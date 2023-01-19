@@ -4,9 +4,9 @@ imports Gabow_Skeleton
 begin
 
 text \<open>
-  As a first variant, we implement an algorithm that computes a list of SCCs 
+  As a first variant, we implement an algorithm that computes a list of SCCs
   of a graph, in topological order. This is the standard variant described by
-  Gabow~\<^cite>\<open>"gabow00"\<close>.
+  Gabow~\<^cite>\<open>"Gabow00"\<close>.
 \<close>
 
 section \<open>Specification\<close>
@@ -15,33 +15,33 @@ begin
   text \<open>We specify a distinct list that covers all reachable nodes and
     contains SCCs in topological order\<close>
 
-  definition "compute_SCC_spec \<equiv> SPEC (\<lambda>l. 
-    distinct l \<and> \<Union>(set l) = E\<^sup>*``V0 \<and> (\<forall>U\<in>set l. is_scc E U) 
+  definition "compute_SCC_spec \<equiv> SPEC (\<lambda>l.
+    distinct l \<and> \<Union>(set l) = E\<^sup>*``V0 \<and> (\<forall>U\<in>set l. is_scc E U)
     \<and> (\<forall>i j. i<j \<and> j<length l \<longrightarrow> l!j \<times> l!i \<inter> E\<^sup>* = {}) )"
 end
 
 section \<open>Extended Invariant\<close>
 
 locale cscc_invar_ext = fr_graph G
-  for G :: "('v,'more) graph_rec_scheme" + 
+  for G :: "('v,'more) graph_rec_scheme" +
   fixes l :: "'v set list" and D :: "'v set"
   assumes l_is_D: "\<Union>(set l) = D" \<comment> \<open>The output contains all done CNodes\<close>
   assumes l_scc: "set l \<subseteq> Collect (is_scc E)" \<comment> \<open>The output contains only SCCs\<close>
-  assumes l_no_fwd: "\<And>i j. \<lbrakk>i<j; j<length l\<rbrakk> \<Longrightarrow> l!j \<times> l!i \<inter> E\<^sup>* = {}" 
+  assumes l_no_fwd: "\<And>i j. \<lbrakk>i<j; j<length l\<rbrakk> \<Longrightarrow> l!j \<times> l!i \<inter> E\<^sup>* = {}"
     \<comment> \<open>The output contains no forward edges\<close>
 begin
   lemma l_no_empty: "{}\<notin>set l" using l_scc by (auto simp: in_set_conv_decomp)
 end
-  
+
 locale cscc_outer_invar_loc = outer_invar_loc G it D + cscc_invar_ext G l D
-  for G :: "('v,'more) graph_rec_scheme" and it l D 
+  for G :: "('v,'more) graph_rec_scheme" and it l D
 begin
   lemma locale_this: "cscc_outer_invar_loc G it l D" by unfold_locales
   lemma abs_outer_this: "outer_invar_loc G it D" by unfold_locales
 end
 
 locale cscc_invar_loc = invar_loc G v0 D0 p D pE + cscc_invar_ext G l D
-  for G :: "('v,'more) graph_rec_scheme" and v0 D0 and l :: "'v set list" 
+  for G :: "('v,'more) graph_rec_scheme" and v0 D0 and l :: "'v set list"
   and p D pE
 begin
   lemma locale_this: "cscc_invar_loc G v0 D0 l p D pE" by unfold_locales
@@ -67,13 +67,13 @@ begin
 
           (l,p,D,pE) \<leftarrow>
           WHILEIT (cscc_invar v0 D0)
-            (\<lambda>(l,p,D,pE). p \<noteq> []) (\<lambda>(l,p,D,pE). 
+            (\<lambda>(l,p,D,pE). p \<noteq> []) (\<lambda>(l,p,D,pE).
           do {
             \<comment> \<open>Select edge from end of path\<close>
             (vo,(p,D,pE)) \<leftarrow> select_edge (p,D,pE);
 
             ASSERT (p\<noteq>[]);
-            case vo of 
+            case vo of
               Some v \<Rightarrow> do {
                 if v \<in> \<Union>(set p) then do {
                   \<comment> \<open>Collapse\<close>
@@ -104,7 +104,7 @@ end
 section \<open>Preservation of Invariant Extension\<close>
 context cscc_invar_ext
 begin
-  lemma l_disjoint: 
+  lemma l_disjoint:
     assumes A: "i<j" "j<length l"
     shows "l!i \<inter> l!j = {}"
   proof (rule disjointI)
@@ -153,9 +153,9 @@ begin
     assumes INV: "cscc_outer_invar it (l,D0)"
     shows "cscc_invar_part (l,initial v0 D0)"
   proof -
-    from INV interpret cscc_outer_invar_loc G it l D0 
+    from INV interpret cscc_outer_invar_loc G it l D0
       unfolding cscc_outer_invar_def by simp
-    
+
     show ?thesis
       unfolding cscc_invar_part_def initial_def
       apply simp
@@ -169,15 +169,15 @@ begin
     assumes NO': "pE \<inter> (last p \<times> UNIV) = {}"
     shows "cscc_invar_part (last p # l, pop (p,D,pE))"
   proof -
-    from INV interpret cscc_invar_loc G v0 D0 l p D pE 
+    from INV interpret cscc_invar_loc G v0 D0 l p D pE
       unfolding cscc_invar_def by simp
 
     have AUX_l_scc: "is_scc E (last p)"
       unfolding is_scc_pointwise
     proof safe
       {
-        assume "last p = {}" thus False 
-          using p_no_empty by (cases p rule: rev_cases) auto 
+        assume "last p = {}" thus False
+          using p_no_empty by (cases p rule: rev_cases) auto
       }
 
       fix u v
@@ -185,14 +185,14 @@ begin
       with p_sc[of "last p"] have "(u,v) \<in> (lvE \<inter> last p \<times> last p)\<^sup>*" by auto
       with lvE_ss_E show "(u,v)\<in>(E \<inter> last p \<times> last p)\<^sup>*"
         by (metis Int_mono equalityE rtrancl_mono_mp)
-      
+
       fix u'
       assume "u'\<notin>last p" "(u,u')\<in>E\<^sup>*" "(u',v)\<in>E\<^sup>*"
 
       from \<open>u'\<notin>last p\<close> \<open>u\<in>last p\<close> \<open>(u,u')\<in>E\<^sup>*\<close>
         and rtrancl_reachable_induct[OF order_refl lastp_un_D_closed[OF NE NO']]
       have "u'\<in>D" by auto
-      with \<open>(u',v)\<in>E\<^sup>*\<close> and rtrancl_reachable_induct[OF order_refl D_closed] 
+      with \<open>(u',v)\<in>E\<^sup>*\<close> and rtrancl_reachable_induct[OF order_refl D_closed]
       have "v\<in>D" by auto
       with \<open>v\<in>last p\<close> p_not_D show False by (cases p rule: rev_cases) auto
     qed
@@ -205,10 +205,10 @@ begin
         fix u v
         assume "(u, v) \<in> E\<^sup>*" "u \<in> l ! (j - Suc 0)" "v \<in> (last p # l) ! i"
         from \<open>u \<in> l ! (j - Suc 0)\<close> A have "u\<in>\<Union>(set l)"
-          by (metis Ex_list_of_length Suc_pred UnionI length_greater_0_conv 
-            less_nat_zero_code not_less_eq nth_mem) 
+          by (metis Ex_list_of_length Suc_pred UnionI length_greater_0_conv
+            less_nat_zero_code not_less_eq nth_mem)
         with l_is_D have "u\<in>D" by simp
-        with rtrancl_reachable_induct[OF order_refl D_closed] \<open>(u,v)\<in>E\<^sup>*\<close> 
+        with rtrancl_reachable_induct[OF order_refl D_closed] \<open>(u,v)\<in>E\<^sup>*\<close>
         have "v\<in>D" by auto
 
         show False proof cases
@@ -216,9 +216,9 @@ begin
           with p_not_D \<open>v\<in>D\<close> show False by (cases p rule: rev_cases) auto
         next
           assume "i\<noteq>0" with \<open>v \<in> (last p # l) ! i\<close> have "v\<in>l!(i - 1)" by auto
-          with l_no_fwd[of "i - 1" "j - 1"] 
+          with l_no_fwd[of "i - 1" "j - 1"]
             and \<open>u \<in> l ! (j - Suc 0)\<close> \<open>(u, v) \<in> E\<^sup>*\<close> \<open>i\<noteq>0\<close> A
-          show False by fastforce 
+          show False by fastforce
         qed
       qed
     } note AUX_l_no_fwd = this
@@ -237,7 +237,7 @@ begin
 
   thm cscc_invar_pop[of v_0 D_0 l p D pE]
 
-  lemma cscc_invar_unchanged: 
+  lemma cscc_invar_unchanged:
     assumes INV: "cscc_invar v0 D0 (l,p,D,pE)"
     shows "cscc_invar_part (l,p',D,pE')"
     using INV unfolding cscc_invar_def cscc_invar_part_def cscc_invar_loc_def
@@ -261,17 +261,17 @@ begin
 
 
   lemma cscc_invar_outer_newnode:
-    assumes A: "v0\<notin>D0" "v0\<in>it" 
+    assumes A: "v0\<notin>D0" "v0\<in>it"
     assumes OINV: "cscc_outer_invar it (l,D0)"
     assumes INV: "cscc_invar v0 D0 (l',[],D',pE)"
     shows "cscc_invar_ext G l' D'"
   proof -
-    from OINV interpret cscc_outer_invar_loc G it l D0 
+    from OINV interpret cscc_outer_invar_loc G it l D0
       unfolding cscc_outer_invar_def by simp
-    from INV interpret inv: cscc_invar_loc G v0 D0 l' "[]" D' pE 
+    from INV interpret inv: cscc_invar_loc G v0 D0 l' "[]" D' pE
       unfolding cscc_invar_def by simp
-    
-    show ?thesis 
+
+    show ?thesis
       by unfold_locales
 
   qed
@@ -281,10 +281,10 @@ begin
     shows "cscc_invar_ext G l D"
     using assms
     by (simp add: cscc_outer_invar_def cscc_outer_invar_loc_def)
-    
+
   lemmas cscc_invar_preserve = invar_preserve
     cscc_invar_initial
-    cscc_invar_pop cscc_invar_collapse cscc_invar_push cscc_invar_unchanged 
+    cscc_invar_pop cscc_invar_collapse cscc_invar_push cscc_invar_unchanged
     cscc_outer_invar_initial cscc_invar_outer_newnode cscc_invar_outer_Dnode
 
   text \<open>On termination, the invariant implies the specification\<close>
@@ -315,20 +315,20 @@ end
 
 section \<open>Main Correctness Proof\<close>
 
-context fr_graph 
+context fr_graph
 begin
   lemma invar_from_cscc_invarI: "cscc_invar v0 D0 (L,PDPE) \<Longrightarrow> invar v0 D0 PDPE"
     unfolding cscc_invar_def invar_def
     apply (simp split: prod.splits)
     unfolding cscc_invar_loc_def by simp
 
-  lemma outer_invar_from_cscc_invarI: 
+  lemma outer_invar_from_cscc_invarI:
     "cscc_outer_invar it (L,D) \<Longrightarrow>outer_invar it D"
     unfolding cscc_outer_invar_def outer_invar_def
     apply (simp split: prod.splits)
     unfolding cscc_outer_invar_loc_def by simp
 
-  text \<open>With the extended invariant and the auxiliary lemmas, the actual 
+  text \<open>With the extended invariant and the auxiliary lemmas, the actual
     correctness proof is straightforward:\<close>
   theorem compute_SCC_correct: "compute_SCC \<le> compute_SCC_spec"
   proof -
@@ -339,7 +339,7 @@ begin
       unfolding compute_SCC_def compute_SCC_spec_def select_edge_def select_def
       apply (refine_rcg
         WHILEIT_rule[where R="inv_image (abs_wf_rel v0) snd" for v0]
-        refine_vcg 
+        refine_vcg
       )
 
       apply (vc_solve
@@ -355,15 +355,15 @@ begin
 
 
   text \<open>Simple proof, for presentation\<close>
-  context 
+  context
     notes [refine]=refine_vcg
     notes [[goals_limit = 1]]
   begin
     theorem "compute_SCC \<le> compute_SCC_spec"
       unfolding compute_SCC_def compute_SCC_spec_def select_edge_def select_def
-      by (refine_rcg 
+      by (refine_rcg
         WHILEIT_rule[where R="inv_image (abs_wf_rel v0) snd" for v0])
-      (vc_solve 
+      (vc_solve
         rec: cscc_invarI cscc_outer_invarI solve: cscc_invar_preserve cscc_finI
         intro: invar_from_cscc_invarI outer_invar_from_cscc_invarI
         dest!: sym[of "pop A" for A]
@@ -378,27 +378,27 @@ section \<open>Refinement to Gabow's Data Structure\<close>
 context GS begin
   definition "seg_set_impl l u \<equiv> do {
     (_,res) \<leftarrow> WHILET
-      (\<lambda>(l,_). l<u) 
-      (\<lambda>(l,res). do { 
-        ASSERT (l<length S); 
+      (\<lambda>(l,_). l<u)
+      (\<lambda>(l,res). do {
+        ASSERT (l<length S);
         let x = S!l;
-        ASSERT (x\<notin>res); 
+        ASSERT (x\<notin>res);
         RETURN (Suc l,insert x res)
-      }) 
+      })
       (l,{});
-      
+
     RETURN res
   }"
 
   lemma seg_set_impl_aux:
     fixes l u
-    shows "\<lbrakk>l<u; u\<le>length S; distinct S\<rbrakk> \<Longrightarrow> seg_set_impl l u 
+    shows "\<lbrakk>l<u; u\<le>length S; distinct S\<rbrakk> \<Longrightarrow> seg_set_impl l u
     \<le> SPEC (\<lambda>r. r = {S!j | j. l\<le>j \<and> j<u})"
     unfolding seg_set_impl_def
-    apply (refine_rcg 
-      WHILET_rule[where 
+    apply (refine_rcg
+      WHILET_rule[where
         I="\<lambda>(l',res). res = {S!j | j. l\<le>j \<and> j<l'} \<and> l\<le>l' \<and> l'\<le>u"
-        and R="measure (\<lambda>(l',_). u-l')" 
+        and R="measure (\<lambda>(l',_). u-l')"
       ]
       refine_vcg)
 
@@ -410,13 +410,13 @@ context GS begin
     shows "seg_set_impl (seg_start i) (seg_end i) \<le> SPEC (\<lambda>r. r=p_\<alpha>!i)"
     apply (refine_rcg order_trans[OF seg_set_impl_aux] refine_vcg)
 
-    using assms 
+    using assms
     apply (simp_all add: seg_start_less_end seg_end_bound S_distinct) [3]
 
     apply (auto simp: p_\<alpha>_def assms seg_def) []
     done
 
-  definition "last_seg_impl 
+  definition "last_seg_impl
     \<equiv> do {
       ASSERT (length B - 1 < length B);
       seg_set_impl (seg_start (length B - 1)) (seg_end (length B - 1))
@@ -436,20 +436,20 @@ context fr_graph
 begin
 
   definition "last_seg_impl s \<equiv> GS.last_seg_impl s"
-  lemmas last_seg_impl_def_opt = 
-    last_seg_impl_def[abs_def, THEN opt_GSdef, 
-      unfolded GS.last_seg_impl_def GS.seg_set_impl_def 
-    GS.seg_start_def GS.seg_end_def GS_sel_simps] 
-    (* TODO: Some potential for optimization here: the assertion 
+  lemmas last_seg_impl_def_opt =
+    last_seg_impl_def[abs_def, THEN opt_GSdef,
+      unfolded GS.last_seg_impl_def GS.seg_set_impl_def
+    GS.seg_start_def GS.seg_end_def GS_sel_simps]
+    (* TODO: Some potential for optimization here: the assertion
       guarantees that length B - 1 + 1 = length B !*)
 
-  lemma last_seg_impl_refine: 
+  lemma last_seg_impl_refine:
     assumes A: "(s,(p,D,pE))\<in>GS_rel"
     assumes NE: "p\<noteq>[]"
     shows "last_seg_impl s \<le> \<Down>Id (RETURN (last p))"
   proof -
-    from A have 
-      [simp]: "p=GS.p_\<alpha> s \<and> D=GS.D_\<alpha> s \<and> pE=GS.pE_\<alpha> s" 
+    from A have
+      [simp]: "p=GS.p_\<alpha> s \<and> D=GS.D_\<alpha> s \<and> pE=GS.pE_\<alpha> s"
         and INV: "GS_invar s"
       by (auto simp add: GS_rel_def br_def GS_\<alpha>_split)
 
@@ -457,7 +457,7 @@ begin
       unfolding last_seg_impl_def[abs_def]
       apply (rule order_trans[OF GS_invar.last_seg_impl_correct])
       using INV NE
-      apply (simp_all) 
+      apply (simp_all)
       done
   qed
 
@@ -465,7 +465,7 @@ begin
     "compute_SCC_impl \<equiv> do {
       stat_start_nres;
       let so = ([],Map.empty);
-      (l,D) \<leftarrow> FOREACHi (\<lambda>it (l,s). cscc_outer_invar it (l,oGS_\<alpha> s)) 
+      (l,D) \<leftarrow> FOREACHi (\<lambda>it (l,s). cscc_outer_invar it (l,oGS_\<alpha> s))
         V0 (\<lambda>v0 (l,I0). do {
           if \<not>is_done_oimpl v0 I0 then do {
             let ls = (l,initial_impl v0 I0);
@@ -476,7 +476,7 @@ begin
               \<comment> \<open>Select edge from end of path\<close>
               (vo,s) \<leftarrow> select_edge_impl s;
 
-              case vo of 
+              case vo of
                 Some v \<Rightarrow> do {
                   if is_on_stack_impl v s then do {
                     s\<leftarrow>collapse_impl v s;
@@ -513,7 +513,7 @@ begin
       (l',l)\<in>Id;
       (v',v)\<in>Id;
       v\<in>\<Union>(set p)
-    \<rbrakk> \<Longrightarrow> do { s'\<leftarrow>collapse_impl v' s'; RETURN (l',s') } 
+    \<rbrakk> \<Longrightarrow> do { s'\<leftarrow>collapse_impl v' s'; RETURN (l',s') }
       \<le> \<Down>(Id \<times>\<^sub>r GS_rel) (RETURN (l,collapse v (p,D,pE)))"
       apply (refine_rcg order_trans[OF collapse_refine] refine_vcg)
       apply assumption+
@@ -525,9 +525,9 @@ begin
       unfolding compute_SCC_impl_def compute_SCC_def
       apply (refine_rcg
         bind_refine'
-        select_edge_refine push_refine 
+        select_edge_refine push_refine
         pop_refine
-        (*collapse_refine*) 
+        (*collapse_refine*)
         initial_refine
         oinitial_refine
         (*last_seg_impl_refine*)
@@ -537,7 +537,7 @@ begin
 
       apply refine_dref_type
       apply (vc_solve (nopre) solve: asm_rl I_to_outer
-        simp: GS_rel_def br_def GS.\<alpha>_def oGS_rel_def oGS_\<alpha>_def 
+        simp: GS_rel_def br_def GS.\<alpha>_def oGS_rel_def oGS_\<alpha>_def
         is_on_stack_refine path_is_empty_refine is_done_refine is_done_orefine
       )
 
