@@ -977,6 +977,19 @@ paragraph \<open>Grounding idempotence\<close>
 lemma grounding_of_grounding_of_cls: "E \<in> grounding_of_cls D \<Longrightarrow> D \<in> grounding_of_cls C \<Longrightarrow> E = D"
   using grounding_of_cls_def by auto
 
+lemma image_grounding_of_cls_grounding_of_cls:
+  "grounding_of_cls ` grounding_of_cls C = (\<lambda>x. {x}) ` grounding_of_cls C"
+proof (rule image_cong)
+  show "\<And>x. x \<in> grounding_of_cls C \<Longrightarrow> grounding_of_cls x = {x}"
+    using grounding_of_cls_ground is_ground_cls_if_in_grounding_of_cls by blast
+qed simp
+
+lemma grounding_of_clss_grounding_of_clss[simp]:
+  "grounding_of_clss (grounding_of_clss N) = grounding_of_clss N"
+  unfolding grounding_of_clss_def UN_UN_flatten
+  unfolding image_grounding_of_cls_grounding_of_cls
+  by simp
+
 
 subsubsection \<open>Subsumption\<close>
 
