@@ -5,22 +5,22 @@ topics = [
 ]
 abstract = """
 We construct an abstract ledger supporting the <em>risk-free
-lending</em> protocol. The risk-free lending protocol is a
-system for issuing and exchanging novel financial products we call
-<em>risk-free loan</em>. The system allows one party to
-lend money at 0&#37; APY to another party in exchange for a good
-or service. On every update of the ledger, accounts have interest
-distributed to them. Holders of lent assets keep interest accrued by
-those assets. After distributing interest, the system returns a fixed
-fraction of each loan. These fixed fractions determine <em>loan
-periods</em>. Loans for longer periods have a smaller fixed
-fraction returned. Loans may be re-lent or used as collateral for
-other loans. We give a sufficient criterion to enforce all accounts
-will forever be solvent. We give a protocol for maintaining this
-invariant when transferring or lending funds. We also show this
-invariant holds after update. Even though the system does not track
-counter-party obligations, we show that all credited and debited loans
-cancel and the monetary supply grows at a specified interest rate."""
+lending</em> protocol. The risk-free lending protocol is a system for
+issuing and exchanging novel financial products we call <em>risk-free
+loans</em>. The system allows one party to lend money at 0&percnt; APY
+to another party in exchange for a good or service. On every update of
+the ledger, accounts have interest distributed to them. Holders of
+lent assets keep interest accrued by those assets. After distributing
+interest, the system returns a fixed fraction of each loan. These
+fixed fractions determine <em>loan periods</em>. Loans for longer
+periods have a smaller fixed fraction returned. Loans may be re-lent
+or used as collateral for other loans. We give a sufficient criterion
+to enforce that all accounts will forever be solvent. We give a
+protocol for maintaining this invariant when transferring or lending
+funds. We also show that this invariant holds after an update. Even
+though the system does not track counter-party obligations, we show
+that all credited and debited loans cancel, and the monetary supply
+grows at a specified interest rate."""
 license = "bsd"
 note = ""
 
@@ -39,3 +39,4 @@ doty = "doty_email" # matt@w-d.org
 [extra]
 
 [related]
+dois = ["10.2139/ssrn.4254003"]

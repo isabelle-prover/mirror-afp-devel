@@ -1768,6 +1768,331 @@ proof -
     by (metis Rep_account_inject ext)
 qed
 
+subsection \<open>Simple Transfers\<close>
+
+text \<open>Building on our decomposition, we can understand the necessary and
+      sufficient conditions to transfer a loan of \<^term>\<open>\<delta> n c\<close>.\<close>
+
+text \<open>We first give a notion of the \<^emph>\<open>reserves for a period \<open>n\<close>\<close>. This
+      characterizes the available funds for a loan of period \<open>n\<close> that an
+      account \<open>\<alpha>\<close> possesses.\<close>
+
+definition reserves_for_period :: "account \<Rightarrow> nat \<Rightarrow> real" where
+  "reserves_for_period \<alpha> n =
+      fold
+        min
+        [(\<Sum> i\<le>k . \<pi> \<alpha> i) . k \<leftarrow> [n..<shortest_period \<alpha>+1]]
+        (\<Sum> i\<le>n . \<pi> \<alpha> i)"
+
+lemma nav_reserves_for_period:
+  assumes "shortest_period \<alpha> \<le> n"
+  shows "reserves_for_period \<alpha> n = net_asset_value \<alpha>"
+proof cases
+  assume "shortest_period \<alpha> = n"
+  hence "[n..<shortest_period \<alpha>+1] = [n]"
+    by simp
+  hence "[(\<Sum> i\<le>k . \<pi> \<alpha> i) . k \<leftarrow> [n..<shortest_period \<alpha>+1]] =
+           [(\<Sum> i\<le>n . \<pi> \<alpha> i)]"
+    by simp
+  then show ?thesis
+    unfolding reserves_for_period_def
+    by (simp add: \<open>shortest_period \<alpha> = n\<close> net_asset_value_alt_def)
+next
+  assume "shortest_period \<alpha> \<noteq> n"
+  hence "shortest_period \<alpha> < n"
+    using assms order_le_imp_less_or_eq by blast
+  hence "[(\<Sum> i\<le>k . \<pi> \<alpha> k) . k \<leftarrow> [n..<shortest_period \<alpha>+1]] = []"
+    by force
+  hence "reserves_for_period \<alpha> n = (\<Sum> i\<le>n . \<pi> \<alpha> i)"
+    unfolding reserves_for_period_def by auto
+  then show ?thesis
+    using assms net_asset_value_shortest_period_ge by presburger
+qed
+
+lemma reserves_for_period_exists:
+  "\<exists>m\<ge>n. reserves_for_period \<alpha> n = (\<Sum> i\<le>m . \<pi> \<alpha> i)
+         \<and> (\<forall>u\<ge>n. (\<Sum> i\<le>m . \<pi> \<alpha> i) \<le> (\<Sum> i\<le>u . \<pi> \<alpha> i))"
+proof -
+  {
+    fix j
+    have "\<exists>m\<ge>n. (\<Sum> i\<le>m . \<pi> \<alpha> i) =
+                  fold
+                    min
+                    [(\<Sum> i\<le>k . \<pi> \<alpha> i) . k \<leftarrow> [n..<j]]
+                    (\<Sum> i\<le>n . \<pi> \<alpha> i)
+                 \<and> (\<forall>u\<ge>n. u < j \<longrightarrow> (\<Sum> i\<le>m . \<pi> \<alpha> i) \<le> (\<Sum> i\<le>u . \<pi> \<alpha> i))"
+    proof (induct j)
+      case 0
+      then show ?case by auto
+    next
+      case (Suc j)
+      then show ?case
+      proof cases
+        assume "j \<le> n"
+        thus ?thesis
+          by (simp, metis dual_order.refl le_less_Suc_eq)
+      next
+        assume "\<not>(j \<le> n)"
+        hence "n < j" by auto
+        obtain m where
+          "m \<ge> n"
+          "\<forall>u\<ge>n. u < j \<longrightarrow> (\<Sum> i\<le>m . \<pi> \<alpha> i) \<le> (\<Sum> i\<le>u . \<pi> \<alpha> i)"
+          "(\<Sum> i\<le>m . \<pi> \<alpha> i) =
+                    fold
+                      min
+                      [(\<Sum> i\<le>k . \<pi> \<alpha> i) . k \<leftarrow> [n..<j]]
+                      (\<Sum> i\<le>n . \<pi> \<alpha> i)"
+          using Suc by blast
+        note \<heartsuit> = this
+        hence \<dagger>: "min (\<Sum> i\<le>m . \<pi> \<alpha> i) (\<Sum> i\<le>j . \<pi> \<alpha> i) =
+                fold
+                  min
+                  [(\<Sum> i\<le>k . \<pi> \<alpha> i) . k \<leftarrow> [n..<Suc j]]
+                  (\<Sum> i\<le>n . \<pi> \<alpha> i)"
+          (is "_ = ?fold")
+          using \<open>n < j\<close> by simp
+        show ?thesis
+        proof cases
+          assume "(\<Sum> i\<le>m . \<pi> \<alpha> i) < (\<Sum> i\<le>j . \<pi> \<alpha> i)"
+          hence
+            "\<forall>u\<ge>n. u < Suc j \<longrightarrow> (\<Sum> i\<le>m . \<pi> \<alpha> i) \<le> (\<Sum> i\<le>u . \<pi> \<alpha> i)"
+            by (metis
+                  \<heartsuit>(2)
+                  dual_order.order_iff_strict
+                  less_Suc_eq)
+          thus ?thesis
+            using \<dagger> \<open>m \<ge> n\<close> by auto
+        next
+          assume \<star>: "\<not> ((\<Sum> i\<le>m . \<pi> \<alpha> i) < (\<Sum> i\<le>j . \<pi> \<alpha> i))"
+          hence
+            "\<forall>u\<ge>n. u < j \<longrightarrow> (\<Sum> i\<le>j . \<pi> \<alpha> i) \<le> (\<Sum> i\<le>u . \<pi> \<alpha> i)"
+            using \<heartsuit>(2)
+            by auto
+          hence
+            "\<forall>u\<ge>n. u < Suc j \<longrightarrow> (\<Sum> i\<le>j . \<pi> \<alpha> i) \<le> (\<Sum> i\<le>u . \<pi> \<alpha> i)"
+            by (simp add: less_Suc_eq)
+          also have "?fold = (\<Sum> i\<le>j . \<pi> \<alpha> i)"
+            using \<dagger> \<star> by linarith
+          ultimately show ?thesis
+            by (metis \<open>n < j\<close> less_or_eq_imp_le)
+        qed
+      qed
+    qed
+  }
+  from this obtain m where
+      "m \<ge> n"
+      "(\<Sum> i\<le>m . \<pi> \<alpha> i) = reserves_for_period \<alpha> n"
+      "\<forall>u\<ge>n. u < shortest_period \<alpha> + 1
+              \<longrightarrow> (\<Sum> i\<le>m . \<pi> \<alpha> i) \<le> (\<Sum> i\<le>u . \<pi> \<alpha> i)"
+    unfolding reserves_for_period_def
+    by blast
+  note \<diamondsuit> = this
+  hence "(\<Sum> i\<le>m . \<pi> \<alpha> i) \<le> (\<Sum> i\<le>shortest_period \<alpha> . \<pi> \<alpha> i)"
+    by (metis
+          less_add_one
+          nav_reserves_for_period
+          net_asset_value_alt_def
+          nle_le)
+  hence "\<forall>u\<ge>shortest_period \<alpha>. (\<Sum> i\<le>m . \<pi> \<alpha> i) \<le> (\<Sum> i\<le>u . \<pi> \<alpha> i)"
+    by (metis
+          net_asset_value_alt_def
+          net_asset_value_shortest_period_ge)
+  hence "\<forall>u\<ge>n. (\<Sum> i\<le>m . \<pi> \<alpha> i) \<le> (\<Sum> i\<le>u . \<pi> \<alpha> i)"
+    by (metis \<diamondsuit>(3) Suc_eq_plus1 less_Suc_eq linorder_not_le)
+  thus ?thesis
+    using \<diamondsuit>(1) \<diamondsuit>(2)
+    by metis
+qed
+
+lemma permissible_loan_converse:
+  assumes "strictly_solvent (\<alpha> - \<delta> n c)"
+  shows "c \<le> reserves_for_period \<alpha> n"
+proof -
+  obtain m where
+    "n \<le> m"
+    "reserves_for_period \<alpha> n = (\<Sum> i\<le>m . \<pi> \<alpha> i)"
+    using reserves_for_period_exists by blast
+  have "(\<Sum> i\<le>m . \<pi> (\<alpha> - \<delta> n c) i) = (\<Sum> i\<le>m . \<pi> \<alpha> i) - c"
+    using \<open>n \<le> m\<close>
+  proof (induct m)
+    case 0
+    hence "n = 0" by auto
+    have "\<pi> (\<alpha> - \<delta> n c + \<delta> n c) 0 = \<pi> (\<alpha> - \<delta> n c) 0 + \<pi> (\<delta> n c) 0"
+      using Rep_account_plus by presburger
+    thus ?case
+      unfolding \<open>n = 0\<close>
+      by simp
+  next
+    case (Suc m)
+    then show ?case
+    proof cases
+      assume "n = Suc m"
+      hence "m < n" by auto
+      hence "(\<Sum> i\<le>m . \<pi> (\<alpha> - \<delta> n c) i) = (\<Sum> i\<le>m . \<pi> \<alpha> i)"
+      proof(induct m)
+        case 0
+        then show ?case
+          by (metis
+                (no_types, opaque_lifting)
+                Rep_account_loan
+                Rep_account_plus
+                atMost_0 bot_nat_0.not_eq_extremum
+                diff_0_right
+                diff_add_cancel
+                empty_iff
+                finite.intros(1)
+                sum.empty
+                sum.insert)
+      next
+        case (Suc m)
+        hence "m < n" and "n \<noteq> Suc m"
+          using Suc_lessD by blast+
+        moreover have
+          "\<pi> (\<alpha> - \<delta> n c + \<delta> n c) (Suc m) =
+              \<pi> (\<alpha> - \<delta> n c) (Suc m) + \<pi> (\<delta> n c) (Suc m)"
+          using Rep_account_plus by presburger
+        ultimately show ?case by (simp add: Suc.hyps)
+      qed
+      moreover
+      have "\<pi> (\<alpha> - \<delta> (Suc m) c + \<delta> (Suc m) c) (Suc m) =
+              \<pi> (\<alpha> - \<delta> (Suc m) c) (Suc m) + \<pi> (\<delta> (Suc m) c) (Suc m)"
+        by (meson Rep_account_plus)
+      ultimately show ?thesis
+        unfolding \<open>n = Suc m\<close>
+        by simp
+    next
+      assume "n \<noteq> Suc m"
+      hence "n \<le> m"
+        using Suc.prems le_SucE by blast
+      have "\<pi> (\<alpha> - \<delta> n c + \<delta> n c) (Suc m) =
+              \<pi> (\<alpha> - \<delta> n c) (Suc m) + \<pi> (\<delta> n c) (Suc m)"
+        by (meson Rep_account_plus)
+      moreover have "0 = (if n = Suc m then c else 0)"
+        using \<open>n \<noteq> Suc m\<close> by presburger
+      ultimately show ?thesis
+        by (simp add: Suc.hyps \<open>n \<le> m\<close>)
+    qed
+  qed
+  hence "0 \<le> (\<Sum> i\<le>m . \<pi> \<alpha> i) - c"
+    by (metis assms strictly_solvent_def)
+  thus ?thesis
+    by (simp add: \<open>reserves_for_period \<alpha> n = sum (\<pi> \<alpha>) {..m}\<close>)
+qed
+
+lemma permissible_loan:
+  assumes "strictly_solvent \<alpha>"
+  shows "strictly_solvent (\<alpha> - \<delta> n c) = (c \<le> reserves_for_period \<alpha> n)"
+proof
+  assume "strictly_solvent (\<alpha> - \<delta> n c)"
+  thus "c \<le> reserves_for_period \<alpha> n"
+    using permissible_loan_converse by blast
+next
+  assume "c \<le> reserves_for_period \<alpha> n"
+  {
+    fix j
+    have "0 \<le> (\<Sum> i\<le>j . \<pi> (\<alpha> - \<delta> n c) i)"
+    proof cases
+      assume "j < n"
+      hence "(\<Sum> i\<le>j . \<pi> (\<alpha> - \<delta> n c) i) = (\<Sum> i\<le>j . \<pi> \<alpha> i)"
+      proof (induct j)
+        case 0
+        then show ?case
+          by (simp,
+              metis
+                Rep_account_loan
+                Rep_account_plus
+                \<open>j < n\<close>
+                add.commute
+                add_0
+                diff_add_cancel
+                gr_implies_not_zero)
+      next
+        case (Suc j)
+        moreover have "\<pi> (\<alpha> - \<delta> n c + \<delta> n c) (Suc j) =
+                         \<pi> (\<alpha> - \<delta> n c) (Suc j) + \<pi> (\<delta> n c) (Suc j)"
+          using Rep_account_plus by presburger
+        ultimately show ?case by simp
+      qed
+      thus ?thesis
+        by (metis assms strictly_solvent_def)
+    next
+      assume "\<not> (j < n)"
+      hence "n \<le> j" by auto
+      obtain m where
+        "reserves_for_period \<alpha> n = (\<Sum> i\<le>m . \<pi> \<alpha> i)"
+        "\<forall>u\<ge>n. (\<Sum> i\<le>m . \<pi> \<alpha> i) \<le> (\<Sum> i\<le>u . \<pi> \<alpha> i)"
+        using reserves_for_period_exists by blast
+      hence "\<forall>u\<ge>n. c \<le> (\<Sum> i\<le>u . \<pi> \<alpha> i)"
+        using \<open>c \<le> reserves_for_period \<alpha> n\<close>
+        by auto
+      hence "c \<le> (\<Sum> i\<le>j . \<pi> \<alpha> i)"
+        using \<open>n \<le> j\<close> by presburger
+      hence "0 \<le> (\<Sum> i\<le>j . \<pi> \<alpha> i) - c"
+        by force
+      moreover have "(\<Sum> i\<le>j . \<pi> \<alpha> i) - c = (\<Sum> i\<le>j . \<pi> (\<alpha> - \<delta> n c) i)"
+        using \<open>n \<le> j\<close>
+      proof (induct j)
+        case 0
+        hence "n = 0" by auto
+        have "\<pi> (\<alpha> - \<delta> 0 c + \<delta> 0 c) 0 = \<pi> (\<alpha> - \<delta> 0 c) 0 + \<pi> (\<delta> 0 c) 0"
+          using Rep_account_plus by presburger
+        thus ?case unfolding \<open>n = 0\<close> by simp
+      next
+        case (Suc j)
+        then show ?case
+        proof cases
+          assume "n = Suc j"
+          hence "j < n"
+            by blast
+          hence "(\<Sum> i\<le>j . \<pi> (\<alpha> - \<delta> n c) i) = (\<Sum> i\<le>j . \<pi> \<alpha> i)"
+          proof (induct j)
+            case 0
+            then show ?case
+              by (simp,
+                  metis
+                    Rep_account_loan
+                    Rep_account_plus
+                    \<open>j < n\<close>
+                    add.commute
+                    add_0
+                    diff_add_cancel
+                    gr_implies_not_zero)
+          next
+            case (Suc j)
+            moreover have "\<pi> (\<alpha> - \<delta> n c + \<delta> n c) (Suc j) =
+                             \<pi> (\<alpha> - \<delta> n c) (Suc j) + \<pi> (\<delta> n c) (Suc j)"
+              using Rep_account_plus by presburger
+            ultimately show ?case by simp
+          qed
+          moreover have
+            "\<pi> (\<alpha> - \<delta> (Suc j) c + \<delta> (Suc j) c) (Suc j) =
+               \<pi> (\<alpha> - \<delta> (Suc j) c) (Suc j) + \<pi> (\<delta> (Suc j) c) (Suc j)"
+            using Rep_account_plus by presburger
+          ultimately show ?thesis
+            unfolding \<open>n = Suc j\<close>
+            by simp
+        next
+          assume "n \<noteq> Suc j"
+          hence "n \<le> j"
+            using Suc.prems le_SucE by blast
+          hence "(\<Sum> i\<le>j . \<pi> \<alpha> i) - c = (\<Sum> i\<le>j . \<pi> (\<alpha> - \<delta> n c) i)"
+            using Suc.hyps by blast
+          moreover have "\<pi> (\<alpha> - \<delta> n c + \<delta> n c) (Suc j) =
+                           \<pi> (\<alpha> - \<delta> n c) (Suc j) + \<pi> (\<delta> n c) (Suc j)"
+            using Rep_account_plus by presburger
+          ultimately show ?thesis
+            by (simp add: \<open>n \<noteq> Suc j\<close>)
+        qed
+      qed
+      ultimately show ?thesis by auto
+    qed
+  }
+  thus "strictly_solvent (\<alpha> - \<delta> n c)"
+    unfolding strictly_solvent_def
+    by auto
+qed
+
+
 subsection \<open>Closed Forms \label{subsec:bulk-update-closed-form}\<close>
 
 text \<open>We first give closed forms for loans \<^term>\<open>\<delta> n c\<close>.  The simplest closed
