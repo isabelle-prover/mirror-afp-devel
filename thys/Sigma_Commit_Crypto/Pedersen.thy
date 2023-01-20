@@ -1,6 +1,6 @@
 subsection\<open>Pedersen Commitment Scheme\<close>
 
-text\<open>The Pedersen commitment scheme \<^cite>\<open>"BLP:conf/crypto/Pedersen91"\<close> is a commitment scheme based on a cyclic group. We use the 
+text\<open>The Pedersen commitment scheme \<^cite>\<open>"DBLP:conf/crypto/Pedersen91"\<close> is a commitment scheme based on a cyclic group. We use the 
 construction of cyclic groups from CryptHOL to formalise the commitment scheme. We prove perfect hiding
 and computational binding, with a reduction to the discrete log problem. We a proof of the Pedersen commitment scheme
 is realised in the instantiation of the Schnorr \<open>\<Sigma>\<close>-protocol with the general construction of commitment schemes 
