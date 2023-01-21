@@ -15,24 +15,24 @@ begin
 section\<open>Introduction\<close>
 
   text\<open>This document provides a concise overview on the core results of our previous
-       work \<^cite>\<open>"C67" and "R58" and "C57"\<close> on the exploration of axiom systems for category theory.
+       work \cite{C67,R58,C57} on the exploration of axiom systems for category theory.
        Extending the previous studies we
        include one further axiomatic theory in our experiments. This additional
-       theory has been suggested by Mac Lane~\<^cite>\<open>"MacLane48"\<close> in
+       theory has been suggested by Mac Lane~\cite{MacLane48} in
        1948. We show that the axioms proposed by Mac Lane are equivalent to the ones studied
-       in~\<^cite>\<open>"R58"\<close>, which includes an axioms set suggested by Scott~\<^cite>\<open>"Scott79"\<close>
-       in the 1970s and another axioms set proposed by Freyd and Scedrov~\<^cite>\<open>"FreydScedrov90"\<close> in 1990,
-       which we slightly modified in~\<^cite>\<open>"R58"\<close> to remedy a minor technical issue.
+       in~\cite{R58}, which includes an axioms set suggested by Scott~\cite{Scott79}
+       in the 1970s and another axioms set proposed by Freyd and Scedrov~\cite{FreydScedrov90} in 1990,
+       which we slightly modified in~\cite{R58} to remedy a minor technical issue.
 
       The explanations given below are minimal, for more details we refer to the referenced
-      papers, in particular, to~\<^cite>\<open>"R58"\<close>.\<close>
+      papers, in particular, to~\cite{R58}.\<close>
 
 
 section\<open>Embedding of Free Logic in HOL\<close>
 
-text\<open>We introduce a shallow semantical embedding of free logic \<^cite>\<open>"R58"\<close> in Isabelle/HOL.
+text\<open>We introduce a shallow semantical embedding of free logic \cite{R58} in Isabelle/HOL.
      Definite description is omitted, since it is not needed in the studies below and also
-     since the definition provided in \<^cite>\<open>"C57"\<close> introduces the here undesired commitment
+     since the definition provided in \cite{C57} introduces the here undesired commitment
      that at least one non-existing element of type $i$ is a priori given. We here want to
      consider this an optional condition.\<close>
 
@@ -81,7 +81,7 @@ composition from right to left). \label{IDMcL}\<close>
  lemma IDPredicates: "ID \<equiv> IDMcL" by auto
 
 
-section\<open>The Axioms Sets studied by Benzm\"uller and Scott \<^cite>\<open>"R58"\<close>\<close>
+section\<open>The Axioms Sets studied by Benzm\"uller and Scott \cite{R58}\<close>
 
 subsection\<open>AxiomsSet1\<close>
 
@@ -258,9 +258,9 @@ text\<open>AxiomsSet2 is developed from AxiomsSet1 by Skolemization of the
 
 subsection\<open>AxiomsSet5\<close>
 
-  text\<open>AxiomsSet5 has been proposed by Scott \<^cite>\<open>"Scott79"\<close> in the 1970s. This set of
+  text\<open>AxiomsSet5 has been proposed by Scott \cite{Scott79} in the 1970s. This set of
  axioms is equivalent to the axioms set presented by Freyd and Scedrov in their textbook
- ``Categories, Allegories'' \<^cite>\<open>"FreydScedrov90"\<close> when encoded in free logic, corrected/adapted
+ ``Categories, Allegories'' \cite{FreydScedrov90} when encoded in free logic, corrected/adapted
  and further simplified, see Section 5.\<close>
 
  locale AxiomsSet5 =
@@ -306,10 +306,10 @@ subsection\<open>AxiomsSet5\<close>
 
 
 
-section\<open>The Axioms Sets by Freyd and Scedrov \<^cite>\<open>"FreydScedrov90"\<close>\<close>
+section\<open>The Axioms Sets by Freyd and Scedrov \cite{FreydScedrov90}\<close>
 
 subsection\<open>AxiomsSet6\<close>
-text\<open>The axioms by Freyd and Scedrov  \<^cite>\<open>"FreydScedrov90"\<close> in our notation, when being
+text\<open>The axioms by Freyd and Scedrov  \cite{FreydScedrov90} in our notation, when being
      corrected (cf. the modification in axiom A1).
 
      Freyd and Scedrov employ a different notation for $dom\ x$ and $cod\ 
@@ -558,9 +558,9 @@ subsection\<open>AxiomsSet8Strict (algebraic reading)\<close>
 
 
 
-  section\<open>The Axioms Sets of Mac Lane \<^cite>\<open>"MacLane48"\<close>\<close>
+  section\<open>The Axioms Sets of Mac Lane \cite{MacLane48}\<close>
 
-  text\<open>We analyse the axioms set suggested by Mac Lane~\<^cite>\<open>"MacLane48"\<close> already in 1948.
+  text\<open>We analyse the axioms set suggested by Mac Lane~\cite{MacLane48} already in 1948.
       As for the theory by
        Freyd and Scedrov above, which was developed much later, we need to assume
        strictness of composition to show equivalence to our previous axiom sets.
