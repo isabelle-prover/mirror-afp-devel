@@ -35,9 +35,11 @@ session "Lorenz_Approximation" (AFP) in "Ex/Lorenz" = "HOL-ODE-Numerics" +
     Lorenz_Approximation
 
 session "HOL-ODE-Examples" (AFP large) in "Ex" = "HOL-ODE-Numerics" +
-  options [timeout = 7200]
+  options [timeout = 7200, document = false]
   theories
     ODE_Examples
+  document_files (in "../document")
+    "root.bib"
 
 session "HOL-ODE-ARCH-COMP" (AFP) in "Ex/ARCH_COMP" = "HOL-ODE-Numerics" +
   options [timeout = 7200]
