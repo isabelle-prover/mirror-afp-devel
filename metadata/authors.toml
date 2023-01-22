@@ -4348,6 +4348,23 @@ host = [
 [murray.homepages]
 murray_homepage = "https://people.eng.unimelb.edu.au/tobym/"
 
+[myreen]
+name = "Magnus O. Myreen"
+orcid = "0000-0002-9504-4107"
+
+[myreen.emails]
+
+[myreen.emails.myreen_email]
+user = [
+  "myreen",
+]
+host = [
+  "chalmers",
+  "se",
+]
+
+[myreen.homepages]
+
 [nagashima]
 name = "Yutaka Nagashima"
 
@@ -4892,6 +4909,17 @@ platzer_homepage = "https://www.cs.cmu.edu/~aplatzer/"
 name = "Johannes Åman Pohjola"
 
 [pohjola.emails]
+
+[pohjola.emails.pohjola_email]
+user = [
+  "j",
+  "amanpohjola",
+]
+host = [
+  "unsw",
+  "edu",
+  "au",
+]
 
 [pohjola.homepages]
 
@@ -6239,6 +6267,24 @@ host = [
 
 [tan.homepages]
 tan_homepage = "https://www.cs.cmu.edu/~yongkiat/"
+
+[tanaka]
+name = "Miki Tanaka"
+
+[tanaka.emails]
+
+[tanaka.emails.tanaka_email]
+user = [
+  "miki",
+  "tanaka",
+]
+host = [
+  "unsw",
+  "edu",
+  "au",
+]
+
+[tanaka.homepages]
 
 [tasch]
 name = "Markus Tasch"

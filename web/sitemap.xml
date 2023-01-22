@@ -3,15 +3,33 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2023-01-14T00:00:00+00:00</lastmod>
+    <lastmod>2023-01-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/HoareForDivergence.html</loc>
+    <lastmod>2023-01-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2023-01-14T00:00:00+00:00</lastmod>
+    <lastmod>2023-01-20T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/bordg/</loc>
-    <lastmod>2023-01-14T00:00:00+00:00</lastmod>
+    <loc>/dependencies/coinductive/</loc>
+    <lastmod>2023-01-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2023-01-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/</loc>
+    <lastmod>2023-01-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/myreen/</loc>
+    <lastmod>2023-01-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/pohjola/</loc>
+    <lastmod>2023-01-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/tanaka/</loc>
+    <lastmod>2023-01-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/bordg/</loc>
     <lastmod>2023-01-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/mateo/</loc>
@@ -57,9 +75,6 @@
     <lastmod>2022-12-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/datatype_order_generator/</loc>
-    <lastmod>2022-12-15T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/</loc>
     <lastmod>2022-12-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/descartes_sign_rule/</loc>
@@ -2190,9 +2205,6 @@
     <lastmod>2018-06-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/brunner/</loc>
-    <lastmod>2018-06-05T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/coinductive/</loc>
     <lastmod>2018-06-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Partial_Order_Reduction.html</loc>
@@ -5051,6 +5063,8 @@
     <loc>/theories/higher_order_terms/</loc>
   </url><url>
     <loc>/theories/hoare_time/</loc>
+  </url><url>
+    <loc>/theories/hoarefordivergence/</loc>
   </url><url>
     <loc>/theories/hol-csp/</loc>
   </url><url>

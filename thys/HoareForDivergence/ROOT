@@ -1,0 +1,17 @@
+chapter AFP
+
+session HoareForDivergence (AFP) = HOL +
+  options [timeout = 600]
+
+sessions
+    "HOL-Library"
+    Coinductive
+
+  theories
+    DivLogicSoundness
+    DivLogicCompleteness
+    Examples
+
+  document_files
+    "root.bib"
+    "root.tex"
