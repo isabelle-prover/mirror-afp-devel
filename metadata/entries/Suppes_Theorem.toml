@@ -1,0 +1,31 @@
+title = "Suppes' Theorem For Probability Logic"
+date = 2023-01-22
+topics = [
+  "Logic/General logic/Classical propositional logic",
+  "Mathematics/Probability theory",
+]
+abstract = """
+We develop finitely additive probability logic and prove a theorem of Patrick Suppes that asserts that $\\Psi \\vdash \\phi$ in classical propositional logic if and only if $(\\sum \\psi \\leftarrow \\Psi.\\; 1 - \\mathcal{P}
+  \\psi) \\geq 1 - \\mathcal{P} \\phi$ holds for all probabilities $\\mathcal{P}$. We also provide a novel <em>dual</em> form of Suppes' Theorem, which holds that $(\\sum \\phi \\leftarrow \\Phi.\\; \\mathcal{P} \\phi) \\leq \\mathcal{P} \\psi$ for all probabilities $\\mathcal{P}$ if and only $\\left(\\bigvee \\Phi\\right)  \\vdash \\psi$ and all of the formulae in $\\Phi$ are logically exclusive from one another. Our proofs use <em>Maximally Consistent Sets</em>, and as a consequence, we obtain two <em>collapse</em> theorems.  In particular, we show $(\\sum \\phi \\leftarrow \\Phi.\\; \\mathcal{P} \\phi) \\geq \\mathcal{P} \\psi$ holds for all probabilities $\\mathcal{P}$ if and only if $(\\sum \\phi \\leftarrow \\Phi.\\; \\delta\\; \\phi) \\geq \\delta\\; \\psi$ holds for all binary-valued probabilities $\\delta$, along with the dual assertion that $(\\sum \\phi \\leftarrow \\Phi. \\;\\mathcal{P} \\phi) \\leq \\mathcal{P} \\psi$ holds for all probabilities $\\mathcal{P}$ if and only if $(\\sum \\phi \\leftarrow \\Phi.\\; \\delta\\; \\phi) \\leq \\delta\\; \\psi$ holds for all binary-valued probabilities $\\delta$."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.doty]
+email = "doty_email"
+
+[contributors]
+
+[notify]
+doty = "doty_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1016/S0049-237X(08)71662-8",
+]
+pubs = []

@@ -3,21 +3,39 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2023-01-20T00:00:00+00:00</lastmod>
+    <lastmod>2023-01-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/</loc>
+    <lastmod>2023-01-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2023-01-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/doty/</loc>
+    <lastmod>2023-01-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2023-01-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/logic/</loc>
+    <lastmod>2023-01-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2023-01-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/propositional_logic_class/</loc>
+    <lastmod>2023-01-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Suppes_Theorem.html</loc>
+    <lastmod>2023-01-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2023-01-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/HoareForDivergence.html</loc>
     <lastmod>2023-01-20T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/</loc>
-    <lastmod>2023-01-20T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/coinductive/</loc>
-    <lastmod>2023-01-20T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/</loc>
-    <lastmod>2023-01-20T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/</loc>
     <lastmod>2023-01-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/myreen/</loc>
@@ -35,19 +53,10 @@
     <loc>/authors/mateo/</loc>
     <lastmod>2023-01-14T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/topics/mathematics/</loc>
-    <lastmod>2023-01-14T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/StrictOmegaCategories.html</loc>
     <lastmod>2023-01-14T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/topics/</loc>
-    <lastmod>2023-01-14T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/from/</loc>
-    <lastmod>2023-01-09T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/logic/</loc>
     <lastmod>2023-01-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Synthetic_Completeness.html</loc>
@@ -78,9 +87,6 @@
     <lastmod>2022-12-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/descartes_sign_rule/</loc>
-    <lastmod>2022-12-15T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/doty/</loc>
     <lastmod>2022-12-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/factor_algebraic_polynomial/</loc>
@@ -5910,6 +5916,8 @@
     <loc>/theories/sunflowers/</loc>
   </url><url>
     <loc>/theories/supercalc/</loc>
+  </url><url>
+    <loc>/theories/suppes_theorem/</loc>
   </url><url>
     <loc>/theories/surprise_paradox/</loc>
   </url><url>
