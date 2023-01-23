@@ -17,14 +17,6 @@ theory Khovanskii
     "HOL-Library.List_Lenlexorder"      \<comment> \<open>lexicographic ordering for the type @{typ \<open>nat list\<close>}\<close>
 begin
 
-lemma real_polynomial_function_sum_of_powers:
-  "\<exists>p. real_polynomial_function p \<and> (\<forall>n. (\<Sum>i\<le>n. real i ^ j) = p (real n))"
-proof (intro exI conjI strip)
-  let ?p = "\<lambda>n. (bernpoly (Suc j) (1 + n) - bernpoly (Suc j) 0) / (Suc j)"
-  show "real_polynomial_function ?p"
-    by (force simp: bernpoly_def)
-qed (simp add: add.commute sum_of_powers)
-
 text \<open>The sum of the elements of a list\<close>
 abbreviation "\<sigma> \<equiv> sum_list"
 
