@@ -22,7 +22,7 @@ lemma real_polynomial_function_sum_of_powers:
 proof (intro exI conjI strip)
   let ?p = "\<lambda>n. (bernpoly (Suc j) (1 + n) - bernpoly (Suc j) 0) / (Suc j)"
   show "real_polynomial_function ?p"
-    by (force simp add: bernpoly_def)
+    by (force simp: bernpoly_def)
 qed (simp add: add.commute sum_of_powers)
 
 text \<open>The sum of the elements of a list\<close>
@@ -184,7 +184,7 @@ lemma pointwise_less_Nil2 [simp]: "\<not> x \<lhd> Nil"
   by (simp add: pointwise_less_def)
 
 lemma zero_pointwise_le_iff [simp]: "replicate r 0 \<unlhd> x \<longleftrightarrow> length x = r"
-  by (auto simp add: pointwise_le_iff_nth)
+  by (auto simp: pointwise_le_iff_nth)
 
 lemma pointwise_le_imp_\<sigma>:
   assumes "xs \<unlhd> ys" shows "\<sigma> xs \<le> \<sigma> ys"
@@ -264,7 +264,7 @@ subsection \<open>A locale to fix the finite subset @{term "A \<subseteq> G"}\<c
 
 locale Khovanskii = additive_abelian_group +
   fixes A :: "'a set"
-  assumes AsubG: "A \<subseteq> G" and finA: "finite A" and nonempty: "A \<noteq> {}"
+  assumes AsubG: "A \<subseteq> G" and finA: "finite A"
 
 begin
 
@@ -462,7 +462,7 @@ proof -
     have "\<And>x. x \<le> n - N \<Longrightarrow> \<exists>m\<ge>N. m \<le> n \<and> x = n - m"
       by (metis assms diff_diff_cancel diff_le_mono2 diff_le_self le_trans)
     then show "{..n - N} = (-) n ` {N..n}"
-      by (auto simp add: image_iff Bex_def)
+      by (auto simp: image_iff Bex_def)
   qed auto
   also have "\<dots> = (\<Sum>i=N..n. real i ^ j)"
     using sum.reindex [OF inj, of "\<lambda>i. real (n - i) ^ j", symmetric]
@@ -506,7 +506,7 @@ next
     by (simp add: p_eq q_def sum.swap sum_diff_split add.commute sum_of_powers flip: sum_distrib_left)
   define p' where "p' \<equiv> \<lambda>x. q x + real (card (length_sum_set r 0))"
   have "real_polynomial_function p'"
-    using rp_q by (force simp add: p'_def)
+    using rp_q by (force simp: p'_def)
   moreover have "(\<Sum>x\<le>n - Suc 0. p (real (n - x))) +
                 real (card (length_sum_set r 0)) = p' (real n)" if "n>0" for n
     using that q_eq by (auto simp: p'_def)
@@ -645,7 +645,7 @@ proof -
     by (simp add: \<sigma>x' lenx' leny pointwise_le_plus sum_list_minus sum_list_plus y'_def)
   moreover have "\<alpha> y' = \<alpha> y"
     using assms lenx' \<alpha>x' leny
-    by (fastforce simp add: y'_def pointwise_le_plus alpha_minus alpha_plus local.associative)
+    by (fastforce simp: y'_def pointwise_le_plus alpha_minus alpha_plus local.associative)
   ultimately show ?thesis
     using leny' useless_def by blast
 qed
@@ -665,7 +665,7 @@ proof -
   moreover have "\<exists>k<length xs. xs!k < ys!k"
     using assms pointwise_less_iff2 by force
   ultimately show ?thesis
-    by (force simp add: eq sum_list_sum_nth intro: sum_strict_mono_ex1)
+    by (force simp: eq sum_list_sum_nth intro: sum_strict_mono_ex1)
 qed
 
 lemma wf_measure_\<sigma>: "wf (inv_image less_than \<sigma>)"
@@ -724,7 +724,7 @@ next
       using that by (simp add: Suc.prems VF_def V_def)
     have *: "\<exists>i\<le>r. v!i < u!i" if "v \<in> V" for v
       using that u Suc.prems
-      by (force simp add: V_def pointwise_le_iff_nth not_le less_Suc_eq_le)
+      by (force simp: V_def pointwise_le_iff_nth not_le less_Suc_eq_le)
     with u have "minimal_elements U \<le> insert u (\<Union>i\<le>r. \<Union>t < u!i. minimal_elements (VF i t))"
       by (force simp: VF_def V_def minimal_elements.simps pointwise_less_def)
     moreover
@@ -740,7 +740,7 @@ next
         assume "delete u \<unlhd> delete v"
         then have "\<forall>j. (j < i \<longrightarrow> u!j \<le> v!j) \<and> (j < r \<longrightarrow> i \<le> j \<longrightarrow> u!Suc j \<le> v!Suc j)"
           using that \<open>i \<le> r\<close>
-          by (force simp add: pointwise_le_iff_nth nth_delete split: if_split_asm cong: conj_cong)
+          by (force simp: pointwise_le_iff_nth nth_delete split: if_split_asm cong: conj_cong)
         then show "u \<unlhd> v"
           using that \<open>i \<le> r\<close>
           apply (simp add: pointwise_le_iff_nth VF_def)
@@ -842,7 +842,7 @@ lemma dementum_nonzero:
   shows "0 \<notin> set (dementum ns)"
   unfolding dementum_def minus_list_def
   using sorted_wrt_nth_less [OF ns] 0
-  by (auto simp add: in_set_conv_nth image_iff set_zip nth_Cons' dest: leD)
+  by (auto simp: in_set_conv_nth image_iff set_zip nth_Cons' dest: leD)
 
 lemma nth_augmentum [simp]: "i < length ns \<Longrightarrow> augmentum ns!i = (\<Sum>j\<le>i. ns!j)"
 proof (induction ns arbitrary: i)
@@ -887,7 +887,7 @@ proof (rule nth_equalityI)
     have "augmentum (dementum ns)!i = (\<Sum>j\<le>i. ns!j - (if j = 0 then 0 else ns!(j-1)))"
       using i by (simp add: dementum_def nth_Cons')
     also have "\<dots> = (\<Sum>j=0..i. if j = 0 then ns!0 else ns!j - ns!(j-1))"
-      by (smt (verit, best) diff_zero sum.cong atMost_atLeast0)
+      by (smt (verit, del_insts) diff_zero sum.cong atMost_atLeast0)
     also have "\<dots> = ns!0 + (\<Sum>j\<in>{0<..i}. ns!j - ns!(j-1))"
       by (simp add: sum.head)
     also have "\<dots> = ns!0 + ((\<Sum>j\<in>{0<..i}. ns!j) - (\<Sum>j\<in>{0<..i}. ns!(j-1)))"
@@ -977,7 +977,7 @@ proof-
     have "(set \<circ> augmentum) t \<in> U" if "t \<in> T" for t
     proof -
       have t: "length t = r" "\<sigma> t = m+r" "0 \<notin> set t"
-        using that by (force simp add: T_def length_sum_set_def)+
+        using that by (force simp: T_def length_sum_set_def)+
       then have mrt: "m + r \<in> set (augmentum t)"
         by (metis \<open>r>0\<close> sum_list_augmentum)
       then have "set (augmentum t) = insert (m + r) (set (augmentum t) - {m + r})"
@@ -993,11 +993,11 @@ proof-
       from that
       obtain N where u: "u = insert (m + r) N" and Nsub: "N \<subseteq> {0<..<m + r}"
         and [simp]: "card N = r - Suc 0"
-        by (auto simp add: U_def finsets_def)
+        by (auto simp: U_def finsets_def)
       have [simp]: "0 \<notin> N" "m+r \<notin> N" "finite N"
         using finite_subset Nsub by auto
       have [simp]: "card u = r"
-        using Nsub \<open>r>0\<close> by (auto simp add: u card_insert_if)
+        using Nsub \<open>r>0\<close> by (auto simp: u card_insert_if)
       have ssN: "sorted (sorted_list_of_set N @ [m + r])"
         using Nsub by (simp add: less_imp_le_nat sorted_wrt_append subset_eq)
       have so_u_N: "sorted_list_of_set u = insort (m+r) (sorted_list_of_set N)"
@@ -1094,7 +1094,7 @@ proof -
   have "r > 1" "r \<noteq> 0"
     using assms r_def by auto
   have Csub: "C n x' \<subseteq> length_sum_set (length x') n" for n x'
-    by (auto simp add: C_def length_sum_set_def pointwise_le_iff)
+    by (auto simp: C_def length_sum_set_def pointwise_le_iff)
   then have finC: "finite (C n x')" for n x'
     by (meson finite_length_sum_set finite_subset)
   have "finite X"
