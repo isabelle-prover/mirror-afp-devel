@@ -7,7 +7,7 @@ begin
 text\<open>
   The following function optimizes expressions w.r.t. gas consumption.
 \<close>
-fun eupdate :: "E \<Rightarrow> E" (* Processing of this definition takes several minutes. *) 
+primrec eupdate :: "E \<Rightarrow> E"
 and lupdate :: "L \<Rightarrow> L"
 where
   "lupdate (Id i) = Id i"
