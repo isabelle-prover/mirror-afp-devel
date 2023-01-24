@@ -146,17 +146,16 @@ proof-
   have cong_y1: "[int a * int x1 + int b = int a' * int x1 + int b'] (mod q)" 
     by (metis c c' cong_def Num.of_nat_simps(4) Num.of_nat_simps(5) cong_int_iff)
   show ?thesis 
-  proof(cases "a mod q > a' mod q")
+  proof (cases "a mod q > a' mod q")
     case True
-    hence gcd: "gcd (nat ((int a mod q - int a' mod q) mod q)) q = 1"
-    proof-
-      have "((int a mod q - int a' mod q) mod q) \<noteq> 0" 
-        by (metis True comm_monoid_add_class.add_0 diff_add_cancel mod_add_left_eq mod_diff_eq nat_mod_as_int order_less_irrefl)
-      moreover have "((int a mod q - int a' mod q) mod q) < q" by simp   
-      ultimately show ?thesis
-        using prime_field[of q "nat ((int a mod int q - int a' mod int q) mod int q)"] prime_q 
-        by (smt Euclidean_Division.pos_mod_sign coprime_imp_gcd_eq_1 int_nat_eq nat_less_iff of_nat_0_less_iff q_gt_0)
-    qed
+    moreover have \<open>((int a mod q - int a' mod q) mod q) \<noteq> 0\<close>
+      by (metis True comm_monoid_add_class.add_0 diff_add_cancel mod_add_left_eq mod_diff_eq nat_mod_as_int order_less_irrefl)
+    moreover have "((int a mod q - int a' mod q) mod q) < q" by simp
+    ultimately have \<open>coprime (nat ((int a mod q - int a' mod q) mod q)) q\<close>
+      using prime_field [of q \<open>nat ((int a mod int q - int a' mod int q) mod int q)\<close>] prime_q
+      by (simp flip: of_nat_mod of_nat_diff)
+    then have gcd: "gcd (nat ((int a mod q - int a' mod q) mod q)) q = 1"
+      by simp
     hence "[int a * int x1 - int a' * int x1 = int b'- int b] (mod q)"  
       by (smt cong_diff_iff_cong_0 cong_y1 cong_diff cong_diff)
     hence "[int a mod q * int x1 - int a' mod q * int x1 = int b'- int b] (mod q)"  
@@ -191,15 +190,14 @@ proof-
     hence aa': "a mod q < a' mod q" 
       using a_a' cong_refl nat_neq_iff 
       by (simp add: cong_def)
-    hence gcd: "gcd (nat ((int a' mod q - int a mod q) mod q)) q = 1"
-    proof-
-      have "((int a' mod q - int a mod q) mod q) \<noteq> 0" 
-        by (metis aa' comm_monoid_add_class.add_0 diff_add_cancel mod_add_left_eq mod_diff_eq nat_mod_as_int order_less_irrefl)
-      moreover have "((int a' mod q - int a mod q) mod q) < q" by simp   
-      ultimately show ?thesis
-        using prime_field[of q "nat ((int a' mod int q - int a mod int q) mod int q)"] prime_q
-        by (smt Euclidean_Division.pos_mod_sign coprime_imp_gcd_eq_1 int_nat_eq nat_less_iff of_nat_0_less_iff q_gt_0) 
-    qed
+    moreover have "((int a' mod q - int a mod q) mod q) \<noteq> 0" 
+      by (metis aa' comm_monoid_add_class.add_0 diff_add_cancel mod_add_left_eq mod_diff_eq nat_mod_as_int order_less_irrefl)
+    moreover have "((int a' mod q - int a mod q) mod q) < q" by simp   
+    ultimately have \<open>coprime (nat ((int a' mod q - int a mod q) mod q)) q\<close>
+      using prime_field [of q \<open>nat ((int a' mod int q - int a mod int q) mod int q)\<close>] prime_q
+      by (simp flip: of_nat_mod of_nat_diff)
+    then have gcd: "gcd (nat ((int a' mod q - int a mod q) mod q)) q = 1"
+      by simp
     have "[int b - int b' = int a' * int x1 - int a * int x1] (mod q)"
       by (smt cong_diff_iff_cong_0 cong_y1 cong_diff cong_diff)
     hence "[int b - int b' = int x1 * (int a' - int a)] (mod q)"
@@ -220,7 +218,8 @@ proof-
     hence "[int x1 * 1 = (int b - int b') * inverse (nat ((int a' mod q - int a mod q) mod q)) q] (mod q)"
     proof -
       have "[(int a' mod int q - int a mod int q) mod int q * Number_Theory_Aux.inverse (nat ((int a' mod int q - int a mod int q) mod int q)) q = 1] (mod int q)"
-        by (metis (no_types) Euclidean_Division.pos_mod_sign inverse gcd int_nat_eq of_nat_0_less_iff q_gt_0)
+        using inverse [of \<open>nat ((int a' mod int q - int a mod int q) mod int q)\<close> q, OF gcd]
+        by simp
       then show ?thesis
         by (meson * cong_scalar_left cong_sym_eq cong_trans)
     qed

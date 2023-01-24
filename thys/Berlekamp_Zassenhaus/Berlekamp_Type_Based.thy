@@ -412,7 +412,7 @@ definition power_poly_f_mod :: "'a::field poly \<Rightarrow> 'a poly \<Rightarro
   "power_poly_f_mod modulus = (\<lambda>a n. a ^ n mod modulus)"
 
 lemma power_poly_f_mod_binary: "power_poly_f_mod m a n = (if n = 0 then 1 mod m
-    else let (d, r) = Euclidean_Division.divmod_nat n 2;
+    else let (d, r) = Euclidean_Rings.divmod_nat n 2;
        rec = power_poly_f_mod m ((a * a) mod m) d in
     if r = 0 then rec else (rec * a) mod m)"
   for m a :: "'a :: {field_gcd} poly"
@@ -424,8 +424,8 @@ proof -
     thus ?thesis unfolding d by simp
   next
     case False
-    obtain q r where div: "Euclidean_Division.divmod_nat n 2 = (q,r)" by force
-    hence n: "n = 2 * q + r" and r: "r = 0 \<or> r = 1" unfolding Euclidean_Division.divmod_nat_def by auto
+    obtain q r where div: "Euclidean_Rings.divmod_nat n 2 = (q,r)" by force
+    hence n: "n = 2 * q + r" and r: "r = 0 \<or> r = 1" unfolding Euclidean_Rings.divmod_nat_def by auto
     have id: "a ^ (2 * q) = (a * a) ^ q"
       by (simp add: power_mult_distrib semiring_normalization_rules)
     show ?thesis
@@ -433,7 +433,7 @@ proof -
       case True
       show ?thesis
         using power_mod [of "a * a" m q]
-        by (auto simp add: Euclidean_Division.divmod_nat_def Let_def True n d div id)
+        by (auto simp add: Euclidean_Rings.divmod_nat_def Let_def True n d div id)
     next
       case False
       with r have r: "r = 1" by simp

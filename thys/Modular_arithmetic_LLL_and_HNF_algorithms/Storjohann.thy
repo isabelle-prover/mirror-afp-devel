@@ -2163,7 +2163,7 @@ proof -
       using I_def 07 06 by simp
     moreover have "\<forall>j' < m. p * d fs j' * d fs (Suc j') > 0" using p(2) LLL_d_pos[OF Linvw] by simp
     ultimately show ?thesis using sym_mod_abs
-      by (smt Euclidean_Division.pos_mod_bound Euclidean_Division.pos_mod_sign less_trans)
+      by auto (smt (verit, del_insts) Suc_lessD less_trans_Suc) 
   qed
   have "LLL_invariant_mod fs mfs dmu' p first b 0" 
     using LLL_invI_mod[OF len' m0 04 01 03 wred _ modbnd d\<mu>dmu' p(2) gbnd p(1)] 02 mfs by simp

@@ -145,8 +145,8 @@ next
     using vebt_member.simps(2) by blast
 next
   case (4 treeList n summary m deg mi ma)
-  hence "deg \<ge> 2" 
-    by (metis Euclidean_Division.div_eq_0_iff add_self_div_2 le_less_linear valid_tree_deg_neq_0)
+  hence "deg \<ge> 2"
+    using member_inv by blast
   then show ?case proof(cases "x = mi \<or> x = ma")
     case True
     then show ?thesis
@@ -494,8 +494,8 @@ proof-
       ultimately have "\<exists> y. both_member_options (treeList ! (high x n)) y" 
         using  "0" "4"(3) "4"(4) "4"(6) \<open>both_member_options summary x\<close> inthall 
         by (metis nth_mem)
-      then show ?thesis 
-        by (metis "0" "4"(3) "4"(4) Euclidean_Division.div_eq_0_iff \<open>x < 2 ^ m\<close> high_def nth_mem zero_less_numeral zero_less_power)
+      then show ?thesis
+        by (metis "0" "4"(3) "4"(4) div_eq_0_iff \<open>x < 2 ^ m\<close> high_def nth_mem zero_less_numeral zero_less_power)
     qed
     then show ?thesis 
       using calculation by blast

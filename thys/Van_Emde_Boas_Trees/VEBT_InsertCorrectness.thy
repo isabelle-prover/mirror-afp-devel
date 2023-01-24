@@ -552,7 +552,7 @@ next
       hence abcdef: "mi < x" by simp
       let ?h = "high x n" and ?l="low x n"
       have highlowprop: "high x n < 2^m \<and> low x n < 2^n" 
-        by (metis "1" "2" "3" "5.IH"(1) "5.prems" Euclidean_Division.div_eq_0_iff add_nonneg_eq_0_iff deg_not_0 div_exp_eq exp_split_high_low(2) high_def not_one_le_zero one_add_one power_not_zero set_n_deg_not_0 zero_le_one zero_neq_one)
+        by (metis "1" "2" "3" "5.IH"(1) "5.prems" div_eq_0_iff add_nonneg_eq_0_iff deg_not_0 div_exp_eq exp_split_high_low(2) high_def not_one_le_zero one_add_one power_not_zero set_n_deg_not_0 zero_le_one zero_neq_one)
       have 10:"vebt_insert (Node (Some (mi,ma)) deg  treeList summary) x = 
                  Node (Some (mi, max x ma)) deg  (treeList[?h :=vebt_insert (treeList ! ?h) ?l])
                                (if minNull (treeList ! ?h) then  vebt_insert summary ?h else summary) " 

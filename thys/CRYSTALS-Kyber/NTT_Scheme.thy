@@ -655,9 +655,8 @@ proof -
       have eq: "(\<lambda>j. x' j i) ` {..<n} = {..<n}" unfolding x'_def 
       proof (safe, goal_cases)
         case (1 _ j)
-        then show ?case 
-        using Euclidean_Division.pos_mod_bound Euclidean_Division.pos_mod_sign 
-        n_gt_zero nat_less_iff by blast
+        with n_gt_zero show ?case
+          by (simp add: nat_less_iff)
       next
         case (2 x)
         define j where "j = (x+i) mod n"
@@ -670,10 +669,9 @@ proof -
       have inj: "inj_on (\<lambda>j. x' j i) {..<n}" unfolding x'_def inj_on_def 
       proof (safe, goal_cases)
         case (1 x y)
-        then show ?case 
-        by (smt (verit, best) Euclidean_Division.pos_mod_sign int_nat_eq 
-          less_imp_le_nat mod_diff_cong mod_pos_pos_trivial of_nat_0_less_iff 
-          of_nat_diff of_nat_eq_iff of_nat_less_0_iff zero_less_diff)
+        then show ?case
+        by (smt (verit, ccfv_SIG) Euclidean_Rings.pos_mod_sign int_nat_eq less_imp_of_nat_less
+          mod_diff_cong mod_pos_pos_trivial of_nat_0_le_iff of_nat_eq_iff)
       qed
       show ?thesis unfolding * by (subst sum.reindex_cong[OF inj eq[symmetric], 
         of "(\<lambda>x. poly.coeff (of_qr g) x * \<psi> ^ (x * (2 * l + 1)))" 

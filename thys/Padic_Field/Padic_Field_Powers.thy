@@ -9955,35 +9955,24 @@ proof-
     by auto
   obtain l where l_def: "l =  ((- d) mod n)"
     by blast
+  have 10: "n > 0"
+    using P_n_def
+    by blast
+  have 11: "l \<ge> 0"
+    using 10 by (simp add: l_def)
   have 1: "(l + d) mod n = 0"
     by (metis add_eq_0_iff equation_minus_iff l_def mod_0 mod_add_cong mod_minus_eq zmod_int)
-  then  obtain m::int where m_def:  " (l + d) = m*n "
+  then obtain m::int where m_def: "(l + int d) = m * int n"
     using d_def l_def
     by (metis mult_of_nat_commute zmod_eq_0D)
-  have 2: "m \<ge>0"
-  proof-
-    have 10: "n > 0"
-      using P_n_def
-      by blast
-    have 11: "l \<ge> 0"
-      using l_def 10 Euclidean_Division.pos_mod_sign of_nat_0_less_iff
-      by blast
-    then show ?thesis
-      using m_def
-      by (metis "10" le_add_same_cancel1 minus_add_cancel negative_zle
-        neq0_conv  of_nat_le_0_iff zero_le_imp_eq_int zero_le_mult_iff)
-  qed
+  with 10 have \<open>m = (l + d) div n\<close>
+    by simp
+  with 10 11 have 2: "m \<ge> 0"
+    by (simp add: div_int_pos_iff)
   obtain N where N_def: "N = m*n"
     by blast
-  have 3: "N \<ge> d"
-  proof-
-    have "l \<ge> 0"
-      using l_def d_def m_def  Euclidean_Division.pos_mod_sign[of n "-d"] P_n_def
-      by linarith
-    then show ?thesis
-      using d_def N_def m_def
-      by linarith
-  qed
+  from 11 have 3: "N \<ge> d"
+    by (simp add: N_def flip: m_def)
   have 4: "deg (coord_ring Q\<^sub>p k) (to_univ_poly (Suc k) 0 P) \<le> nat N"
     using d_def N_def 3
     by linarith
@@ -10100,9 +10089,8 @@ proof-
           qed
           have 53: "x [^] N = x [^] (nat N)"
           proof-
-            have "N \<ge> 0"
-              by (metis (full_types) Euclidean_Division.pos_mod_sign N_def P_n_def
-                  add_increasing2 int.lless_eq l_def  m_def  of_nat_0_le_iff of_nat_le_0_iff )
+            from 11 m_def N_def [symmetric] have "N \<ge> 0"
+              by simp
             then show ?thesis
                by (metis pow_nat)
           qed

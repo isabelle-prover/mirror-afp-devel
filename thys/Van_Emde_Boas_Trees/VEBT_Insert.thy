@@ -173,7 +173,7 @@ next
   case (5 treeList n summary m deg mi ma)
   hence "length treeList =2^m" by blast
   hence "high x n < length treeList"
-    by (metis "5.hyps"(4) "5.prems" Euclidean_Division.div_eq_0_iff div_exp_eq high_def length_0_conv length_greater_0_conv zero_less_numeral zero_less_power)
+    by (metis "5.hyps"(4) "5.prems" div_eq_0_iff div_exp_eq high_def length_0_conv length_greater_0_conv zero_less_numeral zero_less_power)
   hence "mi<2^deg" 
     using "5.hyps"(7) "5.hyps"(8) le_less_trans by blast
   then show ?case 
@@ -188,7 +188,7 @@ next
     proof(cases "x < mi")
       case True
       hence "high mi n < length treeList"
-        by (metis "5.hyps"(2) "5.hyps"(4) Euclidean_Division.div_eq_0_iff \<open>mi < 2 ^ deg\<close> div_exp_eq high_def length_0_conv length_greater_0_conv zero_less_numeral zero_less_power)
+        by (metis "5.hyps"(2) "5.hyps"(4) div_eq_0_iff \<open>mi < 2 ^ deg\<close> div_exp_eq high_def length_0_conv length_greater_0_conv zero_less_numeral zero_less_power)
       hence "vebt_insert ( Node (Some (mi, ma)) deg treeList summary) x = 
                       Node (Some (x, max mi ma)) deg ( treeList[ (high mi n):=vebt_insert (treeList ! (high mi n)) (low mi n)] )
                                (if minNull (treeList ! high mi n) then  vebt_insert summary (high mi n) else summary)" 
@@ -337,7 +337,7 @@ next
             using insert_simp_excp[of mi deg treeList y ma summary]
             by (smt "0" "00" "4.hyps"(7) "4.hyps"(8) False add_self_div_2 antisym_conv3 high_def le_less_trans less_mult_imp_div_less mult_2 power2_eq_square power_even_eq)
           have mimaprop: "high mi n < 2^n \<and> low mi n < 2^n"  
-            by (metis "00" "4.hyps"(7) "4.hyps"(8) Euclidean_Division.div_eq_0_iff div_exp_eq high_def le_less_trans low_def mod_less_divisor zero_less_numeral zero_less_power)
+            by (metis "00" "4.hyps"(7) "4.hyps"(8) div_eq_0_iff div_exp_eq high_def le_less_trans low_def mod_less_divisor zero_less_numeral zero_less_power)
           have "invar_vebt (treeList ! (high x n)) n"
             by (metis "4.IH"(1) "4.hyps"(2) in_set_member inthall xyprop)      
           then show ?thesis 
@@ -425,7 +425,7 @@ next
         hence "both_member_options (treeList !(high x n) ) (low x n) \<or> x = ma"
           using False \<open>x = mi \<or> x = ma \<or> both_member_options (treeList ! high x n) (low x n)\<close> by blast
         have "high ma n < 2^m"
-          by (metis "00" "5.hyps"(8) Euclidean_Division.div_eq_0_iff div_exp_eq high_def nat_zero_less_power_iff power_not_zero zero_power2)
+          by (metis "00" "5.hyps"(8) div_eq_0_iff div_exp_eq high_def nat_zero_less_power_iff power_not_zero zero_power2)
         hence "both_member_options (treeList !(high ma n) ) (low ma n)" 
           using "5.hyps"(3) "5.hyps"(9) \<open>mi \<noteq> ma\<close> by blast
         hence "both_member_options (treeList !(high x n) ) (low x n)"
@@ -459,7 +459,7 @@ next
                  Node (Some (y, max mi ma)) deg (treeList[(high mi n):= vebt_insert (treeList ! (high mi n)) (low mi n)] )
                                (if minNull (treeList ! (high mi n)) then  vebt_insert summary (high mi n) else summary)"
             using insert_simp_excp[of mi deg treeList y ma summary]
-            by (metis "0" "00" "5.hyps"(7) "5.hyps"(8) Euclidean_Division.div_eq_0_iff False antisym_conv3 div_exp_eq high_def le_less_trans power_not_zero zero_neq_numeral)      
+            by (metis "0" "00" "5.hyps"(7) "5.hyps"(8) div_eq_0_iff False antisym_conv3 div_exp_eq high_def le_less_trans power_not_zero zero_neq_numeral)      
           have mimaprop: "high mi n < 2^m \<and> low mi n < 2^n" using exp_split_high_low[of mi n m] 00 "5"(9,10) by force
           have "invar_vebt (treeList ! (high x n)) n"
             by (metis "5.IH"(1) "5.hyps"(2) in_set_member inthall xyprop)      
@@ -501,7 +501,7 @@ next
 next
   case (4 treeList n summary m deg mi ma)
   hence 00:"deg = n+m \<and> n \<ge> 0 \<and> n = m \<and> deg \<ge> 2 \<and> length treeList =2^n"
-    by (metis Euclidean_Division.div_eq_0_iff add_self_div_2 deg_not_0 not_less zero_le)
+    by (metis div_eq_0_iff add_self_div_2 deg_not_0 not_less zero_le)
   hence xyprop: "high x n < 2^n \<and> high y n < 2^n"
     using "4.hyps"(1) "4.prems"(1) "4.prems"(2) deg_not_0 exp_split_high_low(1) by blast
   have "low x n <2^n \<and> low y n< 2^n" 

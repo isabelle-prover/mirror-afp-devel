@@ -35,8 +35,7 @@ lemma tensor_unpack_sndsnd: \<open>snd (tensor_unpack B C (snd (tensor_unpack A 
 lemma tensor_unpack_fstsnd: \<open>fst (tensor_unpack B C (snd (tensor_unpack A (B * C) i)))
      = snd (tensor_unpack A B (fst (tensor_unpack (A * B) C i)))\<close>
   unfolding tensor_unpack_def apply auto
-  by (metis (no_types, lifting) Euclidean_Division.div_eq_0_iff add_0_iff bits_mod_div_trivial div_mult_self4 mod_mult2_eq mod_mult_self1_is_0 mult.commute)
-
+  by (cases \<open>C = 0\<close>) (simp_all add: mult.commute [of B C] mod_mult2_eq [of i C B])
 
 definition "tensor_state_jnf \<psi> \<phi> = (let d1 = dim_vec \<psi> in let d2 = dim_vec \<phi> in
   vec (d1*d2) (\<lambda>i. let (i1,i2) = tensor_unpack d1 d2 i in (vec_index \<psi> i1) * (vec_index \<phi> i2)))"

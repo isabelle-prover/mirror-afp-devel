@@ -270,9 +270,12 @@ proof-
       by (metis cong_int_iff int_ops(2))
     thus False 
       using \<open>[g \<noteq> 1] (mod p)\<close> by auto
-    qed
-    thus ?thesis using that g_Def calculation 
-    by (metis Euclidean_Division.pos_mod_bound Euclidean_Division.pos_mod_sign mod_homo nat_int of_nat_0_less_iff of_nat_mod p_def residue_primroot_mod to_int_mod_ring_of_int_mod_ring zero_less_card_finite)
+  qed
+  moreover have \<open>residue_primroot p (g mod p)\<close>
+    using g_Def by simp
+  then have \<open>residue_primroot p (nat (to_int_mod_ring (of_int_mod_ring (int g) :: 'a mod_ring)))\<close>
+    by (transfer fixing: p) (simp add: p_def nat_mod_distrib)
+  ultimately show thesis ..
 qed
 
 text \<open>From this, we obtain an $n$-th root of unity $\omega$ in the finite 

@@ -48,13 +48,13 @@ code_printing \<comment> \<open>FIXME illusion of partiality\<close>
     and (Haskell) "divMod/ ( _ )/ ( _ )"
     and (Scala) "!((k: BigInt) => (l: BigInt) =>/ if (l == 0)/ (BigInt(0), k) else/ (k '/% l))"
 
-subsection \<open>@{const Euclidean_Division.divmod_nat}.\<close>
-text \<open>We implement @{const Euclidean_Division.divmod_nat} via @{const divmod_integer}
+subsection \<open>@{const Euclidean_Rings.divmod_nat}.\<close>
+text \<open>We implement @{const Euclidean_Rings.divmod_nat} via @{const divmod_integer}
   instead of invoking both division and modulo separately, 
   and we further simplify the case-analysis which is
   performed in @{thm divmod_integer_code''}.\<close>
 
-lemma divmod_nat_code'[code]: "Euclidean_Division.divmod_nat m n = (
+lemma divmod_nat_code'[code]: "Euclidean_Rings.divmod_nat m n = (
   let k = integer_of_nat m; l = integer_of_nat n
   in map_prod nat_of_integer nat_of_integer
   (if k = 0 then (0, 0)

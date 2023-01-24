@@ -994,8 +994,7 @@ proof -
     by (metis adjoint_eval c2 ij less_mult_imp_div_less r2)
   also have "... = (Complex_Matrix.adjoint m1) $$ (i div c2, j div r2) *
     (Complex_Matrix.adjoint m2) $$ (i mod c2, j mod r2)"
-    by (metis Euclidean_Division.div_eq_0_iff adjoint_eval assms(4) bits_mod_div_trivial c2 
-        gr_implies_not_zero ij(2) mult_not_zero r2)
+    using \<open>0 < c2\<close> \<open>0 < r2\<close> by (simp add: adjoint_eval c2 r2)
   also have "... = (tensor_mat (Complex_Matrix.adjoint m1) (Complex_Matrix.adjoint m2)) $$ (i,j)"
   proof (rule index_tensor_mat[symmetric], (simp add: ij c1 c2 r1 r2) +)
     show "i < c1 * c2" using ij c1 c2 by simp

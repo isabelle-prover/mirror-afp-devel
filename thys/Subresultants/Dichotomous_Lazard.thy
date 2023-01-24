@@ -79,11 +79,11 @@ next
     by (simp add: eq_fract(1) to_fract_def)
 qed
   
-declare Euclidean_Division.divmod_nat_def [termination_simp]
+declare Euclidean_Rings.divmod_nat_def [termination_simp]
 
 fun dichotomous_Lazard :: "'a :: idom_divide \<Rightarrow> 'a \<Rightarrow> nat \<Rightarrow> 'a" where
   "dichotomous_Lazard x y n = (if n \<le> 1 then if n = 1 then x else 1 else
-    let (d,r) = Euclidean_Division.divmod_nat n 2; 
+    let (d,r) = Euclidean_Rings.divmod_nat n 2; 
        rec = dichotomous_Lazard x y d;
        recsq = rec * rec div y in 
     if r = 0 then recsq else recsq * x div y)"
@@ -99,8 +99,8 @@ proof (induct x y n rule: dichotomous_Lazard.induct)
   thus ?case
   proof cases
     case n
-    obtain d r where n2: "Euclidean_Division.divmod_nat n 2 = (d,r)" by force
-    from Euclidean_Division.divmod_nat_def[of n 2] n2 have dr: "d = n div 2" "r = n mod 2" by auto
+    obtain d r where n2: "Euclidean_Rings.divmod_nat n 2 = (d,r)" by force
+    from Euclidean_Rings.divmod_nat_def[of n 2] n2 have dr: "d = n div 2" "r = n mod 2" by auto
     hence r: "r = 0 \<or> r = 1" by auto
     define rec where "rec = dichotomous_Lazard x y d"      
     let ?sq = "rec * rec div y" 

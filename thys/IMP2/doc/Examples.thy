@@ -326,8 +326,8 @@ proof -
     unfolding \<open>b = _\<close> by (simp add: algebra_simps)
   then show ?thesis
     using \<open>b > 0\<close>
-    by (simp add: algebra_simps \<open>q = _\<close>)
-       (smt Euclidean_Division.pos_mod_sign cancel_div_mod_rules(1) mult.commute)
+    by (simp add: algebra_simps \<open>q = a div b\<close>)
+      (simp flip: minus_mod_eq_mult_div)
 qed
 
 end

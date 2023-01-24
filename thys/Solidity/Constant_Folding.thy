@@ -7,7 +7,7 @@ begin
 text\<open>
   The following function optimizes expressions w.r.t. gas consumption.
 \<close>
-fun eupdate :: "E \<Rightarrow> E" (* Processing of this definition takes several minutes. *) 
+primrec eupdate :: "E \<Rightarrow> E"
 and lupdate :: "L \<Rightarrow> L"
 where
   "lupdate (Id i) = Id i"
@@ -4051,7 +4051,7 @@ next
                     have "?x \<ge> - (2 ^ (max b1 b2 - 1))" using lower_bound2[of "max b1 b2" ?v] by simp
                   moreover from `b1 > 0` have "2^(max b1 b2 -1) > (0::nat)" by simp
                     hence "2^(max b1 b2 -1) - (-?v+2^(max b1 b2-1)-1) mod (2^max b1 b2) - 1 < 2 ^ (max b1 b2 - 1)"
-                    by (smt (verit, best) Euclidean_Division.pos_mod_sign not_exp_less_eq_0_int)
+                      by (simp add: algebra_simps flip: zle_diff1_eq)
                   moreover from `0 < b1` have "0 < max b1 b2" using max_def by simp
                   ultimately show ?thesis using createSInt_id[of ?x "max b1 b2"] by simp
                 qed
@@ -4127,7 +4127,7 @@ next
                       = Normal ((KValue (createSInt b1 ?x), Value (TSInt b1)),st)" by simp
                     moreover from `0 < b1` have "?x \<ge> - (2 ^ (b1 - 1))" using upper_bound2 by simp
                     moreover have "2^(b1-1) - (-?v+2^(b1-1)-1) mod (2^b1) - 1 < 2 ^ (b1 - 1)"
-                      by (smt (verit, best) Euclidean_Division.pos_mod_sign zero_less_power)
+                      by (simp add: algebra_simps flip: int_one_le_iff_zero_less)
                     ultimately show ?thesis using createSInt_id[of ?x b1] `0 < b1` by simp
                   qed
                   ultimately show ?thesis by simp
@@ -4326,7 +4326,7 @@ next
                       = Normal ((KValue (createSInt b2 ?x), Value (TSInt b2)),st)" by simp
                     moreover from `0 < b2` have "?x \<ge> - (2 ^ (b2 - 1))" using upper_bound2 by simp
                     moreover have "2^(b2-1) - (-?v+2^(b2-1)-1) mod (2^b2) - 1 < 2 ^ (b2 - 1)"
-                      by (smt (verit, best) Euclidean_Division.pos_mod_sign zero_less_power)
+                      by (simp add: algebra_simps flip: int_one_le_iff_zero_less)
                     ultimately show ?thesis using createSInt_id[of ?x b2] `0 < b2` by simp
                   qed
                   ultimately show ?thesis by simp
@@ -4549,7 +4549,7 @@ next
                     have "?x \<ge> - (2 ^ (max b1 b2 - 1))" using lower_bound2[of "max b1 b2" ?v] by simp
                   moreover from `b1 > 0` have "2^(max b1 b2 -1) > (0::nat)" by simp
                     hence "2^(max b1 b2 -1) - (-?v+2^(max b1 b2-1)-1) mod (2^max b1 b2) - 1 < 2 ^ (max b1 b2 - 1)"
-                    by (smt (verit, best) Euclidean_Division.pos_mod_sign not_exp_less_eq_0_int)
+                    by (simp add: algebra_simps flip: int_one_le_iff_zero_less)
                   moreover from `0 < b1` have "0 < max b1 b2" using max_def by simp
                   ultimately show ?thesis using createSInt_id[of ?x "max b1 b2"] by simp
                 qed
@@ -4630,7 +4630,7 @@ next
                       = Normal ((KValue (createSInt b1 ?x), Value (TSInt b1)),st)" by simp
                     moreover from `0 < b1` have "?x \<ge> - (2 ^ (b1 - 1))" using upper_bound2 by simp
                     moreover have "2^(b1-1) - (-?v+2^(b1-1)-1) mod (2^b1) - 1 < 2 ^ (b1 - 1)"
-                      by (smt (verit, best) Euclidean_Division.pos_mod_sign zero_less_power)
+                      by (simp add: algebra_simps flip: int_one_le_iff_zero_less)
                     ultimately show ?thesis using createSInt_id[of ?x b1] `0 < b1` by simp
                   qed
                   ultimately show ?thesis by simp
@@ -4834,7 +4834,7 @@ next
                       = Normal ((KValue (createSInt b2 ?x), Value (TSInt b2)),st)" by simp
                     moreover from `0 < b2` have "?x \<ge> - (2 ^ (b2 - 1))" using upper_bound2 by simp
                     moreover have "2^(b2-1) - (-?v+2^(b2-1)-1) mod (2^b2) - 1 < 2 ^ (b2 - 1)"
-                      by (smt (verit, best) Euclidean_Division.pos_mod_sign zero_less_power)
+                      by (simp add: algebra_simps flip: int_one_le_iff_zero_less)
                     ultimately show ?thesis using createSInt_id[of ?x b2] `0 < b2` by simp
                   qed
                   ultimately show ?thesis by simp

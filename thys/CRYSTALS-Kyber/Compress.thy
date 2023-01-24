@@ -53,6 +53,10 @@ definition decompress :: "nat \<Rightarrow> int \<Rightarrow> int" where
 lemma compress_zero: "compress d 0 = 0"
 unfolding compress_def by auto
 
+lemma compress_less:
+  \<open>compress d x < 2 ^ d\<close>
+  by (simp add: compress_def)
+
 lemma decompress_zero: "decompress d 0 = 0" 
 unfolding decompress_def by auto
 
@@ -745,15 +749,18 @@ proof -
       moreover have "strip_while (\<lambda>x. x mod q = 0) compress_x = 
         strip_while (\<lambda>x. x = 0) compress_x"
       proof -
-        have "compress d s = 0" 
-          if "compress d s mod q = 0" for s
-          using that unfolding compress_def using twod_lt_q 
-          by (smt (verit, ccfv_threshold) 
-            Euclidean_Division.pos_mod_bound 
-            Euclidean_Division.pos_mod_sign assms(1) 
-            compress_def mod_pos_pos_trivial of_int_add 
-            of_int_hom.hom_one of_int_power_less_of_int_cancel_iff 
-            powr_realpow that zero_less_power)
+        have \<open>compress d s = 0\<close> if \<open>compress d s mod q = 0\<close> for s
+        proof -
+          from \<open>int d < \<lceil>log 2 (real_of_int q)\<rceil>\<close> twod_lt_q [of d]
+          have \<open>2 ^ d < q\<close>
+            by (simp add: powr_realpow)
+          with compress_less [of d s] have \<open>compress d s < q\<close>
+            by simp
+          then have \<open>compress d s = compress d s mod q\<close>
+            by (simp add: compress_def)
+          with that show ?thesis
+            by simp
+        qed
         then have right: "\<And>s. compress d s mod q = 0 \<longrightarrow> 
           compress d s = 0" by simp
         have  "\<not> (compress d s = 0)" 
