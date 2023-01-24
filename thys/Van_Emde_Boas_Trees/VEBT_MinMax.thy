@@ -199,7 +199,7 @@ proof-
 next
   case (5 n m)
    have "both_member_options summary (high ma n)" 
-     by (metis "5"(10) "5"(5) "5"(6) "5"(9) Euclidean_Division.div_eq_0_iff assms(2) div_exp_eq high_def nat.simps(3) numerals(2) power_not_zero)
+     by (metis "5"(10) "5"(5) "5"(6) "5"(9) div_eq_0_iff assms(2) div_exp_eq high_def nat.simps(3) numerals(2) power_not_zero)
       have "high ma n \<le> the (vebt_maxt summary)" 
         by (metis "5"(2) VEBT_Member.vebt_member.simps(2) \<open>both_member_options summary (high ma n)\<close> vebt_maxt.elims maxt_corr_help minNull.simps(1) min_Null_member option.exhaust_sel option.simps(3) valid_member_both_member_options)
    have "high ma n < the (vebt_maxt summary) \<Longrightarrow> False"

@@ -87,8 +87,7 @@ lemma(in padic_integers) p_residue_alt_def:
 
 lemma(in padic_integers) p_residue_range:
 "p_residue m n \<in> {0..<p^m}"
-  using p_residue_def int_ops(6) prime prime_gt_0_nat 
-  by (metis Euclidean_Division.pos_mod_bound Euclidean_Division.pos_mod_sign atLeastLessThan_iff p_residue_alt_def prime_gt_0_int zero_less_power)
+  using prime by (simp add: p_residue_alt_def prime_gt_0_int)
 
 lemma(in padic_integers) p_residue_mod:
   assumes "m > k"

@@ -42,21 +42,21 @@ subsection \<open>Simple properties and equivalences\<close>
 
 text \<open>Reduce the @{term nth_digit} function to @{term nth_bit} if the base is a power of 2\<close>
 
-lemma digit_gen_pow2_reduct: "k<c \<Longrightarrow> (nth_digit a t (2^c)) \<exclamdown> k = a \<exclamdown> (c*t+k)"
+lemma digit_gen_pow2_reduct:
+  \<open>(nth_digit a t (2 ^ c)) \<exclamdown> k = a \<exclamdown> (c * t + k)\<close> if \<open>k < c\<close>
 proof -
-  assume "k<c"
-  then have moddiv: "(x mod 2^c) \<exclamdown> k = x \<exclamdown> k" for x
+  have moddiv: "(x mod 2 ^ c) \<exclamdown> k = x \<exclamdown> k" for x
   proof-
-    assume klc: "k<c"
-    obtain a b where x_def: "x = a*2^c + b" and "b < 2^c" 
+    define n where \<open>n = c - k\<close>
+    with \<open>k < c\<close> have c_nk: \<open>c = n + k\<close>
+      by simp
+    obtain a b where x_def: "x = a * 2 ^ c + b" and "b < 2 ^ c" 
       by (meson mod_div_decomp mod_less_divisor zero_less_numeral zero_less_power)
     then have bk: "(x mod 2 ^ c) \<exclamdown> k = b \<exclamdown> k" by simp
-    have "x div 2 ^ k = a*2^(c-k) + b div 2^k" 
-      using x_def by (smt Euclidean_Division.div_eq_0_iff add_diff_inverse_nat add_self_div_2
-          div_mult_self3 klc mult.left_commute nat_le_linear not_less power_add power_eq_0_iff 
-          semiring_normalization_rules(7))
+    from \<open>b < 2 ^ c\<close> have \<open>x div 2 ^ k = a * 2 ^ (c - k) + b div 2 ^ k\<close>
+      by (simp add: x_def c_nk power_add flip: mult.commute [of \<open>2 ^ k\<close>] mult.left_commute [of \<open>2 ^ k\<close>])
     then have "x \<exclamdown> k = (a*2^(c-k) + b div 2^k) mod 2" by (simp add: nth_bit_def)
-    then have "x \<exclamdown> k = b \<exclamdown> k" using nth_bit_def klc by (simp add: mod2_eq_if)
+    then have "x \<exclamdown> k = b \<exclamdown> k" using nth_bit_def \<open>k < c\<close> by (simp add: mod2_eq_if)
     then show ?thesis using nth_bit_def bk by linarith
   qed
   have "a div ((2 ^ c) ^ t * 2 ^ k) = a div (2 ^ c) ^ t div 2 ^ k" using div_mult2_eq by blast

@@ -57,7 +57,7 @@ definition mult_p :: "int \<Rightarrow> int \<Rightarrow> int" where
 
 fun power_p :: "int \<Rightarrow> nat \<Rightarrow> int" where
   "power_p x n = (if n = 0 then 1 else
-    let (d,r) = Euclidean_Division.divmod_nat n 2;
+    let (d,r) = Euclidean_Rings.divmod_nat n 2;
        rec = power_p (mult_p x x) d in
     if r = 0 then rec else mult_p rec x)"
 
@@ -330,7 +330,7 @@ proof (intro rel_funI, clarify, unfold binary_power[symmetric], goal_cases)
       thus ?thesis by (simp add: mod_ring_1)
     next
       case False
-      obtain d r where id: "Euclidean_Division.divmod_nat n 2 = (d,r)" by force
+      obtain d r where id: "Euclidean_Rings.divmod_nat n 2 = (d,r)" by force
       let ?int = "power_p p (mult_p p y y) d"
       let ?gfp = "binary_power (x * x) d"
       from False have id': "?thesis = (mod_ring_rel
@@ -629,8 +629,8 @@ including bit_operations_syntax proof (induct x' y' arbitrary: x y rule: power_p
     hence id: "(y = 0) = False" "(y' = 0) = False" using urel32_eq[OF y urel32_0] by auto
     from y have \<open>int y' = int_of_uint32 y\<close> \<open>int y' < p\<close>
       by (simp_all add: urel32_def)
-    obtain d' r' where dr': "Euclidean_Division.divmod_nat y' 2 = (d',r')" by force
-    from Euclidean_Division.divmod_nat_def[of y' 2, unfolded dr']
+    obtain d' r' where dr': "Euclidean_Rings.divmod_nat y' 2 = (d',r')" by force
+    from Euclidean_Rings.divmod_nat_def[of y' 2, unfolded dr']
     have r': "r' = y' mod 2" and d': "d' = y' div 2" by auto
     have "urel32 (y AND 1) r'"
       using \<open>int y' < p\<close> small
@@ -1059,8 +1059,8 @@ including bit_operations_syntax proof (induct x' y' arbitrary: x y rule: power_p
     hence id: "(y = 0) = False" "(y' = 0) = False" using urel64_eq[OF y urel64_0] by auto
     from y have \<open>int y' = int_of_uint64 y\<close> \<open>int y' < p\<close>
       by (simp_all add: urel64_def)
-    obtain d' r' where dr': "Euclidean_Division.divmod_nat y' 2 = (d',r')" by force
-    from Euclidean_Division.divmod_nat_def[of y' 2, unfolded dr']
+    obtain d' r' where dr': "Euclidean_Rings.divmod_nat y' 2 = (d',r')" by force
+    from Euclidean_Rings.divmod_nat_def[of y' 2, unfolded dr']
     have r': "r' = y' mod 2" and d': "d' = y' div 2" by auto
     have "urel64 (y AND 1) r'"
       using \<open>int y' < p\<close> small
@@ -1477,8 +1477,8 @@ including bit_operations_syntax proof (induct x' y' arbitrary: x y rule: power_p
     case False
     hence id: "(y \<le> 0) = False" "(y' = 0) = False" using False y
       by (auto simp add: urel_integer_def not_le) (metis of_int_integer_of of_int_of_nat_eq of_nat_0_less_iff)
-    obtain d' r' where dr': "Euclidean_Division.divmod_nat y' 2 = (d',r')" by force
-    from Euclidean_Division.divmod_nat_def[of y' 2, unfolded dr']
+    obtain d' r' where dr': "Euclidean_Rings.divmod_nat y' 2 = (d',r')" by force
+    from Euclidean_Rings.divmod_nat_def[of y' 2, unfolded dr']
     have r': "r' = y' mod 2" and d': "d' = y' div 2" by auto
     have aux: "\<And> y'. int (y' mod 2) = int y' mod 2" by presburger
     have "urel_integer (y AND 1) r'" unfolding r' using y unfolding urel_integer_def 

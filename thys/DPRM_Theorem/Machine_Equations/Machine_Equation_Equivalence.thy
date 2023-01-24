@@ -214,10 +214,9 @@ next
     using reg Req_def nth_digit_def  
     using rm_eq_fixes.register_equations_def
           rm_eq_fixes.register_l_def 
-          rm_eq_fixes.register_0_def  
-          rm_eq_fixes.register_bound_def 
-    by (smt Euclidean_Division.div_eq_0_iff mod_if mult_0_right mult_mod_right nat_mult_1_right 
-        zero_less_one fx)   
+          rm_eq_fixes.register_0_def
+          rm_eq_fixes.register_bound_def
+    by auto (simp add: fx)
 
   have state_m_0: "t<q \<Longrightarrow> S ic p m t = 0" for t
     proof -

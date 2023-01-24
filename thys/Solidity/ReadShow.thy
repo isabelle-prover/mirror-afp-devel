@@ -168,15 +168,20 @@ next
   qed
 qed
 
-lemma nat_explode'_digits: \<open>\<forall> d \<in> set (nat_explode' n). d < 10\<close>
-  using image_set[of \<open>(\<lambda> x. x mod 10)\<close> \<open>(nat_explode' n)\<close>] 
-        nat_explode_mod_10_ident[symmetric]
-  by (metis (no_types, lifting) Euclidean_Division.div_eq_0_iff 
-                                imageE mod_div_trivial zero_neq_numeral)
+lemma nat_explode'_digits:
+  \<open>\<forall>d \<in> set (nat_explode' n). d < 10\<close>
+proof
+  fix d
+  assume \<open>d \<in> set (nat_explode' n)\<close>
+  then have \<open>d \<in> set (map (\<lambda>m. m mod 10) (nat_explode' n))\<close>
+    by (simp only: nat_explode_mod_10_ident)
+  then show \<open>d < 10\<close>
+    by auto
+qed
 
-lemma nat_explode_digits: \<open>\<forall> d \<in> set (nat_explode n). d < 10\<close>
-  using nat_explode_def set_rev
-  by (metis nat_explode'_digits)
+lemma nat_explode_digits:
+  \<open>\<forall>d \<in> set (nat_explode n). d < 10\<close>
+  using nat_explode'_digits [of n] by (simp only: nat_explode_def set_rev)
 
 value \<open>nat_implode(nat_explode 42) = 42\<close>
 value \<open>nat_explode (Suc 21)\<close>

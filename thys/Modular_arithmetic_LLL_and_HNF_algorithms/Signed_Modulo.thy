@@ -27,10 +27,20 @@ lemma sym_mod_code[code]: "sym_mod x y = (let m = x mod y
 lemma sym_mod_zero[simp]: "n symmod 0 = n" "n > 0 \<Longrightarrow> 0 symmod n = 0"
   unfolding sym_mod_def poly_mod.inv_M_def by auto
 
-lemma sym_mod_range: "y > 0 \<Longrightarrow> x symmod y \<in> {- ((y - 1) div 2) .. y div 2}"
-  unfolding sym_mod_def poly_mod.inv_M_def using pos_mod_bound[of y x]
-  by (cases "x mod y \<ge> y", auto) 
-    (smt (verit) Euclidean_Division.pos_mod_bound Euclidean_Division.pos_mod_sign half_nonnegative_int_iff)+
+lemma sym_mod_range:
+  \<open>x symmod y \<in> {- ((y - 1) div 2) .. y div 2}\<close> if \<open>y > 0\<close>
+proof -
+  from that have \<open>x mod y < y\<close>
+    by (rule pos_mod_bound)
+  then have \<open>x mod y - y < 0\<close>
+    by simp
+  moreover from that have \<open>- ((y - 1) div 2) \<le> 0\<close> \<open>0 \<le> x mod y\<close>
+    by simp_all
+  then have \<open>- ((y - 1) div 2) \<le> x mod y\<close>
+    by (rule order_trans)
+  ultimately show ?thesis
+    by (auto simp add: sym_mod_def poly_mod.inv_M_def)
+qed
 
 text \<open>The range is optimal in the sense that exactly y elements can be represented.\<close>
 lemma card_sym_mod_range: "y > 0 \<Longrightarrow> card {- ((y - 1) div 2) .. y div 2} = y" 
@@ -39,7 +49,6 @@ lemma card_sym_mod_range: "y > 0 \<Longrightarrow> card {- ((y - 1) div 2) .. y 
 lemma sym_mod_abs: "y > 0 \<Longrightarrow> \<bar>x symmod y\<bar> < y"
   "y \<ge> 1 \<Longrightarrow> \<bar>x symmod y\<bar> \<le> y div 2"
   using sym_mod_range[of y x] by auto
-
 
 lemma sym_mod_sym_mod[simp]: "x symmod y symmod y = x symmod (y :: int)" 
   unfolding sym_mod_def using poly_mod.M_def poly_mod.M_inv_M_id by auto
@@ -64,8 +73,9 @@ lemma dvd_imp_sym_mod_0 [simp]:
 
 lemma sym_mod_0_imp_dvd [dest!]:
   "b dvd a" if "a symmod b = 0"
-  using that unfolding sym_mod_def poly_mod.inv_M_def
-  by (smt (verit) Euclidean_Division.pos_mod_bound dvd_eq_mod_eq_0)
+  using that apply (simp add: sym_mod_def poly_mod.inv_M_def not_le split: if_splits)
+  using pos_mod_bound [of b a] apply auto
+  done
 
 definition sym_div :: "int \<Rightarrow> int \<Rightarrow> int" (infixl "symdiv" 70) where
   "sym_div x y = (let d = x div y; m = x mod y in 

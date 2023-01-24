@@ -229,8 +229,8 @@ lemma Extend_SNOC[Presb_simps]: "\<lbrakk>#\<^sub>V \<AA> = length x; len P \<le
   apply transfer
   apply (auto simp: cut_bits_def extend_def test_bit_def nth_Cons' max_absorb1 len_le_iff
     split: if_splits cong del: if_weak_cong)
-   apply (metis add.commute mod_less mod_mult2_eq mult_numeral_1_right numeral_1_eq_Suc_0 power_commuting_commutes)
-  apply (metis Euclidean_Division.div_eq_0_iff div_0 less_mult_imp_div_less mod_less nat_dvd_not_less semiring_normalization_rules(7))
+   apply (metis add.commute div_mult_mod_eq less_mult_imp_div_less mod_less mult_numeral_1 numeral_1_eq_Suc_0)
+  apply (metis div_eq_0_iff less_mult_imp_div_less mod2_eq_if mod_less power_not_zero zero_neq_numeral)
   done
 
 lemma odd_neq_even:

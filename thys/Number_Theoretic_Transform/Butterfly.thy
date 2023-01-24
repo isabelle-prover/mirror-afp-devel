@@ -159,21 +159,21 @@ proof-
   proof-
   assume "\<omega>^(n div 2) \<noteq> -1"
   hence False
-  proof(cases "\<omega>^(n div 2) = 1")
-case True
-  then show ?thesis using  omega_properties(3)
-    by (metis Euclidean_Division.div_eq_0_iff div_less_dividend leD less_le_trans n_lst2 one_less_numeral_iff pos2 semiring_norm(76) zero_neq_numeral)
-next
-  case False
-  hence "(\<omega>^(n div 2)) ^ (2::nat) \<noteq> 1" 
-    by (smt (verit, ccfv_threshold) n_two_pot One_nat_def \<open>\<omega> ^ (n div 2) \<noteq> - 1\<close> diff_zero leD n_lst2 not_less_eq omega_properties(1) one_less_numeral_iff one_power2 power2_eq_square power_mult power_one_right power_strict_increasing_iff semiring_norm(76) square_eq_iff two_powr_div two_powrs_div)
-  moreover have "(n div 2) * 2  = n" using n_two_pot n_lst2  
-    by (metis One_nat_def Suc_lessD assms div_by_Suc_0 one_less_numeral_iff power_0 power_one_right power_strict_increasing_iff semiring_norm(76) two_powrs_div)
-  ultimately show ?thesis  using omega_properties(1)
-    by (metis power_mult)
-qed
-  thus False by simp
-qed
+  proof (cases \<open>\<omega> ^ (n div 2) = 1\<close>)
+    case True
+    then show ?thesis using omega_properties(3) assms
+      by auto
+  next
+    case False
+    hence "(\<omega>^(n div 2)) ^ (2::nat) \<noteq> 1" 
+      by (smt (verit, ccfv_threshold) n_two_pot One_nat_def \<open>\<omega> ^ (n div 2) \<noteq> - 1\<close> diff_zero leD n_lst2 not_less_eq omega_properties(1) one_less_numeral_iff one_power2 power2_eq_square power_mult power_one_right power_strict_increasing_iff semiring_norm(76) square_eq_iff two_powr_div two_powrs_div)
+    moreover have "(n div 2) * 2  = n" using n_two_pot n_lst2  
+      by (metis One_nat_def Suc_lessD assms div_by_Suc_0 one_less_numeral_iff power_0 power_one_right power_strict_increasing_iff semiring_norm(76) two_powrs_div)
+    ultimately show ?thesis  using omega_properties(1)
+      by (metis power_mult)
+  qed
+    thus False by simp
+  qed
   then show ?thesis by auto
 qed
 

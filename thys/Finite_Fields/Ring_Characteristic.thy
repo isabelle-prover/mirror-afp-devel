@@ -187,10 +187,9 @@ proof -
   proof -
     obtain y where y_def: "x = I +>\<^bsub>\<Z>\<^esub> y"
       using a unfolding ZFact_def FactRing_simps by auto
-    obtain z where z_def: "(int z) mod (int n) = y mod (int n)" "z < n"
-      by (metis Euclidean_Division.pos_mod_sign mod_mod_trivial 
-          nonneg_int_cases of_nat_0_less_iff of_nat_mod n_gt_0
-          unique_euclidean_semiring_numeral_class.pos_mod_bound)
+    define z where \<open>z = nat (y mod int n)\<close>
+    with n_gt_0 have z_def: \<open>int z mod int n = y mod int n\<close> \<open>z < n\<close>
+      by (simp_all add: z_def nat_less_iff)
     have "x = I  +>\<^bsub>\<Z>\<^esub> y"
       by (simp add:y_def)
     also have "... = I +>\<^bsub>\<Z>\<^esub> (int z)"

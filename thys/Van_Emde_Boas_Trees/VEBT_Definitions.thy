@@ -208,16 +208,17 @@ lemma valid_eq2: "valid' t d \<Longrightarrow> invar_vebt t d"
     subgoal
       apply (rule invar_vebt.intros(4); simp?)
       apply (auto simp: in_children_def) []
-      apply (meson le_less_linear le_less_trans)
-      apply (metis Euclidean_Division.div_eq_0_iff div_exp_eq gr_implies_not0 high_def)  
-      done
+       apply (meson le_less_linear le_less_trans)
+      apply (metis div_eq_0_iff div_exp_eq gr_implies_not0 high_def)
+       done
     subgoal
       apply (rule invar_vebt.intros(5); simp?)
       apply (auto) []
       apply (auto) []
       apply (auto simp: in_children_def) []
       apply (meson le_less_linear le_less_trans)
-      by (metis Euclidean_Division.div_eq_0_iff add_Suc_right div_exp_eq high_def power_Suc power_eq_0_iff zero_neq_numeral)  
+      apply (metis div_eq_0_iff add_Suc_right div_exp_eq high_def power_Suc power_eq_0_iff zero_neq_numeral)
+      done
     done
   done
   
@@ -432,7 +433,7 @@ proof-
     moreover  hence "deg > 1" 
       using "2.hyps"(2) "2.hyps"(5) "2.hyps"(6) deg_not_0 by force
     moreover have "high x (deg div 2)<2^m"
-      by (metis "2.hyps"(5) "2.hyps"(6) Euclidean_Division.div_eq_0_iff add_self_div_2 assms(2) div_exp_eq high_def power_not_zero zero_neq_one)
+      by (metis "2.hyps"(5) "2.hyps"(6) div_eq_0_iff add_self_div_2 assms(2) div_exp_eq high_def power_not_zero)
     moreover have "membermima  (treeList ! (high x (deg div 2))) (low x (deg div 2)) 
                     \<Longrightarrow> membermima (Node info deg treeList summary) x" using membermima.simps(5)[of "deg-1" treeList summary x]
       using "2.hyps"(4) "2.hyps"(9) \<open>1 < deg\<close> \<open>high x (deg div 2) < 2 ^ m\<close> zero_le_one by fastforce
@@ -449,7 +450,7 @@ proof-
     moreover  hence "deg > 1"
       by (metis "3.hyps"(1) "3.hyps"(2) "3.hyps"(4) "3.hyps"(5) "3.hyps"(6) One_nat_def Suc_lessI add_Suc add_gr_0 add_self_div_2 deg_not_0 le_imp_less_Suc plus_1_eq_Suc set_n_deg_not_0)
     moreover have "high x (deg div 2)<2^m"
-      by (smt "3.hyps"(5) "3.hyps"(6) Euclidean_Division.div_eq_0_iff add_Suc_right add_self_div_2 assms(2) diff_Suc_1 div_exp_eq div_mult_self1_is_m even_Suc high_def odd_add odd_two_times_div_two_nat one_add_one plus_1_eq_Suc power_not_zero zero_less_Suc)
+      by (smt "3.hyps"(5) "3.hyps"(6) div_eq_0_iff add_Suc_right add_self_div_2 assms(2) diff_Suc_1 div_exp_eq div_mult_self1_is_m even_Suc high_def odd_add odd_two_times_div_two_nat one_add_one plus_1_eq_Suc power_not_zero zero_less_Suc)
     moreover have "membermima  (treeList ! (high x (deg div 2))) (low x (deg div 2)) 
                    \<Longrightarrow> membermima (Node info deg treeList summary) x" using membermima.simps(5)[of "deg-1" treeList summary x]
       using "3.hyps"(4) "3.hyps"(9) \<open>1 < deg\<close> \<open>high x (deg div 2) < 2 ^ m\<close> zero_le_one by fastforce
@@ -466,7 +467,7 @@ proof-
     moreover  hence "deg > 1" 
       using "4.hyps"(2) "4.hyps"(5) "4.hyps"(6) deg_not_0 by force
     moreover have "high x (deg div 2)<2^m"
-      by (metis "4.hyps"(5) "4.hyps"(6) Euclidean_Division.div_eq_0_iff add_self_div_2 assms(2) div_exp_eq high_def power_not_zero zero_neq_one)
+      by (metis "4.hyps"(5) "4.hyps"(6) div_eq_0_iff add_self_div_2 assms(2) div_exp_eq high_def power_not_zero)
     moreover have "membermima  (treeList ! (high x (deg div 2))) (low x (deg div 2)) 
                    \<Longrightarrow> membermima (Node info deg treeList summary) x" using membermima.simps(5)[of "deg-1" treeList summary x]
       by (smt "4.hyps"(12) "4.hyps"(4) Suc_diff_Suc calculation(2) calculation(3) diff_zero le_less_trans membermima.simps(4) zero_le_one) 
@@ -482,7 +483,7 @@ proof-
     moreover  hence "deg > 1"
       by (metis "5.hyps"(1) "5.hyps"(2) "5.hyps"(4) "5.hyps"(5) "5.hyps"(6) One_nat_def Suc_lessI add_Suc add_gr_0 add_self_div_2 deg_not_0 le_imp_less_Suc plus_1_eq_Suc set_n_deg_not_0)
     moreover have "high x (deg div 2)<2^m" 
-      by (metis "5.hyps"(5) "5.hyps"(6) Euclidean_Division.div_eq_0_iff add_Suc_right add_self_div_2 assms(2) div_exp_eq even_Suc_div_two even_add high_def nat.simps(3) power_not_zero)
+      by (metis "5.hyps"(5) "5.hyps"(6) div_eq_0_iff add_Suc_right add_self_div_2 assms(2) div_exp_eq even_Suc_div_two even_add high_def nat.simps(3) power_not_zero)
     moreover have "membermima  (treeList ! (high x (deg div 2))) (low x (deg div 2)) 
                     \<Longrightarrow> membermima (Node info deg treeList summary) x" using membermima.simps(5)[of "deg-1" treeList summary x]
       by (smt "5.hyps"(12) "5.hyps"(4) Suc_diff_Suc calculation(2) calculation(3) diff_zero le_less_trans membermima.simps(4) zero_le_one)  
@@ -496,8 +497,7 @@ qed
 
 lemma exp_split_high_low: assumes "x < 2^(n+m)" and "n > 0" and "m> 0" 
   shows "high x n < 2^m" and "low x n < 2^n"
-  apply (metis Euclidean_Division.div_eq_0_iff assms(1) div_exp_eq high_def nat.simps(3) numeral_2_eq_2 power_not_zero)
-  by (simp add: low_def)
+  using assms by (simp_all add: high_bound_aux low_def)
 
 lemma low_inv: assumes "x< 2^n " shows "low (y*2^n + x) n = x" unfolding low_def 
   by (simp add: assms)

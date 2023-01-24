@@ -93,9 +93,7 @@ proof -
        using digit_gen_pow2_reduct by (auto simp: b_def) (metis power_Suc)
      
      have "k\<ge>Suc c \<Longrightarrow> x mod (2 ^ Suc c) div 2 ^ k = 0" for k x::nat
-       by (metis Euclidean_Division.div_eq_0_iff One_nat_def Suc_le_lessD b_gt1 b_def less_le_trans
-                mod_less_divisor nat_power_less_imp_less not_less not_less0 not_less_eq_eq
-                numeral_2_eq_2 zero_less_Suc)
+       by (simp only: drop_bit_take_bit flip: take_bit_eq_mod drop_bit_eq_div) simp
      then have "\<forall>k\<ge>Suc c. nth_digit x y b \<exclamdown> k = 0" for x y
        using b_def nth_bit_def nth_digit_def by auto
      then have k_gt_c: "\<forall>t'. \<forall>k'\<ge>Suc c. nth_digit x t' b \<exclamdown> k' 
@@ -725,9 +723,7 @@ proof -
       using digit_gen_pow2_reduct by (auto simp: b_def) (metis power_Suc)
 
     have "k\<ge>Suc c \<Longrightarrow> x mod (2 ^ Suc c) div 2 ^ k = 0" for k x::nat
-      by (metis Euclidean_Division.div_eq_0_iff One_nat_def Suc_le_lessD b_gt1 b_def less_le_trans
-                mod_less_divisor nat_power_less_imp_less not_less not_less0 not_less_eq_eq
-                numeral_2_eq_2 zero_less_Suc)
+      by (simp only: drop_bit_take_bit flip: take_bit_eq_mod drop_bit_eq_div) simp
     then have "\<forall>k\<ge>Suc c. nth_digit x y b \<exclamdown> k = 0" for x y
       using b_def nth_bit_def nth_digit_def by auto
     then have k_gt_c: "\<forall>l<n. \<forall>t'. \<forall>k'\<ge>Suc c. nth_digit (z l) t' b \<exclamdown> k' 

@@ -164,11 +164,24 @@ lemma set_spmf_I_N:
   by (simp add: set_spmf_sample_coprime)
 
 lemma set_spmf_I_e_d: 
-  assumes "((N,e),d) \<in> set_spmf I" 
-  shows "e > 1" and "d > 1" 
-  using assms sample_coprime_e_gt_1  
-   apply(auto simp add: I_def Let_def) 
-  by (smt Euclidean_Division.pos_mod_sign Num.of_nat_simps(5) Suc_diff_1 bezw_inverse cong_def coprime_imp_gcd_eq_1 gr0I less_1_mult less_numeral_extra(2) mem_Collect_eq mod_by_0 mod_less more_arith_simps(6) nat_0 nat_0_less_mult_iff nat_int nat_neq_iff numerals(2) of_nat_0_le_iff of_nat_1 rsa_base.mem_samp_primes_gt_2 rsa_base_axioms set_spmf_sample_coprime zero_less_diff)
+  \<open>e > 1\<close> \<open>d > 1\<close> if \<open>((N, e), d) \<in> set_spmf I\<close>
+proof -
+  from that obtain M where
+    e: \<open>e \<in> set_spmf (sample_coprime M)\<close>
+    and d: \<open>d = nat (fst (bezw e M) mod M)\<close>
+    by (auto simp add: I_def Let_def)
+  from e set_spmf_sample_coprime [of M]
+  have \<open>coprime e M\<close> \<open>1 < e\<close> \<open>e < M\<close>
+    by simp_all
+  then have \<open>2 < M\<close>
+    by simp
+  from \<open>1 < e\<close> show \<open>e > 1\<close>.
+  from d \<open>coprime e M\<close> bezw_inverse [of e M]
+  have \<open>[e * d = 1] (mod M)\<close>
+    by simp
+  with \<open>e > 1\<close> \<open>2 < M\<close> show \<open>d > 1\<close>
+    by (cases \<open>d = 0 \<or> d = 1\<close>) (auto simp add: \<open>e < M\<close> cong_def)
+qed
 
 definition domain :: "index \<Rightarrow> nat set"
   where "domain index \<equiv> {..< fst index}"

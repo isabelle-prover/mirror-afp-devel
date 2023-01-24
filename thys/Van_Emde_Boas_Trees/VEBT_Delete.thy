@@ -665,7 +665,7 @@ next
         case False
         hence "x = mi" by simp
         have "both_member_options summary (high ma n)" 
-          by (metis "4"(10) "4"(11) "4"(7) "4.hyps"(4) Euclidean_Division.div_eq_0_iff Suc_leI Suc_le_D div_exp_eq dual_order.irrefl high_def mimapr nat.simps(3))
+          by (metis "4"(10) "4"(11) "4"(7) "4.hyps"(4) div_eq_0_iff Suc_leI Suc_le_D div_exp_eq dual_order.irrefl high_def mimapr nat.simps(3))
         hence "vebt_member summary (high ma n)" 
           using "4.hyps"(1) valid_member_both_member_options by blast
         obtain summin where "Some summin = vebt_mint summary" 
@@ -691,7 +691,7 @@ next
         let ?h ="high ?xn n"
         let ?l = "low ?xn n"
         have "?xn < 2^deg"
-          by (smt (verit, ccfv_SIG) "4.hyps"(1) "4.hyps"(4) Euclidean_Division.div_eq_0_iff \<open>Some lx = vebt_mint (treeList ! summin)\<close> \<open>Some summin = vebt_mint summary\<close> \<open>invar_vebt (treeList ! summin) n\<close> div_exp_eq high_def high_inv le_0_eq member_bound mint_member not_numeral_le_zero power_not_zero)
+          by (smt (verit, ccfv_SIG) "4.hyps"(1) "4.hyps"(4) div_eq_0_iff \<open>Some lx = vebt_mint (treeList ! summin)\<close> \<open>Some summin = vebt_mint summary\<close> \<open>invar_vebt (treeList ! summin) n\<close> div_exp_eq high_def high_inv le_0_eq member_bound mint_member not_numeral_le_zero power_not_zero)
         hence "?h < length treeList" 
           using "4.hyps"(2) "4.hyps"(3) "4.hyps"(4) \<open>invar_vebt (treeList ! summin) n\<close> deg_not_0 exp_split_high_low(1) by metis
         let ?newnode = "vebt_delete (treeList ! ?h) ?l" 
@@ -1382,7 +1382,7 @@ next
         case False
         hence "x = mi" by simp
         have "both_member_options summary (high ma n)" 
-          by (metis "5"(10) "5"(11) "5"(7) "5.hyps"(4) Euclidean_Division.div_eq_0_iff Suc_leI Suc_le_D div_exp_eq dual_order.irrefl high_def mimapr nat.simps(3))
+          by (metis "5"(10) "5"(11) "5"(7) "5.hyps"(4) div_eq_0_iff Suc_leI Suc_le_D div_exp_eq dual_order.irrefl high_def mimapr nat.simps(3))
         hence "vebt_member summary (high ma n)" 
           using "5.hyps"(1) valid_member_both_member_options by blast
         obtain summin where "Some summin = vebt_mint summary" 
@@ -1408,7 +1408,7 @@ next
         let ?h ="high ?xn n"
         let ?l = "low ?xn n"
         have "?xn < 2^deg"
-          by (smt (verit, ccfv_SIG) "5.hyps"(1) "5.hyps"(4) Euclidean_Division.div_eq_0_iff \<open>Some lx = vebt_mint (treeList ! summin)\<close> \<open>Some summin = vebt_mint summary\<close> \<open>invar_vebt (treeList ! summin) n\<close> div_exp_eq high_def high_inv le_0_eq member_bound mint_member not_numeral_le_zero power_not_zero)
+          by (smt (verit, ccfv_SIG) "5.hyps"(1) "5.hyps"(4) div_eq_0_iff \<open>Some lx = vebt_mint (treeList ! summin)\<close> \<open>Some summin = vebt_mint summary\<close> \<open>invar_vebt (treeList ! summin) n\<close> div_exp_eq high_def high_inv le_0_eq member_bound mint_member not_numeral_le_zero power_not_zero)
         hence "?h < length treeList"
           using "5.hyps"(2) \<open>vebt_member (treeList ! summin) lx\<close> \<open>summin < 2 ^ m\<close> \<open>invar_vebt (treeList ! summin) n\<close> high_inv member_bound by presburger
         let ?newnode = "vebt_delete (treeList ! ?h) ?l" 

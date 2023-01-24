@@ -50,7 +50,7 @@ begin
 
 fun power_poly_f_mod_i :: "('i list \<Rightarrow> 'i list) \<Rightarrow> 'i list \<Rightarrow> nat \<Rightarrow> 'i list" where
   "power_poly_f_mod_i modulus a n = (if n = 0 then modulus (one_poly_i ff_ops)
-    else let (d,r) = Euclidean_Division.divmod_nat n 2; 
+    else let (d,r) = Euclidean_Rings.divmod_nat n 2; 
        rec = power_poly_f_mod_i modulus (modulus (times_poly_i ff_ops a a)) d in 
     if r = 0 then rec else modulus (times_poly_i ff_ops rec a))"
 
@@ -166,8 +166,8 @@ proof -
     next
       case False
       hence n: "(n = 0) = False" by simp
-      obtain q r where div: "Euclidean_Division.divmod_nat n 2 = (q,r)" by force
-      from this[unfolded Euclidean_Division.divmod_nat_def] n have "q < n" by auto
+      obtain q r where div: "Euclidean_Rings.divmod_nat n 2 = (q,r)" by force
+      from this[unfolded Euclidean_Rings.divmod_nat_def] n have "q < n" by auto
       note IH = less(1)[OF this]
       have rec: "poly_rel (power_poly_f_mod_i ff_ops m (m (times_poly_i ff_ops f f)) q) 
         (power_poly_f_mod m' (f' * f' mod m') q)" 

@@ -84,7 +84,8 @@ proof -
     have "a * y +  b \<in> {0..<x*y}"
       by (metis arith * atLeastLessThan_iff le0 mult.commute)
     thus "(a, b) \<in> (\<lambda>ia. (ia div y, ia mod y)) ` {0..<x * y}"
-      by (metis (no_types, lifting) "*"(2) Euclidean_Division.div_eq_0_iff add_cancel_right_right div_mult_self3 gr_implies_not0 image_iff mod_less mod_mult_self3)
+      using * by (auto simp add: image_iff)
+        (metis \<open>a * y + b \<in> {0..<x * y}\<close> add.commute add.right_neutral div_less div_mult_self1 less_zeroE mod_eq_self_iff_div_eq_0 mod_mult_self1)
   qed
   have 22:"(\<lambda>ia. (ia div y, ia mod y)) ` {0..<x * y} \<subseteq> {0..<x} \<times> {0..<y}"
     using less_mult_imp_div_less apply auto
@@ -135,7 +136,7 @@ proof clarsimp
     have 3: "col C (j div dim_col D) $ (x div dim_row D) = C $$ (x div dim_row D, j div dim_col D)"
       by (simp add: "*" ij(2) less_mult_imp_div_less)
     have 4: "col D (j mod dim_col D) $ (x mod dim_row D) = D $$ (x mod dim_row D, j mod dim_col D)"
-      by (metis "*" Euclidean_Division.div_eq_0_iff gr_implies_not0 ij(2) index_col mod_div_trivial mult_not_zero)
+      by (metis "*" bot_nat_0.not_eq_extremum ij(2) index_col mod_less_divisor mult_zero_right not_less_zero)
     show "A $$ (i div dim_row B, x div dim_row D) *
          B $$ (i mod dim_row B, x mod dim_row D) *
          (C $$ (x div dim_row D, j div dim_col D) *

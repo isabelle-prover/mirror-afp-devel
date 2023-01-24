@@ -313,11 +313,11 @@ proof-
     using cong_mod_left by blast
   hence  **: "[nat (((int z - int z') * fst (bezw ((nat (int e - int e'))) (order \<G>)))mod order \<G>)
               = t] (mod  order \<G>)"
-    by (metis Euclidean_Division.pos_mod_sign cong_int_iff int_nat_eq of_nat_0_less_iff order_gt_0)
+    by (metis cong_def mod_mod_trivial nat_int of_nat_mod)
   hence "\<^bold>g [^] (nat (((int z - int z') * fst (bezw ((nat (int e - int e'))) (order \<G>)))mod order \<G>)) = \<^bold>g [^] t"
     using cyclic_group.pow_generator_eq_iff_cong cyclic_group_axioms order_gt_0 order_gt_0_iff_finite by blast
-  thus ?thesis using t 
-    by (smt Euclidean_Division.pos_mod_sign discrete_log.order_gt_0 int_pow_def2 nat_minus_as_int of_nat_0_less_iff)
+  thus ?thesis using t
+    by (simp add: nat_minus_as_int) 
 qed
 
 text\<open>The special soundness property for the Schnorr \<open>\<Sigma>\<close>-protocol.\<close>

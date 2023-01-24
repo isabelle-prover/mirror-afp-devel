@@ -58,8 +58,8 @@ proof - (* found by e *)
   fix r :: nat
   assume a1: "a < 2 ^ k"
   assume a2: "k \<le> r"
-  have "a div 2 ^ k = 0"
-    using a1 Euclidean_Division.div_eq_0_iff by blast
+  from a1 have "a div 2 ^ k = 0"
+    by simp
   then have "2 = (0::nat) \<or> a < 2 ^ r"
     using a2 by (metis (no_types) div_le_mono nat_zero_less_power_iff neq0_conv not_le power_diff)
   then show "a div 2 ^ r mod 2 = 0"

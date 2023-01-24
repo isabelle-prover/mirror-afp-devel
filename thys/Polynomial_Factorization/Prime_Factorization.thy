@@ -39,7 +39,7 @@ definition next_candidates :: "nat \<Rightarrow> nat \<times> nat list" where
 definition "candidate_invariant n = (n = 0 \<or> n mod 30 = (11 :: nat))"
 
 partial_function (tailrec) remove_prime_factor :: "nat \<Rightarrow> nat \<Rightarrow> nat list \<Rightarrow> nat \<times> nat list " where
-  [code]: "remove_prime_factor p n ps = (case Euclidean_Division.divmod_nat n p of (n',m) \<Rightarrow> 
+  [code]: "remove_prime_factor p n ps = (case Euclidean_Rings.divmod_nat n p of (n',m) \<Rightarrow> 
      if m = 0 then remove_prime_factor p n' (p # ps) else (n,ps))" 
   
 partial_function (tailrec) prime_factorization_nat_main 
@@ -47,7 +47,7 @@ partial_function (tailrec) prime_factorization_nat_main
   [code]: "prime_factorization_nat_main n j is ps = (case is of 
      [] \<Rightarrow> 
        (case next_candidates j of (j,is) \<Rightarrow> prime_factorization_nat_main n j is ps)
-   | (i # is) \<Rightarrow> (case Euclidean_Division.divmod_nat n i of (n',m) \<Rightarrow> 
+   | (i # is) \<Rightarrow> (case Euclidean_Rings.divmod_nat n i of (n',m) \<Rightarrow> 
        if m = 0 then case remove_prime_factor i n' (i # ps)
        of (n',ps') \<Rightarrow> if n' = 1 then ps' else 
          prime_factorization_nat_main n' j is ps'
@@ -88,8 +88,8 @@ lemma remove_prime_factor: assumes res: "remove_prime_factor i n ps = (m,qs)"
   using res n
 proof (induct n arbitrary: ps rule: less_induct)
   case (less n ps)
-  obtain n' mo where dm: "Euclidean_Division.divmod_nat n i = (n',mo)" by force
-  hence n': "n' = n div i" and mo: "mo = n mod i" by (auto simp: Euclidean_Division.divmod_nat_def)
+  obtain n' mo where dm: "Euclidean_Rings.divmod_nat n i = (n',mo)" by force
+  hence n': "n' = n div i" and mo: "mo = n mod i" by (auto simp: Euclidean_Rings.divmod_nat_def)
   from less(2)[unfolded remove_prime_factor.simps[of i n] dm]
   have res: "(if mo = 0 then remove_prime_factor i n' (i # ps) else (n, ps)) = (m, qs)" by auto
   from less(3) have n: "n \<noteq> 0" by auto
@@ -442,8 +442,8 @@ proof (induct ni arbitrary: n i "is" jj res ps rule: wf_induct[OF
     qed (insert can(5) ijj, auto)
   next
     case (Cons i' iis)
-    obtain n' m where dm: "Euclidean_Division.divmod_nat n i' = (n',m)" by force
-    hence n': "n' = n div i'" and m: "m = n mod i'" by (auto simp: Euclidean_Division.divmod_nat_def)
+    obtain n' m where dm: "Euclidean_Rings.divmod_nat n i' = (n',m)" by force
+    hence n': "n' = n div i'" and m: "m = n mod i'" by (auto simp: Euclidean_Rings.divmod_nat_def)
     have m: "(m = 0) = (i' dvd n)" unfolding m by auto
     from Cons res[unfolded simps] dm m n'
     have res: "res = (
