@@ -1810,7 +1810,7 @@ proof (induct "length qs" arbitrary: val p init_assumps qs rule: less_induct)
              comb = combine_systems_M p q1 left q2 right in
              reduce_system_M p (fst comb) (snd comb)
         )" using * calculate_data_assumps_M.simps
-      by (smt (z3) Euclidean_Division.div_eq_0_iff bot_nat_0.not_eq_extremum div_greater_zero_iff rel_simps(69))
+      by (smt (z3) div_eq_0_iff bot_nat_0.not_eq_extremum div_greater_zero_iff rel_simps(69))
         (* Takes a second to load *)
     let ?q1 = "take (?len div 2) qs"
     let ?left = "calculate_data_assumps_M p ?q1 init_assumps"
