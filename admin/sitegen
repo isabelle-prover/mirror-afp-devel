@@ -21,8 +21,11 @@ shift $((OPTIND-1))
 
 set_isabelle_tool
 
+echo "Checking metadata..."
+"$ISABELLE_TOOL" afp_check_metadata || exit 2
+
 echo "Checking ROOTs ..."
-"$ISABELLE_TOOL" afp_check_roots || exit 2
+"$ISABELLE_TOOL" afp_check_roots -C chapter,groups,presence,roots,timeout || exit 2
 
 echo "Building Isabelle components ..."
 

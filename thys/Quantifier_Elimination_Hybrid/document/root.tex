@@ -1,0 +1,74 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap]{stmaryrd}
+  %for \<Sqinter>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{A First Complete Algorithm for Real Quantifier Elimination in Isabelle/HOL}
+\author{Katherine Kosaian, Yong Kiam Tan, and Andr\'e Platzer}
+\maketitle
+
+\begin{abstract}
+We formalize a multivariate quantifier elimination (QE) algorithm in the theorem prover Isabelle/HOL. Our algorithm is complete, in that it is able to reduce \textit{any} quantified formula in the first-order logic of real arithmetic to a logically equivalent quantifier-free formula. The algorithm we formalize is a hybrid mixture of Tarski's original QE algorithm \cite{Tarski} and the Ben-Or, Kozen, and Reif \cite{DBLP:journals/jcss/Ben-OrKR86} algorithm, and it is the first complete multivariate QE algorithm formalized in Isabelle/HOL.
+\end{abstract}
+
+\section*{Remark} 
+This is the AFP entry associated with a corresponding paper by Kosaian, Tan, and Platzer \cite{DBLP:conf/cpp/KosaianTP23}.
+Various auxiliary sources \cite{algRAG,DBLP:journals/jsc/Renegar92b} beyond the original BKR paper were helpful in the development of this AFP entry.
+The most closely related works are by Cyril Cohen and Assia Mahboubi \cite{CyrilReduction,cohen_phd,AssiaQE}.
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\section*{Acknowledgements}
+This material is based upon work supported by the National Science Foundation under Grant No. CNS-1739629, a National Science Foundation Graduate Research Fellowship under Grants Nos. DGE1252522 and DGE1745016, by the AFOSR under grant number FA9550-16-1-0288, by A*STAR, Singapore, and the Alexander von Humboldt Foundation. 
+Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation, AFOSR, or A*STAR.
+
+
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

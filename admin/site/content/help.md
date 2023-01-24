@@ -4,6 +4,7 @@ menu:
     main:
         name: "Help"
         weight: 4
+rss: false
 ---
 
 This section focuses on the Archive of Formal Proofs. For help with Isabelle, see the [Isabelle Documentation](https://isabelle.in.tum.de/documentation.html). More resources are listed in the [Isabelle Quick Access Links](https://isabelle.systems).
@@ -44,12 +45,12 @@ The following gives an example of the preferred way for citing entries in the AF
 The bibtex entry for this would be:
 
 ```
-@article{Jaskelioff-Merz-AFP05,
+@article{DiskPaxos-AFP,
   author =   {Mauro Jaskelioff and Stephan Merz},
   title =    {Proving the Correctness of Disk Paxos},
   journal =  {Archive of Formal Proofs},
-  month =    Jun,
-  year =     2005,
+  month =    {June},
+  year =     {2005},
   note =     {\url{https://isa-afp.org/entries/DiskPaxos.html}, Formal proof development},
   ISSN =     {2150-914x}
 }

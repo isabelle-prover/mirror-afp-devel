@@ -1,0 +1,23 @@
+chapter AFP
+
+session "AOT" (AFP) = "HOL-Cardinals" +
+  options [show_question_marks = false, timeout = 600, names_short = true]
+  sessions
+    "HOL-Cardinals"
+    "HOL-Eisbach"
+  theories
+    AOT_model
+    AOT_commands
+    AOT_syntax
+    AOT_semantics
+    AOT_Definitions
+    AOT_Axioms
+    AOT_PLM
+    AOT_BasicLogicalObjects
+    AOT_RestrictedVariables
+    AOT_ExtendedRelationComprehension
+    AOT_PossibleWorlds
+    AOT_NaturalNumbers
+    AOT_misc
+  document_files
+    "root.tex"

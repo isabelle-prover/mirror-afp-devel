@@ -21,6 +21,7 @@ Allen_Calculus
 Amicable_Numbers
 Amortized_Complexity
 AnselmGod
+AOT
 Applicative_Lifting
 Approximation_Algorithms
 Architectural_Design_Patterns
@@ -34,6 +35,7 @@ AutoFocus-Stream
 Automated_Stateful_Protocol_Verification
 Automatic_Refinement
 AxiomaticCategoryTheory
+Balog_Szemeredi_Gowers
 BDD
 BD_Security_Compositional
 BNF_CC
@@ -52,10 +54,12 @@ Binding_Syntax_Theory
 Binomial-Heaps
 Binomial-Queues
 BirdKMP
+Birkhoff_Finite_Distributive_Lattices
 Blue_Eyes
 Bondy
 Boolean_Expression_Checkers
 Boolos_Curious_Inference
+Boolos_Curious_Inference_Automated
 Bounded_Deducibility_Security
 Buchi_Complementation
 Budan_Fourier
@@ -67,6 +71,7 @@ CAVA_Automata
 CAVA_LTL_Modelchecker
 CCS
 CISC-Kernel
+Cook_Levin
 CRYSTALS-Kyber
 CRDT
 CSP_RefTK
@@ -91,6 +96,7 @@ Cauchy
 Cayley_Hamilton
 Certification_Monads
 Chandy_Lamport
+CHERI-C_Memory_Model
 Chord_Segments
 Circus
 Clean
@@ -105,6 +111,7 @@ Coinductive
 Coinductive_Languages
 Collections
 Combinable_Wands
+Combinatorial_Enumeration_Algorithms
 Combinatorics_Words
 Combinatorics_Words_Graph_Lemma
 Combinatorics_Words_Lyndon
@@ -279,6 +286,7 @@ Hidden_Markov_Models
 Higher_Order_Terms
 Hoare_Time
 Hood_Melville_Queue
+HoareForDivergence
 HotelKeyCards
 Huffman
 Hybrid_Logic
@@ -335,6 +343,7 @@ KD_Tree
 Key_Agreement_Strong_Adversaries
 Khovanskii_Theorem
 Kleene_Algebra
+Kneser_Cauchy_Davenport
 Knights_Tour
 Knot_Theory
 Knuth_Bendix_Order
@@ -426,6 +435,7 @@ MuchAdoAboutTwo
 Multiset_Ordering_NPC
 Multi_Party_Computation
 Multirelations
+Multitape_To_Singletape_TM
 Myhill-Nerode
 Name_Carrying_Type_Inference
 Nano_JSON
@@ -461,6 +471,7 @@ Ordinary_Differential_Equations
 PAC_Checker
 Package_logic
 PAL
+PAPP_Impossibility
 PCF
 PLM
 POPLmark-deBruijn
@@ -511,6 +522,7 @@ Projective_Measurements
 Promela
 Proof_Strategy_Language
 PropResPI
+Propositional_Logic_Class
 Propositional_Proof_Systems
 Prpu_Maxflow
 PseudoHoops
@@ -520,6 +532,7 @@ Public_Announcement_Logic
 QHLProver
 QR_Decomposition
 Quantales
+Quantifier_Elimination_Hybrid
 Quasi_Borel_Spaces
 Quaternions
 Query_Optimization
@@ -579,6 +592,7 @@ Safe_OCL
 Safe_Range_RC
 Saturation_Framework
 Saturation_Framework_Extensions
+Sauer_Shelah_Lemma
 SCC_Bloemen_Sequential
 Schutz_Spacetime
 Secondary_Sylow
@@ -631,6 +645,7 @@ Stone_Relation_Algebras
 Store_Buffer_Reduction
 Stream-Fusion
 Stream_Fusion_Code
+StrictOmegaCategories
 Strong_Security
 Sturm_Sequences
 Sturm_Tarski
@@ -640,9 +655,11 @@ Subset_Boolean_Algebras
 SumSquares
 Sunflowers
 SuperCalc
+Suppes_Theorem
 Surprise_Paradox
 Symmetric_Polynomials
 Syntax_Independent_Logic
+Synthetic_Completeness
 Szemeredi_Regularity
 Szpilrajn
 TESL_Language
@@ -666,6 +683,7 @@ Tree-Automata
 Tree_Decomposition
 Triangle
 Trie
+Turans_Graph_Theorem
 Twelvefold_Way
 Tycon
 Types_Tableaus_and_Goedels_God

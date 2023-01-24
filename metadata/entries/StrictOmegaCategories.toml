@@ -1,0 +1,32 @@
+title = "Strict Omega Categories"
+date = 2023-01-14
+topics = [
+  "Mathematics/Category theory",
+]
+abstract = "This theory formalises a definition of strict $\\omega$-categories and the strict $\\omega$-category of pasting diagrams. It is the first step towards a formalisation of weak infinity categories à la Batanin&ndash;Leinster."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.bordg]
+email = "bordg_email"
+
+[authors.mateo]
+email = "mateo_email"
+
+[contributors]
+
+[notify]
+bordg = "bordg_email"
+mateo = "mateo_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1017/CBO9780511525896",
+]
+pubs = []

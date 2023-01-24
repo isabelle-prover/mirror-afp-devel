@@ -1,0 +1,20 @@
+chapter AFP
+
+session Balog_Szemeredi_Gowers (AFP) = "HOL-Probability" +
+  options [timeout = 900]
+  sessions
+    Pluennecke_Ruzsa_Inequality Random_Graph_Subgraph_Threshold
+    Undirected_Graph_Theory
+  theories
+    Miscellaneous_Lemmas
+    Graph_Theory_Preliminaries
+    Prob_Space_Lemmas 
+    Sumset_Triangle_Inequality
+    Additive_Combinatorics_Preliminaries
+    Additive_Energy_Lower_Bounds
+    Balog_Szemeredi_Gowers_Main_Proof
+    Balog_Szemeredi_Gowers_Supplementary
+  document_files
+    root.bib
+    root.tex
+

@@ -7,6 +7,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language><atom:link href="/topics/computer-science/programming-languages/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>A Hoare Logic for Diverging Programs</title>
+      <link>/entries/HoareForDivergence.html</link>
+      <pubDate>Fri, 20 Jan 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/HoareForDivergence.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Unbounded Separation Logic</title>
       <link>/entries/Separation_Logic_Unbounded.html</link>
       <pubDate>Mon, 05 Sep 2022 00:00:00 +0000</pubDate>

@@ -1,0 +1,14 @@
+chapter AFP
+
+session Suppes_Theorem (AFP) = "HOL" +
+  options [timeout = 600]
+  sessions
+    "HOL-Combinatorics"
+    "HOL-Library"
+    Propositional_Logic_Class
+  theories
+    Probability_Logic
+    Suppes_Theorem
+  document_files
+    "root.tex"
+    "root.bib"

@@ -1,0 +1,15 @@
+chapter AFP
+
+session "CHERI-C_Memory_Model" (AFP) = Containers +
+  options [timeout=1500]
+  sessions
+    "HOL-Library"
+    "Word_Lib"
+    "Separation_Algebra"
+  theories
+    Preliminary_Library
+    CHERI_C_Concrete_Memory_Model
+    CHERI_C_Global_Environment
+  document_files
+    "root.bib"
+    "root.tex"

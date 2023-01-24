@@ -1,0 +1,50 @@
+title = "The Balog–Szemerédi–Gowers Theorem"
+date = 2022-11-11
+topics = [
+  "Mathematics/Combinatorics",
+  "Mathematics/Graph theory",
+]
+abstract = """
+We formalise the Balog–Szemerédi–Gowers Theorem, a profound result in additive combinatorics which played a central role in
+<a href=\"https://link.springer.com/article/10.1007/s00039-001-0332-9\">Gowers's proof deriving the first effective bounds for Szemerédi's Theorem</a>.
+The proof is of great mathematical interest given that it involves an interplay between different mathematical areas, namely applications of graph theory and probability theory to additive combinatorics involving algebraic objects.
+This interplay is what made the process of the formalisation, for which we had to develop formalisations of new background material in the aforementioned areas, more rich and technically challenging.  We demonstrate how locales, Isabelle’s module system, can be employed to handle such interplays. To treat the graph-theoretic aspects of the proof, we make use of a new, more general <a href=\"https://www.isa-afp.org/entries/Undirected_Graph_Theory.html\">undirected graph theory library</a> developed recently by Chelsea Edmonds, which is both flexible and extensible.
+For the formalisation we followed a proof presented in the 2022 lecture notes by Timothy
+Gowers  <a href=\"https://drive.google.com/file/d/1ut0mUqSyPMweoxoDTfhXverEONyFgcuO/view\">Introduction to Additive Combinatorics </a> for Part III of the Mathematics Tripos taught at the University of Cambridge.
+In addition to the main theorem, which, following our source, is formulated for difference sets, we
+also give an alternative version for sumsets which required a formalisation of an auxiliary triangle inequality
+following a proof by Yufei Zhao from his book
+<a href=\"https://yufeizhao.com/gtacbook/\">Graph Theory and Additive Combinatorics </a>.
+We moreover formalise a few
+additional results in additive combinatorics that are not used in the proof of the main theorem.
+This is the first formalisation of the Balog–Szemerédi–Gowers Theorem in any proof assistant to our knowledge."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.argyraki]
+homepage = "argyraki_homepage"
+
+[authors.baksys]
+homepage = "baksys_homepage"
+
+[authors.edmonds]
+homepage = "edmonds_homepage"
+
+[contributors]
+
+[notify]
+argyraki = "argyraki_email"
+baksys = "baksys_email"
+edmonds = "edmonds_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1007/s00039-001-0332-9",
+]
+pubs = []

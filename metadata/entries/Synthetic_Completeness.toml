@@ -1,0 +1,56 @@
+title = "Synthetic Completeness"
+date = 2023-01-09
+topics = [
+  "Logic/General logic",
+  "Logic/Proof theory",
+]
+abstract = """
+<p>In this work, I provide an abstract framework for proving the completeness of a logical calculus using the synthetic method.
+The synthetic method is based on maximal consistent saturated sets (MCSs).
+A set of formulas is consistent (with respect to the calculus) when we cannot derive a contradiction from it.
+It is maximally consistent when it contains every formula that is consistent with it.
+For logics where it is relevant, it is saturated when it contains a witness for every existential formula.
+To prove completeness using these maximal consistent saturated sets, we prove a truth lemma: every formula in an MCS has a satisfying model.
+Here, Hintikka sets provide a useful stepping stone.
+These can be seen as characterizations of the MCSs based on simple subformula conditions rather than via the calculus.
+We then prove that every Hintikka set gives rise to a satisfying model and that MCSs are Hintikka sets.
+Now, assume a valid formula cannot be derived.
+Then its negation must be consistent and therefore satisfiable.
+This contradicts validity and the original formula must be derivable.</p>
+
+<p>To start, I build maximal consistent saturated sets for any logic that satisfies a small set of assumptions.
+I do this using a transfinite version of Lindenbaum's lemma, which allows me to support languages of any cardinality.
+I then prove useful abstract results about derivations and refutations as they relate to MCSs.
+Finally, I show how Hintikka sets can be derived from the logic's semantics, outlining one way to prove the required truth lemma.</p>
+
+<p>To demonstrate the versatility of the framework, I instantiate it with five different examples.
+The formalization contains soundness and completeness results for:
+a propositional tableau calculus,
+a propositional sequent calculus,
+an axiomatic system for modal logic,
+a labelled natural deduction system for hybrid logic and
+a natural deduction system for first-order logic.
+The tableau example uses custom Hintikka sets based on the calculus, but the other four examples derive them from the semantics in the style of the framework.
+The hybrid and first-order logic examples rely on saturated MCSs.
+This places requirements on the cardinalities of their languages to ensure that there are enough witnesses available.
+In both cases, the type of witnesses must be infinite and have cardinality at least that of the type of propositional/predicate symbols.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.from]
+email = "from_email"
+
+[contributors]
+
+[notify]
+from = "from_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

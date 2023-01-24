@@ -1,0 +1,13 @@
+chapter AFP
+
+session Combinatorial_Enumeration_Algorithms (AFP) = "HOL-Library" +
+  options [timeout = 600]
+  sessions
+	"HOL-Combinatorics"
+	"Falling_Factorial_Sum"
+	"Card_Number_Partitions"
+  theories
+    Combinatorial_Enumeration_Algorithms
+  document_files
+    "root.tex"
+    "root.bib"

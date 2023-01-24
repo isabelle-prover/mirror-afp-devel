@@ -1,0 +1,42 @@
+title = "A Hoare Logic for Diverging Programs"
+date = 2023-01-20
+topics = [
+  "Computer science/Programming languages/Logics",
+]
+abstract = """
+This submission contains:
+<ol>
+<li> a formalisation of a small While language with support for output;</li>
+<li> a standard total-correctness Hoare logic that has been proved sound and complete; and</li>
+<li> a new Hoare logic for proofs about programs that diverge: this new logic has also been proved sound and complete.</li>
+</ol>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.pohjola]
+email = "pohjola_email"
+
+[authors.myreen]
+email = "myreen_email"
+
+[authors.tanaka]
+email = "tanaka_email"
+
+[contributors]
+
+[notify]
+myreen = "myreen_email"
+tanaka = "tanaka_email"
+pohjola = "pohjola_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.4230/LIPIcs.ITP.2019.32",
+]
+pubs = []

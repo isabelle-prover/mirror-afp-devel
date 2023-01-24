@@ -1,0 +1,33 @@
+title = "Turán's Graph Theorem"
+date = 2022-11-14
+topics = [
+  "Mathematics/Graph theory",
+]
+abstract = """
+<a href=\"https://en.wikipedia.org/wiki/Tur%C3%A1n%27s_theorem\">Turán's Graph Theorem</a> states that any undirected, simple graph with $n$ vertices that does not contain a $p$-clique, contains at most $\\left( 1 - \\frac{1}{p-1} \\right) \\frac{n^2}{2}$ edges.
+The theorem is an important result in graph theory and the foundation of the field of extremal graph theory.
+
+The formalisation follows Aigner and Ziegler's presentation in <i>Proofs from THE BOOK</i> of Turán's initial proof.
+Besides a direct adaptation of the textbook proof, a simplified, second proof is presented which decreases the size of the formalised proof significantly."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.lauermann]
+email = "lauermann_email"
+
+[contributors]
+
+[notify]
+lauermann = "lauermann_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1007/978-3-662-57265-8_41",
+]
+pubs = []

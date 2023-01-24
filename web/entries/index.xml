@@ -6,7 +6,169 @@
     <description>Recent content in Entries on Archive of Formal Proofs</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Tue, 04 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="/entries/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 22 Jan 2023 00:00:00 +0000</lastBuildDate><atom:link href="/entries/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Suppes&#39; Theorem For Probability Logic</title>
+      <link>/entries/Suppes_Theorem.html</link>
+      <pubDate>Sun, 22 Jan 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Suppes_Theorem.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Hoare Logic for Diverging Programs</title>
+      <link>/entries/HoareForDivergence.html</link>
+      <pubDate>Fri, 20 Jan 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/HoareForDivergence.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Strict Omega Categories</title>
+      <link>/entries/StrictOmegaCategories.html</link>
+      <pubDate>Sat, 14 Jan 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/StrictOmegaCategories.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Synthetic Completeness</title>
+      <link>/entries/Synthetic_Completeness.html</link>
+      <pubDate>Mon, 09 Jan 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Synthetic_Completeness.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Cook-Levin theorem</title>
+      <link>/entries/Cook_Levin.html</link>
+      <pubDate>Sun, 08 Jan 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Cook_Levin.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A First Complete Algorithm for Real Quantifier Elimination in Isabelle/HOL</title>
+      <link>/entries/Quantifier_Elimination_Hybrid.html</link>
+      <pubDate>Thu, 15 Dec 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Quantifier_Elimination_Hybrid.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Class-based Classical Propositional Logic</title>
+      <link>/entries/Propositional_Logic_Class.html</link>
+      <pubDate>Thu, 15 Dec 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Propositional_Logic_Class.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Birkhoff&#39;s Representation Theorem For Finite Distributive Lattices</title>
+      <link>/entries/Birkhoff_Finite_Distributive_Lattices.html</link>
+      <pubDate>Tue, 06 Dec 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Birkhoff_Finite_Distributive_Lattices.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Automation of Boolos&#39; Curious Inference in Isabelle/HOL</title>
+      <link>/entries/Boolos_Curious_Inference_Automated.html</link>
+      <pubDate>Mon, 05 Dec 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Boolos_Curious_Inference_Automated.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Verified Translation of Multitape Turing Machines into Singletape Turing Machines</title>
+      <link>/entries/Multitape_To_Singletape_TM.html</link>
+      <pubDate>Wed, 30 Nov 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Multitape_To_Singletape_TM.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Abstract Object Theory</title>
+      <link>/entries/AOT.html</link>
+      <pubDate>Mon, 28 Nov 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/AOT.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Formal CHERI-C Memory Model</title>
+      <link>/entries/CHERI-C_Memory_Model.html</link>
+      <pubDate>Fri, 25 Nov 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/CHERI-C_Memory_Model.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Sauer-Shelah Lemma</title>
+      <link>/entries/Sauer_Shelah_Lemma.html</link>
+      <pubDate>Thu, 24 Nov 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Sauer_Shelah_Lemma.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Kneser&#39;s Theorem and the Cauchy–Davenport Theorem</title>
+      <link>/entries/Kneser_Cauchy_Davenport.html</link>
+      <pubDate>Mon, 21 Nov 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Kneser_Cauchy_Davenport.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Turán&#39;s Graph Theorem</title>
+      <link>/entries/Turans_Graph_Theorem.html</link>
+      <pubDate>Mon, 14 Nov 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Turans_Graph_Theorem.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Combinatorial Enumeration Algorithms</title>
+      <link>/entries/Combinatorial_Enumeration_Algorithms.html</link>
+      <pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Combinatorial_Enumeration_Algorithms.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Balog–Szemerédi–Gowers Theorem</title>
+      <link>/entries/Balog_Szemeredi_Gowers.html</link>
+      <pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Balog_Szemeredi_Gowers.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Incompatibility of Strategy-Proofness and Representation in Party-Approval Multi-Winner Elections</title>
+      <link>/entries/PAPP_Impossibility.html</link>
+      <pubDate>Thu, 10 Nov 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/PAPP_Impossibility.html</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>Verification of Query Optimization Algorithms</title>
       <link>/entries/Query_Optimization.html</link>

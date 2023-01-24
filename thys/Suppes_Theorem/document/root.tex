@@ -1,0 +1,64 @@
+\documentclass[11pt,a4paper]{report}
+\usepackage{isabelle, isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+\usepackage{mathpartir}
+\usepackage{eurosym}
+
+\usepackage[only,bigsqcap]{stmaryrd}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{Suppes' Theorem For Probability Logic}
+\author{Matthew Doty}
+
+\maketitle
+
+\begin{abstract}
+  We develop finitely additive probability logic and prove a theorem
+  of Patrick Suppes that asserts that $\Psi \vdash \phi$ in classical
+  propositional logic if and only if
+  $(\sum \psi \leftarrow \Psi.\; 1 - \mathcal{P} \psi) \geq 1 -
+  \mathcal{P} \phi$ holds for all probabilities $\mathcal{P}$. We also
+  provide a novel \emph{dual} form of Suppes' Theorem, which holds
+  that
+  $(\sum \phi \leftarrow \Phi.\; \mathcal{P} \phi) \leq \mathcal{P}
+  \psi$ for all probabilities $\mathcal{P}$ if and only
+  $\left(\bigvee \Phi\right) \vdash \psi$ and all of the formulae in
+  $\Phi$ are logically exclusive from one another. Our proofs use
+  \emph{Maximally Consistent Sets}, and as a consequence, we obtain
+  two \emph{collapse} theorems. In particular, we show
+  $(\sum \phi \leftarrow \Phi.\; \mathcal{P} \phi) \geq \mathcal{P}
+  \psi$ holds for all probabilities $\mathcal{P}$ if and only if
+  $(\sum \phi \leftarrow \Phi.\; \delta\; \phi) \geq \delta\; \psi$
+  holds for all binary-valued probabilities $\delta$, along with the
+  dual assertion that
+  $(\sum \phi \leftarrow \Phi. \;\mathcal{P} \phi) \leq \mathcal{P}
+  \psi$ holds for all probabilities $\mathcal{P}$ if and only if
+  $(\sum \phi \leftarrow \Phi.\; \delta\; \phi) \leq \delta\; \psi$
+  holds for all binary-valued probabilities $\delta$.
+\end{abstract}
+
+\tableofcontents
+
+\newpage
+
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

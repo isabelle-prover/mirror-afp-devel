@@ -196,6 +196,15 @@
     </item>
     
     <item>
+      <title>AOT</title>
+      <link>/theories/aot/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/aot/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Applicative_Lifting</title>
       <link>/theories/applicative_lifting/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -327,6 +336,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/axiomaticcategorytheory/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Balog_Szemeredi_Gowers</title>
+      <link>/theories/balog_szemeredi_gowers/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/balog_szemeredi_gowers/</guid>
       <description></description>
     </item>
     
@@ -466,6 +484,15 @@
     </item>
     
     <item>
+      <title>Birkhoff_Finite_Distributive_Lattices</title>
+      <link>/theories/birkhoff_finite_distributive_lattices/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/birkhoff_finite_distributive_lattices/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Blue_Eyes</title>
       <link>/theories/blue_eyes/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -516,6 +543,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/boolos_curious_inference/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Boolos_Curious_Inference_Automated</title>
+      <link>/theories/boolos_curious_inference_automated/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/boolos_curious_inference_automated/</guid>
       <description></description>
     </item>
     
@@ -790,6 +826,15 @@
     </item>
     
     <item>
+      <title>CHERI-C_Memory_Model</title>
+      <link>/theories/cheri-c_memory_model/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/cheri-c_memory_model/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Chord_Segments</title>
       <link>/theories/chord_segments/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -912,6 +957,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/combinable_wands/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Combinatorial_Enumeration_Algorithms</title>
+      <link>/theories/combinatorial_enumeration_algorithms/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/combinatorial_enumeration_algorithms/</guid>
       <description></description>
     </item>
     
@@ -1128,6 +1182,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/containers-benchmarks/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Cook_Levin</title>
+      <link>/theories/cook_levin/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/cook_levin/</guid>
       <description></description>
     </item>
     
@@ -2545,6 +2608,15 @@
     </item>
     
     <item>
+      <title>HoareForDivergence</title>
+      <link>/theories/hoarefordivergence/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/hoarefordivergence/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>HOL-CSP</title>
       <link>/theories/hol-csp/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -3126,6 +3198,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/kleene_algebra/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Kneser_Cauchy_Davenport</title>
+      <link>/theories/kneser_cauchy_davenport/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/kneser_cauchy_davenport/</guid>
       <description></description>
     </item>
     
@@ -3994,6 +4075,15 @@
     </item>
     
     <item>
+      <title>Multitape_To_Singletape_TM</title>
+      <link>/theories/multitape_to_singletape_tm/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/multitape_to_singletape_tm/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Myhill-Nerode</title>
       <link>/theories/myhill-nerode/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -4341,6 +4431,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/pal/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>PAPP_Impossibility</title>
+      <link>/theories/papp_impossibility/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/papp_impossibility/</guid>
       <description></description>
     </item>
     
@@ -4759,6 +4858,15 @@
     </item>
     
     <item>
+      <title>Propositional_Logic_Class</title>
+      <link>/theories/propositional_logic_class/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/propositional_logic_class/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Propositional_Proof_Systems</title>
       <link>/theories/propositional_proof_systems/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -4854,6 +4962,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/quantales/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Quantifier_Elimination_Hybrid</title>
+      <link>/theories/quantifier_elimination_hybrid/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/quantifier_elimination_hybrid/</guid>
       <description></description>
     </item>
     
@@ -5340,6 +5457,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/saturation_framework_extensions/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Sauer_Shelah_Lemma</title>
+      <link>/theories/sauer_shelah_lemma/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/sauer_shelah_lemma/</guid>
       <description></description>
     </item>
     
@@ -5902,6 +6028,15 @@
     </item>
     
     <item>
+      <title>StrictOmegaCategories</title>
+      <link>/theories/strictomegacategories/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/strictomegacategories/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Strong_Security</title>
       <link>/theories/strong_security/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -5983,6 +6118,15 @@
     </item>
     
     <item>
+      <title>Suppes_Theorem</title>
+      <link>/theories/suppes_theorem/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/suppes_theorem/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Surprise_Paradox</title>
       <link>/theories/surprise_paradox/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -6006,6 +6150,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/syntax_independent_logic/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Synthetic_Completeness</title>
+      <link>/theories/synthetic_completeness/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/synthetic_completeness/</guid>
       <description></description>
     </item>
     
@@ -6213,6 +6366,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/trie/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Turans_Graph_Theorem</title>
+      <link>/theories/turans_graph_theorem/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/turans_graph_theorem/</guid>
       <description></description>
     </item>
     

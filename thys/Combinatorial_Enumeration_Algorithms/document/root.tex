@@ -1,0 +1,51 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{Combinatorial Enumeration Algorithms}
+\author{Paul Hofmeier and Emin Karayel}
+\maketitle
+
+\begin{abstract}
+Combinatorial objects have configurations which can be enumerated by algorithms,
+but especially for imperative programs, it is difficult to find out if they produce the
+correct output and don't generate duplicates. Therefore, for some of the most common
+combinatorial objects, namely n\_Sequences, n\_Permutations, n\_Subsets, Powerset,
+Integer\_Compositions, Integer\_Partitions, Weak\_Integer\_Compositions, Derangements and Trees, this
+entry formalizes efficient functional programs and verifies their correctness.
+In addition, it provides cardinality proofs for those combinatorial objects.
+Some cardinalities are verified using the enumeration functions and others are
+shown using existing libraries including other AFP entries.
+\end{abstract}
+
+Related books on combinatorics include \cite{stanleyenumerative} and
+\cite{stantonwhite}. 
+Some of the cardinality theorems in this entry are also proved in another 
+AFP entry, The Twelvefold Way \cite{AFPtwel}. 
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

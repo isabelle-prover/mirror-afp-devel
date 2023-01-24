@@ -1,0 +1,14 @@
+chapter AFP
+
+session "Sauer_Shelah_Lemma" (AFP) = HOL +
+  options [timeout = 600]
+
+  theories
+    Sauer_Shelah_Lemma
+    Shattering
+    Card_Lemmas
+    Binomial_Lemmas
+
+  document_files
+    "root.tex"
+    "root.bib"

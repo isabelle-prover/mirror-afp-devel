@@ -6,7 +6,16 @@
     <description>Recent content in Tools on Archive of Formal Proofs</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Fri, 29 Jul 2022 00:00:00 +0000</lastBuildDate><atom:link href="/topics/tools/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 05 Dec 2022 00:00:00 +0000</lastBuildDate><atom:link href="/topics/tools/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Automation of Boolos&#39; Curious Inference in Isabelle/HOL</title>
+      <link>/entries/Boolos_Curious_Inference_Automated.html</link>
+      <pubDate>Mon, 05 Dec 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Boolos_Curious_Inference_Automated.html</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>Nano JSON: Working with JSON formatted data in Isabelle/HOL and Isabelle/ML</title>
       <link>/entries/Nano_JSON.html</link>

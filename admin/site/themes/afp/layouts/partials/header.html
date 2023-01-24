@@ -15,7 +15,7 @@
   {{- end -}}
   <h1 {{ if or (eq .Kind "home" ) (eq .File.BaseFileName "search" ) -}}class="large-top-margin" {{ end -}}>
     {{ title (.Scratch.Get "title") | replaceRE "[A-Z]" "<span class='first'>$0</span>" | safeHTML -}}
-    {{- if (eq .Section "dependencies") }} Dependents{{ end -}}
+    {{- if and (eq .Section "dependencies") (eq .Kind "term") }} Dependents{{ end -}}
   </h1>
   <div>
     {{ if (eq .Section "authors") -}}

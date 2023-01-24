@@ -1,0 +1,44 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{A Hoare Logic for Diverging Programs}
+\author{Johannes \AA{}man Pojhola, Magnus O. Myreen, Miki Tanaka}
+\maketitle
+
+\begin{abstract}
+
+  This submission contains:
+  (1) a formalisation of a small While language with support for output;
+  (2) a standard total-correctness Hoare logic that has been proved sound and complete; and
+  (3) a new Hoare logic for proofs about programs that diverge: this new logic has also been proved sound and complete.
+
+\end{abstract}
+
+\section*{Background}
+
+The theories in this submission are a port of
+\href{https://github.com/HOL-Theorem-Prover/HOL/tree/develop/examples/Hoare-for-divergence}{a similar formalisation in HOL4},
+which, in turn, is a simplified version of a program logic for nonterminating CakeML programs~\cite{ITP19} (which was not complete).
+
+The HOL4 version of these theories was developed by Myreen with some lemmas proved by \AA{}man Pojhola.
+The Isabelle/HOL theories were developed by Tanaka with some input from \AA{}man Pojhola.
+
+\tableofcontents
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

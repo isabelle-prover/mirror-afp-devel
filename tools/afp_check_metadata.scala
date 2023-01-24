@@ -5,9 +5,9 @@ Tool to check metadata consistency.
 package afp
 
 
-import isabelle._
+import isabelle.*
 
-import afp.Metadata._
+import afp.Metadata.*
 
 
 object AFP_Check_Metadata {
@@ -22,38 +22,25 @@ object AFP_Check_Metadata {
     }
   }
 
-  val isabelle_tool = Isabelle_Tool("afp_check_metadata", "Checks the AFP metadata files",
-    Scala_Project.here,
-  { args =>
+  def afp_check_metadata(
+    strict: Boolean,
+    reformat: Boolean,
+    slow: Boolean,
+    afp_structure: AFP_Structure,
+    verbose: Boolean,
+    progress: Progress
+  ): Unit = {
+    def warn(msg: String): Unit = if (strict) error(msg) else progress.echo_warning(msg)
 
-    var strict = false
-
-    val getopts = Getopts("""
-Usage: isabelle afp_check_metadata [OPTIONS]
-
-  Options are:
-    -S           strict mode (fail on warnings)
-
-  Check AFP metadata files for consistency.
-""",
-      "S" -> (_ => strict = true))
-
-    getopts(args)
-
-    val progress = new Console_Progress()
-
-    val afp_structure = AFP_Structure()
-
-    progress.echo("Checking author file...")
-    val authors = afp_structure.load_authors.map(author => author.id -> author).toMap
-    progress.echo("Checking topic file...")
-    val root_topics = afp_structure.load_topics
-    val topics = Utils.grouped_sorted(root_topics.flatMap(_.all_topics), (t: Topic) => t.id)
-    progress.echo("Checking license file....")
-    val licenses = afp_structure.load_licenses.map(license => license.id -> license).toMap
-    progress.echo("Checking release file....")
-    val releases = afp_structure.load_releases.groupBy(_.entry)
-    progress.echo("Checking entry files...")
+    progress.echo_if(verbose, "Loading metadata...")
+    val orig_authors = afp_structure.load_authors
+    val orig_topics = afp_structure.load_topics
+    val orig_licenses = afp_structure.load_licenses
+    val orig_releases = afp_structure.load_releases
+    val authors = orig_authors.map(author => author.id -> author).toMap
+    val topics = Utils.grouped_sorted(orig_topics.flatMap(_.all_topics), (t: Topic) => t.id)
+    val licenses = orig_licenses.map(license => license.id -> license).toMap
+    val releases = orig_releases.groupBy(_.entry)
     val entries = afp_structure.entries.map(name =>
       afp_structure.load_entry(name, authors, topics, licenses, releases))
 
@@ -63,15 +50,13 @@ Usage: isabelle afp_check_metadata [OPTIONS]
     def check_toml[A](kind: String, a: A, from: A => afp.TOML.T, to: afp.TOML.T => A): Unit =
       if (to(from(a)) != a) error("Inconsistent toml encode/decode: " + kind)
 
-    progress.echo("Checking toml conversions...")
+    progress.echo_if(verbose, "Checking toml conversions...")
     check_toml("authors", authors.values.toList, TOML.from_authors, TOML.to_authors)
-    check_toml("topics", root_topics, TOML.from_topics, TOML.to_topics)
+    check_toml("topics", orig_topics, TOML.from_topics, TOML.to_topics)
     check_toml("licenses", licenses.values.toList, TOML.from_licenses, TOML.to_licenses)
     check_toml("releases", releases.values.flatten.toList, TOML.from_releases, TOML.to_releases)
-    entries.foreach(entry => check_toml("entry " + entry.name, entry, TOML.from_entry,
-      t => TOML.to_entry(entry.name, t, authors, topics, licenses, releases.getOrElse(entry.name, Nil))))
-
-    def warn(msg: String): Unit = if (strict) error(msg) else progress.echo_warning(msg)
+    entries.foreach(entry => check_toml("entry " + entry.name, entry, TOML.from_entry, t =>
+      TOML.to_entry(entry.name, t, authors, topics, licenses, releases.getOrElse(entry.name, Nil))))
 
 
     /* duplicate ids */
@@ -80,7 +65,7 @@ Usage: isabelle afp_check_metadata [OPTIONS]
     def check_id(id: String): Unit =
       if (seen_ids.contains(id)) error("Duplicate id: " + id) else seen_ids += id
 
-    progress.echo("Checking for duplicate ids...")
+    progress.echo_if(verbose, "Checking for duplicate ids...")
 
     authors.values.foreach { author =>
       check_id(author.id)
@@ -92,9 +77,10 @@ Usage: isabelle afp_check_metadata [OPTIONS]
     entries.map(_.name).foreach(check_id)
 
 
-    /* unused fields */
+    /* unread fields */
 
-    progress.echo("Checking for unused fields...")
+    progress.echo_if(verbose, "Checking for unused fields...")
+
     def check_unused_toml[A](file: Path, to: afp.TOML.T => A, from: A => afp.TOML.T): Unit = {
       val toml = afp.TOML.parse(File.read(file))
       val recoded = from(to(toml))
@@ -106,8 +92,8 @@ Usage: isabelle afp_check_metadata [OPTIONS]
     check_unused_toml(afp_structure.topics_file, TOML.to_topics, TOML.from_topics)
     check_unused_toml(afp_structure.licenses_file, TOML.to_licenses, TOML.from_licenses)
     check_unused_toml(afp_structure.releases_file, TOML.to_releases, TOML.from_releases)
-    entries.foreach(entry => check_unused_toml(afp_structure.entry_file(entry.name),
-      t => TOML.to_entry(entry.name, t, authors, topics, licenses, releases.getOrElse(entry.name, Nil)),
+    entries.foreach(entry => check_unused_toml(afp_structure.entry_file(entry.name), t =>
+      TOML.to_entry(entry.name, t, authors, topics, licenses, releases.getOrElse(entry.name, Nil)),
       TOML.from_entry))
 
 
@@ -116,7 +102,7 @@ Usage: isabelle afp_check_metadata [OPTIONS]
     def warn_unused(name: String, unused: Set[String]): Unit =
       if (unused.nonEmpty) warn("Extra (unused) " + name + ": " + commas_quote(unused.toList))
 
-    progress.echo("Checking for unused values...")
+    progress.echo_if(verbose, "Checking for unused values...")
 
     val all_affils = entries.flatMap(entry => entry.authors ++ entry.contributors ++ entry.notifies)
     warn_unused("authors", authors.keySet diff all_affils.map(_.author).toSet)
@@ -135,13 +121,63 @@ Usage: isabelle afp_check_metadata [OPTIONS]
     warn_unused("licenses", licenses.keySet diff entries.map(_.license.id).toSet)
 
 
+    /* formatting of commonly patched files */
+
+    if (reformat) afp_structure.save_authors(orig_authors)
+    else {
+      def check_toml_format(toml: afp.TOML.T, file: Path): Unit = {
+        val present = File.read(file)
+        val formatted = afp.TOML.Format(toml)
+        if (present != formatted) progress.echo_warning("Badly formatted toml: " + file)
+      }
+
+      progress.echo_if(verbose, "Checking formatting...")
+      check_toml_format(TOML.from_authors(orig_authors), afp_structure.authors_file)
+    }
+
+
     /* extra */
 
-    progress.echo("Checking dois...")
-    entries.flatMap(entry => entry.related).collect { case d: DOI => d.formatted() }
+    if (slow) {
+      progress.echo_if(verbose, "Checking DOIs...")
+      entries.flatMap(entry => entry.related).collect { case d: DOI => d.formatted() }
+    }
 
-    progress.echo("Checked " + authors.size + " authors with " + affils.size + " affiliations, " +
-      topics.size + " topics, " + releases.values.flatten.size + " releases, " + licenses.size +
-      " licenses, and " + entries.size + " entries.")
+    progress.echo_if(verbose, "Checked " + authors.size + " authors with " + affils.size +
+      " affiliations, " + topics.size + " topics, " + releases.values.flatten.size + " releases, " +
+      licenses.size + " licenses, and " + entries.size + " entries.")
+  }
+
+  val isabelle_tool = Isabelle_Tool("afp_check_metadata", "Checks the AFP metadata files",
+    Scala_Project.here,
+  { args =>
+
+    var slow = false
+    var reformat = false
+    var strict = false
+    var verbose = false
+
+    val getopts = Getopts("""
+Usage: isabelle afp_check_metadata [OPTIONS]
+
+  Options are:
+    -s    activate slow checks
+    -v    verbose
+    -R    reformat metadata files
+    -S    strict mode (fail on warnings)
+
+  Check AFP metadata files for consistency.
+""",
+      "s" -> (_ => slow = true),
+      "v" -> (_ => verbose = true),
+      "R" -> (_ => reformat = true),
+      "S" -> (_ => strict = true))
+
+    getopts(args)
+
+    val progress = new Console_Progress()
+    val afp_structure = AFP_Structure()
+
+    afp_check_metadata(strict, reformat, slow, afp_structure, verbose, progress)
   })
 }

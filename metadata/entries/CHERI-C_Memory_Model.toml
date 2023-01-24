@@ -1,0 +1,28 @@
+title = "A Formal CHERI-C Memory Model"
+date = 2022-11-25
+topics = [
+  "Computer science/Semantics and reasoning",
+]
+abstract = "In this work, we present a formal memory model that provides a memory semantics for CHERI-C programs with uncompressed capabilities in a 'purecap' environment. We present a CHERI-C memory model theory with properties suitable for verification and potentially other types of analyses. Our theory generates an OCaml executable instance of the memory model, which is then used to instantiate the parametric Gillian program analysis framework, enabling concrete execution of CHERI-C programs. The tool can run a CHERI-C test suite, demonstrating the correctness of our tool, and catch a good class of safety violations that the CHERI hardware might miss."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.park]
+homepage = "park_homepage"
+
+[contributors]
+
+[notify]
+park = "park_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.48550/arxiv.2211.07511",
+]
+pubs = []

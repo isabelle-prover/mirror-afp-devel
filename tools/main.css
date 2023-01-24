@@ -5,7 +5,7 @@
     font-display: swap;
     font-style: normal;
     font-weight: 300;
-    src: local(""), url("https://isa-afp.org/font/open-sans-v18-latin-300.woff2") format("woff2"), url("https://isa-afp.org/font/open-sans-v18-latin-300.woff") format("woff");
+    src: local(""), url("https://www.isa-afp.org/font/open-sans-v18-latin-300.woff2") format("woff2"), url("https://www.isa-afp.org/font/open-sans-v18-latin-300.woff") format("woff");
 }
 
 @font-face {
@@ -13,7 +13,7 @@
     font-display: swap;
     font-style: normal;
     font-weight: 400;
-    src: local(""), url("https://isa-afp.org/font/open-sans-v18-latin-regular.woff2") format("woff2"), url("https://isa-afp.org/font/open-sans-v18-latin-regular.woff") format("woff");
+    src: local(""), url("https://www.isa-afp.org/font/open-sans-v18-latin-regular.woff2") format("woff2"), url("https://www.isa-afp.org/font/open-sans-v18-latin-regular.woff") format("woff");
 }
 
 @font-face {
@@ -21,7 +21,7 @@
     font-display: swap;
     font-style: italic;
     font-weight: 400;
-    src: local(""), url("https://isa-afp.org/font/open-sans-v18-latin-italic.woff2") format("woff2"), url("https://isa-afp.org/font/open-sans-v18-latin-italic.woff") format("woff");
+    src: local(""), url("https://www.isa-afp.org/font/open-sans-v18-latin-italic.woff2") format("woff2"), url("https://www.isa-afp.org/font/open-sans-v18-latin-italic.woff") format("woff");
 }
 
 @font-face {
@@ -29,7 +29,7 @@
     font-display: swap;
     font-style: normal;
     font-weight: 700;
-    src: local(""), url("https://isa-afp.org/font/open-sans-v18-latin-700.woff2") format("woff2"), url("https://isa-afp.org/font/open-sans-v18-latin-700.woff") format("woff");
+    src: local(""), url("https://www.isa-afp.org/font/open-sans-v18-latin-700.woff2") format("woff2"), url("https://www.isa-afp.org/font/open-sans-v18-latin-700.woff") format("woff");
 }
 
 @font-face {
@@ -37,7 +37,7 @@
     font-display: swap;
     font-style: italic;
     font-weight: 700;
-    src: local(""), url("https://isa-afp.org/font/open-sans-v18-latin-700italic.woff2") format("woff2"), url("https://isa-afp.org/font/open-sans-v18-latin-700italic.woff") format("woff");
+    src: local(""), url("https://www.isa-afp.org/font/open-sans-v18-latin-700italic.woff2") format("woff2"), url("https://www.isa-afp.org/font/open-sans-v18-latin-700italic.woff") format("woff");
 }
 
 iframe {
@@ -47,16 +47,20 @@ iframe {
 
 form {
     width: 100%;
+    overflow-x: auto;
 }
 
 div {
     width: 100%;
 }
 
-pre, code {
+pre {
     font-family: "Consolas", monospace;
     background-color: #f2f2f2;
     color: #303030;
+    max-width: 100%;
+    padding: 1rem;
+    overflow-x: auto;
 }
 
 *::selection {
@@ -76,6 +80,8 @@ body {
 
 li {
     margin: 0.25em 0;
+    height: 2rem;
+    clear: both;
 }
 
 
@@ -117,20 +123,6 @@ img {
     max-width: 90%;
 }
 
-pre {
-    padding: 1rem;
-    overflow: auto;
-}
-
-pre.code {
-    white-space: pre;
-    padding: 10px 2px;
-}
-
-code {
-    padding: 1px 2px 2px;
-}
-
 blockquote {
     border: 2px solid #ddd;
     padding: 1rem 2rem;
@@ -144,6 +136,8 @@ tr:nth-child(even) {
 fieldset {
     margin-top: 16px;
     margin-bottom: 16px;
+    max-width: 100%;
+    overflow-x: auto;
 }
 
 a:link {
@@ -178,7 +172,7 @@ a[download]:hover, a[download]:active, a.download:hover, a.download:active {
 }
 
 a[download]:after, a.download:after {
-    content: url("https://isa-afp.org/images/download.svg");
+    content: url("https://www.isa-afp.org/images/download.svg");
     position: relative;
     top: 0.12em;
     left: 5px;
@@ -197,7 +191,6 @@ a[download], a.download, button, input[type=text], select {
 
 select {
     height: 2rem;
-    padding: 7px;
     width: 30ch;
 }
 
@@ -238,6 +231,10 @@ label {
 
 span {
     padding-right: 7px;
+}
+
+.right {
+    float: right;
 }
 
 .loader {

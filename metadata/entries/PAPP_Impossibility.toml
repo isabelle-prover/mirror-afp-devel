@@ -1,0 +1,63 @@
+title = "The Incompatibility of Strategy-Proofness and Representation in Party-Approval Multi-Winner Elections"
+date = 2022-11-10
+topics = [
+  "Mathematics/Games and economics",
+]
+abstract = """
+<p>
+  In party-approval multi-winner elections, the goal is to allocate the seats of a fixed-size
+  committee to parties based on approval ballots of the voters over the parties. In particular, each
+  can approve multiple parties and each party can be assigned multiple seats.
+</p>
+
+<p>Three central requirements in this settings are:</p>
+<ul>
+  <li>Anonymity: The result is invariant under renaming the voters.</li>
+  <li>Representation:Every sufficiently large group of voters with similar preferences
+    is represented by some committee members.</li>
+  <li>Strategy-proofness: No voter can benefit by misreporting her true preferences.</li>
+</ul>
+<p>
+  We show that these three basic axioms are incompatible for party-approval multi-winner voting
+  rules,
+  thus proving a far-reaching impossibility theorem.</p>
+<p>The proof of this result is obtained by
+  formulating the problem in propositional logic and then letting a SAT solver show that the
+  formula is unsatisfiable. The DRUP proof output by the SAT solver is then converted into
+  <a href=\"https://www21.in.tum.de/~lammich/grat/\">Lammich's GRAT format</a> and imported into
+  Isabelle/HOL with some custom-written ML code.</p>
+<p>This transformation is proof-producing, so the final Isabelle/HOL theorem does not rely on any
+  oracles
+  or other trusted external trusted components.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.delemazure]
+homepage = "delemazure_homepage"
+
+[authors.demeulemeester]
+homepage = "demeulemeester_homepage"
+
+[authors.eberl]
+homepage = "eberl_homepage"
+
+[authors.israel]
+homepage = "israel_homepage"
+
+[authors.lederer]
+homepage = "lederer_homepage"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

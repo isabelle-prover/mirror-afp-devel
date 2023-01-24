@@ -1,0 +1,13 @@
+chapter AFP
+
+session Kneser_Cauchy_Davenport (AFP) = "HOL-Number_Theory" +
+ options [timeout = 900] 
+ sessions
+    Pluennecke_Ruzsa_Inequality
+    Jacobson_Basic_Algebra
+ theories
+    Kneser_Cauchy_Davenport_preliminaries
+    Kneser_Cauchy_Davenport_main_proofs
+ document_files
+    "root.bib"
+    "root.tex"

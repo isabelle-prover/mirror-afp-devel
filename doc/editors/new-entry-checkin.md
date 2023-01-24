@@ -57,10 +57,9 @@ Everything happens in the release branch `afp/release`.
     header. We only accept the BSD 3-Clause and LPGPL version 2.1 licenses
     as they are printed in `thys/LICENSE` and `thys/LICENSE.LGPL`.
 5. `hg add` and `hg commit` the new submission
-6. Enter data for author/abstract/index/etc in the `metadata` dir.
-   Make sure that your editor uses UTF-8 encoding to preserve special 
-   characters. If the entry uses a new topic or category, add it to 
-   metadata/topics.
+6. Apply the metadata patch for author/abstract/index/etc with `patch -p0 < PATCH_FILE`
+   (from the AFP base directory). When editing the metadata, make sure that your editor
+   uses UTF-8 encoding to preserve special characters.
 7. Generate the new web site by running `../admin/sitegen` .
 8. Use `hg st` and `hg diff` to make sure the generated html makes
     sense. The diff should be small and concern the new entry only.

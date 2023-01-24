@@ -1,0 +1,59 @@
+\documentclass[11pt,a4paper]{report}
+\usepackage{isabelle, isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+\usepackage{mathpartir}
+\usepackage{eurosym}
+
+\usepackage[only,bigsqcap]{stmaryrd}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{Class-based Classical Propositional Logic}
+\author{Matthew Doty}
+
+\maketitle
+
+\begin{abstract}
+  We formulate classical propositional logic as an axiom class. Our
+  class represents a Hilbert-style proof system with the axioms
+  \(\vdash \varphi \to \psi \to \varphi\),
+  \(\vdash (\varphi \to \psi \to \chi) \to (\varphi \to \psi) \to
+  \varphi \to \chi\), and
+  \(\vdash ((\varphi \to \bot) \to \bot) \to \varphi\) along with the
+  rule \emph{modus ponens}
+  \(\vdash \varphi \to \psi \Longrightarrow \; \vdash \varphi
+  \Longrightarrow \; \vdash \psi\). In this axiom class we provide
+  lemmas to obtain \emph{Maximally Consistent Sets} via Zorn's lemma.
+  We define the concrete classical propositional calculus inductively
+  and show it instantiates our axiom class. We formulate the usual
+  semantics for the propositional calculus and show strong soundness
+  and completeness. We provide conventional definitions of the other
+  logical connectives and prove various common identities. Finally, we
+  show that the propositional calculus \emph{embeds} into any logic in
+  our axiom class.
+\end{abstract}
+
+\tableofcontents
+
+\newpage
+
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

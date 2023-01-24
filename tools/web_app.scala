@@ -304,6 +304,15 @@ object Web_App {
     }
   }
 
+  class API(base_path: Path) {
+    def rel_url(path: Path, params: Properties.T = Nil): String = {
+      def param(p: Properties.Entry): String = Url.encode(p._1) + "=" + Url.encode(p._2)
+      if (params.isEmpty) path.implode else path.implode + "?" + params.map(param).mkString("&")
+    }
+    def abs_url(path: Path, params: Properties.T = Nil): String =
+      "/" + base_path.implode + "/" + rel_url(path, params)
+  }
+
   abstract class Server[A](
     port: Int = 0,
     verbose: Boolean = false,
@@ -333,8 +342,8 @@ object Web_App {
         isabelle.HTML.footer
     }
 
-    sealed abstract class Endpoint(path: String, method: String = "GET")
-      extends HTTP.Service(path.stripPrefix("/"), method) {
+    sealed abstract class Endpoint(path: Path, method: String = "GET")
+      extends HTTP.Service(path.implode, method) {
 
       def reply(request: HTTP.Request): HTTP.Response
 
@@ -359,7 +368,7 @@ object Web_App {
         space_explode('&', params).flatMap(decode))
     }
 
-    class Get(path: String, description: String, get: Properties.T => Option[A])
+    class Get(path: Path, description: String, get: Properties.T => Option[A])
       extends Endpoint(path) {
 
       def reply(request: HTTP.Request): HTTP.Response = {
@@ -373,7 +382,7 @@ object Web_App {
       }
     }
 
-    class Get_File(path: String, description: String, download: Properties.T => Option[Path])
+    class Get_File(path: Path, description: String, download: Properties.T => Option[Path])
       extends Endpoint(path) {
 
       def reply(request: HTTP.Request): HTTP.Response = {
@@ -389,7 +398,7 @@ object Web_App {
       }
     }
 
-    class Post(path: String, description: String, post: Params.Data => Option[A])
+    class Post(path: Path, description: String, post: Params.Data => Option[A])
       extends Endpoint(path, method = "POST") {
 
       def reply(request: HTTP.Request): HTTP.Response = {

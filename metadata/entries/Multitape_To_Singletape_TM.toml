@@ -1,0 +1,35 @@
+title = "A Verified Translation of Multitape Turing Machines into Singletape Turing Machines"
+date = 2022-11-30
+topics = [
+  "Logic/Computability",
+  "Computer science/Automata and formal languages",
+]
+abstract = """
+We define single- and multitape Turing machines (TMs)
+and verify a translation from multitape TMs to singletape TMs. In particular, the following results have been
+formalized: the accepted languages coincide, and whenever the multitape TM runs in
+$\\mathcal{O}(f(n))$ time, then the singletape TM has a worst-time complexity of
+$\\mathcal{O}(f(n)^2 + n)$.
+The translation is applicable both on deterministic and non-deterministic TMs."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.dalvit]
+
+[authors.thiemann]
+email = "thiemann_email"
+
+[contributors]
+
+[notify]
+thiemann = "thiemann_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

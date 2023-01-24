@@ -15,6 +15,8 @@ class AFP_Structure private(val base_dir: Path) {
 
   val thys_dir = base_dir + Path.basic("thys")
 
+  def entry_thy_dir(name: Metadata.Entry.Name): Path = thys_dir + Path.basic(name)
+
   val authors_file = metadata_dir + Path.basic("authors.toml")
 
   val releases_file = metadata_dir + Path.basic("releases.toml")

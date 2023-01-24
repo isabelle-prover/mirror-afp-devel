@@ -1,0 +1,17 @@
+chapter AFP
+
+session Propositional_Logic_Class (AFP) = "HOL" +
+  (* options [document = pdf, document_output = "output"] *)
+  options [timeout = 300]
+  sessions
+    "HOL-Combinatorics"
+    "HOL-Library"
+  theories
+    Implication_Logic
+    Classical_Logic
+    Classical_Logic_Completeness
+    List_Utilities
+    Classical_Connectives
+  document_files
+    "root.tex"
+    "root.bib"

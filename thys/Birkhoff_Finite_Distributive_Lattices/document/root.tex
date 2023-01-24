@@ -1,0 +1,51 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle, isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+\usepackage{mathpartir}
+\usepackage{eurosym}
+
+\usepackage[only,bigsqcap]{stmaryrd}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{Birkhoff's Representation Theorem For Finite Distributive
+  Lattices}
+
+\author{Matthew Doty}
+
+\maketitle
+
+\begin{abstract}
+  This theory proves a theorem of Birkhoff that asserts that any
+  finite distributive lattice is isomorphic to the set of
+  \emph{down-sets} of that lattice's join-irreducible elements. The
+  isomorphism preserves order, meets and joins as well as
+  complementation in the case the lattice is a Boolean algebra. A
+  consequence of this representation theorem is that every finite
+  Boolean algebra is isomorphic to a powerset algebra.
+\end{abstract}
+
+\tableofcontents
+
+\newpage
+
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
