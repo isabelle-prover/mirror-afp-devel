@@ -15,7 +15,6 @@ session Van_Emde_Boas_Trees (AFP) = HOL +
   (*suppression of some theories*)
   theories [document = false]
     "Imperative_HOL_Time/Array_Time"
-    "Imperative_HOL_Time/Heap"
     "Imperative_HOL_Time/Heap_Time_Monad"
     "Imperative_HOL_Time/Imperative_HOL_Time"
     "Imperative_HOL_Time/Ref_Time"
