@@ -132,6 +132,8 @@ as a measure space. It is used in places where the existing definitions, such as
 expect a measure space even though only a \emph{measurable} space is really needed, i.e., in cases
 where the property is invariant with respect to the actual measure.\<close>
 
+hide_const (open) discrete
+
 abbreviation "discrete \<equiv> count_space UNIV"
 
 lemma (in prob_space) indep_vars_restrict_space:
