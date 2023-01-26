@@ -4,7 +4,7 @@
 
 section \<open>Monadic references\<close>
 
-text \<open>This theory is an adaptation of \<open>HOL/Imperative_HOL/Array_Time.thy\<close>,
+text \<open>This theory is an adaptation of \<open>HOL/Imperative_HOL/Ref.thy\<close>,
  adding time bookkeeping.\<close>
 
 theory Ref_Time

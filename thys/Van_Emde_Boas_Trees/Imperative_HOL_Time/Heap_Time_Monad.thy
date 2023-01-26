@@ -4,7 +4,7 @@
 
 section \<open>A monad with a polymorphic heap and time and primitive reasoning infrastructure\<close>
 
-text \<open>This theory is an adapted version of \<open>Imperative_HOL/Heap_Time_Monad\<close>, where the heap is 
+text \<open>This theory is an adapted version of \<open>Imperative_HOL/Heap_Monad\<close>, where the heap is
   extended by time bookkeeping.\<close>
 
 theory Heap_Time_Monad

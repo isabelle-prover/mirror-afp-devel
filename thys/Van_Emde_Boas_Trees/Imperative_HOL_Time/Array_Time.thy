@@ -3,7 +3,7 @@
 *)
 section \<open>Monadic arrays\<close>
 
-text \<open>This theory is an adaptation of \<open>HOL/Imperative_HOL/Array_Time.thy\<close>,
+text \<open>This theory is an adaptation of \<open>HOL/Imperative_HOL/Array.thy\<close>,
  adding time bookkeeping.\<close>
 
 theory Array_Time
