@@ -21,9 +21,7 @@ text \<open>Monadic heap actions either produce values
   and transform the heap, or fail\<close>
 datatype 'a Heap = Heap "heap \<Rightarrow> ('a \<times> heap \<times> nat) option"
 
-lemma [code, code del]:
-  "(Code_Evaluation.term_of :: 'a::typerep Heap \<Rightarrow> Code_Evaluation.term) = Code_Evaluation.term_of"
-  ..
+declare [[code drop: "Code_Evaluation.term_of :: 'a::typerep Heap \<Rightarrow> Code_Evaluation.term"]]
 
 primrec execute :: "'a Heap \<Rightarrow> heap \<Rightarrow> ('a \<times> heap \<times> nat) option" where
   [code del]: "execute (Heap f) = f"
@@ -704,14 +702,14 @@ open Code_Thingol;
 
 val imp_program =
   let
-    val is_bind = curry (op =) @{const_name bind};
-    val is_return = curry (op =) @{const_name return};
+    val is_bind = curry (=) \<^const_name>\<open>bind\<close>;
+    val is_return = curry (=) \<^const_name>\<open>return\<close>;
     val dummy_name = "";
     val dummy_case_term = IVar NONE;
     (*assumption: dummy values are not relevant for serialization*)
-    val unitT = @{type_name unit} `%% [];
+    val unitT = \<^type_name>\<open>unit\<close> `%% [];
     val unitt =
-      IConst { sym = Code_Symbol.Constant @{const_name Unity}, typargs = [], dicts = [], dom = [],
+      IConst { sym = Code_Symbol.Constant \<^const_name>\<open>Unity\<close>, typargs = [], dicts = [], dom = [],
         annotation = NONE };
     fun dest_abs ((v, ty) `|=> t, _) = ((v, ty), t)
       | dest_abs (t, ty) =
