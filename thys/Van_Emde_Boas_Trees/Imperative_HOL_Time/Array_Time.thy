@@ -448,7 +448,6 @@ qed
 hide_const (open) new' make' len' nth' upd'
 
 
-  
 text \<open>SML\<close>
 
 code_printing type_constructor array \<rightharpoonup> (SML) "_/ array"
@@ -505,7 +504,5 @@ code_printing constant Array_Time.nth' \<rightharpoonup> (Scala) "('_: Unit)/ =>
 code_printing constant Array_Time.upd' \<rightharpoonup> (Scala) "('_: Unit)/ =>/ Array.upd((_), (_), (_))"
 code_printing constant Array_Time.freeze \<rightharpoonup> (Scala) "('_: Unit)/ =>/ Array.freeze((_))"
 code_printing constant "HOL.equal :: 'a array \<Rightarrow> 'a array \<Rightarrow> bool" \<rightharpoonup> (Scala) infixl 5 "=="
-
-
 
 end
