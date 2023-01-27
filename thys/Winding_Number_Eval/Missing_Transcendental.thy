@@ -48,8 +48,7 @@ proof
   proof -
     have "tan (x - k * pi) = y" using asm tan_periodic_int[of _ "-k"] by auto
     then have "arctan y = x - real_of_int k * pi"
-      apply (intro arctan_unique)
-      using k that by (auto simp add:field_simps)
+      using arctan_tan k that by force
     then show ?thesis by auto
   qed
   moreover have "y=0" when "x = pi/2 + k*pi"

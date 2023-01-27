@@ -14,12 +14,8 @@ begin
 
 subsection \<open>Misc\<close>
 
-lemma poly_holomorphic_on[simp]:
-  "(poly p) holomorphic_on s"
-  apply (rule holomorphic_onI)
-  apply (unfold field_differentiable_def)
-  apply (rule_tac x="poly (pderiv p) x" in exI)
-  by (simp add:has_field_derivative_at_within)
+lemma poly_holomorphic_on[simp]: "(poly p) holomorphic_on s"
+  by (meson field_differentiable_def has_field_derivative_at_within holomorphic_onI poly_DERIV)
 
 lemma order_zorder:
   fixes p::"complex poly" and z::complex
@@ -54,8 +50,7 @@ proof -
     proof (subst DERIV_cong_ev[of w w "poly p" "\<lambda>w.  h w * (w - z) ^ Suc n" ],simp_all)
       show "\<forall>\<^sub>F x in nhds w. poly p x = h x * ((x - z) * (x - z) ^ n)"
         unfolding eventually_nhds using Suc(3) \<open>w\<in>ball z r\<close>
-        apply (intro exI[where x="ball z r"])
-        by auto
+        by (metis Elementary_Metric_Spaces.open_ball power_Suc)
       next
         have "(h has_field_derivative deriv h w) (at w)" 
           using \<open>h holomorphic_on ball z r\<close> \<open>w\<in>ball z r\<close> holomorphic_on_imp_differentiable_at 
@@ -92,36 +87,24 @@ proof -
 qed  
 
 lemma pcompose_pCons_0:"pcompose p [:a:] = [:poly p a:]"
-  apply (induct p)
-  by (auto simp add:pcompose_pCons algebra_simps)       
+  by (metis (no_types, lifting) coeff_pCons_0 pcompose_0' pcompose_assoc poly_0_coeff_0 poly_pcompose)
    
 lemma pcompose_coeff_0:
   "coeff (pcompose p q) 0 = poly p (coeff q 0)"
-  apply (induct p)
-  by (auto simp add:pcompose_pCons coeff_mult)  
+  by (metis poly_0_coeff_0 poly_pcompose)
     
 lemma poly_field_differentiable_at[simp]:
   "poly p field_differentiable (at x within s)"
-apply (unfold field_differentiable_def)
-apply (rule_tac x="poly (pderiv p) x" in exI)
-by (simp add:has_field_derivative_at_within)  
+  using field_differentiable_at_within field_differentiable_def poly_DERIV by blast
   
 lemma deriv_pderiv:
   "deriv (poly p) = poly (pderiv p)"
-apply (rule ext)  
-apply (rule DERIV_imp_deriv)  
-  using poly_DERIV . 
+  by (meson ext DERIV_imp_deriv poly_DERIV)
     
 lemma lead_coeff_map_poly_nz:
   assumes "f (lead_coeff p) \<noteq>0" "f 0=0"
-  shows "lead_coeff (map_poly f p) = f (lead_coeff p) "
-proof -
-  have "lead_coeff (Poly (map f (coeffs p))) = f (lead_coeff p)"
-    by (metis (mono_tags, lifting) antisym assms(1) assms(2) coeff_0_degree_minus_1 coeff_map_poly 
-        degree_Poly degree_eq_length_coeffs le_degree length_map map_poly_def)
-  then show ?thesis
-    by (simp add: map_poly_def)
-qed 
+  shows "lead_coeff (map_poly f p) = f (lead_coeff p)"
+  by (metis (no_types, lifting) antisym assms coeff_0 coeff_map_poly le_degree leading_coeff_0_iff)
 
 lemma filterlim_poly_at_infinity:
   fixes p::"'a::real_normed_field poly"
@@ -232,16 +215,15 @@ proof -
   qed
   ultimately show ?thesis by (auto dest:tendsto_cong)
 qed
-    
+
 lemma lead_coeff_list_def:
   "lead_coeff p= (if coeffs p=[] then 0 else last (coeffs p))"
-by (simp add: last_coeffs_eq_coeff_degree)
-  
+  by (simp add: last_coeffs_eq_coeff_degree)
+
 lemma poly_linepath_comp: 
   fixes a::"'a::{real_normed_vector,comm_semiring_0,real_algebra_1}"
   shows "poly p o (linepath a b) = poly (p \<circ>\<^sub>p [:a, b-a:]) o of_real"
-  apply rule
-  by (auto simp add:poly_pcompose linepath_def scaleR_conv_of_real algebra_simps)
+  by (force simp add:poly_pcompose linepath_def scaleR_conv_of_real algebra_simps)
 
 lemma poly_eventually_not_zero:
   fixes p::"real poly"
@@ -277,10 +259,8 @@ lemma map_poly_degree_less:
 proof -
   have "length (coeffs p) >1" 
     using \<open>degree p\<noteq>0\<close> by (simp add: degree_eq_length_coeffs)  
-  then obtain xs x where xs_def:"coeffs p=xs@[x]" "length xs>0"  
-    by (metis One_nat_def add.commute add_diff_cancel_left' append_Nil assms(2) 
-        degree_eq_length_coeffs length_greater_0_conv list.size(3) list.size(4) not_less_zero
-        rev_exhaust) 
+  then obtain xs x where xs_def:"coeffs p=xs@[x]" "length xs>0"
+    by (metis One_nat_def add_0 append_Nil length_greater_0_conv list.size(4) nat_neq_iff not_less_zero rev_exhaust)
   have "f x=0" using assms(1) by (simp add: lead_coeff_list_def xs_def(1))
   have "degree (map_poly f p) = length (strip_while ((=) 0) (map f (xs@[x]))) - 1" 
     unfolding map_poly_def degree_eq_length_coeffs coeffs_Poly
@@ -326,7 +306,7 @@ proof -
     have "nat (zorder (poly p) x) = order x p" when "x\<in>proots p" for x 
       using order_zorder[OF \<open>p\<noteq>0\<close>] that unfolding proots_def by auto
     then show ?thesis unfolding proots_def 
-      apply (auto intro!:comm_monoid_add_class.sum.cong)
+      apply (auto intro!: sum.cong)
       by (metis assms(1) nat_eq_iff2 of_nat_nat order_root)
   qed
   finally show ?thesis . 
