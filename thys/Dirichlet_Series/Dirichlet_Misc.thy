@@ -5,7 +5,6 @@
 section \<open>Miscellaneous auxiliary facts\<close>
 theory Dirichlet_Misc
   imports 
-    Main 
     "HOL-Number_Theory.Number_Theory"
 begin
 
@@ -28,28 +27,25 @@ proof -
 qed
 
 lemma dvd_div_gt0: "d dvd n \<Longrightarrow> n > 0 \<Longrightarrow> n div d > (0::nat)"
-  by (auto elim: dvdE)
+  by auto
 
 lemma Set_filter_insert: 
   "Set.filter P (insert x A) = (if P x then insert x (Set.filter P A) else Set.filter P A)"
-  by (auto simp: Set.filter_def)
+  by auto
     
 lemma Set_filter_union: "Set.filter P (A \<union> B) = Set.filter P A \<union> Set.filter P B"
-  by (auto simp: Set.filter_def)
+  by auto
 
 lemma Set_filter_empty [simp]: "Set.filter P {} = {}"
-  by (auto simp: Set.filter_def)
+  by auto
     
 lemma Set_filter_image: "Set.filter P (f ` A) = f ` Set.filter (P \<circ> f) A"
-  by (auto simp: Set.filter_def)
+  by auto
 
 lemma Set_filter_cong [cong]:
     "(\<And>x. x \<in> A \<Longrightarrow> P x \<longleftrightarrow> Q x) \<Longrightarrow> A = B \<Longrightarrow>  Set.filter P A = Set.filter Q B"
-  by (auto simp: Set.filter_def)
+  by auto
     
-lemma finite_Set_filter: "finite A \<Longrightarrow> finite (Set.filter P A)"
-  by (auto simp: Set.filter_def)
-
 lemma inj_on_insert': "(\<And>B. B \<in> A \<Longrightarrow> x \<notin> B) \<Longrightarrow> inj_on (insert x) A"
   by (auto simp: inj_on_def insert_eq_iff)
 
@@ -79,13 +75,13 @@ proof -
     also have "card (Set.filter (even \<circ> card) (Pow A) \<union> insert x ` \<dots>) = 
                  card (Set.filter (even \<circ> card) (Pow A)) + card (insert x ` \<dots>)"
       (is "card (?A \<union> ?B) = _")
-      by (intro card_Un_disjoint finite_Set_filter finite_imageI) (auto simp:  insert.hyps)
+      by (intro card_Un_disjoint finite_filter finite_imageI) (auto simp:  insert.hyps)
     also have "card ?B = card (Set.filter (odd \<circ> card) (Pow A))"
       using insert.hyps by (intro card_image inj_on_insert') auto
     also have "Set.filter (odd \<circ> card) (Pow A) = Pow A - Set.filter (even \<circ> card) (Pow A)"
       by auto
     also have "card \<dots> = card (Pow A) - card (Set.filter (even \<circ> card) (Pow A))"
-      using insert.hyps by (subst card_Diff_subset) (auto simp: finite_Set_filter)
+      using insert.hyps by (subst card_Diff_subset) (auto simp: finite_filter)
     also have "card (Set.filter (even \<circ> card) (Pow A)) + \<dots> = card (Pow A)"
       by (intro add_diff_inverse_nat, subst not_less, rule card_mono) (insert insert.hyps, auto)  
     also have "2 * \<dots> = 2 ^ card (insert x A)"
@@ -97,7 +93,7 @@ proof -
 
   have "Set.filter (odd \<circ> card) (Pow A) = Pow A - Set.filter (even \<circ> card) (Pow A)" by auto
   also have "2 * card \<dots> = 2 * 2 ^ card A - 2 * card (Set.filter (even \<circ> card) (Pow A))"
-    using assms by (subst card_Diff_subset) (auto intro!: finite_Set_filter simp: card_Pow)
+    using assms by (subst card_Diff_subset) (auto intro!: finite_filter simp: card_Pow)
   also note *
   also have "2 * 2 ^ card A - 2 ^ card A = (2 ^ card A :: nat)" by simp
   finally show B: "card {B. B \<subseteq> A \<and> odd (card B)} = 2 ^ (card A - 1)"
@@ -134,16 +130,6 @@ proof
     using assms by (auto simp: le_imp_power_dvd divides_primepow_nat)
 qed
 
-lemma power_diff':
-  assumes "m \<ge> n" "x \<noteq> 0"
-  shows   "x ^ (m - n) = (x ^ m div x ^ n :: 'a :: unique_euclidean_semiring)"
-proof -
-  from assms have "x ^ m = x ^ (m - n) * x ^ n"
-    by (subst power_add [symmetric]) simp
-  also from assms have "\<dots> div x ^ n = x ^ (m - n)" by simp
-  finally show ?thesis ..
-qed
-  
 lemma sum_divisors_coprime_mult:
   assumes "coprime a (b :: nat)"
   shows   "(\<Sum>d | d dvd a * b. f d) = (\<Sum>r | r dvd a. \<Sum>s | s dvd b. f (r * s))"

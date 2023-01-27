@@ -12,7 +12,7 @@ begin
 lemma sum_coprime_dvd_cong:
   "(\<Sum>r | r dvd a. \<Sum>s | s dvd b. f r s) = (\<Sum>r | r dvd a. \<Sum>s | s dvd b. g r s)"
   if "coprime a b" "\<And>r s. coprime r s \<Longrightarrow> r dvd a \<Longrightarrow> s dvd b \<Longrightarrow> f r s = g r s"
-using refl proof (rule sum.cong, rule sum.cong)
+proof (intro sum.cong)
   fix r s
   assume "r \<in> {r. r dvd a}" and "s \<in> {s. s dvd b}"
   then have "r dvd a" and "s dvd b"
@@ -22,7 +22,7 @@ using refl proof (rule sum.cong, rule sum.cong)
     by (auto intro: coprime_imp_coprime dvd_trans)
   ultimately show "f r s = g r s"
     using that by simp
-qed
+qed auto
 
 definition dirichlet_prod :: "(nat \<Rightarrow> 'a :: semiring_0) \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> nat \<Rightarrow> 'a" where
   "dirichlet_prod f g = (\<lambda>n. \<Sum>d | d dvd n. f d * g (n div d))"
@@ -495,7 +495,7 @@ proof -
     unfolding dirichlet_prod_def using assms
     by (intro sum.reindex_bij_betw [symmetric] bij_betw_prime_power_divisors)
   also from assms have "\<dots> = (\<Sum>i\<le>k. f (p ^ i) * g (p ^ (k - i)))"
-    by (intro sum.cong refl) (auto simp: power_diff')
+    by (intro sum.cong refl) (auto simp: power_diff)
   finally show ?thesis .
 qed
 

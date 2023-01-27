@@ -568,23 +568,12 @@ using assms by auto
 lemma append_Cons_nth_right:
   assumes "i > length xs"
   shows "(xs @ u # ys) ! i = (xs @ z # ys) ! i"
-proof -
-  from assms have "i - length xs > 0" by auto
-  then obtain j where j: "i - length xs = Suc j" by (cases "i - length xs", auto)
-  thus ?thesis by (simp add: nth_append)
-qed
+  by (simp add: assms nth_append)
 
 lemma append_Cons_nth_not_middle:
   assumes "i \<noteq> length xs"
   shows "(xs @ u # ys) ! i = (xs @ z # ys) ! i"
-proof (cases "i < length xs")
-  case True
-  thus ?thesis by (simp add: append_Cons_nth_left)
-next
-  case False 
-  with assms have "i > length xs" by arith
-  thus ?thesis by (rule append_Cons_nth_right)
-qed
+  by (metis assms list_update_length nth_list_update_neq)
 
 lemmas append_Cons_nth = append_Cons_nth_middle append_Cons_nth_not_middle
 
@@ -683,7 +672,8 @@ qed simp
 
 declare list_diff.simps[simp del]
 
-lemma nth_drop_0: "0 < length ss \<Longrightarrow> (ss!0)#drop (Suc 0) ss = ss" by (induct ss) auto
+lemma nth_drop_0: "0 < length ss \<Longrightarrow> (ss!0)#drop (Suc 0) ss = ss"
+  by (simp add: Cons_nth_drop_Suc)
 
 
 lemma set_foldr_remdups_set_map_conv[simp]:
@@ -778,18 +768,10 @@ proof (induct xs)
     thus ?thesis using oCons by auto
   next
     case (Cons z zs)
-    hence id: "min_list (y # ys) = min y (min_list ys)" 
+    hence "min_list (y # ys) = min y (min_list ys)" 
       by auto
-    show ?thesis 
-    proof (cases "x = y")
-      case True
-      show ?thesis unfolding id True by auto
-    next
-      case False
-      have "min y (min_list ys) \<le> min_list ys" by auto
-      also have "... \<le> x" using oCons False by auto
-      finally show ?thesis unfolding id .
-    qed
+    then show ?thesis
+      using min_le_iff_disj oCons.hyps oCons.prems by auto 
   qed
 qed simp
 
@@ -798,18 +780,7 @@ lemma min_list_Cons:
     and len: "length xs = length ys"
     and xsys: "min_list xs \<le> min_list ys"
   shows "min_list (x # xs) \<le> min_list (y # ys)"
-proof (cases xs)
-  case Nil
-  with len have ys: "ys = []" by simp
-  with xy Nil show ?thesis by simp
-next
-  case (Cons x' xs')
-  with len obtain y' ys' where ys: "ys = y' # ys'" by (cases ys, auto)
-  from Cons have one: "min_list (x # xs) = min x (min_list xs)" by auto
-  from ys have two: "min_list (y # ys) = min y (min_list ys)" by auto
-  show ?thesis unfolding one two using xy xsys 
-    unfolding  min_def by auto
-qed
+  by (metis min_list.simps len length_greater_0_conv min.mono nth_drop_0 xsys xy)
 
 lemma min_list_nth:
   assumes "length xs = length ys"
@@ -858,17 +829,7 @@ qed auto
 lemma min_list_subset:
   assumes subset: "set ys \<subseteq> set xs" and mem: "min_list xs \<in> set ys"
   shows "min_list xs = min_list ys"
-proof -
-  from subset mem have "xs \<noteq> []" by auto
-  from min_list_ex[OF this] obtain x where x: "x \<in> set xs" and mx: "min_list xs = x" by auto
-  from min_list[OF mem] have two: "min_list ys \<le> min_list xs" by auto
-  from mem have "ys \<noteq> []" by auto
-  from min_list_ex[OF this] obtain y where y: "y \<in> set ys" and my: "min_list ys = y" by auto
-  from y subset have "y \<in> set xs" by auto
-  from min_list[OF this] have one: "min_list xs \<le> y" by auto
-  from one two 
-  show ?thesis unfolding mx my by auto
-qed
+  by (metis antisym empty_iff empty_set mem min_list min_list_ex subset subsetD)
 
 text\<open>Apply a permutation to a list.\<close>
 
@@ -1101,7 +1062,7 @@ lemma list_all2_in_set2:
 
 lemma map_eq_conv':
   "map f xs = map g ys \<longleftrightarrow> length xs = length ys \<and> (\<forall>i < length xs. f (xs ! i) = g (ys ! i))"
-by (auto dest: map_eq_imp_length_eq map_nth_conv simp: nth_map_conv)
+  using map_equality_iff map_equality_iff nth_map_conv by auto
 
 
 lemma list_3_cases[case_names Nil 1 2]:
@@ -1109,7 +1070,7 @@ lemma list_3_cases[case_names Nil 1 2]:
       and "\<And>x. xs = [x] \<Longrightarrow> P"
       and "\<And>x y ys. xs = x#y#ys \<Longrightarrow> P"
   shows P
-  using assms by (cases xs; cases "tl xs", auto)
+  using assms by (rule remdups_adj.cases)
 
 lemma list_4_cases[case_names Nil 1 2 3]:
   assumes "xs = [] \<Longrightarrow> P"
@@ -1129,13 +1090,13 @@ lemma foldr_append2_Nil [simp]:
 
 lemma UNION_set_zip:
   "(\<Union>x \<in> set (zip [0..<length xs] (map f xs)). g x) = (\<Union>i < length xs. g (i, f (xs ! i)))"
-by (auto simp: set_conv_nth)
+  by (auto simp: set_conv_nth)
 
 lemma zip_fst: "p \<in> set (zip as bs) \<Longrightarrow> fst p \<in> set as"
-  by (cases p, rule set_zip_leftD, simp)
+  by (metis in_set_zipE prod.collapse)
 
 lemma zip_snd: "p \<in> set (zip as bs) \<Longrightarrow> snd p \<in> set bs"
-  by (cases p, rule set_zip_rightD, simp)
+  by (metis in_set_zipE prod.collapse)
 
 lemma zip_size_aux: "size_list (size o snd) (zip ts ls) \<le> (size_list size ls)"
 proof (induct ls arbitrary: ts)
@@ -1163,14 +1124,10 @@ qed
 lemma remove_nth_length :
   assumes n_bd: "n < length xs"
   shows "length (remove_nth n xs) = length xs - 1"
-proof-
- from length_take have ll:"n < length xs \<longrightarrow> length (take n xs) = n" by auto
- from length_drop have lr: "length (drop (Suc n) xs) = length xs - (Suc n)" by simp
- from ll and lr and length_append and n_bd show ?thesis by auto
-qed
+  using n_bd by force
 
 lemma remove_nth_id : "length xs \<le> n \<Longrightarrow> remove_nth n xs = xs"
-using take_all drop_all append_Nil2 by simp
+  by simp
 
 lemma remove_nth_sound_l :
   assumes p_ub: "p < n"
@@ -1258,15 +1215,15 @@ definition adjust_idx_rev :: "nat \<Rightarrow> nat \<Rightarrow> nat" where
   "adjust_idx_rev i j \<equiv> (if j < i then j else j - Suc 0)"
 
 lemma adjust_idx_rev1: "adjust_idx_rev i (adjust_idx i j) = j"
-  unfolding adjust_idx_def adjust_idx_rev_def by (cases "i < j", auto)
+  using adjust_idx_def adjust_idx_rev_def by auto
 
 lemma adjust_idx_rev2:
   assumes "j \<noteq> i" shows "adjust_idx i (adjust_idx_rev i j) = j"
-  unfolding adjust_idx_def adjust_idx_rev_def using assms by (cases "i < j", auto)
+  using adjust_idx_def adjust_idx_rev_def assms by auto
 
 lemma adjust_idx_i:
   "adjust_idx i j \<noteq> i"
-  unfolding adjust_idx_def by (cases "j < i", auto)
+  using adjust_idx_def lessI less_irrefl_nat by auto
 
 lemma adjust_idx_nth:
   assumes i: "i < length xs"
@@ -1294,37 +1251,20 @@ lemma adjust_idx_rev_nth:
   assumes i: "i < length xs"
     and ji: "j \<noteq> i"
   shows "remove_nth i xs ! adjust_idx_rev i j = xs ! j" (is "?l = ?r")
-proof -
-  let ?j = "adjust_idx_rev i j"
-  from i have ltake: "length (take i xs) = i" by simp
-  note nth_xs = arg_cong[where f = "\<lambda> xs. xs ! j", OF id_take_nth_drop[OF i], unfolded nth_append ltake]
-  show ?thesis
-  proof (cases "j < i")
-    case True
-    hence j: "?j = j" unfolding adjust_idx_rev_def by simp
-    show ?thesis unfolding nth_xs unfolding j remove_nth_def nth_append ltake
-      using True by simp
-  next
-    case False
-    with ji have ji: "j > i" by auto
-    hence j: "?j = j - Suc 0" unfolding adjust_idx_rev_def by simp
-    show ?thesis unfolding nth_xs unfolding j remove_nth_def nth_append ltake
-      using ji by auto
-  qed
-qed
+  by (simp add: adjust_idx_nth adjust_idx_rev2 i ji)
 
 lemma adjust_idx_length:
   assumes i: "i < length xs"
     and j: "j < length (remove_nth i xs)"
   shows "adjust_idx i j < length xs"
-  using j unfolding remove_nth_len[OF i] adjust_idx_def by (cases "j < i", auto)
+  using adjust_idx_def i j remove_nth_len by fastforce
 
 lemma adjust_idx_rev_length:
   assumes "i < length xs"
     and "j < length xs"
     and "j \<noteq> i"
   shows "adjust_idx_rev i j < length (remove_nth i xs)"
-  using assms by (cases "j < i") (simp_all add: adjust_idx_rev_def remove_nth_len[OF assms(1)])
+  by (metis adjust_idx_def adjust_idx_rev2 assms not_less_eq remove_nth_len)
 
 
 text\<open>If a binary relation holds on two couples of lists, then it holds on
@@ -1336,25 +1276,7 @@ lemma P_as_bs_extend:
   and nsab: "\<forall>i. i < length bs \<longrightarrow> P (as ! i) (bs ! i)"
   and nscd: "\<forall>i. i < length ds \<longrightarrow> P (cs ! i) (ds ! i)"
   shows "\<forall>i. i < length (bs @ ds) \<longrightarrow> P ((as @ cs) ! i) ((bs @ ds) ! i)"
-proof-
- {
-   fix i
-   assume i_bd: "i < length (bs @ ds)"
-   have "P ((as @ cs) ! i) ((bs @ ds) ! i)"
-   proof (cases "i < length as")
-    case True
-     with nth_append and nsab and lab
-      show ?thesis by metis
-    next
-     case False
-      with lab and lcd and i_bd and length_append[of bs ds]
-       have "(i - length as) < length cs" by arith
-      with False and nth_append[of _ _ i] and lab and lcd
-       and nscd[rule_format] show ?thesis by metis
-   qed
- }
- thus ?thesis by clarify
-qed
+  by (simp add: lab nsab nscd nth_append)
 
 text\<open>Extension of filter and partition to binary relations.\<close>
 
@@ -1425,15 +1347,11 @@ definition partition2 :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow>
 
 lemma partition2_sound_P: "\<forall>i. i < length (fst (fst (partition2 P as bs))) \<longrightarrow>
   P (fst (fst (partition2 P as bs)) ! i) (snd (fst (partition2 P as bs)) ! i)"
-proof-
- from filter2_sound show ?thesis unfolding partition2_def by simp
-qed
+  by (simp add: filter2_sound partition2_def)
 
 lemma partition2_sound_nP: "\<forall>i. i < length (fst (snd (partition2 P as bs))) \<longrightarrow>
-  \<not> P (fst (snd (partition2 P as bs)) ! i) (snd (snd (partition2 P as bs)) ! i)" 
-proof-
- from filter2_sound show ?thesis unfolding partition2_def by simp
-qed
+  \<not> P (fst (snd (partition2 P as bs)) ! i) (snd (snd (partition2 P as bs)) ! i)"
+  by (metis filter2_sound partition2_def snd_conv) 
 
 
 text\<open>Membership decision function that actually returns the
@@ -1638,19 +1556,22 @@ proof (induct ys)
   case (Cons xy ys)
   obtain x' y where xy: "xy = (x',y)" by force
   show ?case
-    by (cases "x' = x", insert assms xy Cons, auto)
+    using assms local.Cons by auto
 qed simp
 
-lemma set_subset_insertI: "set xs \<subseteq> set (List.insert x xs)" by auto
-lemma set_removeAll_subset: "set (removeAll x xs) \<subseteq> set xs" by auto
+lemma set_subset_insertI: "set xs \<subseteq> set (List.insert x xs)" 
+  by auto
+
+lemma set_removeAll_subset: "set (removeAll x xs) \<subseteq> set xs" 
+  by auto
 
 lemma map_of_append_Some:
   "map_of xs y = Some z \<Longrightarrow> map_of (xs @ ys) y = Some z"
-  by (induction xs) auto
+  by simp
 
 lemma map_of_append_None:
   "map_of xs y = None \<Longrightarrow> map_of (xs @ ys) y = map_of ys y"
-  by (induction xs) auto
+  by (simp add: map_add_def)
 
 
 end

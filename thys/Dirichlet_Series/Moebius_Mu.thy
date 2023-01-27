@@ -19,16 +19,6 @@ definition moebius_mu :: "nat \<Rightarrow> 'a :: comm_ring_1" where
 lemma abs_moebius_mu_le: "abs (moebius_mu n :: 'a :: {linordered_idom}) \<le> 1"
   by (auto simp add: moebius_mu_def)
 
-lemma moebius_commute: "x * moebius_mu n = moebius_mu n * x"
-  by (cases "even (card (prime_factors n))") (auto simp: moebius_mu_def)
-
-lemma dirichlet_prod_moebius_commute: 
-  "dirichlet_prod f moebius_mu = dirichlet_prod moebius_mu f"
-  by (subst dirichlet_prod_def, subst dirichlet_prod_altdef1) (simp add: moebius_commute)
-
-lemma fds_moebius_commute: "x * fds moebius_mu = fds moebius_mu * x"
-  by (simp add: fds_eq_iff fds_nth_mult dirichlet_prod_moebius_commute)
-
 lemma of_int_moebius_mu [simp]: "of_int (moebius_mu n) = moebius_mu n"
   by (simp add: moebius_mu_def)
   
@@ -42,7 +32,7 @@ lemma fds_nth_fds_moebius_mu [simp]: "fds_nth (fds moebius_mu) = moebius_mu"
   by (simp add: fun_eq_iff fds_nth_fds)
     
 lemma prime_factors_Suc_0 [simp]: "prime_factors (Suc 0) = {}"
-  by (subst prime_factors_dvd) auto
+  by simp
   
 lemma moebius_mu_Suc_0 [simp]: "moebius_mu (Suc 0) = 1"
   by (simp add: moebius_mu_def)
@@ -66,7 +56,7 @@ qed
   
 lemma moebius_mu_power':
   "moebius_mu (a ^ n) = (if a = 1 \<or> n = 0 then 1 else if n = 1 then moebius_mu a else 0)"
-  by (cases "a = 0") (auto simp: power_0_left moebius_mu_power)
+  by (simp add: squarefree_power_iff)
 
 lemma moebius_mu_squarefree_eq: 
   "squarefree n \<Longrightarrow> moebius_mu n = (-1) ^ card (prime_factors n)"
@@ -177,7 +167,7 @@ qed
 
 lemma fds_moebius_inverse_zeta:
   "fds moebius_mu = inverse (fds_zeta :: 'a :: field fds)"
-  by (rule fds_right_inverse_unique) (simp add: fds_zeta_times_moebius_mu)
+  using fds_right_inverse_unique fds_zeta_times_moebius_mu by blast
 
 lemma moebius_mu_formula_real: "(moebius_mu n :: real) = dirichlet_inverse (\<lambda>_. 1) 1 n"
 proof -
@@ -232,17 +222,7 @@ lemma moebius_mu_code [code]:
 
 
 lemma fds_moebius_inversion: "f = fds moebius_mu * g \<longleftrightarrow> g = f * fds_zeta"
-proof
-  assume "g = f * fds_zeta"
-  hence "g * fds moebius_mu = f * (fds_zeta * fds moebius_mu)" by (simp add: mult_ac)
-  also have "\<dots> = f" by (simp add: fds_zeta_times_moebius_mu)
-  finally show "f = fds moebius_mu * g" by (simp add: mult_ac)
-next
-  assume "f = fds moebius_mu * g"
-  hence "fds_zeta * f = fds_zeta * fds moebius_mu * g" by (simp add: mult_ac)
-  also have "\<dots> = g" by (simp add: fds_zeta_times_moebius_mu)
-  finally show "g = f * fds_zeta" by (simp add: mult_ac)
-qed
+  by (metis fds_zeta_times_moebius_mu mult.commute mult.left_commute mult.right_neutral)
 
 lemma moebius_inversion:
   assumes "\<And>n. n > 0 \<Longrightarrow> g n = (\<Sum>d | d dvd n. f d)" "n > 0"
@@ -373,12 +353,7 @@ lemma completely_multiplicative_fds_inverse':
   fixes f :: "'a :: field fds"
   assumes "completely_multiplicative_function (fds_nth f)"
   shows   "inverse f = fds (\<lambda>n. moebius_mu n * fds_nth f n)"
-proof -
-  have "f = fds (fds_nth f)" by simp
-  also have "inverse (fds (fds_nth f)) = fds (\<lambda>n. moebius_mu n * fds_nth f n)"
-    by (intro completely_multiplicative_fds_inverse assms)
-  finally show ?thesis by simp
-qed
+  by (metis assms completely_multiplicative_fds_inverse fds_fds_nth)
     
 
 context
