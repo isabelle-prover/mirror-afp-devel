@@ -4,6 +4,8 @@ theory Product_PMF_Ext
   imports Main Probability_Ext "HOL-Probability.Product_PMF" Universal_Hash_Families.Preliminary_Results
 begin
 
+hide_const "Isolated.discrete"
+
 text \<open>This section introduces a restricted version of @{term "Pi_pmf"} where the default value is @{term "undefined"}
 and contains some additional results about that case in addition to @{theory "HOL-Probability.Product_PMF"}\<close>
 
