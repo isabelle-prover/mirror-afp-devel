@@ -767,7 +767,7 @@ proof -
       and N: "(\<Union>i. C i) \<subseteq> N" and infC: "\<And>i::nat. infinite (C i)"
     using assms infinite_infinite_partition by blast
   then have "\<exists>\<phi>::nat \<Rightarrow> nat. inj \<phi> \<and> range \<phi> = C i \<and> strict_mono \<phi>" for i
-    by (metis bij_betw_imp_inj_on bij_betw_imp_surj_on bij_enumerate enumerate_mono infC strict_mono_def)
+    by (metis nat_infinite_iff strict_mono_on_imp_inj_on)
   then obtain \<phi>:: "[nat,nat] \<Rightarrow> nat"
       where \<phi>: "\<And>i. inj (\<phi> i) \<and> range (\<phi> i) = C i \<and> strict_mono (\<phi> i)"
     by metis

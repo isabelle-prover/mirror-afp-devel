@@ -213,7 +213,7 @@ next
     also have "\<dots> = (\<Sum>wi \<in> L \<times> k_words n. 1 / b^cw_len_concat (fst wi # snd wi))"
       by (metis (erased, lifting) add.commute comp_apply foldr.simps(2))
     also have "\<dots> = (\<Sum>w \<in> (k_words (Suc n)). 1 / b^(cw_len_concat w))"
-      using bij_k_words sum.reindex_bij_betw by fastforce
+      using sum.reindex_bij_betw [OF bij_k_words] by fastforce
     finally show ?case by simp
 qed
 

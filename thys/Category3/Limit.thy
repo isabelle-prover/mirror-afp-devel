@@ -4524,7 +4524,7 @@ begin
         by blast
       have \<phi>': "inv_into (hom unity \<Pi>D) \<phi> \<in> D.cones unity \<rightarrow> hom unity \<Pi>D \<and>
                 inj_on (inv_into (hom unity \<Pi>D) \<phi>) (D.cones unity)"
-        using \<phi> bij_betw_inv_into bij_betw_imp_inj_on bij_betw_imp_funcset by blast
+        using \<phi> bij_betw_inv_into bij_betw_imp_inj_on bij_betw_imp_funcset by metis 
       let ?\<pi> = "img o (inv_into (hom unity \<Pi>D) \<phi>) o D.funToCone"
       have 1: "D.funToCone \<in> PiE' I (set o D.map) \<rightarrow> D.cones unity"
         using D.funToCone_mapsto extensional'_def [of I] by auto

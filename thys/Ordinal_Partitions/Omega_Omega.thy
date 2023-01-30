@@ -4230,13 +4230,13 @@ next
         show "f ` [h ` X]\<^bsup>2\<^esup> \<subseteq> {0}"
         proof (clarsimp simp: image_subset_iff nsets_def)
           fix Y
-          assume "Y \<subseteq> h ` X" and "finite Y" and "card Y = 2"
-          have "inv_into WW h ` Y \<subseteq> X"
-            using \<open>X \<subseteq> WW\<close> \<open>Y \<subseteq> h ` X\<close> \<open>bij_betw h WW WW'\<close> bij_betw_inv_into_LEFT by blast
+          assume Y: "Y \<subseteq> h ` X" "finite Y" "card Y = 2"
+          then have "inv_into WW h ` Y \<subseteq> X"
+            by (metis \<open>X \<subseteq> WW\<close> \<open>bij_betw h WW WW'\<close> bij_betw_inv_into_LEFT image_mono)
           moreover have "finite (inv_into WW h ` Y)"
             using \<open>finite Y\<close> by blast
           moreover have "card (inv_into WW h ` Y) = 2"
-            by (metis \<open>X \<subseteq> WW\<close> \<open>Y \<subseteq> h ` X\<close> \<open>card Y = 2\<close> card_image inj_on_inv_into subset_image_iff subset_trans)
+            using Y by (metis \<open>X \<subseteq> WW\<close> card_image inj_on_inv_into subset_image_iff subset_trans)
           ultimately have "f (h ` inv_into WW h ` Y) = 0"
             using 0 by (auto simp: image_subset_iff nsets_def)
           then show "f Y = 0"
