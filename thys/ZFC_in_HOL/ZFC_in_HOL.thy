@@ -221,7 +221,7 @@ lemma big_UNIV [simp]: "\<not> small (UNIV::V set)" (is  "\<not> small ?U")
     then have "range elts = UNIV"
       by (meson small_iff surj_def)
   then show False
-    by (metis Cantors_paradox Pow_UNIV)
+    by (metis Cantors_theorem Pow_UNIV)
 qed
 
 lemma inj_on_set: "inj_on set (Collect small)"
