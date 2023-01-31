@@ -5028,6 +5028,23 @@ name = "Cornelia Pusch"
 
 [pusch.homepages]
 
+[qiu]
+name = "Qi Qiu"
+
+[qiu.emails]
+
+[qiu.emails.qiu_email]
+user = [
+  "qi",
+  "qiu",
+]
+host = [
+  "univ-lyon1",
+  "fr",
+]
+
+[qiu.homepages]
+
 [rabe]
 name = "Markus N. Rabe"
 

@@ -2383,6 +2383,15 @@
     </item>
     
     <item>
+      <title>Given_Clause_Loops</title>
+      <link>/theories/given_clause_loops/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/given_clause_loops/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Goedel_HFSet_Semantic</title>
       <link>/theories/goedel_hfset_semantic/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>

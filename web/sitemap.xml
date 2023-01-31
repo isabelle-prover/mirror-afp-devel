@@ -3,21 +3,42 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2023-01-22T00:00:00+00:00</lastmod>
+    <lastmod>2023-01-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2023-01-22T00:00:00+00:00</lastmod>
+    <lastmod>2023-01-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/blanchette/</loc>
+    <lastmod>2023-01-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/</loc>
-    <lastmod>2023-01-22T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/doty/</loc>
-    <lastmod>2023-01-22T00:00:00+00:00</lastmod>
+    <lastmod>2023-01-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/</loc>
-    <lastmod>2023-01-22T00:00:00+00:00</lastmod>
+    <lastmod>2023-01-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Given_Clause_Loops.html</loc>
+    <lastmod>2023-01-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/logic/</loc>
+    <lastmod>2023-01-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/qiu/</loc>
+    <lastmod>2023-01-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/saturation_framework/</loc>
+    <lastmod>2023-01-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2023-01-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/tourret/</loc>
+    <lastmod>2023-01-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/weighted_path_order/</loc>
+    <lastmod>2023-01-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/doty/</loc>
     <lastmod>2023-01-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/mathematics/</loc>
@@ -27,9 +48,6 @@
     <lastmod>2023-01-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Suppes_Theorem.html</loc>
-    <lastmod>2023-01-22T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2023-01-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/HoareForDivergence.html</loc>
@@ -501,9 +519,6 @@
     <lastmod>2022-04-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Multiset_Ordering_NPC.html</loc>
-    <lastmod>2022-04-20T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/weighted_path_order/</loc>
     <lastmod>2022-04-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Sophomores_Dream.html</loc>
@@ -1403,9 +1418,6 @@
     <loc>/entries/Relational_Disjoint_Set_Forests.html</loc>
     <lastmod>2020-08-26T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/blanchette/</loc>
-    <lastmod>2020-08-25T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Saturation_Framework_Extensions.html</loc>
     <lastmod>2020-08-25T00:00:00+00:00</lastmod>
   </url><url>
@@ -1422,12 +1434,6 @@
     <lastmod>2020-08-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/BirdKMP.html</loc>
-    <lastmod>2020-08-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/saturation_framework/</loc>
-    <lastmod>2020-08-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/tourret/</loc>
     <lastmod>2020-08-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/well_quasi_orders/</loc>
@@ -5017,6 +5023,8 @@
     <loc>/theories/gewirthpgcproof/</loc>
   </url><url>
     <loc>/theories/girth_chromatic/</loc>
+  </url><url>
+    <loc>/theories/given_clause_loops/</loc>
   </url><url>
     <loc>/theories/goedel_hfset_semantic/</loc>
   </url><url>
