@@ -1,7 +1,7 @@
 chapter AFP
 
 session Virtual_Substitution (AFP) = "HOL-Analysis" +
-  options [timeout = 1200]
+  options [timeout = 1800]
   sessions
     "Polynomials"
   theories

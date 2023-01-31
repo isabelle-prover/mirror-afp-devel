@@ -1,7 +1,7 @@
 chapter AFP
 
 session Quantifier_Elimination_Hybrid (AFP) = Algebraic_Numbers +
-  options [timeout = 1200]
+  options [timeout = 2400]
   sessions
     Datatype_Order_Generator
     Descartes_Sign_Rule
