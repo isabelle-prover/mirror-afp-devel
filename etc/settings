@@ -11,5 +11,5 @@ AFP_BUILD_OPTIONS='-v -o browser_info -o "document=pdf" -o "document_variants=do
 ISABELLE_TOOLS="$ISABELLE_TOOLS:$AFP_BASE/tools/lib"
 
 if [ -f "$AFP_BASE/etc/build.props" ]; then
-  init_components "$ISABELLE_HOME_USER/contrib" "$AFP_BASE/admin/components/afp"
+  init_components "${ISABELLE_COMPONENTS_BASE:-$USER_HOME/.isabelle/contrib}" "$AFP_BASE/admin/components/afp"
 fi
