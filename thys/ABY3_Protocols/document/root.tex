@@ -1,0 +1,37 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{ABY3 Multiplication and Array Shuffling}
+\author{Shuwei Hu}
+\maketitle
+
+\begin{abstract}
+We formalizes two protocols from a privacy-preserving machine-learning framework based on ABY3 \cite{mohassel2018aby3},
+a particular three-party computation framework where inputs are systematically `reshared'
+without being considered as privacy leakage.
+In particular, we consider the multiplication protocol \cite{mohassel2018aby3} and the array shuffling protocol \cite{laud2016secure},
+both based on ABY3's additive secret sharing scheme.
+We proved their security in the semi-honest setting under the ideal/real simulation paradigm.
+These two proof-of-concept opens the door to further verification of more protocols within the framework.
+\end{abstract}
+
+\tableofcontents
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

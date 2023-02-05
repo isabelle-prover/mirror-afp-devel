@@ -1,0 +1,11 @@
+chapter AFP
+
+session "ABY3_Protocols" (AFP) = "CryptHOL" +
+  options [timeout = 600]
+  theories
+    Shuffle
+    Multiplication
+    Multiplication_Synthesization
+  document_files
+    "root.bib"
+    "root.tex"
