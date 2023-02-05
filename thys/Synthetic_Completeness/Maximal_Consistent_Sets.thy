@@ -114,7 +114,7 @@ lemma card_of_infinite_smaller_Union:
   using assms by (metis (full_types) Field_card_of card_of_UNION_ordLeq_infinite
       card_of_well_order_on ordLeq_iff_ordLess_or_ordIso ordLess_or_ordLeq)
 
-lemma card_of_info_marker_lists:
+lemma card_of_params_marker_lists:
   assumes \<open>infinite (UNIV :: 'i set)\<close> \<open>|UNIV :: 'm set| \<le>o |UNIV :: nat set|\<close>
   shows \<open>|UNIV :: ('i + 'm \<times> nat) list set| \<le>o |UNIV :: 'i set|\<close>
 proof -
@@ -165,12 +165,12 @@ locale MCS_Lim_Ord = MCS_Base +
   fixes r :: \<open>'a rel\<close>
   assumes WELL: \<open>Well_order r\<close>
     and Cinfinite_r: \<open>Cinfinite r\<close>
-  fixes info :: \<open>'a \<Rightarrow> 'i set\<close>
+  fixes params :: \<open>'a \<Rightarrow> 'i set\<close>
     and witness :: \<open>'a \<Rightarrow> 'a set \<Rightarrow> 'a set\<close>
-  assumes finite_info: \<open>\<And>p. finite (info p)\<close>
-    and finite_witness_info: \<open>\<And>p S. finite (\<Union>(info ` witness p S))\<close>
+  assumes finite_params: \<open>\<And>p. finite (params p)\<close>
+    and finite_witness_params: \<open>\<And>p S. finite (\<Union>q \<in> witness p S. params q)\<close>
     and consistent_witness: \<open>\<And>p S. consistent ({p} \<union> S)
-      \<Longrightarrow> infinite (UNIV - \<Union>(info ` S))
+      \<Longrightarrow> infinite (UNIV - (\<Union>q \<in> S. params q))
       \<Longrightarrow> consistent (witness p S \<union> {p} \<union> S)\<close>
 begin
 
@@ -182,8 +182,8 @@ lemma isLimOrd_r: \<open>isLimOrd r\<close>
 
 subsection \<open>Lindenbaum Extension\<close>
 
-abbreviation infos :: \<open>'a set \<Rightarrow> 'i set\<close> where
-  \<open>infos S \<equiv> \<Union>(info ` S)\<close>
+abbreviation paramss :: \<open>'a set \<Rightarrow> 'i set\<close> where
+  \<open>paramss S \<equiv> \<Union>p \<in> S. params p\<close>
 
 definition extendS :: \<open>'a \<Rightarrow> 'a set \<Rightarrow> 'a set\<close> where
   \<open>extendS n prev \<equiv> if consistent ({n} \<union> prev) then witness n prev \<union> {n} \<union> prev else prev\<close>
@@ -248,9 +248,9 @@ lemma extend_under: \<open>m \<in> under r n \<Longrightarrow> extend S m \<subs
 
 subsection \<open>Consistency\<close>
 
-lemma info_origin:
-  assumes \<open>a \<in> infos (extend S n)\<close>
-  shows \<open>a \<in> infos S \<or> (\<exists>m \<in> underS r n. a \<in> infos (witness m (extend S m) \<union> {m}))\<close>
+lemma params_origin:
+  assumes \<open>a \<in> paramss (extend S n)\<close>
+  shows \<open>a \<in> paramss S \<or> (\<exists>m \<in> underS r n. a \<in> paramss (witness m (extend S m) \<union> {m}))\<close>
   using assms
 proof (induct n rule: wo_rel.well_order_inductZSL[OF wo_rel_r])
   case 1
@@ -259,7 +259,7 @@ proof (induct n rule: wo_rel.well_order_inductZSL[OF wo_rel_r])
     by blast
 next
   case (2 i)
-  then consider (here) \<open>a \<in> infos (witness i (extend S i) \<union> {i})\<close> | (there) \<open>a \<in> infos (extend S i)\<close>
+  then consider (here) \<open>a \<in> paramss (witness i (extend S i) \<union> {i})\<close> | (there) \<open>a \<in> paramss (extend S i)\<close>
     using wo_rel.worecZSL_succ[OF wo_rel_r adm_woL_extendL 2(1)] extendS_def extend_def
     by (metis (no_types, lifting) UN_Un UnE)
   then show ?case
@@ -277,7 +277,7 @@ next
   qed
 next
   case (3 i)
-  then obtain j where \<open>j \<in> underS r i\<close> \<open>a \<in> infos (extend S j)\<close>
+  then obtain j where \<open>j \<in> underS r i\<close> \<open>a \<in> paramss (extend S j)\<close>
     unfolding extend_def extendL_def wo_rel.worecZSL_isLim[OF wo_rel_r adm_woL_extendL 3(1-2)]
     by blast
   then show ?case
@@ -285,7 +285,7 @@ next
 qed
 
 lemma consistent_extend:
-  assumes \<open>consistent S\<close> \<open>r \<le>o |UNIV - infos S|\<close>
+  assumes \<open>consistent S\<close> \<open>r \<le>o |UNIV - paramss S|\<close>
   shows \<open>consistent (extend S n)\<close>
   using assms(1)
 proof (induct n rule: wo_rel.well_order_inductZSL[OF wo_rel_r])
@@ -299,39 +299,39 @@ next
     by (meson WELL  well_order_on_domain wo_rel.succ_in_diff[OF wo_rel_r])
   then have *: \<open>|underS r i| <o r\<close>
     using card_of_underS by (simp add: Cinfinite_r)
-  let ?infos = \<open>\<lambda>k. infos (witness k (extend S k) \<union> {k})\<close>
-  let ?X = \<open>\<Union>k \<in> underS r i. ?infos k\<close>
+  let ?paramss = \<open>\<lambda>k. paramss (witness k (extend S k) \<union> {k})\<close>
+  let ?X = \<open>\<Union>k \<in> underS r i. ?paramss k\<close>
   have \<open>|?X| <o r\<close>
   proof (cases \<open>finite (underS r i)\<close>)
     case True
     then have \<open>finite ?X\<close>
-      by (simp add: finite_info finite_witness_info)
+      by (simp add: finite_params finite_witness_params)
     then show ?thesis
       using Cinfinite_r assms(2) unfolding cinfinite_def by (simp add: finite_ordLess_infinite)
   next
     case False
-    moreover have \<open>\<forall>k. finite (?infos k)\<close>
-      by (simp add: finite_info finite_witness_info)
-    then have \<open>\<forall>k. |?infos k| <o |underS r i|\<close>
+    moreover have \<open>\<forall>k. finite (?paramss k)\<close>
+      by (simp add: finite_params finite_witness_params)
+    then have \<open>\<forall>k. |?paramss k| <o |underS r i|\<close>
       using False by simp
     ultimately have \<open>|?X| \<le>o |underS r i|\<close>
       using card_of_infinite_smaller_Union by fast
     then show ?thesis
       using * ordLeq_ordLess_trans by blast
   qed
-  then have \<open>|?X| <o |UNIV - infos S|\<close>
+  then have \<open>|?X| <o |UNIV - paramss S|\<close>
     using assms(2) ordLess_ordLeq_trans by blast
-  moreover have \<open>infinite (UNIV - infos S)\<close>
+  moreover have \<open>infinite (UNIV - paramss S)\<close>
     using assms(2) Cinfinite_r unfolding cinfinite_def by (metis Field_card_of ordLeq_finite_Field)
-  ultimately have \<open>|UNIV - infos S - ?X| =o |UNIV - infos S|\<close>
+  ultimately have \<open>|UNIV - paramss S - ?X| =o |UNIV - paramss S|\<close>
     using card_of_Un_diff_infinite by blast
-  moreover from this have \<open>infinite (UNIV - infos S - ?X)\<close>
-    using \<open>infinite (UNIV - infos S)\<close> card_of_ordIso_finite by blast
-  moreover have \<open>\<And>a. a \<in> infos (extend S i) \<Longrightarrow> a \<in> infos S \<or> a \<in> ?X\<close>
-    using info_origin by simp
-  then have \<open>infos (extend S i) \<subseteq> infos S \<union> ?X\<close>
+  moreover from this have \<open>infinite (UNIV - paramss S - ?X)\<close>
+    using \<open>infinite (UNIV - paramss S)\<close> card_of_ordIso_finite by blast
+  moreover have \<open>\<And>a. a \<in> paramss (extend S i) \<Longrightarrow> a \<in> paramss S \<or> a \<in> ?X\<close>
+    using params_origin by simp
+  then have \<open>paramss (extend S i) \<subseteq> paramss S \<union> ?X\<close>
     by fast
-  ultimately have \<open>infinite (UNIV - infos (extend S i))\<close>
+  ultimately have \<open>infinite (UNIV - paramss (extend S i))\<close>
     using infinite_Diff_subset by (metis (no_types, lifting) Set_Diff_Un)
   with 2 show ?case
     unfolding extend_def extendS_def wo_rel.worecZSL_succ[OF wo_rel_r adm_woL_extendL 2(1)]
@@ -361,7 +361,7 @@ next
 qed
 
 lemma consistent_Extend:
-  assumes \<open>consistent S\<close> \<open>r \<le>o |UNIV - infos S|\<close>
+  assumes \<open>consistent S\<close> \<open>r \<le>o |UNIV - paramss S|\<close>
   shows \<open>consistent (Extend S)\<close>
   unfolding Extend_def
 proof (rule ccontr)
@@ -442,11 +442,11 @@ section \<open>Locale with Saturation\<close>
 
 locale MCS_Saturation = MCS_Base +
   assumes infinite_UNIV: \<open>infinite (UNIV :: 'a set)\<close>
-  fixes info :: \<open>'a \<Rightarrow> 'i set\<close>
+  fixes params :: \<open>'a \<Rightarrow> 'i set\<close>
     and witness :: \<open>'a \<Rightarrow> 'a set \<Rightarrow> 'a set\<close>
-  assumes \<open>\<And>p. finite (info p)\<close>
-    and \<open>\<And>p S. finite (\<Union>(info ` witness p S))\<close>
-    and \<open>\<And>p S. consistent ({p} \<union> S) \<Longrightarrow> infinite (UNIV - \<Union>(info ` S))
+  assumes \<open>\<And>p. finite (params p)\<close>
+    and \<open>\<And>p S. finite (\<Union>q \<in> witness p S. params q)\<close>
+    and \<open>\<And>p S. consistent ({p} \<union> S) \<Longrightarrow> infinite (UNIV - (\<Union>q \<in> S. params q))
       \<Longrightarrow> consistent (witness p S \<union> {p} \<union> S)\<close>
 
 sublocale MCS_Saturation \<subseteq> MCS_Lim_Ord _ \<open>|UNIV|\<close>
@@ -458,16 +458,16 @@ next
     unfolding cinfinite_def using infinite_UNIV by simp
 next
   fix p
-  show \<open>finite (info p)\<close>
+  show \<open>finite (params p)\<close>
     by (metis MCS_Saturation_axioms MCS_Saturation_axioms_def MCS_Saturation_def)
 next
   fix p S
-  show \<open>finite (\<Union> (info ` witness p S))\<close>
+  show \<open>finite (\<Union>q \<in> witness p S. params q)\<close>
     by (metis MCS_Saturation_axioms MCS_Saturation_axioms_def MCS_Saturation_def)
 next
   fix p S
   show \<open>consistent ({p} \<union> S) \<Longrightarrow>
-           infinite (UNIV - \<Union> (info ` S)) \<Longrightarrow>
+           infinite (UNIV - (\<Union>q \<in> S. params q)) \<Longrightarrow>
            consistent (witness p S \<union> {p} \<union> S)\<close>
     by (metis MCS_Saturation_axioms MCS_Saturation_axioms_def MCS_Saturation_def)
 qed
@@ -495,7 +495,7 @@ lemma saturated_Extend:
   using assms saturated'_Extend saturated_saturated' by blast
 
 theorem MCS_Extend:
-  assumes \<open>consistent S\<close> \<open>|UNIV :: 'a set| \<le>o |UNIV - infos S|\<close>
+  assumes \<open>consistent S\<close> \<open>|UNIV :: 'a set| \<le>o |UNIV - paramss S|\<close>
   shows \<open>consistent (Extend S)\<close> \<open>maximal (Extend S)\<close> \<open>saturated (Extend S)\<close>
   using assms consistent_Extend maximal_Extend saturated_Extend by blast+
 
@@ -536,34 +536,34 @@ end
 section \<open>Truth Lemma\<close>
 
 locale Truth_Base =
-  fixes interp :: \<open>'model \<Rightarrow> ('model \<Rightarrow> 'fm \<Rightarrow> bool) \<Rightarrow> 'fm \<Rightarrow> bool\<close>
+  fixes semics :: \<open>'model \<Rightarrow> ('model \<Rightarrow> 'fm \<Rightarrow> bool) \<Rightarrow> 'fm \<Rightarrow> bool\<close>
     and semantics :: \<open>'model \<Rightarrow> 'fm \<Rightarrow> bool\<close>
     and models_from :: \<open>'a set \<Rightarrow> 'model set\<close>
-    and P :: \<open>'a set \<Rightarrow> 'model \<Rightarrow> 'fm \<Rightarrow> bool\<close>
-  assumes interp_semantics: \<open>semantics M p \<longleftrightarrow> interp M semantics p\<close>
-    and Hintikka_model: \<open>\<And>H M p. \<forall>M \<in> models_from H. \<forall>p. interp M (P H) p \<longleftrightarrow> P H M p \<Longrightarrow>
-      M \<in> models_from H \<Longrightarrow> semantics M p \<longleftrightarrow> P H M p\<close>
+    and rel :: \<open>'a set \<Rightarrow> 'model \<Rightarrow> 'fm \<Rightarrow> bool\<close>
+  assumes semics_semantics: \<open>semantics M p \<longleftrightarrow> semics M semantics p\<close>
+    and Hintikka_model: \<open>\<And>H M p. \<forall>M \<in> models_from H. \<forall>p. semics M (rel H) p \<longleftrightarrow> rel H M p \<Longrightarrow>
+      M \<in> models_from H \<Longrightarrow> semantics M p \<longleftrightarrow> rel H M p\<close>
 
 locale Truth_Saturation = MCS_Saturation + Truth_Base +
   assumes MCS_Hintikka: \<open>\<And>H. consistent H \<Longrightarrow> maximal H \<Longrightarrow> saturated H \<Longrightarrow>
-      \<forall>M \<in> models_from H. \<forall>p. interp M (P H) p \<longleftrightarrow> P H M p\<close>
+      \<forall>M \<in> models_from H. \<forall>p. semics M (rel H) p \<longleftrightarrow> rel H M p\<close>
 begin
 
 theorem truth_lemma_saturation:
   assumes \<open>consistent H\<close> \<open>maximal H\<close> \<open>saturated H\<close> \<open>M \<in> models_from H\<close>
-  shows \<open>semantics M p \<longleftrightarrow> P H M p\<close>
+  shows \<open>semantics M p \<longleftrightarrow> rel H M p\<close>
   using Hintikka_model MCS_Hintikka assms .
 
 end
 
 locale Truth_No_Saturation = MCS_No_Saturation + Truth_Base +
   assumes MCS_Hintikka: \<open>\<And>H. consistent H \<Longrightarrow> maximal H \<Longrightarrow>
-      \<forall>M \<in> models_from H. \<forall>p. interp M (P H) p \<longleftrightarrow> P H M p\<close>
+      \<forall>M \<in> models_from H. \<forall>p. semics M (rel H) p \<longleftrightarrow> rel H M p\<close>
 begin
 
 theorem truth_lemma_no_saturation:
   assumes \<open>consistent H\<close> \<open>maximal H\<close> \<open>M \<in> models_from H\<close>
-  shows \<open>semantics M p \<longleftrightarrow> P H M p\<close>
+  shows \<open>semantics M p \<longleftrightarrow> rel H M p\<close>
   using Hintikka_model MCS_Hintikka assms .
 
 end

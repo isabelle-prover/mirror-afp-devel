@@ -19,9 +19,9 @@ section \<open>Semantics\<close>
 type_synonym 'p model = \<open>'p \<Rightarrow> bool\<close>
 
 fun semantics :: \<open>'p model \<Rightarrow> 'p fm \<Rightarrow> bool\<close> (\<open>\<lbrakk>_\<rbrakk>\<close>) where
-  \<open>\<lbrakk>I\<rbrakk> (\<^bold>\<ddagger>P) = I P\<close>
-| \<open>\<lbrakk>I\<rbrakk> (\<^bold>\<not> p) = (\<not> \<lbrakk>I\<rbrakk> p)\<close>
-| \<open>\<lbrakk>I\<rbrakk> (p \<^bold>\<longrightarrow> q) = (\<lbrakk>I\<rbrakk> p \<longrightarrow> \<lbrakk>I\<rbrakk> q)\<close>
+  \<open>\<lbrakk>I\<rbrakk> (\<^bold>\<ddagger>P) \<longleftrightarrow> I P\<close>
+| \<open>\<lbrakk>I\<rbrakk> (\<^bold>\<not> p) \<longleftrightarrow> \<not> \<lbrakk>I\<rbrakk> p\<close>
+| \<open>\<lbrakk>I\<rbrakk> (p \<^bold>\<longrightarrow> q) \<longleftrightarrow> \<lbrakk>I\<rbrakk> p \<longrightarrow> \<lbrakk>I\<rbrakk> q\<close>
 
 section \<open>Calculus\<close>
 

@@ -21,9 +21,9 @@ section \<open>Semantics\<close>
 type_synonym 'p model = \<open>'p \<Rightarrow> bool\<close>
 
 fun semantics :: \<open>'p model \<Rightarrow> 'p fm \<Rightarrow> bool\<close> (\<open>\<lbrakk>_\<rbrakk>\<close>) where
-  \<open>\<lbrakk>_\<rbrakk> \<^bold>\<bottom> = False\<close>
-| \<open>\<lbrakk>I\<rbrakk> (\<^bold>\<ddagger>P) = I P\<close>
-| \<open>\<lbrakk>I\<rbrakk> (p \<^bold>\<longrightarrow> q) = (\<lbrakk>I\<rbrakk> p \<longrightarrow> \<lbrakk>I\<rbrakk> q)\<close>
+  \<open>\<lbrakk>_\<rbrakk> \<^bold>\<bottom> \<longleftrightarrow> False\<close>
+| \<open>\<lbrakk>I\<rbrakk> (\<^bold>\<ddagger>P) \<longleftrightarrow> I P\<close>
+| \<open>\<lbrakk>I\<rbrakk> (p \<^bold>\<longrightarrow> q) \<longleftrightarrow> \<lbrakk>I\<rbrakk> p \<longrightarrow> \<lbrakk>I\<rbrakk> q\<close>
 
 section \<open>Calculus\<close>
 
@@ -99,16 +99,16 @@ section \<open>Truth Lemma\<close>
 abbreviation hmodel :: \<open>'p fm set \<Rightarrow> 'p model\<close> where
   \<open>hmodel H \<equiv> \<lambda>P. \<^bold>\<ddagger>P \<in> H\<close>
 
-fun interp :: \<open>'p model \<Rightarrow> ('p model \<Rightarrow> 'p fm \<Rightarrow> bool) \<Rightarrow> 'p fm \<Rightarrow> bool\<close> where
-  \<open>interp _ _ \<^bold>\<bottom> = False\<close>
-| \<open>interp I _ (\<^bold>\<ddagger>P) = I P\<close>
-| \<open>interp I X (p \<^bold>\<longrightarrow> q) = (X I p \<longrightarrow> X I q)\<close>
+fun semics :: \<open>'p model \<Rightarrow> ('p model \<Rightarrow> 'p fm \<Rightarrow> bool) \<Rightarrow> 'p fm \<Rightarrow> bool\<close> where
+  \<open>semics _ _ \<^bold>\<bottom> \<longleftrightarrow> False\<close>
+| \<open>semics I _ (\<^bold>\<ddagger>P) \<longleftrightarrow> I P\<close>
+| \<open>semics I rel (p \<^bold>\<longrightarrow> q) \<longleftrightarrow> rel I p \<longrightarrow> rel I q\<close>
 
 fun rel :: \<open>'p fm set \<Rightarrow> 'p model \<Rightarrow> 'p fm \<Rightarrow> bool\<close> where
   \<open>rel H _ p = (p \<in> H)\<close>
 
 theorem Hintikka_model':
-  assumes \<open>\<And>p. interp (hmodel H) (rel H) p \<longleftrightarrow> p \<in> H\<close>
+  assumes \<open>\<And>p. semics (hmodel H) (rel H) p \<longleftrightarrow> p \<in> H\<close>
   shows \<open>p \<in> H \<longleftrightarrow> \<lbrakk>hmodel H\<rbrakk> p\<close>
 proof (induct p rule: wf_induct[where r=\<open>measure size\<close>])
   case 1
@@ -121,7 +121,7 @@ qed
 
 lemma Hintikka_Extend:
   assumes \<open>consistent H\<close> \<open>maximal H\<close>
-  shows \<open>interp (hmodel H) (rel H) p \<longleftrightarrow> p \<in> H\<close>
+  shows \<open>semics (hmodel H) (rel H) p \<longleftrightarrow> p \<in> H\<close>
 proof (cases p)
   case Fls
   have \<open>\<^bold>\<bottom> \<notin> H\<close>
@@ -143,20 +143,20 @@ next
     using Imp by simp
 qed simp
 
-interpretation Truth_No_Saturation consistent interp semantics \<open>\<lambda>H. {hmodel H}\<close> rel
+interpretation Truth_No_Saturation consistent semics semantics \<open>\<lambda>H. {hmodel H}\<close> rel
 proof
   fix p and M :: \<open>'p model\<close>
-  show \<open>\<lbrakk>M\<rbrakk> p \<longleftrightarrow> interp M semantics p\<close>
+  show \<open>\<lbrakk>M\<rbrakk> p \<longleftrightarrow> semics M semantics p\<close>
     by (induct p) auto
 next
   fix p and H :: \<open>'p fm set\<close> and M :: \<open>'p model\<close>
-  assume \<open>\<forall>M \<in> {hmodel H}. \<forall>p. interp M (rel H) p \<longleftrightarrow> rel H M p\<close> \<open>M \<in> {hmodel H}\<close>
+  assume \<open>\<forall>M \<in> {hmodel H}. \<forall>p. semics M (rel H) p \<longleftrightarrow> rel H M p\<close> \<open>M \<in> {hmodel H}\<close>
   then show \<open>\<lbrakk>M\<rbrakk> p \<longleftrightarrow> rel H M p\<close>
     using Hintikka_model' by auto
 next
   fix H :: \<open>'p fm set\<close>
   assume \<open>consistent H\<close> \<open>maximal H\<close>
-  then show \<open>\<forall>M \<in> {hmodel H}. \<forall>p. interp M (rel H) p \<longleftrightarrow> rel H M p\<close>
+  then show \<open>\<forall>M \<in> {hmodel H}. \<forall>p. semics M (rel H) p \<longleftrightarrow> rel H M p\<close>
     using Hintikka_Extend by auto
 qed
 

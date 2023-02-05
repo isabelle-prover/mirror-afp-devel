@@ -36,10 +36,10 @@ primrec add_env :: \<open>'a \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> 
 | \<open>(t \<Zsemi> s) (Suc n) = s n\<close>
 
 fun semantics_fm :: \<open>('a, 'f, 'p) model \<Rightarrow> ('f, 'p) fm \<Rightarrow> bool\<close> (\<open>\<lbrakk>_\<rbrakk>\<close>) where
-  \<open>\<lbrakk>_\<rbrakk> \<^bold>\<bottom> = False\<close>
-| \<open>\<lbrakk>(E, F, G)\<rbrakk> (\<^bold>\<ddagger>P ts) = G P (map \<lparr>(E, F)\<rparr> ts)\<close>
-| \<open>\<lbrakk>(E, F, G)\<rbrakk> (p \<^bold>\<longrightarrow> q) = (\<lbrakk>(E, F, G)\<rbrakk> p \<longrightarrow> \<lbrakk>(E, F, G)\<rbrakk> q)\<close>
-| \<open>\<lbrakk>(E, F, G)\<rbrakk> (\<^bold>\<forall>p) = (\<forall>x. \<lbrakk>(x \<Zsemi> E, F, G)\<rbrakk> p)\<close>
+  \<open>\<lbrakk>_\<rbrakk> \<^bold>\<bottom> \<longleftrightarrow> False\<close>
+| \<open>\<lbrakk>(E, F, G)\<rbrakk> (\<^bold>\<ddagger>P ts) \<longleftrightarrow> G P (map \<lparr>(E, F)\<rparr> ts)\<close>
+| \<open>\<lbrakk>(E, F, G)\<rbrakk> (p \<^bold>\<longrightarrow> q) \<longleftrightarrow> \<lbrakk>(E, F, G)\<rbrakk> p \<longrightarrow> \<lbrakk>(E, F, G)\<rbrakk> q\<close>
+| \<open>\<lbrakk>(E, F, G)\<rbrakk> (\<^bold>\<forall>p) \<longleftrightarrow> (\<forall>x. \<lbrakk>(x \<Zsemi> E, F, G)\<rbrakk> p)\<close>
 
 section \<open>Operations\<close>
 
@@ -155,7 +155,7 @@ corollary soundness': \<open>[] \<turnstile>\<^sub>\<forall> p \<Longrightarrow>
 corollary \<open>\<not> ([] \<turnstile>\<^sub>\<forall> \<^bold>\<bottom>)\<close>
   using soundness' by fastforce
 
-section \<open>Derived Rules\<close>
+section \<open>Admissible Rules\<close>
 
 lemma Assm_head: \<open>p # A \<turnstile>\<^sub>\<forall> p\<close>
   by auto
@@ -310,18 +310,18 @@ section \<open>Truth Lemma\<close>
 abbreviation hmodel :: \<open>('f, 'p) fm set \<Rightarrow> ('f tm, 'f, 'p) model\<close> where
   \<open>hmodel H \<equiv> (\<^bold>#, \<^bold>\<dagger>, \<lambda>P ts. \<^bold>\<ddagger>P ts \<in> H)\<close>
 
-fun interp ::
+fun semics ::
   \<open>('a, 'f, 'p) model \<Rightarrow> (('a, 'f, 'p) model \<Rightarrow> ('f, 'p) fm \<Rightarrow> bool) \<Rightarrow> ('f, 'p) fm \<Rightarrow> bool\<close> where
-  \<open>interp _ _ \<^bold>\<bottom> = False\<close>
-| \<open>interp (E, F, G) X (\<^bold>\<ddagger>P ts) = G P (map \<lparr>(E, F)\<rparr> ts)\<close>
-| \<open>interp (E, F, G) X (p \<^bold>\<longrightarrow> q) = (X (E, F, G) p \<longrightarrow> X (E, F, G) q)\<close>
-| \<open>interp (E, F, G) X (\<^bold>\<forall>p) = (\<forall>x. X (x \<Zsemi> E, F, G) p)\<close>
+  \<open>semics _ _ \<^bold>\<bottom> \<longleftrightarrow> False\<close>
+| \<open>semics (E, F, G) _ (\<^bold>\<ddagger>P ts) \<longleftrightarrow> G P (map \<lparr>(E, F)\<rparr> ts)\<close>
+| \<open>semics (E, F, G) rel (p \<^bold>\<longrightarrow> q) \<longleftrightarrow> rel (E, F, G) p \<longrightarrow> rel (E, F, G) q\<close>
+| \<open>semics (E, F, G) rel (\<^bold>\<forall>p) \<longleftrightarrow> (\<forall>x. rel (x \<Zsemi> E, F, G) p)\<close>
 
 fun rel :: \<open>('f, 'p) fm set \<Rightarrow> ('f tm, 'f, 'p) model \<Rightarrow> ('f, 'p) fm \<Rightarrow> bool\<close> where
   \<open>rel H (E, _, _) p = (sub_fm E p \<in> H)\<close>
 
 theorem Hintikka_model':
-  assumes \<open>\<And>p. interp (hmodel H) (rel H) p \<longleftrightarrow> p \<in> H\<close>
+  assumes \<open>\<And>p. semics (hmodel H) (rel H) p \<longleftrightarrow> p \<in> H\<close>
   shows \<open>p \<in> H \<longleftrightarrow> \<lbrakk>hmodel H\<rbrakk> p\<close>
 proof (induct p rule: wf_induct[where r=\<open>measure size_fm\<close>])
   case 1
@@ -334,7 +334,7 @@ qed
 
 lemma Hintikka_Extend:
   assumes \<open>consistent H\<close> \<open>maximal H\<close> \<open>saturated H\<close>
-  shows \<open>interp (hmodel H) (rel H) p \<longleftrightarrow> p \<in> H\<close>
+  shows \<open>semics (hmodel H) (rel H) p \<longleftrightarrow> p \<in> H\<close>
 proof (cases p)
   case Fls
   have \<open>\<^bold>\<bottom> \<notin> H\<close>
@@ -380,20 +380,20 @@ next
 qed simp
 
 interpretation Truth_Saturation
-  consistent params_fm witness interp semantics_fm \<open>\<lambda>H. {hmodel H}\<close> rel
+  consistent params_fm witness semics semantics_fm \<open>\<lambda>H. {hmodel H}\<close> rel
 proof unfold_locales
   fix p and M :: \<open>('a tm, 'f, 'p) model\<close>
-  show \<open>\<lbrakk>M\<rbrakk> p \<longleftrightarrow> interp M semantics_fm p\<close>
+  show \<open>\<lbrakk>M\<rbrakk> p \<longleftrightarrow> semics M semantics_fm p\<close>
     by (cases M, induct p) auto
 next
   fix p and H :: \<open>('f, 'p) fm set\<close> and M :: \<open>('f tm, 'f, 'p) model\<close>
-  assume \<open>\<forall>M \<in> {hmodel H}. \<forall>p. interp M (rel H) p \<longleftrightarrow> rel H M p\<close> \<open>M \<in> {hmodel H}\<close>
+  assume \<open>\<forall>M \<in> {hmodel H}. \<forall>p. semics M (rel H) p \<longleftrightarrow> rel H M p\<close> \<open>M \<in> {hmodel H}\<close>
   then show \<open>\<lbrakk>M\<rbrakk> p \<longleftrightarrow> rel H M p\<close>
     using Hintikka_model' by auto
 next
   fix H :: \<open>('f, 'p) fm set\<close>
   assume \<open>consistent H\<close> \<open>maximal H\<close> \<open>saturated H\<close>
-  then show \<open>\<forall>M \<in> {hmodel H}. \<forall>p. interp M (rel H) p \<longleftrightarrow> rel H M p\<close>
+  then show \<open>\<forall>M \<in> {hmodel H}. \<forall>p. semics M (rel H) p \<longleftrightarrow> rel H M p\<close>
     using Hintikka_Extend by auto
 qed
 
@@ -498,7 +498,7 @@ proof -
   moreover have \<open>infinite (UNIV :: ('f + 'p) set)\<close>
     using assms by simp
   ultimately have \<open>|UNIV :: ('f, 'p) enc list set| \<le>o |UNIV :: ('f + 'p) set|\<close>
-    using card_of_info_marker_lists by blast
+    using card_of_params_marker_lists by blast
   moreover have \<open>|UNIV :: ('f, 'p) fm set| \<le>o |UNIV :: ('f, 'p) enc list set|\<close>
     using card_of_ordLeq inj_encode_fm by blast
   ultimately have \<open>|UNIV :: ('f, 'p) fm set| \<le>o |UNIV :: ('f + 'p) set|\<close>
