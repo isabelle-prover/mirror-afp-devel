@@ -438,17 +438,10 @@ lemma image_compose_permutations_left_right:
   fixes S
   assumes "\<pi>a permutes S" "\<pi>b permutes S"
   shows "{\<pi>a \<circ> \<pi> \<circ> \<pi>b |\<pi>. \<pi> permutes S} = {\<pi>. \<pi> permutes S}"
-  using image_compose_permutations_left[OF assms(1)] image_compose_permutations_right[OF assms(2)]
-  apply auto
-
 proof -
   have *: "(\<lambda>\<pi>. \<pi>a \<circ> \<pi> \<circ> \<pi>b) = (\<lambda>\<pi>'. \<pi>a \<circ> \<pi>') \<circ> (\<lambda>\<pi>. \<pi> \<circ> \<pi>b)"
     by (simp add: comp_def)
   then show ?thesis
-    using image_compose_permutations_left[OF assms(1)] image_compose_permutations_right[OF assms(2)]
-    apply(auto simp add: comp_def)
-    
-
     apply (fold image_Collect)
     apply (unfold *)
     apply (fold image_comp)
