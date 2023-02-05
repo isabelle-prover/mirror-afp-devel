@@ -1,0 +1,58 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+\usepackage[T1]{fontenc}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+\usepackage[shortcuts]{extdash}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{rm}
+
+
+\begin{document}
+
+\title{NP-hardness of CVP and SVP}
+\author{Katharina Kreuzer}
+\maketitle
+
+\begin{abstract}
+This article formalizes the NP-hardness proofs of the Closest Vector Problem (CVP) and the Shortest Vector Problem (SVP) in maximum norm as well as the CVP in any $p$-norm for $p\geq1$. 
+CVP and SVP are two fundamental problems in lattice theory. Lattices are a discrete, additive subgroup of $\mathbb{R}^n$ and are used for lattice-based cryptography. The CVP asks to find the nearest lattice vector to a target. The SVP asks to find the shortest non-zero lattice vector. 
+
+This entry formalizes the basic properties of lattices, the reduction from CVP to Subset Sum in both maximum and $p$-norm for $1\leq p<\infty$ and the reduction of SVP to Partition using the Bounded Homogeneous Linear Equations problem (BHLE) as an intermediate step. 
+The formalization uncovered a number of problems with the existing proofs in the literature \cite{EmBo81} and \cite{Mic02}.
+\end{abstract}
+
+
+\newpage
+\tableofcontents
+
+\newpage
+\parindent 0pt\parskip 0.5ex
+
+\section{Introduction}
+Two problems form the very basis for cryptography on lattices, namely the closest vector problem (CVP) and the shortest vector problem (SVP). 
+Given a finite set of basis vectors in $\mathbb{R}^n$, the set of all linear combinations with integer coefficients forms a lattice. In optimization form, SVP asks for the shortest vector in the lattice and CVP asks for the lattice vector closest to some given target vector, both with respect to some given norm. 
+The proof of NP-hardness of these problems in $\ell_\infty$ goes back to an early technical report by van Emde-Boas \cite{EmBo81}.
+Indeed, for other norms (especially for the Euclidean norm), NP-hardness of the SVP could only be shown using a randomized reduction \cite{Ajt98}. For CVP, NP-hardness has been shown in any $p$-norm for $p\geq 1$. One exemplary proof can be found in the book by Micciancio and Goldwasser~\cite[Chapter 3, Thm 3.1]{Mic02}.
+
+% anschaulichere Erklärung zu SVP und CVP
+%In order to have a more graphic view on lattices, CVP and SVP, let us make a short example. Consider the lattice spanned by $\mathbb{Z}^2$ in the real plane. These points form a discrete set which is closed under addition. The SVP now asks us to find the shortest possible vectors in the lattice. These would be $(1,0), (0,1), (-1,0),(0,-1)$. In the CVP, we do not consider the closest vector to the origin but to a given target vector $b$. For example, given the target vector $(1.01,0)$ (the target vector needs not to be in $\mathbb{Z}^2$ but is allowed any real coefficients), the ``ovbious'' solution for the closest vector in the lattice is $(1,0)$.
+
+%Other usecases for CVP SVP
+The CVP and SVP are not only used in cryptography, but in various other areas as well. For example, they closely relate to integer programs (see Lenstra's paper~\cite{Len83}) or finding irreducible factors of polynomials as in Lenstra's paper~\cite{Len81}. For example, the LLL-algorithm by Lenstra, Lenstra and Lov\'{a}sz \cite{LLL} gives a polynomial-time algorithm for lattice basis reduction which solves integer linear programs in fixed dimensions. Using this reduced basis, one can find good approximations to CVP using Babai's algorithm~\cite{Babai86} for certain approximation factors. 
+Still, for arbitrary dimensions, the problem remains NP-hard. 
+
+\vspace{1cm}
+\input{session}
+
+%\nocite{kyber}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+

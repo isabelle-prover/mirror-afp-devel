@@ -1,0 +1,15 @@
+chapter AFP
+
+session "CVP_Hardness" (AFP) = Berlekamp_Zassenhaus +
+  options [timeout = 600]
+  sessions
+    Jordan_Normal_Form
+    LLL_Basis_Reduction
+    BenOr_Kozen_Reif
+  theories
+    CVP_p
+    CVP_vec
+    SVP_vec
+  document_files
+    "root.bib"
+    "root.tex"
