@@ -3,21 +3,45 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2023-01-27T00:00:00+00:00</lastmod>
+    <lastmod>2023-02-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/</loc>
+    <lastmod>2023-02-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/benor_kozen_reif/</loc>
+    <lastmod>2023-02-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/berlekamp_zassenhaus/</loc>
+    <lastmod>2023-02-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2023-02-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2023-02-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/CVP_Hardness.html</loc>
+    <lastmod>2023-02-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/jordan_normal_form/</loc>
+    <lastmod>2023-02-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/kreuzer/</loc>
+    <lastmod>2023-02-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/lll_basis_reduction/</loc>
+    <lastmod>2023-02-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2023-02-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2023-02-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/ABY3_Protocols.html</loc>
     <lastmod>2023-01-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/</loc>
-    <lastmod>2023-01-27T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/crypthol/</loc>
-    <lastmod>2023-01-27T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/</loc>
-    <lastmod>2023-01-27T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/</loc>
     <lastmod>2023-01-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/hu/</loc>
@@ -38,9 +62,6 @@
     <loc>/dependencies/saturation_framework/</loc>
     <lastmod>2023-01-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/topics/</loc>
-    <lastmod>2023-01-25T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/tourret/</loc>
     <lastmod>2023-01-25T00:00:00+00:00</lastmod>
   </url><url>
@@ -48,9 +69,6 @@
     <lastmod>2023-01-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/doty/</loc>
-    <lastmod>2023-01-22T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/mathematics/</loc>
     <lastmod>2023-01-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/propositional_logic_class/</loc>
@@ -99,9 +117,6 @@
     <lastmod>2022-12-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/algebraic_numbers/</loc>
-    <lastmod>2022-12-15T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/benor_kozen_reif/</loc>
     <lastmod>2022-12-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Propositional_Logic_Class.html</loc>
@@ -332,13 +347,7 @@
     <loc>/authors/villadsen/</loc>
     <lastmod>2022-09-13T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/berlekamp_zassenhaus/</loc>
-    <lastmod>2022-09-08T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/CRYSTALS-Kyber.html</loc>
-    <lastmod>2022-09-08T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/kreuzer/</loc>
     <lastmod>2022-09-08T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/number_theoretic_transform/</loc>
@@ -747,9 +756,6 @@
     <lastmod>2021-11-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/campo/</loc>
-    <lastmod>2021-11-29T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/jordan_normal_form/</loc>
     <lastmod>2021-11-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/michaelis/</loc>
@@ -1173,9 +1179,6 @@
     <lastmod>2021-03-12T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/hermite/</loc>
-    <lastmod>2021-03-12T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/lll_basis_reduction/</loc>
     <lastmod>2021-03-12T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/smith_normal_form/</loc>
@@ -4788,6 +4791,8 @@
     <loc>/theories/csp_reftk/</loc>
   </url><url>
     <loc>/theories/cubic_quartic_equations/</loc>
+  </url><url>
+    <loc>/theories/cvp_hardness/</loc>
   </url><url>
     <loc>/theories/cyk/</loc>
   </url><url>

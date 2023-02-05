@@ -6,7 +6,16 @@
     <description>Recent content in BenOr_Kozen_Reif on Archive of Formal Proofs</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Thu, 15 Dec 2022 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/benor_kozen_reif/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 02 Feb 2023 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/benor_kozen_reif/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Hardness of Lattice Problems</title>
+      <link>/entries/CVP_Hardness.html</link>
+      <pubDate>Thu, 02 Feb 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/CVP_Hardness.html</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>A First Complete Algorithm for Real Quantifier Elimination in Isabelle/HOL</title>
       <link>/entries/Quantifier_Elimination_Hybrid.html</link>

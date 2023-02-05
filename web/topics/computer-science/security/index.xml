@@ -7,6 +7,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language><atom:link href="/topics/computer-science/security/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>Hardness of Lattice Problems</title>
+      <link>/entries/CVP_Hardness.html</link>
+      <pubDate>Thu, 02 Feb 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/CVP_Hardness.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>ABY3 Multiplication and Array Shuffling</title>
       <link>/entries/ABY3_Protocols.html</link>
       <pubDate>Fri, 27 Jan 2023 00:00:00 +0000</pubDate>

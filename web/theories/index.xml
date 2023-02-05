@@ -1330,6 +1330,15 @@
     </item>
     
     <item>
+      <title>CVP_Hardness</title>
+      <link>/theories/cvp_hardness/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/cvp_hardness/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>CYK</title>
       <link>/theories/cyk/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
