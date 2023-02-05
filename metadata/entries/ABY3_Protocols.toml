@@ -1,0 +1,26 @@
+title = "ABY3 Multiplication and Array Shuffling"
+date = 2023-01-27
+topics = [
+  "Computer science/Security",
+]
+abstract = "We formalizes two protocols from a privacy-preserving machine-learning framework based on ABY3, a particular three-party computation framework where inputs are systematically ‘reshared’ without being considered as privacy leakage. In particular, we consider the multiplication protocol and the array shuffling protocol, both based on ABY3's additive secret sharing scheme. We proved their security in the semi-honest setting under the ideal/real simulation paradigm. These two proof-of-concept opens the door to further verification of more protocols within the framework."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.hu]
+email = "hu_email"
+
+[contributors]
+
+[notify]
+hu = "hu_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []
