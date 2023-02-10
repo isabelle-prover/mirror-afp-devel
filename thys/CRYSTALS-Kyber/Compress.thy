@@ -7,6 +7,35 @@ imports Kyber_spec
 
 begin
 
+lemma prime_half:
+  assumes "prime (p::int)"
+          "p > 2"
+  shows "\<lceil>p / 2\<rceil> > \<lfloor>p / 2\<rfloor>"
+proof -
+  have "odd p" using prime_odd_int[OF assms] .
+  then have "\<lceil>p / 2\<rceil> > p/2" 
+  by (smt (verit, best) cos_npi_int cos_zero_iff_int 
+    le_of_int_ceiling mult.commute times_divide_eq_right)
+  then have "\<lfloor>p / 2\<rfloor> < p/2" 
+  by (meson floor_less_iff less_ceiling_iff)
+  then show ?thesis using \<open>\<lceil>p / 2\<rceil> > p/2\<close> by auto
+qed
+
+lemma ceiling_int: 
+  "\<lceil>of_int a + b\<rceil> = a + \<lceil>b\<rceil>"
+unfolding ceiling_def by (simp add: add.commute)
+
+lemma deg_Poly':
+  assumes "Poly xs \<noteq> 0" 
+  shows "degree (Poly xs) \<le> length xs - 1"
+proof (induct xs)
+  case (Cons a xs)
+  then show ?case
+    by simp (metis Poly.simps(1) Suc_le_eq Suc_pred 
+    le_imp_less_Suc length_greater_0_conv)
+qed simp
+
+
 context kyber_spec begin
 
 section \<open>Compress and Decompress Functions\<close>
@@ -21,16 +50,8 @@ using oddE[OF prime_odd_int[OF q_prime q_gt_two]] by fastforce
 lemma mod_plus_minus_range_q: 
   assumes "y \<in> {-\<lfloor>q/2\<rfloor>..\<lfloor>q/2\<rfloor>}"
   shows "y mod+- q = y"
-using mod_plus_minus_range[OF q_gt_zero, of y] 
-unfolding mod_plus_minus_def
-proof (auto)
-  have this': "y + \<lfloor>real_of_int q/2\<rfloor> \<in> {0..<q}" 
-  using assms two_mid_lt_q by auto
-  have "(y + \<lfloor>real_of_int q/2\<rfloor>) mod q = (y + \<lfloor>real_of_int q/2\<rfloor>)" 
-    using mod_rangeE[OF this'] by auto
-  then show "(y + \<lfloor>real_of_int q/2\<rfloor>) mod q - \<lfloor>real_of_int q/2\<rfloor>
-     = y" by auto
-qed
+using assms mod_plus_minus_rangeE q_gt_zero q_odd by presburger
+
  
 
 text \<open>Compression only works for $x \in \mathbb{Z}_q$ and outputs an integer 
@@ -74,19 +95,7 @@ lemma twod_lt_q:
 using assms less_log_iff[of 2 q d] d_lt_logq q_gt_zero 
 by auto
 
-lemma prime_half:
-  assumes "prime (p::int)"
-          "p > 2"
-  shows "\<lceil>p / 2\<rceil> > \<lfloor>p / 2\<rfloor>"
-proof -
-  have "odd p" using prime_odd_int[OF assms] .
-  then have "\<lceil>p / 2\<rceil> > p/2" 
-  by (smt (verit, best) cos_npi_int cos_zero_iff_int 
-    le_of_int_ceiling mult.commute times_divide_eq_right)
-  then have "\<lfloor>p / 2\<rfloor> < p/2" 
-  by (meson floor_less_iff less_ceiling_iff)
-  then show ?thesis using \<open>\<lceil>p / 2\<rceil> > p/2\<close> by auto
-qed
+
 
 
 lemma break_point_gt_q_div_two:
@@ -378,8 +387,9 @@ proof -
       using floor_mono[OF fact] by auto
   qed
   then have "abs y \<le> \<lfloor>q/2\<rfloor>" using assms by auto
-  then show ?thesis using mod_plus_minus_range[OF q_gt_zero]
-    using mod_plus_minus_def two_mid_lt_q by force 
+  then show ?thesis using mod_plus_minus_range_odd[OF q_gt_zero q_odd] 
+  by (smt (verit, del_insts) mod_plus_minus_def mod_pos_pos_trivial neg_mod_plus_minus 
+    q_odd two_mid_lt_q)
 qed
 
 
@@ -400,9 +410,6 @@ qed
 
 text \<open>Now lets look at what happens when the \<open>mod+-\<close> reduction comes into action.\<close>
 
-lemma ceiling_int: 
-  "\<lceil>of_int a + b\<rceil> = a + \<lceil>b\<rceil>"
-unfolding ceiling_def by (simp add: add.commute)
 
 lemma decompress_compress_mod: 
   assumes "x\<in>{\<lceil>q-(q/(2*2^d))\<rceil>..q-1}" 
@@ -413,17 +420,22 @@ proof -
   have "(decompress d (compress d x) - x) = - x" 
     using compress_mod[OF assms] unfolding decompress_def 
     by auto
-  moreover have "-x mod+- q = -x+q" 
+  moreover have "-x mod+- q = -x+q"
   proof -
-    have "(-x + \<lfloor>q/2\<rfloor>) + q < q" using assms(1) 
-      break_point_gt_q_div_two[OF assms(2)] by force
-    moreover have "(-x + \<lfloor>q/2\<rfloor>) + q \<ge> 0 " 
-      using assms(1) q_gt_zero 
-      by (smt (verit, best) atLeastAtMost_iff divide_nonneg_nonneg 
-        of_int_nonneg zero_le_floor)
-    ultimately have "(- x + \<lfloor>q/2\<rfloor>) mod q = - x + \<lfloor>q/2\<rfloor> + q" 
-      by (metis mod_add_self2 mod_pos_pos_trivial)
-    then show ?thesis unfolding mod_plus_minus_def by auto
+    have range_x: "x \<in> {\<lfloor>real_of_int q / 2\<rfloor><..q - 1}" using assms(1) 
+      break_point_gt_q_div_two[OF assms(2)] by auto
+    then have *: "- x \<in> {-q + 1..< -\<lfloor>real_of_int q / 2\<rfloor>}" by auto
+    have **: "-x + q \<in>{0..<q-\<lfloor>real_of_int q / 2\<rfloor>}" using * by auto 
+    have "-x + q \<in>{0..<q}" 
+    proof (subst atLeastLessThan_iff)
+      have "q-\<lfloor>real_of_int q / 2\<rfloor> \<le> q" using q_gt_zero by auto
+      moreover have "0 \<le> - x + q \<and> - x + q < q-\<lfloor>real_of_int q / 2\<rfloor>" using ** by auto
+      ultimately show "0 \<le> - x + q \<and> - x + q < q" by linarith
+    qed
+    then have rew: "-x mod q = -x + q" using mod_rangeE by fastforce
+    have "-x mod q < q - \<lfloor>real_of_int q / 2\<rfloor>" using ** by (subst rew)(auto simp add: * range_x)
+    then have "\<lfloor>real_of_int q / 2\<rfloor> \<ge> - x mod q" by linarith
+    then show ?thesis unfolding mod_plus_minus_def using rew by auto
   qed
   moreover have "abs (q - x) \<le> round ( real_of_int q / 
     real_of_int (2^(d+1)))" 
@@ -511,15 +523,7 @@ definition decompress_poly :: "nat \<Rightarrow> 'a qr \<Rightarrow> 'a qr" wher
 text \<open>Lemmas for compression error for polynomials. Lemma telescope to go qrom module level 
     down to integer coefficients and back up again.\<close>
 
-lemma deg_Poly':
-  assumes "Poly xs \<noteq> 0" 
-  shows "degree (Poly xs) \<le> length xs - 1"
-proof (induct xs)
-  case (Cons a xs)
-  then show ?case
-    by simp (metis Poly.simps(1) Suc_le_eq Suc_pred 
-    le_imp_less_Suc length_greater_0_conv)
-qed simp
+
 
 lemma of_int_mod_ring_eq_0:
   "((of_int_mod_ring x :: 'a mod_ring) = 0) \<longleftrightarrow> 
@@ -666,6 +670,7 @@ case False
     using length_coeffs_degree[of "of_qr x"] deg_of_qr[of x]
     using deg_qr_n by fastforce
 qed  (auto simp add: n_gt_zero) 
+end
 
 lemma strip_while_change: 
   assumes "\<And>x. P x \<longrightarrow> S x" "\<And>x. (\<not> P x) \<longrightarrow> (\<not> S x)"
@@ -693,7 +698,8 @@ qed simp
 
 text \<open>Estimate for decompress compress for polynomials. Using the inequality for integers,
   chain it up to the level of polynomials.\<close>
-
+context kyber_spec
+begin
 lemma decompress_compress_poly:
   assumes "of_nat d < \<lceil>(log 2 q)::real\<rceil>"
           "d>0"
@@ -1028,6 +1034,7 @@ proof -
   qed
   then show ?thesis by auto
 qed
+end
 
 lemma of_int_mod_ring_mult:
   "of_int_mod_ring (a*b) = of_int_mod_ring a * of_int_mod_ring b"
@@ -1035,7 +1042,8 @@ unfolding of_int_mod_ring_def
 by (metis (mono_tags, lifting) Rep_mod_ring_inverse mod_mult_eq 
   of_int_mod_ring.rep_eq of_int_mod_ring_def times_mod_ring.rep_eq)
   
-
+context kyber_spec
+begin
 lemma decompress_1: 
   assumes "a\<in>{0,1}"
   shows "decompress 1 a = round(real_of_int q/2) * a" 
@@ -1115,13 +1123,15 @@ proof -
     to_qr_of_qr[of "to_module (round (real_of_int q/2)) * x"] 
     by auto
 qed
-
+end
 text \<open>Compression and decompression for vectors.\<close>
 
 definition map_vector :: 
-  "('b \<Rightarrow> 'b) \<Rightarrow> ('b, 'n) vec \<Rightarrow> ('b, 'n::finite) vec" where
+  "('b \<Rightarrow> 'c) \<Rightarrow> ('b, 'n) vec \<Rightarrow> ('c, 'n::finite) vec" where
   "map_vector f v = (\<chi> i. f (vec_nth v i))"
 
+context kyber_spec 
+begin
 text \<open>Compression and decompression of vectors in \<open>\<int>_q[X]/(X^n+1)\<close>.\<close>
 
 definition compress_vec :: 

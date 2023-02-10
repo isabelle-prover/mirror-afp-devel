@@ -1,6 +1,6 @@
 chapter AFP
 
-session "CRYSTALS-Kyber" (AFP) = "Berlekamp_Zassenhaus"  +
+session "Kyber" (AFP) = "Berlekamp_Zassenhaus"  +
   options [timeout = 600]
   sessions
     "Number_Theoretic_Transform"

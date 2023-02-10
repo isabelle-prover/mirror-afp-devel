@@ -138,15 +138,15 @@ lemma of_int_mod_ring_eq_iff [simp]:
    ((a mod 7681) = (b mod 7681))"
   by (metis of_int_fin7681.abs_eq of_int_fin7681.rep_eq)
 
-interpretation kyber7681: kyber_spec "TYPE(fin7681)" "TYPE(3)" 256 7681 3 8
+interpretation kyber7681: kyber_spec 256 7681 3 8 "TYPE(fin7681)" "TYPE(3)"
 proof (unfold_locales, goal_cases)
-  case 5
+  case 4
   then show ?case using prime_7681 prime_int_numeral_eq by blast
 next
-  case 6
+  case 5
   then show ?case using CARD_fin7681 by auto
 next
-  case 8
+  case 7
   then show ?case unfolding qr_poly'_fin7681_def by auto
 qed auto
 

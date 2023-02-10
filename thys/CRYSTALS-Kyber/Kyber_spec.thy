@@ -317,19 +317,7 @@ lemma of_nat_qr_eq_0_iff [simp]:
 
 
 section \<open>Specification of Kyber\<close>
-text \<open>
-We now define a locale for the specification parameters of Kyber as in \<^cite>\<open>"kyber"\<close>.
-The specifications use the parameters:
 
-\begin{tabular}{r l}
-$n$ & $=256 = 2^{n'}$\\
-$n'$ & $= 8$\\
-$q$ & $= 7681$ or $3329$\\
-$k$ & $= 3$\\
-\end{tabular}
-
-It is important, that $q$ is a prime with the property $q\equiv 1\mod 4$.
-\<close>
 
 
 definition to_module :: "int \<Rightarrow> 'a ::qr_spec qr" where
@@ -365,8 +353,10 @@ lemma of_qr_to_qr_smult:
   Polynomial.smult a (of_qr (to_qr p))"
 by (simp add: mod_smult_left of_qr_to_qr)
 
+text \<open>The following locale comprehends all variables used in crypto schemes over $R_q$ like
+Kyber and Dilithium.\<close>
 
-locale kyber_spec =
+locale module_spec =
 fixes "type_a" :: "('a :: qr_spec) itself" 
   and "type_k" :: "('k ::finite) itself" 
   and n q::int and k n'::nat
@@ -374,7 +364,6 @@ assumes
 n_powr_2: "n = 2 ^ n'" and
 n'_gr_0: "n' > 0" and 
 q_gr_two: "q > 2" and
-q_mod_4: "q mod 4 = 1" and 
 q_prime : "prime q" and
 CARD_a: "int (CARD('a :: qr_spec)) = q" and
 CARD_k: "int (CARD('k :: finite)) = k" and
@@ -384,17 +373,16 @@ begin
 text \<open>Some properties of the modulus q.\<close>
 
 lemma q_nonzero: "q \<noteq> 0" 
-using kyber_spec_axioms kyber_spec_def by (smt (z3))
+using module_spec_axioms module_spec_def  by (smt (z3))
 
 lemma q_gt_zero: "q>0" 
-using kyber_spec_axioms kyber_spec_def by (smt (z3))
+using module_spec_axioms module_spec_def by (smt (z3))
 
 lemma q_gt_two: "q>2"
-using kyber_spec_axioms kyber_spec_def by (smt (z3))
+using module_spec_axioms module_spec_def by (smt (z3))
 
 lemma q_odd: "odd q"
-using kyber_spec_axioms kyber_spec_def
- prime_odd_int by blast
+using module_spec_axioms module_spec_def prime_odd_int by blast
 
 lemma nat_q: "nat q = q"
 using q_gt_zero by force
@@ -402,7 +390,7 @@ using q_gt_zero by force
 text \<open>Some properties of the degree n.\<close>
 
 lemma n_gt_1: "n > 1"
-using kyber_spec_axioms kyber_spec_def
+using module_spec_axioms module_spec_def
   by (simp add: n'_gr_0 n_powr_2)
 
 lemma n_nonzero: "n \<noteq> 0" 
@@ -420,4 +408,26 @@ unfolding deg_qr_def using qr_poly'_eq n_gt_1
 by (simp add: degree_add_eq_left degree_monom_eq)
 
 end
+
+text \<open>
+We now define a locale for the specification parameters of Kyber as in \cite{kyber}.
+The specifications use the parameters:
+
+\begin{tabular}{r l}
+$n$ & $=256 = 2^{n'}$\\
+$n'$ & $= 8$\\
+$q$ & $= 7681$ or $3329$\\
+$k$ & $= 3$\\
+\end{tabular}
+
+Additionally, we need that $q$ is a prime with the property $q\equiv 1\mod 4$.
+\<close>
+
+locale kyber_spec = module_spec "TYPE ('a ::qr_spec)" "TYPE ('k::finite)" +
+fixes type_a :: "('a :: qr_spec) itself" 
+  and type_k :: "('k ::finite) itself" 
+assumes q_mod_4: "q mod 4 = 1"
+begin 
+end
+
 end

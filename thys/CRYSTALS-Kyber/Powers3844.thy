@@ -19,10 +19,10 @@ lemma fast_exp_7681_to_mod_ring:
 "fast_exp_7681 x e = to_int_mod_ring ((of_int_mod_ring x :: fin7681 mod_ring)^e)"
 proof (induct e arbitrary: x rule: fast_exp_7681.induct)
   case (2 x e)
-  then show ?case 
-  by (metis Suc_inject fast_exp_7681.elims kyber7681.CARD_a kyber7681.of_int_mod_ring_mult 
-    nat.discI of_int_mod_ring.rep_eq of_int_mod_ring_to_int_mod_ring power_Suc 
-    to_int_mod_ring.rep_eq)
+  then show ?case
+  by (metis (no_types, lifting) Suc_inject fast_exp_7681.elims kyber7681.module_spec_axioms 
+    module_spec.CARD_a nat.simps(3) of_int_mod_ring.rep_eq of_int_mod_ring_mult 
+    of_int_mod_ring_to_int_mod_ring power_Suc to_int_mod_ring.rep_eq)
 qed auto
 
 lemma fast_exp_7681_less256:

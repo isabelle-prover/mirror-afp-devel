@@ -51,13 +51,13 @@ powrs 3844^l for l=1..<256 in Powrs_3844 file"
 interpretation kyber7681_ntt: kyber_ntt 256 7681 3 8 
   "TYPE(fin7681)" "TYPE(3)" 3844 6584 62 1115 7651 30
 proof (unfold_locales, goal_cases)
-  case 5
+  case 4
   then show ?case using kyber7681.q_prime by fastforce
 next
-  case 7
+  case 6
   then show ?case using kyber7681.CARD_k by blast
 next
-  case 8
+  case 7
   then show ?case by (simp add: qr_poly'_fin7681_def)
 next
   case 9
