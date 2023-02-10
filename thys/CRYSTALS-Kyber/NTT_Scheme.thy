@@ -669,9 +669,10 @@ proof -
       have inj: "inj_on (\<lambda>j. x' j i) {..<n}" unfolding x'_def inj_on_def 
       proof (safe, goal_cases)
         case (1 x y)
+        then have "((int x - int i) mod int n) = ((int y - int i) mod int n)"
+          by (meson eq_nat_nat_iff mod_int_pos_iff n_gt_zero)
         then have "int x mod int n = int y mod int n"
-        by (smt (z3) Euclidean_Division.pos_mod_sign int_nat_eq mod_diff_cong 
-            mod_pos_pos_trivial of_nat_0_le_iff of_nat_less_iff)
+          by (smt (z3) mod_diff_cong)
         then show ?case using 1 by auto
       qed
       show ?thesis unfolding * by (subst sum.reindex_cong[OF inj eq[symmetric], 

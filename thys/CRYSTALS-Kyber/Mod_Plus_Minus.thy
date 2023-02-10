@@ -34,8 +34,9 @@ proof -
     by (metis add.commute diff_add_cancel even_add even_succ_div_2 floor_divide_of_int_eq 
     odd_one of_int_numeral)
   then show "- \<lfloor>real_of_int b / 2\<rfloor> \<le> y mod b - b" using assms by linarith
-  have "y mod b \<le> b + \<lfloor>real_of_int b / 2\<rfloor>" using mod_range[OF assms(1)]
-  by (smt (verit) Euclidean_Division.pos_mod_bound \<open>- \<lfloor>real_of_int b / 2\<rfloor> \<le> y mod b - b\<close> assms(1))
+  have "y mod b \<le> b + \<lfloor>real_of_int b / 2\<rfloor>" using mod_range[OF assms(1)] 
+  by (smt (verit, ccfv_SIG) \<open>\<lfloor>real_of_int b / 2\<rfloor> = (b - 1) div 2\<close> atLeastAtMost_iff 
+    pos_imp_zdiv_neg_iff)
   then show "y mod b - b \<le> \<lfloor>real_of_int b / 2\<rfloor>" by auto
 qed
 
