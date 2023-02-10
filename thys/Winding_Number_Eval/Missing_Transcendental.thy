@@ -31,109 +31,6 @@ proof -
   thus ?thesis by auto
 qed
 
-lemma tan_eq_arctan_Ex:
-  shows "tan x = y \<longleftrightarrow> (\<exists>k::int. x = arctan y + k*pi \<or> (x = pi/2 + k*pi \<and> y=0))"
-proof
-  assume asm:"tan x = y"
-  obtain k::int where k:"-pi/2 < x-k*pi" "x-k*pi \<le> pi/2"
-  proof -
-    define k where "k=ceiling (x/pi - 1/2)"
-    have "(x/pi - 1/2)\<le>k" unfolding k_def by auto
-    then have "x-k*pi \<le> pi/2" by (auto simp add:field_simps)
-    moreover have "k-1 < x/pi - 1/2" unfolding k_def by linarith
-    then have "-pi/2 < x-k*pi"  by (auto simp add:field_simps)
-    ultimately show ?thesis using that by auto
-  qed
-  have "x = arctan y + of_int k * pi" when "x \<noteq> pi/2 + k*pi"
-  proof -
-    have "tan (x - k * pi) = y" using asm tan_periodic_int[of _ "-k"] by auto
-    then have "arctan y = x - real_of_int k * pi"
-      using arctan_tan k that by force
-    then show ?thesis by auto
-  qed
-  moreover have "y=0" when "x = pi/2 + k*pi"
-    using asm that by auto (simp add: tan_def)
-  ultimately show "\<exists>k. x = arctan y + of_int k * pi \<or> (x = pi/2 + k*pi \<and> y=0)"
-    using k by auto
-next
-  assume "\<exists>k::int. x = arctan y +  k * pi \<or> x = pi / 2 + k * pi \<and> y = 0"
-  then show "tan x = y"
-    by (metis arctan_unique cos_pi_half division_ring_divide_zero tan_def tan_periodic_int tan_total)
-qed
-
-lemma arccos_unique:
-  assumes "0 \<le> x"
-    and "x \<le> pi"
-    and "cos x = y"
-  shows "arccos y = x"
-using arccos_cos assms by blast
-
-lemma cos_eq_arccos_Ex:
-  "cos x = y \<longleftrightarrow> -1\<le>y \<and> y\<le>1 \<and> (\<exists>k::int. x = arccos y + 2*k*pi \<or> x = - arccos y + 2*k*pi)"
-proof
-  assume asm:"-1\<le>y \<and> y\<le>1 \<and> (\<exists>k::int. x = arccos y + 2*k*pi \<or> x = - arccos y + 2*k*pi)"
-  then obtain k::int where "x = arccos y + 2*k*pi \<or> x = - arccos y + 2*k*pi" by auto
-  moreover have "cos x = y" when "x = arccos y + 2*k*pi"
-  proof -
-    have "cos x = cos (arccos y + k*(2*pi))"
-      using that by (auto simp add:algebra_simps)
-    also have "... = cos (arccos y)"
-      using cos.periodic_simps(3)[of "arccos y" k] by auto
-    also have "... = y"
-      using asm by auto
-    finally show ?thesis .
-  qed
-  moreover have "cos x = y" when "x = -arccos y + 2*k*pi"
-  proof -
-    have "cos x = cos (- arccos y + k*2*pi)"
-      unfolding that by (auto simp add:algebra_simps)
-    also have "... = cos (arccos y - k*2*pi)"
-      by (metis cos_minus minus_diff_eq uminus_add_conv_diff)
-    also have "... = cos (arccos y)"
-      using cos.periodic_simps(3)[of "arccos y" "-k"]
-      by (auto simp add:algebra_simps)
-    also have "... = y"
-      using asm by auto
-    finally show ?thesis .
-  qed
-  ultimately show "cos x = y" by auto
-next
-  assume asm:"cos x =y"
-  let ?goal = "(\<exists>k::int. x = arccos y + 2*k*pi \<or> x = - arccos y + 2*k*pi)"
-  obtain k::int where k:"-pi < x-k*2*pi" "x-k*2*pi \<le> pi"
-  proof -
-    define k where "k=ceiling (x/(2*pi) - 1/2)"
-    have "(x/(2*pi) - 1/2)\<le>k" unfolding k_def by auto
-    then have "x-k*2*pi \<le> pi" by (auto simp add:field_simps)
-    moreover have "k-1 < x/(2*pi) - 1/2" unfolding k_def by linarith
-    then have "-pi < x-k*2*pi"  by (auto simp add:field_simps)
-    ultimately show ?thesis using that by auto
-  qed
-  have ?goal when "x-k*2*pi\<ge>0"
-  proof -
-    have "cos (x - k * 2*pi) = y"
-      using cos.periodic_simps(3)[of x "-k"] asm by (auto simp add:field_simps)
-    then have "arccos y = x - k * 2*pi"
-      apply (intro arccos_unique)
-      using k that by auto
-    then show ?goal by auto
-  qed
-  moreover have ?goal when "\<not> x-k*2*pi \<ge>0"
-  proof -
-    have "cos (x - k * 2*pi) = y"
-      using cos.periodic_simps(3)[of x "-k"] asm by (auto simp add:field_simps)
-    then have "cos (k * 2*pi - x) = y"
-      by (metis cos_minus minus_diff_eq)
-    then have "arccos y = k * 2*pi - x"
-      apply (intro arccos_unique)
-      using k that by auto
-    then show ?goal by auto
-  qed
-  ultimately have ?goal by auto
-  moreover have "-1\<le>y \<and> y\<le>1" using asm by auto
-  ultimately show "-1\<le>y \<and> y\<le>1 \<and> ?goal" by auto
-qed
-
 lemma uniform_discrete_tan_eq:
   "uniform_discrete {x::real. tan x = y}"
 proof -
@@ -212,22 +109,16 @@ lemma filtermap_tan_at_right:
   assumes "cos a\<noteq>0"
   shows "filtermap tan (at_right a) = at_right (tan a)"
 proof -
-  obtain k::int and a1 where aa1:"a=k*pi+a1" and "-pi/2\<le>a1" "a1<pi/2"
+  obtain k::int and a1 where aa1:"a=k*pi+a1" and pi_a1: "-pi/2\<le>a1" "a1<pi/2"
     using get_norm_value[of pi a "-pi/2"] by auto
   have "-pi/2 < a1" 
-  proof (rule ccontr)
-    assume "\<not> - pi / 2 < a1"
-    then have "a1=- pi / 2" using \<open>-pi/2\<le>a1\<close> by auto
-    then have "cos a = 0" unfolding aa1
-      by (metis (no_types, opaque_lifting) add.commute add_0_left cos_pi_half 
-              diff_eq_eq mult.left_neutral mult_minus_right mult_zero_left 
-              sin_add sin_pi_half sin_zero_iff_int2 times_divide_eq_left uminus_add_conv_diff)
-    then show False using assms by auto
-  qed
+  using assms
+    by (smt (verit, ccfv_SIG) pi_a1 aa1 cos_2pi_minus cos_diff cos_pi_half cos_two_pi divide_minus_left mult_of_int_commute sin_add sin_npi_int sin_pi_half sin_two_pi)
   have "eventually P (at_right (tan a))" 
     when "eventually P (filtermap tan (at_right a))" for P
   proof -
     obtain b1 where "b1>a" and b1_imp:" \<forall>y>a. y < b1 \<longrightarrow> P (tan y)"
+sledgehammer [isar_proofs, provers = cvc4 vampire verit e spass z3 zipperposition, timeout = 77]
       using \<open>eventually P (filtermap tan (at_right a))\<close>
       unfolding eventually_filtermap eventually_at_right 
       by (metis eventually_at_right_field)
@@ -344,12 +235,6 @@ proof -
   then show ?thesis 
     unfolding filtermap_filtermap comp_def by auto
 qed
-
-lemma cos_zero_iff_int2:
-  fixes x::real
-  shows "cos x = 0 \<longleftrightarrow> (\<exists>n::int. x = n * pi +  pi/2)"
-  using sin_zero_iff_int2[of "x-pi/2"] unfolding sin_cos_eq 
-  by (auto simp add:algebra_simps)
 
 lemma filtermap_tan_at_right_inf:
   fixes a::real

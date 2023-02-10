@@ -164,13 +164,12 @@ lemma exp_nat_irrational:
 proof
   assume "exp (real_of_int s) \<in> \<rat>"
   then obtain a b where ab: "a > 0" "b > 0" "coprime a b" and exp_s: "exp s = of_int a / of_int b"
-    using Rats_cases' div_0 exp_not_eq_zero of_int_0
-    by (smt (verit, best) exp_gt_zero of_int_0_less_iff zero_less_divide_iff)
+    by (smt (verit) Rats_cases' divide_nonpos_pos exp_gt_zero of_int_0_less_iff)
   define n where "n \<equiv> nat (max (a^2) (3 * s^3))"
   then have ns3: "s^3 \<le> real n / 3"
     by linarith
   have "n > 0"
-    using \<open>a > 0\<close> n_def by (smt (verit, best) zero_less_nat_eq zero_less_power)
+    using \<open>a > 0\<close> by (simp add: n_def max.strict_coboundedI1)
   then have "s ^ (2*n+1) \<le> s ^ (3*n)"
     using \<open>a > 0\<close> assms by (intro power_increasing) auto
   also have "\<dots> = real_of_int(s^3) ^ n"
@@ -178,19 +177,15 @@ proof
   also have "\<dots> \<le> (n / 3) ^ n"
     using assms ns3 by (simp add: power_mono)
   also have "\<dots> \<le> (n / exp 1) ^ n"
-    using exp_le \<open>n > 0\<close>
-    by (auto simp add: divide_simps)
+    using exp_le \<open>n > 0\<close> by (auto simp add: divide_simps)
   finally have s_le: "s ^ (2*n+1) \<le> (n / exp 1) ^ n"
     by presburger 
   have a_less: "a < sqrt (2*pi*n)"
   proof -
     have "2*pi > 1"
-      by (smt (z3) pi_gt_zero sin_gt_zero_02 sin_le_zero)
-    have "a = sqrt (a^2)"
-      by (simp add: ab(1) order_less_imp_le)
-    also have "\<dots> \<le> sqrt n"
-      unfolding n_def
-      by (smt (verit, ccfv_SIG) int_nat_eq of_nat_less_of_int_iff real_sqrt_le_mono)
+      using pi_ge_two by linarith
+    have "a \<le> sqrt n"
+      using \<open>0 < n\<close> n_def of_nat_nat real_le_rsqrt by fastforce
     also have "\<dots> < sqrt (2*pi*n)"
       by (simp add: \<open>0 < n\<close> \<open>1 < 2 * pi\<close>)
     finally show ?thesis .
