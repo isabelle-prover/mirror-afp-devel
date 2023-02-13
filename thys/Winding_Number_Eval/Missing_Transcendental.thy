@@ -118,10 +118,7 @@ proof -
     when "eventually P (filtermap tan (at_right a))" for P
   proof -
     obtain b1 where "b1>a" and b1_imp:" \<forall>y>a. y < b1 \<longrightarrow> P (tan y)"
-sledgehammer [isar_proofs, provers = cvc4 vampire verit e spass z3 zipperposition, timeout = 77]
-      using \<open>eventually P (filtermap tan (at_right a))\<close>
-      unfolding eventually_filtermap eventually_at_right 
-      by (metis eventually_at_right_field)
+      by (metis Sturm_Tarski.eventually_at_right \<open>eventually P (filtermap tan (at_right a))\<close> eventually_filtermap)
     define b2 where "b2=min b1 (k*pi+pi/4+a1/2)"  
     define b3 where "b3=b2 - k*pi"
     have "-pi/2 < b3" "b3<pi/2" 
@@ -130,10 +127,7 @@ sledgehammer [isar_proofs, provers = cvc4 vampire verit e spass z3 zipperpositio
         using \<open>b1>a\<close> aa1 \<open>a1<pi/2\<close> unfolding b2_def b3_def by (auto simp add:field_simps)
       then show "-pi/2 < b3" using \<open>-pi/2\<le>a1\<close> by auto
       show "b3 < pi/2"
-        unfolding b2_def b3_def
-        apply (subst min_diff_distrib_left)
-        apply (rule min.strict_coboundedI2)
-        using \<open>b1>a\<close> aa1 \<open>a1<pi/2\<close> \<open>-pi/2<a1\<close> by auto
+        using b2_def b3_def pi_a1(2) by linarith
     qed
     have "tan b2 > tan a" 
     proof -
