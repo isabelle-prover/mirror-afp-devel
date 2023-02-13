@@ -415,7 +415,7 @@ lemma remaining_steps_push [simp]: "invar common
    \<Longrightarrow> remaining_steps (push x common) = remaining_steps common"
   by(induction x common rule: Common.push.induct)(auto split: current.splits)
 
-lemma remaining_steps_pop: "\<lbrakk>invar common; 0 < size common; pop common = (x, common')\<rbrakk> 
+lemma remaining_steps_pop: "\<lbrakk>invar common; pop common = (x, common')\<rbrakk> 
   \<Longrightarrow> remaining_steps common' \<le> remaining_steps common"
 proof(induction common rule: pop.induct)
   case (1 current idle)

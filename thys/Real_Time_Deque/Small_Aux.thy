@@ -26,7 +26,6 @@ fun invar_state :: "'a state \<Rightarrow> bool" where
 | "invar (Reverse2 current auxS big newS count) = (
    case current of Current _ _ old remained \<Rightarrow>
       remained = count + size big + size old
-    \<and> remained \<ge> size old
     \<and> count = List.length newS
     \<and> invar current
     \<and> List.length auxS \<ge> size old

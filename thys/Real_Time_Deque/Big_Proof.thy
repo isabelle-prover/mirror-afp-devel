@@ -274,7 +274,7 @@ lemma remaining_steps_step_0 [simp]: "\<lbrakk>invar (big :: 'a state); remainin
 lemma remaining_steps_push: "invar big \<Longrightarrow> remaining_steps (push x big) = remaining_steps big"
   by(induction x big rule: push.induct)(auto split: current.splits)
 
-lemma remaining_steps_pop: "\<lbrakk>invar big; 0 < size big; pop big = (x, big')\<rbrakk>
+lemma remaining_steps_pop: "\<lbrakk>invar big; pop big = (x, big')\<rbrakk>
    \<Longrightarrow> remaining_steps big' \<le> remaining_steps big"
 proof(induction big rule: pop.induct)
   case (1 state)

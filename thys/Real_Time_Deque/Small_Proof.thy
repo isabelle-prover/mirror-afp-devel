@@ -7,6 +7,9 @@ begin
 lemma step_size [simp]: "invar (small :: 'a state) \<Longrightarrow> size (step small) = size small"
   by(induction small rule: step_state.induct)(auto split: current.splits)
 
+lemma step_size_new [simp]: "invar (small :: 'a state) \<Longrightarrow> size_new (step small) = size_new small"
+  by(induction small rule: step_state.induct)(auto split: current.splits)
+
 lemma size_push [simp]: "invar small \<Longrightarrow> size (push x small) = Suc (size small)"
   by(induction x small rule: push.induct) (auto split: current.splits)
 

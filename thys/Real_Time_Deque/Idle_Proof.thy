@@ -29,7 +29,7 @@ lemma size_pop_sub: "\<lbrakk>pop idle = (x, idle')\<rbrakk> \<Longrightarrow> s
 lemma invar_push: "invar idle \<Longrightarrow> invar (push x idle)"
   by(induction x idle rule: push.induct) auto
 
-lemma invar_pop: "\<lbrakk>\<not> is_empty idle; invar idle; pop idle = (x, idle')\<rbrakk> \<Longrightarrow> invar idle'"
+lemma invar_pop: "\<lbrakk>invar idle; pop idle = (x, idle')\<rbrakk> \<Longrightarrow> invar idle'"
   by(induction idle arbitrary: x rule: pop.induct) auto
 
 lemma size_empty: "size idle = 0 \<longleftrightarrow> is_empty (idle :: 'a idle)"

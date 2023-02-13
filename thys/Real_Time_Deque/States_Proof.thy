@@ -78,10 +78,11 @@ next
 qed auto
 
 lemma push_small_lists: "
-  \<lbrakk>invar (States dir big small); lists (States dir big small) = (big', small')\<rbrakk>
-    \<Longrightarrow> lists (States dir big (Small.push x small)) = (big', x # small')"
-  by(induction "States dir big (Small.push x small)" rule: lists.induct)
-    (auto split: current.splits Small.state.splits)
+  invar (States dir big small)
+   \<Longrightarrow> lists (States dir big (Small.push x small)) = (big', x # small') \<longleftrightarrow> 
+       lists (States dir big small) = (big', small')"
+  apply(induction "States dir big (Small.push x small)" rule: lists.induct)
+  by (auto split: current.splits Small.state.splits)
 
 lemma list_small_big: "
     list_small_first (States dir big small) = list_current_small_first (States dir big small) \<longleftrightarrow>
@@ -1177,7 +1178,6 @@ qed
 
 lemma size_ok_steps: "\<lbrakk>
   invar states;
-   n < remaining_steps states; 
   size_ok' states (remaining_steps states - n)
 \<rbrakk> \<Longrightarrow> size_ok ((step ^^ n) states)"
   by (simp add: step_n_size_ok')

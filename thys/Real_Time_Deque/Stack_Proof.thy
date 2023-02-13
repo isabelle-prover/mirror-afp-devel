@@ -7,7 +7,7 @@ begin
 lemma push_list [simp]: "list (push x stack) = x # list stack"
   by(cases stack) auto
 
-lemma pop_list [simp]: "\<not> is_empty stack \<Longrightarrow> list (pop stack) = tl (list stack)"
+lemma pop_list [simp]: "list (pop stack) = tl (list stack)"
   by(induction stack rule: pop.induct) auto
 
 lemma first_list [simp]: "\<not> is_empty stack \<Longrightarrow> first stack = hd (list stack)"
