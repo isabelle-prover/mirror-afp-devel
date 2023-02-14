@@ -594,7 +594,7 @@ proof -
       where R="\<lambda>_ _. True", simplified, OF 
       iteratei_correct[OF I, unfolded set_iterator_def]
     ] have 
-        M: "Map.map_of (it_to_list iteratei m) = \<alpha> m"
+        M: "List.map_of (it_to_list iteratei m) = \<alpha> m"
         and D: "distinct (List.map fst (it_to_list iteratei m))"
       by (simp_all)
 
