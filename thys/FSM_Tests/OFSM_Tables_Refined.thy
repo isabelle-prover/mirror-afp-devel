@@ -703,7 +703,7 @@ proof -
           by force
         then have "the (Mapping.lookup distMap (q1,q2)) = get_distinguishing_sequence_from_ofsm_tables M q1 q2"
           unfolding distMap_def 
-          unfolding Map.map_of_eq_Some_iff[OF \<open>distinct (map fst (map (\<lambda> (q1,q2) . ((q1,q2), get_distinguishing_sequence_from_ofsm_tables M q1 q2)) distStates))\<close>, symmetric]
+          unfolding map_of_eq_Some_iff[OF \<open>distinct (map fst (map (\<lambda> (q1,q2) . ((q1,q2), get_distinguishing_sequence_from_ofsm_tables M q1 q2)) distStates))\<close>, symmetric]
           by (metis option.sel)
         moreover have "distHelper q1 q2 = the (Mapping.lookup distMap (q1,q2))"
           using True unfolding distHelper_def by metis

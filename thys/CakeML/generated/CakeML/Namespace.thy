@@ -43,9 +43,9 @@ datatype( 'm, 'n, 'v) namespace =
 
 \<comment> \<open>\<open>val nsLookup : forall 'v 'm 'n. Eq 'n, Eq 'm => namespace 'm 'n 'v -> id 'm 'n -> maybe 'v\<close>\<close>
 fun  nsLookup  :: "('m,'n,'v)namespace \<Rightarrow>('m,'n)id0 \<Rightarrow> 'v option "  where 
-     " nsLookup (Bind v2 m) (Short n) = ( Map.map_of v2 n )"
+     " nsLookup (Bind v2 m) (Short n) = ( List.map_of v2 n )"
     |" nsLookup (Bind v2 m) (Long mn id1) = (
-      (case  Map.map_of m mn of
+      (case  List.map_of m mn of
         None => None
       | Some env => nsLookup env id1
       ))"
@@ -55,7 +55,7 @@ fun  nsLookup  :: "('m,'n,'v)namespace \<Rightarrow>('m,'n)id0 \<Rightarrow> 'v 
 fun  nsLookupMod  :: "('m,'n,'v)namespace \<Rightarrow> 'm list \<Rightarrow>(('m,'n,'v)namespace)option "  where 
      " nsLookupMod e [] = ( Some e )"
     |" nsLookupMod (Bind v2 m) (mn # path) = (
-      (case  Map.map_of m mn of
+      (case  List.map_of m mn of
         None => None
       | Some env => nsLookupMod env path
       ))"

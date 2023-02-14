@@ -654,7 +654,7 @@ definition match_pres where
     "match_pres pres s \<equiv> \<forall>pre\<in>set pres. match_pre pre s"
 
 lemma match_pres_distinct: 
-  "distinct (map fst pres) \<Longrightarrow> match_pres pres s \<longleftrightarrow> Map.map_of pres \<subseteq>\<^sub>m s"
+  "distinct (map fst pres) \<Longrightarrow> match_pres pres s \<longleftrightarrow> List.map_of pres \<subseteq>\<^sub>m s"
   unfolding match_pres_def match_pre_def 
   using map_le_def map_of_SomeD
   apply (auto split: prod.splits)
@@ -699,13 +699,13 @@ lemma set_tree_intorder: "set_tree t = set (inorder t)"
   by (induction t) auto
 
 lemma map_of_eq:
-  "map_of xs = Map.map_of xs"
+  "map_of xs = List.map_of xs"
   by (induction xs) (auto simp: map_of_simps split: option.split)
 
 lemma lookup_someD: "lookup T x = Some y \<Longrightarrow> \<exists>p. p \<in> set (inorder T) \<and> p = (x, y)"
   by (induction T) (auto split: if_splits)
 
-lemma map_of_lookup: "sorted1 (inorder T) \<Longrightarrow> Map.map_of (inorder T) = lookup T"
+lemma map_of_lookup: "sorted1 (inorder T) \<Longrightarrow> List.map_of (inorder T) = lookup T"
   apply(induction T)
    apply (auto split: prod.splits intro!: map_le_antisym
       simp: lookup_map_of map_add_Some_iff map_of_None2 sorted_wrt_append)
@@ -717,7 +717,7 @@ lemma map_le_cong: "(\<And>x. m1 x = m2 x) \<Longrightarrow> m1 \<subseteq>\<^su
   by presburger
 
 lemma match_pres_submap:
-  "match_pres (inorder (M.tree_map_of' empty pres)) s \<longleftrightarrow> Map.map_of pres \<subseteq>\<^sub>m s"
+  "match_pres (inorder (M.tree_map_of' empty pres)) s \<longleftrightarrow> List.map_of pres \<subseteq>\<^sub>m s"
   using match_pres_distinct[OF M.tree_map_of_distinct]
   by (smt M.invar_def M.invar_empty M.tree_map_of_invar M.tree_map_of_works map_le_cong map_of_eq map_of_lookup)  
 

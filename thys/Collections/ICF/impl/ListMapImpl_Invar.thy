@@ -22,7 +22,7 @@ type_synonym ('k,'v) lmi = "('k\<times>'v) list"
 
 term revg
 
-definition "lmi_\<alpha> \<equiv> Map.map_of"
+definition "lmi_\<alpha> \<equiv> List.map_of"
 definition "lmi_invar \<equiv> \<lambda>m. distinct (List.map fst m)"
 
 definition lmi_basic_ops :: "('k,'v,('k,'v) lmi) map_basic_ops"
@@ -30,7 +30,7 @@ definition lmi_basic_ops :: "('k,'v,('k,'v) lmi) map_basic_ops"
   bmap_op_\<alpha> = lmi_\<alpha>,
   bmap_op_invar = lmi_invar,
   bmap_op_empty = (\<lambda>_::unit. []),
-  bmap_op_lookup = (\<lambda>k m. Map.map_of m k),
+  bmap_op_lookup = (\<lambda>k m. List.map_of m k),
   bmap_op_update = AList.update,
   bmap_op_update_dj = (\<lambda>k v m. (k, v) # m),
   bmap_op_delete = AList.delete_aux,
