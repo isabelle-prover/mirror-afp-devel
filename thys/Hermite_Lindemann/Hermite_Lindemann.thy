@@ -16,6 +16,9 @@ imports
   Misc_HLW
 begin
 
+hide_const (open) Henstock_Kurzweil_Integration.content  Module.smult
+
+
 text \<open>
   The Hermite--Lindemann--Weierstraß theorem answers questions about the transcendence of
   the exponential function and other related complex functions. It proves that a large number of
@@ -1029,7 +1032,7 @@ proof
         using \<open>D > 0\<close> by simp
       also have "(\<lambda>p. D ^ (p - 1)) \<in> o(\<lambda>p. fact (p - 1))"
         by (intro smalloI_tendsto[OF filterlim_compose[OF power_over_fact_tendsto_0]]
-                  filterlim_minus_nat_at_top) auto
+                  filterlim_minus_const_nat_at_top) auto
       finally show "(\<lambda>p. D ^ p) \<in> o(\<lambda>x. fact (x - 1))" .
     qed fact+
     finally have smallo: "(\<lambda>p. C' * C p ^ n) \<in> o(\<lambda>p. fact (p - 1) ^ n)" .

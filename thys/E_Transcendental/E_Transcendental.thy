@@ -14,6 +14,9 @@ theory E_Transcendental
     "HOL-Computational_Algebra.Polynomial"
 begin
 
+hide_const (open) UnivPoly.coeff  UnivPoly.up_ring.monom 
+hide_const (open) Module.smult  Coset.order
+
 (* TODO: Lots of stuff to move to the distribution *)
   
 subsection \<open>Various auxiliary facts\<close>
@@ -31,30 +34,17 @@ proof -
   from this [symmetric] show ?thesis by simp
 qed
 
-lemma of_nat_eq_1_iff [simp]: "of_nat x = (1 :: 'a :: semiring_char_0) \<longleftrightarrow> x = 1"
-  by (fact of_nat_eq_1_iff)
-
 lemma prime_elem_int_not_dvd_neg1_power:
   "prime_elem (p :: int) \<Longrightarrow> \<not>p dvd (-1) ^ n"
-  by (rule notI, frule (1) prime_elem_dvd_power, cases "p \<ge> 0") (auto simp: prime_elem_def)
+  by (metis dvdI minus_one_mult_self unit_imp_no_prime_divisors)
 
 lemma nat_fact [simp]: "nat (fact n) = fact n"
-  by (subst of_nat_fact [symmetric]) (rule nat_int)
+  by (metis nat_int of_nat_fact of_nat_fact)
 
 lemma prime_dvd_fact_iff_int:
   "p dvd fact n \<longleftrightarrow> p \<le> int n" if "prime p"
   using that prime_dvd_fact_iff [of "nat \<bar>p\<bar>" n]
   by auto (simp add: prime_ge_0_int)
-
-lemma filterlim_minus_nat_at_top:
-  "filterlim (\<lambda>n. n - k :: nat) at_top at_top"
-proof -
-  have "sequentially = filtermap (\<lambda>n. n + k) at_top"
-    by (auto simp: filter_eq_iff eventually_filtermap)
-  also have "filterlim (\<lambda>n. n - k :: nat) at_top \<dots>"
-    by (simp add: filterlim_filtermap filterlim_ident)
-  finally show ?thesis .
-qed
 
 lemma power_over_fact_tendsto_0:
   "(\<lambda>n. (x :: real) ^ n / fact n) \<longlonglongrightarrow> 0"
@@ -71,7 +61,7 @@ lift_definition of_int_poly :: "int poly \<Rightarrow> 'a :: comm_ring_1 poly" i
   by (auto elim: eventually_mono)
 
 lemma coeff_of_int_poly [simp]: "coeff (of_int_poly p) n = of_int (coeff p n)"
-  by transfer' simp
+  by (simp add: of_int_poly.rep_eq)
 
 lemma of_int_poly_0 [simp]: "of_int_poly 0 = 0"
   by transfer (simp add: fun_eq_iff)
@@ -237,7 +227,7 @@ qed
 
 lemma fact_dvd_poly_higher_pderiv_aux':
   "m \<le> n \<Longrightarrow> (fact m :: int) dvd poly ((pderiv ^^ n) p) x"
-  by (rule dvd_trans[OF fact_dvd fact_dvd_poly_higher_pderiv_aux]) simp_all
+  by (meson dvd_trans fact_dvd fact_dvd_poly_higher_pderiv_aux)
 
 lemma algebraicE':
   assumes "algebraic (x :: 'a :: field_char_0)"
@@ -658,7 +648,7 @@ proof
   qed
 
   have "(\<lambda>n. E * F * F ^ (n - 1) / fact (n - 1)) \<longlonglongrightarrow> 0" (is ?P)
-    by (intro filterlim_compose[OF power_over_fact_tendsto_0' filterlim_minus_nat_at_top])
+    by (intro filterlim_compose[OF power_over_fact_tendsto_0' filterlim_minus_const_nat_at_top])
   also have "?P \<longleftrightarrow> (\<lambda>n. E * F ^ n / fact (n - 1)) \<longlonglongrightarrow> 0"
     by (intro filterlim_cong refl eventually_mono[OF eventually_gt_at_top[of "0::nat"]])
        (auto simp: power_Suc [symmetric] simp del: power_Suc)
