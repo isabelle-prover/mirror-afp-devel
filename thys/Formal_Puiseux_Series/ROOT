@@ -6,7 +6,6 @@ session Formal_Puiseux_Series (AFP) = "HOL-Computational_Algebra" +
     Polynomial_Interpolation
   theories
     Puiseux_Polynomial_Library
-    Puiseux_Laurent_Library
     FPS_Hensel
     Formal_Puiseux_Series
   document_files

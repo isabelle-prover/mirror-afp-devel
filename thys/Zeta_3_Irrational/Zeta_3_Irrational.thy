@@ -10,6 +10,9 @@ imports
   "Prime_Distribution_Elementary.PNT_Consequences"
 begin
 
+hide_const (open) UnivPoly.coeff  UnivPoly.up_ring.monom
+hide_const (open) Module.smult  Coset.order
+
 text \<open>
   Ap\'{e}ry's original proof of the irrationality of $\zeta(3)$ contained several
   tricky identities of sums involving binomial coefficients that are difficult to
