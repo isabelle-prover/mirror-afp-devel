@@ -1110,7 +1110,7 @@ type_funs tenv tenvE [] []"
 check_freevars (num_tvs tenvE) [] (Tfn t1 t2) \<and>
 (type_e tenv (Bind_name n(( 0 :: nat)) t1 tenvE) e t2 \<and>
 (type_funs tenv tenvE funs bindings \<and>
-(List.map_of bindings fn = None)))
+(Map.map_of bindings fn = None)))
 ==>
 type_funs tenv tenvE ((fn, n, e)# funs) ((fn, Tfn t1 t2)# bindings)"
 

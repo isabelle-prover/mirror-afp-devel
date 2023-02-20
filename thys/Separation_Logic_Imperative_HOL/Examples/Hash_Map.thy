@@ -219,7 +219,7 @@ proof -
     from assms(2,3) have 
       "distinct (map fst (l ! bounded_hashcode_nat (length l) k))"
       by (simp add: ht_distinct_def bounded_hashcode_nat_bounds)
-    from map_of_is_SomeI[OF this v] map_of_is_SomeI[OF this w]
+    from Map.map_of_is_SomeI[OF this v] Map.map_of_is_SomeI[OF this w]
     show "v = w" by simp
   qed    
   with ex show ?thesis by blast
