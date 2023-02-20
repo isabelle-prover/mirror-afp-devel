@@ -751,15 +751,15 @@ lemma netmap_fst_netgmap_rel:
     qed
   qed
 
-lemma netmap_is_fst_netgmap:
-  assumes "netmap s' = netmap s"
-    shows "fst (netgmap sr s') = fst (netgmap sr s)"
-  using assms by (metis netmap_fst_netgmap_rel)
-
 lemma netmap_is_fst_netgmap':
   assumes "netmap s' i = netmap s i"
     shows "fst (netgmap sr s') i = fst (netgmap sr s) i"
   using assms by (metis netmap_fst_netgmap_rel)
+
+lemma netmap_is_fst_netgmap:
+  assumes "netmap s' = netmap s"
+    shows "fst (netgmap sr s') = fst (netgmap sr s)"
+  by (rule ext) (metis assms netmap_fst_netgmap_rel)
 
 lemma fst_netgmap_pair_fst [simp]:
   "fst (netgmap (\<lambda>(p, q). (fst p, snd p, q)) s) = fst (netgmap fst s)"
