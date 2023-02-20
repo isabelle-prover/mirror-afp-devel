@@ -312,7 +312,7 @@ lemma effect__strips_iii_a:
       using effect_to_assignments_ii
       by blast
     have d: "map_of ?as = map_of as\<^sub>2 ++ map_of as\<^sub>1"
-      using b map_of_append
+      using b Map.map_of_append
       by auto
     {
       \<comment> \<open> TODO refactor? \<close>
@@ -361,7 +361,7 @@ lemma effect__strips_iii_b:
       using effect_to_assignments_ii
       by blast
     have e: "map_of ?as = map_of as\<^sub>2 ++ map_of as\<^sub>1"
-      using b map_of_append
+      using b Map.map_of_append
       by auto
     {
       have "dom (map_of as\<^sub>1) = set (add_effects_of op)"
@@ -424,7 +424,7 @@ lemma effect__strips_iii_c:
       using effect_to_assignments_ii
       by blast
     have e: "map_of ?as = map_of as\<^sub>2 ++ map_of as\<^sub>1"
-      using b map_of_append
+      using b Map.map_of_append
       by auto
     {
       have "dom (map_of as\<^sub>1) = set (add_effects_of op)"
