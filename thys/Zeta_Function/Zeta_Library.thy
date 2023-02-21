@@ -213,60 +213,7 @@ lemma continuous_on_imp_set_integrable_cbox:
   fixes h :: "'a :: euclidean_space \<Rightarrow> 'b :: euclidean_space"
   assumes "continuous_on (cbox a b) h"
   shows   "set_integrable lborel (cbox a b) h"
-proof -
-  from assms have "h absolutely_integrable_on cbox a b"
-    by (rule absolutely_integrable_continuous)
-  moreover have "(\<lambda>x. indicat_real (cbox a b) x *\<^sub>R h x) \<in> borel_measurable borel"
-    by (rule borel_measurable_continuous_on_indicator) (use assms in auto)
-  ultimately show ?thesis
-    unfolding set_integrable_def using assms by (subst (asm) integrable_completion) auto
-qed
-
-lemma set_nn_integral_cong:
-  assumes "M = M'" "A = B" "\<And>x. x \<in> space M \<inter> A \<Longrightarrow> f x = g x"
-  shows   "set_nn_integral M A f = set_nn_integral M' B g"
-  using assms unfolding assms(1,2) by (intro nn_integral_cong) (auto simp: indicator_def)
-
-lemma set_integrable_bound:
-  fixes f :: "'a \<Rightarrow> 'b::{banach, second_countable_topology}"
-    and g :: "'a \<Rightarrow> 'c::{banach, second_countable_topology}"
-  assumes "set_integrable M A f" "set_borel_measurable M A g"
-  assumes "AE x in M. x \<in> A \<longrightarrow> norm (g x) \<le> norm (f x)"
-  shows   "set_integrable M A g"
-  unfolding set_integrable_def
-proof (rule Bochner_Integration.integrable_bound)
-  from assms(1) show "integrable M (\<lambda>x. indicator A x *\<^sub>R f x)"
-    by (simp add: set_integrable_def)
-  from assms(2) show "(\<lambda>x. indicat_real A x *\<^sub>R g x) \<in> borel_measurable M"
-    by (simp add: set_borel_measurable_def)
-  from assms(3) show "AE x in M. norm (indicat_real A x *\<^sub>R g x) \<le> norm (indicat_real A x *\<^sub>R f x)"
-    by eventually_elim (simp add: indicator_def)
-qed
-
-(* TODO replace version in library. Better name? *)
-lemma nn_integral_has_integral_lebesgue:
-  fixes f :: "'a::euclidean_space \<Rightarrow> real"
-  assumes nonneg: "\<And>x. x \<in> \<Omega> \<Longrightarrow> 0 \<le> f x" and I: "(f has_integral I) \<Omega>"
-  shows "integral\<^sup>N lborel (\<lambda>x. indicator \<Omega> x * f x) = I"
-proof -
-  from I have "(\<lambda>x. indicator \<Omega> x *\<^sub>R f x) \<in> lebesgue \<rightarrow>\<^sub>M borel"
-    by (rule has_integral_implies_lebesgue_measurable)
-  then obtain f' :: "'a \<Rightarrow> real"
-    where [measurable]: "f' \<in> borel \<rightarrow>\<^sub>M borel" and eq: "AE x in lborel. indicator \<Omega> x * f x = f' x"
-    by (auto dest: completion_ex_borel_measurable_real)
-
-  from I have "((\<lambda>x. abs (indicator \<Omega> x * f x)) has_integral I) UNIV"
-    using nonneg by (simp add: indicator_def of_bool_def if_distrib[of "\<lambda>x. x * f y" for y] cong: if_cong)
-  also have "((\<lambda>x. abs (indicator \<Omega> x * f x)) has_integral I) UNIV \<longleftrightarrow> ((\<lambda>x. abs (f' x)) has_integral I) UNIV"
-    using eq by (intro has_integral_AE) auto
-  finally have "integral\<^sup>N lborel (\<lambda>x. abs (f' x)) = I"
-    by (rule nn_integral_has_integral_lborel[rotated 2]) auto
-  also have "integral\<^sup>N lborel (\<lambda>x. abs (f' x)) = integral\<^sup>N lborel (\<lambda>x. abs (indicator \<Omega> x * f x))"
-    using eq by (intro nn_integral_cong_AE) auto
-  also have "(\<lambda>x. abs (indicator \<Omega> x * f x)) = (\<lambda>x. indicator \<Omega> x * f x)"
-    using nonneg by (auto simp: indicator_def fun_eq_iff)
-  finally show ?thesis .
-qed
+  by (simp add: assms borel_integrable_compact set_integrable_def)
 
 
 subsection \<open>Uniform convergence of integrals\<close>
@@ -288,38 +235,6 @@ proof -
     by (intro has_absolute_integral_change_of_variables_1 assms) auto
   thus ?thesis
     by (simp add: absolutely_integrable_on_1_iff integral_on_1_eq)
-qed
-
-lemma set_nn_integral_lborel_eq_integral:
-  fixes f::"'a::euclidean_space \<Rightarrow> real"
-  assumes "set_borel_measurable borel A f"
-  assumes "\<And>x. x \<in> A \<Longrightarrow> 0 \<le> f x" "(\<integral>\<^sup>+x\<in>A. f x \<partial>lborel) < \<infinity>"
-  shows "(\<integral>\<^sup>+x\<in>A. f x \<partial>lborel) = integral A f"
-proof -
-  have eq: "(\<integral>\<^sup>+x\<in>A. f x \<partial>lborel) = (\<integral>\<^sup>+x. ennreal (indicator A x * f x) \<partial>lborel)"
-    by (intro nn_integral_cong) (auto simp: indicator_def)
-  also have "\<dots> = integral UNIV (\<lambda>x. indicator A x * f x)"
-    using assms eq by (intro nn_integral_lborel_eq_integral)
-                      (auto simp: indicator_def set_borel_measurable_def)
-  also have "integral UNIV (\<lambda>x. indicator A x * f x) = integral A (\<lambda>x. indicator A x * f x)"
-    by (rule integral_spike_set) (auto intro: empty_imp_negligible)
- 
-  also have "\<dots> = integral A f"
-    by (rule integral_cong) (auto simp: indicator_def)
-  finally show ?thesis .
-qed
-
-lemma nn_integral_has_integral_lebesgue':
-  fixes f :: "'a::euclidean_space \<Rightarrow> real"
-  assumes nonneg: "\<And>x. x \<in> \<Omega> \<Longrightarrow> 0 \<le> f x" and I: "(f has_integral I) \<Omega>"
-  shows "integral\<^sup>N lborel (\<lambda>x. ennreal (f x) * indicator \<Omega> x) = ennreal I"
-proof -
-  have "integral\<^sup>N lborel (\<lambda>x. ennreal (f x) * indicator \<Omega> x) =
-        integral\<^sup>N lborel (\<lambda>x. ennreal (indicator \<Omega> x * f x))"
-    by (intro nn_integral_cong) (auto simp: indicator_def)
-  also have "\<dots> = ennreal I"
-    using assms by (intro nn_integral_has_integral_lebesgue)
-  finally show ?thesis .
 qed
 
 lemma uniform_limit_set_lebesgue_integral:
