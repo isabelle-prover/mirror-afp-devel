@@ -393,8 +393,8 @@ lemma has_sum_comm_additive_general:
   assumes inS: \<open>\<And>F. finite F \<Longrightarrow> sum g F \<in> T\<close>
   assumes cont: \<open>(f \<longlongrightarrow> f x) (at x within T)\<close>
     \<comment> \<open>For \<^class>\<open>t2_space\<close> and \<^term>\<open>T=UNIV\<close>, this is equivalent to \<open>isCont f x\<close> by @{thm [source] isCont_def}.\<close>
-  assumes infsum: \<open>has_sum g S x\<close>
-  shows \<open>has_sum (f o g) S (f x)\<close> 
+  assumes infsum: \<open>(g has_sum x) S\<close>
+  shows \<open>((f o g) has_sum (f x)) S\<close> 
 proof -
   have \<open>(sum g \<longlongrightarrow> x) (finite_subsets_at_top S)\<close>
     using infsum has_sum_def by blast
@@ -404,7 +404,7 @@ proof -
   then have \<open>(sum (f o g) \<longlongrightarrow> f x) (finite_subsets_at_top S)\<close>
     apply (rule tendsto_cong[THEN iffD1, rotated])
     using f_sum by fastforce
-  then show \<open>has_sum (f o g) S (f x)\<close>
+  then show \<open>((f o g) has_sum (f x)) S\<close>
     using has_sum_def by blast 
 qed
 
@@ -414,7 +414,7 @@ lemma summable_on_comm_additive_general:
   assumes \<open>\<And>F. finite F \<Longrightarrow> F \<subseteq> S \<Longrightarrow> sum (f o g) F = f (sum g F)\<close>
     \<comment> \<open>Not using \<^const>\<open>additive\<close> because it would add sort constraint \<^class>\<open>ab_group_add\<close>\<close>
   assumes inS: \<open>\<And>F. finite F \<Longrightarrow> sum g F \<in> T\<close>
-  assumes cont: \<open>\<And>x. has_sum g S x \<Longrightarrow> (f \<longlongrightarrow> f x) (at x within T)\<close>
+  assumes cont: \<open>\<And>x. (g has_sum x) S \<Longrightarrow> (f \<longlongrightarrow> f x) (at x within T)\<close>
     \<comment> \<open>For \<^class>\<open>t2_space\<close> and \<^term>\<open>T=UNIV\<close>, this is equivalent to \<open>isCont f x\<close> by @{thm [source] isCont_def}.\<close>
   assumes \<open>g summable_on S\<close>
   shows \<open>(f o g) summable_on S\<close>
@@ -422,7 +422,7 @@ lemma summable_on_comm_additive_general:
 
 lemma has_sum_metric:
   fixes l :: \<open>'a :: {metric_space, comm_monoid_add}\<close>
-  shows \<open>has_sum f A l \<longleftrightarrow> (\<forall>e. e > 0 \<longrightarrow> (\<exists>X. finite X \<and> X \<subseteq> A \<and> (\<forall>Y. finite Y \<and> X \<subseteq> Y \<and> Y \<subseteq> A \<longrightarrow> dist (sum f Y) l < e)))\<close>
+  shows \<open>(f has_sum l) A \<longleftrightarrow> (\<forall>e. e > 0 \<longrightarrow> (\<exists>X. finite X \<and> X \<subseteq> A \<and> (\<forall>Y. finite Y \<and> X \<subseteq> Y \<and> Y \<subseteq> A \<longrightarrow> dist (sum f Y) l < e)))\<close>
   unfolding has_sum_def
   apply (subst tendsto_iff)
   unfolding eventually_finite_subsets_at_top

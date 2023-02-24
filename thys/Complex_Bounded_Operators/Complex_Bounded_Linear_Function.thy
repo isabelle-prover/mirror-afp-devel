@@ -395,8 +395,8 @@ lemma infsum_cblinfun_apply:
       bounded_cbilinear_cblinfun_apply)
 
 lemma has_sum_cblinfun_apply:
-  assumes \<open>has_sum g S x\<close>
-  shows \<open>has_sum (\<lambda>x. A *\<^sub>V g x) S (A *\<^sub>V x)\<close>
+  assumes \<open>(g has_sum x) S\<close>
+  shows \<open>((\<lambda>x. A *\<^sub>V g x) has_sum (A *\<^sub>V x)) S\<close>
   apply (rule has_sum_bounded_linear[unfolded o_def, of \<open>cblinfun_apply A\<close>])
   using assms by (auto simp add: bounded_clinear.bounded_linear cblinfun.bounded_clinear_right)
 
@@ -409,8 +409,8 @@ lemma abs_summable_on_cblinfun_apply:
 text \<open>The next eight lemmas logically belong in \<^theory>\<open>Complex_Bounded_Operators.Complex_Inner_Product\<close> 
   but the proofs use facts from this theory.\<close>
 lemma has_sum_cinner_left:
-  assumes \<open>has_sum f I x\<close>
-  shows \<open>has_sum (\<lambda>i. cinner a (f i)) I (cinner a x)\<close>
+  assumes \<open>(f has_sum x) I\<close>
+  shows \<open>((\<lambda>i. cinner a (f i)) has_sum cinner a x) I\<close>
   by (metis assms cblinfun_cinner_right.rep_eq has_sum_cblinfun_apply)
 
 lemma summable_on_cinner_left:
@@ -424,8 +424,8 @@ lemma infsum_cinner_left:
   by (metis assms has_sum_cinner_left has_sum_infsum infsumI)
 
 lemma has_sum_cinner_right:
-  assumes \<open>has_sum f I x\<close>
-  shows \<open>has_sum (\<lambda>i. f i \<bullet>\<^sub>C a) I (x \<bullet>\<^sub>C a)\<close>
+  assumes \<open>(f has_sum x) I\<close>
+  shows \<open>((\<lambda>i. f i \<bullet>\<^sub>C a) has_sum (x \<bullet>\<^sub>C a)) I\<close>
   apply (rule has_sum_bounded_linear[where f=\<open>\<lambda>x. x \<bullet>\<^sub>C a\<close>, unfolded o_def])
   using assms by (simp_all add: bounded_antilinear.bounded_linear bounded_antilinear_cinner_left)
 
@@ -1314,8 +1314,8 @@ lemma sum_adj: \<open>(sum a F)* = sum (\<lambda>i. (a i)*) F\<close>
   by (auto simp add: adj_plus)
 
 lemma has_sum_adj:
-  assumes \<open>has_sum f I x\<close>
-  shows \<open>has_sum (\<lambda>x. adj (f x)) I (adj x)\<close>
+  assumes \<open>(f has_sum x) I\<close>
+  shows \<open>((\<lambda>x. adj (f x)) has_sum adj x) I\<close>
   apply (rule has_sum_comm_additive[where f=adj, unfolded o_def])
   apply (simp add: antilinear.axioms(1))
   apply (metis (no_types, lifting) LIM_eq adj_plus adj_uminus norm_adj uminus_add_conv_diff)

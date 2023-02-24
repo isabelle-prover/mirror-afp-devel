@@ -138,8 +138,8 @@ lemma infsum_bounded_linear:
 
 lemma has_sum_bounded_linear: 
   assumes \<open>bounded_linear f\<close>
-  assumes \<open>has_sum g S x\<close>
-  shows \<open>has_sum (f o g) S (f x)\<close>
+  assumes \<open>(g has_sum x) S\<close>
+  shows \<open>((f o g) has_sum (f x)) S\<close>
   apply (rule has_sum_comm_additive)
   using assms blinfun_apply_induct blinfun.additive_right apply auto
   using isCont_def linear_continuous_at by fastforce
