@@ -77,14 +77,18 @@ begin
   primrec hf_of_list where
     "hf_of_list Nil = 0"
   | "hf_of_list (x#xs) = \<langle>hf_of x, hf_of_list xs\<rangle>"
-  lemma [simp]: fixes x :: "'a list" shows "hf_of x = hf_of y \<Longrightarrow> x = y"
-    apply (induct x arbitrary: y, auto)
-    apply (metis (mono_tags) hf_of_list.simps(2) hpair_nonzero neq_Nil_conv)
-    apply (rename_tac y)
-    apply (case_tac y, auto)
-    done
-  instance 
-    by intro_classes (auto simp: inj_on_def)
+  
+lemma [simp]: fixes x :: "'a list" shows "hf_of x = hf_of y \<Longrightarrow> x = y"
+  proof (induction x arbitrary: y)
+    case Nil
+    then show ?case by (cases y) auto
+  next
+    case (Cons a x)
+    then show ?case by (cases y) auto
+  qed
+
+instance 
+  by intro_classes (auto simp: inj_on_def)
 end
 
 end

@@ -44,20 +44,25 @@ abbreviation NullStr where
   "NullStr \<equiv> \<lparr>states = 1, init = 1, final = 1, next = \<lambda>st x st'. False\<rparr>"
 
 theorem regular_emptystr:  "regular {[]}"
-  apply (auto simp: regular_def accepts_def)
-  apply (rule exI [where x = NullStr], auto)
-  apply (case_tac x, auto)
-  done
+proof -
+  have "\<And>x::'a list. reaches NullStr 0 x 0 \<Longrightarrow> x = []"
+    using reaches.simps by fastforce
+  then show ?thesis
+    unfolding regular_def accepts_def
+    by (rule_tac x = NullStr in exI) auto
+qed
 
 abbreviation SingStr where
   "SingStr a \<equiv> \<lparr>states = \<lbrace>0, 1\<rbrace>, init = \<lbrace>0\<rbrace>, final = \<lbrace>1\<rbrace>, next = \<lambda>st x st'. st=0 \<and> x=a \<and> st'=1\<rparr>"
 
 theorem regular_singstr: "regular {[a]}"
-  apply (auto simp: regular_def accepts_def)
-  apply (rule exI [where x = "SingStr a"], auto)
-  apply (case_tac x, auto)
-  apply (case_tac list, auto)
-  done
+proof -
+  have "\<And>x::'a list. reaches (SingStr a) 0 x 1 \<Longrightarrow> x = [a]"
+    by (smt (verit, best) one_neq_zero reaches.simps select_convs(4))
+  then show ?thesis
+    unfolding regular_def accepts_def
+    by (rule_tac x = "SingStr a" in exI) auto
+qed
 
 definition Reverse where
   "Reverse fsm = \<lparr>states = states fsm, init = final fsm, final = init fsm,
@@ -108,13 +113,17 @@ lemma next_Times: "next (Times fsm1 fsm2) \<langle>st1,st2\<rangle> x st' \<long
 lemma reaches_Times_iff [simp]:
      "reaches (Times fsm1 fsm2) \<langle>st1,st2\<rangle> xs \<langle>st1',st2'\<rangle> \<longleftrightarrow>
       reaches fsm1 st1 xs st1' \<and> reaches fsm2 st2 xs st2'"
-apply (induct xs arbitrary: st1 st2 st1' st2', force)
-apply (force simp add: next_Times Times_def reaches.Cons)
-done
+proof (induction xs arbitrary: st1 st2 st1' st2')
+  case Nil
+  then show ?case by auto
+next
+  case (Cons a xs)
+  then show ?case
+    by (force simp add: next_Times Times_def reaches.Cons)
+qed
 
 lemma accepts_Times_iff [simp]:
-     "accepts (Times fsm1 fsm2) xs \<longleftrightarrow>
-      accepts fsm1 xs \<and> accepts fsm2 xs"
+     "accepts (Times fsm1 fsm2) xs \<longleftrightarrow> accepts fsm1 xs \<and> accepts fsm2 xs"
   by (force simp add: accepts_def)
 
 theorem regular_Int:
@@ -153,25 +162,38 @@ lemma next_Plus2: "next (Plus fsm1 fsm2) (Inr st2) x st' \<longleftrightarrow> (
 lemma reaches_Plus_iff1 [simp]:
      "reaches (Plus fsm1 fsm2) (Inl st1) xs st' \<longleftrightarrow>
       (\<exists>st1'. st' = Inl st1' \<and> reaches fsm1 st1 xs st1')"
-apply (induct xs arbitrary: st1, force)
-apply (force simp add: next_Plus1 reaches.Cons)
-done
+proof (induction xs arbitrary: st1)
+  case Nil
+  then show ?case by auto
+next
+  case (Cons a xs)
+  then show ?case 
+    by (force simp add: next_Plus1 reaches.Cons)
+qed
 
 lemma reaches_Plus_iff2 [simp]:
      "reaches (Plus fsm1 fsm2) (Inr st2) xs st' \<longleftrightarrow>
       (\<exists>st2'. st' = Inr st2' \<and> reaches fsm2 st2 xs st2')"
-apply (induct xs arbitrary: st2, force)
-apply (force simp add: next_Plus2 reaches.Cons)
-done
+proof (induction xs arbitrary: st2)
+  case Nil
+  then show ?case by auto
+next
+  case (Cons a xs)
+  then show ?case by (force simp add: next_Plus2 reaches.Cons)
+qed
 
 lemma reaches_Plus_iff [simp]:
      "reaches (Plus fsm1 fsm2) st xs st' \<longleftrightarrow>
       (\<exists>st1 st1'. st = Inl st1 \<and> st' = Inl st1' \<and> reaches fsm1 st1 xs st1') \<or>
       (\<exists>st2 st2'. st = Inr st2 \<and> st' = Inr st2' \<and> reaches fsm2 st2 xs st2')"
-apply (induct xs arbitrary: st st', auto)
-apply (force simp add: next_Plus1 next_Plus2 Plus_def reaches.Cons)
-apply (auto simp: Plus_def)
-done
+proof (induction xs arbitrary: st st')
+  case Nil
+  then show ?case by auto
+next
+  case (Cons a xs)
+  then show ?case
+    by (smt (verit) Plus_def list.simps(3) reaches.simps reaches_Plus_iff1 reaches_Plus_iff2 select_convs(4))
+qed
 
 lemma accepts_Plus_iff [simp]:
      "accepts (Plus fsm1 fsm2) xs \<longleftrightarrow> accepts fsm1 xs \<or> accepts fsm2 xs"

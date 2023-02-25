@@ -94,16 +94,13 @@ proof -
 qed
 
 lemma Rep_hf_hinsert:
-  "a \<^bold>\<notin> b \<Longrightarrow> Rep_hf (hinsert a b) = 2 ^ (Rep_hf a) + Rep_hf b"
-  unfolding hinsert_def HF_def hfset_def
-  apply (simp add: image_image Abs_hf_inverse Rep_hf_inverse)
-  apply (subst set_encode_insert, simp)
-  apply (clarsimp simp add: hmem_def hfset_def image_def
-    Rep_hf_inject [symmetric] Abs_hf_inverse, simp)
-  done
-
-lemma less_two_power: "n < 2 ^ n"
-  by (fact less_exp)
+  assumes "a \<^bold>\<notin> b" shows "Rep_hf (hinsert a b) = 2 ^ (Rep_hf a) + Rep_hf b"
+proof -
+  have "Rep_hf a \<notin> set_decode (Rep_hf b)"
+    by (metis Rep_hf_inverse hfset_def hmem_def image_eqI assms)
+  then show ?thesis
+  by (simp add: hinsert_def HF_def hfset_def image_image Abs_hf_inverse Rep_hf_inverse)
+qed
 
 
 section \<open>Verifying the Axioms of HF\<close>
@@ -129,7 +126,7 @@ proof (induct z rule: wf_induct [where r="measure Rep_hf", OF wf_measure])
       case (hinsert a b)
       thus ?thesis using 1
         by (simp add: Rep_hf_hinsert
-                      less_le_trans [OF less_two_power le_add1])
+                      less_le_trans [OF less_exp le_add1])
     qed
 qed
 
@@ -147,11 +144,7 @@ lemma hinsert_commute: "(z \<triangleleft> y) \<triangleleft> x = (z \<trianglel
   by (auto simp: hf_ext)
 
 lemma hmem_HF_iff [simp]: "x \<^bold>\<in> HF A \<longleftrightarrow> x \<in> A \<and> finite A"
-  apply (cases "finite A", auto)
-  apply (simp add: hmem_def)
-  apply (simp add: hmem_def)
-  apply (metis HF_def Rep_hf_inject Abs_hf_0 finite_imageD hempty_iff inj_onI set_encode_inf)
-  done
+  by (metis Abs_hf_0 HF_def Rep_hf_inverse finite_imageD hemptyE hfset_HF hmem_def inj_onI set_encode_inf)
 
 
 section \<open>Ordered Pairs, from ZF/ZF.thy\<close>
@@ -255,11 +248,11 @@ translations
   "\<lbrace>x \<^bold>\<in> A. P\<rbrace>" \<rightleftharpoons> "CONST HCollect (\<lambda>x. P) A"
 
 lemma HCollect_iff [iff]: "hmem x (HCollect P A) \<longleftrightarrow> P x \<and> x \<^bold>\<in> A"
-apply (insert comprehension [of A P], clarify)
-apply (simp add: HCollect_def)
-apply (rule theI2, blast)
-apply (auto simp: hf_ext)
-done
+  using comprehension [of A P]
+  apply (clarsimp simp: HCollect_def)
+  apply (rule theI2, blast)
+   apply (auto simp: hf_ext)
+  done
 
 lemma HCollectI: "a \<^bold>\<in> A \<Longrightarrow> P a \<Longrightarrow> hmem a \<lbrace>x \<^bold>\<in> A. P x\<rbrace>"
   by simp
@@ -284,21 +277,19 @@ abbreviation hunion :: "hf \<Rightarrow> hf \<Rightarrow> hf" (infixl "\<squnion
   "hunion \<equiv> sup"
 
 lemma hunion_iff [iff]: "hmem x (a \<squnion> b) \<longleftrightarrow> x \<^bold>\<in> a \<or> x \<^bold>\<in> b"
-apply (insert binary_union [of a b], clarify)
-apply (simp add: sup_hf_def)
-apply (rule theI2)
-apply (auto simp: hf_ext)
-done
+  using binary_union [of a b]
+  apply (clarsimp simp: sup_hf_def)
+  apply (rule theI2, auto simp: hf_ext)
+  done
 
 definition HUnion :: "hf \<Rightarrow> hf"        ("\<Squnion>_" [900] 900)
   where "HUnion A = (THE z. \<forall>u. u \<^bold>\<in> z \<longleftrightarrow> (\<exists>y. y \<^bold>\<in> A \<and> u \<^bold>\<in> y))"
 
 lemma HUnion_iff [iff]: "hmem x (\<Squnion> A) \<longleftrightarrow> (\<exists>y. y \<^bold>\<in> A \<and> x \<^bold>\<in> y)"
-apply (insert union_of_set [of A], clarify)
-apply (simp add: HUnion_def)
-apply (rule theI2)
-apply (auto simp: hf_ext)
-done
+  using union_of_set [of A]
+  apply (clarsimp simp: HUnion_def)
+  apply (rule theI2, auto simp: hf_ext)
+  done
 
 lemma HUnion_hempty [simp]: "\<Squnion> 0 = 0"
   by (simp add: hf_ext)
@@ -407,17 +398,15 @@ translations
 lemma PrimReplace_iff:
   assumes sv: "\<forall>u v v'. u \<^bold>\<in> A \<longrightarrow> R u v \<longrightarrow> R u v' \<longrightarrow> v'=v"
   shows "v \<^bold>\<in> (PrimReplace A R) \<longleftrightarrow> (\<exists>u. u \<^bold>\<in> A \<and> R u v)"
-apply (insert replacement [OF sv], clarify)
-apply (simp add: PrimReplace_def)
-apply (rule theI2)
-apply (auto simp: hf_ext)
-done
+  using replacement [OF sv]
+  apply (clarsimp simp: PrimReplace_def)
+  apply (rule theI2, auto simp: hf_ext)
+  done
 
 lemma Replace_iff [iff]:
   "v \<^bold>\<in> Replace A R \<longleftrightarrow> (\<exists>u. u \<^bold>\<in> A \<and> R u v \<and> (\<forall>y. R u y \<longrightarrow> y=v))"
-apply (simp add: Replace_def)
-apply (subst PrimReplace_iff, auto)
-done
+  unfolding Replace_def
+  by (smt (verit, ccfv_threshold) PrimReplace_iff)
 
 lemma Replace_0 [simp]: "Replace 0 R = 0"
   by blast
@@ -437,7 +426,7 @@ lemma RepFun_cong [cong]:
 by (simp add: RepFun_def)
 
 lemma triv_RepFun [simp]: "RepFun A (\<lambda>x. x) = A"
-by blast
+  by blast
 
 lemma RepFun_0 [simp]: "RepFun 0 f = 0"
   by blast
@@ -478,7 +467,7 @@ lemma hsubsetCE [elim]: "\<lbrakk> A \<le> B;  c\<^bold>\<notin>A \<Longrightarr
 
 text \<open>Rule in Modus Ponens style\<close>
 lemma hsubsetD [elim]: "\<lbrakk> A \<le> B;  c\<^bold>\<in>A \<rbrakk> \<Longrightarrow> c\<^bold>\<in>B"
-  by (simp add: less_eq_hf_def)
+  by auto
 
 text \<open>Sometimes useful with premises in this order\<close>
 lemma rev_hsubsetD: "\<lbrakk> c\<^bold>\<in>A; A\<le>B \<rbrakk> \<Longrightarrow> c\<^bold>\<in>B"
@@ -643,13 +632,16 @@ lemma hcard_hinsert_if: "hcard (hinsert x y) = (if x \<^bold>\<in> y then hcard 
   by (simp add: hcard_def hfset_hinsert card_insert_if hmem_def)
 
 lemma hcard_union_inter: "hcard (x \<squnion> y) + hcard (x \<sqinter> y) = hcard x + hcard y"
-  apply (induct x arbitrary: y rule: hf_induct)
-  apply (auto simp: hcard_hinsert_if hunion_hinsert_left hinter_hinsert_left)
-  done
+proof (induct x arbitrary: y rule: hf_induct)
+next
+  case (hinsert x y)
+  then show ?case
+    by (simp add: hcard_hinsert_if hinter_hinsert_left hunion_hinsert_left)
+qed auto
 
 lemma hcard_hdiff1_less: "x \<^bold>\<in> z \<Longrightarrow> hcard (z - \<lbrace>x\<rbrace>) < hcard z"
-  by (simp add: hcard_def hfset_hdiff hfset_hinsert)
-     (metis card_Diff1_less finite_hfset hmem_def)
+  unfolding hmem_def
+  by (metis card_Diff1_less finite_hfset hcard_def hfset_0 hfset_hdiff hfset_hinsert)
 
 
 subsection \<open>Powerset Operator\<close>
@@ -666,21 +658,18 @@ next
   obtain RPb where RPb: "\<forall>v. v \<^bold>\<in> RPb \<longleftrightarrow> (\<exists>u. u \<^bold>\<in> Pb \<and> v = hinsert a u)"
     using replacement_fun ..
   thus ?case using Pb binary_union [of Pb RPb]
-    apply (simp add: less_eq_insert2_iff, clarify)
-    apply (rule_tac x=z in exI)
-    apply (metis hinsert.hyps less_eq_hf_def)
-    done
+    unfolding less_eq_insert2_iff
+    by (smt (verit, ccfv_threshold) hinsert.hyps less_eq_hf_def)
 qed
 
 definition HPow :: "hf \<Rightarrow> hf"
   where "HPow x = (THE z. \<forall>u. u \<^bold>\<in> z \<longleftrightarrow> u \<le> x)"
 
 lemma HPow_iff [iff]: "u \<^bold>\<in> HPow x \<longleftrightarrow> u \<le> x"
-apply (insert powerset [of x], clarify)
-apply (simp add: HPow_def)
-apply (rule theI2)
-apply (auto simp: hf_ext)
-done
+  using powerset [of x]
+  apply (clarsimp simp: HPow_def)
+  apply (rule theI2, auto simp: hf_ext)
+  done
 
 lemma HPow_mono: "x \<le> y \<Longrightarrow> HPow x \<le> HPow y"
   by (metis HPow_iff less_eq_hf_def order_trans)
@@ -727,31 +716,22 @@ lemma hbspec [dest?]: "\<forall>x\<^bold>\<in>A. P x \<Longrightarrow> x\<^bold>
   by (simp add: HBall_def)
 
 lemma hballE [elim]: "\<forall>x\<^bold>\<in>A. P x \<Longrightarrow> (P x \<Longrightarrow> Q) \<Longrightarrow> (x \<^bold>\<notin> A \<Longrightarrow> Q) \<Longrightarrow> Q"
-  by (unfold HBall_def) blast
+  by (force simp add: HBall_def)
 
 lemma hbex_cong [cong]:
     "\<lbrakk> A=A';  \<And>x. x \<^bold>\<in> A' \<Longrightarrow> P(x) \<longleftrightarrow> P'(x) \<rbrakk>  \<Longrightarrow> (\<exists>x\<^bold>\<in>A. P(x)) \<longleftrightarrow> (\<exists>x\<^bold>\<in>A'. P'(x))"
   by (simp add: HBex_def cong: conj_cong)
 
-lemma hbexI [intro]: "P x \<Longrightarrow> x\<^bold>\<in>A \<Longrightarrow> \<exists>x\<^bold>\<in>A. P x"
-  by (unfold HBex_def) blast
+lemma hbexI [intro]: "P x \<Longrightarrow> x\<^bold>\<in>A \<Longrightarrow> \<exists>x\<^bold>\<in>A. P x" 
+  and rev_hbexI [intro?]: "x\<^bold>\<in>A \<Longrightarrow> P x \<Longrightarrow> \<exists>x\<^bold>\<in>A. P x"
+  and bexCI: "(\<forall>x\<^bold>\<in>A. \<not> P x \<Longrightarrow> P a) \<Longrightarrow> a\<^bold>\<in>A \<Longrightarrow> \<exists>x\<^bold>\<in>A. P x"
+  and hbexE [elim!]: "\<exists>x\<^bold>\<in>A. P x \<Longrightarrow> (\<And>x. x\<^bold>\<in>A \<Longrightarrow> P x \<Longrightarrow> Q) \<Longrightarrow> Q"
+  using HBex_def by auto
 
-lemma rev_hbexI [intro?]: "x\<^bold>\<in>A \<Longrightarrow> P x \<Longrightarrow> \<exists>x\<^bold>\<in>A. P x"
-  by (unfold HBex_def) blast
-
-lemma bexCI: "(\<forall>x\<^bold>\<in>A. \<not> P x \<Longrightarrow> P a) \<Longrightarrow> a\<^bold>\<in>A \<Longrightarrow> \<exists>x\<^bold>\<in>A. P x"
-  by (unfold HBex_def) blast
-
-lemma hbexE [elim!]: "\<exists>x\<^bold>\<in>A. P x \<Longrightarrow> (\<And>x. x\<^bold>\<in>A \<Longrightarrow> P x \<Longrightarrow> Q) \<Longrightarrow> Q"
-  by (unfold HBex_def) blast
-
-lemma hball_triv [simp]: "(\<forall>x\<^bold>\<in>A. P) = ((\<exists>x. x\<^bold>\<in>A) \<longrightarrow> P)"
-  \<comment> \<open>trivial rewrite rule.\<close>
-  by (simp add: HBall_def)
-
-lemma hbex_triv [simp]: "(\<exists>x\<^bold>\<in>A. P) = ((\<exists>x. x\<^bold>\<in>A) \<and> P)"
+lemma hball_triv [simp]: "(\<forall>x\<^bold>\<in>A. P) = ((\<exists>x. x\<^bold>\<in>A) \<longrightarrow> P)" 
+  and hbex_triv [simp]: "(\<exists>x\<^bold>\<in>A. P) = ((\<exists>x. x\<^bold>\<in>A) \<and> P)"
   \<comment> \<open>Dual form for existentials.\<close>
-  by (simp add: HBex_def)
+  by blast+
 
 lemma hbex_triv_one_point1 [simp]: "(\<exists>x\<^bold>\<in>A. x = a) = (a\<^bold>\<in>A)"
   by blast
