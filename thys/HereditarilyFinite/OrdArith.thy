@@ -18,8 +18,7 @@ lemma hadd: "x @+ y = x \<squnion> RepFun y (\<lambda>z. x @+ z)"
 lemma hmem_hadd_E:
   assumes l: "l \<^bold>\<in> x @+ y"
   obtains "l \<^bold>\<in> x" | z where "z \<^bold>\<in> y" "l = x @+ z"
-  using l
-  by (auto simp: hadd [of x y])
+  using l by (auto simp: hadd [of x y])
 
 lemma hadd_0_right [simp]: "x @+ 0 = x"
   by (subst hadd) simp
@@ -31,9 +30,11 @@ lemma hadd_succ_right [simp]: "x @+ succ y = succ (x @+ y)"
   by (metis hadd_hinsert_right succ_def)
 
 lemma not_add_less_right: "\<not> (x @+ y < x)"
-  apply (induct y, auto)
-  apply (metis less_supI1 hadd order_less_le)
-  done
+proof (induction y)
+  case (2 y1 y2)
+  then show ?case
+    using hadd less_supI1 order_less_le by blast
+qed auto
 
 lemma not_add_mem_right: "\<not> (x @+ y \<^bold>\<in> x)"
   by (metis hadd hmem_not_refl hunion_iff)
@@ -73,10 +74,7 @@ lemma RepFun_hadd_cancel: "RepFun y (\<lambda>z. x @+ z) = RepFun z (\<lambda>z.
   by (metis hadd hadd_cancel_right)
 
 lemma hadd_hmem_cancel [simp]: "x @+ y \<^bold>\<in> x @+ z \<longleftrightarrow> y \<^bold>\<in> z"
-  apply (auto simp: hadd [of _ y] hadd [of _ z] not_add_mem_right)
-  apply (metis hmem_not_refl hunion_iff)
-  apply (metis hadd hadd_cancel_right)
-  done
+  by (metis RepFun_iff hadd hadd_cancel_right hunion_iff not_add_mem_right)
 
 lemma ord_of_add: "ord_of (i+j) = ord_of i @+ ord_of j"
   by (induct j) auto
@@ -148,8 +146,7 @@ lemma hdomain_shift_add: "hdomain (shift f delta) = \<lbrace>delta @+ n . n \<^b
   by  (rule hf_equalityI) (force simp add: hdomain_def hmem_shift_iff)
 
 lemma hdomain_shift_disjoint: "delta \<sqinter> hdomain (shift f delta) = 0"
-  by (auto simp: hdomain_def intro!: hf_equalityI)
-     (metis shiftD hpair_inject not_add_mem_right)
+  by (simp add: RepFun_hadd_disjoint hdomain_shift_add)
 
 definition seq_append :: "hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> hf"
   where "seq_append k f g \<equiv> hrestrict f k \<squnion> shift g k"
@@ -157,14 +154,19 @@ definition seq_append :: "hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> hf"
 lemma hrelation_seq_append [simp]: "hrelation (seq_append k f g)"
   by (simp add: seq_append_def)
 
-lemma Seq_append: "Seq s1 k1 \<Longrightarrow> Seq s2 k2 \<Longrightarrow> Seq (seq_append k1 s1 s2) (k1 @+ k2)"
-  apply (auto simp: Seq_def seq_append_def)
-  apply (metis hdomain_restr hdomain_shift_disjoint hfunction_hunion hfunction_restr hfunction_shift_iff inf_absorb2 seq_append_def)
-  apply (simp add: hdomain_shift_add)
-  apply (metis hmem_hadd_E rev_hsubsetD)
-  apply (erule hmem_hadd_E, assumption, auto)
-  apply (metis Seq_def Seq_iff_app hdomainI hmem_shift_add_iff)
-  done
+lemma Seq_append:
+  assumes "Seq s1 k1" "Seq s2 k2"
+  shows "Seq (seq_append k1 s1 s2) (k1 @+ k2)"
+proof -
+  have "hfunction (hrestrict s1 k1 \<squnion> shift s2 k1)"
+    using assms
+    by (simp add: Ordinal.Seq_def hdomain_shift_disjoint hfunction_hunion hfunction_restr inf.absorb2)
+  moreover 
+  have "\<And>x. \<lbrakk>x \<^bold>\<in> k1 @+ k2; x \<^bold>\<notin> hdomain (shift s2 k1)\<rbrakk> \<Longrightarrow> x \<^bold>\<in> hdomain s1 \<and> x \<^bold>\<in> k1"
+    by (metis Ordinal.Seq_def RepFun_iff assms hdomain_shift_add hmem_hadd_E hsubsetCE)
+  ultimately show ?thesis
+    by (auto simp: Seq_def seq_append_def)
+qed
 
 lemma app_hunion1: "x \<^bold>\<notin> hdomain g \<Longrightarrow> app (f \<squnion> g) x = app f x"
   by (auto simp: app_def) (metis hdomainI)
@@ -173,9 +175,7 @@ lemma app_hunion2: "x \<^bold>\<notin> hdomain f \<Longrightarrow> app (f \<squn
   by (auto simp: app_def) (metis hdomainI)
 
 lemma Seq_append_app1: "Seq s k \<Longrightarrow> l \<^bold>\<in> k \<Longrightarrow> app (seq_append k s s') l = app s l"
-  apply (auto simp: Seq_def seq_append_def)
-  apply (metis app_hunion1 hdomain_shift_disjoint hemptyE hinter_iff app_hrestrict)
-  done
+  by (metis app_hrestrict app_hunion1 hdomain_shift_disjoint hemptyE hinter_iff seq_append_def)
 
 lemma Seq_append_app2: "Seq s1 k1 \<Longrightarrow> Seq s2 k2 \<Longrightarrow> l = k1 @+ j \<Longrightarrow> app (seq_append k1 s1 s2) l = app s2 j"
   by (metis seq_append_def app_hunion2 app_shift hdomain_restr hinter_iff not_add_mem_right)
@@ -213,13 +213,10 @@ lemma LstSeq_imp_Ord: "LstSeq s k y \<Longrightarrow> Ord k"
   by (metis LstSeq_def)
 
 lemma LstSeq_trunc: "LstSeq s k y \<Longrightarrow> l \<^bold>\<in> k \<Longrightarrow> LstSeq s l (app s l)"
-  apply (auto simp: LstSeq_def Seq_iff_app)
-  apply (metis Ord_succ Seq_Ord_D mem_succ_iff)
-  apply (metis Ord_in_Ord)
-  done
+  by (meson LstSeq_def Ord_in_Ord Seq_Ord_D Seq_iff_app Seq_succ_iff)
 
 lemma LstSeq_insf: "LstSeq s k z \<Longrightarrow> LstSeq (insf s (succ k) y) (succ k) y"
-  by (metis OrdDom_insf LstSeq_def Ord_succ_iff Seq_imp_eq_app Seq_insf Seq_succ_iff app_insf_Seq)
+  using LstSeq_def OrdDom_insf Seq_insf insf_def by force
 
 lemma app_insf_LstSeq: "LstSeq s k z \<Longrightarrow> app (insf s (succ k) y) (succ k) = y"
   by (metis LstSeq_imp_Seq_succ app_insf_Seq)
@@ -248,11 +245,7 @@ lemma Seq_append_OrdDom: "\<lbrakk>Ord k; OrdDom s1; OrdDom s2\<rbrakk> \<Longri
 
 lemma LstSeq_append:
   "\<lbrakk>LstSeq s1 k1 y1; LstSeq s2 k2 y2\<rbrakk> \<Longrightarrow> LstSeq (seq_append (succ k1) s1 s2) (succ (k1 @+ k2)) y2"
-  apply (auto simp: LstSeq_def Seq_append Ord_hadd Seq_append_pair)
-  apply (metis Seq_append hadd_succ_left hadd_succ_right)
-  apply (metis Seq_append_pair hadd_succ_left)
-  apply (metis Ord_succ Seq_append_OrdDom)
-  done
+  using LstSeq_def Ord_hadd Seq_append Seq_append_OrdDom Seq_append_pair by fastforce
 
 lemma LstSeq_app [simp]: "LstSeq s k y \<Longrightarrow> app s k = y"
   by (metis LstSeq_def Seq_imp_eq_app)
@@ -291,17 +284,7 @@ lemma BuildSeq_trunc:
   assumes b: "BuildSeq B C s k y"
       and l: "l \<^bold>\<in> k"
   shows "BuildSeq B C s l (app s l)"
-proof -
-  { fix j
-    assume j: "j \<^bold>\<in> succ l"
-    have k: "Ord k"
-      by (metis BuildSeq_imp_LstSeq LstSeq_def b)
-    hence "Builds B C s j"
-      by (metis BuildSeq_def OrdmemD b hballE hsubsetD j l succ_iff)
- }
- thus ?thesis using b l
-  by (auto simp: BuildSeq_def LstSeq_trunc)
-qed
+  by (smt (verit) BuildSeqI BuildSeq_def LstSeq_def LstSeq_trunc Ord_trans b hballE l succ_iff)
 
 
 subsection \<open>Showing that Sequences can be Constructed\<close>
@@ -331,8 +314,6 @@ next
       by (auto simp: Builds_def l)
   next
     assume l: "l \<^bold>\<in> succ k"
-    have  "LstSeq s k z"
-      by (metis BuildSeq_imp_LstSeq b)
     thus "Builds B C (insf s (succ k) y) l" using b l
       by (metis hballE Builds_insf BuildSeq_def)
   qed
@@ -383,7 +364,7 @@ next
       assume "\<exists>m\<^bold>\<in>l. \<exists>n\<^bold>\<in>l. C (app s1 l) (app s1 m) (app s1 n)"
       then obtain m n where mn: "m \<^bold>\<in> l" "n \<^bold>\<in> l" and C: "C (app s1 l) (app s1 m) (app s1 n)"
         by blast
-      also have "m \<^bold>\<in> succ k1" "n \<^bold>\<in> succ k1"
+      moreover have "m \<^bold>\<in> succ k1" "n \<^bold>\<in> succ k1"
         by (metis LstSeq_def Ord_trans l1 mn s1L succ_iff)+
       ultimately have "C (app (seq_append (succ k1) s1 s2) l)
                          (app (seq_append (succ k1) s1 s2) m)
@@ -498,10 +479,7 @@ lemma BuildSeq2_combine:
       and y: "C y y' y1 y1' y2 y2'"
   shows "BuildSeq2 B C (insf (seq_append (succ k1) s1 s2) (succ (succ (k1 @+ k2))) \<langle>y, y'\<rangle>)
                        (succ (succ (k1 @+ k2))) y y'"
-  using assms
-  apply (unfold BuildSeq2_def)
-  apply (blast intro: BuildSeq_combine)
-  done
+  using BuildSeq2_def BuildSeq_combine b1 b2 y by force
 
 lemma BuildSeq2_1: "B y y' \<Longrightarrow> BuildSeq2 B C \<lbrace>\<langle>0, y, y'\<rangle>\<rbrace> 0 y y'"
   by (auto simp: BuildSeq2_def BuildSeq_1)
@@ -511,14 +489,14 @@ lemma BuildSeq2_exI: "B t t' \<Longrightarrow> \<exists>s k. BuildSeq2 B C s k t
 
 lemma BuildSeq2_induct [consumes 1, case_names B C]:
   assumes "BuildSeq2 B C s k a a'"
-      and B: "\<And>x x'. B x x' \<Longrightarrow> P x x'"
-      and C: "\<And>x x' y y' z z'. C x x' y y' z z' \<Longrightarrow> P y y' \<Longrightarrow> P z z' \<Longrightarrow> P x x'"
+    and B: "\<And>x x'. B x x' \<Longrightarrow> P x x'"
+    and C: "\<And>x x' y y' z z'. C x x' y y' z z' \<Longrightarrow> P y y' \<Longrightarrow> P z z' \<Longrightarrow> P x x'"
   shows "P a a'"
-using assms
-apply (simp add: BuildSeq2_def)
-apply (drule BuildSeq_induct [where P = "\<lambda>\<langle>x,x'\<rangle>. P x x'"])
-apply (auto intro: B C)
-done
+  using assms
+  apply (simp only: BuildSeq2_def)
+  apply (drule BuildSeq_induct [where P = "\<lambda>\<langle>x,x'\<rangle>. P x x'"])
+    apply (auto intro: B C)
+  done
 
 definition BuildSeq3
    :: "[[hf,hf,hf] \<Rightarrow> bool, [hf,hf,hf,hf,hf,hf,hf,hf,hf] \<Rightarrow> bool, hf, hf, hf, hf, hf] \<Rightarrow> bool"
@@ -535,9 +513,7 @@ lemma BuildSeq3_combine:
   shows "BuildSeq3 B C (insf (seq_append (succ k1) s1 s2) (succ (succ (k1 @+ k2))) \<langle>y, y', y''\<rangle>)
                        (succ (succ (k1 @+ k2))) y y' y''"
   using assms
-  apply (unfold BuildSeq3_def)
-  apply (blast intro: BuildSeq_combine)
-  done
+  unfolding BuildSeq3_def by (blast intro: BuildSeq_combine)
 
 lemma BuildSeq3_1: "B y y' y'' \<Longrightarrow> BuildSeq3 B C \<lbrace>\<langle>0, y, y', y''\<rangle>\<rbrace> 0 y y' y''"
   by (auto simp: BuildSeq3_def BuildSeq_1)
@@ -547,14 +523,14 @@ lemma BuildSeq3_exI: "B t t' t'' \<Longrightarrow> \<exists>s k. BuildSeq3 B C s
 
 lemma BuildSeq3_induct [consumes 1, case_names B C]:
   assumes "BuildSeq3 B C s k a a' a''"
-      and B: "\<And>x x' x''. B x x' x'' \<Longrightarrow> P x x' x''"
-      and C: "\<And>x x' x'' y y' y'' z z' z''. C x x' x'' y y' y'' z z' z'' \<Longrightarrow> P y y' y'' \<Longrightarrow> P z z' z'' \<Longrightarrow> P x x' x''"
+    and B: "\<And>x x' x''. B x x' x'' \<Longrightarrow> P x x' x''"
+    and C: "\<And>x x' x'' y y' y'' z z' z''. C x x' x'' y y' y'' z z' z'' \<Longrightarrow> P y y' y'' \<Longrightarrow> P z z' z'' \<Longrightarrow> P x x' x''"
   shows "P a a' a''"
-using assms
-apply (simp add: BuildSeq3_def)
-apply (drule BuildSeq_induct [where P = "\<lambda>\<langle>x,x',x''\<rangle>. P x x' x''"])
-apply (auto intro: B C)
-done
+  using assms
+  apply (simp add: BuildSeq3_def)
+  apply (drule BuildSeq_induct [where P = "\<lambda>\<langle>x,x',x''\<rangle>. P x x' x''"])
+    apply (auto intro: B C)
+  done
 
 
 section \<open>A Unique Predecessor for every non-empty set\<close>
@@ -563,18 +539,21 @@ lemma Rep_hf_0 [simp]: "Rep_hf 0 = 0"
   by (metis Abs_hf_inverse HF.HF_def UNIV_I Zero_hf_def image_empty set_encode_empty)
 
 lemma hmem_imp_less: "x \<^bold>\<in> y \<Longrightarrow> Rep_hf x < Rep_hf y"
-apply (auto simp: hmem_def hfset_def set_decode_def Abs_hf_inverse)
-apply (metis div_less even_zero le_less_trans less_two_power not_less)
-done
-
-lemma hsubset_imp_le: "x \<le> y \<Longrightarrow> Rep_hf x \<le> Rep_hf y"
-  apply (auto simp: less_eq_hf_def hmem_def hfset_def Abs_hf_inverse)
-  apply (cases x rule: Abs_hf_cases)
-  apply (cases y rule: Abs_hf_cases, auto)
-  apply (rule subset_decode_imp_le)
-  apply (auto simp: Abs_hf_inverse [OF UNIV_I])
-  apply (metis Abs_hf_inverse UNIV_I imageE imageI)
+unfolding hmem_def hfset_def
+  apply (clarsimp simp: hmem_def hfset_def set_decode_def Abs_hf_inverse)
+  apply (metis div_less even_zero le_less_trans less_exp not_less)
   done
+
+lemma hsubset_imp_le: 
+  assumes "x \<le> y" shows "Rep_hf x \<le> Rep_hf y"
+proof -
+  have "\<And>u v. \<lbrakk>\<forall>x. x \<in> Abs_hf ` set_decode (Rep_hf (Abs_hf u)) \<longrightarrow>
+                   x \<in> Abs_hf ` set_decode (Rep_hf (Abs_hf v))\<rbrakk>
+              \<Longrightarrow> u \<le> v"
+    by (metis Abs_hf_inverse UNIV_I imageE image_eqI subsetI subset_decode_imp_le)
+  then show ?thesis
+    by (metis Rep_hf_inverse assms hfset_def hmem_def hsubsetCE)
+qed
 
 lemma diff_hmem_imp_less: assumes "x \<^bold>\<in> y" shows "Rep_hf (y - \<lbrace>x\<rbrace>) < Rep_hf y"
 proof -
@@ -593,11 +572,8 @@ definition least :: "hf \<Rightarrow> hf"
 lemma least_equality:
   assumes "x \<^bold>\<in> a" and "\<And>y. y \<^bold>\<in> a \<Longrightarrow> Rep_hf x \<le> Rep_hf y"
   shows "least a = x"
-unfolding least_def
-apply (rule the_equality)
-apply (metis assms)
-apply (metis Rep_hf_inverse assms eq_iff)
-done
+  unfolding least_def
+  using Rep_hf_inject assms order_antisym_conv by blast
 
 lemma leastI2_order:
   assumes "x \<^bold>\<in> a"
@@ -618,14 +594,11 @@ next
     next
       case False
       thus ?thesis
-        by (metis dual_order.trans eq_iff hinsert.IH(2) hmem_hinsert
-                  less_eq_insert1_iff linear)
+        by (metis order.trans hinsert.IH(2) hmem_hinsert linorder_le_cases)
     qed
 qed
 
 lemma least_hmem: "a \<noteq> 0 \<Longrightarrow> least a \<^bold>\<in> a"
-apply (frule nonempty_imp_ex_least, clarify)
-apply (rule leastI2_order, auto)
-done
+  by (metis least_equality nonempty_imp_ex_least)
 
 end

@@ -187,10 +187,13 @@ subsection \<open>Supremum and Infimum\<close>
 lemma Ord_Union [intro,simp]: "\<lbrakk> \<And>i. i\<^bold>\<in>A \<Longrightarrow> Ord(i) \<rbrakk>  \<Longrightarrow> Ord(\<Squnion> A)"
   by (auto simp: Ord_def Transset_def) blast
 
-lemma Ord_Inter [intro,simp]: "\<lbrakk> \<And>i. i\<^bold>\<in>A \<Longrightarrow> Ord(i) \<rbrakk>  \<Longrightarrow> Ord(\<Sqinter> A)"
-  apply (case_tac "A=0", auto simp: Ord_def Transset_def)
-  apply (force simp add: hf_ext)+
-  done
+lemma Ord_Inter [intro,simp]:
+  assumes "\<And>i. i\<^bold>\<in>A \<Longrightarrow> Ord(i)" shows "Ord(\<Sqinter> A)"
+proof (cases "A=0")
+  case False
+  with assms show ?thesis
+    by (fastforce simp add: Ord_def Transset_def)
+qed auto
 
 text \<open>Theorem 2.7. Every set x of ordinals is ordered by the binary relation <.
       Moreover if x = 0 then x has a smallest and a largest element.\<close>
@@ -317,9 +320,11 @@ lemma nat_of_ord_0 [simp]: "nat_of_ord 0 = 0"
   by (metis (mono_tags) nat_of_ord_ord_of ord_of.simps(1))
 
 lemma ord_of_nat_of_ord [simp]: "Ord x \<Longrightarrow> ord_of (nat_of_ord x) = x"
-  apply (erule Ord_induct2, simp)
-  apply (metis nat_of_ord_ord_of ord_of.simps(2))
-  done
+proof (induction x rule: Ord_induct2)
+  case (succ k)
+  then show ?case
+    by (metis nat_of_ord_ord_of ord_of.simps(2))
+qed auto
 
 lemma nat_of_ord_inject: "Ord x \<Longrightarrow> Ord y \<Longrightarrow> nat_of_ord x = nat_of_ord y \<longleftrightarrow> x = y"
   by (metis ord_of_nat_of_ord)
@@ -336,7 +341,8 @@ lemma hfset_ord_of: "hfset (ord_of n) = ord_of ` {0..<n}"
 lemma bij_betw_ord_of: "bij_betw ord_of {0..<n} (hfset (ord_of n))"
   by (simp add: bij_betw_def inj_ord_of hfset_ord_of)
 
-lemma bij_betw_ord_ofI: "bij_betw h A {0..<n} \<Longrightarrow> bij_betw (ord_of \<circ> h) A (hfset (ord_of n))"
+lemma bij_betw_ord_ofI:
+  "bij_betw h A {0..<n} \<Longrightarrow> bij_betw (ord_of \<circ> h) A (hfset (ord_of n))"
   by (blast intro: bij_betw_ord_of bij_betw_trans)
 
 
@@ -368,23 +374,27 @@ lemma Seq_ins: "\<lbrakk>Seq s k; k \<^bold>\<notin> hdomain s\<rbrakk> \<Longri
 definition insf :: "hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> hf"
   where "insf s k y \<equiv> nonrestrict s \<lbrace>k\<rbrace> \<triangleleft> \<langle>k, y\<rangle>"
 
+lemma hrelation_insf: "hrelation s \<Longrightarrow> hrelation (insf s k y)"
+  by (simp add: hrelation_def insf_def nonrestrict_def)
+
 lemma hfunction_insf: "hfunction s \<Longrightarrow> hfunction (insf s k y)"
   by (auto simp: insf_def hfunction_def nonrestrict_def hmem_not_refl)
 
+lemma hdomain_insf: "k \<le> hdomain s \<Longrightarrow> succ k \<le> hdomain (insf s k y)"
+  unfolding insf_def
+  using hdomain_def hdomain_ins less_eq_hf_def nonrestrict_def by fastforce 
+
 lemma Seq_insf: "Seq s k \<Longrightarrow> Seq (insf s k y) (succ k)"
-  apply (auto simp: Seq_def hrelation_def insf_def hfunction_def nonrestrict_def)
-  apply (force simp add: hdomain_def)
-  done
+  by (simp add: Ordinal.Seq_def hdomain_insf hfunction_insf hrelation_insf)
 
 lemma Seq_succ_iff: "Seq s (succ k) \<longleftrightarrow> Seq s k \<and> (\<exists>y. \<langle>k, y\<rangle> \<^bold>\<in> s)"
-  apply (auto simp: Seq_def hdomain_def)
-  apply (metis hfst_conv, blast)
-  done
+  using Ordinal.Seq_def hdomain_def succ_def by auto
 
 lemma nonrestrictD: "a \<^bold>\<in> nonrestrict s X \<Longrightarrow> a \<^bold>\<in> s"
   by (auto simp: nonrestrict_def)
 
-lemma hpair_in_nonrestrict_iff [simp]: "\<langle>a,b\<rangle> \<^bold>\<in> nonrestrict s X \<longleftrightarrow> \<langle>a,b\<rangle> \<^bold>\<in> s \<and> \<not> a \<^bold>\<in> X"
+lemma hpair_in_nonrestrict_iff [simp]:
+  "\<langle>a,b\<rangle> \<^bold>\<in> nonrestrict s X \<longleftrightarrow> \<langle>a,b\<rangle> \<^bold>\<in> s \<and> \<not> a \<^bold>\<in> X"
   by (auto simp: nonrestrict_def)
 
 lemma app_nonrestrict_Seq: "Seq s k \<Longrightarrow> z \<^bold>\<notin> X \<Longrightarrow> app (nonrestrict s X) z = app s z"
@@ -429,13 +439,8 @@ proof -
       by (metis Seq_def hrelation_def is_hpair_def)
     hence "z \<^bold>\<in> insf s k y"
       by (metis hemptyE hmem_hinsert hpair_in_nonrestrict_iff insf_def yuniq z)
-  }
-  note left2right = this
-  show ?thesis
-    proof
-      show "s = insf s k y"
-        by (rule hf_equalityI) (metis hmem_hinsert insf_def left2right nonrestrictD y)
-    qed
+  } then show ?thesis
+    by (metis hf_equalityI hmem_hinsert insf_def nonrestrictD y)
 qed
 
 lemma ord_rec_Seq_succ_iff:
@@ -443,13 +448,10 @@ lemma ord_rec_Seq_succ_iff:
   shows "ord_rec_Seq T G s (succ k) z \<longleftrightarrow> (\<exists> s' y. ord_rec_Seq T G s' k y \<and> z = G y \<and> s = insf s' k y)"
 proof
   assume os: "ord_rec_Seq T G s (succ k) z"
-  show "\<exists>s' y. ord_rec_Seq T G s' k y \<and> z = G y \<and> s = insf s' k y"
-    apply (rule_tac x=s in exI)  using os k knz
-    apply (auto simp: Seq_insf ord_rec_Seq_def app_insf_Seq app_insf2_Seq
-                          hmem_succ_ne hmem_ne hmem_Sup_ne Seq_succ_iff hmem_0_Ord)
-    apply (metis Ord_pred)
-    apply (metis Ord_pred Seq_succ_iff Seq_succ_insf app_insf_Seq)
-    done
+  have "s = insf s k (G (app s (\<Squnion>k)))"
+    by (smt (verit, best) Ord_pred Seq_succ_D Seq_succ_insf app_insf_Seq k knz ord_rec_Seq_def os succ_iff)
+  then show "\<exists>s' y. ord_rec_Seq T G s' k y \<and> z = G y \<and> s = insf s' k y"
+    by (metis Ord_Sup_succ_eq Seq_succ_D app_insf_Seq k ord_rec_Seq_def os succ_iff)
 next
   assume ok: "\<exists>s' y. ord_rec_Seq T G s' k y \<and> z = G y \<and> s = insf s' k y"
   thus "ord_rec_Seq T G s (succ k) z" using ok k knz
@@ -523,10 +525,7 @@ proof -
   from ord_recp_total [of T G H k]
   obtain y where "ord_recp T G H k y" by auto
   thus ?thesis using k
-    apply (simp add: ord_rec_def ord_recp_succ_iff)
-    apply (rule theI2)
-    apply (auto dest: ord_recp_functional)
-    done
+    by (metis (no_types, lifting) ord_rec_def ord_recp_functional ord_recp_succ_iff the_equality)
 qed
 
 lemma ord_rec_non [simp]: "\<not> Ord x \<Longrightarrow> ord_rec T G H x = H x"

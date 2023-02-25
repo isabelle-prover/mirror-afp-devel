@@ -151,10 +151,10 @@ lemma rank_sup [simp]: "rank (a \<squnion> b) = rank a \<squnion> rank b"
 proof (rule antisym)
   have o: "Ord (rank a \<squnion> rank b)"
     by simp
+  have "a \<le> Vset (rank a \<squnion> rank b) \<and> b \<le> Vset (rank a \<squnion> rank b)"
+    by (metis le_Vset_rank order_trans Vset_mono sup_ge1 sup_ge2 o)
   thus "rank (a \<squnion> b) \<le> rank a \<squnion> rank b"
-    apply (rule Vset_succ_rank_le, simp)
-    apply (metis le_Vset_rank order_trans Vset_mono sup_ge1 sup_ge2 o)
-    done
+    using Vset_succ_rank_le by auto
 next
   show "rank a \<squnion> rank b \<le> rank (a \<squnion> b)"
     by (metis le_supI le_supI1 le_supI2 order_eq_refl rank_mono)
@@ -207,7 +207,7 @@ proof -
   moreover have "X \<le> Y \<sqinter> Vset (rank X)"
     by (metis Y(2) le_Vset_rank le_inf_iff)
   ultimately show "eclose X \<le> Y"
-    apply (auto simp: eclose_def)
+    apply (clarsimp simp: eclose_def)
     apply (metis hinter_iff le_inf_iff order_refl)
     done
 qed
@@ -278,12 +278,7 @@ definition
   "hmem_rel = trancl {(x,y). x \<^bold>\<in> y}"
 
 lemma wf_hmem_rel: "wf hmem_rel"
-proof -
-  have "wf {(x,y). x \<^bold>\<in> y}"
-    by (metis (full_types) hmem_induct wfPUNIVI wfP_def)
-  thus ?thesis
-    by (metis hmem_rel_def wf_trancl)
-qed
+  by (metis hmem_induct hmem_rel_def wfPUNIVI wfP_def wf_trancl)
 
 lemma hmem_eclose_le: "y \<^bold>\<in> x \<Longrightarrow> eclose y \<le> eclose x"
   by (metis Transset_def Transset_eclose eclose_minimal hsubsetD le_eclose)
@@ -326,10 +321,7 @@ lemma ecut_apply: "y \<^bold>\<in> eclose x \<Longrightarrow> ecut f x y = f y"
   by (metis ecut_def)
 
 lemma RepFun_ecut: "y \<le> z \<Longrightarrow> RepFun y (ecut f z) = RepFun y f"
-  apply (auto simp: hf_ext)
-  apply (metis ecut_def hsubsetD le_eclose)
-  apply (metis ecut_apply le_eclose hsubsetD)
-  done
+  by (meson RepFun_cong ecut_apply hsubsetCE le_eclose)
 
 text \<open>Now, a stronger induction rule, for the transitive closure of membership\<close>
 lemma hmem_rel_induct [case_names step]:
@@ -348,11 +340,15 @@ proof -
 qed
 
 lemma rank_HUnion_less:  "x \<noteq> 0 \<Longrightarrow> rank (\<Squnion>x) < rank x"
-  apply (induct x rule: hf_induct, auto)
-  apply (metis hmem_hinsert rank_hinsert rank_lt)
-  apply (metis HUnion_hempty Ord_lt_succ_iff_le Ord_rank hunion_hempty_right
-               less_supI1 less_supI2 rank_sup sup.cobounded2)
-  done
+proof (induction x rule: hf_induct)
+  case 0
+  then show ?case by auto
+next
+  case (hinsert x y)
+  then show ?case
+    apply (clarsimp simp: Ord_lt_succ_iff_le less_supI2)
+    by (metis HUnion_hempty Ord_lt_succ_iff_le Ord_rank hunion_hempty_right less_supI1 less_supI2 rank_sup sup.cobounded2)
+qed
 
 corollary Sup_ne: "x \<noteq> 0 \<Longrightarrow> \<Squnion>x \<noteq> x"
   by (metis less_irrefl rank_HUnion_less)
