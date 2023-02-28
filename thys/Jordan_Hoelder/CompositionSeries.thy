@@ -5,9 +5,10 @@
 
 theory CompositionSeries
 imports
-  SimpleGroups
-  MaximalNormalSubgroups
+  MaximalNormalSubgroups Secondary_Sylow.SndSylow
 begin
+
+hide_const (open) Divisibility.prime
 
 section \<open>Normal series and Composition series\<close>
 
@@ -16,19 +17,19 @@ subsection \<open>Preliminaries\<close>
 text \<open>A subgroup which is unique in cardinality is normal:\<close>
 
 lemma (in group) unique_sizes_subgrp_normal:
-  assumes fin:"finite (carrier G)"
+  assumes fin: "finite (carrier G)"
   assumes "\<exists>!Q. Q \<in> subgroups_of_size q"
   shows "(THE Q. Q \<in> subgroups_of_size q) \<lhd> G"
 proof -
   from assms obtain Q where "Q \<in> subgroups_of_size q" by auto
   define Q where "Q = (THE Q. Q \<in> subgroups_of_size q)"
-  with assms have Qsize:"Q \<in> subgroups_of_size q" using theI by metis
-  hence QG:"subgroup Q G" and cardQ:"card Q = q" unfolding subgroups_of_size_def by auto
+  with assms have Qsize: "Q \<in> subgroups_of_size q" using theI by metis
+  hence QG: "subgroup Q G" and cardQ: "card Q = q" unfolding subgroups_of_size_def by auto
   from QG have "Q \<lhd> G" apply(rule normalI)
   proof
     fix g
-    assume g:"g \<in> carrier G"
-    hence invg:"inv g \<in> carrier G" by (metis inv_closed)
+    assume g: "g \<in> carrier G"
+    hence invg: "inv g \<in> carrier G" by (metis inv_closed)
     with fin Qsize have "conjugation_action q (inv g) Q \<in> subgroups_of_size q" by (metis conjugation_is_size_invariant)
     with g Qsize have "(inv g) <# (Q #> inv (inv g)) \<in> subgroups_of_size q" unfolding conjugation_action_def by auto
     with invg g have "inv g <# (Q #> g) = Q" by (metis Qsize assms(2) inv_inv)
@@ -41,22 +42,22 @@ text \<open>A group whose order is the product of two distinct
 primes $p$ and $q$ where $p < q$ has a unique subgroup of size $q$:\<close>
 
 lemma (in group) pq_order_unique_subgrp:
-  assumes finite:"finite (carrier G)"
-  assumes orderG:"order G = q * p"
-  assumes primep:"prime p" and primeq:"prime q" and pq:"p < q"
+  assumes finite: "finite (carrier G)"
+  assumes orderG: "order G = q * p"
+  assumes primep: "prime p" and primeq: "prime q" and pq: "p < q"
   shows "\<exists>!Q. Q \<in> (subgroups_of_size q)"
 proof -
-  from primep primeq pq have nqdvdp:"\<not> (q dvd p)" by (metis less_not_refl3 prime_nat_iff)
+  from primep primeq pq have nqdvdp: "\<not> (q dvd p)" by (metis less_not_refl3 prime_nat_iff)
   define calM where "calM = {s. s \<subseteq> carrier G \<and> card s = q ^ 1}"
   define RelM where "RelM = {(N1, N2). N1 \<in> calM \<and> N2 \<in> calM \<and> (\<exists>g\<in>carrier G. N1 = N2 #> g)}"
   interpret syl: snd_sylow G q 1 p calM RelM
     unfolding snd_sylow_def sylow_def snd_sylow_axioms_def sylow_axioms_def
     using is_group primeq orderG finite nqdvdp calM_def RelM_def by auto
-  obtain Q where Q:"Q \<in> subgroups_of_size q" by (metis (lifting, mono_tags) mem_Collect_eq power_one_right subgroups_of_size_def syl.sylow_thm)
+  obtain Q where Q: "Q \<in> subgroups_of_size q" by (metis (lifting, mono_tags) mem_Collect_eq power_one_right subgroups_of_size_def syl.sylow_thm)
   thus ?thesis 
   proof (rule ex1I)
      fix P
-     assume P:"P \<in> subgroups_of_size q"
+     assume P: "P \<in> subgroups_of_size q"
      have "card (subgroups_of_size q) mod q = 1" by (metis power_one_right syl.p_sylow_mod_p)     
      moreover have "card (subgroups_of_size q) dvd p" by (metis power_one_right syl.num_sylow_dvd_remainder)
      then have "card (subgroups_of_size q) = p \<or> card (subgroups_of_size q) = 1"
@@ -70,9 +71,9 @@ qed
 text \<open>... And this unique subgroup is normal.\<close>
 
 corollary (in group) pq_order_subgrp_normal:
-  assumes finite:"finite (carrier G)"
-  assumes orderG:"order G = q * p"
-  assumes primep:"prime p" and primeq:"prime q" and pq:"p < q"
+  assumes finite: "finite (carrier G)"
+  assumes orderG: "order G = q * p"
+  assumes primep: "prime p" and primeq: "prime q" and pq: "p < q"
   shows "(THE Q. Q \<in> subgroups_of_size q) \<lhd> G"
 using assms by (metis pq_order_unique_subgrp unique_sizes_subgrp_normal)
 
@@ -91,10 +92,10 @@ and each of the list items must be a normal subgroup of its successor.\<close>
 
 locale normal_series = group +
   fixes \<GG>
-  assumes notempty:"\<GG> \<noteq> []"
-  assumes hd:"hd \<GG> = {\<one>}"
-  assumes last:"last \<GG> = carrier G"
-  assumes normal:"\<And>i. i + 1 < length \<GG> \<Longrightarrow> (\<GG> ! i) \<lhd> G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>"
+  assumes notempty: "\<GG> \<noteq> []"
+  assumes hd: "hd \<GG> = {\<one>}"
+  assumes last: "last \<GG> = carrier G"
+  assumes normal: "\<And>i. i + 1 < length \<GG> \<Longrightarrow> (\<GG> ! i) \<lhd> G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>"
 
 lemma (in normal_series) is_normal_series: "normal_series G \<GG>" by (rule normal_series_axioms)
 
@@ -115,16 +116,16 @@ lemma (in normal_series) length_two_unique:
 proof(rule nth_equalityI)
   from assms show "length \<GG> = length [{\<one>}, carrier G]" by auto
 next
-  show "\<GG> ! i = [{\<one>}, carrier G] ! i" if i:"i < length \<GG>" for i
+  show "\<GG> ! i = [{\<one>}, carrier G] ! i" if i: "i < length \<GG>" for i
   proof -
     have "i = 0 \<or> i = 1" using that assms by auto
     thus "\<GG> ! i = [{\<one>}, carrier G] ! i"
     proof(rule disjE)
-      assume i:"i = 0"
+      assume i: "i = 0"
       hence "\<GG> ! i = hd \<GG>" by (metis hd_conv_nth notempty)
       thus "\<GG> ! i = [{\<one>}, carrier G] ! i" using hd i by simp
     next
-      assume i:"i = 1"
+      assume i: "i = 1"
       with assms have "\<GG> ! i = last \<GG>" by (metis diff_add_inverse last_conv_nth nat_1_add_1 notempty)
       thus "\<GG> ! i = [{\<one>}, carrier G] ! i" using last i by simp
     qed
@@ -136,13 +137,13 @@ append the carrier of a group @{term G} to a normal series for a normal subgroup
 @{term "H \<lhd> G"} we receive a normal series for @{term G}.\<close>
 
 lemma (in group) normal_series_extend:
-  assumes normal:"normal_series (G\<lparr>carrier := H\<rparr>) \<HH>"
-  assumes HG:"H \<lhd> G"
+  assumes normal: "normal_series (G\<lparr>carrier := H\<rparr>) \<HH>"
+  assumes HG: "H \<lhd> G"
   shows "normal_series G (\<HH> @ [carrier G])"
 proof -
   from normal interpret normalH: normal_series "(G\<lparr>carrier := H\<rparr>)" \<HH>.
   from normalH.hd have "hd \<HH> = {\<one>}" by simp
-  with normalH.notempty have hdTriv:"hd (\<HH> @ [carrier G]) = {\<one>}" by (metis hd_append2)
+  with normalH.notempty have hdTriv: "hd (\<HH> @ [carrier G]) = {\<one>}" by (metis hd_append2)
   show ?thesis unfolding normal_series_def normal_series_axioms_def using is_group
   proof auto
     fix x
@@ -152,7 +153,7 @@ proof -
     from hdTriv show  "\<one> \<in> hd (\<HH> @ [carrier G])" by simp
   next
     fix i
-    assume i:"i < length \<HH>"
+    assume i: "i < length \<HH>"
     show "(\<HH> @ [carrier G]) ! i \<lhd> G\<lparr>carrier := (\<HH> @ [carrier G]) ! Suc i\<rparr>"
     proof (cases "i + 1 < length \<HH>")
       case True
@@ -161,7 +162,7 @@ proof -
       with True show "(\<HH> @ [carrier G]) ! i \<lhd> G\<lparr>carrier := (\<HH> @ [carrier G]) ! (Suc i)\<rparr>" using nth_append Suc_eq_plus1 by metis
     next
       case False
-      with i have i2:"i + 1 = length \<HH>" by simp
+      with i have i2: "i + 1 = length \<HH>" by simp
       from i have "(\<HH> @ [carrier G]) ! i = \<HH> ! i" by (metis nth_append)
       also from i2 normalH.notempty have "... = last \<HH>" by (metis add_diff_cancel_right' last_conv_nth)
       also from normalH.last have "... = H" by simp
@@ -180,16 +181,17 @@ proof -
   have "i + 1 < length \<GG> \<Longrightarrow> subgroup (\<GG> ! i) G"
   proof (induction "length \<GG> - (i + 2)" arbitrary: i)
     case 0
-    hence i:"i + 2 = length \<GG>" by simp
-    hence ii:"i + 1 = length \<GG> - 1" by force
+    hence i: "i + 2 = length \<GG>" by simp
+    hence ii: "i + 1 = length \<GG> - 1" by force
     from i normal have "\<GG> ! i \<lhd> G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>" by auto
     with ii last notempty show "subgroup (\<GG> ! i) G" using last_conv_nth normal_imp_subgroup by fastforce
   next
     case (Suc k)
-    from Suc(3)  normal have i:"subgroup (\<GG> ! i) (G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>)" using normal_imp_subgroup by auto
-    from Suc(2) have k:"k = length \<GG> - ((i + 1) + 2)" by arith
+    from Suc(3)  normal have i: "subgroup (\<GG> ! i) (G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>)" using normal_imp_subgroup by auto
+    from Suc(2) have k: "k = length \<GG> - ((i + 1) + 2)" by arith
     with Suc have "subgroup (\<GG> ! (i + 1)) G" by simp
-    with i show "subgroup (\<GG> ! i) G" by (metis is_group subgroup.subgroup_of_subgroup)
+    with i show "subgroup (\<GG> ! i) G"
+      using incl_subgroup by blast
   qed
   moreover have "i + 1 = length \<GG> \<Longrightarrow> subgroup (\<GG> ! i) G"
     using last notempty last_conv_nth by (metis add_diff_cancel_right' subgroup_self)
@@ -202,7 +204,7 @@ lemma (in normal_series) normal_series_snd_to_last:
   shows "\<GG> ! (length \<GG> - 2) \<lhd> G"
 proof (cases "2 \<le> length \<GG>")
   case False
-  with notempty have length:"length \<GG> = 1" by (metis Suc_eq_plus1 leI length_0_conv less_2_cases plus_nat.add_0)
+  with notempty have length: "length \<GG> = 1" by (metis Suc_eq_plus1 leI length_0_conv less_2_cases plus_nat.add_0)
   with hd have "\<GG> ! (length \<GG> - 2) = {\<one>}" using hd_conv_nth notempty by auto
   with length show ?thesis by (metis trivial_subgroup_is_normal)
 next
@@ -233,13 +235,13 @@ text \<open>If a group's order is the product of two distinct primes @{term p} a
 @{term "p < q"}, we can construct a normal series using the only subgroup of size  @{term q}.\<close>
 
 lemma (in group) pq_order_normal_series:
-  assumes finite:"finite (carrier G)"
-  assumes orderG:"order G = q * p"
-  assumes primep:"prime p" and primeq:"prime q" and pq:"p < q"
+  assumes finite: "finite (carrier G)"
+  assumes orderG: "order G = q * p"
+  assumes primep: "prime p" and primeq: "prime q" and pq: "p < q"
   shows "normal_series G [{\<one>}, (THE H. H \<in> subgroups_of_size q), carrier G]"
 proof -
   define H where "H = (THE H. H \<in> subgroups_of_size q)"
-  with assms have HG:"H \<lhd> G" by (metis pq_order_subgrp_normal)
+  with assms have HG: "H \<lhd> G" by (metis pq_order_subgrp_normal)
   then interpret groupH: group "G\<lparr>carrier := H\<rparr>" unfolding normal_def by (metis subgroup_imp_group)
   have "normal_series (G\<lparr>carrier := H\<rparr>) [{\<one>}, H]"  using groupH.trivial_normal_series by auto
   with HG show ?thesis unfolding H_def by (metis append_Cons append_Nil normal_series_extend)
@@ -266,7 +268,7 @@ lemma (in normal_series) last_quotient:
   assumes "length \<GG> > 1"
   shows "last quotients = G Mod \<GG> ! (length \<GG> - 1 - 1)"
 proof -
-  from assms have lsimp:"length \<GG> - 1 - 1 + 1 = length \<GG> - 1" by auto
+  from assms have lsimp: "length \<GG> - 1 - 1 + 1 = length \<GG> - 1" by auto
   from assms have "quotients \<noteq> []" unfolding quotients_def by auto
   hence "last quotients = quotients ! (length quotients - 1)" by (metis last_conv_nth)
   also have "\<dots> = quotients ! (length \<GG> - 1 - 1)" by (metis add_diff_cancel_left' quotients_length add.commute)
@@ -281,13 +283,13 @@ text \<open>The next lemma transports the constituting properties of a normal se
 along an isomorphism of groups.\<close>
 
 lemma (in normal_series) normal_series_iso:
-  assumes H:"group H"
-  assumes iso:"\<Psi> \<in> iso G H"
+  assumes H: "group H"
+  assumes iso: "\<Psi> \<in> iso G H"
   shows "normal_series H (map (image \<Psi>) \<GG>)"
 apply (simp add: normal_series_def normal_series_axioms_def)
 using H notempty apply simp
 proof (rule conjI)
-  from H is_group iso have group_hom:"group_hom G H \<Psi>" unfolding group_hom_def group_hom_axioms_def iso_def by auto
+  from H is_group iso have group_hom: "group_hom G H \<Psi>" unfolding group_hom_def group_hom_axioms_def iso_def by auto
   have "hd (map (image \<Psi>) \<GG>) = \<Psi> ` {\<one>}" by (metis hd_map hd notempty)
   also have "\<dots> = {\<Psi> \<one>}" by (metis image_empty image_insert)
   also have "\<dots> = {\<one>\<^bsub>H\<^esub>}" using group_hom group_hom.hom_one by auto
@@ -300,13 +302,14 @@ next
     finally show "last (map ((`) \<Psi>) \<GG>) = carrier H".
   next
     fix i
-    assume i:"Suc i < length \<GG>"
-    hence norm:"\<GG> ! i \<lhd> G\<lparr>carrier := \<GG> ! Suc i\<rparr>" using normal by simp
+    assume i: "Suc i < length \<GG>"
+    hence norm: "\<GG> ! i \<lhd> G\<lparr>carrier := \<GG> ! Suc i\<rparr>" using normal by simp
     moreover have "restrict \<Psi> (\<GG> ! Suc i) \<in> iso (G\<lparr>carrier := \<GG> ! Suc i\<rparr>) (H\<lparr>carrier := \<Psi> ` \<GG> ! Suc i\<rparr>)"
       by (metis H i is_group iso iso_restrict normal_series_subgroups)
     moreover have "group (G\<lparr>carrier := \<GG> ! Suc i\<rparr>)" by (metis i normal_series_subgroups subgroup_imp_group)
     moreover hence "subgroup (\<GG> ! Suc i) G" by (metis i normal_series_subgroups)
-    hence "subgroup (\<Psi> ` \<GG> ! Suc i) H" by (metis H is_group iso iso_subgroup)
+    hence "subgroup (\<Psi> ` \<GG> ! Suc i) H"
+      by (simp add: H iso subgroup.iso_subgroup)
     hence "group (H\<lparr>carrier := \<Psi> ` \<GG> ! Suc i\<rparr>)" by (metis H subgroup.subgroup_is_group)
     ultimately have "restrict \<Psi> (\<GG> ! Suc i) ` \<GG> ! i \<lhd> H\<lparr>carrier := \<Psi> ` \<GG> ! Suc i\<rparr>"
       using is_group H iso_normal_subgroup by (auto cong del: image_cong_simp)
@@ -321,7 +324,7 @@ subsection \<open>Composition Series\<close>
 text \<open>A composition series is a normal series where all consecutive factor groups are simple:\<close>
 
 locale composition_series = normal_series +
-  assumes simplefact:"\<And>i. i + 1 <  length \<GG> \<Longrightarrow> simple_group (G\<lparr>carrier := \<GG> ! (i + 1)\<rparr> Mod \<GG> ! i)"
+  assumes simplefact: "\<And>i. i + 1 <  length \<GG> \<Longrightarrow> simple_group (G\<lparr>carrier := \<GG> ! (i + 1)\<rparr> Mod \<GG> ! i)"
 
 lemma (in composition_series) is_composition_series:
   shows "composition_series G \<GG>"
@@ -343,13 +346,13 @@ qed
 lemma (in composition_series) composition_series_triv_group:
   shows "(carrier G = {\<one>}) = (\<GG> = [{\<one>}])"
 proof
-  assume G:"carrier G = {\<one>}"
+  assume G: "carrier G = {\<one>}"
   have "length \<GG> = 1"
   proof (rule ccontr)
     assume "length \<GG> \<noteq> 1"
-    with notempty have length:"length \<GG> \<ge> 2" by (metis Suc_eq_plus1 length_0_conv less_2_cases not_less plus_nat.add_0)
+    with notempty have length: "length \<GG> \<ge> 2" by (metis Suc_eq_plus1 length_0_conv less_2_cases not_less plus_nat.add_0)
     with simplefact hd hd_conv_nth notempty have "simple_group (G\<lparr>carrier := \<GG> ! 1\<rparr> Mod {\<one>})" by force
-    moreover have SG:"subgroup (\<GG> ! 1) G" using length normal_series_subgroups by auto
+    moreover have SG: "subgroup (\<GG> ! 1) G" using length normal_series_subgroups by auto
     hence "group (G\<lparr>carrier := \<GG> ! 1\<rparr>)" by (metis subgroup_imp_group)
     ultimately have  "simple_group (G\<lparr>carrier := \<GG> ! 1\<rparr>)" using group.trivial_factor_iso simple_group.iso_simple by fastforce
     moreover from SG G have "carrier (G\<lparr>carrier := \<GG> ! 1\<rparr>) = {\<one>}" unfolding subgroup_def by auto
@@ -370,8 +373,8 @@ lemma (in composition_series) inner_elements_not_triv:
   shows "\<GG> ! i \<noteq> {\<one>}"
 proof
   from assms have "(i - 1) + 1 < length \<GG>" by simp
-  hence simple:"simple_group (G\<lparr>carrier := \<GG> ! ((i - 1) + 1)\<rparr> Mod \<GG> ! (i - 1))" using simplefact by auto
-  assume i:"\<GG> ! i = {\<one>}"
+  hence simple: "simple_group (G\<lparr>carrier := \<GG> ! ((i - 1) + 1)\<rparr> Mod \<GG> ! (i - 1))" using simplefact by auto
+  assume i: "\<GG> ! i = {\<one>}"
   moreover from assms have "(i - 1) + 1 = i" by auto
   ultimately have "G\<lparr>carrier := \<GG> ! ((i - 1) + 1)\<rparr> Mod \<GG> ! (i - 1) = G\<lparr>carrier := {\<one>}\<rparr> Mod \<GG> ! (i - 1)" using i by auto
   hence "order (G\<lparr>carrier := \<GG> ! ((i - 1) + 1)\<rparr> Mod \<GG> ! (i - 1)) = 1" unfolding FactGroup_def order_def RCOSETS_def by force
@@ -388,7 +391,7 @@ proof
   moreover have "the_elem \<in> iso (G Mod {\<one>}) G" by (rule trivial_factor_iso)
   ultimately show "simple_group G" by (metis is_group simple_group.iso_simple)
 next
-  assume simple:"simple_group G"
+  assume simple: "simple_group G"
   have "length \<GG> > 1"
   proof (rule ccontr)
     assume "\<not> 1 < length \<GG>"
@@ -401,13 +404,13 @@ next
   proof (rule ccontr)
     define k where "k = length \<GG> - 2"
     assume "\<not> (length \<GG> \<le> 2)"
-    hence gt2:"length \<GG> > 2" by simp
-    hence ksmall:"k + 1 < length \<GG>" unfolding k_def by auto
-    from gt2 have carrier:"\<GG> ! (k + 1) = carrier G" using notempty last last_conv_nth k_def
+    hence gt2: "length \<GG> > 2" by simp
+    hence ksmall: "k + 1 < length \<GG>" unfolding k_def by auto
+    from gt2 have carrier: "\<GG> ! (k + 1) = carrier G" using notempty last last_conv_nth k_def
       by (metis Nat.add_diff_assoc Nat.diff_cancel \<open>\<not> length \<GG> \<le> 2\<close> add.commute nat_le_linear one_add_one)
     from normal ksmall have "\<GG> ! k \<lhd> G\<lparr> carrier := \<GG> ! (k + 1)\<rparr>" by simp
-    from simplefact ksmall have simplek:"simple_group (G\<lparr>carrier := \<GG> ! (k + 1)\<rparr> Mod \<GG> ! k)" by simp
-    from simplefact ksmall have simplek':"simple_group (G\<lparr>carrier := \<GG> ! ((k - 1) + 1)\<rparr> Mod \<GG> ! (k - 1))" by auto
+    from simplefact ksmall have simplek: "simple_group (G\<lparr>carrier := \<GG> ! (k + 1)\<rparr> Mod \<GG> ! k)" by simp
+    from simplefact ksmall have simplek': "simple_group (G\<lparr>carrier := \<GG> ! ((k - 1) + 1)\<rparr> Mod \<GG> ! (k - 1))" by auto
     have "\<GG> ! k \<lhd> G" using carrier k_def gt2 normal ksmall by force
     with simple have "(\<GG> ! k) = carrier G \<or> (\<GG> ! k) = {\<one>}" unfolding simple_group_def simple_group_axioms_def by simp
     thus "False"
@@ -427,14 +430,14 @@ qed
 text \<open>Two consecutive elements in a composition series are distinct.\<close>
 
 lemma (in composition_series) entries_distinct:
-  assumes finite:"finite (carrier G)"
-  assumes i:"i + 1 < length \<GG>"
+  assumes finite: "finite (carrier G)"
+  assumes i: "i + 1 < length \<GG>"
   shows "\<GG> ! i \<noteq> \<GG> ! (i + 1)"
 proof
   from finite have "finite  (\<GG> ! (i + 1))" 
     using i normal_series_subgroups subgroup.subset rev_finite_subset by metis
-  hence fin:"finite (carrier (G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>))" by auto
-  from i have norm:"\<GG> ! i \<lhd> (G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>)" by (rule normal)
+  hence fin: "finite (carrier (G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>))" by auto
+  from i have norm: "\<GG> ! i \<lhd> (G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>)" by (rule normal)
   assume "\<GG> ! i = \<GG> ! (i + 1)"
   hence "\<GG> ! i = carrier (G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>)" by auto
   hence "carrier ((G\<lparr>carrier := (\<GG> ! (i + 1))\<rparr>) Mod (\<GG> ! i)) = {\<one>\<^bsub>(G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>) Mod \<GG> ! i\<^esub>}"
@@ -446,36 +449,38 @@ qed
 text \<open>The normal series for groups of order @{term "p * q"} is even a composition series:\<close>
 
 lemma (in group) pq_order_composition_series:
-  assumes finite:"finite (carrier G)"
-  assumes orderG:"order G = q * p"
-  assumes primep:"prime p" and primeq:"prime q" and pq:"p < q"
+  assumes finite: "finite (carrier G)"
+  assumes orderG: "order G = q * p"
+  assumes primep: "prime p" and primeq: "prime q" and pq: "p < q"
   shows "composition_series G [{\<one>}, (THE H. H \<in> subgroups_of_size q), carrier G]"
 unfolding composition_series_def composition_series_axioms_def
 apply(auto)
 using assms apply(rule pq_order_normal_series)
 proof -
   define H where "H = (THE H. H \<in> subgroups_of_size q)"
-  from assms have exi:"\<exists>!Q. Q \<in> (subgroups_of_size q)" by (auto simp: pq_order_unique_subgrp)
-  hence Hsize:"H \<in> subgroups_of_size q" unfolding H_def using theI' by metis
-  hence HsubG:"subgroup H G" unfolding subgroups_of_size_def by auto
+  from assms have exi: "\<exists>!Q. Q \<in> (subgroups_of_size q)" by (auto simp: pq_order_unique_subgrp)
+  hence Hsize: "H \<in> subgroups_of_size q" unfolding H_def using theI' by metis
+  hence HsubG: "subgroup H G" unfolding subgroups_of_size_def by auto
   then interpret Hgroup: group "G\<lparr>carrier := H\<rparr>" by (metis subgroup_imp_group)
   fix i
   assume "i < Suc (Suc 0)"
   hence "i = 0 \<or> i = 1" by auto
   thus "simple_group (G\<lparr>carrier := [H, carrier G] ! i\<rparr> Mod [{\<one>}, H, carrier G] ! i)"
   proof
-    assume i:"i = 0"
-    from Hsize have orderH:"order (G\<lparr>carrier := H\<rparr>) = q" unfolding subgroups_of_size_def order_def by simp
-    hence "order (G\<lparr>carrier := H\<rparr> Mod {\<one>}) = q" unfolding FactGroup_def using card_rcosets_triv order_def
-      by (metis Hgroup.card_rcosets_triv HsubG finite monoid.cases_scheme monoid.select_convs(2) partial_object.select_convs(1) partial_object.update_convs(1) subgroup_finite)
-    have "normal {\<one>} (G\<lparr>carrier := H\<rparr>)" by (metis Hgroup.is_group Hgroup.normal_inv_iff HsubG group.trivial_subgroup_is_normal is_group singleton_iff subgroup.one_closed subgroup.subgroup_of_subgroup)
+    assume i: "i = 0"
+    from Hsize have orderH: "order (G\<lparr>carrier := H\<rparr>) = q" unfolding subgroups_of_size_def order_def by simp
+    hence order_eq_q: "order (G\<lparr>carrier := H\<rparr> Mod {\<one>}) = q"
+      using Hgroup.trivial_factor_iso iso_same_order by auto
+    have "normal {\<one>} (G\<lparr>carrier := H\<rparr>)"
+      by (simp add: HsubG group.normal_restrict_supergroup subgroup.one_closed trivial_subgroup_is_normal)
     hence "group (G\<lparr>carrier := H\<rparr> Mod {\<one>})" by (metis normal.factorgroup_is_group)
-    with orderH primeq have "simple_group (G\<lparr>carrier := H\<rparr> Mod {\<one>})" by (metis \<open>order (G\<lparr>carrier := H\<rparr> Mod {\<one>}) = q\<close> group.prime_order_simple)
+    with orderH primeq have "simple_group (G\<lparr>carrier := H\<rparr> Mod {\<one>})" 
+      by (metis order_eq_q group.prime_order_simple)
     with i show ?thesis by simp
   next
-    assume i:"i = 1"
+    assume i: "i = 1"
     from assms exi have "H \<lhd> G" unfolding H_def by (metis pq_order_subgrp_normal)
-    hence groupGH:"group (G Mod H)" by (metis normal.factorgroup_is_group)
+    hence groupGH: "group (G Mod H)" by (metis normal.factorgroup_is_group)
     from primeq have "q \<noteq> 0" by (metis not_prime_0)
     from HsubG finite orderG have "card (rcosets H) * card H = q * p" unfolding subgroups_of_size_def using lagrange by simp
     with Hsize have "card (rcosets H) * q = q * p" unfolding subgroups_of_size_def by simp
@@ -496,7 +501,7 @@ proof auto
   from assms show "normal_series (G\<lparr>carrier := \<GG> ! (i - Suc 0)\<rparr>) (take i \<GG>)" by (metis One_nat_def normal_series_prefix_closed)
 next
   fix j
-  assume j:"Suc j < length \<GG>" "Suc j < i"
+  assume j: "Suc j < length \<GG>" "Suc j < i"
   with simplefact show "simple_group (G\<lparr>carrier := \<GG> ! Suc j\<rparr> Mod \<GG> ! j)" by (metis Suc_eq_plus1)
 qed
 
@@ -519,7 +524,7 @@ lemma (in composition_series) composition_snd_simple_iff:
   assumes "i < length \<GG>"
   shows "(simple_group (G\<lparr>carrier :=  \<GG> ! i\<rparr>)) = (i = 1)"
 proof
-  assume simpi:"simple_group (G\<lparr>carrier := \<GG> ! i\<rparr>)"
+  assume simpi: "simple_group (G\<lparr>carrier := \<GG> ! i\<rparr>)"
   hence "\<GG> ! i \<noteq> {\<one>}" using simple_group.simple_not_triv by force
   hence "i \<noteq> 0" using hd hd_conv_nth notempty by auto
   then interpret compTake: composition_series "G\<lparr>carrier := \<GG> ! i\<rparr>" "take (Suc i) \<GG>"
@@ -531,7 +536,7 @@ proof
   with assms have "Suc i = 2" by force
   thus "i = 1" by simp
 next
-  assume i:"i = 1"
+  assume i: "i = 1"
   with assms have "2 \<le> length \<GG>" by simp
   with i show "simple_group (G\<lparr>carrier := \<GG> ! i\<rparr>)" by (metis composition_series_snd_simple)
 qed
@@ -540,32 +545,32 @@ text \<open>The second to last entry of a normal series is not only a normal sub
   actually even a \emph{maximal} normal subgroup.\<close>
 
 lemma (in composition_series) snd_to_last_max_normal:
-  assumes finite:"finite (carrier G)"
-  assumes length:"length \<GG> > 1"
+  assumes finite: "finite (carrier G)"
+  assumes length: "length \<GG> > 1"
   shows "max_normal_subgroup (\<GG> ! (length \<GG> - 2)) G"
 unfolding max_normal_subgroup_def max_normal_subgroup_axioms_def
 proof (auto del: equalityI)
   show "\<GG> ! (length \<GG> - 2) \<lhd> G" by (rule normal_series_snd_to_last)
 next 
   define G' where "G' = \<GG> ! (length \<GG> - 2)"
-  from length have length21:"length \<GG> - 2 + 1 = length \<GG> - 1" by arith
+  from length have length21: "length \<GG> - 2 + 1 = length \<GG> - 1" by arith
   from length have "length \<GG> - 2 + 1 < length \<GG>" by arith
   with simplefact have "simple_group (G\<lparr>carrier := \<GG> ! ((length \<GG> - 2) + 1)\<rparr> Mod G')" unfolding G'_def by auto
-  with length21 have simple_last:"simple_group (G Mod G')" using last notempty last_conv_nth by fastforce
+  with length21 have simple_last: "simple_group (G Mod G')" using last notempty last_conv_nth by fastforce
   {
-    assume snd_to_last_eq:"G' = carrier G"
+    assume snd_to_last_eq: "G' = carrier G"
     hence "carrier (G Mod G') = {\<one>\<^bsub>G Mod G'\<^esub>}"
     using normal_series_snd_to_last finite normal.fact_group_trivial_iff unfolding G'_def by metis
     with snd_to_last_eq have "\<not> simple_group (G Mod G')" by (metis self_factor_not_simple)
     with simple_last show False unfolding G'_def by auto
   }
   {
-    have G'G:"G' \<lhd> G" unfolding G'_def by (rule normal_series_snd_to_last)
+    have G'G: "G' \<lhd> G" unfolding G'_def by (rule normal_series_snd_to_last)
     fix J
-    assume J:"J \<lhd> G" "J \<noteq> G'" "J \<noteq> carrier G" "G' \<subseteq> J"
-    hence JG'GG':"rcosets\<^bsub>(G\<lparr>carrier := J\<rparr>)\<^esub> G' \<lhd> G Mod G'"  using normality_factorization normal_series_snd_to_last unfolding G'_def by auto
-    from G'G J(1,4) have G'J:"G' \<lhd> (G\<lparr>carrier := J\<rparr>)" by (metis normal_imp_subgroup normal_restrict_supergroup)
-    from finite J(1) have finJ:"finite J" by (auto simp: normal_imp_subgroup subgroup_finite)
+    assume J: "J \<lhd> G" "J \<noteq> G'" "J \<noteq> carrier G" "G' \<subseteq> J"
+    hence JG'GG': "rcosets\<^bsub>(G\<lparr>carrier := J\<rparr>)\<^esub> G' \<lhd> G Mod G'"  using normality_factorization normal_series_snd_to_last unfolding G'_def by auto
+    from G'G J(1,4) have G'J: "G' \<lhd> (G\<lparr>carrier := J\<rparr>)" by (metis normal_imp_subgroup normal_restrict_supergroup)
+    from finite J(1) have finJ: "finite J" by (auto simp: normal_imp_subgroup subgroup_finite)
     from JG'GG' simple_last have "rcosets\<^bsub>G\<lparr>carrier := J\<rparr>\<^esub> G' = {\<one>\<^bsub>G Mod G'\<^esub>} \<or> rcosets\<^bsub>G\<lparr>carrier := J\<rparr>\<^esub> G' = carrier (G Mod G')"
       unfolding simple_group_def simple_group_axioms_def by auto
     thus False 
@@ -575,7 +580,7 @@ next
       hence "G' = J" using G'J finJ normal.fact_group_trivial_iff unfolding FactGroup_def by fastforce
       with J(2) show False by simp
     next
-      assume facts_eq:"rcosets\<^bsub>G\<lparr>carrier := J\<rparr>\<^esub> G' = carrier (G Mod G')"
+      assume facts_eq: "rcosets\<^bsub>G\<lparr>carrier := J\<rparr>\<^esub> G' = carrier (G Mod G')"
       have "J = carrier G"
       proof
         show "J \<subseteq> carrier G" using J(1) normal_imp_subgroup subgroup.subset by force
@@ -583,12 +588,12 @@ next
         show "carrier G \<subseteq> J"
         proof
           fix x
-          assume x:"x \<in> carrier G"
+          assume x: "x \<in> carrier G"
           hence "G' #> x \<in> carrier (G Mod G')" unfolding FactGroup_def RCOSETS_def by auto
           hence "G' #> x \<in> rcosets\<^bsub>G\<lparr>carrier := J\<rparr>\<^esub> G'" using facts_eq by auto
-          then obtain j where j:"j \<in> J" "G' #> x = G' #> j" unfolding RCOSETS_def r_coset_def by force
+          then obtain j where j: "j \<in> J" "G' #> x = G' #> j" unfolding RCOSETS_def r_coset_def by force
           hence "x \<in> G' #> j" using G'G normal_imp_subgroup x repr_independenceD by fastforce
-          then obtain g' where g':"g' \<in> G'" "x = g' \<otimes> j" unfolding r_coset_def by auto
+          then obtain g' where g': "g' \<in> G'" "x = g' \<otimes> j" unfolding r_coset_def by auto
           hence "g' \<in> J" using G'J normal_imp_subgroup subgroup.subset by force
           with g'(2) j(1) show  "x \<in> J" using J(1) normal_imp_subgroup subgroup.m_closed by fastforce
         qed
@@ -614,19 +619,19 @@ next
     by auto
   then obtain y xs' where xs: "xs = y # xs'"
     by (cases xs) blast
-  from \<open>xs \<noteq> []\<close> have lenxs:"length xs > 0" by simp
-  from xs have rem:"remdups_adj (x # xs) = (if x = y then remdups_adj (y # xs') else x # remdups_adj (y # xs'))" using remdups_adj.simps(3) by auto
+  from \<open>xs \<noteq> []\<close> have lenxs: "length xs > 0" by simp
+  from xs have rem: "remdups_adj (x # xs) = (if x = y then remdups_adj (y # xs') else x # remdups_adj (y # xs'))" using remdups_adj.simps(3) by auto
   show thesis
   proof (cases "x = y")
     case True
-    with rem xs have rem2:"remdups_adj (x # xs) = remdups_adj xs" by auto
+    with rem xs have rem2: "remdups_adj (x # xs) = remdups_adj xs" by auto
     with Cons(3) have "i + 1 < length (remdups_adj xs)" by simp
-    with Cons.IH lenxs obtain k where j:"k + 1 < length xs" "remdups_adj xs ! i = xs ! k"
+    with Cons.IH lenxs obtain k where j: "k + 1 < length xs" "remdups_adj xs ! i = xs ! k"
         "remdups_adj xs ! (i + 1) = xs ! (k + 1)" by auto
     thus thesis using Cons(2) rem2 by auto
   next
     case False
-    with rem xs have rem2:"remdups_adj (x # xs) = x # remdups_adj xs" by auto
+    with rem xs have rem2: "remdups_adj (x # xs) = x # remdups_adj xs" by auto
     show thesis
     proof (cases i)
       case 0
@@ -654,7 +659,7 @@ next
       also have "\<dots> \<le> length (remdups_adj xs) + 1 - 1" by (metis One_nat_def le_refl list.size(4) rem2)
       also have "\<dots> = length (remdups_adj xs)" by simp
       finally have "k + 1 < length (remdups_adj xs)".
-      with Cons.IH lenxs obtain j where j:"j + 1 < length xs" "remdups_adj xs ! k = xs ! j"
+      with Cons.IH lenxs obtain j where j: "j + 1 < length xs" "remdups_adj xs ! k = xs ! j"
         "remdups_adj xs ! (k + 1) = xs ! (j + 1)" by auto
       from j(1) have "Suc j + 1 < length (x # xs)" by simp
       moreover have "remdups_adj (x # xs) ! i = (x # xs) ! (Suc j)"
@@ -692,8 +697,8 @@ text \<open>Intersecting each entry of a composition series with a normal subgro
   all adjacent duplicates yields another composition series.\<close>
 
 lemma (in composition_series) intersect_normal:
-  assumes finite:"finite (carrier G)"
-  assumes KG:"K \<lhd> G"
+  assumes finite: "finite (carrier G)"
+  assumes KG: "K \<lhd> G"
   shows "composition_series (G\<lparr>carrier := K\<rparr>) (remdups_adj (map (\<lambda>H. K \<inter> H) \<GG>))"
 unfolding composition_series_def composition_series_axioms_def normal_series_def normal_series_axioms_def
 apply (auto simp only: conjI del: equalityI)
@@ -719,7 +724,7 @@ next
     last entry of a reduced list, we reverse the list twice.\<close>
   have "rev \<GG> = (carrier G) # tl (rev \<GG>)" by (metis list.sel(1,3) last last_rev neq_Nil_conv notempty rev_is_Nil_conv rev_rev_ident)
   hence "rev (map ((\<inter>) K) \<GG>) = map ((\<inter>) K) ((carrier G) # tl (rev \<GG>))" by (metis rev_map)
-  hence rev:"rev (map ((\<inter>) K) \<GG>) = (K \<inter> (carrier G)) # (map ((\<inter>) K) (tl (rev \<GG>)))" by simp
+  hence rev: "rev (map ((\<inter>) K) \<GG>) = (K \<inter> (carrier G)) # (map ((\<inter>) K) (tl (rev \<GG>)))" by simp
   have "last (remdups_adj (map ((\<inter>) K) \<GG>)) = hd (rev (remdups_adj (map ((\<inter>) K) \<GG>)))"
     by (metis hd_rev map_is_Nil_conv notempty remdups_adj_Nil_iff)
   also have "\<dots> = hd (remdups_adj (rev (map ((\<inter>) K) \<GG>)))" by (metis remdups_adj_rev)
@@ -730,32 +735,32 @@ next
 next
   \<comment> \<open>The induction step, using the second isomorphism theorem for groups.\<close>
   fix j
-  assume j:"j + 1 < length (remdups_adj (map ((\<inter>) K) \<GG>))"
-  have KGnotempty:"(map ((\<inter>) K) \<GG>) \<noteq> []" using notempty by (metis Nil_is_map_conv)
-  with j obtain i where i:"i + 1 < length (map ((\<inter>) K) \<GG>)"
+  assume j: "j + 1 < length (remdups_adj (map ((\<inter>) K) \<GG>))"
+  have KGnotempty: "(map ((\<inter>) K) \<GG>) \<noteq> []" using notempty by (metis Nil_is_map_conv)
+  with j obtain i where i: "i + 1 < length (map ((\<inter>) K) \<GG>)"
     "(remdups_adj (map ((\<inter>) K) \<GG>)) ! j = (map ((\<inter>) K) \<GG>) ! i"
     "(remdups_adj (map ((\<inter>) K) \<GG>)) ! (j + 1) = (map ((\<inter>) K) \<GG>) ! (i + 1)"
     using remdups_adj_obtain_adjacency by force
-  from i(1) have i':"i + 1 < length \<GG>" by (metis length_map)
-  hence GiSi:"\<GG> ! i \<lhd> G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>" by (metis normal)
-  hence GiSi':"\<GG> ! i \<subseteq> \<GG> ! (i + 1)" using normal_imp_subgroup subgroup.subset by force
-  from i' have finGSi:"finite (\<GG> ! (i + 1))" using  normal_series_subgroups finite by (metis subgroup_finite)
-  from GiSi KG i' normal_series_subgroups have GSiKnormGSi:"\<GG> ! (i + 1) \<inter> K \<lhd> G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>"
+  from i(1) have i': "i + 1 < length \<GG>" by (metis length_map)
+  hence GiSi: "\<GG> ! i \<lhd> G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>" by (metis normal)
+  hence GiSi': "\<GG> ! i \<subseteq> \<GG> ! (i + 1)" using normal_imp_subgroup subgroup.subset by force
+  from i' have finGSi: "finite (\<GG> ! (i + 1))" using  normal_series_subgroups finite by (metis subgroup_finite)
+  from GiSi KG i' normal_series_subgroups have GSiKnormGSi: "\<GG> ! (i + 1) \<inter> K \<lhd> G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>"
     using second_isomorphism_grp.normal_subgrp_intersection_normal
     unfolding second_isomorphism_grp_def second_isomorphism_grp_axioms_def by auto
   with GiSi have "\<GG> ! i \<inter> (\<GG> ! (i + 1) \<inter> K) \<lhd> G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>"
     by (metis group.normal_subgroup_intersect group.subgroup_imp_group i' is_group is_normal_series normal_series.normal_series_subgroups)
   hence "K \<inter> (\<GG> ! i \<inter> \<GG> ! (i + 1)) \<lhd> G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>" by (metis inf_commute inf_left_commute)
-  hence KGinormGSi:"K \<inter> \<GG> ! i \<lhd> G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>" using GiSi' by (metis le_iff_inf)
+  hence KGinormGSi: "K \<inter> \<GG> ! i \<lhd> G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>" using GiSi' by (metis le_iff_inf)
   moreover have "K \<inter> \<GG> ! i \<subseteq> K \<inter> \<GG> ! (i + 1)" using GiSi' by auto
-  moreover have groupGSi:"group (G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>)" using i normal_series_subgroups subgroup_imp_group by auto
-  moreover have subKGSiGSi:"subgroup (K \<inter> \<GG> ! (i + 1)) (G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>)" by (metis GSiKnormGSi inf_sup_aci(1) normal_imp_subgroup)
-  ultimately have fstgoal:"K \<inter> \<GG> ! i \<lhd> G\<lparr>carrier := \<GG> ! (i + 1), carrier := K \<inter> \<GG> ! (i + 1)\<rparr>"
+  moreover have groupGSi: "group (G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>)" using i normal_series_subgroups subgroup_imp_group by auto
+  moreover have subKGSiGSi: "subgroup (K \<inter> \<GG> ! (i + 1)) (G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>)" by (metis GSiKnormGSi inf_sup_aci(1) normal_imp_subgroup)
+  ultimately have fstgoal: "K \<inter> \<GG> ! i \<lhd> G\<lparr>carrier := \<GG> ! (i + 1), carrier := K \<inter> \<GG> ! (i + 1)\<rparr>"
     using group.normal_restrict_supergroup by force
   thus "remdups_adj (map ((\<inter>) K) \<GG>) ! j \<lhd> G\<lparr>carrier := K, carrier := remdups_adj (map ((\<inter>) K) \<GG>) ! (j + 1)\<rparr>"
     using i by auto
-  from simplefact have Gisimple:"simple_group (G\<lparr>carrier := \<GG> ! (i + 1)\<rparr> Mod \<GG> ! i)" using i' by simp
-  hence Gimax:"max_normal_subgroup (\<GG> ! i) (G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>)"
+  from simplefact have Gisimple: "simple_group (G\<lparr>carrier := \<GG> ! (i + 1)\<rparr> Mod \<GG> ! i)" using i' by simp
+  hence Gimax: "max_normal_subgroup (\<GG> ! i) (G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>)"
     using normal.max_normal_simple_quotient GiSi finGSi by force
   from GSiKnormGSi GiSi have "\<GG> ! i <#>\<^bsub>G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>\<^esub> \<GG> ! (i + 1) \<inter> K \<lhd> (G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>)"
     using groupGSi group.normal_subgroup_set_mult_closed set_mult_consistent by fastforce
@@ -766,7 +771,7 @@ next
     unfolding second_isomorphism_grp_def second_isomorphism_grp_axioms_def
     using subKGSiGSi GiSi normal_imp_subgroup by fastforce
   hence "\<GG> ! i \<subseteq> \<GG> ! i <#> K \<inter> \<GG> ! (i + 1)" unfolding set_mult_def by auto
-  ultimately have KGdisj:"\<GG> ! i <#> K \<inter> \<GG> ! (i + 1) = \<GG> ! i \<or> \<GG> ! i <#> K \<inter> \<GG> ! (i + 1) = \<GG> ! (i + 1)"
+  ultimately have KGdisj: "\<GG> ! i <#> K \<inter> \<GG> ! (i + 1) = \<GG> ! i \<or> \<GG> ! i <#> K \<inter> \<GG> ! (i + 1) = \<GG> ! (i + 1)"
     using Gimax unfolding max_normal_subgroup_def max_normal_subgroup_axioms_def
     by auto
   obtain \<phi> where "\<phi> \<in> iso  (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (\<GG> ! i \<inter> (K \<inter> \<GG> ! (i + 1))))
@@ -783,20 +788,21 @@ next
   hence "\<phi> \<in> iso (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> \<GG> ! i))
                  (G\<lparr>carrier := \<GG> ! i <#>\<^bsub>G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>\<^esub> K \<inter> \<GG> ! (i + 1)\<rparr> Mod \<GG> ! i)" 
     by (metis GiSi' Int_absorb2 Int_commute)
-  hence \<phi>:"\<phi> \<in> iso (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> \<GG> ! i))
+  hence \<phi>: "\<phi> \<in> iso (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> \<GG> ! i))
                    (G\<lparr>carrier := \<GG> ! i <#> K \<inter> \<GG> ! (i + 1)\<rparr> Mod \<GG> ! i)"
     unfolding set_mult_def by auto
-  from fstgoal have KGsiKGigroup:"group (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> \<GG> ! i))" using normal.factorgroup_is_group by auto
+  from fstgoal have KGsiKGigroup: "group (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> \<GG> ! i))" using normal.factorgroup_is_group by auto
   from KGdisj show "simple_group (G\<lparr>carrier := K, carrier := remdups_adj (map ((\<inter>) K) \<GG>) ! (j + 1)\<rparr> Mod remdups_adj (map ((\<inter>) K) \<GG>) ! j)"
   proof auto
-    have groupGi:"group (G\<lparr>carrier := \<GG> ! i\<rparr>)" using i' normal_series_subgroups subgroup_imp_group by auto
+    have groupGi: "group (G\<lparr>carrier := \<GG> ! i\<rparr>)" using i' normal_series_subgroups subgroup_imp_group by auto
     assume "\<GG> ! i <#> K \<inter> \<GG> ! Suc i = \<GG> ! i"
     with \<phi> have "\<phi> \<in> iso (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> \<GG> ! i)) (G\<lparr>carrier := \<GG> ! i\<rparr> Mod \<GG> ! i)" by auto
     moreover obtain \<psi> where "\<psi> \<in> iso (G\<lparr>carrier := \<GG> ! i\<rparr> Mod (carrier (G\<lparr>carrier := \<GG> ! i\<rparr>))) (G\<lparr>carrier := {\<one>\<^bsub>G\<lparr>carrier := \<GG> ! i\<rparr>\<^esub>}\<rparr>)"
       using group.self_factor_iso groupGi by force
     ultimately obtain \<pi> where "\<pi> \<in> iso (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> \<GG> ! i)) (G\<lparr>carrier := {\<one>}\<rparr>)"
       using iso_set_trans by fastforce
-    hence "order (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> \<GG> ! i)) = order (G\<lparr>carrier := {\<one>}\<rparr>)" by (metis iso_order_closed)
+    hence "order (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> \<GG> ! i)) = order (G\<lparr>carrier := {\<one>}\<rparr>)"
+      by (meson iso_same_order)
     hence "order (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> \<GG> ! i)) = 1" unfolding order_def by auto
     hence "carrier (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> \<GG> ! i)) = {\<one>\<^bsub>G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> \<GG> ! i)\<^esub>}"
       using group.order_one_triv_iff KGsiKGigroup by blast
@@ -808,11 +814,13 @@ next
     thus "simple_group (G\<lparr>carrier := remdups_adj (map ((\<inter>) K) \<GG>) ! Suc j\<rparr> Mod remdups_adj (map ((\<inter>) K) \<GG>) ! j)"..
   next
     assume "\<GG> ! i <#> K \<inter> \<GG> ! Suc i = \<GG> ! Suc i"
-    moreover with \<phi> have "\<phi> \<in> iso (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> \<GG> ! i)) (G\<lparr>carrier := \<GG> ! (i + 1)\<rparr> Mod \<GG> ! i)"by auto
+    with \<phi> have "\<phi> \<in> iso (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> \<GG> ! i)) (G\<lparr>carrier := \<GG> ! (i + 1)\<rparr> Mod \<GG> ! i)"
+      by auto
     then obtain \<phi>' where "\<phi>' \<in> iso (G\<lparr>carrier := \<GG> ! (i + 1)\<rparr> Mod \<GG> ! i) (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> \<GG> ! i))"
       using KGsiKGigroup group.iso_set_sym by auto
     with Gisimple KGsiKGigroup have "simple_group (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> \<GG> ! i))" by (metis simple_group.iso_simple)
-    with i show "simple_group (G\<lparr>carrier := remdups_adj (map ((\<inter>) K) \<GG>) ! Suc j\<rparr> Mod remdups_adj (map ((\<inter>) K) \<GG>) ! j)" by auto
+    with i show "simple_group (G\<lparr>carrier := remdups_adj (map ((\<inter>) K) \<GG>) ! Suc j\<rparr> Mod remdups_adj (map ((\<inter>) K) \<GG>) ! j)"
+      by auto
   qed
 qed
 
@@ -825,7 +833,7 @@ proof auto
   from assms(1) interpret comp\<HH>: composition_series "G\<lparr>carrier := H\<rparr>" \<HH> .
   show "normal_series G (\<HH> @ [carrier G])" using  assms(3) comp\<HH>.is_normal_series by (metis normal_series_extend)
   fix i
-  assume i:"i < length \<HH>"
+  assume i: "i < length \<HH>"
   show "simple_group (G\<lparr>carrier := (\<HH> @ [carrier G]) ! Suc i\<rparr> Mod (\<HH> @ [carrier G]) ! i)"
   proof (cases "i = length \<HH> - 1")
     case True
@@ -851,8 +859,8 @@ using assms proof (induction "j - i" arbitrary: i j)
   thus "\<GG> ! i \<subseteq> \<GG> ! j" by auto
 next
   case (Suc k i j)
-  hence i':"i + (Suc k) = j" "i + 1 < length \<GG>" by auto
-  hence ij:"i + 1 \<le> j" by auto
+  hence i': "i + (Suc k) = j" "i + 1 < length \<GG>" by auto
+  hence ij: "i + 1 \<le> j" by auto
   have "\<GG> ! i \<subseteq> \<GG> ! (i + 1)" using i' normal normal_imp_subgroup subgroup.subset by force
   moreover have "j - (i + 1) = k" "j < length \<GG>" using Suc assms by auto
   hence "\<GG> ! (i + 1) \<subseteq> \<GG> ! j" using Suc(1) ij by auto
