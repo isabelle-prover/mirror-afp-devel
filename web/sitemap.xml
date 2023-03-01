@@ -3,10 +3,25 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2023-02-02T00:00:00+00:00</lastmod>
+    <lastmod>2023-02-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2023-02-02T00:00:00+00:00</lastmod>
+    <lastmod>2023-02-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2023-02-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Edwards_Elliptic_Curves_Group.html</loc>
+    <lastmod>2023-02-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2023-02-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/raya/</loc>
+    <lastmod>2023-02-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2023-02-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/benor_kozen_reif/</loc>
     <lastmod>2023-02-02T00:00:00+00:00</lastmod>
@@ -15,9 +30,6 @@
     <lastmod>2023-02-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/</loc>
-    <lastmod>2023-02-02T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/</loc>
     <lastmod>2023-02-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/CVP_Hardness.html</loc>
@@ -30,12 +42,6 @@
     <lastmod>2023-02-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/lll_basis_reduction/</loc>
-    <lastmod>2023-02-02T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/mathematics/</loc>
-    <lastmod>2023-02-02T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2023-02-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/ABY3_Protocols.html</loc>
@@ -1740,9 +1746,6 @@
     <lastmod>2019-12-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Gauss_Sums.html</loc>
-    <lastmod>2019-12-10T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/raya/</loc>
     <lastmod>2019-12-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Generalized_Counting_Sort.html</loc>
@@ -4877,6 +4880,8 @@
     <loc>/theories/echelon_form/</loc>
   </url><url>
     <loc>/theories/edmondskarp_maxflow/</loc>
+  </url><url>
+    <loc>/theories/edwards_elliptic_curves_group/</loc>
   </url><url>
     <loc>/theories/efficient-mergesort/</loc>
   </url><url>
