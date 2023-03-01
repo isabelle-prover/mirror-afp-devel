@@ -22,8 +22,13 @@ declare [[coercion "apply_bfun :: ('a \<Rightarrow>\<^sub>b ('b :: metric_space)
 
 setup_lifting type_definition_bfun
 
-lemma bounded_apply_bfun[intro, simp]: "bounded (range (apply_bfun x))"
-  using apply_bfun by (auto simp: bfun_def)
+lemma bounded_apply_bfun[intro, simp]: "bounded ((apply_bfun x) ` X)"
+  using apply_bfun by (fastforce simp: bfun_def bounded_def)
+
+lemma apply_bfun_bdd_above[simp, intro]: 
+  fixes f :: "'c \<Rightarrow>\<^sub>b real"
+  shows "bdd_above (f ` X)"
+  by (auto intro: bounded_imp_bdd_above)
 
 lemma bfun_eqI[intro]: "(\<And>x. apply_bfun f x = apply_bfun g x) \<Longrightarrow> f = g"
   by transfer auto
@@ -434,7 +439,7 @@ lemma less_eq_bfunD[dest]: "f \<le> g \<Longrightarrow> (\<And>x. apply_bfun f x
 subsection \<open>Miscellaneous\<close>
 instantiation bfun :: (type, one) one begin
 
-lift_definition one_bfun :: "'s \<Rightarrow>\<^sub>b real" is "\<lambda>x. 1"
+lift_definition one_bfun :: "'s \<Rightarrow>\<^sub>b 'd::{metric_space, one}" is "\<lambda>x. 1"
   using const_bfun .
 
 instance

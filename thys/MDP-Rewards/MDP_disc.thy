@@ -1,7 +1,7 @@
 (* Author: Maximilian Schäffeler *)
 
 theory MDP_disc
-  imports
+  imports 
     MDP_cont
     "HOL-Library.Omega_Words_Fun"
 begin
@@ -26,25 +26,24 @@ proof -
   have "integrable S.S (\<lambda>X. f (to_stream X))"
     using int_f
     by (metis integrable_distr measurable_to_stream stream_space_eq_distr)
-  hence "integrable (distr (M \<Otimes>\<^sub>M Pi\<^sub>M UNIV (\<lambda>i. M)) (Pi\<^sub>M UNIV (\<lambda>i. M))
+  hence "integrable (distr (M \<Otimes>\<^sub>M Pi\<^sub>M UNIV (\<lambda>i. M)) (Pi\<^sub>M UNIV (\<lambda>i. M)) 
     (\<lambda>(x, y). case_nat x y)) (\<lambda>X. f (to_stream X))"
     by (auto simp: S.PiM_iter)
-  moreover have "integrable (distr (M \<Otimes>\<^sub>M Pi\<^sub>M UNIV (\<lambda>i. M)) (Pi\<^sub>M UNIV (\<lambda>i. M)) (\<lambda>(x, y). case_nat x y))
-    (\<lambda>X. f (to_stream X)) \<longleftrightarrow>
+  moreover have "integrable (distr (M \<Otimes>\<^sub>M Pi\<^sub>M UNIV (\<lambda>i. M)) (Pi\<^sub>M UNIV (\<lambda>i. M)) (\<lambda>(x, y). case_nat x y)) 
+    (\<lambda>X. f (to_stream X)) \<longleftrightarrow> 
     integrable (M \<Otimes>\<^sub>M S.S) (\<lambda>X. f (to_stream ((\<lambda>(s, \<omega>). case_nat s \<omega>) X)))"
     by (auto simp: integrable_distr_eq)
   ultimately have "integrable (M \<Otimes>\<^sub>M S.S) (\<lambda>X. f (to_stream ((\<lambda>(s, \<omega>). case_nat s \<omega>) X)))"
     by auto
-  hence "integrable (M \<Otimes>\<^sub>M (Pi\<^sub>M UNIV (\<lambda>i. M)))
+  hence "integrable (M \<Otimes>\<^sub>M (Pi\<^sub>M UNIV (\<lambda>i. M))) 
     (\<lambda>X. f (to_stream ((\<lambda>(s, \<omega>). case_nat s \<omega>) X)))"
     by auto
-  moreover have "integrable (M \<Otimes>\<^sub>M (Pi\<^sub>M UNIV (\<lambda>i. M)))
-    (\<lambda>X. f (to_stream ((\<lambda>(s, \<omega>). case_nat s \<omega>) X))) =
+  moreover have "integrable (M \<Otimes>\<^sub>M (Pi\<^sub>M UNIV (\<lambda>i. M))) 
+    (\<lambda>X. f (to_stream ((\<lambda>(s, \<omega>). case_nat s \<omega>) X))) = 
       integrable (M \<Otimes>\<^sub>M Pi\<^sub>M UNIV (\<lambda>i. M)) (\<lambda>(x, X). f (to_stream (case_nat x X)))"
-    by (fastforce intro!: Bochner_Integration.integrable_cong)
+    by (auto intro!: Bochner_Integration.integrable_cong)
   ultimately have *: "integrable (M \<Otimes>\<^sub>M Pi\<^sub>M UNIV (\<lambda>i. M)) (\<lambda>(x, X). f (to_stream (case_nat x X)))"
     by auto
-
   have "(\<integral>X. f X \<partial>stream_space M) = (\<integral>X. f (to_stream X) \<partial>S.S)"
     by (subst stream_space_eq_distr) (simp add: integral_distr)
   also have "\<dots> = (\<integral>X. f (to_stream ((\<lambda>(s, \<omega>). case_nat s \<omega>) X)) \<partial>(M \<Otimes>\<^sub>M S.S))"
@@ -55,13 +54,13 @@ proof -
   also have "\<dots> = (\<integral>x. \<integral>X. f (x ## to_stream X) \<partial>S.S \<partial>M)"
     by (auto intro!: integral_cong simp: to_stream_nat_case)
   also have "\<dots> = (\<integral>x. \<integral>X. f (x ## X) \<partial>distr (Pi\<^sub>M UNIV (\<lambda>i. M)) (stream_space M) to_stream \<partial>M)"
-    by (subst Bochner_Integration.integral_cong[OF refl]) (auto simp: integral_distr)
+    by (subst Bochner_Integration.integral_cong[OF refl]) (auto simp: integral_distr) 
   also have "\<dots> = (\<integral>x. \<integral>X. f (x ## X) \<partial>stream_space M \<partial>M)"
     using stream_space_eq_distr by metis
   finally show ?thesis .
 qed
 
-lemma prefix_cons:
+lemma prefix_cons: 
   "Omega_Words_Fun.prefix (Suc n) seq = seq 0#Omega_Words_Fun.prefix n (\<lambda>n. seq (Suc n))"
   by (metis map_upt_Suc subsequence_def)
 
@@ -72,25 +71,25 @@ lemma prefix_restrict: "Omega_Words_Fun.prefix i (restrict y {0..<i}) = Omega_Wo
 proof (induction i arbitrary: y)
   case (Suc i)
   then show ?case
-    unfolding restrict_Suc prefix_cons
+    unfolding restrict_Suc prefix_cons 
     by fastforce+
 qed simp
 
-lemma prefix_measurable[measurable]:
-  "Omega_Words_Fun.prefix i \<in> Pi\<^sub>M {0..<i}
+lemma prefix_measurable[measurable]: 
+  "Omega_Words_Fun.prefix i \<in> Pi\<^sub>M {0..<i} 
   (\<lambda>_. count_space (UNIV :: ('s ::countable \<times> 'a::countable) set)) \<rightarrow>\<^sub>M count_space UNIV"
 proof (induction i)
   case 0
   then show ?case by simp
 next
   case (Suc i)
-  have aux: "(\<lambda>w. (restrict w {0..<i}, w i)) \<in> Pi\<^sub>M {0..<Suc i} (\<lambda>_. count_space UNIV) \<rightarrow>\<^sub>M
+  have aux: "(\<lambda>w. (restrict w {0..<i}, w i)) \<in> Pi\<^sub>M {0..<Suc i} (\<lambda>_. count_space UNIV) \<rightarrow>\<^sub>M 
     Pi\<^sub>M {0..<i} (\<lambda>_. count_space UNIV) \<Otimes>\<^sub>M (count_space UNIV)"
     by auto
-  have aux': "(\<lambda>(w,wi). Omega_Words_Fun.prefix i (restrict w {0..<i})@[wi]) \<in> Pi\<^sub>M {0..<i}
+  have aux': "(\<lambda>(w,wi). Omega_Words_Fun.prefix i (restrict w {0..<i})@[wi]) \<in> Pi\<^sub>M {0..<i} 
     (\<lambda>_. count_space (UNIV :: ('s \<times> 'a) set)) \<Otimes>\<^sub>M (count_space UNIV) \<rightarrow>\<^sub>M count_space UNIV"
     using Suc.IH by auto
-  have f_eq: "\<And>w. Omega_Words_Fun.prefix i (restrict w {0..<i}) @ [w i] =
+  have f_eq: "\<And>w. Omega_Words_Fun.prefix i (restrict w {0..<i}) @ [w i] = 
     (\<lambda>(w,wi). Omega_Words_Fun.prefix i w @[wi]) ((restrict w {0..<i}), w i)"
     by auto
   have "(\<lambda>w:: nat \<Rightarrow> 's \<times> 'a. Omega_Words_Fun.prefix i (restrict w {0..<i}) @ [w i]) \<in> Pi\<^sub>M {0..<Suc i} (\<lambda>_. count_space UNIV) \<rightarrow>\<^sub>M count_space UNIV"
@@ -117,7 +116,7 @@ type_synonym ('c, 'd) dec = "'c \<Rightarrow> 'd pmf"
 definition is_dec :: "('s, 'a) dec \<Rightarrow> bool" where
   "is_dec d \<equiv> \<forall>s. d s \<subseteq> A s"
 
-lemma is_decI[intro]:
+lemma is_decI[intro]: 
   "(\<And>s. set_pmf (d s) \<subseteq> A s) \<Longrightarrow> is_dec d"
   unfolding is_dec_def
   by auto
@@ -193,7 +192,7 @@ lemma mk_markovian_nil [simp]: "mk_markovian p [] = p 0"
 
 definition "mk_markovian_det p \<equiv> (\<lambda>h s. return_pmf (p (length h) s))"
 
-abbreviation "\<Pi>\<^sub>M\<^sub>D \<equiv> {p. \<forall>n. p n \<in> D\<^sub>D}"
+abbreviation "\<Pi>\<^sub>M\<^sub>D \<equiv> {p. \<forall>n::nat. p n \<in> D\<^sub>D}"
 abbreviation "\<Pi>\<^sub>M\<^sub>R \<equiv> {p. \<forall>n. p n \<in> D\<^sub>R}"
 
 lemma \<Pi>\<^sub>M\<^sub>R_imp_policies[intro]: "p \<in> \<Pi>\<^sub>M\<^sub>R \<Longrightarrow> mk_markovian p \<in> \<Pi>\<^sub>H\<^sub>R"
@@ -205,6 +204,12 @@ lemma \<Pi>\<^sub>M\<^sub>D_MR_iff[simp]: "(\<lambda>n. mk_dec_det (p n)) \<in> 
 lemma \<Pi>\<^sub>M\<^sub>D_to_MR[intro]: "p \<in> \<Pi>\<^sub>M\<^sub>D \<Longrightarrow> (\<lambda>n. mk_dec_det (p n)) \<in> \<Pi>\<^sub>M\<^sub>R"
   by simp
 
+lemma p_n_\<pi>_MD[intro]: "p \<in> \<Pi>\<^sub>M\<^sub>D \<Longrightarrow> p n \<in> D\<^sub>D"
+  by auto
+
+lemma p_n_\<pi>_MR[intro]: "p \<in> \<Pi>\<^sub>M\<^sub>R \<Longrightarrow> p n \<in> D\<^sub>R"
+  by auto
+
 lemma \<Pi>\<^sub>M\<^sub>D_ne[simp]: "\<Pi>\<^sub>M\<^sub>D \<noteq> {}"
   by (auto simp: someI_ex[OF ex_dec_det] intro: exI[of _ "\<lambda>n. (SOME d. is_dec_det d)"])
 
@@ -213,7 +218,6 @@ lemma \<Pi>\<^sub>M\<^sub>R_ne[simp]: "\<Pi>\<^sub>M\<^sub>R \<noteq> {}"
 
 lemma policies_ne[simp, intro]: "\<Pi>\<^sub>H\<^sub>R \<noteq> {}"
   using \<Pi>\<^sub>M\<^sub>R_ne is_policy_def by auto
-
 
 text \<open>Stationary policies\<close>
 definition "is_stationary p \<equiv> is_policy p \<and> (\<forall>h h'. p h = p h')"
@@ -229,12 +233,14 @@ abbreviation "mk_stationary_det d \<equiv> mk_markovian (\<lambda>_. mk_dec_det 
 
 subsubsection \<open>Successor Policy\<close>
 text \<open>
-After taking the first step in the MDP, we will know which state and which action got selected
-during the initial epoch. To obtain a policy that acts as if the current epoch was the initial one,
-we prepend the observed state-action pair to the history. The result is again a policy,
+After taking the first step in the MDP, we will know which state and which action got selected 
+during the initial epoch. To obtain a policy that acts as if the current epoch was the initial one, 
+we prepend the observed state-action pair to the history. The result is again a policy, 
 i.e. it satisfies @{const is_policy}.
 \<close>
-definition "\<pi>_Suc p sa h = p (sa#h)"
+definition \<pi>_Suc :: "('s, 'a) pol \<Rightarrow> 's \<times> 'a \<Rightarrow> ('s, 'a) pol"
+  where
+    "\<pi>_Suc p sa h = p (sa#h)"
 
 lemma is_policy_\<pi>_Suc [intro]: "is_policy p \<Longrightarrow> is_policy (\<pi>_Suc p sa)"
   unfolding is_policy_def \<pi>_Suc_def by force
@@ -245,14 +251,14 @@ lemma Suc_mk_markovian[simp]: "\<pi>_Suc (mk_markovian p) x = mk_markovian (\<la
 subsection \<open>Stream Space of the MDP\<close>
 subsubsection \<open>Initial State-Action Distribution\<close>
 text \<open>
-If we fix a decision rule @{term d} and an initial distribution of states @{term "S0"},
+If we fix a decision rule @{term d} and an initial distribution of states @{term "S0"}, 
 we obtain a distribution over state-action pairs in the following way:
-First, the initial state @{term "s"} is sampled from @{term S0},
+First, the initial state @{term "s"} is sampled from @{term S0}, 
 then an action @{term a} is selected from @{term "d s"}.
 \<close>
 
 definition "K0 d S0 = do {
-  s \<leftarrow> S0;
+  s \<leftarrow> S0; 
   a \<leftarrow> d s;
   return_pmf (s,a)
 }"
@@ -281,7 +287,7 @@ abbreviation "S \<equiv> stream_space (count_space UNIV)"
 text \<open>We inherit the trace space from MDPs with continuous state-action spaces\<close>
 interpretation MDP_cont: MDP_cont.discrete_MDP "count_space UNIV" "count_space UNIV" A K
 proof standard
-  show "(\<lambda>x. measure_pmf (K x)) \<in>
+  show "(\<lambda>x. measure_pmf (K x)) \<in> 
     count_space UNIV \<Otimes>\<^sub>M count_space UNIV \<rightarrow>\<^sub>M prob_algebra (count_space UNIV)"
     using measurable_prob_algebraI
     by (measurable, auto simp: prob_space_measure_pmf measurable_pair_measure_countable1)+
@@ -299,7 +305,7 @@ text \<open>We reuse the stream space provided by @{const MDP_cont.lim_stream}\<
 definition T :: "('s, 'a) pol \<Rightarrow> 's pmf \<Rightarrow> ('s \<times> 'a) stream measure"
   where "T p = MDP_cont.lim_stream (\<lambda>n (h,s). p (Omega_Words_Fun.prefix n h) s)"
 
-lemma sets_T[measurable_cong]:
+lemma sets_T[measurable_cong]: 
   "sets (T p x) = sets S"
   by (auto simp: T_def MDP_cont.sets_lim_stream)
 
@@ -309,7 +315,7 @@ lemma space_stream_space_ne[simp]: "space S \<noteq> {}"
 lemma space_T[simp]: "space (T p S0) = space S"
   by (simp add: MDP_cont.space_lim_stream T_def space_stream_space)
 
-lemma is_policy_MDP_cont[intro]:
+lemma is_policy_MDP_cont[intro]: 
   fixes p :: "('s \<times> 'a) list \<Rightarrow> 's \<Rightarrow> 'a pmf"
   shows "MDP_cont.is_policy (\<lambda>n (h,s). p (Omega_Words_Fun.prefix n h) s)"
   unfolding MDP_cont.is_policy_def MDP_cont.is_dec_def
@@ -320,15 +326,15 @@ lemma is_policy_MDP_cont[intro]:
 lemma prob_space_T[intro, simp]: "prob_space (T p x)"
   by (auto simp add: T_def prob_space_measure_pmf space_prob_algebra)
 
-lemma T_subprob[simp]:
+lemma T_subprob[simp]: 
   "T p S0 \<in> space (subprob_algebra S)"
   by (metis prob_space.M_in_subprob prob_space_T sets_T subprob_algebra_cong)
 
 lemma T_subprob_space [simp]: "subprob_space (T p S0)"
   by (auto intro: prob_space_imp_subprob_space)
 
-lemma K0_MDP_cont_eq:
-  "MDP_cont.K0 (\<lambda>x (h,s). measure_pmf (p (Omega_Words_Fun.prefix x h) s)) (measure_pmf S0) =
+lemma K0_MDP_cont_eq: 
+  "MDP_cont.K0 (\<lambda>x (h,s). measure_pmf (p (Omega_Words_Fun.prefix x h) s)) (measure_pmf S0) = 
     K0 (p []) S0"
   unfolding MDP_cont.K0_def K0_def MDP_cont.K'_def map_pmf_def
   by (simp add: measure_pmf_bind return_pmf.rep_eq)
@@ -340,7 +346,7 @@ The distribution of traces/walks the MDP allows should intuitively satisfy the f
 \<^enum> select the initial state @{term s} from @{term S0}
 \<^enum> pass it to the decision rule @{term "p []"} to determine a distribution over actions
 \<^enum> select the action @{term a}
-\<^item> finally pass the state-action pair @{term "(s,a)"} to the kernel @{term K} to get a new
+\<^item> finally pass the state-action pair @{term "(s,a)"} to the kernel @{term K} to get a new 
   distribution over states @{term s0'}
 
 Then the iteration repeats with the updated policy @{term "\<pi>_Suc p (s,a)"}.
@@ -358,7 +364,7 @@ lemma T_eq:
 proof (subst MDP_cont.lim_stream_eq)
   show "MDP_cont.is_policy (\<lambda>x xa. measure_pmf (case xa of (h, xa) \<Rightarrow> p (Omega_Words_Fun.prefix x h) xa))"
     by auto
-qed (auto simp: space_prob_algebra prob_space_measure_pmf \<pi>_Suc_def MDP_cont.Suc_policy_def
+qed (auto simp: space_prob_algebra prob_space_measure_pmf \<pi>_Suc_def MDP_cont.Suc_policy_def 
     prefix_cons K0_MDP_cont_eq  prod.case_distrib)
 
 lemma T_eq_distr:
@@ -366,7 +372,7 @@ lemma T_eq_distr:
   by (simp add: T_eq[symmetric] bind_return_distr'[symmetric])
 
 text \<open>
-The iteration rule lets us nicely decompose integrals (expected values) over functions on traces of
+The iteration rule lets us nicely decompose integrals (expected values) over functions on traces of 
 the MDP.
 \<close>
 lemma integral_T:
@@ -381,8 +387,8 @@ proof -
   also have "\<dots> = measure_pmf.expectation (K\<^sub>0 (p []) x) (\<lambda>sa. LINT t'|T (\<pi>_Suc p sa) (K sa). f (sa ## t'))"
   proof (subst integral_bind[OF f f_bounded, where B' = 1], goal_cases)
     case 1
-    then show ?case
-      by (auto intro!: prob_space_imp_subprob_space prob_space.prob_space_distr
+    then show ?case 
+      by (auto intro!: prob_space_imp_subprob_space prob_space.prob_space_distr 
           simp: space_subprob_algebra)
   next
     case 3
@@ -401,37 +407,37 @@ lemma nn_integral_T:
   assumes f: "f \<in> borel_measurable S"
   shows "(\<integral>\<^sup>+t. f t \<partial>T p x) = (\<integral>\<^sup>+sa. \<integral>\<^sup>+ t'. f (sa##t') \<partial>T (\<pi>_Suc p sa) (K sa) \<partial>K0 (p []) x)"
   unfolding T_eq_distr[of p]
-  by (subst nn_integral_bind[OF f])
-    (auto intro!: prob_space_imp_subprob_space prob_space.prob_space_distr
+  by (subst nn_integral_bind[OF f]) 
+    (auto intro!: prob_space_imp_subprob_space prob_space.prob_space_distr 
       simp: f nn_integral_distr space_subprob_algebra)
 
 subsubsection \<open>A Denotational View on the Stochastic Process\<close>
 text \<open>
-Many definitions on MDPs do not rely on the individual traces but only on the distribution
+Many definitions on MDPs do not rely on the individual traces but only on the distribution 
 of states and actions at each epoch.
 
 We define this view on the trace space as the repeated iteration of @{const K0} and @{term K}.
-It conincides with the definition of @{const T}.
+It coincides with the definition of @{const T}.
 \<close>
 
 primrec Pn :: "('s, 'a) pol \<Rightarrow> 's pmf \<Rightarrow> nat \<Rightarrow> ('s \<times> 'a) pmf" where
   "Pn p S0 0 = K0 (p []) S0"
 | "Pn p S0 (Suc n) = K0 (p []) S0 \<bind> (\<lambda>sa. Pn (\<pi>_Suc p sa) (K sa) n)"
+
 declare Pn.simps(2)[simp del]
 
-lemma Pn_eq_T:
-  shows "measure_pmf (Pn p S0 n) = distr (T p S0) (count_space UNIV) (\<lambda>t. t !! n)"
+lemma Pn_eq_T: "measure_pmf (Pn p S0 n) = distr (T p S0) (count_space UNIV) (\<lambda>t. t !! n)"
 proof (induction n arbitrary: p S0)
   case (0 p S0)
   then show ?case
     unfolding T_eq[of p]
   proof (subst distr_bind[where K = S], goal_cases)
     case 1
-    then show ?case
+    then show ?case 
       by (auto intro!: prob_space_imp_subprob_space subprob_space.bind_in_space)
   next
     case 4
-    then show ?case
+    then show ?case 
       by (subst bind_cong[OF refl, where g = "return (count_space UNIV)"])
         (auto intro!: bind_const' simp: distr_bind[where K = S] distr_return bind_return'' space_stream_space subprob_space_return_ne)
   qed auto
@@ -441,7 +447,7 @@ next
     unfolding T_eq[of p]
   proof (subst distr_bind[where K = S], goal_cases)
     case 1
-    then show ?case
+    then show ?case 
       by (auto intro!: prob_space_imp_subprob_space subprob_space.bind_in_space)[1]
   next
     case 4
@@ -458,7 +464,7 @@ the traces of the MDP.
 lemma Pn_in_A: "is_policy p \<Longrightarrow> (s, a) \<in> Pn p S0 n \<Longrightarrow> a \<in> A s"
 proof (induction n arbitrary: S0 p)
   case 0
-  then show ?case
+  then show ?case 
     using 0 unfolding is_policy_def is_dec_def
     by (auto simp: K0_def)
 next
@@ -500,7 +506,7 @@ qed
 lemma Pn_markovian_eq_Xn_bind: "Pn (mk_markovian p) S0 n = K0 (p n) (Xn (mk_markovian p) S0 n)"
 proof (induction n arbitrary: p S0)
   case 0
-  then show ?case
+  then show ?case 
     unfolding Xn_def by auto
 next
   case (Suc n)
@@ -515,10 +521,9 @@ lemma Xn_Suc': "Xn p S0 (Suc n) = K0 (p []) S0 \<bind> (\<lambda>sa. Xn (\<pi>_S
 lemma set_pmf_X0 [simp]: "set_pmf (Xn p S0 0) = S0"
   using X0 by auto
 
-lemma set_pmf_PSuc: "set_pmf (Pn (mk_markovian p) S0 n) =
+lemma set_pmf_PSuc: "set_pmf (Pn (mk_markovian p) S0 n) = 
   {(s, a). s \<in> set_pmf (Xn (mk_markovian p) S0 n) \<and> a \<in> p n s}"
-  using set_pmf_K0 Pn_markovian_eq_Xn_bind
-  by auto
+  using set_pmf_K0 Pn_markovian_eq_Xn_bind by auto
 
 subsubsection \<open>The Conditional Distribution of Actions\<close>
 text \<open>
@@ -534,9 +539,9 @@ proof (subst measure_pmf_bind, subst measure_pmf.measure_bind[of _ _ "count_spac
     by (simp add: measure_pmf_in_subprob_algebra)
 next
   case 3
-  then show ?case
+  then show ?case 
     by (subst integral_measure_pmf_real[of "{x}"]) (auto split: if_splits)
-qed simp
+qed simp  
 
 lemma prob_Pn_X[simp]: "measure_pmf.prob (Pn p S0 n) {(s, a). s = x} = pmf (Xn p S0 n) x"
 proof (induction n arbitrary: p S0)
@@ -546,7 +551,7 @@ proof (induction n arbitrary: p S0)
 next
   case (Suc n)
   show ?case
-    unfolding Xn_Suc' Pn.simps(2) measure_pmf_bind
+    unfolding Xn_Suc' Pn.simps(2) measure_pmf_bind 
     using Suc
     by (simp add: measure_pmf.measure_bind[of _ _ "count_space UNIV"] K0_def
         measure_pmf_in_subprob_algebra pmf_bind)
@@ -557,8 +562,7 @@ lemma pmf_Pn_pair:
   shows "pmf (Pn p S0 n) sa = pmf (Y_cond_X p S0 n (fst sa)) (snd sa) * pmf (Xn p S0 n) (fst sa)"
 proof -
   have aux: "set_pmf (Pn p S0 n) \<inter> {(s, a). s = fst sa} \<noteq> {}"
-    using Xn_def assms
-    by auto
+    using Xn_def assms by auto
   have aux': "({(s, a). s = fst sa} \<inter> snd -` {snd sa}) = {sa}"
     by auto
   show ?thesis
@@ -592,7 +596,7 @@ proof -
   show ?thesis
     using assms aux'
     unfolding Y_cond_X_def
-    by (auto simp: cond_pmf.rep_eq[OF aux] pmf_map pmf_eq_0_set_pmf measure_pmf.emeasure_eq_measure
+    by (auto simp: cond_pmf.rep_eq[OF aux] pmf_map pmf_eq_0_set_pmf measure_pmf.emeasure_eq_measure 
         measure_pmf_single)
 qed
 
@@ -610,18 +614,18 @@ lemma Y_cond_X_markovian[simp]:
 lemma Pn_eq_Xn_Y_cond: "Pn p S0 n = Xn p S0 n \<bind> (\<lambda>x. map_pmf (\<lambda>a. (x, a)) (Y_cond_X p S0 n x))"
 proof (induction n)
   case 0
-  then show ?case
+  then show ?case 
     by (auto simp: K0_iff intro: bind_pmf_cong)
 next
   case (Suc n)
   show ?case
   proof (intro pmf_eqI; safe)
-    fix a :: 's
+    fix a :: 's 
     fix b :: 'a
-    have aux': "pmf (Xn p S0 (Suc n) \<bind> (\<lambda>x. map_pmf (Pair x) (Y_cond_X p S0 (Suc n) x))) (a,b)
-      = measure_pmf.expectation (Pn p S0 (Suc n)) (\<lambda>x.
+    have aux': "pmf (Xn p S0 (Suc n) \<bind> (\<lambda>x. map_pmf (Pair x) (Y_cond_X p S0 (Suc n) x))) (a,b) 
+      = measure_pmf.expectation (Pn p S0 (Suc n)) (\<lambda>x. 
           if fst x = a then pmf (Y_cond_X p S0 (Suc n) a) b else 0)"
-      by (auto intro!: Bochner_Integration.integral_cong[OF refl]
+      by (auto intro!: Bochner_Integration.integral_cong[OF refl] 
           simp: Xn_def bind_map_pmf pmf_map pmf_bind measure_pmf_single)
     also have "\<dots> = measure_pmf.expectation (Pn p S0 (Suc n))
      (\<lambda>x. indicator {(s',a'). s' = a} x * (pmf (Pn p S0 (Suc n)) (a, b) / pmf (Xn p S0 (Suc n)) a))"
@@ -630,27 +634,27 @@ next
       assume h: "y \<in> set_pmf (Pn p S0 (Suc n))"
       hence h': "fst y \<in> set_pmf (Xn p S0 (Suc n))"
         by (metis mult_eq_0_iff pmf_Pn_pair pmf_eq_0_set_pmf)
-      show "(if fst y = a then pmf (Y_cond_X p S0 (Suc n) a) b else 0) =
-        indicat_real {(s', a'). s' = a} y *
+      show "(if fst y = a then pmf (Y_cond_X p S0 (Suc n) a) b else 0) = 
+        indicat_real {(s', a'). s' = a} y * 
         (pmf (Pn p S0 (Suc n)) (a, b) / pmf (Xn p S0 (Suc n)) a)"
         by (auto simp: case_prod_beta' pmf_Y_cond_X[of "fst y" p S0 "(Suc n)" b, OF h'])
     qed auto
-    also have "\<dots> = measure_pmf.prob (Pn p S0 (Suc n)) {(s',a'). s' = a} *
+    also have "\<dots> = measure_pmf.prob (Pn p S0 (Suc n)) {(s',a'). s' = a} * 
       pmf (Pn p S0 (Suc n)) (a, b) / pmf (Xn p S0 (Suc n)) a"
       by auto
     also have "\<dots> = pmf (Pn p S0 (Suc n)) (a,b)"
       using prob_Pn_X Xn_def pmf_Pn_pair pmf_eq_0_set_pmf by fastforce
-    finally show "pmf (Pn p S0 (Suc n)) (a, b) = pmf (Xn p S0 (Suc n) \<bind>
+    finally show "pmf (Pn p S0 (Suc n)) (a, b) = pmf (Xn p S0 (Suc n) \<bind> 
       (\<lambda>x. map_pmf (Pair x) (Y_cond_X p S0 (Suc n) x))) (a, b)"
       by auto
   qed
 qed
 
-lemma Pn_eq_Xn_Y_cond':
+lemma Pn_eq_Xn_Y_cond': 
   "Pn p S0 n = Xn p S0 n \<bind> (\<lambda>s. Y_cond_X p S0 n s \<bind> (\<lambda>a. return_pmf (s,a)))"
   by (metis K0_def K0_iff Pn_eq_Xn_Y_cond)
 
-lemma Pn_markovian_Suc: "Pn (mk_markovian p) S0 (Suc n) =
+lemma Pn_markovian_Suc: "Pn (mk_markovian p) S0 (Suc n) = 
   Pn (mk_markovian p) S0 n \<bind> (\<lambda>sa. K0 (p (Suc n)) (K sa))"
 proof (induction n arbitrary: S0 p)
   case 0
@@ -675,7 +679,7 @@ hence we may express @{const Yn} solely in terms of @{const Xn} and the current 
 \<close>
 
 lemma Yn_markovian: "Yn (mk_markovian p) S0 n = Xn (mk_markovian p) S0 n \<bind> p n"
-proof (induction n arbitrary: p S0)
+proof (induction n arbitrary: p S0) 
   case 0
   then show ?case
     by (auto simp: Y0)
@@ -686,7 +690,7 @@ next
 qed
 
 subsection \<open>Restriction to Markovian Policies\<close>
-abbreviation "as_markovian p S0 n x \<equiv>
+abbreviation "as_markovian p S0 n x \<equiv> 
   if x \<in> (Xn p S0 n) then Y_cond_X p S0 n x else return_pmf (SOME a. a \<in> A x)"
 
 text \<open>
@@ -695,22 +699,20 @@ any statements about @{const Y_cond_X} (a distribution conditioned on an event w
 \<close>
 
 lemma is_\<Pi>\<^sub>M\<^sub>R_as_markovian:
-  assumes p: "is_policy p"
+  assumes p: "is_policy p" 
   shows "as_markovian p S0 \<in> \<Pi>\<^sub>M\<^sub>R"
 proof -
   have aux: "\<And>hs s. s \<in> set_pmf (Xn p S0 hs) \<Longrightarrow> set_pmf ((Pn p S0 hs)) \<inter> {(s', a). s' = s} \<noteq> {}"
     by (simp add: measure_pmf_zero_iff[symmetric] pmf_eq_0_set_pmf)
   thus ?thesis
-    using assms A_ne Pn_in_A
-    unfolding is_dec_def Y_cond_X_def
-    by (auto simp: some_in_eq)
+    using assms A_ne Pn_in_A by (auto simp: is_dec_def some_in_eq Y_cond_X_def)
 qed
 
 lemma is_policy_as_markovian: "is_policy p \<Longrightarrow> is_policy (mk_markovian (as_markovian p S0))"
   using is_\<Pi>\<^sub>M\<^sub>R_as_markovian \<Pi>\<^sub>M\<^sub>R_imp_policies by auto
 
 theorem Pn_as_markovian_eq: "Pn (mk_markovian (as_markovian p S0)) S0 = Pn p S0"
-proof
+proof 
   fix n show "Pn (mk_markovian (as_markovian p S0)) S0 n = Pn p S0 n"
   proof (induction n)
     case 0
@@ -718,7 +720,7 @@ proof
       by (auto intro!: map_pmf_cong bind_pmf_cong simp: K0_def)
   next
     case (Suc n)
-    have "\<And>x. x \<in> Xn p S0 (Suc n) \<Longrightarrow>
+    have "\<And>x. x \<in> Xn p S0 (Suc n) \<Longrightarrow> 
       Y_cond_X (mk_markovian (as_markovian p S0)) S0 (Suc n) x = Y_cond_X p S0 (Suc n) x"
       by (auto simp: Suc.IH Xn_Suc)
     moreover have "Xn (mk_markovian (as_markovian p S0)) S0 (Suc n) = Xn p S0 (Suc n)"
@@ -736,16 +738,16 @@ where we the initial state is of the form @{term "return_pmf s"}.
 \<close>
 definition "\<T> p s \<equiv> T p (return_pmf s)"
 
-lemma \<T>_eq_return_distr: "\<T> p s =
+lemma \<T>_eq_return_distr: "\<T> p s = 
   measure_pmf (p [] s) \<bind> (\<lambda>a. distr (T (\<pi>_Suc p (s,a)) (K (s,a))) S ((##) (s,a)))"
   unfolding \<T>_def
-  by (subst T_eq_distr) (fastforce intro!: bind_distr subprob_space.subprob_space_distr
+  by (subst T_eq_distr) (fastforce intro!: bind_distr subprob_space.subprob_space_distr 
       simp: K0_iff map_pmf_rep_eq space_subprob_algebra bind_return_pmf)+
 
 lemma \<T>_eq_return:
   shows "\<T> p s = do {
     y \<leftarrow> measure_pmf (p [] s);
-    \<omega> \<leftarrow> T (\<pi>_Suc p (s,y)) (K (s,y));
+    \<omega> \<leftarrow> T (\<pi>_Suc p (s,y)) (K (s,y)); 
     return S ((s,y) ## \<omega>)
   }"
   by (auto simp: \<T>_eq_return_distr bind_return_distr' prob_space.not_empty intro!: bind_cong)
@@ -753,16 +755,16 @@ lemma \<T>_eq_return:
 lemma \<T>_return:
   shows "T p S0 = measure_pmf S0 \<bind> \<T> p"
 proof -
-  have "T p S0 = measure_pmf S0 \<bind> (\<lambda>x. measure_pmf (map_pmf (Pair x) (p [] x))) \<bind>
+  have "T p S0 = measure_pmf S0 \<bind> (\<lambda>x. measure_pmf (map_pmf (Pair x) (p [] x))) \<bind> 
   (\<lambda>sa. distr (T (\<pi>_Suc p sa) (K sa)) (stream_space (count_space UNIV)) ((##) sa))"
     unfolding T_eq_distr[of p] K0_iff measure_pmf_bind
     by auto
   also have "\<dots> = measure_pmf S0 \<bind>
     (\<lambda>x. distr (measure_pmf (p [] x)) (count_space UNIV) (Pair x) \<bind>
           (\<lambda>sa. distr (T (\<pi>_Suc p sa) (K sa)) (stream_space (count_space UNIV)) ((##) sa)))"
-    using measurable_measure_pmf
+    using measurable_measure_pmf 
     by (subst bind_assoc[where N = "count_space UNIV", where R = S])
-      (fastforce intro!: prob_space_imp_subprob_space prob_space.prob_space_distr
+      (fastforce intro!: prob_space_imp_subprob_space prob_space.prob_space_distr 
         simp: space_subprob_algebra prob_space_measure_pmf map_pmf_rep_eq)+
   also have "\<dots> = measure_pmf S0 \<bind> \<T> p"
     by (subst bind_distr[where K  = S])
@@ -772,29 +774,15 @@ proof -
 qed
 
 lemma \<T>_return_eq:
-  shows
-    "\<T> p s = do {
+"\<T> p s = do {
   a \<leftarrow> measure_pmf (p [] s);
   s' \<leftarrow> measure_pmf (K (s,a));
   w \<leftarrow> T (\<pi>_Suc p (s,a)) (return_pmf s');
   return S ((s,a)##w)
 }"
-proof -
-  have "\<T> p s = do {
-    a \<leftarrow> measure_pmf (p [] s);
-    \<omega> \<leftarrow> T (\<pi>_Suc p (s, a)) (K (s, a));
-   return S ((s, a) ## \<omega>)}"
-    using \<T>_eq_return
-    by auto
-  also have "\<dots> =  do {
-    a \<leftarrow> measure_pmf (p [] s);
-    s' \<leftarrow> measure_pmf (K (s, a));
-    \<omega> \<leftarrow> T (\<pi>_Suc p (s, a)) (return_pmf s');
-   return S ((s, a) ## \<omega>)}"
-    unfolding \<T>_return
-    by (subst bind_assoc[of _ _ S _ S]) (auto simp add: \<T>_def \<T>_return[symmetric])
-  finally show ?thesis.
-qed
+  unfolding \<T>_eq_return
+  unfolding \<T>_return
+  by (subst bind_assoc[of _ _ S _ S]) (auto simp add: \<T>_def \<T>_return[symmetric])
 
 lemma \<T>_eq:
   shows "\<T> p s = do {
@@ -808,21 +796,21 @@ lemma \<T>_eq:
 lemma \<T>_prob_space[intro]: "prob_space (\<T> p s)"
   by (metis \<T>_def prob_space_T)
 
-lemma \<T>_sets[measurable_cong]:
+lemma \<T>_sets[measurable_cong]: 
   "sets (\<T> p s) = sets S"
   by (simp add: \<T>_def sets_T)
 
-lemma measurable_ident_Suc'[measurable]:
+lemma measurable_ident_Suc'[measurable]: 
   "(\<lambda>x. x) \<in> \<T> (\<pi>_Suc p sa) s' \<rightarrow>\<^sub>M S"
   by (simp add: \<T>_def)
 
-lemma nn_integral_\<T>:
+lemma nn_integral_\<T>: 
   fixes f :: "('s \<times> 'a) stream \<Rightarrow> real"
   assumes f[measurable]: "f \<in> borel_measurable S"
-  shows "(\<integral>\<^sup>+t. f t \<partial>\<T> p s)
+  shows "(\<integral>\<^sup>+t. f t \<partial>\<T> p s) 
     = \<integral>\<^sup>+a. \<integral>\<^sup>+s'. \<integral>\<^sup>+t'. f ((s,a)##t') \<partial>\<T> (\<pi>_Suc p (s,a)) s' \<partial>K (s,a) \<partial>p [] s"
 proof -
-  have "(\<integral>\<^sup>+t. f t \<partial>\<T> p s) =
+  have "(\<integral>\<^sup>+t. f t \<partial>\<T> p s) = 
   \<integral>\<^sup>+ x. \<integral>\<^sup>+ y. (f y) \<partial>measure_pmf (K (s, x)) \<bind> (\<lambda>s'. \<T> (\<pi>_Suc p (s, x)) s' \<bind> (\<lambda>w. return S ((s, x) ## w))) \<partial>(p [] s)"
     unfolding \<T>_eq[of p]
     by (subst nn_integral_bind[of _ S])
@@ -838,16 +826,16 @@ proof -
   finally show ?thesis.
 qed
 
-lemma integral_\<T>:
+lemma integral_\<T>: 
   fixes f :: "('s \<times> 'a) stream \<Rightarrow> real"
   assumes f_bounded: "\<And>x. \<bar>f x\<bar> \<le> B"
   assumes f[measurable]: "f \<in> borel_measurable S"
-  shows "(\<integral>t. f t \<partial>\<T> p s)
+  shows "(\<integral>t. f t \<partial>\<T> p s) 
     = \<integral>a. \<integral>s'. \<integral>t'. f ((s,a)##t') \<partial>\<T> (\<pi>_Suc p (s,a)) s' \<partial>K (s,a) \<partial>p [] s"
   unfolding \<T>_def integral_T[OF f_bounded f] K0_iff bind_return_pmf
   unfolding \<T>_return[of "\<pi>_Suc p _"] integral_map_pmf
   using \<T>_return[of "\<pi>_Suc p _", symmetric]
-  by (subst integral_bind[OF _ f_bounded, where B' = 1, where K = S])
+  by (subst integral_bind[OF _ f_bounded, where B' = 1, where K = S]) 
     (auto simp: \<T>_def intro: prob_space.emeasure_le_1)
 
 lemma integrable_\<T>_bounded[intro]:
@@ -856,7 +844,7 @@ lemma integrable_\<T>_bounded[intro]:
   assumes b: "bounded (range f)"
   shows "integrable (\<T> p s) f"
   using b
-  by (auto simp: prob_space.finite_measure \<T>_prob_space bounded_iff
+  by (auto simp: prob_space.finite_measure \<T>_prob_space bounded_iff 
       intro!: finite_measure.integrable_const_bound)
 
 definition "Pn' p s = Pn p (return_pmf s)"
@@ -867,8 +855,7 @@ definition "K0' d s \<equiv> map_pmf (\<lambda>a. (s, a)) (d s)"
 definition "K_st d s \<equiv> d s \<bind> (\<lambda>a. K (s,a))"
 
 lemma pmf_K_st: "pmf (K_st d s) t = \<integral>a. pmf (K(s, a)) t \<partial>d s"
-  unfolding K_st_def
-  by (subst pmf_bind) auto
+  unfolding K_st_def by (auto simp: pmf_bind)
 
 text \<open>
 @{const K_st} defines the distribution over the successor states for a given decision rule and state.
@@ -889,7 +876,7 @@ lemma PSuc': "Pn' p s (Suc n) = K0' (p []) s \<bind> (\<lambda>sa. K sa \<bind> 
   by (auto intro!: bind_pmf_cong
       simp: Pn.simps(2) Pn_return_pmf K0_iff K0'_def bind_return_pmf map_bind_pmf bind_map_pmf)
 
-lemma PSuc'_markovian:
+lemma PSuc'_markovian: 
   "Pn' (mk_markovian p) s (Suc n) = K_st (p 0) s \<bind> (\<lambda>s'. Pn' (mk_markovian (p \<circ> Suc)) s' n)"
   unfolding PSuc'
   by (auto simp: bind_map_pmf bind_assoc_pmf comp_def K0'_def K_st_def intro!: bind_pmf_cong)
@@ -903,23 +890,22 @@ lemma Xn'_Pn': "Xn' p s n = map_pmf fst (Pn' p s n)"
 lemma Suc_Xn': "Xn' p s (Suc n) = p [] s \<bind> (\<lambda>a. K (s,a) \<bind> (\<lambda>s'. Xn' (\<pi>_Suc p (s,a)) s' n))"
   by (auto simp: Xn'_Pn' map_bind_pmf bind_map_pmf PSuc' K0'_def)
 
-lemma Suc_Xn'_markovian:
+lemma Suc_Xn'_markovian: 
   "Xn' (mk_markovian p) s (Suc n) = K_st (p 0) s \<bind> (\<lambda>s'. Xn' (mk_markovian (\<lambda>n. p (Suc n))) s' n)"
   by (auto simp: K_st_def bind_assoc_pmf Suc_Xn')
 
-lemma Xn'_split: "Xn' (mk_markovian p) s (n + m) =
+lemma Xn'_split: "Xn' (mk_markovian p) s (n + m) = 
   Xn' (mk_markovian p) s n \<bind> (\<lambda>s. Xn' (mk_markovian (\<lambda>i. p (i + n))) s m)"
   by (induction n arbitrary: p s) (auto intro!: bind_pmf_cong simp: bind_assoc_pmf bind_return_pmf Suc_Xn')
 
 lemma Yn'_markovian: "Yn' (mk_markovian p) s n = Xn' (mk_markovian p) s n \<bind> p n"
-  unfolding Yn'_def Xn'_def Yn_markovian
-  by simp
+  unfolding Yn'_def Xn'_def Yn_markovian by simp
 
 lemma Pn'_markovian_eq_Xn'_bind: "Pn' (mk_markovian p) s n = Xn' (mk_markovian p) s n \<bind> K0' (p n)"
-  unfolding Xn'_def Pn'_def K0'_def K0_iff Pn_markovian_eq_Xn_bind
-  by simp
+  unfolding Xn'_def Pn'_def K0'_def K0_iff Pn_markovian_eq_Xn_bind by simp
 
 lemma Pn'_eq_\<T>: "measure_pmf (Pn' p s n) = distr (\<T> p s) (count_space UNIV) (\<lambda>t. t !! n)"
   by (auto simp: \<T>_def Pn'_def Pn_eq_T)
+
 end
 end

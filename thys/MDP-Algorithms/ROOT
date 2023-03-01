@@ -1,15 +1,23 @@
 chapter AFP
 session "MDP-Algorithms" (AFP) = "MDP-Rewards" +
-  options [timeout = 600]
+  options [document = pdf, document_output = "output", timeout = 600]
   sessions
-    Gauss_Jordan
+    Gauss_Jordan Jordan_Normal_Form Perron_Frobenius "HOL-Data_Structures"
   directories
     code
-    examples
+    "code/lib"
   theories
-    Algorithms
-    Code_Mod
-    Examples
+    VI_Code_Export_Float
+    VI_Code_Export_Rat
+    GS_Code_Export_Float
+    GS_Code_Export_Rat
+    MPI_Code_Export_Float
+    MPI_Code_Export_Rat
+    PI_Code_Export_Float
+    PI_Code_Export_Rat
+    Fin_Code_Export_Float
+    Fin_Code_Export_Rat
+
   document_files
     "root.bib"
     "root.tex"

@@ -240,8 +240,8 @@ lemma has_arg_max_is_arg_max: "has_arg_max f X \<Longrightarrow> is_arg_max f (\
   by (auto intro: someI)
 
 lemma has_arg_max_arg_max: "has_arg_max f X \<Longrightarrow> (arg_max f (\<lambda>x. x \<in> X)) \<in> X"
-  unfolding has_arg_max_def arg_max_def
-  by (auto; metis is_arg_max_def someI_ex)
+  unfolding has_arg_max_def arg_max_def is_arg_max_def by (auto intro: someI2_ex)
+  
 
 lemma app_arg_max_ge: "has_arg_max (f :: 'b \<Rightarrow> real) X \<Longrightarrow> x \<in> X \<Longrightarrow> f x \<le> f (arg_max_on f X)"
   unfolding has_arg_max_def arg_max_on_def arg_max_def is_arg_max_def
@@ -258,31 +258,30 @@ lemma SUP_is_arg_max:
   using not_less assms cSUP_upper[of _ X f] 
   by auto
 
-
 lemma is_arg_max_linorderI[intro]: fixes f :: "'c \<Rightarrow> 'b :: linorder"
   assumes "P x" "\<And>y. (P y \<Longrightarrow> f x \<ge> f y)"
   shows "is_arg_max f P x"
-  using assms
-  by (auto simp: is_arg_max_linorder)
+  using assms by (auto simp: is_arg_max_linorder)
 
 lemma is_arg_max_linorderD[dest]: fixes f :: "'c \<Rightarrow> 'b :: linorder"
   assumes "is_arg_max f P x"
   shows "P x" "(P y \<Longrightarrow> f x \<ge> f y)"
-  using assms
-  by (auto simp: is_arg_max_linorder)
+  using assms by (auto simp: is_arg_max_linorder)
 
 lemma is_arg_max_cong: 
   assumes "\<And>x. P x \<Longrightarrow> f x = g x"
   shows "is_arg_max f P x \<longleftrightarrow> is_arg_max g P x"
-  unfolding is_arg_max_def 
-  using assms
-  by auto
+  unfolding is_arg_max_def using assms by auto
+
+lemma is_arg_max_cong':
+  assumes "\<And>x. P x \<Longrightarrow> f x = g x"
+  shows "is_arg_max f P = is_arg_max g P"
+  using assms by (auto cong: is_arg_max_cong)
 
 lemma is_arg_max_congI: 
   assumes "is_arg_max f P x" "\<And>x. P x \<Longrightarrow> f x = g x" 
   shows "is_arg_max g P x" 
-  using is_arg_max_cong assms 
-  by force
+  using is_arg_max_cong assms by force
 
 subsection \<open>Contraction Mappings\<close>
 
@@ -305,8 +304,7 @@ proof -
       case (Suc n)
       thus "dist ((C ^^ Suc n) v0) v \<le> l ^ Suc n * dist v0 v"
         using \<open>0 \<le> l\<close>
-        by (subst C(1)[symmetric]) 
-          (auto simp: algebra_simps intro!: order_trans[OF cont(1)] mult_left_mono)
+        by (subst C(1)[symmetric]) (auto simp: algebra_simps intro!: order_trans[OF cont(1)] mult_left_mono)
     qed simp
   qed
   have "(\<lambda>n. l ^ n) \<longlonglongrightarrow> 0"
@@ -323,10 +321,7 @@ proof -
     by (metis (mono_tags, lifting) C theI')
 next
   show "\<exists>!v. C v = v"
-    using assms
-    unfolding is_contraction_def
-    using banach_fix_type 
-    by blast
+    using assms banach_fix_type unfolding is_contraction_def by blast
 qed
 
 lemma contraction_dist:
@@ -338,11 +333,9 @@ proof -
   have "is_contraction C"
     unfolding is_contraction_def using assms by auto
   then obtain v_fix where v_fix: "v_fix = (THE v. C v = v)"
-    using the1_equality
-    by blast
+    using the1_equality by blast
   hence "(\<lambda>n. (C ^^ n) v) \<longlonglongrightarrow> v_fix"
-    using banach'[OF \<open>is_contraction C\<close>]
-    by simp
+    using banach'[OF \<open>is_contraction C\<close>] by simp
   have dist_contr_le_pow: "\<And>n. dist ((C ^^ n) v) ((C ^^ Suc n) v) \<le> c ^ n * dist v (C v)"
   proof -
     fix n 
@@ -526,5 +519,48 @@ qed
 lemma abs_cSUP_le[intro]: 
   "X \<noteq> {} \<Longrightarrow> bounded (F ` X) \<Longrightarrow> \<bar>\<Squnion>x \<in> X. (F x) :: real\<bar> \<le> (\<Squnion>x \<in> X. \<bar>F x\<bar>)"
   by (auto intro!: cSup_abs_le cSUP_upper2 bounded_imp_bdd_above simp: image_image[symmetric])
+
+section \<open>Least argmax\<close>
+definition "least_arg_max f P = (LEAST x. is_arg_max f P x)"
+
+lemma least_arg_max_prop: "\<exists>x::'a::wellorder. P x \<Longrightarrow> finite {x. P x} \<Longrightarrow> P (least_arg_max (f :: _ \<Rightarrow> real) P)"
+  unfolding least_arg_max_def
+  apply (rule LeastI2_ex)
+  using finite_is_arg_max[of "{x. P x}", where f = f]
+  by auto
+
+lemma is_arg_max_apply_eq: "is_arg_max (f :: _ \<Rightarrow> _ :: linorder)  P x \<Longrightarrow> is_arg_max f P y \<Longrightarrow> f x = f y"
+  by (auto simp: is_arg_max_def not_less dual_order.eq_iff)
+  
+lemma least_arg_max_apply:
+  assumes "is_arg_max (f :: _ \<Rightarrow> _ :: linorder) P (x::_::wellorder)" 
+  shows "f (least_arg_max f P) = f x"
+proof -
+  have "is_arg_max f P (least_arg_max f P)"
+    by (metis LeastI_ex assms least_arg_max_def)
+  thus ?thesis
+    using is_arg_max_apply_eq assms by metis
+qed
+
+lemma apply_arg_max_eq_max: "finite {x . P x} \<Longrightarrow> is_arg_max (f :: _ \<Rightarrow> _ :: linorder) P x \<Longrightarrow> f x = Max (f ` {x. P x})"
+  by (auto simp: is_arg_max_def intro!: Max_eqI[symmetric])
+
+lemma apply_arg_max_eq_max': "finite X\<Longrightarrow> is_arg_max (f :: _ \<Rightarrow> _ :: linorder) (\<lambda>x. x \<in> X) x \<Longrightarrow> (MAX x \<in> X. f x) = f x"
+  by (auto simp: is_arg_max_linorder intro!: Max_eqI)
+
+lemma least_arg_max_is_arg_max: "P \<noteq> {} \<Longrightarrow> finite P \<Longrightarrow> is_arg_max f (\<lambda>x::_::wellorder. x \<in> P) (least_arg_max (f :: _ \<Rightarrow> real) (\<lambda>x. x \<in> P))"
+  unfolding least_arg_max_def
+  apply (rule LeastI_ex)
+  using finite_is_arg_max 
+  by auto
+
+lemma is_arg_max_const: "is_arg_max (f :: _ \<Rightarrow> _ :: linorder) (\<lambda>y. y = c) x \<longleftrightarrow> x = c"
+  unfolding is_arg_max_def
+  by auto
+
+lemma least_arg_max_cong': 
+  assumes "\<And>x. is_arg_max f P x = is_arg_max g P x"
+  shows "least_arg_max f P = least_arg_max g P"
+  unfolding least_arg_max_def using assms by metis
 
 end

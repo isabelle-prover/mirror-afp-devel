@@ -1,6 +1,6 @@
 chapter AFP
 session "MDP-Rewards" (AFP) = "HOL-Probability" +
-  options [timeout = 600]
+  options [document = pdf, document_output = "output", timeout = 600]
   theories
     MDP_reward
   document_files

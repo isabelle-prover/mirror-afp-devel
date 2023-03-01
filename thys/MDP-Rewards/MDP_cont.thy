@@ -533,8 +533,7 @@ next
         proof (rule measurable_PiM_single')
           fix i assume "i \<in> {0..<Suc n}"
           then show "(\<lambda>\<omega>. (case \<omega> of (x, y) \<Rightarrow> (snd x)(n := y)) i) \<in> (prob_algebra Ms \<Otimes>\<^sub>M Pi\<^sub>M {0..<n} (\<lambda>_. M)) \<Otimes>\<^sub>M M \<rightarrow>\<^sub>M M"
-            unfolding split_beta'
-            by (cases "i = n") auto
+            unfolding split_beta' by (cases "i = n") auto
         next
           show "(\<lambda>\<omega>. case \<omega> of (x, y) \<Rightarrow> (snd x)(n := y)) \<in> space ((prob_algebra Ms \<Otimes>\<^sub>M Pi\<^sub>M {0..<n} (\<lambda>_. M)) \<Otimes>\<^sub>M M) \<rightarrow> {0..<Suc n} \<rightarrow>\<^sub>E space M"
             by (auto simp: space_pair_measure space_PiM less_Suc_eq PiE_iff)
@@ -542,7 +541,7 @@ next
       next
         show "(\<lambda>x. K' p (fst x) n (snd x)) \<in> prob_algebra Ms \<Otimes>\<^sub>M Pi\<^sub>M {0..<n} (\<lambda>_. M) \<rightarrow>\<^sub>M subprob_algebra M"
           unfolding K'_def comp_def
-          using p 
+          using p
           by (auto intro!: measurable_prob_algebraD)
       qed
     qed
@@ -551,19 +550,16 @@ next
       by (subst measurable_cong[OF Ionescu_Tulcea.C.simps(2)[OF IT_K', where p1 = p, OF p]])
         (auto intro!: measurable_bind)
   qed
-
   have *: "(\<lambda>x. Ionescu_Tulcea.CI (K' p x) (\<lambda>_. M) J) \<in> prob_algebra Ms \<rightarrow>\<^sub>M subprob_algebra (Pi\<^sub>M J (\<lambda>_. M))"
     using measurable_distr[OF measurable_restrict_subset[OF J_le_n], of "(\<lambda>_. M)"] C p
     by (subst measurable_cong) 
       (auto simp: Ionescu_Tulcea.up_to_def[OF IT_K'] n_def Ionescu_Tulcea.CI_def[OF IT_K'])
-
   have "(\<lambda>a. emeasure (lim_sequence p a) X) \<in> borel_measurable (prob_algebra Ms) \<longleftrightarrow>
     (\<lambda>a. emeasure (Ionescu_Tulcea.CI (K' p a) (\<lambda>_. M) J) (Pi\<^sub>E J F)) \<in> 
       borel_measurable (prob_algebra Ms)"
     unfolding X using J Pi_F by (intro p measurable_cong emeasure_lim_sequence_emb) auto
   also have "\<dots>"
-    using * measurable_emeasure_subprob_algebra Pi_F(2)
-    by auto
+    using * measurable_emeasure_subprob_algebra Pi_F(2) by auto
   finally show "(\<lambda>a. emeasure (lim_sequence p a) X) \<in> borel_measurable (prob_algebra Ms)" .
 qed
 
@@ -640,7 +636,7 @@ next
               \<in> M \<Otimes>\<^sub>M Pi\<^sub>M {0..<n} (\<lambda>_. M) \<rightarrow>\<^sub>M subprob_algebra (Pi\<^sub>M {0..<Suc n} (\<lambda>_. M))"
           proof (intro measurable_distr2[where M=M] measurable_PiM_single', goal_cases)
             case (1 i)
-            then show ?case 
+            then show ?case
               by (cases "i = n") (auto simp: split_beta')
           next
             case 2
@@ -744,11 +740,9 @@ proof -
   proof (subst bind_distr[where K = "Pi\<^sub>M {0..<Suc n} (\<lambda>_. M)"], goal_cases)
     case 1
     then show ?case 
-      using measurable_C[of 1 n, measurable del] x[THEN sets_K0[OF p]]
+      using measurable_C[of 1 n, measurable del] x[THEN sets_K0[OF p]] measurable_ident_sets[OF sets_P]
       unfolding K0_def
-      apply auto
-      apply measurable
-      by (auto simp: space_P measurable_ident_sets sets_P)
+      by auto
   next
     case 2
     then show ?case
@@ -994,7 +988,6 @@ next
       distr (lim_sequence (Suc_policy p a) (K a)) (stream_space M) (to_stream \<circ> case_nat a) =
       distr (lim_sequence (Suc_policy p a) (K a)) (stream_space M) to_stream \<bind> 
         (\<lambda>\<omega>. return (stream_space M) (a ## \<omega>))"
-
     proof (subst bind_return_distr', goal_cases)
       case (1 a)
       then show ?case by (simp add: p space_stream_space_M_ne x)

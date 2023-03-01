@@ -37,6 +37,7 @@ schaeffeler = "schaeffeler_email"
 abdulaziz = "abdulaziz_email"
 
 [history]
+2023-03-01 = "Add MPI and Gauss-Seidel Iteration, improved code generation."
 
 [extra]
 

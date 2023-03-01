@@ -299,7 +299,7 @@ lemma inv_app2'[simp]: "invertible\<^sub>L X \<Longrightarrow> X (inv\<^sub>L X 
   using inv_app2 blinfun_apply_blinfun_compose id_blinfun.rep_eq
   by metis
 
-lemma [simp]: "invertible\<^sub>L X \<Longrightarrow> inv\<^sub>L (inv\<^sub>L X) = X"
+lemma inv\<^sub>L_inv\<^sub>L[simp]: "invertible\<^sub>L X \<Longrightarrow> inv\<^sub>L (inv\<^sub>L X) = X"
   by (metis inv\<^sub>L_eq is_inverse\<^sub>L_comm)
 
 lemma inv\<^sub>L_cancel_iff:
@@ -510,4 +510,132 @@ proof -
     by (auto simp: mult_right_mono mult.commute[of _ b] 
         intro!: boundedI[of _ "norm x * b"] dual_order.trans[OF _ norm_blinfun])
 qed
+
+lemma tendsto_blinfun_apply: "(\<lambda>n. X n) \<longlonglongrightarrow> L  \<Longrightarrow> (\<lambda>n. blinfun_apply (X n) u) \<longlonglongrightarrow> L u"  
+  using blinfun.bounded_bilinear_axioms
+  by (auto simp: convergent_LIMSEQ_iff intro: Limits.bounded_bilinear.tendsto)
+
+
+definition "nonneg_blinfun (Q :: _::{ordered_real_normed_vector} \<Rightarrow>\<^sub>L _::{ordered_ab_group_add, ordered_real_normed_vector}) \<equiv> (\<forall>v\<ge>0. blinfun_apply Q v \<ge> 0)"
+
+definition "blinfun_le Q R = nonneg_blinfun (R - Q)"
+
+
+lemma nonneg_blinfun_nonneg[dest]: "nonneg_blinfun Q \<Longrightarrow> 0 \<le> v \<Longrightarrow> 0 \<le> Q v"
+  unfolding nonneg_blinfun_def
+  by auto
+
+lemma nonneg_blinfun_mono[dest]: "nonneg_blinfun Q \<Longrightarrow> u \<le> v \<Longrightarrow> Q u \<le> Q v"
+  using nonneg_blinfun_nonneg[of Q "v - u", unfolded blinfun.diff_right]
+  by auto
+
+lemma nonneg_id_blinfun: "nonneg_blinfun id_blinfun"
+  by (auto simp: nonneg_blinfun_def)
+
+
+
+
+lemma blinfun_nonneg_eq:
+  assumes "\<forall>v \<ge> 0. blinfun_apply (f::('c \<Rightarrow>\<^sub>b real) \<Rightarrow>\<^sub>L ('c \<Rightarrow>\<^sub>b real)) v = blinfun_apply g v"
+  shows "f = g"
+proof (rule blinfun_eqI)
+  fix v :: "'c \<Rightarrow>\<^sub>b real"
+  define v1 where "v1 = Bfun (\<lambda>x. max (v x) 0)"
+  define v2 where "v2 = Bfun (\<lambda>x. - min (v x) 0)"
+  have in_bfun[simp]: "(\<lambda>x. max (v x) 0) \<in> bfun" "(\<lambda>x. - min (v x) 0) \<in> bfun"
+    by (auto simp: le_norm_bfun minus_min_eq_max abs_le_norm_bfun abs_le_D2 intro!: boundedI[of _ "norm v"])
+  have eq_v: "v = v1 - v2"
+    unfolding v1_def v2_def
+    by (auto simp: Bfun_inverse)
+  have nonneg: "0 \<le> v1" "0 \<le> v2"
+    unfolding less_eq_bfun_def
+    by (auto simp: v1_def v2_def Bfun_inverse)
+  show " blinfun_apply f v = blinfun_apply g v"
+    unfolding eq_v
+    using nonneg assms
+    by (auto simp: blinfun.diff_right)
+qed
+
+lemma bfun_zero_le_one: "0 \<le> (1 :: 'c \<Rightarrow>\<^sub>b real)"
+  by (simp add: less_eq_bfunI)
+
+lemma norm_nonneg_blinfun_one:
+  assumes "nonneg_blinfun (X :: ('c \<Rightarrow>\<^sub>b real) \<Rightarrow>\<^sub>L ('c \<Rightarrow>\<^sub>b real))"
+  shows "norm X = norm (blinfun_apply X 1)"
+  using assms unfolding nonneg_blinfun_def
+  by (auto simp: norm_blinfun_mono_eq_one)
+
+
+lemma blinfun_apply_mono: "nonneg_blinfun X \<Longrightarrow> 0 \<le> v \<Longrightarrow> blinfun_le X Y \<Longrightarrow> X v \<le> Y v"
+  by (simp add: blinfun.diff_left blinfun_le_def nonneg_blinfun_def)
+
+lemma nonneg_blinfun_scaleR[intro]:  "nonneg_blinfun B \<Longrightarrow> 0 \<le> c \<Longrightarrow> nonneg_blinfun (c *\<^sub>R B)"
+  by (simp add: nonneg_blinfun_def scaleR_blinfun.rep_eq scaleR_nonneg_nonneg)
+
+lemma nonneg_blinfun_compose[intro]: "nonneg_blinfun B \<Longrightarrow> nonneg_blinfun C \<Longrightarrow> nonneg_blinfun (C o\<^sub>L B)"
+  by (simp add: nonneg_blinfun_def)
+
+
+lemma matrix_le_norm_mono:
+  assumes "nonneg_blinfun (C :: ('c \<Rightarrow>\<^sub>b real) \<Rightarrow>\<^sub>L ('c \<Rightarrow>\<^sub>b real))"
+    and "nonneg_blinfun (D - C)"
+  shows "norm C \<le> norm D"
+proof -
+  have "nonneg_blinfun D"
+    using assms
+    by (metis add_nonneg_nonneg diff_add_cancel nonneg_blinfun_def plus_blinfun.rep_eq)
+  have zero_le: "0 \<le> C 1" "0 \<le> D 1"
+    using assms zero_le_one  \<open>nonneg_blinfun D\<close>
+    by (auto simp add: less_eq_bfunI nonneg_blinfun_nonneg)
+  hence "C 1 \<le> D 1"
+    using assms(2) unfolding nonneg_blinfun_def blinfun.diff_left
+    by (simp add: less_eq_bfun_def)
+  thus ?thesis
+    using assms \<open>nonneg_blinfun D\<close> zero_le le_norm_bfun
+    by (fastforce simp: norm_nonneg_blinfun_one norm_bfun_def' less_eq_bfun_def intro!: bdd_above.I2 cSUP_mono)
+qed
+
+
+lemma bounded_subset: "Y \<subseteq> X \<Longrightarrow> bounded (f ` X) \<Longrightarrow> bounded (f ` Y)"
+  by (auto simp: bounded_def)
+
+lemma bounded_subset_range: "bounded (range f) \<Longrightarrow> bounded (f ` Y)"
+  using bounded_subset subset_UNIV by metis
+
+
+lift_definition bfun_if :: "('b \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow>\<^sub>b 'c::metric_space) \<Rightarrow> ('b \<Rightarrow>\<^sub>b 'c) \<Rightarrow> ('b \<Rightarrow>\<^sub>b 'c)" is "\<lambda>b u v s. if b s then u s else v s"
+  using bounded_subset_range
+  by (auto simp: bfun_def)
+
+lemma bfun_if_add: "bfun_if b (w + z) (u + v) = bfun_if b w u + bfun_if b z v"
+  by (auto simp: bfun_if.rep_eq)
+
+lemma bfun_if_zero_add: "bfun_if b 0 (u + v) = bfun_if b 0 u + bfun_if b 0 v"
+  by (auto simp: bfun_if.rep_eq)
+
+lemma bfun_if_zero_le: "0 \<le> v \<Longrightarrow> bfun_if b 0 v \<le> v"
+  by (metis (no_types, lifting) bfun_if.rep_eq le_less less_eq_bfun_def)
+
+
+lemma bfun_if_eq: "(\<And>i. P i \<Longrightarrow> apply_bfun v i = apply_bfun u i) \<Longrightarrow> (\<And>i. \<not>P i \<Longrightarrow> v i = apply_bfun w i) \<Longrightarrow> bfun_if P u w = v"
+  by (auto simp: bfun_if.rep_eq)
+  
+lemma bfun_if_scaleR: "c *\<^sub>R bfun_if b v1 v2 = bfun_if b (c *\<^sub>R v1) (c *\<^sub>R v2)"
+  by (auto simp: bfun_if.rep_eq)
+
+
+
+lemma summable_blinfun_apply:
+  assumes "summable (f :: nat \<Rightarrow> 'a::real_normed_vector \<Rightarrow>\<^sub>L 'a)" 
+  shows "summable (\<lambda>n. f n v)"
+  using assms tendsto_blinfun_apply
+  unfolding summable_def sums_def blinfun.sum_left[symmetric]
+  by auto
+
+
+lemma blinfun_apply_suminf: 
+  assumes "summable (f :: nat \<Rightarrow> 'a::real_normed_vector \<Rightarrow>\<^sub>L 'a)" 
+  shows "(\<Sum>k. blinfun_apply (f k) v) = (\<Sum>k. f k) v"
+  using bounded_linear.suminf[OF blinfun.bounded_linear_left assms] 
+  by auto
 end
