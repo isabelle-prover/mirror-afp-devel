@@ -1,0 +1,12 @@
+chapter AFP
+
+session Edwards_Elliptic_Curves_Group (AFP) = HOL +
+  options [timeout = 600]
+  sessions
+    "HOL-Library"
+    "HOL-Algebra"
+  theories
+    Edwards_Elliptic_Curves_Group
+  document_files
+    "root.bib"
+    "root.tex"

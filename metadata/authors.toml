@@ -5212,6 +5212,15 @@ host = [
 name = "Rodrigo Raya"
 
 [raya.emails]
+[raya.emails.raya_email]
+user = [
+  "rodrigo",
+  "raya",
+]
+host = [
+  "epfl",
+  "ch",
+]
 
 [raya.homepages]
 raya_homepage = "https://people.epfl.ch/rodrigo.raya"
