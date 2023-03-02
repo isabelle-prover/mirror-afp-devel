@@ -7,23 +7,8 @@ theory Pi_pmf
   imports "HOL-Probability.Probability"
 begin
 
-subsection \<open>Preliminaries\<close>
-
-lemma pmf_expectation_eq_infsetsum: "measure_pmf.expectation p f = infsetsum (\<lambda>x. pmf p x * f x) UNIV"
-  unfolding infsetsum_def measure_pmf_eq_density by (subst integral_density) simp_all
-
-lemma measure_pmf_prob_product:
-  assumes "countable A" "countable B"
-  shows "measure_pmf.prob (pair_pmf M N) (A \<times> B) = measure_pmf.prob M A * measure_pmf.prob N B"
-proof -
-  have "measure_pmf.prob (pair_pmf M N) (A \<times> B) = (\<Sum>\<^sub>a(a, b)\<in>A \<times> B. pmf M a * pmf N b)"
-    by (auto intro!: infsetsum_cong simp add: measure_pmf_conv_infsetsum pmf_pair)
-  also have "\<dots> = measure_pmf.prob M A * measure_pmf.prob N B"
-    using assms by (subst infsetsum_product) (auto simp add: measure_pmf_conv_infsetsum)
-  finally show ?thesis
-    by simp
-qed
-
+text \<open>Conflicting notation from \<^theory>\<open>HOL-Analysis.Infinite_Sum\<close>\<close>
+no_notation Infinite_Sum.abs_summable_on (infixr "abs'_summable'_on" 46)
 
 subsection \<open>Definition\<close>
 
