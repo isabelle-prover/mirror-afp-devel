@@ -2355,7 +2355,7 @@ begin
         apply simp_all
 
         using B_in_bound B_sorted B_distinct
-        apply (auto simp: sorted_take dest: in_set_takeD) [3]
+        apply (auto simp: sorted_wrt_take dest: in_set_takeD) [3]
 
         using B0 S_distinct apply auto [2]
 

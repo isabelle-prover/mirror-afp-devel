@@ -2036,7 +2036,7 @@ lemma done_empty_valid_mmuaux'_intro:
   shows "valid_mmuaux' args cur dt'
     (tp, tss, len, maskL, maskR, a1_map, a2_map, [], 0)
     (drop (length done) auxlist)"
-  using assms sorted_drop by (auto simp add: drop_map[symmetric])
+  using assms sorted_wrt_drop by (auto simp add: drop_map[symmetric])
 
 lemma valid_mmuaux'_mono:
   assumes "valid_mmuaux' args cur dt aux auxlist" "dt \<le> dt'"

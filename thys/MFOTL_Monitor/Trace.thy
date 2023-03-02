@@ -235,7 +235,7 @@ lemma prefix_of_take_prefix[simp]: "prefix_of (take_prefix i \<sigma>) \<sigma>"
   by transfer auto
 
 lift_definition pdrop :: "nat \<Rightarrow> 'a prefix \<Rightarrow> 'a prefix" is drop
-  by (auto simp: drop_map[symmetric] sorted_drop)
+  by (auto simp: drop_map[symmetric] sorted_wrt_drop)
 
 lemma pdrop_0[simp]: "pdrop 0 \<pi> = \<pi>"
   by transfer auto

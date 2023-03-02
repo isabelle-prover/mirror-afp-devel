@@ -2306,7 +2306,7 @@ proof (induct m arbitrary: l)
   then show ?case by simp
 next
   case (Cons a m)
-  have "sorted (drop a l)" using Cons sorted_drop by simp
+  have "sorted (drop a l)" using Cons sorted_wrt_drop by simp
   moreover have "m = eq_comps (drop a l)" using eq_comps_drop Cons by simp
   ultimately have "lst_diff (drop a l) m" using Cons by simp
   have "a \<le> length l" using eq_comps_elem_le_length Cons by simp
@@ -2398,7 +2398,7 @@ proof (induct m arbitrary: l)
   then show ?case by simp
 next
   case (Cons a m)  
-  have "sorted (map Re (drop a l))" using Cons sorted_drop
+  have "sorted (map Re (drop a l))" using Cons sorted_wrt_drop
     by (metis drop_map)
   moreover have "m = eq_comps (drop a l)" using eq_comps_drop Cons by simp
   ultimately have "lst_diff (drop a l) m" using Cons
