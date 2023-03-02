@@ -1,0 +1,11 @@
+chapter AFP
+
+session "Rensets" (AFP) = HOL +
+options [timeout = 600]
+
+theories
+    All
+
+document_files
+    "root.bib"
+    "root.tex"

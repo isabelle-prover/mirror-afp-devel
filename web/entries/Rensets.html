@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Renaming-Enriched Sets (Rensets) and Renaming-Based Recursion - Archive of Formal Proofs</title><meta name="description" content="I formalize the notion of renaming-enriched sets (rensets for short) and renaming-based recursion introduced in my IJCAR 2022 paper ``Rensets and..."><meta property="og:title" content="Renaming-Enriched Sets (Rensets) and Renaming-Based Recursion" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/Rensets.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2023-02-28T00:00:00+00:00" />
+<meta property="article:modified_time" content="2023-02-28T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="Renaming-Enriched Sets (Rensets) and Renaming-Based Recursion"/>
+<meta name="twitter:description" content=""/>
+
+  
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
+</head>
+
+
+<body class='mathjax_ignore '>
+  <aside>
+    <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
+
+  <a href="../" class='logo-link'>
+    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  </a>
+
+  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+      </a>
+      <ul>
+        <a href="../"><li >Home</li></a>
+        <a href="../topics/"><li >Topics</li></a>
+        <a href="../download/"><li >Download</li></a>
+        <a href="../help/"><li >Help</li></a>
+        <a href="../submission/"><li >Submission</li></a>
+        <a href="../statistics/"><li >Statistics</li></a>
+        <a href="../about/"><li >About</li></a>
+      </ul>
+    </div>
+  </nav>
+</div>
+  </aside>
+
+  <div
+    class='content  entries'><header>
+  <form autocomplete="off" action="../search">
+    <div class='form-container'>
+      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
+      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
+      <datalist id="autocomplete">
+      </datalist>
+    </div>
+  </form>
+  <h1 >
+    <span class='first'>R</span>enaming-<span class='first'>E</span>nriched <span class='first'>S</span>ets (<span class='first'>R</span>ensets) and <span class='first'>R</span>enaming-<span class='first'>B</span>ased <span class='first'>R</span>ecursion</h1>
+  <div>
+    
+    <p><a href="../authors/popescu">Andrei Popescu</a> <a class="obfuscated" data="eyJob3N0IjpbInNoZWZmaWVsZCIsImFjIiwidWsiXSwidXNlciI6WyJhIiwicG9wZXNjdSJdfQ==">📧</a>
+    </p>
+    
+    
+    <p class="date">February 28, 2023</p>
+    
+  </div>
+</header><div><main><h3>Abstract</h3>
+
+  <div class="abstract mathjax_process">I formalize the notion of <i>renaming-enriched sets</i> (<i>rensets</i> for short) and renaming-based recursion introduced in my 
+<a href="https://link.springer.com/book/10.1007/978-3-031-10769-6">IJCAR 2022</a> 
+paper 
+<a href="https://link.springer.com/chapter/10.1007/978-3-031-10769-6_36">``Rensets and Renaming-Based Recursion for Syntax with Bindings''</a>. 
+Rensets are an algebraic axiomatization of renaming (variable-for-variable substitution). 
+The formalization includes a connection with nominal sets, showing that any renset naturally gives rise to a nominal set. It also includes examples of deploying the renaming-based recursor:  semantic interpretation, counting functions for free and bound occurrences, unary and parallel substitution, etc. Finally, it includes a variation of rensets that axiomatize term-for-variable substitution, called <i>substitutive sets</i>, which yields a  corresponding recursion principle.</div>
+
+  <h3>License</h3>
+  <div><a href="https://isa-afp.org/LICENSE">BSD License</a></div><h3>Topics</h3>
+  <ul><li><a href="../topics/computer-science/programming-languages/logics">Computer science/Programming languages/Logics</a></li></ul><h3>Related publications</h3>
+  <ul><li>
+      Popescu, A. (2022). Rensets and Renaming-Based Recursion for Syntax with Bindings. Lecture Notes in Computer Science, 618–639. <a href="https://doi.org/10.1007/978-3-031-10769-6_36">https://doi.org/10.1007/978-3-031-10769-6_36</a>
+
+    </li></ul>
+  <h3>Session Rensets</h3>
+  <ul>
+    <li><a href="../theories/rensets/#Lambda_Terms">Lambda_Terms</a></li>
+    <li><a href="../theories/rensets/#Rensets">Rensets</a></li>
+    <li><a href="../theories/rensets/#Nominal_Sets">Nominal_Sets</a></li>
+    <li><a href="../theories/rensets/#Rensets_to_Nominal_Sets">Rensets_to_Nominal_Sets</a></li>
+    <li><a href="../theories/rensets/#FRBCE_Rensets">FRBCE_Rensets</a></li>
+    <li><a href="../theories/rensets/#Substitutive_Sets">Substitutive_Sets</a></li>
+    <li><a href="../theories/rensets/#Examples">Examples</a></li>
+    <li><a href="../theories/rensets/#All">All</a></li></ul><div class="flex-wrap">
+  
+  
+  </div>
+</main>
+
+<nav class='links'>
+  <a class='popup-button' href="#cite-popup">Cite</a>
+  <a class='popup-button' href="#download-popup">Download</a>
+  <h4>PDFs</h4>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Rensets/outline.pdf">Proof
+    outline</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Rensets/document.pdf">Proof
+    document</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Rensets/session_graph.pdf">Dependencies</a></nav>
+
+<div id="cite-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Cite</h2>
+    <a class="close" href="#">&times;</a>
+    <div>
+      <p style="display:none;" id="bibtex-filename">Rensets-AFP</p><pre id="copy-text">@article{Rensets-AFP,
+  author  = {Andrei Popescu},
+  title   = {Renaming-Enriched Sets (Rensets) and Renaming-Based Recursion},
+  journal = {Archive of Formal Proofs},
+  month   = {February},
+  year    = {2023},
+  note    = {\url{https://isa-afp.org/entries/Rensets.html},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+    </div>
+  </div>
+</div>
+
+<div id="download-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Download</h2>
+    <a class="close" href="#">&times;</a>
+    <a href="https://www.isa-afp.org/release//afp-Rensets-current.tar.gz" download>Download latest</a>
+    
+  </div>
+</div>
+    </div>
+  </div>
+</body>
+
+</html>
