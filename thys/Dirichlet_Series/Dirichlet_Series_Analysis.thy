@@ -14,10 +14,8 @@ imports
   Euler_Products
 begin
 
-(* TODO Move *)
-lemma frequently_eventually_frequently:
-  "frequently P F \<Longrightarrow> eventually Q F \<Longrightarrow> frequently (\<lambda>x. P x \<and> Q x) F"
-  by (erule frequently_rev_mp, erule eventually_mono) auto
+text \<open>Conflicting notation from \<^theory>\<open>HOL-Analysis.Infinite_Sum\<close>\<close>
+no_notation Infinite_Sum.abs_summable_on (infixr "abs'_summable'_on" 46)
 
 text \<open>
   The following illustrates a concept we will need later on: A property holds for

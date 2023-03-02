@@ -5,6 +5,9 @@ imports
   "HOL-Real_Asymp.Real_Asymp"
 begin
 
+text \<open>Conflicting notation from \<^theory>\<open>HOL-Analysis.Infinite_Sum\<close>\<close>
+no_notation Infinite_Sum.abs_summable_on (infixr "abs'_summable'_on" 46)
+
 (* TODO: Move *)
 lemma asymp_equivD_strong:
   assumes "f \<sim>[F] g" "eventually (\<lambda>x. f x \<noteq> 0 \<or> g x \<noteq> 0) F"
@@ -16,11 +19,6 @@ proof -
     by (intro filterlim_cong eventually_mono[OF assms(2)]) auto
   finally show ?thesis .
 qed
-
-lemma frontier_real_Ici [simp]:
-  fixes a :: real
-  shows "frontier {a..} = {a}"
-  unfolding frontier_def by (auto simp: interior_real_atLeast)
 
 lemma sum_upto_ln_conv_sum_upto_mangoldt:
   "sum_upto (\<lambda>n. ln (real n)) x = sum_upto (\<lambda>n. mangoldt n * nat \<lfloor>x / real n\<rfloor>) x"
@@ -92,10 +90,6 @@ lemma conv_abscissa_scaleR: "conv_abscissa (scaleR c f) \<le> conv_abscissa f"
 lemma abs_conv_abscissa_scaleR: "abs_conv_abscissa (scaleR c f) \<le> abs_conv_abscissa f"
   by (rule abs_conv_abscissa_mono) auto
 
-lemma fds_converges_mult_const_left [intro]:
-  "fds_converges f s \<Longrightarrow> fds_converges (fds_const c * f) s"
-  by (auto simp: fds_converges_def dest: summable_mult[of _ c])
-
 lemma fds_abs_converges_mult_const_left [intro]:
   "fds_abs_converges f s \<Longrightarrow> fds_abs_converges (fds_const c * f) s"
   by (auto simp: fds_abs_converges_def norm_mult norm_divide dest: summable_mult[of _ "norm c"])
@@ -108,13 +102,9 @@ lemma abs_conv_abscissa_mult_const_left:
   "abs_conv_abscissa (fds_const c * f) \<le> abs_conv_abscissa f"
   by (intro abs_conv_abscissa_mono) auto
 
-lemma fds_converges_mult_const_right [intro]:
-  "fds_converges f s \<Longrightarrow> fds_converges (f * fds_const c) s"
-  by (auto simp: fds_converges_def dest: summable_mult2[of _ c])
-
 lemma fds_abs_converges_mult_const_right [intro]:
   "fds_abs_converges f s \<Longrightarrow> fds_abs_converges (f * fds_const c) s"
-  by (auto simp: fds_abs_converges_def norm_mult norm_divide dest: summable_mult2[of _ "norm c"])
+  by (metis mult.commute fds_abs_converges_mult_const_left)
 
 lemma conv_abscissa_mult_const_right:
   "conv_abscissa (f * fds_const c) \<le> conv_abscissa f"

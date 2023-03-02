@@ -9,6 +9,9 @@ imports
   Multiplicative_Function
 begin
 
+text \<open>Conflicting notation from \<^theory>\<open>HOL-Analysis.Infinite_Sum\<close>\<close>
+no_notation Infinite_Sum.abs_summable_on (infixr "abs'_summable'_on" 46)
+
 lemma prime_factors_power_subset:
   "prime_factors (x ^ n) \<subseteq> prime_factors x"
   by (cases "n = 0") (auto simp: prime_factors_power)
