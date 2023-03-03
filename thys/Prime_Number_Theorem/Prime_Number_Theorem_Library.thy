@@ -8,17 +8,26 @@ begin
 text \<open>Conflicting notation from \<^theory>\<open>HOL-Analysis.Infinite_Sum\<close>\<close>
 no_notation Infinite_Sum.abs_summable_on (infixr "abs'_summable'_on" 46)
 
-(* TODO: Move *)
-lemma asymp_equivD_strong:
-  assumes "f \<sim>[F] g" "eventually (\<lambda>x. f x \<noteq> 0 \<or> g x \<noteq> 0) F"
-  shows   "((\<lambda>x. f x / g x) \<longlongrightarrow> 1) F"
-proof -
-  from assms(1) have "((\<lambda>x. if f x = 0 \<and> g x = 0 then 1 else f x / g x) \<longlongrightarrow> 1) F"
-    by (rule asymp_equivD)
-  also have "?this \<longleftrightarrow> ?thesis"
-    by (intro filterlim_cong eventually_mono[OF assms(2)]) auto
-  finally show ?thesis .
-qed
+lemma homotopic_loopsI:
+  fixes h :: "real \<times> real \<Rightarrow> _"
+  assumes "continuous_on ({0..1} \<times> {0..1}) h"
+          "h ` ({0..1} \<times> {0..1}) \<subseteq> s"
+          "\<And>x. x \<in> {0..1} \<Longrightarrow> h (0, x) = p x"
+          "\<And>x. x \<in> {0..1} \<Longrightarrow> h (1, x) = q x"
+          "\<And>x. x \<in> {0..1} \<Longrightarrow> pathfinish (h \<circ> Pair x) = pathstart (h \<circ> Pair x)"
+  shows   "homotopic_loops s p q"
+  using assms unfolding homotopic_loops by (intro exI[of _ h]) auto
+
+lemma homotopic_pathsI:
+  fixes h :: "real \<times> real \<Rightarrow> _"
+  assumes "continuous_on ({0..1} \<times> {0..1}) h"
+  assumes "h ` ({0..1} \<times> {0..1}) \<subseteq> s"
+  assumes "\<And>x. x \<in> {0..1} \<Longrightarrow> h (0, x) = p x"
+  assumes "\<And>x. x \<in> {0..1} \<Longrightarrow> h (1, x) = q x"
+  assumes "\<And>x. x \<in> {0..1} \<Longrightarrow> pathstart (h \<circ> Pair x) = pathstart p"
+  assumes "\<And>x. x \<in> {0..1} \<Longrightarrow> pathfinish (h \<circ> Pair x) = pathfinish p"
+  shows   "homotopic_paths s p q"
+  using assms unfolding homotopic_paths by (intro exI[of _ h]) auto
 
 lemma sum_upto_ln_conv_sum_upto_mangoldt:
   "sum_upto (\<lambda>n. ln (real n)) x = sum_upto (\<lambda>n. mangoldt n * nat \<lfloor>x / real n\<rfloor>) x"
@@ -44,9 +53,6 @@ proof -
     by (intro sum_upto_cong) (auto simp: floor_divide_of_nat_eq)
   finally show ?thesis .
 qed
-
-lemma powr_sum: "x \<noteq> 0 \<Longrightarrow> finite A \<Longrightarrow> x powr sum f A = (\<Prod>y\<in>A. x powr f y)"
-  by (simp add: powr_def exp_sum sum_distrib_right)
 
 lemma fds_abs_converges_comparison_test:
   fixes s :: "'a :: dirichlet_series"
@@ -168,7 +174,6 @@ proof -
     by (rule bounded_coeffs_imp_abs_conv_abscissa_le[where s = 0]) (insert assms, auto simp:)
 qed
 
-(* TODO: replace library version *)
 (* EXAMPLE: This might make a good example to illustrate real_asymp *)
 lemma
   fixes a b c :: real
@@ -214,113 +219,10 @@ proof -
 qed
 
 lemma linepath_translate_left: "linepath (c + a) (c + a) = (\<lambda>x. c + a) \<circ> linepath a b"
-  by (auto simp: fun_eq_iff linepath_def algebra_simps)
+  by auto
 
 lemma linepath_translate_right: "linepath (a + c) (b + c) = (\<lambda>x. x + c) \<circ> linepath a b"
   by (auto simp: fun_eq_iff linepath_def algebra_simps)
-
-lemma integrable_on_affinity:
-  assumes "m \<noteq> 0" "f integrable_on (cbox a b)"
-  shows   "(\<lambda>x. f (m *\<^sub>R x + c)) integrable_on ((\<lambda>x. (1 / m) *\<^sub>R x - ((1 / m) *\<^sub>R c)) ` cbox a b)"
-proof -
-  from assms obtain I where "(f has_integral I) (cbox a b)"
-    by (auto simp: integrable_on_def)
-  from has_integral_affinity[OF this assms(1), of c] show ?thesis
-    by (auto simp: integrable_on_def)
-qed
-
-lemma has_integral_cmul_iff:
-  assumes "c \<noteq> 0"
-  shows   "((\<lambda>x. c *\<^sub>R f x) has_integral (c *\<^sub>R I)) A \<longleftrightarrow> (f has_integral I) A"
-  using assms has_integral_cmul[of f I A c]
-        has_integral_cmul[of "\<lambda>x. c *\<^sub>R f x" "c *\<^sub>R I" A "inverse c"] by (auto simp: field_simps)
-
-lemma has_integral_affinity':
-  fixes a :: "'a::euclidean_space"
-  assumes "(f has_integral i) (cbox a b)" and "m > 0"
-  shows "((\<lambda>x. f(m *\<^sub>R x + c)) has_integral (i /\<^sub>R m ^ DIM('a)))
-           (cbox ((a - c) /\<^sub>R m) ((b - c) /\<^sub>R m))"
-proof (cases "cbox a b = {}")
-  case True
-  hence "(cbox ((a - c) /\<^sub>R m) ((b - c) /\<^sub>R m)) = {}"
-    using \<open>m > 0\<close> unfolding box_eq_empty by (auto simp: algebra_simps)
-  with True and assms show ?thesis by simp
-next
-  case False
-  have "((\<lambda>x. f (m *\<^sub>R x + c)) has_integral (1 / \<bar>m\<bar> ^ DIM('a)) *\<^sub>R i)
-          ((\<lambda>x. (1 / m) *\<^sub>R x + - ((1 / m) *\<^sub>R c)) ` cbox a b)"
-    using assms by (intro has_integral_affinity) auto
-  also have "((\<lambda>x. (1 / m) *\<^sub>R x + - ((1 / m) *\<^sub>R c)) ` cbox a b) =
-               ((\<lambda>x.  - ((1 / m) *\<^sub>R c) + x) ` (\<lambda>x. (1 / m) *\<^sub>R x) ` cbox a b)"
-    by (simp add: image_image algebra_simps)
-  also have "(\<lambda>x. (1 / m) *\<^sub>R x) ` cbox a b = cbox ((1 / m) *\<^sub>R a) ((1 / m) *\<^sub>R b)" using \<open>m > 0\<close> False
-    by (subst image_smult_cbox) simp_all
-  also have "(\<lambda>x. - ((1 / m) *\<^sub>R c) + x) ` \<dots> = cbox ((a - c) /\<^sub>R m) ((b - c) /\<^sub>R m)"
-    by (subst cbox_translation [symmetric]) (simp add: field_simps vector_add_divide_simps)
-  finally show ?thesis using \<open>m > 0\<close> by (simp add: field_simps)
-qed
-
-lemma has_integral_affinity_iff:
-  fixes f :: "'a :: euclidean_space \<Rightarrow> 'b :: real_normed_vector"
-  assumes "m > 0"
-  shows   "((\<lambda>x. f (m *\<^sub>R x + c)) has_integral (I /\<^sub>R m ^ DIM('a)))
-               (cbox ((a - c) /\<^sub>R m) ((b - c) /\<^sub>R m)) \<longleftrightarrow>
-           (f has_integral I) (cbox a b)" (is "?lhs = ?rhs")
-proof
-  assume ?lhs
-  from has_integral_affinity'[OF this, of "1 / m" "-c /\<^sub>R m"] and \<open>m > 0\<close>
-    show ?rhs by (simp add: vector_add_divide_simps) (simp add: field_simps)
-next
-  assume ?rhs
-  from has_integral_affinity'[OF this, of m c] and \<open>m > 0\<close>
-  show ?lhs by simp
-qed
-
-lemma has_contour_integral_linepath_Reals_iff:
-  fixes a b :: complex and f :: "complex \<Rightarrow> complex"
-  assumes "a \<in> Reals" "b \<in> Reals" "Re a < Re b"
-  shows   "(f has_contour_integral I) (linepath a b) \<longleftrightarrow>
-             ((\<lambda>x. f (of_real x)) has_integral I) {Re a..Re b}"
-proof -
-  from assms have [simp]: "of_real (Re a) = a" "of_real (Re b) = b"
-    by (simp_all add: complex_eq_iff)
-  from assms have "a \<noteq> b" by auto
-  have "((\<lambda>x. f (of_real x)) has_integral I) (cbox (Re a) (Re b)) \<longleftrightarrow>
-          ((\<lambda>x. f (a + b * of_real x - a * of_real x)) has_integral I /\<^sub>R (Re b - Re a)) {0..1}"
-    by (subst has_integral_affinity_iff [of "Re b - Re a" _ "Re a", symmetric])
-       (insert assms, simp_all add: field_simps scaleR_conv_of_real)
-  also have "(\<lambda>x. f (a + b * of_real x - a * of_real x)) =
-               (\<lambda>x. (f (a + b * of_real x - a * of_real x) * (b - a)) /\<^sub>R (Re b - Re a))"
-    using \<open>a \<noteq> b\<close> by (auto simp: field_simps fun_eq_iff scaleR_conv_of_real)
-  also have "(\<dots> has_integral I /\<^sub>R (Re b - Re a)) {0..1} \<longleftrightarrow>
-               ((\<lambda>x. f (linepath a b x) * (b - a)) has_integral I) {0..1}" using assms
-    by (subst has_integral_cmul_iff) (auto simp: linepath_def scaleR_conv_of_real algebra_simps)
-  also have "\<dots> \<longleftrightarrow> (f has_contour_integral I) (linepath a b)" unfolding has_contour_integral_def
-    by (intro has_integral_cong) (simp add: vector_derivative_linepath_within)
-  finally show ?thesis by simp
-qed
-
-lemma contour_integrable_linepath_Reals_iff:
-  fixes a b :: complex and f :: "complex \<Rightarrow> complex"
-  assumes "a \<in> Reals" "b \<in> Reals" "Re a < Re b"
-  shows   "(f contour_integrable_on linepath a b) \<longleftrightarrow>
-             (\<lambda>x. f (of_real x)) integrable_on {Re a..Re b}"
-  using has_contour_integral_linepath_Reals_iff[OF assms, of f]
-  by (auto simp: contour_integrable_on_def integrable_on_def)
-
-lemma contour_integral_linepath_Reals_eq:
-  fixes a b :: complex and f :: "complex \<Rightarrow> complex"
-  assumes "a \<in> Reals" "b \<in> Reals" "Re a < Re b"
-  shows   "contour_integral (linepath a b) f = integral {Re a..Re b} (\<lambda>x. f (of_real x))"
-proof (cases "f contour_integrable_on linepath a b")
-  case True
-  thus ?thesis using has_contour_integral_linepath_Reals_iff[OF assms, of f]
-    using has_contour_integral_integral has_contour_integral_unique by blast
-next
-  case False
-  thus ?thesis using contour_integrable_linepath_Reals_iff[OF assms, of f]
-    by (simp add: not_integrable_contour_integral not_integrable_integral)
-qed
 
 lemma has_contour_integral_linepath_same_Im_iff:
   fixes a b :: complex and f :: "complex \<Rightarrow> complex"
@@ -343,8 +245,7 @@ lemma contour_integrable_linepath_same_Im_iff:
   assumes "Im a = Im b" "Re a < Re b"
   shows   "(f contour_integrable_on linepath a b) \<longleftrightarrow>
              (\<lambda>x. f (of_real x + Im a * \<i>)) integrable_on {Re a..Re b}"
-  using has_contour_integral_linepath_same_Im_iff[OF assms, of f]
-  by (auto simp: contour_integrable_on_def integrable_on_def)
+  using contour_integrable_on_def has_contour_integral_linepath_same_Im_iff[OF assms] by blast
 
 lemma contour_integral_linepath_same_Im:
   fixes a b :: complex and f :: "complex \<Rightarrow> complex"
@@ -363,60 +264,8 @@ qed
 
 lemmas [simp del] = div_mult_self3 div_mult_self4 div_mult_self2 div_mult_self1
 
-lemma continuous_on_compact_bound:
-  assumes "compact A" "continuous_on A f"
-  obtains B where "B \<ge> 0" "\<And>x. x \<in> A \<Longrightarrow> norm (f x) \<le> B"
-proof -
-  from assms(2,1) have "compact (f ` A)" by (rule compact_continuous_image)
-  then obtain B where "\<forall>x\<in>A. norm (f x) \<le> B"
-    by (auto dest!: compact_imp_bounded simp: bounded_iff)
-  hence "max B 0 \<ge> 0" and "\<forall>x\<in>A. norm (f x) \<le> max B 0" by auto
-  thus ?thesis using that by blast
-qed
-
 interpretation cis: periodic_fun_simple cis "2 * pi"
   by standard (simp_all add: complex_eq_iff)
-
-lemma open_contains_cbox:
-  fixes x :: "'a :: euclidean_space"
-  assumes "open A" "x \<in> A"
-  obtains a b where "cbox a b \<subseteq> A" "x \<in> box a b" "\<forall>i\<in>Basis. a \<bullet> i < b \<bullet> i"
-proof -
-  from assms obtain R where R: "R > 0" "ball x R \<subseteq> A"
-    by (auto simp: open_contains_ball)
-  define r :: real where "r = R / (2 * sqrt DIM('a))"
-  from \<open>R > 0\<close> have [simp]: "r > 0" by (auto simp: r_def)
-  define d :: 'a where "d = r *\<^sub>R Topology_Euclidean_Space.One"
-  have "cbox (x - d) (x + d) \<subseteq> A"
-  proof safe
-    fix y assume y: "y \<in> cbox (x - d) (x + d)"
-    have "dist x y = sqrt (\<Sum>i\<in>Basis. (dist (x \<bullet> i) (y \<bullet> i))\<^sup>2)"
-      by (subst euclidean_dist_l2) (auto simp: L2_set_def)
-    also from y have "sqrt (\<Sum>i\<in>Basis. (dist (x \<bullet> i) (y \<bullet> i))\<^sup>2) \<le> sqrt (\<Sum>i\<in>(Basis::'a set). r\<^sup>2)"
-      by (intro real_sqrt_le_mono sum_mono power_mono)
-         (auto simp: dist_norm d_def cbox_def algebra_simps)
-    also have "\<dots> = sqrt (DIM('a) * r\<^sup>2)" by simp
-    also have "DIM('a) * r\<^sup>2 = (R / 2) ^ 2"
-      by (simp add: r_def power_divide)
-    also have "sqrt \<dots> = R / 2"
-      using \<open>R > 0\<close> by simp
-    also from \<open>R > 0\<close> have "\<dots> < R" by simp
-    finally have "y \<in> ball x R" by simp
-    with R show "y \<in> A" by blast
-  qed
-  thus ?thesis
-    using that[of "x - d" "x + d"] by (auto simp: algebra_simps d_def box_def)
-qed
-
-lemma open_contains_box:
-  fixes x :: "'a :: euclidean_space"
-  assumes "open A" "x \<in> A"
-  obtains a b where "box a b \<subseteq> A" "x \<in> box a b" "\<forall>i\<in>Basis. a \<bullet> i < b \<bullet> i"
-proof -
-  from assms obtain a b where "cbox a b \<subseteq> A" "x \<in> box a b" "\<forall>i\<in>Basis. a \<bullet> i < b \<bullet> i"
-    by (rule open_contains_cbox)
-  with that[of a b] box_subset_cbox[of a b] show ?thesis by auto
-qed
 
 lemma analytic_onE_box:
   assumes "f analytic_on A" "s \<in> A"
@@ -431,23 +280,6 @@ proof -
     by (auto simp: Basis_complex_def)
 qed
 
-lemma inner_image_box:
-  assumes "(i :: 'a :: euclidean_space) \<in> Basis"
-  assumes "\<forall>i\<in>Basis. a \<bullet> i < b \<bullet> i"
-  shows   "(\<lambda>x. x \<bullet> i) ` box a b = {a \<bullet> i<..<b \<bullet> i}"
-proof safe
-  fix x assume x: "x \<in> {a \<bullet> i<..<b \<bullet> i}"
-  let ?y = "(\<Sum>j\<in>Basis. (if i = j then x else (a + b) \<bullet> j / 2) *\<^sub>R j)"
-  from x assms have "?y \<bullet> i \<in> (\<lambda>x. x \<bullet> i) ` box a b"
-    by (intro imageI) (auto simp: box_def algebra_simps)
-  also have "?y \<bullet> i = (\<Sum>j\<in>Basis. (if i = j then x else (a + b) \<bullet> j / 2) * (j \<bullet> i))"
-    by (simp add: inner_sum_left)
-  also have "\<dots> = (\<Sum>j\<in>Basis. if i = j then x else 0)"
-    by (intro sum.cong) (auto simp: inner_not_same_Basis assms)
-  also have "\<dots> = x" using assms by simp
-  finally show "x \<in> (\<lambda>x. x \<bullet> i) ` box a b"  .
-qed (insert assms, auto simp: box_def)
-
 lemma Re_image_box:
   assumes "Re a < Re b" "Im a < Im b"
   shows   "Re ` box a b = {Re a<..<Re b}"
@@ -457,23 +289,6 @@ lemma Im_image_box:
   assumes "Re a < Re b" "Im a < Im b"
   shows   "Im ` box a b = {Im a<..<Im b}"
   using inner_image_box[of "\<i>::complex" a b] assms by (auto simp: Basis_complex_def)
-
-lemma inner_image_cbox:
-  assumes "(i :: 'a :: euclidean_space) \<in> Basis"
-  assumes "\<forall>i\<in>Basis. a \<bullet> i \<le> b \<bullet> i"
-  shows   "(\<lambda>x. x \<bullet> i) ` cbox a b = {a \<bullet> i..b \<bullet> i}"
-proof safe
-  fix x assume x: "x \<in> {a \<bullet> i..b \<bullet> i}"
-  let ?y = "(\<Sum>j\<in>Basis. (if i = j then x else a \<bullet> j) *\<^sub>R j)"
-  from x assms have "?y \<bullet> i \<in> (\<lambda>x. x \<bullet> i) ` cbox a b"
-    by (intro imageI) (auto simp: cbox_def)
-  also have "?y \<bullet> i = (\<Sum>j\<in>Basis. (if i = j then x else a \<bullet> j) * (j \<bullet> i))"
-    by (simp add: inner_sum_left)
-  also have "\<dots> = (\<Sum>j\<in>Basis. if i = j then x else 0)"
-    by (intro sum.cong) (auto simp: inner_not_same_Basis assms)
-  also have "\<dots> = x" using assms by simp
-  finally show "x \<in> (\<lambda>x. x \<bullet> i) ` cbox a b"  .
-qed (insert assms, auto simp: cbox_def)
 
 lemma Re_image_cbox:
   assumes "Re a \<le> Re b" "Im a \<le> Im b"
@@ -522,9 +337,6 @@ corollary analytic_zeta' [analytic_intros]:
 
 lemma logderiv_zeta_analytic: "(\<lambda>s. deriv zeta s / zeta s) analytic_on {s. Re s \<ge> 1} - {1}"
   using zeta_Re_ge_1_nonzero by (auto intro!: analytic_intros)
-
-lemma cis_pi_half [simp]: "cis (pi / 2) = \<i>"
-  by (simp add: complex_eq_iff)
 
 lemma mult_real_sqrt: "x \<ge> 0 \<Longrightarrow> x * sqrt y = sqrt (x ^ 2 * y)"
   by (simp add: real_sqrt_mult)
@@ -649,16 +461,6 @@ lemma analytic_fds_eval' [analytic_intros]:
   using analytic_on_compose_gen[OF assms(1) analytic_fds_eval[OF order.refl, of f]] assms(2)
   by (auto simp: o_def)
 
-lemma homotopic_loopsI:
-  fixes h :: "real \<times> real \<Rightarrow> _"
-  assumes "continuous_on ({0..1} \<times> {0..1}) h"
-          "h ` ({0..1} \<times> {0..1}) \<subseteq> s"
-          "\<And>x. x \<in> {0..1} \<Longrightarrow> h (0, x) = p x"
-          "\<And>x. x \<in> {0..1} \<Longrightarrow> h (1, x) = q x"
-          "\<And>x. x \<in> {0..1} \<Longrightarrow> pathfinish (h \<circ> Pair x) = pathstart (h \<circ> Pair x)"
-  shows   "homotopic_loops s p q"
-  using assms unfolding homotopic_loops by (intro exI[of _ h]) auto
-
 lemma continuous_on_linepath [continuous_intros]:
   assumes "continuous_on A a" "continuous_on A b" "continuous_on A f"
   shows   "continuous_on A (\<lambda>x. linepath (a x) (b x) (f x))"
@@ -696,17 +498,6 @@ proof -
                     cis_mult [symmetric] cis_divide [symmetric] assms)
   qed
 qed
-
-lemma homotopic_pathsI:
-  fixes h :: "real \<times> real \<Rightarrow> _"
-  assumes "continuous_on ({0..1} \<times> {0..1}) h"
-  assumes "h ` ({0..1} \<times> {0..1}) \<subseteq> s"
-  assumes "\<And>x. x \<in> {0..1} \<Longrightarrow> h (0, x) = p x"
-  assumes "\<And>x. x \<in> {0..1} \<Longrightarrow> h (1, x) = q x"
-  assumes "\<And>x. x \<in> {0..1} \<Longrightarrow> pathstart (h \<circ> Pair x) = pathstart p"
-  assumes "\<And>x. x \<in> {0..1} \<Longrightarrow> pathfinish (h \<circ> Pair x) = pathfinish p"
-  shows   "homotopic_paths s p q"
-  using assms unfolding homotopic_paths by (intro exI[of _ h]) auto
 
 lemma part_circlepath_conv_subpath:
   "part_circlepath c r a b = subpath (a / (2*pi)) (b / (2*pi)) (circlepath c r)"
@@ -770,74 +561,6 @@ next
   thus ?thesis using assms by simp
 qed
 
-lemma has_contour_integral_mirror_iff:
-  assumes "valid_path g"
-  shows   "(f has_contour_integral I) (-g) \<longleftrightarrow> ((\<lambda>x. -f (- x)) has_contour_integral I) g"
-proof -
-  from assms have "g piecewise_differentiable_on {0..1}"
-    by (auto simp: valid_path_def piecewise_C1_imp_differentiable)
-  then obtain S where S: "finite S" "\<And>x. x \<in> {0..1} - S \<Longrightarrow> g differentiable at x within {0..1}"
-     unfolding piecewise_differentiable_on_def by blast
-  have S': "g differentiable at x" if "x \<in> {0..1} - ({0, 1} \<union> S)" for x
-  proof -
-    from that have "x \<in> interior {0..1}" by auto
-    with S(2)[of x] that show ?thesis by (auto simp: at_within_interior[of _ "{0..1}"])
-  qed
-
-  have "(f has_contour_integral I) (-g) \<longleftrightarrow>
-          ((\<lambda>x. f (- g x) * vector_derivative (-g) (at x)) has_integral I) {0..1}"
-    by (simp add: has_contour_integral)
-  also have "\<dots> \<longleftrightarrow> ((\<lambda>x. -f (- g x) * vector_derivative g (at x)) has_integral I) {0..1}"
-    by (intro has_integral_spike_finite_eq[of "S \<union> {0, 1}"])
-       (insert \<open>finite S\<close> S', auto simp: o_def fun_Compl_def)
-  also have "\<dots> \<longleftrightarrow> ((\<lambda>x. -f (-x)) has_contour_integral I) g"
-    by (simp add: has_contour_integral)
-  finally show ?thesis .
-qed
-
-lemma contour_integral_on_mirror_iff:
-  assumes "valid_path g"
-  shows   "f contour_integrable_on (-g) \<longleftrightarrow> (\<lambda>x. -f (- x)) contour_integrable_on g"
-  by (auto simp: contour_integrable_on_def has_contour_integral_mirror_iff assms)
-
-lemma contour_integral_mirror:
-  assumes "valid_path g"
-  shows   "contour_integral (-g) f = contour_integral g (\<lambda>x. -f (- x))"
-proof (cases "f contour_integrable_on (-g)")
-  case True
-  then obtain I where I: "(f has_contour_integral I) (-g)"
-    by (auto simp: contour_integrable_on_def)
-  also note has_contour_integral_mirror_iff[OF assms]
-  finally have "((\<lambda>x. - f (- x)) has_contour_integral I) g" .
-  with I show ?thesis using contour_integral_unique by blast
-next
-  case False
-  hence "\<not>(\<lambda>x. -f (-x)) contour_integrable_on g"
-    by (auto simp: contour_integral_on_mirror_iff assms)
-  from False and this show ?thesis
-    by (simp add: not_integrable_contour_integral)
-qed
-
-lemma contour_integrable_neg_iff:
-  "(\<lambda>x. -f x) contour_integrable_on g \<longleftrightarrow> f contour_integrable_on g"
-  using contour_integrable_neg[of f g] contour_integrable_neg[of "\<lambda>x. -f x" g] by auto
-
-lemma contour_integral_neg:
-  shows "contour_integral g (\<lambda>x. -f x) = -contour_integral g f"
-proof (cases "f contour_integrable_on g")
-  case True
-  thus ?thesis by (simp add: contour_integral_neg)
-next
-  case False
-  hence "\<not>(\<lambda>x. -f x) contour_integrable_on g" by (simp add: contour_integrable_neg_iff)
-  with False show ?thesis
-    by (simp add: not_integrable_contour_integral)
-qed
-
-
-lemma minus_cis: "-cis x = cis (x + pi)"
-  by (simp add: complex_eq_iff)
-
 lemma path_image_part_circlepath_subset:
   assumes "a \<le> a'" "a' \<le> b'" "b' \<le> b"
   shows   "path_image (part_circlepath c r a' b') \<subseteq> path_image (part_circlepath c r a b)"
@@ -879,56 +602,6 @@ lemma pathstart_mirror [simp]: "pathstart (-g) = -pathstart g"
 lemma path_image_mirror: "path_image (-g) = uminus ` path_image g"
   by (auto simp: path_image_def)
 
-lemma contour_integral_bound_part_circlepath:
-  assumes "f contour_integrable_on part_circlepath c r a b"
-  assumes "B \<ge> 0" "r \<ge> 0" "\<And>x. x \<in> path_image (part_circlepath c r a b) \<Longrightarrow> norm (f x) \<le> B"
-  shows   "norm (contour_integral (part_circlepath c r a b) f) \<le> B * r * \<bar>b - a\<bar>"
-proof -
-  let ?I = "integral {0..1} (\<lambda>x. f (part_circlepath c r a b x) * \<i> * of_real (r * (b - a)) *
-              exp (\<i> * linepath a b x))"
-  have "norm ?I \<le> integral {0..1} (\<lambda>x::real. B * 1 * (r * \<bar>b - a\<bar>) * 1)"
-  proof (rule integral_norm_bound_integral, goal_cases)
-    case 1
-    with assms(1) show ?case
-      by (simp add: contour_integrable_on vector_derivative_part_circlepath mult_ac)
-  next
-    case (3 x)
-    with assms(2-) show ?case unfolding norm_mult norm_of_real abs_mult
-      by (intro mult_mono) (auto simp: path_image_def)
-  qed auto
-  also have "?I = contour_integral (part_circlepath c r a b) f"
-    by (simp add: contour_integral_integral vector_derivative_part_circlepath mult_ac)
-  finally show ?thesis by simp
-qed
-
-lemma contour_integral_spike_finite_simple_path:
-  assumes "finite A" "simple_path g" "g = g'" "\<And>x. x \<in> path_image g - A \<Longrightarrow> f x = f' x"
-  shows   "contour_integral g f = contour_integral g' f'"
-  unfolding contour_integral_integral
-proof (rule integral_spike)
-  have "finite (g -` A \<inter> {0<..<1})" using \<open>simple_path g\<close> \<open>finite A\<close>
-    by (intro finite_vimage_IntI simple_path_inj_on) auto
-  hence "finite ({0, 1} \<union> g -` A \<inter> {0<..<1})" by auto
-  thus "negligible ({0, 1} \<union> g -` A \<inter> {0<..<1})" by (rule negligible_finite)
-next
-  fix x assume "x \<in> {0..1} - ({0, 1} \<union> g -` A \<inter> {0<..<1})"
-  hence "g x \<in> path_image g - A" by (auto simp: path_image_def)
-  from assms(4)[OF this] and assms(3)
-    show "f' (g' x) * vector_derivative g' (at x) = f (g x) * vector_derivative g (at x)" by simp
-  qed
-
-proposition contour_integral_bound_part_circlepath_strong:
-  assumes fi: "f contour_integrable_on part_circlepath z r s t"
-      and "finite k" and le: "0 \<le> B" "0 < r" "s \<le> t"
-      and B: "\<And>x. x \<in> path_image(part_circlepath z r s t) - k \<Longrightarrow> norm(f x) \<le> B"
-    shows "cmod (contour_integral (part_circlepath z r s t) f) \<le> B * r * (t - s)"
-proof -
-  from fi have "(f has_contour_integral contour_integral (part_circlepath z r s t) f)
-                  (part_circlepath z r s t)"
-    by (rule has_contour_integral_integral)
-  from has_contour_integral_bound_part_circlepath_strong[OF this assms(2-)] show ?thesis by auto
-qed
-
 lemma cos_le_zero:
   assumes "x \<in> {pi/2..3*pi/2}"
   shows   "cos x \<le> 0"
@@ -941,9 +614,6 @@ qed
 
 lemma cos_le_zero': "x \<in> {-3*pi/2..-pi/2} \<Longrightarrow> cos x \<le> 0"
   using cos_le_zero[of "-x"] by simp
-
-lemma cis_minus_pi_half [simp]: "cis (- (pi / 2)) = -\<i>"
-  by (simp add: complex_eq_iff)
 
 lemma winding_number_join_pos_combined':
      "\<lbrakk>valid_path \<gamma>1 \<and> z \<notin> path_image \<gamma>1 \<and> 0 < Re (winding_number \<gamma>1 z);
@@ -1209,17 +879,6 @@ proof -
     using * by (subst (asm) suminf_split_head) auto
 qed
 
-lemma norm_suminf_le:
-  assumes "\<And>n. norm (f n :: 'a :: banach) \<le> g n" "summable g"
-  shows   "norm (suminf f) \<le> suminf g"
-proof -
-  have *: "summable (\<lambda>n. norm (f n))" using assms
-    by (intro summable_norm summable_comparison_test[OF _ assms(2)] exI[of _ 0]) auto
-  hence "norm (suminf f) \<le> (\<Sum>n. norm (f n))" by (intro summable_norm) auto
-  also have "\<dots> \<le> suminf g" by (intro suminf_le * assms allI)
-  finally show ?thesis .
-qed
-
 lemma of_nat_powr_neq_1_complex [simp]:
   assumes "n > 1" "Re s \<noteq> 0"
   shows   "of_nat n powr s \<noteq> (1::complex)"
@@ -1409,22 +1068,8 @@ proof -
   from sums_infsetsum_nat[OF *(1)] and *(2) show ?thesis by simp
 qed
 
-lemma abs_conv_abscissa_diff_le:
-  "abs_conv_abscissa (f - g :: 'a :: dirichlet_series fds) \<le>
-     max (abs_conv_abscissa f) (abs_conv_abscissa g)"
-  using abs_conv_abscissa_add_le[of f "-g"] by auto
-
-lemma abs_conv_abscissa_diff_leI:
-  "abs_conv_abscissa (f :: 'a :: dirichlet_series fds) \<le> d \<Longrightarrow> abs_conv_abscissa g \<le> d \<Longrightarrow>
-     abs_conv_abscissa (f - g) \<le> d"
-  using abs_conv_abscissa_diff_le[of f g] by (auto simp: le_max_iff_disj)
-
 lemma range_add_nat: "range (\<lambda>n. n + c) = {(c::nat)..}"
-proof safe
-  fix x assume "x \<ge> c"
-  hence "x = x - c + c" by simp
-  thus "x \<in> range (\<lambda>n. n + c)" by blast
-qed auto
+  using Nat.le_imp_diff_is_add by auto
 
 lemma abs_summable_hurwitz_zeta:
   assumes "Re s > 1" "a + real b > 0"
@@ -1457,25 +1102,6 @@ proof -
   also have "range (\<lambda>n. n + a) = {a..}" by (rule range_add_nat)
   finally show "hurwitz_zeta (real a) s = (\<Sum>\<^sub>an\<in>{a..}. of_nat n powr -s)" .
 qed
-
-lemma continuous_on_pre_zeta [continuous_intros]:
-  assumes "continuous_on A f" "a > 0"
-  shows   "continuous_on A (\<lambda>x. pre_zeta a (f x))"
-proof -
-  from assms have "continuous_on UNIV (pre_zeta a)"
-    by (intro holomorphic_on_imp_continuous_on[OF holomorphic_pre_zeta]) auto
-  from continuous_on_compose2[OF this assms(1)] show ?thesis by simp
-qed
-
-lemma continuous_pre_zeta [continuous_intros]:
-  assumes "continuous (at x within A) f" "a > 0"
-  shows   "continuous (at x within A) (\<lambda>x. pre_zeta a (f x))"
-proof -
-  have "continuous (at z) (pre_zeta a)" for z
-    by (rule continuous_on_interior[of UNIV]) (insert assms, auto intro!: continuous_intros)
-  from continuous_within_compose3[OF this assms(1)] show ?thesis .
-qed
-
 
 lemma pre_zeta_bound:
   assumes "0 < Re s" and a: "a > 0"
@@ -1525,17 +1151,6 @@ proof -
     using assms by (simp add: divide_right_mono)
 qed
 
-lemma summable_comparison_test_bigo:
-  fixes f :: "nat \<Rightarrow> real"
-  assumes "summable (\<lambda>n. norm (g n))" "f \<in> O(g)"
-  shows   "summable f"
-proof -
-  from \<open>f \<in> O(g)\<close> obtain C where C: "eventually (\<lambda>x. norm (f x) \<le> C * norm (g x)) at_top"
-    by (auto elim: landau_o.bigE)
-  thus ?thesis
-    by (rule summable_comparison_test_ev) (insert assms, auto intro: summable_mult)
-qed
-
 lemma deriv_zeta_eq:
   assumes s: "s \<noteq> 1"
   shows   "deriv zeta s = deriv (pre_zeta 1) s - 1 / (s - 1)\<^sup>2"
@@ -1575,11 +1190,6 @@ proof -
     by (intro deriv_cong_ev eventually_mono[OF ev]) (auto simp: eval_fds_zeta)
   finally show ?thesis .
 qed
-
-lemma length_sorted_list_of_set [simp]:
-  "finite A \<Longrightarrow> length (sorted_list_of_set A) = card A"
-  by (metis length_remdups_card_conv length_sort set_sorted_list_of_set
-            sorted_list_of_set_sort_remdups)
 
 lemma le_nat_iff': "x \<le> nat y \<longleftrightarrow> x = 0 \<and> y \<le> 0 \<or> int x \<le> y"
   by auto
@@ -1731,21 +1341,6 @@ qed
 lemma mangoldt_non_primepow: "\<not>primepow n \<Longrightarrow> mangoldt n = 0"
   by (auto simp: mangoldt_def)
 
-lemma le_imp_bigo_real:
-  assumes "c \<ge> 0" "eventually (\<lambda>x. f x \<le> c * (g x :: real)) F" "eventually (\<lambda>x. 0 \<le> f x) F"
-  shows   "f \<in> O[F](g)"
-proof -
-  have "eventually (\<lambda>x. norm (f x) \<le> c * norm (g x)) F"
-    using assms(2,3)
-  proof eventually_elim
-    case (elim x)
-    have "norm (f x) \<le> c * g x" using elim by simp
-    also have "\<dots> \<le> c * norm (g x)" by (intro mult_left_mono assms) auto
-    finally show ?case .
-  qed
-  thus ?thesis by (intro bigoI[of _ c]) auto
-qed
-
 (* TODO: unneeded. But why does real_asymp not work? *)
 lemma ln_minus_ln_floor_bigo: "(\<lambda>x. ln x - ln (real (nat \<lfloor>x\<rfloor>))) \<in> O(\<lambda>_. 1)"
 proof (intro le_imp_bigo_real[of 1] eventually_mono[OF eventually_ge_at_top[of 1]])
@@ -1886,9 +1481,6 @@ proof -
   finally show ?thesis .
 qed
 
-lemma powr_numeral [simp]: "x \<ge> 0 \<Longrightarrow> (x::real) powr numeral y = x ^ numeral y"
-  using powr_numeral[of x y] by (cases "x = 0") auto
-
 lemma eval_fds_logderiv_zeta_real:
   assumes "x > (1 :: real)"
   shows  "(\<lambda>p. ln (real p) / (p powr x - 1)) abs_summable_on {p. prime p}" (is ?th1)
@@ -1953,26 +1545,7 @@ lemma sum_upto_ln_conv_ln_fact: "sum_upto ln x = ln (fact (nat \<lfloor>x\<rfloo
   by (simp add: ln_fact_conv_sum_upto sum_upto_altdef)
 
 lemma real_of_nat_div: "real (a div b) = real_of_int \<lfloor>real a / real b\<rfloor>"
-  by (subst floor_divide_of_nat_eq) auto
-
-lemma integral_subset_negligible:
-  fixes f :: "'a :: euclidean_space \<Rightarrow> 'b :: banach"
-  assumes "S \<subseteq> T" "negligible (T - S)"
-  shows   "integral S f = integral T f"
-proof -
-  have "integral T f = integral T (\<lambda>x. if x \<in> S then f x else 0)"
-    by (rule integral_spike[of "T - S"]) (use assms in auto)
-  also have "\<dots> = integral (S \<inter> T) f"
-    by (subst integral_restrict_Int) auto
-  also have "S \<inter> T = S" using assms by auto
-  finally show ?thesis ..
-qed
-
-lemma integrable_on_cong [cong]:
-  assumes "\<And>x. x \<in> A \<Longrightarrow> f x = g x" "A = B"
-  shows   "f integrable_on A \<longleftrightarrow> g integrable_on B"
-  using has_integral_cong[of A f g, OF assms(1)] assms(2)
-  by (auto simp: integrable_on_def)
+  by (simp add: floor_divide_of_nat_eq)
 
 lemma measurable_sum_upto [measurable]:
   fixes f :: "'a \<Rightarrow> nat \<Rightarrow> real"
