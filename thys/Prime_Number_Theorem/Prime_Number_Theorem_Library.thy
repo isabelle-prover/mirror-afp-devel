@@ -636,9 +636,7 @@ proof (intro equalityI subsetI)
     with x have x: "x \<ge> real a" "x < real b" by simp_all
     hence "x \<ge> real (nat \<lfloor>x\<rfloor>)" "x \<le> real (Suc (nat \<lfloor>x\<rfloor>))" by linarith+
     moreover from x have "nat \<lfloor>x\<rfloor> \<ge> a" "nat \<lfloor>x\<rfloor> < b" by linarith+
-    ultimately have "\<exists>n\<in>{a..<b}. x \<in> {real n..real (n + 1)}"
-      by (intro bexI[of _ "nat \<lfloor>x\<rfloor>"]) simp_all
-    thus ?thesis by blast
+    ultimately show ?thesis by force
   qed
 qed auto
 
@@ -804,30 +802,21 @@ proof -
   finally show ?thesis .
 qed
 
-(* TODO replace version in library *)
-lemma nn_integral_has_integral_lebesgue:
-  fixes f :: "'a::euclidean_space \<Rightarrow> real"
-  assumes nonneg: "\<And>x. x \<in> \<Omega> \<Longrightarrow> 0 \<le> f x" and I: "(f has_integral I) \<Omega>"
-  shows "integral\<^sup>N lborel (\<lambda>x. indicator \<Omega> x * f x) = I"
-proof -
-  from I have "(\<lambda>x. indicator \<Omega> x *\<^sub>R f x) \<in> lebesgue \<rightarrow>\<^sub>M borel"
-    by (rule has_integral_implies_lebesgue_measurable)
-  then obtain f' :: "'a \<Rightarrow> real"
-    where [measurable]: "f' \<in> borel \<rightarrow>\<^sub>M borel" and eq: "AE x in lborel. indicator \<Omega> x * f x = f' x"
-    by (auto dest: completion_ex_borel_measurable_real)
+lemma abs_summable_on_uminus_iff:
+  "(\<lambda>x. -f x) abs_summable_on A \<longleftrightarrow> f abs_summable_on A"
+  by (simp add: abs_summable_on_def)
 
-  from I have "((\<lambda>x. abs (indicator \<Omega> x * f x)) has_integral I) UNIV"
-    using nonneg by (simp add: indicator_def of_bool_def if_distrib[of "\<lambda>x. x * f y" for y] cong: if_cong)
-  also have "((\<lambda>x. abs (indicator \<Omega> x * f x)) has_integral I) UNIV \<longleftrightarrow> ((\<lambda>x. abs (f' x)) has_integral I) UNIV"
-    using eq by (intro has_integral_AE) auto
-  finally have "integral\<^sup>N lborel (\<lambda>x. abs (f' x)) = I"
-    by (rule nn_integral_has_integral_lborel[rotated 2]) auto
-  also have "integral\<^sup>N lborel (\<lambda>x. abs (f' x)) = integral\<^sup>N lborel (\<lambda>x. abs (indicator \<Omega> x * f x))"
-    using eq by (intro nn_integral_cong_AE) auto
-  also have "(\<lambda>x. abs (indicator \<Omega> x * f x)) = (\<lambda>x. indicator \<Omega> x * f x)"
-    using nonneg by (auto simp: indicator_def fun_eq_iff)
-  finally show ?thesis .
-qed
+lemma abs_summable_on_cmult_right_iff:
+  fixes f :: "'a \<Rightarrow> 'b :: {banach, real_normed_field, second_countable_topology}"
+  assumes "c \<noteq> 0"
+  shows   "(\<lambda>x. c * f x) abs_summable_on A \<longleftrightarrow> f abs_summable_on A"
+  by (simp add: abs_summable_on_altdef assms)
+
+lemma abs_summable_on_cmult_left_iff:
+  fixes f :: "'a \<Rightarrow> 'b :: {banach, real_normed_field, second_countable_topology}"
+  assumes "c \<noteq> 0"
+  shows   "(\<lambda>x. f x * c) abs_summable_on A \<longleftrightarrow> f abs_summable_on A"
+  by (simp add: abs_summable_on_altdef assms)
 
 lemma decreasing_sum_le_integral:
   fixes f :: "real \<Rightarrow> real"
@@ -889,24 +878,6 @@ proof -
     using assms by (auto simp: powr_def)
   finally show ?thesis by auto
 qed
-
-lemma abs_summable_on_uminus_iff:
-  "(\<lambda>x. -f x) abs_summable_on A \<longleftrightarrow> f abs_summable_on A"
-  using abs_summable_on_uminus[of f A] abs_summable_on_uminus[of "\<lambda>x. -f x" A] by auto
-
-lemma abs_summable_on_cmult_right_iff:
-  fixes f :: "'a \<Rightarrow> 'b :: {banach, real_normed_field, second_countable_topology}"
-  assumes "c \<noteq> 0"
-  shows   "(\<lambda>x. c * f x) abs_summable_on A \<longleftrightarrow> f abs_summable_on A"
-  using assms abs_summable_on_cmult_right[of c f A]
-        abs_summable_on_cmult_right[of "inverse c" "\<lambda>x. c * f x" A] by (auto simp: field_simps)
-
-lemma abs_summable_on_cmult_left_iff:
-  fixes f :: "'a \<Rightarrow> 'b :: {banach, real_normed_field, second_countable_topology}"
-  assumes "c \<noteq> 0"
-  shows   "(\<lambda>x. f x * c) abs_summable_on A \<longleftrightarrow> f abs_summable_on A"
-  using assms abs_summable_on_cmult_left[of c f A]
-        abs_summable_on_cmult_left[of "inverse c" "\<lambda>x. f x * c" A] by (auto simp: field_simps)
 
 lemma fds_logderiv_completely_multiplicative:
   fixes f :: "'a :: {real_normed_field} fds"
