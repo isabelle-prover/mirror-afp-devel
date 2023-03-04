@@ -98,8 +98,8 @@ object Hugo {
   def watch(layout: Layout, out_dir: Path, progress: Progress = new Progress()): Process_Result = {
     Isabelle_System.bash(
       exec.implode + " server -s " + quote(layout.src_dir.implode) + " -d " + quote(out_dir.canonical.implode),
-      progress_stdout = progress.echo,
-      progress_stderr = progress.echo_warning)
+      progress_stdout = progress.echo(_),
+      progress_stderr = progress.echo_warning(_))
   }
 
   def clean(out_dir: Path): Unit =
