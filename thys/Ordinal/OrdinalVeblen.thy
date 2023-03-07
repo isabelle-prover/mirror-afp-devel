@@ -18,64 +18,64 @@ assumes closed:    "\<And>g. \<forall>n. g n \<in> A \<Longrightarrow> oLimit g 
     and unbounded: "\<And>x. \<exists>y\<in>A. x < y"
 
 lemma (in normal_set) less_next: "x < (LEAST z. z \<in> A \<and> x < z)"
- apply (rule LeastI2_ex)
- apply (fold Bex_def, rule unbounded)
- apply (erule conjunct2)
-done
+  by (metis (no_types, lifting) LeastI unbounded)
 
 lemma (in normal_set) mem_next: "(LEAST z. z \<in> A \<and> x < z) \<in> A"
- apply (rule LeastI2_ex)
- apply (fold Bex_def, rule unbounded)
- apply (erule conjunct1)
-done
+  by (metis (no_types, lifting) LeastI unbounded)
 
 lemma (in normal) normal_set_range: "normal_set (range F)"
- apply (rule normal_set.intro)
-  apply (simp add: image_def)
-  apply (rule_tac x="oLimit (\<lambda>n. LEAST x. g n = F x)" in exI)
-  apply (simp only: oLimit)
-  apply (rule_tac f=oLimit in arg_cong)
-  apply (rule ext)
-  apply (rule LeastI_ex)
-  apply (erule spec)
- apply (rule_tac x="F (oSuc x)" in bexI)
-  apply (rule order_le_less_trans [OF increasing])
-  apply (simp add: cancel_less)
- apply (rule rangeI)
-done
+proof (rule normal_set.intro)
+  fix g :: "nat \<Rightarrow> ordinal"
+  assume "\<forall>n. g n \<in> range F"
+  then have "\<And>n. g n = F (LEAST z. g n = F z)"
+    by (meson LeastI rangeE)
+  then have "oLimit g = F (oLimit (\<lambda>n. LEAST z. g n = F z))"
+    by (simp add: continuousD continuous_axioms)
+  then show "oLimit g \<in> range F"
+    by simp
+next 
+  show "\<And>x. \<exists>y\<in>range F. x < y"
+    using oInv_bound2 by blast
+qed
 
 lemma oLimit_mem_INTER:
-"\<lbrakk>\<forall>n. normal_set (A n); \<forall>n. A (Suc n) \<subseteq> A n;
-  \<forall>n. f n \<in> A n; mono f\<rbrakk>
-  \<Longrightarrow> oLimit f \<in> (\<Inter>n. A n)"
- apply (clarsimp, rename_tac k)
- apply (subgoal_tac "oLimit (\<lambda>n. f (n + k)) \<in> A k")
-  apply (simp add: oLimit_shift_mono)
- apply (rule normal_set.closed [rule_format], erule spec)
- apply (rule_tac A="A (n + k)" in subsetD)
-  apply (induct_tac n, simp, rename_tac m)
-  apply (rule_tac B="A (m + k)" in subset_trans, simp, simp)
- apply (erule spec)
-done
+  assumes norm: "\<forall>n. normal_set (A n)" 
+    and A: "\<forall>n. A (Suc n) \<subseteq> A n" "\<forall>n. f n \<in> A n" and "mono f"
+  shows "oLimit f \<in> (\<Inter>n. A n)"
+proof
+  fix k
+  have "f (n + k) \<in> A k" for n
+    using A le_add2 lift_Suc_antimono_le by blast
+  then have "oLimit (\<lambda>n. f (n + k)) \<in> A k"
+    by (simp add: norm normal_set.closed)
+  then show "oLimit f \<in> A k"
+    by (simp add: \<open>mono f\<close> oLimit_shift_mono)
+qed
 
 lemma normal_set_INTER:
-"\<lbrakk>\<forall>n. normal_set (A n); \<forall>n. A (Suc n) \<subseteq> A n\<rbrakk> \<Longrightarrow> normal_set (\<Inter>n. A n)"
- apply (rule normal_set.intro)
-  apply (clarsimp simp add: normal_set.closed)
- apply (rule_tac x="oLimit (\<lambda>n. LEAST y. y \<in> A n \<and> x < y)" in bexI)
-  apply (rule_tac y="LEAST y. y \<in> A n \<and> x < y" in order_less_le_trans)
-   apply (simp only: normal_set.less_next)
-  apply (rule le_oLimit)
- apply (rule oLimit_mem_INTER, assumption+)
-  apply (simp add: normal_set.mem_next)
- apply (rule mono_natI)
- apply (rule Least_le)
- apply (rule conjI)
-  apply (rule subsetD, erule spec)
-  apply (simp only: normal_set.mem_next)
- apply (simp only: normal_set.less_next)
-done
-
+  assumes norm: "\<forall>n. normal_set (A n)"  and A: "\<forall>n. A (Suc n) \<subseteq> A n"
+  shows "normal_set (\<Inter>n. A n)"
+proof (rule normal_set.intro)
+  fix g :: "nat \<Rightarrow> ordinal"
+  assume "\<forall>n. g n \<in> \<Inter> (range A)"
+  then show "oLimit g \<in> \<Inter> (range A)"
+    using norm normal_set.closed by force
+next
+  fix x
+  define F where "F \<equiv> \<lambda>n. LEAST y. y \<in> A n \<and> x < y"
+  have "x < oLimit F"
+    by (simp add: F_def less_oLimitI norm normal_set.less_next)
+  moreover 
+  have \<section>: "F n \<in> A n" for n
+    by (simp add: F_def norm normal_set.mem_next)
+  then have "F n \<le> F (Suc n)" for n
+    unfolding F_def
+    by (metis (no_types, lifting) A LeastI Least_le norm normal_set_def subsetD)
+  then have "oLimit F \<in> \<Inter> (range A)"
+    by (meson "\<section>" A mono_natI norm oLimit_mem_INTER)
+  ultimately show "\<exists>y\<in>\<Inter> (range A). x < y"
+    by blast
+qed
 
 subsection \<open>Ordering functions\<close>
 
@@ -87,90 +87,91 @@ definition
   "ordering A = ordinal_rec (LEAST z. z \<in> A) (\<lambda>p x. LEAST z. z \<in> A \<and> x < z)"
 
 lemma ordering_0:
-"ordering A 0 = (LEAST z. z \<in> A)"
-by (simp add: ordering_def)
+  "ordering A 0 = (LEAST z. z \<in> A)"
+  by (simp add: ordering_def)
 
 lemma ordering_oSuc:
-"ordering A (oSuc x) = (LEAST z. z \<in> A \<and> ordering A x < z)"
-by (simp add: ordering_def)
+  "ordering A (oSuc x) = (LEAST z. z \<in> A \<and> ordering A x < z)"
+  by (simp add: ordering_def)
 
 lemma (in normal_set) normal_ordering: "normal (ordering A)"
- apply (unfold ordering_def)
- apply (rule normal_ordinal_rec [rule_format])
- apply (rule less_next)
-done
+  by (simp add: OrdinalVeblen.ordering_def normal_ordinal_rec normal_set.less_next normal_set_axioms)
 
-lemma (in normal_set) ordering_oLimit:
-"ordering A (oLimit f) = oLimit (\<lambda>n. ordering A (f n))"
- apply (rule normal.oLimit)
- apply (rule normal_ordering)
-done
+lemma (in normal_set) ordering_oLimit: "ordering A (oLimit f) = oLimit (\<lambda>n. ordering A (f n))"
+  by (simp add: normal.oLimit normal_ordering)
 
 lemma (in normal) ordering_range: "ordering (range F) = F"
- apply (rule ext, rule_tac a=x in oLimit_induct)
-   apply (simp add: ordering_0)
-   apply (rule Least_equality)
-    apply (rule rangeI)
-   apply (clarsimp simp add: cancel_le)
-  apply (simp add: ordering_oSuc)
-  apply (rule Least_equality)
-   apply (simp add: cancel_less)
-  apply (clarsimp simp add: cancel_le cancel_less oSuc_leI)
- apply (subst normal_set.ordering_oLimit)
-  apply (rule normal_set_range)
- apply (simp add: oLimit)
-done
+proof
+  fix x
+  show "ordering (range F) x = F x"
+  proof (induction x rule: oLimit_induct)
+    case zero
+    have "(LEAST z. z \<in> range F) = F 0"
+      by (metis Least_equality Least_mono UNIV_I mono ordinal_0_le)
+    then show ?case
+      by (simp add: ordering_0)
+  next
+    case (suc x)
+    have "ordering (range F) (oSuc x) = (LEAST z. z \<in> range F \<and> F x < z)"
+      by (simp add: ordering_oSuc suc)
+    also have "\<dots> = F (oSuc x)"
+      using cancel_less less_oInvD oInv_inverse 
+      by (bestsimp intro!: Least_equality local.strict_monoD)
+    finally show ?case .
+  next
+    case (lim f)
+    then show ?case
+      using oLimit by (simp add: normal_set_range normal_set.ordering_oLimit)
+  qed
+qed
 
 lemma (in normal_set) ordering_mem: "ordering A x \<in> A"
- apply (rule_tac a=x in oLimit_induct)
-   apply (subst ordering_0)
-   apply (rule LeastI_ex)
-   apply (cut_tac unbounded, force)
-  apply (subst ordering_oSuc)
-  apply (rule mem_next)
- apply (subst ordering_oLimit)
- apply (erule closed)
-done
-
-lemma (in normal_set) range_ordering_lemma:
-"\<forall>y. y \<in> A \<longrightarrow> y < ordering A x \<longrightarrow> y \<in> range (ordering A)"
- apply (simp add: image_def)
- apply (rule_tac a=x in oLimit_induct, safe)
-   apply (simp add: ordering_0)
-   apply (drule not_less_Least, simp)
-  apply (simp add: ordering_oSuc)
-  apply (drule not_less_Least, simp)
-  apply (force simp add: linorder_not_less order_le_less)
- apply (simp add: ordering_oLimit)
- apply (drule less_oLimitD, clarsimp)
-done
+proof (induction x rule: oLimit_induct)
+  case zero
+  then show ?case
+    by (metis LeastI ordering_0 unbounded)
+ next
+  case (suc x)
+  then show ?case
+    by (simp add: mem_next ordering_oSuc)
+next
+  case (lim f)
+  then show ?case
+    by (simp add: closed normal.oLimit normal_ordering)
+qed
 
 lemma (in normal_set) range_ordering: "range (ordering A) = A"
- apply (safe intro!: ordering_mem)
- apply (erule_tac x="oSuc x" in range_ordering_lemma[rule_format])
- apply (rule order_less_le_trans[OF less_oSuc])
- apply (rule normal.increasing[OF normal_ordering])
-done
+proof -
+  have "\<forall>y. y \<in> A \<longrightarrow> y < ordering A x \<longrightarrow> y \<in> range (ordering A)" for x
+  proof (induction x rule: oLimit_induct)
+    case zero
+    then show ?case
+      using not_less_Least ordering_0 by auto
+  next
+    case (suc x)
+    then show ?case
+      using not_less_Least ordering_oSuc by fastforce
+  next
+    case (lim f)
+    then show ?case
+      by (metis less_oLimitD ordering_oLimit)
+  qed
+  then show ?thesis
+    using normal.oInv_bound2 normal_ordering ordering_mem by fastforce
+qed
 
 lemma ordering_INTER_0:
-"\<lbrakk>\<forall>n. normal_set (A n); \<forall>n. A (Suc n) \<subseteq> A n\<rbrakk>
- \<Longrightarrow> ordering (\<Inter>n. A n) 0 = oLimit (\<lambda>n. ordering (A n) 0)"
- apply (subst ordering_0)
- apply (rule Least_equality)
-  apply (rule oLimit_mem_INTER, assumption+)
-   apply (simp add: normal_set.ordering_mem)
-  apply (rule mono_natI)
-  apply (simp add: ordering_0)
-  apply (rule Least_le)
-  apply (rule subsetD, erule spec)
-  apply (drule_tac x="Suc n" in spec)
-  apply (drule normal_set.unbounded, clarify)
-  apply (erule LeastI)
- apply (rule oLimit_leI[rule_format])
- apply (simp add: ordering_0)
- apply (rule Least_le)
- apply (erule spec)
-done
+  assumes norm: "\<forall>n. normal_set (A n)"  and A: "\<forall>n. A (Suc n) \<subseteq> A n"
+  shows "ordering (\<Inter>n. A n) 0 = oLimit (\<lambda>n. ordering (A n) 0)"
+proof -
+  have "oLimit (\<lambda>n. OrdinalVeblen.ordering (A n) 0) \<in> \<Inter> (range A)"
+    using assms
+    by (metis (mono_tags, lifting) Least_le mono_natI normal_set.ordering_mem oLimit_mem_INTER ordering_0 subsetD)
+  moreover have "\<And>y. y \<in> \<Inter> (range A) \<Longrightarrow> oLimit (\<lambda>n. ordering (A n) 0) \<le> y"
+  by (simp add: Least_le oLimit_def ordering_0)
+  ultimately show ?thesis
+    by (metis LeastI Least_le nle_le ordering_0)
+qed
 
 
 subsection \<open>Critical ordinals\<close>
@@ -180,73 +181,46 @@ definition
   "critical_set A =
      ordinal_rec0 A (\<lambda>p x. x \<inter> range (oDeriv (ordering x))) (\<lambda>f. \<Inter>n. f n)"
 
-lemma critical_set_0:
-"critical_set A 0 = A"
-by (unfold critical_set_def, rule ordinal_rec0_0)
+lemma critical_set_0 [simp]: "critical_set A 0 = A"
+  by (simp add: critical_set_def)
 
 lemma critical_set_oSuc_lemma:
-"critical_set A (oSuc n) =
-  critical_set A n \<inter> range (oDeriv (ordering (critical_set A n)))"
-by (unfold critical_set_def, rule ordinal_rec0_oSuc)
+  "critical_set A (oSuc n) = critical_set A n \<inter> range (oDeriv (ordering (critical_set A n)))"
+  by (simp add: critical_set_def ordinal_rec0_oSuc)
 
-lemma omega_complete_INTER:
-"omega_complete (\<lambda>x y. y \<subseteq> x) (\<lambda>f. \<Inter> (range f))"
- apply (rule omega_complete.intro)
-  apply (rule porder.flip)
-  apply (rule porder_order)
- apply (rule omega_complete_axioms.intro)
-  apply fast
- apply fast
-done
+lemma omega_complete_INTER: "omega_complete (\<lambda>x y. y \<subseteq> x) (\<lambda>f. \<Inter> (range f))"
+  by (simp add: INF_greatest Inf_lower omega_complete_axioms_def omega_complete_def porder.flip porder_order)
 
-lemma critical_set_oLimit:
-"critical_set A (oLimit f) = (\<Inter>n. critical_set A (f n))"
- apply (unfold critical_set_def)
- apply (rule omega_complete.ordinal_rec0_oLimit)
-  apply (rule omega_complete_INTER)
- apply fast
-done
+lemma critical_set_oLimit: "critical_set A (oLimit f) = (\<Inter>n. critical_set A (f n))"
+  unfolding critical_set_def
+  by (best intro!: omega_complete.ordinal_rec0_oLimit omega_complete_INTER)
 
-lemma critical_set_mono:
-"x \<le> y \<Longrightarrow> critical_set A y \<subseteq> critical_set A x"
- apply (unfold critical_set_def)
- apply (rule omega_complete.ordinal_rec0_mono
-          [OF omega_complete_INTER])
-  apply fast
- apply assumption
-done
+lemma critical_set_mono: "x \<le> y \<Longrightarrow> critical_set A y \<subseteq> critical_set A x"
+  unfolding critical_set_def
+  by (intro omega_complete.ordinal_rec0_mono [OF omega_complete_INTER]) force
 
-lemma (in normal_set) range_oDeriv_subset:
-"range (oDeriv (ordering A)) \<subseteq> A"
- apply (clarsimp, rename_tac x)
- apply (cut_tac n=x in oDeriv_fixed[OF normal_ordering])
- apply (erule subst)
- apply (rule ordering_mem)
-done
+lemma (in normal_set) range_oDeriv_subset: "range (oDeriv (ordering A)) \<subseteq> A"
+  by (metis image_subsetI normal_ordering oDeriv_fixed rangeI range_ordering)
 
-lemma normal_set_critical_set:
-"normal_set A \<Longrightarrow> normal_set (critical_set A x)"
- apply (rule_tac a=x in oLimit_induct)
-   apply (simp only: critical_set_0)
-  apply (simp only: critical_set_oSuc_lemma)
-  apply (subst Int_absorb1)
-   apply (erule normal_set.range_oDeriv_subset)
-  apply (rule normal.normal_set_range)
-  apply (rule normal_oDeriv)
- apply (simp only: critical_set_oLimit)
- apply (erule normal_set_INTER)
- apply (rule allI, rule critical_set_mono)
- apply (simp add: strict_mono_monoD)
-done
+lemma normal_set_critical_set: "normal_set A \<Longrightarrow> normal_set (critical_set A x)"
+proof (induction x rule: oLimit_induct)
+  case zero
+  then show ?case
+    by simp
+next
+  case (suc x)
+  then show ?case
+    by (simp add: Int_absorb1 critical_set_oSuc_lemma normal.normal_set_range normal_oDeriv normal_set.range_oDeriv_subset)
+next
+  case (lim f)
+  then show ?case
+    unfolding critical_set_oLimit
+    by (meson critical_set_mono lessI normal_set_INTER order_le_less strict_mono.strict_mono)
+qed
 
 lemma critical_set_oSuc: 
-"normal_set A
- \<Longrightarrow> critical_set A (oSuc x) = range (oDeriv (ordering (critical_set A x)))"
- apply (simp only: critical_set_oSuc_lemma)
- apply (rule Int_absorb1)
- apply (rule normal_set.range_oDeriv_subset)
- apply (erule normal_set_critical_set)
-done
+  "normal_set A \<Longrightarrow> critical_set A (oSuc x) = range (oDeriv (ordering (critical_set A x)))"
+  by (metis critical_set_oSuc_lemma inf.absorb_iff2 normal_set.range_oDeriv_subset normal_set_critical_set)
 
 
 subsection \<open>Veblen hierarchy over a normal function\<close>
@@ -256,106 +230,77 @@ definition
   "oVeblen F = (\<lambda>x. ordering (critical_set (range F) x))"
 
 lemma (in normal) oVeblen_0: "oVeblen F 0 = F"
- apply (unfold oVeblen_def)
- apply (subst critical_set_0)
- apply (rule ordering_range)
-done
+  by (simp add: normal.ordering_range normal_axioms oVeblen_def)
 
-lemma (in normal) oVeblen_oSuc:
-"oVeblen F (oSuc x) = oDeriv (oVeblen F x)"
- apply (unfold oVeblen_def)
- apply (subst critical_set_oSuc)
-  apply (rule normal_set_range)
- apply (rule normal.ordering_range)
- apply (rule normal_oDeriv)
-done
+lemma (in normal) oVeblen_oSuc: "oVeblen F (oSuc x) = oDeriv (oVeblen F x)"
+  using critical_set_oSuc normal.normal_set_range normal.ordering_range normal_axioms normal_oDeriv oVeblen_def by presburger
 
 lemma (in normal) oVeblen_oLimit:
 "oVeblen F (oLimit f) = ordering (\<Inter>n. range (oVeblen F (f n)))"
- apply (unfold oVeblen_def)
- apply (subst critical_set_oLimit)
- apply (cut_tac normal_set_range)
- apply (simp add: normal_set.range_ordering[OF normal_set_critical_set])
-done
+ unfolding oVeblen_def
+  using critical_set_oLimit normal_set.range_ordering normal_set_critical_set normal_set_range by presburger
 
-lemma (in normal) normal_oVeblen:
-"normal (oVeblen F x)"
- apply (unfold oVeblen_def)
- apply (rule normal_set.normal_ordering)
- apply (rule normal_set_critical_set)
- apply (rule normal_set_range)
-done
+lemma (in normal) normal_oVeblen: "normal (oVeblen F x)"
+ unfolding oVeblen_def
+  by (simp add: normal_set.normal_ordering normal_set_critical_set normal_set_range)
 
-lemma (in normal) continuous_oVeblen_0:
-"continuous (\<lambda>x. oVeblen F x 0)"
+lemma (in normal) continuous_oVeblen_0: "continuous (\<lambda>x. oVeblen F x 0)"
  apply (rule continuousI)
   apply (simp add: oVeblen_def critical_set_oLimit)
   apply (rule ordering_INTER_0[rule_format])
-   apply (rule normal_set_critical_set)
-   apply (rule normal_set_range)
-  apply (rule critical_set_mono)
-  apply (simp add: strict_mono_monoD)
- apply (simp only: oVeblen_oSuc)
- apply (rule oDeriv_increasing)
- apply (rule normal.continuous)
- apply (rule normal_oVeblen)
-done
+  using normal_set_critical_set normal_set_range apply blast
+  apply (simp add: critical_set_mono strict_mono_cancel_le)
+  using le_oFix1 oVeblen_oSuc by force
 
 lemma (in normal) oVeblen_oLimit_0:
-"oVeblen F (oLimit f) 0 = oLimit (\<lambda>n. oVeblen F (f n) 0)"
-by (rule continuousD[OF continuous_oVeblen_0])
+  "oVeblen F (oLimit f) 0 = oLimit (\<lambda>n. oVeblen F (f n) 0)"
+  by (rule continuousD[OF continuous_oVeblen_0])
 
 lemma (in normal) normal_oVeblen_0:
-"0 < F 0 \<Longrightarrow> normal (\<lambda>x. oVeblen F x 0)"
- apply (rule normalI)
-  apply (rule oVeblen_oLimit_0)
- apply (simp only: oVeblen_oSuc)
- apply (subst oDeriv_fixed[OF normal_oVeblen, symmetric])
- apply (rule normal.strict_monoD[OF normal_oVeblen])
- apply (simp add: zero_less_oFix_eq)
- apply (erule order_less_le_trans)
- apply (subgoal_tac "oVeblen F 0 0 \<le> oVeblen F x 0")
-  apply (simp add: oVeblen_0)
- apply (rule continuous.monoD[OF _ ordinal_0_le])
- apply (rule continuous_oVeblen_0)
-done
+  assumes "0 < F 0" shows "normal (\<lambda>x. oVeblen F x 0)"
+proof -
+  { fix x
+    have "0 < oVeblen F x 0"
+      by (metis leD ordinal_0_le ordinal_neq_0 continuous.monoD continuous_oVeblen_0 oVeblen_0 assms)
+    then have "oVeblen F x 0 < oVeblen F x (oDeriv (oVeblen F x) 0)"
+      by (simp add: normal.strict_monoD normal_oVeblen zero_less_oFix_eq)
+    then have "oVeblen F x 0 < oVeblen F (oSuc x) 0"
+      by (metis normal_oVeblen oDeriv_fixed oVeblen_oSuc) 
+  }
+  then show ?thesis
+    using continuous_def continuous_oVeblen_0 normalI by blast
+qed
 
 lemma (in normal) range_oVeblen:
-"range (oVeblen F x) = critical_set (range F) x"
- apply (unfold oVeblen_def)
- apply (rule normal_set.range_ordering)
- apply (rule normal_set_critical_set)
- apply (rule normal_set_range)
-done
+  "range (oVeblen F x) = critical_set (range F) x"
+  unfolding oVeblen_def
+  using normal_set.range_ordering normal_set_critical_set normal_set_range by blast
 
 lemma (in normal) range_oVeblen_subset:
-"x \<le> y \<Longrightarrow> range (oVeblen F y) \<subseteq> range (oVeblen F x)"
- apply (simp only: range_oVeblen)
- apply (erule critical_set_mono)
-done
+  "x \<le> y \<Longrightarrow> range (oVeblen F y) \<subseteq> range (oVeblen F x)"
+  using critical_set_mono range_oVeblen by presburger
 
 lemma (in normal) oVeblen_fixed:
-"\<forall>x<y. \<forall>a. oVeblen F x (oVeblen F y a) = oVeblen F y a"
- apply (rule_tac a=y in oLimit_induct)
-   apply simp
-  apply (clarsimp simp only: oVeblen_oSuc)
-  apply (erule less_oSucE)
-   apply (drule spec, drule mp, assumption)
-   apply (drule_tac x="oDeriv (oVeblen F x) a" in spec)
-   apply (simp add: oDeriv_fixed normal_oVeblen)
-  apply simp
-  apply (rule oDeriv_fixed)
-  apply (rule normal_oVeblen)
- apply clarsimp
- apply (erule less_oLimitE)
- apply (drule spec, drule spec, drule mp, assumption)
- apply (subgoal_tac "oVeblen F (oLimit f) a \<in> range (oVeblen F (f n))")
-  apply clarsimp
- apply (rule_tac A="range (oVeblen F (oLimit f))" in subsetD)
-  apply (rule range_oVeblen_subset)
-  apply (rule le_oLimit)
- apply (rule rangeI)
-done
+  assumes "x<y"
+  shows "oVeblen F x (oVeblen F y a) = oVeblen F y a"
+  using assms
+proof (induction y arbitrary: x a rule: oLimit_induct)
+  case zero
+  then show ?case
+    by auto
+next
+  case (suc u)
+  then show ?case
+    by (metis antisym_conv3 leD normal_oVeblen oDeriv_fixed oSuc_le_eq_less oVeblen_oSuc)
+next
+  case (lim f x a)
+  then obtain n where "x < f n"
+    using less_oLimitD by blast
+  have "oVeblen F (oLimit f) a \<in> range (oVeblen F (f n))"
+    by (simp add: range_oVeblen_subset range_subsetD)
+  then show ?case
+    using lim.IH \<open>x < f n\<close> by force
+qed
 
 lemma (in normal) critical_set_fixed:
 "0 < z \<Longrightarrow> range (oVeblen F z) = {x. \<forall>y<z. oVeblen F y x = x}"
@@ -384,54 +329,72 @@ done
 subsection \<open>Veblen hierarchy over $\lambda x.\ 1 + x$\<close>
 
 lemma oDeriv_id: "oDeriv id = id"
- apply (rule ext, rule_tac a=x in oLimit_induct)
-   apply (simp add: oFix_eq_self)
-  apply (simp add: oFix_eq_self)
- apply simp
-done
+proof
+  fix x show "oDeriv id x = id x"
+    by (induction x rule: oLimit_induct) (auto simp add: oFix_eq_self)
+qed
 
 lemma oFix_plus: "oFix (\<lambda>x. a + x) 0 = a * \<omega>"
- apply (simp add: oFix_def omega_def)
- apply (rule_tac f=oLimit in arg_cong)
- apply (rule ext, induct_tac n, simp)
- apply (simp, rename_tac n)
- apply (induct_tac n, simp)
- apply (simp add: ordinal_plus_assoc[symmetric])
-done
+proof -
+  have "iter n ((+) a) 0 = a * ordinal_of_nat n" for n
+  proof (induction n)
+    case 0
+    then show ?case by auto
+  next
+    case (Suc n)
+    then show ?case
+      apply simp
+      by (metis oSuc_plus_ordinal_of_nat ordinal_0_plus ordinal_times_0 ordinal_times_distrib ordinal_times_oSuc)
+  qed
+  then show ?thesis
+    by (simp add: oFix_def omega_def)
+qed
 
 lemma oDeriv_plus: "oDeriv ((+) a) = ((+) (a * \<omega>))"
- apply (rule ext, rule_tac a=x in oLimit_induct)
-   apply (simp add: oFix_plus)
-  apply (simp add: oFix_eq_self
-                   ordinal_plus_assoc[symmetric]
-                   ordinal_plus_times_omega)
- apply simp
-done
+proof
+  show "oDeriv ((+) a) x = a * \<omega> + x" for x
+  proof (induction x rule: oLimit_induct)
+    case (suc x)
+    then show ?case 
+      by (simp add: oFix_eq_self ordinal_plus_absorb)
+  qed (auto simp: oFix_plus)
+qed
+
 
 lemma oVeblen_1_plus: "oVeblen ((+) 1) x = ((+) (\<omega> ** x))"
- apply (rule_tac a=x in wf_induct[OF wf], simp)
- apply (rule_tac a=x in ordinal_cases)
-   apply (simp add: normal.oVeblen_0[OF normal_plus])
-  apply (simp add: normal.oVeblen_oSuc[OF normal_plus])
-  apply (simp add: oDeriv_plus)
- apply clarsimp
- apply (rule normal_range_eq)
-   apply (rule normal.normal_oVeblen[OF normal_plus])
-  apply (rule normal_plus)
- apply (subst normal.critical_set_fixed[OF normal_plus])
-  apply (rule_tac y="f 0" in order_le_less_trans, simp)
-  apply (simp add: strict_mono_less_oLimit)
- apply safe
-  apply (simp add: image_def)
-  apply (rule exI, rule ordinal_plus_minus2[symmetric])
-  apply (rule oLimit_leI[rule_format])
-  apply (subgoal_tac "\<omega> ** f n + x = x", erule subst, simp)
-  apply (drule_tac x="f n" in spec)
-  apply (simp add: strict_mono_less_oLimit)
- apply simp
- apply (simp only: ordinal_exp_oLimit[symmetric] zero_less_omega)
- apply (simp only: ordinal_plus_assoc[symmetric])
- apply (simp only: absorb_omega_exp2)
-done
+  using wf
+proof (induction x rule: wf_induct_rule)
+  case (less x)
+  have "oVeblen ((+) (oSuc 0)) x = (+) (\<omega> ** x)"
+  proof (cases x rule: ordinal_cases)
+    case zero
+    then show ?thesis
+      by (simp add: normal.oVeblen_0 normal_plus)
+  next
+    case (suc y)
+    with less show ?thesis
+      by (simp add: normal.oVeblen_oSuc[OF normal_plus] oDeriv_plus)
+  next
+    case (lim f)
+    show ?thesis
+    proof (rule normal_range_eq)
+      show "normal (oVeblen ((+) (oSuc 0)) x)"
+        using normal.normal_oVeblen normal_plus by blast
+      show "normal ((+) (\<omega> ** x))"
+        using normal_plus by blast
+      have "\<forall>y<oLimit f. \<omega> ** y + u = u \<Longrightarrow> u \<in> range ((+) (oLimit (\<lambda>n. \<omega> ** f n)))" for u
+        by (metis rangeI lim oLimit_leI ordinal_le_plusR strict_mono_less_oLimit ordinal_plus_minus2)
+      moreover 
+      have "\<omega> ** y + (oLimit (\<lambda>n. \<omega> ** f n) + u) = oLimit (\<lambda>n. \<omega> ** f n) + u" 
+        if "y < oLimit f" for u y
+        by (metis absorb_omega_exp2 ordinal_exp_oLimit ordinal_plus_assoc that zero_less_omega)
+      ultimately show "range (oVeblen ((+) (oSuc 0)) x) = range ((+) (\<omega> ** x))"
+        using less lim
+        by (force simp add: strict_mono_limit_ordinal normal.critical_set_fixed[OF normal_plus])
+    qed
+  qed
+  then show ?case
+    by simp
+qed
 
 end
