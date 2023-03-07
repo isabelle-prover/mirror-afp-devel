@@ -17,6 +17,15 @@
     </item>
     
     <item>
+      <title>A Sound and Complete Calculus for Probability Inequalities</title>
+      <link>/entries/Probability_Inequality_Completeness.html</link>
+      <pubDate>Mon, 20 Feb 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Probability_Inequality_Completeness.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Group Law of Edwards Elliptic Curves</title>
       <link>/entries/Edwards_Elliptic_Curves_Group.html</link>
       <pubDate>Thu, 16 Feb 2023 00:00:00 +0000</pubDate>
@@ -11425,6 +11434,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/probabilistic_while/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Probability_Inequality_Completeness</title>
+      <link>/theories/probability_inequality_completeness/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/probability_inequality_completeness/</guid>
       <description></description>
     </item>
     

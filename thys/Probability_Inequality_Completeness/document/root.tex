@@ -1,0 +1,61 @@
+\documentclass[11pt,a4paper]{report}
+\usepackage{isabelle, isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+\usepackage{mathpartir}
+\usepackage{eurosym}
+
+\usepackage[only,bigsqcap]{stmaryrd}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{A Sound and Complete Calculus for Probability Inequalities}
+\author{Matthew Doty}
+
+\maketitle
+
+\begin{abstract}
+  We give a sound an complete multiple-conclusion calculus
+  \(\$\vdash\) for finitely additive probability inequalities. In
+  particular, we show
+
+  $$\mathbf{\sim} \Gamma \$\vdash \mathbf{\sim} \Phi \equiv \forall \mathcal{P} \in probabilities. \sum \phi \leftarrow \Phi.\ \mathcal{P} \phi \leq \sum \gamma \leftarrow \Gamma.\ \mathcal{P} \gamma $$
+
+  \ldots where $\sim \Gamma$ is the negation of all of the formulae in
+  $\Gamma$ (and similarly for $\sim\Phi$). We prove this by using an
+  abstract form of {\em MaxSAT}. We also show
+
+  $$MaxSAT (\mathbf{\sim} \Gamma\ @\ \Phi) + c\leq length\ \Gamma \equiv \forall \mathcal{P} \in probabilities. \left(\sum \phi \leftarrow \Phi.\ \mathcal{P} \phi\right) + c \leq \sum \gamma \leftarrow \Gamma.\ \mathcal{P} \gamma $$
+
+  Finally, we establish a {\em collapse theorem}, which asserts that
+  $\left(\sum \phi \leftarrow \Phi.\ \mathcal{P} \phi\right) + c \leq
+  \sum \gamma \leftarrow \Gamma.\ \mathcal{P} \gamma$ holds for all
+  probabilities $\mathcal{P}$ if and only if
+  $\left(\sum \phi \leftarrow \Phi.\ \delta \phi\right) + c \leq \sum
+  \gamma \leftarrow \Gamma.\ \delta \gamma$ holds for all
+  binary-valued probabilities $\delta$.
+\end{abstract}
+
+\tableofcontents
+
+\newpage
+
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

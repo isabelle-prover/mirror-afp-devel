@@ -17,25 +17,37 @@
     <loc>/entries/Rensets.html</loc>
     <lastmod>2023-02-28T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/entries/Probability_Inequality_Completeness.html</loc>
+    <lastmod>2023-02-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2023-02-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/doty/</loc>
+    <lastmod>2023-02-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/logic/</loc>
+    <lastmod>2023-02-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2023-02-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/suppes_theorem/</loc>
+    <lastmod>2023-02-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2023-02-20T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/entries/Edwards_Elliptic_Curves_Group.html</loc>
     <lastmod>2023-02-16T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/topics/mathematics/</loc>
-    <lastmod>2023-02-16T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/raya/</loc>
-    <lastmod>2023-02-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2023-02-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/benor_kozen_reif/</loc>
     <lastmod>2023-02-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/berlekamp_zassenhaus/</loc>
-    <lastmod>2023-02-02T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/</loc>
     <lastmod>2023-02-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/CVP_Hardness.html</loc>
@@ -65,9 +77,6 @@
     <loc>/entries/Given_Clause_Loops.html</loc>
     <lastmod>2023-01-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/topics/logic/</loc>
-    <lastmod>2023-01-25T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/qiu/</loc>
     <lastmod>2023-01-25T00:00:00+00:00</lastmod>
   </url><url>
@@ -79,9 +88,6 @@
   </url><url>
     <loc>/dependencies/weighted_path_order/</loc>
     <lastmod>2023-01-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/doty/</loc>
-    <lastmod>2023-01-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/propositional_logic_class/</loc>
     <lastmod>2023-01-22T00:00:00+00:00</lastmod>
@@ -5641,6 +5647,8 @@
     <loc>/theories/probabilistic_timed_automata/</loc>
   </url><url>
     <loc>/theories/probabilistic_while/</loc>
+  </url><url>
+    <loc>/theories/probability_inequality_completeness/</loc>
   </url><url>
     <loc>/theories/program-conflict-analysis/</loc>
   </url><url>
