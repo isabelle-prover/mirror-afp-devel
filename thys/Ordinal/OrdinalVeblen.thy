@@ -1,5 +1,4 @@
 (*  Title:       Countable Ordinals
-
     Author:      Brian Huffman, 2005
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
@@ -245,12 +244,20 @@ lemma (in normal) normal_oVeblen: "normal (oVeblen F x)"
   by (simp add: normal_set.normal_ordering normal_set_critical_set normal_set_range)
 
 lemma (in normal) continuous_oVeblen_0: "continuous (\<lambda>x. oVeblen F x 0)"
- apply (rule continuousI)
-  apply (simp add: oVeblen_def critical_set_oLimit)
-  apply (rule ordering_INTER_0[rule_format])
-  using normal_set_critical_set normal_set_range apply blast
-  apply (simp add: critical_set_mono strict_mono_cancel_le)
-  using le_oFix1 oVeblen_oSuc by force
+proof (rule continuousI)
+  fix f:: "nat \<Rightarrow> ordinal"
+  assume f: "OrdinalInduct.strict_mono f"
+  have "normal_set (critical_set (range F) (f n))" for n
+    using normal_set_critical_set normal_set_range by blast
+  moreover
+  have "critical_set (range F) (f (Suc n)) \<subseteq> critical_set (range F) (f n)" for n
+    by (simp add: f critical_set_mono strict_mono_monoD)
+  ultimately show "oVeblen F (oLimit f) 0 = oLimit (\<lambda>n. oVeblen F (f n) 0)"
+    using ordering_INTER_0 by (simp add: oVeblen_def critical_set_oLimit)
+next
+  show "\<And>x. oVeblen F x 0 \<le> oVeblen F (oSuc x) 0"
+    by (simp add: le_oFix1 oVeblen_oSuc)
+qed
 
 lemma (in normal) oVeblen_oLimit_0:
   "oVeblen F (oLimit f) 0 = oLimit (\<lambda>n. oVeblen F (f n) 0)"
@@ -303,28 +310,35 @@ next
 qed
 
 lemma (in normal) critical_set_fixed:
-"0 < z \<Longrightarrow> range (oVeblen F z) = {x. \<forall>y<z. oVeblen F y x = x}"
- apply (rule equalityI)
-  apply (clarsimp simp add: oVeblen_fixed)
- apply (erule rev_mp)
- apply (rule_tac a=z in oLimit_induct)
-   apply simp
-  apply clarsimp
-  apply (simp add: oVeblen_oSuc range_oDeriv normal_oVeblen)
- apply clarsimp
- apply (simp add: range_oVeblen)
- apply (clarsimp simp add: critical_set_oLimit)
- apply (rule_tac A="critical_set (range F) (f (Suc xa))" in subsetD)
-  apply (rule critical_set_mono)
-  apply (simp add: strict_mono_monoD)
- apply (drule_tac x="Suc xa" in spec, drule mp)
-  apply (rule_tac y="f xa" in order_le_less_trans, simp)
-  apply (erule OrdinalInduct.strict_monoD, simp)
- apply (erule subsetD, clarsimp)
- apply (drule spec, erule mp)
- apply (erule order_less_le_trans)
- apply (rule le_oLimit)
-done
+  assumes "0 < z" 
+  shows "range (oVeblen F z) = {x. \<forall>y<z. oVeblen F y x = x}" (is "?L = ?R")
+proof
+  show "?L \<subseteq> ?R"
+    using oVeblen_fixed by auto
+  have "{x. \<forall>y<z. oVeblen F y x = x} \<subseteq> range (oVeblen F z)"
+    using assms
+  proof (induction z rule: oLimit_induct)
+    case zero
+    then show ?case by auto
+  next
+    case (suc x)
+    then show ?case
+      by (force simp: normal_oVeblen oVeblen_oSuc range_oDeriv)
+  next
+    case (lim f)
+    show ?case
+    proof clarsimp
+      fix x
+      assume "\<forall>y<oLimit f. oVeblen F y x = x"
+      then have "x \<in> critical_set (range F) (f n)" for n
+        by (metis lim.hyps rangeI range_oVeblen strict_mono_less_oLimit)
+      then show "x \<in> range (oVeblen F (oLimit f))"
+        by (simp add: range_oVeblen critical_set_oLimit)
+    qed
+  qed
+  then show "?R \<subseteq> ?L"
+    by blast
+qed
 
 subsection \<open>Veblen hierarchy over $\lambda x.\ 1 + x$\<close>
 
@@ -342,9 +356,9 @@ proof -
     then show ?case by auto
   next
     case (Suc n)
-    then show ?case
-      apply simp
-      by (metis oSuc_plus_ordinal_of_nat ordinal_0_plus ordinal_times_0 ordinal_times_distrib ordinal_times_oSuc)
+    have "a + a * ordinal_of_nat n = a * ordinal_of_nat n + a" for n
+      by (induction n) (simp_all flip: ordinal_plus_assoc)
+    with Suc show ?case by simp
   qed
   then show ?thesis
     by (simp add: oFix_def omega_def)
