@@ -18,6 +18,7 @@ lemma LV_simps:
   and   "LV (Atom c) s = (if s = [c] then {Atm c} else {})"
   and   "LV (Plus r1 r2) s = Left ` LV r1 s \<union> Right ` LV r2 s"
   and   "LV (NTimes r 0) s = (if s = [] then {Stars []} else {})"
+  and   "LV (Rec l r) s = {Recv l v | v. v \<in> LV r s}"
 unfolding LV_def
   apply(auto intro: Prf.intros elim: Prf.cases)
   apply(simp add: Prf_NTimes_empty)
@@ -343,6 +344,11 @@ next
   case (From r n)
   then show "finite (LV (From r n) s)"
     by (simp add: finite_From_empty)
+next 
+  case (Rec l r)
+  have "\<And>s. finite (LV r s)" by fact
+  then show "finite (LV (Rec l r) s)"
+    by(simp add: LV_simps)
 qed
 
 
@@ -370,7 +376,9 @@ lemma Posix_LV:
   using Posix1a Posix_Upto2 apply fastforce
   using Posix1a Posix_From2 apply fastforce
   apply (smt (verit, best) Posix1(2) Posix1a Posix_From1 mem_Collect_eq)
-  by (smt (verit, best) Posix1a Posix_From3 flat.simps(7) mem_Collect_eq)
+  apply (smt (verit, best) Posix1a Posix_From3 flat.simps(7) mem_Collect_eq)
+  by (simp add: Prf.intros(11))
+  
 
 lemma Posix_Prf:
   assumes "s \<in> r \<rightarrow> v"

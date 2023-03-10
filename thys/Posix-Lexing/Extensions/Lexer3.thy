@@ -16,6 +16,7 @@ datatype 'a val =
 | Right "'a val"
 | Left "'a val"
 | Stars "('a val) list"
+| Recv string "'a val"
 
 
 section \<open>The string behind a value\<close>
@@ -30,6 +31,7 @@ where
 | "flat (Seq v1 v2) = (flat v1) @ (flat v2)"
 | "flat (Stars []) = []"
 | "flat (Stars (v#vs)) = (flat v) @ (flat (Stars vs))" 
+| "flat (Recv l v) = flat v"
 
 abbreviation
   "flats vs \<equiv> concat (map flat vs)"
@@ -63,6 +65,7 @@ where
     \<forall>v \<in> set vs2. \<turnstile> v : r \<and> flat v = []; 
     length (vs1 @ vs2) = n\<rbrakk> \<Longrightarrow> \<turnstile> Stars (vs1 @ vs2) : From r n"
 | "\<lbrakk>\<forall>v \<in> set vs. \<turnstile> v : r  \<and> flat v \<noteq> []; length vs > n\<rbrakk> \<Longrightarrow> \<turnstile> Stars vs : From r n"
+| "\<turnstile> v : r \<Longrightarrow> \<turnstile> Recv l v : Rec l r"
 
 inductive_cases Prf_elims:
   "\<turnstile> v : Zero"
@@ -74,6 +77,7 @@ inductive_cases Prf_elims:
   "\<turnstile> vs : NTimes r n"
   "\<turnstile> vs : Upto r n"
   "\<turnstile> vs : From r n"
+  "\<turnstile> vs : Rec l r"
 
 lemma Prf_NTimes_empty:
   assumes "\<forall>v \<in> set vs. \<turnstile> v : r \<and> flat v = []" 
@@ -286,6 +290,10 @@ next
     apply (meson in_set_takeD)
     apply(rule_tac x="Stars vs1" in exI)
     by (simp add: Prf.intros(10))
+next
+  case (Rec l r)
+  then show ?case apply(auto)
+    using Prf.intros(11) flat.simps(8) by blast
 qed (auto intro: Prf.intros)
 
 lemma L_flat_Prf:
@@ -305,6 +313,7 @@ where
 | "mkeps(Upto r n) = Stars []"
 | "mkeps(NTimes r n) = Stars (replicate n (mkeps r))"
 | "mkeps(From r n) = Stars (replicate n (mkeps r))"
+| "mkeps(Rec l r) = Recv l (mkeps r)"
 
 fun injval :: "'a rexp \<Rightarrow> 'a \<Rightarrow> 'a val \<Rightarrow> 'a val"
 where
@@ -318,7 +327,7 @@ where
 | "injval (NTimes r n) c (Seq v (Stars vs)) = Stars ((injval r c v) # vs)" 
 | "injval (Upto r n) c (Seq v (Stars vs)) = Stars ((injval r c v) # vs)" 
 | "injval (From r n) c (Seq v (Stars vs)) = Stars ((injval r c v) # vs)"
-
+| "injval (Rec l r) c v = Recv l (injval r c v)"
 
 section \<open>Mkeps, injval\<close>
 
@@ -386,7 +395,8 @@ apply(simp)
 apply(erule Prf_elims(9))
 apply(simp)
 apply (smt (verit, best) Cons_eq_appendI Prf.intros(9) Prf_injval_flat length_Cons length_append list.discI set_ConsD)
-by (simp add: Prf.intros(10) Prf_injval_flat)
+apply(simp add: Prf.intros(10) Prf_injval_flat)
+  by (simp add: Prf.intros(11))
 
 
 section \<open>Our Alternative Posix definition\<close>
@@ -422,7 +432,7 @@ where
 | Posix_From3: "\<lbrakk>s1 \<in> r \<rightarrow> v; s2 \<in> Star r \<rightarrow> Stars vs; flat v \<noteq> [];
     \<not>(\<exists>s\<^sub>3 s\<^sub>4. s\<^sub>3 \<noteq> [] \<and> s\<^sub>3 @ s\<^sub>4 = s2 \<and> (s1 @ s\<^sub>3) \<in> lang r \<and> s\<^sub>4 \<in> lang (Star r))\<rbrakk>
     \<Longrightarrow> (s1 @ s2) \<in> From r 0 \<rightarrow> Stars (v # vs)"  
-
+| Posix_Rec: "s \<in> r \<rightarrow> v \<Longrightarrow> s \<in> (Rec l r) \<rightarrow> (Recv l v)"
 
 inductive_cases Posix_elims:
   "s \<in> Zero \<rightarrow> v"
@@ -434,6 +444,7 @@ inductive_cases Posix_elims:
   "s \<in> NTimes r n \<rightarrow> v"
   "s \<in> Upto r n \<rightarrow> v"
   "s \<in> From r n \<rightarrow> v"
+  "s \<in> Rec l r \<rightarrow> v"
 
 lemma Posix1:
   assumes "s \<in> r \<rightarrow> v"
@@ -483,7 +494,8 @@ apply(subst append.simps(1)[symmetric])
 apply(rule Posix.intros)
 apply(auto)
 apply(simp add: Posix_NTimes2 pow_empty_iff)
-by (simp add: Posix_From2 pow_empty_iff)
+apply(simp add: Posix_From2 pow_empty_iff)
+done
 
 lemma List_eq_zipI:
   assumes "\<forall>(v1, v2) \<in> set (zip vs1 vs2). v1 = v2" 
@@ -648,6 +660,9 @@ next
   have IHs: "\<And>v2. s1 \<in> r \<rightarrow> v2 \<Longrightarrow> v = v2"
             "\<And>v2. s2 \<in> Star r \<rightarrow> v2 \<Longrightarrow> Stars vs = v2" by fact+
   ultimately show "Stars (v # vs) = v2" by auto  
+next
+  case (Posix_Rec s r v l v2)
+  then show "Recv l v = v2" by (metis Posix_elims(10))
 qed
 
 
@@ -940,6 +955,10 @@ next
           by (metis Posix_From3) 
         then show "(c # s) \<in> From r n \<rightarrow> injval (From r n) c v" using null by (simp)
       qed  
+next
+  case (Rec l r)
+  then show "(c # s) \<in> Rec l r \<rightarrow> injval (Rec l r) c v"
+    by (simp add: Posix_Rec)
 qed
 
 

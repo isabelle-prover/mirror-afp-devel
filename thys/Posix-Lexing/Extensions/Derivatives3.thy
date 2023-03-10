@@ -6,7 +6,7 @@ theory Derivatives3
 imports Regular_Exps3
 begin
 
-text\<open>This theory is based on work by Brozowski \<^cite>\<open>"Brzozowski64"\<close>.\<close>
+text\<open>This theory is based on work by Brozowski.\<close>
 
 subsection \<open>Brzozowski's derivatives of regular expressions\<close>
 
@@ -23,6 +23,7 @@ where
 | "deriv c (NTimes r n) = (if n = 0 then Zero else Times (deriv c r) (NTimes r (n - 1)))"
 | "deriv c (Upto r n) = (if n = 0 then Zero else Times (deriv c r) (Upto r (n - 1)))"
 | "deriv c (From r n) = (if n = 0 then Times (deriv c r) (Star r) else Times (deriv c r) (From r (n - 1)))"
+| "deriv c (Rec l r) = deriv c r"
 
 fun 
   derivs :: "'a list \<Rightarrow> 'a rexp \<Rightarrow> 'a rexp"

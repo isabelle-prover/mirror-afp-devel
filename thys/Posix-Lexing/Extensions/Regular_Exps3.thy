@@ -16,7 +16,8 @@ datatype (atoms: 'a) rexp =
   Star "('a rexp)" |
   NTimes "('a rexp)" "nat" | (* r{n}    - exactly n-times *)
   Upto "('a rexp)" "nat" |   (* r{..n}  - up to n-times *) 
-  From "('a rexp)" "nat"     (* r{n..}  - from n-times *) 
+  From "('a rexp)" "nat" |    (* r{n..}  - from n-times *) 
+  Rec string "('a rexp)"
 
 fun lang :: "'a rexp => 'a lang" where
 "lang Zero = {}" |
@@ -27,7 +28,8 @@ fun lang :: "'a rexp => 'a lang" where
 "lang (Star r) = star(lang r)" |
 "lang (NTimes r n) = ((lang r) ^^ n)" | 
 "lang (Upto r n) = (\<Union>i \<in> {..n}. (lang r) ^^ i)" |
-"lang (From r n) = (\<Union>i \<in> {n..}. (lang r) ^^ i)"
+"lang (From r n) = (\<Union>i \<in> {n..}. (lang r) ^^ i)" |
+"lang (Rec l r) = lang r"
 
 lemma lang_subset_lists: 
   "atoms r \<subseteq> A \<Longrightarrow> lang r \<subseteq> lists A"
@@ -46,7 +48,8 @@ primrec nullable :: "'a rexp \<Rightarrow> bool" where
 "nullable (Star r) = True" |
 "nullable (NTimes r n) = (if n = 0 then True else nullable r)" |
 "nullable (Upto r n) = True" |
-"nullable (From r n) = (if n = 0 then True else nullable r)" 
+"nullable (From r n) = (if n = 0 then True else nullable r)" |
+"nullable (Rec l r) = nullable r"
 
 lemma pow_empty_iff:
   shows "[] \<in> (lang r) ^^ n \<longleftrightarrow> (if n = 0 then True else [] \<in> (lang r))"
