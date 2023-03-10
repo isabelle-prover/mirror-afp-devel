@@ -15,7 +15,8 @@ where
 | "at (Right v) (Suc 0#ps)= at v ps"
 | "at (Seq v1 v2) (0#ps)= at v1 ps"
 | "at (Seq v1 v2) (Suc 0#ps)= at v2 ps"
-| "at (Stars vs) (n#ps)= at (nth vs n) ps"
+| "at (Stars vs) (n#ps) = at (nth vs n) ps"
+| "at (Recv l v) ps = at v ps" 
 
 
 
@@ -28,7 +29,7 @@ where
 | "Pos (Seq v1 v2) = {[]} \<union> {0#ps | ps. ps \<in> Pos v1} \<union> {1#ps | ps. ps \<in> Pos v2}" 
 | "Pos (Stars []) = {[]}"
 | "Pos (Stars (v#vs)) = {[]} \<union> {0#ps | ps. ps \<in> Pos v} \<union> {Suc n#ps | n ps. n#ps \<in> Pos (Stars vs)}"
-
+| "Pos (Recv l v) = {[]} \<union> {ps . ps \<in> Pos v}"
 
 lemma Pos_stars:
   "Pos (Stars vs) = {[]} \<union> (\<Union>n < length vs. {n#ps | ps. ps \<in> Pos (vs ! n)})"
@@ -58,8 +59,11 @@ lemma pflat_len_simps:
   and   "pflat_len (Right v) (0#p) = -1"
   and   "pflat_len (Stars (v#vs)) (Suc n#p) = pflat_len (Stars vs) (n#p)"
   and   "pflat_len (Stars (v#vs)) (0#p) = pflat_len v p"
+  and   "pflat_len (Recv l v) p = pflat_len v p"
   and   "pflat_len v [] = intlen (flat v)"
-by (auto simp add: pflat_len_def Pos_empty)
+  apply (auto simp add: pflat_len_def Pos_empty)
+  by (metis at.simps(7) neq_Nil_conv)
+  
 
 lemma pflat_len_Stars_simps:
   assumes "n < length vs"
@@ -273,6 +277,15 @@ using assms
 unfolding pflat_len_def
 by (auto split: if_splits)
 
+lemma PosOrd_Rec_eq:
+  assumes "flat v1 = flat v2"
+  shows "Recv l v1 :\<sqsubset>val Recv l v2 \<longleftrightarrow> v1 :\<sqsubset>val v2" 
+unfolding PosOrd_ex_def PosOrd_def2
+  using assms
+  apply(auto)
+  apply (simp add: pflat_len_simps(10))
+  apply (metis pflat_len_simps(9))
+  by (metis pflat_len_simps(10) pflat_len_simps(9))
 
 lemma PosOrd_Left_Right:
   assumes "flat v1 = flat v2"
@@ -923,7 +936,11 @@ next
       then show "Stars (v # vs) :\<sqsubseteq>val v3"
       unfolding PosOrd_ex_eq_def using cond2
       by (simp add: PosOrd_shorterI)
-    qed      
+  qed      
+next
+  case (Posix_Rec s r v l v2)
+  then show "Recv l v :\<sqsubseteq>val v2"
+    by (smt (verit, del_insts) LV_def LV_simps(6) PosOrd_Rec_eq PosOrd_ex_eq_def Posix1(2) mem_Collect_eq) 
 qed
 
 
