@@ -131,18 +131,22 @@ lemma ordinal_plus_times_omega: "x + x * \<omega> = x * \<omega>"
 lemma ordinal_plus_absorb: "x * \<omega> \<le> y \<Longrightarrow> x + y = y"
   by (metis ordinal_plus_assoc ordinal_plus_minus2 ordinal_plus_times_omega)
 
-lemma ordinal_less_plusL: "y < x * \<omega> \<Longrightarrow> y < x + y"
-  apply (case_tac "x = 0", simp_all)
-  apply (drule ordinal_div_less)
-  apply (drule less_omegaD, clarify)
-  apply (rule_tac y="x * (1 + ordinal_of_nat n)" in order_less_le_trans)
-   apply (simp add: oSuc_plus_ordinal_of_nat)
-   apply (erule subst)
-   apply (erule ordinal_less_times_div_plus)
-  apply (simp add: ordinal_times_distrib)
-  apply (erule subst)
-  apply (rule ordinal_times_div_le)
-  done
+lemma ordinal_less_plusL: 
+  assumes "y < x * \<omega>" shows "y < x + y"
+proof (cases "x = 0")
+  case True
+  with assms show ?thesis by auto
+next
+  case False
+  then obtain n where n: "ordinal_of_nat n = y div x"
+    using assms less_omegaD ordinal_div_less by metis
+  then have "y < x * (1 + ordinal_of_nat n)"
+    using n unfolding ordinal_one_def oSuc_plus_ordinal_of_nat
+    by (metis False ordinal_0_plus ordinal_less_times_div_plus ordinal_neq_0 ordinal_times_oSuc)
+  also have "... \<le> x + y"
+    using n by (simp add: ordinal_times_distrib ordinal_times_div_le)
+  finally show ?thesis .
+qed
 
 lemma ordinal_plus_absorb_iff: "(x + y = y) = (x * \<omega> \<le> y)"
   by (metis linorder_linear order_le_less order_less_irrefl ordinal_less_plusL ordinal_plus_absorb)
@@ -175,66 +179,62 @@ lemma additive_principal_oSuc:
   by (metis less_oSuc0 ordinal_plus_0 ordinal_plus_left_cancel_less ordinal_plus_oSuc)
 
 lemma additive_principal_intro2 [rule_format]:
-  assumes not_0: "0 < a"
-  shows "(\<forall>x<a. \<forall>y<a. x + y < a) \<longrightarrow> additive_principal a"
-  apply (simp add: additive_principal_def not_0)
-  apply (rule_tac a=a in oLimit_induct)
-    apply simp
-   apply clarsimp
-   apply (drule_tac x=x in spec, simp)
-   apply (drule_tac x=1 in spec, simp)
-  apply (simp add: linorder_not_less)
-  apply clarsimp
-  apply (rule order_antisym)
-   apply (rule oLimit_leI, clarify)
-   apply (rule order_less_imp_le)
-   apply (simp add: strict_mono_less_oLimit)
-  apply (rule oLimit_leI, clarify)
-  apply (rule_tac n=n in le_oLimitI)
-  apply (rule ordinal_le_plusL)
-  done
+  assumes not_0: "0 < a" and lessa: "(\<forall>x<a. \<forall>y<a. x + y < a)"
+  shows "additive_principal a"
+proof -
+  have "\<forall>b<a. b + a = a"
+    using lessa
+  proof (induction a rule: oLimit_induct)
+    case zero
+    then show ?case by auto
+  next
+    case (suc x)
+    then show ?case
+      by (metis le_oSucE less_oSuc linorder_not_le ordinal_le_plusL ordinal_plus_oSuc)
+  next
+    case (lim f)
+    then show ?case 
+      by (metis leD order_le_less ordinal_le_plusL ordinal_plus_minus2)
+  qed
+  then show ?thesis
+    by (simp add: additive_principal_def not_0)
+qed
 
 lemma additive_principal_1: "additive_principal (oSuc 0)"
   by (simp add: additive_principal_def)
 
 lemma additive_principal_omega: "additive_principal \<omega>"
-  apply (rule additive_principal.intro)
-   apply (rule zero_less_omega)
-  apply (drule less_omegaD, clarify)
-  apply (rule ordinal_of_nat_plus_omega)
-  done
+  using additive_principal.intro less_omegaD ordinal_of_nat_plus_omega zero_less_omega by blast
 
 lemma additive_principal_times_omega:
-  "0 < x \<Longrightarrow> additive_principal (x * \<omega>)"
-  apply (rule additive_principal.intro)
-   apply simp
-  apply (simp add: omega_def)
-  apply (drule less_oLimitD, clarify, rename_tac k)
-  apply (drule_tac x=b in order_less_imp_le)
-  apply (rule oLimit_eqI)
-   apply (rule_tac x="k + n" in exI)
-   apply (erule order_trans[OF ordinal_plus_monoL])
-   apply (simp add: ordinal_times_distrib[symmetric])
-  apply (rule_tac x=n in exI, simp)
-  done
+  assumes "0 < x" shows "additive_principal (x * \<omega>)"
+proof (rule additive_principal.intro)
+  fix b
+  assume "b < x * \<omega>"
+  then obtain k where k: "b < x * ordinal_of_nat k"
+    by (metis less_oLimitD omega_def ordinal_times_oLimit)
+  then have "b + x * ordinal_of_nat n \<le> x * ordinal_of_nat (k + n)" for n
+    by (metis order_less_imp_le ordinal_of_nat_plus ordinal_plus_monoL ordinal_times_distrib)
+  then show "b + x * \<omega> = x * \<omega>"
+    by (metis oLimit_eqI omega_def ordinal_le_plusL ordinal_plus_oLimit ordinal_times_oLimit)
+qed (use assms in auto)
 
 lemma additive_principal_oLimit:
-  "\<forall>n. additive_principal (f n) \<Longrightarrow> additive_principal (oLimit f)"
-  apply (rule additive_principal.intro)
-   apply (rule_tac n=0 in less_oLimitI)
-   apply (simp add: additive_principal.not_0)
-  apply simp
-  apply (drule less_oLimitD, clarify, rename_tac k)
-  apply (rule oLimit_eqI)
-   apply (rule_tac x="f n" and y = "f k" in linorder_le_cases)
-    apply (rule_tac x=k in exI)
-    apply (rule_tac y="b + f k" in order_trans, simp)
-    apply (simp add: additive_principal.sum_eq)
-   apply (rule_tac x=n in exI)
-   apply (drule order_less_le_trans, assumption)
-   apply (simp add: additive_principal.sum_eq)
-  apply (rule_tac x=n in exI, simp)
-  done
+  assumes "\<forall>n. additive_principal (f n)" 
+  shows "additive_principal (oLimit f)"
+proof (rule additive_principal.intro)
+  show "0 < oLimit f"
+    by (metis assms less_oLimitI not_additive_principal_0 ordinal_neq_0)
+next
+  fix b
+  assume "b < oLimit f"
+  then obtain k where "b < f k"
+    using less_oLimitD by auto
+  then have "\<exists>m. b + f n \<le> f m" for n
+    by (metis additive_principal.sum_eq assms order.trans leI order_less_imp_le ordinal_plus_left_cancel_le)
+  then show "b + oLimit f = oLimit f"
+    by (metis \<open>b < f k\<close> additive_principal_def assms le_oLimit ordinal_plus_assoc ordinal_plus_minus2)
+qed
 
 lemma additive_principal_omega_exp: "additive_principal (\<omega> ** x)"
   by (induction x rule: oLimit_induct)
@@ -288,13 +288,18 @@ lemma to_cnf_eq_Cons: "to_cnf x = a # list \<Longrightarrow> a = oLog \<omega> x
   by (case_tac "x = 0", simp, simp add: to_cnf_not_0)
 
 lemma to_cnf_inverse: "from_cnf (to_cnf x) = x"
-  apply (rule wf_induct[OF wf], simp)
-  apply (case_tac "x = 0", simp_all)
-  apply (simp add: to_cnf_not_0)
-  apply (simp add: cnf_lemma)
-  apply (rule ordinal_plus_minus2)
-  apply (erule ordinal_exp_oLog_le, simp)
-  done
+  using wf
+proof (induction rule: wf_induct_rule)
+  case (less x)
+  then have IH: "\<forall>y<x. from_cnf (to_cnf y) = y"
+    by simp
+  show ?case
+  proof (cases "x = 0")
+    case False
+    with cnf_lemma show ?thesis
+      by (simp add: ordinal_exp_oLog_le to_cnf_not_0 IH)
+  qed auto
+qed
 
 primrec normalize_cnf where
   normalize_cnf_Nil: "normalize_cnf [] = []"
@@ -303,32 +308,43 @@ primrec normalize_cnf where
         (if x < y then [] else [x]) @ normalize_cnf xs)"
 
 lemma from_cnf_normalize_cnf: "from_cnf (normalize_cnf xs) = from_cnf xs"
-  apply (induct_tac xs, simp_all)
-  apply (case_tac list, simp, clarsimp simp del: normalize_cnf_Cons)
-  apply (simp add: ordinal_plus_assoc[symmetric] absorb_omega_exp2)
-  done
+proof (induction xs)
+  case Nil
+  then show ?case by auto
+next
+  case (Cons a xs)
+  have "\<And>x y. a < x \<Longrightarrow> \<omega> ** x + from_cnf y = \<omega> ** a + (\<omega> ** x + from_cnf y)"
+    by (metis absorb_omega_exp2 from_cnf.simps(2) ordinal_plus_assoc)
+  with Cons show ?case
+    by simp (auto simp del: normalize_cnf_Cons split: list.split)
+qed
+
 
 lemma normalize_cnf_to_cnf: "normalize_cnf (to_cnf x) = to_cnf x"
-  apply (rule_tac a=x in wf_induct[OF wf], simp)
-  apply (case_tac "x = 0", simp_all)
-  apply (drule spec, drule mp, erule cnf_lemma)
-  apply (simp add: to_cnf_not_0)
-  apply (case_tac "to_cnf (x - \<omega> ** oLog \<omega> x)", simp_all)
-  apply (drule to_cnf_eq_Cons, simp add: linorder_not_less)
-  apply (rule ordinal_oLog_monoR)
-  apply (rule order_less_imp_le)
-  apply (erule cnf_lemma)
-  done
+  using wf
+proof (induction rule: wf_induct_rule)
+  case (less x)
+  then have IH: "\<forall>y<x. normalize_cnf (to_cnf y) = to_cnf y"
+    by simp
+  show ?case
+  proof (cases "x = 0")
+    case False
+    then have \<section>: "normalize_cnf (to_cnf (x - \<omega> ** oLog \<omega> x)) = to_cnf (x - \<omega> ** oLog \<omega> x)"
+      using IH cnf_lemma by blast
+    with False show ?thesis
+      apply (simp add: to_cnf_not_0)
+      apply (case_tac "to_cnf (x - \<omega> ** oLog \<omega> x)", simp_all)
+      by (metis cnf_lemma linorder_not_le order_le_less ordinal_oLog_monoR to_cnf_eq_Cons)
+  qed auto
+qed
 
 
 text "alternate form of CNF"
 
 lemma cnf2_lemma:
   "0 < x \<Longrightarrow> x mod \<omega> ** oLog \<omega> x < x"
-  apply (rule order_less_le_trans)
-   apply (rule ordinal_mod_less, simp)
-  apply (erule ordinal_exp_oLog_le, simp)
-  done
+  by (meson oSuc_less_omega order_less_le_trans ordinal_exp_not_0 ordinal_exp_oLog_le ordinal_mod_less zero_less_omega)
+
 
 primrec from_cnf2 where
   "from_cnf2 []       = 0"
@@ -357,23 +373,12 @@ lemma to_cnf2_eq_Cons: "to_cnf2 x = (a,b) # list \<Longrightarrow> a = oLog \<om
 
 lemma ordinal_of_nat_of_ordinal:
   "x < \<omega> \<Longrightarrow> ordinal_of_nat (inv ordinal_of_nat x) = x"
-  apply (rule f_inv_into_f)
-  apply (simp add: image_def)
-  apply (erule less_omegaD)
-  done
+  by (simp add: f_inv_into_f image_def less_omegaD)
 
 lemma to_cnf2_inverse: "from_cnf2 (to_cnf2 x) = x"
-  apply (rule wf_induct[OF wf], simp)
-  apply (case_tac "x = 0", simp_all)
-  apply (simp add: to_cnf2_not_0)
-  apply (simp add: cnf2_lemma)
-  apply (drule_tac x="x mod \<omega> ** oLog \<omega> x" in spec)
-  apply (simp add: cnf2_lemma)
-  apply (subst ordinal_of_nat_of_ordinal)
-   apply (rule ordinal_div_less)
-   apply (rule ordinal_less_exp_oLog, simp)
-  apply (rule ordinal_div_plus_mod)
-  done
+  apply (rule wf_induct[OF wf])
+  apply (case_tac "x = 0")
+  by (simp_all add: to_cnf2_not_0 cnf2_lemma ordinal_div_exp_oLog_less ordinal_div_plus_mod ordinal_of_nat_of_ordinal)
 
 primrec is_normalized2 where
   is_normalized2_Nil: "is_normalized2 [] = True"
@@ -381,17 +386,12 @@ primrec is_normalized2 where
       (case xs of [] \<Rightarrow> True | y # ys \<Rightarrow> fst y < fst x \<and> is_normalized2 xs)"
 
 lemma is_normalized2_to_cnf2: "is_normalized2 (to_cnf2 x)"
-  apply (rule_tac a=x in wf_induct[OF wf], simp)
+  apply (rule_tac a=x in wf_induct[OF wf])
   apply (case_tac "x = 0", simp_all)
   apply (drule spec, drule mp, erule cnf2_lemma)
   apply (simp add: to_cnf2_not_0)
-  apply (case_tac "x mod \<omega> ** oLog \<omega> x = 0", simp_all)
-  apply (case_tac "to_cnf2 (x mod \<omega> ** oLog \<omega> x)", simp_all)
-  apply (case_tac a, simp)
-  apply (drule to_cnf2_eq_Cons, simp)
-  apply (erule ordinal_oLog_less, simp)
-  apply (rule ordinal_mod_less, simp)
-  done
+  apply (case_tac "x mod \<omega> ** oLog \<omega> x = 0")
+  by (simp_all add: ordinal_mod_less ordinal_oLog_less to_cnf2_not_0)
 
 
 subsection \<open>Epsilon 0\<close>
