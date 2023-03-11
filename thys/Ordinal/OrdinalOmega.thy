@@ -363,22 +363,28 @@ lemma to_cnf2_0 [simp]: "to_cnf2 0 = []"
   by (simp add: to_cnf2.simps)
 
 lemma to_cnf2_not_0:
-  "0 < x \<Longrightarrow> to_cnf2 x =
-  (oLog \<omega> x, inv ordinal_of_nat (x div (\<omega> ** oLog \<omega> x)))
-     # to_cnf2 (x mod (\<omega> ** oLog \<omega> x))"
+  "0 < x \<Longrightarrow> to_cnf2 x = (oLog \<omega> x, inv ordinal_of_nat (x div (\<omega> ** oLog \<omega> x)))
+                       # to_cnf2 (x mod (\<omega> ** oLog \<omega> x))"
   by (simp add: to_cnf2.simps[of x])
 
 lemma to_cnf2_eq_Cons: "to_cnf2 x = (a,b) # list \<Longrightarrow> a = oLog \<omega> x"
-  by (case_tac "x = 0", simp, simp add: to_cnf2_not_0)
+  by (metis Pair_inject list.discI list.inject to_cnf2.elims)
 
 lemma ordinal_of_nat_of_ordinal:
   "x < \<omega> \<Longrightarrow> ordinal_of_nat (inv ordinal_of_nat x) = x"
   by (simp add: f_inv_into_f image_def less_omegaD)
 
 lemma to_cnf2_inverse: "from_cnf2 (to_cnf2 x) = x"
-  apply (rule wf_induct[OF wf])
-  apply (case_tac "x = 0")
-  by (simp_all add: to_cnf2_not_0 cnf2_lemma ordinal_div_exp_oLog_less ordinal_div_plus_mod ordinal_of_nat_of_ordinal)
+  using wf
+proof (induction x rule: wf_induct_rule)
+  case (less x)
+  show ?case
+  proof (cases "x > 0")
+    case True
+    then show ?thesis
+      by (simp add: cnf2_lemma less ordinal_div_exp_oLog_less ordinal_div_plus_mod ordinal_of_nat_of_ordinal to_cnf2_not_0)
+  qed auto
+qed
 
 primrec is_normalized2 where
   is_normalized2_Nil: "is_normalized2 [] = True"
@@ -386,12 +392,25 @@ primrec is_normalized2 where
       (case xs of [] \<Rightarrow> True | y # ys \<Rightarrow> fst y < fst x \<and> is_normalized2 xs)"
 
 lemma is_normalized2_to_cnf2: "is_normalized2 (to_cnf2 x)"
-  apply (rule_tac a=x in wf_induct[OF wf])
-  apply (case_tac "x = 0", simp_all)
-  apply (drule spec, drule mp, erule cnf2_lemma)
-  apply (simp add: to_cnf2_not_0)
-  apply (case_tac "x mod \<omega> ** oLog \<omega> x = 0")
-  by (simp_all add: ordinal_mod_less ordinal_oLog_less to_cnf2_not_0)
+  using wf
+proof (induction x rule: wf_induct_rule)
+  case (less x)
+  show ?case
+  proof (cases "x > 0")
+    case True
+    then have *: "is_normalized2 (to_cnf2 (x mod \<omega> ** oLog \<omega> x))"
+      using cnf2_lemma less by blast
+    show ?thesis
+    proof (cases "x mod \<omega> ** oLog \<omega> x = 0")
+      case True
+      with to_cnf2_not_0 \<open>x > 0\<close> show ?thesis by simp
+    next
+      case False
+      with \<open>x > 0\<close> * show ?thesis
+        by (simp add: ordinal_mod_less ordinal_oLog_less to_cnf2_not_0)
+    qed   
+  qed auto
+qed
 
 
 subsection \<open>Epsilon 0\<close>
