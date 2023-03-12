@@ -492,11 +492,8 @@ lemma BuildSeq2_induct [consumes 1, case_names B C]:
     and B: "\<And>x x'. B x x' \<Longrightarrow> P x x'"
     and C: "\<And>x x' y y' z z'. C x x' y y' z z' \<Longrightarrow> P y y' \<Longrightarrow> P z z' \<Longrightarrow> P x x'"
   shows "P a a'"
-  using assms
-  apply (simp only: BuildSeq2_def)
-  apply (drule BuildSeq_induct [where P = "\<lambda>\<langle>x,x'\<rangle>. P x x'"])
-    apply (auto intro: B C)
-  done
+  using assms BuildSeq_induct [where P = "\<lambda>\<langle>x,x'\<rangle>. P x x'"]
+  by (smt (verit, del_insts) BuildSeq2_def hsplit)
 
 definition BuildSeq3
    :: "[[hf,hf,hf] \<Rightarrow> bool, [hf,hf,hf,hf,hf,hf,hf,hf,hf] \<Rightarrow> bool, hf, hf, hf, hf, hf] \<Rightarrow> bool"
@@ -526,11 +523,8 @@ lemma BuildSeq3_induct [consumes 1, case_names B C]:
     and B: "\<And>x x' x''. B x x' x'' \<Longrightarrow> P x x' x''"
     and C: "\<And>x x' x'' y y' y'' z z' z''. C x x' x'' y y' y'' z z' z'' \<Longrightarrow> P y y' y'' \<Longrightarrow> P z z' z'' \<Longrightarrow> P x x' x''"
   shows "P a a' a''"
-  using assms
-  apply (simp add: BuildSeq3_def)
-  apply (drule BuildSeq_induct [where P = "\<lambda>\<langle>x,x',x''\<rangle>. P x x' x''"])
-    apply (auto intro: B C)
-  done
+  using assms BuildSeq_induct [where P = "\<lambda>\<langle>x,x',x''\<rangle>. P x x' x''"]
+  by (smt (verit, del_insts) BuildSeq3_def hsplit)
 
 
 section \<open>A Unique Predecessor for every non-empty set\<close>
@@ -539,7 +533,7 @@ lemma Rep_hf_0 [simp]: "Rep_hf 0 = 0"
   by (metis Abs_hf_inverse HF.HF_def UNIV_I Zero_hf_def image_empty set_encode_empty)
 
 lemma hmem_imp_less: "x \<^bold>\<in> y \<Longrightarrow> Rep_hf x < Rep_hf y"
-unfolding hmem_def hfset_def
+  unfolding hmem_def hfset_def image_iff 
   apply (clarsimp simp: hmem_def hfset_def set_decode_def Abs_hf_inverse)
   apply (metis div_less even_zero le_less_trans less_exp not_less)
   done

@@ -85,10 +85,11 @@ lemma [simp]: "init (Reverse fsm) = final fsm"
 lemma [simp]: "final (Reverse fsm) = init fsm"
   by (simp add: Reverse_def)
 
+lemma accepts_Reverse: "rev ` {xs. accepts fsm xs} = {xs. accepts (Reverse fsm) xs}"
+  by (fastforce simp: accepts_def image_iff)
+
 theorem regular_rev: "regular S \<Longrightarrow> regular (rev ` S)"
-  apply (auto simp: regular_def accepts_def)
-  apply (rule_tac x="Reverse fsm" in exI, force+)
-  done
+  by (metis accepts_Reverse regular_def)
 
 definition Times where
   "Times fsm1 fsm2 = \<lparr>states = states fsm1 * states fsm2,
