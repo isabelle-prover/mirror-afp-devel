@@ -1184,7 +1184,7 @@ qed
 
 
 corollary remark_3: "partn_lst_VWF (\<omega>\<up>(Suc(4*k))) [4, \<omega>\<up>(Suc(2*k))] 2"
-  using Erdos_Milner [of "2*k" 2]
+  using Erdos_Milner [of "2*k" 2] 
   apply (simp flip: ord_of_nat_mult ord_of_nat.simps)
   by (simp add: one_V_def)
 

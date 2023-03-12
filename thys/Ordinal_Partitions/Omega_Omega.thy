@@ -173,13 +173,8 @@ lemma omega_sum_\<omega>\<omega>:
 proof -
   obtain ms where "\<gamma> = omega_sum ms"
     using assms Ex_omega_sum by (auto simp: oexp_Limit elts_\<omega>)
-  show thesis
-  proof
-    show "\<gamma> = omega_sum (dropWhile (\<lambda>n. n=0) ms)"
-      by (simp add: \<open>\<gamma> = omega_sum ms\<close>)
-    show "normal (dropWhile (\<lambda>n. n=0) ms)"
-      by auto
-  qed
+  then show thesis
+    by (metis normal_drop omega_sum_drop that)
 qed
 
 definition Cantor_\<omega>\<omega> :: "V \<Rightarrow> nat list"
@@ -387,7 +382,7 @@ lemma less_list_iff_less_sets:
   by (force simp: less_list_def less_sets_def intro: order.trans)
 
 lemma strict_sorted_append_iff:
-  "strict_sorted (xs @ ys) \<longleftrightarrow> xs < ys \<and> strict_sorted xs \<and> strict_sorted ys" (is "?lhs = ?rhs")
+  "strict_sorted (xs @ ys) \<longleftrightarrow> xs < ys \<and> strict_sorted xs \<and> strict_sorted ys"
   by (metis less_list_iff_less_sets less_setsD sorted_wrt_append strict_sorted_imp_less_sets strict_sorted_imp_sorted)
 
 lemma singleton_less_list_iff: "sorted xs \<Longrightarrow> [n] < xs \<longleftrightarrow> {..n} \<inter> list.set xs = {}"
@@ -473,8 +468,8 @@ next
   then show ?lhs
   proof cases
     case (1 ys)
-    with assms(2) show ?thesis
-      by (metis init_segment_def set_append sorted_list_of_set_imp_less_sets strict_sorted_append_iff strict_sorted_imp_sorted)
+    with assms show ?thesis
+      by (simp add: init_segment_Un strict_sorted_imp_less_sets)
   qed
 qed
 
@@ -518,8 +513,7 @@ proof -
       using \<open>A \<subseteq> WW\<close> \<open>l \<in> A\<close> unfolding WW_def by blast
     moreover have "h (list_of (list.set l)) = 1 - i \<longrightarrow> \<not> (list.set l \<subseteq> N)"
       using N_disjoint \<open>N \<subseteq> M\<close> \<open>l \<in> A\<close> by (auto simp: AM_def)
-    ultimately
-    show "h l = i"
+    ultimately show "h l = i"
       using N \<open>N \<subseteq> M\<close> \<open>l \<in> A\<close> \<open>list.set l \<subseteq> N\<close>
       by (auto simp: vimage_def set_eq_iff AM_def WW_def subset_iff)
   qed
@@ -881,39 +875,39 @@ proof (induction "length as" arbitrary: as bs as' bs')
   case 0 then show ?case
     by auto
 next
-  case (Suc k)
+  case SUC: (Suc k)
   show ?case
   proof (cases k)
     case 0
-    then obtain a a' where aa': "as = [a]" "as' = [a']"
-      by (metis Suc.hyps(2) \<open>length as = length as'\<close> Suc_length_conv length_0_conv)
+    with SUC obtain a a' where aa': "as = [a]" "as' = [a']"
+      by (metis Suc_length_conv length_0_conv)
     show ?thesis
     proof
       show "as = as'"
         using aa' \<open>concat as = concat as'\<close> by force
-      with Suc 0 show " bs = bs'"
+      with SUC 0 show "bs = bs'"
         by (metis Suc_leI append_Nil2 concat.simps impossible_Cons le_antisym length_greater_0_conv list.exhaust)
     qed
   next
     case (Suc k')
     then obtain a cs b ds where eq: "as = a#cs" "bs = b#ds"
-      using Suc.prems
-      by (metis Suc.hyps(2) le0 list.exhaust list.size(3) not_less_eq_eq)
+      using SUC
+      by (metis le0 list.exhaust list.size(3) not_less_eq_eq)
     have "length as' \<noteq> 0"
-      using Suc.hyps(2) \<open>length as = length as'\<close> by force
+      using SUC by force
     then obtain a' cs' b' ds' where eq': "as' = a'#cs'" "bs' = b'#ds'"
       by (metis \<open>length bs = length bs'\<close> eq(2) length_0_conv list.exhaust)
     obtain k: "k = length cs" "k \<le> Suc (length ds)"
-      using eq \<open>Suc k = length as\<close> \<open>length bs \<le> length as\<close> \<open>length as \<le> Suc (length bs)\<close> by auto
+      using eq SUC by auto
     case (Suc k')
     obtain [simp]: "b \<noteq> []" "b' \<noteq> []" "a \<noteq> []" "a' \<noteq> []"
-      using Suc.prems by (simp add: eq eq')
+      using SUC by (simp add: eq eq')
     then have "hd b' = hd b"
-      using Suc.prems(2) by (metis concat.simps(2) eq'(2) eq(2) hd_append2)
+      using SUC by (metis concat.simps(2) eq'(2) eq(2) hd_append2)
     have ss_ab: "strict_sorted (concat as)" "strict_sorted (concat bs)"
-      using strict_sorted_interact_imp_concat Suc.prems(5) by blast+
+      using strict_sorted_interact_imp_concat SUC.prems(5) by blast+
     have sw_ab: "strict_sorted (a @ b @ interact cs ds)"
-      by (metis Suc.prems(5) eq interact.simps(3))
+      by (metis SUC.prems(5) eq interact.simps(3))
     then obtain "a < b" "strict_sorted a" "strict_sorted b"
       by (metis append_assoc strict_sorted_append_iff)
     have b_cs: "strict_sorted (concat (b # cs))"
@@ -932,13 +926,13 @@ next
     qed
     moreover
     have ss_ab': "strict_sorted (concat as')" "strict_sorted (concat bs')"
-      using strict_sorted_interact_imp_concat Suc.prems(10) by blast+
+      using strict_sorted_interact_imp_concat SUC.prems(10) by blast+
     have sw_ab': "strict_sorted (a' @ b' @ interact cs' ds')"
-      by (metis Suc.prems(10) eq' interact.simps(3))
+      by (metis SUC.prems(10) eq' interact.simps(3))
     then obtain "a' < b'" "strict_sorted a'" "strict_sorted b'"
       by (metis append_assoc strict_sorted_append_iff)
     have b_cs': "strict_sorted (concat (b' # cs'))"
-      by (metis (no_types) Suc.prems(10) append_Nil eq' interact.simps(3) strict_sorted_append_iff strict_sorted_interact_imp_concat)
+      by (metis (no_types) SUC.prems(10) append_Nil eq' interact.simps(3) strict_sorted_append_iff strict_sorted_interact_imp_concat)
     then have "b' < concat cs'"
       by (simp add: strict_sorted_append_iff)
     then have "hd b' \<notin> list.set (concat cs')"
@@ -956,15 +950,15 @@ next
         using \<open>b' \<noteq> []\<close> sw_ab' by (force simp: strict_sorted_append_iff sorted_wrt_append eq')
     qed
     ultimately have "a=a'"
-      by (simp add: Suc.prems(1) \<open>hd b' = hd b\<close> \<open>strict_sorted a'\<close> \<open>strict_sorted a\<close> strict_sorted_equal)
+      by (simp add: SUC.prems(1) \<open>hd b' = hd b\<close> \<open>strict_sorted a'\<close> \<open>strict_sorted a\<close> strict_sorted_equal)
     moreover
     have ccat_cs_cs': "concat cs = concat cs'"
-      using Suc.prems(1) \<open>a = a'\<close> eq'(1) eq(1) by fastforce
+      using SUC.prems(1) \<open>a = a'\<close> eq'(1) eq(1) by fastforce
     have "b=b'"
     proof (cases "ds = [] \<or> ds' = []")
       case True
       then show ?thesis
-        using \<open>length bs = length bs'\<close> Suc.prems(2) eq'(2) eq(2) by auto
+        using SUC eq'(2) eq(2) by fastforce
     next
       case False
       then have "ds \<noteq> []" "ds' \<noteq> []" "sorted (concat ds)" "sorted (concat ds')"
@@ -975,7 +969,7 @@ next
       have "cs \<noteq> []"
         using k local.Suc by auto
       then obtain "hd cs \<noteq> []" "hd ds \<noteq> []"
-        using Suc.prems(3) Suc.prems(4) eq list.set_sel(1)
+        using SUC.prems(3) SUC.prems(4) eq list.set_sel(1)
         by (simp add: \<open>ds \<noteq> []\<close> mem_lists_non_Nil)
       then have "concat cs \<noteq> []"
         using \<open>cs \<noteq> []\<close> hd_in_set by auto
@@ -989,15 +983,15 @@ next
           if "x < hd (concat cs)" and "l \<in> list.set ds" and "x \<in> list.set l" for x l
           using \<open>hd (concat cs) < hd (concat ds)\<close> \<open>sorted (concat ds)\<close> sorted_hd_le that by fastforce
         have 2: "l < hd (concat cs)" if "l \<in> list.set b" for l
-          by (meson \<open>b < concat cs\<close> \<open>b \<noteq> []\<close> \<open>concat cs \<noteq> []\<close> \<open>strict_sorted b\<close> le_less_trans less_list_def sorted_le_last strict_sorted_imp_sorted that)
+          by (metis \<open>concat cs \<noteq> []\<close> b_cs concat.simps(2) list.set_sel(1) sorted_wrt_append that)
         show ?thesis
           using 1 2 by (auto simp: strict_sorted_append_iff sorted_wrt_append eq)
       qed
       moreover
       have "cs' \<noteq> []"
-        using k local.Suc \<open>concat cs \<noteq> []\<close> ccat_cs_cs' by auto
+        using k Suc \<open>concat cs \<noteq> []\<close> ccat_cs_cs' by auto
       then obtain "hd cs' \<noteq> []" "hd ds' \<noteq> []"
-        using Suc.prems(8,9) \<open>ds' \<noteq> []\<close> eq'(1) eq'(2) list.set_sel(1) by auto
+        using SUC.prems(8,9) \<open>ds' \<noteq> []\<close> eq'(1) eq'(2) list.set_sel(1) by auto
       then have "concat cs' \<noteq> []"
         using \<open>cs' \<noteq> []\<close> hd_in_set by auto
       have "hd (concat cs') < hd (concat ds')"
@@ -1014,24 +1008,24 @@ next
           using 1 2 by (auto simp: strict_sorted_append_iff sorted_wrt_append eq')
       qed
       ultimately show "b = b'"
-        by (simp add: Suc.prems(2) ccat_cs_cs' strict_sorted_equal)
+        by (simp add: SUC.prems(2) ccat_cs_cs' strict_sorted_equal)
     qed
     moreover
     have "cs = cs' \<and> ds = ds'"
-    proof (rule Suc.hyps)
+    proof (rule SUC.hyps)
       show "k = length cs"
-        using eq Suc.hyps(2) by auto[1]
+        using eq SUC.hyps(2) by auto[1]
       show "concat ds = concat ds'"
-        using Suc.prems(2) \<open>b = b'\<close> eq'(2) eq(2) by auto
+        using SUC.prems(2) \<open>b = b'\<close> eq'(2) eq(2) by auto
       show "strict_sorted (interact cs ds)"
-        using eq Suc.prems(5) strict_sorted_append_iff by auto
+        using eq SUC.prems(5) strict_sorted_append_iff by auto
       show "length ds \<le> length cs" "length cs \<le> Suc (length ds)"
-        using eq Suc.hyps(2) Suc.prems(6) k by auto
+        using eq SUC k by auto
       show "strict_sorted (interact cs' ds')"
-        using eq' Suc.prems(10) strict_sorted_append_iff by auto
+        using eq' SUC.prems(10) strict_sorted_append_iff by auto
       show "length cs = length cs'"
-        using Suc.hyps(2) Suc.prems(13) eq'(1) k(1) by force
-    qed (use ccat_cs_cs' eq eq' Suc.prems in auto)
+        using SUC eq'(1) k(1) by force
+    qed (use ccat_cs_cs' eq eq' SUC.prems in auto)
     ultimately show ?thesis
       by (simp add: \<open>a = a'\<close> \<open>b = b'\<close> eq eq')
   qed
@@ -1099,10 +1093,8 @@ proof -
     show ?thesis
       unfolding inter_scheme_def
       apply (rule some_equality [symmetric], metis One_nat_def True FB mult_2)
-      subgoal for zs'
-        using assms \<open>length xs < length ys\<close>
-        by (auto simp: True mult_2 Set.doubleton_eq_iff Form_Body_unique dest: Form_Body_length, presburger)
-      done
+      using assms \<open>length xs < length ys\<close>
+      by (auto simp: True mult_2 Set.doubleton_eq_iff Form_Body_unique dest: Form_Body_length, presburger)
   next
     case False
     then have eq: "ka = Suc kb"
@@ -1110,10 +1102,8 @@ proof -
     show ?thesis
       unfolding inter_scheme_def
       apply (rule some_equality [symmetric], use assms False mult_2 one_is_add eq in fastforce)
-      subgoal for zs'
-        using assms \<open>length xs < length ys\<close>
-        by (auto simp: eq mult_2 Set.doubleton_eq_iff Form_Body_unique dest: Form_Body_length, presburger)
-      done
+      using assms \<open>length xs < length ys\<close>
+      by (auto simp: eq mult_2 Set.doubleton_eq_iff Form_Body_unique dest: Form_Body_length, presburger)
   qed
 qed
 
@@ -1770,7 +1760,7 @@ next
     case (Suc n)
     then have "enum (DF k i) 0 \<le> enum (DF k i) n \<and> enum (DF k i) n \<le> enum (DF k i) (Suc n)"
       using sm_enum_DF [of k i]
-      by (metis Suc_leD card_DF dual_order.eq_iff finite_DF finite_enumerate_mono le_imp_less_Suc less_imp_le_nat not_gr_zero)
+      by (metis card_DF finite_DF finite_enumerate_mono_iff le_imp_less_Suc less_nat_zero_code linorder_not_le nless_le)
     with Suc show ?case
       by (auto simp: RF_def card_QF del_def)
   qed
@@ -1804,8 +1794,8 @@ next
         using not_less that by blast
     qed
     show ?lhs if "i \<le> i'"
-      using sm_DF [of k] that \<open>j \<le> k\<close> card_DF finite_enumerate_in_set finite_DF le_eq_less_or_eq
-      by (force simp: strict_mono_sets_def less_sets_def finite_enumerate_in_set)
+      by (metis DF_DF \<open>j \<le> k\<close> card_DF finite_DF finite_enumerate_in_set le_eq_less_or_eq 
+                less_Suc_eq_le less_sets_def that)
   qed
   then have enum_DF_eq_iff[simp]:
     "enum (DF k i) j = enum (DF k i') j \<longleftrightarrow> i = i'" if "j \<le> k" for i' i j k
@@ -1820,13 +1810,7 @@ next
     by (simp add: lessThan_k RF_0 flip: sum_card_RF')
 
   have sorted_list_of_set_iff [simp]: "list_of {0<..<k} = [] \<longleftrightarrow> k = 1" if "k>0" for k::nat
-  proof -
-    have "list_of {0<..<k} = [] \<longleftrightarrow> {0<..<k} = {}"
-      by simp
-    also have "\<dots> \<longleftrightarrow> k = 1"
-      using \<open>k > 0\<close> atLeastSucLessThan_greaterThanLessThan by fastforce
-    finally show ?thesis .
-  qed
+    using atLeastSucLessThan_greaterThanLessThan that by fastforce
   show thesis \<comment>\<open>proof of main result\<close>
   proof
     have inj: "inj_on (\<lambda>i. list_of (\<Union>j<ka. RF j i)) {..<m}"
