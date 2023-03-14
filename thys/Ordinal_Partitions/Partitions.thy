@@ -118,8 +118,8 @@ proof (clarsimp simp: partn_lst_def)
                    and fi: "f ` nsets H n \<subseteq> {i}"
     using assms by (auto simp: partn_lst_def smaller_than_small)
   then have bij: "bij_betw (ordermap H r) H (elts (\<alpha>!i))"
-    using ordermap_bij [of r H]
-    by (smt assms(8) in_mono r(1) r(3) smaller_than_small total_on_def)
+    using ordermap_bij [of r H] r
+    by (smt \<open>small B\<close> in_mono smaller_than_small total_on_def)
   define H' where "H' = inv_into H (ordermap H r) ` (elts (\<alpha>'!i))"
   have "H' \<subseteq> H"
     using bij \<open>i < length \<alpha>\<close> bij_betw_imp_surj_on le
@@ -140,7 +140,7 @@ proof (clarsimp simp: partn_lst_def)
       proof (intro iffI ordermap_mono_less)
         assume "ordermap H r x < ordermap H r y"
         then show "(x, y) \<in> r"
-          by (metis \<open>H \<subseteq> B\<close> assms(8) calculation in_mono leD ordermap_mono_le r smaller_than_small that total_on_def)
+          by (metis \<open>H \<subseteq> B\<close> \<open>small H\<close> \<open>H' \<subseteq> H\<close> leD ordermap_mono_le r subsetD that total_on_def)
       qed (use assms that \<open>H' \<subseteq> H\<close> \<open>small H\<close> in auto)
     qed
     show "total_on H' r"
@@ -178,8 +178,7 @@ proof (clarsimp simp: partn_lst_def)
     case True
     then obtain x y where "x \<in> elts ?\<beta>" "y \<in> elts ?\<beta>" "x \<noteq> y" "f {x, y} = 0"
       by auto
-    then have "{x,y} \<subseteq> elts ?\<beta>" "tp {x,y} = 2"
-      "f ` [{x, y}]\<^bsup>2\<^esup> \<subseteq> {0}"
+    then have "{x,y} \<subseteq> elts ?\<beta>" "tp {x,y} = 2" "f ` [{x, y}]\<^bsup>2\<^esup> \<subseteq> {0}"
       by auto (simp add: eval_nat_numeral ordertype_VWF_finite_nat)
     with \<open>x \<noteq> y\<close> show ?thesis
       by (metis nth_Cons_0 zero_less_Suc)
@@ -200,7 +199,7 @@ subsection \<open>Relating partition properties on @{term VWF} to the general ca
 text \<open>Two very similar proofs here!\<close>
 
 lemma partn_lst_imp_partn_lst_VWF_eq:
-  assumes part: "partn_lst r U \<alpha> n" and \<beta>: "ordertype U r = \<beta>" "small U" 
+  assumes part: "partn_lst r U \<alpha> n" and \<beta>: "ordertype U r = \<beta>" and "small U" 
     and r: "wf r" "trans r" "total_on U r"
   shows "partn_lst_VWF \<beta> \<alpha> n"
   unfolding partn_lst_def
@@ -218,19 +217,7 @@ proof clarsimp
     by (force simp: cv_def nsets_def subset_image_iff inj_on_subset finite_image_iff card_image)
   have ot_eq [simp]: "tp (cv X) = ordertype X r" if "X \<subseteq> U" for X
     unfolding cv_def
-  proof (rule ordertype_inc_eq)
-    fix u v
-    assume "u \<in> X" "v \<in> X" and "(u,v) \<in> r"
-    with that have "ordermap U r u < ordermap U r v"
-      by (simp add: assms ordermap_mono_less subset_eq)
-    then show "(ordermap U r u, ordermap U r v) \<in> VWF"
-      by (simp add: r)
-  next
-    show "total_on X r"
-      using that r by (auto simp: total_on_def)
-    show "small X"
-      by (meson \<open>small U\<close> smaller_than_small that)
-  qed (use assms in auto)
+    by (meson \<open>small U\<close> ordertype_image_ordermap r that total_on_subset)
   obtain X i where "X \<subseteq> U" and X: "ordertype X r = \<alpha>!i" "(f \<circ> cv) ` [X]\<^bsup>n\<^esup> \<subseteq> {i}" 
     and "i < length \<alpha>"
     using part func by (auto simp: partn_lst_def)
@@ -272,8 +259,7 @@ proof clarsimp
   have "inj_on (ordermap U r) U"
     using bij bij_betw_def by blast
   then have cv_part: "\<lbrakk>\<forall>x\<in>[X]\<^bsup>n\<^esup>. f (cv x) = i; X \<subseteq> elts \<beta>; a \<in> [cv X]\<^bsup>n\<^esup>\<rbrakk> \<Longrightarrow> f a = i" for a X i n
-    apply ( simp add: cv_def nsets_def subset_image_iff inj_on_subset finite_image_iff card_image)
-    by (metis bij bij_betw_def card_image inj_on_finite inj_on_inv_into subset_eq)
+    by (metis bij bij_betw_imp_surj_on cv_def inj_on_inv_into nset_image_obtains)
   have ot_eq [simp]: "ordertype (cv X) r = tp X" if "X \<subseteq> elts \<beta>" for X
     unfolding cv_def
   proof (rule ordertype_inc_eq)
@@ -288,8 +274,8 @@ proof clarsimp
         by (meson f_inv_into_f)+
       then have "y \<notin> elts x"
         by (metis (no_types) VWF_non_refl mem_imp_VWF that(3) trans_VWF trans_def)
-      then show ?thesis
-        by (metis (no_types) VWF_non_refl xy eq assms(3) inv_into_into ordermap_mono r(1) r(3) that(3) total_on_def)
+      with r show ?thesis
+        by (metis (no_types) VWF_non_refl xy eq assms(3) inv_into_into ordermap_mono that(3) total_on_def)
     qed
   qed (use r in auto)
   obtain X i where "X \<subseteq> elts \<beta>" and X: "tp X = \<alpha>!i" "(f \<circ> cv) ` [X]\<^bsup>n\<^esup> \<subseteq> {i}" 
@@ -912,12 +898,7 @@ proof clarsimp
       by blast
   qed
   then show "\<exists>i<Suc (Suc 0). \<exists>H\<subseteq>UU. ordertype H pair_less = [\<omega>\<up>2, \<alpha>] ! i \<and> f ` [H]\<^bsup>2\<^esup> \<subseteq> {i}"
-  proof 
-    show "?P0 \<Longrightarrow> ?thesis"
-      by (metis nth_Cons_0 numeral_2_eq_2 pos2)
-    show "?P1 \<Longrightarrow> ?thesis"
-      by (metis One_nat_def lessI nth_Cons_0 nth_Cons_Suc)
-  qed
+    by (metis One_nat_def lessI nth_Cons_0 nth_Cons_Suc zero_less_Suc)
 qed
 
 theorem Specker: "\<alpha> \<in> elts \<omega> \<Longrightarrow> partn_lst_VWF (\<omega>\<up>2) [\<omega>\<up>2,\<alpha>] 2"

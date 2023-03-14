@@ -1867,7 +1867,6 @@ next
       then have pq: "p<q" "length x < length y"
         using xy \<open>k \<le> ka\<close> \<open>ka \<le> Suc k\<close> lexl_not_refl [OF irrefl_less_than]
         by (auto simp: lenlex_def sm_RF sorted_list_of_set_UN_lessThan length_concat sum_sorted_list_of_set_map)
-      moreover
       have xc: "x = concat (map (?R p) (list_of {..<ka}))"
         by (simp add: x sorted_list_of_set_UN_eq_concat \<open>k \<le> ka\<close> \<open>ka \<le> Suc k\<close> \<open>p < m\<close> sm_RF)
       have yc: "y = concat (map (?R q) (list_of {..<ka}))"
@@ -1937,10 +1936,11 @@ next
               using kka zs zs_N \<open>k=1\<close> Form_Body_imp_inter_scheme by (fastforce simp: \<open>U = {x,y}\<close>)
           qed
         next
-          case 2
+          case 2 \<comment>\<open>Still in our painful special case\<close>
           note True [simp] note 2 [simp]
           have [simp]: "{0<..<2} = {1::nat}"
             by auto
+
           have enum_DF1_eq: "enum (DF 1 i) 1 = card (AF 1 i) + card (RF 1 i)"
             if "i < m" for i
             using card_AF_sum that by (simp add: One_nat_def)
@@ -1960,59 +1960,56 @@ next
               by (metis QF_0 RF_0 diff_self_eq_0 finite_RF le_refl sorted_list_of_set_Un zero_less_one)
             finally show "x = concat ([list_of (AF 1 p),list_of (RF 1 p)])"
               by (simp add: RF_0)
+
+            have *: "i \<in> AF 1 q \<or> i \<in> RF 1 q \<or> i \<in> RF 1 p \<Longrightarrow> enum (DF 1 q) 1 < i" for i
+              using True card_DF finite_enumerate_in_set[OF finite_DF] 
+              by (metis AF_ne DF_AF One_nat_def RF_0 RF_non_Nil finite_RF lessI less_RF_Suc less_RF_k less_setsD 
+                  less_sets_trans sorted_list_of_set.sorted_key_list_of_set_eq_Nil_iff)
+
             show "y = concat [list_of (RF 1 q \<union> AF 1 q)]"
               by (simp add: y eval_nat_numeral lessThan_Suc RF_0 One_nat_def)
             show zs: "zs = concat [[card (AF 1 p), card (AF 1 p) + card (RF 1 p)], list_of (AF 1 p),
-                              [card (AF 1 q) + card (RF 1 q)], list_of (RF 1 q \<union> AF 1 q)] @ interact [list_of (RF 1 p)] []"
+                                  [card (AF 1 q) + card (RF 1 q)], list_of (RF 1 q \<union> AF 1 q)] @ interact [list_of (RF 1 p)] []"
               using list_of_AF_RF by (simp add: zs_def Un_commute)
+
             show "strict_sorted zs"
             proof (simp add: \<open>p<m\<close> \<open>q<m\<close> \<open>p<q\<close> zs_def strict_sorted_append_iff, intro conjI strip)
               show "0 < card (RF 1 p)"
                 using \<open>p<m\<close> by (simp add: card_RF card_DF finite_DF)
-              show "card (AF 1 p) < card (AF 1 q) + card (RF 1 q)"
-                using \<open>p<q\<close> \<open>q<m\<close> by (simp add: Inf_DF_less card_AF trans_less_add1)
+              show G1: "card (AF 1 p) < card (AF 1 q) + card (RF 1 q)"
+                by (simp add: Inf_DF_less card_AF \<open>p<q\<close> trans_less_add1)
               show "card (AF 1 p) < x"
                 if "x \<in> AF 1 p \<union> (AF 1 q \<union> (RF 1 q \<union> RF 1 p))" for x
-                using that
-                apply (simp add: card_AF)
-                by (metis AF_ne DF_AF DF_ne less_RF_RF less_RF_Suc less_RF_k Inf_nat_def1 One_nat_def RF_0 RF_non_Nil True finite_RF lessI less_setsD less_sets_trans sorted_list_of_set_eq_Nil_iff)
-              show "card (AF 1 p) + card (RF 1 p) < card (AF 1 q) + card (RF 1 q)"
+                using that \<open>q < m\<close> *
+                  by (metis (no_types) order_refl AF_Inf_DF_less Un_iff G1 card_AF order.strict_trans enum_DF1_eq that)
+              show G2: "card (AF 1 p) + card (RF 1 p) < card (AF 1 q) + card (RF 1 q)"
                 using \<open>p < q\<close> \<open>p < m\<close> \<open>q < m\<close> by (metis enum_DF1_eq enum_DF_less_iff le_refl)
-              show "card (AF 1 p) + card (RF 1 p) < x"
+              show "card (AF 1 q) + card (RF 1 q) < x"
+                if "x \<in> AF 1 q \<union> (RF 1 q \<union> RF 1 p)" for x
+                using that \<open>q < m\<close> * enum_DF1_eq by force
+              then show "card (AF 1 p) + card (RF 1 p) < x"
                 if "x \<in> AF 1 p \<union> (AF 1 q \<union> (RF 1 q \<union> RF 1 p))" for x
-                using that \<open>p < m\<close>
-                apply (simp flip: enum_DF1_eq)
-                by (metis AF_ne DF_AF less_RF_RF less_RF_Suc less_RF_k One_nat_def RF_0 RF_non_Nil Suc_mono True \<open>0 < k\<close> card_DF finite_enumerate_in_set finite_DF less_setsD less_sets_trans sorted_list_of_set_empty)
+                using that \<open>p < m\<close> finite_enumerate_in_set[OF finite_DF]
+                by (metis DF_AF G2 Un_iff card_DF dual_order.strict_trans enum_DF1_eq lessI less_setsD) 
               have "list_of (AF 1 p) < list_of {enum (DF 1 q) 1}"
               proof (rule less_sets_imp_sorted_list_of_set)
                 show "AF 1 p \<lless> {enum (DF 1 q) 1}"
-                  by (metis AF_DF card_DF empty_subsetI finite_DF finite_enumerate_in_set insert_subset less_Suc_eq less_sets_weaken2 pq(1))
+                  by (metis AF_DF card_DF empty_subsetI finite_DF finite_enumerate_in_set insert_subset 
+                      less_Suc_eq less_sets_weaken2 \<open>p<q\<close>)
               qed auto
               then show "list_of (AF 1 p) < (card (AF 1 q) + card (RF 1 q)) # list_of (AF 1 q) @ list_of (RF 1 q) @ list_of (RF 1 p)"
                 using \<open>q < m\<close> by (simp add: less_list_def enum_DF1_eq)
-              show "card (AF 1 q) + card (RF 1 q) < x"
-                if "x \<in> AF 1 q \<union> (RF 1 q \<union> RF 1 p)" for x
-                using that \<open>q < m\<close>
-                apply (simp flip: enum_DF1_eq)
-                by (metis AF_ne DF_AF less_RF_Suc less_RF_k One_nat_def RF_0 RF_non_Nil True card_DF finite_enumerate_in_set finite_DF finite_RF lessI less_setsD less_sets_trans sorted_list_of_set_eq_Nil_iff)
               have "list_of (AF 1 q) < list_of (RF 1 q)"
-              proof (rule less_sets_imp_sorted_list_of_set)
-                show "AF 1 q \<lless> RF 1 q"
-                  by (metis less_RF_Suc One_nat_def RF_0 True \<open>0 < k\<close>)
-              qed auto
+                by (metis One_nat_def RF_0 True \<open>0 < k\<close> finite_RF less_RF_Suc less_sets_imp_sorted_list_of_set)           
               then show "list_of (AF 1 q) < list_of (RF 1 q) @ list_of (RF 1 p)"
                 using RF_non_Nil by (auto simp: less_list_def)
               show "list_of (RF 1 q) < list_of (RF 1 p)"
-              proof (rule less_sets_imp_sorted_list_of_set)
-                show "RF 1 q \<lless> RF 1 p"
-                  by (metis less_RF_k True)
-              qed auto
+                using True finite_RF less_RF_k less_sets_imp_sorted_list_of_set by metis
             qed
             show "[list_of (AF 1 p), list_of (RF 1 p)] \<in> lists (- {[]})"
               using RF_non_Nil \<open>0 < k\<close> by (auto simp: zs_def AF_ne)
             show "[card (AF 1 q) + card (RF 1 q)] = acc_lengths 0 [list_of (RF 1 q \<union> AF 1 q)]"
-              using list_of_AF_RF
-              by (auto simp: zs_def AF_ne sup_commute)
+              using list_of_AF_RF by (auto simp: zs_def AF_ne sup_commute)
           qed (auto simp: zs_def AF_ne \<open>length x < length y\<close>)
           have zs_N: "list.set zs \<subseteq> N"
             using \<open>p < m\<close> \<open>q < m\<close> DF_in_N  enum_DF1_eq [symmetric]
@@ -2302,6 +2299,7 @@ lemma prev_maximal:
 lemma pair_less_prev:
   assumes "(u, (j,i)) \<in> pair_less" "u \<in> IJ k"
   shows "prev j i = Some u \<or> (\<exists>x. (u, x) \<in> pair_less \<and> prev j i = Some x)"
+  using assms
 proof (cases "prev j i")
   case None
   then show ?thesis
@@ -2478,7 +2476,7 @@ proof (cases "\<I> = {}")
           then have "A ?mx = A ?my"
             by (meson False UNIV_I total_llt total_on_def)
           then show ?thesis
-            using "\<section>" irrefl_less_than that(2) by auto
+            using "\<section>" irrefl_less_than that by auto
         qed (use that in blast)
         then have "\<beta> * ordermap (A`\<I>) ?R (A ?mx) + ordermap (B`J ?mx) ?R (B (Max x))
                  < \<beta> * ordermap (A`\<I>) ?R (A ?my) + ordermap (B`J ?my) ?R (B (Max y))"
@@ -2574,16 +2572,15 @@ lemma merge_interact:
   using assms
 proof induction
   case (App as1 bs1 as2 bs2 as bs)
-  then have bs: "concat bs1 < concat bs" "concat bs1 < concat as" and xx: "concat bs1 \<noteq> []"
+  then have bs: "concat bs1 < concat bs" "concat bs1 < concat as" 
+    and nonmt: "concat bs1 \<noteq> []"
     using merge_preserves strict_sorted_append_iff by fastforce+
   then have "concat bs1 < interact as bs"
     unfolding less_list_def using App bs
     by (metis (no_types, lifting) Un_iff concat_append hd_in_set last_in_set merge_preserves set_interact sorted_wrt_append strict_sorted_append_iff)
   with App show ?case
-    apply (simp add: strict_sorted_append_iff del: concat_eq_Nil_conv)
-    by (metis hd_append2 less_list_def xx)
+    by (metis append_in_lists_conv concat_append hd_append2 interact.simps(3) less_list_def strict_sorted_append_iff nonmt)
 qed auto
-
 
 lemma acc_lengths_merge1:
   assumes "merge as bs us vs"
@@ -2633,6 +2630,7 @@ proof induction
     by (fastforce simp: less_sets_UN1 less_sets_UN2 less_sets_Un2)
 qed auto
 
+
 lemma set_takeWhile:
   assumes "strict_sorted (concat as)" "as \<in> lists (- {[]})"
   shows "list.set (takeWhile (\<lambda>x. x < y) as) = {x \<in> list.set as. x < y}"
@@ -2643,13 +2641,13 @@ proof (induction as)
     if a: "a < concat as" "strict_sorted a" "strict_sorted (concat as)" "x < y" "x \<noteq> []" "x \<in> list.set as"
     for x
   proof -
-    have "last x \<in> list.set (concat as)"
-      using set_concat that(5) that(6) by fastforce
-    then have "last a < hd (concat as)"
+    have \<section>: "last x \<in> list.set (concat as)"
+      using set_concat that by fastforce
+    have "last a < hd (concat as)"
       using Cons.prems that by (auto simp: less_list_def)
     also have "\<dots> \<le> hd y" if "y \<noteq> []"
       using that a
-      by (meson \<open>last x \<in> list.set (concat as)\<close> dual_order.strict_trans less_list_def not_le sorted_hd_le strict_sorted_imp_sorted)
+      by (meson \<section> order.strict_trans less_list_def not_le sorted_hd_le strict_sorted_imp_sorted)
     finally show ?thesis
       by (simp add: less_list_def)
   qed
@@ -2787,11 +2785,7 @@ proof -
   proof (induction ij rule: wf_induct_rule)
     case (less u)
     then show ?case
-    proof (cases u)
-      case (Pair j i)
-      with less_sets_grab show ?thesis
-        by (simp add: bf_rec [of M q j i] less.IH prev_pair_less that split: option.split)
-    qed
+      by (metis bf_rec finite_grab_iff infinite_bf less_sets_grab prod.exhaust_sel that)
   qed
 
   have card_fst_bf: "finite (fst (bf M q (j,i))) \<and> card (fst (bf M q (j,i))) = q j i" if "infinite M" for M q j i
@@ -2880,8 +2874,7 @@ proof -
 
   have M_Suc_subset: "M (Suc k) \<subseteq> M k" for k
     apply (clarsimp simp add: Let_def M_def F_def DF_simps split: prod.split)
-    apply (drule grab_eqD, blast dest: infinite_nxtN local.inf)+
-    using bf_subset nxt_subset by blast
+    by (metis bf_subset in_mono nxt_subset snd_conv snd_grab_subset)
 
   have Inf_M_Suc_ge: "Inf (M k) \<le> Inf (M (Suc k))" for k
     by (simp add: M_Suc_subset cInf_superset_mono infinite_imp_nonempty)
@@ -3128,7 +3121,7 @@ proof -
       then obtain i where "Max (insert j0 (K - {Max K})) < i" "K = insert i (K - {Max K})"
         using K 
         by (simp add: subset_iff) (metis DiffE Max.coboundedI insertCI insert_Diff le_neq_implies_less)
-      then  show "\<exists>L\<subseteq>{j0<..}. finite L \<and> card L = j \<and> (\<exists>i\<in>{Max (insert j0 L)<..}. K = insert i L)"
+      then show "\<exists>L\<subseteq>{j0<..}. finite L \<and> card L = j \<and> (\<exists>i\<in>{Max (insert j0 L)<..}. K = insert i L)"
         using K
         by (metis \<open>Max K \<in> K\<close> card_Diff_singleton_if diff_Suc_1 finite_Diff greaterThan_iff insert_subset)
     qed
@@ -3173,14 +3166,7 @@ proof -
     also have "\<dots> = list_of ((a j0 \<union> (\<Union>i<j. b (enum K i) (j0, i)))) @ list_of (b (enum K j) (j0, j))"
     proof (rule sorted_list_of_set_Un)
       have "b (enum K i) (j0, i) \<lless> b (enum K j) (j0, j)" if "i<j" for i
-      proof (rule bb)
-        show "i < j0"
-          using j that by linarith
-        show "j0 \<le> enum K i"
-          using that K by (metis \<K>_enum cardK less_SucI less_imp_le_nat)
-        show "enum K i < enum K j"
-          by (simp add: cardK finite_enumerate_mono that)
-      qed
+        using K \<K>_enum bb cardK j le_eq_less_or_eq that by auto
       moreover have "a j0 \<lless> b (enum K j) (j0, j)"
         using MaxK \<open>j0 < Max K\<close> ab by auto
       ultimately show "a j0 \<union> (\<Union>x<j. b (enum K x) (j0, x)) \<lless> b (enum K j) (j0, j)"
@@ -3215,13 +3201,7 @@ proof -
   qed auto
 
   have b_ge: "\<Sqinter> (b k (j,i)) \<ge> k-1" if "k \<ge> j" "j > i" for k j i
-  proof -
-    have "\<not> Suc (\<Sqinter> (b k (j, i))) < k"
-      by (metis (no_types) Inf_b_less Suc_leI b_ge_k diff_Suc_1 lessI not_less that)
-    then show ?thesis
-      by simp
-  qed
-
+    by (metis Inf_b_less Suc_leI b_ge_k diff_Suc_1 lessI not_less that diff_le_mono)
   have hd_b: "hd (list_of (b k (j,i))) = \<Sqinter> (b k (j,i))"
     if "i < j" "j \<le> k" for k j i
     using that by (simp add: hd_list_of cInf_eq_Min)
@@ -3796,32 +3776,14 @@ proof -
       have ps_subset_d: "list.set ps \<subseteq> d j"
           using K Ksub \<K>_card \<open>finite K\<close> acc_lengths_subset_d u_sub by blast
       have ps_less_u1: "ps < u1"
-      proof -
-        have "hd u1 = hd x"
-          using us_ne by (auto simp: xu_eq)
-        then have "hd u1 \<in> a j"
-          by (simp add: xeq BB_eq_concat_seqs K seqs_def hd_append hd_list_of)
-        then have "list.set ps \<lless> {hd u1}"
-          by (metis da ps_subset_d less_sets_def singletonD subset_iff)
-        then show ?thesis
-          by (metis less_hd_imp_less list.set(2) empty_set less_sets_imp_list_less)
-      qed
+        by (metis append.assoc concat.simps(2) ss strict_sorted_append_iff zs_def)
       have qs_subset_d: "list.set qs \<subseteq> d r"
         using L Lsub \<K>_card \<open>finite L\<close> acc_lengths_subset_d v_sub by blast
       have qs_less_v1: "qs < v1"
-      proof -
-        have "hd v1 = hd y"
-          using vs_ne by (auto simp: yv_eq)
-        then have "hd v1 \<in> a r"
-          by (simp add: yeq BB_eq_concat_seqs L seqs_def hd_append hd_list_of)
-        then have "list.set qs \<lless> {hd v1}"
-          by (metis da qs_subset_d less_sets_def singletonD subset_iff)
-        then show ?thesis
-          by (metis less_hd_imp_less list.set(2) empty_set less_sets_imp_list_less)
-      qed
+        by (metis append.assoc concat.simps(2) ss strict_sorted_append_iff zs_def)
       have FB: "Form_Body ku kv x y zs"
-        unfolding Form_Body.simps
-        using ku_def kv_def ps_def qs_def ss us_ne vs_ne xu_eq xy yv_eq zs_def by blast
+        unfolding Form_Body.simps ku_def kv_def
+        using ps_def qs_def ss us_ne vs_ne xu_eq xy yv_eq zs_def by blast
       then have "zs = (inter_scheme ((ku+kv) - Suc 0) {x,y})"
         by (simp add: Form_Body_imp_inter_scheme k)
       obtain l where "l \<le> 2 * (Suc j)" and l: "Form l U" and zs_eq_interact: "zs = inter_scheme l {x,y}"
@@ -4125,11 +4087,11 @@ next
       proof -
         have "finite M"
           using False m that by auto
-        with not1 [simplified, rule_format, of M] f
-        show ?thesis
-          using that \<open>1 < m\<close>
-          apply (simp add: Pi_iff image_subset_iff finite_ordertype_eq_card m)
-          by (metis less_2_cases nsets_mono numeral_2_eq_2 subset_iff)
+        with not1 [simplified, rule_format, of M] that 
+        have "\<exists>x\<in>[M]\<^bsup>2\<^esup>. f x \<noteq> Suc 0"
+          by (simp add: image_subset_iff finite_ordertype_eq_card m)
+        with that show ?thesis
+          by (metis PiE f lessThan_iff less_2_cases nsets_mono numeral_2_eq_2 subset_iff)
       qed
       have m_fh_0: "\<exists>x\<in>[M]\<^bsup>2\<^esup>. ?fh x = 0" if "M \<subseteq> WW" "card M = m" for M
       proof -
