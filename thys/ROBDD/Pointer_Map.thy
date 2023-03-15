@@ -39,11 +39,11 @@ next
   {
     fix n
     have " \<lbrakk>distinct (entries s) \<and> (\<forall>x. x \<in> {..<length (entries s)} \<longrightarrow> getentry s (entries s ! x) = Some x) \<and> (\<forall>p i. getentry s p = Some i \<longrightarrow> entries s ! i = p \<and> i < length (entries s)); m \<notin> set (entries s);
-          n \<in> {..<length (entries \<lparr>entries = entries s @ [m], getentry = getentry s(m \<mapsto> length (entries s))\<rparr>)}; n < length (entries s)\<rbrakk>
-         \<Longrightarrow> getentry \<lparr>entries = entries s @ [m], getentry = getentry s(m \<mapsto> length (entries s))\<rparr> (entries \<lparr>entries = entries s @ [m], getentry = getentry s(m \<mapsto> length (entries s))\<rparr> ! n) = Some n"
-         "\<lbrakk>distinct (entries s) \<and> (\<forall>x. x \<in> {..<length (entries s)} \<longrightarrow> getentry s (entries s ! x) = Some x) \<and> (\<forall>p i. getentry s p = Some i \<longrightarrow> entries s ! i = p \<and> i < length (entries s)); m \<notin> set (entries s);
-          n \<in> {..<length (entries \<lparr>entries = entries s @ [m], getentry = getentry s(m \<mapsto> length (entries s))\<rparr>)}; \<not> n < length (entries s)\<rbrakk>
-         \<Longrightarrow> getentry \<lparr>entries = entries s @ [m], getentry = getentry s(m \<mapsto> length (entries s))\<rparr> (entries \<lparr>entries = entries s @ [m], getentry = getentry s(m \<mapsto> length (entries s))\<rparr> ! n) = Some n"
+          n \<in> {..<length (entries \<lparr>entries = entries s @ [m], getentry = (getentry s)(m \<mapsto> length (entries s))\<rparr>)}; n < length (entries s)\<rbrakk>
+         \<Longrightarrow> getentry \<lparr>entries = entries s @ [m], getentry = (getentry s)(m \<mapsto> length (entries s))\<rparr> (entries \<lparr>entries = entries s @ [m], getentry = (getentry s)(m \<mapsto> length (entries s))\<rparr> ! n) = Some n"
+         "\<lbrakk>distinct (entries s) \<and> (\<forall>x. x \<in> {..<length (entries s)} \<longrightarrow> (getentry s) (entries s ! x) = Some x) \<and> (\<forall>p i. getentry s p = Some i \<longrightarrow> entries s ! i = p \<and> i < length (entries s)); m \<notin> set (entries s);
+          n \<in> {..<length (entries \<lparr>entries = entries s @ [m], getentry = (getentry s)(m \<mapsto> length (entries s))\<rparr>)}; \<not> n < length (entries s)\<rbrakk>
+         \<Longrightarrow> getentry \<lparr>entries = entries s @ [m], getentry = (getentry s)(m \<mapsto> length (entries s))\<rparr> (entries \<lparr>entries = entries s @ [m], getentry = (getentry s)(m \<mapsto> length (entries s))\<rparr> ! n) = Some n"
       proof(goal_cases)
         case 1 note goal1 = 1
         from goal1(4) have sa: "\<And>a. (entries s @ a) ! n = entries s ! n" by (simp add: nth_append)

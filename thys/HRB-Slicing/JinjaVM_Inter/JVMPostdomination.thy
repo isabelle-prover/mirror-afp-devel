@@ -241,7 +241,7 @@ next
   moreover with \<open>C \<noteq> ClassMain P\<close> \<open>(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Normal)\<close>
     \<open> instrs_of (PROG P) C M ! pc = New Cl\<close>
     \<open> ek = \<Up>\<lambda>s. let a = the (new_Addr (heap_of s)) in
-    s(Heap \<mapsto> Hp (heap_of s(a \<mapsto> blank (PROG P) Cl)),
+    s(Heap \<mapsto> Hp ((heap_of s)(a \<mapsto> blank (PROG P) Cl)),
       Stack (stkLength (P, C, M) pc) \<mapsto> Value (Addr a))\<close>
   have "vp_snoc P C0 Main as (C, M, \<lfloor>pc\<rfloor>, Normal) ek (C, M, \<lfloor>Suc pc\<rfloor>, Enter)"
     by (fastforce intro: JVMCFG_reachable.CFG_New_Update)
@@ -264,7 +264,7 @@ next
     by blast
   moreover with \<open>C \<noteq> ClassMain P\<close> \<open>(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter)\<close>
     \<open>instrs_of (PROG P) C M ! pc = New Cl\<close>
-    \<open>ek = \<Up>\<lambda>s. s(Exception := None)(Stack (stkLength (P, C, M) pc' - 1) \<mapsto>
+    \<open>ek = \<Up>\<lambda>s. (s(Exception := None))(Stack (stkLength (P, C, M) pc' - 1) \<mapsto>
     Value (Addr (addr_of_sys_xcpt OutOfMemory)))\<close>
   have "vp_snoc P C0 Main as (C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter) ek (C, M, \<lfloor>pc'\<rfloor>, Enter)"
     by (fastforce intro: JVMCFG_reachable.CFG_New_Exceptional_handle)
@@ -322,7 +322,7 @@ next
     by blast
   moreover with \<open>C \<noteq> ClassMain P\<close> \<open>(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter)\<close>
     \<open>instrs_of (PROG P) C M ! pc = Getfield F Cl\<close>
-    \<open>ek = \<Up>\<lambda>s. s(Exception := None)(Stack (stkLength (P, C, M) pc' - 1) \<mapsto>
+    \<open>ek = \<Up>\<lambda>s. (s(Exception := None))(Stack (stkLength (P, C, M) pc' - 1) \<mapsto>
     Value (Addr (addr_of_sys_xcpt NullPointer)))\<close>
   have "vp_snoc P C0 Main as (C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter) ek (C, M, \<lfloor>pc'\<rfloor>, Enter)"
     by (fastforce intro: JVMCFG_reachable.CFG_Getfield_Exceptional_handle)
@@ -359,7 +359,7 @@ next
     \<open>instrs_of (PROG P) C M ! pc = Putfield F Cl\<close>
     \<open>ek = \<Up>\<lambda>s. let v = stkAt s (stkLength (P, C, M) pc - 1);
     r = stkAt s (stkLength (P, C, M) pc - 2);
-    a = the_Addr r; (D, fs) = the (heap_of s a); h' = heap_of s(a \<mapsto> (D, fs((F, Cl) \<mapsto> v)))
+    a = the_Addr r; (D, fs) = the (heap_of s a); h' = (heap_of s)(a \<mapsto> (D, fs((F, Cl) \<mapsto> v)))
     in s(Heap \<mapsto> Hp h')\<close>
   have "vp_snoc P C0 Main as (C, M, \<lfloor>pc\<rfloor>, Normal) ek (C, M, \<lfloor>Suc pc\<rfloor>, Enter)"
     by (fastforce intro: JVMCFG_reachable.CFG_Putfield_Update)
@@ -382,7 +382,7 @@ next
     by blast
   moreover with \<open>C \<noteq> ClassMain P\<close> \<open>(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter)\<close>
     \<open>instrs_of (PROG P) C M ! pc = Putfield F Cl\<close>
-    \<open>ek = \<Up>\<lambda>s. s(Exception := None)(Stack (stkLength (P, C, M) pc' - 1) \<mapsto>
+    \<open>ek = \<Up>\<lambda>s. (s(Exception := None))(Stack (stkLength (P, C, M) pc' - 1) \<mapsto>
     Value (Addr (addr_of_sys_xcpt NullPointer)))\<close>
   have "vp_snoc P C0 Main as (C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter) ek (C, M, \<lfloor>pc'\<rfloor>, Enter)"
     by (fastforce intro: JVMCFG_reachable.CFG_Putfield_Exceptional_handle)
@@ -429,7 +429,7 @@ next
     by blast
   moreover with \<open>C \<noteq> ClassMain P\<close> \<open>(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter)\<close>
     \<open>instrs_of (PROG P) C M ! pc = Checkcast Cl\<close>
-    \<open>ek = \<Up>\<lambda>s. s(Exception := None)(Stack (stkLength (P, C, M) pc' - 1) \<mapsto>
+    \<open>ek = \<Up>\<lambda>s. (s(Exception := None))(Stack (stkLength (P, C, M) pc' - 1) \<mapsto>
     Value (Addr (addr_of_sys_xcpt ClassCast)))\<close>
   have "vp_snoc P C0 Main as (C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter) ek (C, M, \<lfloor>pc'\<rfloor>, Enter)"
     by (fastforce intro: JVMCFG_reachable.CFG_Checkcast_Exceptional_handle)
@@ -517,7 +517,7 @@ next
     by blast
   moreover with \<open>C \<noteq> ClassMain P\<close> \<open>(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter)\<close>
     \<open>pc' \<noteq> length (instrs_of (PROG P) C M)\<close> \<open>instrs_of (PROG P) C M ! pc = Throw\<close>
-    \<open>ek = \<Up>\<lambda>s. s(Exception := None)(Stack (stkLength (P, C, M) pc' - 1) \<mapsto>
+    \<open>ek = \<Up>\<lambda>s. (s(Exception := None))(Stack (stkLength (P, C, M) pc' - 1) \<mapsto>
     Value (stkAt s (stkLength (P, C, M) pc - 1)))\<close>
   have "vp_snoc P C0 Main as (C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter) ek (C, M, \<lfloor>pc'\<rfloor>, Enter)"
     by (fastforce intro: JVMCFG_reachable.CFG_Throw_handle)
@@ -564,7 +564,7 @@ next
     by blast
   moreover with \<open>C \<noteq> ClassMain P\<close> \<open>(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter)\<close>
     \<open>instrs_of (PROG P) C M ! pc = Invoke M' n\<close>
-    \<open>ek = \<Up>\<lambda>s. s(Exception := None)(Stack (stkLength (P, C, M) pc' - 1) \<mapsto>
+    \<open>ek = \<Up>\<lambda>s. (s(Exception := None))(Stack (stkLength (P, C, M) pc' - 1) \<mapsto>
     Value (Addr (addr_of_sys_xcpt NullPointer)))\<close>
   have "vp_snoc P C0 Main as (C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter) ek (C, M, \<lfloor>pc'\<rfloor>, Enter)"
     by (fastforce intro: JVMCFG_reachable.CFG_Invoke_NP_handle)

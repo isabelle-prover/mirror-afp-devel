@@ -159,7 +159,7 @@ proof -
     
   have COUPLING': "coupling 
     ((relax_outgoing' u du (M_lookup V) (Q_lookup Q))(u := None)) 
-    (M_lookup V(u \<mapsto> du)) 
+    ((M_lookup V)(u \<mapsto> du)) 
     (relax_outgoing u D) 
     (Set.insert u S)"  
     using coupling_step[OF COUPLING \<open>u\<notin>S\<close> \<open>D u = enat du\<close>] by auto

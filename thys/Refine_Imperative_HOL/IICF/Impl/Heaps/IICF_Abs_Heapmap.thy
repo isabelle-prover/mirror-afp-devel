@@ -679,7 +679,7 @@ begin
       by (auto simp: pw_le_iff pw_leof_iff refine_pw_simps split: prod.splits)
 
     lemma hm_decrease_key_op_\<alpha>_correct: 
-      "heapmap_invar hm \<Longrightarrow> hm_decrease_key_op k v hm \<le>\<^sub>n SPEC (\<lambda>hm'. heapmap_\<alpha> hm' = heapmap_\<alpha> hm(k\<mapsto>v))"
+      "heapmap_invar hm \<Longrightarrow> hm_decrease_key_op k v hm \<le>\<^sub>n SPEC (\<lambda>hm'. heapmap_\<alpha> hm' = (heapmap_\<alpha> hm)(k\<mapsto>v))"
       unfolding hm_decrease_key_op_def
       apply (refine_vcg 
         hm_update_op_\<alpha>_correct[THEN leof_trans] 
@@ -736,7 +736,7 @@ begin
       done
 
     lemma hm_increase_key_op_\<alpha>_correct: 
-      "heapmap_invar hm \<Longrightarrow> hm_increase_key_op k v hm \<le>\<^sub>n SPEC (\<lambda>hm'. heapmap_\<alpha> hm' = heapmap_\<alpha> hm(k\<mapsto>v))"
+      "heapmap_invar hm \<Longrightarrow> hm_increase_key_op k v hm \<le>\<^sub>n SPEC (\<lambda>hm'. heapmap_\<alpha> hm' = (heapmap_\<alpha> hm)(k\<mapsto>v))"
       unfolding hm_increase_key_op_def
       apply (refine_vcg 
         hm_update_op_\<alpha>_correct[THEN leof_trans] 
@@ -794,7 +794,7 @@ begin
       done
 
     lemma hm_change_key_op_\<alpha>_correct: 
-      "heapmap_invar hm \<Longrightarrow> hm_change_key_op k v hm \<le>\<^sub>n SPEC (\<lambda>hm'. heapmap_\<alpha> hm' = heapmap_\<alpha> hm(k\<mapsto>v))"
+      "heapmap_invar hm \<Longrightarrow> hm_change_key_op k v hm \<le>\<^sub>n SPEC (\<lambda>hm'. heapmap_\<alpha> hm' = (heapmap_\<alpha> hm)(k\<mapsto>v))"
       unfolding hm_change_key_op_def
       apply (refine_vcg 
         hm_update_op_\<alpha>_correct[THEN leof_trans] 

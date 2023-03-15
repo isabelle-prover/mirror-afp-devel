@@ -210,7 +210,7 @@ proof
       from None have ndom: "key d \<notin> Map.dom (rm.\<alpha> (?el ds))" by auto
       have r: "?r k (d # ds) = ?r k ds \<inter> {da. key da \<noteq> key d} \<union> {da . key da = k \<and> da = d}" (is "_ = ?r1 \<union> ?r2") using r by auto
       from ndom have l: "?l k (d # ds) = 
-        set (case (rm.\<alpha> (elem_list_to_rm key ds)(key d \<mapsto> [d])) k of None \<Rightarrow> []
+        set (case ((rm.\<alpha> (elem_list_to_rm key ds))(key d \<mapsto> [d])) k of None \<Rightarrow> []
         | Some rules \<Rightarrow> rules)" (is "_ = ?l") unfolding el rm_set_lookup_def 
         by (simp add: rm.correct)
       {
@@ -226,7 +226,7 @@ proof
           from this[unfolded ind[symmetric] rm_set_lookup_def]
           obtain das where rm: "rm.\<alpha> (?el ds) k = Some das" and da: "da \<in> set das" and k: "key da \<noteq> key d" by (cases "rm.\<alpha> (?el ds) k", auto)
           from ind[of k, unfolded rm_set_lookup_def] rm da k have k: "key d \<noteq> k" by auto
-          have rm: "(rm.\<alpha> (elem_list_to_rm key ds)(key d \<mapsto> [d])) k = Some das"
+          have rm: "((rm.\<alpha> (elem_list_to_rm key ds))(key d \<mapsto> [d])) k = Some das"
             unfolding rm[symmetric] using k by auto
           show ?thesis unfolding rm using da by auto
         qed
@@ -260,7 +260,7 @@ proof
         by simp
       from Some have dom: "key d \<in> Map.dom (rm.\<alpha> (?el ds))" by auto
       from dom have l: "?l k (d # ds) = 
-        set (case (rm.\<alpha> (elem_list_to_rm key ds)(key d \<mapsto> (d # das))) k of None \<Rightarrow> []
+        set (case ((rm.\<alpha> (elem_list_to_rm key ds))(key d \<mapsto> (d # das))) k of None \<Rightarrow> []
         | Some rules \<Rightarrow> rules)" (is "_ = ?l") unfolding el rm_set_lookup_def 
         by (simp add: rm.correct)
       have r: "?r k (d # ds) = ?r k ds \<union> {da. key da = k \<and> da = d}" (is "_ = ?r1 \<union> ?r2")  by auto

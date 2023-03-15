@@ -252,7 +252,7 @@ context param_DFS begin context begin interpretation timing_syntax .
     case (finish s s')
     hence EQ[simp]: "discovered s' = discovered s" 
                     "counter s' = Suc (counter s)"
-                    "finished s' = finished s(hd (stack s) \<mapsto> counter s)"
+                    "finished s' = (finished s)(hd (stack s) \<mapsto> counter s)"
       by simp_all
 
     from finish interpret DFS_invar where s=s by simp

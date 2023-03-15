@@ -252,8 +252,8 @@ inductive JVMCFG :: "jvm_method \<Rightarrow> cfg_node \<Rightarrow> (var, val, 
   | CFG_New_Update: "\<lbrakk> C \<noteq> ClassMain P; (P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Normal);
     instrs_of (PROG P) C M ! pc = New Cl;
     ek = \<Up>(\<lambda>s. let a = the (new_Addr (heap_of s))
-                in s(Heap \<mapsto> Hp ((heap_of s)(a \<mapsto> blank (PROG P) Cl)))
-                    (Stack (stkLength(P, C, M) pc) \<mapsto> Value (Addr a))) \<rbrakk>
+                in s(Heap \<mapsto> Hp ((heap_of s)(a \<mapsto> blank (PROG P) Cl)),
+                    Stack (stkLength(P, C, M) pc) \<mapsto> Value (Addr a))) \<rbrakk>
   \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, \<lfloor>pc\<rfloor>, Normal) -(ek)\<rightarrow> (C, M, \<lfloor>Suc pc\<rfloor>, Enter)"
   | CFG_New_Exceptional_prop: "\<lbrakk> C \<noteq> ClassMain P; (P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional None Enter);
     instrs_of (PROG P) C M ! pc = New Cl;
@@ -261,7 +261,7 @@ inductive JVMCFG :: "jvm_method \<Rightarrow> cfg_node \<Rightarrow> (var, val, 
   \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, \<lfloor>pc\<rfloor>, Exceptional None Enter) -(ek)\<rightarrow> (C, M, None, Return)"
   | CFG_New_Exceptional_handle: "\<lbrakk> C \<noteq> ClassMain P; (P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter);
     instrs_of (PROG P) C M ! pc = New Cl;
-    ek = \<Up>(\<lambda>s. s(Exception := None)
+    ek = \<Up>(\<lambda>s. (s(Exception := None))
                 (Stack (stkLength (P, C, M) pc' - 1) \<mapsto> Value (Addr (addr_of_sys_xcpt OutOfMemory)))) \<rbrakk>
   \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter) -(ek)\<rightarrow> (C, M, \<lfloor>pc'\<rfloor>, Enter)"
   | CFG_Getfield_Check_Normal: "\<lbrakk> C \<noteq> ClassMain P; (P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter);
@@ -286,7 +286,7 @@ inductive JVMCFG :: "jvm_method \<Rightarrow> cfg_node \<Rightarrow> (var, val, 
   \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, \<lfloor>pc\<rfloor>, Exceptional None Enter) -(ek)\<rightarrow> (C, M, None, Return)"
   | CFG_Getfield_Exceptional_handle: "\<lbrakk> C \<noteq> ClassMain P; (P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter);
     instrs_of (PROG P) C M ! pc = Getfield F Cl;
-    ek = \<Up>(\<lambda>s. s(Exception := None)
+    ek = \<Up>(\<lambda>s. (s(Exception := None))
                 (Stack (stkLength (P, C, M) pc' - 1) \<mapsto> Value (Addr (addr_of_sys_xcpt NullPointer)))) \<rbrakk>
   \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter) -(ek)\<rightarrow> (C, M, \<lfloor>pc'\<rfloor>, Enter)"
   | CFG_Putfield_Check_Normal: "\<lbrakk> C \<noteq> ClassMain P; (P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter);
@@ -315,7 +315,7 @@ inductive JVMCFG :: "jvm_method \<Rightarrow> cfg_node \<Rightarrow> (var, val, 
   \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, \<lfloor>pc\<rfloor>, Exceptional None Enter) -(ek)\<rightarrow> (C, M, None, Return)"
   | CFG_Putfield_Exceptional_handle: "\<lbrakk> C \<noteq> ClassMain P; (P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter);
     instrs_of (PROG P) C M ! pc = Putfield F Cl;
-    ek = \<Up>(\<lambda>s. s(Exception := None)
+    ek = \<Up>(\<lambda>s. (s(Exception := None))
                 (Stack (stkLength (P, C, M) pc' - 1) \<mapsto> Value (Addr (addr_of_sys_xcpt NullPointer)))) \<rbrakk>
   \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter) -(ek)\<rightarrow> (C, M, \<lfloor>pc'\<rfloor>, Enter)"
   | CFG_Checkcast_Check_Normal: "\<lbrakk> C \<noteq> ClassMain P; (P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter);
@@ -335,7 +335,7 @@ inductive JVMCFG :: "jvm_method \<Rightarrow> cfg_node \<Rightarrow> (var, val, 
   \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, \<lfloor>pc\<rfloor>, Exceptional None Enter) -(ek)\<rightarrow> (C, M, None, Return)"
   | CFG_Checkcast_Exceptional_handle: "\<lbrakk> C \<noteq> ClassMain P; (P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter);
     instrs_of (PROG P) C M ! pc = Checkcast Cl;
-    ek = \<Up>(\<lambda>s. s(Exception := None)
+    ek = \<Up>(\<lambda>s. (s(Exception := None))
                 (Stack (stkLength (P, C, M) pc' - 1) \<mapsto> Value (Addr (addr_of_sys_xcpt ClassCast)))) \<rbrakk>
   \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter) -(ek)\<rightarrow> (C, M, \<lfloor>pc'\<rfloor>, Enter)"
   | CFG_Throw_Check: "\<lbrakk> C \<noteq> ClassMain P; (P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter);
@@ -357,7 +357,7 @@ inductive JVMCFG :: "jvm_method \<Rightarrow> cfg_node \<Rightarrow> (var, val, 
   | CFG_Throw_handle: "\<lbrakk> C \<noteq> ClassMain P; (P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter);
     pc' \<noteq> length (instrs_of (PROG P) C M);
     instrs_of (PROG P) C M ! pc = Throw;
-    ek = \<Up>(\<lambda>s. s(Exception := None)
+    ek = \<Up>(\<lambda>s. (s(Exception := None))
                 (Stack (stkLength (P, C, M) pc' - 1) \<mapsto> Value (stkAt s (stkLength (P, C, M) pc - 1)))) \<rbrakk>
   \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter) -(ek)\<rightarrow> (C, M, \<lfloor>pc'\<rfloor>, Enter)"
   | CFG_Invoke_Check_NP_Normal: "\<lbrakk> C \<noteq> ClassMain P; (P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter);
@@ -378,7 +378,7 @@ inductive JVMCFG :: "jvm_method \<Rightarrow> cfg_node \<Rightarrow> (var, val, 
   \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, \<lfloor>pc\<rfloor>, Exceptional None Enter) -(ek)\<rightarrow> (C, M, None, Return)"
   | CFG_Invoke_NP_handle: "\<lbrakk> C \<noteq> ClassMain P; (P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter);
     instrs_of (PROG P) C M ! pc = Invoke M' n;
-    ek = \<Up>(\<lambda>s. s(Exception := None)
+    ek = \<Up>(\<lambda>s. (s(Exception := None))
                 (Stack (stkLength (P, C, M) pc' - 1) \<mapsto> Value (Addr (addr_of_sys_xcpt NullPointer)))) \<rbrakk>
   \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter) -(ek)\<rightarrow> (C, M, \<lfloor>pc'\<rfloor>, Enter)"
   | CFG_Invoke_Call: "\<lbrakk> C \<noteq> ClassMain P; (P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Normal);

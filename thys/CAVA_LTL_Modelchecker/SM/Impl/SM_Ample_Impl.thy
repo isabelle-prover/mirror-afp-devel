@@ -520,7 +520,7 @@ lift_definition vi_update :: "ident \<Rightarrow> uint32 \<Rightarrow> valuation
 lemma [code]: "vi_update = Mapping.update"
   by transfer simp
 
-lemma vi_update_correct: "vi_\<alpha> (vi_update k v m) = vi_\<alpha> m (k\<mapsto>Rep_uint32 v)"
+lemma vi_update_correct: "vi_\<alpha> (vi_update k v m) = (vi_\<alpha> m) (k\<mapsto>Rep_uint32 v)"
   unfolding vi_\<alpha>_def
   by transfer simp
 

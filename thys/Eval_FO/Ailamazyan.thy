@@ -1269,7 +1269,7 @@ proof (induction ys arbitrary: i k ns)
       define ns' where "ns' = rremdups (List.map_filter (case_sum Map.empty Some) ys)"
       have id_map_None: "id_map i (Inr i) = None"
         by (auto simp: id_map_def)
-      have id_map_upd: "id_map i(Inr i \<mapsto> i) = id_map (Suc i)"
+      have id_map_upd: "(id_map i)(Inr i \<mapsto> i) = id_map (Suc i)"
         by (auto simp: id_map_def split: sum.splits)
       have "set (filter (\<lambda>n. n < Suc i) ns') \<subseteq> {..<Suc i}"
         using Cons(2,3)
@@ -1576,7 +1576,7 @@ lemma nall_tuples_rec_Inl: "vs \<in> nall_tuples_rec AD i n \<Longrightarrow> In
 lemma nall_tuples_rec_length: "xs \<in> nall_tuples_rec AD i n \<Longrightarrow> length xs = n"
   by (induction AD i n arbitrary: xs rule: nall_tuples_rec.induct) auto
 
-lemma fun_upd_id_map: "id_map i(Inr i \<mapsto> i) = id_map (Suc i)"
+lemma fun_upd_id_map: "(id_map i)(Inr i \<mapsto> i) = id_map (Suc i)"
   by (rule ext) (auto simp: id_map_def split: sum.splits)
 
 lemma id_mapD: "id_map j (Inr i) = None \<Longrightarrow> j \<le> i" "id_map j (Inr i) = Some x \<Longrightarrow> i < j \<and> i = x"
@@ -1824,7 +1824,7 @@ next
     show ?thesis
     proof (cases "j = i")
       case True
-      have id_map: "id_map i (Inr j) = None" "id_map i(Inr j \<mapsto> i) = id_map (Suc i)"
+      have id_map: "id_map i (Inr j) = None" "(id_map i)(Inr j \<mapsto> i) = id_map (Suc i)"
         unfolding True fun_upd_id_map
         by (auto simp: id_map_def)
       have norm_xs: "fo_nmlz_rec (Suc i) (id_map (Suc i)) AD xs = xs"
@@ -2376,7 +2376,7 @@ next
     then have n_j: "n = j"
       using 3(3)
       by (auto split: option.splits dest: id_mapD)
-    have id_map: "id_map j (Inr n) = None" "id_map j(Inr n \<mapsto> j) = id_map (Suc j)"
+    have id_map: "id_map j (Inr n) = None" "(id_map j)(Inr n \<mapsto> j) = id_map (Suc j)"
       unfolding n_j fun_upd_id_map
       by (auto simp: id_map_def)
     have norm_xs: "fo_nmlz_rec (Suc j) (id_map (Suc j)) X xs = xs"
