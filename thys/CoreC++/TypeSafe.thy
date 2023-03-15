@@ -336,14 +336,14 @@ proof(induct Vs Ts vs e rule:blocks_old_induct)
   from length have "length Vs = length Ts" "length vs = length Ts"
     by simp_all
   from IH[OF this type'] have eq:"(P,E(V \<mapsto> T'),h \<turnstile> blocks (Vs,Ts,vs,e) : T) =
-  (P,E(V \<mapsto> T')(Vs [\<mapsto>] Ts),h \<turnstile> e : T \<and>
+  (P,E(V \<mapsto> T', Vs [\<mapsto>] Ts),h \<turnstile> e : T \<and>
    (\<exists>Ts'. map P \<turnstile> typeof\<^bsub>h\<^esub> vs = map Some Ts' \<and> P \<turnstile> Ts' [\<le>] Ts))" .
   show ?case
   proof(rule iffI)
     assume "P,E,h \<turnstile> blocks (V#Vs,T'#Ts,v#vs,e) : T"
     then have wt:"P,E(V \<mapsto> T'),h \<turnstile> V:=Val v : T'"
       and blocks:"P,E(V \<mapsto> T'),h \<turnstile> blocks (Vs,Ts,vs,e) : T" by auto
-    from blocks eq obtain Ts' where wte:"P,E(V \<mapsto> T')(Vs [\<mapsto>] Ts),h \<turnstile> e : T"
+    from blocks eq obtain Ts' where wte:"P,E(V \<mapsto> T', Vs [\<mapsto>] Ts),h \<turnstile> e : T"
       and typeof:"map P \<turnstile> typeof\<^bsub>h\<^esub> vs = map Some Ts'" and subs:"P \<turnstile> Ts' [\<le>] Ts"
       by auto
     from wt obtain T'' where "P \<turnstile> typeof\<^bsub>h\<^esub> v = Some T''" and "P \<turnstile> T'' \<le> T'"
@@ -1685,7 +1685,5 @@ proof -
     qed
   qed
 qed
-
-
 
 end

@@ -584,11 +584,11 @@ proof -
       "Kab = sesK (Rs$sk)" "Rs \<notin> dom (runs t)"
       "\<lbrace>Agent A, Agent B\<rbrace> \<in> parts (IK t)"
     let ?s'=
-      "s\<lparr> runs := runs s(Rs \<mapsto> (Serv, [A, B], [aNum (clk t)])),
+      "s\<lparr> runs := (runs s)(Rs \<mapsto> (Serv, [A, B], [aNum (clk t)])),
           chan := insert (Secure Sv A (Msg [aAgt B, aKey Kab, aNum (clk t)]))
                  (insert (Secure Sv B (Msg [aKey Kab, aAgt A, aNum (clk t)])) (chan s)) \<rparr>"
     let ?t'=
-      "t\<lparr> runs := runs t(Rs \<mapsto> (Serv, [A, B], [aNum (clk t)])),
+      "t\<lparr> runs := (runs t)(Rs \<mapsto> (Serv, [A, B], [aNum (clk t)])),
           IK := insert
                   (Crypt (shrK A)
                      \<lbrace> Key Kab, Agent B, Number (clk t),
@@ -621,8 +621,8 @@ proof -
       "t \<in> m3_inv3_sesK_compr" "t \<in> m3_inv2_ticket"  "t \<in> m3_inv1_lkeysec"
       "runs t Ra = Some (Init, [A, B], [])"
       "Crypt (shrK A) \<lbrace>Key Kab, Agent B, Number Ts, X\<rbrace> \<in> analz (IK t)"
-    let ?s' = "s\<lparr> runs := runs s(Ra \<mapsto> (Init, [A, B], [aKey Kab, aNum Ts])) \<rparr>"
-    and ?t' = "t\<lparr> runs := runs t(Ra \<mapsto> (Init, [A, B], [aKey Kab, aNum Ts])),
+    let ?s' = "s\<lparr> runs := (runs s)(Ra \<mapsto> (Init, [A, B], [aKey Kab, aNum Ts])) \<rparr>"
+    and ?t' = "t\<lparr> runs := (runs t)(Ra \<mapsto> (Init, [A, B], [aKey Kab, aNum Ts])),
                  IK := insert X  (IK t) \<rparr>"
     from H have
       "Secure Sv A (Msg [aAgt B, aKey Kab, aNum Ts]) \<in> chan s"

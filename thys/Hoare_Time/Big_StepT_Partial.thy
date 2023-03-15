@@ -189,7 +189,7 @@ lemma pbval_bval_part: "pbval b (part s) = bval b s"
   apply(induct b) by (auto simp: paval_aval_part) 
  
     
-lemma part_paval_aval: "part (s(x := aval a s)) = part s(x \<mapsto> paval a (part s))"
+lemma part_paval_aval: "part (s(x := aval a s)) = (part s)(x \<mapsto> paval a (part s))"
   apply(rule ext)
   apply(case_tac "xa=x")  
     unfolding part_def apply auto by (metis (full_types) domIff map_le_def map_le_substate_conv option.distinct(1) part_def paval_aval2 subsetI) 

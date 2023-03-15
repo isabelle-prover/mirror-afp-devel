@@ -1171,8 +1171,8 @@ lemma wf_tr_stmt_in_G':
     \<and> map (\<lambda>(cl, var, ty). ty) cl_var_ty_list = map snd y_ty_list
     \<and> map (\<lambda>(y, cl, var, var', v). var) y_cl_var_var'_v_list = map (\<lambda>(cl, var, ty). var) cl_var_ty_list
     \<and> is_sty_one P ty_x_d ty_x_m = Some True
-    \<and> wf_stmt P (map_of (map (\<lambda>(cl, var, ty). (x_var var, ty)) cl_var_ty_list)(x_this \<mapsto> ty_x_m)) s'
-    \<and> tr_s (map_of (map (\<lambda>(y, cl, var, var', v). (x_var var, x_var var')) y_cl_var_var'_v_list)(x_this \<mapsto> x')) s' s''
+    \<and> wf_stmt P ((map_of (map (\<lambda>(cl, var, ty). (x_var var, ty)) cl_var_ty_list))(x_this \<mapsto> ty_x_m)) s'
+    \<and> tr_s ((map_of (map (\<lambda>(y, cl, var, var', v). (x_var var, x_var var')) y_cl_var_var'_v_list))(x_this \<mapsto> x')) s' s''
     \<longrightarrow> wf_stmt P ((\<Gamma> ++ map_of (map (\<lambda>((y, cl, var, var', v), y', y). (x_var var', y)) (zip y_cl_var_var'_v_list y_ty_list)))(x' \<mapsto> ty_x_m)) s''"
 apply(rule s_induct')
 
@@ -1389,7 +1389,7 @@ apply(erule wf_objectE) apply(simp) apply(simp)
 done
 
 lemma [iff]:
-  "length (tr_ss_f (map_of (zip (map (case_vd (\<lambda>cl. x_var)) vds) (map x_var vars'))(x_this \<mapsto> x')) ss') = length ss'"
+  "length (tr_ss_f ((map_of (zip (map (case_vd (\<lambda>cl. x_var)) vds) (map x_var vars')))(x_this \<mapsto> x')) ss') = length ss'"
 by (induct ss', auto)
 
 lemma collect_suc_eq_lt[simp]:
@@ -1453,8 +1453,8 @@ lemma length_y_ty_list_vs[rule_format]:
 by (induct y_ty_list, auto split: option.splits)
 
 lemma translation_eq:
-  "\<forall>x\<in>set (zip (tr_ss_f (map_of (zip (map (case_vd (\<lambda>cl. x_var)) vds) (map x_var vars'))(x_this \<mapsto> x')) ss') ss').
-             (\<lambda>(s'', s'). tr_s (map_of (zip (map (case_vd (\<lambda>cl. x_var)) vds) (map x_var vars'))(x_this \<mapsto> x')) s' s'') x"
+  "\<forall>x\<in>set (zip (tr_ss_f ((map_of (zip (map (case_vd (\<lambda>cl. x_var)) vds) (map x_var vars')))(x_this \<mapsto> x')) ss') ss').
+             (\<lambda>(s'', s'). tr_s ((map_of (zip (map (case_vd (\<lambda>cl. x_var)) vds) (map x_var vars')))(x_this \<mapsto> x')) s' s'') x"
 apply(induct ss') apply(simp add: tr_rel_f_eq)+ done
 
 

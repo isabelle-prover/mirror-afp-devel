@@ -557,11 +557,11 @@ proof -
       "Kab = sesK (Rs$sk)" "Rs \<notin> dom (runs t)"
       "\<lbrace> Agent A, Agent B, Nonce Na \<rbrace> \<in> parts (IK t)"
     let ?s'=
-      "s\<lparr> runs := runs s(Rs \<mapsto> (Serv, [A, B], [aNon Na, aNum (clk t)])),
+      "s\<lparr> runs := (runs s)(Rs \<mapsto> (Serv, [A, B], [aNon Na, aNum (clk t)])),
           chan := insert (Secure Sv A (Msg [aKey Kab, aAgt B, aNum (clk t), aNon Na]))
                  (insert (Secure Sv B (Msg [aKey Kab, aAgt A, aNum (clk t)])) (chan s)) \<rparr>"
     let ?t'=
-      "t\<lparr> runs := runs t(Rs \<mapsto> (Serv, [A, B], [aNon Na, aNum (clk t)])),
+      "t\<lparr> runs := (runs t)(Rs \<mapsto> (Serv, [A, B], [aNon Na, aNum (clk t)])),
           IK := insert
                   \<lbrace> Crypt (shrK A) \<lbrace> Key Kab, Agent B, Number (clk t), Nonce Na \<rbrace>,
                     Crypt (shrK B) \<lbrace> Key Kab, Agent A, Number (clk t) \<rbrace> \<rbrace>
@@ -600,9 +600,9 @@ proof -
       "(s, t) \<in> R23_pres"  "t \<in> m3_inv1_lkeysec"
       "runs t Ra = Some (Init, [A, B], [])" "Na = Ra$na"
       "\<lbrace> Crypt (shrK A) \<lbrace>Key Kab, Agent B, Number Ts, Nonce Na\<rbrace>, X\<rbrace>  \<in> analz (IK t)"
-    let ?s' = "s\<lparr> runs := runs s(Ra \<mapsto> (Init, [A, B], [aKey Kab, aNum Ts, aNum (clk t)])),
+    let ?s' = "s\<lparr> runs := (runs s)(Ra \<mapsto> (Init, [A, B], [aKey Kab, aNum Ts, aNum (clk t)])),
                  chan := insert (dAuth Kab (Msg [aAgt A, aNum (clk t)])) (chan s) \<rparr>"
-    and ?t' = "t\<lparr> runs := runs t(Ra \<mapsto> (Init, [A, B], [aKey Kab, aNum Ts, aNum (clk t)])),
+    and ?t' = "t\<lparr> runs := (runs t)(Ra \<mapsto> (Init, [A, B], [aKey Kab, aNum Ts, aNum (clk t)])),
                  IK := insert \<lbrace>Crypt Kab \<lbrace>Agent A, Number (clk t)\<rbrace>, X\<rbrace> (IK t) \<rparr>"
     from H have
       "Secure Sv A (Msg [aKey Kab, aAgt B, aNum Ts, aNon Na]) \<in> chan s"

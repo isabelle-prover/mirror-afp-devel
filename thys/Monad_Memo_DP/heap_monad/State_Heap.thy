@@ -204,7 +204,7 @@ lemma lookup'_correct:
   by simp (metis (mono_tags, lifting) domIff lookup_correct map_le_def map_of_heap_def)
 
 lemma update'_correct:
-  "state_mem_defs.map_of lookup' (snd (State_Monad.run_state (update' k v) m)) \<subseteq>\<^sub>m state_mem_defs.map_of lookup' m(k \<mapsto> v)"
+  "state_mem_defs.map_of lookup' (snd (State_Monad.run_state (update' k v) m)) \<subseteq>\<^sub>m (state_mem_defs.map_of lookup' m)(k \<mapsto> v)"
   if "P m"
   unfolding state_mem_defs.map_of_def map_le_def lookup'_def update'_def
   using update_correct[of m k v] that by (auto split: if_split_asm simp: map_le_def map_of_heap_def)

@@ -655,11 +655,11 @@ proof -
       "Kab = sesK (Rs$sk)" "Rs \<notin> dom (runs t)"
       "\<lbrace> Agent A, Agent B, Nonce Na \<rbrace> \<in> parts (IK t)"
     let ?s'=
-      "s\<lparr> runs := runs s(Rs \<mapsto> (Serv, [A, B], [aNon Na])),
+      "s\<lparr> runs := (runs s)(Rs \<mapsto> (Serv, [A, B], [aNon Na])),
           chan := insert (Secure Sv A (Msg [aNon Na, aAgt B, aKey Kab]))
                  (insert (Secure Sv B (Msg [aKey Kab, aAgt A])) (chan s)) \<rparr>"
     let ?t'=
-      "t\<lparr> runs := runs t(Rs \<mapsto> (Serv, [A, B], [aNon Na])),
+      "t\<lparr> runs := (runs t)(Rs \<mapsto> (Serv, [A, B], [aNon Na])),
           IK := insert
                   (Crypt (shrK A)
                     \<lbrace>Nonce Na, Agent B, Key Kab,
@@ -716,8 +716,8 @@ proof -
       "runs t Ra = Some (Init, [A, B], [])"
       "Na = Ra$na"
       "Crypt (shrK A) \<lbrace>Nonce Na, Agent B, Key Kab, X\<rbrace> \<in> analz (IK t)"
-    let ?s' = "s\<lparr> runs := runs s(Ra \<mapsto> (Init, [A, B], [aKey Kab])) \<rparr>"
-    and ?t' = "t\<lparr> runs := runs t(Ra \<mapsto> (Init, [A, B], [aKey Kab])),
+    let ?s' = "s\<lparr> runs := (runs s)(Ra \<mapsto> (Init, [A, B], [aKey Kab])) \<rparr>"
+    and ?t' = "t\<lparr> runs := (runs t)(Ra \<mapsto> (Init, [A, B], [aKey Kab])),
                   IK := insert X (IK t) \<rparr>"
     from H
     have "Secure Sv A (Msg [aNon Na, aAgt B, aKey Kab]) \<in> chan s" by auto

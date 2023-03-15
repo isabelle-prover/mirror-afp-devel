@@ -519,9 +519,9 @@ lift_definition new_Addr' :: "heap' \<Rightarrow> addr option" is "new_Addr" .
 lift_definition start_heap' :: "prog \<Rightarrow> heap'" is "start_heap" .
 
 lemma start_heap'_code [code]:
-  "start_heap' P = Map.empty (addr_of_sys_xcpt NullPointer \<mapsto> blank' P NullPointer)
-                        (addr_of_sys_xcpt ClassCast \<mapsto> blank' P ClassCast)
-                        (addr_of_sys_xcpt OutOfMemory \<mapsto> blank' P OutOfMemory)"
+  "start_heap' P = Map.empty (addr_of_sys_xcpt NullPointer \<mapsto> blank' P NullPointer,
+                        addr_of_sys_xcpt ClassCast \<mapsto> blank' P ClassCast,
+                        addr_of_sys_xcpt OutOfMemory \<mapsto> blank' P OutOfMemory)"
 by transfer(simp add: start_heap_def)
 
 type_synonym

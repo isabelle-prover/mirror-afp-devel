@@ -1067,7 +1067,7 @@ proof(induct Vs Ts vs e rule:blocks_old_induct)
   from casts obtain x xs where vs':"vs' = x#xs"
     by(cases vs',auto dest:length_Casts_vs')
   with reds
-  have reds':"P,E(V \<mapsto> T)(Vs [\<mapsto>] Ts) \<turnstile> \<langle>e,(h\<^sub>0,l\<^sub>0(V \<mapsto> x)(Vs [\<mapsto>] xs))\<rangle> 
+  have reds':"P,E(V \<mapsto> T, Vs [\<mapsto>] Ts) \<turnstile> \<langle>e,(h\<^sub>0,l\<^sub>0(V \<mapsto> x, Vs [\<mapsto>] xs))\<rangle> 
                                     \<rightarrow>* \<langle>e',(h\<^sub>1,l\<^sub>1)\<rangle>"
     by simp
   from casts vs' have casts':"P \<turnstile> Ts Casts vs to xs" 
@@ -1728,7 +1728,7 @@ next
     and casts:"P \<turnstile> T casts v to v'"
     by(auto elim!: eval_cases simp:fun_upd_same)
   from IH[OF length1 length2 eval_ps'] obtain l'' vs'' where
-    "P,E(p \<mapsto> T)(ps' [\<mapsto>] Ts') \<turnstile> \<langle>e,(h, l(p\<mapsto>v')(ps'[\<mapsto>]vs''))\<rangle> \<Rightarrow> 
+    "P,E(p \<mapsto> T, ps' [\<mapsto>] Ts') \<turnstile> \<langle>e,(h, l(p\<mapsto>v', ps'[\<mapsto>]vs''))\<rangle> \<Rightarrow> 
                                        \<langle>e',(h',l'')\<rangle>"
     and "P \<turnstile> Ts' Casts vs' to vs''"
     and "length vs'' = length vs'" by auto

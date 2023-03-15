@@ -189,7 +189,7 @@ lemma renaming_distr_combination [simp]:
   by (rule ext) auto
 
 lemma renaming_distr_store [simp]:
-  "bij \<beta> \<Longrightarrow> \<R>\<^sub>S \<alpha> \<beta> (\<sigma>(l \<mapsto> v)) = \<R>\<^sub>S \<alpha> \<beta> \<sigma>(\<beta> l \<mapsto> \<R>\<^sub>V \<alpha> \<beta> v)"
+  "bij \<beta> \<Longrightarrow> \<R>\<^sub>S \<alpha> \<beta> (\<sigma>(l \<mapsto> v)) = (\<R>\<^sub>S \<alpha> \<beta> \<sigma>)(\<beta> l \<mapsto> \<R>\<^sub>V \<alpha> \<beta> v)"
   by (auto simp add: bijection.intro bijection.inv_left_eq_iff)
 
 (* distribution law for local follows from the definition *)
@@ -197,7 +197,7 @@ lemma renaming_distr_store [simp]:
 subsubsection Global 
 
 lemma renaming_distr_global [simp]:
-  "bij \<alpha> \<Longrightarrow> \<R>\<^sub>G \<alpha> \<beta> (s(r \<mapsto> ls)) = \<R>\<^sub>G \<alpha> \<beta> s(\<alpha> r \<mapsto> \<R>\<^sub>L \<alpha> \<beta> ls)"
+  "bij \<alpha> \<Longrightarrow> \<R>\<^sub>G \<alpha> \<beta> (s(r \<mapsto> ls)) = (\<R>\<^sub>G \<alpha> \<beta> s)(\<alpha> r \<mapsto> \<R>\<^sub>L \<alpha> \<beta> ls)"
   "bij \<alpha> \<Longrightarrow> \<R>\<^sub>G \<alpha> \<beta> (s(r := None)) = (\<R>\<^sub>G \<alpha> \<beta> s)(\<alpha> r := None)"
   by (auto simp add: bijection.intro bijection.inv_left_eq_iff)
 

@@ -3161,10 +3161,10 @@ proof-
                                getConflictFlag := False,
                                getQ := [],
                                getM := ?prefix,
-                               getReason := getReason state(opposite ?l \<mapsto> length (getF state) - 1)
+                               getReason := (getReason state)(opposite ?l \<mapsto> length (getF state) - 1)
                                \<rparr>"
                         "state \<lparr>
-                               getReason := getReason state(opposite ?l \<mapsto> length (getF state) - 1),
+                               getReason := (getReason state)(opposite ?l \<mapsto> length (getF state) - 1),
                                getConflictFlag := False, 
                                getM := prefixToLevel (getBackjumpLevel state) (getM state),
                                getQ := []
@@ -3176,12 +3176,12 @@ proof-
     moreover
     have "?stateTmp'' = ?state''2"
       unfolding setReason_def
-      using arg_cong[of "state \<lparr>getReason := getReason state(opposite ?l \<mapsto> length (getF state) - 1), 
+      using arg_cong[of "state \<lparr>getReason := (getReason state)(opposite ?l \<mapsto> length (getF state) - 1), 
                                getConflictFlag := False,
                                getM := ?prefix, getQ := [opposite ?l]\<rparr>"
                         "state \<lparr>getConflictFlag := False, 
                                getM := prefixToLevel (getBackjumpLevel state) (getM state),
-                               getReason := getReason state(opposite ?l \<mapsto> length (getF state) - 1),
+                               getReason := (getReason state)(opposite ?l \<mapsto> length (getF state) - 1),
                                getQ := [opposite ?l]\<rparr>"
                         "\<lambda> x. assertLiteral (opposite ?l) False x"]
       by simp

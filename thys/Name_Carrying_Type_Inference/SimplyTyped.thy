@@ -773,7 +773,7 @@ using assms proof(induction rule: typing.induct)
       using fvs_simp(4) DiffI empty_iff insert_iff by fastforce
     thus ?case proof(cases)
       case 1
-        hence "(\<Gamma>(y \<mapsto> \<sigma>)(x \<mapsto> \<tau>)) \<turnstile> A : \<tau>'" using tfn.hyps fun_upd_upd by simp
+        hence "(\<Gamma>(y \<mapsto> \<sigma>, x \<mapsto> \<tau>)) \<turnstile> A : \<tau>'" using tfn.hyps fun_upd_upd by simp
         thus ?thesis using typing.tfn by metis
       next
       case 2
@@ -1679,9 +1679,9 @@ using assms proof(induction M arbitrary: \<Gamma> \<sigma> rule: trm_strong_dept
 
     from \<open>\<Gamma>(z \<mapsto> \<tau>) \<turnstile> Fn x T A : \<sigma>\<close> obtain \<sigma>' where
       "\<sigma> = TArr T \<sigma>'"
-      "\<Gamma>(z \<mapsto> \<tau>)(x \<mapsto> T) \<turnstile> A : \<sigma>'"
+      "\<Gamma>(z \<mapsto> \<tau>, x \<mapsto> T) \<turnstile> A : \<sigma>'"
       using typing_fnE by metis
-    hence "\<Gamma>(x \<mapsto> T)(z \<mapsto> \<tau>) \<turnstile> A : \<sigma>'" using \<open>x \<noteq> z\<close> fun_upd_twist by metis
+    hence "\<Gamma>(x \<mapsto> T, z \<mapsto> \<tau>) \<turnstile> A : \<sigma>'" using \<open>x \<noteq> z\<close> fun_upd_twist by metis
     hence "\<Gamma>(x \<mapsto> T) \<turnstile> A[z ::= N] : \<sigma>'" using 4 * ** by metis
     hence "\<Gamma> \<turnstile> Fn x T (A[z ::= N]) : \<sigma>" using typing.tfn \<open>\<sigma> = TArr T \<sigma>'\<close> by metis
     thus ?case using \<open>x \<noteq> z\<close> \<open>x \<notin> fvs N\<close> subst_simp_fn by metis

@@ -102,6 +102,7 @@ Instance X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n3 :: Person = [ salary
 
 subsection\<open>Designing Class Models (II): Jumping to Another Semantic Floor\<close>
 
+(* Fails because of modified map update syntax priorities
 State \<sigma>\<^sub>1 =
   [ ([ salary = 1000 , boss = self 1 ] :: Person)
   , ([ salary = 1200 ] :: Person)
@@ -119,7 +120,7 @@ State \<sigma>\<^sub>1' =
   , X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n3 ]
 
 PrePost \<sigma>\<^sub>1 \<sigma>\<^sub>1'
-
+*)
 (* PrePost \<sigma>\<^sub>1 [ ([ salary = 1000 , boss = self 1 ] :: Person) ] *)
 
 subsection\<open>Designing Class Models (III): Interaction with (Pure) Term\<close>

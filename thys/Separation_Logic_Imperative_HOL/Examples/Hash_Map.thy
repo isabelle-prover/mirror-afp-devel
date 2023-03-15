@@ -400,7 +400,7 @@ lemma abs_update_map_of':
   assumes "ht_distinct l"
   assumes "1 < length l"
   shows "map_of (concat (abs_update k v l)) x 
-    = (map_of (concat l)(k \<mapsto> v)) x"
+    = ((map_of (concat l))(k \<mapsto> v)) x"
   apply (cases "x = k")
   apply (simp add: abs_update_map_of''[OF assms])
   by (simp add: abs_update_map_of'''[OF assms])
@@ -410,7 +410,7 @@ lemma abs_update_map_of:
   assumes "ht_distinct l"
   assumes "1 < length l"
   shows "map_of (concat (abs_update k v l)) 
-    = map_of (concat l)(k \<mapsto> v) "
+    = (map_of (concat l))(k \<mapsto> v) "
   apply (rule ext)
   by (simp add: abs_update_map_of'[OF assms])
 
@@ -497,7 +497,7 @@ lemma abs_update_rehash_map_of:
   assumes "ht_distinct l"
   assumes "1 < length l"
   shows "map_of (concat (abs_update k v (ls_rehash l))) 
-  = map_of (concat l)(k \<mapsto> v)"
+  = (map_of (concat l))(k \<mapsto> v)"
 proof -
   note a = ht_hash_ls_rehash[of l]
   note b = ht_distinct_ls_rehash[of l]

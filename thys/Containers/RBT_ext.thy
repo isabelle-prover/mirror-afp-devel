@@ -21,7 +21,7 @@ by(simp add: rbt_insert_def is_rbt_fold_rbt_insertwk)
 lemma rbt_sorted_fold_insert: "rbt_sorted t \<Longrightarrow> rbt_sorted (RBT_Impl.fold rbt_insert t' t)"
 by(induct t' arbitrary: t)(simp_all add: rbt_insert_rbt_sorted)
 
-lemma rbt_lookup_rbt_insert': "rbt_sorted t \<Longrightarrow> rbt_lookup (rbt_insert k v t) = rbt_lookup t(k \<mapsto> v)"
+lemma rbt_lookup_rbt_insert': "rbt_sorted t \<Longrightarrow> rbt_lookup (rbt_insert k v t) = (rbt_lookup t)(k \<mapsto> v)"
 by(simp add: rbt_insert_def rbt_lookup_rbt_insertwk fun_eq_iff split: option.split)
 
 lemma rbt_lookup_fold_rbt_insert_impl:
