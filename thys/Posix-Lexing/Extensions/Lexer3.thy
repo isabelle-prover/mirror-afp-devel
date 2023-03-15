@@ -66,6 +66,7 @@ where
     length (vs1 @ vs2) = n\<rbrakk> \<Longrightarrow> \<turnstile> Stars (vs1 @ vs2) : From r n"
 | "\<lbrakk>\<forall>v \<in> set vs. \<turnstile> v : r  \<and> flat v \<noteq> []; length vs > n\<rbrakk> \<Longrightarrow> \<turnstile> Stars vs : From r n"
 | "\<turnstile> v : r \<Longrightarrow> \<turnstile> Recv l v : Rec l r"
+| "c \<in> cs \<Longrightarrow> \<turnstile> Atm c : Charset cs"
 
 inductive_cases Prf_elims:
   "\<turnstile> v : Zero"
@@ -73,11 +74,12 @@ inductive_cases Prf_elims:
   "\<turnstile> v : Plus r1 r2"
   "\<turnstile> v : One"
   "\<turnstile> v : Atom c"
-  "\<turnstile> vs : Star r"
-  "\<turnstile> vs : NTimes r n"
-  "\<turnstile> vs : Upto r n"
-  "\<turnstile> vs : From r n"
-  "\<turnstile> vs : Rec l r"
+  "\<turnstile> v : Star r"
+  "\<turnstile> v : NTimes r n"
+  "\<turnstile> v : Upto r n"
+  "\<turnstile> v : From r n"
+  "\<turnstile> v : Rec l r"
+  "\<turnstile> v : Charset cs"
 
 lemma Prf_NTimes_empty:
   assumes "\<forall>v \<in> set vs. \<turnstile> v : r \<and> flat v = []" 
@@ -317,7 +319,7 @@ where
 
 fun injval :: "'a rexp \<Rightarrow> 'a \<Rightarrow> 'a val \<Rightarrow> 'a val"
 where
-  "injval (Atom d) c Void = Atm d"
+  "injval (Atom d) c Void = Atm c"
 | "injval (Plus r1 r2) c (Left v1) = Left(injval r1 c v1)"
 | "injval (Plus r1 r2) c (Right v2) = Right(injval r2 c v2)"
 | "injval (Times r1 r2) c (Seq v1 v2) = Seq (injval r1 c v1) v2"
@@ -328,6 +330,7 @@ where
 | "injval (Upto r n) c (Seq v (Stars vs)) = Stars ((injval r c v) # vs)" 
 | "injval (From r n) c (Seq v (Stars vs)) = Stars ((injval r c v) # vs)"
 | "injval (Rec l r) c v = Recv l (injval r c v)"
+| "injval (Charset cs) c Void = Atm c"
 
 section \<open>Mkeps, injval\<close>
 
@@ -396,7 +399,8 @@ apply(erule Prf_elims(9))
 apply(simp)
 apply (smt (verit, best) Cons_eq_appendI Prf.intros(9) Prf_injval_flat length_Cons length_append list.discI set_ConsD)
 apply(simp add: Prf.intros(10) Prf_injval_flat)
-  by (simp add: Prf.intros(11))
+apply(simp add: Prf.intros(11))
+by (metis Prf.intros(12) Prf_elims(1) Prf_elims(4) deriv.simps(11) injval.simps(12))
 
 
 section \<open>Our Alternative Posix definition\<close>
@@ -433,6 +437,7 @@ where
     \<not>(\<exists>s\<^sub>3 s\<^sub>4. s\<^sub>3 \<noteq> [] \<and> s\<^sub>3 @ s\<^sub>4 = s2 \<and> (s1 @ s\<^sub>3) \<in> lang r \<and> s\<^sub>4 \<in> lang (Star r))\<rbrakk>
     \<Longrightarrow> (s1 @ s2) \<in> From r 0 \<rightarrow> Stars (v # vs)"  
 | Posix_Rec: "s \<in> r \<rightarrow> v \<Longrightarrow> s \<in> (Rec l r) \<rightarrow> (Recv l v)"
+| Posix_Cset: "c \<in> cs \<Longrightarrow> [c] \<in> (Charset cs) \<rightarrow> (Atm c)"
 
 inductive_cases Posix_elims:
   "s \<in> Zero \<rightarrow> v"
@@ -445,6 +450,7 @@ inductive_cases Posix_elims:
   "s \<in> Upto r n \<rightarrow> v"
   "s \<in> From r n \<rightarrow> v"
   "s \<in> Rec l r \<rightarrow> v"
+  "s \<in> Charset cs \<rightarrow> v"
 
 lemma Posix1:
   assumes "s \<in> r \<rightarrow> v"
@@ -663,6 +669,10 @@ next
 next
   case (Posix_Rec s r v l v2)
   then show "Recv l v = v2" by (metis Posix_elims(10))
+next 
+  case (Posix_Cset c cs v2)
+  have "[c] \<in> Charset cs \<rightarrow> v2" by fact
+  then show "Atm c = v2" by cases auto
 qed
 
 
@@ -959,6 +969,24 @@ next
   case (Rec l r)
   then show "(c # s) \<in> Rec l r \<rightarrow> injval (Rec l r) c v"
     by (simp add: Posix_Rec)
+next 
+  case (Charset cs)
+  consider (eq) "c \<in> cs" | (ineq) "c \<notin> cs" by blast
+  then show "(c # s) \<in> (Charset cs) \<rightarrow> (injval (Charset cs) c v)"
+  proof (cases)
+    case eq
+    have "s \<in> deriv c (Charset cs) \<rightarrow> v" by fact
+    then have "s \<in> One \<rightarrow> v" using eq by simp
+    then have eqs: "s = [] \<and> v = Void" by cases simp
+    show "(c # s) \<in> Charset cs \<rightarrow> injval (Charset cs) c v" using eq eqs 
+    by (auto intro: Posix.intros)
+  next
+    case ineq
+    have "s \<in> deriv c (Charset cs) \<rightarrow> v" by fact
+    then have "s \<in> Zero \<rightarrow> v" using ineq by simp
+    then have "False" by cases
+    then show "(c # s) \<in> Charset cs \<rightarrow> injval (Charset cs) c v" by simp
+  qed
 qed
 
 

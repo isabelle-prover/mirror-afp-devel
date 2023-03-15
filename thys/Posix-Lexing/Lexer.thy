@@ -124,7 +124,7 @@ where
 
 fun injval :: "'a rexp \<Rightarrow> 'a \<Rightarrow> 'a val \<Rightarrow> 'a val"
 where
-  "injval (Atom d) c Void = Atm d"
+  "injval (Atom d) c Void = Atm c"
 | "injval (Plus r1 r2) c (Left v1) = Left(injval r1 c v1)"
 | "injval (Plus r1 r2) c (Right v2) = Right(injval r2 c v2)"
 | "injval (Times r1 r2) c (Seq v1 v2) = Seq (injval r1 c v1) v2"

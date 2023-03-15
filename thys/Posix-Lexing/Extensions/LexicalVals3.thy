@@ -19,10 +19,11 @@ lemma LV_simps:
   and   "LV (Plus r1 r2) s = Left ` LV r1 s \<union> Right ` LV r2 s"
   and   "LV (NTimes r 0) s = (if s = [] then {Stars []} else {})"
   and   "LV (Rec l r) s = {Recv l v | v. v \<in> LV r s}"
+  and   "LV (Charset cs) s = (if length s = 1 \<and> (hd s) \<in> cs then {Atm (hd s)} else {})"
 unfolding LV_def
   apply(auto intro: Prf.intros elim: Prf.cases)
   apply(simp add: Prf_NTimes_empty)
-  done  
+  by (metis Suc_length_conv length_0_conv list.sel(1))  
 
 abbreviation
   "Prefixes s \<equiv> {s'. prefix s' s}"
@@ -349,6 +350,9 @@ next
   have "\<And>s. finite (LV r s)" by fact
   then show "finite (LV (Rec l r) s)"
     by(simp add: LV_simps)
+next
+  case (Charset cs s)
+  show "finite (LV (Charset cs) s)" by (simp add: LV_simps)
 qed
 
 
@@ -377,7 +381,8 @@ lemma Posix_LV:
   using Posix1a Posix_From2 apply fastforce
   apply (smt (verit, best) Posix1(2) Posix1a Posix_From1 mem_Collect_eq)
   apply (smt (verit, best) Posix1a Posix_From3 flat.simps(7) mem_Collect_eq)
-  by (simp add: Prf.intros(11))
+  apply(simp add: Prf.intros(11))
+  by (simp add: Prf.intros(12))
   
 
 lemma Posix_Prf:

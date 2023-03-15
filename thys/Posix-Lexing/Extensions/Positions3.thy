@@ -941,6 +941,14 @@ next
   case (Posix_Rec s r v l v2)
   then show "Recv l v :\<sqsubseteq>val v2"
     by (smt (verit, del_insts) LV_def LV_simps(6) PosOrd_Rec_eq PosOrd_ex_eq_def Posix1(2) mem_Collect_eq) 
+next
+  case (Posix_Cset c cs v)
+  have "v \<in> LV (Charset cs) [c]" by fact
+  then have "v = Atm c \<or> False"
+    apply(case_tac "c \<in> cs")
+    by(auto simp add: LV_simps)
+  then show "Atm c :\<sqsubseteq>val v"
+    by (simp add: PosOrd_ex_eq_def)
 qed
 
 

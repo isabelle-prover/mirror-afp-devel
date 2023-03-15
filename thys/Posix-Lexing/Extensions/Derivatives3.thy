@@ -24,20 +24,13 @@ where
 | "deriv c (Upto r n) = (if n = 0 then Zero else Times (deriv c r) (Upto r (n - 1)))"
 | "deriv c (From r n) = (if n = 0 then Times (deriv c r) (Star r) else Times (deriv c r) (From r (n - 1)))"
 | "deriv c (Rec l r) = deriv c r"
+| "deriv c (Charset cs) = (if c \<in> cs then One else Zero)"
 
 fun 
   derivs :: "'a list \<Rightarrow> 'a rexp \<Rightarrow> 'a rexp"
 where
   "derivs [] r = r"
 | "derivs (c # s) r = derivs s (deriv c r)"
-
-
-lemma atoms_deriv_subset: "atoms (deriv x r) \<subseteq> atoms r"
-by (induction r) (auto)
-
-lemma atoms_derivs_subset: "atoms (derivs w r) \<subseteq> atoms r"
-by (induction w arbitrary: r) (auto dest: atoms_deriv_subset[THEN subsetD])
-
 
 
 lemma deriv_pow [simp]:
@@ -53,7 +46,8 @@ lemma lang_deriv: "lang (deriv c r) = Deriv c (lang r)"
   apply(auto)
   apply(simp add: conc_def)
   apply(metis diff_Suc_Suc minus_nat.diff_0 star_pow zero_less_Suc)
-  apply(metis IntI Suc_le_mono Suc_pred atLeast_iff diff_Suc_1 mem_Collect_eq zero_less_Suc)
+     apply(metis IntI Suc_le_mono Suc_pred atLeast_iff diff_Suc_1 mem_Collect_eq zero_less_Suc)
+  apply(auto simp add: Deriv_def)
   done    
   
 
