@@ -8,6 +8,9 @@ begin
 definition less_sets :: "['a::order set, 'a::order set] \<Rightarrow> bool" (infixr "\<lless>" 50)
     where "A \<lless> B \<equiv> \<forall>x\<in>A. \<forall>y\<in>B. x < y"
 
+lemma less_sets_empty[iff]: "S \<lless> {}" "{} \<lless> T"
+  by (auto simp: less_sets_def)
+
 lemma less_setsD: "\<lbrakk>A \<lless> B; a \<in> A; b \<in> B\<rbrakk> \<Longrightarrow> a < b"
   by (auto simp: less_sets_def)
 
