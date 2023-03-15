@@ -140,7 +140,7 @@ begin
     by (auto intro!: ext simp: nth_append)
 
   lemma iam_update_abs2: "\<not> length l \<le> k 
-    \<Longrightarrow> iam_of_list (l[k := Some v]) = iam_of_list l(k \<mapsto> v)"
+    \<Longrightarrow> iam_of_list (l[k := Some v]) = (iam_of_list l)(k \<mapsto> v)"
     unfolding iam_of_list_def[abs_def]
     by auto
 

@@ -4253,7 +4253,7 @@ proof
   from k_nin have k_nin': "\<And>v'. (k, v') \<notin> S"
     by (auto simp add: image_iff Ball_def)
 
-  show "set_to_map (insert kv S) k' = (set_to_map S(fst kv \<mapsto> snd kv)) k'"
+  show "set_to_map (insert kv S) k' = ((set_to_map S)(fst kv \<mapsto> snd kv)) k'"
     by (simp add: set_to_map_def k_nin')
 qed
 

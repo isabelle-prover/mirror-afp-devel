@@ -630,7 +630,7 @@ r_stmt ((config_normal P L H ([((s_write x f y))] @ s_list))) ((config_normal P 
                 None \<Rightarrow> arbitrary
               | Some tyfs \<Rightarrow>
                    (( H  ( oid   \<mapsto>
-                       (fst tyfs, snd tyfs ( f   \<mapsto>   v ))))::H))  (s_list)))"
+                       (fst tyfs, (snd tyfs) ( f   \<mapsto>   v ))))::H))  (s_list)))"
 
 | r_if_trueI: "\<lbrakk>  L   x   = Some  v  ;
   L   y   = Some  w  ;

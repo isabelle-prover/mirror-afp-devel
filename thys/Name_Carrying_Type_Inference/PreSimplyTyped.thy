@@ -610,13 +610,13 @@ using assms proof(induction X arbitrary: T S \<Gamma>)
           "ptrm_infer_type (\<Gamma>(a \<mapsto> S, b \<mapsto> T)) ([a \<leftrightarrow> b] \<bullet> PFn x \<tau> A)
          = ptrm_infer_type (\<Gamma>(a \<mapsto> S, b \<mapsto> T)) (PFn a \<tau> ([a \<leftrightarrow> b] \<bullet> A))"
           using prm_unit_action prm_unit_commutes ptrm_apply_prm.simps(4) by metis
-        moreover have "... = (case ptrm_infer_type (\<Gamma>(a \<mapsto> S, b \<mapsto> T)(a \<mapsto> \<tau>)) ([a \<leftrightarrow> b] \<bullet> A) of None \<Rightarrow> None | Some \<sigma> \<Rightarrow> Some (TArr \<tau> \<sigma>))"
+        moreover have "... = (case ptrm_infer_type (\<Gamma>(a \<mapsto> S, b \<mapsto> T, a \<mapsto> \<tau>)) ([a \<leftrightarrow> b] \<bullet> A) of None \<Rightarrow> None | Some \<sigma> \<Rightarrow> Some (TArr \<tau> \<sigma>))"
           by simp
         moreover have "... = (case ptrm_infer_type (\<Gamma>(a \<mapsto> \<tau>, b \<mapsto> T)) ([a \<leftrightarrow> b] \<bullet> A) of None \<Rightarrow> None | Some \<sigma> \<Rightarrow> Some (TArr \<tau> \<sigma>))"
           using fun_upd_upd fun_upd_twist \<open>a \<noteq> b\<close> by metis
         moreover have "... = (case ptrm_infer_type (\<Gamma>(a \<mapsto> T, b \<mapsto> \<tau>)) A of None \<Rightarrow> None | Some \<sigma> \<Rightarrow> Some (TArr \<tau> \<sigma>))"
           using * by metis
-        moreover have "... = (case ptrm_infer_type (\<Gamma>(a \<mapsto> T, b \<mapsto> S)(b \<mapsto> \<tau>)) A of None \<Rightarrow> None | Some \<sigma> \<Rightarrow> Some (TArr \<tau> \<sigma>))"
+        moreover have "... = (case ptrm_infer_type (\<Gamma>(a \<mapsto> T, b \<mapsto> S, b \<mapsto> \<tau>)) A of None \<Rightarrow> None | Some \<sigma> \<Rightarrow> Some (TArr \<tau> \<sigma>))"
           using \<open>a \<noteq> b\<close> fun_upd_upd by metis
         moreover have "... = ptrm_infer_type (\<Gamma>(b \<mapsto> S, a \<mapsto> T)) (PFn x \<tau> A)"
           using \<open>x = b\<close> by simp
@@ -630,7 +630,7 @@ using assms proof(induction X arbitrary: T S \<Gamma>)
           "ptrm_infer_type (\<Gamma>(a \<mapsto> S, b \<mapsto> T)) ([a \<leftrightarrow> b] \<bullet> PFn x \<tau> A)
          = ptrm_infer_type (\<Gamma>(a \<mapsto> S, b \<mapsto> T)) (PFn x \<tau> ([a \<leftrightarrow> b] \<bullet> A))"
           by (simp add: prm_unit_inaction)
-        moreover have "... = (case ptrm_infer_type (\<Gamma>(a \<mapsto> S, b \<mapsto> T)(x \<mapsto> \<tau>)) ([a \<leftrightarrow> b] \<bullet> A) of None \<Rightarrow> None | Some \<sigma> \<Rightarrow> Some (TArr \<tau> \<sigma>))"
+        moreover have "... = (case ptrm_infer_type (\<Gamma>(a \<mapsto> S, b \<mapsto> T, x \<mapsto> \<tau>)) ([a \<leftrightarrow> b] \<bullet> A) of None \<Rightarrow> None | Some \<sigma> \<Rightarrow> Some (TArr \<tau> \<sigma>))"
           by simp
         moreover have "... = (case ptrm_infer_type (\<Gamma>(x \<mapsto> \<tau>, a \<mapsto> S, b \<mapsto> T)) ([a \<leftrightarrow> b] \<bullet> A) of None \<Rightarrow> None | Some \<sigma> \<Rightarrow> Some (TArr \<tau> \<sigma>))"
           using \<open>x \<noteq> a\<close> \<open>x \<noteq> b\<close> fun_upd_twist by metis
@@ -735,8 +735,8 @@ using assms proof(induction X arbitrary: \<tau> \<Gamma>)
       case 2
         hence "a \<noteq> x" using assms by auto
         have "
-          ptrm_infer_type (\<Gamma>(a \<mapsto> \<tau>)(b \<mapsto> \<sigma>)) A =
-          ptrm_infer_type (\<Gamma>(b \<mapsto> \<tau>)(a \<mapsto> \<sigma>)) ([a \<leftrightarrow> b] \<bullet> A)
+          ptrm_infer_type (\<Gamma>(a \<mapsto> \<tau>, b \<mapsto> \<sigma>)) A =
+          ptrm_infer_type (\<Gamma>(b \<mapsto> \<tau>, a \<mapsto> \<sigma>)) ([a \<leftrightarrow> b] \<bullet> A)
         " using ptrm_infer_type_swp_types using \<open>a \<noteq> b\<close> fun_upd_twist by metis
         thus ?thesis
           using \<open>b = x\<close> prm_unit_action prm_unit_commutes

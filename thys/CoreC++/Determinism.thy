@@ -32,7 +32,7 @@ next
     next
       case (Suc n)
       with x i have x':"x = xs'!n" and n:"n < length xs'" by simp_all
-      from map ys have map':"(E(x' \<mapsto> y')(xs' [\<mapsto>] ys')) x = Some y" by simp
+      from map ys have map':"(E(x' \<mapsto> y', xs' [\<mapsto>] ys')) x = Some y" by simp
       from length ys have length':"length xs' = length ys'" by simp
       from dist have dist':"distinct xs'" by simp
       from IH[OF map' length' dist'] 
@@ -62,8 +62,8 @@ next
   with Ts length dist have length':"length pns' = length Ts'" 
     and dist':"distinct pns'" and notin:"p' \<notin> set pns'" by simp_all
   from i_length Ts have n_length:"n < length Ts'" by simp
-  with length' dist' have map:"(E(p' \<mapsto> T')(pns' [\<mapsto>] Ts')) (pns'!n) = Some(Ts'!n)" by fact
-  with notin have "(E(p' \<mapsto> T')(pns' [\<mapsto>] Ts')) p' = Some T'" by simp
+  with length' dist' have map:"(E(p' \<mapsto> T', pns' [\<mapsto>] Ts')) (pns'!n) = Some(Ts'!n)" by fact
+  with notin have "(E(p' \<mapsto> T', pns' [\<mapsto>] Ts')) p' = Some T'" by simp
   with pns Ts map show ?case by simp
 qed
 
@@ -1462,7 +1462,7 @@ next
             with length have "length pns = length vs'" by simp
             with map dist V length_i have v:"v = vs'!i" by(fastforce dest:maps_nth)
             from length dist length_i
-            have env:"(E(this \<mapsto> Class (last Cs'))(pns [\<mapsto>] Ts)) (pns!i) = Some(Ts!i)"
+            have env:"(E(this \<mapsto> Class (last Cs'), pns [\<mapsto>] Ts)) (pns!i) = Some(Ts!i)"
               by(rule_tac E="E(this \<mapsto> Class (last Cs'))" in nth_maps,simp_all)
             from wf Casts wtes subs eq param_types eval'' sconf'
             have "\<forall>i < length Ts. P,h\<^sub>2 \<turnstile> vs'!i :\<le> Ts!i"
@@ -1639,7 +1639,7 @@ next
             with length have "length pns = length vs'" by simp
             with map dist V length_i have v:"v = vs'!i" by(fastforce dest:maps_nth)
             from length dist length_i
-            have env:"(E(this \<mapsto> Class (last Ds))(pns [\<mapsto>] Ts)) (pns!i) = Some(Ts!i)"
+            have env:"(E(this \<mapsto> Class (last Ds), pns [\<mapsto>] Ts)) (pns!i) = Some(Ts!i)"
               by(rule_tac E="E(this \<mapsto> Class (last Ds))" in nth_maps,simp_all)
             from wf Casts wtes subs eval'' sconf'
             have "\<forall>i < length Ts. P,h\<^sub>2 \<turnstile> vs'!i :\<le> Ts!i"

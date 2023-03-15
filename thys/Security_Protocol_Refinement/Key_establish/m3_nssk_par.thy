@@ -556,11 +556,11 @@ proof -
       "Kab = sesK (Rs$sk)" "Rs \<notin> dom (runs t)"
       "\<lbrace> Agent A, Agent B, Nonce Na \<rbrace> \<in> parts (IK t)"
     let ?s'=
-      "s\<lparr> runs := runs s(Rs \<mapsto> (Serv, [A, B], [aNon Na])),
+      "s\<lparr> runs := (runs s)(Rs \<mapsto> (Serv, [A, B], [aNon Na])),
           chan := insert (Secure Sv A (Msg [aNon Na, aAgt B, aKey Kab]))
                  (insert (Secure Sv B (Msg [aKey Kab, aAgt A])) (chan s)) \<rparr>"
     let ?t'=
-      "t\<lparr> runs := runs t(Rs \<mapsto> (Serv, [A, B], [aNon Na])),
+      "t\<lparr> runs := (runs t)(Rs \<mapsto> (Serv, [A, B], [aNon Na])),
           IK := insert (Crypt (shrK A) \<lbrace> Nonce Na, Agent B, Key Kab \<rbrace>)
                 (insert (Crypt (shrK B) \<lbrace> Key Kab, Agent A \<rbrace>) (IK t)) \<rparr>"
     have "(?s', ?t') \<in> R23_msgs" using H

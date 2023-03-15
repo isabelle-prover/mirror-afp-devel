@@ -326,7 +326,7 @@ next
     case (1 m')
     then have "m' = m"
       by (rule get_state)
-    from 1 prems have "map_of1 ?m1 \<subseteq>\<^sub>m map_of1 m(k \<mapsto> v)"
+    from 1 prems have "map_of1 ?m1 \<subseteq>\<^sub>m (map_of1 m)(k \<mapsto> v)"
       by (smt inv_pair_P_D map_le_def map_of1_def surjective_pairing domIff
           fst_conv fun_upd_apply injective update_correct update_keys
           )
@@ -340,7 +340,7 @@ next
       using inv_pair_neq map_of2_def by fastforce
     moreover from 1 prems have "inv_pair ?m1"
       using inv_pair_update1 fst_conv surjective_pairing by metis
-    ultimately show "pair.map_of (snd (State_Monad.run_state (update1 (key2 k) v) m')) \<subseteq>\<^sub>m pair.map_of m(k \<mapsto> v)"
+    ultimately show "pair.map_of (snd (State_Monad.run_state (update1 (key2 k) v) m')) \<subseteq>\<^sub>m (pair.map_of m)(k \<mapsto> v)"
       unfolding \<open>m' = m\<close> using disjoint
       apply (subst map_of_eq_pair[symmetric])
        defer
@@ -351,14 +351,14 @@ next
     case (2 k1 m' m'')
     then have "m' = m" "m'' = m"
       by (auto dest: get_state)
-    from 2 prems have "map_of2 ?m2 \<subseteq>\<^sub>m map_of2 m(k \<mapsto> v)"
+    from 2 prems have "map_of2 ?m2 \<subseteq>\<^sub>m (map_of2 m)(k \<mapsto> v)"
       unfolding \<open>m' = m\<close> \<open>m'' = m\<close>
       by (smt inv_pair_P_D map_le_def map_of2_def surjective_pairing domIff
           fst_conv fun_upd_apply injective update_correct update_keys
           )
     moreover from prems have "map_of1 ?m2 \<subseteq>\<^sub>m map_of1 m"
       by (smt domIff inv_pair_P_D update_correct update_keys map_le_def map_of1_def surjective_pairing)
-    moreover from 2 have "dom (map_of1 ?m2) \<inter> dom (map_of2 m(k \<mapsto> v)) = {}"
+    moreover from 2 have "dom (map_of1 ?m2) \<inter> dom ((map_of2 m)(k \<mapsto> v)) = {}"
       unfolding \<open>m' = m\<close>
       by (smt domIff \<open>map_of1 ?m2 \<subseteq>\<^sub>m map_of1 m\<close> disjoint_iff_not_equal fst_conv fun_upd_apply
           map_le_def map_of1_def map_of2_def
@@ -366,7 +366,7 @@ next
     moreover from 2 prems have "inv_pair ?m2"
       unfolding \<open>m' = m\<close>
       using inv_pair_update2 fst_conv surjective_pairing by metis
-    ultimately show "pair.map_of (snd (State_Monad.run_state (update2 (key2 k) v) m'')) \<subseteq>\<^sub>m pair.map_of m(k \<mapsto> v)"
+    ultimately show "pair.map_of (snd (State_Monad.run_state (update2 (key2 k) v) m'')) \<subseteq>\<^sub>m (pair.map_of m)(k \<mapsto> v)"
       unfolding \<open>m' = m\<close> \<open>m'' = m\<close>
       apply (subst map_of_eq_pair[symmetric])
        defer
@@ -378,7 +378,7 @@ next
     then have "m1 = m" "m2 = m"
       by (auto dest: get_state)
     let ?m3 = "snd (State_Monad.run_state (update1 (key2 k) v) m3)"
-    from 3 prems have "map_of1 ?m3 \<subseteq>\<^sub>m map_of2 m(k \<mapsto> v)"
+    from 3 prems have "map_of1 ?m3 \<subseteq>\<^sub>m (map_of2 m)(k \<mapsto> v)"
       unfolding \<open>m2 = m\<close>
       by (smt inv_pair_P_D map_le_def map_of1_def surjective_pairing domIff
           fst_conv fun_upd_apply injective
@@ -593,17 +593,17 @@ next
       by (auto intro: inv_pair_P_D1 inv_pair_P_D2)
     from assms(3) P_empty update_inv[of k v] have "P m3"
       unfolding lift_p_def by auto
-    have [intro]: "map_of m1' \<subseteq>\<^sub>m map_of m1(k \<mapsto> v)" "map_of m2' \<subseteq>\<^sub>m map_of m2(k \<mapsto> v)"
+    have [intro]: "map_of m1' \<subseteq>\<^sub>m (map_of m1)(k \<mapsto> v)" "map_of m2' \<subseteq>\<^sub>m (map_of m2)(k \<mapsto> v)"
       using update_correct[OF \<open>P m1\<close>, of k v] update_correct[OF \<open>P m2\<close>, of k v] assms by auto
-    have "map_of m3 \<subseteq>\<^sub>m map_of empty(k \<mapsto> v)"
+    have "map_of m3 \<subseteq>\<^sub>m (map_of empty)(k \<mapsto> v)"
       using assms(3) update_correct[OF P_empty, of k v] by auto
-    also have "\<dots> \<subseteq>\<^sub>m map_of m2(k \<mapsto> v)"
+    also have "\<dots> \<subseteq>\<^sub>m (map_of m2)(k \<mapsto> v)"
       using empty_correct by (auto elim: map_le_trans intro!: map_le_upd)
-    finally have "map_of m3 \<subseteq>\<^sub>m map_of m2(k \<mapsto> v)" .
-    have 1: "dom (map_of m1) \<inter> dom (map_of m2(k \<mapsto> v)) = {}" if "k1 \<noteq> key k"
+    finally have "map_of m3 \<subseteq>\<^sub>m (map_of m2)(k \<mapsto> v)" .
+    have 1: "dom (map_of m1) \<inter> dom ((map_of m2)(k \<mapsto> v)) = {}" if "k1 \<noteq> key k"
       using assms(4) that by (force simp: inv_pair_def)
     have 2: "dom (map_of m3) \<inter> dom (map_of m1) = {}" if "k1 \<noteq> key k"
-      using \<open>local.map_of m3 \<subseteq>\<^sub>m local.map_of empty(k \<mapsto> v)\<close> assms(4) that
+      using \<open>local.map_of m3 \<subseteq>\<^sub>m (map_of empty)(k \<mapsto> v)\<close> assms(4) that
       by (fastforce dest!: map_le_implies_dom_le simp: inv_pair_def)
     have inv: "inv_pair (Pair_Storage (key k) k1 m3 m1)" if "k2 \<noteq> key k" "k1 \<noteq> key k"
       using that \<open>P m1\<close> \<open>P m2\<close> \<open>P m3\<close> unfolding inv_pair_def
@@ -617,9 +617,9 @@ next
         using assms(4) unfolding inv_pair_def by fastforce
       done
     have A:
-      "pair.map_of (Pair_Storage (key k) k1 m3 m1) \<subseteq>\<^sub>m pair.map_of (Pair_Storage k1 k2 m1 m2)(k \<mapsto> v)"
+      "pair.map_of (Pair_Storage (key k) k1 m3 m1) \<subseteq>\<^sub>m (pair.map_of (Pair_Storage k1 k2 m1 m2))(k \<mapsto> v)"
       if "k2 \<noteq> key k" "k1 \<noteq> key k"
-      using inv assms(4) \<open>map_of m3 \<subseteq>\<^sub>m map_of m2(k \<mapsto> v)\<close> 1
+      using inv assms(4) \<open>map_of m3 \<subseteq>\<^sub>m (map_of m2)(k \<mapsto> v)\<close> 1
       apply (simp add: that map_of_eq_pair[symmetric])
       apply (subst map_add_upd[symmetric], subst Map.map_add_comm, rule 2, rule that)
       by (rule map_add_mono; auto)
@@ -645,14 +645,14 @@ next
       using update_inv[of k v] assms unfolding lift_p_def by force
     have C:
       "pair.map_of (Pair_Storage (key k) k2 m1' m2) \<subseteq>\<^sub>m
-       pair.map_of (Pair_Storage (key k) k2 m1 m2)(k \<mapsto> v)"
+       (pair.map_of (Pair_Storage (key k) k2 m1 m2))(k \<mapsto> v)"
       if "k2 \<noteq> key k" "k1 = key k"
       using inv1[OF that] assms(4) \<open>inv_pair m\<close>
       by (simp add: that map_of_eq_pair[symmetric])
          (subst map_add_upd2[symmetric]; force simp: inv_pair_def intro: map_add_mono map_le_refl)
     have B:
       "pair.map_of (Pair_Storage k1 (key k) m1 m2') \<subseteq>\<^sub>m
-       pair.map_of (Pair_Storage k1 (key k) m1 m2)(k \<mapsto> v)"
+       (pair.map_of (Pair_Storage k1 (key k) m1 m2))(k \<mapsto> v)"
       if "k2 = key k" "k1 \<noteq> key k"
       using inv2[OF that] assms(4)
       by (simp add: that map_of_eq_pair[symmetric])

@@ -1056,7 +1056,7 @@ by (rule ext, erule rev_mp)
 
 lemma ir_runs2sigs_upd_serv [simp]:
   "\<lbrakk> Rs \<notin> dom (runs y) \<rbrakk>
-  \<Longrightarrow> ir_runs2sigs (runs y(Rs \<mapsto> (Serv, [A, B], [aNon Na, aNum Ts]))) 
+  \<Longrightarrow> ir_runs2sigs ((runs y)(Rs \<mapsto> (Serv, [A, B], [aNon Na, aNum Ts]))) 
       = ir_runs2sigs (runs y)"
 by (rule ext, erule rev_mp) 
    (rule ir_runs2sigs.induct, auto dest: dom_lemmas)

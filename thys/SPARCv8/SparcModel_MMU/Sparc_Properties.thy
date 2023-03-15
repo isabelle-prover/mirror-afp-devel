@@ -5081,33 +5081,33 @@ by (metis low_equal_com memory_write_def memory_write_low_equal_none)
 lemma mem_context_val_9_unchanged:
 "mem_context_val 9 addr1 (mem s1) =
 mem_context_val 9 addr1
-              ((mem s1)(10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None)))"
+              ((mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None)))"
 apply (simp add: mem_context_val_def)
 by (simp add: Let_def)
 
 lemma mem_context_val_w32_9_unchanged:
 "mem_context_val_w32 9 addr1 (mem s1) =
 mem_context_val_w32 9 addr1
-              ((mem s1)(10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None)))"
+              ((mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None)))"
 apply (simp add: mem_context_val_w32_def)
 apply (simp add: Let_def)
 by (metis mem_context_val_9_unchanged)
 
 lemma ptd_lookup_unchanged_4: 
 "ptd_lookup va ptp (mem s1) 4 = 
-ptd_lookup va ptp ((mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+ptd_lookup va ptp ((mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
                             11 := (mem s1 11)(addr := None))) 4"
 by auto
 
 lemma ptd_lookup_unchanged_3: 
 "ptd_lookup va ptp (mem s1) 3 = 
-ptd_lookup va ptp ((mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+ptd_lookup va ptp ((mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
                             11 := (mem s1 11)(addr := None))) 3"
 proof (cases "mem_context_val_w32 9 ((ucast (ptp OR ((ucast ((ucast (va >> 12))::word6))::word32)))::word36) (mem s1) = None")
   case True
   then have "mem_context_val_w32 9 ((ucast (ptp OR ((ucast ((ucast (va >> 12))::word6))::word32)))::word36) (mem s1) = None \<and>
     mem_context_val_w32 9 ((ucast (ptp OR ((ucast ((ucast (va >> 12))::word6))::word32)))::word36)
-           ((mem s1)(10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) = None"
+           ((mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) = None"
     using mem_context_val_w32_9_unchanged by metis    
   then show ?thesis 
   by auto  
@@ -5116,17 +5116,17 @@ next
   then have "mem_context_val_w32 9 
     ((ucast (ptp OR ((ucast ((ucast (va >> 12))::word6))::word32)))::word36) (mem s1) \<noteq> None \<and>
     mem_context_val_w32 9 ((ucast (ptp OR ((ucast ((ucast (va >> 12))::word6))::word32)))::word36) 
-      ((mem s1)(10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) \<noteq> None"
+      ((mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) \<noteq> None"
     using mem_context_val_w32_9_unchanged by metis
   then have "mem_context_val_w32 9 
     ((ucast (ptp OR ((ucast ((ucast (va >> 12))::word6))::word32)))::word36) (mem s1) \<noteq> None \<and>
     mem_context_val_w32 9 ((ucast (ptp OR ((ucast ((ucast (va >> 12))::word6))::word32)))::word36) 
-      ((mem s1)(10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) \<noteq> None \<and>
+      ((mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) \<noteq> None \<and>
     (\<forall>y. (mem_context_val_w32 9 
     ((ucast (ptp OR ((ucast ((ucast (va >> 12))::word6))::word32)))::word36) (mem s1) = Some y) \<longrightarrow> 
     (mem_context_val_w32 9 
     ((ucast (ptp OR ((ucast ((ucast (va >> 12))::word6))::word32)))::word36) 
-      ((mem s1)(10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None)))= Some y))"
+      ((mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None)))= Some y))"
     using mem_context_val_w32_9_unchanged by metis
   then show ?thesis 
   apply auto
@@ -5135,13 +5135,13 @@ qed
 
 lemma ptd_lookup_unchanged_2: 
 "ptd_lookup va ptp (mem s1) 2 = 
-ptd_lookup va ptp ((mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+ptd_lookup va ptp ((mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
                             11 := (mem s1 11)(addr := None))) 2"
 proof (cases "mem_context_val_w32 9 ((ucast (ptp OR ((ucast ((ucast (va >> 18))::word6))::word32)))::word36) (mem s1) = None")
   case True
   then have "mem_context_val_w32 9 ((ucast (ptp OR ((ucast ((ucast (va >> 18))::word6))::word32)))::word36) (mem s1) = None \<and>
     mem_context_val_w32 9 ((ucast (ptp OR ((ucast ((ucast (va >> 18))::word6))::word32)))::word36)
-           ((mem s1)(10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) = None"
+           ((mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) = None"
     using mem_context_val_w32_9_unchanged by metis    
   then show ?thesis 
   by auto  
@@ -5150,17 +5150,17 @@ next
   then have "mem_context_val_w32 9 
     ((ucast (ptp OR ((ucast ((ucast (va >> 18))::word6))::word32)))::word36) (mem s1) \<noteq> None \<and>
     mem_context_val_w32 9 ((ucast (ptp OR ((ucast ((ucast (va >> 18))::word6))::word32)))::word36) 
-      ((mem s1)(10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) \<noteq> None"
+      ((mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) \<noteq> None"
     using mem_context_val_w32_9_unchanged by metis
   then have "mem_context_val_w32 9 
     ((ucast (ptp OR ((ucast ((ucast (va >> 18))::word6))::word32)))::word36) (mem s1) \<noteq> None \<and>
     mem_context_val_w32 9 ((ucast (ptp OR ((ucast ((ucast (va >> 18))::word6))::word32)))::word36) 
-      ((mem s1)(10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) \<noteq> None \<and>
+      ((mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) \<noteq> None \<and>
     (\<forall>y. (mem_context_val_w32 9 
     ((ucast (ptp OR ((ucast ((ucast (va >> 18))::word6))::word32)))::word36) (mem s1) = Some y) \<longrightarrow> 
     (mem_context_val_w32 9 
     ((ucast (ptp OR ((ucast ((ucast (va >> 18))::word6))::word32)))::word36) 
-      ((mem s1)(10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None)))= Some y))"
+      ((mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None)))= Some y))"
     using mem_context_val_w32_9_unchanged by metis
   then show ?thesis 
   apply auto
@@ -5171,13 +5171,13 @@ qed
 
 lemma ptd_lookup_unchanged_1: 
 "ptd_lookup va ptp (mem s1) 1 = 
-ptd_lookup va ptp ((mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+ptd_lookup va ptp ((mem s1)(10 := (mem s1 10) (addr \<mapsto> val), 
                             11 := (mem s1 11)(addr := None))) 1"
 proof (cases "mem_context_val_w32 9 ((ucast (ptp OR ((ucast ((ucast (va >> 24))::word8))::word32)))::word36) (mem s1) = None")
   case True
   then have "mem_context_val_w32 9 ((ucast (ptp OR ((ucast ((ucast (va >> 24))::word8))::word32)))::word36) (mem s1) = None \<and>
     mem_context_val_w32 9 ((ucast (ptp OR ((ucast ((ucast (va >> 24))::word8))::word32)))::word36)
-           ((mem s1)(10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) = None"
+           ((mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) = None"
     using mem_context_val_w32_9_unchanged by metis    
   then show ?thesis 
   by auto  
@@ -5186,17 +5186,17 @@ next
   then have "mem_context_val_w32 9 
     ((ucast (ptp OR ((ucast ((ucast (va >> 24))::word8))::word32)))::word36) (mem s1) \<noteq> None \<and>
     mem_context_val_w32 9 ((ucast (ptp OR ((ucast ((ucast (va >> 24))::word8))::word32)))::word36) 
-      ((mem s1)(10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) \<noteq> None"
+      ((mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) \<noteq> None"
     using mem_context_val_w32_9_unchanged by metis
   then have "mem_context_val_w32 9 
     ((ucast (ptp OR ((ucast ((ucast (va >> 24))::word8))::word32)))::word36) (mem s1) \<noteq> None \<and>
     mem_context_val_w32 9 ((ucast (ptp OR ((ucast ((ucast (va >> 24))::word8))::word32)))::word36) 
-      ((mem s1)(10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) \<noteq> None \<and>
+      ((mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) \<noteq> None \<and>
     (\<forall>y. (mem_context_val_w32 9 
     ((ucast (ptp OR ((ucast ((ucast (va >> 24))::word8))::word32)))::word36) (mem s1) = Some y) \<longrightarrow> 
     (mem_context_val_w32 9 
     ((ucast (ptp OR ((ucast ((ucast (va >> 24))::word8))::word32)))::word36) 
-      ((mem s1)(10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None)))= Some y))"
+      ((mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None)))= Some y))"
     using mem_context_val_w32_9_unchanged by metis
   then show ?thesis 
   apply auto
@@ -5204,19 +5204,19 @@ next
   unfolding Let_def
   proof -
     fix y :: word32
-    have "(y AND 3 \<noteq> 0 \<or> y AND 3 = 0 \<or> (y AND 3 \<noteq> 1 \<or> ptd_lookup va (y AND 4294967292) (mem s1) (Suc 0 + 1) = None) \<and> (y AND 3 = 1 \<or> y AND 3 \<noteq> 2 \<or> None = Some ((ucast (ucast (y >> 8)::word24) << 12) OR (ucast (ucast va::word12)::word36), ucast y::word8))) \<and> (y AND 3 = 0 \<or> (y AND 3 \<noteq> 1 \<or> (y AND 3 \<noteq> 0 \<or> ptd_lookup va (y AND 4294967292) ((mem s1) (10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) (Suc 0 + 1) = None) \<and> (y AND 3 = 0 \<or> (y AND 3 \<noteq> 1 \<or> ptd_lookup va (y AND 4294967292) (mem s1) (Suc 0 + 1) = ptd_lookup va (y AND 4294967292) ((mem s1) (10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) (Suc 0 + 1)) \<and> (y AND 3 = 1 \<or> (y AND 3 \<noteq> 2 \<or> ptd_lookup va (y AND 4294967292) ((mem s1) (10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) (Suc 0 + 1) = Some ((ucast (ucast (y >> 8)::word24) << 12) OR ucast (ucast va::word12), ucast y)) \<and> (y AND 3 = 2 \<or> ptd_lookup va (y AND 4294967292) ((mem s1) (10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) (Suc 0 + 1) = None)))) \<and> (y AND 3 = 1 \<or> (y AND 3 \<noteq> 2 \<or> (y AND 3 \<noteq> 0 \<or> None = Some ((ucast (ucast (y >> 8)::word24) << 12) OR (ucast (ucast va::word12)::word36), ucast y::word8)) \<and> (y AND 3 = 0 \<or> (y AND 3 \<noteq> 1 \<or> ptd_lookup va (y AND 4294967292) (mem s1) (Suc 0 + 1) = Some ((ucast (ucast (y >> 8)::word24) << 12) OR ucast (ucast va::word12), ucast y)) \<and> (y AND 3 = 1 \<or> y AND 3 = 2 \<or> None = Some ((ucast (ucast (y >> 8)::word24) << 12) OR (ucast (ucast va::word12)::word36), ucast y::word8)))) \<and> (y AND 3 = 2 \<or> y AND 3 = 0 \<or> (y AND 3 \<noteq> 1 \<or> ptd_lookup va (y AND 4294967292) (mem s1) (Suc 0 + 1) = None) \<and> (y AND 3 = 1 \<or> y AND 3 \<noteq> 2 \<or> None = Some ((ucast (ucast (y >> 8)::word24) << 12) OR (ucast (ucast va::word12)::word36), ucast y::word8))))) \<or> (\<forall>w. mem s1 w = ((mem s1) (10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) w)"
+    have "(y AND 3 \<noteq> 0 \<or> y AND 3 = 0 \<or> (y AND 3 \<noteq> 1 \<or> ptd_lookup va (y AND 4294967292) (mem s1) (Suc 0 + 1) = None) \<and> (y AND 3 = 1 \<or> y AND 3 \<noteq> 2 \<or> None = Some ((ucast (ucast (y >> 8)::word24) << 12) OR (ucast (ucast va::word12)::word36), ucast y::word8))) \<and> (y AND 3 = 0 \<or> (y AND 3 \<noteq> 1 \<or> (y AND 3 \<noteq> 0 \<or> ptd_lookup va (y AND 4294967292) ((mem s1) (10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) (Suc 0 + 1) = None) \<and> (y AND 3 = 0 \<or> (y AND 3 \<noteq> 1 \<or> ptd_lookup va (y AND 4294967292) (mem s1) (Suc 0 + 1) = ptd_lookup va (y AND 4294967292) ((mem s1) (10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) (Suc 0 + 1)) \<and> (y AND 3 = 1 \<or> (y AND 3 \<noteq> 2 \<or> ptd_lookup va (y AND 4294967292) ((mem s1) (10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) (Suc 0 + 1) = Some ((ucast (ucast (y >> 8)::word24) << 12) OR ucast (ucast va::word12), ucast y)) \<and> (y AND 3 = 2 \<or> ptd_lookup va (y AND 4294967292) ((mem s1) (10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) (Suc 0 + 1) = None)))) \<and> (y AND 3 = 1 \<or> (y AND 3 \<noteq> 2 \<or> (y AND 3 \<noteq> 0 \<or> None = Some ((ucast (ucast (y >> 8)::word24) << 12) OR (ucast (ucast va::word12)::word36), ucast y::word8)) \<and> (y AND 3 = 0 \<or> (y AND 3 \<noteq> 1 \<or> ptd_lookup va (y AND 4294967292) (mem s1) (Suc 0 + 1) = Some ((ucast (ucast (y >> 8)::word24) << 12) OR ucast (ucast va::word12), ucast y)) \<and> (y AND 3 = 1 \<or> y AND 3 = 2 \<or> None = Some ((ucast (ucast (y >> 8)::word24) << 12) OR (ucast (ucast va::word12)::word36), ucast y::word8)))) \<and> (y AND 3 = 2 \<or> y AND 3 = 0 \<or> (y AND 3 \<noteq> 1 \<or> ptd_lookup va (y AND 4294967292) (mem s1) (Suc 0 + 1) = None) \<and> (y AND 3 = 1 \<or> y AND 3 \<noteq> 2 \<or> None = Some ((ucast (ucast (y >> 8)::word24) << 12) OR (ucast (ucast va::word12)::word36), ucast y::word8))))) \<or> (\<forall>w. mem s1 w = ((mem s1) (10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) w)"
       by (metis (no_types) One_nat_def Suc_1 Suc_eq_plus1 ptd_lookup_unchanged_2)
-    then show "(if y AND 3 = 0 then None else if y AND 3 = 1 then ptd_lookup va (y AND 4294967292) (mem s1) (Suc 0 + 1) else if y AND 3 = 2 then Some ((ucast (ucast (y >> 8)::word24) << 12) OR ucast (ucast va::word12), ucast y) else None) = (if y AND 3 = 0 then None else if y AND 3 = 1 then ptd_lookup va (y AND 4294967292) ((mem s1) (10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) (Suc 0 + 1) else if y AND 3 = 2 then Some ((ucast (ucast (y >> 8)::word24) << 12) OR ucast (ucast va::word12), ucast y) else None)"
+    then show "(if y AND 3 = 0 then None else if y AND 3 = 1 then ptd_lookup va (y AND 4294967292) (mem s1) (Suc 0 + 1) else if y AND 3 = 2 then Some ((ucast (ucast (y >> 8)::word24) << 12) OR ucast (ucast va::word12), ucast y) else None) = (if y AND 3 = 0 then None else if y AND 3 = 1 then ptd_lookup va (y AND 4294967292) ((mem s1) (10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) (Suc 0 + 1) else if y AND 3 = 2 then Some ((ucast (ucast (y >> 8)::word24) << 12) OR ucast (ucast va::word12), ucast y) else None)"
     proof -
       have f1: "2 = Suc 0 + 1"
         by (metis One_nat_def Suc_1 Suc_eq_plus1)
       { assume "y AND 3 = 1"
         moreover
-        { assume "y AND 3 = 1 \<and> (if y AND 3 = 0 then None else if y AND 3 = 1 then ptd_lookup va (y AND 4294967292) (mem s1) (Suc 0 + 1) else if y AND 3 = 2 then Some ((ucast (ucast (y >> 8)::word24) << 12) OR ucast (ucast va::word12), ucast y) else None) \<noteq> (if y AND 3 = 0 then None else if y AND 3 = 1 then ptd_lookup va (y AND 4294967292) ((mem s1) (10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) (Suc 0 + 1) else if y AND 3 = 2 then Some ((ucast (ucast (y >> 8)::word24) << 12) OR ucast (ucast va::word12), ucast y) else None)"
-          have "y AND 3 = 1 \<and> (if y AND 3 = 0 then None else if y AND 3 = 1 then ptd_lookup va (y AND 4294967292) (mem s1) (Suc 0 + 1) else if y AND 3 = 2 then Some ((ucast (ucast (y >> 8)::word24) << 12) OR ucast (ucast va::word12), ucast y) else None) \<noteq> ptd_lookup va (y AND 4294967292) ((mem s1) (10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) (Suc 0 + 1) \<or> (if y AND 3 = 0 then None else if y AND 3 = 1 then ptd_lookup va (y AND 4294967292) (mem s1) (Suc 0 + 1) else if y AND 3 = 2 then Some ((ucast (ucast (y >> 8)::word24) << 12) OR ucast (ucast va::word12), ucast y) else None) = (if y AND 3 = 0 then None else if y AND 3 = 1 then ptd_lookup va (y AND 4294967292) ((mem s1) (10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) (Suc 0 + 1) else if y AND 3 = 2 then Some ((ucast (ucast (y >> 8)::word24) << 12) OR ucast (ucast va::word12), ucast y) else None)"
+        { assume "y AND 3 = 1 \<and> (if y AND 3 = 0 then None else if y AND 3 = 1 then ptd_lookup va (y AND 4294967292) (mem s1) (Suc 0 + 1) else if y AND 3 = 2 then Some ((ucast (ucast (y >> 8)::word24) << 12) OR ucast (ucast va::word12), ucast y) else None) \<noteq> (if y AND 3 = 0 then None else if y AND 3 = 1 then ptd_lookup va (y AND 4294967292) ((mem s1) (10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) (Suc 0 + 1) else if y AND 3 = 2 then Some ((ucast (ucast (y >> 8)::word24) << 12) OR ucast (ucast va::word12), ucast y) else None)"
+          have "y AND 3 = 1 \<and> (if y AND 3 = 0 then None else if y AND 3 = 1 then ptd_lookup va (y AND 4294967292) (mem s1) (Suc 0 + 1) else if y AND 3 = 2 then Some ((ucast (ucast (y >> 8)::word24) << 12) OR ucast (ucast va::word12), ucast y) else None) \<noteq> ptd_lookup va (y AND 4294967292) ((mem s1) (10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) (Suc 0 + 1) \<or> (if y AND 3 = 0 then None else if y AND 3 = 1 then ptd_lookup va (y AND 4294967292) (mem s1) (Suc 0 + 1) else if y AND 3 = 2 then Some ((ucast (ucast (y >> 8)::word24) << 12) OR ucast (ucast va::word12), ucast y) else None) = (if y AND 3 = 0 then None else if y AND 3 = 1 then ptd_lookup va (y AND 4294967292) ((mem s1) (10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) (Suc 0 + 1) else if y AND 3 = 2 then Some ((ucast (ucast (y >> 8)::word24) << 12) OR ucast (ucast va::word12), ucast y) else None)"
             by presburger
           moreover
-          { assume "y AND 3 = 1 \<and> (if y AND 3 = 0 then None else if y AND 3 = 1 then ptd_lookup va (y AND 4294967292) (mem s1) (Suc 0 + 1) else if y AND 3 = 2 then Some ((ucast (ucast (y >> 8)::word24) << 12) OR ucast (ucast va::word12), ucast y) else None) \<noteq> ptd_lookup va (y AND 4294967292) ((mem s1) (10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) (Suc 0 + 1)"
+          { assume "y AND 3 = 1 \<and> (if y AND 3 = 0 then None else if y AND 3 = 1 then ptd_lookup va (y AND 4294967292) (mem s1) (Suc 0 + 1) else if y AND 3 = 2 then Some ((ucast (ucast (y >> 8)::word24) << 12) OR ucast (ucast va::word12), ucast y) else None) \<noteq> ptd_lookup va (y AND 4294967292) ((mem s1) (10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) (Suc 0 + 1)"
             then have "y AND 3 = 1 \<and> (if y AND 3 = 0 then None else if y AND 3 = 1 then ptd_lookup va (y AND 4294967292) (mem s1) (Suc 0 + 1) else if y AND 3 = 2 then Some ((ucast (ucast (y >> 8)::word24) << 12) OR ucast (ucast va::word12), ucast y) else None) \<noteq> ptd_lookup va (y AND 4294967292) (mem s1) 2"
               by (metis One_nat_def Suc_1 Suc_eq_plus1 ptd_lookup_unchanged_2)
             then have ?thesis
@@ -5240,14 +5240,14 @@ assumes a1: "(let context_table_entry = (v1 >> 11 << 11) OR (v2 AND 511 << 2)
     (case_option None (\<lambda>lvl1_page_table. ptd_lookup va lvl1_page_table (mem s2) 1)))"
 shows "(let context_table_entry = (v1 >> 11 << 11) OR (v2 AND 511 << 2)
   in Let (mem_context_val_w32 (word_of_int 9) (ucast context_table_entry)
-    ((mem s1)(10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))))
+    ((mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))))
      (case_option None (\<lambda>lvl1_page_table. ptd_lookup va lvl1_page_table
-      ((mem s1)(10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) 1))) =
+      ((mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) 1))) =
  (let context_table_entry = (v1 >> 11 << 11) OR (v2 AND 511 << 2)
   in Let (mem_context_val_w32 (word_of_int 9) (ucast context_table_entry)
-    ((mem s2)(10 := mem s2 10(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))))
+    ((mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))))
      (case_option None (\<lambda>lvl1_page_table. ptd_lookup va lvl1_page_table
-      ((mem s2)(10 := mem s2 10(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) 1)))"
+      ((mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) 1)))"
 proof -
   from a1 have 
    "(case mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) (mem s1) of
@@ -5256,42 +5256,42 @@ proof -
      None \<Rightarrow> None | Some lvl1_page_table \<Rightarrow> ptd_lookup va lvl1_page_table (mem s2) 1)" 
      unfolding Let_def by auto
   then have "(case mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) 
-     ((mem s1)(10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) of
+     ((mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) of
      None \<Rightarrow> None | Some lvl1_page_table \<Rightarrow> ptd_lookup va lvl1_page_table (mem s1) 1) =
     (case mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) 
-     ((mem s2)(10 := mem s2 10(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) of
+     ((mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) of
      None \<Rightarrow> None | Some lvl1_page_table \<Rightarrow> ptd_lookup va lvl1_page_table (mem s2) 1)"
     using mem_context_val_w32_9_unchanged
     by (metis word_numeral_alt) 
  then have "(case mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) 
-     ((mem s1)(10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) of
+     ((mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) of
      None \<Rightarrow> None | Some lvl1_page_table \<Rightarrow> ptd_lookup va lvl1_page_table 
-      ((mem s1)(10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) 1) =
+      ((mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) 1) =
     (case mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) 
-     ((mem s2)(10 := mem s2 10(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) of
+     ((mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) of
      None \<Rightarrow> None | Some lvl1_page_table \<Rightarrow> ptd_lookup va lvl1_page_table 
-     ((mem s2)(10 := mem s2 10(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) 1)"   
+     ((mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) 1)"   
     using ptd_lookup_unchanged_1
     proof -
       obtain ww :: "word32 option \<Rightarrow> word32" where
         f1: "\<forall>z. (z = None \<or> z = Some (ww z)) \<and> (z \<noteq> None \<or> (\<forall>w. z \<noteq> Some w))"
         by moura
-      then have f2: "(mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s1) (10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) = None \<or> mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s1) (10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) = Some (ww (mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s1) (10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None)))))) \<and> (mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s1) (10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) \<noteq> None \<or> (\<forall>w. mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s1) (10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) \<noteq> Some w))"
+      then have f2: "(mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s1) (10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) = None \<or> mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s1) (10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) = Some (ww (mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s1) (10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None)))))) \<and> (mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s1) (10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) \<noteq> None \<or> (\<forall>w. mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s1) (10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) \<noteq> Some w))"
         by blast
-      then have f3: "(case mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s1) (10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) of None \<Rightarrow> None | Some w \<Rightarrow> ptd_lookup va w ((mem s1) (10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) 1) \<noteq> None \<longrightarrow> (case mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s1) (10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) of None \<Rightarrow> None | Some w \<Rightarrow> ptd_lookup va w ((mem s1) (10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) 1) = (case mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s1) (10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) of None \<Rightarrow> None | Some w \<Rightarrow> ptd_lookup va w (mem s1) 1)"
-        by (metis (no_types) \<open>\<And>val va s1 ptp addr. ptd_lookup va ptp (mem s1) 1 = ptd_lookup va ptp ((mem s1) (10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) 1\<close> option.case(2) option.simps(4))
-      have f4: "mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s2) (10 := mem s2 10(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) = Some (ww (mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s2) (10 := mem s2 10(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))))) \<and> mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s1) (10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) = Some (ww (mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s1) (10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))))) \<longrightarrow> (case mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s1) (10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) of None \<Rightarrow> None | Some w \<Rightarrow> ptd_lookup va w ((mem s1) (10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) 1) = (case Some (ww (mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s2) (10 := mem s2 10(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))))) of None \<Rightarrow> None | Some w \<Rightarrow> ptd_lookup va w ((mem s2) (10 := mem s2 10(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) 1)"
-        by (metis (no_types) \<open>(case mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s1) (10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) of None \<Rightarrow> None | Some lvl1_page_table \<Rightarrow> ptd_lookup va lvl1_page_table (mem s1) 1) = (case mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s2) (10 := mem s2 10(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) of None \<Rightarrow> None | Some lvl1_page_table \<Rightarrow> ptd_lookup va lvl1_page_table (mem s2) 1)\<close> \<open>\<And>val va s1 ptp addr. ptd_lookup va ptp (mem s1) 1 = ptd_lookup va ptp ((mem s1) (10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) 1\<close> option.case(2))
-      have f5: "(mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s2) (10 := mem s2 10(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) = None \<or> mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s2) (10 := mem s2 10(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) = Some (ww (mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s2) (10 := mem s2 10(addr \<mapsto> val), 11 := (mem s2 11)(addr := None)))))) \<and> (mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s2) (10 := mem s2 10(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) \<noteq> None \<or> (\<forall>w. mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s2) (10 := mem s2 10(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) \<noteq> Some w))"
+      then have f3: "(case mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s1) (10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) of None \<Rightarrow> None | Some w \<Rightarrow> ptd_lookup va w ((mem s1) (10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) 1) \<noteq> None \<longrightarrow> (case mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s1) (10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) of None \<Rightarrow> None | Some w \<Rightarrow> ptd_lookup va w ((mem s1) (10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) 1) = (case mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s1) (10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) of None \<Rightarrow> None | Some w \<Rightarrow> ptd_lookup va w (mem s1) 1)"
+        by (metis (no_types) \<open>\<And>val va s1 ptp addr. ptd_lookup va ptp (mem s1) 1 = ptd_lookup va ptp ((mem s1) (10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) 1\<close> option.case(2) option.simps(4))
+      have f4: "mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s2) (10 := (mem s2 10)(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) = Some (ww (mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s2) (10 := (mem s2 10)(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))))) \<and> mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s1) (10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) = Some (ww (mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s1) (10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))))) \<longrightarrow> (case mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s1) (10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) of None \<Rightarrow> None | Some w \<Rightarrow> ptd_lookup va w ((mem s1) (10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) 1) = (case Some (ww (mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s2) (10 := (mem s2 10)(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))))) of None \<Rightarrow> None | Some w \<Rightarrow> ptd_lookup va w ((mem s2) (10 := (mem s2 10)(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) 1)"
+        by (metis (no_types) \<open>(case mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s1) (10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) of None \<Rightarrow> None | Some lvl1_page_table \<Rightarrow> ptd_lookup va lvl1_page_table (mem s1) 1) = (case mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s2) (10 := (mem s2 10)(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) of None \<Rightarrow> None | Some lvl1_page_table \<Rightarrow> ptd_lookup va lvl1_page_table (mem s2) 1)\<close> \<open>\<And>val va s1 ptp addr. ptd_lookup va ptp (mem s1) 1 = ptd_lookup va ptp ((mem s1) (10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) 1\<close> option.case(2))
+      have f5: "(mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s2) (10 := (mem s2 10)(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) = None \<or> mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s2) (10 := (mem s2 10)(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) = Some (ww (mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s2) (10 := (mem s2 10)(addr \<mapsto> val), 11 := (mem s2 11)(addr := None)))))) \<and> (mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s2) (10 := (mem s2 10)(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) \<noteq> None \<or> (\<forall>w. mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s2) (10 := (mem s2 10)(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) \<noteq> Some w))"
         using f1 by blast
-      { assume "(case mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s1) (10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) of None \<Rightarrow> None | Some w \<Rightarrow> ptd_lookup va w ((mem s1) (10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) 1) \<noteq> (case mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s2) (10 := mem s2 10(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) of None \<Rightarrow> None | Some w \<Rightarrow> ptd_lookup va w ((mem s2) (10 := mem s2 10(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) 1)"
-        { assume "(case mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s2) (10 := mem s2 10(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) of None \<Rightarrow> None | Some w \<Rightarrow> ptd_lookup va w (mem s2) 1) \<noteq> None \<and> (case mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s2) (10 := mem s2 10(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) of None \<Rightarrow> None | Some w \<Rightarrow> ptd_lookup va w (mem s2) 1) \<noteq> None"
-          then have "(case mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s2) (10 := mem s2 10(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) of None \<Rightarrow> None | Some w \<Rightarrow> ptd_lookup va w (mem s2) 1) \<noteq> None \<and> mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s1) (10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) \<noteq> None"
-            by (metis (no_types) \<open>(case mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s1) (10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) of None \<Rightarrow> None | Some lvl1_page_table \<Rightarrow> ptd_lookup va lvl1_page_table (mem s1) 1) = (case mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s2) (10 := mem s2 10(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) of None \<Rightarrow> None | Some lvl1_page_table \<Rightarrow> ptd_lookup va lvl1_page_table (mem s2) 1)\<close> option.simps(4))
+      { assume "(case mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s1) (10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) of None \<Rightarrow> None | Some w \<Rightarrow> ptd_lookup va w ((mem s1) (10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) 1) \<noteq> (case mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s2) (10 := (mem s2 10)(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) of None \<Rightarrow> None | Some w \<Rightarrow> ptd_lookup va w ((mem s2) (10 := (mem s2 10)(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) 1)"
+        { assume "(case mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s2) (10 := (mem s2 10)(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) of None \<Rightarrow> None | Some w \<Rightarrow> ptd_lookup va w (mem s2) 1) \<noteq> None \<and> (case mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s2) (10 := (mem s2 10)(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) of None \<Rightarrow> None | Some w \<Rightarrow> ptd_lookup va w (mem s2) 1) \<noteq> None"
+          then have "(case mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s2) (10 := (mem s2 10)(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) of None \<Rightarrow> None | Some w \<Rightarrow> ptd_lookup va w (mem s2) 1) \<noteq> None \<and> mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s1) (10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) \<noteq> None"
+            by (metis (no_types) \<open>(case mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s1) (10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) of None \<Rightarrow> None | Some lvl1_page_table \<Rightarrow> ptd_lookup va lvl1_page_table (mem s1) 1) = (case mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s2) (10 := (mem s2 10)(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) of None \<Rightarrow> None | Some lvl1_page_table \<Rightarrow> ptd_lookup va lvl1_page_table (mem s2) 1)\<close> option.simps(4))
           then have ?thesis
             using f5 f4 f2 by force }
         then have ?thesis
-          using f5 f3 by (metis (no_types) \<open>(case mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s1) (10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) of None \<Rightarrow> None | Some lvl1_page_table \<Rightarrow> ptd_lookup va lvl1_page_table (mem s1) 1) = (case mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s2) (10 := mem s2 10(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) of None \<Rightarrow> None | Some lvl1_page_table \<Rightarrow> ptd_lookup va lvl1_page_table (mem s2) 1)\<close> \<open>\<And>val va s1 ptp addr. ptd_lookup va ptp (mem s1) 1 = ptd_lookup va ptp ((mem s1) (10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) 1\<close> option.case(2) option.simps(4)) }
+          using f5 f3 by (metis (no_types) \<open>(case mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s1) (10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) of None \<Rightarrow> None | Some lvl1_page_table \<Rightarrow> ptd_lookup va lvl1_page_table (mem s1) 1) = (case mem_context_val_w32 (word_of_int 9) (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s2) (10 := (mem s2 10)(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) of None \<Rightarrow> None | Some lvl1_page_table \<Rightarrow> ptd_lookup va lvl1_page_table (mem s2) 1)\<close> \<open>\<And>val va s1 ptp addr. ptd_lookup va ptp (mem s1) 1 = ptd_lookup va ptp ((mem s1) (10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) 1\<close> option.case(2) option.simps(4)) }
       then show ?thesis
         by blast
     qed
@@ -5301,9 +5301,9 @@ qed
 
 lemma virt_to_phys_unchanged: 
 assumes a1: "(\<forall>va. virt_to_phys va (mmu s2) (mem s1) = virt_to_phys va (mmu s2) (mem s2))"
-shows "(\<forall>va. virt_to_phys va (mmu s2) ((mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+shows "(\<forall>va. virt_to_phys va (mmu s2) ((mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
                                          11 := (mem s1 11)(addr := None))) =
-             virt_to_phys va (mmu s2) ((mem s2)(10 := mem s2 10(addr \<mapsto> val), 
+             virt_to_phys va (mmu s2) ((mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 
                                          11 := (mem s2 11)(addr := None))))"
 proof (cases "registers (mmu s2) CR AND 1 \<noteq> 0")
   case True
@@ -5342,14 +5342,14 @@ lemma virt_to_phys_unchanged2_sub1:
   None \<Rightarrow> None | Some lvl1_page_table \<Rightarrow> ptd_lookup va lvl1_page_table (mem s2) 1) =
 (case mem_context_val_w32 (word_of_int 9) 
   (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s2)
-    (10 := mem s2 10(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) of
+    (10 := (mem s2 10)(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) of
   None \<Rightarrow> None | Some lvl1_page_table \<Rightarrow> ptd_lookup va lvl1_page_table ((mem s2)
-    (10 := mem s2 10(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) 1)"
+    (10 := (mem s2 10)(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) 1)"
 proof (cases "mem_context_val_w32 9 (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) (mem s2) = None")
   case True
   then have "mem_context_val_w32 9 (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) (mem s2) = None \<and>
     mem_context_val_w32 9 (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s2)
-    (10 := mem s2 10(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) = None"
+    (10 := (mem s2 10)(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) = None"
     using mem_context_val_w32_9_unchanged by metis
   then show ?thesis 
   by auto
@@ -5358,7 +5358,7 @@ next
   then have "mem_context_val_w32 9 (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) (mem s2) \<noteq> None \<and> 
     (\<forall>y. mem_context_val_w32 9 (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) (mem s2) = Some y \<longrightarrow>
          mem_context_val_w32 9 (ucast ((v1 >> 11 << 11) OR (v2 AND 511 << 2))) ((mem s2)
-         (10 := mem s2 10(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) = Some y)"
+         (10 := (mem s2 10)(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))) = Some y)"
     using mem_context_val_w32_9_unchanged by metis 
   then show ?thesis
   using ptd_lookup_unchanged_1 by fastforce 
@@ -5366,7 +5366,7 @@ qed
 
 lemma virt_to_phys_unchanged2: 
 "virt_to_phys va (mmu s2) (mem s2) =
-virt_to_phys va (mmu s2) ((mem s2)(10 := mem s2 10(addr \<mapsto> val), 
+virt_to_phys va (mmu s2) ((mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 
                                          11 := (mem s2 11)(addr := None)))"
 proof (cases "registers (mmu s2) CR AND 1 \<noteq> 0")
   case True
@@ -5404,9 +5404,9 @@ qed
 
 lemma virt_to_phys_unchanged_low_equal: 
 assumes a1: "low_equal s1 s2"
-shows "(\<forall>va. virt_to_phys va (mmu s2) ((mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+shows "(\<forall>va. virt_to_phys va (mmu s2) ((mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
                                          11 := (mem s1 11)(addr := None))) =
-             virt_to_phys va (mmu s2) ((mem s2)(10 := mem s2 10(addr \<mapsto> val), 
+             virt_to_phys va (mmu s2) ((mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 
                                          11 := (mem s2 11)(addr := None))))"
 using a1 apply (simp add: low_equal_def)
 using virt_to_phys_unchanged
@@ -5417,9 +5417,9 @@ by (simp add: low_equal_def)
 
 lemma mem_val_alt_8_unchanged0: 
 assumes a1: "mem_equal s1 s2 pa"
-shows "mem_val_alt 8 (pa AND 68719476732) (s1\<lparr>mem := (mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+shows "mem_val_alt 8 (pa AND 68719476732) (s1\<lparr>mem := (mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
   11 := (mem s1 11)(addr := None))\<rparr>) = 
-  mem_val_alt 8 (pa AND 68719476732) (s2\<lparr>mem := (mem s2)(10 := mem s2 10(addr \<mapsto> val), 
+  mem_val_alt 8 (pa AND 68719476732) (s2\<lparr>mem := (mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 
   11 := (mem s2 11)(addr := None))\<rparr>)"
 apply (simp add: mem_val_alt_def)
 apply (simp add: Let_def)
@@ -5428,9 +5428,9 @@ by (metis option.distinct(1))
 
 lemma mem_val_alt_8_unchanged1: 
 assumes a1: "mem_equal s1 s2 pa"
-shows "mem_val_alt 8 ((pa AND 68719476732) + 1) (s1\<lparr>mem := (mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+shows "mem_val_alt 8 ((pa AND 68719476732) + 1) (s1\<lparr>mem := (mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
   11 := (mem s1 11)(addr := None))\<rparr>) = 
-  mem_val_alt 8 ((pa AND 68719476732) + 1) (s2\<lparr>mem := (mem s2)(10 := mem s2 10(addr \<mapsto> val), 
+  mem_val_alt 8 ((pa AND 68719476732) + 1) (s2\<lparr>mem := (mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 
   11 := (mem s2 11)(addr := None))\<rparr>)"
 apply (simp add: mem_val_alt_def)
 apply (simp add: Let_def)
@@ -5439,9 +5439,9 @@ by (metis option.distinct(1))
 
 lemma mem_val_alt_8_unchanged2: 
 assumes a1: "mem_equal s1 s2 pa"
-shows "mem_val_alt 8 ((pa AND 68719476732) + 2) (s1\<lparr>mem := (mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+shows "mem_val_alt 8 ((pa AND 68719476732) + 2) (s1\<lparr>mem := (mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
   11 := (mem s1 11)(addr := None))\<rparr>) = 
-  mem_val_alt 8 ((pa AND 68719476732) + 2) (s2\<lparr>mem := (mem s2)(10 := mem s2 10(addr \<mapsto> val), 
+  mem_val_alt 8 ((pa AND 68719476732) + 2) (s2\<lparr>mem := (mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 
   11 := (mem s2 11)(addr := None))\<rparr>)"
 apply (simp add: mem_val_alt_def)
 apply (simp add: Let_def)
@@ -5450,9 +5450,9 @@ by (metis option.distinct(1))
 
 lemma mem_val_alt_8_unchanged3: 
 assumes a1: "mem_equal s1 s2 pa"
-shows "mem_val_alt 8 ((pa AND 68719476732) + 3) (s1\<lparr>mem := (mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+shows "mem_val_alt 8 ((pa AND 68719476732) + 3) (s1\<lparr>mem := (mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
   11 := (mem s1 11)(addr := None))\<rparr>) = 
-  mem_val_alt 8 ((pa AND 68719476732) + 3) (s2\<lparr>mem := (mem s2)(10 := mem s2 10(addr \<mapsto> val), 
+  mem_val_alt 8 ((pa AND 68719476732) + 3) (s2\<lparr>mem := (mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 
   11 := (mem s2 11)(addr := None))\<rparr>)"
 apply (simp add: mem_val_alt_def)
 apply (simp add: Let_def)
@@ -5461,21 +5461,21 @@ by (metis option.distinct(1))
 
 lemma mem_val_alt_8_unchanged: 
 assumes a1: "mem_equal s1 s2 pa"
-shows "mem_val_alt 8 (pa AND 68719476732) (s1\<lparr>mem := (mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+shows "mem_val_alt 8 (pa AND 68719476732) (s1\<lparr>mem := (mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
   11 := (mem s1 11)(addr := None))\<rparr>) = 
-  mem_val_alt 8 (pa AND 68719476732) (s2\<lparr>mem := (mem s2)(10 := mem s2 10(addr \<mapsto> val), 
+  mem_val_alt 8 (pa AND 68719476732) (s2\<lparr>mem := (mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 
   11 := (mem s2 11)(addr := None))\<rparr>) \<and>
-  mem_val_alt 8 ((pa AND 68719476732) + 1) (s1\<lparr>mem := (mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+  mem_val_alt 8 ((pa AND 68719476732) + 1) (s1\<lparr>mem := (mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
   11 := (mem s1 11)(addr := None))\<rparr>) = 
-  mem_val_alt 8 ((pa AND 68719476732) + 1) (s2\<lparr>mem := (mem s2)(10 := mem s2 10(addr \<mapsto> val), 
+  mem_val_alt 8 ((pa AND 68719476732) + 1) (s2\<lparr>mem := (mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 
   11 := (mem s2 11)(addr := None))\<rparr>) \<and>
-  mem_val_alt 8 ((pa AND 68719476732) + 2) (s1\<lparr>mem := (mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+  mem_val_alt 8 ((pa AND 68719476732) + 2) (s1\<lparr>mem := (mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
   11 := (mem s1 11)(addr := None))\<rparr>) = 
-  mem_val_alt 8 ((pa AND 68719476732) + 2) (s2\<lparr>mem := (mem s2)(10 := mem s2 10(addr \<mapsto> val), 
+  mem_val_alt 8 ((pa AND 68719476732) + 2) (s2\<lparr>mem := (mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 
   11 := (mem s2 11)(addr := None))\<rparr>) \<and>
-  mem_val_alt 8 ((pa AND 68719476732) + 3) (s1\<lparr>mem := (mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+  mem_val_alt 8 ((pa AND 68719476732) + 3) (s1\<lparr>mem := (mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
   11 := (mem s1 11)(addr := None))\<rparr>) = 
-  mem_val_alt 8 ((pa AND 68719476732) + 3) (s2\<lparr>mem := (mem s2)(10 := mem s2 10(addr \<mapsto> val), 
+  mem_val_alt 8 ((pa AND 68719476732) + 3) (s2\<lparr>mem := (mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 
   11 := (mem s2 11)(addr := None))\<rparr>)"
 using a1 mem_val_alt_8_unchanged0 mem_val_alt_8_unchanged1
 mem_val_alt_8_unchanged2 mem_val_alt_8_unchanged3
@@ -5483,9 +5483,9 @@ by blast
 
 lemma mem_val_w32_8_unchanged: 
 assumes a1: "mem_equal s1 s2 a"
-shows "mem_val_w32 8 a (s1\<lparr>mem := (mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+shows "mem_val_w32 8 a (s1\<lparr>mem := (mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
   11 := (mem s1 11)(addr := None))\<rparr>) =
-mem_val_w32 8 a (s2\<lparr>mem := (mem s2)(10 := mem s2 10(addr \<mapsto> val), 
+mem_val_w32 8 a (s2\<lparr>mem := (mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 
   11 := (mem s2 11)(addr := None))\<rparr>)"
 apply (simp add: mem_val_w32_def)
 apply (simp add: Let_def)
@@ -5503,16 +5503,16 @@ by fastforce
 lemma load_word_mem_8_unchanged: 
 assumes a1: "low_equal s1 s2 \<and> 
 load_word_mem s1 addra 8 = load_word_mem s2 addra 8"
-shows "load_word_mem (s1\<lparr>mem := (mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+shows "load_word_mem (s1\<lparr>mem := (mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
                                          11 := (mem s1 11)(addr := None))\<rparr>) addra 8 =
-       load_word_mem (s2\<lparr>mem := (mem s2)(10 := mem s2 10(addr \<mapsto> val), 
+       load_word_mem (s2\<lparr>mem := (mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 
                                          11 := (mem s2 11)(addr := None))\<rparr>) addra 8"
-proof (cases "virt_to_phys addra (mmu s1) ((mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+proof (cases "virt_to_phys addra (mmu s1) ((mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
           11 := (mem s1 11)(addr := None))) = None")
   case True
-  then have "virt_to_phys addra (mmu s1) ((mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+  then have "virt_to_phys addra (mmu s1) ((mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
           11 := (mem s1 11)(addr := None))) = None \<and>
-             virt_to_phys addra (mmu s2) ((mem s2)(10 := mem s2 10(addr \<mapsto> val), 
+             virt_to_phys addra (mmu s2) ((mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 
           11 := (mem s2 11)(addr := None))) = None"
     using a1 apply (auto simp add: mmu_low_equal)
     using a1 virt_to_phys_unchanged_low_equal by metis
@@ -5520,15 +5520,15 @@ proof (cases "virt_to_phys addra (mmu s1) ((mem s1)(10 := mem s1 10(addr \<mapst
   by (simp add: load_word_mem_def)
 next
   case False
-  then have "\<exists>p. virt_to_phys addra (mmu s1) ((mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+  then have "\<exists>p. virt_to_phys addra (mmu s1) ((mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
           11 := (mem s1 11)(addr := None))) = Some p \<and>
-             virt_to_phys addra (mmu s2) ((mem s2)(10 := mem s2 10(addr \<mapsto> val), 
+             virt_to_phys addra (mmu s2) ((mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 
           11 := (mem s2 11)(addr := None))) = Some p"
     using a1 apply (auto simp add: mmu_low_equal)
     using a1 virt_to_phys_unchanged_low_equal by metis
-  then have "\<exists>p. virt_to_phys addra (mmu s1) ((mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+  then have "\<exists>p. virt_to_phys addra (mmu s1) ((mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
           11 := (mem s1 11)(addr := None))) = Some p \<and>
-            virt_to_phys addra (mmu s2) ((mem s2)(10 := mem s2 10(addr \<mapsto> val), 
+            virt_to_phys addra (mmu s2) ((mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 
           11 := (mem s2 11)(addr := None))) = Some p \<and> 
             virt_to_phys addra (mmu s1) (mem s1) = Some p \<and>
             virt_to_phys addra (mmu s2) (mem s2) = Some p"
@@ -5555,10 +5555,10 @@ lemma memory_read_8_unchanged:
 assumes a1: "low_equal s1 s2 \<and>
 fst (memory_read 8 addra s1) = fst (memory_read 8 addra s2)"
 shows "fst (memory_read 8 addra
-                   (s1\<lparr>mem := (mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+                   (s1\<lparr>mem := (mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
                                        11 := (mem s1 11)(addr := None))\<rparr>)) =
          fst (memory_read 8 addra
-                   (s2\<lparr>mem := (mem s2)(10 := mem s2 10(addr \<mapsto> val), 
+                   (s2\<lparr>mem := (mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 
                                        11 := (mem s2 11)(addr := None))\<rparr>))"
 proof (cases "sys_reg s1 CCR AND 1 = 0")
   case True
@@ -5572,12 +5572,12 @@ next
   then have f1: "sys_reg s1 CCR AND 1 \<noteq> 0 \<and> sys_reg s2 CCR AND 1 \<noteq> 0"
     using a1 sys_reg_low_equal by fastforce
   then show ?thesis using a1
-  proof (cases "load_word_mem (s1\<lparr>mem := (mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+  proof (cases "load_word_mem (s1\<lparr>mem := (mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
       11 := (mem s1 11)(addr := None))\<rparr>) addra 8 = None")
     case True
-    then have "load_word_mem (s1\<lparr>mem := (mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+    then have "load_word_mem (s1\<lparr>mem := (mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
       11 := (mem s1 11)(addr := None))\<rparr>) addra 8 = None \<and> 
-      load_word_mem (s2\<lparr>mem := (mem s2)(10 := mem s2 10(addr \<mapsto> val), 
+      load_word_mem (s2\<lparr>mem := (mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 
       11 := (mem s2 11)(addr := None))\<rparr>) addra 8 = None"
       using a1 f1  
       apply (simp add: memory_read_def)
@@ -5588,11 +5588,11 @@ next
     by (simp add: memory_read_def)
   next
     case False
-    then have "\<exists>y. load_word_mem (s1\<lparr>mem := (mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+    then have "\<exists>y. load_word_mem (s1\<lparr>mem := (mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
       11 := (mem s1 11)(addr := None))\<rparr>) addra 8 = Some y" by auto
-    then have "\<exists>y. load_word_mem (s1\<lparr>mem := (mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+    then have "\<exists>y. load_word_mem (s1\<lparr>mem := (mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
       11 := (mem s1 11)(addr := None))\<rparr>) addra 8 = Some y \<and> 
-                   load_word_mem (s2\<lparr>mem := (mem s2)(10 := mem s2 10(addr \<mapsto> val), 
+                   load_word_mem (s2\<lparr>mem := (mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 
       11 := (mem s2 11)(addr := None))\<rparr>) addra 8 = Some y"
       using a1 f1
       apply (simp add: memory_read_def)
@@ -5607,21 +5607,21 @@ qed
 lemma mem_val_alt_mod: 
 assumes a1: "addr1 \<noteq> addr2"
 shows "mem_val_alt 10 addr1 s = 
-mem_val_alt 10 addr1 (s\<lparr>mem := (mem s)(10 := mem s 10(addr2 \<mapsto> val), 
+mem_val_alt 10 addr1 (s\<lparr>mem := (mem s)(10 := (mem s 10)(addr2 \<mapsto> val), 
   11 := (mem s 11)(addr2 := None))\<rparr>)"
 using a1 apply (simp add: mem_val_alt_def)
 by (simp add: Let_def)
 
 lemma mem_val_alt_mod2: 
-"mem_val_alt 10 addr (s\<lparr>mem := (mem s)(10 := mem s 10(addr \<mapsto> val), 
+"mem_val_alt 10 addr (s\<lparr>mem := (mem s)(10 := (mem s 10)(addr \<mapsto> val), 
   11 := (mem s 11)(addr := None))\<rparr>) = Some val"
 by (simp add: mem_val_alt_def)
 
 lemma mem_val_alt_10_unchanged0: 
 assumes a1: "mem_equal s1 s2 pa"
-shows "mem_val_alt 10 (pa AND 68719476732) (s1\<lparr>mem := (mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+shows "mem_val_alt 10 (pa AND 68719476732) (s1\<lparr>mem := (mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
   11 := (mem s1 11)(addr := None))\<rparr>) = 
-  mem_val_alt 10 (pa AND 68719476732) (s2\<lparr>mem := (mem s2)(10 := mem s2 10(addr \<mapsto> val), 
+  mem_val_alt 10 (pa AND 68719476732) (s2\<lparr>mem := (mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 
   11 := (mem s2 11)(addr := None))\<rparr>)"
 apply (simp add: mem_val_alt_def)
 apply (simp add: Let_def)
@@ -5630,9 +5630,9 @@ by (metis option.distinct(1))
 
 lemma mem_val_alt_10_unchanged1: 
 assumes a1: "mem_equal s1 s2 pa"
-shows "mem_val_alt 10 ((pa AND 68719476732) + 1) (s1\<lparr>mem := (mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+shows "mem_val_alt 10 ((pa AND 68719476732) + 1) (s1\<lparr>mem := (mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
   11 := (mem s1 11)(addr := None))\<rparr>) = 
-  mem_val_alt 10 ((pa AND 68719476732) + 1) (s2\<lparr>mem := (mem s2)(10 := mem s2 10(addr \<mapsto> val), 
+  mem_val_alt 10 ((pa AND 68719476732) + 1) (s2\<lparr>mem := (mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 
   11 := (mem s2 11)(addr := None))\<rparr>)"
 apply (simp add: mem_val_alt_def)
 apply (simp add: Let_def)
@@ -5641,9 +5641,9 @@ by (metis option.distinct(1))
 
 lemma mem_val_alt_10_unchanged2: 
 assumes a1: "mem_equal s1 s2 pa"
-shows "mem_val_alt 10 ((pa AND 68719476732) + 2) (s1\<lparr>mem := (mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+shows "mem_val_alt 10 ((pa AND 68719476732) + 2) (s1\<lparr>mem := (mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
   11 := (mem s1 11)(addr := None))\<rparr>) = 
-  mem_val_alt 10 ((pa AND 68719476732) + 2) (s2\<lparr>mem := (mem s2)(10 := mem s2 10(addr \<mapsto> val), 
+  mem_val_alt 10 ((pa AND 68719476732) + 2) (s2\<lparr>mem := (mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 
   11 := (mem s2 11)(addr := None))\<rparr>)"
 apply (simp add: mem_val_alt_def)
 apply (simp add: Let_def)
@@ -5652,9 +5652,9 @@ by (metis option.distinct(1))
 
 lemma mem_val_alt_10_unchanged3: 
 assumes a1: "mem_equal s1 s2 pa"
-shows "mem_val_alt 10 ((pa AND 68719476732) + 3) (s1\<lparr>mem := (mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+shows "mem_val_alt 10 ((pa AND 68719476732) + 3) (s1\<lparr>mem := (mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
   11 := (mem s1 11)(addr := None))\<rparr>) = 
-  mem_val_alt 10 ((pa AND 68719476732) + 3) (s2\<lparr>mem := (mem s2)(10 := mem s2 10(addr \<mapsto> val), 
+  mem_val_alt 10 ((pa AND 68719476732) + 3) (s2\<lparr>mem := (mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 
   11 := (mem s2 11)(addr := None))\<rparr>)"
 apply (simp add: mem_val_alt_def)
 apply (simp add: Let_def)
@@ -5663,21 +5663,21 @@ by (metis option.distinct(1))
 
 lemma mem_val_alt_10_unchanged: 
 assumes a1: "mem_equal s1 s2 pa"
-shows "mem_val_alt 10 (pa AND 68719476732) (s1\<lparr>mem := (mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+shows "mem_val_alt 10 (pa AND 68719476732) (s1\<lparr>mem := (mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
   11 := (mem s1 11)(addr := None))\<rparr>) = 
-  mem_val_alt 10 (pa AND 68719476732) (s2\<lparr>mem := (mem s2)(10 := mem s2 10(addr \<mapsto> val), 
+  mem_val_alt 10 (pa AND 68719476732) (s2\<lparr>mem := (mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 
   11 := (mem s2 11)(addr := None))\<rparr>) \<and>
-  mem_val_alt 10 ((pa AND 68719476732) + 1) (s1\<lparr>mem := (mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+  mem_val_alt 10 ((pa AND 68719476732) + 1) (s1\<lparr>mem := (mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
   11 := (mem s1 11)(addr := None))\<rparr>) = 
-  mem_val_alt 10 ((pa AND 68719476732) + 1) (s2\<lparr>mem := (mem s2)(10 := mem s2 10(addr \<mapsto> val), 
+  mem_val_alt 10 ((pa AND 68719476732) + 1) (s2\<lparr>mem := (mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 
   11 := (mem s2 11)(addr := None))\<rparr>) \<and>
-  mem_val_alt 10 ((pa AND 68719476732) + 2) (s1\<lparr>mem := (mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+  mem_val_alt 10 ((pa AND 68719476732) + 2) (s1\<lparr>mem := (mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
   11 := (mem s1 11)(addr := None))\<rparr>) = 
-  mem_val_alt 10 ((pa AND 68719476732) + 2) (s2\<lparr>mem := (mem s2)(10 := mem s2 10(addr \<mapsto> val), 
+  mem_val_alt 10 ((pa AND 68719476732) + 2) (s2\<lparr>mem := (mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 
   11 := (mem s2 11)(addr := None))\<rparr>) \<and>
-  mem_val_alt 10 ((pa AND 68719476732) + 3) (s1\<lparr>mem := (mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+  mem_val_alt 10 ((pa AND 68719476732) + 3) (s1\<lparr>mem := (mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
   11 := (mem s1 11)(addr := None))\<rparr>) = 
-  mem_val_alt 10 ((pa AND 68719476732) + 3) (s2\<lparr>mem := (mem s2)(10 := mem s2 10(addr \<mapsto> val), 
+  mem_val_alt 10 ((pa AND 68719476732) + 3) (s2\<lparr>mem := (mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 
   11 := (mem s2 11)(addr := None))\<rparr>)"
 using a1 mem_val_alt_10_unchanged0 mem_val_alt_10_unchanged1
 mem_val_alt_10_unchanged2 mem_val_alt_10_unchanged3
@@ -5685,9 +5685,9 @@ by blast
 
 lemma mem_val_w32_10_unchanged: 
 assumes a1: "mem_equal s1 s2 a"
-shows "mem_val_w32 10 a (s1\<lparr>mem := (mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+shows "mem_val_w32 10 a (s1\<lparr>mem := (mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
   11 := (mem s1 11)(addr := None))\<rparr>) =
-mem_val_w32 10 a (s2\<lparr>mem := (mem s2)(10 := mem s2 10(addr \<mapsto> val), 
+mem_val_w32 10 a (s2\<lparr>mem := (mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 
   11 := (mem s2 11)(addr := None))\<rparr>)"
 apply (simp add: mem_val_w32_def)
 apply (simp add: Let_def)
@@ -5714,16 +5714,16 @@ by fastforce
 lemma load_word_mem_10_unchanged: 
 assumes a1: "low_equal s1 s2 \<and> 
 load_word_mem s1 addra 10 = load_word_mem s2 addra 10"
-shows "load_word_mem (s1\<lparr>mem := (mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+shows "load_word_mem (s1\<lparr>mem := (mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
                                          11 := (mem s1 11)(addr := None))\<rparr>) addra 10 =
-       load_word_mem (s2\<lparr>mem := (mem s2)(10 := mem s2 10(addr \<mapsto> val), 
+       load_word_mem (s2\<lparr>mem := (mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 
                                          11 := (mem s2 11)(addr := None))\<rparr>) addra 10"
-proof (cases "virt_to_phys addra (mmu s1) ((mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+proof (cases "virt_to_phys addra (mmu s1) ((mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
           11 := (mem s1 11)(addr := None))) = None")
   case True
-  then have "virt_to_phys addra (mmu s1) ((mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+  then have "virt_to_phys addra (mmu s1) ((mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
           11 := (mem s1 11)(addr := None))) = None \<and>
-             virt_to_phys addra (mmu s2) ((mem s2)(10 := mem s2 10(addr \<mapsto> val), 
+             virt_to_phys addra (mmu s2) ((mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 
           11 := (mem s2 11)(addr := None))) = None"
     using a1 apply (auto simp add: mmu_low_equal)
     using a1 virt_to_phys_unchanged_low_equal by metis
@@ -5731,15 +5731,15 @@ proof (cases "virt_to_phys addra (mmu s1) ((mem s1)(10 := mem s1 10(addr \<mapst
   by (simp add: load_word_mem_def)
 next
   case False
-  then have "\<exists>p. virt_to_phys addra (mmu s1) ((mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+  then have "\<exists>p. virt_to_phys addra (mmu s1) ((mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
           11 := (mem s1 11)(addr := None))) = Some p \<and>
-             virt_to_phys addra (mmu s2) ((mem s2)(10 := mem s2 10(addr \<mapsto> val), 
+             virt_to_phys addra (mmu s2) ((mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 
           11 := (mem s2 11)(addr := None))) = Some p"
     using a1 apply (auto simp add: mmu_low_equal)
     using a1 virt_to_phys_unchanged_low_equal by metis
-  then have "\<exists>p. virt_to_phys addra (mmu s1) ((mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+  then have "\<exists>p. virt_to_phys addra (mmu s1) ((mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
           11 := (mem s1 11)(addr := None))) = Some p \<and>
-            virt_to_phys addra (mmu s2) ((mem s2)(10 := mem s2 10(addr \<mapsto> val), 
+            virt_to_phys addra (mmu s2) ((mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 
           11 := (mem s2 11)(addr := None))) = Some p \<and> 
             virt_to_phys addra (mmu s1) (mem s1) = Some p \<and>
             virt_to_phys addra (mmu s2) (mem s2) = Some p"
@@ -5765,10 +5765,10 @@ lemma memory_read_10_unchanged:
 assumes a1: "low_equal s1 s2 \<and>
 fst (memory_read 10 addra s1) = fst (memory_read 10 addra s2)"
 shows "fst (memory_read 10 addra
-                   (s1\<lparr>mem := (mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+                   (s1\<lparr>mem := (mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
                                        11 := (mem s1 11)(addr := None))\<rparr>)) =
          fst (memory_read 10 addra
-                   (s2\<lparr>mem := (mem s2)(10 := mem s2 10(addr \<mapsto> val), 
+                   (s2\<lparr>mem := (mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 
                                        11 := (mem s2 11)(addr := None))\<rparr>))"
 proof (cases "sys_reg s1 CCR AND 1 = 0")
   case True
@@ -5782,12 +5782,12 @@ next
   then have f1: "sys_reg s1 CCR AND 1 \<noteq> 0 \<and> sys_reg s2 CCR AND 1 \<noteq> 0"
     using a1 sys_reg_low_equal by fastforce
   then show ?thesis using a1
-  proof (cases "load_word_mem (s1\<lparr>mem := (mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+  proof (cases "load_word_mem (s1\<lparr>mem := (mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
       11 := (mem s1 11)(addr := None))\<rparr>) addra 10 = None")
     case True
-    then have "load_word_mem (s1\<lparr>mem := (mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+    then have "load_word_mem (s1\<lparr>mem := (mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
       11 := (mem s1 11)(addr := None))\<rparr>) addra 10 = None \<and> 
-      load_word_mem (s2\<lparr>mem := (mem s2)(10 := mem s2 10(addr \<mapsto> val), 
+      load_word_mem (s2\<lparr>mem := (mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 
       11 := (mem s2 11)(addr := None))\<rparr>) addra 10 = None"
       using a1 f1  
       apply (simp add: memory_read_def)
@@ -5797,11 +5797,11 @@ next
     by (simp add: memory_read_def)
   next
     case False
-    then have "\<exists>y. load_word_mem (s1\<lparr>mem := (mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+    then have "\<exists>y. load_word_mem (s1\<lparr>mem := (mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
       11 := (mem s1 11)(addr := None))\<rparr>) addra 10 = Some y" by auto
-    then have "\<exists>y. load_word_mem (s1\<lparr>mem := (mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+    then have "\<exists>y. load_word_mem (s1\<lparr>mem := (mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
       11 := (mem s1 11)(addr := None))\<rparr>) addra 10 = Some y \<and> 
-                   load_word_mem (s2\<lparr>mem := (mem s2)(10 := mem s2 10(addr \<mapsto> val), 
+                   load_word_mem (s2\<lparr>mem := (mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 
       11 := (mem s2 11)(addr := None))\<rparr>) addra 10 = Some y"
       using a1 f1
       apply (simp add: memory_read_def)
@@ -5821,13 +5821,13 @@ assumes a1: "(\<forall>va. virt_to_phys va (mmu s2) (mem s1) =
   mem_equal s1 s2 pa) \<and>
   mmu s1 = mmu s2 \<and>
   virt_to_phys va (mmu s2)
-  ((mem s1)(10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) =
+  ((mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) =
   Some (pa, b) \<and>
   mmu_readable (get_acc_flag b) 10"
 shows "mem_equal s1 s2 pa"
 proof -
   have "virt_to_phys va (mmu s1)
-  ((mem s1)(10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) =
+  ((mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))) =
   Some (pa, b)"
     using a1 by auto
   then have "virt_to_phys va (mmu s1) (mem s1) = Some (pa, b)"
@@ -5839,9 +5839,9 @@ qed
 
 lemma mem_equal_unchanged: 
 assumes a1: "mem_equal s1 s2 pa"
-shows "mem_equal (s1\<lparr>mem := (mem s1)(10 := mem s1 10(addr \<mapsto> val), 
+shows "mem_equal (s1\<lparr>mem := (mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 
   11 := (mem s1 11)(addr := None))\<rparr>)
- (s2\<lparr>mem := (mem s2)(10 := mem s2 10(addr \<mapsto> val), 
+ (s2\<lparr>mem := (mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 
   11 := (mem s2 11)(addr := None))\<rparr>)
  pa"
 using a1 apply (simp add: mem_equal_def)
@@ -5849,8 +5849,8 @@ by auto
 
 lemma state_mem_mod_1011_low_equal: 
 assumes a1: "low_equal s1 s2 \<and>
-t1 = s1\<lparr>mem := (mem s1)(10 := mem s1 10(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))\<rparr> \<and>
-t2 = s2\<lparr>mem := (mem s2)(10 := mem s2 10(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))\<rparr>"
+t1 = s1\<lparr>mem := (mem s1)(10 := (mem s1 10)(addr \<mapsto> val), 11 := (mem s1 11)(addr := None))\<rparr> \<and>
+t2 = s2\<lparr>mem := (mem s2)(10 := (mem s2 10)(addr \<mapsto> val), 11 := (mem s2 11)(addr := None))\<rparr>"
 shows "low_equal t1 t2"
 using a1
 apply (simp add: low_equal_def)

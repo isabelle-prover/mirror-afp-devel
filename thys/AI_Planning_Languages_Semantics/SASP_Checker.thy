@@ -26,7 +26,7 @@ section \<open>An Executable Checker for Multi-Valued Planning Problem Solutions
     assumes "distinct (map fst ps)"
     shows "m ++ map_of ps = fold (\<lambda>(k, v) m. m(k \<mapsto> v)) ps m"
   proof -
-    have X1: "fold (\<lambda>(k, v) m. m(k \<mapsto> v)) ps m(a \<mapsto> b) 
+    have X1: "(fold (\<lambda>(k, v) m. m(k \<mapsto> v)) ps m)(a \<mapsto> b) 
             = fold (\<lambda>(k, v) m. m(k \<mapsto> v)) ps (m(a \<mapsto> b))" 
       if "a \<notin> fst ` set ps"
       for a b ps and m :: "'a \<rightharpoonup> 'b"

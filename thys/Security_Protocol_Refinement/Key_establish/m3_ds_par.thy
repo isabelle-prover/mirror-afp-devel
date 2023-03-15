@@ -489,11 +489,11 @@ proof -
       "Kab = sesK (Rs$sk)" "Rs \<notin> dom (runs t)"
       "\<lbrace> Agent A, Agent B \<rbrace> \<in> parts (IK t)"
     let ?s'=
-      "s\<lparr> runs := runs s(Rs \<mapsto> (Serv, [A, B], [aNum (clk t)])),
+      "s\<lparr> runs := (runs s)(Rs \<mapsto> (Serv, [A, B], [aNum (clk t)])),
           chan := insert (Secure Sv A (Msg [aAgt B, aKey Kab, aNum (clk t)]))
                  (insert (Secure Sv B (Msg [aKey Kab, aAgt A, aNum (clk t)])) (chan s)) \<rparr>"
     let ?t'=
-      "t\<lparr> runs := runs t(Rs \<mapsto> (Serv, [A, B], [aNum (clk t)])),
+      "t\<lparr> runs := (runs t)(Rs \<mapsto> (Serv, [A, B], [aNum (clk t)])),
           IK := insert
                   (Crypt (shrK A) \<lbrace> Agent B, Key Kab, Number (clk t) \<rbrace>)
                 (insert

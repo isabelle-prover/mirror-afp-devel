@@ -16,7 +16,7 @@ lemma map_of_set_simps[simp]:
   "map_of_set {} = Map.empty"
   "map_of_set s x = None \<longleftrightarrow> x\<notin>s"
   "map_of_set s x = Some u \<longleftrightarrow> x\<in>s"
-  "map_of_set s (x\<mapsto>()) = map_of_set (insert x s)"
+  "(map_of_set s) (x\<mapsto>()) = map_of_set (insert x s)"
   "(map_of_set s) |` (-{x}) = map_of_set (s -{x})"
   apply (auto simp: map_of_set_def 
     dom_def ne_some_unit_eq restrict_map_def 

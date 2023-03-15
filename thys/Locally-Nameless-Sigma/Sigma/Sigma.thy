@@ -2368,13 +2368,13 @@ proof
       from obkmem mem_ob have obkfst: "dom (fst(ob!k)) = dom f" by blast 
 
         (* get witness *)
-      define ob' where "ob' = ob @ [(fst(ob!k)(l' \<mapsto> the (g l')), insert l' (snd(ob!k)))]"
+      define ob' where "ob' = ob @ [((fst(ob!k))(l' \<mapsto> the (g l')), insert l' (snd(ob!k)))]"
 
       from nth_fst[OF \<open>length ob = k + 1\<close>] have first: "ob'!0 = ob!0" 
         by (simp add: ob'_def)
 
       from \<open>length ob = k + 1\<close> nth_last[of ob "Suc k"]
-      have last: "ob'!Suc k = (fst(ob!k)(l' \<mapsto> the (g l')), insert l' (snd(ob!k)))"
+      have last: "ob'!Suc k = ((fst(ob!k))(l' \<mapsto> the (g l')), insert l' (snd(ob!k)))"
         by (simp add: ob'_def)
 
       from \<open>length ob = k + 1\<close> nth_append[of ob _ k] have kth: "ob'!k = ob!k"
@@ -2397,7 +2397,7 @@ proof
         unfolding ob'_def
       proof (intro strip)
         fix obi :: "(Label -~> sterm) \<times> (Label set)"
-        assume "obi \<in> set (ob @ [(fst(ob!k)(l' \<mapsto> the (g l')), insert l' (snd (ob!k)))])"
+        assume "obi \<in> set (ob @ [((fst(ob!k))(l' \<mapsto> the (g l')), insert l' (snd (ob!k)))])"
         note mem_append_lem'[OF this]
         thus "dom (fst obi) = dom f \<and> snd obi \<subseteq> dom f"
         proof (rule disjE, simp_all)
@@ -2508,11 +2508,11 @@ proof
         note obj_lem[OF this \<open>finite L\<close>]
 
         ultimately
-        have "Obj (fst(ob!k)) T \<rightarrow>\<^sub>\<beta>\<^sup>* Obj (fst(ob!k)(l' \<mapsto> the (g l'))) T"
+        have "Obj (fst(ob!k)) T \<rightarrow>\<^sub>\<beta>\<^sup>* Obj ((fst(ob!k))(l' \<mapsto> the (g l'))) T"
           by blast
 
         moreover
-        from last have "fst(ob'!Suc k) = fst(ob!k)(l' \<mapsto> the (g l'))"
+        from last have "fst(ob'!Suc k) = (fst(ob!k))(l' \<mapsto> the (g l'))"
           by auto
 
         ultimately
