@@ -786,7 +786,7 @@ proof -
         thus 
           "map_of (map p_unwrap (map snd (\<alpha> 
               (aluprio_insert splits annot isEmpty app consr s e a)))) 
-            = map_of (map p_unwrap (map snd (\<alpha> s)))(e \<mapsto> a)"
+            = (map_of (map p_unwrap (map snd (\<alpha> s))))(e \<mapsto> a)"
           using v12 v13 v4(1)
           by simp
       next
@@ -811,7 +811,7 @@ proof -
         thus 
           "map_of (map p_unwrap (map snd (\<alpha> 
               (aluprio_insert splits annot isEmpty app consr s e a)))) 
-            = map_of (map p_unwrap (map snd (\<alpha> s)))(e \<mapsto> a)"
+            = (map_of (map p_unwrap (map snd (\<alpha> s))))(e \<mapsto> a)"
           using v12 v13 v16
           by simp
       qed

@@ -166,7 +166,7 @@ where
 | redT_acquire:
   "\<And>ln. \<lbrakk> thr s t = \<lfloor>(x, ln)\<rfloor>; \<not> waiting (wset s t);
      may_acquire_all (locks s) t ln; ln $ n > 0;
-     s' = (acquire_all (locks s) t ln, (thr s(t \<mapsto> (x, no_wait_locks)), shr s), wset s, interrupts s) \<rbrakk>
+     s' = (acquire_all (locks s) t ln, ((thr s)(t \<mapsto> (x, no_wait_locks)), shr s), wset s, interrupts s) \<rbrakk>
   \<Longrightarrow> s -t\<triangleright>((K$ []), [], [], [], [], convert_RA ln)\<rightarrow> s'"
 
 abbreviation
@@ -189,14 +189,14 @@ lemma redT_elims [consumes 1, case_names normal acquire]:
       wset_actions_ok (wset s) t \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>;
       interrupt_actions_ok (interrupts s) \<lbrace>ta\<rbrace>\<^bsub>i\<^esub>;
       redT_updWs t (wset s) \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> ws';
-      s' = (redT_updLs (locks s) t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>, (redT_updTs (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>(t \<mapsto> (x', redT_updLns (locks s) t no_wait_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>)), m'), ws', redT_updIs (interrupts s) \<lbrace>ta\<rbrace>\<^bsub>i\<^esub>) \<rbrakk>
+      s' = (redT_updLs (locks s) t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>, ((redT_updTs (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>)(t \<mapsto> (x', redT_updLns (locks s) t no_wait_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>)), m'), ws', redT_updIs (interrupts s) \<lbrace>ta\<rbrace>\<^bsub>i\<^esub>) \<rbrakk>
     \<Longrightarrow> thesis"
    and acquire: "\<And>x ln n.
     \<lbrakk> thr s t = \<lfloor>(x, ln)\<rfloor>;
       ta = (K$ [], [], [], [], [], convert_RA ln);
       \<not> waiting (wset s t);
       may_acquire_all (locks s) t ln; 0 < ln $ n;
-      s' = (acquire_all (locks s) t ln, (thr s(t \<mapsto> (x, no_wait_locks)), shr s), wset s, interrupts s) \<rbrakk>
+      s' = (acquire_all (locks s) t ln, ((thr s)(t \<mapsto> (x, no_wait_locks)), shr s), wset s, interrupts s) \<rbrakk>
     \<Longrightarrow> thesis"
   shows thesis
 using red

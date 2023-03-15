@@ -137,7 +137,7 @@ lemma map_upds_apply_eq_Some:
 
 lemma map_upds_upd_conv_index:
   "\<lbrakk>x \<in> set xs; size xs \<le> size ys \<rbrakk>
-  \<Longrightarrow> m(xs[\<mapsto>]ys)(x\<mapsto>y) = m(xs[\<mapsto>]ys[index xs x := y])"
+  \<Longrightarrow> m(xs[\<mapsto>]ys, x\<mapsto>y) = m(xs[\<mapsto>]ys[index xs x := y])"
 (*<*)
 apply(rule ext)
 apply(simp add:fun_upds_apply index_less_aux eq_sym_conv Let_def)

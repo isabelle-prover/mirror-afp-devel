@@ -1131,10 +1131,10 @@ proof (intro fun_relI, clarsimp)
   qed
 
   moreover have "ahm_\<alpha> bhc (ahm_update_aux (=) bhc hm k v) = 
-                     ahm_\<alpha> bhc hm(k \<mapsto> v)"
+                     (ahm_\<alpha> bhc hm)(k \<mapsto> v)"
   proof
     fix k'
-    show "ahm_\<alpha> bhc (ahm_update_aux (=) bhc hm k v) k' = (ahm_\<alpha> bhc hm(k \<mapsto> v)) k'"
+    show "ahm_\<alpha> bhc (ahm_update_aux (=) bhc hm k v) k' = ((ahm_\<alpha> bhc hm)(k \<mapsto> v)) k'"
     proof (cases "bhc ?l k = bhc ?l k'") 
       case False
         thus ?thesis by (force simp add: Let_def 

@@ -46,7 +46,7 @@ by(simp add:fun_upds_apply Let_def)
 
 lemma map_upds_upd_conv_last_index:
   "\<lbrakk>x \<in> set xs; size xs \<le> size ys \<rbrakk>
-  \<Longrightarrow> m(xs[\<mapsto>]ys)(x\<mapsto>y) = m(xs[\<mapsto>]ys[last_index xs x := y])"
+  \<Longrightarrow> m(xs[\<mapsto>]ys, x\<mapsto>y) = m(xs[\<mapsto>]ys[last_index xs x := y])"
 by(rule ext) (simp add:fun_upds_apply eq_sym_conv Let_def)
 
 end

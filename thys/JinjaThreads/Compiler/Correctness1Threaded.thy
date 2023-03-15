@@ -394,7 +394,7 @@ proof(cases rule: Red1_mthr.redT.cases)
     note [simp] = \<open>ex = (e, x)\<close> \<open>ta = extTA2J1 P TA\<close> \<open>ex' = (e', x')\<close> \<open>exs' = exs\<close>
       and red = \<open>False,P,t \<turnstile>1 \<langle>e,(shr s1, x)\<rangle> -TA\<rightarrow> \<langle>e',(m', x')\<rangle>\<close>
     { fix t'
-      assume None: "(redT_updTs (thr s1) (map (convert_new_thread_action (extNTA2J1 P)) \<lbrace>TA\<rbrace>\<^bsub>t\<^esub>)(t \<mapsto> (((e', x'), exs), redT_updLns (locks s1) t (snd (the (thr s1 t))) \<lbrace>TA\<rbrace>\<^bsub>l\<^esub>))) t' = None"
+      assume None: "((redT_updTs (thr s1) (map (convert_new_thread_action (extNTA2J1 P)) \<lbrace>TA\<rbrace>\<^bsub>t\<^esub>))(t \<mapsto> (((e', x'), exs), redT_updLns (locks s1) t (snd (the (thr s1 t))) \<lbrace>TA\<rbrace>\<^bsub>l\<^esub>))) t' = None"
       { fix l
         from aoe have "lock_actions_ok (locks s1 $ l) t (\<lbrace>ta\<rbrace>\<^bsub>l\<^esub> $ l)" by(auto simp add: lock_ok_las_def)
         with None have "has_locks ((redT_updLs (locks s1) t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>) $ l) t' = has_locks (locks s1 $ l) t'"
@@ -405,7 +405,7 @@ proof(cases rule: Red1_mthr.redT.cases)
       hence "\<forall>l. has_locks (upd_locks (locks s1 $ l) t (\<lbrace>TA\<rbrace>\<^bsub>l\<^esub> $ l)) t' = 0" .. }
     moreover {
       fix t' eX eXS LN
-      assume Some: "(redT_updTs (thr s1) (map (convert_new_thread_action (extNTA2J1 P)) \<lbrace>TA\<rbrace>\<^bsub>t\<^esub>)(t \<mapsto> (((e', x'), exs), redT_updLns (locks s1) t (snd (the (thr s1 t))) \<lbrace>TA\<rbrace>\<^bsub>l\<^esub>))) t' = \<lfloor>((eX, eXS), LN)\<rfloor>"
+      assume Some: "((redT_updTs (thr s1) (map (convert_new_thread_action (extNTA2J1 P)) \<lbrace>TA\<rbrace>\<^bsub>t\<^esub>))(t \<mapsto> (((e', x'), exs), redT_updLns (locks s1) t (snd (the (thr s1 t))) \<lbrace>TA\<rbrace>\<^bsub>l\<^esub>))) t' = \<lfloor>((eX, eXS), LN)\<rfloor>"
       { fix l
         from aoe have lao: "lock_actions_ok (locks s1 $ l) t (\<lbrace>ta\<rbrace>\<^bsub>l\<^esub> $ l)" by(auto simp add: lock_ok_las_def)
         have "has_locks ((redT_updLs (locks s1) t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>) $ l) t' + LN $ l = expr_lockss (map fst (eX # eXS)) l"

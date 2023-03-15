@@ -911,7 +911,7 @@ proof
   next
     case (redT_acquire x n ln)
     hence [simp]: "ta = (K$ [], [], [], [], [], convert_RA ln)"
-      and s': "s' = (acquire_all (locks s) t ln, (thr s(t \<mapsto> (x, no_wait_locks)), shr s), wset s, interrupts s)"
+      and s': "s' = (acquire_all (locks s) t ln, ((thr s)(t \<mapsto> (x, no_wait_locks)), shr s), wset s, interrupts s)"
       and tst: "thr s t = \<lfloor>(x, ln)\<rfloor>" 
       and wst: "\<not> waiting (wset s t)" by auto
     from t'dead show ?thesis

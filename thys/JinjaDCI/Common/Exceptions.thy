@@ -78,13 +78,13 @@ using Start_nsys_xcpts by(auto simp: sys_xcpts_def dest: sym)
 
 definition start_heap :: "'c prog \<Rightarrow> heap"
 where
-  "start_heap G \<equiv> Map.empty (addr_of_sys_xcpt NullPointer \<mapsto> blank G NullPointer)
-                        (addr_of_sys_xcpt ClassCast \<mapsto> blank G ClassCast)
-                        (addr_of_sys_xcpt OutOfMemory \<mapsto> blank G OutOfMemory)
-                        (addr_of_sys_xcpt NoClassDefFoundError \<mapsto> blank G NoClassDefFoundError)
-                        (addr_of_sys_xcpt IncompatibleClassChangeError \<mapsto> blank G IncompatibleClassChangeError)
-                        (addr_of_sys_xcpt NoSuchFieldError \<mapsto> blank G NoSuchFieldError)
-                        (addr_of_sys_xcpt NoSuchMethodError \<mapsto> blank G NoSuchMethodError)"
+  "start_heap G \<equiv> Map.empty (addr_of_sys_xcpt NullPointer \<mapsto> blank G NullPointer,
+                        addr_of_sys_xcpt ClassCast \<mapsto> blank G ClassCast,
+                        addr_of_sys_xcpt OutOfMemory \<mapsto> blank G OutOfMemory,
+                        addr_of_sys_xcpt NoClassDefFoundError \<mapsto> blank G NoClassDefFoundError,
+                        addr_of_sys_xcpt IncompatibleClassChangeError \<mapsto> blank G IncompatibleClassChangeError,
+                        addr_of_sys_xcpt NoSuchFieldError \<mapsto> blank G NoSuchFieldError,
+                        addr_of_sys_xcpt NoSuchMethodError \<mapsto> blank G NoSuchMethodError)"
 
 definition preallocated :: "heap \<Rightarrow> bool"
 where

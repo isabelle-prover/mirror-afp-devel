@@ -113,7 +113,7 @@ lemma ahm_empty_correct:
 
 
 lemma ahm_update_correct: 
-  "ahm_\<alpha> (ahm_update k v m) = ahm_\<alpha> m (k \<mapsto> v)"
+  "ahm_\<alpha> (ahm_update k v m) = (ahm_\<alpha> m)(k \<mapsto> v)"
   "ahm_invar m \<Longrightarrow> ahm_invar (ahm_update k v m)"
   apply (rule ext)
   apply (unfold ahm_update_def)

@@ -954,7 +954,7 @@ next
     and l''': "l'=l'''(p:=l p)"
     by (auto elim!: eval_cases)
   then obtain l'' where 
-    hyp: "P \<turnstile> \<langle>e,(h, l(p\<mapsto>v)(ps'[\<mapsto>]vs'))\<rangle> \<Rightarrow> \<langle>e',(h', l'')\<rangle>"
+    hyp: "P \<turnstile> \<langle>e,(h, l(p\<mapsto>v, ps'[\<mapsto>]vs'))\<rangle> \<Rightarrow> \<langle>e',(h', l'')\<rangle>"
     using length_eqs Ts vs Cons.hyps [OF _ _ eval_ps'] by auto
   from hyp
   show "\<exists>l''. P \<turnstile> \<langle>e,(h, l(p # ps'[\<mapsto>]vs))\<rangle> \<Rightarrow> \<langle>e',(h', l'')\<rangle>"

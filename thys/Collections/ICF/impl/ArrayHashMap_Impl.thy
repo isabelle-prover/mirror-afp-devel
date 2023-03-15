@@ -620,12 +620,12 @@ proof -
     from inv have "1 < array_length a" by(auto elim: ahm_invar_auxE)
     thus "1 < array_length ?a'" by simp
   qed
-  moreover have "ahm_\<alpha> (ahm_update_aux hm k v) = ahm_\<alpha> hm(k \<mapsto> v)"
+  moreover have "ahm_\<alpha> (ahm_update_aux hm k v) = (ahm_\<alpha> hm)(k \<mapsto> v)"
   proof
     fix k'
     from inv have "1 < array_length a" by(auto elim: ahm_invar_auxE)
     with bounded_hashcode_nat_bounds[OF this, of k]
-    show "ahm_\<alpha> (ahm_update_aux hm k v) k' = (ahm_\<alpha> hm(k \<mapsto> v)) k'"
+    show "ahm_\<alpha> (ahm_update_aux hm k v) k' = ((ahm_\<alpha> hm)(k \<mapsto> v)) k'"
       by(cases "bounded_hashcode_nat (array_length a) k = bounded_hashcode_nat (array_length a) k'")(auto simp add: Let_def update_conv array_get_array_set_other)
   qed
   ultimately show ?thesis1 ?thesis2 by(simp_all add: Let_def)

@@ -41,12 +41,12 @@ by(induct cas)(auto)
 
 lemma cond_action_oks_upd:
   assumes tst: "thr s t = \<lfloor>xln\<rfloor>"
-  shows "cond_action_oks (locks s, (thr s(t \<mapsto> xln'), shr s), wset s, interrupts s) t cas = cond_action_oks s t cas"
+  shows "cond_action_oks (locks s, ((thr s)(t \<mapsto> xln'), shr s), wset s, interrupts s) t cas = cond_action_oks s t cas"
 proof(induct cas)
   case Nil thus ?case by simp
 next
   case (Cons ca cas)
-  from tst have eq: "cond_action_ok (locks s, (thr s(t \<mapsto> xln'), shr s), wset s, interrupts s) t ca = cond_action_ok s t ca"
+  from tst have eq: "cond_action_ok (locks s, ((thr s)(t \<mapsto> xln'), shr s), wset s, interrupts s) t ca = cond_action_ok s t ca"
     by(cases ca) auto
   with Cons show ?case by(auto simp del: fun_upd_apply)
 qed

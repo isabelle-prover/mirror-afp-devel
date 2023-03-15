@@ -695,7 +695,7 @@ proof(rule iffI)
     from mexec_eq_mexecd[OF wf \<open>\<Phi> \<turnstile> t: (xcp, shr s, frs) \<surd>\<close>] \<open>mexec P t (x, shr s) ta (x', m')\<close>
     have *: "mexecd P t (x, shr s) ta (x', m')" by simp
     with lifting_wf.redT_updTs_preserves[OF lifting_wf_correct_state_d[OF wf] cs, OF this \<open>thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>\<close>] \<open>thread_oks (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>\<close>
-    have "correct_state_ts \<Phi> (redT_updTs (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>(t \<mapsto> (x', redT_updLns (locks s) t no_wait_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>))) m'" by simp
+    have "correct_state_ts \<Phi> ((redT_updTs (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>)(t \<mapsto> (x', redT_updLns (locks s) t no_wait_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>))) m'" by simp
     with * show ?thesis using normal 
       by(cases s')(erule execd_mthr.redT_normal, auto)
   next
@@ -715,7 +715,7 @@ next
     from mexec_eq_mexecd[OF wf \<open>\<Phi> \<turnstile> t: (xcp, shr s, frs) \<surd>\<close>] \<open>mexecd P t (x, shr s) ta (x', m')\<close>
     have "mexec P t (x, shr s) ta (x', m')" by simp
     moreover from lifting_wf.redT_updTs_preserves[OF lifting_wf_correct_state_d[OF wf] cs, OF \<open>mexecd P t (x, shr s) ta (x', m')\<close> \<open>thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>\<close>] \<open>thread_oks (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>\<close>
-    have "correct_state_ts \<Phi> (redT_updTs (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>(t \<mapsto> (x', redT_updLns (locks s) t no_wait_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>))) m'" by simp
+    have "correct_state_ts \<Phi> ((redT_updTs (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>)(t \<mapsto> (x', redT_updLns (locks s) t no_wait_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>))) m'" by simp
     ultimately show ?thesis using normal
       by(cases s')(erule exec_mthr.redT_normal, auto)
   next

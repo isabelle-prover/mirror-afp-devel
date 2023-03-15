@@ -12,7 +12,7 @@ lemmas mapping_filter_code [code] = map_filter_simps[containers_identify]
 definition test :: "(nat \<Rightarrow> int option) \<Rightarrow> nat list \<Rightarrow> int list"
 where
   "test f xs = 
-  (if f = Map.empty then [] else List.map_filter (f(2 := None)(1 \<mapsto> -1)) xs)"
+  (if f = Map.empty then [] else List.map_filter ((f(2 := None))(1 \<mapsto> -1)) xs)"
 
 lift_definition test' :: "(nat, int) mapping \<Rightarrow> nat list \<Rightarrow> int list" is test .
 

@@ -930,17 +930,17 @@ proof -
       and "s1' \<approx>m s2''" and fin: "\<And>t. r1.final_thread s1' t \<Longrightarrow> r2.final_thread s2'' t" and "shr s2'' = shr s2'" by blast
     have "thr s2' t = None" unfolding s2'_def by simp
     with \<open>r2.mthr.silent_moves s2' s2''\<close>
-    have "r2.mthr.silent_moves (locks s2', (thr s2'(t \<mapsto> the (thr s2 t)), shr s2'), wset s2', interrupts s2')
-      (locks s2'', (thr s2''(t \<mapsto> the (thr s2 t)), shr s2''), wset s2'', interrupts s2'')"
+    have "r2.mthr.silent_moves (locks s2', ((thr s2')(t \<mapsto> the (thr s2 t)), shr s2'), wset s2', interrupts s2')
+      (locks s2'', ((thr s2'')(t \<mapsto> the (thr s2 t)), shr s2''), wset s2'', interrupts s2'')"
       by(rule r2.\<tau>mRedT_add_thread_inv)
-    also let ?s2'' = "(locks s2, (thr s2''(t \<mapsto> the (thr s2 t)), shr s2), wset s2, interrupts s2)"
+    also let ?s2'' = "(locks s2, ((thr s2'')(t \<mapsto> the (thr s2 t)), shr s2), wset s2, interrupts s2)"
     from \<open>shr s2'' = shr s2'\<close> \<open>s1' \<approx>m s2''\<close> \<open>s1 \<approx>m s2\<close>
-    have "(locks s2'', (thr s2''(t \<mapsto> the (thr s2 t)), shr s2''), wset s2'', interrupts s2'') = ?s2''"
+    have "(locks s2'', ((thr s2'')(t \<mapsto> the (thr s2 t)), shr s2''), wset s2'', interrupts s2'') = ?s2''"
       unfolding s2'_def s1'_def by(simp add: mbisim_def)
     also (back_subst) from \<open>s1 \<approx>m s2\<close> have "dom (thr s1) = dom (thr s2)" by(rule mbisim_dom_eq)
     with \<open>r1.final_thread s1 t\<close> have "t \<in> dom (thr s2)" by(auto simp add: r1.final_thread_def)
     then obtain x2 ln where tst2: "thr s2 t = \<lfloor>(x2, ln)\<rfloor>" by auto
-    hence "(locks s2', (thr s2'(t \<mapsto> the (thr s2 t)), shr s2'), wset s2', interrupts s2') = s2"
+    hence "(locks s2', ((thr s2')(t \<mapsto> the (thr s2 t)), shr s2'), wset s2', interrupts s2') = s2"
       unfolding s2'_def by(cases s2)(auto intro!: ext)
     also from \<open>s1 \<approx>m s2\<close> tst2 obtain x1
       where tst1: "thr s1 t = \<lfloor>(x1, ln)\<rfloor>"

@@ -32,9 +32,9 @@ where
 
 definition start_heap :: "'c prog \<Rightarrow> heap"
 where
-  "start_heap G \<equiv> Map.empty (addr_of_sys_xcpt NullPointer \<mapsto> blank G NullPointer)
-                        (addr_of_sys_xcpt ClassCast \<mapsto> blank G ClassCast)
-                        (addr_of_sys_xcpt OutOfMemory \<mapsto> blank G OutOfMemory)"
+  "start_heap G \<equiv> Map.empty (addr_of_sys_xcpt NullPointer \<mapsto> blank G NullPointer,
+                        addr_of_sys_xcpt ClassCast \<mapsto> blank G ClassCast,
+                        addr_of_sys_xcpt OutOfMemory \<mapsto> blank G OutOfMemory)"
 
 definition preallocated :: "heap \<Rightarrow> bool"
 where

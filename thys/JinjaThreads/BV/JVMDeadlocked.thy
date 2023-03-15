@@ -293,7 +293,7 @@ proof -
       have "\<Phi> \<turnstile> t': (XCP, shr s, FRS) \<surd>" by(auto dest: ts_okD)
       ultimately have "\<Phi> \<turnstile> t': (XCP, M', FRS) \<surd>" by -(rule correct_state_heap_change[OF wf])
       moreover from lifting_wf.redT_updTs_preserves[OF lifting_wf_correct_state_d[OF wf] css, OF \<open>mexecd P t' (X, shr s) ta' (X', M')\<close> \<open>thr s t' = \<lfloor>(X, no_wait_locks)\<rfloor>\<close>, of no_wait_locks] \<open>thread_oks (thr s) \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>\<close>
-      have "correct_state_ts \<Phi> (redT_updTs (thr s) \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>(t' \<mapsto> (X', no_wait_locks))) M'" by simp
+      have "correct_state_ts \<Phi> ((redT_updTs (thr s) \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>)(t' \<mapsto> (X', no_wait_locks))) M'" by simp
       ultimately have "correct_state_ts \<Phi> (redT_updTs (thr s) \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>) M'"
         using \<open>thr s t' = \<lfloor>(X, no_wait_locks)\<rfloor>\<close> \<open>thread_oks (thr s) \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>\<close>
         apply(auto intro!: ts_okI dest: ts_okD)
@@ -302,7 +302,7 @@ proof -
         apply(drule_tac t=t in ts_okD, fastforce+)
         done
       hence "correct_state_ts \<Phi> (redT_updTs (thr s) \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>) (shr s')" 
-        using \<open>s' = (redT_updLs (locks s) t' \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub>, (redT_updTs (thr s) \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>(t' \<mapsto> (X', redT_updLns (locks s) t' no_wait_locks \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub>)), M'), ws', redT_updIs (interrupts s) \<lbrace>ta'\<rbrace>\<^bsub>i\<^esub>)\<close>
+        using \<open>s' = (redT_updLs (locks s) t' \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub>, ((redT_updTs (thr s) \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>)(t' \<mapsto> (X', redT_updLns (locks s) t' no_wait_locks \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub>)), M'), ws', redT_updIs (interrupts s) \<lbrace>ta'\<rbrace>\<^bsub>i\<^esub>)\<close>
         by simp
       moreover from tst \<open>thread_oks (thr s) \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>\<close>
       have "redT_updTs (thr s) \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub> t = \<lfloor>(x, no_wait_locks)\<rfloor>" by(auto intro: redT_updTs_Some)

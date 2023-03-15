@@ -207,11 +207,11 @@ next
 qed
 
 lemma redT_updT_upd:
-  "\<lbrakk> ts t = \<lfloor>xw\<rfloor>; thread_ok ts ta \<rbrakk> \<Longrightarrow> redT_updT ts ta(t \<mapsto> xw') = redT_updT (ts(t \<mapsto> xw')) ta"
+  "\<lbrakk> ts t = \<lfloor>xw\<rfloor>; thread_ok ts ta \<rbrakk> \<Longrightarrow> (redT_updT ts ta)(t \<mapsto> xw') = redT_updT (ts(t \<mapsto> xw')) ta"
 by(cases ta)(fastforce intro: fun_upd_twist)+
 
 lemma redT_updTs_upd:
-  "\<lbrakk> ts t = \<lfloor>xw\<rfloor>; thread_oks ts tas \<rbrakk> \<Longrightarrow> redT_updTs ts tas(t \<mapsto> xw') = redT_updTs (ts(t \<mapsto> xw')) tas"
+  "\<lbrakk> ts t = \<lfloor>xw\<rfloor>; thread_oks ts tas \<rbrakk> \<Longrightarrow> (redT_updTs ts tas)(t \<mapsto> xw') = redT_updTs (ts(t \<mapsto> xw')) tas"
 by(induct ts tas rule: redT_updTs.induct)(auto simp del: fun_upd_apply simp add: redT_updT_upd dest: redT_updT_Some)
 
 lemma thread_ok_upd:

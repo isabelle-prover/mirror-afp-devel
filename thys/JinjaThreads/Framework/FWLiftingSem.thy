@@ -62,10 +62,10 @@ lemma redT_updTs_invariant:
   and red: "t \<turnstile> \<langle>x, m\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle>"
   and tao: "thread_oks ts \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>"
   and tst: "ts t = \<lfloor>(x, ln)\<rfloor>"
-  shows "ts_inv P (upd_invs I P \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>) (redT_updTs ts \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>(t \<mapsto> (x', ln'))) m'"
+  shows "ts_inv P (upd_invs I P \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>) ((redT_updTs ts \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>)(t \<mapsto> (x', ln'))) m'"
 proof(rule ts_invI)
   fix T X LN
-  assume XLN: "(redT_updTs ts \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>(t \<mapsto> (x', ln'))) T = \<lfloor>(X, LN)\<rfloor>"
+  assume XLN: "((redT_updTs ts \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>)(t \<mapsto> (x', ln'))) T = \<lfloor>(X, LN)\<rfloor>"
   from tsiP \<open>ts t = \<lfloor>(x, ln)\<rfloor>\<close> obtain i where "I t = \<lfloor>i\<rfloor>" "P i t x m" 
     by(auto dest: ts_invD)
   show "\<exists>i. upd_invs I P \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> T = \<lfloor>i\<rfloor> \<and> P i T X m'"
@@ -115,7 +115,7 @@ proof(cases rule: redT_elims)
 next
   case (normal x x' m')
   with esinvP
-  have "ts_inv P (upd_invs I P \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>) (redT_updTs (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>(t \<mapsto> (x', redT_updLns (locks s) t no_wait_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>))) m'"
+  have "ts_inv P (upd_invs I P \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>) ((redT_updTs (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>)(t \<mapsto> (x', redT_updLns (locks s) t no_wait_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>))) m'"
     by(auto intro: redT_updTs_invariant)
   thus ?thesis using normal by simp
 qed
@@ -164,11 +164,11 @@ lemma redT_updTs_preserves:
   and red: "t \<turnstile> \<langle>x, m\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle>"
   and "ts t = \<lfloor>(x, ln)\<rfloor>"
   and "thread_oks ts \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>"
-  shows "ts_ok P (redT_updTs ts \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>(t \<mapsto> (x', ln'))) m'"
+  shows "ts_ok P ((redT_updTs ts \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>)(t \<mapsto> (x', ln'))) m'"
 proof -
   interpret lifting_inv final r convert_RA "\<lambda>_ :: unit. P" by(rule lifting_inv)
   from esokQ obtain I :: "'t \<rightharpoonup> unit" where "ts_inv (\<lambda>_. P) I ts m" by(rule ts_ok_into_ts_inv_const)
-  hence "ts_inv (\<lambda>_. P) (upd_invs I (\<lambda>_. P) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>) (redT_updTs ts \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>(t \<mapsto> (x', ln'))) m'"
+  hence "ts_inv (\<lambda>_. P) (upd_invs I (\<lambda>_. P) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>) ((redT_updTs ts \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>)(t \<mapsto> (x', ln'))) m'"
     using red \<open>thread_oks ts \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>\<close> \<open>ts t = \<lfloor>(x, ln)\<rfloor>\<close> by(rule redT_updTs_invariant)
   thus ?thesis by(rule ts_inv_const_into_ts_ok)
 qed

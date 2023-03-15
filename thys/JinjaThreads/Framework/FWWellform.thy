@@ -96,7 +96,7 @@ by(rule ccontr)(auto dest: lock_thread_okD)
 
 lemma redT_upds_preserves_lock_thread_ok:
   "\<lbrakk>lock_thread_ok ls ts; ts t = \<lfloor>xw\<rfloor>; thread_oks ts tas\<rbrakk>
-  \<Longrightarrow> lock_thread_ok (redT_updLs ls t las) (redT_updTs ts tas(t \<mapsto> xw'))"
+  \<Longrightarrow> lock_thread_ok (redT_updLs ls t las) ((redT_updTs ts tas)(t \<mapsto> xw'))"
 apply(rule lock_thread_okI)
 apply(clarsimp simp del: split_paired_Ex)
 apply(drule has_lock_upd_locks_implies_has_lock, simp)

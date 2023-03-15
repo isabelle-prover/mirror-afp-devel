@@ -524,9 +524,9 @@ proof -
       and lota: "lock_ok_las ls t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>"
       and cctta: "thread_oks ts \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>"
       and ls': "ls' = redT_updLs ls t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>"
-      and s': "ts' = redT_updTs ts \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>(t \<mapsto> ((e', x'), redT_updLns ls t no_wait_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>))"
+      and s': "ts' = (redT_updTs ts \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>)(t \<mapsto> ((e', x'), redT_updLns ls t no_wait_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>))"
       by auto
-    let ?ts' = "redT_updTs ts \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>(t \<mapsto> ((e', x'), redT_updLns ls t no_wait_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>))"
+    let ?ts' = "(redT_updTs ts \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>)(t \<mapsto> ((e', x'), redT_updLns ls t no_wait_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>))"
     from est aoes have aoe: "sync_ok e" by(auto dest: ts_okD)
     from aoe P have aoe': "sync_ok e'" by(auto dest: red_preserve_sync_ok[OF wf])
     from aoes red_new_thread_sync_ok[OF wf P]
