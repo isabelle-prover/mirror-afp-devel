@@ -71,7 +71,7 @@ begin
     obtain k v where 2: "x = (k, v)" by force
     have 3: "inj_on fst H" using inj_on_fst_map_to_set inj_on_subset 1(1) by blast
     have "f x s = f (k, v) s" unfolding 2 by rule
-    also have "\<dots> \<le> SPEC (I (set_to_map H (k \<mapsto> v)))"
+    also have "\<dots> \<le> SPEC (I ((set_to_map H) (k \<mapsto> v)))"
     proof (rule assms(4))
       show "set_to_map H \<subseteq>\<^sub>m g"
         using 1(1) 3
@@ -82,7 +82,7 @@ begin
         using 1(1, 3, 4) unfolding 2 set_to_map_dom
         by (metis fst_conv inj_on_fst_map_to_set inj_on_image_mem_iff)
     qed
-    also have "set_to_map H (k \<mapsto> v) = set_to_map H (fst x \<mapsto> snd x)" unfolding 2 by simp
+    also have "(set_to_map H) (k \<mapsto> v) = (set_to_map H) (fst x \<mapsto> snd x)" unfolding 2 by simp
     also have "\<dots> = set_to_map (insert x H)"
       using 1(1, 3, 4) by (metis inj_on_fst_map_to_set inj_on_image_mem_iff set_to_map_insert)
     finally show "f x s \<le> SPEC (I (set_to_map (insert x H)))" by this
