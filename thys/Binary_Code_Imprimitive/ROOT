@@ -1,0 +1,12 @@
+chapter AFP
+
+session Binary_Code_Imprimitive (AFP) = Combinatorics_Words +
+  options [timeout = 600]
+  sessions
+    Combinatorics_Words_Graph_Lemma
+  theories
+    Binary_Square_Interpretation
+    Binary_Code_Imprimitive
+  document_files
+    root.tex
+    root.bib
