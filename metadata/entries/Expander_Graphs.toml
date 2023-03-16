@@ -1,0 +1,36 @@
+title = "Expander Graphs"
+date = 2023-03-03
+topics = [
+  "Computer science/Algorithms/Graph",
+  "Mathematics/Graph theory",
+  "Mathematics/Probability theory",
+]
+abstract = """
+Expander Graphs are low-degree graphs that are highly connected. They have diverse 
+applications, for example in derandomization and pseudo-randomness, error-correcting codes, as well 
+as pure mathematical subjects such as metric embeddings. This entry formalizes the concept and
+derives main theorems about them such as Cheeger's inequality or tail bounds on distribution of 
+random walks on them. It includes a strongly explicit construction for every size and spectral gap. 
+The latter is based on the Margulis-Gabber-Galil graphs and several graph operations
+that preserve spectral properties. The proofs are based on the survey papers/monographs
+by <a href=\"http://dx.doi.org/10.1090/S0273-0979-06-01126-8\">Hoory et al.</a> and <a href=\"http://dx.doi.org/10.1561/0400000010\">Vadhan</a>, as well as results from <a href=\"https://doi.org/10.1007/978-3-642-15369-3_46\">Impagliazzo and Kabanets</a> and <a href=\"http://dx.doi.org/10.4230/LIPIcs.APPROX-RANDOM.2019.42\">Murtagh et al.</a>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.karayel]
+email = "karayel_email"
+
+[contributors]
+
+[notify]
+karayel = "karayel_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []
