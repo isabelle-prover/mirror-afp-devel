@@ -448,6 +448,15 @@
     </item>
     
     <item>
+      <title>Binary_Code_Imprimitive</title>
+      <link>/theories/binary_code_imprimitive/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/binary_code_imprimitive/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>BinarySearchTree</title>
       <link>/theories/binarysearchtree/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -6438,6 +6447,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/twelvefold_way/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Two_Generated_Word_Monoids_Intersection</title>
+      <link>/theories/two_generated_word_monoids_intersection/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/two_generated_word_monoids_intersection/</guid>
       <description></description>
     </item>
     

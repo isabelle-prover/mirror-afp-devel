@@ -131,6 +131,27 @@
     <loc>/entries/Cook_Levin.html</loc>
     <lastmod>2023-01-08T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/entries/Binary_Code_Imprimitive.html</loc>
+    <lastmod>2023-01-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/combinatorics_words/</loc>
+    <lastmod>2023-01-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/combinatorics_words_graph_lemma/</loc>
+    <lastmod>2023-01-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/holub/</loc>
+    <lastmod>2023-01-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Two_Generated_Word_Monoids_Intersection.html</loc>
+    <lastmod>2023-01-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/raska/</loc>
+    <lastmod>2023-01-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/starosta/</loc>
+    <lastmod>2023-01-03T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/entries/Quantifier_Elimination_Hybrid.html</loc>
     <lastmod>2022-12-15T00:00:00+00:00</lastmod>
   </url><url>
@@ -1088,22 +1109,10 @@
     <loc>/entries/Combinatorics_Words.html</loc>
     <lastmod>2021-05-24T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/combinatorics_words/</loc>
-    <lastmod>2021-05-24T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Combinatorics_Words_Graph_Lemma.html</loc>
     <lastmod>2021-05-24T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/holub/</loc>
-    <lastmod>2021-05-24T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Combinatorics_Words_Lyndon.html</loc>
-    <lastmod>2021-05-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/raska/</loc>
-    <lastmod>2021-05-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/starosta/</loc>
     <lastmod>2021-05-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/szpilrajn/</loc>
@@ -4544,6 +4553,8 @@
   </url><url>
     <loc>/theories/bicategory/</loc>
   </url><url>
+    <loc>/theories/binary_code_imprimitive/</loc>
+  </url><url>
     <loc>/theories/binarysearchtree/</loc>
   </url><url>
     <loc>/theories/binding_syntax_theory/</loc>
@@ -6014,6 +6025,8 @@
     <loc>/theories/turans_graph_theorem/</loc>
   </url><url>
     <loc>/theories/twelvefold_way/</loc>
+  </url><url>
+    <loc>/theories/two_generated_word_monoids_intersection/</loc>
   </url><url>
     <loc>/theories/tycon/</loc>
   </url><url>
