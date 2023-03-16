@@ -1,0 +1,100 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage[top=1in, bottom=1in, left=0.8in, right=0.8in]{geometry}
+
+\usepackage{amssymb}
+\usepackage{pdfsetup}
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{Expander Graphs}
+\author{Emin Karayel}
+\maketitle
+
+\abstract{Expander Graphs are low-degree graphs that are highly connected. They have diverse 
+applications, for example in derandomization and pseudo-randomness, error-correcting codes, as well 
+as pure mathematical subjects such as metric embeddings. This entry formalizes the concept and
+derives main theorems about them such as Cheeger's inequality or tail bounds on distribution of 
+random walks on them. It includes a strongly explicit construction for every size and spectral gap. 
+The latter is based on the Margulis-Gabber-Galil graphs and several graph operations
+that preserve spectral properties. The proofs are based on the survey papers/monographs
+by Hoory et al.~\cite{hoory2006} and Vadhan~\cite{vadhan2012}, as well as results from Impagliazzo 
+and Kabanets~\cite{impagliazzo2010} and Murtagh et al.~\cite{murtagh2019}}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+\pagebreak
+
+\section{Introduction}
+A good introduction into Expander Graphs can be found in the survey article by 
+Hoory et al.~\cite{hoory2006}: An expander graph is an infinite family of undirected regular 
+graphs\footnote{A graph is regular if every node has the same degree.}  
+with increasing sizes, but contant degrees, all fulfilling a non-trivial expansion condition 
+consistently. Most common are the following expansion conditions:
+\begin{itemize}
+\item One-sided spectral expansion -- an upper-bound on the second largest 
+  eigenvalue $\lambda_2$ of the adjacency matrix,
+\item Two-sided spectral expansion -- an upper-bound on the absolute value of both 
+  $\lambda_2$ and $\lambda_n$ the smallest eigenvalue,
+\item Edge expansion -- a lower-bound on the relative count of edges between any subset
+  and its complement.
+\end{itemize}
+
+There are various implications between the three types of families, most notably the Cheeger 
+inequality, which relates edge-expansion to (one-sided) spectral expansion. 
+(Section~\ref{sec:cheeger_ineq})
+
+This entry formalizes 
+\begin{itemize}
+\item definitions for the expansion conditions, as well as proofs for the relations between them,
+\item a construction and proofs of spectral expansion of the Margulis-Gabber-Galil expander 
+  (Section~\ref{sec:margulis}), and
+\item proofs of how expansion-properties are affected by graph operations
+(Sections~\ref{sec:graph_power} and \ref{sec:see}).
+\end{itemize}
+And concludes with a consturction of strongly explicit expanders for every size and 
+spectral gap with asymptotically optimal degree (Section~\ref{sec:see}). 
+
+It also includes a proof of the hitting property, i.e., tail-bounds for the probability that a 
+random walk in an expander graph ramains inside a given subset, as well as Chernoff-type bounds on 
+the number of times a given subset will be hit by a random walk. (Section~\ref{sec:random_walks})
+
+The basis for the graph theory relies on the formalization by 
+Lars Noschinski~\cite{Graph_Theory-AFP}. Most of the algabraic development is carried out in the
+type-based formalization of linear algebra in ``HOL-Analysis''. To achieve that I have transferred 
+some  results from the set based world into the type-based world - most notably unified 
+diagonalization of commuting hermitian matrices by Echenim~\cite{Commuting_Hermitian-AFP} 
+(Section~\ref{sec:expander_eigenvalues}). The transfer happens using the pre-exisiting framework by 
+Divas\'{o}n et al.~\cite{Perron_Frobenius-AFP}.
+
+On the otherhand, results that are obtained using the stochastic matrix, but do not explicitly 
+reference it are transferred back into purely graph-theoretic theorems using the Types-To-Sets 
+mechanism by Kunc\u{a}r and Popescu~\cite{kuncar2016} (Section~\ref{sec:tts}), i.e., the stochastic
+matrix is defined using a local type (isomorphic to the vertex set.)
+
+%A notable deviation from canonical theory is the derivation of the Chernoff-type bound for the
+%tail bounds on the hitting frequency, where I rely on a theorem by Impagliazzo and 
+%Kabantes~\cite{impagliazzo2010} (Section~\ref{sec:sec:constructive_chernoff_bound}),
+%which is a generic result, that can be used to derive Chernoff-type estimates for weakly-dependent
+%random variables (such as martingales or negative-dependence). They already present a proof as an
+%application of their theorem to expander walks, but the result here is improved.
+
+% generated text of all theories
+\section{Preliminary Results}
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

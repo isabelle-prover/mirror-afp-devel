@@ -1,0 +1,25 @@
+chapter AFP
+
+session Expander_Graphs (AFP) = Frequency_Moments +
+  options [timeout = 1200]
+  sessions
+    Graph_Theory
+    Perron_Frobenius
+    Commuting_Hermitian
+    Weighted_Arithmetic_Geometric_Mean
+  theories
+    Constructive_Chernoff_Bound
+    Expander_Graphs_Algebra
+    Expander_Graphs_Cheeger_Inequality
+    Expander_Graphs_Definition
+    Expander_Graphs_Eigenvalues
+    Expander_Graphs_MGG
+    Expander_Graphs_Multiset_Extras
+    Expander_Graphs_Power_Construction
+    Expander_Graphs_Strongly_Explicit
+    Expander_Graphs_TTS
+    Expander_Graphs_Walks
+    Extra_Congruence_Method
+  document_files
+    "root.tex"
+    "root.bib"
