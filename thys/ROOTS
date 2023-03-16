@@ -2,6 +2,7 @@ ABY3_Protocols
 ADS_Functor
 AI_Planning_Languages_Semantics
 AODV
+AOT
 AVL-Trees
 AWN
 Abortable_Linearizable_Modules
@@ -22,7 +23,6 @@ Allen_Calculus
 Amicable_Numbers
 Amortized_Complexity
 AnselmGod
-AOT
 Applicative_Lifting
 Approximation_Algorithms
 Architectural_Design_Patterns
@@ -36,12 +36,12 @@ AutoFocus-Stream
 Automated_Stateful_Protocol_Verification
 Automatic_Refinement
 AxiomaticCategoryTheory
-Balog_Szemeredi_Gowers
 BDD
 BD_Security_Compositional
 BNF_CC
 BNF_Operations
 BTree
+Balog_Szemeredi_Gowers
 Banach_Steinhaus
 Belief_Revision
 Bell_Numbers_Spivey
@@ -71,10 +71,10 @@ C2KA_DistributedSystems
 CAVA_Automata
 CAVA_LTL_Modelchecker
 CCS
+CHERI-C_Memory_Model
 CISC-Kernel
-Cook_Levin
-CRYSTALS-Kyber
 CRDT
+CRYSTALS-Kyber
 CSP_RefTK
 CVP_Hardness
 CYK
@@ -98,7 +98,6 @@ Cauchy
 Cayley_Hamilton
 Certification_Monads
 Chandy_Lamport
-CHERI-C_Memory_Model
 Chord_Segments
 Circus
 Clean
@@ -137,6 +136,7 @@ Constructive_Cryptography
 Constructive_Cryptography_CM
 Constructor_Funs
 Containers
+Cook_Levin
 CoreC++
 Core_DOM
 Core_SC_DOM
@@ -148,6 +148,7 @@ CryptoBasedCompositionalProperties
 Cubic_Quartic_Equations
 DFS_Framework
 DOM_Components
+DPRM_Theorem
 DPT-SAT-Solver
 DataRefinementIBP
 Datatype_Order_Generator
@@ -177,7 +178,6 @@ DiscretePricing
 Discrete_Summation
 DiskPaxos
 Dominance_CHK
-DPRM_Theorem
 DynamicArchitectures
 Dynamic_Tables
 E_Transcendental
@@ -205,6 +205,7 @@ FOL_Harrison
 FOL_Seq_Calc1
 FOL_Seq_Calc2
 FOL_Seq_Calc3
+FO_Theory_Rewriting
 FSM_Tests
 Factor_Algebraic_Polynomial
 Factored_Transition_System_Bounding
@@ -235,7 +236,6 @@ Formal_SSA
 Formula_Derivatives
 Foundation_of_geometry
 Fourier
-FO_Theory_Rewriting
 Free-Boolean-Algebra
 Free-Groups
 Frequency_Moments
@@ -288,9 +288,9 @@ Hermite
 Hermite_Lindemann
 Hidden_Markov_Models
 Higher_Order_Terms
+HoareForDivergence
 Hoare_Time
 Hood_Melville_Queue
-HoareForDivergence
 HotelKeyCards
 Huffman
 Hybrid_Logic
@@ -329,10 +329,10 @@ Irrational_Series_Erdos_Straus
 Irrationality_J_Hancl
 Irrationals_From_THEBOOK
 IsaGeoCoq
+IsaNet
 Isabelle_C
 Isabelle_Marries_Dirac
 Isabelle_Meta_Model
-IsaNet
 Jacobson_Basic_Algebra
 Jinja
 JinjaDCI
@@ -358,6 +358,7 @@ Kuratowski_Closure_Complement
 LLL_Basis_Reduction
 LLL_Factorization
 LOFT
+LP_Duality
 LTL
 LTL_Master_Theorem
 LTL_Normal_Form
@@ -399,7 +400,6 @@ Logging_Independent_Anonymity
 Lowe_Ontological_Argument
 Lower_Semicontinuous
 Lp
-LP_Duality
 Lucas_Theorem
 MDP-Algorithms
 MDP-Rewards
@@ -414,8 +414,8 @@ Matrices_for_ODEs
 Matrix
 Matrix_Tensor
 Matroids
-Maximum_Segment_Sum
 Max-Card-Matching
+Maximum_Segment_Sum
 Median_Method
 Median_Of_Medians_Selection
 Menger
@@ -436,9 +436,9 @@ MonoBoolTranAlgebra
 MonoidalCategory
 Monomorphic_Monad
 MuchAdoAboutTwo
-Multiset_Ordering_NPC
 Multi_Party_Computation
 Multirelations
+Multiset_Ordering_NPC
 Multitape_To_Singletape_TM
 Myhill-Nerode
 Name_Carrying_Type_Inference
@@ -473,15 +473,15 @@ Ordinal_Partitions
 Ordinals_and_Cardinals
 Ordinary_Differential_Equations
 PAC_Checker
-Package_logic
 PAL
 PAPP_Impossibility
 PCF
 PLM
 POPLmark-deBruijn
 PSemigroupsConvolution
-Padic_Ints
+Package_logic
 Padic_Field
+Padic_Ints
 Pairing_Heap
 Paraconsistency
 Parity_Game
@@ -542,7 +542,6 @@ Quasi_Borel_Spaces
 Quaternions
 Query_Optimization
 Quick_Sort_Cost
-Rensets
 RIPEMD-160-SPARK
 ROBDD
 RSAPSS
@@ -573,6 +572,7 @@ Relational_Forests
 Relational_Method
 Relational_Minimum_Spanning_Trees
 Relational_Paths
+Rensets
 Rep_Fin_Groups
 ResiduatedTransitionSystem
 Residuated_Lattices
@@ -588,6 +588,7 @@ Roth_Arithmetic_Progressions
 Routing
 Roy_Floyd_Warshall
 SATSolverVerification
+SCC_Bloemen_Sequential
 SC_DOM_Components
 SDS_Impossibility
 SIFPL
@@ -599,7 +600,6 @@ Safe_Range_RC
 Saturation_Framework
 Saturation_Framework_Extensions
 Sauer_Shelah_Lemma
-SCC_Bloemen_Sequential
 Schutz_Spacetime
 Secondary_Sylow
 Security_Protocol_Refinement
@@ -628,8 +628,8 @@ Slicing
 Sliding_Window_Algorithm
 Smith_Normal_Form
 Smooth_Manifolds
-Sophomores_Dream
 Solidity
+Sophomores_Dream
 Sort_Encodings
 Source_Coding_Theorem
 SpecCheck
@@ -701,6 +701,7 @@ Undirected_Graph_Theory
 Universal_Hash_Families
 Universal_Turing_Machine
 UpDown_Scheme
+VYDRA_MDL
 Valuation
 Van_Emde_Boas_Trees
 Van_der_Waerden
@@ -713,7 +714,6 @@ VerifyThis2019
 Vickrey_Clarke_Groves
 Virtual_Substitution
 VolpanoSmith
-VYDRA_MDL
 WHATandWHERE_Security
 WOOT_Strong_Eventual_Consistency
 WebAssembly
