@@ -1,0 +1,11 @@
+chapter AFP
+
+session Two_Generated_Word_Monoids_Intersection (AFP) = Combinatorics_Words +
+  options [timeout = 600]
+  sessions
+    Combinatorics_Words_Graph_Lemma
+  theories
+    Two_Generated_Word_Monoids_Intersection
+  document_files
+    root.tex
+    root.bib
