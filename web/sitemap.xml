@@ -3,13 +3,43 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2023-02-28T00:00:00+00:00</lastmod>
+    <lastmod>2023-03-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2023-02-28T00:00:00+00:00</lastmod>
+    <lastmod>2023-03-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/commuting_hermitian/</loc>
+    <lastmod>2023-03-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2023-03-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/</loc>
-    <lastmod>2023-02-28T00:00:00+00:00</lastmod>
+    <lastmod>2023-03-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Expander_Graphs.html</loc>
+    <lastmod>2023-03-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/frequency_moments/</loc>
+    <lastmod>2023-03-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/graph_theory/</loc>
+    <lastmod>2023-03-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/karayel/</loc>
+    <lastmod>2023-03-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2023-03-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/perron_frobenius/</loc>
+    <lastmod>2023-03-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2023-03-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/weighted_arithmetic_geometric_mean/</loc>
+    <lastmod>2023-03-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/popescu/</loc>
     <lastmod>2023-02-28T00:00:00+00:00</lastmod>
@@ -20,22 +50,13 @@
     <loc>/entries/Probability_Inequality_Completeness.html</loc>
     <lastmod>2023-02-20T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/</loc>
-    <lastmod>2023-02-20T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/doty/</loc>
     <lastmod>2023-02-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/logic/</loc>
     <lastmod>2023-02-20T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/topics/mathematics/</loc>
-    <lastmod>2023-02-20T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/suppes_theorem/</loc>
-    <lastmod>2023-02-20T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2023-02-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Edwards_Elliptic_Curves_Group.html</loc>
@@ -284,9 +305,6 @@
     <loc>/authors/hofmeier/</loc>
     <lastmod>2022-11-11T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/karayel/</loc>
-    <lastmod>2022-11-11T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Balog_Szemeredi_Gowers.html</loc>
     <lastmod>2022-11-11T00:00:00+00:00</lastmod>
   </url><url>
@@ -313,9 +331,6 @@
   </url><url>
     <loc>/entries/PAPP_Impossibility.html</loc>
     <lastmod>2022-11-10T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/graph_theory/</loc>
-    <lastmod>2022-10-04T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/stevens/</loc>
     <lastmod>2022-10-04T00:00:00+00:00</lastmod>
@@ -1515,9 +1530,6 @@
     <lastmod>2020-06-01T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Smith_Normal_Form.html</loc>
-    <lastmod>2020-05-23T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/perron_frobenius/</loc>
     <lastmod>2020-05-23T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Nash_Williams.html</loc>
@@ -4924,6 +4936,8 @@
     <loc>/theories/euler_partition/</loc>
   </url><url>
     <loc>/theories/eval_fo/</loc>
+  </url><url>
+    <loc>/theories/expander_graphs/</loc>
   </url><url>
     <loc>/theories/extended_finite_state_machine_inference/</loc>
   </url><url>

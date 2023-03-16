@@ -1816,6 +1816,15 @@
     </item>
     
     <item>
+      <title>Expander_Graphs</title>
+      <link>/theories/expander_graphs/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/expander_graphs/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Extended_Finite_State_Machine_Inference</title>
       <link>/theories/extended_finite_state_machine_inference/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
