@@ -1,0 +1,38 @@
+title = "Binary codes that do not preserve primitivity"
+date = 2023-01-03
+topics = [
+  "Computer science/Automata and formal languages",
+]
+abstract = """
+A code $X$ is not primitivity preserving if there is a primitive list $\\mathtt{ws} \\in \\mathtt{lists} \\ X$ whose concatenation is imprimitive. We formalize a full characterization of such codes in the binary case in the proof assistant Isabelle/HOL. Part of the formalization, interesting on its own, is a description of $\\{x,y\\}$-interpretations of the square $xx$ if $\\mathtt{length}\\ y \\leq \\mathtt{length} \\ x$. We also provide a formalized parametric solution of the related equation $x^jy^k = z^\\ell$.
+
+The core of the theory is an investigation of imprimitive words which are concatenations of copies of two noncommuting words (such a pair of words is called a binary code). We follow the article <a href=”https://dx.doi.org/10.1016/0304-3975(85)90060-X”>[Barbin-Le Rest, Le Rest, 85]</a> (mainly Théorème 2.1 and Lemme 3.1), while substantially optimizing the proof. See also [J.-C. Spehner. Quelques problèmes d’extension, de conjugaison et de présentation des sous-monoïdes d’un monoïde libre. PhD thesis, Université Paris VII, 1976] for an earlier result on this question, and <a href=”https://dx.doir.org/10.46298/dmtcs.279”>[Maňuch, 01]</a> for another proof."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.holub]
+email = "holub_email"
+
+[authors.raska]
+
+[contributors]
+
+[notify]
+holub = "holub_email"
+starosta = "starosta_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1016/0304-3975(85)90060-X",
+  "10.46298/dmtcs.279",
+]
+pubs = [
+  "J.-C. Spehner. Quelques problèmes d’extension, de conjugaison et de présentation des sous-monoïdes d’un monoïde libre. PhD thesis, Université Paris VII, 1976",
+  "<a href=\"https://gitlab.com/formalcow/combinatorics-on-words-formalized\">Development repository</a>",
+]
