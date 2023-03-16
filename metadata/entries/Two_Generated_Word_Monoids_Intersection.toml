@@ -10,7 +10,7 @@ Namely, the intersection has one of the following forms
 \\( \\{\\beta,\\gamma\\}^* \\quad \\text{ or } \\quad \\left(\\beta_0 + \\beta(\\gamma(1+\\delta+ \\cdots + \\delta^t))^*\\epsilon\\right)^*.\\)
 Note that it can be infinitely generated.
 
-The result is due to <a href=”https://doi.org/10.1007/BFb0036924”>[Karhumäki, 84]</a>. Our proof uses the terminology of morphisms which allows us to formulate the result in a shorter and more transparent way."""
+The result is due to <a href="https://doi.org/10.1007/BFb0036924">[Karhumäki, 84]</a>. Our proof uses the terminology of morphisms which allows us to formulate the result in a shorter and more transparent way."""
 license = "bsd"
 note = ""
 
