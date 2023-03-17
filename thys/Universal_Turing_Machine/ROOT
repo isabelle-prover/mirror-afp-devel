@@ -2,7 +2,6 @@ chapter AFP
 
 session Universal_Turing_Machine (AFP) = HOL +
   options [timeout = 1200]
-
   sessions
     "HOL-Library"
   theories [document = false]
@@ -12,7 +11,7 @@ session Universal_Turing_Machine (AFP) = HOL +
      "HOL-Library.Code_Target_Nat"
      "HOL-Library.Code_Target_Numeral"
 
-  theories [document = pdf]
+  theories
     "Turing"
     "Turing_aux"
     "BlanksDoNotMatter"
@@ -66,7 +65,6 @@ session Universal_Turing_Machine (AFP) = HOL +
 
     (* ------------------- *)
 
-document_files
+  document_files
     "root.bib"
     "root.tex"
-
