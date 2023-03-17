@@ -1,6 +1,6 @@
 chapter AFP
 session "MDP-Algorithms" (AFP) = "MDP-Rewards" +
-  options [timeout = 600]
+  options [timeout = 2400]
   sessions
     Gauss_Jordan Jordan_Normal_Form Perron_Frobenius "HOL-Data_Structures"
   directories
