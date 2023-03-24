@@ -92,7 +92,7 @@ fun group_code_eqs ctxt consts =
     fun mk_eqs name = name
       |> Code_Preproc.cert graph
       |> Code.equations_of_cert thy ||> these
-      ||> map (apsnd fst o apfst (apsnd fst o apfst (map fst)))
+      ||> map (apsnd fst o apfst (apsnd snd o apfst (map snd)))
       |> pair name
   in
     map (map mk_eqs) (rev (Graph.strong_conn graph))
