@@ -113,7 +113,7 @@ lemma tso_store_refs_simps[simp]:
  = mut_m.tso_store_refs m s \<union> (if m' = m then store_refs (mw_Mutate_Payload r f pl) else {})"
   "mut_m.tso_store_refs m (s(sys := s sys\<lparr>heap := (sys_heap s)(r' := None)\<rparr>))
  = mut_m.tso_store_refs m s"
-  "mut_m.tso_store_refs m (s(mutator m' := s (mutator m')\<lparr>roots := insert r (roots (s (mutator m')))\<rparr>, sys := s sys\<lparr>heap := sys_heap s(r \<mapsto> obj)\<rparr>))
+  "mut_m.tso_store_refs m (s(mutator m' := s (mutator m')\<lparr>roots := insert r (roots (s (mutator m')))\<rparr>, sys := s sys\<lparr>heap := (sys_heap s)(r \<mapsto> obj)\<rparr>))
  = mut_m.tso_store_refs m s"
   "mut_m.tso_store_refs m (s(mutator m' := s (mutator m')\<lparr>ghost_honorary_root := Option.set_option opt_r', ref := opt_r'\<rparr>))
  = mut_m.tso_store_refs m s"
@@ -790,7 +790,7 @@ by (clarsimp simp: fun_upd_apply split: obj_at_splits)
 
 lemma obj_at_alloc[simp]:
   "sys_heap s r' = None
-  \<Longrightarrow> obj_at P r (s(m := mut_m_s', sys := (s sys)\<lparr> heap := sys_heap s(r' \<mapsto> obj) \<rparr>))
+  \<Longrightarrow> obj_at P r (s(m := mut_m_s', sys := (s sys)\<lparr> heap := (sys_heap s)(r' \<mapsto> obj) \<rparr>))
   \<longleftrightarrow> (obj_at P r s \<or> (r = r' \<and> P obj))"
 unfolding ran_def by (simp add: fun_upd_apply split: obj_at_splits)
 
@@ -980,21 +980,21 @@ unfolding black_def white_def by (simp add: fun_upd_apply)
 
 lemma colours_alloc[simp]:
   "heap (s sys) r' = None
-     \<Longrightarrow> black r (s(mutator m := (s (mutator m))\<lparr> roots := roots' \<rparr>, sys := (s sys)\<lparr>heap := heap (s sys)(r' \<mapsto> \<lparr>obj_mark = fl, obj_fields = Map.empty, obj_payload = Map.empty\<rparr>)\<rparr>))
+     \<Longrightarrow> black r (s(mutator m := (s (mutator m))\<lparr> roots := roots' \<rparr>, sys := (s sys)\<lparr>heap := (heap (s sys))(r' \<mapsto> \<lparr>obj_mark = fl, obj_fields = Map.empty, obj_payload = Map.empty\<rparr>)\<rparr>))
      \<longleftrightarrow> black r s \<or> (r' = r \<and> fl = sys_fM s \<and> \<not>grey r' s)"
-  "grey r (s(mutator m := (s (mutator m))\<lparr> roots := roots' \<rparr>, sys := (s sys)\<lparr>heap := heap (s sys)(r' \<mapsto> \<lparr>obj_mark = fl, obj_fields = Map.empty, obj_payload = Map.empty\<rparr>)\<rparr>))
+  "grey r (s(mutator m := (s (mutator m))\<lparr> roots := roots' \<rparr>, sys := (s sys)\<lparr>heap := (heap (s sys))(r' \<mapsto> \<lparr>obj_mark = fl, obj_fields = Map.empty, obj_payload = Map.empty\<rparr>)\<rparr>))
      \<longleftrightarrow> grey r s"
   "heap (s sys) r' = None
-     \<Longrightarrow> white r (s(mutator m := (s (mutator m))\<lparr> roots := roots' \<rparr>, sys := (s sys)\<lparr>heap := heap (s sys)(r' \<mapsto> \<lparr>obj_mark = fl, obj_fields = Map.empty, obj_payload = Map.empty\<rparr>)\<rparr>))
+     \<Longrightarrow> white r (s(mutator m := (s (mutator m))\<lparr> roots := roots' \<rparr>, sys := (s sys)\<lparr>heap := (heap (s sys))(r' \<mapsto> \<lparr>obj_mark = fl, obj_fields = Map.empty, obj_payload = Map.empty\<rparr>)\<rparr>))
      \<longleftrightarrow> white r s \<or> (r' = r \<and> fl \<noteq> sys_fM s)"
 unfolding black_def white_def by (auto simp: fun_upd_apply split: obj_at_splits)
 
 lemma heap_colours_alloc[simp]:
   "\<lbrakk> heap (s sys) r' = None; valid_refs_inv s \<rbrakk>
-  \<Longrightarrow> black_heap (s(mutator m := s (mutator m)\<lparr>roots := roots'\<rparr>, sys := s sys\<lparr>heap := sys_heap s(r' \<mapsto> \<lparr>obj_mark = fl, obj_fields = Map.empty, obj_payload = Map.empty\<rparr>)\<rparr>))
+  \<Longrightarrow> black_heap (s(mutator m := s (mutator m)\<lparr>roots := roots'\<rparr>, sys := s sys\<lparr>heap := (sys_heap s)(r' \<mapsto> \<lparr>obj_mark = fl, obj_fields = Map.empty, obj_payload = Map.empty\<rparr>)\<rparr>))
   \<longleftrightarrow> black_heap s \<and> fl = sys_fM s"
   "heap (s sys) r' = None
-  \<Longrightarrow> white_heap (s(mutator m := s (mutator m)\<lparr>roots := roots'\<rparr>, sys := s sys\<lparr>heap := sys_heap s(r' \<mapsto> \<lparr>obj_mark = fl, obj_fields = Map.empty, obj_payload = Map.empty\<rparr>)\<rparr>))
+  \<Longrightarrow> white_heap (s(mutator m := s (mutator m)\<lparr>roots := roots'\<rparr>, sys := s sys\<lparr>heap := (sys_heap s)(r' \<mapsto> \<lparr>obj_mark = fl, obj_fields = Map.empty, obj_payload = Map.empty\<rparr>)\<rparr>))
   \<longleftrightarrow> white_heap s \<and> fl \<noteq> sys_fM s"
 unfolding black_heap_def white_def white_heap_def
 apply (simp_all add: fun_upd_apply split: obj_at_splits)
@@ -1021,7 +1021,7 @@ unfolding grey_protects_white_def by (simp add: fun_upd_apply)
 
 lemma grey_protects_white_alloc[simp]:
   "\<lbrakk> fl = sys_fM s; sys_heap s r = None \<rbrakk>
-     \<Longrightarrow> (g grey_protects_white w) (s(mutator m := s (mutator m)\<lparr>roots := roots'\<rparr>, sys := s sys\<lparr>heap := sys_heap s(r \<mapsto> \<lparr>obj_mark = fl, obj_fields = Map.empty, obj_payload = Map.empty\<rparr>)\<rparr>))
+     \<Longrightarrow> (g grey_protects_white w) (s(mutator m := s (mutator m)\<lparr>roots := roots'\<rparr>, sys := s sys\<lparr>heap := (sys_heap s)(r \<mapsto> \<lparr>obj_mark = fl, obj_fields = Map.empty, obj_payload = Map.empty\<rparr>)\<rparr>))
      \<longleftrightarrow> (g grey_protects_white w) s"
 unfolding grey_protects_white_def has_white_path_to_def by simp
 
@@ -1200,7 +1200,7 @@ done
 
 lemma no_black_refs_alloc[simp]:
   "\<lbrakk> heap (s sys) r' = None; no_black_refs s \<rbrakk>
-     \<Longrightarrow> no_black_refs (s(mutator m' := s (mutator m')\<lparr>roots := roots'\<rparr>, sys := s sys\<lparr>heap := sys_heap s(r' \<mapsto> \<lparr>obj_mark = fl, obj_fields = Map.empty, obj_payload = Map.empty\<rparr>)\<rparr>))
+     \<Longrightarrow> no_black_refs (s(mutator m' := s (mutator m')\<lparr>roots := roots'\<rparr>, sys := s sys\<lparr>heap := (sys_heap s)(r' \<mapsto> \<lparr>obj_mark = fl, obj_fields = Map.empty, obj_payload = Map.empty\<rparr>)\<rparr>))
      \<longleftrightarrow> fl \<noteq> sys_fM s \<or> grey r' s"
 unfolding no_black_refs_def by simp
 

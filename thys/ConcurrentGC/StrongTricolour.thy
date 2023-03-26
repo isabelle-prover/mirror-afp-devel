@@ -36,7 +36,7 @@ by (auto simp: marked_insertions_def
 
 lemma marked_insertions_alloc[simp]:
   "\<lbrakk> heap (s sys) r' = None; valid_refs_inv s \<rbrakk>
-  \<Longrightarrow> marked_insertions (s(mutator m' := s (mutator m')\<lparr>roots := roots'\<rparr>, sys := s sys\<lparr>heap := sys_heap s(r' \<mapsto> obj')\<rparr>))
+  \<Longrightarrow> marked_insertions (s(mutator m' := s (mutator m')\<lparr>roots := roots'\<rparr>, sys := s sys\<lparr>heap := (sys_heap s)(r' \<mapsto> obj')\<rparr>))
   \<longleftrightarrow> marked_insertions s"
 apply (clarsimp simp: marked_insertions_def split: mem_store_action.splits option.splits)
 apply (rule iffI)
@@ -60,7 +60,7 @@ by (auto simp: marked_deletions_def
 
 lemma marked_deletions_alloc[simp]:
   "\<lbrakk> marked_deletions s; heap (s sys) r' = None; valid_refs_inv s \<rbrakk>
-  \<Longrightarrow> marked_deletions (s(mutator m' := s (mutator m')\<lparr>roots := roots'\<rparr>, sys := s sys\<lparr>heap := sys_heap s(r' \<mapsto> obj')\<rparr>))"
+  \<Longrightarrow> marked_deletions (s(mutator m' := s (mutator m')\<lparr>roots := roots'\<rparr>, sys := s sys\<lparr>heap := (sys_heap s)(r' \<mapsto> obj')\<rparr>))"
 apply (clarsimp simp: marked_deletions_def split: mem_store_action.splits)
 apply (rename_tac ref field option)
 apply (drule_tac x="mw_Mutate ref field option" in spec)

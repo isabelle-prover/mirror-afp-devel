@@ -63,7 +63,7 @@ unfolding valid_refs_inv_def by (simp add: fun_upd_apply)
 
 lemma valid_refs_inv_alloc:
   "\<lbrakk> valid_refs_inv s; sys_heap s r' = None \<rbrakk>
-     \<Longrightarrow> valid_refs_inv (s(mutator m := s (mutator m)\<lparr>roots := insert r' (mut_roots s)\<rparr>, sys := s sys\<lparr>heap := sys_heap s(r' \<mapsto> \<lparr>obj_mark = fl, obj_fields = Map.empty, obj_payload = Map.empty\<rparr>)\<rparr>))"
+     \<Longrightarrow> valid_refs_inv (s(mutator m := s (mutator m)\<lparr>roots := insert r' (mut_roots s)\<rparr>, sys := s sys\<lparr>heap := (sys_heap s)(r' \<mapsto> \<lparr>obj_mark = fl, obj_fields = Map.empty, obj_payload = Map.empty\<rparr>)\<rparr>))"
 unfolding valid_refs_inv_def mut_m.reachable_def
 apply (clarsimp simp: fun_upd_apply)
 apply (auto elim: converse_reachesE split: obj_at_splits)
