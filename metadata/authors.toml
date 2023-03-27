@@ -95,6 +95,14 @@ host = [
 
 [ammer.homepages]
 
+[andreka]
+name = "Hajnal Andreka"
+
+[andreka.emails]
+
+[andreka.homepages]
+andreka_homepage = "https://renyi.hu/en/researchers/hajnal-andreka"
+
 [andronick]
 name = "June Andronick"
 
@@ -2550,6 +2558,13 @@ host = [
 
 [hibon.homepages]
 
+[higgins]
+name = "Edward Higgins"
+
+[higgins.emails]
+
+[higgins.homepages]
+
 [hirata]
 name = "Michikazu Hirata"
 
@@ -3832,6 +3847,14 @@ host = [
 ]
 
 [lux.homepages]
+
+[madarasz]
+name = "Judit Madarasz"
+
+[madarasz.emails]
+
+[madarasz.homepages]
+madarasz_homepage = "https://users.renyi.hu/~madarasz/"
 
 [makarios]
 name = "T. J. M. Makarios"
@@ -6259,6 +6282,14 @@ host = [
 
 [sylvestre.homepages]
 sylvestre_homepage = "http://ualberta.ca/~jsylvest/"
+
+[szekely]
+name = "Gergely Szekely"
+
+[szekely.emails]
+
+[szekely.homepages]
+szekely_homepage = "https://users.renyi.hu/~turms/"
 
 [taha]
 name = "Safouan Taha"

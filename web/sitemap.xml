@@ -3,18 +3,45 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2023-03-03T00:00:00+00:00</lastmod>
+    <lastmod>2023-03-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/andreka/</loc>
+    <lastmod>2023-03-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2023-03-03T00:00:00+00:00</lastmod>
+    <lastmod>2023-03-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2023-03-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/higgins/</loc>
+    <lastmod>2023-03-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/madarasz/</loc>
+    <lastmod>2023-03-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2023-03-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/nemeti/</loc>
+    <lastmod>2023-03-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/No_FTL_observers_Gen_Rel.html</loc>
+    <lastmod>2023-03-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/stannett/</loc>
+    <lastmod>2023-03-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/szekely/</loc>
+    <lastmod>2023-03-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2023-03-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/commuting_hermitian/</loc>
     <lastmod>2023-03-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/</loc>
-    <lastmod>2023-03-03T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/</loc>
     <lastmod>2023-03-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Expander_Graphs.html</loc>
@@ -29,13 +56,7 @@
     <loc>/authors/karayel/</loc>
     <lastmod>2023-03-03T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/topics/mathematics/</loc>
-    <lastmod>2023-03-03T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/perron_frobenius/</loc>
-    <lastmod>2023-03-03T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2023-03-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/weighted_arithmetic_geometric_mean/</loc>
@@ -3179,13 +3200,7 @@
     <loc>/entries/Groebner_Bases.html</loc>
     <lastmod>2016-05-02T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/nemeti/</loc>
-    <lastmod>2016-04-28T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/No_FTL_observers.html</loc>
-    <lastmod>2016-04-28T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/stannett/</loc>
     <lastmod>2016-04-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/CYK.html</loc>
@@ -5532,6 +5547,8 @@
     <loc>/theories/neumann_morgenstern_utility/</loc>
   </url><url>
     <loc>/theories/no_ftl_observers/</loc>
+  </url><url>
+    <loc>/theories/no_ftl_observers_gen_rel/</loc>
   </url><url>
     <loc>/theories/nominal2/</loc>
   </url><url>

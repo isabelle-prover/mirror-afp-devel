@@ -1,0 +1,42 @@
+title = "No Faster-Than-Light Observers (GenRel)"
+date = 2023-03-05
+topics = [
+  "Mathematics/Physics",
+]
+abstract = "We have <a href=\"https://www.isa-afp.org/entries/No_FTL_observers.html\">previously verified</a>, in the first order theory SpecRel of Special Relativity, that inertial observers cannot travel faster than light. We now prove the corresponding result for GenRel, the first-order theory of General Relativity. Specifically, we prove that whenever an observer <i>m</i> encounters another observer <i>k</i> (so that <i>m</i> and <i>k</i> are both present at some spacetime location <i>x</i>), <i>k</i> will necessarily be observed by <i>m</i> to be traveling at less than light speed."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.stannett]
+email = "stannett_email"
+
+[authors.higgins]
+
+[authors.andreka]
+homepage = "andreka_homepage"
+
+[authors.madarasz]
+homepage = "madarasz_homepage"
+
+[authors.nemeti]
+homepage = "nemeti_homepage"
+
+[authors.szekely]
+homepage = "szekely_homepage"
+
+[contributors]
+
+[notify]
+stannett = "stannett_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = [
+  "https://isa-afp.org/entries/No_FTL_observers.html",
+]
