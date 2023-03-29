@@ -132,7 +132,7 @@ fun unoverload_types_term thy t =
     val t' = Term.map_const const_map_opt t
     val t'' =
       let                     
-        val uctxt = Logic.unconstrainT [] t' |> #1
+        val uctxt = Logic.unconstrainT Sortset.empty t' |> #1
         (*Ported from Pure/Logic.ML with amendments*)
         val map_atyps = 
           Term.map_atyps (Type.default_sorts thy o (#atyp_map uctxt))
