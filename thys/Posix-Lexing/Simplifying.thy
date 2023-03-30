@@ -40,15 +40,19 @@ fun simp_Plus where
 | "simp_Plus (r\<^sub>1, f\<^sub>1) (r\<^sub>2, f\<^sub>2) = (Plus r\<^sub>1 r\<^sub>2, F_Plus f\<^sub>1 f\<^sub>2)"
 
 fun simp_Times where
-  "simp_Times (One, f\<^sub>1) (r\<^sub>2, f\<^sub>2) = (r\<^sub>2, F_Times1 f\<^sub>1 f\<^sub>2)"
+  "simp_Times (Zero, f\<^sub>1) (r\<^sub>2, f\<^sub>2) = (Zero, undefined)"
+| "simp_Times (r\<^sub>1, f\<^sub>1) (Zero, f\<^sub>2) = (Zero, undefined)"
+| "simp_Times (One, f\<^sub>1) (r\<^sub>2, f\<^sub>2) = (r\<^sub>2, F_Times1 f\<^sub>1 f\<^sub>2)"
 | "simp_Times (r\<^sub>1, f\<^sub>1) (One, f\<^sub>2) = (r\<^sub>1, F_Times2 f\<^sub>1 f\<^sub>2)"
 | "simp_Times (r\<^sub>1, f\<^sub>1) (r\<^sub>2, f\<^sub>2) = (Times r\<^sub>1 r\<^sub>2, F_Times f\<^sub>1 f\<^sub>2)"  
  
 lemma simp_Times_simps[simp]:
-  "simp_Times p1 p2 = (if (fst p1 = One) then (fst p2, F_Times1 (snd p1) (snd p2))
+  "simp_Times p1 p2 = (if (fst p1 = Zero) then (Zero, undefined)
+                    else (if (fst p2 = Zero) then (Zero, undefined)
+                    else (if (fst p1 = One) then (fst p2, F_Times1 (snd p1) (snd p2))
                     else (if (fst p2 = One) then (fst p1, F_Times2 (snd p1) (snd p2))
-                    else (Times (fst p1) (fst p2), F_Times (snd p1) (snd p2))))"
-by (induct p1 p2 rule: simp_Times.induct) (auto)
+                    else (Times (fst p1) (fst p2), F_Times (snd p1) (snd p2))))))"
+ by (induct p1 p2 rule: simp_Times.induct)(auto)
 
 lemma simp_Plus_simps[simp]:
   "simp_Plus p1 p2 = (if (fst p1 = Zero) then (fst p2, F_RIGHT (snd p2))
@@ -143,13 +147,20 @@ next
   have IH1: "\<And>s v. s \<in> fst (simp r1) \<rightarrow> v \<Longrightarrow> s \<in> r1 \<rightarrow> snd (simp r1) v" by fact
   have IH2: "\<And>s v. s \<in> fst (simp r2) \<rightarrow> v \<Longrightarrow> s \<in> r2 \<rightarrow> snd (simp r2) v" by fact
   have as: "s \<in> fst (simp (Times r1 r2)) \<rightarrow> v" by fact
-  consider (One_One) "fst (simp r1) = One" "fst (simp r2) = One"
-         | (One_NOne) "fst (simp r1) = One" "fst (simp r2) \<noteq> One"
-         | (NOne_One) "fst (simp r1) \<noteq> One" "fst (simp r2) = One"
-         | (NOne_NOne) "fst (simp r1) \<noteq> One" "fst (simp r2) \<noteq> One" by auto
+  consider (Zero)  "fst (simp r1) = Zero \<or> fst (simp r2) = Zero"
+         | (One_One) "fst (simp r1) = One" "fst (simp r2) = One"
+         | (One_NOne) "fst (simp r1) = One" "fst (simp r2) \<noteq> One" "fst (simp r2) \<noteq> Zero"
+         | (NOne_One) "fst (simp r1) \<noteq> One" "fst (simp r2) = One" "fst (simp r1) \<noteq> Zero"
+         | (NOne_NOne) "fst (simp r1) \<noteq> One" "fst (simp r2) \<noteq> One" 
+                       "fst (simp r1) \<noteq> Zero" "fst (simp r2) \<noteq> Zero" by auto
   then show "s \<in> Times r1 r2 \<rightarrow> snd (simp (Times r1 r2)) v" 
   proof(cases)
-      case (One_One)
+    case (Zero)
+    with as have "False" 
+      by (metis Posix_elims(1) fst_conv simp.simps(2) simp_Times_simps) 
+    then show "s \<in> Times r1 r2 \<rightarrow> snd (simp (Times r1 r2)) v" by simp     
+  next
+    case (One_One)
       with as have b: "s \<in> One \<rightarrow> v" by simp 
       from b have "s \<in> r1 \<rightarrow> snd (simp r1) v" using IH1 One_One by simp
       moreover
