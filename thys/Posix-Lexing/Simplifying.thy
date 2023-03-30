@@ -37,7 +37,8 @@ fun F_Times where
 fun simp_Plus where
   "simp_Plus (Zero, f\<^sub>1) (r\<^sub>2, f\<^sub>2) = (r\<^sub>2, F_RIGHT f\<^sub>2)"
 | "simp_Plus (r\<^sub>1, f\<^sub>1) (Zero, f\<^sub>2) = (r\<^sub>1, F_LEFT f\<^sub>1)"
-| "simp_Plus (r\<^sub>1, f\<^sub>1) (r\<^sub>2, f\<^sub>2) = (Plus r\<^sub>1 r\<^sub>2, F_Plus f\<^sub>1 f\<^sub>2)"
+| "simp_Plus (r\<^sub>1, f\<^sub>1) (r\<^sub>2, f\<^sub>2) = 
+  (if r\<^sub>1 = r\<^sub>2 then (r\<^sub>1, F_LEFT f\<^sub>1) else (Plus r\<^sub>1 r\<^sub>2, F_Plus f\<^sub>1 f\<^sub>2))"
 
 fun simp_Times where
   "simp_Times (Zero, f\<^sub>1) (r\<^sub>2, f\<^sub>2) = (Zero, undefined)"
@@ -57,7 +58,8 @@ lemma simp_Times_simps[simp]:
 lemma simp_Plus_simps[simp]:
   "simp_Plus p1 p2 = (if (fst p1 = Zero) then (fst p2, F_RIGHT (snd p2))
                     else (if (fst p2 = Zero) then (fst p1, F_LEFT (snd p1))
-                    else (Plus (fst p1) (fst p2), F_Plus (snd p1) (snd p2))))"
+                    else (if (fst p1 = fst p2) then (fst p1, F_LEFT (snd p1))
+                    else (Plus (fst p1) (fst p2), F_Plus (snd p1) (snd p2)))))"
 by (induct p1 p2 rule: simp_Plus.induct) (auto)
 
 fun 
@@ -99,7 +101,8 @@ proof(induct r arbitrary: s v rule: rexp.induct)
   consider (Zero_Zero) "fst (simp r1) = Zero" "fst (simp r2) = Zero"
          | (Zero_NZero) "fst (simp r1) = Zero" "fst (simp r2) \<noteq> Zero"
          | (NZero_Zero) "fst (simp r1) \<noteq> Zero" "fst (simp r2) = Zero"
-         | (NZero_NZero) "fst (simp r1) \<noteq> Zero" "fst (simp r2) \<noteq> Zero" by auto
+         | (NZero_NZero1) "fst (simp r1) \<noteq> Zero" "fst (simp r2) \<noteq> Zero" "fst (simp r1) = fst (simp r2)"
+         | (NZero_NZero2) "fst (simp r1) \<noteq> Zero" "fst (simp r2) \<noteq> Zero" "fst (simp r1) \<noteq> fst (simp r2)" by auto
   then show "s \<in> Plus r1 r2 \<rightarrow> snd (simp (Plus r1 r2)) v" 
     proof(cases)
       case (Zero_Zero)
@@ -124,7 +127,12 @@ proof(induct r arbitrary: s v rule: rexp.induct)
       then have "s \<in> Plus r1 r2 \<rightarrow> Left (snd (simp r1) v)" by (rule Posix_Plus1) 
       then show "s \<in> Plus r1 r2 \<rightarrow> snd (simp (Plus r1 r2)) v" using NZero_Zero by simp
     next
-      case (NZero_NZero)
+      case (NZero_NZero1)
+      with as have a: "s \<in> fst (simp r1) \<rightarrow> v" by simp
+        then show "s \<in> Plus r1 r2 \<rightarrow> snd (simp (Plus r1 r2)) v" 
+        using IH1 NZero_NZero1 Posix_Plus1 a by fastforce
+    next
+      case (NZero_NZero2)
       with as have "s \<in> Plus (fst (simp r1)) (fst (simp r2)) \<rightarrow> v" by simp
       then consider (Left) v1 where "v = Left v1" "s \<in> (fst (simp r1)) \<rightarrow> v1"
                   | (Right) v2 where "v = Right v2" "s \<in> (fst (simp r2)) \<rightarrow> v2" "s \<notin> lang (fst (simp r1))"
@@ -133,12 +141,12 @@ proof(induct r arbitrary: s v rule: rexp.induct)
       proof(cases)
         case (Left)
         then have "v = Left v1" "s \<in> r1 \<rightarrow> (snd (simp r1) v1)" using IH1 by simp_all
-        then show "s \<in> Plus r1 r2 \<rightarrow> snd (simp (Plus r1 r2)) v" using NZero_NZero
+        then show "s \<in> Plus r1 r2 \<rightarrow> snd (simp (Plus r1 r2)) v" using NZero_NZero2
           by (simp_all add: Posix_Plus1)
       next 
         case (Right)
         then have "v = Right v2" "s \<in> r2 \<rightarrow> (snd (simp r2) v2)" "s \<notin> lang r1" using IH2 L_fst_simp by auto
-        then show "s \<in> Plus r1 r2 \<rightarrow> snd (simp (Plus r1 r2)) v" using NZero_NZero
+        then show "s \<in> Plus r1 r2 \<rightarrow> snd (simp (Plus r1 r2)) v" using NZero_NZero2
           by (simp_all add: Posix_Plus2)
       qed
     qed
