@@ -5,7 +5,7 @@
 
 (*<*)
 theory Huffman
-imports Main
+  imports Main
 begin
 (*>*)
 
@@ -402,9 +402,7 @@ straightforward but long-winded.
 apply rotate_tac
 apply induction_schema
        apply atomize_elim
-       apply (case_tac t)
-        apply fastforce
-       apply fastforce
+       apply (metis consistent.simps(2) disjoint_iff_not_equal tree.exhaust)
 by lexicographic_order
 
 text \<open>
@@ -989,7 +987,7 @@ by (induct t a rule: sibling.induct) auto
 
 lemma sibling_ne_imp_sibling_in_alphabet:
 "sibling t a \<noteq> a \<Longrightarrow> sibling t a \<in> alphabet t"
-by (metis notin_alphabet_imp_sibling_id in_alphabet_imp_sibling_in_alphabet)
+using in_alphabet_imp_sibling_in_alphabet by force
 
 text \<open>
 The default induction rule for @{const sibling} distinguishes four cases.
@@ -1064,14 +1062,9 @@ apply induction_schema
    apply atomize_elim
    apply (case_tac t, simp)
    apply clarsimp
-   apply (rename_tac a t\<^sub>1 t\<^sub>2)
-   apply (case_tac "height t\<^sub>1 = 0 \<and> height t\<^sub>2 = 0")
-    apply simp
-    apply (case_tac t\<^sub>1)
-     apply (case_tac t\<^sub>2)
-      apply fastforce
-     apply simp+
-   apply (auto intro: in_alphabet_imp_sibling_in_alphabet)[1]
+   apply (metis One_nat_def add_is_0 alphabet.simps(1) bot_nat_0.not_eq_extremum disjoint_iff
+                exists_at_height height.simps(2) in_alphabet_imp_sibling_in_alphabet nat.simps(3)
+                tree.exhaust)
 by lexicographic_order
 
 text \<open>
@@ -1359,7 +1352,7 @@ next
         note h\<^sub>2 = True
         show ?thesis
         proof (cases t\<^sub>2)
-          case Leaf thus ?thesis using l\<^sub>1 hyps by auto metis+
+          case Leaf thus ?thesis using l\<^sub>1 hyps by simp presburger
         next
           case Node thus ?thesis using h\<^sub>2 by simp
         qed
@@ -1386,28 +1379,7 @@ next
     proof (cases "height t\<^sub>2 = 0")
       case True
       note h\<^sub>2 = True
-      show ?thesis
-      proof (cases t\<^sub>2)
-        case (Leaf w\<^sub>d d)
-        note l\<^sub>2 = Leaf
-        show ?thesis
-        proof cases
-          assume "d = b" thus ?thesis using h\<^sub>1 l\<^sub>2 hyps by simp
-        next
-          assume "d \<noteq> b" show ?thesis
-          proof (cases "b \<in> alphabet t\<^sub>1")
-            case True
-            hence "sibling t\<^sub>1 b \<in> alphabet t\<^sub>1" using \<open>d \<noteq> b\<close> h\<^sub>1 l\<^sub>2 hyps
-              by (simp add: sibling_ne_imp_sibling_in_alphabet)
-            thus ?thesis using True \<open>d \<noteq> b\<close> h\<^sub>1 l\<^sub>2 hyps
-              by (simp add: alphabet_swapLeaves)
-          next
-            case False thus ?thesis using \<open>d \<noteq> b\<close> l\<^sub>2 hyps by simp
-          qed
-        qed
-      next
-        case Node thus ?thesis using h\<^sub>2 by simp
-      qed
+      show ?thesis using h\<^sub>1 h\<^sub>2 hyps(1,3-5) by auto
     next
       case False
       note h\<^sub>2 = False
@@ -1472,11 +1444,7 @@ proof cases
   assume "a = b" thus ?thesis using assms by simp
 next
   assume "a \<noteq> b"
-  hence "cost (swapLeaves t (freq t a) a (freq t b) b)
-    + freq t a * depth t a + freq t b * depth t b =
-    cost t + freq t a * depth t b + freq t b * depth t a"
-    using assms by (simp add: cost_swapLeaves)
-  thus ?thesis using assms by (simp add: swapSyms_def)
+  thus ?thesis using assms by (simp add: cost_swapLeaves swapSyms_def)
 qed
 
 text \<open>
@@ -1484,16 +1452,6 @@ If $a$'s frequency is lower than or equal to $b$'s, and $a$ is higher up in the
 tree than $b$ or at the same level, then interchanging $a$ and $b$ does not
 increase the tree's cost.
 \<close>
-
-lemma le_le_imp_sum_mult_le_sum_mult:
-assumes "i \<le> j" "m \<le> (n::nat)"
-shows "i * n + j * m \<le> i * m + j * n"
-proof -
-  have "i * m + i * (n - m) + j * m \<le> i * m + j * m + j * (n - m)" using assms
-    by simp
-  thus ?thesis using assms
-    by (simp add: diff_mult_distrib2)
-qed
 
 lemma cost_swapSyms_le:
 assumes "consistent t" "a \<in> alphabet t" "b \<in> alphabet t" "freq t a \<le> freq t b"
@@ -1503,7 +1461,8 @@ proof -
   let ?aabb = "freq t a * depth t a + freq t b * depth t b"
   let ?abba = "freq t a * depth t b + freq t b * depth t a"
   have "?abba \<le> ?aabb" using assms(4-5)
-    by (rule le_le_imp_sum_mult_le_sum_mult)
+    by (metis (no_types) Groups.add_ac(2) Groups.mult_ac(2) nat_arith.rule0 nat_le_add_iff1
+        nat_le_add_iff2 zero_order(1))
   have "cost (swapSyms t a b) + ?aabb = cost t + ?abba" using assms(1-3)
     by (simp add: cost_swapSyms add.assoc[THEN sym])
   also have "\<dots> \<le> cost t + ?aabb" using \<open>?abba \<le> ?aabb\<close> by simp
@@ -1854,14 +1813,9 @@ proof -
   proof (cases "a \<noteq> d \<and> b \<noteq> c")
     case True show ?thesis
     proof cases
-      assume "a = c" show ?thesis
-      proof cases
-        assume "b = d" thus ?thesis using \<open>a = c\<close> True assms
-          by (simp add: lems)
-      next
-        assume "b \<noteq> d" thus ?thesis using \<open>a = c\<close> True assms
-          by (simp add: lems)
-      qed
+      assume "a = c" thus ?thesis
+      using assms by (metis Orderings.order_eq_iff True cost_swapSyms_le depth_le_height minima_def
+                            swapFourSyms_def swapSyms_id)
     next
       assume "a \<noteq> c" show ?thesis
       proof cases
