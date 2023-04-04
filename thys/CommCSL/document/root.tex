@@ -1,0 +1,77 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+%\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+\begin{document}
+
+\title{Formalization of CommCSL: A Relational Concurrent Separation Logic for Proving Information Flow Security in Concurrent Programs}
+\author{Thibault Dardinier\\
+Department of Computer Science\\ETH Zurich, Switzerland}
+
+\maketitle
+
+\begin{abstract}
+Information flow security ensures that the secret data manipulated by a program does not influence its observable output.
+Proving information flow security is especially challenging for concurrent programs, where operations on secret data may influence the execution time of a thread and, thereby, the interleaving between threads.
+Such internal timing channels may affect the observable outcome of a program even if an attacker does not observe execution times.
+Existing verification techniques for information flow security in concurrent programs attempt to prove that secret data does not influence the relative timing of threads.
+However, these techniques are often restrictive (for instance because they disallow branching on secret data) and make strong assumptions about the execution platform (ignoring caching, processor instructions with data-dependent execution time, and other common features that affect execution time).
+
+In this entry, we formalize and prove the soundness of \textsc{CommCSL}~\cite{CommCSL}, a novel relational concurrent separation logic for proving secure information flow in concurrent programs
+that lifts these restrictions and does not make any assumptions about timing behavior.
+The key idea is to prove that all mutating operations performed on shared data commute, such that different thread interleavings do not influence its final value.
+Crucially, commutativity is required only for an abstraction of the shared data that contains the information that will be leaked to a public output.
+Abstract commutativity is satisfied by many more operations than standard commutativity, which makes our technique widely applicable.
+\end{abstract}
+
+\clearpage
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

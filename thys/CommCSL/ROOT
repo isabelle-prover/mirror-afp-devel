@@ -1,0 +1,19 @@
+chapter AFP
+
+session CommCSL (AFP) = "HOL-Library" +
+  options [timeout = 600]
+  theories
+    PartialMap
+    PosRat
+    FractionalHeap
+    StateModel
+    Lang
+    AbstractCommutativity
+    CommCSL
+    Guards
+    Safety
+    Soundness
+    NonInterference
+  document_files
+    "root.bib"
+    "root.tex"
