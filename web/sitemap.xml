@@ -3,15 +3,21 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2023-03-05T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/andreka/</loc>
-    <lastmod>2023-03-05T00:00:00+00:00</lastmod>
+    <lastmod>2023-03-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2023-03-05T00:00:00+00:00</lastmod>
+    <lastmod>2023-03-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/dardinier/</loc>
+    <lastmod>2023-03-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/</loc>
+    <lastmod>2023-03-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/CommCSL.html</loc>
+    <lastmod>2023-03-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/andreka/</loc>
     <lastmod>2023-03-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/higgins/</loc>
@@ -427,9 +433,6 @@
   </url><url>
     <loc>/dependencies/number_theoretic_transform/</loc>
     <lastmod>2022-09-08T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/dardinier/</loc>
-    <lastmod>2022-09-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Separation_Logic_Unbounded.html</loc>
     <lastmod>2022-09-05T00:00:00+00:00</lastmod>
@@ -4705,6 +4708,8 @@
     <loc>/theories/combinatorics_words_graph_lemma/</loc>
   </url><url>
     <loc>/theories/combinatorics_words_lyndon/</loc>
+  </url><url>
+    <loc>/theories/commcsl/</loc>
   </url><url>
     <loc>/theories/commuting_hermitian/</loc>
   </url><url>

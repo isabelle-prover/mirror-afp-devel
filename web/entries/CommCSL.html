@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Formalization of CommCSL: A Relational Concurrent Separation Logic for Proving Information Flow Security in Concurrent Programs - Archive of Formal Proofs</title><meta name="description" content="Information flow security ensures that the secret data manipulated by a program does not influence its observable output. Proving information flow security..."><meta property="og:title" content="Formalization of CommCSL: A Relational Concurrent Separation Logic for Proving Information Flow Security in Concurrent Programs" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/CommCSL.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2023-03-15T00:00:00+00:00" />
+<meta property="article:modified_time" content="2023-03-15T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="Formalization of CommCSL: A Relational Concurrent Separation Logic for Proving Information Flow Security in Concurrent Programs"/>
+<meta name="twitter:description" content=""/>
+
+  
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
+</head>
+
+
+<body class='mathjax_ignore '>
+  <aside>
+    <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
+
+  <a href="../" class='logo-link'>
+    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  </a>
+
+  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+      </a>
+      <ul>
+        <a href="../"><li >Home</li></a>
+        <a href="../topics/"><li >Topics</li></a>
+        <a href="../download/"><li >Download</li></a>
+        <a href="../help/"><li >Help</li></a>
+        <a href="../submission/"><li >Submission</li></a>
+        <a href="../statistics/"><li >Statistics</li></a>
+        <a href="../about/"><li >About</li></a>
+      </ul>
+    </div>
+  </nav>
+</div>
+  </aside>
+
+  <div
+    class='content  entries'><header>
+  <form autocomplete="off" action="../search">
+    <div class='form-container'>
+      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
+      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
+      <datalist id="autocomplete">
+      </datalist>
+    </div>
+  </form>
+  <h1 >
+    <span class='first'>F</span>ormalization of <span class='first'>C</span>omm<span class='first'>C</span><span class='first'>S</span><span class='first'>L</span>: <span class='first'>A</span> <span class='first'>R</span>elational <span class='first'>C</span>oncurrent <span class='first'>S</span>eparation <span class='first'>L</span>ogic for <span class='first'>P</span>roving <span class='first'>I</span>nformation <span class='first'>F</span>low <span class='first'>S</span>ecurity in <span class='first'>C</span>oncurrent <span class='first'>P</span>rograms</h1>
+  <div>
+    
+    <p><a href="../authors/dardinier">Thibault Dardinier</a> <a class="obfuscated" data="eyJob3N0IjpbImluZiIsImV0aHoiLCJjaCJdLCJ1c2VyIjpbInRoaWJhdWx0IiwiZGFyZGluaWVyIl19">📧</a>
+    </p>
+    
+    
+    <p class="date">March 15, 2023</p>
+    
+  </div>
+</header><div><main><h3>Abstract</h3>
+
+  <div class="abstract mathjax_process"><p>Information flow security ensures that the secret data manipulated by a program does not influence its observable output. Proving information flow security is especially challenging for concurrent programs, where operations on secret data may influence the execution time of a thread and, thereby, the interleaving between threads. Such internal timing channels may affect the observable outcome of a program even if an attacker does not observe execution times. Existing verification techniques for information flow security in concurrent programs attempt to prove that secret data does not influence the relative timing of threads. However, these techniques are often restrictive (for instance because they disallow branching on secret data) and make strong assumptions about the execution platform (ignoring caching, processor instructions with data-dependent execution time, and other common features that affect execution time).
+</p><p>
+In this entry, we formalize and prove the soundness of CommCSL, a novel relational concurrent separation logic for proving secure information flow in concurrent programs that lifts these restrictions and does not make any assumptions about timing behavior. The key idea is to prove that all mutating operations performed on shared data commute, such that different thread interleavings do not influence its final value. Crucially, commutativity is required only for an abstraction of the shared data that contains the information that will be leaked to a public output. Abstract commutativity is satisfied by many more operations than standard commutativity, which makes our technique widely applicable.</p></div>
+
+  <h3>License</h3>
+  <div><a href="https://isa-afp.org/LICENSE">BSD License</a></div><h3>Topics</h3>
+  <ul><li><a href="../topics/computer-science/programming-languages/logics">Computer science/Programming languages/Logics</a></li><li><a href="../topics/computer-science/concurrency">Computer science/Concurrency</a></li><li><a href="../topics/computer-science/security">Computer science/Security</a></li></ul><h3>Related publications</h3>
+  <ul><li>
+      Eilers, M., Dardinier, T., &amp; Müller, P. (2022). <i>CommCSL: Proving Information Flow Security for Concurrent Programs using Abstract Commutativity</i> (Version 1). arXiv. https://doi.org/10.48550/ARXIV.2211.08459
+    </li></ul>
+  <h3>Session CommCSL</h3>
+  <ul>
+    <li><a href="../theories/commcsl/#PartialMap">PartialMap</a></li>
+    <li><a href="../theories/commcsl/#PosRat">PosRat</a></li>
+    <li><a href="../theories/commcsl/#FractionalHeap">FractionalHeap</a></li>
+    <li><a href="../theories/commcsl/#StateModel">StateModel</a></li>
+    <li><a href="../theories/commcsl/#Lang">Lang</a></li>
+    <li><a href="../theories/commcsl/#CommCSL">CommCSL</a></li>
+    <li><a href="../theories/commcsl/#AbstractCommutativity">AbstractCommutativity</a></li>
+    <li><a href="../theories/commcsl/#Guards">Guards</a></li>
+    <li><a href="../theories/commcsl/#Safety">Safety</a></li>
+    <li><a href="../theories/commcsl/#Soundness">Soundness</a></li>
+    <li><a href="../theories/commcsl/#NonInterference">NonInterference</a></li></ul><div class="flex-wrap">
+  
+  
+  </div>
+</main>
+
+<nav class='links'>
+  <a class='popup-button' href="#cite-popup">Cite</a>
+  <a class='popup-button' href="#download-popup">Download</a>
+  <h4>PDFs</h4>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/CommCSL/outline.pdf">Proof
+    outline</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/CommCSL/document.pdf">Proof
+    document</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/CommCSL/session_graph.pdf">Dependencies</a></nav>
+
+<div id="cite-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Cite</h2>
+    <a class="close" href="#">&times;</a>
+    <div>
+      <p style="display:none;" id="bibtex-filename">CommCSL-AFP</p><pre id="copy-text">@article{CommCSL-AFP,
+  author  = {Thibault Dardinier},
+  title   = {Formalization of CommCSL: A Relational Concurrent Separation Logic for Proving Information Flow Security in Concurrent Programs},
+  journal = {Archive of Formal Proofs},
+  month   = {March},
+  year    = {2023},
+  note    = {\url{https://isa-afp.org/entries/CommCSL.html},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+    </div>
+  </div>
+</div>
+
+<div id="download-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Download</h2>
+    <a class="close" href="#">&times;</a>
+    <a href="https://www.isa-afp.org/release//afp-CommCSL-current.tar.gz" download>Download latest</a>
+    
+  </div>
+</div>
+    </div>
+  </div>
+</body>
+
+</html>
