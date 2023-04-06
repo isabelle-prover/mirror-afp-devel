@@ -6,7 +6,16 @@
     <description>Recent content in Perron_Frobenius on Archive of Formal Proofs</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Sat, 23 May 2020 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/perron_frobenius/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 16 Dec 2021 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/perron_frobenius/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Verified Algorithms for Solving Markov Decision Processes</title>
+      <link>/entries/MDP-Algorithms.html</link>
+      <pubDate>Thu, 16 Dec 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/MDP-Algorithms.html</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>A verified algorithm for computing the Smith normal form of a matrix</title>
       <link>/entries/Smith_Normal_Form.html</link>

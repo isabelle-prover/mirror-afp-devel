@@ -695,10 +695,16 @@
     <loc>/dependencies/gauss_jordan/</loc>
     <lastmod>2021-12-16T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/dependencies/jordan_normal_form/</loc>
+    <lastmod>2021-12-16T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/entries/MDP-Rewards.html</loc>
     <lastmod>2021-12-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/mdp-rewards/</loc>
+    <lastmod>2021-12-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/perron_frobenius/</loc>
     <lastmod>2021-12-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/schaeffeler/</loc>
@@ -723,9 +729,6 @@
     <lastmod>2021-11-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/campo/</loc>
-    <lastmod>2021-11-29T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/jordan_normal_form/</loc>
     <lastmod>2021-11-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/michaelis/</loc>
@@ -1473,9 +1476,6 @@
     <lastmod>2020-06-01T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Smith_Normal_Form.html</loc>
-    <lastmod>2020-05-23T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/perron_frobenius/</loc>
     <lastmod>2020-05-23T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Nash_Williams.html</loc>

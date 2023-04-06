@@ -6,7 +6,16 @@
     <description>Recent content in Jordan_Normal_Form on Archive of Formal Proofs</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Mon, 29 Nov 2021 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/jordan_normal_form/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 16 Dec 2021 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/jordan_normal_form/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Verified Algorithms for Solving Markov Decision Processes</title>
+      <link>/entries/MDP-Algorithms.html</link>
+      <pubDate>Thu, 16 Dec 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/MDP-Algorithms.html</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>Simplicial Complexes and Boolean functions</title>
       <link>/entries/Simplicial_complexes_and_boolean_functions.html</link>

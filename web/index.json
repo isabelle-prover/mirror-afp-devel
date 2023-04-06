@@ -106,7 +106,7 @@
  {
   "abstract": "We formalize a multivariate quantifier elimination (QE) algorithm in the theorem prover Isabelle/HOL. Our algorithm is complete, in that it is able to reduce \u003ci\u003eany\u003c/i\u003e quantified formula in the first-order logic of real arithmetic to a logically equivalent quantifier-free formula. The algorithm we formalize is a hybrid mixture of Tarski's original QE algorithm and the Ben-Or, Kozen, and Reif algorithm, and it is the first complete multivariate QE algorithm formalized in Isabelle/HOL.",
   "authors": [
-   "Katherine Cordwell",
+   "Katherine Kosaian",
    "Yong Kiam Tan",
    "André Platzer"
   ],
@@ -341,7 +341,7 @@
   "used_by": 0
  },
  {
-  "abstract": "We formalise the Balog–Szemerédi–Gowers Theorem, a profound result in additive combinatorics which played a central role in \u003ca href=\"https://link.springer.com/article/10.1007/s00039-001-0332-9\"\u003eGowers's proof deriving the first effective bounds for Szemerédi's Theorem\u003c/a\u003e. The proof is of great mathematical interest given that it involves an interplay between different mathematical areas, namely applications of graph theory and probability theory to additive combinatorics involving algebraic objects. This interplay is what made the process of the formalisation, for which we had to develop formalisations of new background material in the aforementioned areas, more rich and technically challenging.  We demonstrate how locales, Isabelle’s module system, can be employed to handle such interplays. To treat the graph-theoretic aspects of the proof, we make use of a new, more general \u003ca href=\"https://www.isa-afp.org/entries/Undirected_Graph_Theory.html\"\u003eundirected graph theory library\u003c/a\u003e developed recently by Chelsea Edmonds, which is both flexible and extensible. For the formalisation we followed a proof presented in the 2022 lecture notes by Timothy Gowers  \u003ca href=\"https://drive.google.com/file/d/1ut0mUqSyPMweoxoDTfhXverEONyFgcuO/view\"\u003eIntroduction to Additive Combinatorics \u003c/a\u003e for Part III of the Mathematics Tripos taught at the University of Cambridge. In addition to the main theorem, which, following our source, is formulated for difference sets, we also give an alternative version for sumsets which required a formalisation of an auxiliary triangle inequality following a proof by Yufei Zhao from his book \u003ca href=\"https://yufeizhao.com/gtacbook/\"\u003eGraph Theory and Additive Combinatorics \u003c/a\u003e. We moreover formalise a few additional results in additive combinatorics that are not used in the proof of the main theorem. This is the first formalisation of the Balog–Szemerédi–Gowers Theorem in any proof assistant to our knowledge.",
+  "abstract": "We formalise the Balog–Szemerédi–Gowers Theorem, a profound result in additive combinatorics which played a central role in \u003ca href=\"https://link.springer.com/article/10.1007/s00039-001-0332-9\"\u003eGowers's proof deriving the first effective bounds for Szemerédi's Theorem\u003c/a\u003e. The proof is of great mathematical interest given that it involves an interplay between different mathematical areas, namely applications of graph theory and probability theory to additive combinatorics involving algebraic objects. This interplay is what made the process of the formalisation, for which we had to develop formalisations of new background material in the aforementioned areas, more rich and technically challenging.  We demonstrate how locales, Isabelle’s module system, can be employed to handle such interplays. To treat the graph-theoretic aspects of the proof, we make use of a new, more general \u003ca href=\"https://www.isa-afp.org/entries/Undirected_Graph_Theory.html\"\u003eundirected graph theory library\u003c/a\u003e developed recently by Chelsea Edmonds, which is both flexible and extensible. For the formalisation we followed a proof presented in the 2022 lecture notes by Timothy Gowers  \u003ca href=\"https://drive.google.com/file/d/1ut0mUqSyPMweoxoDTfhXverEONyFgcuO/view\"\u003eIntroduction to Additive Combinatorics \u003c/a\u003e for Part III of the Mathematical Tripos taught at the University of Cambridge. In addition to the main theorem, which, following our source, is formulated for difference sets, we also give an alternative version for sumsets which required a formalisation of an auxiliary triangle inequality following a proof by Yufei Zhao from his book \u003ca href=\"https://yufeizhao.com/gtacbook/\"\u003eGraph Theory and Additive Combinatorics \u003c/a\u003e. We moreover formalise a few additional results in additive combinatorics that are not used in the proof of the main theorem. This is the first formalisation of the Balog–Szemerédi–Gowers Theorem in any proof assistant to our knowledge.",
   "authors": [
    "Angeliki Koutsoukou-Argyraki",
    "Mantas Bakšys",
@@ -467,7 +467,7 @@
   "used_by": 0
  },
  {
-  "abstract": "This work is a formalization of Stalnaker's epistemic logic with countably many agents and its soundness and completeness theorems, as well as the equivalence between the axiomatization of S4 available in the Epistemic Logic theory and the topological one. It builds on the Epistemic Logic theory.",
+  "abstract": "This work is a formalization of Stalnaker's epistemic logic and its soundness and completeness theorems, as well as the equivalence between the axiomatization of S4 available in the Epistemic Logic theory and the topological one. It builds on the Epistemic Logic theory.",
   "authors": [
    "Laura P. Gamboa Guzman"
   ],
@@ -507,7 +507,7 @@
   "used_by": 0
  },
  {
-  "abstract": "We construct an abstract ledger supporting the \u003cem\u003erisk-free lending\u003c/em\u003e protocol. The risk-free lending protocol is a system for issuing and exchanging novel financial products we call \u003cem\u003erisk-free loan\u003c/em\u003e. The system allows one party to lend money at 0\u0026#37; APY to another party in exchange for a good or service. On every update of the ledger, accounts have interest distributed to them. Holders of lent assets keep interest accrued by those assets. After distributing interest, the system returns a fixed fraction of each loan. These fixed fractions determine \u003cem\u003eloan periods\u003c/em\u003e. Loans for longer periods have a smaller fixed fraction returned. Loans may be re-lent or used as collateral for other loans. We give a sufficient criterion to enforce all accounts will forever be solvent. We give a protocol for maintaining this invariant when transferring or lending funds. We also show this invariant holds after update. Even though the system does not track counter-party obligations, we show that all credited and debited loans cancel and the monetary supply grows at a specified interest rate.",
+  "abstract": "We construct an abstract ledger supporting the \u003cem\u003erisk-free lending\u003c/em\u003e protocol. The risk-free lending protocol is a system for issuing and exchanging novel financial products we call \u003cem\u003erisk-free loans\u003c/em\u003e. The system allows one party to lend money at 0\u0026percnt; APY to another party in exchange for a good or service. On every update of the ledger, accounts have interest distributed to them. Holders of lent assets keep interest accrued by those assets. After distributing interest, the system returns a fixed fraction of each loan. These fixed fractions determine \u003cem\u003eloan periods\u003c/em\u003e. Loans for longer periods have a smaller fixed fraction returned. Loans may be re-lent or used as collateral for other loans. We give a sufficient criterion to enforce that all accounts will forever be solvent. We give a protocol for maintaining this invariant when transferring or lending funds. We also show that this invariant holds after an update. Even though the system does not track counter-party obligations, we show that all credited and debited loans cancel, and the monetary supply grows at a specified interest rate.",
   "authors": [
    "Matthew Doty"
   ],
@@ -1995,7 +1995,7 @@
   "abstract": "This paper presents a formally verified quantifier elimination (QE) algorithm for first-order real arithmetic by linear and quadratic virtual substitution (VS) in Isabelle/HOL. The Tarski-Seidenberg theorem established that the first-order logic of real arithmetic is decidable by QE. However, in practice, QE algorithms are highly complicated and often combine multiple methods for performance. VS is a practically successful method for QE that targets formulas with low-degree polynomials. To our knowledge, this is the first work to formalize VS for quadratic real arithmetic including inequalities. The proofs necessitate various contributions to the existing multivariate polynomial libraries in Isabelle/HOL. Our framework is modularized and easily expandable (to facilitate integrating future optimizations), and could serve as a basis for developing practical general-purpose QE algorithms. Further, as our formalization is designed with practicality in mind, we export our development to SML and test the resulting code on 378 benchmarks from the literature, comparing to Redlog, Z3, Wolfram Engine, and SMT-RAT. This identified inconsistencies in some tools, underscoring the significance of a verified approach for the intricacies of real arithmetic.",
   "authors": [
    "Matias Scharager",
-   "Katherine Cordwell",
+   "Katherine Kosaian",
    "Stefan Mitsch",
    "André Platzer"
   ],
@@ -2531,7 +2531,7 @@
   "used_by": 0
  },
  {
-  "abstract": "This work is a formalization of public announcement logic with countably many agents. It includes proofs of soundness and completeness for a variant of the axiom system PA + DIST! + NEC!. The completeness proof builds on the Epistemic Logic theory. Paper: \u003ca href=\"https://doi.org/10.1007/978-3-030-90138-7_2\"\u003edoi.org/10.1007/978-3-030-90138-7_2\u003c/a\u003e.",
+  "abstract": "This work is a formalization of public announcement logic. It includes proofs of soundness and completeness for a variant of the axiom system PA + DIST! + NEC!. The completeness proof builds on the Epistemic Logic theory. Paper: \u003ca href=\"https://doi.org/10.1007/978-3-030-90138-7_2\"\u003edoi.org/10.1007/978-3-030-90138-7_2\u003c/a\u003e.",
   "authors": [
    "Asta Halkjær From"
   ],
@@ -2690,7 +2690,7 @@
  {
   "abstract": "We formalize the univariate case of Ben-Or, Kozen, and Reif's decision procedure for first-order real arithmetic (the BKR algorithm). We also formalize the univariate case of Renegar's variation of the BKR algorithm. The two formalizations differ mathematically in minor ways (that have significant impact on the multivariate case), but are quite similar in proof structure.  Both rely on sign-determination (finding the set of consistent sign assignments for a set of polynomials).  The method used for sign-determination is similar to Tarski's original quantifier elimination algorithm (it stores key information in a matrix equation), but with a reduction step to keep complexity low.",
   "authors": [
-   "Katherine Cordwell",
+   "Katherine Kosaian",
    "Yong Kiam Tan",
    "André Platzer"
   ],
@@ -5825,7 +5825,7 @@
   "used_by": 0
  },
  {
-  "abstract": "This work is a formalization of epistemic logic with countably many agents. It includes proofs of soundness and completeness for the axiom system K. The completeness proof is based on the textbook \"Reasoning About Knowledge\" by Fagin, Halpern, Moses and Vardi (MIT Press 1995). The extensions of system K (T, KB, K4, S4, S5) and their completeness proofs are based on the textbook \"Modal Logic\" by Blackburn, de Rijke and Venema (Cambridge University Press 2001). Papers: \u003ca href=\"https://doi.org/10.1007/978-3-030-88853-4_1\"\u003edoi.org/10.1007/978-3-030-88853-4_1\u003c/a\u003e, \u003ca href=\"https://doi.org/10.1007/978-3-030-90138-7_2\"\u003edoi.org/10.1007/978-3-030-90138-7_2\u003c/a\u003e.",
+  "abstract": "This work is a formalization of epistemic logic. It includes proofs of soundness and completeness for the axiom system K. The completeness proof is based on the textbook \"Reasoning About Knowledge\" by Fagin, Halpern, Moses and Vardi (MIT Press 1995). The extensions of system K (T, KB, K4, S4, S5) and their completeness proofs are based on the textbook \"Modal Logic\" by Blackburn, de Rijke and Venema (Cambridge University Press 2001). Papers: \u003ca href=\"https://doi.org/10.1007/978-3-030-88853-4_1\"\u003edoi.org/10.1007/978-3-030-88853-4_1\u003c/a\u003e, \u003ca href=\"https://doi.org/10.1007/978-3-030-90138-7_2\"\u003edoi.org/10.1007/978-3-030-90138-7_2\u003c/a\u003e.",
   "authors": [
    "Asta Halkjær From"
   ],
@@ -9229,7 +9229,7 @@
   "topics": [
    "Mathematics/Algebra"
   ],
-  "used_by": 3
+  "used_by": 4
  },
  {
   "abstract": "The \u003ca href=\"http://incredible.pm\"\u003eIncredible Proof Machine\u003c/a\u003e is an interactive visual theorem prover which represents proofs as port graphs. We model this proof representation in Isabelle, and prove that it is just as powerful as natural deduction.",
@@ -10037,7 +10037,7 @@
   "topics": [
    "Mathematics/Algebra"
   ],
-  "used_by": 12
+  "used_by": 13
  },
  {
   "abstract": "This theory formalizes the commutation version of decreasing diagrams for Church-Rosser modulo. The proof follows Felgenhauer and van Oostrom (RTA 2013). The theory also provides important specializations, in particular van Oostrom’s conversion version (TCS 2008) of decreasing diagrams.",

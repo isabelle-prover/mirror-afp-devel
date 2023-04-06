@@ -6,7 +6,169 @@
     <description>Recent content on Archive of Formal Proofs</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Tue, 04 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 22 Jan 2023 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Suppes&#39; Theorem For Probability Logic</title>
+      <link>/entries/Suppes_Theorem.html</link>
+      <pubDate>Sun, 22 Jan 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Suppes_Theorem.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Hoare Logic for Diverging Programs</title>
+      <link>/entries/HoareForDivergence.html</link>
+      <pubDate>Fri, 20 Jan 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/HoareForDivergence.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Strict Omega Categories</title>
+      <link>/entries/StrictOmegaCategories.html</link>
+      <pubDate>Sat, 14 Jan 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/StrictOmegaCategories.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Synthetic Completeness</title>
+      <link>/entries/Synthetic_Completeness.html</link>
+      <pubDate>Mon, 09 Jan 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Synthetic_Completeness.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Cook-Levin theorem</title>
+      <link>/entries/Cook_Levin.html</link>
+      <pubDate>Sun, 08 Jan 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Cook_Levin.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A First Complete Algorithm for Real Quantifier Elimination in Isabelle/HOL</title>
+      <link>/entries/Quantifier_Elimination_Hybrid.html</link>
+      <pubDate>Thu, 15 Dec 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Quantifier_Elimination_Hybrid.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Class-based Classical Propositional Logic</title>
+      <link>/entries/Propositional_Logic_Class.html</link>
+      <pubDate>Thu, 15 Dec 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Propositional_Logic_Class.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Birkhoff&#39;s Representation Theorem For Finite Distributive Lattices</title>
+      <link>/entries/Birkhoff_Finite_Distributive_Lattices.html</link>
+      <pubDate>Tue, 06 Dec 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Birkhoff_Finite_Distributive_Lattices.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Automation of Boolos&#39; Curious Inference in Isabelle/HOL</title>
+      <link>/entries/Boolos_Curious_Inference_Automated.html</link>
+      <pubDate>Mon, 05 Dec 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Boolos_Curious_Inference_Automated.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Verified Translation of Multitape Turing Machines into Singletape Turing Machines</title>
+      <link>/entries/Multitape_To_Singletape_TM.html</link>
+      <pubDate>Wed, 30 Nov 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Multitape_To_Singletape_TM.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Abstract Object Theory</title>
+      <link>/entries/AOT.html</link>
+      <pubDate>Mon, 28 Nov 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/AOT.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Formal CHERI-C Memory Model</title>
+      <link>/entries/CHERI-C_Memory_Model.html</link>
+      <pubDate>Fri, 25 Nov 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/CHERI-C_Memory_Model.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Sauer-Shelah Lemma</title>
+      <link>/entries/Sauer_Shelah_Lemma.html</link>
+      <pubDate>Thu, 24 Nov 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Sauer_Shelah_Lemma.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Kneser&#39;s Theorem and the Cauchy–Davenport Theorem</title>
+      <link>/entries/Kneser_Cauchy_Davenport.html</link>
+      <pubDate>Mon, 21 Nov 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Kneser_Cauchy_Davenport.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Turán&#39;s Graph Theorem</title>
+      <link>/entries/Turans_Graph_Theorem.html</link>
+      <pubDate>Mon, 14 Nov 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Turans_Graph_Theorem.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Combinatorial Enumeration Algorithms</title>
+      <link>/entries/Combinatorial_Enumeration_Algorithms.html</link>
+      <pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Combinatorial_Enumeration_Algorithms.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Balog–Szemerédi–Gowers Theorem</title>
+      <link>/entries/Balog_Szemeredi_Gowers.html</link>
+      <pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Balog_Szemeredi_Gowers.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Incompatibility of Strategy-Proofness and Representation in Party-Approval Multi-Winner Elections</title>
+      <link>/entries/PAPP_Impossibility.html</link>
+      <pubDate>Thu, 10 Nov 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/PAPP_Impossibility.html</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>Verification of Query Optimization Algorithms</title>
       <link>/entries/Query_Optimization.html</link>
@@ -6398,16 +6560,6 @@
     </item>
     
     <item>
-      <title>About</title>
-      <link>/about/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/about/</guid>
-      <description>The Archive of Formal Proofs is a collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle. It is organized in the way of a scientific journal. Submissions are refereed.
-The archive repository is hosted on Heptapod to provide easy free access to archive entries. The entries are tested and maintained continuously against the current stable release of Isabelle. Older versions of archive entries will remain available.</description>
-    </item>
-    
-    <item>
       <title>Abs_Int_ITP2012</title>
       <link>/theories/abs_int_itp2012/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -6588,6 +6740,15 @@ The archive repository is hosted on Heptapod to provide easy free access to arch
     </item>
     
     <item>
+      <title>AOT</title>
+      <link>/theories/aot/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/aot/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Applicative_Lifting</title>
       <link>/theories/applicative_lifting/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -6719,6 +6880,15 @@ The archive repository is hosted on Heptapod to provide easy free access to arch
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/axiomaticcategorytheory/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Balog_Szemeredi_Gowers</title>
+      <link>/theories/balog_szemeredi_gowers/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/balog_szemeredi_gowers/</guid>
       <description></description>
     </item>
     
@@ -6858,6 +7028,15 @@ The archive repository is hosted on Heptapod to provide easy free access to arch
     </item>
     
     <item>
+      <title>Birkhoff_Finite_Distributive_Lattices</title>
+      <link>/theories/birkhoff_finite_distributive_lattices/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/birkhoff_finite_distributive_lattices/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Blue_Eyes</title>
       <link>/theories/blue_eyes/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -6908,6 +7087,15 @@ The archive repository is hosted on Heptapod to provide easy free access to arch
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/boolos_curious_inference/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Boolos_Curious_Inference_Automated</title>
+      <link>/theories/boolos_curious_inference_automated/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/boolos_curious_inference_automated/</guid>
       <description></description>
     </item>
     
@@ -7182,6 +7370,15 @@ The archive repository is hosted on Heptapod to provide easy free access to arch
     </item>
     
     <item>
+      <title>CHERI-C_Memory_Model</title>
+      <link>/theories/cheri-c_memory_model/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/cheri-c_memory_model/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Chord_Segments</title>
       <link>/theories/chord_segments/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -7304,6 +7501,15 @@ The archive repository is hosted on Heptapod to provide easy free access to arch
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/combinable_wands/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Combinatorial_Enumeration_Algorithms</title>
+      <link>/theories/combinatorial_enumeration_algorithms/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/combinatorial_enumeration_algorithms/</guid>
       <description></description>
     </item>
     
@@ -7520,6 +7726,15 @@ The archive repository is hosted on Heptapod to provide easy free access to arch
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/containers-benchmarks/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Cook_Levin</title>
+      <link>/theories/cook_levin/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/cook_levin/</guid>
       <description></description>
     </item>
     
@@ -7956,18 +8171,6 @@ The archive repository is hosted on Heptapod to provide easy free access to arch
     </item>
     
     <item>
-      <title>Download the Archive</title>
-      <link>/download/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/download/</guid>
-      <description>Current stable version (for most recent Isabelle release): Download all sessions: afp-current.tar.gz (~70 MB)
-Older stable versions: Please use the sourceforge download system to access older versions of the archive.
-Mercurial access: The AFP repositories with tooling and metadata can be found at Heptapod. In particular, the development version of the Archive (for the development version of Isabelle) is available there.
-How to refer to AFP entries: You can refer to AFP entries by using the AFP as an Isabelle component.</description>
-    </item>
-    
-    <item>
       <title>DPRM_Theorem</title>
       <link>/theories/dprm_theorem/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -8055,16 +8258,6 @@ How to refer to AFP entries: You can refer to AFP entries by using the AFP as an
       
       <guid>/theories/encodability_process_calculi/</guid>
       <description></description>
-    </item>
-    
-    <item>
-      <title>Entry Submission</title>
-      <link>/submission/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/submission/</guid>
-      <description>Submission Guidelines The submission must follow the following Isabelle style rules. For additional guidelines on Isabelle proofs, also see the this guide (feel free to follow all of these; only the below are mandatory). Technical details about the submission process and the format of the submission are explained on the submission site.
- No use of the commands sorry or back. Instantiations must not use Isabelle-generated names such as xa — use Isar, the subgoal command or rename_tac to avoid such names.</description>
     </item>
     
     <item>
@@ -8905,16 +9098,6 @@ How to refer to AFP entries: You can refer to AFP entries by using the AFP as an
     </item>
     
     <item>
-      <title>Help</title>
-      <link>/help/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/help/</guid>
-      <description>This section focuses on the Archive of Formal Proofs. For help with Isabelle, see the Isabelle Documentation. More resources are listed in the Isabelle Quick Access Links.
-Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you can include its articles and theories in your own developments. If you would like to make your work available to others without having to include the AFP articles you depend on, here is how to do it.</description>
-    </item>
-    
-    <item>
       <title>HereditarilyFinite</title>
       <link>/theories/hereditarilyfinite/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -8965,6 +9148,15 @@ Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/hoare_time/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>HoareForDivergence</title>
+      <link>/theories/hoarefordivergence/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/hoarefordivergence/</guid>
       <description></description>
     </item>
     
@@ -9550,6 +9742,15 @@ Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/kleene_algebra/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Kneser_Cauchy_Davenport</title>
+      <link>/theories/kneser_cauchy_davenport/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/kneser_cauchy_davenport/</guid>
       <description></description>
     </item>
     
@@ -10418,6 +10619,15 @@ Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you
     </item>
     
     <item>
+      <title>Multitape_To_Singletape_TM</title>
+      <link>/theories/multitape_to_singletape_tm/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/multitape_to_singletape_tm/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Myhill-Nerode</title>
       <link>/theories/myhill-nerode/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -10765,6 +10975,15 @@ Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/pal/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>PAPP_Impossibility</title>
+      <link>/theories/papp_impossibility/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/papp_impossibility/</guid>
       <description></description>
     </item>
     
@@ -11183,6 +11402,15 @@ Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you
     </item>
     
     <item>
+      <title>Propositional_Logic_Class</title>
+      <link>/theories/propositional_logic_class/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/propositional_logic_class/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Propositional_Proof_Systems</title>
       <link>/theories/propositional_proof_systems/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -11278,6 +11506,15 @@ Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/quantales/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Quantifier_Elimination_Hybrid</title>
+      <link>/theories/quantifier_elimination_hybrid/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/quantifier_elimination_hybrid/</guid>
       <description></description>
     </item>
     
@@ -11768,6 +12005,15 @@ Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you
     </item>
     
     <item>
+      <title>Sauer_Shelah_Lemma</title>
+      <link>/theories/sauer_shelah_lemma/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/sauer_shelah_lemma/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>SC_DOM_Components</title>
       <link>/theories/sc_dom_components/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -11800,15 +12046,6 @@ Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/sds_impossibility/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Search the Archive</title>
-      <link>/search/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/search/</guid>
       <description></description>
     </item>
     
@@ -12236,15 +12473,6 @@ Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you
     </item>
     
     <item>
-      <title>Statistics</title>
-      <link>/statistics/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/statistics/</guid>
-      <description>709 Entries   430 Authors   ~225,800 Lemmas   ~3,657,100 Lines of Code   Most used AFP entries:   Name Used by ? entries   1. List-Index 22   2. Collections 19   3. Show 16   4. Deriving 13   5. Coinductive 12   6. Jordan_Normal_Form 12   7. Polynomial_Factorization 12   8. Regular-Sets 12   9.</description>
-    </item>
-    
-    <item>
       <title>Stellar_Quorums</title>
       <link>/theories/stellar_quorums/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -12344,6 +12572,15 @@ Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you
     </item>
     
     <item>
+      <title>StrictOmegaCategories</title>
+      <link>/theories/strictomegacategories/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/strictomegacategories/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Strong_Security</title>
       <link>/theories/strong_security/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -12425,6 +12662,15 @@ Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you
     </item>
     
     <item>
+      <title>Suppes_Theorem</title>
+      <link>/theories/suppes_theorem/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/suppes_theorem/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Surprise_Paradox</title>
       <link>/theories/surprise_paradox/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -12448,6 +12694,15 @@ Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/syntax_independent_logic/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Synthetic_Completeness</title>
+      <link>/theories/synthetic_completeness/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/synthetic_completeness/</guid>
       <description></description>
     </item>
     
@@ -12655,6 +12910,15 @@ Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/trie/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Turans_Graph_Theorem</title>
+      <link>/theories/turans_graph_theorem/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/turans_graph_theorem/</guid>
       <description></description>
     </item>
     
