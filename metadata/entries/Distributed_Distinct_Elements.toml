@@ -1,0 +1,28 @@
+title = "Distributed Distinct Elements"
+date = 2023-04-03
+topics = [
+  "Computer science/Algorithms/Distributed",
+  "Computer science/Algorithms/Approximation",
+  "Mathematics/Probability theory",
+]
+abstract = "This entry formalizes a randomized cardinality estimation data structure with asymptotically optimal space usage. It is inspired by the streaming algorithm presented by <a href=\"https://doi.org/10.1145/3309193\">B&lstrok;asiok</a> in 2018. His work closed the gap between the best-known lower bound and upper bound after a long line of research started by <a href=\"https://doi.org/10.1016/0022-0000(85)90041-8\">Flajolet and Martin</a> in 1984 and was to first to apply expander graphs (in addition to hash families) to the problem. The formalized algorithm has two improvements compared to the algorithm by B&lstrok;asiok. It supports operation in parallel mode, and it relies on a simpler pseudo-random construction avoiding the use of code based extractors."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.karayel]
+email = "karayel_email"
+
+[contributors]
+
+[notify]
+karayel = "karayel_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []
