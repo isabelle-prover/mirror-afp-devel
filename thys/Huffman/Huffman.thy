@@ -2080,7 +2080,7 @@ We are now ready to prove the commutativity lemma.
 \<close>
 
 lemma splitLeaf_huffman_commute:
-"\<lbrakk>consistent\<^sub>F ts; ts \<noteq> []; a \<in> alphabet\<^sub>F ts; freq\<^sub>F ts a = w\<^sub>a + w\<^sub>b\<rbrakk> \<Longrightarrow>
+"\<lbrakk>consistent\<^sub>F ts; a \<in> alphabet\<^sub>F ts; freq\<^sub>F ts a = w\<^sub>a + w\<^sub>b\<rbrakk> \<Longrightarrow>
  splitLeaf (huffman ts) w\<^sub>a a w\<^sub>b b = huffman (splitLeaf\<^sub>F ts w\<^sub>a a w\<^sub>b b)"
 proof (induct ts rule: huffman.induct)
   case (1 t) thus ?case by simp
@@ -2126,10 +2126,6 @@ subsection \<open>Optimality Theorem\<close>
 text \<open>
 We are one lemma away from our main result.
 \<close>
-
-lemma max_0_imp_0[simp]:
-"(max x y = (0::nat)) = (x = 0 \<and> y = 0)"
-by auto
 
 theorem optimum_huffman:
 "\<lbrakk>consistent\<^sub>F ts; height\<^sub>F ts = 0; sortedByWeight ts; ts \<noteq> []\<rbrakk> \<Longrightarrow>
