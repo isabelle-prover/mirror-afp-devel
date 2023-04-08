@@ -522,7 +522,9 @@ val namespace_enum = namespace_tag
 
 val encode_positions =
      map (Position.dest
-       #> (fn pos => ((#line pos, #offset pos, #end_offset pos), #props pos)))
+       #> (fn pos => ((#line pos, #offset pos, #end_offset pos),
+        Properties.make_string Markup.fileN (#file (#props pos)) @
+        Properties.make_string Markup.idN (#id (#props pos)))))
   #> let open XML.Encode in list (pair (triple int int int) properties) end
   #> YXML.string_of_body
   
@@ -531,7 +533,7 @@ val decode_positions =
   #> let open XML.Decode in list (pair (triple int int int) properties) end
   #> map ((fn ((line, offset, end_offset), props) =>
            {line = line, offset = offset, end_offset = end_offset, props = props})
-          #> Position.make)
+          #> Position.of_props)
 
 end
 \<close>
