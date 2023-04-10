@@ -116,7 +116,7 @@ fun instantiate_combinator_type (ty_info : type_info) (cl_info : class_info) con
 
         val left = left |> dest_TVar |> (fn ((s,_),_) => TFree (s,\<^sort>\<open>type\<close>))
         val right = right |> dest_TVar |> (fn ((s,_),_) => TFree (s,\<^sort>\<open>type\<close>))
-        val def_const = Thm.hyps_of def_thm |> hd |> Logic.dest_equals |> snd
+        val def_const = Thm.hyps_of def_thm |> Termset.dest |> hd |> Logic.dest_equals |> snd
         val ctxt_thy = Proof_Context.init_global (Proof_Context.theory_of lthy')
         val def_thm = singleton (Proof_Context.export lthy' ctxt_thy) def_thm
       in

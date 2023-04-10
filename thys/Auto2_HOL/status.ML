@@ -350,7 +350,7 @@ fun find_ritem_exact (st as {ctxt, ...}) id ritem =
 
 (* Invoke a single handler (vars, t, ex_th) on the theorem th. *)
 fun invoke_handler ctxt (vars, t, ex_th) th =
-    if member (op aconv) (Thm.hyps_of th) t then
+    if Termset.member (Thm.hyps_of th) t then
       th |> Thm.implies_intr (Thm.cterm_of ctxt t)
          |> fold (UtilLogic.ex_elim ctxt) (rev vars)
          |> Thm.elim_implies ex_th
@@ -373,7 +373,7 @@ fun get_on_resolve (st as {ctxt, ...}) id i th =
       val th' = th |> fold (invoke_handler ctxt) handlers
                    |> Thm.implies_intr (Thm.cterm_of ctxt init_assum)
                    |> apply_to_thm UtilLogic.rewrite_from_contra_form
-      val _ = assert (prim_id <> BoxID.home_id orelse null (Thm.hyps_of th'))
+      val _ = assert (prim_id <> BoxID.home_id orelse Termset.is_empty (Thm.hyps_of th'))
                      "get_on_resolve: did not remove all hypothesis at box 0."
     in
       th'

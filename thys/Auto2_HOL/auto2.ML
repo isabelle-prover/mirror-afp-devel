@@ -97,7 +97,7 @@ fun check_hyps id th (st as {ctxt, ...}) =
           (Status.get_handlers st)
               |> filter (fn (id', _) => BoxID.is_eq_ancestor ctxt id' id)
               |> map (fn (_, (_, t, _)) => t)
-      val extra = subtract (op aconv) (inits @ handlers) hyps
+      val extra = Termset.dest (fold Termset.remove (inits @ handlers) hyps)
     in
       if null extra then ()
       else let
