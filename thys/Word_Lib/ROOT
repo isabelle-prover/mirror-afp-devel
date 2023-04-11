@@ -32,3 +32,4 @@ session Word_Lib (AFP) = HOL +
     Examples
   document_files
     "root.tex"
+    "root.bib"
