@@ -75,7 +75,7 @@ using val_cong[OF inorder2_tm.simps(2), of l]
 by(simp only: inorder2_def val_simps)
 
 lemma inorder2: "inorder2 t xs = Tree.inorder2 t xs"
-by(induction t xs rule: inorder2_tm.induct)(auto)
+by(induction t xs rule: inorder2_tm.induct)(auto simp:inorder2_def)
 
 definition T_inorder2 :: "'a tree \<Rightarrow> 'a list \<Rightarrow> nat" where
 "T_inorder2 t xs = time(inorder2_tm t xs)"
@@ -185,8 +185,6 @@ apply(induction n xs rule: bal_tm.induct)
 apply(case_tac "n=0")
 apply(simp add: bal_tm_simps)
   apply(auto simp add: bal_tm_simps tm_simps simp del: subst_all split: tm.split)
-subgoal premises p for n xs t1 xs1
-  using p(2)[OF refl,of xs1] p(3-) by(simp)
 done
 
 definition bal_list_tm :: "nat \<Rightarrow> 'a list \<Rightarrow> 'a tree tm" where
