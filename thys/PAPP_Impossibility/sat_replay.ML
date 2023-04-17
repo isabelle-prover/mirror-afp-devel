@@ -105,11 +105,11 @@ fun list_iterator ls =
   let
     val r = Unsynchronized.ref ls
     fun itr () =
-      case Unsynchronized.! r of
+      case ! r of
         [] => NONE
       | l :: ls =>
           let
-            val _ = Unsynchronized.:= (r, ls)
+            val _ = r := ls
           in
             SOME l
           end
@@ -431,7 +431,7 @@ fun add_assignment (rup_ctxt : rup_context) (v, lit_thm) =
     val _ =
       Array.update (#assignments rup_ctxt, v, SOME (mk_assn rup_ctxt v lit_thm))
     val _ =
-      if Unsynchronized.! (#local_mode rup_ctxt) then
+      if ! (#local_mode rup_ctxt) then
         Unsynchronized.change (#local_assignments rup_ctxt) (fn xs => v :: xs)
       else
         ()
@@ -455,9 +455,9 @@ fun delete_assignments rupctxt assns =
 
 fun set_local_mode (rupctxt : rup_context) b =
   let
-    val _ = delete_assignments rupctxt (Unsynchronized.! (#local_assignments rupctxt))
-    val _ = Unsynchronized.:= (#local_mode rupctxt, b)
-    val _ = Unsynchronized.:= (#local_assignments rupctxt, [])
+    val _ = delete_assignments rupctxt (! (#local_assignments rupctxt))
+    val _ = #local_mode rupctxt := b
+    val _ = #local_assignments rupctxt := []
   in
     ()
   end
@@ -678,9 +678,9 @@ fun replay_rup_file rup_input grat_file =
   let
     val ls = Unsynchronized.ref (read_grat_file grat_file)
     fun itr () =
-      case Unsynchronized.! ls of
+      case ! ls of
         [] => NONE
-      | (l :: ls') => let val _ = Unsynchronized.:= (ls, ls') in SOME l end
+      | (l :: ls') => let val _ = ls := ls' in SOME l end
     val res = replay_rup rup_input itr
   in
     res

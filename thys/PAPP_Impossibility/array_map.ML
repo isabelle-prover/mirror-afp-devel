@@ -29,11 +29,9 @@ fun growth_factor n = (3 * n) div 2
 
 type 'a T = 'a option array Unsynchronized.ref
 
-open Unsynchronized
-
 fun capacity a = Array.length (!a)
 
-fun empty cap = ref (Array.array (cap, NONE))
+fun empty cap = Unsynchronized.ref (Array.array (cap, NONE))
 
 fun sub (a, i) =
   if i < 0 orelse i >= capacity a then NONE else Array.sub (!a, i)
@@ -67,7 +65,7 @@ fun tabulate (cap, n, f) =
     fun g i = if i >= n then NONE else SOME (f i)
     val cap = if cap <= 0 then growth_factor n else cap
   in
-    ref (Array.tabulate (Int.max (cap, n), g))
+    Unsynchronized.ref (Array.tabulate (Int.max (cap, n), g))
   end
 
 fun fromArray a =
