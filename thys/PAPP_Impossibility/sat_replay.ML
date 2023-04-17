@@ -80,7 +80,7 @@ fun read_dimacs itr =
             SOME l
 
     val l = get_line ()
-    val _ = if not (Option.isSome l) then raise DIMACS "Missing header line" else ()
+    val _ = if is_none l then raise DIMACS "Missing header line" else ()
 
     val (n_vars, n_clauses) =
       case words (the l) of
@@ -127,7 +127,7 @@ fun read_grat itr =
   let
     val words = String.tokens (fn c => c = #" ")
     val l = itr ()
-    val _ = if not (Option.isSome l) then raise GRAT_PARSE "Missing header line" else ()
+    val _ = if is_none l then raise GRAT_PARSE "Missing header line" else ()
     val _ =
       case words (the l) of
         ["GRATbt", _, _] => ()
@@ -500,7 +500,7 @@ fun rup rupctxt clause up_ids confl_id =
     val _ = set_local_mode rupctxt true
     val local_assns =
       (map abs clause ~~ neg_lits)
-      |> filter_out (fn (v, _) => Option.isSome (lookup_var_assignment rupctxt v))
+      |> filter_out (fn (v, _) => is_some (lookup_var_assignment rupctxt v))
     val _ = add_assignments rupctxt local_assns
 
     fun go [] =
