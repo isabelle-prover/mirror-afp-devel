@@ -65,6 +65,16 @@ lemmas val_simps =
 
 lemmas val_cong = arg_cong[where f=val]
 
+text\<open>The following congruence rule enables termination proofs for recursive functions using 
+this monad.\<close>
+
+lemma bind_tm_cong[fundef_cong]:
+  assumes "m1 = m2"
+  assumes "f1 (val m1) = f2 (val m2)"
+  shows "m1 \<bind> f1 = m2 \<bind> f2"
+  using assms unfolding bind_tm_def
+  by (cases m1;cases m2) auto
+
 hide_const TM
 
 end
