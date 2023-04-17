@@ -172,7 +172,6 @@ apply (fastforce split: prod.split intro!: heap_sift_down
   dest: del_left_size del_left_braun del_left_heap)
 done
 
-(* unused
 lemma size_del_min: assumes "braun t" shows "size(del_min t) = size t - 1"
 proof(cases t rule: del_min.cases)
   case [simp]: (3 ll b lr a r)
@@ -181,7 +180,6 @@ proof(cases t rule: del_min.cases)
     by(subst size_sift_down) (auto dest: del_left_size del_left_braun) }
   thus ?thesis by(auto split: prod.split)
 qed (insert assms, auto)
-*)
 
 lemma mset_del_min: assumes "braun t" "t \<noteq> Leaf"
 shows "mset_tree(del_min t) = mset_tree t - {#get_min t#}"
