@@ -712,8 +712,7 @@ fun derive_false ctxt profiles_file grat_file =
       let
         val thy = Proof_Context.theory_of ctxt
         val _ = writeln "Generating SAT problem:"
-        val sat = mk_sat_problem ctxt profiles_file
-        val (n_vars, n_clauses) = case sat of ((n_vars, _), (n_clauses, _), _) => (n_vars, n_clauses)
+        val sat as ((n_vars, _), (n_clauses, _), _) = mk_sat_problem ctxt profiles_file
         val _ =
           writeln ("Generated SAT problems has " ^ Int.toString n_vars ^ " variables, " ^ 
             Int.toString n_clauses ^ " clauses")
@@ -730,10 +729,9 @@ fun derive_false ctxt profiles_file grat_file =
       in
         thm
       end
-    fun tac {context, ...} = HEADGOAL (resolve_tac context [mk_thm ()])
-    val thm = Goal.prove_future ctxt [] [] \<^prop>\<open>False\<close> tac
   in
-    thm
+    Goal.prove_future ctxt [] [] \<^prop>\<open>False\<close>
+      (fn {context, ...} => HEADGOAL (resolve_tac context [mk_thm ()]))
   end
 
 end
