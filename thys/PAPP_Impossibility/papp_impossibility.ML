@@ -610,9 +610,9 @@ let
 
   val _ = writeln "Consolidating theorems..."
   val start = Timing.start ()
-  val clauses1 = flat (map (map fst) [symm_break_clauses, functional_clauses, sp_clauses])
+  val clauses1 = maps (map fst) [symm_break_clauses, functional_clauses, sp_clauses]
   val clauses2 =
-    flat (map (map snd) [symm_break_clauses, functional_clauses, sp_clauses])
+    maps (map snd) [symm_break_clauses, functional_clauses, sp_clauses]
     |> consolidate_hyps ctxt'
   val n_clauses = add_clauses (clauses1 ~~ clauses2) 0 
   val _ = writeln (Timing.message (Timing.result start))
