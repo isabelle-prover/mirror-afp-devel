@@ -269,7 +269,6 @@ fun negate_clause rupctxt (clause, clause_cterm) =
     fun mk_inst (x, y) = (((x, 0), \<^typ>\<open>bool\<close>), y)
     fun inst insts thm = Thm.instantiate (TVars.empty, Vars.make (map mk_inst insts)) thm
     fun lookup v = lookup_var rupctxt v
-    fun mp thm1 thm2 = Thm.implies_elim thm2 thm1
 
     val neg_clause_cterm =
       clause_cterm
@@ -282,7 +281,7 @@ fun negate_clause rupctxt (clause, clause_cterm) =
             val thm' =
               if v > 0 then thm
             else
-              notnotD_thm |> inst [("A", lookup (abs v))] |> mp thm
+              notnotD_thm |> inst [("A", lookup (abs v))] |> Thm.elim_implies thm
           in
             rev (thm' :: acc)
           end
@@ -293,11 +292,11 @@ fun negate_clause rupctxt (clause, clause_cterm) =
             val lit_thm =
               lit_thm
               |> inst [("A", lookup (abs v)), ("B", ct')]
-              |> mp thm
+              |> Thm.elim_implies thm
             val thm' =
               neg_clauseE_thm3
               |> inst [("A", lookup v), ("B", ct')]
-              |> mp thm
+              |> Thm.elim_implies thm
           in
             go vs thm' ct' (lit_thm :: acc)
           end
@@ -342,7 +341,6 @@ fun unit_prop rupctxt clause_id =
     val _ = trace rupctxt (fn _ => "Unit propagation resulted in clause " ^ @{make_string} clause')
     fun inst insts =
       Thm.instantiate (TVars.empty, Vars.make (map (apfst (fn v => ((v, 0), \<^typ>\<open>bool\<close>))) insts))
-    fun mp thm1 thm2 = Thm.implies_elim thm2 thm1
 
     val clause_info = clause |>
       map (fn (v, b) =>
@@ -351,15 +349,15 @@ fun unit_prop rupctxt clause_id =
     fun reduce_right [(v, SOME b, v_cterm, SOME v_thm)] =
           lit_eq_false_thm ((v > 0) = b)
           |> inst [("P", v_cterm)]
-          |> mp v_thm
+          |> Thm.elim_implies v_thm
       | reduce_right ((v, SOME b, v_cterm, SOME v_thm) :: vs) =
           let
             val eq_thm = reduce_right vs
           in
             reduce_right_thm ((v > 0) = b)
             |> inst [("P", v_cterm), ("R", Thm.lhs_of eq_thm)]
-            |> mp v_thm
-            |> mp eq_thm
+            |> Thm.elim_implies v_thm
+            |> Thm.elim_implies eq_thm
           end
       | reduce_right _ = raise Match
 
@@ -367,8 +365,8 @@ fun unit_prop rupctxt clause_id =
       | reduce_left [(v, SOME b, v_cterm, SOME v_thm)] thm =
           reduce_left_terminal_thm ((v > 0) = b)
           |> inst [("P", v_cterm)]
-          |> mp v_thm
-          |> mp thm          
+          |> Thm.elim_implies v_thm
+          |> Thm.elim_implies thm
       | reduce_left ((_, NONE, _, _) :: vs) thm =
           let
             val eq_thm = reduce_right vs
@@ -376,8 +374,8 @@ fun unit_prop rupctxt clause_id =
           in
             join_thm
             |> inst [("Q", q), ("R", Thm.lhs_of eq_thm)]
-            |> mp thm
-            |> mp eq_thm
+            |> Thm.elim_implies thm
+            |> Thm.elim_implies eq_thm
           end
       | reduce_left ((v, SOME b, v_cterm, SOME v_thm) :: vs) thm =
           let
@@ -385,8 +383,8 @@ fun unit_prop rupctxt clause_id =
           in
             reduce_left_thm ((v > 0) = b)
             |> inst [("P", v_cterm), ("Q", q)]
-            |> mp v_thm
-            |> mp thm
+            |> Thm.elim_implies v_thm
+            |> Thm.elim_implies thm
             |> reduce_left vs
           end
       | reduce_left _ _ = raise Match

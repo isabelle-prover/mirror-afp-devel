@@ -110,8 +110,6 @@ fun simp_discharge ctxt thm =
 fun simp_discharge_all ctxt thm =
   if Thm.nprems_of thm = 0 then thm else simp_discharge_all ctxt (simp_discharge ctxt thm)
 
-fun mp thm thm' = Thm.implies_elim thm' thm
-
 fun elim_conjunctions_parallel 0 thm = Conjunction.elim_conjunctions thm
   | elim_conjunctions_parallel n thm =
       case try Conjunction.elim thm of
@@ -495,8 +493,8 @@ let
           val wr_thms = Array.sub (wr_thm_table, id)
           val total_thm = 
             inst r_in_com_thm
-            |> mp (#wf_thm profile)
-            |> mp (profile_def profile)
+            |> Thm.elim_implies (#wf_thm profile)
+            |> Thm.elim_implies (profile_def profile)
             |> Conv.fconv_rule (Conv.arg_conv (total_conv wr_thms))
           val right_unique_thms = inst' r_right_unique_thm |> HOLogic.conj_elims ctxt
           val right_unique_clauses =                
@@ -558,11 +556,11 @@ let
           val not_less_thm =
             not_manipulable_thm'
             |> Thm.instantiate (TVars.empty, vars)
-            |> mp (#wf_thm p1)
-            |> mp (#wf_thm p2)
-            |> mp (profile_def p1)
-            |> mp (profile_def p2)
-            |> mp eq_thm
+            |> Thm.elim_implies (#wf_thm p1)
+            |> Thm.elim_implies (#wf_thm p2)
+            |> Thm.elim_implies (profile_def p1)
+            |> Thm.elim_implies (profile_def p2)
+            |> Thm.elim_implies eq_thm
           val comms = Array.sub (committee_pref_cache, x)
           fun mk_clause (c1, c2, less_thm) =
             if is_possible_committee (p1, c1) andalso is_possible_committee (p2, c2) then
@@ -576,10 +574,10 @@ let
                 val thm =
                   stratproof_aux_thm
                   |> Thm.instantiate (TVars.empty, vars)
-                  |> mp not_less_thm
-                  |> mp (profile_def p1)
-                  |> mp (profile_def p2)
-                  |> mp less_thm
+                  |> Thm.elim_implies not_less_thm
+                  |> Thm.elim_implies (profile_def p1)
+                  |> Thm.elim_implies (profile_def p2)
+                  |> Thm.elim_implies less_thm
               in
                 [([(true, #id p1, c1), (true, #id p2, c2)], thm)]
               end
