@@ -11,7 +11,7 @@ fun trace_t ctxt s t =
 
 (* Debugging: trace full theorem *)
 fun trace_fullthm ctxt s th =
-    tracing (s ^ " [" ^ (Thm.hyps_of th |> Termset.dest |> string_of_terms ctxt) ^
+    tracing (s ^ " [" ^ (Thm.hyps_of th |> string_of_terms ctxt) ^
              "] ==> " ^ (Thm.prop_of th |> Syntax.string_of_term ctxt))
 
 (* nat type *)

@@ -146,7 +146,6 @@ fun mk_tts_goal tts_thms_specs outer_ctxt st =
       |> map 
         (
           Thm.hyps_of 
-          #> Termset.dest
           #> the_single 
           #> Logic.get_forall_ftv_permute 
           #> #2

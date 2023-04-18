@@ -338,7 +338,7 @@ fun trace_tlist ctxt s ts =
 fun trace_thm ctxt s th =
     tracing (s ^ " " ^ (th |> Thm.prop_of |> Syntax.string_of_term ctxt))
 fun trace_fullthm ctxt s th =
-    tracing (s ^ " [" ^ (Thm.hyps_of th |> Termset.dest |> string_of_terms ctxt) ^
+    tracing (s ^ " [" ^ (Thm.hyps_of th |> string_of_terms ctxt) ^
              "] ==> " ^ (Thm.prop_of th |> Syntax.string_of_term ctxt))
 fun trace_thm_global s th =
     let
@@ -351,7 +351,7 @@ fun trace_fullthm_global s th =
     let
       val thy = Thm.theory_of_thm th
     in
-      tracing (s ^ " [" ^ (Thm.hyps_of th |> Termset.dest |> string_of_terms_global thy) ^
+      tracing (s ^ " [" ^ (Thm.hyps_of th |> string_of_terms_global thy) ^
                "] ==> " ^ (Thm.prop_of th |> Syntax.string_of_term_global thy))
     end
 
