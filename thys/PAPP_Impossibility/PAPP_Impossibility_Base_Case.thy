@@ -680,7 +680,7 @@ text \<open>
   clicking on ``See theory exports'' in the messages output by the invocation below.
 
   On a 2021 desktop PC with 12 cores, proving all the clauses takes 8.4\,s (multithreaded;
-  CPU time 55\,s). Replaying the proof takes 130\,s (singlethreaded).
+  CPU time 55\,s). Replaying the proof takes 30\,s (singlethreaded).
 \<close>
 
 local_setup \<open>fn lthy =>
