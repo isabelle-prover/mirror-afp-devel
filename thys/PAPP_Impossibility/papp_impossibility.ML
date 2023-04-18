@@ -110,24 +110,6 @@ fun simp_discharge ctxt thm =
 fun simp_discharge_all ctxt thm =
   if Thm.nprems_of thm = 0 then thm else simp_discharge_all ctxt (simp_discharge ctxt thm)
 
-fun elim_conjunctions_parallel 0 thm = Conjunction.elim_conjunctions thm
-  | elim_conjunctions_parallel n thm =
-      case try Conjunction.elim thm of
-        NONE => [thm]
-      | SOME (thm1, thm2) => Par_List.map (elim_conjunctions_parallel (n - 1)) [thm1, thm2] |> flat
-
-(* make sure that all theorems in the list have pointer-equal hyps *)
-fun consolidate_hyps ctxt thms =
-  thms
-  |> chop_groups 20000
-  |> Par_List.map Conjunction.intr_balanced
-  |> Conjunction.intr_balanced
-  |> Thm.solve_constraints
-  |> Thm.strip_shyps
-  |> Thm.adjust_maxidx_thm (~1)
-  |> Thm.transfer' ctxt
-  |> elim_conjunctions_parallel 4
-
 val mset_swap_conv =
   Conv.rewr_conv @{thm eq_reflection[OF add_mset_commute]}
 
@@ -608,14 +590,11 @@ let
       let val _ = Array_Map.update (clauses, i + 1, SOME (prep x)) in i + 1 end)
 (*  val n_clauses = fold add_clauses [symm_break_clauses, functional_clauses, sp_clauses] 0*)
 
-  val _ = writeln "Consolidating theorems..."
-  val start = Timing.start ()
   val clauses1 = maps (map fst) [symm_break_clauses, functional_clauses, sp_clauses]
   val clauses2 =
     maps (map snd) [symm_break_clauses, functional_clauses, sp_clauses]
-    |> consolidate_hyps ctxt'
+    |> Thm.shared_context' ctxt'
   val n_clauses = add_clauses (clauses1 ~~ clauses2) 0 
-  val _ = writeln (Timing.message (Timing.result start))
 
   local
     fun term_of_clause' cl =
