@@ -274,19 +274,6 @@ lemma T_del_min_neq_Leaf: "l \<noteq> Leaf \<Longrightarrow>
   T_del_min (Node l x r) = 1 + (let (y,l') = del_left l in T_del_left l + T_sift_down r y l')"
 by (auto simp add: neq_Leaf_iff)
 
-lemma braun_height: assumes "braun(Node l x r)"
-shows "height l = height r \<or> height l = height r + 1"
-proof -
-  from braun_Node' assms have 1: "size r \<le> size l" "size l \<le> size r + 1" "braun l" "braun r"
-    by auto
-  note acomps = acomplete_if_braun[OF \<open>braun l\<close>] acomplete_if_braun[OF \<open>braun r\<close>]
-  have "height r \<le> height l"
-    by(fact acomplete_optimal[OF acomps(2) 1(1)])
-  moreover have "height l \<le> height r + 1"
-    using acomplete_optimal[OF acomps(1), of "Node Leaf _ r", simplified] 1(2) by linarith
-  ultimately show ?thesis by linarith
-qed
-
 lemma T_del_min: assumes "braun t" shows "T_del_min t \<le> 2*height t + 1"
 proof(cases t)
   case Leaf then show ?thesis by simp
