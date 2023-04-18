@@ -11,7 +11,7 @@ signature PAPP_IMPOSSIBILITY =
 sig
 
 type clause = int list * thm
-type sat_problem = (int * cterm option array) * (int * clause Array_Map.T) * Proof.context
+type sat_problem = (int * cterm option array) * (int * clause Array_Map.T) * thm * Proof.context
 
 val mk_sat_problem : Proof.context -> Path.T -> sat_problem
 val mk_dimacs : sat_problem -> string
@@ -26,7 +26,7 @@ structure PAPP_Impossibility : PAPP_IMPOSSIBILITY =
 struct
 
 type clause = int list * thm
-type sat_problem = (int * cterm option array) * (int * clause Array_Map.T) * Proof.context
+type sat_problem = (int * cterm option array) * (int * clause Array_Map.T) * thm * Proof.context
 
 exception CLAUSE of cterm * thm
                                         
@@ -109,6 +109,30 @@ fun simp_discharge ctxt thm =
 
 fun simp_discharge_all ctxt thm =
   if Thm.nprems_of thm = 0 then thm else simp_discharge_all ctxt (simp_discharge ctxt thm)
+
+fun elim_conjunctions_parallel 0 thm = Conjunction.elim_conjunctions thm
+  | elim_conjunctions_parallel n thm =
+      case try Conjunction.elim thm of
+        NONE => [thm]
+      | SOME (thm1, thm2) => Par_List.map (elim_conjunctions_parallel (n - 1)) [thm1, thm2] |> flat
+
+fun consolidate_hyps ctxt thms =
+  let
+    val thm = 
+      thms
+      |> chop_groups 20000
+      |> Par_List.map Conjunction.intr_balanced
+      |> Conjunction.intr_balanced
+      |> Thm.solve_constraints
+      |> Thm.strip_shyps
+      |> Thm.adjust_maxidx_thm (~1)
+      |> Thm.transfer' ctxt
+     val cprop = Thm.cprop_of thm
+     val thm' = Thm.assume cprop
+     val thms' = thm' |> elim_conjunctions_parallel 4
+   in
+    (thms', thm)
+  end
 
 val mset_swap_conv =
   Conv.rewr_conv @{thm eq_reflection[OF add_mset_commute]}
@@ -590,11 +614,14 @@ let
       let val _ = Array_Map.update (clauses, i + 1, SOME (prep x)) in i + 1 end)
 (*  val n_clauses = fold add_clauses [symm_break_clauses, functional_clauses, sp_clauses] 0*)
 
+  val _ = writeln "Consolidating theorems..."
+  val start = Timing.start ()
   val clauses1 = maps (map fst) [symm_break_clauses, functional_clauses, sp_clauses]
-  val clauses2 =
+  val (clauses2, hyp_thm) =
     maps (map snd) [symm_break_clauses, functional_clauses, sp_clauses]
-    |> Thm.shared_context' ctxt'
+    |> consolidate_hyps ctxt'
   val n_clauses = add_clauses (clauses1 ~~ clauses2) 0 
+  val _ = writeln (Timing.message (Timing.result start))
 
   local
     fun term_of_clause' cl =
@@ -631,11 +658,11 @@ let
       | NONE => a) (n_clauses + 1) 0
 
 in
-  ((n_vars, vars), (n_clauses, clauses), ctxt')
+  ((n_vars, vars), (n_clauses, clauses), hyp_thm, ctxt')
 end
 
 
-fun dimacs_gen st put ((n_vars, _), (n_clauses, clauses), _) =
+fun dimacs_gen st put ((n_vars, _), (n_clauses, clauses), _, _) =
   let
     fun write_clause st (cs, _) =
       put st (space_implode " " (map signed_string_of_int cs) ^ " 0")
@@ -665,7 +692,7 @@ fun mk_dimacs sat =
   |> rev
   |> space_implode "\n"
 
-fun replay_grat ctxt ((n_vars, vars), (n_clauses, clauses), ctxt') grat_file =
+fun replay_grat ctxt ((n_vars, vars), (n_clauses, clauses), hyp_thm, ctxt') grat_file =
   let
     val is_xz =
       case Path.split_ext grat_file of
@@ -681,6 +708,8 @@ fun replay_grat ctxt ((n_vars, vars), (n_clauses, clauses), ctxt') grat_file =
     } : Replay_RUP.rup_input
   in
     Replay_RUP.replay_rup_file rup_input (grat_file, is_xz)
+    |> Thm.implies_intr (Thm.cprop_of hyp_thm)
+    |> (fn thm => Thm.implies_elim thm hyp_thm)
     |> Local_Defs.export ctxt' ctxt
     |> snd
   end
@@ -691,7 +720,7 @@ fun derive_false ctxt profiles_file grat_file =
       let
         val thy = Proof_Context.theory_of ctxt
         val _ = writeln "Generating SAT problem:"
-        val sat as ((n_vars, _), (n_clauses, _), _) = mk_sat_problem ctxt profiles_file
+        val sat as ((n_vars, _), (n_clauses, _), _, _) = mk_sat_problem ctxt profiles_file
         val _ =
           writeln ("Generated SAT problems has " ^ Int.toString n_vars ^ " variables, " ^ 
             Int.toString n_clauses ^ " clauses")
