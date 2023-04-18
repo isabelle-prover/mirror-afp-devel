@@ -1,9 +1,9 @@
 (*
   File:     papp_impossibility.ML
-  Author:   Manuel Eberl, University of Innsbruck 
+  Author:   Manuel Eberl, University of Innsbruck
 
   This file implements the generation of a SAT problem in DIMACS format from the situation we
-  have in the base case of the P-APP impossibility, and the replaying of an externally found 
+  have in the base case of the P-APP impossibility, and the replaying of an externally found
   GRAT proof to prove that impossibility.
 *)
 
@@ -29,7 +29,7 @@ type clause = int list * thm
 type sat_problem = (int * cterm option array) * (int * clause Array_Map.T) * thm * Proof.context
 
 exception CLAUSE of cterm * thm
-                                        
+
 fun decode_approval_list i =
   let
     val i' = i + 1
@@ -43,7 +43,7 @@ fun mk_committees k n =
       if hi <= lo orelse n < 0 then []
       else if n = 0 then [[]]
       else map (fn xs => lo :: xs) (go (lo, hi, n-1)) @ go (lo+1, hi, n)
-  in 
+  in
     go (0, k, n)
   end
 
@@ -118,7 +118,7 @@ fun elim_conjunctions_parallel 0 thm = Conjunction.elim_conjunctions thm
 
 fun consolidate_hyps ctxt thms =
   let
-    val thm = 
+    val thm =
       thms
       |> chop_groups 20000
       |> Par_List.map Conjunction.intr_balanced
@@ -171,7 +171,7 @@ fun decode_lit l = case decode_var (abs l) of (i, j) => (l < 0, i, j)
 fun mk_disjs [] = raise Empty
   | mk_disjs [x] = x
   | mk_disjs (x :: xs) = HOLogic.mk_disj (x, mk_disjs xs)
-  
+
 fun rev_maps_pairs f xs =
   let
     fun go [] acc = acc
@@ -184,8 +184,8 @@ fun rev_maps_pairs f xs =
           end
   in
     go xs []
-  end    
-  
+  end
+
 fun get_approval_list ct 0 = Thm.dest_arg1 ct
   | get_approval_list ct i = get_approval_list (Thm.dest_arg ct) (i - 1)
 
@@ -227,20 +227,20 @@ let
   val committee_list = mk_committees 4 3
   val committees = Array.fromList committee_list
   fun committee i = Array.sub (committees, i)
-  
+
   val approval_list_cache' =
     Array.tabulate (14, decode_approval_list #> map cand #> HOLogic.mk_set candT)
-  
+
   val approval_list_cache =
     Array.tabulate (14, fn i => Thm.cterm_of ctxt (Array.sub (approval_list_cache', i)))
-  
+
   fun holify_approval_list i = Array.sub (approval_list_cache, i)
   fun holify_approval_list' i = Array.sub (approval_list_cache', i)
-  
-  
+
+
   val holify_profile' =
     map holify_approval_list' #> mk_mset candsetT
-    
+
   fun mk_profile ctxt id profile =
     let
       val term = holify_profile' profile
@@ -254,7 +254,7 @@ let
     in
       {id = id, profile = profile, cterm = cterm, wf_thm = thm} : profile
     end
-    
+
   fun read_profiles ctxt path =
     let
       fun process_line (id, l) =
@@ -276,7 +276,7 @@ let
 
   local
     fun mk_def prof =
-      ((Binding.make ("prof" ^ Int.toString (#id prof), \<^here>), NoSyn), 
+      ((Binding.make ("prof" ^ Int.toString (#id prof), \<^here>), NoSyn),
          (Binding.empty_atts, profile_term prof))
     val xs = map mk_def profs
     val (aux, ctxt) = Local_Defs.define xs ctxt
@@ -295,7 +295,7 @@ let
       |> map cand
       |> mk_mset candT
     fun mk_def i =
-      ((Binding.make ("W" ^ Int.toString i, \<^here>), NoSyn), 
+      ((Binding.make ("W" ^ Int.toString i, \<^here>), NoSyn),
          (Binding.empty_atts, mk_committee i))
     val xs = map_range mk_def 20
     val (aux, ctxt) = Local_Defs.define xs ctxt'
@@ -349,7 +349,7 @@ let
         |> filter (fn (_, n) => n >= 2)
         |> map fst
       val ctxt'' = ctxt addsimps w_def_list
-  
+
       (*
         Returns a list of all committees that are forbidden for the given profile due to
         weak representation, and why they are forbidden (basic WP or the Lemma).
@@ -359,7 +359,7 @@ let
         let
           val sings = sing_alts profile
           val ws = 0 upto (n_committees - 1)
-          
+
           fun upd (idx, i) (ws, acc)=
             let
               val xs = decode_approval_list i
@@ -382,14 +382,14 @@ let
               else
                 (ws, acc)
             end
-  
+
           val es = filter_out (fn w => is_subset sings (committee w)) ws
           val state = (subtract es ws, if null es then [] else [(es, Weak_Rep)])
           val state = fold_index upd (#profile profile) state
         in
           (sings, fst state, snd state)
         end
-  
+
       fun mk_clauses (profile, (sings, remaining, justifications)) =
         let
           val sings_cterm = Thm.cterm_of ctxt (HOLogic.mk_set candT (map cand sings))
@@ -397,7 +397,7 @@ let
              \<^instantiate>\<open>A = "profile_cterm profile" and Z = sings_cterm
                in cprop \<open>\<forall>x\<in>Z. count A {x :: 'a} \<ge> 2\<close>\<close>
           val sing_thm = simp_prove ctxt'' goal
-  
+
           fun mk_clauses' (ws, Weak_Rep) =
                 let
                   fun go w =
@@ -433,7 +433,7 @@ let
         in
           (remaining, maps mk_clauses' justifications)
         end
-  
+
     in
       profiles |> chop_groups 10 |> Par_List.map (map (fn profile => mk_clauses (profile, elims profile))) |> flat
     end
@@ -449,7 +449,7 @@ let
     fun is_possible_committee (p : profile, i : int) =
       Inttab.defined (Array.sub (possible_committee_table, #id p)) i
   end
-  
+
   val n_vars = Array.length committees * length profs
   val vars =
      Array.tabulate (n_vars + 1,
@@ -472,7 +472,7 @@ let
       Conv.bottom_conv (K (Conv.repeat_conv (Conv.rewrs_conv thms))) ctxt'
     end
 
-  fun functional profiles = 
+  fun functional profiles =
     let
       val unfold_thms = map (fn thm => thm RS @{thm eq_reflection})
          @{thms COM'_def pairs.simps list_ex_unfold list_all_unfold list.map append.simps prod.case}
@@ -492,18 +492,18 @@ let
           val inst = Thm.instantiate (TVars.empty, insts)
           val insts' = [((("A", 0), profileT), Thm.cterm_of ctxt' (profile_const profile))] |> Vars.make
           val inst' = Thm.instantiate (TVars.empty, insts')
-  
+
           val possible =
             Inttab.keys (Array.sub (possible_committee_table, id))
           val total_clause = map (fn i => (false, id, i)) possible
           val wr_thms = Array.sub (wr_thm_table, id)
-          val total_thm = 
+          val total_thm =
             inst r_in_com_thm
             |> Thm.elim_implies (#wf_thm profile)
             |> Thm.elim_implies (profile_def profile)
             |> Conv.fconv_rule (Conv.arg_conv (total_conv wr_thms))
           val right_unique_thms = inst' r_right_unique_thm |> HOLogic.conj_elims ctxt
-          val right_unique_clauses =                
+          val right_unique_clauses =
             (committee_pairs ~~ right_unique_thms)
             |> filter (fn ((i, j), _) => is_possible_committee (profile, i)
                  andalso is_possible_committee (profile, j))
@@ -514,7 +514,7 @@ let
     in
       profiles |> chop_groups 200 |> Par_List.map (map mk_clause) |> flat |> flat
     end
-  
+
   val _ = writeln "Generating totality and right-uniqueness facts..."
   val start = Timing.start ()
   val functional_clauses = functional profs
@@ -599,7 +599,7 @@ let
       |> flat
       |> flat
     end
-  
+
   val _ = writeln "Generating strategyproofness facts..."
   val start = Timing.start ()
   val sp_clauses = stratproof profs
@@ -620,7 +620,7 @@ let
   val (clauses2, hyp_thm) =
     maps (map snd) [symm_break_clauses, functional_clauses, sp_clauses]
     |> consolidate_hyps ctxt'
-  val n_clauses = add_clauses (clauses1 ~~ clauses2) 0 
+  val n_clauses = add_clauses (clauses1 ~~ clauses2) 0
   val _ = writeln (Timing.message (Timing.result start))
 
   local
@@ -635,13 +635,13 @@ let
       in
         go cl |> HOLogic.mk_Trueprop
       end
-    
+
     fun check_clause' (cl, thm) =
       if Thm.prop_of thm = term_of_clause' cl then
         ()
       else
         raise CLAUSE (Thm.cterm_of ctxt (term_of_clause' cl), thm)
-    
+
     fun check i = if i > n_clauses then () else
       let val _ = check_clause' (the (Array_Map.sub (clauses, i))) in check (i+1) end
   in
@@ -709,7 +709,7 @@ fun replay_grat ctxt ((n_vars, vars), (n_clauses, clauses), hyp_thm, ctxt') grat
   in
     Replay_RUP.replay_rup_file rup_input (grat_file, is_xz)
     |> Thm.implies_intr (Thm.cprop_of hyp_thm)
-    |> (fn thm => Thm.implies_elim thm hyp_thm)
+    |> Thm.elim_implies hyp_thm
     |> Local_Defs.export ctxt' ctxt
     |> snd
   end
@@ -722,10 +722,10 @@ fun derive_false ctxt profiles_file grat_file =
         val _ = writeln "Generating SAT problem:"
         val sat as ((n_vars, _), (n_clauses, _), _, _) = mk_sat_problem ctxt profiles_file
         val _ =
-          writeln ("Generated SAT problems has " ^ Int.toString n_vars ^ " variables, " ^ 
+          writeln ("Generated SAT problems has " ^ Int.toString n_vars ^ " variables, " ^
             Int.toString n_clauses ^ " clauses")
         val path = Path.basic "papp.cnf"
-        val _ = 
+        val _ =
            Export.export thy (Path.binding (path, \<^here>)) [XML.Text (mk_dimacs sat)]
         val _ = writeln (Export.message thy path)
         val _ = writeln " "
