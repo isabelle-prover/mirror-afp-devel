@@ -110,29 +110,12 @@ fun simp_discharge ctxt thm =
 fun simp_discharge_all ctxt thm =
   if Thm.nprems_of thm = 0 then thm else simp_discharge_all ctxt (simp_discharge ctxt thm)
 
-fun elim_conjunctions_parallel 0 thm = Conjunction.elim_conjunctions thm
-  | elim_conjunctions_parallel n thm =
-      case try Conjunction.elim thm of
-        NONE => [thm]
-      | SOME (thm1, thm2) => Par_List.map (elim_conjunctions_parallel (n - 1)) [thm1, thm2] |> flat
-
-fun consolidate_hyps ctxt thms =
+fun consolidate_hyps thms =
   let
-    val thm =
-      thms
-      |> chop_groups 20000
-      |> Par_List.map Conjunction.intr_balanced
-      |> Conjunction.intr_balanced
-      |> Thm.solve_constraints
-      |> Thm.strip_shyps
-      |> Thm.adjust_maxidx_thm (~1)
-      |> Thm.transfer' ctxt
-     val cprop = Thm.cprop_of thm
-     val thm' = Thm.assume cprop
-     val thms' = thm' |> elim_conjunctions_parallel 4
-   in
-    (thms', thm)
-  end
+    val thm = Conjunction.intr_balanced thms
+    val thm' = Thm.assume (Thm.cprop_of thm)
+    val thms' = Conjunction.elim_balanced (length thms) thm'
+  in (thms', thm) end
 
 val mset_swap_conv =
   Conv.rewr_conv @{thm eq_reflection[OF add_mset_commute]}
@@ -618,8 +601,7 @@ let
   val start = Timing.start ()
   val clauses1 = maps (map fst) [symm_break_clauses, functional_clauses, sp_clauses]
   val (clauses2, hyp_thm) =
-    maps (map snd) [symm_break_clauses, functional_clauses, sp_clauses]
-    |> consolidate_hyps ctxt'
+    consolidate_hyps (maps (map snd) [symm_break_clauses, functional_clauses, sp_clauses])
   val n_clauses = add_clauses (clauses1 ~~ clauses2) 0
   val _ = writeln (Timing.message (Timing.result start))
 
