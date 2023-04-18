@@ -21,11 +21,11 @@ fun thm_printer ctxt print name thms =
     ctxt
     ((Thm.theoremK, ""), single (name, thms));
 
-fun qualified_name_of_const_name c = 
-  if Long_Name.qualification c = 0
+fun qualified_name_of_const_name c =
+  if Long_Name.count c = 0
   then error "qualified_name_of_const_name: invalid constant name"
   else 
-    if Long_Name.qualification c = 1 
+    if Long_Name.count c = 1 
     then c 
     else c |> Long_Name.explode |> tl |> Long_Name.implode
 
