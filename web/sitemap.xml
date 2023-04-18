@@ -8,6 +8,9 @@
     <loc>/authors/</loc>
     <lastmod>2023-04-03T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/authors/dardinier/</loc>
+    <lastmod>2023-04-03T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/dependencies/</loc>
     <lastmod>2023-04-03T00:00:00+00:00</lastmod>
   </url><url>
@@ -23,6 +26,9 @@
     <loc>/dependencies/expander_graphs/</loc>
     <lastmod>2023-04-03T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/entries/HyperHoareLogic.html</loc>
+    <lastmod>2023-04-03T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/authors/karayel/</loc>
     <lastmod>2023-04-03T00:00:00+00:00</lastmod>
   </url><url>
@@ -34,9 +40,6 @@
   </url><url>
     <loc>/topics/</loc>
     <lastmod>2023-04-03T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/dardinier/</loc>
-    <lastmod>2023-03-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/CommCSL.html</loc>
     <lastmod>2023-03-15T00:00:00+00:00</lastmod>
@@ -5184,6 +5187,8 @@
     <loc>/theories/hyperctl/</loc>
   </url><url>
     <loc>/theories/hyperdual/</loc>
+  </url><url>
+    <loc>/theories/hyperhoarelogic/</loc>
   </url><url>
     <loc>/theories/ieee_floating_point/</loc>
   </url><url>

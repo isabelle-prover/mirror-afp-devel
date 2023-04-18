@@ -1,0 +1,13 @@
+chapter AFP
+
+session HyperHoareLogic (AFP) = HOL +
+  options [timeout = 600]
+  theories
+    Language
+    Logic
+    Examples
+    ProgramHyperproperties
+    Expressivity
+  document_files
+    "root.bib"
+    "root.tex"

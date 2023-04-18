@@ -2815,6 +2815,15 @@
     </item>
     
     <item>
+      <title>HyperHoareLogic</title>
+      <link>/theories/hyperhoarelogic/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/hyperhoarelogic/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>IEEE_Floating_Point</title>
       <link>/theories/ieee_floating_point/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
