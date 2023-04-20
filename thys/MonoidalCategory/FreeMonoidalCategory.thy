@@ -315,7 +315,7 @@ begin
       determines a category.
 \<close>
 
-    interpretation partial_magma comp
+    interpretation partial_composition comp
       apply unfold_locales
       using comp_def not_ARR_empty by metis
 
@@ -332,7 +332,7 @@ begin
       have "?P {}" using comp_def not_ARR_empty by simp
       moreover have "\<exists>!n. ?P n" using ex_un_null by metis
       ultimately show ?thesis using null_def theI_unique [of ?P "{}"]
-        by (metis comp_null(2))
+        by (metis null_is_zero(2))
     qed
 
     lemma ARR_comp:
@@ -2127,7 +2127,7 @@ begin
     proof
       show "map \<F>C.\<iota> = \<iota>\<^sub>D"
         using \<F>C.\<iota>_def \<F>C.lunit_agreement map_def \<F>C.rep_lunit \<F>C.Arr_rep [of \<I>]
-              eval_norm \<F>C.lunit_agreement D.unitor_coincidence D.comp_cod_arr D.\<iota>_in_hom
+              eval_norm \<F>C.lunit_agreement D.unitor_coincidence D.comp_cod_arr D.unit_in_hom
         by auto
       show "\<And>f g. \<lbrakk> \<F>C.arr f; \<F>C.arr g \<rbrakk> \<Longrightarrow>
                   map (\<F>C.tensor f g) = D.tensor (map f) (map g)"

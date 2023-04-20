@@ -63,7 +63,7 @@ begin
     obtains f where "\<guillemotleft>f : a \<rightarrow> b\<guillemotright>" and "\<And>f'. \<guillemotleft>f' : a \<rightarrow> b\<guillemotright> \<Longrightarrow> f' = f"
       using assms terminal_def terminal_arr_unique by meson
 
-    theorem terminal_objs_isomorphic:
+    lemma terminal_objs_isomorphic:
     assumes "terminal a" and "terminal b"
     shows "isomorphic a b"
     proof -
@@ -78,7 +78,38 @@ begin
       thus ?thesis using f by auto
     qed
 
-    theorem initial_objs_isomorphic:
+    lemma isomorphic_to_terminal_is_terminal:
+    assumes "terminal a" and "isomorphic a a'"
+    shows "terminal a'"
+    proof
+      show "ide a'"
+        using assms terminal_def isomorphic_def by auto
+      obtain h h' where h: "\<guillemotleft>h : a \<rightarrow> a'\<guillemotright> \<and> inverse_arrows h h'"
+        using assms isomorphic_def by auto
+      fix b
+      assume b: "ide b"
+      obtain t where t: "\<guillemotleft>t : b \<rightarrow> a\<guillemotright>"
+        using assms b by blast
+      show "\<exists>!f. \<guillemotleft>f : b \<rightarrow> a'\<guillemotright>"
+      proof
+        show "\<guillemotleft>h \<cdot> t : b \<rightarrow> a'\<guillemotright>"
+          using h t by blast
+        show "\<And>f. \<guillemotleft>f : b \<rightarrow> a'\<guillemotright> \<Longrightarrow> f = h \<cdot> t"
+        proof -
+          fix f
+          assume f: "\<guillemotleft>f : b \<rightarrow> a'\<guillemotright>"
+          have "\<guillemotleft>h' \<cdot> f : b \<rightarrow> a\<guillemotright>"
+            by (metis f h inv_in_hom inverse_unique comp_in_homI isoI)
+          hence "h \<cdot> h' \<cdot> f = h \<cdot> t"
+            using assms f h terminal_def
+            by (metis t terminal_arr_unique in_homE)
+          thus "f = h \<cdot> t"
+            by (metis f h comp_arr_inv' comp_cod_arr inverse_unique in_homE isoI comp_assoc)
+        qed
+      qed
+    qed
+
+    lemma initial_objs_isomorphic:
     assumes "initial a" and "initial b"
     shows "isomorphic a b"
     proof -
@@ -90,6 +121,38 @@ begin
             retractionI sectionI dom_comp iso_iff_section_and_retraction ide_in_hom seqI')
       thus ?thesis
         using f by auto
+    qed
+
+    lemma isomorphic_to_initial_is_initial:
+    assumes "initial a" and "isomorphic a a'"
+    shows "initial a'"
+    proof
+      show "ide a'"
+        using assms initial_def isomorphic_def by auto
+      obtain h h' where h: "\<guillemotleft>h : a' \<rightarrow> a\<guillemotright> \<and> inverse_arrows h h'"
+        using assms isomorphic_def
+        by (meson isoE isomorphic_symmetric)
+      fix b
+      assume b: "ide b"
+      obtain i where i: "\<guillemotleft>i : a \<rightarrow> b\<guillemotright>"
+        using assms b by blast
+      show "\<exists>!f. \<guillemotleft>f : a' \<rightarrow> b\<guillemotright>"
+      proof
+        show "\<guillemotleft>i \<cdot> h : a' \<rightarrow> b\<guillemotright>"
+          using h i by blast
+        show "\<And>f. \<guillemotleft>f : a' \<rightarrow> b\<guillemotright> \<Longrightarrow> f = i \<cdot> h"
+        proof -
+          fix f
+          assume f: "\<guillemotleft>f : a' \<rightarrow> b\<guillemotright>"
+          have "\<guillemotleft>f \<cdot> h' : a \<rightarrow> b\<guillemotright>"
+            by (metis f h inv_in_hom inverse_unique comp_in_homI isoI)
+          hence "f \<cdot> h' \<cdot> h = i \<cdot> h"
+            using assms f h initial_def comp_assoc
+            by (metis i initial_arr_unique in_homE)
+          thus "f = i \<cdot> h"
+            by (metis f h comp_inv_arr' comp_arr_dom inverse_unique in_homE isoI)
+        qed
+      qed
     qed
 
     lemma point_is_mono:

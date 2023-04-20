@@ -156,11 +156,11 @@ begin
         proof -
           have "FF (C.VV.comp \<mu>\<nu> \<tau>\<pi>) = (F (fst \<mu>\<nu>) \<cdot>\<^sub>D F (fst \<tau>\<pi>), F (snd \<mu>\<nu>) \<cdot>\<^sub>D F (snd \<tau>\<pi>))"
             using 1 2 FF_def C.VV.comp_char C.VxV.comp_char C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
-            by (metis (no_types, lifting) C.VV.seq_char\<^sub>S\<^sub>b\<^sub>C C.VxV.seqE fst_conv
+            by (metis (no_types, lifting) C.VV.seq_char\<^sub>S\<^sub>b\<^sub>C C.VxV.seqE\<^sub>P\<^sub>C fst_conv
                 as_nat_trans.preserves_comp_2 snd_conv)
           also have "... = D.VV.comp (FF \<mu>\<nu>) (FF \<tau>\<pi>)"
             using 1 2 FF_def D.VV.comp_char D.VxV.comp_char C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C D.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
-                  C.VV.seq_char\<^sub>S\<^sub>b\<^sub>C C.VxV.seqE preserves_seq
+                  C.VV.seq_char\<^sub>S\<^sub>b\<^sub>C C.VxV.seqE\<^sub>P\<^sub>C preserves_seq
             by simp meson
           finally show ?thesis by simp
         qed
@@ -796,7 +796,7 @@ begin
           apply (metis (no_types, lifting) B.hseqE B.hseq_char')
          apply auto[3]
       using VV.comp_char VV.seq_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VxV.comp_char B.interchange
-      by (metis (no_types, lifting) B.VxV.seqE fst_conv snd_conv)
+      by (metis (no_types, lifting) B.VxV.seqE\<^sub>P\<^sub>C fst_conv snd_conv)
 
     interpretation horizontal_composition V H src trg
       by (unfold_locales, auto)
@@ -822,7 +822,7 @@ begin
       have "VVV.ide \<mu>\<nu>\<tau> \<longleftrightarrow> VVV.arr \<mu>\<nu>\<tau> \<and> B.VxVxV.ide \<mu>\<nu>\<tau>"
         using VVV.ide_char\<^sub>S\<^sub>b\<^sub>C by simp
       also have "... \<longleftrightarrow> B.VVV.arr (DN \<mu>\<nu>\<tau>) \<and> B.VxVxV.ide (DN \<mu>\<nu>\<tau>)"
-        using VVV_arr_char B.VxVxV.ide_char by auto
+        using VVV_arr_char B.VxVxV.ide_char\<^sub>P\<^sub>C by auto
       also have "... \<longleftrightarrow> B.VVV.ide (DN \<mu>\<nu>\<tau>)"
         using B.VVV.ide_char\<^sub>S\<^sub>b\<^sub>C [of "DN \<mu>\<nu>\<tau>"] by blast
       finally show ?thesis by fast

@@ -90,7 +90,7 @@ text \<open>
         | "comp TT TT = TT"
         | "comp _ _ = Null"
 
-    interpretation partial_magma comp
+    interpretation partial_composition comp
     proof
       show "\<exists>!n. \<forall>f. comp n f = n \<and> comp f n = n"
       proof
@@ -106,7 +106,7 @@ text \<open>
       have "\<forall>f. comp Null f = Null \<and> comp f Null = Null" by simp
       thus ?thesis
         using null_def ex_un_null theI [of "\<lambda>n. \<forall>f. comp n f = n \<and> comp f n = n"]
-        by (metis partial_magma.comp_null(2) partial_magma_axioms)
+        by (metis partial_magma.null_is_zero(2) partial_magma_axioms)
     qed
 
     lemma ide_char:
@@ -467,7 +467,7 @@ text \<open>
         have "p0 \<cdot> induced_arrow (C.dom p0') (D.mkCone p0' p1') =
                 D.cones_map (induced_arrow (C.dom p0') (D.mkCone p0' p1'))
                             (D.mkCone p0 p1) J.AA"
-          using cone induced_arrowI(1) D.mkCone_def J.arr_char cone_\<chi> by force
+          using cone induced_arrowI(1) D.mkCone_def J.arr_char is_cone by force
         also have "... = p0'"
         proof -
           have "D.cones_map (induced_arrow (C.dom p0') (D.mkCone p0' p1'))
@@ -488,7 +488,7 @@ text \<open>
           have "C.dom p0' = C.dom p1'"
             using assms by (metis C.dom_comp)
           thus ?thesis
-            using cone induced_arrowI(1) D.mkCone_def J.arr_char cone_\<chi> by force
+            using cone induced_arrowI(1) D.mkCone_def J.arr_char is_cone by force
         qed
         also have "... = p1'"
         proof -
@@ -549,7 +549,7 @@ text \<open>
             using 3 by blast
           have "\<guillemotleft>l : x \<rightarrow> ?a\<guillemotright>"
             using l 2 \<chi>'.preserves_hom J.arr_char J.ide_char \<chi>'.component_in_hom
-                  \<chi>'.is_extensional \<chi>'.preserves_reflects_arr comp_in_homE comp_null(2) in_homE
+                  \<chi>'.is_extensional \<chi>'.preserves_reflects_arr comp_in_homE null_is_zero(2) in_homE
             by metis
           moreover have "D.cones_map l (D.mkCone p q) = \<chi>'"
             using l D.cones_map_mkCone_eq_iff [of p q "\<chi>' J.AA" "\<chi>' J.BB" l]
@@ -1054,35 +1054,35 @@ text \<open>
   context category_with_pullbacks
   begin
 
-    definition prj1
-    where "prj1 f g \<equiv> if cospan f g then
+    definition some_prj1  ("\<p>\<^sub>1\<^sup>?[_, _]")
+    where "\<p>\<^sub>1\<^sup>?[f, g] \<equiv> if cospan f g then
                          fst (SOME x. cospan_diagram.has_as_pullback C f g (fst x) (snd x))
                        else null"
 
-    definition prj0
-    where "prj0 f g \<equiv> if cospan f g then
+    definition some_prj0  ("\<p>\<^sub>0\<^sup>?[_, _]")
+    where "\<p>\<^sub>0\<^sup>?[f, g] \<equiv> if cospan f g then
                          snd (SOME x. cospan_diagram.has_as_pullback C f g (fst x) (snd x))
                        else null"
 
     lemma prj_yields_pullback:
     assumes "cospan f g"
-    shows "cospan_diagram.has_as_pullback C f g (prj1 f g) (prj0 f g)"
+    shows "cospan_diagram.has_as_pullback C f g \<p>\<^sub>1\<^sup>?[f, g] \<p>\<^sub>0\<^sup>?[f, g]"
     proof -
       have "\<exists>x. cospan_diagram.has_as_pullback C f g (fst x) (snd x)"
         using assms has_pullbacks has_pullbacks_def has_as_pullback_def by simp
       thus ?thesis
-        using assms has_pullbacks has_pullbacks_def prj0_def prj1_def
+        using assms has_pullbacks has_pullbacks_def some_prj0_def some_prj1_def
               someI_ex [of "\<lambda>x. cospan_diagram.has_as_pullback C f g (fst x) (snd x)"]
         by simp
     qed
 
-    interpretation elementary_category_with_pullbacks C prj0 prj1
+    interpretation elementary_category_with_pullbacks C some_prj0 some_prj1
     proof
-      show "\<And>f g. \<not> cospan f g \<Longrightarrow> prj0 f g = null"
-        using prj0_def by auto
-      show "\<And>f g. \<not> cospan f g \<Longrightarrow> prj1 f g = null"
-        using prj1_def by auto
-      show "\<And>f g. cospan f g \<Longrightarrow> commutative_square f g (prj1 f g) (prj0 f g)"
+      show "\<And>f g. \<not> cospan f g \<Longrightarrow> \<p>\<^sub>0\<^sup>?[f, g] = null"
+        using some_prj0_def by auto
+      show "\<And>f g. \<not> cospan f g \<Longrightarrow> \<p>\<^sub>1\<^sup>?[f, g] = null"
+        using some_prj1_def by auto
+      show "\<And>f g. cospan f g \<Longrightarrow> commutative_square f g \<p>\<^sub>1\<^sup>?[f, g] \<p>\<^sub>0\<^sup>?[f, g]"
       proof
         fix f g
         assume fg: "cospan f g"
@@ -1090,48 +1090,48 @@ text \<open>
         interpret J: cospan_shape .
         interpret D: cospan_diagram C f g
           using fg by (unfold_locales, auto)
-        let ?\<chi> = "D.mkCone (prj1 f g) (prj0 f g)"
-        interpret \<chi>: limit_cone J.comp C D.map \<open>dom (prj1 f g)\<close> ?\<chi>
+        let ?\<chi> = "D.mkCone \<p>\<^sub>1\<^sup>?[f, g] \<p>\<^sub>0\<^sup>?[f, g]"
+        interpret \<chi>: limit_cone J.comp C D.map \<open>dom \<p>\<^sub>1\<^sup>?[f, g]\<close> ?\<chi>
           using fg prj_yields_pullback by auto
-        have 1: "prj1 f g = ?\<chi> J.AA \<and> prj0 f g = ?\<chi> J.BB"
+        have 1: "\<p>\<^sub>1\<^sup>?[f, g] = ?\<chi> J.AA \<and> \<p>\<^sub>0\<^sup>?[f, g] = ?\<chi> J.BB"
           using D.mkCone_def by simp
-        show "span (prj1 f g) (prj0 f g)"
+        show "span \<p>\<^sub>1\<^sup>?[f, g] \<p>\<^sub>0\<^sup>?[f, g]"
         proof -
-          have "arr (prj1 f g) \<and> arr (prj0 f g)"
+          have "arr \<p>\<^sub>1\<^sup>?[f, g] \<and> arr \<p>\<^sub>0\<^sup>?[f, g]"
             using 1 J.arr_char J.seq_char
             by (metis J.seqE \<chi>.preserves_reflects_arr)
-          moreover have "dom (prj1 f g) = dom (prj0 f g)"
+          moreover have "dom \<p>\<^sub>1\<^sup>?[f, g] = dom \<p>\<^sub>0\<^sup>?[f, g]"
             using 1 D.is_rendered_commutative_by_cone \<chi>.cone_axioms J.seq_char
             by (metis J.cod_eqI J.seqE \<chi>.A.map_simp \<chi>.preserves_dom J.ide_char)
           ultimately show ?thesis by simp
         qed
-        show "dom f = cod (prj1 f g)"
+        show "dom f = cod \<p>\<^sub>1\<^sup>?[f, g]"
           using 1 fg \<chi>.preserves_cod [of J.BB] J.cod_char D.mkCone_def
           by (metis D.map.simps(1) D.preserves_cod J.seqE \<chi>.preserves_cod cod_dom J.seq_char)
-        show "f \<cdot> prj1 f g = g \<cdot> prj0 f g"
+        show "f \<cdot> \<p>\<^sub>1\<^sup>?[f, g] = g \<cdot> \<p>\<^sub>0\<^sup>?[f, g]"
           using 1 fg D.is_rendered_commutative_by_cone \<chi>.cone_axioms by force
       qed
-      show "\<And>f g h k. commutative_square f g h k \<Longrightarrow> \<exists>!l. prj1 f g \<cdot> l = h \<and> prj0 f g \<cdot> l = k"
+      show "\<And>f g h k. commutative_square f g h k \<Longrightarrow> \<exists>!l. \<p>\<^sub>1\<^sup>?[f, g] \<cdot> l = h \<and> \<p>\<^sub>0\<^sup>?[f, g] \<cdot> l = k"
       proof -
         fix f g h k
         assume fghk: "commutative_square f g h k"
         interpret J: cospan_shape .
         interpret D: cospan_diagram C f g
           using fghk by (unfold_locales, auto)
-        let ?\<chi> = "D.mkCone (prj1 f g) (prj0 f g)"
-        interpret \<chi>: limit_cone J.comp C D.map \<open>dom (prj1 f g)\<close> ?\<chi>
+        let ?\<chi> = "D.mkCone \<p>\<^sub>1\<^sup>?[f, g] \<p>\<^sub>0\<^sup>?[f, g]"
+        interpret \<chi>: limit_cone J.comp C D.map \<open>dom \<p>\<^sub>1\<^sup>?[f, g]\<close> ?\<chi>
           using fghk prj_yields_pullback by auto
-        interpret \<chi>: pullback_cone C f g \<open>prj1 f g\<close> \<open>prj0 f g\<close> ..
-        have 1: "prj1 f g = ?\<chi> J.AA \<and> prj0 f g = ?\<chi> J.BB"
+        interpret \<chi>: pullback_cone C f g \<open>\<p>\<^sub>1\<^sup>?[f, g]\<close> \<open>\<p>\<^sub>0\<^sup>?[f, g]\<close> ..
+        have 1: "\<p>\<^sub>1\<^sup>?[f, g] = ?\<chi> J.AA \<and> \<p>\<^sub>0\<^sup>?[f, g] = ?\<chi> J.BB"
           using D.mkCone_def by simp
-        show "\<exists>!l. prj1 f g \<cdot> l = h \<and> prj0 f g \<cdot> l = k"
+        show "\<exists>!l. \<p>\<^sub>1\<^sup>?[f, g] \<cdot> l = h \<and> \<p>\<^sub>0\<^sup>?[f, g] \<cdot> l = k"
         proof
-          let ?l = "SOME l. prj1 f g \<cdot> l = h \<and> prj0 f g \<cdot> l = k"
-          show "prj1 f g \<cdot> ?l = h \<and> prj0 f g \<cdot> ?l = k"
+          let ?l = "SOME l. \<p>\<^sub>1\<^sup>?[f, g] \<cdot> l = h \<and> \<p>\<^sub>0\<^sup>?[f, g] \<cdot> l = k"
+          show "\<p>\<^sub>1\<^sup>?[f, g] \<cdot> ?l = h \<and> \<p>\<^sub>0\<^sup>?[f, g] \<cdot> ?l = k"
              using fghk \<chi>.is_universal' \<chi>.renders_commutative
-                   someI_ex [of "\<lambda>l. prj1 f g \<cdot> l = h \<and> prj0 f g \<cdot> l = k"]
+                   someI_ex [of "\<lambda>l. \<p>\<^sub>1\<^sup>?[f, g] \<cdot> l = h \<and> \<p>\<^sub>0\<^sup>?[f, g] \<cdot> l = k"]
              by blast
-          thus "\<And>l. prj1 f g \<cdot> l = h \<and> prj0 f g \<cdot> l = k \<Longrightarrow> l = ?l"
+          thus "\<And>l. \<p>\<^sub>1\<^sup>?[f, g] \<cdot> l = h \<and> \<p>\<^sub>0\<^sup>?[f, g] \<cdot> l = k \<Longrightarrow> l = ?l"
             using fghk \<chi>.is_universal' \<chi>.renders_commutative limit_cone_def
             by (metis (no_types, lifting) in_homI seqE commutative_squareE dom_comp seqI)
         qed
@@ -1139,7 +1139,7 @@ text \<open>
     qed
 
     proposition extends_to_elementary_category_with_pullbacks:
-    shows "elementary_category_with_pullbacks C prj0 prj1"
+    shows "elementary_category_with_pullbacks C some_prj0 some_prj1"
       ..
 
   end

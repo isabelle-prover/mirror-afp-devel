@@ -6,7 +6,7 @@
 chapter DualCategory
 
 theory DualCategory
-imports Category
+imports EpiMonoIso
 begin
 
   text\<open>
@@ -31,14 +31,14 @@ begin
     shows "g \<cdot>\<^sup>o\<^sup>p f = f \<cdot> g"
       using comp_def by auto
 
-    interpretation partial_magma comp
+    interpretation partial_composition comp
       apply unfold_locales using comp_def C.ex_un_null by metis
 
     notation in_hom ("\<guillemotleft>_ : _ \<leftarrow> _\<guillemotright>")
 
     lemma null_char [simp]:
     shows "null = C.null"
-      by (metis C.comp_null(2) comp_null(2) comp_def)
+      by (metis C.null_is_zero(2) null_is_zero(2) comp_def)
 
     lemma ide_char [simp]:
     shows "ide a \<longleftrightarrow> C.ide a"
@@ -88,6 +88,12 @@ begin
     lemma seq_char [simp]:
     shows "seq g f = C.seq f g"
       by simp
+
+    lemma iso_char [simp]:
+    shows "iso f \<longleftrightarrow> C.iso f"
+      using C.iso_iff_section_and_retraction iso_iff_section_and_retraction
+            retraction_def section_def
+      by auto
 
   end
 

@@ -125,7 +125,7 @@ begin
 
   lemma eqI:
   assumes "natural_transformation A B F G \<sigma>" and "natural_transformation A B F G \<sigma>'"
-  and "\<And>a. partial_magma.ide A a \<Longrightarrow> \<sigma> a = \<sigma>' a"
+  and "\<And>a. partial_composition.ide A a \<Longrightarrow> \<sigma> a = \<sigma>' a"
   shows "\<sigma> = \<sigma>'"
   proof -
     interpret A: category A using assms(1) natural_transformation_def by blast
@@ -370,7 +370,7 @@ begin
                   vertical_composite.is_natural_transformation)
   proof -
     fix a :: 'a
-    assume a: "partial_magma.ide A a"
+    assume a: "partial_composition.ide A a"
     interpret Go\<tau>: vertical_composite A B F G G \<tau> G
       by (meson assms functor_is_transformation natural_transformation.axioms(1-4)
                 vertical_composite.intro)

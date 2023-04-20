@@ -163,6 +163,12 @@ begin
 
     interpretation H: partial_magma H
       using is_partial_magma by auto
+    interpretation H: partial_composition H
+      ..
+
+    lemma is_partial_composition:
+    shows "partial_composition H"
+      ..
 
     text \<open>
       Either \<open>match_1\<close> or \<open>match_2\<close> seems essential for the next result, which states
@@ -171,7 +177,7 @@ begin
 
     lemma null_agreement [simp]:
     shows "H.null = null"
-      by (metis VoV.inclusion VxV.not_arr_null match_1 H.comp_null(1))
+      by (metis VoV.inclusion VxV.not_arr_null match_1 H.null_is_zero(1))
 
     lemma composable_implies_arr:
     assumes "\<nu> \<star> \<mu> \<noteq> null"
@@ -180,7 +186,7 @@ begin
 
     lemma hcomp_null [simp]:
     shows "null \<star> \<mu> = null" and "\<mu> \<star> null = null"
-      using H.comp_null by auto
+      using H.null_is_zero by auto
 
     lemma hcomp_simps\<^sub>W\<^sub>C [simp]:
     assumes "\<nu> \<star> \<mu> \<noteq> null"
@@ -231,7 +237,7 @@ begin
     shows "(\<nu> \<cdot> \<mu>) \<star> (\<tau> \<cdot> \<sigma>) = (\<nu> \<star> \<tau>) \<cdot> (\<mu> \<star> \<sigma>)"
     proof -
       have "\<mu> \<star> \<sigma> = null \<Longrightarrow> ?thesis"
-        by (metis assms comp_null(2) dom_comp hom_connected(1-2))
+        by (metis assms null_is_zero(2) dom_comp hom_connected(1-2))
       moreover have "\<mu> \<star> \<sigma> \<noteq> null \<Longrightarrow> ?thesis"
       proof -
         assume \<mu>\<sigma>: "\<mu> \<star> \<sigma> \<noteq> null"
@@ -261,13 +267,13 @@ begin
     shows "\<nu> \<star> \<mu> = (cod \<nu> \<star> \<mu>) \<cdot> (\<nu> \<star> dom \<mu>)"
       using interchange composable_implies_arr comp_arr_dom comp_cod_arr
             hom_connected(2-3)
-      by (metis comp_null(2))
+      by (metis null_is_zero(2))
 
     lemma paste_2:
     shows "\<nu> \<star> \<mu> = (\<nu> \<star> cod \<mu>) \<cdot> (dom \<nu> \<star> \<mu>)"
       using interchange composable_implies_arr comp_arr_dom comp_cod_arr
             hom_connected(1,4)
-      by (metis comp_null(2))
+      by (metis null_is_zero(2))
 
     lemma whisker_left:
     assumes "seq \<nu> \<mu>" and "ide f"
@@ -1581,8 +1587,8 @@ begin
       We first show that the notion ``weak unit'' is preserved under isomorphism.
     \<close>
 
-    interpretation H: partial_magma H
-      using is_partial_magma by auto
+    interpretation H: partial_composition H
+      using is_partial_composition by auto
 
     lemma isomorphism_respects_weak_units:
     assumes "weak_unit a" and "a \<cong> a'"
@@ -2589,18 +2595,18 @@ begin
     no_notation in_hom        ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
 
     text \<open>
-      \<open>H\<close> is a partial magma, which shares its null with \<open>V\<close>.
+      \<open>H\<close> is a partial composition, which shares its null with \<open>V\<close>.
     \<close>
 
-    lemma is_partial_magma:
-    shows "partial_magma H" and "partial_magma.null H = null"
+    lemma is_partial_composition:
+    shows "partial_composition H" and "partial_magma.null H = null"
     proof -
       have 1: "\<forall>f. null \<star> f = null \<and> f \<star> null = null"
         using H.is_extensional VV.arr_char\<^sub>S\<^sub>b\<^sub>C not_arr_null by auto
-      interpret H: partial_magma H
+      interpret H: partial_composition H
         using 1 VV.arr_char\<^sub>S\<^sub>b\<^sub>C H.is_extensional not_arr_null
         by unfold_locales metis
-      show "partial_magma H" ..
+      show "partial_composition H" ..
       show "H.null = null"
         using 1 H.null_def the1_equality [of "\<lambda>n. \<forall>f. n \<star> f = n \<and> f \<star> n = n"]
         by metis
@@ -2878,14 +2884,14 @@ begin
         have "VxVxV.comp g f =
               (fst g \<cdot> fst f, fst (snd g) \<cdot> fst (snd f), snd (snd g) \<cdot> snd (snd f))"
           using fg VVV.seq_char\<^sub>S\<^sub>b\<^sub>C VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C VxVxV.comp_char VxV.comp_char
-          by (metis (no_types, lifting) VxV.seqE VxVxV.seqE)
+          by (metis (no_types, lifting) VxV.seqE\<^sub>P\<^sub>C VxVxV.seqE\<^sub>P\<^sub>C)
         hence "HoHV (VVV.comp g f) =
               (fst g \<cdot> fst f \<star> fst (snd g) \<cdot> fst (snd f)) \<star> snd (snd g) \<cdot> snd (snd f)"
           using HoHV_def VVV.comp_simp fg by auto
         also have "... = ((fst g \<star> fst (snd g)) \<star> snd (snd g)) \<cdot>
                            ((fst f \<star> fst (snd f)) \<star> snd (snd f))"
           using fg VVV.seq_char\<^sub>S\<^sub>b\<^sub>C VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C interchange
-          by (metis (no_types, lifting) VxV.seqE VxVxV.seqE hseqI' src_vcomp trg_vcomp)
+          by (metis (no_types, lifting) VxV.seqE\<^sub>P\<^sub>C VxVxV.seqE\<^sub>P\<^sub>C hseqI' src_vcomp trg_vcomp)
         also have "... = HoHV g \<cdot> HoHV f"
           using HoHV_def fg by auto
         finally show ?thesis by simp
@@ -2909,14 +2915,14 @@ begin
         have "VxVxV.comp g f =
               (fst g \<cdot> fst f, fst (snd g) \<cdot> fst (snd f), snd (snd g) \<cdot> snd (snd f))"
           using fg VVV.seq_char\<^sub>S\<^sub>b\<^sub>C VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C VxVxV.comp_char VxV.comp_char
-          by (metis (no_types, lifting) VxV.seqE VxVxV.seqE)
+          by (metis (no_types, lifting) VxV.seqE\<^sub>P\<^sub>C VxVxV.seqE\<^sub>P\<^sub>C)
         hence "HoVH (VVV.comp g f) =
               fst g \<cdot> fst f \<star> fst (snd g) \<cdot> fst (snd f) \<star> snd (snd g) \<cdot> snd (snd f)"
           using HoVH_def VVV.comp_simp fg by auto
         also have "... = (fst g \<star> fst (snd g) \<star> snd (snd g)) \<cdot>
                            (fst f \<star> fst (snd f) \<star> snd (snd f))"
           using fg VVV.seq_char\<^sub>S\<^sub>b\<^sub>C VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C interchange
-          by (metis (no_types, lifting) VxV.seqE VxVxV.seqE hseqI' src_vcomp trg_vcomp)
+          by (metis (no_types, lifting) VxV.seqE\<^sub>P\<^sub>C VxVxV.seqE\<^sub>P\<^sub>C hseqI' src_vcomp trg_vcomp)
         also have "... = HoVH g \<cdot> HoVH f"
           using fg VVV.seq_char\<^sub>S\<^sub>b\<^sub>C VVV.arr_char\<^sub>S\<^sub>b\<^sub>C HoVH_def VVV.comp_char VV.arr_char\<^sub>S\<^sub>b\<^sub>C
           by (metis (no_types, lifting))

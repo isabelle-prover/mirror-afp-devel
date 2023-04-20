@@ -22,7 +22,7 @@ begin
   locale category_with_finite_limits =
     category +
   assumes has_finite_limits:
-            "\<lbrakk> category (J :: nat comp); finite (Collect (partial_magma.arr J)) \<rbrakk>
+            "\<lbrakk> category (J :: nat comp); finite (Collect (partial_composition.arr J)) \<rbrakk>
                  \<Longrightarrow> has_limits_of_shape J"
   begin
 
@@ -121,7 +121,7 @@ begin
             interpret \<chi>: cone J.comp C \<open>\<lambda>_.null\<close> a \<open>\<lambda>_.null\<close>
               apply unfold_locales
                   apply simp
-              using dom_null cod_null comp_null
+              using dom_null cod_null null_is_zero
               by blast+
             have "\<exists>!f. \<guillemotleft>f : a \<rightarrow> t\<guillemotright> \<and> D.cones_map f \<tau> = (\<lambda>_. null)"
               using \<tau>.induced_arrowI [of "\<lambda>_.null" a] \<chi>.cone_axioms
@@ -165,17 +165,19 @@ begin
   context category_with_pullbacks_and_terminal
   begin
 
-    interpretation ECP: elementary_category_with_pullbacks C prj0 prj1
+    interpretation ECP: elementary_category_with_pullbacks C some_prj0 some_prj1
       using extends_to_elementary_category_with_pullbacks by simp
 
-    abbreviation prj0'
-    where "prj0' a b \<equiv> (if ide a \<and> ide b then prj0 (trm a) (trm b) else null)"
+    abbreviation some_prj0'
+    where "some_prj0' a b \<equiv> (if ide a \<and> ide b then some_prj0 \<t>\<^sup>?[a] \<t>\<^sup>?[b] else null)"
 
-    abbreviation prj1'
-    where "prj1' a b \<equiv> (if ide a \<and> ide b then prj1 (trm a) (trm b) else null)"
+    abbreviation some_prj1'
+    where "some_prj1' a b \<equiv> (if ide a \<and> ide b then some_prj1 \<t>\<^sup>?[a] \<t>\<^sup>?[b] else null)"
 
-    interpretation ECC: elementary_cartesian_category C prj0' prj1' \<one> trm
-      using trm_naturality ECP.universal
+    interpretation ECC: elementary_category_with_terminal_object C \<open>\<one>\<^sup>?\<close> \<open>\<lambda>a. \<t>\<^sup>?[a]\<close>
+      using extends_to_elementary_category_with_terminal_object by blast
+    interpretation ECC: elementary_cartesian_category C some_prj0' some_prj1' \<open>\<one>\<^sup>?\<close> \<open>\<lambda>a. \<t>\<^sup>?[a]\<close>
+      using ECC.trm_naturality ECP.universal
       by unfold_locales auto
 
     interpretation category_with_equalizers C
@@ -194,17 +196,17 @@ begin
         using par by simp
       have g1: "\<guillemotleft>?g1 : dom f1 \<rightarrow> ECC.prod (cod f1) (dom f1)\<guillemotright>"
         using par by simp
-      define e0 where "e0 = prj0 ?g1 ?g0"
-      define e1 where "e1 = prj1 ?g1 ?g0"
+      define e0 where "e0 = \<p>\<^sub>0\<^sup>?[?g1, ?g0]"
+      define e1 where "e1 = \<p>\<^sub>1\<^sup>?[?g1, ?g0]"
       have e0: "\<guillemotleft>e0 : dom e0 \<rightarrow> dom f0\<guillemotright>"
         using par 1 e0_def by auto
       have e1: "\<guillemotleft>e1 : dom e0 \<rightarrow> dom f1\<guillemotright>"
         using par 1 e1_def e0_def by auto
       have eq: "e0 = e1"
       proof -
-        have "e1 = prj0' (cod f1) (dom f1) \<cdot> ?g1 \<cdot> e1"
+        have "e1 = some_prj0' (cod f1) (dom f1) \<cdot> ?g1 \<cdot> e1"
         proof -
-          have "((prj0' (cod f1) (dom f1) \<cdot> (ECC.prod f1 (dom f1))) \<cdot> ECC.dup (dom f1)) \<cdot> e1 =
+          have "((some_prj0' (cod f1) (dom f1) \<cdot> (ECC.prod f1 (dom f1))) \<cdot> ECC.dup (dom f1)) \<cdot> e1 =
                 dom f1 \<cdot> e1"
             using par ECC.pr_naturality(1) [of "dom f1" "dom f1" "dom f1" f1 "dom f1" "cod f1"]
                   comp_cod_arr ECC.pr_dup(1)
@@ -214,12 +216,12 @@ begin
           finally show ?thesis
             using comp_assoc by simp
         qed
-        also have "... = prj0' (cod f1) (dom f1) \<cdot> ?g0 \<cdot> e0"
+        also have "... = some_prj0' (cod f1) (dom f1) \<cdot> ?g0 \<cdot> e0"
           using par ECP.pullback_commutes
           unfolding commutative_square_def e0_def e1_def by simp
         also have "... = e0"
         proof -
-          have "((prj0' (cod f1) (dom f1) \<cdot> (ECC.prod f0 (dom f0))) \<cdot> ECC.dup (dom f0)) \<cdot> e0 =
+          have "((some_prj0' (cod f1) (dom f1) \<cdot> (ECC.prod f0 (dom f0))) \<cdot> ECC.dup (dom f0)) \<cdot> e0 =
                 dom f0 \<cdot> e0"
             using par ECC.pr_naturality(1) [of "dom f0" "dom f0" "dom f1" f0 "dom f0" "cod f0"]
                   comp_cod_arr ECC.pr_dup(1) ide_dom
@@ -239,19 +241,19 @@ begin
         proof -
           have "f0 \<cdot> e0 = (f0 \<cdot> dom f0) \<cdot> e0"
             using par comp_arr_dom by simp
-          also have "... = (f0 \<cdot> (prj1' (dom f0) (dom f0) \<cdot> ECC.dup (dom f0))) \<cdot> e0"
+          also have "... = (f0 \<cdot> (some_prj1' (dom f0) (dom f0) \<cdot> ECC.dup (dom f0))) \<cdot> e0"
             using par ECC.pr_dup(2) by auto
-          also have "... = ((f0 \<cdot> prj1' (dom f0) (dom f0)) \<cdot> ECC.dup (dom f0)) \<cdot> e0"
+          also have "... = ((f0 \<cdot> some_prj1' (dom f0) (dom f0)) \<cdot> ECC.dup (dom f0)) \<cdot> e0"
             using comp_assoc by auto
-          also have "... = prj1' (cod f1) (dom f1) \<cdot> ?g0 \<cdot> e0"
+          also have "... = some_prj1' (cod f1) (dom f1) \<cdot> ?g0 \<cdot> e0"
             using par ECC.pr_naturality(2) [of "dom f0" "dom f0" "dom f1" f0 "dom f0" "cod f0"]
             by (metis (no_types, lifting) arr_dom cod_dom dom_dom comp_assoc)
-          also have "... = prj1' (cod f1) (dom f1) \<cdot> ?g1 \<cdot> e1"
+          also have "... = some_prj1' (cod f1) (dom f1) \<cdot> ?g1 \<cdot> e1"
             using par ECP.pullback_commutes [of ?g1 ?g0]
             unfolding commutative_square_def e0_def e1_def by simp
-          also have "... = (prj1' (cod f1) (dom f1) \<cdot> ?g1) \<cdot> e1"
+          also have "... = (some_prj1' (cod f1) (dom f1) \<cdot> ?g1) \<cdot> e1"
             using comp_assoc by simp
-          also have "... = (f1 \<cdot> (prj1' (dom f1) (dom f1) \<cdot> ECC.dup (dom f1))) \<cdot> e1"
+          also have "... = (f1 \<cdot> (some_prj1' (dom f1) (dom f1) \<cdot> ECC.dup (dom f1))) \<cdot> e1"
             using par ECC.pr_naturality(2) [of "dom f1" "dom f1" "dom f1" f1 "dom f1" "cod f1"]
             by (metis (no_types, lifting) arr_dom cod_dom dom_dom comp_assoc)
           also have "... = (f1 \<cdot> dom f1) \<cdot> e1"
@@ -395,22 +397,20 @@ begin
       assume finite: "finite (Collect J.arr)"
       show "has_limits_of_shape J"
       proof -
-        have "Collect (partial_magma.ide J) \<subseteq> Collect J.arr"
+        have "Collect (partial_composition.ide J) \<subseteq> Collect J.arr"
           by auto
         hence 1: "finite (Collect J.ide)"
           using finite finite_subset by blast
-        have "has_products (Collect (partial_magma.ide J))"
-          using 1 J.ideD(1) J.not_arr_null category_with_finite_products.has_finite_products
-                is_category_with_finite_products
-          by simp
-        moreover have "Collect (partial_magma.ide J) \<noteq> UNIV"
+        have "has_products (Collect (partial_composition.ide J))"
+          using 1 J.ideD(1) J.not_arr_null ECC.has_finite_products by auto
+        moreover have "Collect (partial_composition.ide J) \<noteq> UNIV"
           using J.not_arr_null by blast
-        moreover have "Collect (partial_magma.arr J) \<noteq> UNIV"
+        moreover have "Collect (partial_composition.arr J) \<noteq> UNIV"
           using J.not_arr_null by blast
         ultimately show ?thesis
           using finite 1 J.category_axioms has_limits_if_has_products
-                has_finite_products' [of "Collect J.ide"]
-                has_finite_products' [of "Collect J.arr"]
+                ECC.has_finite_products' [of "Collect J.ide"]
+                ECC.has_finite_products' [of "Collect J.arr"]
           by simp
       qed
     qed

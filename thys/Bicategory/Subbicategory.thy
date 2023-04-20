@@ -124,7 +124,7 @@ begin
       proof -
         have "fst (VV.comp g f) \<star> snd (VV.comp g f) = fst g \<cdot> fst f \<star> snd g \<cdot> snd f"
           using fg VV.seq_char\<^sub>S\<^sub>b\<^sub>C VV.comp_char VxV.comp_char VxV.not_Arr_Null
-          by (metis (no_types, lifting) VxV.seqE prod.sel(1) prod.sel(2))
+          by (metis (no_types, lifting) VxV.seqE\<^sub>P\<^sub>C prod.sel(1-2))
         also have "... = (fst g \<cdot>\<^sub>B fst f) \<star>\<^sub>B (snd g \<cdot>\<^sub>B snd f)"
           using fg comp_char hcomp_def VV.seq_char\<^sub>S\<^sub>b\<^sub>C inclusion arr_char\<^sub>S\<^sub>b\<^sub>C seq_char\<^sub>S\<^sub>b\<^sub>C B.hseq_char
           by (metis (no_types, lifting) B.hseq_char' VxV.seq_char null_char)
@@ -134,7 +134,7 @@ begin
             by (metis (no_types, lifting) VV.arrE VV.seq_char\<^sub>S\<^sub>b\<^sub>C fg src_def trg_def)
           thus ?thesis
             using fg VV.seq_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C arr_char\<^sub>S\<^sub>b\<^sub>C seq_char\<^sub>S\<^sub>b\<^sub>C inclusion B.interchange
-            by (meson VxV.seqE)
+            by (meson VxV.seqE\<^sub>P\<^sub>C)
         qed
         also have "... = (fst g \<star> snd g) \<cdot> (fst f \<star> snd f)"
           using fg comp_char hcomp_def VV.seq_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C arr_char\<^sub>S\<^sub>b\<^sub>C seq_char\<^sub>S\<^sub>b\<^sub>C inclusion
@@ -907,7 +907,7 @@ begin
             using 1 VxVxV.seq_char VxV.seq_char seq_char\<^sub>S\<^sub>b\<^sub>C by blast
           have 5: "VxVxV.comp f g =
                    (fst f \<cdot> fst g, fst (snd f) \<cdot> fst (snd g), snd (snd f) \<cdot> snd (snd g))"
-            using 1 2 3 4 VxVxV.seqE VxVxV.comp_char VxV.comp_char seq_char\<^sub>S\<^sub>b\<^sub>C arr_char\<^sub>S\<^sub>b\<^sub>C
+            using 1 2 3 4 VxVxV.seqE\<^sub>P\<^sub>C VxVxV.comp_char VxV.comp_char seq_char\<^sub>S\<^sub>b\<^sub>C arr_char\<^sub>S\<^sub>b\<^sub>C
             by (metis (no_types, lifting)) 
           also have "... = VVV.comp f g"
             using 1 VVV.comp_char VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C
@@ -981,7 +981,7 @@ begin
         show "\<not> arr \<mu> \<Longrightarrow> \<ll> \<mu> \<cdot> (\<phi> \<star> dom \<mu>) = null"
           using \<phi> arr_char\<^sub>S\<^sub>b\<^sub>C dom_char\<^sub>S\<^sub>b\<^sub>C ext
           apply simp
-          using comp_null(2) hcomp_def by fastforce
+          using null_is_zero(2) hcomp_def by fastforce
         assume \<mu>: "arr \<mu>"
         have 0: "in_hhom (dom \<mu>) a a"
           using \<mu> arr_char\<^sub>S\<^sub>b\<^sub>C src_dom trg_dom src_def trg_def dom_simp by simp
@@ -1142,7 +1142,7 @@ begin
         show "\<not> arr \<mu> \<Longrightarrow> \<rr> \<mu> \<cdot> (dom \<mu> \<star> \<phi>) = null"
           using \<phi> arr_char\<^sub>S\<^sub>b\<^sub>C dom_char\<^sub>S\<^sub>b\<^sub>C ext
           apply simp
-          using comp_null(2) hcomp_def by fastforce
+          using null_is_zero(2) hcomp_def by fastforce
         assume \<mu>: "arr \<mu>"
         have 0: "in_hhom (dom \<mu>) a a"
           using \<mu> arr_char\<^sub>S\<^sub>b\<^sub>C src_dom trg_dom src_def trg_def dom_simp by simp
@@ -1293,17 +1293,15 @@ begin
           using f g h k VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C src_def trg_def ide_char\<^sub>S\<^sub>b\<^sub>C arr_char\<^sub>S\<^sub>b\<^sub>C
           by simp
         have 2: "VVV.arr (f, g \<star> h, k)"
-          using f g h k 1 HoHV_def VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C src_def trg_def ide_char\<^sub>S\<^sub>b\<^sub>C arr_char\<^sub>S\<^sub>b\<^sub>C
-                VxV.arrI VxVxV.arrI VxVxV_comp_eq_VVV_comp hseqI'
+          using f g h k src_def trg_def ide_char\<^sub>S\<^sub>b\<^sub>C arr_char\<^sub>S\<^sub>b\<^sub>C VxVxV_comp_eq_VVV_comp hseqI'
           by auto
         have 3: "VVV.arr (f, g, h \<star> k)"
           using f g h k 1 VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C src_def trg_def ide_char\<^sub>S\<^sub>b\<^sub>C arr_char\<^sub>S\<^sub>b\<^sub>C
                 VxV.arrI VxVxV.arrI VxVxV_comp_eq_VVV_comp H.preserves_reflects_arr hseqI'
           by auto
         have 4: "VVV.arr (f \<star> g, h, k)"
-          using f g h k VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C src_def trg_def ide_char\<^sub>S\<^sub>b\<^sub>C arr_char\<^sub>S\<^sub>b\<^sub>C hseq_char
-                VxV.arrI VxVxV.arrI VxVxV_comp_eq_VVV_comp
-          by force
+          using f g h k src_def trg_def ide_char\<^sub>S\<^sub>b\<^sub>C arr_char\<^sub>S\<^sub>b\<^sub>C hseq_char VxVxV_comp_eq_VVV_comp
+          by auto
         have "(fst (f, \<alpha> (g, h, k)) \<star> snd (f, \<alpha> (g, h, k))) \<cdot>
                 \<alpha> (f, fst (g, h) \<star> snd (g, h), k) \<cdot>
                 (fst (\<alpha> (f, g, h), k) \<star> snd (\<alpha> (f, g, h), k)) =
@@ -1459,12 +1457,12 @@ begin
     interpret M: monoidal_category_with_alternate_unit
                    S.comp \<open>\<lambda>\<mu>\<nu>. S.hcomp (fst \<mu>\<nu>) (snd \<mu>\<nu>)\<close> S.\<alpha> \<open>\<i>[a]\<close> \<omega> ..
     have 1: "M\<^sub>\<omega>.unity = w"
-      using assms M\<^sub>\<omega>.unity_def S.cod_char\<^sub>S\<^sub>b\<^sub>C S.arr_char\<^sub>S\<^sub>b\<^sub>C
+      using assms S.cod_char\<^sub>S\<^sub>b\<^sub>C S.arr_char\<^sub>S\<^sub>b\<^sub>C
       by (metis (no_types, lifting) S.in_homE S\<^sub>\<omega>.\<omega>_in_vhom)
     have 2: "M.unity = a"
-      using assms M.unity_def S.cod_char\<^sub>S\<^sub>b\<^sub>C S.arr_char\<^sub>S\<^sub>b\<^sub>C by simp
+      using assms S.cod_char\<^sub>S\<^sub>b\<^sub>C S.arr_char\<^sub>S\<^sub>b\<^sub>C by simp
     have "\<exists>!\<psi>. S.in_hom \<psi> a w \<and> S.iso \<psi> \<and> S.comp \<psi> \<i>[a] = S.comp \<omega> (M.tensor \<psi> \<psi>)"
-      using assms 1 2 M.unit_unique_upto_unique_iso M.unity_def M\<^sub>\<omega>.unity_def S.cod_char\<^sub>S\<^sub>b\<^sub>C
+      using assms 1 2 M.unit_unique_upto_unique_iso S.cod_char\<^sub>S\<^sub>b\<^sub>C
       by simp
     show "\<exists>!\<psi>. \<guillemotleft>\<psi> : a \<Rightarrow> w\<guillemotright> \<and> iso \<psi> \<and> \<psi> \<cdot> \<i>[a] = \<omega> \<cdot> (\<psi> \<star> \<psi>)"
     proof -
@@ -1482,8 +1480,8 @@ begin
         using assms S.in_hom_char\<^sub>S\<^sub>b\<^sub>C S.arr_char\<^sub>S\<^sub>b\<^sub>C S.hcomp_def S.comp_char S.dom_char\<^sub>S\<^sub>b\<^sub>C S.cod_char\<^sub>S\<^sub>b\<^sub>C
         by (metis (no_types, lifting) M\<^sub>\<omega>.arr_tensor S\<^sub>\<omega>.\<omega>_simps(1) calculation(3) ext)
       ultimately show ?thesis
-        by (metis (no_types, lifting) M.unit_unique_upto_unique_iso M.unity_def M\<^sub>\<omega>.unity_def
-            S.\<omega>_in_vhom S.in_homE S\<^sub>\<omega>.\<omega>_in_vhom)
+        by (metis (no_types, lifting) M.unit_unique_upto_unique_iso S.\<omega>_in_vhom S.in_homE
+            S\<^sub>\<omega>.\<omega>_in_vhom)
     qed
   qed
 

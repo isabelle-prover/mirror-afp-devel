@@ -998,7 +998,7 @@ $$
               also have "... = \<a>[trg f, f, f\<^sub>a] \<cdot>
                                  ((\<epsilon> \<star> f) \<cdot> \<a>\<^sup>-\<^sup>1[f, f\<^sub>a, f] \<cdot> (f \<star> \<eta>) \<star> f\<^sub>a) \<cdot>
                                  \<a>\<^sup>-\<^sup>1[f, src f, f\<^sub>a]"
-                using \<eta>' comp_assoc whisker_right \<open>ide f\<^sub>a\<close> comp_null(2) ide_leg0 ext
+                using \<eta>' comp_assoc whisker_right \<open>ide f\<^sub>a\<close> null_is_zero(2) ide_leg0 ext
                       runit_simps(1)
                 by metis
               finally show ?thesis
@@ -4431,7 +4431,7 @@ $$
                     using w\<^sub>C' \<beta>\<^sub>C F\<beta>\<^sub>C_def cmp_components_are_iso D.comp_inv_arr' by simp
                   also have "... = F g \<star>\<^sub>D D.inv \<phi>'"
                     using D.comp_cod_arr [of "F g \<star>\<^sub>D D.inv \<phi>'" "F g \<star>\<^sub>D F w\<^sub>C'"]
-                    by (metis D.cod_inv D.comp_null(2) D.hseq_char' D.in_homE
+                    by (metis D.cod_inv D.null_is_zero(2) D.hseq_char' D.in_homE
                         D.is_weak_composition T'.leg1_simps(6) \<phi>'
                         weak_composition.hcomp_simps\<^sub>W\<^sub>C(3))
                   finally show ?thesis by blast
@@ -4719,7 +4719,7 @@ $$
                      ((F g \<star>\<^sub>D \<phi>') \<cdot>\<^sub>D (F g \<star>\<^sub>D F \<gamma>\<^sub>C)) \<cdot>\<^sub>D (F g \<star>\<^sub>D D.inv \<phi>)"
               proof -
                 have "D.seq (F g \<star>\<^sub>D \<phi>') (F g \<star>\<^sub>D F \<gamma>\<^sub>C)"
-                  by (metis "1" "2" "3" D.arrI D.comp_null(1) D.comp_null(2) D.ext F\<beta>\<^sub>C \<beta>\<^sub>C)
+                  by (metis "1" "2" "3" D.arrI D.null_is_zero(1) D.null_is_zero(2) D.ext F\<beta>\<^sub>C \<beta>\<^sub>C)
                 moreover have "D.iso (F g \<star>\<^sub>D \<phi>)"
                   using D.vconn_implies_hpar(2) D.vconn_implies_hpar(4) \<phi> we by auto
                 moreover have "D.inv (F g \<star>\<^sub>D \<phi>) = F g \<star>\<^sub>D D.inv \<phi>"
@@ -5105,7 +5105,7 @@ $$
                   ultimately show ?thesis
                     using w w' e e.antipar D.pentagon' [of "F g" w e d]
                           D.iso_inv_iso D.inv_inv D.comp_assoc D.invert_side_of_triangle(1)
-                    by (metis D.assoc'_simps(3) D.comp_null(2) D.ide_hcomp D.ideD(1)
+                    by (metis D.assoc'_simps(3) D.null_is_zero(2) D.ide_hcomp D.ideD(1)
                         D.iso_assoc' D.not_arr_null D.seq_if_composable D.src_hcomp T'.ide_leg1
                         \<open>trg\<^sub>D e = a\<close> a_def e.ide_left e.ide_right)
                 qed
@@ -5304,7 +5304,7 @@ $$
                     using w'e D.isomorphic_implies_ide(2) w\<^sub>C' D.comp_assoc_assoc' by auto
                   also have "... = F f \<star>\<^sub>D \<gamma>e \<star>\<^sub>D d"
                     using D.comp_cod_arr
-                    by (metis D.comp_cod_arr D.comp_null(2) D.hseq_char D.hseq_char'
+                    by (metis D.comp_cod_arr D.null_is_zero(2) D.hseq_char D.hseq_char'
                         D.in_homE D.whisker_left D.whisker_right P\<gamma>e T'.ide_leg0 e.ide_right)
                   finally show ?thesis by simp
                 qed
@@ -5372,7 +5372,7 @@ $$
                       \<psi> \<cdot>\<^sub>D (\<theta> \<star>\<^sub>D e) \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[F f, w, e]"
                   using P\<gamma>e by simp
                 moreover have "D.arr (\<psi> \<cdot>\<^sub>D (\<theta>' \<star>\<^sub>D e) \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[F f, w', e] \<cdot>\<^sub>D (F f \<star>\<^sub>D \<gamma>e))"
-                  by (metis C.in_homE D.comp_assoc D.comp_null(1) D.ext F\<theta>\<^sub>C_def P\<gamma>e \<theta>\<^sub>C
+                  by (metis C.in_homE D.comp_assoc D.null_is_zero(1) D.ext F\<theta>\<^sub>C_def P\<gamma>e \<theta>\<^sub>C
                       preserves_arr)
                 moreover have "D.arr (\<psi> \<cdot>\<^sub>D (\<theta> \<star>\<^sub>D e) \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[F f, w, e])"
                   using P\<gamma>e calculation(2) by auto

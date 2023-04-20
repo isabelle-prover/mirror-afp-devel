@@ -193,7 +193,7 @@ begin
     for C :: "'c comp"     (infixr "\<cdot>\<^sub>C" 55)
     and D :: "'d comp"     (infixr "\<cdot>\<^sub>D" 55)
     and G :: "'c \<Rightarrow> 'd" +
-    assumes initial_arrows_exist: "D.ide x \<Longrightarrow> (\<exists>y e. initial_arrow_to_functor C D G x y e)"
+    assumes ex_initial_arrow: "D.ide x \<Longrightarrow> (\<exists>y e. initial_arrow_to_functor C D G x y e)"
   begin
 
     notation C.in_hom      ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>C _\<guillemotright>")
@@ -1314,7 +1314,7 @@ begin
     shows "F y = Fo y"
     proof -
       interpret initial_arrow_to_functor C D G y \<open>Fo y\<close> \<open>\<eta>o y\<close>
-        using assms initial_arrows_exist Fo_\<eta>o_initial by blast
+        using assms ex_initial_arrow Fo_\<eta>o_initial by blast
       have 1: "arrow_to_functor C D G y (Fo y) (\<eta>o y)" ..
       have "is_ext (Fo y) (\<eta>o y) (Fo y)"
         unfolding is_ext_def using arrow D.comp_ide_arr [of "G (Fo y)" "\<eta>o y"] by force
@@ -1338,9 +1338,9 @@ begin
       let ?y = "D.dom g"
       let ?y' = "D.cod g"
       interpret y\<eta>: initial_arrow_to_functor C D G ?y \<open>Fo ?y\<close> \<open>\<eta>o ?y\<close>
-        using g initial_arrows_exist Fo_\<eta>o_initial by simp
+        using g ex_initial_arrow Fo_\<eta>o_initial by simp
       interpret y'\<eta>: initial_arrow_to_functor C D G ?y' \<open>Fo ?y'\<close> \<open>\<eta>o ?y'\<close>
-        using g initial_arrows_exist Fo_\<eta>o_initial by simp
+        using g ex_initial_arrow Fo_\<eta>o_initial by simp
       have 1: "arrow_to_functor C D G ?y (Fo ?y') (D (\<eta>o ?y') g)"
         using g y'\<eta>.arrow by unfold_locales auto
       have "F g = y\<eta>.the_ext (Fo ?y') (D (\<eta>o ?y') g)"
@@ -1359,11 +1359,11 @@ begin
       let ?y' = "D.cod g"
       let ?y'' = "D.cod g'"
       interpret y\<eta>: initial_arrow_to_functor C D G ?y \<open>Fo ?y\<close> \<open>\<eta>o ?y\<close>
-        using g initial_arrows_exist Fo_\<eta>o_initial by simp
+        using g ex_initial_arrow Fo_\<eta>o_initial by simp
       interpret y'\<eta>: initial_arrow_to_functor C D G ?y' \<open>Fo ?y'\<close> \<open>\<eta>o ?y'\<close>
-        using g initial_arrows_exist Fo_\<eta>o_initial by simp
+        using g ex_initial_arrow Fo_\<eta>o_initial by simp
       interpret y''\<eta>: initial_arrow_to_functor C D G ?y'' \<open>Fo ?y''\<close> \<open>\<eta>o ?y''\<close>
-        using g' initial_arrows_exist Fo_\<eta>o_initial by auto
+        using g' ex_initial_arrow Fo_\<eta>o_initial by auto
       have 1: "arrow_to_functor C D G ?y (Fo ?y') (\<eta>o ?y' \<cdot>\<^sub>D g)"
         using g y'\<eta>.arrow by unfold_locales auto
       have "F g = y\<eta>.the_ext (Fo ?y') (\<eta>o ?y' \<cdot>\<^sub>D g)"
@@ -1410,7 +1410,7 @@ begin
       show "\<guillemotleft>\<eta>o y : D.map y \<rightarrow>\<^sub>D FG.map y\<guillemotright>"
       proof -
         interpret initial_arrow_to_functor C D G y \<open>Fo y\<close> \<open>\<eta>o y\<close>
-          using y Fo_\<eta>o_initial initial_arrows_exist by simp
+          using y Fo_\<eta>o_initial ex_initial_arrow by simp
         show ?thesis using y F_ide arrow by auto
       qed
       next
@@ -1421,9 +1421,9 @@ begin
         let ?y = "D.dom g"
         let ?y' = "D.cod g"
         interpret y\<eta>: initial_arrow_to_functor C D G ?y \<open>Fo ?y\<close> \<open>\<eta>o ?y\<close>
-          using g Fo_\<eta>o_initial initial_arrows_exist by simp
+          using g Fo_\<eta>o_initial ex_initial_arrow by simp
         interpret y'\<eta>: initial_arrow_to_functor C D G ?y' \<open>Fo ?y'\<close> \<open>\<eta>o ?y'\<close>
-          using g Fo_\<eta>o_initial initial_arrows_exist by simp
+          using g Fo_\<eta>o_initial ex_initial_arrow by simp
         have "arrow_to_functor C D G ?y (Fo ?y') (\<eta>o ?y' \<cdot>\<^sub>D g)"
           using g y'\<eta>.arrow by unfold_locales auto
         moreover have "F g = y\<eta>.the_ext (Fo ?y') (\<eta>o ?y' \<cdot>\<^sub>D g)"
@@ -1478,7 +1478,7 @@ begin
     proof
       have y: "D.ide y" using g by auto
       interpret y\<eta>: initial_arrow_to_functor C D G y \<open>Fo y\<close> \<open>\<eta>o y\<close>
-        using y initial_arrows_exist Fo_\<eta>o_initial by auto
+        using y ex_initial_arrow Fo_\<eta>o_initial by auto
       have 1: "arrow_to_functor C D G y x g"
         using x g by (unfold_locales, auto)
       let ?f = "y\<eta>.the_ext x g"
@@ -1538,7 +1538,7 @@ begin
   context meta_adjunction
   begin
 
-    interpretation S: replete_setcat \<open>undefined :: 'c+'d\<close> .
+    interpretation S: replete_setcat \<open>TYPE('c+'d)\<close> .
 
     definition inC :: "'c \<Rightarrow> ('c+'d) setcat.arr"
     where "inC \<equiv> S.UP o Inl"
@@ -1546,7 +1546,7 @@ begin
     definition inD :: "'d \<Rightarrow> ('c+'d) setcat.arr"
     where "inD \<equiv> S.UP o Inr"
 
-    interpretation S: replete_setcat \<open>undefined :: ('c+'d)\<close> .
+    interpretation S: replete_setcat \<open>TYPE('c+'d)\<close> .
     interpretation Cop: dual_category C ..
     interpretation Dop: dual_category D ..
     interpretation CopxC: product_category Cop.comp C ..
@@ -1938,8 +1938,7 @@ begin
     abbreviation HomD where "HomD \<equiv> HomD.map"
     abbreviation \<phi>D where "\<phi>D \<equiv> \<lambda>_. inD"
 
-    theorem induces_hom_adjunction: "hom_adjunction C D S.comp S.setp \<phi>C \<phi>D F G \<Phi> \<Psi>"
-      using F.is_extensional by unfold_locales auto
+    theorem induces_hom_adjunction: "hom_adjunction C D S.comp S.setp \<phi>C \<phi>D F G \<Phi> \<Psi>" ..
 
     lemma \<Psi>_simp:
     assumes yx: "DopxC.ide yx"

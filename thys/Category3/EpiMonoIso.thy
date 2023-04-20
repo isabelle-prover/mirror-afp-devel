@@ -24,7 +24,7 @@ begin
      where "mono f = (arr f \<and> inj_on (\<lambda>g. f \<cdot> g) {g. seq f g})"
 
      lemma epiI [intro]:
-     assumes "arr f" and "\<And>g g'. seq g f \<and> seq g' f \<and> g \<cdot> f = g' \<cdot> f \<Longrightarrow> g = g'"
+     assumes "arr f" and "\<And>g g'. \<lbrakk>seq g f; seq g' f; g \<cdot> f = g' \<cdot> f\<rbrakk> \<Longrightarrow> g = g'"
      shows "epi f"
        using assms epi_def inj_on_def by blast
 
@@ -45,7 +45,7 @@ begin
        using assms unfolding epi_def inj_on_def by blast
        
      lemma monoI [intro]:
-     assumes "arr g" and "\<And>f f'. seq g f \<and> seq g f' \<and> g \<cdot> f = g \<cdot> f' \<Longrightarrow> f = f'"
+     assumes "arr g" and "\<And>f f'. \<lbrakk>seq g f; seq g f'; g \<cdot> f = g \<cdot> f'\<rbrakk> \<Longrightarrow> f = f'"
      shows "mono g"
        using assms mono_def inj_on_def by blast
 
@@ -129,9 +129,7 @@ begin
        show "arr g" using assms section_def by blast
        from assms obtain h where h: "ide (h \<cdot> g)" by blast
        have hg: "seq h g" using h by auto
-       fix f f'
-       assume "seq g f \<and> seq g f' \<and> g \<cdot> f = g \<cdot> f'"
-       thus "f = f'"
+       thus "\<And>f f'. \<lbrakk>seq g f; seq g f'; g \<cdot> f = g \<cdot> f'\<rbrakk> \<Longrightarrow> f = f'"
          using hg h ide_compE seqE comp_assoc comp_cod_arr by metis
      qed
 
@@ -142,9 +140,7 @@ begin
        show "arr g" using assms retraction_def by blast
        from assms obtain f where f: "ide (g \<cdot> f)" by blast
        have gf: "seq g f" using f by auto
-       fix h h'
-       assume "seq h g \<and> seq h' g \<and> h \<cdot> g = h' \<cdot> g"
-       thus "h = h'"
+       thus "\<And>h h'. \<lbrakk>seq h g; seq h' g; h \<cdot> g = h' \<cdot> g\<rbrakk> \<Longrightarrow> h = h'"
          using gf f ide_compE seqE comp_assoc comp_arr_dom by metis
      qed
 

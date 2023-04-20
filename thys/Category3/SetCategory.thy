@@ -2149,35 +2149,18 @@ begin
       show "mono f"
       proof
         show "arr f" using f by auto
-        show "\<And>g g'. seq f g \<and> seq f g' \<and> f \<cdot> g = f \<cdot> g' \<Longrightarrow> g = g'"
+        show "\<And>g g'. \<lbrakk>seq f g; seq f g'; f \<cdot> g = f \<cdot> g'\<rbrakk> \<Longrightarrow> g = g'"
         proof -
           fix g g'
-          assume gg': "seq f g \<and> seq f g' \<and> f \<cdot> g = f \<cdot> g'"
+          assume fg: "seq f g" and fg': "seq f g'" and eq: "f \<cdot> g = f \<cdot> g'"
           show "g = g'"
           proof (intro arr_eqI\<^sub>S\<^sub>C)
             show par: "par g g'"
-              using gg' dom_comp by (metis seqE)
+              using fg' eq dom_comp by (metis seqE)
             show "Fun g = Fun g'"
-            proof
-              fix x
-              have "x \<notin> Dom g \<Longrightarrow> Fun g x = Fun g' x"
-                using gg' by (simp add: par Fun_def)
-              moreover have "x \<in> Dom g \<Longrightarrow> Fun g x = Fun g' x"
-              proof -
-                assume x: "x \<in> Dom g"
-                have "Fun f (Fun g x) = Fun (f \<cdot> g) x"
-                  using gg' x Fun_comp [of f g] by auto
-                also have "... = Fun f (Fun g' x)"
-                  using par f gg' x monoE by simp
-                finally have "Fun f (Fun g x) = Fun f (Fun g' x)" by auto
-                moreover have "Fun g x \<in> Dom f \<and> Fun g' x \<in> Dom f"
-                  using par gg' x Fun_mapsto by fastforce
-                ultimately show "Fun g x = Fun g' x"
-                  using f gg' inj_onD [of "Fun f" "Dom f" "Fun g x" "Fun g' x"]
-                  by simp
-              qed
-              ultimately show "Fun g x = Fun g' x" by auto
-            qed
+              by (metis empty_is_image eq f fg' ide_dom incl_in_def incl_in_img_cod
+                  initial_arr_unique initial_empty empty_def monoE mkIde_set
+                  section_if_inj(1) section_is_mono seqE set_img subset_empty)
           qed
         qed
       qed

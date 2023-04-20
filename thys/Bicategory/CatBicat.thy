@@ -20,7 +20,7 @@ begin
   begin
 
     abbreviation ARR
-    where "ARR A B \<equiv> partial_magma.arr (functor_category.comp A B)"
+    where "ARR A B \<equiv> partial_composition.arr (functor_category.comp A B)"
 
     abbreviation MKARR
     where "MKARR \<equiv> concrete_category.MkArr"
@@ -220,12 +220,12 @@ begin
           qed
         qed
       qed  
-      show 2: "\<And>(A :: 'a comp). A \<in> OBJ \<Longrightarrow> partial_magma.ide (HOM A A) (ID A)"
+      show 2: "\<And>(A :: 'a comp). A \<in> OBJ \<Longrightarrow> partial_composition.ide (HOM A A) (ID A)"
         using concrete_category.ide_MkIde functor_category.is_concrete_category
               functor_category_def identity_functor.intro identity_functor.is_functor
         by fastforce
       show "\<And>(A :: 'a comp). A \<in> OBJ
-                \<Longrightarrow> partial_magma.in_hom (HOM A A) (ID A)
+                \<Longrightarrow> partial_composition.in_hom (HOM A A) (ID A)
                                          (COMP A A A (ID A) (ID A)) (ID A)"
       proof -
         fix A :: "'a comp"
@@ -413,7 +413,7 @@ begin
           also have "... = ?RHS"
             by (metis (no_types, lifting) AB.Cod_comp AB.Dom_comp AB.Map_comp'
                 AB.seq_char BC.Cod_comp BC.Dom_comp BC.Map_comp' BC.seq_char
-                BC_AB.seq_char CD_BC_AB.seqE seq)
+                BC_AB.seq_char CD_BC_AB.seqE\<^sub>P\<^sub>C seq)
           finally show "?LHS = ?RHS" by fastforce
         qed
 
@@ -505,7 +505,7 @@ begin
                   g.natural_transformation_axioms g'.natural_transformation_axioms
                   C.category_axioms D.category_axioms
             by (unfold vertical_composite_def)
-               (metis BC.seq_char BC_AB.seqE natural_transformation_def)
+               (metis BC.seq_char BC_AB.seqE\<^sub>P\<^sub>C natural_transformation_def)
           interpret gg'off': natural_transformation B D
                                \<open>AC.Dom (fst fgh') \<circ> AC.Dom (fst (snd fgh'))\<close>
                                \<open>AC.Cod (fst fgh) \<circ> AC.Cod (fst (snd fgh))\<close> \<open>ff'.map \<circ> gg'.map\<close>
@@ -538,7 +538,7 @@ begin
               using fgh fgh' CD_BC_AB.comp_char CD.seq_char BC_AB.comp_char
                     BC.seq_char AB.seq_char gg'off'.natural_transformation_axioms
               apply simp
-              by (metis (no_types, lifting) BC_AB.seqE CD_BC_AB.seqE seq)
+              by (metis (no_types, lifting) BC_AB.seqE\<^sub>P\<^sub>C CD_BC_AB.seqE\<^sub>P\<^sub>C seq)
             finally show ?thesis by argo
           qed
         qed
@@ -842,7 +842,7 @@ begin
                       functor.preserves_iso)
                 thus "D.iso (AC.Map (fst abc) (AC.Map (fst (snd abc))
                             (AC.Map (snd (snd abc)) a')))"
-                  by (meson CD.ide_char CD_BC_AB.ide_char abc functor.preserves_iso)
+                  by (meson CD.ide_char CD_BC_AB.ide_char\<^sub>P\<^sub>C abc functor.preserves_iso)
               qed
               thus "natural_isomorphism A D
                                (BD.Dom (?A abc)) (BD.Cod (?A abc)) (BD.Map (?A abc))"
@@ -863,7 +863,7 @@ begin
       qed
       show "\<And>(A :: 'a comp) (B :: 'a comp). \<lbrakk> A \<in> OBJ; B \<in> OBJ \<rbrakk>
                \<Longrightarrow> fully_faithful_functor (HOM A B) (HOM A B)
-                         (\<lambda>f. if partial_magma.arr (HOM A B) f
+                         (\<lambda>f. if partial_composition.arr (HOM A B) f
                               then COMP B B A (ID B) f
                               else partial_magma.null (HOM A B))"
       proof -
@@ -873,7 +873,7 @@ begin
         interpret B: category B using B by simp
         interpret AB: functor_category A B ..
         interpret BB: functor_category B B ..
-        let ?L = "\<lambda>f. if partial_magma.arr (HOM A B) f
+        let ?L = "\<lambda>f. if partial_composition.arr (HOM A B) f
                       then COMP B B A (ID B) f
                       else partial_magma.null (HOM A B)"
         have "?L = AB.map"
@@ -883,7 +883,7 @@ begin
       qed
       show "\<And>(A :: 'a comp) (B :: 'a comp). \<lbrakk> A \<in> OBJ; B \<in> OBJ \<rbrakk>
                    \<Longrightarrow> fully_faithful_functor (HOM A B) (HOM A B)
-                         (\<lambda>f. if partial_magma.arr (HOM A B) f
+                         (\<lambda>f. if partial_composition.arr (HOM A B) f
                               then COMP B A A f (ID A)
                               else partial_magma.null (HOM A B))"
       proof -
@@ -894,7 +894,7 @@ begin
         interpret AB: functor_category A B ..
         interpret AA: functor_category A A ..
         interpret BB: functor_category B B ..
-        let ?R = "\<lambda>f. if partial_magma.arr (HOM A B) f
+        let ?R = "\<lambda>f. if partial_composition.arr (HOM A B) f
                       then COMP B A A f (ID A)
                       else partial_magma.null (HOM A B)"
         have "?R = AB.map"
@@ -919,8 +919,8 @@ begin
       qed
       show "\<And>(A :: 'a comp) (B :: 'a comp) (C :: 'a comp) (D :: 'a comp) (E :: 'a comp) f g h k.
             \<lbrakk> A \<in> OBJ; B \<in> OBJ; C \<in> OBJ; D \<in> OBJ; E \<in> OBJ;
-              partial_magma.ide (HOM D E) f; partial_magma.ide (HOM C D) g;
-              partial_magma.ide (HOM B C) h; partial_magma.ide (HOM A B) k \<rbrakk> \<Longrightarrow>
+              partial_composition.ide (HOM D E) f; partial_composition.ide (HOM C D) g;
+              partial_composition.ide (HOM B C) h; partial_composition.ide (HOM A B) k \<rbrakk> \<Longrightarrow>
               HOM A E (COMP E D A f (ASSOC D C B A g h k))
                       (HOM A E (ASSOC E D B A f (COMP D C B g h) k)
                                (COMP E B A (ASSOC E D C B f g h) k)) =
@@ -932,10 +932,10 @@ begin
         fix f g h k
         assume A: "A \<in> OBJ" and B: "B \<in> OBJ" and C: "C \<in> OBJ"
           and D: "D \<in> OBJ" and E: "E \<in> OBJ"
-        assume f: "partial_magma.ide (HOM D E) f"
-        assume g: "partial_magma.ide (HOM C D) g"
-        assume h: "partial_magma.ide (HOM B C) h"
-        assume k: "partial_magma.ide (HOM A B) k"
+        assume f: "partial_composition.ide (HOM D E) f"
+        assume g: "partial_composition.ide (HOM C D) g"
+        assume h: "partial_composition.ide (HOM B C) h"
+        assume k: "partial_composition.ide (HOM A B) k"
         interpret A: category A using A by simp
         interpret B: category B using B by simp
         interpret C: category C using C by simp

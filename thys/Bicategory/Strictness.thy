@@ -601,7 +601,7 @@ begin
           using fg VV.arrE by blast
         have 0: "VV.comp g f = (fst g \<cdot> fst f, snd g \<cdot> snd f)"
           using fg 1 VV.comp_char VxV.comp_char
-          by (metis (no_types, lifting) VV.seq_char\<^sub>S\<^sub>b\<^sub>C VxV.seqE)
+          by (metis (no_types, lifting) VV.seq_char\<^sub>S\<^sub>b\<^sub>C VxV.seqE\<^sub>P\<^sub>C)
         let ?X = "MkArr (Dom (fst (VV.comp g f)) \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Dom (snd (VV.comp g f)))
                         (Cod (fst (VV.comp g f)) \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Cod (snd (VV.comp g f)))
                         (B.can (Cod (fst (VV.comp g f)) \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Cod (snd (VV.comp g f)))
@@ -697,7 +697,7 @@ begin
                       moreover have
                         "\<^bold>\<lfloor>Dom (fst g) \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Dom (snd g)\<^bold>\<rfloor> = \<^bold>\<lfloor>Cod (fst f) \<^bold>\<star> Cod (snd f)\<^bold>\<rfloor>"
                         using g fg seq_char
-                        by (metis (no_types, lifting) VV.seq_char\<^sub>S\<^sub>b\<^sub>C VxV.seqE calculation(4))
+                        by (metis (no_types, lifting) VV.seq_char\<^sub>S\<^sub>b\<^sub>C VxV.seqE\<^sub>P\<^sub>C calculation(4))
                       moreover have
                         "Dom (fst g) \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Dom (snd g) = Cod (fst f) \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Cod (snd f)"
                         using 0 1 by (simp add: seq_char)
@@ -878,7 +878,7 @@ begin
                               B.can (Dom \<tau>) (Dom \<tau>))"
               proof -
                 have "B.seq (Map \<mu> \<star>\<^sub>B Map \<nu>) (B.can (Dom \<mu> \<^bold>\<star> Dom \<nu>) (Dom \<mu> \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Dom \<nu>))"
-                  by (metis (no_types, lifting) B.arrI B.comp_null(2) B.ext Map_hcomp
+                  by (metis (no_types, lifting) B.arrI B.null_is_zero(2) B.ext Map_hcomp
                       arrE arr_hcomp assms(1) assms(2) assms(4))
                 moreover have "B.seq (Map \<tau>) (B.can (Dom \<tau>) (Dom \<tau>))"
                   using assms(3) by fastforce
@@ -1063,7 +1063,7 @@ begin
                                  (B.can (Dom \<mu>) (Dom \<mu>) \<star>\<^sub>B
                                     B.can (Dom \<nu> \<^bold>\<star> Dom \<tau>) (Dom \<nu> \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Dom \<tau>))"
               using assms B.interchange B.comp_arr_dom [of "Map \<mu>" "B.can (Dom \<mu>) (Dom \<mu>)"]
-              by (metis (no_types, lifting) B.can_Ide_self B.comp_null(2) B.ext B.in_homE
+              by (metis (no_types, lifting) B.can_Ide_self B.null_is_zero(2) B.ext B.in_homE
                   Map_hcomp arrE hseq_char)
             finally have
               "Map \<mu> \<star>\<^sub>B B.can (Cod \<nu> \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Cod \<tau>) (Cod \<nu> \<^bold>\<star> Cod \<tau>) \<cdot>\<^sub>B
@@ -1264,7 +1264,8 @@ begin
             have "B.lunit \<lbrace>Cod g\<rbrace> \<cdot>\<^sub>B (trg\<^sub>B (Map g) \<star>\<^sub>B Map g) \<cdot>\<^sub>B B.lunit' \<lbrace>Dom g\<rbrace> =
                   B.lunit \<lbrace>Cod g\<rbrace> \<cdot>\<^sub>B B.lunit' \<lbrace>Cod g\<rbrace> \<cdot>\<^sub>B Map g"
               using g ide_char arr_char B.lunit'_naturality
-              by (metis (no_types, lifting) partial_magma_axioms B.in_homE partial_magma.arrI)
+              by (metis (no_types, lifting) partial_composition_axioms B.in_homE
+                  partial_composition.arrI)
             also have "... = (B.lunit \<lbrace>Cod g\<rbrace> \<cdot>\<^sub>B B.lunit' \<lbrace>Cod g\<rbrace>) \<cdot>\<^sub>B Map g"
               using B.comp_assoc by simp
             also have "... = \<lbrace>Cod g\<rbrace> \<cdot>\<^sub>B Map g"
@@ -1276,7 +1277,7 @@ begin
           ultimately have
             "B.lunit \<lbrace>Cod a\<rbrace> \<cdot>\<^sub>B (trg\<^sub>B \<lbrace>Cod a\<rbrace> \<star>\<^sub>B Map g) \<cdot>\<^sub>B B.lunit' \<lbrace>Dom a'\<rbrace> = Map g"
             using a a' 1 2 f g hcomp_def dom_char cod_char
-            by (metis (no_types, lifting) B.comp_null(2) B.ext B.lunit_simps(2) B.lunit_simps(3)
+            by (metis (no_types, lifting) B.null_is_zero(2) B.ext B.lunit_simps(2) B.lunit_simps(3)
                 B.src.preserves_reflects_arr B.trg_vcomp B.vseq_implies_hpar(1) ideE)
           thus ?thesis
             using a 1 2 by auto
@@ -1356,7 +1357,8 @@ begin
             have "B.runit \<lbrace>Cod g\<rbrace> \<cdot>\<^sub>B (Map g \<star>\<^sub>B src\<^sub>B (Map g)) \<cdot>\<^sub>B B.runit' \<lbrace>Dom g\<rbrace> =
                   B.runit \<lbrace>Cod g\<rbrace> \<cdot>\<^sub>B B.runit'\<lbrace>Cod g\<rbrace> \<cdot>\<^sub>B Map g"
               using g ide_char arr_char B.runit'_naturality [of "Map g"]
-              by (metis (no_types, lifting) partial_magma_axioms B.in_homE partial_magma.arrI)
+              by (metis (no_types, lifting) partial_composition_axioms B.in_homE
+                  partial_composition.arrI)
             also have "... = (B.runit \<lbrace>Cod g\<rbrace> \<cdot>\<^sub>B B.runit' \<lbrace>Cod g\<rbrace>) \<cdot>\<^sub>B Map g"
               using B.comp_assoc by simp
             also have "... = \<lbrace>Cod g\<rbrace> \<cdot>\<^sub>B Map g"
@@ -2790,7 +2792,7 @@ begin
                 proof
                   show 2: "B.hseq (Map g) (Map h)"
                     using g h gh
-                    by (metis (no_types, lifting) B.comp_null(1-2) B.hseq_char'
+                    by (metis (no_types, lifting) B.null_is_zero(1-2) B.hseq_char'
                         B.ideD(1) Map_hcomp ideE ide_hcomp)
                   show "B.dom (Map g \<star>\<^sub>B Map h) = EVAL (Dom g \<^bold>\<star> Dom h)"
                     using g h gh 2 by fastforce

@@ -46,7 +46,7 @@ begin
   locale ZFC_class_cat
   begin
 
-    sublocale replete_setcat \<open>undefined :: V\<close> .
+    sublocale replete_setcat \<open>TYPE(V)\<close> .
 
     lemma admits_small_V_tupling:
     assumes "small (I :: V set)"
@@ -143,23 +143,23 @@ begin
 
     interpretation Cls: ZFC_class_cat .
 
-    abbreviation setp
+    definition setp
     where "setp A \<equiv> A \<subseteq> Cls.Univ \<and> small A"
 
-    sublocale sub_set_category Cls.comp \<open>\<lambda>A. A \<subseteq> Cls.Univ\<close> \<open>\<lambda>A. A \<subseteq> Cls.Univ \<and> small A\<close>
-      using small_Un smaller_than_small
+    sublocale sub_set_category Cls.comp \<open>\<lambda>A. A \<subseteq> Cls.Univ\<close> setp
+      using small_Un smaller_than_small setp_def
       apply unfold_locales
          apply simp_all
        apply force
       by auto
 
     lemma is_sub_set_category:
-    shows "sub_set_category Cls.comp (\<lambda>A. A \<subseteq> Cls.Univ) (\<lambda>A. A \<subseteq> Cls.Univ \<and> small A)"
+    shows "sub_set_category Cls.comp (\<lambda>A. A \<subseteq> Cls.Univ) setp"
       using sub_set_category_axioms by blast
 
     interpretation incl: full_inclusion_functor Cls.comp \<open>\<lambda>a. Cls.ide a \<and> setp (Cls.set a)\<close>
       ..
- 
+
     text\<open>
       The following functions establish a bijection between the identities of the category
       and the elements of type \<open>V\<close>; which in turn are in bijective correspondence with
@@ -192,9 +192,9 @@ begin
         have "Cls.UP ` elts A \<subseteq> Univ \<and> small (Cls.UP ` elts A)"
           using Cls.UP_mapsto terminal_char by blast
         hence "ide (mkIde (Cls.UP ` elts A))"
-          using ide_mkIde \<open>Univ = Cls.Univ\<close> by auto
+          using ide_mkIde \<open>Univ = Cls.Univ\<close> setp_def by auto
         thus "ide_of_V A \<in> Collect ide"
-          using ide_of_V_def ide_char\<^sub>S\<^sub>S\<^sub>C
+          using ide_of_V_def ide_char\<^sub>S\<^sub>S\<^sub>C setp_def
           by (metis (no_types, lifting) Cls.ide_mkIde Cls.set_mkIde arr_mkIde ide_char'
               mem_Collect_eq)
       qed
@@ -206,11 +206,11 @@ begin
               Cls.mkIde (Cls.UP ` elts (ZFC_in_HOL.set (Cls.DN ` Cls.set a)))"
           unfolding ide_of_V_def V_of_ide_def by simp
         also have "... = Cls.mkIde (Cls.UP ` Cls.DN ` Cls.set a)"
-          using setp_set_ide a ide_char\<^sub>S\<^sub>S\<^sub>C by force
+          using setp_set_ide a ide_char\<^sub>S\<^sub>S\<^sub>C setp_def by force
         also have "... = Cls.mkIde (Cls.set a)"
         proof -
           have "Cls.set a \<subseteq> Cls.Univ"
-            using a ide_char\<^sub>S\<^sub>S\<^sub>C by blast
+            using a ide_char\<^sub>S\<^sub>S\<^sub>C setp_def by blast
           hence "Cls.UP ` Cls.DN ` Cls.set a = Cls.set a"
           proof -
             have "\<And>x. x \<in> Cls.set a \<Longrightarrow> x \<in> Cls.UP ` Cls.DN ` Cls.set a"
@@ -333,7 +333,7 @@ begin
                 using f in_hom_char\<^sub>F\<^sub>S\<^sub>b\<^sub>C arr_char\<^sub>S\<^sub>b\<^sub>C Cls.Fun_mapsto [of f] by blast
               thus "Cls.DN (Cls.Fun f (Cls.UP x)) \<in> elts (V_of_ide b)"
                 by (metis (no_types, lifting) V_of_ide_def arrE cod_char\<^sub>S\<^sub>b\<^sub>C elts_of_set f
-                    in_homE mem_Collect_eq replacement)
+                    in_homE mem_Collect_eq replacement setp_def)
             qed
             ultimately show "(Cls.DN \<circ> Cls.Fun f \<circ> Cls.UP) x \<in> elts (V_of_ide b)" by argo
           qed
@@ -354,7 +354,7 @@ begin
           have 3: "app F \<in> elts (V_of_ide a) \<rightarrow> elts (V_of_ide b)"
             using F app_vfun_mapsto [of "V_of_ide a" "V_of_ide b" F] by blast
           have 4: "app F \<in> Cls.DN ` (Cls.set a) \<rightarrow> Cls.DN ` (Cls.set b)"
-            using 3 V_of_ide_def a b ide_char\<^sub>S\<^sub>S\<^sub>C by auto
+            using 3 V_of_ide_def a b ide_char\<^sub>S\<^sub>S\<^sub>C setp_def by auto
           have "arr_of_V a b F = Cls.mkArr (Cls.set a) (Cls.set b) (Cls.UP \<circ> app F \<circ> Cls.DN)"
             unfolding arr_of_V_def by simp
           moreover have "... \<in> hom a b"
@@ -364,7 +364,7 @@ begin
               have 4: "Cls.arr (Cls.mkArr (Cls.set a) (Cls.set b) (Cls.UP \<circ> app F \<circ> Cls.DN))"
               proof -
                 have "Cls.set a \<subseteq> Cls.Univ \<and> Cls.set b \<subseteq> Cls.Univ"
-                  using a b ide_char\<^sub>S\<^sub>S\<^sub>C by blast
+                  using a b ide_char\<^sub>S\<^sub>S\<^sub>C setp_def by blast
                 moreover have "Cls.UP \<circ> app F \<circ> Cls.DN \<in> Cls.set a \<rightarrow> Cls.set b"
                 proof
                   fix x
@@ -374,7 +374,7 @@ begin
                   moreover have "... \<in> Cls.set b"
                     by (metis (no_types, lifting) 4 Cls.arr_mkIde Cls.ide_char' Cls.set_mkIde
                         PiE V_of_ide_def bij_betw_ide_V(3) b elts_of_set ide_char\<^sub>S\<^sub>S\<^sub>C
-                        ide_of_V_def replacement rev_image_eqI x)
+                        ide_of_V_def replacement rev_image_eqI x setp_def)
                   ultimately show "(Cls.UP \<circ> app F \<circ> Cls.DN) x \<in> Cls.set b"
                     by auto
                 qed
@@ -473,7 +473,7 @@ begin
               have "Cls.DN x \<in> elts (V_of_ide (dom f))"
                 using f
                 by (metis (no_types, lifting) V_of_ide_def elts_of_set ide_char\<^sub>S\<^sub>S\<^sub>C ide_dom image_eqI
-                    in_homE mem_Collect_eq replacement x)
+                    in_homE mem_Collect_eq replacement x setp_def)
               thus ?thesis
                 using beta by auto
             qed
@@ -512,7 +512,7 @@ begin
         have 6: "Cls.arr ?f"
         proof -
           have "Cls.set a \<subseteq> Cls.Univ \<and> Cls.set b \<subseteq> Cls.Univ"
-            using a b ide_char\<^sub>S\<^sub>S\<^sub>C by blast
+            using a b ide_char\<^sub>S\<^sub>S\<^sub>C setp_def by blast
           moreover have "Cls.UP \<circ> app F \<circ> Cls.DN \<in> Cls.set a \<rightarrow> Cls.set b"
           proof
             fix x
@@ -523,7 +523,7 @@ begin
             proof -
               have "app F (Cls.DN x) \<in> Cls.DN ` Cls.set b"
                 using a b ide_char\<^sub>S\<^sub>S\<^sub>C x F app_vfun_mapsto [of "V_of_ide a" "V_of_ide b" F]
-                      V_of_ide_def
+                      V_of_ide_def setp_def
                 by auto
               thus ?thesis
                 using \<open>Cls.set a \<subseteq> Cls.Univ \<and> Cls.set b \<subseteq> Cls.Univ\<close>
@@ -551,7 +551,7 @@ begin
             using a
             apply simp
             by (metis (no_types, lifting) Cls.bij_arr_of a bij_betw_def empty_iff ide_char\<^sub>S\<^sub>S\<^sub>C
-                image_eqI image_inv_into_cancel)
+                image_eqI image_inv_into_cancel setp_def)
           have 8: "\<And>x. x \<in> elts (V_of_ide a) \<Longrightarrow>
                          (Cls.DN \<circ> restrict (Cls.UP \<circ> app F \<circ> Cls.DN) (Cls.set a) \<circ> Cls.UP) x
                             \<in> elts (V_of_ide b)"
@@ -631,7 +631,7 @@ begin
       show "I \<noteq> UNIV"
         using assms big_UNIV by blast
       fix J D
-      assume D: "discrete_diagram J comp D \<and> Collect (partial_magma.arr J) = I"
+      assume D: "discrete_diagram J comp D \<and> Collect (partial_composition.arr J) = I"
       interpret J: category J
         using D discrete_diagram_def by blast
       interpret D: discrete_diagram J comp D
@@ -766,7 +766,9 @@ begin
         hence "small (Cls.set \<Pi>D)"
           by (simp add: Cls.set_def)
         hence 2: "ide \<Pi>D"
-          using ide_char\<^sub>S\<^sub>S\<^sub>C Cls.setp_set_ide Cls.product_is_ide \<Pi>D by blast
+          using ide_char\<^sub>S\<^sub>S\<^sub>C Cls.setp_set_ide Cls.product_is_ide \<Pi>D
+          unfolding setp_def
+          by blast
         interpret \<Pi>D': constant_functor J comp \<Pi>D
           using 2 by unfold_locales
         interpret \<pi>': cone J comp D \<Pi>D \<pi>
@@ -886,7 +888,7 @@ begin
     qed
 
     theorem has_small_limits:
-    assumes "category (J :: 'j comp)" and "small (Collect (partial_magma.arr J))"
+    assumes "category (J :: 'j comp)" and "small (Collect (partial_composition.arr J))"
     shows "has_limits_of_shape J"
     proof -
       interpret J: category J
@@ -969,7 +971,8 @@ begin
         using 1 by blast
       show "\<And>b a. \<lbrakk>ide b; ide a\<rbrakk> \<Longrightarrow> inj_on (Hom (b, a)) (hom b a)"
         using 1 by blast
-      show "\<And>b a. \<lbrakk>ide b; ide a\<rbrakk> \<Longrightarrow> Hom (b, a) ` hom b a \<subseteq> S.S.Univ \<and> small (Hom (b, a) ` hom b a)"
+      show "\<And>b a. \<lbrakk>ide b; ide a\<rbrakk> \<Longrightarrow> S.setp (Hom (b, a) ` hom b a)"
+        unfolding S.setp_def
         using 1 locally_small S.terminal_char by force
     qed
 
@@ -1003,7 +1006,5 @@ begin
     qed
 
   end
-
-  interpretation ZFCSetCat: ZFC_set_cat .
 
 end

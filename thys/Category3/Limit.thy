@@ -205,6 +205,13 @@ begin
     shows "\<guillemotleft>\<chi> j : a \<rightarrow> D (J.cod j)\<guillemotright>"
       using assms by auto
 
+    (* Suggested by Charles Staats, 12/13/2022 *)
+    lemma cod_determines_component:
+    assumes "J.arr j"
+    shows "\<chi> j = \<chi> (J.cod j)"
+      using assms is_natural_2 A.map_simp C.comp_arr_ide ide_apex preserves_reflects_arr
+      by metis
+
   end
 
   text\<open>
@@ -373,7 +380,7 @@ begin
   assumes "diagram J C D" and "diagram J C D'"
   and "natural_transformation J C D D' \<tau>"
   and "cone J C D a \<chi>"
-  and f: "partial_magma.in_hom C f a' a"
+  and f: "partial_composition.in_hom C f a' a"
   shows "diagram.cones_map J C D' f (vertical_composite.map J C \<chi> \<tau>)
            = vertical_composite.map J C (diagram.cones_map J C D f \<chi>) \<tau>"
   proof -
@@ -744,7 +751,7 @@ begin
 
     interpretation Cop: dual_category C ..
     interpretation CopxC: product_category Cop.comp C ..
-    interpretation S: replete_setcat \<open>undefined :: 'c + ('j \<Rightarrow> 'c)\<close> .
+    interpretation S: replete_setcat \<open>TYPE('c + ('j \<Rightarrow> 'c))\<close> .
 
     notation S.comp      (infixr "\<cdot>\<^sub>S" 55)
 
@@ -789,7 +796,7 @@ begin
                            (\<phi> (C.dom g, a) o Cop.comp g o \<psi> (C.cod g, a))"
       using ide_apex g Y.Y_ide_arr [of a g "C.dom g" "C.cod g"] by auto
 
-    lemma cone_\<chi> [simp]:
+    lemma is_cone [simp]:
     shows "\<chi> \<in> D.cones a"
       using cone_axioms by simp
     
@@ -820,7 +827,7 @@ begin
           hence "\<guillemotleft>\<psi> (a', a) x : a' \<rightarrow> a\<guillemotright>"
             using ide_apex a' Hom.\<psi>_mapsto by auto
           hence "D.cones_map (\<psi> (a', a) x) \<chi> \<in> D.cones a'"
-            using ide_apex a' x D.cones_map_mapsto cone_\<chi> by force
+            using ide_apex a' x D.cones_map_mapsto is_cone by force
           thus "\<iota> (D.cones_map (\<psi> (a', a) x) \<chi>) \<in> \<iota> ` D.cones a'" by simp
         qed
         moreover have "Hom.set (a', a) \<subseteq> S.Univ"
@@ -901,9 +908,9 @@ begin
               thus ?thesis using Hom.\<psi>_\<phi> by presburger
             qed
             also have "... = \<iota> (D.cones_map g (D.cones_map (\<psi> (C.cod g, a) x) \<chi>))"
-              using g x 1 cone_\<chi> D.cones_map_comp [of "\<psi> (C.cod g, a) x" g] by fastforce
+              using g x 1 is_cone D.cones_map_comp [of "\<psi> (C.cod g, a) x" g] by fastforce
             also have "... = \<iota> (D.cones_map g (\<o> (\<iota> (D.cones_map (\<psi> (C.cod g, a) x) \<chi>))))"
-              using 1 cone_\<chi> D.cones_map_mapsto Sr.DN_UP by auto
+              using 1 is_cone D.cones_map_mapsto Sr.DN_UP by auto
             also have "... = (?F' o ?G') x" by simp
             finally show "(?G o ?F) x = (?F' o ?G') x" by auto
           qed
@@ -938,7 +945,7 @@ begin
             have 1: "\<exists>!f. \<guillemotleft>f : a' \<rightarrow> a\<guillemotright> \<and> \<iota> (D.cones_map f \<chi>) = \<iota> (D.cones_map (\<psi> (a', a) x) \<chi>)"
             proof -
               have "D.cones_map (\<psi> (a', a) x) \<chi> \<in> D.cones a'"
-                using \<psi>x a' cone_\<chi> D.cones_map_mapsto by force
+                using \<psi>x a' is_cone D.cones_map_mapsto by force
               hence 2: "\<exists>!f. \<guillemotleft>f : a' \<rightarrow> a\<guillemotright> \<and> D.cones_map f \<chi> = D.cones_map (\<psi> (a', a) x) \<chi>"
                 using a' is_universal by simp
               show "\<exists>!f. \<guillemotleft>f : a' \<rightarrow> a\<guillemotright> \<and> \<iota> (D.cones_map f \<chi>) = \<iota> (D.cones_map (\<psi> (a', a) x) \<chi>)"
@@ -1012,7 +1019,7 @@ begin
                 moreover have "\<guillemotleft>\<psi> (a', a) x' : a' \<rightarrow> a\<guillemotright>"
                   using ide_apex a' x' Hom.set_def Hom.\<psi>_\<phi> by auto
                 ultimately show ?thesis
-                  using x' cone_\<chi> D.cones_map_mapsto by force
+                  using x' is_cone D.cones_map_mapsto by force
               qed
             qed
             show "\<iota> ` D.cones a' \<subseteq> ?F ` Hom.set (a', a)"
@@ -1081,10 +1088,10 @@ begin
       qed
       finally have "\<Phi>.FUN a (\<phi> (a, a) a) = \<iota> (D.cones_map a \<chi>)" by auto
       also have "... = \<iota> \<chi>"
-        using ide_apex D.cones_map_ide [of \<chi> a] cone_\<chi> by simp
+        using ide_apex D.cones_map_ide [of \<chi> a] is_cone by simp
       finally have "\<Phi>.FUN a (\<phi> (a, a) a) = \<iota> \<chi>" by blast
       hence "\<o> (\<Phi>.FUN a (\<phi> (a, a) a)) = \<o> (\<iota> \<chi>)" by simp
-      thus ?thesis using cone_\<chi> Sr.DN_UP by simp
+      thus ?thesis using is_cone Sr.DN_UP by simp
     qed
 
     abbreviation Hom
@@ -1432,7 +1439,7 @@ begin
                 have "D'.cones_map ?f (\<chi> o \<psi>) j' = \<chi> (\<psi> j') \<cdot> ?f"
                   using j' f \<chi>o\<psi> by fastforce
                 also have "... = D.cones_map ?f \<chi> (\<psi> j')"
-                  using j' f_in_hom \<chi> \<chi>.cone_\<chi> by fastforce
+                  using j' f_in_hom \<chi> \<chi>.is_cone by fastforce
                 also have "... = \<chi>' j'"
                   using j' f \<chi> \<phi>\<psi> Fun.comp_def J'.map_simp by metis
                 finally show "D'.cones_map ?f (\<chi> o \<psi>) j' = \<chi>' j'" by auto
@@ -1446,12 +1453,12 @@ begin
             proof
               fix j
               have "\<not>J.arr j \<Longrightarrow> D.cones_map f' \<chi> j = (\<chi>' o \<phi>) j"
-                using f' \<chi> \<chi>'o\<phi>.is_extensional \<chi>.cone_\<chi> mem_Collect_eq restrict_apply by auto
+                using f' \<chi> \<chi>'o\<phi>.is_extensional \<chi>.is_cone mem_Collect_eq restrict_apply by auto
               moreover have "J.arr j \<Longrightarrow> D.cones_map f' \<chi> j = (\<chi>' o \<phi>) j"
               proof -
                 assume j: "J.arr j"
                 have "D.cones_map f' \<chi> j = C (\<chi> j) f'"
-                  using j f' \<chi>.cone_\<chi> by auto
+                  using j f' \<chi>.is_cone by auto
                 also have "... = C ((\<chi> o \<psi>) (\<phi> j)) f'"
                   using j f' \<psi>\<phi> by (metis comp_apply J.map_simp)
                 also have "... = D'.cones_map f' (\<chi> o \<psi>) (\<phi> j)"
@@ -1942,6 +1949,102 @@ begin
 
   end
 
+  lemma (in category) limits_are_isomorphic:
+  fixes J :: "'j comp"
+  assumes "limit_cone J C D a \<chi>" and "limit_cone J C D a' \<chi>'"
+  shows "isomorphic a a'" and "iso (limit_cone.induced_arrow J C D a \<chi> a' \<chi>')"
+  proof -
+    interpret J: category J
+      using assms(1) limit_cone.axioms(2) by metis
+    interpret C: category C
+      using assms(1) limit_cone.axioms(1) by metis
+    interpret D: diagram J C D
+      using assms(1) limit_cone.axioms(3) by metis
+    interpret \<chi>: limit_cone J C D a \<chi>
+      using assms(1) by blast
+    interpret \<chi>': limit_cone J C D a' \<chi>'
+      using assms(2) by blast
+    have 1: "\<exists>!f. \<guillemotleft>f : a \<rightarrow> a'\<guillemotright> \<and> D.cones_map f \<chi>' = \<chi>"
+      using \<chi>'.is_universal [of a \<chi>] \<chi>.cone_axioms by simp
+    have 2: "\<exists>!g. \<guillemotleft>g : a' \<rightarrow> a\<guillemotright> \<and> D.cones_map g \<chi> = \<chi>'"
+      using \<chi>.is_universal [of a' \<chi>'] \<chi>'.cone_axioms by simp
+    define f where "f = \<chi>'.induced_arrow a \<chi>"
+    define g where "g = \<chi>.induced_arrow a' \<chi>'"
+    have f: "\<guillemotleft>f : a \<rightarrow> a'\<guillemotright> \<and> D.cones_map f \<chi>' = \<chi>"
+      using f_def \<chi>'.induced_arrowI(1-2) \<chi>.is_cone by blast
+    have g: "\<guillemotleft>g : a' \<rightarrow> a\<guillemotright> \<and> D.cones_map g \<chi> = \<chi>'"
+      using g_def \<chi>.induced_arrowI(1-2) \<chi>'.is_cone by blast
+    have *: "inverse_arrows f g"
+    proof
+      show "ide (g \<cdot> f)"
+      proof -
+        have "g \<cdot> f = a"
+        proof -
+          have "\<exists>!h. \<guillemotleft>h : a \<rightarrow> a\<guillemotright> \<and> D.cones_map h \<chi> = \<chi>"
+            using \<chi>.is_universal [of a \<chi>] \<chi>.cone_axioms by blast
+          moreover have "\<guillemotleft>g \<cdot> f : a \<rightarrow> a\<guillemotright>"
+            using f g by blast
+          moreover have "D.cones_map (g \<cdot> f) \<chi> = \<chi>"
+          proof
+            fix j :: 'j
+            show "D.cones_map (g \<cdot> f) \<chi> j = \<chi> j"
+            proof (cases "J.arr j")
+              show "\<not> J.arr j \<Longrightarrow> ?thesis"
+                using f g \<chi>.cone_axioms \<chi>.is_extensional by fastforce
+              assume j: "J.arr j"
+              have "D.cone (dom g) (D.cones_map g \<chi>)"
+                using g D.cones_map_mapsto \<chi>.cone_axioms by blast
+              thus ?thesis
+                using f g \<chi>.cone_axioms D.cones_map_comp [of g f] by fastforce
+            qed
+          qed
+          moreover have "\<guillemotleft>a : a \<rightarrow> a\<guillemotright>"
+            using \<chi>.ide_apex by auto
+          moreover have "D.cones_map a \<chi> = \<chi>"
+            using f \<chi>.cone_axioms D.cones_map_ide by blast
+          ultimately show ?thesis by blast
+        qed
+        thus ?thesis
+          using \<chi>.ide_apex by blast
+      qed
+      show "ide (f \<cdot> g)"
+      proof -
+        have "f \<cdot> g = a'"
+        proof -
+          have "\<exists>!h. \<guillemotleft>h : a' \<rightarrow> a'\<guillemotright> \<and> D.cones_map h \<chi>' = \<chi>'"
+            using \<chi>'.is_universal [of a' \<chi>'] \<chi>'.cone_axioms by blast
+          moreover have "\<guillemotleft>f \<cdot> g : a' \<rightarrow> a'\<guillemotright>"
+            using f g by blast
+          moreover have "D.cones_map (f \<cdot> g) \<chi>' = \<chi>'"
+          proof
+            fix j :: 'j
+            show "D.cones_map (f \<cdot> g) \<chi>' j = \<chi>' j"
+            proof (cases "J.arr j")
+              show "\<not> J.arr j \<Longrightarrow> ?thesis"
+                using f g \<chi>'.cone_axioms \<chi>'.is_extensional by fastforce
+              assume j: "J.arr j"
+              have "D.cone (dom f) (D.cones_map f \<chi>')"
+                using f D.cones_map_mapsto \<chi>'.cone_axioms by blast
+              thus ?thesis
+                using f g \<chi>'.cone_axioms D.cones_map_comp [of f g] by fastforce
+            qed
+          qed
+          moreover have "\<guillemotleft>a' : a' \<rightarrow> a'\<guillemotright>"
+            using \<chi>'.ide_apex by auto
+          moreover have "D.cones_map a' \<chi>' = \<chi>'"
+            using g \<chi>'.cone_axioms D.cones_map_ide by blast
+          ultimately show ?thesis by blast
+        qed
+        thus ?thesis
+          using \<chi>'.ide_apex by blast
+      qed
+    qed
+    show "isomorphic a a'"
+      using * f g by blast
+    show "iso (\<chi>.induced_arrow a' \<chi>')"
+      using * g_def by blast
+  qed
+
   lemma (in category) has_limits_iff_left_adjoint_diagonal:
   assumes "category J"
   shows "has_limits_of_shape J \<longleftrightarrow>
@@ -2272,7 +2375,7 @@ begin
               using 1 2 by simp
             ultimately show ?thesis
               using ex1E [of "\<lambda>f. \<guillemotleft>f : F b \<rightarrow>\<^sub>C a\<guillemotright> \<and> E.cones_map f \<chi> = ?\<chi>'" "\<psi> a g' = f"]
-              using 1 2 Adj.\<epsilon>.is_extensional C.comp_null(2) C.ex_un_null \<chi>.cone_axioms f
+              using 1 2 Adj.\<epsilon>.is_extensional C.null_is_zero(2) C.ex_un_null \<chi>.cone_axioms f
                     mem_Collect_eq restrict_apply
               by blast
           qed
@@ -2572,7 +2675,7 @@ begin
     definition has_products
     where "has_products (I :: 'i set) \<equiv>
              I \<noteq> UNIV \<and>
-             (\<forall>J D. discrete_diagram J C D \<and> Collect (partial_magma.arr J) = I
+             (\<forall>J D. discrete_diagram J C D \<and> Collect (partial_composition.arr J) = I
                       \<longrightarrow> (\<exists>a. has_as_product J D a))"
 
     lemma ex_productE:
@@ -2586,7 +2689,7 @@ begin
     proof (unfold has_products_def, intro conjI allI impI)
       show "I \<noteq> UNIV" by fact
       fix J D
-      assume D: "discrete_diagram J C D \<and> Collect (partial_magma.arr J) = I"
+      assume D: "discrete_diagram J C D \<and> Collect (partial_composition.arr J) = I"
       interpret D: discrete_diagram J C D
         using D by simp
       have 1: "\<exists>a. D.has_as_limit a"
@@ -2597,13 +2700,13 @@ begin
     qed
 
     lemma has_finite_products_if_has_finite_limits:
-    assumes "\<And>J :: 'j comp. (finite (Collect (partial_magma.arr J))) \<Longrightarrow> has_limits_of_shape J"
+    assumes "\<And>J :: 'j comp. (finite (Collect (partial_composition.arr J))) \<Longrightarrow> has_limits_of_shape J"
     and "finite (I :: 'j set)" and "I \<noteq> UNIV"
     shows "has_products I"
     proof (unfold has_products_def, intro conjI allI impI)
       show "I \<noteq> UNIV" by fact
       fix J D
-      assume D: "discrete_diagram J C D \<and> Collect (partial_magma.arr J) = I"
+      assume D: "discrete_diagram J C D \<and> Collect (partial_composition.arr J) = I"
       interpret D: discrete_diagram J C D
         using D by simp
       have 1: "\<exists>a. D.has_as_limit a"
@@ -2617,11 +2720,11 @@ begin
     shows "has_products I'"
     proof (unfold has_products_def, intro conjI allI impI)
       show "I' \<noteq> UNIV" by fact
-      show "\<And>J' D'. discrete_diagram J' C D' \<and> Collect (partial_magma.arr J') = I'
+      show "\<And>J' D'. discrete_diagram J' C D' \<and> Collect (partial_composition.arr J') = I'
                      \<Longrightarrow> \<exists>a. has_as_product J' D' a"
       proof -
         fix J' D'
-        assume 1: "discrete_diagram J' C D' \<and> Collect (partial_magma.arr J') = I'"
+        assume 1: "discrete_diagram J' C D' \<and> Collect (partial_composition.arr J') = I'"
         interpret J': category J'
           using 1 by (simp add: discrete_diagram_def)
         interpret D': discrete_diagram J' C D'
@@ -2749,7 +2852,7 @@ begin
                         have "arr f \<and> dom f = a' \<and> cod f = a"
                           using f by blast
                         thus ?thesis
-                          using \<phi>'.preserves_arr \<pi>.cone_\<chi> j' by auto
+                          using \<phi>'.preserves_arr \<pi>.is_cone j' by auto
                       qed
                       also have "... = (\<chi>' \<circ> ?\<phi>) (the_inv_into I \<phi> j')"
                         using f by simp
@@ -2904,15 +3007,15 @@ begin
       proof (unfold has_products_def, intro conjI)
         show "{1 :: nat} \<noteq> UNIV" by auto
         show "\<forall>(J :: nat comp) D.
-                discrete_diagram J (\<cdot>) D \<and> Collect (partial_magma.arr J) = {1}
+                discrete_diagram J (\<cdot>) D \<and> Collect (partial_composition.arr J) = {1}
                    \<longrightarrow> (\<exists>a. has_as_product J D a)"
         proof
           fix J :: "nat comp"
-          show "\<forall>D. discrete_diagram J (\<cdot>) D \<and> Collect (partial_magma.arr J) = {1}
+          show "\<forall>D. discrete_diagram J (\<cdot>) D \<and> Collect (partial_composition.arr J) = {1}
                        \<longrightarrow> (\<exists>a. has_as_product J D a)"
           proof (intro allI impI)
             fix D
-            assume D: "discrete_diagram J (\<cdot>) D \<and> Collect (partial_magma.arr J) = {1}"
+            assume D: "discrete_diagram J (\<cdot>) D \<and> Collect (partial_composition.arr J) = {1}"
             interpret D: discrete_diagram J C D
               using D by auto
             interpret J: discrete_category \<open>{1 :: nat}\<close> D.J.null
@@ -3169,10 +3272,10 @@ begin
             have "\<not>J.arr j \<Longrightarrow> D.cones_map h (D.mkCone e) j = D.mkCone e' j"
               using h cone_axioms D.mkCone_def by auto
             moreover have "j = J.Zero \<Longrightarrow> D.cones_map h (D.mkCone e) j = D.mkCone e' j"
-              using h e' cone_\<chi> D.mkCone_def J.arr_char [of J.Zero] by force
+              using h e' is_cone D.mkCone_def J.arr_char [of J.Zero] by force
             moreover have
                 "J.arr j \<and> j \<noteq> J.Zero \<Longrightarrow> D.cones_map h (D.mkCone e) j = D.mkCone e' j"
-              using C.comp_assoc D.mkCone_def cone_\<chi> e' h by auto
+              using C.comp_assoc D.mkCone_def is_cone e' h by auto
             ultimately show "D.cones_map h (D.mkCone e) j = D.mkCone e' j" by blast
           qed
         qed
@@ -3191,7 +3294,7 @@ begin
         using assms D.cone_mkCone [of e'] by blast
       have "e \<cdot> induced_arrow (C.dom e') (D.mkCone e') =
               D.cones_map (induced_arrow (C.dom e') (D.mkCone e')) (D.mkCone e) J.Zero"
-        using cone induced_arrowI(1) D.mkCone_def J.arr_char cone_\<chi> by force
+        using cone induced_arrowI(1) D.mkCone_def J.arr_char is_cone by force
       also have "... = e'"
       proof -
         have "D.cones_map (induced_arrow (C.dom e') (D.mkCone e')) (D.mkCone e) =
@@ -3325,8 +3428,8 @@ begin
 
     lemma has_limits_if_has_products:
     fixes J :: "'j comp"  (infixr "\<cdot>\<^sub>J" 55)
-    assumes "category J" and "has_products (Collect (partial_magma.ide J))"
-    and "has_products (Collect (partial_magma.arr J))"
+    assumes "category J" and "has_products (Collect (partial_composition.ide J))"
+    and "has_products (Collect (partial_composition.arr J))"
     shows "has_limits_of_shape J"
     proof (unfold has_limits_of_shape_def)
       interpret J: category J using assms(1) by auto
@@ -3426,11 +3529,11 @@ begin
               have "?\<chi> j \<cdot> h = \<Delta>a.cones_map ?f \<pi>a j \<cdot> h"
                 using j f_map by fastforce
               also have "... = \<pi>a j \<cdot> ?f \<cdot> h"
-                using j f_in_hom \<Delta>a.map_def \<pi>a.cone_\<chi> comp_assoc by auto
+                using j f_in_hom \<Delta>a.map_def \<pi>a.is_cone comp_assoc by auto
               also have "... = \<pi>a j \<cdot> ?g \<cdot> h"
                 using j E by simp
               also have "... = \<Delta>a.cones_map ?g \<pi>a j \<cdot> h"
-                using j g_in_hom \<Delta>a.map_def \<pi>a.cone_\<chi> comp_assoc by auto
+                using j g_in_hom \<Delta>a.map_def \<pi>a.is_cone comp_assoc by auto
               also have "... = ?\<chi>' j \<cdot> h"
                 using j g_map by force
               finally show "?\<chi> j \<cdot> h = ?\<chi>' j \<cdot> h" by auto
@@ -4582,11 +4685,11 @@ begin
           The elements of @{term \<Pi>D} are in bijective correspondence with the set of cones
           over @{term D}, hence @{term \<Pi>D} is a limit of @{term D}.
 \<close>
-        have "\<And>J D. discrete_diagram J S D \<and> Collect (partial_magma.arr J) = I
+        have "\<And>J D. discrete_diagram J S D \<and> Collect (partial_composition.arr J) = I
                  \<Longrightarrow> \<exists>\<Pi>D. has_as_product J D \<Pi>D"
         proof
           fix J :: "'i comp" and D
-          assume D: "discrete_diagram J S D \<and> Collect (partial_magma.arr J) = I"
+          assume D: "discrete_diagram J S D \<and> Collect (partial_composition.arr J) = I"
           interpret J: category J
             using D discrete_diagram.axioms(1) by blast
           interpret D: discrete_diagram J S D
@@ -4705,7 +4808,7 @@ begin
             using has_as_product_def by auto
         qed
         thus "I \<noteq> UNIV \<and>
-              (\<forall>J D. discrete_diagram J S D \<and> Collect (partial_magma.arr J) = I
+              (\<forall>J D. discrete_diagram J S D \<and> Collect (partial_composition.arr J) = I
                   \<longrightarrow> (\<exists>\<Pi>D. has_as_product J D \<Pi>D))"
           using ex_\<pi> by blast
       qed
@@ -4734,7 +4837,7 @@ begin
       show "has_limits (undefined :: 'j)"
         using has_limits_def admits_tupling has_products_iff_admits_tupling
         by (metis category.axioms(1) category.ideD(1) has_limits_if_has_products
-            iso_tuple_UNIV_I mem_Collect_eq partial_magma.not_arr_null)
+            iso_tuple_UNIV_I mem_Collect_eq partial_composition.not_arr_null)
     qed
 
   end
@@ -5617,8 +5720,6 @@ $$\xymatrix{
               using f' A_B.MkArr_Map by auto
             also have "... = ?f"
             proof (intro A_B.MkArr_eqI)
-              show "A_B.arr (A_B.MkArr (A_B.Dom f') (A_B.Cod f') (A_B.Map f'))"
-                using f' calculation by blast
               show 1: "A_B.Dom f' = A_B.Map x'" using f' A_B.Map_dom by auto
               show 2: "A_B.Cod f' = A_B.Map x" using f' A_B.Map_cod by auto
               show "A_B.Map f' = \<phi>.map"

@@ -177,10 +177,8 @@ begin
 
     lemma cone_iff_span:
     shows "cone (C.dom h) (mkCone h k) \<longleftrightarrow> C.span h k \<and> C.cod h = a0 \<and> C.cod k = a1"
-      using cone_mkCone mkCone_def J.arr_char J.ide_char is_rendered_commutative_by_cone
-      apply (intro iffI)
-        apply (metis (no_types, lifting) C.cod_eqI C.comp_ide_arr J.arr.inject is_discrete)
-      by auto
+      by (metis (no_types, lifting) C.cod_eqI C.comp_cod_arr C.comp_ide_arr J.arr.simps(1)
+          cone_mkCone is_discrete is_rendered_commutative_by_cone mkCone_def)
 
     lemma cones_map_mkCone_eq_iff:
     assumes "is_rendered_commutative_by p0 p1" and "is_rendered_commutative_by p0' p1'"
@@ -193,13 +191,13 @@ begin
         using assms(2) cone_mkCone [of p0' p1'] by blast
       show ?thesis
       proof
-        assume 3: "cones_map h (mkCone p0 p1) = mkCone p0' p1'"
+        assume 1: "cones_map h (mkCone p0 p1) = mkCone p0' p1'"
         show "p0 \<cdot> h = p0' \<and> p1 \<cdot> h = p1'"
         proof
           show "p0 \<cdot> h = p0'"
           proof -
             have "p0' = cones_map h (mkCone p0 p1) J.FF"
-              using 3 mkCone_def J.arr_char by simp
+              using 1 mkCone_def J.arr_char by simp
             also have "... = p0 \<cdot> h"
               using assms mkCone_def J.arr_char \<chi>.cone_axioms by auto
             finally show ?thesis by auto
@@ -207,7 +205,7 @@ begin
           show "p1 \<cdot> h = p1'"
           proof -
             have "p1' = cones_map h (mkCone p0 p1) J.TT"
-              using 3 mkCone_def J.arr_char by simp
+              using 1 mkCone_def J.arr_char by simp
             also have "... = p1 \<cdot> h"
               using assms mkCone_def J.arr_char \<chi>.cone_axioms by auto
             finally show ?thesis by auto
@@ -269,30 +267,21 @@ begin
       show 0: "p0 \<cdot> induced_arrow (C.dom p0') (D.mkCone p0' p1') = p0'"
       proof -
         have "p0 \<cdot> induced_arrow (C.dom p0') (D.mkCone p0' p1') =
-                D.cones_map (induced_arrow (C.dom p0') (D.mkCone p0' p1'))
-                            (D.mkCone p0 p1) J.FF"
-          using cone induced_arrowI(1) D.mkCone_def J.arr_char cone_\<chi> by force
+                D.cones_map (induced_arrow (C.dom p0') (D.mkCone p0' p1')) (D.mkCone p0 p1) J.FF"
+          using cone induced_arrowI(1) D.mkCone_def J.arr_char is_cone by force
         also have "... = p0'"
-        proof -
-          have "D.cones_map (induced_arrow (C.dom p0') (D.mkCone p0' p1'))
-                            (D.mkCone p0 p1) =
-                D.mkCone p0' p1'"
-            using cone induced_arrowI by blast
-          thus ?thesis
-            using J.arr_char D.mkCone_def by simp
-        qed
+          by (metis (no_types, lifting) D.mkCone_def cone induced_arrowI(2)
+              mem_Collect_eq restrict_apply)
         finally show ?thesis by auto
       qed
       show "p1 \<cdot> induced_arrow (C.dom p1') (D.mkCone p0' p1') = p1'"
       proof -
         have "p1 \<cdot> induced_arrow (C.dom p1') (D.mkCone p0' p1') =
-                D.cones_map (induced_arrow (C.dom p0') (D.mkCone p0' p1'))
-                            (D.mkCone p0 p1) J.TT"
-          using assms cone induced_arrowI(1) D.mkCone_def J.arr_char cone_\<chi> by fastforce
+                D.cones_map (induced_arrow (C.dom p0') (D.mkCone p0' p1')) (D.mkCone p0 p1) J.TT"
+          using assms cone induced_arrowI(1) D.mkCone_def J.arr_char is_cone by fastforce
         also have "... = p1'"
         proof -
-          have "D.cones_map (induced_arrow (C.dom p0') (D.mkCone p0' p1'))
-                            (D.mkCone p0 p1) =
+          have "D.cones_map (induced_arrow (C.dom p0') (D.mkCone p0' p1')) (D.mkCone p0 p1) =
                 D.mkCone p0' p1'"
             using cone induced_arrowI by blast
           thus ?thesis
@@ -330,18 +319,18 @@ begin
         using assms(1-2) by unfold_locales auto
       show "D.has_as_binary_product p q"
       proof -
-        have 2: "D.is_rendered_commutative_by p q"
+        have 1: "D.is_rendered_commutative_by p q"
           using assms ide_in_hom by blast
         let ?\<chi> = "D.mkCone p q"
         interpret \<chi>: cone J.comp C D.map c ?\<chi>
-           using assms(4) D.cone_mkCone 2 by auto
+           using assms(4) D.cone_mkCone 1 by auto
         interpret \<chi>: limit_cone J.comp C D.map c ?\<chi>
         proof
           fix x \<chi>'
           assume \<chi>': "D.cone x \<chi>'"
           interpret \<chi>': cone J.comp C D.map x \<chi>'
             using \<chi>' by simp
-          have 1: "\<exists>!h. \<guillemotleft>h : x \<rightarrow> c\<guillemotright> \<and> p \<cdot> h = \<chi>' J.FF \<and> q \<cdot> h = \<chi>' J.TT"
+          have 2: "\<exists>!h. \<guillemotleft>h : x \<rightarrow> c\<guillemotright> \<and> p \<cdot> h = \<chi>' J.FF \<and> q \<cdot> h = \<chi>' J.TT"
           proof -
             have "\<guillemotleft>\<chi>' J.FF : x \<rightarrow> a\<guillemotright> \<and> \<guillemotleft>\<chi>' J.TT : x \<rightarrow> b\<guillemotright>"
               by auto
@@ -351,7 +340,7 @@ begin
           have 3: "D.is_rendered_commutative_by (\<chi>' J.FF) (\<chi>' J.TT)"
             using assms(1-2) by force
           obtain h where h: "\<guillemotleft>h : x \<rightarrow> c\<guillemotright> \<and> p \<cdot> h = \<chi>' J.FF \<and> q \<cdot> h = \<chi>' J.TT"
-            using 1 by blast
+            using 2 by blast
           have 4: "\<guillemotleft>h : dom (\<chi>' (J.MkIde False)) \<rightarrow> dom p\<guillemotright>"
             using assms(3) h by auto
           have "\<guillemotleft>h : x \<rightarrow> c\<guillemotright> \<and> D.cones_map h (D.mkCone p q) = \<chi>'"
@@ -362,29 +351,22 @@ begin
             proof
               fix j
               show "D.cones_map h (D.mkCone p q) j = \<chi>' j"
-                using h 2 3 4 D.cones_map_mkCone_eq_iff [of p q "\<chi>' J.FF" "\<chi>' J.TT"]
+                using h 1 3 4 D.cones_map_mkCone_eq_iff [of p q "\<chi>' J.FF" "\<chi>' J.TT"]
                       \<chi>.cone_axioms J.is_discrete \<chi>'.is_extensional
                       D.mkCone_def binary_product_shape.ide_char
-                apply (cases "J.ide j")
-                 apply auto[1]
-                 by auto
+                by (cases "J.ide j") auto
             qed
           qed
           moreover have "\<And>h'. \<guillemotleft>h' : x \<rightarrow> c\<guillemotright> \<and> D.cones_map h' (D.mkCone p q) = \<chi>' \<Longrightarrow> h' = h"
           proof -
             fix h'
-            assume 1: "\<guillemotleft>h' : x \<rightarrow> c\<guillemotright> \<and> D.cones_map h' (D.mkCone p q) = \<chi>'"
+            assume 5: "\<guillemotleft>h' : x \<rightarrow> c\<guillemotright> \<and> D.cones_map h' (D.mkCone p q) = \<chi>'"
             have "\<exists>!h. \<guillemotleft>h : x \<rightarrow> c\<guillemotright> \<and> p \<cdot> h = \<chi>' J.FF \<and> q \<cdot> h = \<chi>' J.TT"
-            proof -
-              have "\<guillemotleft>\<chi>' J.FF : x \<rightarrow> a\<guillemotright> \<and> \<guillemotleft>\<chi>' J.TT : x \<rightarrow> b\<guillemotright>"
-                by auto
-              thus ?thesis
-                using h assms(5) [of "\<chi>' J.FF" x "\<chi>' J.TT"] J.ide_char by auto
-            qed
+              by (simp add: assms(5) in_homI)
             moreover have "\<guillemotleft>h : x \<rightarrow> c\<guillemotright> \<and> \<chi>' J.FF = p \<cdot> h \<and> q \<cdot> h = \<chi>' J.TT"
               using h by simp
             moreover have "\<guillemotleft>h' : x \<rightarrow> c\<guillemotright> \<and> \<chi>' J.FF = p \<cdot> h' \<and> q \<cdot> h' = \<chi>' J.TT"
-              using 1 \<chi>.cone_axioms D.mkCone_def [of p q] by auto
+              using 5 \<chi>.cone_axioms D.mkCone_def [of p q] by auto
             ultimately show "h' = h" by auto
           qed
           ultimately show "\<exists>!h. \<guillemotleft>h : x \<rightarrow> c\<guillemotright> \<and> D.cones_map h (D.mkCone p q) = \<chi>'"
@@ -423,32 +405,38 @@ begin
         let ?\<chi>' = "D.mkCone f g"
         interpret \<chi>': cone J.comp C D.map x ?\<chi>'
           using 1 f g by blast
-        have 3: "\<exists>!l. \<guillemotleft>l : x \<rightarrow> dom p\<guillemotright> \<and> D.cones_map l ?\<chi> = ?\<chi>'"
+        have 2: "\<exists>!l. \<guillemotleft>l : x \<rightarrow> dom p\<guillemotright> \<and> D.cones_map l ?\<chi> = ?\<chi>'"
           using 1 f g \<chi>.is_universal [of x "D.mkCone f g"] \<chi>'.cone_axioms by fastforce
         obtain l where l: "\<guillemotleft>l : x \<rightarrow> dom p\<guillemotright> \<and> D.cones_map l ?\<chi> = ?\<chi>'"
-          using 3 by blast
+          using 2 by blast
         have "p \<cdot> l = f \<and> q \<cdot> l = g"
         proof
-          have "p \<cdot> l = ?\<chi> J.FF \<cdot> l"
-            using D.mkCone_def by presburger
-          also have "... = D.cones_map l ?\<chi> J.FF"
-            using \<chi>.cone_axioms
-            apply simp
-            using l by fastforce
-          also have "... = f"
-            using D.mkCone_def l by presburger
-          finally show "p \<cdot> l = f" by blast
-          have "q \<cdot> l = ?\<chi> J.TT \<cdot> l"
-            using D.mkCone_def by simp
-          also have "... = D.cones_map l ?\<chi> J.TT"
-            using \<chi>.cone_axioms
-            apply simp
-            using l by fastforce
-          also have "... = g"
-            using D.mkCone_def l by simp
-          finally show "q \<cdot> l = g" by blast
+          show "p \<cdot> l = f"
+          proof -
+            have "p \<cdot> l = ?\<chi> J.FF \<cdot> l"
+              using D.mkCone_def by presburger
+            also have "... = D.cones_map l ?\<chi> J.FF"
+              using \<chi>.cone_axioms
+              apply simp
+              using l by fastforce
+            also have "... = f"
+              using D.mkCone_def l by presburger
+            finally show ?thesis by blast
+          qed
+          show "q \<cdot> l = g"
+          proof -
+            have "q \<cdot> l = ?\<chi> J.TT \<cdot> l"
+              using D.mkCone_def by simp
+            also have "... = D.cones_map l ?\<chi> J.TT"
+              using \<chi>.cone_axioms
+              apply simp
+              using l by fastforce
+            also have "... = g"
+              using D.mkCone_def l by simp
+            finally show "q \<cdot> l = g" by blast
+          qed
         qed
-        moreover have "\<And>l'. p \<cdot> l' = f \<and> q \<cdot> l' = g\<Longrightarrow> l' = l"
+        moreover have "\<And>l'. p \<cdot> l' = f \<and> q \<cdot> l' = g \<Longrightarrow> l' = l"
         proof -
           fix l'
           assume 1: "p \<cdot> l' = f \<and> q \<cdot> l' = g"
@@ -478,9 +466,7 @@ begin
   text \<open>
     An \emph{elementary category with binary products} is a category equipped with a specific
     way of mapping each pair of objects \<open>a\<close> and \<open>b\<close> to a pair of arrows \<open>\<pp>\<^sub>1[a, b]\<close> and \<open>\<pp>\<^sub>0[a, b]\<close>
-    that comprise a universal span.  It is useful to assume that the mappings that produce
-    \<open>\<pp>\<^sub>1[a, b]\<close> and \<open>\<pp>\<^sub>0[a, b]\<close> from \<open>a\<close> and \<open>b\<close> are extensional; that is, if either \<open>a\<close> or \<open>b\<close>
-    is not an identity, then \<open>\<pp>\<^sub>1[a, b]\<close> and \<open>\<pp>\<^sub>0[a, b]\<close> are \<open>null\<close>.
+    that comprise a universal span.
   \<close>
 
   locale elementary_category_with_binary_products =
@@ -488,9 +474,7 @@ begin
   for C :: "'a comp"                             (infixr "\<cdot>" 55)
   and pr0 :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"                    ("\<pp>\<^sub>0[_, _]")
   and pr1 :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"                    ("\<pp>\<^sub>1[_, _]") +
-  assumes pr0_ext: "\<not> (ide a \<and> ide b) \<Longrightarrow> \<pp>\<^sub>0[a, b] = null"
-  and pr1_ext: "\<not> (ide a \<and> ide b) \<Longrightarrow> \<pp>\<^sub>1[a, b] = null"
-  and span_pr: "\<lbrakk> ide a; ide b \<rbrakk> \<Longrightarrow> span \<pp>\<^sub>1[a, b] \<pp>\<^sub>0[a, b]"
+  assumes span_pr: "\<lbrakk> ide a; ide b \<rbrakk> \<Longrightarrow> span \<pp>\<^sub>1[a, b] \<pp>\<^sub>0[a, b]"
   and cod_pr0: "\<lbrakk> ide a; ide b \<rbrakk> \<Longrightarrow> cod \<pp>\<^sub>0[a, b] = b"
   and cod_pr1: "\<lbrakk> ide a; ide b \<rbrakk> \<Longrightarrow> cod \<pp>\<^sub>1[a, b] = a"
   and universal: "span f g \<Longrightarrow> \<exists>!l. \<pp>\<^sub>1[cod f, cod g] \<cdot> l = f \<and> \<pp>\<^sub>0[cod f, cod g] \<cdot> l = g"
@@ -625,14 +609,14 @@ begin
     qed
 
     lemma pr_in_hom [intro, simp]:
-    assumes "ide a" and "ide b"
-    shows "\<guillemotleft>\<pp>\<^sub>0[a, b] : a \<otimes> b \<rightarrow> b\<guillemotright>" and "\<guillemotleft>\<pp>\<^sub>1[a, b] : a \<otimes> b \<rightarrow> a\<guillemotright>"
+    assumes "ide a" and "ide b" and "x = a \<otimes> b"
+    shows "\<guillemotleft>\<pp>\<^sub>0[a, b] : x \<rightarrow> b\<guillemotright>" and "\<guillemotleft>\<pp>\<^sub>1[a, b] : x \<rightarrow> a\<guillemotright>"
     proof -
-      show 0: "\<guillemotleft>\<pp>\<^sub>0[a, b] : a \<otimes> b \<rightarrow> b\<guillemotright>"
+      show 0: "\<guillemotleft>\<pp>\<^sub>0[a, b] : x \<rightarrow> b\<guillemotright>"
         using assms pr0_in_hom' seq_pr_tuple [of "\<pp>\<^sub>1[a, b]" "\<pp>\<^sub>0[a, b]"]
               cod_tuple [of "\<pp>\<^sub>1[a, b]" "\<pp>\<^sub>0[a, b]"] span_pr cod_pr0 cod_pr1
         by (intro in_homI, auto)
-      show "\<guillemotleft>\<pp>\<^sub>1[a, b] : a \<otimes> b \<rightarrow> a\<guillemotright>"
+      show "\<guillemotleft>\<pp>\<^sub>1[a, b] : x \<rightarrow> a\<guillemotright>"
         using assms 0 span_pr pr1_in_hom' by fastforce
     qed
 
@@ -642,51 +626,24 @@ begin
     and "arr \<pp>\<^sub>1[a, b]" and "dom \<pp>\<^sub>1[a, b] = a \<otimes> b" and "cod \<pp>\<^sub>1[a, b] = a"
       using assms pr_in_hom by blast+
 
-    lemma arr_pr0_iff [iff]:
-    shows "arr \<pp>\<^sub>0[a, b] \<longleftrightarrow> ide a \<and> ide b"
-    proof
-      show "ide a \<and> ide b \<Longrightarrow> arr \<pp>\<^sub>0[a, b]"
-        using pr_in_hom by auto
-      show "arr \<pp>\<^sub>0[a, b] \<Longrightarrow> ide a \<and> ide b"
-        using pr0_ext not_arr_null by metis
-    qed
-
-    lemma arr_pr1_iff [iff]:
-    shows "arr \<pp>\<^sub>1[a, b] \<longleftrightarrow> ide a \<and> ide b"
-    proof
-      show "ide a \<and> ide b \<Longrightarrow> arr \<pp>\<^sub>1[a, b]"
-        using pr_in_hom by auto
-      show "arr \<pp>\<^sub>1[a, b] \<Longrightarrow> ide a \<and> ide b"
-        using pr1_ext not_arr_null by metis
-    qed
-
     lemma pr_joint_monic:
-    assumes "seq \<pp>\<^sub>0[a, b] h"
+    assumes "ide a" and "ide b" and "seq \<pp>\<^sub>0[a, b] h"
     and "\<pp>\<^sub>0[a, b] \<cdot> h = \<pp>\<^sub>0[a, b] \<cdot> h'" and "\<pp>\<^sub>1[a, b] \<cdot> h = \<pp>\<^sub>1[a, b] \<cdot> h'"
     shows "h = h'"
-      using assms
-      by (metis arr_pr0_iff seqE tuple_pr_arr)
+      using assms by (metis tuple_pr_arr)
 
     lemma comp_tuple_arr [simp]:
     assumes "span f g" and "arr h" and "dom f = cod h"
     shows "\<langle>f, g\<rangle> \<cdot> h = \<langle>f \<cdot> h, g \<cdot> h\<rangle>"
     proof (intro pr_joint_monic [where h = "\<langle>f, g\<rangle> \<cdot> h"])
+      show "ide (cod f)" and "ide (cod g)"
+        using assms ide_cod by blast+
       show "seq \<pp>\<^sub>0[cod f, cod g] (\<langle>f, g\<rangle> \<cdot> h)"
         using assms by fastforce
       show "\<pp>\<^sub>0[cod f, cod g] \<cdot> \<langle>f, g\<rangle> \<cdot> h = \<pp>\<^sub>0[cod f, cod g] \<cdot> \<langle>f \<cdot> h, g \<cdot> h\<rangle>"
-      proof -
-        have "\<pp>\<^sub>0[cod f, cod g] \<cdot> \<langle>f, g\<rangle> \<cdot> h = (\<pp>\<^sub>0[cod f, cod g] \<cdot> \<langle>f, g\<rangle>) \<cdot> h"
-          using comp_assoc by simp
-        thus ?thesis
-          using assms by simp
-      qed
+        using assms(1-3) comp_reduce by auto
       show "\<pp>\<^sub>1[cod f, cod g] \<cdot> \<langle>f, g\<rangle> \<cdot> h = \<pp>\<^sub>1[cod f, cod g] \<cdot> \<langle>f \<cdot> h, g \<cdot> h\<rangle>"
-      proof -
-        have "\<pp>\<^sub>1[cod f, cod g] \<cdot> \<langle>f, g\<rangle> \<cdot> h = (\<pp>\<^sub>1[cod f, cod g] \<cdot> \<langle>f, g\<rangle>) \<cdot> h"
-          using comp_assoc by simp
-        thus ?thesis
-          using assms by simp
-      qed
+        using assms comp_reduce by auto
     qed
 
     lemma ide_prod [intro, simp]:
@@ -712,6 +669,27 @@ begin
     and "cod (f0 \<otimes> f1) = cod f0 \<otimes> cod f1"
       using assms prod_in_hom by blast+
 
+    lemma has_as_binary_product:
+    assumes "ide a" and "ide b"
+    shows "has_as_binary_product a b \<pp>\<^sub>1[a, b] \<pp>\<^sub>0[a, b]"
+    proof
+      show "ide a" and "ide b"
+        using assms by auto
+      show "\<guillemotleft>\<pp>\<^sub>1[a, b] : dom \<pp>\<^sub>1[a, b] \<rightarrow> a\<guillemotright>"
+        using assms by simp
+      show "\<guillemotleft>\<pp>\<^sub>0[a, b] : dom \<pp>\<^sub>1[a, b] \<rightarrow> b\<guillemotright>"
+        using assms by simp
+      fix x f g
+      assume f: "\<guillemotleft>f : x \<rightarrow> a\<guillemotright>" and g: "\<guillemotleft>g : x \<rightarrow> b\<guillemotright>"
+      have "span f g"
+        using f g by auto
+      hence "\<exists>!l. \<pp>\<^sub>1[a, b] \<cdot> l = f \<and> \<pp>\<^sub>0[a, b] \<cdot> l = g"
+        using assms f g universal [of f g]
+        by (metis in_homE)
+      thus "\<exists>!h. \<guillemotleft>h : x \<rightarrow> dom \<pp>\<^sub>1[a, b]\<guillemotright> \<and> \<pp>\<^sub>1[a, b] \<cdot> h = f \<and> \<pp>\<^sub>0[a, b] \<cdot> h = g"
+        using f by blast
+    qed
+
   end
 
   subsection "Agreement between the Definitions"
@@ -725,77 +703,71 @@ begin
   context category_with_binary_products
   begin
 
-    definition pr1
-    where "pr1 a b \<equiv> if ide a \<and> ide b then
-                        fst (SOME x. has_as_binary_product a b (fst x) (snd x))
-                      else null"
+    definition some_pr1  ("\<pp>\<^sub>1\<^sup>?[_, _]")
+    where "some_pr1 a b \<equiv> if ide a \<and> ide b then
+                             fst (SOME x. has_as_binary_product a b (fst x) (snd x))
+                           else null"
 
-    definition pr0
-    where "pr0 a b \<equiv> if ide a \<and> ide b then
-                        snd (SOME x. has_as_binary_product a b (fst x) (snd x))
-                      else null"
+    definition some_pr0  ("\<pp>\<^sub>0\<^sup>?[_, _]")
+    where "some_pr0 a b \<equiv> if ide a \<and> ide b then
+                             snd (SOME x. has_as_binary_product a b (fst x) (snd x))
+                           else null"
 
     lemma pr_yields_binary_product:
     assumes "ide a" and "ide b"
-    shows "has_as_binary_product a b (pr1 a b) (pr0 a b)"
+    shows "has_as_binary_product a b \<pp>\<^sub>1\<^sup>?[a, b] \<pp>\<^sub>0\<^sup>?[a, b]"
     proof -
       have "\<exists>x. has_as_binary_product a b (fst x) (snd x)"
         using assms has_binary_products has_binary_products_def has_as_binary_product_def
         by simp
       thus ?thesis
-        using assms has_binary_products has_binary_products_def pr0_def pr1_def
+        using assms has_binary_products has_binary_products_def some_pr0_def some_pr1_def
               someI_ex [of "\<lambda>x. has_as_binary_product a b (fst x) (snd x)"]
         by simp
     qed
 
-    interpretation elementary_category_with_binary_products C pr0 pr1
+    interpretation elementary_category_with_binary_products C some_pr0 some_pr1
     proof
-      show "\<And>a b. \<not> (ide a \<and> ide b) \<Longrightarrow> pr0 a b = null"
-        using pr0_def by auto
-      show "\<And>a b. \<not> (ide a \<and> ide b) \<Longrightarrow> pr1 a b = null"
-        using pr1_def by auto
       fix a b
       assume a: "ide a" and b: "ide b"
       interpret J: binary_product_shape .
       interpret D: binary_product_diagram C a b
         using a b by unfold_locales auto
-      let ?\<chi> = "D.mkCone (pr1 a b) (pr0 a b)"
-      interpret \<chi>: limit_cone J.comp C D.map \<open>dom (pr1 a b)\<close> ?\<chi>
+      let ?\<chi> = "D.mkCone \<pp>\<^sub>1\<^sup>?[a, b] \<pp>\<^sub>0\<^sup>?[a, b]"
+      interpret \<chi>: limit_cone J.comp C D.map \<open>dom \<pp>\<^sub>1\<^sup>?[a, b]\<close> ?\<chi>
         using a b pr_yields_binary_product
         by (simp add: has_as_binary_product_def)
-      have 1: "pr1 a b = ?\<chi> J.FF \<and> pr0 a b = ?\<chi> J.TT"
+      have 1: "\<pp>\<^sub>1\<^sup>?[a, b] = ?\<chi> J.FF \<and> \<pp>\<^sub>0\<^sup>?[a, b] = ?\<chi> J.TT"
         using D.mkCone_def by simp
-      show "span (pr1 a b) (pr0 a b)"
+      show "span \<pp>\<^sub>1\<^sup>?[a, b] \<pp>\<^sub>0\<^sup>?[a, b]"
         using 1 \<chi>.preserves_reflects_arr J.seqE J.arr_char J.seq_char J.is_category
               D.is_rendered_commutative_by_cone \<chi>.cone_axioms
         by metis
-      show "cod (pr1 a b) = a"
+      show "cod \<pp>\<^sub>1\<^sup>?[a, b] = a"
         using 1 \<chi>.preserves_cod [of J.FF] J.cod_char J.arr_char by auto
-      show "cod (pr0 a b) = b"
+      show "cod \<pp>\<^sub>0\<^sup>?[a, b] = b"
         using 1 \<chi>.preserves_cod [of J.TT] J.cod_char J.arr_char by auto
       next
       fix f g
       assume fg: "span f g"
-      show "\<exists>!l. pr1 (cod f) (cod g) \<cdot> l = f \<and> pr0 (cod f) (cod g) \<cdot> l = g"
+      show "\<exists>!l. \<pp>\<^sub>1\<^sup>?[cod f, cod g] \<cdot> l = f \<and> \<pp>\<^sub>0\<^sup>?[cod f, cod g] \<cdot> l = g"
       proof -
         interpret J: binary_product_shape .
         interpret D: binary_product_diagram C \<open>cod f\<close> \<open>cod g\<close>
           using fg by unfold_locales auto
-        let ?\<chi> = "D.mkCone (pr1 (cod f) (cod g)) (pr0 (cod f) (cod g))"
-        interpret \<chi>: limit_cone J.comp C D.map \<open>dom (pr1 (cod f) (cod g))\<close> ?\<chi>
+        let ?\<chi> = "D.mkCone \<pp>\<^sub>1\<^sup>?[cod f, cod g] \<pp>\<^sub>0\<^sup>?[cod f, cod g]"
+        interpret \<chi>: limit_cone J.comp C D.map \<open>dom \<pp>\<^sub>1\<^sup>?[cod f, cod g]\<close> ?\<chi>
           using fg pr_yields_binary_product [of "cod f" "cod g"] has_as_binary_product_def
           by simp
-        interpret \<chi>: binary_product_cone C \<open>cod f\<close> \<open>cod g\<close>
-                       \<open>pr1 (cod f) (cod g)\<close> \<open>pr0 (cod f) (cod g)\<close> ..
-        have 1: "pr1 (cod f) (cod g) = ?\<chi> J.FF \<and> pr0 (cod f) (cod g) = ?\<chi> J.TT"
+        interpret \<chi>: binary_product_cone C \<open>cod f\<close> \<open>cod g\<close> \<open>\<pp>\<^sub>1\<^sup>?[cod f, cod g]\<close> \<open>\<pp>\<^sub>0\<^sup>?[cod f, cod g]\<close> ..
+        have 1: "\<pp>\<^sub>1\<^sup>?[cod f, cod g] = ?\<chi> J.FF \<and> \<pp>\<^sub>0\<^sup>?[cod f, cod g] = ?\<chi> J.TT"
           using D.mkCone_def by simp
-        show "\<exists>!l. pr1 (cod f) (cod g) \<cdot> l = f \<and> pr0 (cod f) (cod g) \<cdot> l = g"
+        show "\<exists>!l. \<pp>\<^sub>1\<^sup>?[cod f, cod g] \<cdot> l = f \<and> \<pp>\<^sub>0\<^sup>?[cod f, cod g] \<cdot> l = g"
         proof -
-          have "\<exists>!l. \<guillemotleft>l : dom f \<rightarrow> dom (pr1 (cod f) (cod g))\<guillemotright> \<and>
-                     pr1 (cod f) (cod g) \<cdot> l = f \<and> pr0 (cod f) (cod g) \<cdot> l = g"
+          have "\<exists>!l. \<guillemotleft>l : dom f \<rightarrow> dom \<pp>\<^sub>1\<^sup>?[cod f, cod g]\<guillemotright> \<and>
+                     \<pp>\<^sub>1\<^sup>?[cod f, cod g] \<cdot> l = f \<and> \<pp>\<^sub>0\<^sup>?[cod f, cod g] \<cdot> l = g"
             using fg \<chi>.is_universal' by simp
-          moreover have "\<And>l. pr1 (cod f) (cod g) \<cdot> l = f
-                                \<Longrightarrow> \<guillemotleft>l : dom f \<rightarrow> dom (pr1 (cod f) (cod g))\<guillemotright>"
+          moreover have "\<And>l. \<pp>\<^sub>1\<^sup>?[cod f, cod g] \<cdot> l = f \<Longrightarrow> \<guillemotleft>l : dom f \<rightarrow> dom \<pp>\<^sub>1\<^sup>?[cod f, cod g]\<guillemotright>"
             using fg dom_comp in_homI seqE seqI by metis
           ultimately show ?thesis by auto
         qed
@@ -803,39 +775,21 @@ begin
     qed
 
     proposition extends_to_elementary_category_with_binary_products:
-    shows "elementary_category_with_binary_products C pr0 pr1"
+    shows "elementary_category_with_binary_products C some_pr0 some_pr1"
       ..
+
+    abbreviation some_prod    (infixr "\<otimes>\<^sup>?" 51)
+    where "some_prod \<equiv> prod"
 
   end
 
   context elementary_category_with_binary_products
   begin
 
-    interpretation category_with_binary_products C
+    sublocale category_with_binary_products C
     proof
       show "has_binary_products"
-      proof (unfold has_binary_products_def, intro allI impI)
-        show "\<And>a b. ide a \<and> ide b \<Longrightarrow> \<exists>p0 p1. has_as_binary_product a b p0 p1"
-        proof -
-          fix a b
-          assume ab: "ide a \<and> ide b"
-          have "has_as_binary_product a b \<pp>\<^sub>1[a, b] \<pp>\<^sub>0[a, b]"
-          proof
-            show "ide a" and "ide b" and "\<guillemotleft>\<pp>\<^sub>1[a, b] : a \<otimes> b \<rightarrow> a\<guillemotright>" and "\<guillemotleft>\<pp>\<^sub>0[a, b] : a \<otimes> b \<rightarrow> b\<guillemotright>"
-              using ab by auto
-            show "\<And>x f g. \<lbrakk>\<guillemotleft>f : x \<rightarrow> a\<guillemotright>; \<guillemotleft>g : x \<rightarrow> b\<guillemotright>\<rbrakk>
-                             \<Longrightarrow> \<exists>!h. \<guillemotleft>h : x \<rightarrow> a \<otimes> b\<guillemotright> \<and> \<pp>\<^sub>1[a, b] \<cdot> h = f \<and> \<pp>\<^sub>0[a, b] \<cdot> h = g"
-            proof -
-              fix x f g
-              assume f: "\<guillemotleft>f : x \<rightarrow> a\<guillemotright>" and g: "\<guillemotleft>g : x \<rightarrow> b\<guillemotright>"
-              show "\<exists>!h. \<guillemotleft>h : x \<rightarrow> a \<otimes> b\<guillemotright> \<and> \<pp>\<^sub>1[a, b] \<cdot> h = f \<and> \<pp>\<^sub>0[a, b] \<cdot> h = g"
-                using ab f g tuple_pr_arr pr_tuple [of f g a b] tuple_in_hom'
-                by (metis in_homE)
-            qed
-          qed
-          thus "\<exists>p0 p1. has_as_binary_product a b p0 p1" by blast
-        qed
-      qed
+        by (meson has_as_binary_product has_binary_products_def)
     qed
 
     proposition is_category_with_binary_products:
@@ -891,10 +845,15 @@ begin
       using assms prod_def comp_assoc comp_tuple_arr by fastforce
 
     lemma tuple_eqI:
-    assumes "seq \<pp>\<^sub>0[b, c] f" and "seq \<pp>\<^sub>1[b, c] f"
+    assumes "ide b" and "ide c" and "seq \<pp>\<^sub>0[b, c] f" and "seq \<pp>\<^sub>1[b, c] f"
     and "\<pp>\<^sub>0[b, c] \<cdot> f = f0" and "\<pp>\<^sub>1[b, c] \<cdot> f = f1"
     shows "f = \<langle>f1, f0\<rangle>"
       using assms pr_joint_monic [of b c "\<langle>f1, f0\<rangle>" f] pr_tuple by auto
+
+    lemma tuple_expansion:
+    assumes "span f g"
+    shows "(f \<otimes> g) \<cdot> \<d>[dom f] = \<langle>f, g\<rangle>"
+      using assms prod_tuple comp_arr_dom by simp
 
     definition assoc ("\<a>[_, _, _]")
     where "\<a>[a, b, c] \<equiv> \<langle>\<pp>\<^sub>1[a, b] \<cdot> \<pp>\<^sub>1[a \<otimes> b, c], \<langle>\<pp>\<^sub>0[a, b] \<cdot> \<pp>\<^sub>1[a \<otimes> b, c], \<pp>\<^sub>0[a \<otimes> b, c]\<rangle>\<rangle>"
@@ -925,6 +884,20 @@ begin
     and "dom \<a>\<^sup>-\<^sup>1[a, b, c] = a \<otimes> (b \<otimes> c)"
     and "cod \<a>\<^sup>-\<^sup>1[a, b, c] = (a \<otimes> b) \<otimes> c"
       using assms assoc'_in_hom by auto
+
+    lemma pr_assoc:
+    assumes "ide a" and "ide b" and "ide c"
+    shows "\<pp>\<^sub>0[b, c] \<cdot> \<pp>\<^sub>0[a, b \<otimes> c] \<cdot> \<a>[a, b, c] = \<pp>\<^sub>0[a \<otimes> b, c]"
+    and "\<pp>\<^sub>1[b, c] \<cdot> \<pp>\<^sub>0[a, b \<otimes> c] \<cdot> \<a>[a, b, c] = \<pp>\<^sub>0[a, b] \<cdot> \<pp>\<^sub>1[a \<otimes> b, c]"
+    and "\<pp>\<^sub>1[a, b \<otimes> c] \<cdot> \<a>[a, b, c] = \<pp>\<^sub>1[a, b] \<cdot> \<pp>\<^sub>1[a \<otimes> b, c]"
+      using assms assoc_def by force+
+
+    lemma pr_assoc':
+    assumes "ide a" and "ide b" and "ide c"
+    shows "\<pp>\<^sub>1[a, b] \<cdot> \<pp>\<^sub>1[a \<otimes> b, c] \<cdot> \<a>\<^sup>-\<^sup>1[a, b, c] = \<pp>\<^sub>1[a, b \<otimes> c]"
+    and "\<pp>\<^sub>0[a, b] \<cdot> \<pp>\<^sub>1[a \<otimes> b, c] \<cdot> \<a>\<^sup>-\<^sup>1[a, b, c] = \<pp>\<^sub>1[b, c] \<cdot> \<pp>\<^sub>0[a, b \<otimes> c]"
+    and "\<pp>\<^sub>0[a \<otimes> b, c] \<cdot> \<a>\<^sup>-\<^sup>1[a, b, c] = \<pp>\<^sub>0[b, c] \<cdot> \<pp>\<^sub>0[a, b \<otimes> c]"
+      using assms assoc'_def by force+
 
     lemma assoc_naturality:
     assumes "\<guillemotleft>f0 : a0 \<rightarrow> b0\<guillemotright>" and "\<guillemotleft>f1 : a1 \<rightarrow> b1\<guillemotright>" and "\<guillemotleft>f2 : a2 \<rightarrow> b2\<guillemotright>"
@@ -988,6 +961,9 @@ begin
     proof (intro pr_joint_monic
                    [where h = "((a \<otimes> \<a>[b, c, d]) \<cdot> \<a>[a, b \<otimes> c, d]) \<cdot> (\<a>[a, b, c] \<otimes> d)"
                       and h' = "\<a>[a, b, c \<otimes> d] \<cdot> \<a>[a \<otimes> b, c, d]"])
+      show "ide a" by fact
+      show "ide (b \<otimes> (c \<otimes> d))"
+        by (simp add: assms(2-4))
       show "seq \<pp>\<^sub>0[a, b \<otimes> (c \<otimes> d)] (((a \<otimes> \<a>[b, c, d]) \<cdot> \<a>[a, b \<otimes> c, d]) \<cdot> (\<a>[a, b, c] \<otimes> d))"
         using assms by simp
       show "\<pp>\<^sub>1[a, b \<otimes> c \<otimes> d] \<cdot> ((a \<otimes> \<a>[b, c, d]) \<cdot> \<a>[a, b \<otimes> c, d]) \<cdot> (\<a>[a, b, c] \<otimes> d) =
@@ -1053,6 +1029,19 @@ begin
       using assms assoc_def assoc'_def comp_assoc
       by (auto simp add: tuple_pr_arr)
 
+    lemma inv_prod:
+    assumes "iso f" and "iso g"
+    shows "iso (prod f g)"
+    and "inv (prod f g) = prod (inv f) (inv g)"
+    proof -
+      have 1: "inverse_arrows (prod f g) (prod (inv f) (inv g))"
+        by (auto simp add: assms comp_inv_arr' comp_arr_inv' iso_is_arr interchange)
+      show "iso (prod f g)"
+        using 1 by blast
+      show "inv (prod f g) = prod (inv f) (inv g)"
+        using 1 by (simp add: inverse_unique)
+    qed
+
     interpretation CC: product_category C C ..
 
     abbreviation Prod
@@ -1074,6 +1063,51 @@ begin
 
     lemma binary_functor_Prod:
     shows "binary_functor C C C Prod" and "binary_functor C C C Prod'"
+      ..
+
+    interpretation CCC: product_category C CC.comp ..
+    interpretation T: binary_endofunctor C Prod ..
+    interpretation ToTC: "functor" CCC.comp C T.ToTC
+      using T.functor_ToTC by auto
+    interpretation ToCT: "functor" CCC.comp C T.ToCT
+      using T.functor_ToCT by auto
+
+    abbreviation \<alpha>
+    where "\<alpha> f \<equiv> \<a>[cod (fst f), cod (fst (snd f)), cod (snd (snd f))] \<cdot>
+                      ((fst f \<otimes> fst (snd f)) \<otimes> snd (snd f))"
+
+    lemma \<alpha>_simp_ide:
+    assumes "CCC.ide a"
+    shows "\<alpha> a = \<a>[fst a, fst (snd a), snd (snd a)]"
+      using assms comp_arr_dom by auto
+
+    interpretation \<alpha>: natural_isomorphism CCC.comp C T.ToTC T.ToCT \<alpha>
+    proof
+      fix f
+      show "\<not> CCC.arr f \<Longrightarrow> \<alpha> f = null"
+        by (metis CC.arr_char CCC.arr_char ext prod_def seqE tuple_ext)
+      assume f: "CCC.arr f"
+      show "dom (\<alpha> f) = T.ToTC (CCC.dom f)"
+        using f by auto
+      show "cod (\<alpha> f) = T.ToCT (CCC.cod f)"
+        using f by auto
+      show "T.ToCT f \<cdot> \<alpha> (CCC.dom f) = \<alpha> f"
+        using f T.ToCT_def T.ToTC_def comp_assoc
+              assoc_naturality
+                [of "fst f" "dom (fst f)" "cod (fst f)"
+                    "fst (snd f)" "dom (fst (snd f))" "cod (fst (snd f))"
+                    "snd (snd f)" "dom (snd (snd f))" "cod (snd (snd f))"]
+        by (simp add: comp_arr_dom in_homI)
+      show "\<alpha> (CCC.cod f) \<cdot> T.ToTC f = \<alpha> f"
+        using T.ToTC_def comp_arr_dom f by auto
+      next
+      show "\<And>a. CCC.ide a \<Longrightarrow> iso (\<alpha> a)"
+        using CCC.ide_char\<^sub>P\<^sub>C CC.ide_char\<^sub>P\<^sub>C comp_arr_dom inverse_arrows_assoc isoI
+        by (metis assoc_simps(1-2) ideD(3))
+    qed
+
+    lemma \<alpha>_is_natural_isomorphism:
+    shows "natural_isomorphism CCC.comp C T.ToTC T.ToCT \<alpha>"
       ..
 
     definition sym ("\<s>[_, _]")
@@ -1283,92 +1317,114 @@ begin
   and one :: "'a"                                 ("\<one>")
   and trm :: "'a \<Rightarrow> 'a"                           ("\<t>[_]") +
   assumes ide_one: "ide \<one>"
-  and trm_in_hom_ax: "ide a \<Longrightarrow> \<guillemotleft>\<t>[a] : a \<rightarrow> \<one>\<guillemotright>"
-  and trm_eqI_ax: "\<lbrakk> ide a; \<guillemotleft>f : a \<rightarrow> \<one>\<guillemotright> \<rbrakk> \<Longrightarrow> f = \<t>[a]"
+  and trm_in_hom [intro, simp]: "ide a \<Longrightarrow> \<guillemotleft>\<t>[a] : a \<rightarrow> \<one>\<guillemotright>"
+  and trm_eqI: "\<lbrakk> ide a; \<guillemotleft>f : a \<rightarrow> \<one>\<guillemotright> \<rbrakk> \<Longrightarrow> f = \<t>[a]"
   begin
 
-    lemma trm_simps_ide:
+    lemma trm_simps [simp]:
     assumes "ide a"
     shows "arr \<t>[a]" and "dom \<t>[a] = a" and "cod \<t>[a] = \<one>"
-      using assms trm_in_hom_ax by auto
+      using assms trm_in_hom by blast+
 
     lemma trm_one:
     shows "\<t>[\<one>] = \<one>"
-    using ide_one trm_in_hom_ax trm_eqI_ax ide_in_hom by auto
+    using ide_one trm_eqI ide_in_hom by auto
 
     lemma terminal_one:
     shows "terminal \<one>"
-      using ide_one trm_in_hom_ax trm_eqI_ax terminal_def by metis
+      using ide_one trm_in_hom trm_eqI terminal_def by metis
 
     lemma trm_naturality:
     assumes "arr f"
     shows "\<t>[cod f] \<cdot> f = \<t>[dom f]"
-      using assms trm_eqI_ax
-      by (metis comp_in_homI' ide_cod ide_dom in_homE trm_in_hom_ax)
+      using assms trm_eqI
+      by (metis comp_in_homI' ide_cod ide_dom in_homE trm_in_hom)
+
+    sublocale category_with_terminal_object C
+      apply unfold_locales
+      using terminal_one by auto
 
     proposition is_category_with_terminal_object:
     shows "category_with_terminal_object C"
-      apply unfold_locales
-      using terminal_one by auto
+      ..
+
+    definition \<tau>
+    where "\<tau> = (\<lambda>f. if arr f then trm (dom f) else null)"
+
+    lemma \<tau>_in_hom [intro, simp]:
+    assumes "arr f"
+    shows "\<guillemotleft>\<tau> f : dom f \<rightarrow> \<one>\<guillemotright>"
+      by (simp add: \<tau>_def assms)
+
+    lemma \<tau>_simps [simp]:
+    assumes "arr f"
+    shows "arr (\<tau> f)" and "dom (\<tau> f) = dom f" and "cod (\<tau> f) = \<one>"
+      using assms by (auto simp add: \<tau>_def assms)
+
+    sublocale \<Omega>: constant_functor C C \<one>
+      using ide_one
+      by unfold_locales auto
+
+    sublocale \<tau>: natural_transformation C C map \<Omega>.map \<tau>
+      unfolding \<tau>_def
+      using trm_simps(1-3) comp_cod_arr trm_naturality
+      by unfold_locales auto
 
   end
 
   context category_with_terminal_object
   begin
 
-    definition some_terminal ("\<one>")
+    definition some_terminal ("\<one>\<^sup>?")
     where "some_terminal \<equiv> SOME t. terminal t"
 
-    definition "trm" ("\<t>[_]")
-    where "\<t>[f] \<equiv> if arr f then THE t. \<guillemotleft>t : dom f \<rightarrow> \<one>\<guillemotright> else null"
+    definition "some_terminator" ("\<t>\<^sup>?[_]")
+    where "\<t>\<^sup>?[f] \<equiv> if arr f then THE t. \<guillemotleft>t : dom f \<rightarrow> \<one>\<^sup>?\<guillemotright> else null"
 
     lemma terminal_some_terminal [intro]:
-    shows "terminal \<one>"
+    shows "terminal \<one>\<^sup>?"
       using some_terminal_def has_terminal someI_ex [of "\<lambda>t. terminal t"] by presburger
 
     lemma ide_some_terminal:
-    shows "ide \<one>"
+    shows "ide \<one>\<^sup>?"
       using terminal_def by blast
 
-    lemma trm_in_hom [intro]:
+    lemma some_trm_in_hom [intro]:
     assumes "arr f"
-    shows "\<guillemotleft>\<t>[f] : dom f \<rightarrow> \<one>\<guillemotright>"
+    shows "\<guillemotleft>\<t>\<^sup>?[f] : dom f \<rightarrow> \<one>\<^sup>?\<guillemotright>"
     proof -
       have "ide (dom f)" using assms by fastforce
-      hence "\<exists>!t. \<guillemotleft>t : dom f \<rightarrow> \<one>\<guillemotright>"
-        using assms trm_def terminal_def terminal_some_terminal by simp
+      hence "\<exists>!t. \<guillemotleft>t : dom f \<rightarrow> \<one>\<^sup>?\<guillemotright>"
+        using assms some_terminator_def terminal_def terminal_some_terminal by simp
       thus ?thesis
-        using assms trm_def [of f] theI' [of "\<lambda>t. \<guillemotleft>t : dom f \<rightarrow> \<one>\<guillemotright>"] by auto
+        using assms some_terminator_def [of f] theI' [of "\<lambda>t. \<guillemotleft>t : dom f \<rightarrow> \<one>\<^sup>?\<guillemotright>"] by auto
     qed
 
-    lemma trm_simps [simp]:
+    lemma some_trm_simps [simp]:
     assumes "arr f"
-    shows "arr \<t>[f]" and "dom \<t>[f] = dom f" and "cod \<t>[f] = \<one>"
-      using assms trm_in_hom by auto
+    shows "arr \<t>\<^sup>?[f]" and "dom \<t>\<^sup>?[f] = dom f" and "cod \<t>\<^sup>?[f] = \<one>\<^sup>?"
+      using assms some_trm_in_hom by auto
 
-    lemma trm_eqI:
-    assumes "\<guillemotleft>t : dom f \<rightarrow> \<one>\<guillemotright>"
-    shows "t = \<t>[f]"
+    lemma some_trm_eqI:
+    assumes "\<guillemotleft>t : dom f \<rightarrow> \<one>\<^sup>?\<guillemotright>"
+    shows "t = \<t>\<^sup>?[f]"
     proof -
       have "ide (dom f)" using assms
         by (metis ide_dom in_homE)
-      hence "\<exists>!t. \<guillemotleft>t : dom f \<rightarrow> \<one>\<guillemotright>"
-        using terminal_def [of \<one>] terminal_some_terminal by auto
-      moreover have "\<guillemotleft>t : dom f \<rightarrow> \<one>\<guillemotright>"
+      hence "\<exists>!t. \<guillemotleft>t : dom f \<rightarrow> \<one>\<^sup>?\<guillemotright>"
+        using terminal_def [of "\<one>\<^sup>?"] terminal_some_terminal by auto
+      moreover have "\<guillemotleft>t : dom f \<rightarrow> \<one>\<^sup>?\<guillemotright>"
         using assms by simp
       ultimately show ?thesis
-        using assms trm_def the1_equality [of "\<lambda>t. \<guillemotleft>t : dom f \<rightarrow> \<one>\<guillemotright>" t]
+        using assms some_terminator_def the1_equality [of "\<lambda>t. \<guillemotleft>t : dom f \<rightarrow> \<one>\<^sup>?\<guillemotright>" t]
               \<open>ide (dom f)\<close> arr_dom_iff_arr
         by fastforce
     qed
 
-    sublocale elementary_category_with_terminal_object C \<one> trm
-      using ide_some_terminal trm_eqI
-      by unfold_locales auto
-
     proposition extends_to_elementary_category_with_terminal_object:
-      shows "elementary_category_with_terminal_object C \<one> trm"
-      ..
+    shows "elementary_category_with_terminal_object C \<one>\<^sup>? (\<lambda>a. \<t>\<^sup>?[a])"
+      using ide_some_terminal some_trm_eqI
+      by unfold_locales auto
 
   end
 
@@ -1385,35 +1441,32 @@ begin
 
     sublocale category_with_binary_products C
     proof
+      interpret elementary_category_with_terminal_object C \<open>\<one>\<^sup>?\<close> \<open>\<lambda>a. \<t>\<^sup>?[a]\<close>
+        using extends_to_elementary_category_with_terminal_object by blast
       show "has_binary_products"
       proof -
         have "\<And>a0 a1. \<lbrakk>ide a0; ide a1\<rbrakk> \<Longrightarrow> \<exists>p0 p1. has_as_binary_product a0 a1 p0 p1"
         proof -
           fix a0 a1
           assume a0: "ide a0" and a1: "ide a1"
-          obtain p0 p1 where p0p1: "has_as_pullback \<t>[a0] \<t>[a1] p0 p1"
+          obtain p0 p1 where p0p1: "has_as_pullback \<t>\<^sup>?[a0] \<t>\<^sup>?[a1] p0 p1"
             using a0 a1 has_pullbacks has_pullbacks_def by force
           have "has_as_binary_product a0 a1 p0 p1"
-            using a0 a1 p0p1
-            apply (elim has_as_pullbackE, intro has_as_binary_productI)
-                apply blast
-               apply blast
-              apply fastforce
-             apply fastforce
-          proof -
+          proof
+            show "ide a0" and "ide a1"
+              using a0 a1 by auto
+            show "\<guillemotleft>p0 : dom p1 \<rightarrow> a0\<guillemotright>" and "\<guillemotleft>p1 : dom p1 \<rightarrow> a1\<guillemotright>"
+              using p0p1 a0 a1 commutative_squareE has_as_pullbackE in_homI trm_simps(2)
+              by metis+
             fix x f g
             assume f: "\<guillemotleft>f : x \<rightarrow> a0\<guillemotright>" and g: "\<guillemotleft>g : x \<rightarrow> a1\<guillemotright>"
-            assume "\<And>h k. commutative_square \<t>[a0] \<t>[a1] h k \<Longrightarrow> \<exists>!l. p0 \<cdot> l = h \<and> p1 \<cdot> l = k"
-            moreover have "commutative_square \<t>[a0] \<t>[a1] f g"
-              using f g
-              by (metis a0 commutative_squareI in_homE
-                        elementary_category_with_terminal_object.trm_simps_ide(2)
-                        extends_to_elementary_category_with_terminal_object
-                        has_as_pullbackE p0p1 trm_naturality)
+            have "commutative_square \<t>\<^sup>?[a0] \<t>\<^sup>?[a1] f g"
+              by (metis a0 has_as_pullbackE in_homE commutative_squareI f g p0p1 trm_naturality
+                  trm_simps(2))
             moreover have "\<And>l. p0 \<cdot> l = f \<and> p1 \<cdot> l = g \<Longrightarrow> \<guillemotleft>l : x \<rightarrow> dom p1\<guillemotright>"
               using f g by blast
             ultimately show "\<exists>!l. \<guillemotleft>l : x \<rightarrow> dom p1\<guillemotright> \<and> p0 \<cdot> l = f \<and> p1 \<cdot> l = g"
-              by metis
+              by (metis has_as_pullbackE p0p1)
           qed
           thus "\<exists>p0 p1. has_as_binary_product a0 a1 p0 p1"
             by auto
@@ -1432,11 +1485,14 @@ begin
     elementary_category_with_terminal_object
   begin
 
-    proposition is_cartesian_category:
-    shows "cartesian_category C"
+    sublocale cartesian_category C
       using cartesian_category.intro is_category_with_binary_products
             is_category_with_terminal_object
       by auto
+
+    proposition is_cartesian_category:
+    shows "cartesian_category C"
+      ..
 
   end
 
@@ -1444,15 +1500,14 @@ begin
   begin
 
     proposition extends_to_elementary_cartesian_category:
-    shows "elementary_cartesian_category C pr0 pr1 \<one> trm"
+    shows "elementary_cartesian_category C some_pr0 some_pr1 \<one>\<^sup>? (\<lambda>a. \<t>\<^sup>?[a])"
       by (simp add: elementary_cartesian_category_def
-          elementary_category_with_terminal_object_axioms
+          extends_to_elementary_category_with_terminal_object
           extends_to_elementary_category_with_binary_products)
 
-    sublocale elementary_cartesian_category C pr0 pr1 \<one> trm
-      using extends_to_elementary_cartesian_category by simp
-
   end
+
+subsection "Monoidal Structure"
 
   text \<open>
     Here we prove some facts that will later allow us to show that an elementary cartesian
@@ -1470,18 +1525,21 @@ begin
       using ide_one
       by (simp add: terminal_arr_unique terminal_one)
 
-    lemma \<iota>_is_terminal_arr:
+    lemma unit_is_terminal_arr:
     shows "terminal_arr \<iota>"
       using ide_one
       by (simp add: terminal_one)
 
+    lemma unit_eq_trm:
+    shows "\<iota> = \<t>[\<one> \<otimes> \<one>]"
+      by (metis unit_is_terminal_arr cod_pr1 comp_cod_arr pr_simps(5) trm_naturality ide_one
+          pr_coincidence trm_one)
+
     lemma inverse_arrows_\<iota>:
     shows "inverse_arrows \<iota> \<langle>\<one>, \<one>\<rangle>"
       using ide_one
-      by (metis (no_types, lifting) dup_is_natural_transformation \<iota>_is_terminal_arr cod_pr0
-          comp_cod_arr pr_dup(1) ide_dom inverse_arrows_def map_simp
-          natural_transformation.is_natural_2 pr_simps(2) pr1_in_hom' trm_eqI_ax trm_naturality
-          trm_one tuple_pr)
+      by (metis unit_is_terminal_arr cod_pr0 comp_tuple_arr ide_char ide_dom inverse_arrows_def
+          prod_def pr_coincidence pr_dup(2) pr_simps(2))
 
     lemma \<iota>_is_iso:
     shows "iso \<iota>"
@@ -1490,14 +1548,8 @@ begin
     lemma trm_tensor:
     assumes "ide a" and "ide b"
     shows "\<t>[a \<otimes> b] = \<iota> \<cdot> (\<t>[a] \<otimes> \<t>[b])"
-    proof -
-      have "\<t>[a \<otimes> b] = \<t>[a] \<cdot> \<pp>\<^sub>1[a, b]"
-        by (metis assms(1-2) cod_pr1 pr_simps(4-6) trm_naturality)
-      moreover have "\<guillemotleft>\<t>[b] : b \<rightarrow> \<one>\<guillemotright>"
-        using assms(2) trm_in_hom_ax by blast
-      ultimately show ?thesis
-        using assms(1) pr_coincidence trm_in_hom_ax by fastforce
-    qed
+      using assms unit_is_terminal_arr terminal_arr_unique ide_one
+      by (simp add: unit_eq_trm)
 
     abbreviation runit ("\<r>[_]")
     where "\<r>[a] \<equiv> \<pp>\<^sub>1[a, \<one>]"
@@ -1519,7 +1571,7 @@ begin
     lemma runit'_in_hom:
     assumes "ide a"
     shows "\<guillemotleft>\<r>\<^sup>-\<^sup>1[a] : a \<rightarrow> a \<otimes> \<one>\<guillemotright>"
-      using assms ide_in_hom trm_in_hom_ax by blast
+      using assms ide_in_hom trm_in_hom by blast
 
     lemma lunit_in_hom:
     assumes "ide a"
@@ -1529,11 +1581,11 @@ begin
     lemma lunit'_in_hom:
     assumes "ide a"
     shows "\<guillemotleft>\<l>\<^sup>-\<^sup>1[a] : a \<rightarrow> \<one> \<otimes> a\<guillemotright>"
-      using assms ide_in_hom trm_in_hom_ax by blast
+      using assms ide_in_hom trm_in_hom by blast
 
     lemma runit_naturality:
-    assumes "ide a"
-    shows "\<r>[cod a] \<cdot> (a \<otimes> \<one>) = a \<cdot> \<r>[dom a]"
+    assumes "arr f"
+    shows "\<r>[cod f] \<cdot> (f \<otimes> \<one>) = f \<cdot> \<r>[dom f]"
       using assms pr_naturality(2) ide_char ide_one by blast
 
     lemma inverse_arrows_runit:
@@ -1541,19 +1593,16 @@ begin
     shows "inverse_arrows \<r>[a] \<r>\<^sup>-\<^sup>1[a]"
     proof
       show "ide (\<r>[a] \<cdot> \<r>\<^sup>-\<^sup>1[a])"
-      proof -
-        have "\<r>[a] \<cdot> \<r>\<^sup>-\<^sup>1[a] = a"
-          using assms
-          by (metis in_homE ide_char pr_tuple(1) trm_in_hom_ax)
-        thus ?thesis
-          using assms by presburger
-      qed
+        using assms by auto
       show "ide (\<r>\<^sup>-\<^sup>1[a] \<cdot> \<r>[a])"
       proof -
         have "ide (a \<otimes> \<one>)"
           using assms ide_one by blast
         moreover have "\<r>\<^sup>-\<^sup>1[a] \<cdot> \<r>[a] = a \<otimes> \<one>"
         proof (intro pr_joint_monic [of a \<one> "\<r>\<^sup>-\<^sup>1[a] \<cdot> \<r>[a]" "a \<otimes> \<one>"])
+          show "ide a" by fact
+          show "ide \<one>"
+            using ide_one by blast
           show "seq \<pp>\<^sub>0[a, \<one>] (\<r>\<^sup>-\<^sup>1[a] \<cdot> \<r>[a])"
             using assms ide_one runit'_in_hom [of a]
             by (intro seqI) auto
@@ -1563,11 +1612,11 @@ begin
               using comp_assoc by simp
             also have "... = \<t>[a] \<cdot> \<r>[a]"
               using assms ide_one
-              by (metis in_homE pr_tuple(2) ide_char trm_in_hom_ax)
+              by (metis in_homE pr_tuple(2) ide_char trm_in_hom)
             also have "... = \<t>[a \<otimes> \<one>]"
               using assms ide_one trm_naturality [of "\<r>[a]"] by simp
             also have "... = \<pp>\<^sub>0[a, \<one>] \<cdot> (a \<otimes> \<one>)"
-              using assms comp_arr_dom ide_one trm_naturality trm_one by fastforce
+              by (simp add: assms ide_one trm_one trm_tensor)
             finally show ?thesis by blast
           qed
           show "\<pp>\<^sub>1[a, \<one>] \<cdot> \<r>\<^sup>-\<^sup>1[a] \<cdot> \<r>[a] = \<pp>\<^sub>1[a, \<one>] \<cdot> (a \<otimes> \<one>)"
@@ -1589,17 +1638,14 @@ begin
     shows "inverse_arrows \<l>[a] \<l>\<^sup>-\<^sup>1[a]"
     proof
       show "ide (C \<l>[a] \<l>\<^sup>-\<^sup>1[a])"
-      proof -
-        have "C \<l>[a] \<l>\<^sup>-\<^sup>1[a] = a"
-          using assms
-          by (metis ide_char in_homE pr_tuple(2) trm_in_hom_ax)
-        thus ?thesis
-          using assms by simp
-      qed
+        using assms by auto
       show "ide (\<l>\<^sup>-\<^sup>1[a] \<cdot> \<l>[a])"
       proof -
         have "\<l>\<^sup>-\<^sup>1[a] \<cdot> \<l>[a] = \<one> \<otimes> a"
         proof (intro pr_joint_monic [of \<one> a "\<l>\<^sup>-\<^sup>1[a] \<cdot> \<l>[a]" "\<one> \<otimes> a"])
+          show "ide a" by fact
+          show "ide \<one>"
+            using ide_one by blast
           show "seq \<l>[a] (\<l>\<^sup>-\<^sup>1[a] \<cdot> \<l>[a])"
             using assms \<open>ide (\<l>[a] \<cdot> \<l>\<^sup>-\<^sup>1[a])\<close> by blast
           show "\<l>[a] \<cdot> \<l>\<^sup>-\<^sup>1[a] \<cdot> \<l>[a] = \<l>[a] \<cdot> (\<one> \<otimes> a)"
@@ -1612,11 +1658,11 @@ begin
               using comp_assoc by simp
             also have "... = \<t>[a] \<cdot> \<l>[a]"
               using assms ide_one
-              by (metis pr_tuple(1) ide_char in_homE trm_in_hom_ax)
+              by (metis pr_tuple(1) ide_char in_homE trm_in_hom)
             also have "... = \<t>[\<one> \<otimes> a]"
               using assms ide_one trm_naturality [of "\<l>[a]"] by simp
             also have "... = \<pp>\<^sub>1[\<one>, a] \<cdot> (\<one> \<otimes> a)"
-              using assms comp_arr_dom ide_one trm_naturality trm_one by fastforce
+              by (simp add: assms ide_one pr_coincidence trm_one trm_tensor)
             finally show ?thesis by simp
           qed
         qed
@@ -1626,42 +1672,30 @@ begin
       qed
     qed
 
+    lemma pr_expansion:
+    assumes "ide a" and "ide b"
+    shows "\<pp>\<^sub>0[a, b] = \<l>[b] \<cdot> (\<t>[a] \<otimes> b)" and "\<pp>\<^sub>1[a, b] = \<r>[a] \<cdot> (a \<otimes> \<t>[b])"
+      using assms
+      by (auto simp add: comp_ide_arr)
+
     lemma comp_lunit_term_dup:
     assumes "ide a"
     shows "\<l>[a] \<cdot> (\<t>[a] \<otimes> a) \<cdot> \<d>[a] = a"
-    proof -
-      have "\<guillemotleft>\<t>[a] : a \<rightarrow> \<one>\<guillemotright>"
-        using assms trm_in_hom_ax by blast
-      hence "\<l>[a] \<cdot> (\<t>[a] \<otimes> a) = a \<cdot> \<pp>\<^sub>0[a, a]"
-        by (metis assms pr_naturality(1) ide_char in_homE)
-      thus ?thesis
-        by (metis (no_types) assms comp_assoc comp_ide_self pr_dup(1))
-    qed
+      using assms prod_tuple by force
 
     lemma comp_runit_term_dup:
     assumes "ide a"
     shows "\<r>[a] \<cdot> (a \<otimes> \<t>[a]) \<cdot> \<d>[a] = a"
-    proof -
-      have "\<guillemotleft>\<t>[a] : a \<rightarrow> \<one>\<guillemotright>"
-        using assms trm_in_hom_ax by blast
-      hence "\<r>[a] \<cdot> (a \<otimes> \<t>[a]) = a \<cdot> \<pp>\<^sub>1[a, a]"
-        using assms by auto
-      thus ?thesis
-        using assms
-        by (metis comp_ide_arr pr_dup(2) ide_char comp_assoc seqI)
-    qed
-
-    lemma comp_proj_assoc:
-    assumes "ide a0" and "ide a1" and "ide a2"
-    shows "\<pp>\<^sub>1[a0, a1 \<otimes> a2] \<cdot> \<a>[a0, a1, a2] = \<pp>\<^sub>1[a0, a1] \<cdot> \<pp>\<^sub>1[a0 \<otimes> a1, a2]"
-    and "\<pp>\<^sub>0[a0, a1 \<otimes> a2] \<cdot> \<a>[a0, a1, a2] = \<langle>\<pp>\<^sub>0[a0, a1] \<cdot> \<pp>\<^sub>1[a0 \<otimes> a1, a2], \<pp>\<^sub>0[a0 \<otimes> a1, a2]\<rangle>"
-      using assms assoc_def by auto
+      using assms prod_tuple by force
 
     lemma dup_coassoc:
     assumes "ide a"
     shows "\<a>[a, a, a] \<cdot> (\<d>[a] \<otimes> a) \<cdot> \<d>[a] = (a \<otimes> \<d>[a]) \<cdot> \<d>[a]"
     proof (intro pr_joint_monic
                    [of a "a \<otimes> a" "\<a>[a, a, a] \<cdot> (\<d>[a] \<otimes> a) \<cdot> \<d>[a]" "(a \<otimes> \<d>[a]) \<cdot> \<d>[a]"])
+      show "ide a" by fact
+      show "ide (a \<otimes> a)"
+        by (simp add: assms)
       show "seq \<pp>\<^sub>0[a, a \<otimes> a] (\<a>[a, a, a] \<cdot> (\<d>[a] \<otimes> a) \<cdot> \<d>[a])"
         using assms by simp
       show "\<pp>\<^sub>0[a, a \<otimes> a] \<cdot> \<a>[a, a, a] \<cdot> (\<d>[a] \<otimes> a) \<cdot> \<d>[a] = \<pp>\<^sub>0[a, a \<otimes> a] \<cdot> (a \<otimes> \<d>[a]) \<cdot> \<d>[a]"
@@ -1709,6 +1743,8 @@ begin
     shows "\<d>[a \<otimes> b] = \<a>\<^sup>-\<^sup>1[a, b, a \<otimes> b] \<cdot> (a \<otimes> \<a>[b, a, b]) \<cdot> (a \<otimes> \<sigma> (a, b) \<otimes> b) \<cdot>
                         (a \<otimes> \<a>\<^sup>-\<^sup>1[a, b, b]) \<cdot> \<a>[a, a, b \<otimes> b] \<cdot> (\<d>[a] \<otimes> \<d>[b])"
     proof (intro pr_joint_monic [of "a \<otimes> b" "a \<otimes> b" "\<d>[a \<otimes> b]"])
+      show "ide (a \<otimes> b)" and "ide (a \<otimes> b)"
+        by (auto simp add: assms)
       show "seq \<pp>\<^sub>0[a \<otimes> b, a \<otimes> b] (\<d>[a \<otimes> b])"
         using assms by simp
       have 1: "\<a>\<^sup>-\<^sup>1[a, b, a \<otimes> b] \<cdot> (a \<otimes> \<a>[b, a, b]) \<cdot> (a \<otimes> \<sigma> (a, b) \<otimes> b) \<cdot>
@@ -1725,11 +1761,13 @@ begin
           thus ?thesis by presburger
         qed
         also have "... = \<a>\<^sup>-\<^sup>1[a, b, a \<otimes> b] \<cdot>
-        \<langle>a \<cdot> a \<cdot> a \<cdot> \<pp>\<^sub>1[a, b], \<a>[b, a, b] \<cdot> (\<s>[a, b] \<cdot> (a \<otimes> b) \<otimes> b) \<cdot>
-                               \<a>\<^sup>-\<^sup>1[a, b, b] \<cdot> \<langle>\<pp>\<^sub>1[a, b], \<d>[b \<cdot> \<pp>\<^sub>0[a, b]]\<rangle>\<rangle>"
+                           \<langle>a \<cdot> a \<cdot> a \<cdot> \<pp>\<^sub>1[a, b],
+                            \<a>[b, a, b] \<cdot> (\<s>[a, b] \<cdot> (a \<otimes> b) \<otimes> b) \<cdot>
+                              \<a>\<^sup>-\<^sup>1[a, b, b] \<cdot> \<langle>\<pp>\<^sub>1[a, b], \<d>[b \<cdot> \<pp>\<^sub>0[a, b]]\<rangle>\<rangle>"
           using assms prod_tuple by simp
         also have "... = \<a>\<^sup>-\<^sup>1[a, b, a \<otimes> b] \<cdot>
-        \<langle>\<pp>\<^sub>1[a, b], \<a>[b, a, b] \<cdot> (\<s>[a, b] \<otimes> b) \<cdot> \<a>\<^sup>-\<^sup>1[a, b, b] \<cdot> \<langle>\<pp>\<^sub>1[a, b], \<d>[\<pp>\<^sub>0[a, b]]\<rangle>\<rangle>"
+                           \<langle>\<pp>\<^sub>1[a, b],
+                            \<a>[b, a, b] \<cdot> (\<s>[a, b] \<otimes> b) \<cdot> \<a>\<^sup>-\<^sup>1[a, b, b] \<cdot> \<langle>\<pp>\<^sub>1[a, b], \<d>[\<pp>\<^sub>0[a, b]]\<rangle>\<rangle>"
         proof -
           have "a \<cdot> a \<cdot> a \<cdot> \<pp>\<^sub>1[a, b] = \<pp>\<^sub>1[a, b]"
             using assms comp_cod_arr by simp
@@ -1752,7 +1790,8 @@ begin
           using assms comp_assoc_tuple(1)
           by (metis sym_def pr_in_hom)
         also have "... = \<langle>\<langle>\<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>, \<langle>\<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>\<rangle>"
-          using assms comp_assoc_tuple(2) by force
+          using assms comp_assoc_tuple(2)
+          by (metis \<open>ide (a \<otimes> b)\<close> ide_in_hom pr_in_hom tuple_pr)
         also have "... = \<d>[a \<otimes> b]"
           using assms by simp
         finally show ?thesis by simp
@@ -1769,18 +1808,7 @@ begin
         using assms 1 by force
     qed
 
-    (* TODO: Not sure if the remaining facts are useful. *)
-
-    lemma \<iota>_eq_trm:
-    shows "\<iota> = \<t>[\<one> \<otimes> \<one>]"
-    proof (intro terminal_arr_unique)
-      show "par \<iota> \<t>[\<one> \<otimes> \<one>]"
-        by (simp add: ide_one trm_one trm_tensor)
-      show "terminal_arr \<t>[\<one> \<otimes> \<one>]"
-        using ide_one \<iota>_is_terminal_arr \<open>par \<iota> \<t>[\<one> \<otimes> \<one>]\<close> by auto
-      show "terminal_arr \<iota>"
-        using \<iota>_is_terminal_arr by blast
-    qed
+    (* TODO: Not sure if the following fact is useful. *)
 
     lemma terminal_tensor_one_one:
     shows "terminal (\<one> \<otimes> \<one>)"
@@ -1794,29 +1822,128 @@ begin
         show "\<exists>!f. \<guillemotleft>f : a \<rightarrow> \<one> \<otimes> \<one>\<guillemotright>"
         proof
           show "\<guillemotleft>inv \<iota> \<cdot> \<t>[a] : a \<rightarrow> \<one> \<otimes> \<one>\<guillemotright>"
-            using a ide_one inverse_arrows_\<iota> inverse_unique trm_in_hom_ax by fastforce
+            using a ide_one inverse_arrows_\<iota> inverse_unique trm_in_hom by fastforce
           show "\<And>f. \<guillemotleft>f : a \<rightarrow> \<one> \<otimes> \<one>\<guillemotright> \<Longrightarrow> f = inv \<iota> \<cdot> \<t>[a]"
-          proof -
-            fix f
-            assume f: "\<guillemotleft>f : a \<rightarrow> \<one> \<otimes> \<one>\<guillemotright>"
-            have "\<iota> \<cdot> f = \<t>[a]"
-            proof (intro terminal_arr_unique)
-              show "par (\<iota> \<cdot> f) \<t>[a]"
-                using a f
-                by (metis \<iota>_is_iso \<iota>_is_terminal_arr \<open>\<guillemotleft>inv \<iota> \<cdot> \<t>[a] : a \<rightarrow> \<one> \<otimes> \<one>\<guillemotright>\<close>
-                    cod_comp dom_comp dom_inv ide_one in_homE pr_simps(2-3) seqE seqI)
-              show "terminal_arr (\<iota> \<cdot> f)"
-                using a f \<iota>_is_terminal_arr cod_comp by force
-              show "terminal_arr \<t>[a]"
-                using a \<open>par (\<iota> \<cdot> f) \<t>[a]\<close> \<open>terminal_arr (\<iota> \<cdot> f)\<close> by auto
-            qed
-            thus "f = inv \<iota> \<cdot> \<t>[a]"
-              using a f \<iota>_is_iso invert_side_of_triangle(1)
-                    \<open>\<guillemotleft>inv \<iota> \<cdot> \<t>[a] : a \<rightarrow> \<one> \<otimes> \<one>\<guillemotright>\<close>
-              by blast
-          qed
+            by (metis \<open>\<guillemotleft>local.inv \<iota> \<cdot> \<t>[a] : a \<rightarrow> \<one> \<otimes> \<one>\<guillemotright>\<close> a in_homE ide_one pr_coincidence
+                pr_joint_monic trm_naturality trm_simps(1) unit_eq_trm)
         qed
       qed
+    qed
+
+  end
+
+subsection "Exponentials"
+
+  text \<open>
+    The following prepare the way for the definition of cartesian closed categories.
+    The notion of exponential has to be defined in relation to products.
+    Here we use a generic choice of products for this purpose.
+  \<close>
+
+  context cartesian_category
+  begin
+
+    definition has_as_exponential
+    where "has_as_exponential b c x e \<equiv>
+           ide b \<and> ide x \<and> \<guillemotleft>e : some_prod x b \<rightarrow> c\<guillemotright> \<and>
+           (\<forall>a g. ide a \<and> \<guillemotleft>g : some_prod a b \<rightarrow> c\<guillemotright> \<longrightarrow>
+                    (\<exists>!f. \<guillemotleft>f : a \<rightarrow> x\<guillemotright> \<and> g = C e (some_prod f b)))"
+
+    lemma has_as_exponentialI [intro]:
+    assumes "ide b" and "ide x" and "\<guillemotleft>e : some_prod x b \<rightarrow> c\<guillemotright>"
+    and "\<And>a g. \<lbrakk>ide a; \<guillemotleft>g : some_prod a b \<rightarrow> c\<guillemotright>\<rbrakk> \<Longrightarrow> \<exists>!f. \<guillemotleft>f : a \<rightarrow> x\<guillemotright> \<and> g = C e (some_prod f b)"
+    shows "has_as_exponential b c x e"
+      using assms has_as_exponential_def by simp
+
+    lemma has_as_exponentialE [elim]:
+    assumes "has_as_exponential b c x e"
+    and "\<lbrakk>ide b; ide x; \<guillemotleft>e : some_prod x b \<rightarrow> c\<guillemotright>;
+          \<And>a g. \<lbrakk>ide a; \<guillemotleft>g : some_prod a b \<rightarrow> c\<guillemotright>\<rbrakk> \<Longrightarrow> \<exists>!f. \<guillemotleft>f : a \<rightarrow> x\<guillemotright> \<and> g = C e (some_prod f b)\<rbrakk>
+             \<Longrightarrow> T"
+    shows T
+      using assms has_as_exponential_def by simp
+
+    lemma exponentials_are_isomorphic:
+    assumes "has_as_exponential b c x e" and "has_as_exponential b c x' e'"
+    shows "\<exists>!h. \<guillemotleft>h : x \<rightarrow> x'\<guillemotright> \<and> e = e' \<cdot> some_prod h b"
+    and "\<And>h. \<lbrakk>\<guillemotleft>h : x \<rightarrow> x'\<guillemotright>; e = e' \<cdot> (some_prod h b)\<rbrakk> \<Longrightarrow> iso h"
+    proof -
+      have "ide b \<and> ide c"
+        using assms(1) has_as_exponential_def by auto
+      have "ide x \<and> \<guillemotleft>e : some_prod x b \<rightarrow> c\<guillemotright>"
+        using assms(1) has_as_exponential_def by blast
+      have "ide x' \<and> \<guillemotleft>e' : some_prod x' b \<rightarrow> c\<guillemotright>"
+        using assms(2) has_as_exponential_def by blast
+      show 1: "\<exists>!h. \<guillemotleft>h : x \<rightarrow> x'\<guillemotright> \<and> e = e' \<cdot> some_prod h b"
+        using assms has_as_exponential_def by simp
+      have 2: "\<exists>!h. \<guillemotleft>h : x' \<rightarrow> x\<guillemotright> \<and> e' = e \<cdot> some_prod h b"
+        using assms has_as_exponential_def by simp
+      have 3: "\<exists>!h. \<guillemotleft>h : x \<rightarrow> x\<guillemotright> \<and> e = e \<cdot> some_prod h b"
+        using assms has_as_exponential_def by simp
+      have 4: "\<exists>!h. \<guillemotleft>h : x' \<rightarrow> x'\<guillemotright> \<and> e' = e' \<cdot> some_prod h b"
+        using assms has_as_exponential_def by simp
+      have 5: "\<And>h. \<guillemotleft>h : x \<rightarrow> x\<guillemotright> \<and> e = e \<cdot> some_prod h b \<Longrightarrow> h = x"
+        by (metis assms(1) 3 category.in_homE category_axioms comp_arr_dom has_as_exponential_def
+            partial_composition.ide_in_hom partial_composition_axioms)
+      have 6: "\<And>h. \<guillemotleft>h : x' \<rightarrow> x'\<guillemotright> \<and> e' = e' \<cdot> some_prod h b \<Longrightarrow> h = x'"
+        by (metis assms(2) 4 category.in_homE category_axioms comp_arr_dom has_as_exponential_def
+            partial_composition.ide_in_hom partial_composition_axioms)
+      let ?f = "THE h. \<guillemotleft>h : x' \<rightarrow> x\<guillemotright> \<and> e' = e \<cdot> some_prod h b"
+      let ?g = "THE h. \<guillemotleft>h : x \<rightarrow> x'\<guillemotright> \<and> e = e' \<cdot> some_prod h b"
+      have "inverse_arrows ?f ?g"
+      proof
+        have "?g \<cdot> ?f = x'"
+        proof -
+          have "\<guillemotleft>?g \<cdot> ?f : x' \<rightarrow> x'\<guillemotright> \<and> e' = e' \<cdot> some_prod ?g b \<cdot> some_prod ?f b"
+          proof
+            show "\<guillemotleft>?g \<cdot> ?f : x' \<rightarrow> x'\<guillemotright>"
+              using 1 2 theI [of "\<lambda>h. \<guillemotleft>h : x \<rightarrow> x'\<guillemotright> \<and> e = e' \<cdot> some_prod h b"]
+                    theI [of "\<lambda>h. \<guillemotleft>h : x' \<rightarrow> x\<guillemotright> \<and> e' = e \<cdot> some_prod h b"]
+              by (meson comp_in_homI)
+            show "e' = e' \<cdot> some_prod ?g b \<cdot> some_prod ?f b"
+              using 1 2 theI [of "\<lambda>h. \<guillemotleft>h : x \<rightarrow> x'\<guillemotright> \<and> e = e' \<cdot> some_prod h b"]
+                    theI [of "\<lambda>h. \<guillemotleft>h : x' \<rightarrow> x\<guillemotright> \<and> e' = e \<cdot> some_prod h b"]
+              by (metis (no_types, lifting) comp_assoc)
+          qed
+          hence "\<guillemotleft>?g \<cdot> ?f : x' \<rightarrow> x'\<guillemotright> \<and> e' = e' \<cdot> some_prod (?g \<cdot> ?f) (b \<cdot> b)"
+            by (metis (no_types, lifting) \<open>ide b \<and> ide c\<close> arrI ext
+                elementary_category_with_binary_products.interchange
+                extends_to_elementary_category_with_binary_products ide_def)
+          thus ?thesis
+            using 6
+            by (simp add: \<open>ide b \<and> ide c\<close>)
+        qed
+        thus "ide (?g \<cdot> ?f)"
+          using \<open>ide x' \<and> \<guillemotleft>e' : some_prod x' b \<rightarrow> c\<guillemotright>\<close> by presburger
+        have "?f \<cdot> ?g = x"
+        proof -
+          have "\<guillemotleft>?f \<cdot> ?g : x \<rightarrow> x\<guillemotright> \<and> e = e \<cdot> some_prod ?f b \<cdot> some_prod ?g b"
+          proof
+            show "\<guillemotleft>?f \<cdot> ?g : x \<rightarrow> x\<guillemotright>"
+              using 1 2 theI [of "\<lambda>h. \<guillemotleft>h : x \<rightarrow> x'\<guillemotright> \<and> e = e' \<cdot> some_prod h b"]
+                    theI [of "\<lambda>h. \<guillemotleft>h : x' \<rightarrow> x\<guillemotright> \<and> e' = e \<cdot> some_prod h b"]
+              by (meson comp_in_homI)
+            show "e = e \<cdot> some_prod ?f b \<cdot> some_prod ?g b"
+              using 1 2 theI [of "\<lambda>h. \<guillemotleft>h : x \<rightarrow> x'\<guillemotright> \<and> e = e' \<cdot> some_prod h b"]
+                    theI [of "\<lambda>h. \<guillemotleft>h : x' \<rightarrow> x\<guillemotright> \<and> e' = e \<cdot> some_prod h b"]
+              by (metis (no_types, lifting) comp_assoc)
+          qed
+          hence "\<guillemotleft>?f \<cdot> ?g : x \<rightarrow> x\<guillemotright> \<and> e = e \<cdot> some_prod (?f \<cdot> ?g) (b \<cdot> b)"
+            by (metis (no_types, lifting) \<open>ide b \<and> ide c\<close> arrI ext
+                elementary_category_with_binary_products.interchange
+                extends_to_elementary_category_with_binary_products ide_def)
+          thus ?thesis
+            using 5
+            by (simp add: \<open>ide b \<and> ide c\<close>)
+        qed
+        thus "ide (?f \<cdot> ?g)"
+          using \<open>ide x \<and> \<guillemotleft>e : some_prod x b \<rightarrow> c\<guillemotright>\<close> by presburger
+      qed
+      hence "iso ?g"
+        by blast
+      moreover have "\<And>h. \<lbrakk>\<guillemotleft>h : x \<rightarrow> x'\<guillemotright>; e = e' \<cdot> (some_prod h b)\<rbrakk> \<Longrightarrow> h = ?g"
+        using 1 theI [of "\<lambda>h. \<guillemotleft>h : x \<rightarrow> x'\<guillemotright> \<and> e = e' \<cdot> some_prod h b"] by auto
+      ultimately show "\<And>h. \<lbrakk>\<guillemotleft>h : x \<rightarrow> x'\<guillemotright>; e = e' \<cdot> (some_prod h b)\<rbrakk> \<Longrightarrow> iso h" by simp
     qed
 
   end
@@ -1880,21 +2007,24 @@ begin
           \<close>
           let ?\<phi> = "(\<lambda>x :: nat. if x = 0 then J.FF else J.TT)"
           let ?\<psi> = "\<lambda>j. if j = J.FF then 0 else 1"
-          have "bij_betw ?\<phi> ({0, 1} :: nat set) {J.FF, J.TT}"
-            using bij_betwI [of ?\<phi> "{0, 1} :: nat set" "{J.FF, J.TT}" ?\<psi>] by fastforce
-          hence "has_products {J.FF, J.TT}"
-            using assms has_products_def [of "{J.FF, J.TT}"]
-                  has_products_preserved_by_bijection
-                    [of "{0, 1} :: nat set" ?\<phi> "{J.FF, J.TT}"]
-            by blast
-          hence "\<exists>a. has_as_product J.comp D.map a"
-            using has_products_def [of "{J.FF, J.TT}"]
-                  discrete_diagram_axioms J.arr_char
-            by blast
-          hence "\<exists>a \<pi>. product_cone J.comp C D.map a \<pi>"
-            using has_as_product_def by blast
-          hence 2: "\<exists>a \<pi>. D.limit_cone a \<pi>"
-            unfolding product_cone_def by simp
+          have 2: "\<exists>a \<pi>. D.limit_cone a \<pi>"
+          proof -
+            have "bij_betw ?\<phi> ({0, 1} :: nat set) {J.FF, J.TT}"
+              using bij_betwI [of ?\<phi> "{0, 1} :: nat set" "{J.FF, J.TT}" ?\<psi>] by fastforce
+            hence "has_products {J.FF, J.TT}"
+              using assms has_products_def [of "{J.FF, J.TT}"]
+                    has_products_preserved_by_bijection
+                      [of "{0, 1} :: nat set" ?\<phi> "{J.FF, J.TT}"]
+              by blast
+            hence "\<exists>a. has_as_product J.comp D.map a"
+              using has_products_def [of "{J.FF, J.TT}"]
+                    discrete_diagram_axioms J.arr_char
+              by blast
+            hence "\<exists>a \<pi>. product_cone J.comp C D.map a \<pi>"
+              using has_as_product_def by blast
+            thus ?thesis
+              unfolding product_cone_def by simp
+          qed
           obtain a \<pi> where \<pi>: "D.limit_cone a \<pi>"
             using 2 by auto
           interpret \<pi>: limit_cone J.comp C D.map a \<pi>
@@ -1968,14 +2098,14 @@ begin
     lemma binary_product_of_products_is_product:
     assumes "has_as_product J0 D0 a0" and "has_as_product J1 D1 a1"
     and "has_as_binary_product a0 a1 p0 p1"
-    and "Collect (partial_magma.arr J0) \<inter> Collect (partial_magma.arr J1) = {}"
+    and "Collect (partial_composition.arr J0) \<inter> Collect (partial_composition.arr J1) = {}"
     and "partial_magma.null J0 = partial_magma.null J1"
     shows "has_as_product
              (discrete_category.comp
-                (Collect (partial_magma.arr J0) \<union> Collect (partial_magma.arr J1))
+                (Collect (partial_composition.arr J0) \<union> Collect (partial_composition.arr J1))
                 (partial_magma.null J0))
-             (\<lambda>i. if i \<in> Collect (partial_magma.arr J0) then D0 i
-                  else if i \<in> Collect (partial_magma.arr J1) then D1 i
+             (\<lambda>i. if i \<in> Collect (partial_composition.arr J0) then D0 i
+                  else if i \<in> Collect (partial_composition.arr J1) then D1 i
                   else null)
              (dom p0)"
     proof -
@@ -2050,19 +2180,9 @@ begin
         show "?D j \<cdot> ?\<pi> (J.dom j) = ?\<pi> j"
         proof -
           have 0: "J0.arr j \<Longrightarrow> D0 j \<cdot> \<pi>0 j \<cdot> p0 = \<pi>0 j \<cdot> p0"
-          proof -
-            have "J0.arr j \<Longrightarrow> (D0 j \<cdot> \<pi>0 j) \<cdot> p0 = \<pi>0 j \<cdot> p0"
-              using p0 \<pi>0.is_natural_1 \<pi>0.is_natural_2 D0.is_discrete by simp
-            thus "J0.arr j \<Longrightarrow> D0 j \<cdot> \<pi>0 j \<cdot> p0 = \<pi>0 j \<cdot> p0"
-              using comp_assoc by simp
-          qed
+            by (metis D0.is_discrete J0.ide_char \<pi>0.is_natural_1 comp_assoc)
           have 1: "J1.arr j \<Longrightarrow> D1 j \<cdot> \<pi>1 j \<cdot> p1 = \<pi>1 j \<cdot> p1"
-          proof -
-            have "J1.arr j \<Longrightarrow> (D1 j \<cdot> \<pi>1 j) \<cdot> p1 = \<pi>1 j \<cdot> p1"
-              using p1 \<pi>1.is_natural_1 \<pi>1.is_natural_2 D1.is_discrete by simp
-            thus "J1.arr j \<Longrightarrow> D1 j \<cdot> \<pi>1 j \<cdot> p1 = \<pi>1 j \<cdot> p1"
-              using comp_assoc by simp
-          qed
+            by (metis D1.is_discrete J1.ide_char \<pi>1.is_natural_1 comp_assoc)
           show ?thesis
             using 0 1 by auto
         qed
@@ -2299,6 +2419,8 @@ begin
           hence I: "I = {}" by force
           thus "has_products I"
           proof -
+            interpret elementary_category_with_terminal_object C \<open>\<one>\<^sup>?\<close> \<open>\<lambda>a. \<t>\<^sup>?[a]\<close>
+              using extends_to_elementary_category_with_terminal_object by blast
             interpret J: discrete_category I 0
               apply unfold_locales using I by auto
             have "\<And>D. discrete_diagram J.comp C D \<Longrightarrow> \<exists>a. has_as_product J.comp D a"
@@ -2318,10 +2440,9 @@ begin
               using I by blast
             ultimately show ?thesis
               using I has_products_def
-              by (metis category_with_terminal_object.has_terminal discrete_diagram.product_coneI
-                  discrete_diagram_def empty_diagram.has_as_limit_iff_terminal empty_diagram.intro
-                  empty_diagram_axioms.intro empty_iff has_as_product_def
-                  is_category_with_terminal_object mem_Collect_eq)
+              by (metis has_terminal discrete_diagram.product_coneI discrete_diagram_def
+                  empty_diagram.has_as_limit_iff_terminal empty_diagram.intro
+                  empty_diagram_axioms.intro empty_iff has_as_product_def mem_Collect_eq)
           qed
         qed
         show "\<And>n I :: nat set.
@@ -2350,7 +2471,7 @@ begin
                 show "I \<noteq> UNIV"
                   using I by auto
                 fix J D
-                assume D: "discrete_diagram J C D \<and> Collect (partial_magma.arr J) = I"
+                assume D: "discrete_diagram J C D \<and> Collect (partial_composition.arr J) = I"
                 interpret D: discrete_diagram J C D
                   using D by simp
                 have Null: "D.J.null \<notin> ?I0 \<and> D.J.null \<notin> ?I1"

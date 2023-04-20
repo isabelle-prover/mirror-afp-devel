@@ -1719,7 +1719,7 @@ begin
             (\<lambda>t. if arr t then t \<^bold>\<circ> a else \<^bold>\<sharp>)"
         using assms ide_implies_arr by force
       thus ?thesis
-        using assms App.fixing_ide_gives_simulation_2 [of a] by auto
+        using assms App.fixing_ide_gives_simulation_0 [of a] by auto
     qed
 
     lemma App_is_simulation2:

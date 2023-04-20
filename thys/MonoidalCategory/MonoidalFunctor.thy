@@ -97,11 +97,11 @@ begin
 
     lemma \<iota>\<^sub>1_in_hom:
     shows "\<guillemotleft>\<iota>\<^sub>1 : F \<I>\<^sub>C \<otimes>\<^sub>D F \<I>\<^sub>C \<rightarrow>\<^sub>D F \<I>\<^sub>C\<guillemotright>"
-      using C.\<iota>_in_hom by (intro D.in_homI, auto)
+      using C.unit_in_hom by (intro D.in_homI, auto)
 
     lemma \<iota>\<^sub>1_is_iso:
     shows "D.iso \<iota>\<^sub>1"
-      using C.\<iota>_is_iso C.\<iota>_in_hom \<phi>_in_hom D.isos_compose by auto
+      using C.unit_is_iso C.unit_in_hom \<phi>_in_hom D.isos_compose by auto
 
     interpretation D: monoidal_category_with_alternate_unit D T\<^sub>D \<alpha>\<^sub>D \<iota>\<^sub>D \<iota>\<^sub>1
     proof -
@@ -134,7 +134,7 @@ begin
           using L.isomorphic_to_identity_is_equivalence \<ll>\<^sub>Do\<psi>x.natural_isomorphism_axioms
           by simp
         show "equivalence_functor D D (\<lambda>f. (D.cod \<iota>\<^sub>1) \<otimes>\<^sub>D f)"
-          using L.equivalence_functor_axioms C.\<iota>_in_hom by auto
+          using L.equivalence_functor_axioms C.unit_in_hom by auto
       qed
       interpret R: equivalence_functor D D \<open>\<lambda>f. T\<^sub>D (f, D.cod \<iota>\<^sub>1)\<close>
       proof -
@@ -155,10 +155,10 @@ begin
           using R.isomorphic_to_identity_is_equivalence \<rho>\<^sub>Dox\<psi>.natural_isomorphism_axioms
           by simp
         show "equivalence_functor D D (\<lambda>f. f \<otimes>\<^sub>D (D.cod \<iota>\<^sub>1))"
-          using R.equivalence_functor_axioms C.\<iota>_in_hom by auto
+          using R.equivalence_functor_axioms C.unit_in_hom by auto
       qed
       show "monoidal_category_with_alternate_unit D T\<^sub>D \<alpha>\<^sub>D \<iota>\<^sub>D \<iota>\<^sub>1"
-        using D.pentagon C.\<iota>_is_iso C.\<iota>_in_hom preserves_hom \<iota>\<^sub>1_is_iso \<iota>\<^sub>1_in_hom
+        using D.pentagon C.unit_is_iso C.unit_in_hom preserves_hom \<iota>\<^sub>1_is_iso \<iota>\<^sub>1_in_hom
         by (unfold_locales, auto)
     qed
 
@@ -174,7 +174,7 @@ begin
 
     lemma \<I>\<^sub>1_char [simp]:
     shows "\<I>\<^sub>1 = F \<I>\<^sub>C"
-      using D.C\<^sub>1.unity_def \<iota>\<^sub>1_in_hom by auto
+      using \<iota>\<^sub>1_in_hom by auto
 
     definition \<psi>
     where "\<psi> \<equiv> THE \<psi>. \<guillemotleft>\<psi> : \<I>\<^sub>D \<rightarrow>\<^sub>D F \<I>\<^sub>C\<guillemotright> \<and> D.iso \<psi> \<and> \<psi> \<cdot>\<^sub>D \<iota>\<^sub>D = \<iota>\<^sub>1 \<cdot>\<^sub>D (\<psi> \<otimes>\<^sub>D \<psi>)"
@@ -184,7 +184,7 @@ begin
     and "\<exists>!\<psi>. \<guillemotleft>\<psi> : \<I>\<^sub>D \<rightarrow>\<^sub>D F \<I>\<^sub>C\<guillemotright> \<and> D.iso \<psi> \<and> \<psi> \<cdot>\<^sub>D \<iota>\<^sub>D = \<iota>\<^sub>1 \<cdot>\<^sub>D (\<psi> \<otimes>\<^sub>D \<psi>)"
     proof -
       show "\<exists>!\<psi>. \<guillemotleft>\<psi> : \<I>\<^sub>D \<rightarrow>\<^sub>D F \<I>\<^sub>C\<guillemotright> \<and> D.iso \<psi> \<and> \<psi> \<cdot>\<^sub>D \<iota>\<^sub>D = \<iota>\<^sub>1 \<cdot>\<^sub>D (\<psi> \<otimes>\<^sub>D \<psi>)"
-        using D.unit_unique_upto_unique_iso \<iota>\<^sub>1_in_hom D.C\<^sub>1.\<iota>_in_hom
+        using D.unit_unique_upto_unique_iso \<iota>\<^sub>1_in_hom
         by (elim D.in_homE, auto)
       hence 1: "\<guillemotleft>\<psi> : \<I>\<^sub>D \<rightarrow>\<^sub>D F \<I>\<^sub>C\<guillemotright> \<and> D.iso \<psi> \<and> \<psi> \<cdot>\<^sub>D \<iota>\<^sub>D = \<iota>\<^sub>1 \<cdot>\<^sub>D (\<psi> \<otimes>\<^sub>D \<psi>)"
         unfolding \<psi>_def
@@ -207,7 +207,7 @@ begin
     shows "\<l>\<^sub>1[F a] \<cdot>\<^sub>D (\<psi> \<otimes>\<^sub>D F a) = \<l>\<^sub>D[F a]"
     proof -
       have "D.par (\<l>\<^sub>1[F a] \<cdot>\<^sub>D (\<psi> \<otimes>\<^sub>D F a)) \<l>\<^sub>D[F a]"
-        using assms D.C\<^sub>1.lunit_in_hom D.tensor_in_hom D.lunit_in_hom \<psi>_char(1) C.\<iota>_in_hom
+        using assms D.C\<^sub>1.lunit_in_hom D.tensor_in_hom D.lunit_in_hom \<psi>_char(1)
         by auto
       text \<open>
         The upper left triangle in the following diagram commutes.
@@ -282,11 +282,11 @@ $$\xymatrix{
           proof -
             have "(D.inv \<psi> \<otimes>\<^sub>D F a) \<cdot>\<^sub>D (\<iota>\<^sub>1 \<otimes>\<^sub>D F a) \<cdot>\<^sub>D ((\<psi> \<otimes>\<^sub>D \<psi>) \<otimes>\<^sub>D F a) =
                   D.inv \<psi> \<cdot>\<^sub>D \<psi> \<cdot>\<^sub>D \<iota>\<^sub>D \<otimes>\<^sub>D F a"
-              using assms \<psi>_char(1-3) D.\<iota>_in_hom \<iota>\<^sub>1_in_hom D.interchange
+              using assms \<psi>_char(1-3) \<iota>\<^sub>1_in_hom D.interchange
               by (elim D.in_homE, auto)
             also have "... = \<iota>\<^sub>D \<otimes>\<^sub>D F a"
               using assms \<psi>_char(1-2) D.inv_is_inverse D.comp_inv_arr D.comp_cod_arr
-                    D.comp_reduce D.\<iota>_in_hom
+                    D.comp_reduce D.unit_in_hom
               by (elim D.in_homE, auto)
             finally show ?thesis by blast
           qed
@@ -297,7 +297,7 @@ $$\xymatrix{
         finally show ?thesis by blast
       qed
       ultimately show ?thesis
-        using D.L.is_faithful [of "\<l>\<^sub>1[F a] \<cdot>\<^sub>D (\<psi> \<otimes>\<^sub>D F a)" "\<l>\<^sub>D[F a]"] D.\<iota>_in_hom by force
+        using D.L.is_faithful [of "\<l>\<^sub>1[F a] \<cdot>\<^sub>D (\<psi> \<otimes>\<^sub>D F a)" "\<l>\<^sub>D[F a]"] by force
     qed
 
     lemma lunit_coherence2:
@@ -364,17 +364,17 @@ $$\xymatrix{
                          D.inv \<a>\<^sub>D[F \<I>\<^sub>C, F \<I>\<^sub>C, F a]"
         proof -
           have 1: "F (\<I>\<^sub>C \<otimes>\<^sub>C \<l>\<^sub>C[a]) = F (\<iota>\<^sub>C \<otimes>\<^sub>C a) \<cdot>\<^sub>D D.inv (F \<a>\<^sub>C[\<I>\<^sub>C, \<I>\<^sub>C, a])"
-            using assms C.lunit_char(1-2) C.\<iota>_in_hom preserves_inv by auto
+            using assms C.lunit_char(1-2) C.unit_in_hom preserves_inv by auto
           hence "F \<a>\<^sub>C[\<I>\<^sub>C, \<I>\<^sub>C, a] = D.inv (F (\<I>\<^sub>C \<otimes>\<^sub>C \<l>\<^sub>C[a])) \<cdot>\<^sub>D F (\<iota>\<^sub>C \<otimes>\<^sub>C a)"
           proof -
             have "F \<a>\<^sub>C[\<I>\<^sub>C, \<I>\<^sub>C, a] \<cdot>\<^sub>D D.inv (F (\<iota>\<^sub>C \<otimes>\<^sub>C a))
                     = D.inv (F (\<iota>\<^sub>C \<otimes>\<^sub>C a) \<cdot>\<^sub>D D.inv (F \<a>\<^sub>C[\<I>\<^sub>C, \<I>\<^sub>C ,a]))"
-              using assms 1 preserves_iso C.ide_is_iso C.\<iota>_is_iso C.ide_unity C.iso_assoc
+              using assms 1 preserves_iso C.ide_is_iso C.unit_is_iso C.ide_unity C.iso_assoc
                     C.iso_lunit C.tensor_preserves_iso D.inv_comp D.inv_inv
                     D.iso_inv_iso D.iso_is_arr
               by metis
             thus ?thesis
-              using assms 1 preserves_iso C.ide_is_iso C.\<iota>_is_iso C.ide_unity C.iso_assoc
+              using assms 1 preserves_iso C.ide_is_iso C.unit_is_iso C.ide_unity C.iso_assoc
                     C.iso_lunit C.tensor_preserves_iso D.inv_comp D.inv_inv
                     D.iso_inv_iso D.iso_is_arr D.invert_side_of_triangle(2)
               by metis
@@ -388,7 +388,7 @@ $$\xymatrix{
         also have "... = (F \<I>\<^sub>C \<otimes>\<^sub>D F \<l>\<^sub>C[a]) \<cdot>\<^sub>D D.inv (\<phi> (\<I>\<^sub>C, \<I>\<^sub>C \<otimes>\<^sub>C a)) \<cdot>\<^sub>D
                          D.inv (F (\<I>\<^sub>C \<otimes>\<^sub>C \<l>\<^sub>C[a])) \<cdot>\<^sub>D (\<phi> (\<I>\<^sub>C, a) \<cdot>\<^sub>D (F \<iota>\<^sub>C \<otimes>\<^sub>D F a)) \<cdot>\<^sub>D
                          (\<phi> (\<I>\<^sub>C, \<I>\<^sub>C) \<otimes>\<^sub>D F a) \<cdot>\<^sub>D D.inv \<a>\<^sub>D[F \<I>\<^sub>C, F \<I>\<^sub>C, F a]"
-          using assms \<phi>.naturality [of "(\<iota>\<^sub>C, a)"] C.\<iota>_in_hom by auto
+          using assms \<phi>.naturality [of "(\<iota>\<^sub>C, a)"] C.unit_in_hom by auto
         also have "... = (F \<I>\<^sub>C \<otimes>\<^sub>D F \<l>\<^sub>C[a]) \<cdot>\<^sub>D D.inv (\<phi> (\<I>\<^sub>C, \<I>\<^sub>C \<otimes>\<^sub>C a)) \<cdot>\<^sub>D
                          D.inv (F (\<I>\<^sub>C \<otimes>\<^sub>C \<l>\<^sub>C[a])) \<cdot>\<^sub>D \<phi> (\<I>\<^sub>C, a) \<cdot>\<^sub>D
                          ((F \<iota>\<^sub>C \<otimes>\<^sub>D F a) \<cdot>\<^sub>D (\<phi> (\<I>\<^sub>C, \<I>\<^sub>C) \<otimes>\<^sub>D F a)) \<cdot>\<^sub>D
@@ -397,7 +397,7 @@ $$\xymatrix{
         also have "... = (F \<I>\<^sub>C \<otimes>\<^sub>D F \<l>\<^sub>C[a]) \<cdot>\<^sub>D D.inv (\<phi> (\<I>\<^sub>C, \<I>\<^sub>C \<otimes>\<^sub>C a)) \<cdot>\<^sub>D
                          D.inv (F (\<I>\<^sub>C \<otimes>\<^sub>C \<l>\<^sub>C[a])) \<cdot>\<^sub>D \<phi> (\<I>\<^sub>C, a) \<cdot>\<^sub>D (\<iota>\<^sub>1 \<otimes>\<^sub>D F a) \<cdot>\<^sub>D
                          D.inv \<a>\<^sub>D[F \<I>\<^sub>C, F \<I>\<^sub>C, F a]"
-          using assms D.interchange C.\<iota>_in_hom by auto
+          using assms D.interchange C.unit_in_hom by auto
         also have "... = (F \<I>\<^sub>C \<otimes>\<^sub>D F \<l>\<^sub>C[a]) \<cdot>\<^sub>D D.inv (\<phi> (\<I>\<^sub>C, \<I>\<^sub>C \<otimes>\<^sub>C a)) \<cdot>\<^sub>D
                          D.inv (F (\<I>\<^sub>C \<otimes>\<^sub>C \<l>\<^sub>C[a])) \<cdot>\<^sub>D \<phi> (\<I>\<^sub>C, a) \<cdot>\<^sub>D
                          ((F \<I>\<^sub>C \<otimes>\<^sub>D \<l>\<^sub>1[F a]) \<cdot>\<^sub>D \<a>\<^sub>D[F \<I>\<^sub>C, F \<I>\<^sub>C, F a]) \<cdot>\<^sub>D
@@ -439,7 +439,7 @@ $$\xymatrix{
       moreover have "D.par (F \<l>\<^sub>C[a] \<cdot>\<^sub>D \<phi> (\<I>\<^sub>C, a)) \<l>\<^sub>1[F a]"
         using assms \<phi>_in_hom by simp
       ultimately show ?thesis
-        using D.C\<^sub>1.L.is_faithful [of "F \<l>\<^sub>C[a] \<cdot>\<^sub>D \<phi> (\<I>\<^sub>C, a)" "\<l>\<^sub>1[F a]"] D.C\<^sub>1.unity_def by simp
+        using D.C\<^sub>1.L.is_faithful [of "F \<l>\<^sub>C[a] \<cdot>\<^sub>D \<phi> (\<I>\<^sub>C, a)" "\<l>\<^sub>1[F a]"] by simp
     qed
 
     text \<open>
@@ -600,7 +600,7 @@ $$\xymatrix{
 
     lemma strictly_preserves_unity:
     shows "F \<I>\<^sub>C = \<I>\<^sub>D"
-      using C.\<iota>_in_hom strictly_preserves_\<iota> C.unity_def D.unity_def by auto
+      using C.unit_in_hom strictly_preserves_\<iota> by auto
 
     lemma strictly_preserves_assoc:
     assumes "C.arr a" and "C.arr b" and "C.arr c"
@@ -622,7 +622,7 @@ $$\xymatrix{
         moreover have
             "F ((\<iota>\<^sub>C \<otimes>\<^sub>C a) \<cdot>\<^sub>C C.assoc' \<I>\<^sub>C \<I>\<^sub>C a) = (\<iota>\<^sub>D \<otimes>\<^sub>D F a) \<cdot>\<^sub>D D.assoc' \<I>\<^sub>D \<I>\<^sub>D (F a)"
           using assms 1 strictly_preserves_\<iota> strictly_preserves_assoc strictly_preserves_unity
-                strictly_preserves_tensor preserves_inv C.\<iota>_in_hom
+                strictly_preserves_tensor preserves_inv C.unit_in_hom
           by auto
         moreover have "\<I>\<^sub>D \<otimes>\<^sub>D F \<l>\<^sub>C[a] = F (\<I>\<^sub>C \<otimes>\<^sub>C \<l>\<^sub>C[a])"
           using assms strictly_preserves_unity strictly_preserves_tensor by simp
@@ -647,7 +647,7 @@ $$\xymatrix{
         moreover have "F ((a \<otimes>\<^sub>C \<iota>\<^sub>C) \<cdot>\<^sub>C C.assoc a \<I>\<^sub>C \<I>\<^sub>C)
                          = (F a \<otimes>\<^sub>D \<iota>\<^sub>D) \<cdot>\<^sub>D D.assoc (F a) \<I>\<^sub>D \<I>\<^sub>D"
           using assms 1 strictly_preserves_\<iota> strictly_preserves_assoc strictly_preserves_unity
-                strictly_preserves_tensor preserves_inv C.\<iota>_in_hom
+                strictly_preserves_tensor preserves_inv C.unit_in_hom
           by auto
         moreover have "F \<r>\<^sub>C[a] \<otimes>\<^sub>D \<I>\<^sub>D = F (\<r>\<^sub>C[a] \<otimes>\<^sub>C \<I>\<^sub>C)"
           using assms strictly_preserves_unity strictly_preserves_tensor by simp

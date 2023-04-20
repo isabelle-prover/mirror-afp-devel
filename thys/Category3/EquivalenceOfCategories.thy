@@ -554,21 +554,22 @@ begin
           proof
             show "D.arr (Adj.\<epsilon> a)"
               using a by simp
-            show "\<And>f f'. D.seq (Adj.\<epsilon> a) f \<and> D.seq (Adj.\<epsilon> a) f' \<and> Adj.\<epsilon> a \<cdot>\<^sub>D f = Adj.\<epsilon> a \<cdot>\<^sub>D f'
+            show "\<And>f f'. \<lbrakk>D.seq (Adj.\<epsilon> a) f; D.seq (Adj.\<epsilon> a) f'; Adj.\<epsilon> a \<cdot>\<^sub>D f = Adj.\<epsilon> a \<cdot>\<^sub>D f'\<rbrakk>
                             \<Longrightarrow> f = f'"
             proof -
               fix f f'
-              assume ff': "D.seq (Adj.\<epsilon> a) f \<and> D.seq (Adj.\<epsilon> a) f' \<and> Adj.\<epsilon> a \<cdot>\<^sub>D f = Adj.\<epsilon> a \<cdot>\<^sub>D f'"
+              assume seq: "D.seq (Adj.\<epsilon> a) f" and seq': "D.seq (Adj.\<epsilon> a) f'"
+              and eq: "Adj.\<epsilon> a \<cdot>\<^sub>D f = Adj.\<epsilon> a \<cdot>\<^sub>D f'"
               have f: "\<guillemotleft>f : D.dom f \<rightarrow>\<^sub>D F (G a)\<guillemotright>"
-                using a ff' Adj.\<epsilon>.preserves_hom [of a a a] by fastforce
+                using a seq Adj.\<epsilon>.preserves_hom [of a a a] by fastforce
               have f': "\<guillemotleft>f' : D.dom f' \<rightarrow>\<^sub>D F (G a)\<guillemotright>"
-                using a ff' Adj.\<epsilon>.preserves_hom [of a a a] by fastforce
+                using a seq' Adj.\<epsilon>.preserves_hom [of a a a] by fastforce
               have par: "D.par f f'"
-                using f f' ff' D.dom_comp [of "Adj.\<epsilon> a" f] by force
+                using f f' seq eq D.dom_comp [of "Adj.\<epsilon> a" f] by force
               obtain b' \<phi> where \<phi>: "C.ide b' \<and> D.iso \<phi> \<and> \<guillemotleft>\<phi>: F b' \<rightarrow>\<^sub>D D.dom f\<guillemotright>"
                 using par essentially_surjective D.ide_dom [of f] by blast
               have 1: "Adj.\<epsilon> a \<cdot>\<^sub>D f \<cdot>\<^sub>D \<phi> = Adj.\<epsilon> a \<cdot>\<^sub>D f' \<cdot>\<^sub>D \<phi>"
-                using ff' \<phi> par D.comp_assoc by metis
+                using eq \<phi> par D.comp_assoc by metis
               obtain g where g: "\<guillemotleft>g : b' \<rightarrow>\<^sub>C G a\<guillemotright> \<and> F g = f \<cdot>\<^sub>D \<phi>"
                 using a f \<phi> is_full [of "G a" b' "f \<cdot>\<^sub>D \<phi>"] by auto
               obtain g' where g': "\<guillemotleft>g' : b' \<rightarrow>\<^sub>C G a\<guillemotright> \<and> F g' = f' \<cdot>\<^sub>D \<phi>"

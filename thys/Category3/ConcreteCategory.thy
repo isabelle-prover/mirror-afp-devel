@@ -79,7 +79,7 @@ begin
                       else
                          Null"
 
-    interpretation partial_magma COMP
+    interpretation partial_composition COMP
       using COMP_def by (unfold_locales, metis)
 
     lemma null_char:

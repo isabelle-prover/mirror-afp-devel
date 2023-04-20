@@ -34,65 +34,11 @@ begin
     \<open>C \<times> C \<times> C\<close> has to mean either \<open>C \<times> (C \<times> C)\<close> or \<open>(C \<times> C) \<times> C\<close>,
     which are not formally identical, and that associativities are somehow involved in the
     definitions of the functors \<open>T o (T \<times> C)\<close> and \<open>T o (C \<times> T)\<close>.
-    Here we define the \<open>binary_endofunctor\<close> locale to codify our choices about what
+    Here we use the @{locale binary_endofunctor} locale to codify our choices about what
     \<open>C \<times> C \<times> C\<close>, \<open>T o (T \<times> C)\<close>, and \<open>T o (C \<times> T)\<close> actually mean.
     In particular, we choose \<open>C \<times> C \<times> C\<close> to be \<open>C \<times> (C \<times> C)\<close> and define the
     functors \<open>T o (T \<times> C)\<close>, and \<open>T o (C \<times> T)\<close> accordingly.
 \<close>
-
-  locale binary_endofunctor =
-    C: category C +
-    CC: product_category C C +
-    CCC: product_category C CC.comp +
-    binary_functor C C C T
-  for C :: "'a comp"      (infixr "\<cdot>" 55)
-  and T :: "'a * 'a \<Rightarrow> 'a"
-  begin
-
-    definition ToTC
-    where "ToTC f \<equiv> if CCC.arr f then T (T (fst f, fst (snd f)), snd (snd f)) else C.null"
-
-    lemma functor_ToTC:
-    shows "functor CCC.comp C ToTC"
-      using ToTC_def apply unfold_locales
-          apply auto[4]
-    proof -
-      fix f g
-      assume gf: "CCC.seq g f"
-      show "ToTC (CCC.comp g f) = ToTC g \<cdot> ToTC f"
-        using gf unfolding CCC.seq_char CC.seq_char ToTC_def
-        apply auto
-        by (metis CC.comp_simp CC.seqI fst_conv preserves_comp preserves_seq snd_conv)
-    qed
-
-    lemma ToTC_simp [simp]:
-    assumes "C.arr f" and "C.arr g" and "C.arr h"
-    shows "ToTC (f, g, h) = T (T (f, g), h)"
-      using assms ToTC_def CCC.arr_char by simp
-
-    definition ToCT
-    where "ToCT f \<equiv> if CCC.arr f then T (fst f, T (fst (snd f), snd (snd f))) else C.null"
-
-    lemma functor_ToCT:
-    shows "functor CCC.comp C ToCT"
-      using ToCT_def apply unfold_locales
-        apply auto[4]
-    proof -
-      fix f g
-      assume gf: "CCC.seq g f"
-      show "ToCT (CCC.comp g f) = ToCT g \<cdot> ToCT f"
-        using gf unfolding CCC.seq_char CC.seq_char ToCT_def
-        apply auto
-        by (metis CC.comp_simp CC.seq_char as_nat_trans.preserves_comp_2 fst_conv
-                  preserves_reflects_arr snd_conv)
-    qed
-
-    lemma ToCT_simp [simp]:
-    assumes "C.arr f" and "C.arr g" and "C.arr h"
-    shows "ToCT (f, g, h) = T (f, T (g, h))"
-      using assms ToCT_def CCC.arr_char by simp
-
-  end
 
   text \<open>
     Our primary definition for ``monoidal category'' follows the somewhat non-traditional
@@ -131,8 +77,8 @@ begin
   and T :: "'a * 'a \<Rightarrow> 'a"
   and \<alpha> :: "'a * 'a * 'a \<Rightarrow> 'a"
   and \<iota> :: 'a +
-  assumes \<iota>_in_hom': "\<guillemotleft>\<iota> : T (cod \<iota>, cod \<iota>) \<rightarrow> cod \<iota>\<guillemotright>"
-  and \<iota>_is_iso: "iso \<iota>"
+  assumes unit_in_hom_ax: "\<guillemotleft>\<iota> : T (cod \<iota>, cod \<iota>) \<rightarrow> cod \<iota>\<guillemotright>"
+  and unit_is_iso: "iso \<iota>"
   and pentagon: "\<lbrakk> ide a; ide b; ide c; ide d \<rbrakk> \<Longrightarrow>
                  T (a, \<alpha> (b, c, d)) \<cdot> \<alpha> (a, T (b, c), d) \<cdot> T (\<alpha> (a, b, c), d) =
                  \<alpha> (a, b, T (c, d)) \<cdot> \<alpha> (T (a, b), c, d)"
@@ -146,7 +92,7 @@ begin
       to be a binary functor requires that it take a pair as its argument.
 \<close>
 
-    definition unity :: 'a ("\<I>")
+    abbreviation unity :: 'a ("\<I>")
     where "unity \<equiv> cod \<iota>"
 
     abbreviation L :: "'a \<Rightarrow> 'a"
@@ -175,18 +121,6 @@ begin
     where "runit a \<equiv> THE f. \<guillemotleft>f : a \<otimes> \<I> \<rightarrow> a\<guillemotright> \<and> f \<otimes> \<I> = (a \<otimes> \<iota>) \<cdot> \<a>[a, \<I>, \<I>]"
 
     text\<open>
-      The next two definitions extend the unitors to all arrows, not just identities.
-      Unfortunately, the traditional symbol \<open>\<lambda>\<close> for the left unitor is already
-      reserved for a higher purpose, so we have to make do with a poor substitute.
-\<close>
-
-    abbreviation \<ll>
-    where "\<ll> f \<equiv> if arr f then f \<cdot> \<l>[dom f] else null"
-
-    abbreviation \<rho>
-    where "\<rho> f \<equiv> if arr f then f \<cdot> \<r>[dom f] else null"
-
-    text\<open>
       We now embark upon a development of the consequences of the monoidal category axioms.
       One of our objectives is to be able to show that an interpretation of the
       \<open>monoidal_category\<close> locale induces an interpretation of a locale corresponding
@@ -194,18 +128,24 @@ begin
       Another is to obtain the facts we need to prove the coherence theorem.
 \<close>
 
-    lemma \<iota>_in_hom [intro]:
+    lemma unit_in_hom [intro]:
     shows "\<guillemotleft>\<iota> : \<I> \<otimes> \<I> \<rightarrow> \<I>\<guillemotright>"
-      using unity_def \<iota>_in_hom' by force
+      using unit_in_hom_ax by force
 
     lemma ide_unity [simp]:
     shows "ide \<I>"
-      using \<iota>_in_hom unity_def by auto
+      using unit_in_hom by auto
 
     lemma tensor_in_hom [simp]:
     assumes "\<guillemotleft>f : a \<rightarrow> b\<guillemotright>" and "\<guillemotleft>g : c \<rightarrow> d\<guillemotright>"
     shows "\<guillemotleft>f \<otimes> g : a \<otimes> c \<rightarrow> b \<otimes> d\<guillemotright>"
       using assms T.preserves_hom CC.arr_char by simp
+
+    lemma tensor_in_homI [intro]:
+    assumes "\<guillemotleft>f : a \<rightarrow> b\<guillemotright>" and "\<guillemotleft>g : c \<rightarrow> d\<guillemotright>" and "x = a \<otimes> c" and "y = b \<otimes> d"
+    shows "\<guillemotleft>f \<otimes> g : x \<rightarrow> y\<guillemotright>"
+      using assms tensor_in_hom
+      by force
 
     lemma arr_tensor [simp]:
     assumes "arr f" and "arr g"
@@ -293,38 +233,34 @@ begin
     and "\<exists>!f. \<guillemotleft>f : \<I> \<otimes> a \<rightarrow> a\<guillemotright> \<and> \<I> \<otimes> f = (\<iota> \<otimes> a) \<cdot> inv \<a>[\<I>, \<I>, a]"
     proof -
       obtain F \<eta> \<epsilon> where L: "equivalence_of_categories C C F (\<lambda>f. \<I> \<otimes> f) \<eta> \<epsilon>"
-        using L.induces_equivalence unity_def by auto
+        using L.induces_equivalence by auto
       interpret L: equivalence_of_categories C C F \<open>\<lambda>f. \<I> \<otimes> f\<close> \<eta> \<epsilon>
         using L by auto
       let ?P = "\<lambda>f. \<guillemotleft>f : \<I> \<otimes> a \<rightarrow> a\<guillemotright> \<and> \<I> \<otimes> f = (\<iota> \<otimes> a) \<cdot> inv \<a>[\<I>, \<I>, a]"
-      have "\<guillemotleft>(\<iota> \<otimes> a) \<cdot> inv \<a>[\<I>, \<I>, a] : \<I> \<otimes> \<I> \<otimes> a \<rightarrow> \<I> \<otimes> a\<guillemotright>"
-      proof
-        show "\<guillemotleft>\<iota> \<otimes> a : (\<I> \<otimes> \<I>) \<otimes> a \<rightarrow> \<I> \<otimes> a\<guillemotright>"
-          using assms ide_in_hom by (intro tensor_in_hom, auto)
-        show "\<guillemotleft>inv \<a>[\<I>, \<I>, a] : \<I> \<otimes> \<I> \<otimes> a \<rightarrow> (\<I> \<otimes> \<I>) \<otimes> a\<guillemotright>"
-          using assms by auto
-      qed
-      moreover have "ide (\<I> \<otimes> a)" using assms by simp
-      ultimately have "\<exists>f. ?P f"
-        using assms L.is_full by blast
-      moreover have "\<And>f f'. ?P f \<Longrightarrow> ?P f' \<Longrightarrow> f = f'"
+      show "\<exists>!f. ?P f"
       proof -
-        fix f f'
-        assume f: "?P f" and f': "?P f'"
-        have "par f f'" using f f' by force
-        show "f = f'" using f f' L.is_faithful [of f f'] by force
+        have "\<exists>f. ?P f"
+        proof -
+          have "\<guillemotleft>(\<iota> \<otimes> a) \<cdot> inv \<a>[\<I>, \<I>, a] : \<I> \<otimes> \<I> \<otimes> a \<rightarrow> \<I> \<otimes> a\<guillemotright>"
+          proof
+            show "\<guillemotleft>\<iota> \<otimes> a : (\<I> \<otimes> \<I>) \<otimes> a \<rightarrow> \<I> \<otimes> a\<guillemotright>"
+              using assms ide_in_hom by blast
+            show "\<guillemotleft>inv \<a>[\<I>, \<I>, a] : \<I> \<otimes> \<I> \<otimes> a \<rightarrow> (\<I> \<otimes> \<I>) \<otimes> a\<guillemotright>"
+              using assms by auto
+          qed
+          moreover have "ide (\<I> \<otimes> a)" using assms by simp
+          ultimately show ?thesis
+            using assms L.is_full by blast
+        qed
+        moreover have "\<And>f f'. ?P f \<Longrightarrow> ?P f' \<Longrightarrow> f = f'"
+          by (metis L.is_faithful in_homE)
+        ultimately show ?thesis by blast
       qed
-      ultimately show "\<exists>!f. ?P f" by blast
       hence 1: "?P \<l>[a]"
         unfolding lunit_def using theI' [of ?P] by auto
       show "\<guillemotleft>\<l>[a] : \<I> \<otimes> a \<rightarrow> a\<guillemotright>" using 1 by fast
       show "\<I> \<otimes> \<l>[a] = (\<iota> \<otimes> a) \<cdot> inv \<a>[\<I>, \<I>, a]" using 1 by fast
     qed
-
-    lemma \<ll>_ide_simp:
-    assumes "ide a"
-    shows "\<ll> a = \<l>[a]"
-      using assms lunit_char comp_cod_arr ide_in_hom by (metis in_homE)
 
     lemma lunit_in_hom [intro]:
     assumes "ide a"
@@ -355,9 +291,9 @@ begin
     lemma iso_lunit [simp]:
     assumes "ide a"
     shows "iso \<l>[a]"
-      using assms lunit_char(2) \<iota>_is_iso ide_unity isos_compose iso_assoc iso_inv_iso
-            \<iota>_in_hom L.reflects_iso arr_lunit arr_tensor ideD(1) ide_is_iso lunit_in_hom
-            tensor_preserves_iso unity_def
+      using assms lunit_char(2) unit_is_iso ide_unity isos_compose iso_assoc iso_inv_iso
+            unit_in_hom L.reflects_iso arr_lunit arr_tensor ideD(1) ide_is_iso lunit_in_hom
+            tensor_preserves_iso
       by metis
 
     text\<open>
@@ -386,32 +322,28 @@ begin
     and "\<exists>!f. \<guillemotleft>f : a \<otimes> \<I> \<rightarrow> a\<guillemotright> \<and> f \<otimes> \<I> = (a \<otimes> \<iota>) \<cdot> \<a>[a, \<I>, \<I>]"
     proof -
       obtain F \<eta> \<epsilon> where R: "equivalence_of_categories C C F (\<lambda>f. f \<otimes> \<I>) \<eta> \<epsilon>"
-        using R.induces_equivalence \<iota>_in_hom by auto
+        using R.induces_equivalence by auto
       interpret R: equivalence_of_categories C C F \<open>\<lambda>f. f \<otimes> \<I>\<close> \<eta> \<epsilon>
         using R by auto
       let ?P = "\<lambda>f. \<guillemotleft>f : a \<otimes> \<I> \<rightarrow> a\<guillemotright> \<and> f \<otimes> \<I> = (a \<otimes> \<iota>) \<cdot> \<a>[a, \<I>, \<I>]"
-      have "\<guillemotleft>(a \<otimes> \<iota>) \<cdot> \<a>[a, \<I>, \<I>] : (a \<otimes> \<I>) \<otimes> \<I> \<rightarrow> a \<otimes> \<I>\<guillemotright>"
-        using assms by fastforce
-      moreover have "ide (a \<otimes> \<I>)" using assms by simp
-      ultimately have "\<exists>f. ?P f"
-        using assms R.is_full [of a "a \<otimes> \<I>" "(a \<otimes> \<iota>) \<cdot> \<a>[a, \<I>, \<I>]"] by blast
-      moreover have "\<And>f f'. ?P f \<Longrightarrow> ?P f' \<Longrightarrow> f = f'"
+      show "\<exists>!f. ?P f"
       proof -
-        fix f f'
-        assume f: "?P f" and f': "?P f'"
-        have "par f f'" using f f' by force
-        show "f = f'" using f f' R.is_faithful [of f f'] by force
+        have "\<exists>f. ?P f"
+        proof -
+          have "\<guillemotleft>(a \<otimes> \<iota>) \<cdot> \<a>[a, \<I>, \<I>] : (a \<otimes> \<I>) \<otimes> \<I> \<rightarrow> a \<otimes> \<I>\<guillemotright>"
+            using assms by fastforce
+          moreover have "ide (a \<otimes> \<I>)" using assms by simp
+          ultimately show ?thesis
+            using assms R.is_full [of a "a \<otimes> \<I>" "(a \<otimes> \<iota>) \<cdot> \<a>[a, \<I>, \<I>]"] by blast
+        qed
+        moreover have "\<And>f f'. ?P f \<Longrightarrow> ?P f' \<Longrightarrow> f = f'"
+          by (metis R.is_faithful in_homE)
+        ultimately show ?thesis by blast
       qed
-      ultimately show "\<exists>!f. ?P f" by blast
       hence 1: "?P \<r>[a]" unfolding runit_def using theI' [of ?P] by fast
       show "\<guillemotleft>\<r>[a] : a \<otimes> \<I> \<rightarrow> a\<guillemotright>" using 1 by fast
       show "\<r>[a] \<otimes> \<I> = (a \<otimes> \<iota>) \<cdot> \<a>[a, \<I>, \<I>]" using 1 by fast
     qed
-
-    lemma \<rho>_ide_simp:
-    assumes "ide a"
-    shows "\<rho> a = \<r>[a]"
-      using assms runit_char [of a] comp_cod_arr by auto
 
     lemma runit_in_hom [intro]:
     assumes "ide a"
@@ -445,9 +377,8 @@ begin
     lemma iso_runit [simp]:
     assumes "ide a"
     shows "iso \<r>[a]"
-      using assms \<iota>_is_iso iso_inv_iso isos_compose ide_is_iso R.preserves_reflects_arr
+      using assms unit_is_iso iso_inv_iso isos_compose ide_is_iso R.preserves_reflects_arr
             arrI ide_unity iso_assoc runit_char tensor_preserves_iso R.reflects_iso
-            unity_def
       by metis
 
     text\<open>
@@ -465,31 +396,31 @@ begin
       moreover have "\<I> \<otimes> \<l>[cod f] \<cdot> (\<I> \<otimes> f) = \<I> \<otimes> f \<cdot> \<l>[dom f]"
       proof -
         have "\<I> \<otimes> \<l>[cod f] \<cdot> (\<I> \<otimes> f) = ((\<iota> \<otimes> cod f) \<cdot> ((\<I> \<otimes> \<I>) \<otimes> f)) \<cdot> inv \<a>[\<I>, \<I>, dom f]"
-          using assms interchange [of \<I> \<I> "\<I> \<otimes> f" "\<l>[cod f]"] lunit_char(2) \<iota>_in_hom unity_def
+          using assms interchange [of \<I> \<I> "\<I> \<otimes> f" "\<l>[cod f]"] lunit_char(2)
                 \<alpha>'.naturality [of "(\<I>, \<I>, f)"] comp_assoc
           by auto
         also have "... = ((\<I> \<otimes> f) \<cdot> (\<iota> \<otimes> dom f)) \<cdot> inv \<a>[\<I>, \<I>, dom f]"
-          using assms interchange comp_arr_dom comp_cod_arr \<iota>_in_hom by auto
+          using assms interchange comp_arr_dom comp_cod_arr unit_in_hom by auto
         also have "... = (\<I> \<otimes> f) \<cdot> (\<I> \<otimes> \<l>[dom f])"
-          using assms \<iota>_in_hom lunit_char(2) comp_assoc by auto
+          using assms lunit_char(2) comp_assoc by auto
         also have "... = \<I> \<otimes> f \<cdot> \<l>[dom f]"
-          using assms interchange by simp
+          using assms interchange L.preserves_comp par by metis
         finally show ?thesis by blast
       qed
       ultimately show "\<l>[cod f] \<cdot> (\<I> \<otimes> f) = f \<cdot> \<l>[dom f]"
-        using L.is_faithful unity_def by metis
+        using L.is_faithful by metis
     qed
 
     lemma runit_naturality:
     assumes "arr f"
     shows "\<r>[cod f] \<cdot> (f \<otimes> \<I>) = f \<cdot> \<r>[dom f]"
     proof -
-      have "par (\<r>[cod f] \<cdot> (f \<otimes> \<I>)) (f \<cdot> \<r>[dom f])"
+      have par: "par (\<r>[cod f] \<cdot> (f \<otimes> \<I>)) (f \<cdot> \<r>[dom f])"
         using assms by force
       moreover have "\<r>[cod f] \<cdot> (f \<otimes> \<I>) \<otimes> \<I> = f \<cdot> \<r>[dom f] \<otimes> \<I>"
       proof -
         have "\<r>[cod f] \<cdot> (f \<otimes> \<I>) \<otimes> \<I> = (cod f \<otimes> \<iota>) \<cdot> \<a>[cod f, \<I>, \<I>] \<cdot> ((f \<otimes> \<I>) \<otimes> \<I>)"
-          using assms interchange [of \<I> \<I> "\<I> \<otimes> f" "\<r>[cod f]"] runit_char(2) \<iota>_in_hom unity_def
+          using assms interchange [of \<I> \<I> "\<I> \<otimes> f" "\<r>[cod f]"] runit_char(2)
                 comp_assoc
           by auto
         also have "... = (cod f \<otimes> \<iota>) \<cdot> (f \<otimes> \<I> \<otimes> \<I>) \<cdot>  \<a>[dom f, \<I>, \<I>]"
@@ -497,48 +428,48 @@ begin
         also have "... = ((cod f \<otimes> \<iota>) \<cdot> (f \<otimes> \<I> \<otimes> \<I>)) \<cdot> \<a>[dom f, \<I>, \<I>]"
           using comp_assoc by simp
         also have "... = ((f \<otimes> \<I>) \<cdot> (dom f \<otimes> \<iota>)) \<cdot> \<a>[dom f, \<I>, \<I>]"
-          using assms \<iota>_in_hom interchange comp_arr_dom comp_cod_arr by auto
+          using assms unit_in_hom interchange comp_arr_dom comp_cod_arr by auto
         also have "... = (f \<otimes> \<I>) \<cdot> (\<r>[dom f] \<otimes> \<I>)"
           using assms runit_char comp_assoc by auto
         also have "... = f \<cdot> \<r>[dom f] \<otimes> \<I>"
-          using assms interchange by simp
+          using assms interchange R.preserves_comp par by metis
         finally show ?thesis by blast
       qed
       ultimately show "\<r>[cod f] \<cdot> (f \<otimes> \<I>) = f \<cdot> \<r>[dom f]"
-        using R.is_faithful unity_def by metis
+        using R.is_faithful by metis
     qed
 
+    text\<open>
+      The next two definitions extend the unitors to all arrows, not just identities.
+      Unfortunately, the traditional symbol \<open>\<lambda>\<close> for the left unitor is already
+      reserved for a higher purpose, so we have to make do with a poor substitute.
+\<close>
+
+    abbreviation \<ll>
+    where "\<ll> f \<equiv> if arr f then f \<cdot> \<l>[dom f] else null"
+
+    abbreviation \<rho>
+    where "\<rho> f \<equiv> if arr f then f \<cdot> \<r>[dom f] else null"
+
+    lemma \<ll>_ide_simp:
+    assumes "ide a"
+    shows "\<ll> a = \<l>[a]"
+      using assms lunit_char comp_cod_arr ide_in_hom by (metis in_homE)
+
+    lemma \<rho>_ide_simp:
+    assumes "ide a"
+    shows "\<rho> a = \<r>[a]"
+      using assms runit_char [of a] comp_cod_arr by auto
+
   end
-
-  text\<open>
-    The following locale is an extension of @{locale monoidal_category} that has the
-    unitors and their inverses, as well as the inverse to the associator,
-    conveniently pre-interpreted.
-\<close>
-
-  locale extended_monoidal_category =
-    monoidal_category +
-    \<alpha>': inverse_transformation CCC.comp C T.ToTC T.ToCT \<alpha> +
-    \<ll>: natural_isomorphism C C L map \<ll> +
-    \<ll>': inverse_transformation C C L map \<ll> +
-    \<rho>: natural_isomorphism C C R map \<rho> +
-    \<rho>': inverse_transformation C C R map \<rho>
-
-  text\<open>
-    Next we show that an interpretation of @{locale monoidal_category} extends to an
-    interpretation of @{locale extended_monoidal_category} and we arrange for the former
-    locale to inherit from the latter.
-\<close>
 
   context monoidal_category
   begin
 
-    interpretation \<alpha>': inverse_transformation CCC.comp C T.ToTC T.ToCT \<alpha> ..
-
-    interpretation \<ll>: natural_transformation C C L map \<ll>
+    sublocale \<ll>: natural_transformation C C L map \<ll>
     proof -
       interpret \<ll>: transformation_by_components C C L map \<open>\<lambda>a. \<l>[a]\<close>
-        using lunit_in_hom lunit_naturality unity_def \<iota>_in_hom' L.is_extensional
+        using lunit_in_hom lunit_naturality unit_in_hom_ax L.is_extensional
         by (unfold_locales, auto)
       have "\<ll>.map = \<ll>"
         using \<ll>.is_natural_1 \<ll>.is_extensional by auto
@@ -546,14 +477,14 @@ begin
         using \<ll>.natural_transformation_axioms by auto
     qed
 
-    interpretation \<ll>: natural_isomorphism C C L map \<ll>
+    sublocale \<ll>: natural_isomorphism C C L map \<ll>
       apply unfold_locales
       using iso_lunit \<ll>_ide_simp by simp
 
-    interpretation \<rho>: natural_transformation C C R map \<rho>
+    sublocale \<rho>: natural_transformation C C R map \<rho>
     proof -
       interpret \<rho>: transformation_by_components C C R map \<open>\<lambda>a. \<r>[a]\<close>
-        using runit_naturality unity_def \<iota>_in_hom' R.is_extensional
+        using runit_naturality unit_in_hom_ax R.is_extensional
         by (unfold_locales, auto)
       have "\<rho>.map = \<rho>"
         using \<rho>.is_natural_1 \<rho>.is_extensional by auto
@@ -561,26 +492,16 @@ begin
         using \<rho>.natural_transformation_axioms by auto
     qed
 
-    interpretation \<rho>: natural_isomorphism C C R map \<rho>
+    sublocale \<rho>: natural_isomorphism C C R map \<rho>
       apply unfold_locales
       using \<rho>_ide_simp by simp
 
-    lemma induces_extended_monoidal_category:
-    shows "extended_monoidal_category C T \<alpha> \<iota>" ..
-
-  end
-
-  sublocale monoidal_category \<subseteq> extended_monoidal_category
-    using induces_extended_monoidal_category by auto
-
-  context monoidal_category
-  begin
+    sublocale \<ll>': inverse_transformation C C L map \<ll> ..
+    sublocale \<rho>': inverse_transformation C C R map \<rho> ..
+    sublocale \<alpha>': inverse_transformation CCC.comp C T.ToTC T.ToCT \<alpha> ..
 
     abbreviation \<alpha>'
     where "\<alpha>' \<equiv> \<alpha>'.map"
-
-    lemma natural_isomorphism_\<alpha>':
-    shows "natural_isomorphism CCC.comp C T.ToCT T.ToTC \<alpha>'" ..
 
     abbreviation assoc' ("\<a>\<^sup>-\<^sup>1[_, _, _]")
     where "\<a>\<^sup>-\<^sup>1[a, b, c] \<equiv> inv \<a>[a, b, c]"
@@ -711,7 +632,6 @@ begin
     shows "\<l>[\<I> \<otimes> a] = \<I> \<otimes> \<l>[a]"
       using assms lunit_naturality lunit_in_hom iso_lunit iso_is_section
             section_is_mono monoE L.preserves_ide arrI cod_lunit dom_lunit seqI
-            unity_def
       by metis
 
     lemma runit_commutes_with_R:
@@ -719,7 +639,6 @@ begin
     shows "\<r>[a \<otimes> \<I>] = \<r>[a] \<otimes> \<I>"
       using assms runit_naturality runit_in_hom iso_runit iso_is_section
             section_is_mono monoE R.preserves_ide arrI cod_runit dom_runit seqI
-            unity_def
       by metis
 
     text\<open>
@@ -770,11 +689,11 @@ $$\xymatrix{
           also have "... = (a \<otimes> ((\<I> \<otimes> \<l>[b]) \<cdot> \<a>[\<I>, \<I>, b])) \<cdot> \<a>[a, \<I> \<otimes> \<I>, b] \<cdot> (\<a>[a, \<I>, \<I>] \<otimes> b)"
             using assms interchange lunit_commutes_with_L by simp
           also have "... = ((a \<otimes> (\<iota> \<otimes> b)) \<cdot> \<a>[a, \<I> \<otimes> \<I>, b]) \<cdot> (\<a>[a, \<I>, \<I>] \<otimes> b)"
-            using assms lunit_char \<iota>_in_hom comp_arr_dom comp_assoc by auto
+            using assms lunit_char unit_in_hom comp_arr_dom comp_assoc by auto
           also have "... = (\<a>[a, \<I>, b] \<cdot> ((a \<otimes> \<iota>) \<otimes> b)) \<cdot> (\<a>[a, \<I>, \<I>] \<otimes> b)"
-            using assms \<iota>_in_hom assoc_naturality [of a \<iota> b] by fastforce
+            using assms unit_in_hom assoc_naturality [of a \<iota> b] by fastforce
           also have "... = \<a>[a, \<I>, b] \<cdot> ((\<r>[a] \<otimes> \<I>) \<otimes> b)"
-            using assms \<iota>_in_hom interchange runit_char(2) comp_assoc by auto
+            using assms unit_in_hom interchange runit_char(2) comp_assoc by auto
           also have "... = (\<r>[a] \<otimes> \<I> \<otimes> b) \<cdot> \<a>[a \<otimes> \<I>, \<I>, b]"
             using assms assoc_naturality [of "\<r>[a]" \<I> b] by simp
           finally show ?thesis by blast
@@ -900,7 +819,7 @@ $$\xymatrix{
       moreover have "par (\<l>[a \<otimes> b] \<cdot> \<a>[\<I>, a, b]) (\<l>[a] \<otimes> b)"
         using assms by simp
       ultimately show ?thesis
-        using assms L.is_faithful [of "\<l>[a \<otimes> b] \<cdot> \<a>[\<I>, a, b]" "\<l>[a] \<otimes> b"] unity_def by simp
+        using assms L.is_faithful [of "\<l>[a \<otimes> b] \<cdot> \<a>[\<I>, a, b]" "\<l>[a] \<otimes> b"] by simp
     qed
 
     lemma lunit_tensor:
@@ -978,8 +897,8 @@ $$\xymatrix{
       moreover have "par ((a \<otimes> \<r>[b]) \<cdot> \<a>[a, b, \<I>]) \<r>[a \<otimes> b]"
         using assms by simp
       ultimately show ?thesis
-        using assms R.is_faithful [of "(a \<otimes> \<r>[b]) \<cdot> (\<a>[a, b, \<I>])" "\<r>[a \<otimes> b]"] unity_def
-        by argo
+        using assms R.is_faithful [of "(a \<otimes> \<r>[b]) \<cdot> (\<a>[a, b, \<I>])" "\<r>[a \<otimes> b]"]
+        by fastforce
     qed
 
     lemma runit_tensor':
@@ -1031,18 +950,18 @@ $$\xymatrix{
       moreover have "\<r>[\<I>] \<otimes> \<I> = (\<I> \<otimes> \<l>[\<I>]) \<cdot> \<a>[\<I>, \<I>, \<I>]"
         using triangle [of \<I> \<I>] by simp
       moreover have "\<iota> \<otimes> \<I> = (\<I> \<otimes> \<l>[\<I>]) \<cdot> \<a>[\<I>, \<I>, \<I>]"
-        using lunit_char comp_arr_dom \<iota>_in_hom comp_assoc by auto
+        using lunit_char comp_arr_dom unit_in_hom comp_assoc by auto
       ultimately have "\<l>[\<I>] \<otimes> \<I> = \<iota> \<otimes> \<I> \<and> \<r>[\<I>] \<otimes> \<I> = \<iota> \<otimes> \<I>"
         by argo
       moreover have "par \<l>[\<I>] \<iota> \<and> par \<r>[\<I>] \<iota>"
-        using \<iota>_in_hom by force
+        using unit_in_hom by force
       ultimately have 1: "\<l>[\<I>] = \<iota> \<and> \<r>[\<I>] = \<iota>"
-        using R.is_faithful unity_def by metis
+        using R.is_faithful by metis
       show "\<l>[\<I>] = \<iota>" using 1 by auto
       show "\<r>[\<I>] = \<iota>" using 1 by auto
     qed
 
-    lemma \<iota>_triangle:
+    lemma unit_triangle:
     shows "\<iota> \<otimes> \<I> = (\<I> \<otimes> \<iota>) \<cdot> \<a>[\<I>, \<I>, \<I>]"
     and "(\<iota> \<otimes> \<I>) \<cdot> \<a>\<^sup>-\<^sup>1[\<I>, \<I>, \<I>] = \<I> \<otimes> \<iota>"
       using triangle [of \<I> \<I>] triangle' [of \<I> \<I>] unitor_coincidence by auto
@@ -1051,35 +970,23 @@ $$\xymatrix{
       The only isomorphism that commutes with @{term \<iota>} is @{term \<I>}.
 \<close>
 
-    lemma iso_commuting_with_\<iota>_equals_\<I>:
+    lemma iso_commuting_with_unit_equals_unity:
     assumes "\<guillemotleft>f : \<I> \<rightarrow> \<I>\<guillemotright>" and "iso f" and "f \<cdot> \<iota> = \<iota> \<cdot> (f \<otimes> f)"
     shows "f = \<I>"
     proof -
-      have 1: "f \<otimes> f = f \<otimes> \<I>"
+      have "\<I> \<otimes> f = \<I> \<otimes> \<I>"
       proof -
-        have "f \<otimes> f = (inv \<iota> \<cdot> \<iota>) \<cdot> (f \<otimes> f)"
-          using assms \<iota>_in_hom \<iota>_is_iso inv_is_inverse comp_inv_arr comp_cod_arr [of "f \<otimes> f"]
-          by force
-        also have "... = (inv \<iota> \<cdot> f) \<cdot> \<iota>"
-          using assms \<iota>_is_iso inv_is_inverse comp_assoc by force
-        also have "... = ((f \<otimes> \<I>) \<cdot> inv \<iota>) \<cdot> \<iota>"
-          using assms unitor_coincidence runit'_naturality [of f] by auto
-        also have "... = (f \<otimes> \<I>) \<cdot> (inv \<iota> \<cdot> \<iota>)"
-          using comp_assoc by force
-        also have "... = f \<otimes> \<I>"
-          using assms \<iota>_in_hom \<iota>_is_iso inv_is_inverse comp_inv_arr
-                comp_arr_dom [of "f \<otimes> \<I>" "\<I> \<otimes> \<I>"]
-          by force
-        finally show ?thesis by blast
+        have "f \<otimes> f = f \<otimes> \<I>"
+          by (metis assms(1,3) iso_cancel_left runit_naturality seqE seqI' unit_in_hom_ax
+              unit_is_iso unitor_coincidence(2))
+        thus ?thesis
+          by (metis assms(1-2) R.preserves_comp comp_cod_arr comp_inv_arr' ideD(1) ide_unity
+              in_homE interchange)
       qed
-      moreover have "(f \<otimes> f) \<cdot> (inv f \<otimes> \<I>) = \<I> \<otimes> f \<and> (f \<otimes> \<I>) \<cdot> (inv f \<otimes> \<I>) = \<I> \<otimes> \<I>"
-        using assms interchange comp_arr_inv inv_is_inverse comp_arr_dom by auto
-      ultimately have "\<I> \<otimes> f = \<I> \<otimes> \<I>" by metis
       moreover have "par f \<I>"
         using assms by auto
-      ultimately have "f = \<I>"
-        using L.is_faithful unity_def by metis
-      thus ?thesis using 1 by blast
+      ultimately show "f = \<I>"
+        using L.is_faithful by metis
     qed
 
   end
@@ -1171,7 +1078,7 @@ $$\xymatrix{
           also have "... = (\<iota> \<cdot> \<r>\<^sub>1[\<I> \<otimes> \<I>]) \<cdot> \<a>\<^sup>-\<^sup>1[\<I>, \<I>, \<I>\<^sub>1] \<cdot> (\<r>\<^sub>1[\<I>] \<otimes> \<I> \<otimes> \<I>\<^sub>1)"
             using comp_assoc by auto
           also have "... = (\<r>\<^sub>1[\<I>] \<cdot> (\<iota> \<otimes> \<I>\<^sub>1)) \<cdot> \<a>\<^sup>-\<^sup>1[\<I>, \<I>, \<I>\<^sub>1] \<cdot> (\<r>\<^sub>1[\<I>] \<otimes> \<I> \<otimes> \<I>\<^sub>1)"
-            using C\<^sub>1.runit_naturality [of \<iota>] \<iota>_in_hom by fastforce
+            using C\<^sub>1.runit_naturality [of \<iota>] unit_in_hom by fastforce
           also have "... = \<r>\<^sub>1[\<I>] \<cdot> ((\<iota> \<otimes> \<I>\<^sub>1) \<cdot> \<a>\<^sup>-\<^sup>1[\<I>, \<I>, \<I>\<^sub>1]) \<cdot> (\<r>\<^sub>1[\<I>] \<otimes> \<I> \<otimes> \<I>\<^sub>1)"
             using comp_assoc by auto
           also have "... = \<r>\<^sub>1[\<I>] \<cdot> (\<I> \<otimes> \<l>[\<I>\<^sub>1]) \<cdot> (\<r>\<^sub>1[\<I>] \<otimes> \<I> \<otimes> \<I>\<^sub>1)"
@@ -1181,7 +1088,7 @@ $$\xymatrix{
           finally show ?thesis by blast
         qed
         moreover have "seq \<iota> (\<r>\<^sub>1[\<I>] \<otimes> \<r>\<^sub>1[\<I>]) \<and> seq \<r>\<^sub>1[\<I>] (\<r>\<^sub>1[\<I>] \<otimes> \<l>[\<I>\<^sub>1])"
-          using \<iota>_in_hom by fastforce
+          using unit_in_hom by fastforce
         moreover have "iso \<r>\<^sub>1[\<I>] \<and> iso (\<r>\<^sub>1[\<I>] \<otimes> \<r>\<^sub>1[\<I>])"
           using C\<^sub>1.iso_runit tensor_preserves_iso by force
         ultimately show ?thesis
@@ -1224,7 +1131,7 @@ $$\xymatrix{
         also have "... = (\<l>[\<I>\<^sub>1] \<cdot> (\<I> \<otimes> \<iota>\<^sub>1)) \<cdot> \<a>[\<I>, \<I>\<^sub>1, \<I>\<^sub>1] \<cdot> ((\<I> \<otimes> \<I>\<^sub>1) \<otimes> \<l>[\<I>\<^sub>1])"
           using comp_assoc by fastforce
         also have "... = (\<iota>\<^sub>1 \<cdot> \<l>[\<I>\<^sub>1 \<otimes> \<I>\<^sub>1]) \<cdot> \<a>[\<I>, \<I>\<^sub>1, \<I>\<^sub>1] \<cdot> ((\<I> \<otimes> \<I>\<^sub>1) \<otimes> \<l>[\<I>\<^sub>1])"
-          using lunit_naturality [of \<iota>\<^sub>1] C\<^sub>1.\<iota>_in_hom lunit_commutes_with_L by fastforce
+          using lunit_naturality [of \<iota>\<^sub>1] C\<^sub>1.unit_in_hom lunit_commutes_with_L by fastforce
         also have "... = \<iota>\<^sub>1 \<cdot> (\<l>[\<I>\<^sub>1 \<otimes> \<I>\<^sub>1] \<cdot> \<a>[\<I>, \<I>\<^sub>1, \<I>\<^sub>1]) \<cdot> ((\<I> \<otimes> \<I>\<^sub>1) \<otimes> \<l>[\<I>\<^sub>1])"
           using comp_assoc by force
         also have "... = \<iota>\<^sub>1 \<cdot> (\<l>[\<I>\<^sub>1] \<otimes> \<I>\<^sub>1) \<cdot> ((\<I> \<otimes> \<I>\<^sub>1) \<otimes> \<l>[\<I>\<^sub>1])"
@@ -1285,10 +1192,8 @@ $$\xymatrix{
         have "(inv i \<cdot> f) \<cdot> \<iota> = (inv i \<cdot> \<iota>\<^sub>1) \<cdot> (f \<otimes> f)"
           using assms iso_i comp_assoc by auto
         also have "... = (\<iota> \<cdot> (inv i \<otimes> inv i)) \<cdot> (f \<otimes> f)"
-          using assms iso_i invert_opposite_sides_of_square
-                inv_tensor \<iota>_in_hom C\<^sub>1.\<iota>_in_hom tensor_in_hom tensor_preserves_iso
-                inv_in_hom i_maps_\<iota>_to_\<iota>\<^sub>1 unity_def seqI'
-          by metis
+          by (metis unit_in_hom_ax i_maps_\<iota>_to_\<iota>\<^sub>1 invert_opposite_sides_of_square iso_i
+              inv_tensor tensor_preserves_iso seqI')
         also have "... = \<iota> \<cdot> (inv i \<cdot> f \<otimes> inv i \<cdot> f)"
           using assms 1 iso_i interchange comp_assoc by fastforce
         finally show ?thesis by blast
@@ -1305,7 +1210,7 @@ $$\xymatrix{
         fix f
         assume f: "\<guillemotleft>f : \<I> \<rightarrow> \<I>\<^sub>1\<guillemotright> \<and> iso f \<and> f \<cdot> \<iota> = \<iota>\<^sub>1 \<cdot> (f \<otimes> f)"
         have "inv i \<cdot> f = \<I>"
-          using f inv_i_iso_\<iota> iso_commuting_with_\<iota>_equals_\<I> by blast
+          using f inv_i_iso_\<iota> iso_commuting_with_unit_equals_unity by blast
         hence "ide (C (inv i) f)"
           using iso_i by simp
         thus "f = i"
@@ -1368,7 +1273,7 @@ $$\xymatrix{
 
     lemma induces_elementary_monoidal_category:
       shows "elementary_monoidal_category C tensor \<I> lunit runit assoc"
-        using \<iota>_in_hom iso_assoc tensor_preserves_ide assoc_in_hom tensor_in_hom
+        using iso_assoc tensor_preserves_ide assoc_in_hom tensor_in_hom
               assoc_naturality lunit_naturality runit_naturality lunit_in_hom runit_in_hom
               iso_lunit iso_runit interchange pentagon triangle
         by unfold_locales auto
@@ -1405,7 +1310,7 @@ $$\xymatrix{
       using assms tensor_in_hom by blast
 
     interpretation T: binary_endofunctor C T
-      using tensor_in_hom interchange T_def
+      using interchange T_def
       apply unfold_locales
           apply auto[4]
       by (elim CC.seqE, auto)
@@ -1420,15 +1325,16 @@ $$\xymatrix{
       using T.functor_ToCT by auto
 
     definition \<alpha>
-    where "\<alpha> f \<equiv> if CCC.arr f then (fst f \<otimes> (fst (snd f) \<otimes> snd (snd f))) \<cdot>
-                                   \<a>[dom (fst f), dom (fst (snd f)), dom (snd (snd f))]
+    where "\<alpha> f \<equiv> if CCC.arr f
+                  then (fst f \<otimes> (fst (snd f) \<otimes> snd (snd f))) \<cdot>
+                          \<a>[dom (fst f), dom (fst (snd f)), dom (snd (snd f))]
                   else null"
 
     lemma \<alpha>_ide_simp [simp]:
     assumes "ide a" and "ide b" and "ide c"
     shows "\<alpha> (a, b, c) = \<a>[a, b, c]"
       unfolding \<alpha>_def using assms assoc_in_hom comp_cod_arr
-      by (metis CC.arrI CCC.arrI fst_conv ide_char in_homE snd_conv)
+      by (metis CC.arrI\<^sub>P\<^sub>C CCC.arrI\<^sub>P\<^sub>C fst_conv ide_char in_homE snd_conv)
 
     lemma arr_assoc [simp]:
     assumes "ide a" and "ide b" and "ide c"
@@ -1569,15 +1475,15 @@ $$\xymatrix{
 
     lemma \<I>_agreement:
     shows "MC.unity = \<I>"
-      by (metis MC.unity_def \<iota>_def ide_unity in_homE lunit_in_hom)
+      by (metis \<iota>_def ide_unity in_homE lunit_in_hom)
 
     lemma L_agreement:
     shows "MC.L = (\<lambda>f. T (\<I>, f))"
-      using \<iota>_in_hom MC.unity_def by auto
+      using \<iota>_in_hom by auto
 
     lemma R_agreement:
     shows "MC.R = (\<lambda>f. T (f, \<I>))"
-      using \<iota>_in_hom MC.unity_def by auto
+      using \<iota>_in_hom by auto
 
     text\<open>
       We wish to show that the components of the unitors @{term MC.\<ll>} and @{term MC.\<rho>}
@@ -1598,44 +1504,22 @@ $$\xymatrix{
     shows "\<l>[\<I>] = \<iota>" and "\<r>[\<I>] = \<iota>"
     proof -
       have "\<r>[\<I>] = MC.runit MC.unity"
-      proof (intro MC.runit_eqI)
-        show 1: "\<guillemotleft>\<r>[\<I>] : MC.tensor MC.unity MC.unity \<rightarrow> MC.unity\<guillemotright>"
-          using runit_in_hom \<iota>_in_hom MC.unity_def by auto
-        show "MC.tensor \<r>[\<I>] MC.unity
-                = MC.tensor MC.unity \<iota> \<cdot> MC.assoc MC.unity MC.unity MC.unity"
-          using T_def \<iota>_in_hom \<iota>_def triangle MC.unity_def
-          by (metis 1 MC.ide_unity T_simp \<alpha>_ide_simp ideD(1) in_homE)
-      qed
+        by (metis (no_types, lifting) MC.arr_runit MC.runit_eqI MC.unitor_coincidence(2)
+            T_simp \<I>_agreement \<iota>_def \<alpha>_ide_simp ideD(1) ide_unity iso_is_arr iso_runit
+            runit_in_hom triangle)
       moreover have "\<l>[\<I>] = MC.lunit MC.unity"
-      proof (intro MC.lunit_eqI)
-        show "\<guillemotleft>\<l>[\<I>] : MC.tensor MC.unity MC.unity \<rightarrow> MC.unity\<guillemotright>"
-          using lunit_in_hom [of \<I>] \<iota>_in_hom MC.unity_def by auto
-        show "MC.tensor MC.unity \<l>[\<I>]
-                = MC.tensor \<iota> MC.unity \<cdot> MC.assoc' MC.unity MC.unity MC.unity"
-          using T_def lunit_in_hom \<iota>_in_hom \<iota>_def MC.\<iota>_triangle by argo
-      qed
-      moreover have "MC.lunit MC.unity = \<iota> \<and> MC.runit MC.unity = \<iota>"
+        using MC.unitor_coincidence(1) \<iota>_def by force
+      ultimately have 1: "\<l>[\<I>] = \<iota> \<and> \<r>[\<I>] = \<iota>"
         using MC.unitor_coincidence by simp
-      ultimately have 1: "\<l>[\<I>] = \<iota> \<and> \<r>[\<I>] = \<iota>" by simp
       show "\<l>[\<I>] = \<iota>" using 1 by simp
       show "\<r>[\<I>] = \<iota>" using 1 by simp
     qed
 
     lemma lunit_char:
     assumes "ide a"
-    shows "\<I> \<otimes> \<l>[a] = (\<iota> \<otimes> a) \<cdot> MC.assoc' MC.unity MC.unity a"
-    proof -
-      have "(\<r>[\<I>] \<otimes> a) \<cdot> MC.assoc' MC.unity MC.unity a
-                = ((\<I> \<otimes> \<l>[a]) \<cdot> \<a>[\<I>, \<I>, a]) \<cdot> MC.assoc' MC.unity MC.unity a"
-        using assms triangle by simp
-      also have "... = \<I> \<otimes> \<l>[a]"
-        using assms MC.assoc_inv comp_arr_inv \<I>_agreement iso_assoc comp_arr_dom comp_assoc
-        by (metis MC.\<iota>_is_iso \<alpha>_ide_simp arr_tensor ideD(1) ide_unity invert_side_of_triangle(2)
-            iso_is_arr triangle unitor_coincidence(2))
-      finally have "\<I> \<otimes> \<l>[a] = (\<r>[\<I>] \<otimes> a) \<cdot> MC.assoc' MC.unity MC.unity a" by argo
-      thus "\<I> \<otimes> \<l>[a] = (\<iota> \<otimes> a) \<cdot> MC.assoc' MC.unity MC.unity a"
-        using unitor_coincidence by auto
-    qed
+    shows "\<I> \<otimes> \<l>[a] = (\<iota> \<otimes> a) \<cdot> inv \<a>[\<I>, \<I>, a]"
+      by (metis MC.iso_assoc \<alpha>_ide_simp \<iota>_in_hom arrI arr_tensor assms ideD(1)
+          ide_unity invert_side_of_triangle(2) triangle unitor_coincidence(2))
     
     lemma runit_char:
     assumes "ide a"
@@ -1692,6 +1576,18 @@ $$\xymatrix{
 
   end
 
+  (*
+   * TODO: The locale parameters lunit, runit, etc. of elementary_monoidal_category
+   * shadow the same-named constants defined in the parent locale monoidal category
+   * after the following sublocale declaration.  The constants in the parent locale
+   * can be accessed by using the qualifier "local", but there seems also to be
+   * some kind of shadowing effect on facts.
+   *)
+(*
+  sublocale elementary_monoidal_category \<subseteq> monoidal_category C T \<alpha> \<iota>
+    using induces_monoidal_category by blast
+ *)
+
   section "Strict Monoidal Category"
 
   text\<open>
@@ -1713,17 +1609,8 @@ $$\xymatrix{
     lemma tensor_assoc [simp]:
     assumes "arr f0" and "arr f1" and "arr f2"
     shows "(f0 \<otimes> f1) \<otimes> f2 = f0 \<otimes> f1 \<otimes> f2"
-    proof -
-      have "(f0 \<otimes> f1) \<otimes> f2 = \<a>[cod f0, cod f1, cod f2] \<cdot> ((f0 \<otimes> f1) \<otimes> f2)"
-        using assms assoc_in_hom [of "cod f0" "cod f1" "cod f2"] strict_assoc comp_cod_arr
-        by auto
-      also have "... = (f0 \<otimes> f1 \<otimes> f2) \<cdot> \<a>[dom f0, dom f1, dom f2]"
-        using assms assoc_naturality by simp
-      also have "... = f0 \<otimes> f1 \<otimes> f2"
-        using assms assoc_in_hom [of "dom f0" "dom f1" "dom f2"] strict_assoc comp_arr_dom
-        by auto
-      finally show ?thesis by simp
-    qed
+      by (metis CC.arrI\<^sub>P\<^sub>C CCC.arrI\<^sub>P\<^sub>C \<alpha>'.preserves_reflects_arr \<alpha>'_simp assms(1-3)
+          assoc'_naturality ide_cod ide_dom inv_ide comp_arr_ide comp_ide_arr strict_assoc)
 
   end
 
@@ -1770,7 +1657,7 @@ $$\xymatrix{
     interpret R: equivalence_functor C C \<open>\<lambda>f. T (f, C.cod \<iota>)\<close>
       using C.L.equivalence_functor_axioms by simp
     show "monoidal_category C T \<alpha> \<iota>"
-      using C.\<iota>_in_hom C.\<iota>_is_iso C.unity_def C.pentagon' C.comp_assoc
+      using C.unit_is_iso C.pentagon' C.comp_assoc
       by (unfold_locales) auto
   qed
 
@@ -1896,11 +1783,11 @@ $$\xymatrix{
     shows "Ide t \<Longrightarrow> Arr t"
       by (induct t) auto
 
-    lemma Arr_implies_Ide_Dom [elim]:
+    lemma Arr_implies_Ide_Dom:
     shows "Arr t \<Longrightarrow> Ide (Dom t)"
       by (induct t) auto
 
-    lemma Arr_implies_Ide_Cod [elim]:
+    lemma Arr_implies_Ide_Cod:
     shows "Arr t \<Longrightarrow> Ide (Cod t)"
       by (induct t) auto
 
@@ -2012,12 +1899,12 @@ $$\xymatrix{
       show "u \<noteq> \<^bold>\<I>" using 1 by simp
     qed
 
-    lemma Diag_implies_Arr [elim]:
+    lemma Diag_implies_Arr:
     shows "Diag t \<Longrightarrow> Arr t"
       apply (induct t, simp_all)
       by (simp add: Diag_TensorE)
 
-    lemma Dom_preserves_Diag [elim]:
+    lemma Dom_preserves_Diag:
     shows "Diag t \<Longrightarrow> Diag (Dom t)"
     apply (induct t, simp_all)
     proof -
@@ -2037,7 +1924,7 @@ $$\xymatrix{
       qed
     qed
     
-    lemma Cod_preserves_Diag [elim]:
+    lemma Cod_preserves_Diag:
     shows "Diag t \<Longrightarrow> Diag (Cod t)"
     apply (induct t, simp_all)
     proof -
@@ -3561,7 +3448,7 @@ $$\xymatrix{
     lemma eval_red2_Diag_Unity:
     assumes "Ide a" and "Diag a"
     shows "\<lbrace>a \<^bold>\<Down> \<^bold>\<I>\<rbrace> = \<r>[\<lbrace>a\<rbrace>]"
-      using assms tensor_preserves_ide \<rho>_ide_simp unitor_coincidence \<iota>_in_hom comp_cod_arr
+      using assms tensor_preserves_ide \<rho>_ide_simp unitor_coincidence unit_in_hom comp_cod_arr
       by (cases a, auto)
 
     text\<open>
@@ -4169,7 +4056,7 @@ $$\xymatrix{
               have "(Dom v \<^bold>\<otimes> Dom w) \<^bold>\<Down> Dom u
                        = (Dom v \<^bold>\<Down> (Dom w \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>Dom u\<^bold>\<rfloor>)) \<^bold>\<cdot> (Dom v \<^bold>\<otimes> (Dom w \<^bold>\<Down> Dom u)) \<^bold>\<cdot>
                          \<^bold>\<a>\<^bold>[Dom v, Dom w, Dom u\<^bold>]"
-                using u u' v w red2_in_Hom TensorDiag_in_Hom tensor_in_hom Ide_in_Hom
+                using u u' v w red2_in_Hom TensorDiag_in_Hom Ide_in_Hom
                 by (cases u) auto
               thus ?thesis
                 using u v w red2_in_Hom by simp

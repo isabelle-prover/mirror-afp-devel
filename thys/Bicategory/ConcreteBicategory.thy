@@ -36,10 +36,10 @@ begin
   and binary_functor_Comp:
         "\<lbrakk> A \<in> Obj; B \<in> Obj; C \<in> Obj \<rbrakk>
             \<Longrightarrow> binary_functor (Hom B C) (Hom A B) (Hom A C) (\<lambda>(f, g). Comp C B A f g)"
-  and ide_Id: "A \<in> Obj \<Longrightarrow> partial_magma.ide (Hom A A) (Id A)"
+  and ide_Id: "A \<in> Obj \<Longrightarrow> partial_composition.ide (Hom A A) (Id A)"
   and Unit_in_hom:
         "A \<in> Obj \<Longrightarrow>
-           partial_magma.in_hom (Hom A A) (Unit A) (Comp A A A (Id A) (Id A)) (Id A)"
+           partial_composition.in_hom (Hom A A) (Unit A) (Comp A A A (Id A) (Id A)) (Id A)"
   and iso_Unit: "A \<in> Obj \<Longrightarrow> category.iso (Hom A A) (Unit A)"
   and natural_isomorphism_Assoc:
         "\<lbrakk> A \<in> Obj; B \<in> Obj; C \<in> Obj; D \<in> Obj \<rbrakk>
@@ -52,20 +52,20 @@ begin
   and left_unit_Id:
         "\<And>A B. \<lbrakk> A \<in> Obj; B \<in> Obj \<rbrakk>
                    \<Longrightarrow> fully_faithful_functor (Hom A B) (Hom A B)
-                         (\<lambda>f. if partial_magma.arr (Hom A B) f
+                         (\<lambda>f. if partial_composition.arr (Hom A B) f
                               then Comp B B A (Id B) f
                               else partial_magma.null (Hom A B))"
   and right_unit_Id:
         "\<And>A B. \<lbrakk> A \<in> Obj; B \<in> Obj \<rbrakk>
                    \<Longrightarrow> fully_faithful_functor (Hom A B) (Hom A B)
-                         (\<lambda>f. if partial_magma.arr (Hom A B) f
+                         (\<lambda>f. if partial_composition.arr (Hom A B) f
                               then Comp B A A f (Id A)
                               else partial_magma.null (Hom A B))"
   and pentagon:
         "\<And>A B C D E f g h k.
             \<lbrakk> A \<in> Obj; B \<in> Obj; C \<in> Obj; D \<in> Obj; E \<in> Obj;
-              partial_magma.ide (Hom D E) f; partial_magma.ide (Hom C D) g;
-              partial_magma.ide (Hom B C) h; partial_magma.ide (Hom A B) k \<rbrakk> \<Longrightarrow>
+              partial_composition.ide (Hom D E) f; partial_composition.ide (Hom C D) g;
+              partial_composition.ide (Hom B C) h; partial_composition.ide (Hom A B) k \<rbrakk> \<Longrightarrow>
               Hom A E (Comp E D A f (Assoc D C B A g h k))
                       (Hom A E (Assoc E D B A f (Comp D C B g h) k)
                                (Comp E B A (Assoc E D C B f g h) k)) =
@@ -102,20 +102,20 @@ begin
 
     abbreviation Cell
     where "Cell \<mu> \<equiv> \<mu> \<noteq> Null \<and> Src \<mu> \<in> Obj \<and> Trg \<mu> \<in> Obj \<and>
-                    partial_magma.arr (Hom (Src \<mu>) (Trg \<mu>)) (Map \<mu>)"
+                    partial_composition.arr (Hom (Src \<mu>) (Trg \<mu>)) (Map \<mu>)"
 
     definition vcomp
     where "vcomp \<mu> \<nu> \<equiv> if Cell \<mu> \<and> Cell \<nu> \<and> Src \<mu> = Src \<nu> \<and> Trg \<mu> = Trg \<nu> \<and>
-                           partial_magma.seq (Hom (Src \<mu>) (Trg \<mu>)) (Map \<mu>) (Map \<nu>)
+                           partial_composition.seq (Hom (Src \<mu>) (Trg \<mu>)) (Map \<mu>) (Map \<nu>)
                         then MkCell (Src \<mu>) (Trg \<mu>) (Hom (Src \<mu>) (Trg \<mu>) (Map \<mu>) (Map \<nu>))
                         else Null"
 
-    interpretation partial_magma vcomp
-      by (metis partial_magma_def vcomp_def)
+    interpretation partial_composition vcomp
+      by (metis partial_composition_def partial_magma_def vcomp_def)
 
     lemma null_char:
     shows "null = Null"
-      using comp_null(1) vcomp_def by metis
+      using null_is_zero(1) vcomp_def by metis
 
     lemma MkCell_Map:
     assumes "\<mu> \<noteq> null"
@@ -129,9 +129,9 @@ begin
      * used in some subsequent proofs.
      *)
     lemma ide_char'':
-    shows "ide \<mu> \<longleftrightarrow> Cell \<mu> \<and> partial_magma.ide (Hom (Src \<mu>) (Trg \<mu>)) (Map \<mu>)"
+    shows "ide \<mu> \<longleftrightarrow> Cell \<mu> \<and> partial_composition.ide (Hom (Src \<mu>) (Trg \<mu>)) (Map \<mu>)"
     proof
-      show "ide \<mu> \<Longrightarrow> Cell \<mu> \<and> partial_magma.ide (Hom (Src \<mu>) (Trg \<mu>)) (Map \<mu>)"
+      show "ide \<mu> \<Longrightarrow> Cell \<mu> \<and> partial_composition.ide (Hom (Src \<mu>) (Trg \<mu>)) (Map \<mu>)"
       proof
         assume \<mu>: "ide \<mu>"
         show 1: "Cell \<mu>"
@@ -147,9 +147,9 @@ begin
         ultimately show "Hom.ide (Map \<mu>)"
           using 1 Hom.ide_dom by fastforce
       qed
-      show "Cell \<mu> \<and> partial_magma.ide (Hom (Src \<mu>) (Trg \<mu>)) (Map \<mu>) \<Longrightarrow> ide \<mu>"
+      show "Cell \<mu> \<and> partial_composition.ide (Hom (Src \<mu>) (Trg \<mu>)) (Map \<mu>) \<Longrightarrow> ide \<mu>"
       proof -
-        assume \<mu>: "Cell \<mu> \<and> partial_magma.ide (Hom (Src \<mu>) (Trg \<mu>)) (Map \<mu>)"
+        assume \<mu>: "Cell \<mu> \<and> partial_composition.ide (Hom (Src \<mu>) (Trg \<mu>)) (Map \<mu>)"
         interpret Hom: category "Hom (Src \<mu>) (Trg \<mu>)"
           using \<mu> category_Hom by simp
         show "ide \<mu>"
@@ -168,7 +168,7 @@ begin
 
     lemma MkCell_in_domains:
     assumes "Cell \<mu>"
-    shows "MkCell (Src \<mu>) (Trg \<mu>) (partial_magma.dom (Hom (Src \<mu>) (Trg \<mu>)) (Map \<mu>))
+    shows "MkCell (Src \<mu>) (Trg \<mu>) (partial_composition.dom (Hom (Src \<mu>) (Trg \<mu>)) (Map \<mu>))
              \<in> domains \<mu>"
     proof -
       interpret Hom: category "Hom (Src \<mu>) (Trg \<mu>)"
@@ -185,7 +185,7 @@ begin
     
     lemma MkCell_in_codomains:
     assumes "Cell \<mu>"
-    shows "MkCell (Src \<mu>) (Trg \<mu>) (partial_magma.cod (Hom (Src \<mu>) (Trg \<mu>)) (Map \<mu>))
+    shows "MkCell (Src \<mu>) (Trg \<mu>) (partial_composition.cod (Hom (Src \<mu>) (Trg \<mu>)) (Map \<mu>))
              \<in> codomains \<mu>"
     proof -
       interpret Hom: category "Hom (Src \<mu>) (Trg \<mu>)"
@@ -206,7 +206,7 @@ begin
       have "\<not> Cell \<mu> \<Longrightarrow> domains \<mu> = {}"
         using vcomp_def domains_def null_char by auto
       moreover have
-        "Cell \<mu> \<Longrightarrow> MkCell (Src \<mu>) (Trg \<mu>) (partial_magma.dom (Hom (Src \<mu>) (Trg \<mu>)) (Map \<mu>))
+        "Cell \<mu> \<Longrightarrow> MkCell (Src \<mu>) (Trg \<mu>) (partial_composition.dom (Hom (Src \<mu>) (Trg \<mu>)) (Map \<mu>))
                        \<in> domains \<mu>"
         using MkCell_in_domains by simp
       ultimately show ?thesis by auto
@@ -218,7 +218,7 @@ begin
       have "\<not> Cell \<mu> \<Longrightarrow> codomains \<mu> = {}"
         using vcomp_def codomains_def null_char by auto
       moreover have
-        "Cell \<mu> \<Longrightarrow> MkCell (Src \<mu>) (Trg \<mu>) (partial_magma.cod (Hom (Src \<mu>) (Trg \<mu>)) (Map \<mu>))
+        "Cell \<mu> \<Longrightarrow> MkCell (Src \<mu>) (Trg \<mu>) (partial_composition.cod (Hom (Src \<mu>) (Trg \<mu>)) (Map \<mu>))
                        \<in> codomains \<mu>"
         using MkCell_in_codomains by simp
       ultimately show ?thesis by auto
@@ -229,12 +229,12 @@ begin
       using arr_def has_domain_char has_codomain_char by simp
 
     lemma ide_char''':
-    shows "ide \<mu> \<longleftrightarrow> arr \<mu> \<and> partial_magma.ide (Hom (Src \<mu>) (Trg \<mu>)) (Map \<mu>)"
+    shows "ide \<mu> \<longleftrightarrow> arr \<mu> \<and> partial_composition.ide (Hom (Src \<mu>) (Trg \<mu>)) (Map \<mu>)"
       using ide_char'' arr_char by simp
 
     lemma seq_char:
     shows "seq \<mu> \<nu> \<longleftrightarrow> Cell \<mu> \<and> Cell \<nu> \<and> Src \<mu> = Src \<nu> \<and> Trg \<mu> = Trg \<nu> \<and>
-                       partial_magma.seq (Hom (Src \<mu>) (Trg \<mu>)) (Map \<mu>) (Map \<nu>)"
+                       partial_composition.seq (Hom (Src \<mu>) (Trg \<mu>)) (Map \<mu>) (Map \<nu>)"
       using arr_char vcomp_def by auto
 
     lemma vcomp_char:
@@ -295,14 +295,14 @@ begin
 
     lemma dom_char:
     shows "dom \<mu> = (if arr \<mu> then
-                      MkCell (Src \<mu>) (Trg \<mu>) (partial_magma.dom (Hom (Src \<mu>) (Trg \<mu>)) (Map \<mu>))
+                      MkCell (Src \<mu>) (Trg \<mu>) (partial_composition.dom (Hom (Src \<mu>) (Trg \<mu>)) (Map \<mu>))
                     else Null)"
       by (metis MkCell_in_domains arr_char dom_in_domains domain_unique has_domain_iff_arr
           dom_def null_char)
         
     lemma cod_char:
     shows "cod \<mu> = (if arr \<mu> then
-                      MkCell (Src \<mu>) (Trg \<mu>) (partial_magma.cod (Hom (Src \<mu>) (Trg \<mu>)) (Map \<mu>))
+                      MkCell (Src \<mu>) (Trg \<mu>) (partial_composition.cod (Hom (Src \<mu>) (Trg \<mu>)) (Map \<mu>))
                     else Null)"
       by (metis MkCell_in_codomains arr_char cod_def cod_in_codomains codomain_unique
           has_codomain_iff_arr null_char)
@@ -323,18 +323,18 @@ begin
       using assms seq_char vcomp_def by auto
 
     lemma arr_MkCell [simp]:
-    assumes "A \<in> Obj" and "B \<in> Obj" and "partial_magma.arr (Hom A B) f"
+    assumes "A \<in> Obj" and "B \<in> Obj" and "partial_composition.arr (Hom A B) f"
     shows "arr (MkCell A B f)"
       using assms arr_char by simp
 
     lemma dom_MkCell [simp]:
     assumes "arr (MkCell A B f)"
-    shows "dom (MkCell A B f) = MkCell A B (partial_magma.dom (Hom A B) f)"
+    shows "dom (MkCell A B f) = MkCell A B (partial_composition.dom (Hom A B) f)"
       using assms arr_char dom_char by simp
 
     lemma cod_MkCell [simp]:
     assumes "arr (MkCell A B f)"
-    shows "cod (MkCell A B f) = MkCell A B (partial_magma.cod (Hom A B) f)"
+    shows "cod (MkCell A B f) = MkCell A B (partial_composition.cod (Hom A B) f)"
       using assms arr_char cod_char by simp
 
     lemma iso_char:
@@ -476,12 +476,12 @@ begin
 
     lemma Map_dom [simp]:
     assumes "arr \<mu>"
-    shows "Map (dom \<mu>) = partial_magma.dom (Hom (Src \<mu>) (Trg \<mu>)) (Map \<mu>)"
+    shows "Map (dom \<mu>) = partial_composition.dom (Hom (Src \<mu>) (Trg \<mu>)) (Map \<mu>)"
       using assms by (simp add: dom_char)
 
     lemma Map_cod [simp]:
     assumes "arr \<mu>"
-    shows "Map (cod \<mu>) = partial_magma.cod (Hom (Src \<mu>) (Trg \<mu>)) (Map \<mu>)"
+    shows "Map (cod \<mu>) = partial_composition.cod (Hom (Src \<mu>) (Trg \<mu>)) (Map \<mu>)"
       using assms by (simp add: cod_char)
 
     lemma ide_MkObj:
@@ -531,10 +531,10 @@ begin
       using assms src_def H.obj_def ide_MkObj by simp
 
     lemma MkCell_in_hom [intro]:
-    assumes "A \<in> Obj" and "B \<in> Obj" and "partial_magma.arr (Hom A B) f"
+    assumes "A \<in> Obj" and "B \<in> Obj" and "partial_composition.arr (Hom A B) f"
     shows "H.in_hhom (MkCell A B f) (MkObj A) (MkObj B)"
-    and "\<guillemotleft>MkCell A B f : MkCell A B (partial_magma.dom (Hom A B) f)
-                            \<Rightarrow> MkCell A B (partial_magma.cod (Hom A B) f)\<guillemotright>"
+    and "\<guillemotleft>MkCell A B f : MkCell A B (partial_composition.dom (Hom A B) f)
+                            \<Rightarrow> MkCell A B (partial_composition.cod (Hom A B) f)\<guillemotright>"
       using assms by auto
 
     text \<open>
@@ -669,10 +669,10 @@ begin
         have "Src (snd (H.VV.comp g f)) = Src ?f2"
           using assms arr_char src_def H.VV.comp_char H.VV.seq_char\<^sub>S\<^sub>b\<^sub>C
           by (metis (no_types, lifting) H.vseq_implies_hpar(1) Src.simps(1) H.VV.arrE
-              H.VV.inclusion H.VxV.comp_arr_dom H.VxV.dom_comp H.VxV.seqE)
+              H.VV.inclusion H.VxV.comp_arr_dom H.VxV.dom_comp H.VxV.seqE\<^sub>P\<^sub>C)
         moreover have "Trg (fst (H.VV.comp g f)) = Trg ?f1"
           by (metis (no_types, lifting) H.VV.comp_arr_dom H.VV.comp_simp H.VV.seq_char\<^sub>S\<^sub>b\<^sub>C
-              H.VxV.arr_char H.VxV.cod_comp H.VxV.comp_cod_arr H.VxV.seqE
+              H.VxV.arr_char H.VxV.cod_comp H.VxV.comp_cod_arr H.VxV.seqE\<^sub>P\<^sub>C
               H.vseq_implies_hpar(2) Src_trg assms)
         moreover have
             "Comp (Trg (fst (H.VV.comp g f))) (Trg (snd (H.VV.comp g f)))
@@ -711,18 +711,18 @@ begin
             proof -
               have "Comp_f.A1xA2.seq (Map ?g1, Map ?g2) (Map ?f1, Map ?f2)"
                 using assms 2 H.VV.seq_char\<^sub>S\<^sub>b\<^sub>C
-                by (metis (no_types, lifting) Comp_f.A1xA2.seq_char H.VxV.seqE
+                by (metis (no_types, lifting) Comp_f.A1xA2.seq_char H.VxV.seqE\<^sub>P\<^sub>C
                     fst_conv seq_char snd_conv)
               moreover have
                 "Comp_f.A1xA2.comp (Map ?g1, Map ?g2) (Map ?f1, Map ?f2) =
                  (Hom (Src ?g1) (Trg ?g1) (Map ?g1) (Map ?f1),
                   Hom (Src ?g2) (Trg ?g2) (Map ?g2) (Map ?f2))"
-                using assms 2 H.VV.seq_char\<^sub>S\<^sub>b\<^sub>C H.VxV.seqE seq_char
+                using assms 2 H.VV.seq_char\<^sub>S\<^sub>b\<^sub>C H.VxV.seqE\<^sub>P\<^sub>C seq_char
                 by (metis (no_types, lifting) Comp_f.A1xA2.comp_char fst_conv snd_conv)
               ultimately show ?thesis
                 by (metis 2 Comp_f.as_nat_trans.preserves_comp_2 old.prod.case)
             qed
-            thus ?thesis using assms 2 H.VV.seq_char\<^sub>S\<^sub>b\<^sub>C H.VxV.seqE seq_char
+            thus ?thesis using assms 2 H.VV.seq_char\<^sub>S\<^sub>b\<^sub>C H.VxV.seqE\<^sub>P\<^sub>C seq_char
               by (metis (no_types, lifting))
           qed
           finally show ?thesis by blast
@@ -732,14 +732,14 @@ begin
       also have "... = vcomp (hcomp ?g1 ?g2) (hcomp ?f1 ?f2)"
       proof -
         have 2: "Trg ?g1 = Trg ?f1 \<and> Src ?g2 = Src ?f2 \<and> Src ?f1 = Trg ?f2"
-          using assms seq_char H.VV.seq_char\<^sub>S\<^sub>b\<^sub>C H.VxV.seqE
+          using assms seq_char H.VV.seq_char\<^sub>S\<^sub>b\<^sub>C H.VxV.seqE\<^sub>P\<^sub>C
           by (metis (no_types, lifting) H.VV.arr_char\<^sub>S\<^sub>b\<^sub>C Src_src Src_trg)
         have "Hom_f.seq (Comp (Trg ?f1) (Trg ?g2) (Src ?f2)
                               (Map ?g1) (Map ?g2))
                         (Comp (Trg ?f1) (Trg ?f2) (Src ?f2)
                               (Map ?f1) (Map ?f2))"
-          by (metis (no_types, lifting) 2 Comp_f.A1xA2.seqI Comp_f.preserves_seq H.VV.seq_char\<^sub>S\<^sub>b\<^sub>C
-              H.VxV.seqE arr_char assms case_prod_conv vcomp_def)
+          by (metis (no_types, lifting) 2 Comp_f.A1xA2.seqI\<^sub>P\<^sub>C Comp_f.preserves_seq H.VV.seq_char\<^sub>S\<^sub>b\<^sub>C
+              H.VxV.seqE\<^sub>P\<^sub>C arr_char assms case_prod_conv vcomp_def)
         moreover have "?f1 \<noteq> Null \<and> ?f2 \<noteq> Null \<and> src ?f1 = trg ?f2 \<and>
                        ?g1 \<noteq> Null \<and> ?g2 \<noteq> Null \<and> src ?g1 = trg ?g2"
           using assms H.VV.arr_char\<^sub>S\<^sub>b\<^sub>C arr_char assms by blast
@@ -767,11 +767,11 @@ begin
       using assms H.obj_def Map_src Map_trg H.obj_simps(3) by metis+
 
     lemma MkCell_simps:
-    assumes "A \<in> Obj" and "B \<in> Obj" and "partial_magma.arr (Hom A B) f"
+    assumes "A \<in> Obj" and "B \<in> Obj" and "partial_composition.arr (Hom A B) f"
     shows "arr (MkCell A B f)"
     and "src (MkCell A B f) = MkObj A" and "trg (MkCell A B f) = MkObj B"
-    and "dom (MkCell A B f) = MkCell A B (partial_magma.dom (Hom A B) f)"
-    and "cod (MkCell A B f) = MkCell A B (partial_magma.cod (Hom A B) f)"
+    and "dom (MkCell A B f) = MkCell A B (partial_composition.dom (Hom A B) f)"
+    and "cod (MkCell A B f) = MkCell A B (partial_composition.cod (Hom A B) f)"
       using assms MkCell_in_hom by auto
 
     text \<open>
@@ -1538,7 +1538,7 @@ begin
 
     lemma arr_Map:
     assumes "arr \<mu>"
-    shows "partial_magma.arr (Hom (Src \<mu>) (Trg \<mu>)) (Map \<mu>)"
+    shows "partial_composition.arr (Hom (Src \<mu>) (Trg \<mu>)) (Map \<mu>)"
       using assms arr_char by simp
 
     lemma obj_MkObj_Src:
@@ -1553,7 +1553,7 @@ begin
 
     lemma vcomp_MkCell [simp]:
     assumes "arr (MkCell A B f)" and "arr (MkCell A B g)"
-    and "partial_magma.seq (Hom A B) f g"
+    and "partial_composition.seq (Hom A B) f g"
     shows "vcomp (MkCell A B f) (MkCell A B g) = MkCell A B (Hom A B f g)"
       using assms(1-3) arr_char vcomp_def by fastforce
 
@@ -1583,7 +1583,7 @@ begin
 
     lemma Map_in_Hom:
     assumes "arr \<mu>"
-    shows "partial_magma.in_hom (Hom (Src \<mu>) (Trg \<mu>)) (Map \<mu>) (Map (dom \<mu>)) (Map (cod \<mu>))"
+    shows "partial_composition.in_hom (Hom (Src \<mu>) (Trg \<mu>)) (Map \<mu>) (Map (dom \<mu>)) (Map (cod \<mu>))"
       by (simp add: Src_in_Obj Trg_in_Obj arr_Map assms category.in_homI category_Hom)
 
     text \<open>

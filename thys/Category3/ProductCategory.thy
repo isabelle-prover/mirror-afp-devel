@@ -57,7 +57,7 @@ begin
     shows "\<not>Arr Null"
       by simp
 
-    interpretation partial_magma comp
+    interpretation partial_composition comp
     proof
       show "\<exists>!n. \<forall>f. n \<cdot> f = n \<and> f \<cdot> n = n"
       proof
@@ -120,7 +120,7 @@ begin
     shows "arr f \<longleftrightarrow> Arr f"
       using has_domain_char has_codomain_char arr_def by simp
 
-    lemma arrI [intro]:
+    lemma arrI\<^sub>P\<^sub>C [intro]:
     assumes "C1.arr f1" and "C2.arr f2"
     shows "arr (f1, f2)"
       using assms by simp
@@ -131,12 +131,12 @@ begin
     shows "T"
       using assms by auto
 
-    lemma seqI [intro]:
+    lemma seqI\<^sub>P\<^sub>C [intro]:
     assumes "C1.seq g1 f1 \<and> C2.seq g2 f2"
     shows "seq (g1, g2) (f1, f2)"
       using assms comp_def by auto
 
-    lemma seqE [elim]:
+    lemma seqE\<^sub>P\<^sub>C [elim]:
     assumes "seq g f"
     and "C1.seq (fst g) (fst f) \<Longrightarrow> C2.seq (snd g) (snd f) \<Longrightarrow> T"
     shows "T"
@@ -195,7 +195,7 @@ begin
             product_category_axioms product_category_def fst_conv snd_conv)
       show "seq g f \<Longrightarrow> seq h g \<Longrightarrow> (h \<cdot> g) \<cdot> f = h \<cdot> g \<cdot> f"
         using comp_def null_char seq_char C1.comp_assoc C2.comp_assoc
-        by (elim seqE C1.seqE C2.seqE, simp)
+        by (elim seqE\<^sub>P\<^sub>C C1.seqE C2.seqE, simp)
     qed
 
     sublocale category comp
@@ -231,19 +231,19 @@ begin
     shows "cod f = (C1.cod (fst f), C2.cod (snd f))"
       using assms cod_char by auto
 
-    lemma in_homI [intro, simp]:
+    lemma in_homI\<^sub>P\<^sub>C [intro, simp]:
     assumes "\<guillemotleft>fst f: fst a \<rightarrow>\<^sub>1 fst b\<guillemotright>" and "\<guillemotleft>snd f: snd a \<rightarrow>\<^sub>2 snd b\<guillemotright>"
     shows "\<guillemotleft>f: a \<rightarrow> b\<guillemotright>"
       using assms by fastforce
 
-    lemma in_homE [elim]:
+    lemma in_homE\<^sub>P\<^sub>C [elim]:
     assumes "\<guillemotleft>f: a \<rightarrow> b\<guillemotright>"
     and "\<guillemotleft>fst f: fst a \<rightarrow>\<^sub>1 fst b\<guillemotright> \<Longrightarrow> \<guillemotleft>snd f: snd a \<rightarrow>\<^sub>2 snd b\<guillemotright> \<Longrightarrow> T"
     shows "T"
       using assms
       by (metis C1.in_homI C2.in_homI arr_char cod_simp dom_simp fst_conv in_homE snd_conv)
 
-    lemma ide_char [iff]:
+    lemma ide_char\<^sub>P\<^sub>C [iff]:
     shows "ide f \<longleftrightarrow> Ide f"
       using ide_in_hom C1.ide_in_hom C2.ide_in_hom by blast
 
@@ -279,13 +279,13 @@ begin
       obtain g2 where g2: "C2.inverse_arrows (snd f) g2" using f by blast
       have "C1.ide (g1 \<cdot>\<^sub>1 fst f) \<and> C2.ide (g2 \<cdot>\<^sub>2 snd f) \<and>
             C1.ide (fst f \<cdot>\<^sub>1 g1) \<and> C2.ide (snd f \<cdot>\<^sub>2 g2)"
-        using g1 g2 ide_char by force
+        using g1 g2 ide_char\<^sub>P\<^sub>C by force
       hence "inverse_arrows f (g1, g2)"
-        using f g1 g2 ide_char comp_char by (intro inverse_arrowsI, auto)
+        using f g1 g2 ide_char\<^sub>P\<^sub>C comp_char by (intro inverse_arrowsI, auto)
       thus "iso f" by auto
     qed
 
-    lemma isoI [intro, simp]:
+    lemma isoI\<^sub>P\<^sub>C [intro, simp]:
     assumes "C1.iso (fst f)" and "C2.iso (snd f)"
     shows "iso f"
       using assms by simp
@@ -306,9 +306,9 @@ begin
         have 2: "C2.inverse_arrows (snd f) (C2.inv (snd f))"
           using assms iso_char C2.inv_is_inverse by simp
         show "ide ((C1.inv (fst f), C2.inv (snd f)) \<cdot> f)"
-          using 1 2 ide_char comp_char by auto
+          using 1 2 ide_char\<^sub>P\<^sub>C comp_char by auto
         show "ide (f \<cdot> (C1.inv (fst f), C2.inv (snd f)))"
-          using 1 2 ide_char comp_char by auto
+          using 1 2 ide_char\<^sub>P\<^sub>C comp_char by auto
       qed
       thus ?thesis using inverse_unique by auto
     qed

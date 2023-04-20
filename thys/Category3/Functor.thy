@@ -69,6 +69,11 @@ begin
       by (metis A.arr_dom_iff_arr B.ide_dom B.inverse_arrows_def B.isoI preserves_arr
                 preserves_comp preserves_dom)
 
+    lemma preserves_isomorphic:
+    assumes "A.isomorphic a b"
+    shows "B.isomorphic (F a) (F b)"
+      by (meson A.isomorphic_def B.isomorphic_def assms preserves_hom preserves_iso)
+
     lemma preserves_section_retraction:
     assumes "A.ide (A e m)"
     shows "B.ide (B (F e) (F m))"
@@ -544,16 +549,8 @@ begin
         fix a a' g
         assume a: "A.ide a" and a': "A.ide a'" and g: "\<guillemotleft>g : G a \<rightarrow>\<^sub>B G a'\<guillemotright>"
         show "\<exists>f. \<guillemotleft>f : a \<rightarrow>\<^sub>A a'\<guillemotright> \<and> G f = g"
-        proof
-          have "\<guillemotleft>F g : F (G a) \<rightarrow>\<^sub>A F (G a')\<guillemotright> \<and> G (F g) = g"
-            using a a' g FG.inv FG.inv' comp_apply
-            by (metis B.arrI B.map_simp FG.F.preserves_hom)
-          moreover have "F (G a) = a \<and> F (G a') = a'"
-            using a a' FG.inv' comp_apply
-            by (metis A.ideD(1) A.map_simp)
-          ultimately show "\<guillemotleft>F g : a \<rightarrow>\<^sub>A a'\<guillemotright> \<and> G (F g) = g"
-            by simp
-        qed
+          by (metis A.ideD(1) A.map_simp B.arrI B.map_simp FG.F.preserves_hom FG.inv FG.inv'
+              a a' g o_apply)
       qed
     qed
 
@@ -613,12 +610,8 @@ begin
     notation Aop.comp     (infixr "\<cdot>\<^sub>A\<^sup>o\<^sup>p" 55)
     notation Bop.comp     (infixr "\<cdot>\<^sub>B\<^sup>o\<^sup>p" 55)
 
-    definition map
+    abbreviation map
     where "map \<equiv> F"
-
-    lemma map_simp [simp]:
-    shows "map f = F f"
-      by (simp add: map_def)
 
     lemma is_functor:
     shows "functor Aop.comp Bop.comp map"
@@ -640,8 +633,8 @@ begin
 
     lemma bij_induces_invertible_functor:
     assumes "bij_betw \<phi> S (Collect arr)" and "n \<notin> S"
-    shows "\<exists>C'. Collect (partial_magma.arr C') = S \<and>
-                invertible_functor C' C (\<lambda>i. if partial_magma.arr C' i then \<phi> i else null)"
+    shows "\<exists>C'. Collect (partial_composition.arr C') = S \<and>
+                invertible_functor C' C (\<lambda>i. if partial_composition.arr C' i then \<phi> i else null)"
     proof -
       define \<psi> where "\<psi> = (\<lambda>f. if arr f then inv_into S \<phi> f else n)"
       have \<psi>: "bij_betw \<psi> (Collect arr) S"
@@ -654,7 +647,7 @@ begin
         using assms(1) \<psi> bij_betw_inv_into_left [of \<phi> S "Collect arr"]
         by (metis bij_betw_def image_eqI mem_Collect_eq)
       define C' where "C' = (\<lambda>i j. if i \<in> S \<and> j \<in> S \<and> seq (\<phi> i) (\<phi> j) then \<psi> (\<phi> i \<cdot> \<phi> j) else n)"
-      interpret C': partial_magma C'
+      interpret C': partial_composition C'
         using assms(1-2) C'_def \<psi>_def
         by unfold_locales metis
       have null_char: "C'.null = n"
@@ -737,15 +730,8 @@ begin
           using C'.codomains_def by simp
       qed
       have arr_char: "\<And>i. C'.arr i \<longleftrightarrow> i \<in> S"
-      proof
-        fix i
-        show "i \<in> S \<Longrightarrow> C'.arr i"
-          using dom cod C'.arr_def by auto
-        show "C'.arr i \<Longrightarrow> i \<in> S"
-          using C'_def C'.arr_def C'.domains_def C'.codomains_def null_char
-          apply simp
-          by metis
-      qed
+        by (metis (mono_tags, lifting) C'.arr_def C'.codomains_def C'.domains_def
+            C'_def assms(2) dom mem_Collect_eq null_char C'.cod_in_codomains C'.dom_in_domains)
       have seq_char: "\<And>i j. C'.seq i j \<longleftrightarrow> i \<in> S \<and> j \<in> S \<and> seq (\<phi> i) (\<phi> j)"
         using assms(1-2) C'_def arr_char null_char
         apply simp
@@ -809,11 +795,11 @@ begin
     proof -
       obtain n :: nat and \<phi> where \<phi>: "bij_betw \<phi> {0..<n} (Collect arr)"
         using assms ex_bij_betw_nat_finite by blast
-      obtain C' where C': "Collect (partial_magma.arr C') = {0..<n} \<and>
+      obtain C' where C': "Collect (partial_composition.arr C') = {0..<n} \<and>
                            invertible_functor C' (\<cdot>)
-                             (\<lambda>i. if partial_magma.arr C' i then \<phi> i else null)"
+                             (\<lambda>i. if partial_composition.arr C' i then \<phi> i else null)"
         using \<phi> bij_induces_invertible_functor [of \<phi> "{0..<n}"] by auto
-      interpret \<phi>: invertible_functor C' C \<open>\<lambda>i. if partial_magma.arr C' i then \<phi> i else null\<close>
+      interpret \<phi>: invertible_functor C' C \<open>\<lambda>i. if partial_composition.arr C' i then \<phi> i else null\<close>
         using C' by simp
       show ?thesis
         using \<phi>.isomorphic_categories_axioms by blast

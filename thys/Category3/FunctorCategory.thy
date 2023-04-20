@@ -135,16 +135,10 @@ begin
         using assms(1) seq_char t'ot.natural_transformation_axioms by simp
     qed
 
-    lemma MkArr_eqI [intro]:
-    assumes "arr (MkArr F G \<tau>)"
-    and "F = F'" and "G = G'" and "\<tau> = \<tau>'"
+    lemma MkArr_eqI:
+    assumes "F = F'" and "G = G'" and "\<tau> = \<tau>'"
     shows "MkArr F G \<tau> = MkArr F' G' \<tau>'"
-      using assms arr_eqI by simp
-
-    lemma MkArr_eqI' [intro]:
-    assumes "arr (MkArr F G \<tau>)" and "\<tau> = \<tau>'"
-    shows "MkArr F G \<tau> = MkArr F G \<tau>'"
-      using assms arr_eqI by simp
+      using assms by simp
 
     lemma iso_char [iff]:
     shows "iso t \<longleftrightarrow> t \<noteq> null \<and> natural_isomorphism A B (Dom t) (Cod t) (Map t)"
@@ -265,7 +259,7 @@ begin
       let ?F' = "fst Fg'" and ?g' = "snd Fg'"
       have F': "A_B.arr ?F'" using 1 A_BxA.seqE by blast
       have CodF: "A_B.Cod ?F = A_B.Map (A_B.cod ?F)"
-        using 1 by (metis A_B.Map_cod A_B.seqE A_BxA.seqE)
+        using 1 by (metis A_B.Map_cod A_B.seqE A_BxA.seqE\<^sub>P\<^sub>C)
       have DomF': "A_B.Dom ?F' = A_B.Map (A_B.dom ?F')"
         using F' by simp
       have seq_F'F: "A_B.seq ?F' ?F" using 1 by blast
@@ -359,12 +353,12 @@ begin
       proof -
         interpret F_dom_f1: "functor" A2 B \<open>\<lambda>f2. F (A1.dom f1, f2)\<close>
           using f1 \<tau>.F.is_extensional apply (unfold_locales, simp_all)
-          by (metis A1.arr_dom A1.comp_arr_dom A1.dom_dom A1xA2.comp_simp A1xA2.seqI
+          by (metis A1.arr_dom A1.comp_arr_dom A1.dom_dom A1xA2.comp_simp A1xA2.seqI\<^sub>P\<^sub>C
               \<tau>.F.as_nat_trans.preserves_comp_2 fst_conv snd_conv)
         interpret G_cod_f1: "functor" A2 B \<open>\<lambda>f2. G (A1.cod f1, f2)\<close>
           using f1 \<tau>.G.is_extensional A1.arr_cod_iff_arr
           apply (unfold_locales, simp_all)
-          by (metis A1.comp_arr_dom A1.dom_cod A1xA2.comp_simp A1xA2.seqI
+          by (metis A1.comp_arr_dom A1.dom_cod A1xA2.comp_simp A1xA2.seqI\<^sub>P\<^sub>C
               \<tau>.G.preserves_comp fst_conv snd_conv)
         have "natural_transformation A2 B (\<lambda>f2. F (A1.dom f1, f2)) (\<lambda>f2. G (A1.cod f1, f2))
                                           (\<lambda>f2. \<tau> (f1, f2))"
@@ -445,9 +439,6 @@ begin
           proof (intro A2_B.MkArr_eqI)
             show "(\<lambda>f2. F (A1.dom f1, f2)) = (\<lambda>f2. F (A1.dom f1, f2))" by simp
             show "(\<lambda>f2. G (A1.cod f1, f2)) = (\<lambda>f2. G (A1.cod f1, f2))" by simp
-            show "A2_B.arr (A2_B.MkArr (\<lambda>f2. F (A1.dom f1, f2)) (\<lambda>f2. G (A1.cod f1, f2))
-                                       G_f1o\<tau>_dom_f1.map)"
-              using G_f1o\<tau>_dom_f1.natural_transformation_axioms by blast
             show "G_f1o\<tau>_dom_f1.map = (\<lambda>f2. \<tau> (f1, f2))"
             proof
               fix f2
@@ -507,9 +498,6 @@ begin
           proof (intro A2_B.MkArr_eqI)
             show "(\<lambda>f2. F (A1.dom f1, f2)) = (\<lambda>f2. F (A1.dom f1, f2))" by simp
             show "(\<lambda>f2. G (A1.cod f1, f2)) = (\<lambda>f2. G (A1.cod f1, f2))" by simp
-            show "A2_B.arr (A2_B.MkArr (\<lambda>f2. F (A1.dom f1, f2)) (\<lambda>f2. G (A1.cod f1, f2))
-                                       \<tau>_cod_f1oF_f1.map)"
-              using \<tau>_cod_f1oF_f1.natural_transformation_axioms by blast
             show "\<tau>_cod_f1oF_f1.map = (\<lambda>f2. \<tau> (f1, f2))"
             proof
               fix f2

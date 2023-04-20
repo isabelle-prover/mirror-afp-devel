@@ -63,7 +63,7 @@ begin
 
     definition map
     where "map f = (if A1.arr (fst f) \<and> A2.arr (snd f)
-                    then (F1 (fst f), F2 (snd f)) else B1xB2.null)"
+                    then (F1 (fst f), F2 (snd f)) else (F1 A1.null, F2 A2.null))"
 
     lemma map_simp [simp]:
     assumes "A1xA2.arr f"
@@ -72,7 +72,7 @@ begin
 
     lemma is_functor:
     shows "functor A1xA2.comp B1xB2.comp map"
-      using B1xB2.dom_char B1xB2.cod_char
+      using B1xB2.dom_char B1xB2.cod_char F1.is_extensional F2.is_extensional
       apply (unfold_locales)
       using map_def A1.arr_dom_iff_arr A1.arr_cod_iff_arr A2.arr_dom_iff_arr A2.arr_cod_iff_arr
           apply auto[4]
@@ -83,6 +83,66 @@ begin
   sublocale product_functor \<subseteq> "functor" A1xA2.comp B1xB2.comp map
     using is_functor by auto
   sublocale product_functor \<subseteq> binary_functor A1 A2 B1xB2.comp map ..
+
+  text\<open>
+    The following locale is concerned with a binary functor from a category to itself.
+    It defines related functors that are useful when considering monoidal structure on a
+    category.
+\<close>
+
+  locale binary_endofunctor =
+    C: category C +
+    CC: product_category C C +
+    CCC: product_category C CC.comp +
+    binary_functor C C C T
+  for C :: "'a comp"      (infixr "\<cdot>" 55)
+  and T :: "'a * 'a \<Rightarrow> 'a"
+  begin
+
+    definition ToTC
+    where "ToTC f \<equiv> if CCC.arr f then T (T (fst f, fst (snd f)), snd (snd f)) else C.null"
+
+    lemma functor_ToTC:
+    shows "functor CCC.comp C ToTC"
+      using ToTC_def apply unfold_locales
+          apply auto[4]
+    proof -
+      fix f g
+      assume gf: "CCC.seq g f"
+      show "ToTC (CCC.comp g f) = ToTC g \<cdot> ToTC f"
+        using gf unfolding CCC.seq_char CC.seq_char ToTC_def
+        apply auto
+        by (metis CC.comp_simp CC.seqI\<^sub>P\<^sub>C fst_conv preserves_comp preserves_seq snd_conv)
+    qed
+
+    lemma ToTC_simp [simp]:
+    assumes "C.arr f" and "C.arr g" and "C.arr h"
+    shows "ToTC (f, g, h) = T (T (f, g), h)"
+      using assms ToTC_def CCC.arr_char by simp
+
+    definition ToCT
+    where "ToCT f \<equiv> if CCC.arr f then T (fst f, T (fst (snd f), snd (snd f))) else C.null"
+
+    lemma functor_ToCT:
+    shows "functor CCC.comp C ToCT"
+      using ToCT_def apply unfold_locales
+        apply auto[4]
+    proof -
+      fix f g
+      assume gf: "CCC.seq g f"
+      show "ToCT (CCC.comp g f) = ToCT g \<cdot> ToCT f"
+        using gf unfolding CCC.seq_char CC.seq_char ToCT_def
+        apply auto
+        by (metis CC.comp_simp CC.seq_char as_nat_trans.preserves_comp_2 fst_conv
+                  preserves_reflects_arr snd_conv)
+    qed
+
+    lemma ToCT_simp [simp]:
+    assumes "C.arr f" and "C.arr g" and "C.arr h"
+    shows "ToCT (f, g, h) = T (f, T (g, h))"
+      using assms ToCT_def CCC.arr_char by simp
+
+  end
 
   text\<open>
     A symmetry functor is a binary functor that exchanges its two arguments.

@@ -216,7 +216,7 @@ begin
   begin
 
     interpretation I: constant_functor C C \<I>
-      using \<iota>_in_hom by unfold_locales auto
+      using unit_in_hom by unfold_locales auto
     interpretation horizontal_homs C I.map I.map
       by unfold_locales auto
 
@@ -249,7 +249,7 @@ begin
         show "CCC.comp g f = VVV.comp g f"
         proof -
           have "CCC.seq g f \<Longrightarrow> CCC.comp g f = VVV.comp g f"
-            by (metis (no_types, lifting) CC.arrE CCC.seqE CC_eq_VV I.map_simp
+            by (metis (no_types, lifting) CC.arrE CCC.seqE\<^sub>P\<^sub>C CC_eq_VV I.map_simp
                 I.preserves_reflects_arr VV.seq_char\<^sub>S\<^sub>b\<^sub>C VVV.arrI\<^sub>S\<^sub>b\<^sub>C VVV.comp_simp VVV.seq_char\<^sub>S\<^sub>b\<^sub>C
                 trg_vcomp vseq_implies_hpar(1))
           moreover have "\<not> CCC.seq g f \<Longrightarrow> CCC.comp g f = VVV.comp g f"
@@ -287,17 +287,17 @@ begin
       using H.is_extensional CC_eq_VV CC.arr_char by force
 
     interpretation R': fully_faithful_functor C C H.R
-      using R'_eq_R R.fully_faithful_functor_axioms unity_def by auto
+      using R'_eq_R R.fully_faithful_functor_axioms by auto
     interpretation L': fully_faithful_functor C C H.L
-      using L'_eq_L L.fully_faithful_functor_axioms unity_def by auto
+      using L'_eq_L L.fully_faithful_functor_axioms by auto
 
     lemma obj_char:
     shows "obj a \<longleftrightarrow> a = \<I>"
-      using obj_def [of a] \<iota>_in_hom by fastforce
+      using obj_def [of a] unit_in_hom by fastforce
 
     proposition induces_bicategory:
     shows "bicategory C tensor (\<lambda>\<mu> \<nu> \<tau>. \<alpha> (\<mu>, \<nu>, \<tau>)) (\<lambda>_. \<iota>) I.map I.map"
-      using obj_char \<iota>_in_hom \<iota>_is_iso pentagon \<alpha>.is_extensional \<alpha>.is_natural_1 \<alpha>.is_natural_2
+      using obj_char unit_in_hom unit_is_iso pentagon \<alpha>.is_extensional \<alpha>.is_natural_1 \<alpha>.is_natural_2
       by unfold_locales simp_all
 
   end
@@ -1375,8 +1375,8 @@ begin
             isomorphic_implies_ide(1) src_trg target_iso_trg weak_unit_iff_self_target)
     qed
         
-    interpretation H: partial_magma H
-      using is_partial_magma by auto
+    interpretation H: partial_composition H
+      using is_partial_composition by auto
 
     text \<open>
       Every arrow with respect to horizontal composition is also an arrow with respect
@@ -1454,8 +1454,8 @@ begin
     interpretation prebicategory_with_homs V H \<a> src trg
       using is_prebicategory_with_homs by auto
 
-    interpretation H: partial_magma H
-      using is_partial_magma(1) by auto
+    interpretation H: partial_composition H
+      using is_partial_composition(1) by auto
 
     lemma weak_unit_is_horizontal_identity:
     assumes "weak_unit a"

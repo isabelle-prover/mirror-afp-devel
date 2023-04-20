@@ -51,38 +51,52 @@ begin
     to the usability of the theory.
 \<close>
 
-  section "Partial Magmas"
-
   text \<open>
-    A \emph{partial magma} is a partial binary operation \<open>C\<close> defined on the set
+    A \emph{partial magma} is a partial binary operation \<open>OP\<close> defined on the set
     of elements at a type @{typ 'a}.  As discussed above,
     we assume the existence of a unique element \<open>null\<close> of type @{typ 'a}
-    that is a zero for \<open>C\<close>, and we use \<open>null\<close> to represent ``undefined''.
-    We think of the operation \<open>C\<close> as an operation of ``composition'', and
-    we regard elements \<open>f\<close> and \<open>g\<close> of type @{typ 'a} as \emph{composable}
-    if \<open>C g f \<noteq> null\<close>.
+    that is a zero for \<open>OP\<close>, and we use \<open>null\<close> to represent ``undefined''.
+    A \emph{partial magma} consists simply of a partial binary operation.
+    We represent the partiality by assuming the existence of a unique value \<open>null\<close>
+    that behaves as a zero for the operation.
+  \<close>
+
+  locale partial_magma =
+  fixes OP :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"
+  assumes ex_un_null: "\<exists>!n. \<forall>t. OP n t = n \<and> OP t n = n"
+  begin
+
+    definition null :: 'a
+    where "null = (THE n. \<forall>t. OP n t = n \<and> OP t n = n)"
+
+    lemma null_eqI:
+    assumes "\<And>t. OP n t = n \<and> OP t n = n"
+    shows "n = null"
+      using assms null_def ex_un_null the1_equality [of "\<lambda>n. \<forall>t. OP n t = n \<and> OP t n = n"]
+      by auto
+    
+    lemma null_is_zero [simp]:
+    shows "OP null t = null" and "OP t null = null"
+      using null_def ex_un_null theI' [of "\<lambda>n. \<forall>t. OP n t = n \<and> OP t n = n"]
+      by auto
+
+  end
+
+  section "Partial Composition"
+
+  text \<open>
+    A \emph{partial composition} is formally the same thing as a partial magma,
+    except that we think of the operation as an operation of ``composition'',
+    and we regard elements \<open>f\<close> and \<open>g\<close> of type @{typ 'a} as \emph{composable}
+    if their composition is non-null.
 \<close>
 
   type_synonym 'a comp = "'a \<Rightarrow> 'a \<Rightarrow> 'a"
 
-  locale partial_magma =
-  fixes C :: "'a comp" (infixr "\<cdot>" 55)
-  assumes ex_un_null: "\<exists>!n. \<forall>f. n \<cdot> f = n \<and> f \<cdot> n = n"
+  locale partial_composition =
+    partial_magma C
+  for C :: "'a comp" (infixr "\<cdot>" 55)
   begin
-
-    definition null :: 'a
-    where "null = (THE n. \<forall>f. n \<cdot> f = n \<and> f \<cdot> n = n)"
-
-    lemma null_eqI:
-    assumes "\<And>f. n \<cdot> f = n \<and> f \<cdot> n = n"
-    shows "n = null"
-      using assms null_def ex_un_null the1_equality [of "\<lambda>n. \<forall>f. n \<cdot> f = n \<and> f \<cdot> n = n"]
-      by auto
-    
-    lemma comp_null [simp]:
-    shows "null \<cdot> f = null" and "f \<cdot> null = null"
-      using null_def ex_un_null theI' [of "\<lambda>n. \<forall>f. n \<cdot> f = n \<and> f \<cdot> n = n"]
-      by auto
 
     text \<open>
       An \emph{identity} is a self-composable element \<open>a\<close> such that composition of
@@ -227,7 +241,7 @@ begin
     \<open>match_4\<close> can be derived from \<open>match_3\<close> and vice versa.
 \<close>
 
-  locale category = partial_magma +
+  locale category = partial_composition +
   assumes ext: "g \<cdot> f \<noteq> null \<Longrightarrow> seq g f"
   and has_domain_iff_has_codomain: "domains f \<noteq> {} \<longleftrightarrow> codomains f \<noteq> {}"
   and match_1: "\<lbrakk> seq h g; seq (h \<cdot> g) f \<rbrakk> \<Longrightarrow> seq g f"

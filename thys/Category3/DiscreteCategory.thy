@@ -29,7 +29,7 @@ begin
     definition comp :: "'a comp"      (infixr "\<cdot>" 55)
     where "y \<cdot> x \<equiv> (if x \<in> Obj \<and> x = y then x else Null)"
 
-    interpretation partial_magma comp
+    interpretation partial_composition comp
       apply unfold_locales
       using comp_def by metis
 

@@ -26,7 +26,7 @@ begin
   \<close>
 
   locale setcat =
-  fixes dummy :: 'e
+  fixes elem_type :: "'e itself"
   and Setp :: "'e set \<Rightarrow> bool"
   assumes Setp_singleton: "Setp {x}"
   and Setp_respects_subset: "A' \<subseteq> A \<Longrightarrow> Setp A \<Longrightarrow> Setp A'"
@@ -1315,10 +1315,10 @@ begin
   \<close>
 
   locale replete_setcat =
-  fixes dummy :: 'e
+  fixes elem_type :: "'e itself"
   begin
 
-    interpretation SC: setcat dummy \<open>\<lambda>_. True\<close>
+    interpretation SC: setcat elem_type \<open>\<lambda>_. True\<close>
       by unfold_locales blast
 
     definition comp

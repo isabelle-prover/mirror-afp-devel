@@ -180,19 +180,19 @@ subsection "Spans"
      * inherits everything from horizontal_homs.  I wish I could say that I completely
      * understood the inheritance and overriding rules for locales.
      *)
-    interpretation V: partial_magma vcomp
+    interpretation V: partial_composition vcomp
       using not_arr_Null vcomp_def
       apply unfold_locales
       by (metis (no_types, opaque_lifting))
 
-    lemma is_partial_magma:
+    lemma is_partial_composition:
     shows "partial_magma vcomp"
       ..
 
     lemma null_char:
     shows "V.null = Null"
       using V.null_def vcomp_def not_arr_Null
-      by (metis (no_types, lifting) V.comp_null(2))
+      by (metis (no_types, lifting) V.null_is_zero(2))
 
     text \<open>
       Identities are arrows of spans whose chines are identities of C.
@@ -259,7 +259,7 @@ subsection "Spans"
             fix \<nu> :: "'a arrow_of_spans_data"
             assume \<nu>: "\<nu> \<bullet> \<mu> \<noteq> V.null"
             have 2: "arrow_of_spans C \<nu> \<and> Dom \<nu> = Cod \<mu>"
-              using \<nu> 1 vcomp_def by (metis V.comp_null(2))
+              using \<nu> 1 vcomp_def by (metis V.null_is_zero(2))
             interpret \<nu>: arrow_of_spans C \<nu>
               using 2 by auto
             show "\<nu> \<bullet> \<mu> = \<nu>"
@@ -271,7 +271,7 @@ subsection "Spans"
             fix \<nu> :: "'a arrow_of_spans_data"
             assume \<nu>: "\<mu> \<bullet> \<nu> \<noteq> V.null"
             have 2: "arrow_of_spans C \<nu> \<and> Dom \<mu> = Cod \<nu>"
-              using \<nu> 1 vcomp_def by (metis V.comp_null(1))
+              using \<nu> 1 vcomp_def by (metis V.null_is_zero(1))
             interpret \<nu>: arrow_of_spans C \<nu>
               using 2 by auto
             show "\<mu> \<bullet> \<nu> = \<nu>"
@@ -1146,7 +1146,7 @@ $$\xymatrix{
         fix \<nu>\<mu>' \<nu>\<mu>
         assume 1: "VV.seq \<nu>\<mu>' \<nu>\<mu>"
         have "VV.comp \<nu>\<mu>' \<nu>\<mu> = (fst \<nu>\<mu>' \<bullet> fst \<nu>\<mu>, snd \<nu>\<mu>' \<bullet> snd \<nu>\<mu>)"
-          by (metis (no_types, lifting) "1" VV.comp_simp VV.seq_char\<^sub>S\<^sub>b\<^sub>C VxV.comp_char VxV.seqE)
+          by (metis (no_types, lifting) "1" VV.comp_simp VV.seq_char\<^sub>S\<^sub>b\<^sub>C VxV.comp_char VxV.seqE\<^sub>P\<^sub>C)
         thus "fst (VV.comp \<nu>\<mu>' \<nu>\<mu>) \<star> snd (VV.comp \<nu>\<mu>' \<nu>\<mu>) =
               (fst \<nu>\<mu>' \<star> snd \<nu>\<mu>') \<bullet> (fst \<nu>\<mu> \<star> snd \<nu>\<mu>)"
           using 1 hcomp_vcomp VV.seq_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.comp_char
