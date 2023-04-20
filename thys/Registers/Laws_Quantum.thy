@@ -731,7 +731,7 @@ text \<open>The simproc \<open>compatibility_warn\<close> produces helpful warni
    \<^term>\<open>compatible x y\<close> that are probably unsolvable due to missing declarations of 
    variable compatibility facts. Same for subgoals of the form \<^term>\<open>register x\<close>.\<close>
 simproc_setup "compatibility_warn" ("compatible x y" | "register x") = \<open>
-let val thy_string = Markup.markup (Theory.get_markup \<^theory>) (Context.theory_name \<^theory>)
+let val thy_string = Markup.markup (Theory.get_markup \<^theory>) (Context.theory_base_name \<^theory>)
 in
 fn m => fn ctxt => fn ct => let
   val (x,y) = case Thm.term_of ct of

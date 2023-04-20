@@ -134,7 +134,7 @@ ML \<open>
 fun define_raw_dts dts cnstr_names cnstr_tys bn_funs bn_eqs bclauses lthy =
 let
   val thy = Local_Theory.exit_global lthy
-  val thy_name = Context.theory_name thy
+  val thy_name = Context.theory_base_name thy
 
   val dt_names = map (fn ((s, _, _), _) => Binding.name_of s) dts
   val dt_full_names = map (Long_Name.qualify thy_name) dt_names

@@ -492,7 +492,7 @@ fun C_export_file (pos, _) lthy =
       Path.binding
         ( Path.appends [ Path.basic C_Generated_Files.c_dir
                        , Path.basic (string_of_int (length c_sources))
-                       , lthy |> Proof_Context.theory_of |> Context.theory_name |> Path.explode
+                       , lthy |> Proof_Context.theory_of |> Context.theory_base_name |> Path.explode
                               |> Path.ext C_Generated_Files.c_ext ]
         , pos)
   in

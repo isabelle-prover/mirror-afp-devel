@@ -65,7 +65,7 @@ fun compile_chantype (name, chans) ctx =
     val thypfx = 
       case (Named_Target.locale_of ctx) of
         SOME loc => loc ^ "." |
-        NONE => Context.theory_name (Local_Theory.exit_global ctx) ^ "."
+        NONE => Context.theory_base_name (Local_Theory.exit_global ctx) ^ "."
     val prefix = thypfx ^ name ^ "."
     val attrs = @{attributes [simp, code_unfold]}
     val dummy_disc = absdummy dummyT @{term True}
