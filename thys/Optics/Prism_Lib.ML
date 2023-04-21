@@ -16,21 +16,18 @@ end
 structure Prism_Lib : PRISM_LIB = 
 struct
 
-open Syntax
-open HOLogic
-
 val wb_prismN = @{const_name wb_prism}
 val prism_diffN = @{const_name prism_diff}
 
 val codepsN = "codeps"
 
-fun prismT a b = Type (@{type_name prism_ext}, [a, b, unitT])
+fun prismT a b = Type (@{type_name prism_ext}, [a, b, HOLogic.unitT])
 
 fun isPrismT (Type (n, _)) = (n = @{type_name prism_ext}) |
     isPrismT _ = false
 
-fun mk_wb_prism t = mk_Trueprop (const wb_prismN $ t)
+fun mk_wb_prism t = HOLogic.mk_Trueprop (Syntax.const wb_prismN $ t)
 
-fun mk_codep x y = mk_Trueprop (const prism_diffN $ x $ y)
+fun mk_codep x y = HOLogic.mk_Trueprop (Syntax.const prism_diffN $ x $ y)
 
 end
