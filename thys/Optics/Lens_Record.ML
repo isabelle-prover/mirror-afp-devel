@@ -179,7 +179,7 @@ fun equiv_one_proof tname thy fs =
               $ ( Const (lens_equivN, dummyT)
                 $ Const (id_lensN, dummyT)
                 $ foldr1 (fn (x, y) => Const (lens_plusN, dummyT) $ x $ y) 
-                         (map (fn n => Const (theory_name thy ^ "." ^ tname ^ "." ^ n, dummyT)) (fs @ [child_lensN]))
+                         (map (fn n => Const (Context.theory_base_name thy ^ "." ^ tname ^ "." ^ n, dummyT)) (fs @ [child_lensN]))
                 )]))
       (prove_equiv tname thy)
   end
@@ -194,7 +194,7 @@ fun equiv_more_proof tname pname thy fs =
               $ ( Const (lens_equivN, dummyT)
                 $ Const (pname ^ "." ^ child_lensN, dummyT)
                 $ foldr1 (fn (x, y) => Const (lens_plusN, dummyT) $ x $ y) 
-                         (map (fn n => Const (theory_name thy ^ "." ^ tname ^ "." ^ n, dummyT)) (fs @ [child_lensN]))
+                         (map (fn n => Const (Context.theory_base_name thy ^ "." ^ tname ^ "." ^ n, dummyT)) (fs @ [child_lensN]))
                 )]))
       (prove_equiv tname thy)
   end
@@ -206,10 +206,10 @@ fun equiv_base_proof tname parent thy fs =
               (Proof_Context.init_global thy)
               [ Const (Trueprop, dummyT)
               $ ( Const (lens_equivN, dummyT)
-                $ Const (theory_name thy ^ "." ^ tname ^ "." ^ base_lensN, dummyT)
+                $ Const (Context.theory_base_name thy ^ "." ^ tname ^ "." ^ base_lensN, dummyT)
                 $ foldr1 (fn (x, y) => Const (lens_plusN, dummyT) $ x $ y) 
                          ((case parent of NONE => [] | SOME (_, pname) => [Const (pname ^ "." ^ base_lensN, dummyT)]) @ 
-                          map (fn n => Const (theory_name thy ^ "." ^ tname ^ "." ^ n, dummyT)) fs)
+                          map (fn n => Const (Context.theory_base_name thy ^ "." ^ tname ^ "." ^ n, dummyT)) fs)
                 )]))
       (prove_equiv tname thy)
   end
@@ -223,7 +223,7 @@ fun lenses_bij_proof tname parent thy fs =
               $ (const (bij_lensN) $ 
                 (foldr1 (fn (x, y) => Const (lens_plusN, dummyT) $ x $ y) 
                           ((case parent of NONE => [] | SOME (_, pname) => [Const (pname ^ "." ^ base_lensN, dummyT)]) @ 
-                            map (fn n => Const (theory_name thy ^ "." ^ tname ^ "." ^ n, dummyT)) (fs @ [child_lensN]))))
+                            map (fn n => Const (Context.theory_base_name thy ^ "." ^ tname ^ "." ^ n, dummyT)) (fs @ [child_lensN]))))
                                       ]))
       (fn {context = context, prems = _}
                            => EVERY [ Locale.intro_locales_tac {strict = true, eager = true} context []
@@ -240,8 +240,8 @@ fun equiv_partition_proof tname thy =
               [ Const (Trueprop, dummyT)
               $ ( Const (lens_equivN, dummyT)
                 $ ( Const (lens_plusN, dummyT) 
-                  $ Const (theory_name thy ^ "." ^ tname ^ "." ^ base_lensN, dummyT)
-                  $ Const (theory_name thy ^ "." ^ tname ^ "." ^ child_lensN, dummyT))
+                  $ Const (Context.theory_base_name thy ^ "." ^ tname ^ "." ^ base_lensN, dummyT)
+                  $ Const (Context.theory_base_name thy ^ "." ^ tname ^ "." ^ child_lensN, dummyT))
                 $ Const (id_lensN, dummyT)
                 )]))
       (prove_equiv tname thy)
