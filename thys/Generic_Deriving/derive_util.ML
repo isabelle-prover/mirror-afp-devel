@@ -163,7 +163,7 @@ fun collect_tfrees ctrs = map (fn (t,s) => (TFree (t,s),s))
 fun collect_tfree_names ctrs = fold Term.add_tfree_namesT (ctrs_arguments ctrs) []
 
 fun not_instantiated thy tname class =
-  null (Thm.thynames_of_arity thy (tname, class))
+  null (Thm.theory_names_of_arity {long = true} thy (tname, class))
 
 fun combs_to_list t =
   let
