@@ -6,7 +6,16 @@
     <description>Recent content on Archive of Formal Proofs</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Mon, 03 Apr 2023 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 20 Apr 2023 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>A Formalization of the SCL(FOL) Calculus: Simple Clause Learning for First-Order Logic</title>
+      <link>/entries/Simple_Clause_Learning.html</link>
+      <pubDate>Thu, 20 Apr 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Simple_Clause_Learning.html</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>Distributed Distinct Elements</title>
       <link>/entries/Distributed_Distinct_Elements.html</link>
@@ -12469,6 +12478,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/simpl/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Simple_Clause_Learning</title>
+      <link>/theories/simple_clause_learning/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/simple_clause_learning/</guid>
       <description></description>
     </item>
     

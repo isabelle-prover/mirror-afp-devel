@@ -1,0 +1,17 @@
+chapter AFP
+
+session Simple_Clause_Learning (AFP) = First_Order_Terms +
+  options [timeout = 600]
+  sessions
+    First_Order_Terms
+    Functional_Ordered_Resolution_Prover
+    Ordered_Resolution_Prover
+    Saturation_Framework
+    Saturation_Framework_Extensions
+  theories
+    Completeness
+    Initial_Literals_Generalize_Learned_Literals
+    Invariants
+  document_files
+    "root.bib"
+    "root.tex"

@@ -3,24 +3,51 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2023-04-03T00:00:00+00:00</lastmod>
+    <lastmod>2023-04-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Simple_Clause_Learning.html</loc>
+    <lastmod>2023-04-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2023-04-03T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/dardinier/</loc>
-    <lastmod>2023-04-03T00:00:00+00:00</lastmod>
+    <lastmod>2023-04-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/</loc>
+    <lastmod>2023-04-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/desharnais/</loc>
+    <lastmod>2023-04-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2023-04-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/first_order_terms/</loc>
+    <lastmod>2023-04-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/functional_ordered_resolution_prover/</loc>
+    <lastmod>2023-04-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/logic/</loc>
+    <lastmod>2023-04-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/ordered_resolution_prover/</loc>
+    <lastmod>2023-04-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/saturation_framework/</loc>
+    <lastmod>2023-04-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/saturation_framework_extensions/</loc>
+    <lastmod>2023-04-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2023-04-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/dardinier/</loc>
     <lastmod>2023-04-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/discrete_summation/</loc>
     <lastmod>2023-04-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Distributed_Distinct_Elements.html</loc>
-    <lastmod>2023-04-03T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/</loc>
     <lastmod>2023-04-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/expander_graphs/</loc>
@@ -36,9 +63,6 @@
     <lastmod>2023-04-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/stirling_formula/</loc>
-    <lastmod>2023-04-03T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2023-04-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/CommCSL.html</loc>
@@ -95,9 +119,6 @@
     <loc>/authors/doty/</loc>
     <lastmod>2023-02-20T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/topics/logic/</loc>
-    <lastmod>2023-02-20T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/suppes_theorem/</loc>
     <lastmod>2023-02-20T00:00:00+00:00</lastmod>
   </url><url>
@@ -141,9 +162,6 @@
     <lastmod>2023-01-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/qiu/</loc>
-    <lastmod>2023-01-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/saturation_framework/</loc>
     <lastmod>2023-01-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/tourret/</loc>
@@ -1340,9 +1358,6 @@
     <loc>/dependencies/relational_disjoint_set_forests/</loc>
     <lastmod>2020-12-08T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/desharnais/</loc>
-    <lastmod>2020-12-07T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Interpreter_Optimizations.html</loc>
     <lastmod>2020-12-07T00:00:00+00:00</lastmod>
   </url><url>
@@ -1508,16 +1523,10 @@
     <loc>/entries/Saturation_Framework_Extensions.html</loc>
     <lastmod>2020-08-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/first_order_terms/</loc>
-    <lastmod>2020-08-25T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/gammie/</loc>
     <lastmod>2020-08-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/holcf-prelude/</loc>
-    <lastmod>2020-08-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/ordered_resolution_prover/</loc>
     <lastmod>2020-08-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/BirdKMP.html</loc>
@@ -5914,6 +5923,8 @@
     <loc>/theories/signature_groebner/</loc>
   </url><url>
     <loc>/theories/simpl/</loc>
+  </url><url>
+    <loc>/theories/simple_clause_learning/</loc>
   </url><url>
     <loc>/theories/simple_firewall/</loc>
   </url><url>

@@ -1343,6 +1343,16 @@ host = [
   "de",
 ]
 
+[desharnais.emails.desharnais_email1]
+user = [
+  "desharnais",
+]
+host = [
+  "mpi-inf",
+  "mpg",
+  "de",
+]
+
 [desharnais.homepages]
 desharnais_homepage = "https://martin.desharnais.me"
 
