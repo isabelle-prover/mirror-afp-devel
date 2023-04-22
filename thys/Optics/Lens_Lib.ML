@@ -34,9 +34,6 @@ end
 structure Lens_Lib : LENS_LIB =
 struct
 
-open Syntax
-open HOLogic
-
 val bij_lensN = @{const_name bij_lens}
 val vwb_lensN = @{const_name vwb_lens}
 val sym_lensN = @{const_name sym_lens}
@@ -56,7 +53,7 @@ val compositionsN = "compositions"
 
 val lens_suffix = "\<^sub>v"
 
-fun lensT a b = Type (@{type_name lens_ext}, [a, b, unitT])
+fun lensT a b = Type (@{type_name lens_ext}, [a, b, HOLogic.unitT])
 
 fun isLensT (Type (n, _)) = (n = @{type_name lens_ext}) |
     isLensT _ = false
@@ -72,9 +69,9 @@ fun pairsWith [] _ = []
 fun pairings [] = []
   | pairings (x :: xs) = pairWith x xs @ pairings xs;  
 
-fun mk_vwb_lens t = mk_Trueprop (const vwb_lensN $ t)
+fun mk_vwb_lens t = HOLogic.mk_Trueprop (Syntax.const vwb_lensN $ t)
 
-fun mk_indep x y = mk_Trueprop (const lens_indepN $ x $ y)
+fun mk_indep x y = HOLogic.mk_Trueprop (Syntax.const lens_indepN $ x $ y)
 
 fun remove_lens_suffix x = (if (String.isSuffix lens_suffix x) 
                    then String.substring (x, 0, (String.size x - String.size lens_suffix)) 

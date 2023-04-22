@@ -4,29 +4,24 @@ struct
   val achanT = TFree ("'ch", ["HOL.type"])
 
   fun mk_constant_elements cds =
-    let
-    open Syntax;
-    val cfixes = map (fn (n, t) => (Binding.name n, SOME t, NoSyn)) cds
+    let val cfixes = map (fn (n, t) => (Binding.name n, SOME t, NoSyn)) cds
     in [ Element.Fixes cfixes ] end;
 
   (* Produce a list of new elements for a locale to characterise the channels *)
   fun mk_channel_elements exts chds thy = 
   let
-    open Lens_Lib;
-    open Prism_Lib;
-    open Syntax;
     val ctx = Named_Target.theory_init thy
     val chns = map fst chds 
-    val chfixes = map (fn (n, t) => (Binding.name n, SOME (prismT t achanT), NoSyn)) chds
-    val wbs    = map (mk_wb_prism o free) chns;
+    val chfixes = map (fn (n, t) => (Binding.name n, SOME (Prism_Lib.prismT t achanT), NoSyn)) chds
+    val wbs    = map (Prism_Lib.mk_wb_prism o Syntax.free) chns;
     val simp   = Attrib.check_src ctx (Token.make_src ("simp", Position.none) [])
     val imps   = map (fn e => Locale.check thy (e, Position.none)) exts
     (* List of prisms imported *)
-    val ilnsls = map (filter (isPrismT o snd) o map fst o Locale.params_of thy) imps
+    val ilnsls = map (filter (Prism_Lib.isPrismT o snd) o map fst o Locale.params_of thy) imps
     (* Codependence axioms from imports *)
-    val impind = List.concat (map (pairsWith chns) (map (map fst) ilnsls))
-    val codeps = map (fn (x, y) => mk_codep (free x) (free y)) 
-                     (pairings (chns) @ impind)
+    val impind = List.concat (map (Lens_Lib.pairsWith chns) (map (map fst) ilnsls))
+    val codeps = map (fn (x, y) => Prism_Lib.mk_codep (Syntax.free x) (Syntax.free y)) 
+                     (Lens_Lib.pairings (chns) @ impind)
   in 
   (* Fix each of the channels as prisms *)
   [ Element.Fixes chfixes 
@@ -43,17 +38,15 @@ struct
 
   fun compile_dataspace nm exts cds assms vds chds thy =
   let
-    open Lens_Lib;
-    open Syntax;
     val imps   = map (fn e => Locale.check thy (e, Position.none)) exts
     (* When extending existing dataspaces, we instantiate their respective state and channel
        types to avoid ambiguity (via a locale "where" clause) *)
     val pinsts = Expression.Named 
-                    [(STATE, Logic.mk_type astateT)
+                    [(STATE, Logic.mk_type Lens_Lib.astateT)
                     ,(CHAN, Logic.mk_type achanT)]
     val locexs = map (fn i => (i, (("", false), (pinsts, [])))) imps
     (* We also create fixed parameters for the types so they can be instantiated later *)
-    val st_par = (Binding.name STATE, SOME (Term.itselfT astateT), NoSyn)
+    val st_par = (Binding.name STATE, SOME (Term.itselfT Lens_Lib.astateT), NoSyn)
     val ch_par = (Binding.name CHAN, SOME (Term.itselfT achanT), NoSyn)
   in
   (Local_Theory.exit_global o snd o 
@@ -67,21 +60,25 @@ struct
   
   fun dataspace_cmd nm exts cds rassms vds chds thy = 
   let 
-    open Syntax; open HOLogic;
     val ctx = Named_Target.theory_init thy 
-    val assms = map (fn (b, td) => (b, map (fn (t, ts) => (mk_Trueprop (parse_term ctx t), map (mk_Trueprop o parse_term ctx) ts)) td)) rassms in
-    compile_dataspace nm exts (map (fn (n, t) => (n, read_typ ctx t)) cds) assms (map (fn (n, t) => (n, read_typ ctx t)) vds) (map (fn (n, t) => (n, read_typ ctx t)) chds)  thy
+    val assms =
+      map (fn (b, td) => (b, map (fn (t, ts) =>
+        (HOLogic.mk_Trueprop (Syntax.parse_term ctx t),
+          map (HOLogic.mk_Trueprop o Syntax.parse_term ctx) ts)) td)) rassms
+  in
+    compile_dataspace nm exts (map (fn (n, t) =>
+      (n, Syntax.read_typ ctx t)) cds) assms (map (fn (n, t) =>
+          (n, Syntax.read_typ ctx t)) vds) (map (fn (n, t) => (n, Syntax.read_typ ctx t)) chds) thy
   end
 
-end;
-
-let open Parse; open Parse_Spec; open Scan in
+val _ =
   Outer_Syntax.command @{command_keyword dataspace} "define reactive contexts"
-    ((name --
-      ((@{keyword "="} |-- repeat (Parse.name --| @{keyword "+"}))
-       -- optional (@{keyword "constants"} |-- repeat1 (name -- ($$$ "::" |-- !!! typ))) []
-       -- optional (@{keyword "assumes"} |-- !!! (and_list1 (opt_thm_name ":" -- repeat1 propp))) []
-       -- optional (@{keyword "variables"} |-- repeat1 (name -- ($$$ "::" |-- !!! typ))) []
-       -- optional (@{keyword "channels"} |-- repeat1 (name -- ($$$ "::" |-- !!! typ))) [])
-    >> (fn (nm, ((((exts, cds), assms), vds), chds)) => Toplevel.theory (Dataspace.dataspace_cmd nm exts cds assms vds chds))))
+    ((Parse.name --
+      ((@{keyword "="} |-- Scan.repeat (Parse.name --| @{keyword "+"}))
+       -- Scan.optional (@{keyword "constants"} |-- Scan.repeat1 (Parse.name -- (Parse.$$$ "::" |-- Parse.!!! Parse.typ))) []
+       -- Scan.optional (@{keyword "assumes"} |-- Parse.!!! (Parse.and_list1 (Parse_Spec.opt_thm_name ":" -- Scan.repeat1 Parse.propp))) []
+       -- Scan.optional (@{keyword "variables"} |-- Scan.repeat1 (Parse.name -- (Parse.$$$ "::" |-- Parse.!!! Parse.typ))) []
+       -- Scan.optional (@{keyword "channels"} |-- Scan.repeat1 (Parse.name -- (Parse.$$$ "::" |-- Parse.!!! Parse.typ))) [])
+    >> (fn (nm, ((((exts, cds), assms), vds), chds)) => Toplevel.theory (dataspace_cmd nm exts cds assms vds chds))))
+
 end;

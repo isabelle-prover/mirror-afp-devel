@@ -586,7 +586,7 @@ structure Deep0 = struct
 fun apply_hs_code_identifiers ml_module thy =
   let fun mod_hs (fic, ml_module) = Code_Symbol.Module (fic, [("Haskell", SOME ml_module)]) in
   fold (Code_Target.set_identifiers o mod_hs)
-    (map (fn x => (Context.theory_name x, ml_module))
+    (map (fn x => (Context.theory_base_name x, ml_module))
          (* list of .hs files that will be merged together in "ml_module" *)
          ( thy
            :: (* we over-approximate the set of compiler files *)
@@ -870,7 +870,7 @@ fun export_code_tmp_file seris g =
   fold
     (fn ((ml_compiler, ml_module), export_arg) => fn f => fn g =>
       f (fn accu =>
-        let val tmp_name = Context.theory_name @{theory} in
+        let val tmp_name = Context.theory_base_name @{theory} in
         (if Deep0.Find.export_mode ml_compiler = Deep0.Export_code_env.Directory then
            Isabelle_System.with_tmp_dir tmp_name
          else
