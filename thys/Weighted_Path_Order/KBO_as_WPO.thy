@@ -174,7 +174,7 @@ proof -
       have "\<not> weight_less t (Var x)"
         by (metis leD weight.simps(1) weight_le_less_iff weight_less_imp_le weight_w0)
       thus ?thesis
-        by (cases t, auto simp add: s kbo_altdef wpo.wpo.simps, simp add: weight_le_def)
+        by (cases t, auto simp add: s kbo_altdef wpo.wpo.simps)
     next
       case s: (Fun f ss)
       show ?thesis

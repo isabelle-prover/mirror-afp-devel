@@ -29,15 +29,13 @@ begin
 
 fun wpo :: "('f, 'v) term \<Rightarrow> ('f, 'v) term \<Rightarrow> bool \<times> bool" 
   where
-    "wpo s t =
-    (case s of
+    "wpo s t = (if (s,t) \<in> S then (True, True) else 
+        if (s,t) \<in> NS then (case s of
       Var x \<Rightarrow> (False, 
         (case t of 
           Var y \<Rightarrow> x = y 
-        | Fun g ts \<Rightarrow> (s, t) \<in> NS \<and> status \<sigma>\<sigma> (g, length ts) = [] \<and> prl (g, length ts)))
+        | Fun g ts \<Rightarrow> status \<sigma>\<sigma> (g, length ts) = [] \<and> prl (g, length ts)))
     | Fun f ss \<Rightarrow>
-      if (s, t) \<in> S then (True, True)
-      else if (s, t) \<in> NS then
         if \<exists> i \<in> set (status \<sigma>\<sigma> (f, length ss)). snd (wpo (ss ! i) t) then (True, True)
         else
           (case t of
@@ -55,7 +53,7 @@ fun wpo :: "('f, 'v) term \<Rightarrow> ('f, 'v) term \<Rightarrow> bool \<times
                       else if cf = Mul \<and> cg = Mul
                            then mul_ext wpo ss' ts'
                            else (length ss' \<noteq> 0 \<and> length ts' = 0, length ts' = 0)
-              else (False, False)))
+              else (False, False))))
       else (False, False))"
 
 declare wpo.simps [simp del]
@@ -154,7 +152,7 @@ proof (induct s)
         unfold locally_refl_def, auto simp: in_multiset_in_set[of ?ss] intro!: Fun status_aux)
   from rec11 rec12 show ?case using refl_NS_point prc_refl wpo_s
     by (cases "c (f,length ss)", auto simp: wpo.simps[of "Fun f ss" "Fun f ss"])
-qed (simp add: wpo.simps)
+qed (simp add: wpo.simps refl_NS_point)
 
 lemma wpo_ns_imp_NS: "s \<succeq> t \<Longrightarrow> (s,t) \<in> NS" 
   using S_imp_NS
@@ -164,18 +162,15 @@ lemma wpo_ns_imp_NS: "s \<succeq> t \<Longrightarrow> (s,t) \<in> NS"
 lemma wpo_s_imp_NS: "s \<succ> t \<Longrightarrow> (s,t) \<in> NS" 
   by (rule wpo_ns_imp_NS[OF wpo_s_imp_ns])
 
-lemma S_imp_wpo_s: assumes st: "(s,t) \<in> S"
-  shows "s \<succ> t"
-proof (cases s)
-  case (Fun f ss)
-  then show ?thesis using st by (auto simp: wpo.simps)
-next
-  case (Var x)
+lemma S_imp_wpo_s: "(s,t) \<in> S \<Longrightarrow> s \<succ> t" by (simp add: wpo.simps)
+
+lemma Var_not_S[simp]: "(Var x, t) \<notin> S" 
+proof 
+  assume st: "(Var x, t) \<in> S" 
   from SN_imp_minimal[OF SN, rule_format, of undefined UNIV]
   obtain s where "\<And> u. (s,u) \<notin> S" by blast
-  with subst_S[OF st[unfolded Var], of "\<lambda> _. s"]
-  have False by auto
-  then show ?thesis by auto
+  with subst_S[OF st, of "\<lambda> _. s"]
+  show False by auto
 qed
 
 lemma wpo_least_1: assumes "prl (f,length ss)" 
@@ -293,7 +288,7 @@ proof (induct "(s,t,u)" arbitrary: s t u rule: wf_induct[OF wf_measures[of "[\<l
     }
     with wpo_s_imp_ns show ?thesis by blast
   next
-    case False
+  case False
     then have stS: "(s,t) \<notin> S" and tuS: "(t,u) \<notin> S" and suS: "(s,u) \<notin> S" by auto
     show ?thesis
     proof (cases t)
@@ -303,7 +298,7 @@ proof (induct "(s,t,u)" arbitrary: s t u rule: wf_induct[OF wf_measures[of "[\<l
       show ?thesis
       proof safe
         assume "wpo_s t u"
-        with Var show "wpo_s s u" by (cases u, auto)
+        with Var tuS show "wpo_s s u" by (auto split: if_splits)
       next
         assume gr: "wpo_s s t" and ge: "wpo_ns t u"
         from wpo_s_imp_NS[OF gr] have stA: "(s,t) \<in> NS" .
@@ -312,19 +307,19 @@ proof (induct "(s,t,u)" arbitrary: s t u rule: wf_induct[OF wf_measures[of "[\<l
         show "wpo_s s u"
         proof (cases u)
           case (Var y)
-          with ge \<open>t = Var x\<close> have "t = u" by auto
+          with ge \<open>t = Var x\<close> tuS have "t = u" by (auto split: if_splits)
           with gr show ?thesis by auto
         next
           case (Fun h us)
           let ?h = "(h,length us)"
-          from Fun ge Var have us: "\<sigma> ?h = []" and pri: "prl ?h" by auto
-          from gr Var obtain f ss where s: "s = Fun f ss" by (cases s, auto)
+          from Fun ge Var tuS have us: "\<sigma> ?h = []" and pri: "prl ?h" by (auto split: if_splits)
+          from gr Var tuS obtain f ss where s: "s = Fun f ss" by (cases s, auto split: if_splits)
           let ?f = "(f,length ss)"
           from s gr Var False obtain i where i: "i \<in> set (\<sigma> ?f)" and sit: "ss ! i \<succeq> t" by (auto split: if_splits)        
           from trans_NS_point[OF wpo_ns_imp_NS[OF sit] tuA] have siu: "(ss ! i,u) \<in> NS" .
           from wpo_least_1[OF pri siu[unfolded Fun us] us]
           have "ss ! i \<succeq> u" unfolding Fun us .
-          with i have "\<exists> i \<in> set (\<sigma> ?f). ss ! i \<succeq> u" by auto
+          with i have "\<exists> i \<in> set (\<sigma> ?f). ss ! i \<succeq> u" by blast
           with s suA show ?thesis by simp
         qed
       next
@@ -332,12 +327,12 @@ proof (induct "(s,t,u)" arbitrary: s t u rule: wf_induct[OF wf_measures[of "[\<l
         show "wpo_ns s u"
         proof (cases u)
           case (Var y)
-          with ge2 \<open>t = Var x\<close> have "t = u" by auto
+          with ge2 \<open>t = Var x\<close> have "t = u" by (auto split: if_splits)
           with ge1 show ?thesis by auto
         next
           case (Fun h us)
           let ?h = "(h,length us)"
-          from Fun ge2 Var have us: "\<sigma> ?h = []" and pri: "prl ?h" by auto
+          from Fun ge2 Var have us: "\<sigma> ?h = []" and pri: "prl ?h" by (auto split: if_splits)
           show ?thesis unfolding Fun us
             by (rule wpo_least_1[OF pri trans_NS_point[OF wpo_ns_imp_NS[OF ge1] 
                     wpo_ns_imp_NS[OF ge2[unfolded Fun us]]] us]) 
@@ -355,14 +350,14 @@ proof (induct "(s,t,u)" arbitrary: s t u rule: wf_induct[OF wf_measures[of "[\<l
         show ?thesis
         proof safe
           assume gr: "wpo_s s t"
-          with Var Fun show "wpo_s s u" by (auto simp: wpo.simps)
+          with Var Fun show "wpo_s s u" by (auto simp: wpo.simps split: if_splits)
         next
           assume ge: "wpo_ns s t" and gr: "wpo_s t u"
-          with Var Fun have pri: "prl ?g" and "\<sigma> ?g = []" by (auto simp: wpo.simps)
+          with Var Fun have pri: "prl ?g" and "\<sigma> ?g = []" by (auto simp: wpo.simps split: if_splits)
           with gr Fun show "wpo_s s u" using wpo_least_2[OF pri, of u] False by auto
         next
           assume ge1: "wpo_ns s t" and ge2: "wpo_ns t u"
-          with Var Fun have pri: "prl ?g" and empty: "\<sigma> ?g = []" by (auto simp: wpo.simps)
+          with Var Fun have pri: "prl ?g" and empty: "\<sigma> ?g = []" by (auto simp: wpo.simps split: if_splits)
           from wpo_ns_imp_NS[OF ge1] Var Fun empty have ns: "(Var x, Fun g ts) \<in> NS" by simp
           show "wpo_ns s u"
           proof (rule wpo_least_3[OF pri ge2[unfolded Fun empty] 
@@ -410,7 +405,7 @@ proof (induct "(s,t,u)" arbitrary: s t u rule: wf_induct[OF wf_measures[of "[\<l
             from \<sigma>E[OF i] have s': "ss ! i \<in> set ss" .
             with i s s' ind2[of "ss ! i" t u, simplified] ges ge2 have "ss ! i \<succ> u" by auto
             then have "ss ! i \<succeq> u" by (rule wpo_s_imp_ns)
-            with i s suA show ?thesis by (cases u, auto simp: wpo.simps)
+            with i s suA show ?thesis by (cases u, auto simp: wpo.simps split: if_splits)
           next
             case False
             show ?thesis
@@ -544,7 +539,7 @@ proof (induct "(s,t,u)" arbitrary: s t u rule: wf_induct[OF wf_measures[of "[\<l
             from True obtain i where i: "i \<in> ?ss" and ges: "ss ! i \<succeq> t" by auto
             from \<sigma>E[OF i] have s': "ss ! i \<in> set ss" by auto
             with s s' ind2[of "ss ! i" t u, simplified] ges ge2 have "ss ! i \<succeq> u" by auto
-            with i s' s suA show ?thesis by (cases u, auto simp: wpo.simps)
+            with i s' s suA show ?thesis by (cases u, auto simp: wpo.simps split: if_splits)
           next
             case False
             show ?thesis
@@ -876,7 +871,7 @@ proof -
   have refl: "ss ! i \<succeq> ss ! i" by (rule wpo_ns_refl)
   with i have "\<exists> t \<in> set (\<sigma> (f,length ss)). ss ! i \<succeq> ss ! i" by auto
   with NS_arg[OF i] i
-  show ?thesis by (auto simp: wpo.simps)
+  show ?thesis by (auto simp: wpo.simps split: if_splits)
 qed
 
 lemma subterm_wpo_ns_arg: assumes i: "i \<in> set (\<sigma> (f,length ss))"
@@ -1230,7 +1225,7 @@ proof -
       proof (intro allI impI)
         fix s
         assume "(Var x, s) \<in> WPO_S"
-        then have False by (cases s, auto simp: wpo.simps)
+        then have False by (cases s, auto simp: wpo.simps split: if_splits)
         then show "?S s" ..
       qed
     } note var_SN = this
@@ -1541,7 +1536,7 @@ next
   from \<sigma>_full[of f "length ss"] i have ii: "i \<in> set (\<sigma> (f,length ss))" by auto
   from subt have "Fun f ss \<unrhd> t" by auto
   from NS_subterm[OF \<sigma>_full this] ns ii
-  show ?case by (auto simp: wpo.simps)
+  show ?case by (auto simp: wpo.simps split: if_splits)
 qed
 
 (* Compatibility of the subterm relation with the order relation:
