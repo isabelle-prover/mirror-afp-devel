@@ -3,18 +3,18 @@
     Author:     Wenda Li <wl302@cam.ac.uk / liwenda1990@hotmail.com>
 *)
 
-section \<open>Budan-Fourier theorem\<close>
+section \<open>Budan--Fourier theorem\<close>
 
 theory Budan_Fourier imports
   BF_Misc
 begin
 
 text \<open>
-The Budan-Fourier theorem is a classic result in real algebraic geometry to over-approximate
+The Budan--Fourier theorem is a classic result in real algebraic geometry to over-approximate
 real roots of a polynomial (counting multiplicity) within an interval. When all roots of the 
 the polynomial are known to be real, the over-approximation becomes tight -- the number of 
 roots are counted exactly. Also note that Descartes' rule of sign is a direct consequence of
-the Budan-Fourier theorem.
+the Budan--Fourier theorem.
 
 The proof mainly follows Theorem 2.35 in
   Basu, S., Pollack, R., Roy, M.-F.: Algorithms in Real Algebraic Geometry. 
@@ -378,7 +378,7 @@ lemma changes_poly_at_pders_0:"changes_poly_at (pders p) 0 = changes (coeffs p)"
   apply (subst (1 2) changes_map_sgn_eq)
   by (auto simp add:pders_coeffs_sgn_eq comp_def)
 
-subsection \<open>Budan-Fourier theorem\<close>
+subsection \<open>Budan--Fourier theorem\<close>
 
 lemma budan_fourier_aux_right:
   assumes "c<d2" and "p\<noteq>0"
@@ -827,7 +827,7 @@ proof -
   ultimately show ?thesis by auto
 qed
 
-text \<open>Descartes' rule of signs is a direct consequence of the Budan-Fourier theorem\<close>
+text \<open>Descartes' rule of signs is a direct consequence of the Budan--Fourier theorem\<close>
 theorem descartes_sign:
   fixes p::"real poly"
   assumes "p\<noteq>0"
@@ -1002,7 +1002,7 @@ next
 qed
 
 text \<open>If all roots are real, we can use the 
-      Budan-Fourier theorem to EXACTLY count the number of real roots.\<close>
+      Budan--Fourier theorem to EXACTLY count the number of real roots.\<close>
 corollary budan_fourier_real:
   assumes "p\<noteq>0" 
   assumes "all_roots_real p"

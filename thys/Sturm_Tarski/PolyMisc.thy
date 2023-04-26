@@ -2,7 +2,7 @@
     Author:     Wenda Li <wl302@cam.ac.uk / liwenda1990@hotmail.com>
 *)
 
-section \<open>Misc polynomial lemmas for the Sturm-Tarski theorem\<close>
+section \<open>Misc polynomial lemmas for the Sturm--Tarski theorem\<close>
 
 theory PolyMisc imports
   "HOL-Computational_Algebra.Polynomial_Factorial"

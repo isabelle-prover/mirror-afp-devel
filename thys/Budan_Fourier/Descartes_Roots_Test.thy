@@ -11,7 +11,7 @@ begin
 text \<open>The Descartes roots test is a consequence of Descartes' rule of signs:
   through counting sign variations on coefficients of a base-transformed (i.e. Taylor shifted) 
   polynomial, it can over-approximate the number of real roots (counting multiplicity) 
-  within an interval. Its ability is similar to the Budan-Fourier theorem, but is far more 
+  within an interval. Its ability is similar to the Budan--Fourier theorem, but is far more 
   efficient in practice. Therefore, this test is widely used in modern root isolation procedures. 
 
   More information can be found in the wiki page about Vincent's theorem:
@@ -104,7 +104,7 @@ corollary descartes_roots_test_one:
   by (metis dvd_diffD even_zero le_neq_implies_less less_one odd_one)
 
 
-text \<open>Similar to the Budan-Fourier theorem, the Descartes roots test result is exact when all roots 
+text \<open>Similar to the Budan--Fourier theorem, the Descartes roots test result is exact when all roots 
       are real.\<close>
 corollary descartes_roots_test_real:
   fixes p::"real poly"

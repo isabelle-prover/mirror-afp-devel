@@ -2,7 +2,7 @@
     Author:     Wenda Li <wl302@cam.ac.uk / liwenda1990@hotmail.com>
 *)
 
-section "Sturm-Tarski Theorem"
+section "Sturm--Tarski Theorem"
 
 theory Sturm_Tarski
   imports Complex_Main PolyMisc "HOL-Computational_Algebra.Field_as_Ring"
