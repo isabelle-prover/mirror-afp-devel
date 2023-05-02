@@ -889,7 +889,7 @@ proof (fold factorial_condition_one, intro conjI)
 qed
 
 instance poly :: (ufd) ufd
-  by (intro class.ufd.of_class.intro factorial_monoid_imp_ufd factorial_monoid_poly)
+  by (intro ufd.intro_of_class factorial_monoid_imp_ufd factorial_monoid_poly)
 
 
 lemma primitive_iff_some_content_dvd_1:

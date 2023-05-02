@@ -19,7 +19,7 @@ definition "x \<le> y \<longleftrightarrow> option_le (\<le>) x y"
 definition "(x :: 'a option) < y \<longleftrightarrow> x \<le> y \<and> \<not> (y \<le> x)"
 
 instance
-  by (rule class.wqo.of_class.intro)
+  by (rule wqo.intro_of_class)
      (auto simp: less_eq_option_def [abs_def] less_option_def [abs_def])
 end
 
@@ -32,7 +32,7 @@ definition "x \<le> y \<longleftrightarrow> sum_le (\<le>) (\<le>) x y"
 definition "(x :: 'a + 'b) < y \<longleftrightarrow> x \<le> y \<and> \<not> (y \<le> x)"
 
 instance
-  by (rule class.wqo.of_class.intro)
+  by (rule wqo.intro_of_class)
      (auto simp: less_eq_sum_def [abs_def] less_sum_def [abs_def])
 end
 
@@ -49,7 +49,7 @@ definition "p \<le> q \<longleftrightarrow> prod_le (\<le>) (\<le>) p q"
 definition "(p :: 'a \<times> 'b) < q \<longleftrightarrow> p \<le> q \<and> \<not> (q \<le> p)"
 
 instance
-  by (rule class.wqo.of_class.intro)
+  by (rule wqo.intro_of_class)
      (auto simp: less_eq_prod_def [abs_def] less_prod_def [abs_def])
 end
 
@@ -66,7 +66,7 @@ definition "xs \<le> ys \<longleftrightarrow> list_emb (\<le>) xs ys"
 definition "(xs :: 'a list) < ys \<longleftrightarrow> xs \<le> ys \<and> \<not> (ys \<le> xs)"
 
 instance
-  by (rule class.wqo.of_class.intro)
+  by (rule wqo.intro_of_class)
      (auto simp: less_eq_list_def [abs_def] less_list_def [abs_def])
 end
 

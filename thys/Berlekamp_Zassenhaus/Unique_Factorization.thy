@@ -963,7 +963,7 @@ qed
 
 end
 
-instance int :: ufd by (intro class.ufd.of_class.intro as_ufd.ufd_axioms)
+instance int :: ufd by (intro ufd.intro_of_class as_ufd.ufd_axioms)
 instance int :: idom_gcd by (intro_classes, auto)
 
 instance field \<subseteq> ufd by (intro_classes, auto simp: dvd_field_iff)

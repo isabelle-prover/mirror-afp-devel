@@ -53,7 +53,7 @@ definition "s \<le> t \<longleftrightarrow> tree_emb UNIV (\<le>) s t"
 definition "(s :: 'a tree) < t \<longleftrightarrow> s \<le> t \<and> \<not> (t \<le> s)"
 
 instance
-  by (rule class.wqo.of_class.intro)
+  by (rule wqo.intro_of_class)
      (auto simp: less_eq_tree_def [abs_def] less_tree_def [abs_def]
            intro: wqo_on_trees [of _ UNIV, simplified])
 end
