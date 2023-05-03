@@ -763,8 +763,8 @@ lemma OFCLASS_bezout_ring_imp_class_bezout_ring:
   by (auto, intro_locales)
 
 text \<open>The other implication can be obtained
-  by thm @{text "Rings2.class.Rings2.bezout_ring.of_class.intro"} \<close>
-thm Rings2.class.Rings2.bezout_ring.of_class.intro
+  by thm @{text bezout_ring.intro_of_class} \<close>
+thm bezout_ring.intro_of_class
 
 
 (*OFCLASS is a proposition (Prop), and then the following statement is not valid.*)

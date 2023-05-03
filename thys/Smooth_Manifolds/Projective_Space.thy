@@ -180,7 +180,7 @@ lemma topspace_map_Proj: "topspace (map_topology Proj euclidean) = UNIV"
   using surj_Proj by auto
 
 instance
-  apply (rule class.Topological_Spaces.topological_space.of_class.intro)
+  apply (rule topological_space.intro_of_class)
   unfolding open_proj_space_def
   using surj_Proj
   by (rule topological_space_quotient)
@@ -387,12 +387,12 @@ lemma closed_Proj_rel: "closed {(x, y). Proj x = Proj y}"
   by (smt Collect_cong case_prodE case_prodI2 prod.inject proj_space.abs_eq_iff)
 
 instance proj_space :: (euclidean_space) t2_space
-  apply (rule class.Topological_Spaces.t2_space.of_class.intro)
+  apply (rule t2_space.intro_of_class)
   using open_proj_space_def surj_Proj Proj_open_map closed_Proj_rel
   by (rule t2_space_quotient)
 
 instance proj_space :: (euclidean_space) second_countable_topology
-  apply (rule class.Elementary_Topology.second_countable_topology.of_class.intro)
+  apply (rule second_countable_topology.intro_of_class)
   using open_proj_space_def surj_Proj Proj_open_map
   by (rule second_countable_topology_quotient)
 

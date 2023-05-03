@@ -258,7 +258,7 @@ definition
    state_transition_infra_def: "(i \<rightarrow>\<^sub>i i') =  (i \<rightarrow>\<^sub>n (i' :: infrastructure))"
 
 instance
-  by (rule MC.class.MC.state.of_class.intro)
+  by (rule state.intro_of_class)
 
 definition state_transition_in_refl ("(_ \<rightarrow>\<^sub>n* _)" 50)
 where "s \<rightarrow>\<^sub>n* s' \<equiv> ((s,s') \<in> {(x,y). state_transition_in x y}\<^sup>*)"

@@ -761,7 +761,7 @@ lemma bezout_ring_imp_diagonal_admits_SNF_mod_ring_admits:
   assumes of: "class.bezout_ring (*) (1::'a::comm_ring_1) (+) 0 (-) uminus" (*It is equivalent to the statement based on OFCLASS*)
   shows "\<forall>A::'a^'n::nontriv mod_ring^'n::nontriv mod_ring. admits_SNF_HA A"
   using bezout_ring_imp_diagonal_admits_SNF
-        [OF Rings2.class.Rings2.bezout_ring.of_class.intro[OF of]] 
+        [OF bezout_ring.intro_of_class[OF of]]
   unfolding admits_SNF_HA_def by auto
 
 text\<open>I start here to apply local type definitions\<close>
@@ -887,7 +887,7 @@ next
   hence *: "class.bezout_ring (*) (1::'a) (+) 0 (-) uminus" 
     using diagonal_admits_SNF_iff_bezout_ring by auto
   show "OFCLASS('a, bezout_ring_class)"
-    by (rule Rings2.class.Rings2.bezout_ring.of_class.intro, rule *)
+    by (rule bezout_ring.intro_of_class, rule *)
 qed
 
 end
