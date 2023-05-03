@@ -3207,6 +3207,14 @@ host = [
 
 [ketland.homepages]
 
+[kim]
+name = "Sunpill Kim"
+orcid = "0000-0002-7767-4084"
+
+[kim.emails]
+
+[kim.homepages]
+
 [kirchner]
 name = "Daniel Kirchner"
 

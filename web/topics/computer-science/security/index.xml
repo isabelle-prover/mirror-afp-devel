@@ -7,6 +7,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language><atom:link href="/topics/computer-science/security/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>The Schwartz-Zippel Lemma</title>
+      <link>/entries/Schwartz_Zippel.html</link>
+      <pubDate>Thu, 27 Apr 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Schwartz_Zippel.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Formalization of CommCSL: A Relational Concurrent Separation Logic for Proving Information Flow Security in Concurrent Programs</title>
       <link>/entries/CommCSL.html</link>
       <pubDate>Wed, 15 Mar 2023 00:00:00 +0000</pubDate>
