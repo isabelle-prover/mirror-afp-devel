@@ -1,0 +1,14 @@
+chapter AFP
+
+session Schwartz_Zippel (AFP) = "HOL-Probability" +
+  options [timeout = 1800]
+  sessions
+    Skip_Lists
+    Factor_Algebraic_Polynomial
+    Jordan_Normal_Form
+  theories
+    Schwartz_Zippel
+    Rand_Perfect_Matching
+  document_files
+    "root.tex"
+    "root.bib"
