@@ -31,11 +31,12 @@ inductive_set
     subt [intro]: "s \<in> set ss \<Longrightarrow> (s, t) \<in> supt \<Longrightarrow> (Fun f ss, t) \<in> supt"
 
 hide_const suptp supteqp
-hide_fact (open) supt.arg supt.subt supteq.refl supteq.subt
 hide_fact
   suptp.arg suptp.cases suptp.induct suptp.intros suptp.subt suptp_supt_eq
 hide_fact
   supteqp.cases supteqp.induct supteqp.intros supteqp.refl supteqp.subt supteqp_supteq_eq
+
+hide_fact (open) supt.arg supt.subt supteq.refl supteq.subt
 
 
 subsubsection \<open>Syntactic Sugar\<close>
