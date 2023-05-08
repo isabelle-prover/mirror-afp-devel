@@ -6,7 +6,7 @@ begin
 
 datatype direction = Left | Right
 
-datatype 'a states = States direction "'a Big.state" "'a Small.state"
+datatype 'a states = States direction "'a big_state" "'a Small.state"
 
 instantiation states::(type) step
 begin

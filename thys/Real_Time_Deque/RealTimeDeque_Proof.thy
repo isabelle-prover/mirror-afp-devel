@@ -6,11 +6,11 @@ begin
 
 lemma swap_lists_left: "invar (States Left big small) \<Longrightarrow> 
     States_Aux.listL (States Left big small) = rev (States_Aux.listL (States Right big small))"
-  by(auto split: prod.splits Big.state.splits Small.state.splits)
+  by(auto split: prod.splits big_state.splits Small.state.splits)
 
 lemma swap_lists_right: "invar (States Right big small) \<Longrightarrow> 
     States_Aux.listL (States Right big small) = rev (States_Aux.listL (States Left big small))"
-  by(auto split: prod.splits Big.state.splits Small.state.splits)
+  by(auto split: prod.splits big_state.splits Small.state.splits)
 
 lemma swap_list [simp]: "invar q \<Longrightarrow> listR (swap q) = listL q"
 proof(induction q)

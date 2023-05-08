@@ -5,7 +5,7 @@ imports Big_Aux Common_Proof
 begin
 
 lemma step_list [simp]: "invar big \<Longrightarrow> list (step big) = list big"
-proof(induction big rule: step_state.induct)
+proof(induction big rule: step_big_state.induct)
   case 1
   then show ?case 
     by auto
@@ -20,7 +20,7 @@ next
 qed
     
 lemma step_list_current [simp]: "invar big \<Longrightarrow> list_current (step big) = list_current big"
-  by(induction big rule: step_state.induct)(auto split: current.splits)
+  by(induction big rule: step_big_state.induct)(auto split: current.splits)
 
 lemma push_list [simp]: "list (push x big) = x # list big"
 proof(induction x big rule: push.induct)
@@ -69,7 +69,7 @@ next
   then show ?case by auto
 qed
 
-lemma size_list [simp]: " \<lbrakk>0 < size big; invar big; list big = []\<rbrakk> \<Longrightarrow> False"
+lemma size_list [simp]: "\<lbrakk>0 < size big; invar big; list big = []\<rbrakk> \<Longrightarrow> False"
 proof(induction big rule: list.induct)
   case 1
   then show ?case
@@ -97,8 +97,8 @@ lemma pop_list_tl: "\<lbrakk>0 < size big; invar big; pop big = (x, big')\<rbrak
   by force
 
 (* TODO: *)
-lemma invar_step: "invar (big :: 'a state) \<Longrightarrow> invar (step big)" 
-proof(induction big rule: step_state.induct)
+lemma invar_step: "invar (big :: 'a big_state) \<Longrightarrow> invar (step big)" 
+proof(induction big rule: step_big_state.induct)
   case 1
   then show ?case 
     by(auto simp: invar_step)
@@ -110,9 +110,11 @@ next
     by(auto split: current.splits)
 
   (* TODO: *)
-  with 2 have "\<lbrakk>current = Current extra (length extra) old remained; remained \<le> length aux;
+  with 2 have "\<lbrakk>
+     current = Current extra (length extra) old remained; 
+     remained \<le> length aux;
      Stack_Aux.list old =
-     rev (take (size old - size big) aux) @ rev (take (size old) (rev (Stack_Aux.list big)));
+      rev (take (size old - size big) aux) @ rev (take (size old) (rev (Stack_Aux.list big)));
      take remained (rev (take (size old - size big) aux)) @
      take (remained - min (length aux) (size old - size big))
       (rev (take (size old) (rev (Stack_Aux.list big)))) =
@@ -260,14 +262,14 @@ next
     by(auto simp: Stack_Proof.size_not_empty Stack_Proof.list_empty)
 qed
 
-lemma step_size: "invar (big :: 'a state) \<Longrightarrow> size big = size (step big)"
-  by(induction big rule: step_state.induct)(auto split: current.splits)
+lemma step_size: "invar (big :: 'a big_state) \<Longrightarrow> size big = size (step big)"
+  by(induction big rule: step_big_state.induct)(auto split: current.splits)
 
-lemma remaining_steps_step [simp]: "\<lbrakk>invar (big :: 'a state); remaining_steps big > 0\<rbrakk>
+lemma remaining_steps_step [simp]: "\<lbrakk>invar (big :: 'a big_state); remaining_steps big > 0\<rbrakk>
    \<Longrightarrow> Suc (remaining_steps (step big)) = remaining_steps big"
-  by(induction big rule: step_state.induct)(auto split: current.splits)
+  by(induction big rule: step_big_state.induct)(auto split: current.splits)
 
-lemma remaining_steps_step_0 [simp]: "\<lbrakk>invar (big :: 'a state); remaining_steps big = 0\<rbrakk> 
+lemma remaining_steps_step_0 [simp]: "\<lbrakk>invar (big :: 'a big_state); remaining_steps big = 0\<rbrakk> 
     \<Longrightarrow> remaining_steps (step big) = 0"
   by(induction big)(auto split: current.splits)
 
@@ -316,7 +318,7 @@ next
     by(induction current rule: Current.pop.induct) auto
 qed
 
-lemma size_size_new: "\<lbrakk>invar (big :: 'a state); 0 < size big\<rbrakk> \<Longrightarrow> 0 < size_new big"
+lemma size_size_new: "\<lbrakk>invar (big :: 'a big_state); 0 < size big\<rbrakk> \<Longrightarrow> 0 < size_new big"
   by(induction big)(auto simp: size_size_new)
 
 end

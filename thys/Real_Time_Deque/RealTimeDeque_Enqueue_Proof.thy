@@ -198,7 +198,7 @@ next
      then obtain small_current small_idle big_current big_idle where idle [simp]: "
       ?states_stepped = 
       States Left 
-          (Big.state.Common (state.Idle big_current big_idle))
+          (big_state.Common (state.Idle big_current big_idle))
           (Small.state.Common (state.Idle small_current small_idle))
       "
        using remaining_steps_idle' invar_stepped remaining_steps_stepped step_n_same
@@ -279,7 +279,7 @@ next
      then obtain small_current small_idle big_current big_idle where idle [simp]: "
       ?states_stepped = 
       States Right 
-          (Big.state.Common (state.Idle big_current big_idle))
+          (big_state.Common (state.Idle big_current big_idle))
           (Small.state.Common (state.Idle small_current small_idle))
       "
        using remaining_steps_idle' invar_stepped remaining_steps_stepped step_n_same

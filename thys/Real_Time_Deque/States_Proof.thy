@@ -4,7 +4,7 @@ theory States_Proof
 imports States_Aux Big_Proof Small_Proof
 begin
 
-lemmas state_splits = idle.splits Common.state.splits Small.state.splits Big.state.splits
+lemmas state_splits = idle.splits Common.state.splits Small.state.splits big_state.splits
 lemmas invar_steps = Big_Proof.invar_step Common_Proof.invar_step Small_Proof.invar_step
 
 lemma invar_list_big_first: 
@@ -188,7 +188,7 @@ lemma invar_pop_big_aux: "\<lbrakk>
       | (Reverse _ _ _ _, _) \<Rightarrow> False
       | _ \<Rightarrow> True
       )"
-  by(auto split: Big.state.splits Small.state.splits prod.splits)
+  by(auto split: big_state.splits Small.state.splits prod.splits)
 
 lemma invar_pop_big: "\<lbrakk>
   invar (States dir big small);
@@ -221,23 +221,23 @@ lemma invar_pop_small_aux: "\<lbrakk>
 proof(induction small rule: Small.pop.induct)
   case 1
   then show ?case
-    by(auto split: Big.state.splits Small.state.splits prod.splits)
+    by(auto split: big_state.splits Small.state.splits prod.splits)
 next
   case (2 current)
   then show ?case 
   proof(induction current rule: Current.pop.induct)
     case 1
     then show ?case 
-      by(auto split: Big.state.splits)
+      by(auto split: big_state.splits)
   next
     case 2
     then show ?case 
-      by(auto split: Big.state.splits)
+      by(auto split: big_state.splits)
   qed
 next
   case 3
   then show ?case 
-    by(auto split: Big.state.splits)
+    by(auto split: big_state.splits)
 qed
   
 lemma invar_pop_small: "\<lbrakk>
@@ -266,15 +266,15 @@ lemma invar_push_small: "invar (States dir big small)
 proof(induction x small arbitrary: big rule: Small.push.induct)
   case (1 x state)
   then show ?case 
-    by(auto simp: Common_Proof.invar_push split: Big.state.splits)
+    by(auto simp: Common_Proof.invar_push split: big_state.splits)
 next
   case (2 x current small auxS)
   then show ?case
-    by(induction x current rule: Current.push.induct)(auto split: Big.state.splits)
+    by(induction x current rule: Current.push.induct)(auto split: big_state.splits)
 next
   case (3 x current auxS big newS count)
   then show ?case 
-    by(induction x current rule: Current.push.induct)(auto split: Big.state.splits)
+    by(induction x current rule: Current.push.induct)(auto split: big_state.splits)
 qed
 
 lemma step_invars:"\<lbrakk>invar states; step states = States dir big small\<rbrakk> \<Longrightarrow> invar big \<and> invar small"
@@ -335,7 +335,7 @@ proof(induction states rule: step_states.induct)
       using Stack_Proof.size_empty[symmetric, of small]
       by(auto split: current.splits)
   qed auto 
-qed (auto split: Big.state.splits Small.state.splits) 
+qed (auto split: big_state.splits Small.state.splits) 
 
 lemma invar_step: "invar (states :: 'a states) \<Longrightarrow> invar (step states)" 
   using invar_step_aux[of states] step_lists_small_first[of states]
@@ -361,7 +361,8 @@ lemma size_ok'_decline: "size_ok' states x \<Longrightarrow> x \<ge> y \<Longrig
 
 lemma remaining_steps_0 [simp]: "\<lbrakk>invar (states :: 'a states); remaining_steps states = 0\<rbrakk>
    \<Longrightarrow> remaining_steps (step states) = 0"
-  by(induction states rule: step_states.induct) (auto split: current.splits Small.state.splits)
+  by(induction states rule: step_states.induct) 
+    (auto split: current.splits Small.state.splits)
 
 lemma remaining_steps_0': "\<lbrakk>invar (states :: 'a states); remaining_steps states = 0\<rbrakk>
    \<Longrightarrow> remaining_steps ((step ^^ n) states) = 0"
@@ -373,7 +374,7 @@ lemma remaining_steps_decline_Suc:
 proof(induction states rule: step_states.induct)
   case 1
   then show ?case 
-     by(auto simp: max_def split: Big.state.splits Small.state.splits current.splits)
+     by(auto simp: max_def split: big_state.splits Small.state.splits current.splits)
 next
   case ("2_1" _ _ _ _ _ small)
   then show ?case 
@@ -475,11 +476,11 @@ next
 next
   case "2_3"
   then show ?case 
-    by(auto split: Big.state.splits)
+    by(auto split: big_state.splits)
 next
   case "2_4"
   then show ?case 
-    by(auto split: Big.state.splits)
+    by(auto split: big_state.splits)
 qed
 
 lemma step_size_new_big_2 [simp]:
@@ -517,11 +518,11 @@ next
 next
   case "2_3"
   then show ?case 
-    by(auto split: current.splits Big.state.splits)
+    by(auto split: current.splits big_state.splits)
 next
   case "2_4"
   then show ?case 
-    by(auto split: Big.state.splits)
+    by(auto split: big_state.splits)
 qed
 
 lemma step_size_big_2 [simp]:
@@ -730,7 +731,7 @@ proof(induction small rule: Small.pop.induct)
 next
   case (2 current small auxS)
   then show ?case
-    by(induction current rule: Current.pop.induct)(auto split: Big.state.splits) 
+    by(induction current rule: Current.pop.induct)(auto split: big_state.splits) 
 next
   case (3 current auxS big newS count)
   then show ?case 
@@ -1188,13 +1189,13 @@ lemma remaining_steps_idle: "invar states
        States _ (Big.Common (Common.Idle _ _)) (Small.Common (Common.Idle _ _))  \<Rightarrow> True 
     | _ \<Rightarrow> False) "
   by(cases states)
-    (auto split: Big.state.split Small.state.split Common.state.split current.splits)
+    (auto split: big_state.split Small.state.split Common.state.split current.splits)
 
 lemma remaining_steps_idle': 
   "\<lbrakk>invar (States dir big small); remaining_steps (States dir big small) = 0\<rbrakk>
     \<Longrightarrow> \<exists>big_current big_idle small_current small_idle. States dir big small = 
           States dir 
-            (Big.state.Common (state.Idle big_current big_idle)) 
+            (big_state.Common (state.Idle big_current big_idle)) 
             (Small.state.Common (state.Idle small_current small_idle))"
   using remaining_steps_idle[of "States dir big small"]
   by(cases big; cases small) (auto split!: Common.state.splits)
