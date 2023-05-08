@@ -333,7 +333,7 @@ next
       States Left big_stepped small_stepped = 
       States Left 
           (big_state.Common (state.Idle big_current big_idle))
-          (Small.state.Common (state.Idle small_current small_idle))
+          (small_state.Common (state.Idle small_current small_idle))
       "
       using remaining_steps_idle' invar_stepped remaining_steps_stepped
       by fastforce
@@ -421,7 +421,7 @@ next
       States Right big_stepped small_stepped = 
       States Right 
           (big_state.Common (state.Idle big_current big_idle))
-          (Small.state.Common (state.Idle small_current small_idle))
+          (small_state.Common (state.Idle small_current small_idle))
       "
       using remaining_steps_idle' invar_stepped remaining_steps_stepped
       by fastforce

@@ -14,7 +14,7 @@ text \<open>
 \<^noindent> Each phase contains a \<open>current\<close> state, which holds the original elements of the deque end. 
 \<close>
 
-datatype (plugins del: size) 'a state =
+datatype (plugins del: size) 'a small_state =
    Reverse1 "'a current" "'a stack" "'a list"
  | Reverse2 "'a current" "'a list" "'a stack" "'a list" nat
  | Common "'a Common.state"
@@ -24,10 +24,10 @@ text \<open>\<^noindent> Functions:
  \<^descr> \<open>push\<close>, \<open>pop\<close>: Add and remove elements using the \<open>current\<close> state.
  \<^descr> \<open>step\<close>: Executes one step of the transformation, while keeping the invariant.\<close>
 
-instantiation state::(type) step
+instantiation small_state::(type) step
 begin
 
-fun step_state :: "'a state \<Rightarrow> 'a state" where
+fun step_small_state :: "'a small_state \<Rightarrow> 'a small_state" where
   "step (Common state) = Common (step state)"
 | "step (Reverse1 current small auxS) = (
     if is_empty small 
@@ -43,13 +43,13 @@ fun step_state :: "'a state \<Rightarrow> 'a state" where
 instance..
 end
 
-fun push :: "'a \<Rightarrow> 'a state \<Rightarrow> 'a state" where
+fun push :: "'a \<Rightarrow> 'a small_state \<Rightarrow> 'a small_state" where
   "push x (Common state) = Common (Common.push x state)"
 | "push x (Reverse1 current small auxS) = Reverse1 (Current.push x current) small auxS"
 | "push x (Reverse2 current auxS big newS count) = 
     Reverse2 (Current.push x current) auxS big newS count"
 
-fun pop :: "'a state \<Rightarrow> 'a * 'a state" where
+fun pop :: "'a small_state \<Rightarrow> 'a * 'a small_state" where
   "pop (Common state) = (
     let (x, state) = Common.pop state 
     in (x, Common state)

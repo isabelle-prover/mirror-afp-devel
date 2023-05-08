@@ -4,11 +4,12 @@ theory Small_Proof
 imports Common_Proof Small_Aux
 begin
 
-lemma step_size [simp]: "invar (small :: 'a state) \<Longrightarrow> size (step small) = size small"
-  by(induction small rule: step_state.induct)(auto split: current.splits)
+lemma step_size [simp]: "invar (small :: 'a small_state) \<Longrightarrow> size (step small) = size small"
+  by(induction small rule: step_small_state.induct)(auto split: current.splits)
 
-lemma step_size_new [simp]: "invar (small :: 'a state) \<Longrightarrow> size_new (step small) = size_new small"
-  by(induction small rule: step_state.induct)(auto split: current.splits)
+lemma step_size_new [simp]: 
+    "invar (small :: 'a small_state) \<Longrightarrow> size_new (step small) = size_new small"
+  by(induction small rule: step_small_state.induct)(auto split: current.splits)
 
 lemma size_push [simp]: "invar small \<Longrightarrow> size (push x small) = Suc (size small)"
   by(induction x small rule: push.induct) (auto split: current.splits)
@@ -50,11 +51,11 @@ next
     by(induction current rule: Current.pop.induct) auto
 qed
 
-lemma size_size_new: "\<lbrakk>invar (small :: 'a state); 0 < size small\<rbrakk> \<Longrightarrow> 0 < size_new small"
+lemma size_size_new: "\<lbrakk>invar (small :: 'a small_state); 0 < size small\<rbrakk> \<Longrightarrow> 0 < size_new small"
   by(induction small)(auto simp: size_size_new)
 
 lemma step_list_current [simp]: "invar small \<Longrightarrow> list_current (step small) = list_current small"
-  by(induction small rule: step_state.induct)(auto split: current.splits)
+  by(induction small rule: step_small_state.induct)(auto split: current.splits)
 
 lemma step_list_common [simp]:
     "\<lbrakk>small = Common common; invar small\<rbrakk> \<Longrightarrow> list (step small) = list small"
@@ -80,8 +81,8 @@ proof -
     by(auto simp: Stack_Proof.list_empty split: current.splits)
 qed
   
-lemma invar_step: "invar (small :: 'a state) \<Longrightarrow> invar (step small)" 
-proof(induction small rule: step_state.induct)
+lemma invar_step: "invar (small :: 'a small_state) \<Longrightarrow> invar (step small)" 
+proof(induction small rule: step_small_state.induct)
   case (1 state)
   then show ?case 
     by(auto simp: invar_step)
