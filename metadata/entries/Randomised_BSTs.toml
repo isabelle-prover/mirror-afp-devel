@@ -2,6 +2,7 @@ title = "Randomised Binary Search Trees"
 date = 2018-10-19
 topics = [
   "Computer science/Data structures",
+  "Computer science/Algorithms/Randomized",
 ]
 abstract = """
 <p>This work is a formalisation of the Randomised Binary Search

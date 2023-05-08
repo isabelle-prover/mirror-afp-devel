@@ -3,7 +3,7 @@ date = 2017-05-05
 topics = [
   "Computer science/Functional programming",
   "Mathematics/Probability theory",
-  "Computer science/Algorithms",
+  "Computer science/Algorithms/Randomized",
 ]
 abstract = """
 This AFP entry defines a probabilistic while operator based on

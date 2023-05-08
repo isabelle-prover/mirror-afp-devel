@@ -12,12 +12,12 @@
   "shortname": "Schwartz_Zippel",
   "title": "The Schwartz-Zippel Lemma",
   "topic_links": [
-   "computer-science/security/cryptography",
-   "mathematics/probability-theory"
+   "computer-science/algorithms/randomized",
+   "mathematics/algebra"
   ],
   "topics": [
-   "Computer science/Security/Cryptography",
-   "Mathematics/Probability theory"
+   "Computer science/Algorithms/Randomized",
+   "Mathematics/Algebra"
   ],
   "used_by": 0
  },
@@ -54,11 +54,13 @@
   "topic_links": [
    "computer-science/algorithms/distributed",
    "computer-science/algorithms/approximation",
+   "computer-science/algorithms/randomized",
    "mathematics/probability-theory"
   ],
   "topics": [
    "Computer science/Algorithms/Distributed",
    "Computer science/Algorithms/Approximation",
+   "Computer science/Algorithms/Randomized",
    "Mathematics/Probability theory"
   ],
   "used_by": 0
@@ -1440,10 +1442,12 @@
   "title": "Formalization of Randomized Approximation Algorithms for Frequency Moments",
   "topic_links": [
    "computer-science/algorithms/approximation",
+   "computer-science/algorithms/randomized",
    "mathematics/probability-theory"
   ],
   "topics": [
    "Computer science/Algorithms/Approximation",
+   "Computer science/Algorithms/Randomized",
    "Mathematics/Probability theory"
   ],
   "used_by": 1
@@ -1837,10 +1841,12 @@
   "shortname": "Median_Method",
   "title": "Median Method",
   "topic_links": [
-   "mathematics/probability-theory"
+   "mathematics/probability-theory",
+   "computer-science/algorithms/randomized"
   ],
   "topics": [
-   "Mathematics/Probability theory"
+   "Mathematics/Probability theory",
+   "Computer science/Algorithms/Randomized"
   ],
   "used_by": 1
  },
@@ -4693,10 +4699,12 @@
   "shortname": "Skip_Lists",
   "title": "Skip Lists",
   "topic_links": [
-   "computer-science/data-structures"
+   "computer-science/data-structures",
+   "computer-science/algorithms/randomized"
   ],
   "topics": [
-   "Computer science/Data structures"
+   "Computer science/Data structures",
+   "Computer science/Algorithms/Randomized"
   ],
   "used_by": 1
  },
@@ -5722,9 +5730,11 @@
   "shortname": "Probabilistic_Prime_Tests",
   "title": "Probabilistic Primality Testing",
   "topic_links": [
+   "computer-science/algorithms/randomized",
    "mathematics/number-theory"
   ],
   "topics": [
+   "Computer science/Algorithms/Randomized",
    "Mathematics/Number theory"
   ],
   "used_by": 1
@@ -6211,10 +6221,12 @@
   "shortname": "Randomised_BSTs",
   "title": "Randomised Binary Search Trees",
   "topic_links": [
-   "computer-science/data-structures"
+   "computer-science/data-structures",
+   "computer-science/algorithms/randomized"
   ],
   "topics": [
-   "Computer science/Data structures"
+   "Computer science/Data structures",
+   "Computer science/Algorithms/Randomized"
   ],
   "used_by": 0
  },
@@ -8044,12 +8056,12 @@
   "topic_links": [
    "computer-science/functional-programming",
    "mathematics/probability-theory",
-   "computer-science/algorithms"
+   "computer-science/algorithms/randomized"
   ],
   "topics": [
    "Computer science/Functional programming",
    "Mathematics/Probability theory",
-   "Computer science/Algorithms"
+   "Computer science/Algorithms/Randomized"
   ],
   "used_by": 1
  },

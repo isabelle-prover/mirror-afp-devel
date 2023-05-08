@@ -124,6 +124,18 @@ ams.hierarchy = [
   "Quantum algorithms and complexity in the theory of computing",
 ]
 
+["Computer science".Algorithms."Randomized"]
+
+["Computer science".Algorithms."Randomized".classification]
+acm.id = "10002950.10003648.10003671"
+acm.desc = "Mathematics of computing~Probabilistic algorithms"
+ams.id = "68W20"
+ams.hierarchy = [
+  "Computer science",
+  "Algorithms in computer science",
+  "Randomized algorithms",
+]
+
 ["Computer science".Concurrency]
 
 ["Computer science".Concurrency.classification]

@@ -2,6 +2,7 @@ title = "Median Method"
 date = 2022-01-25
 topics = [
   "Mathematics/Probability theory",
+  "Computer science/Algorithms/Randomized",
 ]
 abstract = """
 <p>The median method is an amplification result for randomized
