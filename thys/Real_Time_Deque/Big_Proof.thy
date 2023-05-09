@@ -210,7 +210,7 @@ next
     with 1 show ?case 
       apply(auto simp: rev_take take_tl drop_Suc Suc_diff_le tl_drop linarith simp del: take_rev_def)
       using b
-      apply (metis \<open>remained \<le> length (take_rev count (Stack_Aux.list big) @ aux)\<close> rev_append rev_take take_append)
+      apply (metis \<open>remained \<le> length (take_rev count (Stack_Aux.list big) @ aux)\<close> le_diff_conv rev_append rev_take take_append)
       by (smt (verit, del_insts) Nat.diff_cancel tl_append_if Suc_diff_le append_self_conv2 diff_add_inverse diff_diff_cancel diff_is_0_eq diff_le_mono drop_eq_Nil2 length_rev nle_le not_less_eq_eq plus_1_eq_Suc tl_drop_2)
   next
     case (2 x xs added old remained)

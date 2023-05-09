@@ -29,8 +29,7 @@ fun invar_big_state :: "'a big_state \<Rightarrow> bool" where
 | "invar (Big1 current big aux count) \<longleftrightarrow> (
    case current of Current extra added old remained \<Rightarrow>
       invar current
-    \<and> List.length aux \<ge> remained - count
-    
+    \<and> remained \<le> length aux + count
     \<and> count \<le> size big
     \<and> Stack_Aux.list old = rev (take (size old) ((rev (Stack_Aux.list big)) @ aux))
     \<and> take remained (Stack_Aux.list old) = 

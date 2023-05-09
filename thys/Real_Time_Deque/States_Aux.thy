@@ -10,11 +10,9 @@ fun remaining_steps_states :: "'a states \<Rightarrow> nat" where
     (remaining_steps big) 
     (case small of 
        Small3 common \<Rightarrow> remaining_steps common
-     | Small2 (Current _ _ _ remaining) _ big _ count \<Rightarrow> 
-          (remaining - (count + size big)) + size big + 1
+     | Small2 (Current _ _ _ remaining) _ big _ count \<Rightarrow> remaining - count + 1
      | Small1 (Current _ _ _ remaining) _ _ \<Rightarrow>
-         case big of
-           Big1 currentB big auxB count \<Rightarrow> size big + (remaining + count - size big) + 2
+         case big of Big1 currentB big auxB count \<Rightarrow> remaining + count + 2
     )"
 
 instance..
