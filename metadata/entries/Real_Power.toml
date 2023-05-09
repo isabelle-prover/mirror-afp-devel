@@ -16,7 +16,7 @@ properties (for $a \\ge 0$).  This particular construction of real
 exponents is needed instead of the usual one using the natural
 logarithm and exponential functions (which already exists in Isabelle)
 to support our mechanical derivation of Euler's exponential
-series as an ``infinite polynomial\". Aside from helping us avoid
+series as an “infinite polynomial”. Aside from helping us avoid
 circular reasoning, this is, as far as we are aware, the first time
 real exponents are mechanised in this way within a proof assistant."""
 license = "bsd"

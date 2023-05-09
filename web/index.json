@@ -155,7 +155,7 @@
   "used_by": 1
  },
  {
-  "abstract": "I formalize the notion of \u003ci\u003erenaming-enriched sets\u003c/i\u003e (\u003ci\u003erensets\u003c/i\u003e for short) and renaming-based recursion introduced in my  \u003ca href=\"https://link.springer.com/book/10.1007/978-3-031-10769-6\"\u003eIJCAR 2022\u003c/a\u003e  paper  \u003ca href=\"https://link.springer.com/chapter/10.1007/978-3-031-10769-6_36\"\u003e``Rensets and Renaming-Based Recursion for Syntax with Bindings''\u003c/a\u003e.  Rensets are an algebraic axiomatization of renaming (variable-for-variable substitution).  The formalization includes a connection with nominal sets, showing that any renset naturally gives rise to a nominal set. It also includes examples of deploying the renaming-based recursor:  semantic interpretation, counting functions for free and bound occurrences, unary and parallel substitution, etc. Finally, it includes a variation of rensets that axiomatize term-for-variable substitution, called \u003ci\u003esubstitutive sets\u003c/i\u003e, which yields a  corresponding recursion principle.",
+  "abstract": "I formalize the notion of \u003ci\u003erenaming-enriched sets\u003c/i\u003e (\u003ci\u003erensets\u003c/i\u003e for short) and renaming-based recursion introduced in my  \u003ca href=\"https://link.springer.com/book/10.1007/978-3-031-10769-6\"\u003eIJCAR 2022\u003c/a\u003e  paper  \u003ca href=\"https://link.springer.com/chapter/10.1007/978-3-031-10769-6_36\"\u003e“Rensets and Renaming-Based Recursion for Syntax with Bindings”\u003c/a\u003e.  Rensets are an algebraic axiomatization of renaming (variable-for-variable substitution).  The formalization includes a connection with nominal sets, showing that any renset naturally gives rise to a nominal set. It also includes examples of deploying the renaming-based recursor:  semantic interpretation, counting functions for free and bound occurrences, unary and parallel substitution, etc. Finally, it includes a variation of rensets that axiomatize term-for-variable substitution, called \u003ci\u003esubstitutive sets\u003c/i\u003e, which yields a  corresponding recursion principle.",
   "authors": [
    "Andrei Popescu"
   ],
@@ -1664,7 +1664,7 @@
   "used_by": 0
  },
  {
-  "abstract": "\u003cp\u003eRuntime monitoring (or runtime verification) is an approach to checking compliance of a system's execution with a specification (e.g., a temporal formula). The system's execution is logged into a \u003ci\u003etrace\u003c/i\u003e\u0026mdash;a sequence of time-points, each consisting of a time-stamp and observed events. A \u003ci\u003emonitor\u003c/i\u003e is an algorithm that produces \u003ci\u003everdicts\u003c/i\u003e on the satisfaction of a temporal formula on a trace.\u003c/p\u003e \u003cp\u003eWe formalize the time-stamps as an abstract algebraic structure satisfying certain assumptions. Instances of this structure include natural numbers, real numbers, and lexicographic combinations of them. We also include the formalization of a conversion from the abstract time domain introduced by Koymans (1990) to our time-stamps.\u003c/p\u003e \u003cp\u003eWe formalize a monitoring algorithm for metric dynamic logic, an extension of metric temporal logic with regular expressions. The monitor computes whether a given formula is satisfied at every position in an input trace of time-stamped events. Our monitor follows the multi-head paradigm: it reads the input simultaneously at multiple positions and moves its reading heads asynchronously. This mode of operation results in unprecedented time and space complexity guarantees for metric dynamic logic: The monitor's amortized time complexity to process a time-point and the monitor's space complexity neither depends on the event-rate, i.e., the number of events within a fixed time-unit, nor on the numeric constants occurring in the quantitative temporal constraints in the given formula.\u003c/p\u003e \u003cp\u003eThe multi-head monitoring algorithm for metric dynamic logic is reported in our paper ``Multi-Head Monitoring of Metric Dynamic Logic'' published at ATVA 2020. We have also formalized unpublished specialized algorithms for the temporal operators of metric temporal logic.\u003c/p\u003e",
+  "abstract": "\u003cp\u003eRuntime monitoring (or runtime verification) is an approach to checking compliance of a system's execution with a specification (e.g., a temporal formula). The system's execution is logged into a \u003ci\u003etrace\u003c/i\u003e\u0026mdash;a sequence of time-points, each consisting of a time-stamp and observed events. A \u003ci\u003emonitor\u003c/i\u003e is an algorithm that produces \u003ci\u003everdicts\u003c/i\u003e on the satisfaction of a temporal formula on a trace.\u003c/p\u003e \u003cp\u003eWe formalize the time-stamps as an abstract algebraic structure satisfying certain assumptions. Instances of this structure include natural numbers, real numbers, and lexicographic combinations of them. We also include the formalization of a conversion from the abstract time domain introduced by Koymans (1990) to our time-stamps.\u003c/p\u003e \u003cp\u003eWe formalize a monitoring algorithm for metric dynamic logic, an extension of metric temporal logic with regular expressions. The monitor computes whether a given formula is satisfied at every position in an input trace of time-stamped events. Our monitor follows the multi-head paradigm: it reads the input simultaneously at multiple positions and moves its reading heads asynchronously. This mode of operation results in unprecedented time and space complexity guarantees for metric dynamic logic: The monitor's amortized time complexity to process a time-point and the monitor's space complexity neither depends on the event-rate, i.e., the number of events within a fixed time-unit, nor on the numeric constants occurring in the quantitative temporal constraints in the given formula.\u003c/p\u003e \u003cp\u003eThe multi-head monitoring algorithm for metric dynamic logic is reported in our paper “Multi-Head Monitoring of Metric Dynamic Logic” published at ATVA 2020. We have also formalized unpublished specialized algorithms for the temporal operators of metric temporal logic.\u003c/p\u003e",
   "authors": [
    "Martin Raszyk"
   ],
@@ -2183,7 +2183,7 @@
   "used_by": 4
  },
  {
-  "abstract": "In this formalisation, we  construct real exponents as the limits of sequences of rational exponents. In particular, if $a \\ge 1$ and $x \\in \\mathbb{R}$, we choose an increasing rational sequence $r_n$ such that $\\lim_{n\\to\\infty} {r_n} = x$. Then the sequence $a^{r_n}$ is increasing and if $r$ is any rational number such that $r \u003e x$, $a^{r_n}$ is bounded above by $a^r$. By the convergence criterion for monotone sequences, $a^{r_n}$ converges. We define $a^ x = \\lim_{n\\to\\infty} a^{r_n}$ and show that it has the expected properties (for $a \\ge 0$).  This particular construction of real exponents is needed instead of the usual one using the natural logarithm and exponential functions (which already exists in Isabelle) to support our mechanical derivation of Euler's exponential series as an ``infinite polynomial\". Aside from helping us avoid circular reasoning, this is, as far as we are aware, the first time real exponents are mechanised in this way within a proof assistant.",
+  "abstract": "In this formalisation, we  construct real exponents as the limits of sequences of rational exponents. In particular, if $a \\ge 1$ and $x \\in \\mathbb{R}$, we choose an increasing rational sequence $r_n$ such that $\\lim_{n\\to\\infty} {r_n} = x$. Then the sequence $a^{r_n}$ is increasing and if $r$ is any rational number such that $r \u003e x$, $a^{r_n}$ is bounded above by $a^r$. By the convergence criterion for monotone sequences, $a^{r_n}$ converges. We define $a^ x = \\lim_{n\\to\\infty} a^{r_n}$ and show that it has the expected properties (for $a \\ge 0$).  This particular construction of real exponents is needed instead of the usual one using the natural logarithm and exponential functions (which already exists in Isabelle) to support our mechanical derivation of Euler's exponential series as an “infinite polynomial”. Aside from helping us avoid circular reasoning, this is, as far as we are aware, the first time real exponents are mechanised in this way within a proof assistant.",
   "authors": [
    "Jacques D. Fleuriot"
   ],
@@ -2270,7 +2270,7 @@
   "used_by": 0
  },
  {
-  "abstract": "This AFP entry provides semantics for roughly 120 different X86-64 assembly instructions. These instructions include various moves, arithmetic/logical operations, jumps, call/return, SIMD extensions and others. External functions are supported by allowing a user to provide custom semantics for these calls. Floating-point operations are mapped to uninterpreted functions. The model provides semantics for register aliasing and a byte-level little-endian memory model. The semantics are purposefully incomplete, but overapproximative. For example, the precise effect of flags may be undefined for certain instructions, or instructions may simply have no semantics at all. In those cases, the semantics are mapped to universally quantified uninterpreted terms from a locale. Second, this entry provides a method to symbolic execution of basic blocks. The method, called ''se_step'' (for: symbolic execution step) fetches an instruction and updates the current symbolic state while keeping track of assumptions made over the memory model. A key component is a set of theorems that prove how reads from memory resolve after writes have occurred. Thirdly, this entry provides a parser that allows the user to copy-paste the output of the standard disassembly tool objdump into Isabelle/HOL. A couple small and explanatory examples are included, including functions from the word count program. Several examples can be supplied upon request (they are not included due to the running time of verification): functions from the floating-point modulo function from FDLIBM, the GLIBC strlen function and the CoreUtils SHA256 implementation.",
+  "abstract": "This AFP entry provides semantics for roughly 120 different X86-64 assembly instructions. These instructions include various moves, arithmetic/logical operations, jumps, call/return, SIMD extensions and others. External functions are supported by allowing a user to provide custom semantics for these calls. Floating-point operations are mapped to uninterpreted functions. The model provides semantics for register aliasing and a byte-level little-endian memory model. The semantics are purposefully incomplete, but overapproximative. For example, the precise effect of flags may be undefined for certain instructions, or instructions may simply have no semantics at all. In those cases, the semantics are mapped to universally quantified uninterpreted terms from a locale. Second, this entry provides a method to symbolic execution of basic blocks. The method, called “\u003ctt\u003ese_step\u003c/tt\u003e” (for: symbolic execution step) fetches an instruction and updates the current symbolic state while keeping track of assumptions made over the memory model. A key component is a set of theorems that prove how reads from memory resolve after writes have occurred. Thirdly, this entry provides a parser that allows the user to copy-paste the output of the standard disassembly tool objdump into Isabelle/HOL. A couple small and explanatory examples are included, including functions from the word count program. Several examples can be supplied upon request (they are not included due to the running time of verification): functions from the floating-point modulo function from FDLIBM, the GLIBC strlen function and the CoreUtils SHA256 implementation.",
   "authors": [
    "Freek Verbeek",
    "Abhijith Bharadwaj",
@@ -3695,7 +3695,7 @@
   "used_by": 0
  },
  {
-  "abstract": "In this AFP entry, we formalize the core of the Safely Composable Document Object Model (SC DOM). The SC DOM improve the standard DOM (as formalized in the AFP entry \"Core DOM\") by strengthening the tree boundaries set by shadow roots: in the SC DOM, the shadow root is a sub-class of the document class (instead of a base class). This modifications also results in changes to some API methods (e.g., getOwnerDocument) to return the nearest shadow root rather than the document root. As a result, many API methods that, when called on a node inside a shadow tree, would previously ``break out'' and return or modify nodes that are possibly outside the shadow tree, now stay within its boundaries. This change in behavior makes programs that operate on shadow trees more predictable for the developer and allows them to make more assumptions about other code accessing the DOM.",
+  "abstract": "In this AFP entry, we formalize the core of the Safely Composable Document Object Model (SC DOM). The SC DOM improve the standard DOM (as formalized in the AFP entry “Core DOM”) by strengthening the tree boundaries set by shadow roots: in the SC DOM, the shadow root is a sub-class of the document class (instead of a base class). This modifications also results in changes to some API methods (e.g., getOwnerDocument) to return the nearest shadow root rather than the document root. As a result, many API methods that, when called on a node inside a shadow tree, would previously “break out” and return or modify nodes that are possibly outside the shadow tree, now stay within its boundaries. This change in behavior makes programs that operate on shadow trees more predictable for the developer and allows them to make more assumptions about other code accessing the DOM.",
   "authors": [
    "Achim D. Brucker",
    "Michael Herzberg"
@@ -5194,7 +5194,7 @@
   "used_by": 0
  },
  {
-  "abstract": "We formalize the static properties of personal Byzantine quorum systems (PBQSs) and Stellar quorum systems, as described in the paper ``Stellar Consensus by Reduction'' (to appear at DISC 2019).",
+  "abstract": "We formalize the static properties of personal Byzantine quorum systems (PBQSs) and Stellar quorum systems, as described in the paper “Stellar Consensus by Reduction” (to appear at DISC 2019).",
   "authors": [
    "Giuliano Losa"
   ],
@@ -5567,7 +5567,7 @@
   "used_by": 1
  },
  {
-  "abstract": "We present a formalisation of the unified translation approach of linear temporal logic (LTL) into ω-automata from [1]. This approach decomposes LTL formulas into ``simple'' languages and allows a clear separation of concerns: first, we formalise the purely logical result yielding this decomposition; second, we instantiate this generic theory to obtain a construction for deterministic (state-based) Rabin automata (DRA). We extract from this particular instantiation an executable tool translating LTL to DRAs. To the best of our knowledge this is the first verified translation from LTL to DRAs that is proven to be double exponential in the worst case which asymptotically matches the known lower bound. \u003cp\u003e [1] Javier Esparza, Jan Kretínský, Salomon Sickert. One Theorem to Rule Them All: A Unified Translation of LTL into ω-Automata. LICS 2018",
+  "abstract": "We present a formalisation of the unified translation approach of linear temporal logic (LTL) into ω-automata from [1]. This approach decomposes LTL formulas into “simple” languages and allows a clear separation of concerns: first, we formalise the purely logical result yielding this decomposition; second, we instantiate this generic theory to obtain a construction for deterministic (state-based) Rabin automata (DRA). We extract from this particular instantiation an executable tool translating LTL to DRAs. To the best of our knowledge this is the first verified translation from LTL to DRAs that is proven to be double exponential in the worst case which asymptotically matches the known lower bound. \u003cp\u003e [1] Javier Esparza, Jan Kretínský, Salomon Sickert. One Theorem to Rule Them All: A Unified Translation of LTL into ω-Automata. LICS 2018",
   "authors": [
    "Benedikt Seidl",
    "Salomon Sickert"
@@ -6475,7 +6475,7 @@
   "used_by": 0
  },
  {
-  "abstract": "Utility functions form an essential part of game theory and economics. In order to guarantee the existence of utility functions most of the time sufficient properties are assumed in an axiomatic manner. One famous and very common set of such assumptions is that of expected utility theory. Here, the rationality, continuity, and independence of preferences is assumed. The von-Neumann-Morgenstern Utility theorem shows that these assumptions are necessary and sufficient for an expected utility function to exists. This theorem was proven by Neumann and Morgenstern in ``Theory of Games and Economic Behavior'' which is regarded as one of the most influential works in game theory. The formalization includes formal definitions of the underlying concepts including continuity and independence of preferences.",
+  "abstract": "Utility functions form an essential part of game theory and economics. In order to guarantee the existence of utility functions most of the time sufficient properties are assumed in an axiomatic manner. One famous and very common set of such assumptions is that of expected utility theory. Here, the rationality, continuity, and independence of preferences is assumed. The von-Neumann-Morgenstern Utility theorem shows that these assumptions are necessary and sufficient for an expected utility function to exists. This theorem was proven by Neumann and Morgenstern in “Theory of Games and Economic Behavior” which is regarded as one of the most influential works in game theory. The formalization includes formal definitions of the underlying concepts including continuity and independence of preferences.",
   "authors": [
    "Julian Parsert",
    "Cezary Kaliszyk"
@@ -8087,7 +8087,7 @@
   "used_by": 1
  },
  {
-  "abstract": "A computer-formalisation of the essential parts of Fitting's textbook \"Types, Tableaus and Gödel's God\" in Isabelle/HOL is presented. In particular, Fitting's (and Anderson's) variant of the ontological argument is verified and confirmed. This variant avoids the modal collapse, which has been criticised as an undesirable side-effect of Kurt Gödel's (and Dana Scott's) versions of the ontological argument. Fitting's work is employing an intensional higher-order modal logic, which we shallowly embed here in classical higher-order logic. We then utilize the embedded logic for the formalisation of Fitting's argument. (See also the earlier AFP entry ``Gödel's God in Isabelle/HOL''.)",
+  "abstract": "A computer-formalisation of the essential parts of Fitting's textbook \"Types, Tableaus and Gödel's God\" in Isabelle/HOL is presented. In particular, Fitting's (and Anderson's) variant of the ontological argument is verified and confirmed. This variant avoids the modal collapse, which has been criticised as an undesirable side-effect of Kurt Gödel's (and Dana Scott's) versions of the ontological argument. Fitting's work is employing an intensional higher-order modal logic, which we shallowly embed here in classical higher-order logic. We then utilize the embedded logic for the formalisation of Fitting's argument. (See also the earlier AFP entry “Gödel's God in Isabelle/HOL”.)",
   "authors": [
    "David Fuenmayor",
    "Christoph Benzmüller"
@@ -10533,7 +10533,7 @@
   "used_by": 2
  },
  {
-  "abstract": "The Derangements Formula describes the number of fixpoint-free permutations as a closed formula. This theorem is the 88th theorem in a list of the ``\u003ca href=\"http://www.cs.ru.nl/~freek/100/\"\u003eTop 100 Mathematical Theorems\u003c/a\u003e''.",
+  "abstract": "The Derangements Formula describes the number of fixpoint-free permutations as a closed formula. This theorem is the 88th theorem in a list of the “\u003ca href=\"http://www.cs.ru.nl/~freek/100/\"\u003eTop 100 Mathematical Theorems\u003c/a\u003e”.",
   "authors": [
    "Lukas Bulwahn"
   ],
@@ -10774,7 +10774,7 @@
   "used_by": 0
  },
  {
-  "abstract": "This article formalizes the ``trie'' data structure invented by Fredkin [CACM 1960]. It also provides a specialization where the entries in the trie are lists.",
+  "abstract": "This article formalizes the “trie” data structure invented by Fredkin [CACM 1960]. It also provides a specialization where the entries in the trie are lists.",
   "authors": [
    "Andreas Lochbihler",
    "Tobias Nipkow"
@@ -10814,7 +10814,7 @@
   "used_by": 0
  },
  {
-  "abstract": "\u003cp\u003eWe provide a framework for registering automatic methods to derive class instances of datatypes, as it is possible using Haskell's ``deriving Ord, Show, ...'' feature.\u003c/p\u003e \u003cp\u003eWe further implemented such automatic methods to derive comparators, linear orders, parametrizable equality functions, and hash-functions which are required in the Isabelle Collection Framework and the Container Framework. Moreover, for the tactic of Blanchette to show that a datatype is countable, we implemented a wrapper so that this tactic becomes accessible in our framework. All of the generators are based on the infrastructure that is provided by the BNF-based datatype package.\u003c/p\u003e \u003cp\u003eOur formalization was performed as part of the \u003ca href=\"http://cl-informatik.uibk.ac.at/software/ceta\"\u003eIsaFoR/CeTA\u003c/a\u003e project. With our new tactics we could remove several tedious proofs for (conditional) linear orders, and conditional equality operators within IsaFoR and the Container Framework.\u003c/p\u003e",
+  "abstract": "\u003cp\u003eWe provide a framework for registering automatic methods to derive class instances of datatypes, as it is possible using Haskell's “\u003ctt\u003ederiving Ord, Show, ...\u003c/tt\u003e” feature.\u003c/p\u003e \u003cp\u003eWe further implemented such automatic methods to derive comparators, linear orders, parametrizable equality functions, and hash-functions which are required in the Isabelle Collection Framework and the Container Framework. Moreover, for the tactic of Blanchette to show that a datatype is countable, we implemented a wrapper so that this tactic becomes accessible in our framework. All of the generators are based on the infrastructure that is provided by the BNF-based datatype package.\u003c/p\u003e \u003cp\u003eOur formalization was performed as part of the \u003ca href=\"http://cl-informatik.uibk.ac.at/software/ceta\"\u003eIsaFoR/CeTA\u003c/a\u003e project. With our new tactics we could remove several tedious proofs for (conditional) linear orders, and conditional equality operators within IsaFoR and the Container Framework.\u003c/p\u003e",
   "authors": [
    "Christian Sternagel",
    "René Thiemann"
@@ -11459,7 +11459,7 @@
   "used_by": 2
  },
  {
-  "abstract": "We present an LTL model checker whose code has been completely verified using the Isabelle theorem prover. The checker consists of over 4000 lines of ML code. The code is produced using the Isabelle Refinement Framework, which allows us to split its correctness proof into (1) the proof of an abstract version of the checker, consisting of a few hundred lines of ``formalized pseudocode'', and (2) a verified refinement step in which mathematical sets and other abstract structures are replaced by implementations of efficient structures like red-black trees and functional arrays. This leads to a checker that, while still slower than unverified checkers, can already be used as a trusted reference implementation against which advanced implementations can be tested.",
+  "abstract": "We present an LTL model checker whose code has been completely verified using the Isabelle theorem prover. The checker consists of over 4000 lines of ML code. The code is produced using the Isabelle Refinement Framework, which allows us to split its correctness proof into (1) the proof of an abstract version of the checker, consisting of a few hundred lines of “formalized pseudocode”, and (2) a verified refinement step in which mathematical sets and other abstract structures are replaced by implementations of efficient structures like red-black trees and functional arrays. This leads to a checker that, while still slower than unverified checkers, can already be used as a trusted reference implementation against which advanced implementations can be tested.",
   "authors": [
    "Javier Esparza",
    "Peter Lammich",
@@ -12484,7 +12484,7 @@
   "used_by": 0
  },
  {
-  "abstract": "In this contribution, we present some formalizations based on the HOL-Multivariate-Analysis session of Isabelle. Firstly, a generalization of several theorems of such library are presented. Secondly, some definitions and proofs involving Linear Algebra and the four fundamental subspaces of a matrix are shown. Finally, we present a proof of the result known in Linear Algebra as the ``Rank-Nullity Theorem'', which states that, given any linear map f from a finite dimensional vector space V to a vector space W, then the dimension of V is equal to the dimension of the kernel of f (which is a subspace of V) and the dimension of the range of f (which is a subspace of W). The proof presented here is based on the one given by Sheldon Axler in his book \u003ci\u003eLinear Algebra Done Right\u003c/i\u003e. As a corollary of the previous theorem, and taking advantage of the relationship between linear maps and matrices, we prove that, for every matrix A (which has associated a linear map between finite dimensional vector spaces), the sum of its null space and its column space (which is equal to the range of the linear map) is equal to the number of columns of A.",
+  "abstract": "In this contribution, we present some formalizations based on the HOL-Multivariate-Analysis session of Isabelle. Firstly, a generalization of several theorems of such library are presented. Secondly, some definitions and proofs involving Linear Algebra and the four fundamental subspaces of a matrix are shown. Finally, we present a proof of the result known in Linear Algebra as the “Rank-Nullity Theorem”, which states that, given any linear map f from a finite dimensional vector space V to a vector space W, then the dimension of V is equal to the dimension of the kernel of f (which is a subspace of V) and the dimension of the range of f (which is a subspace of W). The proof presented here is based on the one given by Sheldon Axler in his book \u003ci\u003eLinear Algebra Done Right\u003c/i\u003e. As a corollary of the previous theorem, and taking advantage of the relationship between linear maps and matrices, we prove that, for every matrix A (which has associated a linear map between finite dimensional vector spaces), the sum of its null space and its column space (which is equal to the range of the linear map) is equal to the number of columns of A.",
   "authors": [
    "Jose Divasón",
    "Jesús Aransay"
@@ -12649,7 +12649,7 @@
   "used_by": 0
  },
  {
-  "abstract": "We provide a framework for registering automatic methods to derive class instances of datatypes, as it is possible using Haskell's ``deriving Ord, Show, ...'' feature. \u003cp\u003e We further implemented such automatic methods to derive (linear) orders or hash-functions which are required in the Isabelle Collection Framework. Moreover, for the tactic of Huffman and Krauss to show that a datatype is countable, we implemented a wrapper so that this tactic becomes accessible in our framework. \u003cp\u003e Our formalization was performed as part of the \u003ca href=\"http://cl-informatik.uibk.ac.at/software/ceta\"\u003eIsaFoR/CeTA\u003c/a\u003e project. With our new tactic we could completely remove tedious proofs for linear orders of two datatypes. \u003cp\u003e This development is aimed at datatypes generated by the \"old_datatype\" command.",
+  "abstract": "We provide a framework for registering automatic methods to derive class instances of datatypes, as it is possible using Haskell's “\u003ctt\u003ederiving Ord, Show, ...\u003c/tt\u003e” feature. \u003cp\u003e We further implemented such automatic methods to derive (linear) orders or hash-functions which are required in the Isabelle Collection Framework. Moreover, for the tactic of Huffman and Krauss to show that a datatype is countable, we implemented a wrapper so that this tactic becomes accessible in our framework. \u003cp\u003e Our formalization was performed as part of the \u003ca href=\"http://cl-informatik.uibk.ac.at/software/ceta\"\u003eIsaFoR/CeTA\u003c/a\u003e project. With our new tactic we could completely remove tedious proofs for linear orders of two datatypes. \u003cp\u003e This development is aimed at datatypes generated by the \"\u003ctt\u003eold_datatype\u003c/tt\u003e\" command.",
   "authors": [
    "René Thiemann"
   ],
@@ -13820,7 +13820,7 @@
   "used_by": 13
  },
  {
-  "abstract": "This contribution contains a fast SAT solver for Isabelle written in Standard ML. By loading the theory \u003ctt\u003eDPT_SAT_Solver\u003c/tt\u003e, the SAT solver installs itself (under the name ``dptsat'') and certain Isabelle tools like Refute will start using it automatically. This is a port of the DPT (Decision Procedure Toolkit) SAT Solver written in OCaml.",
+  "abstract": "This contribution contains a fast SAT solver for Isabelle written in Standard ML. By loading the theory \u003ctt\u003eDPT_SAT_Solver\u003c/tt\u003e, the SAT solver installs itself (under the name “\u003ctt\u003edptsat\u003c/tt\u003e”) and certain Isabelle tools like Refute will start using it automatically. This is a port of the DPT (Decision Procedure Toolkit) SAT Solver written in OCaml.",
   "authors": [
    "Armin Heller"
   ],
@@ -13956,7 +13956,7 @@
   "used_by": 0
  },
  {
-  "abstract": "We develop a basic theory of ordinals and cardinals in Isabelle/HOL, up to the point where some cardinality facts relevant for the ``working mathematician\" become available. Unlike in set theory, here we do not have at hand canonical notions of ordinal and cardinal. Therefore, here an ordinal is merely a well-order relation and a cardinal is an ordinal minim w.r.t. order embedding on its field.",
+  "abstract": "We develop a basic theory of ordinals and cardinals in Isabelle/HOL, up to the point where some cardinality facts relevant for the “working mathematician” become available. Unlike in set theory, here we do not have at hand canonical notions of ordinal and cardinal. Therefore, here an ordinal is merely a well-order relation and a cardinal is an ordinal minim w.r.t. order embedding on its field.",
   "authors": [
    "Andrei Popescu"
   ],
@@ -14211,7 +14211,7 @@
   "used_by": 0
  },
  {
-  "abstract": "This is a collection of cute puzzles of the form ``Show that if a function satisfies the following constraints, it must be ...'' Please add further examples to this collection!",
+  "abstract": "This is a collection of cute puzzles of the form ”Show that if a function satisfies the following constraints, it must be ...µ Please add further examples to this collection!",
   "authors": [
    "Tobias Nipkow"
   ],
