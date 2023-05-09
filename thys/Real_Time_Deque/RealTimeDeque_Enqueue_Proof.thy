@@ -25,8 +25,8 @@ proof(induction x deque rule: enqL.induct)
     case False
     let ?length_left = "length_left' - length_right - 1"
     let ?length_right = "2 * length_right + 1"
-    let ?big = "Reverse  (Current [] 0 left' ?length_left) left' [] ?length_left"
-    let ?small = "Reverse1 (Current [] 0 right ?length_right) right []"
+    let ?big = "Big1  (Current [] 0 left' ?length_left) left' [] ?length_left"
+    let ?small = "Small1 (Current [] 0 right ?length_right) right []"
     let ?states = "States Right ?big ?small"
     let ?states_stepped = "(step^^6) ?states"
 
@@ -64,7 +64,7 @@ next
 
   with 6 show ?case
     by(cases big_stepped; cases small_stepped)
-      (auto simp: Let_def stepped split!: Common.state.split)
+      (auto simp: Let_def stepped split!: common_state.split)
 next
   case (7 x big small)
 
@@ -97,7 +97,7 @@ next
   with list_invar show ?case
     using app_rev[of "Small_Aux.list_current small" "Big_Aux.list_current big"]
     by(cases big_stepped; cases small_stepped)   
-      (auto simp: Let_def stepped split!: prod.split Common.state.split)
+      (auto simp: Let_def stepped split!: prod.split common_state.split)
 qed auto
 
 lemma invar_enqL: "invar deque \<Longrightarrow> invar (enqL x deque)"
@@ -125,8 +125,8 @@ proof(induction x deque rule: enqL.induct)
     let ?length_left = "length_left' - length_right - 1"
     let ?length_right = "Suc (2 * length_right)"
     let ?states = "States Right 
-          (Reverse (Current [] 0 left' ?length_left) left' [] ?length_left)
-          (Reverse1 (Current [] 0 right ?length_right) right [])"
+          (Big1 (Current [] 0 left' ?length_left) left' [] ?length_left)
+          (Small1 (Current [] 0 right ?length_right) right [])"
     let ?states_stepped = "(step^^6) ?states"
 
     from invar_left' 5 False have invar: "invar ?states" 
@@ -189,7 +189,7 @@ next
 
      from remaining_steps size_ok invar_stepped show ?thesis
        by(cases big_stepped; cases small_stepped) 
-         (auto simp: Let_def split!: Common.state.split)
+         (auto simp: Let_def split!: common_state.split)
    next
      case False
      then have remaining_steps_stepped: "remaining_steps ?states_stepped = 0"
@@ -198,8 +198,8 @@ next
      then obtain small_current small_idle big_current big_idle where idle [simp]: "
       ?states_stepped = 
       States Left 
-          (Big.state.Common (state.Idle big_current big_idle))
-          (Small.state.Common (state.Idle small_current small_idle))
+          (Big2 (common_state.Idle big_current big_idle))
+          (Small3 (common_state.Idle small_current small_idle))
       "
        using remaining_steps_idle' invar_stepped remaining_steps_stepped step_n_same
        by (smt (verit) invar_states.elims(2))
@@ -270,7 +270,7 @@ next
 
      from remaining_steps size_ok invar_stepped show ?thesis
        by(cases big_stepped; cases small_stepped) 
-         (auto simp: Let_def split!: Common.state.split)
+         (auto simp: Let_def split!: common_state.split)
    next
      case False
      then have remaining_steps_stepped: "remaining_steps ?states_stepped = 0"
@@ -279,8 +279,8 @@ next
      then obtain small_current small_idle big_current big_idle where idle [simp]: "
       ?states_stepped = 
       States Right 
-          (Big.state.Common (state.Idle big_current big_idle))
-          (Small.state.Common (state.Idle small_current small_idle))
+          (Big2 (common_state.Idle big_current big_idle))
+          (Small3 (common_state.Idle small_current small_idle))
       "
        using remaining_steps_idle' invar_stepped remaining_steps_stepped step_n_same
        by (smt (verit) invar_states.elims(2))

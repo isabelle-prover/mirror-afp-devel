@@ -6,14 +6,14 @@ begin
 
 datatype direction = Left | Right
 
-datatype 'a states = States direction "'a Big.state" "'a Small.state"
+datatype 'a states = States direction "'a big_state" "'a small_state"
 
 instantiation states::(type) step
 begin
 
 fun step_states :: "'a states \<Rightarrow> 'a states" where
-  "step (States dir (Reverse currentB big auxB 0) (Reverse1 currentS _ auxS)) =
-    States dir (step (Reverse currentB big auxB 0)) (Reverse2 currentS auxS big [] 0)"
+  "step (States dir (Big1 currentB big auxB 0) (Small1 currentS _ auxS)) =
+    States dir (step (Big1 currentB big auxB 0)) (Small2 currentS auxS big [] 0)"
 | "step (States dir left right) = States dir (step left) (step right)"
 
 instance..

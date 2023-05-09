@@ -6,10 +6,10 @@ begin
 
 text \<open>
 \noindent This data structure is composed of:
-\<^item> the newly added elements to one end of a deque during the transformation phase
+\<^item> the newly added elements to one end of a deque during the rebalancing phase
 \<^item> the number of these newly added elements 
 \<^item> the originally contained elements
-\<^item> the number of elements which will be contained after the transformation is finished.
+\<^item> the number of elements which will be contained after the rebalancing is finished.
 \<close>
 
 datatype (plugins del: size) 'a current = Current "'a list" nat "'a stack" nat

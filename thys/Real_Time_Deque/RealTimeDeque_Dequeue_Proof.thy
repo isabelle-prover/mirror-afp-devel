@@ -35,20 +35,20 @@ proof(induction deque arbitrary: x rule: deqL'.induct)
       by auto
   next
     case False
-    note Start_Transformation = False
+    note Start_Rebalancing = False
 
     then show ?thesis
     proof(cases "length_left' \<ge> 1")
       case True
-      let ?big = "Reverse (Current [] 0 right (size right - Suc length_left')) 
+      let ?big = "Big1 (Current [] 0 right (size right - Suc length_left')) 
                            right [] (size right - Suc length_left')"
-      let ?small = "Reverse1 (Current [] 0 stack_left' (Suc (2 * length_left'))) stack_left' []"
+      let ?small = "Small1 (Current [] 0 stack_left' (Suc (2 * length_left'))) stack_left' []"
       let ?states = "States Left ?big ?small"
 
-      from 4 Start_Transformation True invar_left' have invar: "invar ?states"
+      from 4 Start_Rebalancing True invar_left' have invar: "invar ?states"
         by(auto simp: Let_def rev_take rev_drop)
 
-      with 4 Start_Transformation True invar_left'
+      with 4 Start_Rebalancing True invar_left'
       have "States_Aux.listL ?states = tl (Idle_Aux.list left) @ rev (Stack_Aux.list right)"
         using pop_list_tl'[of left x left'] 
         by (auto simp del: take_rev_def)
@@ -59,20 +59,20 @@ proof(induction deque arbitrary: x rule: deqL'.induct)
         using step_n_listL[of ?states 6]
         by presburger
       
-      with 4 Start_Transformation True show ?thesis 
+      with 4 Start_Rebalancing True show ?thesis 
         by(auto simp: Let_def)
     next
       case False
-      from False Start_Transformation 4 have [simp]:"size left = 1"
+      from False Start_Rebalancing 4 have [simp]:"size left = 1"
         using size_left' size_left'_size_left by auto
         
-      with False Start_Transformation 4 have [simp]: "Idle_Aux.list left = [x]"
+      with False Start_Rebalancing 4 have [simp]: "Idle_Aux.list left = [x]"
         by(induction left)(auto simp: length_one_hd split: stack.splits)
 
       obtain right1 right2 where "right = Stack right1 right2"
         using Stack_Aux.list.cases by blast
 
-      with False Start_Transformation 4 show ?thesis 
+      with False Start_Rebalancing 4 show ?thesis 
         by(induction right1 right2 rule: small_deque.induct) auto
     qed 
   qed
@@ -115,21 +115,21 @@ next
                 Small_Aux.list_current small @ rev (Big_Aux.list_current big)"
     using States_Proof.step_n_listL invar listL by metis
 
-  then have "listL (deqL (Transforming (States Left big small))) = States_Aux.listL ?states_stepped"
+  then have "listL (deqL (Rebal (States Left big small))) = States_Aux.listL ?states_stepped"
     by(auto simp: Let_def pop split: prod.splits direction.splits states.splits state_splits)
 
   then have states_listL_list_current: 
-      "x # listL (deqL (Transforming (States Left big small))) =
+      "x # listL (deqL (Rebal (States Left big small))) =
        Small_Aux.list_current small @ rev (Big_Aux.list_current big)"
     by auto
 
-  with 5(1) have "listL (Transforming (States Left big small)) = 
+  with 5(1) have "listL (Rebal (States Left big small)) = 
                   Small_Aux.list_current small @ rev (Big_Aux.list_current big)"
     by auto
 
   with states_listL_list_current 
-  have "x # listL (deqL (Transforming (States Left big small))) = 
-        listL (Transforming (States Left big small))"
+  have "x # listL (deqL (Rebal (States Left big small))) = 
+        listL (Rebal (States Left big small))"
     by auto
 
   with 5 show ?case by auto
@@ -177,22 +177,22 @@ next
     using States_Proof.step_n_listL[of ?states_new 4] invar listL
     by auto
 
-  then have "listL (deqL (Transforming (States Right big small))) = 
+  then have "listL (deqL (Rebal (States Right big small))) = 
               States_Aux.listL ?states_stepped"
     by(auto simp: Let_def pop split: prod.splits direction.splits states.splits state_splits)
 
   then have listL_list_current: 
-      "x # listL (deqL (Transforming (States Right big small))) = 
+      "x # listL (deqL (Rebal (States Right big small))) = 
        Big_Aux.list_current big @ rev (Small_Aux.list_current small)"
     by auto
 
-  with 6(1) have "listL (Transforming (States Right big small)) = 
+  with 6(1) have "listL (Rebal (States Right big small)) = 
                   Big_Aux.list_current big @ rev (Small_Aux.list_current small)"
     using invar_list_big_first[of "States Right big small"] by fastforce
 
   with listL_list_current have 
-    "x # listL (deqL (Transforming (States Right big small))) = 
-     listL (Transforming (States Right big small))"
+    "x # listL (deqL (Rebal (States Right big small))) = 
+     listL (Rebal (States Right big small))"
     by auto
 
   with 6 show ?case by auto
@@ -239,54 +239,54 @@ proof(induction deque rule: deqL'.induct)
       by(auto simp: Stack_Proof.size_empty[symmetric])
   next
     case False
-    note Start_Transformation = False
+    note Start_Rebalancing = False
     then show ?thesis 
     proof(cases "1 \<le> size left'")
       case True
       let ?big = 
-        "Reverse 
+        "Big1 
             (Current [] 0 right (size right - Suc length_left')) 
             right [] (size right - Suc length_left')"
-      let ?small = "Reverse1 (Current [] 0 stack_left' (Suc (2 * length_left'))) stack_left' []"
+      let ?small = "Small1 (Current [] 0 stack_left' (Suc (2 * length_left'))) stack_left' []"
       let ?states = "States Left ?big ?small"
 
-      from 4 Start_Transformation True invar_left' 
+      from 4 Start_Rebalancing True invar_left' 
       have invar: "invar ?states"
         by(auto simp: Let_def rev_take rev_drop)
 
       then have invar_stepped: "invar ((step^^6) ?states)"
         using invar_step_n by blast
 
-      from 4 Start_Transformation True 
+      from 4 Start_Rebalancing True 
       have remaining_steps: "6 < remaining_steps ?states"
         by auto
 
       then have remaining_steps_end: "0 < remaining_steps ((step^^6) ?states)"
         by(simp only: remaining_steps_n_steps_sub[of ?states 6] invar)
 
-      from 4 Start_Transformation True  
+      from 4 Start_Rebalancing True  
       have size_ok': "size_ok' ?states (remaining_steps ?states - 6)"
         by auto
          
       then have size_ok: "size_ok ((step^^6) ?states)"
         using invar remaining_steps size_ok_steps by blast
 
-      from True Start_Transformation 4 show ?thesis
+      from True Start_Rebalancing 4 show ?thesis
         using remaining_steps_end size_ok invar_stepped
         by(auto simp: Let_def)
     next
       case False
-      from False Start_Transformation 4 have [simp]: "size left = 1"
+      from False Start_Rebalancing 4 have [simp]: "size left = 1"
         by auto
         
-      with False Start_Transformation 4 have [simp]: "Idle_Aux.list left = [x]"  
+      with False Start_Rebalancing 4 have [simp]: "Idle_Aux.list left = [x]"  
         using list[symmetric]
         by(auto simp: list Stack_Proof.list_empty_size)
      
       obtain right1 right2 where "right = Stack right1 right2"
         using Stack_Aux.list.cases by blast
 
-      with False Start_Transformation 4 show ?thesis 
+      with False Start_Rebalancing 4 show ?thesis 
         by(induction right1 right2 rule: small_deque.induct) auto
     qed
   qed
@@ -323,7 +323,7 @@ next
       by auto
 
     from remaining_steps size_ok invar_stepped show ?thesis
-      by(cases big_stepped; cases small_stepped) (auto simp: Let_def split!: Common.state.split)
+      by(cases big_stepped; cases small_stepped) (auto simp: Let_def split!: common_state.split)
   next
     case False
     then have remaining_steps_stepped: "remaining_steps ?states_stepped = 0"
@@ -332,8 +332,8 @@ next
     then obtain small_current small_idle big_current big_idle where idle [simp]: "
       States Left big_stepped small_stepped = 
       States Left 
-          (Big.state.Common (state.Idle big_current big_idle))
-          (Small.state.Common (state.Idle small_current small_idle))
+          (Big2 (common_state.Idle big_current big_idle))
+          (Small3 (common_state.Idle small_current small_idle))
       "
       using remaining_steps_idle' invar_stepped remaining_steps_stepped
       by fastforce
@@ -411,7 +411,7 @@ next
       by auto
 
     from remaining_steps size_ok invar_stepped show ?thesis
-      by(cases big_stepped; cases small_stepped) (auto simp: Let_def split!: Common.state.split)
+      by(cases big_stepped; cases small_stepped) (auto simp: Let_def split!: common_state.split)
   next
     case False
     then have remaining_steps_stepped: "remaining_steps ?states_stepped = 0"
@@ -420,8 +420,8 @@ next
     then obtain small_current small_idle big_current big_idle where idle [simp]: "
       States Right big_stepped small_stepped = 
       States Right 
-          (Big.state.Common (state.Idle big_current big_idle))
-          (Small.state.Common (state.Idle small_current small_idle))
+          (Big2 (common_state.Idle big_current big_idle))
+          (Small3 (common_state.Idle small_current small_idle))
       "
       using remaining_steps_idle' invar_stepped remaining_steps_stepped
       by fastforce
