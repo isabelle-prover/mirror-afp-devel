@@ -33,11 +33,11 @@ next
     by(induction x current rule: Current.push.induct) auto
 qed
 
-lemma list_Reverse: "\<lbrakk>
-    0 < size (Reverse current big aux count); 
-    invar (Reverse current big aux count)
-\<rbrakk> \<Longrightarrow> first current # list (Reverse (drop_first current) big aux count) =
-      list (Reverse current big aux count)" 
+lemma list_Big1: "\<lbrakk>
+    0 < size (Big1 current big aux count); 
+    invar (Big1 current big aux count)
+\<rbrakk> \<Longrightarrow> first current # list (Big1 (drop_first current) big aux count) =
+      list (Big1 current big aux count)" 
 proof(induction current rule: Current.pop.induct)
   case (1 added old remained)
   then have [simp]: "remained - Suc 0 < length (take_rev count (Stack_Aux.list big) @ aux)"
@@ -77,7 +77,7 @@ proof(induction big rule: list.induct)
 next
   case 2
   then show ?case
-    by (metis list.distinct(1) list_Reverse)
+    by (metis list.distinct(1) list_Big1)
 qed
 
 lemma pop_list [simp]: "\<lbrakk>0 < size big; invar big; Big.pop big = (x, big')\<rbrakk>
@@ -89,7 +89,7 @@ proof(induction big arbitrary: x rule: list.induct)
 next
   case 2
   then show ?case 
-    by (metis Big.pop.simps(2) list_Reverse prod.inject)
+    by (metis Big.pop.simps(2) list_Big1 prod.inject)
 qed
 
 lemma pop_list_tl: "\<lbrakk>0 < size big; invar big; pop big = (x, big')\<rbrakk> \<Longrightarrow> list big' = tl (list big)"
@@ -175,7 +175,7 @@ next
       by linarith
 
     have a: " \<lbrakk>remained \<le> count + length aux; 0 < remained; added = 0; x = Stack.first old;
-         big' = Reverse (Current [] 0 (Stack.pop old) (remained - Suc 0)) big aux count;
+         big' = Big1 (Current [] 0 (Stack.pop old) (remained - Suc 0)) big aux count;
          count \<le> size big; Stack_Aux.list old = rev aux @ Stack_Aux.list big;
          take remained (rev aux) @ take (remained - length aux) (Stack_Aux.list big) =
          drop (count + length aux - remained) (rev aux) @
@@ -187,11 +187,11 @@ next
     have b: "\<lbrakk>remained \<le> length (take_rev count (Stack_Aux.list big) @ aux); 0 < size old; 
           0 < remained; added = 0;
          x = Stack.first old;
-         big' = Reverse (Current [] 0 (Stack.pop old) (remained - Suc 0)) big aux count;
+         big' = Big1 (Current [] 0 (Stack.pop old) (remained - Suc 0)) big aux count;
          remained - count \<le> length aux; count \<le> size big;
          Stack_Aux.list old =
-         drop (length aux - (size old - size big)) (rev aux) @
-         drop (size big - size old) (Stack_Aux.list big);
+           drop (length aux - (size old - size big)) (rev aux) @
+           drop (size big - size old) (Stack_Aux.list big);
          take remained (drop (length aux - (size old - size big)) (rev aux)) @
          take (remained + (length aux - (size old - size big)) - length aux)
           (drop (size big - size old) (Stack_Aux.list big)) =

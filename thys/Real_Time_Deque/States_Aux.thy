@@ -9,21 +9,21 @@ fun remaining_steps_states :: "'a states \<Rightarrow> nat" where
   "remaining_steps (States _ big small) = max 
     (remaining_steps big) 
     (case small of 
-       Small.Common common \<Rightarrow> remaining_steps common
-     | Reverse2 (Current _ _ _ remaining) _ big _ count \<Rightarrow> 
+       Small3 common \<Rightarrow> remaining_steps common
+     | Small2 (Current _ _ _ remaining) _ big _ count \<Rightarrow> 
           (remaining - (count + size big)) + size big + 1
-     | Reverse1 (Current _ _ _ remaining) _ _ \<Rightarrow>
+     | Small1 (Current _ _ _ remaining) _ _ \<Rightarrow>
          case big of
-           Reverse currentB big auxB count \<Rightarrow> size big + (remaining + count - size big) + 2
+           Big1 currentB big auxB count \<Rightarrow> size big + (remaining + count - size big) + 2
     )"
 
 instance..
 end
 
 fun lists :: "'a states \<Rightarrow> 'a list * 'a list" where
-  "lists (States _ (Reverse currentB big auxB count) (Reverse1 currentS small auxS)) = (
-    Big_Aux.list (Reverse currentB big auxB count),
-    Small_Aux.list (Reverse2 currentS (take_rev count (Stack_Aux.list small) @ auxS) ((Stack.pop ^^ count) big) [] 0)
+  "lists (States _ (Big1 currentB big auxB count) (Small1 currentS small auxS)) = (
+    Big_Aux.list (Big1 currentB big auxB count),
+    Small_Aux.list (Small2 currentS (take_rev count (Stack_Aux.list small) @ auxS) ((Stack.pop ^^ count) big) [] 0)
   )"
 | "lists (States _ big small) = (Big_Aux.list big, Small_Aux.list small)"
 
@@ -55,10 +55,10 @@ fun invar_states :: "'a states \<Rightarrow> bool" where
    \<and> invar small
    \<and> list_small_first (States dir big small) = list_current_small_first (States dir big small)
    \<and> (case (big, small) of 
-        (Reverse _ big _ count, Reverse1 (Current _ _ old remained) small _) \<Rightarrow> 
+        (Big1 _ big _ count, Small1 (Current _ _ old remained) small _) \<Rightarrow> 
           size big - count = remained - size old \<and> count \<ge> size small
-      | (_, Reverse1 _ _ _) \<Rightarrow> False
-      | (Reverse _ _ _ _, _) \<Rightarrow> False
+      | (_, Small1 _ _ _) \<Rightarrow> False
+      | (Big1 _ _ _ _, _) \<Rightarrow> False
       | _ \<Rightarrow> True
       ))"
 

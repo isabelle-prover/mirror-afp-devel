@@ -58,12 +58,12 @@ lemma step_list_current [simp]: "invar small \<Longrightarrow> list_current (ste
   by(induction small rule: step_small_state.induct)(auto split: current.splits)
 
 lemma step_list_common [simp]:
-    "\<lbrakk>small = Common common; invar small\<rbrakk> \<Longrightarrow> list (step small) = list small"
+    "\<lbrakk>small = Small3 common; invar small\<rbrakk> \<Longrightarrow> list (step small) = list small"
   by auto
 
-lemma step_list_reverse2 [simp]: 
+lemma step_list_Small2 [simp]: 
   assumes
-    "small = (Reverse2 current aux big new count)" 
+    "small = (Small2 current aux big new count)" 
     "invar small"
   shows
     "list (step small) = list small"
@@ -166,7 +166,7 @@ next
        (auto simp: rev_take Suc_diff_le drop_Suc tl_drop)
 qed
 
-lemma push_list_common [simp]: "small = Common common \<Longrightarrow> list (push x small) = x # list small"
+lemma push_list_common [simp]: "small = Small3 common \<Longrightarrow> list (push x small) = x # list small"
   by auto
 
 lemma push_list_current [simp]: "list_current (push x small) = x # list_current small"
@@ -204,29 +204,29 @@ qed
 
 lemma list_current_size [simp]: "\<lbrakk>0 < size small; list_current small = []; invar small\<rbrakk> \<Longrightarrow> False"
 proof(induction small)
-  case (Reverse1 current)
+  case (Small1 current)
   then have "invar current" 
     by(auto split: current.splits)
 
-  with Reverse1 show ?case 
+  with Small1 show ?case 
     using Current_Proof.list_size
     by auto
 next
-  case Reverse2
+  case Small2
   then show ?case 
     by(auto split: current.splits)
 next
-  case Common
+  case Small3
   then show ?case 
     using list_current_size by auto
 qed
 
-lemma list_Reverse2 [simp]: "\<lbrakk>
-  0 < size (Reverse2 current auxS big newS count); 
-  invar (Reverse2 current auxS big newS count)
+lemma list_Small2 [simp]: "\<lbrakk>
+  0 < size (Small2 current auxS big newS count); 
+  invar (Small2 current auxS big newS count)
 \<rbrakk> \<Longrightarrow>
-   fst (Current.pop current) # list (Reverse2 (drop_first current) auxS big newS count) =
-   list (Reverse2 current auxS big newS count)"
+   fst (Current.pop current) # list (Small2 (drop_first current) auxS big newS count) =
+   list (Small2 current auxS big newS count)"
   by(induction current rule: Current.pop.induct)
     (auto simp: first_hd rev_take Suc_diff_le)
 

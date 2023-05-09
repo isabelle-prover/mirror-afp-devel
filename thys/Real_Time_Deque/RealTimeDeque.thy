@@ -91,8 +91,8 @@ fun deqL' :: "'a deque \<Rightarrow> 'a * 'a deque" where
       let length_left' = 2 * length_left + 1 in
       let length_right' = length_right - length_left - 1 in
 
-      let small  = Reverse1 (Current [] 0 left length_left') left [] in
-      let big = Reverse (Current [] 0 right length_right') right [] length_right' in
+      let small  = Small1 (Current [] 0 left length_left') left [] in
+      let big = Big1 (Current [] 0 right length_right') right [] length_right' in
 
       let states = States Left big small in
       let states = (step^^6) states in
@@ -106,8 +106,8 @@ fun deqL' :: "'a deque \<Rightarrow> 'a * 'a deque" where
     let states = (step^^4) (States Left big small) in
     case states of 
         States Left
-          (Big.Common (Common.Idle _ big))
-          (Small.Common (Common.Idle _ small)) 
+          (Big2 (Common.Idle _ big))
+          (Small3 (Common.Idle _ small)) 
            \<Rightarrow> (x, Idle small big)
      | _ \<Rightarrow> (x, Rebal states)
   )"
@@ -116,8 +116,8 @@ fun deqL' :: "'a deque \<Rightarrow> 'a * 'a deque" where
     let states = (step^^4) (States Right big small) in
     case states of 
        States Right 
-          (Big.Common (Common.Idle _ big)) 
-          (Small.Common (Common.Idle _ small)) \<Rightarrow>
+          (Big2 (Common.Idle _ big)) 
+          (Small3 (Common.Idle _ small)) \<Rightarrow>
             (x, Idle big small)
      | _ \<Rightarrow> (x, Rebal states)
   )"
@@ -154,8 +154,8 @@ fun enqL :: "'a \<Rightarrow> 'a deque \<Rightarrow> 'a deque" where
         let length_left = length_left - length_right - 1 in
         let length_right = 2 * length_right + 1 in
 
-        let big  = Reverse  (Current [] 0 left length_left) left [] length_left in
-        let small = Reverse1 (Current [] 0 right length_right) right [] in
+        let big  = Big1  (Current [] 0 left length_left) left [] length_left in
+        let small = Small1 (Current [] 0 right length_right) right [] in
   
         let states = States Right big small in
         let states = (step^^6) states in
@@ -167,8 +167,8 @@ fun enqL :: "'a \<Rightarrow> 'a deque \<Rightarrow> 'a deque" where
     let states = (step^^4) (States Left big small) in
     case states of 
         States Left 
-          (Big.Common (Common.Idle _ big))
-          (Small.Common (Common.Idle _ small)) 
+          (Big2 (Common.Idle _ big))
+          (Small3 (Common.Idle _ small)) 
          \<Rightarrow> Idle small big
      | _ \<Rightarrow> Rebal states
   )"
@@ -177,8 +177,8 @@ fun enqL :: "'a \<Rightarrow> 'a deque \<Rightarrow> 'a deque" where
     let states = (step^^4) (States Right big small) in
     case states of 
         States Right 
-          (Big.Common (Common.Idle _ big)) 
-          (Small.Common (Common.Idle _ small)) 
+          (Big2 (Common.Idle _ big)) 
+          (Small3 (Common.Idle _ small)) 
          \<Rightarrow> Idle big small
      | _ \<Rightarrow> Rebal states
   )"

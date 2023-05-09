@@ -40,9 +40,9 @@ proof(induction deque arbitrary: x rule: deqL'.induct)
     then show ?thesis
     proof(cases "length_left' \<ge> 1")
       case True
-      let ?big = "Reverse (Current [] 0 right (size right - Suc length_left')) 
+      let ?big = "Big1 (Current [] 0 right (size right - Suc length_left')) 
                            right [] (size right - Suc length_left')"
-      let ?small = "Reverse1 (Current [] 0 stack_left' (Suc (2 * length_left'))) stack_left' []"
+      let ?small = "Small1 (Current [] 0 stack_left' (Suc (2 * length_left'))) stack_left' []"
       let ?states = "States Left ?big ?small"
 
       from 4 Start_Rebalancing True invar_left' have invar: "invar ?states"
@@ -244,10 +244,10 @@ proof(induction deque rule: deqL'.induct)
     proof(cases "1 \<le> size left'")
       case True
       let ?big = 
-        "Reverse 
+        "Big1 
             (Current [] 0 right (size right - Suc length_left')) 
             right [] (size right - Suc length_left')"
-      let ?small = "Reverse1 (Current [] 0 stack_left' (Suc (2 * length_left'))) stack_left' []"
+      let ?small = "Small1 (Current [] 0 stack_left' (Suc (2 * length_left'))) stack_left' []"
       let ?states = "States Left ?big ?small"
 
       from 4 Start_Rebalancing True invar_left' 
@@ -332,8 +332,8 @@ next
     then obtain small_current small_idle big_current big_idle where idle [simp]: "
       States Left big_stepped small_stepped = 
       States Left 
-          (big_state.Common (common_state.Idle big_current big_idle))
-          (small_state.Common (common_state.Idle small_current small_idle))
+          (Big2 (common_state.Idle big_current big_idle))
+          (Small3 (common_state.Idle small_current small_idle))
       "
       using remaining_steps_idle' invar_stepped remaining_steps_stepped
       by fastforce
@@ -420,8 +420,8 @@ next
     then obtain small_current small_idle big_current big_idle where idle [simp]: "
       States Right big_stepped small_stepped = 
       States Right 
-          (big_state.Common (common_state.Idle big_current big_idle))
-          (small_state.Common (common_state.Idle small_current small_idle))
+          (Big2 (common_state.Idle big_current big_idle))
+          (Small3 (common_state.Idle small_current small_idle))
       "
       using remaining_steps_idle' invar_stepped remaining_steps_stepped
       by fastforce
