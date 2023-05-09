@@ -12,7 +12,7 @@ fun listL :: "'a deque \<Rightarrow> 'a list" where
 | "listL (One x) = [x]"
 | "listL (Two x y) = [x, y]"
 | "listL (Three x y z) = [x, y, z]"
-| "listL (Idle left right) = Idle_Aux.list left @ (rev (Idle_Aux.list right))"
+| "listL (Idles left right) = Idle_Aux.list left @ (rev (Idle_Aux.list right))"
 | "listL (Rebal states) = States_Aux.listL states"
 
 abbreviation listR :: "'a deque \<Rightarrow> 'a list" where
@@ -26,7 +26,7 @@ fun invar_deque :: "'a deque \<Rightarrow> bool" where
 | "invar (One _) = True"
 | "invar (Two _ _) = True"
 | "invar (Three _ _ _) = True"
-| "invar (Idle left right) \<longleftrightarrow>
+| "invar (Idles left right) \<longleftrightarrow>
    invar left  \<and>
    invar right \<and>
    \<not> is_empty left  \<and> 

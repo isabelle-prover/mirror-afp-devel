@@ -11,14 +11,14 @@ The real-time deque can be in the following states:
  \<^descr> \<open>One\<close>: One element in the deque.
  \<^descr> \<open>Two\<close>: Two elements in the deque.
  \<^descr> \<open>Three\<close>: Three elements in the deque.
- \<^descr> \<open>Idle\<close>: Deque with a left and a right end, fulfilling the following invariant:
+ \<^descr> \<open>Idles\<close>: Deque with a left and a right end, fulfilling the following invariant:
    \<^item> 3 * size of left end \<open>\<ge>\<close> size of right end
    \<^item> 3 * size of right end \<open>\<ge>\<close> size of left end
    \<^item> Neither of the ends is empty
- \<^descr> \<open>Rebal\<close>: Deque which violated the invariant of the \<open>idle\<close> state by non-balanced dequeue and enqueue operations. The invariants during in this state are:
-   \<^item> The rebalancing is not done yet. The deque needs to be in \<open>idle\<close> state otherwise.
+ \<^descr> \<open>Rebal\<close>: Deque which violated the invariant of the \<open>Idles\<close> state by non-balanced dequeue and enqueue operations. The invariants during in this state are:
+   \<^item> The rebalancing is not done yet. The deque needs to be in \<open>Idles\<close> state otherwise.
    \<^item> The rebalancing is in a valid state (Defined in theory \<open>States\<close>)
-   \<^item> The two ends of the deque are in a size window, such that after finishing the rebalancing the invariant of the \<open>idle\<close> state will be met. 
+   \<^item> The two ends of the deque are in a size window, such that after finishing the rebalancing the invariant of the \<open>Idles\<close> state will be met. 
 
 Functions:
 
@@ -37,7 +37,7 @@ datatype 'a deque =
   | One 'a
   | Two 'a 'a
   | Three 'a 'a 'a 
-  | Idle "'a idle" "'a idle"
+  | Idles "'a idle" "'a idle"
   | Rebal "'a states"
 
 definition empty where
@@ -58,7 +58,7 @@ fun swap :: "'a deque \<Rightarrow> 'a deque" where
 | "swap (One x) = One x"
 | "swap (Two x y) = Two y x"
 | "swap (Three x y z) = Three z y x"
-| "swap (Idle left right) = Idle right left"
+| "swap (Idles left right) = Idles right left"
 | "swap (Rebal (States Left big small)) = (Rebal (States Right big small))"
 | "swap (Rebal (States Right big small)) = (Rebal (States Left big small))"
 
@@ -81,11 +81,11 @@ fun deqL' :: "'a deque \<Rightarrow> 'a * 'a deque" where
   "deqL' (One x) = (x, Empty)"
 | "deqL' (Two x y) = (x, One y)"
 | "deqL' (Three x y z) = (x, Two y z)"
-| "deqL' (Idle left (idle.Idle right length_right)) = (
+| "deqL' (Idles left (idle.Idle right length_right)) = (
    case Idle.pop left of (x, (idle.Idle left length_left)) \<Rightarrow>
     if 3 * length_left \<ge> length_right 
     then 
-      (x, Idle (idle.Idle left length_left) (idle.Idle right length_right))
+      (x, Idles (idle.Idle left length_left) (idle.Idle right length_right))
     else if length_left \<ge> 1
     then 
       let length_left' = 2 * length_left + 1 in
@@ -108,7 +108,7 @@ fun deqL' :: "'a deque \<Rightarrow> 'a * 'a deque" where
         States Left
           (Big2 (Common.Idle _ big))
           (Small3 (Common.Idle _ small)) 
-           \<Rightarrow> (x, Idle small big)
+           \<Rightarrow> (x, Idles small big)
      | _ \<Rightarrow> (x, Rebal states)
   )"
 | "deqL' (Rebal (States Right big small)) = (
@@ -118,7 +118,7 @@ fun deqL' :: "'a deque \<Rightarrow> 'a * 'a deque" where
        States Right 
           (Big2 (Common.Idle _ big)) 
           (Small3 (Common.Idle _ small)) \<Rightarrow>
-            (x, Idle big small)
+            (x, Idles big small)
      | _ \<Rightarrow> (x, Rebal states)
   )"
 
@@ -144,12 +144,12 @@ fun enqL :: "'a \<Rightarrow> 'a deque \<Rightarrow> 'a deque" where
   "enqL x Empty = One x"
 | "enqL x (One y) = Two x y"
 | "enqL x (Two y z) = Three x y z"
-| "enqL x (Three a b c) = Idle (idle.Idle (Stack [x, a] []) 2) (idle.Idle (Stack [c, b] []) 2)"
-| "enqL x (Idle left (idle.Idle right length_right)) = (
+| "enqL x (Three a b c) = Idles (idle.Idle (Stack [x, a] []) 2) (idle.Idle (Stack [c, b] []) 2)"
+| "enqL x (Idles left (idle.Idle right length_right)) = (
     case Idle.push x left of idle.Idle left length_left \<Rightarrow> 
       if 3 * length_right \<ge> length_left
       then 
-        Idle (idle.Idle left length_left) (idle.Idle right length_right)
+        Idles (idle.Idle left length_left) (idle.Idle right length_right)
       else 
         let length_left = length_left - length_right - 1 in
         let length_right = 2 * length_right + 1 in
@@ -169,7 +169,7 @@ fun enqL :: "'a \<Rightarrow> 'a deque \<Rightarrow> 'a deque" where
         States Left 
           (Big2 (Common.Idle _ big))
           (Small3 (Common.Idle _ small)) 
-         \<Rightarrow> Idle small big
+         \<Rightarrow> Idles small big
      | _ \<Rightarrow> Rebal states
   )"
 | "enqL x (Rebal (States Right big small)) = (
@@ -179,7 +179,7 @@ fun enqL :: "'a \<Rightarrow> 'a deque \<Rightarrow> 'a deque" where
         States Right 
           (Big2 (Common.Idle _ big)) 
           (Small3 (Common.Idle _ small)) 
-         \<Rightarrow> Idle big small
+         \<Rightarrow> Idles big small
      | _ \<Rightarrow> Rebal states
   )"
 
