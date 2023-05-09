@@ -78,5 +78,41 @@
       <description></description>
     </item>
     
+    <item>
+      <title>Expected Shape of Random Binary Search Trees</title>
+      <link>/entries/Random_BSTs.html</link>
+      <pubDate>Tue, 04 Apr 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Random_BSTs.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The number of comparisons in QuickSort</title>
+      <link>/entries/Quick_Sort_Cost.html</link>
+      <pubDate>Wed, 15 Mar 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Quick_Sort_Cost.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Fisher–Yates shuffle</title>
+      <link>/entries/Fisher_Yates.html</link>
+      <pubDate>Fri, 30 Sep 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Fisher_Yates.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Analysis of List Update Algorithms</title>
+      <link>/entries/List_Update.html</link>
+      <pubDate>Wed, 17 Feb 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/List_Update.html</guid>
+      <description></description>
+    </item>
+    
   </channel>
 </rss>

@@ -1736,9 +1736,11 @@
   "shortname": "Quasi_Borel_Spaces",
   "title": "Quasi-Borel Spaces",
   "topic_links": [
+   "mathematics/probability-theory",
    "computer-science/semantics-and-reasoning"
   ],
   "topics": [
+   "Mathematics/Probability theory",
    "Computer science/Semantics and reasoning"
   ],
   "used_by": 0
@@ -8194,10 +8196,12 @@
   "shortname": "Random_BSTs",
   "title": "Expected Shape of Random Binary Search Trees",
   "topic_links": [
-   "computer-science/data-structures"
+   "computer-science/data-structures",
+   "computer-science/algorithms/randomized"
   ],
   "topics": [
-   "Computer science/Data structures"
+   "Computer science/Data structures",
+   "Computer science/Algorithms/Randomized"
   ],
   "used_by": 2
  },
@@ -8232,10 +8236,12 @@
   "shortname": "Quick_Sort_Cost",
   "title": "The number of comparisons in QuickSort",
   "topic_links": [
-   "computer-science/algorithms"
+   "computer-science/algorithms",
+   "computer-science/algorithms/randomized"
   ],
   "topics": [
-   "Computer science/Algorithms"
+   "Computer science/Algorithms",
+   "Computer science/Algorithms/Randomized"
   ],
   "used_by": 1
  },
@@ -8916,10 +8922,10 @@
   "shortname": "Fisher_Yates",
   "title": "Fisher–Yates shuffle",
   "topic_links": [
-   "computer-science/algorithms"
+   "computer-science/algorithms/randomized"
   ],
   "topics": [
-   "Computer science/Algorithms"
+   "Computer science/Algorithms/Randomized"
   ],
   "used_by": 0
  },
@@ -9907,10 +9913,12 @@
   "shortname": "List_Update",
   "title": "Analysis of List Update Algorithms",
   "topic_links": [
-   "computer-science/algorithms/online"
+   "computer-science/algorithms/online",
+   "computer-science/algorithms/randomized"
   ],
   "topics": [
-   "Computer science/Algorithms/Online"
+   "Computer science/Algorithms/Online",
+   "Computer science/Algorithms/Randomized"
   ],
   "used_by": 0
  },

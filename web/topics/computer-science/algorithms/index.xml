@@ -646,11 +646,29 @@
     </item>
     
     <item>
+      <title>Expected Shape of Random Binary Search Trees</title>
+      <link>/entries/Random_BSTs.html</link>
+      <pubDate>Tue, 04 Apr 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Random_BSTs.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Lower bound on comparison-based sorting algorithms</title>
       <link>/entries/Comparison_Sort_Lower_Bound.html</link>
       <pubDate>Wed, 15 Mar 2017 00:00:00 +0000</pubDate>
       
       <guid>/entries/Comparison_Sort_Lower_Bound.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The number of comparisons in QuickSort</title>
+      <link>/entries/Quick_Sort_Cost.html</link>
+      <pubDate>Wed, 15 Mar 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Quick_Sort_Cost.html</guid>
       <description></description>
     </item>
     
@@ -714,6 +732,15 @@
       <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
       
       <guid>/entries/ROBDD.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Analysis of List Update Algorithms</title>
+      <link>/entries/List_Update.html</link>
+      <pubDate>Wed, 17 Feb 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/List_Update.html</guid>
       <description></description>
     </item>
     

@@ -2,6 +2,7 @@ title = "The number of comparisons in QuickSort"
 date = 2017-03-15
 topics = [
   "Computer science/Algorithms",
+  "Computer science/Algorithms/Randomized",
 ]
 abstract = """
 <p>We give a formal proof of the well-known results about the

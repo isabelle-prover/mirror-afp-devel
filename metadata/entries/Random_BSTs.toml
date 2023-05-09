@@ -2,6 +2,7 @@ title = "Expected Shape of Random Binary Search Trees"
 date = 2017-04-04
 topics = [
   "Computer science/Data structures",
+  "Computer science/Algorithms/Randomized",
 ]
 abstract = """
 <p>This entry contains proofs for the textbook results about the

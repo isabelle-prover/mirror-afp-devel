@@ -1,7 +1,7 @@
 title = "Fisher–Yates shuffle"
 date = 2016-09-30
 topics = [
-  "Computer science/Algorithms",
+  "Computer science/Algorithms/Randomized",
 ]
 abstract = """
 <p>This work defines and proves the correctness of the Fisher–Yates
