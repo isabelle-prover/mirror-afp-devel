@@ -5,10 +5,10 @@ imports Current Idle
 begin
 
 text \<open>
-\<^noindent> The last two phases of both deque ends during transformation:
+\<^noindent> The last two phases of both deque ends during rebalancing:
 
  \<^descr> \<open>Copy\<close>: Using the \<open>step\<close> function the new elements of this deque end are brought back into the original order.
- \<^descr> \<open>Idle\<close>: The transformation of the deque end is finished.
+ \<^descr> \<open>Idle\<close>: The rebalancing of the deque end is finished.
 
 \<^noindent> Each phase contains a \<open>current\<close> state, that holds the original elements of the deque end.
 \<close>
@@ -21,7 +21,7 @@ text\<open>
 \<^noindent> Functions:
 
 \<^descr> \<open>push\<close>, \<open>pop\<close>: Add and remove elements using the \<open>current\<close> state.
-\<^descr> \<open>step\<close>: Executes one step of the transformation, while keeping the invariant.\<close>
+\<^descr> \<open>step\<close>: Executes one step of the rebalancing, while keeping the invariant.\<close>
 
 (* TODO: Maybe inline function? *)
 fun normalize :: "'a common_state \<Rightarrow> 'a common_state" where

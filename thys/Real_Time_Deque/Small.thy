@@ -5,7 +5,7 @@ imports Common
 begin
 
 text \<open>
-\<^noindent> The smaller end of the deque during \<open>transformation\<close> can be in one three phases:
+\<^noindent> The smaller end of the deque during \<open>Rebalancing\<close> can be in one three phases:
 
  \<^descr> \<open>Reverse1\<close>: Using the \<open>step\<close> function the originally contained elements are reversed.
  \<^descr> \<open>Reverse2\<close>: Using the \<open>step\<close> function the newly obtained elements from the bigger end are reversed on top of the ones reversed in the previous phase.
@@ -22,7 +22,7 @@ datatype (plugins del: size) 'a small_state =
 text \<open>\<^noindent> Functions:
 
  \<^descr> \<open>push\<close>, \<open>pop\<close>: Add and remove elements using the \<open>current\<close> state.
- \<^descr> \<open>step\<close>: Executes one step of the transformation, while keeping the invariant.\<close>
+ \<^descr> \<open>step\<close>: Executes one step of the rebalancing, while keeping the invariant.\<close>
 
 instantiation small_state::(type) step
 begin

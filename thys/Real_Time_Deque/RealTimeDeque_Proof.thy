@@ -14,7 +14,7 @@ lemma swap_lists_right: "invar (States Right big small) \<Longrightarrow>
 
 lemma swap_list [simp]: "invar q \<Longrightarrow> listR (swap q) = listL q"
 proof(induction q)
-  case (Transforming states)
+  case (Rebal states)
   then show ?case
     apply(cases states)
     using swap_lists_left swap_lists_right

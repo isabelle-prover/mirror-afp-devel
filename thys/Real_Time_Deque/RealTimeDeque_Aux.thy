@@ -13,7 +13,7 @@ fun listL :: "'a deque \<Rightarrow> 'a list" where
 | "listL (Two x y) = [x, y]"
 | "listL (Three x y z) = [x, y, z]"
 | "listL (Idle left right) = Idle_Aux.list left @ (rev (Idle_Aux.list right))"
-| "listL (Transforming states) = States_Aux.listL states"
+| "listL (Rebal states) = States_Aux.listL states"
 
 abbreviation listR :: "'a deque \<Rightarrow> 'a list" where
   "listR deque \<equiv> rev (listL deque)"
@@ -34,7 +34,7 @@ fun invar_deque :: "'a deque \<Rightarrow> bool" where
    3 * size right \<ge> size left \<and>
    3 * size left \<ge> size right
   "
-| "invar (Transforming states) \<longleftrightarrow> 
+| "invar (Rebal states) \<longleftrightarrow> 
    invar states \<and>
    size_ok states \<and>
    0 < remaining_steps states

@@ -5,10 +5,10 @@ begin
 text\<open>
 \<^noindent> Functions:
 
-\<^descr> \<open>list\<close>: List abstraction of the elements which this end will contain after the transformation is finished
+\<^descr> \<open>list\<close>: List abstraction of the elements which this end will contain after the rebalancing is finished
 \<^descr> \<open>list_current\<close>: List abstraction of the elements currently in this deque end.
-\<^descr> \<open>remaining_steps\<close>: Returns how many steps are left until the transformation is finished.
-\<^descr> \<open>size_new\<close>: Returns the size, that the deque end will have after the transformation is finished.
+\<^descr> \<open>remaining_steps\<close>: Returns how many steps are left until the rebalancing is finished.
+\<^descr> \<open>size_new\<close>: Returns the size, that the deque end will have after the rebalancing is finished.
 \<^descr> \<open>size\<close>: Minimum of \<open>size_new\<close> and the number of elements contained in the \<open>current\<close> state.\<close>
 
 definition take_rev where 

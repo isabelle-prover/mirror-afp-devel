@@ -3,9 +3,9 @@ imports Small Common_Aux
 begin
 
 text \<open>\<^noindent> Functions:
- \<^descr> \<open>size_new\<close>: Returns the size, that the deque end will have after the transformation is finished.
+ \<^descr> \<open>size_new\<close>: Returns the size, that the deque end will have after the rebalancing is finished.
  \<^descr> \<open>size\<close>: Minimum of \<open>size_new\<close> and the number of elements contained in the `current` state.
- \<^descr> \<open>list\<close>: List abstraction of the elements which this end will contain after the transformation is finished. The first phase is not covered, since the elements, which will be transferred from the bigger deque end are not known yet.
+ \<^descr> \<open>list\<close>: List abstraction of the elements which this end will contain after the rebalancing is finished. The first phase is not covered, since the elements, which will be transferred from the bigger deque end are not known yet.
  \<^descr> \<open>list_current\<close>: List abstraction of the elements currently in this deque end.\<close>
 
 fun list :: "'a small_state \<Rightarrow> 'a list" where

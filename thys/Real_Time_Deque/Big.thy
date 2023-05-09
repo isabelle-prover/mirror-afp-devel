@@ -4,7 +4,7 @@ theory Big
 imports Common
 begin
 
-text \<open>\<^noindent> The bigger end of the deque during transformation can be in two phases:
+text \<open>\<^noindent> The bigger end of the deque during rebalancing can be in two phases:
 
  \<^descr> \<open>Reverse\<close>: Using the \<open>step\<close> function the originally contained elements, 
     which will be kept in this end, are reversed.
@@ -21,7 +21,7 @@ datatype (plugins del: size) 'a big_state =
 text \<open>\<^noindent> Functions:
 
 \<^descr> \<open>push\<close>, \<open>pop\<close>: Add and remove elements using the \<open>current\<close> state.
-\<^descr> \<open>step\<close>: Executes one step of the transformation\<close>
+\<^descr> \<open>step\<close>: Executes one step of the rebalancing\<close>
 
 instantiation big_state ::(type) step
 begin
