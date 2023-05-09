@@ -4,7 +4,7 @@ theory States_Proof
 imports States_Aux Big_Proof Small_Proof
 begin
 
-lemmas state_splits = idle.splits Common.state.splits small_state.splits big_state.splits
+lemmas state_splits = idle.splits common_state.splits small_state.splits big_state.splits
 lemmas invar_steps = Big_Proof.invar_step Common_Proof.invar_step Small_Proof.invar_step
 
 lemma invar_list_big_first: 
@@ -1189,15 +1189,15 @@ lemma remaining_steps_idle: "invar states
        States _ (Big.Common (Common.Idle _ _)) (Small.Common (Common.Idle _ _))  \<Rightarrow> True 
     | _ \<Rightarrow> False) "
   by(cases states)
-    (auto split: big_state.split small_state.split Common.state.split current.splits)
+    (auto split: big_state.split small_state.split common_state.split current.splits)
 
 lemma remaining_steps_idle': 
   "\<lbrakk>invar (States dir big small); remaining_steps (States dir big small) = 0\<rbrakk>
     \<Longrightarrow> \<exists>big_current big_idle small_current small_idle. States dir big small = 
           States dir 
-            (big_state.Common (state.Idle big_current big_idle)) 
-            (small_state.Common (state.Idle small_current small_idle))"
+            (big_state.Common (common_state.Idle big_current big_idle)) 
+            (small_state.Common (common_state.Idle small_current small_idle))"
   using remaining_steps_idle[of "States dir big small"]
-  by(cases big; cases small) (auto split!: Common.state.splits)
+  by(cases big; cases small) (auto split!: common_state.splits)
 
 end

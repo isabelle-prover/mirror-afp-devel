@@ -22,7 +22,7 @@ lemma take_rev_nth:
   by (simp add: take_Suc_conv_app_nth)
 
 lemma step_list [simp]: "invar common \<Longrightarrow> list (step common) = list common"
-proof(induction common rule: step_state.induct)
+proof(induction common rule: step_common_state.induct)
   case (1 idle)
   then show ?case by auto
 next
@@ -43,7 +43,7 @@ next
         by auto
 
       with True Current 2 aux_not_empty show ?thesis 
-        by(auto simp: )
+        by auto
     next
       case False
       with Current show ?thesis 
@@ -66,8 +66,8 @@ next
     by(induction x current rule: Current.push.induct) auto
 qed
 
-lemma invar_step: "invar (common :: 'a state) \<Longrightarrow> invar (step common)" 
-proof(induction "common" rule: invar_state.induct)
+lemma invar_step: "invar (common :: 'a common_state) \<Longrightarrow> invar (step common)" 
+proof(induction "common" rule: invar_common_state.induct)
   case (1 idle)
   then show ?case
     by auto
@@ -257,7 +257,11 @@ next
         from 1 have c: "remained - Suc (length new) < length aux"
           by auto
 
-        from 1 have not_empty: "0 < remained" "0 < size old" "0 < remained - length new" "0 < length aux" 
+        from 1 have not_empty: 
+            "0 < remained" 
+            "0 < size old" 
+            "0 < remained - length new" 
+            "0 < length aux" 
           by auto
 
         with False have 
@@ -349,7 +353,7 @@ qed
 
 lemma list_current_size [simp]: 
   "\<lbrakk>0 < size common; list_current common = []; invar common\<rbrakk> \<Longrightarrow> False"
-proof(induction common rule: invar_state.induct)
+proof(induction common rule: invar_common_state.induct)
   case 1
   then show ?case
     using list_size by auto
@@ -364,7 +368,7 @@ next
 qed
 
 lemma list_size [simp]: "\<lbrakk>0 < size common; list common = []; invar common\<rbrakk> \<Longrightarrow> False"
-proof(induction common rule: invar_state.induct)
+proof(induction common rule: invar_common_state.induct)
   case 1
   then show ?case
     using list_size Idle_Proof.size_empty
@@ -379,8 +383,8 @@ next
   then show ?case using list_size by auto
 qed
   
-lemma step_size [simp]: "invar (common :: 'a state) \<Longrightarrow> size (step common) = size common"
-proof(induction common rule: step_state.induct)
+lemma step_size [simp]: "invar (common :: 'a common_state) \<Longrightarrow> size (step common) = size common"
+proof(induction common rule: step_common_state.induct)
   case 1
   then show ?case by auto
 next
@@ -389,9 +393,9 @@ next
     by(auto simp: min_def split: current.splits)
 qed
 
-lemma step_size_new [simp]: "invar (common :: 'a state)
+lemma step_size_new [simp]: "invar (common :: 'a common_state)
    \<Longrightarrow> size_new (step common) = size_new common"
-proof(induction common rule: step_state.induct)
+proof(induction common rule: step_common_state.induct)
   case (1 current idle)
   then show ?case by auto
 next
@@ -399,15 +403,15 @@ next
   then show ?case by(auto split: current.splits)
 qed
 
-lemma remaining_steps_step [simp]: "\<lbrakk>invar (common :: 'a state); remaining_steps common > 0\<rbrakk>
+lemma remaining_steps_step [simp]: "\<lbrakk>invar (common :: 'a common_state); remaining_steps common > 0\<rbrakk>
    \<Longrightarrow> Suc (remaining_steps (step common)) = remaining_steps common"
   by(induction common)(auto split: current.splits)
 
-lemma remaining_steps_step_sub [simp]: "\<lbrakk>invar (common :: 'a state)\<rbrakk>
+lemma remaining_steps_step_sub [simp]: "\<lbrakk>invar (common :: 'a common_state)\<rbrakk>
  \<Longrightarrow> remaining_steps (step common) = remaining_steps common - 1"
   by(induction common)(auto split: current.splits)
 
-lemma remaining_steps_step_0 [simp]: "\<lbrakk>invar (common :: 'a state); remaining_steps common = 0\<rbrakk>
+lemma remaining_steps_step_0 [simp]: "\<lbrakk>invar (common :: 'a common_state); remaining_steps common = 0\<rbrakk>
    \<Longrightarrow> remaining_steps (step common) = 0"
   by(induction common)(auto split: current.splits)
 
@@ -469,7 +473,7 @@ next
   qed
 qed
 
-lemma size_size_new: "\<lbrakk>invar (common :: 'a state); 0 < size common\<rbrakk> \<Longrightarrow> 0 < size_new common"
+lemma size_size_new: "\<lbrakk>invar (common :: 'a common_state); 0 < size common\<rbrakk> \<Longrightarrow> 0 < size_new common"
   by(cases common) auto
 
 end

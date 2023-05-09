@@ -323,7 +323,7 @@ next
       by auto
 
     from remaining_steps size_ok invar_stepped show ?thesis
-      by(cases big_stepped; cases small_stepped) (auto simp: Let_def split!: Common.state.split)
+      by(cases big_stepped; cases small_stepped) (auto simp: Let_def split!: common_state.split)
   next
     case False
     then have remaining_steps_stepped: "remaining_steps ?states_stepped = 0"
@@ -332,8 +332,8 @@ next
     then obtain small_current small_idle big_current big_idle where idle [simp]: "
       States Left big_stepped small_stepped = 
       States Left 
-          (big_state.Common (state.Idle big_current big_idle))
-          (small_state.Common (state.Idle small_current small_idle))
+          (big_state.Common (common_state.Idle big_current big_idle))
+          (small_state.Common (common_state.Idle small_current small_idle))
       "
       using remaining_steps_idle' invar_stepped remaining_steps_stepped
       by fastforce
@@ -411,7 +411,7 @@ next
       by auto
 
     from remaining_steps size_ok invar_stepped show ?thesis
-      by(cases big_stepped; cases small_stepped) (auto simp: Let_def split!: Common.state.split)
+      by(cases big_stepped; cases small_stepped) (auto simp: Let_def split!: common_state.split)
   next
     case False
     then have remaining_steps_stepped: "remaining_steps ?states_stepped = 0"
@@ -420,8 +420,8 @@ next
     then obtain small_current small_idle big_current big_idle where idle [simp]: "
       States Right big_stepped small_stepped = 
       States Right 
-          (big_state.Common (state.Idle big_current big_idle))
-          (small_state.Common (state.Idle small_current small_idle))
+          (big_state.Common (common_state.Idle big_current big_idle))
+          (small_state.Common (common_state.Idle small_current small_idle))
       "
       using remaining_steps_idle' invar_stepped remaining_steps_stepped
       by fastforce

@@ -16,7 +16,7 @@ text \<open>\<^noindent> The bigger end of the deque during transformation can b
 
 datatype (plugins del: size) 'a big_state = 
      Reverse "'a current" "'a stack" "'a list" nat
-   | Common "'a Common.state"
+   | Common "'a common_state"
 
 text \<open>\<^noindent> Functions:
 

@@ -64,7 +64,7 @@ next
 
   with 6 show ?case
     by(cases big_stepped; cases small_stepped)
-      (auto simp: Let_def stepped split!: Common.state.split)
+      (auto simp: Let_def stepped split!: common_state.split)
 next
   case (7 x big small)
 
@@ -97,7 +97,7 @@ next
   with list_invar show ?case
     using app_rev[of "Small_Aux.list_current small" "Big_Aux.list_current big"]
     by(cases big_stepped; cases small_stepped)   
-      (auto simp: Let_def stepped split!: prod.split Common.state.split)
+      (auto simp: Let_def stepped split!: prod.split common_state.split)
 qed auto
 
 lemma invar_enqL: "invar deque \<Longrightarrow> invar (enqL x deque)"
@@ -189,7 +189,7 @@ next
 
      from remaining_steps size_ok invar_stepped show ?thesis
        by(cases big_stepped; cases small_stepped) 
-         (auto simp: Let_def split!: Common.state.split)
+         (auto simp: Let_def split!: common_state.split)
    next
      case False
      then have remaining_steps_stepped: "remaining_steps ?states_stepped = 0"
@@ -198,8 +198,8 @@ next
      then obtain small_current small_idle big_current big_idle where idle [simp]: "
       ?states_stepped = 
       States Left 
-          (big_state.Common (state.Idle big_current big_idle))
-          (small_state.Common (state.Idle small_current small_idle))
+          (big_state.Common (common_state.Idle big_current big_idle))
+          (small_state.Common (common_state.Idle small_current small_idle))
       "
        using remaining_steps_idle' invar_stepped remaining_steps_stepped step_n_same
        by (smt (verit) invar_states.elims(2))
@@ -270,7 +270,7 @@ next
 
      from remaining_steps size_ok invar_stepped show ?thesis
        by(cases big_stepped; cases small_stepped) 
-         (auto simp: Let_def split!: Common.state.split)
+         (auto simp: Let_def split!: common_state.split)
    next
      case False
      then have remaining_steps_stepped: "remaining_steps ?states_stepped = 0"
@@ -279,8 +279,8 @@ next
      then obtain small_current small_idle big_current big_idle where idle [simp]: "
       ?states_stepped = 
       States Right 
-          (big_state.Common (state.Idle big_current big_idle))
-          (small_state.Common (state.Idle small_current small_idle))
+          (big_state.Common (common_state.Idle big_current big_idle))
+          (small_state.Common (common_state.Idle small_current small_idle))
       "
        using remaining_steps_idle' invar_stepped remaining_steps_stepped step_n_same
        by (smt (verit) invar_states.elims(2))

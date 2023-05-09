@@ -17,7 +17,7 @@ text \<open>
 datatype (plugins del: size) 'a small_state =
    Reverse1 "'a current" "'a stack" "'a list"
  | Reverse2 "'a current" "'a list" "'a stack" "'a list" nat
- | Common "'a Common.state"
+ | Common "'a common_state"
 
 text \<open>\<^noindent> Functions:
 
