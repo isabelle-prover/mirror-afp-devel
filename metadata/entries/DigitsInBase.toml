@@ -1,0 +1,26 @@
+title = "Positional Notation for Natural Numbers in an Arbitrary Base"
+date = 2023-04-03
+topics = [
+  "Mathematics/Number theory",
+]
+abstract = "We demonstrate the existence and uniqueness of the base-$n$ representation of a natural number, where $n$ is any natural number greater than 1. This comes up when trying to translate mathematical contest problems and solutions into Isabelle/HOL."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.staats]
+email = "staats_email"
+
+[contributors]
+
+[notify]
+staats = "staats_email1"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

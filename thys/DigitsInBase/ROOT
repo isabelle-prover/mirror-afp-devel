@@ -1,0 +1,9 @@
+chapter AFP
+
+session "DigitsInBase" (AFP) = "HOL-Number_Theory" +
+  options [timeout = 300]
+  theories
+    DigitsInBase
+  document_files
+    "root.bib"
+    "root.tex"

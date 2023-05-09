@@ -80,6 +80,12 @@
     <loc>/authors/karayel/</loc>
     <lastmod>2023-04-03T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/entries/DigitsInBase.html</loc>
+    <lastmod>2023-04-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/staats/</loc>
+    <lastmod>2023-04-03T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/dependencies/stirling_formula/</loc>
     <lastmod>2023-04-03T00:00:00+00:00</lastmod>
   </url><url>
@@ -4927,6 +4933,8 @@
     <loc>/theories/differential_game_logic/</loc>
   </url><url>
     <loc>/theories/digit_expansions/</loc>
+  </url><url>
+    <loc>/theories/digitsinbase/</loc>
   </url><url>
     <loc>/theories/dijkstra_shortest_path/</loc>
   </url><url>

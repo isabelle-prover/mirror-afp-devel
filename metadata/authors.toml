@@ -5953,6 +5953,33 @@ host = [
 
 [sprenger.homepages]
 
+[staats]
+name = "Charles Staats"
+
+[staats.emails]
+
+[staats.emails.staats_email]
+user = [
+  "cstaats",
+]
+host = [
+  "google",
+  "com",
+]
+
+[staats.emails.staats_email1]
+user = [
+  "charles",
+  "staats",
+  "iii",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[staats.homepages]
+
 [stannett]
 name = "Mike Stannett"
 
