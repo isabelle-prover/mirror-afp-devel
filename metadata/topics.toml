@@ -253,8 +253,14 @@ acm.desc = "Software and its engineering~Data types and structures"
 ["Computer science"."Programming languages".Logics]
 
 ["Computer science"."Programming languages".Logics.classification]
-acm.id = "10011007.10011006.10011008.10011009.10011015"
-acm.desc = "Software and its engineering~Constraint and logic languages"
+acm.id = "10003752.10003790.10003806"
+acm.desc = "Theory of computation~Programming logic"
+ams.id = "68Q60"
+ams.hierarchy = [
+  "Computer science",
+  "Theory of computing",
+  "Specification and verification (program logics, model checking, etc.)"
+]
 
 ["Computer science"."Programming languages".Compiling]
 
@@ -295,6 +301,12 @@ ams.hierarchy = [
 ["Computer science".Security.Cryptography.classification]
 acm.id = "10002978.10002979"
 acm.desc = "Security and privacy~Cryptography"
+ams.id = "94A60"
+ams.hierarchy = [
+  "Information and communication theory, circuits",
+  "Communication, information",
+  "Cryptography",
+]
 
 ["Computer science"."Semantics and reasoning"]
 
