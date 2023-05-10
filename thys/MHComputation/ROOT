@@ -1,0 +1,11 @@
+chapter AFP
+
+session "MHComputation" (AFP) = HOL +
+  options [timeout = 600]
+
+  theories
+    MHComputation
+	
+  document_files
+    "root.tex"
+    "root.bib"

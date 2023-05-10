@@ -1,0 +1,34 @@
+title = "The Halting Problem is Soluble in Malament-Hogarth Spacetimes"
+date = 2023-04-29
+topics = [
+  "Computer science",
+  "Logic/Computability",
+  "Mathematics/Physics",
+]
+abstract = """
+We provide an Isabelle verification that the Halting Problem can be solved in Malament-Hogarth (MH) spacetimes. Our proof is quite general -- rather than assume the full machinery of general relativity, we only assume the existence of a
+reachability relation defined on an abstract space of locations. An MH spacetime can then be described as a space in which there exists an unboundedly long path together with a location which is reachable from all points on that path. Likewise, we use a very general notion of computation - the current state of a computation is assumed to be representable as a machine configuration containing all the information required to determine how the system changes with the execution of each ensuing instruction. The program is deemed to halt if the system enters a stable configuration. Since this situation is generally detectable by an operating system, we can use its occurrence to trigger events that exploit the nature of MH spacetimes, thereby enabling us to detect whether or not halting will eventually have occurred. Our verification follows existing arguments in the literature, albeit translated into this more general setting."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.stannett]
+email = "stannett_email"
+
+[contributors]
+
+[notify]
+stannett = "stannett_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = [
+  "G. Etesi and I. Németi. Non-turing computations via Malament- Hogarth space-times. Int. J. Theor. Phys., 41:341–370, 2002.",
+  "M. Hogarth. Deciding arithmetic using SAD computers. British Journal for the Philosophy of Science, 55:681–691, 2004.",
+  "M. Stannett. Towards formal verification of computations and hypercomputations in relativistic physics. In J. Durand-Lose and B. Nagy, editors, Machines, Computations, and Universality 2015, 09-11 Sep 2015, Famagusta, North Cyprus, number 9288 in Lecture Notes in Computer Science. Springer Verlag, 2015.",
+]
