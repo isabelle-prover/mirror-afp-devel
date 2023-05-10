@@ -117,7 +117,7 @@ export_code float_of in SML
 
 subsection \<open>Conversion from int\<close>
 
-lift_definition double_of_int::"int \<Rightarrow> double" is "\<lambda>i. round To_nearest (real_of_int i)" .
+lift_definition double_of_int::"int \<Rightarrow> double" is "\<lambda>i. round RNE (real_of_int i)" .
 
 context includes integer.lifting begin
 lift_definition double_of_integer::"integer \<Rightarrow> double" is double_of_int .

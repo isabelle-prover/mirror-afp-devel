@@ -726,13 +726,13 @@ proof -
     using assms by (auto simp: finite_nan finite_infinity)
   have "a - b = (zerosign
         (if is_zero a \<and> is_zero b \<and> sign a \<noteq> sign b then (sign a) else 0)
-        (round To_nearest (valof a - valof b)))"
+        (round RNE (valof a - valof b)))"
     using nab
     by (auto simp: minus_float_def fsub_def)
   also have "\<dots> =
     (zerosign
         (if is_zero a \<and> is_zero (- b) \<and> sign a = sign (- b) then sign a else 0)
-        (round To_nearest (valof a + valof (- b))))"
+        (round RNE (valof a + valof (- b))))"
     using assms
     by (simp add: float_neg_sign1 float_neg_add)
   also have "\<dots> = a + - b"
@@ -803,19 +803,19 @@ lemma neg_zerosign: "- (zerosign s a) = zerosign (1 - s) (- a)"
 subsection \<open>Properties about Rounding Errors\<close>
 
 definition error :: "('e, 'f)float itself \<Rightarrow> real \<Rightarrow> real"
-  where "error _ x = valof (round To_nearest x::('e, 'f)float) - x"
+  where "error _ x = valof (round RNE x::('e, 'f)float) - x"
 
 lemma bound_at_worst_lemma:
   fixes a::"('e, 'f)float"
   assumes threshold: "\<bar>x\<bar> < threshold TYPE(('e, 'f)float)"
   assumes finite: "is_finite a"
-  shows "\<bar>valof (round To_nearest x::('e, 'f)float) - x\<bar> \<le> \<bar>valof a - x\<bar>"
+  shows "\<bar>valof (round RNE x::('e, 'f)float) - x\<bar> \<le> \<bar>valof a - x\<bar>"
 proof -
-  have *: "(round To_nearest x::('e,'f)float) =
+  have *: "(round RNE x::('e,'f)float) =
       closest valof (\<lambda>a. even (fraction a)) {a. is_finite a} x"
     using threshold finite
     by auto
-  have "is_closest (valof) {a. is_finite a} x (round To_nearest x::('e,'f)float)"
+  have "is_closest (valof) {a. is_finite a} x (round RNE x::('e,'f)float)"
     using is_finite_nonempty
     unfolding *
     by (intro closest_is_closest) auto
@@ -851,12 +851,12 @@ lemma is_finite_closest: "is_finite (closest (v::_\<Rightarrow>real) p {a. is_fi
 
 lemma defloat_float_zerosign_round_finite:
   assumes threshold: "\<bar>x\<bar> < threshold TYPE(('e, 'f)float)"
-  shows "is_finite (zerosign s (round To_nearest x::('e, 'f)float))"
+  shows "is_finite (zerosign s (round RNE x::('e, 'f)float))"
 proof -
-  have "(round To_nearest x::('e, 'f)float) =
+  have "(round RNE x::('e, 'f)float) =
       (closest valof (\<lambda>a. even (fraction a)) {a. is_finite a} x)"
     using threshold by (metis (full_types) abs_less_iff leD le_minus_iff round.simps(1))
-  then have "is_finite (round To_nearest x::('e, 'f)float)"
+  then have "is_finite (round RNE x::('e, 'f)float)"
     by (metis is_finite_closest)
   then show ?thesis
     using is_finite_zerosign by auto
@@ -885,20 +885,20 @@ proof -
   then have ab: "(a + b) =
     (zerosign
       (if is_zero a \<and> is_zero b \<and> sign a = sign b then (sign a) else 0)
-      (round To_nearest (valof a + valof b)))"
+      (round RNE (valof a + valof b)))"
     using assms by (auto simp add: float_defs fadd_def plus_float_def)
   then show "is_finite ((a + b))"
     by (metis threshold defloat_float_zerosign_round_finite)
   have val_ab: "valof (a + b) =
     valof (zerosign
       (if is_zero a \<and> is_zero b \<and> sign a = sign b then (sign a) else 0)
-      (round To_nearest (valof a + valof b)::('e, 'f)float))"
+      (round RNE (valof a + valof b)::('e, 'f)float))"
     by (auto simp: ab is_infinity_def is_nan_def valof_def)
   show "valof (a + b) = valof a + valof b + error TYPE(('e, 'f)float) (valof a + valof b)"
-  proof (cases "is_zero (round To_nearest (valof a + valof b)::('e, 'f)float)")
+  proof (cases "is_zero (round RNE (valof a + valof b)::('e, 'f)float)")
     case True
     have "valof a + valof b + error TYPE(('e, 'f)float) (valof a + valof b) =
-        valof (round To_nearest (valof a + valof b)::('e, 'f)float)"
+        valof (round RNE (valof a + valof b)::('e, 'f)float)"
       unfolding error_def
       by simp
     then show ?thesis
@@ -923,20 +923,20 @@ proof -
   then have ab: "a - b =
     (zerosign
       (if is_zero a \<and> is_zero b \<and> sign a \<noteq> sign b then sign a else 0)
-      (round To_nearest (valof a - valof b)))"
+      (round RNE (valof a - valof b)))"
     using assms by (auto simp add: float_defs fsub_def minus_float_def)
   then show "is_finite (a - b)"
    by (metis threshold defloat_float_zerosign_round_finite)
   have val_ab: "valof (a - b) =
     valof (zerosign
       (if is_zero a \<and> is_zero b \<and> sign a \<noteq> sign b then sign a else 0)
-      (round To_nearest (valof a - valof b)::('e, 'f)float))"
+      (round RNE (valof a - valof b)::('e, 'f)float))"
     by (auto simp: ab is_infinity_def is_nan_def valof_def)
   show "valof (a - b) = valof a - valof b + error TYPE(('e, 'f)float) (valof a - valof b)"
-  proof (cases "is_zero (round To_nearest (valof a - valof b)::('e, 'f)float)")
+  proof (cases "is_zero (round RNE (valof a - valof b)::('e, 'f)float)")
     case True
     have "valof a - valof b + error TYPE(('e, 'f)float) (valof a - valof b) =
-        valof (round To_nearest (valof a - valof b)::('e, 'f)float)"
+        valof (round RNE (valof a - valof b)::('e, 'f)float)"
       unfolding error_def by simp
     then show ?thesis
       by (metis True signzero_zero val_zero val_ab)
@@ -959,19 +959,19 @@ proof -
     using assms float_distinct_finite by auto
   then have ab: "a * b =
     (zerosign (of_bool (sign a \<noteq> sign b))
-      (round To_nearest (valof a * valof b)::('e, 'f)float))"
+      (round RNE (valof a * valof b)::('e, 'f)float))"
     using assms by (auto simp: float_defs fmul_def times_float_def)
   then show "is_finite (a * b)"
     by (metis threshold defloat_float_zerosign_round_finite)
   have val_ab: "valof (a * b) =
       valof (zerosign (of_bool (sign a \<noteq> sign b))
-        (round To_nearest (valof a * valof b)::('e, 'f)float))"
+        (round RNE (valof a * valof b)::('e, 'f)float))"
     by (auto simp: ab float_defs of_bool_def)
   show "valof (a * b) = valof a * valof b + error TYPE(('e, 'f)float) (valof a * valof b)"
-  proof (cases "is_zero (round To_nearest (valof a * valof b)::('e, 'f)float)")
+  proof (cases "is_zero (round RNE (valof a * valof b)::('e, 'f)float)")
     case True
     have "valof a * valof b + error TYPE(('e, 'f)float)  (valof a * valof b) =
-        valof (round To_nearest (valof a * valof b)::('e, 'f)float)"
+        valof (round RNE (valof a * valof b)::('e, 'f)float)"
       unfolding error_def
       by simp
     then show ?thesis
@@ -993,20 +993,20 @@ lemma float_div:
 proof -
   have ab: "a / b =
     (zerosign (of_bool (sign a \<noteq> sign b))
-      (round To_nearest (valof a / valof b)))"
+      (round RNE (valof a / valof b)))"
      using assms
      by (simp add: divide_float_def fdiv_def finite_infinity finite_nan not_zero float_defs [symmetric])
   then show "is_finite (a / b)"
     by (metis threshold defloat_float_zerosign_round_finite)
   have val_ab: "valof (a / b) =
       valof (zerosign (of_bool (sign a \<noteq> sign b))
-        (round To_nearest (valof a / valof b))::('e, 'f)float)"
+        (round RNE (valof a / valof b))::('e, 'f)float)"
     by (auto simp: ab float_defs of_bool_def)
   show "valof (a / b) = valof a / valof b + error TYPE(('e, 'f)float)  (valof a / valof b)"
-  proof (cases "is_zero (round To_nearest (valof a / valof b)::('e, 'f)float)")
+  proof (cases "is_zero (round RNE (valof a / valof b)::('e, 'f)float)")
     case True
     have "valof a / valof b + error TYPE(('e, 'f)float) (valof a / valof b) =
-        valof (round To_nearest (valof a / valof b)::('e, 'f)float)"
+        valof (round RNE (valof a / valof b)::('e, 'f)float)"
       unfolding error_def
       by simp
     then show ?thesis
