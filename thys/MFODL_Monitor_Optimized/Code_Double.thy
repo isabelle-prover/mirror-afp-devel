@@ -281,7 +281,7 @@ lemma compare_double_le_0: "compare_double x y \<le> 0 \<longleftrightarrow>
     (auto simp: compare_double_simps nan_fcompare_double)
 
 lift_definition double_of_integer :: "integer \<Rightarrow> double" is
-  "\<lambda>x. zerosign 0 (intround To_nearest (int_of_integer x))" .
+  "\<lambda>x. zerosign 0 (intround RNE (int_of_integer x))" .
 
 definition double_of_int where [code del]: "double_of_int x = double_of_integer (integer_of_int x)"
 
@@ -290,7 +290,7 @@ lemma [code]: "double_of_int (int_of_integer x) = double_of_integer x"
 
 lift_definition integer_of_double :: "double \<Rightarrow> integer" is
   "\<lambda>x. if IEEE.is_nan x \<or> IEEE.is_infinity x then undefined
-     else integer_of_int \<lfloor>valof (intround float_To_zero (valof x) :: (11, 52) float)\<rfloor>"
+     else integer_of_int \<lfloor>valof (intround roundTowardZero (valof x) :: (11, 52) float)\<rfloor>"
   by auto
 
 definition int_of_double: "int_of_double x = int_of_integer (integer_of_double x)"
