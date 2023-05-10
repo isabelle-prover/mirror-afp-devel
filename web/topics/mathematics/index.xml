@@ -6,7 +6,16 @@
     <description>Recent content in Mathematics on Archive of Formal Proofs</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Thu, 27 Apr 2023 00:00:00 +0000</lastBuildDate><atom:link href="/topics/mathematics/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 29 Apr 2023 00:00:00 +0000</lastBuildDate><atom:link href="/topics/mathematics/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>The Halting Problem is Soluble in Malament-Hogarth Spacetimes</title>
+      <link>/entries/MHComputation.html</link>
+      <pubDate>Sat, 29 Apr 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/MHComputation.html</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>The Schwartz-Zippel Lemma</title>
       <link>/entries/Schwartz_Zippel.html</link>

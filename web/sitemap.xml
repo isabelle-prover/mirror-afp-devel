@@ -3,15 +3,33 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2023-04-27T00:00:00+00:00</lastmod>
+    <lastmod>2023-04-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2023-04-27T00:00:00+00:00</lastmod>
+    <lastmod>2023-04-29T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/</loc>
-    <lastmod>2023-04-27T00:00:00+00:00</lastmod>
+    <loc>/topics/computer-science/</loc>
+    <lastmod>2023-04-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/</loc>
+    <lastmod>2023-04-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/logic/</loc>
+    <lastmod>2023-04-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2023-04-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/stannett/</loc>
+    <lastmod>2023-04-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/MHComputation.html</loc>
+    <lastmod>2023-04-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2023-04-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
     <lastmod>2023-04-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/factor_algebraic_polynomial/</loc>
@@ -23,9 +41,6 @@
     <loc>/authors/kim/</loc>
     <lastmod>2023-04-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/topics/mathematics/</loc>
-    <lastmod>2023-04-27T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/skip_lists/</loc>
     <lastmod>2023-04-27T00:00:00+00:00</lastmod>
   </url><url>
@@ -33,9 +48,6 @@
     <lastmod>2023-04-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Schwartz_Zippel.html</loc>
-    <lastmod>2023-04-27T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2023-04-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Simple_Clause_Learning.html</loc>
@@ -48,9 +60,6 @@
     <lastmod>2023-04-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/functional_ordered_resolution_prover/</loc>
-    <lastmod>2023-04-20T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/logic/</loc>
     <lastmod>2023-04-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/ordered_resolution_prover/</loc>
@@ -105,9 +114,6 @@
     <lastmod>2023-03-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/No_FTL_observers_Gen_Rel.html</loc>
-    <lastmod>2023-03-05T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/stannett/</loc>
     <lastmod>2023-03-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/szekely/</loc>
@@ -5535,6 +5541,8 @@
     <loc>/theories/mfodl_monitor_optimized/</loc>
   </url><url>
     <loc>/theories/mfotl_monitor/</loc>
+  </url><url>
+    <loc>/theories/mhcomputation/</loc>
   </url><url>
     <loc>/theories/minimal_ssa/</loc>
   </url><url>
