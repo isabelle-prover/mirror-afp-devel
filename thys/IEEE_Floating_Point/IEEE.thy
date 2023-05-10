@@ -154,7 +154,20 @@ lift_definition zero_lp::"('e ,'f) float \<Rightarrow> ('e ,'f) float" is "\<lam
 definition ulp :: "('e, 'f) float \<Rightarrow> real" where "ulp a = valof (one_lp a) - valof (zero_lp a)"
 
 text \<open>Enumerated type for rounding modes.\<close>
-datatype roundmode = To_nearest | float_To_zero | To_pinfinity | To_ninfinity
+datatype roundmode = roundNearestTiesToEven
+  | roundNearestTiesToAway
+  | roundTowardPositive
+  | roundTowardNegative
+  | roundTowardZero
+
+abbreviation (input) "RNE \<equiv> roundNearestTiesToEven"
+abbreviation (input) "RNA \<equiv> roundNearestTiesToAway"
+abbreviation (input) "RTP \<equiv> roundTowardPositive"
+abbreviation (input) "RTN \<equiv> roundTowardNegative"
+abbreviation (input) "RNZ \<equiv> roundTowardZero"
+
+
+subsection \<open>Rounding\<close>
 
 text \<open>Characterization of best approximation from a set of abstract values.\<close>
 definition "is_closest v s x a \<longleftrightarrow> a \<in> s \<and> (\<forall>b. b \<in> s \<longrightarrow> \<bar>v a - x\<bar> \<le> \<bar>v b - x\<bar>)"
@@ -163,27 +176,28 @@ text \<open>Best approximation with a deciding preference for multiple possibili
 definition "closest v p s x =
   (SOME a. is_closest v s x a \<and> ((\<exists>b. is_closest v s x b \<and> p b) \<longrightarrow> p a))"
 
-
-subsection \<open>Rounding\<close>
-
 fun round :: "roundmode \<Rightarrow> real \<Rightarrow> ('e ,'f) float"
 where
-  "round To_nearest y =
+  "round roundNearestTiesToEven y =
    (if y \<le> - threshold TYPE(('e ,'f) float) then minus_infinity
     else if y \<ge> threshold TYPE(('e ,'f) float) then plus_infinity
-    else closest (valof) (\<lambda>a. even (fraction a)) {a. is_finite a} y)"
-| "round float_To_zero y =
-   (if y < - largest TYPE(('e ,'f) float) then bottomfloat
-    else if y > largest TYPE(('e ,'f) float) then topfloat
-    else closest (valof) (\<lambda>a. True) {a. is_finite a \<and> \<bar>valof a\<bar> \<le> \<bar>y\<bar>} y)"
-| "round To_pinfinity y =
+    else closest (valof) (\<lambda>a. even (fraction a)) {a. is_finite a} y)" (*FIXME: broken, especially if both nearest are odd*)
+| "round roundNearestTiesToAway y =
+   (if y \<le> - threshold TYPE(('e ,'f) float) then minus_infinity
+    else if y \<ge> threshold TYPE(('e ,'f) float) then plus_infinity
+    else closest (valof) (\<lambda>a. True) {a. is_finite a \<and> \<bar>valof a\<bar> \<ge> \<bar>y\<bar>} y)"
+| "round roundTowardPositive y =
    (if y < - largest TYPE(('e ,'f) float) then bottomfloat
     else if y > largest TYPE(('e ,'f) float) then plus_infinity
     else closest (valof) (\<lambda>a. True) {a. is_finite a \<and> valof a \<ge> y} y)"
-| "round To_ninfinity y =
+| "round roundTowardNegative y =
    (if y < - largest TYPE(('e ,'f) float) then minus_infinity
     else if y > largest TYPE(('e ,'f) float) then topfloat
     else closest (valof) (\<lambda>a. True) {a. is_finite a \<and> valof a \<le> y} y)"
+| "round roundTowardZero y =
+   (if y < - largest TYPE(('e ,'f) float) then bottomfloat
+    else if y > largest TYPE(('e ,'f) float) then topfloat
+    else closest (valof) (\<lambda>a. True) {a. is_finite a \<and> \<bar>valof a\<bar> \<le> \<bar>y\<bar>} y)"
 
 text \<open>Rounding to integer values in floating point format.\<close>
 
@@ -192,22 +206,26 @@ definition is_integral :: "('e ,'f) float \<Rightarrow> bool"
 
 fun intround :: "roundmode \<Rightarrow> real \<Rightarrow> ('e ,'f) float"
 where
-  "intround To_nearest y =
+  "intround roundNearestTiesToEven y =
     (if y \<le> - threshold TYPE(('e ,'f) float) then minus_infinity
      else if y \<ge> threshold TYPE(('e ,'f) float) then plus_infinity
      else closest (valof) (\<lambda>a. (\<exists>n::nat. even n \<and> \<bar>valof a\<bar> = real n)) {a. is_integral a} y)"
-|"intround float_To_zero y =
-    (if y < - largest TYPE(('e ,'f) float) then bottomfloat
-     else if y > largest TYPE(('e ,'f) float) then topfloat
-     else closest (valof) (\<lambda>x. True) {a. is_integral a \<and> \<bar>valof a\<bar> \<le> \<bar>y\<bar>} y)"
-|"intround To_pinfinity y =
+| "intround roundNearestTiesToAway y =
+    (if y \<le> - threshold TYPE(('e ,'f) float) then minus_infinity
+     else if y \<ge> threshold TYPE(('e ,'f) float) then plus_infinity
+     else closest (valof) (\<lambda>x. True) {a. is_integral a \<and> \<bar>valof a\<bar> \<ge> \<bar>y\<bar>} y)"
+| "intround roundTowardPositive y =
     (if y < - largest TYPE(('e ,'f) float) then bottomfloat
      else if y > largest TYPE(('e ,'f) float) then plus_infinity
      else closest (valof) (\<lambda>x. True) {a. is_integral a \<and> valof a \<ge> y} y)"
-|"intround To_ninfinity y =
+| "intround roundTowardNegative y =
     (if y < - largest TYPE(('e ,'f) float) then minus_infinity
      else if y > largest TYPE(('e ,'f) float) then topfloat
      else closest (valof) (\<lambda>x. True) {a. is_integral a \<and> valof a \<ge> y} y)"
+| "intround roundTowardZero y =
+    (if y < - largest TYPE(('e ,'f) float) then bottomfloat
+     else if y > largest TYPE(('e ,'f) float) then topfloat
+     else closest (valof) (\<lambda>x. True) {a. is_integral a \<and> \<bar>valof a\<bar> \<le> \<bar>y\<bar>} y)"
 
 text \<open>Round, choosing between -0.0 or +0.0\<close>
 
@@ -258,7 +276,7 @@ definition fadd :: "roundmode \<Rightarrow> ('e ,'f) float \<Rightarrow> ('e ,'f
      else
       zerosign
         (if is_zero a \<and> is_zero b \<and> sign a = sign b then sign a
-         else if m = To_ninfinity then 1 else 0)
+         else if m = roundTowardNegative then 1 else 0)
         (round m (valof a + valof b)))"
 
 definition fsub :: "roundmode \<Rightarrow> ('e ,'f) float \<Rightarrow> ('e ,'f) float \<Rightarrow> ('e ,'f) float"
@@ -270,7 +288,7 @@ definition fsub :: "roundmode \<Rightarrow> ('e ,'f) float \<Rightarrow> ('e ,'f
      else
       zerosign
         (if is_zero a \<and> is_zero b \<and> sign a \<noteq> sign b then sign a
-         else if m = To_ninfinity then 1 else 0)
+         else if m = roundTowardNegative then 1 else 0)
         (round m (valof a - valof b)))"
 
 definition fmul :: "roundmode \<Rightarrow> ('e ,'f) float \<Rightarrow> ('e ,'f) float \<Rightarrow> ('e ,'f) float"
@@ -319,7 +337,7 @@ definition fmul_add :: "roundmode \<Rightarrow> ('t ,'w) float \<Rightarrow> ('t
     in 
       if r=0 then ( \<comment> \<open>Exact Zero Case. Same sign rules as for add apply. \<close>
         if r1=0 \<and> r2=0 \<and> signP=sign z then zerosign signP 0
-        else if mode = To_ninfinity then -0
+        else if mode = roundTowardNegative then -0
         else 0
       ) else ( \<comment> \<open>Not exactly zero: Rounding has sign of exact value, even if rounded val is zero\<close>
         zerosign (if r<0 then 1 else 0) (round mode r)
@@ -366,7 +384,7 @@ instantiation float :: (len, len) plus
 begin
 
 definition plus_float :: "('a, 'b) float \<Rightarrow> ('a, 'b) float \<Rightarrow> ('a, 'b) float"
-  where "a + b = fadd To_nearest a b"
+  where "a + b = fadd RNE a b"
 
 instance ..
 
@@ -376,7 +394,7 @@ instantiation float :: (len, len) minus
 begin
 
 definition minus_float :: "('a, 'b) float \<Rightarrow> ('a, 'b) float \<Rightarrow> ('a, 'b) float"
-  where "a - b = fsub To_nearest a b"
+  where "a - b = fsub RNE a b"
 
 instance ..
 
@@ -386,7 +404,7 @@ instantiation float :: (len, len) times
 begin
 
 definition times_float :: "('a, 'b) float \<Rightarrow> ('a, 'b) float \<Rightarrow> ('a, 'b) float"
-  where "a * b = fmul To_nearest a b"
+  where "a * b = fmul RNE a b"
 
 instance ..
 
@@ -405,23 +423,23 @@ instantiation float :: (len, len) inverse
 begin
 
 definition divide_float :: "('a, 'b) float \<Rightarrow> ('a, 'b) float \<Rightarrow> ('a, 'b) float"
-  where "a div b = fdiv To_nearest a b"
+  where "a div b = fdiv RNE a b"
 
 definition inverse_float :: "('a, 'b) float \<Rightarrow> ('a, 'b) float"
-  where "inverse_float a = fdiv To_nearest 1 a"
+  where "inverse_float a = fdiv RNE 1 a"
 
 instance ..
 
 end
 
 definition float_rem :: "('a, 'b) float \<Rightarrow> ('a, 'b) float \<Rightarrow> ('a, 'b) float"
-  where "float_rem a b = frem To_nearest a b"
+  where "float_rem a b = frem RNE a b"
 
 definition float_sqrt :: "('a, 'b) float \<Rightarrow> ('a, 'b) float"
-  where "float_sqrt a = fsqrt To_nearest a"
+  where "float_sqrt a = fsqrt RNE a"
 
 definition ROUNDFLOAT ::"('a, 'b) float \<Rightarrow> ('a, 'b) float"
-  where "ROUNDFLOAT a = fintrnd To_nearest a"
+  where "ROUNDFLOAT a = fintrnd RNE a"
 
 
 instantiation float :: (len, len) ord
