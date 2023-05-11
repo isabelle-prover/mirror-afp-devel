@@ -53,14 +53,14 @@ fun fp_cmp  :: " fp_cmp_op \<Rightarrow> 64 word \<Rightarrow> 64 word \<Rightar
 fun fp_uop  :: " fp_uop_op \<Rightarrow> 64 word \<Rightarrow> 64 word "  where 
      " fp_uop FP_Abs = ( fp64_abs )"
 |" fp_uop FP_Neg = ( fp64_negate )"
-|" fp_uop FP_Sqrt = ( fp64_sqrt To_nearest )"
+|" fp_uop FP_Sqrt = ( fp64_sqrt RNE )"
 
 
 \<comment> \<open>\<open>val fp_bop : fp_bop -> word64 -> word64 -> word64\<close>\<close>
 fun fp_bop  :: " fp_bop_op \<Rightarrow> 64 word \<Rightarrow> 64 word \<Rightarrow> 64 word "  where 
-     " fp_bop FP_Add = ( fp64_add To_nearest )"
-|" fp_bop FP_Sub = ( fp64_sub To_nearest )"
-|" fp_bop FP_Mul = ( fp64_mul To_nearest )"
-|" fp_bop FP_Div = ( fp64_div To_nearest )"
+     " fp_bop FP_Add = ( fp64_add RNE )"
+|" fp_bop FP_Sub = ( fp64_sub RNE )"
+|" fp_bop FP_Mul = ( fp64_mul RNE )"
+|" fp_bop FP_Div = ( fp64_div RNE )"
 
 end
