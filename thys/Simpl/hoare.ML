@@ -939,7 +939,7 @@ fun procedures_definition locname procs thy =
         val context =
           Context.Theory thy
           |> fold (add_parameter_info  Morphism.identity (unsuffix proc_deco)) name_pars
-          |> StateSpace.set_silent true
+          |> Config.put_generic StateSpace.silent true
 
         fun read_body (_, body) =
           Syntax.read_term (Context.proof_of context) body;
