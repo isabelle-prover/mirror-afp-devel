@@ -50,16 +50,16 @@ lemma hf_differt [iff]: "hf n differentiable at x"
 
 lemma deriv_sum_int:
   "deriv (\<lambda>x. \<Sum>i=0..n. real_of_int (c i) * x^i) x 
-     = (if n=0 then 0 else (\<Sum>i=0..n - Suc 0. real_of_int ((int i + 1) * c (Suc i)) * x^i))"
+       = (if n=0 then 0 else (\<Sum>i=0..n-1. of_int((i+1) * c(Suc i)) * x^i))"
   (is "deriv ?f x = (if n=0 then 0 else ?g)")
 proof -
   have "(?f has_real_derivative ?g) (at x)" if "n > 0"
   proof -
     have "(\<Sum>i = 0..n. i * x ^ (i - Suc 0) * (c i))
-        = (\<Sum>i = Suc 0..n. (real (i - Suc 0) + 1) * real_of_int (c i) * x ^ (i - Suc 0))"
-      using that by (auto simp add: sum.atLeast_Suc_atMost intro!: sum.cong)
-    also have "\<dots> = sum ((\<lambda>i. (real i + 1) * real_of_int (c (Suc i)) * x^i) \<circ> (\<lambda>n. n - Suc 0)) 
-                     {Suc 0..Suc (n - Suc 0)}"
+        = (\<Sum>i = 1..n. (real (i-1) + 1) * of_int (c i) * x ^ (i-1))"
+      using that by (auto simp: sum.atLeast_Suc_atMost intro!: sum.cong)
+    also have "\<dots> = sum ((\<lambda>i. (real i + 1) * c (Suc i) * x^i) \<circ> (\<lambda>n. n-1)) 
+                     {1..Suc (n-1)}"
       using that by simp
     also have "\<dots> = ?g"
       by (simp flip: sum.atLeast_atMost_pred_shift [where m=0])
@@ -177,7 +177,7 @@ proof
   also have "\<dots> \<le> (n / 3) ^ n"
     using assms ns3 by (simp add: power_mono)
   also have "\<dots> \<le> (n / exp 1) ^ n"
-    using exp_le \<open>n > 0\<close> by (auto simp add: divide_simps)
+    using exp_le \<open>n > 0\<close> by (auto simp: divide_simps)
   finally have s_le: "s ^ (2*n+1) \<le> (n / exp 1) ^ n"
     by presburger 
   have a_less: "a < sqrt (2*pi*n)"
@@ -233,7 +233,7 @@ proof
     using hf_deriv_1 by (simp add: F01_Ints)
   finally have N_Ints: "?N \<in> \<int>" .
   have "sF' (1/2) > 0" and ge0: "\<And>x. x \<in> {0..1} \<Longrightarrow> 0 \<le> sF' x"
-    using assms by (auto simp add: sF'_def hf_def)
+    using assms by (auto simp: sF'_def hf_def)
   moreover have "continuous_on {0..1} sF'"
     unfolding sF'_def hf_def by (intro continuous_intros) auto
   ultimately have False if "(sF' has_integral 0) {0..1}"
