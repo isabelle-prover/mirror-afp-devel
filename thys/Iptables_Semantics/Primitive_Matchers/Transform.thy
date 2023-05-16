@@ -841,10 +841,10 @@ theorem transform_normalize_primitives:
       \<forall>r\<in> set (normalize_rules (normalize_primitive_extract (disc, sel) C f) rs). normalized_dst_ports (get_match r)"
       by blast
     from preserve_normalized_dst_ports[OF normalized_rs2 normalized_dst_ports wf_disc_sel_common_primitive(3),
-         where f3=ipt_iprange_compress, folded normalize_src_ips_def]
+         where f=ipt_iprange_compress, folded normalize_src_ips_def]
     have normalized_dst_ports_rs3: "\<forall>r \<in> set ?rs3.  normalized_dst_ports (get_match r)" by force
     from preserve_normalized_dst_ports[OF normalized_rs3 normalized_dst_ports_rs3 wf_disc_sel_common_primitive(4),
-         where f3=ipt_iprange_compress, folded normalize_dst_ips_def]
+         where f=ipt_iprange_compress, folded normalize_dst_ips_def]
          normalized_rs4
     have normalized_dst_ports_rs4: "\<forall>r \<in> set ?rs4. normalized_nnf_match (get_match r) \<and> normalized_dst_ports (get_match r)" by force
     with optimize_matches_option_compress_normalize_besteffort_preserves_unrelated_normalized_n_primitive[
