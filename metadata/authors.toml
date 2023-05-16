@@ -1074,6 +1074,13 @@ name = "L. Chen"
 
 [chen.homepages]
 
+[chevalier]
+name = "Loïc Chevalier"
+
+[chevalier.emails]
+
+[chevalier.homepages]
+
 [clouston]
 name = "Ranald Clouston"
 
@@ -1233,6 +1240,24 @@ name = "Christian Dalvit"
 [dalvit.emails]
 
 [dalvit.homepages]
+
+[danilkin]
+name = "Anton Danilkin"
+
+[danilkin.emails]
+
+[danilkin.emails.danilkin_email]
+user = [
+  "anton",
+  "danilkin",
+]
+host = [
+  "ens",
+  "psl",
+  "eu",
+]
+
+[danilkin.homepages]
 
 [dardinier]
 name = "Thibault Dardinier"

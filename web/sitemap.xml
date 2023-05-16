@@ -3,21 +3,39 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2023-04-29T00:00:00+00:00</lastmod>
+    <lastmod>2023-05-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2023-04-29T00:00:00+00:00</lastmod>
+    <lastmod>2023-05-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/chevalier/</loc>
+    <lastmod>2023-05-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/danilkin/</loc>
+    <lastmod>2023-05-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2023-05-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/dirichlet_l/</loc>
+    <lastmod>2023-05-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2023-05-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2023-05-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Three_Squares.html</loc>
+    <lastmod>2023-05-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2023-05-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/computer-science/</loc>
     <lastmod>2023-04-29T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/entries/</loc>
-    <lastmod>2023-04-29T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/topics/logic/</loc>
-    <lastmod>2023-04-29T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/mathematics/</loc>
     <lastmod>2023-04-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/stannett/</loc>
@@ -25,12 +43,6 @@
   </url><url>
     <loc>/entries/MHComputation.html</loc>
     <lastmod>2023-04-29T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
-    <lastmod>2023-04-29T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/</loc>
-    <lastmod>2023-04-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/factor_algebraic_polynomial/</loc>
     <lastmod>2023-04-27T00:00:00+00:00</lastmod>
@@ -1837,9 +1849,6 @@
   </url><url>
     <loc>/authors/simic/</loc>
     <lastmod>2019-12-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/dirichlet_l/</loc>
-    <lastmod>2019-12-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Gauss_Sums.html</loc>
     <lastmod>2019-12-10T00:00:00+00:00</lastmod>
@@ -6078,6 +6087,8 @@
     <loc>/theories/</loc>
   </url><url>
     <loc>/theories/three_circles/</loc>
+  </url><url>
+    <loc>/theories/three_squares/</loc>
   </url><url>
     <loc>/theories/timed_automata/</loc>
   </url><url>
