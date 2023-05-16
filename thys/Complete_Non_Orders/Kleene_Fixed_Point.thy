@@ -1,5 +1,5 @@
 theory Kleene_Fixed_Point
-  imports Complete_Relations
+  imports Complete_Relations Continuity
 begin
 
 
@@ -10,7 +10,7 @@ for a pointed directed complete partial order $\tp{A,\SLE}$
 and a Scott-continuous map $f: A \to A$,
 the supremum of $\set{f^n(\bot) \mid n\in\Nat}$ exists in $A$ and is a least 
 fixed point.
-Mashburn \<^cite>\<open>"mashburn83"\<close> generalized the result so that
+Mashburn \cite{mashburn83} generalized the result so that
 $\tp{A,\SLE}$ is a $\omega$-complete partial order
 and $f$ is $\omega$-continuous.
 
@@ -23,85 +23,6 @@ they are quasi-fixed points.
 Moreover, if $(\SLE)$ is attractive, then the suprema are precisely the least 
 quasi-fixed points.\<close>
 
-subsection \<open>Scott Continuity, $\omega$-Completeness, $\omega$-Continuity\<close>
-
-text \<open>In this Section, we formalize $\omega$-completeness, Scott continuity and $\omega$-continuity.
-We then prove that a Scott continuous map is $\omega$-continuous and that an $\omega$-continuous 
-map is ``nearly'' monotone.\<close>
-
-context
-  fixes A :: "'a set" and less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>" 50)
-begin
-
-definition "omega_continuous f \<equiv>
-  f ` A \<subseteq> A \<and>
-  (\<forall>c :: nat \<Rightarrow> 'a. \<forall> b \<in> A.
-  range c \<subseteq> A \<longrightarrow>
-  monotone (\<le>) (\<sqsubseteq>) c \<longrightarrow>
-  extreme_bound A (\<sqsubseteq>) (range c) b \<longrightarrow> extreme_bound A (\<sqsubseteq>) (f ` range c) (f b))"
-
-lemmas omega_continuousI[intro?] =
-  omega_continuous_def[unfolded atomize_eq, THEN iffD2, unfolded conj_imp_eq_imp_imp, rule_format]
-
-lemmas omega_continuousDdom =
-  omega_continuous_def[unfolded atomize_eq, THEN iffD1, unfolded conj_imp_eq_imp_imp, THEN conjunct1]
-
-lemmas omega_continuousD =
-  omega_continuous_def[unfolded atomize_eq, THEN iffD1, unfolded conj_imp_eq_imp_imp, THEN conjunct2, rule_format]
-
-lemmas omega_continuousE[elim] =
-  omega_continuous_def[unfolded atomize_eq, THEN iffD1, elim_format, unfolded conj_imp_eq_imp_imp, rule_format]
-
-lemma omega_continuous_imp_mono_refl:
-  assumes cont: "omega_continuous f"
-    and x: "x \<in> A" and y: "y \<in> A"
-    and xy: "x \<sqsubseteq> y" and xx: "x \<sqsubseteq> x" and yy: "y \<sqsubseteq> y"
-  shows "f x \<sqsubseteq> f y"
-proof-
-  define c :: "nat \<Rightarrow> 'a" where "c \<equiv> \<lambda>i. if i = 0 then x else y"
-  from x y xx xy yy have c: "range c \<subseteq> A" "monotone (\<le>) (\<sqsubseteq>) c"
-    by (auto simp: c_def intro!: monotoneI)
-  have "extreme_bound A (\<sqsubseteq>) (range c) y" using xy yy x y by (auto simp: c_def)
-  then have fboy: "extreme_bound A (\<sqsubseteq>) (f ` range c) (f y)" using c cont y by auto
-  then show "f x \<sqsubseteq> f y" by (auto simp: c_def)
-qed
-
-definition "scott_continuous f \<equiv>
-  f ` A \<subseteq> A \<and>
-  (\<forall>X s. X \<subseteq> A \<longrightarrow> directed X (\<sqsubseteq>) \<longrightarrow> X \<noteq> {} \<longrightarrow> extreme_bound A (\<sqsubseteq>) X s \<longrightarrow> extreme_bound A (\<sqsubseteq>) (f ` X) (f s))"
-
-lemmas scott_continuousI[intro?] =
-  scott_continuous_def[unfolded atomize_eq, THEN iffD2, unfolded conj_imp_eq_imp_imp, rule_format]
-
-lemmas scott_continuousE =
-  scott_continuous_def[unfolded atomize_eq, THEN iffD1, elim_format, unfolded conj_imp_eq_imp_imp, rule_format]
-
-lemma scott_continuous_imp_mono_refl:
-  assumes scott: "scott_continuous f"
-    and x: "x \<in> A" and y: "y \<in> A" and xy: "x \<sqsubseteq> y" and yy: "y \<sqsubseteq> y"
-  shows "f x \<sqsubseteq> f y"
-proof-
-  define D where "D \<equiv> {x,y}"
-  from x y xy yy have dir_D: "D \<subseteq> A" "directed D (\<sqsubseteq>)" "D \<noteq> {}"
-    by (auto simp: D_def intro!: bexI[of _ y] directedI)
-  have "extreme_bound A (\<sqsubseteq>) D y" using xy yy x y by (auto simp: D_def)
-  then have fboy: "extreme_bound A (\<sqsubseteq>) (f ` D) (f y)" using dir_D scott by (auto elim!: scott_continuousE)
-  then show "f x \<sqsubseteq> f y" by (auto simp: D_def)
-qed
-
-lemma scott_continuous_imp_omega_continuous:
-  assumes scott: "scott_continuous f" shows "omega_continuous f"
-proof
-  from scott show "f ` A \<subseteq> A" by (auto elim!: scott_continuousE)
-  fix c :: "nat \<Rightarrow> 'a"
-  assume mono: "monotone (\<le>) (\<sqsubseteq>) c" and c: "range c \<subseteq> A"
-  from monotone_directed_image[OF mono[folded monotone_on_UNIV] order.directed] scott c
-  show "extreme_bound A (\<sqsubseteq>) (range c) b \<Longrightarrow> extreme_bound A (\<sqsubseteq>) (f ` range c) (f b)" for b
-    by (auto elim!: scott_continuousE)
-qed
-
-end
-
 subsection \<open>Existence of Iterative Fixed Points\<close>
 
 text \<open>The first part of Kleene's theorem demands to prove that the set 
@@ -109,12 +30,9 @@ $\set{f^n(\bot) \mid n \in \Nat}$ has a supremum and
 that all such are quasi-fixed points. We prove this claim without assuming 
 anything on the relation $\SLE$ besides $\omega$-completeness and one bottom element.\<close>
 
-(*
-no_notation power (infixr "^" 80)
-*)
 notation compower ("_^_"[1000,1000]1000)
 
-lemma mono_funpow: assumes f: "f ` A \<subseteq> A" and mono: "monotone_on A r r f"
+lemma monotone_on_funpow: assumes f: "f ` A \<subseteq> A" and mono: "monotone_on A r r f"
   shows "monotone_on A r r (f^n)"
 proof (induct n)
   case 0
@@ -130,10 +48,10 @@ no_notation bot ("\<bottom>")
 context
   fixes A and less_eq (infix "\<sqsubseteq>" 50) and bot ("\<bottom>") and f
   assumes bot: "\<bottom> \<in> A" "\<forall>q \<in> A. \<bottom> \<sqsubseteq> q"
-  assumes cont: "omega_continuous A (\<sqsubseteq>) f"
+  assumes cont: "omega_chain-continuous A (\<sqsubseteq>) A (\<sqsubseteq>) f"
 begin
 
-interpretation less_eq_notations.
+interpretation less_eq_symmetrize.
 
 private lemma f: "f ` A \<subseteq> A" using cont by auto
 
@@ -146,20 +64,23 @@ proof (atomize(full), induct n)
 next
   case (Suc n)
   then have fn: "f^n \<bottom> \<in> A" and fnfn: "f^n \<bottom> \<sqsubseteq> f^n \<bottom>" by auto
-  from f fn omega_continuous_imp_mono_refl[OF cont fn fn fnfn fnfn fnfn]
+  from f fn omega_continuous_imp_mono_refl[OF cont fnfn fnfn fnfn]
   show ?case by auto
 qed
 
 private lemma FnA: "Fn \<subseteq> A" using fnA by auto
 
-private lemma fn_monotone: "monotone (\<le>) (\<sqsubseteq>) (\<lambda>n. f^n \<bottom>)"
-proof
-  fix n m :: nat
-  assume "n \<le> m"
-  from le_Suc_ex[OF this] obtain k where m: "m = n + k" by auto
-  from bot fn_ref fnA omega_continuous_imp_mono_refl[OF cont]
-  show "f^n \<bottom> \<sqsubseteq> f^m \<bottom>" by (unfold m, induct n, auto)
-qed
+private lemma Fn_chain: "omega_chain Fn (\<sqsubseteq>)"
+proof (intro omega_chainI)
+  show fn_monotone: "monotone (\<le>) (\<sqsubseteq>) (\<lambda>n. f^n \<bottom>)"
+  proof
+    fix n m :: nat
+    assume "n \<le> m"
+    from le_Suc_ex[OF this] obtain k where m: "m = n + k" by auto
+    from bot fn_ref fnA omega_continuous_imp_mono_refl[OF cont]
+    show "f^n \<bottom> \<sqsubseteq> f^m \<bottom>" by (unfold m, induct n, auto)
+  qed
+qed auto
 
 private lemma Fn: "Fn = range (\<lambda>n. f^n \<bottom>)" by auto
 
@@ -168,24 +89,22 @@ theorem kleene_qfp:
   shows "f q \<sim> q"
 proof
   have fq: "extreme_bound A (\<sqsubseteq>) (f ` Fn) (f q)"
-    apply (unfold Fn)
-    apply (rule omega_continuousD[OF cont])
-    using FnA fn_monotone q by (unfold Fn, auto)
-  with bot have nq: "f^n \<bottom> \<sqsubseteq> f q" for n
-    by(induct n, auto simp: extreme_bound_iff)
+    apply (rule continuousD[OF cont _ _ FnA q])
+    using Fn_chain by auto
+  with bot have nq: "f^n \<bottom> \<sqsubseteq> f q" for n by (induct n, auto simp: extreme_bound_iff)
   then show "q \<sqsubseteq> f q" using f q by blast
   have "f (f^n \<bottom>) \<in> Fn" for n by (auto intro!: exI[of _ "Suc n"])
   then have "f ` Fn \<subseteq> Fn" by auto
-  from extreme_bound_mono[OF this fq q]
+  from extreme_bound_subset[OF this fq q]
   show "f q \<sqsubseteq> q".
 qed
 
 lemma ex_kleene_qfp:
-  assumes comp: "omega_complete A (\<sqsubseteq>)"
-  shows "\<exists>p. extreme_bound A (\<sqsubseteq>) Fn p" 
-  using fn_monotone
-  apply (intro comp[unfolded omega_complete_def, THEN completeD, OF FnA])
-  by fast
+  assumes comp: "omega_chain-complete A (\<sqsubseteq>)"
+  shows "\<exists>p. extreme_bound A (\<sqsubseteq>) Fn p"
+  apply (intro comp[THEN completeD, OF FnA])
+  using Fn_chain
+  by auto
 
 subsection \<open>Iterative Fixed Points are Least.\<close>
 text \<open>Kleene's theorem also states that the quasi-fixed point found this way is a least one.
@@ -217,7 +136,7 @@ proof(safe intro!: extremeI kleene_qfp[OF q])
 qed
 
 lemma kleene_qfp_iff_least:
-  assumes comp: "omega_complete A (\<sqsubseteq>)"
+  assumes comp: "omega_chain-complete A (\<sqsubseteq>)"
   assumes attract: "\<forall>q \<in> A. \<forall>x \<in> A. f q \<sim> q \<longrightarrow> x \<sqsubseteq> f q \<longrightarrow> x \<sqsubseteq> q"
   assumes dual_attract: "\<forall>p \<in> A. \<forall>q \<in> A. \<forall>x \<in> A. p \<sim> q \<longrightarrow> q \<sqsubseteq> x \<longrightarrow> p \<sqsubseteq> x"
   shows "extreme_bound A (\<sqsubseteq>) Fn = extreme {s \<in> A. f s \<sim> s} (\<sqsupseteq>)"
@@ -248,7 +167,7 @@ proof (intro ext iffI kleene_qfp_is_least[OF attract])
       from fnA f have fsnbA: "f (f^n \<bottom>) \<in> A" by auto
       have fnfn: "f^n \<bottom> \<sqsubseteq> f^n \<bottom>" using fn_ref by auto
       have "f (f^n \<bottom>) \<sqsubseteq> f q"
-        using omega_continuous_imp_mono_refl[OF cont fnA qA S fnfn qq] by auto
+        using omega_continuous_imp_mono_refl[OF cont] fnA qA S fnfn qq by auto
       then show ?case using fsnbA qA attract fqq by auto
     qed
   next
@@ -266,24 +185,24 @@ end
 
 context attractive begin
 
-interpretation less_eq_notations.
+interpretation less_eq_dualize + less_eq_symmetrize.
 
 theorem kleene_qfp_is_dual_extreme:
-  assumes comp: "omega_complete A (\<sqsubseteq>)"
-    and cont: "omega_continuous A (\<sqsubseteq>) f" and bA: "b \<in> A" and bot: "\<forall>x \<in> A. b \<sqsubseteq> x"
+  assumes comp: "omega_chain-complete A (\<sqsubseteq>)"
+    and cont: "omega_chain-continuous A (\<sqsubseteq>) A (\<sqsubseteq>) f" and bA: "b \<in> A" and bot: "\<forall>x \<in> A. b \<sqsubseteq> x"
   shows "extreme_bound A (\<sqsubseteq>) {f^n b |. n :: nat} = extreme {s \<in> A. f s \<sim> s} (\<sqsupseteq>)"
   apply (rule kleene_qfp_iff_least[OF bA bot cont comp])
-  using cont[THEN omega_continuousDdom]
+  using continuous_carrierD[OF cont]
   by (auto dest: sym_order_trans order_sym_trans)
 
 end
 
 corollary(in antisymmetric) kleene_fp:
-  assumes cont: "omega_continuous A (\<sqsubseteq>) f"
+  assumes cont: "omega_chain-continuous A (\<sqsubseteq>) A (\<sqsubseteq>) f"
     and b: "b \<in> A" "\<forall>x \<in> A. b \<sqsubseteq> x"
     and p: "extreme_bound A (\<sqsubseteq>) {f^n b |. n :: nat} p"
   shows "f p = p"
-  using kleene_qfp[OF b cont] p cont[THEN omega_continuousDdom]
+  using kleene_qfp[OF b cont] p cont[THEN continuous_carrierD]
   by (auto 2 3 intro!:antisym)
 
 no_notation compower ("_^_"[1000,1000]1000)

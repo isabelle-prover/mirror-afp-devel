@@ -5,25 +5,25 @@ License: LGPL (see file COPYING.LESSER)
 *)
 
 theory Fixed_Points
-  imports Complete_Relations
+  imports Complete_Relations Directedness
 begin
 
 section \<open>Existence of Fixed Points in Complete Related Sets\<close>
 text \<open>\label{sec:qfp-exists}\<close>
 
 text \<open>The following proof is simplified and generalized from
-  Stouti--Maaden \<^cite>\<open>"SM13"\<close>. We construct some set whose extreme bounds 
+  Stouti--Maaden \cite{SM13}. We construct some set whose extreme bounds 
   -- if they exist, typically when the underlying related set is complete -- 
   are fixed points of a monotone or inflationary function on any 
   related set. When the related set is attractive, those are actually the least fixed points.
-  This generalizes \<^cite>\<open>"SM13"\<close>, relaxing reflexivity and antisymmetry.\<close>
+  This generalizes \cite{SM13}, relaxing reflexivity and antisymmetry.\<close>
 
 locale fixed_point_proof = related_set +
   fixes f
   assumes f: "f ` A \<subseteq> A"
 begin
 
-sublocale less_eq_notations.
+sublocale less_eq_asymmetrize.
 
 definition AA where "AA \<equiv>
   {X. X \<subseteq> A \<and> f ` X \<subseteq> X \<and> (\<forall>Y s. Y \<subseteq> X \<longrightarrow> extreme_bound A (\<sqsubseteq>) Y s \<longrightarrow> s \<in> X)}"
@@ -157,25 +157,25 @@ qed
 end
 
 lemma ex_qfp:
-  assumes comp: "CC-complete A (\<sqsubseteq>)" and C: "C \<in> CC"
+  assumes comp: "CC-complete A (\<sqsubseteq>)" and C: "CC C (\<sqsubseteq>)"
     and infl_mono: "\<forall>a \<in> A. a \<sqsubseteq> f a \<or> (\<forall>b \<in> A. b \<sqsubseteq> a \<longrightarrow> f b \<sqsubseteq> f a)"
   shows "\<exists>s \<in> A. f s \<sim> s"
-  using qfp_as_extreme_bound[OF _  infl_mono] completeD[OF comp CA C] by auto
+  using qfp_as_extreme_bound[OF _  infl_mono] completeD[OF comp CA, OF C] by auto
 
 lemma ex_extreme_qfp_fp:
-  assumes comp: "CC-complete A (\<sqsubseteq>)" and C: "C \<in> CC"
+  assumes comp: "CC-complete A (\<sqsubseteq>)" and C: "CC C (\<sqsubseteq>)"
     and attract: "\<forall>q \<in> A. \<forall>x \<in> A. f q \<sim> q \<longrightarrow> x \<sqsubseteq> f q \<longrightarrow> x \<sqsubseteq> q"
     and mono: "monotone_on A (\<sqsubseteq>) (\<sqsubseteq>) f"
   shows "\<exists>c. extreme {q \<in> A. f q \<sim> q \<or> f q = q} (\<sqsupseteq>) c"
-  using extreme_qfp[OF _ attract mono] completeD[OF comp CA C] by auto
+  using extreme_qfp[OF _ attract mono] completeD[OF comp CA, OF C] by auto
 
 lemma ex_extreme_qfp:
-  assumes comp: "CC-complete A (\<sqsubseteq>)" and C: "C \<in> CC"
+  assumes comp: "CC-complete A (\<sqsubseteq>)" and C: "CC C (\<sqsubseteq>)"
     and attract: "\<forall>q \<in> A. \<forall>x \<in> A. f q \<sim> q \<longrightarrow> x \<sqsubseteq> f q \<longrightarrow> x \<sqsubseteq> q"
     and mono: "monotone_on A (\<sqsubseteq>) (\<sqsubseteq>) f"
   shows "\<exists>c. extreme {q \<in> A. f q \<sim> q} (\<sqsupseteq>) c"
 proof-
-  from completeD[OF comp CA C]
+  from completeD[OF comp CA, OF C]
   obtain c where Cc: "extreme_bound A (\<sqsubseteq>) C c" by auto
   from extreme_qfp[OF Cc attract mono]
   have Qc: "bound {q \<in> A. f q \<sim> q} (\<sqsupseteq>) c" by auto
@@ -193,22 +193,22 @@ context
   assumes f: "f ` A \<subseteq> A"
 begin
 
-interpretation less_eq_notations.
+interpretation less_eq_symmetrize.
 interpretation fixed_point_proof A "(\<sqsubseteq>)" f using f by unfold_locales
 
 theorem complete_infl_mono_imp_ex_qfp:
-  assumes comp: "UNIV-complete A (\<sqsubseteq>)" and infl_mono: "\<forall>a\<in>A. a \<sqsubseteq> f a \<or> (\<forall>b\<in>A. b \<sqsubseteq> a \<longrightarrow> f b \<sqsubseteq> f a)"
+  assumes comp: "\<top>-complete A (\<sqsubseteq>)" and infl_mono: "\<forall>a\<in>A. a \<sqsubseteq> f a \<or> (\<forall>b\<in>A. b \<sqsubseteq> a \<longrightarrow> f b \<sqsubseteq> f a)"
   shows "\<exists>s\<in>A. f s \<sim> s"
   apply (rule ex_qfp[OF comp _ infl_mono]) by auto
 
 end
 
 corollary (in antisymmetric) complete_infl_mono_imp_ex_fp:
-  assumes comp: "UNIV-complete A (\<sqsubseteq>)" and f: "f ` A \<subseteq> A"
+  assumes comp: "\<top>-complete A (\<sqsubseteq>)" and f: "f ` A \<subseteq> A"
     and infl_mono: "\<forall>a\<in>A. a \<sqsubseteq> f a \<or> (\<forall>b\<in>A. b \<sqsubseteq> a \<longrightarrow> f b \<sqsubseteq> f a)"
   shows "\<exists>s \<in> A. f s = s"
 proof-
-  interpret less_eq_notations.
+  interpret less_eq_symmetrize.
   from complete_infl_mono_imp_ex_qfp[OF f comp infl_mono]
   obtain s where sA: "s \<in> A" and fss: "f s \<sim> s" by auto
   from f sA have fsA: "f s \<in> A" by auto
@@ -218,10 +218,10 @@ qed
 
 context semiattractive begin
 
-interpretation less_eq_notations.
+interpretation less_eq_symmetrize.
 
 theorem complete_mono_imp_ex_extreme_qfp:
-  assumes comp: "UNIV-complete A (\<sqsubseteq>)" and f: "f ` A \<subseteq> A"
+  assumes comp: "\<top>-complete A (\<sqsubseteq>)" and f: "f ` A \<subseteq> A"
     and mono: "monotone_on A (\<sqsubseteq>) (\<sqsubseteq>) f"
   shows "\<exists>s. extreme {p \<in> A. f p \<sim> p} (\<sqsubseteq>) s"
 proof-
@@ -236,11 +236,11 @@ qed
 end
 
 corollary (in antisymmetric) complete_mono_imp_ex_extreme_fp:
-  assumes comp: "UNIV-complete A (\<sqsubseteq>)" and f: "f ` A \<subseteq> A"
+  assumes comp: "\<top>-complete A (\<sqsubseteq>)" and f: "f ` A \<subseteq> A"
     and mono: "monotone_on A (\<sqsubseteq>) (\<sqsubseteq>) f"
   shows "\<exists>s. extreme {s \<in> A. f s = s} (\<sqsubseteq>)\<^sup>- s"
 proof-
-  interpret less_eq_notations.
+  interpret less_eq_symmetrize.
   interpret fixed_point_proof A "(\<sqsubseteq>)" f using f by unfold_locales
   have "\<exists>c. extreme {q \<in> A. f q \<sim> q \<or> f q = q} (\<sqsupseteq>) c"
     apply (rule ex_extreme_qfp_fp[OF comp _ _ mono])
@@ -259,7 +259,7 @@ inflationary or monotone map over a well-complete antisymmetric set
 has a fixed point.
 
 In order to formalize such a theorem in Isabelle,
-we followed Grall's~\<^cite>\<open>"grall10"\<close> elementary proof for Bourbaki--Witt and Markowsky's theorems.
+we followed Grall's~\cite{grall10} elementary proof for Bourbaki--Witt and Markowsky's theorems.
 His idea is to consider well-founded derivation trees over $A$,
 where from a set $C \subseteq A$ of premises
 one can derive $f\:(\bigsqcup C)$ if $C$ is a chain.
@@ -290,6 +290,8 @@ definition "derivation X \<equiv> X \<subseteq> A \<and> well_ordered_set X (\<s
     (\<exists>y. extreme Y (\<sqsubseteq>) y \<and> x = f y) \<or>
     f ` Y \<subseteq> Y \<and> extreme_bound A (\<sqsubseteq>) Y x)"
 
+lemma empty_derivation: "derivation {}" by (auto simp: derivation_def)
+
 lemma assumes "derivation P"
   shows derivation_A: "P \<subseteq> A" and derivation_well_ordered: "well_ordered_set P (\<sqsubseteq>)"
   using assms by (auto simp: derivation_def)
@@ -312,11 +314,12 @@ lemma derivable_A: "derivable x \<Longrightarrow> x \<in> A" by (auto elim: deri
 lemma UN_derivations_eq_derivable: "(\<Union>{P. derivation P}) = {x. derivable x}"
   by (auto simp: derivable_def)
 
-context
-  assumes ord: "antisymmetric A (\<sqsubseteq>)"
-begin
+end
 
-interpretation antisymmetric using ord.
+locale fixed_point_proof2 = fixed_point_proof + antisymmetric +
+  assumes derivation_infl: "\<forall>X x y. derivation X \<longrightarrow> x \<in> X \<longrightarrow> y \<in> X \<longrightarrow> x \<sqsubseteq> y \<longrightarrow> x \<sqsubseteq> f y"
+    and derivation_f_refl: "\<forall>X x. derivation X \<longrightarrow> x \<in> X \<longrightarrow> f x \<sqsubseteq> f x"
+begin
 
 lemma derivation_lim:
   assumes P: "derivation P" and fP: "f ` P \<subseteq> P" and Pp: "extreme_bound A (\<sqsubseteq>) P p"
@@ -332,7 +335,7 @@ next
   have bp: "bound P (\<sqsubseteq>) p" using Pp by auto
   then have pp: "p \<sqsubseteq> p" using Pp by auto
   have 1: "y \<in> P \<longrightarrow> {x. (x = p \<or> x \<in> P) \<and> x \<sqsubset> y} = {x \<in> P. x \<sqsubset> y}" for y
-    using Pp by (auto dest:extreme_bound_bound)
+    using Pp by (auto dest!: extreme_bound_imp_bound)
   { fix x assume xP: "x \<in> P" and px: "p \<sqsubseteq> x"
     from xP Pp have "x \<sqsubseteq> p" by auto
     with px have "p = x" using xP PA pA by (auto intro!: antisym)
@@ -347,11 +350,6 @@ next
   from P fP Pp
   show "derivation (P \<union> {p})" by (auto simp: derivation_def pA wr[simplified] 1 3)
 qed
-
-context
-  assumes derivation_infl: "\<forall>X x y. derivation X \<longrightarrow> x \<in> X \<longrightarrow> y \<in> X \<longrightarrow> x \<sqsubseteq> y \<longrightarrow> x \<sqsubseteq> f y"
-    and derivation_f_refl: "\<forall>X x. derivation X \<longrightarrow> x \<in> X \<longrightarrow> f x \<sqsubseteq> f x"
-begin
 
 lemma derivation_suc:
   assumes P: "derivation P" and Pp: "extreme P (\<sqsubseteq>) p" shows "derivation (P \<union> {f p})"
@@ -415,7 +413,7 @@ proof (insert x, elim derivableE)
     next
       case False
       then have zx: "z \<sqsubset> x" using zPx by (auto simp: Px_def)
-      from P.asympartp.trans[OF yz zx yP zP xP] show ?thesis.
+      from P.asym.trans[OF yz zx yP zP xP] show ?thesis.
     qed
   }
   then have 1: "\<And>z. z \<in> Px \<longrightarrow> {y \<in> Px. y \<sqsubset> z} = {y \<in> P. y \<sqsubset> z}" using Px_def by blast
@@ -424,7 +422,7 @@ proof (insert x, elim derivableE)
   show ?thesis by (auto intro!: derivableI)
 qed
 
-text \<open>The following lemma is derived from Grall's proof. We simplify the claim so that we
+text \<open>The following lemma is derived from Grall’s proof. We simplify the claim so that we
 consider two elements from one derivation, instead of two derivations.\<close>
 
 lemma derivation_useful:
@@ -514,7 +512,7 @@ qed
 
 text \<open>Next one is the main lemma of this section, stating that elements from two possibly different 
 derivations are comparable, and moreover the lower one is in the derivation of the upper one. 
-The latter claim, not found in Grall's proof, is crucial in proving that the union of all 
+The latter claim, not found in Grall’s proof, is crucial in proving that the union of all 
 derivations is well-related.\<close>
 
 lemma derivations_cross_compare:
@@ -543,7 +541,7 @@ proof-
         then obtain z where zZ: "z \<in> Z" and yz: "y \<sqsubset> z" by auto
         from zZ Z have zX: "z \<in> X" and zx: "z \<sqsubset> x" by auto
         from IHx[rule_format, OF zX zx] yz have yX: "y \<in> X" by auto
-        from X.asympartp.trans[OF yz zx yX zX xX] have "y \<sqsubset> x".
+        from X.asym.trans[OF yz zx yX zX xX] have "y \<sqsubset> x".
         with yX show ?thesis by auto
       next
         case False
@@ -576,7 +574,7 @@ proof-
         with zy zX show ?thesis by auto
       next
         assume yz: "y \<sqsubset> z" and yX: "y \<in> X"
-        from X.asympartp.trans[OF yz zx yX zX xX] have "y \<sqsubset> x".
+        from X.asym.trans[OF yz zx yX zX xX] have "y \<sqsubset> x".
         with yX show ?thesis by auto
       qed
     }
@@ -642,7 +640,7 @@ proof-
   qed
 qed
 
-interpretation derivable: well_ordered_set "{x. derivable x}" "(\<sqsubseteq>)"
+sublocale derivable: well_ordered_set "{x. derivable x}" "(\<sqsubseteq>)"
 proof (rule well_ordered_set.intro)
   show "antisymmetric {x. derivable x} (\<sqsubseteq>)"
     apply unfold_locales by (auto dest: derivable_A antisym)
@@ -651,10 +649,6 @@ proof (rule well_ordered_set.intro)
   apply (rule closed_UN_well_related)
   by (auto dest: derivation_well_ordered derivations_cross_compare well_ordered_set.axioms)
 qed
-
-lemmas derivable_well_ordered = derivable.well_ordered_set_axioms
-lemmas derivable_total_ordered = derivable.total_ordered_set_axioms
-lemmas derivable_well_related = derivable.well_related_set_axioms
 
 lemma pred_unique:
   assumes X: "derivation X" and xX: "x \<in> X"
@@ -681,89 +675,110 @@ lemma derivation_derivable: "derivation {x. derivable x}"
 
 text \<open>Finally, if the set of all derivable elements admits a supremum, then it is a fixed point.\<close>
 
-lemma
+context
+  fixes p
   assumes p: "extreme_bound A (\<sqsubseteq>) {x. derivable x} p"
-  shows sup_derivable_qfp: "f p \<sim> p" and sup_derivable_fp: "f p = p"
-proof (intro antisym sympartpI)
-  define P where "P \<equiv> {x. derivable x}"
-  have pA: "p \<in> A" using p by auto
-  have P: "derivation P" using derivation_derivable by (simp add: P_def)
-  from derivable_closed have fP: "f ` P \<subseteq> P" by (auto simp: P_def)
-  from derivation_lim[OF P fP] p
-  have pP: "p \<in> P" by (auto simp: P_def intro:derivableI)
-  with fP have "f p \<in> P" by auto
-  with p show fpp: "f p \<sqsubseteq> p" by (auto simp: P_def)
-  show pfp: "p \<sqsubseteq> f p" apply (rule derivation_infl[rule_format, OF P]) using pP by (auto simp: P_def)
-  from fpp pfp p f show "f p = p" by (auto intro!: antisym)
-qed
+begin
+
+lemma sup_derivable_derivable: "derivable p"
+  using derivation_lim[OF derivation_derivable _ p] derivable_closed
+  by (auto intro: derivableI)
+
+private lemmas sucp = sup_derivable_derivable[THEN derivable_closed]
+
+lemma sup_derivable_prefixed: "f p \<sqsubseteq> p" using sucp p by auto
+
+lemma sup_derivable_postfixed: "p \<sqsubseteq> f p"
+  apply (rule derivation_infl[rule_format, OF derivation_derivable])
+  using sup_derivable_derivable by auto
+
+lemma sup_derivable_qfp: "f p \<sim> p"
+  using sup_derivable_prefixed sup_derivable_postfixed by auto
+
+lemma sup_derivable_fp: "f p = p"
+  using sup_derivable_derivable sucp
+  by (auto intro!: antisym sup_derivable_prefixed sup_derivable_postfixed simp: derivable_A)
+
+end
 
 end
 
 text "The assumptions are satisfied by monotone functions."
 
+context fixed_point_proof begin
+
+context
+  assumes ord: "antisymmetric A (\<sqsubseteq>)"
+begin
+
+interpretation antisymmetric using ord.
+
 context
   assumes mono: "monotone_on A (\<sqsubseteq>) (\<sqsubseteq>) f"
 begin
 
-lemma mono_imp_derivation_infl:
-  "\<forall>X x y. derivation X \<longrightarrow> x \<in> X \<longrightarrow> y \<in> X \<longrightarrow> x \<sqsubseteq> y \<longrightarrow> x \<sqsubseteq> f y"
-proof (intro allI impI)
-  fix X x y
-  assume X: "derivation X" and xX: "x \<in> X" and yX: "y \<in> X" and xy: "x \<sqsubseteq> y"
-  interpret X: well_ordered_set X "(\<sqsubseteq>)" using derivation_well_ordered[OF X].
-  note XA = derivation_A[OF X]
-  from xX yX xy show "x \<sqsubseteq> f y"
-  proof (induct x)
-    case (less x)
-    note IH = this(2) and xX = \<open>x \<in> X\<close> and yX = \<open>y \<in> X\<close> and xy = \<open>x \<sqsubseteq> y\<close>
-    from xX yX XA have xA: "x \<in> A" and yA: "y \<in> A" by auto
-    from X xX show ?case
-    proof (cases rule: derivation_cases)
-      case (suc Z z)
-      then have zX: "z \<in> X" and zsx: "z \<sqsubset> x" and xfz: "x = f z" by auto
-      then have zx: "z \<sqsubseteq> x" by auto
-      from X.trans[OF zx xy zX xX yX] have zy: "z \<sqsubseteq> y".
-      from zX XA have zA: "z \<in> A" by auto
-      from zy monotone_onD[OF mono] zA yA xfz show "x \<sqsubseteq> f y" by auto
-    next
-      case (lim Z)
-      note Z = \<open>Z = {z \<in> X. z \<sqsubset> x}\<close> and Zx = \<open>extreme_bound A (\<sqsubseteq>) Z x\<close>
-      from f yA have fyA: "f y \<in> A" by auto
-      have "bound Z (\<sqsubseteq>) (f y)"
-      proof
-        fix z assume zZ: "z \<in> Z"
-        with Z xX have zsx: "z \<sqsubset> x" and zX: "z \<in> X" by auto
+interpretation fixed_point_proof2
+proof
+  show mono_imp_derivation_infl:
+    "\<forall>X x y. derivation X \<longrightarrow> x \<in> X \<longrightarrow> y \<in> X \<longrightarrow> x \<sqsubseteq> y \<longrightarrow> x \<sqsubseteq> f y"
+  proof (intro allI impI)
+    fix X x y
+    assume X: "derivation X" and xX: "x \<in> X" and yX: "y \<in> X" and xy: "x \<sqsubseteq> y"
+    interpret X: well_ordered_set X "(\<sqsubseteq>)" using derivation_well_ordered[OF X].
+    note XA = derivation_A[OF X]
+    from xX yX xy show "x \<sqsubseteq> f y"
+    proof (induct x)
+      case (less x)
+      note IH = this(2) and xX = \<open>x \<in> X\<close> and yX = \<open>y \<in> X\<close> and xy = \<open>x \<sqsubseteq> y\<close>
+      from xX yX XA have xA: "x \<in> A" and yA: "y \<in> A" by auto
+      from X xX show ?case
+      proof (cases rule: derivation_cases)
+        case (suc Z z)
+        then have zX: "z \<in> X" and zsx: "z \<sqsubset> x" and xfz: "x = f z" by auto
         then have zx: "z \<sqsubseteq> x" by auto
         from X.trans[OF zx xy zX xX yX] have zy: "z \<sqsubseteq> y".
-        from IH[OF zX zsx yX] zy show "z \<sqsubseteq> f y" by auto
+        from zX XA have zA: "z \<in> A" by auto
+        from zy monotone_onD[OF mono] zA yA xfz show "x \<sqsubseteq> f y" by auto
+      next
+        case (lim Z)
+        note Z = \<open>Z = {z \<in> X. z \<sqsubset> x}\<close> and Zx = \<open>extreme_bound A (\<sqsubseteq>) Z x\<close>
+        from f yA have fyA: "f y \<in> A" by auto
+        have "bound Z (\<sqsubseteq>) (f y)"
+        proof
+          fix z assume zZ: "z \<in> Z"
+          with Z xX have zsx: "z \<sqsubset> x" and zX: "z \<in> X" by auto
+          then have zx: "z \<sqsubseteq> x" by auto
+          from X.trans[OF zx xy zX xX yX] have zy: "z \<sqsubseteq> y".
+          from IH[OF zX zsx yX] zy show "z \<sqsubseteq> f y" by auto
+        qed
+        with Zx fyA show ?thesis by auto
       qed
-      with Zx fyA show ?thesis by auto
     qed
+  qed
+  show mono_imp_derivation_f_refl:
+    "\<forall>X x. derivation X \<longrightarrow> x \<in> X \<longrightarrow> f x \<sqsubseteq> f x"
+  proof (intro allI impI)
+    fix X x
+    assume X: "derivation X" and xX: "x \<in> X"
+    interpret X: well_ordered_set X "(\<sqsubseteq>)" using derivation_well_ordered[OF X].
+    note XA = derivation_A[OF X]
+    from monotone_onD[OF mono] xX XA show "f x \<sqsubseteq> f x" by auto
   qed
 qed
 
-lemma mono_imp_derivation_f_refl:
-  "\<forall>X x. derivation X \<longrightarrow> x \<in> X \<longrightarrow> f x \<sqsubseteq> f x"
-proof (intro allI impI)
-  fix X x
-  assume X: "derivation X" and xX: "x \<in> X"
-  interpret X: well_ordered_set X "(\<sqsubseteq>)" using derivation_well_ordered[OF X].
-  note XA = derivation_A[OF X]
-  from xX have "x \<sqsubseteq> x" by auto
-  from monotone_onD[OF mono this] xX XA show "f x \<sqsubseteq> f x" by auto
-qed
+lemmas mono_imp_fixed_point_proof2 = fixed_point_proof2_axioms
 
 corollary mono_imp_sup_derivable_fp:
   assumes p: "extreme_bound A (\<sqsubseteq>) {x. derivable x} p"
   shows "f p = p"
-  by (simp add: sup_derivable_fp[OF mono_imp_derivation_infl mono_imp_derivation_f_refl p])
+  by (simp add: sup_derivable_fp[OF p])
 
 lemma mono_imp_sup_derivable_lfp:
   assumes p: "extreme_bound A (\<sqsubseteq>) {x. derivable x} p"
   shows "extreme {q \<in> A. f q = q} (\<sqsupseteq>) p"
 proof (safe intro!: extremeI)
   from p show "p \<in> A" by auto
-  from sup_derivable_fp[OF mono_imp_derivation_infl mono_imp_derivation_f_refl p]
+  from sup_derivable_fp[OF p]
   show "f p = p".
   fix q assume qA: "q \<in> A" and fqq: "f q = q"
   have "bound {x. derivable x} (\<sqsubseteq>) q"
@@ -779,7 +794,7 @@ proof (safe intro!: extremeI)
       proof (cases rule: derivation_cases)
         case (suc Z z)
         with IH[of z] have zq: "z \<sqsubseteq> q" and zX: "z \<in> X" by auto
-        from monotone_onD[OF mono zq] zX qA derivation_A[OF X]
+        from monotone_onD[OF mono _ qA zq] zX derivation_A[OF X]
         show ?thesis by (auto simp: fqq suc)
       next
         case lim
@@ -792,20 +807,15 @@ proof (safe intro!: extremeI)
 qed
 
 lemma mono_imp_ex_least_fp:
-  assumes comp: "well_complete A (\<sqsubseteq>)"
+  assumes comp: "well_related_set-complete A (\<sqsubseteq>)"
   shows "\<exists>p. extreme {q \<in> A. f q = q} (\<sqsupseteq>) p"
 proof-
   interpret fixed_point_proof using f by unfold_locales
-  note as = antisymmetric_axioms
-  note infl = mono_imp_derivation_infl
-  note refl = mono_imp_derivation_f_refl
-  have wr: "well_related_set {x. derivable x} (\<sqsubseteq>)"
-    using derivable_well_related[OF infl refl].
   have "\<exists>p. extreme_bound A (\<sqsubseteq>) {x. derivable x} p"
     apply (rule completeD[OF comp])
-    using derivable_A wr by auto
+    using derivable_A derivable.well_related_set_axioms by auto
   then obtain p where p: "extreme_bound A (\<sqsubseteq>) {x. derivable x} p" by auto
-  from p mono_imp_sup_derivable_lfp[OF p] sup_derivable_qfp[OF infl refl p]
+  from p mono_imp_sup_derivable_lfp[OF p] sup_derivable_qfp[OF p]
   show ?thesis by auto
 qed
 
@@ -816,23 +826,36 @@ end
 end
 
 text \<open>Bourbaki-Witt Theorem on well-complete pseudo-ordered set:\<close>
-theorem (in pseudo_ordered_set) well_complete_infl_imp_ex_fp:
-  assumes comp: "well_complete A (\<sqsubseteq>)"
+theorem (in pseudo_ordered_set) well_complete_infl'_imp_ex_fp:
+  assumes comp: "well_related_set-complete A (\<sqsubseteq>)"
     and f: "f ` A \<subseteq> A" and infl: "\<forall>x \<in> A. \<forall>y \<in> A. x \<sqsubseteq> y \<longrightarrow> x \<sqsubseteq> f y"
   shows "\<exists>p \<in> A. f p = p"
 proof-
-  note as = antisymmetric_axioms
   interpret fixed_point_proof using f by unfold_locales
-  have dinfl: "\<forall>X x y. derivation X \<longrightarrow> x \<in> X \<longrightarrow> y \<in> X \<longrightarrow> x \<sqsubseteq> y \<longrightarrow> x \<sqsubseteq> f y"
-    using infl by (auto dest!:derivation_A)
-  have drefl: "\<forall>X x. derivation X \<longrightarrow> x \<in> X \<longrightarrow> f x \<sqsubseteq> f x" using f by (auto dest!: derivation_A)
+  interpret fixed_point_proof2
+  proof
+    show dinfl: "\<forall>X x y. derivation X \<longrightarrow> x \<in> X \<longrightarrow> y \<in> X \<longrightarrow> x \<sqsubseteq> y \<longrightarrow> x \<sqsubseteq> f y"
+      using infl by (auto dest!:derivation_A)
+    show drefl: "\<forall>X x. derivation X \<longrightarrow> x \<in> X \<longrightarrow> f x \<sqsubseteq> f x"
+      using f by (auto dest!: derivation_A)
+  qed
   have "\<exists>p. extreme_bound A (\<sqsubseteq>) {x. derivable x} p"
     apply (rule completeD[OF comp])
-    using derivable_well_related[OF as dinfl drefl] derivable_A by auto
-  with sup_derivable_fp[OF as dinfl drefl]
+    using derivable.well_related_set_axioms derivable_A by auto
+  with sup_derivable_fp
   show ?thesis by auto
 qed
 
+text \<open>Bourbaki-Witt Theorem on posets:\<close>
+corollary (in partially_ordered_set) well_complete_infl_imp_ex_fp:
+  assumes comp: "well_related_set-complete A (\<sqsubseteq>)"
+    and f: "f ` A \<subseteq> A" and infl: "\<forall>x \<in> A. x \<sqsubseteq> f x"
+  shows "\<exists>p \<in> A. f p = p"
+proof (intro well_complete_infl'_imp_ex_fp[OF comp f] ballI impI)
+  fix x y assume x: "x \<in> A" and y: "y \<in> A" and xy: "x \<sqsubseteq> y"
+  from y infl have "y \<sqsubseteq> f y" by auto
+  from trans[OF xy this x y] f y show "x \<sqsubseteq> f y" by auto
+qed
 
 section \<open>Completeness of (Quasi-)Fixed Points\<close>
 
@@ -851,7 +874,7 @@ subsection \<open>Least Quasi-Fixed Points for Attractive Relations.\<close>
 
 lemma attract_mono_imp_least_qfp:
   assumes attract: "attractive A (\<sqsubseteq>)"
-    and comp: "well_complete A (\<sqsubseteq>)"
+    and comp: "well_related_set-complete A (\<sqsubseteq>)"
     and mono: "monotone_on A (\<sqsubseteq>) (\<sqsubseteq>) f"
   shows "\<exists>c. extreme {p \<in> A. f p \<sim> p \<or> f p = p} (\<sqsupseteq>) c \<and> f c \<sim> c"
 proof-
@@ -891,8 +914,8 @@ proof-
     }
     then show "X \<sqsubseteq>\<^sup>s Y" using XQ YQ XA YA by auto
   qed
-  have compQ: "well_complete Q (\<sqsubseteq>\<^sup>s)"
-  proof (intro completeI, safe)
+  have compQ: "well_related_set-complete Q (\<sqsubseteq>\<^sup>s)"
+  proof (intro completeI)
     fix XX assume XXQ: "XX \<subseteq> Q" and XX: "well_related_set XX (\<sqsubseteq>\<^sup>s)"
     have BA: "\<Union>XX \<subseteq> A" using XXQ by (auto simp: Q_def ecl_def)
     from XX interpret XX: well_related_set XX "(\<sqsubseteq>\<^sup>s)".
@@ -996,10 +1019,9 @@ proof-
     show "F X \<sqsubseteq>\<^sup>s F Y" using RSLE_eq[OF XQFXQ[OF XQ] XQFXQ[OF YQ] fxgX fygY fxfy].
   qed
   have QdA: "{x. Q.derivable x} \<subseteq> Q" using Q.derivable_A by auto
-  note asQ = Q.antisymmetric_axioms
-  note infl = Q.mono_imp_derivation_infl[OF asQ monoQ]
-  note f_refl = Q.mono_imp_derivation_f_refl[OF asQ monoQ]
-  from Q.mono_imp_ex_least_fp[OF asQ monoQ compQ]
+  interpret Q: fixed_point_proof2 Q "(\<sqsubseteq>\<^sup>s)" F
+    using Q.mono_imp_fixed_point_proof2[OF Q.antisymmetric_axioms monoQ].
+  from Q.mono_imp_ex_least_fp[OF Q.antisymmetric_axioms monoQ compQ]
   obtain P where P: "extreme {q \<in> Q. F q = q} (\<sqsubseteq>\<^sup>s)\<^sup>- P" by auto
   then have PQ: "P \<in> Q" by (auto simp: extreme_def)
   from P have FPP: "F P = P" using PQ by auto
@@ -1035,14 +1057,14 @@ subsection \<open>General Completeness\<close>
 lemma attract_mono_imp_fp_qfp_complete:
   assumes attract: "attractive A (\<sqsubseteq>)"
     and comp: "CC-complete A (\<sqsubseteq>)"
-    and wr_CC: "\<forall>C \<subseteq> A. well_related_set C (\<sqsubseteq>) \<longrightarrow> C \<in> CC"
-    and extend: "\<forall>X \<in> CC. \<forall>Y \<in> CC. X \<sqsubseteq>\<^sup>s Y \<longrightarrow> X \<union> Y \<in> CC"
+    and wr_CC: "\<forall>C \<subseteq> A. well_related_set C (\<sqsubseteq>) \<longrightarrow> CC C (\<sqsubseteq>)"
+    and extend: "\<forall>X Y. CC X (\<sqsubseteq>) \<longrightarrow> CC Y (\<sqsubseteq>) \<longrightarrow> X \<sqsubseteq>\<^sup>s Y \<longrightarrow> CC (X \<union> Y) (\<sqsubseteq>)"
     and mono: "monotone_on A (\<sqsubseteq>) (\<sqsubseteq>) f"
     and P: "P \<subseteq> {x \<in> A. f x = x}"
   shows "CC-complete ({q \<in> A. f q \<sim> q} \<union> P) (\<sqsubseteq>)"
 proof (intro completeI)
   interpret attractive using attract.
-  fix X assume Xfix: "X \<subseteq> {q \<in> A. f q \<sim> q} \<union> P" and XCC: "X \<in> CC"
+  fix X assume Xfix: "X \<subseteq> {q \<in> A. f q \<sim> q} \<union> P" and XCC: "CC X (\<sqsubseteq>)"
   with P have XA: "X \<subseteq> A" by auto
   define B where "B \<equiv> {b \<in> A. \<forall>a \<in> X. a \<sqsubseteq> b}"
   { fix s a assume sA: "s \<in> A" and as: "\<forall>a \<in> X. a \<sqsubseteq> s" and aX: "a \<in> X"
@@ -1063,14 +1085,14 @@ proof (intro completeI)
   have BA: "B \<subseteq> A" by (auto simp: B_def)
   have compB: "CC-complete B (\<sqsubseteq>)"
   proof (unfold complete_def, intro allI impI)
-    fix Y assume YS: "Y \<subseteq> B" and YCC: "Y \<in> CC"
+    fix Y assume YS: "Y \<subseteq> B" and YCC: "CC Y (\<sqsubseteq>)"
     with BA have YA: "Y \<subseteq> A" by auto
     define C where "C \<equiv> X\<union>Y"
     then have CA: "C \<subseteq> A" using XA YA C_def by auto
     have XY: "X \<sqsubseteq>\<^sup>s Y" using B_def YS by auto
-    then have CCC: "C \<in> CC" using extend XA YA XCC YCC C_def by auto
+    then have CCC: "CC C (\<sqsubseteq>)" using extend XA YA XCC YCC C_def by auto
     then obtain s where s: "extreme_bound A (\<sqsubseteq>) C s"
-      using completeD[OF comp CA CCC] by auto
+      using completeD[OF comp CA, OF CCC] by auto
     then have sA: "s \<in> A" by auto
     show "Ex (extreme_bound B (\<sqsubseteq>) Y)"
     proof (intro exI extreme_boundI)
@@ -1091,7 +1113,7 @@ proof (intro completeI)
   from BA have *: "{x \<in> A. f x \<sim> x} \<inter> B = {x \<in> B. f x \<sim> x}" by auto
   have asB: "attractive B (\<sqsubseteq>)" using attractive_subset[OF BA] by auto
   have monoB: "monotone_on B (\<sqsubseteq>) (\<sqsubseteq>) f" using monotone_on_cmono[OF BA] mono by (auto dest!: le_funD)
-  have compB: "well_complete B (\<sqsubseteq>)"
+  have compB: "well_related_set-complete B (\<sqsubseteq>)"
     using wr_CC compB BA by (simp add: complete_def) 
   from B.attract_mono_imp_least_qfp[OF asB compB monoB]
   obtain l where "extreme {p \<in> B. f p \<sim> p \<or> f p = p} (\<sqsupseteq>) l" and fll: "f l \<sim> l" by auto
@@ -1112,8 +1134,8 @@ qed
 lemma attract_mono_imp_qfp_complete:
   assumes "attractive A (\<sqsubseteq>)"
     and "CC-complete A (\<sqsubseteq>)"
-    and "\<forall>C \<subseteq> A. well_related_set C (\<sqsubseteq>) \<longrightarrow> C \<in> CC"
-    and "\<forall>X \<in> CC. \<forall>Y \<in> CC. X \<sqsubseteq>\<^sup>s Y \<longrightarrow> X \<union> Y \<in> CC"
+    and "\<forall>C \<subseteq> A. well_related_set C (\<sqsubseteq>) \<longrightarrow> CC C (\<sqsubseteq>)"
+    and "\<forall>X Y. CC X (\<sqsubseteq>) \<longrightarrow> CC Y (\<sqsubseteq>) \<longrightarrow> X \<sqsubseteq>\<^sup>s Y \<longrightarrow> CC (X \<union> Y) (\<sqsubseteq>)"
     and "monotone_on A (\<sqsubseteq>) (\<sqsubseteq>) f"
   shows "CC-complete {p \<in> A. f p \<sim> p} (\<sqsubseteq>)"
   using attract_mono_imp_fp_qfp_complete[OF assms, of "{}"] by simp
@@ -1121,8 +1143,8 @@ lemma attract_mono_imp_qfp_complete:
 lemma antisym_mono_imp_fp_complete:
   assumes anti: "antisymmetric A (\<sqsubseteq>)"
     and comp: "CC-complete A (\<sqsubseteq>)"
-    and wr_CC: "\<forall>C \<subseteq> A. well_related_set C (\<sqsubseteq>) \<longrightarrow> C \<in> CC"
-    and extend: "\<forall>X \<in> CC. \<forall>Y \<in> CC. X \<sqsubseteq>\<^sup>s Y \<longrightarrow> X \<union> Y \<in> CC"
+    and wr_CC: "\<forall>C \<subseteq> A. well_related_set C (\<sqsubseteq>) \<longrightarrow> CC C (\<sqsubseteq>)"
+    and extend: "\<forall>X Y. CC X (\<sqsubseteq>) \<longrightarrow> CC Y (\<sqsubseteq>) \<longrightarrow> X \<sqsubseteq>\<^sup>s Y \<longrightarrow> CC (X \<union> Y) (\<sqsubseteq>)"
     and mono: "monotone_on A (\<sqsubseteq>) (\<sqsubseteq>) f"
   shows "CC-complete {p \<in> A. f p = p} (\<sqsubseteq>)"
 proof-
@@ -1140,39 +1162,39 @@ subsubsection \<open>Instances under attractivity\<close>
 
 context attractive begin
 
-interpretation less_eq_notations.
+interpretation less_eq_symmetrize.
 
 text \<open>Full completeness\<close>
-theorem mono_imp_qfp_UNIV_complete:
-  assumes comp: "UNIV-complete A (\<sqsubseteq>)" and f: "f ` A \<subseteq> A" and mono: "monotone_on A (\<sqsubseteq>) (\<sqsubseteq>) f"
-  shows "UNIV-complete {p \<in> A. f p \<sim> p} (\<sqsubseteq>)"
+theorem mono_imp_qfp_complete:
+  assumes comp: "\<top>-complete A (\<sqsubseteq>)" and f: "f ` A \<subseteq> A" and mono: "monotone_on A (\<sqsubseteq>) (\<sqsubseteq>) f"
+  shows "\<top>-complete {p \<in> A. f p \<sim> p} (\<sqsubseteq>)"
   apply (intro fixed_point_proof.attract_mono_imp_qfp_complete comp mono)
     apply unfold_locales
   by (auto simp: f)
 
 text \<open>Connex completeness\<close>
 theorem mono_imp_qfp_connex_complete:
-  assumes comp: "{X. connex X (\<sqsubseteq>)}-complete A (\<sqsubseteq>)"
+  assumes comp: "connex-complete A (\<sqsubseteq>)"
     and f: "f ` A \<subseteq> A" and mono: "monotone_on A (\<sqsubseteq>) (\<sqsubseteq>) f"
-  shows "{X. connex X (\<sqsubseteq>)}-complete {p \<in> A. f p \<sim> p} (\<sqsubseteq>)"
+  shows "connex-complete {p \<in> A. f p \<sim> p} (\<sqsubseteq>)"
   apply (intro fixed_point_proof.attract_mono_imp_qfp_complete mono comp)
     apply unfold_locales
-  by (auto simp: f intro: connex_union well_related_set.connex_axioms)
+  by (auto simp: f intro: connex_union well_related_set.connex)
 
 text \<open>Directed completeness\<close>
 theorem mono_imp_qfp_directed_complete:
-  assumes comp: "{X. directed X (\<sqsubseteq>)}-complete A (\<sqsubseteq>)"
+  assumes comp: "directed-complete A (\<sqsubseteq>)"
     and f: "f ` A \<subseteq> A" and mono: "monotone_on A (\<sqsubseteq>) (\<sqsubseteq>) f"
-  shows "{X. directed X (\<sqsubseteq>)}-complete {p \<in> A. f p \<sim> p} (\<sqsubseteq>)"
+  shows "directed-complete {p \<in> A. f p \<sim> p} (\<sqsubseteq>)"
   apply (intro fixed_point_proof.attract_mono_imp_qfp_complete mono comp)
     apply unfold_locales
-  by (auto simp: f intro!: directed_extend intro: well_related_set.connex_axioms connex.directed)
+  by (auto simp: f intro!: directed_extend intro: well_related_set.connex connex.directed)
 
 text \<open>Well Completeness\<close>
 theorem mono_imp_qfp_well_complete:
-  assumes comp: "well_complete A (\<sqsubseteq>)"
+  assumes comp: "well_related_set-complete A (\<sqsubseteq>)"
     and f: "f ` A \<subseteq> A" and mono: "monotone_on A (\<sqsubseteq>) (\<sqsubseteq>) f"
-  shows "well_complete {p \<in> A. f p \<sim> p} (\<sqsubseteq>)"
+  shows "well_related_set-complete {p \<in> A. f p \<sim> p} (\<sqsubseteq>)"
   apply (intro fixed_point_proof.attract_mono_imp_qfp_complete mono comp)
     apply unfold_locales
   by (auto simp: f well_related_extend)
@@ -1185,9 +1207,9 @@ context antisymmetric begin
 
 text \<open>Knaster--Tarski\<close>
 theorem mono_imp_fp_complete:
-  assumes comp: "UNIV-complete A (\<sqsubseteq>)"
+  assumes comp: "\<top>-complete A (\<sqsubseteq>)"
     and f: "f ` A \<subseteq> A" and mono: "monotone_on A (\<sqsubseteq>) (\<sqsubseteq>) f"
-  shows "UNIV-complete {p \<in> A. f p = p} (\<sqsubseteq>)"
+  shows "\<top>-complete {p \<in> A. f p = p} (\<sqsubseteq>)"
 proof-
   interpret fixed_point_proof using f by unfold_locales
   show ?thesis
@@ -1197,33 +1219,33 @@ qed
 
 text \<open>Markowsky 1976\<close>
 theorem mono_imp_fp_connex_complete:
-  assumes comp: "{X. connex X (\<sqsubseteq>)}-complete A (\<sqsubseteq>)"
+  assumes comp: "connex-complete A (\<sqsubseteq>)"
     and f: "f ` A \<subseteq> A" and mono: "monotone_on A (\<sqsubseteq>) (\<sqsubseteq>) f"
-  shows "{X. connex X (\<sqsubseteq>)}-complete {p \<in> A. f p = p} (\<sqsubseteq>)"
+  shows "connex-complete {p \<in> A. f p = p} (\<sqsubseteq>)"
 proof-
   interpret fixed_point_proof using f by unfold_locales
   show ?thesis
     apply (intro antisym_mono_imp_fp_complete antisymmetric_axioms mono comp)
-    by (auto intro: connex_union well_related_set.connex_axioms)
+    by (auto intro: connex_union well_related_set.connex)
 qed
 
 text \<open>Pataraia\<close>
 theorem mono_imp_fp_directed_complete:
-  assumes comp: "{X. directed X (\<sqsubseteq>)}-complete A (\<sqsubseteq>)"
+  assumes comp: "directed-complete A (\<sqsubseteq>)"
     and f: "f ` A \<subseteq> A" and mono: "monotone_on A (\<sqsubseteq>) (\<sqsubseteq>) f"
-  shows "{X. directed X (\<sqsubseteq>)}-complete {p \<in> A. f p = p} (\<sqsubseteq>)"
+  shows "directed-complete {p \<in> A. f p = p} (\<sqsubseteq>)"
 proof-
   interpret fixed_point_proof using f by unfold_locales
   show ?thesis
     apply (intro antisym_mono_imp_fp_complete mono antisymmetric_axioms comp)
-     by (auto intro: directed_extend connex.directed well_related_set.connex_axioms)
+     by (auto intro: directed_extend connex.directed well_related_set.connex)
 qed
 
 text \<open>Bhatta \& George 2011\<close>
 theorem mono_imp_fp_well_complete:
-  assumes comp: "well_complete A (\<sqsubseteq>)"
+  assumes comp: "well_related_set-complete A (\<sqsubseteq>)"
     and f: "f ` A \<subseteq> A" and mono: "monotone_on A (\<sqsubseteq>) (\<sqsubseteq>) f"
-  shows "well_complete {p \<in> A. f p = p} (\<sqsubseteq>)"
+  shows "well_related_set-complete {p \<in> A. f p = p} (\<sqsubseteq>)"
 proof-
   interpret fixed_point_proof using f by unfold_locales
   show ?thesis

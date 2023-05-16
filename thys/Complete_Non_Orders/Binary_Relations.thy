@@ -10,8 +10,14 @@ theory Binary_Relations
   imports
 (* To verify that we don't use the axiom of choice, import
     HOL.Complete_Partial_Order HOL.Wellfounded
-   instead of *) Main
+   instead of *)
+    Main
 begin
+
+unbundle lattice_syntax
+
+lemma conj_iff_conj_iff_imp_iff: "Trueprop (x \<and> y \<longleftrightarrow> x \<and> z) \<equiv> (x \<Longrightarrow> (y \<longleftrightarrow> z))"
+  by (auto intro!: equal_intr_rule)
 
 lemma conj_imp_eq_imp_imp: "(P \<and> Q \<Longrightarrow> PROP R) \<equiv> (P \<Longrightarrow> Q \<Longrightarrow> PROP R)"
   by standard simp_all
@@ -25,6 +31,8 @@ lemma tranclp_id[simp]: "transp r \<Longrightarrow> tranclp r = r"
 lemma transp_tranclp[simp]: "transp (tranclp r)" by (auto simp: tranclp_trancl transp_trans)
 
 lemma funpow_dom: "f ` A \<subseteq> A \<Longrightarrow> (f^^n) ` A \<subseteq> A" by (induct n, auto)
+
+lemma image_subsetD: "f ` A \<subseteq> B \<Longrightarrow> a \<in> A \<Longrightarrow> f a \<in> B" by auto
 
 text \<open>Below we introduce an Isabelle-notation for $\{ \ldots x\ldots \mid x \in X \}$.\<close>
 
@@ -50,19 +58,11 @@ abbreviation(input) dual ("(_\<^sup>-)" [1000] 1000) where "r\<^sup>- x y \<equi
 
 lemma conversep_is_dual[simp]: "conversep = dual" by auto
 
+lemma dual_inf: "(r \<sqinter> s)\<^sup>- = r\<^sup>- \<sqinter> s\<^sup>-" by (auto intro!: ext)
+
 text \<open>Monotonicity is already defined in the library, but we want one restricted to a domain.\<close>
 
-definition monotone_on where
-  "monotone_on X r s f \<equiv> \<forall>x y. x \<in> X \<longrightarrow> y \<in> X \<longrightarrow> r x y \<longrightarrow> s (f x) (f y)"
-
-lemmas monotone_onI = monotone_on_def[unfolded atomize_eq, THEN iffD2, rule_format]
-lemma monotone_onD: "monotone_on X r s f \<Longrightarrow> r x y \<Longrightarrow> x \<in> X \<Longrightarrow> y \<in> X \<Longrightarrow> s (f x) (f y)"
-  by (auto simp: monotone_on_def)
-
 lemmas monotone_onE = monotone_on_def[unfolded atomize_eq, THEN iffD1, elim_format, rule_format]
-
-lemma monotone_on_UNIV[simp]: "monotone_on UNIV = monotone"
-  by (intro ext, auto simp: monotone_on_def monotone_def)
 
 lemma monotone_on_dual: "monotone_on X r s f \<Longrightarrow> monotone_on X r\<^sup>- s\<^sup>- f"
   by (auto simp: monotone_on_def)
@@ -93,6 +93,8 @@ lemma sympartp_dual: "sympartp r\<^sup>- = sympartp r"
   by (auto intro!:ext simp: sympartp_def)
 
 lemma sympartp_eq[simp]: "sympartp (=) = (=)" by auto
+
+lemma sympartp_sympartp[simp]: "sympartp (sympartp r) = sympartp r" by (auto intro!:ext)
 
 lemma reflclp_sympartp[simp]: "(sympartp r)\<^sup>=\<^sup>= = sympartp r\<^sup>=\<^sup>=" by auto
 
@@ -139,12 +141,16 @@ lemma asympartp_sympartp [simp]: "asympartp (sympartp r) = bot"
   and sympartp_asympartp [simp]: "sympartp (asympartp r) = bot"
   by (auto intro!: ext)
 
+lemma asympartp_dual: "asympartp r\<^sup>- = (asympartp r)\<^sup>-" by auto
+
 text \<open>Restriction to a set:\<close>
 
 definition Restrp (infixl "\<restriction>" 60) where "(r \<restriction> A) a b \<equiv> a \<in> A \<and> b \<in> A \<and> r a b"
 
 lemmas RestrpI[intro!] = Restrp_def[unfolded atomize_eq, THEN iffD2, unfolded conj_imp_eq_imp_imp]
 lemmas RestrpE[elim!] = Restrp_def[unfolded atomize_eq, THEN iffD1, elim_format, unfolded conj_imp_eq_imp_imp]
+
+lemma Restrp_simp[simp]: "a \<in> A \<Longrightarrow> b \<in> A \<Longrightarrow> (r \<restriction> A) a b \<longleftrightarrow> r a b" by auto
 
 lemma Restrp_UNIV[simp]: "r \<restriction> UNIV \<equiv> r" by (auto simp: atomize_eq)
 
@@ -167,22 +173,41 @@ lemma subset_Imagep: "B \<subseteq> r ``` A \<longleftrightarrow> (\<forall>b\<i
   by (auto simp: Imagep_def)
 
 text \<open>Bounds of a set:\<close>
-definition "bound X r b \<equiv> \<forall>x \<in> X. r x b"
+definition "bound X (\<sqsubseteq>) b \<equiv> \<forall>x \<in> X. x \<sqsubseteq> b" for r (infix "\<sqsubseteq>" 50)
 
 lemma
   fixes r (infix "\<sqsubseteq>" 50)
   shows boundI[intro!]: "(\<And>x. x \<in> X \<Longrightarrow> x \<sqsubseteq> b) \<Longrightarrow> bound X (\<sqsubseteq>) b"
     and boundE[elim]: "bound X (\<sqsubseteq>) b \<Longrightarrow> ((\<And>x. x \<in> X \<Longrightarrow> x \<sqsubseteq> b) \<Longrightarrow> thesis) \<Longrightarrow> thesis"
+    and boundD: "bound X (\<sqsubseteq>) b \<Longrightarrow> a \<in> X \<Longrightarrow> a \<sqsubseteq> b"
   by (auto simp: bound_def)
 
 lemma bound_empty: "bound {} = (\<lambda>r x. True)" by auto
+
+lemma bound_cmono: assumes "X \<subseteq> Y" shows "bound Y \<le> bound X"
+  using assms by auto
+
+lemmas bound_subset = bound_cmono[THEN le_funD, THEN le_funD, THEN le_boolD, folded atomize_imp]
+
+lemma bound_un: "bound (A \<union> B) = bound A \<sqinter> bound B"
+  by auto
 
 lemma bound_insert[simp]:
   fixes r (infix "\<sqsubseteq>" 50)
   shows "bound (insert x X) (\<sqsubseteq>) b \<longleftrightarrow> x \<sqsubseteq> b \<and> bound X (\<sqsubseteq>) b" by auto
 
+lemma bound_cong:
+  assumes "A = A'"
+    and "b = b'"
+    and "\<And>a. a \<in> A' \<Longrightarrow> le a b' = le' a b'"
+  shows "bound A le b = bound A' le' b'"
+  by (auto simp: assms)
+
+lemma bound_subsel: "le \<le> le' \<Longrightarrow> bound A le \<le> bound A le'"
+  by (auto simp add: bound_def)
+
 text \<open>Extreme (greatest) elements in a set:\<close>
-definition "extreme X r e \<equiv> e \<in> X \<and> (\<forall>x \<in> X. r x e)"
+definition "extreme X (\<sqsubseteq>) e \<equiv> e \<in> X \<and> (\<forall>x \<in> X. x \<sqsubseteq> e)" for r (infix "\<sqsubseteq>" 50)
 
 lemma
   fixes r (infix "\<sqsubseteq>" 50)
@@ -195,54 +220,196 @@ lemma
   fixes r (infix "\<sqsubseteq>" 50)
   shows extreme_UNIV[simp]: "extreme UNIV (\<sqsubseteq>) t \<longleftrightarrow> (\<forall>x. x \<sqsubseteq> t)" by auto
 
+lemma extreme_iff_bound: "extreme X r e \<longleftrightarrow> bound X r e \<and> e \<in> X" by auto
+
+lemma extreme_imp_bound: "extreme X r x \<Longrightarrow> bound X r x" by auto
+
+lemma extreme_inf: "extreme X (r \<sqinter> s) x \<longleftrightarrow> extreme X r x \<and> extreme X s x" by auto
+
 lemma extremes_equiv: "extreme X r b \<Longrightarrow> extreme X r c \<Longrightarrow> sympartp r b c" by blast
 
-lemma bound_cmono: assumes "X \<subseteq> Y" shows "bound Y \<le> bound X"
-  using assms by auto
+lemma extreme_cong:
+  assumes "A = A'"
+    and "b = b'"
+    and "\<And>a. a \<in> A' \<Longrightarrow> b' \<in> A' \<Longrightarrow> le a b' = le' a b'"
+  shows "extreme A le b = extreme A' le' b'"
+  by (auto simp: assms extreme_def)
 
-lemma sympartp_sympartp[simp]: "sympartp (sympartp r) = sympartp r" by (auto intro!:ext)
+lemma extreme_subset: "X \<subseteq> Y \<Longrightarrow> extreme X r x \<Longrightarrow> extreme Y r y \<Longrightarrow> r x y" by blast
+
+lemma extreme_subrel:
+  "le \<le> le' \<Longrightarrow> extreme A le \<le> extreme A le'" by (auto simp: extreme_def)
 
 text \<open>Now suprema and infima are given uniformly as follows.
   The definition is restricted to a given set.
 \<close>
+
+definition
+  "extreme_bound A (\<sqsubseteq>) X \<equiv> extreme {b \<in> A. bound X (\<sqsubseteq>) b} (\<sqsubseteq>)\<^sup>-" for r (infix "\<sqsubseteq>" 50)
+
+lemmas extreme_boundI_extreme = extreme_bound_def[unfolded atomize_eq, THEN fun_cong, THEN iffD2]
+
+lemmas extreme_boundD_extreme = extreme_bound_def[unfolded atomize_eq, THEN fun_cong, THEN iffD1]
+
 context
   fixes A :: "'a set" and less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>" 50)
 begin
 
-abbreviation "extreme_bound X \<equiv> extreme {b \<in> A. bound X (\<sqsubseteq>) b} (\<lambda>x y. y \<sqsubseteq> x)"
-
 lemma extreme_boundI[intro]:
   assumes "\<And>b. bound X (\<sqsubseteq>) b \<Longrightarrow> b \<in> A \<Longrightarrow> s \<sqsubseteq> b" and "\<And>x. x \<in> X \<Longrightarrow> x \<sqsubseteq> s" and "s \<in> A"
-  shows "extreme_bound X s"
-  using assms by auto
+  shows "extreme_bound A (\<sqsubseteq>) X s"
+  using assms by (auto simp: extreme_bound_def)
 
-lemma extreme_bound_bound: "extreme_bound X y \<Longrightarrow> x \<in> X \<Longrightarrow> x \<sqsubseteq> y" by auto
+lemma extreme_boundD:
+  assumes "extreme_bound A (\<sqsubseteq>) X s"
+  shows "x \<in> X \<Longrightarrow> x \<sqsubseteq> s"
+    and "bound X (\<sqsubseteq>) b \<Longrightarrow> b \<in> A \<Longrightarrow> s \<sqsubseteq> b"
+    and extreme_bound_in: "s \<in> A"
+  using assms by (auto simp: extreme_bound_def)
 
-lemma extreme_bound_mono:
+lemma extreme_boundE[elim]:
+  assumes "extreme_bound A (\<sqsubseteq>) X s"
+    and "s \<in> A \<Longrightarrow> bound X (\<sqsubseteq>) s \<Longrightarrow> (\<And>b. bound X (\<sqsubseteq>) b \<Longrightarrow> b \<in> A \<Longrightarrow> s \<sqsubseteq> b) \<Longrightarrow> thesis"
+  shows thesis
+  using assms by (auto simp: extreme_bound_def)
+
+lemma extreme_bound_imp_bound: "extreme_bound A (\<sqsubseteq>) X s \<Longrightarrow> bound X (\<sqsubseteq>) s" by auto
+
+lemma extreme_imp_extreme_bound:
+  assumes Xs: "extreme X (\<sqsubseteq>) s" and XA: "X \<subseteq> A" shows "extreme_bound A (\<sqsubseteq>) X s"
+  using assms by force
+
+lemma extreme_bound_subset_bound:
   assumes XY: "X \<subseteq> Y"
-    and sX: "extreme_bound X sX"
-    and sY: "extreme_bound Y sY"
+    and sX: "extreme_bound A (\<sqsubseteq>) X s"
+    and b: "bound Y (\<sqsubseteq>) b" and bA: "b \<in> A"
+  shows "s \<sqsubseteq> b"
+  using bound_subset[OF XY b] sX bA by auto
+
+lemma extreme_bound_subset:
+  assumes XY: "X \<subseteq> Y"
+    and sX: "extreme_bound A (\<sqsubseteq>) X sX"
+    and sY: "extreme_bound A (\<sqsubseteq>) Y sY"
   shows "sX \<sqsubseteq> sY"
-proof-
-  have "bound X (\<sqsubseteq>) sY" using XY sY by force
-  with sX sY show ?thesis by (auto 0 4)
-qed
+  using extreme_bound_subset_bound[OF XY sX] sY by auto
 
 lemma extreme_bound_iff:
-  shows "extreme_bound X s \<longleftrightarrow> s \<in> A \<and> (\<forall>c \<in> A. (\<forall>x \<in> X. x \<sqsubseteq> c) \<longrightarrow> s \<sqsubseteq> c) \<and> (\<forall>x \<in> X. x \<sqsubseteq> s)"
-  by (auto simp: extreme_def)
+  "extreme_bound A (\<sqsubseteq>) X s \<longleftrightarrow> s \<in> A \<and> (\<forall>c \<in> A. (\<forall>x \<in> X. x \<sqsubseteq> c) \<longrightarrow> s \<sqsubseteq> c) \<and> (\<forall>x \<in> X. x \<sqsubseteq> s)"
+  by (auto simp: extreme_bound_def extreme_def)
+
+lemma extreme_bound_empty: "extreme_bound A (\<sqsubseteq>) {} x \<longleftrightarrow> extreme A (\<sqsubseteq>)\<^sup>- x"
+  by auto
 
 lemma extreme_bound_singleton_refl[simp]:
-  "extreme_bound {x} x \<longleftrightarrow> x \<in> A \<and> x \<sqsubseteq> x" by auto
+  "extreme_bound A (\<sqsubseteq>) {x} x \<longleftrightarrow> x \<in> A \<and> x \<sqsubseteq> x" by auto
 
 lemma extreme_bound_image_const:
-  "x \<sqsubseteq> x \<Longrightarrow> I \<noteq> {} \<Longrightarrow> (\<And>i. i \<in> I \<Longrightarrow> f i = x) \<Longrightarrow> x \<in> A \<Longrightarrow> extreme_bound (f ` I) x"
+  "x \<sqsubseteq> x \<Longrightarrow> I \<noteq> {} \<Longrightarrow> (\<And>i. i \<in> I \<Longrightarrow> f i = x) \<Longrightarrow> x \<in> A \<Longrightarrow> extreme_bound A (\<sqsubseteq>) (f ` I) x"
   by (auto simp: image_constant)
 
 lemma extreme_bound_UN_const:
   "x \<sqsubseteq> x \<Longrightarrow> I \<noteq> {} \<Longrightarrow> (\<And>i y. i \<in> I \<Longrightarrow> P i y \<longleftrightarrow> x = y) \<Longrightarrow> x \<in> A \<Longrightarrow>
-  extreme_bound (\<Union>i\<in>I. {y. P i y}) x"
+  extreme_bound A (\<sqsubseteq>) (\<Union>i\<in>I. {y. P i y}) x"
   by auto
+
+lemma extreme_bounds_equiv:
+  assumes s: "extreme_bound A (\<sqsubseteq>) X s" and s': "extreme_bound A (\<sqsubseteq>) X s'"
+  shows "sympartp (\<sqsubseteq>) s s'"
+  using s s'
+  apply (unfold extreme_bound_def)
+  apply (subst sympartp_dual)
+  by (rule extremes_equiv)
+
+lemma extreme_bound_sqweeze:
+  assumes XY: "X \<subseteq> Y" and YZ: "Y \<subseteq> Z"
+    and Xs: "extreme_bound A (\<sqsubseteq>) X s" and Zs: "extreme_bound A (\<sqsubseteq>) Z s"
+  shows "extreme_bound A (\<sqsubseteq>) Y s"
+proof
+  from Xs show "s \<in> A" by auto
+  fix b assume Yb: "bound Y (\<sqsubseteq>) b" and bA: "b \<in> A"
+  from bound_subset[OF XY Yb] have "bound X (\<sqsubseteq>) b".
+  with Xs bA
+  show "s \<sqsubseteq> b" by auto
+next
+  fix y assume yY: "y \<in> Y"
+  with YZ have "y \<in> Z" by auto
+  with Zs show "y \<sqsubseteq> s" by auto
+qed
+
+lemma bound_closed_imp_extreme_bound_eq_extreme:
+  assumes closed: "\<forall>b \<in> A. bound X (\<sqsubseteq>) b \<longrightarrow> b \<in> X" and XA: "X \<subseteq> A"
+  shows "extreme_bound A (\<sqsubseteq>) X = extreme X (\<sqsubseteq>)"
+proof (intro ext iffI extreme_boundI extremeI)
+  fix e
+  assume "extreme_bound A (\<sqsubseteq>) X e"
+  then have Xe: "bound X (\<sqsubseteq>) e" and "e \<in> A" by auto
+  with closed show "e \<in> X" by auto
+  fix x assume "x \<in> X"
+  with Xe show "x \<sqsubseteq> e" by auto
+next
+  fix e
+  assume Xe: "extreme X (\<sqsubseteq>) e"
+  then have eX: "e \<in> X" by auto
+  with XA show "e \<in> A" by auto
+  { fix b assume Xb: "bound X (\<sqsubseteq>) b" and "b \<in> A"
+    from eX Xb show "e \<sqsubseteq> b" by auto
+  }
+  fix x assume xX: "x \<in> X" with Xe show "x \<sqsubseteq> e" by auto
+qed
+
+end
+
+lemma extreme_bound_cong:
+  assumes "A = A'"
+    and "X = X'"
+    and "\<And>a b. a \<in> A' \<Longrightarrow> b \<in> A' \<Longrightarrow> le a b \<longleftrightarrow> le' a b"
+    and "\<And>a b. a \<in> X' \<Longrightarrow> b \<in> A' \<Longrightarrow> le a b \<longleftrightarrow> le' a b"
+  shows "extreme_bound A le X s = extreme_bound A le' X s"
+  apply (unfold extreme_bound_def)
+  apply (rule extreme_cong)
+  by (auto simp: assms)
+
+
+text \<open>Maximal or Minimal\<close>
+
+definition "extremal X (\<sqsubseteq>) x \<equiv> x \<in> X \<and> (\<forall>y \<in> X. x \<sqsubseteq> y \<longrightarrow> y \<sqsubseteq> x)" for r (infix "\<sqsubseteq>" 50)
+
+context
+  fixes r :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>" 50)
+begin
+
+lemma extremalI:
+  assumes "x \<in> X" "\<And>y. y \<in> X \<Longrightarrow> x \<sqsubseteq> y \<Longrightarrow> y \<sqsubseteq> x"
+  shows "extremal X (\<sqsubseteq>) x"
+  using assms by (auto simp: extremal_def)
+
+lemma extremalE:
+  assumes "extremal X (\<sqsubseteq>) x"
+    and "x \<in> X \<Longrightarrow> (\<And>y. y \<in> X \<Longrightarrow> x \<sqsubseteq> y \<Longrightarrow> y \<sqsubseteq> x) \<Longrightarrow> thesis"
+  shows thesis
+  using assms by (auto simp: extremal_def)
+
+lemma extremalD:
+  assumes "extremal X (\<sqsubseteq>) x" shows "x \<in> X" "y \<in> X \<Longrightarrow> x \<sqsubseteq> y \<Longrightarrow> y \<sqsubseteq> x"
+  using assms by (auto elim!: extremalE)
+
+end
+
+context
+  fixes ir (infix "\<preceq>" 50) and r (infix "\<sqsubseteq>" 50) and I f
+  assumes mono: "monotone_on I (\<preceq>) (\<sqsubseteq>) f"
+begin
+
+lemma monotone_image_bound:
+  assumes "X \<subseteq> I" and "b \<in> I" and "bound X (\<preceq>) b"
+  shows "bound (f ` X) (\<sqsubseteq>) (f b)"
+  using assms monotone_onD[OF mono]
+  by (auto simp: bound_def)
+
+lemma monotone_image_extreme:
+  assumes e: "extreme I (\<preceq>) e"
+  shows "extreme (f ` I) (\<sqsubseteq>) (f e)"
+  using e[unfolded extreme_iff_bound] monotone_image_bound[of I e] by auto
 
 end
 
@@ -269,7 +436,7 @@ end
 subsection \<open>Locales for Binary Relations\<close>
 
 text \<open>We now define basic properties of binary relations,
-in form of \emph{locales}~\<^cite>\<open>"Kammuller00" and "locale"\<close>.\<close>
+in form of \emph{locales}~\cite{Kammuller00,locale}.\<close>
 
 subsubsection \<open>Syntactic Locales\<close>
 
@@ -293,14 +460,26 @@ end
 text \<open>Next ones introduce abbreviations for dual etc.
 To avoid needless constants, one should be careful when declaring them as sublocales.\<close>
 
-locale less_eq_notations = less_eq_syntax
+locale less_eq_dualize = less_eq_syntax
 begin
 
 abbreviation (input) greater_eq (infix "\<sqsupseteq>" 50) where "x \<sqsupseteq> y \<equiv> y \<sqsubseteq> x"
+
+end
+
+locale less_eq_symmetrize = less_eq_dualize
+begin
+
 abbreviation sym (infix "\<sim>" 50) where "(\<sim>) \<equiv> sympartp (\<sqsubseteq>)"
+abbreviation equiv (infix "(\<simeq>)" 50) where "(\<simeq>) \<equiv> equivpartp (\<sqsubseteq>)"
+
+end
+
+locale less_eq_asymmetrize = less_eq_symmetrize
+begin
+
 abbreviation less (infix "\<sqsubset>" 50) where "(\<sqsubset>) \<equiv> asympartp (\<sqsubseteq>)"
 abbreviation greater (infix "\<sqsupset>" 50) where "(\<sqsupset>) \<equiv> (\<sqsubset>)\<^sup>-"
-abbreviation equiv (infix "(\<simeq>)" 50) where "(\<simeq>) \<equiv> equivpartp (\<sqsubseteq>)"
 
 lemma asym_cases[consumes 1, case_names asym sym]:
   assumes "x \<sqsubseteq> y" and "x \<sqsubset> y \<Longrightarrow> thesis" and "x \<sim> y \<Longrightarrow> thesis"
@@ -309,7 +488,7 @@ lemma asym_cases[consumes 1, case_names asym sym]:
 
 end
 
-locale less_notations = less_syntax
+locale less_dualize = less_syntax
 begin
 
 abbreviation (input) greater (infix "\<sqsupset>" 50) where "x \<sqsupset> y \<equiv> y \<sqsubset> x"
@@ -330,15 +509,17 @@ begin
 
 lemma eq_implies: "x = y \<Longrightarrow> x \<in> A \<Longrightarrow> x \<sqsubseteq> y" by auto
 
+lemma reflexive_subset: "B \<subseteq> A \<Longrightarrow> reflexive B (\<sqsubseteq>)" apply unfold_locales by auto
+
 lemma extreme_singleton[simp]: "x \<in> A \<Longrightarrow> extreme {x} (\<sqsubseteq>) y \<longleftrightarrow> x = y" by auto
 
 lemma extreme_bound_singleton: "x \<in> A \<Longrightarrow> extreme_bound A (\<sqsubseteq>) {x} x" by auto
 
-lemma reflexive_subset: "B \<subseteq> A \<Longrightarrow> reflexive B (\<sqsubseteq>)" apply unfold_locales by auto
+lemma extreme_bound_cone: "x \<in> A \<Longrightarrow> extreme_bound A (\<sqsubseteq>) {a \<in> A. a \<sqsubseteq> x} x" by auto
 
 end
 
-declare reflexive.intro[intro!]
+lemmas reflexiveI[intro!] = reflexive.intro
 
 lemma reflexiveE[elim]:
   assumes "reflexive A r" and "(\<And>x. x \<in> A \<Longrightarrow> r x x) \<Longrightarrow> thesis" shows thesis
@@ -363,17 +544,23 @@ lemma irreflexive_subset: "B \<subseteq> A \<Longrightarrow> irreflexive B (\<sq
 
 end
 
-declare irreflexive.intro[intro!]
+lemmas irreflexiveI[intro!] = irreflexive.intro
 
 lemma irreflexive_cong:
   "(\<And>a b. a \<in> A \<Longrightarrow> b \<in> A \<Longrightarrow> r a b \<longleftrightarrow> r' a b) \<Longrightarrow> irreflexive A r \<longleftrightarrow> irreflexive A r'"
   by (simp add: irreflexive_def)
 
+context reflexive begin
+
+interpretation less_eq_asymmetrize.
+
+lemma asympartp_irreflexive: "irreflexive A (\<sqsubset>)" by auto
+
+end
+
 locale transitive = related_set +
   assumes trans[trans]: "x \<sqsubseteq> y \<Longrightarrow> y \<sqsubseteq> z \<Longrightarrow> x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> z \<in> A \<Longrightarrow> x \<sqsubseteq> z"
 begin
-
-interpretation less_eq_notations.
 
 lemma Restrp_transitive: "transitive UNIV ((\<sqsubseteq>)\<restriction>A)"
   apply unfold_locales
@@ -382,12 +569,25 @@ lemma Restrp_transitive: "transitive UNIV ((\<sqsubseteq>)\<restriction>A)"
 lemma bound_trans[trans]: "bound X (\<sqsubseteq>) b \<Longrightarrow> b \<sqsubseteq> c \<Longrightarrow> X \<subseteq> A \<Longrightarrow> b \<in> A \<Longrightarrow> c \<in> A \<Longrightarrow> bound X (\<sqsubseteq>) c"
   by (auto 0 4 dest: trans)
 
+lemma extreme_bound_mono:
+  assumes XY: "\<forall>x\<in>X. \<exists>y\<in>Y. x \<sqsubseteq> y" and XA: "X \<subseteq> A" and YA: "Y \<subseteq> A"
+    and sX: "extreme_bound A (\<sqsubseteq>) X sX"
+    and sY: "extreme_bound A (\<sqsubseteq>) Y sY"
+  shows "sX \<sqsubseteq> sY"
+proof (intro extreme_boundD(2)[OF sX] CollectI conjI boundI)
+  from sY show sYA: "sY \<in> A" by auto
+  from sY have "bound Y (\<sqsubseteq>) sY" by auto
+  fix x assume xX: "x \<in> X" with XY obtain y where yY: "y \<in> Y" and xy: "x \<sqsubseteq> y" by auto
+  from yY sY have "y \<sqsubseteq> sY" by auto
+  from trans[OF xy this] xX XA yY YA sYA show "x \<sqsubseteq> sY" by auto
+qed
+
 lemma transitive_subset:
   assumes BA: "B \<subseteq> A" shows "transitive B (\<sqsubseteq>)"
   apply unfold_locales
   using trans BA by blast
 
-lemma asympartp_transitive: "transitive A (\<sqsubset>)"
+lemma asympartp_transitive: "transitive A (asympartp (\<sqsubseteq>))"
   apply unfold_locales by (auto dest:trans)
 
 lemma reflclp_transitive: "transitive A (\<sqsubseteq>)\<^sup>=\<^sup>="
@@ -397,7 +597,12 @@ text \<open>The symmetric part is also transitive, but this is done in the later
 
 end
 
-declare transitive.intro[intro?]
+lemmas transitiveI = transitive.intro
+
+lemma transitive_ball[code]:
+  "transitive A (\<sqsubseteq>) \<longleftrightarrow> (\<forall>x \<in> A. \<forall>y \<in> A. \<forall>z \<in> A. x \<sqsubseteq> y \<longrightarrow> y \<sqsubseteq> z \<longrightarrow> x \<sqsubseteq> z)"
+  for less_eq (infix "\<sqsubseteq>" 50)
+  by (auto simp: transitive_def)
 
 lemma transitive_cong:
   assumes r: "\<And>a b. a \<in> A \<Longrightarrow> b \<in> A \<Longrightarrow> r a b \<longleftrightarrow> r' a b" shows "transitive A r \<longleftrightarrow> transitive A r'"
@@ -411,6 +616,8 @@ proof (intro iffI)
     apply (unfold r)
     using transitive.trans.
 qed
+
+lemma transitive_empty[intro!]: "transitive {} r" by (auto intro!: transitive.intro)
 
 lemma tranclp_transitive: "transitive A (tranclp r)"
   using tranclp_trans by unfold_locales
@@ -430,12 +637,13 @@ lemma symmetric_subset: "B \<subseteq> A \<Longrightarrow> symmetric B (\<sim>)"
 
 end
 
-declare symmetric.intro[intro]
+lemmas symmetricI[intro] = symmetric.intro
 
 lemma symmetric_cong:
   "(\<And>a b. a \<in> A \<Longrightarrow> b \<in> A \<Longrightarrow> r a b \<longleftrightarrow> r' a b) \<Longrightarrow> symmetric A r \<longleftrightarrow> symmetric A r'"
   by (auto simp: symmetric_def)
 
+lemma symmetric_empty[intro!]: "symmetric {} r" by auto
 
 global_interpretation sympartp: symmetric UNIV "sympartp r"
   rewrites "\<And>r. r \<restriction> UNIV \<equiv> r"
@@ -450,7 +658,7 @@ locale antisymmetric = related_set +
   assumes antisym: "x \<sqsubseteq> y \<Longrightarrow> y \<sqsubseteq> x \<Longrightarrow> x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> x = y"
 begin
 
-interpretation less_eq_notations.
+interpretation less_eq_symmetrize.
 
 lemma sym_iff_eq_refl: "x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> x \<sim> y \<longleftrightarrow> x = y \<and> y \<sqsubseteq> y" by (auto dest: antisym)
 
@@ -468,6 +676,9 @@ lemma ex_extreme_iff_the:
   apply (rule theI')
   using extreme_unique by auto
 
+lemma eq_The_extreme: "X \<subseteq> A \<Longrightarrow> extreme X (\<sqsubseteq>) x \<Longrightarrow> x = The (extreme X (\<sqsubseteq>))"
+  by (rule the1_equality[symmetric], auto simp: ex_extreme_iff_ex1[symmetric])
+
 lemma Restrp_antisymmetric: "antisymmetric UNIV ((\<sqsubseteq>)\<restriction>A)"
    apply unfold_locales
   by (auto dest: antisym)
@@ -477,11 +688,13 @@ lemma antisymmetric_subset: "B \<subseteq> A \<Longrightarrow> antisymmetric B (
 
 end
 
-declare antisymmetric.intro[intro]
+lemmas antisymmetricI[intro] = antisymmetric.intro
 
 lemma antisymmetric_cong:
   "(\<And>a b. a \<in> A \<Longrightarrow> b \<in> A \<Longrightarrow> r a b \<longleftrightarrow> r' a b) \<Longrightarrow> antisymmetric A r \<longleftrightarrow> antisymmetric A r'"
   by (auto simp: antisymmetric_def)
+
+lemma antisymmetric_empty[intro!]: "antisymmetric {} r" by auto
 
 lemma antisymmetric_union:
   fixes less_eq (infix "\<sqsubseteq>" 50)
@@ -500,7 +713,7 @@ locale semiattractive = related_set +
   assumes attract: "x \<sqsubseteq> y \<Longrightarrow> y \<sqsubseteq> x \<Longrightarrow> y \<sqsubseteq> z \<Longrightarrow> x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> z \<in> A \<Longrightarrow> x \<sqsubseteq> z"
 begin
 
-interpretation less_eq_notations.
+interpretation less_eq_symmetrize.
 
 lemma equiv_order_trans[trans]:
   assumes xy: "x \<simeq> y" and yz: "y \<sqsubseteq> z" and x: "x \<in> A" and y: "y \<in> A" and z: "z \<in> A"
@@ -551,7 +764,7 @@ lemma extreme_bound_quasi_const_iff:
 proof (intro iffI)
   assume y: "extreme_bound A (\<sqsubseteq>) C y"
   note x = extreme_bound_quasi_const[OF C x C0 const]
-  from extremes_equiv[OF y x]
+  from extreme_bounds_equiv[OF y x]
   show "x \<sim> y" by auto
 next
   assume xy: "x \<sim> y"
@@ -569,6 +782,8 @@ lemma semiattractive_subset: "B \<subseteq> A \<Longrightarrow> semiattractive B
 
 end
 
+lemmas semiattractiveI = semiattractive.intro
+
 lemma semiattractive_cong:
   assumes r: "\<And>a b. a \<in> A \<Longrightarrow> b \<in> A \<Longrightarrow> r a b \<longleftrightarrow> r' a b"
   shows "semiattractive A r \<longleftrightarrow> semiattractive A r'" (is "?l \<longleftrightarrow> ?r")
@@ -583,11 +798,14 @@ proof
     using semiattractive.attract.
 qed
 
+lemma semiattractive_empty[intro!]: "semiattractive {} r"
+  by (auto intro!: semiattractiveI)
+
 locale attractive = semiattractive +
   assumes "semiattractive A (\<sqsubseteq>)\<^sup>-"
 begin
 
-interpretation less_eq_notations.
+interpretation less_eq_symmetrize.
 
 sublocale dual: semiattractive A "(\<sqsubseteq>)\<^sup>-"
   rewrites "\<And>r. sympartp (r \<restriction> A) \<equiv> sympartp r \<restriction> A"
@@ -608,6 +826,23 @@ lemma order_sym_trans[trans]:
   shows "x \<sqsubseteq> z"
   using dual.attract[OF _ _ _ z y x] xy yz by auto
 
+lemma extreme_bound_sym_trans:
+  assumes XA: "X \<subseteq> A" and Xx: "extreme_bound A (\<sqsubseteq>) X x"
+    and xy: "x \<sim> y" and yA: "y \<in> A"
+  shows "extreme_bound A (\<sqsubseteq>) X y"
+proof (intro extreme_boundI yA)
+  from Xx have xA: "x \<in> A" by auto
+  {
+    fix b assume Xb: "bound X (\<sqsubseteq>) b" and bA: "b \<in> A"
+    with Xx have xb: "x \<sqsubseteq> b" by auto
+    from sym_order_trans[OF _ xb yA xA bA] xy show "y \<sqsubseteq> b" by auto
+  }
+  fix a assume aX: "a \<in> X"
+  with Xx have ax: "a \<sqsubseteq> x" by auto
+  from aX XA have aA: "a \<in> A" by auto
+  from order_sym_trans[OF ax xy aA xA yA] show "a \<sqsubseteq> y" by auto
+qed
+
 interpretation Restrp: semiattractive UNIV "(\<sqsubseteq>)\<restriction>A" using Restrp_semiattractive.
 interpretation dual.Restrp: semiattractive UNIV "(\<sqsubseteq>)\<^sup>-\<restriction>A" using dual.Restrp_semiattractive.
 
@@ -621,10 +856,15 @@ lemma attractive_subset: "B \<subseteq> A \<Longrightarrow> attractive B (\<sqsu
 
 end
 
+lemmas attractiveI = attractive.intro[OF _ attractive_axioms.intro]
+
 lemma attractive_cong:
   assumes r: "\<And>a b. a \<in> A \<Longrightarrow> b \<in> A \<Longrightarrow> r a b \<longleftrightarrow> r' a b"
   shows "attractive A r \<longleftrightarrow> attractive A r'"
   by (simp add: attractive_def attractive_axioms_def r cong: semiattractive_cong)
+
+lemma attractive_empty[intro!]: "attractive {} r"
+  by (auto intro!: attractiveI)
 
 context antisymmetric begin
 
@@ -672,6 +912,8 @@ lemma asymmetric_subset: "B \<subseteq> A \<Longrightarrow> asymmetric B (\<sqsu
 
 end
 
+lemmas asymmetricI = asymmetric.intro
+
 lemma asymmetric_iff_irreflexive_antisymmetric:
   fixes less (infix "\<sqsubset>" 50)
   shows "asymmetric A (\<sqsubset>) \<longleftrightarrow> irreflexive A (\<sqsubset>) \<and> antisymmetric A (\<sqsubset>)" (is "?l \<longleftrightarrow> ?r")
@@ -682,13 +924,16 @@ proof
 next
   assume ?r
   then interpret irreflexive + antisymmetric A "(\<sqsubset>)" by auto
-  show ?l by (auto intro!:asymmetric.intro dest: antisym irrefl)
+  show ?l by (auto intro!:asymmetricI dest: antisym irrefl)
 qed
 
 lemma asymmetric_cong:
   assumes r: "\<And>a b. a \<in> A \<Longrightarrow> b \<in> A \<Longrightarrow> r a b \<longleftrightarrow> r' a b"
   shows "asymmetric A r \<longleftrightarrow> asymmetric A r'"
   by (simp add: asymmetric_iff_irreflexive_antisymmetric r cong: irreflexive_cong antisymmetric_cong)
+
+lemma asymmetric_empty: "asymmetric {} r"
+  by (auto simp: asymmetric_iff_irreflexive_antisymmetric)
 
 locale quasi_ordered_set = reflexive + transitive
 begin
@@ -699,10 +944,18 @@ lemma quasi_ordered_subset: "B \<subseteq> A \<Longrightarrow> quasi_ordered_set
 
 end
 
+lemmas quasi_ordered_setI = quasi_ordered_set.intro
+
 lemma quasi_ordered_set_cong:
   assumes r: "\<And>a b. a \<in> A \<Longrightarrow> b \<in> A \<Longrightarrow> r a b \<longleftrightarrow> r' a b"
   shows "quasi_ordered_set A r \<longleftrightarrow> quasi_ordered_set A r'"
   by (simp add: quasi_ordered_set_def r cong: reflexive_cong transitive_cong)
+
+lemma quasi_ordered_set_empty[intro!]: "quasi_ordered_set {} r"
+  by (auto intro!: quasi_ordered_set.intro)
+
+lemma rtranclp_quasi_ordered: "quasi_ordered_set A (rtranclp r)"
+  by (unfold_locales, auto)
 
 locale near_ordered_set = antisymmetric + transitive
 begin
@@ -718,15 +971,20 @@ lemma near_ordered_subset: "B \<subseteq> A \<Longrightarrow> near_ordered_set B
 
 end
 
+lemmas near_ordered_setI = near_ordered_set.intro
+
 lemma near_ordered_set_cong:
   assumes r: "\<And>a b. a \<in> A \<Longrightarrow> b \<in> A \<Longrightarrow> r a b \<longleftrightarrow> r' a b"
   shows "near_ordered_set A r \<longleftrightarrow> near_ordered_set A r'"
   by (simp add: near_ordered_set_def r cong: antisymmetric_cong transitive_cong)
 
+lemma near_ordered_set_empty[intro!]: "near_ordered_set {} r"
+  by (auto intro!: near_ordered_set.intro)
+
 locale pseudo_ordered_set = reflexive + antisymmetric
 begin
 
-interpretation less_eq_notations.
+interpretation less_eq_symmetrize.
 
 lemma sym_eq[simp]: "x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> x \<sim> y \<longleftrightarrow> x = y"
   by (auto simp: refl dest: antisym)
@@ -745,10 +1003,15 @@ lemma pseudo_ordered_subset: "B \<subseteq> A \<Longrightarrow> pseudo_ordered_s
 
 end
 
+lemmas pseudo_ordered_setI = pseudo_ordered_set.intro
+
 lemma pseudo_ordered_set_cong:
   assumes r: "\<And>a b. a \<in> A \<Longrightarrow> b \<in> A \<Longrightarrow> r a b \<longleftrightarrow> r' a b"
   shows "pseudo_ordered_set A r \<longleftrightarrow> pseudo_ordered_set A r'"
   by (simp add: pseudo_ordered_set_def r cong: reflexive_cong antisymmetric_cong)
+
+lemma pseudo_ordered_set_empty[intro!]: "pseudo_ordered_set {} r"
+  by (auto intro!: pseudo_ordered_setI)
 
 locale partially_ordered_set = reflexive + antisymmetric + transitive
 begin
@@ -761,10 +1024,15 @@ lemma partially_ordered_subset: "B \<subseteq> A \<Longrightarrow> partially_ord
 
 end
 
+lemmas partially_ordered_setI = partially_ordered_set.intro
+
 lemma partially_ordered_set_cong:
   assumes r: "\<And>a b. a \<in> A \<Longrightarrow> b \<in> A \<Longrightarrow> r a b \<longleftrightarrow> r' a b"
   shows "partially_ordered_set A r \<longleftrightarrow> partially_ordered_set A r'"
   by (simp add: partially_ordered_set_def r cong: reflexive_cong antisymmetric_cong transitive_cong)
+
+lemma partially_ordered_set_empty[intro!]: "partially_ordered_set {} r"
+  by (auto intro!: partially_ordered_setI)
 
 locale strict_ordered_set = irreflexive + transitive A "(\<sqsubset>)"
 begin
@@ -793,10 +1061,15 @@ lemma strict_ordered_subset: "B \<subseteq> A \<Longrightarrow> strict_ordered_s
 
 end
 
+lemmas strict_ordered_setI = strict_ordered_set.intro
+
 lemma strict_ordered_set_cong:
   assumes r: "\<And>a b. a \<in> A \<Longrightarrow> b \<in> A \<Longrightarrow> r a b \<longleftrightarrow> r' a b"
   shows "strict_ordered_set A r \<longleftrightarrow> strict_ordered_set A r'"
   by (simp add: strict_ordered_set_def r cong: irreflexive_cong transitive_cong)
+
+lemma strict_ordered_set_empty[intro!]: "strict_ordered_set {} r"
+  by (auto intro!: strict_ordered_set.intro)
 
 locale tolerance = symmetric + reflexive A "(\<sim>)"
 begin
@@ -807,10 +1080,14 @@ lemma tolerance_subset: "B \<subseteq> A \<Longrightarrow> tolerance B (\<sim>)"
 
 end
 
+lemmas toleranceI = tolerance.intro
+
 lemma tolerance_cong:
   assumes r: "\<And>a b. a \<in> A \<Longrightarrow> b \<in> A \<Longrightarrow> r a b \<longleftrightarrow> r' a b"
   shows "tolerance A r \<longleftrightarrow> tolerance A r'"
   by (simp add: tolerance_def r cong: reflexive_cong symmetric_cong)
+
+lemma tolerance_empty[intro!]: "tolerance {} r" by (auto intro!: toleranceI)
 
 global_interpretation equiv: tolerance UNIV "equivpartp r"
   rewrites "\<And>r. r \<restriction> UNIV \<equiv> r"
@@ -836,11 +1113,16 @@ lemma partial_equivalence_subset: "B \<subseteq> A \<Longrightarrow> partial_equ
 
 end
 
+lemmas partial_equivalenceI = partial_equivalence.intro[OF _ partial_equivalence_axioms.intro]
+
 lemma partial_equivalence_cong:
   assumes r: "\<And>a b. a \<in> A \<Longrightarrow> b \<in> A \<Longrightarrow> r a b \<longleftrightarrow> r' a b"
   shows "partial_equivalence A r \<longleftrightarrow> partial_equivalence A r'"
   by (simp add: partial_equivalence_def partial_equivalence_axioms_def r
       cong: transitive_cong symmetric_cong)
+
+lemma partial_equivalence_empty[intro!]: "partial_equivalence {} r"
+  by (auto intro!: partial_equivalenceI)
 
 locale equivalence = symmetric + reflexive A "(\<sim>)" + transitive A "(\<sim>)"
 begin
@@ -852,6 +1134,8 @@ lemma equivalence_subset: "B \<subseteq> A \<Longrightarrow> equivalence B (\<si
   using symmetric_subset transitive_subset by auto
 
 end
+
+lemmas equivalenceI = equivalence.intro
 
 lemma equivalence_cong:
   assumes r: "\<And>a b. a \<in> A \<Longrightarrow> b \<in> A \<Longrightarrow> r a b \<longleftrightarrow> r' a b"
@@ -914,7 +1198,7 @@ end
 
 subsection \<open>Totality\<close>
 
-locale semiconnex = related_set A "(\<sqsubset>)" for A and less (infix "\<sqsubset>" 50) +
+locale semiconnex = related_set _ "(\<sqsubset>)" + less_syntax +
   assumes semiconnex: "x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> x \<sqsubset> y \<or> x = y \<or> y \<sqsubset> x"
 begin
 
@@ -933,13 +1217,13 @@ lemma semiconnex_subset: "B \<subseteq> A \<Longrightarrow> semiconnex B (\<sqsu
 
 end
 
-declare semiconnex.intro[intro]
+lemmas semiconnexI[intro] = semiconnex.intro
 
-text \<open>Totality is negated antisymmetry \<^cite>\<open>\<open>Proposition 2.2.4\<close> in "Schmidt1993"\<close>.\<close>
+text \<open>Totality is negated antisymmetry \cite[Proposition 2.2.4]{Schmidt1993}.\<close>
 proposition semiconnex_iff_neg_antisymmetric:
   fixes less (infix "\<sqsubset>" 50)
   shows "semiconnex A (\<sqsubset>) \<longleftrightarrow> antisymmetric A (\<lambda>x y. \<not> x \<sqsubset> y)" (is "?l \<longleftrightarrow> ?r")
-proof (intro iffI semiconnex.intro antisymmetric.intro)
+proof (intro iffI semiconnexI antisymmetricI)
   assume ?l
   then interpret semiconnex.
   fix x y
@@ -968,6 +1252,8 @@ lemma semiconnex_irreflexive_subset: "B \<subseteq> A \<Longrightarrow> semiconn
 
 end
 
+lemmas semiconnex_irreflexiveI = semiconnex_irreflexive.intro
+
 lemma semiconnex_irreflexive_cong:
   assumes r: "\<And>a b. a \<in> A \<Longrightarrow> b \<in> A \<Longrightarrow> r a b \<longleftrightarrow> r' a b"
   shows "semiconnex_irreflexive A r \<longleftrightarrow> semiconnex_irreflexive A r'"
@@ -977,7 +1263,7 @@ locale connex = related_set +
   assumes comparable: "x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> x \<sqsubseteq> y \<or> y \<sqsubseteq> x"
 begin
 
-interpretation less_eq_notations.
+interpretation less_eq_asymmetrize.
 
 sublocale reflexive apply unfold_locales using comparable by auto
 
@@ -992,17 +1278,21 @@ lemma comparable_three_cases[consumes 2, case_names less eq greater]:
 lemma
   assumes x: "x \<in> A" and y: "y \<in> A"
   shows not_iff_asym: "\<not>x \<sqsubseteq> y \<longleftrightarrow> y \<sqsubset> x"
-    and not_asym_iff[simp]: "\<not>x \<sqsubset> y \<longleftrightarrow> y \<sqsubseteq> x"
+    and not_asym_iff: "\<not>x \<sqsubset> y \<longleftrightarrow> y \<sqsubseteq> x"
   using comparable[OF x y] by auto
 
 lemma connex_subset: "B \<subseteq> A \<Longrightarrow> connex B (\<sqsubseteq>)"
   by (intro connex.intro comparable, auto)
 
+interpretation less_eq_asymmetrize.
+
 end
+
+lemmas connexI[intro] = connex.intro
 
 lemmas connexE = connex.comparable_cases
 
-lemmas connexI[intro] = connex.intro
+lemma connex_empty: "connex {} A" by auto
 
 context
   fixes less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>" 50)
@@ -1048,7 +1338,21 @@ lemma total_pseudo_ordered_subset: "B \<subseteq> A \<Longrightarrow> total_pseu
   apply (intro_locales)
   using antisymmetric_subset connex_subset by auto
 
+interpretation less_eq_asymmetrize.
+
+interpretation asympartp: semiconnex_irreflexive A "(\<sqsubset>)"
+proof (intro semiconnex_irreflexive.intro asympartp_irreflexive semiconnexI)
+  fix x y assume xA: "x \<in> A" and yA: "y \<in> A"
+  with comparable antisym
+  show "x \<sqsubset> y \<or> x = y \<or> y \<sqsubset> x" by (auto simp: asympartp_def)
+qed
+
+lemmas asympartp_semiconnex = asympartp.semiconnex_axioms
+lemmas asympartp_semiconnex_irreflexive = asympartp.semiconnex_irreflexive_axioms
+
 end
+
+lemmas total_pseudo_ordered_setI = total_pseudo_ordered_set.intro
 
 lemma total_pseudo_ordered_set_cong:
   assumes r: "\<And>a b. a \<in> A \<Longrightarrow> b \<in> A \<Longrightarrow> r a b \<longleftrightarrow> r' a b"
@@ -1065,6 +1369,8 @@ lemma total_quasi_ordered_subset: "B \<subseteq> A \<Longrightarrow> total_quasi
 
 end
 
+lemmas total_quasi_ordered_setI = total_quasi_ordered_set.intro
+
 lemma total_quasi_ordered_set_cong:
   assumes r: "\<And>a b. a \<in> A \<Longrightarrow> b \<in> A \<Longrightarrow> r a b \<longleftrightarrow> r' a b"
   shows "total_quasi_ordered_set A r \<longleftrightarrow> total_quasi_ordered_set A r'"
@@ -1078,631 +1384,24 @@ sublocale partially_ordered_set + total_pseudo_ordered_set ..
 lemma total_ordered_subset: "B \<subseteq> A \<Longrightarrow> total_ordered_set B (\<sqsubseteq>)"
   using total_quasi_ordered_subset antisymmetric_subset by (intro total_ordered_set.intro)
 
+lemma weak_semiconnex: "semiconnex A (\<sqsubseteq>)"
+  using connex_axioms by (simp add: connex_iff_semiconnex_reflexive)
+
+interpretation less_eq_asymmetrize.
+
 end
+
+lemmas total_ordered_setI = total_ordered_set.intro[OF total_quasi_ordered_setI]
 
 lemma total_ordered_set_cong:
   assumes r: "\<And>a b. a \<in> A \<Longrightarrow> b \<in> A \<Longrightarrow> r a b \<longleftrightarrow> r' a b"
   shows "total_ordered_set A r \<longleftrightarrow> total_ordered_set A r'"
   by (simp add: total_ordered_set_def r cong: total_quasi_ordered_set_cong antisymmetric_cong)
 
-subsection \<open>Well-Foundedness\<close>
-
-locale well_founded = related_set A "(\<sqsubset>)" for A and less (infix "\<sqsubset>" 50) +
-  assumes induct[consumes 1, case_names less, induct set]:
-    "a \<in> A \<Longrightarrow> (\<And>x. x \<in> A \<Longrightarrow> (\<And>y. y \<in> A \<Longrightarrow> y \<sqsubset> x \<Longrightarrow> P y) \<Longrightarrow> P x) \<Longrightarrow> P a"
-begin
-
-sublocale asymmetric
-proof (intro asymmetric.intro notI)
-  fix x y
-  assume xA: "x \<in> A"
-  then show "y \<in> A \<Longrightarrow> x \<sqsubset> y \<Longrightarrow> y \<sqsubset> x \<Longrightarrow> False"
-    by (induct arbitrary: y rule: induct, auto)
-qed
-
-lemma prefixed_Imagep_imp_empty:
-  assumes a: "X \<subseteq> ((\<sqsubset>) ``` X) \<inter> A" shows "X = {}"
-proof -
-  from a have XA: "X \<subseteq> A" by auto
-  have "x \<in> A \<Longrightarrow> x \<notin> X" for x
-  proof (induct x rule: induct)
-    case (less x)
-    with a show ?case by (auto simp: Imagep_def)
-  qed
-  with XA show ?thesis by auto
-qed
-
-lemma nonempty_imp_ex_extremal:
-  assumes QA: "Q \<subseteq> A" and Q: "Q \<noteq> {}"
-  shows "\<exists>z \<in> Q. \<forall>y \<in> Q. \<not> y \<sqsubset> z"
-  using Q prefixed_Imagep_imp_empty[of Q] QA by (auto simp: Imagep_def)
-
-interpretation Restrp: well_founded UNIV "(\<sqsubset>)\<restriction>A"
-  rewrites "\<And>x. x \<in> UNIV \<equiv> True"
-    and "(\<sqsubset>)\<restriction>A\<restriction>UNIV = (\<sqsubset>)\<restriction>A"
-    and "\<And>P1. (True \<Longrightarrow> PROP P1) \<equiv> PROP P1"
-    and "\<And>P1. (True \<Longrightarrow> P1) \<equiv> Trueprop P1"
-    and "\<And>P1 P2. (True \<Longrightarrow> PROP P1 \<Longrightarrow> PROP P2) \<equiv> (PROP P1 \<Longrightarrow> PROP P2)"
-proof -
-  have "(\<And>x. (\<And>y. ((\<sqsubset>) \<restriction> A) y x \<Longrightarrow> P y) \<Longrightarrow> P x) \<Longrightarrow> P a" for a P
-    using induct[of a P] by (auto simp: Restrp_def)
-  then show "well_founded UNIV ((\<sqsubset>)\<restriction>A)" apply unfold_locales by auto
-qed auto
-
-lemmas Restrp_well_founded = Restrp.well_founded_axioms
-lemmas Restrp_induct[consumes 0, case_names less] = Restrp.induct
-
-interpretation Restrp.tranclp: well_founded UNIV "((\<sqsubset>)\<restriction>A)\<^sup>+\<^sup>+"
-  rewrites "\<And>x. x \<in> UNIV \<equiv> True"
-    and "((\<sqsubset>)\<restriction>A)\<^sup>+\<^sup>+ \<restriction> UNIV = ((\<sqsubset>)\<restriction>A)\<^sup>+\<^sup>+"
-    and "(((\<sqsubset>)\<restriction>A)\<^sup>+\<^sup>+)\<^sup>+\<^sup>+ = ((\<sqsubset>)\<restriction>A)\<^sup>+\<^sup>+"
-    and "\<And>P1. (True \<Longrightarrow> PROP P1) \<equiv> PROP P1"
-    and "\<And>P1. (True \<Longrightarrow> P1) \<equiv> Trueprop P1"
-    and "\<And>P1 P2. (True \<Longrightarrow> PROP P1 \<Longrightarrow> PROP P2) \<equiv> (PROP P1 \<Longrightarrow> PROP P2)"
-proof-
-  { fix P x
-    assume induct_step: "\<And>x. (\<And>y. ((\<sqsubset>)\<restriction>A)\<^sup>+\<^sup>+ y x \<Longrightarrow> P y) \<Longrightarrow> P x"
-    have "P x"
-    proof (rule induct_step)
-      show "\<And>y. ((\<sqsubset>)\<restriction>A)\<^sup>+\<^sup>+ y x \<Longrightarrow> P y"
-      proof (induct x rule: Restrp_induct)
-        case (less x)
-        from \<open>((\<sqsubset>)\<restriction>A)\<^sup>+\<^sup>+ y x\<close>
-        show ?case
-        proof (cases rule: tranclp.cases)
-          case r_into_trancl
-          with induct_step less show ?thesis by auto
-        next
-          case (trancl_into_trancl b)
-          with less show ?thesis by auto
-        qed
-      qed
-    qed
-  }
-  then show "well_founded UNIV ((\<sqsubset>)\<restriction>A)\<^sup>+\<^sup>+" by unfold_locales auto
-qed auto
-
-lemmas Restrp_tranclp_well_founded = Restrp.tranclp.well_founded_axioms
-lemmas Restrp_tranclp_induct[consumes 0, case_names less] = Restrp.tranclp.induct
-
-end
-
-context
-  fixes A :: "'a set" and less :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubset>" 50)
-begin
-
-lemma well_foundedI_pf:
-  assumes pre: "\<And>X. X \<subseteq> A \<Longrightarrow> X \<subseteq> ((\<sqsubset>) ``` X) \<inter> A \<Longrightarrow> X = {}"
-  shows "well_founded A (\<sqsubset>)"
-proof
-  fix P a assume aA: "a \<in> A" and Ind: "\<And>x. x \<in> A \<Longrightarrow> (\<And>y. y \<in> A \<Longrightarrow> y \<sqsubset> x \<Longrightarrow> P y) \<Longrightarrow> P x"
-  from Ind have "{a\<in>A. \<not>P a} \<subseteq> ((\<sqsubset>) ``` {a\<in>A. \<not>P a}) \<inter> A" by (auto simp: Imagep_def)
-  from pre[OF _ this] aA
-  show "P a" by auto
-qed
-
-lemma well_foundedI_extremal:
-  assumes a: "\<And>X. X \<subseteq> A \<Longrightarrow> X \<noteq> {} \<Longrightarrow> \<exists>x \<in> X. \<forall>y \<in> X. \<not> y \<sqsubset> x"
-  shows "well_founded A (\<sqsubset>)"
-proof (rule well_foundedI_pf)
-  fix X assume XA: "X \<subseteq> A" and pf: "X \<subseteq> ((\<sqsubset>) ``` X) \<inter> A"
-  from a[OF XA] pf show "X = {}" by (auto simp: Imagep_def)
-qed
-
-lemma well_founded_iff_ex_extremal:
-  "well_founded A (\<sqsubset>) \<longleftrightarrow> (\<forall>X \<subseteq> A. X \<noteq> {} \<longrightarrow> (\<exists>x \<in> X. \<forall>z \<in> X. \<not> z \<sqsubset> x))"
-  using well_founded.nonempty_imp_ex_extremal well_foundedI_extremal by blast
-
-end
-
-lemma well_founded_cong:
-  assumes r: "\<And>a b. a \<in> A \<Longrightarrow> b \<in> A \<Longrightarrow> r a b \<longleftrightarrow> r' a b"
-    and A: "\<And>a b. r' a b \<Longrightarrow> a \<in> A \<longleftrightarrow> a \<in> A'"
-    and B: "\<And>a b. r' a b \<Longrightarrow> b \<in> A \<longleftrightarrow> b \<in> A'"
-  shows "well_founded A r \<longleftrightarrow> well_founded A' r'"
-proof (intro iffI)
-  assume wf: "well_founded A r"
-  show "well_founded A' r'"
-  proof (intro well_foundedI_extremal)
-    fix X
-    assume X: "X \<subseteq> A'" and X0: "X \<noteq> {}"
-    show "\<exists>x\<in>X. \<forall>y\<in>X. \<not> r' y x"
-    proof (cases "X \<inter> A = {}")
-      case True
-      from X0 obtain x where xX: "x \<in> X" by auto
-      with True have "x \<notin> A" by auto
-      with xX X have "\<forall>y\<in>X. \<not> r' y x" by (auto simp: B)
-      with xX show ?thesis by auto
-    next
-      case False
-      from well_founded.nonempty_imp_ex_extremal[OF wf _ this]
-      obtain x where x: "x \<in> X \<inter> A" and Ar: "\<And>y. y \<in> X \<Longrightarrow> y \<in> A \<Longrightarrow> \<not> r y x" by auto
-      have "\<forall>y \<in> X. \<not> r' y x"
-      proof (intro ballI notI)
-        fix y assume yX: "y \<in> X" and yx: "r' y x"
-        from yX X have yA': "y \<in> A'" by auto
-        show False
-        proof (cases "y \<in> A")
-          case True with x Ar[OF yX] yx r show ?thesis by auto
-        next
-          case False with yA' x A[OF yx] r X show ?thesis by (auto simp:)
-        qed
-      qed
-      with x show "\<exists>x \<in> X. \<forall>y \<in> X. \<not> r' y x" by auto
-    qed
-  qed
-next
-  assume wf: "well_founded A' r'"
-  show "well_founded A r"
-  proof (intro well_foundedI_extremal)
-    fix X
-    assume X: "X \<subseteq> A" and X0: "X \<noteq> {}"
-    show "\<exists>x\<in>X. \<forall>y\<in>X. \<not> r y x"
-    proof (cases "X \<inter> A' = {}")
-      case True
-      from X0 obtain x where xX: "x \<in> X" by auto
-      with True have "x \<notin> A'" by auto
-      with xX X B have "\<forall>y\<in>X. \<not> r y x" by (auto simp: r in_mono)
-      with xX show ?thesis by auto
-    next
-      case False
-      from well_founded.nonempty_imp_ex_extremal[OF wf _ this]
-      obtain x where x: "x \<in> X \<inter> A'" and Ar: "\<And>y. y \<in> X \<Longrightarrow> y \<in> A' \<Longrightarrow> \<not> r' y x" by auto
-      have "\<forall>y \<in> X. \<not> r y x"
-      proof (intro ballI notI)
-        fix y assume yX: "y \<in> X" and yx: "r y x"
-        from yX X have y: "y \<in> A" by auto
-        show False
-        proof (cases "y \<in> A'")
-          case True with x Ar[OF yX] yx r X y show ?thesis by auto
-        next
-          case False with y x A yx r X show ?thesis by auto
-        qed
-      qed
-      with x show "\<exists>x \<in> X. \<forall>y \<in> X. \<not> r y x" by auto
-    qed
-  qed
-qed
-
-lemma wfP_iff_well_founded_UNIV: "wfP r \<longleftrightarrow> well_founded UNIV r"
-  by (auto simp: wfP_def wf_def well_founded_def)
-
-lemma well_founded_singleton:
-  assumes "\<not>r x x" shows "well_founded {x} r"
-  using assms by (auto simp: well_founded_iff_ex_extremal)
-
-lemma well_founded_Restrp[simp]: "well_founded A (r\<restriction>B) \<longleftrightarrow> well_founded (A\<inter>B) r" (is "?l \<longleftrightarrow> ?r")
-proof (intro iffI well_foundedI_extremal)
-  assume l: ?l
-  fix X assume XAB: "X \<subseteq> A \<inter> B" and X0: "X \<noteq> {}"
-  with l[THEN well_founded.nonempty_imp_ex_extremal]
-  have "\<exists>x\<in>X. \<forall>z\<in>X. \<not> (r \<restriction> B) z x" by auto
-  with XAB show "\<exists>x\<in>X. \<forall>y\<in>X. \<not> r y x" by (auto simp: Restrp_def)
-next
-  assume r: ?r
-  fix X assume XA: "X \<subseteq> A" and X0: "X \<noteq> {}"
-  show "\<exists>x\<in>X. \<forall>y\<in>X. \<not> (r \<restriction> B) y x"
-  proof (cases "X \<subseteq> B")
-    case True
-    with r[THEN well_founded.nonempty_imp_ex_extremal, of X] XA X0
-    have "\<exists>z\<in>X. \<forall>y\<in>X. \<not> r y z" by auto
-    then show ?thesis by auto
-  next
-    case False
-    then obtain x where x: "x \<in> X - B" by auto
-    then have "\<forall>y\<in>X. \<not> (r \<restriction> B) y x" by auto
-    with x show ?thesis by auto
-  qed
-qed
-
-lemma (in well_founded) well_founded_subset:
-  assumes "B \<subseteq> A" shows "well_founded B (\<sqsubset>)"
-  using assms well_founded_axioms by (auto simp: well_founded_iff_ex_extremal)
-
-lemma well_founded_extend:
-  fixes less (infix "\<sqsubset>" 50)
-  assumes A: "well_founded A (\<sqsubset>)"
-  assumes B: "well_founded B (\<sqsubset>)"
-  assumes AB: "\<forall>a \<in> A. \<forall>b \<in> B. \<not>b \<sqsubset> a"
-  shows "well_founded (A \<union> B) (\<sqsubset>)"
-proof (intro well_foundedI_extremal)
-  interpret A: well_founded A "(\<sqsubset>)" using A.
-  interpret B: well_founded B "(\<sqsubset>)" using B.
-  fix X assume XAB: "X \<subseteq> A \<union> B" and X0: "X \<noteq> {}"
-  show "\<exists>x\<in>X. \<forall>y\<in>X. \<not> y \<sqsubset> x"
-  proof (cases "X \<inter> A = {}")
-    case True
-    with XAB have XB: "X \<subseteq> B" by auto
-    from B.nonempty_imp_ex_extremal[OF XB X0] show ?thesis.
-  next
-    case False
-    with A.nonempty_imp_ex_extremal[OF _ this]
-    obtain e where XAe: "e \<in> X \<inter> A" "\<forall>y\<in>X \<inter> A. \<not> y \<sqsubset> e" by auto
-    then have eX: "e \<in> X" and eA: "e \<in> A" by auto
-    { fix x assume xX: "x \<in> X"
-      have "\<not>x \<sqsubset> e"
-      proof (cases "x \<in> A")
-        case True with XAe xX show ?thesis by auto
-      next
-        case False
-        with xX XAB have "x \<in> B" by auto
-        with AB eA show ?thesis by auto
-      qed
-    }
-    with eX show ?thesis by auto
-  qed
-qed
-
-lemma closed_UN_well_founded:
-  fixes r (infix "\<sqsubset>" 50)
-  assumes XX: "\<forall>X\<in>XX. well_founded X (\<sqsubset>) \<and> (\<forall>x\<in>X. \<forall>y\<in>\<Union>XX. y \<sqsubset> x \<longrightarrow> y \<in> X)"
-  shows "well_founded (\<Union>XX) (\<sqsubset>)"
-proof (intro well_foundedI_extremal)
-  have *: "X \<in> XX \<Longrightarrow> x\<in>X \<Longrightarrow> y \<in> \<Union>XX \<Longrightarrow> y \<sqsubset> x \<Longrightarrow> y \<in> X" for X x y using XX by blast
-  fix S
-  assume S: "S \<subseteq> \<Union>XX" and S0: "S \<noteq> {}"
-  from S0 obtain x where xS: "x \<in> S" by auto
-  with S obtain X where X: "X \<in> XX" and xX: "x \<in> X" by auto
-  from xS xX have Sx0: "S \<inter> X \<noteq> {}" by auto
-  from X XX interpret well_founded X "(\<sqsubset>)" by auto
-  from nonempty_imp_ex_extremal[OF _ Sx0]
-  obtain z where zS: "z \<in> S" and zX: "z \<in> X" and min: "\<forall>y \<in> S \<inter> X. \<not> y \<sqsubset> z" by auto
-  show "\<exists>x\<in>S. \<forall>y\<in>S. \<not> y \<sqsubset> x"
-  proof (intro bexI[OF _ zS] ballI notI)
-    fix y
-    assume yS: "y \<in> S" and yz: "y \<sqsubset> z"
-    have yXX: "y \<in> \<Union> XX" using S yS by auto
-    from *[OF X zX yXX yz] yS have "y \<in> X \<inter> S" by auto
-    with min yz show False by auto
-  qed
-qed
-
-lemma well_founded_cmono:
-  assumes r': "r' \<le> r" and wf: "well_founded A r"
-  shows "well_founded A r'"
-proof (intro well_foundedI_extremal)
-  fix X assume "X \<subseteq> A" and "X \<noteq> {}"
-  from well_founded.nonempty_imp_ex_extremal[OF wf this]
-  show "\<exists>x\<in>X. \<forall>y\<in>X. \<not> r' y x" using r' by auto
-qed
-
-locale well_founded_ordered_set = well_founded + transitive _ "(\<sqsubset>)"
-begin
-
-sublocale strict_ordered_set..
-
-interpretation Restrp: strict_ordered_set UNIV "(\<sqsubset>)\<restriction>A" + Restrp: well_founded UNIV "(\<sqsubset>)\<restriction>A"
-  using Restrp_strict_order Restrp_well_founded .
-
-lemma Restrp_well_founded_order: "well_founded_ordered_set UNIV ((\<sqsubset>)\<restriction>A)"..
-
-lemma well_founded_ordered_subset: "B \<subseteq> A \<Longrightarrow> well_founded_ordered_set B (\<sqsubset>)"
-  apply intro_locales
-  using well_founded_subset transitive_subset by auto
-
-end
-
-lemma (in well_founded) Restrp_tranclp_well_founded_ordered: "well_founded_ordered_set UNIV ((\<sqsubset>)\<restriction>A)\<^sup>+\<^sup>+"
-  using Restrp_tranclp_well_founded tranclp_transitive by intro_locales
-
-locale well_related_set = related_set +
-  assumes nonempty_imp_ex_extreme: "X \<subseteq> A \<Longrightarrow> X \<noteq> {} \<Longrightarrow> \<exists>e. extreme X (\<sqsubseteq>)\<^sup>- e"
-begin
-
-sublocale connex
-proof
-  fix x y assume "x \<in> A" and "y \<in> A"
-  with nonempty_imp_ex_extreme[of "{x,y}"] show "x \<sqsubseteq> y \<or> y \<sqsubseteq> x" by auto 
-qed
-
-lemmas connex_axioms = connex_axioms
-
-interpretation less_eq_notations.
-
-sublocale asym: well_founded A "(\<sqsubset>)"
-proof (unfold well_founded_iff_ex_extremal, intro allI impI)
-  fix X
-  assume XA: "X \<subseteq> A" and X0: "X \<noteq> {}"
-  from nonempty_imp_ex_extreme[OF XA X0] obtain e where "extreme X (\<sqsubseteq>)\<^sup>- e" by auto
-  then show "\<exists>x\<in>X. \<forall>z\<in>X. \<not>z \<sqsubset> x" by (auto intro!: bexI[of _ e])
-qed
-
-lemma well_related_subset: "B \<subseteq> A \<Longrightarrow> well_related_set B (\<sqsubseteq>)"
-  by (auto intro!: well_related_set.intro nonempty_imp_ex_extreme)
-
-end
-
-context
-  fixes less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>" 50)
-begin
-
-lemma well_related_iff_neg_well_founded:
-  "well_related_set A (\<sqsubseteq>) \<longleftrightarrow> well_founded A (\<lambda>x y. \<not> y \<sqsubseteq> x)"
-  by (simp add: well_related_set_def well_founded_iff_ex_extremal extreme_def Bex_def)
-
-lemma well_related_singleton_refl: 
-  assumes "x \<sqsubseteq> x" shows "well_related_set {x} (\<sqsubseteq>)"
-  by (intro well_related_set.intro exI[of _ x], auto simp: subset_singleton_iff assms)
-
-lemma closed_UN_well_related:
-  assumes XX: "\<forall>X\<in>XX. well_related_set X (\<sqsubseteq>) \<and> (\<forall>x\<in>X. \<forall>y\<in>\<Union>XX. \<not>x \<sqsubseteq> y \<longrightarrow> y \<in> X)"
-  shows "well_related_set (\<Union>XX) (\<sqsubseteq>)"
-  using XX
-  apply (unfold well_related_iff_neg_well_founded)
-  using closed_UN_well_founded[of _ "\<lambda>x y. \<not> y \<sqsubseteq> x"].
-
-end
-
-lemma well_related_extend:
-  fixes r (infix "\<sqsubseteq>" 50)
-  assumes "well_related_set A (\<sqsubseteq>)" and "well_related_set B (\<sqsubseteq>)" and "\<forall>a \<in> A. \<forall>b \<in> B. a \<sqsubseteq> b"
-  shows "well_related_set (A \<union> B) (\<sqsubseteq>)"
-  using well_founded_extend[of _ "\<lambda>x y. \<not> y \<sqsubseteq> x", folded well_related_iff_neg_well_founded]
-  using assms by auto
-
-locale pre_well_ordered_set = semiattractive + well_related_set
-begin
-
-interpretation less_eq_notations.
-
-sublocale transitive
-proof
-  fix x y z assume xy: "x \<sqsubseteq> y" and yz: "y \<sqsubseteq> z" and x: "x \<in> A" and y: "y \<in> A" and z: "z \<in> A"
-  from x y z have "\<exists>e. extreme {x,y,z} (\<sqsupseteq>) e" (is "\<exists>e. ?P e") by (auto intro!: nonempty_imp_ex_extreme)
-  then have "?P x \<or> ?P y \<or> ?P z" by auto
-  then show "x \<sqsubseteq> z"
-  proof (elim disjE)
-    assume "?P x"
-    then show ?thesis by auto
-  next
-    assume "?P y"
-    then have "y \<sqsubseteq> x" by auto
-    from attract[OF xy this yz] x y z show ?thesis by auto
-  next
-    assume "?P z"
-    then have zx: "z \<sqsubseteq> x" and zy: "z \<sqsubseteq> y" by auto
-    from attract[OF yz zy zx] x y z have yx: "y \<sqsubseteq> x" by auto
-    from attract[OF xy yx yz] x y z show ?thesis by auto
-  qed
-qed
-
-sublocale total_quasi_ordered_set..
-
-lemmas connex_axioms = connex_axioms
-
-lemma strict_weak_trans[trans]:
-  assumes xy: "x \<sqsubset> y" and yz: "y \<sqsubseteq> z" and x: "x \<in> A" and y: "y \<in> A" and z: "z \<in> A"
-  shows "x \<sqsubset> z"
-proof (intro asympartpI notI)
-  from trans xy yz x y z show "x \<sqsubseteq> z" by auto
-  assume "z \<sqsubseteq> x"
-  from trans[OF yz this] y z x have "y \<sqsubseteq> x" by auto
-  with xy show False by auto
-qed
-
-lemma weak_strict_trans[trans]:
-  assumes xy: "x \<sqsubseteq> y" and yz: "y \<sqsubset> z" and x: "x \<in> A" and y: "y \<in> A" and z: "z \<in> A"
-  shows "x \<sqsubset> z"
-proof (intro asympartpI notI)
-  from trans xy yz x y z show "x \<sqsubseteq> z" by auto
-  assume "z \<sqsubseteq> x"
-  from trans[OF this xy] z x y have "z \<sqsubseteq> y" by auto
-  with yz show False by auto
-qed
-
-end
-
-lemma pre_well_ordered_iff:
-  "pre_well_ordered_set A r \<longleftrightarrow> total_quasi_ordered_set A r \<and> well_founded A (asympartp r)"
-  (is "?p \<longleftrightarrow> ?t \<and> ?w")
-proof safe
-  assume ?p
-  then interpret pre_well_ordered_set A r.
-  show ?t ?w by unfold_locales
-next
-  assume ?t
-  then interpret total_quasi_ordered_set A r.
-  assume ?w
-  then have "well_founded UNIV (asympartp r \<restriction> A)" by simp
-  also have "asympartp r \<restriction> A = (\<lambda>x y. \<not> r y x) \<restriction> A" by (intro ext, auto simp: not_iff_asym)
-  finally have "well_related_set A r" by (simp add: well_related_iff_neg_well_founded)
-  then show ?p by intro_locales
-qed
-
-lemma (in semiattractive) pre_well_ordered_iff_well_related:
-  assumes XA: "X \<subseteq> A"
-  shows "pre_well_ordered_set X (\<sqsubseteq>) \<longleftrightarrow> well_related_set X (\<sqsubseteq>)" (is "?l \<longleftrightarrow> ?r")
-proof
-  interpret X: semiattractive X using semiattractive_subset[OF XA].
-  { assume ?l
-    then interpret X: pre_well_ordered_set X.
-    show ?r by unfold_locales
-  }
-  assume ?r
-  then interpret X: well_related_set X.
-  show ?l by unfold_locales
-qed
-
-lemma semiattractive_extend:
-  fixes r (infix "\<sqsubseteq>" 50)
-  assumes A: "semiattractive A (\<sqsubseteq>)" and B: "semiattractive B (\<sqsubseteq>)"
-    and AB: "\<forall>a \<in> A. \<forall>b \<in> B. a \<sqsubseteq> b \<and> \<not> b \<sqsubseteq> a"
-  shows "semiattractive (A \<union> B) (\<sqsubseteq>)"
-proof-
-  interpret A: semiattractive A "(\<sqsubseteq>)" using A.
-  interpret B: semiattractive B "(\<sqsubseteq>)" using B.
-  {
-    fix x y z
-    assume yB: "y \<in> B" and zA: "z \<in> A" and yz: "y \<sqsubseteq> z"
-    have False using AB[rule_format, OF zA yB] yz by auto
-  }
-  note * = this
-  show ?thesis 
-    by (auto intro!: semiattractive.intro dest:* AB[rule_format] A.attract B.attract)
-qed
-
-lemma pre_well_order_extend:
-  fixes r (infix "\<sqsubseteq>" 50)
-  assumes A: "pre_well_ordered_set A (\<sqsubseteq>)" and B: "pre_well_ordered_set B (\<sqsubseteq>)"
-    and AB: "\<forall>a \<in> A. \<forall>b \<in> B. a \<sqsubseteq> b \<and> \<not> b \<sqsubseteq> a"
-  shows "pre_well_ordered_set (A\<union>B) (\<sqsubseteq>)"
-proof-
-  interpret A: pre_well_ordered_set A "(\<sqsubseteq>)" using A.
-  interpret B: pre_well_ordered_set B "(\<sqsubseteq>)" using B.
-  show ?thesis
-    apply (intro pre_well_ordered_set.intro well_related_extend semiattractive_extend)
-    apply unfold_locales
-    by (auto dest: AB[rule_format])
-qed
-
-locale well_ordered_set = antisymmetric + well_related_set
-begin
-
-sublocale pre_well_ordered_set..
-
-sublocale total_ordered_set..
-
-lemma well_ordered_subset: "B \<subseteq> A \<Longrightarrow> well_ordered_set B (\<sqsubseteq>)"
-  using well_related_subset antisymmetric_subset by (intro well_ordered_set.intro)
-
-lemmas connex_axioms = connex_axioms
-
-end
-
-lemma (in antisymmetric) well_ordered_iff_well_related:
-  assumes XA: "X \<subseteq> A"
-  shows "well_ordered_set X (\<sqsubseteq>) \<longleftrightarrow> well_related_set X (\<sqsubseteq>)" (is "?l \<longleftrightarrow> ?r")
-proof
-  interpret X: antisymmetric X using antisymmetric_subset[OF XA].
-  { assume ?l
-    then interpret X: well_ordered_set X.
-    show ?r by unfold_locales
-  }
-  assume ?r
-  then interpret X: well_related_set X.
-  show ?l by unfold_locales
-qed
-
-context
-  fixes A and less_eq (infix "\<sqsubseteq>" 50)
-  assumes A: "\<forall>a \<in> A. \<forall>b \<in> A. a \<sqsubseteq> b"
-begin
-
-interpretation well_related_set A "(\<sqsubseteq>)"
-  apply unfold_locales
-  using A by blast
-
-lemmas trivial_well_related = well_related_set_axioms
-
-lemma trivial_pre_well_order: "pre_well_ordered_set A (\<sqsubseteq>)"
-  apply unfold_locales
-  using A by blast
-
-end
-
-context
-  fixes less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>" 50)
-begin
-
-interpretation less_eq_notations.
-
-lemma well_order_extend:
-  assumes A: "well_ordered_set A (\<sqsubseteq>)" and B: "well_ordered_set B (\<sqsubseteq>)"
-    and ABa: "\<forall>a \<in> A. \<forall>b \<in> B. a \<sqsubseteq> b \<longrightarrow> b \<sqsubseteq> a \<longrightarrow> a = b"
-    and AB: "\<forall>a \<in> A. \<forall>b \<in> B. a \<sqsubseteq> b"
-  shows "well_ordered_set (A\<union>B) (\<sqsubseteq>)"
-proof-
-  interpret A: well_ordered_set A "(\<sqsubseteq>)" using A.
-  interpret B: well_ordered_set B "(\<sqsubseteq>)" using B.
-  show ?thesis
-    apply (intro well_ordered_set.intro antisymmetric_union well_related_extend ABa AB)
-    by unfold_locales
-qed
-
-interpretation singleton: antisymmetric "{a}" "(\<sqsubseteq>)" for a apply unfold_locales by auto
-
-lemmas singleton_antisymmetric[intro!] = singleton.antisymmetric_axioms
-
-lemma singleton_well_ordered[intro!]: "a \<sqsubseteq> a \<Longrightarrow> well_ordered_set {a} (\<sqsubseteq>)"
-  apply unfold_locales by auto
-
-lemma closed_UN_well_ordered:
-  assumes anti: "antisymmetric (\<Union> XX) (\<sqsubseteq>)"
-    and XX: "\<forall>X\<in>XX. well_ordered_set X (\<sqsubseteq>) \<and> (\<forall>x\<in>X. \<forall>y\<in>\<Union>XX. \<not> x \<sqsubseteq> y \<longrightarrow> y \<in> X)"
-  shows "well_ordered_set (\<Union>XX) (\<sqsubseteq>)"
-  apply (intro well_ordered_set.intro closed_UN_well_related anti)
-  using XX well_ordered_set.axioms by fast
-
-end
-
-text \<open>Directed sets:\<close>
-
-definition "directed A r \<equiv> \<forall>x \<in> A. \<forall>y \<in> A. \<exists>z \<in> A. r x z \<and> r y z"
-
-lemmas directedI[intro] = directed_def[unfolded atomize_eq, THEN iffD2, rule_format]
-
-lemmas directedD = directed_def[unfolded atomize_eq, THEN iffD1, rule_format]
-
-context
-  fixes less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>" 50)
-begin
-
-lemma directedE:
-  assumes "directed A (\<sqsubseteq>)" and "x \<in> A" and "y \<in> A"
-    and "\<And>z. z \<in> A \<Longrightarrow> x \<sqsubseteq> z \<Longrightarrow> y \<sqsubseteq> z \<Longrightarrow> thesis"
-  shows "thesis"
-  using assms by (auto dest: directedD)
-
-lemma directed_empty[simp]: "directed {} (\<sqsubseteq>)" by auto
-
-lemma directed_union:
-  assumes dX: "directed X (\<sqsubseteq>)" and dY: "directed Y (\<sqsubseteq>)"
-    and XY: "\<forall>x\<in>X. \<forall>y\<in>Y. \<exists>z \<in> X \<union> Y. x \<sqsubseteq> z \<and> y \<sqsubseteq> z"
-  shows "directed (X \<union> Y) (\<sqsubseteq>)"
-  using directedD[OF dX] directedD[OF dY] XY
-  apply (intro directedI) by blast
-
-lemma directed_extend:
-  assumes X: "directed X (\<sqsubseteq>)" and Y: "directed Y (\<sqsubseteq>)" and XY: "\<forall>x\<in>X. \<forall>y\<in>Y. x \<sqsubseteq> y"
-  shows "directed (X \<union> Y) (\<sqsubseteq>)"
-proof -
-  { fix x y
-    assume xX: "x \<in> X" and yY: "y \<in> Y"
-    let ?g = "\<exists>z\<in>X \<union> Y. x \<sqsubseteq> z \<and> y \<sqsubseteq> z"
-    from directedD[OF Y yY yY] obtain z where zY: "z \<in> Y" and yz: "y \<sqsubseteq> z" by auto
-    from xX XY zY yz have ?g by auto
-  }
-  then show ?thesis by (auto intro!: directed_union[OF X Y])
-qed
-
-end
-
-context connex begin
-
-lemma directed: "directed A (\<sqsubseteq>)"
-proof
-  fix x y
-  assume x: "x \<in> A" and y: "y \<in> A"
-  then show "\<exists>z\<in>A. x \<sqsubseteq> z \<and> y \<sqsubseteq> z"
-  proof (cases rule: comparable_cases)
-    case le
-    with refl[OF y] y show ?thesis by (intro bexI[of _ y], auto)
-  next
-    case ge
-    with refl[OF x] x show ?thesis by (intro bexI[of _ x], auto)
-  qed
-qed
-
-end
-
-context
-  fixes ir :: "'i \<Rightarrow> 'i \<Rightarrow> bool" (infix "\<preceq>" 50)
-  fixes r :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>" 50)
-begin
 
 lemma monotone_connex_image:
-  assumes mono: "monotone_on I (\<preceq>) (\<sqsubseteq>) f"
-  assumes connex: "connex I (\<preceq>)"
+  fixes ir (infix "\<preceq>" 50) and r (infix "\<sqsubseteq>" 50)
+  assumes mono: "monotone_on I (\<preceq>) (\<sqsubseteq>) f" and connex: "connex I (\<preceq>)"
   shows "connex (f ` I) (\<sqsubseteq>)"
 proof (rule connexI)
   fix x y
@@ -1712,89 +1411,174 @@ proof (rule connexI)
   with ij mono show "x \<sqsubseteq> y \<or> y \<sqsubseteq> x" by (elim disjE, auto dest: monotone_onD) 
 qed
 
-lemma monotone_directed_image:
-  assumes mono: "monotone_on I (\<preceq>) (\<sqsubseteq>) f"
-  assumes dir: "directed I (\<preceq>)" shows "directed (f ` I) (\<sqsubseteq>)"
-proof (rule directedI, safe)
-  fix x y assume x: "x \<in> I" and y: "y \<in> I"
-  with dir obtain z where z: "z \<in> I" and "x \<preceq> z" and "y \<preceq> z" by (auto elim: directedE)
-  with mono x y have "f x \<sqsubseteq> f z" and "f y \<sqsubseteq> f z" by (auto dest: monotone_onD)
-  with z show "\<exists>fz \<in> f ` I. f x \<sqsubseteq> fz \<and> f y \<sqsubseteq> fz" by auto
-qed
-
-end
-
 subsection \<open>Order Pairs\<close>
 
-locale compatible = related_set + related_set A "(\<sqsubset>)" for less (infix "\<sqsubset>" 50) +
-  assumes compat_right[trans]: "x \<sqsubseteq> y \<Longrightarrow> y \<sqsubset> z \<Longrightarrow> x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> z \<in> A \<Longrightarrow> x \<sqsubset> z"
-  assumes compat_left[trans]: "x \<sqsubset> y \<Longrightarrow> y \<sqsubseteq> z \<Longrightarrow> x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> z \<in> A \<Longrightarrow> x \<sqsubset> z"
+text \<open>We pair a relation (weak part) with a well-behaving ``strict'' part. Here no assumption is
+ put on the ``weak'' part.\<close>
 
-locale compatible_ordering = reflexive + irreflexive + compatible +
+locale compatible_ordering =
+  related_set + irreflexive +
   assumes strict_implies_weak: "x \<sqsubset> y \<Longrightarrow> x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> x \<sqsubseteq> y"
+  assumes weak_strict_trans[trans]: "x \<sqsubseteq> y \<Longrightarrow> y \<sqsubset> z \<Longrightarrow> x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> z \<in> A \<Longrightarrow> x \<sqsubset> z"
+  assumes strict_weak_trans[trans]: "x \<sqsubset> y \<Longrightarrow> y \<sqsubseteq> z \<Longrightarrow> x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> z \<in> A \<Longrightarrow> x \<sqsubset> z"
 begin
-
-text \<open>The strict part is necessarily transitive.\<close>
 
 text \<open>The following sequence of declarations are in order to obtain fact names in a manner
 similar to the Isabelle/HOL facts of orders.\<close>
 
+text \<open>The strict part is necessarily transitive.\<close>
+
 sublocale strict: transitive A "(\<sqsubset>)"
-  using compat_right[OF strict_implies_weak] by unfold_locales
+  using weak_strict_trans[OF strict_implies_weak] by unfold_locales
 
 sublocale strict_ordered_set A "(\<sqsubset>)" ..
 
 thm strict.trans asym irrefl
 
+lemma Restrp_compatible_ordering: "compatible_ordering UNIV ((\<sqsubseteq>)\<restriction>A) ((\<sqsubset>)\<restriction>A)"
+  apply (unfold_locales)
+  by (auto dest: weak_strict_trans strict_weak_trans strict_implies_weak)
+
 lemma strict_implies_not_weak: "x \<sqsubset> y \<Longrightarrow> x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> \<not> y \<sqsubseteq> x"
-  using irrefl compat_left by blast
+  using irrefl weak_strict_trans by blast
+
+lemma weak_implies_not_strict:
+  assumes xy: "x \<sqsubseteq> y" and [simp]: "x \<in> A" "y \<in> A"
+  shows "\<not>y \<sqsubset> x"
+proof 
+  assume "y \<sqsubset> x"
+  also note xy
+  finally show False using irrefl by auto
+qed
+
+lemma compatible_ordering_subset: assumes "X \<subseteq> A" shows "compatible_ordering X (\<sqsubseteq>) (\<sqsubset>)"
+  apply unfold_locales
+  using assms strict_implies_weak by (auto intro: strict_weak_trans weak_strict_trans)
 
 end
 
 context transitive begin
 
-interpretation less_eq_notations.
+interpretation less_eq_asymmetrize.
 
 lemma asym_trans[trans]:
   shows "x \<sqsubset> y \<Longrightarrow> y \<sqsubseteq> z \<Longrightarrow> x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> z \<in> A \<Longrightarrow> x \<sqsubset> z"
     and "x \<sqsubseteq> y \<Longrightarrow> y \<sqsubset> z \<Longrightarrow> x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> z \<in> A \<Longrightarrow> x \<sqsubset> z"
   by (auto 0 3 dest: trans)
 
+lemma asympartp_compatible_ordering: "compatible_ordering A (\<sqsubseteq>) (\<sqsubset>)"
+  apply unfold_locales
+  by (auto dest: asym_trans)
+
 end
 
-locale attractive_ordering = compatible_ordering + attractive
+locale reflexive_ordering = reflexive + compatible_ordering
 
-locale pseudo_ordering = compatible_ordering + pseudo_ordered_set
+locale reflexive_attractive_ordering = reflexive_ordering + attractive
+
+locale pseudo_ordering = pseudo_ordered_set + compatible_ordering
 begin
 
-sublocale attractive_ordering ..
+sublocale reflexive_attractive_ordering..
 
 end
 
-locale quasi_ordering = compatible_ordering + quasi_ordered_set
+locale quasi_ordering = quasi_ordered_set + compatible_ordering
 begin
 
-sublocale attractive_ordering ..
+sublocale reflexive_attractive_ordering..
+
+lemma quasi_ordering_subset: assumes "X \<subseteq> A" shows "quasi_ordering X (\<sqsubseteq>) (\<sqsubset>)"
+  by (intro quasi_ordering.intro quasi_ordered_subset compatible_ordering_subset assms)
 
 end
 
-locale partial_ordering = compatible_ordering + partially_ordered_set
+context quasi_ordered_set begin
+
+interpretation less_eq_asymmetrize.
+
+lemma asympartp_quasi_ordering: "quasi_ordering A (\<sqsubseteq>) (\<sqsubset>)"
+  by (intro quasi_ordering.intro quasi_ordered_set_axioms asympartp_compatible_ordering)
+
+end
+
+locale partial_ordering = partially_ordered_set + compatible_ordering
 begin
 
-sublocale pseudo_ordering + quasi_ordering ..
+sublocale quasi_ordering + pseudo_ordering..
+
+lemma partial_ordering_subset: assumes "X \<subseteq> A" shows "partial_ordering X (\<sqsubseteq>) (\<sqsubset>)"
+  by (intro partial_ordering.intro partially_ordered_subset compatible_ordering_subset assms)
 
 end
 
-locale well_founded_ordering = quasi_ordering + well_founded
+context partially_ordered_set begin
 
-locale total_ordering = compatible_ordering + total_ordered_set
+interpretation less_eq_asymmetrize.
+
+lemma asympartp_partial_ordering: "partial_ordering A (\<sqsubseteq>) (\<sqsubset>)"
+  by (intro partial_ordering.intro partially_ordered_set_axioms asympartp_compatible_ordering)
+
+end
+
+locale total_quasi_ordering = total_quasi_ordered_set + compatible_ordering
 begin
 
-sublocale partial_ordering ..
+sublocale quasi_ordering..
+
+lemma total_quasi_ordering_subset: assumes "X \<subseteq> A" shows "total_quasi_ordering X (\<sqsubseteq>) (\<sqsubset>)"
+  by (intro total_quasi_ordering.intro total_quasi_ordered_subset compatible_ordering_subset assms)
 
 end
 
-locale strict_total_ordering = partial_ordering + semiconnex A "(\<sqsubset>)"
+context total_quasi_ordered_set begin
+
+interpretation less_eq_asymmetrize.
+
+lemma asympartp_total_quasi_ordering: "total_quasi_ordering A (\<sqsubseteq>) (\<sqsubset>)"
+  by (intro total_quasi_ordering.intro total_quasi_ordered_set_axioms asympartp_compatible_ordering)
+
+end
+
+
+text \<open>Fixing the definition of the strict part is very common, though it looks restrictive
+to the author.\<close>
+locale strict_quasi_ordering = quasi_ordered_set + less_syntax +
+  assumes strict_iff: "x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> x \<sqsubset> y \<longleftrightarrow> x \<sqsubseteq> y \<and> \<not>y \<sqsubseteq> x"
+begin
+
+sublocale compatible_ordering
+proof unfold_locales
+  fix x y z
+  show "x \<in> A \<Longrightarrow> \<not> x \<sqsubset> x" by (auto simp: strict_iff)
+  { assume xy: "x \<sqsubseteq> y" and yz: "y \<sqsubset> z" and x: "x \<in> A" and y: "y \<in> A" and z: "z \<in> A"
+    from yz y z have ywz: "y \<sqsubseteq> z" and zy: "\<not>z \<sqsubseteq> y" by (auto simp: strict_iff)
+    from trans[OF xy ywz]x y z have xz: "x \<sqsubseteq> z" by auto
+    from trans[OF _ xy] x y z zy have zx: "\<not>z \<sqsubseteq> x" by auto 
+    from xz zx x z show "x \<sqsubset> z" by (auto simp: strict_iff)
+  }
+  { assume xy: "x \<sqsubset> y" and yz: "y \<sqsubseteq> z" and x: "x \<in> A" and y: "y \<in> A" and z: "z \<in> A"
+    from xy x y have xwy: "x \<sqsubseteq> y" and yx: "\<not>y \<sqsubseteq> x" by (auto simp: strict_iff)
+    from trans[OF xwy yz]x y z have xz: "x \<sqsubseteq> z" by auto
+    from trans[OF yz] x y z yx have zx: "\<not>z \<sqsubseteq> x" by auto 
+    from xz zx x z show "x \<sqsubset> z" by (auto simp: strict_iff)
+  }
+  { show "x \<sqsubset> y \<Longrightarrow> x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> x \<sqsubseteq> y" by (auto simp: strict_iff) }
+qed
+
+end
+
+locale strict_partial_ordering = strict_quasi_ordering + antisymmetric
+begin
+
+sublocale partial_ordering..
+
+lemma strict_iff_neq: "x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> x \<sqsubset> y \<longleftrightarrow> x \<sqsubseteq> y \<and> x \<noteq> y"
+  by (auto simp: strict_iff antisym)
+
+end
+
+locale total_ordering = reflexive + compatible_ordering + semiconnex A "(\<sqsubset>)"
 begin
 
 sublocale semiconnex_irreflexive ..
@@ -1803,29 +1587,268 @@ sublocale connex
 proof
   fix x y assume x: "x \<in> A" and y: "y \<in> A"
   then show "x \<sqsubseteq> y \<or> y \<sqsubseteq> x"
-    apply (cases rule: cases[OF x y])
-    by (auto dest: strict_implies_weak)
+    by (cases rule: cases, auto dest: strict_implies_weak)
 qed
 
-sublocale total_ordering ..
-(*
-sublocale old: ordering "(\<sqsubseteq>)" "(\<sqsubset>)"
-proof-
-  have "a \<sqsubseteq> b \<Longrightarrow> a \<noteq> b \<Longrightarrow> a \<sqsubset> b" for a b
-    by (cases a b rule: cases, auto dest: strict_implies_weak)
-  then show "ordering (\<sqsubseteq>) (\<sqsubset>)"
-    by (unfold_locales, auto dest:strict_implies_weak trans)
-qed
-*)
-
-lemma not_weak[simp]:
+lemma not_weak:
   assumes "x \<in> A" and "y \<in> A" shows "\<not> x \<sqsubseteq> y \<longleftrightarrow> y \<sqsubset> x"
   using assms by (cases rule:cases, auto simp: strict_implies_not_weak dest: strict_implies_weak)
 
-lemma not_strict[simp]: "x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> \<not> x \<sqsubset> y \<longleftrightarrow> y \<sqsubseteq> x"
+lemma not_strict: "x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> \<not> x \<sqsubset> y \<longleftrightarrow> y \<sqsubseteq> x"
   using not_weak by blast
 
+sublocale strict_partial_ordering
+proof
+  fix a b
+  assume a: "a \<in> A" and b: "b \<in> A"
+  then show "a \<sqsubset> b \<longleftrightarrow> a \<sqsubseteq> b \<and> \<not> b \<sqsubseteq> a" by (auto simp: not_strict[symmetric] dest: asym)
+next
+  fix x y z assume xy: "x \<sqsubseteq> y" and yz: "y \<sqsubseteq> z" and xA: "x \<in> A" and yA: "y \<in> A" and zA: "z \<in> A"
+  with weak_strict_trans[OF yz] show "x \<sqsubseteq> z" by (auto simp: not_strict[symmetric])
+next
+  fix x y assume xy: "x \<sqsubseteq> y" and yx: "y \<sqsubseteq> x" and xA: "x \<in> A" and yA: "y \<in> A"
+  with semiconnex show "x = y" by (auto dest: weak_implies_not_strict)
+qed
+
+sublocale total_ordered_set..
+
+context
+  fixes s
+  assumes s: "\<forall>x \<in> A. x \<sqsubset> s \<longrightarrow> (\<exists>z \<in> A. x \<sqsubset> z \<and> z \<sqsubset> s)" and sA: "s \<in> A"
+begin
+
+lemma dense_weakI:
+  assumes bound: "\<And>x. x \<sqsubset> s \<Longrightarrow> x \<in> A \<Longrightarrow> x \<sqsubseteq> y" and yA: "y \<in> A"
+  shows "s \<sqsubseteq> y"
+proof (rule ccontr)
+  assume "\<not> ?thesis"
+  with yA sA have "y \<sqsubset> s" by (simp add: not_weak)
+  from s[rule_format, OF yA this]
+  obtain x where xA: "x \<in> A" and xs: "x \<sqsubset> s" and yx: "y \<sqsubset> x" by safe
+  have xy: "x \<sqsubseteq> y" using bound[OF xs xA] .
+  from yx xy xA yA
+  show False by (simp add: weak_implies_not_strict)
+qed
+
+lemma dense_bound_iff:
+  assumes bA: "b \<in> A" shows "bound {x\<in>A. x \<sqsubset> s} (\<sqsubseteq>) b \<longleftrightarrow> s \<sqsubseteq> b"
+  using assms sA
+  by (auto simp: bound_def intro: strict_implies_weak strict_weak_trans dense_weakI)
+
+lemma dense_extreme_bound:
+  "extreme_bound A (\<sqsubseteq>) {x \<in> A. x \<sqsubset> s} s"
+  by (auto intro!: extreme_boundI intro: strict_implies_weak simp: dense_bound_iff sA)
+
 end
+
+lemma ordinal_cases[consumes 1, case_names suc lim]:
+  assumes aA: "a \<in> A"
+    and suc: "\<And>p. extreme {x \<in> A. x \<sqsubset> a} (\<sqsubseteq>) p \<Longrightarrow> thesis"
+    and lim: "extreme_bound A (\<sqsubseteq>) {x \<in> A. x \<sqsubset> a} a \<Longrightarrow> thesis"
+  shows "thesis"
+proof (cases "\<exists>p. extreme {x \<in> A. x \<sqsubset> a} (\<sqsubseteq>) p")
+  case True
+  with suc show ?thesis by auto
+next
+  case False
+  show ?thesis
+  proof (rule lim, rule dense_extreme_bound, safe intro!: aA)
+    fix x assume xA: "x \<in> A" and xa: "x \<sqsubset> a"
+    show "\<exists>z\<in>A. x \<sqsubset> z \<and> z \<sqsubset> a"
+    proof (rule ccontr)
+      assume "\<not>?thesis"
+      with xA xa have "extreme {x \<in> A. x \<sqsubset> a} (\<sqsubseteq>) x" by (auto simp: not_strict)
+      with False show False by auto
+    qed
+  qed
+qed
+
+end
+
+context total_ordered_set begin
+
+interpretation less_eq_asymmetrize.
+
+lemma asympartp_total_ordering: "total_ordering A (\<sqsubseteq>) (\<sqsubset>)"
+  by (intro total_ordering.intro reflexive_axioms asympartp_compatible_ordering asympartp_semiconnex)
+
+end
+
+subsection \<open>Functions\<close>
+
+definition "pointwise I r f g \<equiv> \<forall>i \<in> I. r (f i) (g i)"
+
+lemmas pointwiseI = pointwise_def[unfolded atomize_eq, THEN iffD2, rule_format]
+
+lemmas pointwiseD[simp] = pointwise_def[unfolded atomize_eq, THEN iffD1, rule_format]
+
+lemma pointwise_cong:
+  assumes "r = r'" "\<And>i. i \<in> I \<Longrightarrow> f i = f' i" "\<And>i. i \<in> I \<Longrightarrow> g i = g' i"
+  shows "pointwise I r f g = pointwise I r' f' g'"
+  using assms by (auto simp: pointwise_def)
+
+lemma pointwise_empty[simp]: "pointwise {} = \<top>" by (auto intro!: ext pointwiseI)
+
+lemma dual_pointwise[simp]: "(pointwise I r)\<^sup>- = pointwise I r\<^sup>-"
+  by (auto intro!: ext pointwiseI dest: pointwiseD)
+
+lemma pointwise_dual: "pointwise I r\<^sup>- f g \<Longrightarrow> pointwise I r g f" by (auto simp: pointwise_def)
+
+lemma pointwise_un: "pointwise (I\<union>J) r = pointwise I r \<sqinter> pointwise J r"
+  by (auto intro!: ext pointwiseI)
+
+lemma pointwise_unI[intro!]: "pointwise I r f g \<Longrightarrow> pointwise J r f g \<Longrightarrow> pointwise (I \<union> J) r f g"
+  by (auto simp: pointwise_un)
+
+lemma pointwise_bound: "bound F (pointwise I r) f \<longleftrightarrow> (\<forall>i \<in> I. bound {f i |. f \<in> F} r (f i))"
+  by (auto intro!:pointwiseI elim!: boundE)
+
+lemma pointwise_extreme:
+  shows "extreme F (pointwise X r) e \<longleftrightarrow> e \<in> F \<and> (\<forall>x \<in> X. extreme {f x |. f \<in> F} r (e x))"
+  by (auto intro!: pointwiseI extremeI elim!: extremeE)
+
+lemma pointwise_extreme_bound:
+  fixes r (infix "\<sqsubseteq>" 50)
+  assumes F: "F \<subseteq> {f. f ` X \<subseteq> A}"
+  shows "extreme_bound {f. f ` X \<subseteq> A} (pointwise X (\<sqsubseteq>)) F s \<longleftrightarrow>
+    (\<forall>x \<in> X. extreme_bound A (\<sqsubseteq>) {f x |. f \<in> F} (s x))" (is "?p \<longleftrightarrow> ?a")
+proof (safe intro!: extreme_boundI pointwiseI)
+  fix x
+  assume s: ?p and xX: "x \<in> X"
+  { fix b
+    assume b: "bound {f x |. f \<in> F} (\<sqsubseteq>) b" and bA: "b \<in> A"
+    have "pointwise X (\<sqsubseteq>) s (s(x:=b))"
+    proof (rule extreme_boundD(2)[OF s], safe intro!: pointwiseI)
+      fix f y
+      assume fF: "f \<in> F" and yX: "y \<in> X"
+      show "f y \<sqsubseteq> (s(x:=b)) y"
+      proof (cases "x = y")
+        case True
+        with b fF show "?thesis" by auto
+      next
+        case False
+        with s[THEN extreme_bound_imp_bound] fF yX show ?thesis by (auto dest: boundD)
+      qed
+    next
+      fix y assume "y \<in> X" with bA s show "(s(x := b)) y \<in> A" by auto
+    qed
+    with xX show "s x \<sqsubseteq> b" by (auto dest: pointwiseD)
+  next
+    fix f assume "f \<in> F"
+    from extreme_boundD(1)[OF s this] F xX
+    show "f x \<sqsubseteq> s x" by auto
+  next
+    show "s x \<in> A" using s xX by auto
+  }
+next
+  fix x
+  assume s: ?a and xX: "x \<in> X"
+  { from s xX show "s x \<in> A" by auto
+  next
+    fix b assume b: "bound F (pointwise X (\<sqsubseteq>)) b" and bA: "b ` X \<subseteq> A"
+    with xX have "bound {f x |. f \<in> F} (\<sqsubseteq>) (b x)" by (auto simp: pointwise_bound)
+    with s[rule_format, OF xX] bA xX show "s x \<sqsubseteq> b x" by auto
+  next
+    fix f assume "f \<in> F"
+    with s[rule_format, OF xX] show "f x \<sqsubseteq> s x" by auto
+  }
+qed
+
+lemma dual_pointwise_extreme_bound:
+  "extreme_bound FA (pointwise X r)\<^sup>- F = extreme_bound FA (pointwise X r\<^sup>-) F"
+  by (simp)
+
+lemma pointwise_monotone_on:
+  fixes less_eq (infix "\<sqsubseteq>" 50) and prec_eq (infix "\<preceq>" 50)
+  shows "monotone_on I (\<preceq>) (pointwise A (\<sqsubseteq>)) f \<longleftrightarrow>
+   (\<forall>a \<in> A. monotone_on I (\<preceq>) (\<sqsubseteq>) (\<lambda>i. f i a))" (is "?l \<longleftrightarrow> ?r")
+proof (safe intro!: monotone_onI pointwiseI)
+  fix a i j assume aA: "a \<in> A" and *: ?l "i \<preceq> j" "i \<in> I" "j \<in> I"
+  then
+  show "f i a \<sqsubseteq> f j a" by (auto dest: monotone_onD)
+next
+  fix a i j assume ?r and "a \<in> A" and ij: "i \<preceq> j" "i \<in> I" "j \<in> I"
+  then have "monotone_on I (\<preceq>) (\<sqsubseteq>) (\<lambda>i. f i a)" by auto
+  from monotone_onD[OF this]ij
+  show "f i a \<sqsubseteq> f j a" by auto
+qed
+
+lemmas pointwise_monotone = pointwise_monotone_on[of UNIV]
+
+lemma (in reflexive) pointwise_reflexive: "reflexive {f. f ` I \<subseteq> A} (pointwise I (\<sqsubseteq>))"
+  apply unfold_locales by (auto intro!: pointwiseI simp: subsetD[OF _ imageI])
+
+lemma (in irreflexive) pointwise_irreflexive:
+  assumes I0: "I \<noteq> {}" shows "irreflexive {f. f ` I \<subseteq> A} (pointwise I (\<sqsubset>))"
+proof (safe intro!: irreflexive.intro)
+  fix f
+  assume f: "f ` I \<subseteq> A" and ff: "pointwise I (\<sqsubset>) f f"
+  from I0 obtain i where i: "i \<in> I" by auto
+  with ff have "f i \<sqsubset> f i" by auto
+  with f i show False by auto
+qed
+
+lemma (in semiattractive) pointwise_semiattractive: "semiattractive {f. f ` I \<subseteq> A} (pointwise I (\<sqsubseteq>))"
+proof (unfold_locales, safe intro!: pointwiseI)
+  fix f g h i
+  assume fg: "pointwise I (\<sqsubseteq>) f g" and gf: "pointwise I (\<sqsubseteq>) g f" and gh: "pointwise I (\<sqsubseteq>) g h"
+    and [simp]: "i \<in> I" and f: "f ` I \<subseteq> A" and g: "g ` I \<subseteq> A" and h: "h ` I \<subseteq> A"
+  show "f i \<sqsubseteq> h i"
+  proof (rule attract)
+    from fg show "f i \<sqsubseteq> g i" by auto
+    from gf show "g i \<sqsubseteq> f i" by auto
+    from gh show "g i \<sqsubseteq> h i" by auto
+  qed (insert f g h, auto simp: subsetD[OF _ imageI])
+qed
+
+lemma (in attractive) pointwise_attractive: "attractive {f. f ` I \<subseteq> A} (pointwise I (\<sqsubseteq>))"
+  apply (intro attractive.intro attractive_axioms.intro)
+  using pointwise_semiattractive dual.pointwise_semiattractive by auto
+
+text \<open>Antisymmetry will not be preserved by pointwise extension over restricted domain.\<close>
+lemma (in antisymmetric) pointwise_antisymmetric:
+  "antisymmetric {f. f ` I \<subseteq> A} (pointwise I (\<sqsubseteq>))"
+  oops
+
+lemma (in transitive) pointwise_transitive: "transitive {f. f ` I \<subseteq> A} (pointwise I (\<sqsubseteq>))"
+proof (unfold_locales, safe intro!: pointwiseI)
+  fix f g h i
+  assume fg: "pointwise I (\<sqsubseteq>) f g" and gh: "pointwise I (\<sqsubseteq>) g h"
+    and [simp]: "i \<in> I" and f: "f ` I \<subseteq> A" and g: "g ` I \<subseteq> A" and h: "h ` I \<subseteq> A"
+  from fg have "f i \<sqsubseteq> g i" by auto
+  also from gh have "g i \<sqsubseteq> h i" by auto
+  finally show "f i \<sqsubseteq> h i" using f g h by (auto simp: subsetD[OF _ imageI])
+qed
+
+lemma (in quasi_ordered_set) pointwise_quasi_order:
+  "quasi_ordered_set {f. f ` I \<subseteq> A} (pointwise I (\<sqsubseteq>))"
+  by (intro quasi_ordered_setI pointwise_transitive pointwise_reflexive)
+
+lemma (in compatible_ordering) pointwise_compatible_ordering:
+  assumes I0: "I \<noteq> {}"
+  shows "compatible_ordering {f. f ` I \<subseteq> A} (pointwise I (\<sqsubseteq>)) (pointwise I (\<sqsubset>))"
+proof (intro compatible_ordering.intro compatible_ordering_axioms.intro pointwise_irreflexive[OF I0], safe intro!: pointwiseI)
+  fix f g h i
+  assume fg: "pointwise I (\<sqsubseteq>) f g" and gh: "pointwise I (\<sqsubset>) g h"
+    and [simp]: "i \<in> I" and f: "f ` I \<subseteq> A" and g: "g ` I \<subseteq> A" and h: "h ` I \<subseteq> A"
+  from fg have "f i \<sqsubseteq> g i" by auto
+  also from gh have "g i \<sqsubset> h i" by auto
+  finally show "f i \<sqsubset> h i" using f g h by (auto simp: subsetD[OF _ imageI])
+next
+  fix f g h i
+  assume fg: "pointwise I (\<sqsubset>) f g" and gh: "pointwise I (\<sqsubseteq>) g h"
+    and [simp]: "i \<in> I" and f: "f ` I \<subseteq> A" and g: "g ` I \<subseteq> A" and h: "h ` I \<subseteq> A"
+  from fg have "f i \<sqsubset> g i" by auto
+  also from gh have "g i \<sqsubseteq> h i" by auto
+  finally show "f i \<sqsubset> h i" using f g h by (auto simp: subsetD[OF _ imageI])
+next
+  fix f g i
+  assume fg: "pointwise I (\<sqsubset>) f g"
+    and [simp]: "i \<in> I"
+    and f: "f ` I \<subseteq> A" and g: "g ` I \<subseteq> A"
+  from fg have "f i \<sqsubset> g i" by auto
+  with f g show "f i \<sqsubseteq> g i" by (auto simp: subsetD[OF _ imageI] strict_implies_weak)
+qed
 
 subsection \<open>Relating to Classes\<close>
 
@@ -1842,6 +1865,19 @@ abbreviation supremum where "supremum X \<equiv> least (Collect (bound X (\<le>)
 
 abbreviation infimum where "infimum X \<equiv> greatest (Collect (bound X (\<lambda>x y. y \<le> x)))"
 
+lemma supremumI: "bound X (\<le>) s \<Longrightarrow> (\<And>b. bound X (\<le>) b \<Longrightarrow> s \<le> b) \<Longrightarrow> supremum X s"
+  and infimumI: "bound X (\<ge>) i \<Longrightarrow> (\<And>b. bound X (\<ge>) b \<Longrightarrow> b \<le> i) \<Longrightarrow> infimum X i"
+  by (auto intro!: extremeI)
+
+lemma supremumE: "supremum X s \<Longrightarrow>
+    (bound X (\<le>) s \<Longrightarrow> (\<And>b. bound X (\<le>) b \<Longrightarrow> s \<le> b) \<Longrightarrow> thesis) \<Longrightarrow> thesis"
+  and infimumE: "infimum X i \<Longrightarrow>
+    (bound X (\<ge>) i \<Longrightarrow> (\<And>b. bound X (\<ge>) b \<Longrightarrow> b \<le> i) \<Longrightarrow> thesis) \<Longrightarrow> thesis"
+  by (auto)
+
+lemma extreme_bound_supremum[simp]: "extreme_bound UNIV (\<le>) = supremum" by (auto intro!: ext)
+lemma extreme_bound_infimum[simp]: "extreme_bound UNIV (\<ge>) = infimum" by (auto intro!: ext)
+
 lemma Least_eq_The_least: "Least P = The (least {x. P x})"
   by (auto simp: Least_def extreme_def[unfolded atomize_eq, THEN ext])
 
@@ -1853,10 +1889,20 @@ end
 lemma Ball_UNIV[simp]: "Ball UNIV = All" by auto
 lemma Bex_UNIV[simp]: "Bex UNIV = Ex" by auto
 
-class compat = ord + assumes "compatible_ordering UNIV (\<le>) (<)"
+lemma pointwise_UNIV_le[simp]: "pointwise UNIV (\<le>) = (\<le>)" by (intro ext, simp add: pointwise_def le_fun_def)
+lemma pointwise_UNIV_ge[simp]: "pointwise UNIV (\<ge>) = (\<ge>)" by (intro ext, simp add: pointwise_def le_fun_def)
+
+lemma fun_supremum_iff: "supremum F e \<longleftrightarrow> (\<forall>x. supremum {f x |. f \<in> F} (e x))"
+  using pointwise_extreme_bound[of F UNIV UNIV "(\<le>)"] by simp
+
+lemma fun_infimum_iff: "infimum F e \<longleftrightarrow> (\<forall>x. infimum {f x |. f \<in> F} (e x))"
+  using pointwise_extreme_bound[of F UNIV UNIV "(\<ge>)"] by simp
+
+
+class reflorder = ord + assumes "reflexive_ordering UNIV (\<le>) (<)"
 begin
 
-sublocale order: compatible_ordering UNIV
+sublocale order: reflexive_ordering UNIV
   rewrites "\<And>x. x \<in> UNIV \<equiv> True"
     and "\<And>X. X \<subseteq> UNIV \<equiv> True"
     and "\<And>r. r \<restriction> UNIV \<equiv> r"
@@ -1867,24 +1913,27 @@ sublocale order: compatible_ordering UNIV
     and "\<And>P1. (True \<Longrightarrow> PROP P1) \<equiv> PROP P1"
     and "\<And>P1. (True \<Longrightarrow> P1) \<equiv> Trueprop P1"
     and "\<And>P1 P2. (True \<Longrightarrow> PROP P1 \<Longrightarrow> PROP P2) \<equiv> (PROP P1 \<Longrightarrow> PROP P2)"
-  using compat_axioms unfolding class.compat_def by (auto 0 4 simp:atomize_eq)
+  using reflorder_axioms unfolding class.reflorder_def by (auto 0 4 simp:atomize_eq)
 
 end
 
 text \<open>We should have imported locale-based facts in classes, e.g.:\<close>
 thm order.trans order.strict.trans order.refl order.irrefl order.asym order.extreme_bound_singleton
 
-class attractive_order = ord + assumes "attractive_ordering UNIV (\<le>) (<)"
+class attrorder = ord +
+  assumes "reflexive_attractive_ordering UNIV (\<le>) (<)"
 begin
 
 text \<open>We need to declare subclasses before sublocales in order to preserve facts for superclasses.\<close>
 
-interpretation attractive_ordering UNIV
-  using attractive_order_axioms unfolding class.attractive_order_def.
+subclass reflorder
+proof-
+  interpret reflexive_attractive_ordering UNIV
+    using attrorder_axioms unfolding class.attrorder_def by auto
+  show "class.reflorder (\<le>) (<)"..
+qed
 
-subclass compat ..
-
-sublocale order: attractive_ordering UNIV
+sublocale order: reflexive_attractive_ordering UNIV
   rewrites "\<And>x. x \<in> UNIV \<equiv> True"
     and "\<And>X. X \<subseteq> UNIV \<equiv> True"
     and "\<And>r. r \<restriction> UNIV \<equiv> r"
@@ -1895,7 +1944,8 @@ sublocale order: attractive_ordering UNIV
     and "\<And>P1. (True \<Longrightarrow> PROP P1) \<equiv> PROP P1"
     and "\<And>P1. (True \<Longrightarrow> P1) \<equiv> Trueprop P1"
     and "\<And>P1 P2. (True \<Longrightarrow> PROP P1 \<Longrightarrow> PROP P2) \<equiv> (PROP P1 \<Longrightarrow> PROP P2)"
-  apply unfold_locales by (auto simp:atomize_eq)
+  using attrorder_axioms unfolding class.attrorder_def
+  by (auto simp:atomize_eq)
 
 end
 
@@ -1904,9 +1954,12 @@ thm order.extreme_bound_quasi_const
 class psorder = ord + assumes "pseudo_ordering UNIV (\<le>) (<)"
 begin
 
-interpretation pseudo_ordering UNIV using psorder_axioms unfolding class.psorder_def.
-
-subclass attractive_order ..
+subclass attrorder
+proof-
+  interpret pseudo_ordering UNIV
+    using psorder_axioms unfolding class.psorder_def by auto
+  show "class.attrorder (\<le>) (<)"..
+qed
 
 sublocale order: pseudo_ordering UNIV
   rewrites "\<And>x. x \<in> UNIV \<equiv> True"
@@ -1919,16 +1972,19 @@ sublocale order: pseudo_ordering UNIV
     and "\<And>P1. (True \<Longrightarrow> PROP P1) \<equiv> PROP P1"
     and "\<And>P1. (True \<Longrightarrow> P1) \<equiv> Trueprop P1"
     and "\<And>P1 P2. (True \<Longrightarrow> PROP P1 \<Longrightarrow> PROP P2) \<equiv> (PROP P1 \<Longrightarrow> PROP P2)"
-  apply unfold_locales by (auto simp:atomize_eq)
+  using psorder_axioms unfolding class.psorder_def by (auto simp:atomize_eq)
 
 end
 
 class qorder = ord + assumes "quasi_ordering UNIV (\<le>) (<)"
 begin
 
-interpretation quasi_ordering UNIV using qorder_axioms unfolding class.qorder_def.
-
-subclass attractive_order ..
+subclass attrorder
+proof-
+  interpret quasi_ordering UNIV
+    using qorder_axioms unfolding class.qorder_def by auto
+  show "class.attrorder (\<le>) (<)"..
+qed
 
 sublocale order: quasi_ordering UNIV
   rewrites "\<And>x. x \<in> UNIV \<equiv> True"
@@ -1941,7 +1997,9 @@ sublocale order: quasi_ordering UNIV
     and "\<And>P1. (True \<Longrightarrow> PROP P1) \<equiv> PROP P1"
     and "\<And>P1. (True \<Longrightarrow> P1) \<equiv> Trueprop P1"
     and "\<And>P1 P2. (True \<Longrightarrow> PROP P1 \<Longrightarrow> PROP P2) \<equiv> (PROP P1 \<Longrightarrow> PROP P2)"
-  apply unfold_locales by (auto simp:atomize_eq)
+  using qorder_axioms unfolding class.qorder_def by (auto simp:atomize_eq)
+
+lemmas [intro!] = order.quasi_ordered_subset
 
 end
 
@@ -1949,10 +2007,11 @@ class porder = ord + assumes "partial_ordering UNIV (\<le>) (<)"
 begin
 
 interpretation partial_ordering UNIV
-  using porder_axioms unfolding class.porder_def.
+  using porder_axioms unfolding class.porder_def by auto
 
-subclass psorder ..
-subclass qorder ..
+subclass psorder..
+
+subclass qorder..
 
 sublocale order: partial_ordering UNIV
   rewrites "\<And>x. x \<in> UNIV \<equiv> True"
@@ -1969,15 +2028,15 @@ sublocale order: partial_ordering UNIV
 
 end
 
-class wf_qorder = ord + assumes "well_founded_ordering UNIV (\<le>) (<)"
+class linqorder = ord + assumes "total_quasi_ordering UNIV (\<le>) (<)"
 begin
 
-interpretation well_founded_ordering UNIV
-  using wf_qorder_axioms unfolding class.wf_qorder_def.
+interpretation total_quasi_ordering UNIV
+  using linqorder_axioms unfolding class.linqorder_def by auto
 
-subclass qorder ..
+subclass qorder..
 
-sublocale order: well_founded_ordering UNIV
+sublocale order: total_quasi_ordering UNIV
   rewrites "\<And>x. x \<in> UNIV \<equiv> True"
     and "\<And>X. X \<subseteq> UNIV \<equiv> True"
     and "\<And>r. r \<restriction> UNIV \<equiv> r"
@@ -1988,17 +2047,78 @@ sublocale order: well_founded_ordering UNIV
     and "\<And>P1. (True \<Longrightarrow> PROP P1) \<equiv> PROP P1"
     and "\<And>P1. (True \<Longrightarrow> P1) \<equiv> Trueprop P1"
     and "\<And>P1 P2. (True \<Longrightarrow> PROP P1 \<Longrightarrow> PROP P2) \<equiv> (PROP P1 \<Longrightarrow> PROP P2)"
-  apply unfold_locales by (auto simp:atomize_eq)
+    using linqorder_axioms unfolding class.linqorder_def
+    by (auto simp:atomize_eq)
+
+lemmas asympartp_le = order.not_iff_asym[symmetric, abs_def]
 
 end
 
-class totalorder = ord + assumes "total_ordering UNIV (\<le>) (<)"
-begin
 
-interpretation total_ordering UNIV
-  using totalorder_axioms unfolding class.totalorder_def.
+text \<open>Isabelle/HOL's @{class preorder} belongs to @{class qorder}, but not vice versa.\<close>
 
-subclass porder ..
+context preorder begin
+
+text \<open>The relation @{term "(<)"} is defined as the antisymmetric part of @{term "(\<le>)"}.\<close>
+lemma [simp]:
+  shows asympartp_le: "asympartp (\<le>) = (<)"
+    and asympartp_ge: "asympartp (\<ge>) = (>)"
+  by (intro ext, auto simp: asympartp_def less_le_not_le)
+
+interpretation strict_quasi_ordering UNIV "(\<le>)" "(<)"
+  apply unfold_locales
+  using order_refl apply assumption
+  using order_trans apply assumption
+  using less_le_not_le apply assumption
+  done
+
+subclass qorder..
+
+sublocale order: strict_quasi_ordering UNIV
+  rewrites "\<And>x. x \<in> UNIV \<equiv> True"
+    and "\<And>X. X \<subseteq> UNIV \<equiv> True"
+    and "\<And>r. r \<restriction> UNIV \<equiv> r"
+    and "\<And>P. True \<and> P \<equiv> P"
+    and "Ball UNIV \<equiv> All"
+    and "Bex UNIV \<equiv> Ex"
+    and "sympartp (\<le>)\<^sup>- \<equiv> sympartp (\<le>)"
+    and "\<And>P1. (True \<Longrightarrow> PROP P1) \<equiv> PROP P1"
+    and "\<And>P1. (True \<Longrightarrow> P1) \<equiv> Trueprop P1"
+    and "\<And>P1 P2. (True \<Longrightarrow> PROP P1 \<Longrightarrow> PROP P2) \<equiv> (PROP P1 \<Longrightarrow> PROP P2)"
+  apply unfold_locales
+    by (auto simp:atomize_eq)
+
+end
+
+context order begin
+
+interpretation strict_partial_ordering UNIV "(\<le>)" "(<)"
+  apply unfold_locales
+  using order_antisym by assumption
+
+subclass porder..
+
+sublocale order: strict_partial_ordering UNIV
+  rewrites "\<And>x. x \<in> UNIV \<equiv> True"
+    and "\<And>X. X \<subseteq> UNIV \<equiv> True"
+    and "\<And>r. r \<restriction> UNIV \<equiv> r"
+    and "\<And>P. True \<and> P \<equiv> P"
+    and "Ball UNIV \<equiv> All"
+    and "Bex UNIV \<equiv> Ex"
+    and "sympartp (\<le>)\<^sup>- \<equiv> sympartp (\<le>)"
+    and "\<And>P1. (True \<Longrightarrow> PROP P1) \<equiv> PROP P1"
+    and "\<And>P1. (True \<Longrightarrow> P1) \<equiv> Trueprop P1"
+    and "\<And>P1 P2. (True \<Longrightarrow> PROP P1 \<Longrightarrow> PROP P2) \<equiv> (PROP P1 \<Longrightarrow> PROP P2)"
+  apply unfold_locales
+    by (auto simp:atomize_eq)
+
+end
+
+text \<open>Isabelle/HOL's @{class linorder} is equivalent to our locale @{locale total_ordering}.\<close>
+
+context linorder begin
+
+subclass linqorder apply unfold_locales by auto
 
 sublocale order: total_ordering UNIV
   rewrites "\<And>x. x \<in> UNIV \<equiv> True"
@@ -2015,55 +2135,13 @@ sublocale order: total_ordering UNIV
 
 end
 
-text \<open>Isabelle/HOL's @{class preorder} belongs to @{class qorder}, but not vice versa.\<close>
-
-subclass (in preorder) qorder
-  apply unfold_locales
-  using order_refl apply assumption
-  apply simp
-  using le_less_trans apply assumption
-  using less_le_trans apply assumption
-  using less_imp_le apply assumption
-  using  order_trans apply assumption
-  done
-
-subclass (in order) porder by (unfold_locales, auto)
-
-subclass (in wellorder) wf_qorder
-  apply (unfold_locales)
-  using less_induct by auto
-
-text \<open>Isabelle/HOL's @{class linorder} is equivalent to our locale @{locale strict_total_ordering}.\<close>
-
-context linorder begin
-
-interpretation strict_total_ordering UNIV
-  apply unfold_locales by auto
-
-subclass totalorder ..
-
-sublocale order: strict_total_ordering UNIV
-  rewrites "\<And>x. x \<in> UNIV \<equiv> True"
-    and "\<And>X. X \<subseteq> UNIV \<equiv> True"
-    and "\<And>r. r \<restriction> UNIV \<equiv> r"
-    and "\<And>P. True \<and> P \<equiv> P"
-    and "Ball UNIV \<equiv> All"
-    and "Bex UNIV \<equiv> Ex"
-    and "sympartp (\<le>)\<^sup>- \<equiv> sympartp (\<le>)"
-    and "\<And>P1. (True \<Longrightarrow> PROP P1) \<equiv> PROP P1"
-    and "\<And>P1. (True \<Longrightarrow> P1) \<equiv> Trueprop P1"
-    and "\<And>P1 P2. (True \<Longrightarrow> PROP P1 \<Longrightarrow> PROP P2) \<equiv> (PROP P1 \<Longrightarrow> PROP P2)"
-  apply unfold_locales by (auto simp:atomize_eq)
-
-end
-
 text \<open>Tests: facts should be available in the most general classes.\<close>
 
-thm order.strict.trans[where 'a="'a::compat"]
-thm order.extreme_bound_quasi_const[where 'a="'a::attractive_order"]
+thm order.strict.trans[where 'a="'a::reflorder"]
+thm order.extreme_bound_quasi_const[where 'a="'a::attrorder"]
 thm order.extreme_bound_singleton_eq[where 'a="'a::psorder"]
 thm order.trans[where 'a="'a::qorder"]
-thm order.comparable_cases[where 'a="'a::totalorder"]
+thm order.comparable_cases[where 'a="'a::linqorder"]
 thm order.cases[where 'a="'a::linorder"]
 
 subsection \<open>Declaring Duals\<close>
@@ -2090,7 +2168,7 @@ sublocale reflexive \<subseteq> dual: reflexive A "(\<sqsubseteq>)\<^sup>-"
 
 context attractive begin
 
-interpretation less_eq_notations.
+interpretation less_eq_symmetrize.
 
 sublocale dual: attractive A "(\<sqsupseteq>)"
   rewrites "sympartp (\<sqsupseteq>) = (\<sim>)"
@@ -2120,6 +2198,26 @@ sublocale antisymmetric \<subseteq> dual: antisymmetric A "(\<sqsubseteq>)\<^sup
   rewrites "(\<sqsubseteq>)\<^sup>- \<restriction> A \<equiv> ((\<sqsubseteq>) \<restriction> A)\<^sup>-"
     and "sympartp (\<sqsubseteq>)\<^sup>- = sympartp (\<sqsubseteq>)"
   by (auto dest: antisym simp: atomize_eq)
+
+context antisymmetric begin
+
+lemma extreme_bound_unique:
+  "extreme_bound A (\<sqsubseteq>) X x \<Longrightarrow> extreme_bound A (\<sqsubseteq>) X y \<longleftrightarrow> x = y"
+  apply (unfold extreme_bound_def)
+  apply (rule dual.extreme_unique) by auto
+
+lemma ex_extreme_bound_iff_ex1:
+  "Ex (extreme_bound A (\<sqsubseteq>) X) \<longleftrightarrow> Ex1 (extreme_bound A (\<sqsubseteq>) X)"
+  apply (unfold extreme_bound_def)
+  apply (rule dual.ex_extreme_iff_ex1) by auto
+
+lemma ex_extreme_bound_iff_the:
+   "Ex (extreme_bound A (\<sqsubseteq>) X) \<longleftrightarrow> extreme_bound A (\<sqsubseteq>) X (The (extreme_bound A (\<sqsubseteq>) X))"
+  apply (rule iffI)
+  apply (rule theI')
+  using extreme_bound_unique by auto
+
+end
 
 sublocale semiconnex \<subseteq> dual: semiconnex A "(\<sqsubset>)\<^sup>-"
   rewrites "sympartp (\<sqsubset>)\<^sup>- = sympartp (\<sqsubset>)"
@@ -2156,15 +2254,21 @@ sublocale total_quasi_ordered_set \<subseteq> dual: total_quasi_ordered_set A "(
 sublocale compatible_ordering \<subseteq> dual: compatible_ordering A "(\<sqsubseteq>)\<^sup>-" "(\<sqsubset>)\<^sup>-"
   rewrites "sympartp (\<sqsubseteq>)\<^sup>- = sympartp (\<sqsubseteq>)"
   apply unfold_locales
-  by (auto dest: compat_left compat_right strict_implies_weak)
+  by (auto dest: strict_implies_weak strict_weak_trans weak_strict_trans)
 
-sublocale attractive_ordering \<subseteq> dual: attractive_ordering A "(\<sqsubseteq>)\<^sup>-" "(\<sqsubset>)\<^sup>-"
+lemmas(in qorder) [intro!] = order.dual.quasi_ordered_subset
+
+sublocale reflexive_ordering \<subseteq> dual: reflexive_ordering A "(\<sqsubseteq>)\<^sup>-" "(\<sqsubset>)\<^sup>-"
+  rewrites "sympartp (\<sqsubseteq>)\<^sup>- = sympartp (\<sqsubseteq>)"
+  by unfold_locales auto
+
+sublocale reflexive_attractive_ordering \<subseteq> dual: reflexive_attractive_ordering A "(\<sqsubseteq>)\<^sup>-" "(\<sqsubset>)\<^sup>-"
   rewrites "sympartp (\<sqsubseteq>)\<^sup>- = sympartp (\<sqsubseteq>)"
   by unfold_locales auto
 
 sublocale pseudo_ordering \<subseteq> dual: pseudo_ordering A "(\<sqsubseteq>)\<^sup>-" "(\<sqsubset>)\<^sup>-"
   rewrites "sympartp (\<sqsubseteq>)\<^sup>- = sympartp (\<sqsubseteq>)"
-  by unfold_locales (auto 0 4)
+  by unfold_locales auto
 
 sublocale quasi_ordering \<subseteq> dual: quasi_ordering A "(\<sqsubseteq>)\<^sup>-" "(\<sqsubset>)\<^sup>-"
   rewrites "sympartp (\<sqsubseteq>)\<^sup>- = sympartp (\<sqsubseteq>)"
@@ -2172,18 +2276,34 @@ sublocale quasi_ordering \<subseteq> dual: quasi_ordering A "(\<sqsubseteq>)\<^s
 
 sublocale partial_ordering \<subseteq> dual: partial_ordering A "(\<sqsubseteq>)\<^sup>-" "(\<sqsubset>)\<^sup>-"
   rewrites "sympartp (\<sqsubseteq>)\<^sup>- = sympartp (\<sqsubseteq>)"
-  by unfold_locales (auto 0 4)
+  by unfold_locales auto
+
+sublocale total_quasi_ordering \<subseteq> dual: total_quasi_ordering A "(\<sqsubseteq>)\<^sup>-" "(\<sqsubset>)\<^sup>-"
+  rewrites "sympartp (\<sqsubseteq>)\<^sup>- = sympartp (\<sqsubseteq>)"
+  by unfold_locales auto
 
 sublocale total_ordering \<subseteq> dual: total_ordering A "(\<sqsubseteq>)\<^sup>-" "(\<sqsubset>)\<^sup>-"
   rewrites "sympartp (\<sqsubseteq>)\<^sup>- = sympartp (\<sqsubseteq>)"
-  by unfold_locales (auto 0 4)
+  by unfold_locales auto
+
+sublocale strict_quasi_ordering \<subseteq> dual: strict_quasi_ordering A "(\<sqsubseteq>)\<^sup>-" "(\<sqsubset>)\<^sup>-"
+  rewrites "sympartp (\<sqsubseteq>)\<^sup>- = sympartp (\<sqsubseteq>)"
+  by unfold_locales (auto simp: strict_iff)
+
+sublocale strict_partial_ordering \<subseteq> dual: strict_partial_ordering A "(\<sqsubseteq>)\<^sup>-" "(\<sqsubset>)\<^sup>-"
+  rewrites "sympartp (\<sqsubseteq>)\<^sup>- = sympartp (\<sqsubseteq>)"
+  by unfold_locales auto
+
+sublocale total_ordering \<subseteq> dual: total_ordering A "(\<sqsubseteq>)\<^sup>-" "(\<sqsubset>)\<^sup>-"
+  rewrites "sympartp (\<sqsubseteq>)\<^sup>- = sympartp (\<sqsubseteq>)"
+  by unfold_locales auto
 
 lemma(in antisymmetric) monotone_extreme_imp_extreme_bound_iff:
   fixes ir (infix "\<preceq>" 50)
   assumes "f ` C \<subseteq> A" and "monotone_on C (\<preceq>) (\<sqsubseteq>) f" and i: "extreme C (\<preceq>) i"
   shows "extreme_bound A (\<sqsubseteq>) (f ` C) x \<longleftrightarrow> f i = x"
-  using dual.extreme_unique monotone_extreme_extreme_boundI[OF assms] by auto
-
+  using dual.extreme_unique monotone_extreme_extreme_boundI[OF assms]
+  by (auto simp: extreme_bound_def)
 
 subsection \<open>Instantiations\<close>
 
@@ -2193,7 +2313,7 @@ instance nat :: linorder ..
 
 text \<open>Pointwise ordering of functions are compatible only if the weak part is transitive.\<close>
 
-instance "fun" :: (type,qorder) compat
+instance "fun" :: (type,qorder) reflorder
 proof (intro_classes, unfold_locales)
   note [simp] = le_fun_def less_fun_def
   fix f g h :: "'a \<Rightarrow> 'b"
