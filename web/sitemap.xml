@@ -3,10 +3,34 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2023-05-03T00:00:00+00:00</lastmod>
+    <lastmod>2023-05-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2023-05-03T00:00:00+00:00</lastmod>
+    <lastmod>2023-05-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/computer-science/</loc>
+    <lastmod>2023-05-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/cremer/</loc>
+    <lastmod>2023-05-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2023-05-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2023-05-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2023-05-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2023-05-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Tree_Enumeration.html</loc>
+    <lastmod>2023-05-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/undirected_graph_theory/</loc>
+    <lastmod>2023-05-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/chevalier/</loc>
     <lastmod>2023-05-03T00:00:00+00:00</lastmod>
@@ -14,26 +38,11 @@
     <loc>/authors/danilkin/</loc>
     <lastmod>2023-05-03T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/</loc>
-    <lastmod>2023-05-03T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/dirichlet_l/</loc>
-    <lastmod>2023-05-03T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/</loc>
-    <lastmod>2023-05-03T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/mathematics/</loc>
     <lastmod>2023-05-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Three_Squares.html</loc>
     <lastmod>2023-05-03T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
-    <lastmod>2023-05-03T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/computer-science/</loc>
-    <lastmod>2023-04-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/logic/</loc>
     <lastmod>2023-04-29T00:00:00+00:00</lastmod>
@@ -401,9 +410,6 @@
     <loc>/entries/Balog_Szemeredi_Gowers.html</loc>
     <lastmod>2022-11-11T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/undirected_graph_theory/</loc>
-    <lastmod>2022-11-11T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/delemazure/</loc>
     <lastmod>2022-11-10T00:00:00+00:00</lastmod>
   </url><url>
@@ -433,9 +439,6 @@
   </url><url>
     <loc>/entries/Query_Optimization.html</loc>
     <lastmod>2022-10-04T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/cremer/</loc>
-    <lastmod>2022-09-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/design_theory/</loc>
     <lastmod>2022-09-29T00:00:00+00:00</lastmod>
@@ -6117,6 +6120,8 @@
     <loc>/theories/tree-automata/</loc>
   </url><url>
     <loc>/theories/tree_decomposition/</loc>
+  </url><url>
+    <loc>/theories/tree_enumeration/</loc>
   </url><url>
     <loc>/theories/triangle/</loc>
   </url><url>
