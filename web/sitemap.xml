@@ -92,6 +92,21 @@
     <loc>/dependencies/saturation_framework_extensions/</loc>
     <lastmod>2023-04-20T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/dependencies/commuting_hermitian/</loc>
+    <lastmod>2023-04-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/echenim/</loc>
+    <lastmod>2023-04-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/mhalla/</loc>
+    <lastmod>2023-04-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/mori/</loc>
+    <lastmod>2023-04-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/TsirelsonBound.html</loc>
+    <lastmod>2023-04-18T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/authors/dardinier/</loc>
     <lastmod>2023-04-03T00:00:00+00:00</lastmod>
   </url><url>
@@ -139,9 +154,6 @@
   </url><url>
     <loc>/authors/szekely/</loc>
     <lastmod>2023-03-05T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/commuting_hermitian/</loc>
-    <lastmod>2023-03-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Expander_Graphs.html</loc>
     <lastmod>2023-03-03T00:00:00+00:00</lastmod>
@@ -556,9 +568,6 @@
   </url><url>
     <loc>/entries/Nano_JSON.html</loc>
     <lastmod>2022-07-29T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/echenim/</loc>
-    <lastmod>2022-07-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Solidity.html</loc>
     <lastmod>2022-07-18T00:00:00+00:00</lastmod>
@@ -6126,6 +6135,8 @@
     <loc>/theories/triangle/</loc>
   </url><url>
     <loc>/theories/trie/</loc>
+  </url><url>
+    <loc>/theories/tsirelsonbound/</loc>
   </url><url>
     <loc>/theories/turans_graph_theorem/</loc>
   </url><url>

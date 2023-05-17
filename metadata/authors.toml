@@ -4189,6 +4189,22 @@ host = [
 
 [messner.homepages]
 
+[mhalla]
+name = "Mehdi Mhalla"
+
+[mhalla.emails]
+
+[mhalla.emails.mhalla_email]
+user = [
+  "mhallam",
+]
+host = [
+  "univ-grenoble-alpes",
+  "fr",
+]
+
+[mhalla.homepages]
+
 [michaelis]
 name = "Julius Michaelis"
 
@@ -4316,6 +4332,23 @@ name = "Bernhard Möller"
 
 [moeller.homepages]
 moeller_homepage = "https://www.informatik.uni-augsburg.de/en/chairs/dbis/pmi/staff/moeller/"
+
+[mori]
+name = "Coraline Mori"
+
+[mori.emails]
+
+[mori.emails.mori_email]
+user = [
+  "coraline",
+  "mori",
+]
+host = [
+  "grenoble-inp",
+  "org",
+]
+
+[mori.homepages]
 
 [muendler]
 name = "Niels Mündler"
