@@ -1,0 +1,11 @@
+chapter AFP
+
+session TsirelsonBound (AFP) = "Commuting_Hermitian" +
+  options [timeout = 1800]
+  theories
+    Tensor_Mat_Compl_Properties
+    Matrix_L2_Operator_Norm
+    Density_Matrix_Basics
+    Tsirelson
+  document_files
+    "root.tex"
