@@ -1,0 +1,26 @@
+chapter AFP 
+
+session MLSS_Decision_Proc (AFP) = HOL +
+  options [timeout = 1200]
+  sessions
+    "HOL-Library"
+    Graph_Theory
+    HereditarilyFinite
+    Fresh_Identifiers
+    "List-Index"
+  theories [document = false]
+    MLSS_Logic
+    MLSS_HF_Extras
+    MLSS_Proc_All
+  theories
+    MLSS_Semantics 
+    MLSS_Typing_Defs
+    MLSS_Calculus
+    MLSS_Suc_Theory
+    MLSS_Typing
+    MLSS_Typing_Urelems
+    MLSS_Proc
+    MLSS_Proc_Code
+  document_files
+    "root.tex"
+    "root.bib"
