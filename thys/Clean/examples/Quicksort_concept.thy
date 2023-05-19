@@ -101,22 +101,35 @@ ML\<open> val Type(s,t) = StateMgt_core.get_state_type_global @{theory};
 text\<open>The \<open>global_vars\<close> command, described and defined in \<^verbatim>\<open>Clean.thy\<close>,
 declares the global variable \<^verbatim>\<open>A\<close>. This has the following effect:\<close>
 
-global_vars state
+
+global_vars (S)
     A :: "int list"
+ML\<open>
+(fst o  StateMgt_core.get_data_global) @{theory}
+\<close>
+global_vars (S2)
+    B :: "int list"
+
+
+ML\<open>
+(Int.toString o length o Symtab.dest o fst o  StateMgt_core.get_data_global) @{theory}
+\<close>
+
+find_theorems (60) name:global_state2_state
 
 find_theorems create\<^sub>L name:"Quick"
 
 text\<open>... which is reflected in Clean's state-management table:\<close>
-ML\<open> val Type("Quicksort_concept.global_state_state_scheme",t) 
+ML\<open> val Type("Quicksort_concept.global_S2_state_scheme",t) 
         = StateMgt_core.get_state_type_global @{theory};
-    StateMgt_core.get_state_field_tab_global @{theory}\<close>
+    (Int.toString o length o Symtab.dest)(StateMgt_core.get_state_field_tab_global @{theory})\<close>
 
 
 text\<open>Note that the state-management uses long-names for complete disambiguation.\<close>
 
 
 subsubsection\<open>A Simulation of Synthesis of Typed Assignment-Rules\<close>
-definition A\<^sub>L' where "A\<^sub>L' \<equiv> create\<^sub>L global_state_state.A global_state_state.A_update"
+definition A\<^sub>L' where "A\<^sub>L' \<equiv> create\<^sub>L global_S_state.A global_S_state.A_update"
 
 lemma  A\<^sub>L'_control_indep : "(break_status\<^sub>L \<bowtie> A\<^sub>L' \<and> return_status\<^sub>L \<bowtie> A\<^sub>L')"
   unfolding A\<^sub>L'_def break_status\<^sub>L_def return_status\<^sub>L_def create\<^sub>L_def upd2put_def
@@ -135,7 +148,7 @@ the invariant @{term \<open>\<not> exec_stop \<sigma>\<close>}.\<close>
 lemma assign_global_A:
      "\<lbrace>\<lambda>\<sigma>. \<triangleright> \<sigma> \<and>  P (\<sigma>\<lparr>A := rhs \<sigma>\<rparr>)\<rbrace>  A_update :==\<^sub>G rhs \<lbrace>\<lambda>r \<sigma>. \<triangleright> \<sigma> \<and> P \<sigma> \<rbrace>"
      apply(rule assign_global)
-     apply(rule strong_vs_weak_upd [of global_state_state.A global_state_state.A_update])
+     apply(rule strong_vs_weak_upd [of global_S_state.A global_S_state.A_update])
      apply (metis A\<^sub>L'_def A\<^sub>L'_strong_indep)
      by(rule ext, rule ext, auto)
 
@@ -159,7 +172,11 @@ defines      " \<open> tmp := A ! i\<close>  ;-
 value "\<lparr>break_status = False, return_status = False, A = [1,2,3], 
        tmp = [], result_value = [], \<dots> = X\<rparr>"
 
-value "swap (0,1) \<lparr>break_status = False, return_status = False, A = [1,2,3], 
+term swap
+
+find_theorems (70) name:"local_swap_state"
+
+value "swap (0,1) \<lparr>break_status = False, return_status = False, A = [1,2,3], B=[],
                    tmp = [],
                    result_value = [],\<dots> = X\<rparr>"  
 
@@ -190,9 +207,9 @@ subsection \<open>A Similation of \<^verbatim>\<open>swap\<close> in elementary 
 text\<open>Note that we prime identifiers in order to avoid confusion with the definitions of the
 previous section. The pre- and postconditions are just definitions of the following form:\<close>
 
-definition swap'_pre :: " nat \<times> nat \<Rightarrow> 'a global_state_state_scheme \<Rightarrow> bool"
+definition swap'_pre :: " nat \<times> nat \<Rightarrow> 'a global_S_state_scheme \<Rightarrow> bool"
   where   "swap'_pre \<equiv> \<lambda>(i, j) \<sigma>. i < length (A \<sigma>) \<and> j < length (A \<sigma>)"
-definition swap'_post :: "'a \<times> 'b \<Rightarrow> 'c global_state_state_scheme \<Rightarrow> 'd global_state_state_scheme \<Rightarrow> unit \<Rightarrow> bool"
+definition swap'_post :: "'a \<times> 'b \<Rightarrow> 'c global_S_state_scheme \<Rightarrow> 'd global_S_state_scheme \<Rightarrow> unit \<Rightarrow> bool"
   where   "swap'_post \<equiv> \<lambda>(i, j) \<sigma>\<^sub>p\<^sub>r\<^sub>e \<sigma> res. length (A \<sigma>) = length (A \<sigma>\<^sub>p\<^sub>r\<^sub>e) \<and> res = ()"
 text\<open>The somewhat vacuous parameter \<open>res\<close> for the result of the swap-computation is the conseqeuence 
 of the implicit definition of the return-type as @{typ "unit"}\<close>
@@ -201,7 +218,7 @@ text\<open>We simulate the effect of the local variable space declaration by the
      factoring out the functionality into the command \<open>local_vars_test\<close> \<close>
 
 
-local_vars_test swap' "unit"
+local_vars_test (swap' "unit")
    tmp :: "int"
 
 text\<open>The immediate effect of this command on the internal Clean State Management
@@ -246,7 +263,7 @@ text\<open>NOTE: If local variables were only used in single-assignment style, i
    calculation as well as well as symbolic execution and deduction.\<close>
 
 text\<open>The could be represented by the following alternative, optimized version :\<close>
-definition swap_opt :: "nat \<times> nat \<Rightarrow>  (unit,'a global_state_state_scheme) MON\<^sub>S\<^sub>E"
+definition swap_opt :: "nat \<times> nat \<Rightarrow>  (unit,'a global_S_state_scheme) MON\<^sub>S\<^sub>E"
     where "swap_opt \<equiv> \<lambda>(i,j). (tmp \<leftarrow>  yield\<^sub>C (\<lambda>\<sigma>. A \<sigma> ! i) ;
                           ((assign_global A_update (\<lambda>\<sigma>. list_update (A \<sigma>) (i) (A \<sigma> ! j))) ;- 
                            (assign_global A_update (\<lambda>\<sigma>. list_update (A \<sigma>) (j) (tmp)))))" 
@@ -355,7 +372,7 @@ definition "partition'_post \<equiv> \<lambda>(lo, hi) \<sigma>\<^sub>p\<^sub>r\
 subsubsection\<open>Memory-Model\<close>
 text\<open>Recall: list-lifting is automatic in \<open>local_vars_test\<close>:\<close>
 
-local_vars_test  partition' "nat"
+local_vars_test  (partition' "nat")
     pivot  :: "int"
     i      :: "nat"
     j      :: "nat"
@@ -448,7 +465,7 @@ text\<open>This is the most complex form a Clean function may have: it may be di
 recursive. Two subcases are to be distinguished: either a measure is provided or not.\<close>
 
 text\<open>We start again with our simulation: First, we define the local variable \<open>p\<close>.\<close>
-local_vars_test  quicksort' "unit"
+local_vars_test  (quicksort' "unit")
     p  :: "nat"
 
 ML\<open> val (x,y) = StateMgt_core.get_data_global @{theory}; \<close>

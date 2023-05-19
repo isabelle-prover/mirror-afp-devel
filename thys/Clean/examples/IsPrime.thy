@@ -75,7 +75,8 @@ defines " if\<^sub>C \<open>n < 2\<close>
          return\<^bsub>local_isPrime_state.result_value_update\<^esub> \<open>True\<close>"
 
 find_theorems name:isPrime name:core
-
+term\<open>isPrime_core\<close>
+ 
 lemma XXX : 
 "isPrime_core n \<equiv>
      if\<^sub>C (\<lambda>\<sigma>. n < 2) then (return\<^bsub>result_value_update\<^esub> (\<lambda>\<sigma>. False)) 

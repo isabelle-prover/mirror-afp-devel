@@ -522,41 +522,29 @@ lemma mbindFSave_vs_mbindFStop :
 
 
 lemma mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>a\<^sub>v\<^sub>e_vs_mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>t\<^sub>o\<^sub>p:
-assumes A: "\<forall> \<iota> \<sigma>. ioprog \<iota> \<sigma> \<noteq> None"
+assumes A: "\<forall> \<iota>\<in>set \<iota>s. \<forall> \<sigma>. ioprog \<iota> \<sigma> \<noteq> None"
 shows      "(\<sigma> \<Turnstile> (os \<leftarrow> (mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>a\<^sub>v\<^sub>e \<iota>s ioprog); P os)) = 
             (\<sigma> \<Turnstile> (os \<leftarrow> (mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>t\<^sub>o\<^sub>p \<iota>s ioprog); P os))" 
-proof(induct "\<iota>s") 
+proof(insert A, erule rev_mp, induct "\<iota>s") 
   case Nil show ?case by simp
 next 
   case (Cons a \<iota>s) 
        from Cons.hyps                           
        have B:"\<forall> S f \<sigma>. mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>a\<^sub>v\<^sub>e S f \<sigma> \<noteq> None " by simp
-       have C:"\<forall>\<sigma>. mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>t\<^sub>o\<^sub>p \<iota>s ioprog \<sigma> = mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>a\<^sub>v\<^sub>e \<iota>s ioprog \<sigma>" 
+
+       have C:"(\<forall> \<iota>\<in>set \<iota>s. \<forall> \<sigma>. ioprog \<iota> \<sigma> \<noteq> None) 
+               \<longrightarrow> (\<forall>\<sigma>. mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>t\<^sub>o\<^sub>p \<iota>s ioprog \<sigma> = mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>a\<^sub>v\<^sub>e \<iota>s ioprog \<sigma>)" 
                apply(induct \<iota>s, simp)
-               apply(rule allI,rename_tac "\<sigma>")
+               apply(intro impI allI,rename_tac "\<sigma>")
                apply(simp add: Seq_MonadSE.mbind'.simps(2))
-               apply(insert A, erule_tac x="a" in allE)
+               apply(insert A, erule_tac x="a" in ballE)
                apply(erule_tac x="\<sigma>" and P="\<lambda>\<sigma> . ioprog a \<sigma> \<noteq> None" in allE)
                apply(auto split:option.split)
                done
-       show ?case 
-       apply(insert A,erule_tac x="a" in allE,erule_tac x="\<sigma>" in allE)
-       apply(simp, elim exE)
-       apply(rename_tac  "out" "\<sigma>'")
-       apply(insert B, erule_tac x=\<iota>s in allE, erule_tac x=ioprog in allE, erule_tac x=\<sigma>' in allE)
-       apply(subst(asm) not_None_eq, elim exE)
-       apply(subst  exec_bind_SE_success)
-       apply(simp   split: option.split, auto)
-       apply(rule_tac s="(\<lambda> a b c. a # (fst c)) out \<sigma>' (aa, b)" in trans, simp,rule refl)
-       apply(rule_tac s="(\<lambda> a b c. (snd c)) out \<sigma>' (aa, b)" in trans, simp,rule refl)
-       apply(simp_all)
-       apply(subst  exec_bind_SE_success, assumption)
-       apply(subst  exec_bind_SE_success)
-       apply(rule_tac s="Some (aa, b)" in  trans,simp_all add:C)
-       apply(subst(asm)  exec_bind_SE_success, assumption)
-       apply(subst(asm)  exec_bind_SE_success)
-       apply(rule_tac s="Some (aa, b)" in  trans,simp_all add:C)
-    done
+      show ?case 
+        apply(intro impI) 
+        by (smt (verit, best) C exec_mbindFSave_E exec_mbindFSave_success exec_mbindFStop_E 
+                exec_mbindFStop_success list.set_intros(1) list.set_intros(2) valid_bind_cong)
 qed
 
 subsection\<open>Miscellaneous\<close>

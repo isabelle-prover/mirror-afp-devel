@@ -55,14 +55,19 @@ section\<open>The LinearSearch Example\<close>
 
 definition bool2int where "bool2int x = (if x then 1::int else 0)"
 
-global_vars state
+global_vars (state)
     t :: "int list"
+
+global_vars ("2")
+    tt :: "int list"
+
+find_theorems (160) name:"2" name:"Linear"
 
 function_spec linearsearch (x::int, n::int) returns int
 pre          "\<open> 0 \<le> n \<and> n < int(length t) \<and> sorted t\<close>"    
 post         "\<open>\<lambda>res::int. res = bool2int (\<exists> i \<in> {0 ..< length t}. t!i = x) \<close>" 
 local_vars   i  :: int
-defines      " \<open>i := 0 \<close> ;-
+defines      " \<open>i := 0 \<close> ;- \<open>tt :=  [] \<close>;-
                while\<^sub>C \<open>i < n \<close> 
                  do if\<^sub>C \<open>t ! (nat i) < x\<close>  
                       then  \<open>i := i + 1 \<close>
