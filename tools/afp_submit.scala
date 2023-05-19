@@ -182,6 +182,70 @@ object AFP_Submit {
       def check(id: ID): Option[ID] = unapply(id).map(apply)
     }
 
+
+    /* Handler for local edits */
+
+    class Edit(afp_structure: AFP_Structure) extends Handler {
+      val authors = afp_structure.load_authors.map(author => author.id -> author).toMap
+      val topics = afp_structure.load_topics.flatMap(_.all_topics)
+      val all_topics = topics.map(topic => topic.id -> topic).toMap
+      val licenses = afp_structure.load_licenses.map(license => license.id -> license).toMap
+      val releases = afp_structure.load_releases.groupBy(_.entry)
+      val dates = afp_structure.load().map(entry => entry.name -> entry.date).toMap
+
+      override def create(
+        date: Date,
+        meta: Metadata,
+        message: String,
+        archive: Bytes,
+        ext: String
+      ): ID = {
+        val entry =
+          meta.entries match {
+            case e :: Nil => e
+            case _ => isabelle.error("Must be a single entry")
+          }
+
+        val old = afp_structure.load_entry(entry.name, authors, all_topics, licenses, releases)
+        val updated =
+          old.copy(
+            title = entry.title,
+            authors = entry.authors,
+            topics = entry.topics,
+            `abstract` = entry.`abstract`,
+            notifies = entry.notifies,
+            license = entry.license,
+            related = entry.related)
+
+        afp_structure.save_entry(updated)
+        // TODO what happens to the authors
+
+        entry.name
+      }
+
+      override def list(): Submission_List =
+        Submission_List(afp_structure.entries.sortBy(dates.get).reverse.map { entry =>
+          Overview(entry, dates(entry), entry, Status.Added)
+        })
+
+      override def get(
+        id: ID, topics: Map[ID, Topic], licenses: Map[ID, License]
+      ): Option[Submission] =
+        if (!afp_structure.entries.contains(id)) None
+        else {
+          val entry = afp_structure.load_entry(id, authors, all_topics, licenses, releases)
+          val meta = Metadata(authors, List(entry))
+          Some(Submission(id, meta, "", Model.Build.Success, Some(Status.Added), ""))
+        }
+
+      override def submit(id: ID): Unit = ()
+      override def set_status(id: ID, status: Model.Status.Value): Unit = ()
+      override def abort_build(id: ID): Unit = ()
+      override def get_patch(id: ID): Option[Path] = None
+      override def get_archive(id: ID): Option[Path] = None
+    }
+
+
     /* Adapter to existing submission system */
 
     class Adapter(submission_dir: Path, afp_structure: AFP_Structure) extends Handler {
@@ -1267,7 +1331,7 @@ object AFP_Submit {
         if (name.isBlank) Val.err(name, "Name must not be blank")
         else if (!"[a-zA-Z0-9_-]+".r.matches(name)) Val.err(name,
           "Invalid character in name")
-        else if (Server.this.entries.contains(name)) Val.err(name, "Entry already exists")
+        else if (Server.this.entries.contains(name) && !devel) Val.err(name, "Entry already exists")
         else Val.ok(name)
 
       def entries(entries: List[Model.Create_Entry]): Val[List[Model.Create_Entry]] =
@@ -1330,9 +1394,9 @@ object AFP_Submit {
           val archive = Bytes.decode_base64(params.get(ARCHIVE).get(FILE).value)
           val file_name = params.get(ARCHIVE).value
 
-          if (archive.is_empty || file_name.isEmpty) {
+          if ((archive.is_empty || file_name.isEmpty) && !devel) {
             Some(upload.copy(error = "Select a file"))
-          } else if (!file_name.endsWith(".zip") && !file_name.endsWith(".tar.gz")) {
+          } else if (!file_name.endsWith(".zip") && !file_name.endsWith(".tar.gz") && !devel) {
             Some(upload.copy(error = "Only .zip and .tar.gz archives allowed"))
           } else {
             val ext = if (file_name.endsWith(".zip")) ".zip" else ".tar.gz"
@@ -1461,9 +1525,10 @@ object AFP_Submit {
       var devel = false
       var verbose = false
       var port = 8080
+      var dir: Option[Path] = None
 
       val getopts = Getopts("""
-Usage: isabelle afp_submit [OPTIONS] DIR
+Usage: isabelle afp_submit [OPTIONS]
 
   Options are:
       -a PATH      backend path (if endpoint is not server root)
@@ -1471,28 +1536,29 @@ Usage: isabelle afp_submit [OPTIONS] DIR
       -d           devel mode (serves frontend and skips automatic AFP repository updates)
       -p PORT      server port. Default: """ + port + """
       -v           verbose
+      -D DIR       submission directory
 
-  Start afp submission server, which stores submissions in DIR.
+  Start afp submission server. Server is in "edit" mode
+  unless directory to store submissions in is specified.
 """,
         "a:" -> (arg => backend_path = Path.explode(arg)),
         "b:" -> (arg => frontend_url = new URL(arg)),
         "d" -> (_ => devel = true),
         "p:" -> (arg => port = Value.Int.parse(arg)),
-        "v" -> (_ => verbose = true))
+        "v" -> (_ => verbose = true),
+        "D:" -> (arg => dir = Some(Path.explode(arg))))
 
-      val more_args = getopts(args)
-
-      val dir =
-        more_args match {
-          case dir :: Nil => Path.explode(dir)
-          case _ => getopts.usage()
-        }
+      getopts(args)
 
       val afp_structure = AFP_Structure()
 
       val progress = new Console_Progress(verbose = verbose)
 
-      val handler = new Handler.Adapter(dir, afp_structure)
+      val handler = dir match {
+        case Some(dir) => Handler.Adapter(dir, afp_structure)
+        case None => Handler.Edit(afp_structure)
+      }
+
       val api = new API(frontend_url, backend_path, devel = devel)
       val server = new Server(api = api, afp_structure = afp_structure, handler = handler,
         devel = devel, verbose = verbose, progress = progress, port = port)
