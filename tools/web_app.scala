@@ -9,6 +9,7 @@ import isabelle._
 
 import scala.annotation.tailrec
 
+import java.net.URL
 import java.nio.file.Files
 
 
@@ -107,7 +108,9 @@ object Web_App {
       XML.Elem(Markup("form", attrs), default_button :: body)
     }
 
-    def unescape(html: String): XML.Body = List(XML.Elem(Markup("unescape", Nil), text(html)))
+    val UNESCAPE = "unescape"
+
+    def unescape(html: String): XML.Body = List(XML.Elem(Markup(UNESCAPE, Nil), text(html)))
   }
 
 
@@ -304,16 +307,24 @@ object Web_App {
     }
   }
 
-  class API(base_path: Path) {
-    def rel_url(path: Path, params: Properties.T = Nil): String = {
+
+  /* API with backend base path, and application url (e.g. for frontend links). */
+
+  class API(val app: URL, val base_path: Path) {
+    def url(path: Path, params: Properties.T = Nil): String = {
       def param(p: Properties.Entry): String = Url.encode(p._1) + "=" + Url.encode(p._2)
       if (params.isEmpty) path.implode else path.implode + "?" + params.map(param).mkString("&")
     }
-    def abs_url(path: Path, params: Properties.T = Nil): String =
-      "/" + base_path.implode + "/" + rel_url(path, params)
+
+    def api_url(path: Path, params: Properties.T = Nil): String =
+      "/" + base_path.implode + "/" + url(path, params)
+
+    def app_url(path: Path, params: Properties.T = Nil): String =
+      app.toString + "/" + url(path, params)
   }
 
   abstract class Server[A](
+    api: API,
     port: Int = 0,
     verbose: Boolean = false,
     progress: Progress = new Progress()
@@ -323,23 +334,31 @@ object Web_App {
     val endpoints: List[Endpoint]
     val head: XML.Body
 
-    def output(body: XML.Body): String = {
+    def output(tree: XML.Tree): String = {
       def out(body: XML.Body): String = isabelle.HTML.output(body, hidden = true, structural = true)
       def collect(t: XML.Tree): List[String] = t match {
-        case XML.Elem(Markup("unescape", _), List(XML.Text(html))) => List(out(HTML.unescape(html)))
+        case XML.Elem(Markup(HTML.UNESCAPE, _), List(XML.Text(escaped))) =>
+          List(out(HTML.unescape(escaped)))
         case XML.Elem(_, body) => body.flatMap(collect)
         case XML.Text(_) => Nil
       }
-      val unescaped = body.flatMap(collect).foldLeft(out(body)) {
+
+      collect(tree).foldLeft(out(List(tree))) {
         case (escaped, html) => escaped.replace(html, isabelle.HTML.input(html))
       }
+    }
 
-      isabelle.HTML.header +
-        out(List(XML.elem("head", isabelle.HTML.head_meta :: head))) +
-        "<body onLoad='parent.postMessage(document.body.scrollHeight, \"*\")'>" +
-        unescaped +
-        "</body>" +
-        isabelle.HTML.footer
+    def output_document(content: XML.Body, post_height: Boolean = true): String = {
+      val attrs =
+        if (post_height) List("onLoad" -> "parent.postMessage(document.body.scrollHeight, '*')")
+        else Nil
+
+      cat_lines(
+        List(
+          isabelle.HTML.header,
+          output(XML.elem("head", isabelle.HTML.head_meta :: head)),
+          output(XML.Elem(Markup("body", attrs), content)),
+          isabelle.HTML.footer))
     }
 
     sealed abstract class Endpoint(path: Path, method: String = "GET")
@@ -368,6 +387,9 @@ object Web_App {
         space_explode('&', params).flatMap(decode))
     }
 
+
+    /* endpoint types */
+
     class Get(path: Path, description: String, get: Properties.T => Option[A])
       extends Endpoint(path) {
 
@@ -378,7 +400,7 @@ object Web_App {
         progress.echo_if(verbose, "params: " + params.toString())
 
         val model = get(params).getOrElse(error)
-        HTTP.Response.html(output(render(model)))
+        HTTP.Response.html(output_document(render(model)))
       }
     }
 
@@ -393,7 +415,7 @@ object Web_App {
 
         download(params) match {
           case Some(path) => HTTP.Response.content(HTTP.Content.read(path))
-          case None => HTTP.Response.html(output(render(error)))
+          case None => HTTP.Response.html(output_document(render(error)))
         }
       }
     }
@@ -409,7 +431,7 @@ object Web_App {
         progress.echo_if(verbose, "params: " + params.toString)
 
         val model = post(params).getOrElse(error)
-        HTTP.Response.html(output(render(model)))
+        HTTP.Response.html(output_document(render(model)))
       }
     }
 
