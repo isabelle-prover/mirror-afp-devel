@@ -1457,10 +1457,10 @@ object AFP_Submit {
     { args =>
 
       var backend_path = Path.current
-      var frontend_url = new URL("https://www.isa-afp.org/webapp")
+      var frontend_url = new URL("http://localhost:8080")
       var devel = false
       var verbose = false
-      var port = 0
+      var port = 8080
 
       val getopts = Getopts("""
 Usage: isabelle afp_submit [OPTIONS] DIR
@@ -1468,7 +1468,7 @@ Usage: isabelle afp_submit [OPTIONS] DIR
   Options are:
       -a PATH      backend path (if endpoint is not server root)
       -b URL       application frontend url. Default: """ + frontend_url + """"
-      -d           devel mode (e.g., skips automatic AFP repository updates)
+      -d           devel mode (serves frontend and skips automatic AFP repository updates)
       -p PORT      server port. Default: """ + port + """
       -v           verbose
 
@@ -1493,7 +1493,7 @@ Usage: isabelle afp_submit [OPTIONS] DIR
       val progress = new Console_Progress(verbose = verbose)
 
       val handler = new Handler.Adapter(dir, afp_structure)
-      val api = new API(frontend_url, backend_path)
+      val api = new API(frontend_url, backend_path, devel = devel)
       val server = new Server(api = api, afp_structure = afp_structure, handler = handler,
         devel = devel, verbose = verbose, progress = progress, port = port)
 

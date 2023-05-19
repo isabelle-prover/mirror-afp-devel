@@ -310,14 +310,18 @@ object Web_App {
 
   /* API with backend base path, and application url (e.g. for frontend links). */
 
-  class API(val app: URL, val base_path: Path) {
+  class API(val app: URL, val base_path: Path, val devel: Boolean = false) {
     def url(path: Path, params: Properties.T = Nil): String = {
       def param(p: Properties.Entry): String = Url.encode(p._1) + "=" + Url.encode(p._2)
       if (params.isEmpty) path.implode else path.implode + "?" + params.map(param).mkString("&")
     }
 
-    def api_url(path: Path, params: Properties.T = Nil): String =
-      "/" + base_path.implode + "/" + url(path, params)
+    def api_path(path: Path, external: Boolean = true): Path =
+      (if (devel) Path.explode("backend") else Path.current) +
+        (if (external) base_path else Path.current) + path
+
+    def api_url(path: Path, params: Properties.T = Nil, external: Boolean = true): String =
+      "/" + url(api_path(path, external = external), params)
 
     def app_url(path: Path, params: Properties.T = Nil): String =
       app.toString + "/" + url(path, params)
@@ -361,8 +365,42 @@ object Web_App {
           isabelle.HTML.footer))
     }
 
+    class UI(path: Path) extends HTTP.Service(path.implode, "GET") {
+
+      def apply(request: HTTP.Request): Option[HTTP.Response] = {
+        progress.echo_if(verbose, "GET ui")
+
+        val on_load = """
+(function() {
+  window.addEventListener('message', (event) => {
+    if (Number.isInteger(event.data)) {
+      this.style.height=event.data + 32 + 'px'
+    }
+  })
+}).call(this)"""
+
+        val set_src = """
+const base = '""" + api.app.toString.replace("/", "\\/") + """'
+document.getElementById('iframe').src = base + '""" + api.api_url(path).replace("/", "\\/") + """' + window.location.search"""
+
+        Some(HTTP.Response.html(output_document(
+          List(
+            XML.Elem(
+              Markup(
+                "iframe",
+                List(
+                  "id" -> "iframe",
+                  "name" -> "iframe",
+                  "style" -> "border-style: none; width: 100%",
+                  "onload" -> on_load)),
+              isabelle.HTML.text("content")),
+            isabelle.HTML.script(set_src)),
+            post_height = false)))
+      }
+    }
+
     sealed abstract class Endpoint(path: Path, method: String = "GET")
-      extends HTTP.Service(path.implode, method) {
+      extends HTTP.Service(api.api_path(path, external = false).implode, method) {
 
       def reply(request: HTTP.Request): HTTP.Response
 
@@ -390,7 +428,7 @@ object Web_App {
 
     /* endpoint types */
 
-    class Get(path: Path, description: String, get: Properties.T => Option[A])
+    class Get(val path: Path, description: String, get: Properties.T => Option[A])
       extends Endpoint(path) {
 
       def reply(request: HTTP.Request): HTTP.Response = {
@@ -435,7 +473,12 @@ object Web_App {
       }
     }
 
-    private lazy val server = HTTP.server(port = port, name = "", services = endpoints)
+
+    /* server */
+
+    private lazy val services =
+      endpoints ::: (if (api.devel) endpoints.collect { case g: Get => new UI(g.path) } else Nil)
+    private lazy val server = HTTP.server(port = port, name = "", services = services)
 
     def run(): Unit = {
       start()
