@@ -86,7 +86,7 @@ fun lift_morphism f =
 fun import_function_data t ctxt =
   let
     val ct = Thm.cterm_of ctxt t
-    val inst_morph = lift_morphism o Thm.instantiate
+    val inst_morph = Morphism.set_context' ctxt o lift_morphism o Thm.instantiate
 
     fun match (trm, data) =
       SOME (morph_function_data data (inst_morph (Thm.match (Thm.cterm_of ctxt trm, ct))))
