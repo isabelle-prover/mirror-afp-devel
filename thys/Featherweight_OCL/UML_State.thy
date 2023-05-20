@@ -1256,7 +1256,7 @@ proof -
 
   apply(case_tac s_set, simp)
   proof - fix z' a list show "(\<lambda>x. f x \<tau>) ` set s_set = {z'} \<Longrightarrow> s_set = a # list \<Longrightarrow> \<exists>e. List.member s_set e \<and> z' = f e \<tau>"
-    apply(drule list_same[where x = a])
+    apply(drule list_same[where x1 = a])
      apply (metis member_rec(1))
    by (metis (opaque_lifting, mono_tags) ListMem_iff elem in_set_member)
   qed

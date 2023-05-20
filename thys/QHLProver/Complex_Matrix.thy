@@ -990,7 +990,7 @@ next
   have rl: "\<And> x1 x2 x3 x4 y1 y2 y3 y4 f. x1 = y1 \<Longrightarrow> x2 = y2 \<Longrightarrow> x3 = y3 \<Longrightarrow> x4 = y4 \<Longrightarrow> f x1 x2 x3 x4 = f y1 y2 y3 y4" by simp
   have Q'aP': "?Q' = adjoint ?P'"
     apply (subst four_block_mat_adjoint, auto simp add: newP')
-    apply (rule rl[where f = four_block_mat])
+    apply (rule rl[where f2 = four_block_mat])
        apply (auto simp add: eq_matI adjoint_eval Q'P')
     done
   have "adjoint P = adjoint ?P' * adjoint W"  using W newP' n

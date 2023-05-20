@@ -2421,7 +2421,7 @@ proof -
 
  have OclSelect_body_bot: "\<And>\<tau>. \<tau> \<Turnstile> \<delta> X \<Longrightarrow> \<tau> \<Turnstile> \<upsilon> y \<Longrightarrow> P y \<tau> \<noteq> \<bottom> \<Longrightarrow>
                                (\<exists>x\<in>\<lceil>\<lceil>Rep_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e (X \<tau>)\<rceil>\<rceil>. P (\<lambda>_. x) \<tau> = \<bottom>) \<Longrightarrow> \<bottom> = ?select \<tau>"
-      apply(drule ex_excluding1[where X = X and y = y and f = "\<lambda>x \<tau>. x \<tau> = \<bottom>"],
+      apply(drule ex_excluding1[where X2 = X and y2 = y and f2 = "\<lambda>x \<tau>. x \<tau> = \<bottom>"],
             (simp add: P_cp[symmetric])+)
       apply(subgoal_tac "\<tau> \<Turnstile> (\<bottom> \<triangleq> ?select)", simp add: OclValid_def StrongEq_def true_def bot_fun_def)
       apply(simp add: OclSelect_body_def)
@@ -2429,7 +2429,7 @@ proof -
       apply(simp add: OclValid_def, subst StrongEq_def, subst true_def, simp)
       apply(subgoal_tac "\<exists>x\<in>\<lceil>\<lceil>Rep_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e (X->excluding\<^sub>S\<^sub>e\<^sub>t(y) \<tau>)\<rceil>\<rceil>. P (\<lambda>_. x) \<tau> = \<bottom> \<tau>")
        prefer 2 apply (metis bot_fun_def )
-       apply(subst if_same[where d = "\<bottom>"])
+       apply(subst if_same[where d5 = "\<bottom>"])
         apply (metis defined7 transform1)
        apply(simp add: OclSelect_def bot_option_def bot_fun_def invalid_def)
       apply(subst invert_including)
@@ -2497,7 +2497,7 @@ proof -
     apply(simp)
     (* *)
     apply(subst conj_comm, rule conjI)
-     apply(drule_tac y = false in bool_invalid)
+     apply(drule_tac y11 = false in bool_invalid)
      apply(simp only: OclSelect_body_def,
            metis OclIf_def OclValid_def defined_def foundation2 foundation22
                  bot_fun_def invalid_def)
@@ -2980,7 +2980,7 @@ proof -
    proof - fix x F show "(\<delta> S) \<tau> = true \<tau> \<Longrightarrow> \<exists>x. x \<in> F \<Longrightarrow>
             ?forall (\<lambda>b \<tau>. ?P_eq x b \<tau> \<or> ?P F b \<tau>) =
             ((\<lambda>_. ?forall (?P F)) and (\<lambda>_. P (\<lambda>\<tau>. x) \<tau>)) \<tau>"
-    apply(rule disjE4[OF destruct_ocl[where x = "P (\<lambda>\<tau>. x) \<tau>"]])
+    apply(rule disjE4[OF destruct_ocl[where x1 = "P (\<lambda>\<tau>. x) \<tau>"]])
        apply(simp_all add: true_def false_def invalid_def OclAnd_def
                            null_fun_def null_option_def bot_fun_def bot_option_def)
    by (metis (lifting) option.distinct(1))+
