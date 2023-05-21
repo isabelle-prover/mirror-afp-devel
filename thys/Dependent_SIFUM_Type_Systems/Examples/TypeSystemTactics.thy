@@ -19,14 +19,14 @@ method_setup wrap =
     let
       val morph = Data.get ctxt;
 
-      fun safe_fact thm =
-        perhaps (try (Morphism.thm morph)) thm;
+      fun safe_fact thms =
+        perhaps (try (Morphism.fact morph)) thms;
        
       val morph' = Morphism.morphism "safe" 
-        {binding = [Morphism.binding morph],
-         fact = [map safe_fact],
-         term = [Morphism.term morph],
-         typ = [Morphism.typ morph]}
+        {binding = [K (Morphism.binding morph)],
+         fact = [K safe_fact],
+         term = [K (Morphism.term morph)],
+         typ = [K (Morphism.typ morph)]}
       
       val text' = Method.map_source (map (Token.transform morph')) text;
     in Method.evaluate_runtime text' ctxt end)\<close>

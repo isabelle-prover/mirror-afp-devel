@@ -13,7 +13,7 @@ sig
     (* monad_map_compose thm: mapM f (mapM g x) = mapM (f o g) x *)
     thm list -> 
     (* monad_map_ident thm: mapM (% y. y) x = x *)
-    thm list -> declaration
+    thm list -> Morphism.declaration
 
   val add_partial_function_mr: string -> (binding * typ option * mixfix) list ->
     Specification.multi_specs -> local_theory -> thm list * local_theory
