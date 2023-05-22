@@ -71,21 +71,22 @@ structure NominalFunctionData = Generic_Data
 val get_function = NominalFunctionData.get o Context.Proof;
 
 
-fun lift_morphism ctxt f =
+fun lift_morphism f =
   let
-    fun term t = Thm.term_of (Drule.cterm_rule f (Thm.cterm_of ctxt t))
+    fun term thy t = Thm.term_of (Drule.cterm_rule f (Thm.global_cterm_of thy t))
+    fun typ thy t = Logic.type_map (term thy) t
   in
     Morphism.morphism "lift_morphism"
       {binding = [],
-       typ = [Logic.type_map term],
-       term = [term],
-       fact = [map f]}
+       typ = [typ o Morphism.the_theory],
+       term = [term o Morphism.the_theory],
+       fact = [fn _ => map f]}
   end
 
 fun import_function_data t ctxt =
   let
     val ct = Thm.cterm_of ctxt t
-    val inst_morph = lift_morphism ctxt o Thm.instantiate
+    val inst_morph = Morphism.set_context' ctxt o lift_morphism o Thm.instantiate
 
     fun match (trm, data) =
       SOME (morph_function_data data (inst_morph (Thm.match (Thm.cterm_of ctxt trm, ct))))
