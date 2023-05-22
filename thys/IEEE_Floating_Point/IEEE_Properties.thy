@@ -714,7 +714,7 @@ lemma valof_uminus:
 
 
 text \<open>Showing \<open>a + (- b) = a - b\<close>.\<close>
-lemma float_neg_add:
+lemma float_neg_add: (*FIXME*)
   "is_finite a \<Longrightarrow> is_finite b \<Longrightarrow> is_finite (a - b) \<Longrightarrow> valof a + valof (- b) = valof a - valof b"
   by (simp add: valof_uminus)
 
