@@ -127,7 +127,17 @@ object AFP_Submit {
     }
 
     case class Overview(id: String, date: LocalDate, name: String, status: Status.Value)
-    case class Metadata(authors: Map[Author.ID, Author], entries: List[Entry])
+    case class Metadata(authors: Map[Author.ID, Author], entries: List[Entry]) {
+      def new_authors(old_authors: Map[Author.ID, Author]): Set[Author] =
+        entries.flatMap(_.authors).map(_.author).filterNot(old_authors.contains).toSet.map(authors)
+
+      def new_affils(old_authors: Map[Author.ID, Author]): Set[Affiliation] =
+        entries.flatMap(entry => entry.authors ++ entry.notifies).toSet.filter {
+          case _: Unaffiliated => false
+          case e: Email => !old_authors.get(e.author).exists(_.emails.contains(e))
+          case h: Homepage => !old_authors.get(h.author).exists(_.homepages.contains(h))
+        }
+    }
 
     sealed trait T
     case object Invalid extends T
@@ -707,15 +717,6 @@ object AFP_Submit {
     }
 
     def render_metadata(meta: Model.Metadata): XML.Body = {
-      val new_authors =
-        meta.entries.flatMap(_.authors).map(_.author).filterNot(authors.contains).map(meta.authors)
-      val new_affils =
-        meta.entries.flatMap(entry => entry.authors ++ entry.notifies).distinct.filter {
-          case _: Unaffiliated => false
-          case e: Email => !authors.get(e.author).exists(_.emails.contains(e))
-          case h: Homepage => !authors.get(h.author).exists(_.homepages.contains(h))
-        }
-
       def render_topic(topic: Topic, key: Params.Key): XML.Elem =
         item(hidden(Nest_Key(key, ID), topic.id) :: text(topic.id))
 
@@ -780,8 +781,8 @@ object AFP_Submit {
           hidden(Nest_Key(key, AFFILIATION), affil_address(affil))))
 
       indexed(meta.entries, Params.empty, ENTRY, render_entry) :::
-        indexed(new_authors, Params.empty, AUTHOR, render_new_author) :::
-        indexed(new_affils, Params.empty, AFFILIATION, render_new_affil)
+        indexed(meta.new_authors(authors).toList, Params.empty, AUTHOR, render_new_author) :::
+        indexed(meta.new_affils(authors).toList, Params.empty, AFFILIATION, render_new_affil)
     }
 
     def render_submission(submission: Model.Submission): XML.Body = {
