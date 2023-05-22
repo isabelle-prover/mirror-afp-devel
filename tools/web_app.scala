@@ -437,7 +437,12 @@ document.getElementById('iframe').src = base + '""" + api.api_url(path).replace(
         val params = query_params(request)
         progress.echo_if(verbose, "params: " + params.toString())
 
-        val model = get(params).getOrElse(error)
+        val model = get(params) match {
+          case Some(model) => model
+          case None =>
+            progress.echo_if(verbose, "Parsing failed")
+            error
+        }
         HTTP.Response.html(output_document(render(model)))
       }
     }
@@ -453,7 +458,9 @@ document.getElementById('iframe').src = base + '""" + api.api_url(path).replace(
 
         download(params) match {
           case Some(path) => HTTP.Response.content(HTTP.Content.read(path))
-          case None => HTTP.Response.html(output_document(render(error)))
+          case None =>
+            progress.echo_if(verbose, "Fetching file path failed")
+            HTTP.Response.html(output_document(render(error)))
         }
       }
     }
@@ -468,7 +475,12 @@ document.getElementById('iframe').src = base + '""" + api.api_url(path).replace(
         val params = Params.Data.from_multipart(parts)
         progress.echo_if(verbose, "params: " + params.toString)
 
-        val model = post(params).getOrElse(error)
+        val model = post(params) match {
+          case Some(model) => model
+          case None =>
+            progress.echo_if(verbose, "Parsing failed")
+            error
+        }
         HTTP.Response.html(output_document(render(model)))
       }
     }
