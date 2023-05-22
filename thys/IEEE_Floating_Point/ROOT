@@ -9,6 +9,7 @@ session IEEE_Floating_Point (AFP) = "Word_Lib" +
     FP64
     Double
     IEEE_Single_NaN
+    IEEE_Single_NaN_SMTLIB
   document_files
     "root.bib"
     "root.tex"
