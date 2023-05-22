@@ -265,7 +265,7 @@ and value =
   Term of term |
   Fact of string option * thm list |  (*optional name for dynamic fact, i.e. fact "variable"*)
   Attribute of morphism -> attribute |
-  Declaration of declaration |
+  Declaration of Morphism.declaration |
   Files of Token.file Exn.result list |
   Output of XML.body option;
 
