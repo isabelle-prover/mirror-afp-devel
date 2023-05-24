@@ -844,7 +844,7 @@ fun declare_combinators combs phi =
   in Data.map (map_data add_combs I I) end;
 
 val setup_combinators =
-  Local_Theory.declaration {syntax = false, pervasive = false} o declare_combinators;
+  Local_Theory.declaration {syntax = false, pervasive = false, pos = \<^here>} o declare_combinators;
 
 fun combinator_of_red thm =
   let
@@ -1255,7 +1255,7 @@ fun register_afun af =
       val (name, afuns') = Name_Space.define context true (name_of_afun af', af') afuns;
       val patterns' = Item_Net.update (name, patterns_of_afun af') patterns;
     in {combinators = combinators, afuns = afuns', patterns = patterns'} end) context;
-  in Local_Theory.declaration {syntax = false, pervasive = false} decl end;
+  in Local_Theory.declaration {syntax = false, pervasive = false, pos = \<^here>} decl end;
 
 fun applicative_cmd (((((name, flags), raw_pure), raw_ap), raw_rel), raw_set) lthy =
   let

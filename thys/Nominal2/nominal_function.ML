@@ -100,9 +100,6 @@ fun nominal_check_defs ctxt fixes eqs =
 
 
 
-val psimp_attribs = map (Attrib.internal o K)
-  [Named_Theorems.add @{named_theorems nitpick_psimp}]
-
 fun mk_defname fixes = fixes |> map (fst o fst) |> space_implode "_"
 
 fun add_simps fnames post sort extra_qualify label mod_binding moreatts
@@ -158,14 +155,14 @@ fun prepare_nominal_function do_print prep default_constraint fixspec eqns confi
         val (((psimps', pinducts'), (_, [termination'])), lthy) =
           lthy
           |> addsmps (concealed_partial o Binding.qualify false "partial")
-               "psimps" concealed_partial psimp_attribs psimps
+               "psimps" concealed_partial @{attributes [nitpick_psimp]} psimps
           ||>> Local_Theory.note ((concealed_partial (qualify "pinduct"),
-                 [Attrib.internal (K (Rule_Cases.case_names cnames)),
-                  Attrib.internal (K (Rule_Cases.consumes 1)),
-                  Attrib.internal (K (Induct.induct_pred ""))]), simple_pinducts)
+                 [Attrib.internal \<^here> (K (Rule_Cases.case_names cnames)),
+                  Attrib.internal \<^here> (K (Rule_Cases.consumes 1)),
+                  Attrib.internal \<^here> (K (Induct.induct_pred ""))]), simple_pinducts)
           ||>> Local_Theory.note ((Binding.concealed (qualify "termination"), []), [termination])
           ||> (snd o Local_Theory.note ((qualify "cases",
-                 [Attrib.internal (K (Rule_Cases.case_names cnames))]), [cases]))
+                 [Attrib.internal \<^here> (K (Rule_Cases.case_names cnames))]), [cases]))
           ||> (case domintros of NONE => I | SOME thms =>
                    Local_Theory.note ((qualify "domintros", []), thms) #> snd)
 
@@ -177,7 +174,7 @@ fun prepare_nominal_function do_print prep default_constraint fixspec eqns confi
           (Position.thread_data ()) lthy (K false) (map fst fixes)
       in
         (info,
-         lthy |> Local_Theory.declaration {syntax = false, pervasive = false}
+         lthy |> Local_Theory.declaration {syntax = false, pervasive = false, pos = \<^here>}
            (add_function_data o morph_function_data info))
       end
   in

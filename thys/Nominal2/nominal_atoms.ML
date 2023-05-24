@@ -15,8 +15,6 @@ end;
 structure Atom_Decl : ATOM_DECL =
 struct
 
-val simp_attr = Attrib.internal (K Simplifier.simp_add)
-
 fun atom_decl_set (str : string) : term =
   let
     val a = Free ("a", \<^Type>\<open>atom\<close>);
@@ -68,7 +66,7 @@ fun add_atom_decl (name : binding, arg : binding option) (thy : theory) =
     val class_thm = @{thm at_class} OF [type_definition, atom_def, permute_def];
     val sort_thm = @{thm at_class_sort} OF [type_definition, atom_def]
     val thy = lthy
-      |> snd o (Local_Theory.note ((sort_thm_name, [simp_attr]), [sort_thm]))
+      |> snd o (Local_Theory.note ((sort_thm_name, @{attributes [simp]}), [sort_thm]))
       |> Class.prove_instantiation_instance (fn ctxt => resolve_tac ctxt [class_thm] 1)
       |> Local_Theory.exit_global;
   in

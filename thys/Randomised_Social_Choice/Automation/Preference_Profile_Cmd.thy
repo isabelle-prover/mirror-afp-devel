@@ -334,7 +334,7 @@ fun preference_profile ((agents, alts), args) lthy =
         |> note wf_thms_raw "wf_raw" []
         |> note wf_thms "wf" @{attributes [simp]} 
         |> notes eval_thmss "eval" []
-        |> Local_Theory.declaration {syntax = false, pervasive = false}
+        |> Local_Theory.declaration {syntax = false, pervasive = false, pos = \<^here>}
              (fn m => add_infos (map (fn (t,i) => (Morphism.term m t, transform_info i m)) infos))
       end
     | after_qed _ _ = raise Match
