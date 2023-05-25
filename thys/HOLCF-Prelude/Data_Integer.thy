@@ -152,14 +152,16 @@ instance proof
     unfolding compare_Integer_def
     by (cases x, cases y, simp, simp,
         cases y, simp, simp add: not_less less_imp_le)
-  { assume "compare\<cdot>x\<cdot>y = EQ" then show "x = y"
-      unfolding compare_Integer_def
-      by (cases x, cases y, simp, simp,
-          cases y, simp, simp split: if_splits) }
-  { assume "compare\<cdot>x\<cdot>y = LT" and "compare\<cdot>y\<cdot>z = LT" then show "compare\<cdot>x\<cdot>z = LT"
-      unfolding compare_Integer_def
-      by (cases x, simp, cases y, simp, cases z, simp,
-          auto split: if_splits) }
+  show "x = y" if "compare\<cdot>x\<cdot>y = EQ"
+    using that
+    unfolding compare_Integer_def
+    by (cases x, cases y, simp, simp,
+        cases y, simp, simp split: if_splits)
+  show "compare\<cdot>x\<cdot>z = LT" if "compare\<cdot>x\<cdot>y = LT" and "compare\<cdot>y\<cdot>z = LT"
+    using that
+    unfolding compare_Integer_def
+    by (cases x, simp, cases y, simp, cases z, simp,
+        auto split: if_splits)
   show "eq\<cdot>x\<cdot>y = is_EQ\<cdot>(compare\<cdot>x\<cdot>y)"
     unfolding eq_Integer_def compare_Integer_def
     by (cases x, simp, cases y, simp, auto)

@@ -60,7 +60,7 @@ fun relator_of_generic context = context
 val relator_of_proof = Context.Proof #> relator_of_generic;
 val relator_of_global = Context.Theory #> relator_of_generic;
 fun update_relator k rel = Local_Theory.declaration
-  {pervasive=true, syntax=false} 
+  {pervasive=true, syntax=false, pos = \<^here>} 
   (fn phi => (k, Morphism.term phi rel) |> Symtab.update |> RelatorData.map);
 
 

@@ -59,7 +59,7 @@ fun mk_funs {T, ctrs, ...} lthy =
     fun morph_unfold phi (len, thm) = (len, Morphism.thm phi thm)
 
     fun upd (ts', unfolds') =
-      Local_Theory.declaration {syntax = false, pervasive = true}
+      Local_Theory.declaration {syntax = false, pervasive = true, pos = \<^here>}
         (fn phi =>
           Data.map (fn (ts, unfolds, s) =>
             (map (Morphism.term phi) ts' @ ts,

@@ -82,7 +82,7 @@ fun the_info ctxt tyco =
   | NONE => error ("no show function available for type " ^ quote tyco))
 
 fun declare_info tyco p pshow show show_def m m_comp used_pos law_thm =
-  Local_Theory.declaration {syntax = false, pervasive = false} (fn phi =>
+  Local_Theory.declaration {syntax = false, pervasive = false, pos = \<^here>} (fn phi =>
     add_info tyco
       {prec = p,
        pshowsp = Morphism.term phi pshow,

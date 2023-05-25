@@ -40,11 +40,6 @@ ML_file \<open>nominal_mutual.ML\<close>
 ML_file \<open>nominal_function.ML\<close>
 ML_file \<open>nominal_termination.ML\<close>
 
-ML \<open>
-val eqvt_attr = Attrib.internal (K Nominal_ThmDecls.eqvt_add)
-val simp_attr = Attrib.internal (K Simplifier.simp_add)
-val induct_attr = Attrib.internal (K Induct.induct_simp_add)
-\<close>
 
 section\<open>Interface for \<open>nominal_datatype\<close>\<close>
 
@@ -235,7 +230,7 @@ let
   val ((raw_perm_funs, raw_perm_simps, raw_perm_laws), lthy2a) = define_raw_perms raw_dt_info lthy0
 
   (* noting the raw permutations as eqvt theorems *)
-  val lthy3 = snd (Local_Theory.note ((Binding.empty, [eqvt_attr]), raw_perm_simps) lthy2a)
+  val lthy3 = snd (Local_Theory.note ((Binding.empty, @{attributes [eqvt]}), raw_perm_simps) lthy2a)
 
   val _ = trace_msg (K "Defining raw fv- and bn-functions...")
   val (raw_bns, raw_bn_defs, raw_bn_info, raw_bn_inducts, lthy3a) =
@@ -267,7 +262,7 @@ let
     lthy4
     |> Local_Theory.begin_nested
     |> snd
-    |> Local_Theory.note ((Binding.empty, [eqvt_attr]), raw_bn_eqvt)
+    |> Local_Theory.note ((Binding.empty, @{attributes [eqvt]}), raw_bn_eqvt)
     |> snd
     |> Local_Theory.end_nested
 
@@ -286,7 +281,7 @@ let
         |> map (fn thm => thm RS @{thm sym})
     end
 
-  val lthy5 = snd (Local_Theory.note ((Binding.empty, [eqvt_attr]), raw_fv_eqvt) lthy_tmp)
+  val lthy5 = snd (Local_Theory.note ((Binding.empty, @{attributes [eqvt]}), raw_fv_eqvt) lthy_tmp)
 
   val alpha_eqvt =
     let
@@ -503,20 +498,20 @@ let
   val thms_name =
     the_default (Binding.name (space_implode "_" qty_names)) opt_thms_name
   fun thms_suffix s = Binding.qualify_name true thms_name s
-  val case_names_attr = Attrib.internal (K (Rule_Cases.case_names cnstr_names))
+  val case_names_attr = Attrib.internal \<^here> (K (Rule_Cases.case_names cnstr_names))
 
   val infos = mk_infos qty_full_names qeq_iffs' qdistincts qstrong_exhaust_thms qstrong_induct_thms
 
   val (_, lthy9') = lthyC
-     |> Local_Theory.declaration {syntax = false, pervasive = false} (K (fold register_info infos))
-     |> Local_Theory.note ((thms_suffix "distinct", [induct_attr, simp_attr]), qdistincts)
-     ||>> Local_Theory.note ((thms_suffix "eq_iff", [induct_attr, simp_attr]), qeq_iffs')
+     |> Local_Theory.declaration {syntax = false, pervasive = false, pos = \<^here>} (K (fold register_info infos))
+     |> Local_Theory.note ((thms_suffix "distinct", @{attributes [induct_simp, simp]}), qdistincts)
+     ||>> Local_Theory.note ((thms_suffix "eq_iff", @{attributes [induct_simp, simp]}), qeq_iffs')
      ||>> Local_Theory.note ((thms_suffix "fv_defs", []), qfv_defs)
      ||>> Local_Theory.note ((thms_suffix "bn_defs", []), qbn_defs)
      ||>> Local_Theory.note ((thms_suffix "bn_inducts", []), qbn_inducts)
-     ||>> Local_Theory.note ((thms_suffix "perm_simps", [eqvt_attr, simp_attr]), qperm_simps)
-     ||>> Local_Theory.note ((thms_suffix "fv_bn_eqvt", [eqvt_attr]), qfv_qbn_eqvts)
-     ||>> Local_Theory.note ((thms_suffix "size", [simp_attr]), qsize_simps)
+     ||>> Local_Theory.note ((thms_suffix "perm_simps", @{attributes [eqvt, simp]}), qperm_simps)
+     ||>> Local_Theory.note ((thms_suffix "fv_bn_eqvt", @{attributes [eqvt]}), qfv_qbn_eqvts)
+     ||>> Local_Theory.note ((thms_suffix "size", @{attributes [simp]}), qsize_simps)
      ||>> Local_Theory.note ((thms_suffix "size_eqvt", []), qsize_eqvt)
      ||>> Local_Theory.note ((thms_suffix "induct", [case_names_attr]), [qinduct])
      ||>> Local_Theory.note ((thms_suffix "inducts", [case_names_attr]), qinducts)
@@ -526,7 +521,7 @@ let
      ||>> Local_Theory.note ((thms_suffix "supports", []), qsupports_thms)
      ||>> Local_Theory.note ((thms_suffix "fsupp", []), qfsupp_thms)
      ||>> Local_Theory.note ((thms_suffix "supp", []), qsupp_constrs)
-     ||>> Local_Theory.note ((thms_suffix "fresh", [simp_attr]), qfresh_constrs)
+     ||>> Local_Theory.note ((thms_suffix "fresh", @{attributes [simp]}), qfresh_constrs)
      ||>> Local_Theory.note ((thms_suffix "perm_bn_simps", []), qperm_bn_simps)
      ||>> Local_Theory.note ((thms_suffix "bn_finite", []), qbn_finite_thms)
      ||>> Local_Theory.note ((thms_suffix "perm_bn_alpha", []), qperm_bn_alpha_thms)

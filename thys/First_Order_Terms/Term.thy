@@ -55,8 +55,8 @@ setup \<open>
     (fn Const (@{const_name Fun}, _) $ _ $ _ => true | _ => false)
 \<close>
 
-simproc_setup reorient_Var ("Var x = t") = Reorient_Proc.proc
-simproc_setup reorient_Fun ("Fun f ss = t") = Reorient_Proc.proc
+simproc_setup reorient_Var ("Var x = t") = \<open>K Reorient_Proc.proc\<close>
+simproc_setup reorient_Fun ("Fun f ss = t") = \<open>K Reorient_Proc.proc\<close>
 
 text \<open>The \emph{root symbol} of a term is defined by:\<close>
 fun root :: "('f, 'v) term \<Rightarrow> ('f \<times> nat) option"

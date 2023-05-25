@@ -104,7 +104,7 @@ fun the_info ctxt tyco =
       | NONE => error ("no comparator information available for type " ^ quote tyco))
 
 fun declare_info tyco m p c c_def m_comp p_thms c_thm used_pos =
-  Local_Theory.declaration {syntax = false, pervasive = false} (fn phi =>
+  Local_Theory.declaration {syntax = false, pervasive = false, pos = \<^here>} (fn phi =>
     add_info tyco
      {map = Morphism.term phi m,
       pcomp = Morphism.term phi p,

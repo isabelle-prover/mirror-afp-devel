@@ -540,7 +540,7 @@ fun dest_Guard (Const (@{const_name Language.com.Guard},_)$f$g$c) = (f,g,c,false
 fun add_declaration name decl thy =
   thy
   |> Named_Target.init [] name
-  |> Local_Theory.declaration {syntax = false, pervasive = false} decl
+  |> Local_Theory.declaration {syntax = false, pervasive = false, pos = \<^here>} decl
   |> Local_Theory.exit
   |> Proof_Context.theory_of;
 
@@ -1058,7 +1058,7 @@ fun procedures_definition locname procs thy =
             ctxt
             |> Proof_Context.theory_of
             |> Named_Target.init [] lname
-            |> Local_Theory.declaration {syntax = false, pervasive = false} parameter_info_decl
+            |> Local_Theory.declaration {syntax = false, pervasive = false, pos = \<^here>} parameter_info_decl
             |> (fn lthy => if has_body name
                            then snd (Local_Theory.define (def lthy) lthy)
                            else lthy)

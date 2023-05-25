@@ -23,12 +23,6 @@ open Function_Lib
 open Function_Common
 open Nominal_Function_Common
 
-val simp_attribs = map (Attrib.internal o K)
-  [Simplifier.simp_add,
-   Named_Theorems.add @{named_theorems nitpick_simp}]
-
-val eqvt_attrib =  Attrib.internal (K Nominal_ThmDecls.eqvt_add)
-
 fun prepare_termination_proof prep_term is_eqvt raw_term_opt lthy =
   let
     val term_opt = Option.map (prep_term lthy) raw_term_opt
@@ -58,11 +52,11 @@ fun prepare_termination_proof prep_term is_eqvt raw_term_opt lthy =
             |> Binding.qualify true defname
         in
           lthy
-          |> add_simps I "simps" I simp_attribs tsimps
-          ||>> Local_Theory.note ((qualify "eqvt", if is_eqvt then [eqvt_attrib] else []), teqvts)
+          |> add_simps I "simps" I @{attributes [simp, nitpick_simp]} tsimps
+          ||>> Local_Theory.note ((qualify "eqvt", if is_eqvt then @{attributes [eqvt]} else []), teqvts)
           ||>> Local_Theory.note
              ((qualify "induct",
-               [Attrib.internal (K (Rule_Cases.case_names case_names))]),
+               [Attrib.internal \<^here> (K (Rule_Cases.case_names case_names))]),
               tinducts)
           |-> (fn ((simps, (_, eqvts)), (_, inducts)) => fn lthy =>
             let val info' = { is_partial=false, defname=defname, add_simps=add_simps,
@@ -70,7 +64,7 @@ fun prepare_termination_proof prep_term is_eqvt raw_term_opt lthy =
               simps=SOME simps, inducts=SOME inducts, termination=termination, eqvts=teqvts }
             in
               lthy
-              |> Local_Theory.declaration {syntax = false, pervasive = false}
+              |> Local_Theory.declaration {syntax = false, pervasive = false, pos = \<^here>}
                    (add_function_data o morph_function_data info')
               |> Spec_Rules.add Binding.empty Spec_Rules.equational_recdef fs tsimps
               |> Code.declare_default_eqns (map (rpair true) tsimps)

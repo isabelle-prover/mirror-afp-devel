@@ -120,7 +120,7 @@ fun the_info ctxt tyco =
       | NONE => error ("no hash_code information available for type " ^ quote tyco))
 
 fun declare_info tyco m p c c_def m_hash used_pos =
-  Local_Theory.declaration {syntax = false, pervasive = false} (fn phi =>
+  Local_Theory.declaration {syntax = false, pervasive = false, pos = \<^here>} (fn phi =>
     add_info tyco
      {map = Morphism.term phi m,
       phash = Morphism.term phi p,

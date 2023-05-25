@@ -130,7 +130,7 @@ fun get_last_cmd_info ctxt =
 
 fun commit_dp_info monad_name dp_info =
   Local_Theory.declaration
-    {pervasive = false, syntax = false}
+    {pervasive = false, syntax = false, pos = \<^here>}
     (fn phi => fn context =>
       let
         val old_cmd_info = get_last_cmd_info_generic context
@@ -144,7 +144,7 @@ fun commit_dp_info monad_name dp_info =
 
 fun add_tmp_cmd_info (scope, head, locale_opt) =
   Local_Theory.declaration
-    {pervasive = false, syntax = false}
+    {pervasive = false, syntax = false, pos = \<^here>}
     (fn phi => fn context =>
       let
         val new_cmd_info = {

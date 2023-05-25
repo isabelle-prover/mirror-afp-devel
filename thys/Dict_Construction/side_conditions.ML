@@ -230,7 +230,7 @@ fun mk_side simps inducts lthy =
     val preds = map_index (fn (n, (_, t)) => mk_pred n t) (distinct op = heads)
 
     val lthy'' =
-      Local_Theory.declaration {pervasive = false, syntax = false}
+      Local_Theory.declaration {pervasive = false, syntax = false, pos = \<^here>}
         (fn phi => fold (Predicates.map o Item_Net.update o transform_predicate phi) preds) lthy'
   in
     (preds, lthy'')

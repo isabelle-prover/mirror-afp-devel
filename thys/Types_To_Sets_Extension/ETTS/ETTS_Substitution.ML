@@ -61,7 +61,7 @@ fun update_sbt_data k v =
     fun declaration phi = (Morphism.cterm phi k, Morphism.thm phi v) 
       |> Ctermtab.update 
       |> map_sbt_data
-  in Local_Theory.declaration {pervasive=true, syntax=false}  declaration end;
+  in Local_Theory.declaration {pervasive=true, syntax=false, pos = \<^here>}  declaration end;
 
 fun is_sbt_data_key ctxt ct = member (op aconvc) (sbt_data_keys ctxt) ct;
 
