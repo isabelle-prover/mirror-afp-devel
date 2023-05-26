@@ -914,9 +914,9 @@ next
   assume "n - m = - int d"
   then have "n \<le> m" by auto
   moreover
-  { assume "n = m" then have "?P m n" by (simp add: one_Integer_def) }
+  have "?P m n" if "n = m" using that by (simp add: one_Integer_def)
   moreover
-  { assume "n < m" then have "?P m n" by (simp add: one_Integer_def) }
+  have "?P m n" if "n < m" using that by (simp add: one_Integer_def)
   ultimately show ?thesis by arith
 qed
 
@@ -985,7 +985,7 @@ setup \<open>
     (fn Const(@{const_name Nil}, _) => true | _ => false)
 \<close>
 
-simproc_setup reorient_Nil ("Nil = x") = Reorient_Proc.proc
+simproc_setup reorient_Nil ("Nil = x") = \<open>K Reorient_Proc.proc\<close>
 
 
 lemma set_append [simp]:
@@ -1022,15 +1022,14 @@ lemma distinct_append [simp]:
     (is "?P xs ys")
   using assms
 proof (induct "xs ++ ys" arbitrary: xs ys)
-  case (Cons z zs)
+  case Cons': (Cons z zs)
   show ?case
   proof (cases xs)
-    note Cons' = Cons
     case (Cons u us)
     with Cons' have "finite_list us"
       and [simp]: "zs = us ++ ys" "?P us ys" by simp_all
     then show ?thesis by (auto simp: Cons)
-  qed (insert Cons, simp_all)
+  qed (use Cons' in simp_all)
 qed simp
 
 lemma finite_set [simp]:
@@ -1402,18 +1401,21 @@ proof (induct xs arbitrary: n m)
   have len: "length\<cdot>xs = MkI\<cdot>(n - 1)"
     by (auto simp: plus_eq_MkI_conv one_Integer_def)
   from Cons(3) have le: "n - 1 \<le> m - 1" by simp
-  { assume "m < 0"
-    with ge have ?case using Cons(3) by simp }
-  moreover
-  { assume "m = 0"
+  consider "m < 0" | "m = 0" | "m > 0" by arith
+  then show ?case
+  proof cases
+    case 1
+    with ge show ?thesis using Cons(3) by simp
+  next
+    case 2
     with Cons(3) and ge have "n = 0" by simp
-    with Cons(2) have ?case
-      by (auto dest: length_ge_0 simp: one_Integer_def plus_eq_MkI_conv) }
-  moreover
-  { assume "m > 0"
-    then have ?case
-      by (auto simp: Cons(1) [OF len le] zero_Integer_def one_Integer_def) }
-  ultimately show ?case by arith
+    with Cons(2) show ?thesis
+      by (auto dest: length_ge_0 simp: one_Integer_def plus_eq_MkI_conv)
+  next
+    case 3
+    then show ?thesis
+      by (auto simp: Cons(1) [OF len le] zero_Integer_def one_Integer_def)
+  qed
 qed (simp_all add: zero_Integer_def)
 
 lemma replicate_nth [simp]:
@@ -1455,27 +1457,22 @@ lemma filter_alt_def:
   fixes xs :: "['a]"
   shows "filter\<cdot>P\<cdot>xs = map\<cdot>(nth\<cdot>xs)\<cdot>(findIndices\<cdot>P\<cdot>xs)"
 proof -
-  {
-    fix f g :: "Integer \<rightarrow> 'a"
+  have 1: "map\<cdot>f\<cdot>(map\<cdot>snd\<cdot>(filter\<cdot>(\<Lambda>\<langle>x, i\<rangle>. P\<cdot>x)\<cdot>(zip\<cdot>xs\<cdot>[MkI\<cdot>i..])))
+    = map\<cdot>g\<cdot>(map\<cdot>snd\<cdot>(filter\<cdot>(\<Lambda>\<langle>x, i\<rangle>. P\<cdot>x)\<cdot>(zip\<cdot>xs\<cdot>[MkI\<cdot>i..])))"
+    if "\<forall>j\<ge>i. f\<cdot>(MkI\<cdot>j) = g\<cdot>(MkI\<cdot>j)"
+    for f g :: "Integer \<rightarrow> 'a"
       and P :: "'a \<rightarrow> tr"
       and i xs
-    assume "\<forall>j\<ge>i. f\<cdot>(MkI\<cdot>j) = g\<cdot>(MkI\<cdot>j)"
-    then have "map\<cdot>f\<cdot>(map\<cdot>snd\<cdot>(filter\<cdot>(\<Lambda>\<langle>x, i\<rangle>. P\<cdot>x)\<cdot>(zip\<cdot>xs\<cdot>[MkI\<cdot>i..])))
-      = map\<cdot>g\<cdot>(map\<cdot>snd\<cdot>(filter\<cdot>(\<Lambda>\<langle>x, i\<rangle>. P\<cdot>x)\<cdot>(zip\<cdot>xs\<cdot>[MkI\<cdot>i..])))"
-      by (induct xs arbitrary: i, simp_all, subst (1 2) intsFrom.simps)
-        (rename_tac a b c, case_tac "P\<cdot>a", simp_all add: one_Integer_def)
-  } note 1 = this
-  {
-    fix a and ys :: "['a]"
-    have "\<forall>i\<ge>0. nth\<cdot>ys\<cdot>(MkI\<cdot>i) = (nth\<cdot>(a : ys) oo (+1))\<cdot>(MkI\<cdot>i)"
-      by (auto simp: one_Integer_def zero_Integer_def)
-  } note 2 = this
-  {
-    fix a P and ys xs :: "['a]"
-    have "map\<cdot>(nth\<cdot>(a : ys) oo (+1))\<cdot>(findIndices\<cdot>P\<cdot>xs)
-      = map\<cdot>(nth\<cdot>ys)\<cdot>(findIndices\<cdot>P\<cdot>xs)"
-      by (simp add: findIndices_def 1 [OF 2, simplified, of ys P xs a] zero_Integer_def)
-  } note 3 = this
+    using that
+    by (induct xs arbitrary: i, simp_all, subst (1 2) intsFrom.simps)
+      (rename_tac a b c, case_tac "P\<cdot>a", simp_all add: one_Integer_def)
+  have 2: "\<forall>i\<ge>0. nth\<cdot>ys\<cdot>(MkI\<cdot>i) = (nth\<cdot>(a : ys) oo (+1))\<cdot>(MkI\<cdot>i)"
+    for a and ys :: "['a]"
+    by (auto simp: one_Integer_def zero_Integer_def)
+  have 3: "map\<cdot>(nth\<cdot>(a : ys) oo (+1))\<cdot>(findIndices\<cdot>P\<cdot>xs)
+    = map\<cdot>(nth\<cdot>ys)\<cdot>(findIndices\<cdot>P\<cdot>xs)"
+    for a P and ys xs :: "['a]"
+    by (simp add: findIndices_def 1 [OF 2, simplified, of ys P xs a] zero_Integer_def)
   show ?thesis
     by (induct xs, simp_all, simp add: findIndices_def, simp add: findIndices_def)
        (rename_tac a b, case_tac "P\<cdot>a", simp add: findIndices_def, simp_all add: 3)
@@ -1487,14 +1484,14 @@ abbreviation cfun_image :: "('a \<rightarrow> 'b) \<Rightarrow> 'a set \<Rightar
 lemma set_map:
   "set (map\<cdot>f\<cdot>xs) = f `\<cdot> set xs" (is "?l = ?r")
 proof
-  { fix a assume "listmem a xs" then have "listmem (f\<cdot>a) (map\<cdot>f\<cdot>xs)"
-      by (induct) simp_all }
+  have "listmem (f\<cdot>a) (map\<cdot>f\<cdot>xs)" if "listmem a xs" for a
+    using that by (induct) simp_all
   then show "?r \<subseteq> ?l" by (auto simp: set_def)
 next
-  { fix a assume "listmem a (map\<cdot>f\<cdot>xs)"
-    then have "\<exists>b. a = f\<cdot>b \<and> listmem b xs"
+  have "\<exists>b. a = f\<cdot>b \<and> listmem b xs" if "listmem a (map\<cdot>f\<cdot>xs)" for a
+    using that
     by (induct a "map\<cdot>f\<cdot>xs" arbitrary: xs)
-       (rename_tac xsa, case_tac xsa, auto)+ }
+       (rename_tac xsa, case_tac xsa, auto)+
   then show "?l \<subseteq> ?r" unfolding set_def by auto
 qed
 
@@ -1599,8 +1596,7 @@ qed simp+
 lemma eq_take_length_isPrefixOf:
   "eq\<cdot>xs\<cdot>(take\<cdot>(length\<cdot>xs)\<cdot>ys) \<sqsubseteq> isPrefixOf\<cdot>xs\<cdot>ys"
 proof (induct xs arbitrary: ys)
-  case (Cons x xs)
-  note IH = this
+  case IH: (Cons x xs)
   show ?case
   proof (cases "length\<cdot>xs = \<bottom>")
     case True then show ?thesis by simp

@@ -31,7 +31,7 @@ fun postprocess_transfer_rule b thm ctxt =
     val lthy = ctxt
       |> Local_Theory.note 
         (
-          (b, Transfer.transfer_add |> K |> Attrib.internal |> single), 
+          (b, Transfer.transfer_add |> K |> Attrib.internal \<^here> |> single), 
           single thm
         )
       |>> #2

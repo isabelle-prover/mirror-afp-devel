@@ -376,8 +376,8 @@ fun prove_strong_inductive pred_names rule_names avoids raw_induct intrs ctxt =
           |> (fn s => Binding.qualify false s (Binding.name "strong_induct"))
 
         val attrs =
-          [ Attrib.internal (K (Rule_Cases.consumes 1)),
-            Attrib.internal (K (Rule_Cases.case_names rule_names)) ]
+          [ Attrib.internal \<^here> (K (Rule_Cases.consumes 1)),
+            Attrib.internal \<^here> (K (Rule_Cases.case_names rule_names)) ]
       in
         ctxt
         |> Local_Theory.note ((qualified_thm_name, attrs), strong_ind_thms)

@@ -119,8 +119,7 @@ FIXME trim simpsets: 1: sets 2: not much 3: not much
     val memb_thm_full_name = Local_Theory.full_name ctxt memb_thm_name
     val (finish, ctxt) = Target_Context.switch_named_cmd (SOME ("-", Position.none)) (Context.Proof ctxt) (* switch to the "root" local theory *)
     val memb_thms = Proof_Context.get_fact ctxt (Facts.named memb_thm_full_name)
-    val attrs = [Attrib.internal (K (Named_Theorems.add \<^named_theorems>\<open>locset_cache\<close>))]
-    val (_, ctxt) = ctxt |> Local_Theory.note ((Binding.empty, attrs), memb_thms)
+    val (_, ctxt) = ctxt |> Local_Theory.note ((Binding.empty, @{attributes [locset_cache]}), memb_thms)
     val ctxt = case finish ctxt of Context.Proof ctxt => ctxt | _ => error "Context.generic failure" (* Return to the locale we were in *)
   in
     ctxt

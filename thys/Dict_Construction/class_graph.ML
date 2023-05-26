@@ -332,7 +332,7 @@ fun ensure_class class lthy =
             val (ev, edges, lthy') = collect_super (mk_node class ax_info)
             val upd = Symtab.update_new (class, (edges, node_of ev))
           in
-            (ev, Local_Theory.declaration {pervasive = false, syntax = false} (K (Classes.map upd)) lthy')
+            (ev, Local_Theory.declaration {pervasive = false, syntax = false, pos = \<^here>} (K (Classes.map upd)) lthy')
           end
     end
 

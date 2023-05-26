@@ -310,8 +310,7 @@ fun main localename assembly lthy = let
   val fixes_fetch = Element.Fixes [( Binding.name "fetch" , SOME (@{typ "64 word => I"}), NoSyn)]
 
   (* the locale contains a list of assumptions, one for each instruction. They are given the [simp] attribute. *)
-  val simp_attrib = Attrib.internal (fn (_) => Simplifier.simp_add)
-  fun mk_assume thm_name term =  ((Binding.name thm_name, [simp_attrib]), [term]);
+  fun mk_assume thm_name term =  ((Binding.name thm_name, @{attributes [simp]}), [term]);
   val mk_fetch = Free ("fetch", @{typ "64 word => I"})
   fun mk_fetch_equality_assume si str =
     let val instr = parse_instr si str

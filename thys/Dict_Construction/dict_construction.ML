@@ -379,7 +379,7 @@ fun add_instantiation (class, tyco) term cert =
             tab
             |> Symreltab.update ((class, tyco), (Morphism.term phi term, Morphism.thm phi cert))) I
   in
-    Local_Theory.declaration {pervasive = false, syntax = false} upd
+    Local_Theory.declaration {pervasive = false, syntax = false, pos = \<^here>} upd
   end
 
 fun add_constant name name' (cert, info) lthy =
@@ -395,7 +395,7 @@ fun add_constant name name' (cert, info) lthy =
             |> Symtab.update (name,
                 (qname, (Option.map (Morphism.thm phi) cert, morph_const_info phi info))))
   in
-    Local_Theory.declaration {pervasive = false, syntax = false} upd lthy
+    Local_Theory.declaration {pervasive = false, syntax = false, pos = \<^here>} upd lthy
     |> Local_Theory.note ((Binding.empty, @{attributes [dict_construction_specs]}), #simps info)
     |> snd
   end
@@ -843,7 +843,7 @@ fun consts consts proof group lthy =
         val data' =
           apsnd (map_const_info I I I I I I (K (SOME congs'))) data
       in
-        (data', Local_Theory.declaration {pervasive = false, syntax = false} add_congs lthy)
+        (data', Local_Theory.declaration {pervasive = false, syntax = false, pos = \<^here>} add_congs lthy)
       end
 
     fun mk_fun lthy =
