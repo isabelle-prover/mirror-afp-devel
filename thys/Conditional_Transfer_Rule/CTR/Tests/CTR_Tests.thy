@@ -47,7 +47,7 @@ val ctr_test_data_of_proof = Context.Proof #> test_data_of_generic;
 (*oversimplified: to be used with care*)
 fun update_ctr_test_data k ctr_test_data =
   Local_Theory.declaration
-    {pervasive=true, syntax=false}
+    {pervasive=true, syntax=false, pos = \<^here>}
     (fn _ => (k, ctr_test_data) |> Symtab.update |> CTRTestData.map);
 
 fun process_ctr_test_data (k, args) (lthy : local_theory) =

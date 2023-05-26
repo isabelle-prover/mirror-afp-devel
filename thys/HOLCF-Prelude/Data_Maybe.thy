@@ -127,17 +127,19 @@ proof
     by (cases x, simp, (cases y, simp, simp, simp)+)
   show "compare\<cdot>x\<cdot>x \<sqsubseteq> EQ"
     by (cases x) simp_all
-  { assume "compare\<cdot>x\<cdot>y = EQ" then show "x = y"
-      by (cases x, simp, cases y, simp, simp, simp,
-          cases y, simp, simp, simp) (erule compare_EQ_dest) }
-  { assume "compare\<cdot>x\<cdot>y = LT" and "compare\<cdot>y\<cdot>z = LT" then show "compare\<cdot>x\<cdot>z = LT"
-      apply (cases x, simp)
-       apply (cases y, simp, simp)
-       apply (cases z, simp, simp, simp)
-      apply (cases y, simp, simp)
-      apply (cases z, simp, simp)
-      apply (auto elim: compare_LT_trans)
-      done }
+  show "x = y" if "compare\<cdot>x\<cdot>y = EQ"
+    using that
+    by (cases x, simp, cases y, simp, simp, simp,
+        cases y, simp, simp, simp) (erule compare_EQ_dest)
+  show "compare\<cdot>x\<cdot>z = LT" if "compare\<cdot>x\<cdot>y = LT" and "compare\<cdot>y\<cdot>z = LT"
+    using that
+    apply (cases x, simp)
+     apply (cases y, simp, simp)
+     apply (cases z, simp, simp, simp)
+    apply (cases y, simp, simp)
+    apply (cases z, simp, simp)
+    apply (auto elim: compare_LT_trans)
+    done
 qed
 
 lemma isJust_strict [simp]: "isJust\<cdot>\<bottom>  = \<bottom>" by (fixrec_simp)

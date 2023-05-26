@@ -121,8 +121,7 @@ fun note_named_thm (name, thm) ctxt =
   let
     val thm_name = Binding.qualified_name
       (Long_Name.qualify (Long_Name.base_name name) "eqvt")
-    val attr = Attrib.internal (K eqvt_add)
-    val ((_, [thm']), ctxt') = Local_Theory.note ((thm_name, [attr]), [thm]) ctxt
+    val ((_, [thm']), ctxt') = Local_Theory.note ((thm_name, @{attributes [eqvt]}), [thm]) ctxt
   in
     (thm', ctxt')
   end

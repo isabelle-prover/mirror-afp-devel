@@ -84,9 +84,10 @@ proof
   fix x y z :: "\<langle>'a, 'b\<rangle>"
   show "eq\<cdot>x\<cdot>x \<noteq> FF"
     by (cases x, simp_all)
-  { assume "eq\<cdot>x\<cdot>y = TT" and "eq\<cdot>y\<cdot>z = TT" then show "eq\<cdot>x\<cdot>z = TT"
-      by (cases x, simp, cases y, simp, cases z, simp, simp,
-          fast intro: eq_trans) }
+  show "eq\<cdot>x\<cdot>z = TT" if "eq\<cdot>x\<cdot>y = TT" and "eq\<cdot>y\<cdot>z = TT"
+    using that
+    by (cases x, simp, cases y, simp, cases z, simp, simp,
+        fast intro: eq_trans)
 qed
 
 instance Tuple2 :: (Eq_eq, Eq_eq) Eq_eq
@@ -94,8 +95,8 @@ proof
   fix x y :: "\<langle>'a, 'b\<rangle>"
   show "eq\<cdot>x\<cdot>x \<noteq> FF"
     by (cases x, simp_all)
-  { assume "eq\<cdot>x\<cdot>y = TT" then show "x = y"
-      by (cases x, simp, cases y, simp, simp, fast) }
+  show "x = y" if "eq\<cdot>x\<cdot>y = TT"
+    using that by (cases x, simp, cases y, simp, simp, fast)
 qed
 
 instantiation Tuple2 :: (Ord, Ord) Ord_strict
@@ -122,17 +123,18 @@ proof
     by (cases x, simp, cases y, simp, simp add: eq_conv_compare)
   show "oppOrdering\<cdot>(compare\<cdot>x\<cdot>y) = compare\<cdot>y\<cdot>x"
     by (cases x, simp, cases y, simp, simp add: oppOrdering_thenOrdering)
-  { assume "compare\<cdot>x\<cdot>y = EQ" then show "x = y"
-      by (cases x, simp, cases y, simp, auto elim: compare_EQ_dest) }
-  { assume "compare\<cdot>x\<cdot>y = LT" and "compare\<cdot>y\<cdot>z = LT" then show "compare\<cdot>x\<cdot>z = LT"
-      apply (cases x, simp, cases y, simp, cases z, simp, simp)
-      apply (elim disjE conjE)
-         apply (fast elim!: compare_LT_trans)
-        apply (fast dest: compare_EQ_dest)
-       apply (fast dest: compare_EQ_dest)
-      apply (drule compare_EQ_dest)
-      apply (fast elim!: compare_LT_trans)
-      done }
+  show "x = y" if "compare\<cdot>x\<cdot>y = EQ"
+    using that by (cases x, simp, cases y, simp, auto elim: compare_EQ_dest)
+  show "compare\<cdot>x\<cdot>z = LT" if "compare\<cdot>x\<cdot>y = LT" and "compare\<cdot>y\<cdot>z = LT"
+    using that
+    apply (cases x, simp, cases y, simp, cases z, simp, simp)
+    apply (elim disjE conjE)
+       apply (fast elim!: compare_LT_trans)
+      apply (fast dest: compare_EQ_dest)
+     apply (fast dest: compare_EQ_dest)
+    apply (drule compare_EQ_dest)
+    apply (fast elim!: compare_LT_trans)
+    done
   show "compare\<cdot>x\<cdot>x \<sqsubseteq> EQ"
     by (cases x, simp_all)
 qed
@@ -171,9 +173,10 @@ proof
   fix x y z :: "\<langle>'a, 'b, 'c\<rangle>"
   show "eq\<cdot>x\<cdot>x \<noteq> FF"
     by (cases x, simp_all)
-  { assume "eq\<cdot>x\<cdot>y = TT" and "eq\<cdot>y\<cdot>z = TT" then show "eq\<cdot>x\<cdot>z = TT"
-      by (cases x, simp, cases y, simp, cases z, simp, simp,
-          fast intro: eq_trans) }
+  show "eq\<cdot>x\<cdot>z = TT" if "eq\<cdot>x\<cdot>y = TT" and "eq\<cdot>y\<cdot>z = TT"
+    using that
+    by (cases x, simp, cases y, simp, cases z, simp, simp,
+        fast intro: eq_trans)
 qed
 
 instance Tuple3 :: (Eq_eq, Eq_eq, Eq_eq) Eq_eq
@@ -181,8 +184,8 @@ proof
   fix x y :: "\<langle>'a, 'b, 'c\<rangle>"
   show "eq\<cdot>x\<cdot>x \<noteq> FF"
     by (cases x, simp_all)
-  { assume "eq\<cdot>x\<cdot>y = TT" then show "x = y"
-      by (cases x, simp, cases y, simp, simp, fast) }
+  show "x = y" if "eq\<cdot>x\<cdot>y = TT"
+    using that by (cases x, simp, cases y, simp, simp, fast)
 qed
 
 instantiation Tuple3 :: (Ord, Ord, Ord) Ord_strict
@@ -211,22 +214,23 @@ proof
     by (cases x, simp, cases y, simp, simp add: eq_conv_compare)
   show "oppOrdering\<cdot>(compare\<cdot>x\<cdot>y) = compare\<cdot>y\<cdot>x"
     by (cases x, simp, cases y, simp, simp add: oppOrdering_thenOrdering)
-  { assume "compare\<cdot>x\<cdot>y = EQ" then show "x = y"
-      by (cases x, simp, cases y, simp, auto elim: compare_EQ_dest) }
-  { assume "compare\<cdot>x\<cdot>y = LT" and "compare\<cdot>y\<cdot>z = LT" then show "compare\<cdot>x\<cdot>z = LT"
-      apply (cases x, simp, cases y, simp, cases z, simp, simp)
-      apply (elim disjE conjE)
-              apply (fast elim!: compare_LT_trans)
-             apply (fast dest: compare_EQ_dest)
-            apply (fast dest: compare_EQ_dest)
+  show "x = y" if "compare\<cdot>x\<cdot>y = EQ"
+    using that by (cases x, simp, cases y, simp, auto elim: compare_EQ_dest)
+  show "compare\<cdot>x\<cdot>z = LT" if "compare\<cdot>x\<cdot>y = LT" and "compare\<cdot>y\<cdot>z = LT"
+    using that
+    apply (cases x, simp, cases y, simp, cases z, simp, simp)
+    apply (elim disjE conjE)
+            apply (fast elim!: compare_LT_trans)
            apply (fast dest: compare_EQ_dest)
           apply (fast dest: compare_EQ_dest)
-         apply (drule compare_EQ_dest)
-         apply (fast elim!: compare_LT_trans)
+         apply (fast dest: compare_EQ_dest)
         apply (fast dest: compare_EQ_dest)
-       apply (fast dest: compare_EQ_dest)
-      apply (fast dest: compare_EQ_dest elim!: compare_LT_trans)
-      done }
+       apply (drule compare_EQ_dest)
+       apply (fast elim!: compare_LT_trans)
+      apply (fast dest: compare_EQ_dest)
+     apply (fast dest: compare_EQ_dest)
+    apply (fast dest: compare_EQ_dest elim!: compare_LT_trans)
+    done
   show "compare\<cdot>x\<cdot>x \<sqsubseteq> EQ"
     by (cases x, simp_all)
 qed

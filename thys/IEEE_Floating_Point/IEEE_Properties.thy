@@ -11,7 +11,6 @@ begin
 
 subsection \<open>Theorems derived from definitions\<close>
 
-
 lemma valof_eq:
   "valof x =
     (if exponent x = 0
@@ -99,15 +98,15 @@ lemma float_cases: "is_nan a \<or> is_infinity a \<or> is_normal a \<or> is_deno
 lemma float_cases_finite: "is_nan a \<or> is_infinity a \<or> is_finite a"
   by (simp add: float_cases is_finite_def)
 
-lemma float_zero1[simp]: "is_zero 0"
+lemma float_zero1 [simp]: "is_zero 0"
   unfolding float_defs
   by transfer auto
 
-lemma float_zero2[simp]: "is_zero (- x) \<longleftrightarrow> is_zero x"
+lemma float_zero2 [simp]: "is_zero (- x) \<longleftrightarrow> is_zero x"
   unfolding float_defs
   by transfer auto
 
-lemma emax_pos[simp]: "0 < emax x" "emax x \<noteq> 0"
+lemma emax_pos [simp]: "0 < emax x" "emax x \<noteq> 0"
   by (auto simp: emax_def)
 
 
@@ -133,10 +132,10 @@ lemma normal_imp_not_zero: "is_normal f \<Longrightarrow> \<not>is_zero f"
 lemma normal_imp_not_denormal: "is_normal f \<Longrightarrow> \<not>is_denormal f"
   by (simp add: is_normal_def is_denormal_def)
 
-lemma denormal_zero[simp]: "\<not>is_denormal 0" "\<not>is_denormal minus_zero"
+lemma denormal_zero [simp]: "\<not>is_denormal 0" "\<not>is_denormal minus_zero"
   using denormal_imp_not_zero float_zero1 float_zero2 by blast+
 
-lemma normal_zero[simp]: "\<not>is_normal 0" "\<not>is_normal minus_zero"
+lemma normal_zero [simp]: "\<not>is_normal 0" "\<not>is_normal minus_zero"
   using normal_imp_not_zero float_zero1 float_zero2 by blast+
 
 lemma float_distinct_finite: "\<not> (is_nan a \<and> is_finite a)" "\<not>(is_infinity a \<and> is_finite a)"
@@ -148,7 +147,7 @@ lemma finite_infinity: "is_finite a \<Longrightarrow> \<not> is_infinity a"
 lemma finite_nan: "is_finite a \<Longrightarrow> \<not> is_nan a"
   by (auto simp: float_defs)
 
-text \<open>For every real number, the floating-point numbers closest to it always exist.\<close>
+text \<open>For every real number, the floating-point numbers closest to it always exists.\<close>
 lemma is_closest_exists:
   fixes v :: "('e, 'f)float \<Rightarrow> real"
     and s :: "('e, 'f)float set"
@@ -286,7 +285,8 @@ text \<open>Reflexivity of equality for non-NaNs.\<close>
 lemma float_eq_refl [simp]: "a \<doteq> a \<longleftrightarrow> \<not> is_nan a"
   by (auto simp: float_defs)
 
-text \<open>Properties about Ordering.\<close>
+
+text \<open>Properties about ordering.\<close>
 lemma float_lt_trans: "is_finite a \<Longrightarrow> is_finite b \<Longrightarrow> is_finite c \<Longrightarrow> a < b \<Longrightarrow> b < c \<Longrightarrow> a < c"
   by (auto simp: le_trans)
 
@@ -302,11 +302,15 @@ lemma float_le_neg: "is_finite a \<Longrightarrow> is_finite b \<Longrightarrow>
 
 text \<open>Properties about bounding.\<close>
 
-lemma float_le_infinity [simp]: "\<not> is_nan a \<Longrightarrow> a \<le> plus_infinity"
+lemma float_le_plus_infinity [simp]: "\<not> is_nan a \<Longrightarrow> a \<le> plus_infinity"
   unfolding float_defs
   by auto
 
-lemma zero_le_topfloat[simp]: "0 \<le> topfloat" "- 0 \<le> topfloat"
+lemma minus_infinity_le_float [simp]: "\<not> is_nan a \<Longrightarrow> minus_infinity \<le> a"
+  unfolding float_defs
+  by auto
+
+lemma zero_le_topfloat [simp]: "0 \<le> topfloat" "- 0 \<le> topfloat"
   by (auto simp: float_defs field_simps power_gt1_lemma of_nat_diff mask_eq_exp_minus_1)
 
 lemma LENGTH_contr:
@@ -424,19 +428,19 @@ next
   then show ?thesis ..
 qed
 
-lemma minus_minus_float[simp]: "- (-f) = f" for f::"('e, 'f)float"
+lemma minus_minus_float [simp]: "- (-f) = f" for f::"('e, 'f)float"
   by transfer auto
 
 lemma sign_minus_float: "sign (-f) = (1 - sign f)" for f::"('e, 'f)float"
   by transfer (auto simp: unat_eq_1 one_word_le unat_sub)
 
-lemma exponent_uminus[simp]: "exponent (- f) = exponent f" by transfer auto
-lemma fraction_uminus[simp]: "fraction (- f) = fraction f" by transfer auto
+lemma exponent_uminus [simp]: "exponent (- f) = exponent f" by transfer auto
+lemma fraction_uminus [simp]: "fraction (- f) = fraction f" by transfer auto
 
-lemma is_normal_minus_float[simp]: "is_normal (-f) = is_normal f" for f::"('e, 'f)float"
+lemma is_normal_minus_float [simp]: "is_normal (-f) = is_normal f" for f::"('e, 'f)float"
   by (auto simp: is_normal_def)
 
-lemma is_denormal_minus_float[simp]: "is_denormal (-f) = is_denormal f" for f::"('e, 'f)float"
+lemma is_denormal_minus_float [simp]: "is_denormal (-f) = is_denormal f" for f::"('e, 'f)float"
   by (auto simp: is_denormal_def)
 
 lemma bitlen_normal_mantissa:
@@ -531,10 +535,10 @@ proof -
   qed
 qed
 
-lemma infinite_infinity[simp]: "\<not> is_finite plus_infinity" "\<not> is_finite minus_infinity"
+lemma infinite_infinity [simp]: "\<not> is_finite plus_infinity" "\<not> is_finite minus_infinity"
   by (auto simp: is_finite_def is_normal_def infinity_simps is_denormal_def is_zero_def)
 
-lemma nan_not_finite[simp]: "is_nan x \<Longrightarrow> \<not> is_finite x"
+lemma nan_not_finite [simp]: "is_nan x \<Longrightarrow> \<not> is_finite x"
   using float_distinct_finite(1) by blast
 
 lemma valof_nonneg:
@@ -677,7 +681,7 @@ text \<open>Commutativity of addition.\<close>
 lemma
   assumes "is_finite a" "is_finite b"
   shows float_plus_comm_eq: "a + b = b + a"
-    and float_plus_comm: "is_finite (a + b) \<Longrightarrow> (a + b) \<doteq> (b + a)"
+    and float_plus_comm: "is_finite (a + b) \<Longrightarrow> (a + b) \<doteq> (b + a)" (*FIXME: this should hold unconditionally?*)
 proof -
   have "\<not> is_nan a" and "\<not> is_nan b" and "\<not> is_infinity a" and "\<not> is_infinity b"
     using assms by (auto simp: finite_nan finite_infinity)
@@ -687,21 +691,21 @@ proof -
     by (metis float_eq)
 qed
 
-text \<open>The floating-point number a falls into the same category as the negation of \<open>a\<close>.\<close>
-lemma is_zero_uminus[simp]: "is_zero (- a) \<longleftrightarrow> is_zero a"
+text \<open>The floating-point number \<open>a\<close> falls into the same category as the negation of \<open>a\<close>.\<close>
+lemma is_zero_uminus [simp]: "is_zero (- a) \<longleftrightarrow> is_zero a"
   by (simp add: is_zero_def)
 
 lemma is_infinity_uminus [simp]: "is_infinity (- a) = is_infinity a"
   by (simp add: is_infinity_def)
 
-lemma is_finite_uminus[simp]: "is_finite (- a) \<longleftrightarrow> is_finite a"
+lemma is_finite_uminus [simp]: "is_finite (- a) \<longleftrightarrow> is_finite a"
   by (simp add: is_finite_def)
 
-lemma is_nan_uminus[simp]: "is_nan (- a) \<longleftrightarrow> is_nan a"
+lemma is_nan_uminus [simp]: "is_nan (- a) \<longleftrightarrow> is_nan a"
   by (simp add: is_nan_def)
 
-text \<open>The sign of a and the sign of a's negation is different.\<close>
-lemma float_neg_sign: "(sign a) \<noteq> (sign (- a))"
+text \<open>The sign of \<open>a\<close> and the sign of \<open>a\<close>'s negation are different.\<close>
+lemma float_neg_sign: "sign a \<noteq> sign (- a)"
   by (cases a rule: sign_cases) (auto simp: sign_minus_float)
 
 lemma float_neg_sign1: "sign a = sign (- b) \<longleftrightarrow> sign a \<noteq> sign b"
@@ -709,15 +713,10 @@ lemma float_neg_sign1: "sign a = sign (- b) \<longleftrightarrow> sign a \<noteq
 
 lemma valof_uminus:
   assumes "is_finite a"
-  shows "valof (- a) = - valof a" (is "?L = ?R")
+  shows "valof (- a) = - valof a"
   by (cases a rule: sign_cases)  (auto simp: valof_eq sign_minus_float)
 
-
-text \<open>Showing \<open>a + (- b) = a - b\<close>.\<close>
-lemma float_neg_add:
-  "is_finite a \<Longrightarrow> is_finite b \<Longrightarrow> is_finite (a - b) \<Longrightarrow> valof a + valof (- b) = valof a - valof b"
-  by (simp add: valof_uminus)
-
+text \<open>Showing \<open>a + (- b) \<doteq> a - b\<close>.\<close>
 lemma float_plus_minus:
   assumes "is_finite a" "is_finite b" "is_finite (a - b)"
   shows "(a + - b) \<doteq> (a - b)"
@@ -734,7 +733,7 @@ proof -
         (if is_zero a \<and> is_zero (- b) \<and> sign a = sign (- b) then sign a else 0)
         (round RNE (valof a + valof (- b))))"
     using assms
-    by (simp add: float_neg_sign1 float_neg_add)
+    by (simp add: float_neg_sign1 valof_uminus)
   also have "\<dots> = a + - b"
     using nab by (auto simp: float_defs fadd_def plus_float_def)
   finally show ?thesis
@@ -842,7 +841,7 @@ proof -
     by (metis abs_le_zero_iff abs_zero diff_self error_at_worst_lemma assms(1))
 qed
 
-lemma is_finite_zerosign[simp]: "is_finite (zerosign s a) \<longleftrightarrow> is_finite a"
+lemma is_finite_zerosign [simp]: "is_finite (zerosign s a) \<longleftrightarrow> is_finite a"
   by (auto simp: zerosign_def is_finite_def)
 
 lemma is_finite_closest: "is_finite (closest (v::_\<Rightarrow>real) p {a. is_finite a} x)"
@@ -862,7 +861,7 @@ proof -
     using is_finite_zerosign by auto
 qed
 
-lemma valof_zero[simp]: "valof 0 = 0" "valof minus_zero = 0"
+lemma valof_zero [simp]: "valof 0 = 0" "valof minus_zero = 0"
   by (auto simp add: zerosign_def valof_eq zero_simps)
 
 lemma signzero_zero:
@@ -1017,7 +1016,7 @@ proof -
   qed
 qed
 
-lemma valof_one[simp]: "valof (1 :: ('e, 'f) float) = of_bool (LENGTH('e) > 1)"
+lemma valof_one [simp]: "valof (1 :: ('e, 'f) float) = of_bool (LENGTH('e) > 1)"
   apply transfer
   apply (auto simp add: bias_def unat_mask_eq simp flip: mask_eq_exp_minus_1)
   apply (simp add: mask_eq_exp_minus_1)

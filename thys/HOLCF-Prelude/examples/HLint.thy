@@ -131,10 +131,9 @@ lemma
   shows "take\<cdot>(length\<cdot>x - 1)\<cdot>x \<sqsubseteq> init\<cdot>x"
   using assms
 proof (induct x)
-  case (Cons y ys)
+  case IH: (Cons y ys)
   show ?case
   proof (cases ys)
-    note IH = Cons
     case (Cons z zs)
     show ?thesis
       using IH

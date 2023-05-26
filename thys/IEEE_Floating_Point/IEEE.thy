@@ -164,7 +164,7 @@ abbreviation (input) "RNE \<equiv> roundNearestTiesToEven"
 abbreviation (input) "RNA \<equiv> roundNearestTiesToAway"
 abbreviation (input) "RTP \<equiv> roundTowardPositive"
 abbreviation (input) "RTN \<equiv> roundTowardNegative"
-abbreviation (input) "RNZ \<equiv> roundTowardZero"
+abbreviation (input) "RTZ \<equiv> roundTowardZero"
 
 
 subsection \<open>Rounding\<close>

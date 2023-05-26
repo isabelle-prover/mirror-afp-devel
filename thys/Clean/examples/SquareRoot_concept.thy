@@ -88,7 +88,7 @@ val Type(u,v) = @{typ unit}
 \<close>
 
 (* could also be local variable, we flipped a coin and it became this way *)
-global_vars state
+global_vars (state)
    tm    :: int
    i     :: int
    sqsum :: int

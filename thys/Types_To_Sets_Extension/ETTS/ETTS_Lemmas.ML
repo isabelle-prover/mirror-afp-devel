@@ -145,7 +145,7 @@ fun thm_of_fact ctxt thms =
     val thm = thms 
       |> map (elim_assms assms)
       |> Conjunction.intr_balanced
-      |> singleton (Proof_Context.goal_export ctxt' ctxt)
+      |> singleton (Proof_Context.export_goal ctxt' ctxt)
 
   in thm end;
 

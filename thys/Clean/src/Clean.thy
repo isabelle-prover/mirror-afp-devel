@@ -327,8 +327,8 @@ cf. \<^cite>\<open>"Foster2009BidirectionalPL" and "DBLP:journals/toplas/FosterG
 "DBLP:conf/ictac/FosterZW16"\<close>) to the generic assign operators. This pair of accessor and update
 carries all relevant semantic and type information of this particular variable and \<^emph>\<open>characterizes\<close>
 this variable semantically. Specific syntactic support~\<^footnote>\<open>via the Isabelle concept of
-cartouche: \<^url>\<open>https://isabelle.in.tum.de/doc/isar-ref.pdf\<close>\<close> will hide away the syntactic overhead and permit a human-readable
-form of assignments or expressions accessing the underlying state. \<close>
+cartouche: \<^url>\<open>https://isabelle.in.tum.de/doc/isar-ref.pdf\<close>\<close> will hide away the syntactic overhead 
+and permit a human-readable form of assignments or expressions accessing the underlying state. \<close>
 
 
 consts syntax_assign :: "('\<alpha>  \<Rightarrow> int) \<Rightarrow> int \<Rightarrow> term" (infix ":=" 60)
@@ -634,7 +634,89 @@ the function specifications defined below.
 \<close>
 
 ML\<open>
-structure StateMgt = 
+
+signature STATEMGT = sig
+    structure Data: GENERIC_DATA
+    datatype var_kind = global_var of typ | local_var of typ
+    type state_field_tab = var_kind Symtab.table
+    val MON_SE_T: typ -> typ -> typ
+    val add_record_cmd:
+       {overloaded: bool} ->
+         bool ->
+           (string * string option) list ->
+             binding -> string option -> (binding * string * mixfix) list -> theory -> theory
+    val add_record_cmd':
+       {overloaded: bool} ->
+         bool ->
+           (string * string option) list ->
+             binding -> string option -> (binding * typ * mixfix) list -> theory -> theory
+    val add_record_cmd0:
+       ('a -> Proof.context -> (binding * typ * mixfix) list * Proof.context) ->
+         {overloaded: bool} ->
+           bool -> (string * string option) list -> binding -> string option -> 'a -> theory -> theory
+    val cmd:
+       (binding * typ option * mixfix) option * (Attrib.binding * term) * term list *
+       (binding * typ option * mixfix) list
+         -> local_theory -> local_theory
+    val construct_update: bool -> binding -> typ -> theory -> term
+    val control_stateS: typ
+    val control_stateT: typ
+    val declare_state_variable_global: (typ -> var_kind) -> string -> theory -> theory
+    val declare_state_variable_local: (typ -> var_kind) -> string -> Context.generic -> Context.generic
+    val define_lense: binding -> typ -> binding * typ * 'a -> Proof.context -> local_theory
+    val fetch_state_field: string * 'a -> (string * string) * 'a
+    val filter_attr_of: string -> theory -> ((string * string) * var_kind) list
+    val filter_name: string -> string * 'a -> ((string * string) * 'a) option
+    val get_data: Proof.context -> Data.T
+    val get_data_global: theory -> Data.T
+    val get_result_value_conf: string -> theory -> (string * string) * var_kind
+    val get_state_field_tab: Proof.context -> state_field_tab
+    val get_state_field_tab_global: theory -> state_field_tab
+    val get_state_type: Proof.context -> typ
+    val get_state_type_global: theory -> typ
+    val is_global_program_variable: Symtab.key -> theory -> bool
+    val is_local_program_variable: Symtab.key -> theory -> bool
+    val is_program_variable: Symtab.key -> theory -> bool
+    val map_data: (Data.T -> Data.T) -> Context.generic -> Context.generic
+    val map_data_global: (Data.T -> Data.T) -> theory -> theory
+    val map_to_update: typ -> bool -> theory -> (string * string) * var_kind -> term -> term
+    val merge_control_stateS: typ * typ -> typ
+    val mk_global_state_name: binding -> binding
+    val mk_lense_name: binding -> binding
+    val mk_local_state_name: binding -> binding
+    val mk_lookup_result_value_term: string -> typ -> theory -> term
+    val mk_pop_def: binding -> typ -> typ -> Proof.context -> local_theory
+    val mk_pop_name: binding -> binding
+    val mk_push_def: binding -> typ -> Proof.context -> local_theory
+    val mk_push_name: binding -> binding
+    val new_state_record:
+       bool ->
+         (((string * string option) list * binding) * string option) option * 
+          (binding * string * mixfix) list
+           -> theory -> theory
+    val new_state_record':
+       bool ->
+         (((string * string option) list * binding) * typ option) option * (binding * typ * mixfix) list ->
+           theory -> theory
+    val new_state_record0:
+       ({overloaded: bool} ->
+          bool -> 'a list -> binding -> string option -> (binding * 'b * mixfix) list -> theory -> theory)
+         -> bool -> (('a list * binding) * 'b option) option * (binding * 'b * mixfix) list -> theory -> theory
+    val optionT: typ -> typ
+    val parse_typ_'a: Proof.context -> binding -> typ
+    val pop_eq: binding -> string -> typ -> typ -> Proof.context -> term
+    val push_eq: binding -> string -> typ -> typ -> Proof.context -> term
+    val read_fields: ('a * string * 'b) list -> Proof.context -> ('a * typ * 'b) list * Proof.context
+    val read_parent: string option -> Proof.context -> (typ list * string) option * Proof.context
+    val result_name: string
+    val typ_2_string_raw: typ -> string
+    val type_of: var_kind -> typ
+    val upd_state_type: (typ -> typ) -> Context.generic -> Context.generic
+    val upd_state_type_global: (typ -> typ) -> theory -> theory
+
+  end
+
+structure StateMgt : STATEMGT = 
 struct
 
 open StateMgt_core
@@ -806,11 +888,19 @@ fun typ_2_string_raw (Type(s,[TFree _])) = if String.isSuffix "_scheme" s
    |typ_2_string_raw _ = error  "Illegal state type - not allowed in Clean." 
                                   
              
-fun new_state_record0 add_record_cmd is_global_kind (((raw_params, binding), res_ty), raw_fields) thy =
-    let val binding = if is_global_kind 
+fun new_state_record0 add_record_cmd is_global_kind (aS, raw_fields) thy =
+    let val state_index = (Int.toString o length o Symtab.dest)
+                                (StateMgt_core.get_state_field_tab_global thy)
+        val state_pos = (Binding.pos_of o #1 o hd) raw_fields
+        val ((raw_params, binding), res_ty) = case aS of 
+                                                SOME d => d
+                                              | NONE => (([], Binding.make(state_index,state_pos)), NONE)
+        val binding = if is_global_kind 
                       then mk_global_state_name binding
                       else mk_local_state_name binding
         val raw_parent = SOME(typ_2_string_raw (StateMgt_core.get_state_type_global thy))
+        val _ = writeln("XXXXX " ^ @{make_string} raw_params ^ "CCC " ^  @{make_string} binding 
+                                 ^ @{make_string} raw_fields)
         val pos = Binding.pos_of binding
         fun upd_state_typ thy =  StateMgt_core.upd_state_type_global 
                                   (K (parse_typ_'a (Proof_Context.init_global thy) binding)) thy
@@ -828,27 +918,32 @@ val add_record_cmd    = add_record_cmd0 read_fields;
 val add_record_cmd'   = add_record_cmd0 pair;
 
 val new_state_record  = new_state_record0 add_record_cmd
-val new_state_record' = new_state_record0 add_record_cmd'
+val new_state_record' = new_state_record0 add_record_cmd';
+
+
+fun clean_ctxt_parser b = Parse.$$$ "(" 
+                          |--   (Parse.type_args_constrained -- Parse.binding)
+                           -- (if b then Scan.succeed NONE else Parse.typ >> SOME) 
+                          --| Parse.$$$ ")"
+                          : (((string * string option) list * binding) * string option) parser
 
 val _ =
   Outer_Syntax.command 
       \<^command_keyword>\<open>global_vars\<close>   
       "define global state record"
-      ((Parse.type_args_constrained -- Parse.binding)
-    -- Scan.succeed NONE
-    -- Scan.repeat1 Parse.const_binding
-    >> (Toplevel.theory o new_state_record true));
-;
+      (Scan.option (clean_ctxt_parser true) -- Scan.repeat1 Parse.const_binding
+       >> (Toplevel.theory o new_state_record true));
+
+
 
 val _ =
   Outer_Syntax.command 
       \<^command_keyword>\<open>local_vars_test\<close>  
       "define local state record"
-      ((Parse.type_args_constrained -- Parse.binding) 
-    -- (Parse.typ >> SOME)
-    -- Scan.repeat1 Parse.const_binding
-    >> (Toplevel.theory o new_state_record false))
-;
+      (Scan.option (clean_ctxt_parser false) -- Scan.repeat1 Parse.const_binding
+      >> (Toplevel.theory o new_state_record false));
+
+
 end
 \<close>
 
@@ -1180,7 +1275,7 @@ val _ = Named_Target.theory_map;
                                         #> define_postcond binding ret_ty sty_old params read_post)
                      in parse_contract
                      end
-                |> StateMgt.new_state_record false ((([],binding), SOME ret_type),locals)
+                |> StateMgt.new_state_record false (SOME (([],binding), SOME ret_type),locals)
                 |> theory_map
                          (fn params => fn ret_ty => fn ctxt => 
                           let val sty = StateMgt_core.get_state_type ctxt
@@ -1310,12 +1405,12 @@ struct
 
 fun mk_seq_C C C' = let val t = fastype_of C
                      val t' =  fastype_of C'
-                 in  Const(\<^const_name>\<open>bind_SE'\<close>, t --> t' --> t') end;
+                 in  Const(\<^const_name>\<open>bind_SE'\<close>, t --> t' --> t') $ C $ C' end;
 
 fun mk_skip_C sty = Const(\<^const_name>\<open>skip\<^sub>S\<^sub>E\<close>, StateMgt_core.MON_SE_T HOLogic.unitT sty)
 
 fun mk_break sty = 
-    Const(\<^const_name>\<open>if_C\<close>, StateMgt_core.MON_SE_T HOLogic.unitT sty )
+    Const(\<^const_name>\<open>break\<close>, StateMgt_core.MON_SE_T HOLogic.unitT sty )
 
 fun mk_return_C upd rhs =
     let val ty = fastype_of rhs 
@@ -1418,8 +1513,6 @@ Note, furthermore, that expressions may not only be right-hand-sides of (local o
 assignments or conceptually similar return-statements,  but also passed as argument of other 
 function calls, where the same problem arises.  
 \<close>
-
-
 
 end
 

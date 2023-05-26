@@ -2170,7 +2170,7 @@ proof-
     show ?thesis
     unfolding \<open>t = 0\<close> Lim_at
     proof(simp add: dist_norm[of _ 0] del: zero_less_dist_iff, safe, rule exI, rule conjI[OF \<open>0 < u\<close>], safe)
-      fix e::real and x assume "0 < e" "0 < dist x x0" "dist x x0 < u"
+      fix e::real and x assume "0 < e" "dist x x0 < u"
       hence "x \<in> X"
         using uK_def(3)
         by (auto simp: dist_commute)

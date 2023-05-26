@@ -147,27 +147,24 @@ next
       moreover
       have "0 \<le> \<lbrakk> MkI\<cdot>(int nat) \<rbrakk>"  by simp
       moreover
-      { fix j::Integer
-        assume "defined j" and le: "\<lbrakk> j \<rbrakk> < \<lbrakk> MkI\<cdot>(int nat) \<rbrakk>"
-        have "P j"
-        proof(cases j)
-          case bottom with \<open>defined j\<close> show ?thesis by simp
+      have "P j" if "defined j" and le: "\<lbrakk> j \<rbrakk> < \<lbrakk> MkI\<cdot>(int nat) \<rbrakk>" for j::Integer
+      proof(cases j)
+        case bottom with \<open>defined j\<close> show ?thesis by simp
+      next
+        case (MkI integer)
+        show ?thesis
+        proof(cases integer)
+          case (neg nat)
+          have "\<lbrakk>j\<rbrakk> < 0" using neg MkI by simp
+          with \<open>defined j\<close>
+          show ?thesis by (rule assms(2))
         next
-          case (MkI integer)
-          show ?thesis
-          proof(cases integer)
-            case (neg nat)
-            have "\<lbrakk>j\<rbrakk> < 0" using neg MkI by simp
-            with \<open>defined j\<close>
-            show ?thesis by (rule assms(2))
-          next
-            case (nonneg m)
-            have "Suc m \<le> nat" using le nonneg MkI by simp
-            then have "P (MkI\<cdot>(int m))" by (metis "1.IH")
-            then show ?thesis using nonneg MkI by simp
-          qed
+          case (nonneg m)
+          have "Suc m \<le> nat" using le nonneg MkI by simp
+          then have "P (MkI\<cdot>(int m))" by (metis "1.IH")
+          then show ?thesis using nonneg MkI by simp
         qed
-      }
+      qed
       ultimately
       show ?case
         by (rule step)

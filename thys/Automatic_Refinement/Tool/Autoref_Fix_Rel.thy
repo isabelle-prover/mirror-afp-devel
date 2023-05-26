@@ -333,7 +333,7 @@ ML \<open>
         val pat1 = Proof_Context.cert_term lthy pat0
         val pat2 = singleton (Variable.export_terms (Proof_Context.augment pat1 lthy) lthy) pat1
       in
-        lthy |> Local_Theory.declaration {syntax = false, pervasive = false}
+        lthy |> Local_Theory.declaration {syntax = false, pervasive = false, pos = \<^here>}
           (fn phi =>
             let val item = (name, Morphism.term phi pat2) in
               Rel_Prio.map (fn rpl =>
@@ -346,7 +346,7 @@ ML \<open>
             end)
       end
 
-    fun delete_prio name = Local_Theory.declaration {syntax = false, pervasive = false}
+    fun delete_prio name = Local_Theory.declaration {syntax = false, pervasive = false, pos = \<^here>}
       (fn phi => Rel_Prio.map (Rel_Prio_List.delete (name, Term.dummy)))
 
     local
