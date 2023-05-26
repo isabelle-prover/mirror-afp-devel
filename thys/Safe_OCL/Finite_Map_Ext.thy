@@ -63,7 +63,7 @@ proof -
   with assms have
     "map (\<lambda>k. (k, f (the (fmlookup xm k)) (the (fmlookup ym k)))) zm =
      map (\<lambda>k. (k, f (the (fmlookup ym k)) (the (fmlookup xm k)))) zm"
-    by (auto) (metis fmdom_notI fmran'I notin_fset option.collapse)
+    by (auto) (metis fmdom_notI fmran'I option.collapse)
   thus ?thesis
     unfolding fmmerge_def zm
     by (metis (no_types, lifting) inf_commute)
@@ -90,7 +90,7 @@ proof -
       unfolding fmmerge_def fmlookup_of_list apply auto
       unfolding option_rel_Some2 apply (rule_tac ?x="g a b" in exI)
       unfolding map_of_map_restrict restrict_map_def
-      by (auto simp: fmember_iff_member_fset)
+      by auto
   }
   with assms(2) assms(3) show ?thesis
     by (meson fmdomE fmrel_on_fsetI fmrel_on_fset_fmdom)
@@ -108,7 +108,7 @@ proof -
     hence "rel_option f (fmlookup xm x) (fmlookup (fmmerge g xm ym) x)"
       unfolding fmmerge_def fmlookup_of_list apply auto
       unfolding option_rel_Some1 apply (rule_tac ?x="g a b" in exI)
-      by (auto simp add: map_of_map_restrict fmember_iff_member_fset assms fmran'I)
+      by (auto simp add: map_of_map_restrict assms fmran'I)
   }
   with assms show ?thesis
     apply auto
@@ -440,6 +440,6 @@ lemma fmmerge_fun_simp [code_abbrev, simp]:
   "fmmerge_fun f xm ym = fmmerge f xm ym"
   unfolding fmmerge_def
   apply (rule_tac ?f="fmap_of_list" in HOL.arg_cong)
-  by (simp add: notin_fset)
+  by simp
 
 end

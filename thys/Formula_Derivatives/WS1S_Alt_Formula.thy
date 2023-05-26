@@ -186,7 +186,6 @@ next
         split: bool.splits order.splits nat.splits)
 next
   fix \<AA> :: interp and a :: ws1s
-  note fmember_iff_member_fset[symmetric, simp]
   assume "Length \<AA> = 0"
   then show "nullable0 a = satisfies0 \<AA> a"
     by (induct a, unfold wf0.simps nullable0.simps satisfies0.simps Let_def)

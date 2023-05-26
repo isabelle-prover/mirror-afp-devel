@@ -118,7 +118,7 @@ proof(induction)
     moreover
     from NatRule(5,6)
     have "local_fresh_check (Rule (fst rule)) i s (\<Gamma> \<turnstile> subst s (freshen i c))"
-      by (fastforce intro!: local_fresh_check.intros simp add: all_local_vars_def fmember_iff_member_fset)
+      by (fastforce intro!: local_fresh_check.intros simp add: all_local_vars_def)
     ultimately
     have "local_iwf ?it ((\<Gamma> \<turnstile> subst s (freshen i c)))"
       by (intro iwf ) (auto simp add: list_all2_map2 list_all2_same)

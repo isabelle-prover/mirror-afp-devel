@@ -521,8 +521,8 @@ proof -
     by (meson local.get_child_nodes_pure pure_returns_heap_eq)
   then show ?thesis
     using assms
-    apply(auto simp add: is_strongly_dom_component_safe_def Let_def preserved_def)[1]
-    by (smt (verit) IntI fmember_iff_member_fset get_child_nodes_is_strongly_dom_component_safe
+    apply(auto simp add: is_strongly_dom_component_safe_def Let_def preserved_def Bex_def)[1]
+    by (smt (verit) IntI get_child_nodes_is_strongly_dom_component_safe
         is_OK_returns_result_I local.get_child_nodes_ptr_in_heap local.get_dom_component_impl
         local.get_dom_component_ok local.get_dom_component_ptr returns_result_select_result)
 
@@ -571,7 +571,7 @@ proof -
   then show ?thesis
     using assms
     apply(auto simp add: is_strongly_dom_component_safe_def Let_def preserved_def)[1]
-    by (metis IntI finite_set_in local.get_dom_component_impl local.get_dom_component_ok
+    by (metis IntI local.get_dom_component_impl local.get_dom_component_ok
         local.get_dom_component_parent_inside local.get_dom_component_ptr local.get_parent_parent_in_heap
         local.known_ptrs_known_ptr local.parent_child_rel_child_in_heap local.parent_child_rel_parent
         returns_result_select_result)
@@ -649,7 +649,7 @@ proof -
   then show ?thesis
     using assms
     apply(auto simp add: is_strongly_dom_component_safe_def Let_def preserved_def)[1]
-    by (metis (no_types, lifting) IntI finite_set_in get_root_node_is_strongly_dom_component_safe_step
+    by (metis (no_types, opaque_lifting) IntI get_root_node_is_strongly_dom_component_safe_step
         is_OK_returns_result_I local.get_dom_component_impl local.get_dom_component_ok
         local.get_dom_component_ptr local.get_root_node_ptr_in_heap returns_result_select_result)
 qed
@@ -755,7 +755,7 @@ proof -
     apply(auto simp add: is_strongly_dom_component_safe_def Let_def preserved_def get_element_by_id_def
         first_in_tree_order_def elim!: bind_returns_result_E2 intro!: map_filter_M_pure bind_pure_I
         split: option.splits list.splits)[1]
-    by (metis (no_types, lifting) Int_iff \<open>ptr |\<in>| object_ptr_kinds h\<close> assms(4) finite_set_in
+    by (metis (no_types, opaque_lifting) Int_iff \<open>ptr |\<in>| object_ptr_kinds h\<close> assms(4)
         get_element_by_id_is_strongly_dom_component_safe_step local.get_dom_component_impl
         local.get_dom_component_ptr select_result_I2)
 qed
@@ -862,7 +862,7 @@ proof -
     apply(auto simp add: is_strongly_dom_component_safe_def Let_def preserved_def
         get_elements_by_class_name_def first_in_tree_order_def elim!: bind_returns_result_E2
         intro!: map_filter_M_pure bind_pure_I split: option.splits list.splits)[1]
-    by (metis (no_types, lifting) Int_iff \<open>ptr |\<in>| object_ptr_kinds h\<close> assms(4) finite_set_in
+    by (metis (no_types, opaque_lifting) Int_iff \<open>ptr |\<in>| object_ptr_kinds h\<close> assms(4)
         get_elements_by_class_name_is_strongly_dom_component_safe_step local.get_dom_component_impl
         local.get_dom_component_ptr select_result_I2)
 qed
@@ -966,7 +966,7 @@ proof -
     apply(auto simp add: is_strongly_dom_component_safe_def Let_def preserved_def
         get_elements_by_class_name_def first_in_tree_order_def elim!: bind_returns_result_E2
         intro!: map_filter_M_pure bind_pure_I split: option.splits list.splits)[1]
-    by (metis (no_types, lifting) IntI \<open>ptr |\<in>| object_ptr_kinds h\<close> finite_set_in
+    by (metis (no_types, opaque_lifting) IntI \<open>ptr |\<in>| object_ptr_kinds h\<close>
         get_elements_by_tag_name_is_strongly_dom_component_safe_step local.get_dom_component_impl
         local.get_dom_component_ptr select_result_I2)
 qed
@@ -1526,10 +1526,10 @@ proof -
      apply (metis (no_types, lifting) document_ptr_kinds_eq_h h' list.set_intros(1)
         local.set_disconnected_nodes_get_disconnected_nodes select_result_I2)
     apply(simp add: object_ptr_kinds_eq_h)
-    by(metis (no_types, lifting) NodeMonad.ptr_kinds_ptr_kinds_M
+    by(metis (no_types, opaque_lifting) NodeMonad.ptr_kinds_ptr_kinds_M
         \<open>cast\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_element_ptr \<notin> set |h \<turnstile> node_ptr_kinds_M|\<^sub>r\<close> children_eq2_h
         children_eq2_h2 children_eq2_h3 disconnected_nodes_eq2_h disconnected_nodes_eq2_h2
-        disconnected_nodes_eq2_h3 document_ptr_kinds_eq_h finite_set_in h'
+        disconnected_nodes_eq2_h3 document_ptr_kinds_eq_h h'
         l_set_disconnected_nodes_get_disconnected_nodes.set_disconnected_nodes_get_disconnected_nodes
         list.set_intros(2) local.l_set_disconnected_nodes_get_disconnected_nodes_axioms
         node_ptr_kinds_commutes select_result_I2)

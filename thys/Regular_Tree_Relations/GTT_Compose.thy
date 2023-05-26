@@ -13,7 +13,7 @@ inductive_set \<Delta>\<^sub>\<epsilon>_set :: "('q, 'f) ta \<Rightarrow> ('q, '
 lemma \<Delta>\<^sub>\<epsilon>_states: "\<Delta>\<^sub>\<epsilon>_set \<A> \<B> \<subseteq> fset (\<Q> \<A> |\<times>| \<Q> \<B>)"
 proof -
   {fix p q assume "(p, q) \<in> \<Delta>\<^sub>\<epsilon>_set \<A> \<B>" then have "(p, q) \<in> fset (\<Q> \<A> |\<times>| \<Q> \<B>)"
-      by (induct) (auto dest: rule_statesD eps_statesD simp flip: fmember_iff_member_fset)}
+      by (induct) (auto dest: rule_statesD eps_statesD)}
   then show ?thesis by auto
 qed
 
@@ -36,7 +36,7 @@ end
 
 lemma finite_alt_def [simp]:
   "finite {(\<alpha>, \<beta>). (\<exists>t. ground t \<and> \<alpha> |\<in>| ta_der \<A> t \<and> \<beta> |\<in>| ta_der \<B> t)}" (is "finite ?S")
-  by (auto dest: ground_ta_der_states[THEN fsubsetD] simp flip: fmember_iff_member_fset
+  by (auto dest: ground_ta_der_states[THEN fsubsetD]
            intro!: finite_subset[of ?S "fset (\<Q> \<A> |\<times>| \<Q> \<B>)"])
 
 lemma \<Delta>\<^sub>\<epsilon>_def':
@@ -92,11 +92,11 @@ lemma \<Delta>\<^sub>\<epsilon>_statesD:
   "(p, q) |\<in>| \<Delta>\<^sub>\<epsilon> \<A> \<B> \<Longrightarrow> p |\<in>| \<Q> \<A>"
   "(p, q) |\<in>| \<Delta>\<^sub>\<epsilon> \<A> \<B> \<Longrightarrow> q |\<in>| \<Q> \<B>"
   using subsetD[OF \<Delta>\<^sub>\<epsilon>_states, of "(p, q)" \<A> \<B>]
-  by (auto simp flip: \<Delta>\<^sub>\<epsilon>.rep_eq fmember_iff_member_fset)
+  by (auto simp flip: \<Delta>\<^sub>\<epsilon>.rep_eq)
 
 lemma \<Delta>\<^sub>\<epsilon>_statesD':
   "q |\<in>| eps_states (\<Delta>\<^sub>\<epsilon> \<A> \<B>) \<Longrightarrow> q |\<in>| \<Q> \<A> |\<union>| \<Q> \<B>"
-  by (auto simp: eps_states_def fmember.abs_eq dest: \<Delta>\<^sub>\<epsilon>_statesD)
+  by (auto simp: eps_states_def dest: \<Delta>\<^sub>\<epsilon>_statesD)
 
 lemma \<Delta>\<^sub>\<epsilon>_swap:
   "prod.swap p |\<in>| \<Delta>\<^sub>\<epsilon> \<A> \<B> \<longleftrightarrow> p |\<in>| \<Delta>\<^sub>\<epsilon> \<B> \<A>"
@@ -179,12 +179,12 @@ lemma \<Delta>\<^sub>\<epsilon>_steps_from_\<G>\<^sub>2:
 proof (induct rule: converse_ftrancl_induct)
   case (Base y)
   then show ?case using assms(3)
-    by (fastforce simp: GTT_comp_def gtt_states_def fmember.abs_eq dest: eps_statesD \<Delta>\<^sub>\<epsilon>_statesD(1))
+    by (fastforce simp: GTT_comp_def gtt_states_def dest: eps_statesD \<Delta>\<^sub>\<epsilon>_statesD(1))
 next
   case (Step q p)
   have "(q, p) |\<in>| (eps (fst \<G>\<^sub>2))|\<^sup>+|" "p |\<in>| gtt_states \<G>\<^sub>2"
     using Step(1, 4) assms(3)
-    by (auto simp: GTT_comp_def gtt_states_def fmember.abs_eq dest: eps_statesD \<Delta>\<^sub>\<epsilon>_statesD(1))
+    by (auto simp: GTT_comp_def gtt_states_def dest: eps_statesD \<Delta>\<^sub>\<epsilon>_statesD(1))
   then show ?case using Step(3)
     by (auto intro: ftrancl_trans)
 qed
@@ -200,14 +200,14 @@ proof (induct arbitrary: thesis rule: converse_ftrancl_induct)
   case (Base p)
   from Base(1) consider (a) "(p, r) |\<in>| eps (fst \<G>\<^sub>1)" | (b) "(p, r) |\<in>| eps (fst \<G>\<^sub>2)" |
     (c) "(p, r) |\<in>| (\<Delta>\<^sub>\<epsilon> (snd \<G>\<^sub>1) (fst \<G>\<^sub>2))"
-    by (auto simp: GTT_comp_def fmember.abs_eq)
+    by (auto simp: GTT_comp_def)
   then show ?case using assms(3) Base
-    by cases (auto simp: GTT_comp_def gtt_states_def fmember.abs_eq dest: eps_statesD \<Delta>\<^sub>\<epsilon>_statesD)
+    by cases (auto simp: GTT_comp_def gtt_states_def dest: eps_statesD \<Delta>\<^sub>\<epsilon>_statesD)
 next
   case (Step q p)
   consider "(q, p) |\<in>| (eps (fst \<G>\<^sub>1))|\<^sup>+|" "p |\<in>| gtt_states \<G>\<^sub>1"
     | "(q, p) |\<in>| \<Delta>\<^sub>\<epsilon> (snd \<G>\<^sub>1) (fst \<G>\<^sub>2)" "p |\<in>| gtt_states \<G>\<^sub>2" using assms(3) Step(1, 6)
-    by (auto simp: GTT_comp_def gtt_states_def fmember.abs_eq dest: eps_statesD \<Delta>\<^sub>\<epsilon>_statesD)
+    by (auto simp: GTT_comp_def gtt_states_def dest: eps_statesD \<Delta>\<^sub>\<epsilon>_statesD)
   then show ?case
   proof (cases)
     case 1 note a = 1 show ?thesis
@@ -234,7 +234,7 @@ lemma \<Delta>\<^sub>\<epsilon>_steps_from_\<G>\<^sub>1_\<G>\<^sub>2:
 lemma GTT_comp_eps_fst_statesD:
   "(p, q) |\<in>| eps (fst (GTT_comp \<G>\<^sub>1 \<G>\<^sub>2)) \<Longrightarrow> p |\<in>| gtt_states \<G>\<^sub>1 |\<union>| gtt_states \<G>\<^sub>2"
   "(p, q) |\<in>| eps (fst (GTT_comp \<G>\<^sub>1 \<G>\<^sub>2)) \<Longrightarrow> q |\<in>| gtt_states \<G>\<^sub>1 |\<union>| gtt_states \<G>\<^sub>2"
-  by (auto simp: GTT_comp_def gtt_states_def fmember.abs_eq dest: eps_statesD \<Delta>\<^sub>\<epsilon>_statesD)
+  by (auto simp: GTT_comp_def gtt_states_def dest: eps_statesD \<Delta>\<^sub>\<epsilon>_statesD)
 
 lemma GTT_comp_eps_ftrancl_fst_statesD:
   "(p, q) |\<in>| (eps (fst (GTT_comp \<G>\<^sub>1 \<G>\<^sub>2)))|\<^sup>+| \<Longrightarrow> p |\<in>| gtt_states \<G>\<^sub>1 |\<union>| gtt_states \<G>\<^sub>2"

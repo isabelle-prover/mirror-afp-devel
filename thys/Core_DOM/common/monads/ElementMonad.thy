@@ -312,7 +312,7 @@ lemma type_wf_put_ptr_in_heap_E:
   using assms
   apply(auto simp add: type_wf_defs split: option.splits if_splits)[1]
   by (metis (no_types, lifting) NodeClass.l_get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_lemmas_axioms assms(2) bind.bind_lunit
-            cast\<^sub>N\<^sub>o\<^sub>d\<^sub>e\<^sub>2\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_inv cast\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>2\<^sub>N\<^sub>o\<^sub>d\<^sub>e_inv finite_set_in get\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_def
+            cast\<^sub>N\<^sub>o\<^sub>d\<^sub>e\<^sub>2\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_inv cast\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>2\<^sub>N\<^sub>o\<^sub>d\<^sub>e_inv get\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_def
             l_get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_lemmas.get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_type_wf option.collapse)
 
 subsection\<open>Preserving Types\<close>
@@ -322,13 +322,13 @@ lemma new_element_type_wf_preserved [simp]: "h \<turnstile> new_element \<righta
       new_element_def Let_def put\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def put\<^sub>N\<^sub>o\<^sub>d\<^sub>e_def put\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_def get\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def 
       get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_def get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_def
       split: prod.splits if_splits elim!: bind_returns_heap_E)[1]
-     apply (metis element_ptr_kinds_commutes element_ptrs_def fempty_iff ffmember_filter finite_set_in
+     apply (metis element_ptr_kinds_commutes element_ptrs_def fempty_iff ffmember_filter
       is_element_ptr_ref)
-    apply (metis element_ptrs_def fempty_iff ffmember_filter finite_set_in is_element_ptr_ref)
+    apply (metis element_ptrs_def fempty_iff ffmember_filter is_element_ptr_ref)
    apply (metis (no_types, lifting) Suc_n_not_le_n element_ptr.sel(1) element_ptr_kinds_commutes
-                element_ptrs_def fMax_ge ffmember_filter fimage_eqI is_element_ptr_ref notin_fset)
+                element_ptrs_def fMax_ge ffmember_filter fimage_eqI is_element_ptr_ref)
   apply (metis (no_types, lifting) Suc_n_not_le_n element_ptr.sel(1) element_ptrs_def
-               fMax_ge ffmember_filter fimage_eqI finite_set_in is_element_ptr_ref)
+               fMax_ge ffmember_filter fimage_eqI is_element_ptr_ref)
   done
 
 locale l_new_element = l_type_wf +
@@ -344,8 +344,8 @@ lemma put_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_tag_name_typ
       Let_def put_M_defs get_M_defs put\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def put\<^sub>N\<^sub>o\<^sub>d\<^sub>e_def put\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_def 
       get\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_def get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_def 
       split: prod.splits option.splits Option.bind_splits elim!: bind_returns_heap_E)[1]
-   apply (metis finite_set_in option.inject)
-  apply (metis cast\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>2\<^sub>N\<^sub>o\<^sub>d\<^sub>e_inv finite_set_in option.sel)
+   apply (metis option.inject)
+  apply (metis cast\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>2\<^sub>N\<^sub>o\<^sub>d\<^sub>e_inv option.sel)
   done
 
 lemma put_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_child_nodes_type_wf_preserved [simp]: 
@@ -354,8 +354,8 @@ lemma put_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_child_nodes_
       Let_def put_M_defs get_M_defs put\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def put\<^sub>N\<^sub>o\<^sub>d\<^sub>e_def put\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_def 
       get\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_def get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_def 
       split: prod.splits option.splits Option.bind_splits elim!: bind_returns_heap_E)[1]
-   apply (metis finite_set_in option.inject)
-  apply (metis cast\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>2\<^sub>N\<^sub>o\<^sub>d\<^sub>e_inv finite_set_in option.sel)
+   apply (metis option.inject)
+  apply (metis cast\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>2\<^sub>N\<^sub>o\<^sub>d\<^sub>e_inv option.sel)
   done
 
 lemma put_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_attrs_type_wf_preserved [simp]: 
@@ -364,8 +364,8 @@ lemma put_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_attrs_type_w
       put_M_defs get_M_defs put\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def put\<^sub>N\<^sub>o\<^sub>d\<^sub>e_def put\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_def get\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def 
       get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_def get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_def 
       split: prod.splits option.splits Option.bind_splits elim!: bind_returns_heap_E)[1]
-   apply (metis finite_set_in option.inject)
-  apply (metis cast\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>2\<^sub>N\<^sub>o\<^sub>d\<^sub>e_inv finite_set_in option.sel)
+   apply (metis option.inject)
+  apply (metis cast\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>2\<^sub>N\<^sub>o\<^sub>d\<^sub>e_inv option.sel)
   done
 
 lemma put_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_shadow_root_opt_type_wf_preserved [simp]: 
@@ -374,8 +374,8 @@ lemma put_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_shadow_root_
       Let_def put_M_defs get_M_defs put\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def put\<^sub>N\<^sub>o\<^sub>d\<^sub>e_def put\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_def 
       get\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_def get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_def 
       split: prod.splits option.splits Option.bind_splits elim!: bind_returns_heap_E)[1]
-   apply (metis finite_set_in option.inject)
-  apply (metis cast\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>2\<^sub>N\<^sub>o\<^sub>d\<^sub>e_inv finite_set_in option.sel)
+   apply (metis option.inject)
+  apply (metis cast\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>2\<^sub>N\<^sub>o\<^sub>d\<^sub>e_inv option.sel)
   done
 
 lemma put_M_pointers_preserved:
@@ -437,7 +437,7 @@ lemma type_wf_drop: "type_wf h \<Longrightarrow> type_wf (Heap (fmdrop ptr (the_
   apply(auto simp add: type_wf_defs NodeClass.type_wf_defs ObjectClass.type_wf_defs 
       node_ptr_kinds_def object_ptr_kinds_def is_node_ptr_kind_def 
       get\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_def get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_def)[1]
-   apply (metis (no_types, lifting) element_ptr_kinds_commutes finite_set_in fmdom_notD fmdom_notI
+   apply (metis (no_types, lifting) element_ptr_kinds_commutes fmdom_notD fmdom_notI
                 fmlookup_drop heap.sel node_ptr_kinds_commutes o_apply object_ptr_kinds_def)
   by (metis element_ptr_kinds_commutes fmdom_notI fmdrop_lookup heap.sel node_ptr_kinds_commutes
             o_apply object_ptr_kinds_def)

@@ -202,7 +202,7 @@ using assms proof (induction t)
       apply (rule fset_map_snd_id)
       apply simp
       apply (rule Pabs)
-      using Pabs(2) by (auto simp: fmember_iff_member_fset snds.simps)
+      using Pabs(2) by (auto simp: snds.simps)
     done
 qed auto
 
@@ -413,7 +413,6 @@ proof -
       apply (rule inj_onI)
       apply safe
        apply auto
-      apply (subst (asm) fmember_iff_member_fset[symmetric])+
       using \<open>is_fmap rs\<close> by (blast dest: is_fmapD)
     subgoal by simp
     subgoal using \<open>(name, rhs) |\<in>| rs\<close> by simp
@@ -562,7 +561,6 @@ next
     apply (drule ordered_fmap_sound[OF \<open>is_fmap cs\<close>])
     subgoal for pat rhs
       apply (rule Pabs)
-         apply (subst (asm) fmember_iff_member_fset)
          apply assumption
         apply auto
       using Pabs by force+
@@ -605,7 +603,7 @@ using assms proof induction
      apply (insert fmap)
      apply (rule is_fmapI)
      apply (force dest: is_fmapD)
-    by (simp add: rev_fimage_eqI)
+    by (metis fimage_eqI id_def map_prod_simp)
 next
   case (beta c cs t t')
   from beta obtain pat rhs penv where "c = (pat, rhs)" "match pat t = Some penv" "subst rhs penv = t'"

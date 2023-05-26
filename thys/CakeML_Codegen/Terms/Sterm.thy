@@ -120,7 +120,7 @@ next
         subgoal
           using prems
           unfolding ffUnion_alt_def
-          by (auto simp add: fmember_iff_member_fset fset_of_list.rep_eq elim!: fBallE)
+          by (auto simp add: fset_of_list.rep_eq elim!: fBallE)
         subgoal
           apply (rule arg_cong[where f = "subst rhs"])
           by (auto intro: fmap_ext)

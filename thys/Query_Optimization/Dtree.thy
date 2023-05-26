@@ -129,13 +129,13 @@ lemma darcs_child_subseteq: "x \<in> fst ` fset xs \<Longrightarrow> darcs x \<s
   by force
 
 lemma mset_sum_elem: "x \<in># (\<Sum>y \<in> fset Y. f y) \<Longrightarrow> \<exists>y \<in> fset Y. x \<in># f y"
-  by (induction Y) (auto simp: notin_fset)
+  by (induction Y) auto
 
 lemma mset_sum_elem_iff: "x \<in># (\<Sum>y \<in> fset Y. f y) \<longleftrightarrow> (\<exists>y \<in> fset Y. x \<in># f y)"
-  by (induction Y) (auto simp: notin_fset)
+  by (induction Y) auto
 
 lemma mset_sum_elemI: "\<lbrakk>y \<in> fset Y; x \<in># f y\<rbrakk> \<Longrightarrow> x \<in># (\<Sum>y \<in> fset Y. f y)"
-  by (induction Y) (auto simp: notin_fset)
+  by (induction Y) auto
 
 lemma darcs_mset_elem:
   "x \<in># darcs_mset (Node r xs) \<Longrightarrow> \<exists>(t,e) \<in> fset xs. x \<in># darcs_mset t \<or> x = e"
@@ -160,14 +160,14 @@ lemma darcs_mset_if_nsuc:
   using darcs_mset_if_nchild[of x "root t" "sucs t"] by simp
 
 lemma darcs_mset_if_snd[intro]: "x \<in> snd ` fset xs \<Longrightarrow> x \<in># darcs_mset (Node r xs)"
-  by (induction xs) (auto simp: notin_fset)
+  by (induction xs) auto
 
 lemma darcs_mset_suc_if_snd[intro]: "x \<in> snd ` fset (sucs t) \<Longrightarrow> x \<in># darcs_mset t"
   using darcs_mset_if_snd[of x "sucs t" "root t"] by simp
 
 lemma darcs_mset_if_child[intro]:
   "\<lbrakk>(t1,e1) \<in> fset xs; x \<in># darcs_mset t1\<rbrakk> \<Longrightarrow> x \<in># darcs_mset (Node r xs)"
-  by (induction xs) (auto simp: notin_fset)
+  by (induction xs) auto
 
 lemma darcs_mset_if_suc[intro]:
   "\<lbrakk>(t1,e1) \<in> fset (sucs t); x \<in># darcs_mset t1\<rbrakk> \<Longrightarrow> x \<in># darcs_mset t"
@@ -228,7 +228,7 @@ lemma dverts_mset_suc_if_root[intro]: "x = root t \<Longrightarrow> x \<in># dve
 
 lemma dverts_mset_if_child[intro]:
   "\<lbrakk>(t1,e1) \<in> fset xs; x \<in># dverts_mset t1\<rbrakk> \<Longrightarrow> x \<in># dverts_mset (Node r xs)"
-  by (induction xs) (auto simp: notin_fset)
+  by (induction xs) auto
 
 lemma dverts_mset_if_suc[intro]:
   "\<lbrakk>(t1,e1) \<in> fset (sucs t); x \<in># dverts_mset t1\<rbrakk> \<Longrightarrow> x \<in># dverts_mset t"
@@ -262,15 +262,15 @@ lemma dverts_mset_eq_dverts[simp]: "set_mset (dverts_mset t) = dverts t"
   using dverts_mset_sub_dverts dverts_sub_dverts_mset by force
 
 lemma mset_sum_count_le: "y \<in> fset Y \<Longrightarrow> count (f y) x \<le> count (\<Sum>y \<in> fset Y. f y) x"
-  by (induction Y) (auto simp: notin_fset)
+  by (induction Y) auto
 
 lemma darcs_mset_alt:
   "darcs_mset (Node r xs) = (\<Sum>(t,e) \<in> fset xs. {#e#}) + (\<Sum>(t,e) \<in> fset xs. darcs_mset t)"
-  by (induction xs) (auto simp: notin_fset)
+  by (induction xs) auto
 
 lemma darcs_mset_ge_child:
   "t1 \<in> fst ` fset xs \<Longrightarrow> count (darcs_mset t1) x \<le> count (darcs_mset (Node r xs)) x"
-  by (induction xs) (force simp: notin_fset)+
+  by (induction xs) force+
 
 lemma darcs_mset_ge_suc:
   "t1 \<in> fst ` fset (sucs t) \<Longrightarrow> count (darcs_mset t1) x \<le> count (darcs_mset t) x"
@@ -283,7 +283,7 @@ lemma darcs_mset_count_sum_aux:
 
 lemma darcs_mset_count_sum_aux0:
   "x \<notin> snd ` fset xs \<Longrightarrow> count ((\<Sum>(t, e)\<in>fset xs. {#e#})) x = 0"
-  by (induction xs) (auto simp: notin_fset)
+  by (induction xs) auto
 
 lemma darcs_mset_count_sum_eq:
   "x \<notin> snd ` fset xs
@@ -292,7 +292,7 @@ lemma darcs_mset_count_sum_eq:
 
 lemma darcs_mset_count_sum_ge:
   "(\<Sum>(t1,e1) \<in> fset xs. count (darcs_mset t1) x) \<le> count (darcs_mset (Node r xs)) x"
-  by (induction xs) (auto simp: notin_fset split: prod.splits)
+  by (induction xs) (auto split: prod.splits)
 
 lemma wf_darcs_alt: "wf_darcs t \<longleftrightarrow> (\<forall>x. count (darcs_mset t) x \<le> 1)"
   unfolding wf_darcs_def by (metis count_greater_eq_one_iff dual_order.eq_iff linorder_le_cases)
@@ -325,12 +325,12 @@ qed
 
 lemma disjoint_darcs_if_wf_aux1: "\<lbrakk>wf_darcs (Node r xs); (t1,e1) \<in> fset xs\<rbrakk> \<Longrightarrow> e1 \<notin> darcs t1"
   apply (induction xs)
-   apply(auto simp: notin_fset wf_darcs_def split: if_splits prod.splits)[2]
+   apply(auto simp: wf_darcs_def split: if_splits prod.splits)[2]
   by (metis UnI2 add_is_1 count_eq_zero_iff)
 
 lemma fset_sum_ge_elem2:
   "\<lbrakk>x \<in> fset X; y \<in> fset X; x \<noteq> y\<rbrakk> \<Longrightarrow> (f :: 'a \<Rightarrow> nat) x + f y \<le> (\<Sum>x \<in> fset X. f x)"
-  by (induction X) (auto simp: notin_fset fset_sum_ge_elem)
+  by (induction X) (auto simp: fset_sum_ge_elem)
 
 lemma darcs_children_count_ge2_aux:
   assumes "(t1,e1) \<in> fset xs" and "(t2,e2) \<in> fset xs" and "(t1,e1) \<noteq> (t2,e2)"
@@ -403,15 +403,15 @@ using assms proof(induction xs)
     case 1
     then have "count (\<Sum>(t, e)\<in>fset xs. {#e#}) e2 \<ge> 1"
       using insert.prems(2,3) darcs_snd_count_ge1 by auto
-    then show ?thesis using insert.prems(4) insert.hyps 1 by (auto simp: notin_fset)
+    then show ?thesis using insert.prems(4) insert.hyps 1 by auto
   next
     case 2
     then have "count (\<Sum>(t, e)\<in>fset xs. {#e#}) e2 \<ge> 1"
       using insert.prems(1,3,4) darcs_snd_count_ge1 by auto
-    then show ?thesis using insert.prems(4) insert.hyps 2 by (auto simp: notin_fset)
+    then show ?thesis using insert.prems(4) insert.hyps 2 by auto
   next
     case 3
-    then show ?thesis using insert.IH insert.prems(3,4) insert.hyps by (auto simp: notin_fset)
+    then show ?thesis using insert.IH insert.prems(3,4) insert.hyps by auto
   qed
 qed(simp)
 
@@ -454,7 +454,7 @@ lemma wf_darcs_if_darcs'_aux:
   "\<lbrakk>\<forall>(x,e) \<in> fset xs. wf_darcs x; disjoint_darcs xs\<rbrakk> \<Longrightarrow> wf_darcs (Node r xs)"
   apply(simp split: prod.splits)
   apply(induction xs)
-   apply(auto simp: notin_fset wf_darcs_def count_eq_zero_iff)[2]
+   apply(auto simp: wf_darcs_def count_eq_zero_iff)[2]
   by (fastforce dest: mset_sum_elem)+
 
 lemma wf_darcs_if_darcs': "wf_darcs' t \<Longrightarrow> wf_darcs t"
@@ -496,7 +496,7 @@ qed
 
 lemma dverts_mset_count_sum_ge:
   "(\<Sum>(t1,e1) \<in> fset xs. count (dverts_mset t1) x) \<le> count (dverts_mset (Node r xs)) x"
-  by (induction xs) (auto simp: notin_fset)
+  by (induction xs) auto
 
 lemma dverts_children_count_ge2_aux:
   assumes "(t1,e1) \<in> fset xs" and "(t2,e2) \<in> fset xs" and "(t1,e1) \<noteq> (t2,e2)"
@@ -551,7 +551,7 @@ lemma root_not_child_if_wf_dverts': "wf_dverts (Node r xs) \<Longrightarrow> \<f
 
 lemma dverts_mset_ge_child:
   "t1 \<in> fst ` fset xs \<Longrightarrow> count (dverts_mset t1) x \<le> count (dverts_mset (Node r xs)) x"
-  by (induction xs) (force simp: notin_fset)+
+  by (induction xs) force+
 
 lemma wf_dverts_rec[dest]:
   assumes "wf_dverts (Node r xs)" and "t1 \<in> fst ` fset xs"
@@ -584,7 +584,7 @@ lemma wf_dverts_if_dverts'_aux:
     \<Longrightarrow> wf_dverts (Node r xs)"
   apply(simp split: prod.splits)
   apply(induction xs)
-   apply(auto simp: notin_fset wf_dverts_def count_eq_zero_iff)[2]
+   apply(auto simp: wf_dverts_def count_eq_zero_iff)[2]
   by (fastforce dest: mset_sum_elem)+
 
 lemma wf_dverts_if_dverts': "wf_dverts' t \<Longrightarrow> wf_dverts t"
@@ -616,17 +616,17 @@ proof(induction ys arbitrary: xs)
       by blast
     then have "xs' |\<subseteq>| ys" using insert.prems by blast
     have "count (\<Sum>x \<in> fset xs. f x) a = count (\<Sum>x \<in> fset xs'. f x) a + count (f y) a"
-      using xs'_def by (auto simp: notin_fset)
+      using xs'_def by auto
     also have "\<dots> \<le> count (\<Sum>x \<in> fset ys. f x) a + count (f y) a"
       using \<open>xs' |\<subseteq>| ys\<close> insert.IH by simp
     also have "\<dots> = count (\<Sum>x \<in> fset (finsert y ys). f x) a"
-      using insert.hyps by (auto simp: notin_fset)
+      using insert.hyps by auto
     finally show ?thesis .
   next
     case False
     then have "count (\<Sum>x \<in> fset xs. f x) a \<le> count (\<Sum>x \<in> fset ys. f x) a"
       using insert.prems insert.IH by blast
-    then show ?thesis using insert.hyps by (auto simp: notin_fset)
+    then show ?thesis using insert.hyps by auto
   qed
 qed(simp)
 
@@ -673,7 +673,7 @@ lemma combine_uneq: "Node r {|(t1, e1)|} \<noteq> Node (r@root t1) (sucs t1)"
   using size_combine_decr[of r t1 e1] by fastforce
 
 lemma child_uneq: "t \<in> fst ` fset xs \<Longrightarrow> Node r xs \<noteq> t"
-  using dtree_size_decr_aux' by fast
+  using dtree_size_decr_aux' by fastforce
 
 lemma suc_uneq: "t1 \<in> fst ` fset (sucs t) \<Longrightarrow> t \<noteq> t1"
   using child_uneq[of t1 "sucs t" "root t"] by simp
@@ -711,14 +711,14 @@ using assms proof(induction xs)
     also have "\<dots> \<le> g t + (\<Sum>(x,y)\<in> fset ((\<lambda>(t,e). (f t, e)) |`| xs). g x)"
       using insert.prems t_def by auto
     also have "\<dots> \<le> g t + (\<Sum>(x,y)\<in> fset xs. g x)" using insert by simp
-    finally show ?thesis using insert.hyps t_def notin_fset by fastforce
+    finally show ?thesis using insert.hyps t_def by fastforce
   next
     case False
     then have "(\<Sum>(x,y)\<in> fset ((\<lambda>(t,e). (f t, e)) |`| (finsert x xs)). g x)
               = (\<Sum>(x,y)\<in> fset ((\<lambda>(t,e). (f t, e)) |`| xs). g x)"
-      by (metis (no_types, lifting) t_def fimage_finsert finsert_absorb notin_fset prod.case)
+      by (metis (no_types, lifting) t_def fimage_finsert finsert_absorb prod.case)
     also have "\<dots> \<le> (\<Sum>(x,y)\<in> fset xs. g x)" using insert by simp
-    finally show ?thesis using insert.hyps t_def notin_fset by fastforce
+    finally show ?thesis using insert.hyps t_def by fastforce
   qed
 qed (simp)
 
@@ -748,7 +748,7 @@ using assms proof(induction xs)
       also have "\<dots> < g t + (\<Sum>(x,y)\<in> fset ((\<lambda>(t,e). (f t, e)) |`| xs). g x)"
         using True by simp
       also have "\<dots> \<le> g t + (\<Sum>(x,y)\<in> fset xs. g x)" using sum_img_le insert.prems(1) by auto
-      finally show ?thesis using insert.hyps t_def notin_fset by fastforce
+      finally show ?thesis using insert.hyps t_def by fastforce
     next
       case False
       then have 0: "\<exists>t \<in> fst ` fset xs. g (f t) < g t" using insert.prems(2) t_def by simp
@@ -758,16 +758,16 @@ using assms proof(induction xs)
       also have "\<dots> \<le> g t + (\<Sum>(x,y)\<in> fset ((\<lambda>(t,e). (f t, e)) |`| xs). g x)"
         using t_def insert.prems(1) by simp
       also have "\<dots> < g t + (\<Sum>(x,y)\<in> fset xs. g x)" using insert.IH insert.prems(1,3) 0 by simp
-      finally show ?thesis using insert.hyps t_def notin_fset by fastforce
+      finally show ?thesis using insert.hyps t_def by fastforce
     qed
   next
     case False
     then have "(\<Sum>(x,y)\<in> fset ((\<lambda>(t,e). (f t, e)) |`| (finsert x xs)). g x)
               = (\<Sum>(x,y)\<in> fset ((\<lambda>(t,e). (f t, e)) |`| xs). g x)"
-      by (metis (no_types, lifting) t_def fimage_finsert finsert_absorb notin_fset prod.case)
+      by (metis (no_types, lifting) t_def fimage_finsert finsert_absorb prod.case)
     also have "\<dots> \<le> (\<Sum>(x,y)\<in> fset xs. g x)" using sum_img_le insert.prems(1) by auto
     also have "\<dots> < g t + (\<Sum>(x,y)\<in> fset xs. g x)" using insert.prems(3) t_def by simp
-    finally show ?thesis using insert.hyps t_def notin_fset by fastforce
+    finally show ?thesis using insert.hyps t_def by fastforce
   qed
 qed (simp)
 
@@ -789,10 +789,10 @@ using assms proof(induction xs)
   case (insert x xs)
   obtain t e where t_def: "x = (t,e)" by fastforce
   then have 0: "(f t,e) \<notin> fset ((\<lambda>(t,e). (f t, e)) |`| xs)"
-    using insert.prems(2) insert.hyps notin_fset fcard_finsert_if fcard_image_le
+    using insert.prems(2) insert.hyps fcard_finsert_if fcard_image_le
     by (metis (mono_tags, lifting) case_prod_conv fimage_finsert leD lessI)
   then have 1: "fcard ((\<lambda>(t,e). (f t, e)) |`| xs) = fcard xs "
-    using insert.prems(2) insert.hyps t_def notin_fset Suc_inject
+    using insert.prems(2) insert.hyps t_def Suc_inject
     by (metis (mono_tags, lifting) fcard_finsert_if fimage_finsert old.prod.case)
   have "(\<Sum>(x,y)\<in> fset ((\<lambda>(t,e). (f t, e)) |`| (finsert x xs)). g x)
             = g (f t) + (\<Sum>(x,y)\<in> fset ((\<lambda>(t,e). (f t, e)) |`| xs). g x)"
@@ -800,7 +800,7 @@ using assms proof(induction xs)
   also have "\<dots> = g t + (\<Sum>(x,y)\<in> fset ((\<lambda>(t,e). (f t, e)) |`| xs). g x)"
     using insert.prems t_def by auto
   also have "\<dots> = g t + (\<Sum>(x,y)\<in> fset xs. g x)" using insert.IH 1 insert.prems(1) by simp
-  finally show ?case using insert.hyps t_def notin_fset by fastforce
+  finally show ?case using insert.hyps t_def by fastforce
 qed (simp)
 
 lemma elem_neq_if_fset_neq:
@@ -814,6 +814,11 @@ lemma ffold_commute_supset:
   \<Longrightarrow> ffold (\<lambda>a b. if a \<notin> fset ys \<or> \<not>Q a b \<or> \<not>P ys then b else R a b) acc xs
     = ffold (\<lambda>a b. if a \<notin> fset xs \<or> \<not>Q a b \<or> \<not>P xs then b else R a b) acc xs"
 proof(induction xs arbitrary: ys)
+  case empty
+  show ?case
+    unfolding empty.prems(4)[THEN comp_fun_commute.ffold_empty]
+    by simp
+next
   case (insert x xs)
   let ?f = "\<lambda>a b. if a \<notin> fset ys \<or> \<not>Q a b \<or> \<not>P ys then b else R a b"
   let ?f' = "\<lambda>a b. if a \<notin> fset xs \<or> \<not>Q a b \<or> \<not>P xs then b else R a b"
@@ -821,7 +826,7 @@ proof(induction xs arbitrary: ys)
   have 0: "P (finsert x xs)" using insert.prems by simp
   have 1: "xs |\<subseteq>| (finsert x xs)" by blast
   have 2: "comp_fun_commute ?f1" using insert.prems(4) by blast
-  have 3: "x \<in> fset ys" using insert.prems(1) notin_fset by fastforce
+  have 3: "x \<in> fset ys" using insert.prems(1) by fastforce
   have "ffold ?f acc (finsert x xs) = ?f x (ffold ?f acc xs)"
     using comp_fun_commute.ffold_finsert[of ?f] insert.prems(4) insert.hyps by blast
   also have "\<dots> = ?f x (ffold ?f' acc xs)" using insert.IH[of ys] insert.prems by fastforce
@@ -830,7 +835,7 @@ proof(induction xs arbitrary: ys)
   also have "\<dots> = ffold ?f1 acc (finsert x xs)"
     using comp_fun_commute.ffold_finsert[of ?f1 x xs] 2 insert.hyps by presburger
   finally show ?case .
-qed (smt (z3) comp_fun_commute.ffold_empty)
+qed
 
 lemma ffold_eq_fold: "\<lbrakk>finite xs; f = g\<rbrakk> \<Longrightarrow> ffold f acc (Abs_fset xs) = Finite_Set.fold g acc xs"
   unfolding ffold_def by (simp add: Abs_fset_inverse)
@@ -841,7 +846,7 @@ lemma Abs_fset_sub_if_sub:
 proof (rule ccontr)
   assume "\<not>(Abs_fset xs |\<subseteq>| Abs_fset ys)"
   then obtain x where x_def: "x |\<in>| Abs_fset xs" "x |\<notin>| Abs_fset ys" by blast
-  then have "x \<in> fset (Abs_fset xs) \<and> x \<notin> fset (Abs_fset ys)" using notin_fset by fast
+  then have "x \<in> fset (Abs_fset xs) \<and> x \<notin> fset (Abs_fset ys)" by fast
   moreover have "finite xs" using assms finite_subset by auto
   ultimately show False using assms Abs_fset_inverse by blast
 qed
@@ -986,6 +991,11 @@ lemma dtail_ffold_notelem_eq_def:
   shows "ffold (\<lambda>(x,e2) b. if (x,e2) \<notin> fset ys \<or> e \<notin> darcs x \<or> \<not>wf_darcs (Node r ys)
           then b else dtail x def) def xs = def"
 using assms proof(induction xs)
+  case empty
+  show ?case
+    unfolding dtail_commute[THEN comp_fun_commute.ffold_empty]
+    by simp
+next
   case (insert x' xs)
   obtain x e3 where x_def: "x' = (x,e3)" by fastforce
   let ?f = "(\<lambda>(x,e2) b. if (x,e2) \<notin> fset ys \<or> e \<notin> darcs x \<or> \<not>wf_darcs (Node r ys)
@@ -995,7 +1005,7 @@ using assms proof(induction xs)
   also have "\<dots> = (ffold ?f def xs)" using insert.prems by auto
   also have "\<dots> = def" using insert.IH insert.prems by simp
   finally show ?case .
-qed(auto intro: dtail_commute comp_fun_commute.ffold_empty)
+qed
 
 lemma dtail_notelem_eq_def:
   assumes "e \<notin> darcs t"
@@ -1133,6 +1143,11 @@ lemma dhead_ffold_notelem_eq_def:
   shows "ffold (\<lambda>(x,e2) b. if (x,e2) \<notin> fset ys \<or> e \<notin> (darcs x \<union> {e2}) \<or> \<not>wf_darcs (Node r ys) then b
             else if e=e2 then root x else dhead x def e) (def e) xs = def e"
 using assms proof(induction xs)
+  case empty
+  show ?case
+    apply (rule comp_fun_commute.ffold_empty)
+    using dhead_commute by force
+next
   case (insert x' xs)
   obtain x e3 where x_def: "x' = (x,e3)" by fastforce
   let ?f = "(\<lambda>(x,e2) b. if (x,e2) \<notin> fset ys \<or> e \<notin> (darcs x \<union> {e2}) \<or> \<not>wf_darcs (Node r ys)
@@ -1142,7 +1157,7 @@ using assms proof(induction xs)
   also have "\<dots> = (ffold ?f (def e) xs)" using insert.prems by auto
   also have "\<dots> = def e" using insert.IH insert.prems by simp
   finally show ?case .
-qed(auto intro: dtail_commute comp_fun_commute.ffold_empty)
+qed
 
 lemma dhead_notelem_eq_def:
   assumes "e \<notin> darcs t"
@@ -1313,7 +1328,7 @@ proof -
     using assms(1) unfolding strict_subtree_def by auto
   have "size t < size (Node r xs)" using subtree_size_decr'[OF assms(1)] by blast
   then have "size t < size (Node r ys)" using size_le_if_child_subset[OF assms(2)] by simp
-  moreover have "is_subtree t (Node r ys)" using assms(2) t1_def notin_fset[of "(t1,e1)"] by auto
+  moreover have "is_subtree t (Node r ys)" using assms(2) t1_def by auto
   ultimately show ?thesis unfolding strict_subtree_def by blast
 qed
 
@@ -1410,7 +1425,7 @@ proof(rule ccontr)
   assume asm: "to_dtree_aux r \<noteq> Node r {||}"
   then obtain xs where xs_def: "Node r xs = to_dtree_aux r" by simp
   then have "xs \<noteq> {||}" using asm by simp
-  then obtain x e where x_def: "(x,e) \<in> fset xs" using notin_fset by fast
+  then obtain x e where x_def: "(x,e) \<in> fset xs" by fast
   then have "e \<in> out_arcs T r" using xs_def dtree_children_fset_id[of r] by (auto split: if_splits)
   then show False using assms by auto
 qed
@@ -2512,7 +2527,8 @@ lemma darc_in_sub_if_dtail_in_sub:
 proof (rule ccontr)
   assume asm: "e \<notin> darcs x"
   have "e \<notin> snd ` fset xs"
-    using assms(1-6) asm arc_in_subtree_if_tail_in_subtree dverts_subtree_subset by blast
+    using assms(1-6) asm arc_in_subtree_if_tail_in_subtree dverts_subtree_subset
+    by (metis subset_eq)
   then obtain x2 e2 where x2_def: "(x2,e2) \<in> fset xs \<and> e \<in> darcs x2" using assms(2,5) by force
   then have "v \<in> dverts x" using assms(4,6) dverts_subtree_subset by fastforce
   then have "v \<notin> dverts x2" using assms(1-3,5) arc_in_subtree_if_tail_in_subtree asm by blast
@@ -2607,7 +2623,8 @@ using assms wf_dtree_axioms proof(induction x arbitrary: t v rule: darcs_mset.in
     fix y
     assume asm: "y \<in> fset xs"
     obtain x e where x_def: "y = (x,e)" by fastforce
-    then have "is_subtree x (Node r xs)" using subtree_if_child asm by fastforce
+    then have "is_subtree x (Node r xs)" using subtree_if_child asm
+      by (metis image_iff prod.sel(1))
     then have "?todt (from_dtree dt dh x) (root x) = x
             \<and> XT.to_dtree_aux (root x) = ?todt (from_dtree dt dh x) (root x)"
       using ind.IH R_xs.wf_dtree_axioms asm x_def dtree.set_sel(1) by blast
@@ -2637,7 +2654,8 @@ using assms wf_dtree_axioms proof(induction x arbitrary: t v rule: darcs_mset.in
       fix y
       assume asm: "y \<in> fset xs"
       obtain x e where x_def: "y = (x,e)" by fastforce
-      then have "is_subtree x (Node r xs)" using subtree_if_child asm by fastforce
+      then have "is_subtree x (Node r xs)" using subtree_if_child asm
+        by (metis image_iff prod.sel(1))
       then have "is_subtree x t" using asm subtree_trans ind.prems(1) by blast
       then have "?todt (from_dtree dt dh x) (root x) = x
               \<and> DT.to_dtree_aux (root x) = ?todt (from_dtree dt dh x) (root x)"
@@ -2664,7 +2682,8 @@ using assms wf_dtree_axioms proof(induction x arbitrary: t v rule: darcs_mset.in
     case False
     (* goal 1 *)
     then obtain x1 e1 where x_def: "(x1,e1) \<in> fset xs" "v \<in> dverts x1" using ind.prems(2) by auto
-    then have "is_subtree x1 (Node r xs)" using subtree_if_child by fastforce
+    then have "is_subtree x1 (Node r xs)" using subtree_if_child
+      by (metis image_iff prod.sel(1))
     moreover from this have "is_subtree x1 t" using ind.prems(1) subtree_trans by blast
     ultimately have g1: "DT.to_dtree_aux v = XT.to_dtree_aux v"
       using ind.IH x_def by (metis R_xs.wf_dtree_axioms wf_dtree_axioms)
@@ -2712,7 +2731,7 @@ lemma nempty_if_mdeg_gt_fcard: "max_deg (Node r xs) > fcard xs \<Longrightarrow>
   by auto
 
 lemma mdeg_img_nempty: "max_deg (Node r xs) > fcard xs \<Longrightarrow> max_deg ` fst ` fset xs \<noteq> {}"
-  using nempty_if_mdeg_gt_fcard notin_fset[where S=xs] by fast
+  using nempty_if_mdeg_gt_fcard[of xs] by fast
 
 lemma mdeg_img_fin: "finite (max_deg ` fst ` fset xs)"
   by simp
@@ -2728,13 +2747,13 @@ lemma mdeg_child_if_gt_fcard:
 lemma mdeg_child_if_wedge:
   "\<lbrakk>max_deg (Node r xs) > n; fcard xs \<le> n \<or> \<not>(\<forall>t \<in> fst ` fset xs. max_deg t \<le> n)\<rbrakk>
     \<Longrightarrow> \<exists>t \<in> fst ` fset xs. max_deg t > n"
-  using mdeg_child_if_gt_fcard by force
+  using mdeg_child_if_gt_fcard[of xs] by force
 
 lemma maxif_eq_Max: "finite X \<Longrightarrow> (if X \<noteq> {} then max x (Max X) else x) = Max (insert x X)"
   by simp
 
 lemma mdeg_img_empty_iff: "max_deg ` fst ` fset xs = {} \<longleftrightarrow> xs = {||}"
-  using notin_fset by fast
+  by fast
 
 lemma mdeg_alt: "max_deg (Node r xs) = Max (insert (fcard xs) (max_deg ` fst ` fset xs))"
   using maxif_eq_Max[OF mdeg_img_fin, of xs "fcard xs"] mdeg_img_empty_iff[of xs]
@@ -2861,7 +2880,7 @@ lemma fcard_not0_if_elem: "\<exists>x. x \<in> fset xs \<Longrightarrow> fcard x
   by auto
 
 lemma fcard1_if_le1_elem: "\<lbrakk>fcard xs \<le> 1; x \<in> fset xs\<rbrakk> \<Longrightarrow> fcard xs = 1"
-  using fcard_not0_if_elem by fastforce
+  using fcard_not0_if_elem[of xs] by fastforce
 
 lemma singleton_if_fcard_le1_elem: "\<lbrakk>fcard xs \<le> 1; x \<in> fset xs\<rbrakk> \<Longrightarrow> xs = {|x|}"
   using fcard_single_1_iff[of xs] fcard1_if_le1_elem by fastforce
@@ -2977,13 +2996,13 @@ proof(induction xs)
       case True
       then show ?thesis
         using 2 insert.hyps insert.prems(1)
-        by (metis fcard_finsert_disjoint fimage_finsert finsert_fimage lessI notin_fset)
+        by (metis fcard_finsert_disjoint fimage_finsert finsert_fimage lessI)
     next
       case False
       then have "fcard (f |`| xs) \<le> fcard xs" using fcard_image_le by auto
       then have "fcard (f |`| xs) < fcard xs" using False by simp
       then show ?thesis
-        using 2 insert.prems(1) notin_fset fcard_image_le fcard_mono fimage_finsert less_le_not_le
+        using 2 insert.prems(1) fcard_image_le fcard_mono fimage_finsert less_le_not_le
         by (metis order_class.order.not_eq_order_implies_strict finsert_fimage fsubset_finsertI)
     qed
   next
@@ -2993,13 +3012,13 @@ proof(induction xs)
       case True
       then show ?thesis
         using 3 insert.hyps insert.prems(1)
-        by (metis fcard_finsert_disjoint fimage_finsert finsert_fimage lessI notin_fset)
+        by (metis fcard_finsert_disjoint fimage_finsert finsert_fimage lessI)
     next
       case False
       then have "fcard (f |`| xs) \<le> fcard xs" using fcard_image_le by auto
       then have "fcard (f |`| xs) < fcard xs" using False by simp
       then show ?thesis
-        using 3 insert.prems(1) notin_fset fcard_image_le fcard_mono fimage_finsert less_le_not_le
+        using 3 insert.prems(1) fcard_image_le fcard_mono fimage_finsert less_le_not_le
         by (metis order_class.order.not_eq_order_implies_strict finsert_fimage fsubset_finsertI)
     qed
   qed
@@ -3017,7 +3036,8 @@ next
     using mdeg_ge_fcard[of "f |`| xs"] by simp
   then obtain t1 e1 where t1_def:
       "(t1,e1) \<in> fset (f |`| xs)" "max_deg t1 = max_deg (Node r (f |`| xs))"
-    using mdeg_child_if_gt_fcard[of "f |`| xs" r] by fastforce
+    using mdeg_child_if_gt_fcard[of "f |`| xs" r]
+    by (metis (no_types, opaque_lifting) fst_conv imageE surj_pair)
   then obtain t2 e2 where t2_def: "(t2,e2) \<in> fset xs" "f (t2,e2) = (t1,e1)" by auto
   then have "max_deg t2 \<ge> max_deg (Node r (f |`| xs))" using t1_def(2) assms by fastforce
   then show ?thesis using mdeg_ge_child[OF t2_def(1)] by simp
@@ -3049,7 +3069,8 @@ lemma mdeg_img_eq:
 proof(cases "max_deg (Node r (f |`| xs)) = fcard (f |`| xs)")
   case True
   then have "\<forall>(t,e) \<in> fset (f |`| xs). max_deg t \<le> fcard (f |`| xs)"
-    using mdeg_ge_child by fastforce
+    using mdeg_ge_child
+    by (metis (mono_tags, lifting) case_prodI2)
   then have "\<forall>(t,e) \<in> fset xs. max_deg t \<le> fcard xs" using assms by fastforce
   then have "max_deg (Node r xs) = fcard xs" using mdeg_fcard_if_fcard_ge_child by fast
   then show ?thesis using True assms(2) by simp
@@ -3059,16 +3080,18 @@ next
     using mdeg_ge_fcard[of "f |`| xs"] by simp
   then obtain t1 e1 where t1_def:
       "(t1,e1) \<in> fset (f |`| xs)" "max_deg t1 = max_deg (Node r (f |`| xs))"
-    using mdeg_child_if_gt_fcard[of "f |`| xs" r] by fastforce
+    using mdeg_child_if_gt_fcard[of "f |`| xs" r]
+    by (metis (no_types, opaque_lifting) fst_conv imageE old.prod.exhaust)
   then obtain t2 e2 where t2_def: "(t2,e2) \<in> fset xs" "f (t2,e2) = (t1,e1)" by auto
   then have mdeg_t21: "max_deg t2 = max_deg t1" using assms(1) by auto
   have "\<forall>(t3,e3) \<in> fset (f |`| xs). max_deg t3 \<le> max_deg t1"
-    using t1_def(2) mdeg_ge_child[where xs="f |`| xs"] by force
+    using t1_def(2) mdeg_ge_child[where xs="f |`| xs"]
+    by (metis (no_types, lifting) case_prodI2)
   then have "\<forall>(t3,e3) \<in> fset xs. max_deg (fst (f (t3,e3))) \<le> max_deg t1" by auto
   then have "\<forall>(t3,e3) \<in> fset xs. max_deg t3 \<le> max_deg t2" using assms(1) mdeg_t21 by fastforce
   moreover have "max_deg t2 \<ge> fcard xs" using t1_def(2) assms(2) mdeg_t21 by simp
   ultimately have "max_deg (Node r xs) = max_deg t2"
-    using t2_def(1) mdeg_child_if_child_max by fast
+    using t2_def(1) mdeg_child_if_child_max by metis
   then show ?thesis using t1_def(2) mdeg_t21 by simp
 qed
 
@@ -3095,7 +3118,7 @@ proof(induction t)
   show ?case
   proof(cases "xs = {||}")
     case False
-    then obtain t e where t_def: "(t,e) \<in> fset xs" using notin_fset by fast
+    then obtain t e where t_def: "(t,e) \<in> fset xs" by fast
     then have "1 \<le> num_leaves t" using Node by simp
     then show ?thesis
       using fset_sum_ge_elem[OF finite_fset[of xs] t_def, of "\<lambda>(t,e). num_leaves t"] by auto
@@ -3744,7 +3767,7 @@ next
     have "insert_before v e y (finsert x xs) = finsert (?f x) (insert_before v e y xs)"
       by (simp add: insert.hyps prod.case_distrib)
     then show ?thesis
-      by (smt (z3) False Pair_inject old.prod.case case_prodI2 finsert_iff insert.prems notin_fset)
+      by (smt (z3) False Pair_inject old.prod.case case_prodI2 finsert_iff insert.prems)
   qed
 qed
 
@@ -3756,7 +3779,7 @@ proof(induction xs)
   have "insert_before v e y (finsert x xs) = finsert (?f x) (insert_before v e y xs)"
     by (simp add: insert.hyps prod.case_distrib)
   then have "insert_before v e y (finsert x xs) = finsert x (insert_before v e y xs)"
-    using notin_fset insert.prems
+    using insert.prems
     by (smt (z3) old.prod.exhaust case_prod_conv finsertCI fst_conv image_eqI)
   moreover have "\<not>(\<exists>t. t \<in> fst ` fset xs \<and> root t = y)" using insert.prems by auto
   ultimately show ?case using insert.IH by blast
@@ -3903,7 +3926,7 @@ proof(induction xs)
       have "insert_before v e y (finsert x xs) = finsert (?f x) (insert_before v e y xs)"
         by (simp add: insert.hyps prod.case_distrib)
       then have "insert_before v e y (finsert x xs) = insert_before v e y xs"
-        using True in_xs notin_fset by fastforce
+        using True in_xs by fastforce
       then show ?thesis using insert.IH insert.prems by simp
     next
       case False
@@ -3925,7 +3948,7 @@ proof(induction xs)
     next
       case False
       then have "(t1,e1) = x"
-        using insert.prems(1) notin_fset dtree.sel(1) \<open>?f x = (t1,e1)\<close>
+        using insert.prems(1) dtree.sel(1) \<open>?f x = (t1,e1)\<close>
         by (smt (verit, ccfv_SIG) Pair_inject old.prod.case case_prodE finsertI1)
       then show ?thesis using insert.prems(1) by auto
     qed
@@ -3947,7 +3970,7 @@ proof(induction xs)
       have "insert_before v e y (finsert x xs) = finsert (?f x) (insert_before v e y xs)"
         by (simp add: insert.hyps prod.case_distrib)
       then have "insert_before v e y (finsert x xs) = insert_before v e y xs"
-        using True in_xs notin_fset by fastforce
+        using True in_xs by fastforce
       then show ?thesis using insert.IH insert.prems by simp
     next
       case False
@@ -3969,7 +3992,7 @@ proof(induction xs)
     next
       case False
       then have "(t1,e1) = x"
-        using insert.prems(1) notin_fset dtree.sel(1) \<open>?f x = (t1,e1)\<close>
+        using insert.prems(1) dtree.sel(1) \<open>?f x = (t1,e1)\<close>
         by (smt (verit, ccfv_SIG) Pair_inject old.prod.case case_prodE finsertI1)
       then show ?thesis using insert.prems(1) by auto
     qed
@@ -4231,7 +4254,7 @@ proof(induction xs)
       have "insert_before v e y (finsert x xs) = finsert (?f x) (insert_before v e y xs)"
         by (simp add: insert.hyps prod.case_distrib)
       then have "insert_before v e y (finsert x xs) = insert_before v e y xs"
-        using True in_xs notin_fset by fastforce
+        using True in_xs by fastforce
       moreover have "disjoint_darcs xs"
         using disjoint_darcs_insert[OF disjoint_darcs_if_wf_xs[OF insert.prems(1)]] .
       ultimately show ?thesis
@@ -4436,8 +4459,8 @@ next
     then obtain t e where t_def: "x = (t,e)" by fastforce
     then obtain t2 where t2_def: "(t2,e) |\<in>| xs" using asm by auto
     then have "(t,e)\<noteq>(t2,e)" using insert.hyps t_def by blast
-    moreover have "(t,e) \<in> fset (finsert x xs)" using t_def notin_fset by simp
-    moreover have "(t2,e) \<in> fset (finsert x xs)" using t2_def notin_fset by fastforce
+    moreover have "(t,e) \<in> fset (finsert x xs)" using t_def by simp
+    moreover have "(t2,e) \<in> fset (finsert x xs)" using t2_def by fastforce
     ultimately show False using insert.prems by fast
   qed
   ultimately show ?case by (simp add: fcard_finsert_disjoint local.insert.hyps)
@@ -4486,8 +4509,8 @@ next
         "(t2,e2) |\<in>| xs" "(\<lambda>(t1,e1). (f t1, e1)) (t2,e2) = (\<lambda>(t1,e1). (f t1, e1)) (t,e)"
       using asm by auto
     then have "(t,e)\<noteq>(t2,e)" using insert.hyps t_def by fast
-    moreover have "(t,e) \<in> fset (finsert x xs)" using t_def notin_fset by simp
-    moreover have "(t2,e2) \<in> fset (finsert x xs)" using t2_def(1) notin_fset by fastforce
+    moreover have "(t,e) \<in> fset (finsert x xs)" using t_def by simp
+    moreover have "(t2,e2) \<in> fset (finsert x xs)" using t2_def(1) by fastforce
     ultimately show False using insert.prems t2_def(2) by fast
   qed
   ultimately show ?case by (simp add: fcard_finsert_disjoint local.insert.hyps)
@@ -4501,14 +4524,16 @@ proof (cases "root (fst x) = y")
   case True
   then obtain t1 e1 where t1_def: "x = (t1,e1)" "root t1 = y" by fastforce
   then have 0: "\<forall>(t2,e2) \<in> fset xs. dverts t1 \<inter> dverts t2 = {}"
-    using assms notin_fset disjoint_dverts_if_wf_aux by fastforce
+    using assms disjoint_dverts_if_wf_aux by fastforce
   then have "\<forall>(t2,e2) \<in> fset xs. root t2 \<noteq> y"
     by (smt (verit, del_insts) dtree.set_sel(1) t1_def(2) case_prodD case_prodI2 disjoint_iff)
+  hence "\<nexists>t. t \<in> fst ` fset xs \<and> dtree.root t = y"
+    by fastforce
   then have 1: "(insert_before v e y xs) = xs" using insert_before_not_y_id by fastforce
   have "?f x = (Node v {|(t1,e1)|},e)" using t1_def by simp
   then have "\<forall>(t2,e2) \<in> fset xs. (fst (?f x)) \<noteq> t2" using 0 dtree.set_sel(1) by fastforce
   then have "\<forall>(t2,e2) \<in> fset (insert_before v e y xs). ?f x \<noteq> (t2,e2)" using 1 by fastforce
-  then show ?thesis using notin_fset by fast
+  then show ?thesis by fast
 next
   case False
   then have x_id: "?f x = x" by (smt (verit) old.prod.exhaust case_prod_conv fst_conv)
@@ -4527,12 +4552,12 @@ next
       using insert_before_not_y_id[of "xs |-| {|(t1,e1)|}"] by (simp add: insert_before_alt)
     have "?f (t1,e1) = (Node v {|(t1,e1)|},e)" using t1_def by simp
     then have "?f |`| xs = finsert (Node v {|(t1,e1)|},e) (?f |`| (xs |-| {|(t1,e1)|}))"
-      using t1_def(1) notin_fset by (metis (no_types, lifting) fimage_finsert finsert_fminus)
+      using t1_def(1) by (metis (no_types, lifting) fimage_finsert finsert_fminus)
     then have "?f |`| xs = finsert (Node v {|(t1,e1)|},e) (xs |-| {|(t1,e1)|})"
       using 1 by simp
     then have 2: "insert_before v e y xs = finsert (Node v {|(t1,e1)|},e) (xs |-| {|(t1,e1)|})"
       by (simp add: insert_before_alt)
-    have "dverts t1 \<inter> dverts (fst x) = {}" using 0 assms(1) notin_fset t1_def(1) by fastforce
+    have "dverts t1 \<inter> dverts (fst x) = {}" using 0 assms(1) t1_def(1) by fastforce
     then have "(Node v {|(t1,e1)|},e) \<noteq> x" using dtree.set_sel(1) by fastforce
     then show ?thesis using 2 assms(1) x_id by auto
   next

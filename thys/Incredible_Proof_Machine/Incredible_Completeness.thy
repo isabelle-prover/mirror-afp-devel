@@ -58,7 +58,7 @@ definition vertices :: "'form vertex fset"  where
   "vertices = Abs_fset (Union ( set (map (\<lambda> c. insert (c, []) ((\<lambda> p. (c, 0 # p)) ` (it_paths (it' c))))  conclusions)))"
 
 lemma mem_vertices: "v |\<in>| vertices \<longleftrightarrow>  (fst v \<in> set conclusions \<and> (snd v = [] \<or> snd v \<in> ((#) 0) ` it_paths (it' (fst v))))"
-  unfolding vertices_def fmember_iff_member_fset ffUnion.rep_eq 
+  unfolding vertices_def ffUnion.rep_eq 
   by (cases v)(auto simp add: Abs_fset_inverse Bex_def )
 
 lemma prefixeq_vertices: "(c,is) |\<in>| vertices \<Longrightarrow> prefix is' is \<Longrightarrow> (c, is') |\<in>| vertices"
@@ -339,7 +339,7 @@ qed
 sublocale Port_Graph nodes inPorts outPorts vertices nodeOf edges
 proof
   show "nodeOf ` fset vertices \<subseteq> sset nodes"
-    apply (auto simp add: fmember_iff_member_fset[symmetric] mem_vertices)
+    apply (auto simp add: mem_vertices)
     apply (auto simp add: stream.set_map dest: iNodeOf_tree_at[OF iwf_it])
     done
   next
@@ -367,7 +367,7 @@ fun vidx :: "'form vertex \<Rightarrow> nat" where
 
 lemma my_vidx_inj: "inj_on vidx (fset vertices)"
   by (rule inj_onI)
-     (auto simp add:  mem_vertices[unfolded fmember_iff_member_fset] iAnnot_globalize simp del: iAnnot.simps)
+     (auto simp add:  mem_vertices iAnnot_globalize simp del: iAnnot.simps)
 
 lemma vidx_not_v_away[simp]: "v |\<in>| vertices \<Longrightarrow> vidx v \<noteq> v_away"
   by (cases v rule:vidx.cases) (auto simp add: iAnnot_globalize  simp del: iAnnot.simps)
@@ -678,7 +678,7 @@ proof
     assume "c \<in> set conclusions"
     hence "(c, []) |\<in>| vertices" by simp
     hence "nodeOf (c, []) \<in> nodeOf ` fset vertices"
-      unfolding fmember_iff_member_fset by (rule imageI)
+      by (rule imageI)
     hence "Conclusion c \<in> nodeOf ` fset vertices"  by simp
   } thus ?thesis by auto
   qed

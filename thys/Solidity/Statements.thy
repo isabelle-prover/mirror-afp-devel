@@ -312,7 +312,8 @@ proof (induct "xs")
   proof
     fix x
     assume "x |\<in>| fmdom (denvalue (ffold (init ct) e {||}))"
-    moreover have "ffold (init ct) e {||} = e" using FSet.comp_fun_commute.ffold_empty[OF init_commte, of "init ct" e] by simp
+    moreover have "ffold (init ct) e {||} = e"
+      using FSet.comp_fun_commute.ffold_empty[OF init_commte, of ct e] by simp
     ultimately show "x |\<in>| fmdom (denvalue e) |\<union>| {||}" by simp
   qed
 next

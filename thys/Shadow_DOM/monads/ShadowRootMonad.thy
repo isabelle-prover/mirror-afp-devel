@@ -424,7 +424,7 @@ lemma type_wf_put_ptr_in_heap_E:
   apply(auto simp add: type_wf_defs elim!: DocumentMonad.type_wf_put_ptr_in_heap_E
       split: option.splits if_splits)[1]
   by (metis (no_types, opaque_lifting) ObjectClass.a_type_wf_def ObjectClass.get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_type_wf
-      bind.bind_lunit finite_set_in get\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_def is_shadow_root_kind_def option.exhaust_sel)
+      bind.bind_lunit get\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_def is_shadow_root_kind_def option.exhaust_sel)
 
 
 subsection \<open>type\_wf\<close>
@@ -697,8 +697,8 @@ lemma type_wf_drop: "type_wf h \<Longrightarrow> type_wf (Heap (fmdrop ptr (the_
   apply(auto simp add: type_wf_defs)[1]
   using type_wf_drop
    apply blast
-  by (metis (no_types, lifting) DocumentClass.type_wf\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t ElementClass.get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_type_wf
-      ElementMonad.type_wf_drop fmember_iff_member_fset fmlookup_drop get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_def get\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_def
+  by (metis (no_types, opaque_lifting) DocumentClass.type_wf\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t ElementClass.get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_type_wf
+      ElementMonad.type_wf_drop fmlookup_drop get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_def get\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_def
       object_ptr_kinds_code5 shadow_root_ptr_kinds_commutes)
 
 lemma delete_shadow_root_type_wf_preserved [simp]:

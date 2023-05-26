@@ -64,19 +64,19 @@ lemma fset_elim:
 
 lemma fmember_intro:
   "\<lbrakk> x \<in> fset(xs) \<rbrakk> \<Longrightarrow> x |\<in>| xs"
-  by (metis fmember_iff_member_fset)
+  .
 
 lemma fmember_elim:
   "\<lbrakk> x |\<in>| xs; x \<in> fset(xs) \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
-  by (metis fmember_iff_member_fset)
+  .
 
 lemma fnmember_intro [intro]:
   "\<lbrakk> x \<notin> fset(xs) \<rbrakk> \<Longrightarrow> x |\<notin>| xs"
-  by (metis fmember_iff_member_fset)
+  .
 
 lemma fnmember_elim [elim]:
   "\<lbrakk> x |\<notin>| xs; x \<notin> fset(xs) \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
-  by (metis fmember_iff_member_fset)
+  .
 
 lemma fsubset_intro [intro]:
   "\<langle>xs\<rangle>\<^sub>f \<subseteq> \<langle>ys\<rangle>\<^sub>f \<Longrightarrow> xs |\<subseteq>| ys"
@@ -88,11 +88,11 @@ lemma fsubset_elim [elim]:
 
 lemma fBall_intro [intro]:
   "Ball \<langle>A\<rangle>\<^sub>f P \<Longrightarrow> fBall A P"
-  by (metis (poly_guards_query) fBallI fmember_iff_member_fset)
+  by (metis (poly_guards_query) fBallI)
 
 lemma fBall_elim [elim]:
   "\<lbrakk> fBall A P; Ball \<langle>A\<rangle>\<^sub>f P \<Longrightarrow> Q \<rbrakk> \<Longrightarrow> Q"
-  by (metis fBallE fmember_iff_member_fset)
+  by (metis fBallE)
 
 lift_definition finset :: "'a list \<Rightarrow> 'a fset" is set ..
 
@@ -152,7 +152,7 @@ lemma fcard_flist:
 
 lemma flist_nth:
   "i < fcard vs \<Longrightarrow> flist vs ! i |\<in>| vs"
-  apply (simp add: fmember_def flist_def fcard_def)
+  apply (simp add: flist_def fcard_def)
   apply (metis fcard.rep_eq fcard_flist finset.rep_eq flist_def flist_inv nth_mem)
   done
 
@@ -186,9 +186,9 @@ lemma flist_arb_inj:
   by (metis flist_arb_inv injI)
 
 lemma flist_arb_lists: "flist_arb ` Fow A \<subseteq> lists A"
-  apply (auto)
-  using Fow_def finset.rep_eq apply fastforce
-  done
+  apply (auto simp: Fow_def flist_arb_def flists_def)
+  using finset.rep_eq
+  by (metis (mono_tags, lifting) finite_distinct_list finite_fset fset_inverse someI_ex subset_eq)
 
 lemma countable_Fow:
   fixes A :: "'a set"
@@ -239,7 +239,7 @@ lemma fglb_rep_eq:
 lemma FinPow_rep_eq [simp]:
   "fset (FinPow xs) = {ys. ys |\<subseteq>| xs}"
   apply (subgoal_tac "finite (Abs_fset ` Pow \<langle>xs\<rangle>\<^sub>f)")
-   apply (auto simp add: fmember_def FinPow_def)
+   apply (auto simp add: FinPow_def)
    apply (rename_tac x' y')
    apply (subgoal_tac "finite x'")
     apply (auto)
@@ -261,15 +261,15 @@ lemma FInter_rep_eq [simp]:
 
 lemma FUnion_empty [simp]:
   "\<Union>\<^sub>f \<lbrace>\<rbrace> = \<lbrace>\<rbrace>"
-  by (auto simp add:FUnion_def fmember_def)
+  by (auto simp add:FUnion_def)
 
 lemma FinPow_member [simp]:
   "xs |\<in>| FinPow xs"
-  by (auto simp add:fmember_def)
+  by auto
 
 lemma FUnion_FinPow [simp]:
   "\<Union>\<^sub>f (FinPow x) = x"
-  by (auto simp add:fmember_def less_eq_fset_def)
+  by (auto simp add: less_eq_fset_def)
 
 lemma Fow_mem [iff]: "x \<in> Fow A \<longleftrightarrow> \<langle>x\<rangle>\<^sub>f \<subseteq> A"
   by (auto simp add:Fow_def)

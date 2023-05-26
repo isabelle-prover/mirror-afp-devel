@@ -142,7 +142,7 @@ proof (rule ccontr)
   moreover have "(\<forall>(x,e1) \<in> fset xs. set r \<inter> dlverts x = {})"
     using assms(2) root_empty_inter_subset[OF assms(1)] by fastforce
   ultimately obtain x e where x_def: "(x,e) \<in> fset xs" "\<not>wf_dlverts x" using asm by auto
-  then have "(x,e) \<in> fset ys" using assms(1) notin_fset fin_mono by metis
+  then have "(x,e) \<in> fset ys" using assms(1) fin_mono by metis
   then show False using assms(2) x_def(2) by fastforce
 qed
 
@@ -620,14 +620,14 @@ proof(induction xs)
       then show ?thesis using r_def ra by auto
     next
       case False
-      then have "b \<in> fset (child2 a ys xs)" using insert.prems(1) 0 notin_fset by force
+      then have "b \<in> fset (child2 a ys xs)" using insert.prems(1) 0 by force
       then show ?thesis using insert.IH insert.prems(2) by auto
     qed
   next
     case False
     then show ?thesis using insert r_def by force
   qed
-qed (simp add: notin_fset)
+qed simp
 
 lemma child_in_darcs: "(y,e2) \<in> fset xs \<Longrightarrow> darcs y \<union> {e2} \<subseteq> darcs (Node r xs)"
   by force
@@ -646,7 +646,7 @@ proof (rule ccontr)
     | "(x,e1) |\<notin>| (remove_child a xs)" "e1 \<in> darcs x"
     | "(x,e1) |\<notin>| (remove_child a xs)" "e1 \<notin> darcs x" "(y,e2) \<in> fset (remove_child a xs)"
     | "(x,e1) |\<notin>| (remove_child a xs)" "e1 \<notin> darcs x" "(y,e2) |\<notin>| (remove_child a xs)"
-    by (auto simp: notin_fset)
+    by auto
   then show False
   proof(cases)
     case 1
@@ -659,7 +659,7 @@ proof (rule ccontr)
     then have x_xs: "(x,e1) \<in> fset xs" by simp
     obtain rs2 re2 where r2_def: "(Node a rs2, re2) \<in> fset xs" "(y,e2) |\<in>| rs2"
       using child2_in_child asm(2) 3(3) by fast
-    then have "darcs y \<union> {e2} \<subseteq> darcs (Node a rs2)" using child_in_darcs notin_fset by fast
+    then have "darcs y \<union> {e2} \<subseteq> darcs (Node a rs2)" using child_in_darcs by fast
     then have "(darcs x \<union> {e1}) \<inter> (darcs (Node a rs2) \<union> {re2}) \<noteq> {}" using 3(2) asm(3) by blast
     moreover have "(x,e1)\<noteq>(Node a rs2, re2)" using 3(1) by force
     ultimately have "\<not> disjoint_darcs xs" using r2_def(1) x_xs by fast
@@ -668,14 +668,14 @@ proof (rule ccontr)
     case 4
     then obtain rs1 re1 where r1_def: "(Node a rs1, re1) \<in> fset xs" "(x,e1) |\<in>| rs1"
       using child2_in_child asm(1) by fast
-    then have "\<not>disjoint_darcs rs1" using notin_fset 4(2) by fast
+    then have "\<not>disjoint_darcs rs1" using 4(2) by fast
     then show ?thesis using assms r1_def(1) by fastforce
   next
     case 5
     then obtain rs1 re1 where r1_def: "(Node a rs1, re1) \<in> fset xs" "(x,e1) |\<in>| rs1"
       using child2_in_child asm(1) by fast
     have 1: "(darcs (Node a rs1) \<union> {re1}) \<inter> (darcs y \<union> {e2}) \<noteq> {}"
-      using r1_def(2) asm(3) 5(2) child_in_darcs notin_fset by fast
+      using r1_def(2) asm(3) 5(2) child_in_darcs by fast
     have y_xs: "(y,e2) \<in> fset xs" using 5(3) by simp
     then have "(Node a rs1, re1)\<noteq>(y,e2)" using 5(3) by force
     then have "\<not> disjoint_darcs xs" using r1_def(1) y_xs 1 by fast
@@ -685,17 +685,17 @@ proof (rule ccontr)
     then obtain rs1 re1 where r1_def: "(Node a rs1, re1) \<in> fset xs" "(x,e1) |\<in>| rs1"
       using child2_in_child asm(1) by fast
     then have 1: "(darcs (Node a rs1) \<union> {re1}) \<inter> (darcs y \<union> {e2}) \<noteq> {}"
-      using asm(3) 6(2) child_in_darcs notin_fset by fast
+      using asm(3) 6(2) child_in_darcs by fast
     obtain rs2 re2 where r2_def: "(Node a rs2, re2) \<in> fset xs" "(y,e2) |\<in>| rs2"
       using child2_in_child asm(2) 6(3) by fast
-    then have "darcs y \<union> {e2} \<subseteq> darcs (Node a rs2)" using child_in_darcs notin_fset by fast
+    then have "darcs y \<union> {e2} \<subseteq> darcs (Node a rs2)" using child_in_darcs by fast
     then have 1: "(darcs (Node a rs1) \<union> {re1}) \<inter> (darcs (Node a rs2) \<union> {re2}) \<noteq> {}"
-      using 1 asm(3) 6(2) child_in_darcs notin_fset by blast
+      using 1 asm(3) 6(2) child_in_darcs by blast
     then show ?thesis
     proof(cases "(Node a rs1, re1) = (Node a rs2, re2)")
       case True
       then have "(x,e1) \<in> fset rs1 \<and> (y,e2) \<in> fset rs1"
-        using r1_def(2) r2_def(2) notin_fset by fast
+        using r1_def(2) r2_def(2) by fast
       then show ?thesis using assms r1_def asm(3) 6(2) by fastforce
     next
       case False
@@ -710,12 +710,12 @@ lemma wf_darcs_child2:
   shows "wf_darcs x"
 proof(cases "(x,e) |\<in>| remove_child a xs")
   case True
-  then show ?thesis using assms(1) notin_fset by (fastforce simp: wf_darcs_iff_darcs')
+  then show ?thesis using assms(1) by (fastforce simp: wf_darcs_iff_darcs')
 next
   case False
   then obtain r rs e1  where "(Node r rs, e1) \<in> fset xs \<and> (x,e) |\<in>| rs \<and> r = a"
     using child2_in_child assms(2) by fast
-  then show ?thesis using assms notin_fset by (fastforce simp: wf_darcs_iff_darcs')
+  then show ?thesis using assms by (fastforce simp: wf_darcs_iff_darcs')
 qed
 
 lemma disjoint_darcs_combine:
@@ -766,13 +766,14 @@ using list_dtree_axioms proof(induction t)
       then show ?thesis
       proof(cases "(t,e) |\<in>| (remove_child y xs)")
         case True
-        then have "(t,e) \<in> fset (remove_child y xs)" using notin_fset by fast
+        then have "(t,e) \<in> fset (remove_child y xs)" by fast
         then show ?thesis using t_def(2) by force
       next
         case False
         then obtain r1 rs1 re1 where r1_def: "(Node r1 rs1, re1) \<in> fset xs" "(t,e) |\<in>| rs1"
           using child2_in_child t_def(1) by fast
-        have "is_subtree t (Node r1 rs1)" using subtree_if_child notin_fset r1_def(2) by fastforce
+        have "is_subtree t (Node r1 rs1)" using subtree_if_child r1_def(2)
+          by (metis image_iff prod.sel(1))
         moreover have "is_subtree (Node r1 rs1) (Node r xs)"
           using subtree_if_child r1_def(1) by fastforce
         ultimately have "is_subtree t (Node r xs)" using subtree_trans by blast
@@ -843,7 +844,8 @@ using list_dtree_axioms proof(induction t)
           using \<open>t1\<noteq>t\<close> t1_def(1) by auto
         have "(t2,e2) \<in> fset (child2 y (remove_child y xs) xs)"
           using t2_def(2) rs1_def t1_def(2) child'_in_child2 by fast
-        then have "is_subtree t2 (combine x y (Node r xs))" using subtree_if_child 0 by fastforce
+        then have "is_subtree t2 (combine x y (Node r xs))" using subtree_if_child 0
+          using self_subtree by fastforce
         then have "is_subtree t (combine x y (Node r xs))" using subtree_trans t2_def(1) by blast
         then show ?thesis
           using t_def(2) t2_def(1) subtree_in_dlverts dtree.set_sel(1) lverts_if_in_verts by fast
@@ -898,12 +900,12 @@ lemma wf_dlverts_child2:
     shows "wf_dlverts t1"
 proof(cases "(t1,e) |\<in>| (remove_child y xs)")
   case True
-  then show ?thesis using assms(2) notin_fset by fastforce
+  then show ?thesis using assms(2) by fastforce
 next
   case False
   then obtain rs re where r_def: "(Node y rs, re) \<in> fset xs" "(t1,e)|\<in>| rs"
     using child2_in_child assms(1) by fast
-  then show ?thesis using assms(2) notin_fset by fastforce
+  then show ?thesis using assms(2) by fastforce
 qed
 
 lemma wf_dlverts_child2_aux1:
@@ -913,7 +915,7 @@ lemma wf_dlverts_child2_aux1:
     shows "set (r@y) \<inter> dlverts t1 = {}"
 proof(cases "(t1,e1) |\<in>| (remove_child y xs)")
   case True
-  then have t1_def: "root t1 \<noteq> y" "(t1,e1) \<in> fset xs" using notin_fset by fastforce+
+  then have t1_def: "root t1 \<noteq> y" "(t1,e1) \<in> fset xs" by fastforce+
   obtain t et where t_def: "(t,et) \<in> fset xs" "root t = y" using assms(2) by force
   have "\<forall>y'\<in> set y. y' \<notin> dlverts t1"
   proof
@@ -928,8 +930,8 @@ next
   case False
   then obtain rs1 re1 where r_def: "(Node y rs1, re1) \<in> fset xs" "(t1,e1)|\<in>| rs1"
     using child2_in_child assms(1) by fast
-  have "\<forall>y'\<in> set y. y' \<notin> dlverts t1" using assms(3) r_def notin_fset by fastforce
-  then show ?thesis using assms(3) notin_fset r_def by fastforce
+  have "\<forall>y'\<in> set y. y' \<notin> dlverts t1" using assms(3) r_def by fastforce
+  then show ?thesis using assms(3) r_def by fastforce
 qed
 
 lemma wf_dlverts_child2_aux2:
@@ -945,14 +947,14 @@ proof(cases "(t1,e1) |\<in>| (remove_child y xs)")
   proof(cases "(t2,e2) |\<in>| (remove_child y xs)")
     case True
     then show ?thesis
-      by (smt (verit, ccfv_threshold) t1_r assms(1,5) Int_iff case_prodD filter_fset notin_fset)
+      by (smt (verit, ccfv_threshold) t1_r assms(1,5) Int_iff case_prodD filter_fset)
   next
     case False
     then obtain rs2 re2 where r_def: "(Node y rs2, re2) \<in> fset xs" "(t2,e2)|\<in>| rs2"
       using child2_in_child assms(4) by fast
     then show ?thesis
-      using t1_r assms(1) notin_fset ffmember_filter inf_assoc inf_bot_right inf_commute
-      by (smt (z3) dtree.sel(1) semilattice_inf_class.inf.absorb_iff2 case_prodD child_in_dlverts)
+      using t1_r assms(1) ffmember_filter inf_assoc inf_bot_right inf_commute
+      by (smt (verit) dtree.sel(1) semilattice_inf_class.inf.absorb_iff2 case_prodD child_in_dlverts)
   qed
 next
   case False
@@ -962,8 +964,8 @@ next
   proof(cases "(t2,e2) |\<in>| (remove_child y xs)")
     case True
     then show ?thesis
-      using r1_def assms(1) notin_fset ffmember_filter inf_assoc inf_bot_right inf_commute
-      by (smt (z3) dtree.sel(1) semilattice_inf_class.inf.absorb_iff2 case_prodD child_in_dlverts)
+      using r1_def assms(1) ffmember_filter inf_assoc inf_bot_right inf_commute
+      by (smt (verit) dtree.sel(1) semilattice_inf_class.inf.absorb_iff2 case_prodD child_in_dlverts)
   next
     case False
     then obtain rs2 re2 where r2_def: "(Node y rs2, re2) \<in> fset xs" "(t2,e2) |\<in>| rs2"
@@ -975,14 +977,14 @@ next
                 dlverts t1 \<inter> dlverts t2 = {} \<or> (t1,e1)=(t2,e2)"
         using r1_def(1) assms(2) by fastforce
       then show ?thesis
-        using r1_def(2) r2_def(2) assms(5) True notin_fset
+        using r1_def(2) r2_def(2) assms(5) True
         by (metis (mono_tags, lifting) case_prodD)
     next
       case False
       then have "dlverts (Node y rs1) \<inter> dlverts (Node y rs2) = {}"
         using assms(1) r1_def(1) r2_def(1) by fast
       then show ?thesis
-        using r1_def(2) r2_def(2) child_in_dlverts notin_fset
+        using r1_def(2) r2_def(2) child_in_dlverts
         by (metis order_bot_class.bot.extremum_uniqueI inf_mono)
     qed
   qed

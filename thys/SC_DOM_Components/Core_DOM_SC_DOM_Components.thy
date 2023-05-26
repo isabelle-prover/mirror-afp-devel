@@ -262,12 +262,12 @@ proof -
     have "\<not>(\<exists>parent \<in> fset (object_ptr_kinds h). root_ptr' \<in> set |h \<turnstile> get_child_nodes parent|\<^sub>r)"
       using disc_nodes
       by (meson assms(1) assms(2) assms(3) disjoint_iff_not_equal local.get_child_nodes_ok
-          local.heap_is_wellformed_children_disc_nodes_different local.known_ptrs_known_ptr notin_fset
+          local.heap_is_wellformed_children_disc_nodes_different local.known_ptrs_known_ptr
           returns_result_select_result root_ptr')
     then
     have "h \<turnstile> get_parent root_ptr' \<rightarrow>\<^sub>r None"
       using disc_nodes
-      by (metis (no_types, lifting) assms(1) assms(2) assms(3) fmember_iff_member_fset local.get_parent_child_dual
+      by (metis (no_types, opaque_lifting) assms(1) assms(2) assms(3) local.get_parent_child_dual
           local.get_parent_ok local.get_parent_parent_in_heap local.heap_is_wellformed_disc_nodes_in_heap
           returns_result_select_result root_ptr' select_result_I2 split_option_ex)
     then have "h \<turnstile> get_root_node ptr' \<rightarrow>\<^sub>r cast root_ptr'"
@@ -332,12 +332,12 @@ proof -
     have "\<not>(\<exists>parent \<in> fset (object_ptr_kinds h). root_ptr' \<in> set |h \<turnstile> get_child_nodes parent|\<^sub>r)"
       using disc_nodes
       by (meson assms(1) assms(2) assms(3) disjoint_iff_not_equal local.get_child_nodes_ok
-          local.heap_is_wellformed_children_disc_nodes_different local.known_ptrs_known_ptr notin_fset
+          local.heap_is_wellformed_children_disc_nodes_different local.known_ptrs_known_ptr
           returns_result_select_result root_ptr')
     then
     have "h \<turnstile> get_parent root_ptr' \<rightarrow>\<^sub>r None"
       using disc_nodes
-      by (metis (no_types, lifting) assms(1) assms(2) assms(3) fmember_iff_member_fset
+      by (metis (no_types, opaque_lifting) assms(1) assms(2) assms(3)
           local.get_parent_child_dual local.get_parent_ok local.get_parent_parent_in_heap
           local.heap_is_wellformed_disc_nodes_in_heap returns_result_select_result root_ptr'
           select_result_I2 split_option_ex)
@@ -527,7 +527,7 @@ proof -
   then show ?thesis
     using assms
     apply(auto simp add: is_strongly_scdom_component_safe_def Let_def preserved_def)[1]
-    by (smt (verit, del_insts) IntI finite_set_in
+    by (smt (verit, del_insts) IntI
         get_child_nodes_is_strongly_scdom_component_safe_step is_OK_returns_result_I
         local.get_child_nodes_ptr_in_heap local.get_dom_component_ok local.get_dom_component_ptr
         local.get_scdom_component_impl local.get_scdom_component_ok
@@ -576,12 +576,11 @@ proof -
     using assms
     apply(auto simp add: is_strongly_scdom_component_safe_def Let_def preserved_def)[1]
     by (smt (verit) Int_iff get_parent_is_strongly_scdom_component_safe_step in_mono
-        l_get_dom_component\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M.get_dom_component_ptr local.get_dom_component_ok
+        get_dom_component_ptr local.get_dom_component_ok
         local.get_parent_parent_in_heap local.get_scdom_component_impl local.get_scdom_component_ok
         local.get_scdom_component_ptr_in_heap local.get_scdom_component_ptrs_same_scope_component
         local.get_scdom_component_subset_get_dom_component
-        local.l_get_dom_component\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_axioms notin_fset returns_result_eq
-        returns_result_select_result)
+        returns_result_eq returns_result_select_result)
 qed
 end
 
@@ -625,7 +624,7 @@ proof -
   then show ?thesis
     using assms
     apply(auto simp add: is_strongly_scdom_component_safe_def Let_def preserved_def)[1]
-    by (smt (verit) Int_iff finite_set_in is_OK_returns_result_I local.get_dom_component_ok
+    by (smt (verit) Int_iff is_OK_returns_result_I local.get_dom_component_ok
         local.get_dom_component_ptr local.get_root_node_is_strongly_dom_component_safe_step
         local.get_root_node_ptr_in_heap local.get_scdom_component_impl local.get_scdom_component_ok
         local.get_scdom_component_subset_get_dom_component returns_result_select_result subset_eq)
@@ -692,7 +691,7 @@ proof -
     apply(auto simp add: is_strongly_scdom_component_safe_def Let_def preserved_def
         get_element_by_id_def first_in_tree_order_def elim!: bind_returns_result_E2
         intro!: map_filter_M_pure bind_pure_I split: option.splits list.splits)[1]
-    by (smt (verit) IntI \<open>ptr |\<in>| object_ptr_kinds h\<close> assms(4) finite_set_in
+    by (smt (verit) IntI \<open>ptr |\<in>| object_ptr_kinds h\<close> assms(4)
         get_element_by_id_is_strongly_scdom_component_safe_step local.get_dom_component_ok
         local.get_dom_component_ptr local.get_scdom_component_impl
         local.get_scdom_component_subset_get_dom_component returns_result_select_result select_result_I2
@@ -759,7 +758,7 @@ proof -
     apply(auto simp add: is_strongly_scdom_component_safe_def Let_def preserved_def
         get_element_by_id_def first_in_tree_order_def elim!: bind_returns_result_E2 intro!: map_filter_M_pure
         bind_pure_I split: option.splits list.splits)[1]
-    by (smt (verit) IntI \<open>ptr |\<in>| object_ptr_kinds h\<close> finite_set_in
+    by (smt (verit) IntI \<open>ptr |\<in>| object_ptr_kinds h\<close>
         get_elements_by_class_name_is_strongly_scdom_component_safe_step local.get_dom_component_ok
         local.get_dom_component_ptr local.get_scdom_component_impl
         local.get_scdom_component_subset_get_dom_component returns_result_select_result select_result_I2 subsetD)
@@ -824,7 +823,7 @@ proof -
     apply(auto simp add: is_strongly_scdom_component_safe_def Let_def preserved_def
         get_element_by_id_def first_in_tree_order_def elim!: bind_returns_result_E2 intro!:
         map_filter_M_pure bind_pure_I split: option.splits list.splits)[1]
-    by (smt (verit) IntI \<open>ptr |\<in>| object_ptr_kinds h\<close> finite_set_in
+    by (smt (verit) IntI \<open>ptr |\<in>| object_ptr_kinds h\<close>
         get_elements_by_tag_name_is_strongly_scdom_component_safe_step local.get_dom_component_ok
         local.get_dom_component_ptr local.get_scdom_component_impl
         local.get_scdom_component_subset_get_dom_component returns_result_select_result select_result_I2
@@ -1094,9 +1093,9 @@ proof -
   then have "a_all_ptrs_in_heap h'"
     apply(auto simp add: a_all_ptrs_in_heap_def node_ptr_kinds_eq3 disconnected_nodes_eq)[1]
      apply (metis (no_types, lifting) \<open>type_wf h'\<close> assms local.get_child_nodes_ok local.known_ptrs_known_ptr
-        local.remove_child_children_subset notin_fset object_ptr_kinds_eq3 returns_result_select_result subset_code(1))
+        local.remove_child_children_subset object_ptr_kinds_eq3 returns_result_select_result subset_code(1))
     apply (metis (no_types, lifting) assms(4) disconnected_nodes_eq2 disconnected_nodes_h disconnected_nodes_h'
-        document_ptr_kinds_eq3 finite_set_in local.remove_child_child_in_heap node_ptr_kinds_eq3 select_result_I2
+        document_ptr_kinds_eq3 local.remove_child_child_in_heap node_ptr_kinds_eq3 select_result_I2
         set_ConsD subset_code(1))
     done
   moreover have "a_owner_document_valid h"
@@ -1126,7 +1125,7 @@ node_ptr \<in> set |h \<turnstile> get_child_nodes parent_ptr|\<^sub>r)"
         using 0 1 2 children_eq2 children_h children_h' disconnected_nodes_eq2 disconnected_nodes_h
           disconnected_nodes_h'
         apply(auto simp add: children_eq2 disconnected_nodes_eq2 dest!: select_result_I2)[1]
-        by (metis children_eq2 disconnected_nodes_eq2 finite_set_in in_set_remove1 list.set_intros(2))
+        by (metis children_eq2 disconnected_nodes_eq2 in_set_remove1 list.set_intros(2))
     qed
   qed
 
@@ -1361,7 +1360,7 @@ node_ptr \<in> set |h \<turnstile> get_child_nodes parent_ptr|\<^sub>r)"
         using 3 get_disconnected_nodes_ok[OF \<open>type_wf h'\<close>, of xb]  document_ptr_kinds_eq2 by auto
 
       obtain children where children: "h \<turnstile> get_child_nodes xa \<rightarrow>\<^sub>r children"
-        by (metis "1" assms finite_set_in get_child_nodes_ok is_OK_returns_result_E
+        by (metis "1" assms get_child_nodes_ok is_OK_returns_result_E
             local.known_ptrs_known_ptr object_ptr_kinds_eq3)
       obtain children' where children': "h' \<turnstile> get_child_nodes xa \<rightarrow>\<^sub>r children'"
         using children children_eq children_h' by fastforce
@@ -1839,7 +1838,7 @@ proof -
        apply (simp add: children_eq2_h3 object_ptr_kinds_h3_eq3 subset_code(1))
       by (metis (no_types, lifting) \<open>child \<in> set disc_nodes_old_document_h2\<close> disc_nodes_document_ptr_h'
           disc_nodes_document_ptr_h2 disc_nodes_old_document_h2 disconnected_nodes_eq2_h3 document_ptr_kinds_eq3_h3
-          finite_set_in local.heap_is_wellformed_disc_nodes_in_heap node_ptr_kinds_eq3_h2 node_ptr_kinds_eq3_h3
+          local.heap_is_wellformed_disc_nodes_in_heap node_ptr_kinds_eq3_h2 node_ptr_kinds_eq3_h3
           select_result_I2 set_ConsD subset_code(1) wellformed_h2)
 
     moreover have "a_owner_document_valid h2"
@@ -2012,7 +2011,7 @@ proof -
                   using 2 a1 old_document_in_heap document_ptr_kinds_eq2_h2 document_ptr_kinds_eq2_h3
                     \<open>old_document \<noteq> x\<close>
                   by (metis (no_types, lifting) a0 distinct_concat_map_E(1) document_ptr_kinds_eq3_h2
-                      document_ptr_kinds_eq3_h3 finite_fset fmember_iff_member_fset set_sorted_list_of_set)
+                      document_ptr_kinds_eq3_h3 finite_fset set_sorted_list_of_set)
                 ultimately show ?thesis
                   using 5 select_result_I2[OF disc_nodes_document_ptr_h']
                     select_result_I2[OF disc_nodes_old_document_h2] \<open>old_document \<noteq> x\<close>
@@ -2098,7 +2097,7 @@ proof -
           using a6 a3 by simp
         have "x \<notin> set |h2 \<turnstile> get_disconnected_nodes xb|\<^sub>r"
           using a12 a8 a4 \<open>xb |\<in>| document_ptr_kinds h'\<close>
-          by (meson UN_I disjoint_iff_not_equal fmember_iff_member_fset)
+          by (meson UN_I disjoint_iff_not_equal)
         then have "x = child"
           using f13 a11 a10 a7 a5 a2 a1
           by (metis (no_types, lifting) select_result_I2 set_ConsD)
@@ -3744,7 +3743,7 @@ proof -
         local.get_dom_component_ok local.get_dom_component_to_tree_order_subset local.get_owner_document_ptr_in_heap
         local.get_scdom_component_impl local.get_scdom_component_ok local.get_scdom_component_ptr_in_heap
         local.get_scdom_component_subset_get_dom_component local.to_tree_order_ok
-        local.to_tree_order_ptr_in_result notin_fset returns_result_select_result subset_eq)
+        local.to_tree_order_ptr_in_result returns_result_select_result subset_eq)
 qed
 end
 

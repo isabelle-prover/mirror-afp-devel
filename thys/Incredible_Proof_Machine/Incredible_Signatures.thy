@@ -27,7 +27,7 @@ begin
     where "hyps n h = Some p \<Longrightarrow> h \<in> hyps_for' n p"
 
   lemma hyps_for'_subset: "hyps_for' n p \<subseteq> fset (outPorts n)"
-    using hyps_correct by (meson hyps_for'.cases notin_fset subsetI)
+    using hyps_correct by (meson hyps_for'.cases subsetI)
  
   context includes fset.lifting
   begin
@@ -42,7 +42,7 @@ begin
   end
   lemma hyps_for_subset: "hyps_for n p |\<subseteq>| outPorts n"
     using hyps_for'_subset
-    by (fastforce simp add: fmember_iff_member_fset hyps_for.rep_eq simp del: hyps_for_simp hyps_for_simp')
+    by (fastforce simp add: hyps_for.rep_eq simp del: hyps_for_simp hyps_for_simp')
 end
 
 locale Labeled_Signature = 

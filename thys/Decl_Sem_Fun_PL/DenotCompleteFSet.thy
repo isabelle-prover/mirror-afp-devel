@@ -50,7 +50,7 @@ lemma le_union_left: "\<lbrakk> v1 \<squnion> v2 = Some v12; v1 \<sqsubseteq> v3
   apply (cases v1) apply (cases v2) apply force+ done
     
 lemma e_val: "isval v \<Longrightarrow> \<exists> v'. v' \<in> E v \<rho>"
-  apply (case_tac v) apply auto apply (rule_tac x="{||}" in exI) apply force done
+  by (cases v) auto
 
 lemma reverse_subst_lam:
   assumes fl: "VFun f \<in> E (ELam x e) \<rho>"
@@ -71,7 +71,7 @@ next
   from insert(3) have 1: "VFun f \<in> E (ELam x e) \<rho>" by auto
   obtain v1 v2 where a: "a = (v1,v2)" by (cases a) simp
   from insert 1 have "\<exists> \<rho>' v''. v'' \<in> E v [] \<and> VFun f \<in> E (ELam x e') \<rho>' \<and> \<rho>' \<approx> ((y,v'')#\<rho>)"
-    by blast
+    by metis
   from this obtain \<rho>'' v'' where vpp_v: "v'' \<in> E v []" and f_l: "VFun f \<in> E (ELam x e') \<rho>''" 
     and rpp_r: "\<rho>'' \<approx> ((y,v'')#\<rho>)" by blast
   from insert(3) a have v2_e: "v2 \<in> E e ((x,v1)#\<rho>)" using e_lam_elim2 by blast
@@ -142,7 +142,7 @@ next
 next
   case (3 x eb \<rho>)
   { assume ev: "e = EVar y \<and> v = ELam x eb"
-    from ev 3(3) 3(2) rev_subst_var have ?case by blast
+    from ev 3(3) 3(2) rev_subst_var have ?case by metis
   } also { assume ex: "e = ELam x eb \<and> x = y" 
     from 3(3) e_val is_val_def obtain v'' where vpp_E: "v'' \<in> E v []" by force
     from env_eq_def have rr: "((y,v'')#\<rho>) \<approx> ((y,v'')#\<rho>)" by simp
@@ -277,7 +277,7 @@ proof (induction arbitrary: v \<rho> rule: reduce.induct)
     using reverse_subst_pres_denot[of v' "subst x v e" \<rho> v x e] by blast
   from beta 1 2 3 show ?case
     apply simp apply (rule_tac x="{|(v'',v')|}" in exI) apply (rule conjI)
-     apply clarify apply simp apply clarify apply (rule env_swap) apply blast apply blast 
+     apply clarify apply simp apply (rule env_swap) apply blast apply blast 
     apply (rule_tac x=v'' in exI) apply (rule conjI) apply (rule env_strengthen)
       apply assumption apply force apply force done
 qed auto

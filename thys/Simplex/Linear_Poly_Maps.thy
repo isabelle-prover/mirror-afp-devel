@@ -88,13 +88,13 @@ proof (rule fmap_ext)
   show "fmlookup (linear_poly_map (p1 + p2)) x = fmlookup (add (linear_poly_map p1) (linear_poly_map p2)) x"
   proof (cases "fmlookup P1 x")
     case None
-    from fmdom_notI[OF None] have "x \<notin> fset (fmdom P1)" by (meson notin_fset)
+    from fmdom_notI[OF None] have "x \<notin> fset (fmdom P1)" by metis
     with k1 have x: "x \<notin> set k1" by auto
     show ?thesis unfolding id P1_def[symmetric] P2_def[symmetric] None
       unfolding add_def k1_def[symmetric] fmlookup_fold_not_mem[OF x] by auto
   next
     case (Some y1)
-    from fmdomI[OF this] have "x \<in> fset (fmdom P1)" by (meson notin_fset)
+    from fmdomI[OF this] have "x \<in> fset (fmdom P1)" by metis
     with k1 have "x \<in> set k1" by auto
     from split_list[OF this] obtain bef aft where k1_id: "k1 = bef @ x # aft" by auto
     with k1 have x: "x \<notin> set bef" "x \<notin> set aft" by auto

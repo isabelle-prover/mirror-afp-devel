@@ -42,7 +42,7 @@ proof-
   have "finite (fset vertices)" by (rule finite_fset)
   moreover
   have "global_assms' i \<subseteq> (\<lambda> v. case nodeOf v of Assumption p \<Rightarrow>  labelAtOut v (Reg p)) ` fset vertices"
-    by (force simp add: global_assms'.simps fmember_iff_member_fset image_iff )
+    by (force simp add: global_assms'.simps image_iff )
   ultimately
   show ?thesis by (rule finite_surj)
 qed
@@ -65,7 +65,7 @@ lemma hyps_alongE[consumes 1, case_names Hyp Assumption]:
   obtains v p h where "(v,p) \<in> snd ` set pth" and "f = labelAtOut v h " and "h |\<in>| hyps_for (nodeOf v) p"
   | v pf  where "v |\<in>| vertices" and "nodeOf v = Assumption pf" "f = labelAtOut v (Reg pf)"
   using assms
-  apply (auto simp add: fmember_iff_member_fset ffUnion.rep_eq  global_assms_simps[unfolded fmember_iff_member_fset])
+  apply (auto simp add: ffUnion.rep_eq  global_assms_simps)
   apply (metis image_iff snd_conv)
   done
 
@@ -121,7 +121,7 @@ case (wf v p pth)
   let ?l = "labelAtIn v p"
 
   from e valid_edges have "v' |\<in>| vertices" and "p' |\<in>| outPorts (nodeOf v')" by auto
-  hence "nodeOf v' \<in> sset nodes" using valid_nodes by (meson image_eqI notin_fset subsetD)
+  hence "nodeOf v' \<in> sset nodes" using valid_nodes by (meson image_eqI subsetD)
 
   from \<open>?e \<in> edges\<close>
   have s: "labelAtOut v' p' = labelAtIn v p"  by (rule solved)
@@ -156,9 +156,9 @@ case (wf v p pth)
     ultimately
 
     have "labelAtOut v' (Hyp h c) |\<in>| ?\<Gamma>"
-      by (fastforce simp add: fmember_iff_member_fset ffUnion.rep_eq)
+      by (fastforce simp add: ffUnion.rep_eq)
 
-    hence "labelAtIn v p |\<in>| ?\<Gamma>" by (simp add: s[symmetric] Hyp fmember_iff_member_fset)
+    hence "labelAtIn v p |\<in>| ?\<Gamma>" by (simp add: s[symmetric] Hyp)
     thus ?thesis
       using Hyp
       apply (auto intro: exI[where x = ?t] simp add: eff.simps simp del: hyps_along.simps)
@@ -170,7 +170,7 @@ case (wf v p pth)
     have "labelAtOut v' (Reg f) |\<in>| global_assms TYPE('var)"
       by (rule global_assmsI)
     hence "labelAtOut v' (Reg f) |\<in>| ?\<Gamma>" by auto
-    hence "labelAtIn v p |\<in>| ?\<Gamma>" by (simp add: s[symmetric] Assumption fmember_iff_member_fset)
+    hence "labelAtIn v p |\<in>| ?\<Gamma>" by (simp add: s[symmetric] Assumption)
     thus ?thesis using Assumption
       by (auto intro: exI[where x = ?t] simp add: eff.simps)
   next
@@ -212,7 +212,7 @@ case (wf v p pth)
         case (Hyp v'' p'' h'')
 
         from Hyp(1) snd_set_path_verties[OF terminal_path_is_path[OF \<open>terminal_path v' t ?pth'\<close>]]
-        have "v'' |\<in>| vertices" by (force simp add: fmember_iff_member_fset)
+        have "v'' |\<in>| vertices" by (force simp add:)
 
         from \<open>terminal_path v' t ?pth'\<close> Hyp(1)
         have "v'' \<notin> scope (v', ant)" by (rule hyps_free_path_not_in_scope)
@@ -222,7 +222,7 @@ case (wf v p pth)
         moreover
         from hyps_free_vertices_distinct'[OF \<open>terminal_path v' t ?pth'\<close>] Hyp.hyps(1)
         have "v'' \<noteq> v'" by (metis distinct.simps(2) fst_conv image_eqI list.set_map)
-        hence "vidx v'' \<noteq> vidx v'" using \<open>v' |\<in>| vertices\<close> \<open>v'' |\<in>| vertices\<close> by (meson vidx_inj inj_onD notin_fset)
+        hence "vidx v'' \<noteq> vidx v'" using \<open>v' |\<in>| vertices\<close> \<open>v'' |\<in>| vertices\<close> by (meson vidx_inj inj_onD)
         hence "freshenLC (vidx v') ` a_fresh ant \<inter> freshenLC (vidx v'') ` lconsts (labelsOut (nodeOf v'') h'') = {}"by auto
         moreover
         have "lconsts f \<subseteq> lconsts (freshen (vidx v'') (labelsOut (nodeOf v'') h'')) \<union> subst_lconsts (inst v'') " using \<open>f = _\<close>
@@ -234,7 +234,7 @@ case (wf v p pth)
         case (Assumption v pf)
         hence "f = subst (inst v) (freshen (vidx v) pf)" by (simp add: labelAtOut_def)
         moreover
-        from Assumption have "Assumption pf \<in> sset nodes" using valid_nodes by (auto simp add: fmember_iff_member_fset)
+        from Assumption have "Assumption pf \<in> sset nodes" using valid_nodes by auto
         hence "pf \<in> set assumptions" unfolding nodes_def by (auto simp add: stream.set_map)
         hence "closed pf" by (rule assumptions_closed)
         ultimately
@@ -262,7 +262,7 @@ case (wf v p pth)
     also
     have "?ants = ((\<lambda>x. (extra_assms (v',x) |\<union>| hyps_along ?pth' \<turnstile> labelAtIn  v' x)) |`| f_antecedent r)"
       by (rule fimage_cong[OF refl])
-        (auto simp add: labelAtIn_def labelAtOut_def Rule hyps_for_fimage fmember_iff_member_fset ffUnion.rep_eq)
+        (auto simp add: labelAtIn_def labelAtOut_def Rule hyps_for_fimage ffUnion.rep_eq)
     finally
     have "eff (NatRule (r, f))
         (?\<Gamma>, labelAtIn v p)
@@ -334,7 +334,7 @@ proof
   then obtain v pf where "v |\<in>| vertices" and "nodeOf v = Assumption pf" and "x = labelAtOut v (Reg pf)"
     by (auto simp add: global_assms_simps)
   from this (1,2) valid_nodes
-  have "Assumption pf \<in> sset nodes" by (auto simp add: fmember_iff_member_fset)
+  have "Assumption pf \<in> sset nodes" by (auto simp add:)
   hence "pf \<in> set assumptions" by (auto simp add: nodes_def stream.set_map)
   hence "closed pf" by (rule  assumptions_closed)
   with \<open>x = labelAtOut v (Reg pf)\<close>
@@ -519,7 +519,7 @@ proof(intro ballI allI conjI impI)
   hence "c \<in> set conclusions"  by (auto simp add: conc_forms_def)
   from this(1) conclusions_present
   obtain v where "v |\<in>| vertices" and "nodeOf v = Conclusion c"
-    by (auto, metis (no_types, lifting) image_iff image_subset_iff notin_fset)
+    by auto
 
   have "valid_in_port (v, (plain_ant c))"
     using \<open>v |\<in>| vertices\<close> \<open>nodeOf _ = _ \<close>  by simp

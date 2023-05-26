@@ -94,21 +94,21 @@ proof -
         
         have "q |\<in>| nexts" 
           using \<open>q \<in> fset nexts\<close>
-          by (meson notin_fset) 
+          by simp 
         moreover have "q' \<noteq> {||}"
         proof -
           have ***:"(Set.filter (\<lambda>t . t_source t |\<in>| q) (fset A)) = fset (ffilter (\<lambda>t . t_source t |\<in>| q) (A))"
             by auto
           have "\<exists> t . t |\<in>| (ffilter (\<lambda>t. t_source t |\<in>| q) A) \<and> (t_input t, t_output t) = (x,y)"
             using *
-            by (metis (no_types, lifting) "***" image_iff notin_fset) 
+            by (metis (no_types, lifting) "***" image_iff) 
           then show ?thesis unfolding **
             by force 
         qed
         moreover have "fset q' = t_target ` {t' . t' |\<in>| A \<and> t_source t' |\<in>| q \<and> t_input t' = x \<and> t_output t' = y}"
         proof -
           have "{t' . t' |\<in>| A \<and> t_source t' |\<in>| q \<and> t_input t' = x \<and> t_output t' = y} = ((Set.filter (\<lambda>t . (t_input t, t_output t) = (x,y)) (fset (ffilter (\<lambda>t . t_source t |\<in>| q) (A)))))"
-            using notin_fset by fastforce
+             by fastforce
           also have "\<dots> = fset ((ffilter (\<lambda>t . (t_input t, t_output t) = (x,y)) (ffilter (\<lambda>t . t_source t |\<in>| q) (A))))"
             by fastforce
           finally have "{t' . t' |\<in>| A \<and> t_source t' |\<in>| q \<and> t_input t' = x \<and> t_output t' = y} = fset ((ffilter (\<lambda>t . (t_input t, t_output t) = (x,y)) (ffilter (\<lambda>t . t_source t |\<in>| q) (A))))" .
@@ -132,16 +132,11 @@ proof -
           by (metis bot_fset.rep_eq fset_inject)
 
         have "(x,y) \<in> (image (\<lambda> t . (t_input t, t_output t)) (Set.filter (\<lambda>t . t_source t |\<in>| q) (fset A)))"
-        proof -
-          have **:"\<And> t . t |\<in>| A = (t \<in> fset A)"
-            by (meson notin_fset)
-          show ?thesis
-            using \<open>fset q' \<noteq> {}\<close> unfolding * Set.filter_def ** by blast
-        qed
+          using \<open>fset q' \<noteq> {}\<close> unfolding * Set.filter_def by blast
         moreover have "q' = t_target |`| ffilter (\<lambda>t. (t_input t, t_output t) = (x, y)) (ffilter (\<lambda>t. t_source t |\<in>| q) A)"
         proof -
           have "{t' . t' |\<in>| A \<and> t_source t' |\<in>| q \<and> t_input t' = x \<and> t_output t' = y} = ((Set.filter (\<lambda>t . (t_input t, t_output t) = (x,y)) (fset (ffilter (\<lambda>t . t_source t |\<in>| q) (A)))))"
-            using notin_fset by fastforce
+            by fastforce
           also have "\<dots> = fset ((ffilter (\<lambda>t . (t_input t, t_output t) = (x,y)) (ffilter (\<lambda>t . t_source t |\<in>| q) (A))))"
             by fastforce
           finally have ***:"{t' . t' |\<in>| A \<and> t_source t' |\<in>| q \<and> t_input t' = x \<and> t_output t' = y} = fset ((ffilter (\<lambda>t . (t_input t, t_output t) = (x,y)) (ffilter (\<lambda>t . t_source t |\<in>| q) (A))))" .
@@ -151,10 +146,8 @@ proof -
             unfolding ***
             by (metis (no_types, lifting) fimage.rep_eq fset_inject)
         qed 
-        moreover have "q \<in> fset nexts"
-          using \<open>q |\<in>| nexts\<close>
-          by (meson notin_fset)  
         ultimately show "t \<in> ?A"
+          using \<open>q |\<in>| nexts\<close>
           unfolding \<open>t = (q,x,y,q')\<close> 
           by force
       qed
@@ -165,7 +158,7 @@ proof -
       unfolding assms Let_def by blast
   qed
   then show "\<And> t . t |\<in>| qtrans \<longleftrightarrow> t_source t |\<in>| nexts \<and> t_target t \<noteq> {||} \<and> fset (t_target t) = t_target ` {t' . t' |\<in>| A \<and> t_source t' |\<in>| t_source t \<and> t_input t' = t_input t \<and> t_output t' = t_output t}"
-    unfolding fmember_iff_member_fset by force
+    by force
 qed
 
 
@@ -227,7 +220,7 @@ proof -
       then have *: "fset (t_target t) = t_target ` {t' . t' |\<in>| base_trans \<and> t_source t' |\<in>| t_source t \<and> t_input t' = t_input t \<and> t_output t' = t_output t}"
         using qtrans_prop by blast
       then have "fset (t_target t) \<subseteq> t_target ` (fset base_trans)"
-        by (metis (mono_tags, lifting) imageI image_Collect_subsetI notin_fset)
+        by (metis (mono_tags, lifting) imageI image_Collect_subsetI)
       then show "t_target t |\<in>| fPow (t_target |`| base_trans)"
         by (simp add: less_eq_fset.rep_eq) 
     qed
@@ -378,7 +371,7 @@ using assms proof (induction base_trans "(fimage t_target ts) |-| dones" dones t
         define tgts where tgts: "tgts = Abs_fset (t_target ` ?tgts)"
       
         have "?tgts \<subseteq> fset base_trans"
-          using notin_fset by fastforce
+          by fastforce
         then have "finite (t_target ` ?tgts)"
           by (meson finite_fset finite_imageI finite_subset) 
         then have "fset tgts = (t_target ` ?tgts)"
@@ -446,7 +439,8 @@ using assms proof (induction "ftransitions M" "(fimage t_target ts) |-| dones" d
       by (simp add: fsubsetD)
 
     obtain q' where "q' |\<in>| q" 
-      using \<open>{||} |\<notin>| dones\<close> \<open>q |\<in>| dones\<close> by fastforce 
+      using \<open>{||} |\<notin>| dones\<close> \<open>q |\<in>| dones\<close>
+      by (metis all_not_in_conv bot_fset.rep_eq fset_cong) 
     have "q' |\<in>| t_source |`| ftransitions M |\<union>| t_target |`| ftransitions M |\<union>| {|FSM.initial M|}"
       using scheme[OF \<open>q' |\<in>| q\<close> "1.prems"(4)[OF \<open>q |\<in>| dones\<close>]] .
     then have "q' \<in> states M"
@@ -490,7 +484,7 @@ using assms proof (induction "ftransitions M" "(fimage t_target ts) |-| dones" d
                    t_source t' |\<in>| t_source t \<and> t_input t' = t_input t \<and> t_output t' = t_output t})"
       using "1.prems"(1) qtrans_prop
       using ftransitions_set[of M]
-      by (metis (mono_tags, lifting) Collect_cong fmember_iff_member_fset funion_iff) 
+      by (metis (mono_tags, lifting) Collect_cong funion_iff) 
 
     have i2: "(\<And>q t'.
                 q |\<in>| dones |\<union>| ?nexts \<Longrightarrow>
@@ -520,7 +514,7 @@ using assms proof (induction "ftransitions M" "(fimage t_target ts) |-| dones" d
 
         have "?tgts \<subseteq> transitions M"
           using ftransitions_set[of M]
-          by (metis (no_types, lifting) mem_Collect_eq notin_fset subsetI)   
+          by (metis (no_types, lifting) mem_Collect_eq subsetI)   
         then have "finite (t_target ` ?tgts)"
           by (meson finite_imageI finite_subset fsm_transitions_finite)
         then have "fset tgts = (t_target ` ?tgts)"
@@ -530,7 +524,7 @@ using assms proof (induction "ftransitions M" "(fimage t_target ts) |-| dones" d
 
         have "?tgts \<noteq> {}"
           using * **
-          by (metis (mono_tags, lifting) empty_iff ftransitions_set mem_Collect_eq notin_fset)
+          by (metis (mono_tags, lifting) empty_iff ftransitions_set mem_Collect_eq)
         then have "t_target ` ?tgts \<noteq> {}"
           by blast
         then have "tgts \<noteq> {||}" 
@@ -562,7 +556,7 @@ using assms proof (induction "ftransitions M" "(fimage t_target ts) |-| dones" d
       then have "fset q = t_target ` {t'. t' |\<in>| ftransitions M \<and> t_source t' |\<in>| t_source t \<and> t_input t' = t_input t \<and> t_output t' = t_output t}"
         unfolding qtrans_prop by auto
       then have "fset q \<subseteq> t_target ` transitions M"
-        by (metis (no_types, lifting) ftransitions_set image_Collect_subsetI image_eqI notin_fset)
+        by (metis (no_types, lifting) ftransitions_set image_Collect_subsetI image_eqI)
       then show "q |\<in>| fPow (t_source |`| ftransitions M |\<union>| t_target |`| ftransitions M)"
         by (metis (no_types, lifting) fPowI fset.set_map fset_inject ftransitions_set le_supI2 sup.orderE sup.orderI sup_fset.rep_eq)
     qed
@@ -630,7 +624,7 @@ using assms proof (induction "ftransitions M" "(fimage t_target ts) |-| dones" d
               using i1[OF \<open>tP |\<in>| ts |\<union>| qtrans\<close>]
               using \<open>p = tM # pM\<close> \<open>path M q' p\<close> \<open>q' |\<in>| q\<close> 
               unfolding \<open>t_input tP = t_input tM\<close> \<open>t_output tP = t_output tM\<close> \<open>t_source tP = q\<close>
-              using fmember_iff_member_fset by fastforce 
+              by fastforce 
             ultimately have "\<exists>q' p. q' |\<in>| t_target tP \<and> path M q' p \<and> p_io p = ioP"
               using \<open>p_io pM = ioP\<close> \<open>path M (t_target tM) pM\<close> by blast
 
@@ -672,11 +666,9 @@ using assms proof (induction "ftransitions M" "(fimage t_target ts) |-| dones" d
             ultimately obtain q'' pM where "q'' |\<in>| t_target tP" and "path M q'' pM" and "p_io pM = ioP"
               using Cons.IH unfolding \<open>?obs = ?ts'\<close> by blast
       
-            have "q'' \<in> fset (t_target tP)"
-              using \<open>q'' |\<in>| t_target tP\<close>
-              by (meson notin_fset)  
             then obtain tM where "t_source tM |\<in>| q" and "tM \<in> transitions M" and "t_input tM = t_input tP" and "t_output tM = t_output tP" and "t_target tM = q''"
-              using i1[OF \<open>tP |\<in>| ts |\<union>| qtrans\<close>]  
+              using i1[OF \<open>tP |\<in>| ts |\<union>| qtrans\<close>]
+              using \<open>q'' |\<in>| t_target tP\<close>  
               unfolding \<open>t_source tP = q\<close> by force
 
             have "path M (t_source tM) (tM#pM)"
@@ -749,7 +741,7 @@ using assms proof (induction "ftransitions M" "(fimage t_target ts) |-| dones" d
           moreover have "t_target tM |\<in>| t_target tP"
             using "1.prems"(1)[OF \<open>tP |\<in>| ts\<close>] \<open>p = tM # pM\<close> \<open>path M q' p\<close> \<open>q' |\<in>| q\<close>  
             unfolding \<open>t_input tP = t_input tM\<close> \<open>t_output tP = t_output tM\<close> \<open>t_source tP = q\<close>
-            using fmember_iff_member_fset by fastforce 
+            by fastforce 
           ultimately have "\<exists>q' p. q' |\<in>| t_target tP \<and> path M q' p \<and> p_io p = ioP"
             using \<open>p_io pM = ioP\<close> \<open>path M (t_target tM) pM\<close> by blast
   
@@ -777,7 +769,7 @@ using assms proof (induction "ftransitions M" "(fimage t_target ts) |-| dones" d
 
           have "\<And> t' . t' |\<in>| ftransitions M = (t' \<in> transitions M)"
             using ftransitions_set
-            by (metis notin_fset) 
+            by metis
 
           from \<open>p' = tP#pP\<close> have "t_source tP = q" and "tP |\<in>| ?obs"
             using \<open>pathlike ?obs q p'\<close> by auto
@@ -798,7 +790,7 @@ using assms proof (induction "ftransitions M" "(fimage t_target ts) |-| dones" d
           obtain tM where "t_source tM |\<in>| q" and "tM \<in> transitions M" and "t_input tM = t_input tP" and "t_output tM = t_output tP" and "t_target tM = q''"
             using "1.prems"(1)[OF \<open>tP |\<in>| ts\<close>] \<open>q'' |\<in>| t_target tP\<close> 
             unfolding \<open>t_source tP = q\<close> 
-            unfolding fmember_iff_member_fset by force
+            by force
 
           have "path M (t_source tM) (tM#pM)"
             using \<open>tM \<in> transitions M\<close> \<open>t_target tM = q''\<close> \<open>path M q'' pM\<close> by auto
@@ -1049,7 +1041,7 @@ proof -
   proof -
     have *:"\<And> t' . t' |\<in>| ftransitions M = (t' \<in> transitions M)"
             using ftransitions_set
-            by (metis notin_fset) 
+            by metis 
     have **: "initial_trans = ffUnion (fimage (\<lambda> q . (let qts = ffilter (\<lambda>t . t_source t |\<in>| q) (ftransitions M);
                                            ios = fimage (\<lambda> t . (t_input t, t_output t)) qts
                                        in fimage (\<lambda>(x,y) . (q,x,y, t_target |`| (ffilter (\<lambda>t . (t_input t, t_output t) = (x,y)) qts))) ios)) {|{|initial M|}|})"
@@ -1066,7 +1058,7 @@ proof -
 
     then have i2: "t |\<in>| make_observable_transitions (ftransitions M) (fimage t_target initial_trans |-| {|{|initial M|}|}) {|{|initial M|}|} initial_trans"
       using ptransitions_def
-      by (meson notin_fset) 
+      by metis 
 
     have i1: "(\<And>t. t |\<in>| initial_trans \<Longrightarrow>
           t_source t |\<in>| {|{|FSM.initial M|}|} \<and>
@@ -1090,10 +1082,10 @@ proof -
 
         have "fset (ftransitions M) = transitions M"
           by (simp add: fset_of_list.rep_eq fsm_transitions_finite) 
-        then have "t' |\<in>| ftransitions M"
-          using \<open>t' \<in> transitions M\<close> notin_fset by fastforce 
         then show ?thesis 
-          unfolding \<open>t_input t = t_input t'\<close> \<open>t_output t = t_output t'\<close> by auto
+          unfolding \<open>t_input t = t_input t'\<close> \<open>t_output t = t_output t'\<close>
+          using \<open>t' \<in> transitions M\<close>
+          by auto
       qed
         
       ultimately show "?P t" 
@@ -1103,13 +1095,13 @@ proof -
 
     have "?P1 t"
       using make_observable_transitions_transition_props(1)[OF i1 i2] unfolding pstates_def ptransitions_def \<open>states M' = fset pstates\<close>
-      by (metis finsert_is_funion fmember_iff_member_fset)
+      by (metis finsert_is_funion)
     moreover have "?P2 t" 
     proof-
       have "t_input t |\<in>| t_input |`| ftransitions M"
         using make_observable_transitions_transition_props(3)[OF i1 i2] by blast
       then have "t_input t \<in> t_input ` transitions M"
-        using ftransitions_set by (metis (mono_tags, lifting) fmember_iff_member_fset fset.set_map)
+        using ftransitions_set by (metis (mono_tags, lifting) fset.set_map)
       then show ?thesis
         using finputs_set fsm_transition_input \<open>inputs M' = inputs M\<close> by fastforce 
     qed
@@ -1118,13 +1110,13 @@ proof -
       have "t_output t |\<in>| t_output |`| ftransitions M"
         using make_observable_transitions_transition_props(4)[OF i1 i2] by blast
       then have "t_output t \<in> t_output ` transitions M"
-        using ftransitions_set by (metis (mono_tags, lifting) fmember_iff_member_fset fset.set_map)
+        using ftransitions_set by (metis (mono_tags, lifting) fset.set_map)
       then show ?thesis
         using foutputs_set fsm_transition_output \<open>outputs M' = outputs M\<close> by fastforce 
     qed
     moreover have "?P4 t"
       using make_observable_transitions_transition_props(2)[OF i1 i2] unfolding pstates_def ptransitions_def \<open>states M' = fset pstates\<close>
-      by (metis finsert_is_funion fmember_iff_member_fset)
+      by (metis finsert_is_funion)
       
     ultimately show "?P1 t \<and> ?P2 t \<and> ?P3 t \<and> ?P4 t"
       by blast
@@ -1222,7 +1214,7 @@ proof -
     
           have "t \<in> transitions (make_observable M)"
             using \<open>t |\<in>| ptransitions\<close> \<open>transitions (make_observable M) = fset ptransitions\<close>
-            by (metis notin_fset)
+            by metis
           moreover have "path (make_observable M) (t_target t) p"
             using Cons.IH[OF _ \<open>pathlike ptransitions (t_target t) p\<close>] calculation by blast
           ultimately show ?case 
@@ -1246,7 +1238,7 @@ proof -
   
           have "t |\<in>| ptransitions"
             using \<open>t \<in> transitions (make_observable M)\<close> \<open>transitions (make_observable M) = fset ptransitions\<close>
-            by (metis notin_fset)
+            by metis
           then show ?case 
             using Cons.IH[OF \<open>path (make_observable M) (t_target t) p\<close>] \<open>t_source t = q\<close> by blast          
         qed
@@ -1274,14 +1266,14 @@ proof -
 
     have "\<And> t' . t' |\<in>| ftransitions M = (t' \<in> transitions M)"
       using ftransitions_set
-      by (metis notin_fset) 
+      by metis 
     have "observable_fset ptransitions"
       using make_observable_transitions_observable[OF _ i2, of "{| {|initial M|} |}" "ftransitions M"] i1 
       unfolding ptransitions_def \<open>\<And> t' . t' |\<in>| ftransitions M = (t' \<in> transitions M)\<close>
       by blast 
     then show ?thesis
       unfolding observable.simps observable_fset.simps \<open>transitions (make_observable M) = fset ptransitions\<close>
-      by (meson notin_fset) 
+      by metis 
   qed
 qed
 

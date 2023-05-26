@@ -143,8 +143,7 @@ definition a_known_ptrs :: "(_) heap \<Rightarrow> bool"
 
 lemma known_ptrs_known_ptr: 
   "a_known_ptrs h \<Longrightarrow> ptr |\<in>| object_ptr_kinds h \<Longrightarrow> known_ptr ptr"
-  apply(simp add: a_known_ptrs_def)
-  using notin_fset by fastforce
+  by (simp add: a_known_ptrs_def)
 
 lemma known_ptrs_preserved:
   "object_ptr_kinds h = object_ptr_kinds h' \<Longrightarrow> a_known_ptrs h = a_known_ptrs h'"

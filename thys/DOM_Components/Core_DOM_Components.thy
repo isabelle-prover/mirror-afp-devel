@@ -526,7 +526,7 @@ proof -
   then show ?thesis
     using assms
     apply(auto simp add: is_strongly_dom_component_safe_def Let_def preserved_def)[1]
-    by (smt IntI finite_set_in get_dom_component_get_child_nodes is_OK_returns_result_E
+    by (smt IntI get_dom_component_get_child_nodes is_OK_returns_result_E
         is_OK_returns_result_I local.get_child_nodes_ptr_in_heap local.get_component_impl
         local.get_component_ok local.get_dom_component_ptr select_result_I2)
 qed
@@ -574,7 +574,7 @@ proof -
     using assms
     apply(auto simp add: is_strongly_dom_component_safe_def Let_def preserved_def)[1]
     using get_dom_component_get_child_nodes local.get_component_impl local.get_dom_component_ptr
-    by (metis (no_types, opaque_lifting) Int_iff finite_set_in get_parent_is_strongly_dom_component_safe_step
+    by (metis (no_types, opaque_lifting) Int_iff get_parent_is_strongly_dom_component_safe_step
         local.get_component_ok local.get_parent_parent_in_heap local.to_tree_order_ok local.to_tree_order_parent
         local.to_tree_order_ptr_in_result local.to_tree_order_ptrs_in_heap returns_result_select_result)
 qed
@@ -651,9 +651,9 @@ proof -
   then show ?thesis
     using assms
     apply(auto simp add: is_strongly_dom_component_safe_def Let_def preserved_def)[1]
-    by (metis (no_types, lifting) IntI get_root_node_is_strongly_dom_component_safe_step is_OK_returns_result_I
+    by (metis (no_types, opaque_lifting) IntI get_root_node_is_strongly_dom_component_safe_step is_OK_returns_result_I
         local.get_component_impl local.get_component_ok local.get_dom_component_ptr
-        local.get_root_node_ptr_in_heap notin_fset returns_result_select_result)
+        local.get_root_node_ptr_in_heap returns_result_select_result)
 qed
 end
 
@@ -756,7 +756,7 @@ proof -
     apply(auto simp add: is_strongly_dom_component_safe_def Let_def preserved_def get_element_by_id_def
         first_in_tree_order_def elim!: bind_returns_result_E2 intro!: map_filter_M_pure bind_pure_I
         split: option.splits list.splits)[1]
-    by (metis (no_types, lifting) Int_iff \<open>ptr |\<in>| object_ptr_kinds h\<close> assms(4) finite_set_in
+    by (metis (no_types, opaque_lifting) Int_iff \<open>ptr |\<in>| object_ptr_kinds h\<close> assms(4)
         get_element_by_id_is_strongly_dom_component_safe_step local.get_component_impl local.get_dom_component_ptr
         select_result_I2)
 qed
@@ -875,7 +875,7 @@ proof -
     apply(auto simp add: is_strongly_dom_component_safe_def Let_def preserved_def
         get_elements_by_class_name_def first_in_tree_order_def elim!: bind_returns_result_E2
         intro!: map_filter_M_pure bind_pure_I split: option.splits list.splits)[1]
-    by (metis (no_types, lifting) Int_iff \<open>ptr |\<in>| object_ptr_kinds h\<close> assms(4) finite_set_in
+    by (metis (no_types, opaque_lifting) Int_iff \<open>ptr |\<in>| object_ptr_kinds h\<close> assms(4)
         get_elements_by_class_name_is_strongly_dom_component_safe_step local.get_component_impl
         local.get_dom_component_ptr select_result_I2)
 qed
@@ -990,7 +990,7 @@ proof -
     apply(auto simp add: is_strongly_dom_component_safe_def Let_def preserved_def
         get_elements_by_class_name_def first_in_tree_order_def elim!: bind_returns_result_E2
         intro!: map_filter_M_pure bind_pure_I split: option.splits list.splits)[1]
-    by (metis (no_types, lifting) IntI \<open>ptr |\<in>| object_ptr_kinds h\<close> finite_set_in
+    by (metis (no_types, opaque_lifting) IntI \<open>ptr |\<in>| object_ptr_kinds h\<close>
         get_elements_by_tag_name_is_strongly_dom_component_safe_step local.get_component_impl
         local.get_dom_component_ptr select_result_I2)
 qed

@@ -39,7 +39,8 @@ next
       st: "(f p, g q) |\<in>| (map_prod f g |`| Q)" using assms ta_der_fmap_states_inv[of f "fst \<G>" _ s]
       using ta_der_fmap_states_inv[of g "snd \<G>" _ t]
       by (auto simp: gta_der_def adapt_vars_term_of_gterm elim!: pair_at_langE)
-         (metis (no_types, opaque_lifting) fimageE fmap_prod_fimageI ta_der_fmap_states_conv)
+        (metis (no_types, opaque_lifting) f_the_finv_into_f fimage.rep_eq fmap_prod_fimageI
+          fmap_states gterm_ta_der_states)
     then have "p |\<in>| \<Q> (fst \<G>)" "q |\<in>| \<Q> (snd \<G>)" by auto
     then have "(p, q) |\<in>| Q" using assms st unfolding fimage_iff fBex_def
       by (auto dest!: fsubsetD simp: finj_on_eq_iff)
@@ -92,12 +93,13 @@ inductive_set \<Delta>_Atrans_set :: "('q \<times> 'q) fset \<Rightarrow> ('q, '
 
 lemma \<Delta>_Atrans_set_states:
   "(p, q) \<in> \<Delta>_Atrans_set Q \<A> \<B> \<Longrightarrow> (p, q) \<in> fset ((fst |`| Q |\<union>| \<Q> \<A>) |\<times>| (snd |`| Q |\<union>| \<Q> \<B>))"
-  by (induct rule: \<Delta>_Atrans_set.induct) (auto simp: fimage_iff fBex_def simp flip: fmember_iff_member_fset)
+  by (induct rule: \<Delta>_Atrans_set.induct) (auto simp: image_iff intro!: bexI)
 
 lemma finite_\<Delta>_Atrans_set: "finite (\<Delta>_Atrans_set Q \<A> \<B>)"
 proof -
   have "\<Delta>_Atrans_set Q \<A> \<B> \<subseteq> fset ((fst |`| Q |\<union>| \<Q> \<A>) |\<times>| (snd |`| Q |\<union>| \<Q> \<B>))"
-    using \<Delta>_Atrans_set_states by auto
+    using \<Delta>_Atrans_set_states
+    by (metis subrelI)
   from finite_subset[OF this] show ?thesis by simp
 qed
 
@@ -288,7 +290,7 @@ proof -
         by (auto simp: \<Delta>\<^sub>\<epsilon>_def' intro!: ground_term_of_gterm)
            (metis ground_term_of_gterm ground_term_to_gtermD ta_der_to_fmap_states_der)
       then show ?case using step by auto
-    qed (auto simp add: fmap_prod_fimageI)}
+    qed (auto simp add: map_prod_imageI)}
   moreover
   {fix p q assume "(p, q) |\<in>| ?RS"
     then have "(p, q) |\<in>| ?LS" using assms
@@ -310,14 +312,14 @@ proof -
            (metis ground_term_of_gterm ground_term_to_gtermD ta_der_fmap_states_inv)
       then have "(q, r) |\<in>| map_prod g f |`| \<Delta>\<^sub>\<epsilon> (snd \<G>) (fst \<G>)" using step
         using the_finv_into_f_f[OF assms(1)] the_finv_into_f_f[OF assms(2)] sub
-        by auto (smt \<Delta>\<^sub>\<epsilon>_statesD(1, 2) f_the_finv_into_f fmap_prod_fimageI fmap_states)
+        by (smt (verit, ccfv_threshold) \<Delta>\<^sub>\<epsilon>_statesD(1) \<Delta>\<^sub>\<epsilon>_statesD(2) f_the_finv_into_f fimage.rep_eq
+            fmap_states fst_map_prod map_prod_imageI snd_map_prod)
       then show ?case using s_e assms(1, 2) s_e
         using fsubsetD[OF sub]
         using fsubsetD[OF \<Delta>_Atrans_states_stable[OF assms(3)]]
         using \<Delta>_Atrans_step[of "?f p" "?g q" Q "fst \<G>" "snd \<G>" "?f r" "?g v"]
         using the_finv_into_f_f[OF assms(1)] the_finv_into_f_f[OF assms(2)]
-        by  (auto simp: fimage_iff fBex_def)
-            (smt Pair_inject prod_fun_fimageE step.hyps(2) step.hyps(5) step.prems(3))
+        using step.hyps(2) step.hyps(5) step.prems(3) by force
     qed auto}
   ultimately show ?thesis by auto
 qed
@@ -332,7 +334,7 @@ lemma Q_pow_fmember:
   "(X, Y) |\<in>| Q_pow Q \<S>\<^sub>1 \<S>\<^sub>2 \<longleftrightarrow> (\<exists> p q. ex X |\<in>| fPow \<S>\<^sub>1 \<and> ex Y |\<in>| fPow \<S>\<^sub>2 \<and> p |\<in>| ex X \<and> q |\<in>| ex Y \<and> (p, q) |\<in>| Q)"
 proof -
   let ?S = "{(Wrapp X, Wrapp Y) | X Y p q. X |\<in>| fPow \<S>\<^sub>1 \<and> Y |\<in>| fPow \<S>\<^sub>2 \<and> p |\<in>| X \<and> q |\<in>| Y \<and> (p, q) |\<in>| Q}" 
-  have "?S \<subseteq> map_prod Wrapp Wrapp ` fset (fPow \<S>\<^sub>1 |\<times>| fPow \<S>\<^sub>2)" by (auto simp flip: fmember_iff_member_fset)
+  have "?S \<subseteq> map_prod Wrapp Wrapp ` fset (fPow \<S>\<^sub>1 |\<times>| fPow \<S>\<^sub>2)" by auto
   from finite_subset[OF this] show ?thesis unfolding Q_pow_def
     apply auto apply blast
     by (meson FSet_Lex_Wrapper.exhaust_sel)
@@ -348,8 +350,8 @@ proof -
       by (auto simp: pair_at_lang_def gta_der_def)
     from ps_rules_complete[OF this(1)] ps_rules_complete[OF this(2)] this(3)
     have "(s, t) \<in> ?RS" using fPow_iff ps_ta_states'
-      by (auto simp: pair_at_lang_def gta_der_def Q_pow_fmember)
-         force}
+      apply (auto simp: pair_at_lang_def gta_der_def Q_pow_fmember)
+      by (smt (verit, best) dual_order.trans ground_ta_der_states ground_term_of_gterm ps_rules_sound)}
   moreover
   {fix s t assume "(s, t) \<in> ?RS" then have "(s, t) \<in> ?LS"
       using ps_rules_sound

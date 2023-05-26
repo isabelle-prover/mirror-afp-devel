@@ -50,7 +50,7 @@ next
       by (cases "rec a ys") auto
   qed (auto intro: refl)
   show ?case using propagate[of x "{}" "fset bs", unfolded infer1 Un_empty_left] 3(2)
-    by (auto simp: delete fmember_iff_member_fset split: if_splits intro: trans delete)
+    by (auto simp: delete split: if_splits intro: trans delete)
 qed auto
 
 lemma saturate_impl_sound:
@@ -91,7 +91,7 @@ proof -
         unfolding fold.simps comp_def option.simps
         apply (subst saturate_rec.simps)
         apply (auto simp flip: saturate_rec.simps split!: if_splits simp: infer1)
-        apply (simp add: notin_fset saturate_rec.simps)
+        apply (simp add: saturate_rec.simps)
         done
     qed simp
   qed

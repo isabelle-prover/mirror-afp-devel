@@ -68,7 +68,7 @@ lemma rtl_implies_finite_indexed_myhill_relation:
 proof -
   let ?D = "\<lambda> X. gta_der \<A> ` X"
   have image: "?D ` ?R \<subseteq> Pow (fset (fPow (\<Q> \<A>)))" unfolding gta_der_def
-    by (meson PowI fPowI ground_ta_der_states ground_term_of_gterm image_subsetI notin_fset)
+    by (meson PowI fPowI ground_ta_der_states ground_term_of_gterm image_subsetI)
   then have "finite (Pow (fset (fPow (\<Q> \<A>))))" by simp
   then have "finite (?D ` ?R)" using finite_subset[OF image] by fastforce
   then show ?thesis using finite_image_iff[OF rtl_der_image_on_myhill_inj[OF assms]]

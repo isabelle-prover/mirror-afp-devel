@@ -141,7 +141,7 @@ begin
 sublocale horn "\<Delta>_Atr_rules Q A B" .
 
 lemma \<Delta>_Atr_infer0: "infer0 = fset Q"
-  by (auto simp: horn.infer0_def \<Delta>_Atr_rules_def fmember_iff_member_fset)
+  by (auto simp: horn.infer0_def \<Delta>_Atr_rules_def)
   
 lemma \<Delta>_Atr_infer1:
   "infer1 pq X = {(p, snd pq) | p q. (p, q) \<in> X \<and> (q, fst pq) |\<in>| \<Delta>\<^sub>\<epsilon> B A} \<union>

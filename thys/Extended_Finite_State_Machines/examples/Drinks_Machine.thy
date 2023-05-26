@@ -96,7 +96,7 @@ lemma possible_steps_0:
 
 lemma first_step_select:
   "(s', t) |\<in>| possible_steps drinks 0 r aa b \<Longrightarrow> s' = 1 \<and> t = select"
-  apply (simp add: possible_steps_def fimage_def ffilter_def fmember_def Abs_fset_inverse Set.filter_def drinks_def)
+  apply (simp add: possible_steps_def fimage_def ffilter_def Abs_fset_inverse Set.filter_def drinks_def)
   apply safe
   by (simp_all add: transitions)
 

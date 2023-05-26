@@ -2182,8 +2182,8 @@ proof -
         \<comment> \<open>TODO unwrap smt proof.\<close>
       then show ?thesis
         using assms(1, 2, 3, 4, 5) 1
-        by (smt IntD1 SUBMAP_FUNION_DRESTRICT_i UnE agree_def domIff fmdom'.rep_eq fmdom'_alt_def
-            fmdom'_fmrestrict_set fmlookup_add fmlookup_restrict_set inf_sup_distrib2 notin_fset
+        by (smt (verit) IntD1 SUBMAP_FUNION_DRESTRICT_i UnE agree_def domIff fmdom'.rep_eq fmdom'_alt_def
+            fmdom'_fmrestrict_set fmlookup_add fmlookup_restrict_set inf_sup_distrib2
             subset_iff sup_commute)
     next
       case False
@@ -2240,7 +2240,7 @@ proof -
         by blast
       then have "fmlookup ?f v = fmlookup fma v"
         unfolding 2 fmlookup_add
-        by (simp add: fmdom'_alt_def notin_fset)
+        by (simp add: fmdom'_alt_def)
       also have "\<dots> = fmlookup (fmrestrict_set vs1 fma) v"
         unfolding fmlookup_restrict_set
         using i

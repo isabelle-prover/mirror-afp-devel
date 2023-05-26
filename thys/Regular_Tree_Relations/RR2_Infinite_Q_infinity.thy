@@ -70,7 +70,7 @@ proof (induct C arbitrary: q p)
   then have "\<forall> i < length qs. qs ! i |\<in>| ta_der_strict A ((ss @ C\<langle>Var q''\<rangle> # ts) ! i)"
     using rec r(2) More(3)
     using ta_der_strict_ta_der_eq_on_ground[of _ A]
-    by (auto simp: nth_append_Cons all_Suc_conv fmember_iff_member_fset split:if_splits cong: if_cong')
+    by (auto simp: nth_append_Cons all_Suc_conv split:if_splits cong: if_cong')
   then show ?case using rec r conjunct1[OF mid]
     by (rule_tac x = q'' in exI, auto intro!: exI[of _ q'] exI[of _ qs])
 qed auto
@@ -103,7 +103,7 @@ lemma Q_inf_finite:
   "finite (Q_inf \<A>)" "finite (Q_inf_e \<A>)"
 proof -
   have *: "Q_inf \<A> \<subseteq> fset (\<Q> \<A> |\<times>| \<Q> \<A>)" "Q_inf_e \<A> \<subseteq> fset (\<Q> \<A>)"
-    by (auto simp add: Q_inf_states_ta_states(1, 2) subrelI simp flip: fmember_iff_member_fset)
+    by (auto simp add: Q_inf_states_ta_states(1, 2) subrelI)
   show "finite (Q_inf \<A>)"
     by (intro finite_subset[OF *(1)]) simp
   show "finite (Q_inf_e \<A>)"
@@ -449,7 +449,7 @@ lemma Q_infty_fQ_inf_e_conv:
    and "\<Q> \<A> |\<subseteq>| ta_reachable \<A>" and "\<Q> \<A> |\<subseteq>| ta_productive Q \<A>"
   shows "Q_infty \<A> \<F> = fQ_inf_e \<A>"
   using Q_inf_impl_Q_inf_exec Q_inf_exec_impl_Q_inf[OF assms]
-  by (auto simp: fQ_inf_e.rep_eq fmember_iff_member_fset) fastforce
+  by (auto simp: fQ_inf_e.rep_eq) fastforce
 
 definition Inf_reg_impl where
   "Inf_reg_impl R = Inf_reg R (fQ_inf_e (ta R))"

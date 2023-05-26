@@ -122,7 +122,7 @@ definition GTT_to_RR2_reg  :: "('f \<times> nat) fset \<Rightarrow> ('q, 'f) gtt
 lemma agtt_lang_syms:
   "gtt_syms \<G> |\<subseteq>| \<F> \<Longrightarrow> agtt_lang \<G> \<subseteq> {t. funas_gterm t \<subseteq> fset \<F>} \<times> {t. funas_gterm t \<subseteq> fset \<F>}"
   by (auto simp: agtt_lang_def gta_der_def funas_term_of_gterm_conv)
-     (metis ffunas_gterm.rep_eq fin_mono notin_fset ta_der_gterm_sig)+
+     (metis ffunas_gterm.rep_eq fin_mono ta_der_gterm_sig)+
 
 
 lemma gtt_lang_from_agtt_lang:

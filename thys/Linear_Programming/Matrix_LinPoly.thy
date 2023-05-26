@@ -9,7 +9,7 @@ begin
 text \<open> Add this to linear polynomials in Simplex \<close>
 
 lemma eval_poly_with_sum: "(v \<lbrace> X \<rbrace>) = (\<Sum>x\<in> vars v. coeff v x * X x)"
-  using linear_poly_sum sum.cong by fastforce
+  by (auto simp: linear_poly_sum intro: sum.cong)
 
 lemma eval_poly_with_sum_superset:
   assumes "finite S"
@@ -22,7 +22,7 @@ proof -
   have fnt: "finite (vars v)"
     using finite_vars by auto
   have "(v \<lbrace>X\<rbrace>) = (\<Sum>x\<in> vars v. coeff v x * X x)" 
-    using linear_poly_sum sum.cong by fastforce
+    by (auto simp add: linear_poly_sum intro: sum.cong)
   also have "... = (\<Sum>x\<in> vars v. coeff v x * X x) + (\<Sum>x\<in>D. coeff v x * X x)"
     using zeros by auto
   also have "... = (\<Sum>x\<in> vars v \<union> D. coeff v x * X x)"

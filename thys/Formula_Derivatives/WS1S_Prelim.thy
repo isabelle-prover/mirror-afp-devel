@@ -246,7 +246,7 @@ lemma nth_replicate_simp: "replicate m x ! i = (if i < m then x else [] ! (i - m
 
 lemma MSB_eq_SucD: "MSB Is = Suc x \<Longrightarrow> \<exists>P\<in>set Is. x |\<in>| P"
   using Max_in[of "\<Union>x\<in>set Is. fset x"]
-  unfolding MSB_def by (force simp: fmember_def split: if_splits)
+  unfolding MSB_def by (force split: if_splits)
 
 lemma append_replicate_inj:
   assumes "xs \<noteq> [] \<Longrightarrow> last xs \<noteq> x" and "ys \<noteq> [] \<Longrightarrow> last ys \<noteq> x"
@@ -377,11 +377,27 @@ lemma MSB_decreases:
   by (auto simp add: not_le less_Suc_eq_le fset_eq_empty_iff fset_le_singleton_iff
     split: if_splits dest!: iffD1[OF Max_le_iff, rotated -1] iffD1[OF Max_ge_iff, rotated -1]; force)
 
-lemma CONS_surj[dest]: "Length \<AA> > 0 \<Longrightarrow>
-  \<exists>x \<BB>. \<AA> = CONS x \<BB> \<and> #\<^sub>V \<BB> = #\<^sub>V \<AA> \<and> size_atom x = #\<^sub>V \<AA>"
-  by transfer (auto simp: gr0_conv_Suc list_eq_iff_nth_eq lift_def upshift_def split: if_splits
-    intro!: exI[of _ "map (\<lambda>X. 0 |\<in>| X) _"] exI[of _ "map (\<lambda>X. (\<lambda>x. x - Suc 0) |`| (X |-| {|0|})) _"],
-    auto simp: MSB_decreases upshift_def Suc_minus1 fimage_iff intro: rev_fBexI split: if_splits)
+lemma CONS_surj[dest]:
+  assumes "Length \<AA> > 0"
+  shows "\<exists>x \<BB>. \<AA> = CONS x \<BB> \<and> #\<^sub>V \<BB> = #\<^sub>V \<AA> \<and> size_atom x = #\<^sub>V \<AA>"
+proof -
+  have "MSB I1 \<le> Suc m \<Longrightarrow> MSB I2 \<le> Suc m \<Longrightarrow> \<exists>a b ab ba.
+    (\<exists>I1. length ab = length I1 \<and> (\<forall>i<length ab. ab ! i = I1 ! i) \<and>
+      (\<exists>I2. length ba = length I2 \<and> (\<forall>i<length ba. ba ! i = I2 ! i) \<and>
+        MSB I1 \<le> m \<and> MSB I2 \<le> m)) \<and>
+    I1 = map_index (lift a) ab \<and>
+    I2 = map_index (lift b) ba \<and>
+    length ab = length I1 \<and>
+    length ba = length I2 \<and>
+    length a = length I1 \<and>
+    length b = length I2"
+    for m I1 I2
+    by (auto simp: list_eq_iff_nth_eq lift_def upshift_def split: if_splits
+        intro!: exI[of _ "map (\<lambda>X. 0 |\<in>| X) _"] exI[of _ "map (\<lambda>X. (\<lambda>x. x - Suc 0) |`| (X |-| {|0|})) _"],
+        auto simp: MSB_decreases upshift_def Suc_minus1 fimage_iff intro: rev_fBexI split: if_splits)
+  with assms show ?thesis
+    by transfer (auto simp: gr0_conv_Suc list_eq_iff_nth_eq)
+qed
  
 (*<*)
 end

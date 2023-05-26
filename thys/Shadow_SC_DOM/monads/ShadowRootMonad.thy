@@ -58,10 +58,15 @@ lemma shadow_root_ptr_kinds_M_eq:
 
 global_interpretation l_dummy defines get_M\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t = "l_get_M.a_get_M get\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t" .
 lemma get_M_is_l_get_M: "l_get_M get\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t type_wf shadow_root_ptr_kinds"
-  apply(simp add: get\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_type_wf l_get_M_def)
-  apply(auto simp add: get\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_def shadow_root_ptr_kinds_def)[1]
-  by (metis (no_types, lifting) DocumentMonad.l_get_M_axioms bind_eq_None_conv fset.map_comp
-      l_get_M_def option.discI shadow_root_ptr_kinds_commutes shadow_root_ptr_kinds_def)
+proof -
+  have "\<forall>ptr h. (\<exists>y. get ptr h = Some y) \<longrightarrow> ptr |\<in>| shadow_root_ptr_kinds h"
+  apply(auto simp add: get\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_def shadow_root_ptr_kinds_def bind_eq_Some_conv image_iff Bex_def)
+  by (metis (no_types, opaque_lifting) DocumentMonad.l_get_M_axioms is_shadow_root_ptr_kind_cast l_get_M_def
+      option.sel option.simps(3) shadow_root_ptr_casts_commute2)
+  thus ?thesis
+    by (simp add: get\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_type_wf l_get_M_def)
+qed
+
 lemmas get_M_defs = get_M\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_def[unfolded l_get_M.a_get_M_def[OF get_M_is_l_get_M]]
 
 adhoc_overloading get_M get_M\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t
@@ -499,9 +504,9 @@ lemma type_wf_put_ptr_not_in_heap_E:
   assumes "ptr |\<notin>| object_ptr_kinds h"
   shows "type_wf h"
   using assms
-  by (metis (no_types, lifting) DocumentMonad.type_wf_put_ptr_not_in_heap_E ObjectClass.get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_type_wf
+  by (metis (no_types, opaque_lifting) DocumentMonad.type_wf_put_ptr_not_in_heap_E ObjectClass.get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_type_wf
       ObjectMonad.type_wf_put_ptr_not_in_heap_E ShadowRootClass.type_wf\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t ShadowRootClass.type_wf_defs
-      document_ptr_kinds_commutes get\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_def get_document_ptr_simp get_object_ptr_simp2 notin_fset
+      document_ptr_kinds_commutes get\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_def get_document_ptr_simp get_object_ptr_simp2
       shadow_root_ptr_kinds_commutes)
 
 
@@ -514,8 +519,8 @@ lemma type_wf_put_ptr_in_heap_E:
   using assms
   apply(auto simp add: type_wf_defs elim!: DocumentMonad.type_wf_put_ptr_in_heap_E
       split: option.splits if_splits)[1]
-  by (metis (no_types, lifting) DocumentClass.l_get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_lemmas_axioms assms(2) bind.bind_lunit
-      cast\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>2\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_inv cast\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>2\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t_inv finite_set_in get\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def get\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_def l_get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_lemmas.get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_type_wf option.collapse)
+  by (metis (no_types, opaque_lifting) DocumentClass.l_get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_lemmas_axioms assms(2) bind.bind_lunit
+      cast\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>2\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_inv cast\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>2\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t_inv get\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def get\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_def l_get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_lemmas.get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_type_wf option.collapse)
 
 
 subsection \<open>type\_wf\<close>
@@ -675,7 +680,7 @@ proof -
     using 0 2
     apply(auto simp add: is_document_kind_def type_wf_defs is_shadow_root_kind_def get\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_def
         split: option.splits Option.bind_splits)[1]
-    by (metis (no_types, lifting) DocumentMonad.get_M_defs finite_set_in get_heap_returns_result
+    by (metis (no_types, lifting) DocumentMonad.get_M_defs get_heap_returns_result
         id_apply option.simps(5) return_returns_result)
 
 
@@ -771,7 +776,7 @@ proof -
     using 0 2
     apply(auto simp add: is_document_kind_def type_wf_defs is_shadow_root_kind_def get\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_def
         split: option.splits Option.bind_splits)[1]
-    by (metis (no_types, lifting) DocumentMonad.get_M_defs finite_set_in get_heap_returns_result id_def
+    by (metis (no_types, lifting) DocumentMonad.get_M_defs get_heap_returns_result id_def
         option.simps(5) return_returns_result)
 
   then show "\<exists>y. cast y = x\<lparr>document_element := v\<rparr>"
@@ -868,7 +873,7 @@ proof -
     using 0 2
     apply(auto simp add: is_document_kind_def type_wf_defs is_shadow_root_kind_def get\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_def
         split: option.splits Option.bind_splits)[1]
-    by (metis (no_types, lifting) DocumentMonad.get_M_defs finite_set_in get_heap_returns_result
+    by (metis (no_types, lifting) DocumentMonad.get_M_defs get_heap_returns_result
         id_def option.simps(5) return_returns_result)
 
   then show "\<exists>y. cast y = x\<lparr>disconnected_nodes := v\<rparr>"
@@ -1022,8 +1027,8 @@ lemma type_wf_drop: "type_wf h \<Longrightarrow> type_wf (Heap (fmdrop ptr (the_
   apply(auto simp add: type_wf_defs)[1]
   using type_wf_drop
    apply blast
-  by (metis (no_types, lifting) DocumentClass.type_wf\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t DocumentMonad.type_wf_drop
-      ObjectClass.get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_type_wf document_ptr_kinds_commutes finite_set_in fmlookup_drop get\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def
+  by (metis (no_types, opaque_lifting) DocumentClass.type_wf\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t DocumentMonad.type_wf_drop
+      ObjectClass.get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_type_wf document_ptr_kinds_commutes fmlookup_drop get\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def
       get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_def get\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_def heap.sel shadow_root_ptr_kinds_commutes)
 
 lemma delete_shadow_root_type_wf_preserved [simp]:

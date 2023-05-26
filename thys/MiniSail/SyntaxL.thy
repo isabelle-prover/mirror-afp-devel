@@ -227,7 +227,7 @@ proof -
   have *:"supp B = fset (fimage atom B)"
     by (metis fimage.rep_eq finite_fset supp_finite_set_at_base supp_fset)
   thus ?thesis using assms 
-    using notin_fset by fastforce
+    by fastforce
 qed
 
 lemma u_fresh_d:

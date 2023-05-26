@@ -16,8 +16,10 @@ lemma ta_der_Fun_code [code]:
          S |\<union>| (eps \<A>)|\<^sup>+| |``| S)" (is "?Ls = ?Rs")
 proof
   {fix q assume "q |\<in>| ?Ls" then have "q |\<in>| ?Rs"
-      by (auto simp: Let_def ffmember_filter fimage_iff fBex_def list_all2_conv_all_nth fImage_iff
-               split!: ta_rule.splits) force}
+      apply (simp add: Let_def fImage_iff fBex_def image_iff)
+      by (smt (verit, ccfv_threshold) IntI length_map list_all2_conv_all_nth mem_Collect_eq nth_map
+          ta_rule.case ta_rule.sel(3))
+    }
   then show "?Ls |\<subseteq>| ?Rs" by blast
 next
   {fix q assume "q |\<in>| ?Rs" then have "q |\<in>| ?Ls"
@@ -67,7 +69,8 @@ section \<open>Computing the epsilon transition for the product automaton\<close
 lemma prod_eps[code_unfold]:
   "fCollect (prod_epsLp \<A> \<B>) = (\<lambda> ((p, q), r). ((p, r), (q, r))) |`| (eps \<A> |\<times>| \<Q> \<B>)"
   "fCollect (prod_epsRp \<A> \<B>) = (\<lambda> ((p, q), r). ((r, p), (r, q))) |`| (eps \<B> |\<times>| \<Q> \<A>)"
-  by (auto simp: finite_prod_epsLp prod_epsLp_def finite_prod_epsRp prod_epsRp_def fimage_iff fBex_def)
+  by (auto simp: finite_prod_epsLp prod_epsLp_def finite_prod_epsRp prod_epsRp_def image_iff
+      fSigma.rep_eq) force+
 
 section \<open>Computing reachability\<close>
 
@@ -105,7 +108,7 @@ lemma ta_reach_reachable:
   using ta_reach_ground_term_der[of _ \<A>]
   using ground_term_der_ta_reach[of _ _ \<A>]
   unfolding ta_reachable_def
-  by (auto simp flip: fmember_iff_member_fset)
+  by auto
 
 
 subsection \<open>Horn setup for reachable states\<close>
@@ -162,10 +165,10 @@ lemma ta_productive_ind:
   "ta_productive_ind P \<A> = fset (ta_productive P \<A>)" (is "?LS = ?RS")
 proof -
   {fix q assume "q \<in> ?LS" then have "q \<in> ?RS"
-      by (induct) (auto dest: ta_prod_epsD simp flip: fmember_iff_member_fset intro: ta_productive_setI,
+      by (induct) (auto dest: ta_prod_epsD intro: ta_productive_setI,
          metis (full_types) in_set_conv_nth rule_reachable_ctxt_exist ta_productiveI')}
   moreover
-  {fix q assume "q \<in> ?RS" note * = this[unfolded fmember_iff_member_fset[symmetric]]
+  {fix q assume "q \<in> ?RS" note * = this
     from ta_productiveE[OF *] obtain r C where
       reach : "r |\<in>| ta_der \<A> C\<langle>Var q\<rangle>" and f: "r |\<in>| P" by auto
     from f have "r \<in> ta_productive_ind P \<A>" "r |\<in>| ta_productive P \<A>"
@@ -178,10 +181,10 @@ proof -
              "ps ! length ss |\<in>| ta_der \<A> C\<langle>Var q\<rangle>"
         by (auto simp: nth_append_Cons split: if_splits)
       then have "p \<in> ta_productive_ind P \<A> \<Longrightarrow> p |\<in>| ta_der \<A> C\<langle>Var q\<rangle> \<Longrightarrow> q \<in> ta_productive_ind P \<A>" for p
-        using More(1) calculation by (auto simp flip: fmember_iff_member_fset)
+        using More(1) calculation by auto
       note [intro!] = this[of "ps ! length ss"]
       show ?case using More(2) inv
-        by (auto simp flip: fmember_iff_member_fset simp: nth_append_Cons ta_productive_ind.rule)
+        by (auto simp: nth_append_Cons ta_productive_ind.rule)
            (metis less_add_Suc1 nth_mem ta_productive_ind.simps)
     qed (auto intro: ta_productive_setI)
   }
@@ -202,7 +205,7 @@ begin
 sublocale horn "productive_rules P \<A>" .
 
 lemma productive_infer0: "infer0 = fset P"
-  by (auto simp: productive_rules_def horn.infer0_def simp flip: fmember_iff_member_fset)
+  by (auto simp: productive_rules_def horn.infer0_def)
 
 lemma productive_infer1:
   "infer1 p X = {r | r. (r, p) |\<in>| eps \<A>} \<union>
@@ -273,7 +276,7 @@ sublocale horn "ps_states_rules \<A>" .
 
 lemma ps_construction_infer0: "infer0 =
   {Wrapp q | f q. q = ps_reachable_states \<A> f [] \<and> q \<noteq> {||}}"
-    by (auto simp: ps_states_rules_def horn.infer0_def simp flip: fmember_iff_member_fset)
+    by (auto simp: ps_states_rules_def horn.infer0_def)
 
 lemma ps_construction_infer1:
   "infer1 p X = {Wrapp q | f qs q. q = ps_reachable_states \<A> f (map ex qs) \<and> q \<noteq> {||} \<and>
@@ -325,9 +328,7 @@ lemma ps_rules [code]:
   using ps_reachable_states_sig finite_ps_rulesp_unfolded[of Q \<A>]
   unfolding ps_rules_cont_def
   apply (auto simp: fset_of_list_elem ps_rules_def fin_mono ps_rulesp_def
-    fimage_iff set_n_lists simp flip: fmember_iff_member_fset split!: prod.splits dest!: in_set_idx)
-  apply fastforce
-  apply (meson fmember_iff_member_fset nth_mem subsetD)
-  done
+    image_iff set_n_lists split!: prod.splits dest!: in_set_idx)
+  by fastforce+
 
 end

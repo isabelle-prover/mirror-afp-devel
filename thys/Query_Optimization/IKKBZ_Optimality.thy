@@ -2884,7 +2884,8 @@ proof(induction t1)
     case False
     then obtain t2 e2 where t2_def: "(t2,e2) \<in> fset xs" "x \<in> dlverts t2"
       using Node.prems(3) by auto
-    then have "is_subtree t2 (Node r xs)" using subtree_if_child by fastforce
+    then have "is_subtree t2 (Node r xs)" using subtree_if_child
+      by (metis image_iff prod.sel(1))
     then have "is_subtree t2 t" using Node.prems(1) subtree_trans by blast
     then show ?thesis using Node.IH Node.prems(2) t2_def by fastforce
   qed
@@ -4040,7 +4041,8 @@ lemma normalize1_children_deg1_eq_if_wfarcs:
   "\<forall>(t1,e1)\<in>fset xs. wf_darcs t1
     \<Longrightarrow> (\<lambda>(t1,e1). (normalize1 t1,e1)) ` children_deg1 xs
       = children_deg1 ((\<lambda>(t1,e1). (normalize1 t1,e1)) |`| xs)"
-  using children_deg1_normalize1_sub normalize1_children_deg1_sub_if_wfarcs by fast
+  using children_deg1_normalize1_sub normalize1_children_deg1_sub_if_wfarcs
+  by (meson subset_antisym)
 
 lemma normalize1_children_deg1_sub_if_wflverts:
   "\<forall>(t1,e1)\<in>fset xs. wf_dlverts t1
@@ -4052,7 +4054,8 @@ lemma normalize1_children_deg1_eq_if_wflverts:
   "\<forall>(t1,e1)\<in>fset xs. wf_dlverts t1
     \<Longrightarrow> (\<lambda>(t1,e1). (normalize1 t1,e1)) ` children_deg1 xs
       = children_deg1 ((\<lambda>(t1,e1). (normalize1 t1,e1)) |`| xs)"
-  using children_deg1_normalize1_sub normalize1_children_deg1_sub_if_wflverts by fast
+  using children_deg1_normalize1_sub normalize1_children_deg1_sub_if_wflverts
+  by (meson subset_antisym)
 
 lemma dom_children_normalize1_img:
   assumes "dom_children (Node r (Abs_fset (children_deg1 xs))) T"
@@ -4067,7 +4070,24 @@ proof -
   then have "\<forall>(t2, e2) \<in> children_deg1 ((\<lambda>(t1,e1). (normalize1 t1,e1)) |`| xs).
               dom_children (Node r {|(t2, e2)|}) T"
     using normalize1_children_deg1_eq_if_wflverts[of xs] assms(2) by blast
-  then show ?thesis using dom_children_if_all_singletons children_deg1_fset_id by fast
+  then show ?thesis using dom_children_if_all_singletons children_deg1_fset_id
+  proof -
+    have "\<forall>f as p. \<exists>pa. (dom_children (Node (as::'a list) f) p \<or> pa |\<in>| f) \<and> (\<not> (case pa of (d, b::'b) \<Rightarrow> dom_children (Node as {|(d, b)|}) p) \<or> dom_children (Node as f) p)"
+      using dom_children_if_all_singletons by blast
+    then obtain pp :: "(('a list, 'b) Dtree.dtree \<times> 'b) fset \<Rightarrow> 'a list \<Rightarrow> ('a, 'b) pre_digraph \<Rightarrow> ('a list, 'b) Dtree.dtree \<times> 'b" where
+      f1: "\<And>as f p. (dom_children (Node as f) p \<or> pp f as p |\<in>| f) \<and> (\<not> (case pp f as p of (d, b) \<Rightarrow> dom_children (Node as {|(d, b)|}) p) \<or> dom_children (Node as f) p)"
+      by metis
+    moreover
+    { assume "\<not> (case pp (Abs_fset (children_deg1 ((\<lambda>(d, y). (normalize1 d, y)) |`| xs))) r T of (d, b) \<Rightarrow> dom_children (Node r {|(d, b)|}) T)"
+      then have "pp (Abs_fset (children_deg1 ((\<lambda>(d, y). (normalize1 d, y)) |`| xs))) r T \<notin> children_deg1 ((\<lambda>(d, y). (normalize1 d, y)) |`| xs)"
+        by (smt (z3) \<open>\<forall>(t2, e2) \<in>children_deg1 ((\<lambda>(t1, e1). (normalize1 t1, e1)) |`| xs). dom_children (Node r {|(t2, e2)|}) T\<close>)
+      then have "pp (Abs_fset (children_deg1 ((\<lambda>(d, y). (normalize1 d, y)) |`| xs))) r T |\<notin>| Abs_fset (children_deg1 ((\<lambda>(d, y). (normalize1 d, y)) |`| xs))"
+        by (metis (no_types) children_deg1_fset_id)
+      then have ?thesis
+        using f1 by blast }
+    ultimately show ?thesis
+      by meson
+  qed
 qed
 
 lemma normalize1_dom_wedge:
@@ -4419,7 +4439,7 @@ proof(induction xs)
       using path_lverts_list_merge_supset_ys_notin[OF 1] by presburger
     then show ?thesis using insert.IH 0 insert.prems(2) f_def f'_def by auto
   qed
-qed(simp)
+qed (simp add: ffold.rep_eq)
 
 lemma path_lverts_merge_ffold_sup:
   "\<lbrakk>list_dtree (Node r xs); t1 \<in> fst ` fset xs; a \<in> dlverts t1\<rbrakk>
@@ -4433,7 +4453,7 @@ proof(induction xs)
   have 0: "list_dtree (Node r xs)" using list_dtree_subset insert.prems(1) by blast
   obtain t2 e2 where t2_def[simp]: "x = (t2,e2)" by fastforce
   have "(t2, e2) \<in> fset (finsert x xs)" by simp
-  moreover have "(t2, e2) \<notin> fset xs" using insert.hyps notin_fset by fastforce
+  moreover have "(t2, e2) \<notin> fset xs" using insert.hyps by fastforce
   ultimately have xs_val:
     "(\<forall>(v,e) \<in> set (ffold f' [] xs). set v \<inter> dlverts t2 = {} \<and> v \<noteq> [] \<and> e \<notin> darcs t2 \<union> {e2})"
     using merge_ffold_empty_inter_preserv'[OF insert.prems(1) empty_list_valid_merge] f'_def
@@ -4675,7 +4695,8 @@ using assms proof(induction t0)
     then have "merge1 (Node r' ys) = Node r' ((\<lambda>(t,e). (merge1 t,e)) |`| ys)" by auto
     then obtain t2 e2 where t2_def: "(t2,e2) \<in> fset ys" "is_subtree (Node r xs) (merge1 t2)"
       using Node.prems(2) 3(2) by auto
-    then have subt2: "is_subtree t2 (Node r' ys)" using subtree_if_child by fastforce
+    then have subt2: "is_subtree t2 (Node r' ys)" using subtree_if_child
+      by (metis fstI image_eqI)
     then have "\<And>r1 t3 e3. is_subtree (Node r1 {|(t3, e3)|}) t2
                     \<Longrightarrow> rank (rev r1) \<le> rank (rev (Dtree.root t3))"
       using Node.prems(1) subtree_trans by blast
@@ -4747,7 +4768,8 @@ using assms proof(induction t0)
     ultimately obtain t2 e2 where t2_def:
         "(t2,e2) \<in> fset xs" "is_subtree (Node r {|(t1, e1)|}) (merge1 t2)"
       using Node.prems(3) by auto
-    then have "is_subtree t2 (Node v xs)" using subtree_if_child by fastforce
+    then have "is_subtree t2 (Node v xs)" using subtree_if_child
+      by (metis fst_conv image_eqI)
     then have "\<And>r1 t3 e3. is_subtree (Node r1 {|(t3, e3)|}) t2
                     \<Longrightarrow> rank (rev r1) \<le> rank (rev (Dtree.root t3))"
       using Node.prems(1) subtree_trans by blast
@@ -5686,7 +5708,7 @@ next
     then show ?thesis using "2.IH" t1_def t2_def True "2.prems"(5) R.ranked_dtree_orig_rec by simp
   next
     case False
-    have sub: "is_subtree t1 (Node r xs)" using t1_def(1) subtree_if_child by fastforce
+    have sub: "is_subtree t1 (Node r xs)" using t1_def(1) subtree_if_child[of t1 xs r] by force
     have "set v1 \<subseteq> dlverts t1" using set_subset_if_normalize1_vert t1_def(2) by simp
     then have reach_t1: "\<forall>x \<in> set v1. \<forall>y. x \<rightarrow>\<^sup>+\<^bsub>T\<^esub> y \<longrightarrow> y \<in> dlverts t1"
       using R.dlverts_reach1_in_dlverts sub by blast
@@ -6105,13 +6127,18 @@ lemma dom_children_full:
   unfolding dom_children_def using dom_children_aux2 by auto
 
 lemma dom_children':
-  "is_subtree (Node r xs) to_list_dtree \<Longrightarrow> dom_children (Node r (Abs_fset (children_deg1 xs))) T"
-  unfolding dom_children_def using dom_children_aux2 children_deg1_fset_id by fastforce
+  assumes "is_subtree (Node r xs) to_list_dtree"
+  shows "dom_children (Node r (Abs_fset (children_deg1 xs))) T"
+  unfolding dom_children_def dtree.sel children_deg1_fset_id
+  using dom_children_aux2[OF assms(1)] by fastforce
 
 lemma dom_children_maxdeg_1:
   "\<lbrakk>is_subtree (Node r xs) to_list_dtree; max_deg (Node r xs) \<le> 1\<rbrakk>
      \<Longrightarrow> dom_children (Node r xs) T"
-  using dom_children_full mdeg_ge_child by fastforce
+proof (elim dom_children_full)
+  show "max_deg (Node r xs) \<le> 1 \<Longrightarrow> \<forall>t\<in>fst ` fset xs. max_deg t \<le> 1"
+    using mdeg_ge_child by fastforce
+qed
 
 lemma dom_child_subtree:
   "\<lbrakk>is_subtree (Node r xs) to_list_dtree; t \<in> fst ` fset xs\<rbrakk> \<Longrightarrow> \<exists>v\<in>set r. v \<rightarrow>\<^bsub>T\<^esub> hd (Dtree.root t)"

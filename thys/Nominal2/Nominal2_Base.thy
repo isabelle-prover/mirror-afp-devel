@@ -1196,7 +1196,7 @@ lemma map_option_eqvt[eqvt]:
 subsubsection \<open>Equivariance for @{typ "'a fset"}\<close>
 
 context includes fset.lifting begin
-lemma in_fset_eqvt [eqvt]:
+lemma in_fset_eqvt:
   shows "(p \<bullet> (x |\<in>| S)) = ((p \<bullet> x) |\<in>| (p \<bullet> S))"
   by transfer simp
 

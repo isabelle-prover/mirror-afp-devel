@@ -512,9 +512,7 @@ function inference_step :: "(cfstate \<times> cfstate) set \<Rightarrow> iEFSM \
   )"
   by auto
 termination
-  apply (relation "measures [\<lambda>(_, _, s, _, _, _). size s]")
-   apply simp
-  by (simp add: card_minus_fMin)
+  by (relation "measures [\<lambda>(_, _, s, _, _, _). size s]") (auto dest!: card_minus_fMin)
 
 (* Takes an iEFSM and iterates inference_step until no further states can be successfully merged  *)
 (* @param e - an iEFSM dest be generalised                                                        *)

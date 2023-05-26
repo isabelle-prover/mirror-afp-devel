@@ -194,7 +194,7 @@ lemma rule_statesD:
   "TA_rule f qs q |\<in>| \<Delta>\<^sub>A \<Longrightarrow> q |\<in>| \<Q>\<^sub>A"
   "TA_rule f qs q |\<in>| \<Delta>\<^sub>B \<Longrightarrow> q |\<in>| \<Q>\<^sub>B"
   "TA_rule f qs q |\<in>| \<Delta>\<^sub>A \<Longrightarrow> p |\<in>| fset_of_list qs \<Longrightarrow> p |\<in>| \<Q>\<^sub>A"
-  by (auto simp: rule_statesD \<Q>\<^sub>B_def rev_fimage_eqI)
+  by (auto simp: rule_statesD \<Q>\<^sub>B_def rev_image_eqI)
 
 lemma eps_states_dest:
   "(p, q) |\<in>| \<Delta>\<^sub>\<E>\<^sub>A \<Longrightarrow> p |\<in>| \<Q>\<^sub>A"
@@ -203,7 +203,7 @@ lemma eps_states_dest:
   "(p, q) |\<in>| \<Delta>\<^sub>\<E>\<^sub>A|\<^sup>+| \<Longrightarrow> q |\<in>| \<Q>\<^sub>A"
   "(p, q) |\<in>| \<Delta>\<^sub>\<E>\<^sub>B \<Longrightarrow> q |\<in>| \<Q>\<^sub>B"
   "(p, q) |\<in>| \<Delta>\<^sub>\<E>\<^sub>B|\<^sup>+| \<Longrightarrow> q |\<in>| \<Q>\<^sub>B"
-  by (auto simp: eps_dest_all \<Q>\<^sub>B_def rev_fimage_eqI elim: ftranclE)
+  by (auto simp: eps_dest_all \<Q>\<^sub>B_def rev_image_eqI elim: ftranclE)
 
 lemma transcl_eps_simp:
   "(eps A)|\<^sup>+| = \<Delta>\<^sub>\<E>\<^sub>A|\<^sup>+| |\<union>| \<Delta>\<^sub>\<E>\<^sub>B|\<^sup>+| |\<union>| (\<Delta>\<^sub>\<E>\<^sub>A|\<^sup>+| |O| \<Delta>\<^sub>\<E>\<^sub>B|\<^sup>+|)"

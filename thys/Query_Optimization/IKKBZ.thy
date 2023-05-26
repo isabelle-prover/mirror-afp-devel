@@ -641,7 +641,7 @@ proof(induction xs)
     proof(cases "(v,e) \<in> set (dtree_to_list (Node r {|(t2,e2)|}))")
       case True
       have uneq: "(t2,e2) \<noteq> (t1,e1)" using insert.prems(5) t2_def by fastforce
-      moreover have 1: "(t2,e2) \<in> fset ys" using insert.prems(2) notin_fset by fastforce
+      moreover have 1: "(t2,e2) \<in> fset ys" using insert.prems(2) by fastforce
       ultimately have "dlverts t1 \<inter> dlverts t2 = {}" using insert.prems(4) wf_lverts by fastforce
       then have 2: "\<forall>x1\<in>fst ` set (dtree_to_list (Node r {|(t2, e2)|})). set x1 \<inter> dlverts t1 = {}"
         using dtree_to_list_x1_disjoint by fast
@@ -674,7 +674,7 @@ proof(induction xs)
       then show ?thesis using insert.IH insert.prems by force
     qed
   qed
-qed(auto)
+qed (auto simp: ffold.rep_eq)
 
 lemma merge_ffold_empty_inter_preserv':
   "\<lbrakk>list_dtree (Node r (finsert x xs));
@@ -692,7 +692,7 @@ proof(induction xs)
   let ?f = "merge_f r (finsert x xs)"
   let ?f' = "merge_f r xs"
   have "(t1, e1) \<in> fset (finsert x xs)" by simp
-  moreover have "(t1, e1) \<notin> fset xs" using insert.hyps notin_fset by fastforce
+  moreover have "(t1, e1) \<notin> fset xs" using insert.hyps by fastforce
   ultimately have xs_val:
     "(\<forall>(v,e) \<in> set (ffold ?f' [] xs). set v \<inter> dlverts t1 = {} \<and> v \<noteq> [] \<and> e \<notin> darcs t1 \<union> {e1})"
     using merge_ffold_empty_inter_preserv'[OF insert.prems empty_list_valid_merge] by blast
@@ -710,7 +710,7 @@ proof(induction xs)
   then have "set (ffold ?f [] (finsert x xs))
         = (set (dtree_to_list (Node r {|x|})) \<union> set (ffold ?f' [] xs))" using set_merge by fast
   then show ?case using 0 insert.IH insert.prems by auto
-qed (simp)
+qed (simp add: ffold.rep_eq)
 
 lemma merge_ffold_nempty:
   "\<lbrakk>list_dtree (Node r xs); xs \<noteq> {||}\<rbrakk> \<Longrightarrow> ffold (merge_f r xs) [] xs \<noteq> []"
@@ -722,7 +722,7 @@ proof(induction xs)
   have 0: "list_dtree (Node r xs)" using list_dtree_subset insert.prems(1) by blast
   obtain t2 e2 where t2_def[simp]: "x = (t2,e2)" by fastforce
   have "(t2, e2) \<in> fset (finsert x xs)" by simp
-  moreover have "(t2, e2) \<notin> fset xs" using insert.hyps notin_fset by fastforce
+  moreover have "(t2, e2) \<notin> fset xs" using insert.hyps by fastforce
   ultimately have xs_val:
     "(\<forall>(v,e) \<in> set (ffold f' [] xs). set v \<inter> dlverts t2 = {} \<and> v \<noteq> [] \<and> e \<notin> darcs t2 \<union> {e2})"
     using merge_ffold_empty_inter_preserv'[OF insert.prems(1) empty_list_valid_merge] f'_def
@@ -760,7 +760,7 @@ proof(induction xs)
   then have "ffold f [] (finsert x xs) = ffold f [] xs"
     using insert.prems merge_f_not_list_dtree by force
   then show ?case using insert f_def by argo
-qed(simp)
+qed (simp add: ffold.rep_eq)
 
 lemma merge_empty_if_nwf: "\<not>list_dtree (Node r xs) \<Longrightarrow> merge (Node r xs) = Node r {||}"
   unfolding merge_def using merge_ffold_empty_if_nwf by simp
@@ -769,10 +769,25 @@ lemma merge_empty_if_nwf_sucs: "\<not>list_dtree t1 \<Longrightarrow> merge t1 =
   using merge_empty_if_nwf[of "root t1" "sucs t1"] by simp
 
 lemma merge_empty: "merge (Node r {||}) = Node r {||}"
-  unfolding merge_def by simp
+proof -
+  have "comp_fun_commute (\<lambda>(t, e) b. b)"
+    by (simp add: comp_fun_commute_const cond_case_prod_eta)
+  hence "dtree_from_list r (ffold (\<lambda>(t, e) b. b) [] {||}) = Node r {||}"
+    using comp_fun_commute.ffold_empty
+    by (smt (verit, best) dtree_from_list.simps(1))
+  thus ?thesis
+    unfolding merge_def by simp
+qed
 
-lemma merge_empty_sucs: "sucs t1 = {||} \<Longrightarrow> merge t1 = Node (root t1) {||}"
-  unfolding merge_def by simp
+lemma merge_empty_sucs:
+  assumes "sucs t1 = {||}"
+  shows "merge t1 = Node (root t1) {||}"
+proof -
+  have "dtree_from_list (dtree.root t1) (ffold (\<lambda>(t, e) b. b) [] {||}) = Node (dtree.root t1) {||}"
+    by (simp add: ffold.rep_eq)
+  with assms show ?thesis
+    unfolding merge_def by simp
+qed
 
 lemma merge_singleton_sucs:
   assumes "list_dtree (Node (root t1) (sucs t1))" and "sucs t1 \<noteq> {||}"
@@ -829,7 +844,7 @@ proof(induction xs)
   let ?f = "merge_f r (finsert x xs)"
   let ?f' = "merge_f r xs"
   have "(t1, e1) \<in> fset (finsert x xs)" by simp
-  moreover have "(t1, e1) \<notin> fset xs" using insert.hyps notin_fset by fastforce
+  moreover have "(t1, e1) \<notin> fset xs" using insert.hyps by fastforce
   ultimately have xs_val:
     "(\<forall>(v,e) \<in> set (ffold ?f' [] xs). set v \<inter> dlverts t1 = {} \<and> v \<noteq> [] \<and> e \<notin> darcs t1 \<union> {e1})"
     using merge_ffold_empty_inter_preserv'[OF insert.prems(1) empty_list_valid_merge] by blast
@@ -856,7 +871,7 @@ proof(induction xs)
     then have "y \<in> fst ` set (dtree_to_list (Node r {|x|}))" using False insert.prems by fast
     then show ?thesis by (simp add: dtree_to_list_x_in_dverts)
   qed
-qed (simp)
+qed (simp add: ffold.rep_eq)
 
 lemma verts_child_if_merge_child:
   assumes "t1 \<in> fst ` fset (sucs (merge t0))" and "x \<in> dverts t1"
@@ -883,7 +898,7 @@ lemma sucs_dverts_eq_dtree_list:
   shows "dverts (Node (root t) {|(t1,e1)|}) - {root t}
         = fst ` set (dtree_to_list (Node (root t) {|(t1,e1)|}))"
 proof -
-  have "{|(t1,e1)|} |\<subseteq>| sucs t" using assms(1) notin_fset by fast
+  have "{|(t1,e1)|} |\<subseteq>| sucs t" using assms(1) by fast
   then have wf: "wf_dverts (Node (root t) {|(t1,e1)|})"
     using wf_verts wf_dverts_sub by (metis dtree.exhaust_sel)
   have "\<forall>(t1,e1) \<in> fset (sucs t) . fcard {|(t1,e1)|} = 1" using fcard_single_1 by fast
@@ -903,7 +918,7 @@ proof(induction xs)
   let ?f = "merge_f r (finsert x xs)"
   let ?f' = "merge_f r xs"
   have "(t1, e1) \<in> fset (finsert x xs)" by simp
-  moreover have "(t1, e1) \<notin> fset xs" using insert.hyps notin_fset by fastforce
+  moreover have "(t1, e1) \<notin> fset xs" using insert.hyps by fastforce
   ultimately have xs_val:
     "(\<forall>(v,e) \<in> set (ffold ?f' [] xs). set v \<inter> dlverts t1 = {} \<and> v \<noteq> [] \<and> e \<notin> darcs t1 \<union> {e1})"
     using merge_ffold_empty_inter_preserv'[OF insert.prems(1) empty_list_valid_merge] by blast
@@ -921,7 +936,7 @@ proof(induction xs)
   then have "set (ffold ?f [] (finsert x xs))
         = (set (dtree_to_list (Node r {|x|})) \<union> set (ffold ?f' [] xs))" using set_merge by fast
   then show ?case using 1 insert.IH by simp
-qed (simp)
+qed (simp add: ffold.rep_eq)
 
 lemma sucs_dverts_no_root:
   "(t1,e1) \<in> fset (sucs t) \<Longrightarrow> dverts (Node (root t) {|(t1,e1)|}) - {root t} = dverts t1"
@@ -1055,7 +1070,7 @@ proof(induction xs)
     obtain t2 e2 where t2_def[simp]: "x = (t2,e2)" by fastforce
     have 0: "list_dtree (Node r (finsert x xs))" using list_dtree_subset insert.prems(1,2) by blast
     have "(t2,e2) \<noteq> (t1,e1)" using insert.prems(5) t2_def by fastforce
-    moreover have "(t2,e2) \<in> fset ys" using insert.prems(2) notin_fset by fastforce
+    moreover have "(t2,e2) \<in> fset ys" using insert.prems(2) by fastforce
     moreover have "disjoint_darcs ys"
       using disjoint_darcs_if_wf[OF list_dtree.wf_arcs [OF insert.prems(1)]] by simp
     ultimately have "(darcs t1 \<union> {e1}) \<inter> (darcs t2 \<union> {e2}) = {}"
@@ -1082,7 +1097,7 @@ proof(induction xs)
       using set_merge[of "dtree_to_list (Node r {|(t2,e2)|})"] by presburger
     then show ?thesis using 1 2 by fast
   qed
-qed (auto)
+qed (auto simp: ffold.rep_eq)
 
 lemma merge_ffold_wf_list_arcs:
   "\<lbrakk>\<And>x. x \<in> fset xs \<Longrightarrow> wf_darcs (Node r {|x|}); list_dtree (Node r xs)\<rbrakk>
@@ -1093,7 +1108,7 @@ proof(induction xs)
   let ?f = "merge_f r (finsert x xs)"
   let ?f' = "merge_f r xs"
   have 0: "(t1, e1) \<in> fset (finsert x xs)" by simp
-  moreover have t1_not_xs: "(t1, e1) \<notin> fset xs" using insert.hyps notin_fset by fastforce
+  moreover have t1_not_xs: "(t1, e1) \<notin> fset xs" using insert.hyps by fastforce
   ultimately have xs_val:
     "(\<forall>(v,e) \<in> set (ffold ?f' [] xs). set v \<inter> dlverts t1 = {} \<and> v \<noteq> [] \<and> e \<notin> darcs t1 \<union> {e1})"
     using merge_ffold_empty_inter_preserv'[OF insert.prems(2) empty_list_valid_merge] by blast
@@ -1113,7 +1128,7 @@ proof(induction xs)
               = Sorting_Algorithms.merge cmp' (dtree_to_list (Node r {|x|})) (ffold ?f' [] xs)"
     using xs_val insert.prems by simp
   then show ?case using wf_list_arcs_merge[OF 1 2 3] by presburger
-qed (simp)
+qed (simp add: ffold.rep_eq)
 
 lemma merge_wf_darcs: "wf_darcs (merge t)"
 proof -
@@ -1131,7 +1146,7 @@ proof(induction xs)
   let ?f = "merge_f r (finsert x xs)"
   let ?f' = "merge_f r xs"
   have 0: "(t1, e1) \<in> fset (finsert x xs)" by simp
-  moreover have "(t1, e1) \<notin> fset xs" using insert.hyps notin_fset by fastforce
+  moreover have "(t1, e1) \<notin> fset xs" using insert.hyps by fastforce
   ultimately have xs_val:
     "(\<forall>(v,e) \<in> set (ffold ?f' [] xs). set v \<inter> dlverts t1 = {} \<and> v \<noteq> [] \<and> e \<notin> darcs t1 \<union> {e1})"
     using merge_ffold_empty_inter_preserv'[OF insert.prems(2) empty_list_valid_merge] by blast
@@ -1152,7 +1167,7 @@ proof(induction xs)
               = Sorting_Algorithms.merge cmp' (dtree_to_list (Node r {|x|})) (ffold ?f' [] xs)"
     using xs_val insert.prems by simp
   then show ?case using wf_list_lverts_merge[OF 1 2 3] by presburger
-qed (simp)
+qed (simp add: ffold.rep_eq)
 
 lemma merge_ffold_root_inter_preserv:
   "\<lbrakk>list_dtree (Node r xs); \<forall>t1 \<in> fst ` fset xs. set r' \<inter> dlverts t1 = {};
@@ -1196,7 +1211,7 @@ proof(induction xs)
       then show ?thesis using insert.IH insert.prems(2-3) 0 by auto
     qed
   qed
-qed (fastforce)
+qed (fastforce simp: ffold.rep_eq)
 
 lemma merge_wf_dlverts: "wf_dlverts (merge t)"
 proof -
@@ -1264,7 +1279,7 @@ proof(induction xs)
       then show ?thesis using insert.IH[OF 0] insert.prems(2-3) by simp
     qed
   qed
-qed (fastforce)
+qed (fastforce simp: ffold.rep_eq)
 
 lemma distinct_merge:
   assumes "\<forall>v\<in>dverts t. distinct v" and "v\<in>dverts (merge t)"
@@ -1300,7 +1315,7 @@ proof(induction xs)
   have i1: "\<exists>(t1, e1)\<in>fset (finsert x xs). hd (dtree_to_list (Node r {|(t2,e2)|})) = (root t1, e1)"
     by simp
   have "(t2, e2) \<in> fset (finsert x xs)" by simp
-  moreover have "(t2, e2) \<notin> fset xs" using insert.hyps notin_fset by fastforce
+  moreover have "(t2, e2) \<notin> fset xs" using insert.hyps by fastforce
   ultimately have xs_val:
     "(\<forall>(v,e) \<in> set (ffold f' [] xs). set v \<inter> dlverts t2 = {} \<and> v \<noteq> [] \<and> e \<notin> darcs t2 \<union> {e2})"
     using merge_ffold_empty_inter_preserv'[OF insert.prems(1) empty_list_valid_merge] f'_def
@@ -1317,7 +1332,7 @@ proof(induction xs)
   show ?case
   proof(cases "xs = {||}")
     case True
-    then show ?thesis using merge i1 f_def by auto
+    then show ?thesis using merge i1 f_def by (auto simp: ffold.rep_eq)
   next
     case False
     then have i2: "\<exists>(t1,e1) \<in> fset (finsert x xs). hd (ffold f' [] xs) = (root t1,e1)"
@@ -1359,7 +1374,8 @@ proof -
 qed
 
 lemma ffold_singleton: "comp_fun_commute f \<Longrightarrow> ffold f z {|x|} = f x z"
-  using comp_fun_commute.ffold_finsert by fastforce
+  using comp_fun_commute.ffold_finsert
+  by (metis comp_fun_commute.ffold_empty finsert_absorb finsert_not_fempty)
 
 lemma ffold_singleton1:
   "\<lbrakk>comp_fun_commute (\<lambda>a b. if P a b then Q a b else R a b); P x z\<rbrakk>
@@ -1379,7 +1395,7 @@ proof -
   define f where "f = merge_f r {|(t1,e1)|}"
   have "ffold f [] {|(t1,e1)|} = f (t1,e1) (ffold f [] {||})"
     using Comm.ffold_finsert f_def by blast
-  then show ?thesis using f_def assms by simp
+  then show ?thesis using f_def assms by (simp add: ffold.rep_eq)
 qed
 
 lemma merge_singleton_if_wf:
@@ -1406,7 +1422,7 @@ proof(induction xs arbitrary: as bs)
   let ?f = "merge_f r (finsert x xs)"
   let ?f' = "merge_f r xs"
   have "(t1, e1) \<in> fset (finsert x xs)" by simp
-  moreover have "(t1, e1) \<notin> fset xs" using insert.hyps notin_fset by fastforce
+  moreover have "(t1, e1) \<notin> fset xs" using insert.hyps by fastforce
   ultimately have xs_val:
     "(\<forall>(v,e) \<in> set (ffold ?f' [] xs). set v \<inter> dlverts t1 = {} \<and> v \<noteq> [] \<and> e \<notin> darcs t1 \<union> {e1})"
     using merge_ffold_empty_inter_preserv'[OF insert.prems(2) empty_list_valid_merge] by blast
@@ -1439,7 +1455,7 @@ proof(induction xs arbitrary: as bs)
           \<and> dverts (Node v zs) \<subseteq> fst ` set ((v,e)#bs))"
     using strict_subtree_subset[where r=r and xs=xs and ys="finsert x xs"] by fast
   then show ?case using merge_split_supset_strict_subtree[OF left right] ind insert.prems(3) by simp
-qed (simp)
+qed (simp add: ffold.rep_eq)
 
 lemma merge_strict_subtree_dverts_sup:
   assumes "\<forall>t \<in> fst ` fset (sucs t). max_deg t \<le> 1"
@@ -1974,7 +1990,7 @@ proof(induction xs)
     using insert.prems(2) by fastforce
   then have ind2: "sorted cmp'' (ffold f' [] xs)" using insert.IH[OF 0] f'_def by blast
   have "(t2, e2) \<in> fset (finsert x xs)" by simp
-  moreover have "(t2, e2) \<notin> fset xs" using insert.hyps notin_fset by fastforce
+  moreover have "(t2, e2) \<notin> fset xs" using insert.hyps by fastforce
   ultimately have xs_val:
     "(\<forall>(v,e) \<in> set (ffold f' [] xs). set v \<inter> dlverts t2 = {} \<and> v \<noteq> [] \<and> e \<notin> darcs t2 \<union> {e2})"
     using merge_ffold_empty_inter_preserv'[OF insert.prems(1) empty_list_valid_merge] f'_def
@@ -1989,7 +2005,7 @@ proof(induction xs)
               = ?merge (dtree_to_list (Node r {|(t2,e2)|})) (ffold f'[] xs)"
     using t2_def by blast
   then show ?case using sorted_cmp''_merge[OF ind1 ind2] f_def by auto
-qed(simp)
+qed (simp add: ffold.rep_eq)
 
 lemma not_single_subtree_if_nwf:
   "\<not>list_dtree (Node r xs) \<Longrightarrow> \<not>is_subtree (Node r1 {|(t1,e1)|}) (merge (Node r xs))"

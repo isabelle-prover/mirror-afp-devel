@@ -1727,7 +1727,7 @@ proof -
     using ofsm_table_fix_set[OF _ assms] \<open>eq_class = ofsm_table_fix M ?f 0\<close> by blast
   
   have ***: "(eq_class (initial M)) |\<in>| (eq_class |`| fstates M)"
-    using fsm_initial[of M] fstates_set fmember_iff_member_fset by fastforce
+    using fsm_initial[of M] fstates_set by fastforce
 
   have m1:"initial M' = {q' \<in> states M . LS M q' = LS M (initial M)}"
     by (metis (mono_tags) "***" "****" M'_def create_unconnected_fsm_from_fsets_simps(1) fsm_initial)
@@ -1742,10 +1742,10 @@ proof -
   qed  
 
   have m3: "inputs M' = inputs M"
-    using create_unconnected_fsm_from_fsets_simps(3)[OF ***] finputs_set unfolding M'_def by force
+    using create_unconnected_fsm_from_fsets_simps(3)[OF ***] finputs_set unfolding M'_def by metis
 
   have m4: "outputs M' = outputs M"
-    using create_unconnected_fsm_from_fsets_simps(4)[OF ***] foutputs_set unfolding M'_def by force
+    using create_unconnected_fsm_from_fsets_simps(4)[OF ***] foutputs_set unfolding M'_def by metis
 
   have m5: "transitions M' = {}"
     using create_unconnected_fsm_from_fsets_simps(5)[OF ***] unfolding M'_def by force

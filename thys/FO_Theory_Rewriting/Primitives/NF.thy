@@ -69,7 +69,7 @@ lift_definition fstates :: "('a, 'b) term fset \<Rightarrow> 'a bot_term fset" i
 lemma bound_max_state_fset:
   "bound_max t (psubt_lhs_bot (fset R)) |\<in>| fstates R"
   using bound_max_state_set[of "fset R" t]
-  using fstates.rep_eq notin_fset by fastforce
+  using fstates.rep_eq by fastforce
 
 end
 
@@ -92,12 +92,12 @@ proof -
       using finite_cartesian_product[OF _ *[of n], of "{f}"] unfolding ** by simp}
   then have *: "finite (\<Union> (f, n) \<in> fset \<F> . {(f, qs) | qs. ?subP n qs})" by auto
   have **: "(\<Union> (f, n) \<in> fset \<F> . {(f, qs) | qs. ?subP n qs}) = {(f, qs) | f qs. (f, length qs) |\<in>| \<F> \<and> ?subP (length qs) qs}"
-    by (auto simp: fmember_iff_member_fset)
+    by auto
   have *: "finite ({(f, qs) | f qs. (f, length qs) |\<in>| \<F> \<and> ?subP (length qs) qs} \<times> fset (fstates R))"
     using * unfolding ** by (intro finite_cartesian_product) auto
   have **: "{TA_rule f qs q | f qs q. (f, length qs) |\<in>| \<F> \<and> fset_of_list qs |\<subseteq>| fstates R \<and> q |\<in>| fstates R} =
     (\<lambda> ((f, qs), q). TA_rule f qs q) ` ({(f, qs) | f qs. (f, length qs) |\<in>| \<F> \<and> ?subP (length qs) qs} \<times> fset (fstates R))"
-    by (auto simp: image_def fmember_iff_member_fset split!: prod.splits) 
+    by (auto simp: image_def split!: prod.splits) 
   have f: "finite {TA_rule f qs q | f qs q. (f, length qs) |\<in>| \<F> \<and> fset_of_list qs |\<subseteq>| fstates R \<and> q |\<in>| fstates R}"
     unfolding ** using * by auto
   show ?thesis
@@ -179,7 +179,7 @@ next
   have subst: "s\<^sup>\<bottom> \<le>\<^sub>b BFun f qs" using IN(1)[OF nth_mem, of i "term.args s ! i" "qs ! i" for i] IN(2-) reach
     by (cases s) (auto elim!: bless_eq.cases)
   have "s\<^sup>\<bottom> \<in> psubt_lhs_bot (fset R)" using Fun(2 - 4)
-    by auto (metis notin_fset)
+    by auto
   then have "lift_total.lifted_less_eq (Some (s\<^sup>\<bottom>)) (lift_sup_small (BFun f qs) (psubt_lhs_bot (fset R)))"
     using subst
     by (intro lift_total.lift_ord.supremum_sound)
@@ -233,7 +233,7 @@ proof (induct t)
   obtain q where "q = bound_max (BFun f qs) (psubt_lhs_bot (fset R))" by blast
   then have "f qs \<rightarrow> q |\<in>| rules (nf_ta R \<F>)" using Fun(2 - 4)
     using ta_nf_tr_to_state[of "ts ! i" "qs ! i" R \<F> for i] len nt_inst reach
-    by (auto simp: nf_ta_def nf_rules_fmember, simp add: fmember_iff_member_fset)
+    by (auto simp: nf_ta_def nf_rules_fmember)
        (metis (no_types, lifting) in_fset_idx nth_mem)
   then show ?case using reach len by auto
 qed auto
@@ -283,7 +283,8 @@ proof (induct t arbitrary: q)
   from Fun(2-) have "(f, length ts) |\<in>| \<F>"
     by (auto simp: nf_ta_def nf_rules_def)
   then show ?case using Fun
-    by (auto simp: fmember_iff_member_fset) (metis Fun.hyps Fun.prems(2) in_set_idx subsetD ta_der_Fun)
+    apply simp
+    by (smt (verit) Union_least image_iff in_set_idx)
 qed auto
 
 lemma gta_lang_nf_ta_funas:

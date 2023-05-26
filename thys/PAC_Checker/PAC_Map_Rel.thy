@@ -34,7 +34,7 @@ lemma fmap_rel_alt_def:
       fset (fmdom m2) \<subseteq> Range K \<and>
       (\<forall>i j. (i, j) \<in> K \<longrightarrow> (j \<in># dom_m m2) = (i \<in># dom_m m1))}
 \<close>
-  unfolding fmap_rel_def dom_m_def fmember_iff_member_fset
+  unfolding fmap_rel_def dom_m_def
   by auto
 
 lemma fmdom_empty_fmempty_iff[simp]: \<open>fmdom m = {||} \<longleftrightarrow> m = fmempty\<close>
@@ -44,13 +44,13 @@ lemma fmap_rel_empty1_simp[simp]:
   "(fmempty,m)\<in>\<langle>K,V\<rangle>fmap_rel \<longleftrightarrow> m=fmempty"
   apply (cases \<open>fmdom m = {||}\<close>)
    apply (auto simp: fmap_rel_def)[]
-  by (auto simp add: fmember_iff_member_fset fmap_rel_def simp del: fmdom_empty_fmempty_iff)
+  by (auto simp add: fmap_rel_def simp del: fmdom_empty_fmempty_iff)
 
 lemma fmap_rel_empty2_simp[simp]:
   "(m,fmempty)\<in>\<langle>K,V\<rangle>fmap_rel \<longleftrightarrow> m=fmempty"
   apply (cases \<open>fmdom m = {||}\<close>)
    apply (auto simp: fmap_rel_def)[]
-  by (fastforce simp add: fmember_iff_member_fset fmap_rel_def simp del: fmdom_empty_fmempty_iff)
+  by (fastforce simp add: fmap_rel_def simp del: fmdom_empty_fmempty_iff)
 
 sepref_decl_intf ('k,'v) f_map is "('k, 'v) fmap"
 
@@ -164,9 +164,7 @@ sepref_decl_op fmap_lookup: "fmlookup" :: "\<langle>K,V\<rangle>fmap_rel \<right
   done
 
 lemma in_fdom_alt: "k\<in>#dom_m m \<longleftrightarrow> \<not>is_None (fmlookup m k)"
-  apply (auto split: option.split intro: fmdom_notI simp: dom_m_def fmember_iff_member_fset)
-   apply (meson fmdom_notI notin_fset)
-  using notin_fset by fastforce
+  by (auto split: option.split intro: fmdom_notI fmdomI simp: dom_m_def)
 
 sepref_decl_op fmap_contains_key: "\<lambda>k m. k\<in>#dom_m m" :: "K \<rightarrow> \<langle>K,V\<rangle>fmap_rel \<rightarrow> bool_rel"
   unfolding in_fdom_alt

@@ -14,7 +14,7 @@ inductive_set \<Delta>_trancl_set :: "('q, 'f) ta \<Rightarrow> ('q, 'f) ta \<Ri
 lemma \<Delta>_trancl_set_states: "\<Delta>_trancl_set \<A> \<B> \<subseteq> fset (\<Q> \<A> |\<times>| \<Q> \<B>)"
 proof -
   {fix p q assume "(p, q) \<in> \<Delta>_trancl_set \<A> \<B>" then have "(p, q) \<in> fset (\<Q> \<A> |\<times>| \<Q> \<B>)"
-      by (induct) (auto dest: rule_statesD eps_statesD simp flip: fmember_iff_member_fset)}
+      by (induct) (auto dest: rule_statesD eps_statesD)}
   then show ?thesis by auto
 qed
 
@@ -65,7 +65,7 @@ qed
 lemma gtt_states_GTT_trancl:
   "gtt_states (GTT_trancl G) |\<subseteq>| gtt_states G"
   unfolding GTT_trancl_def
-  by (auto simp: gtt_states_def \<Q>_def \<Delta>_trancl_inv dest!: fsubsetD[OF \<Delta>_trancl_states] simp flip: fmember_iff_member_fset)
+  by (auto simp: gtt_states_def \<Q>_def \<Delta>_trancl_inv dest!: fsubsetD[OF \<Delta>_trancl_states])
 
 lemma gtt_syms_GTT_trancl:
   "gtt_syms (GTT_trancl G) = gtt_syms G"
@@ -83,7 +83,7 @@ proof -
     by (induct rule: \<Delta>\<^sub>\<epsilon>_induct) (auto intro: \<Delta>_trancl_intros simp: \<Delta>_trancl_inv[of B A, symmetric])
   show ?thesis
     by (intro gtt_lang_mono[of "GTT_comp (GTT_trancl G) (GTT_trancl G)" "GTT_trancl G"])
-       (auto simp: GTT_comp_def GTT_trancl_def fmember.abs_eq \<Delta>_trancl_inv)
+       (auto simp: GTT_comp_def GTT_trancl_def \<Delta>_trancl_inv)
 qed
 
 lemma agtt_lang_base:
@@ -220,7 +220,7 @@ proof (induct s arbitrary: p)
                          trancl_gtt_lang_arg_closed exI[of _ qs] exI[of _ q])
       next
         assume "(q, p) |\<in>| (\<Delta>_trancl B A)"
-        then have "(q, p) |\<in>| \<Delta>_trancl B A" by (simp add: fmember.abs_eq)       
+        then have "(q, p) |\<in>| \<Delta>_trancl B A" by simp       
         from trancl_step[OF this] show ?thesis using Base(3, 4)
           by auto
       qed
@@ -233,7 +233,7 @@ proof (induct s arbitrary: p)
           by (auto simp: gta_der_def ta_der_eps intro!: exI[of _ s'])
       next
         assume "(q, r) |\<in>| \<Delta>_trancl B A"
-        then have "(q, r) |\<in>| \<Delta>_trancl B A" by (simp add: fmember.abs_eq)       
+        then have "(q, r) |\<in>| \<Delta>_trancl B A" by simp       
         from trancl_step[OF this] show ?thesis using s' by auto
       qed
     qed

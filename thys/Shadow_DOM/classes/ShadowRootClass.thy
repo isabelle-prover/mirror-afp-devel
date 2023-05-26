@@ -76,8 +76,7 @@ the |`| (cast |`| (ffilter is_shadow_root_ptr_kind (object_ptr_kinds heap)))"
 lemma shadow_root_ptr_kinds_simp [simp]:
   "shadow_root_ptr_kinds (Heap (fmupd (cast shadow_root_ptr) shadow_root (the_heap h))) =
 {|shadow_root_ptr|} |\<union>| shadow_root_ptr_kinds h"
-  apply(auto simp add: shadow_root_ptr_kinds_def)[1]
-  by force
+  by (auto simp add: shadow_root_ptr_kinds_def)
 
 definition shadow_root_ptrs :: "(_) heap \<Rightarrow> (_) shadow_root_ptr fset"
   where
@@ -103,15 +102,19 @@ definition is_shadow_root_kind :: "(_) Object \<Rightarrow> bool"
 lemma shadow_root_ptr_kinds_heap_upd [simp]:
   "shadow_root_ptr_kinds (Heap (fmupd (cast shadow_root_ptr) shadow_root (the_heap h))) =
 {|shadow_root_ptr|} |\<union>| shadow_root_ptr_kinds h"
-  apply(auto simp add: shadow_root_ptr_kinds_def)[1]
-  by force
+  by (auto simp add: shadow_root_ptr_kinds_def)
 
 lemma shadow_root_ptr_kinds_commutes [simp]:
   "cast shadow_root_ptr |\<in>| object_ptr_kinds h \<longleftrightarrow> shadow_root_ptr |\<in>| shadow_root_ptr_kinds h"
-  apply(auto simp add: object_ptr_kinds_def shadow_root_ptr_kinds_def)[1]
-  by (metis (no_types, lifting) shadow_root_ptr_casts_commute2 shadow_root_ptr_shadow_root_ptr_cast
-      ffmember_filter fimage_eqI
-      fset.map_comp option.sel)
+proof (rule iffI)
+  show "cast shadow_root_ptr |\<in>| object_ptr_kinds h \<Longrightarrow> shadow_root_ptr |\<in>| shadow_root_ptr_kinds h"
+    by (metis (no_types, opaque_lifting) finsertI1 finsert_absorb funion_finsert_left
+        funion_finsert_right put\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_def put\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_put_ptrs shadow_root_ptr_kinds_def
+        shadow_root_ptr_kinds_heap_upd sup_bot.right_neutral)
+next
+  show "shadow_root_ptr |\<in>| shadow_root_ptr_kinds h \<Longrightarrow> cast shadow_root_ptr |\<in>| object_ptr_kinds h"
+    by (auto simp add: object_ptr_kinds_def shadow_root_ptr_kinds_def)
+qed
 
 definition get\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t :: "(_) shadow_root_ptr \<Rightarrow> (_) heap \<Rightarrow> (_) ShadowRoot option"
   where
@@ -147,7 +150,7 @@ lemma get\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>
   shows "shadow_root_ptr |\<in>| shadow_root_ptr_kinds h \<longleftrightarrow> get\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t shadow_root_ptr h \<noteq> None"
   using l_type_wf\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_axioms assms
   apply(simp add: type_wf_defs get\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_def l_type_wf\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_def)
-  by (metis is_none_bind is_none_simps(1) is_none_simps(2) local.get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_type_wf notin_fset
+  by (metis is_none_bind is_none_simps(1) is_none_simps(2) local.get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_type_wf
       shadow_root_ptr_kinds_commutes)
 end
 
@@ -348,8 +351,7 @@ definition a_known_ptrs :: "(_) heap \<Rightarrow> bool"
     "a_known_ptrs h = (\<forall>ptr \<in> fset (object_ptr_kinds h). known_ptr ptr)"
 
 lemma known_ptrs_known_ptr: "a_known_ptrs h \<Longrightarrow> ptr |\<in>| object_ptr_kinds h \<Longrightarrow> known_ptr ptr"
-  apply(simp add: a_known_ptrs_def)
-  using notin_fset by fastforce
+  by (simp add: a_known_ptrs_def)
 
 lemma known_ptrs_preserved:
   "object_ptr_kinds h = object_ptr_kinds h' \<Longrightarrow> a_known_ptrs h = a_known_ptrs h'"

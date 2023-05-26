@@ -97,14 +97,18 @@ definition is_document_kind :: "(_) Object \<Rightarrow> bool"
 lemma document_ptr_kinds_simp [simp]: 
   "document_ptr_kinds (Heap (fmupd (cast document_ptr) document (the_heap h))) 
           = {|document_ptr|} |\<union>| document_ptr_kinds h"
-  apply(auto simp add: document_ptr_kinds_def)[1]
-  by force
+  by (auto simp add: document_ptr_kinds_def)
 
 lemma document_ptr_kinds_commutes [simp]: 
   "cast document_ptr |\<in>| object_ptr_kinds h \<longleftrightarrow> document_ptr |\<in>| document_ptr_kinds h"
-  apply(auto simp add: object_ptr_kinds_def document_ptr_kinds_def)[1]
-  by (metis (no_types, lifting) document_ptr_casts_commute2 document_ptr_document_ptr_cast 
-      ffmember_filter fimage_eqI fset.map_comp option.sel)
+proof (rule iffI)
+ show "cast document_ptr |\<in>| object_ptr_kinds h \<Longrightarrow> document_ptr |\<in>| document_ptr_kinds h"
+   by (metis (no_types, lifting) document_ptr_casts_commute2 document_ptr_document_ptr_cast
+       document_ptr_kinds_def ffmember_filter fimage_eqI option.sel)
+next
+  show "document_ptr |\<in>| document_ptr_kinds h \<Longrightarrow> cast document_ptr |\<in>| object_ptr_kinds h"
+    by (auto simp add: object_ptr_kinds_def document_ptr_kinds_def)
+qed
 
 definition get\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t :: "(_) document_ptr \<Rightarrow> (_) heap \<Rightarrow> (_) Document option"
   where                             
@@ -136,7 +140,7 @@ lemma get\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t_type_w
   shows "document_ptr |\<in>| document_ptr_kinds h \<longleftrightarrow> get\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t document_ptr h \<noteq> None"
   using l_type_wf\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t_axioms assms
   apply(simp add: type_wf_defs get\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def l_type_wf\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def)
-  by (metis document_ptr_kinds_commutes fmember_iff_member_fset is_none_bind is_none_simps(1)
+  by (metis document_ptr_kinds_commutes is_none_bind is_none_simps(1)
       is_none_simps(2) local.get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_type_wf)
 end
 
@@ -321,8 +325,7 @@ definition a_known_ptrs :: "(_) heap \<Rightarrow> bool"
     "a_known_ptrs h = (\<forall>ptr \<in> fset (object_ptr_kinds h). known_ptr ptr)"
 
 lemma known_ptrs_known_ptr: "a_known_ptrs h \<Longrightarrow> ptr |\<in>| object_ptr_kinds h \<Longrightarrow> known_ptr ptr"
-  apply(simp add: a_known_ptrs_def)
-  using notin_fset by fastforce
+  by (simp add: a_known_ptrs_def)
 
 lemma known_ptrs_preserved: 
   "object_ptr_kinds h = object_ptr_kinds h' \<Longrightarrow> a_known_ptrs h = a_known_ptrs h'"

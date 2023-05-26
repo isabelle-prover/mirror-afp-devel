@@ -39,9 +39,6 @@ subsection\<open>Datatypes\<close>
 datatype exception = NotFoundError | HierarchyRequestError | NotSupportedError | SegmentationFault
   | AssertException | NonTerminationException | InvokeError | TypeError
 
-lemma finite_set_in [simp]: "x \<in> fset FS \<longleftrightarrow> x |\<in>| FS"
-  by (meson notin_fset)
-
 consts put_M :: 'a
 consts get_M :: 'a
 consts delete_M :: 'a

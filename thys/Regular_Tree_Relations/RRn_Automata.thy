@@ -571,8 +571,8 @@ proof -
   { fix A B
     let ?AB = "?swp (pair_automaton A B)" and ?BA = "pair_automaton B A"
     have "eps ?AB |\<subseteq>| eps ?BA" "rules ?AB |\<subseteq>| rules ?BA"
-      by (auto simp: fmap_states_ta_def fmap_funs_ta_def pair_automaton_def fimage_iff ta_rule.map_comp)
-         force+
+      by (auto simp: fmap_states_ta_def fmap_funs_ta_def pair_automaton_def
+          fimage_funion comp_def prod.map_comp ta_rule.map_comp)
   } note * = this
   let ?BA = "?swp (?swp (pair_automaton B A))" and ?AB = "?swp (pair_automaton A B)"
   have **: "r |\<in>| rules (pair_automaton B A) \<Longrightarrow> ?m r |\<in>| ?m |`| rules (pair_automaton B A)" for r
@@ -580,7 +580,7 @@ proof -
   have "r |\<in>| rules ?BA \<Longrightarrow> r |\<in>| rules ?AB" "e |\<in>| eps ?BA \<Longrightarrow> e |\<in>| eps ?AB" for r e
     using *[of B A] map_ta_rule_prod_swap_id
     unfolding fmap_funs_ta_def fmap_states_ta_def
-      by (auto simp: map_ta_rule_comp fimage_iff fBex_def ta_rule.map_id0 intro!: exI[of _ "?m r"])
+      by (auto simp: map_ta_rule_comp image_iff fBex_def ta_rule.map_id0 intro!: bexI[of _ "?m r"])
   then have "eps ?BA |\<subseteq>| eps ?AB" "rules ?BA |\<subseteq>| rules ?AB"
     by blast+
   then have "fmap_states_ta prod.swap (fmap_funs_ta prod.swap (pair_automaton A B)) = pair_automaton B A"
@@ -601,9 +601,24 @@ proof (goal_cases sn ns ss)
   let ?AB = "pair_automaton A B"
   have 1: "(Some p, None) |\<in>| ta_der (pair_automaton A B) (term_of_gterm (map_gterm (\<lambda>f. (Some f, None)) s))"
     if "p |\<in>| ta_der A (term_of_gterm s)" for A B p s
-    by (intro fsubsetD[OF ta_der_mono, OF _ _ ta_der_fmap_states_ta[OF ta_der_fmap_funs_ta[OF that]],
-      unfolded map_term_of_gterm id_def gterm.map_ident])
-       (auto simp add: pair_automaton_def fmap_states_ta_def fmap_funs_ta_def ta_rule.map_comp image_iff eps_to_pair_eps_Some_None)
+  proof (rule fsubsetD[OF ta_der_mono])
+    show "rules (fmap_states_ta lift_Some_None (fmap_funs_ta lift_Some_None A)) |\<subseteq>|
+      rules (pair_automaton A B)"
+      by (auto simp: fmap_states_ta_def fmap_funs_ta_def comp_def ta_rule.map_comp
+            pair_automaton_def)
+  next
+    show "eps (fmap_states_ta lift_Some_None (fmap_funs_ta lift_Some_None A)) |\<subseteq>|
+      eps (pair_automaton A B)"
+      by (rule fsubsetI)
+        (auto simp: fmap_states_ta_def fmap_funs_ta_def pair_automaton_def comp_def fimage.rep_eq
+          dest: eps_to_pair_eps_Some_None)
+  next
+    show "lift_Some_None p |\<in>| ta_der
+      (fmap_states_ta lift_Some_None (fmap_funs_ta lift_Some_None A))
+      (term_of_gterm (gterm_to_Some_None s))"
+      using ta_der_fmap_states_ta[OF ta_der_fmap_funs_ta[OF that], of lift_Some_None]
+      using ta_der_fmap_funs_ta ta_der_to_fmap_states_der that by fastforce
+  qed
   have 2: "q |\<in>| ta_der B (term_of_gterm t) \<Longrightarrow>
     (None, Some q) |\<in>| ta_der ?AB (term_of_gterm (map_gterm (\<lambda>g. (None, Some g)) t))"
     for q t using swap_pair_automaton[OF 1[of q B t A]] by (simp add: gterm.map_comp comp_def)
@@ -628,18 +643,32 @@ proof (goal_cases sn ns ss)
         case True note p = this then show ?thesis
         proof (cases "q' = q")
           case False
-          then have "(q', q) |\<in>| (eps B)|\<^sup>+|" using q'(2) by auto 
-          then show ?thesis using p'(1)
-            using ftrancl_map[of "eps B" "\<lambda>q. (Some p', Some q)" "eps ?AB" q' q]
-            by (auto simp: p pair_automaton_def fimage_iff fBex_def rule_statesD)
+          then have "(q', q) |\<in>| (eps B)|\<^sup>+|" using q'(2) by auto
+          hence "((Some p', Some q'), Some p', Some q) |\<in>| (eps (pair_automaton A B))|\<^sup>+|"
+          proof (rule ftrancl_map[rotated])
+            fix x y
+            assume "(x, y) |\<in>| eps B"
+            thus "((Some p', Some x), Some p', Some y) |\<in>| eps (pair_automaton A B)"
+              using p'(1)[THEN rule_statesD(1), simplified]
+              apply (simp add: pair_automaton_def image_iff fSigma.rep_eq)
+              by fastforce
+          qed
+          thus ?thesis
+            by (simp add: p)
         qed (simp add: p)
       next
         case False note p = this
         then have *: "(p', p) |\<in>| (eps A)|\<^sup>+|" using p'(2) by auto
         then have eps: "((Some p', Some q'), Some p, Some q') |\<in>| (eps (pair_automaton A B))|\<^sup>+|"
-            using q'(1) ftrancl_map[of "eps A" "\<lambda>p. (Some p, Some q')" "eps ?AB" p' p]
-            by (auto simp: p pair_automaton_def fimage_iff fBex_def rule_statesD)
-        show ?thesis
+        proof (rule ftrancl_map[rotated])
+          fix x y
+          assume "(x, y) |\<in>| eps A"
+          then show "((Some x, Some q'), Some y, Some q') |\<in>| eps (pair_automaton A B)"
+            using q'(1)[THEN rule_statesD(1), simplified]
+            apply (simp add: pair_automaton_def image_iff fSigma.rep_eq)
+            by fastforce
+        qed
+        then show ?thesis
         proof (cases "q' = q")
           case True then show ?thesis using eps
             by simp
@@ -647,8 +676,11 @@ proof (goal_cases sn ns ss)
           case False
           then have "(q', q) |\<in>| (eps B)|\<^sup>+|" using q'(2) by auto
           then have "((Some p, Some q'), Some p, Some q) |\<in>| (eps (pair_automaton A B))|\<^sup>+|"
-            using * ftrancl_map[of "eps B" "\<lambda>q. (Some p, Some q)" "eps ?AB" q' q]
-            by (auto simp: p pair_automaton_def fimage_iff fBex_def eps_trancl_statesD)
+            apply (rule ftrancl_map[rotated])
+            using *[THEN eps_trancl_statesD]
+            apply (simp add: p pair_automaton_def image_iff fSigma.rep_eq)
+            by fastforce
+            
           then show ?thesis using eps
             by (meson ftrancl_trans)
         qed
@@ -866,7 +898,7 @@ proof
       by (auto simp: fset_of_list.rep_eq fimage_iff intro!: fBexI[of _ "TA_rule (Some f) qs q"])
     then have "TA_rule f (map the (filter (\<lambda>q. \<not> Option.is_none q) qs')) q \<in> ?Ls"
       unfolding collapse_rule_fset_def
-      by (auto simp: image_iff Bex_def fmember_iff_member_fset intro!: exI[of _"TA_rule (Some f) qs' (Some q)"])}
+      by (auto simp: image_iff Bex_def intro!: exI[of _"TA_rule (Some f) qs' (Some q)"])}
   then show "?Rs \<subseteq> ?Ls" by blast
 next
   {fix f qs q assume ass: "TA_rule f qs q \<in> ?Ls"
@@ -875,7 +907,7 @@ next
       "qs' |\<in>| fset_of_list (collapse_state_list Qn Qs ps)"
       "qs = map the (filter (\<lambda>q. \<not> Option.is_none q) qs')"
       unfolding collapse_rule_fset_def collapse_rule_def
-        by (auto simp: fmember_iff_member_fset ffUnion.rep_eq fset_of_list.rep_eq) (metis ta_rule.collapse)
+        by (auto simp: ffUnion.rep_eq fset_of_list.rep_eq) (metis ta_rule.collapse)
     then have "\<forall> i < length qs'. ps ! i |\<in>| Qn \<and> qs' ! i = None \<or> ps ! i |\<in>| Qs \<and> qs' ! i = Some (ps ! i)"
       using collapse_fset_inv_constr2
       by metis
@@ -895,7 +927,7 @@ lemma collapse_rule_fmember [simp]:
   "TA_rule f qs q |\<in>| (collapse_rule_fset A Qn Qs) \<longleftrightarrow> (\<exists> qs' ps.
    qs = map the (filter (\<lambda>q. \<not> Option.is_none q) qs') \<and> TA_rule (Some f) ps q |\<in>| rules A \<and> length ps = length qs' \<and>
   (\<forall>i < length ps. ps ! i |\<in>| Qn \<and> qs' ! i = None \<or> ps ! i |\<in>| Qs \<and> (qs' ! i) = Some (ps ! i)))"
-  unfolding fmember_iff_member_fset collapse_rule_set_conv
+  unfolding collapse_rule_set_conv
   by auto
 
 definition "Qn A \<equiv> (let S = (r_rhs |`| ffilter (\<lambda> r. r_root r = None) (rules A)) in (eps A)|\<^sup>+| |``| S |\<union>| S)"
@@ -906,9 +938,9 @@ lemma Qn_member_iff [simp]:
 proof -
   {assume ass: "q |\<in>| Qn A" then obtain r where
       "r_rhs r = q \<or> (r_rhs r, q) |\<in>| (eps A)|\<^sup>+|" "r |\<in>| rules A" "r_root r = None"
-      by (force simp: Qn_def Image_def image_def Let_def fImage.rep_eq simp flip: fmember_iff_member_fset)
+      by (force simp: Qn_def Image_def image_def Let_def fImage.rep_eq)
     then have "?Ls \<Longrightarrow> ?Rs"  by (cases r) auto}
-  moreover have "?Rs \<Longrightarrow> ?Ls" by (force simp: Qn_def Image_def image_def Let_def fImage.rep_eq fmember_iff_member_fset)
+  moreover have "?Rs \<Longrightarrow> ?Ls" by (force simp: Qn_def Image_def image_def Let_def fImage.rep_eq)
   ultimately show ?thesis by blast
 qed
 
@@ -917,9 +949,9 @@ lemma Qs_member_iff [simp]:
 proof -
   {assume ass: "q |\<in>| Qs A" then obtain f r where
       "r_rhs r = q \<or> (r_rhs r, q) |\<in>| (eps A)|\<^sup>+|" "r |\<in>| rules A" "r_root r = Some f"
-      by (force simp: Qs_def Image_def image_def Let_def fImage.rep_eq simp flip: fmember_iff_member_fset)
+      by (force simp: Qs_def Image_def image_def Let_def fImage.rep_eq)
     then have "?Ls \<Longrightarrow> ?Rs"  by (cases r) auto}
-  moreover have "?Rs \<Longrightarrow> ?Ls" by (force simp: Qs_def Image_def image_def Let_def fImage.rep_eq fmember_iff_member_fset)
+  moreover have "?Rs \<Longrightarrow> ?Ls" by (force simp: Qs_def Image_def image_def Let_def fImage.rep_eq)
   ultimately show ?thesis by blast
 qed
 
@@ -927,7 +959,7 @@ qed
 lemma collapse_Qn_Qs_set_conv:
   "fset (Qn A) = {q' |qs q q'. TA_rule None qs q |\<in>| rules A \<and> (q = q' \<or> (q, q') |\<in>| (eps A)|\<^sup>+|)}" (is "?Ls1 = ?Rs1")
   "fset (Qs A) = {q' |f qs q q'. TA_rule (Some f) qs q |\<in>| rules A \<and> (q = q' \<or> (q, q') |\<in>| (eps A)|\<^sup>+|)}"  (is "?Ls2 = ?Rs2")
-  by (auto simp flip: fmember_iff_member_fset) force+
+  by auto force+
 
 definition collapse_automaton :: "('q, 'f option) ta \<Rightarrow> ('q, 'f) ta" where
   "collapse_automaton A = TA (collapse_rule_fset A (Qn A) (Qs A)) (eps A)"
@@ -938,9 +970,9 @@ definition collapse_automaton_reg where
 lemma ta_states_collapse_automaton:
   "\<Q> (collapse_automaton A) |\<subseteq>| \<Q> A"
   apply (intro \<Q>_subseteq_I)
-  apply (auto simp: collapse_automaton_def fmember_iff_member_fset collapse_Qn_Qs_set_conv collapse_rule_set_conv
-    fset_of_list.rep_eq in_set_conv_nth rule_statesD[unfolded fmember_iff_member_fset] eps_statesD[unfolded fmember_iff_member_fset])
-  apply (metis Option.is_none_def fnth_mem notin_fset option.sel rule_statesD(3) ta_rule.sel(2))
+  apply (auto simp: collapse_automaton_def collapse_Qn_Qs_set_conv collapse_rule_set_conv
+    fset_of_list.rep_eq in_set_conv_nth rule_statesD eps_statesD[unfolded])
+  apply (metis Option.is_none_def fnth_mem option.sel rule_statesD(3) ta_rule.sel(2))
   done
 
 lemma last_nthI:
@@ -1063,11 +1095,11 @@ proof -
       have "Option.is_none (gcollapse (ts ! i)) \<Longrightarrow> qs ! i |\<in>| Qn'" if "i < length qs" for i
         using q(4)[of i] that
         by (cases "ts ! i" rule: gcollapse.cases)
-           (auto simp: q(3) Qn'_def fmember_iff_member_fset collapse_Qn_Qs_set_conv, meson notin_fset ta_der_Fun)
+           (auto simp: q(3) Qn'_def collapse_Qn_Qs_set_conv)
       moreover have "\<not> Option.is_none (gcollapse (ts ! i)) \<Longrightarrow> qs ! i |\<in>| Qs'" if "i < length qs" for i
         using q(4)[of i] that
         by (cases "ts ! i" rule: gcollapse.cases)
-           (auto simp: q(3) Qs'_def fmember_iff_member_fset collapse_Qn_Qs_set_conv, meson notin_fset ta_der_Fun)
+           (auto simp: q(3) Qs'_def collapse_Qn_Qs_set_conv)
       ultimately have "f' (map the (filter (\<lambda>q. \<not> Option.is_none q) qs')) \<rightarrow> q' |\<in>| rules (collapse_automaton A)"
         using q(1, 4) unfolding collapse_automaton_def Qn'_def[symmetric] Qs'_def[symmetric]
         by (fastforce simp: qs'_def q(3) intro: exI[of _ qs] exI[of _ qs'] split: if_splits)
@@ -1410,16 +1442,16 @@ proof (intro set_eqI iffI, goal_cases lr rl)
   then have "() |\<in>| ta_der (term_automaton \<F>) (term_of_gterm t)"
     by (auto simp: gta_der_def)
   then show ?case
-    by (induct t) (auto simp: term_automaton_def split: if_splits simp flip: fmember_iff_member_fset)
+    by (induct t) (auto simp: term_automaton_def split: if_splits)
 next
   case (rl t)
   then have "() |\<in>| ta_der (term_automaton \<F>) (term_of_gterm t)"
   proof (induct t rule: \<T>\<^sub>G.induct)
     case (const a) then show ?case
-      by (auto simp: term_automaton_def fimage_iff simp flip: fmember_iff_member_fset intro: fBexI[of _ "(a, 0)"])
+      by (auto simp: term_automaton_def image_iff intro: bexI[of _ "(a, 0)"])
   next
     case (ind f n ss) then show ?case
-      by (auto simp: term_automaton_def fimage_iff simp flip: fmember_iff_member_fset intro: fBexI[of _ "(f, n)"])
+      by (auto simp: term_automaton_def image_iff intro: bexI[of _ "(f, n)"])
   qed
   then show ?case
     by (auto simp: gta_der_def)

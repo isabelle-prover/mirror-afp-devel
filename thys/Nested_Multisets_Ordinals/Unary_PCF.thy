@@ -119,7 +119,7 @@ proof (rule ccontr, unfold not_ex not_not)
     by (auto simp add: infinite_UNIV_listI)
   moreover
   have "?P \<subseteq> fst ` fset A"
-    by (force simp: fmember_iff_member_fset)
+    by force
   from finite_surj[OF _ this] have "finite ?P"
     by simp
   ultimately show False by blast

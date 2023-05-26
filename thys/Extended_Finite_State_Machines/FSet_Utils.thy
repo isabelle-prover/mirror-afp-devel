@@ -66,13 +66,10 @@ lemma finsert_equiv: "(finsert e f = f') = (insert e (fset f) = (fset f'))"
 
 lemma filter_elements:
   "x |\<in>| Abs_fset (Set.filter f (fset s)) = (x \<in> (Set.filter f (fset s)))"
-  by (metis ffilter.rep_eq fset_inverse notin_fset)
+  by (metis ffilter.rep_eq fset_inverse)
 
 lemma sorted_list_of_fempty [simp]: "sorted_list_of_fset {||} = []"
   by (simp add: sorted_list_of_fset_def)
-
-lemma fmember_implies_member: "e |\<in>| f \<Longrightarrow> e \<in> fset f"
-  by (simp add: fmember_def)
 
 lemma fold_union_ffUnion: "fold (|\<union>|) l {||} = ffUnion (fset_of_list l)"
 by(induct l rule: rev_induct, auto)
@@ -94,7 +91,7 @@ lemma size_fsubset_elem:
       and "\<nexists>e. e |\<in>| x2 \<and> e |\<notin>| x1"
     shows "size x2 < size x1"
   using assms
-  apply (simp add: fmember_def)
+  apply simp
   by (metis card_seteq finite_fset linorder_not_le subsetI)
 
 lemma size_fsubset: "x2 |\<subset>| x1 \<Longrightarrow> size x2 < size x1"
@@ -171,7 +168,7 @@ function ffold_ord :: "(('a::linorder) \<Rightarrow> 'b \<Rightarrow> 'b) \<Righ
 termination
   apply (relation "measures [\<lambda>(a, s, ab). size s]")
    apply simp
-  by (simp add: card_minus_fMin)
+  by (simp add: card_gt_0_iff fset_equiv)
 
 lemma sorted_list_of_fset_Cons:
   "\<exists>h t. (sorted_list_of_fset (finsert s ss)) = h#t"
@@ -243,7 +240,7 @@ lemma fprod_member:
   "x |\<in>| xs \<Longrightarrow>
    y |\<in>| ys \<Longrightarrow>
    (x, y) |\<in>| xs |\<times>| ys"
-  by (simp add: fmember_def fprod_def Abs_fset_inverse)
+  by (simp add: fprod_def Abs_fset_inverse)
 
 lemma fprod_subseteq:
   "x |\<subseteq>| x' \<and> y |\<subseteq>| y' \<Longrightarrow> x |\<times>| y |\<subseteq>| x' |\<times>| y'"
@@ -311,7 +308,7 @@ lemma size_ffilter: "size (ffilter P f) \<le> size f"
    apply simp
   apply (simp only: ffilter_finsert)
   apply (case_tac "P x")
-   apply (simp add: fmember_iff_member_fset)
+   apply simp
   by (simp add: card_insert_if)
 
 lemma fimage_size_le: "\<And>f s. size s \<le> n \<Longrightarrow> size (fimage f s) \<le> n"

@@ -25,12 +25,12 @@ lemma ps_reachable_statespE:
 
 lemma ps_reachable_statesp_\<Q>:
   "ps_reachable_statesp \<A> f ps q \<Longrightarrow> q |\<in>| \<Q> \<A>"
-  by (auto simp: ps_reachable_statesp_def simp flip: fmember_iff_member_fset dest: rule_statesD eps_trancl_statesD)
+  by (auto simp: ps_reachable_statesp_def simp flip: dest: rule_statesD eps_trancl_statesD)
 
 lemma finite_Collect_ps_statep [simp]:
   "finite (Collect (ps_reachable_statesp \<A> f ps))" (is "finite ?S")
   by (intro finite_subset[of ?S "fset (\<Q> \<A>)"])
-     (auto simp: ps_reachable_statesp_\<Q> simp flip: fmember_iff_member_fset)
+     (auto simp: ps_reachable_statesp_\<Q>)
 lemmas finite_Collect_ps_statep_unfolded [simp] = finite_Collect_ps_statep[unfolded ps_reachable_statesp_def, simplified]
 
 definition "ps_reachable_states \<A> f ps \<equiv> fCollect (ps_reachable_statesp \<A> f ps)"
@@ -50,7 +50,7 @@ lemma ps_reachable_statesI:
 
 lemma ps_reachable_states_sig:
   "ps_reachable_states \<A> f ps \<noteq> {||} \<Longrightarrow> (f, length ps) |\<in>| ta_sig \<A>"
-  by (auto simp: ps_reachable_states_simp ta_sig_def fimage_iff fBex_def dest!: list_all2_lengthD)
+  by (auto simp: ps_reachable_states_simp ta_sig_def image_iff intro!: bexI dest!: list_all2_lengthD)
 
 text \<open>
 A set of "powerset states" is complete if it is sufficient to capture all (non)deterministic
@@ -77,7 +77,7 @@ lemma ps_states_Pow:
   "ps_states_set \<A> \<subseteq> fset (Wrapp |`| fPow (\<Q> \<A>))"
 proof -
   {fix q assume "q \<in> ps_states_set \<A>" then have "q \<in> fset (Wrapp |`| fPow (\<Q> \<A>))"
-      by induct (auto simp: ps_reachable_statesp_\<Q> ps_reachable_states_def image_iff simp flip: fmember_iff_member_fset)}
+      by induct (auto simp: ps_reachable_statesp_\<Q> ps_reachable_states_def image_iff)}
   then show ?thesis by blast
 qed
 
@@ -135,13 +135,13 @@ proof -
       unfolding ps_rulesp_def ps_reachable_states_simp
       using list_all2_lengthD by fastforce 
     from this have sym: "(f, length qs) \<in> ?sig"
-      by (auto simp flip: fmember_iff_member_fset)
+      by auto
     moreover from * have "set ps \<subseteq> ?Q" unfolding ps_rulesp_def
-      by (auto simp flip: fset_of_list_elem fmember_iff_member_fset simp: ps_reachable_statesp_def)
+      by (auto simp flip: fset_of_list_elem simp: ps_reachable_statesp_def)
     ultimately have ps: "ps \<in> args"
       by (auto simp only: args_def UN_iff intro!: bexI[of _ "(f, length qs)"] len)  
     from * have "p \<in> ?Q" unfolding ps_rulesp_def ps_reachable_states_def
-      using fmember_iff_member_fset ps_reachable_statesp_\<Q>
+      using ps_reachable_statesp_\<Q>
       by (fastforce simp add: image_iff)
     with ps sym show "r \<in> bound"
       by (auto simp only: r bound_def UN_iff intro!: bexI[of _ "(f, length qs)"] bexI[of _ "p"] bexI[of _ "ps"])
@@ -259,7 +259,7 @@ lemma \<L>_ps_reg:
 
 lemma ps_ta_states: "\<Q> (ps_ta \<A>) |\<subseteq>| Wrapp |`| fPow (\<Q> \<A>)"
   using ps_rules_states ps_states unfolding ps_ta_def \<Q>_def
-  by (auto simp: Let_def ps_rules_def) blast
+  by (auto simp: Let_def ps_rules_def) force
 
 lemma ps_ta_states': "ex |`| \<Q> (ps_ta \<A>) |\<subseteq>| fPow (\<Q> \<A>)"
   using ps_ta_states[of \<A>]

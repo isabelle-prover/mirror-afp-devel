@@ -427,7 +427,7 @@ lemma min_dnf_Abs_fset[simp]:
 
 lemma dnf_prop_atoms:
   "\<Phi> \<in> dnf \<phi> \<Longrightarrow> fset \<Phi> \<subseteq> prop_atoms \<phi>"
-  by (induction \<phi> arbitrary: \<Phi>) (auto simp: product_def, blast+)
+  by (induction \<phi> arbitrary: \<Phi>) (auto simp: product_def)
 
 lemma min_dnf_prop_atoms:
   "\<Phi> \<in> min_dnf \<phi> \<Longrightarrow> fset \<Phi> \<subseteq> prop_atoms \<phi>"
@@ -516,7 +516,7 @@ next
     by auto
 
   then have "fset B \<Turnstile>\<^sub>P \<phi>"
-    by (induction \<phi> arbitrary: B) (auto simp: min_set_def min_product_def product_def min_union_def, blast+)
+    by (induction \<phi> arbitrary: B) (auto simp: min_set_def min_product_def product_def min_union_def)
 
   then show "\<A> \<Turnstile>\<^sub>P \<phi>"
     using \<open>fset B \<subseteq> \<A>\<close> by blast
@@ -748,7 +748,7 @@ proof -
     unfolding ltln_of_dnf_def using Or\<^sub>n_And\<^sub>n_image_semantics by fastforce
 
   then show ?thesis
-    by (metis image_iff notin_fset)
+    by (metis image_iff)
 qed
 
 lemma ltln_of_dnf_prop_semantics:
@@ -762,7 +762,7 @@ proof -
     unfolding ltln_of_dnf_def using Or\<^sub>n_And\<^sub>n_image_prop_semantics by fastforce
 
   then show ?thesis
-    by (metis image_iff notin_fset)
+    by (metis image_iff)
 qed
 
 lemma ltln_of_dnf_prop_equiv:
@@ -773,7 +773,7 @@ proof
   have "\<A> \<Turnstile>\<^sub>P ltln_of_dnf (min_dnf \<phi>) \<longleftrightarrow> (\<exists>\<Phi> \<in> min_dnf \<phi>. \<forall>\<phi>. \<phi> |\<in>| \<Phi> \<longrightarrow> \<A> \<Turnstile>\<^sub>P \<phi>)"
     using ltln_of_dnf_prop_semantics min_dnf_finite by metis
   also have "\<dots> \<longleftrightarrow> (\<exists>\<Phi> \<in> min_dnf \<phi>. fset \<Phi> \<subseteq> \<A>)"
-    by (metis min_dnf_prop_atoms prop_atoms_entailment_iff notin_fset subset_eq)
+    by (metis min_dnf_prop_atoms prop_atoms_entailment_iff subset_eq)
   also have "\<dots> \<longleftrightarrow> \<A> \<Turnstile>\<^sub>P \<phi>"
     using min_dnf_iff_prop_assignment_subset by blast
   finally show "\<A> \<Turnstile>\<^sub>P ltln_of_dnf (min_dnf \<phi>) = \<A> \<Turnstile>\<^sub>P \<phi>" .
@@ -1022,11 +1022,11 @@ text \<open>This is almost the lemma we need. However, we need to show that the 
 
 lemma fold_product:
   "Finite_Set.fold (\<lambda>x. (\<otimes>) {{|x|}}) {{||}} (fset x) = {x}"
-  by (induction x) (simp_all add: notin_fset, simp add: product_singleton_singleton)
+  by (induction x) (simp_all, simp add: product_singleton_singleton)
 
 lemma fold_union:
   "Finite_Set.fold (\<lambda>x. (\<union>) {x}) {} (fset x) = fset x"
-  by (induction x) (simp_all add: notin_fset comp_fun_idem_on.fold_insert_idem[OF comp_fun_idem_insert[unfolded comp_fun_idem_def']])
+  by (induction x) (simp_all add: comp_fun_idem_on.fold_insert_idem[OF comp_fun_idem_insert[unfolded comp_fun_idem_def']])
 
 lemma fold_union_fold_product:
   assumes "finite X" and "\<And>\<Psi> \<psi>. \<Psi> \<in> X \<Longrightarrow> \<psi> \<in> fset \<Psi> \<Longrightarrow> dnf \<psi> = {{|\<psi>|}}"
@@ -1040,7 +1040,7 @@ proof -
       by force
 
     from insert.prems have "Finite_Set.fold (\<lambda>\<phi>. (\<otimes>) (dnf \<phi>)) {{||}} (fset \<Phi>) = Finite_Set.fold (\<lambda>\<phi>. (\<otimes>) {{|\<phi>|}}) {{||}} (fset \<Phi>)"
-      by (induction \<Phi>) (force simp: notin_fset)+
+      by (induction \<Phi>) force+
 
     with insert 1 show ?case
       by simp

@@ -85,8 +85,7 @@ the |`| (cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^
 lemma element_ptr_kinds_simp [simp]: 
   "element_ptr_kinds (Heap (fmupd (cast element_ptr) element (the_heap h))) =
 {|element_ptr|} |\<union>| element_ptr_kinds h"
-  apply(auto simp add: element_ptr_kinds_def)[1]
-  by force
+  by (auto simp add: element_ptr_kinds_def)
 
 definition element_ptrs :: "(_) heap \<Rightarrow> (_) element_ptr fset"
   where
@@ -128,10 +127,14 @@ adhoc_overloading is_element_kind is_element_kind\<^sub>O\<^sub>b\<^sub>j\<^sub>
 
 lemma element_ptr_kinds_commutes [simp]: 
   "cast element_ptr |\<in>| node_ptr_kinds h \<longleftrightarrow> element_ptr |\<in>| element_ptr_kinds h"
-  apply(auto simp add: node_ptr_kinds_def element_ptr_kinds_def)[1]
-  by (metis (no_types, lifting) element_ptr_casts_commute2 ffmember_filter fimage_eqI 
-      fset.map_comp is_element_ptr_kind_none node_ptr_casts_commute3 
-      node_ptr_kinds_commutes node_ptr_kinds_def option.sel option.simps(3))
+proof (rule iffI)
+  show "cast element_ptr |\<in>| node_ptr_kinds h \<Longrightarrow> element_ptr |\<in>| element_ptr_kinds h"
+    by (metis (no_types, opaque_lifting) element_ptr_casts_commute2 element_ptr_kinds_def
+        ffmember_filter fimage_eqI is_element_ptr_kind_cast option.sel)
+next
+  show "element_ptr |\<in>| element_ptr_kinds h \<Longrightarrow> cast element_ptr |\<in>| node_ptr_kinds h"
+    by (auto simp: node_ptr_kinds_def element_ptr_kinds_def)
+qed
 
 definition get\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t :: "(_) element_ptr \<Rightarrow> (_) heap \<Rightarrow> (_) Element option"
   where                             
@@ -163,10 +166,15 @@ sublocale l_get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_lemmas by unfold_locales
 lemma get\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_type_wf:
   assumes "type_wf h"
   shows "element_ptr |\<in>| element_ptr_kinds h \<longleftrightarrow> get\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t element_ptr h \<noteq> None"
-  using l_type_wf\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_axioms assms
-  apply(simp add: type_wf_defs get\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def l_type_wf\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def)
-  by (metis NodeClass.get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_type_wf bind_eq_None_conv element_ptr_kinds_commutes notin_fset
-      option.distinct(1))
+proof (rule iffI)
+  show "element_ptr |\<in>| element_ptr_kinds h \<Longrightarrow> get element_ptr h \<noteq> None"
+    using ElementClass.a_type_wf_def assms type_wf\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t by blast
+next
+  show "get element_ptr h \<noteq> None \<Longrightarrow> element_ptr |\<in>| element_ptr_kinds h"
+    by (metis NodeClass.get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_type_wf assms bind.bind_lzero element_ptr_kinds_commutes
+        get\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def local.type_wf\<^sub>N\<^sub>o\<^sub>d\<^sub>e)
+qed
+
 end
 
 global_interpretation l_get\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_lemmas type_wf
@@ -305,8 +313,7 @@ definition a_known_ptrs :: "(_) heap \<Rightarrow> bool"
 
 lemma known_ptrs_known_ptr: 
   "ptr |\<in>| object_ptr_kinds h \<Longrightarrow> a_known_ptrs h \<Longrightarrow> known_ptr ptr"
-  apply(simp add: a_known_ptrs_def)
-  using notin_fset by fastforce
+  by (simp add: a_known_ptrs_def)
 
 lemma known_ptrs_preserved:
   "object_ptr_kinds h = object_ptr_kinds h' \<Longrightarrow> a_known_ptrs h = a_known_ptrs h'"

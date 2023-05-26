@@ -311,7 +311,7 @@ lemma traverse_refinement: \<comment> \<open>This is the refinement lemma.\<clos
   unfolding traverse_impl_def traverse_def
   apply(rule rel_funI)
   apply(rule dds_of_parametric[where S="(=)", THEN rel_funD, THEN rel_funD])
-   apply(auto simp add: rel_fun_def list_fset_rel_def fset_of_list_elem intro: rev_fimage_eqI)
+   apply(auto simp add: rel_fun_def list_fset_rel_def fset_of_list_elem intro!: rev_image_eqI)
   done
 
 lemma fset_of_list_parametric [transfer_rule]:

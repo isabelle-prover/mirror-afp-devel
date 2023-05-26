@@ -132,7 +132,7 @@ next
           unfolding ids_def
           using \<open>consts rhs |\<subseteq>| S\<close> \<open>frees rhs |\<subseteq>| frees pat |\<union>| S\<close>
           by auto
-        subgoal using 6(3) by fast
+        subgoal using 6(3) by auto
         subgoal by fact
         done
     qed
@@ -1106,7 +1106,10 @@ next
               apply (rule fmrelD)
               apply (rule \<open>var_env \<Gamma>' env'\<close>)
               done
-            subgoal using * by simp
+            subgoal
+              unfolding *[symmetric]
+              using fmdom_of_list fset_of_list_map fset.set_map image_image fst_map_prod
+              by simp
             subgoal using *
               by (metis (no_types, opaque_lifting) comp_def fimageI fmdom_fmap_of_list fset_of_list_map fst_comp_map_prod)
             subgoal using **

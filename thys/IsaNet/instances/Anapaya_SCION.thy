@@ -76,7 +76,7 @@ lemma extr_helper:
 | Hash _ \<Rightarrow> 0 | _ \<Rightarrow> 0)
            < Suc (fcard segid)"
   apply auto 
-  using fcard_fminus1_less notin_fset xor_singleton(1) by (metis)
+  using fcard_fminus1_less xor_singleton(1) by (metis)
 
 text\<open>We can extract the entire path from the hvf field, which includes the local forwarding 
 information as well as, recursively, all upstream hvf fields and their hop information.\<close>
@@ -379,7 +379,7 @@ proof-
   have hvfy_in_uinfo: "hvfy \<in> fset uinfo" 
     using assms(2) apply(auto intro!: hf_valid_uinfo) using unfolded_defs by simp
   then obtain fcard_uinfo_minus1 where "fcard uinfo = Suc fcard_uinfo_minus1"
-    by (metis fcard_Suc_fminus1 notin_fset)
+    by (metis fcard_Suc_fminus1)
   then show ?thesis 
     apply(cases y)
     using unfolded_defs(1-7) apply (auto intro!: ahi_eq)

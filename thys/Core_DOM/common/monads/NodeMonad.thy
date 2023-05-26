@@ -166,7 +166,7 @@ lemma type_wf_put_ptr_in_heap_E:
   shows "type_wf h"
   using assms
   apply(auto simp add: type_wf_defs split: option.splits if_splits)[1]
-  by (metis ObjectClass.get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_type_wf bind.bind_lunit finite_set_in get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_def is_node_kind_def option.exhaust_sel)
+  by (metis ObjectClass.get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_type_wf bind.bind_lunit get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_def is_node_kind_def option.exhaust_sel)
 
 
 subsection\<open>Preserving Types\<close>
@@ -195,7 +195,7 @@ lemma type_wf_preserved_small:
   apply(auto simp add: type_wf_defs)[1]
    apply(auto simp add: preserved_def get_M_defs node_ptr_kinds_small[OF assms(1)]
       split: option.splits)[1]
-  apply (metis notin_fset option.simps(3))
+  apply (metis option.simps(3))
   by(auto simp add: preserved_def get_M_defs node_ptr_kinds_small[OF assms(1)]
       split: option.splits, force)[1]
 

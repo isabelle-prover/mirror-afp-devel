@@ -49,15 +49,15 @@ begin
 
   lemma inPorts_fset_of:
     "inPorts n = fset_from_list (inPorts' n)"
-    by (cases n rule: inPorts.cases) (auto simp: fmember_iff_member_fset f_antecedent_def)
+    by (cases n rule: inPorts.cases) (auto simp: f_antecedent_def)
 
   definition outPortsRule where
     "outPortsRule r = ffUnion ((\<lambda> a. (\<lambda> h. Hyp h a) |`| a_hyps a) |`| f_antecedent r) |\<union>| Reg |`| f_consequent r"
 
   lemma Reg_in_outPortsRule[simp]:  "Reg c |\<in>| outPortsRule r \<longleftrightarrow> c |\<in>| f_consequent r"
-    by (auto simp add: outPortsRule_def fmember_iff_member_fset ffUnion.rep_eq)
+    by (auto simp add: outPortsRule_def ffUnion.rep_eq)
   lemma Hyp_in_outPortsRule[simp]:  "Hyp h c |\<in>| outPortsRule r \<longleftrightarrow> c |\<in>| f_antecedent r \<and> h |\<in>| a_hyps c"
-    by (auto simp add: outPortsRule_def fmember_iff_member_fset ffUnion.rep_eq)
+    by (auto simp add: outPortsRule_def ffUnion.rep_eq)
 
   fun outPorts where
     "outPorts (Rule r) = outPortsRule r"

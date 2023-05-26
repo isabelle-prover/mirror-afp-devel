@@ -87,6 +87,6 @@ lemma fidx_inj[simp]: "x |\<in>| s \<Longrightarrow> y |\<in>| s \<Longrightarro
   by (auto dest!: fmember_is_indexed_fmember simp add: indexed_fmember_unique)
 
 lemma inj_on_fidx: "inj_on (fidx vertices) (fset vertices)"
-  by (rule inj_onI) (auto simp: fmember_iff_member_fset [symmetric])
+  by (rule inj_onI) simp
 
 end

@@ -79,7 +79,7 @@ lemma ltl_step_cases:
     apply (case_tac "SOME xa. xa = x \<or> xa |\<in>| S'")
     apply simp
     apply (insert assms(2))
-    apply (simp add: fBall_def Ball_def fmember_def)
+    apply (simp add: fBall_def Ball_def)
     by (metis (mono_tags, lifting) fst_conv prod.case_eq_if snd_conv someI_ex)
   done
 

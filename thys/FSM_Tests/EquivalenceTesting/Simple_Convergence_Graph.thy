@@ -68,9 +68,9 @@ lemma can_merge_by_suffix_code[code] :
   (is "?P1 = ?P2")
 proof 
   show "?P1 \<Longrightarrow> ?P2"
-    by (metis append_eq_conv_conj can_merge_by_suffix.elims(2) is_prefix_prefix notin_fset) 
+    by (metis append_eq_conv_conj can_merge_by_suffix.elims(2) is_prefix_prefix) 
   show "?P2 \<Longrightarrow> ?P1"
-    by (metis append_eq_conv_conj can_merge_by_suffix.elims(3) is_prefix_prefix notin_fset)
+    by (metis append_eq_conv_conj can_merge_by_suffix.elims(3) is_prefix_prefix)
 qed
 
 
@@ -798,7 +798,7 @@ fun can_merge_by_intersection :: "'a list fset \<Rightarrow> 'a list fset \<Righ
 lemma can_merge_by_intersection_code[code] : 
   "can_merge_by_intersection x1 x2 = (\<exists> \<alpha> \<in> fset x1 . \<alpha> |\<in>| x2)"
   unfolding can_merge_by_intersection.simps
-  by (meson notin_fset) 
+  by metis
 
 
 lemma can_merge_by_intersection_validity :
@@ -817,7 +817,7 @@ proof -
   have "converge M1 u \<alpha> \<and> converge M2 u \<alpha>"
     using \<open>\<alpha> |\<in>| x1\<close> \<open>\<alpha> |\<in>| x2\<close> assms(1,2,4,6,7) by blast
   moreover have "converge M1 v \<alpha> \<and> converge M2 v \<alpha>"
-    by (metis \<open>\<alpha> |\<in>| x1\<close> \<open>\<alpha> |\<in>| x2\<close> assms(1) assms(2) assms(5) calculation converge.elims(2) funion_iff) 
+    by (metis (no_types, opaque_lifting) \<open>\<alpha> |\<in>| x1\<close> \<open>\<alpha> |\<in>| x2\<close> assms(1) assms(2) assms(5) calculation converge.simps funion_iff)
   ultimately show ?thesis
     by simp
 qed
@@ -1415,7 +1415,7 @@ next
     then have "\<beta> \<in> list.set (simple_cg_lookup (G@[x]) \<alpha>)"
       unfolding simple_cg_lookup.simps
       unfolding sorted_list_of_set_set
-      using notin_fset by force
+      by simp
     then show ?thesis 
       using True by auto
   next
@@ -1434,7 +1434,7 @@ next
       next
         case 2
         then have "\<beta> \<notin> list.set (sorted_list_of_fset x)"
-          using fmember_iff_member_fset by fastforce          
+          by simp          
         then have "(\<beta> \<in> list.set (simple_cg_lookup (G@[x]) \<alpha>)) = (\<beta> \<in> Set.insert \<alpha> (list.set (simple_cg_lookup G \<alpha>)))"
           unfolding simple_cg_lookup.simps
           unfolding sorted_list_of_set_set 

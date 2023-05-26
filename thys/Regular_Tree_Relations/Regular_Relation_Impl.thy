@@ -41,16 +41,16 @@ sublocale l: horn_fset "\<Delta>\<^sub>\<epsilon>_rules A B" "\<Delta>\<^sub>\<e
   unfolding sorted_list_of_fset_simps union_fset
   subgoal
     apply (auto split!: prod.splits ta_rule.splits simp: comp_def fset_of_list_elem r_rhs_def
-       map_prod_def fSigma.rep_eq image_def Bex_def simp flip: fmember_iff_member_fset)
+       map_prod_def fSigma.rep_eq image_def Bex_def)
     apply (metis ta_rule.exhaust_sel)
     done
   unfolding Let_def prod.case set_append Un_assoc
   apply (intro arg_cong2[of _ _ _ _ "(\<union>)"])
   subgoal
-    apply (auto split!: prod.splits ta_rule.splits simp flip: fmember_iff_member_fset )
+    apply (auto split!: prod.splits ta_rule.splits)
     apply (smt (verit, del_insts) Pair_inject map_prod_imageI mem_Collect_eq ta_rule.inject ta_rule.sel(3))
     done
-by (force simp add: image_def fmember_iff_member_fset split!: prod.splits)+
+by (force simp add: image_def split!: prod.splits)+
 
 lemmas infer = l.infer0 l.infer1
 lemmas saturate_impl_sound = l.saturate_impl_sound
@@ -66,7 +66,7 @@ lemma \<Delta>\<^sub>\<epsilon>_impl_sound:
   shows "xs = \<Delta>\<^sub>\<epsilon> (TA \<Delta>\<^sub>A \<Delta>\<^sub>A\<^sub>\<epsilon>) (TA \<Delta>\<^sub>B \<Delta>\<^sub>B\<^sub>\<epsilon>)"
   using \<Delta>\<^sub>\<epsilon>_fset.saturate_impl_sound[OF assms[unfolded \<Delta>\<^sub>\<epsilon>_impl_def]]
   unfolding \<Delta>\<^sub>\<epsilon>_horn.\<Delta>\<^sub>\<epsilon>_sound[symmetric]
-  by (auto simp flip: \<Delta>\<^sub>\<epsilon>.rep_eq simp: fmember_iff_member_fset)
+  by (auto simp flip: \<Delta>\<^sub>\<epsilon>.rep_eq)
 
 lemma \<Delta>\<^sub>\<epsilon>_impl_complete:
   fixes \<Delta>\<^sub>A :: "('q :: linorder, 'f :: linorder) ta_rule fset" and \<Delta>\<^sub>B :: "('q, 'f) ta_rule fset"
@@ -123,7 +123,7 @@ lemma \<Delta>_trancl_impl_sound:
   shows "xs = \<Delta>_trancl (TA \<Delta>\<^sub>A \<Delta>\<^sub>A\<^sub>\<epsilon>) (TA \<Delta>\<^sub>B \<Delta>\<^sub>B\<^sub>\<epsilon>)"
   using \<Delta>_trancl_list.saturate_impl_sound[OF assms[unfolded \<Delta>_trancl_impl_def]]
   unfolding \<Delta>_trancl_horn.\<Delta>_trancl_sound[symmetric] \<Delta>_trancl.rep_eq[symmetric]
-  by (auto simp: fmember_iff_member_fset)
+  by auto
 
 lemma \<Delta>_trancl_impl_complete:
   fixes \<Delta>\<^sub>A :: "('q :: linorder, 'f :: linorder) ta_rule fset" and \<Delta>\<^sub>B :: "('q, 'f) ta_rule fset"
@@ -170,7 +170,7 @@ proof -
     unfolding \<Delta>_Atr_infer1_cont_def set_append Un_assoc[symmetric] Let_def
     unfolding sorted_list_of_fset_simps union_fset
     apply (intro arg_cong2[of _ _ _ _ "(\<union>)"])
-    apply (simp_all add: fSigma_repeq fmember_iff_member_fset flip: \<Delta>\<^sub>\<epsilon>_impl fset_of_list_elem)
+    apply (simp_all add: fSigma_repeq flip: \<Delta>\<^sub>\<epsilon>_impl fset_of_list_elem)
     apply force+
     done
   then show ?thesis
@@ -238,12 +238,12 @@ sublocale l: horn_fset "Q_inf_rules A" "Q_infer0_cont \<Delta>" "Q_infer1_cont \
   unfolding Q_horn.Q_infer0 Q_horn.Q_infer1 Q_infer0_cont_def Q_infer1_cont_def set_append Un_assoc[symmetric]
   unfolding sorted_list_of_fset_simps union_fset
   subgoal
-    apply (auto simp add: Bex_def fmember_iff_member_fset split!: ta_rule.splits)
+    apply (auto simp add: Bex_def split!: ta_rule.splits)
     apply (rule_tac x = "TA_rule (lift_None_Some f) ps p" in exI)
     apply (force dest: in_set_idx)+
     done
   unfolding Let_def set_append Un_assoc
-  by (intro arg_cong2[of _ _ _ _ "(\<union>)"]) (auto simp add: fmember_iff_member_fset)
+  by (intro arg_cong2[of _ _ _ _ "(\<union>)"]) auto
 
 lemmas saturate_impl_sound = l.saturate_impl_sound
 lemmas saturate_impl_complete = l.saturate_impl_complete
@@ -262,7 +262,7 @@ lemma Q_impl_complete:
 proof -
   let ?A = "TA \<Delta> \<Delta>\<epsilon>"
   have *: "Q_inf ?A \<subseteq> fset (\<Q> ?A |\<times>| \<Q> ?A)"
-    by (auto simp add: Q_inf_states_ta_states(1, 2) subrelI simp flip: fmember_iff_member_fset)
+    by (auto simp add: Q_inf_states_ta_states(1, 2) subrelI)
   have "finite (Q_inf ?A)"
     by (intro finite_subset[OF *]) simp
   then show ?thesis unfolding Q_impl_def
@@ -277,7 +277,7 @@ lemma Q_infinity_impl_fmember:
   "q |\<in>| Q_infinity_impl \<Delta> \<Delta>\<epsilon> \<longleftrightarrow> (\<exists> p. (p, p) |\<in>| the (Q_impl \<Delta> \<Delta>\<epsilon>) \<and>
     (p, q) |\<in>| the (Q_impl \<Delta> \<Delta>\<epsilon>))"
   unfolding Q_infinity_impl_def
-  by (auto simp: Let_def fimage_iff fBex_def) fastforce
+  by (auto simp: Let_def image_iff Bex_def) fastforce
 
 lemma loop_sound_correct [simp]:
   "fset (Q_infinity_impl \<Delta> \<Delta>\<epsilon>) = Q_inf_e (TA \<Delta> \<Delta>\<epsilon>)"
@@ -289,13 +289,13 @@ proof -
     by (auto simp: fset_of_list.rep_eq)
   then show ?thesis
     by (force simp: Q_infinity_impl_fmember Let_def fset_of_list_elem
-          fset_of_list.rep_eq simp flip: fmember_iff_member_fset)
+          fset_of_list.rep_eq)
 qed
 
 lemma fQ_inf_e_code [code]:
   "fQ_inf_e (TA \<Delta> \<Delta>\<epsilon>) = Q_infinity_impl \<Delta> \<Delta>\<epsilon>"
   using loop_sound_correct
-  by (auto simp add: fQ_inf_e.rep_eq fmember_iff_member_fset)
+  by (auto simp add: fQ_inf_e.rep_eq)
 
 
 end

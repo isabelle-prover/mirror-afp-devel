@@ -222,9 +222,9 @@ lemma object_ptr_kinds_preserved_small:
   using assms
   apply(auto simp add: object_ptr_kinds_def preserved_def get_M_defs get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_def 
       split: option.splits)[1]
-   apply (metis (mono_tags, lifting) domIff error_returns_result fmdom.rep_eq fmember_iff_member_fset 
+   apply (metis (mono_tags, lifting) domIff error_returns_result fmdom.rep_eq 
       old.unit.exhaust option.case_eq_if return_returns_result)
-  by (metis (mono_tags, lifting) domIff error_returns_result fmdom.rep_eq fmember_iff_member_fset 
+  by (metis (mono_tags, lifting) domIff error_returns_result fmdom.rep_eq 
       old.unit.exhaust option.case_eq_if return_returns_result)
 
 lemma object_ptr_kinds_preserved:

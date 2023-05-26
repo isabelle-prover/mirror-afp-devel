@@ -77,7 +77,7 @@ lemma possible_steps_empty_guards_false:
   by (simp add: Abs_ffilter fBall_def Ball_def)
 
 lemma fmember_possible_steps: "(s', t) |\<in>| possible_steps e s r l i = (((s, s'), t) \<in> {((origin, dest), t) \<in> fset e. origin = s \<and> Label t = l \<and> length i = Arity t \<and> apply_guards (Guards t) (join_ir i r)})"
-  apply (simp add: possible_steps_def ffilter_def fimage_def fmember_def Abs_fset_inverse)
+  apply (simp add: possible_steps_def ffilter_def fimage_def Abs_fset_inverse)
   by force
 
 lemma possible_steps_alt_aux:
@@ -165,7 +165,7 @@ lemma no_outgoing_transitions:
 "ffilter (\<lambda>((s', _), _). s = s') e = {||} \<Longrightarrow>
 possible_steps e s r l i = {||}"
   apply (simp add: possible_steps_def)
-  by auto
+  by (smt (verit, best) case_prod_beta eq_ffilter ffilter_empty ffmember_filter)
 
 lemma ffilter_split: "ffilter (\<lambda>((origin, dest), t). origin = s \<and> Label t = l \<and> length i = Arity t \<and> apply_guards (Guards t) (join_ir i r)) e =
                       ffilter (\<lambda>((origin, dest), t). Label t = l \<and> length i = Arity t \<and> apply_guards (Guards t) (join_ir i r)) (ffilter (\<lambda>((origin, dest), t). origin = s) e)"
@@ -302,7 +302,7 @@ lemma fsubset_if: "\<forall>x. x |\<in>| f1 \<longrightarrow> x |\<in>| f2 \<Lon
 
 lemma in_possible_steps: "(((s, s'), t)|\<in>|e \<and> Label t = l \<and> can_take_transition t i r) = ((s', t) |\<in>| possible_steps e s r l i)"
   apply (simp add: fmember_possible_steps)
-  by (simp add: can_take_def can_take_transition_def fmember_iff_member_fset)
+  by (simp add: can_take_def can_take_transition_def)
 
 lemma possible_steps_can_take_transition:
   "(s2, t1) |\<in>| possible_steps e1 s1 r l i \<Longrightarrow> can_take_transition t1 i r"
@@ -359,7 +359,7 @@ lemma not_deterministic_conv:
         apply (rule_tac x=aa in exI)
         apply (rule_tac x=b in exI)
         apply (rule_tac x=ba in exI)
-        by (metis finsertI1 finsert_commute in_possible_steps)
+        by (metis finsertCI in_possible_steps)
       done
     done
   done
@@ -384,7 +384,7 @@ lemma "\<forall>l i r.
   apply (rule allI)+
   apply (simp only: size_le_1 possible_steps_empty)
   apply (case_tac "\<exists>t s'. ((s, s'), t)|\<in>|e \<and> Label t = l \<and> can_take_transition t i r")
-   defer using notin_fset apply fastforce
+   defer apply fastforce
   apply (rule disjI2)
   apply clarify
   apply (rule_tac x="(s', t)" in exI)
@@ -407,7 +407,7 @@ lemma "\<forall>l i r.
 definition "outgoing_transitions e s = ffilter (\<lambda>((o, _), _). o = s) e"
 
 lemma in_outgoing: "((s1, s2), t) |\<in>| outgoing_transitions e s = (((s1, s2), t) |\<in>| e \<and> s1 = s)"
-  by (simp add: outgoing_transitions_def)
+  by (auto simp add: outgoing_transitions_def)
 
 lemma outgoing_transitions_deterministic:
   "\<forall>s.
@@ -433,9 +433,8 @@ lemma outgoing_transitions_deterministic:
          apply (erule_tac x=d2 in allE)
          apply (erule_tac x=t2 in allE)
          apply (simp add: outgoing_transitions_def choice_def can_take)
-         apply (meson fmember_implies_member)
-        apply (simp add: outgoing_transitions_def)
-        by (meson fmember_implies_member)
+         apply meson
+        by (simp add: outgoing_transitions_def)
       done
     done
   done
@@ -454,7 +453,7 @@ lemma outgoing_transitions_fprod_deterministic:
 \<Longrightarrow> deterministic e"
   apply (rule outgoing_transitions_deterministic)
   apply clarify
-  by (metis SigmaI fmember_implies_member in_outgoing)
+  by (metis SigmaI in_outgoing)
 
 text\<open>The \texttt{random\_member} function returns a random member from a finite set, or
 \texttt{None}, if the set is empty.\<close>
@@ -949,8 +948,6 @@ next
      apply simp
     apply clarsimp
     subgoal for l o _ _ i
-      apply (case_tac "ffilter (\<lambda>(s1', t1). evaluate_outputs t1 i r1 = map Some o) (possible_steps e1 s1 r1 l i) = {||}")
-       apply auto[1]
       by fastforce
     done
 qed
@@ -1358,7 +1355,7 @@ next
     subgoal for _ _ aa ba
       apply (rule_tac x=aa in exI)
       apply (rule_tac x=ba in exI)
-      apply (simp add: fmember_implies_member)
+      apply simp
       by blast
     done  
 qed
@@ -1490,7 +1487,6 @@ lemma possible_steps_replace_unchanged:
   "((s, aa), ba) \<noteq> ((s1, s2), t1) \<Longrightarrow>
   (aa, ba) |\<in>| possible_steps e1 s r l i \<Longrightarrow>
   (aa, ba) |\<in>| possible_steps (replace e1 ((s1, s2), t1) ((s1, s2), t2)) s r l i"
-  apply (simp add: in_possible_steps[symmetric] replace_def)
-  by fastforce
+  by (simp add: in_possible_steps[symmetric] replace_def)
 
 end

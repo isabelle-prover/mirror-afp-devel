@@ -127,14 +127,14 @@ proof -
   let ?r = "ta_rule_sig"
   have *:"Bot |\<notin>| (fstates R) - {|Bot|}" by simp
   have f: "\<F> = ?r |`| ((\<lambda> (f, n). TA_rule f (replicate n Bot) Bot) |`| \<F>)"
-    by (auto simp: fimage_iff fBex_def ta_rule_sig_def split!: prod.splits)
+    by (auto simp: image_iff Bex_def ta_rule_sig_def split!: prod.splits)
   moreover have "ffunas_terms R = ?r |`| (term_to_ta_rule |`| ((fstates R) - {|Bot|}))"
     unfolding ta_rule_sig_term_to_ta_rule_root_set[OF *]
     unfolding froot_bot_states_root_subterms root_fsubsterms_ffunas_term_fset
     by simp
   ultimately show ?thesis unfolding pattern_automaton_def ta_sig_def
     unfolding ta_rule_sig_def pattern_automaton_rules_def
-      by (auto simp add: Let_def comp_def fimage_funion)
+    by (simp add: fimage_funion comp_def) blast
 qed
 
 lemma terms_reach_Bot:
@@ -165,7 +165,7 @@ proof (induct t arbitrary: s)
       using in_set_idx by fastforce
     from GFun(3) have s: "g = f" "length ss = length ts" by auto
     from GFun(2) s(2) assms(1) have rule: "TA_rule f ?ss (BFun f ?ss) |\<in>| pattern_automaton_rules \<F> R"
-      by (auto simp: s(1) pattern_automaton_rules_def fimage_iff fBex_def)
+      by (auto simp: s(1) pattern_automaton_rules_def image_iff Bex_def)
     {fix i assume bound: "i < length ts"
       then have sub: "l \<unrhd> ss ! i" using GFun(2) arg_subteq[OF nth_mem, of i ss f]
         unfolding Fun s(1) using s(2) by (metis subterm.order.trans)
@@ -256,46 +256,46 @@ proof
   let ?t_o_g = "term_of_gterm :: 'f gterm \<Rightarrow> ('f, 'v) Term.term"
   have [simp]: "\<F> |\<union>| |\<Union>| ((ffunas_term \<circ> fst) |`| R) = \<F>"
     "\<F> |\<union>| |\<Union>| ((ffunas_term \<circ> snd) |`| R) = \<F>" using assms(2)
-    by (force simp: less_eq_fset.rep_eq ffunas_trs.rep_eq funas_trs_def ffunas_term.rep_eq fmember_iff_member_fset ffUnion.rep_eq)+
+    by (force simp: less_eq_fset.rep_eq ffunas_trs.rep_eq funas_trs_def ffunas_term.rep_eq ffUnion.rep_eq)+
   {fix s t assume "(s, t) \<in> ?Ls"
     from pair_at_langE[OF this] obtain p q where st: "(q, p) |\<in>| Rel\<^sub>f R"
       "q |\<in>| gta_der (fst (root_pair_automaton \<F> R)) s" "p |\<in>| gta_der (snd (root_pair_automaton \<F> R)) t"
       by blast
     from st(1) obtain l r where tm: "q = l\<^sup>\<bottom>" "p = r\<^sup>\<bottom>" "(l, r) |\<in>| R" unfolding Rel\<^sub>f_def
-      using assms(1) by (auto simp: fmember.abs_eq)
+      using assms(1) by auto
     have sm: "l\<^sup>\<bottom> \<le>\<^sub>b (?t_o_g s)\<^sup>\<bottom>" "r\<^sup>\<bottom> \<le>\<^sub>b (?t_o_g t)\<^sup>\<bottom>"
       using pattern_automaton_reach_smallet_term[of l \<F> "fst |`| R" "term_of_gterm s"]
       using pattern_automaton_reach_smallet_term[of r \<F> "snd |`| R" "term_of_gterm t"]
       using st(2, 3) tm(3) unfolding tm
       by (auto simp: gta_der_def root_pair_automaton_def) (smt bot_term_of_gterm_conv)+
     have "linear_term l" "linear_term r" using tm(3) assms(1)
-      by (auto simp: lv_trs_def fmember_iff_member_fset)
+      by (auto simp: lv_trs_def)
     then obtain \<sigma> \<tau> where "l \<cdot> \<sigma> = ?t_o_g s" "r \<cdot> \<tau> = ?t_o_g t" using sm
       by (auto dest!: bless_eq_to_instance)
     then obtain \<mu> where subst: "l \<cdot> \<mu> = ?t_o_g s" "r \<cdot> \<mu> = ?t_o_g t"
-      using lv_trs_subst_unification[OF assms(1) tm(3)[unfolded fmember_iff_member_fset], of "?t_o_g s" \<sigma> "?t_o_g t" \<tau>]
+      using lv_trs_subst_unification[OF assms(1) tm(3), of "?t_o_g s" \<sigma> "?t_o_g t" \<tau>]
       by metis
     moreover have "s \<in> \<T>\<^sub>G (fset \<F>)" "t \<in> \<T>\<^sub>G (fset \<F>)" using st(2-) assms
       using ta_der_gterm_sig[of q "pattern_automaton \<F> (fst |`| R)" s]
       using ta_der_gterm_sig[of p "pattern_automaton \<F> (snd |`| R)" t]
       by (auto simp: gta_der_def root_pair_automaton_def \<T>\<^sub>G_equivalent_def less_eq_fset.rep_eq ffunas_gterm.rep_eq)
     ultimately have "(s, t) \<in> ?Rs" using tm(3)
-      by (auto simp: grrstep_def rrstep_def' fmember_iff_member_fset) metis}
+      by (auto simp: grrstep_def rrstep_def') metis}
   then show "?Ls \<subseteq> ?Rs" by auto
 next
   let ?t_o_g = "term_of_gterm :: 'f gterm \<Rightarrow> ('f, 'v) Term.term"
   {fix s t assume "(s, t) \<in> ?Rs"
     then obtain \<sigma> l r where st: "(l, r) |\<in>| R" "l \<cdot> \<sigma> = ?t_o_g s" "r \<cdot> \<sigma> = ?t_o_g t" "s \<in> \<T>\<^sub>G (fset \<F>)" "t \<in> \<T>\<^sub>G (fset \<F>)"
-      by (auto simp: grrstep_def rrstep_def' fmember_iff_member_fset)
+      by (auto simp: grrstep_def rrstep_def')
     have funas: "ffunas_gterm s |\<subseteq>| \<F>" "ffunas_gterm t |\<subseteq>| \<F>" using st(4, 5)
       by (auto simp: \<T>\<^sub>G_equivalent_def)
-         (metis ffunas_gterm.rep_eq notin_fset subsetD)+
+         (metis ffunas_gterm.rep_eq subsetD)+
     from st(1) have "(l\<^sup>\<bottom>, r\<^sup>\<bottom>) |\<in>| Rel\<^sub>f R" unfolding Rel\<^sub>f_def using assms(1)
       by (auto simp: fimage_iff fBex_def)
     then have "(s, t) \<in> ?Ls" using st
       using pattern_automaton_ground_instance_reach[of l "fst |`| R" \<sigma>, OF _ _ funas(1)]
       using pattern_automaton_ground_instance_reach[of r "snd |`| R" \<sigma>, OF _ _ funas(2)]
-      by (auto simp: \<T>\<^sub>G_equivalent_def fimage_iff fBex_def fmember.abs_eq root_pair_automaton_def gta_der_def pair_at_lang_def)}
+      by (auto simp: \<T>\<^sub>G_equivalent_def image_iff Bex_def root_pair_automaton_def gta_der_def pair_at_lang_def)}
   then show "?Rs \<subseteq> ?Ls" by auto
 qed
 
@@ -314,7 +314,7 @@ lemma root_pair_automaton_grrstep_set:
   shows "pair_at_lang (root_pair_automaton (Abs_fset \<F>) (Abs_fset R)) (Rel\<^sub>f (Abs_fset R)) = Restr (grrstep R) (\<T>\<^sub>G \<F>)"
 proof -
   from assms(1, 2, 4) have "ffunas_trs (Abs_fset R) |\<subseteq>| Abs_fset \<F>"
-    by (auto simp add: Abs_fset_inverse ffunas_trs.rep_eq fmember_iff_member_fset subset_eq)
+    by (auto simp add: Abs_fset_inverse ffunas_trs.rep_eq subset_eq)
   from root_pair_automaton_grrstep[OF _ this] assms
   show ?thesis
     by (auto simp: Abs_fset_inverse)

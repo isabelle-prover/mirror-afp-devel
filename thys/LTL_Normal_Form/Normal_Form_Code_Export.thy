@@ -109,12 +109,12 @@ proof
   then obtain M' where "fset M' \<subseteq> ?M" and "M' \<in> min_dnf \<phi>"
     using min_dnf_iff_prop_assignment_subset by blast
   thus ?rhs
-    by (meson in_mono mem_Collect_eq notin_fset)
+    by (meson in_mono mem_Collect_eq)
 next 
   let ?M = "{\<psi>. w \<Turnstile>\<^sub>n \<psi>}"
   assume ?rhs
   then obtain M' where "fset M' \<subseteq> ?M" and "M' \<in> min_dnf \<phi>"
-    using notin_fset by fastforce
+    by auto
   hence "?M \<Turnstile>\<^sub>P \<phi>"
     using min_dnf_iff_prop_assignment_subset by blast
   thus ?lhs

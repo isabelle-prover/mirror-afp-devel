@@ -80,8 +80,7 @@ the |`| (cast\<^sub>d\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^
 lemma shadow_root_ptr_kinds_simp [simp]:
   "shadow_root_ptr_kinds (Heap (fmupd (cast shadow_root_ptr) shadow_root (the_heap h))) =
 {|shadow_root_ptr|} |\<union>| shadow_root_ptr_kinds h"
-  apply(auto simp add: shadow_root_ptr_kinds_def)[1]
-  by force
+  by (auto simp add: shadow_root_ptr_kinds_def)
 
 definition shadow_root_ptrs :: "(_) heap \<Rightarrow> (_) shadow_root_ptr fset"
   where
@@ -158,7 +157,7 @@ proof
   then
   show "get shadow_root_ptr h \<noteq> None"
     using l_type_wf\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_axioms[unfolded l_type_wf\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_def type_wf_defs] assms
-    by (meson notin_fset)
+    by meson
 next
   assume "get shadow_root_ptr h \<noteq> None"
   then
@@ -166,8 +165,8 @@ next
     apply(auto simp add: get\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_def get\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_def shadow_root_ptr_kinds_def
         document_ptr_kinds_def object_ptr_kinds_def
         split: Option.bind_splits)[1]
-    by (metis comp_eq_dest_lhs document_ptr_casts_commute2 document_ptr_document_ptr_cast
-        ffmember_filter fimageI fmdomI is_shadow_root_ptr_kind_cast option.sel
+    by (metis (no_types, lifting) IntI document_ptr_casts_commute2 document_ptr_document_ptr_cast
+        fmdomI image_iff is_shadow_root_ptr_kind_cast mem_Collect_eq option.sel
         shadow_root_ptr_casts_commute2)
 qed
 end
@@ -250,9 +249,8 @@ lemma is_shadow_root_kind_disconnected_nodes [simp]:
 lemma shadow_root_ptr_kinds_commutes [simp]:
   "cast shadow_root_ptr |\<in>| document_ptr_kinds h \<longleftrightarrow> shadow_root_ptr |\<in>| shadow_root_ptr_kinds h"
   apply(auto simp add: document_ptr_kinds_def shadow_root_ptr_kinds_def)[1]
-  by (metis (no_types, lifting) shadow_root_ptr_casts_commute2 ffmember_filter fimage_eqI
-      fset.map_comp is_shadow_root_ptr_kind_none document_ptr_casts_commute3
-      document_ptr_kinds_commutes document_ptr_kinds_def option.sel option.simps(3))
+  by (metis Int_iff imageI is_shadow_root_ptr_kind_cast mem_Collect_eq option.sel
+      shadow_root_ptr_casts_commute2)
 
 lemma get_shadow_root_ptr_simp1 [simp]:
   "get\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t shadow_root_ptr (put\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t shadow_root_ptr shadow_root h) = Some shadow_root"
@@ -415,8 +413,7 @@ definition a_known_ptrs :: "(_) heap \<Rightarrow> bool"
     "a_known_ptrs h = (\<forall>ptr \<in> fset (object_ptr_kinds h). known_ptr ptr)"
 
 lemma known_ptrs_known_ptr: "a_known_ptrs h \<Longrightarrow> ptr |\<in>| object_ptr_kinds h \<Longrightarrow> known_ptr ptr"
-  apply(simp add: a_known_ptrs_def)
-  using notin_fset by fastforce
+  by (simp add: a_known_ptrs_def)
 
 lemma known_ptrs_preserved:
   "object_ptr_kinds h = object_ptr_kinds h' \<Longrightarrow> a_known_ptrs h = a_known_ptrs h'"

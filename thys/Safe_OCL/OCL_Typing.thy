@@ -1088,6 +1088,7 @@ qed
 section \<open>Code Setup\<close>
 
 code_pred op_type .
+
 code_pred (modes:
     i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool,
     i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) iterator_typing .

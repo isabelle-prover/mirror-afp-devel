@@ -169,10 +169,9 @@ lemma FS_parts:
     FS l \<in> parts H;
     \<lbrakk> fset l \<subseteq> parts H \<rbrakk> \<Longrightarrow> P
    \<rbrakk> \<Longrightarrow> P"
-  by (simp add: fmember_iff_member_fset parts.FSt subsetI)
-thm fmember_iff_member_fset parts.FSt subsetI
+  by (simp add: parts.FSt subsetI)
+thm parts.FSt subsetI
 
-declare fmember_iff_member_fset[simp]
 declare MPair_parts [elim!] L_parts [elim!] FS_parts [elim] parts.Body [dest!]
 
 text \<open>NB These two rules are UNSAFE in the formal sense, as they discard the
@@ -214,9 +213,7 @@ lemma parts_Un_subset1: "parts G \<union> parts H \<subseteq> parts(G \<union> H
 by (intro Un_least parts_mono Un_upper1 Un_upper2)
 
 lemma parts_Un_subset2: "parts(G \<union> H) \<subseteq> parts G \<union> parts H"
-apply (rule subsetI)
-  apply (erule parts.induct, blast+)
-  using parts.FSt by auto
+  by (rule subsetI) (erule parts.induct, blast+)
 
 lemma parts_Un [simp]: "parts(G \<union> H) = parts G \<union> parts H"
 by (intro equalityI parts_Un_subset1 parts_Un_subset2)
@@ -256,8 +253,7 @@ by (blast intro: parts_mono [THEN [2] rev_subsetD])
 subsubsection \<open>Idempotence\<close>
 
 lemma parts_partsD [dest!]: "X\<in> parts (parts H) \<Longrightarrow> X\<in> parts H"
-  apply (erule parts.induct, blast+)
-  using parts.FSt by auto
+  by (erule parts.induct, blast+)
 
 lemma parts_idem [simp]: "parts (parts H) = parts H"
 by blast
@@ -445,17 +441,14 @@ lemma FS_analz [elim!]:
     FS l \<in> analz H;
     \<lbrakk> fset l \<subseteq> analz H \<rbrakk> \<Longrightarrow> P
    \<rbrakk> \<Longrightarrow> P"
-  by (simp add: fmember_iff_member_fset analz.FSt subsetI)
+  by (simp add: analz.FSt subsetI)
 
-thm fmember_iff_member_fset parts.FSt subsetI
+thm parts.FSt subsetI
 lemma analz_increasing: "H \<subseteq> analz(H)"
 by blast
 
 lemma analz_subset_parts: "analz H \<subseteq> parts H"
-apply (rule subsetI)
-  apply (erule analz.induct, blast+)
-  apply auto
-done
+  by (rule subsetI) (erule analz.induct, blast+)
 
 
 text \<open>If there is no cryptography, then analz and parts is equivalent.\<close>

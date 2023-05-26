@@ -155,7 +155,7 @@ lemma Q_infty_fmember:
   "q |\<in>| Q_infty \<A> \<F> \<longleftrightarrow> infinite {t | t. funas_gterm t \<subseteq> fset \<F> \<and> q |\<in>| ta_der \<A> (term_of_gterm (gterm_to_None_Some t))}"
 proof -
   have "{q | q. infinite {t | t. funas_gterm t \<subseteq> fset \<F> \<and> q |\<in>| ta_der \<A> (term_of_gterm (gterm_to_None_Some t))}} \<subseteq> fset (\<Q> \<A>)"
-    using not_finite_existsD notin_fset by fastforce
+    using not_finite_existsD by fastforce
   from finite_subset[OF this] show ?thesis
     by (auto simp: Q_infty_def)
 qed
@@ -232,7 +232,15 @@ lemma Inf_automata_eps [simp]:
 
 lemma Inl_A_res_Inf_automata:
   "ta_der (fmap_states_ta CInl \<A>) t |\<subseteq>| ta_der (Inf_automata \<A> Q) t"
-  by (intro ta_der_mono) (auto simp: Inf_automata_def rev_fimage_eqI fmap_states_ta_def')
+proof (rule ta_der_mono)
+  show "rules (fmap_states_ta CInl \<A>) |\<subseteq>| rules (Inf_automata \<A> Q)"
+    apply (rule fsubsetI)
+    apply (simp add: Inf_automata_def fmap_states_ta_def')
+    by force
+next
+  show "eps (fmap_states_ta CInl \<A>) |\<subseteq>| eps (Inf_automata \<A> Q)"
+    by (rule fsubsetI) (simp add: Inf_automata_def fmap_states_ta_def')
+qed
 
 lemma Inl_res_A_res_Inf_automata:
   "CInl |`| ta_der \<A> (term_of_gterm t) |\<subseteq>| ta_der (Inf_automata \<A> Q) (term_of_gterm t)"

@@ -76,8 +76,7 @@ definition character_data_ptr_kinds :: "(_) heap \<Rightarrow> (_) character_dat
 lemma character_data_ptr_kinds_simp [simp]:
   "character_data_ptr_kinds (Heap (fmupd (cast character_data_ptr) character_data (the_heap h))) 
               = {|character_data_ptr|} |\<union>| character_data_ptr_kinds h"
-  apply(auto simp add: character_data_ptr_kinds_def)[1]
-  by force
+  by (auto simp add: character_data_ptr_kinds_def)
 
 definition character_data_ptrs :: "(_) heap \<Rightarrow> _ character_data_ptr fset"
   where
@@ -125,10 +124,17 @@ adhoc_overloading is_character_data_kind is_character_data_kind\<^sub>O\<^sub>b\
 lemma character_data_ptr_kinds_commutes [simp]:
   "cast character_data_ptr |\<in>| node_ptr_kinds h 
        \<longleftrightarrow> character_data_ptr |\<in>| character_data_ptr_kinds h"
-  apply(auto simp add: character_data_ptr_kinds_def)[1]
-  by (metis character_data_ptr_casts_commute2 comp_eq_dest_lhs ffmember_filter fimage_eqI 
-      is_character_data_ptr_kind_none
-      option.distinct(1) option.sel)
+proof (rule iffI)
+  show "cast character_data_ptr |\<in>| node_ptr_kinds h \<Longrightarrow>
+    character_data_ptr |\<in>| character_data_ptr_kinds h"
+    by (metis (no_types, opaque_lifting) character_data_ptr_casts_commute2
+        character_data_ptr_kinds_def ffmember_filter fimage_eqI is_character_data_ptr_kind\<^sub>_cast
+        option.sel)
+next
+  show "character_data_ptr |\<in>| character_data_ptr_kinds h \<Longrightarrow>
+      cast character_data_ptr |\<in>| node_ptr_kinds h"
+    by (auto simp add: character_data_ptr_kinds_def)
+qed
 
 definition get\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a :: "(_) character_data_ptr \<Rightarrow> (_) heap \<Rightarrow> (_) CharacterData option"
   where                             
@@ -164,7 +170,7 @@ lemma get\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>
           \<longleftrightarrow> get\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a character_data_ptr h \<noteq> None"
   using l_type_wf\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a_axioms assms
   apply(simp add: type_wf_defs get\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a_def l_type_wf\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a_def)
-  by (metis assms bind.bind_lzero character_data_ptr_kinds_commutes fmember_iff_member_fset
+  by (metis assms bind.bind_lzero character_data_ptr_kinds_commutes
       local.get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_type_wf option.exhaust option.simps(3))
 end
 
@@ -331,8 +337,7 @@ definition a_known_ptrs :: "(_) heap \<Rightarrow> bool"
     "a_known_ptrs h = (\<forall>ptr \<in> fset (object_ptr_kinds h). known_ptr ptr)"
 
 lemma known_ptrs_known_ptr: "a_known_ptrs h \<Longrightarrow> ptr |\<in>| object_ptr_kinds h \<Longrightarrow> known_ptr ptr"
-  apply(simp add: a_known_ptrs_def)
-  using notin_fset by fastforce
+  by (simp add: a_known_ptrs_def)
 
 lemma known_ptrs_preserved: 
   "object_ptr_kinds h = object_ptr_kinds h' \<Longrightarrow> a_known_ptrs h = a_known_ptrs h'"

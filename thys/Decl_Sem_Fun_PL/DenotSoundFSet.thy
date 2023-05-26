@@ -226,7 +226,8 @@ proof (induction f arbitrary: x e \<rho>)
   case empty
   interpret ge: comp_fun_commute "(good_entry x e \<rho>)"
     unfolding comp_fun_commute_def by auto
-  from empty show ?case using good_fun_def2 by simp
+  from empty show ?case using good_fun_def2
+    by (simp add: comp_fun_commute.ffold_empty ge.comp_comp_fun_commute)
 next
   case (insert p f)
   interpret ge: comp_fun_commute "(good_entry x e \<rho>) \<circ> good_prod"

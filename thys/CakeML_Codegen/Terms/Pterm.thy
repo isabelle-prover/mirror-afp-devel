@@ -88,7 +88,6 @@ proof (rule pterm.induct, goal_cases)
   show ?case
     apply (rule assms)
     using 3
-    apply (subst (asm) fmember_iff_member_fset[symmetric])
     by auto
 qed fact+
 
@@ -161,7 +160,6 @@ apply (subst subst_pterm.simps)
 apply (rule arg_cong[where f = Pabs])
 apply (rule fset_map_snd_id)
 apply (rule assms)
-apply (subst (asm) fmember_iff_member_fset[symmetric])
 apply assumption
 done
 
@@ -252,10 +250,10 @@ next
       subgoal premises prems[rule_format]
         apply (subst (2) prems(1)[symmetric, where pat = pat])
         subgoal
-          by (subst fmember_iff_member_fset) fact
+          by fact
         subgoal
           using prems unfolding ffUnion_alt_def
-          by (auto simp: fmember_iff_member_fset fset_of_list.rep_eq elim!: fBallE)
+          by (auto simp: fset_of_list.rep_eq elim!: fBallE)
         subgoal
           apply (rule arg_cong[where f = "subst rhs"])
           by (auto intro: fmap_ext)
@@ -270,7 +268,7 @@ next
     apply (rule fset.map_cong0)
     apply clarsimp
     subgoal premises prems[rule_format] for cs env\<^sub>1 env\<^sub>2 a b
-      apply (rule prems(2)[unfolded fmember_iff_member_fset, OF prems(5)])
+      apply (rule prems(2)[OF prems(5)])
       using prems unfolding fdisjnt_alt_def by auto
     done
 next

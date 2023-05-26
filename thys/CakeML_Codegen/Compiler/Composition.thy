@@ -228,7 +228,7 @@ qed
 
 lemma (in irules) transform_finished_id: "finished rs \<Longrightarrow> transform_irule_set rs = rs"
 unfolding transform_irule_set_def finished_def transform_irules_def map_prod_def id_apply
-by (rule fset_map_snd_id) (auto simp: fmember_iff_member_fset elim!: fBallE)
+by (rule fset_map_snd_id) (auto elim!: fBallE)
 
 lemma (in irules) max_arity_decr: "max_arity (transform_irule_set rs) = max_arity rs - 1"
 proof (cases "finished rs")
@@ -241,11 +241,11 @@ next
     unfolding transform_irule_set_def fset.map_comp
     proof (rule fset.map_cong0, safe, unfold o_apply map_prod_simp id_apply snd_conv)
       fix name irs
-      assume "(name, irs) \<in> fset rs"
-      hence "(name, irs) |\<in>| rs"
-        by (simp add: fmember_iff_member_fset)
+      assume "(name, irs) |\<in>| rs"
       hence "arity_compatibles irs" "irs \<noteq> {||}"
-        using nonempty inner by (blast dest: fpairwiseD)+
+        using nonempty inner
+        unfolding atomize_conj
+        by (smt (verit, del_insts) \<open>(name, irs) |\<in>| rs\<close> case_prodD fBallE inner)
       thus "arity (transform_irules irs) = arity irs - 1"
         by (simp add: arity_transform_irules)
     qed
@@ -498,7 +498,7 @@ apply (drule map_of_SomeD)
 apply auto
 apply (rule vrecabs_global_css_refl)
 unfolding global_css_def
-by (auto simp: fset_of_list_elem intro: rev_fimage_eqI)
+by (auto simp: fset_of_list_elem intro: rev_image_eqI)
 
 lemma as_vrules_refl_C: "fmrel_on_fset C vrelated (fmap_of_list as_vrules) (fmap_of_list as_vrules)"
 proof
@@ -756,7 +756,7 @@ next
      apply (subst global_css_def)
      apply simp
     subgoal for x1 x2
-      apply (rule fimage_eqI[where x = "(x1, x2)"])
+      apply (rule image_eqI[where x = "(x1, x2)"])
       by (auto simp: fset_of_list_elem)
     subgoal
       using disjnt by (auto simp: fdisjnt_alt_def fmdom_global_css)

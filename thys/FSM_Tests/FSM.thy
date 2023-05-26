@@ -5120,12 +5120,12 @@ lemma ftransitions_set: "fset (ftransitions M) = transitions M"
 lemma ftransitions_source:
   "q |\<in>| (t_source |`| ftransitions M) \<Longrightarrow> q \<in> states M" 
   using ftransitions_set[of M] fsm_transition_source[of _ M]
-  by (metis (no_types, lifting) fimageE fmember_iff_member_fset)
+  by (metis (no_types, opaque_lifting) fimageE)
 
 lemma ftransitions_target:
   "q |\<in>| (t_target |`| ftransitions M) \<Longrightarrow> q \<in> states M" 
   using ftransitions_set[of M] fsm_transition_target[of _ M]
-  by (metis (no_types, lifting) fimageE fmember_iff_member_fset)
+  by (metis (no_types, lifting) fimageE)
 
 
 subsection \<open>Responses to Input Sequences\<close>
@@ -5429,7 +5429,7 @@ lemma create_unconnected_fsm_from_fsets_simps :
         "inputs (create_unconnected_fsm_from_fsets q ns ins outs)  = fset ins"
         "outputs (create_unconnected_fsm_from_fsets q ns ins outs) = fset outs"
         "transitions (create_unconnected_fsm_from_fsets q ns ins outs) = {}"
-  using assms unfolding fmember_def by (transfer; auto)+
+  using assms by (transfer; auto)+
 
 
 lift_definition add_transitions :: "('a,'b,'c) fsm \<Rightarrow> ('a,'b,'c) transition set \<Rightarrow> ('a,'b,'c) fsm" 

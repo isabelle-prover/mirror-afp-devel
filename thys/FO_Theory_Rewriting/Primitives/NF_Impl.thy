@@ -133,7 +133,7 @@ proof -
   have funas: "(f, length qs) \<in> set \<F>" and st: "fset_of_list qs |\<subseteq>| fstates (fset_of_list R)"
    and nlhs: "\<not>(\<exists> s \<in> (set R). s\<^sup>\<bottom> \<le>\<^sub>b BFun f qs)"
    and min: "q = bound_max (BFun f qs) (psubt_lhs_bot (set R))"
-    using assms by (auto simp add: nf_rules_fmember simp flip: fset_of_list_elem fmember_iff_member_fset)
+    using assms by (auto simp add: nf_rules_fmember simp flip: fset_of_list_elem)
   then have st_impl: "qs |\<in>| fset_of_list (List.n_lists (length qs) (states_impl R))"
     by (auto simp add: fset_of_list_elem subset_code(1) set_n_lists
         fset_of_list.rep_eq less_eq_fset.rep_eq fstates.rep_eq)
@@ -157,7 +157,7 @@ proof -
    and min: "q = min_elem (BFun f qs) (psubt_bot_impl R)" using assms
     by (auto simp add: set_n_lists nf_rule_impl_def fset_of_list_elem)    
   from st_impl have st: "fset_of_list qs |\<subseteq>| fstates (fset_of_list R)"
-    by (force simp: set_n_lists fset_of_list_elem fstates.rep_eq fmember_iff_member_fset fset_of_list.rep_eq)
+    by (force simp: set_n_lists fset_of_list_elem fstates.rep_eq fset_of_list.rep_eq)
   from nlhs_impl have nlhs: "\<not>(\<exists> l \<in> (set R). l\<^sup>\<bottom> \<le>\<^sub>b BFun f qs)"
     by auto (metis (no_types, lifting) Ball_set_list_all in_set_idx length_map nth_map nth_mem)
   have "q = bound_max (BFun f qs) (psubt_lhs_bot (set R))"
@@ -184,7 +184,7 @@ qed
 
 lemma fstates_code[code]:
   "fstates R = fset_of_list (states_impl (sorted_list_of_fset R))"
-  by (auto simp: fmember_iff_member_fset fstates.rep_eq fset_of_list.rep_eq)
+  by (auto simp: fstates.rep_eq fset_of_list.rep_eq)
 
 lemma nf_ta_code [code]:
   "nf_ta R \<F> = TA (fset_of_list (nf_rules_impl (sorted_list_of_fset R) (sorted_list_of_fset \<F>))) {||}"

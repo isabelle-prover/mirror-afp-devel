@@ -19,7 +19,7 @@ primrec compress_pterm :: "pterm \<Rightarrow> pterm" where
 "compress_pterm (t $\<^sub>p u) = compress_pterm t $\<^sub>p compress_pterm u"
 
 lemma compress_pterm_eq[simp]: "compress_pterm t = t"
-by (induction t) (auto simp: subst_pabs_id fset_map_snd_id map_prod_def fmember_iff_member_fset)
+by (induction t) (auto simp: subst_pabs_id fset_map_snd_id map_prod_def)
 
 definition compress_crule_set :: "crule_set \<Rightarrow> crule_set" where
 "compress_crule_set = fcompress \<circ> fimage (map_prod id fcompress)"

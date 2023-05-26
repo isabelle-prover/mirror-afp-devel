@@ -175,12 +175,12 @@ proof -
     have "\<not>(\<exists>parent \<in> fset (object_ptr_kinds h). root_ptr' \<in> set |h \<turnstile> get_child_nodes parent|\<^sub>r)"
       using disc_nodes
       by (meson assms(1) assms(2) assms(3) disjoint_iff_not_equal local.get_child_nodes_ok
-          local.heap_is_wellformed_children_disc_nodes_different local.known_ptrs_known_ptr notin_fset
+          local.heap_is_wellformed_children_disc_nodes_different local.known_ptrs_known_ptr
           returns_result_select_result root_ptr')
     then
     have "h \<turnstile> get_parent root_ptr' \<rightarrow>\<^sub>r None"
       using disc_nodes
-      by (metis (no_types, lifting) assms(1) assms(2) assms(3) fmember_iff_member_fset local.get_parent_child_dual
+      by (metis (no_types, opaque_lifting) assms(1) assms(2) assms(3) local.get_parent_child_dual
           local.get_parent_ok local.get_parent_parent_in_heap local.heap_is_wellformed_disc_nodes_in_heap
           returns_result_select_result root_ptr' select_result_I2 split_option_ex)
     then have "h \<turnstile> get_root_node ptr' \<rightarrow>\<^sub>r cast root_ptr'"
@@ -244,12 +244,12 @@ proof -
     have "\<not>(\<exists>parent \<in> fset (object_ptr_kinds h). root_ptr' \<in> set |h \<turnstile> get_child_nodes parent|\<^sub>r)"
       using disc_nodes
       by (meson assms(1) assms(2) assms(3) disjoint_iff_not_equal local.get_child_nodes_ok
-          local.heap_is_wellformed_children_disc_nodes_different local.known_ptrs_known_ptr notin_fset
+          local.heap_is_wellformed_children_disc_nodes_different local.known_ptrs_known_ptr
           returns_result_select_result root_ptr')
     then
     have "h \<turnstile> get_parent root_ptr' \<rightarrow>\<^sub>r None"
       using disc_nodes
-      by (metis (no_types, lifting) assms(1) assms(2) assms(3) fmember_iff_member_fset local.get_parent_child_dual
+      by (metis (no_types, opaque_lifting) assms(1) assms(2) assms(3) local.get_parent_child_dual
           local.get_parent_ok local.get_parent_parent_in_heap local.heap_is_wellformed_disc_nodes_in_heap
           returns_result_select_result root_ptr' select_result_I2 split_option_ex)
     then have "h \<turnstile> get_root_node ptr' \<rightarrow>\<^sub>r cast root_ptr'"
@@ -623,7 +623,7 @@ proof -
     apply(auto simp add: returns_result_heap_def get_shadow_root_safe_def elim!: bind_returns_result_E2
         split: option.splits if_splits)[1]
     using get_shadow_root_shadow_root_ptr_in_heap
-    by (meson assms(5) is_OK_returns_result_I local.get_mode_ptr_in_heap notin_fset returns_result_eq
+    by (meson assms(5) is_OK_returns_result_I local.get_mode_ptr_in_heap returns_result_eq
         shadow_root_mode.distinct(1))
   ultimately show ?thesis
     by(simp add: is_strongly_scdom_component_safe_def preserved_def)
@@ -976,8 +976,8 @@ proof -
     apply(auto simp add: returns_result_heap_def assigned_slot_def a_find_slot_def
         elim!: bind_returns_result_E2 split: option.splits if_splits
         dest!: get_shadow_root_shadow_root_ptr_in_heap[OF assms(1)])[1]
-     apply (meson finite_set_in returns_result_eq shadow_root_mode.distinct(1))
-    apply (meson finite_set_in returns_result_eq shadow_root_mode.distinct(1))
+     apply (meson returns_result_eq shadow_root_mode.distinct(1))
+    apply (meson returns_result_eq shadow_root_mode.distinct(1))
     done
   ultimately show ?thesis
     by(auto simp add: is_strongly_scdom_component_safe_def preserved_def)

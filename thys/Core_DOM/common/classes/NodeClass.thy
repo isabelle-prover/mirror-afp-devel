@@ -62,8 +62,7 @@ definition node_ptr_kinds :: "(_) heap \<Rightarrow> (_) node_ptr fset"
 lemma node_ptr_kinds_simp [simp]: 
   "node_ptr_kinds (Heap (fmupd (cast node_ptr) node (the_heap h))) 
        = {|node_ptr|} |\<union>| node_ptr_kinds h"
-  apply(auto simp add: node_ptr_kinds_def)[1]
-  by force
+  by (auto simp add: node_ptr_kinds_def)
 
 definition cast\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>2\<^sub>N\<^sub>o\<^sub>d\<^sub>e :: "(_) Object \<Rightarrow> (_) Node option"
   where
@@ -110,7 +109,7 @@ lemma get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_type_wf:
   shows "node_ptr |\<in>| node_ptr_kinds h \<longleftrightarrow> get\<^sub>N\<^sub>o\<^sub>d\<^sub>e node_ptr h \<noteq> None"
   using l_type_wf\<^sub>N\<^sub>o\<^sub>d\<^sub>e_axioms assms
   apply(simp add: type_wf_defs get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_def l_type_wf\<^sub>N\<^sub>o\<^sub>d\<^sub>e_def)
-  by (metis bind_eq_None_conv ffmember_filter fimage_eqI fmember_iff_member_fset is_node_ptr_kind_cast 
+  by (metis bind_eq_None_conv ffmember_filter fimage_eqI is_node_ptr_kind_cast 
             get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_type_wf node_ptr_casts_commute2 node_ptr_kinds_def option.sel option.simps(3))
 end
 
@@ -138,10 +137,14 @@ lemma put\<^sub>N\<^sub>o\<^sub>d\<^sub>e_put_ptrs:
 
 lemma node_ptr_kinds_commutes [simp]: 
   "cast node_ptr |\<in>| object_ptr_kinds h \<longleftrightarrow> node_ptr |\<in>| node_ptr_kinds h"
-  apply(auto simp add: node_ptr_kinds_def split: option.splits)[1]
-  by (metis (no_types, lifting) ffmember_filter fimage_eqI fset.map_comp 
-      is_node_ptr_kind_none node_ptr_casts_commute2
-      option.distinct(1) option.sel)
+proof (rule iffI)
+  show "cast node_ptr |\<in>| object_ptr_kinds h \<Longrightarrow> node_ptr |\<in>| node_ptr_kinds h"
+    by (metis ffmember_filter fimage_eqI is_node_ptr_kind_cast node_ptr_casts_commute2
+        node_ptr_kinds_def option.sel)
+next
+  show "node_ptr |\<in>| node_ptr_kinds h \<Longrightarrow> cast node_ptr |\<in>| object_ptr_kinds h"
+    by (auto simp add: node_ptr_kinds_def)
+qed
 
 lemma node_empty [simp]: 
   "\<lparr>RObject.nothing = (), RNode.nothing = (), \<dots> = RNode.more node\<rparr> = node"
@@ -179,8 +182,8 @@ definition a_known_ptrs :: "(_) heap \<Rightarrow> bool"
     "a_known_ptrs h = (\<forall>ptr \<in> fset (object_ptr_kinds h). known_ptr ptr)"
 
 lemma known_ptrs_known_ptr: "a_known_ptrs h \<Longrightarrow> ptr |\<in>| object_ptr_kinds h \<Longrightarrow> known_ptr ptr"
-  apply(simp add: a_known_ptrs_def)
-  using notin_fset by fastforce
+  by (simp add: a_known_ptrs_def)
+
 lemma known_ptrs_preserved:
   "object_ptr_kinds h = object_ptr_kinds h' \<Longrightarrow> a_known_ptrs h = a_known_ptrs h'"
   by(auto simp add: a_known_ptrs_def)

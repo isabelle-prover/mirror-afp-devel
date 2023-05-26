@@ -369,15 +369,25 @@ lemma (in object_model) static_operation_det:
 
 subsection \<open>Code Setup\<close>
 
-lemma fmember_code_predI [code_pred_intro]:
-  "x |\<in>| xs" if "Predicate_Compile.contains (fset xs) x"
-  using that by (simp add: Predicate_Compile.contains_def fmember_iff_member_fset)
-
-code_pred fmember
-  by (simp add: Predicate_Compile.contains_def fmember_iff_member_fset)
+declare owned_attribute'.intros[folded Predicate_Compile.contains_def, code_pred_intro]
+code_pred (modes:
+  i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool,
+  i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool,
+  i \<Rightarrow> o \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool,
+  i \<Rightarrow> o \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) owned_attribute'
+  by (elim owned_attribute'.cases) (simp add: Predicate_Compile.contains_def)
 
 code_pred unique_closest_attribute .
 
+declare role_refer_class.intros[folded Predicate_Compile.contains_def, code_pred_intro]
+code_pred (modes:
+    i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool,
+    i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool,
+    i \<Rightarrow> o \<Rightarrow> i \<Rightarrow> bool,
+    i \<Rightarrow> o \<Rightarrow> o \<Rightarrow> bool) role_refer_class
+  by (elim role_refer_class.cases) (simp add: Predicate_Compile.contains_def)
+
+declare association_ends'.intros[folded Predicate_Compile.contains_def, code_pred_intro]
 code_pred (modes:
     i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool,
     i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool,
@@ -394,7 +404,8 @@ code_pred (modes:
     i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> o \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool,
     i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> o \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool,
     i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> o \<Rightarrow> o \<Rightarrow> i \<Rightarrow> bool,
-    i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> o \<Rightarrow> o \<Rightarrow> o \<Rightarrow> bool) association_ends' .
+    i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> o \<Rightarrow> o \<Rightarrow> o \<Rightarrow> bool) association_ends'
+  by (auto simp: Predicate_Compile.contains_def elim: association_ends'.cases)
 
 code_pred association_ends_not_unique' .
 
@@ -454,9 +465,9 @@ code_pred association_class_end_not_unique .
 
 code_pred unique_association_class_end .
 
-code_pred (modes:
-    i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool,
-    i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) any_operation' .
+declare any_operation'.intros[folded Predicate_Compile.contains_def, code_pred_intro]
+code_pred [show_modes] any_operation'
+  by (elim any_operation'.cases) (simp add: Predicate_Compile.contains_def)
 
 code_pred (modes:
     i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool,
@@ -484,6 +495,9 @@ code_pred (modes:
 
 code_pred static_operation_defined' .
 
-code_pred has_literal' .
+declare has_literal'.intros[folded Predicate_Compile.contains_def, code_pred_intro]
+code_pred (modes:
+  i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) has_literal'
+  by (elim has_literal'.cases) (simp add: Predicate_Compile.contains_def)
 
 end

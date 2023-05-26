@@ -24,7 +24,7 @@ proof -
       case (GFun f ts)
       then show ?case
         by (auto simp: sig_ta_rules_fmember SUP_le_iff
-                 simp flip: fmember_iff_member_fset intro!: exI[of _ "replicate (length ts) ()"])
+                 intro!: exI[of _ "replicate (length ts) ()"])
     qed}
   moreover
   {fix t q assume "q |\<in>| ta_der (sig_ta \<F>) (term_of_gterm t)"
@@ -32,7 +32,7 @@ proof -
     proof (induct rule: ta_der_gterm_induct)
       case (GFun f ts ps p q)
       from GFun(1 - 4) GFun(5)[THEN subsetD] show ?case
-        by (auto simp: sig_ta_rules_fmember simp flip: fmember_iff_member_fset dest!: in_set_idx)
+        by (auto simp: sig_ta_rules_fmember dest!: in_set_idx)
       qed}
   ultimately show ?thesis
     unfolding partially_completely_defined_on_def
@@ -47,7 +47,7 @@ proof -
     using assms by (simp add: ta_der_mono')
   then show ?thesis using sig_ta_completely_defined assms(2)
     by (auto simp: partially_completely_defined_on_def)
-       (metis ffunas_gterm.rep_eq fin_mono notin_fset ta_der_gterm_sig)
+       (metis ffunas_gterm.rep_eq fin_mono ta_der_gterm_sig)
 qed
 
 lemma completely_definied_ps_taI:
@@ -135,8 +135,7 @@ proof -
     proof (induct rule: ta_der_gterm_induct)
       case (GFun f ts ps p q)
       then show ?case
-        by (auto simp: filter_ta_sig_def SUP_le_iff simp flip: fmember_iff_member_fset
-                    intro!: exI[of _ ps] exI[of _ p])
+        by (auto simp: filter_ta_sig_def SUP_le_iff intro!: exI[of _ ps] exI[of _ p])
     qed
     then have "t \<in> ?Ls" using p(1) by auto}
   ultimately show ?thesis by blast

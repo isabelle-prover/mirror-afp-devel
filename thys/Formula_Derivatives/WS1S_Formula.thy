@@ -511,7 +511,6 @@ next
         split: bool.splits order.splits nat.splits)
 next
   fix \<AA> :: interp and a :: ws1s
-  note fmember_iff_member_fset[symmetric, simp]
   assume "Length \<AA> = 0"
   then show "nullable0 a = satisfies0 \<AA> a"
     by (induct a, unfold wf0.simps nullable0.simps satisfies0.simps Let_def)
@@ -566,27 +565,23 @@ next
          (metis assigns_less_Length finsertI1 less_not_refl)+
    next
      case Suc_SO then show ?case
-     apply (auto 2 1 split: prod.splits)
-                       apply (metis finsert_iff gr0_implies_Suc in_fimage_Suc nat.distinct(2))
-                      apply (metis finsert_iff in_fimage_Suc less_not_refl)
-                     apply (metis (no_types, opaque_lifting) fimage_finsert finsertE finsertI1 finsert_commute in_fimage_Suc n_not_Suc_n)
-                    apply (metis (no_types, opaque_lifting) assigns_less_Length order.strict_iff_order finsert_iff in_fimage_Suc not_less_eq_eq order_refl)
-                   apply (metis assigns_less_Length fimageI finsert_iff less_irrefl_nat nat.inject)
-                  apply (metis finsertE finsertI1 finsert_commute finsert_fminus_single in_fimage_Suc n_not_Suc_n)
-                 apply (metis (no_types, opaque_lifting) assigns_less_Length finsertE fminus_finsert2 fminus_iff in_fimage_Suc lessI not_less_iff_gr_or_eq)
-                apply (metis assigns_less_Length finsert_iff lessI not_less_iff_gr_or_eq)
-               apply (metis assigns_less_Length fimage_finsert finsert_iff not_less_eq not_less_iff_gr_or_eq)
-              apply metis
-             apply (metis assigns_less_Length order.strict_iff_order finsert_iff in_fimage_Suc not_less_eq_eq order_refl)
-            apply (metis Suc_leI assigns_less_Length fimageI finsert_iff le_eq_less_or_eq lessI less_imp_not_less)
-           apply (metis assigns_less_Length fimageE finsertI1 finsert_fminus_if fminus_finsert_absorb lessI less_not_sym)
-          apply (metis assigns_less_Length order.strict_iff_order finsert_iff not_less_eq_eq order_refl)
-         apply (metis assigns_less_Length order.strict_iff_order finsert_iff not_less_eq_eq order_refl)
-        apply (metis assigns_less_Length fimage_Suc_inj fimage_finsert finsert_absorb finsert_iff less_not_refl nat.distinct(2))
-       apply (metis assigns_less_Length fimage_Suc_inj fimage_finsert finsertI1 finsert_absorb less_not_refl)
-      apply (metis assigns_less_Length fimage_Suc_inj fimage_finsert finsert_absorb finsert_iff less_not_refl nat.distinct(2))
-     apply (metis assigns_less_Length fimage_Suc_inj fimage_finsert finsertI1 finsert_absorb2 less_not_refl)
-     done
+       apply (auto 2 1 dest: assigns_less_Length split: prod.splits)
+                      apply (metis fimage.rep_eq finsert_iff less_not_refl)
+                     apply (metis fimage.rep_eq finsert_iff less_not_refl)
+                    apply (metis fimage.rep_eq finsert_iff n_not_Suc_n)
+                   apply (metis Suc_lessD assigns_less_Length fimage.rep_eq finsert_iff not_less_eq)
+                  apply (metis Suc_less_eq assigns_less_Length fimageI finsert_iff less_not_refl)
+                 apply (metis fimage.rep_eq finsert_fminus_single finsert_iff n_not_Suc_n)
+                apply (metis assigns_less_Length dual_order.strict_trans fimage.rep_eq finsert_fminus_single finsert_iff lessI less_not_refl)
+               apply (metis Suc_n_not_le_n assigns_less_Length finsert_iff less_or_eq_imp_le)
+              apply (metis Suc_n_not_le_n assigns_less_Length finsertE finsertI1 less_or_eq_imp_le)
+             apply (metis assigns_less_Length fimage.rep_eq finsert_iff lessI order_less_imp_not_less)
+            apply (metis Length_notin_assigns finsert_fimage finsert_iff nat.inject)
+           apply (metis assigns_less_Length fimage.rep_eq finsert_fminus_single finsert_iff not_add_less2 plus_1_eq_Suc)
+          apply (metis assigns_less_Length finsertI1 finsert_commute not_add_less2 plus_1_eq_Suc)
+         apply (metis assigns_less_Length finsertI1 not_add_less2 plus_1_eq_Suc)
+        apply (metis Length_notin_assigns Suc_in_fimage_Suc finsert_iff)
+       by (metis Length_notin_assigns Suc_in_fimage_Suc finsertI1)
    next
      case In then show ?case by (auto split: prod.splits) (metis fMin_less_Length less_not_sym)+
    next
@@ -607,7 +602,6 @@ next
        by (auto 0 1 simp add: fset_eq_iff split: prod.splits) (metis assigns_less_Length less_not_refl)+
    next
      let ?f = "sum ((^) (2 :: nat))"
-     note fmember_iff_member_fset[symmetric, simp]
      case (Eq_Presb l M n)
      moreover
      let ?M = "fset (M\<^bsup>\<AA>\<^esup>SO)" and ?L = "Length \<AA>"
