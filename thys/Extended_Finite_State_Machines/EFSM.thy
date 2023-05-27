@@ -74,7 +74,7 @@ lemma possible_steps_empty_guards_false:
   "\<forall>((s1, s2), t) |\<in>| ffilter (\<lambda>((origin, dest), t). Label t = l) e. \<not>can_take_transition t i r \<Longrightarrow>
   possible_steps e s r l i = {||}"
   apply (simp add: possible_steps_def can_take[symmetric] split_label)
-  by (simp add: Abs_ffilter fBall_def Ball_def)
+  by (simp add: Abs_ffilter Ball_def)
 
 lemma fmember_possible_steps: "(s', t) |\<in>| possible_steps e s r l i = (((s, s'), t) \<in> {((origin, dest), t) \<in> fset e. origin = s \<and> Label t = l \<and> length i = Arity t \<and> apply_guards (Guards t) (join_ir i r)})"
   apply (simp add: possible_steps_def ffilter_def fimage_def Abs_fset_inverse)
@@ -419,7 +419,7 @@ lemma outgoing_transitions_deterministic:
   apply (rule allI)
   subgoal for s
     apply (erule_tac x=s in allE)
-    apply (simp add: fBall_def Ball_def)
+    apply (simp add: Ball_def)
     apply (rule allI)+
     subgoal for i r d1 d2 t1
       apply (erule_tac x=s in allE)
@@ -914,7 +914,7 @@ lemma trace_simulation_step:
    apply (rule trace_simulation.cases, simp+)
   apply (rule trace_simulation.step)
    apply simp
-  by blast
+  by fastforce
 
 lemma trace_simulation_step_none:
   "s2 = f s1 \<Longrightarrow>
@@ -948,7 +948,7 @@ next
      apply simp
     apply clarsimp
     subgoal for l o _ _ i
-      by fastforce
+      by blast
     done
 qed
 
@@ -1351,7 +1351,7 @@ next
       apply simp
      apply simp
     apply clarsimp
-    apply (simp add: fBex_def Bex_def ex_comm4)
+    apply (simp add: Bex_def ex_comm4)
     subgoal for _ _ aa ba
       apply (rule_tac x=aa in exI)
       apply (rule_tac x=ba in exI)

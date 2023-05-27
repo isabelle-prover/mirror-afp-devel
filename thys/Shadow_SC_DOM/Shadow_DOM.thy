@@ -4926,29 +4926,16 @@ h' \<turnstile> get_shadow_root ptr' \<rightarrow>\<^sub>r shadow_root_opt"
   have "CD.a_all_ptrs_in_heap h"
     using \<open>heap_is_wellformed h\<close>
     by (simp add: heap_is_wellformed_def CD.heap_is_wellformed_def)
-  then have "CD.a_all_ptrs_in_heap h2"
-    apply(auto simp add: CD.a_all_ptrs_in_heap_def object_ptr_kinds_eq_h node_ptr_kinds_def
-        children_eq_h disconnected_nodes_eq_h)[1]
-     apply (metis (no_types, lifting) children_eq2_h subsetD)
-    by (metis (no_types, lifting) disconnected_nodes_eq2_h document_ptr_kinds_eq_h
-        in_mono)
-  then have "CD.a_all_ptrs_in_heap h'"
-    apply(auto simp add: CD.a_all_ptrs_in_heap_def node_ptr_kinds_eq_h2 children_eq_h2
-        disconnected_nodes_eq_h2)[1]
-     apply(case_tac "ptr = cast shadow_root_ptr")
-    using object_ptr_kinds_eq_h2 children_eq_h2
-      apply (meson \<open>cast\<^sub>s\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>_\<^sub>r\<^sub>o\<^sub>o\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r shadow_root_ptr |\<notin>| object_ptr_kinds h'\<close>
-        is_OK_returns_result_I local.get_child_nodes_ptr_in_heap)
-     apply(auto dest!: children_eq_h2)[1]
-    using assms(1) children_eq_h local.heap_is_wellformed_children_in_heap node_ptr_kinds_eq_h
-      node_ptr_kinds_eq_h2 apply blast
-     apply (meson \<open>known_ptrs h'\<close> \<open>type_wf h'\<close> local.get_child_nodes_ok local.known_ptrs_known_ptr
-        returns_result_select_result)
-    by (metis (no_types, lifting) \<open>cast\<^sub>s\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>_\<^sub>r\<^sub>o\<^sub>o\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r shadow_root_ptr |\<notin>| object_ptr_kinds h'\<close>
-        \<open>type_wf h2\<close> assms(1) disconnected_nodes_eq2_h2 disconnected_nodes_eq_h document_ptr_kinds_commutes
-        document_ptr_kinds_eq2_h2 fin_mono local.get_disconnected_nodes_ok
-        local.heap_is_wellformed_disc_nodes_in_heap node_ptr_kinds_eq_h node_ptr_kinds_eq_h2
-        returns_result_select_result)
+  hence "CD.a_all_ptrs_in_heap h2"
+    by (simp add: children_eq2_h disconnected_nodes_eq2_h document_ptr_kinds_eq_h
+        l_heap_is_wellformed\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_defs.a_all_ptrs_in_heap_def node_ptr_kinds_eq_h
+        object_ptr_kinds_eq_h)
+  hence "CD.a_all_ptrs_in_heap h'"
+    by (metis (no_types, opaque_lifting)
+        \<open>cast\<^sub>s\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>_\<^sub>r\<^sub>o\<^sub>o\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r shadow_root_ptr |\<notin>| object_ptr_kinds h'\<close> children_eq2_h2
+        delete\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_M_ptr_not_in_heap disconnected_nodes_eq2_h2 document_ptr_kinds_eq2_h2
+        fsubsetD h' CD.a_all_ptrs_in_heap_def node_ptr_kinds_eq_h2 object_ptr_kinds_eq_h2
+        shadow_root_ptr_kinds_commutes)
 
   moreover
   have "CD.a_distinct_lists h"

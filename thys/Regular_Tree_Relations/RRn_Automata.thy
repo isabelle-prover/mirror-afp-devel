@@ -579,8 +579,8 @@ proof -
     by blast
   have "r |\<in>| rules ?BA \<Longrightarrow> r |\<in>| rules ?AB" "e |\<in>| eps ?BA \<Longrightarrow> e |\<in>| eps ?AB" for r e
     using *[of B A] map_ta_rule_prod_swap_id
-    unfolding fmap_funs_ta_def fmap_states_ta_def
-      by (auto simp: map_ta_rule_comp image_iff fBex_def ta_rule.map_id0 intro!: bexI[of _ "?m r"])
+    unfolding fmap_funs_ta_def fmap_states_ta_def ta.sel
+    by (auto simp: map_ta_rule_comp image_iff ta_rule.map_id0 intro!: bexI[of _ "?m r"]) 
   then have "eps ?BA |\<subseteq>| eps ?AB" "rules ?BA |\<subseteq>| rules ?AB"
     by blast+
   then have "fmap_states_ta prod.swap (fmap_funs_ta prod.swap (pair_automaton A B)) = pair_automaton B A"
@@ -895,7 +895,7 @@ proof
     "\<forall>i < length qs. qs ! i |\<in>| Qn \<and> qs' ! i = None \<or> qs ! i |\<in>| Qs \<and> (qs' ! i) = Some (qs ! i)"
     then have "TA_rule (Some f) qs' (Some q) |\<in>| collapse_rule A Qn Qs"
       using collapse_fset_inv_constr[of qs' qs Qn Qs] unfolding collapse_rule_def
-      by (auto simp: fset_of_list.rep_eq fimage_iff intro!: fBexI[of _ "TA_rule (Some f) qs q"])
+      by (auto simp: fset_of_list.rep_eq fimage_iff intro!: bexI[of _ "TA_rule (Some f) qs q"])
     then have "TA_rule f (map the (filter (\<lambda>q. \<not> Option.is_none q) qs')) q \<in> ?Ls"
       unfolding collapse_rule_fset_def
       by (auto simp: image_iff Bex_def intro!: exI[of _"TA_rule (Some f) qs' (Some q)"])}

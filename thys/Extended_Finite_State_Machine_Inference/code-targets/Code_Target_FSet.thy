@@ -102,15 +102,6 @@ lemma code_fsubset [code]:
    apply (simp only: size_fsubset)
   by auto
 
-lemma code_fset [code]: "fset (fset_of_list l) = fold insert l {}"
-  using fset_of_list.rep_eq union_set_fold by fastforce
-
-lemma code_fBall [code]: "fBall (fset_of_list l) f = list_all f l"
-  by (simp add: Ball_set fBall.rep_eq fset_of_list.rep_eq)
-
-lemma code_fBex [code]: "fBex (fset_of_list l) f = list_ex f l"
-  by (meson Bex_set fBexE fset_of_list_elem rev_fBexI)
-
 definition "nativeSort = sort"
 code_printing constant nativeSort \<rightharpoonup> (Scala) "_.sortWith((Orderings.less))"
 

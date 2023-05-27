@@ -45,8 +45,21 @@ lemma (in pre_irules) irulesI:
   assumes "\<And>name irs pats rhs. (name, irs) |\<in>| rs \<Longrightarrow> (pats, rhs) |\<in>| irs \<Longrightarrow> welldefined rhs"
   assumes "is_fmap rs" "rs \<noteq> {||}"
   shows "irules C_info rs"
-using assms unfolding irules_axioms_def irules_def
-by (auto simp: prod_fBallI intro: pre_irules_axioms)
+proof unfold_locales
+  show "is_fmap rs"
+    using assms(12) .
+next
+  show "rs \<noteq> {||}"
+    using assms(13) .
+next
+  show "fBall rs (\<lambda>(_, irs). Rewriting_Nterm.arity_compatibles irs \<and> is_fmap irs \<and>
+    patterns_compatibles irs \<and> irs \<noteq> {||} \<and>
+    fBall irs (\<lambda>(pats, rhs). linears pats \<and> abs_ish pats rhs \<and> closed_except rhs (freess pats) \<and>
+      fdisjnt (freess pats) all_consts \<and> pre_strong_term_class.wellformed rhs \<and>
+      \<not> shadows_consts rhs \<and> consts rhs |\<subseteq>| all_consts))"
+    using assms(1-11)
+    by (intro prod_BallI conjI) metis+
+qed
 
 lemmas irulesI[intro!] = pre_irules.irulesI[unfolded pre_irules_def]
 
@@ -120,7 +133,8 @@ proof
   then obtain irs' where "(name, irs') |\<in>| rs" "irs = translate_crules irs'"
     unfolding compile_def by force
   hence "arity_compatibles irs'"
-    using inner by (blast dest: fpairwiseD)
+    using inner
+    by (metis (no_types, lifting) case_prodD)
   thus "arity_compatibles irs"
     unfolding \<open>irs = translate_crules irs'\<close> translate_crules_def
     by (force dest: fpairwiseD)
@@ -162,7 +176,7 @@ proof
 
   have "fdisjnt (freess pats) all_consts"
     using \<open>(pats, rhs') |\<in>| irs'\<close> \<open>(name, irs') |\<in>| rs\<close> inner
-    by blast
+    by auto
   thus "fdisjnt (freess pats) (pre_constants.all_consts C_info (fst |`| compile rs))"
     unfolding compile_def by simp
 
@@ -294,7 +308,8 @@ proof
   then obtain irs' where "(name, irs') |\<in>| rs" "irs = transform_irules irs'"
     unfolding transform_irule_set_def by force
   hence "arity_compatibles irs'"
-    using inner by (blast dest: fpairwiseD)
+    using inner
+    by (metis (no_types, lifting) case_prodD)
   thus "arity_compatibles irs"
     unfolding \<open>irs = transform_irules irs'\<close> by (rule arity_compatibles_transform_irules)
 
@@ -377,7 +392,7 @@ proof
       thus ?thesis
         using \<open>(pats, rhs) |\<in>| irs\<close> \<open>(name, irs') |\<in>| rs\<close> inner
         unfolding \<open>irs = transform_irules irs'\<close> transform_irules_def
-        by (smt fBallE split_conv)
+        by auto
     next
       case False
       hence irs': "irs = map_prod id Pabs |`| ?grp"
@@ -391,7 +406,7 @@ proof
         by simp
       moreover have "linears pats'"
         using \<open>(pats', x) |\<in>| irs'\<close> \<open>(name, irs') |\<in>| rs\<close> inner
-        by blast
+        by auto
       ultimately show ?thesis
         by auto
     qed
@@ -402,7 +417,7 @@ proof
       thus ?thesis
         using \<open>(pats, rhs) |\<in>| irs\<close> \<open>(name, irs') |\<in>| rs\<close> inner
         unfolding \<open>irs = transform_irules irs'\<close> transform_irules_def
-        by (smt fBallE split_conv)
+        by auto
     next
       case False
       hence irs': "irs = map_prod id Pabs |`| ?grp"
@@ -415,7 +430,7 @@ proof
       hence "pats = butlast pats'"
         by simp
       moreover have "fdisjnt (freess pats') all_consts"
-        using \<open>(pats', x) |\<in>| irs'\<close> \<open>(name, irs') |\<in>| rs\<close> inner by blast
+        using \<open>(pats', x) |\<in>| irs'\<close> \<open>(name, irs') |\<in>| rs\<close> inner by auto
       ultimately show ?thesis
         by (metis subsetI in_set_butlastD freess_subset fdisjnt_subset_left)
     qed
@@ -429,7 +444,7 @@ proof
       thus ?thesis
         using \<open>(pats, rhs) |\<in>| irs\<close> \<open>(name, irs') |\<in>| rs\<close> inner
         unfolding \<open>irs = transform_irules irs'\<close> transform_irules_def
-        by (smt fBallE split_conv)
+        by auto
     next
       case False
       hence irs': "irs = map_prod id Pabs |`| ?grp"
@@ -445,7 +460,7 @@ proof
           then obtain pats' where "(pats', t) |\<in>| irs'" "?f (pats', t) = (pats, (pat, t))"
             using \<open>(pats, cs) |\<in>| ?grp\<close> by auto
           hence "closed_except t (freess pats')"
-            using \<open>(name, irs') |\<in>| rs\<close> inner by blast
+            using \<open>(name, irs') |\<in>| rs\<close> inner by auto
 
           have "pats' \<noteq> []"
             using \<open>arity_compatibles irs'\<close> \<open>(pats', t) |\<in>| irs'\<close> False
@@ -467,7 +482,7 @@ proof
       thus ?thesis
         using \<open>(pats, rhs) |\<in>| irs\<close> \<open>(name, irs') |\<in>| rs\<close> inner
         unfolding \<open>irs = transform_irules irs'\<close> transform_irules_def
-        by (smt fBallE split_conv)
+        by auto
     next
       case False
       hence irs': "irs = map_prod id Pabs |`| ?grp"
@@ -536,12 +551,12 @@ proof
             by auto
 
           moreover have "linears pats'"
-            using \<open>(pats', t) |\<in>| irs'\<close> \<open>(name, irs') |\<in>| rs\<close> inner by blast
+            using \<open>(pats', t) |\<in>| irs'\<close> \<open>(name, irs') |\<in>| rs\<close> inner by auto
           ultimately show "linear pat"
             by (metis linears_linear)
 
           show "wellformed t"
-            using \<open>(pats', t) |\<in>| irs'\<close> \<open>(name, irs') |\<in>| rs\<close> inner by blast
+            using \<open>(pats', t) |\<in>| irs'\<close> \<open>(name, irs') |\<in>| rs\<close> inner by auto
         qed
     qed
 
@@ -551,7 +566,7 @@ proof
       thus ?thesis
         using \<open>(pats, rhs) |\<in>| irs\<close> \<open>(name, irs') |\<in>| rs\<close> inner
         unfolding \<open>irs = transform_irules irs'\<close> transform_irules_def
-        by (smt fBallE split_conv)
+        by auto
     next
       case False
       hence irs': "irs = map_prod id Pabs |`| ?grp"
@@ -578,12 +593,12 @@ proof
             proof
               assume "shadows_consts t"
               thus False
-                using \<open>(name, irs') |\<in>| rs\<close> \<open>(pats', t) |\<in>| irs'\<close> inner by blast
+                using \<open>(name, irs') |\<in>| rs\<close> \<open>(pats', t) |\<in>| irs'\<close> inner by auto
             next
               assume "shadows_consts pat"
 
               have "fdisjnt (freess pats') all_consts"
-                using \<open>(name, irs') |\<in>| rs\<close> \<open>(pats', t) |\<in>| irs'\<close> inner by blast
+                using \<open>(name, irs') |\<in>| rs\<close> \<open>(pats', t) |\<in>| irs'\<close> inner by auto
               have "fdisjnt (frees pat) all_consts"
                 apply (rule fdisjnt_subset_left)
                  apply (subst freess_single[symmetric])
@@ -607,7 +622,7 @@ proof
       thus ?thesis
         using \<open>(pats, rhs) |\<in>| irs\<close> \<open>(name, irs') |\<in>| rs\<close> inner
         unfolding \<open>irs = transform_irules irs'\<close> transform_irules_def
-        by (smt fBallE split_conv)
+        by auto
     next
       case False
       hence irs': "irs = map_prod id Pabs |`| ?grp"
@@ -1069,10 +1084,11 @@ next
       by auto
 
     have "closed_except rhs (freess pats)" "linears pats"
-      using \<open>(pats, rhs) |\<in>| rsi\<close> \<open>(name, rsi) |\<in>| rs\<close> inner by blast+
+      using \<open>(pats, rhs) |\<in>| rsi\<close> \<open>(name, rsi) |\<in>| rs\<close> inner by auto
 
     have "arity_compatibles rsi"
-      using "defer" inner by (blast dest: fpairwiseD)
+      using "defer" inner
+      by (metis (no_types, lifting) case_prodD)
     have "length pats > 0"
       by (subst arity_compatible_length) fact+
     hence "pats = butlast pats @ [last pats]"
@@ -1294,10 +1310,11 @@ using assms(1-3) proof (induction arbitrary: t thesis rule: irewrite.induct)
           and "(pats, rhs\<^sub>1) |\<in>| rsi"
         by auto
       hence "linears pats"
-        using \<open>(name, rsi) |\<in>| rs\<close> inner unfolding irules_def by blast
+        using \<open>(name, rsi) |\<in>| rs\<close> inner unfolding irules_def by auto
 
       have "arity_compatibles rsi"
-        using "defer" inner by (blast dest: fpairwiseD)
+        using "defer" inner
+        by (metis (no_types, lifting) case_prodD)
       have "length pats > 0"
         by (subst arity_compatible_length) fact+
       hence "pats = butlast pats @ [pat]"
@@ -1364,7 +1381,8 @@ next
   then obtain rs\<^sub>1 where "rs\<^sub>2 = transform_irules rs\<^sub>1" "(name, rs\<^sub>1) |\<in>| rs"
     unfolding transform_irule_set_def by force
   hence "arity_compatibles rs\<^sub>1"
-    using inner by (blast dest: fpairwiseD)
+    using inner
+    by (metis (no_types, lifting) case_prodD)
 
   show ?case
     proof (cases "arity rs\<^sub>1 = 0")
@@ -1457,19 +1475,19 @@ next
                 subgoal by fact
                 subgoal
                   apply (rule linears_butlastI)
-                  using \<open>(pats', rhs) |\<in>| rs\<^sub>1\<close> \<open>(name, rs\<^sub>1) |\<in>| rs\<close> inner by blast
+                  using \<open>(pats', rhs) |\<in>| rs\<^sub>1\<close> \<open>(name, rs\<^sub>1) |\<in>| rs\<close> inner by auto
                 subgoal
                   using \<open>(pats, _) |\<in>| rs\<^sub>2\<close> \<open>(name, rs\<^sub>2) |\<in>| transform_irule_set rs\<close>
-                  using irules'.inner by blast
+                  using irules'.inner by auto
                   apply fact+
                 subgoal
                   apply (rule matchs_compatible_eq)
                       apply fact
                      apply (rule linears_butlastI)
                   using \<open>(pats', rhs) |\<in>| rs\<^sub>1\<close> \<open>(name, rs\<^sub>1) |\<in>| rs\<close> inner
-                     apply blast
+                  apply auto []
                   using \<open>(pats, _) |\<in>| rs\<^sub>2\<close> \<open>(name, rs\<^sub>2) |\<in>| transform_irule_set rs\<close>
-                  using irules'.inner apply blast
+                  using irules'.inner apply auto[]
                   by fact+
                 done
 
@@ -1487,7 +1505,7 @@ next
                     apply (rule linears_appendD)
                     apply (subst \<open>butlast pats' @ [last pats'] = pats'\<close>)
                     using \<open>(pats', rhs) |\<in>| rs\<^sub>1\<close> \<open>(name, rs\<^sub>1) |\<in>| rs\<close> inner
-                    by blast
+                    by auto
 
                   show "subst rhs env \<approx>\<^sub>p ?rhs_subst env\<^sub>2"
                     apply (rule prelated_subst)
@@ -1533,7 +1551,7 @@ next
               hence "pats' = pats @ [pat]"
                 unfolding \<open>pats = _\<close> \<open>pat = _\<close> by auto
               moreover have "linears pats'"
-                using \<open>(pats', rhs) |\<in>| rs\<^sub>1\<close> \<open>(name, rs\<^sub>1) |\<in>| _\<close> inner by blast
+                using \<open>(pats', rhs) |\<in>| rs\<^sub>1\<close> \<open>(name, rs\<^sub>1) |\<in>| _\<close> inner by auto
               ultimately have "fdisjnt (fmdom env\<^sub>1) (frees pat)"
                 unfolding \<open>fmdom env\<^sub>1 = _\<close>
                 by (auto dest: linears_appendD)
@@ -1639,13 +1657,12 @@ using assms proof induction
       by blast
     from step False have "length pats' \<noteq> 0"
       using arity_compatible_length inner
-      by (smt fBallE prod.simps(2))
+      by (smt (verit, ccfv_threshold) case_prodD)
     then have "pats' = pats @ [pat]"
       unfolding \<open>pat = _\<close> \<open>pats = _\<close>
       by simp
     from step have "linears pats'"
-      using inner fBallE
-      by (metis (mono_tags, lifting) old.prod.case)
+      using inner by auto
     then have "fdisjnt (freess pats) (frees pat)"
       unfolding \<open>pats' = _\<close>
       using linears_appendD(3) freess_single

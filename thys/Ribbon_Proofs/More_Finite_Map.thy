@@ -4,6 +4,9 @@ theory More_Finite_Map imports
   "HOL-Library.Finite_Map"
 begin
 
+lemma fdisjoint_iff: "A |\<inter>| B = {||} \<longleftrightarrow> (\<forall>x. x |\<in>| A \<longrightarrow> x |\<notin>| B)"
+  by (smt (verit) disjoint_iff_fnot_equal)
+
 unbundle lifting_syntax
 unbundle fmap.lifting
 

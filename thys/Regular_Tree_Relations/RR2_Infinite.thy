@@ -235,8 +235,7 @@ lemma Inl_A_res_Inf_automata:
 proof (rule ta_der_mono)
   show "rules (fmap_states_ta CInl \<A>) |\<subseteq>| rules (Inf_automata \<A> Q)"
     apply (rule fsubsetI)
-    apply (simp add: Inf_automata_def fmap_states_ta_def')
-    by force
+    by (auto simp: Inf_automata_def fmap_states_ta_def' image_iff Bex_def)
 next
   show "eps (fmap_states_ta CInl \<A>) |\<subseteq>| eps (Inf_automata \<A> Q)"
     by (rule fsubsetI) (simp add: Inf_automata_def fmap_states_ta_def')
@@ -290,7 +289,9 @@ proof (cases t)
     reach: "\<forall> i < length ts. ex_comp_state (gargs r ! i) |\<in>| ta_der \<A> (term_of_gterm (gterm_to_None_Some (ts  ! i)))"
     by (auto intro!: run_to_comp_st_gta_der[unfolded gta_der_def comp_def])
   from rule assms(2) have "(None, Some f) (map (CInl \<circ> ex_comp_state) (gargs r)) \<rightarrow> CInr (ex_rule_state r) |\<in>| rules  (Inf_automata \<A> Q)"
-    by (auto simp: Inf_automata_def) force
+    apply (simp add: Inf_automata_def image_iff bex_Un)
+    apply (rule disjI1)
+    by force
   then show ?thesis using reach rule Inl_res_A_res_Inf_automata[of \<A> "gterm_to_None_Some (ts ! i)" Q for i]
     by (auto simp: gta_der_def intro!: exI[of _ "CInr (ex_rule_state r)"]  exI[of _ "map (CInl \<circ> ex_comp_state) (gargs r)"])
         blast

@@ -1346,9 +1346,10 @@ lemma fmap_states_ta_sig [simp]:
 
 lemma fmap_states_ta_eps_wit:
   assumes "(h p, q) |\<in>| (map_both h |`| eps \<A>)|\<^sup>+|" "finj_on h (\<Q> \<A>)" "p |\<in>| \<Q> \<A>"
-  obtains q' where "q = h q'" "(p, q') |\<in>| (eps \<A>)|\<^sup>+|" "q' |\<in>| \<Q> \<A>" using assms
-  by (auto simp: fimage_iff finj_on_def' ftrancl_map_both_fsubset[OF assms(2), of "eps \<A>"])
-     (metis (mono_tags, lifting) assms(2) eps_trancl_statesD finj_on_eq_iff)
+  obtains q' where "q = h q'" "(p, q') |\<in>| (eps \<A>)|\<^sup>+|" "q' |\<in>| \<Q> \<A>"
+  using assms(1)[unfolded ftrancl_map_both_fsubset[OF assms(2), of "eps \<A>", simplified]]
+  using \<open>finj_on h (\<Q> \<A>)\<close>[unfolded finj_on_def', rule_format, OF \<open>p |\<in>| \<Q> \<A>\<close>]
+  by (metis Pair_inject eps_trancl_statesD prod_fun_fimageE)
 
 lemma ta_der_fmap_states_inv_superset:
   assumes "\<Q> \<A> |\<subseteq>| \<B>" "finj_on h \<B>"

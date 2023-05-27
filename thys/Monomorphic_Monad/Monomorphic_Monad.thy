@@ -59,7 +59,7 @@ lemma rel_fset_induct [consumes 1, case_names empty step, induct pred: rel_fset]
   shows "P X Y"
 proof -
   from XY obtain Z where X: "X = fst |`| Z" and Y: "Y = snd |`| Z" and Z: "fBall Z (\<lambda>(x, y). A x y)"
-    unfolding fset.in_rel by(auto simp add: fBall.rep_eq)
+    unfolding fset.in_rel by auto
   from Z show ?thesis unfolding X Y
   proof(induction Z)
     case (insert xy Z)
@@ -67,7 +67,7 @@ proof -
     show ?case using insert
       apply(cases "x |\<in>| fst |`| Z \<and> y |\<in>| snd |`| Z")
        apply(simp add: finsert_absorb)
-      apply(auto intro!: step simp add: fset.in_rel fBall.rep_eq; blast)
+      apply(auto intro!: step simp add: fset.in_rel; blast)
       done
   qed(simp add: assms)
 qed

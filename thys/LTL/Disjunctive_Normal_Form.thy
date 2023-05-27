@@ -741,11 +741,15 @@ lemma ltln_of_dnf_semantics:
   assumes "finite \<A>"
   shows "w \<Turnstile>\<^sub>n ltln_of_dnf \<A> \<longleftrightarrow> (\<exists>\<Phi> \<in> \<A>. \<forall>\<phi>. \<phi> |\<in>| \<Phi> \<longrightarrow> w \<Turnstile>\<^sub>n \<phi>)"
 proof -
-  have "finite (fset ` \<A>)"
-    using assms by blast
-
-  then have "w \<Turnstile>\<^sub>n ltln_of_dnf \<A> \<longleftrightarrow> (\<exists>\<Phi> \<in> fset ` \<A>. \<forall>\<phi> \<in> \<Phi>. w \<Turnstile>\<^sub>n \<phi>)"
-    unfolding ltln_of_dnf_def using Or\<^sub>n_And\<^sub>n_image_semantics by fastforce
+  have "w \<Turnstile>\<^sub>n ltln_of_dnf \<A> \<longleftrightarrow> (\<exists>\<Phi> \<in> fset ` \<A>. \<forall>\<phi> \<in> \<Phi>. w \<Turnstile>\<^sub>n \<phi>)"
+    unfolding ltln_of_dnf_def
+  proof (rule Or\<^sub>n_And\<^sub>n_image_semantics)
+    show "finite (fset ` \<A>)"
+      using assms by blast
+  next
+    show "\<And>\<Phi>. \<Phi> \<in> fset ` \<A> \<Longrightarrow> finite \<Phi>"
+      by auto
+  qed
 
   then show ?thesis
     by (metis image_iff)
@@ -755,11 +759,15 @@ lemma ltln_of_dnf_prop_semantics:
   assumes "finite \<A>"
   shows "\<I> \<Turnstile>\<^sub>P ltln_of_dnf \<A> \<longleftrightarrow> (\<exists>\<Phi> \<in> \<A>. \<forall>\<phi>. \<phi> |\<in>| \<Phi> \<longrightarrow> \<I> \<Turnstile>\<^sub>P \<phi>)"
 proof -
-  have "finite (fset ` \<A>)"
-    using assms by blast
-
-  then have "\<I> \<Turnstile>\<^sub>P ltln_of_dnf \<A> \<longleftrightarrow> (\<exists>\<Phi> \<in> fset ` \<A>. \<forall>\<phi> \<in> \<Phi>. \<I> \<Turnstile>\<^sub>P \<phi>)"
-    unfolding ltln_of_dnf_def using Or\<^sub>n_And\<^sub>n_image_prop_semantics by fastforce
+  have "\<I> \<Turnstile>\<^sub>P ltln_of_dnf \<A> \<longleftrightarrow> (\<exists>\<Phi> \<in> fset ` \<A>. \<forall>\<phi> \<in> \<Phi>. \<I> \<Turnstile>\<^sub>P \<phi>)"
+    unfolding ltln_of_dnf_def
+  proof (rule Or\<^sub>n_And\<^sub>n_image_prop_semantics)
+    show "finite (fset ` \<A>)"
+      using assms by blast
+  next
+    show "\<And>\<Phi>. \<Phi> \<in> fset ` \<A> \<Longrightarrow> finite \<Phi>"
+      by auto
+  qed
 
   then show ?thesis
     by (metis image_iff)

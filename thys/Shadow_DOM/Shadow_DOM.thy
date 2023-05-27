@@ -4769,18 +4769,11 @@ proof -
         CD.a_all_ptrs_in_heap_def object_ptr_kinds_eq_h node_ptr_kinds_def
         children_eq_h disconnected_nodes_eq_h)
   then have "CD.a_all_ptrs_in_heap h'"
+    using disconnected_nodes_eq2_h2 document_ptr_kinds_eq_h2
     apply(auto simp add: CD.a_all_ptrs_in_heap_def node_ptr_kinds_eq_h2 children_eq_h2
-        disconnected_nodes_eq_h2)[1]
-     apply(case_tac "ptr = cast shadow_root_ptr")
-    using object_ptr_kinds_eq_h2 children_eq_h2
-      apply (meson \<open>cast\<^sub>s\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>_\<^sub>r\<^sub>o\<^sub>o\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r shadow_root_ptr |\<notin>| object_ptr_kinds h'\<close>
-        is_OK_returns_result_I local.get_child_nodes_ptr_in_heap)
-     apply (metis (no_types, opaque_lifting) children_eq2_h2 fin_mono object_ptr_kinds_eq_h2
-        subsetD)
-    by (metis (full_types) assms(1) assms(2) disconnected_nodes_eq2_h disconnected_nodes_eq2_h2
-        document_ptr_kinds_eq_h document_ptr_kinds_eq_h2 local.get_disconnected_nodes_ok
-        local.heap_is_wellformed_disc_nodes_in_heap node_ptr_kinds_eq_h node_ptr_kinds_eq_h2
-        returns_result_select_result)
+         object_ptr_kinds_eq_h2)[1]
+    by (metis (no_types, opaque_lifting) \<open>cast\<^sub>s\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>_\<^sub>r\<^sub>o\<^sub>o\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r shadow_root_ptr |\<notin>| object_ptr_kinds h'\<close>
+        children_eq2_h2 fsubsetD in_mono object_ptr_kinds_eq_h2)
 
   moreover
   have "CD.a_distinct_lists h"

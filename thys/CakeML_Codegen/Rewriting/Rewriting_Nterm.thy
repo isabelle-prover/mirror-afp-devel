@@ -153,7 +153,7 @@ next
       apply auto
       using \<open>fBall T\<^sub>1 ((<) x\<^sub>1)\<close> apply auto[]
       using \<open>fBall T\<^sub>2 ((<) x\<^sub>2)\<close> \<open>x\<^sub>1 \<le> x\<^sub>2\<close>
-      by (meson fBallE less_le_not_le order_trans)
+      by auto
     done
 qed auto
 
@@ -594,8 +594,20 @@ lemma (in pre_crules) crulesI:
   assumes "\<And>name crs pats rhs. (name, crs) |\<in>| rs \<Longrightarrow> (pats, rhs) |\<in>| crs \<Longrightarrow> welldefined rhs"
   assumes "is_fmap rs" "rs \<noteq> {||}"
   shows "crules C_info rs"
-using assms unfolding crules_axioms_def crules_def
-by (auto simp: prod_fBallI intro: pre_crules_axioms)
+proof unfold_locales
+  show "is_fmap rs"
+    using assms(11) .
+next
+  show "rs \<noteq> {||}"
+    using assms(12) .
+next
+  show "fBall rs (\<lambda>(_, crs). Rewriting_Nterm.arity_compatibles crs \<and> is_fmap crs \<and>
+    patterns_compatibles crs \<and> crs \<noteq> {||} \<and>
+    fBall crs (\<lambda>(pats, rhs). linears pats \<and> pats \<noteq> [] \<and> fdisjnt (freess pats) all_consts \<and>
+      \<not> shadows_consts rhs \<and> frees rhs |\<subseteq>| freess pats \<and> consts rhs |\<subseteq>| all_consts))"
+    using assms(1-10)
+    by (intro prod_BallI conjI) metis+
+qed
 
 lemmas crulesI[intro!] = pre_crules.crulesI[unfolded pre_crules_def]
 
@@ -771,3 +783,4 @@ export_code
   checking Scala
 
 end
+  

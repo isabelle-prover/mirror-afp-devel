@@ -227,7 +227,7 @@ fun and_aci where
 
 lemma eval_and_aci [simp]:
   "eval_aci e f g (and_aci p q) \<longleftrightarrow> eval_aci e f g p \<and> eval_aci e f g q"
-  by (cases "(p, q)" rule: and_aci.cases) (simp_all add: fBall_funion, meson+)
+  by (cases "(p, q)" rule: and_aci.cases) (simp_all add: ball_Un, meson+)
 
 declare and_aci.simps [simp del]
 
@@ -245,7 +245,7 @@ fun or_aci where
 
 lemma eval_or_aci [simp]:
   "eval_aci e f g (or_aci p q) \<longleftrightarrow> eval_aci e f g p \<or> eval_aci e f g q"
-  by (cases "(p, q)" rule: or_aci.cases) (simp_all add: fBex_funion, meson+)
+  by (cases "(p, q)" rule: or_aci.cases) (simp_all add: bex_Un, meson+)
 
 declare or_aci.simps [simp del]
 

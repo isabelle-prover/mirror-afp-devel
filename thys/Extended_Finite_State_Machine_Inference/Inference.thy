@@ -199,9 +199,9 @@ lemma paths_of_length_1: "paths_of_length 1 e s = fimage (\<lambda>(d, t, id). [
   apply (simp add: outgoing_transitions_def comp_def One_nat_def[symmetric])
   apply (rule fBall_ffilter2)
    defer
-   apply (simp add: ffilter_def ffUnion_def fBall_def Abs_fset_inverse)
+   apply (simp add: ffilter_def ffUnion_def Abs_fset_inverse)
    apply auto[1]
-  apply (simp add: ffilter_def ffUnion_def fBall_def Abs_fset_inverse fset_both_sides)
+  apply (simp add: ffilter_def ffUnion_def Abs_fset_inverse fset_both_sides)
   by force
 
 fun step_score :: "(tids \<times> tids) list \<Rightarrow> iEFSM \<Rightarrow> strategy \<Rightarrow> nat" where

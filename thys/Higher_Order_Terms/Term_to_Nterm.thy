@@ -224,8 +224,7 @@ next
   case (abs \<Gamma> t)
 
   have "next s |\<notin>| frees t |\<union>| fset_of_list \<Gamma>"
-    using abs(5)[simplified]
-    by (rule next_ge_fall)
+    using abs(5) next_ge_fall by auto
 
   have "nterm_to_term (next s # \<Gamma>) (fst (run_state (term_to_nterm (next s # \<Gamma>) t) (next s))) = t"
     proof (subst abs)
@@ -241,14 +240,16 @@ next
         using \<open>next s |\<notin>| frees t |\<union>| fset_of_list \<Gamma>\<close> apply (simp add: fset_of_list_elem)
         apply fact
         done
-      show "fBall (frees t |\<union>| fset_of_list (next s # \<Gamma>)) (\<lambda>x. x \<le> next s)"
-        using abs(5) apply simp
-        apply (rule fBall_pred_weaken[where P = "\<lambda>x. x \<le> s"])
-        subgoal
-          apply simp
-          by (meson dual_order.strict_implies_order dual_order.strict_trans2 fresh_class.next_ge)
-        subgoal by assumption
-        done
+      have "fBall (frees t |\<union>| fset_of_list \<Gamma>) (\<lambda>x. x \<le> next s)"
+      proof (rule fBall_pred_weaken)
+        show "fBall (frees t |\<union>| fset_of_list \<Gamma>) (\<lambda>x. x \<le> s)"
+          using abs(5) by simp
+      next
+        show "\<And>x. x |\<in>| frees t |\<union>| fset_of_list \<Gamma> \<Longrightarrow> x \<le> s \<Longrightarrow> x \<le> next s"
+          by (metis Fresh_Class.next_ge dual_order.strict_trans less_eq_name_def)
+      qed
+      thus "fBall (frees t |\<union>| fset_of_list (next s # \<Gamma>)) (\<lambda>x. x \<le> next s)"
+        by simp
     qed auto
 
   thus ?case
@@ -369,24 +370,24 @@ next
   case (abs \<Gamma> t)
   have *: "next s1 > s1" "next s2 > s2"
     using next_ge by force+
-  with abs have "next s1 \<notin> set \<Gamma>" "next s2 \<notin> set \<Gamma>2"
-    by (metis fBall_funion fset_of_list_elem next_ge_fall)+
-  have "fresh_fin (frees t |\<union>| fset_of_list \<Gamma>) (next s1)"
+  from abs.prems(5,7) have "next s1 \<notin> set \<Gamma>" "next s2 \<notin> set \<Gamma>2"
+    unfolding fBall_funion
+    by (metis fset_of_list_elem next_ge_fall)+
+  moreover have "fresh_fin (frees t |\<union>| fset_of_list \<Gamma>) (next s1)"
        "fresh_fin (frees t |\<union>| fset_of_list \<Gamma>2) (next s2)"
     using * abs
     by (smt dual_order.trans fBall_pred_weaken frees_term.simps(3) less_imp_le)+
-  have "fdisjnt (finsert (next s1) (fset_of_list \<Gamma>)) (frees t)"
+  moreover have "fdisjnt (finsert (next s1) (fset_of_list \<Gamma>)) (frees t)"
        "fdisjnt (finsert (next s2) (fset_of_list \<Gamma>2)) (frees t)"
     unfolding fdisjnt_alt_def using abs frees_term.simps
     by (metis fdisjnt_alt_def finter_finsert_right funionCI inf_commute next_ge_fall)+
-  have "wellformed' (Suc (length \<Gamma>2)) t"
+  moreover have "wellformed' (Suc (length \<Gamma>2)) t"
     using wellformed'.simps abs
     by (metis Suc_eq_plus1)
-  show ?case
-    apply (auto simp: split_beta create_alt_def)
-    apply rule
-    apply (rule abs.IH[of _ "next s2 # \<Gamma>2", simplified])
-    by (fact | rule)+
+  ultimately show ?case
+    using abs.prems(1,2,3)
+    by (auto simp: split_beta create_alt_def
+        intro: alpha_equiv.abs abs.IH[of _ "next s2 # \<Gamma>2", simplified])
 next
   case (app \<Gamma>1 t\<^sub>1 t\<^sub>2)
   hence "wellformed' (length \<Gamma>1) t\<^sub>1" "wellformed' (length \<Gamma>1) t\<^sub>2"
@@ -406,19 +407,26 @@ next
   have "fresh_fin (frees t\<^sub>2 |\<union>| fset_of_list \<Gamma>2) (snd (run_state (term_to_nterm \<Gamma>2 t\<^sub>1) s2))"
     apply rule
     using app frees_term.simps \<open>s2 \<le> _\<close> dual_order.trans
-    by (metis fbspec funion_iff)
+    by (metis funion_iff)
 
   show ?case
     apply (auto simp: split_beta create_alt_def)
     apply (rule alpha_equiv.app)
     subgoal
-      apply (rule app)
-      apply (simp | fact)+
-      done
+      using app.IH
+      using \<open>fBall (frees t\<^sub>1 |\<union>| fset_of_list \<Gamma>1) (\<lambda>y. y \<le> s1)\<close>
+        \<open>fBall (frees t\<^sub>1 |\<union>| fset_of_list \<Gamma>2) (\<lambda>y. y \<le> s2)\<close>
+        \<open>fdisjnt (fset_of_list \<Gamma>1) (frees t\<^sub>1)\<close>
+        \<open>fdisjnt (fset_of_list \<Gamma>2) (frees t\<^sub>1)\<close> \<open>wellformed' (length \<Gamma>1) t\<^sub>1\<close>
+        app.prems(1) app.prems(2) app.prems(3) by blast
     subgoal
-      apply (rule app)
-      apply (simp | fact)+
-      done
+      using app.IH
+      using \<open>fBall (frees t\<^sub>2 |\<union>| fset_of_list \<Gamma>1) (\<lambda>y. y \<le> snd (run_state (term_to_nterm \<Gamma>1 t\<^sub>1) s1))\<close>
+        \<open>fBall (frees t\<^sub>2 |\<union>| fset_of_list \<Gamma>2) (\<lambda>y. y \<le> snd (run_state (term_to_nterm \<Gamma>2 t\<^sub>1) s2))\<close>
+        \<open>fdisjnt (fset_of_list \<Gamma>1) (frees t\<^sub>2)\<close>
+        \<open>fdisjnt (fset_of_list \<Gamma>2) (frees t\<^sub>2)\<close>
+        \<open>wellformed' (length \<Gamma>1) t\<^sub>2\<close>
+        app.prems(1) app.prems(2) app.prems(3) by blast
     done
 qed (force intro: alpha_equiv.intros simp: fmlookup_of_list in_set_zip)+
 
