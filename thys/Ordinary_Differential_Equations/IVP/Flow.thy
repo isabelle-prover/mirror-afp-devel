@@ -1810,12 +1810,7 @@ proof -
     by auto
   show "flow = (\<lambda>t0 x0 t. flow0 x0 (t - t0))"
     unfolding flow0_def
-    apply (rule ext)
-    apply (rule ext)
-    apply (rule flow_eq_in_existence_ivlI)
-    apply (auto intro: flow_shift_autonomous1
-       mem_existence_ivl_shift_autonomous1 mem_existence_ivl_shift_autonomous2)
-    done
+    by (metis flow_def flow_shift_autonomous1 flow_shift_autonomous2 mem_existence_ivl_iv_defined(2))
   show "existence_ivl = (\<lambda>t0 x0. (+) t0 ` existence_ivl0 x0)"
     unfolding existence_ivl0_def
     apply (safe intro!: ext)

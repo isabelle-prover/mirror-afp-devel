@@ -43,11 +43,11 @@ lemma circle_y_bounds:
   unfolding circle_y_def real_sqrt_ge_0_iff
 proof -
   show "0 \<le> 1/4 - x * x"
-    using assms by (sos "(((A<0 * R<1) + ((A<=0 * (A<=1 * R<1)) * (R<1 * [1]^2))))")
+    using assms
+    by (sos "(((A<0 * R<1) + ((A<=0 * (A<=1 * R<1)) * (R<1 * [1]^2))))")
   show "sqrt (1/4 - x * x) \<le> 1/2"
     apply (rule real_le_lsqrt)
-    using assms apply(auto simp add: divide_simps algebra_simps)
-    by (sos "(((A<0 * R<1) + ((A<=0 * (A<=1 * R<1)) * (R<1 * [1]^2))))")
+    using assms by(auto simp add: divide_simps algebra_simps)
 qed
 
 lemma circle_y_x_coord_bounds:

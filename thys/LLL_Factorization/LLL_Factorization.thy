@@ -259,17 +259,11 @@ proof -
   have res0: "resultant f g = 0"
   proof (rule mod_0_abs_less_imp_0)
     show "[resultant f g = 0] (mod m)" using res_0_mod unfolding cong_def by auto
-    have "\<bar>resultant f g\<bar> \<le> sqrt ((sq_norm_poly f)^k * (sq_norm_poly g)^n)" 
+    have "\<bar>resultant f g\<bar> \<le> sqrt (real_of_int (\<parallel>f\<parallel>\<^sup>2 ^ k * \<parallel>g\<parallel>\<^sup>2 ^ n))" 
       unfolding k_def n_def
       by (rule resultant_le_prod_sq_norm)
     also have "... < m"
-    proof (rule real_less_lsqrt)
-      show "0 \<le> real_of_int (\<parallel>f\<parallel>\<^sup>2 ^ k * \<parallel>g\<parallel>\<^sup>2 ^ n)"
-        by (simp add: sq_norm_poly_ge_0)
-      show "0 \<le> real_of_int m" using m by simp
-      show "real_of_int (\<parallel>f\<parallel>\<^sup>2 ^ k * \<parallel>g\<parallel>\<^sup>2 ^ n) < (real_of_int m)\<^sup>2"
-        by (metis of_int_less_iff of_int_power short)
-    qed
+      by (meson m of_int_0_le_iff of_int_power_less_of_int_cancel_iff real_less_lsqrt short)
     finally show "\<bar>resultant f g\<bar> < m" using of_int_less_iff by blast 
     qed
   have "\<not> coprime f g" 

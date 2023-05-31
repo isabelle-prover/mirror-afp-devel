@@ -720,8 +720,6 @@ proof -
       have "l2norm {-pi..pi} (\<lambda>x. g x - (?\<phi> n a b x)) \<le> e/2"
         unfolding l2norm_def l2product_def power2_eq_square [symmetric]
       proof (rule real_le_lsqrt)
-        show "0 \<le> LINT x|lebesgue_on {-pi..pi}. (g x - (?\<phi> n a b x))\<^sup>2"
-          by (rule integral_nonneg_AE) auto
         have "LINT x|lebesgue_on {-pi..pi}. (g x - (?\<phi> n a b x))\<^sup>2
             \<le> LINT x|lebesgue_on {-pi..pi}. (e / 6) ^ 2"
         proof (rule integral_mono)
