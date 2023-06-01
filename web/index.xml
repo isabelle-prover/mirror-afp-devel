@@ -6,7 +6,16 @@
     <description>Recent content on Archive of Formal Proofs</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Tue, 09 May 2023 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 01 Jun 2023 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>A Verified Efficient Implementation of the Weighted Path Order</title>
+      <link>/entries/Efficient_Weighted_Path_Order.html</link>
+      <pubDate>Thu, 01 Jun 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Efficient_Weighted_Path_Order.html</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>Tree Enumeration</title>
       <link>/entries/Tree_Enumeration.html</link>
@@ -8491,6 +8500,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/efficient-mergesort/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Efficient_Weighted_Path_Order</title>
+      <link>/theories/efficient_weighted_path_order/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/efficient_weighted_path_order/</guid>
       <description></description>
     </item>
     
