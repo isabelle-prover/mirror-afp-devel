@@ -351,12 +351,12 @@ next
       unfolding bef aft .
   qed
   thus ?thesis
-    unfolding defs by (auto simp: notin_fset)
+    unfolding defs by auto
 next
   case (delete_bwd_a C' A C N P)
   note defs = this(1,2) and c'_ni = this(3)
   show ?thesis
-    unfolding defs using c'_ni by (auto simp: notin_fset intro!: subset_implies_multp)
+    unfolding defs using c'_ni by (auto intro!: subset_implies_multp)
 next
   case (simplify_bwd_a C'' C' A C N P)
   note defs = this(1,2) and prec = this(3) and c'_ni = this(4)
@@ -401,7 +401,7 @@ next
   hence "?old_aft \<prec>\<prec>S ?old_bef"
     unfolding bef aft .
   thus ?thesis
-    unfolding defs using c'_ni by (auto simp: notin_fset)
+    unfolding defs using c'_ni by auto
 qed (use xx xx' in auto)
 
 lemma xx_nonempty_ILf_step_imp_Precprec_S:
@@ -494,9 +494,9 @@ proof cases
   note defs = this(1,2) and c_ni = this(3)
 
   have mset_eq: "mset_of_fstate St' = mset_of_fstate St"
-    unfolding defs using c_ni by (fastforce simp: fmember.rep_eq)
+    unfolding defs using c_ni by fastforce
   have new_lt: "mset_set (fset (new_of St')) \<prec>\<prec>S mset_set (fset (new_of St))"
-    unfolding defs using c_ni[unfolded fmember.rep_eq]
+    unfolding defs using c_ni
     by (auto intro!: subset_implies_multp)
 
   show ?thesis
@@ -541,7 +541,7 @@ next
     case c_in: True
     have "mset_of_fstate St' \<prec>\<prec>S mset_of_fstate St"
       unfolding defs using c_in add_again
-      by (auto simp: fmember.rep_eq intro!: subset_implies_multp)
+      by (auto intro!: subset_implies_multp)
     thus ?thesis
       unfolding Less1_state_def by blast
   next
@@ -552,7 +552,7 @@ next
     have new_mset_eq: "mset_set (fset (new_of St')) = mset_set (fset (new_of St))"
       unfolding defs using c_ni by auto
     have xx_lt: "mset_set (set_option (xx_of St')) \<prec>\<prec>S mset_set (set_option (xx_of St))"
-      unfolding defs using c_ni[unfolded fmember.rep_eq] by (auto intro!: subset_implies_multp)
+      unfolding defs using c_ni by (auto intro!: subset_implies_multp)
 
     show ?thesis
       unfolding Less1_state_def using mset_eq new_mset_eq xx_lt by blast

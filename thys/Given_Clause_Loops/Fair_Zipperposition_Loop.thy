@@ -532,7 +532,7 @@ next
 
   have all: "add_mset (p_select P) (mset_set (passive.elems P - {p_select P})) =
     mset_set (passive.elems P)"
-    by (metis finite_fset local.choose_p(3) mset_set.remove passive.select_in_elems)
+    by (metis finite_fset local.choose_p(3) mset_set.remove passive.select_in_felems)
   have pas: "mset_set (passive.elems P - {p_select P}) \<prec>\<prec>S mset_set (passive.elems P)"
     by (metis all multi_psub_of_add_self subset_implies_multp)
 
@@ -563,7 +563,7 @@ next
   note defs = this(1,2) and c_ni = this(3)
   show ?thesis
     unfolding defs Less_state_def using c_ni
-    by (auto simp: fmember.rep_eq intro!: subset_implies_multp)
+    by (auto intro!: subset_implies_multp)
 next
   case (simplify_bwd C' A C'' C T D P)
   note defs = this(1,2) and c'_ni = this(3) and prec = this(4)
@@ -573,14 +573,14 @@ next
     case c''_in: True
     show ?thesis
       unfolding defs Less_state_def using c'_ni
-      by (auto simp: fmember.rep_eq insert_absorb[OF c''_in] intro!: subset_implies_multp)
+      by (auto simp: insert_absorb[OF c''_in] intro!: subset_implies_multp)
   next
     case c''_ni: False
 
     have bef: "add_mset C (mset_set (passive.elems P) + mset_set (insert C' (fset A))) =
       add_mset C (mset_set (passive.elems P) + mset_set (fset A)) + {#C'#}"
       (is "?old_bef = ?new_bef")
-      using c'_ni[simplified fmember.rep_eq] by auto
+      using c'_ni by auto
     have aft: "add_mset C (mset_set (insert C'' (passive.elems P)) + mset_set (fset A)) =
       add_mset C (mset_set (passive.elems P) + mset_set (fset A)) + {#C''#}"
       (is "?old_aft = ?new_aft")

@@ -96,9 +96,6 @@ lemma elems_empty: "elems empty = {}"
 lemma formula_not_empty[simp]: "Q \<noteq> empty \<Longrightarrow> elems Q \<noteq> {}"
   by (metis bot_fset.rep_eq felems_not_empty fset_cong)
 
-lemma select_in_elems[simp]: "Q \<noteq> empty \<Longrightarrow> select Q \<in> elems Q"
-  by (metis fmember.rep_eq select_in_felems)
-
 lemma
   elems_add: "elems (add e Q) = {e} \<union> elems Q" and
   elems_remove: "elems (remove e Q) = elems Q - {e}"

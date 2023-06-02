@@ -346,7 +346,7 @@ next
         case sel: (Passive_Inference \<iota>)
         hence \<iota>_inf: "\<iota> \<in> Inf_F"
           using inv p unfolding st by (metis DLf_invariant.cases fst_conv mem_Collect_eq
-              passive_inferences_of_def select_in_elems subset_iff)
+              passive_inferences_of_def select_in_felems subset_iff)
         have \<iota>_red: "\<iota> \<in> no_labels.Red_I_\<G> (fset A \<union> {concl_of \<iota>})"
           using \<iota>_inf no_labels.empty_ord.Red_I_of_Inf_to_N by auto
         show ?thesis
@@ -388,7 +388,7 @@ proof cases
 
   have pas_min_\<iota>_uni_\<iota>: "passive_inferences_of P - {\<iota>} \<union> {\<iota>} = passive_inferences_of P"
     by (metis Un_insert_right insert_Diff_single insert_absorb mem_Collect_eq p_nemp
-        passive_inferences_of_def sel select_in_elems sup_bot.right_neutral)
+        passive_inferences_of_def sel select_in_felems sup_bot.right_neutral)
 
   show ?thesis
     unfolding defs fstate_alt_def
@@ -402,7 +402,7 @@ next
 
   have pas_min_c_uni_c: "passive_formulas_of P - {C} \<union> {C} = passive_formulas_of P"
     by (metis Un_insert_right insert_Diff mem_Collect_eq p_nemp passive_formulas_of_def sel
-        select_in_elems sup_bot.right_neutral)
+        select_in_felems sup_bot.right_neutral)
 
   show ?thesis
     unfolding defs fstate_alt_def
@@ -543,7 +543,7 @@ next
   note defs = this(1,2) and c_ni = this(3)
   show ?thesis
     unfolding defs Less_state_def using c_ni
-    by (auto simp: fmember.rep_eq intro!: subset_implies_multp)
+    by (auto intro!: subset_implies_multp)
 next
   case (simplify_bwd C' A C'' C P)
   note defs = this(1,2) and c'_ni = this(3) and prec = this(4)
@@ -553,7 +553,7 @@ next
     case c''_in: True
     show ?thesis
       unfolding defs Less_state_def using c'_ni
-      by (auto simp: fmember.rep_eq insert_absorb[OF c''_in] intro!: subset_implies_multp)
+      by (auto simp: insert_absorb[OF c''_in] intro!: subset_implies_multp)
   next
     case c''_ni: False
 
@@ -562,7 +562,7 @@ next
       add_mset C
         (image_mset concl_of (mset_set (passive_inferences_of P)) +
          mset_set (passive_formulas_of P) + mset_set (fset A)) + {#C'#}" (is "?old_bef = ?new_bef")
-      using c'_ni[simplified fmember.rep_eq] by auto
+      using c'_ni by auto
     have aft: "add_mset C
         (image_mset concl_of (mset_set (passive_inferences_of P)) +
          mset_set (insert C'' (passive_formulas_of P)) + mset_set (fset A)) =

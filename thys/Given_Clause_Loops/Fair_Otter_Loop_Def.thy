@@ -300,7 +300,7 @@ proof cases
   case (choose_n C)
   note defs = this(1-7) and c_ni = this(8)
   show ?thesis
-    unfolding defs fstate.simps option.set using OL.choose_n c_ni by (simp add: notin_fset)
+    unfolding defs fstate.simps option.set using OL.choose_n c_ni by simp
 next
   case (delete_fwd C)
   note defs = this(1-7) and c_red = this(8)
