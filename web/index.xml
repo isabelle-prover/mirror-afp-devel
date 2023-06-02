@@ -6,7 +6,187 @@
     <description>Recent content on Archive of Formal Proofs</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Sun, 22 Jan 2023 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 01 Jun 2023 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>A Verified Efficient Implementation of the Weighted Path Order</title>
+      <link>/entries/Efficient_Weighted_Path_Order.html</link>
+      <pubDate>Thu, 01 Jun 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Efficient_Weighted_Path_Order.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Tree Enumeration</title>
+      <link>/entries/Tree_Enumeration.html</link>
+      <pubDate>Tue, 09 May 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Tree_Enumeration.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>MLSS Decision Procedure</title>
+      <link>/entries/MLSS_Decision_Proc.html</link>
+      <pubDate>Fri, 05 May 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/MLSS_Decision_Proc.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Three Squares Theorem</title>
+      <link>/entries/Three_Squares.html</link>
+      <pubDate>Wed, 03 May 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Three_Squares.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Halting Problem is Soluble in Malament-Hogarth Spacetimes</title>
+      <link>/entries/MHComputation.html</link>
+      <pubDate>Sat, 29 Apr 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/MHComputation.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Schwartz-Zippel Lemma</title>
+      <link>/entries/Schwartz_Zippel.html</link>
+      <pubDate>Thu, 27 Apr 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Schwartz_Zippel.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Formalization of the SCL(FOL) Calculus: Simple Clause Learning for First-Order Logic</title>
+      <link>/entries/Simple_Clause_Learning.html</link>
+      <pubDate>Thu, 20 Apr 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Simple_Clause_Learning.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The CHSH inequality: Tsirelson&#39;s upper-bound and other results</title>
+      <link>/entries/TsirelsonBound.html</link>
+      <pubDate>Tue, 18 Apr 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/TsirelsonBound.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Distributed Distinct Elements</title>
+      <link>/entries/Distributed_Distinct_Elements.html</link>
+      <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Distributed_Distinct_Elements.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Formalization of Hyper Hoare Logic: A Logic to (Dis-)Prove Program Hyperproperties</title>
+      <link>/entries/HyperHoareLogic.html</link>
+      <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/HyperHoareLogic.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Positional Notation for Natural Numbers in an Arbitrary Base</title>
+      <link>/entries/DigitsInBase.html</link>
+      <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/DigitsInBase.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Formalization of CommCSL: A Relational Concurrent Separation Logic for Proving Information Flow Security in Concurrent Programs</title>
+      <link>/entries/CommCSL.html</link>
+      <pubDate>Wed, 15 Mar 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/CommCSL.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>No Faster-Than-Light Observers (GenRel)</title>
+      <link>/entries/No_FTL_observers_Gen_Rel.html</link>
+      <pubDate>Sun, 05 Mar 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/No_FTL_observers_Gen_Rel.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Expander Graphs</title>
+      <link>/entries/Expander_Graphs.html</link>
+      <pubDate>Fri, 03 Mar 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Expander_Graphs.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Renaming-Enriched Sets (Rensets) and Renaming-Based Recursion</title>
+      <link>/entries/Rensets.html</link>
+      <pubDate>Tue, 28 Feb 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Rensets.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Sound and Complete Calculus for Probability Inequalities</title>
+      <link>/entries/Probability_Inequality_Completeness.html</link>
+      <pubDate>Mon, 20 Feb 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Probability_Inequality_Completeness.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Group Law of Edwards Elliptic Curves</title>
+      <link>/entries/Edwards_Elliptic_Curves_Group.html</link>
+      <pubDate>Thu, 16 Feb 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Edwards_Elliptic_Curves_Group.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Hardness of Lattice Problems</title>
+      <link>/entries/CVP_Hardness.html</link>
+      <pubDate>Thu, 02 Feb 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/CVP_Hardness.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ABY3 Multiplication and Array Shuffling</title>
+      <link>/entries/ABY3_Protocols.html</link>
+      <pubDate>Fri, 27 Jan 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/ABY3_Protocols.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Given Clause Loops</title>
+      <link>/entries/Given_Clause_Loops.html</link>
+      <pubDate>Wed, 25 Jan 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Given_Clause_Loops.html</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>Suppes&#39; Theorem For Probability Logic</title>
       <link>/entries/Suppes_Theorem.html</link>
@@ -49,6 +229,24 @@
       <pubDate>Sun, 08 Jan 2023 00:00:00 +0000</pubDate>
       
       <guid>/entries/Cook_Levin.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Binary codes that do not preserve primitivity</title>
+      <link>/entries/Binary_Code_Imprimitive.html</link>
+      <pubDate>Tue, 03 Jan 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Binary_Code_Imprimitive.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Intersection of two monoids generated by two element codes</title>
+      <link>/entries/Two_Generated_Word_Monoids_Intersection.html</link>
+      <pubDate>Tue, 03 Jan 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Two_Generated_Word_Monoids_Intersection.html</guid>
       <description></description>
     </item>
     
@@ -2681,7 +2879,7 @@
     </item>
     
     <item>
-      <title>The Budan-Fourier Theorem and Counting Real Roots with Multiplicity</title>
+      <title>The Budan–Fourier Theorem and Counting Real Roots with Multiplicity</title>
       <link>/entries/Budan_Fourier.html</link>
       <pubDate>Sun, 02 Sep 2018 00:00:00 +0000</pubDate>
       
@@ -4760,7 +4958,7 @@
     </item>
     
     <item>
-      <title>The Sturm-Tarski Theorem</title>
+      <title>The Sturm–Tarski Theorem</title>
       <link>/entries/Sturm_Tarski.html</link>
       <pubDate>Fri, 19 Sep 2014 00:00:00 +0000</pubDate>
       
@@ -6605,6 +6803,15 @@
     </item>
     
     <item>
+      <title>ABY3_Protocols</title>
+      <link>/theories/aby3_protocols/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/aby3_protocols/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Ackermanns_not_PR</title>
       <link>/theories/ackermanns_not_pr/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -6979,6 +7186,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/bicategory/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Binary_Code_Imprimitive</title>
+      <link>/theories/binary_code_imprimitive/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/binary_code_imprimitive/</guid>
       <description></description>
     </item>
     
@@ -7541,6 +7757,15 @@
     </item>
     
     <item>
+      <title>CommCSL</title>
+      <link>/theories/commcsl/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/commcsl/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Commuting_Hermitian</title>
       <link>/theories/commuting_hermitian/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -7865,6 +8090,15 @@
     </item>
     
     <item>
+      <title>CVP_Hardness</title>
+      <link>/theories/cvp_hardness/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/cvp_hardness/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>CYK</title>
       <link>/theories/cyk/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -8090,6 +8324,15 @@
     </item>
     
     <item>
+      <title>DigitsInBase</title>
+      <link>/theories/digitsinbase/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/digitsinbase/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Dijkstra_Shortest_Path</title>
       <link>/theories/dijkstra_shortest_path/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -8149,6 +8392,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/diskpaxos/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Distributed_Distinct_Elements</title>
+      <link>/theories/distributed_distinct_elements/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/distributed_distinct_elements/</guid>
       <description></description>
     </item>
     
@@ -8234,11 +8486,29 @@
     </item>
     
     <item>
+      <title>Edwards_Elliptic_Curves_Group</title>
+      <link>/theories/edwards_elliptic_curves_group/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/edwards_elliptic_curves_group/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Efficient-Mergesort</title>
       <link>/theories/efficient-mergesort/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/efficient-mergesort/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Efficient_Weighted_Path_Order</title>
+      <link>/theories/efficient_weighted_path_order/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/efficient_weighted_path_order/</guid>
       <description></description>
     </item>
     
@@ -8320,6 +8590,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/eval_fo/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Expander_Graphs</title>
+      <link>/theories/expander_graphs/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/expander_graphs/</guid>
       <description></description>
     </item>
     
@@ -8927,6 +9206,15 @@
     </item>
     
     <item>
+      <title>Given_Clause_Loops</title>
+      <link>/theories/given_clause_loops/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/given_clause_loops/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Goedel_HFSet_Semantic</title>
       <link>/theories/goedel_hfset_semantic/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -9283,6 +9571,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/hyperdual/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>HyperHoareLogic</title>
+      <link>/theories/hyperhoarelogic/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/hyperhoarelogic/</guid>
       <description></description>
     </item>
     
@@ -10457,6 +10754,15 @@
     </item>
     
     <item>
+      <title>MHComputation</title>
+      <link>/theories/mhcomputation/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/mhcomputation/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Minimal_SSA</title>
       <link>/theories/minimal_ssa/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -10498,6 +10804,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/minsky_machines/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>MLSS_Decision_Proc</title>
+      <link>/theories/mlss_decision_proc/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/mlss_decision_proc/</guid>
       <description></description>
     </item>
     
@@ -10714,6 +11029,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/no_ftl_observers/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>No_FTL_observers_Gen_Rel</title>
+      <link>/theories/no_ftl_observers_gen_rel/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/no_ftl_observers_gen_rel/</guid>
       <description></description>
     </item>
     
@@ -11348,6 +11672,15 @@
     </item>
     
     <item>
+      <title>Probability_Inequality_Completeness</title>
+      <link>/theories/probability_inequality_completeness/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/probability_inequality_completeness/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Program-Conflict-Analysis</title>
       <link>/theories/program-conflict-analysis/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -11798,6 +12131,15 @@
     </item>
     
     <item>
+      <title>Rensets</title>
+      <link>/theories/rensets/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/rensets/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Rep_Fin_Groups</title>
       <link>/theories/rep_fin_groups/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -12041,6 +12383,15 @@
     </item>
     
     <item>
+      <title>Schwartz_Zippel</title>
+      <link>/theories/schwartz_zippel/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/schwartz_zippel/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>SDS_Impossibility</title>
       <link>/theories/sds_impossibility/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -12244,6 +12595,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/simpl/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Simple_Clause_Learning</title>
+      <link>/theories/simple_clause_learning/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/simple_clause_learning/</guid>
       <description></description>
     </item>
     
@@ -12770,6 +13130,15 @@
     </item>
     
     <item>
+      <title>Three_Squares</title>
+      <link>/theories/three_squares/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/three_squares/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Timed_Automata</title>
       <link>/theories/timed_automata/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -12896,6 +13265,15 @@
     </item>
     
     <item>
+      <title>Tree_Enumeration</title>
+      <link>/theories/tree_enumeration/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/tree_enumeration/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Triangle</title>
       <link>/theories/triangle/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -12914,6 +13292,15 @@
     </item>
     
     <item>
+      <title>TsirelsonBound</title>
+      <link>/theories/tsirelsonbound/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/tsirelsonbound/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Turans_Graph_Theorem</title>
       <link>/theories/turans_graph_theorem/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -12928,6 +13315,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/twelvefold_way/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Two_Generated_Word_Monoids_Intersection</title>
+      <link>/theories/two_generated_word_monoids_intersection/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/two_generated_word_monoids_intersection/</guid>
       <description></description>
     </item>
     

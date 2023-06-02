@@ -1,0 +1,174 @@
+@article{blasiok2020,
+  author = {Jaros\l{}aw B\l{}asiok},
+  title     = {Optimal Streaming and Tracking Distinct Elements with High Probability},
+  journal   = {{ACM} Trans. Algorithms},
+  volume    = {16},
+  number    = {1},
+  pages     = {3:1--3:28},
+  year      = {2020},
+  _url       = {https://doi.org/10.1145/3309193},
+  doi       = {10.1145/3309193},
+  timestamp = {Sat, 08 Jan 2022 02:22:06 +0100},
+  _biburl    = {https://dblp.org/rec/journals/talg/Blasiok20.bib},
+  _bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{Frequency_Moments-AFP,
+  author  = {Emin Karayel},
+  title   = {Formalization of Randomized Approximation Algorithms for Frequency Moments},
+  journal = {Archive of Formal Proofs},
+  month   = {April},
+  year    = {2022},
+  note    = {\url{https://isa-afp.org/entries/Frequency_Moments.html},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}
+
+@article{Finite_Fields-AFP,
+  author  = {Emin Karayel},
+  title   = {Finite Fields},
+  journal = {Archive of Formal Proofs},
+  month   = {June},
+  year    = {2022},
+  note    = {\url{https://isa-afp.org/entries/Finite_Fields.html},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}
+
+@article{Expander_Graphs-AFP,
+  author  = {Emin Karayel},
+  title   = {Expander Graphs},
+  journal = {Archive of Formal Proofs},
+  month   = {March},
+  year    = {2023},
+  note    = {\url{https://isa-afp.org/entries/Expander_Graphs.html},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}
+
+@article{guruswami2009,
+        author = {Guruswami, Venkatesan and Umans, Christopher and Vadhan, Salil},
+        title = {Unbalanced Expanders and Randomness Extractors from Parvaresh--Vardy Codes},
+        year = {2009},
+        issue_date = {June 2009},
+        publisher = {Association for Computing Machinery},
+        address = {New York, NY, USA},
+        volume = {56},
+        number = {4},
+        issn = {0004-5411},
+        url = {https://doi.org/10.1145/1538902.1538904},
+        doi = {10.1145/1538902.1538904},
+        journal = {J. ACM},
+        month = {jul},
+        articleno = {20},
+        numpages = {34},
+}
+
+
+@article{flajolet1985,
+	title = {Probabilistic counting algorithms for data base applications},
+	author = {Philippe Flajolet and G. {Nigel Martin}},
+	year = 1985,
+	journal = {Journal of Computer and System Sciences},
+	volume = 31,
+	number = 2,
+	pages = {182--209},
+	issn = {0022-0000},
+	doi = {10.1016/0022-0000(85)90041-8}
+}
+
+@inproceedings{baryossef2002,
+	title = {Counting Distinct Elements in a Data Stream},
+	author = {Bar-Yossef, Ziv and Jayram, T. S. and Kumar, Ravi and Sivakumar, D. and Trevisan, Luca},
+	year = 2002,
+	booktitle = {Randomization and Approximation Techniques in Computer Science},
+	publisher = {Springer Berlin Heidelberg},
+	pages = {1--10},
+	_address = {Berlin, Heidelberg},
+  	doi = {10.1007/3-540-45726-7_1},
+}
+
+@inproceedings{gibbons2001,
+	title = {Estimating Simple Functions on the Union of Data Streams},
+	author = {Gibbons, Phillip B. and Tirthapura, Srikanta},
+	year = 2001,
+	booktitle = {Proceedings of the Thirteenth Annual ACM Symposium on Parallel Algorithms and Architectures},
+	series = {SPAA '01},
+	pages = {281--291},
+	doi = {10.1145/378580.378687},
+	isbn = 1581134096,
+	_publisher = {Association for Computing Machinery},
+	_address = {New York, NY, USA},
+	_url = {https://doi.org/10.1145/378580.378687},
+	abstract = {Massive data sets often arise as physically distributed, parallel data streams. We present algorithms for estimating simple functions on the union of such data streams, while using only logarithmic space per stream. Each processor observes only its own stream, and communicates with the other processors only after observing its entire stream. This models the set-up in current network monitoring products. Our algorithms employ a novel coordinated sampling technique to extract a sample of the union; this sample can be used to estimate aggregate functions on the union. The technique can also be used to estimate aggregate functions over the distinct “labels” in one or more data streams, e.g., to determine the zeroth frequency moment (i.e., the number of distinct labels) in one or more data streams. Our space and time bounds are the best known for these problems, and our logarithmic space bounds for coordinated sampling contrast with polynomial lower bounds for independent sampling. We relate our distributed streams model to previously studied non-distributed (i.e., merged) streams models, presenting tight bounds on the gap between the distributed and merged models for deterministic algorithms.},
+	numpages = 11,
+	_location = {Crete Island, Greece}
+}
+
+@inproceedings{kane2010,
+	title = {An Optimal Algorithm for the Distinct Elements Problem},
+	author = {Kane, Daniel M. and Nelson, Jelani and Woodruff, David P.},
+	year = 2010,
+	booktitle = {Proceedings of the Twenty-Ninth ACM SIGMOD-SIGACT-SIGART Symposium on Principles of Database Systems},
+	location = {Indianapolis, Indiana, USA},
+	address = {New York},
+	series = {PODS '10},
+	pages = {41--52},
+	doi = {10.1145/1807085.1807094},
+	isbn = 9781450300339,
+	_publisher = {Association for Computing Machinery},
+	_url = {https://doi.org/10.1145/1807085.1807094},
+	abstract = {We give the first optimal algorithm for estimating the number of distinct elements in a data stream, closing a long line of theoretical research on this problem begun by Flajolet and Martin in their seminal paper in FOCS 1983. This problem has applications to query optimization, Internet routing, network topology, and data mining. For a stream of indices in {1,...,n}, our algorithm computes a (1 \<plusminus> \<epsilon>)-approximation using an optimal O(1/\<epsilon>-2 + log(n)) bits of space with 2/3 success probability, where 0&lt;\<epsilon>&lt;1 is given. This probability can be amplified by independent repetition. Furthermore, our algorithm processes each stream update in O(1) worst-case time, and can report an estimate at any point midstream in O(1) worst-case time, thus settling both the space and time complexities simultaneously.We also give an algorithm to estimate the Hamming norm of a stream, a generalization of the number of distinct elements, which is useful in data cleaning, packet tracing, and database auditing. Our algorithm uses nearly optimal space, and has optimal O(1) update and reporting times.},
+	numpages = 12,
+	keywords = {streaming, query optimization, distinct elements, data mining}
+}
+
+@incollection{goldreich2011,
+  author    = {Oded Goldreich},
+  editor    = {Oded Goldreich},
+  title     = {A Sample of Samplers: {A} Computational Perspective on Sampling},
+  booktitle = {Studies in Complexity and Cryptography. Miscellanea on the Interplay
+               between Randomness and Computation - In Collaboration with Lidor Avigad,
+               Mihir Bellare, Zvika Brakerski, Shafi Goldwasser, Shai Halevi, Tali
+               Kaufman, Leonid Levin, Noam Nisan, Dana Ron, Madhu Sudan, Luca Trevisan,
+               Salil Vadhan, Avi Wigderson, David Zuckerman},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {6650},
+  pages     = {302--332},
+  publisher = {Springer},
+  year      = {2011},
+  _url       = {https://doi.org/10.1007/978-3-642-22670-0\_24},
+  doi       = {10.1007/978-3-642-22670-0\_24},
+  timestamp = {Tue, 14 May 2019 10:00:35 +0200},
+  biburl    = {https://dblp.org/rec/books/sp/goldreich2011/Goldreich11j.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{woodruff2004,
+	author = {Woodruff, David},
+	title = {Optimal Space Lower Bounds for All Frequency Moments},
+	year = {2004},
+	isbn = {089871558X},
+	publisher = {Society for Industrial and Applied Mathematics},
+	address = {USA},
+	abstract = {We prove that any one-pass streaming algorithm which (\<epsilon>, \<delta>)-approximates the kth frequency moment Fk, for any real k \<noteq> 1 and any \<epsilon> = \<Omega>(1/\<surd>m), must use \<Omega>(1/\<epsilon>²) bits of space, where m is the size of the universe. This is optimal in terms of \<epsilon>, resolves the open questions of Bar-Yossef et al in [3, 4], and extends the \<Omega>(1/\<epsilon>²) lower bound for F0 in [11] to much smaller \<epsilon> by applying novel techniques. Along the way we lower bound the one-way communication complexity of approximating the Hamming distance and the number of bipartite graphs with minimum/maximum degree constraints.},
+	booktitle = {Proceedings of the Fifteenth Annual ACM-SIAM Symposium on Discrete Algorithms},
+	pages = {167--175},
+	numpages = {9},
+	location = {New Orleans, Louisiana},
+	series = {SODA '04}
+}
+
+@article{alon1999,
+	title = {The Space Complexity of Approximating the Frequency Moments},
+	author = {Noga Alon and Yossi Matias and Mario Szegedy},
+	year = 1999,
+	journal = {Journal of Computer and System Sciences},
+	volume = 58,
+	number = 1,
+	pages = {137--147},
+	issn = {0022-0000},
+	doi = {10.1006/jcss.1997.1545},
+	_url = {https://www.sciencedirect.com/science/article/pii/S0022000097915452}
+}
+

@@ -1,0 +1,43 @@
+title = "The CHSH inequality: Tsirelson's upper-bound and other results"
+date = 2023-04-18
+topics = [
+  "Mathematics/Algebra",
+  "Mathematics/Physics/Quantum information",
+]
+abstract = """
+The CHSH inequality, named after Clauser, Horne, Shimony and Holt, was used by Alain Aspect to prove experimentally that Einstein's hypothesis stating that quantum mechanics could be defined using local hidden variables was incorrect. 
+The CHSH inequality is based on a setting in which an experiment consisting of two separate parties performing joint measurements is run several times, and a score is derived from these runs. If the local hidden variable hypothesis had been correct, this score would have been bounded by $2$, but a suitable choice of observables in a quantum setting permits to violate this inequality when measuring the Bell state; this is the result that Aspect obtained experimentally. Tsirelson answered the question of how large this violation could be by proving that in the quantum setting, the highest score that can be obtained when running this experiment is $2\\sqrt{2}$. Along with elementary results on density matrices which represent quantum states in the finite dimensional setting, we formalize Tsirelson's result and summarize the main results on the CHSH score:
+<ol>
+<li>Under the local hidden variable hypothesis, this score admits 2 as an upper-bound.</li>
+<li>When the density matrix under consideration is separable, the upper-bound cannot be violated.</li>
+<li>When one of the parties in the experiment performs measures using commuting observables, this upper-bound remains valid.</li>
+<li>Otherwise, the upper-bound of this score is $2\\sqrt{2}$, regardless of the observables that are used and the quantum state that is measured, and</li>
+<li>This upper-bound is reached for a suitable choice of observables when measuring the Bell state.</li>
+</ol>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.echenim]
+email = "echenim_email"
+
+[authors.mhalla]
+email = "mhalla_email"
+
+[authors.mori]
+email = "mori_email"
+
+[contributors]
+
+[notify]
+echenim = "echenim_email"
+mhalla = "mhalla_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

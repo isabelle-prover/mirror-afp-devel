@@ -7,6 +7,24 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language><atom:link href="/topics/computer-science/algorithms/graph/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>Tree Enumeration</title>
+      <link>/entries/Tree_Enumeration.html</link>
+      <pubDate>Tue, 09 May 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Tree_Enumeration.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Expander Graphs</title>
+      <link>/entries/Expander_Graphs.html</link>
+      <pubDate>Fri, 03 Mar 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Expander_Graphs.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Correctness of a Set-based Algorithm for Computing Strongly Connected Components of a Graph</title>
       <link>/entries/SCC_Bloemen_Sequential.html</link>
       <pubDate>Wed, 17 Aug 2022 00:00:00 +0000</pubDate>

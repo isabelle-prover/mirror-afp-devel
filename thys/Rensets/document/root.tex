@@ -1,0 +1,37 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% this should be the last package used
+%\usepackage{url}
+%\usepackage{hyperref}
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Renaming-Enriched Sets (Rensets) and Renaming-Based Recursion}
+\author{Andrei Popescu}
+\maketitle
+
+\begin{abstract}
+  I formalize the notion of \emph{renaming-enriched sets} (\emph{rensets} sor short) and renaming-based recursion introduced in my \href{https://link.springer.com/book/10.1007/978-3-031-10769-6}{IJCAR 2022} 
+  paper \href{https://link.springer.com/chapter/10.1007/978-3-031-10769-6_36}{``Rensets and Renaming-Based Recursion for Syntax with Bindings''} \cite{DBLP:conf/cade/Popescu22}.  
+  Rensets are an algebraic axiomatization of renaming (variable-for-variable substitution). 
+  The formalization includes a connection with nominal sets \cite{DBLP:conf/lics/GabbayP99,pitts_2013}, showing that any renset naturally gives rise to a nominal set. 
+   It also includes examples of deploying the renaming-based recursor:  semantic interpretation, counting functions for free and bound occurrences, unary and parallel substitution, etc. Finally, it includes a variation of rensets that axiomatize term-for-variable substitution, called \emph{substitutive sets}, which yields a  corresponding recursion principle. 
+\end{abstract}
+
+\tableofcontents
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

@@ -1,0 +1,91 @@
+\documentclass[11pt,a4paper]{article}
+\setcounter{tocdepth}{1}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage[top=1in, bottom=1in, left=0.8in, right=0.8in]{geometry}
+
+\usepackage{amssymb}
+\usepackage{pdfsetup}
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{Distributed Distinct Elements}
+\author{Emin Karayel}
+\maketitle
+
+\abstract{This entry formalizes a randomized cardinality estimation data structure with 
+asymptotically optimal space usage. It is inspired by the streaming algorithm presented by 
+B\l{}asiok~\cite{blasiok2020} in 2018. His work closed the gap between the best-known lower
+bound and upper bound after a long line of research started by Flajolet and 
+Martin~\cite{flajolet1985} in 1984 and was to first to apply expander graphs (in addition to hash
+families) to the problem. The formalized algorithm has two improvements compared to the 
+algorithm by B\l{}asiok. It supports operation in parallel mode, and it relies on a simpler 
+pseudo-random construction avoiding the use of code based extractors.}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+\pagebreak
+
+\section{Introduction\label{sec:intro}}
+The algorithm is described as functional data strucutures, given a seed which needs to be 
+choosen uniformly from a initial segment of the natural numbers and globally, there are three 
+functions:
+\begin{itemize}
+\item \textrm{single} - given the seed and an element from the universe computes a sketch for 
+that singleton set
+\item \textrm{merge} - computes a sketch based on two input sketches and returns a sketch
+representing the union set
+\item \textrm{estimate} - computes an estimate for the cardinality of the set represented by a
+sketch
+\end{itemize}
+
+The main point is that a sketch requires $\mathcal O( \delta^{-2} \ln (\varepsilon^{-1}) + \ln n)$
+space where $n$ is the universe size, $\delta$ is the desired relative accuracy and $\varepsilon$ is
+the desired failure probability. Note that it is easy to see that an exact solution would
+necessarily require $\mathcal O(n)$ bits.
+
+The algorithm is split into two parts an inner algorithm, described in 
+Section~\ref{sec:inner_algorithm}, which itself is already a full cardinality estimation algorithm,
+however its space usage is below optimal. The outer algorithm is introduced in 
+Section~\ref{sec:outer_algorithm}, which runs mutiple copies of the inner algorithm with carefully
+chosen inner parameters. 
+
+As mentioned in the abstract the algorithm is inspired by the solution to the streaming version
+of the problem by B\l{}asiok~\cite{blasiok2020} in 2020. His work builds on a long line of reasarch
+starting in 1985~\cite{flajolet1985, alon1999, baryossef2002, kane2010, woodruff2004, gibbons2001}.
+
+In an earlier AFP entry~\cite{Frequency_Moments-AFP} I have formalized an earlier cardinality 
+estimation algorithm based on the work by Bar-Yossef et al.~\cite{baryossef2002} in 2002. Since then
+I have addressed the existence of finite fields for higher prime powers and
+expander graphs~\cite{Finite_Fields-AFP, Expander_Graphs-AFP}. Building on these results,
+the formalization of this more advanced solution presented here became possible.
+
+The solution described here improves on the algorithms described by B\l{}asiok in two ways 
+(without comprising its optimal space usage). It can be used in a parallel mode of operation.
+Moreover the pseudo-random construction used is simpler than the solution described by B\l{}asiok 
+--- who uses an extractor based on Parvaresh-Vardy codes~\cite{guruswami2009} to sample random walks
+in an expander graph, which are then sub-sampled and then the walks are used to sample seeds for
+hash functions. In the solution presented here neither the sub-sampling step nor the extractor is 
+needed, instead a two-stage expander construction is used, this means that the nodes of the first 
+expander correspond to the walks in a second expander graph. The latters nodes correspond to seeds 
+of hash functions (as in B\l{}asiok's solution).
+
+The modification needed to support a parallel mode of operation is a change in the failure strategy
+of the solution presented in Kane et al., which is the event when the data in the sketch reequires
+too much space. The main issue is that in the parallel case the number of states the algorithm might
+reach is not bounded by the universe size and thus an estimate they make for the probability of the
+failure event does not transfer to the parallel case. To solve that the algorithm in this work is
+more conservative. Instead of failing out-right it instead increases a cutoff threshold. For which
+it is then possible to show an upper estimate independent of the number of reached states.
+
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

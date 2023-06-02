@@ -6,7 +6,16 @@
     <description>Recent content in HereditarilyFinite on Archive of Formal Proofs</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Wed, 16 Sep 2020 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/hereditarilyfinite/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 05 May 2023 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/hereditarilyfinite/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>MLSS Decision Procedure</title>
+      <link>/entries/MLSS_Decision_Proc.html</link>
+      <pubDate>Fri, 05 May 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/MLSS_Decision_Proc.html</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>From Abstract to Concrete G&amp;ouml;del&#39;s Incompleteness Theorems&amp;mdash;Part II</title>
       <link>/entries/Goedel_HFSet_Semanticless.html</link>

@@ -1,0 +1,35 @@
+title = "Tree Enumeration"
+date = 2023-05-09
+topics = [
+  "Computer science/Algorithms/Graph",
+  "Mathematics/Graph theory",
+  "Mathematics/Combinatorics",
+]
+abstract = """
+This thesis presents the verification of enumeration algorithms for trees.
+The first algorithm is based on the well known Prüfer-correspondence and allows the enumeration of all possible labeled trees over a fixed finite set of vertices.
+The second algorithm enumerates rooted, unlabeled trees of a specified size up to graph isomorphism.
+It allows for the efficient enumeration without the use of an intermediate encoding of the trees with level sequences, unlike the <a href=\"https://doi.org/10.1137/0209055\">algorithm</a> by Beyer and Hedetniemi it is based on.
+Both algorithms are formalized and verified in Isabelle/HOL.
+The formalization of trees and other graph theoretic results is also presented."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.cremer]
+email = "cremer_email"
+
+[contributors]
+
+[notify]
+cremer = "cremer_email"
+karayel = "karayel_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

@@ -1,0 +1,38 @@
+title = "Given Clause Loops"
+date = 2023-01-25
+topics = [
+  "Logic/General logic/Classical first-order logic",
+]
+abstract = """
+This Isabelle/HOL formalization extends the Saturation_Framework and Saturation_Framework_Extensions entries of the Archive of Formal Proofs with the specification and
+verification of four semiabstract given clause procedures, or \"loops\": the DISCOUNT, Otter, iProver, and Zipperposition loops. For each loop, (dynamic) refutational completeness is proved under the assumption that the underlying calculus is (statically) refutationally complete and that the used queue data structures are fair.
+
+The formalization is inspired by the proof sketches found in the article \"A comprehensive framework for saturation theorem proving\" by Uwe Waldmann, Sophie Tourret, Simon Robillard, and Jasmin Blanchette (Journal of Automated Reasoning 66(4): 499-539, 2022). A paper titled \"Verified given clause procedures\" about the present formalization is in the works."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.blanchette]
+email = "blanchette_email"
+
+[authors.qiu]
+email = "qiu_email"
+
+[authors.tourret]
+email = "tourret_email"
+
+[contributors]
+
+[notify]
+blanchette = "blanchette_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1007/s10817-022-09621-7",
+]
+pubs = []

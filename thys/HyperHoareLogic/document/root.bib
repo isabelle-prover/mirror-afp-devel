@@ -1,0 +1,684 @@
+@article{FloydLogic,
+author={Floyd, Robert W.},
+title={Assigning Meanings to Programs},
+journal={Proceedings of Symposium in Applied Mathematics},
+editor={Schwartz, J. T.},
+year={1967},
+pages={19--32}
+}
+
+@article{HoareLogic,
+author = {Hoare, C. A. R.},
+title = {An Axiomatic Basis for Computer Programming},
+year = {1969},
+issue_date = {Oct. 1969},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {12},
+number = {10},
+issn = {0001-0782},
+doi = {10.1145/363235.363259},
+abstract = {In this paper an attempt is made to explore the logical foundations of computer programming by use of techniques which were first applied in the study of geometry and have later been extended to other branches of mathematics. This involves the elucidation of sets of axioms and rules of inference which can be used in proofs of the properties of computer programs. Examples are given of such axioms and rules, and a formal proof of a simple theorem is displayed. Finally, it is argued that important advantage, both theoretical and practical, may follow from a pursuance of these topics.},
+journal = {Commun. ACM},
+month = {oct},
+pages = {576–580},
+numpages = {5},
+keywords = {machine-independent programming, program documentation, axiomatic method, theory of programming' proofs of programs, programming language design, formal language definition}
+}
+
+@INPROCEEDINGS{hyperproperties,
+author={Clarkson, Michael R. and Schneider, Fred B.},
+booktitle={21st IEEE Computer Security Foundations Symposium}, 
+title={Hyperproperties}, 
+year={2008},
+volume={},
+number={},
+pages={51-65},
+doi={10.1109/CSF.2008.7}}
+
+@book{Isabelle,
+author = {Nipkow, Tobias and Wenzel, Markus and Paulson, Lawrence C.},
+title = {Isabelle/HOL: A Proof Assistant for Higher-Order Logic},
+year = {2002},
+isbn = {3540433767},
+publisher = {Springer-Verlag},
+address = {Berlin, Heidelberg}
+}
+
+@inproceedings{Benton04,
+author = {Benton, Nick},
+title = {Simple Relational Correctness Proofs for Static Analyses and Program Transformations},
+year = {2004},
+isbn = {158113729X},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+doi = {10.1145/964001.964003},
+abstract = {We show how some classical static analyses for imperative programs, and the optimizing transformations which they enable, may be expressed and proved correct using elementary logical and denotationaltechniques. The key ingredients are an interpretation of program properties as relations, rather than predicates, and a realization that although many program analyses are traditionally formulated in very intensional terms, the associated transformations are actually enabled by more liberal extensional properties.We illustrate our approach with formal systems for analysing and transforming while-programs. The first is a simple type system which tracks constancy and dependency information and can be used to perform dead-code elimination, constant propagation and program slicing as well as capturing a form of secure information flow. The second is a relational version of Hoare logic, which significantly generalizes our first type system and can also justify optimizations including hoisting loop invariants. Finally we show how a simple available expression analysis and redundancy elimination transformation may be justified by translation into relational Hoare logic.},
+booktitle = {Proceedings of the 31st ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages},
+pages = {14–25},
+numpages = {12},
+keywords = {dependency, partial equivalence relations, security, optimizing compilation, program analysis, denotational semantics, information flow, Hoare logic, types},
+location = {Venice, Italy},
+series = {POPL '04}
+}
+
+
+@inproceedings{CHL16,
+author = {Sousa, Marcelo and Dillig, Isil},
+title = {Cartesian {H}oare {L}ogic for Verifying K-Safety Properties},
+year = {2016},
+isbn = {9781450342612},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+doi = {10.1145/2908080.2908092},
+abstract = {Unlike safety properties which require the absence of a “bad” program trace, k-safety properties stipulate the absence of a “bad” interaction between k traces. Examples of k-safety properties include transitivity, associativity, anti-symmetry, and monotonicity. This paper presents a sound and relatively complete calculus, called Cartesian Hoare Logic (CHL), for verifying k-safety properties. We also present an automated verification algorithm based on CHL and implement it in a tool called DESCARTES. We use DESCARTES to analyze user-defined relational operators in Java and demonstrate that DESCARTES is effective at verifying (or finding violations of) multiple k-safety properties.},
+booktitle = {Proceedings of the 37th ACM SIGPLAN Conference on Programming Language Design and Implementation},
+pages = {57–69},
+numpages = {13},
+location = {Santa Barbara, CA, USA},
+series = {PLDI '16}
+}
+
+@article{IncorrectnessLogic,
+author = {O'Hearn, Peter W.},
+title = {Incorrectness {L}ogic},
+year = {2019},
+issue_date = {January 2020},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {4},
+number = {POPL},
+doi = {10.1145/3371078},
+journal = {Proc. ACM Program. Lang.},
+month = {dec},
+articleno = {10},
+numpages = {32},
+keywords = {none}
+}
+
+  
+@InProceedings{ReverseHL,
+author="de Vries, Edsko
+and Koutavas, Vasileios",
+editor="Barthe, Gilles
+and Pardo, Alberto
+and Schneider, Gerardo",
+title="Reverse {H}oare {L}ogic",
+booktitle="Software Engineering and Formal Methods",
+year="2011",
+pages="155--171",
+isbn="978-3-642-24690-6"
+}
+
+@article{InsecurityLogic,
+  doi = {10.48550/ARXIV.2003.04791},
+  url = {https://arxiv.org/abs/2003.04791},
+  author = {Murray, Toby},
+  keywords = {Logic in Computer Science (cs.LO), FOS: Computer and information sciences, FOS: Computer and information sciences},
+  title = {An Under-Approximate Relational Logic: Heralding Logics of Insecurity, Incorrect Implementation and More},
+  publisher = {arXiv},
+  year = {2020},
+  journal={arXiv preprint arXiv:2003.04791},
+  copyright = {arXiv.org perpetual, non-exclusive license}
+}
+
+@article{OutcomeLogic,
+author = {Zilberstein, Noam and Dreyer, Derek and Silva, Alexandra},
+title = {Outcome {L}ogic: A Unifying Foundation for Correctness and Incorrectness Reasoning},
+year = {2023},
+issue_date = {April 2023},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {7},
+number = {OOPSLA1},
+doi = {10.1145/3586045},
+journal = {Proc. ACM Program. Lang.},
+month = {april},
+articleno = {93}
+}
+
+
+@inproceedings{RHLE,
+author = {Dickerson, Robert and Ye, Qianchuan and Zhang, Michael K. and Delaware, Benjamin},
+title = {{RHLE}: Modular Deductive Verification of Relational $\forall{}\exists{}$ Properties},
+year = {2022},
+isbn = {978-3-031-21036-5},
+doi = {10.1007/978-3-031-21037-2\_4},
+booktitle = {Programming Languages and Systems: 20th Asian Symposium, APLAS 2022, Auckland, New Zealand, December 5, 2022, Proceedings},
+pages = {67–87},
+numpages = {21},
+location = {Auckland, New Zealand}
+}
+
+@article{refinement,
+title = {The existence of refinement mappings},
+journal = {Theoretical Computer Science},
+volume = {82},
+number = {2},
+pages = {253-284},
+year = {1991},
+issn = {0304-3975},
+doi = {https://doi.org/10.1016/0304-3975(91)90224-P},
+author = {Martín Abadi and Leslie Lamport}
+}
+
+@unpublished{Boogie,
+author = {Leino, K. Rustan M.},
+title = {This is {B}oogie 2},
+year = {2008},
+month = {June},
+url = {https://www.microsoft.com/en-us/research/publication/this-is-boogie-2-2/},
+}
+
+@InProceedings{Z3,
+author="de Moura, Leonardo
+and Bj{\o}rner, Nikolaj",
+editor="Ramakrishnan, C. R.
+and Rehof, Jakob",
+title="Z3: An Efficient SMT Solver",
+booktitle="Tools and Algorithms for the Construction and Analysis of Systems",
+year="2008",
+pages="337--340",
+isbn="978-3-540-78800-3"
+}
+
+@INPROCEEDINGS{SeparationLogic,
+  author={Reynolds, J.C.},
+  booktitle={Proceedings 17th Annual IEEE Symposium on Logic in Computer Science},
+  title={Separation logic: a logic for shared mutable data structures},
+  year={2002},
+  volume={},
+  number={},
+  pages={55-74},
+  doi={10.1109/LICS.2002.1029817}
+}
+
+@INPROCEEDINGS{SIF,
+  author={Gray, J.W.},
+  booktitle={Proceedings. 1991 IEEE Computer Society Symposium on Research in Security and Privacy},
+  title={Toward a mathematical foundation for information flow security},
+  year={1991},
+  volume={},
+  number={},
+  pages={21-34},
+  keywords={},
+  doi={10.1109/RISP.1991.130769},
+  ISSN={},
+  month={May}
+}
+
+@article{CSL,
+title = {Resources, concurrency, and local reasoning},
+journal = {Theoretical Computer Science},
+volume = {375},
+number = {1},
+pages = {271-307},
+year = {2007},
+issn = {0304-3975},
+doi = {https://doi.org/10.1016/j.tcs.2006.12.035},
+author = {Peter W. O’Hearn},
+keywords = {Concurrency, Logics of programs, Separation logic}
+}
+
+@article{Dijkstra75,
+author = {Dijkstra, Edsger W.},
+title = {Guarded Commands, Nondeterminacy and Formal Derivation of Programs},
+year = {1975},
+issue_date = {Aug. 1975},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {18},
+number = {8},
+issn = {0001-0782},
+doi = {10.1145/360933.360975},
+journal = {Commun. ACM},
+month = {aug},
+pages = {453–457},
+numpages = {5},
+keywords = {program semantics, programming methodology, case-construction, correctness proof, termination, nondeterminancy, programming languages, sequencing primitives, repetition, derivation of programs, programming language semantics}
+}
+
+@article{HypersafetyCompositionally,
+author = {D’Osualdo, Emanuele and Farzan, Azadeh and Dreyer, Derek},
+title = {Proving Hypersafety Compositionally},
+year = {2022},
+issue_date = {October 2022},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {6},
+number = {OOPSLA2},
+doi = {10.1145/3563298},
+journal = {Proc. ACM Program. Lang.},
+month = {oct},
+articleno = {135},
+numpages = {26},
+keywords = {Modularity, Compositionality, Weakest Precondition, Hyperproperties}
+}
+
+@article{RelationalSL,
+title = {Relational separation logic},
+journal = {Theoretical Computer Science},
+volume = {375},
+number = {1},
+pages = {308-334},
+year = {2007},
+issn = {0304-3975},
+doi = {https://doi.org/10.1016/j.tcs.2006.12.036},
+author = {Hongseok Yang},
+keywords = {Separation logic, Program verification, Relational reasoning, Schorr–Waite graph marking algorithm},
+}
+
+@InProceedings{SecCSL,
+author="Ernst, Gidon
+and Murray, Toby",
+editor="Dillig, Isil
+and Tasiran, Serdar",
+title="{SecCSL}: Security Concurrent Separation Logic",
+booktitle="Computer Aided Verification",
+year="2019",
+address="Cham",
+pages="208--230",
+isbn="978-3-030-25543-5"
+}
+
+@misc{CommCSL,
+  doi = {10.48550/ARXIV.2211.08459},
+  url = {https://arxiv.org/abs/2211.08459},
+  author = {Eilers, Marco and Dardinier, Thibault and Müller, Peter},
+  keywords = {Cryptography and Security (cs.CR), Programming Languages (cs.PL), FOS: Computer and information sciences, FOS: Computer and information sciences},
+  title = {{CommCSL}: Proving Information Flow Security for Concurrent Programs using Abstract Commutativity},
+  publisher = {arXiv},
+  year = {2022},
+  copyright = {arXiv.org perpetual, non-exclusive license}
+}
+
+@InProceedings{ISL,
+author="Raad, Azalea
+and Berdine, Josh
+and Dang, Hoang-Hai
+and Dreyer, Derek
+and O'Hearn, Peter
+and Villard, Jules",
+title="Local Reasoning About the Presence of Bugs:  {I}ncorrectness {S}eparation {L}ogic",
+booktitle="Computer Aided Verification",
+year="2020",
+address="Cham",
+pages="225--252",
+isbn="978-3-030-53291-8"
+}
+
+
+@article{CISL,
+author = {Raad, Azalea and Berdine, Josh and Dreyer, Derek and O'Hearn, Peter W.},
+title = {Concurrent {I}ncorrectness {S}eparation {L}ogic},
+year = {2022},
+issue_date = {January 2022},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {6},
+number = {POPL},
+doi = {10.1145/3498695},
+abstract = {Incorrectness separation logic (ISL) was recently introduced as a theory of under-approximate reasoning, with the goal of proving that compositional bug catchers find actual bugs. However, ISL only considers sequential programs. Here, we develop concurrent incorrectness separation logic (CISL), which extends ISL to account for bug catching in concurrent programs. Inspired by the work on Views, we design CISL as a parametric framework, which can be instantiated for a number of bug catching scenarios, including race detection, deadlock detection, and memory safety error detection. For each instance, the CISL meta-theory ensures the soundness of incorrectness reasoning for free, thereby guaranteeing that the bugs detected are true positives.},
+journal = {Proc. ACM Program. Lang.},
+month = {jan},
+articleno = {34},
+numpages = {29},
+keywords = {bug catching, Concurrency, program logics, separation logic}
+}
+
+@InProceedings{SurveyRHL,
+author="Naumann, David A.",
+editor="Margaria, Tiziana
+and Steffen, Bernhard",
+title="Thirty-Seven Years of {R}elational {H}oare {L}ogic: Remarks on Its Principles and History",
+booktitle="Leveraging Applications of Formal Methods, Verification and Validation: Engineering Principles",
+year="2020",
+address="Cham",
+pages="93--116",
+abstract="Relational Hoare logics extend the applicability of modular, deductive verification to encompass important 2-run properties including dependency requirements such as confidentiality and program relations such as equivalence or similarity between program versions. A considerable number of recent works introduce different relational Hoare logics without yet converging on a core set of proof rules. This paper looks backwards to little known early work. This brings to light some principles that clarify and organize the rules as well as suggesting a new rule and a new notion of completeness.",
+isbn="978-3-030-61470-6"
+}
+
+@article{auxVariables,
+author = {Kleymann, Thomas},
+title = {Hoare Logic and Auxiliary Variables},
+year = {1999},
+issue_date = {Dec 1999},
+volume = {11},
+number = {5},
+issn = {0934-5043},
+doi = {10.1007/s001650050057},
+abstract = {Auxiliary variables are essential for specifying programs in Hoare Logic. They are required to relate the value of variables in different states. However, the axioms and rules of Hoare Logic turn a blind eye to the role of auxiliary variables. We stipulate a new structural rule for adjusting auxiliary variables when strengthening preconditions and weakening postconditions. Courtesy of this new rule, Hoare Logic is adaptation complete, which benefits software re-use. This property is responsible for a number of improvements. Relative completeness follows uniformly from the Most General Formula property. Moreover, one can show that Hoare Logic subsumes Vienna Development Method's (VDM) operation decomposition rules in that every derivation in VDM can be naturally embedded in Hoare Logic. Furthermore, the new treatment leads to a significant simplification in the presentation for verification calculi dealing with more interesting features such as recursion.},
+journal = {Form. Asp. Comput.},
+month = {dec},
+pages = {541–566},
+numpages = {26},
+keywords = {Keywords: Hoare Logic; Auxiliary variables; Adaptation Completeness; Most General Formula; VDM}
+}
+
+@article{francez1983product,
+  title={Product properties and their direct verification},
+  author={Francez, Nissim},
+  journal={Acta informatica},
+  volume={20},
+  number={4},
+  pages={329--344},
+  year={1983}
+}
+
+@article{aguirre2017relational,
+  title={A relational logic for higher-order programs},
+  author={Aguirre, Alejandro and Barthe, Gilles and Gaboardi, Marco and Garg, Deepak and Strub, Pierre-Yves},
+  journal={Proceedings of the ACM on Programming Languages},
+  volume={1},
+  number={ICFP},
+  pages={1--29},
+  year={2017},
+  publisher={ACM New York, NY, USA}
+}
+
+@article{next700RHL,
+author = {Maillard, Kenji and Hri\c{t}cu, C\u{a}t\u{a}lin and Rivas, Exequiel and Van Muylder, Antoine},
+title = {The next 700 Relational Program Logics},
+year = {2019},
+issue_date = {January 2020},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {4},
+number = {POPL},
+doi = {10.1145/3371072},
+abstract = {We propose the first framework for defining relational program logics for arbitrary monadic effects. The framework is embedded within a relational dependent type theory and is highly expressive. At the semantic level, we provide an algebraic presentation of relational specifications as a class of relative monads, and link computations and specifications by introducing relational effect observations, which map pairs of monadic computations to relational specifications in a way that respects the algebraic structure. For an arbitrary relational effect observation, we generically define the core of a sound relational program logic, and explain how to complete it to a full-fledged logic for the monadic effect at hand. We show that this generic framework can be used to define relational program logics for effects as diverse as state, input-output, nondeterminism, and discrete probabilities. We, moreover, show that by instantiating our framework with state and unbounded iteration we can embed a variant of Benton's Relational Hoare Logic, and also sketch how to reconstruct Relational Hoare Type Theory. Finally, we identify and overcome conceptual challenges that prevented previous relational program logics from properly dealing with control effects, and are the first to provide a relational program logic for exceptions.},
+journal = {Proc. ACM Program. Lang.},
+month = {dec},
+articleno = {4},
+numpages = {33},
+keywords = {side-effects, monads, program verification, dependent types, foundations}
+}
+
+@article{AmtoftSIF,
+author = {Amtoft, Torben and Bandhakavi, Sruthi and Banerjee, Anindya},
+title = {A Logic for Information Flow in Object-Oriented Programs},
+year = {2006},
+issue_date = {January 2006},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {41},
+number = {1},
+issn = {0362-1340},
+doi = {10.1145/1111320.1111046},
+abstract = {This paper specifies, via a Hoare-like logic, an interprocedural and flow sensitive (but termination insensitive) information flow analysis for object-oriented programs. Pointer aliasing is ubiquitous in such programs, and can potentially leak confidential information. Thus the logic employs independence assertions to describe the noninterference property that formalizes confidentiality, and employs region assertions to describe possible aliasing. Programmer assertions, in the style of JML, are also allowed, thereby permitting a more fine-grained specification of information flow policy.The logic supports local reasoning about state in the style of separation logic. Small specifications are used; they mention only the variables and addresses relevant to a command. Specifications are combined using a frame rule. An algorithm for the computation of postconditions is described: under certain assumptions, there exists a strongest postcondition which the algorithm computes.},
+journal = {SIGPLAN Not.},
+month = {jan},
+pages = {91–102},
+numpages = {12},
+keywords = {confidentiality, aliasing, information flow}
+}
+
+@InProceedings{Costanzo2014,
+author="Costanzo, David
+and Shao, Zhong",
+editor="Abadi, Mart{\'i}n
+and Kremer, Steve",
+title="A Separation Logic for Enforcing Declarative Information Flow Control Policies",
+booktitle="Principles of Security and Trust",
+year="2014",
+pages="179--198",
+abstract="In this paper, we present a program logic for proving that a program does not release information about sensitive data in an unintended way. The most important feature of the logic is that it provides a formal security guarantee while supporting ``declassification policies'' that describe precise conditions under which a piece of sensitive data can be released. We leverage the power of Hoare Logic to express the policies and security guarantee in terms of state predicates. This allows our system to be far more specific regarding declassification conditions than most other information flow systems.",
+isbn="978-3-642-54792-8"
+}
+
+@article{volpano1996nonInterference,
+  title={A sound type system for secure flow analysis},
+  author={Volpano, Dennis and Irvine, Cynthia and Smith, Geoffrey},
+  journal={Journal of computer security},
+  volume={4},
+  number={2-3},
+  pages={167--187},
+  year={1996},
+  publisher={IOS Press}
+}
+
+@InProceedings{UnifyingHLandIL,
+author="M{\"o}ller, Bernhard
+and O'Hearn, Peter
+and Hoare, Tony",
+editor="Fahrenberg, Uli
+and Gehrke, Mai
+and Santocanale, Luigi
+and Winter, Michael",
+title="On Algebra of Program Correctness and Incorrectness",
+booktitle="Relational and Algebraic Methods in Computer Science",
+year="2021",
+address="Cham",
+pages="325--343",
+abstract="Variants of Kleene algebra have been used to provide foundations of reasoning about programs, for instance by representing Hoare Logic (HL) in algebra. That work has generally emphasised program correctness, i.e., proving the absence of bugs. Recently, Incorrectness Logic (IL) has been advanced as a formalism for the dual problem: proving the presence of bugs. IL is intended to underpin the use of logic in program testing and static bug finding. Here, we use a Kleene algebra with diamond operators and countable joins of tests, which embeds IL, and which also is complete for reasoning about the image of the embedding. Next to embedding IL, the algebra is able to embed HL, and allows making connections between IL and HL specifications. In this sense, it unifies correctness and incorrectness reasoning in one formalism.",
+isbn="978-3-030-88701-8"
+}
+
+@article{maksimovic2022exact,
+  title={Exact Separation Logic},
+  author={Maksimovi{\'c}, Petar and Cronj{\"a}ger, Caroline and Sutherland, Julian and L{\"o}{\"o}w, Andreas and Ayoun, Sacha-{\'E}lie and Gardner, Philippa},
+  journal={arXiv preprint arXiv:2208.07200},
+  year={2022}
+}
+
+@INBOOK{DynamicLogic,
+  author={Harel, David and Kozen, Dexter and Tiuryn, Jerzy},
+  booktitle={Dynamic Logic}, 
+  title={First-Order Dynamic Logic}, 
+  year={2000},
+  volume={},
+  number={},
+  pages={283-299},
+  doi={}}
+
+
+@book{harel1979first,
+  title={First-order dynamic logic},
+  author={Harel, David},
+  year={1979},
+  publisher={Springer}
+}
+
+@article{hyperpropertiesDL,
+  title={Propositional dynamic logic for hyperproperties},
+  author={Gutsfeld, Jens Oliver and M{\"u}ller-Olm, Markus and Ohrem, Christoph},
+  journal={arXiv preprint arXiv:1910.10546},
+  year={2019}
+}
+
+@article{probaHL,
+  title={Verifying probabilistic programs using a {H}oare like logic},
+  author={Den Hartog, JI and de Vink, Erik P},
+  journal={International journal of foundations of computer science},
+  volume={13},
+  number={03},
+  pages={315--340},
+  year={2002},
+  publisher={World Scientific}
+}
+
+@inproceedings{corin2006probabilistic,
+  title={A probabilistic {H}oare-style logic for game-based cryptographic proofs},
+  author={Corin, Ricardo and Den Hartog, Jerry},
+  booktitle={International Colloquium on Automata, Languages, and Programming},
+  pages={252--263},
+  year={2006}
+}
+
+@inproceedings{barthe2009formal,
+  title={Formal certification of code-based cryptographic proofs},
+  author={Barthe, Gilles and Gr{\'e}goire, Benjamin and Zanella B{\'e}guelin, Santiago},
+  booktitle={Proceedings of the 36th annual ACM SIGPLAN-SIGACT symposium on Principles of programming languages},
+  pages={90--101},
+  year={2009}
+}
+
+@inproceedings{terauchi2005secure,
+  title={Secure information flow as a safety problem},
+  author={Terauchi, Tachio and Aiken, Alex},
+  booktitle={International Static Analysis Symposium},
+  pages={352--367},
+  year={2005}
+}
+
+@article{selfComposition,
+  title={Secure information flow by self-composition},
+  author={Barthe, Gilles and D'argenio, Pedro R and Rezk, Tamara},
+  journal={Mathematical Structures in Computer Science},
+  volume={21},
+  number={6},
+  pages={1207--1252},
+  year={2011},
+  publisher={Cambridge University Press}
+}
+
+@inproceedings{productPrograms,
+  title={Relational verification using product programs},
+  author={Barthe, Gilles and Crespo, Juan Manuel and Kunz, C{\'e}sar},
+  booktitle={International Symposium on Formal Methods},
+  pages={200--214},
+  year={2011}
+}
+
+@article{eilers2019modular,
+  title={Modular product programs},
+  author={Eilers, Marco and M{\"u}ller, Peter and Hitz, Samuel},
+  journal={ACM Transactions on Programming Languages and Systems (TOPLAS)},
+  volume={42},
+  number={1},
+  pages={1--37},
+  year={2019},
+  publisher={ACM New York, NY, USA}
+}
+
+@inproceedings{barthe2013beyond,
+  title={Beyond 2-safety: Asymmetric product programs for relational program verification},
+  author={Barthe, Gilles and Crespo, Juan Manuel and Kunz, C{\'e}sar},
+  booktitle={International Symposium on Logical Foundations of Computer Science},
+  pages={29--43},
+  year={2013}
+}
+
+@inproceedings{clarkson2014temporal,
+  title={Temporal logics for hyperproperties},
+  author={Clarkson, Michael R and Finkbeiner, Bernd and Koleini, Masoud and Micinski, Kristopher K and Rabe, Markus N and S{\'a}nchez, C{\'e}sar},
+  booktitle={International Conference on Principles of Security and Trust},
+  pages={265--284},
+  year={2014}
+}
+
+@inproceedings{coenen2019verifying,
+  title={Verifying hyperliveness},
+  author={Coenen, Norine and Finkbeiner, Bernd and S{\'a}nchez, C{\'e}sar and Tentrup, Leander},
+  booktitle={International Conference on Computer Aided Verification},
+  pages={121--139},
+  year={2019}
+}
+
+@InProceedings{beyondkSafety,
+author="Beutner, Raven
+and Finkbeiner, Bernd",
+editor="Shoham, Sharon
+and Vizel, Yakir",
+title="Software Verification of Hyperproperties Beyond k-Safety",
+booktitle="Computer Aided Verification",
+year="2022",
+address="Cham",
+pages="341--362",
+abstract="Temporal hyperproperties are system properties that relate multiple execution traces. For (finite-state) hardware, temporal hyperproperties are supported by model checking algorithms, and tools for general temporal logics like HyperLTL exist. For (infinite-state) software, the analysis of temporal hyperproperties has, so far, been limited to k-safety properties, i.e., properties that stipulate the absence of a bad interaction between any k traces. In this paper, we present an automated method for the verification of {\$}{\$}{\backslash}forall ^k{\backslash}exists ^l{\$}{\$}∀k∃l-safety properties in infinite-state systems. A {\$}{\$}{\backslash}forall ^k{\backslash}exists ^l{\$}{\$}∀k∃l-safety property stipulates that for any k traces, there exist l traces such that the resulting {\$}{\$}k+l{\$}{\$}k+ltraces do not interact badly. This combination of universal and existential quantification enables us to express many properties beyond k-safety, including, for example, generalized non-interference or program refinement. Our method is based on a strategy-based instantiation of existential trace quantification combined with a program reduction, both in the context of a fixed predicate abstraction. Notably, our framework allows for mutual dependence of strategy and reduction.",
+isbn="978-3-031-13185-1"
+}
+
+@article{assaf2017hypercollecting,
+  title={Hypercollecting semantics and its application to static analysis of information flow},
+  author={Assaf, Mounir and Naumann, David A and Signoles, Julien and Totel, Eric and Tronel, Fr{\'e}d{\'e}ric},
+  journal={ACM SIGPLAN Notices},
+  volume={52},
+  number={1},
+  pages={874--887},
+  year={2017},
+  publisher={ACM New York, NY, USA}
+}
+
+@inproceedings{cousot1977abstract,
+  title={Abstract interpretation: a unified lattice model for static analysis of programs by construction or approximation of fixpoints},
+  author={Cousot, Patrick and Cousot, Radhia},
+  booktitle={Proceedings of the 4th ACM SIGACT-SIGPLAN symposium on Principles of programming languages},
+  pages={238--252},
+  year={1977}
+}
+
+@inproceedings{relationalUsingTraceLogic,
+  title={Verifying relational properties using trace logic},
+  author={Barthe, Gilles and Eilers, Renate and Georgiou, Pamina and Gleiss, Bernhard and Kov{\'a}cs, Laura and Maffei, Matteo},
+  booktitle={2019 Formal Methods in Computer Aided Design (FMCAD)},
+  pages={170--178},
+  year={2019},
+  organization={IEEE}
+}
+
+
+@inproceedings{mccullough1987GNI,
+  title={Specifications for multi-level security and a hook-up},
+  author={McCullough, Daryl},
+  booktitle={1987 IEEE Symposium on Security and Privacy},
+  pages={161--161},
+  year={1987},
+  organization={IEEE}
+}
+
+@article{mclean1996formalGNI,
+  title={A general theory of composition for a class of" possibilistic" properties},
+  author={McLean, John},
+  journal={IEEE Transactions on Software Engineering},
+  volume={22},
+  number={1},
+  pages={53--67},
+  year={1996},
+  publisher={IEEE}
+}
+
+@inproceedings{diffPrivacyHL,
+  title={Proving differential privacy in Hoare logic},
+  author={Barthe, Gilles and Gaboardi, Marco and Arias, Emilio Jes{\'u}s Gallego and Hsu, Justin and Kunz, C{\'e}sar and Strub, Pierre-Yves},
+  booktitle={2014 IEEE 27th Computer Security Foundations Symposium},
+  pages={411--424},
+  year={2014},
+  organization={IEEE}
+}
+
+@inproceedings{Ellora,
+  title={An assertion-based program logic for probabilistic programs},
+  author={Barthe, Gilles and Espitau, Thomas and Gaboardi, Marco and Gr{\'e}goire, Benjamin and Hsu, Justin and Strub, Pierre-Yves},
+  booktitle={European Symposium on Programming},
+  pages={117--144},
+  year={2018}
+}
+
+@article{probabilisticSL,
+author = {Barthe, Gilles and Hsu, Justin and Liao, Kevin},
+title = {A Probabilistic Separation Logic},
+year = {2019},
+issue_date = {January 2020},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {4},
+number = {POPL},
+doi = {10.1145/3371123},
+abstract = {Probabilistic independence is a useful concept for describing the result of random sampling—a basic operation in all probabilistic languages—and for reasoning about groups of random variables. Nevertheless, existing verification methods handle independence poorly, if at all. We propose a probabili stic separation logic PSL, where separation models probabilistic independence. We first give a new, probabilistic model of the logic of bunched implications (BI). We then build a program logic based on these assertions, and prove soundness of the proof system. We demonstrate our logic by verifying information-theoretic security of cryptographic constructions for several well-known tasks, including private information retrieval, oblivious transfer, secure multi-party addition, and simple oblivious RAM. Our proofs reason purely in terms of high-level properties, like independence and uniformity.},
+journal = {Proc. ACM Program. Lang.},
+month = {dec},
+articleno = {55},
+numpages = {30},
+keywords = {probabilistic independence, verified cryptography, separation logic}
+}
+
+@article{HyperHoareLogic,
+  title={Hyper {H}oare {L}ogic: (Dis-)Proving Program Hyperproperties (extended version)},
+  author={Dardinier, Thibault and M{\"u}ller, Peter},
+  journal={arXiv preprint arXiv:2301.10037},
+  year={2023},
+  doi = {10.48550/arXiv.2301.10037},
+  url = {https://doi.org/10.48550/arXiv.2301.10037}
+}

@@ -9,7 +9,7 @@ using the Isabelle theorem prover. The checker consists of over 4000
 lines of ML code. The code is produced using the Isabelle Refinement
 Framework, which allows us to split its correctness proof into (1) the
 proof of an abstract version of the checker, consisting of a few hundred
-lines of ``formalized pseudocode'', and (2) a verified refinement step
+lines of “formalized pseudocode”, and (2) a verified refinement step
 in which mathematical sets and other abstract structures are replaced by
 implementations of efficient structures like red-black trees and
 functional arrays. This leads to a checker that,

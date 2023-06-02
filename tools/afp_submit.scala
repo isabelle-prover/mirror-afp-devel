@@ -127,7 +127,17 @@ object AFP_Submit {
     }
 
     case class Overview(id: String, date: LocalDate, name: String, status: Status.Value)
-    case class Metadata(authors: Map[Author.ID, Author], entries: List[Entry])
+    case class Metadata(authors: Map[Author.ID, Author], entries: List[Entry]) {
+      def new_authors(old_authors: Map[Author.ID, Author]): Set[Author] =
+        entries.flatMap(_.authors).map(_.author).filterNot(old_authors.contains).toSet.map(authors)
+
+      def new_affils(old_authors: Map[Author.ID, Author]): Set[Affiliation] =
+        entries.flatMap(entry => entry.authors ++ entry.notifies).toSet.filter {
+          case _: Unaffiliated => false
+          case e: Email => !old_authors.get(e.author).exists(_.emails.contains(e))
+          case h: Homepage => !old_authors.get(h.author).exists(_.homepages.contains(h))
+        }
+    }
 
     sealed trait T
     case object Invalid extends T
@@ -181,6 +191,70 @@ object AFP_Submit {
       def unapply(id: ID): Option[Date] = format.unapply(id)
       def check(id: ID): Option[ID] = unapply(id).map(apply)
     }
+
+
+    /* Handler for local edits */
+
+    class Edit(afp_structure: AFP_Structure) extends Handler {
+      val authors = afp_structure.load_authors.map(author => author.id -> author).toMap
+      val topics = afp_structure.load_topics.flatMap(_.all_topics)
+      val all_topics = topics.map(topic => topic.id -> topic).toMap
+      val licenses = afp_structure.load_licenses.map(license => license.id -> license).toMap
+      val releases = afp_structure.load_releases.groupBy(_.entry)
+      val dates = afp_structure.load().map(entry => entry.name -> entry.date).toMap
+
+      override def create(
+        date: Date,
+        meta: Metadata,
+        message: String,
+        archive: Bytes,
+        ext: String
+      ): ID = {
+        val entry =
+          meta.entries match {
+            case e :: Nil => e
+            case _ => isabelle.error("Must be a single entry")
+          }
+
+        val old = afp_structure.load_entry(entry.name, authors, all_topics, licenses, releases)
+        val updated =
+          old.copy(
+            title = entry.title,
+            authors = entry.authors,
+            topics = entry.topics,
+            `abstract` = entry.`abstract`,
+            notifies = entry.notifies,
+            license = entry.license,
+            related = entry.related)
+
+        afp_structure.save_entry(updated)
+        // TODO what happens to the authors
+
+        entry.name
+      }
+
+      override def list(): Submission_List =
+        Submission_List(afp_structure.entries.sortBy(dates.get).reverse.map { entry =>
+          Overview(entry, dates(entry), entry, Status.Added)
+        })
+
+      override def get(
+        id: ID, topics: Map[ID, Topic], licenses: Map[ID, License]
+      ): Option[Submission] =
+        if (!afp_structure.entries.contains(id)) None
+        else {
+          val entry = afp_structure.load_entry(id, authors, all_topics, licenses, releases)
+          val meta = Metadata(authors, List(entry))
+          Some(Submission(id, meta, "", Model.Build.Success, Some(Status.Added), ""))
+        }
+
+      override def submit(id: ID): Unit = ()
+      override def set_status(id: ID, status: Model.Status.Value): Unit = ()
+      override def abort_build(id: ID): Unit = ()
+      override def get_patch(id: ID): Option[Path] = None
+      override def get_archive(id: ID): Option[Path] = None
+    }
+
 
     /* Adapter to existing submission system */
 
@@ -318,16 +392,20 @@ object AFP_Submit {
 
   /* server */
 
+  object Mode extends Enumeration {
+    val EDIT, SUBMISSION = Value
+  }
+
   class Server(
     api: API,
-    base_url: String,
     afp_structure: AFP_Structure,
+    mode: Mode.Value,
     handler: Handler,
     devel: Boolean,
     verbose: Boolean,
     progress: Progress,
     port: Int = 0
-  ) extends Web_App.Server[Model.T](port, verbose, progress) {
+  ) extends Web_App.Server[Model.T](api, port, verbose, progress) {
     val repo = Mercurial.the_repository(afp_structure.base_dir)
 
     var authors: Map[Author.ID, Metadata.Author] = Map.empty
@@ -455,9 +533,10 @@ object AFP_Submit {
 
     def download_link(href: String, body: XML.Body): XML.Elem =
       class_("download")(link(href, body)) + ("target" -> "_blank")
-    def abs_link(rel_href: String, body: XML.Body): XML.Elem =
-      link(base_url + "/" + rel_href, body) + ("target" -> "_parent")
+    def frontend_link(path: Path, params: Properties.T, body: XML.Body): XML.Elem =
+      link(api.app_url(path, params), body) + ("target" -> "_parent")
 
+    def render_if(cond: Boolean, body: XML.Body): XML.Body = if (cond) body else Nil
     def render_if(cond: Boolean, elem: XML.Elem): XML.Body = if (cond) List(elem) else Nil
     def render_error(for_elem: String, validated: Val[_]): XML.Body =
       validated.err.map(error =>
@@ -478,7 +557,7 @@ object AFP_Submit {
         par(
           hidden(Nest_Key(key, ID), topic.id) ::
           text(topic.id) :::
-          action_button(api.abs_url(API_SUBMISSION_ENTRY_TOPICS_REMOVE), "x", key) :: Nil)
+          action_button(api.api_url(API_SUBMISSION_ENTRY_TOPICS_REMOVE), "x", key) :: Nil)
 
       def render_affil(affil: Affiliation, key: Params.Key): XML.Elem = {
         val author = updated_authors(affil.author)
@@ -489,7 +568,7 @@ object AFP_Submit {
             selection(Nest_Key(key, AFFILIATION),
               Some(affil_id(affil)),
               affils.map(affil => option(affil_id(affil), affil_string(affil)))) ::
-            action_button(api.abs_url(API_SUBMISSION_ENTRY_AUTHORS_REMOVE), "x", key) :: Nil)
+            action_button(api.api_url(API_SUBMISSION_ENTRY_AUTHORS_REMOVE), "x", key) :: Nil)
       }
 
       def render_notify(email: Email, key: Params.Key): XML.Elem = {
@@ -501,7 +580,7 @@ object AFP_Submit {
               Nest_Key(key, AFFILIATION),
               Some(affil_id(email)),
               author.emails.map(affil => option(affil_id(affil), affil_string(affil)))) ::
-            action_button(api.abs_url(API_SUBMISSION_ENTRY_NOTIFIES_REMOVE), "x", key) :: Nil)
+            action_button(api.api_url(API_SUBMISSION_ENTRY_NOTIFIES_REMOVE), "x", key) :: Nil)
       }
 
       def render_related(related: Reference, key: Params.Key): XML.Elem =
@@ -509,34 +588,34 @@ object AFP_Submit {
           hidden(Nest_Key(key, KIND), Model.Related.get(related).toString) ::
           hidden(Nest_Key(key, INPUT), related_string(related)) ::
           text(related_string(related)) :::
-          action_button(api.abs_url(API_SUBMISSION_ENTRY_RELATED_REMOVE), "x", key) :: Nil)
+          action_button(api.api_url(API_SUBMISSION_ENTRY_RELATED_REMOVE), "x", key) :: Nil)
 
       def render_entry(entry: Model.Create_Entry, key: Params.Key): XML.Elem =
-        fieldset(List(legend("Entry"),
+        fieldset(legend("Entry") ::
           par(
             fieldlabel(Nest_Key(key, TITLE), "Title of article") ::
             textfield(Nest_Key(key, TITLE), "Example Submission", entry.title.v) ::
-            render_error(Nest_Key(key, TITLE), entry.title)),
+            render_error(Nest_Key(key, TITLE), entry.title)) ::
           par(
             fieldlabel(Nest_Key(key, NAME), "Short name") ::
             textfield(Nest_Key(key, NAME), "Example_Submission", entry.name.v) ::
             explanation(Nest_Key(key, NAME),
               "Name of the folder where your ROOT and theory files reside.") ::
-            render_error(Nest_Key(key, NAME), entry.name)),
+            render_error(Nest_Key(key, NAME), entry.name)) ::
           fieldset(legend("Topics") ::
             indexed(entry.topics.v, key, TOPIC, render_topic) :::
             selection(Nest_Key(key, TOPIC),
               entry.topic_input.map(_.id),
               topics.map(topic => option(topic.id, topic.id))) ::
-            action_button(api.abs_url(API_SUBMISSION_ENTRY_TOPICS_ADD), "add", key) ::
-            render_error("", entry.topics)),
+            action_button(api.api_url(API_SUBMISSION_ENTRY_TOPICS_ADD), "add", key) ::
+            render_error("", entry.topics)) ::
           par(List(
             fieldlabel(Nest_Key(key, LICENSE), "License"),
             radio(Nest_Key(key, LICENSE),
               entry.license.id,
               licenses.values.toList.map(license => license.id -> license.name)),
             explanation(Nest_Key(key, LICENSE),
-              "Note: For LGPL submissions, please include the header \"License: LGPL\" in each file"))),
+              "Note: For LGPL submissions, please include the header \"License: LGPL\" in each file"))) ::
           par(
             fieldlabel(Nest_Key(key, ABSTRACT), "Abstract") ::
             placeholder("HTML and MathJax, no LaTeX")(
@@ -545,16 +624,16 @@ object AFP_Submit {
                 ("cols" -> "70")) ::
             explanation(Nest_Key(key, ABSTRACT),
               "Note: You can use HTML or MathJax (not LaTeX!) to format your abstract.") ::
-            render_error(Nest_Key(key, ABSTRACT), entry.`abstract`)),
+            render_error(Nest_Key(key, ABSTRACT), entry.`abstract`)) ::
           fieldset(legend("Authors") ::
             indexed(entry.affils.v, key, AUTHOR, render_affil) :::
             selection(Nest_Key(key, AUTHOR),
               entry.author_input.map(_.id),
               authors_list.map(author => option(author.id, author_string(author)))) ::
-            action_button(api.abs_url(API_SUBMISSION_ENTRY_AUTHORS_ADD), "add", key) ::
+            action_button(api.api_url(API_SUBMISSION_ENTRY_AUTHORS_ADD), "add", key) ::
             explanation(Nest_Key(key, AUTHOR),
               "Add an author from the list. Register new authors first below.") ::
-            render_error(Nest_Key(key, AUTHOR), entry.affils)),
+            render_error(Nest_Key(key, AUTHOR), entry.affils)) ::
           fieldset(legend("Contact") ::
             indexed(entry.notifies.v, key, NOTIFY, render_notify) :::
             selection(Nest_Key(key, NOTIFY),
@@ -563,13 +642,13 @@ object AFP_Submit {
                 entry.used_authors.contains(author.id)).map(author_option)) ::
                 email_authors.filter(author =>
                   !entry.used_authors.contains(author.id)).map(author_option)) ::
-            action_button(api.abs_url(API_SUBMISSION_ENTRY_NOTIFIES_ADD), "add", key) ::
+            action_button(api.api_url(API_SUBMISSION_ENTRY_NOTIFIES_ADD), "add", key) ::
             explanation(Nest_Key(key, NOTIFY),
               "These addresses serve two purposes: " +
               "1. They are used to send you updates about the state of your submission. " +
               "2. They are the maintainers of the entry once it is accepted. " +
               "Typically this will be one or more of the authors.") ::
-            render_error("", entry.notifies)),
+            render_error("", entry.notifies)) ::
           fieldset(legend("Related Publications") ::
             indexed(entry.related, key, RELATED, render_related) :::
             selection(Nest_Key(Nest_Key(key, RELATED), KIND),
@@ -577,13 +656,14 @@ object AFP_Submit {
               Model.Related.values.toList.map(v => option(v.toString, v.toString))) ::
             textfield(Nest_Key(Nest_Key(key, RELATED), INPUT),
               "10.1109/5.771073", entry.related_input.v) ::
-            action_button(api.abs_url(API_SUBMISSION_ENTRY_RELATED_ADD), "add", key) ::
+            action_button(api.api_url(API_SUBMISSION_ENTRY_RELATED_ADD), "add", key) ::
             explanation(Nest_Key(Nest_Key(key, RELATED), INPUT),
               "Publications related to the entry, as DOIs (10.1109/5.771073) or plaintext (HTML)." +
               "Typically a publication by the authors describing the entry," +
               " background literature (articles, books) or web resources. ") ::
-            render_error(Nest_Key(Nest_Key(key, RELATED), INPUT), entry.related_input)),
-          action_button(api.abs_url(API_SUBMISSION_ENTRIES_REMOVE), "remove entry", key)))
+            render_error(Nest_Key(Nest_Key(key, RELATED), INPUT), entry.related_input)) ::
+          render_if(mode == Mode.SUBMISSION,
+            action_button(api.api_url(API_SUBMISSION_ENTRIES_REMOVE), "remove entry", key)))
 
       def render_new_author(author: Author, key: Params.Key): XML.Elem =
         par(
@@ -592,7 +672,7 @@ object AFP_Submit {
           hidden(Nest_Key(key, ORCID), author.orcid.map(_.identifier).getOrElse("")) ::
           text(author_string(author)) :::
           render_if(!model.used_authors.contains(author.id),
-            action_button(api.abs_url(API_SUBMISSION_AUTHORS_REMOVE), "x", key)))
+            action_button(api.api_url(API_SUBMISSION_AUTHORS_REMOVE), "x", key)))
 
       def render_new_affil(affil: Affiliation, key: Params.Key): XML.Elem =
         par(
@@ -601,17 +681,23 @@ object AFP_Submit {
           hidden(Nest_Key(key, AFFILIATION), affil_address(affil)) ::
           text(author_string(updated_authors(affil.author)) + ": " + affil_string(affil)) :::
           render_if(!model.used_affils.contains(affil),
-            action_button(api.abs_url(API_SUBMISSION_AFFILIATIONS_REMOVE), "x", key)))
+            action_button(api.api_url(API_SUBMISSION_AFFILIATIONS_REMOVE), "x", key)))
 
-      List(submit_form(api.abs_url(API_SUBMISSION),
+      val (upload, preview) = mode match {
+        case Mode.EDIT => ("Save", "preview and save >")
+        case Mode.SUBMISSION => ("Upload", "preview and upload >")
+      }
+
+      List(submit_form(api.api_url(API_SUBMISSION),
         indexed(model.entries.v, Params.empty, ENTRY, render_entry) :::
         render_error("", model.entries) :::
-        par(List(
-          explanation("",
-            "You can submit multiple entries at once. " +
-            "Put the corresponding folders in the archive " +
-            "and use the button below to add more input fields for metadata. "),
-          api_button(api.abs_url(API_SUBMISSION_ENTRIES_ADD), "additional entry"))) ::
+        render_if(mode == Mode.SUBMISSION,
+          par(List(
+            explanation("",
+              "You can submit multiple entries at once. " +
+              "Put the corresponding folders in the archive " +
+              "and use the button below to add more input fields for metadata. "),
+            api_button(api.api_url(API_SUBMISSION_ENTRIES_ADD), "additional entry")))) :::
         break :::
         fieldset(legend("New Authors") ::
           explanation("", "If you are new to the AFP, add yourself here.") ::
@@ -620,7 +706,7 @@ object AFP_Submit {
           textfield(Nest_Key(AUTHOR, NAME), "Gerwin Klein", model.new_author_input) ::
           fieldlabel(Nest_Key(AUTHOR, ORCID), "ORCID id (optional)") ::
           textfield(Nest_Key(AUTHOR, ORCID), "0000-0002-1825-0097", model.new_author_orcid) ::
-          api_button(api.abs_url(API_SUBMISSION_AUTHORS_ADD), "add") ::
+          api_button(api.api_url(API_SUBMISSION_AUTHORS_ADD), "add") ::
           render_error("", model.new_authors)) ::
         fieldset(legend("New email or homepage") ::
           explanation("",
@@ -636,23 +722,14 @@ object AFP_Submit {
           fieldlabel(Nest_Key(AFFILIATION, ADDRESS), "Email or Homepage") ::
           textfield(Nest_Key(AFFILIATION, ADDRESS), "https://proofcraft.org",
             model.new_affils_input) ::
-          api_button(api.abs_url(API_SUBMISSION_AFFILIATIONS_ADD), "add") ::
+          api_button(api.api_url(API_SUBMISSION_AFFILIATIONS_ADD), "add") ::
           render_error("", model.new_affils)) ::
         break :::
-        fieldset(List(legend("Upload"),
-          api_button(api.abs_url(API_SUBMISSION_UPLOAD), "preview and upload >"))) :: Nil))
+        fieldset(List(legend(upload),
+          api_button(api.api_url(API_SUBMISSION_UPLOAD), preview))) :: Nil))
     }
 
     def render_metadata(meta: Model.Metadata): XML.Body = {
-      val new_authors =
-        meta.entries.flatMap(_.authors).map(_.author).filterNot(authors.contains).map(meta.authors)
-      val new_affils =
-        meta.entries.flatMap(entry => entry.authors ++ entry.notifies).distinct.filter {
-          case _: Unaffiliated => false
-          case e: Email => !authors.get(e.author).exists(_.emails.contains(e))
-          case h: Homepage => !authors.get(h.author).exists(_.homepages.contains(h))
-        }
-
       def render_topic(topic: Topic, key: Params.Key): XML.Elem =
         item(hidden(Nest_Key(key, ID), topic.id) :: text(topic.id))
 
@@ -717,8 +794,8 @@ object AFP_Submit {
           hidden(Nest_Key(key, AFFILIATION), affil_address(affil))))
 
       indexed(meta.entries, Params.empty, ENTRY, render_entry) :::
-        indexed(new_authors, Params.empty, AUTHOR, render_new_author) :::
-        indexed(new_affils, Params.empty, AFFILIATION, render_new_affil)
+        indexed(meta.new_authors(authors).toList, Params.empty, AUTHOR, render_new_author) :::
+        indexed(meta.new_affils(authors).toList, Params.empty, AFFILIATION, render_new_affil)
     }
 
     def render_submission(submission: Model.Submission): XML.Body = {
@@ -735,52 +812,66 @@ object AFP_Submit {
           API_SUBMISSION_DOWNLOAD_ZIP
         else API_SUBMISSION_DOWNLOAD_TGZ
 
-      List(submit_form(api.abs_url(SUBMISSION, List(ID -> submission.id)),
-        download_link(api.abs_url(archive_url, List(ID -> submission.id)), text("archive")) ::
-        download_link(api.abs_url(API_SUBMISSION_DOWNLOAD, List(ID -> submission.id)),
-          text("metadata patch")) ::
-        text(" (apply with: 'patch -p0 < FILE')") :::
-        par(
+      val resubmit = mode match {
+        case Mode.EDIT => "Update"
+        case Mode.SUBMISSION => "Resubmit"
+      }
+
+      List(submit_form(api.api_url(SUBMISSION, List(ID -> submission.id)),
+        render_if(mode == Mode.SUBMISSION,
+          download_link(api.api_url(archive_url, List(ID -> submission.id)), text("archive")) ::
+          download_link(api.api_url(API_SUBMISSION_DOWNLOAD, List(ID -> submission.id)),
+            text("metadata patch")) ::
+          text(" (apply with: 'patch -p0 < FILE')")) :::
+        render_if(mode == Mode.SUBMISSION, par(
           hidden(MESSAGE, submission.message) ::
-          text("Comment: " + submission.message)) ::
+          text("Comment: " + submission.message))) :::
         section("Metadata") ::
         render_metadata(submission.meta) :::
         section("Status") ::
         span(text(status_text(submission.status))) ::
         render_if(submission.build != Model.Build.Running,
-          action_button(api.abs_url(API_RESUBMIT), "Resubmit", submission.id)) :::
+          action_button(api.api_url(API_RESUBMIT), resubmit, submission.id)) :::
         render_if(submission.build == Model.Build.Running,
-          action_button(api.abs_url(API_BUILD_ABORT), "Abort build", submission.id)) :::
+          action_button(api.api_url(API_BUILD_ABORT), "Abort build", submission.id)) :::
         render_if(submission.build == Model.Build.Success && submission.status.isEmpty,
-          action_button(api.abs_url(API_SUBMIT), "Send submission to AFP editors", submission.id)) :::
-        fieldset(legend("Build") ::
-          bold(text(submission.build.toString)) ::
-          par(text("Isabelle log:") ::: source(submission.log) :: Nil) ::
-          Nil) :: Nil))
+          action_button(api.api_url(API_SUBMIT), "Send submission to AFP editors", submission.id)) :::
+        render_if(mode == Mode.SUBMISSION,
+          fieldset(legend("Build") ::
+            bold(text(submission.build.toString)) ::
+            par(text("Isabelle log:") ::: source(submission.log) :: Nil) ::
+            Nil))))
     }
 
-    def render_upload(upload: Model.Upload): XML.Body =
-      List(submit_form(api.abs_url(API_SUBMISSION), List(
+    def render_upload(upload: Model.Upload): XML.Body = {
+      val submit = mode match {
+        case Mode.EDIT => "save"
+        case Mode.SUBMISSION => "submit"
+      }
+
+      List(submit_form(api.api_url(API_SUBMISSION), List(
         fieldset(legend("Overview") :: render_metadata(upload.meta)),
         fieldset(legend("Submit") ::
-          api_button(api.abs_url(API_SUBMISSION), "< edit metadata") ::
-          par(List(
-            fieldlabel(MESSAGE, "Message for the editors (optional)"),
-            textfield(MESSAGE, "", upload.message),
-            explanation(
-              MESSAGE,
-              "Note: Anything special or noteworthy about your submission can be covered here. " +
-                "It will not become part of your entry. " +
-                "You're also welcome to leave suggestions for our AFP submission service here. ")
-          )) ::
-          par(List(
-            fieldlabel(ARCHIVE, "Archive file (.tar.gz or .zip)"),
-            browse(ARCHIVE, List(".zip", ".tar.gz")),
-            explanation(ARCHIVE,
-              "Note: Your zip or tar file should contain one folder with your theories, ROOT, etc. " +
-              "The folder name should be the short/folder name used in the submission form."))) ::
-          api_button(api.abs_url(API_SUBMISSION_CREATE), "submit") ::
+          api_button(api.api_url(API_SUBMISSION), "< edit metadata") ::
+          render_if(mode == Mode.SUBMISSION, List(
+            par(List(
+              fieldlabel(MESSAGE, "Message for the editors (optional)"),
+              textfield(MESSAGE, "", upload.message),
+              explanation(
+                MESSAGE,
+                "Note: Anything special or noteworthy about your submission can be covered here. " +
+                  "It will not become part of your entry. " +
+                  "You're also welcome to leave suggestions for our AFP submission service here. ")
+            )),
+            par(List(
+              fieldlabel(ARCHIVE, "Archive file (.tar.gz or .zip)"),
+              browse(ARCHIVE, List(".zip", ".tar.gz")),
+              explanation(ARCHIVE,
+                "Note: Your zip or tar file should contain one folder with your theories, ROOT, etc. " +
+                "The folder name should be the short/folder name used in the submission form."))))) :::
+          api_button(api.api_url(API_SUBMISSION_CREATE), submit) ::
           render_error(ARCHIVE, Val.err((), upload.error))))))
+    }
 
     def render_submission_list(submission_list: Model.Submission_List): XML.Body = {
       def render_overview(overview: Model.Overview, key: Params.Key): XML.Elem =
@@ -789,12 +880,13 @@ object AFP_Submit {
           hidden(Nest_Key(key, DATE), overview.date.toString) ::
           hidden(Nest_Key(key, NAME), overview.name) ::
           span(text(overview.date.toString)) ::
-          span(List(abs_link(api.rel_url(SUBMISSION, List(ID -> overview.id)),
+          span(List(frontend_link(SUBMISSION, List(ID -> overview.id),
             text(overview.name)))) ::
-          class_("right")(span(List(
-            selection(Nest_Key(key, STATUS), Some(overview.status.toString),
-              Model.Status.values.toList.map(v => option(v.toString, v.toString))),
-            action_button(api.abs_url(API_SUBMISSION_STATUS), "update", key)))) :: Nil)
+          render_if(mode == Mode.SUBMISSION,
+            class_("right")(span(List(
+              selection(Nest_Key(key, STATUS), Some(overview.status.toString),
+                Model.Status.values.toList.map(v => option(v.toString, v.toString))),
+              action_button(api.api_url(API_SUBMISSION_STATUS), "update", key))))))
 
       def list1(ls: List[XML.Elem]): XML.Elem = if (ls.isEmpty) par(Nil) else list(ls)
 
@@ -802,23 +894,30 @@ object AFP_Submit {
       val finished =
         ls.filter(t => Set(Model.Status.Added, Model.Status.Rejected).contains(t._1.status))
 
-      List(submit_form(api.abs_url(API_SUBMISSION_STATUS),
-        text("Open") :::
-        list1(ls.filter(_._1.status == Model.Status.Submitted).map(render_overview)) ::
-        text("In Progress") :::
-        list1(ls.filter(_._1.status == Model.Status.Review).map(render_overview)) ::
-        text("Finished") :::
+      List(submit_form(api.api_url(API_SUBMISSION_STATUS),
+        render_if(mode == Mode.SUBMISSION,
+          text("Open") :::
+          list1(ls.filter(_._1.status == Model.Status.Submitted).map(render_overview)) ::
+          text("In Progress") :::
+          list1(ls.filter(_._1.status == Model.Status.Review).map(render_overview)) ::
+          text("Finished")) :::
         list1(finished.map(render_overview)) :: Nil))
     }
 
-    def render_created(created: Model.Created): XML.Body =
+    def render_created(created: Model.Created): XML.Body = {
+      val status = mode match {
+        case Mode.SUBMISSION => "View your submission status: "
+        case Mode.EDIT => "View the entry at: "
+      }
+
       List(div(
-        span(text("Entry successfully saved. View your submission status: ")) ::
+        span(text("Entry successfully saved. " + status)) ::
         break :::
-        abs_link(api.rel_url(SUBMISSION, List(ID -> created.id)),
-          text(base_url + "/" +api.rel_url(SUBMISSION, List(ID -> created.id)))) ::
+        frontend_link(SUBMISSION, List(ID -> created.id),
+          text(api.app_url(SUBMISSION, List(ID -> created.id)))) ::
         break :::
-        span(text("(keep that url!).")) :: Nil))
+        render_if(mode == Mode.SUBMISSION, span(text("(keep that url!).")))))
+    }
 
     def render_invalid: XML.Body =
       text("Invalid request")
@@ -1268,8 +1367,14 @@ object AFP_Submit {
         if (name.isBlank) Val.err(name, "Name must not be blank")
         else if (!"[a-zA-Z0-9_-]+".r.matches(name)) Val.err(name,
           "Invalid character in name")
-        else if (Server.this.entries.contains(name)) Val.err(name, "Entry already exists")
-        else Val.ok(name)
+        else mode match {
+          case Mode.EDIT =>
+            if (Server.this.entries.contains(name)) Val.ok(name)
+            else Val.err(name, "Entry does not exist")
+          case Mode.SUBMISSION =>
+            if (Server.this.entries.contains(name)) Val.err(name, "Entry already exists")
+            else Val.ok(name)
+        }
 
       def entries(entries: List[Model.Create_Entry]): Val[List[Model.Create_Entry]] =
         if (entries.isEmpty) Val.err(entries, "Must contain at least one entry")
@@ -1328,17 +1433,23 @@ object AFP_Submit {
     def create(params: Params.Data): Option[Model.T] = {
       upload(params) match {
         case Some(upload: Model.Upload) =>
-          val archive = Bytes.decode_base64(params.get(ARCHIVE).get(FILE).value)
-          val file_name = params.get(ARCHIVE).value
+          mode match {
+            case Mode.EDIT =>
+              handler.create(Date.now(), upload.meta, upload.message, Bytes.empty, "")
+              Some(Model.Created(upload.meta.entries.head.name))
+            case Mode.SUBMISSION =>
+              val archive = Bytes.decode_base64(params.get(ARCHIVE).get(FILE).value)
+              val file_name = params.get(ARCHIVE).value
 
-          if (archive.is_empty || file_name.isEmpty) {
-            Some(upload.copy(error = "Select a file"))
-          } else if (!file_name.endsWith(".zip") && !file_name.endsWith(".tar.gz")) {
-            Some(upload.copy(error = "Only .zip and .tar.gz archives allowed"))
-          } else {
-            val ext = if (file_name.endsWith(".zip")) ".zip" else ".tar.gz"
-            val id = handler.create(Date.now(), upload.meta, upload.message, archive, ext)
-            Some(Model.Created(id))
+              if ((archive.is_empty || file_name.isEmpty)) {
+                Some(upload.copy(error = "Select a file"))
+              } else if (!file_name.endsWith(".zip") && !file_name.endsWith(".tar.gz")) {
+                Some(upload.copy(error = "Only .zip and .tar.gz archives allowed"))
+              } else {
+                val ext = if (file_name.endsWith(".zip")) ".zip" else ".tar.gz"
+                val id = handler.create(Date.now(), upload.meta, upload.message, archive, ext)
+                Some(Model.Created(id))
+              }
           }
         case _ => None
       }
@@ -1447,7 +1558,7 @@ object AFP_Submit {
           "src" -> "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js")), text("\n")),
         script(
           "MathJax={tex:{inlineMath:[['$','$'],['\\\\(','\\\\)']]},processEscapes:true,svg:{fontCache:'global'}}"),
-        style_file(api.abs_url(API_CSS)))
+        style_file(api.api_url(API_CSS)))
   }
 
 
@@ -1457,45 +1568,47 @@ object AFP_Submit {
     Scala_Project.here,
     { args =>
 
-      var base_path = Path.current
-      var base_url = "https://www.isa-afp.org/webapp"
+      var backend_path = Path.current
+      var frontend_url = new URL("http://localhost:8080")
       var devel = false
       var verbose = false
-      var port = 0
+      var port = 8080
+      var dir: Option[Path] = None
 
       val getopts = Getopts("""
-Usage: isabelle afp_submit [OPTIONS] DIR
+Usage: isabelle afp_submit [OPTIONS]
 
   Options are:
-      -a PATH      api base path
-      -b URL       application base url. Default: """ + base_url + """"
-      -d           devel mode (e.g., skips automatic AFP repository updates)
+      -a PATH      backend path (if endpoint is not server root)
+      -b URL       application frontend url. Default: """ + frontend_url + """"
+      -d           devel mode (serves frontend and skips automatic AFP repository updates)
       -p PORT      server port. Default: """ + port + """
       -v           verbose
+      -D DIR       submission directory
 
-  Start afp submission server, which stores submissions in DIR.
+  Start afp submission server. Server is in "edit" mode
+  unless directory to store submissions in is specified.
 """,
-        "a:" -> (arg => base_path = Path.explode(arg)),
-        "b:" -> (arg => base_url = arg),
+        "a:" -> (arg => backend_path = Path.explode(arg)),
+        "b:" -> (arg => frontend_url = new URL(arg)),
         "d" -> (_ => devel = true),
         "p:" -> (arg => port = Value.Int.parse(arg)),
-        "v" -> (_ => verbose = true))
+        "v" -> (_ => verbose = true),
+        "D:" -> (arg => dir = Some(Path.explode(arg))))
 
-      val more_args = getopts(args)
-
-      val dir =
-        more_args match {
-          case dir :: Nil => Path.explode(dir)
-          case _ => getopts.usage()
-        }
+      getopts(args)
 
       val afp_structure = AFP_Structure()
 
       val progress = new Console_Progress(verbose = verbose)
 
-      val handler = new Handler.Adapter(dir, afp_structure)
-      val api = new API(base_path)
-      val server = new Server(api = api, base_url = base_url, afp_structure = afp_structure,
+      val (handler, mode) = dir match {
+        case Some(dir) => (Handler.Adapter(dir, afp_structure), Mode.SUBMISSION)
+        case None => (Handler.Edit(afp_structure), Mode.EDIT)
+      }
+
+      val api = new API(frontend_url, backend_path, devel = devel)
+      val server = new Server(api = api, afp_structure = afp_structure, mode = mode,
         handler = handler, devel = devel, verbose = verbose, progress = progress, port = port)
 
       server.run()

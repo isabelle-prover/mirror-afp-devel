@@ -1,0 +1,33 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{pdfsetup}
+
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{Formalization of the Schwartz-Zippel Lemma}
+\author{Sunpill Kim and Yong Kiam Tan}
+\maketitle
+\begin{abstract}
+This short entry formalizes a version of the Schwartz-Zippel lemma for probabilistic (multivariate) polynomial identity testing.
+The entry includes a textbook example using the lemma to test for perfect matchings in a bipartite graph.
+The lemma is attributed to several independent authors, including Schwartz~\cite{DBLP:journals/jacm/Schwartz80}, Zippel~\cite{DBLP:conf/eurosam/Zippel79}, and DeMillo and Lipton~\cite{DBLP:journals/ipl/DemilloL78}; a historical perspective is given by Lipton~\cite{history}.
+\end{abstract}
+
+\tableofcontents
+
+\input{session}
+\bibliographystyle{abbrv}
+\bibliography{root}
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

@@ -1,0 +1,37 @@
+title = "A Sound and Complete Calculus for Probability Inequalities"
+date = 2023-02-20
+topics = [
+  "Mathematics/Probability theory",
+  "Logic/General logic/Classical propositional logic",
+  "Logic/General logic",
+]
+abstract = """
+We give a sound an complete multiple-conclusion calculus \\(\\$\\vdash\\) for finitely additive probability inequalities. In particular, we show
+
+$$\\mathbf{\\sim} \\Gamma \\$\\vdash \\mathbf{\\sim} \\Phi \\equiv \\forall \\mathcal{P} \\in probabilities. \\sum \\phi \\leftarrow \\Phi.\\ \\mathcal{P} \\phi \\leq \\sum \\gamma \\leftarrow \\Gamma.\\ \\mathcal{P} \\gamma $$
+
+... where $\\sim \\Gamma$ is the negation of all of the formulae in $\\Gamma$ (and similarly for $\\sim\\Phi$). We prove this by using an abstract form of <em>MaxSAT</em>.  We also show
+
+$$MaxSAT (\\mathbf{\\sim} \\Gamma\\ @\\ \\Phi) + c\\leq length\\ \\Gamma \\equiv \\forall \\mathcal{P} \\in probabilities. \\left(\\sum \\phi \\leftarrow \\Phi.\\ \\mathcal{P} \\phi\\right) + c \\leq \\sum \\gamma \\leftarrow \\Gamma.\\ \\mathcal{P} \\gamma $$
+
+Finally, we establish a <em>collapse theorem</em>, which asserts that $\\left(\\sum \\phi \\leftarrow \\Phi.\\ \\mathcal{P} \\phi\\right) + c \\leq \\sum \\gamma \\leftarrow \\Gamma.\\ \\mathcal{P} \\gamma$ holds for all probabilities $\\mathcal{P}$ if and only if $\\left(\\sum \\phi \\leftarrow \\Phi.\\ \\delta \\phi\\right) + c \\leq \\sum \\gamma \\leftarrow \\Gamma.\\ \\delta \\gamma$ holds for all binary-valued probabilities $\\delta$."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.doty]
+email = "doty_email"
+
+[contributors]
+
+[notify]
+doty = "doty_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

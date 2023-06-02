@@ -1,0 +1,26 @@
+title = "A Formalization of the SCL(FOL) Calculus: Simple Clause Learning for First-Order Logic"
+date = 2023-04-20
+topics = [
+  "Logic/General logic/Mechanization of proofs",
+]
+abstract = "This Isabelle/HOL formalization covers the unexecutable specification of Simple Clause Learning for first-order logic without equality: SCL(FOL). The main results are formal proofs of soundness, non-redundancy of learned clauses, termination, and refutational completeness. Compared to the unformalized version, the formalized calculus is simpler, a number of results were generalized, and the non-redundancy statement was strengthened. We found and corrected one bug in a previously published version of the SCL Backtrack rule. Compared to related formalizations, we introduce a new technique for showing termination based on non-redundant clause learning."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.desharnais]
+email = "desharnais_email1"
+
+[contributors]
+
+[notify]
+desharnais = "desharnais_email1"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

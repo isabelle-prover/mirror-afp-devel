@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Computer science/Algorithms/Randomized on Archive of Formal Proofs</title>
+    <link>/topics/computer-science/algorithms/randomized/</link>
+    <description>Recent content in Computer science/Algorithms/Randomized on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language><atom:link href="/topics/computer-science/algorithms/randomized/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>The Schwartz-Zippel Lemma</title>
+      <link>/entries/Schwartz_Zippel.html</link>
+      <pubDate>Thu, 27 Apr 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Schwartz_Zippel.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Distributed Distinct Elements</title>
+      <link>/entries/Distributed_Distinct_Elements.html</link>
+      <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Distributed_Distinct_Elements.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Formalization of Randomized Approximation Algorithms for Frequency Moments</title>
+      <link>/entries/Frequency_Moments.html</link>
+      <pubDate>Fri, 08 Apr 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Frequency_Moments.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Median Method</title>
+      <link>/entries/Median_Method.html</link>
+      <pubDate>Tue, 25 Jan 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Median_Method.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Skip Lists</title>
+      <link>/entries/Skip_Lists.html</link>
+      <pubDate>Thu, 09 Jan 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Skip_Lists.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Probabilistic Primality Testing</title>
+      <link>/entries/Probabilistic_Prime_Tests.html</link>
+      <pubDate>Mon, 11 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Probabilistic_Prime_Tests.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Randomised Binary Search Trees</title>
+      <link>/entries/Randomised_BSTs.html</link>
+      <pubDate>Fri, 19 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Randomised_BSTs.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Probabilistic while loop</title>
+      <link>/entries/Probabilistic_While.html</link>
+      <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Probabilistic_While.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Expected Shape of Random Binary Search Trees</title>
+      <link>/entries/Random_BSTs.html</link>
+      <pubDate>Tue, 04 Apr 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Random_BSTs.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The number of comparisons in QuickSort</title>
+      <link>/entries/Quick_Sort_Cost.html</link>
+      <pubDate>Wed, 15 Mar 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Quick_Sort_Cost.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Fisher–Yates shuffle</title>
+      <link>/entries/Fisher_Yates.html</link>
+      <pubDate>Fri, 30 Sep 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Fisher_Yates.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Analysis of List Update Algorithms</title>
+      <link>/entries/List_Update.html</link>
+      <pubDate>Wed, 17 Feb 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/List_Update.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

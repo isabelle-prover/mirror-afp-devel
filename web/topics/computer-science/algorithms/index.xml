@@ -7,6 +7,69 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language><atom:link href="/topics/computer-science/algorithms/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>A Verified Efficient Implementation of the Weighted Path Order</title>
+      <link>/entries/Efficient_Weighted_Path_Order.html</link>
+      <pubDate>Thu, 01 Jun 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Efficient_Weighted_Path_Order.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Tree Enumeration</title>
+      <link>/entries/Tree_Enumeration.html</link>
+      <pubDate>Tue, 09 May 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Tree_Enumeration.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Schwartz-Zippel Lemma</title>
+      <link>/entries/Schwartz_Zippel.html</link>
+      <pubDate>Thu, 27 Apr 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Schwartz_Zippel.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Distributed Distinct Elements</title>
+      <link>/entries/Distributed_Distinct_Elements.html</link>
+      <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Distributed_Distinct_Elements.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Distributed Distinct Elements</title>
+      <link>/entries/Distributed_Distinct_Elements.html</link>
+      <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Distributed_Distinct_Elements.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Distributed Distinct Elements</title>
+      <link>/entries/Distributed_Distinct_Elements.html</link>
+      <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Distributed_Distinct_Elements.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Expander Graphs</title>
+      <link>/entries/Expander_Graphs.html</link>
+      <pubDate>Fri, 03 Mar 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Expander_Graphs.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>A First Complete Algorithm for Real Quantifier Elimination in Isabelle/HOL</title>
       <link>/entries/Quantifier_Elimination_Hybrid.html</link>
       <pubDate>Thu, 15 Dec 2022 00:00:00 +0000</pubDate>
@@ -79,6 +142,15 @@
     </item>
     
     <item>
+      <title>Formalization of Randomized Approximation Algorithms for Frequency Moments</title>
+      <link>/entries/Frequency_Moments.html</link>
+      <pubDate>Fri, 08 Apr 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Frequency_Moments.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Universal Hash Families</title>
       <link>/entries/Universal_Hash_Families.html</link>
       <pubDate>Sun, 20 Feb 2022 00:00:00 +0000</pubDate>
@@ -102,6 +174,15 @@
       <pubDate>Fri, 04 Feb 2022 00:00:00 +0000</pubDate>
       
       <guid>/entries/Equivalence_Relation_Enumeration.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Median Method</title>
+      <link>/entries/Median_Method.html</link>
+      <pubDate>Tue, 25 Jan 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Median_Method.html</guid>
       <description></description>
     </item>
     
@@ -286,6 +367,15 @@
     </item>
     
     <item>
+      <title>Skip Lists</title>
+      <link>/entries/Skip_Lists.html</link>
+      <pubDate>Thu, 09 Jan 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Skip_Lists.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>An Efficient Generalization of Counting Sort for Large, possibly Infinite Key Ranges</title>
       <link>/entries/Generalized_Counting_Sort.html</link>
       <pubDate>Wed, 04 Dec 2019 00:00:00 +0000</pubDate>
@@ -367,6 +457,15 @@
     </item>
     
     <item>
+      <title>Probabilistic Primality Testing</title>
+      <link>/entries/Probabilistic_Prime_Tests.html</link>
+      <pubDate>Mon, 11 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Probabilistic_Prime_Tests.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>The Inversions of a List</title>
       <link>/entries/List_Inversions.html</link>
       <pubDate>Fri, 01 Feb 2019 00:00:00 +0000</pubDate>
@@ -390,6 +489,15 @@
       <pubDate>Fri, 21 Dec 2018 00:00:00 +0000</pubDate>
       
       <guid>/entries/Auto2_Imperative_HOL.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Randomised Binary Search Trees</title>
+      <link>/entries/Randomised_BSTs.html</link>
+      <pubDate>Fri, 19 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Randomised_BSTs.html</guid>
       <description></description>
     </item>
     
@@ -556,11 +664,29 @@
     </item>
     
     <item>
+      <title>Expected Shape of Random Binary Search Trees</title>
+      <link>/entries/Random_BSTs.html</link>
+      <pubDate>Tue, 04 Apr 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Random_BSTs.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Lower bound on comparison-based sorting algorithms</title>
       <link>/entries/Comparison_Sort_Lower_Bound.html</link>
       <pubDate>Wed, 15 Mar 2017 00:00:00 +0000</pubDate>
       
       <guid>/entries/Comparison_Sort_Lower_Bound.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The number of comparisons in QuickSort</title>
+      <link>/entries/Quick_Sort_Cost.html</link>
+      <pubDate>Wed, 15 Mar 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Quick_Sort_Cost.html</guid>
       <description></description>
     </item>
     
@@ -624,6 +750,15 @@
       <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
       
       <guid>/entries/ROBDD.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Analysis of List Update Algorithms</title>
+      <link>/entries/List_Update.html</link>
+      <pubDate>Wed, 17 Feb 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/List_Update.html</guid>
       <description></description>
     </item>
     

@@ -1,0 +1,29 @@
+title = "The Schwartz-Zippel Lemma"
+date = 2023-04-27
+topics = [
+  "Computer science/Algorithms/Randomized",
+  "Mathematics/Algebra",
+]
+abstract = "This short entry formalizes a version of the Schwartz-Zippel lemma for probabilistic (multivariate) polynomial identity testing. The entry includes a textbook example using the lemma to test for perfect matchings in a bipartite graph. The lemma is attributed to several independent authors, including Schwartz, Zippel, and DeMillo and Lipton; a historical perspective is given by Lipton."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.kim]
+
+[authors.tan]
+email = "tan_email"
+
+[contributors]
+
+[notify]
+tan = "tan_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

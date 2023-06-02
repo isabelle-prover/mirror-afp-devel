@@ -1,0 +1,69 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+%\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{No Faster-Than-Light Observers (GenRel)}
+\author{%
+	Mike Stannett\footnote{Corresponding author: \texttt{m.stannett@sheffield.ac.uk}}~, Edward Higgins\\
+	\small{University of Sheffield, UK}
+	\\[6pt]
+	Hajnal Andr\'eka, Judit Madar\'asz, Istv\'an N\'emeti, Gergely Sz\'ekely$^{\dag}$\\
+	\small{Alfr\'ed R\'enyi Institute of Mathematics, Budapest, Hungary}\\
+	\small{($^{\dag}$ Secondary affiliation: University of Public Service, Budapest, Hungary)}}
+\maketitle
+
+\abstract{We have previously verified, in the first order theory \textsf{SpecRel} of Special Relativity, that inertial observers cannot travel faster than light \cite{NoFTLSR,No_FTL_observers-AFP}. We now prove the corresponding result for \textsf{GenRel}, the first-order theory of General Relativity. Specifically, we prove that whenever an observer $m$ encounters another observer $k$ (so that $m$ and $k$ are both present at some spacetime location $x$), $k$ will necessarily be observed by $m$ to be traveling at less than light speed.
+}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

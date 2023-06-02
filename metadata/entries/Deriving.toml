@@ -6,7 +6,7 @@ topics = [
 abstract = """
 <p>We provide a framework for registering automatic methods
 to derive class instances of datatypes,
-as it is possible using Haskell's ``deriving Ord, Show, ...'' feature.</p>
+as it is possible using Haskell's “<tt>deriving Ord, Show, ...</tt>” feature.</p>
 <p>We further implemented such automatic methods to derive comparators, linear orders, parametrizable equality functions,
 and hash-functions which are required in the
 Isabelle Collection Framework and the Container Framework.

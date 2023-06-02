@@ -1,0 +1,32 @@
+title = "Hardness of Lattice Problems"
+date = 2023-02-02
+topics = [
+  "Computer science/Security/Cryptography",
+  "Mathematics/Misc",
+]
+abstract = """
+This article formalizes the NP-hardness proofs of the Closest Vector Problem (CVP) and the Shortest Vector Problem (SVP) in maximum norm as well as the CVP in any p-norm for p>=1. 
+CVP and SVP are two fundamental problems in lattice theory. Lattices are a discrete, additive subgroup of R^n and are used for lattice-based cryptography. The CVP asks to find the nearest lattice vector to a target. The SVP asks to find the shortest non-zero lattice vector. 
+
+This entry formalizes the basic properties of lattices, the reduction from CVP to Subset Sum in both maximum and p-norm for a finite p with 1<= p and the reduction of SVP to Partition using the Bounded Homogeneous Linear Equations problem (BHLE) as an intermediate step. 
+The formalization uncovered a number of problems with the existing proofs in the literature."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.kreuzer]
+email = "kreuzer_email"
+
+[contributors]
+
+[notify]
+kreuzer = "kreuzer_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

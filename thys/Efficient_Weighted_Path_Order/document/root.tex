@@ -1,0 +1,50 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+
+\usepackage{url}
+\usepackage{amssymb}
+\usepackage{xspace}
+
+\usepackage{authblk}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\newcommand\isafor{\textsf{Isa\kern-0.15exF\kern-0.15exo\kern-0.15exR}}
+\newcommand\ceta{\textsf{C\kern-0.15exe\kern-0.45exT\kern-0.45exA}}
+
+\begin{document}
+
+\title{A Verified Efficient Implementation of the Weighted Path Order\footnote{This research was supported by the Austrian Science Fund (FWF) project I~5943.}}
+\author{Ren\'e Thiemann}
+\author{Elias Wenninger}
+\affil{University of Innsbruck}
+\maketitle
+
+\begin{abstract}
+The Weighted Path Order (WPO) of Yamada is a powerful technique for proving
+termination \cite{WPO_form_paper,WPO-PPDP,WPO}. In a previous AFP entry \cite{WPO_AFP}, the WPO was defined and properties
+of WPO have been formally verified. However, the implementation of WPO was naive, leading 
+to an exponential runtime in the worst case.
+
+Therefore, in this AFP entry we provide a poly-time implementation of WPO.
+The implementation is based on memoization. Since WPO generalizes the recursive path order (RPO) \cite{RPO},
+we also easily derive an efficient implementation of RPO.
+\end{abstract}
+
+\tableofcontents
+
+
+\input{session}
+
+
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+

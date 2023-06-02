@@ -9,6 +9,7 @@ import isabelle._
 
 import scala.annotation.tailrec
 
+import java.net.URL
 import java.nio.file.Files
 
 
@@ -107,7 +108,9 @@ object Web_App {
       XML.Elem(Markup("form", attrs), default_button :: body)
     }
 
-    def unescape(html: String): XML.Body = List(XML.Elem(Markup("unescape", Nil), text(html)))
+    val UNESCAPE = "unescape"
+
+    def unescape(html: String): XML.Body = List(XML.Elem(Markup(UNESCAPE, Nil), text(html)))
   }
 
 
@@ -304,16 +307,28 @@ object Web_App {
     }
   }
 
-  class API(base_path: Path) {
-    def rel_url(path: Path, params: Properties.T = Nil): String = {
+
+  /* API with backend base path, and application url (e.g. for frontend links). */
+
+  class API(val app: URL, val base_path: Path, val devel: Boolean = false) {
+    def url(path: Path, params: Properties.T = Nil): String = {
       def param(p: Properties.Entry): String = Url.encode(p._1) + "=" + Url.encode(p._2)
       if (params.isEmpty) path.implode else path.implode + "?" + params.map(param).mkString("&")
     }
-    def abs_url(path: Path, params: Properties.T = Nil): String =
-      "/" + base_path.implode + "/" + rel_url(path, params)
+
+    def api_path(path: Path, external: Boolean = true): Path =
+      (if (devel) Path.explode("backend") else Path.current) +
+        (if (external) base_path else Path.current) + path
+
+    def api_url(path: Path, params: Properties.T = Nil, external: Boolean = true): String =
+      "/" + url(api_path(path, external = external), params)
+
+    def app_url(path: Path, params: Properties.T = Nil): String =
+      app.toString + "/" + url(path, params)
   }
 
   abstract class Server[A](
+    api: API,
     port: Int = 0,
     verbose: Boolean = false,
     progress: Progress = new Progress()
@@ -323,27 +338,69 @@ object Web_App {
     val endpoints: List[Endpoint]
     val head: XML.Body
 
-    def output(body: XML.Body): String = {
+    def output(tree: XML.Tree): String = {
       def out(body: XML.Body): String = isabelle.HTML.output(body, hidden = true, structural = true)
       def collect(t: XML.Tree): List[String] = t match {
-        case XML.Elem(Markup("unescape", _), List(XML.Text(html))) => List(out(HTML.unescape(html)))
+        case XML.Elem(Markup(HTML.UNESCAPE, _), List(XML.Text(escaped))) =>
+          List(out(HTML.unescape(escaped)))
         case XML.Elem(_, body) => body.flatMap(collect)
         case XML.Text(_) => Nil
       }
-      val unescaped = body.flatMap(collect).foldLeft(out(body)) {
+
+      collect(tree).foldLeft(out(List(tree))) {
         case (escaped, html) => escaped.replace(html, isabelle.HTML.input(html))
       }
+    }
 
-      isabelle.HTML.header +
-        out(List(XML.elem("head", isabelle.HTML.head_meta :: head))) +
-        "<body onLoad='parent.postMessage(document.body.scrollHeight, \"*\")'>" +
-        unescaped +
-        "</body>" +
-        isabelle.HTML.footer
+    def output_document(content: XML.Body, post_height: Boolean = true): String = {
+      val attrs =
+        if (post_height) List("onLoad" -> "parent.postMessage(document.body.scrollHeight, '*')")
+        else Nil
+
+      cat_lines(
+        List(
+          isabelle.HTML.header,
+          output(XML.elem("head", isabelle.HTML.head_meta :: head)),
+          output(XML.Elem(Markup("body", attrs), content)),
+          isabelle.HTML.footer))
+    }
+
+    class UI(path: Path) extends HTTP.Service(path.implode, "GET") {
+
+      def apply(request: HTTP.Request): Option[HTTP.Response] = {
+        progress.echo_if(verbose, "GET ui")
+
+        val on_load = """
+(function() {
+  window.addEventListener('message', (event) => {
+    if (Number.isInteger(event.data)) {
+      this.style.height=event.data + 32 + 'px'
+    }
+  })
+}).call(this)"""
+
+        val set_src = """
+const base = '""" + api.app.toString.replace("/", "\\/") + """'
+document.getElementById('iframe').src = base + '""" + api.api_url(path).replace("/", "\\/") + """' + window.location.search"""
+
+        Some(HTTP.Response.html(output_document(
+          List(
+            XML.Elem(
+              Markup(
+                "iframe",
+                List(
+                  "id" -> "iframe",
+                  "name" -> "iframe",
+                  "style" -> "border-style: none; width: 100%",
+                  "onload" -> on_load)),
+              isabelle.HTML.text("content")),
+            isabelle.HTML.script(set_src)),
+            post_height = false)))
+      }
     }
 
     sealed abstract class Endpoint(path: Path, method: String = "GET")
-      extends HTTP.Service(path.implode, method) {
+      extends HTTP.Service(api.api_path(path, external = false).implode, method) {
 
       def reply(request: HTTP.Request): HTTP.Response
 
@@ -368,7 +425,10 @@ object Web_App {
         space_explode('&', params).flatMap(decode))
     }
 
-    class Get(path: Path, description: String, get: Properties.T => Option[A])
+
+    /* endpoint types */
+
+    class Get(val path: Path, description: String, get: Properties.T => Option[A])
       extends Endpoint(path) {
 
       def reply(request: HTTP.Request): HTTP.Response = {
@@ -377,8 +437,13 @@ object Web_App {
         val params = query_params(request)
         progress.echo_if(verbose, "params: " + params.toString())
 
-        val model = get(params).getOrElse(error)
-        HTTP.Response.html(output(render(model)))
+        val model = get(params) match {
+          case Some(model) => model
+          case None =>
+            progress.echo_if(verbose, "Parsing failed")
+            error
+        }
+        HTTP.Response.html(output_document(render(model)))
       }
     }
 
@@ -393,7 +458,9 @@ object Web_App {
 
         download(params) match {
           case Some(path) => HTTP.Response.content(HTTP.Content.read(path))
-          case None => HTTP.Response.html(output(render(error)))
+          case None =>
+            progress.echo_if(verbose, "Fetching file path failed")
+            HTTP.Response.html(output_document(render(error)))
         }
       }
     }
@@ -408,12 +475,22 @@ object Web_App {
         val params = Params.Data.from_multipart(parts)
         progress.echo_if(verbose, "params: " + params.toString)
 
-        val model = post(params).getOrElse(error)
-        HTTP.Response.html(output(render(model)))
+        val model = post(params) match {
+          case Some(model) => model
+          case None =>
+            progress.echo_if(verbose, "Parsing failed")
+            error
+        }
+        HTTP.Response.html(output_document(render(model)))
       }
     }
 
-    private lazy val server = HTTP.server(port = port, name = "", services = endpoints)
+
+    /* server */
+
+    private lazy val services =
+      endpoints ::: (if (api.devel) endpoints.collect { case g: Get => new UI(g.path) } else Nil)
+    private lazy val server = HTTP.server(port = port, name = "", services = services)
 
     def run(): Unit = {
       start()

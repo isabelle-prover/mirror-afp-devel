@@ -3,9 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>X86 instruction semantics and basic block symbolic execution - Archive of Formal Proofs</title><meta name="description" content="This AFP entry provides semantics for roughly 120 different X86-64
-assembly instructions. These instructions include various moves,
-arithmetic/logical..."><meta property="og:title" content="X86 instruction semantics and basic block symbolic execution" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"><title>X86 instruction semantics and basic block symbolic execution - Archive of Formal Proofs</title><meta name="description" content="This AFP entry provides semantics for roughly 120 different X86-64 assembly instructions. These instructions include various moves, arithmetic/logical..."><meta property="og:title" content="X86 instruction semantics and basic block symbolic execution" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="/entries/X86_Semantics.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
@@ -111,7 +109,7 @@ instructions may simply have no semantics at all. In those cases, the
 semantics are mapped to universally quantified uninterpreted terms
 from a locale. Second, this entry provides a method to symbolic
 execution of basic blocks. The method, called
-''se_step'' (for: symbolic execution step) fetches
+“<tt>se_step</tt>” (for: symbolic execution step) fetches
 an instruction and updates the current symbolic state while keeping
 track of assumptions made over the memory model. A key component is a
 set of theorems that prove how reads from memory resolve after writes

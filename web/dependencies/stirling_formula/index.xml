@@ -6,7 +6,16 @@
     <description>Recent content in Stirling_Formula on Archive of Formal Proofs</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Sun, 08 May 2022 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/stirling_formula/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 03 Apr 2023 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/stirling_formula/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Distributed Distinct Elements</title>
+      <link>/entries/Distributed_Distinct_Elements.html</link>
+      <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Distributed_Distinct_Elements.html</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>Clique is not solvable by monotone circuits of polynomial size</title>
       <link>/entries/Clique_and_Monotone_Circuits.html</link>

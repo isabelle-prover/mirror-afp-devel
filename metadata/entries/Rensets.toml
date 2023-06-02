@@ -1,0 +1,34 @@
+title = "Renaming-Enriched Sets (Rensets) and Renaming-Based Recursion"
+date = 2023-02-28
+topics = [
+  "Computer science/Programming languages/Logics",
+]
+abstract = """
+I formalize the notion of <i>renaming-enriched sets</i> (<i>rensets</i> for short) and renaming-based recursion introduced in my 
+<a href=\"https://link.springer.com/book/10.1007/978-3-031-10769-6\">IJCAR 2022</a> 
+paper 
+<a href=\"https://link.springer.com/chapter/10.1007/978-3-031-10769-6_36\">“Rensets and Renaming-Based Recursion for Syntax with Bindings”</a>. 
+Rensets are an algebraic axiomatization of renaming (variable-for-variable substitution). 
+The formalization includes a connection with nominal sets, showing that any renset naturally gives rise to a nominal set. It also includes examples of deploying the renaming-based recursor:  semantic interpretation, counting functions for free and bound occurrences, unary and parallel substitution, etc. Finally, it includes a variation of rensets that axiomatize term-for-variable substitution, called <i>substitutive sets</i>, which yields a  corresponding recursion principle."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.popescu]
+email = "popescu_email"
+
+[contributors]
+
+[notify]
+popescu = "popescu_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1007/978-3-031-10769-6_36",
+]
+pubs = []

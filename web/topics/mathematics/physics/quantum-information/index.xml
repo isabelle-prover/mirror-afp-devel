@@ -7,6 +7,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language><atom:link href="/topics/mathematics/physics/quantum-information/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>The CHSH inequality: Tsirelson&#39;s upper-bound and other results</title>
+      <link>/entries/TsirelsonBound.html</link>
+      <pubDate>Tue, 18 Apr 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/TsirelsonBound.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Quantum projective measurements and the CHSH inequality</title>
       <link>/entries/Projective_Measurements.html</link>
       <pubDate>Wed, 03 Mar 2021 00:00:00 +0000</pubDate>

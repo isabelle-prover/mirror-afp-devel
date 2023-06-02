@@ -18,7 +18,7 @@ instructions may simply have no semantics at all. In those cases, the
 semantics are mapped to universally quantified uninterpreted terms
 from a locale. Second, this entry provides a method to symbolic
 execution of basic blocks. The method, called
-''se_step'' (for: symbolic execution step) fetches
+“<tt>se_step</tt>” (for: symbolic execution step) fetches
 an instruction and updates the current symbolic state while keeping
 track of assumptions made over the memory model. A key component is a
 set of theorems that prove how reads from memory resolve after writes

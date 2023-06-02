@@ -1,0 +1,43 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+\usepackage{amssymb}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+
+\begin{document}
+
+\title{A Verified Decision Procedure for a Quantifier-Free Fragment of Set Theory}
+\author{Lukas Stevens}
+\maketitle
+
+\begin{abstract}
+  This formalization verifies a decision procedure due to Cantone and Zarba for a quantifier-free fragment of set theory.
+  The fragment is called multi-level syllogistic with singleton, or MLSS for short.
+  Its syntax syntax includes the usual set operations union, intersection, difference, membership, equality as well as the construction of a set containing a single element.
+  We specify the semantics of MLSS in terms of hereditarily finite sets and provide a sound and complete tableau calculus for it. 
+  We also provide an executable specification of a decision procedure that applies the rules of the calculus exhaustively and prove its termination.
+  Furthermore, we extend the calculus with a light-weight type system that paves the way for an integration of the procedure into Isabelle/HOL.
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\nocite{*}
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+

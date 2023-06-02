@@ -2,6 +2,7 @@ title = "Formalization of Randomized Approximation Algorithms for Frequency Mome
 date = 2022-04-08
 topics = [
   "Computer science/Algorithms/Approximation",
+  "Computer science/Algorithms/Randomized",
   "Mathematics/Probability theory",
 ]
 abstract = """

@@ -1,0 +1,32 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{isabelle,isabellesym}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Positional Notation for Natural Numbers in an Arbitrary Base}
+\author{Charles Staats III}
+\maketitle
+
+\begin{abstract}
+We demonstrate the existence and uniqueness of the base-$n$ representation of a natural number, where $n$ is any natural number greater than 1. This comes up when trying to translate mathematical contest problems and solutions into Isabelle/HOL.
+\end{abstract}
+
+\tableofcontents
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

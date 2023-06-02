@@ -1,0 +1,61 @@
+\documentclass[11pt, a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle, isabellesym}
+\usepackage{amssymb} % for \<nexists>
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+% \renewcommand{\isastyle}{\isastyleminor}
+
+\begin{document}
+
+\title{Three squares theorem}
+\author{Anton Danilkin, Loïc Chevalier}
+\maketitle
+
+\begin{abstract}
+  We formalize the Legendre's three squares theorem and its consequences,
+  in particular the following results:
+  \begin{enumerate}
+    \item A natural number can be represented as the sum of
+          three squares of natural numbers if and only if it is not
+          of the form $4^a (8 k + 7)$, where $a$ and $k$ are natural numbers.
+    \item If $n$ is a natural number such that $n \equiv 3 \pmod{8}$,
+          then $n$ can be be represented as the sum of three squares
+          of odd natural numbers.
+  \end{enumerate}
+
+  Consequences include the following:
+  \begin{enumerate}
+    \item An integer $n$ can be written as $n = x^2 + y^2 + z^2 + z$,
+          where $x$, $y$, $z$ are integers, if and only if $n \geq 0$.
+    \item The Legendre's four squares theorem: any natural number
+          can be represented as the sum of four squares of natural numbers.
+  \end{enumerate}
+\end{abstract}
+
+We follow the book of Melvyn B. Nathanson
+`Additive Number Theory: The Classical Bases' \cite{nathanson1996}.
+
+We plan to make use of the first consequence mentioned above in an
+upcoming AFP entry on Diophantine equations. More concretely, we intend
+to formalize universal pairs over the integers which requires expressing
+a natural number as a polynomial in integers while only using few variables.
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

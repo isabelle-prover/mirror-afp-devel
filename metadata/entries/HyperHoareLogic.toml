@@ -1,0 +1,31 @@
+title = "Formalization of Hyper Hoare Logic: A Logic to (Dis-)Prove Program Hyperproperties"
+date = 2023-04-03
+topics = [
+  "Computer science/Programming languages/Logics",
+]
+abstract = """
+Hoare logics are proof systems that allow one to formally establish properties of computer programs. Traditional Hoare logics prove properties of individual program executions (so-called trace properties, such as functional correctness). On the one hand, Hoare logic has been generalized to prove properties of multiple executions of a program (so-called hyperproperties, such as determinism or non-interference). These program logics prove the absence of (bad combinations of) executions. On the other hand, program logics similar to Hoare logic have been proposed to disprove program properties (e.g., Incorrectness Logic [8]), by proving the existence of (bad combinations of) executions. All of these logics have in common that they specify program properties using assertions over a fixed number of states, for instance, a single pre- and post-state for functional properties or pairs of pre- and post-states for non-interference.
+
+In this entry, we formalize Hyper Hoare Logic, a generalization of Hoare logic that lifts assertions to properties of arbitrary sets of states. The resulting logic is simple yet expressive: its judgments can express arbitrary trace- and hyperproperties over the terminating executions of a program. By allowing assertions to reason about sets of states, Hyper Hoare Logic can reason about both the absence and the existence of (combinations of) executions, and, thereby, supports both proving and disproving program (hyper-)properties within the same logic. In fact, we prove that Hyper Hoare Logic subsumes the properties handled by numerous existing correctness and incorrectness logics, and can express hyperproperties that no existing Hoare logic can. We also prove that Hyper Hoare Logic is sound and complete."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.dardinier]
+email = "dardinier_email"
+
+[contributors]
+
+[notify]
+dardinier = "dardinier_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.48550/arXiv.2301.10037",
+]
+pubs = []

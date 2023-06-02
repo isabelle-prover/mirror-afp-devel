@@ -1,0 +1,20 @@
+chapter AFP
+
+session Distributed_Distinct_Elements (AFP) = "Expander_Graphs" +
+  options [timeout = 1200]
+  sessions
+    Discrete_Summation
+    Stirling_Formula
+  theories
+    Distributed_Distinct_Elements_Preliminary
+    Pseudorandom_Combinators
+    Distributed_Distinct_Elements_Balls_and_Bins
+    Distributed_Distinct_Elements_Tail_Bounds
+    Distributed_Distinct_Elements_Inner_Algorithm
+    Distributed_Distinct_Elements_Accuracy_Without_Cutoff
+    Distributed_Distinct_Elements_Cutoff_Level
+    Distributed_Distinct_Elements_Accuracy
+    Distributed_Distinct_Elements_Outer_Algorithm
+  document_files
+    "root.tex"
+    "root.bib"

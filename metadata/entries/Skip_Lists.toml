@@ -2,6 +2,7 @@ title = "Skip Lists"
 date = 2020-01-09
 topics = [
   "Computer science/Data structures",
+  "Computer science/Algorithms/Randomized"
 ]
 abstract = """
 <p> Skip lists are sorted linked lists enhanced with shortcuts

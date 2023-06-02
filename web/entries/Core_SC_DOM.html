@@ -100,13 +100,13 @@ Document Object Model (SC DOM). The SC DOM improve the standard DOM
 
   <div class="abstract mathjax_process">In this AFP entry, we formalize the core of the Safely Composable
 Document Object Model (SC DOM). The SC DOM improve the standard DOM
-(as formalized in the AFP entry "Core DOM") by strengthening
+(as formalized in the AFP entry “Core DOM”) by strengthening
 the tree boundaries set by shadow roots: in the SC DOM, the shadow
 root is a sub-class of the document class (instead of a base class).
 This modifications also results in changes to some API methods (e.g.,
 getOwnerDocument) to return the nearest shadow root rather than the
 document root. As a result, many API methods that, when called on a
-node inside a shadow tree, would previously ``break out''
+node inside a shadow tree, would previously “break out”
 and return or modify nodes that are possibly outside the shadow tree,
 now stay within its boundaries. This change in behavior makes programs
 that operate on shadow trees more predictable for the developer and

@@ -12,4 +12,4 @@
     {{- $.Scratch.Add "index" (dict "id" $index "name" $element.Name "link" $element.Permalink) -}}
   {{- end -}}
 {{- end -}}
-{{- $.Scratch.Get "index" | jsonify -}}
+{{- $.Scratch.Get "index" | jsonify (dict "indent" " ") -}}
