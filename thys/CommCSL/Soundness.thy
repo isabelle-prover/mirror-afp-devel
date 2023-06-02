@@ -507,16 +507,14 @@ proof (induct n)
       then obtain H' where "Some H' = Some ?h \<oplus> Some hf" by auto
       moreover have "H' = ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)"
       proof (rule heap_ext)
-        show "get_gs H' = get_gs (get_fh H(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)"
-          by (metis asm0 calculation fst_conv get_gs.simps plus_extract(2) snd_conv)
-        show "get_gu H' = get_gu (get_fh H(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)"
-          by (metis asm0 calculation get_gu.simps plus_extract(3) snd_conv)
-        show "get_fh H' = get_fh (get_fh H(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)"
-        proof (rule ext)
-          fix l show "get_fh H' l = get_fh (get_fh H(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H) l"
-            using add_fh_update[of "get_fh hf" "edenot E s" fh "(pwrite, edenot E s)"]
-            by (metis \<open>get_fh hf (edenot loc s) = None\<close> add_fh_update add_get_fh asm0 calculation fst_conv get_fh.elims)
-        qed
+        show "get_fh H' = get_fh ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)"
+          using calculation asm0 by (metis \<open>get_fh hf (edenot loc s) = None\<close> add_fh_update add_get_fh fst_conv get_fh.simps)
+        show "get_gs H' = get_gs ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)" 
+          using calculation asm0
+          by (metis fst_conv get_gs.simps plus_extract(2) snd_conv)
+        show "get_gu H' = get_gu ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)"
+          using add_fh_update[of "get_fh hf" "edenot E s" fh "(pwrite, edenot E s)"] asm0 calculation 
+          by (metis get_gu.elims plus_extract(3) snd_conv)
       qed
       moreover have "safe n (None :: ('i, 'a, nat) cont) C' (s', ?h) {(s, fh(edenot loc s \<mapsto> (pwrite, edenot E s)), gs, gu)}"
         using \<open>s = sa\<close> asm1(2) asm1(3) safe_skip by fastforce
@@ -537,20 +535,20 @@ proof (induct n)
               by (metis (mono_tags, lifting) asm asm0 calculation(2) fst_eqD full_ownership_def get_fh.simps map_upd_Some_unfold)
           qed
         qed
-        moreover have "no_guard H'"
-          by (metis \<open>H' = (get_fh H(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)\<close> asm0 fst_conv get_gs.simps get_gu.simps no_guard_def snd_conv)
+        moreover have "no_guard H'" using asm0 
+          by (simp add: \<open>H' = ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)\<close> no_guard_def)
         moreover have "h' = FractionalHeap.normalize (get_fh H')"
         proof (rule ext)
           fix l show "h' l = FractionalHeap.normalize (get_fh H') l"
           proof(cases "l = edenot loc s")
             case True
             then show ?thesis
-              by (metis (no_types, lifting) FractionalHeap.normalize_eq(2) \<open>H' = (get_fh H(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)\<close> \<open>h' = h(edenot loc s \<mapsto> edenot E s)\<close> fst_conv fun_upd_same get_fh.elims)
+              by (metis (no_types, lifting) FractionalHeap.normalize_eq(2) \<open>H' = ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)\<close> \<open>h' = h(edenot loc s \<mapsto> edenot E s)\<close> fst_conv fun_upd_same get_fh.elims)
           next
             case False
             then have "FractionalHeap.normalize (get_fh H') l = FractionalHeap.normalize (get_fh H) l"
               using FractionalHeap.normalize_eq(2)[of "get_fh H'" l]
-                FractionalHeap.normalize_eq(2)[of "get_fh H" l] \<open>H' = (get_fh H(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)\<close>
+                FractionalHeap.normalize_eq(2)[of "get_fh H" l] \<open>H' = ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)\<close>
                 fst_conv fun_upd_other[of l "edenot loc s" "get_fh H"] get_fh.simps option.exhaust
               by metis
             then show ?thesis
@@ -642,16 +640,14 @@ proof (induct n)
       then obtain H' where "Some H' = Some ?h \<oplus> Some hjf" by auto
       moreover have "H' = ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)"
       proof (rule heap_ext)
-        show "get_gs H' = get_gs (get_fh H(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)"
-          by (metis asm00 calculation fst_conv get_gs.simps plus_extract(2) snd_conv)
-        show "get_gu H' = get_gu (get_fh H(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)"
+        show "get_fh H' = get_fh ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)"
+          using asm00 calculation
+          by (metis \<open>get_fh hjf (edenot loc s) = None\<close> add_fh_update add_get_fh fst_conv get_fh.simps)
+        show "get_gs H' = get_gs ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)" 
+          using asm00 calculation 
+          by (metis fst_conv get_gs.simps plus_extract(2) snd_conv)
+        show "get_gu H' = get_gu ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)"
           by (metis asm00 calculation get_gu.simps plus_extract(3) snd_conv)
-        show "get_fh H' = get_fh (get_fh H(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)"
-        proof (rule ext)
-          fix l show "get_fh H' l = get_fh (get_fh H(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H) l"
-            using add_fh_update[of "get_fh hjf" "edenot E s" fh "(pwrite, edenot E s)"]
-            by (metis \<open>get_fh hjf (edenot loc s) = None\<close> add_fh_update add_get_fh asm00 calculation fst_conv get_fh.elims)
-        qed
       qed
       moreover have "safe n (Some \<Gamma>) C' (s', ?h) {(s, fh(edenot loc s \<mapsto> (pwrite, edenot E s)), gs, gu)}"
         using \<open>s = sa\<close> asm1(2) asm1(3) safe_skip by fastforce
@@ -678,12 +674,12 @@ proof (induct n)
           proof(cases "l = edenot loc s")
             case True
             then show ?thesis
-              by (metis (no_types, lifting) FractionalHeap.normalize_eq(2) \<open>H' = (get_fh H(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)\<close> \<open>h' = h(edenot loc s \<mapsto> edenot E s)\<close> fst_conv fun_upd_same get_fh.elims)
+              by (metis (no_types, lifting) FractionalHeap.normalize_eq(2) \<open>H' = ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)\<close> \<open>h' = h(edenot loc s \<mapsto> edenot E s)\<close> fst_conv fun_upd_same get_fh.elims)
           next
             case False
             then have "FractionalHeap.normalize (get_fh H') l = FractionalHeap.normalize (get_fh H) l"
               using FractionalHeap.normalize_eq(2)[of "get_fh H'" l]
-                FractionalHeap.normalize_eq(2)[of "get_fh H" l] \<open>H' = (get_fh H(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)\<close>
+                FractionalHeap.normalize_eq(2)[of "get_fh H" l] \<open>H' = ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)\<close>
                 fst_conv fun_upd_other[of l "edenot loc s" "get_fh H"] get_fh.simps option.exhaust
               by metis
             then show ?thesis
@@ -737,7 +733,7 @@ theorem write_rule:
 proof (rule hoare_triple_validI)
 
   define \<Sigma> :: "store \<times> ('i, 'a) heap \<Rightarrow> (store \<times> ('i, 'a) heap) set" where
-    "\<Sigma> = (\<lambda>(s, h). { (s, (get_fh h(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs h, get_gu h)) })"
+    "\<Sigma> = (\<lambda>(s, h). { (s, ((get_fh h)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs h, get_gu h)) })"
 
   show "\<And>s h n. (s, h), (s, h) \<Turnstile> Exists v (PointsTo loc pwrite (Evar v)) \<Longrightarrow> safe n \<Delta> (Cwrite loc E) (s, h) (\<Sigma> (s, h))"
   proof -
@@ -757,12 +753,12 @@ proof (rule hoare_triple_validI)
     using assms(2) by auto
 
 
-  show "pair_sat (case (s1, h1) of (s, h) \<Rightarrow> {(s, get_fh h(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs h, get_gu h)})
-        (case (s2, h2) of (s, h) \<Rightarrow> {(s, get_fh h(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs h, get_gu h)}) (PointsTo loc pwrite E)"
+  show "pair_sat (case (s1, h1) of (s, h) \<Rightarrow> {(s, (get_fh h)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs h, get_gu h)})
+        (case (s2, h2) of (s, h) \<Rightarrow> {(s, (get_fh h)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs h, get_gu h)}) (PointsTo loc pwrite E)"
   proof (rule pair_satI)
     fix s1' h1' s2' h2'
-    assume asm0: "(s1', h1') \<in> (case (s1, h1) of (s, h) \<Rightarrow> {(s, get_fh h(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs h, get_gu h)}) \<and>
-       (s2', h2') \<in> (case (s2, h2) of (s, h) \<Rightarrow> {(s, get_fh h(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs h, get_gu h)})"
+    assume asm0: "(s1', h1') \<in> (case (s1, h1) of (s, h) \<Rightarrow> {(s, (get_fh h)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs h, get_gu h)}) \<and>
+       (s2', h2') \<in> (case (s2, h2) of (s, h) \<Rightarrow> {(s, (get_fh h)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs h, get_gu h)})"
     then show "(s1', h1'), (s2', h2') \<Turnstile> PointsTo loc pwrite E"
       using \<open>(s1, h1), (s2, h2) \<Turnstile> Exists v (PointsTo loc pwrite (Evar v))\<close> assms(2) by auto
   qed
