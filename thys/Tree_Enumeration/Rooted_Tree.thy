@@ -441,10 +441,10 @@ fun regular_ltree :: "'a ltree \<Rightarrow> bool" where
 datatype 'a stree = SNode 'a "'a stree fset"
 
 lemma stree_size_child_lt[termination_simp]: "t |\<in>| ts \<Longrightarrow> size t < Suc (\<Sum>s\<in>fset ts. Suc (size s))"
-  using sum_nonneg_leq_bound zero_le finite_fset fmember.rep_eq Suc_le_eq less_SucI by metis
+  using sum_nonneg_leq_bound zero_le finite_fset Suc_le_eq less_SucI by metis
 
 lemma stree_size_child_lt'[termination_simp]: "t \<in> fset ts \<Longrightarrow> size t < Suc (\<Sum>s\<in>fset ts. Suc (size s))"
-  using stree_size_child_lt fmember.rep_eq by metis
+  using stree_size_child_lt by metis
 
 fun stree_size :: "'a stree \<Rightarrow> nat" where
   "stree_size (SNode r ts) = Suc (fsum stree_size ts)"
@@ -575,7 +575,7 @@ lemma nodes_tree_graph_stree: "tree_graph_stree t = (V, E, r) \<Longrightarrow> 
   by (induction t) (simp add: tree_graph_stree_def)
 
 lemma relabel_stree_stree_ltree: "relabel_stree f (stree_ltree t) = stree_ltree (relabel_ltree f t)"
-  by (induction t) (auto simp add: fset_of_list_elem, metis comp_apply fimage_eqI fset_of_list_elem)
+  by (induction t) (auto simp add: fset_of_list_elem)
 
 lemma relabel_stree_relabel_ltree: "relabel_ltree f t1 = t2 \<Longrightarrow> relabel_stree f (stree_ltree t1) = stree_ltree t2"
   using relabel_stree_stree_ltree by blast
