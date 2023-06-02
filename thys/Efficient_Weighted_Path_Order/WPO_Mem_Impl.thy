@@ -31,17 +31,16 @@ fun
           Some res \<Rightarrow> (res, mem)
         | None \<Rightarrow> case wpo_main mem (s,t)  
      of (res, mem_new) \<Rightarrow> (res, Mapping.update (i,j) res mem_new)))"
-  | "wpo_main mem (s,t) = (let fs = stored s; ft = stored t in case s of
+  | "wpo_main mem (s,t) = (let fs = stored s; ft = stored t in 
+      if cS fs ft then ((True, True), mem)
+      else if cNS fs ft then (
+      case s of
       Var x \<Rightarrow> ((False,
         (case t of
           Var y \<Rightarrow> name_of x = name_of y
-        | Fun g ts \<Rightarrow> cNS fs ft
-             \<and> status \<sigma> (name_of g, length ts) = [] \<and> prl (name_of g, length ts))), mem)
+        | Fun g ts \<Rightarrow> status \<sigma> (name_of g, length ts) = [] \<and> prl (name_of g, length ts))), mem)
     | Fun f ss \<Rightarrow>
-      if cS fs ft then ((True, True), mem)
-      else
         let ff = (name_of f, length ss); sf = status \<sigma> ff; ss' = map (\<lambda> i. ss ! i) sf in
-        if cNS fs ft then
           (case exists_mem (\<lambda> s'. (s',t)) wpo_mem snd mem ss' of
          (wpo_result, mem_out_1) \<Rightarrow>
             if wpo_result then ((True, True), mem_out_1)
@@ -65,7 +64,7 @@ fun
                     else ((False, False), mem_out_2)) else ((False,False), mem_out_1))
                   )
             )
-        else ((False, False), mem))"
+        ) else ((False, False), mem))"
 
 declare wpo_mem.simps[simp del]
 declare wpo_main.simps[simp del]
@@ -148,7 +147,7 @@ next
       from neg res mem wpo s ncS have cNS: "cNS ?s ?t" by (auto split: if_splits)
       have id: "map_prod flatten flatten (s,t) = (flatten s, flatten t)" for s t :: "('f,'v)indexed_term" by auto
       define sss where "sss = map ((!) ss) ?Sta" 
-      note IHs = IHs[OF s ncS refl _ refl cNS, unfolded name_of.simps, unfolded id fst_conv snd_conv, OF refl, folded sss_def]
+      note IHs = IHs[OF ncS cNS s refl refl refl, unfolded name_of.simps, unfolded id fst_conv snd_conv, folded sss_def]
       from ncS cNS have id: "cS ?s ?t = False" "cNS ?s ?t = True" by auto
       note res = res[unfolded id if_True if_False, folded sss_def]
       have sss: "(map ((!) (map flatten ss)) ?Sta) = map flatten sss" 

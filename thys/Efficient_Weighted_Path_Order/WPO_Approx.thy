@@ -46,16 +46,13 @@ begin
 
 fun wpo_ub  :: "('f, 'v) term \<Rightarrow> ('f, 'v) term \<Rightarrow> bool \<times> bool" 
   where
-    "wpo_ub s t = (case s of
+    "wpo_ub s t = (if cS s t then (True, True) else if cNS s t then (case s of
       Var x \<Rightarrow> (False,
         (case t of
           Var y \<Rightarrow> x = y
-        | Fun g ts \<Rightarrow> cNS s t \<and> status \<sigma> (g, length ts) = [] \<and> prl (g, length ts)))
+        | Fun g ts \<Rightarrow> status \<sigma> (g, length ts) = [] \<and> prl (g, length ts)))
     | Fun f ss \<Rightarrow>
-      if cS s t then (True, True)
-      else
         let ff = (f, length ss); sf = status \<sigma> ff in
-        if cNS s t then
           if (\<exists> i \<in> set sf. snd (wpo_ub (ss ! i) t)) then (True, True)
           else
             (case t of
@@ -74,7 +71,7 @@ fun wpo_ub  :: "('f, 'v) term \<Rightarrow> ('f, 'v) term \<Rightarrow> bool \<t
                      else if cf = Mul \<and> cg = Mul then mul_ext wpo_ub ss' ts'
                      else if ts' = [] then (ss' \<noteq> [], True) else (False, False)
                 else (False, False)))
-        else (False, False))"
+        ) else (False, False))"
 
 declare wpo_ub.simps [simp del]
 
@@ -100,30 +97,33 @@ proof (induct s t rule: wpo.wpo.induct [of S NS \<sigma> _ n pr prl c ssimple la
   let ?goal = "\<lambda> s t. wpo_ub s t \<le>\<^sub>c\<^sub>b ?wpo s t"
   from cb[of s t] have cb_st: "?cb s t" by auto
   show ?case
-  proof (cases s)
-    case (Var x) note s = this
-    show ?thesis
-    proof (cases t)
-      case (Var y) note t = this
-      show ?thesis unfolding simps unfolding s t cbd by simp
-    next
-      case (Fun g ts) note t = this
-      show ?thesis unfolding simps using cb_st unfolding s t cbd by auto
-    qed
+  proof (cases "(s,t) \<in> S \<or> \<not> cNS s t")
+    case True
+    with cb_st show ?thesis unfolding simps unfolding cbd by auto
   next
-    case (Fun f ss) note s = this
-    let ?f = "(f,length ss)"
-    let ?sf = "status \<sigma> ?f"
-    let ?s = "Fun f ss"
+    case False
+    with cb_st have *: "(s,t) \<notin> S" "(s,t) \<in> NS" "((s,t) \<notin> S) = True" "((s, t) \<in> S) = False" 
+      "((s,t) \<in> NS) = True" "cS s t = False" "cNS s t = True"
+      unfolding cbd by auto
+    note simps = simps[unfolded * if_False if_True]
+    note IH = IH[OF *(1-2)]
     show ?thesis
-    proof (cases "(s,t) \<in> S \<or> \<not> cNS s t")
-      case True
-      with cb_st show ?thesis unfolding simps unfolding s cbd by auto
+    proof (cases s)
+      case (Var x) note s = this
+      show ?thesis
+      proof (cases t)
+        case (Var y) note t = this
+        show ?thesis unfolding simps unfolding s t cbd by simp
+      next
+        case (Fun g ts) note t = this
+        show ?thesis unfolding simps unfolding s t cbd by auto
+      qed
     next
-      case False
-      with cb_st have *: "(s,t) \<notin> S" "(s,t) \<in> NS" "((s,t) \<notin> S) = True" "((s,t) \<in> NS) = True" "cS s t = False" "cNS s t = True"
-        unfolding cbd by auto
-      note IH = IH[OF s *(1-2)]
+      case s: (Fun f ss)
+      let ?f = "(f,length ss)"
+      let ?sf = "status \<sigma> ?f"
+      let ?s = "Fun f ss"
+      note IH = IH[OF s]
       show ?thesis
       proof (cases "(\<exists> i \<in> set ?sf. snd (?wpo (ss ! i) t))")
         case True
@@ -151,7 +151,7 @@ proof (induct s t rule: wpo.wpo.induct [of S NS \<sigma> _ n pr prl c ssimple la
             case t: (Var y)
             from False[unfolded t, simplified]
             show ?thesis unfolding s t unfolding cbd
-              using * Fun simps sub t by auto
+              using * s simps sub t by auto
           next
             case t: (Fun g ts)
             let ?g = "(g,length ts)"
