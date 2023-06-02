@@ -200,7 +200,7 @@ lemma pair_enc_eq:
   assumes " a * V + b = c * V + d"
   assumes "b < V" "d < V"
   shows "b = (d::nat)"
-  by (metis Euclidean_Division.div_eq_0_iff add_right_cancel assms(1) assms(2) assms(3) diff_add_inverse div_mult_self3 mult_eq_0_iff)
+  by (metis div_eq_0_iff add_right_cancel assms(1) assms(2) assms(3) diff_add_inverse div_mult_self3 mult_eq_0_iff)
 
 lemma sum_monomial_eq:
   assumes"f permutes {0..<V}"
@@ -499,7 +499,7 @@ lemma arith:
   assumes "i < V"
   assumes "j < (V::nat)"
   shows "i * V + j < V^2"
-  by (smt (verit, ccfv_SIG) Euclidean_Division.div_eq_0_iff add.right_neutral assms(1) 
+  by (smt (verit, ccfv_SIG) div_eq_0_iff add.right_neutral assms(1) 
          assms(2) div_less_iff_less_mult div_mult_self3 le_add1 le_add_same_cancel1 
          order_trans_rules(21) power2_eq_square)
 
