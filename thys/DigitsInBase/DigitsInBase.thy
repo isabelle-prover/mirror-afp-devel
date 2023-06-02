@@ -485,7 +485,7 @@ lemma current_term:
 proof -
   have "(A + a*b^i + c) div b^i mod b = (a*b^i + c) div b^i mod b"
     using assms(1)
-    by (metis (no_types, lifting) Euclidean_Division.div_eq_0_iff add_cancel_right_right
+    by (metis (no_types, lifting) div_eq_0_iff add_cancel_right_right
         assms(2) assms(3) div_plus_div_distrib_dvd_left dvd_add_times_triv_right_iff
         dvd_mult_right lower_terms upper_terms)
   also have "\<dots> = a"
