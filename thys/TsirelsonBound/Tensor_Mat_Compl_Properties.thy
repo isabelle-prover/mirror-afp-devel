@@ -1667,7 +1667,7 @@ proof (rule eq_matI)
   also have "... = A $$ (k div dim_row (B + C), l div dim_col (B + C)) * 
     (B $$ (k mod dim_row (B + C), l mod dim_col (B + C)) +
     C $$ (k mod dim_row (B + C), l mod dim_col (B + C)))"
-    by (metis Euclidean_Division.div_eq_0_iff \<open>B + C \<in> carrier_mat i j\<close> 
+    by (metis div_eq_0_iff \<open>B + C \<in> carrier_mat i j\<close> 
         \<open>k < dim_row ((A \<Otimes> B) + (A \<Otimes> C))\<close> assms(3) assms(5) bc carrier_matD(1) 
         carrier_matD(2) dr index_add_mat(1) less_nat_zero_code mod_div_trivial 
         mult_not_zero)
@@ -2264,7 +2264,7 @@ next
         assume "i \<in> {nC * nD..<Suc nC * nD}"
         show "f nC * g (i mod nD) \<cdot>\<^sub>m (A nC \<Otimes> B (i mod nD)) =
         f nC \<cdot>\<^sub>m A nC \<Otimes> g (i mod nD) \<cdot>\<^sub>m B (i mod nD)" using tensor_mat_smult
-          by (metis Euclidean_Division.div_eq_0_iff Suc(3) Suc(8) 
+          by (metis div_eq_0_iff Suc(3) Suc(8) 
               Suc.prems(1) assms(5) assms(6) lessI mod_div_trivial)
       qed
     qed simp
