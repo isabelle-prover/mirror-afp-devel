@@ -12,23 +12,23 @@ text \<open>
 \<close>
 
 definition is_matching::
-  "(nat \<times> nat) list \<Rightarrow> (nat \<times> nat) list \<Rightarrow> bool"
+  "(nat \<times> nat) set \<Rightarrow> (nat \<times> nat) set \<Rightarrow> bool"
   where "is_matching E match \<longleftrightarrow>
-    set match \<subseteq> set E \<and>
-    distinct (map fst match) \<and> 
-    distinct (map snd match)"
+    match \<subseteq> E \<and>
+    inj_on fst match \<and>
+    inj_on snd match"
 
 definition has_perfect_matching::
-  "nat \<Rightarrow> (nat \<times> nat) list \<Rightarrow> bool"
+  "nat \<Rightarrow> (nat \<times> nat) set \<Rightarrow> bool"
   where "has_perfect_matching V E \<longleftrightarrow>
-  (\<exists>match. is_matching E match \<and> length match = V)"
+  (\<exists>match. is_matching E match \<and> card match = V)"
 
 (* The polynomial matrix *)
-definition adj_mat::"nat \<Rightarrow> (nat \<times> nat) list \<Rightarrow>
+definition adj_mat::"nat \<Rightarrow> (nat \<times> nat) set \<Rightarrow>
     int mpoly mat"
   where "adj_mat V E =
     mat V V (\<lambda>(i,j).
-      if (i,j) \<in> set E then Var (i*V+j) else 0)"
+      if (i,j) \<in> E then Var (i*V+j) else 0)"
 
 lemma adj_mat_square[simp]:
   shows
@@ -38,90 +38,96 @@ lemma adj_mat_square[simp]:
   by auto
 
 lemma perfect_match_set_map_fst:
-  assumes "set E \<subseteq> {0..<V} \<times> {0..<V}"
+  assumes "E \<subseteq> {0..<V} \<times> {0..<V}"
   assumes "is_matching E match"
-  assumes "length match = V"
-  shows   "set (map fst match) = {0..<V}"
+  assumes "card match = V"
+  shows   "fst ` match = {0..<V}"
 proof -
-  have "set (map fst match) \<subseteq> set (map fst E)"
+  have "fst ` match \<subseteq> fst ` E"
     using assms(2) unfolding is_matching_def
     by auto
   moreover have "... \<subseteq> {0..<V}"
     using assms(1) by auto
-  ultimately have 1: "set (map fst match) \<subseteq> {0..<V}"
+  ultimately have 1: "fst` match \<subseteq> {0..<V}"
     by auto
-  then have 2: "{0..<V} \<subseteq> set (map fst match)"
-    by (metis assms(2) assms(3) card_atLeastLessThan card_subset_eq diff_zero distinct_card finite_atLeastLessThan is_matching_def length_map)
+  then have 2: "{0..<V} \<subseteq> fst ` match"
+    by (metis assms(2) assms(3) card_atLeastLessThan card_image card_subset_eq diff_zero finite_atLeastLessThan is_matching_def)
   show ?thesis using 1 2 by auto
 qed
 
 lemma perfect_match_set_map_snd:
-  assumes "set E \<subseteq> {0..<V} \<times> {0..<V}"
+  assumes "E \<subseteq> {0..<V} \<times> {0..<V}"
   assumes "is_matching E match"
-  assumes "length match = V"
-  shows "set (map snd match) = {0..<V}"
+  assumes "card match = V"
+  shows "snd ` match = {0..<V}"
 proof -
-  have "set (map snd match) \<subseteq> set (map snd E)"
+  have "snd ` match \<subseteq> snd ` E"
     using assms(2) unfolding is_matching_def
     by auto
   moreover have "... \<subseteq> {0..<V}"
     using assms(1) by auto
-  ultimately have 1: "set (map snd match) \<subseteq> {0..<V}"
+  ultimately have 1: "snd ` match \<subseteq> {0..<V}"
     by auto
-  then have 2: "{0..<V} \<subseteq> set (map snd match)"
-    by (metis assms(2) assms(3) card_atLeastLessThan card_subset_eq diff_zero distinct_card finite_atLeastLessThan is_matching_def length_map)
+  then have 2: "{0..<V} \<subseteq> snd ` match"
+    by (metis assms(2) assms(3) card_atLeastLessThan card_image card_subset_eq diff_zero finite_atLeastLessThan is_matching_def)
   show ?thesis using 1 2 by auto
 qed
   
 lemma is_matching_permutes:
-  assumes "set E \<subseteq> {0..<V} \<times> {0..<V}"
+  assumes "E \<subseteq> {0..<V} \<times> {0..<V}"
   assumes "is_matching E match"
-  assumes "length match = V"
+  assumes "card match = V"
   obtains f where
     "f permutes {0..<V}"
-    "\<And>i. i < V \<Longrightarrow> (i, f i) \<in> set E"
+    "\<And>i. i < V \<Longrightarrow> (i, f i) \<in> E"
 proof -
-  have fV: "set (map fst match) = {0..<V}"
+  have fV: "fst ` match  = {0..<V}"
     using perfect_match_set_map_fst[OF assms(1-3)] .
 
-  have sV: "set (map snd match) = {0..<V}"
+  have sV: "snd ` match = {0..<V}"
     using perfect_match_set_map_snd[OF assms(1-3)] .
 
   define f where "f =
-    (\<lambda>i. if i < V then the (map_of match i) else i)"
-  have "distinct (map snd match)"
-    using assms(2) is_matching_def by auto
-  from inj_on_map_of'[OF this]
-  have "inj_on (the \<circ> map_of match) {0..<V}"
-    using fV by auto
+    (\<lambda>i. if i < V then (@j. j < V \<and> (i,j) \<in> match) else i)"
 
-  then have 1: "inj_on f {0..<V}"
-    by (subst inj_on_cong[where g = "the \<circ> map_of match"]) (auto simp add: f_def)
-
-  have "\<And>x. x < V \<Longrightarrow>
-    \<exists>y. y < V \<and> map_of match x = Some y"
+  have exuniq: "i < V \<Longrightarrow>
+    (\<exists>!j. j < V \<and> (i,j) \<in> match)" for i
   proof -
-    fix x
-    assume "x < V"
-    then obtain xy where xy: "xy \<in> set match" "fst xy = x"
-      using fV that unfolding atLeastLessThan_iff  list.set_map
-      by (metis atLeastLessThan_iff image_iff zero_le)
-    then have "snd xy < V" using sV
+    assume "i < V"
+    then have "i \<in> fst ` match" using fV
       by auto
-    have "map_of match x = Some (snd xy)"
-      using assms(2) is_matching_def xy(1) xy(2) by auto
-    show "\<exists>y<V. map_of match x = Some y"
-      by (simp add: \<open>map_of match x = Some (snd xy)\<close> \<open>snd xy < V\<close>)
+    then obtain j where ij: "(i,j) \<in> match" by auto
+    then have "j \<in> snd ` match"
+      by (auto simp add: rev_image_eqI)
+    then have 1: "j < V" using sV by auto  
+
+    thus ?thesis
+      using ij 1
+      apply auto[1]
+      by (metis Pair_inject assms(2) fst_eqD inj_on_def is_matching_def)
   qed
-  then have 2: "f \<in> {0..<V} \<rightarrow> {0..<V}"
+
+  have 1: "inj_on f {0..<V}"
+    unfolding f_def inj_on_def
+    apply clarsimp
+    apply (drule exuniq)
+    apply (drule exuniq)
+    by (smt (verit) assms(2) inj_on_def is_matching_def prod.sel(2) prod.simps(1) verit_sko_ex)
+  
+  have 2: "f \<in> {0..<V} \<rightarrow> {0..<V}"
     unfolding f_def
-    by force
+    apply clarsimp
+    apply (drule exuniq)
+    by (smt (verit, ccfv_threshold) verit_sko_ex)
 
   have 1: "f permutes {0..<V}"
     by (intro inj_on_nat_permutes[OF 1 2]) (auto simp: f_def)
-  have 2: "i < V \<Longrightarrow> (i, f i) \<in> set E" for i
+  have 2: "i < V \<Longrightarrow> (i, f i) \<in> E" for i
     unfolding f_def
-    using \<open>\<And>x. x < V \<Longrightarrow> \<exists>y<V. map_of match x = Some y\<close> assms(2) is_matching_def by fastforce
+    apply clarsimp
+    apply (drule exuniq)
+    using assms(2) unfolding is_matching_def subset_iff
+    by (smt (verit, ccfv_threshold) verit_sko_ex)
   
   show ?thesis using that 1 2 by auto
 qed
@@ -173,7 +179,7 @@ lemma det_adj_mat:
     MPoly_Type.monom (
       sum (\<lambda>i.
         monomial 1 (i * V + p i)) {0..<V})
-    (if \<forall>i < V. (i,p i) \<in> set E then
+    (if \<forall>i < V. (i,p i) \<in> E then
       of_int (sign p)
     else 0))"
   unfolding det_def
@@ -261,9 +267,9 @@ proof -
 qed
 
 lemma perfect_matching_det:
-  assumes "set E \<subseteq> {0..<V} \<times> {0..<V}"
+  assumes "E \<subseteq> {0..<V} \<times> {0..<V}"
   assumes "is_matching E match"
-  assumes "length match = V"
+  assumes "card match = V"
   shows"det (adj_mat V E) \<noteq> 0"
 proof -
   have det: "det (adj_mat V E) =
@@ -271,14 +277,14 @@ proof -
     MPoly_Type.monom (
       sum (\<lambda>i.
         monomial 1 (i * V + p i)) {0..<V})
-    (if \<forall>i < V. (i,p i) \<in> set E then
+    (if \<forall>i < V. (i,p i) \<in> E then
       of_int (sign p)
     else 0))"
     unfolding det_adj_mat
     by auto
   from is_matching_permutes[OF assms(1-3)]
   obtain p where p: "p permutes {0..<V}"
-      "\<And>i. i < V \<Longrightarrow> (i, p i) \<in> set E"  by auto
+      "\<And>i. i < V \<Longrightarrow> (i, p i) \<in> E"  by auto
   then have iV: "i < V \<Longrightarrow>
     adj_mat V E $$ (i, p i) \<noteq> 0" for i
     unfolding adj_mat_def
@@ -300,11 +306,11 @@ proof -
 qed
 
 lemma det_perfect_matching:
-  assumes "set E \<subseteq> {0..<V} \<times> {0..<V}"
+  assumes "E \<subseteq> {0..<V} \<times> {0..<V}"
   assumes "det (adj_mat V E) \<noteq> 0"
   obtains match where
     "is_matching E match"
-    "length match = V"
+    "card match = V"
 proof -
   have det: "det (adj_mat V E) =
     (\<Sum>p | p permutes {0..<V}.
@@ -322,19 +328,21 @@ proof -
   have "\<And>i. i < V \<Longrightarrow>  adj_mat V E $$ (i, p i) \<noteq> 0"
     using p(2)
     by simp
-  then have iV: "\<And>i. i < V \<Longrightarrow>  (i, p i) \<in> set E"
+  then have iV: "\<And>i. i < V \<Longrightarrow>  (i, p i) \<in> E"
     unfolding adj_mat_def
     by (smt (verit, del_insts) index_mat(1) p(1) permutes_less(1) prod.simps(2))
 
-  define match where "match = map (\<lambda>i. (i,p i)) [0..<V]"
-  have 1:"length match = V" unfolding match_def by auto
+  define match where "match = (\<lambda>i. (i,p i)) ` {0..<V}"
+  have 1:"card match = V" unfolding match_def
+    apply (subst card_image)
+    unfolding inj_on_def by auto
   have "inj_on p {0..<V}"
     using p(1) permutes_inj_on
     by blast
-  hence 2:"distinct (map fst match)" "distinct (map snd match)"
+  hence 2:"inj_on fst match" "inj_on snd match"
     unfolding match_def
-    by (auto simp add: o_def distinct_map)
-  have 3: "set match \<subseteq> set E"
+    by (auto simp add: inj_on_def)
+  have 3: "match \<subseteq> E"
     using iV unfolding match_def
     by auto
   show ?thesis using that 1 2 3
@@ -342,7 +350,7 @@ proof -
 qed
 
 lemma has_perfect_matching_iff:
-  assumes "set E \<subseteq> {0..<V} \<times> {0..<V}"
+  assumes "E \<subseteq> {0..<V} \<times> {0..<V}"
   shows"has_perfect_matching V E \<longleftrightarrow> det (adj_mat V E) \<noteq> 0"
   by (metis assms det_perfect_matching has_perfect_matching_def perfect_matching_det)
 
@@ -361,7 +369,6 @@ proof -
   thus ?thesis
     unfolding MPoly_Type.monom_def by (simp add: total_degree.abs_eq lookup_sum single.rep_eq)
 qed
-
 
 lemma total_degree_geI:
   assumes "m \<in> keys (mapping_of p)" "(\<Sum>v\<in>keys m. lookup m v) \<ge> n"
@@ -455,7 +462,7 @@ proof -
     MPoly_Type.monom (
       sum (\<lambda>i.
         monomial (Suc 0) (i * V + p i)) {0..<V})
-    (if \<forall>i < V. (i,p i) \<in> set E then
+    (if \<forall>i < V. (i,p i) \<in> E then
       of_int (sign p)
     else 0))" (is "_ = (\<Sum>p | p permutes {0..<V}. ?f p)")
     unfolding det_adj_mat
@@ -470,7 +477,7 @@ proof -
     have "total_degree (?f p) =
           total_degree 
             (MPoly_Type.monom (sum (monomial (Suc 0)) ((\<lambda>i. i * V + p i)`{0..<V}))
-            (if \<forall>i<V. (i, p i) \<in> set E then sign p else 0))"
+            (if \<forall>i<V. (i, p i) \<in> E then sign p else 0))"
       by (subst sum.reindex[OF inj]) auto
     also have "\<dots> \<le> V"
       by (subst total_degree_monom) (simp_all add: card_image[OF inj])
@@ -551,11 +558,11 @@ qed
 definition int_adj_mat::"
   (nat \<Rightarrow> int) \<Rightarrow>
   nat \<Rightarrow>
-  (nat \<times> nat) list \<Rightarrow>
+  (nat \<times> nat) set \<Rightarrow>
   int mat"
   where "int_adj_mat f V E =
     mat V V (\<lambda>(i,j).
-      if (i,j) \<in> set E then f (i* V + j) else 0)"
+      if (i,j) \<in> E then f (i* V + j) else 0)"
 
 lemma map_mat_prod_def:
   shows"map_mat f A \<equiv>
@@ -576,15 +583,15 @@ lemma det_int_adj_mat:
   unfolding int_adj_mat
   by (subst comm_ring_hom.hom_det) (auto simp add:comm_ring_hom_insertion)
 
-definition test_perfect_matching :: "int \<Rightarrow> nat \<Rightarrow> (nat \<times> nat) list \<Rightarrow> bool pmf"
+definition test_perfect_matching :: "int \<Rightarrow> nat \<Rightarrow> (nat \<times> nat) set \<Rightarrow> bool pmf"
   where "test_perfect_matching n V E =
      do {
-       f \<leftarrow> Pi_pmf ({0..<V^2}) 0 (\<lambda>i. pmf_of_set {0::int..<n * V});
+       f \<leftarrow> Pi_pmf ({0..<V^2}) 0 (\<lambda>i. pmf_of_set {0::int..<n});
        return_pmf (det (int_adj_mat f V E) \<noteq> 0)
      }"
 
 theorem test_perfect_matching_false_positive:
-  assumes "set E \<subseteq> {0..<V} \<times> {0..<V}"
+  assumes "E \<subseteq> {0..<V} \<times> {0..<V}"
   assumes "\<not>has_perfect_matching V E"
   shows   "pmf (test_perfect_matching n V E) True = 0"
 proof -
@@ -596,40 +603,40 @@ proof -
 qed
 
 lemma test_perfect_matching_true_negative:
-  assumes "set E \<subseteq> {0..<V} \<times> {0..<V}"
+  assumes "E \<subseteq> {0..<V} \<times> {0..<V}"
   assumes "\<not>has_perfect_matching V E"
   shows   "pmf (test_perfect_matching n V E) False = 1"
   by (metis assms(1) assms(2) pmf_True_conv_False right_minus_eq test_perfect_matching_false_positive)
 
 theorem test_perfect_matching_false_negative:
-  assumes "n > 0" and "V > 0"
-  assumes "set E \<subseteq> {0..<V} \<times> {0..<V}"
+  assumes "(n::nat) > 0"
+  assumes "E \<subseteq> {0..<V} \<times> {0..<V}"
   assumes "has_perfect_matching V E"
-  shows   "pmf (test_perfect_matching n V E) False \<le> 1 / n"
+  shows   "pmf (test_perfect_matching n V E) False \<le> V / n"
 proof -
   have d: "det (adj_mat V E) \<noteq> 0"
-    using assms(3-4) has_perfect_matching_iff by blast
+    using assms has_perfect_matching_iff by blast
   have "pmf (test_perfect_matching n V E) False =
           prob_space.prob (test_perfect_matching n V E) {False}"
     by (simp add: pmf.rep_eq)
   moreover have "... =
     prob_space.prob
     (map_pmf (\<lambda>f. det (int_adj_mat f V E) \<noteq> 0)
-      (Pi_pmf.Pi_pmf {0..<V\<^sup>2} 0 (\<lambda>i. pmf_of_set {0..<n * int V})))
+      (Pi_pmf {0..<V\<^sup>2} 0 (\<lambda>i. pmf_of_set {0..<int n})))
     {False}"
     unfolding test_perfect_matching_def map_pmf_def
     by auto
   moreover have "... =
     prob_space.prob
-    (Pi_pmf.Pi_pmf {0..<V\<^sup>2} 0 (\<lambda>i. pmf_of_set {0..<n * int V}))
+    (Pi_pmf {0..<V\<^sup>2} 0 (\<lambda>i. pmf_of_set {0..<int n}))
     {f. insertion f (det (adj_mat V E)) = 0}"
     unfolding measure_map_pmf vimage_def
     det_int_adj_mat
     by auto
-  moreover have "... \<le> real V / card{0..<n * int(V)}"
+  moreover have "... \<le> real V / card{0..<int n}"
     by (intro schwartz_zippel[OF _ _ _  total_degree_det_adj_mat d vars_det_adj_mat])
        (auto simp add: assms(1-2))
-  moreover have "... \<le> 1/n"
+  moreover have "... \<le> V / n"
     using assms(1) by force
   ultimately show ?thesis by auto
 qed

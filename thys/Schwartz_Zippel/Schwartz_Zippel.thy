@@ -2,7 +2,7 @@ section \<open>The Schwartz-Zippel Lemma\<close>
 theory Schwartz_Zippel imports
     Factor_Algebraic_Polynomial.Poly_Connection
     Polynomials.MPoly_Type
-    Skip_Lists.Pi_pmf
+    "HOL-Probability.Product_PMF"
 begin
 
 text \<open>This theory formalizes the Schwartz-Zippel lemma
@@ -339,8 +339,8 @@ lemma finite_set_pmf_Pi_pmf:
   shows "finite (set_pmf (Pi_pmf A def p))"
 proof -
   from set_Pi_pmf_subset'[OF assms(1)]
-  have 1: "set_pmf (Pi_pmf.Pi_pmf A def p)
-    \<subseteq> Pi_pmf.PiE_dflt A def (set_pmf \<circ> p)"
+  have 1: "set_pmf (Pi_pmf A def p)
+    \<subseteq> PiE_dflt A def (set_pmf \<circ> p)"
     by fastforce
   have 2: "finite ..."
     by (intro finite_PiE_dflt) (use assms in auto)
@@ -369,15 +369,15 @@ next
       by (smt (verit) Collect_cong Diff_insert2 Diff_insert_absorb \<open>x \<notin> vars P\<close> diff_shunt_var insert.IH insert.prems(3) insert_Diff_single local.insert(2) local.insert(4) local.insert(5) subset_insertI)
  
     have inser: "Pi_pmf V 0 (\<lambda>i. pmf_of_set S) =
-      map_pmf (\<lambda>f. f(x := 0)) ((Pi_pmf.Pi_pmf (insert x V) 0 (\<lambda>i. pmf_of_set S)))"
-      by (metis Diff_insert_absorb Pi_pmf.Pi_pmf_remove finite_insert local.insert(1) local.insert(2) local.insert(6) )
+      map_pmf (\<lambda>f. f(x := 0)) ((Pi_pmf (insert x V) 0 (\<lambda>i. pmf_of_set S)))"
+      by (metis Diff_insert_absorb Pi_pmf_remove finite_insert local.insert(1) local.insert(2) local.insert(6) )
 
     have f_aux: "insertion (f(x := 0)) P = 0 \<longleftrightarrow> insertion f P = 0" for f
       by (metis x array_rules(4) insertion_irrelevant_vars)
     have f: "(\<lambda>f. f(x := 0))-`{f. insertion f P = 0 \<and> f x = 0} = {f. insertion f P = 0}"
       by (simp add: f_aux)
     
-    have "prob_space.prob ((Pi_pmf.Pi_pmf (insert x V) 0 (\<lambda>i. pmf_of_set S)))
+    have "prob_space.prob ((Pi_pmf (insert x V) 0 (\<lambda>i. pmf_of_set S)))
       {f. insertion f P = 0} = prob_space.prob (Pi_pmf V 0 (\<lambda>i. pmf_of_set S)) {f. insertion f P = 0 }"
       using inser f by fastforce
     moreover have "... \<le> real d / card S"
@@ -425,21 +425,21 @@ next
     have *: "measure_pmf.prob (Pi_pmf V 0 (\<lambda>i. pmf_of_set S)) {f. insertion f q = 0} \<le> real (d-l) /real (card S)" by auto
 
     have inser: "Pi_pmf V 0 (\<lambda>i. pmf_of_set S) =
-      map_pmf (\<lambda>f. f(x := 0)) ((Pi_pmf.Pi_pmf (insert x V) 0 (\<lambda>i. pmf_of_set S)))"
-      by (metis Diff_insert_absorb Pi_pmf.Pi_pmf_remove finite_insert local.insert(1) local.insert(2) local.insert(6) )
+      map_pmf (\<lambda>f. f(x := 0)) ((Pi_pmf (insert x V) 0 (\<lambda>i. pmf_of_set S)))"
+      by (metis Diff_insert_absorb Pi_pmf_remove finite_insert local.insert(1) local.insert(2) local.insert(6) )
 
     have aux: "insertion (f(x := 0)) q = 0 \<longleftrightarrow> insertion f q = 0" for f
       by  (metis \<open>vars q \<subseteq> V\<close> array_rules(4) insertion_irrelevant_vars local.insert(2) subsetD)
     have "(\<lambda>f. f(x := 0))-`{f. insertion f q = 0 \<and> f x = 0} = {f. insertion f q = 0}"
       by (simp add: aux)
   
-    then have "prob_space.prob (Pi_pmf.Pi_pmf (insert x V) 0 (\<lambda>i. pmf_of_set S)) {f. insertion f q = 0} =
-      prob_space.prob (map_pmf (\<lambda>f. f(x := 0)) (Pi_pmf.Pi_pmf (insert x V) 0 (\<lambda>i. pmf_of_set S))) {f. insertion f q = 0 \<and> f x = 0}"
+    then have "prob_space.prob (Pi_pmf (insert x V) 0 (\<lambda>i. pmf_of_set S)) {f. insertion f q = 0} =
+      prob_space.prob (map_pmf (\<lambda>f. f(x := 0)) (Pi_pmf (insert x V) 0 (\<lambda>i. pmf_of_set S))) {f. insertion f q = 0 \<and> f x = 0}"
       using local.insert(6) by force
     moreover have "... = prob_space.prob (Pi_pmf V 0 (\<lambda>i. pmf_of_set S)) {f. insertion f q = 0 }"
       using inser by fastforce
     
-    ultimately have e2: "measure_pmf.prob (Pi_pmf.Pi_pmf (insert x V) 0 (\<lambda>i. pmf_of_set S)) ?E2 \<le> (d - l) / card S"
+    ultimately have e2: "measure_pmf.prob (Pi_pmf (insert x V) 0 (\<lambda>i. pmf_of_set S)) ?E2 \<le> (d - l) / card S"
       using * by presburger
       
     have ib: "prob_space.prob (pmf_of_set S) {r. poly (map_poly (insertion f) px) r = 0}
@@ -459,31 +459,31 @@ next
       Sigma {f. insertion f q \<noteq> 0} (\<lambda>f. {r. insertion (f(x := r)) P = 0})"
       by auto
 
-    have "measure_pmf.prob (Pi_pmf.Pi_pmf (insert x V) 0 (\<lambda>i. pmf_of_set S)) ?E12 =
-            measure_pmf.prob (pair_pmf (Pi_pmf.Pi_pmf V 0 (\<lambda>i. pmf_of_set S)) (pmf_of_set S))
+    have "measure_pmf.prob (Pi_pmf (insert x V) 0 (\<lambda>i. pmf_of_set S)) ?E12 =
+            measure_pmf.prob (pair_pmf (Pi_pmf V 0 (\<lambda>i. pmf_of_set S)) (pmf_of_set S))
               ((\<lambda>(f, y). f(x := y)) -` {f. insertion f q \<noteq> 0 \<and> insertion f P = 0})"
-      by (subst Pi_pmf.Pi_pmf_insert)
+      by (subst Pi_pmf_insert)
          (use xnV insert in \<open>auto simp add: pair_commute_pmf[of "pmf_of_set S"] 
                                case_prod_unfold * px_def insertion_update[symmetric]\<close>)
     also have "(\<lambda>(f, y). f(x := y)) -` {f. insertion f q \<noteq> 0 \<and> insertion f P = 0} =
                Sigma {f. insertion f q \<noteq> 0} (\<lambda>f. {r. poly (map_poly (insertion f) px) r = 0})"
       by (auto simp: Sigma_def case_prod_unfold insertion_upd px_def simp flip: insertion_update)
 
-    also have "measure_pmf.prob (pair_pmf (Pi_pmf.Pi_pmf V 0 (\<lambda>i. pmf_of_set S)) (pmf_of_set S)) ... \<le>
-      measure_pmf.prob (Pi_pmf.Pi_pmf V 0 (\<lambda>i. pmf_of_set S)) {f. insertion f q \<noteq> 0} *
+    also have "measure_pmf.prob (pair_pmf (Pi_pmf V 0 (\<lambda>i. pmf_of_set S)) (pmf_of_set S)) ... \<le>
+      measure_pmf.prob (Pi_pmf V 0 (\<lambda>i. pmf_of_set S)) {f. insertion f q \<noteq> 0} *
        (real l / real (card S))"
       by (intro measure_pmf_prob_dependent_product_bound') (auto simp: ib measure_Int_set_pmf)
     also have "... \<le> real l / real (card S)"
       by (intro mult_left_le_one_le) auto
-    finally have e12: "measure_pmf.prob (Pi_pmf.Pi_pmf (insert x V) 0 (\<lambda>i. pmf_of_set S)) ?E12 \<le> l / card S" .
+    finally have e12: "measure_pmf.prob (Pi_pmf (insert x V) 0 (\<lambda>i. pmf_of_set S)) ?E12 \<le> l / card S" .
 
-    have "measure_pmf.prob (Pi_pmf.Pi_pmf (insert x V) 0 (\<lambda>i. pmf_of_set S)) {f. insertion f P = 0} \<le>
-      measure_pmf.prob (Pi_pmf.Pi_pmf (insert x V) 0 (\<lambda>i. pmf_of_set S)) ({f. insertion f q = 0} \<union> {f. insertion f q \<noteq> 0 \<and> insertion f P = 0})"
+    have "measure_pmf.prob (Pi_pmf (insert x V) 0 (\<lambda>i. pmf_of_set S)) {f. insertion f P = 0} \<le>
+      measure_pmf.prob (Pi_pmf (insert x V) 0 (\<lambda>i. pmf_of_set S)) ({f. insertion f q = 0} \<union> {f. insertion f q \<noteq> 0 \<and> insertion f P = 0})"
       by (intro measure_pmf.finite_measure_mono) (use split in auto)
 
     moreover have " ... \<le> 
-      measure_pmf.prob (Pi_pmf.Pi_pmf (insert x V) 0 (\<lambda>i. pmf_of_set S)) ?E2 +
-      measure_pmf.prob (Pi_pmf.Pi_pmf (insert x V) 0 (\<lambda>i. pmf_of_set S)) ?E12"
+      measure_pmf.prob (Pi_pmf (insert x V) 0 (\<lambda>i. pmf_of_set S)) ?E2 +
+      measure_pmf.prob (Pi_pmf (insert x V) 0 (\<lambda>i. pmf_of_set S)) ?E12"
       by (auto intro!: measure_pmf.finite_measure_subadditive)
     moreover have "... \<le> (d-l) / card S + l / card S"
       using e2 e12 by auto
