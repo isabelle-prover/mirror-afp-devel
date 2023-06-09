@@ -1,0 +1,34 @@
+title = "Inner Structure, Determinism and Modal Algebra of Multirelations"
+date = 2023-05-22
+topics = [
+  "Mathematics/Algebra",
+]
+abstract = "Binary multirelations form a model of alternating nondeterminism useful for analysing games, interactions of computing systems with their environments or abstract interpretations of probabilistic programs. We investigate this alternating structure in a relational language based on power allegories extended with specific operations on multirelations. We develop algebras of modal operators over multirelations, related to concurrent dynamic logics, in this language."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.guttmann]
+email = "guttmann_email"
+
+[authors.struth]
+email = "struth_email"
+
+[contributors]
+
+[notify]
+guttmann = "guttmann_email"
+struth = "struth_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.48550/arXiv.2305.11342",
+  "10.48550/arXiv.2305.11344",
+  "10.48550/arXiv.2305.11346",
+]
+pubs = []

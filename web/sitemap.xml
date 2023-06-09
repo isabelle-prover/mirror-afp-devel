@@ -35,10 +35,19 @@
     <loc>/authors/wenninger/</loc>
     <lastmod>2023-06-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/cremer/</loc>
-    <lastmod>2023-05-09T00:00:00+00:00</lastmod>
+    <loc>/authors/guttmann/</loc>
+    <lastmod>2023-05-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Multirelations_Heterogeneous.html</loc>
+    <lastmod>2023-05-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/mathematics/</loc>
+    <lastmod>2023-05-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/struth/</loc>
+    <lastmod>2023-05-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/cremer/</loc>
     <lastmod>2023-05-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Tree_Enumeration.html</loc>
@@ -1032,9 +1041,6 @@
     <lastmod>2021-10-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Correctness_Algebras.html</loc>
-    <lastmod>2021-10-12T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/guttmann/</loc>
     <lastmod>2021-10-12T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/monobooltranalgebra/</loc>
@@ -2241,9 +2247,6 @@
     <lastmod>2018-12-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Quantales.html</loc>
-    <lastmod>2018-12-11T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/struth/</loc>
     <lastmod>2018-12-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Transformer_Semantics.html</loc>
@@ -5611,6 +5614,8 @@
     <loc>/theories/multi_party_computation/</loc>
   </url><url>
     <loc>/theories/multirelations/</loc>
+  </url><url>
+    <loc>/theories/multirelations_heterogeneous/</loc>
   </url><url>
     <loc>/theories/multiset_ordering_npc/</loc>
   </url><url>
