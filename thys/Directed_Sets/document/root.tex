@@ -1,0 +1,112 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+\usepackage{amssymb,amsmath,stmaryrd}
+\usepackage{tikz}
+\usetikzlibrary{backgrounds}
+\usetikzlibrary{positioning}
+\usetikzlibrary{shapes}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\newcommand\LE{\sqsubseteq}
+\newcommand\Nat{\mathbb{N}}
+\newtheorem{theorem}{Theorem}
+
+
+
+
+\begin{document}
+
+\title{Formalizing Results on Directed Sets}
+\author{Akihisa Yamada and J\'er\'emy Dubut}
+\maketitle
+
+\begin{abstract}
+Directed sets are of fundamental interest in domain theory and topology.
+In this paper, we formalize some results on directed sets in Isabelle/HOL, most notably: under the axiom of choice,
+a poset has a supremum for every directed set if and only if it does so for every chain;
+and a function between such posets preserves suprema of directed sets if and only if it preserves suprema of chains.
+The known pen-and-paper proofs of these results crucially use uncountable transfinite sequences, which are not directly implementable in Isabelle/HOL.
+We show how to emulate such proofs by utilizing Isabelle/HOL's ordinal and cardinal library.
+Thanks to the formalization, we relax some conditions for the above results.
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}
+
+A \emph{directed set} is a set $D$ equipped with a binary relation $\LE$ such that any finite subset $X \subseteq D$ has an upper bound in $D$ with respect to $\LE$.
+The property is often equivalently stated that $D$ is non-empty and any two elements $x,y \in D$ have a bound in $D$,
+assuming that $\LE$ is transitive (as in posets).
+
+Directed sets find uses in various fields of mathematics and computer science.
+In topology (see for example the textbook~\cite{goubault13}), directed sets are used to generalize the set of natural numbers: sequences $\Nat \to A$ are generalized to \emph{nets} $D \to A$, where $D$ is an arbitrary directed set.
+For example, the usual result on metric spaces that continuous functions are precisely 
+functions that preserve limits of sequences can be generalized in general topological spaces
+as: the continuous functions are precisely functions that preserve limits of nets.
+In domain theory~\cite{abramski94}, key ingredients are \emph{directed-complete posets}, where every directed subset has a supremum in the poset, and
+\emph{Scott-continuous functions} between posets, that is, functions that preserve suprema of directed sets.
+%, $f : A \to B$ that $\SUP f ` D = f ` (\SUP D)$ for every directed $D \subseteq A$.
+Thanks to their fixed-point properties (which we have formalized in Isabelle/HOL in a previous work~\cite{DubutY22}),
+directed-complete posets naturally appear in 
+denotational semantics of languages with loops or fixed-point operators (see for example
+Scott domains~\cite{scott70,winskel93}).
+Directed sets also appear in reachability and coverability analyses of transition systems through the 
+notion of ideals, that is, downward-closed directed sets. They allow effective 
+representations of objects, making forward and backward analysis of well-structured 
+transition systems -- such as Petri nets -- possible (see e.g., \cite{finkel09}).
+
+Apparently milder generalizations of natural numbers are chains (totally ordered sets) or even well-ordered sets.
+In the mathematics literature, the following results are known
+(assuming the axiom of choice):
+
+\begin{theorem}[\cite{Cohn65}]
+\label{thm:comp}
+A poset is directed-complete if (and only if) it has a supremum for every non-empty well-ordered subset.
+\end{theorem}
+
+\begin{theorem}[\cite{markowsky76}]\label{thm:cont}
+Let $f$ be a function between posets, each of which has a supremum for every non-empty chain.
+If $f$ preserves suprema of non-empty chains, then it is Scott-continuous.
+\end{theorem}
+
+The pen-and-paper proofs of these results use induction on cardinality, where the finite case is merely the base case.
+The core of the proof is a technical result called Iwamura's Lemma~\cite{iwamura},
+where the countable case is merely an easy case,
+and the main part heavily uses transfinite sequences indexed by uncountable ordinals.
+
+To formalize these results in Isabelle/HOL
+we extensively use the existing library for ordinals and cardinals~\cite{CardIsa},  but we needed some delicate work in emulating the pen-and-paper proofs.
+In Isabelle/HOL, or any proof assistant based on higher-order logic (HOL), it is not possible to have a datatype for arbitrarily large ordinals;
+hence, it is not possible to directly formalize transfinite sequences.
+We show how to emulate transfinite sequences using the ordinal and cardinal library~\cite{CardIsa}.
+As far as the authors know, our work is the first to mechanize the proof of Theorems~\ref{thm:comp} and~\ref{thm:cont}, as well as Iwamura's Lemma.
+We prove the two theorems for quasi-ordered sets, relaxing antisymmetry, and strengthen Theorem~\ref{thm:cont} so that chains are replaced by well-ordered sets and conditions on the codomain are completely dropped.
+
+\paragraph*{Related Work}
+Systems based on Zermelo-Fraenkel set theory, such as Mizar~\cite{MizerOrdinal} and Isabelle/ZF~\cite{PaulsonG96}, have more direct support for ordinals and cardinals and should pose less challenge in mechanizing the above results.
+Nevertheless, a part of our contribution is in demonstrating that the power of (Isabelle/)HOL is strong enough to deal with uncountable transfinite sequences.
+
+Except for the extra care for transfinite sequences, 
+our proof of Iwamura's Lemma is largely based on the original proof from~\cite{iwamura}.
+Markowsky presented a proof of Theorem~\ref{thm:comp} using Iwamura's Lemma~\cite[Corollary 1]{markowsky76}.
+While he took a minimal-counterexample approach, we take a more constructive approach to build a well-ordered set of suprema.
+This construction was crucial to be reused in the proof of Theorem~\ref{thm:cont}, which Markowsky claimed without a proof~\cite{markowsky76}.
+Another proof of Theorem~\ref{thm:comp} can be found in~\cite{Cohn65}, without using Iwamura's Lemma, but 
+still crucially using transfinite sequences.
+
+This work has been 
+published in the conference paper \cite{yamada23}.
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

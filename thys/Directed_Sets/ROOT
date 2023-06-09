@@ -1,0 +1,14 @@
+chapter AFP
+
+session Directed_Sets (AFP) =  HOL +
+    description "Results on Directed Sets"
+    options [timeout = 300]
+    sessions
+        "HOL-Cardinals"
+        "HOL-Library"
+        Complete_Non_Orders
+    theories
+        Directed_Completeness 
+    document_files
+        "root.tex"
+        "root.bib"
