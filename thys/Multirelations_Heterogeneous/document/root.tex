@@ -1,0 +1,49 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amssymb,ragged2e,stmaryrd}
+\usepackage{pdfsetup}
+
+\isabellestyle{it}
+\renewenvironment{isamarkuptext}{\par\isastyletext\begin{isapar}\justifying\color{blue}}{\end{isapar}}
+\renewcommand\labelitemi{$*$}
+\urlstyle{rm}
+
+\begin{document}
+
+\title{Inner Structure, Determinism and Modal Algebra of Multirelations}
+\author{Walter Guttmann and Georg Struth}
+\maketitle
+
+\begin{abstract}
+  Binary multirelations form a model of alternating nondeterminism useful for analysing games, interactions of computing systems with their environments or abstract interpretations of probabilistic programs.
+  We investigate this alternating structure in a relational language based on power allegories extended with specific operations on multirelations.
+  We develop algebras of modal operators over multirelations, related to concurrent dynamic logics, in this language.
+\end{abstract}
+
+\tableofcontents
+
+\bigskip
+
+\noindent
+The theories formally verify results in \cite{FurusawaGuttmannStruth2023a,FurusawaGuttmannStruth2023b,FurusawaGuttmannStruth2023c}.
+See these papers for further details and related work.
+
+The basic algebra of homogeneous binary multirelations is formalised in \cite{FurusawaStruth2015}.
+The present theories consider heterogeneous binary multirelations, which may have different source and target sets.
+While homogeneous multirelations arise as a special case where source and target sets coincide, we do not attempt to generalise the algebras of \cite{FurusawaStruth2015} to the heterogeneous case but study new concepts instead.
+Thus the present theories and \cite{FurusawaStruth2015} are complementary.
+A unification of the two approaches based on category theory is possible future work.
+
+Algebraic structures for multirelations with Parikh composition are formalised in \cite{Guttmann2021b}.
+
+\begin{flushleft}
+\input{session}
+\end{flushleft}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
