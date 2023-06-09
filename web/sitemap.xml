@@ -35,13 +35,25 @@
     <loc>/authors/wenninger/</loc>
     <lastmod>2023-06-01T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/dependencies/complete_non_orders/</loc>
+    <lastmod>2023-05-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/dubut/</loc>
+    <lastmod>2023-05-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Directed_Sets.html</loc>
+    <lastmod>2023-05-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2023-05-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/yamada/</loc>
+    <lastmod>2023-05-24T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/authors/guttmann/</loc>
     <lastmod>2023-05-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Multirelations_Heterogeneous.html</loc>
-    <lastmod>2023-05-22T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/mathematics/</loc>
     <lastmod>2023-05-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/struth/</loc>
@@ -1079,9 +1091,6 @@
     <loc>/entries/Weighted_Path_Order.html</loc>
     <lastmod>2021-09-16T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/yamada/</loc>
-    <lastmod>2021-09-16T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/CZH_Foundations.html</loc>
     <lastmod>2021-09-06T00:00:00+00:00</lastmod>
   </url><url>
@@ -2022,9 +2031,6 @@
     <lastmod>2019-07-04T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Complete_Non_Orders.html</loc>
-    <lastmod>2019-06-27T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/dubut/</loc>
     <lastmod>2019-06-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Priority_Search_Trees.html</loc>
@@ -4978,6 +4984,8 @@
     <loc>/theories/dijkstra_shortest_path/</loc>
   </url><url>
     <loc>/theories/diophantine_eqns_lin_hom/</loc>
+  </url><url>
+    <loc>/theories/directed_sets/</loc>
   </url><url>
     <loc>/theories/dirichlet_l/</loc>
   </url><url>

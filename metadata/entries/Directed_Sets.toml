@@ -1,0 +1,42 @@
+title = "Formalizing Results on Directed Sets"
+date = 2023-05-24
+topics = [
+  "Mathematics/Order",
+]
+abstract = """
+<p>Directed sets are of fundamental interest in domain theory and topology. In
+this paper, we formalize some results on directed sets in Isabelle/HOL, most
+notably: under the axiom of choice, a poset has a supremum for every directed
+set if and only if it does so for every chain; and a function between such
+posets preserves suprema of directed sets if and only if it preserves suprema of
+chains. The known pen-and-paper proofs of these results crucially use
+uncountable transfinite sequences, which are not directly implementable in
+Isabelle/HOL. We show how to emulate such proofs by utilizing Isabelle/HOL's
+ordinal and cardinal library. Thanks to the formalization, we relax some
+conditions for the above results.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.yamada]
+email = "yamada_email2"
+
+[authors.dubut]
+email = "dubut_email1"
+
+[contributors]
+
+[notify]
+yamada = "yamada_email2"
+dubut = "dubut_email1"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = [
+  "A. Yamada and J. Dubut. Formalizing Results on Directed Sets in Isabelle/HOL. ITP 2023. To appear.",
+]
