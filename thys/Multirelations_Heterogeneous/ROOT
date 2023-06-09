@@ -1,0 +1,17 @@
+chapter AFP
+
+session Multirelations_Heterogeneous (AFP) = HOL +
+
+  options [timeout = 600]
+
+  theories
+    Relational_Properties
+    Power_Allegories_Properties
+    Multirelations_Basics
+    Power_Allegories_Multirelations
+    Multirelations
+
+  document_files
+    "root.tex"
+    "root.bib"
+
