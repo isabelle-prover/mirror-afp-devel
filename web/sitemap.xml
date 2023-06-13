@@ -3,30 +3,39 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2023-06-01T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/Efficient_Weighted_Path_Order.html</loc>
-    <lastmod>2023-06-01T00:00:00+00:00</lastmod>
+    <lastmod>2023-06-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2023-06-01T00:00:00+00:00</lastmod>
+    <lastmod>2023-06-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/computer-science/</loc>
-    <lastmod>2023-06-01T00:00:00+00:00</lastmod>
+    <lastmod>2023-06-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Crypto_Standards.html</loc>
+    <lastmod>2023-06-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/</loc>
-    <lastmod>2023-06-01T00:00:00+00:00</lastmod>
+    <lastmod>2023-06-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/elliptic_curves_group_law/</loc>
+    <lastmod>2023-06-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/</loc>
+    <lastmod>2023-06-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2023-06-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/whitley/</loc>
+    <lastmod>2023-06-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Efficient_Weighted_Path_Order.html</loc>
     <lastmod>2023-06-01T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/logic/</loc>
     <lastmod>2023-06-01T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/thiemann/</loc>
-    <lastmod>2023-06-01T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2023-06-01T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/weighted_path_order/</loc>
@@ -4912,6 +4921,8 @@
     <loc>/theories/crdt/</loc>
   </url><url>
     <loc>/theories/crypthol/</loc>
+  </url><url>
+    <loc>/theories/crypto_standards/</loc>
   </url><url>
     <loc>/theories/cryptobasedcompositionalproperties/</loc>
   </url><url>

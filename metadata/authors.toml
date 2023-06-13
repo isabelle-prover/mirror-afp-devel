@@ -7035,6 +7035,22 @@ host = [
 [wenzel.homepages]
 wenzel_homepage = "https://sketis.net"
 
+[whitley]
+name = "A Whitley"
+
+[whitley.emails]
+
+[whitley.emails.whitley_email]
+user = [
+  "awhitley",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[whitley.homepages]
+
 [wickerson]
 name = "John Wickerson"
 
