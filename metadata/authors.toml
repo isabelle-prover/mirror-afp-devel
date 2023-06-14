@@ -1239,6 +1239,16 @@ name = "Christian Dalvit"
 
 [dalvit.emails]
 
+[dalvit.emails.dalvit_email]
+user = [
+  "chris",
+  "dalvit",
+]
+host = [
+  "gmail",
+  "com",
+]
+
 [dalvit.homepages]
 
 [danilkin]
