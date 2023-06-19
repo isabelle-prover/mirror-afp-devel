@@ -228,14 +228,12 @@
   "topic_links": [
    "computer-science/algorithms/distributed",
    "computer-science/algorithms/approximation",
-   "computer-science/algorithms/randomized",
-   "mathematics/probability-theory"
+   "computer-science/algorithms/randomized"
   ],
   "topics": [
    "Computer science/Algorithms/Distributed",
    "Computer science/Algorithms/Approximation",
-   "Computer science/Algorithms/Randomized",
-   "Mathematics/Probability theory"
+   "Computer science/Algorithms/Randomized"
   ],
   "used_by": 0
  },
@@ -337,13 +335,13 @@
   "title": "Expander Graphs",
   "topic_links": [
    "computer-science/algorithms/graph",
-   "mathematics/graph-theory",
-   "mathematics/probability-theory"
+   "computer-science/algorithms/randomized",
+   "mathematics/graph-theory"
   ],
   "topics": [
    "Computer science/Algorithms/Graph",
-   "Mathematics/Graph theory",
-   "Mathematics/Probability theory"
+   "Computer science/Algorithms/Randomized",
+   "Mathematics/Graph theory"
   ],
   "used_by": 1
  },
@@ -1635,13 +1633,11 @@
   "title": "Formalization of Randomized Approximation Algorithms for Frequency Moments",
   "topic_links": [
    "computer-science/algorithms/approximation",
-   "computer-science/algorithms/randomized",
-   "mathematics/probability-theory"
+   "computer-science/algorithms/randomized"
   ],
   "topics": [
    "Computer science/Algorithms/Approximation",
-   "Computer science/Algorithms/Randomized",
-   "Mathematics/Probability theory"
+   "Computer science/Algorithms/Randomized"
   ],
   "used_by": 1
  },
@@ -1805,12 +1801,10 @@
   "shortname": "Universal_Hash_Families",
   "title": "Universal Hash Families",
   "topic_links": [
-   "mathematics/probability-theory",
-   "computer-science/algorithms"
+   "computer-science/algorithms/randomized"
   ],
   "topics": [
-   "Mathematics/Probability theory",
-   "Computer science/Algorithms"
+   "Computer science/Algorithms/Randomized"
   ],
   "used_by": 1
  },
@@ -2036,11 +2030,9 @@
   "shortname": "Median_Method",
   "title": "Median Method",
   "topic_links": [
-   "mathematics/probability-theory",
    "computer-science/algorithms/randomized"
   ],
   "topics": [
-   "Mathematics/Probability theory",
    "Computer science/Algorithms/Randomized"
   ],
   "used_by": 1

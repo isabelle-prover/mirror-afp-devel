@@ -410,7 +410,7 @@ that it is (obviously) independent of the matrix representation (ordering of the
 definition \<Lambda>\<^sub>2 :: real
   where "\<Lambda>\<^sub>2 = (if n > 1 then (SUP f \<in> \<Lambda>_test. g_inner f (g_step f)/g_inner f f) else 0)"
 
-definition \<Lambda>\<^sub>a :: real (* TODO: Rename to \<Lambda>\<^sub>a *)
+definition \<Lambda>\<^sub>a :: real
   where "\<Lambda>\<^sub>a = (if n > 1 then (SUP f \<in> \<Lambda>_test. \<bar>g_inner f (g_step f)\<bar>/g_inner f f) else 0)"
 
 lemma sum_arcs_tail:

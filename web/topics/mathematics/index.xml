@@ -89,15 +89,6 @@
     </item>
     
     <item>
-      <title>Distributed Distinct Elements</title>
-      <link>/entries/Distributed_Distinct_Elements.html</link>
-      <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Distributed_Distinct_Elements.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>Positional Notation for Natural Numbers in an Arbitrary Base</title>
       <link>/entries/DigitsInBase.html</link>
       <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
@@ -112,15 +103,6 @@
       <pubDate>Sun, 05 Mar 2023 00:00:00 +0000</pubDate>
       
       <guid>/entries/No_FTL_observers_Gen_Rel.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Expander Graphs</title>
-      <link>/entries/Expander_Graphs.html</link>
-      <pubDate>Fri, 03 Mar 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Expander_Graphs.html</guid>
       <description></description>
     </item>
     
@@ -413,15 +395,6 @@
     </item>
     
     <item>
-      <title>Formalization of Randomized Approximation Algorithms for Frequency Moments</title>
-      <link>/entries/Frequency_Moments.html</link>
-      <pubDate>Fri, 08 Apr 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Frequency_Moments.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>Constructing the Reals as Dedekind Cuts of Rationals</title>
       <link>/entries/Dedekind_Real.html</link>
       <pubDate>Thu, 24 Mar 2022 00:00:00 +0000</pubDate>
@@ -436,15 +409,6 @@
       <pubDate>Tue, 15 Mar 2022 00:00:00 +0000</pubDate>
       
       <guid>/entries/Cotangent_PFD_Formula.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Universal Hash Families</title>
-      <link>/entries/Universal_Hash_Families.html</link>
-      <pubDate>Sun, 20 Feb 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Universal_Hash_Families.html</guid>
       <description></description>
     </item>
     
@@ -499,15 +463,6 @@
       <pubDate>Sat, 29 Jan 2022 00:00:00 +0000</pubDate>
       
       <guid>/entries/Interpolation_Polynomials_HOL_Algebra.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Median Method</title>
-      <link>/entries/Median_Method.html</link>
-      <pubDate>Tue, 25 Jan 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Median_Method.html</guid>
       <description></description>
     </item>
     

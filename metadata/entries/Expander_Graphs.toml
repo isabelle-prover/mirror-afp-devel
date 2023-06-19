@@ -2,8 +2,8 @@ title = "Expander Graphs"
 date = 2023-03-03
 topics = [
   "Computer science/Algorithms/Graph",
+  "Computer science/Algorithms/Randomized",
   "Mathematics/Graph theory",
-  "Mathematics/Probability theory",
 ]
 abstract = """
 Expander Graphs are low-degree graphs that are highly connected. They have diverse 

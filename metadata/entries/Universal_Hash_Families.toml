@@ -1,8 +1,7 @@
 title = "Universal Hash Families"
 date = 2022-02-20
 topics = [
-  "Mathematics/Probability theory",
-  "Computer science/Algorithms",
+  "Computer science/Algorithms/Randomized",
 ]
 abstract = """
 A <i>k</i>-universal hash family is a probability

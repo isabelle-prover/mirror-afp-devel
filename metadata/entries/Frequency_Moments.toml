@@ -3,7 +3,6 @@ date = 2022-04-08
 topics = [
   "Computer science/Algorithms/Approximation",
   "Computer science/Algorithms/Randomized",
-  "Mathematics/Probability theory",
 ]
 abstract = """
 In 1999 Alon et. al. introduced the still active research topic of
