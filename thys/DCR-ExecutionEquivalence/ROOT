@@ -1,0 +1,9 @@
+chapter AFP
+
+session "DCR-ExecutionEquivalence" (AFP) = HOL +
+  options [timeout = 600]
+  theories
+    DCRExecutionEquivalence
+  document_files
+    "root.bib"
+    "root.tex"

@@ -1081,6 +1081,23 @@ name = "Loïc Chevalier"
 
 [chevalier.homepages]
 
+[christfort]
+name = "Axel Christfort"
+
+[christfort.emails]
+
+[christfort.emails.christfort_email]
+user = [
+  "axel",
+]
+host = [
+  "di",
+  "ku",
+  "dk",
+]
+
+[christfort.homepages]
+
 [clouston]
 name = "Ranald Clouston"
 
@@ -1304,6 +1321,13 @@ host = [
 ]
 
 [david.homepages]
+
+[debois]
+name = "Søren Debois"
+
+[debois.emails]
+
+[debois.homepages]
 
 [debrat]
 name = "Henri Debrat"

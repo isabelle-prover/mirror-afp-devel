@@ -1,0 +1,32 @@
+title = "DCR Syntax and Execution Equivalent Markings"
+date = 2023-06-16
+topics = [
+  "Computer science/System description languages",
+]
+abstract = """
+We present an Isabelle formalization of the basics of Dynamic Condition Response
+(DCR) graphs before defining Execution Equivalent markings. We then prove that
+execution equivalent markings are perfectly interchangeable during process
+execution, yielding significant state-space reduction for execution-based
+model-checking of DCR graphs."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.christfort]
+email = "christfort_email"
+
+[authors.debois]
+
+[contributors]
+
+[notify]
+christfort = "christfort_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []

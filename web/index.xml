@@ -6,7 +6,16 @@
     <description>Recent content on Archive of Formal Proofs</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Mon, 12 Jun 2023 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 16 Jun 2023 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>DCR Syntax and Execution Equivalent Markings</title>
+      <link>/entries/DCR-ExecutionEquivalence.html</link>
+      <pubDate>Fri, 16 Jun 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/DCR-ExecutionEquivalence.html</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>Zeckendorf’s Theorem</title>
       <link>/entries/Zeckendorf.html</link>
@@ -8185,6 +8194,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/datatype_order_generator/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>DCR-ExecutionEquivalence</title>
+      <link>/theories/dcr-executionequivalence/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/dcr-executionequivalence/</guid>
       <description></description>
     </item>
     

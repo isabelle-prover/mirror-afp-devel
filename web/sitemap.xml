@@ -3,28 +3,37 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2023-06-12T00:00:00+00:00</lastmod>
+    <lastmod>2023-06-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2023-06-12T00:00:00+00:00</lastmod>
+    <lastmod>2023-06-16T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/dalvit/</loc>
-    <lastmod>2023-06-12T00:00:00+00:00</lastmod>
+    <loc>/authors/christfort/</loc>
+    <lastmod>2023-06-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/computer-science/</loc>
+    <lastmod>2023-06-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/DCR-ExecutionEquivalence.html</loc>
+    <lastmod>2023-06-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/debois/</loc>
+    <lastmod>2023-06-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/</loc>
+    <lastmod>2023-06-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2023-06-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/dalvit/</loc>
     <lastmod>2023-06-12T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/mathematics/</loc>
     <lastmod>2023-06-12T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/topics/</loc>
-    <lastmod>2023-06-12T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Zeckendorf.html</loc>
     <lastmod>2023-06-12T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/computer-science/</loc>
-    <lastmod>2023-06-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Crypto_Standards.html</loc>
     <lastmod>2023-06-06T00:00:00+00:00</lastmod>
@@ -4948,6 +4957,8 @@
     <loc>/theories/datarefinementibp/</loc>
   </url><url>
     <loc>/theories/datatype_order_generator/</loc>
+  </url><url>
+    <loc>/theories/dcr-executionequivalence/</loc>
   </url><url>
     <loc>/theories/decl_sem_fun_pl/</loc>
   </url><url>
