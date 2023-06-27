@@ -50,8 +50,8 @@ theory     Bot
 imports    Process
 begin 
 
-definition Bot :: "'\<alpha> process"  
-where     "Bot \<equiv> Abs_process ({(s,X). front_tickFree s}, {d. front_tickFree d})"
+definition BOT :: "'\<alpha> process"  
+where     "BOT \<equiv> Abs_process ({(s,X). front_tickFree s}, {d. front_tickFree d})"
 
 lemma is_process_REP_Bot : 
   "is_process  ({(s,X). front_tickFree s}, {d. front_tickFree d})"
@@ -65,20 +65,20 @@ lemma Rep_Abs_Bot :"Rep_process (Abs_process ({(s,X). front_tickFree s},{d. fron
                     ({(s,X). front_tickFree s},{d. front_tickFree d})"
 by(subst Abs_process_inverse, simp_all only: CollectI Rep_process is_process_REP_Bot)
 
-lemma F_Bot: "F Bot = {(s,X). front_tickFree s}"
-by(simp add: Bot_def FAILURES_def F_def Rep_Abs_Bot)
+lemma F_Bot: "\<F> BOT = {(s,X). front_tickFree s}"
+by(simp add: BOT_def FAILURES_def Failures_def Rep_Abs_Bot)
 
-lemma D_Bot: "D Bot = {d. front_tickFree d}"
-by(simp add: Bot_def DIVERGENCES_def D_def Rep_Abs_Bot)
+lemma D_Bot: "\<D> BOT = {d. front_tickFree d}"
+by(simp add: BOT_def DIVERGENCES_def D_def Rep_Abs_Bot)
 
-lemma T_Bot: "T Bot = {s. front_tickFree s}"
-by(simp add: Bot_def TRACES_def T_def FAILURES_def Rep_Abs_Bot)
+lemma T_Bot: "\<T> BOT = {s. front_tickFree s}"
+by(simp add: BOT_def TRACES_def Traces_def FAILURES_def Rep_Abs_Bot)
 
 text\<open> This is the key result: @{term "\<bottom>"} --- which we know to exist 
 from the process instantiation --- is equal Bot .
 \<close>
 
-lemma Bot_is_UU[simp]: "Bot = \<bottom>"
+lemma BOT_is_UU[simp]: "BOT = \<bottom>"
 apply(auto simp: Pcpo.eq_bottom_iff Process.le_approx_def Ra_def 
                  min_elems_Collect_ftF_is_Nil Process.Nil_elem_T 
                  F_Bot D_Bot T_Bot
@@ -86,13 +86,13 @@ apply(auto simp: Pcpo.eq_bottom_iff Process.le_approx_def Ra_def
 apply(metis Process.is_processT2)
 done
 
-lemma F_UU: "F \<bottom> = {(s,X). front_tickFree s}"
+lemma F_UU: "\<F> \<bottom> = {(s,X). front_tickFree s}"
   using F_Bot by auto
 
-lemma D_UU: "D \<bottom> = {d. front_tickFree d}"
+lemma D_UU: "\<D> \<bottom> = {d. front_tickFree d}"
   using D_Bot by auto
 
-lemma T_UU: "T \<bottom> = {s. front_tickFree s}"
+lemma T_UU: "\<T> \<bottom> = {s. front_tickFree s}"
   using T_Bot by auto
 
 

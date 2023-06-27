@@ -57,14 +57,15 @@ by(simp add: is_process_def FAILURES_def DIVERGENCES_def)
 lemma Rep_Abs_STOP : "Rep_process (Abs_process ({(s, X). s = []},{})) = ({(s, X). s = []},{})"
 by(subst Abs_process_inverse, simp add: Rep_process is_process_REP_STOP, auto)
 
-lemma F_STOP : "F STOP = {(s,X). s = []}"
-by(simp add: STOP_def FAILURES_def F_def Rep_Abs_STOP)
+lemma F_STOP : "\<F> STOP = {(s,X). s = []}"
+by(simp add: STOP_def FAILURES_def Failures_def Rep_Abs_STOP)
 
-lemma D_STOP: "D STOP = {}"
+lemma D_STOP: "\<D> STOP = {}"
 by(simp add: STOP_def DIVERGENCES_def D_def Rep_Abs_STOP)
 
-lemma T_STOP: "T STOP = {[]}"
-by(simp add: STOP_def TRACES_def FAILURES_def T_def Rep_Abs_STOP)
+lemma T_STOP: "\<T> STOP = {[]}"
+by(simp add: STOP_def TRACES_def FAILURES_def Traces_def Rep_Abs_STOP)
+
 
 end
 

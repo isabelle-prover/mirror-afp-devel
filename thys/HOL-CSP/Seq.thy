@@ -49,26 +49,26 @@ theory  Seq
 begin 
 
 subsection\<open>Definition\<close>
-abbreviation "div_seq P Q   \<equiv> {t1 @ t2 |t1 t2. t1 \<in> D P \<and> tickFree t1 \<and> front_tickFree t2}
-                            \<union> {t1 @ t2 |t1 t2. t1 @ [tick] \<in> T P \<and> t2 \<in> D Q}"
+abbreviation "div_seq P Q   \<equiv> {t1 @ t2 |t1 t2. t1 \<in> \<D> P \<and> tickFree t1 \<and> front_tickFree t2}
+                            \<union> {t1 @ t2 |t1 t2. t1 @ [tick] \<in> \<T> P \<and> t2 \<in> \<D> Q}"
 
-definition  seq :: "['a process,'a process] \<Rightarrow> 'a process"  (infixl  "`;`" 24)  
-where       "P `;` Q \<equiv> Abs_process
-                            ({(t, X). (t, X \<union> {tick}) \<in> F P \<and> tickFree t} \<union>
-                             {(t, X). \<exists>t1 t2. t = t1 @ t2 \<and> t1 @ [tick] \<in> T P \<and> (t2, X) \<in> F Q} \<union>
+definition  Seq :: "['a process,'a process] \<Rightarrow> 'a process"  (infixl  "\<^bold>;" 74)  
+where       "P \<^bold>; Q \<equiv> Abs_process
+                            ({(t, X). (t, X \<union> {tick}) \<in> \<F> P \<and> tickFree t} \<union>
+                             {(t, X). \<exists>t1 t2. t = t1 @ t2 \<and> t1 @ [tick] \<in> \<T> P \<and> (t2, X) \<in> \<F> Q} \<union>
                              {(t, X). t \<in> div_seq P Q},
                              div_seq P Q)"
 
-lemma  seq_maintains_is_process:
-      "is_process     ({(t, X). (t, X \<union> {tick}) \<in> F P \<and> tickFree t} \<union>
-                       {(t, X). \<exists>t1 t2. t = t1 @ t2 \<and> t1 @ [tick] \<in> T P \<and> (t2, X) \<in> F Q} \<union>
+lemma  Seq_maintains_is_process:
+      "is_process     ({(t, X). (t, X \<union> {tick}) \<in> \<F> P \<and> tickFree t} \<union>
+                       {(t, X). \<exists>t1 t2. t = t1 @ t2 \<and> t1 @ [tick] \<in> \<T> P \<and> (t2, X) \<in> \<F> Q} \<union>
                        {(t, X). t \<in> div_seq P Q},
                        div_seq P Q)"
        (is "is_process(?f, ?d)")
-proof(simp only: fst_conv snd_conv F_def is_process_def FAILURES_def DIVERGENCES_def,
-      fold FAILURES_def DIVERGENCES_def,fold F_def,intro conjI)
+proof(simp only: fst_conv snd_conv Failures_def is_process_def FAILURES_def DIVERGENCES_def,
+      fold FAILURES_def DIVERGENCES_def,fold Failures_def,intro conjI)
   show "([], {}) \<in> ?f" 
-    apply(cases "[tick] \<in> T P", simp_all add: is_processT1)
+    apply(cases "[tick] \<in> \<T> P", simp_all add: is_processT1)
     using F_T is_processT5_S6 by blast        
 next
   show " \<forall>s X. (s, X) \<in> ?f \<longrightarrow> front_tickFree s"
@@ -96,23 +96,26 @@ next
     by (metis process_charn)
 next
   { fix sa X Y
-    have "(sa, X \<union> {tick}) \<in> F P \<Longrightarrow>
+    have "(sa, X \<union> {tick}) \<in> \<F> P \<Longrightarrow>
             tickFree sa \<Longrightarrow>
-            \<forall>c. c \<in> Y \<and> c \<noteq> tick \<longrightarrow> (sa @ [c], {}) \<notin> F P \<Longrightarrow> 
-            (sa, X \<union> Y \<union> {tick}) \<in> F P \<and> tickFree sa"
+            \<forall>c. c \<in> Y \<and> c \<noteq> tick \<longrightarrow> (sa @ [c], {}) \<notin> \<F> P \<Longrightarrow> 
+            (sa, X \<union> Y \<union> {tick}) \<in> \<F> P \<and> tickFree sa"
     apply(rule_tac t="X \<union> Y \<union> {tick}" and s="X \<union> {tick} \<union> (Y-{tick})" in subst,auto)
     by   (metis DiffE Un_insert_left is_processT5 singletonI)
   } note is_processT5_SEQH3 = this
-  have is_processT5_SEQH4 : "\<And> sa X Y. (sa, X \<union> {tick}) \<in> F P \<Longrightarrow>
-                                         tickFree sa \<Longrightarrow>
-                                         \<forall>c. c \<in> Y \<longrightarrow> (sa@[c],{tick}) \<notin> F P \<or> \<not> tickFree(sa@[c]) \<Longrightarrow>
-                                         \<forall>c. c \<in> Y \<longrightarrow> (\<forall>t1 t2. sa@[c]\<noteq>t1@t2 \<or> t1@[tick]\<notin>T P \<or> (t2,{})\<notin>F Q) \<Longrightarrow>
-                                         (sa, X \<union> Y \<union> {tick}) \<in> F P \<and> tickFree sa"
+  have is_processT5_SEQH4 : 
+       "\<And> sa X Y. (sa, X \<union> {tick}) \<in> \<F> P 
+                   \<Longrightarrow> tickFree sa 
+                   \<Longrightarrow> \<forall>c. c \<in> Y \<longrightarrow> (sa@[c],{tick}) \<notin> \<F> P \<or> \<not> tickFree(sa@[c]) 
+                   \<Longrightarrow> \<forall>c. c \<in> Y \<longrightarrow> (\<forall>t1 t2. sa@[c]\<noteq>t1@t2 \<or> t1@[tick]\<notin>\<T> P \<or> (t2,{})\<notin>\<F> Q) 
+                   \<Longrightarrow> (sa, X \<union> Y \<union> {tick}) \<in> \<F> P \<and> tickFree sa"
     by (metis append_Nil2 is_processT1 is_processT5_S3 is_processT5_SEQH3 
                          no_Trace_implies_no_Failure tickFree_Cons tickFree_append)
-  let ?f1 = "{(t, X). (t, X \<union> {tick}) \<in> F P \<and> tickFree t} \<union> 
-             {(t, X). \<exists>t1 t2. t = t1 @ t2 \<and> t1 @ [tick] \<in> T P \<and> (t2, X) \<in> F Q}"
-  have is_processT5_SEQ2: "\<And> sa X Y. (sa, X) \<in> ?f1 \<Longrightarrow> (\<forall>c. c \<in> Y \<longrightarrow> (sa@[c], {})\<notin>?f) \<Longrightarrow> (sa, X\<union>Y) \<in> ?f1"
+  let ?f1 = "{(t, X). (t, X \<union> {tick}) \<in> \<F> P \<and> tickFree t} \<union> 
+             {(t, X). \<exists>t1 t2. t = t1 @ t2 \<and> t1 @ [tick] \<in> \<T> P \<and> (t2, X) \<in> \<F> Q}"
+  have is_processT5_SEQ2: "\<And> sa X Y. (sa, X) \<in> ?f1 
+                                      \<Longrightarrow> (\<forall>c. c \<in> Y \<longrightarrow> (sa@[c], {})\<notin>?f) 
+                                      \<Longrightarrow> (sa, X\<union>Y) \<in> ?f1"
     apply (clarsimp,rule is_processT5_SEQH4[simplified])
     by (auto simp: is_processT5)
   show "\<forall>s X Y. (s, X) \<in> ?f \<and> (\<forall>c. c \<in> Y \<longrightarrow> (s @ [c], {}) \<notin> ?f) \<longrightarrow> (s, X \<union> Y) \<in> ?f"
@@ -158,29 +161,29 @@ qed
 subsection\<open>The Projections\<close>
 
 
-lemmas  Rep_Abs_Seq[simp] = Abs_process_inverse[simplified, OF seq_maintains_is_process]
+lemmas  Rep_Abs_Seq[simp] = Abs_process_inverse[simplified, OF Seq_maintains_is_process]
 
 lemma  
-    F_seq   : "F(P `;` Q) =  {(t, X). (t, X \<union> {tick}) \<in> F P \<and> tickFree t} \<union>
-                             {(t, X). \<exists>t1 t2. t = t1 @ t2 \<and> t1 @ [tick] \<in> T P \<and> (t2, X) \<in> F Q} \<union>
-                             {(t, X). \<exists>t1 t2. t = t1 @ t2 \<and> t1 \<in> D P \<and> tickFree t1 \<and> front_tickFree t2} \<union>
-                             {(t, X). \<exists>t1 t2. t = t1 @ t2 \<and> t1 @ [tick] \<in> T P \<and> t2 \<in> D Q}"
-unfolding seq_def by(subst F_def, simp only:Rep_Abs_Seq, auto simp: FAILURES_def)
+    F_Seq   : "\<F> (P \<^bold>; Q) =  {(t, X). (t, X \<union> {tick}) \<in> \<F> P \<and> tickFree t} \<union>
+                             {(t, X). \<exists>t1 t2. t = t1 @ t2 \<and> t1 @ [tick] \<in> \<T> P \<and> (t2, X) \<in> \<F> Q} \<union>
+                             {(t, X). \<exists>t1 t2. t = t1 @ t2 \<and> t1 \<in> \<D> P \<and> tickFree t1 \<and> front_tickFree t2} \<union>
+                             {(t, X). \<exists>t1 t2. t = t1 @ t2 \<and> t1 @ [tick] \<in> \<T> P \<and> t2 \<in> \<D> Q}"
+unfolding Seq_def by(subst Failures_def, simp only:Rep_Abs_Seq, auto simp: FAILURES_def)
 
 lemma
-    D_seq   : "D(P `;` Q) =  {t1 @ t2 |t1 t2. t1 \<in> D P \<and> tickFree t1 \<and> front_tickFree t2} \<union>
-                             {t1 @ t2 |t1 t2. t1 @ [tick] \<in> T P \<and> t2 \<in> D Q}"
-unfolding seq_def by(subst D_def,simp only:Rep_Abs_Seq, simp add:DIVERGENCES_def)
+    D_Seq  : "\<D> (P \<^bold>; Q) =  {t1 @ t2 |t1 t2. t1 \<in> \<D> P \<and> tickFree t1 \<and> front_tickFree t2} \<union>
+                           {t1 @ t2 |t1 t2. t1 @ [tick] \<in> \<T> P \<and> t2 \<in> \<D> Q}"
+unfolding Seq_def by(subst D_def,simp only:Rep_Abs_Seq, simp add:DIVERGENCES_def)
 
 lemma
-    T_seq   : "T(P `;` Q) =  {t. \<exists> X. (t, X \<union> {tick}) \<in> F P \<and> tickFree t} \<union>  
-                             {t. \<exists> t1 t2. t = t1 @ t2 \<and> t1 @ [tick] \<in> T P \<and> t2 \<in> T Q} \<union>
-                             {t1 @ t2 |t1 t2. t1 \<in> D P \<and> tickFree t1 \<and> front_tickFree t2} \<union>
-                             {t1 @ t2 |t1 t2. t1 @ [tick] \<in> T P \<and> t2 \<in> D Q} \<union>
-                             {t1 @ t2 |t1 t2. t1 \<in> D P \<and> tickFree t1 \<and> front_tickFree t2} \<union>
-                             {t1 @ t2 |t1 t2. t1 @ [tick] \<in> T P \<and> t2 \<in> D Q}"
-  unfolding seq_def  
-  apply(subst T_def, simp only: Rep_Abs_Seq, auto simp:TRACES_def FAILURES_def)
+    T_Seq   : "\<T> (P \<^bold>; Q) =  {t. \<exists> X. (t, X \<union> {tick}) \<in> \<F> P \<and> tickFree t} \<union>  
+                             {t. \<exists> t1 t2. t = t1 @ t2 \<and> t1 @ [tick] \<in> \<T> P \<and> t2 \<in> \<T> Q} \<union>
+                             {t1 @ t2 |t1 t2. t1 \<in> \<D> P \<and> tickFree t1 \<and> front_tickFree t2} \<union>
+                             {t1 @ t2 |t1 t2. t1 @ [tick] \<in> \<T> P \<and> t2 \<in> \<D> Q} \<union>
+                             {t1 @ t2 |t1 t2. t1 \<in> \<D> P \<and> tickFree t1 \<and> front_tickFree t2} \<union>
+                             {t1 @ t2 |t1 t2. t1 @ [tick] \<in> \<T> P \<and> t2 \<in> \<D> Q}"
+  unfolding Seq_def  
+  apply(subst Traces_def, simp only: Rep_Abs_Seq, auto simp: TRACES_def FAILURES_def)
      using F_T apply fastforce
     apply (simp add: append_T_imp_tickFree)
    using F_T apply fastforce
@@ -188,22 +191,22 @@ lemma
 
 subsection\<open> Continuity Rule \<close>
 
-lemma mono_D11:  
-"P \<sqsubseteq> Q \<Longrightarrow> D (Q `;` S) \<subseteq> D (P `;` S)"
-  apply(auto simp: D_seq)
+lemma mono_Seq_D11:  
+"P \<sqsubseteq> Q \<Longrightarrow> \<D> (Q \<^bold>; S) \<subseteq> \<D> (P \<^bold>; S)"
+  apply(auto simp: D_Seq)
    using le_approx1 apply blast
   using le_approx_lemma_T by blast
 
-lemma mono_D12: 
+lemma mono_Seq_D12: 
 assumes ordered: "P \<sqsubseteq> Q"
-shows   "(\<forall> s. s \<notin> D (P `;` S) \<longrightarrow> Ra (P `;` S) s = Ra (Q `;` S) s)"
+shows   "(\<forall> s. s \<notin> \<D> (P \<^bold>; S) \<longrightarrow> Ra (P \<^bold>; S) s = Ra (Q \<^bold>; S) s)"
 proof -
-  have mono_SEQI2a:"P \<sqsubseteq> Q \<Longrightarrow> \<forall>s. s \<notin> D (P `;` S) \<longrightarrow> Ra (Q `;` S) s \<subseteq> Ra (P `;` S) s"
-    apply(simp add: Ra_def D_seq F_seq)
+  have mono_SEQI2a:"P \<sqsubseteq> Q \<Longrightarrow> \<forall>s. s \<notin> \<D> (P \<^bold>; S) \<longrightarrow> Ra (Q \<^bold>; S) s \<subseteq> Ra (P \<^bold>; S) s"
+    apply(simp add: Ra_def D_Seq F_Seq)
     apply(insert le_approx_lemma_F[of P Q] le_approx_lemma_T[of P Q], auto) 
     using le_approx1 by blast+
-  have mono_SEQI2b:"P \<sqsubseteq> Q \<Longrightarrow> \<forall>s. s \<notin> D (P `;` S) \<longrightarrow> Ra (P `;` S) s \<subseteq> Ra (Q `;` S) s"
-    apply(simp add: Ra_def D_seq F_seq)
+  have mono_SEQI2b:"P \<sqsubseteq> Q \<Longrightarrow> \<forall>s. s \<notin> \<D> (P \<^bold>; S) \<longrightarrow> Ra (P \<^bold>; S) s \<subseteq> Ra (Q \<^bold>; S) s"
+    apply(simp add: Ra_def D_Seq F_Seq)
     apply(insert le_approx_lemma_F[of P Q] le_approx_lemma_T[of P Q] 
           le_approx1[of P Q] le_approx2T[of P Q], auto) 
       using le_approx2 apply fastforce
@@ -215,8 +218,9 @@ proof -
 qed
 
 lemma minSeqInclu: 
-  "min_elems(D (P `;` S)) \<subseteq> min_elems(D P) \<union> {t1@t2|t1 t2. t1@[tick]\<in>T P\<and>t1\<notin>D P\<and>t2\<in>min_elems(D S)}"
-  apply(auto simp: D_seq min_elems_def)
+  "min_elems(\<D> (P \<^bold>; S)) 
+   \<subseteq> min_elems(\<D> P) \<union> {t1@t2|t1 t2. t1@[tick]\<in>\<T> P\<and>t1\<notin>\<D> P\<and>t2\<in>min_elems(\<D> S)}"
+  apply(auto simp: D_Seq min_elems_def)
      apply (meson process_charn)
     apply (metis append_Nil2 front_tickFree_Nil front_tickFree_append front_tickFree_mono 
            le_list_def less_list_def)
@@ -226,11 +230,11 @@ lemma minSeqInclu:
   by (metis D_imp_front_tickFree append_Nil2 front_tickFree_Nil front_tickFree_mono process_charn 
       list.distinct(1) nonTickFree_n_frontTickFree)
 
-lemma mono_D13 : 
+lemma mono_Seq_D13 : 
 assumes ordered: "P \<sqsubseteq> Q"
-shows        "min_elems (D (P `;` S)) \<subseteq> T (Q `;` S)"
+shows        "min_elems (\<D> (P \<^bold>; S)) \<subseteq> \<T> (Q \<^bold>; S)"
   apply (insert ordered, frule le_approx3, rule subset_trans [OF minSeqInclu])
-  apply (auto simp: F_seq T_seq min_elems_def append_T_imp_tickFree)
+  apply (auto simp: F_Seq T_Seq min_elems_def append_T_imp_tickFree)
      apply(rule_tac x="{}" in exI, rule is_processT5_S3)
       apply (metis (no_types, lifting) T_F elem_min_elems le_approx3 less_list_def min_elems5 subset_eq)
      using Nil_elem_T no_Trace_implies_no_Failure apply fastforce
@@ -238,24 +242,24 @@ shows        "min_elems (D (P `;` S)) \<subseteq> T (Q `;` S)"
    apply(rule_tac x="{}" in exI, metis (no_types, lifting) le_approx2T process_charn)
   by (metis (no_types, lifting) less_self nonTickFree_n_frontTickFree process_charn)  
 
-lemma mono_Seq[simp] : "P \<sqsubseteq> Q \<Longrightarrow> (P `;` S) \<sqsubseteq> (Q `;` S)"
-by (auto simp: le_approx_def mono_D11 mono_D12 mono_D13)
+lemma mono_Seq[simp] : "P \<sqsubseteq> Q \<Longrightarrow> (P \<^bold>; S) \<sqsubseteq> (Q \<^bold>; S)"
+by (auto simp: le_approx_def mono_Seq_D11 mono_Seq_D12 mono_Seq_D13)
 
-lemma mono_D21:  
-"P \<sqsubseteq> Q \<Longrightarrow> D (S `;` Q) \<subseteq> D (S `;` P)"
-  apply(auto simp: D_seq)
+lemma mono_Seq_D21:  
+"P \<sqsubseteq> Q \<Longrightarrow> \<D> (S \<^bold>; Q) \<subseteq> \<D> (S \<^bold>; P)"
+  apply(auto simp: D_Seq)
   using le_approx1 by blast
 
-lemma mono_D22: 
+lemma mono_Seq_D22: 
 assumes ordered: "P \<sqsubseteq> Q"
-shows   "(\<forall> s. s \<notin> D (S `;` P) \<longrightarrow> Ra (S `;` P) s = Ra (S `;` Q) s)"
+shows   "(\<forall> s. s \<notin> \<D> (S \<^bold>; P) \<longrightarrow> Ra (S \<^bold>; P) s = Ra (S \<^bold>; Q) s)"
 proof -
-  have mono_SEQI2a:"P \<sqsubseteq> Q \<Longrightarrow> \<forall>s. s \<notin> D (S `;` P) \<longrightarrow> Ra (S `;` Q) s \<subseteq> Ra (S `;` P) s"
-    apply(simp add: Ra_def D_seq F_seq)
+  have mono_SEQI2a:"P \<sqsubseteq> Q \<Longrightarrow> \<forall>s. s \<notin> \<D> (S \<^bold>; P) \<longrightarrow> Ra (S \<^bold>; Q) s \<subseteq> Ra (S \<^bold>; P) s"
+    apply(simp add: Ra_def D_Seq F_Seq)
     apply(insert le_approx_lemma_F[of P Q] le_approx_lemma_T[of P Q], auto) 
     using le_approx1 by fastforce+
-  have mono_SEQI2b:"P \<sqsubseteq> Q \<Longrightarrow> \<forall>s. s \<notin> D (S `;` P) \<longrightarrow> Ra (S `;` P) s \<subseteq> Ra (S `;` Q) s"
-    apply(simp add: Ra_def D_seq F_seq)
+  have mono_SEQI2b:"P \<sqsubseteq> Q \<Longrightarrow> \<forall>s. s \<notin> \<D> (S \<^bold>; P) \<longrightarrow> Ra (S \<^bold>; P) s \<subseteq> Ra (S \<^bold>; Q) s"
+    apply(simp add: Ra_def D_Seq F_Seq)
     apply(insert le_approx_lemma_F[of P Q] le_approx_lemma_T[of P Q] 
             le_approx1[of P Q] le_approx2T[of P Q], auto) 
     using le_approx2 by fastforce+
@@ -263,57 +267,57 @@ proof -
     using ordered mono_SEQI2a mono_SEQI2b by(blast)
 qed
 
-lemma mono_D23 : 
+lemma mono_Seq_D23 : 
 assumes ordered: "P \<sqsubseteq> Q"
-shows       "min_elems (D (S `;` P)) \<subseteq> T (S `;` Q)"
-  apply (insert ordered, frule le_approx3, auto simp:D_seq T_seq min_elems_def)
+shows       "min_elems (\<D> (S \<^bold>; P)) \<subseteq> \<T> (S \<^bold>; Q)"
+  apply (insert ordered, frule le_approx3, auto simp: D_Seq T_Seq min_elems_def)
      apply (metis (no_types, lifting) D_imp_front_tickFree Nil_elem_T append.assoc below_refl 
             front_tickFree_charn less_self min_elems2 no_Trace_implies_no_Failure)
     apply (simp add: append_T_imp_tickFree)
   by (metis (no_types, lifting) D_def D_imp_front_tickFree append_butlast_last_id append_is_Nil_conv 
         butlast_append butlast_snoc is_process9 is_process_Rep less_self nonTickFree_n_frontTickFree)
 
-lemma mono_Seq_sym[simp] : "P \<sqsubseteq> Q \<Longrightarrow> (S `;` P) \<sqsubseteq> (S `;` Q)"
-by (auto simp: le_approx_def mono_D21 mono_D22 mono_D23)
+lemma mono_Seq_sym[simp] : "P \<sqsubseteq> Q \<Longrightarrow> (S \<^bold>; P) \<sqsubseteq> (S \<^bold>; Q)"
+by (auto simp: le_approx_def mono_Seq_D21 mono_Seq_D22 mono_Seq_D23)
 
-lemma chain_Seq1: "chain Y \<Longrightarrow> chain (\<lambda>i. Y i `;` S)"
+lemma chain_Seq1: "chain Y \<Longrightarrow> chain (\<lambda>i. Y i \<^bold>; S)"
   by(simp add: chain_def) 
 
-lemma chain_Seq2: "chain Y \<Longrightarrow> chain (\<lambda>i. S `;` Y i)"
+lemma chain_Seq2: "chain Y \<Longrightarrow> chain (\<lambda>i. S \<^bold>; Y i)"
   by(simp add: chain_def)  
 
-lemma limproc_Seq_D1: "chain Y \<Longrightarrow> D (lim_proc (range Y) `;` S) = D (lim_proc (range (\<lambda>i. Y i `;` S)))"
-  apply(auto simp:Process_eq_spec D_seq F_seq F_LUB D_LUB T_LUB chain_Seq1)
+lemma limproc_Seq_D1: "chain Y \<Longrightarrow> \<D> (lim_proc (range Y) \<^bold>; S) = \<D> (lim_proc (range (\<lambda>i. Y i \<^bold>; S)))"
+  apply(auto simp:Process_eq_spec D_Seq F_Seq F_LUB D_LUB T_LUB chain_Seq1)
    apply(blast)
   proof -
     fix x
-    assume A:"\<forall>xa. (\<exists>t1 t2. x = t1 @ t2 \<and> t1 \<in> D (Y xa) \<and> tickFree t1 \<and> front_tickFree t2) \<or>
-                (\<exists>t1 t2. x = t1 @ t2 \<and> t1 @ [tick] \<in> T (Y xa) \<and> t2 \<in> D S)"
-    and B: "\<forall>t1 t2. x = t1 @ t2 \<longrightarrow> (\<exists>x. t1 @ [tick] \<notin> T (Y x)) \<or> t2 \<notin> D S"
+    assume A:"\<forall>xa. (\<exists>t1 t2. x = t1 @ t2 \<and> t1 \<in> \<D> (Y xa) \<and> tickFree t1 \<and> front_tickFree t2) \<or>
+                (\<exists>t1 t2. x = t1 @ t2 \<and> t1 @ [tick] \<in> \<T> (Y xa) \<and> t2 \<in> \<D> S)"
+    and B: "\<forall>t1 t2. x = t1 @ t2 \<longrightarrow> (\<exists>x. t1 @ [tick] \<notin> \<T> (Y x)) \<or> t2 \<notin> \<D> S"
     and C: "chain Y"
-    thus "\<exists>t1 t2. x = t1 @ t2 \<and> (\<forall>x. t1 \<in> D (Y x)) \<and> tickFree t1 \<and> front_tickFree t2"        
-      proof (cases "\<exists>n. \<forall>t1 \<le> x. t1 \<notin> D (Y n)")
+    thus "\<exists>t1 t2. x = t1 @ t2 \<and> (\<forall>x. t1 \<in> \<D> (Y x)) \<and> tickFree t1 \<and> front_tickFree t2"        
+      proof (cases "\<exists>n. \<forall>t1 \<le> x. t1 \<notin> \<D> (Y n)")
         case True
-        then obtain n where "\<forall>t1 \<le> x. t1 \<notin> D (Y n)" by blast
+        then obtain n where "\<forall>t1 \<le> x. t1 \<notin> \<D> (Y n)" by blast
         with A B C show ?thesis 
           apply(erule_tac x=n in allE, elim exE disjE, auto simp add:le_list_def)
           by (metis D_T chain_lemma is_processT le_approx2T)
       next
         case False
-        from False obtain t1 where D:"t1 \<le> x \<and> (\<forall>n. \<forall>t \<le> x. t \<in> D (Y n) \<longrightarrow> t \<le> t1)" by blast
-        with False have E:"\<forall>n. t1 \<in> D (Y n)" 
+        from False obtain t1 where D:"t1 \<le> x \<and> (\<forall>n. \<forall>t \<le> x. t \<in> \<D> (Y n) \<longrightarrow> t \<le> t1)" by blast
+        with False have E:"\<forall>n. t1 \<in> \<D> (Y n)" 
           by (metis append_Nil2 append_T_imp_tickFree front_tickFree_append front_tickFree_mono 
                     is_processT le_list_def local.A not_Cons_self2)
         from A B C D E show ?thesis
-          by (metis D_imp_front_tickFree T_def append_Nil2 front_tickFree_append 
+          by (metis D_imp_front_tickFree Traces_def append_Nil2 front_tickFree_append 
                     front_tickFree_implies_tickFree front_tickFree_mono is_processT 
                     is_process_Rep le_list_def nonTickFree_n_frontTickFree 
                     trace_with_Tick_implies_tickFree_front)          
       qed
   qed
 
-lemma limproc_Seq_F1: "chain Y \<Longrightarrow> F (lim_proc (range Y) `;` S) = F (lim_proc (range (\<lambda>i. Y i `;` S)))"
-  apply(auto simp add:Process_eq_spec D_seq F_seq F_LUB D_LUB T_LUB chain_Seq1)
+lemma limproc_Seq_F1: "chain Y \<Longrightarrow> \<F> (lim_proc (range Y) \<^bold>; S) = \<F> (lim_proc (range (\<lambda>i. Y i \<^bold>; S)))"
+  apply(auto simp add:Process_eq_spec D_Seq F_Seq F_LUB D_LUB T_LUB chain_Seq1)
   proof (auto, goal_cases)
     case (1 a b x)
     then show ?case
@@ -323,35 +327,40 @@ lemma limproc_Seq_F1: "chain Y \<Longrightarrow> F (lim_proc (range Y) `;` S) = 
       by (metis D_T append_T_imp_tickFree chain_lemma is_processT le_approx2T not_Cons_self2)
   next
     case (2 a b)
-    assume A1:"\<forall>t1 t2. a = t1 @ t2 \<longrightarrow> (\<exists>x. t1 @ [tick] \<notin> T (Y x)) \<or> t2 \<notin> D S"
-      and  A2:"\<forall>t1. tickFree t1 \<longrightarrow> (\<forall>t2. a = t1 @ t2 \<longrightarrow> (\<exists>x. t1 \<notin> D (Y x)) \<or> \<not> front_tickFree t2)"
-      and  A3:"\<forall>t1 t2. a = t1 @ t2 \<longrightarrow> (\<exists>x. t1 @ [tick] \<notin> T (Y x)) \<or> (t2, b) \<notin> F S"
-      and  B: "\<forall>x. (a, insert tick b) \<in> F (Y x) \<and> tickFree a \<or>
-               (\<exists>t1 t2. a = t1 @ t2 \<and> t1 @ [tick] \<in> T (Y x) \<and> (t2, b) \<in> F S) \<or>
-               (\<exists>t1 t2. a = t1 @ t2 \<and> t1 \<in> D (Y x) \<and> tickFree t1 \<and> front_tickFree t2) \<or>
-               (\<exists>t1 t2. a = t1 @ t2 \<and> t1 @ [tick] \<in> T (Y x) \<and> t2 \<in> D S)"
+    assume A1:"\<forall>t1 t2. a = t1 @ t2 \<longrightarrow> (\<exists>x. t1 @ [tick] \<notin> \<T> (Y x)) \<or> t2 \<notin> \<D> S"
+      and  A2:"\<forall>t1. tickFree t1 \<longrightarrow> (\<forall>t2. a = t1 @ t2 \<longrightarrow> (\<exists>x. t1 \<notin> \<D> (Y x)) \<or> \<not> front_tickFree t2)"
+      and  A3:"\<forall>t1 t2. a = t1 @ t2 \<longrightarrow> (\<exists>x. t1 @ [tick] \<notin> \<T> (Y x)) \<or> (t2, b) \<notin> \<F> S"
+      and  B: "\<forall>x. (a, insert tick b) \<in> \<F> (Y x) \<and> tickFree a \<or>
+               (\<exists>t1 t2. a = t1 @ t2 \<and> t1 @ [tick] \<in> \<T> (Y x) \<and> (t2, b) \<in> \<F> S) \<or>
+               (\<exists>t1 t2. a = t1 @ t2 \<and> t1 \<in> \<D> (Y x) \<and> tickFree t1 \<and> front_tickFree t2) \<or>
+               (\<exists>t1 t2. a = t1 @ t2 \<and> t1 @ [tick] \<in> \<T> (Y x) \<and> t2 \<in> \<D> S)"
       and  C:"chain Y" 
     have E:"\<not> tickFree a \<Longrightarrow> False"
       proof -
         assume F:"\<not> tickFree a"
-        from A obtain f where D:"f = (\<lambda>t2. {n. \<exists>t1. a = t1 @ t2 \<and> t1 @ [tick] \<in> T (Y n) \<and> (t2, b) \<in> F S}
-                                      \<union> {n. \<exists>t1. a = t1 @ t2 \<and> t1 \<in> D (Y n) \<and> tickFree t1 \<and> front_tickFree t2})"
+        from A obtain f 
+          where D:"f = (\<lambda>t2. {n. \<exists>t1. a = t1 @ t2 \<and> t1 @ [tick] \<in> \<T> (Y n) \<and> (t2, b) \<in> \<F> S}
+                           \<union> {n. \<exists>t1. a = t1 @ t2 \<and> t1 \<in> \<D> (Y n) \<and> tickFree t1 \<and> front_tickFree t2})"
           by simp
-        with B F have "\<forall>n. n \<in> (\<Union>x\<in>{t. \<exists>t1. a = t1 @ t}. f x)"  (is "\<forall>n. n \<in> ?S f") using NF_ND by fastforce
+        with B F have "\<forall>n. n \<in> (\<Union>x\<in>{t. \<exists>t1. a = t1 @ t}. f x)"  
+                      (is "\<forall>n. n \<in> ?S f") using NF_ND by fastforce
         hence "infinite (?S f)" by (simp add: Sup_set_def)
         then obtain t2 where E:"t2\<in>{t. \<exists>t1. a = t1 @ t} \<and> infinite (f t2)" using suffixes_fin by blast
-        { assume E1:"infinite{n. \<exists>t1. a = t1 @ t2 \<and> t1 @ [tick] \<in> T (Y n) \<and> (t2, b) \<in> F S}" (is "infinite ?E1")
-          with E obtain t1 where F:"a = t1 @ t2 \<and> (t2, b) \<in> F S" using D not_finite_existsD by blast
-          with A3 obtain m where G:"t1@ [tick] \<notin> T (Y m)" by blast
+        { assume E1:"infinite{n. \<exists>t1. a = t1 @ t2 \<and> t1 @ [tick] \<in> \<T> (Y n) \<and> (t2, b) \<in> \<F> S}" 
+                     (is "infinite ?E1")
+          with E obtain t1 where F:"a = t1 @ t2 \<and> (t2, b) \<in> \<F> S" using D not_finite_existsD by blast
+          with A3 obtain m where G:"t1@ [tick] \<notin> \<T> (Y m)" by blast
           with E1 obtain n where "n \<ge> m \<and> n \<in> ?E1" by (meson finite_nat_set_iff_bounded_le nat_le_linear)
-          with D have "n \<ge> m \<and> t1@ [tick] \<in> T (Y n)" by (simp add: F)
+          with D have "n \<ge> m \<and> t1@ [tick] \<in> \<T> (Y n)" by (simp add: F)
           with G C have False using le_approx_lemma_T chain_mono by blast
         } note E1 = this
-        { assume E2:"infinite{n. \<exists>t1. a = t1 @ t2 \<and> t1 \<in> D (Y n) \<and> tickFree t1 \<and> front_tickFree t2}" (is "infinite ?E2")
-          with E obtain t1 where F:"a = t1 @ t2 \<and> tickFree t1 \<and> front_tickFree t2" using D not_finite_existsD by blast
-          with A2 obtain m where G:"t1 \<notin> D (Y m)" by blast
+        { assume E2:"infinite{n. \<exists>t1. a = t1 @ t2 \<and> t1 \<in> \<D> (Y n) \<and> tickFree t1 \<and> front_tickFree t2}" 
+                    (is "infinite ?E2")
+          with E obtain t1 where F:"a = t1 @ t2 \<and> tickFree t1 \<and> front_tickFree t2" 
+            using D not_finite_existsD by blast
+          with A2 obtain m where G:"t1 \<notin> \<D> (Y m)" by blast
           with E2 obtain n where "n \<ge> m \<and> n \<in> ?E2" by (meson finite_nat_set_iff_bounded_le nat_le_linear)
-          with D have "n \<ge> m \<and> t1 \<in> D (Y n)" by (simp add: F)
+          with D have "n \<ge> m \<and> t1 \<in> \<D> (Y n)" by (simp add: F)
           with G C have False using le_approx1 chain_mono by blast
         } note E2 = this      
         from D E E1 E2 show False by blast
@@ -359,72 +368,73 @@ lemma limproc_Seq_F1: "chain Y \<Longrightarrow> F (lim_proc (range Y) `;` S) = 
     from E show "tickFree a" by blast
   qed
 
-lemma cont_left_D : "chain Y \<Longrightarrow> ((\<Squnion> i. Y i) `;` S) = (\<Squnion> i. (Y i `;` S))"
+lemma cont_left_D_Seq : "chain Y \<Longrightarrow> ((\<Squnion> i. Y i) \<^bold>; S) = (\<Squnion> i. (Y i \<^bold>; S))"
   by (simp add: Process_eq_spec chain_Seq1 limproc_Seq_D1 limproc_Seq_F1 limproc_is_thelub)
 
-lemma limproc_Seq_D2: "chain Y \<Longrightarrow> D (S `;` lim_proc (range Y)) = D (lim_proc (range (\<lambda>i. S `;` Y i )))"
-  apply(auto simp add:Process_eq_spec D_seq F_seq F_LUB D_LUB T_LUB chain_Seq2)
+lemma limproc_Seq_D2: "chain Y \<Longrightarrow> \<D> (S \<^bold>; lim_proc (range Y)) = \<D> (lim_proc (range (\<lambda>i. S \<^bold>; Y i )))"
+  apply(auto simp add:Process_eq_spec D_Seq F_Seq F_LUB D_LUB T_LUB chain_Seq2)
   apply(blast)
   proof -
     fix x
-    assume A:"\<forall>t1. t1 @ [tick] \<in> T S \<longrightarrow> (\<forall>t2. x = t1 @ t2 \<longrightarrow> (\<exists>x. t2 \<notin> D (Y x)))"
-    and B: "\<forall>n. \<exists>t1 t2. x = t1 @ t2 \<and> t1 @ [tick] \<in> T S \<and> t2 \<in> D (Y n)"
+    assume A:"\<forall>t1. t1 @ [tick] \<in> \<T> S \<longrightarrow> (\<forall>t2. x = t1 @ t2 \<longrightarrow> (\<exists>x. t2 \<notin> \<D> (Y x)))"
+    and B: "\<forall>n. \<exists>t1 t2. x = t1 @ t2 \<and> t1 @ [tick] \<in> \<T> S \<and> t2 \<in> \<D> (Y n)"
     and C: "chain Y"
-    from A obtain f where D:"f = (\<lambda>t2. {n. \<exists>t1. x = t1 @ t2 \<and> t1 @ [tick] \<in> T S \<and> t2 \<in> D (Y n)})"
+    from A obtain f where D:"f = (\<lambda>t2. {n. \<exists>t1. x = t1 @ t2 \<and> t1 @ [tick] \<in> \<T> S \<and> t2 \<in> \<D> (Y n)})"
       by simp
     with B have "\<forall>n. n \<in> (\<Union>x\<in>{t. \<exists>t1. x = t1 @ t}. f x)" (is "\<forall>n. n \<in> ?S f") by fastforce
     hence "infinite (?S f)" by (simp add: Sup_set_def)
     then obtain t2 where E:"t2\<in>{t. \<exists>t1. x = t1 @ t} \<and> infinite (f t2)" using suffixes_fin by blast
-    then obtain t1 where F:"x = t1 @ t2 \<and> t1 @ [tick] \<in> T S" using D not_finite_existsD by blast
-    from A F obtain m where G:"t2 \<notin> D (Y m)" by blast
+    then obtain t1 where F:"x = t1 @ t2 \<and> t1 @ [tick] \<in> \<T> S" using D not_finite_existsD by blast
+    from A F obtain m where G:"t2 \<notin> \<D> (Y m)" by blast
     with E obtain n where "n \<ge> m \<and> n \<in> (f t2)" by (meson finite_nat_set_iff_bounded_le nat_le_linear)
-    with D have "n \<ge> m \<and> t2 \<in> D (Y n)" by blast
+    with D have "n \<ge> m \<and> t2 \<in> \<D> (Y n)" by blast
     with G C have False using le_approx1 po_class.chain_mono by blast
-    thus "\<exists>t1 t2. x = t1 @ t2 \<and> t1 \<in> D S \<and> tickFree t1 \<and> front_tickFree t2" ..       
+    thus "\<exists>t1 t2. x = t1 @ t2 \<and> t1 \<in> \<D> S \<and> tickFree t1 \<and> front_tickFree t2" ..       
   qed
 
-lemma limproc_Seq_F2: "chain Y \<Longrightarrow> F (S `;` lim_proc (range Y)) = F (lim_proc (range (\<lambda>i. S `;` Y i )))"
-  apply(auto simp:Process_eq_spec D_seq F_seq T_seq F_LUB D_LUB D_LUB_2 T_LUB T_LUB_2 chain_Seq2 del:conjI)
+lemma limproc_Seq_F2: 
+  "chain Y \<Longrightarrow> \<F> (S \<^bold>; lim_proc (range Y)) = \<F> (lim_proc (range (\<lambda>i. S \<^bold>; Y i )))"
+  apply(auto simp:Process_eq_spec D_Seq F_Seq T_Seq F_LUB D_LUB D_LUB_2 T_LUB T_LUB_2 chain_Seq2 del:conjI)
     apply(auto)[1]
    apply(auto)[1]
   proof-
     fix x X
-    assume A:"\<forall>t1. t1 @ [tick] \<in> T S \<longrightarrow> (\<forall>t2. x = t1 @ t2 \<longrightarrow> (\<exists>m. (t2, X) \<notin> F (Y m)))"
-    and B: "\<forall>n. (\<exists>t1 t2. x = t1 @ t2 \<and> t1 @ [tick] \<in> T S \<and> (t2, X) \<in> F (Y n)) \<or>
-                (\<exists>t1 t2. x = t1 @ t2 \<and> t1 @ [tick] \<in> T S \<and> t2 \<in> D (Y n))"
+    assume A:"\<forall>t1. t1 @ [tick] \<in> \<T> S \<longrightarrow> (\<forall>t2. x = t1 @ t2 \<longrightarrow> (\<exists>m. (t2, X) \<notin> \<F> (Y m)))"
+    and B: "\<forall>n. (\<exists>t1 t2. x = t1 @ t2 \<and> t1 @ [tick] \<in> \<T> S \<and> (t2, X) \<in> \<F> (Y n)) \<or>
+                (\<exists>t1 t2. x = t1 @ t2 \<and> t1 @ [tick] \<in> \<T> S \<and> t2 \<in> \<D> (Y n))"
     and C: "chain Y"
-    hence D:"\<forall>n. (\<exists>t1 t2. x = t1 @ t2 \<and> t1 @ [tick] \<in> T S \<and> (t2, X) \<in> F (Y n))" by (meson NF_ND)
-    from A obtain f where D:"f = (\<lambda>t2. {n. \<exists>t1. x = t1 @ t2 \<and> t1 @ [tick] \<in> T S \<and> (t2, X) \<in> F (Y n)})"
+    hence D:"\<forall>n. (\<exists>t1 t2. x = t1 @ t2 \<and> t1 @ [tick] \<in> \<T> S \<and> (t2, X) \<in> \<F> (Y n))" by (meson NF_ND)
+    from A obtain f where D:"f = (\<lambda>t2. {n. \<exists>t1. x = t1 @ t2 \<and> t1 @ [tick] \<in> \<T> S \<and> (t2, X) \<in> \<F> (Y n)})"
       by simp
     with D have "\<forall>n. n \<in> (\<Union>x\<in>{t. \<exists>t1. x = t1 @ t}. f x)" using B NF_ND by fastforce
     hence "infinite (\<Union>x\<in>{t. \<exists>t1. x = t1 @ t}. f x)" by (simp add: Sup_set_def)
     then obtain t2 where E:"t2\<in>{t. \<exists>t1. x = t1 @ t} \<and> infinite (f t2)" using suffixes_fin by blast
-    then obtain t1 where F:"x = t1 @ t2 \<and> t1 @ [tick] \<in> T S" using D not_finite_existsD by blast
-    from A F obtain m where G:"(t2, X) \<notin> F (Y m)" by blast
+    then obtain t1 where F:"x = t1 @ t2 \<and> t1 @ [tick] \<in> \<T> S" using D not_finite_existsD by blast
+    from A F obtain m where G:"(t2, X) \<notin> \<F> (Y m)" by blast
     with E obtain n where "n \<ge> m \<and> n \<in> (f t2)" by (meson finite_nat_set_iff_bounded_le nat_le_linear)
-    with D have "n \<ge> m \<and> (t2, X) \<in> F (Y n)" by blast
+    with D have "n \<ge> m \<and> (t2, X) \<in> \<F> (Y n)" by blast
     with G C have False using is_processT8 po_class.chain_mono proc_ord2a by blast
-    thus "(x, insert tick X) \<in> F S \<and> tickFree x" ..
+    thus "(x, insert tick X) \<in> \<F> S \<and> tickFree x" ..
   qed
 
-lemma cont_right_D : "chain Y \<Longrightarrow> (S `;` (\<Squnion> i. Y i)) = (\<Squnion> i. (S `;` Y i))"
+lemma cont_right_D_Seq : "chain Y \<Longrightarrow> (S \<^bold>; (\<Squnion> i. Y i)) = (\<Squnion> i. (S \<^bold>; Y i))"
   by (simp add: Process_eq_spec chain_Seq2 limproc_Seq_D2 limproc_Seq_F2 limproc_is_thelub)
 
 lemma Seq_cont[simp]:
 assumes f:"cont f"
 and     g:"cont g"
-shows     "cont (\<lambda>x. f x `;` g x)"
+shows     "cont (\<lambda>x. f x \<^bold>; g x)"
 proof -
-  have A : "\<And>x. cont g \<Longrightarrow> cont (\<lambda>y. y `;` g x)"
+  have A : "\<And>x. cont g \<Longrightarrow> cont (\<lambda>y. y \<^bold>; g x)"
     apply (rule contI2, rule monofunI)
      apply (auto)
-    by (simp add: cont_left_D)
-  have B : "\<And>y. cont g \<Longrightarrow> cont (\<lambda>x. y `;` g x)"
-    apply (rule_tac c="(\<lambda> x. y `;` x)" in cont_compose)
+    by (simp add: cont_left_D_Seq)
+  have B : "\<And>y. cont g \<Longrightarrow> cont (\<lambda>x. y \<^bold>; g x)"
+    apply (rule_tac c="(\<lambda> x. y \<^bold>; x)" in cont_compose)
      apply (rule contI2,rule monofunI)
-    by (auto simp add: chain_Seq2 cont_right_D)
+    by (auto simp add: chain_Seq2 cont_right_D_Seq)
   show ?thesis using f g 
-    apply(rule_tac f="(\<lambda>x. (\<lambda> f. f `;` g x))" in cont_apply)
+    apply(rule_tac f="(\<lambda>x. (\<lambda> f. f \<^bold>; g x))" in cont_apply)
       by(auto intro:contI2 monofunI simp:A B)
 qed
 

@@ -55,25 +55,29 @@ definition   Mprefix     :: "['a set,'a => 'a process] => 'a process" where
   "Mprefix A P \<equiv>  Abs_process(  
                               {(tr,ref). tr = [] \<and> ref Int (ev ` A) = {}} \<union>
                               {(tr,ref). tr \<noteq> [] \<and> hd tr \<in> (ev ` A) \<and>
-                                         (\<exists> a. ev a = (hd tr)\<and>(tl tr,ref)\<in>F(P a))},
+                                         (\<exists> a. ev a = (hd tr)\<and>(tl tr,ref)\<in>\<F>(P a))},
                               {d. d \<noteq> [] \<and>  hd d  \<in> (ev ` A) \<and>
-                                         (\<exists> a. ev a = hd d \<and> tl d \<in> D(P a))})"
+                                         (\<exists> a. ev a = hd d \<and> tl d \<in> \<D> (P a))})"
 
-syntax(xsymbols)
-  "@mprefix" :: "[pttrn,'a set,'a process] \<Rightarrow> 'a process"	("(3\<box>(_) \<in> (_) \<rightarrow> (_))"[0,0,64]64)
+syntax
+  "_Mprefix" :: "[pttrn,'a set,'a process] \<Rightarrow> 'a process"	("(3\<box>(_/\<in>_)/ \<rightarrow> (_))"[0,0,64]64)
 
+term "Ball A (\<lambda>x. P)"
 
 translations
-  "\<box>x\<in>A \<rightarrow> P" => "CONST Mprefix A (\<lambda>x. P)"
+  "\<box>x\<in>A \<rightarrow> P" \<rightleftharpoons> "CONST Mprefix A (\<lambda>x. P)"
+
+text\<open>Syntax Check:\<close>
+term \<open>\<box>x\<in>A \<rightarrow> \<box>y\<in>A \<rightarrow> \<box>z\<in>A \<rightarrow> P z x y = Q\<close>
 
 subsection\<open> Well-foundedness of Mprefix \<close>
 
-lemma is_process_REP_Mp  :
+lemma is_process_REP_Mprefix  :
 "is_process ({(tr,ref). tr=[] \<and>  ref \<inter> (ev ` A) = {}} \<union>
              {(tr,ref). tr \<noteq> [] \<and> hd tr \<in> (ev ` A) \<and>
-                        (\<exists> a. ev a = (hd tr) \<and> (tl tr,ref) \<in> F(P a))},
+                        (\<exists> a. ev a = (hd tr) \<and> (tl tr,ref) \<in> \<F>(P a))},
              {d. d \<noteq>  [] \<and>  hd d \<in> (ev ` A) \<and>
-                        (\<exists> a. ev a = hd d  \<and> tl d \<in> D(P a))})"
+                        (\<exists> a. ev a = hd d  \<and> tl d \<in> \<D>(P a))})"
  (is "is_process(?f, ?d)")
 proof  (simp only:is_process_def FAILURES_def DIVERGENCES_def
                   Product_Type.fst_conv Product_Type.snd_conv,
@@ -132,18 +136,18 @@ qed
 
 
 (* bizarre exercise in style proposed by Makarius... *)
-lemma is_process_REP_Mp'  :
+lemma is_process_REP_Mprefix'  :
      "is_process ({(tr,ref). tr=[] \<and>  ref \<inter> (ev ` A) = {}} \<union>
                   {(tr,ref). tr \<noteq> [] \<and> hd tr \<in> (ev ` A) \<and>
-                        (\<exists> a. ev a = (hd tr) \<and> (tl tr,ref) \<in> F(P a))},
+                        (\<exists> a. ev a = (hd tr) \<and> (tl tr,ref) \<in> \<F>(P a))},
                   {d. d \<noteq>  [] \<and>  hd d \<in> (ev ` A) \<and>
-                        (\<exists> a. ev a = hd d  \<and> tl d \<in> D(P a))})"
+                        (\<exists> a. ev a = hd d  \<and> tl d \<in> \<D>(P a))})"
  (is "is_process(?f, ?d)")
 proof  (simp only:is_process_def FAILURES_def DIVERGENCES_def
                   Product_Type.fst_conv Product_Type.snd_conv,
         intro conjI allI impI,goal_cases)
   case 1
-    show "([],{}) \<in> ?f" by(simp )
+    show "([],{}) \<in> ?f" by(simp)
 next  
   case (2 s X) 
     assume H : "(s, X) \<in> ?f"
@@ -192,47 +196,47 @@ next
     then show "s \<in> ?d" by(auto)
 qed
 
-lemmas  Rep_Abs_Mp[simp] = Abs_process_inverse[simplified, OF is_process_REP_Mp]
-thm Rep_Abs_Mp
+lemmas  Rep_Abs_Mprefix[simp] = Abs_process_inverse[simplified, OF is_process_REP_Mprefix]
+thm Rep_Abs_Mprefix
    
-lemma Rep_Abs_Mp'' : 
+lemma Rep_Abs_Mprefix'' : 
 assumes H1 : "f = {(tr, ref). tr = [] \<and> ref \<inter> ev ` A = {}} \<union>
                   {(tr, ref). tr \<noteq> [] \<and> hd tr \<in> ev ` A 
-                             \<and> (\<exists>a. ev a = hd tr \<and> (tl tr, ref) \<in> F (P a))}"
+                             \<and> (\<exists>a. ev a = hd tr \<and> (tl tr, ref) \<in> \<F> (P a))}"
     and H2 : "d = {d. d \<noteq>  [] \<and>  hd d \<in> (ev ` A) \<and> 
-                     (\<exists> a. ev a = hd d  \<and> tl d \<in> D(P a))}"
+                     (\<exists> a. ev a = hd d  \<and> tl d \<in> \<D>(P a))}"
 shows "Rep_process (Abs_process (f,d)) = (f,d)"
 by(subst Abs_process_inverse, 
-   simp_all only: H1 H2 CollectI Rep_process is_process_REP_Mp)
+   simp_all only: H1 H2 CollectI Rep_process is_process_REP_Mprefix)
 
 
 subsection \<open> Projections in Prefix \<close>
 
 lemma F_Mprefix : 
-"F(\<box> x \<in> A \<rightarrow> P x) = {(tr,ref). tr=[] \<and>  ref \<inter> (ev ` A) = {}} \<union>
-                     {(tr,ref). tr \<noteq> [] \<and> hd tr \<in> (ev ` A) \<and> 
-                               (\<exists> a. ev a = (hd tr) \<and> (tl tr,ref) \<in> F(P a))}"
-by(simp add:Mprefix_def F_def Rep_Abs_Mp'' FAILURES_def)
+  "\<F> (\<box> x \<in> A \<rightarrow> P x) = {(tr,ref). tr=[] \<and>  ref \<inter> (ev ` A) = {}} \<union>
+                         {(tr,ref). tr \<noteq> [] \<and> hd tr \<in> (ev ` A) \<and> 
+                                   (\<exists> a. ev a = (hd tr) \<and> (tl tr,ref) \<in> \<F>(P a))}"
+  by(simp add:Mprefix_def Failures_def Rep_Abs_Mprefix'' FAILURES_def)
 
 
 lemma D_Mprefix:
-"D(\<box> x \<in> A \<rightarrow> P x) = {d. d \<noteq>  [] \<and>  hd d \<in> (ev ` A) \<and> 
-                        (\<exists> a. ev a = hd d  \<and> tl d \<in> D(P a))}"
-by(simp add:Mprefix_def D_def Rep_Abs_Mp'' DIVERGENCES_def)
+  "\<D> (\<box> x \<in> A \<rightarrow> P x) = {d. d \<noteq>  [] \<and>  hd d \<in> (ev ` A) \<and> 
+                           (\<exists> a. ev a = hd d  \<and> tl d \<in> \<D>(P a))}"
+  by(simp add:Mprefix_def D_def Rep_Abs_Mprefix'' DIVERGENCES_def)
 
 
 lemma T_Mprefix:
- "T(\<box> x \<in> A \<rightarrow> P x)={s. s=[] \<or> (\<exists> a. a\<in>A \<and> s\<noteq>[] \<and> hd s = ev a \<and> tl s \<in> T(P a))}"
-by(auto simp: T_F_spec[symmetric] F_Mprefix)
+  "\<T> (\<box> x \<in> A \<rightarrow> P x)={s. s=[] \<or> (\<exists> a. a\<in>A \<and> s\<noteq>[] \<and> hd s = ev a \<and> tl s \<in> \<T>(P a))}"
+  by(auto simp: T_F_spec[symmetric] F_Mprefix)
 
 subsection \<open> Basic Properties \<close>
 
-lemma tick_T_Mprefix [simp]: "[tick] \<notin> T(\<box> x \<in> A \<rightarrow> P x)"
-by(simp add:T_Mprefix)
+lemma tick_T_Mprefix [simp]: "[tick] \<notin> \<T> (\<box> x \<in> A \<rightarrow> P x)"
+  by(simp add:T_Mprefix)
 
 
-lemma Nil_Nin_D_Mprefix [simp]: "[] \<notin> D(\<box> x \<in> A \<rightarrow> P x)"
-by(simp add: D_Mprefix)
+lemma Nil_Nin_D_Mprefix [simp]: "[] \<notin> \<D> (\<box> x \<in> A \<rightarrow> P x)"
+  by(simp add: D_Mprefix)
 
 subsection\<open> Proof of Continuity Rule \<close>
 
@@ -248,7 +252,7 @@ definition
 
 lemma contlubE:
   "\<lbrakk>contlub f; chain Y\<rbrakk> \<Longrightarrow> f (\<Squnion> i. Y i) = (\<Squnion> i. f (Y i))"
-by (simp add: contlub_def)
+  by (simp add: contlub_def)
 
 
 lemma monocontlub2cont: "\<lbrakk>monofun f; contlub f\<rbrakk> \<Longrightarrow> cont f"
@@ -273,22 +277,22 @@ done
 subsubsection\<open> Core of Proof  \<close>
 
 lemma mono_Mprefix1:
-"\<forall>a\<in>A. P a \<sqsubseteq> Q a \<Longrightarrow> D (Mprefix A Q) \<subseteq> D (Mprefix A P)"
+"\<forall>a\<in>A. P a \<sqsubseteq> Q a \<Longrightarrow> \<D> (Mprefix A Q) \<subseteq> \<D> (Mprefix A P)"
   apply(auto simp: D_Mprefix) using le_approx1 by blast
 
 lemma mono_Mprefix2:
 "\<forall>x\<in>A. P x \<sqsubseteq> Q x \<Longrightarrow>
- \<forall>s. s \<notin> D (Mprefix A P) \<longrightarrow> Ra (Mprefix A P) s = Ra (Mprefix A Q) s"          
+ \<forall>s. s \<notin> \<D> (Mprefix A P) \<longrightarrow> Ra (Mprefix A P) s = Ra (Mprefix A Q) s"          
   apply (auto simp: Ra_def D_Mprefix F_Mprefix) using proc_ord2a by blast+
 
 lemma mono_Mprefix3 :
 assumes H:"\<forall>x\<in>A. P x \<sqsubseteq> Q x"
-shows " min_elems (D (Mprefix A P)) \<subseteq> T (Mprefix A Q)"
+shows " min_elems (\<D> (Mprefix A P)) \<subseteq> \<T> (Mprefix A Q)"
 proof(auto simp: min_elems_def D_Mprefix T_Mprefix image_def, goal_cases)
   case (1 x a)
   with H[rule_format, of a, OF 1(2)] show ?case 
     apply(auto dest!: le_approx3 simp: min_elems_def)
-    apply(subgoal_tac "\<forall>t. t \<in> D (P a) \<longrightarrow> \<not> t < tl x", auto)
+    apply(subgoal_tac "\<forall>t. t \<in> \<D> (P a) \<longrightarrow> \<not> t < tl x", auto)
     apply(rename_tac t, erule_tac x="(ev a)#t" in allE, auto)
     using less_cons hd_Cons_tl by metis
 qed
@@ -306,15 +310,15 @@ by(auto simp: Fun_Cpo.below_fun_def monofun_def mono_Mprefix0)
 
 
 lemma proc_ord2_set: 
-"P \<sqsubseteq> Q \<Longrightarrow> {(s, X). s \<notin> D P \<and> (s, X) \<in> F P} = {(s, X). s \<notin> D P \<and> (s, X) \<in> F Q}"
+"P \<sqsubseteq> Q \<Longrightarrow> {(s, X). s \<notin> \<D> P \<and> (s, X) \<in> \<F> P} = {(s, X). s \<notin> \<D> P \<and> (s, X) \<in> \<F> Q}"
 by(auto simp: le_approx2)
 
 
-lemma proc_ord_proc_eq_spec: "P \<sqsubseteq> Q \<Longrightarrow> D P \<subseteq> D Q \<Longrightarrow> P = Q"
+lemma proc_ord_proc_eq_spec: "P \<sqsubseteq> Q \<Longrightarrow> \<D> P \<subseteq> \<D> Q \<Longrightarrow> P = Q"
 by (metis (mono_tags, lifting) below_antisym below_refl le_approx_def subset_antisym)
 
 
-lemma mprefix_chainpreserving: "chain Y \<Longrightarrow> chain (\<lambda>i. Mprefix A (Y i))"
+lemma Mprefix_chainpreserving: "chain Y \<Longrightarrow> chain (\<lambda>i. Mprefix A (Y i))"
 apply(rule chainI, rename_tac i)
 apply(frule_tac i="i" in chainE)
 by(simp add: mono_Mprefix0 fun_belowD)
@@ -325,7 +329,7 @@ assumes     "chain S"
 shows       "(Lub S c) = lim_proc (range (\<lambda>x. (S x c)))"
 proof -
   have    "\<And>xa. chain (\<lambda>x. S x xa)"
-                  using \<open>chain S\<close> by(auto intro!: chainI  simp: chain_def fun_belowD )
+                  using `chain S` by(auto intro!: chainI  simp: chain_def fun_belowD )
   then     show ?thesis  by (metis contlub_lambda limproc_is_thelub)
 qed
 
@@ -339,14 +343,14 @@ proof(rule contlubI, rule proc_ord_proc_eq_spec)
                  by(auto simp: chain_def fun_belowD)
    show       "Mprefix A (\<Squnion> i. Y i) \<sqsubseteq> (\<Squnion> i. Mprefix A (Y i))"
                  by(auto simp: Process.le_approx_def F_Mprefix D_Mprefix T_Mprefix C C'
-                               mprefix_chainpreserving limproc_is_thelub limproc_is_thelub_fun
+                               Mprefix_chainpreserving limproc_is_thelub limproc_is_thelub_fun
                                D_T D_LUB D_LUB_2 F_LUB T_LUB_2 Ra_def min_elems_def)
 next
    fix Y   :: "nat \<Rightarrow> 'a \<Rightarrow> 'a process" 
    assume C : "chain Y" 
-   show       "D (Mprefix A (\<Squnion> i. Y i)) \<subseteq> D (\<Squnion> i. Mprefix A (Y i))"
+   show       "\<D> (Mprefix A (\<Squnion> i. Y i)) \<subseteq> \<D> (\<Squnion> i. Mprefix A (Y i))"
                  apply(auto simp: Process.le_approx_def F_Mprefix D_Mprefix T_Mprefix 
-                                  C mprefix_chainpreserving limproc_is_thelub D_LUB_2)
+                                  C Mprefix_chainpreserving limproc_is_thelub D_LUB_2)
                  by (meson C fun_below_iff in_mono is_ub_thelub le_approx1)
 qed
 
@@ -368,7 +372,7 @@ a pair, rather than as a function of type @{typ "'a\<Rightarrow>'b"}. This paves
 for \emph{typed} channels over a common universe of events. \<close>
 
 definition  read     :: "['a \<Rightarrow> 'b,'a set, 'a \<Rightarrow> 'b process] \<Rightarrow> 'b process"
-where      "read c A P  \<equiv> Mprefix(c ` A) (P o (inv c))"
+where      "read c A P  \<equiv> Mprefix(c ` A) (P o (inv_into A c))"
 definition "write"    :: "['a \<Rightarrow> 'b, 'a, 'b process] \<Rightarrow> 'b process"
 where      "write c a P \<equiv> Mprefix {c a} (\<lambda> x. P)"
 definition  write0   :: "['a, 'a process] \<Rightarrow> 'a process"
@@ -377,30 +381,37 @@ where      "write0 a P \<equiv> Mprefix {a} (\<lambda> x. P)"
 
 syntax
   "_read"   :: "[id, pttrn, 'a process] => 'a process"
-                                        ("(3_`?`_ /\<rightarrow> _)" [0,0,28] 28)
+                                        ("(3(_\<^bold>?_) /\<rightarrow> _)" [0,0,78] 78)
   "_readX"  :: "[id, pttrn, bool,'a process] => 'a process"
-                                        ("(3_`?`_`|`_ /\<rightarrow> _)" [0,0,28] 28)
+                                        ("(3(_\<^bold>?_)\<^bold>|_ /\<rightarrow> _)" [0,0,78] 78)
   "_readS"  :: "[id, pttrn, 'b set,'a process] => 'a process"
-                                        ("(3_`?`_`:`_ /\<rightarrow> _)" [0,0,28] 28)
+                                        ("(3(_\<^bold>?_)\<in>_ /\<rightarrow> _)" [0,0,78] 78)
   "_write"  :: "[id, 'b, 'a process] => 'a process"
-                                        ("(3_`!`_ /\<rightarrow> _)" [0,0,28] 28)
+                                        ("(3(_\<^bold>!_) /\<rightarrow> _)" [0,0,78] 78)
   "_writeS" :: "['a, 'a process] => 'a process"
-                                        ("(3_ /\<rightarrow> _)" [0,28] 28)
+                                        ("(3_ /\<rightarrow> _)" [0,78]78)
 
 subsection\<open>CSP$_M$-Style Syntax for Communication Primitives\<close>
 translations
-  "_read c p P"     == "CONST read c CONST UNIV (\<lambda>p. P)"
-  "_write c p P"    == "CONST write c p P"
+  "_read c p P"     \<rightleftharpoons> "CONST read c CONST UNIV (\<lambda>p. P)"
+  "_write c p P"    \<rightleftharpoons> "CONST write c p P"
   "_readX c p b P"  => "CONST read c {p. b} (\<lambda>p. P)"
-  "_writeS a P"     == "CONST write0 a P"
+  "_writeS a P"     \<rightleftharpoons> "CONST write0 a P"
   "_readS c p A P"  => "CONST read c A (\<lambda>p. P)"
 
-lemma read_cont[simp]:
-"(\<And>x. cont (f x)) \<Longrightarrow> cont (\<lambda>y. c`?`x \<rightarrow> f x y)"
-by(simp add:read_def o_def inv_def)
+text\<open>Syntax Check:\<close>
+term\<open> d\<^bold>?y \<rightarrow> c\<^bold>!x \<rightarrow> P = Q\<close>
 
-lemma write_cont[simp]:
-  "(\<And>x. cont (P::('b::cpo \<Rightarrow> 'a process)))  \<Longrightarrow> cont(\<lambda>x. (c `!` a \<rightarrow> P x))"
+
+lemma read_cont[simp]: "cont P \<Longrightarrow> cont (\<lambda>y. read c A (P y))"
+  unfolding read_def o_def
+  by (rule Mprefix_cont) (rule cont2cont_fun) 
+
+
+lemma read_cont'[simp]: "(\<And>x. cont (f x)) \<Longrightarrow> cont (\<lambda>y. c\<^bold>?x \<rightarrow> f x y)" by simp
+
+
+lemma write_cont[simp]: "cont (P::('b::cpo \<Rightarrow> 'a process))  \<Longrightarrow> cont(\<lambda>x. (c\<^bold>!a \<rightarrow> P x))"
 by(simp add:write_def)
 
 
@@ -422,8 +433,7 @@ proof (auto)
     by (simp_all add: *)
 qed
   
-lemma write0_cont[simp]:
-  "cont (P::('b::cpo \<Rightarrow> 'a process))  \<Longrightarrow> cont(\<lambda>x. (a \<rightarrow> P x))"
+lemma write0_cont[simp]: "cont (P::('b::cpo \<Rightarrow> 'a process)) \<Longrightarrow> cont(\<lambda>x. (a \<rightarrow> P x))"
 by(simp add:write0_def)
 
 end

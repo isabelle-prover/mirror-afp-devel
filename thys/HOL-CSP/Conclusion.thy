@@ -3,8 +3,7 @@
  * Project         : HOL-CSP - A Shallow Embedding of CSP in  Isabelle/HOL
  * Version         : 2.0
  *
- * Author          : Burkhart Wolff, Safouan Taha, Lina Ye.
- *                   (Based on HOL-CSP 1.0 by Haykal Tej and Burkhart Wolff)
+ * Author          : Burkhart Wolff, Safouan Taha.
  *
  * This file       : A Combined CSP Theory
  *
@@ -54,25 +53,18 @@ text\<open>As mentioned earlier, this work has its very ancient roots in a first
 of A. Camilieri in the early 90s in HOL. This work was reformulated and substantially
 extended in HOL-CSP 1.0 published in 1997. In 2005, Roggenbach and Isobe published 
 CSP-Prover, a formal theory of a (fragment of) the Failures model of CSP. This work 
-led to a couple of publications culminating in \<^cite>\<open>"IsobeRoggenbach2010"\<close>; emphasis was put
+led to a couple of publications culminating in @{cite "IsobeRoggenbach2010"}; emphasis was put
 on actually completing the CSP theory up to the point where it is sufficiently tactically
 supported to serve as a kind of tool. This theory is still maintained and last releases (the 
 latest one was released on 18 February 2019) can be
 found under \<^url>\<open>https://staff.aist.go.jp/y-isobe/CSP-Prover/CSP-Prover.html\<close>. This theory
 represents the first half of Roscoes theory of a Failures/Divergence model, i.e. the Failures part.
 More recently, Pasquale Noce 
-\<^cite>\<open>"Noninterference_CSP-AFP" and "Noninterference_Sequential_Composition-AFP" and 
-"Noninterference_Concurrent_Composition-AFP"\<close>
+@{cite "Noninterference_CSP-AFP" and "Noninterference_Sequential_Composition-AFP" and 
+"Noninterference_Concurrent_Composition-AFP"}
 developed a theory of non-interference notions based on an abstract denotational model fragment of 
 the Failure/Divergence Model of CSP (without continuity and algebraic laws); this theory could 
 probably be rebuilt on top of our work.
-
-Fairly independently from this line of Isabelle-based CSP formalizations is Circus
-\<^cite>\<open>"Feliachi-Wolff-Gaudel-AFP12" and "feliachigw12"\<close>, another process algebra 
-in the line of CSP and Z specification formalisms. Circus has in contrast to CSP a
-direct notion of internal state of a process, which may be constrained by the state
-invariants known from Z. This work gave rise to a number of publications in the
-area of process-based test generation techniques \<^cite>\<open>"feliachi-wolff:SymbTestgenCirta:2013"\<close>.
 
 The present work could be another, more "classic" foundation of test-generation techniques
 of this kind paving the way to an interaction with FDR and its possibility to generate
@@ -103,19 +95,19 @@ different knowledge about CSP and interactive theorem proving.
 
 section\<open>A Summary on New Results\<close>
 text\<open>Compared to the original version of HOL-CSP 1.0, the present theory is complete relative to
-Roscoe's Book\<^cite>\<open>"roscoe:csp:1998"\<close>. It contains a number of new theorems and some interesting
+Roscoe's Book@{cite "roscoe:csp:1998" }. It contains a number of new theorems and some interesting
 (and unexpected) generalizations: 
-\<^enum> @{thm mono_hiding} is now also valid for the infinite case (arbitrary hide-set A).
-\<^enum> @{term "P \\ (A \<union> B) = (P \\ A) \\ B"} is true for @{term "finite A"} (see @{thm hide_un});
+\<^enum> @{thm mono_Hiding} is now also valid for the infinite case (arbitrary hide-set A).
+\<^enum> @{term \<open>P \ (A \<union> B) = (P \ A) \ B\<close>} is true for @{term "finite A"} (see @{thm Hiding_Un});
   this was not even proven in HOL-CSP 1.0 for the singleton case! It can be considered as the
   most complex theorem of this theory.
-\<^enum> distribution laws of hiding over synchronisation @{thm hide_sync}; 
+\<^enum> distribution laws of hiding over synchronisation @{thm Hiding_Sync}; 
   however, this works only in the finite case. A true monster proof.
-\<^enum> the synchronization operator is associative @{thm "sync_assoc"}.
-  (In HOL-CSP 1.0, this had only be shown for special cases like @{thm "par_assoc"}).
+\<^enum> the synchronization operator is associative @{thm "Sync_assoc"}.
+  (In HOL-CSP 1.0, this had only be shown for special cases like @{thm "Par_assoc"}).
 \<^enum> the generalized non-deterministic choice operator --- relevant for proofs of deadlock-freeness ---
-  has been added to the theory @{thm "mndet_def"}; it is proven monotone in the general case and
-  continuous for the special case @{thm Mndet_cont} relevant for the definition of the
+  has been added to the theory @{thm "Mndetprefix_def"}; it is proven monotone in the general case and
+  continuous for the special case @{thm Mndetprefix_cont} relevant for the definition of the
   deadlock reference processes @{thm DF_def} and @{thm "DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P_def"}.\<close>
 
   

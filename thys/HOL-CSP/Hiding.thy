@@ -46,7 +46,7 @@ chapter\<open>Concurrent CSP Operators\<close>
 
 section\<open>The Hiding Operator\<close>
 
-theory  Hide
+theory  Hiding
 imports Process
 begin
 
@@ -54,20 +54,20 @@ subsection\<open>Preliminaries : primitives and lemmas\<close>
 
 abbreviation "trace_hide t A \<equiv> filter (\<lambda>x. x \<notin> A) t"
 
-lemma hiding_tickFree : "tickFree s \<longleftrightarrow> tickFree (trace_hide s (ev`A))"
+lemma Hiding_tickFree : "tickFree s \<longleftrightarrow> tickFree (trace_hide s (ev`A))"
   by (auto simp add: tickFree_def)
 
-lemma hiding_fronttickFree : "front_tickFree s \<Longrightarrow> front_tickFree (trace_hide s (ev`A))"
+lemma Hiding_fronttickFree : "front_tickFree s \<Longrightarrow> front_tickFree (trace_hide s (ev`A))"
   apply(auto simp add: front_tickFree_charn tickFree_def split:if_splits)
-  by (metis hiding_tickFree list_nonMt_append tickFree_append tickFree_def)
+  by (metis Hiding_tickFree list_nonMt_append tickFree_append tickFree_def)
 
 lemma trace_hide_union[simp] : "trace_hide t (ev ` (A \<union> B)) = trace_hide (trace_hide t (ev ` A)) (ev ` B)" 
   by (subgoal_tac "ev ` (A \<union> B) = (ev ` A) \<union> (ev ` B)") auto
 
-abbreviation "isInfHiddenRun f P A \<equiv> strict_mono f \<and> (\<forall> i. f i \<in> T P) \<and> 
+abbreviation "isInfHiddenRun f P A \<equiv> strict_mono f \<and> (\<forall> i. f i \<in> \<T> P) \<and> 
                                       (\<forall> i. trace_hide (f i) (ev ` A) = trace_hide (f (0::nat)) (ev ` A))"
 
-lemma isInfHiddenRun_1: "isInfHiddenRun f P A \<longleftrightarrow> strict_mono f \<and> (\<forall> i. f i \<in> T P) \<and>  
+lemma isInfHiddenRun_1: "isInfHiddenRun f P A \<longleftrightarrow> strict_mono f \<and> (\<forall> i. f i \<in> \<T> P) \<and>  
                                                   (\<forall>i. \<exists>t. f i = f 0 @ t \<and> set t \<subseteq>  (ev ` A))"
                          (is "?A \<longleftrightarrow> ?B")
 proof
@@ -96,28 +96,28 @@ subsection\<open>The Hiding Operator Definition\<close>
 
 abbreviation "div_hide P A \<equiv> {s. \<exists> t u. front_tickFree u \<and>
                                         tickFree t \<and> s = trace_hide t (ev ` A) @ u \<and> 
-                                        (t \<in> D P \<or> (\<exists> f. isInfHiddenRun f P A \<and> t \<in> range f))}"
+                                        (t \<in> \<D> P \<or> (\<exists> f. isInfHiddenRun f P A \<and> t \<in> range f))}"
 
-definition hiding  :: "['\<alpha> process ,'\<alpha> set] => '\<alpha> process"     ("_ \\ _" [73,72] 72)  where  
-  "P \\ A \<equiv> Abs_process ({(s,X). \<exists> t. s = trace_hide t (ev`A) \<and> (t,X \<union> (ev`A)) \<in> F P} \<union>
-                          {(s,X). s \<in> div_hide P A}, div_hide P A)"
+definition Hiding  :: "['\<alpha> process ,'\<alpha> set] => '\<alpha> process"     (\<open>_ \ _\<close> [57,56] 57)  where  
+  \<open>P \ A \<equiv> Abs_process ({(s,X). \<exists> t. s = trace_hide t (ev`A) \<and> (t,X \<union> (ev`A)) \<in> \<F> P} \<union>
+                        {(s,X). s \<in> div_hide P A}, div_hide P A)\<close>
 
 lemma inf_hidden:
-  assumes as1:"\<forall>t. trace_hide t (ev ` A) = trace_hide s (ev ` A) \<longrightarrow> (t, ev ` A) \<notin> F P"
-      and as2:"s \<in> T P"
+  assumes as1:"\<forall>t. trace_hide t (ev ` A) = trace_hide s (ev ` A) \<longrightarrow> (t, ev ` A) \<notin> \<F> P"
+      and as2:"s \<in> \<T> P"
     shows "\<exists>f. isInfHiddenRun f P A \<and> s \<in> range f"
 proof
-  define f where A:"f = rec_nat s (\<lambda>i t. (let e = SOME e. e \<in> ev`A \<and> t @ [e] \<in> T P in t @ [e]))"
+  define f where A:"f = rec_nat s (\<lambda>i t. (let e = SOME e. e \<in> ev`A \<and> t @ [e] \<in> \<T> P in t @ [e]))"
   hence B:"strict_mono f" by (simp add:strict_mono_def lift_Suc_mono_less_iff)
   from A have C:"s \<in> range f" 
     by (metis (mono_tags, lifting) old.nat.simps(6) range_eqI)
   { fix i
-    have "f i \<in> T P \<and> trace_hide (f i) (ev ` A) = (trace_hide s (ev ` A))"
+    have "f i \<in> \<T> P \<and> trace_hide (f i) (ev ` A) = (trace_hide s (ev ` A))"
     proof(induct i, simp add: A Nil_elem_T as2)
       case (Suc i)
-      with as1[THEN spec, of "f i"] have a:"\<exists>e. e \<in> ev`A \<and> f i @ [e] \<in> T P" 
+      with as1[THEN spec, of "f i"] have a:"\<exists>e. e \<in> ev`A \<and> f i @ [e] \<in> \<T> P" 
         using is_processT5_S7 by force
-      from A have b:"f (Suc i) = (let e = SOME e. e \<in> ev`A \<and> f i @ [e] \<in> T P in  f i @ [e])"
+      from A have b:"f (Suc i) = (let e = SOME e. e \<in> ev`A \<and> f i @ [e] \<in> \<T> P in  f i @ [e])"
         by simp
       with Suc a[THEN someI_ex] show ?case by simp
     qed
@@ -154,11 +154,11 @@ next
   qed
 qed
 
-lemma hiding_maintains_is_process:
-      "is_process     ({(s,X). \<exists> t. s = trace_hide t (ev`A) \<and> (t,X \<union> (ev`A)) \<in> F P} \<union>
+lemma Hiding_maintains_is_process:
+      "is_process     ({(s,X). \<exists> t. s = trace_hide t (ev`A) \<and> (t,X \<union> (ev`A)) \<in> \<F> P} \<union>
                           {(s,X). s \<in> div_hide P A}, div_hide P A)" (is "is_process(?f, ?d)")
-proof (simp only: fst_conv snd_conv F_def is_process_def FAILURES_def DIVERGENCES_def,
-      fold FAILURES_def DIVERGENCES_def,fold F_def,intro conjI, goal_cases)
+proof (simp only: fst_conv snd_conv Failures_def is_process_def FAILURES_def DIVERGENCES_def,
+      fold FAILURES_def DIVERGENCES_def,fold Failures_def,intro conjI, goal_cases)
   case 1 thus ?case
   proof (auto, rule not_not[THEN iffD1], rule notI, simp, goal_cases)
     case 1
@@ -168,14 +168,14 @@ proof (simp only: fst_conv snd_conv F_def is_process_def FAILURES_def DIVERGENCE
   qed
 next
   case 2 thus ?case
-    using is_processT2 hiding_fronttickFree front_tickFree_append hiding_tickFree by blast+
+    using is_processT2 Hiding_fronttickFree front_tickFree_append Hiding_tickFree by blast+
 next
   case 3 thus ?case
   proof(auto del:disjE, goal_cases)
     case (1 s t ta) show ?case
     proof(cases "tickFree s")
       case True
-      from 1(2) obtain ss tt where A:"ta = ss@tt \<and> s = trace_hide ss (ev ` A) \<and> ss \<in> T P"
+      from 1(2) obtain ss tt where A:"ta = ss@tt \<and> s = trace_hide ss (ev ` A) \<and> ss \<in> \<T> P"
         using trace_hide_append[of s t A ta, OF 1(1)] by (metis F_T is_processT3_SR)
       with True have B:"tickFree ss"
         by (metis event.distinct(1) filter_set imageE member_filter tickFree_def)
@@ -185,14 +185,14 @@ next
       case False
       with 1(1,2) obtain ss tt where A:"s = ss@[tick] \<and> ta = tt@[tick]"
         by (metis append_Nil2 contra_subsetD filter_is_subset front_tickFree_mono 
-                  hiding_fronttickFree is_processT nonTickFree_n_frontTickFree tickFree_def)
+                  Hiding_fronttickFree is_processT nonTickFree_n_frontTickFree tickFree_def)
       with 1(1,2) have "ss = trace_hide tt (ev ` A)"
         by (metis (no_types, lifting) butlast_append butlast_snoc contra_subsetD 
                   filter.simps(2) filter_append filter_is_subset front_tickFree_implies_tickFree 
                   front_tickFree_single is_processT nonTickFree_n_frontTickFree non_tickFree_tick 
                   self_append_conv2 tickFree_append tickFree_def)
       with False 1(1,2) A show ?thesis
-        by (metis append_Nil2 front_tickFree_mono hiding_fronttickFree is_processT)
+        by (metis append_Nil2 front_tickFree_mono Hiding_fronttickFree is_processT)
     qed
   next
     case (2 s t ta u) show ?case
@@ -200,7 +200,7 @@ next
       case True
       with append_eq_append_conv2[THEN iffD1, OF 2(3)] 
         obtain tt where "s@tt = trace_hide ta (ev ` A)" by auto
-      with 2(4) obtain ss ttt where A:"ta = ss@ttt \<and> s = trace_hide ss (ev ` A) \<and> ss \<in> T P"
+      with 2(4) obtain ss ttt where A:"ta = ss@ttt \<and> s = trace_hide ss (ev ` A) \<and> ss \<in> \<T> P"
         using trace_hide_append[of s tt A ta] by (metis D_T imageE is_processT3_ST)
       with 2(2) have B:"tickFree ss" using tickFree_append by blast
       show ?thesis 
@@ -222,7 +222,7 @@ next
   proof(intro impI allI, auto, rule not_not[THEN iffD1], rule notI, simp, goal_cases)
     case (1 X Y t)
     from 1(3) 1(4)[THEN spec, of t, simplified] obtain c where A1:"c \<in> Y" and A2:"c \<notin> (ev`A)" 
-                                                           and A3:"t@[c] \<in> T P"
+                                                           and A3:"t@[c] \<in> \<T> P"
       using is_processT5_S7'[of t "X \<union> (ev`A)" P Y] by (metis UnCI sup_commute sup_left_commute)
     hence "trace_hide t (ev ` A) @ [c] = trace_hide (t@[c]) (ev ` A)" by simp
     thus ?case using 1(1)[rule_format, OF A1] inf_hidden[of A "t@[c]", rotated, OF A3]
@@ -270,7 +270,7 @@ next
   proof (intro allI impI, simp, elim exE, goal_cases)
     case (1 s t u)
     then obtain u' where "u = u'@[tick]"
-      by (metis hiding_tickFree nonTickFree_n_frontTickFree non_tickFree_tick tickFree_append)
+      by (metis Hiding_tickFree nonTickFree_n_frontTickFree non_tickFree_tick tickFree_append)
     with 1 show ?case
       apply(rule_tac x=t in exI, rule_tac x=u' in exI)
       using front_tickFree_dw_closed by auto
@@ -278,32 +278,32 @@ next
 qed
 
 lemma Rep_Abs_Hiding: "Rep_process (Abs_process 
-                                  ({(s,X). \<exists> t. s = trace_hide t (ev`A) \<and> (t,X \<union> (ev`A)) \<in> F P} \<union>
+                                  ({(s,X). \<exists> t. s = trace_hide t (ev`A) \<and> (t,X \<union> (ev`A)) \<in> \<F> P} \<union>
                                    {(s,X). s \<in> div_hide P A}, div_hide P A))
-                                  = ({(s,X). \<exists> t. s = trace_hide t (ev`A) \<and> (t,X \<union> (ev`A)) \<in> F P} \<union>
+                                  = ({(s,X). \<exists> t. s = trace_hide t (ev`A) \<and> (t,X \<union> (ev`A)) \<in> \<F> P} \<union>
                                      {(s,X). s \<in> div_hide P A}, div_hide P A)"
-  by (simp only:CollectI Rep_process Abs_process_inverse hiding_maintains_is_process)
+  by (simp only:CollectI Rep_process Abs_process_inverse Hiding_maintains_is_process)
 
 subsection\<open>Projections\<close>
 
-lemma F_hiding: "F(P \\ A) = {(s,X). \<exists> t. s = trace_hide t (ev`A) \<and> (t,X \<union> (ev`A)) \<in> F P} \<union>
-                              {(s,X). s \<in> div_hide P A}"
-  by (subst F_def, simp only: hiding_def Rep_Abs_Hiding FAILURES_def fst_conv)
+lemma F_Hiding: \<open>\<F> (P \ A) = {(s,X). \<exists> t. s = trace_hide t (ev`A) \<and> (t,X \<union> (ev`A)) \<in> \<F> P} \<union>
+                              {(s,X). s \<in> div_hide P A}\<close>
+  by (subst Failures_def, simp only: Hiding_def Rep_Abs_Hiding FAILURES_def fst_conv)
 
-lemma D_hiding: "D(P \\ A) = div_hide P A"
-  by (subst D_def, simp only: hiding_def Rep_Abs_Hiding DIVERGENCES_def snd_conv)
+lemma D_Hiding: \<open>\<D> (P \ A) = div_hide P A\<close>
+  by (subst D_def, simp only: Hiding_def Rep_Abs_Hiding DIVERGENCES_def snd_conv)
 
-lemma T_hiding: "T(P \\ A) = {s. \<exists>t. s = trace_hide t (ev`A) \<and>  (t, ev`A) \<in> F P} \<union> div_hide P A"
-  apply (unfold T_def, simp only:Rep_Abs_Hiding hiding_def TRACES_def FAILURES_def fst_conv, auto)
+lemma T_Hiding: \<open>\<T> (P \ A) = {s. \<exists>t. s = trace_hide t (ev`A) \<and>  (t, ev`A) \<in> \<F> P} \<union> div_hide P A\<close>
+  apply (unfold Traces_def, simp only:Rep_Abs_Hiding Hiding_def TRACES_def FAILURES_def fst_conv, auto)
      apply (metis is_processT sup.cobounded2)
-    apply (metis FAILURES_def F_def NF_NT range_eqI)
+    apply (metis FAILURES_def Failures_def NF_NT range_eqI)
    apply (metis sup.idem)
-  by (metis FAILURES_def F_T F_def range_eqI)
+  by (metis FAILURES_def F_T Failures_def range_eqI)
 
 subsection\<open>Continuity Rule\<close>
 
-lemma mono_hiding[simp]: "(P::'a process) \<sqsubseteq> Q \<Longrightarrow> (P \\ A) \<sqsubseteq> (Q \\ A)" 
-proof (auto simp only:le_approx_def D_hiding Ra_def F_hiding T_hiding, goal_cases)
+lemma mono_Hiding[simp]: \<open>(P::'a process) \<sqsubseteq> Q \<Longrightarrow> (P \ A) \<sqsubseteq> (Q \ A)\<close>
+proof (auto simp only:le_approx_def D_Hiding Ra_def F_Hiding T_Hiding, goal_cases)
   case (1 t u) thus ?case by blast
 next
   case (2 u f xa) thus ?case 
@@ -334,11 +334,11 @@ next
   from 7(4) have A:"x \<in> min_elems (div_hide P A)" by simp
   from elem_min_elems[OF 7(4), simplified] obtain t u 
     where B1:"x = trace_hide t (ev ` A) @ u" and B2:"tickFree t" and B3:"front_tickFree u" and 
-             B4:"(t \<in> D P \<or> (\<exists>(f:: nat \<Rightarrow> 'a event list). strict_mono f \<and> (\<forall>i. f i \<in> T P) \<and>
+             B4:"(t \<in> \<D> P \<or> (\<exists>(f:: nat \<Rightarrow> 'a event list). strict_mono f \<and> (\<forall>i. f i \<in> \<T> P) \<and>
              (\<forall>i. trace_hide (f i) (ev ` A) = trace_hide (f 0) (ev ` A)) \<and> t \<in> range f))" by blast
-  show ?case proof(cases "t \<in> D P")
+  show ?case proof(cases "t \<in> \<D> P")
     case True
-    then obtain t' t'' where C1:"t'@t''=t" and C2:"t' \<in> min_elems (D P)" by (metis min_elems_charn)
+    then obtain t' t'' where C1:"t'@t''=t" and C2:"t' \<in> min_elems (\<D> P)" by (metis min_elems_charn)
     hence C3:"trace_hide t' (ev ` A) \<in> div_hide P A" 
       apply (simp, rule_tac x=t' in exI, rule_tac x="[]" in exI, simp)
       using B2 elem_min_elems tickFree_append by blast 
@@ -347,10 +347,10 @@ next
     from B1 C1 D1 min_elems_no[OF A C3] have E1:"x=trace_hide t' (ev ` A)"
       by (metis (no_types, lifting) append.assoc le_list_def)
     with B1 B2 B3 C1 D1 7(5)[simplified, rule_format, of "t'" "[]"] 
-      have E2:"(\<forall>(f:: nat \<Rightarrow> 'a event list). strict_mono f \<longrightarrow> (\<exists>i. f i \<notin> T Q) \<or>
+      have E2:"(\<forall>(f:: nat \<Rightarrow> 'a event list). strict_mono f \<longrightarrow> (\<exists>i. f i \<notin> \<T> Q) \<or>
               (\<exists>i. trace_hide (f i) (ev ` A) \<noteq> trace_hide (f 0) (ev ` A)) \<or> t' \<notin> range f)"
       apply simp
-      using front_tickFree_append hiding_tickFree tickFree_append by blast
+      using front_tickFree_append Hiding_tickFree tickFree_append by blast
     with E1 7(3) C2 inf_hidden[of A t' Q] show ?thesis 
       by (metis (no_types, lifting) contra_subsetD)
   next
@@ -359,13 +359,13 @@ next
       by (simp, rule_tac x=t in exI, rule_tac x="[]" in exI, simp)
     from B1 min_elems_no[OF A C] have E1:"x=trace_hide t (ev ` A)"
       using le_list_def by auto
-    from B4 False 7(2)[rule_format, of t, OF False] have "t \<in> T Q" using F_T T_F by blast
+    from B4 False 7(2)[rule_format, of t, OF False] have "t \<in> \<T> Q" using F_T T_F by blast
     with E1 7(5)[simplified, rule_format, of t "[]", simplified, OF E1 B2] inf_hidden[of A t Q] show ?thesis
       by metis
   qed
 qed
 
-lemma cont_hiding1 : "chain Y \<Longrightarrow> chain (\<lambda> i. (Y i \\ A))"
+lemma cont_Hiding1 :\<open>chain Y \<Longrightarrow> chain (\<lambda> i. (Y i \ A))\<close>
   by (simp add: po_class.chain_def)
 
 lemma KoenigLemma: 
@@ -428,26 +428,27 @@ proof -
   show ?thesis using Tr'_def e h by blast
 qed
 
-lemma div_hiding_lub :  "finite (A::'a set) \<Longrightarrow> chain Y \<Longrightarrow> D (\<Squnion> i. (Y i \\ A)) \<subseteq> D ((\<Squnion> i. Y i) \\ A)"
-proof (auto simp add:limproc_is_thelub cont_hiding1 D_hiding T_hiding D_LUB T_LUB, goal_cases)
+lemma div_Hiding_lub :  
+   \<open>finite (A::'a set) \<Longrightarrow> chain Y \<Longrightarrow> \<D> (\<Squnion> i. (Y i \ A)) \<subseteq> \<D> ((\<Squnion> i. Y i) \ A)\<close>
+proof (auto simp add:limproc_is_thelub cont_Hiding1 D_Hiding T_Hiding D_LUB T_LUB, goal_cases)
   case (1 x)
   { fix xa t u f
     assume a:"front_tickFree u \<and> tickFree t \<and> x = trace_hide t (ev ` A) @ u \<and>
-              isInfHiddenRun f (Y xa) A \<and> (\<forall> i. f i \<notin> D (Y xa)) \<and> t \<in> range f"
-    hence "(\<forall>i n. f i \<in> T (Y n))" using 1(2) NT_ND chain_lemma le_approx2T by blast
+              isInfHiddenRun f (Y xa) A \<and> (\<forall> i. f i \<notin> \<D> (Y xa)) \<and> t \<in> range f"
+    hence "(\<forall>i n. f i \<in> \<T> (Y n))" using 1(2) NT_ND chain_lemma le_approx2T by blast
     with a have ?case by blast
   } note aa=this 
   { fix xa t u f j
     assume a:"front_tickFree u \<and> tickFree t \<and> x = trace_hide t (ev ` A) @ u \<and> 
-              isInfHiddenRun f (Y xa) A \<and> (f j \<in> D (Y xa)) \<and> t \<in> range f"
-    hence "\<exists>t u. front_tickFree u \<and> tickFree t \<and> x = trace_hide t (ev ` A) @ u \<and> t \<in> D (Y xa)"
+              isInfHiddenRun f (Y xa) A \<and> (f j \<in> \<D> (Y xa)) \<and> t \<in> range f"
+    hence "\<exists>t u. front_tickFree u \<and> tickFree t \<and> x = trace_hide t (ev ` A) @ u \<and> t \<in> \<D> (Y xa)"
       apply(rule_tac x="f j" in exI, rule_tac x=u in exI) 
-      using hiding_tickFree[of "f j" A] hiding_tickFree[of t A] by (metis imageE)
+      using Hiding_tickFree[of "f j" A] Hiding_tickFree[of t A] by (metis imageE)
   } note bb=this
-  have cc: "\<forall>xa. \<exists>t u. front_tickFree u \<and> tickFree t \<and> x = trace_hide t (ev ` A) @ u \<and> t \<in> D (Y xa)
+  have cc: "\<forall>xa. \<exists>t u. front_tickFree u \<and> tickFree t \<and> x = trace_hide t (ev ` A) @ u \<and> t \<in> \<D>(Y xa)
            \<Longrightarrow> ?case" (is "\<forall>xa. \<exists>t. ?S t xa \<Longrightarrow> ?case")
     proof -
-      assume dd:"\<forall>xa. \<exists>t u. front_tickFree u \<and> tickFree t \<and> x = trace_hide t (ev ` A) @ u \<and> t \<in> D (Y xa)"
+      assume dd:"\<forall>xa. \<exists>t u. front_tickFree u \<and> tickFree t \<and> x = trace_hide t (ev ` A) @ u \<and> t \<in> \<D>(Y xa)"
              (is "\<forall>xa. \<exists>t. ?S t xa")
       define f where "f = (\<lambda>n. SOME t. ?S t n)"
       thus ?case 
@@ -460,8 +461,8 @@ proof (auto simp add:limproc_is_thelub cont_hiding1 D_hiding T_hiding D_LUB T_LU
         { fix m
           from gg obtain n where gg:"n \<ge> m \<and> n \<in> (f -` {t})"
             by (meson finite_nat_set_iff_bounded_le nat_le_linear)
-          hence "t \<in> D (Y n)" using f_def dd[rule_format, of n] some_eq_ex[of "\<lambda>t. ?S t n"] by auto
-          with gg 1(2) have "t \<in> D (Y m)" by (meson contra_subsetD le_approx_def po_class.chain_mono)
+          hence "t \<in> \<D> (Y n)" using f_def dd[rule_format, of n] some_eq_ex[of "\<lambda>t. ?S t n"] by auto
+          with gg 1(2) have "t \<in> \<D> (Y m)" by (meson contra_subsetD le_approx_def po_class.chain_mono)
         }
         with gg uu show ?thesis by blast
       next
@@ -535,9 +536,9 @@ proof (auto simp add:limproc_is_thelub cont_hiding1 D_hiding T_hiding D_LUB T_LU
         { fix i n
           from ii obtain m where jj:"m \<ge> n \<and> f m \<ge> f' i" 
             by (metis finite_nat_set_iff_bounded_le mem_Collect_eq nat_le_linear)
-          have kk: "(f m) \<in> D (Y m)" using f_def dd[rule_format, of m] some_eq_ex[of "\<lambda>t. ?S t m"] by auto 
-          with jj gg have "(f' i) \<in> T (Y m)" by (meson D_T is_processT3_ST_pref)
-          with jj 1(2) have  "(f' i) \<in> T (Y n)" using D_T le_approx2T po_class.chain_mono by blast
+          have kk: "(f m) \<in> \<D> (Y m)" using f_def dd[rule_format, of m] some_eq_ex[of "\<lambda>t. ?S t m"] by auto 
+          with jj gg have "(f' i) \<in> \<T> (Y m)" by (meson D_T is_processT3_ST_pref)
+          with jj 1(2) have  "(f' i) \<in> \<T> (Y n)" using D_T le_approx2T po_class.chain_mono by blast
         } note jj=this
         from gg have kk:"mono (\<lambda>n. trace_hide (f' n) (ev ` A))" 
           unfolding strict_mono_def mono_def
@@ -585,56 +586,56 @@ proof (auto simp add:limproc_is_thelub cont_hiding1 D_hiding T_hiding D_LUB T_LU
       qed
     qed
   show ?case 
-  proof (cases "\<exists> xa t u f. front_tickFree u \<and> tickFree t \<and> (\<forall> i. f i \<notin> D (Y xa)) \<and> t \<in> range f \<and>
+  proof (cases "\<exists> xa t u f. front_tickFree u \<and> tickFree t \<and> (\<forall> i. f i \<notin> \<D> (Y xa)) \<and> t \<in> range f \<and>
                             x = trace_hide t (ev ` A) @ u \<and> isInfHiddenRun f (Y xa) A")
     case True
     then show ?thesis using aa by blast
   next
     case False
     have dd:"\<forall>xa. \<exists>t u. front_tickFree u \<and> tickFree t \<and> x = trace_hide t (ev ` A) @ u \<and>
-             (t \<in> D (Y xa) \<or> (\<exists>f. isInfHiddenRun f (Y xa) A \<and> (\<exists>i. f i \<in> D (Y xa)) \<and> t \<in> range f))" 
+             (t \<in> \<D> (Y xa) \<or> (\<exists>f. isInfHiddenRun f (Y xa) A \<and> (\<exists>i. f i \<in> \<D> (Y xa)) \<and> t \<in> range f))" 
             (is "\<forall>xa. ?dd xa")
       proof (rule_tac allI)
         fix xa
         from 1(3) obtain t u where 
               "front_tickFree u \<and> tickFree t \<and> x = trace_hide t (ev ` A) @ u \<and>
-              (t \<in> D (Y xa) \<or> (\<exists>f. isInfHiddenRun f (Y xa) A \<and> t \<in> range f))" 
+              (t \<in> \<D> (Y xa) \<or> (\<exists>f. isInfHiddenRun f (Y xa) A \<and> t \<in> range f))" 
           by blast
         thus "?dd xa"
           apply(rule_tac x=t in exI, rule_tac x=u in exI, intro conjI, simp_all, elim conjE disjE, simp_all)
           using 1(1) False NT_ND chain_lemma le_approx2T by blast
       qed
-    hence ee:"\<forall>xa. \<exists>t u. front_tickFree u \<and> tickFree t \<and> x = trace_hide t (ev ` A) @ u \<and> t \<in> D (Y xa)"
+    hence ee:"\<forall>xa. \<exists>t u. front_tickFree u \<and> tickFree t \<and> x = trace_hide t (ev ` A) @ u \<and> t \<in> \<D>(Y xa)"
       using bb by blast
     with cc show ?thesis by simp
   qed
 qed
 
-lemma cont_hiding2 : "finite A \<Longrightarrow> chain Y \<Longrightarrow> ((\<Squnion> i. Y i) \\ A) = (\<Squnion> i. (Y i \\ A))"
-proof(auto simp add:limproc_is_thelub cont_hiding1 Process_eq_spec 
-                    D_hiding Ra_def F_hiding T_hiding F_LUB  D_LUB T_LUB, goal_cases)
+lemma cont_Hiding2 : \<open>finite A \<Longrightarrow> chain Y \<Longrightarrow> ((\<Squnion> i. Y i) \ A) = (\<Squnion> i. (Y i \ A))\<close>
+proof(auto simp add:limproc_is_thelub cont_Hiding1 Process_eq_spec 
+                    D_Hiding Ra_def F_Hiding T_Hiding F_LUB  D_LUB T_LUB, goal_cases)
   case (1 b x t u) thus ?case by blast
 next
   case (2 b x u f xa) thus ?case by blast
 next
   case (3 s X)
-  hence "s \<notin> D ((\<Squnion> i. Y i) \\ A)" 
-    by (simp add:limproc_is_thelub cont_hiding1 F_LUB  D_LUB T_LUB D_hiding)
-  with 3(1,2) obtain n where a:"s \<notin> D (Y n \\ A)"
-    by (metis (no_types, lifting) D_LUB_2 div_hiding_lub subsetCE limproc_is_thelub cont_hiding1) 
-  with 3(3) obtain t where b:"s = trace_hide t (ev ` A) \<and> (t, X \<union> ev ` A) \<in> F (Y n)" 
-    unfolding D_hiding by blast
+  hence \<open>s \<notin> \<D> ((\<Squnion> i. Y i) \ A)\<close>
+    by (simp add:limproc_is_thelub cont_Hiding1 F_LUB  D_LUB T_LUB D_Hiding)
+  with 3(1,2) obtain n where a: \<open>s \<notin> \<D> (Y n \ A)\<close>
+    by (metis (no_types, lifting) D_LUB_2 div_Hiding_lub subsetCE limproc_is_thelub cont_Hiding1) 
+  with 3(3) obtain t where b:"s = trace_hide t (ev ` A) \<and> (t, X \<union> ev ` A) \<in> \<F> (Y n)" 
+    unfolding D_Hiding by blast
   hence c:"front_tickFree t" using is_processT2 by blast
-  have d:"t \<notin> D(Y n)"
+  have d:"t \<notin> \<D>(Y n)"
     proof(cases "tickFree t")
       case True
       with a b show ?thesis using front_tickFree_Nil 
-        by (simp add:D_hiding)
+        by (simp add: D_Hiding)
     next
       case False
       with c obtain t' where "t = t'@[tick]" using nonTickFree_n_frontTickFree by blast
       with a b show ?thesis
-        apply(simp add:D_hiding, erule_tac x=t' in allE, erule_tac x="[tick]" in allE, simp)
+        apply(simp add: D_Hiding, erule_tac x=t' in allE, erule_tac x="[tick]" in allE, simp)
         by (metis event.distinct(1) filter.simps(1) front_tickFree_implies_tickFree imageE is_processT)
     qed
     with b show ?case using 3(2) NF_ND chain_lemma proc_ord2a by blast   
@@ -644,16 +645,16 @@ next
   case (5 xa u f xb) thus ?case by blast
 next
   case (6 s)
-  hence "s \<in> D (\<Squnion> i. (Y i \\ A))" 
-    by (simp add:limproc_is_thelub cont_hiding1 6(1) D_hiding D_LUB)
-  with div_hiding_lub[OF 6(1,2)] have  "s \<in> D ((\<Squnion>i. Y i) \\ A)" by blast
-  thus ?case by (simp add:limproc_is_thelub 6(2) D_hiding D_LUB T_LUB)
+  hence \<open>s \<in> \<D> (\<Squnion> i. (Y i \ A))\<close>
+    by (simp add:limproc_is_thelub cont_Hiding1 6(1) D_Hiding D_LUB)
+  with div_Hiding_lub[OF 6(1,2)] have  \<open>s \<in> \<D> ((\<Squnion>i. Y i) \ A)\<close> by blast
+  thus ?case by (simp add:limproc_is_thelub 6(2) D_Hiding D_LUB T_LUB)
 qed
 
-lemma cont_hiding_base[simp] : "finite A \<Longrightarrow> cont (\<lambda>x. x \\ A)"
-  by (simp add: cont_def cont_hiding1 cont_hiding2 cpo_lubI)
+lemma cont_Hiding_base[simp] : \<open>finite A \<Longrightarrow> cont (\<lambda>x. x \ A)\<close>
+  by (simp add: cont_def cont_Hiding1 cont_Hiding2 cpo_lubI)
 
-lemma hiding_cont[simp]:  "finite A \<Longrightarrow> cont f \<Longrightarrow> cont (\<lambda>x. f x \\ A)"
+lemma Hiding_cont[simp]:  \<open>finite A \<Longrightarrow> cont f \<Longrightarrow> cont (\<lambda>x. f x \ A)\<close>
   by (rule_tac f=f in cont_compose, simp_all)
 
 end

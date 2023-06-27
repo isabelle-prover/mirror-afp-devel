@@ -51,30 +51,30 @@ begin
 definition SKIP :: "'a process"
 where     "SKIP \<equiv> Abs_process ({(s, X). s = [] \<and> tick \<notin> X} \<union> {(s, X). s = [tick]}, {})"
 
-lemma is_process_REP_Skip:
+lemma is_process_REP_SKIP:
 " is_process ({(s, X). s = [] \<and> tick \<notin> X} \<union> {(s, X). s = [tick]}, {})"
 apply(auto simp: FAILURES_def DIVERGENCES_def front_tickFree_def is_process_def)
 apply(erule contrapos_np,drule neq_Nil_conv[THEN iffD1], auto)
 done
 
-lemma is_process_REP_Skip2:
+lemma is_process_REP_SKIP2:
 "is_process ({[]} \<times> {X. tick \<notin> X} \<union> {(s, X). s = [tick]}, {})"
-using is_process_REP_Skip by auto
+using is_process_REP_SKIP by auto
 
 
 lemmas process_prover = Rep_process Abs_process_inverse 
 	                       FAILURES_def TRACES_def 
-	                       DIVERGENCES_def is_process_REP_Skip
+	                       DIVERGENCES_def is_process_REP_SKIP
 
 lemma F_SKIP:
-"F SKIP = {(s, X). s = [] \<and> tick \<notin> X} \<union> {(s, X). s = [tick]}"
-by(simp add:  process_prover SKIP_def F_def is_process_REP_Skip2)
+"\<F> SKIP = {(s, X). s = [] \<and> tick \<notin> X} \<union> {(s, X). s = [tick]}"
+by(simp add:  process_prover SKIP_def Failures_def is_process_REP_SKIP2)
 
-lemma D_SKIP: "D SKIP = {}"
-by(simp add:  process_prover SKIP_def D_def is_process_REP_Skip2)
+lemma D_SKIP: "\<D> SKIP = {}"
+by(simp add:  process_prover SKIP_def D_def is_process_REP_SKIP2)
 
-lemma T_SKIP: "T SKIP ={[],[tick]}"
-by(auto simp:  process_prover SKIP_def T_def is_process_REP_Skip2)
+lemma T_SKIP: "\<T> SKIP ={[],[tick]}"
+by(auto simp:  process_prover SKIP_def Traces_def is_process_REP_SKIP2)
 
 
 end
