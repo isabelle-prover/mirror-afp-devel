@@ -47,17 +47,12 @@ text \<open>The following lemma registers cblinfun as an abstract datatype with
   and in the rhs we define the matrix that corresponds to the sum of A,B.
   In the rhs, we can access the matrices corresponding to A,B by
   writing \<^term>\<open>mat_of_cblinfun B\<close>.
-  (See, e.g., lemma \<open>cblinfun_of_mat_plusOp\<close> below).
+  (See, e.g., lemma @{thm [source] mat_of_cblinfun_plus}.)
 
   See \<^cite>\<open>"code-generation-tutorial"\<close> for more information on 
   @{theory_text \<open>[code abstype]\<close>}.\<close>
 
 declare mat_of_cblinfun_inverse [code abstype]
-
-
-text \<open>This lemma defines addition. By writing \<^term>\<open>mat_of_cblinfun (M + N)\<close>
-on the left hand side, we get access to the\<close>
-
 
 declare mat_of_cblinfun_plus[code]
   \<comment> \<open>Code equation for addition of cblinfuns\<close>
@@ -149,6 +144,9 @@ instance
   by (metis vec_of_ell2_inverse)
 end
 
+lemma vec_of_ell2_carrier_vec[simp]: \<open>vec_of_ell2 v \<in> carrier_vec CARD('a)\<close> for v :: \<open>'a::enum ell2\<close>
+  by (simp add: vec_of_ell2_def)
+
 lemma vec_of_ell2_zero[code]:
   \<comment> \<open>Code equation for computing the zero vector\<close>
   "vec_of_ell2 (0::'a::enum ell2) = zero_vec (CARD('a))"
@@ -160,7 +158,7 @@ lemma vec_of_ell2_ket[code]:
   for i::"'a::enum"
   using vec_of_ell2_def vec_of_basis_enum_ket by metis
 
-lemma vec_of_ell2_timesScalarVec[code]: 
+lemma vec_of_ell2_scaleC[code]: 
   \<comment> \<open>Code equation for multiplying a vector with a complex scalar\<close>
   "vec_of_ell2 (scaleC a \<psi>) = smult_vec a (vec_of_ell2 \<psi>)"
   for \<psi> :: "'a::enum ell2"
@@ -187,38 +185,37 @@ lemma ell2_of_vec_uminus[code]:
   "vec_of_ell2 (- y) =  - (vec_of_ell2 y)" for y :: "'a::enum ell2"
   by (simp add: vec_of_ell2_def vec_of_basis_enum_uminus)
 
-lemma cinner_ell2_code' [code]: "cinner \<psi> \<phi> = cscalar_prod (vec_of_ell2 \<phi>) (vec_of_ell2 \<psi>)"
+lemma cinner_ell2_code [code]: "cinner \<psi> \<phi> = cscalar_prod (vec_of_ell2 \<phi>) (vec_of_ell2 \<psi>)"
   \<comment> \<open>Code equation for the inner product of vectors\<close>
   by (simp add: cscalar_prod_vec_of_basis_enum vec_of_ell2_def)
 
 lemma norm_ell2_code [code]: 
   \<comment> \<open>Code equation for the norm of a vector\<close>
-  "norm \<psi> = (let \<psi>' = vec_of_ell2 \<psi> in
-    sqrt (\<Sum> i \<in> {0 ..< dim_vec \<psi>'}. let z = vec_index \<psi>' i in (Re z)\<^sup>2 + (Im z)\<^sup>2))"
+  "norm \<psi> = norm_vec (vec_of_ell2 \<psi>)"
   by (simp add: norm_ell2_vec_of_basis_enum vec_of_ell2_def)
 
-lemma times_ell2_code'[code]: 
+lemma times_ell2_code[code]: 
   \<comment> \<open>Code equation for the product in the algebra of one-dimensional vectors\<close>
   fixes \<psi> \<phi> :: "'a::{CARD_1,enum} ell2"
   shows "vec_of_ell2 (\<psi> * \<phi>)
    = vec_of_list [vec_index (vec_of_ell2 \<psi>) 0 * vec_index (vec_of_ell2 \<phi>) 0]"
   by (simp add: vec_of_ell2_def vec_of_basis_enum_times)
 
-lemma divide_ell2_code'[code]: 
+lemma divide_ell2_code[code]: 
   \<comment> \<open>Code equation for the product in the algebra of one-dimensional vectors\<close>
   fixes \<psi> \<phi> :: "'a::{CARD_1,enum} ell2"
   shows "vec_of_ell2 (\<psi> / \<phi>)
    = vec_of_list [vec_index (vec_of_ell2 \<psi>) 0 / vec_index (vec_of_ell2 \<phi>) 0]"
   by (simp add: vec_of_ell2_def vec_of_basis_enum_divide)
 
-lemma inverse_ell2_code'[code]: 
+lemma inverse_ell2_code[code]: 
   \<comment> \<open>Code equation for the product in the algebra of one-dimensional vectors\<close>
   fixes \<psi> :: "'a::{CARD_1,enum} ell2"
   shows "vec_of_ell2 (inverse \<psi>)
    = vec_of_list [inverse (vec_index (vec_of_ell2 \<psi>) 0)]"
   by (simp add: vec_of_ell2_def vec_of_basis_enum_to_inverse)
 
-lemma one_ell2_code'[code]: 
+lemma one_ell2_code[code]: 
   \<comment> \<open>Code equation for the unit in the algebra of one-dimensional vectors\<close>
   "vec_of_ell2 (1 :: 'a::{CARD_1,enum} ell2) = vec_of_list [1]"
   by (simp add: vec_of_ell2_def vec_of_basis_enum_1) 
@@ -229,10 +226,10 @@ text \<open>We proceed to give code equations for operations involving both
   operators (cblinfun) and vectors. As explained above, we have to restrict
   the equations to vectors of type \<^typ>\<open>'a ell2\<close> even though the theory is available
   for any type of class \<^class>\<open>onb_enum\<close>. As a consequence, we run into an
-  addition technicality now. For example, to define a code equation for applying
+  additional technicality now. For example, to define a code equation for applying
   an operator to a vector, we might try to give the following lemma:
 
-\<^theory_text>\<open>lemma cblinfun_apply_code[code]:
+\<^theory_text>\<open>lemma cblinfun_apply_ell2[code]:
   "vec_of_ell2 (M *\<^sub>V x) = (mult_mat_vec (mat_of_cblinfun M) (vec_of_ell2 x))"
   by (simp add: mat_of_cblinfun_cblinfun_apply vec_of_ell2_def)\<close>
 
@@ -240,24 +237,23 @@ text \<open>We proceed to give code equations for operations involving both
   "Projection as head in equation", most likely due to the fact that
   the type of \<^term>\<open>(*\<^sub>V)\<close> in the equation is less general than the type of 
   \<^term>\<open>(*\<^sub>V)\<close> (it is restricted to @{type ell2}). We overcome this problem
-  by defining a constant \<open>cblinfun_apply_code\<close> which is equal to \<^term>\<open>(*\<^sub>V)\<close>
+  by defining a constant \<open>cblinfun_apply_ell2\<close> which is equal to \<^term>\<open>(*\<^sub>V)\<close>
   but has a more restricted type. We then instruct the code generation 
-  to replace occurrences of \<^term>\<open>(*\<^sub>V)\<close> by \<open>cblinfun_apply_code\<close> (where possible),
-  and we add code generation for \<open>cblinfun_apply_code\<close> instead of \<^term>\<open>(*\<^sub>V)\<close>.
+  to replace occurrences of \<^term>\<open>(*\<^sub>V)\<close> by \<open>cblinfun_apply_ell2\<close> (where possible),
+  and we add code generation for \<open>cblinfun_apply_ell2\<close> instead of \<^term>\<open>(*\<^sub>V)\<close>.
 \<close>
 
-
-definition cblinfun_apply_code :: "'a ell2 \<Rightarrow>\<^sub>C\<^sub>L 'b ell2 \<Rightarrow> 'a ell2 \<Rightarrow> 'b ell2" 
-  where [code del, code_abbrev]: "cblinfun_apply_code = (*\<^sub>V)"
+definition cblinfun_apply_ell2 :: "'a ell2 \<Rightarrow>\<^sub>C\<^sub>L 'b ell2 \<Rightarrow> 'a ell2 \<Rightarrow> 'b ell2" 
+  where [code del, code_abbrev]: "cblinfun_apply_ell2 = (*\<^sub>V)"
     \<comment> \<open>@{attribute code_abbrev} instructs the code generation to replace the
-     rhs \<^term>\<open>(*\<^sub>V)\<close> by the lhs \<^term>\<open>cblinfun_apply_code\<close> before starting 
+     rhs \<^term>\<open>(*\<^sub>V)\<close> by the lhs \<^term>\<open>cblinfun_apply_ell2\<close> before starting 
      the actual code generation.\<close>
 
-lemma cblinfun_apply_code[code]:
-  \<comment> \<open>Code equation for \<^term>\<open>cblinfun_apply_code\<close>, i.e., for applying an operator
+lemma cblinfun_apply_ell2[code]:
+  \<comment> \<open>Code equation for \<^term>\<open>cblinfun_apply_ell2\<close>, i.e., for applying an operator
      to an \<^type>\<open>ell2\<close> vector\<close>
-  "vec_of_ell2 (cblinfun_apply_code M x) = (mult_mat_vec (mat_of_cblinfun M) (vec_of_ell2 x))"
-  by (simp add: cblinfun_apply_code_def mat_of_cblinfun_cblinfun_apply vec_of_ell2_def)
+  "vec_of_ell2 (cblinfun_apply_ell2 M x) = (mult_mat_vec (mat_of_cblinfun M) (vec_of_ell2 x))"
+  by (simp add: cblinfun_apply_ell2_def mat_of_cblinfun_cblinfun_apply vec_of_ell2_def)
 
 text \<open>For the constant \<^term>\<open>vector_to_cblinfun\<close> (canonical isomorphism from
   vectors to operators), we have the same problem and define a constant
@@ -274,6 +270,15 @@ lemma vector_to_cblinfun_code[code]:
   "mat_of_cblinfun (vector_to_cblinfun_code \<psi>) = mat_of_cols (CARD('a)) [vec_of_ell2 \<psi>]"
   for \<psi>::"'a::enum ell2"
   by (simp add: mat_of_cblinfun_vector_to_cblinfun  vec_of_ell2_def vector_to_cblinfun_code_def)
+
+definition butterfly_code :: \<open>'a ell2 \<Rightarrow> 'b ell2 \<Rightarrow> 'b ell2 \<Rightarrow>\<^sub>C\<^sub>L 'a ell2\<close> 
+  where [code del, code_abbrev]: \<open>butterfly_code = butterfly\<close> 
+lemma butterfly_code[code]: \<open>mat_of_cblinfun (butterfly_code s t)
+   = mat_of_cols (CARD('a)) [vec_of_ell2 s] * mat_of_rows (CARD('b)) [map_vec cnj (vec_of_ell2 t)]\<close>
+  for s :: \<open>'a::enum ell2\<close> and t :: \<open>'b::enum ell2\<close>
+  by (simp add: butterfly_code_def butterfly_def vector_to_cblinfun_code mat_of_cblinfun_compose
+      mat_of_cblinfun_adj mat_adjoint_def map_map_vec_cols
+      flip: vector_to_cblinfun_code_def map_vec_conjugate[abs_def])
 
 subsection \<open>Subspaces\<close>
 
@@ -365,7 +370,7 @@ computes \<^term>\<open>(+)\<close> in terms of the code for \<^term>\<open>(\<s
 
 definition [code del,code_abbrev]: "Span_code (S::'a::enum ell2 set) = (ccspan S)"
   \<comment> \<open>A copy of \<^term>\<open>ccspan\<close> with restricted type. For analogous reasons as
-     \<^term>\<open>cblinfun_apply_code\<close>, see there for explanations\<close>
+     \<^term>\<open>cblinfun_apply_ell2\<close>, see there for explanations\<close>
 
 lemma span_Set_Monad[code]: "Span_code (Set_Monad l) = (SPAN (map vec_of_ell2 l))"
   \<comment> \<open>Code equation for the span of a finite set. (\<^term>\<open>Set_Monad\<close> is a datatype

@@ -1,4 +1,4 @@
-(*  Based on HOL/Real_Vector_Spaces.thy by Brian Huffman
+(*  Based on HOL/Inner_Product.thy by Brian Huffman
     Adapted to the complex case by Dominique Unruh *)
 
 section \<open>\<open>Complex_Inner_Product0\<close> -- Inner Product Spaces and Gradient Derivative\<close>

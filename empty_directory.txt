@@ -1,0 +1,2 @@
+This directory is used simply because the session Complex_Bounded_Operators_Dependencies needs some directory
+even if it has no theory files.

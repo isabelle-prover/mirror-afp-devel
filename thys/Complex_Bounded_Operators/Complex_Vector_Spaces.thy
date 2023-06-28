@@ -685,6 +685,26 @@ proof -
         simp add: f.add_right f.scaleC_right mult.commute mult.left_commute)
 qed
 
+lemma clinear_scaleR[simp]: \<open>clinear (scaleR x)\<close>
+  by (simp add: complex_vector.linear_scale_self scaleR_scaleC)
+
+
+lemma abs_summable_on_scaleC_left [intro]:
+  fixes c :: \<open>'a :: complex_normed_vector\<close>
+  assumes "c \<noteq> 0 \<Longrightarrow> f abs_summable_on A"
+  shows   "(\<lambda>x. f x *\<^sub>C c) abs_summable_on A"
+  apply (cases \<open>c = 0\<close>)
+   apply simp
+  by (auto intro!: summable_on_cmult_left assms simp: norm_scaleC)
+
+lemma abs_summable_on_scaleC_right [intro]:
+  fixes f :: \<open>'a \<Rightarrow> 'b :: complex_normed_vector\<close>
+  assumes "c \<noteq> 0 \<Longrightarrow> f abs_summable_on A"
+  shows   "(\<lambda>x. c *\<^sub>C f x) abs_summable_on A"
+  apply (cases \<open>c = 0\<close>)
+   apply simp
+  by (auto intro!: summable_on_cmult_right assms simp: norm_scaleC)
+
 
 subsection \<open>Antilinear maps and friends\<close>
 
@@ -1321,13 +1341,16 @@ class cfinite_dim = complex_vector +
   assumes cfinitely_spanned: "\<exists>S::'a set. finite S \<and> cspan S = UNIV"
 
 class basis_enum = complex_vector +
-  fixes canonical_basis :: "'a list"
+  fixes canonical_basis :: \<open>'a list\<close>
+    and canonical_basis_length :: \<open>'a itself \<Rightarrow> nat\<close>
   assumes distinct_canonical_basis[simp]:
     "distinct canonical_basis"
     and is_cindependent_set[simp]:
     "cindependent (set canonical_basis)"
     and is_generator_set[simp]:
     "cspan (set canonical_basis) = UNIV"
+    and canonical_basis_length:
+    \<open>canonical_basis_length TYPE('a) = length canonical_basis\<close>
 
 setup \<open>Sign.add_const_constraint ("Complex_Vector_Spaces0.cindependent", SOME \<^typ>\<open>'a::complex_vector set \<Rightarrow> bool\<close>)\<close>
 setup \<open>Sign.add_const_constraint (\<^const_name>\<open>cdependent\<close>, SOME \<^typ>\<open>'a::complex_vector set \<Rightarrow> bool\<close>)\<close>
@@ -1336,6 +1359,7 @@ setup \<open>Sign.add_const_constraint (\<^const_name>\<open>cspan\<close>, SOME
 
 instantiation complex :: basis_enum begin
 definition "canonical_basis = [1::complex]"
+definition \<open>canonical_basis_length (_::complex itself) = 1\<close>
 instance
 proof
   show "distinct (canonical_basis::complex list)"
@@ -1347,6 +1371,8 @@ proof
     unfolding canonical_basis_complex_def
     apply (auto simp add: cspan_raw_def vector_space_over_itself.span_Basis)
     by (metis complex_scaleC_def complex_vector.span_base complex_vector.span_scale cspan_raw_def insertI1 mult.right_neutral)
+  show \<open>canonical_basis_length TYPE(complex) = length (canonical_basis :: complex list)\<close>
+    by (simp add: canonical_basis_length_complex_def canonical_basis_complex_def)
 qed
 end
 
@@ -1402,7 +1428,6 @@ text \<open>The following auxiliary lemma (\<open>finite_span_complete_aux\<clos
    (HOL does not support such reasoning). Therefore we have the type \<^typ>\<open>'basis\<close> as
    an explicit assumption and remove it using @{attribute internalize_sort} after the proof.\<close>
 
-(* TODO: Maybe this should be in Extra_Vector_Spaces *)
 lemma finite_span_complete_aux:
   fixes b :: "'b::real_normed_vector" and B :: "'b set"
     and  rep :: "'basis::finite \<Rightarrow> 'b" and abs :: "'b \<Rightarrow> 'basis"
@@ -1644,7 +1669,6 @@ proof -
     by simp
 qed
 
-(* TODO: Maybe this should be in Extra_Vector_Spaces *)
 lemma finite_span_complete[simp]:
   fixes A :: "'a::real_normed_vector set"
   assumes "finite A"
@@ -1690,7 +1714,6 @@ next
     using complete_singleton by auto
 qed
 
-(* TODO: Maybe this should be in Extra_Vector_Spaces *)
 lemma finite_span_representation_bounded:
   fixes B :: "'a::real_normed_vector set"
   assumes "finite B" and "independent B"
@@ -1783,7 +1806,6 @@ lemma finite_cspan_complete[simp]:
   shows "complete (cspan B)"
   by (simp add: assms cspan_as_span)
 
-(* TODO: Maybe this should be in Extra_Vector_Spaces *)
 lemma finite_span_closed[simp]:
   fixes B :: "'a::real_normed_vector set"
   assumes "finite B"
@@ -1932,7 +1954,6 @@ proof -
     using assms bounded_clinear_def bounded_clinear_axioms_def by blast
 qed
 
-(* TODO: Maybe this should be in Extra_Vector_Spaces if we move finite_span_closed, too. *)
 lemma summable_on_scaleR_left_converse:
   \<comment> \<open>This result has nothing to do with the bounded operator library but it
       uses @{thm [source] finite_span_closed} so it is proven here.\<close>
@@ -2000,7 +2021,6 @@ proof -
     by (auto simp: o_def)
 qed
 
-(* TODO: Maybe this should be in Extra_Vector_Spaces if we move finite_span_closed, too. *)
 lemma infsum_scaleR_left:
   \<comment> \<open>This result has nothing to do with the bounded operator library but it
       uses @{thm [source] finite_span_closed} so it is proven here.
@@ -2024,7 +2044,6 @@ next
     by (auto simp add: infsum_not_exists)
 qed
 
-(* TODO: Maybe this should be in Extra_Vector_Spaces if we move finite_span_closed, too. *)
 lemma infsum_of_real: 
   shows \<open>(\<Sum>\<^sub>\<infinity>x\<in>A. of_real (f x) :: 'b::{real_normed_vector, real_algebra_1}) = of_real (\<Sum>\<^sub>\<infinity>x\<in>A. f x)\<close>
   \<comment> \<open>This result has nothing to do with the bounded operator library but it
@@ -2174,7 +2193,7 @@ qed
 
 typedef (overloaded) ('a::"{complex_vector,topological_space}")
   ccsubspace = \<open>{S::'a set. closed_csubspace S}\<close>
-  morphisms space_as_set Abs_clinear_space
+  morphisms space_as_set Abs_ccsubspace
   using Complex_Vector_Spaces.closed_csubspace_UNIV by blast
 
 setup_lifting type_definition_ccsubspace
@@ -2325,6 +2344,9 @@ lemma ccspan_superset:
   apply transfer
   by (meson closure_subset complex_vector.span_superset subset_trans)
 
+lemma ccspan_superset': \<open>x \<in> X \<Longrightarrow> x \<in> space_as_set (ccspan X)\<close>
+  using ccspan_superset by auto
+
 lemma ccspan_canonical_basis[simp]: "ccspan (set canonical_basis) = top"
   using ccspan.rep_eq space_as_set_inject top_ccsubspace.rep_eq
     closure_UNIV is_generator_set
@@ -2431,7 +2453,7 @@ lemma antilinear_continuous_within:
   shows \<open>continuous (at x within s) f\<close>
   by (simp add: assms bounded_antilinear.bounded_linear linear_continuous_within)
 
-lemma bounded_clinear_eq_on:
+lemma bounded_clinear_eq_on_closure:
   fixes A B :: "'a::complex_normed_vector \<Rightarrow> 'b::complex_normed_vector"
   assumes \<open>bounded_clinear A\<close> and \<open>bounded_clinear B\<close> and
     eq: \<open>\<And>x. x \<in> G \<Longrightarrow> A x = B x\<close> and t: \<open>t \<in> closure (cspan G)\<close>
@@ -2579,7 +2601,7 @@ lemma space_as_set_top[simp]: \<open>space_as_set top = UNIV\<close>
 lemma ccsubspace_eqI:
   assumes \<open>\<And>x. x \<in> space_as_set S \<longleftrightarrow> x \<in> space_as_set T\<close>
   shows \<open>S = T\<close>
-  by (metis Abs_clinear_space_cases Abs_clinear_space_inverse antisym assms subsetI)
+  by (metis Abs_ccsubspace_cases Abs_ccsubspace_inverse antisym assms subsetI)
 
 lemma ccspan_remove_0: \<open>ccspan (A - {0}) = ccspan A\<close>
   apply transfer
@@ -2635,6 +2657,38 @@ proof-
   show ?thesis
     using closed_csubspace.intro by blast
 qed
+
+lemma ccspan_closure[simp]: \<open>ccspan (closure X) = ccspan X\<close>
+  by (simp add: basic_trans_rules(24) ccspan.rep_eq ccspan_leqI ccspan_mono closure_mono closure_subset complex_vector.span_superset)
+
+lemma ccspan_finite: \<open>space_as_set (ccspan X) = cspan X\<close> if \<open>finite X\<close>
+  by (simp add: ccspan.rep_eq that)
+
+lemma ccspan_UNIV[simp]: \<open>ccspan UNIV = \<top>\<close>
+  by (simp add: ccspan.abs_eq top_ccsubspace_def)
+
+lemma infsum_in_closed_csubspaceI:
+  assumes \<open>\<And>x. x\<in>X \<Longrightarrow> f x \<in> A\<close>
+  assumes \<open>closed_csubspace A\<close>
+  shows \<open>infsum f X \<in> A\<close>
+proof (cases \<open>f summable_on X\<close>)
+  case True
+  then have lim: \<open>(sum f \<longlongrightarrow> infsum f X) (finite_subsets_at_top X)\<close>
+    by (simp add: infsum_tendsto)
+  have sumA: \<open>sum f F \<in> A\<close> if \<open>finite F\<close> and \<open>F \<subseteq> X\<close> for F
+    apply (rule complex_vector.subspace_sum)
+    using that assms by auto
+  from lim show \<open>infsum f X \<in> A\<close>
+    apply (rule Lim_in_closed_set[rotated -1])
+    using assms sumA by (auto intro!: closed_csubspace.closed eventually_finite_subsets_at_top_weakI)
+next
+  case False
+  then show ?thesis
+    using assms by (auto intro!: closed_csubspace.closed complex_vector.subspace_0 simp add: infsum_not_exists)
+qed
+
+lemma closed_csubspace_space_as_set[simp]: \<open>closed_csubspace (space_as_set X)\<close>
+  using space_as_set by simp
 
 subsection \<open>Closed sums\<close>
 
@@ -2879,6 +2933,16 @@ proof
 qed
 end
 
+lemma SUP_ccspan: \<open>(SUP x\<in>X. ccspan (S x)) = ccspan (\<Union>x\<in>X. S x)\<close>
+proof (rule SUP_eqI)
+  show \<open>ccspan (S x) \<le> ccspan (\<Union>x\<in>X. S x)\<close> if \<open>x \<in> X\<close> for x
+    apply (rule ccspan_mono)
+    using that by auto
+  show \<open>ccspan (\<Union>x\<in>X. S x) \<le> y\<close> if \<open>\<And>x. x \<in> X \<Longrightarrow> ccspan (S x) \<le> y\<close> for y
+    apply (intro ccspan_leqI UN_least)
+    using that ccspan_superset by (auto simp: less_eq_ccsubspace.rep_eq)
+qed
+
 lemma ccsubspace_plus_sup: "y \<le> x \<Longrightarrow> z \<le> x \<Longrightarrow> y + z \<le> x"
   for x y z :: "'a::complex_normed_vector ccsubspace"
   unfolding plus_ccsubspace_def by auto
@@ -3011,7 +3075,7 @@ proof -
   moreover from t have \<open>?t \<in> closure (cspan ?G)\<close>
     by (metis bounded_antilinear.bounded_linear bounded_antilinear_to_conjugate_space closure_bounded_linear_image_subset cspan_to_conjugate_space imageI subsetD)
   ultimately have \<open>?A ?t = ?B ?t\<close>
-    by (rule bounded_clinear_eq_on)
+    by (rule bounded_clinear_eq_on_closure)
   then show \<open>A t = B t\<close>
     by (simp add: to_conjugate_space_inverse)
 qed
