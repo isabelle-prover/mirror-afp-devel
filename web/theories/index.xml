@@ -1870,6 +1870,15 @@
     </item>
     
     <item>
+      <title>Executable_Randomized_Algorithms</title>
+      <link>/theories/executable_randomized_algorithms/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/executable_randomized_algorithms/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Expander_Graphs</title>
       <link>/theories/expander_graphs/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
