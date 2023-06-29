@@ -5,12 +5,13 @@ chapter AFP
  * Project         : HOL-CSP - A Shallow Embedding of CSP in  Isabelle/HOL
  * Version         : 2.0
  *
- * Author          : Burkhart Wolff, Safouan Taha & Lina Ye
+ * Author          : Benoit Ballenghien, Safouan Taha, Burkhart Wolff & Lina Ye
  *                   (Based on HOL-CSP 1.0 by Haykal Tej and Burkhart Wolff)
  *
  * This file       : A Combined CSP Theory
  *
  * Copyright (c) 2009 Université Paris-Sud, France
+ * Copyright (c) 2023 Université Paris-Saclay, France
  *
  *
  * All rights reserved.
@@ -43,19 +44,25 @@ chapter AFP
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
+(* $Id:$ *)
+
+
+
 
 session "HOL-CSP" (AFP) = HOLCF +
-  description "HOL-CSP based on the original Roscoe-Book."
-  options [timeout = 1200]
+  description \<open>HOL-CSP based on the original Roscoe-Book.\<close>
+  (* options [document = pdf, document_output = "output", timeout = 1200] *)
+  options [timeout = 1200] 
   sessions
     "HOL-Eisbach"
   theories
     "Introduction"
     "Process"
-     Bot Skip Stop Mprefix Det Ndet Seq Hide Sync Mndet
+     Bot Skip Stop Det Ndet Seq Hiding Sync Mndetprefix Mprefix 
     "CSP" "Assertions"
     "Conclusion"
     "CopyBuffer"
+    Induction_ext
   document_files
     "root.tex"
     "adb-long.bib"
