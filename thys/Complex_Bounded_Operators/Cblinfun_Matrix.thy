@@ -30,7 +30,7 @@ text \<open>We define the canonical isomorphism between vectors in some complex 
   This is possible if \<^typ>\<open>'a\<close>, \<^typ>\<open>'b\<close> are of class \<^class>\<open>basis_enum\<close>
   since that class fixes a finite canonical basis. Vector are represented using
   the \<^typ>\<open>complex vec\<close> type from \<^session>\<open>Jordan_Normal_Form\<close>.
-  (The isomorphism will be called \<^term>\<open>vec_of_onb_enum\<close> below.)\<close>
+  (The isomorphism will be called \<^term>\<open>vec_of_onb_basis\<close> below.)\<close>
 
 definition vec_of_basis_enum :: \<open>'a::basis_enum \<Rightarrow> complex vec\<close> where
   \<comment> \<open>Maps \<^term>\<open>v\<close> to a \<^typ>\<open>'a vec\<close> represented in basis \<^const>\<open>canonical_basis\<close>\<close>
@@ -99,6 +99,10 @@ lemma basis_enum_eq_vec_of_basis_enumI:
   assumes "vec_of_basis_enum a = vec_of_basis_enum b"
   shows "a = b"
   by (metis assms vec_of_basis_enum_inverse)
+
+lemma vec_of_basis_enum_carrier_vec[simp]: \<open>vec_of_basis_enum v \<in> carrier_vec CARD('a)\<close> for v :: \<open>'a::enum ell2\<close>
+  apply (simp only: dim_vec_of_basis_enum' carrier_vec_def vec_of_basis_enum_def)
+  by simp
 
 subsection \<open>Operations on vectors\<close>
 
@@ -182,10 +186,9 @@ lemma cscalar_prod_vec_of_basis_enum: "cscalar_prod (vec_of_basis_enum \<phi>) (
   apply (subst cinner_basis_enum_of_vec[symmetric, where 'a='a])
   by simp_all
 
-lemma norm_ell2_vec_of_basis_enum: "norm \<psi> =
-  (let \<psi>' = vec_of_basis_enum \<psi> in
-    sqrt (\<Sum> i \<in> {0 ..< dim_vec \<psi>'}. let z = vec_index \<psi>' i in (Re z)\<^sup>2 + (Im z)\<^sup>2))"
-  (is "_ = ?rhs") for \<psi> :: "'a::onb_enum"
+definition \<open>norm_vec \<psi> = sqrt (\<Sum> i \<in> {0 ..< dim_vec \<psi>}. let z = vec_index \<psi> i in (Re z)\<^sup>2 + (Im z)\<^sup>2)\<close>
+
+lemma norm_ell2_vec_of_basis_enum: \<open>norm \<psi> = norm_vec (vec_of_basis_enum \<psi>)\<close> for \<psi> :: "'a::onb_enum"
 proof -
   have "norm \<psi> = sqrt (cmod (\<Sum>i = 0..<dim_vec (vec_of_basis_enum \<psi>).
             vec_of_basis_enum \<psi> $ i * conjugate (vec_of_basis_enum \<psi>) $ i))"
@@ -196,8 +199,8 @@ proof -
     apply (subst sum.cong, rule refl)
      apply (subst vec_index_conjugate)
     by (auto simp: Let_def complex_mult_cnj)
-  also have "\<dots> = ?rhs"
-    unfolding Let_def norm_of_real
+  also have "\<dots> = norm_vec (vec_of_basis_enum \<psi>)"
+    unfolding Let_def norm_of_real norm_vec_def
     apply (subst abs_of_nonneg)
      apply (rule sum_nonneg)
     by auto
@@ -647,6 +650,12 @@ proof
       by (metis (full_types) order_refl mult_eq_0_iff norm_eq_zero)
   qed
 qed
+
+lemma cblinfun_of_mat_invalid: 
+  assumes \<open>M \<notin> carrier_mat (canonical_basis_length TYPE('b::{basis_enum,complex_normed_vector})) (canonical_basis_length TYPE('a::{basis_enum,complex_normed_vector}))\<close>
+  shows \<open>(cblinfun_of_mat M :: 'a \<Rightarrow>\<^sub>C\<^sub>L 'b) = 0\<close>
+  apply (transfer fixing: M)
+  using assms by (simp add: canonical_basis_length)
 
 lemma mat_of_cblinfun_ell2_carrier[simp]: \<open>mat_of_cblinfun (a::'a::enum ell2 \<Rightarrow>\<^sub>C\<^sub>L 'b::enum ell2) \<in> carrier_mat CARD('b) CARD('a)\<close>
   by (simp add: mat_of_cblinfun_def)
@@ -1492,29 +1501,11 @@ proof -
     apply (rule butterfly_eq_proj)
     using norm_Snorm by simp
   also have "\<dots> = mat_of_cblinfun (Proj (ccspan (set Snorm)))"
-    apply (rule arg_cong[of _ _ mat_of_cblinfun])
-  proof (insert ortho_Snorm, insert \<open>distinct Snorm\<close>, induction Snorm)
-    case Nil
-    show ?case
-      by simp
-  next
-    case (Cons a Snorm)
-    from Cons.prems have [simp]: "a \<notin> set Snorm"
-      by simp
-
-    have "sum proj (set (a # Snorm))
-        = proj a + sum proj (set Snorm)"
-      by auto
-    also have "\<dots> = proj a + Proj (ccspan (set Snorm))"
-      apply (subst Cons.IH)
-      using Cons.prems apply auto
-      by (meson Cons.prems(1) is_ortho_set_antimono set_subset_Cons)
-    also have "\<dots> = Proj (ccspan ({a} \<union> set Snorm))"
-      apply (rule Proj_orthog_ccspan_union[symmetric])
-      by (metis Cons.prems(1) \<open>a \<notin> set Snorm\<close> is_ortho_set_def list.set_intros(1) list.set_intros(2) singleton_iff)
-    finally show ?case
-      by simp
-  qed
+    apply (rule arg_cong[where f=mat_of_cblinfun])
+    using ortho_Snorm \<open>distinct Snorm\<close> apply (induction Snorm)
+     apply auto
+    apply (subst Proj_orthog_ccspan_insert[where Y=\<open>set _\<close>])
+    by (auto simp: is_ortho_set_def)
   also have "\<dots> = mat_of_cblinfun (Proj (ccspan (set S)))"
     unfolding Span_Snorm by simp
   finally show ?thesis

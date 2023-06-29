@@ -1,19 +1,35 @@
 chapter AFP
 
-session Complex_Bounded_Operators(AFP) = "HOL-Analysis" +
+session Complex_Bounded_Operators(AFP) = "Complex_Bounded_Operators_Dependencies" +
   options [timeout = 3600]
+  directories
+    extra
+  theories
+    Cblinfun_Code_Examples
+  document_files
+    root.tex
+    root.bib
+
+(* We add an intermediate session only with the dependencies to speed up the build.
+   Since Isabelle builds all theories in a session concurrently, there is a very high resource load
+   otherwise. (Even when forcing Isabelle to use only a single thread, probably since the futures are
+   created anyway.) *)
+session Complex_Bounded_Operators_Dependencies in ".fake_session_dir" = "HOL-Analysis" +
   sessions
     "HOL-Examples"
     "HOL-Types_To_Sets"
     Jordan_Normal_Form
     Banach_Steinhaus
     Real_Impl
-  directories
-    extra
   theories
-    Complex_L2
-    Cblinfun_Code
-    Cblinfun_Code_Examples
-  document_files
-    root.tex
-    root.bib
+    "Real_Impl.Real_Impl"
+    "Banach_Steinhaus.Banach_Steinhaus"
+    "HOL-Examples.Sqrt"
+    "HOL-Types_To_Sets.Types_To_Sets"
+    "Jordan_Normal_Form.Matrix_Impl"
+    "Jordan_Normal_Form.Matrix_Kernel"
+    "HOL-Library.Rewrite"
+    "HOL-Library.Complemented_Lattices"
+    "HOL-Library.Function_Algebras"
+    "HOL-Library.Code_Target_Numeral"
+    "HOL-Cardinals.Cardinals"

@@ -11,6 +11,7 @@ theory Extra_General
     "HOL-Analysis.Infinite_Sum"
     "HOL-Cardinals.Cardinals"
     "HOL-Library.Complemented_Lattices"
+    "HOL-Analysis.Abstract_Topological_Spaces"
 begin
 
 subsection \<open>Misc\<close>
@@ -111,6 +112,10 @@ class not_singleton =
 lemma not_singleton_existence[simp]:
   \<open>\<exists> x::('a::not_singleton). x \<noteq> t\<close>
   using not_singleton_card[where ?'a = 'a] by (metis (full_types))
+
+lemma not_not_singleton_zero: 
+  \<open>x = 0\<close> if \<open>\<not> class.not_singleton TYPE('a)\<close> for x :: \<open>'a::zero\<close>
+  using that unfolding class.not_singleton_def by auto
 
 lemma UNIV_not_singleton[simp]: "(UNIV::_::not_singleton set) \<noteq> {x}"
   using not_singleton_existence[of x] by blast
@@ -551,7 +556,7 @@ next
   qed
 qed
 
-lemma enum_idx_bound: "enum_idx x < length (Enum.enum :: 'a list)" for x :: "'a::enum"
+lemma enum_idx_bound[simp]: "enum_idx x < CARD('a)" for x :: "'a::enum"
 proof-
   have p1: "False"
     if "(Enum.enum :: 'a list) = []"
@@ -568,7 +573,7 @@ proof-
   moreover have "(enum_class.enum::'a list) \<noteq> []"
     using p2 by auto
   ultimately show ?thesis
-    unfolding enum_idx_def     
+    unfolding enum_idx_def card_UNIV_length_enum
     using index_of_bound [where x = x and y = "(Enum.enum :: 'a list)"]
     by auto   
 qed
@@ -706,6 +711,83 @@ text \<open>The following lemma is identical to @{thm [source] Complete_Lattices
   except for the more general sort.\<close>
 lemma uminus_SUP: "- (SUP x\<in>A. B x) = (INF x\<in>A. - B x)" for B :: \<open>'a \<Rightarrow> 'b::complete_orthocomplemented_lattice\<close>
   by (simp add: uminus_Sup image_image)
+
+lemma has_sumI_metric:
+  fixes l :: \<open>'a :: {metric_space, comm_monoid_add}\<close>
+  assumes \<open>\<And>e. e > 0 \<Longrightarrow> \<exists>X. finite X \<and> X \<subseteq> A \<and> (\<forall>Y. finite Y \<and> X \<subseteq> Y \<and> Y \<subseteq> A \<longrightarrow> dist (sum f Y) l < e)\<close>
+  shows \<open>(f has_sum l) A\<close>
+  unfolding has_sum_metric using assms by simp
+
+lemma limitin_pullback_topology: 
+  \<open>limitin (pullback_topology A g T) f l F \<longleftrightarrow> l\<in>A \<and> (\<forall>\<^sub>F x in F. f x \<in> A) \<and> limitin T (g o f) (g l) F\<close>
+  apply (simp add: topspace_pullback_topology limitin_def openin_pullback_topology imp_ex flip: ex_simps(1))
+  apply rule
+   apply simp
+   apply safe
+  using eventually_mono apply fastforce
+   apply (simp add: eventually_conj_iff)
+  by (simp add: eventually_conj_iff)
+
+lemma tendsto_coordinatewise: \<open>(f \<longlongrightarrow> l) F \<longleftrightarrow> (\<forall>x. ((\<lambda>i. f i x) \<longlongrightarrow> l x) F)\<close>
+proof (intro iffI allI)
+  assume asm: \<open>(f \<longlongrightarrow> l) F\<close>
+  then show \<open>((\<lambda>i. f i x) \<longlongrightarrow> l x) F\<close> for x
+    apply (rule continuous_on_tendsto_compose[where s=UNIV, rotated])
+    by auto
+next
+  assume asm: \<open>(\<forall>x. ((\<lambda>i. f i x) \<longlongrightarrow> l x) F)\<close>
+  show \<open>(f \<longlongrightarrow> l) F\<close>
+  proof (unfold tendsto_def, intro allI impI)
+    fix S assume \<open>open S\<close> and \<open>l \<in> S\<close>
+    from product_topology_open_contains_basis[OF \<open>open S\<close>[unfolded open_fun_def] \<open>l \<in> S\<close>]
+    obtain U where lU: \<open>l \<in> Pi UNIV U\<close> and openU: \<open>\<And>x. open (U x)\<close> and finiteD: \<open>finite {x. U x \<noteq> UNIV}\<close> and US: \<open>Pi UNIV U \<subseteq> S\<close>
+      by (auto simp add: PiE_UNIV_domain)
+
+    define D where \<open>D = {x. U x \<noteq> UNIV}\<close>
+    with finiteD have finiteD: \<open>finite D\<close>
+      by simp
+    have PiUNIV: \<open>t \<in> Pi UNIV U \<longleftrightarrow> (\<forall>x\<in>D. t x \<in> U x)\<close> for t
+      using D_def by blast
+
+    have f_Ui: \<open>\<forall>\<^sub>F i in F. f i x \<in> U x\<close> for x
+      using asm[rule_format, of x] openU[of x]
+      using lU topological_tendstoD by fastforce
+
+    have \<open>\<forall>\<^sub>F x in F. \<forall>i\<in>D. f x i \<in> U i\<close>
+      using finiteD
+    proof induction
+      case empty
+      then show ?case
+        by simp
+    next
+      case (insert x F)
+      with f_Ui show ?case
+        by (simp add: eventually_conj_iff)
+    qed
+
+    then show \<open>\<forall>\<^sub>F x in F. f x \<in> S\<close>
+      using US by (simp add: PiUNIV eventually_mono in_mono)
+  qed
+qed
+
+lemma limitin_closure_of:
+  assumes limit: \<open>limitin T f c F\<close>
+  assumes in_S: \<open>\<forall>\<^sub>F x in F. f x \<in> S\<close>
+  assumes nontrivial: \<open>\<not> trivial_limit F\<close>
+  shows \<open>c \<in> T closure_of S\<close>
+proof (intro in_closure_of[THEN iffD2] conjI impI allI)
+  from limit show \<open>c \<in> topspace T\<close>
+    by (simp add: limitin_topspace)
+  fix U
+  assume \<open>c \<in> U \<and> openin T U\<close>
+  with limit have \<open>\<forall>\<^sub>F x in F. f x \<in> U\<close>
+    by (simp add: limitin_def)
+  with in_S have \<open>\<forall>\<^sub>F x in F. f x \<in> U \<and> f x \<in> S\<close>
+    by (simp add: eventually_frequently_simps)
+  with nontrivial
+  show \<open>\<exists>y. y \<in> S \<and> y \<in> U\<close>
+    using eventually_happens' by blast
+qed
 
 
 end

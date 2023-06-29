@@ -34,7 +34,7 @@ lemma of_complex_inner_1' [simp]:
   by (metis cinner_commute complex_cnj_cnj of_complex_inner_1)
 
 
-class chilbert_space =  complex_inner + complete_space
+class chilbert_space = complex_inner + complete_space
 begin
 subclass cbanach by standard
 end
@@ -465,7 +465,7 @@ proof -
     using bounded_antilinear_cinner_left apply (rule bounded_antilinear_eq_on[where G=X])
     using assms that by auto
   show \<open>cinner x y = 0\<close>
-    using bounded_clinear_cinner_right apply (rule bounded_clinear_eq_on[where G=Y])
+    using bounded_clinear_cinner_right apply (rule bounded_clinear_eq_on_closure[where G=Y])
     using * assms by auto
 qed
 
@@ -494,7 +494,7 @@ end
 
 definition is_ortho_set :: "'a::complex_inner set \<Rightarrow> bool" where
   \<comment> \<open>Orthogonal set\<close>
-  \<open>is_ortho_set S = ((\<forall>x\<in>S. \<forall>y\<in>S. x \<noteq> y \<longrightarrow> (x \<bullet>\<^sub>C y) = 0) \<and> 0 \<notin> S)\<close>
+  \<open>is_ortho_set S \<longleftrightarrow> (\<forall>x\<in>S. \<forall>y\<in>S. x \<noteq> y \<longrightarrow> (x \<bullet>\<^sub>C y) = 0) \<and> 0 \<notin> S\<close>
 
 definition is_onb where \<open>is_onb E \<longleftrightarrow> is_ortho_set E \<and> (\<forall>b\<in>E. norm b = 1) \<and> ccspan E = top\<close>
 
@@ -795,6 +795,21 @@ lemma orthogonal_complement_UNIV[simp]:
 lemma orthogonal_complement_zero[simp]:
   "orthogonal_complement {0} = UNIV"
   unfolding orthogonal_complement_def by auto
+
+lemma mem_ortho_ccspanI:
+  assumes \<open>\<And>y. y \<in> S \<Longrightarrow> is_orthogonal x y\<close>
+  shows \<open>x \<in> space_as_set (- ccspan S)\<close>
+proof -
+  have \<open>x \<in> space_as_set (ccspan {x})\<close>
+    using ccspan_superset by blast
+  also have \<open>\<dots> \<subseteq> space_as_set (- ccspan S)\<close>
+    apply (simp add: flip: less_eq_ccsubspace.rep_eq)
+    apply (rule ccspan_leq_ortho_ccspan)
+    using assms by auto
+  finally show ?thesis
+    by -
+qed
+
 
 subsection \<open>Projections\<close>
 
@@ -1281,7 +1296,7 @@ lemma is_projection_on_unique:
   unfolding is_projection_on_def by blast
 
 definition projection :: \<open>'a::metric_space set \<Rightarrow> ('a \<Rightarrow> 'a)\<close> where
-  \<open>projection M \<equiv> SOME \<pi>. is_projection_on \<pi> M\<close>
+  \<open>projection M = (SOME \<pi>. is_projection_on \<pi> M)\<close>
 
 lemma projection_is_projection_on:
   fixes M :: \<open>'a::chilbert_space set\<close>
@@ -1972,6 +1987,140 @@ proof (rule ccontr, simp)
     by simp
 qed
 
+lemma basis_projections_reconstruct_has_sum:
+  assumes \<open>is_ortho_set B\<close> and normB: \<open>\<And>b. b\<in>B \<Longrightarrow> norm b = 1\<close> and \<psi>B: \<open>\<psi> \<in> space_as_set (ccspan B)\<close>
+  shows \<open>((\<lambda>b. (b \<bullet>\<^sub>C \<psi>) *\<^sub>C b) has_sum \<psi>) B\<close>
+proof (rule has_sumI_metric)
+  fix e :: real assume \<open>e > 0\<close>
+  define e2 where \<open>e2 = e/2\<close>
+  have [simp]: \<open>e2 > 0\<close>
+    by (simp add: \<open>0 < e\<close> e2_def)
+  define bb where \<open>bb \<phi> b = (b \<bullet>\<^sub>C \<phi>) *\<^sub>C b\<close> for \<phi> and b :: 'a
+  have linear_bb: \<open>clinear (\<lambda>\<phi>. bb \<phi> b)\<close> for b
+    by (simp add: bb_def cinner_add_right clinear_iff scaleC_left.add)
+  from \<psi>B obtain \<phi> where dist\<phi>\<psi>: \<open>dist \<phi> \<psi> < e2\<close> and \<phi>B: \<open>\<phi> \<in> cspan B\<close>
+    apply atomize_elim apply (simp add: ccspan.rep_eq closure_approachable)
+    using \<open>0 < e2\<close> by blast
+  from \<phi>B obtain F where \<open>finite F\<close> and \<open>F \<subseteq> B\<close> and \<phi>F: \<open>\<phi> \<in> cspan F\<close>
+    by (meson vector_finitely_spanned)
+  have \<open>dist (sum (bb \<psi>) G) \<psi> < e\<close> 
+    if \<open>finite G\<close> and \<open>F \<subseteq> G\<close> and \<open>G \<subseteq> B\<close> for G
+  proof -
+    have sum\<phi>: \<open>sum (bb \<phi>) G = \<phi>\<close>
+    proof -
+      from \<phi>F \<open>F \<subseteq> G\<close> have \<phi>G: \<open>\<phi> \<in> cspan G\<close>
+        using complex_vector.span_mono by blast
+      then obtain f where \<phi>sum: \<open>\<phi> = (\<Sum>b\<in>G. f b *\<^sub>C b)\<close>
+        using complex_vector.span_finite[OF \<open>finite G\<close>] 
+        by auto
+      have \<open>sum (bb \<phi>) G = (\<Sum>c\<in>G. \<Sum>b\<in>G. bb (f b *\<^sub>C b) c)\<close>
+        apply (simp add: \<phi>sum)
+        apply (rule sum.cong, simp)
+        apply (rule complex_vector.linear_sum[where f=\<open>\<lambda>x. bb x _\<close>])
+        by (rule linear_bb)
+      also have \<open>\<dots> = (\<Sum>(c,b)\<in>G\<times>G. bb (f b *\<^sub>C b) c)\<close>
+        by (simp add: sum.cartesian_product)
+      also have \<open>\<dots> = (\<Sum>b\<in>G. f b *\<^sub>C b)\<close>
+        apply (rule sym)
+        apply (rule sum.reindex_bij_witness_not_neutral
+            [where j=\<open>\<lambda>b. (b,b)\<close> and i=fst and T'=\<open>G\<times>G - (\<lambda>b. (b,b)) ` G\<close> and S'=\<open>{}\<close>])
+        using \<open>finite G\<close> apply (auto simp: bb_def)
+         apply (metis (no_types, lifting) assms(1) imageI is_ortho_set_antimono is_ortho_set_def that(3))
+        using normB \<open>G \<subseteq> B\<close> cnorm_eq_1 by blast
+      also have \<open>\<dots> = \<phi>\<close>
+        by (simp flip: \<phi>sum)
+      finally show ?thesis
+        by -
+    qed
+    have \<open>dist (sum (bb \<phi>) G) (sum (bb \<psi>) G) < e2\<close>
+    proof -
+      define \<gamma> where \<open>\<gamma> = \<phi> - \<psi>\<close>
+      have \<open>(dist (sum (bb \<phi>) G) (sum (bb \<psi>) G))\<^sup>2 = (norm (sum (bb \<gamma>) G))\<^sup>2\<close>
+        by (simp add: dist_norm \<gamma>_def complex_vector.linear_diff[OF linear_bb] sum_subtractf)
+      also have \<open>\<dots> = (norm (sum (bb \<gamma>) G))\<^sup>2 + (norm (\<gamma> - sum (bb \<gamma>) G))\<^sup>2 - (norm (\<gamma> - sum (bb \<gamma>) G))\<^sup>2\<close>
+        by simp
+      also have \<open>\<dots> = (norm (sum (bb \<gamma>) G + (\<gamma> - sum (bb \<gamma>) G)))\<^sup>2 - (norm (\<gamma> - sum (bb \<gamma>) G))\<^sup>2\<close>
+      proof -
+        have \<open>(\<Sum>b\<in>G. bb \<gamma> b \<bullet>\<^sub>C bb \<gamma> c) = bb \<gamma> c \<bullet>\<^sub>C \<gamma>\<close> if \<open>c \<in> G\<close> for c
+          apply (subst sum_single[where i=c])
+          using that apply (auto intro!: \<open>finite G\<close> simp: bb_def)
+           apply (metis \<open>G \<subseteq> B\<close> \<open>is_ortho_set B\<close> is_ortho_set_antimono is_ortho_set_def)
+          using \<open>G \<subseteq> B\<close> normB cnorm_eq_1 by blast
+        then have \<open>is_orthogonal (sum (bb \<gamma>) G) (\<gamma> - sum (bb \<gamma>) G)\<close>
+          by (simp add: cinner_sum_left cinner_diff_right cinner_sum_right)
+        then show ?thesis
+          apply (rule_tac arg_cong[where f=\<open>\<lambda>x. x - _\<close>])
+          by (rule pythagorean_theorem[symmetric])
+      qed
+      also have \<open>\<dots> = (norm \<gamma>)\<^sup>2 - (norm (\<gamma> - sum (bb \<gamma>) G))\<^sup>2\<close>
+        by simp
+      also have \<open>\<dots> \<le> (norm \<gamma>)\<^sup>2\<close>
+        by simp
+      also have \<open>\<dots> = (dist \<phi> \<psi>)\<^sup>2\<close>
+        by (simp add: \<gamma>_def dist_norm)
+      also have \<open>\<dots> < e2\<^sup>2\<close>
+        using dist\<phi>\<psi> apply (rule power_strict_mono)
+        by auto
+      finally show ?thesis
+        by (smt (verit) \<open>0 < e2\<close> power_mono)
+    qed
+    with sum\<phi> dist\<phi>\<psi> show \<open>dist (sum (bb \<psi>) G) \<psi> < e\<close>
+      apply (rule_tac dist_triangle_lt[where z=\<phi>])
+      by (simp add: e2_def dist_commute)
+  qed
+  with \<open>finite F\<close> and \<open>F \<subseteq> B\<close> 
+  show \<open>\<exists>F. finite F \<and>
+             F \<subseteq> B \<and> (\<forall>G. finite G \<and> F \<subseteq> G \<and> G \<subseteq> B \<longrightarrow> dist (sum (bb \<psi>) G) \<psi> < e)\<close>
+    by (auto intro!: exI[of _ F])
+qed
+
+lemma basis_projections_reconstruct:
+  assumes \<open>is_ortho_set B\<close> and \<open>\<And>b. b\<in>B \<Longrightarrow> norm b = 1\<close> and \<open>\<psi> \<in> space_as_set (ccspan B)\<close>
+  shows \<open>(\<Sum>\<^sub>\<infinity>b\<in>B. (b \<bullet>\<^sub>C \<psi>) *\<^sub>C b) = \<psi>\<close>
+  using assms basis_projections_reconstruct_has_sum infsumI by blast
+
+lemma basis_projections_reconstruct_summable:
+  assumes \<open>is_ortho_set B\<close> and \<open>\<And>b. b\<in>B \<Longrightarrow> norm b = 1\<close> and \<open>\<psi> \<in> space_as_set (ccspan B)\<close>
+  shows \<open>(\<lambda>b. (b \<bullet>\<^sub>C \<psi>) *\<^sub>C b) summable_on B\<close>
+  by (simp add: assms basis_projections_reconstruct basis_projections_reconstruct_has_sum summable_iff_has_sum_infsum)
+
+lemma parseval_identity_has_sum:
+  assumes \<open>is_ortho_set B\<close> and normB: \<open>\<And>b. b\<in>B \<Longrightarrow> norm b = 1\<close> and \<open>\<psi> \<in> space_as_set (ccspan B)\<close>
+  shows \<open>((\<lambda>b. (norm (b \<bullet>\<^sub>C \<psi>))\<^sup>2) has_sum (norm \<psi>)\<^sup>2) B\<close>
+proof -
+  have *: \<open>(\<lambda>v. (norm v)\<^sup>2) (\<Sum>b\<in>F. (b \<bullet>\<^sub>C \<psi>) *\<^sub>C b) = (\<Sum>b\<in>F. (norm (b \<bullet>\<^sub>C \<psi>))\<^sup>2)\<close> if \<open>finite F\<close> and \<open>F \<subseteq> B\<close> for F
+    apply (subst pythagorean_theorem_sum)
+    using \<open>is_ortho_set B\<close> normB that
+      apply (auto intro!: sum.cong[OF refl] simp: is_ortho_set_def)
+    by blast
+  
+  from assms have \<open>((\<lambda>b. (b \<bullet>\<^sub>C \<psi>) *\<^sub>C b) has_sum \<psi>) B\<close>
+    by (simp add: basis_projections_reconstruct_has_sum)
+  then have \<open>((\<lambda>F. \<Sum>b\<in>F. (b \<bullet>\<^sub>C \<psi>) *\<^sub>C b) \<longlongrightarrow> \<psi>) (finite_subsets_at_top B)\<close>
+    by (simp add: has_sum_def)
+  then have \<open>((\<lambda>F. (\<lambda>v. (norm v)\<^sup>2) (\<Sum>b\<in>F. (b \<bullet>\<^sub>C \<psi>) *\<^sub>C b)) \<longlongrightarrow> (norm \<psi>)\<^sup>2) (finite_subsets_at_top B)\<close>
+    apply (rule isCont_tendsto_compose[rotated])
+    by simp
+  then have \<open>((\<lambda>F. (\<Sum>b\<in>F. (norm (b \<bullet>\<^sub>C \<psi>))\<^sup>2)) \<longlongrightarrow> (norm \<psi>)\<^sup>2) (finite_subsets_at_top B)\<close>
+    apply (rule tendsto_cong[THEN iffD2, rotated])
+    apply (rule eventually_finite_subsets_at_top_weakI)
+    by (simp add: *)
+  then show \<open>((\<lambda>b. (norm (b \<bullet>\<^sub>C \<psi>))\<^sup>2) has_sum (norm \<psi>)\<^sup>2) B\<close>
+    by (simp add: has_sum_def)
+qed
+
+lemma parseval_identity_summable:
+  assumes \<open>is_ortho_set B\<close> and \<open>\<And>b. b\<in>B \<Longrightarrow> norm b = 1\<close> and \<open>\<psi> \<in> space_as_set (ccspan B)\<close>
+  shows \<open>(\<lambda>b. (norm (b \<bullet>\<^sub>C \<psi>))\<^sup>2) summable_on B\<close>
+  using parseval_identity_has_sum[OF assms] has_sum_imp_summable by blast
+
+lemma parseval_identity:
+  assumes \<open>is_ortho_set B\<close> and \<open>\<And>b. b\<in>B \<Longrightarrow> norm b = 1\<close> and \<open>\<psi> \<in> space_as_set (ccspan B)\<close>
+  shows \<open>(\<Sum>\<^sub>\<infinity>b\<in>B. (norm (b \<bullet>\<^sub>C \<psi>))\<^sup>2) = (norm \<psi>)\<^sup>2\<close>
+  using parseval_identity_has_sum[OF assms]
+  using infsumI by blast
+
+
 subsection \<open>Riesz-representation theorem\<close>
 
 lemma orthogonal_complement_kernel_functional:
@@ -2382,6 +2531,9 @@ lemma cinner_canonical_basis:
   assumes \<open>j < length (canonical_basis :: 'a::onb_enum list)\<close>
   shows \<open>cinner (canonical_basis!i :: 'a) (canonical_basis!j) = (if i=j then 1 else 0)\<close>
   by (metis assms(1) assms(2) distinct_canonical_basis is_normal is_ortho_set_def is_orthonormal nth_eq_iff_index_eq nth_mem of_real_1 power2_norm_eq_cinner power_one)
+
+lemma canonical_basis_is_onb[simp]: \<open>is_onb (set canonical_basis :: 'a::onb_enum set)\<close>
+  by (simp add: is_normal is_onb_def is_orthonormal)
 
 instance onb_enum \<subseteq> chilbert_space
 proof

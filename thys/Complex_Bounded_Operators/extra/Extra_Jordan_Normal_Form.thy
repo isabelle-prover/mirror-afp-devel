@@ -407,7 +407,11 @@ lemma list_of_vec_mult:
   shows \<open>list_of_vec (c \<cdot>\<^sub>v v) = map ((*) c) (list_of_vec v)\<close>
   by (metis (mono_tags, lifting) index_smult_vec(1) index_smult_vec(2) length_list_of_vec length_map nth_equalityI nth_list_of_vec nth_map)
 
+lemma map_map_vec_cols: \<open>map (map_vec f) (cols m) = cols (map_mat f m)\<close>
+  by (simp add: cols_def)
 
+lemma map_vec_conjugate: \<open>map_vec conjugate v = conjugate v\<close>
+  by fastforce
 
 unbundle no_jnf_notation
 

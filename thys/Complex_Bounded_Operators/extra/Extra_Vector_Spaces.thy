@@ -144,6 +144,12 @@ lemma has_sum_bounded_linear:
   using assms blinfun_apply_induct blinfun.additive_right apply auto
   using isCont_def linear_continuous_at by fastforce
 
+lemma summable_on_bounded_linear:
+  assumes \<open>bounded_linear f\<close>
+  assumes \<open>g summable_on S\<close>
+  shows \<open>(f o g) summable_on S\<close>
+  by (metis assms(1) assms(2) has_sum_bounded_linear infsum_bounded_linear summable_iff_has_sum_infsum)
+
 lemma abs_summable_on_bounded_linear:
   assumes \<open>bounded_linear f\<close>
   assumes \<open>g abs_summable_on S\<close>
@@ -203,6 +209,36 @@ proof-
     by (metis bounded_linear.axioms(2) bounded_linear_axioms_def)
   thus ?thesis by auto
 qed
+
+lemma any_norm_exists:
+  assumes \<open>n \<ge> 0\<close>
+  shows \<open>\<exists>\<psi>::'a::{real_normed_vector,not_singleton}. norm \<psi> = n\<close>
+proof -
+  obtain \<psi> :: 'a where \<open>\<psi> \<noteq> 0\<close>
+    using not_singleton_card
+    by force
+  then have \<open>norm (n *\<^sub>R sgn \<psi>) = n\<close>
+    using assms by (auto simp: sgn_div_norm abs_mult)
+  then show ?thesis
+    by blast
+qed
+
+
+lemma abs_summable_on_scaleR_left [intro]:
+  fixes c :: \<open>'a :: real_normed_vector\<close>
+  assumes "c \<noteq> 0 \<Longrightarrow> f abs_summable_on A"
+  shows   "(\<lambda>x. f x *\<^sub>R c) abs_summable_on A"
+  apply (cases \<open>c = 0\<close>)
+   apply simp
+  by (auto intro!: summable_on_cmult_left assms simp flip: real_norm_def)
+
+lemma abs_summable_on_scaleR_right [intro]:
+  fixes f :: \<open>'a \<Rightarrow> 'b :: real_normed_vector\<close>
+  assumes "c \<noteq> 0 \<Longrightarrow> f abs_summable_on A"
+  shows   "(\<lambda>x. c *\<^sub>R f x) abs_summable_on A"
+  apply (cases \<open>c = 0\<close>)
+   apply simp
+  by (auto intro!: summable_on_cmult_right assms)
 
 
 

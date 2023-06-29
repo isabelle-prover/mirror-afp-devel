@@ -23,7 +23,7 @@ unbundle no_notation_blinfun_apply
 
 subsection \<open>l2 norm of functions\<close>
 
-definition "has_ell2_norm (x::_\<Rightarrow>complex) \<longleftrightarrow> (\<lambda>i. (x i)\<^sup>2) abs_summable_on UNIV"
+definition \<open>has_ell2_norm (x::_\<Rightarrow>complex) \<longleftrightarrow> (\<lambda>i. (x i)\<^sup>2) abs_summable_on UNIV\<close>
 
 lemma has_ell2_norm_bdd_above: \<open>has_ell2_norm x \<longleftrightarrow> bdd_above (sum (\<lambda>xa. norm ((x xa)\<^sup>2)) ` Collect finite)\<close>
   by (simp add: has_ell2_norm_def abs_summable_iff_bdd_above)
@@ -55,7 +55,7 @@ next
     by (simp add: norm_power)
 qed
 
-definition ell2_norm :: \<open>('a \<Rightarrow> complex) \<Rightarrow> real\<close> where \<open>ell2_norm x = sqrt (\<Sum>\<^sub>\<infinity>i. norm (x i)^2)\<close>
+definition ell2_norm :: \<open>('a \<Rightarrow> complex) \<Rightarrow> real\<close> where \<open>ell2_norm f = sqrt (\<Sum>\<^sub>\<infinity>x. norm (f x)^2)\<close>
 
 lemma ell2_norm_SUP:
   assumes \<open>has_ell2_norm x\<close>
@@ -86,11 +86,11 @@ proof-
     using assms by (auto simp: ell2_norm_SUP L2_set_def)
 qed
 
-lemma has_ell2_norm_finite[simp]: "has_ell2_norm (x::'a::finite\<Rightarrow>_)"
+lemma has_ell2_norm_finite[simp]: "has_ell2_norm (f::'a::finite\<Rightarrow>_)"
   unfolding has_ell2_norm_def by simp
 
 lemma ell2_norm_finite: 
-  "ell2_norm (x::'a::finite\<Rightarrow>complex) = sqrt (sum (\<lambda>i. (norm(x i))^2) UNIV)"
+  "ell2_norm (f::'a::finite\<Rightarrow>complex) = sqrt (\<Sum>x\<in>UNIV. (norm (f x))^2)"
   by (simp add: ell2_norm_def)
 
 lemma ell2_norm_finite_L2_set: "ell2_norm (x::'a::finite\<Rightarrow>complex) = L2_set (norm o x) UNIV"
@@ -103,7 +103,7 @@ lemma ell2_norm_square: \<open>(ell2_norm x)\<^sup>2 = (\<Sum>\<^sub>\<infinity>
 
 lemma ell2_ket:
   fixes a
-  defines \<open>f \<equiv> (\<lambda>i. if a = i then 1 else 0)\<close>
+  defines \<open>f \<equiv> (\<lambda>i. of_bool (a = i))\<close>
   shows has_ell2_norm_ket: \<open>has_ell2_norm f\<close>
     and ell2_norm_ket: \<open>ell2_norm f = 1\<close>
 proof -
@@ -310,14 +310,14 @@ lemma ell2_norm_uminus:
 
 subsection \<open>The type \<open>ell2\<close> of square-summable functions\<close>
 
-typedef 'a ell2 = "{x::'a\<Rightarrow>complex. has_ell2_norm x}"
+typedef 'a ell2 = \<open>{f::'a\<Rightarrow>complex. has_ell2_norm f}\<close>
   unfolding has_ell2_norm_def by (rule exI[of _ "\<lambda>_.0"], auto)
 setup_lifting type_definition_ell2
 
 instantiation ell2 :: (type)complex_vector begin
 lift_definition zero_ell2 :: "'a ell2" is "\<lambda>_. 0" by (auto simp: has_ell2_norm_def)
 lift_definition uminus_ell2 :: "'a ell2 \<Rightarrow> 'a ell2" is uminus by (simp add: has_ell2_norm_def)
-lift_definition plus_ell2 :: "'a ell2 \<Rightarrow> 'a ell2 \<Rightarrow> 'a ell2" is "\<lambda>f g x. f x + g x"
+lift_definition plus_ell2 :: \<open>'a ell2 \<Rightarrow> 'a ell2 \<Rightarrow> 'a ell2\<close> is \<open>\<lambda>f g x. f x + g x\<close>
   by (rule ell2_norm_triangle) 
 lift_definition minus_ell2 :: "'a ell2 \<Rightarrow> 'a ell2 \<Rightarrow> 'a ell2" is "\<lambda>f g x. f x - g x"
   apply (subst add_uminus_conv_diff[symmetric])
@@ -325,7 +325,7 @@ lift_definition minus_ell2 :: "'a ell2 \<Rightarrow> 'a ell2 \<Rightarrow> 'a el
   by (auto simp add: ell2_norm_uminus)
 lift_definition scaleR_ell2 :: "real \<Rightarrow> 'a ell2 \<Rightarrow> 'a ell2" is "\<lambda>r f x. complex_of_real r * f x"
   by (rule ell2_norm_smult)
-lift_definition scaleC_ell2 :: "complex \<Rightarrow> 'a ell2 \<Rightarrow> 'a ell2" is "\<lambda>c f x. c * f x"
+lift_definition scaleC_ell2 :: \<open>complex \<Rightarrow> 'a ell2 \<Rightarrow> 'a ell2\<close> is \<open>\<lambda>c f x. c * f x\<close>
   by (rule ell2_norm_smult)
 
 instance
@@ -411,8 +411,8 @@ proof (insert assms(2), transfer fixing: S)
 qed
 
 instantiation ell2 :: (type) complex_inner begin
-lift_definition cinner_ell2 :: "'a ell2 \<Rightarrow> 'a ell2 \<Rightarrow> complex" is 
-  "\<lambda>x y. infsum (\<lambda>i. (cnj (x i) * y i)) UNIV" .
+lift_definition cinner_ell2 :: \<open>'a ell2 \<Rightarrow> 'a ell2 \<Rightarrow> complex\<close> is 
+  \<open>\<lambda>f g. \<Sum>\<^sub>\<infinity>x. (cnj (f x) * g x)\<close> .
 declare cinner_ell2_def[code del]
 
 instance
@@ -659,6 +659,13 @@ proof (intro rel_funI, rename_tac f f' X X')
   qed
 qed
 
+lemma clinear_Rep_ell2[simp]: \<open>clinear (\<lambda>\<psi>. Rep_ell2 \<psi> i)\<close>
+  by (simp add: clinearI plus_ell2.rep_eq scaleC_ell2.rep_eq)
+
+lemma Abs_ell2_inverse_finite[simp]: \<open>Rep_ell2 (Abs_ell2 \<psi>) = \<psi>\<close> for \<psi> :: \<open>_::finite \<Rightarrow> complex\<close>
+  by (simp add: Abs_ell2_inverse)
+
+
 subsection \<open>Orthogonality\<close>
 
 lemma ell2_pointwise_ortho:
@@ -790,7 +797,7 @@ lemma trunc_ell2_twice[simp]: \<open>trunc_ell2 M (trunc_ell2 N \<psi>) = trunc_
 lemma trunc_ell2_union: \<open>trunc_ell2 (M \<union> N) \<psi> = trunc_ell2 M \<psi> + trunc_ell2 N \<psi> - trunc_ell2 (M\<inter>N) \<psi>\<close>
   apply transfer by auto
 
-lemma trunc_ell2_union_disjoint: \<open>M\<inter>N = {} \<Longrightarrow> trunc_ell2 (M \<union> N) \<psi> = trunc_ell2 M \<psi> + trunc_ell2 N \<psi>\<close>
+lemma trunc_ell2_union_disjoint: \<open>M \<inter> N = {} \<Longrightarrow> trunc_ell2 (M \<union> N) \<psi> = trunc_ell2 M \<psi> + trunc_ell2 N \<psi>\<close>
   by (simp add: trunc_ell2_union)
 
 lemma trunc_ell2_union_Diff: \<open>M \<subseteq> N \<Longrightarrow> trunc_ell2 (N-M) \<psi> = trunc_ell2 N \<psi> - trunc_ell2 M \<psi>\<close>
@@ -853,9 +860,25 @@ proof (rule tendstoI)
   qed
 qed
 
+lemma norm_ell2_bound_trunc:
+  assumes \<open>\<And>M. finite M \<Longrightarrow> norm (trunc_ell2 M \<psi>) \<le> B\<close>
+  shows \<open>norm \<psi> \<le> B\<close>
+proof -
+  note trunc_ell2_lim_at_UNIV[of \<psi>]
+  then have \<open>((\<lambda>S. norm (trunc_ell2 S \<psi>)) \<longlongrightarrow> norm \<psi>) (finite_subsets_at_top UNIV)\<close>
+    using tendsto_norm by auto
+  then show \<open>norm \<psi> \<le> B\<close>
+    apply (rule tendsto_upperbound)
+    using assms apply (rule eventually_finite_subsets_at_top_weakI)
+    by auto
+qed
+
+lemma trunc_ell2_uminus: \<open>trunc_ell2 (-M) \<psi> = \<psi> - trunc_ell2 M \<psi>\<close>
+  by (metis Int_UNIV_left boolean_algebra_class.diff_eq subset_UNIV trunc_ell2_UNIV trunc_ell2_union_Diff)
+
 subsection \<open>Kets and bras\<close>
 
-lift_definition ket :: "'a \<Rightarrow> 'a ell2" is "\<lambda>x y. if x=y then 1 else 0"
+lift_definition ket :: \<open>'a \<Rightarrow> 'a ell2\<close> is \<open>\<lambda>x y. of_bool (x=y)\<close>
   by (rule has_ell2_norm_ket)
 
 abbreviation bra :: "'a \<Rightarrow> (_,complex) cblinfun" where "bra i \<equiv> vector_to_cblinfun (ket i)*" for i
@@ -864,14 +887,14 @@ instance ell2 :: (type) not_singleton
 proof standard
   have "ket undefined \<noteq> (0::'a ell2)"
   proof transfer
-    show "(\<lambda>y. if (undefined::'a) = y then 1::complex else 0) \<noteq> (\<lambda>_. 0)"
-      by (meson one_neq_zero)
+    show \<open>(\<lambda>y. of_bool ((undefined::'a) = y)) \<noteq> (\<lambda>_. 0)\<close>
+      by (metis (mono_tags) of_bool_eq(2) zero_neq_one)
   qed   
   thus \<open>\<exists>x y::'a ell2. x \<noteq> y\<close>
     by blast    
 qed
 
-lemma cinner_ket_left: \<open>(ket i \<bullet>\<^sub>C \<psi>) = Rep_ell2 \<psi> i\<close>
+lemma cinner_ket_left: \<open>ket i \<bullet>\<^sub>C \<psi> = Rep_ell2 \<psi> i\<close>
   apply (transfer fixing: i)
   apply (subst infsum_cong_neutral[where T=\<open>{i}\<close>])
   by auto
@@ -881,8 +904,14 @@ lemma cinner_ket_right: \<open>(\<psi> \<bullet>\<^sub>C ket i) = cnj (Rep_ell2 
   apply (subst infsum_cong_neutral[where T=\<open>{i}\<close>])
   by auto
 
+(* Doesn't really belong in this subsection but uses lemmas from this subsection for its proof. *)
+lemma bounded_clinear_Rep_ell2[simp, bounded_clinear]: \<open>bounded_clinear (\<lambda>\<psi>. Rep_ell2 \<psi> x)\<close>
+  apply (subst asm_rl[of \<open>(\<lambda>\<psi>. Rep_ell2 \<psi> x) = (\<lambda>\<psi>. ket x \<bullet>\<^sub>C \<psi>)\<close>])
+   apply (auto simp: cinner_ket_left) 
+  by (simp add: bounded_clinear_cinner_right)
+
 lemma cinner_ket_eqI:
-  assumes \<open>\<And>i. cinner (ket i) \<psi> = cinner (ket i) \<phi>\<close>
+  assumes \<open>\<And>i. ket i \<bullet>\<^sub>C \<psi> = ket i \<bullet>\<^sub>C \<phi>\<close>
   shows \<open>\<psi> = \<phi>\<close>
   by (metis Rep_ell2_inject assms cinner_ket_left ext)
 
@@ -910,19 +939,19 @@ qed
 
 lemma orthogonal_ket[simp]:
   \<open>is_orthogonal (ket i) (ket j) \<longleftrightarrow> i \<noteq> j\<close>
-  by (simp add: cinner_ket_left ket.rep_eq)
+  by (simp add: cinner_ket_left ket.rep_eq of_bool_def)
 
-lemma cinner_ket: \<open>(ket i \<bullet>\<^sub>C ket j) = (if i=j then 1 else 0)\<close>
+lemma cinner_ket: \<open>(ket i \<bullet>\<^sub>C ket j) = of_bool (i=j)\<close>
   by (simp add: cinner_ket_left ket.rep_eq)
 
 lemma ket_injective[simp]: \<open>ket i = ket j \<longleftrightarrow> i = j\<close>
-  by (metis cinner_ket one_neq_zero)
+  by (metis cinner_ket one_neq_zero of_bool_def)
 
 lemma inj_ket[simp]: \<open>inj ket\<close>
   by (simp add: inj_on_def)
 
 lemma trunc_ell2_ket_cspan:
-  \<open>trunc_ell2 S x \<in> (cspan (range ket))\<close> if \<open>finite S\<close>
+  \<open>trunc_ell2 S x \<in> cspan (range ket)\<close> if \<open>finite S\<close>
 proof (use that in induction)
   case empty
   then show ?case 
@@ -977,6 +1006,7 @@ qed
 
 instantiation ell2 :: (enum) onb_enum begin
 definition "canonical_basis_ell2 = map ket Enum.enum"
+definition \<open>canonical_basis_length_ell2 (_ :: 'a ell2 itself) = length (Enum.enum :: 'a list)\<close>
 instance
 proof
   show "distinct (canonical_basis::'a ell2 list)"
@@ -1009,7 +1039,10 @@ proof
     for x :: "'a ell2"
     using that unfolding canonical_basis_ell2_def 
     by auto
-qed
+
+  show \<open>canonical_basis_length TYPE('a ell2) = length (canonical_basis :: 'a ell2 list)\<close>
+    by (simp add: canonical_basis_length_ell2_def canonical_basis_ell2_def)
+  qed
 end
 
 lemma canonical_basis_length_ell2[code_unfold, simp]:
@@ -1024,7 +1057,8 @@ proof-
   hence p1: "ket x = ket ((enum_class.enum::'a list) ! enum_idx x)"
     by simp
   have "enum_idx x < length (enum_class.enum::'a list)"
-    using enum_idx_bound[where x = x].
+    using enum_idx_bound[where x = x] card_UNIV_length_enum
+    by metis
   hence "(map ket (enum_class.enum::'a list)) ! enum_idx x 
         = ket ((enum_class.enum::'a list) ! enum_idx x)"
     by auto      
@@ -1082,7 +1116,7 @@ proof -
   have \<open>(F *\<^sub>V x) \<bullet>\<^sub>C y = x \<bullet>\<^sub>C (G *\<^sub>V y)\<close> if \<open>x \<in> range ket\<close> and \<open>y \<in> range ket\<close> for x y
     using that by auto
   then have \<open>(F *\<^sub>V x) \<bullet>\<^sub>C y = x \<bullet>\<^sub>C (G *\<^sub>V y)\<close> if \<open>x \<in> range ket\<close> for x y
-    apply (rule bounded_clinear_eq_on[where G=\<open>range ket\<close> and t=y, rotated 2])
+    apply (rule bounded_clinear_eq_on_closure[where G=\<open>range ket\<close> and t=y, rotated 2])
     using that by (auto intro!: bounded_linear_intros)
   then have \<open>(F *\<^sub>V x) \<bullet>\<^sub>C y = x \<bullet>\<^sub>C (G *\<^sub>V y)\<close> for x y
     apply (rule bounded_antilinear_eq_on[where G=\<open>range ket\<close> and t=x, rotated 2])
@@ -1094,7 +1128,7 @@ qed
 lemma ket_nonzero[simp]: "ket i \<noteq> 0"
   using norm_ket[of i] by force
 
-lemma cindependent_ket:
+lemma cindependent_ket[simp]:
   "cindependent (range (ket::'a\<Rightarrow>_))"
 proof-
   define S where "S = range (ket::'a\<Rightarrow>_)"
@@ -1123,7 +1157,7 @@ lemma bounded_clinear_equal_ket:
   assumes \<open>\<And>i. f (ket i) = g (ket i)\<close>
   shows \<open>f = g\<close>
   apply (rule ext)
-  apply (rule bounded_clinear_eq_on[of f g \<open>range ket\<close>])
+  apply (rule bounded_clinear_eq_on_closure[of f g \<open>range ket\<close>])
   using assms by auto
 
 lemma bounded_antilinear_equal_ket:
@@ -1143,6 +1177,26 @@ lemma ell2_sum_ket: \<open>\<psi> = (\<Sum>i\<in>UNIV. Rep_ell2 \<psi> i *\<^sub
   apply transfer apply (rule ext)
   apply (subst sum_single)
   by auto
+
+lemma trunc_ell2_singleton: \<open>trunc_ell2 {x} \<psi> = Rep_ell2 \<psi> x *\<^sub>C ket x\<close>
+  apply transfer by auto
+
+lemma trunc_ell2_insert: \<open>trunc_ell2 (insert x M) \<phi> = Rep_ell2 \<phi> x *\<^sub>C ket x + trunc_ell2 M \<phi>\<close>
+  if \<open>x \<notin> M\<close>
+  using trunc_ell2_union_disjoint[where M=\<open>{x}\<close> and N=M]
+  using that by (auto simp: trunc_ell2_singleton)
+
+lemma trunc_ell2_finite_sum: \<open>trunc_ell2 M \<psi> = (\<Sum>i\<in>M. Rep_ell2 \<psi> i *\<^sub>C ket i)\<close> if \<open>finite M\<close>
+  using that apply induction by (auto simp: trunc_ell2_insert)
+
+lemma is_orthogonal_trunc_ell2: \<open>is_orthogonal (trunc_ell2 M \<psi>) (trunc_ell2 N \<phi>)\<close> if \<open>M \<inter> N = {}\<close>
+proof -
+  have *: \<open>cnj (if i \<in> M then a else 0) * (if i \<in> N then b else 0) = 0\<close> for a b i
+    using that by auto
+  show ?thesis
+    apply (transfer fixing: M N)
+    by (simp add: * )
+qed
 
 subsection \<open>Butterflies\<close>
 
@@ -1181,6 +1235,42 @@ lemma sum_butterfly_ket[simp]: \<open>(\<Sum>(i::'a::finite)\<in>UNIV. butterfly
    apply (auto simp add: scaleC_cblinfun.rep_eq cblinfun.add_left clinearI butterfly_def cblinfun_compose_image cinner_ket)
   apply (subst sum.mono_neutral_cong_right[where S=\<open>{_}\<close>])
   by auto
+
+lemma ell2_decompose_has_sum: \<open>((\<lambda>x. Rep_ell2 \<phi> x *\<^sub>C ket x) has_sum \<phi>) UNIV\<close>
+proof (unfold has_sum_def)
+  have *: \<open>trunc_ell2 M \<phi> = (\<Sum>x\<in>M. Rep_ell2 \<phi> x *\<^sub>C ket x)\<close> if \<open>finite M\<close> for M
+    using that apply induction
+    by (auto simp: trunc_ell2_insert)
+  show \<open>(sum (\<lambda>x. Rep_ell2 \<phi> x *\<^sub>C ket x) \<longlongrightarrow> \<phi>) (finite_subsets_at_top UNIV)\<close>
+    apply (rule Lim_transform_eventually)
+     apply (rule trunc_ell2_lim_at_UNIV)
+    using * by (rule eventually_finite_subsets_at_top_weakI)
+qed
+
+lemma ell2_decompose_infsum: \<open>\<phi> = (\<Sum>\<^sub>\<infinity>x. Rep_ell2 \<phi> x *\<^sub>C ket x)\<close>
+  by (metis ell2_decompose_has_sum infsumI)
+
+lemma ell2_decompose_summable: \<open>(\<lambda>x. Rep_ell2 \<phi> x *\<^sub>C ket x) summable_on UNIV\<close>
+  using ell2_decompose_has_sum summable_on_def by blast
+
+lemma Rep_ell2_cblinfun_apply_sum: \<open>Rep_ell2 (A *\<^sub>V \<phi>) y = (\<Sum>\<^sub>\<infinity>x. Rep_ell2 \<phi> x * Rep_ell2 (A *\<^sub>V ket x) y)\<close>
+proof -
+  have 1: \<open>bounded_linear (\<lambda>z. Rep_ell2 (A *\<^sub>V z) y)\<close>
+    by (auto intro!: bounded_clinear_compose[unfolded o_def, OF bounded_clinear_Rep_ell2]
+        cblinfun.bounded_clinear_right bounded_clinear.bounded_linear)
+  have 2: \<open>(\<lambda>x. Rep_ell2 \<phi> x *\<^sub>C ket x) summable_on UNIV\<close>
+    by (simp add: ell2_decompose_summable)
+  have \<open>Rep_ell2 (A *\<^sub>V \<phi>) y = Rep_ell2 (A *\<^sub>V (\<Sum>\<^sub>\<infinity>x. Rep_ell2 \<phi> x *\<^sub>C ket x)) y\<close>
+    by (simp flip: ell2_decompose_infsum)
+  also have \<open>\<dots> = (\<Sum>\<^sub>\<infinity>x. Rep_ell2 (A *\<^sub>V (Rep_ell2 \<phi> x *\<^sub>C ket x)) y)\<close>
+    apply (subst infsum_bounded_linear[symmetric, where f=\<open>\<lambda>z. Rep_ell2 (A *\<^sub>V z) y\<close>])
+    using 1 2 by (auto simp: o_def)
+  also have \<open>\<dots> = (\<Sum>\<^sub>\<infinity>x. Rep_ell2 \<phi> x * Rep_ell2 (A *\<^sub>V ket x) y)\<close>
+    by (simp add: cblinfun.scaleC_right scaleC_ell2.rep_eq)
+  finally show ?thesis
+    by -
+qed
+
 
 subsection \<open>One-dimensional spaces\<close>
 
@@ -1228,6 +1318,132 @@ proof intro_classes
     apply transfer by auto
 qed
 end
+
+subsection \<open>Explicit bounded operators\<close>
+
+definition explicit_cblinfun :: \<open>('a \<Rightarrow> 'b \<Rightarrow> complex) \<Rightarrow> ('b ell2, 'a ell2) cblinfun\<close> where
+  \<open>explicit_cblinfun m = cblinfun_extension (range ket) (\<lambda>a. Abs_ell2 (\<lambda>j. m j (inv ket a)))\<close>
+
+definition explicit_cblinfun_exists :: \<open>('a \<Rightarrow> 'b \<Rightarrow> complex) \<Rightarrow> bool\<close> where
+  \<open>explicit_cblinfun_exists m \<longleftrightarrow> 
+    (\<forall>a. has_ell2_norm (\<lambda>j. m j a)) \<and> 
+      cblinfun_extension_exists (range ket) (\<lambda>a. Abs_ell2 (\<lambda>j. m j (inv ket a)))\<close>
+
+lemma explicit_cblinfun_exists_bounded:
+  fixes B :: real
+  assumes \<open>\<And>S T \<psi>. finite S \<Longrightarrow> finite T \<Longrightarrow> (\<And>a. a\<notin>T \<Longrightarrow> \<psi> a = 0) \<Longrightarrow>
+            (\<Sum>b\<in>S. (cmod (\<Sum>a\<in>T. \<psi> a *\<^sub>C m b a))\<^sup>2) \<le> B * (\<Sum>a\<in>T. (cmod (\<psi> a))\<^sup>2)\<close>
+  shows \<open>explicit_cblinfun_exists m\<close>
+proof -
+  define F f where \<open>F = complex_vector.construct (range ket) f\<close>
+    and \<open>f = (\<lambda>a. Abs_ell2 (\<lambda>j. m j (inv ket a)))\<close>
+  from assms[where S=\<open>{}\<close> and T=\<open>{undefined}\<close> and \<psi>=\<open>\<lambda>x. of_bool (x=undefined)\<close>]
+  have \<open>B \<ge> 0\<close>
+    by auto
+  have has_norm: \<open>has_ell2_norm (\<lambda>b. m b a)\<close> for a
+  proof (unfold has_ell2_norm_def, intro nonneg_bdd_above_summable_on bdd_aboveI)
+    show \<open>0 \<le> cmod ((m x a)\<^sup>2)\<close> for x
+      by simp
+    fix B'
+    assume \<open>B' \<in> sum (\<lambda>x. cmod ((m x a)\<^sup>2)) ` {F. F \<subseteq> UNIV \<and> finite F}\<close>
+    then obtain S where [simp]: \<open>finite S\<close> and B'_def: \<open>B' = (\<Sum>x\<in>S. cmod ((m x a)\<^sup>2))\<close>
+      by blast
+    from assms[where S=S and T=\<open>{a}\<close> and \<psi>=\<open>\<lambda>x. of_bool (x=a)\<close>]
+    show \<open>B' \<le> B\<close>
+      by (simp add: norm_power B'_def)
+  qed
+  have \<open>clinear F\<close>
+    by (auto intro!: complex_vector.linear_construct simp: F_def)
+  have F_B: \<open>norm (F \<psi>) \<le> (sqrt B) * norm \<psi>\<close> if \<psi>_range_ket: \<open>\<psi> \<in> cspan (range ket)\<close> for \<psi>
+  proof -
+    from that
+    obtain T' where \<open>finite T'\<close> and \<open>T' \<subseteq> range ket\<close> and \<psi>T': \<open>\<psi> \<in> cspan T'\<close>
+      by (meson vector_finitely_spanned)
+        (*   from that
+    obtain T' r where \<open>finite T'\<close> and \<open>T' \<subseteq> range ket\<close> and
+      \<psi>T': \<open>\<psi> = (\<Sum>v\<in>T'. r v *\<^sub>C v)\<close>
+      unfolding complex_vector.span_explicit
+      by blast *)
+    then obtain T where T'_def: \<open>T' = ket ` T\<close>
+      by (meson subset_image_iff)
+    have \<open>finite T\<close>
+      by (metis T'_def \<open>finite T'\<close> finite_image_iff inj_ket inj_on_subset subset_UNIV)
+    have \<psi>T: \<open>\<psi> \<in> cspan (ket ` T)\<close>
+      using T'_def \<psi>T' by blast
+    have Rep_\<psi>: \<open>Rep_ell2 \<psi> x = 0\<close> if \<open>x \<notin> T\<close> for x
+      using _ _ \<psi>T apply (rule complex_vector.linear_eq_0_on_span)
+       apply auto
+      by (metis ket.rep_eq that of_bool_def)
+    have \<open>norm (trunc_ell2 S (F \<psi>)) \<le> sqrt B * norm \<psi>\<close> if \<open>finite S\<close> for S
+    proof -
+      have *: \<open>cconstruct (range ket) f \<psi> = (\<Sum>x\<in>T. Rep_ell2 \<psi> x *\<^sub>C f (ket x))\<close>
+      proof (rule complex_vector.linear_eq_on[where x=\<psi> and B=\<open>ket ` T\<close>])
+        show \<open>clinear (cconstruct (range ket) f)\<close>
+          using F_def \<open>clinear F\<close> by blast
+        show \<open>clinear (\<lambda>a. \<Sum>x\<in>T. Rep_ell2 a x *\<^sub>C f (ket x))\<close>
+          by (auto intro!: clinear_compose[unfolded o_def, OF clinear_Rep_ell2] complex_vector.linear_compose_sum)
+        show \<open>\<psi> \<in> cspan (ket ` T)\<close>
+          by (simp add: \<psi>T)
+        have \<open>f b = (\<Sum>x\<in>T. Rep_ell2 b x *\<^sub>C f (ket x))\<close> 
+          if \<open>b \<in> ket ` T\<close> for b
+        proof -
+          define b' where \<open>b' = inv ket b\<close>
+          have bb': \<open>b = ket b'\<close>
+            using b'_def that by force
+          show ?thesis
+            apply (subst sum_single[where i=b'])
+            using that by (auto simp add: \<open>finite T\<close> bb' ket.rep_eq)
+        qed
+        then show \<open>cconstruct (range ket) f b = (\<Sum>x\<in>T. Rep_ell2 b x *\<^sub>C f (ket x))\<close>
+          if \<open>b \<in> ket ` T\<close> for b
+          apply (subst complex_vector.construct_basis)
+          using that by auto
+      qed
+      have \<open>(norm (trunc_ell2 S (F \<psi>)))\<^sup>2 = (norm (trunc_ell2 S (\<Sum>x\<in>T. Rep_ell2 \<psi> x *\<^sub>C f (ket x))))\<^sup>2\<close>
+        apply (rule arg_cong[where f=\<open>\<lambda>x. (norm (trunc_ell2 _ x))\<^sup>2\<close>])
+        by (simp add: F_def * )
+      also have \<open>\<dots> = (norm (trunc_ell2 S (\<Sum>x\<in>T. Rep_ell2 \<psi> x *\<^sub>C Abs_ell2 (\<lambda>b. m b x))))\<^sup>2\<close>
+        by (simp add: f_def)
+      also have \<open>\<dots> = (\<Sum>i\<in>S. (cmod (Rep_ell2 (\<Sum>x\<in>T. Rep_ell2 \<psi> x *\<^sub>C Abs_ell2 (\<lambda>b. m b x)) i))\<^sup>2)\<close>
+        by (simp add: that norm_trunc_ell2_finite real_sqrt_pow2 sum_nonneg)
+      also have \<open>\<dots> = (\<Sum>i\<in>S. (cmod (\<Sum>x\<in>T. Rep_ell2 \<psi> x *\<^sub>C Rep_ell2 (Abs_ell2 (\<lambda>b. m b x)) i))\<^sup>2)\<close>
+        by (simp add: complex_vector.linear_sum[OF clinear_Rep_ell2]
+            clinear.scaleC[OF clinear_Rep_ell2])
+      also have \<open>\<dots> = (\<Sum>i\<in>S. (cmod (\<Sum>x\<in>T. Rep_ell2 \<psi> x *\<^sub>C m i x))\<^sup>2)\<close>
+        using has_norm by (simp add: Abs_ell2_inverse)
+      also have \<open>\<dots> \<le> B * (\<Sum>x\<in>T. (cmod (Rep_ell2 \<psi> x))\<^sup>2)\<close>
+        using \<open>finite S\<close> \<open>finite T\<close> Rep_\<psi> by (rule assms)
+      also have \<open>\<dots> = B * ((norm (trunc_ell2 T \<psi>))\<^sup>2)\<close>
+        by (simp add: \<open>finite T\<close> norm_trunc_ell2_finite sum_nonneg)
+      also have \<open>\<dots> \<le> B * (norm \<psi>)\<^sup>2\<close>
+        by (simp add: mult_left_mono \<open>B \<ge> 0\<close> trunc_ell2_reduces_norm)
+      finally show ?thesis
+        apply (rule_tac power2_le_imp_le)
+        by (simp_all add: \<open>0 \<le> B\<close> power_mult_distrib)
+    qed
+    then show ?thesis
+      by (rule norm_ell2_bound_trunc)
+  qed
+  then have \<open>cblinfun_extension_exists (cspan (range ket)) F\<close>
+    apply (rule cblinfun_extension_exists_hilbert[rotated -1])
+    by (auto intro: \<open>clinear F\<close> complex_vector.linear_add complex_vector.linear_scale)
+  then have ex: \<open>cblinfun_extension_exists (range ket) f\<close>
+    apply (rule cblinfun_extension_exists_restrict[rotated -1])
+    by (simp_all add: F_def complex_vector.span_superset complex_vector.construct_basis)
+  from ex has_norm
+  show ?thesis
+    using explicit_cblinfun_exists_def f_def by blast
+qed
+
+lemma explicit_cblinfun_exists_finite_dim[simp]: \<open>explicit_cblinfun_exists m\<close> for m :: "_::finite \<Rightarrow> _ :: finite \<Rightarrow> _"
+  by (auto simp: explicit_cblinfun_exists_def cblinfun_extension_exists_finite_dim)
+
+lemma explicit_cblinfun_ket: \<open>explicit_cblinfun m *\<^sub>V ket a = Abs_ell2 (\<lambda>b. m b a)\<close> if \<open>explicit_cblinfun_exists m\<close>
+  using that by (auto simp: explicit_cblinfun_exists_def explicit_cblinfun_def cblinfun_extension_apply)
+
+lemma Rep_ell2_explicit_cblinfun_ket[simp]: \<open>Rep_ell2 (explicit_cblinfun m *\<^sub>V ket a) b = m b a\<close> if \<open>explicit_cblinfun_exists m\<close>
+  using that apply (simp add: explicit_cblinfun_ket)
+  by (simp add: Abs_ell2_inverse explicit_cblinfun_exists_def)
 
 subsection \<open>Classical operators\<close>
 
