@@ -56,17 +56,17 @@ to specify and verify patterns of interaction of concurrent systems.
 Together with CCS and LOTOS, it belongs to the family of \<^emph>\<open>process algebras\<close>. 
 CSP's rich theory comprises denotational, operational and algebraic semantic facets 
 and has influenced programming languages such as Limbo, Crystal, Clojure and
-most notably Golang \<^cite>\<open>"donovan2015go"\<close>. CSP has been applied in 
+most notably Golang @{cite "donovan2015go"}. CSP has been applied in 
 industry as a tool for specifying and verifying the concurrent aspects of hardware 
-systems, such as the T9000 transputer \<^cite>\<open>"Barret95"\<close>. 
+systems, such as the T9000 transputer @{cite "Barret95"}. 
 
 The theory of CSP, in particular the denotational Failure/Divergence Denotational Semantics,
-has been initially proposed in the book by Tony Hoare \<^cite>\<open>"Hoare:1985:CSP:3921"\<close>, but evolved
-substantially since \<^cite>\<open>"BrookesHR84" and "brookes-roscoe85" and "roscoe:csp:1998"\<close>.
+has been initially proposed in the book by Tony Hoare @{cite "Hoare:1985:CSP:3921"}, but evolved
+substantially since @{cite "BrookesHR84" and "brookes-roscoe85" and "roscoe:csp:1998"}.
 
 Verification of CSP properties has been centered around the notion of \<^emph>\<open>process refinement orderings\<close>,
 most notably \<open>_\<sqsubseteq>\<^sub>F\<^sub>D_\<close> and \<open>_\<sqsubseteq>_\<close>. The latter turns the denotational domain of CSP into a Scott cpo 
-\<^cite>\<open>"scott:cpo:1972"\<close>, which yields semantics for the fixed point operator \<open>\<mu>x. f(x)\<close> provided 
+@{cite "scott:cpo:1972"}, which yields semantics for the fixed point operator \<open>\<mu>x. f(x)\<close> provided 
 that \<open>f\<close> is continuous with respect to \<open>_\<sqsubseteq>_\<close>. Since it is possible to express deadlock-freeness and 
 livelock-freeness as a refinement problem, the verification of properties has been reduced 
 traditionally to a model-checking problem for a finite set of events \<open>A\<close>.
@@ -81,9 +81,9 @@ interplay of different denotational models, refinement-orderings, and side-condi
 continuity, paper-and-pencil proofs easily reach their limits of precision. 
 
 Several attempts have been undertaken to develop the formal theory of CSP in an interactive proof system, 
-mostly in Isabelle/HOL \<^cite>\<open>"Camilleri91" and "tej.ea:corrected:1997" and  "IsobeRoggenbach2010"\<close>. 
+mostly in Isabelle/HOL @{cite "Camilleri91" and "tej.ea:corrected:1997" and  "IsobeRoggenbach2010"}. 
 This work is based on the most recent instance in this line, HOL-CSP 2.0, which has been published 
-as AFP submission  \<^cite>\<open>"HOL-CSP-AFP"\<close> and whose development is hosted at 
+as AFP submission  @{cite "HOL-CSP-AFP"} and whose development is hosted at 
 \<^url>\<open>https://gitlri.lri.fr/burkhart.wolff/hol-csp2.0\<close>. 
 
 The present AFP Module is an add-on on this work and develops some support for 

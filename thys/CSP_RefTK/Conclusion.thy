@@ -50,9 +50,9 @@ begin
 
 text\<open> We presented a formalisation of the most comprehensive semantic model for CSP, a 'classical' 
 language for the specification and analysis of concurrent systems studied in a rich body of 
-literature. For this purpose, we ported \<^cite>\<open>"tej.ea:corrected:1997"\<close> to a modern version
+literature. For this purpose, we ported @{cite "tej.ea:corrected:1997"} to a modern version
 of Isabelle, restructured the proofs, and extended the resulting theory of the language 
-substantially. The result HOL-CSP 2 has been submitted to the Isabelle AFP \<^cite>\<open>"HOL-CSP-AFP"\<close>, 
+substantially. The result HOL-CSP 2 has been submitted to the Isabelle AFP @{cite "HOL-CSP-AFP"}, 
 thus a fairly sustainable format accessible to other researchers and tools.
 
 We developed a novel set of deadlock - and livelock inference proof principles based on 
