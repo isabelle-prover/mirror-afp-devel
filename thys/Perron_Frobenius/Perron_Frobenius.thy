@@ -160,7 +160,7 @@ proof -
   show ?thesis by auto
 qed
 
-private lemma image_f: "f ` S \<subseteq> S"
+private lemma image_f: "f \<in> S \<rightarrow> S"
 proof -
   {
     fix v
@@ -199,7 +199,7 @@ qualified lemma perron_frobenius_positive_ev:
   "\<exists> v. eigen_vector A v (r sr) \<and> real_non_neg_vec v"
 proof -
   from brouwer[OF compactS convexS non_emptyS cont_f image_f]
-    obtain v where v: "v \<in> S" and fv: "f v = v" by auto
+  obtain v where v: "v \<in> S" and fv: "f v = v" by auto
   define ev where "ev = norm1 (B *v v)"
   from normB_S[OF v] have "ev \<noteq> 0" unfolding ev_def by auto
   with norm1_ge_0[of "B *v v", folded ev_def] have norm: "ev > 0" by auto

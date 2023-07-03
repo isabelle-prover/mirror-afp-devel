@@ -2,7 +2,6 @@
    Author: Mike Stannett
    Date: 22 October 2012
    m.stannett@sheffield.ac.uk
-   Updated 28 April 2016 to run under Isabelle2016.
 *)
 theory SpaceTime
 imports Main

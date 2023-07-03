@@ -42,8 +42,7 @@ definition prod_charts :: "('a \<times> 'c, 'b \<times> 'd) chart set" where
   "prod_charts = {prod_chart c1 c2 | c1 c2. c1 \<in> charts1 \<and> c2 \<in> charts2}"
 
 lemma c_manifold_atlas_product: "c_manifold prod_charts k"
-  apply (unfold_locales)
-proof -
+proof 
   fix c d assume c: "c \<in> prod_charts" and d: "d \<in> prod_charts"
   obtain c1 c2 where c_def: "c = prod_chart c1 c2" and c1: "c1 \<in> charts1" and c2: "c2 \<in> charts2"
     using c prod_charts_def by auto

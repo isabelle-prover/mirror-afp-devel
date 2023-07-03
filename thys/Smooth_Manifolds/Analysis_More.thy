@@ -408,9 +408,7 @@ lemma continuous_on_finer_topo2:
 
 lemma antisym_finer_than: "S = T" if "S finer_than T" "T finer_than S"
   using that
-  apply (auto simp: finer_than_def topology_eq_iff continuous_map_alt)
-  apply (metis inf.orderE)+
-  done
+  by (metis finer_than_iff_nhds openin_subtopology subset_antisym subtopology_topspace topology_eq_iff)
 
 lemma subtopology_finer_than[simp]: "top_of_set X finer_than euclidean"
   by (auto simp: finer_than_iff_nhds openin_subtopology)
@@ -1256,33 +1254,24 @@ lemma frechet_derivative_divide: "frechet_derivative (\<lambda>x. f x / g x) (at
 lemma frechet_derivative_pair:
   "frechet_derivative (\<lambda>x. (f x, g x)) (at x) = (\<lambda>v. (frechet_derivative f (at x) v, frechet_derivative g (at x) v))"
   if "f differentiable (at x)" "g differentiable (at x)"
-  apply (rule frechet_derivative_at')
-  apply (rule derivative_eq_intros)
-    apply (rule frechet_derivative_worksI) apply fact    
-    apply (rule frechet_derivative_worksI) apply fact
-  ..
+  by (metis (no_types) frechet_derivative_at frechet_derivative_works has_derivative_Pair that)
 
 lemma frechet_derivative_fst:
   "frechet_derivative (\<lambda>x. fst (f x)) (at x) = (\<lambda>xa. fst (frechet_derivative f (at x) xa))"
   if "(f differentiable at x)"
   for f::"_\<Rightarrow>(_::real_normed_vector \<times> _::real_normed_vector)"
-  apply (rule frechet_derivative_at')
-  using that
-  by (auto intro!: derivative_eq_intros frechet_derivative_worksI)
+  by (metis frechet_derivative_at frechet_derivative_works has_derivative_fst that)
 
 lemma frechet_derivative_snd:
   "frechet_derivative (\<lambda>x. snd (f x)) (at x) = (\<lambda>xa. snd (frechet_derivative f (at x) xa))"
   if "(f differentiable at x)"
   for f::"_\<Rightarrow>(_::real_normed_vector \<times> _::real_normed_vector)"
-  apply (rule frechet_derivative_at')
-  using that
-  by (auto intro!: derivative_eq_intros frechet_derivative_worksI)
+  by (metis frechet_derivative_at frechet_derivative_worksI has_derivative_snd that)
 
 lemma frechet_derivative_eq_vector_derivative_1:
   assumes "f differentiable at t"
   shows "frechet_derivative f (at t) 1 = vector_derivative f (at t)"
-  apply (subst frechet_derivative_eq_vector_derivative)
-   apply (rule assms) by auto
+  by (simp add: assms frechet_derivative_eq_vector_derivative)
 
 
 subsection \<open>Linear algebra\<close>

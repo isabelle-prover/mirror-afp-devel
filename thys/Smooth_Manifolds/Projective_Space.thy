@@ -679,9 +679,13 @@ lemma chart_basis_basis_defined:
 
 lemma compat_basis_chart: "\<infinity>-smooth_compat (basis_chart a) (basis_chart b)"
   if [transfer_rule]: "a \<in> Basis" "b \<in> Basis"
-  apply (cases "a = b")
-  subgoal by (auto simp: smooth_compat_refl)
-  subgoal
+proof (cases "a = b")
+  case True
+  then show ?thesis
+    by (auto simp: smooth_compat_refl)
+next
+  case False
+  then show ?thesis
     unfolding smooth_compat_def
     apply (transfer; auto)
     subgoal
@@ -693,7 +697,7 @@ lemma compat_basis_chart: "\<infinity>-smooth_compat (basis_chart a) (basis_char
       apply (rule smooth_on_subset)
       by (auto simp: algebra_simps inner_Basis chart_basis_basis_defined that)
     done
-  done
+qed
 
 lemma c_manifold_proj_space: "c_manifold charts_proj_space \<infinity>"
   by standard

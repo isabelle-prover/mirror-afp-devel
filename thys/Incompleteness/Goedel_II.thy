@@ -14,7 +14,7 @@ lemma Quote_q_Succ [intro]:  "Quote y y' \<Longrightarrow> Quote (succ y) (q_Suc
   by (auto simp: succ_def q_Succ_def)
 
 lemma HR_imp_eq_H: "HR x z \<Longrightarrow> z = \<lbrakk>HF x\<rbrakk>e"
-  apply (auto simp add: SeqHR_def HR_def)
+  apply (clarsimp simp: SeqHR_def HR_def)
   apply (erule BuildSeq2_induct, auto simp add: q_defs WR_iff_eq_W [where e=e])
   done
 
@@ -54,10 +54,12 @@ proof -
   have "{PfP \<guillemotleft>\<delta>\<guillemotright>} \<turnstile> PfP \<guillemotleft>PfP \<guillemotleft>\<delta>\<guillemotright>\<guillemotright>"
     by (auto simp: Provability ground_fm_aux_def supp_conv_fresh)
   moreover have "{PfP \<guillemotleft>\<delta>\<guillemotright>} \<turnstile> PfP \<guillemotleft>Neg (PfP \<guillemotleft>\<delta>\<guillemotright>)\<guillemotright>"
-    apply (rule MonPon_PfP_implies_PfP [OF _ gnd])
-    apply (metis Conj_E2 Iff_def Iff_sym diag(1))
-    apply (auto simp: ground_fm_aux_def supp_conv_fresh) 
-    done
+  proof (rule MonPon_PfP_implies_PfP [OF _ gnd])
+    show "{} \<turnstile> \<delta> IMP Neg (PfP \<guillemotleft>\<delta>\<guillemotright>)"
+      by (metis Conj_E2 Iff_def Iff_sym diag(1))
+    show "ground_fm (Neg (PfP \<guillemotleft>\<delta>\<guillemotright>))"
+      by (auto simp: ground_fm_aux_def supp_conv_fresh) 
+  qed
   moreover have "ground_fm (PfP \<guillemotleft>\<delta>\<guillemotright>)"
     by (auto simp: ground_fm_aux_def supp_conv_fresh)
   ultimately have "{PfP \<guillemotleft>\<delta>\<guillemotright>} \<turnstile> PfP \<guillemotleft>Fls\<guillemotright>" using PfP_quot_contra  

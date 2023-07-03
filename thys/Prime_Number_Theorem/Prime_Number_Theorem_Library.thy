@@ -548,7 +548,7 @@ proof (cases "a = c")
   next
     from slope have "path_image f \<subseteq> {0..1}"
       by (auto simp: f_def path_image_join closed_segment_eq_real_ivl)
-    thus "f ` {0..1} \<subseteq> {0..1}" by (simp add: path_image_def)
+    thus "f \<in> {0..1} \<rightarrow> {0..1}" by (force simp add: path_image_def)
   next
     have "path f" unfolding f_def by auto
     thus "continuous_on {0..1} f" by (simp add: path_def)

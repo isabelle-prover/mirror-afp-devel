@@ -598,10 +598,7 @@ proof -
     by (auto simp: diff_fun_space_def diff_fun_def)
   then have "(diff_fun k charts_eucl (f o c))"
     unfolding diff_fun_def
-    apply (intro diff_compose)
-     apply (rule c)
-    apply assumption
-    done
+    using c diff_compose by blast
   then have "k-smooth_on UNIV (f o c)"
     by (rule diff_fun_charts_euclD)
   then have "(f o c) differentiable_on UNIV"
