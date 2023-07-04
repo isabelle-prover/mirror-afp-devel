@@ -259,16 +259,10 @@ proof -
       apply (subst mod_prod_eq)
       apply blast
       done
-    finally have "[d' = \<Prod>q\<in>{q \<in> prime_factors d'. [q = 3] (mod 4)}.
-                        (- 1) ^ multiplicity q d'] (mod 4)"
-      unfolding unique_euclidean_semiring_class.cong_def nat_mod_as_int by auto
-    hence "[\<Prod>q\<in>{q \<in> prime_factors d'. [q = 3] (mod 4)}.
+    finally have "[\<Prod>q\<in>{q \<in> prime_factors d'. [q = 3] (mod 4)}.
             (- 1) ^ multiplicity q d' = 1 :: int] (mod 4)"
       using \<open>d' mod 4 = 1\<close>
-      unfolding unique_euclidean_semiring_class.cong_def nat_mod_as_int
-      apply simp
-      apply linarith
-      done
+      by (simp add: unique_euclidean_semiring_class.cong_def)
     hence prod_prime_factors_minus_one:
         "(\<Prod>q\<in>{q \<in> prime_factors d'. [q = 3] (mod 4)}.
           (- 1) ^ multiplicity q d') = (1 :: int)"
