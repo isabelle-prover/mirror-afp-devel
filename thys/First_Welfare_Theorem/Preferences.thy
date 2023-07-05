@@ -29,6 +29,8 @@ locale preference =
 context preference
 begin
 
+no_notation eqpoll (infixl "\<approx>" 50)
+
 abbreviation geq ("_ \<succeq> _" [51,51] 60)
   where
     "x \<succeq> y \<equiv> x \<succeq>[relation] y"

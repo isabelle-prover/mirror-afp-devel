@@ -776,6 +776,8 @@ locale PL_Indis =
 context PL_Indis
 begin
 
+no_notation eqpoll (infixl "\<approx>" 50)
+
 abbreviation indisAbbrev (infix "\<approx>" 50)
 where "s1 \<approx> s2 \<equiv> (s1, s2) \<in> indis"
 
