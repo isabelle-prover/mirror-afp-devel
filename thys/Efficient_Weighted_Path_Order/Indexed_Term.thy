@@ -23,10 +23,10 @@ definition index_term :: "('f, 'v) term \<Rightarrow> ('f, 'v) indexed_term"
   where
     "index_term t = snd (index_term_aux 0 t)" 
 
-fun flatten :: "('f, 'v) indexed_term \<Rightarrow> ('f, 'v) term"
+fun unindex :: "('f, 'v) indexed_term \<Rightarrow> ('f, 'v) term"
   where
-    "flatten (Var (v,_)) = Var v"
-  | "flatten (Fun (f,_) ts) = Fun f (map flatten ts)"
+    "unindex (Var (v,_)) = Var v"
+  | "unindex (Fun (f,_) ts) = Fun f (map unindex ts)"
 
 fun stored :: "('f, 'v) indexed_term \<Rightarrow> ('f, 'v) term"
   where
@@ -42,11 +42,11 @@ fun index :: "('f, 'v) indexed_term \<Rightarrow> index"
     "index (Var (_,(_,i))) = i"
   | "index (Fun (_,(_,i)) _) = i"
 
-definition "index_term_prop f s = (\<forall> u. s \<unrhd> u \<longrightarrow> f (index u) = Some (flatten u) \<and> stored u = flatten u)" 
+definition "index_term_prop f s = (\<forall> u. s \<unrhd> u \<longrightarrow> f (index u) = Some (unindex u) \<and> stored u = unindex u)" 
 
 lemma index_term_aux: fixes t :: "('f,'v)term" and ts :: "('f,'v)term list"
-  shows "index_term_aux i t = (j,s) \<Longrightarrow> flatten s = t \<and> i < j \<and> (\<exists> f. dom f = {i ..< j} \<and> index_term_prop f s)" 
-    and "index_term_aux_list i ts = (j,ss) \<Longrightarrow> map flatten ss = ts \<and> i \<le> j \<and>
+  shows "index_term_aux i t = (j,s) \<Longrightarrow> unindex s = t \<and> i < j \<and> (\<exists> f. dom f = {i ..< j} \<and> index_term_prop f s)" 
+    and "index_term_aux_list i ts = (j,ss) \<Longrightarrow> map unindex ss = ts \<and> i \<le> j \<and>
     (\<exists> f. dom f = {i ..< j} \<and> Ball (set ss) (index_term_prop f))" 
 proof (induct i t and i ts arbitrary: j s and j ss rule: index_term_aux_index_term_aux_list.induct)
   case (1 i v)
@@ -56,17 +56,17 @@ next
   obtain k ss where rec: "index_term_aux_list i ts = (k,ss)" by force
   from 2(2)[unfolded index_term_aux.simps rec split]
   have j: "j = k + 1" and s: "s = Fun (g, Fun g ts, k) ss" by auto
-  from 2(1)[OF rec] obtain f where fss: "map flatten ss = ts" and
+  from 2(1)[OF rec] obtain f where fss: "map unindex ss = ts" and
     ik: "i \<le> k" and f: "dom f = {i..<k}" "\<And> s. s \<in> set ss \<Longrightarrow> index_term_prop f s" 
     by auto
   have set: "{i..< k + 1} = insert k {i..<k}" using ik by auto
   define h where "h = f(k := Some (Fun g ts))" 
-  show ?case unfolding s flatten.simps fss j set index_term_prop_def
+  show ?case unfolding s unindex.simps fss j set index_term_prop_def
   proof (intro conjI exI[of _ h] refl allI)
     show "i < k + 1" using ik by simp
     show "dom h = insert k {i..<k}" using ik f(1) unfolding h_def by auto
     fix u
-    show "Fun (g, Fun g ts, k) ss \<unrhd> u \<longrightarrow> h (index u) = Some (flatten u) \<and> stored u = flatten u" 
+    show "Fun (g, Fun g ts, k) ss \<unrhd> u \<longrightarrow> h (index u) = Some (unindex u) \<and> stored u = unindex u" 
     proof (cases "u = Fun (g, Fun g ts, k) ss")
       case True
       thus ?thesis by (auto simp: fss h_def index_term_prop_def)
@@ -78,7 +78,7 @@ next
         with False obtain si where "si \<in> set ss" and "si \<unrhd> u"
           by (metis Fun_supt suptI)
         from f(2)[unfolded index_term_prop_def, rule_format, OF this] f(1) ik 
-        show "h (index u) = Some (flatten u) \<and> stored u = flatten u" unfolding h_def by auto
+        show "h (index u) = Some (unindex u) \<and> stored u = unindex u" unfolding h_def by auto
       qed
     qed
   qed
@@ -87,9 +87,9 @@ next
   obtain k s where rec1: "index_term_aux i t = (k,s)" by force
   with 4(3) obtain ss where rec2: "index_term_aux_list k ts = (j,ss)" and sss: "sss = s # ss" 
     by (cases "index_term_aux_list k ts", auto)
-  from 4(1)[OF rec1] obtain f where fs: "flatten s = t" and ik: "i < k" and f: "dom f = {i..<k}" 
+  from 4(1)[OF rec1] obtain f where fs: "unindex s = t" and ik: "i < k" and f: "dom f = {i..<k}" 
     "index_term_prop f s" by auto
-  from 4(2)[unfolded rec1, OF refl rec2] obtain g where fss: "map flatten ss = ts" and kj: "k \<le> j" 
+  from 4(2)[unfolded rec1, OF refl rec2] obtain g where fss: "map unindex ss = ts" and kj: "k \<le> j" 
     and g: "dom g = {k..<j}" "\<And> si. si \<in> set ss \<Longrightarrow> index_term_prop g si"  
     by auto
   define h where "h = (\<lambda> n. if n \<in> {i..<k} then f n else g n)" 
@@ -117,13 +117,13 @@ next
 qed auto
 
 
-lemma index_term_index_flatten: "\<exists> f. \<forall> t. index_term s \<unrhd> t \<longrightarrow> f (index t) = flatten t \<and> stored t = flatten t" 
+lemma index_term_index_unindex: "\<exists> f. \<forall> t. index_term s \<unrhd> t \<longrightarrow> f (index t) = unindex t \<and> stored t = unindex t" 
 proof -
   obtain t i where aux: "index_term_aux 0 s = (i,t)" by force
   from index_term_aux(1)[OF this] show ?thesis unfolding index_term_def aux index_term_prop_def by force
 qed
 
-lemma flatten_index_term[simp]: "flatten (index_term s) = s"
+lemma unindex_index_term[simp]: "unindex (index_term s) = s"
 proof -
   obtain t i where aux: "index_term_aux 0 s = (i,t)" by force
   from index_term_aux(1)[OF this] show ?thesis unfolding index_term_def aux by force
