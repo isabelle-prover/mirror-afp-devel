@@ -29,9 +29,6 @@ lemma compl_compl_eq_id [simp]:
   "UNIV - (UNIV - s) = s"
 by auto
 
-abbreviation sym_diff :: "'a set \<Rightarrow> 'a set \<Rightarrow> 'a set" (infixl "\<Delta>" 70) where
-  "sym_diff A B \<equiv> ((A - B) \<union> (B-A))"
-
 text \<open>Not sure the next lemmas are useful, as they are proved solely by auto, so they
 could be reproved automatically whenever necessary.\<close>
 
