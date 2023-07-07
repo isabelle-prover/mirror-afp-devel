@@ -15,7 +15,6 @@ import java.time.format.DateTimeFormatter
 import java.util.{Map => JMap, Properties => JProperties}
 import javax.mail.internet.{InternetAddress, MimeMessage}
 import javax.mail.{Authenticator, Message, MessagingException, PasswordAuthentication, Transport, Session => JSession}
-import scala.sys.process._
 
 
 object AFP_Build {
@@ -259,8 +258,12 @@ ${result.err_lines.takeRight(50).mkString("\n")}
           println("Running sitegen ...")
 
           val script = afp.base_dir + Path.explode("admin/sitegen-devel")
-          val sitegen_rc = List(script.file.toString, status_file.toString, deps_file.toString).!
-          if (sitegen_rc > 0) {
+          val sitegen_cmd =
+            Bash.strings(List(script.file.toString, status_file.toString, deps_file.toString))
+
+          val sitegen_res =
+            Isabelle_System.bash(sitegen_cmd, progress_stdout = println, progress_stderr = println)
+          if (!sitegen_res.ok) {
             println("sitegen failed")
           }
 
@@ -280,7 +283,7 @@ ${result.err_lines.takeRight(50).mkString("\n")}
           }
 
           print_section("COMPLETED")
-          Result(sitegen_rc)
+          Result(sitegen_res.rc)
         }
 
         Build_Config(
