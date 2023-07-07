@@ -2,7 +2,7 @@ section \<open>Preliminaries\<close>
 
 theory Term_Context
   imports First_Order_Terms.Term
-    Knuth_Bendix_Order.Subterm_and_Context
+    First_Order_Terms.Subterm_and_Context
     Polynomial_Factorization.Missing_List
 begin
 

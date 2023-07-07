@@ -10,7 +10,7 @@ text \<open>
 
 theory Subterm_and_Context
   imports
-    First_Order_Terms.Term
+    Term
     "Abstract-Rewriting.Abstract_Rewriting"
 begin
 
@@ -551,5 +551,53 @@ proof (induct C)
   moreover have "C \<cdot>\<^sub>c \<sigma> = C \<cdot>\<^sub>c \<tau>" using More by auto
   ultimately show ?case by auto
 qed auto
+
+
+text \<open>
+  A \<^emph>\<open>signature\<close> is a set of function symbol/arity pairs, where the arity of a function symbol,
+  denotes the number of arguments it expects.
+\<close>
+type_synonym 'f sig = "('f \<times> nat) set"
+
+text \<open>The set of all function symbol/ arity pairs occurring in a term.\<close>
+fun funas_term :: "('f, 'v) term \<Rightarrow> 'f sig"
+  where
+    "funas_term (Var _) = {}" |
+    "funas_term (Fun f ts) = {(f, length ts)} \<union> \<Union>(set (map funas_term ts))"
+
+
+lemma supt_imp_funas_term_subset:
+  assumes "s \<rhd> t"
+  shows "funas_term t \<subseteq> funas_term s"
+  using assms by induct auto
+
+lemma supteq_imp_funas_term_subset[simp]:
+  assumes "s \<unrhd> t"
+  shows "funas_term t \<subseteq> funas_term s"
+  using assms by induct auto
+
+text \<open>The set of all function symbol/arity pairs occurring in a context.\<close>
+fun funas_ctxt :: "('f, 'v) ctxt \<Rightarrow> 'f sig"
+  where
+    "funas_ctxt Hole = {}" |
+    "funas_ctxt (More f ss1 D ss2) = {(f, Suc (length (ss1 @ ss2)))}
+     \<union> funas_ctxt D \<union> \<Union>(set (map funas_term (ss1 @ ss2)))"
+
+lemma funas_term_ctxt_apply [simp]:
+  "funas_term (C\<langle>t\<rangle>) = funas_ctxt C \<union> funas_term t"
+  by (induct C, auto)
+
+lemma funas_term_subst:
+  "funas_term (t \<cdot> \<sigma>) = funas_term t \<union> \<Union>(funas_term ` \<sigma> ` vars_term t)"
+  by (induct t) auto
+
+lemma funas_ctxt_compose [simp]:
+  "funas_ctxt (C \<circ>\<^sub>c D) = funas_ctxt C \<union> funas_ctxt D"
+  by (induct C) auto
+
+lemma funas_ctxt_subst [simp]:
+  "funas_ctxt (C \<cdot>\<^sub>c \<sigma>) = funas_ctxt C \<union> \<Union>(funas_term ` \<sigma> ` vars_ctxt C)"
+  by (induct C, auto simp: funas_term_subst)
+
 
 end

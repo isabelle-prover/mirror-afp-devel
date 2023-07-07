@@ -15,6 +15,7 @@ session First_Order_Terms (AFP) = "Abstract-Rewriting" +
     Matching
     Unification
     Subsumption
+    Subterm_and_Context
   document_files
     "root.tex"
     "root.bib"

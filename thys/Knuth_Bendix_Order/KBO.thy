@@ -11,7 +11,7 @@ text \<open>
 theory KBO
   imports
     Lexicographic_Extension
-    Term_Aux
+    First_Order_Terms.Subterm_and_Context
     Polynomial_Factorization.Missing_List
 begin
 

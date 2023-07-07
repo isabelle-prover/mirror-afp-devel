@@ -4,7 +4,7 @@ text \<open>We provide a method to index all subterms of a term by numbers.\<clo
 
 theory Indexed_Term
   imports 
-    Knuth_Bendix_Order.Subterm_and_Context
+    First_Order_Terms.Subterm_and_Context
 begin
 
 type_synonym index = int

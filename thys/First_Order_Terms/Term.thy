@@ -6,7 +6,9 @@ License: LGPL
 section \<open>First-Order Terms\<close>
 
 theory Term
-  imports Main
+  imports 
+    Main
+    "HOL-Library.Multiset"
 begin
 
 datatype (funs_term : 'f, vars_term : 'v) "term" =
@@ -45,6 +47,17 @@ next
   from is_var_\<sigma> show "\<And>x. x \<in> (\<Union>x\<in>V. vars_term (\<rho> x)) \<Longrightarrow> x \<in> the_Var ` \<rho> ` V"
     by (smt (verit, best) Term.term.simps(17) UN_iff image_eqI singletonD term.collapse(1))
 qed
+
+text \<open>The variables of a term as multiset.\<close>
+fun vars_term_ms :: "('f, 'v) term \<Rightarrow> 'v multiset"
+  where
+    "vars_term_ms (Var x) = {#x#}" |
+    "vars_term_ms (Fun f ts) = \<Sum>\<^sub># (mset (map vars_term_ms ts))"
+
+lemma set_mset_vars_term_ms [simp]:
+  "set_mset (vars_term_ms t) = vars_term t"
+  by (induct t) auto
+
 
 text \<open>Reorient equations of the form @{term "Var x = t"} and @{term "Fun f ss = t"} to facilitate
   simplification.\<close>
@@ -139,6 +152,25 @@ definition subst_domain :: "('f, 'v) subst \<Rightarrow> 'v set"
 fun subst_range :: "('f, 'v) subst \<Rightarrow> ('f, 'v) term set"
   where
     "subst_range \<sigma> = \<sigma> ` subst_domain \<sigma>"
+
+lemma vars_term_ms_subst [simp]:
+  "vars_term_ms (t \<cdot> \<sigma>) =
+    (\<Sum>x\<in>#vars_term_ms t. vars_term_ms (\<sigma> x))" (is "_ = ?V t")
+proof (induct t)
+  case (Fun f ts)
+  have IH: "map (\<lambda> t. vars_term_ms (t \<cdot> \<sigma>)) ts = map (\<lambda> t. ?V t) ts"
+    by (rule map_cong[OF refl Fun])
+  show ?case by (simp add: o_def IH, induct ts, auto)
+qed simp
+
+lemma vars_term_ms_subst_mono:
+  assumes "vars_term_ms s \<subseteq># vars_term_ms t"
+  shows "vars_term_ms (s \<cdot> \<sigma>) \<subseteq># vars_term_ms (t \<cdot> \<sigma>)"
+proof -
+  from assms[unfolded mset_subset_eq_exists_conv] obtain u where t: "vars_term_ms t = vars_term_ms s + u" by auto
+  show ?thesis unfolding vars_term_ms_subst unfolding t by auto
+qed
+
 
 text \<open>The variables introduced by a substitution.\<close>
 definition range_vars :: "('f, 'v) subst \<Rightarrow> 'v set"
@@ -655,5 +687,32 @@ corollary subst_apply_term_renaming_rename_subst_domain_range: \<^marker>\<open>
   unfolding subst_subst
   unfolding subst_compose_renaming_rename_subst_domain_range[OF assms]
   by (rule refl)
+
+
+text \<open>A term is called \<^emph>\<open>ground\<close> if it does not contain any variables.\<close>
+fun ground :: "('f, 'v) term \<Rightarrow> bool"
+  where
+    "ground (Var x) \<longleftrightarrow> False" |
+    "ground (Fun f ts) \<longleftrightarrow> (\<forall>t \<in> set ts. ground t)"
+
+lemma ground_vars_term_empty:
+  "ground t \<longleftrightarrow> vars_term t = {}"
+  by (induct t) simp_all
+
+lemma ground_subst [simp]:
+  "ground (t \<cdot> \<sigma>) \<longleftrightarrow> (\<forall>x \<in> vars_term t. ground (\<sigma> x))"
+  by (induct t) simp_all
+
+lemma ground_subst_apply:
+  assumes "ground t"
+  shows "t \<cdot> \<sigma> = t"
+proof -
+  have "t = t \<cdot> Var" by simp
+  also have "\<dots> = t \<cdot> \<sigma>"
+    by (rule term_subst_eq, insert assms[unfolded ground_vars_term_empty], auto)
+  finally show ?thesis by simp
+qed
+
+
 
 end

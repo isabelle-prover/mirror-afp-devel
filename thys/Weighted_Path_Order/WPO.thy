@@ -6,7 +6,7 @@ text \<open>This is a version of WPO that also permits multiset comparisons of l
 theory WPO
   imports
     Knuth_Bendix_Order.Lexicographic_Extension
-    Knuth_Bendix_Order.Term_Aux
+    First_Order_Terms.Subterm_and_Context
     Knuth_Bendix_Order.Order_Pair
     Polynomial_Factorization.Missing_List
     Status
