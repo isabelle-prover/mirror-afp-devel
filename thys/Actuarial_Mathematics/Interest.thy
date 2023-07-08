@@ -456,12 +456,13 @@ qed
 
 lemma s''_s: "$s''^{m}_n = (1+i).^(1/m) * $s^{m}_n" if "m \<noteq> 0" for m::nat
   unfolding acc_def acc_due_def
-  by (simp add: sum_distrib_left add_divide_distrib powr_add)
+  apply (subst sum_distrib_left, subst times_divide_eq_right)
+  by (subst powr_add[THEN sym], simp, subst add_divide_distrib, simp)
 
 lemma s_s'': "$s^{m}_n = $v.^(1/m) * $s''^{m}_n" if "m \<noteq> 0" for m::nat
   unfolding acc_def acc_due_def v_pres_def using v_futr_pos
-  apply (simp add: sum_distrib_left inverse_powr add_divide_distrib)
-  by (metis (no_types) add_diff_cancel_left' powr_add uminus_add_conv_diff)
+  apply (subst sum_distrib_left, subst times_divide_eq_right, simp)
+  by (subst inverse_powr, simp, subst powr_add[THEN sym], subst add_divide_distrib, simp)
 
 lemma s''_calc: "$s''^{m}_n = ((1+i)^n - 1) / $d^{m}" if "m \<noteq> 0" "i \<noteq> 0" for n m :: nat
 proof -
@@ -642,7 +643,8 @@ proof -
     hence "\<And>j k. j*m \<le> k \<and> k < (j+1)*m \<Longrightarrow> \<lceil>(k+1)/m\<rceil> = j+1"
       by (metis (no_types) of_nat_1 of_nat_add)
     with v_pos show ?thesis
-      apply (intro sum.cong, simp)
+      apply -
+      apply (rule sum.cong, simp)
       apply (subst sum_distrib_left, rule sum.cong; simp)
       by (smt (verit, ccfv_SIG) of_int_1 of_int_diff of_int_of_nat_eq)
   qed
@@ -793,13 +795,16 @@ lemma Ima''m_calc: "$(I^{m}a'')^{m}_n = (1 - (n*m+1)*$v^n + n*m*$v.^(n+1/m)) / (
   using that v_pos
   apply (subst Ila''m_Ilam, simp)
   apply (subst Imam_calc; simp)
-  by (smt (verit, del_insts) i_v_powr powr_add powr_zero_eq_one)
+  apply (rule disjI2)+
+  by (subst i_v, subst powr_powr, subst powr_add[THEN sym], simp)
 
 lemma Ils''m_Ilsm: "$(I^{l}s'')^{m}_n = (1+i).^(1/m) * $(I^{l}s)^{m}_n"
   if "l \<noteq> 0" "m \<noteq> 0" for l m n :: nat
-  unfolding acc_incr_def acc_due_incr_def sum_distrib_left using that
-  apply (intro sum.cong; simp)
-  by (smt (verit, ccfv_SIG) add_divide_distrib powr_add)
+  unfolding acc_incr_def acc_due_incr_def using that
+  apply (subst sum_distrib_left)
+  apply (rule sum.cong; simp)
+  apply (rule disjI2)
+  by (subst powr_add[THEN sym], subst add_divide_distrib, simp)
 
 lemma Ims''m_calc:
   "$(I^{m}s'')^{m}_n =
@@ -828,7 +833,7 @@ proof -
     moreover have "(\<lambda>n. n*m*$v.^(n+1/m)) \<longlonglongrightarrow> 0"
       apply (subst tendsto_cong[of _ "(\<lambda>n. (m*$v.^(1/m))*(n*$v^n))"])
        apply (rule always_eventually, rule allI)
-      apply (simp add: powr_add powr_realpow v_pos)
+       apply (subst powr_add, subst powr_realpow; simp add: v_pos)
       apply (subgoal_tac "0 = m*$v.^(1/m) * 0", erule ssubst, intro tendsto_intros; simp?)
       by (rule powser_times_n_limit_0, simp add: \<star>)
     ultimately have "(\<lambda>n. $v.^(1/m) * (1 - (n*m+1)*$v^n + n*m*$v.^(n+1/m)) / (m*(1-$v.^(1/m)))^2)
@@ -850,7 +855,7 @@ lemma lim_Ima''m: "(\<lambda>n. $(I^{m}a'')^{m}_n) \<longlonglongrightarrow> 1 /
   apply (subst Ila''m_Ilam, simp, subst mult.commute, subst i_v_powr, subst powr_minus_divide)
   apply (subgoal_tac "1/($d^{m})^2 = (1/($i^{m}*$d^{m}))*(1/$v.^(1/m))", erule ssubst)
    apply (intro tendsto_intros, simp add: lim_Imam)
-  by (simp add: d_nom_i_nom_v power2_eq_square)
+  by (subst power2_eq_square, subst(1) d_nom_i_nom_v; simp add: field_simps that)
 
 lemma perp_due_incr_calc: "$(I^{m}a'')^{m}_\<infinity> = 1 / ($d^{m})^2" if "m \<noteq> 0" "i > 0" for m::nat
   unfolding perp_due_incr_def by (rule limI, rule lim_Ima''m; simp add: that)
