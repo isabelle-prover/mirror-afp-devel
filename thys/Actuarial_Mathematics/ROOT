@@ -1,9 +1,12 @@
 chapter AFP
 
-session "Actuarial_Mathematics" (AFP) = "HOL-Analysis" +
-  options [timeout = 300]
+session "Actuarial_Mathematics" (AFP) = "HOL-Probability" +
+  options [timeout = 600, document = pdf, document_output = "output"]
   theories
     Preliminaries
     Interest
+    Survival_Model
+    Life_Table
+    Examples
   document_files
     "root.tex"
