@@ -4,19 +4,30 @@ topics = [
   "Mathematics/Games and economics",
 ]
 abstract = """
-Actuarial Mathematics is a theory in applied mathematics, which is
-mainly used for determining the prices of insurance products and
-evaluating the liability of a company associating with insurance
-contracts. It is related to calculus, probability theory and financial
-theory, etc. In this entry, I formalize the very basic part of
-Actuarial Mathematics in Isabelle/HOL. The first formalization is
-about the theory of interest which deals with interest rates, present
-value factors, an annuity certain, etc. I have already formalized the
-basic part of Actuarial Mathematics in Coq
-(https://github.com/Yosuke-Ito-345/Actuary). This entry is currently
-the partial translation and a little generalization of the Coq
-formalization. The further translation in Isabelle/HOL is now
-proceeding."""
+Actuarial Mathematics is a theory in applied mathematics,
+which is mainly used for determining the prices of insurance products
+and evaluating the liability of a company associating with insurance contracts.
+It is related to calculus, probability theory and financial theory, etc.
+
+In this entry, I formalize the very basic part of Actuarial Mathematics in Isabelle/HOL.
+It includes the theory of interest, survival model, and life table.
+The theory of interest deals with interest rates, present value factors, an annuity certain, etc.
+The survival model is a probabilistic model that represents the human mortality.
+The life table is based on the survival model and used for practical calculations.
+
+I have already formalized the basic part of Actuarial Mathematics in Coq
+(https://github.com/Yosuke-Ito-345/Actuary) in a purely axiomatic manner.
+In contrast, Isabelle formalization is based on the probability theory
+and the survival model is developed as generally as possible.
+Such rigorous and general formulation seems very rare;
+at least I cannot find any similar documentation on the web.
+
+This formalization in Isabelle is still at an early stage,
+and I cannot guarantee the backward compatibility in the future development.
+If you heavily depend on this entry, please let me know.
+
+(Updated July 8th, 2023.)
+"""
 license = "bsd"
 note = ""
 
@@ -31,7 +42,12 @@ email = "ito_email"
 ito = "ito_email"
 
 [history]
-
+2023-07-08 = """
+Added the theories Survival_Model, Life_Table and Examples. Updated the theories Preliminaries and Interest.
+"""
+2022-01-23 = """
+Submitted the theories Preliminaries and Interest.
+"""
 [extra]
 
 [related]
