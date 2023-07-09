@@ -1439,8 +1439,10 @@ proof -
     finally show ?thesis by simp
   qed
   show ?thesis
-    apply (rule exI[of _ "P * 2^(2 * k)"], rule exI[of _ "2 * k"])
-    using I by auto
+  proof (intro exI)
+    show "\<forall>n>0. B n \<le> P * 2 ^ (2 * k) * real n ^ (2 * k)"
+      using I by auto
+  qed
 qed
 
 end (*of locale locale pmpt_limit*)

@@ -1138,26 +1138,30 @@ text \<open>The set $A$ is stabilized by the induced map.\<close>
 
 lemma induced_map_stabilizes_A:
   "x \<in> A \<longleftrightarrow> induced_map A x \<in> A"
-proof (rule equiv_neg)
-  fix x assume "x \<in> A"
+proof 
+  assume "x \<in> A"
   show "induced_map A x \<in> A"
-  proof (cases)
-    assume "x \<notin> recurrent_subset A"
+  proof (cases "x \<in> recurrent_subset A")
+    case False
     then have "induced_map A x = x" using induced_map_def return_time_function_def by simp
     then show ?thesis using \<open>x \<in> A\<close> by simp
   next
-    assume H: "\<not>(x \<notin> recurrent_subset A)"
+    case True
     define K where "K = {n\<in>{1..}. (T^^n) x \<in> A}"
-    have "K \<noteq> {}" using H recurrent_subset_def K_def by blast
-    moreover have "return_time_function A x = Inf K" using return_time_function_def K_def H by simp
+    have "K \<noteq> {}" using True recurrent_subset_def K_def 
+      by blast
+    moreover have "return_time_function A x = Inf K" 
+      using return_time_function_def K_def True by simp
     ultimately have "return_time_function A x \<in> K" using Inf_nat_def1 by simp
-    then show ?thesis unfolding induced_map_def K_def by blast
+    then show ?thesis 
+      unfolding induced_map_def K_def by blast
   qed
 next
-  fix x assume "x \<notin> A"
-  then have "x \<notin> recurrent_subset A" using recurrent_subset_def by simp
-  then have "induced_map A x = x" using induced_map_def return_time_function_def by simp
-  then show "induced_map A x \<notin> A" using \<open>x \<notin> A\<close> by simp
+  have "induced_map A x = x" if "x \<notin> A"
+    using that 
+    by (auto simp: induced_map_def return_time_function_def recurrent_subset_def)
+  then show "induced_map A x \<in> A \<Longrightarrow> x \<in> A"
+    by fastforce
 qed
 
 lemma induced_map_iterates_stabilize_A:

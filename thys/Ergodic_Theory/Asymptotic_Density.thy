@@ -683,7 +683,7 @@ proof -
     using upper_asymptotic_density_incseq_Union[OF * **] by blast
   define B where "B = UNIV - D"
   have "lower_asymptotic_density B \<ge> l"
-    using D(1) lower_upper_asymptotic_density_complement[of B] unfolding B_def by auto
+    using D(1) lower_upper_asymptotic_density_complement[of B] by (simp add: double_diff B_def)
   moreover have "\<exists>N. B \<inter> {N..} \<subseteq> A n" for n
     using D(2)[of n] unfolding B_def C_def by auto
   ultimately show ?thesis by auto
@@ -703,7 +703,7 @@ proof -
     using upper_asymptotic_density_zero_Union[OF *] by force
   define B where "B = UNIV - D"
   have "lower_asymptotic_density B = 1"
-    using D(1) lower_upper_asymptotic_density_complement[of B] unfolding B_def by auto
+    using D(1) lower_upper_asymptotic_density_complement[of B] by (simp add: double_diff B_def)
   moreover have "\<exists>N. B \<inter> {N..} \<subseteq> A n" for n
     using D(2)[of n] unfolding B_def C_def by auto
   ultimately show ?thesis by auto
@@ -752,7 +752,7 @@ proof -
   qed
   define C where "C = (\<lambda>n::nat. UNIV - B (((1::real)/2)^n))"
   have "lower_asymptotic_density (C n) = 1" for n
-    unfolding C_def lower_upper_asymptotic_density_complement by (auto intro!: A)
+    unfolding C_def lower_upper_asymptotic_density_complement by (simp add: A double_diff)
   then obtain A where A: "lower_asymptotic_density A = 1" "\<And>n. \<exists>N. A \<inter> {N..} \<subseteq> C n"
     using lower_asymptotic_density_one_Inter by blast
   have E: "eventually (\<lambda>n. u n * indicator A n < e) sequentially" if "e > 0" for e

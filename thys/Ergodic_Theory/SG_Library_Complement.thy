@@ -15,31 +15,12 @@ into these files.
 I tried to indicate to which of these classical theories the statements could be added.
 \<close>
 
-subsection \<open>Basic logic\<close>
-
-text \<open>This one is certainly available, but I could not locate it...\<close>
-lemma equiv_neg:
-  "\<lbrakk> P \<Longrightarrow> Q; \<not>P \<Longrightarrow> \<not>Q \<rbrakk> \<Longrightarrow> (P\<longleftrightarrow>Q)"
-by blast
-
-
-subsection \<open>Basic set theory\<close>
 
 lemma compl_compl_eq_id [simp]:
   "UNIV - (UNIV - s) = s"
 by auto
 
-text \<open>Not sure the next lemmas are useful, as they are proved solely by auto, so they
-could be reproved automatically whenever necessary.\<close>
-
-lemma sym_diff_inc:
-  "A \<Delta> C \<subseteq> A \<Delta> B \<union> B \<Delta> C"
-by auto
-
-lemma sym_diff_vimage [simp]:
-  "f-`(A \<Delta> B) = (f-`A) \<Delta> (f-`B)"
-by auto
-
+notation sym_diff (infixl "\<Delta>" 70)
 
 subsection \<open>Set-Interval.thy\<close>
 
