@@ -5,7 +5,10 @@ Support for TOML: https://toml.io/en/v1.0.0
 package afp
 
 
-import isabelle._
+import isabelle.*
+
+import java.lang.Long.parseLong
+import java.time.{LocalDate, LocalDateTime, LocalTime, OffsetDateTime}
 
 import scala.collection.immutable.ListMap
 import scala.reflect.{ClassTag, classTag}
@@ -14,8 +17,6 @@ import scala.util.matching.Regex
 import scala.util.parsing.combinator
 import scala.util.parsing.combinator.lexical.Scanners
 import scala.util.parsing.input.CharArrayReader.EofCh
-
-import java.time.{LocalDate, LocalDateTime, LocalTime, OffsetDateTime}
 
 
 object TOML {
@@ -37,17 +38,20 @@ object TOML {
 
   /* typed access */
 
-  def split_as[A: ClassTag](map: T): List[(Key, A)] = map.keys.toList.map(k => k -> get_as[A](map, k))
+  def split_as[A: ClassTag](map: T): List[(Key, A)] =
+    map.keys.toList.map(k => k -> get_as[A](map, k))
 
   def optional_as[A: ClassTag](map: T, name: String): Option[A] = map.get(name) match {
     case Some(value: A) => Some(value)
-    case Some(value) => error("Value " + quote(value.toString) + " not of type " + classTag[A].runtimeClass.getName)
+    case Some(value) =>
+      error("Value " + quote(value.toString) + " not of type " + classTag[A].runtimeClass.getName)
     case None => None
   }
 
   def get_as[A: ClassTag](map: T, name: String): A = map.get(name) match {
     case Some(value: A) => value
-    case Some(value) => error("Value " + quote(value.toString) + " not of type " + classTag[A].runtimeClass.getName)
+    case Some(value) =>
+      error("Value " + quote(value.toString) + " not of type " + classTag[A].runtimeClass.getName)
     case None => error("Field " + name + " not in " + commas_quote(map.keys))
   }
 
@@ -55,14 +59,15 @@ object TOML {
   /* lexer */
 
   object Kind extends Enumeration {
-    val KEYWORD, IDENT, STRING, ERROR = Value
+    val KEYWORD, VALUE, STRING, MULTILINE_STRING, LINE_SEP, ERROR = Value
   }
 
   sealed case class Token(kind: Kind.Value, text: String) {
-    def is_ident: Boolean = kind == Kind.IDENT
     def is_keyword(name: String): Boolean = kind == Kind.KEYWORD && text == name
+    def is_value: Boolean = kind == Kind.VALUE
     def is_string: Boolean = kind == Kind.STRING
-    def is_error: Boolean = kind == Kind.ERROR
+    def is_multiline_string: Boolean = kind == Kind.MULTILINE_STRING
+    def is_line_sep: Boolean = kind == Kind.LINE_SEP
   }
 
   object Lexer extends Scanners with Scan.Parsers {
@@ -71,47 +76,78 @@ object TOML {
 
     def errorToken(msg: String): Token = Token(Kind.ERROR, msg)
 
-    val white_space: String = " \t\n\r"
+    val white_space: String = " \t"
     override val whiteSpace: Regex = ("[" + white_space + "]+").r
-
-    override def comment: Parser[String] =
-      '#' ~>! rep(elem("", c => c != EofCh && c != '\n' && c != '\r')) ^^ (s => s.mkString)
-
     override def whitespace: Parser[Any] = rep(comment | many1(character(white_space.contains(_))))
 
-    def keyword: Parser[Token] = ("[[" | "]]" | one(character("{}[],=.".contains(_)))) ^^ (s => Token(Kind.KEYWORD, s))
+    def line_sep: Parser[String] = rep1("\n" | s"\r\n" | EofCh) ^^ (cs => cs.mkString)
+    def line_sep_token: Parser[Token] = line_sep ^^ (s => Token(Kind.LINE_SEP, s))
 
-    def ident: Parser[Token] =
-      many1(character(c => Symbol.is_ascii_digit(c) || Symbol.is_ascii_letter(c) || c == '_' || c == '-')) ^^
-        (s => Token(Kind.IDENT, s))
+    def is_control(e: Elem): Boolean =
+      e <= '\u0008' || ('\u000A' <= e && e <= '\u001F') || e == '\u007F'
+
+    override def comment: Parser[String] = '#' ~>! many(character(c => !is_control(c)))
+
+    def keyword: Parser[Token] = one(character("{}[],=.".contains)) ^^ (s => Token(Kind.KEYWORD, s))
+
+    def is_value(c: Elem): Boolean =
+      Symbol.is_ascii_letter(c) || Symbol.is_ascii_digit(c) || "_-:+".contains(c)
+    def value: Parser[Token] =
+      many1(character(is_value)) ~
+        opt(' ' ~ many1(character(is_value)) ^^ { case ws ~ s => ws.toString + s }) ~
+        opt('.' ~ many1(character(is_value)) ^^ { case dot ~ s => dot.toString + s}) ^^
+        { case s ~ ss ~ sd => Token(Kind.VALUE, s + ss.getOrElse("") + sd.getOrElse("")) }
+
+    def string: Parser[Token] =
+      multiline_basic_string | basic_string | multiline_literal_string | literal_string
+
+    private def trim(s: String): String =
+      if (s.startsWith("\n")) s.stripPrefix("\n") else s.stripPrefix("\r\n")
 
     def basic_string: Parser[Token] =
-      '\"' ~> rep(string_body) <~ '\"' ^^ (cs => Token(Kind.STRING, cs.mkString))
+      '"' ~> rep(basic_string_elem) <~ '"' ^^ (cs => Token(Kind.STRING, cs.mkString))
 
     def multiline_basic_string: Parser[Token] =
-      "\"\"\"" ~>!
-        rep(multiline_string_body | ("\"" | "\"\"") ~ multiline_string_body ^^ { case s ~ t => s + t }) <~
-        "\"\"\"" ^^
-          (cs => Token(Kind.STRING, cs.mkString.stripPrefix("\n")))
+      "\"\"\"" ~>
+        rep(multiline_basic_string_elem |
+          ("\"\"" | "\"") ~ multiline_basic_string_elem ^^ { case s ~ t => s + t }) ~
+        repeated(character(_ == '"'), 3, 5) ^^ { case cs ~ q =>
+          Token(Kind.MULTILINE_STRING, trim(cs.mkString + q.drop(3))) }
 
-    def multiline_string_body: Parser[Char] =
-      elem("", c => c == '\t' || c == '\n' || c == '\r' || (c > '\u001f' && c != '\"' && c != '\\' && c != EofCh)) |
-        '\\' ~> string_escape
+    private def multiline_basic_string_elem: Parser[String] =
+      ('\\' ~ line_sep ~ rep(many1(character(white_space.contains)) | line_sep)) ^^ (_ => "") |
+        basic_string_elem ^^ (_.toString) | line_sep
 
-    def string_body: Parser[Char] =
-      elem("", c => c > '\u001f' && c != '\"' && c != '\\' && c != EofCh) | '\\' ~> string_escape
+    def literal_string: Parser[Token] =
+      '\'' ~> rep(literal_string_elem) <~ '\'' ^^ (cs => Token(Kind.STRING, cs.mkString))
 
-    def string_escape: Parser[Char] =
-      elem("", "\"\\/".contains(_)) |
-        elem("", "bfnrt".contains(_)) ^^
-          { case 'b' => '\b' case 'f' => '\f' case 'n' => '\n' case 'r' => '\r' case 't' => '\t' } |
-        'u' ~> repeated(character("0123456789abcdefABCDEF".contains(_)), 4, 4) ^^
+    def multiline_literal_string: Parser[Token] =
+      "'''" ~>
+        rep(multiline_literal_string_elem |
+          ("''" | "'") ~ multiline_literal_string_elem ^^ { case s ~ t => s + t }) ~
+        repeated(character(_ == '\''), 3, 5) ^^ { case cs ~ q =>
+          Token(Kind.MULTILINE_STRING, trim(cs.mkString + q.drop(3))) }
+
+    private def multiline_literal_string_elem: Parser[String] =
+      line_sep | literal_string_elem ^^ (_.toString)
+
+    private def basic_string_elem: Parser[Elem] =
+      elem("", c => !is_control(c) && !"\"\\".contains(c)) | '\\' ~> string_escape
+
+    private def string_escape: Parser[Elem] =
+      elem("", "\"\\".contains(_)) |
+        elem("", "btnfr".contains(_)) ^^
+          { case 'b' => '\b' case 't' => '\t' case 'n' => '\n' case 'f' => '\f' case 'r' => '\r' } |
+        ('u' ~> repeated(character("0123456789abcdefABCDEF".contains(_)), 4, 4) |
+          'U' ~> repeated(character("0123456789abcdefABCDEF".contains(_)), 8, 8)) ^^
           (s => Integer.parseInt(s, 16).toChar)
 
-    def string_failure: Parser[Token] = '\"' ~> failure("Unterminated string")
+    private def literal_string_elem: Parser[Elem] = elem("", c => !is_control(c) && c != '\'')
+
+    def string_failure: Parser[Token] = ("\"" | "'") ~> failure("Unterminated string")
 
     def token: Parser[Token] =
-      keyword | ident | (multiline_basic_string | basic_string | string_failure) | failure("Illegal character")
+      line_sep_token | keyword | value | string | string_failure | failure("Unrecognized token")
   }
 
 
@@ -120,55 +156,106 @@ object TOML {
   trait Parsers extends combinator.Parsers {
     type Elem = Token
 
-    def keys: Parser[List[Key]] = rep1sep(key, $$$("."))
+    def key: Parser[List[Key]] = rep1sep(keys, $$$(".")) ^^ (_.flatten)
 
-    def string: Parser[String] = elem("string", _.is_string) ^^ (_.text)
 
-    def integer: Parser[Int] = token("integer", _.is_ident, _.toInt)
+    /* values */
 
-    def float: Parser[Double] = token("float", _.is_ident, _.toDouble)
+    def string: Parser[String] =
+      elem("string", e => e.is_string || e.is_multiline_string) ^^ (_.text)
+    def integer: Parser[Long] = decimal_int | binary_int | octal_int | hexadecimal_int
+    def float: Parser[Double] = symbol_float | number_float
+    def boolean: Parser[Boolean] = token("boolean", _.is_value, Value.Boolean.parse)
 
-    def boolean: Parser[Boolean] = token("boolean", _.is_ident, _.toBoolean)
+    def offset_date_time: Parser[OffsetDateTime] =
+      token("offset date-time", _.is_value, s => OffsetDateTime.parse(s.replace(" ", "T")))
+    def local_date_time: Parser[LocalDateTime] =
+      token("local date-time", _.is_value, s => LocalDateTime.parse(s.replace(" ", "T")))
+    def local_date: Parser[LocalDate] = token("local date", _.is_value, LocalDate.parse)
+    def local_time: Parser[LocalTime] = token("local time", _.is_value, LocalTime.parse)
 
-    def offset_date_time: Parser[OffsetDateTime] = token("offset date-time", _.is_ident, OffsetDateTime.parse)
+    def array: Parser[V] =
+      $$$("[") ~>! repsep(opt(line_sep) ~> toml_value, opt(line_sep) ~ $$$(",")) <~!
+        opt(line_sep) ~! opt($$$(",")) ~! opt(line_sep) <~! $$$("]")
 
-    def local_date_time: Parser[LocalDateTime] = token("local date-time", _.is_ident, LocalDateTime.parse)
+    def inline_table: Parser[V] = $$$("{") ~>! (repsep(pair, $$$(",")) ^? to_map) <~! $$$("}")
 
-    def local_date: Parser[LocalDate] = token("local date", _.is_ident, LocalDate.parse)
 
-    def local_time: Parser[LocalTime] = token("local time", _.is_ident, LocalTime.parse)
+    /* structures */
 
-    def array: Parser[V] = $$$("[") ~>! repsep(toml_value, $$$(",")) <~ opt($$$(",")) ~ $$$("]")
+    def pair: Parser[(List[Key], V)] = (key <~! $$$("=")) ~! toml_value ^^ { case ks ~ v => (ks,v) }
 
-    def table: Parser[T] = $$$("[") ~>! (keys <~ $$$("]")) ~! content ^?
+    def table: Parser[T] = $$$("[") ~> (key <~! $$$("]") ~! line_sep) ~! content ^?
       { case base ~ T(map) => to_map(List(base -> map)) }
 
-    def inline_table: Parser[V] = $$$("{") ~>! (content ^? to_map) <~ $$$("}")
-
     def array_of_tables: Parser[T] =
-      $$$("[[") ~>! (keys <~ $$$("]]")) >> { ks =>
-        repsep(content ^^ to_map, $$$("[[") ~! (keys ^? { case ks1 if ks1 == ks => }) ~ $$$("]]")) ^^
+      $$$("[") ~ $$$("[") ~>! (key <~! $$$("]") ~! $$$("]") ~! line_sep) >> { ks =>
+        repsep(content ^^ to_map, $$$("[") ~ $$$("[") ~ (key ^? { case ks1 if ks1 == ks => }) ~!
+          $$$("]") ~! $$$("]") ~! line_sep) ^^
           { list => List(ks -> list) } ^? to_map
       }
 
-    def toml: Parser[T] = (content ~ rep(table | array_of_tables)) ^?
-      { case T(map) ~ maps => map :: maps } ^? { case Merge(map) => map }
+    def toml: Parser[T] =
+      (opt(line_sep) ~> content ~ rep(table | array_of_tables)) ^?
+        { case T(map) ~ maps => map :: maps } ^? { case Merge(map) => map } |
+      (opt(line_sep) ~>! content) ^? { case T(map) => map }
 
 
-    /* auxiliary parsers */
+    /* auxiliary */
 
     private def $$$(name: String): Parser[Token] = elem(name, _.is_keyword(name))
-
+    private def maybe[A, B](p: Parser[A], f: A => B): Parser[B] =
+      p ^^ (a => Try(f(a))) ^? { case util.Success(v) => v}
     private def token[A](name: String, p: Token => Boolean, parser: String => A): Parser[A] =
-      elem(name, p) ^^ (tok => Try { parser(tok.text) }) ^? { case util.Success(v) => v }
+      maybe(elem(name, p), s => parser(s.text))
+    private def prefixed[A](
+      prefix: String, name: String, p: String => Boolean, parser: String => A
+    ): Parser[A] =
+      token(name, e => e.is_value && e.text.startsWith(prefix) && p(e.text.stripPrefix(prefix)),
+        s => parser(s.stripPrefix(prefix)))
 
-    private def key: Parser[Key] = elem("key", e => e.is_ident || e.is_string) ^^ (_.text)
+    private def is_key(e: Elem): Boolean = e.is_value && !e.text.exists("+: ".contains(_))
+    private def keys: Parser[List[Key]] =
+      token("string key", _.is_string, List(_)) | token("key", is_key, _.split('.').toList)
 
-    private def toml_value: Parser[V] = string | integer | float | boolean | offset_date_time |
+    private def sep_surrounded(s: String): Boolean =
+      !s.startsWith("_") && !s.endsWith("_") && s.split('_').forall(_.nonEmpty)
+    private def no_leading_zero(s: String): Boolean = {
+      val t = s.replaceAll("_", "").takeWhile(_.isDigit)
+      t == "0" || !t.startsWith("0")
+    }
+
+    private def is_int(s: String): Boolean =
+      no_leading_zero(s.replaceAll("[-+]", "")) && sep_surrounded(s.replaceAll("[-+]", ""))
+    private def decimal_int: Parser[Long] =
+      token("integer", e => e.is_value && is_int(e.text), _.replace("_", "").toLong)
+    private def binary_int: Parser[Long] =
+      prefixed("0b", "integer", sep_surrounded, s => parseLong(s.replace("_", ""), 2))
+    private def octal_int: Parser[Long] =
+      prefixed("0o", "integer", sep_surrounded, s => parseLong(s.replace("_", ""), 8))
+    private def hexadecimal_int: Parser[Long] =
+      prefixed("0x", "integer", sep_surrounded, s => parseLong(s.replace("_", ""), 16))
+
+    private def is_float(s: String): Boolean =
+      s.exists(".eE".contains) && s.count("eE".contains) <= 1 &&
+        no_leading_zero(s.replaceAll("[-+]", "")) &&
+        sep_surrounded(s.replaceAll("[-+]", "").replaceAll("[.eE][+\\-]?", "_"))
+    private def number_float: Parser[Double] =
+      token("float", e => e.is_value && is_float(e.text), _.replace("_", "").toDouble)
+    private def symbol_float: Parser[Double] =
+      token("float", _.is_value, {
+        case "inf" | "+inf" => Double.PositiveInfinity
+        case "-inf" => Double.NegativeInfinity
+        case "nan" | "+nan" | "-nan" => Double.NaN
+      })
+
+    private def toml_value: Parser[V] = string | float | integer | boolean | offset_date_time |
       local_date_time | local_date | local_time | array | inline_table
 
-    private def content: Parser[List[(List[Key], V)]] = rep((keys <~ $$$("=")) ~! toml_value ^^
-      { case ks ~ v => ks -> v })
+    private def line_sep: Parser[Any] = rep1(elem("line sep", _.is_line_sep))
+
+    private def content: Parser[List[(List[Key], V)]] =
+      rep((key <~! $$$("=")) ~! toml_value <~! line_sep ^^ { case ks ~ v => ks -> v })
 
 
     /* extractors */
@@ -201,7 +288,7 @@ object TOML {
             map1.get(k2) match {
               case Some(v1) => (v1, v2) match {
                 case (TOML.T(t1), TOML.T(t2)) => k2 -> merge(t1, t2).getOrElse(return None)
-                case x => return None
+                case _ => return None
               }
               case None => k2 -> v2
             }
@@ -209,28 +296,28 @@ object TOML {
         Some(map1.filter { case (k, _) => !map2.contains(k) } ++ res2)
       }
 
-      def unapply(maps: List[T]): Option[T] = Some(maps.fold(Map.empty)(merge(_, _).getOrElse(return None)))
+      def unapply(maps: List[T]): Option[T] =
+        Some(maps.fold(Map.empty)(merge(_, _).getOrElse(return None)))
     }
 
 
     /* parse */
 
-    def parse(input: CharSequence): T = {
-      val scanner = new Lexer.Scanner(Scan.char_reader(input))
+    def parse(input: String): T = {
+      val scanner = new Lexer.Scanner(Scan.char_reader(input + EofCh))
       val result = phrase(toml)(scanner)
-      (result : @unchecked) match {
+      result match {
         case Success(toml, _) => toml
-        case NoSuccess(_, next) => error("Malformed TOML input at " + next.pos)
+        case Failure(msg, next) => error("Malformed TOML input at " + next.pos + ": " + msg)
+        case Error(msg, next) => error("Error parsing toml at " + next.pos + ": " + msg)
       }
     }
   }
 
   object Parsers extends Parsers
 
-
-  /* standard format */
-
   def parse(s: String): T = Parsers.parse(s)
+
 
   /* format to a subset of TOML */
 
