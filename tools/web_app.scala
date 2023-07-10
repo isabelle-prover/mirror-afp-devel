@@ -5,12 +5,12 @@ Technical layer for web apps using server-side rendering with HTML forms.
 package afp
 
 
-import isabelle._
-
-import scala.annotation.tailrec
+import isabelle.*
 
 import java.net.URL
 import java.nio.file.Files
+
+import scala.annotation.tailrec
 
 
 object Web_App {

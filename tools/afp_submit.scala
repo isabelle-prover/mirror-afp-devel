@@ -13,12 +13,12 @@ import afp.Web_App.Params.{List_Key, Nest_Key, empty}
 import afp.Web_App.HTML.*
 import afp.Metadata.{Affiliation, Author, DOI, Email, Entry, Formatted, Homepage, License, Orcid, Reference, Release, Topic, Unaffiliated}
 
-import scala.collection.immutable.StringView
-import scala.util.matching.Regex
-
 import java.net.URL
 import java.text.Normalizer
 import java.time.LocalDate
+
+import scala.collection.immutable.StringView
+import scala.util.matching.Regex
 
 
 object AFP_Submit {

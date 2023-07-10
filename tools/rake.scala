@@ -7,11 +7,11 @@ documents. Text mining: applications and theory, 1(1-20), 10-1002.
 package afp
 
 
-import isabelle._
-
-import scala.util.matching.Regex
+import isabelle.*
 
 import java.io.{BufferedReader, InputStreamReader}
+
+import scala.util.matching.Regex
 
 
 object Rake {

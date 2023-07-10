@@ -5,12 +5,12 @@ Utilities.
 package afp
 
 
-import isabelle._
-
-import scala.collection.immutable.ListMap
+import isabelle.*
 
 import java.net.URL
 import java.io.{BufferedReader, InputStreamReader, IOException}
+
+import scala.collection.immutable.ListMap
 
 
 object Utils {

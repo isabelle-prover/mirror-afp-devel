@@ -7,7 +7,7 @@ package afp
 
 import isabelle.*
 
-import afp.Metadata.*
+import afp.Metadata.{Author, DOI, Email, Homepage, TOML, Topic}
 
 
 object AFP_Check_Metadata {

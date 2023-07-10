@@ -5,9 +5,9 @@ Tooling to manage AFP releases.
 package afp
 
 
-import isabelle._
+import isabelle.*
 
-import afp.Metadata._
+import afp.Metadata.{Entry, Isabelle, Release}
 
 import java.time.LocalDate
 

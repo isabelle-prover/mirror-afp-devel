@@ -5,14 +5,15 @@ Unified AFP CI integration.
 package afp
 
 
-import isabelle._
-import isabelle.CI_Build._
+import isabelle.*
+import isabelle.CI_Build.{hg_id, print_section, Build_Config, Failed, Job, Profile, Result, Status}
 
 import afp.Metadata.{Email, Entry}
 
 import java.time.{Instant, ZoneId}
 import java.time.format.DateTimeFormatter
 import java.util.{Map => JMap, Properties => JProperties}
+
 import javax.mail.internet.{InternetAddress, MimeMessage}
 import javax.mail.{Authenticator, Message, MessagingException, PasswordAuthentication, Transport, Session => JSession}
 

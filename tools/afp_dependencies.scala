@@ -5,10 +5,9 @@ Tool to extract dependencies of AFP entries.
 package afp
 
 
-import Metadata.Entry
-
-
 import isabelle._
+
+import Metadata.Entry
 
 
 object AFP_Dependencies {

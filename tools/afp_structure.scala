@@ -5,7 +5,7 @@ AFP Metadata file structure with save and load operations.
 package afp
 
 
-import isabelle._
+import isabelle.*
 
 
 class AFP_Structure private(val base_dir: Path) {

@@ -5,7 +5,7 @@ AFP Hugo wrapper and project layout.
 package afp
 
 
-import isabelle._
+import isabelle.*
 
 
 object Hugo {

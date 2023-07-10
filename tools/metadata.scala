@@ -5,9 +5,9 @@ AFP metadata model and TOML serialization.
 package afp
 
 
-import isabelle._
+import isabelle.*
 
-import afp.TOML._
+import afp.TOML.{get_as, split_as, optional_as, T}
 
 import java.time.LocalDate
 import java.net.{URL, URI}

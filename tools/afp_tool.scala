@@ -3,7 +3,7 @@ package afp
 
 import isabelle._
 
-import afp.migration._
+import afp.migration.{AFP_Migrate_Metadata, AFP_Obfuscate_Emails}
 
 
 class Admin_Tools extends Isabelle_Scala_Tools(
