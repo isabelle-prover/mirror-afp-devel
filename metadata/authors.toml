@@ -6028,6 +6028,23 @@ host = [
 
 [spichkova.homepages]
 
+[spitz]
+name = "Maximilian Spitz"
+
+[spitz.emails]
+
+[spitz.emails.spitz_email]
+user = [
+  "maximilian",
+  "spitz",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[spitz.homepages]
+
 [sprenger]
 name = "Christoph Sprenger"
 

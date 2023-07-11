@@ -1,0 +1,9 @@
+chapter AFP
+
+session Gray_Codes (AFP) = HOL +
+  options [timeout = 600]
+  theories
+    Non_Boolean_Gray
+  document_files
+    "root.tex"
+    "root.bib"

@@ -3,10 +3,25 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2023-06-19T00:00:00+00:00</lastmod>
+    <lastmod>2023-07-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2023-06-19T00:00:00+00:00</lastmod>
+    <lastmod>2023-07-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2023-07-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Gray_Codes.html</loc>
+    <lastmod>2023-07-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2023-07-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/spitz/</loc>
+    <lastmod>2023-07-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2023-07-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/computer-science/</loc>
     <lastmod>2023-06-19T00:00:00+00:00</lastmod>
@@ -17,9 +32,6 @@
     <loc>/authors/eberl/</loc>
     <lastmod>2023-06-19T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/entries/</loc>
-    <lastmod>2023-06-19T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Executable_Randomized_Algorithms.html</loc>
     <lastmod>2023-06-19T00:00:00+00:00</lastmod>
   </url><url>
@@ -27,9 +39,6 @@
     <lastmod>2023-06-19T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/probabilistic_while/</loc>
-    <lastmod>2023-06-19T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2023-06-19T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/zeta_function/</loc>
@@ -45,9 +54,6 @@
     <lastmod>2023-06-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/dalvit/</loc>
-    <lastmod>2023-06-12T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/mathematics/</loc>
     <lastmod>2023-06-12T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Zeckendorf.html</loc>
@@ -5222,6 +5228,8 @@
     <loc>/theories/graph_theory/</loc>
   </url><url>
     <loc>/theories/graphmarkingibp/</loc>
+  </url><url>
+    <loc>/theories/gray_codes/</loc>
   </url><url>
     <loc>/theories/green/</loc>
   </url><url>
