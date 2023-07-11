@@ -31,3 +31,4 @@ lammich = "lammich_email"
 [extra]
 
 [related]
+dois = ["10.4230/LIPIcs.ITP.2019.23"]
