@@ -8,19 +8,15 @@ package afp
 import isabelle.*
 
 import afp.Metadata.{Author, DOI, Email, Homepage, TOML, Topic}
+import afp.TOML.{parse, Format, Key, Table}
 
 
 object AFP_Check_Metadata {
 
-  def diff(t1: afp.TOML.T, t2: afp.TOML.T): List[afp.TOML.Key] = {
-    (t1.keySet diff t2.keySet).toList ++ t1.flatMap {
-      case (k, afp.TOML.T(tr1)) => t2.get(k).map {
-        case afp.TOML.T(tr2) => diff (tr1, tr2)
-        case _ => Nil
-      }.getOrElse(Nil)
-      case _ => Nil
+  def diff(t1: Table, t2: Table): List[Key] =
+    (t1.domain diff t2.domain).toList ++ t1.table.values.flatMap {
+      case (k, tr1) => t2.table.get(k).toList.flatMap(diff(tr1, _))
     }
-  }
 
   def afp_check_metadata(
     strict: Boolean,
@@ -47,7 +43,7 @@ object AFP_Check_Metadata {
 
     /* TOML encoding/decoding */
 
-    def check_toml[A](kind: String, a: A, from: A => afp.TOML.T, to: afp.TOML.T => A): Unit =
+    def check_toml[A](kind: String, a: A, from: A => Table, to: Table => A): Unit =
       if (to(from(a)) != a) error("Inconsistent toml encode/decode: " + kind)
 
     progress.echo_if(verbose, "Checking toml conversions...")
@@ -81,10 +77,10 @@ object AFP_Check_Metadata {
 
     progress.echo_if(verbose, "Checking for unused fields...")
 
-    def check_unused_toml[A](file: Path, to: afp.TOML.T => A, from: A => afp.TOML.T): Unit = {
-      val toml = afp.TOML.parse(File.read(file))
+    def check_unused_toml[A](file: Path, to: Table => A, from: A => Table): Unit = {
+      val toml = parse(File.read(file))
       val recoded = from(to(toml))
-      val diff_keys = diff(afp.TOML.parse(File.read(file)), recoded)
+      val diff_keys = diff(parse(File.read(file)), recoded)
       if (diff_keys.nonEmpty) warn("Unused fields: " + commas_quote(diff_keys))
     }
 
@@ -125,9 +121,9 @@ object AFP_Check_Metadata {
 
     if (reformat) afp_structure.save_authors(orig_authors)
     else {
-      def check_toml_format(toml: afp.TOML.T, file: Path): Unit = {
+      def check_toml_format(toml: Table, file: Path): Unit = {
         val present = File.read(file)
-        val formatted = afp.TOML.Format(toml)
+        val formatted = Format(toml)
         if (present != formatted) progress.echo_warning("Badly formatted toml: " + file)
       }
 

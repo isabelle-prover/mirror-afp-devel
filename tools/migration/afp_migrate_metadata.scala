@@ -310,7 +310,7 @@ object AFP_Migrate_Metadata {
     def read(file: Path): String =
       File.read(metadata_dir + file)
 
-    def write(toml: TOML.T, file: Path) = {
+    def write(toml: TOML.Table, file: Path) = {
       val path = metadata_dir + file
       if (!overwrite && path.file.exists) error("File already exists: " + path.file_name)
       else path.dir.file.mkdirs()

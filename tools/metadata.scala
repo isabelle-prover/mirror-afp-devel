@@ -7,10 +7,8 @@ package afp
 
 import isabelle.*
 
-import afp.TOML.{get_as, split_as, optional_as, T}
-
 import java.time.LocalDate
-import java.net.{URL, URI}
+import java.net.{URI, URL}
 
 
 object Metadata {
@@ -176,238 +174,227 @@ object Metadata {
 
   /* toml */
 
+  private def by_id[A](elems: Map[String, A], id: String): A =
+    elems.getOrElse(id, error("Elem " + quote(id) + " not found in " + commas_quote(elems.keys)))
+
   object TOML {
-    private def by_id[A](elems: Map[String, A], id: String): A =
-      elems.getOrElse(id, error("Elem " + quote(id) + " not found in " + commas_quote(elems.keys)))
+    import afp.TOML.{Array, Boolean, Key, Local_Date, String, Table}
 
 
-    /* email */
+    /* affils */
 
-    def from_email(email: Email): T =
-      T(
-        "user" -> email.user.split('.').toList,
-        "host" -> email.host.split('.').toList)
+    def from_email(email: Email): Table =
+      Table(
+        "user" -> Array(email.user.split('.').map(String(_))),
+        "host" -> Array(email.host.split('.').map(String(_))))
 
-    def to_email(author_id: Author.ID, email_id: Email.ID, email: T): Email = {
-      val user = get_as[List[String]](email, "user")
-      val host = get_as[List[String]](email, "host")
+    def to_email(author_id: Author.ID, email_id: Email.ID, email: Table): Email = {
+      val user = email.array("user").string.values.map(_.rep)
+      val host = email.array("host").string.values.map(_.rep)
       Email(author_id, email_id, user.mkString("."), host.mkString("."))
     }
 
-
     /* author */
 
-    def from_author(author: Author): T =
-      T(
-        "name" -> author.name,
-        "emails" -> T(author.emails.map(email => email.id -> from_email(email))),
-        "homepages" -> T(author.homepages.map(homepage => homepage.id -> homepage.url.toString))) ++
-        author.orcid.map(orcid => T("orcid" -> orcid.identifier)).getOrElse(T())
+    def from_author(author: Author): Table =
+      Table(
+        "name" -> String(author.name),
+        "emails" -> Table(author.emails.map(e => e.id -> from_email(e))),
+        "homepages" -> Table(author.homepages.map(h => h.id -> String(h.url.toString)))) ++
+        author.orcid.map(orcid => Table("orcid" -> String(orcid.identifier))).getOrElse(Table())
 
-    def to_author(author_id: Author.ID, author: T): Author = {
-      val emails = split_as[T](get_as[T](author, "emails")) map {
+    def to_author(author_id: Author.ID, author: Table): Author = {
+      val emails = author.table("emails").table.values.map {
         case (id, email) => to_email(author_id, id, email)
       }
-      val homepages = split_as[String](get_as[T](author, "homepages")) map {
-        case (id, url) => Homepage(author = author_id, id = id, url = new URL(url))
+      val homepages = author.table("homepages").string.values.map {
+        case (id, url) => Homepage(author = author_id, id = id, url = new URL(url.rep))
       }
-      val orcid = author.get("orcid").flatMap {
-        case orcid: String => Some(Orcid(orcid))
-        case o => error("Could not read oricid: " + quote(o.toString))
-      }
+      val orcid = author.string.get("orcid").map(_.rep).map(Orcid(_))
       Author(
         id = author_id,
-        name = get_as[String](author, "name"),
+        name = author.string("name").rep,
         orcid = orcid,
         emails = emails,
         homepages = homepages)
     }
 
-    def from_authors(authors: List[Author]): T =
-      T(authors.map(author => author.id -> from_author(author)))
+    def from_authors(authors: List[Author]): Table =
+      Table(authors.map(author => author.id -> from_author(author)))
 
-    def to_authors(authors: T): List[Author] =
-      split_as[T](authors).map { case (id, author) => to_author(id, author) }
+    def to_authors(authors: Table): List[Author] = authors.table.values.map(to_author)
 
 
     /* topics */
 
-    def from_acm(acm: ACM): T =
-      T("id" -> acm.id, "desc" -> acm.desc)
+    def from_acm(acm: ACM): Table =
+      Table("id" -> String(acm.id), "desc" -> String(acm.desc))
 
-    def to_acm(acm: T): ACM =
-      ACM(get_as[String](acm, "id"), get_as[String](acm, "desc"))
+    def to_acm(acm: Table): ACM =
+      ACM(acm.string("id").rep, acm.string("desc").rep)
 
-    def from_ams(ams: AMS): T =
-      T("id" -> ams.id, "hierarchy" -> ams.hierarchy)
+    def from_ams(ams: AMS): Table =
+      Table("id" -> String(ams.id), "hierarchy" -> Array(ams.hierarchy.map(String(_))))
 
-    def to_ams(ams: T): AMS =
-      AMS(get_as[String](ams, "id"), get_as[List[String]](ams, "hierarchy"))
+    def to_ams(ams: Table): AMS =
+      AMS(ams.string("id").rep, ams.array("hierarchy").string.values.map(_.rep))
 
-    def from_classifications(classifications: List[Classification]): T =
-      T(classifications map {
+    def from_classifications(classifications: List[Classification]): Table =
+      Table(classifications.map {
         case acm: ACM => "acm" -> from_acm(acm)
         case ams: AMS => "ams" -> from_ams(ams)
       })
 
-    def to_classifications(classifications: T): List[Classification] = {
-      split_as[T](classifications).map {
+    def to_classifications(classifications: Table): List[Classification] =
+      classifications.table.values.map {
         case ("ams", ams) => to_ams(ams)
         case ("acm", acm) => to_acm(acm)
         case (c, _) => error("Unknown topic classification: " + quote(c))
       }
-    }
 
-    def from_topics(root_topics: List[Topic]): T =
-      T(root_topics.map { t =>
-        t.name -> (
-          T("classification" -> from_classifications(t.classification)) ++
-          from_topics(t.sub_topics))
-      })
+    def from_topics(root_topics: List[Topic]): Table =
+      Table(root_topics.map(t => t.name -> (
+        Table("classification" -> from_classifications(t.classification)) ++
+        from_topics(t.sub_topics))))
 
-    def to_topics(root_topics: T): List[Topic] = {
-      def to_topics_rec(topics: List[(String, T)], root: Topic.ID): List[Topic] = {
+    def to_topics(root_topics: Table): List[Topic] = {
+      def to_topics_rec(topics: List[(Key, Table)], root: Topic.ID): List[Topic] = {
         topics.map {
           case (name, data) =>
             val id = (if (root.nonEmpty) root + "/" else "") + name
 
-            val classifications = data.get("classification").map {
-              case T(t) => to_classifications(t)
-              case o => error("Could not read classifications: " + quote(o.toString))
-            } getOrElse Nil
-            val sub_topics =
-              split_as[T](data).filterNot { case (name, _ ) => name == "classification" }
+            val classifications = to_classifications(data.table("classification"))
+            val sub_topics = data.table.values.filterNot(_._1 == "classification")
 
             Topic(id, name, classifications, to_topics_rec(sub_topics, id))
         }
       }
 
-      to_topics_rec(split_as[T](root_topics), "")
+      to_topics_rec(root_topics.table.values, "")
     }
 
 
     /* releases */
 
-    def from_releases(releases: List[Release]): T =
-      T(Utils.group_sorted(releases, (r: Release) => r.entry).view.mapValues { entry_releases =>
-        T(entry_releases.map(r => r.date.toString -> r.isabelle))
+    def from_releases(releases: List[Release]): Table =
+      Table(Utils.group_sorted(releases, (r: Release) => r.entry).view.mapValues { entry_releases =>
+        Table(entry_releases.map(r => r.date.toString -> String(r.isabelle)))
       }.toList)
 
-    def to_releases(map: T): List[Release] =
-      split_as[T](map).flatMap {
-        case (entry, releases) => split_as[String](releases).map {
-          case (date, version) => Release(entry = entry, date = LocalDate.parse(date), isabelle = version)
+    def to_releases(map: Table): List[Release] =
+      map.table.values.flatMap {
+        case (entry, releases) => releases.string.values.map {
+          case (date, version) =>
+            Release(entry = entry, date = LocalDate.parse(date), isabelle = version.rep)
         }
       }
 
 
     /* affiliation */
 
-    def from_affiliations(affiliations: List[Affiliation]): T =
-      T(Utils.group_sorted(affiliations, (a: Affiliation) => a.author).view.mapValues(vs =>
-        T(vs.collect {
-          case Email(_, id, _) => "email" -> id
-          case Homepage(_, id, _) => "homepage" -> id
+    def from_affiliations(affiliations: List[Affiliation]): Table =
+      Table(Utils.group_sorted(affiliations, (a: Affiliation) => a.author).view.mapValues(vs =>
+        Table(vs.collect {
+          case Email(_, id, _) => "email" -> String(id)
+          case Homepage(_, id, _) => "homepage" -> String(id)
         })).toList)
 
-    def to_affiliations(affiliations: T, authors: Map[Author.ID, Author]): List[Affiliation] = {
-      def to_affiliation(affiliation: (String, String), author: Author): Affiliation = {
+    def to_affiliations(affiliations: Table, authors: Map[Author.ID, Author]): List[Affiliation] = {
+      def to_affiliation(affiliation: (Key, String), author: Author): Affiliation = {
         affiliation match {
-          case ("email", id: String) => author.emails.find(_.id == id) getOrElse
-            error("Email not found: " + quote(id))
-          case ("homepage", id: String) => author.homepages.find(_.id == id) getOrElse
-            error("Homepage not found: " + quote(id))
+          case ("email", id) => author.emails.find(_.id == id.rep) getOrElse
+            error("Email not found: " + quote(id.rep))
+          case ("homepage", id) => author.homepages.find(_.id == id.rep) getOrElse
+            error("Homepage not found: " + quote(id.rep))
           case e => error("Unknown affiliation type: " + e)
         }
       }
 
-      split_as[T](affiliations).flatMap {
+      affiliations.table.values.flatMap {
         case (id, author_affiliations) =>
           val author = by_id(authors, id)
-          if (author_affiliations.isEmpty) List(Unaffiliated(author.id))
-          else split_as[String](author_affiliations).map(to_affiliation(_, author))
+          if (author_affiliations.is_empty) List(Unaffiliated(author.id))
+          else author_affiliations.string.values.map(to_affiliation(_, author))
       }
     }
 
-    def from_emails(emails: List[Email]): T =
-      T(emails.map(email => email.author -> email.id))
+    def from_emails(emails: List[Email]): Table =
+      Table(emails.map(email => email.author -> String(email.id)))
 
-    def to_emails(emails: T, authors: Map[Author.ID, Author]): List[Email] =
-      emails.toList.map {
-        case (author, id: String) => by_id(authors, author).emails.find(_.id == id) getOrElse
-          error("Email not found: " + quote(id))
-        case e => error("Unknown email: " + quote(e.toString))
+    def to_emails(emails: Table, authors: Map[Author.ID, Author]): List[Email] =
+      emails.string.values.map {
+        case (author, id) => by_id(authors, author).emails.find(_.id == id.rep) getOrElse
+          error("Email not found: " + quote(id.rep))
       }
 
 
     /* license */
 
-    def from_licenses(licenses: List[License]): T =
-      T(licenses.map(license => license.id -> T("name" -> license.name)))
+    def from_licenses(licenses: List[License]): Table =
+      Table(licenses.map(license => license.id -> Table("name" -> String(license.name))))
 
-    def to_licenses(licenses: T): List[License] = {
-      split_as[T](licenses) map {
-        case (id, license) => License(id, get_as[String](license, "name"))
+    def to_licenses(licenses: Table): List[License] = {
+      licenses.table.values.map {
+        case (id, license) => License(id, license.string("name").rep)
       }
     }
 
     def to_license(license: String, licenses: Map[License.ID, License]): License =
-      licenses.getOrElse(license, error("No such license: " + quote(license)))
+      licenses.getOrElse(license.rep, error("No such license: " + quote(license.rep)))
 
 
     /* history */
 
-    def from_change_history(change_history: Change_History): T =
-      change_history.map { case (date, str) => date.toString -> str }
+    def from_change_history(change_history: Change_History): Table =
+      Table(change_history.map { case (date, str) => date.toString -> String(str) })
 
-    def to_change_history(change_history: T): Change_History =
-      change_history.map {
-        case (date, entry: String) => LocalDate.parse(date) -> entry
-        case e => error("Unknown history entry: " + quote(e.toString))
-      }
+    def to_change_history(change_history: Table): Change_History =
+      change_history.string.values.map {
+        case (date, entry) => LocalDate.parse(date) -> entry.rep
+      }.toMap
 
 
     /* references */
 
-    def from_related(references: List[Reference]): T = {
-      val dois = references collect { case d: DOI => d }
-      val formatted = references collect { case f: Formatted => f }
+    def from_related(references: List[Reference]): Table = {
+      val dois = references.collect { case d: DOI => d }
+      val formatted = references.collect { case f: Formatted => f }
 
-      T(
-        "dois" -> dois.map(_.identifier),
-        "pubs" -> formatted.map(_.rep))
+      Table(
+        "dois" -> Array(dois.map(_.identifier).map(String(_))),
+        "pubs" -> Array(formatted.map(_.rep).map(String(_))))
     }
 
-    def to_related(references: T): List[Reference] = {
-      val dois = optional_as[List[String]](references, "dois").getOrElse(Nil)
-      val pubs = optional_as[List[String]](references, "pubs").getOrElse(Nil)
+    def to_related(references: Table): List[Reference] = {
+      val dois = references.array.get("dois").toList.flatMap(_.string.values.map(_.rep))
+      val pubs = references.array.get("pubs").toList.flatMap(_.string.values.map(_.rep))
 
-      dois.map(DOI.apply) ++ pubs.map(Formatted.apply)
+      dois.map(DOI(_)) ++ pubs.map(Formatted(_))
     }
 
 
     /* entry */
 
-    def from_entry(entry: Entry): T = {
-      T(
-        "title" -> entry.title,
+    def from_entry(entry: Entry): Table = {
+      Table(
+        "title" -> String(entry.title),
         "authors" -> from_affiliations(entry.authors),
         "contributors" -> from_affiliations(entry.contributors),
-        "date" -> entry.date,
-        "topics" -> entry.topics.map(_.id),
-        "abstract" -> entry.`abstract`,
+        "date" -> Local_Date(entry.date),
+        "topics" -> Array(entry.topics.map(_.id).map(String(_))),
+        "abstract" -> String(entry.`abstract`),
         "notify" -> from_emails(entry.notifies),
-        "license" -> entry.license.id,
-        "note" -> entry.note,
+        "license" -> String(entry.license.id),
+        "note" -> String(entry.note),
         "history" -> from_change_history(entry.change_history),
-        "extra" -> entry.extra,
+        "extra" -> Table(entry.extra.view.mapValues(String(_)).toList),
         "related" -> from_related(entry.related)) ++
-        (if (entry.sitegen_ignore) T("sitegen_ignore" -> true) else T())
+        (if (entry.sitegen_ignore) Table("sitegen_ignore" -> Boolean(true)) else Table())
     }
 
     def to_entry(
       name: Entry.Name,
-      entry: T,
+      entry: Table,
       authors: Map[Author.ID, Author],
       topics: Map[Topic.ID, Topic],
       licenses: Map[License.ID, License],
@@ -415,19 +402,19 @@ object Metadata {
     ): Entry =
       Entry(
         name = name,
-        title = get_as[String](entry, "title"),
-        authors = to_affiliations(get_as[T](entry, "authors"), authors),
-        date = get_as[Date](entry, "date"),
-        topics = get_as[List[String]](entry, "topics").map(by_id(topics, _)),
-        `abstract` = get_as[String](entry, "abstract"),
-        notifies = to_emails(get_as[T](entry, "notify"), authors),
-        license = to_license(get_as[String](entry, "license"), licenses),
-        note = get_as[String](entry, "note"),
-        contributors = to_affiliations(get_as[T](entry, "contributors"), authors),
-        change_history = to_change_history(get_as[T](entry, "history")),
-        extra = get_as[Extra](entry, "extra"),
+        title = entry.string("title").rep,
+        authors = to_affiliations(entry.table("authors"), authors),
+        date = entry.local_date("date").rep,
+        topics = entry.array("topics").string.values.map(_.rep).map(by_id(topics, _)),
+        `abstract` = entry.string("abstract").rep,
+        notifies = to_emails(entry.table("notify"), authors),
+        license = to_license(entry.string("license"), licenses),
+        note = entry.string("note").rep,
+        contributors = to_affiliations(entry.table("contributors"), authors),
+        change_history = to_change_history(entry.table("history")),
+        extra = entry.table("extra").string.values.map((k, v) => (k, v.rep)).toMap,
         releases = releases,
-        sitegen_ignore = optional_as[Boolean](entry, "sitegen_ignore").getOrElse(false),
-        related = to_related(get_as[T](entry, "related")))
+        sitegen_ignore = entry.boolean.get("sitegen_ignore").map(_.rep).getOrElse(false),
+        related = to_related(entry.table("related")))
   }
 }
