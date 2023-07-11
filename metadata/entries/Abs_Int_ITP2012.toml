@@ -34,3 +34,5 @@ nipkow = "nipkow_email"
 [extra]
 
 [related]
+dois = ["10.1007/978-3-642-32347-8_9"]
+

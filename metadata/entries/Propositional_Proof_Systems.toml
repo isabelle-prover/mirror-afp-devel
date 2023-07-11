@@ -31,3 +31,5 @@ michaelis = "michaelis_email1"
 [extra]
 
 [related]
+dois = ["10.4230/LIPIcs.TYPES.2017.5"]
+
