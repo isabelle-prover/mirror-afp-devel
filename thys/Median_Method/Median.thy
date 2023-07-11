@@ -1,7 +1,10 @@
 section \<open>Intervals are Borel measurable\<close>
 
 theory Median
-  imports "HOL-Probability.Hoeffding" "HOL-Library.Multiset"
+  imports 
+    "HOL-Probability.Probability" 
+    "HOL-Library.Multiset" 
+    "Universal_Hash_Families.Preliminary_Results"
 begin
 
 text \<open>This section contains a proof that intervals are Borel measurable, where an interval is
@@ -41,16 +44,13 @@ next
       have "open {y<..}" by simp
       moreover have "x \<in> {y<..}" using a by simp
       moreover have "{y<..} \<subseteq> I"
-        apply (rule subsetI)
-        using a assms(1) apply (simp add: up_ray_def) 
-        by (metis less_le_not_le)
+        using a assms(1) by (auto simp: up_ray_def) 
       ultimately show ?thesis by blast
     next
       case False
       hence "I \<subseteq> {x..}" using linorder_not_less by auto
       moreover have "{x..} \<subseteq> I"
-        using c assms(1)  apply (simp add: up_ray_def) 
-        by blast
+        using c assms(1) unfolding up_ray_def by blast
       ultimately have "I = {x..}" 
         by (rule order_antisym)
       moreover have "closed {x..}" by simp
@@ -169,8 +169,7 @@ next
   moreover have "sort_map f (Suc n) = g n" 
     by (simp add:sort_map_ind g_def del:sort_map.simps)
   ultimately show ?case
-    apply (simp del:sort_map.simps)
-    using Suc by blast
+    using Suc by (simp del:sort_map.simps)
 qed
 
 lemma sort_map_mono:
@@ -312,8 +311,8 @@ lemma order_statistics_measurable:
   apply (subst sort_map_eq_sort[symmetric])
   using assms by (simp add:order_statistics_measurable_aux del:sort_map.simps)
 
-definition median where
-  "median n f =  sort (map f [0..<n]) ! (n div 2)"
+definition median :: "nat \<Rightarrow> (nat \<Rightarrow> ('a :: linorder)) \<Rightarrow> 'a" where
+  "median n f = sort (map f [0..<n]) ! (n div 2)"
 
 lemma median_measurable:
   fixes X :: "nat \<Rightarrow> 'a \<Rightarrow> ('b :: {linorder_topology, second_countable_topology})"
@@ -427,7 +426,309 @@ proof -
     by (simp add:assms)
 qed
 
+lemma prod_pmf_bernoulli_mono:
+  assumes "finite I"
+  assumes "\<And>i. i \<in> I \<Longrightarrow> 0 \<le> f i \<and> f i \<le> g i \<and> g i \<le> 1"
+  assumes "\<And>x y. x \<in> A \<Longrightarrow> (\<forall>i \<in> I. x i \<le> y i) \<Longrightarrow> y \<in> A"
+  shows "measure (Pi_pmf I d (bernoulli_pmf \<circ> f)) A \<le> measure (Pi_pmf I d (bernoulli_pmf \<circ> g)) A"
+    (is "?L \<le> ?R")
+proof -
+  define q where "q i = pmf_of_list [(0::nat, f i), (1, g i - f i), (2, 1 - g i)]" for i
+
+  have wf:"pmf_of_list_wf [(0::nat, f i), (1, g i - f i), (2, 1 - g i)]" if "i \<in> I" for i
+    using assms(2)[OF that] by (intro pmf_of_list_wfI) auto
+
+  have 0: "bernoulli_pmf (f i) = map_pmf (\<lambda>x. x = 0) (q i)" (is "?L1 = ?R1") 
+    if "i \<in> I" for i
+  proof -
+    have "0 \<le> f i" "f i \<le> 1" using assms(2)[OF that] by auto
+    hence "pmf ?L1 x = pmf ?R1 x" for x
+      unfolding q_def pmf_map measure_pmf_of_list[OF wf[OF that]] 
+      by (cases x;simp_all add:vimage_def)
+    thus ?thesis
+      by (intro pmf_eqI) auto
+  qed
+
+  have 1: "bernoulli_pmf (g i) = map_pmf (\<lambda>x. x \<in> {0,1}) (q i)" (is "?L1 = ?R1")
+    if "i \<in> I" for i
+  proof -
+    have "0 \<le> g i" "g i \<le> 1" using assms(2)[OF that] by auto
+    hence "pmf ?L1 x = pmf ?R1 x" for x
+      unfolding q_def pmf_map measure_pmf_of_list[OF wf[OF that]] 
+      by (cases x;simp_all add:vimage_def)
+    thus ?thesis
+      by (intro pmf_eqI) auto
+  qed
+
+  have 2: "(\<lambda>k. x k = 0) \<in> A \<Longrightarrow> (\<lambda>k. x k = 0 \<or> x k = Suc 0) \<in> A" for x
+    by (erule assms(3)) auto
+
+  have "?L = measure (Pi_pmf I d (\<lambda>i. map_pmf (\<lambda>x. x = 0) (q i))) A"
+    unfolding comp_def by (simp add:0 cong: Pi_pmf_cong)
+  also have "... = measure (map_pmf ((\<circ>) (\<lambda>x. x = 0)) (Pi_pmf I (if d then 0 else 2) q)) A"
+    by (intro arg_cong2[where f="measure_pmf.prob"] Pi_pmf_map[OF assms(1)]) auto 
+  also have "... = measure (Pi_pmf I (if d then 0 else 2) q) {x. (\<lambda>k. x k = 0) \<in> A}"
+    by (simp add:comp_def vimage_def)
+  also have "... \<le> measure (Pi_pmf I (if d then 0 else 2) q) {x. (\<lambda>k. x k \<in> {0,1}) \<in> A}"
+    using 2 by (intro measure_pmf.finite_measure_mono subsetI) auto 
+  also have "... = measure (map_pmf ((\<circ>) (\<lambda>x. x \<in> {0,1})) (Pi_pmf I (if d then 0 else 2) q)) A"
+    by (simp add:vimage_def comp_def)
+  also have "... = measure (Pi_pmf I d (\<lambda>i. map_pmf (\<lambda>x. x \<in> {0,1}) (q i))) A"
+    by (intro arg_cong2[where f="measure_pmf.prob"] Pi_pmf_map[OF assms(1), symmetric]) auto
+  also have "... = ?R" 
+    unfolding comp_def by (simp add:1 cong: Pi_pmf_cong)
+  finally show ?thesis by simp
+qed
+
+lemma discrete_measure_eqI:
+  assumes "sets M = count_space UNIV"
+  assumes "sets N = count_space UNIV" 
+  assumes "countable \<Omega>"
+  assumes "\<And>x. x \<in> \<Omega> \<Longrightarrow> emeasure M {x} = emeasure N {x} \<and> emeasure M {x} \<noteq> \<infinity>"
+  assumes "AE x in M. x \<in> \<Omega>"
+  assumes "AE x in N. x \<in> \<Omega>"
+  shows "M = N"
+proof -
+  define E where "E = insert {} ((\<lambda>x. {x}) ` \<Omega>)"
+
+  have 0: "Int_stable E" unfolding E_def by (intro Int_stableI) auto
+  have 1: "countable E" using assms(3) unfolding E_def by simp
+
+  have "E \<subseteq> Pow \<Omega>" unfolding E_def by auto
+  have "emeasure M A = emeasure N A" if A_range: "A \<in> E" for A
+    using that assms(4) unfolding E_def by auto
+  moreover have "sets M = sets N" using assms(1,2) by simp
+  moreover have "\<Omega> \<in> sets M" using assms(1) by simp
+  moreover have "E \<noteq> {}" unfolding E_def by simp
+  moreover have "\<Union>E = \<Omega>" unfolding E_def by simp
+  moreover have "emeasure M a \<noteq> \<infinity>" if "a \<in> E" for a
+    using that assms(4) unfolding E_def by auto
+  moreover have "sets (restrict_space M \<Omega>) = Pow \<Omega>"
+    using assms(1) by (simp add:sets_restrict_space range_inter)
+  moreover have "sets (restrict_space N \<Omega>) = Pow \<Omega>"
+    using assms(2) by (simp add:sets_restrict_space range_inter)
+  moreover have "sigma_sets \<Omega> E = Pow \<Omega>"
+    unfolding E_def by (intro sigma_sets_singletons_and_empty assms(3)) 
+  ultimately show ?thesis
+    by (intro measure_eqI_restrict_generator[OF 0 _ _ _ _ _ _ assms(5,6) 1]) auto
+qed
+
 text \<open>Main results of this section:\<close>
+
+text \<open>The next theorem establishes a bound for the probability of the median of independent random
+variables using the binomial distribution. In a follow-up step, we will establish tail bounds
+for the binomial distribution and corresponding median bounds.
+
+This two-step strategy was suggested by Yong Kiam Tan. In a previous version, I only had verified 
+the exponential tail bound (see theorem \verb+median_bound+ below).\<close>
+
+theorem (in prob_space) median_bound_raw:
+  fixes I :: "('b :: {linorder_topology, second_countable_topology}) set"
+  assumes "n > 0" "p \<ge> 0"
+  assumes "interval I"
+  assumes "indep_vars (\<lambda>_. borel) X {0..<n}"
+  assumes "\<And>i. i < n \<Longrightarrow> \<P>(\<omega> in M. X i \<omega> \<in> I) \<ge> p" 
+  shows "\<P>(\<omega> in M. median n (\<lambda>i. X i \<omega>) \<in> I) \<ge> 1 - measure (binomial_pmf n p) {..n div 2}" 
+    (is "?L \<ge> ?R")
+proof -
+  let ?pi = "Pi_pmf {..<n} undefined"
+  define q where "q i = \<P>(\<omega> in M. X i \<omega> \<in> I)" for i
+
+  have n_ge_1: "n \<ge> 1" using assms(1) by simp
+
+  have 0: "{k. k < n \<and> (k < n \<longrightarrow> X k \<omega> \<in> I)} = {k. k < n \<and> X k \<omega> \<in> I}" for \<omega>
+    by auto
+
+  have "countable ({..<n} \<rightarrow>\<^sub>E (UNIV ::  bool set))"
+    by (intro countable_PiE) auto
+  hence countable_ext: "countable (extensional {..<n} :: (nat \<Rightarrow> bool) set)"
+    unfolding PiE_def by auto
+
+  have m0: "I \<in> sets borel"
+    using interval_borel[OF assms(3)] by simp
+
+  have m1: "random_variable borel (\<lambda>x. X k x)" if "k \<in> {..<n}" for k 
+    using assms(4) that unfolding indep_vars_def by auto
+
+  have m2: "(\<lambda>x. x \<in> I) \<in> borel \<rightarrow>\<^sub>M (measure_pmf ((bernoulli_pmf \<circ> q) k))"  
+    for k using m0 by measurable
+  hence m3: "random_variable (measure_pmf ((bernoulli_pmf \<circ> q) k)) (\<lambda>x. X k x \<in> I)"
+    if "k \<in> {..<n}" for k 
+    by (intro measurable_compose[OF m1] that)
+
+  hence m4: "random_variable (PiM {..<n} (bernoulli_pmf \<circ> q)) (\<lambda>\<omega>. \<lambda>k\<in>{..<n}. X k \<omega> \<in> I)" 
+    by (intro measurable_restrict) auto
+  moreover have "A \<in> sets (Pi\<^sub>M {..<n} (\<lambda>x. measure_pmf (bernoulli_pmf (q x))))"
+    if "A \<subseteq> extensional {..<n}" for A 
+  proof -
+    have "A = (\<Union>a \<in> A. {a})" by auto
+    also have "... = (\<Union>a \<in> A. PiE {..<n} (\<lambda>k. {a k}))"
+      using that by (intro arg_cong[where f="Union"] image_cong refl PiE_singleton[symmetric]) auto
+    also have "... \<in> sets (Pi\<^sub>M {..<n} (\<lambda>x. measure_pmf (bernoulli_pmf (q x))))"
+      using that countable_ext countable_subset
+      by (intro sets.countable_Union countable_image image_subsetI sets_PiM_I_finite) auto
+    finally show ?thesis by simp
+  qed
+  hence m5: "id \<in> (PiM {..<n} (bernoulli_pmf \<circ> q)) \<rightarrow>\<^sub>M (count_space UNIV)"
+    by (intro measurableI) (simp_all add:vimage_def space_PiM PiE_def)
+  ultimately have "random_variable (count_space UNIV) (id \<circ> (\<lambda>\<omega>. \<lambda>k\<in>{..<n}. X k \<omega> \<in> I))"
+    by (rule measurable_comp)
+  hence m6: "random_variable (count_space UNIV) (\<lambda>\<omega>. \<lambda>k\<in>{..<n}. X k \<omega> \<in> I)" by simp
+
+  have indep: "indep_vars (bernoulli_pmf \<circ> q) (\<lambda>i x. X i x \<in> I) {0..<n}" 
+    by (intro indep_vars_compose2[OF assms(4)] m2)
+
+  have "measure M {x \<in> space M. (X k x \<in> I) = \<omega>} = measure (bernoulli_pmf (q k)) {\<omega>}"
+    if "k < n" for \<omega> k
+  proof (cases "\<omega>")
+    case True
+    then show ?thesis unfolding q_def  by (simp add:measure_pmf_single)
+  next
+    case False
+    have "{x \<in> space M. X k x \<in> I} \<in> events"
+      using that m0 by (intro measurable_sets_Collect[OF m1]) auto
+    hence "prob {x \<in> space M. X k x \<notin> I} = 1 - prob {\<omega> \<in> space M. X k \<omega> \<in> I}" 
+      by (subst prob_neg) auto
+    thus ?thesis using False unfolding q_def by (simp add:measure_pmf_single)
+  qed
+
+  hence 1: "emeasure M {x \<in> space M. (X k x \<in> I) = \<omega>} = emeasure (bernoulli_pmf (q k)) {\<omega>}"
+    if "k < n" for \<omega> k
+    using that unfolding emeasure_eq_measure measure_pmf.emeasure_eq_measure by simp
+
+  interpret product_sigma_finite "(bernoulli_pmf \<circ> q)"
+    by standard
+
+  have "distr M (count_space UNIV) (\<lambda>\<omega>. (\<lambda>k\<in>{..<n} . X k \<omega> \<in> I)) = distr 
+    (distr M (PiM {..<n} (bernoulli_pmf \<circ> q)) (\<lambda>\<omega>. \<lambda>k\<in>{..<n}. X k \<omega> \<in> I)) (count_space UNIV) id"
+    by (subst distr_distr[OF m5 m4]) (simp add:comp_def) 
+  also have "... = distr (PiM {..<n} (\<lambda>i. (distr M ((bernoulli_pmf \<circ> q) i) (\<lambda>\<omega>. X i \<omega> \<in> I) )))
+    (count_space UNIV) id" 
+    using assms(1) indep atLeast0LessThan by (intro arg_cong2[where f="\<lambda>x y. distr x y id"] 
+        iffD1[OF indep_vars_iff_distr_eq_PiM'] m3) auto 
+  also have "... = distr (PiM {..<n} (bernoulli_pmf \<circ> q)) (count_space UNIV) id"
+    using m3 1 by (intro distr_cong PiM_cong refl discrete_measure_eqI[where \<Omega>="UNIV"])
+        (simp_all add:emeasure_distr vimage_def Int_def conj_commute)
+  also have "... = ?pi (bernoulli_pmf \<circ> q)"
+  proof (rule discrete_measure_eqI[where \<Omega>="extensional {..<n}"], goal_cases)
+    case 1 show ?case by simp
+  next
+    case 2 show ?case by simp
+  next
+    case 3 show ?case using countable_ext by simp
+  next
+    case (4 x)
+    have "emeasure (Pi\<^sub>M {..<n} (bernoulli_pmf \<circ> q)) {x} = 
+      emeasure (Pi\<^sub>M {..<n} (bernoulli_pmf \<circ> q)) (PiE {..<n} (\<lambda>k. {x k}))"
+      using PiE_singleton[OF 4] by simp
+    also have "... = (\<Prod>i<n. emeasure (measure_pmf (bernoulli_pmf (q i))) {x i})"
+      by (subst emeasure_PiM) auto
+    also have "... = emeasure (Pi_pmf {..<n} undefined (bernoulli_pmf\<circ>q)) 
+      (PiE_dflt {..<n} undefined (\<lambda>k. {x k}))"
+      unfolding measure_pmf.emeasure_eq_measure
+      by (subst measure_Pi_pmf_PiE_dflt) (simp_all add:prod_ennreal)
+    also have "... = emeasure (Pi_pmf {..<n} undefined (bernoulli_pmf\<circ>q)) {x}"
+      using 4 by (intro arg_cong2[where f="emeasure"]) (auto simp add:PiE_dflt_def extensional_def)
+    finally have "emeasure (Pi\<^sub>M {..<n} (bernoulli_pmf \<circ> q)) {x} = 
+      emeasure (Pi_pmf {..<n} undefined (bernoulli_pmf \<circ> q)) {x}"
+      by simp
+    thus ?case using 4 
+      by (subst (1 2) emeasure_distr[OF m5]) (simp_all add:vimage_def space_PiM PiE_def)
+  next
+    case 5
+    have "AE x in Pi\<^sub>M {..<n} (bernoulli_pmf \<circ> q). x \<in> extensional {..<n}"
+      by (intro AE_I2) (simp add:space_PiM PiE_def)
+    then show ?case by (subst AE_distr_iff[OF m5]) simp_all
+  next
+    case 6
+    then show ?case by (intro AE_pmfI) (simp add: set_Pi_pmf PiE_dflt_def extensional_def)
+  qed
+  finally have 2: "distr M (count_space UNIV) (\<lambda>\<omega>. (\<lambda>k\<in>{..<n}. X k \<omega> \<in> I)) = ?pi (bernoulli_pmf\<circ>q)"
+    by simp
+
+  have 3: "n < 2 * card {k. k < n \<and> y k}" if 
+    "n < 2 * card {k. k < n \<and> x k}" "\<And>i. i < n \<Longrightarrow> x i \<Longrightarrow> y i" for x y
+  proof -
+    have "2 * card {k. k < n \<and> x k} \<le> 2 * card {k. k < n \<and> y k}"
+      using that(2) by (intro mult_left_mono card_mono) auto
+    thus ?thesis using that(1) by simp
+  qed
+
+  have 4: "0 \<le> p \<and> p \<le> q i \<and> q i \<le> 1" if "i < n" for i
+    unfolding q_def using assms(2,5) that by auto
+
+  have p_range: "p \<in> {0..1}"
+    using 4[OF assms(1)] by auto
+
+  have "?R = 1 - measure_pmf.prob (binomial_pmf n p) {k. 2 * k \<le> n}"
+    by (intro arg_cong2[where f="(-)"] arg_cong2[where f="measure_pmf.prob"]) auto
+  also have "... = measure (binomial_pmf n p) {k. n < 2 * k}"
+    by (subst measure_pmf.prob_compl[symmetric]) (simp_all add:set_diff_eq not_le)
+  also have "... = measure (?pi (bernoulli_pmf \<circ> (\<lambda>_. p))) {\<omega>. n < 2 * card {k. k < n \<and> \<omega> k}}"
+    using p_range by (subst binomial_pmf_altdef'[where A="{..<n}" and dflt="undefined"]) auto
+  also have "... \<le> measure (?pi (bernoulli_pmf \<circ> q)) {\<omega>. n < 2 * card {k. k < n \<and> \<omega> k}}"
+    using 3 4 by (intro prod_pmf_bernoulli_mono) auto
+  also have "... = 
+    \<P>(\<omega> in distr M (count_space UNIV) (\<lambda>\<omega>. \<lambda>k\<in>{..<n}. X k \<omega> \<in> I). n<2*card {k. k < n \<and> \<omega> k})"
+    unfolding 2 by simp
+  also have "... = \<P>(\<omega> in M. n < 2*card {k. k < n \<and> X k \<omega> \<in> I})" 
+    by (subst measure_distr[OF m6]) (simp_all add:vimage_def Int_def conj_commute 0)
+  also have "... \<le> ?L"
+    using median_est[OF assms(3)] m0 m1
+    by (intro finite_measure_mono measurable_sets_Collect[OF median_measurable[OF n_ge_1]]) auto 
+  finally show "?R \<le> ?L" by simp
+qed
+
+text \<open>Cumulative distribution of the binomial distribution (contributed by Yong Kiam Tan):\<close>
+
+lemma prob_binomial_pmf_upto:
+  assumes "0 \<le> p" "p \<le> 1"
+  shows "measure_pmf.prob (binomial_pmf n p) {..m} =
+    sum (\<lambda>i. real (n choose i) * p^i * (1 - p) ^(n-i)) {0..m}"
+  by (auto simp: pmf_binomial[OF assms] measure_measure_pmf_finite intro!: sum.cong)
+
+text \<open>A tail bound for the binomial distribution using Hoeffding's inequality:\<close>
+
+lemma binomial_pmf_tail:
+  assumes "p \<in> {0..1}" "real k \<le> real n * p"
+  shows "measure (binomial_pmf n p) {..k} \<le> exp (- 2 * real n * (p - real k / n)^2)" 
+    (is "?L \<le> ?R")
+proof (cases "n = 0")
+  case True then show ?thesis by simp
+next
+  case False
+  let ?A = "{..<n}"
+  let ?pi = "Pi_pmf ?A undefined (\<lambda>_. bernoulli_pmf p)"
+
+  define \<mu> where "\<mu> = (\<Sum>i<n. (\<integral>x. (of_bool (x i) :: real) \<partial> ?pi))"
+  define \<epsilon> :: real where "\<epsilon> = \<mu> - k" (* eps \<ge> 0 <-> k \<le> mu *)
+
+  have "\<mu> = (\<Sum>i<n. (\<integral>x. (of_bool x :: real) \<partial> (map_pmf (\<lambda>\<omega>. \<omega> i) ?pi)))"
+    unfolding \<mu>_def by simp
+  also have "... = (\<Sum>i<n. (\<integral>x. (of_bool x :: real) \<partial> (bernoulli_pmf p)))"
+    by (simp add: Pi_pmf_component)
+  also have "... = real n * p" using assms(1) by simp
+  finally have \<mu>_alt: "\<mu> = real n * p"
+    by simp
+
+  have \<epsilon>_ge_0: "\<epsilon> \<ge> 0"
+    using assms(2) unfolding \<epsilon>_def \<mu>_alt by auto
+
+  have indep: "prob_space.indep_vars ?pi (\<lambda>_. borel) (\<lambda>k \<omega>. of_bool (\<omega> k)) {..<n}"
+    by (intro prob_space.indep_vars_compose2[OF prob_space_measure_pmf indep_vars_Pi_pmf]) auto
+  interpret Hoeffding_ineq "?pi" "{..<n}" "\<lambda>k \<omega>. of_bool (\<omega> k)" "\<lambda>_.0" "\<lambda>_.1" \<mu>
+    using indep unfolding \<mu>_def by (unfold_locales) simp_all  
+  
+  have "?L = measure (map_pmf (\<lambda>f. card {x \<in> ?A. f x}) ?pi) {..k}"
+    by (intro arg_cong2[where f="measure_pmf.prob"] binomial_pmf_altdef' assms(1)) auto
+  also have "... = \<P>(\<omega> in ?pi. (\<Sum>i<n. of_bool (\<omega> i)) \<le> \<mu> - \<epsilon>)"
+    unfolding \<epsilon>_def by (simp add:vimage_def Int_def)
+  also have "... \<le> exp (- 2 * \<epsilon>\<^sup>2 / (\<Sum>i<n. (1 - 0)\<^sup>2))"
+    using False by (intro Hoeffding_ineq_le \<epsilon>_ge_0) auto
+  also have "... = ?R"
+    unfolding \<epsilon>_def \<mu>_alt by (simp add:power2_eq_square field_simps) 
+  finally show ?thesis by simp
+qed
 
 theorem (in prob_space) median_bound:
   fixes n :: nat
@@ -440,87 +741,37 @@ theorem (in prob_space) median_bound:
   assumes "\<And>i. i < n \<Longrightarrow> \<P>(\<omega> in M. X i \<omega> \<in> I) \<ge> 1/2+\<alpha>" 
   shows "\<P>(\<omega> in M. median n (\<lambda>i. X i \<omega>) \<in> I) \<ge> 1-\<epsilon>"
 proof -
-  define Y :: "nat \<Rightarrow> 'a \<Rightarrow> real" where "Y = (\<lambda>i. indicator I \<circ> (X i))"
-
-  define t where "t = (\<Sum>i = 0..<n. expectation (Y i)) - n/2"
   have "0 < -ln \<epsilon> / (2 * \<alpha>\<^sup>2)"  
-    apply (rule divide_pos_pos)
-     apply (simp, subst ln_less_zero_iff)
-    using assms by auto
+    using assms by (intro divide_pos_pos) auto
   also have "... \<le> real n" using assms by simp
   finally have "real n > 0" by simp
-  hence n_ge_1:"n \<ge> 1" by linarith
   hence n_ge_0:"n > 0" by simp
 
-  have ind_comp: "\<And>i. indicator I \<circ> (X i) = indicator {\<omega>. X i \<omega> \<in> I}"
-    by (rule ext, simp add:indicator_def comp_def)
+  have d0: "real_of_int \<lfloor>real n / 2\<rfloor> * 2 / real n \<le> 1"
+    using n_ge_0 by simp linarith
 
-  have "\<alpha> * n \<le> (\<Sum> i =0..<n. 1/2 + \<alpha>) - n/2"
-    by (simp add:algebra_simps)
-  also have "... \<le> (\<Sum> i = 0..<n. expectation (Y i)) - n/2"
-    apply (rule diff_right_mono, rule sum_mono)
-    using assms(6) by (simp add:Y_def ind_comp Collect_conj_eq inf_commute)
-  also have "... = t" by (simp add:t_def)
-  finally have t_ge_a: "t \<ge> \<alpha> * n" by simp
+  hence d1: "real (nat \<lfloor>real n / 2\<rfloor>) \<le> real n * (1 / 2)"
+    using n_ge_0 by (simp add:field_simps)
+  also have "... \<le> real n * (1 / 2 + \<alpha>)"
+    using assms(2) by (intro mult_left_mono) auto
+  finally have d1: "real (nat \<lfloor>real n / 2\<rfloor>) \<le> real n * (1 / 2 + \<alpha>)" by simp
 
-  have d: "0 \<le> \<alpha> * n" 
-    apply (rule mult_nonneg_nonneg)
-    using assms(2) n_ge_0 by simp+
-  also have "... \<le> t" using t_ge_a by simp
-  finally have t_ge_0: "t \<ge> 0" by simp
+  have "1/2 + \<alpha> \<le> \<P>(\<omega> in M. X 0 \<omega> \<in> I)" using n_ge_0 by (intro assms(6))
+  also have "... \<le> 1" by simp
+  finally have d2: "1 / 2 + \<alpha> \<le> 1" by simp
 
-  have  "(\<alpha> * n)\<^sup>2 \<le> t\<^sup>2" using t_ge_a d power_mono by blast
-  hence t_ge_a_sq: "\<alpha>\<^sup>2 * real n * real n \<le> t\<^sup>2"
-    by (simp add:algebra_simps power2_eq_square)
+  have d3: "nat \<lfloor>real n / 2\<rfloor> = n div 2" by linarith
 
-  have Y_indep: "indep_vars (\<lambda>_. borel) Y {0..<n}"
-    apply (subst Y_def)
-    apply (rule indep_vars_compose[where M'="(\<lambda>_. borel)", OF assms(4)])
-    using interval_borel[OF assms(1)] by simp
- 
-  hence b:"Hoeffding_ineq M {0..<n} Y (\<lambda>i. 0) (\<lambda>i. 1)" 
-    apply (simp add:Hoeffding_ineq_def indep_interval_bounded_random_variables_def)
-    by (simp add:prob_space_axioms indep_interval_bounded_random_variables_axioms_def Y_def Y_indep)
-
-  have c: "\<And>\<omega>. (\<Sum>i = 0..<n. Y i \<omega>) > n/2 \<Longrightarrow> median n (\<lambda>i. X i \<omega>) \<in> I"
-  proof -
-    fix \<omega>
-    assume "(\<Sum>i = 0..<n. Y i \<omega>) > n/2"
-    hence "n < 2 * card ({0..<n} \<inter> {i. X i \<omega> \<in> I})" 
-      by (simp add:Y_def indicator_def) 
-    also have "... = 2 * card {i. i < n \<and> X i \<omega> \<in> I}"
-      apply (simp, rule arg_cong[where f="card"])
-      by (rule order_antisym, rule subsetI, simp, rule subsetI, simp)
-    finally have "2 * card {i. i < n \<and> X i \<omega> \<in> I} > n" by simp
-    thus "median n (\<lambda>i. X i \<omega>) \<in> I"
-      using median_est[OF assms(1)] by simp
-  qed
-
-  have "1 - \<epsilon> \<le> 1- exp (- (2 * \<alpha>\<^sup>2 * real n))" 
-    apply (simp, subst ln_ge_iff[symmetric])
-    using assms(3) apply simp
-    using assms(5) apply (subst (asm) pos_divide_le_eq) 
-     apply (simp add: assms(2) power2_eq_square)
-    by (simp add: mult_of_nat_commute)
-  also have "... \<le> 1- exp (- (2 * t\<^sup>2 / real n))" 
-    apply simp
-    apply (subst pos_le_divide_eq) using n_ge_0 apply simp
-    using t_ge_a_sq by linarith
-  also have "... \<le> 1 - \<P>(\<omega> in M. (\<Sum>i = 0..<n. Y i \<omega>) \<le> n/2)" 
-    using Hoeffding_ineq.Hoeffding_ineq_le[OF b, where \<epsilon>="t", simplified] n_ge_0 t_ge_0
-    by (simp add:t_def) 
-  also have "... = \<P>(\<omega> in M. (\<Sum>i = 0..<n. Y i \<omega>) > n/2)" 
-    apply (subst prob_compl[symmetric])
-     apply measurable
-     using Y_indep apply (simp add:indep_vars_def)
-    apply (rule arg_cong2[where f="measure"], simp)
-    by (rule order_antisym, rule subsetI, simp add:not_le, rule subsetI, simp add:not_le)
+  have "1 - \<epsilon> \<le> 1 - exp (- 2 * real n * \<alpha>\<^sup>2)" 
+    using assms(2,3,5) by (intro diff_mono order.refl iffD1[OF ln_ge_iff]) (auto simp:field_simps)
+  also have "... \<le> 1 - exp (- 2 * real n * ((1/2+\<alpha>) - real (nat \<lfloor>real n/2\<rfloor>) / real n)\<^sup>2)"
+    using d0 n_ge_0 assms(2)
+    by (intro diff_mono order.refl iffD2[OF exp_le_cancel_iff] mult_left_mono_neg power_mono) auto 
+  also have "... \<le> 1 - measure (binomial_pmf n (1/2+\<alpha>)) {..nat \<lfloor>real n/2\<rfloor>}"
+    using assms(2) d1 d2 by (intro diff_mono order.refl binomial_pmf_tail) auto
+  also have "... = 1 - measure (binomial_pmf n (1/2+\<alpha>)) {..n div 2}" by (simp add:d3)
   also have "... \<le> \<P>(\<omega> in M. median n (\<lambda>i. X i \<omega>) \<in> I)"
-    apply (rule finite_measure_mono)
-     apply (rule subsetI) using c apply simp 
-    using interval_borel[OF assms(1)] apply measurable
-    apply (rule median_measurable[OF n_ge_1])
-    using assms(4) by (simp add:indep_vars_def)
+    using assms(2) by (intro median_bound_raw n_ge_0 assms(1,4,6) add_nonneg_nonneg) auto
   finally show ?thesis by simp
 qed
 
@@ -533,15 +784,13 @@ corollary (in prob_space) median_bound_1:
   assumes "n \<ge> - ln \<epsilon> / (2 * \<alpha>\<^sup>2)"
   assumes "\<forall>i \<in> {0..<n}. \<P>(\<omega> in M. X i \<omega> \<in> ({a..b} :: real set)) \<ge> 1/2+\<alpha>" 
   shows "\<P>(\<omega> in M. median n (\<lambda>i. X i \<omega>) \<in> {a..b}) \<ge> 1-\<epsilon>" 
-  apply (rule median_bound[OF _ assms(1) assms(2) assms(3) assms(4)])
-   apply (simp add:interval_def)
-  using assms(5) by auto
+  using assms(5) by (intro median_bound[OF _ assms(1,2,3,4)]) (auto simp:interval_def)
 
-text \<open>This is a specialization of the above, where $\alpha = \frac{1}{6}$ and the interval is described
-using a mid point @{term "\<mu>"} and radius @{term "\<delta>"}. The choice of $\alpha = \frac{1}{6}$ implies
-a success probability per random variable of $\frac{2}{3}$. It is a commonly chosen success
-probability for Monte-Carlo algorithms (cf. \<^cite>\<open>\<open>\textsection 4\<close> in "baryossef2002"\<close> or
-\<^cite>\<open>\<open>\textsection 1\<close> in "kane2010"\<close>).\<close>
+text \<open>This is a specialization of the above, where $\alpha = \frac{1}{6}$ and the interval is 
+described using a mid point @{term "\<mu>"} and radius @{term "\<delta>"}. The choice of 
+$\alpha = \frac{1}{6}$ implies a success probability per random variable of $\frac{2}{3}$. It is a 
+commonly chosen success probability for Monte-Carlo algorithms 
+(cf. \<^cite>\<open>\<open>\textsection 4\<close> in "baryossef2002"\<close> or \<^cite>\<open>\<open>\textsection 1\<close> in "kane2010"\<close>).\<close>
 
 corollary (in prob_space) median_bound_2:
   fixes \<mu> \<delta> :: real
@@ -589,9 +838,7 @@ text \<open>This could be added to @{theory "HOL.List"}:\<close>
 lemma map_sort:
   assumes "mono f"
   shows "sort (map f xs) = map f (sort xs)"
-  apply (rule properties_for_sort)
-   apply simp
-  by (rule sorted_mono_map, simp, simp add:assms)
+  using assms by (intro properties_for_sort sorted_mono_map) auto
 
 lemma median_cong:
   assumes "\<And>i. i < n \<Longrightarrow> f i = g i"
@@ -633,10 +880,7 @@ proof -
     by (subst sorted_sort_id[OF b], simp)
   have "median k (\<lambda>i \<in> {0..<k}. a) = median k (\<lambda>_. a)"
     by (subst median_restrict, simp)
-  also have "... = a"
-    apply (simp add:median_def a)
-    apply (subst nth_map)
-    using assms by simp+
+  also have "... = a" using assms by (simp add:median_def a)
   finally show ?thesis by simp
 qed
 

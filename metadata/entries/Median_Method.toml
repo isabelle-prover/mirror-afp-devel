@@ -33,6 +33,9 @@ homepage = "karayel_homepage"
 
 [contributors]
 
+[contributors.tan]
+homepage = "tan_homepage"
+
 [notify]
 karayel = "karayel_email"
 
