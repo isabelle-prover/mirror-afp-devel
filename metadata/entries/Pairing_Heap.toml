@@ -28,6 +28,7 @@ homepage = "nipkow_homepage"
 nipkow = "nipkow_email"
 
 [related]
+dois = ["10.1007/s10817-018-9459-3"]
 pubs = ["Pairing Heaps in <a href=\"https://functional-algorithms-verified.org\">Functional Algorithms, Verified!</a>", "<a href=\"https://en.wikipedia.org/wiki/Pairing_heap\">Wikipedia</a>"]
 
 [history]

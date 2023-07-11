@@ -36,3 +36,4 @@ nipkow = "nipkow_email"
 [extra]
 
 [related]
+dois = ["10.4230/LIPIcs.FSTTCS.2016.49"]
