@@ -24,7 +24,8 @@ homepage = "nipkow_homepage"
 nipkow = "nipkow_email"
 
 [related]
-pubs = ["Splay Trees in <a href=\"https://functional-algorithms-verified.org\">Functional Algorithms, Verified!</a>", "<a href=\"https://en.wikipedia.org/wiki/Splay_tree\">Wikipedia</a>"]
+dois = ["10.1007/s10817-018-9459-3"]
+pubs = ["Chapter <i>Splay Trees</i> in <a href=\"https://functional-algorithms-verified.org\">Functional Data Structures and Algorithms</a>", "<a href=\"https://en.wikipedia.org/wiki/Splay_tree\">Wikipedia</a>"]
 
 [history]
 2016-07-12 = "Moved splay heaps here from Amortized_Complexity"

@@ -25,7 +25,8 @@ homepage = "nipkow_homepage"
 nipkow = "nipkow_email"
 
 [related]
-pubs = ["Skew Heaps in <a href=\"https://functional-algorithms-verified.org\">Functional Algorithms, Verified!</a>", "<a href=\"https://en.wikipedia.org/wiki/Skew_heap\">Wikipedia</a>"]
+dois = ["10.1007/s10817-018-9459-3"]
+pubs = ["Chapter <i>Skew Heaps</i> in <a href=\"https://functional-algorithms-verified.org\">Functional Data Structures and Algorithms</a>", "<a href=\"https://en.wikipedia.org/wiki/Skew_heap\">Wikipedia</a>"]
 
 [history]
 
