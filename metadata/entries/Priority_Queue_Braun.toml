@@ -22,11 +22,11 @@ nipkow = "nipkow_email"
 
 [related]
 dois = ["10.1145/3372885.3373834"]
-pubs = ["<a href=\"https://www.in.tum.de/~nipkow/pubs/cpp20.html\">Open access</a>"]
+pubs = ["<a href=\"https://www.proof.cit.tum.de/~nipkow/pubs/cpp20.html\">Author's copy</a>",
+   "See also chapter in <a href=\"https://functional-algorithms-verified.org\">Functional Data Structures and Algorithms. A Proof Assistant Approach</a>"]
 
 [history]
 2019-12-16 = "Added theory Priority_Queue_Braun2 with second version of del_min"
 
 [extra]
 
-[related]
