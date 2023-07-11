@@ -29,8 +29,8 @@ homepage = "robillard_homepage"
 [notify]
 nipkow = "nipkow_email"
 
-#[related]
-#dois = ["10.46298/lmcs-18(1:36)2022"]
+[related]
+dois = ["10.46298/lmcs-18(1:36)2022"]
 
 [history]
 2021-02-08 = "added theory Approx_SC_Hoare (Set Cover) by Robin Eßmann<br>"
