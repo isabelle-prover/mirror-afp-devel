@@ -2,7 +2,7 @@ title = "Gray Codes for Arbitrary Numeral Systems"
 date = 2023-07-11
 topics = [
   "Mathematics/Combinatorics",
-  "Computer Science/Algorithms/Mathematical",
+  "Computer science/Algorithms/Mathematical",
 ]
 abstract = """
 The original Gray code after Frank Gray, also known as reflected binary code (RBC), is an ordering of the binary numeral system such that two successive values differ only in one bit. We provide a theory for a non-Boolean Gray code, which is a generalisation of the idea for an arbitrary base.

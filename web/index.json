@@ -11,10 +11,12 @@
   "shortname": "Gray_Codes",
   "title": "Gray Codes for Arbitrary Numeral Systems",
   "topic_links": [
-   "mathematics/combinatorics"
+   "mathematics/combinatorics",
+   "computer-science/algorithms/mathematical"
   ],
   "topics": [
-   "Mathematics/Combinatorics"
+   "Mathematics/Combinatorics",
+   "Computer science/Algorithms/Mathematical"
   ],
   "used_by": 0
  },
