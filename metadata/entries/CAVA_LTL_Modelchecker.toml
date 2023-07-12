@@ -46,7 +46,7 @@ lammich = "lammich_email"
 
 [related]
 dois = ["10.1007/978-3-642-39799-8_31"]
-pubs = ["<a href=\"https://www.in.tum.de/~nipkow/pubs/cav13.html\">Open access</a>", "<a href=\"https://cava.in.tum.de\">Projekt home page</a>"]
+pubs = ["<a href=\"https://www.proof.cit.tum.de/~nipkow/pubs/cav13.html\">author's copy</a>", "<a href=\"https://cava.in.tum.de\">Projekt home page</a>"]
 
 [history]
 
