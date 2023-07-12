@@ -19,7 +19,7 @@ nipkow = "nipkow_email"
 
 [related]
 dois = ["10.1007/s10817-009-9147-4"]
-pubs = ["<a href=\"https://www.in.tum.de/~nipkow/pubs/arrow.html\">Open access</a>", "<a href=\"https://en.wikipedia.org/wiki/Arrow's_impossibility_theorem\">Wikipedia</a>"]
+pubs = ["<a href=\"https://www.proof.cit.tum.de/~nipkow/pubs/arrow.html\">author's copy</a>", "<a href=\"https://en.wikipedia.org/wiki/Arrow's_impossibility_theorem\">Wikipedia</a>"]
 
 [history]
 
