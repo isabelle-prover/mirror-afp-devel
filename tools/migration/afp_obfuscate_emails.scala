@@ -4,7 +4,7 @@ package afp.migration
 import isabelle._
 
 import afp._
-import afp.TOML.Table
+import isabelle.TOML.Table
 import afp.Metadata.{Author, Email, Homepage}
 
 import java.net.URL

@@ -19,7 +19,6 @@ sources = \
   tools/hugo.scala \
   tools/metadata.scala \
   tools/rake.scala \
-  tools/toml.scala \
   tools/utils.scala \
   tools/web_app.scala
 resources = \

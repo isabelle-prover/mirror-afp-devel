@@ -178,7 +178,7 @@ object Metadata {
     elems.getOrElse(id, error("Elem " + quote(id) + " not found in " + commas_quote(elems.keys)))
 
   object TOML {
-    import afp.TOML.{Array, Boolean, Key, Local_Date, String, Table}
+    import isabelle.TOML.{Array, Boolean, Key, Local_Date, String, Table}
 
 
     /* affils */
