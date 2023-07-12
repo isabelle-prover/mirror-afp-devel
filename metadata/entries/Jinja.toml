@@ -23,7 +23,7 @@ nipkow = "nipkow_email"
 
 [related]
 dois = ["10.1145/1146809.1146811"]
-pubs = ["<a href=\"https://www.in.tum.de/~nipkow/pubs/Jinja/\">Alternate versions</a>"]
+pubs = ["<a href=\"https://www.proof.cit.tum.de/~nipkow/pubs/Jinja/\">Alternate versions</a>"]
 
 [history]
 

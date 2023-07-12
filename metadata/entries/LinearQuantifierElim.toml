@@ -19,7 +19,7 @@ nipkow = "nipkow_email"
 
 [related]
 dois = ["10.1007/s10817-010-9183-0"]
-pubs = ["<a href=\"https://www.in.tum.de/~nipkow/pubs/jar10.html\">Open access</a>"]
+pubs = ["<a href=\"https://www.proof.cit.tum.de/~nipkow/pubs/jar10.html\">author's copy</a>"]
 
 [history]
 
