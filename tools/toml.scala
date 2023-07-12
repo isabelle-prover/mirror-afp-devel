@@ -5,6 +5,9 @@ Support for TOML: https://toml.io/en/v1.0.0
 package afp
 
 
+import TOML.Parsers.Keys
+import TOML.Parse_Context.Seen
+
 import isabelle.*
 
 import java.lang.Long.parseLong
@@ -360,20 +363,95 @@ object TOML {
 
   object Parsers extends Parsers
 
-  def parse(s: Str): Table = {
+
+  /* checking and translating parse structure into toml */
+
+  private def prefixes(ks: Keys): Set[Keys] =
+    if (ks.isEmpty) Set.empty else Range.inclusive(1, ks.length).toSet.map(ks.take)
+
+  class Parse_Context private(var seen_tables: Map[Keys, Seen]) {
+    private def splits(ks: Keys): List[(Keys, Keys)] =
+      Range.inclusive(0, ks.length).toList.map(n => (ks.dropRight(n), ks.takeRight(n)))
+
+    private def recent_array(ks: Keys): (Keys, Seen, Keys) =
+      splits(ks).collectFirst {
+        case (ks1, ks2) if seen_tables.contains(ks1) => (ks1, seen_tables(ks1), ks2)
+      }.get
+
+    private def check_add(start: Int, ks: Keys, elem: Parsers.Def | Parsers.V): Unit = {
+      val (to, seen, rest, split) =
+        elem match {
+          case _: Parsers.Array_Of_Tables =>
+            val (_, seen, rest) = recent_array(ks.dropRight(1))
+            (ks, seen, rest ::: ks.takeRight(1), 0)
+          case _ =>
+            val (to, seen, rest) = recent_array(ks)
+            (to, seen, rest, start - to.length)
+        }
+      val (rest0, rest1) = rest.splitAt(split)
+      val implicitly_seen = prefixes(rest1.dropRight(1)).map(rest0 ::: _)
+
+      if (seen.inlines.exists(rest.startsWith(_))) error("Attempting to update an inline value")
+
+      val (inlines, tables) =
+        elem match {
+          case _: Parsers.Primitive =>
+            (seen.inlines, seen.tables ++ implicitly_seen)
+          case _: Parsers.Array =>
+            if (seen_tables.contains(ks)) error("Attempting to append with an inline array")
+            (seen.inlines + rest, seen.tables ++ implicitly_seen)
+          case _: Parsers.Inline_Table =>
+            if (seen.tables.exists(_.startsWith(rest)))
+              error("Attempting to add with an inline table")
+            (seen.inlines + rest, seen.tables ++ implicitly_seen)
+          case _: Parsers.Table =>
+            if (seen.tables.contains(rest)) error("Attempting to define a table twice")
+            (seen.inlines, seen.tables + rest)
+          case _: Parsers.Array_Of_Tables => (Set.empty, Set.empty)
+        }
+
+      seen_tables += to -> Seen(inlines, tables)
+    }
+    def check_add_def(ks: Keys, defn: Parsers.Def): Unit = check_add(0, ks, defn)
+    def check_add_value(ks0: Keys, ks1: Keys, v: Parsers.V): Unit =
+      check_add(ks0.length - 1, ks0 ::: ks1, v)
+  }
+
+  object Parse_Context {
+    case class Seen(inlines: Set[Keys], tables: Set[Keys])
+
+    def empty: Parse_Context = new Parse_Context(Map(Nil -> Seen(Set.empty, Set.empty)))
+  }
+
+  def parse(s: Str, context: Parse_Context = Parse_Context.empty): Table = {
     val file = Parsers.parse(s)
 
-    def convert(v: Parsers.V): T = v match {
-      case Parsers.Primitive(t) => t
-      case Parsers.Array(rep) => Array(rep.map(convert))
-      case Parsers.Inline_Table(elems) =>
-        elems.foldLeft(Table()) {
-          case (t, (ks, v)) =>
-            t ++ ks.dropRight(1).foldRight(Table(ks.last -> convert(v)))((k, v) => Table(k -> v))
-        }
+    def convert(ks0: Keys, ks1: Keys, v: Parsers.V): T = {
+      def to_table(ks: Keys, t: T): Table =
+        ks.dropRight(1).foldRight(Table(ks.last -> t))((k, v) => Table(k -> v))
+      def to_toml(v: Parsers.V): (T, Set[Keys]) = v match {
+        case Parsers.Primitive(t) => (t, Set.empty)
+        case Parsers.Array(rep) => (Array(rep.map(to_toml(_)._1)), Set.empty)
+        case Parsers.Inline_Table(elems) =>
+          elems.foreach(e => if (elems.count(_._1 == e._1) > 1)
+            error("Duplicate key in inline table"))
+
+          val (tables, pfxs, key_spaces) =
+            elems.map { (ks, v) =>
+              val (t, keys) = to_toml(v)
+              (to_table(ks, t), prefixes(ks), keys.map(ks ::: _) + ks)
+            }.unzip3
+
+          pfxs.foreach(pfx => if (key_spaces.count(pfx.intersect(_).nonEmpty) > 1)
+            error("Inline table not self-contained"))
+
+          (tables.foldLeft(Table())(_ ++ _), pfxs.toSet.flatten ++ key_spaces.toSet.flatten)
+      }
+      context.check_add_value(ks0, ks1, v)
+      to_toml(v)._1
     }
 
-    def update(map: Table, ks: Parsers.Keys, value: T): Table = {
+    def update(map: Table, ks: Keys, value: T): Table = {
       val updated =
         if (ks.length == 1) {
           map.any.get(ks.head) match {
@@ -405,15 +483,17 @@ object TOML {
       (map - ks.head) + (ks.head -> updated)
     }
 
-    def fold(elems: List[(Parsers.Keys, T)]): Table =
+    def fold(elems: List[(Keys, T)]): Table =
       elems.foldLeft(Table()) { case (t0, (ks1, t1)) => update(t0, ks1, t1) }
 
-    val t = fold(file.elems.map((ks, v) => (ks, convert(v))))
+    val t = fold(file.elems.map((ks, v) => (ks, convert(Nil, ks, v))))
     file.defs.foldLeft(t) {
-      case (t0, Parsers.Table(ks0, elems)) =>
-        update(t0, ks0, fold(elems.map((ks, v) => (ks, convert(v)))))
-      case (t0, Parsers.Array_Of_Tables(ks0, elems)) =>
-        update(t0, ks0, Array(fold(elems.map((ks, v) => (ks, convert(v))))))
+      case (t0, defn@Parsers.Table(ks0, elems)) =>
+        context.check_add_def(ks0, defn)
+        update(t0, ks0, fold(elems.map((ks, v) => (ks, convert(ks0, ks, v)))))
+      case (t0, defn@Parsers.Array_Of_Tables(ks0, elems)) =>
+        context.check_add_def(ks0, defn)
+        update(t0, ks0, Array(fold(elems.map((ks, v) => (ks, convert(ks0, ks, v))))))
     }
   }
 
