@@ -31,5 +31,3 @@ pubs = ["<a href=\"https://www.proof.cit.tum.de/~nipkow/pubs/jar18.html\">Author
 2016-07-14 = "Moved pairing heaps from here to the new Pairing_Heap"
 
 [extra]
-
-[related]

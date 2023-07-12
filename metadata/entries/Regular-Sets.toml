@@ -37,5 +37,3 @@ pubs = ["<a href=\"https://www.proof.cit.tum.de/~nipkow/pubs/jar12.html\">author
 2012-05-10 = "Tobias Nipkow added equivalence checking with partial derivatives"
 
 [extra]
-
-[related]

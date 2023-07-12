@@ -31,5 +31,3 @@ pubs = ["Chapter <i>Splay Trees</i> in <a href=\"https://functional-algorithms-v
 2016-07-12 = "Moved splay heaps here from Amortized_Complexity"
 
 [extra]
-
-[related]
