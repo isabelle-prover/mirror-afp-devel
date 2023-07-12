@@ -15,6 +15,7 @@ session Complex_Bounded_Operators(AFP) = "Complex_Bounded_Operators_Dependencies
    otherwise. (Even when forcing Isabelle to use only a single thread, probably since the futures are
    created anyway.) *)
 session Complex_Bounded_Operators_Dependencies in ".fake_session_dir" = "HOL-Analysis" +
+  options [timeout = 3600]
   sessions
     "HOL-Examples"
     "HOL-Types_To_Sets"
