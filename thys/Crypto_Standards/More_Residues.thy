@@ -64,7 +64,7 @@ lemma inv_mod_0':
   using assms inv_mod_0 mod_less by algebra
 
 lemma inv_mod_mod: "inv_mod p x = inv_mod p (x mod p)"
-  by (metis Euclidean_Division.euclidean_semiring_cancel_class.power_mod inv_mod_def)
+  by (metis Euclidean_Rings.euclidean_semiring_cancel_class.power_mod inv_mod_def)
 
 lemma inv_mod_mult: "inv_mod p (x*y) = (inv_mod p x)*(inv_mod p y) mod p"
   by (metis inv_mod_def power_mult_distrib mod_mult_eq)
@@ -193,7 +193,7 @@ lemma QuadResNot0HasRootNot0:
   assumes "QuadRes p a"  "b = some_root_nat p a"  "0 < a"  "a < p"  "1 < p"
   shows   "0 < b"
   by (smt (verit) QuadRes'HasNatRoot QuadResImplQuadRes'1 int_ops(1) neq0_conv Eps_cong 
-      Euclidean_Division.pos_mod_sign add.commute arith_special(3) assms(1,2,3,4,5) cong_def
+      Euclidean_Rings.pos_mod_sign add.commute arith_special(3) assms(1,2,3,4,5) cong_def
       mod_mod_trivial mod_pos_pos_trivial mod_self plus_1_eq_Suc power_mod power_zero_numeral)
 
 lemma QuadRes'Not0HasRootNot0: 

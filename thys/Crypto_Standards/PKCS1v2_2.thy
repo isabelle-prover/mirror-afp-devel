@@ -247,7 +247,7 @@ proof -
   have m2: "0 < ?pm1*?qm1"          using m1 by force
   have m3: "0 < l"                  using assms(3) lcm_pos_nat m2 nat_0_less_mult_iff by algebra
   let ?dint = "( (dP *?v * ?qm1 + dQ * ?u * ?pm1) div ?g) mod l" 
-  have a0: "0 \<le> ?dint"       using m3 Euclidean_Division.pos_mod_sign by simp
+  have a0: "0 \<le> ?dint"       using m3 Euclidean_Rings.pos_mod_sign by simp
   have a1: "d = nat ?dint"   by (metis assms(2,3) d_from_dP_dQ_def gcd_int_int_eq lcm_int_int_eq)
   let ?eint = "int e" 
   let ?eiml = "?eint mod l" 
@@ -384,13 +384,13 @@ proof -
           linorder_neqE_nat mod_less mod_mult_self3 nat_dvd_not_less of_nat_mod p_minus_1_gr_1)
   let ?d = "nat (x mod ?li)" 
   have 4: "?d * e mod ?l = 1" 
-    by (smt (z3) 1 2 3 Euclidean_Division.pos_mod_sign gcd_0_nat int_nat_eq mod_mult_left_eq
+    by (smt (z3) 1 2 3 Euclidean_Rings.pos_mod_sign gcd_0_nat int_nat_eq mod_mult_left_eq
           mult_cancel_right1 mult_eq_0_iff nat_int nat_one_as_int nat_times_as_int of_nat_le_0_iff
           of_nat_mod) 
   have 5: "0 < ?d" 
     by (metis 4 mod_0 mult_is_0 not_gr_zero one_neq_zero) 
   have 6: "?d < n" 
-    by (smt (verit, ccfv_threshold) 4 5 Euclidean_Division.pos_mod_bound ValidKeyDefs(1)
+    by (smt (verit, ccfv_threshold) 4 5 Euclidean_Rings.pos_mod_bound ValidKeyDefs(1)
           assms gcd_0_nat l_less_n less_imp_of_nat_less mod_by_0 mult.right_neutral nat_less_iff
           of_nat_le_0_iff split_nat)
   show ?thesis  by (metis 4 5 6 assms ValidKeyDefs(2) mult.commute)

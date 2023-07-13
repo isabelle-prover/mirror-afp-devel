@@ -137,7 +137,7 @@ next
   case False
   then have B0: "n \<le> i"       by (meson not_le)
   have B1: "s div 2^i = 0"    
-    by (smt (verit, del_insts) assms B0 Euclidean_Division.div_eq_0_iff div_mult2_eq le_iff_add 
+    by (smt (verit, del_insts) assms B0 Euclidean_Rings.div_eq_0_iff div_mult2_eq le_iff_add 
         power_add zero_less_numeral zero_less_power) 
   have B2: "even (s div 2^i)" by (simp add: B1)
   have B3: "bit s i = False"  by (simp add: B1 bit_nat_def) 

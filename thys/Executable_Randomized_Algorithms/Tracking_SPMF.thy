@@ -106,7 +106,7 @@ proof -
   have 0:"rel_pmf (\<ge>) (coin_usage_of_tspmf p) (coin_usage_of_tspmf q)"
     unfolding cp cq map_pmf_def by (intro rel_pmf_bindI[OF 0]) (auto split:option.split)
   show ?thesis
-    unfolding atMost_def by (intro measure_Ici[OF 0] transp_ge) (simp add:reflp_def)
+    unfolding atMost_def by (intro measure_Ici[OF 0] transp_on_ge) (simp add:reflp_def)
 qed
 
 lemma coin_usage_of_tspmf_mono_rev:

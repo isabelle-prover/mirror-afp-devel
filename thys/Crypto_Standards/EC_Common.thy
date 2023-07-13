@@ -1031,7 +1031,7 @@ next
       have C2: "add a p\<^sub>1 p\<^sub>2 = Point ?x3' ?y3'" 
         unfolding add_def Let_def using x_neq P1 P2 by auto
       have C3: "?l = ?l'"
-        by (smt (verit, ccfv_threshold) Euclidean_Division.pos_mod_sign R_m_def gt2 
+        by (smt (verit, ccfv_threshold) Euclidean_Rings.pos_mod_sign R_m_def gt2
         int_nat_eq int_ops(1) integral_iff inv_mod_0' m_div_def mod_in_carrier mod_mod_trivial 
         mult_cong nat_int nat_less_iff res_diff_eq residues.res_mult_eq residues_axioms zero_cong
         residues_prime.inv_mod_p_inv_in_ring residues_prime.p_prime residues_prime_axioms)

@@ -767,7 +767,7 @@ proof -
     case False
     then have "0 < ?\<alpha>" by (smt (verit, best) m_gt_one pos_mod_conj)
     then have "(nat y) = ?\<beta> \<or> (nat y) = p - ?\<beta>"
-      by (metis Euclidean_Division.pos_mod_bound QuadResHasExactlyTwoRoots2 a1 gt2 int_ops(1) 
+      by (metis Euclidean_Rings.pos_mod_bound QuadResHasExactlyTwoRoots2 a1 gt2 int_ops(1)
                 nat_int not_less of_nat_le_0_iff p_prime y2 y3) 
     then show ?thesis 
       by (smt (verit) A2 assms(2) b1 diff_is_0_eq' even_diff_nat int_nat_eq less_imp_le_nat 
@@ -3039,7 +3039,7 @@ proof -
   have 3: "d = ?d \<and> Q = ?Q \<and> M = ?M \<and> ?r \<noteq>0 \<and> d \<noteq> 0" 
     by (metis 2 ECDSA_SelfSign_Some assms) 
   have 4: "d < n"
-    by (metis 3 Euclidean_Division.pos_mod_bound N.residues_prime_axioms nat_int prime_gt_1_nat 
+    by (metis 3 Euclidean_Rings.pos_mod_bound N.residues_prime_axioms nat_int prime_gt_1_nat
               residues_prime.p_prime zless_nat_conj) 
   show ?thesis using 3 4 ECkeyPairValid_def by blast
 qed

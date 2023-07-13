@@ -894,8 +894,9 @@ instance coin_stream :: complete_space
 proof
   show "convergent X" if "Cauchy X" for X :: "nat \<Rightarrow> coin_stream"
   proof -
-    have "Cauchy (from_coins_t \<circ> X)"
-      by (intro uniformly_continuous_imp_Cauchy_continuous[OF from_coins_t_u_continuous that]) auto
+    have "Cauchy (from_coins_t \<circ> X)" 
+      using uniformly_continuous_imp_Cauchy_continuous[unfolded Cauchy_continuous_on_def]
+            from_coins_t_u_continuous that by auto
     hence "convergent (from_coins_t \<circ> X)"
       by (rule Cauchy_convergent)
     then obtain x where "(from_coins_t \<circ> X) \<longlonglongrightarrow> x"

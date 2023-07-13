@@ -1178,7 +1178,7 @@ next
        let ?ds = "replicate (?cl - ?xl) 0" 
        have "cs = ?ds @ ?xs"        using 2 F3 F4 assms(2) by force 
        then show ?thesis
-         by (metis Euclidean_Division.mod_less F1 assms(3) less_or_eq_imp_le nat_lowbnd_word_len 
+         by (metis Euclidean_Rings.mod_less F1 assms(3) less_or_eq_imp_le nat_lowbnd_word_len
               nat_to_words_to_nat not_less words_to_nat_prepend_zeros)
     qed
   qed
