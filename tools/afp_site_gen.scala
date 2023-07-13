@@ -139,11 +139,7 @@ object AFP_Site_Gen {
         opt("related", entry.related.map(from_related(_, cache))))
 
     def from_keywords(keywords: List[String]): T =
-      keywords.zipWithIndex.map {
-        case (keyword, i) => Object(
-          "id" -> i,
-          "keyword" -> keyword)
-      }
+      keywords.sorted.map(keyword => Object("keyword" -> keyword))
   }
 
 
