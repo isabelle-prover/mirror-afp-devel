@@ -1,0 +1,31 @@
+title = "Zeckendorf’s Theorem"
+date = 2023-06-12
+topics = [
+  "Mathematics/Number theory",
+]
+abstract = """
+This work formalizes Zeckendorf's theorem. The theorem states that every positive integer can be uniquely represented as a sum of one or more non-consecutive Fibonacci numbers. More precisely, if $N$ is a positive integer, there exist unique positive integers $c_i \\ge 2$ with $c_{i+1} > c_i + 1$, such that 
+\\[
+   N = \\sum_{i=0}^k F_{c_i} 
+\\]
+where $F_n$ is the $n$-th Fibonacci number."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.dalvit]
+email = "dalvit_email"
+
+[contributors]
+
+[notify]
+dalvit = "dalvit_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

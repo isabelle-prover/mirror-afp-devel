@@ -1312,6 +1312,15 @@
     </item>
     
     <item>
+      <title>Crypto_Standards</title>
+      <link>/theories/crypto_standards/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/crypto_standards/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>CryptoBasedCompositionalProperties</title>
       <link>/theories/cryptobasedcompositionalproperties/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -1407,6 +1416,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/datatype_order_generator/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>DCR-ExecutionEquivalence</title>
+      <link>/theories/dcr-executionequivalence/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/dcr-executionequivalence/</guid>
       <description></description>
     </item>
     
@@ -1857,6 +1875,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/eval_fo/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Executable_Randomized_Algorithms</title>
+      <link>/theories/executable_randomized_algorithms/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/executable_randomized_algorithms/</guid>
       <description></description>
     </item>
     
@@ -2559,6 +2586,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/graphmarkingibp/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Gray_Codes</title>
+      <link>/theories/gray_codes/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/gray_codes/</guid>
       <description></description>
     </item>
     
@@ -6942,6 +6978,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/youngs_inequality/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Zeckendorf</title>
+      <link>/theories/zeckendorf/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/zeckendorf/</guid>
       <description></description>
     </item>
     

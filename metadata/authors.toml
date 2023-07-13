@@ -1081,6 +1081,23 @@ name = "Loïc Chevalier"
 
 [chevalier.homepages]
 
+[christfort]
+name = "Axel Christfort"
+
+[christfort.emails]
+
+[christfort.emails.christfort_email]
+user = [
+  "axel",
+]
+host = [
+  "di",
+  "ku",
+  "dk",
+]
+
+[christfort.homepages]
+
 [clouston]
 name = "Ranald Clouston"
 
@@ -1239,6 +1256,16 @@ name = "Christian Dalvit"
 
 [dalvit.emails]
 
+[dalvit.emails.dalvit_email]
+user = [
+  "chris",
+  "dalvit",
+]
+host = [
+  "gmail",
+  "com",
+]
+
 [dalvit.homepages]
 
 [danilkin]
@@ -1294,6 +1321,13 @@ host = [
 ]
 
 [david.homepages]
+
+[debois]
+name = "Søren Debois"
+
+[debois.emails]
+
+[debois.homepages]
 
 [debrat]
 name = "Henri Debrat"
@@ -6005,6 +6039,23 @@ host = [
 
 [spichkova.homepages]
 
+[spitz]
+name = "Maximilian Spitz"
+
+[spitz.emails]
+
+[spitz.emails.spitz_email]
+user = [
+  "maximilian",
+  "spitz",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[spitz.homepages]
+
 [sprenger]
 name = "Christoph Sprenger"
 
@@ -7045,6 +7096,22 @@ host = [
 
 [wenzel.homepages]
 wenzel_homepage = "https://sketis.net"
+
+[whitley]
+name = "A Whitley"
+
+[whitley.emails]
+
+[whitley.emails.whitley_email]
+user = [
+  "awhitley",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[whitley.homepages]
 
 [wickerson]
 name = "John Wickerson"

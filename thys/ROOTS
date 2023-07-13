@@ -147,7 +147,9 @@ Cotangent_PFD_Formula
 Count_Complex_Roots
 CryptHOL
 CryptoBasedCompositionalProperties
+Crypto_Standards
 Cubic_Quartic_Equations
+DCR-ExecutionEquivalence
 DFS_Framework
 DOM_Components
 DPRM_Theorem
@@ -201,6 +203,7 @@ Euler_MacLaurin
 Euler_Partition
 Eval_FO
 Example-Submission
+Executable_Randomized_Algorithms
 Expander_Graphs
 Extended_Finite_State_Machine_Inference
 Extended_Finite_State_Machines
@@ -277,6 +280,7 @@ Goodstein_Lambda
 GraphMarkingIBP
 Graph_Saturation
 Graph_Theory
+Gray_Codes
 Green
 Groebner_Bases
 Groebner_Macaulay
@@ -747,6 +751,7 @@ X86_Semantics
 XML
 Youngs_Inequality
 ZFC_in_HOL
+Zeckendorf
 Zeta_3_Irrational
 Zeta_Function
 pGCL

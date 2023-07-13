@@ -1,0 +1,16 @@
+chapter AFP
+
+session "Crypto_Standards" (AFP) = "HOL-Number_Theory" +
+  description
+    "Translations of and supporting theories for a collection of crytographic standards."
+  options [timeout = 3000]
+  sessions 
+    "Elliptic_Curves_Group_Law"
+    "HOL-Library"
+    "HOL-Decision_Procs"
+  theories
+    Crypto_Standards
+    Test_Vectors
+  document_files
+    "root.tex"
+    

@@ -6,7 +6,52 @@
     <description>Recent content on Archive of Formal Proofs</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Thu, 01 Jun 2023 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 11 Jul 2023 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Gray Codes for Arbitrary Numeral Systems</title>
+      <link>/entries/Gray_Codes.html</link>
+      <pubDate>Tue, 11 Jul 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Gray_Codes.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Executable Randomized Algorithms</title>
+      <link>/entries/Executable_Randomized_Algorithms.html</link>
+      <pubDate>Mon, 19 Jun 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Executable_Randomized_Algorithms.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>DCR Syntax and Execution Equivalent Markings</title>
+      <link>/entries/DCR-ExecutionEquivalence.html</link>
+      <pubDate>Fri, 16 Jun 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/DCR-ExecutionEquivalence.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Zeckendorf’s Theorem</title>
+      <link>/entries/Zeckendorf.html</link>
+      <pubDate>Mon, 12 Jun 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Zeckendorf.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Cryptographic Standards</title>
+      <link>/entries/Crypto_Standards.html</link>
+      <pubDate>Tue, 06 Jun 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Crypto_Standards.html</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>A Verified Efficient Implementation of the Weighted Path Order</title>
       <link>/entries/Efficient_Weighted_Path_Order.html</link>
@@ -8072,6 +8117,15 @@
     </item>
     
     <item>
+      <title>Crypto_Standards</title>
+      <link>/theories/crypto_standards/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/crypto_standards/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>CryptoBasedCompositionalProperties</title>
       <link>/theories/cryptobasedcompositionalproperties/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -8167,6 +8221,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/datatype_order_generator/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>DCR-ExecutionEquivalence</title>
+      <link>/theories/dcr-executionequivalence/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/dcr-executionequivalence/</guid>
       <description></description>
     </item>
     
@@ -8617,6 +8680,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/eval_fo/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Executable_Randomized_Algorithms</title>
+      <link>/theories/executable_randomized_algorithms/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/executable_randomized_algorithms/</guid>
       <description></description>
     </item>
     
@@ -9319,6 +9391,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/graphmarkingibp/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Gray_Codes</title>
+      <link>/theories/gray_codes/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/gray_codes/</guid>
       <description></description>
     </item>
     
@@ -13702,6 +13783,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/youngs_inequality/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Zeckendorf</title>
+      <link>/theories/zeckendorf/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/zeckendorf/</guid>
       <description></description>
     </item>
     

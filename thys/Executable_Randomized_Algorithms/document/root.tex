@@ -1,0 +1,112 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage[top=1in, bottom=1in, left=0.8in, right=0.8in]{geometry}
+\usepackage{tikz}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{pdfsetup}
+\urlstyle{rm}
+\isabellestyle{it}
+\usetikzlibrary{arrows.meta}
+\begin{document}
+
+\title{Executable Randomized Algorithms}
+\author{Emin Karayel and Manuel Eberl}
+\maketitle
+
+\abstract{In Isabelle, randomized algorithms are usually represented using probability mass
+functions (PMFs), with which it is possible to verify their correctness, particularly properties
+about the distribution of their result. However, that approach does not provide a way to generate
+executable code for such algorithms. In this entry, we introduce a new monad for randomized
+algorithms, for which it is possible to generate code and simultaneously reason about the
+correctness of randomized algorithms. The latter works by a Scott-continuous monad morphism between
+the newly introduced random monad and PMFs. On the other hand, when supplied with an external source
+of random coin flips, the randomized algorithms can be executed.}
+
+\tableofcontents
+
+\section{Introduction}
+In Isabelle, randomized algorithms are usually represented using probability mass functions (PMFs).
+(These are distributions on the discrete $\sigma$-algebra, i.e., pure point measures.) That
+representation allows the verification of the correctness of randomized algorithms, for example
+the expected value of their result, moments or other probabilistic properties. However, it is not
+directly possible to execute a randomized algorithm modelled as a PMF.
+
+In this work, we introduce a representation of randomized algorithms as a parser monad over an
+external arbitrary source of random coin flips, modelled using a lazy infinite stream of booleans.
+Using for example a PRG or some other mechanism, like a hardware RNG to supply the coin flips, the
+generated code for the monad can be executed.
+
+Then we introduce a monad morphism between such algorithms and the corresponding PMF, i.e., the PMF
+representing the distribution of the randomized algorithm under the idealized assumption that the
+coin flips are independent and unbiased, such that correctness properties can still be verified.
+
+In the presence of loops and possible likelihood of non-termination, the resulting PMF maybe an
+SPMF (a finite measure space with total measure less than $1$). (Internally these are just PMFs over
+the \verb+option+ type, where \verb+None+ represents non-termination.) If a randomized algorithm
+terminates almost surely, the weight of the SPMF will be $1$.
+
+With this framework, it is also possible to reason about the number of coin-flips consumed by the
+algorithm. The latter is itself a distribution, where for example the average count of used
+coin-flips is represented as the expectation of that distribution. To facilitate the latter, we
+introduce a second monad morphism, between randomized algorithm and a resource monad on top of the
+SPMF monad. Indeed the latter describes the joint-distribution of the result of a randomized
+algorithm and the number of used coin flips. (It is easy to construct examples where the
+individual marginal distributions are not enough, for example when the number of coin-flips used in
+intermediate steps of the algorithm depend on parameters.)
+
+\begin{figure}
+\centering
+\begin{tikzpicture}[
+    monadnode/.style={rectangle, rounded corners, fill=black!10, draw=black,minimum width=4cm},
+    morph/.style={-{Latex[length=.24cm, width=.24cm,fill=white]}},
+]
+
+\node[monadnode] (ra) at (0,0) {{\isacharprime}a\ random{\isacharunderscore}alg};
+\node[monadnode] (tra) at (0,-3) {\isacharparenleft{\isacharprime}a\ \isamath{\times}\ nat\isacharparenright\ random{\isacharunderscore}alg};
+\node[monadnode] (spmf) at (10,0) {{\isacharprime}a\ spmf};
+\node[monadnode] (tspmf) at (10,-3) {{\isacharprime}a\ tspmf};
+\draw[morph] (ra) -- (spmf) node[midway,above] {spmf{\isacharunderscore}of{\isacharunderscore}ra};
+\draw[morph] (ra) -- (tra) node[midway,right] {track{\isacharunderscore}random{\isacharunderscore}bits};
+\draw[morph] (tra) -- (tspmf) node[midway,above] {spmf{\isacharunderscore}of{\isacharunderscore}ra};
+\draw[morph] (tspmf) -- (spmf) node[midway,left] {map{\isacharunderscore}spmf\ fst};
+\draw[morph] (ra) -- (tspmf) node[midway,above,sloped] {tspmf{\isacharunderscore}of{\isacharunderscore}ra};
+\end{tikzpicture}
+\caption{Scott-continuous monad morphisms verified in this work.}
+\label{fig:morphisms}
+\end{figure}
+
+Figure~\ref{fig:morphisms} summarizes the Scott-continuous monad morphisms verified in this work.
+In particular:
+
+\begin{itemize}
+\item \emph{spmf{\isacharunderscore}of{\isacharunderscore}ra}: Morphism between randomized
+algorithms and the distribution of their result. (Section~\ref{sec:randomized_algorithm})
+\item \emph{track{\isacharunderscore}coin{\isacharunderscore}usage}: Morphism between randomized algorithms and randomized algorithms
+that track their coin flip usage. The result is still executable. (Section~\ref{sec:tracking_randomized_algorithm})
+\item \emph{tspmf{\isacharunderscore}of{\isacharunderscore}ra}: Morpshism between randomized
+algorithms and the joint-distribution of their result and coin-flip usage.
+(Section~\ref{sec:tracking_spmfs})
+\end{itemize}
+
+In addition to that we also introduce the monad morphism
+{pmf{\isacharunderscore}of{\isacharunderscore}ra} which returns a PMF instead of an SPMF. It is
+defined for algorithms that terminate unconditionally or almost surely.
+
+Section~\ref{sec:basic_randomized_algorithms} contains some examples showing how to use this library,
+as well as randomized algorithms for standard probability distributions.
+
+Section~\ref{sec:dice_roll} contains an extended example with verification of correctness, as well
+as bounds on the the average coin-flip usage for a dice roll algorithm. (It is a
+specialization of an algorithm presented by Hao and Hoshi~\cite{hao1997}.)
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

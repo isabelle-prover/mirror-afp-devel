@@ -1,0 +1,20 @@
+chapter AFP
+
+session Executable_Randomized_Algorithms (AFP) = "HOL-Probability" +
+  options [timeout = 1200]
+  sessions
+    Probabilistic_While
+    Zeta_Function
+  theories
+    Tau_Additivity
+    Coin_Space
+    Randomized_Algorithm_Internal
+    Randomized_Algorithm
+    Tracking_Randomized_Algorithm
+    Tracking_SPMF
+    Dice_Roll
+    Basic_Randomized_Algorithms
+    Permuted_Congruential_Generator
+  document_files
+    "root.tex"
+    "root.bib"
