@@ -1,6 +1,6 @@
 chapter AFP
 
-session BD_Security_Compositional (AFP) = Bounded_Deducibility_Security +
+session BD_Security_Compositional = Bounded_Deducibility_Security +
   options [timeout = 600]
   sessions
     "HOL-Library"

@@ -1,6 +1,6 @@
 chapter AFP
 
-session Hahn_Jordan_Decomposition(AFP) = "HOL-Probability" +
+session Hahn_Jordan_Decomposition = "HOL-Probability" +
   options [timeout = 600]
   theories [document = false]
     Extended_Reals_Sums_Compl

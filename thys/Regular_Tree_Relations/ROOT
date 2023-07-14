@@ -1,6 +1,6 @@
 chapter AFP
 
-session Regular_Tree_Relations (AFP) = "HOL-Library" +
+session Regular_Tree_Relations = "HOL-Library" +
   options
     [timeout = 600]
   sessions

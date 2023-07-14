@@ -1,6 +1,6 @@
 chapter AFP
 
-session Relational_Forests (AFP) = Stone_Kleene_Relation_Algebras +
+session Relational_Forests = Stone_Kleene_Relation_Algebras +
 
   options [timeout = 600]
 

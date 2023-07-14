@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Three_Squares" (AFP) = "HOL-Complex_Analysis" +
+session "Three_Squares" = "HOL-Complex_Analysis" +
   description \<open>Three Squares Theorem\<close>
   options [timeout = 1200]
 

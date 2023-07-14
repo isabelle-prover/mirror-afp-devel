@@ -1,6 +1,6 @@
 chapter AFP
 
-session Lambert_W (AFP) = Bernoulli +
+session Lambert_W = Bernoulli +
   options [timeout = 1200]
   sessions
     "HOL-Library"

@@ -1,6 +1,6 @@
 chapter AFP
 
-session "LambdaAuth" (AFP) = Nominal2 +
+session "LambdaAuth" = Nominal2 +
   description \<open>Authenticated Data Structures\<close>
   options [timeout = 600]
   sessions

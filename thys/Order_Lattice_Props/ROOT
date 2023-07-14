@@ -1,6 +1,6 @@
 chapter AFP
 
-session Order_Lattice_Props (AFP) = "HOL-Library" +
+session Order_Lattice_Props = "HOL-Library" +
   options [timeout = 600]
 
   theories

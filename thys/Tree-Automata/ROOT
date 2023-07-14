@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Tree-Automata" (AFP) = Collections +
+session "Tree-Automata" = Collections +
   options [timeout = 1200]
   sessions
     Collections_Examples

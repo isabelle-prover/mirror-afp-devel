@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Abstract-Rewriting" (AFP) = "HOL-Library" +
+session "Abstract-Rewriting" = "HOL-Library" +
   options [timeout = 600]
   sessions
     "Regular-Sets"

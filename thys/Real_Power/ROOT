@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Real_Power" (AFP) = HOL +
+session "Real_Power" = HOL +
   options [timeout = 300]
   theories
     Log

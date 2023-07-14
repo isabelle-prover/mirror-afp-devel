@@ -1,6 +1,6 @@
 chapter AFP
 
-session WOOT_Strong_Eventual_Consistency (AFP) = HOL +
+session WOOT_Strong_Eventual_Consistency = HOL +
   options [timeout = 600]
   sessions
     Certification_Monads

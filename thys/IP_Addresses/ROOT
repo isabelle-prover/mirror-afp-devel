@@ -1,6 +1,6 @@
 chapter AFP
 
-session "IP_Addresses" (AFP) = Word_Lib +
+session "IP_Addresses" = Word_Lib +
   options [timeout = 2400]
   sessions
     Automatic_Refinement

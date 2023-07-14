@@ -1,6 +1,6 @@
 chapter AFP
 
-session No_FTL_observers (AFP) = HOL +
+session No_FTL_observers = HOL +
   options [timeout = 600]
   theories
     SpecRel

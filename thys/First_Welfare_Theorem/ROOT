@@ -1,7 +1,7 @@
 (* License: LGPL *)
 chapter AFP
 
-session First_Welfare_Theorem (AFP) = "HOL-Analysis" +
+session First_Welfare_Theorem = "HOL-Analysis" +
   options [timeout = 600]
   directories
     "Microeconomics"

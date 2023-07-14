@@ -1,6 +1,6 @@
 chapter AFP
 
-session Probabilistic_Timed_Automata (AFP) = "Markov_Models" +
+session Probabilistic_Timed_Automata = "Markov_Models" +
   options [timeout = 1200]
   sessions
     "Pure-ex"

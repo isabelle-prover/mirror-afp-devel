@@ -1,6 +1,6 @@
 chapter AFP
 
-session "UPF_Firewall" (AFP) = UPF +
+session "UPF_Firewall" = UPF +
   description "Formal Network Models and Their Application to Firewall Policies"
   options [timeout = 600]
   directories

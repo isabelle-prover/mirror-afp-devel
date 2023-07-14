@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Modal_Logics_for_NTS" (AFP) = Nominal2 +
+session "Modal_Logics_for_NTS" = Nominal2 +
   options [timeout = 900]
   sessions
     "HOL-Cardinals"

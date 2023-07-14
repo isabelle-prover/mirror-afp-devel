@@ -1,6 +1,6 @@
 chapter AFP
 
-session Birkhoff_Finite_Distributive_Lattices (AFP) = "HOL" +
+session Birkhoff_Finite_Distributive_Lattices = "HOL" +
   options [timeout = 300]
   sessions
     "HOL-Library"

@@ -1,6 +1,6 @@
 chapter AFP
 
-session MFODL_Monitor_Optimized (AFP) = MFOTL_Monitor +
+session MFODL_Monitor_Optimized = MFOTL_Monitor +
   options [timeout = 1200]
   sessions
     IEEE_Floating_Point

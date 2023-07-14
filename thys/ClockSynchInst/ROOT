@@ -5,7 +5,7 @@ chapter AFP
     Maintainer:  Damián Barsotti <damian@hal.famaf.unc.edu.ar>
 *)
 
-session ClockSynchInst (AFP) = HOL +
+session ClockSynchInst = HOL +
   options [timeout = 600]
   theories
     ICAInstance

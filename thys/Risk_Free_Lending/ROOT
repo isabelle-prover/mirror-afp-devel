@@ -1,6 +1,6 @@
 chapter AFP
 
-session Risk_Free_Lending (AFP) = "HOL-Cardinals" +
+session Risk_Free_Lending = "HOL-Cardinals" +
   options [timeout = 300]
   theories
     Risk_Free_Lending

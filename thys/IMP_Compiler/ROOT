@@ -1,6 +1,6 @@
 chapter AFP
 
-session IMP_Compiler (AFP) = HOL +
+session IMP_Compiler = HOL +
   options [timeout=300]
   sessions
     "HOL-IMP"

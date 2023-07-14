@@ -1,6 +1,6 @@
 chapter AFP
 
-session Boolos_Curious_Inference (AFP) = HOL +
+session Boolos_Curious_Inference = HOL +
   options [timeout = 300]
   theories
     Boo1

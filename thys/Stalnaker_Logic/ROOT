@@ -1,6 +1,6 @@
 chapter AFP
 
-session Stalnaker_Logic (AFP) = "Epistemic_Logic" +
+session Stalnaker_Logic = "Epistemic_Logic" +
   options [timeout = 300]
   theories
     Stalnaker_Logic

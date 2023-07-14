@@ -1,6 +1,6 @@
 chapter AFP
 
-session "PropResPI" (AFP)  = "HOL" +
+session "PropResPI"  = "HOL" +
   options [timeout = 300]
   theories
     Propositional_Resolution

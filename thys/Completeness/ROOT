@@ -1,6 +1,6 @@
 chapter AFP
 
-session Completeness (AFP) = HOL +
+session Completeness = HOL +
   options [timeout = 600]
   sessions
     "HOL-Library"

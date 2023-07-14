@@ -1,6 +1,6 @@
 chapter AFP
 
-session Prefix_Free_Code_Combinators (AFP) = "HOL-Library" +
+session Prefix_Free_Code_Combinators = "HOL-Library" +
   options [timeout = 300]
   theories
     Examples

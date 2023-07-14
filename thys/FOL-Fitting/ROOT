@@ -1,6 +1,6 @@
 chapter AFP
 
-session "FOL-Fitting" (AFP) = "HOL-Library" +
+session "FOL-Fitting" = "HOL-Library" +
   options [timeout = 600]
   theories
     FOL_Fitting

@@ -1,6 +1,6 @@
 chapter AFP
 
-session Polynomial_Factorization (AFP) = "HOL-Algebra" + 
+session Polynomial_Factorization = "HOL-Algebra" +
   description "Algebraic Numbers"
   options [timeout = 600]
   sessions

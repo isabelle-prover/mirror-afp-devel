@@ -1,6 +1,6 @@
 chapter AFP
 
-session Symmetric_Polynomials (AFP) = "HOL-Computational_Algebra" +
+session Symmetric_Polynomials = "HOL-Computational_Algebra" +
   options [timeout = 600]
   sessions
     "HOL-Combinatorics"

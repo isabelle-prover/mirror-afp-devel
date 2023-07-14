@@ -1,6 +1,6 @@
 chapter AFP
 
-session Frequency_Moments (AFP) = "HOL-Probability" +
+session Frequency_Moments = "HOL-Probability" +
   options [timeout = 1200]
   sessions
     Bertrands_Postulate

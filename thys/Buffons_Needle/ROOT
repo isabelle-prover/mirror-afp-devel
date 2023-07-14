@@ -1,6 +1,6 @@
 chapter AFP
 
-session Buffons_Needle (AFP) = "HOL-Probability" +
+session Buffons_Needle = "HOL-Probability" +
   options [timeout = 300]
   theories
     Buffons_Needle

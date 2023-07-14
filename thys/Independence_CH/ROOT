@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Independence_CH" (AFP) =  "Transitive_Models" +
+session "Independence_CH" =  "Transitive_Models" +
   description "
     The Independence of the Continuum Hypothesis in Isabelle/ZF
 

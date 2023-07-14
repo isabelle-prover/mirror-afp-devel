@@ -1,6 +1,6 @@
 chapter AFP
 
-session "List_Interleaving" (AFP) = HOL +
+session "List_Interleaving" = HOL +
   options [timeout = 600]
   theories
     ListInterleaving

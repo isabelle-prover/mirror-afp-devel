@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Sauer_Shelah_Lemma" (AFP) = HOL +
+session "Sauer_Shelah_Lemma" = HOL +
   options [timeout = 600]
 
   theories

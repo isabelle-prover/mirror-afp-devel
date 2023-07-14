@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Stateful_Protocol_Composition_and_Typing" (AFP) = "First_Order_Terms" +
+session "Stateful_Protocol_Composition_and_Typing" = "First_Order_Terms" +
   options [timeout = 2400]
   directories
     "examples"

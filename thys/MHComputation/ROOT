@@ -1,6 +1,6 @@
 chapter AFP
 
-session "MHComputation" (AFP) = HOL +
+session "MHComputation" = HOL +
   options [timeout = 600]
 
   theories

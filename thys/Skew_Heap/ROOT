@@ -1,6 +1,6 @@
 chapter AFP
 
-session Skew_Heap (AFP) = "HOL-Library" +
+session Skew_Heap = "HOL-Library" +
   options [timeout = 600]
   sessions
     "HOL-Data_Structures"

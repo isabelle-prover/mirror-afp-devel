@@ -1,6 +1,6 @@
 chapter AFP
 
-session Planarity_Certificates (AFP) = Simpl +
+session Planarity_Certificates = Simpl +
   options [timeout = 600]
   sessions
     "HOL-Combinatorics"

@@ -1,6 +1,6 @@
 chapter AFP
 
-session Refine_Monadic (AFP) = Automatic_Refinement +
+session Refine_Monadic = Automatic_Refinement +
   options [timeout = 1200]
   directories
     "Generic"

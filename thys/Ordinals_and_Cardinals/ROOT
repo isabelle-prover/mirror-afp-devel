@@ -1,6 +1,6 @@
 chapter AFP
 
-session Ordinals_and_Cardinals (AFP) = "HOL-Cardinals" +
+session Ordinals_and_Cardinals = "HOL-Cardinals" +
   options [timeout = 600]
   theories
     Cardinal_Order_Relation_discontinued

@@ -1,6 +1,6 @@
 chapter AFP
 
-session Modular_Assembly_Kit_Security (AFP) = HOL +
+session Modular_Assembly_Kit_Security = HOL +
   description "
     An Isabelle/HOL Formalization of the Modular Assembly Kit for Security Properties
 

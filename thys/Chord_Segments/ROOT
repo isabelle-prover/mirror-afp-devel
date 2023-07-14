@@ -1,6 +1,6 @@
 chapter AFP
 
-session Chord_Segments (AFP) = "HOL-Analysis" +
+session Chord_Segments = "HOL-Analysis" +
   options [timeout = 300]
   sessions
     Triangle

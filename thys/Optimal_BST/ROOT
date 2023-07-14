@@ -1,6 +1,6 @@
 chapter AFP
 
-session Optimal_BST (AFP) = Monad_Memo_DP +
+session Optimal_BST = Monad_Memo_DP +
   options [timeout = 600]
   sessions
     "HOL-Library"

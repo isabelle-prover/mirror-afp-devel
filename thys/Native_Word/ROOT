@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Native_Word" (AFP) = Word_Lib +
+session "Native_Word" = Word_Lib +
   options [timeout = 2400]
   sessions
     "HOL-Imperative_HOL"

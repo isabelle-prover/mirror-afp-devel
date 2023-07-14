@@ -1,6 +1,6 @@
 chapter AFP
 
-session HotelKeyCards (AFP) = HOL +
+session HotelKeyCards = HOL +
   options [timeout = 600, show_question_marks = false]
   sessions
     "HOL-Library"

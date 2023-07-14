@@ -1,6 +1,6 @@
 chapter AFP
 
-session InformationFlowSlicing (AFP) = "Slicing" +
+session InformationFlowSlicing = "Slicing" +
   options [timeout = 600]
   theories
     LiftingIntra

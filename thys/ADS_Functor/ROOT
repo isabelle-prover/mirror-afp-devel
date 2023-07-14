@@ -1,6 +1,6 @@
 chapter AFP
 
-session ADS_Functor (AFP) = "HOL-Library" +
+session ADS_Functor = "HOL-Library" +
   options [timeout = 600]
   theories
     Merkle_Interface

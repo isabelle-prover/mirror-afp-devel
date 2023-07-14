@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Myhill-Nerode" (AFP) = "HOL-Library" +
+session "Myhill-Nerode" = "HOL-Library" +
   options [timeout = 600]
   sessions
     "Abstract-Rewriting"

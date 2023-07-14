@@ -1,6 +1,6 @@
 chapter AFP
 
-session Falling_Factorial_Sum (AFP) = "HOL-Library" +
+session Falling_Factorial_Sum = "HOL-Library" +
   options [timeout = 300]
   sessions
     Discrete_Summation

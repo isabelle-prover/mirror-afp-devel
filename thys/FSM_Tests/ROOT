@@ -1,6 +1,6 @@
 chapter AFP
 
-session FSM_Tests (AFP) = "HOL-Library" + 
+session FSM_Tests = "HOL-Library" +
   options [timeout = 2400]
   sessions
     "Datatype_Order_Generator"

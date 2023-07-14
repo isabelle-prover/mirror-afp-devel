@@ -1,6 +1,6 @@
 chapter AFP
 
-session VerifyThis2019 (AFP) = Sepref_IICF +
+session VerifyThis2019 = Sepref_IICF +
   options [timeout = 600]
   directories
     "lib"

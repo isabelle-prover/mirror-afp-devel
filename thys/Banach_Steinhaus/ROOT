@@ -1,6 +1,6 @@
 chapter AFP
 
-session Banach_Steinhaus (AFP) = "HOL-Analysis" +
+session Banach_Steinhaus = "HOL-Analysis" +
   options [timeout = 300]
   sessions
     "HOL-Types_To_Sets"

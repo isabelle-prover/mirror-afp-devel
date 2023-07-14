@@ -1,6 +1,6 @@
 chapter AFP
 
-session Diophantine_Eqns_Lin_Hom (AFP) = HOL +
+session Diophantine_Eqns_Lin_Hom = HOL +
   options [timeout = 600]
   theories
     List_Vector

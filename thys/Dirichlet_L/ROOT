@@ -1,6 +1,6 @@
 chapter AFP
 
-session Dirichlet_L (AFP) = "Zeta_Function" +
+session Dirichlet_L = "Zeta_Function" +
   options [timeout = 1200]
   sessions
     "HOL-Analysis"

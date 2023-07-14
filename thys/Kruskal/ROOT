@@ -1,6 +1,6 @@
 chapter AFP
  
-session Kruskal (AFP) = Sepref_IICF +
+session Kruskal = Sepref_IICF +
   options [timeout = 600]
   sessions
     Refine_Monadic

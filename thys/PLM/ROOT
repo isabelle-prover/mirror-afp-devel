@@ -1,6 +1,6 @@
 chapter AFP
 
-session "PLM" (AFP) = "HOL" +
+session "PLM" = "HOL" +
   options [show_question_marks = false, timeout = 600, names_short = true]
   sessions
     "HOL-Eisbach"

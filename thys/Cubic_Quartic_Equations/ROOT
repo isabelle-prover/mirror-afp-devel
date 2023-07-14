@@ -1,6 +1,6 @@
 chapter AFP
 
-session Cubic_Quartic_Equations (AFP) = Algebraic_Numbers +
+session Cubic_Quartic_Equations = Algebraic_Numbers +
   options [timeout = 600]
   sessions
     Complex_Geometry

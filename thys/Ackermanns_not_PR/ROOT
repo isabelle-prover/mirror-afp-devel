@@ -1,6 +1,6 @@
 chapter AFP
 
-session Ackermanns_not_PR (AFP) = HOL +
+session Ackermanns_not_PR = HOL +
   options [timeout = 300]
   theories
     Primrec

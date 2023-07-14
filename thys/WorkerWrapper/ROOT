@@ -1,6 +1,6 @@
 chapter AFP
 
-session WorkerWrapper (AFP) = HOLCF +
+session WorkerWrapper = HOLCF +
   options [timeout = 600]
   theories [document = false]
     LList

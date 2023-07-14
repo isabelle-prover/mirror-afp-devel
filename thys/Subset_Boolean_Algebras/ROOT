@@ -1,6 +1,6 @@
 chapter AFP
 
-session Subset_Boolean_Algebras (AFP) = Stone_Algebras +
+session Subset_Boolean_Algebras = Stone_Algebras +
 
   options [timeout = 600]
 

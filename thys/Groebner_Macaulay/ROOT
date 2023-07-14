@@ -1,6 +1,6 @@
 chapter AFP
 
-session Groebner_Macaulay (AFP) = Groebner_Bases +
+session Groebner_Macaulay = Groebner_Bases +
   options [timeout = 3600]
   theories
     Groebner_Macaulay_Examples

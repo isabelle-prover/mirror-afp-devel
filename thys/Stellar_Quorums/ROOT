@@ -1,6 +1,6 @@
 chapter AFP
 
-session Stellar_Quorums (AFP) = HOL +
+session Stellar_Quorums = HOL +
   options [timeout = 600]
   theories
     Stellar_Quorums

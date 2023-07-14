@@ -1,6 +1,6 @@
 chapter AFP
 
-session Noninterference_CSP (AFP) = HOL +
+session Noninterference_CSP = HOL +
   options [timeout = 300]
   theories
     CSPNoninterference

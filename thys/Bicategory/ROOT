@@ -1,6 +1,6 @@
 chapter AFP
 
-session Bicategory (AFP slow) = MonoidalCategory +
+session Bicategory (slow) = MonoidalCategory +
   options [timeout = 10800, names_unique = false]
   theories
     BicategoryOfSpans Modification CatBicat

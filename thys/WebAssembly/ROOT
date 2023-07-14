@@ -1,6 +1,6 @@
 chapter AFP
 
-session WebAssembly (AFP) = "HOL-Library" +
+session WebAssembly = "HOL-Library" +
   options [timeout=600]
   sessions
     "Native_Word"

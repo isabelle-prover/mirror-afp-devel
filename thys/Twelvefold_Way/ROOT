@@ -1,6 +1,6 @@
 chapter AFP
 
-session Twelvefold_Way (AFP) = "HOL-Library" +
+session Twelvefold_Way = "HOL-Library" +
   options [timeout = 300]
   sessions
     "HOL-ex"

@@ -1,6 +1,6 @@
 chapter AFP
 
-session Robinson_Arithmetic (AFP) = Syntax_Independent_Logic +
+session Robinson_Arithmetic = Syntax_Independent_Logic +
   description \<open>Robinson Arithmetic\<close>
   options [timeout = 600]
   sessions

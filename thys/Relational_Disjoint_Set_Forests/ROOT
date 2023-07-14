@@ -1,6 +1,6 @@
 chapter AFP
 
-session Relational_Disjoint_Set_Forests (AFP) = Stone_Kleene_Relation_Algebras +
+session Relational_Disjoint_Set_Forests = Stone_Kleene_Relation_Algebras +
 
   options [timeout = 600]
 

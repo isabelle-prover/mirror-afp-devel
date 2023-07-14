@@ -1,6 +1,6 @@
 chapter AFP
 
-session "ResiduatedTransitionSystem" (AFP) = "HOL-Library" +
+session "ResiduatedTransitionSystem" = "HOL-Library" +
   options [timeout = 1500, names_unique = false]
   theories
     ResiduatedTransitionSystem LambdaCalculus

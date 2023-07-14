@@ -1,6 +1,6 @@
 chapter AFP
 
-session Pairing_Heap (AFP) = "HOL-Library" +
+session Pairing_Heap = "HOL-Library" +
   options [timeout = 600]
   sessions
     "HOL-Data_Structures"

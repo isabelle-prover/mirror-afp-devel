@@ -1,6 +1,6 @@
 chapter AFP
 
-session AxiomaticCategoryTheory (AFP) = HOL +
+session AxiomaticCategoryTheory = HOL +
   options [timeout=600]
   theories
     AxiomaticCategoryTheory

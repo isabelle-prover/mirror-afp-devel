@@ -1,6 +1,6 @@
 chapter AFP
 
-session Wetzels_Problem (AFP) = "HOL-Complex_Analysis" +
+session Wetzels_Problem = "HOL-Complex_Analysis" +
   options [timeout = 300]
   sessions 
   	ZFC_in_HOL

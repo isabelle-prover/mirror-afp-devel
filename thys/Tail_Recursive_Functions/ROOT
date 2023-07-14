@@ -1,6 +1,6 @@
 chapter AFP
 
-session Tail_Recursive_Functions (AFP) = "HOL-Library" +
+session Tail_Recursive_Functions = "HOL-Library" +
   options [timeout = 3600]
   theories
     Method

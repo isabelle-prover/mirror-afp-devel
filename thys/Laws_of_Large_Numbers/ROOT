@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Laws_of_Large_Numbers" (AFP) = "Ergodic_Theory" +
+session "Laws_of_Large_Numbers" = "Ergodic_Theory" +
   options [timeout = 600]
   theories
     Laws_of_Large_Numbers

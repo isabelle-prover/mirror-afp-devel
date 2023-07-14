@@ -1,6 +1,6 @@
 chapter AFP
 
-session Hidden_Markov_Models (AFP) = "Markov_Models" +
+session Hidden_Markov_Models = "Markov_Models" +
   options [timeout = 300]
   sessions
     "HOL-Library"

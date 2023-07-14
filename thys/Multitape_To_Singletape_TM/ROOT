@@ -1,6 +1,6 @@
 chapter AFP
 
-session Multitape_To_Singletape_TM (AFP) = HOL +
+session Multitape_To_Singletape_TM = HOL +
   options [timeout = 300]
   sessions
     "HOL-Library"

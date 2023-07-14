@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Buildings" (AFP) = "HOL-Library" +
+session "Buildings" = "HOL-Library" +
   options [timeout = 600]
   theories
     Prelim

@@ -1,6 +1,6 @@
 chapter AFP
 
-session Linear_Programming (AFP) = Jordan_Normal_Form +
+session Linear_Programming = Jordan_Normal_Form +
   options [timeout = 1200]
 sessions
     Farkas

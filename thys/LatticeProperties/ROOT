@@ -1,6 +1,6 @@
 chapter AFP
 
-session LatticeProperties (AFP) = HOL +
+session LatticeProperties = HOL +
   options [timeout = 600]
   theories
     Complete_Lattice_Prop

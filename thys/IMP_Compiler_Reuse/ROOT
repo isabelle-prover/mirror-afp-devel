@@ -1,6 +1,6 @@
 chapter AFP
 
-session IMP_Compiler_Reuse (AFP) = HOL +
+session IMP_Compiler_Reuse = HOL +
   options [timeout=300]
   sessions
     "HOL-IMP"

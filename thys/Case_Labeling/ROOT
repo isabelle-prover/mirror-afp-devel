@@ -1,6 +1,6 @@
 chapter AFP
 
-session Case_Labeling (AFP) = HOL +
+session Case_Labeling = HOL +
   options [timeout = 300]
   sessions
     "HOL-Eisbach"

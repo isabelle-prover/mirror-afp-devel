@@ -1,6 +1,6 @@
 chapter AFP
 
-session Interpolation_Polynomials_HOL_Algebra (AFP) = "HOL-Algebra" +
+session Interpolation_Polynomials_HOL_Algebra = "HOL-Algebra" +
   options [timeout = 300]
   theories
     Bounded_Degree_Polynomials

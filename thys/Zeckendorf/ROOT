@@ -1,5 +1,5 @@
 chapter AFP
-session Zeckendorf (AFP) = "HOL-Number_Theory" +
+session Zeckendorf = "HOL-Number_Theory" +
   options [timeout = 300]
   sessions
     "HOL-Library"

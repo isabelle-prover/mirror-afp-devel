@@ -2,7 +2,7 @@
 
 chapter AFP
 
-session Neumann_Morgenstern_Utility (AFP) = "HOL-Probability" +
+session Neumann_Morgenstern_Utility = "HOL-Probability" +
   options [timeout = 600]
   sessions
     First_Welfare_Theorem

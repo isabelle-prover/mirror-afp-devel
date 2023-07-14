@@ -1,5 +1,5 @@
 chapter AFP
-session KAT_and_DRA (AFP) = Kleene_Algebra +
+session KAT_and_DRA = Kleene_Algebra +
   options [timeout = 600]
   directories
     "SingleSorted"

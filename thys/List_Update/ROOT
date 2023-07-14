@@ -1,6 +1,6 @@
 chapter AFP
 
-session List_Update (AFP) = "HOL-Probability" +
+session List_Update = "HOL-Probability" +
   options [timeout = 600]
   sessions
     "List-Index"

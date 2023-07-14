@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Formula_Derivatives" (AFP) = "HOL-Library" +
+session "Formula_Derivatives" = "HOL-Library" +
   options [timeout = 2400]
   sessions
     "List-Index"
@@ -18,7 +18,7 @@ session "Formula_Derivatives" (AFP) = "HOL-Library" +
   document_files
     "root.tex"
 
-session "Formula_Derivatives-Examples" (AFP) in "Examples" = "Formula_Derivatives" +
+session "Formula_Derivatives-Examples" in "Examples" = "Formula_Derivatives" +
   options [timeout = 300]
   sessions
     Show

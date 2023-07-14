@@ -1,6 +1,6 @@
 chapter AFP
 
-session Menger (AFP) = HOL +
+session Menger = HOL +
   options [timeout = 600]
   theories
     Menger

@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Functional-Automata" (AFP) = "HOL-Library" +
+session "Functional-Automata" = "HOL-Library" +
   options [timeout = 600]
   sessions
     "Regular-Sets"

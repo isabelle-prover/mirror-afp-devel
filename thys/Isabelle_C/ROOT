@@ -36,7 +36,7 @@
 
 chapter AFP
 
-session Isabelle_C (AFP) = HOL +
+session Isabelle_C = HOL +
   options [timeout = 600, document_variants="document:outline=/proof"]
   sessions
     "HOL-ex"

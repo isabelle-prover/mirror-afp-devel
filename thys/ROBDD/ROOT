@@ -1,6 +1,6 @@
 chapter AFP
 
-session ROBDD (AFP) = Sepref_Prereq +
+session ROBDD = Sepref_Prereq +
   options [timeout = 600]
   sessions
     "HOL-Imperative_HOL"

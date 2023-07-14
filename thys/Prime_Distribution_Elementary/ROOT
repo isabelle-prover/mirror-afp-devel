@@ -1,6 +1,6 @@
 chapter AFP
 
-session Prime_Distribution_Elementary (AFP) = Zeta_Function +
+session Prime_Distribution_Elementary = Zeta_Function +
   options [timeout = 1800]
   sessions
     Prime_Number_Theorem

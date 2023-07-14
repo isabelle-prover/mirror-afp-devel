@@ -1,6 +1,6 @@
 chapter AFP
 
-session Adaptive_State_Counting (AFP) = "Transition_Systems_and_Automata" +
+session Adaptive_State_Counting = "Transition_Systems_and_Automata" +
   options [timeout = 1200]
   sessions
     "HOL-Hoare"

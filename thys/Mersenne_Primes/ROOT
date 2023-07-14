@@ -1,6 +1,6 @@
 chapter AFP
 
-session Mersenne_Primes (AFP) = "HOL-Algebra" +
+session Mersenne_Primes = "HOL-Algebra" +
   options [timeout = 1200]
   sessions
     "HOL-Library"

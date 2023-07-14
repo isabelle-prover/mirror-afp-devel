@@ -1,6 +1,6 @@
 chapter AFP
 
-session Knot_Theory (AFP) = "Matrix_Tensor" +
+session Knot_Theory = "Matrix_Tensor" +
   options [timeout = 600]
   theories
     Example

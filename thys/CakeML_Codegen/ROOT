@@ -1,6 +1,6 @@
 chapter AFP
 
-session CakeML_Codegen (AFP) = CakeML +
+session CakeML_Codegen = CakeML +
   options [timeout = 3600]
   sessions
     Constructor_Funs

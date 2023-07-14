@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Presburger-Automata" (AFP) = "HOL-Library" +
+session "Presburger-Automata" = "HOL-Library" +
   options [timeout = 600]
   theories [document = false]
     DFS

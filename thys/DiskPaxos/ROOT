@@ -1,6 +1,6 @@
 chapter AFP
 
-session DiskPaxos (AFP) = HOL +
+session DiskPaxos = HOL +
   options [timeout = 600]
   theories
     DiskPaxos

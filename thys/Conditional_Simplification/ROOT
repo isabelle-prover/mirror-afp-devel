@@ -1,6 +1,6 @@
 chapter AFP
 
-session Conditional_Simplification (AFP) = HOL +
+session Conditional_Simplification = HOL +
   options [timeout=600]
   sessions
     "HOL-Library"

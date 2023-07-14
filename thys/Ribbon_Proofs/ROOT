@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Ribbon_Proofs" (AFP) = "HOL-Library" +
+session "Ribbon_Proofs" = "HOL-Library" +
   options [timeout = 600]
   theories
     More_Finite_Map

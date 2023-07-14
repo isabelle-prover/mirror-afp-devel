@@ -1,6 +1,6 @@
 chapter AFP
 
-session Slicing (AFP) = Jinja +
+session Slicing = Jinja +
   options [timeout = 3600]
   directories
     "Basic"

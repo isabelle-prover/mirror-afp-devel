@@ -1,6 +1,6 @@
 chapter AFP
 
-session "SC_DOM_Components" (AFP) = "Shadow_SC_DOM" +
+session "SC_DOM_Components" = "Shadow_SC_DOM" +
   options [timeout = 2400]
   theories
     Core_DOM_DOM_Components

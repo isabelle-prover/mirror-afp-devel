@@ -1,6 +1,6 @@
 chapter AFP
 
-session LightweightJava (AFP) = "HOL-Library" +
+session LightweightJava = "HOL-Library" +
   options [timeout = 600]
   theories
     Lightweight_Java_Proof

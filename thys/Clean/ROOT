@@ -41,7 +41,7 @@
 
 chapter AFP
 
-session Clean (AFP) = HOL +
+session Clean = HOL +
   options [timeout=300]
   sessions
     "HOL-Eisbach"

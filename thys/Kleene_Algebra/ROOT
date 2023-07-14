@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Kleene_Algebra" (AFP) = HOL +
+session "Kleene_Algebra" = HOL +
   options [timeout = 600]
   sessions
     "HOL-Library"

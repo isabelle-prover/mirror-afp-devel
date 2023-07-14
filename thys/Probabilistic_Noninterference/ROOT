@@ -1,6 +1,6 @@
 chapter AFP
 
-session Probabilistic_Noninterference (AFP) = "HOL-Probability" +
+session Probabilistic_Noninterference = "HOL-Probability" +
   options [timeout = 600]
   sessions
     Coinductive

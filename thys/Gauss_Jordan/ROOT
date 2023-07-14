@@ -1,6 +1,6 @@
 chapter AFP
 
-session Gauss_Jordan (AFP) = "HOL-Analysis" +
+session Gauss_Jordan = "HOL-Analysis" +
   options [timeout = 600]
   sessions
     Rank_Nullity_Theorem

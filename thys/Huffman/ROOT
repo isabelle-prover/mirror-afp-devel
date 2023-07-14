@@ -1,6 +1,6 @@
 chapter AFP
 
-session Huffman (AFP) = HOL +
+session Huffman = HOL +
   options [timeout = 600]
   theories 
     Huffman

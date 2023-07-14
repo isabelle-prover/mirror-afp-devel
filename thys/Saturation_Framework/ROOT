@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Saturation_Framework" (AFP) = Ordered_Resolution_Prover +
+session "Saturation_Framework" = Ordered_Resolution_Prover +
   options [timeout=300]
   sessions
     Lambda_Free_RPOs

@@ -1,6 +1,6 @@
 chapter AFP
 
-session Knuth_Bendix_Order (AFP) = First_Order_Terms +
+session Knuth_Bendix_Order = First_Order_Terms +
   options [timeout = 600]
   sessions
     Matrix

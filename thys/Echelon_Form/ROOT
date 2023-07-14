@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Echelon_Form" (AFP)= "HOL-Analysis" +
+session "Echelon_Form" = "HOL-Analysis" +
   options [timeout = 2400]
   sessions
     Cayley_Hamilton

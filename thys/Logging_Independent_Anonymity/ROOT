@@ -1,6 +1,6 @@
 chapter AFP
 
-session Logging_Independent_Anonymity (AFP) = HOL +
+session Logging_Independent_Anonymity = HOL +
   options [timeout = 600]
   theories
     Definitions

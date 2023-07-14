@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Rank_Nullity_Theorem" (AFP) = "HOL-Analysis" +
+session "Rank_Nullity_Theorem" = "HOL-Analysis" +
   options [timeout = 600]
   theories
     Dim_Formula

@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Orbit_Stabiliser" (AFP) = "HOL-Algebra" +
+session "Orbit_Stabiliser" = "HOL-Algebra" +
   options [timeout = 600]
   theories
     Tetrahedron

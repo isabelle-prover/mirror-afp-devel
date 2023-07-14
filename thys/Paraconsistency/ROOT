@@ -1,6 +1,6 @@
 chapter AFP
 
-session Paraconsistency (AFP) = HOL +
+session Paraconsistency = HOL +
   options [timeout = 600]
   theories
     Paraconsistency

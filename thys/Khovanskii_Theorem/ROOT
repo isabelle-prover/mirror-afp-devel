@@ -1,6 +1,6 @@
 chapter AFP
 
-session Khovanskii_Theorem (AFP) = "HOL-Analysis" +
+session Khovanskii_Theorem = "HOL-Analysis" +
   options [timeout = 600]
   sessions
     Jacobson_Basic_Algebra

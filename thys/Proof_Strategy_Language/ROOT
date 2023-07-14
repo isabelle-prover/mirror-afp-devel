@@ -1,6 +1,6 @@
 chapter AFP
 
-session Proof_Strategy_Language (AFP) = HOL +
+session Proof_Strategy_Language = HOL +
   options [timeout = 6000]
   sessions
     "HOL-Eisbach"

@@ -1,6 +1,6 @@
 chapter AFP
 
-session Separation_Logic_Unbounded (AFP) = HOL + 
+session Separation_Logic_Unbounded = HOL +
   options [timeout=300]
   theories
     AutomaticVerifiers

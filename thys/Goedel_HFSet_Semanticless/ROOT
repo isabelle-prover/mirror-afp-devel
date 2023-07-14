@@ -1,6 +1,6 @@
 chapter AFP
 
-session Goedel_HFSet_Semanticless (AFP) = Goedel_Incompleteness +
+session Goedel_HFSet_Semanticless = Goedel_Incompleteness +
   description \<open>Upgrade of Paulson's Formalization of Second Incompleteness Theorem\<close>
   options [timeout = 2400]
   sessions

@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Tarskis_Geometry" (AFP) = "HOL-Analysis" +
+session "Tarskis_Geometry" = "HOL-Analysis" +
   options [timeout = 600]
   sessions
     "HOL-Algebra"

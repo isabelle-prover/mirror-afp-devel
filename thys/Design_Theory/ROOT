@@ -1,6 +1,6 @@
 chapter AFP
 
-session Design_Theory (AFP) = "HOL-Library"  +
+session Design_Theory = "HOL-Library"  +
   options [timeout = 600]
   sessions
     Card_Partitions

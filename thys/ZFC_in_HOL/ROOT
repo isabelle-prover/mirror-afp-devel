@@ -1,6 +1,6 @@
 chapter AFP
 
-session ZFC_in_HOL (AFP) = HOL +
+session ZFC_in_HOL = HOL +
   options [timeout = 600]
   sessions
     "HOL-Library"

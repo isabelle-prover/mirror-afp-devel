@@ -1,6 +1,6 @@
 chapter AFP
 
-session FunWithTilings (AFP) = HOL +
+session FunWithTilings = HOL +
   options [timeout = 600]
   theories
     Tilings

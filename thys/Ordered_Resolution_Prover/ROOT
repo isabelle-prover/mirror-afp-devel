@@ -1,6 +1,6 @@
 chapter AFP
 
-session Ordered_Resolution_Prover (AFP) = "HOL-Library" +
+session Ordered_Resolution_Prover = "HOL-Library" +
   options [timeout = 600]
   sessions
     Coinductive

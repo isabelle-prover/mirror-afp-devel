@@ -1,6 +1,6 @@
 chapter AFP
 
-session PseudoHoops (AFP) = HOL +
+session PseudoHoops = HOL +
   options [timeout = 600]
   sessions
     LatticeProperties

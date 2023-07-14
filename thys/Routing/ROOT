@@ -1,6 +1,6 @@
 chapter AFP
 
-session Routing (AFP) = Simple_Firewall +
+session Routing = Simple_Firewall +
   options [timeout = 300]
   sessions
     "Pure-ex"

@@ -1,6 +1,6 @@
 chapter AFP
 
-session Impossible_Geometry (AFP) = HOL +
+session Impossible_Geometry = HOL +
   options [timeout = 600]
   theories
     Impossible_Geometry

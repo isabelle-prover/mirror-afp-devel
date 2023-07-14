@@ -1,6 +1,6 @@
 chapter AFP
 
-session Equivalence_Relation_Enumeration (AFP) = "HOL-Library" +
+session Equivalence_Relation_Enumeration = "HOL-Library" +
   options [timeout = 600]
   sessions
     Card_Equiv_Relations

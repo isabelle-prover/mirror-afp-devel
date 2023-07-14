@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Transitive_Models" (AFP) =  "Delta_System_Lemma" +
+session "Transitive_Models" =  "Delta_System_Lemma" +
   description "
     Transitive Models of Fragments of ZFC
 

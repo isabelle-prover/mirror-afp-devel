@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Nano_JSON" (AFP) = HOL +
+session "Nano_JSON" = HOL +
   description "Nano JSON"
   options [timeout = 600]
   theories

@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Regular-Sets" (AFP) = "HOL-Library" +
+session "Regular-Sets" = "HOL-Library" +
   options [timeout = 600]
   theories
     Regexp_Method

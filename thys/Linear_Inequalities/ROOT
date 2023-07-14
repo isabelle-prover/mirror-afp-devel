@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Linear_Inequalities" (AFP) = "LLL_Basis_Reduction" +
+session "Linear_Inequalities" = "LLL_Basis_Reduction" +
   options [timeout = 600]
   theories
     Missing_Matrix

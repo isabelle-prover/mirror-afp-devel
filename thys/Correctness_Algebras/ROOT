@@ -1,6 +1,6 @@
 chapter AFP
 
-session Correctness_Algebras (AFP) = HOL +
+session Correctness_Algebras = HOL +
 
   options [timeout = 3600]
 

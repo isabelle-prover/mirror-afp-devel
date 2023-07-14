@@ -1,5 +1,5 @@
 chapter AFP
-session "Finitely_Generated_Abelian_Groups" (AFP) = "HOL-Algebra" +
+session "Finitely_Generated_Abelian_Groups" = "HOL-Algebra" +
   options [timeout = 600]
   theories
     Finitely_Generated_Abelian_Groups

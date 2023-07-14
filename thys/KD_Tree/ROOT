@@ -1,6 +1,6 @@
 chapter AFP
 
-session "KD_Tree" (AFP) = "HOL-Analysis" +
+session "KD_Tree" = "HOL-Analysis" +
   options [timeout = 600]
   sessions
     Median_Of_Medians_Selection

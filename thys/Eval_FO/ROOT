@@ -1,6 +1,6 @@
 chapter AFP
 
-session Eval_FO (AFP) = Containers +
+session Eval_FO = Containers +
   options [timeout=600]
   theories
     Ailamazyan_Code

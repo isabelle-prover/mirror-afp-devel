@@ -1,6 +1,6 @@
 chapter AFP
 
-session Markov_Models (AFP) = "HOL-Probability" +
+session Markov_Models = "HOL-Probability" +
   options [timeout = 600]
   sessions
     Coinductive

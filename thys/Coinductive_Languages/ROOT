@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Coinductive_Languages" (AFP) = HOL +
+session "Coinductive_Languages" = HOL +
   options [timeout = 300]
   sessions
     "HOL-Library"

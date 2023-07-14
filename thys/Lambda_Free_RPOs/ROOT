@@ -1,6 +1,6 @@
 chapter AFP
 
-session Lambda_Free_RPOs (AFP) = "HOL-Library" +
+session Lambda_Free_RPOs = "HOL-Library" +
   options [timeout = 600]
   sessions
     "HOL-Cardinals"

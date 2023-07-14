@@ -1,6 +1,6 @@
 chapter AFP
 
-session Algebraic_VCs (AFP) = KAT_and_DRA +
+session Algebraic_VCs = KAT_and_DRA +
   options [timeout = 1200]
   sessions
     "HOL-Eisbach"

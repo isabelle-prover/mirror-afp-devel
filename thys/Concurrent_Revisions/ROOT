@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Concurrent_Revisions" (AFP) = HOL +
+session "Concurrent_Revisions" = HOL +
   options [timeout = 600]
   theories
     Data

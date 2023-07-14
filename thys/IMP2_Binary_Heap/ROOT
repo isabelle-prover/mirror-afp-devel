@@ -1,6 +1,6 @@
 chapter AFP
 
-session "IMP2_Binary_Heap" (AFP) = IMP2 + 
+session "IMP2_Binary_Heap" = IMP2 +
   options [timeout=300]
   theories
     IMP2_Binary_Heap

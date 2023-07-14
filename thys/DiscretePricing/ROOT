@@ -1,6 +1,6 @@
 chapter AFP
 
-session "DiscretePricing" (AFP) = "HOL-Probability" +
+session "DiscretePricing" = "HOL-Probability" +
   options [timeout = 600]
 
   theories

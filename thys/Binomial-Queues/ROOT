@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Binomial-Queues" (AFP) = HOL +
+session "Binomial-Queues" = HOL +
   options [timeout = 600]
   theories
     PQ_Implementation

@@ -1,6 +1,6 @@
 chapter AFP
 
-session Fishers_Inequality (AFP) = "Berlekamp_Zassenhaus" + 
+session Fishers_Inequality = "Berlekamp_Zassenhaus" +
   options [timeout = 600]
   sessions
     Design_Theory

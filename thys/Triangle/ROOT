@@ -1,6 +1,6 @@
 chapter AFP
 
-session Triangle (AFP) = "HOL-Analysis" +
+session Triangle = "HOL-Analysis" +
   options [timeout = 600]
   theories
     Triangle

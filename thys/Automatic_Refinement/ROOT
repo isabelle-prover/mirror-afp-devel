@@ -1,6 +1,6 @@
 chapter AFP
 
-session Automatic_Refinement (AFP) = HOL +
+session Automatic_Refinement = HOL +
   options [timeout = 300]
   sessions
     "HOL-Library"

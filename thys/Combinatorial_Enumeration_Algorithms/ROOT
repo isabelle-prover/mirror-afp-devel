@@ -1,6 +1,6 @@
 chapter AFP
 
-session Combinatorial_Enumeration_Algorithms (AFP) = "HOL-Library" +
+session Combinatorial_Enumeration_Algorithms = "HOL-Library" +
   options [timeout = 600]
   sessions
 	"HOL-Combinatorics"

@@ -1,6 +1,6 @@
 chapter AFP
 
-session Jinja (AFP) = "HOL-Library" +
+session Jinja = "HOL-Library" +
   options [timeout = 1200]
   sessions
     "List-Index"

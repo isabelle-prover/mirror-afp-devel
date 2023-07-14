@@ -1,6 +1,6 @@
 chapter AFP
 
-session Dedekind_Real (AFP) = HOL +
+session Dedekind_Real = HOL +
   options [timeout = 300]
   theories
     Dedekind_Real

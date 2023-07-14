@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Sort_Encodings" (AFP) = "HOL-Cardinals" +
+session "Sort_Encodings" = "HOL-Cardinals" +
   options [timeout = 3600]
   sessions
     "HOL-Library"

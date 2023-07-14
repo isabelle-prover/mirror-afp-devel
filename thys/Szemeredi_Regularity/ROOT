@@ -1,6 +1,6 @@
 chapter AFP
 
-session Szemeredi_Regularity (AFP) = "HOL-Library" +
+session Szemeredi_Regularity = "HOL-Library" +
   options [timeout = 600]
   sessions
     "Girth_Chromatic"

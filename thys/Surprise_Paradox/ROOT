@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Surprise_Paradox" (AFP) = Incompleteness +
+session "Surprise_Paradox" = Incompleteness +
   options [timeout = 300]
   theories
     Surprise_Paradox

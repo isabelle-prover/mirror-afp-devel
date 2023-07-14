@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Lam-ml-Normalization" (AFP) = "HOL-Nominal" +
+session "Lam-ml-Normalization" = "HOL-Nominal" +
   options [timeout = 600]
   theories
     Lam_ml

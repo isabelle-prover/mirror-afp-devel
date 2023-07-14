@@ -1,6 +1,6 @@
 chapter AFP
 
-session FinFun (AFP) = HOL +
+session FinFun = HOL +
   options [timeout = 600]
   sessions
     "HOL-Library"

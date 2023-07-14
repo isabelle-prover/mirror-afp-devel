@@ -1,6 +1,6 @@
 chapter AFP
 
-session EdmondsKarp_Maxflow (AFP) = "Flow_Networks" +
+session EdmondsKarp_Maxflow = "Flow_Networks" +
   options [timeout = 600]
   theories
     FordFulkerson_Algo

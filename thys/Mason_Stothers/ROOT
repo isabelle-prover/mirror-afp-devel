@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Mason_Stothers" (AFP) = "HOL-Computational_Algebra" +
+session "Mason_Stothers" = "HOL-Computational_Algebra" +
   options [timeout = 300]
   theories
     Mason_Stothers

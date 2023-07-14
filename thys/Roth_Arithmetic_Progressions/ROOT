@@ -1,6 +1,6 @@
 chapter AFP
 
-session Roth_Arithmetic_Progressions (AFP) = "HOL-Probability" +
+session Roth_Arithmetic_Progressions = "HOL-Probability" +
   options [timeout = 600]
   sessions
     Girth_Chromatic Szemeredi_Regularity Random_Graph_Subgraph_Threshold Ergodic_Theory

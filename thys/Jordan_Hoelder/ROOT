@@ -1,6 +1,6 @@
 chapter AFP
 
-session Jordan_Hoelder (AFP) = "HOL-Algebra" +
+session Jordan_Hoelder = "HOL-Algebra" +
   options [timeout = 600]
   sessions
     Secondary_Sylow

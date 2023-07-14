@@ -1,6 +1,6 @@
 chapter AFP
 
-session Edwards_Elliptic_Curves_Group (AFP) = HOL +
+session Edwards_Elliptic_Curves_Group = HOL +
   options [timeout = 600]
   sessions
     "HOL-Library"

@@ -1,6 +1,6 @@
 chapter AFP
 
-session RSAPSS (AFP) = "HOL-Number_Theory" +
+session RSAPSS = "HOL-Number_Theory" +
   options [timeout = 600]
   theories [document = false]
     Word  (* local, not HOL-Library! *)

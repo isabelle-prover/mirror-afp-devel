@@ -1,6 +1,6 @@
 chapter AFP
 
-session Lowe_Ontological_Argument (AFP) = HOL +
+session Lowe_Ontological_Argument = HOL +
   options [timeout = 300]
   theories [document = false]
     Relations

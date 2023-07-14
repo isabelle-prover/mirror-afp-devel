@@ -1,5 +1,5 @@
 chapter AFP
-session VeriComp (AFP) = HOL +
+session VeriComp = HOL +
   options [timeout = 600]
   theories
     Compiler

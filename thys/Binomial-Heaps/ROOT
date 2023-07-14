@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Binomial-Heaps" (AFP) = "HOL-Library" +
+session "Binomial-Heaps" = "HOL-Library" +
   options [timeout = 600]
   theories
     BinomialHeap

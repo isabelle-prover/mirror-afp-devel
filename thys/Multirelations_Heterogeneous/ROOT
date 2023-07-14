@@ -1,6 +1,6 @@
 chapter AFP
 
-session Multirelations_Heterogeneous (AFP) = HOL +
+session Multirelations_Heterogeneous = HOL +
 
   options [timeout = 600]
 

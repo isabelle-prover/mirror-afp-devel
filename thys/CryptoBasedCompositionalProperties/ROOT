@@ -1,6 +1,6 @@
 chapter AFP
 
-session CryptoBasedCompositionalProperties (AFP) = "HOL" +
+session CryptoBasedCompositionalProperties = "HOL" +
   options [timeout = 600]
   theories [document = false]
     ListExtras

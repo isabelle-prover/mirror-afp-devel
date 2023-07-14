@@ -1,6 +1,6 @@
 chapter AFP
 
-session Probabilistic_While (AFP) = "HOL-Probability" +
+session Probabilistic_While = "HOL-Probability" +
   options [timeout = 600]
   sessions
     MFMC_Countable

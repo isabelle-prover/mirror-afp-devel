@@ -1,6 +1,6 @@
 chapter AFP
 
-session Bell_Numbers_Spivey (AFP) = "HOL-Library" +
+session Bell_Numbers_Spivey = "HOL-Library" +
   options [timeout = 600]
   sessions
     Card_Partitions

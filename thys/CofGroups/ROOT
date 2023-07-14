@@ -1,6 +1,6 @@
 chapter AFP
 
-session CofGroups (AFP) = HOL +
+session CofGroups = HOL +
   options [timeout = 600]
   sessions
     "HOL-Library"

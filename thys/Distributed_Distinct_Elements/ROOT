@@ -1,6 +1,6 @@
 chapter AFP
 
-session Distributed_Distinct_Elements (AFP) = "Expander_Graphs" +
+session Distributed_Distinct_Elements = "Expander_Graphs" +
   options [timeout = 1200]
   sessions
     Discrete_Summation

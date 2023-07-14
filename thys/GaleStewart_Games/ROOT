@@ -1,6 +1,6 @@
 chapter AFP
 
-session "GaleStewart_Games" (AFP) = Parity_Game +
+session "GaleStewart_Games" = Parity_Game +
   options [timeout = 300]
   theories [document = false]
     MoreCoinductiveList2

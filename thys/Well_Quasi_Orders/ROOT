@@ -1,6 +1,6 @@
 chapter AFP
 
-session Well_Quasi_Orders (AFP) = "HOL-Library" +
+session Well_Quasi_Orders = "HOL-Library" +
   options [timeout = 600]
   sessions
     "Abstract-Rewriting"

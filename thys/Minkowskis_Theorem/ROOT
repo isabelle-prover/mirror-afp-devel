@@ -1,6 +1,6 @@
 chapter AFP
 
-session Minkowskis_Theorem (AFP) = "HOL-Analysis" +
+session Minkowskis_Theorem = "HOL-Analysis" +
   options [timeout = 600]
   theories
     Minkowskis_Theorem

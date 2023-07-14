@@ -1,6 +1,6 @@
 chapter AFP
 
-session Buchi_Complementation (AFP) = "Transition_Systems_and_Automata" +
+session Buchi_Complementation = "Transition_Systems_and_Automata" +
   options [timeout = 1200]
   theories
     "Complementation"

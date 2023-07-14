@@ -1,6 +1,6 @@
 chapter AFP
 
-session Containers (AFP) = "Deriving" +
+session Containers = "Deriving" +
   options [timeout = 600]
   sessions
     "Finger-Trees"
@@ -28,7 +28,7 @@ session Containers (AFP) = "Deriving" +
     "root.tex"
     "root.bib"
 
-session "Containers-Benchmarks" (AFP) in "ITP-2013" = Containers +
+session "Containers-Benchmarks" in "ITP-2013" = Containers +
   options [timeout = 1200]
   sessions
     Trie

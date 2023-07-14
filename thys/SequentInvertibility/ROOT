@@ -1,6 +1,6 @@
 chapter AFP
 
-session SequentInvertibility (AFP) = "HOL-Nominal" +
+session SequentInvertibility = "HOL-Nominal" +
   options [timeout = 600]
   theories
     SequentInvertibility

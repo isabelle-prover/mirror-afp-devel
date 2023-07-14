@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Rensets" (AFP) = HOL +
+session "Rensets" = HOL +
 options [timeout = 600]
 
 theories

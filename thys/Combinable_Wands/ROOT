@@ -1,6 +1,6 @@
 chapter AFP
 
-session Combinable_Wands (AFP) = Package_logic +
+session Combinable_Wands = Package_logic +
   options [timeout = 300]
   theories
     PosRat

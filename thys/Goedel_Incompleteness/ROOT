@@ -1,6 +1,6 @@
 chapter AFP
 
-session Goedel_Incompleteness (AFP) = Syntax_Independent_Logic +
+session Goedel_Incompleteness = Syntax_Independent_Logic +
   description \<open>The Abstract Incompleteness Theorems\<close>
   options [timeout = 600]
   theories

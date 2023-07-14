@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Szpilrajn" (AFP) = HOL +
+session "Szpilrajn" = HOL +
 
   options [timeout = 600]
 

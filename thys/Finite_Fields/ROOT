@@ -1,6 +1,6 @@
 chapter AFP
 
-session Finite_Fields (AFP) = "HOL-Algebra" +
+session Finite_Fields = "HOL-Algebra" +
   options [timeout = 600]
   sessions
     Dirichlet_Series

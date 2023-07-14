@@ -1,6 +1,6 @@
 chapter AFP
 
-session Card_Partitions (AFP) = HOL +
+session Card_Partitions = HOL +
   options [timeout = 600]
   sessions
     "HOL-Combinatorics"

@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Max-Card-Matching" (AFP) = HOL +
+session "Max-Card-Matching" = HOL +
   options [timeout = 600]
   theories
     Matching

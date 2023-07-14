@@ -1,6 +1,6 @@
 chapter AFP
 
-session Priority_Search_Trees (AFP) = HOL +
+session Priority_Search_Trees = HOL +
   options [timeout = 300]
   sessions
     "HOL-Data_Structures"

@@ -1,6 +1,6 @@
 chapter AFP
 
-session Balog_Szemeredi_Gowers (AFP) = "HOL-Probability" +
+session Balog_Szemeredi_Gowers = "HOL-Probability" +
   options [timeout = 900]
   sessions
     Pluennecke_Ruzsa_Inequality Random_Graph_Subgraph_Threshold

@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Flyspeck-Tame" (AFP) = HOL +
+session "Flyspeck-Tame" = HOL +
   options [timeout = 1200]
   sessions
     "HOL-Library"
@@ -11,7 +11,7 @@ session "Flyspeck-Tame" (AFP) = HOL +
     "root.bib"
     "root.tex"
 
-session "Flyspeck-Tame-Computation" (AFP slow very_slow) in "Computation" = "Flyspeck-Tame" +
+session "Flyspeck-Tame-Computation" (slow very_slow) in "Computation" = "Flyspeck-Tame" +
   options [timeout = 50400]
   theories
     Completeness

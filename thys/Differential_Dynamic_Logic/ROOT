@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Differential_Dynamic_Logic" (AFP) = "Ordinary_Differential_Equations" +
+session "Differential_Dynamic_Logic" = "Ordinary_Differential_Equations" +
   options [timeout = 1200]
   theories 
     Axioms

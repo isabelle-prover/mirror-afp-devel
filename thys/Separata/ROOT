@@ -1,6 +1,6 @@
 chapter AFP
 
-session Separata (AFP) = "HOL-Library" +
+session Separata = "HOL-Library" +
   options [timeout = 600]
   sessions
     "HOL-Eisbach"

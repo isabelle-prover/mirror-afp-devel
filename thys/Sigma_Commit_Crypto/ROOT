@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Sigma_Commit_Crypto" (AFP) = CryptHOL +
+session "Sigma_Commit_Crypto" = CryptHOL +
   options [timeout = 600]
   sessions
     "HOL-Number_Theory"

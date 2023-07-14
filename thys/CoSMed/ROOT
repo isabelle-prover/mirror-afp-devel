@@ -1,6 +1,6 @@
 chapter AFP
 
-session CoSMed (AFP) = Bounded_Deducibility_Security +
+session CoSMed = Bounded_Deducibility_Security +
   options [timeout = 1200]
   sessions
     Fresh_Identifiers

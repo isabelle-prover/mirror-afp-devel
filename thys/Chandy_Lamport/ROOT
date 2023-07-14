@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Chandy_Lamport" (AFP) =
+session "Chandy_Lamport" =
   "Ordered_Resolution_Prover" +
   options [timeout = 600]
   theories

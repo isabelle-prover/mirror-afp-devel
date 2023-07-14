@@ -1,6 +1,6 @@
 chapter AFP
 
-session "POPLmark-deBruijn" (AFP) = "HOL-Library" +
+session "POPLmark-deBruijn" = "HOL-Library" +
   options [timeout = 600]
   theories
     POPLmark

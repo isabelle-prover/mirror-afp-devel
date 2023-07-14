@@ -1,6 +1,6 @@
 chapter AFP
 
-session "IMAP-CRDT" (AFP) = "CRDT" +
+session "IMAP-CRDT" = "CRDT" +
   options [timeout = 300]
   theories
     "IMAP-proof"

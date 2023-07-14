@@ -1,6 +1,6 @@
 chapter AFP
 
-session PAPP_Impossibility (AFP) = "HOL-Library" +
+session PAPP_Impossibility = "HOL-Library" +
   options [timeout = 900]
   sessions
     Randomised_Social_Choice

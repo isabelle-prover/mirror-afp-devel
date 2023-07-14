@@ -1,6 +1,6 @@
 chapter AFP
 
-session Suppes_Theorem (AFP) = "HOL" +
+session Suppes_Theorem = "HOL" +
   options [timeout = 600]
   sessions
     "HOL-Combinatorics"

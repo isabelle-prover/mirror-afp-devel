@@ -1,6 +1,6 @@
 chapter AFP
 
-session LP_Duality (AFP) = Linear_Inequalities +
+session LP_Duality = Linear_Inequalities +
   options [timeout = 600]
   theories
     LP_Duality

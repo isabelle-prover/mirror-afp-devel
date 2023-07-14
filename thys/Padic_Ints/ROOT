@@ -1,6 +1,6 @@
 chapter AFP
 
-session Padic_Ints (AFP) = "HOL-Algebra" +
+session Padic_Ints = "HOL-Algebra" +
   options [timeout = 1200] 
  sessions 
     "HOL-Number_Theory"

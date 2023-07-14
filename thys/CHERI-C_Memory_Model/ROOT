@@ -1,6 +1,6 @@
 chapter AFP
 
-session "CHERI-C_Memory_Model" (AFP) = Containers +
+session "CHERI-C_Memory_Model" = Containers +
   options [timeout=1500]
   sessions
     "HOL-Library"

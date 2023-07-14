@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Octonions" (AFP) = "HOL-Analysis" +
+session "Octonions" = "HOL-Analysis" +
   options [timeout = 600]
   theories
     Octonions

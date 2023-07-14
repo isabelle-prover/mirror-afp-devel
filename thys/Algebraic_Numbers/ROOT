@@ -1,6 +1,6 @@
 chapter AFP
 
-session Algebraic_Numbers (AFP) = Berlekamp_Zassenhaus +
+session Algebraic_Numbers = Berlekamp_Zassenhaus +
   description "Algebraic Numbers"
   options [timeout = 3600]
   sessions

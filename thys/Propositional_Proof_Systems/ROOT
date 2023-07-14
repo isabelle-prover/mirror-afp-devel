@@ -1,6 +1,6 @@
 chapter AFP
 
-session Propositional_Proof_Systems (AFP) = HOL +
+session Propositional_Proof_Systems = HOL +
   options [timeout = 600]
   sessions
     "HOL-Library"

@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Recursion-Theory-I" (AFP) = HOL +
+session "Recursion-Theory-I" = HOL +
   options [timeout = 600]
   theories
     RecEnSet

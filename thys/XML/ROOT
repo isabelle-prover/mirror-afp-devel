@@ -1,6 +1,6 @@
 chapter AFP
 
-session XML (AFP) = "HOL-Library" +
+session XML = "HOL-Library" +
   options [timeout = 600]
   sessions
     Certification_Monads

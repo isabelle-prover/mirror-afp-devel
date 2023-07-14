@@ -1,6 +1,6 @@
 chapter AFP
 
-session "DynamicArchitectures" (AFP) = Coinductive +
+session "DynamicArchitectures" = Coinductive +
   options [timeout = 600]
   theories
     Dynamic_Architecture_Calculus

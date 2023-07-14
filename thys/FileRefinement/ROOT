@@ -1,6 +1,6 @@
 chapter AFP
 
-session FileRefinement (AFP) = HOL +
+session FileRefinement = HOL +
   options [timeout = 600]
   theories
     FileRefinement

@@ -1,6 +1,6 @@
 chapter AFP
 
-session Projective_Measurements (AFP) = "HOL-Probability" +
+session Projective_Measurements = "HOL-Probability" +
   options [timeout = 1800]
   sessions
     Isabelle_Marries_Dirac

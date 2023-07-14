@@ -1,6 +1,6 @@
 chapter AFP
 
-session JiveDataStoreModel (AFP) = HOL +
+session JiveDataStoreModel = HOL +
   options [timeout = 600]
   directories
     "Isa_Counter"

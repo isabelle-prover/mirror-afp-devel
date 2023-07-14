@@ -1,6 +1,6 @@
 chapter AFP
 
-session Euler_Partition (AFP) = HOL +
+session Euler_Partition = HOL +
   options [timeout = 600]
   sessions
     "HOL-Library"

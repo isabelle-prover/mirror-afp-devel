@@ -1,6 +1,6 @@
 chapter AFP
 
-session Dict_Construction (AFP) = HOL +
+session Dict_Construction = HOL +
   options [timeout = 300]
   sessions
     "HOL-Library"

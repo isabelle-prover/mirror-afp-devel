@@ -1,6 +1,6 @@
 chapter AFP
 
-session Executable_Randomized_Algorithms (AFP) = "HOL-Probability" +
+session Executable_Randomized_Algorithms = "HOL-Probability" +
   options [timeout = 1200]
   sessions
     Probabilistic_While

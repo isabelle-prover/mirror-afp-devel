@@ -1,6 +1,6 @@
 chapter AFP
 
-session Tree_Enumeration (AFP) = HOL +
+session Tree_Enumeration = HOL +
   options [timeout = 600]
   sessions
     "Undirected_Graph_Theory"

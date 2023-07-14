@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Stream-Fusion" (AFP) = HOLCF +
+session "Stream-Fusion" = HOLCF +
   options [timeout = 600]
   sessions
     "HOLCF-Library"

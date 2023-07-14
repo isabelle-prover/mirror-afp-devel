@@ -1,6 +1,6 @@
 chapter AFP
 
-session Amicable_Numbers (AFP) = "HOL-Number_Theory" +
+session Amicable_Numbers = "HOL-Number_Theory" +
   options [timeout = 600]
   sessions
     "HOL-Computational_Algebra"

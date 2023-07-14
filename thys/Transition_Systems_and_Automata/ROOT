@@ -1,6 +1,6 @@
 chapter AFP
 
-session Transition_Systems_and_Automata (AFP) = "Collections" +
+session Transition_Systems_and_Automata = "Collections" +
   options [timeout = 2400]
   sessions
     "DFS_Framework"

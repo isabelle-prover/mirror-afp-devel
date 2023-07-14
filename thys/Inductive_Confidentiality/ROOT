@@ -1,6 +1,6 @@
 chapter AFP
 
-session Inductive_Confidentiality (AFP) = HOL +
+session Inductive_Confidentiality = HOL +
   options [timeout = 600]
   directories
     "DolevYao"

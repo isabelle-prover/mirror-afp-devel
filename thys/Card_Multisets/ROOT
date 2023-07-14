@@ -1,6 +1,6 @@
 chapter AFP
 
-session Card_Multisets (AFP) = HOL +
+session Card_Multisets = HOL +
   options [timeout = 300]
   sessions
     "HOL-Library"

@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Jordan_Normal_Form" (AFP) = "HOL-Algebra" +
+session "Jordan_Normal_Form" = "HOL-Algebra" +
   options [timeout = 1200]
   sessions
     "HOL-Combinatorics"

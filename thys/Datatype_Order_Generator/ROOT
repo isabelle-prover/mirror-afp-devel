@@ -1,6 +1,6 @@
 chapter AFP
 
-session Datatype_Order_Generator (AFP) = "HOL-Library" +
+session Datatype_Order_Generator = "HOL-Library" +
   options [timeout = 600]
   sessions
     Deriving

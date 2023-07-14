@@ -1,6 +1,6 @@
 chapter AFP
 
-session Vickrey_Clarke_Groves (AFP) = "HOL-Library" +
+session Vickrey_Clarke_Groves = "HOL-Library" +
   options [timeout = 600]
   theories
     CombinatorialAuctionCodeExtraction

@@ -1,6 +1,6 @@
 chapter AFP
 
-session Word_Lib (AFP) = HOL +
+session Word_Lib = HOL +
   options [timeout = 300]
   sessions
     "HOL-Library"

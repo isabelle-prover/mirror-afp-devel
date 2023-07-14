@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Types_Tableaus_and_Goedels_God" (AFP) = "HOL" +
+session "Types_Tableaus_and_Goedels_God" = "HOL" +
   options [timeout = 300]
   theories [document = false]
     Relations

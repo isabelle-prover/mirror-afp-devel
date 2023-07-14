@@ -1,6 +1,6 @@
 chapter AFP
 
-session Budan_Fourier (AFP) = "HOL-Computational_Algebra" +
+session Budan_Fourier = "HOL-Computational_Algebra" +
   options [timeout = 600]
   sessions
     Sturm_Tarski

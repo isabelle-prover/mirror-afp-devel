@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Multirelations" (AFP) = "Kleene_Algebra" +
+session "Multirelations" = "Kleene_Algebra" +
   options [timeout = 1200]
   theories
     C_Algebras

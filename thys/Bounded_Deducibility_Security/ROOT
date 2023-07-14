@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Bounded_Deducibility_Security" (AFP) = HOL +
+session "Bounded_Deducibility_Security" = HOL +
   options [timeout = 600]
   sessions
     "HOL-Library"

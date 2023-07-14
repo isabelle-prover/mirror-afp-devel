@@ -1,6 +1,6 @@
 chapter AFP
 
-session HoareForDivergence (AFP) = HOL +
+session HoareForDivergence = HOL +
   options [timeout = 600]
 
 sessions

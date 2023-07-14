@@ -1,6 +1,6 @@
 chapter AFP
 
-session AnselmGod (AFP) = HOL +
+session AnselmGod = HOL +
   options [timeout = 300]
   theories
     AnselmGod

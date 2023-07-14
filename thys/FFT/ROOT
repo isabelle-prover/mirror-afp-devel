@@ -1,6 +1,6 @@
 chapter AFP
 
-session FFT (AFP) = HOL +
+session FFT = HOL +
   options [timeout = 600]
   theories
     FFT

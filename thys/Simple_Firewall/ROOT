@@ -1,6 +1,6 @@
 chapter AFP
 
-session Simple_Firewall (AFP) = IP_Addresses +
+session Simple_Firewall = IP_Addresses +
   options [timeout = 600]
   directories
     "Common"

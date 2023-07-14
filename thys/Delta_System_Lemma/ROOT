@@ -1,6 +1,6 @@
 chapter AFP
 
-session Delta_System_Lemma (AFP) =  "ZF-Constructible" +
+session Delta_System_Lemma =  "ZF-Constructible" +
   description "
     Cofinality and Delta System Lemma
 

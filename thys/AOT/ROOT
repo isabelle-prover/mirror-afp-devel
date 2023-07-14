@@ -1,6 +1,6 @@
 chapter AFP
 
-session "AOT" (AFP) = "HOL-Cardinals" +
+session "AOT" = "HOL-Cardinals" +
   options [show_question_marks = false, timeout = 600, names_short = true]
   sessions
     "HOL-Cardinals"

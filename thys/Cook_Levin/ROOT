@@ -1,6 +1,6 @@
 chapter AFP
 
-session Cook_Levin (AFP) = "HOL-Analysis" +
+session Cook_Levin = "HOL-Analysis" +
   options [timeout = 4800]
   sessions
     "HOL-Eisbach"

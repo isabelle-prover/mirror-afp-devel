@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Probabilistic_System_Zoo" (AFP) = "HOL-Probability" +
+session "Probabilistic_System_Zoo" = "HOL-Probability" +
   options [timeout = 600, document_variants = "document:outline=/proof,/ML:bnfs:non_bnfs"]
   sessions
     "HOL-Eisbach"

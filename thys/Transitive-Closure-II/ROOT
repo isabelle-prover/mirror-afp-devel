@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Transitive-Closure-II" (AFP) = HOL +
+session "Transitive-Closure-II" = HOL +
   options [timeout = 600]
   sessions
     "HOL-Library"

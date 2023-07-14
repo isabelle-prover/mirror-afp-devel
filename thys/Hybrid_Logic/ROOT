@@ -1,6 +1,6 @@
 chapter AFP
 
-session Hybrid_Logic (AFP) = HOL +
+session Hybrid_Logic = HOL +
   options [timeout = 600]
   sessions
     "HOL-Library"

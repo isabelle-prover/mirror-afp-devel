@@ -1,6 +1,6 @@
 chapter AFP
 
-session Verified_SAT_Based_AI_Planning (AFP) = HOL +
+session Verified_SAT_Based_AI_Planning = HOL +
   description "Verified SAT-Based AI Planning"
   options [timeout = 600]
   sessions

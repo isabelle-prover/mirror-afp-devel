@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Ergodic_Theory" (AFP) = "HOL-Probability" +
+session "Ergodic_Theory" = "HOL-Probability" +
   options [timeout = 900]
   theories
     SG_Library_Complement

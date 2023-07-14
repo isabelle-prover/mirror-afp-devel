@@ -1,6 +1,6 @@
 chapter AFP
 
-session Interpreter_Optimizations (AFP) = "HOL-Library" +
+session Interpreter_Optimizations = "HOL-Library" +
   options [timeout = 600]
   sessions
     VeriComp

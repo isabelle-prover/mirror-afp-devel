@@ -1,6 +1,6 @@
 chapter AFP
 
-session Pop_Refinement (AFP) = HOL +
+session Pop_Refinement = HOL +
   options [timeout = 600]
   theories
     Definition

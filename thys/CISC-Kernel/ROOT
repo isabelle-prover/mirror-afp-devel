@@ -1,6 +1,6 @@
 chapter AFP
 
-session "CISC-Kernel" (AFP) = HOL +
+session "CISC-Kernel" = HOL +
   options [timeout=600]
   directories
     "step"

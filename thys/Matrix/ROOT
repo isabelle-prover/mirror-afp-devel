@@ -1,6 +1,6 @@
 chapter AFP
 
-session Matrix (AFP) = "Abstract-Rewriting" +
+session Matrix = "Abstract-Rewriting" +
   options [timeout = 600]
   sessions
     "HOL-Algebra"

@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Isabelle_Marries_Dirac" (AFP) = "Jordan_Normal_Form" +
+session "Isabelle_Marries_Dirac" = "Jordan_Normal_Form" +
   options [timeout=600]
   sessions
     Matrix_Tensor

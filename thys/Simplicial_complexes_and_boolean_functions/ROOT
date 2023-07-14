@@ -1,5 +1,5 @@
 chapter AFP
-session "Simplicial_complexes_and_boolean_functions" (AFP) = Sepref_Prereq +
+session "Simplicial_complexes_and_boolean_functions" = Sepref_Prereq +
   options [timeout = 600]
   sessions
     Jordan_Normal_Form

@@ -1,6 +1,6 @@
 chapter AFP
 
-session Universal_Hash_Families (AFP) = "HOL-Probability" +
+session Universal_Hash_Families = "HOL-Probability" +
   options [timeout = 600]
   sessions
     "HOL-Algebra"

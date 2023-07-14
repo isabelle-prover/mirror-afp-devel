@@ -1,6 +1,6 @@
 chapter AFP
 
-session Stuttering_Equivalence (AFP) = LTL +
+session Stuttering_Equivalence = LTL +
   options [timeout = 600]
   theories
     Samplers

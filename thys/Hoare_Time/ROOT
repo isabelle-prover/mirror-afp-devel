@@ -1,6 +1,6 @@
 chapter AFP
 
-session Hoare_Time (AFP) = "HOL" +
+session Hoare_Time = "HOL" +
   options [timeout = 900]
   sessions
     "Separation_Algebra"

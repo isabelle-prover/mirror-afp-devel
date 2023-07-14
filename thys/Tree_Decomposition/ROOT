@@ -1,6 +1,6 @@
 chapter AFP
 
-session Tree_Decomposition (AFP) = HOL +
+session Tree_Decomposition = HOL +
   options [timeout = 600]
   theories
     TreeDecomposition

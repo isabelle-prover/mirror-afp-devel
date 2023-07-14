@@ -1,6 +1,6 @@
 chapter AFP
 
-session Tycon (AFP) = HOLCF +
+session Tycon = HOLCF +
   options [timeout = 600]
   theories
     Lazy_List_Monad

@@ -1,6 +1,6 @@
 chapter AFP
 
-session BenOr_Kozen_Reif (AFP) = Algebraic_Numbers +
+session BenOr_Kozen_Reif = Algebraic_Numbers +
   options [timeout = 600]
   sessions
     Sturm_Tarski

@@ -1,6 +1,6 @@
 chapter AFP
 
-session Implicational_Logic (AFP) = HOL +
+session Implicational_Logic = HOL +
   options [timeout = 3600]
   theories
     Implicational_Logic

@@ -1,6 +1,6 @@
 chapter AFP
 
-session Constructive_Cryptography_CM (AFP) = Constructive_Cryptography +
+session Constructive_Cryptography_CM = Constructive_Cryptography +
   options [timeout = 1500]
   sessions
     "Game_Based_Crypto"

@@ -1,6 +1,6 @@
 chapter AFP
 
-session CYK (AFP) = HOL +
+session CYK = HOL +
   options [timeout = 300]
   theories
     CYK

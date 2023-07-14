@@ -1,6 +1,6 @@
 chapter AFP
 
-session Nested_Multisets_Ordinals (AFP) = Ordinal +
+session Nested_Multisets_Ordinals = Ordinal +
   options [timeout = 600]
   sessions
     "HOL-Library"

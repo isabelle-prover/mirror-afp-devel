@@ -1,6 +1,6 @@
 chapter AFP
 
-session Architectural_Design_Patterns (AFP) = DynamicArchitectures +
+session Architectural_Design_Patterns = DynamicArchitectures +
   options [timeout = 600]
   theories
     Blackboard

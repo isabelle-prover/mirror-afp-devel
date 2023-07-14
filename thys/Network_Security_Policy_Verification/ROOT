@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Network_Security_Policy_Verification" (AFP) = HOL +
+session "Network_Security_Policy_Verification" = HOL +
   options [timeout = 3600]
   sessions
     "HOL-Library"

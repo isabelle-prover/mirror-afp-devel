@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Safe_Distance" (AFP) = "HOL-Analysis" +
+session "Safe_Distance" = "HOL-Analysis" +
   options [timeout = 600]
   sessions
     "HOL-Decision_Procs"

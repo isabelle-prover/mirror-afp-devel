@@ -1,6 +1,6 @@
 chapter AFP
 
-session UpDown_Scheme (AFP) = "HOL-Analysis" +
+session UpDown_Scheme = "HOL-Analysis" +
   options [timeout = 600]
   sessions
     "HOL-Imperative_HOL"

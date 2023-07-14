@@ -1,6 +1,6 @@
 chapter AFP
 
-session Clique_and_Monotone_Circuits (AFP) = Stirling_Formula +
+session Clique_and_Monotone_Circuits = Stirling_Formula +
   options [timeout = 600]
   sessions
     "HOL-Library"

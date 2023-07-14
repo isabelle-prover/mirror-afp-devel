@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Van_der_Waerden" (AFP) = HOL +
+session "Van_der_Waerden" = HOL +
   options [timeout = 600]
   sessions
     "HOL-Library"

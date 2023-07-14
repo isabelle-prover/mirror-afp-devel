@@ -1,6 +1,6 @@
 chapter AFP
 
-session "List-Infinite" (AFP) = "HOL-Library" +
+session "List-Infinite" = "HOL-Library" +
   options [timeout = 600]
   directories
     "CommonArith"

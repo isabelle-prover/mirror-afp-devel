@@ -1,6 +1,6 @@
 chapter AFP
 
-session SPARCv8 (AFP) = HOL +
+session SPARCv8 = HOL +
   options [timeout = 1200]
   sessions
     "HOL-Eisbach"

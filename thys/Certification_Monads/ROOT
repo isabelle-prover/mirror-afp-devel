@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Certification_Monads" (AFP) = "HOL" +
+session "Certification_Monads" = "HOL" +
   options [timeout = 600]
   sessions
     "HOL-Library"

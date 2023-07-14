@@ -1,6 +1,6 @@
 chapter AFP
 
-session Root_Balanced_Tree (AFP) = "HOL-Library" +
+session Root_Balanced_Tree = "HOL-Library" +
   options [timeout = 600]
   sessions
     Amortized_Complexity

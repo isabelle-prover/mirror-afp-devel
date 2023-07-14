@@ -1,6 +1,6 @@
 chapter AFP
 
-session Fresh_Identifiers (AFP) = HOL +
+session Fresh_Identifiers = HOL +
   options [timeout=300]
   theories
     Fresh

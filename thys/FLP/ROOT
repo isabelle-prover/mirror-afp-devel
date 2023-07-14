@@ -1,6 +1,6 @@
 chapter AFP
 
-session "FLP" (AFP) = "HOL" +
+session "FLP" = "HOL" +
   description "A constructive proof for FLP"
   options [timeout = 600]
   theories

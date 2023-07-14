@@ -1,6 +1,6 @@
 chapter AFP
 
-session Finite_Automata_HF (AFP) = HOL +
+session Finite_Automata_HF = HOL +
   description "Finite Automata and Regular Languages in HF Set Theory"
   options [timeout = 600]
   sessions

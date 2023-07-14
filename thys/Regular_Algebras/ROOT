@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Regular_Algebras" (AFP) = "Kleene_Algebra" +
+session "Regular_Algebras" = "Kleene_Algebra" +
   options [timeout = 900]
   theories
     Dioid_Power_Sum

@@ -1,6 +1,6 @@
 chapter AFP
 
-session Statecharts (AFP) = HOL +
+session Statecharts = HOL +
   options [timeout = 600]
   theories
     CarAudioSystem

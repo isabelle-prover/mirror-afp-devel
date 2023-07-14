@@ -1,6 +1,6 @@
 chapter AFP
 
-session Abs_Int_ITP2012 (AFP) = "HOL-Library" +
+session Abs_Int_ITP2012 = "HOL-Library" +
   options [timeout = 600]
   sessions
     "HOL-IMP"

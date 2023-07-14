@@ -1,6 +1,6 @@
 chapter AFP
 
-session Random_BSTs (AFP) = Quick_Sort_Cost +
+session Random_BSTs = Quick_Sort_Cost +
   options [timeout = 300]
   sessions
     "HOL-Data_Structures"

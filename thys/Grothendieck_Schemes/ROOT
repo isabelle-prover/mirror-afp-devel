@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Grothendieck_Schemes" (AFP) = HOL +
+session "Grothendieck_Schemes" = HOL +
   options [timeout = 600]
   sessions
     "Jacobson_Basic_Algebra"

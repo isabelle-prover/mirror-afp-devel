@@ -1,6 +1,6 @@
 chapter AFP
 
-session Hello_World (AFP) = HOL +
+session Hello_World = HOL +
   options [timeout = 600]
   sessions
     "HOL-Library"

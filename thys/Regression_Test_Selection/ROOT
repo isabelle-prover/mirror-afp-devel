@@ -1,6 +1,6 @@
 chapter AFP
 
-session Regression_Test_Selection (AFP) = "HOL-Library" +
+session Regression_Test_Selection = "HOL-Library" +
   options [timeout = 1200]
   sessions
     "JinjaDCI"

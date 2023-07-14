@@ -1,6 +1,6 @@
 chapter AFP
 
-session Goedel_HFSet_Semantic (AFP) = Goedel_Incompleteness +
+session Goedel_HFSet_Semantic = Goedel_Incompleteness +
   description \<open>Reproduction of Paulson's Formalization of Incompleteness Theorems\<close>
   options [timeout = 2400]
   sessions

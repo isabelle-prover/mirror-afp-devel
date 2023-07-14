@@ -1,6 +1,6 @@
 chapter AFP
 
-session Relation_Algebra (AFP) = Kleene_Algebra +
+session Relation_Algebra = Kleene_Algebra +
   options [timeout = 600]
   theories
     More_Boolean_Algebra

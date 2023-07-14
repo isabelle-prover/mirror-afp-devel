@@ -1,6 +1,6 @@
 chapter AFP
 
-session MSO_Regex_Equivalence (AFP) = HOL +
+session MSO_Regex_Equivalence = HOL +
   options [timeout = 2400]
   sessions
     "HOL-Library"

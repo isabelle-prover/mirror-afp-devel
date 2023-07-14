@@ -1,6 +1,6 @@
 chapter AFP
 
-session Inductive_Inference (AFP) = HOL +
+session Inductive_Inference = HOL +
   options [timeout = 600]
   sessions
     "HOL-Library"

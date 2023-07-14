@@ -1,6 +1,6 @@
 chapter AFP
 
-session InfPathElimination (AFP) = HOL +
+session InfPathElimination = HOL +
   options [timeout = 600]
   theories
     RB

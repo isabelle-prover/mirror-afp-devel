@@ -1,6 +1,6 @@
 chapter AFP
 
-session VYDRA_MDL (AFP) = Containers +
+session VYDRA_MDL = Containers +
   options [timeout=600]
   theories
     Interval

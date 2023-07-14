@@ -1,6 +1,6 @@
 chapter AFP
 
-session Groebner_Bases (AFP) = "HOL-Algebra" +
+session Groebner_Bases = "HOL-Algebra" +
   options [timeout = 3600]
   sessions
     Polynomials

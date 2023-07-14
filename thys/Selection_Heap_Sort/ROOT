@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Selection_Heap_Sort" (AFP) = "HOL-Library" +
+session "Selection_Heap_Sort" = "HOL-Library" +
   description \<open>
     Author:  Danijela Petrovi\'c, Facylty of Mathematics, University of Belgrade
     

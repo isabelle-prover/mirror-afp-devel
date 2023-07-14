@@ -1,6 +1,6 @@
 chapter AFP
 
-session "DCR-ExecutionEquivalence" (AFP) = HOL +
+session "DCR-ExecutionEquivalence" = HOL +
   options [timeout = 600]
   theories
     DCRExecutionEquivalence

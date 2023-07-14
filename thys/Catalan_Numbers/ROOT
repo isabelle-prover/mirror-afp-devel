@@ -1,6 +1,6 @@
 chapter AFP
 
-session Catalan_Numbers (AFP) = "HOL-Analysis" +
+session Catalan_Numbers = "HOL-Analysis" +
   options [timeout = 600]
   sessions
     Landau_Symbols

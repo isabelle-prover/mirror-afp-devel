@@ -1,6 +1,6 @@
 chapter AFP
 
-session SuperCalc (AFP) = "HOL-Library" +
+session SuperCalc = "HOL-Library" +
   options [timeout = 600]
   sessions
     "HOL-ex"

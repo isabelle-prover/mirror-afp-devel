@@ -1,6 +1,6 @@
 chapter AFP
 
-session MonoidalCategory (AFP) = Category3 +
+session MonoidalCategory = Category3 +
   options [timeout = 3600, names_unique = false]
   theories
     FreeMonoidalCategory CartesianMonoidalCategory

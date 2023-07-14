@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Transformer_Semantics" (AFP) = "Quantales" +
+session "Transformer_Semantics" = "Quantales" +
   options [timeout = 600]
 
   sessions

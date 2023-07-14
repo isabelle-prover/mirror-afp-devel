@@ -1,6 +1,6 @@
 chapter AFP 
 
-session "HyperCTL" (AFP) = "HOL-Library" +
+session "HyperCTL" = "HOL-Library" +
   options [timeout = 600]
   theories
     HyperCTL

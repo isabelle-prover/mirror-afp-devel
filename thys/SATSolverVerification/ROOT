@@ -1,6 +1,6 @@
 chapter AFP
 
-session SATSolverVerification (AFP) = "HOL-Library" +
+session SATSolverVerification = "HOL-Library" +
   options [timeout = 600]
   theories
     BasicDPLL

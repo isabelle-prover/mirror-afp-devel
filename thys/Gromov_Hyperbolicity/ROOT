@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Gromov_Hyperbolicity" (AFP) = "HOL-Analysis" +
+session "Gromov_Hyperbolicity" = "HOL-Analysis" +
   options [timeout = 600]
   sessions
     "HOL-Cardinals"

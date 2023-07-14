@@ -1,6 +1,6 @@
 chapter AFP
 
-session Knuth_Morris_Pratt (AFP) = Sepref_IICF +
+session Knuth_Morris_Pratt = Sepref_IICF +
   options [timeout = 600]
   theories
     KMP

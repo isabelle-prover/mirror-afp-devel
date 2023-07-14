@@ -1,6 +1,6 @@
 chapter AFP
 
-session Sunflowers (AFP) = HOL + 
+session Sunflowers = HOL +
   options [timeout = 600]
   sessions
     "HOL-Library"

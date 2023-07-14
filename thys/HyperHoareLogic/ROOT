@@ -1,6 +1,6 @@
 chapter AFP
 
-session HyperHoareLogic (AFP) = HOL +
+session HyperHoareLogic = HOL +
   options [timeout = 600]
   theories
     Language

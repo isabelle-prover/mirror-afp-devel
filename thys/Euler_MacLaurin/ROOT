@@ -1,6 +1,6 @@
 chapter AFP
 
-session Euler_MacLaurin (AFP) = Bernoulli +
+session Euler_MacLaurin = Bernoulli +
   options [timeout = 600]
   sessions
     "HOL-Complex_Analysis"

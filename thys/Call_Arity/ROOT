@@ -1,6 +1,6 @@
 chapter AFP
 
-session Call_Arity (AFP) = "Launchbury" +
+session Call_Arity = "Launchbury" +
   options [timeout = 600]
   theories
     SestoftCorrect

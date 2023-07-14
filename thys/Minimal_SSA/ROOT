@@ -1,6 +1,6 @@
 chapter AFP
 
-session Minimal_SSA (AFP) = Formal_SSA +
+session Minimal_SSA = Formal_SSA +
   options [timeout = 600]
   theories
     Irreducible

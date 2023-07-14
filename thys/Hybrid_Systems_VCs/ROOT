@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Hybrid_Systems_VCs" (AFP) = "HOL-Analysis" +
+session "Hybrid_Systems_VCs" = "HOL-Analysis" +
   options [timeout = 1500]
   sessions
     Ordinary_Differential_Equations

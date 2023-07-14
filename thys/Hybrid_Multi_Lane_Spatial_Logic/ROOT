@@ -1,6 +1,6 @@
 chapter AFP
 
-session Hybrid_Multi_Lane_Spatial_Logic (AFP) = HOL +
+session Hybrid_Multi_Lane_Spatial_Logic = HOL +
   options [timeout = 600]
   directories
     "perfect"

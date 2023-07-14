@@ -1,6 +1,6 @@
 chapter AFP
 
-session LLL_Factorization (AFP) = LLL_Basis_Reduction +
+session LLL_Factorization = LLL_Basis_Reduction +
   description "LLL Factorization Algorithm"
   options [timeout = 300]
   sessions

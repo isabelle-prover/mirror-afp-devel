@@ -1,6 +1,6 @@
 chapter AFP
 
-session Simplex (AFP) = "HOL-Library" +
+session Simplex = "HOL-Library" +
   options [timeout = 600]
   theories
     Simplex_Auxiliary

@@ -1,6 +1,6 @@
 chapter AFP
 
-session Weighted_Path_Order (AFP) = Knuth_Bendix_Order +
+session Weighted_Path_Order = Knuth_Bendix_Order +
   options [timeout = 600]
   theories
     Status

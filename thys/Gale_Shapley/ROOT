@@ -1,6 +1,6 @@
 chapter AFP
 
-session Gale_Shapley (AFP) = HOL +
+session Gale_Shapley = HOL +
   options [timeout = 600]
   sessions
     "HOL-Library"

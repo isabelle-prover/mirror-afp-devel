@@ -1,6 +1,6 @@
 chapter AFP
 
-session Forcing (AFP) = "ZF-Constructible" +
+session Forcing = "ZF-Constructible" +
   description "
     Formalization of Forcing in Isabelle/ZF
 

@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Finger-Trees" (AFP) = "HOL-Library" +
+session "Finger-Trees" = "HOL-Library" +
   options [timeout = 600]
 
   theories

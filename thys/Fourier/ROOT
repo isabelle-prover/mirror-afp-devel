@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Fourier" (AFP) = "HOL-Probability" +
+session "Fourier" = "HOL-Probability" +
   options [timeout = 600]
   sessions
     Lp

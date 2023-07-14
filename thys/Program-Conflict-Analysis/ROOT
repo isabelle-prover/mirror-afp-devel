@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Program-Conflict-Analysis" (AFP) = "HOL-Library" +
+session "Program-Conflict-Analysis" = "HOL-Library" +
   options [timeout = 600]
   theories [document = false]
     Misc

@@ -1,6 +1,6 @@
 chapter AFP
 
-session Formal_SSA (AFP) = Collections +
+session Formal_SSA = Collections +
   options [timeout = 1200]
   sessions
     Dijkstra_Shortest_Path

@@ -1,6 +1,6 @@
 chapter AFP
 
-session "SDS_Impossibility" (AFP) = "Randomised_Social_Choice" +
+session "SDS_Impossibility" = "Randomised_Social_Choice" +
   options [timeout = 300]
   theories
     SDS_Impossibility

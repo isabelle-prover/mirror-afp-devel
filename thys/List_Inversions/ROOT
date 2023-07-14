@@ -1,6 +1,6 @@
 chapter AFP
 
-session "List_Inversions" (AFP) = HOL +
+session "List_Inversions" = HOL +
   options [timeout = 300]
   sessions
     "HOL-Combinatorics"

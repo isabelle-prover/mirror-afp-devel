@@ -1,6 +1,6 @@
 chapter AFP
 
-session "ShortestPath" (AFP) = Graph_Theory +
+session "ShortestPath" = Graph_Theory +
   options [timeout = 3600]
   theories
     ShortestPath

@@ -1,6 +1,6 @@
 chapter AFP
 
-session "BTree" (AFP) = "Refine_Imperative_HOL" +
+session "BTree" = "Refine_Imperative_HOL" +
   options [timeout = 2400]
   sessions
     "HOL-Data_Structures"

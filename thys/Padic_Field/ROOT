@@ -1,6 +1,6 @@
 chapter AFP
 
-session Padic_Field (AFP) = "Padic_Ints" +
+session Padic_Field = "Padic_Ints" +
   options [timeout = 3600]
 sessions
     "Localization_Ring"

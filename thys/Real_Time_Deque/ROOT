@@ -1,6 +1,6 @@
 chapter AFP
 
-session Real_Time_Deque (AFP) = HOL + 
+session Real_Time_Deque = HOL +
   options [timeout = 300]
   theories
     RealTimeDeque_Proof

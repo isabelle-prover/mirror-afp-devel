@@ -1,6 +1,6 @@
 chapter AFP
 
-session Weight_Balanced_Trees (AFP) = HOL +
+session Weight_Balanced_Trees = HOL +
   options [timeout = 600]
   sessions
     "HOL-Library"

@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Hyperdual" (AFP) = "HOL-Analysis" +
+session "Hyperdual" = "HOL-Analysis" +
   options [timeout = 600]
   sessions
     "HOL-Decision_Procs"

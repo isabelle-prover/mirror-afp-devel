@@ -1,6 +1,6 @@
 chapter AFP
 
-session IFC_Tracking (AFP) = HOL +
+session IFC_Tracking = HOL +
   options [timeout = 600]
   theories
     IFC

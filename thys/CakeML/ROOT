@@ -1,6 +1,6 @@
 chapter AFP
 
-session LEM (AFP) in "generated" = HOL +
+session LEM in "generated" = HOL +
   options [timeout = 300]
   sessions
     Word_Lib
@@ -12,7 +12,7 @@ session LEM (AFP) in "generated" = HOL +
     Lem_string
     Lem_string_extra
 
-session CakeML (AFP) = LEM +
+session CakeML = LEM +
   options [timeout = 3600]
   sessions
     "HOL-Combinatorics"

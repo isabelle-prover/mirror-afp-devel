@@ -1,6 +1,6 @@
 chapter AFP
 
-session Nash_Williams (AFP) = HOL +
+session Nash_Williams = HOL +
   options [timeout = 600]
   sessions
     "HOL-Library"

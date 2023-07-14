@@ -1,6 +1,6 @@
 chapter AFP
 
-session Probability_Inequality_Completeness (AFP) = Suppes_Theorem +
+session Probability_Inequality_Completeness = Suppes_Theorem +
   options [timeout = 600]
   (* options [document = pdf, document_output = "output"] *)
   sessions

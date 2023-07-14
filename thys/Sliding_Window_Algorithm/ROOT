@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Sliding_Window_Algorithm" (AFP) = HOL +
+session "Sliding_Window_Algorithm" = HOL +
   options [timeout = 300]
   theories
     SWA

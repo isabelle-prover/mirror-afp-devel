@@ -1,6 +1,6 @@
 chapter AFP
 
-session Involutions2Squares (AFP) = HOL +
+session Involutions2Squares = HOL +
   options [timeout = 300]
   theories
     Involutions2Squares

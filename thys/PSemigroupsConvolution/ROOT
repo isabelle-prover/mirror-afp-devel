@@ -1,6 +1,6 @@
 chapter AFP
 
-session PSemigroupsConvolution (AFP) = HOL +
+session PSemigroupsConvolution = HOL +
   options [timeout = 600]
   theories
    Partial_Semigroups

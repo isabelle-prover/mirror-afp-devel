@@ -1,6 +1,6 @@
 chapter AFP
 
-session KBPs (AFP) = "HOL-Library" +
+session KBPs = "HOL-Library" +
   options [timeout = 600]
   sessions
     "Transitive-Closure"

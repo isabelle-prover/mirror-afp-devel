@@ -1,6 +1,6 @@
 chapter AFP
 
-session Factored_Transition_System_Bounding (AFP) = HOL +
+session Factored_Transition_System_Bounding = HOL +
   description "Diameter Bounding for Factored Transition Systems"
   options [timeout = 600]
   sessions

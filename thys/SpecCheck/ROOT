@@ -1,6 +1,6 @@
 chapter AFP
 
-session SpecCheck (AFP) = "Pure" +
+session SpecCheck = "Pure" +
   description
     \<open>SpecCheck is a specification-based testing environment for ML programs. It is based on QCheck
     (\<^url>\<open>https://github.com/league/qcheck/\<close>) by Christopher League (\<^url>\<open>https://contrapunctus.net/\<close>).

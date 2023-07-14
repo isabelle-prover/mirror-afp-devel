@@ -1,6 +1,6 @@
 chapter AFP
 
-session Dependent_SIFUM_Type_Systems (AFP) = HOL +
+session Dependent_SIFUM_Type_Systems = HOL +
   description "
     An Isabelle/HOL formalization of a Value-Dependent extension to
     Assumptions and Guarantees for Compositional Noninterference

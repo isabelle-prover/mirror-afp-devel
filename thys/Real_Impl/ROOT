@@ -1,6 +1,6 @@
 chapter AFP
 
-session Real_Impl (AFP) = Sqrt_Babylonian +
+session Real_Impl = Sqrt_Babylonian +
   options [timeout = 300]
   sessions
     "HOL-Computational_Algebra"

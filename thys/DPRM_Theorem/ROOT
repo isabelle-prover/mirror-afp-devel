@@ -1,6 +1,6 @@
 chapter AFP
 
-session DPRM_Theorem (AFP) = HOL +
+session DPRM_Theorem = HOL +
   description \<open>The DPRM Theorem\<close>
   options [timeout = 600]
 

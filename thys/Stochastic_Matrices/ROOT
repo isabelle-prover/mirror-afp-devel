@@ -1,5 +1,5 @@
 chapter AFP
-session Stochastic_Matrices (AFP) = Markov_Models +
+session Stochastic_Matrices = Markov_Models +
   description "Stochastic Matrices"
   options [timeout = 1800]
   sessions

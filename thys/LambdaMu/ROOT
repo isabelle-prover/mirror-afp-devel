@@ -1,6 +1,6 @@
 chapter AFP
 
-session LambdaMu (AFP) = HOL +
+session LambdaMu = HOL +
   options [timeout = 600]
   theories
     Types

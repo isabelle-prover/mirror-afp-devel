@@ -1,6 +1,6 @@
 chapter AFP
 
-session Store_Buffer_Reduction (AFP) = HOL +
+session Store_Buffer_Reduction = HOL +
   options [timeout = 600]
   theories
     Text

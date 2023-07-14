@@ -1,6 +1,6 @@
 chapter AFP
 
-session Types_To_Sets_Extension (AFP) = Conditional_Transfer_Rule +
+session Types_To_Sets_Extension = Conditional_Transfer_Rule +
   options [timeout = 1200]
   sessions
     "HOL-Types_To_Sets"

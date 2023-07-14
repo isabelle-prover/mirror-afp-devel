@@ -1,6 +1,6 @@
 chapter AFP
 
-session GPU_Kernel_PL (AFP) = HOL +
+session GPU_Kernel_PL = HOL +
   options [timeout = 600]
   theories 
     Kernel_programming_language

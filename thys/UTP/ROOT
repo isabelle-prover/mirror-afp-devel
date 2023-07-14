@@ -9,7 +9,7 @@ chapter AFP
 
 (* UTP Mathematical Toolkit *)
 
-session "UTP-Toolkit" (AFP) in "toolkit" = "HOL-Algebra" +
+session "UTP-Toolkit" in "toolkit" = "HOL-Algebra" +
   options [timeout = 600]
   sessions
     Optics
@@ -22,7 +22,7 @@ session "UTP-Toolkit" (AFP) in "toolkit" = "HOL-Algebra" +
 
 (* Core UTP Framework *)
 
-session "UTP" (AFP) = "UTP-Toolkit" +
+session "UTP" = "UTP-Toolkit" +
   options [timeout = 600]
   directories
     "utp"

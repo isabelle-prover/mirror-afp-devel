@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Noninterference_Concurrent_Composition" (AFP) = "Noninterference_Sequential_Composition" +
+session "Noninterference_Concurrent_Composition" = "Noninterference_Sequential_Composition" +
   options [timeout = 300]
   theories
     ConcurrentComposition

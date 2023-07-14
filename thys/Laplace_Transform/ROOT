@@ -1,5 +1,5 @@
 chapter AFP
-session "Laplace_Transform" (AFP) = "HOL-Analysis" +
+session "Laplace_Transform" = "HOL-Analysis" +
   options [timeout = 300]
   theories
     Laplace_Transform

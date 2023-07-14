@@ -1,6 +1,6 @@
 chapter AFP
 
-session Three_Circles (AFP) = "HOL-Computational_Algebra" +
+session Three_Circles = "HOL-Computational_Algebra" +
   options [timeout = 600]
   sessions
     Budan_Fourier

@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Perron_Frobenius" (AFP) = Jordan_Normal_Form + 
+session "Perron_Frobenius" = Jordan_Normal_Form +
   options [timeout = 1800]
   sessions
     "HOL-Types_To_Sets"

@@ -1,6 +1,6 @@
 chapter AFP
 
-session "DigitsInBase" (AFP) = "HOL-Number_Theory" +
+session "DigitsInBase" = "HOL-Number_Theory" +
   options [timeout = 300]
   theories
     DigitsInBase

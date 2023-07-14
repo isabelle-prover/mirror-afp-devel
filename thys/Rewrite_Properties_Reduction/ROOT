@@ -1,6 +1,6 @@
 chapter AFP
 
-session Rewrite_Properties_Reduction (AFP) = "HOL-Library" +
+session Rewrite_Properties_Reduction = "HOL-Library" +
   options [timeout = 600]
   sessions
     "Regular_Tree_Relations"

@@ -1,6 +1,6 @@
 chapter AFP
 
-session Directed_Sets (AFP) =  HOL +
+session Directed_Sets =  HOL +
     description "Results on Directed Sets"
     options [timeout = 300]
     sessions

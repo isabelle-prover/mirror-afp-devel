@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Quantales" (AFP) = "Order_Lattice_Props" +
+session "Quantales" = "Order_Lattice_Props" +
   options [timeout = 600]
 
   sessions

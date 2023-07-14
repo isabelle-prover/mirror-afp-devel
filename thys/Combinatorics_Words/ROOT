@@ -1,6 +1,6 @@
 chapter AFP
 
-session Combinatorics_Words (AFP)  = "HOL-Eisbach" +
+session Combinatorics_Words  = "HOL-Eisbach" +
   options [timeout = 600]
   theories
     Arithmetical_Hints

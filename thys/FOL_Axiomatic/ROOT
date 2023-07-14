@@ -1,6 +1,6 @@
 chapter AFP
 
-session FOL_Axiomatic (AFP) = "HOL" +
+session FOL_Axiomatic = "HOL" +
   options [timeout = 300]
   sessions
     "HOL-Library"

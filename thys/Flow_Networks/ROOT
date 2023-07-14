@@ -1,6 +1,6 @@
 chapter AFP
 
-session Flow_Networks (AFP) = Sepref_IICF +
+session Flow_Networks = Sepref_IICF +
   options [timeout = 1200]
   sessions
     "Program-Conflict-Analysis"

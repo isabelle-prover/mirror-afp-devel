@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Kuratowski_Closure_Complement" (AFP) = "HOL-Analysis" +
+session "Kuratowski_Closure_Complement" = "HOL-Analysis" +
   options [timeout = 300]
   theories
     KuratowskiClosureComplementTheorem

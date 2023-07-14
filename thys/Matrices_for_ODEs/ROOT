@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Matrices_for_ODEs" (AFP) = "HOL-Analysis" +
+session "Matrices_for_ODEs" = "HOL-Analysis" +
   options [timeout = 1800]
   sessions
     Hybrid_Systems_VCs

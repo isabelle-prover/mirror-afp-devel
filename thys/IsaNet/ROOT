@@ -19,7 +19,7 @@
 
 chapter AFP
 
-session IsaNet (AFP) = HOL +
+session IsaNet = HOL +
 description \<open>Formalization of Dataplane Verification\<close> 
 options [timeout = 600]
 sessions

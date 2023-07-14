@@ -1,6 +1,6 @@
 chapter AFP
 
-session Zeta_Function (AFP) = Dirichlet_Series +
+session Zeta_Function = Dirichlet_Series +
   options [timeout = 600]
   sessions
     "Pure-ex"

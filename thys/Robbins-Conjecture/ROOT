@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Robbins-Conjecture" (AFP) = HOL +
+session "Robbins-Conjecture" = HOL +
   options [timeout = 600]
   theories
     Robbins_Conjecture

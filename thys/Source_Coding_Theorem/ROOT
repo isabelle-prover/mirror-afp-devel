@@ -1,6 +1,6 @@
 chapter AFP
 
-session Source_Coding_Theorem (AFP) = "HOL-Probability" +
+session Source_Coding_Theorem = "HOL-Probability" +
   options [timeout = 300]
   theories
     Source_Coding_Theorem

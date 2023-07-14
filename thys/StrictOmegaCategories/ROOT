@@ -1,6 +1,6 @@
 chapter AFP
 
-session "StrictOmegaCategories" (AFP) = HOL +
+session "StrictOmegaCategories" = HOL +
   options [timeout = 600]
 	sessions
 		"HOL-Library" 

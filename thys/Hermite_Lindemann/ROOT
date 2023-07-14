@@ -1,6 +1,6 @@
 chapter AFP
 
-session Hermite_Lindemann (AFP) = "Pi_Transcendental" +
+session Hermite_Lindemann = "Pi_Transcendental" +
   options [timeout = 1200]
   sessions
     "HOL-Library"

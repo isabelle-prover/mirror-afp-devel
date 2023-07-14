@@ -1,6 +1,6 @@
 chapter AFP
 
-session No_FTL_observers_Gen_Rel (AFP) = HOL +
+session No_FTL_observers_Gen_Rel = HOL +
   options [timeout = 600]
 
   theories

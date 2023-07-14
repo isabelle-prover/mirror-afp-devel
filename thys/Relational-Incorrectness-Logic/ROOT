@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Relational-Incorrectness-Logic" (AFP) = "HOL-IMP" +
+session "Relational-Incorrectness-Logic" = "HOL-IMP" +
   options [timeout = 600]
   theories
       RelationalIncorrectness

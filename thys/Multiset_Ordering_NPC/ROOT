@@ -1,6 +1,6 @@
 chapter AFP
 
-session Multiset_Ordering_NPC (AFP) = Weighted_Path_Order +
+session Multiset_Ordering_NPC = Weighted_Path_Order +
   options [timeout = 600]
   theories
     Multiset_Ordering_in_NP    

@@ -1,6 +1,6 @@
 chapter AFP
 
-session Intro_Dest_Elim (AFP) = HOL +
+session Intro_Dest_Elim = HOL +
   options [timeout=600]
   sessions
     "HOL-Library"

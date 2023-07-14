@@ -1,6 +1,6 @@
 chapter AFP
 
-session Epistemic_Logic (AFP) = "HOL-Cardinals" +
+session Epistemic_Logic = "HOL-Cardinals" +
   options [timeout = 300]
   theories
     Epistemic_Logic

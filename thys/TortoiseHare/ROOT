@@ -1,6 +1,6 @@
 chapter AFP
 
-session "TortoiseHare" (AFP) = "HOL-Library" +
+session "TortoiseHare" = "HOL-Library" +
   options [timeout = 600]
   theories
     Basis

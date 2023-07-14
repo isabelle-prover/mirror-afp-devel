@@ -1,6 +1,6 @@
 chapter AFP
 
-session Progress_Tracking (AFP) = Nested_Multisets_Ordinals +
+session Progress_Tracking = Nested_Multisets_Ordinals +
   description \<open>Safety of Timely Dataflow's Progress Tracking Protocol\<close>
   options [timeout = 1200]
   sessions

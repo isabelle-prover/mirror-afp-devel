@@ -1,6 +1,6 @@
 chapter AFP
 
-session Affine_Arithmetic (AFP) = "HOL-Analysis" +
+session Affine_Arithmetic = "HOL-Analysis" +
   options [timeout = 2400]
   sessions
     "HOL-Decision_Procs"

@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Foundation_of_geometry" (AFP) = HOL +
+session "Foundation_of_geometry" = HOL +
   options [timeout = 600]
   theories
     Incidence

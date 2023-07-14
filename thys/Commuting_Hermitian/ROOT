@@ -1,6 +1,6 @@
 chapter AFP
 
-session Commuting_Hermitian (AFP) = "Projective_Measurements" +
+session Commuting_Hermitian = "Projective_Measurements" +
   options [timeout = 1800]
   theories [document = false]
     Commuting_Hermitian_Misc

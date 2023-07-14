@@ -1,6 +1,6 @@
 chapter AFP
 
-session Auto2_HOL (AFP) = HOL +
+session Auto2_HOL = HOL +
   description \<open>
     Instantiation of Auto2 for Isabelle/HOL.
   \<close>

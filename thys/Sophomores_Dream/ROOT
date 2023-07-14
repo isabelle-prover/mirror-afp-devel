@@ -1,6 +1,6 @@
 chapter AFP
 
-session Sophomores_Dream (AFP) = "HOL-Analysis" +
+session Sophomores_Dream = "HOL-Analysis" +
   options [timeout = 900]
   sessions
     "HOL-Real_Asymp"

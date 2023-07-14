@@ -1,6 +1,6 @@
 chapter AFP
 
-session Irrationality_J_Hancl (AFP) = "HOL-Analysis" +
+session Irrationality_J_Hancl = "HOL-Analysis" +
   options [timeout = 300]
   sessions
     "HOL-Decision_Procs"

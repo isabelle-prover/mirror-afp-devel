@@ -1,6 +1,6 @@
 chapter AFP
 
-session Furstenberg_Topology (AFP) = "HOL-Analysis" +
+session Furstenberg_Topology = "HOL-Analysis" +
   options [timeout = 1200]
   sessions
     "HOL-Number_Theory"

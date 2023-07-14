@@ -1,6 +1,6 @@
 chapter AFP
 
-session "MiniSail" (AFP) = "HOL-Library" +
+session "MiniSail" = "HOL-Library" +
   description \<open>Formalisation of MiniSail\<close>
   options [timeout = 4800]
   sessions   

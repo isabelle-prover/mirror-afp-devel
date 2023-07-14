@@ -1,6 +1,6 @@
 chapter AFP
 
-session ComponentDependencies (AFP) = HOL +
+session ComponentDependencies = HOL +
   options [timeout = 600]
   theories
     DataDependenciesConcreteValues

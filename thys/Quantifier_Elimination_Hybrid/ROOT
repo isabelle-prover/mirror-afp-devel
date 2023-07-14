@@ -1,6 +1,6 @@
 chapter AFP
 
-session Quantifier_Elimination_Hybrid (AFP) = Algebraic_Numbers +
+session Quantifier_Elimination_Hybrid = Algebraic_Numbers +
   options [timeout = 2400]
   sessions
     Datatype_Order_Generator

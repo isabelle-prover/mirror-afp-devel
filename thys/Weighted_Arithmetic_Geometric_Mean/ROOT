@@ -1,6 +1,6 @@
 chapter AFP
 
-session Weighted_Arithmetic_Geometric_Mean (AFP) = HOL +
+session Weighted_Arithmetic_Geometric_Mean = HOL +
   options [timeout = 600]
   theories
     Weighted_Arithmetic_Geometric_Mean

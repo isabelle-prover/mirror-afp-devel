@@ -1,6 +1,6 @@
 chapter AFP
 
-session Parity_Game (AFP) = HOL +
+session Parity_Game = HOL +
   options [timeout = 600]
   sessions
     "HOL-Library"

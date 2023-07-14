@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Belief_Revision" (AFP) = HOL +
+session "Belief_Revision" = HOL +
   options [timeout=600]
   theories
      AGM_Logic 

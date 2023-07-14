@@ -1,6 +1,6 @@
 chapter AFP
 
-session "SimplifiedOntologicalArgument" (AFP) = HOL +
+session "SimplifiedOntologicalArgument" = HOL +
 
   options [timeout = 600] 
 

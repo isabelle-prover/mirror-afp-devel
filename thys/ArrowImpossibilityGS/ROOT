@@ -1,6 +1,6 @@
 chapter AFP
 
-session ArrowImpossibilityGS (AFP) = HOL +
+session ArrowImpossibilityGS = HOL +
   options [timeout = 600]
   sessions
     "HOL-Library"

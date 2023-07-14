@@ -1,6 +1,6 @@
 chapter AFP
 
-session Partial_Order_Reduction (AFP) = Transition_Systems_and_Automata +
+session Partial_Order_Reduction = Transition_Systems_and_Automata +
   options [timeout = 600]
   sessions
     Coinductive

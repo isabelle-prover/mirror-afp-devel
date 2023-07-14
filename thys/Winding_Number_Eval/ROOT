@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Winding_Number_Eval" (AFP) = "HOL-Complex_Analysis" +
+session "Winding_Number_Eval" = "HOL-Complex_Analysis" +
   options [timeout = 600]
   sessions
     "HOL-Analysis"

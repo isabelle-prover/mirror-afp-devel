@@ -1,6 +1,6 @@
 chapter AFP
 
-session "AutoFocus-Stream" (AFP) = "Nat-Interval-Logic" +
+session "AutoFocus-Stream" = "Nat-Interval-Logic" +
   options [timeout = 600]
   theories
     ListSlice

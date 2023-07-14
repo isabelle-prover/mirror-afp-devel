@@ -1,6 +1,6 @@
 chapter AFP
 
-session Youngs_Inequality (AFP) = "HOL-Analysis" +
+session Youngs_Inequality = "HOL-Analysis" +
   options [timeout = 300]
   theories
     Youngs

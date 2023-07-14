@@ -1,6 +1,6 @@
 chapter AFP
 
-session "HRB-Slicing" (AFP) = Jinja +
+session "HRB-Slicing" = Jinja +
   options [timeout = 2400]
   directories
     "JinjaVM_Inter"

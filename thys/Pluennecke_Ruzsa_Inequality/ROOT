@@ -1,6 +1,6 @@
 chapter AFP
 
-session Pluennecke_Ruzsa_Inequality (AFP) = "HOL-Library" +
+session Pluennecke_Ruzsa_Inequality = "HOL-Library" +
   options [timeout = 600]
   sessions
     "Jacobson_Basic_Algebra"

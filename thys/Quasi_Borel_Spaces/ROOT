@@ -1,6 +1,6 @@
 chapter AFP
 
-session Quasi_Borel_Spaces (AFP) = "HOL-Probability" +
+session Quasi_Borel_Spaces = "HOL-Probability" +
   options [timeout = 600]
   theories
     Bayesian_Linear_Regression

@@ -1,6 +1,6 @@
 chapter AFP
 
-session Combinatorics_Words_Graph_Lemma (AFP) = Combinatorics_Words +
+session Combinatorics_Words_Graph_Lemma = Combinatorics_Words +
   options [timeout = 300]
   theories
     Glued_Codes

@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Count_Complex_Roots" (AFP) = "HOL-Complex_Analysis" +
+session "Count_Complex_Roots" = "HOL-Complex_Analysis" +
   options [timeout = 600]
   sessions
     Sturm_Tarski

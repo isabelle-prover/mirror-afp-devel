@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Query_Optimization" (AFP) = "Graph_Theory" +
+session "Query_Optimization" = "Graph_Theory" +
   options [timeout=1200]
 
   sessions

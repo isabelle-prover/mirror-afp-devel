@@ -1,6 +1,6 @@
 chapter AFP
 
-session Incredible_Proof_Machine (AFP) = "HOL-Library" +
+session Incredible_Proof_Machine = "HOL-Library" +
   description "The meta theory of the Incredible Proof Machine"
   options [timeout = 600]
   sessions

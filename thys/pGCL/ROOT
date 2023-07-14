@@ -1,6 +1,6 @@
 chapter AFP
 
-session pGCL (AFP) = "HOL-Analysis" +
+session pGCL = "HOL-Analysis" +
   options [timeout = 300]
   directories
     "Tutorial"

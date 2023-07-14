@@ -1,6 +1,6 @@
 chapter AFP
 
-session Iptables_Semantics (AFP) = Routing +
+session Iptables_Semantics = Routing +
   options [timeout = 1200]
   sessions
     Native_Word
@@ -43,7 +43,7 @@ session Iptables_Semantics (AFP) = Routing +
     "root.tex"
     "root.bib"
 
-session Iptables_Semantics_Examples (AFP) in "Examples" = Iptables_Semantics +
+session Iptables_Semantics_Examples in "Examples" = Iptables_Semantics +
   options [timeout = 2400]
   directories
     "Parser_Test"
@@ -70,7 +70,7 @@ session Iptables_Semantics_Examples (AFP) in "Examples" = Iptables_Semantics +
     "root.tex"
     "root.bib"
 
-session Iptables_Semantics_Examples_Big (AFP slow very_slow) in "Examples_Big" = Iptables_Semantics_Examples +
+session Iptables_Semantics_Examples_Big (slow very_slow) in "Examples_Big" = Iptables_Semantics_Examples +
   options [timeout = 60000]
   directories
     "../Examples/IPPartEval"

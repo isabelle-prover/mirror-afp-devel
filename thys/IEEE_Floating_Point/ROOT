@@ -1,6 +1,6 @@
 chapter AFP
 
-session IEEE_Floating_Point (AFP) = "Word_Lib" +
+session IEEE_Floating_Point = "Word_Lib" +
   options [timeout = 3600]
   sessions
     "HOL-Library"

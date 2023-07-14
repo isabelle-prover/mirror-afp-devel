@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Generic_Deriving" (AFP) = HOL +
+session "Generic_Deriving" = HOL +
   options [timeout = 600]
   directories
     "tests"

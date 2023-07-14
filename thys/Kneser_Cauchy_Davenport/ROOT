@@ -1,6 +1,6 @@
 chapter AFP
 
-session Kneser_Cauchy_Davenport (AFP) = "HOL-Number_Theory" +
+session Kneser_Cauchy_Davenport = "HOL-Number_Theory" +
  options [timeout = 900] 
  sessions
     Pluennecke_Ruzsa_Inequality

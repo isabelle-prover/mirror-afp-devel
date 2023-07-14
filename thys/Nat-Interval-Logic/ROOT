@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Nat-Interval-Logic" (AFP) = "List-Infinite" +
+session "Nat-Interval-Logic" = "List-Infinite" +
   options [timeout = 600]
   theories
     IL_Interval

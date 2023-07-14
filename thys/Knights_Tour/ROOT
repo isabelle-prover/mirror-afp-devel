@@ -1,6 +1,6 @@
 chapter AFP
 
-session Knights_Tour (AFP) = HOL +
+session Knights_Tour = HOL +
   options [timeout=300]
   theories
     KnightsTour

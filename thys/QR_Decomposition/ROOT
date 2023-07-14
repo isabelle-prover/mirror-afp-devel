@@ -1,6 +1,6 @@
 chapter AFP
 
-session "QR_Decomposition" (AFP) = "HOL-Analysis" +
+session "QR_Decomposition" = "HOL-Analysis" +
   options [timeout = 1200]
   sessions
     Gauss_Jordan

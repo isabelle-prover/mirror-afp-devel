@@ -1,6 +1,6 @@
 chapter AFP
 
-session Matroids (AFP) = HOL +
+session Matroids = HOL +
   options [timeout = 300]
   theories
     Matroid

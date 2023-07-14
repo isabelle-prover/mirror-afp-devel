@@ -1,6 +1,6 @@
 chapter AFP
 
-session BytecodeLogicJmlTypes (AFP) = HOL +
+session BytecodeLogicJmlTypes = HOL +
   options [timeout = 600]
   theories
     Sound

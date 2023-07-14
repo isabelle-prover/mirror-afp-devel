@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Minsky_Machines" (AFP) = "Abstract-Rewriting" +
+session "Minsky_Machines" = "Abstract-Rewriting" +
   options [timeout = 600]
   sessions
     "Pure-ex"

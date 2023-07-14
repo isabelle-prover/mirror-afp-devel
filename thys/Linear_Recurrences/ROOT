@@ -1,6 +1,6 @@
 chapter AFP
 
-session Linear_Recurrences (AFP) = Count_Complex_Roots +
+session Linear_Recurrences = Count_Complex_Roots +
   options [timeout = 600]
   sessions
     "HOL-Library"
@@ -16,7 +16,7 @@ session Linear_Recurrences (AFP) = Count_Complex_Roots +
   document_files
     "root.tex"
 
-session Linear_Recurrences_Solver (AFP) in "Solver" = Berlekamp_Zassenhaus +
+session Linear_Recurrences_Solver in "Solver" = Berlekamp_Zassenhaus +
   options [timeout = 1200]
   sessions
     Algebraic_Numbers

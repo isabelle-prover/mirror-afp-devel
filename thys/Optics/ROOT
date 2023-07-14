@@ -9,7 +9,7 @@
 
 chapter AFP
 
-session "Optics" (AFP) = "HOL-Eisbach" +
+session "Optics" = "HOL-Eisbach" +
   options [timeout = 600]
   sessions
     "HOL-Library"

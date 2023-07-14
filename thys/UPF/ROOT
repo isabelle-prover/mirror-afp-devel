@@ -1,6 +1,6 @@
 chapter AFP
 
-session "UPF" (AFP) = HOL +
+session "UPF" = HOL +
   description "The Unified Policy Framework (UPF)"
   options [timeout = 300]
   theories

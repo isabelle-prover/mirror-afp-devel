@@ -1,6 +1,6 @@
 chapter AFP
 
-session "GoedelGod" (AFP) = "HOL" +
+session "GoedelGod" = "HOL" +
   options [timeout = 600]
   theories GoedelGod
   document_files

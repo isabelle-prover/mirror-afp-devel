@@ -1,6 +1,6 @@
 chapter AFP
 
-session Open_Induction (AFP) = HOL +
+session Open_Induction = HOL +
   options [timeout = 600]
   theories
     Restricted_Predicates

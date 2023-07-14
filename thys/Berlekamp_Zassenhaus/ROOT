@@ -1,6 +1,6 @@
 chapter AFP
 
-session Berlekamp_Zassenhaus (AFP) = Subresultants +
+session Berlekamp_Zassenhaus = Subresultants +
   description "Berlekamp-Zassenhaus's Factorization Algorithm"
   options [timeout = 1200]
   sessions

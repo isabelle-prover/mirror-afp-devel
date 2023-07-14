@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Deep_Learning" (AFP) = "HOL-Probability" +
+session "Deep_Learning" = "HOL-Probability" +
   options [timeout = 1200]
   sessions
     "HOL-Algebra"

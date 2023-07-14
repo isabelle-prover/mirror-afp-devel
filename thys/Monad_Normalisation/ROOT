@@ -1,6 +1,6 @@
 chapter AFP
 
-session Monad_Normalisation (AFP) = "HOL-Probability" +
+session Monad_Normalisation = "HOL-Probability" +
   options [timeout = 300]
   theories
     Monad_Normalisation

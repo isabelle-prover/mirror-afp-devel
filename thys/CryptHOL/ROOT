@@ -1,6 +1,6 @@
 chapter AFP
 
-session CryptHOL (AFP) = Probabilistic_While +
+session CryptHOL = Probabilistic_While +
   options [timeout = 600]
   sessions
     "HOL-Algebra"

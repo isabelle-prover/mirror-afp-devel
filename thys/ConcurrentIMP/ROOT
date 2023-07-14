@@ -1,6 +1,6 @@
 chapter AFP
 
-session ConcurrentIMP (AFP) = "HOL-Library" +
+session ConcurrentIMP = "HOL-Library" +
   options [timeout = 300]
   directories
     "ex"

@@ -1,6 +1,6 @@
 chapter AFP 
 
-session MLSS_Decision_Proc (AFP) = HOL +
+session MLSS_Decision_Proc = HOL +
   options [timeout = 1200]
   sessions
     "HOL-Library"

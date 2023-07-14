@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Random_Graph_Subgraph_Threshold" (AFP) = Girth_Chromatic +
+session "Random_Graph_Subgraph_Threshold" = Girth_Chromatic +
   options [timeout = 600]
   theories
     Subgraph_Threshold

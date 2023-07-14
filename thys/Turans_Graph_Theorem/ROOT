@@ -1,6 +1,6 @@
 chapter AFP
 
-session Turans_Graph_Theorem (AFP) = "HOL-Probability" +
+session Turans_Graph_Theorem = "HOL-Probability" +
   options [timeout = 600]
   sessions
     Girth_Chromatic

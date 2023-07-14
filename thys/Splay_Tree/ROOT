@@ -1,6 +1,6 @@
 chapter AFP
 
-session Splay_Tree (AFP) = "HOL-Library" +
+session Splay_Tree = "HOL-Library" +
   options [timeout = 600]
   sessions
     "HOL-Data_Structures"

@@ -1,6 +1,6 @@
 chapter AFP
 
-session "PAL" (AFP) = HOL +
+session "PAL" = HOL +
   options [timeout = 300]
   theories
     PAL

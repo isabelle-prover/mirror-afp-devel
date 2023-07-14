@@ -1,6 +1,6 @@
 chapter AFP
 
-session Marriage (AFP) = HOL +
+session Marriage = HOL +
   options [timeout = 600]
   theories
     Marriage

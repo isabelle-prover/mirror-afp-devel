@@ -1,6 +1,6 @@
 chapter AFP
 
-session Pi_Transcendental (AFP) = E_Transcendental +
+session Pi_Transcendental = E_Transcendental +
   options [timeout = 600]
   sessions
     "HOL-Computational_Algebra"

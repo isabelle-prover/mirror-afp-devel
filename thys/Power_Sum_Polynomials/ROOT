@@ -1,6 +1,6 @@
 chapter AFP
 
-session Power_Sum_Polynomials (AFP) = Symmetric_Polynomials +
+session Power_Sum_Polynomials = Symmetric_Polynomials +
   options [timeout = 600]
   sessions
     "HOL-Computational_Algebra"

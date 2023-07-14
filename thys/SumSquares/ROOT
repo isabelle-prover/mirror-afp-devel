@@ -1,6 +1,6 @@
 chapter AFP
 
-session SumSquares (AFP) = "HOL-Number_Theory" +
+session SumSquares = "HOL-Number_Theory" +
   options [timeout = 600]
   theories
     TwoSquares

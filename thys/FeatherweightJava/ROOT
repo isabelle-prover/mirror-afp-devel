@@ -1,6 +1,6 @@
 chapter AFP
 
-session FeatherweightJava (AFP) = HOL +
+session FeatherweightJava = HOL +
   options [timeout = 600]
   theories
     Featherweight_Java

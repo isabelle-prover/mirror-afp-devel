@@ -1,6 +1,6 @@
 chapter AFP
 
-session Synthetic_Completeness (AFP) = HOL +
+session Synthetic_Completeness = HOL +
   options [timeout=300]
   sessions
     "HOL-Cardinals"

@@ -1,6 +1,6 @@
 chapter AFP
 
-session CCS (AFP) = "HOL-Nominal" +
+session CCS = "HOL-Nominal" +
   options [timeout = 600]
   theories
     Weak_Cong_Pres

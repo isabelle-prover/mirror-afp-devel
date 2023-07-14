@@ -1,7 +1,7 @@
 chapter AFP
 
  
-session Arith_Prog_Rel_Primes (AFP) = "HOL-Number_Theory" + 
+session Arith_Prog_Rel_Primes = "HOL-Number_Theory" +
   options [timeout = 300]
   theories
     Arith_Prog_Rel_Primes

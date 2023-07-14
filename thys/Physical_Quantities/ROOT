@@ -45,7 +45,7 @@
 
 chapter AFP
 
-session "Physical_Quantities" (AFP) = "HOL" + 
+session "Physical_Quantities" = "HOL" +
   description \<open> Physical Quantities, Units, and Measurements \<close>
   options [timeout = 600]
   sessions  

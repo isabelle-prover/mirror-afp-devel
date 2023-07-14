@@ -1,6 +1,6 @@
 chapter AFP
 
-session Skip_Lists (AFP) = "HOL-Probability" +
+session Skip_Lists = "HOL-Probability" +
   options [timeout = 300]
   sessions
     Monad_Normalisation

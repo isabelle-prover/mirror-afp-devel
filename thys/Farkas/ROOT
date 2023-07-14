@@ -1,6 +1,6 @@
 chapter AFP
 
-session Farkas (AFP) = Simplex +
+session Farkas = Simplex +
   options [timeout = 600]
   sessions
     Jordan_Normal_Form

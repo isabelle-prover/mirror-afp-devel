@@ -1,6 +1,6 @@
 chapter AFP
 
-session IMP2 (AFP) = HOL +
+session IMP2 = HOL +
   options [timeout = 600]
   sessions 
     "HOL-Library" "HOL-Eisbach"

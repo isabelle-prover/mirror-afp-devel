@@ -1,6 +1,6 @@
 chapter AFP
 
-session Monad_Memo_DP (AFP) = HOL +
+session Monad_Memo_DP = HOL +
   options [timeout = 1200]
   sessions
     "HOL-Library"

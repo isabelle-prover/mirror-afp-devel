@@ -1,6 +1,6 @@
 chapter AFP
 
-session Randomised_Social_Choice (AFP) = "HOL-Probability" +
+session Randomised_Social_Choice = "HOL-Probability" +
   options [timeout = 300]
   sessions
     "HOL-Combinatorics"

@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Decreasing-Diagrams-II" (AFP) = "Abstract-Rewriting" +
+session "Decreasing-Diagrams-II" = "Abstract-Rewriting" +
   options [timeout = 600]
   sessions
     "HOL-Cardinals"

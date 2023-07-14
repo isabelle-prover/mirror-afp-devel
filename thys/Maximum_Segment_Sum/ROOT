@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Maximum_Segment_Sum" (AFP) = HOL +
+session "Maximum_Segment_Sum" = HOL +
   options [timeout=300]
   theories
     Maximum_Segment_Sum

@@ -1,6 +1,6 @@
 chapter AFP
 
-session FOL_Harrison (AFP) = HOL +
+session FOL_Harrison = HOL +
   options [timeout = 600]
   sessions
     "HOL-Library"

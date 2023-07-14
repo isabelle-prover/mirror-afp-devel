@@ -1,6 +1,6 @@
 chapter AFP
 
-session Differential_Game_Logic (AFP) = "HOL-Analysis" +
+session Differential_Game_Logic = "HOL-Analysis" +
   options [timeout = 1200]
   theories
     "Lib"

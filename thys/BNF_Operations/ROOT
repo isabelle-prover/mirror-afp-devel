@@ -1,6 +1,6 @@
 chapter AFP
 
-session BNF_Operations (AFP) = HOL +
+session BNF_Operations = HOL +
   options [timeout = 600]
   sessions "HOL-Library"
   theories [document = false]

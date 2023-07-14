@@ -1,6 +1,6 @@
 chapter AFP
 
-session OpSets (AFP) = HOL +
+session OpSets = HOL +
   options [timeout = 600]
   theories
     OpSet

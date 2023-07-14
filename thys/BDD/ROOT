@@ -1,6 +1,6 @@
 chapter AFP
 
-session BDD (AFP) = Simpl +
+session BDD = Simpl +
   options [timeout = 600]
   theories
     EvalProof

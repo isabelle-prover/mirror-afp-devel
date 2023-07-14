@@ -1,6 +1,6 @@
 chapter AFP
 
-session Conditional_Transfer_Rule (AFP) = HOL +
+session Conditional_Transfer_Rule = HOL +
   options [timeout=600]
   sessions
     "HOL-Library"

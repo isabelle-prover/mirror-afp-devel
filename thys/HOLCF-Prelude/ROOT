@@ -1,6 +1,6 @@
 chapter AFP
 
-session "HOLCF-Prelude" (AFP) = HOLCF +
+session "HOLCF-Prelude" = HOLCF +
   options [show_question_marks = false, timeout = 3600]
   sessions
     "HOL-Computational_Algebra"

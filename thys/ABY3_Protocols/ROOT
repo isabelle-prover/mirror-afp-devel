@@ -1,6 +1,6 @@
 chapter AFP
 
-session "ABY3_Protocols" (AFP) = "CryptHOL" +
+session "ABY3_Protocols" = "CryptHOL" +
   options [timeout = 600]
   theories
     Shuffle

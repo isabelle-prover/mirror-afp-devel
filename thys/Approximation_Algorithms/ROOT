@@ -1,6 +1,6 @@
 chapter AFP
 
-session Approximation_Algorithms (AFP) = HOL +
+session Approximation_Algorithms = HOL +
   options [timeout = 600]
   sessions
     "HOL-Library"

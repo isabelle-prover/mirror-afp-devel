@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Boolos_Curious_Inference_Automated" (AFP) = HOL +
+session "Boolos_Curious_Inference_Automated" = HOL +
 
   options [timeout = 600]
 

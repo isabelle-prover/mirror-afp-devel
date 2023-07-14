@@ -1,6 +1,6 @@
 chapter AFP
 
-session Prime_Number_Theorem (AFP) = Zeta_Function +
+session Prime_Number_Theorem = Zeta_Function +
   options [timeout = 600]
   sessions
     "HOL-Real_Asymp"

@@ -1,6 +1,6 @@
 chapter AFP
 
-session Priority_Queue_Braun (AFP) = "HOL-Library" +
+session Priority_Queue_Braun = "HOL-Library" +
   options [timeout = 600]
   sessions
     "HOL-Data_Structures"

@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Free-Boolean-Algebra" (AFP) = HOL +
+session "Free-Boolean-Algebra" = HOL +
   options [timeout = 600]
   theories
     Free_Boolean_Algebra

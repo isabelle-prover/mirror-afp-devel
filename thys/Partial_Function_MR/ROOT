@@ -1,6 +1,6 @@
 chapter AFP
 
-session Partial_Function_MR (AFP) = HOL +
+session Partial_Function_MR = HOL +
   options [timeout = 300]
   sessions
     "HOL-Library"

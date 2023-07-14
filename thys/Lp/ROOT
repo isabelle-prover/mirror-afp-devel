@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Lp" (AFP) = "HOL-Probability" +
+session "Lp" = "HOL-Probability" +
   options [timeout = 600]
   sessions
     Ergodic_Theory

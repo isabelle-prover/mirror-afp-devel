@@ -1,6 +1,6 @@
 chapter AFP
 
-session Show (AFP) = Deriving +
+session Show = Deriving +
   options [timeout = 600]
   sessions
     "HOL-Computational_Algebra"
@@ -13,7 +13,7 @@ session Show (AFP) = Deriving +
     "root.bib"
     "root.tex"
 
-session Old_Datatype_Show (AFP) in "Old_Datatype" = Datatype_Order_Generator +
+session Old_Datatype_Show in "Old_Datatype" = Datatype_Order_Generator +
   options [timeout = 600]
   theories
     Old_Show_Instances

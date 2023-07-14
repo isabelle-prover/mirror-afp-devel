@@ -1,6 +1,6 @@
 chapter AFP
 
-session Goodstein_Lambda (AFP) = HOL +
+session Goodstein_Lambda = HOL +
 
 options [timeout = 300]
 

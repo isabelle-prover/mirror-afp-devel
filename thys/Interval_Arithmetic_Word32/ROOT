@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Interval_Arithmetic_Word32" (AFP) = Word_Lib +
+session "Interval_Arithmetic_Word32" = Word_Lib +
   options [timeout = 600]
   theories
     Interval_Word32

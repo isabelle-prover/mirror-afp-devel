@@ -1,5 +1,5 @@
 chapter AFP
-session "Fisher_Yates" (AFP) = "HOL-Probability" +
+session "Fisher_Yates" = "HOL-Probability" +
   options [timeout = 300]
   theories
     Fisher_Yates

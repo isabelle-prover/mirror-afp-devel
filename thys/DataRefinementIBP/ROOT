@@ -1,6 +1,6 @@
 chapter AFP
 
-session DataRefinementIBP (AFP) = HOL +
+session DataRefinementIBP = HOL +
   options [timeout = 600]
   sessions
     LatticeProperties

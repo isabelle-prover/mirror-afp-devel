@@ -1,6 +1,6 @@
 chapter AFP
 
-session CZH_Foundations (AFP) = ZFC_in_HOL +
+session CZH_Foundations = ZFC_in_HOL +
   options [timeout = 2400]
   sessions
     "HOL-Library"

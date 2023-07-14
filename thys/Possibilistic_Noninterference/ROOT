@@ -1,6 +1,6 @@
 chapter AFP
 
-session Possibilistic_Noninterference (AFP) = HOL +
+session Possibilistic_Noninterference = HOL +
   options [timeout = 600]
   theories [document = false]
     Interface

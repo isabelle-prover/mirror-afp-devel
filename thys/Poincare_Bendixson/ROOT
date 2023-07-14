@@ -1,6 +1,6 @@
 chapter AFP
 
-session Poincare_Bendixson (AFP) = "HOL-ODE-Numerics" +
+session Poincare_Bendixson = "HOL-ODE-Numerics" +
   options [timeout = 600]
   theories
     Poincare_Bendixson

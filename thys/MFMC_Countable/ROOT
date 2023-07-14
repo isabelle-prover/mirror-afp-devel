@@ -1,6 +1,6 @@
 chapter AFP
 
-session "MFMC_Countable" (AFP) = "HOL-Probability" +
+session "MFMC_Countable" = "HOL-Probability" +
   options [timeout = 600]
   sessions EdmondsKarp_Maxflow
   theories

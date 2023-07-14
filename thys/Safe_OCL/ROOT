@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Safe_OCL" (AFP) = "HOL-Library" +
+session "Safe_OCL" = "HOL-Library" +
   options [timeout = 600]
   theories
     Errorable

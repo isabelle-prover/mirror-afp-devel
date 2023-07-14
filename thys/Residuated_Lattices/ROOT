@@ -1,6 +1,6 @@
 chapter AFP
 
-session Residuated_Lattices (AFP) = Relation_Algebra +
+session Residuated_Lattices = Relation_Algebra +
   options [timeout = 600]
   theories
     Residuated_Lattices

@@ -1,6 +1,6 @@
 chapter AFP
 
-session MFOTL_Monitor (AFP) = "Containers" +
+session MFOTL_Monitor = "Containers" +
   options [timeout = 1200]
   theories
     Trace

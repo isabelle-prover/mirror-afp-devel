@@ -1,6 +1,6 @@
 chapter AFP
 
-session LinearQuantifierElim (AFP) = "HOL-Library" +
+session LinearQuantifierElim = "HOL-Library" +
   options [timeout = 600]
   directories
     "Thys"

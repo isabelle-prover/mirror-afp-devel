@@ -1,6 +1,6 @@
 chapter AFP
 
-session Higher_Order_Terms (AFP) = HOL +
+session Higher_Order_Terms = HOL +
   options [timeout = 600]
   sessions
     Datatype_Order_Generator

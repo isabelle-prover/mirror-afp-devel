@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Dominance_CHK" (AFP) = HOL + 
+session "Dominance_CHK" = HOL +
   options [timeout=300]
   sessions 
     "HOL-Data_Structures"

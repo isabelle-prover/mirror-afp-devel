@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Localization_Ring" (AFP) = "HOL-Algebra" +
+session "Localization_Ring" = "HOL-Algebra" +
   options [timeout=300]
   theories
     Localization

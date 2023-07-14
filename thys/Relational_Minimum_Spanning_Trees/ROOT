@@ -1,6 +1,6 @@
 chapter AFP
 
-session Relational_Minimum_Spanning_Trees (AFP) = Aggregation_Algebras +
+session Relational_Minimum_Spanning_Trees = Aggregation_Algebras +
 
   options [timeout = 600]
 

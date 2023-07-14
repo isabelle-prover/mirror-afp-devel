@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Lehmer" (AFP) = "HOL-Number_Theory" +
+session "Lehmer" = "HOL-Number_Theory" +
   options [timeout = 3600]
   theories
     Lehmer

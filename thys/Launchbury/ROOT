@@ -1,6 +1,6 @@
 chapter AFP
 
-session Launchbury (AFP) = HOLCF +
+session Launchbury = HOLCF +
   options [timeout = 300]
   sessions
     FinFun

@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Elliptic_Curves_Group_Law" (AFP) = "HOL-Number_Theory" +
+session "Elliptic_Curves_Group_Law" = "HOL-Number_Theory" +
   options [timeout = 600]
   sessions
     "HOL-Decision_Procs"

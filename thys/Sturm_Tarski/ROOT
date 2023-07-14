@@ -1,6 +1,6 @@
 chapter AFP
 
-session Sturm_Tarski (AFP) = "HOL-Computational_Algebra" +
+session Sturm_Tarski = "HOL-Computational_Algebra" +
   options [timeout = 600]
   sessions
     Polynomial_Interpolation

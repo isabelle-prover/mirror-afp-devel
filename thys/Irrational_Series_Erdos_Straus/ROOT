@@ -1,6 +1,6 @@
 chapter AFP
 
-session Irrational_Series_Erdos_Straus (AFP) = "HOL-Analysis" +
+session Irrational_Series_Erdos_Straus = "HOL-Analysis" +
   options [timeout = 1200]
   sessions
     Prime_Number_Theorem

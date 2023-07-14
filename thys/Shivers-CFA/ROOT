@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Shivers-CFA" (AFP) = HOLCF +
+session "Shivers-CFA" = HOLCF +
   options [timeout = 600]
   theories
     Eval

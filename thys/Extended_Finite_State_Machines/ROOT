@@ -1,6 +1,6 @@
 chapter AFP
 
-session Extended_Finite_State_Machines (AFP) = "HOL-Library" +
+session Extended_Finite_State_Machines = "HOL-Library" +
 options [timeout = 600] 
 sessions
   FinFun

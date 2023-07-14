@@ -1,6 +1,6 @@
 chapter AFP
 
-session Psi_Calculi (AFP) = "HOL-Nominal" +
+session Psi_Calculi = "HOL-Nominal" +
   options [timeout = 1800]
   theories
     Weak_Bisim_Subst

@@ -1,6 +1,6 @@
 chapter AFP
 
-session Density_Compiler (AFP) = "HOL-Probability" +
+session Density_Compiler = "HOL-Probability" +
   options [timeout = 600]
   theories
     PDF_Transformations

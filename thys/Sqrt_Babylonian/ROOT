@@ -1,6 +1,6 @@
 chapter AFP
 
-session Sqrt_Babylonian (AFP) = Cauchy +
+session Sqrt_Babylonian = Cauchy +
   options [timeout = 600]
   theories 
     Log_Impl

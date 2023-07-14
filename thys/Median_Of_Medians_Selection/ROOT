@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Median_Of_Medians_Selection" (AFP) = HOL +
+session "Median_Of_Medians_Selection" = HOL +
   options [timeout = 300]
   sessions
     "HOL-Library"

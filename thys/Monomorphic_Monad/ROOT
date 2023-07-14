@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Monomorphic_Monad" (AFP) = "HOL-Probability" +
+session "Monomorphic_Monad" = "HOL-Probability" +
   options [timeout = 300]
   theories
     Monomorphic_Monad

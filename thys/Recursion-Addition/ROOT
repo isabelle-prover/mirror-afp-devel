@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Recursion-Addition" (AFP) = ZF +
+session "Recursion-Addition" = ZF +
   options [timeout = 300]
   theories
     recursion

@@ -1,6 +1,6 @@
 chapter AFP
 
-session Signature_Groebner (AFP) = Groebner_Bases +
+session Signature_Groebner = Groebner_Bases +
   options [timeout = 3600]
   theories
     Signature_Examples

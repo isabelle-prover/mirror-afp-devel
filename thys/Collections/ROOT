@@ -1,6 +1,6 @@
 chapter AFP
 
-session Collections (AFP) = Refine_Monadic +
+session Collections = Refine_Monadic +
   options [timeout = 2100, document_variants = "document:outline=/proof,/ML:userguide"]
   sessions
     "Binomial-Heaps"
@@ -148,7 +148,7 @@ session Collections (AFP) = Refine_Monadic +
     "root_userguide.tex"
 
 
-session Collections_Examples (AFP) in "Examples" = Collections +
+session Collections_Examples in "Examples" = Collections +
   options [timeout = 1200]
 
   sessions

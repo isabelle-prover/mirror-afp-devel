@@ -1,6 +1,6 @@
 chapter AFP
 
-session Allen_Calculus (AFP) = HOL +
+session Allen_Calculus = HOL +
   options [timeout = 600]
   sessions
     "HOL-Eisbach"

@@ -1,6 +1,6 @@
 chapter AFP
 
-session Mereology (AFP) = HOL +
+session Mereology = HOL +
   options [timeout = 300]
   theories
     PM

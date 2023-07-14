@@ -1,6 +1,6 @@
 chapter AFP
 
-session Gauss_Sums (AFP) = Dirichlet_Series +
+session Gauss_Sums = Dirichlet_Series +
   options [timeout = 600]
   sessions
     "HOL-Algebra"

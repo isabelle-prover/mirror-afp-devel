@@ -1,6 +1,6 @@
 chapter AFP
 
-session CommCSL (AFP) = "HOL-Library" +
+session CommCSL = "HOL-Library" +
   options [timeout = 600]
   theories
     PartialMap

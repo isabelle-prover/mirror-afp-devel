@@ -1,6 +1,6 @@
 chapter AFP
 
-session IMO2019 (AFP) = Prime_Distribution_Elementary +
+session IMO2019 = Prime_Distribution_Elementary +
   options [timeout = 600]
   theories
     IMO2019_Q1

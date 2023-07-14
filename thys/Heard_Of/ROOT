@@ -1,6 +1,6 @@
 chapter AFP
 
-session Heard_Of (AFP) = HOL +
+session Heard_Of = HOL +
   options [timeout = 600]
   sessions
     "HOL-Library"

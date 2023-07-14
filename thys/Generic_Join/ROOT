@@ -1,5 +1,5 @@
 chapter AFP
-session "Generic_Join" (AFP) = HOL +
+session "Generic_Join" = HOL +
   options [timeout = 1200]
   sessions
 	"MFOTL_Monitor"

@@ -1,6 +1,6 @@
 chapter AFP
 
-session GenClock (AFP) = HOL +
+session GenClock = HOL +
   options [timeout = 600]
   theories
     GenClock

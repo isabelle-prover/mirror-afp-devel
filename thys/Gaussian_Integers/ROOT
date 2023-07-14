@@ -1,6 +1,6 @@
 chapter AFP
 
-session Gaussian_Integers (AFP) = "HOL-Number_Theory" +
+session Gaussian_Integers = "HOL-Number_Theory" +
   options [timeout = 1200]
   sessions
     "HOL-Computational_Algebra"

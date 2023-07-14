@@ -1,6 +1,6 @@
 chapter AFP
 
-session Special_Function_Bounds (AFP) = Sturm_Sequences +
+session Special_Function_Bounds = Sturm_Sequences +
   description "Proofs of upper and lower bounds for trig functions, log, exp, square root"
   options [timeout = 600]
   theories

@@ -1,6 +1,6 @@
 chapter AFP
 
-session FO_Theory_Rewriting (AFP) = "HOL-Library" +
+session FO_Theory_Rewriting = "HOL-Library" +
   options [timeout = 1200]
   sessions
     "Regular_Tree_Relations"

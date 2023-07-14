@@ -1,6 +1,6 @@
 chapter AFP
 
-session BinarySearchTree (AFP) = HOL +
+session BinarySearchTree = HOL +
   options [timeout = 600]
   theories
     BinaryTree

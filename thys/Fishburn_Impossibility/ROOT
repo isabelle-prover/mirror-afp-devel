@@ -1,6 +1,6 @@
 chapter AFP
 
-session Fishburn_Impossibility (AFP) = HOL +
+session Fishburn_Impossibility = HOL +
   options [timeout = 300]
   sessions
     Randomised_Social_Choice

@@ -1,5 +1,5 @@
 chapter AFP
-session "MDP-Rewards" (AFP) = "HOL-Probability" +
+session "MDP-Rewards" = "HOL-Probability" +
   options [timeout = 600]
   theories
     MDP_reward

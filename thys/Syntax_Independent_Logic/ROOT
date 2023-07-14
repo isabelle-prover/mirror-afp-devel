@@ -1,6 +1,6 @@
 chapter AFP
 
-session Syntax_Independent_Logic (AFP) = HOL +
+session Syntax_Independent_Logic = HOL +
   description \<open>Syntax-Independent Logic Infrastructure\<close>
   options [timeout = 2400]
   sessions

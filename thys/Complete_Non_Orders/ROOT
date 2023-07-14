@@ -1,6 +1,6 @@
 chapter AFP
 
-session Complete_Non_Orders (AFP) = HOL +
+session Complete_Non_Orders = HOL +
   description "Fixed-Point Theorems for Non-Transitive Relations"
   options [timeout = 300]
   sessions

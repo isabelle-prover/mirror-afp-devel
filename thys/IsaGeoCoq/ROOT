@@ -1,6 +1,6 @@
 chapter AFP
 
-session IsaGeoCoq (AFP) = HOL +
+session IsaGeoCoq = HOL +
   options [timeout = 600]
   theories
     Tarski_Neutral

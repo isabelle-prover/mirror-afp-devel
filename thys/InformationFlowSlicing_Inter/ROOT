@@ -1,6 +1,6 @@
 chapter AFP
 
-session InformationFlowSlicing_Inter (AFP) = "HRB-Slicing" +
+session InformationFlowSlicing_Inter = "HRB-Slicing" +
   options [timeout = 600]
   theories
     LiftingInter

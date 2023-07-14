@@ -1,6 +1,6 @@
 chapter AFP
 
-session JinjaThreads (AFP slow) = HOL +
+session JinjaThreads (slow) = HOL +
   options [timeout = 28800]
   sessions
     "Binomial-Heaps"

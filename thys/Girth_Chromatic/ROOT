@@ -1,6 +1,6 @@
 chapter AFP
 
-session Girth_Chromatic (AFP) = "HOL-Probability" +
+session Girth_Chromatic = "HOL-Probability" +
   options [timeout = 600]
   sessions
     "HOL-Decision_Procs"

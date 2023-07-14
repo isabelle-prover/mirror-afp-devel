@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Depth-First-Search" (AFP) = HOL +
+session "Depth-First-Search" = HOL +
   options [timeout = 600]
   theories
     DFS

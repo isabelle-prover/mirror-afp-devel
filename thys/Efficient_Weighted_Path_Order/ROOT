@@ -1,6 +1,6 @@
 chapter AFP
 
-session Efficient_Weighted_Path_Order (AFP) = Weighted_Path_Order +
+session Efficient_Weighted_Path_Order = Weighted_Path_Order +
   options [timeout = 600]
   theories
     List_Memo_Functions

@@ -1,6 +1,6 @@
 chapter AFP
 
-session C2KA_DistributedSystems (AFP) = HOL +
+session C2KA_DistributedSystems = HOL +
   options [timeout = 300]
   theories
     Stimuli

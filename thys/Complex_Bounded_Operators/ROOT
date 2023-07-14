@@ -1,6 +1,6 @@
 chapter AFP
 
-session Complex_Bounded_Operators(AFP) = "Complex_Bounded_Operators_Dependencies" +
+session Complex_Bounded_Operators = "Complex_Bounded_Operators_Dependencies" +
   options [timeout = 3600]
   directories
     extra

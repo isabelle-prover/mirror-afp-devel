@@ -1,6 +1,6 @@
 chapter AFP
 
-session MiniML (AFP) = HOL +
+session MiniML = HOL +
   options [timeout = 600]
   theories
     W

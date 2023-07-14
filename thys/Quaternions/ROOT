@@ -1,6 +1,6 @@
 chapter AFP
 
-session Quaternions (AFP) = "HOL-Analysis" +
+session Quaternions = "HOL-Analysis" +
   description "Quaternions"
   options [timeout = 300]
   theories

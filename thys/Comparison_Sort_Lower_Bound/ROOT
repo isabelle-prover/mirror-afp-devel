@@ -1,6 +1,6 @@
 chapter AFP
 
-session Comparison_Sort_Lower_Bound (AFP) = Stirling_Formula +
+session Comparison_Sort_Lower_Bound = Stirling_Formula +
   options [timeout = 300]
   sessions
     "HOL-Combinatorics"

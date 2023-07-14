@@ -1,6 +1,6 @@
 chapter AFP
 
-session PAC_Checker (AFP) = "Sepref_IICF" +
+session PAC_Checker = "Sepref_IICF" +
   description \<open>PAC proof checker\<close>
   options
     [timeout = 2700]

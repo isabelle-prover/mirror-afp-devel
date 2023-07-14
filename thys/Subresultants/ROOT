@@ -1,6 +1,6 @@
 chapter AFP
 
-session Subresultants (AFP) = "Jordan_Normal_Form" +
+session Subresultants = "Jordan_Normal_Form" +
   description "Subresultants"
   options [timeout = 600]
   sessions

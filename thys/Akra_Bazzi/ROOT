@@ -1,6 +1,6 @@
 chapter AFP
 
-session Akra_Bazzi (AFP) = "HOL-Analysis" +
+session Akra_Bazzi = "HOL-Analysis" +
   options [timeout = 600]
   sessions
     "Pure-ex"

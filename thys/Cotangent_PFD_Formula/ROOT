@@ -1,6 +1,6 @@
 chapter AFP
 
-session Cotangent_PFD_Formula (AFP) = "HOL-Complex_Analysis" +
+session Cotangent_PFD_Formula = "HOL-Complex_Analysis" +
   options [timeout = 600]
   sessions
     "HOL-Real_Asymp"

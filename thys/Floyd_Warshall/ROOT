@@ -1,6 +1,6 @@
 chapter AFP
 
-session Floyd_Warshall (AFP) = Refine_Imperative_HOL +
+session Floyd_Warshall = Refine_Imperative_HOL +
   options [timeout=600]
   theories
     Floyd_Warshall

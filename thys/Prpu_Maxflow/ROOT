@@ -1,6 +1,6 @@
 chapter AFP
 
-session Prpu_Maxflow (AFP) = Flow_Networks +
+session Prpu_Maxflow = Flow_Networks +
   options [timeout = 600]
   theories
     Generic_Push_Relabel

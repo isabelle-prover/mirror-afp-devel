@@ -1,6 +1,6 @@
 chapter AFP
 
-session "CoreC++" (AFP) = "HOL-Library" +
+session "CoreC++" = "HOL-Library" +
   options [timeout = 1200]
   theories
     "CoreC++"

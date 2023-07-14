@@ -1,6 +1,6 @@
 chapter AFP
 
-session Boolean_Expression_Checkers (AFP) = "HOL-Library" +
+session Boolean_Expression_Checkers = "HOL-Library" +
   options [timeout = 600]
   theories
     Boolean_Expression_Example

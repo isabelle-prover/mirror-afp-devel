@@ -1,6 +1,6 @@
 chapter AFP
 
-session Schwartz_Zippel (AFP) = "HOL-Probability" +
+session Schwartz_Zippel = "HOL-Probability" +
   options [timeout = 1800]
   sessions
     Skip_Lists

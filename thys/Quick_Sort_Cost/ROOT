@@ -1,6 +1,6 @@
 chapter AFP
 
-session Quick_Sort_Cost (AFP) = "HOL-Probability" +
+session Quick_Sort_Cost = "HOL-Probability" +
   options [timeout = 300]
   sessions
     "List-Index"

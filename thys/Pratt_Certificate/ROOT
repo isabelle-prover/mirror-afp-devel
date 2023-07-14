@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Pratt_Certificate" (AFP) = "HOL-Number_Theory" +
+session "Pratt_Certificate" = "HOL-Number_Theory" +
   options [timeout = 3600]
   sessions
     Lehmer

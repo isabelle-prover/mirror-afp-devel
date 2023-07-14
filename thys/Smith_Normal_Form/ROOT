@@ -1,6 +1,6 @@
 chapter AFP
 
-session Smith_Normal_Form (AFP) = Hermite +
+session Smith_Normal_Form = Hermite +
   options [timeout = 2400]
   sessions
     "HOL-Types_To_Sets"

@@ -1,6 +1,6 @@
 chapter AFP
 
-session LOFT (AFP) = Iptables_Semantics +
+session LOFT = Iptables_Semantics +
   options [timeout = 1200]
   sessions
     "Pure-ex"

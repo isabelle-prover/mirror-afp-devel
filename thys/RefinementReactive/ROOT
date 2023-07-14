@@ -1,6 +1,6 @@
 chapter AFP
 
-session RefinementReactive (AFP) = HOL +
+session RefinementReactive = HOL +
   options [timeout = 600]
   theories
     Reactive

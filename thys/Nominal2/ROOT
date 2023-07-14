@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Nominal2" (AFP) = HOL +
+session "Nominal2" = HOL +
   options [timeout = 600]
   sessions
     "HOL-Library"

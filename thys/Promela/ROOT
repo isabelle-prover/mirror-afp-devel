@@ -1,6 +1,6 @@
 chapter AFP
 
-session Promela (AFP) = CAVA_Automata +
+session Promela = CAVA_Automata +
   options [timeout = 600]
   sessions
     LTL

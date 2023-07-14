@@ -1,3 +1,4 @@
+(* All sessions must be in chapter AFP *)
 chapter AFP
 
 (* There must be one session with the (short) name of the entry.
@@ -6,14 +7,11 @@ chapter AFP
    It is strongly encouraged to have precisely one session, but it
    if needed, further sessions are permitted.
 
-   All sessions must be in group (AFP) - otherwise they are not
-   run upon submission and by the later automatic regression tests.
-
    Every theory must be included in at least one of the sessions.
 *)
 
-(* Session name, add to AFP group, list base session: *)
-session "Example-Submission" (AFP) = HOL +
+(* Session name, list base session: *)
+session "Example-Submission" = HOL +
 
 (* Timeout (in sec) in case of non-termination problems *)
   options [timeout = 600]

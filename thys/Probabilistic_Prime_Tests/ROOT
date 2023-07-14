@@ -1,6 +1,6 @@
 chapter AFP
 
-session Probabilistic_Prime_Tests (AFP) = "HOL-Probability" +
+session Probabilistic_Prime_Tests = "HOL-Probability" +
   options [timeout = 1500]
   sessions
     "HOL-Algebra"

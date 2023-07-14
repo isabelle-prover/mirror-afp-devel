@@ -1,6 +1,6 @@
 chapter AFP
 
-session Package_logic (AFP) = HOL +
+session Package_logic = HOL +
   options [timeout=300]
   theories
   	SepAlgebra

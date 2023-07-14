@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Shadow_DOM" (AFP) = "Core_DOM" +
+session "Shadow_DOM" = "Core_DOM" +
   options [timeout = 3600]
   directories
     classes

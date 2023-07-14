@@ -1,6 +1,6 @@
 chapter AFP
 
-session Dynamic_Tables (AFP) = Amortized_Complexity +
+session Dynamic_Tables = Amortized_Complexity +
   options [timeout = 600]
   theories
     Tables_nat

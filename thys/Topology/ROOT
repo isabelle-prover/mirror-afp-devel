@@ -1,6 +1,6 @@
 chapter AFP
 
-session Topology (AFP) = Coinductive +
+session Topology = Coinductive +
   options [timeout = 600]
   sessions
     "Lazy-Lists-II"

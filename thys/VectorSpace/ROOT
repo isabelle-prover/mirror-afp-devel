@@ -1,6 +1,6 @@
 chapter AFP
 
-session VectorSpace (AFP) = "HOL-Algebra" +
+session VectorSpace = "HOL-Algebra" +
   options [timeout = 600]
   theories
     VectorSpace

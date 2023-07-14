@@ -1,6 +1,6 @@
 chapter AFP
 
-session "X86_Semantics" (AFP) = HOL +
+session "X86_Semantics" = HOL +
 
   options [timeout = 1800]
   sessions
