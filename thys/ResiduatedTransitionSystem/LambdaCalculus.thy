@@ -277,7 +277,7 @@ begin
            apply force
           apply force
          apply force
-        apply fastforce
+        apply force
     proof -
       fix t u d n
       assume ind1: "\<And>d n. FV (Raise d n t) = (\<lambda>x. if d \<le> x then x + n else x) ` FV t"
@@ -288,8 +288,7 @@ begin
             ((\<lambda>x. x + n) ` (FV u \<inter> {x. d \<le> x}) \<union> FV u \<inter> {x. \<not> d \<le> x})"
         using ind1 ind2 by simp
       also have "... = (\<lambda>x. if d \<le> x then x + n else x) ` FV (\<^bold>\<lambda>\<^bold>[t\<^bold>] \<^bold>\<Zspot> u)"
-        apply simp
-        by force
+        by auto force+
       finally show "FV (Raise d n (\<^bold>\<lambda>\<^bold>[t\<^bold>] \<^bold>\<Zspot> u)) =
                     (\<lambda>x. if d \<le> x then x + n else x) ` FV (\<^bold>\<lambda>\<^bold>[t\<^bold>] \<^bold>\<Zspot> u)"
         by blast
@@ -426,12 +425,34 @@ begin
     shows "FV (Subst d v t) = FVS d v t"
     proof (induct t arbitrary: d v)
       have "\<And>d t v. (\<lambda>x. x - 1) ` (FVS (Suc d) v t - {0}) = FVS d v \<^bold>\<lambda>\<^bold>[t\<^bold>]"
-        by auto force+  (* 8 sec *)
+      proof -
+        fix d t v
+        have "FVS d v \<^bold>\<lambda>\<^bold>[t\<^bold>] =
+              (\<lambda>x. x - Suc 0) ` (FV t - {0}) \<inter> {x. x < d} \<union>
+              (\<lambda>x. x - Suc 0) ` {x. d < x \<and> x \<in> (\<lambda>x. x - Suc 0) ` (FV t - {0})} \<union>
+              (\<lambda>x. x + d) ` {x. d \<in> (\<lambda>x. x - Suc 0) ` (FV t - {0}) \<and> x \<in> FV v}"
+          by simp
+        also have "... = (\<lambda>x. x - 1) ` (FVS (Suc d) v t - {0})"
+          by auto force+
+        finally show "(\<lambda>x. x - 1) ` (FVS (Suc d) v t - {0}) = FVS d v \<^bold>\<lambda>\<^bold>[t\<^bold>]"
+          by metis
+      qed
       thus "\<And>d t v. (\<And>d v. FV (Subst d v t) = FVS d v t)
                               \<Longrightarrow> FV (Subst d v \<^bold>\<lambda>\<^bold>[t\<^bold>]) = FVS d v \<^bold>\<lambda>\<^bold>[t\<^bold>]"
         by simp
       have "\<And>t u v d. (\<lambda>x. x - 1) ` (FVS (Suc d) v t - {0}) \<union> FVS d v u = FVS d v (\<^bold>\<lambda>\<^bold>[t\<^bold>] \<^bold>\<Zspot> u)"
-        by auto force+  (* 25 sec *)
+      proof -
+        fix t u v d
+        have "FVS d v (\<^bold>\<lambda>\<^bold>[t\<^bold>] \<^bold>\<Zspot> u) =
+              ((\<lambda>x. x - Suc 0) ` (FV t - {0}) \<union> FV u) \<inter> {x. x < d} \<union>
+              (\<lambda>x. x - Suc 0) ` {x. d < x \<and> (x \<in> (\<lambda>x. x - Suc 0) ` (FV t - {0}) \<or> x \<in> FV u)} \<union>
+              (\<lambda>x. x + d) ` {x. (d \<in> (\<lambda>x. x - Suc 0) ` (FV t - {0}) \<or> d \<in> FV u) \<and> x \<in> FV v}"
+          by simp
+        also have "... = (\<lambda>x. x - 1) ` (FVS (Suc d) v t - {0}) \<union> FVS d v u"
+          by force
+        finally show "(\<lambda>x. x - 1) ` (FVS (Suc d) v t - {0}) \<union> FVS d v u = FVS d v (\<^bold>\<lambda>\<^bold>[t\<^bold>] \<^bold>\<Zspot> u)"
+          by metis
+      qed
       thus "\<And>t u v d. \<lbrakk>\<And>d v. FV (Subst d v t) = FVS d v t;
                        \<And>d v. FV (Subst d v u) = FVS d v u\<rbrakk>
                             \<Longrightarrow> FV (Subst d v (\<^bold>\<lambda>\<^bold>[t\<^bold>] \<^bold>\<Zspot> u)) = FVS d v (\<^bold>\<lambda>\<^bold>[t\<^bold>] \<^bold>\<Zspot> u)"
@@ -1674,10 +1695,10 @@ begin
     proof
       show "\<And>f. \<not> \<Lambda>x\<Lambda>.arr f \<Longrightarrow> Beta\<^sub>e\<^sub>x\<^sub>t f = null"
         by simp
-      show "\<And>f. \<Lambda>x\<Lambda>.ide f \<Longrightarrow> src (Beta\<^sub>e\<^sub>x\<^sub>t f) = App_o_Lam_Id.map (\<Lambda>x\<Lambda>.src f)"
-        using \<Lambda>x\<Lambda>.src_char Lam_Id.map_def by simp
-      show "\<And>f. \<Lambda>x\<Lambda>.ide f \<Longrightarrow> trg (Beta\<^sub>e\<^sub>x\<^sub>t f) = subst\<^sub>e\<^sub>x\<^sub>t (\<Lambda>x\<Lambda>.trg f)"
-        using \<Lambda>x\<Lambda>.trg_char by simp
+      show "\<And>f. \<Lambda>x\<Lambda>.ide f \<Longrightarrow> src (Beta\<^sub>e\<^sub>x\<^sub>t f) = App_o_Lam_Id.map f"
+        using \<Lambda>x\<Lambda>.src_char \<Lambda>x\<Lambda>.src_ide Lam_Id.map_def by force
+      show "\<And>f. \<Lambda>x\<Lambda>.ide f \<Longrightarrow> trg (Beta\<^sub>e\<^sub>x\<^sub>t f) = subst\<^sub>e\<^sub>x\<^sub>t f"
+        using \<Lambda>x\<Lambda>.trg_char \<Lambda>x\<Lambda>.trg_ide by force
       show "\<And>f. \<Lambda>x\<Lambda>.arr f \<Longrightarrow>
                   Beta\<^sub>e\<^sub>x\<^sub>t (\<Lambda>x\<Lambda>.src f) \\ App_o_Lam_Id.map f = Beta\<^sub>e\<^sub>x\<^sub>t (\<Lambda>x\<Lambda>.trg f)"
           using \<Lambda>x\<Lambda>.src_char \<Lambda>x\<Lambda>.trg_char Arr_Trg Arr_not_Nil Lam_Id.map_def by simp
@@ -2134,14 +2155,14 @@ begin
       using in_targets_iff arr_char targets_char by auto
 
     lemma Src_hd_eqI:
-    assumes "cong T U"
+    assumes "T \<^sup>*\<sim>\<^sup>* U"
     shows "\<Lambda>.Src (hd T) = \<Lambda>.Src (hd U)"
       using assms
       by (metis Con_imp_eq_Srcs Con_implies_Arr(1) Ide.simps(1) Srcs_simp\<^sub>\<Lambda>\<^sub>P ide_char
           singleton_insert_inj_eq')
 
     lemma Trg_last_eqI:
-    assumes "cong T U"
+    assumes "T \<^sup>*\<sim>\<^sup>* U"
     shows "\<Lambda>.Trg (last T) = \<Lambda>.Trg (last U)"
     proof -
       have 1: "[\<Lambda>.Trg (last T)] \<in> targets T \<and> [\<Lambda>.Trg (last U)] \<in> targets U"
@@ -2644,11 +2665,11 @@ begin
     assumes "Arr T" and "Arr U"
     shows "map (\<lambda>X. X \<^bold>\<circ> \<Lambda>.Src (hd U)) T @ map (\<Lambda>.App (\<Lambda>.Trg (last T))) U \<^sup>*\<sim>\<^sup>*
            map (\<Lambda>.App (\<Lambda>.Src (hd T))) U @ map (\<lambda>X. X \<^bold>\<circ> \<Lambda>.Trg (last U)) T"
-    (*
-      using assms orthogonal_App_Arr_Arr [of T U]
-      by (smt (verit, best) Con_Arr_self Con_imp_Arr_Resid Con_implies_Arr(1) Con_sym
-          Nil_is_append_conv Resid_append_ind arr_char cube map_is_Nil_conv prfx_reflexive)
-     *)
+(*
+      using assms orthogonal_App_Arr_Arr [of T U] Arr.simps(1) Con_imp_Arr_Resid
+            Con_implies_Arr(1) Resid_Arr_self  Resid_append_ind ide_char list.map_disc_iff cube
+      by (smt (verit))
+*)
     proof
       have 1: "Arr (map (\<lambda>X. X \<^bold>\<circ> \<Lambda>.Src (hd U)) T)"
         using assms Arr_imp_arr_hd Arr_map_App1 \<Lambda>.Ide_Src by force
@@ -3288,8 +3309,8 @@ begin
               by simp
             also have "... \<longleftrightarrow> True"
               using U 1 ide_char Ide_append_iff\<^sub>P\<^sub>W\<^sub>E [of "[u \\ t]" "U \<^sup>*\\\<^sup>* [t \\ u]"]
-              by (metis Ide.simps(2) Ide_appendI\<^sub>P\<^sub>W\<^sub>E Src_resid Trg.simps(2) \<Lambda>.prfx_implies_con
-                  \<Lambda>.trg_resid_sym con_char \<Lambda>.subs_implies_prfx prfx_implies_con)
+              by (metis Ide.simps(2) Ide_appendI\<^sub>P\<^sub>W\<^sub>E Src_resid Trg.simps(2)
+                  \<Lambda>.apex_sym con_char \<Lambda>.subs_implies_prfx prfx_implies_con)
             finally show ?thesis by blast
           qed
         qed
@@ -6643,11 +6664,15 @@ begin
               by (metis (mono_tags, opaque_lifting) \<Lambda>.Arr.simps(4) list.simps(8,9))
             moreover have "seq (map (\<lambda>a. a \<^bold>\<circ> \<Lambda>.Src u) (standard_development t))
                                (map (\<lambda>b. \<Lambda>.Trg t \<^bold>\<circ> b) (standard_development u))"
-              using 1 u seqI\<^sub>\<Lambda>\<^sub>P Con_implies_Arr(1) Ide.simps(1) calculation(2) ide_char
-                    Ide_iff_standard_development_empty Src_hd_eqI Trg_last_eqI
-                    calculation(2-3) hd_map ind2 \<Lambda>.Arr.simps(4) \<Lambda>.Src.simps(4)
-                    \<Lambda>.Src_Trg \<Lambda>.Trg.simps(3) \<Lambda>.Trg_Src last_ConsL list.sel(1)
-              by (metis (no_types, lifting))
+            proof
+              show "Arr (map (\<lambda>a. a \<^bold>\<circ> \<Lambda>.Src u) (standard_development t))"
+                by (metis Con_implies_Arr(1) Ide.simps(1) calculation(2) ide_char)
+              show "Arr (map ((\<^bold>\<circ>) (\<Lambda>.Trg t)) (standard_development u))"
+                by (metis Con_implies_Arr(1) Ide.simps(1) calculation(3) ide_char)
+              show "\<Lambda>.Trg (last (map (\<lambda>a. a \<^bold>\<circ> \<Lambda>.Src u) (standard_development t))) =
+                    \<Lambda>.Src (hd (map ((\<^bold>\<circ>) (\<Lambda>.Trg t)) (standard_development u)))"
+                using 1 Src_hd_eqI Trg_last_eqI calculation(2) calculation(3) by auto
+            qed
             ultimately have "standard_development (t \<^bold>\<circ> u) \<^sup>*\<sim>\<^sup>* [t \<^bold>\<circ> \<Lambda>.Src u] @ [\<Lambda>.Trg t \<^bold>\<circ> u]"
               using cong_append [of "map (\<lambda>a. a \<^bold>\<circ> \<Lambda>.Src u) (standard_development t)"
                                     "map (\<lambda>b. \<Lambda>.Trg t \<^bold>\<circ> b) (standard_development u)"
@@ -8612,8 +8637,8 @@ begin
                       qed
                     qed 
                     moreover have "\<Lambda>.seq (M \<^bold>\<circ> N) u"
-                      by (metis u Srcs_simp\<^sub>\<Lambda>\<^sub>P Arr.simps(2) Trgs.simps(2) seq_char \<Lambda>.arr_char
-                          list.sel(1) seq \<Lambda>.seqI \<Lambda>.sources_char\<^sub>\<Lambda>)
+                      by (metis u Srcs_simp\<^sub>\<Lambda>\<^sub>P Arr.simps(2) Trgs.simps(2) seq_char
+                          list.sel(1) seq \<Lambda>.seqI(1) \<Lambda>.sources_char\<^sub>\<Lambda>)
                     moreover have "\<not> Ide (N # filter notIde (map \<Lambda>.un_App2 (u # U)))"
                       using u *
                       by (metis (no_types, lifting) *** Arr_map_un_App2 Std Std_imp_Arr
@@ -8940,7 +8965,7 @@ begin
                                 qed
                               qed
                               show "seq [M \<^bold>\<circ> \<Lambda>.Src N] [\<Lambda>.Trg M \<^bold>\<circ> N]"
-                                using MN by fastforce
+                                using MN by force
                               show "[M \<^bold>\<circ> \<Lambda>.Src N] \<^sup>*\<sim>\<^sup>* [M \<^bold>\<circ> \<Lambda>.Src N]"
                                 using MN
                                 by (meson head_redex_decomp \<Lambda>.Arr.simps(4) \<Lambda>.Arr_Src

@@ -124,7 +124,7 @@ begin
     shows "arr t" and "arr u"
       using assms
       by (metis arrI con_def con_imp_arr_resid cube null_is_zero(2))+
- 
+
     lemma arr_resid [simp]:
     assumes "t \<frown> u"
     shows "arr (t \\ u)"
@@ -341,7 +341,7 @@ begin
     lemma sources_eqI:
     assumes "sources t \<inter> sources t' \<noteq> {}"
     shows "sources t = sources t'"
-      using assms sources_def sources_are_con sources_con_closed by blast
+      using assms sources_def sources_are_con sources_con_closed by blast (* 3 sec *)
 
     lemma targets_are_con:
     assumes "b \<in> targets t" and "b' \<in> targets t"
@@ -356,7 +356,7 @@ begin
     lemma targets_eqI:
     assumes "targets t \<inter> targets t' \<noteq> {}"
     shows "targets t = targets t'"
-      using assms targets_def targets_are_con targets_con_closed by blast
+      using assms targets_def targets_are_con targets_con_closed by blast (* 2 sec *)
 
     text \<open>
       Arrows are \emph{coinitial} if they have a common source, and \emph{coterminal}
@@ -435,9 +435,9 @@ begin
     where "seq t u \<equiv> arr t \<and> arr u \<and> targets t = sources u"
 
     lemma seqI [intro]:
-    assumes "arr t" and "arr u" and "targets t = sources u"
-    shows "seq t u"
-      using assms seq_def by auto
+    shows "\<lbrakk>arr t; targets t = sources u\<rbrakk> \<Longrightarrow> seq t u"
+    and "\<lbrakk>arr u; targets t = sources u\<rbrakk> \<Longrightarrow> seq t u"
+      using seq_def arr_iff_has_source arr_iff_has_target by metis+
 
     lemma seqE [elim]:
     assumes "seq t u"
@@ -647,13 +647,23 @@ begin
     shows "targets t = {b. arr t \<and> trg t = b}"
       using trg_in_targets arr_has_un_target arr_iff_has_target by auto
 
-    lemma arr_src_iff_arr [iff]:
+    lemma arr_src_iff_arr:
     shows "arr (src t) \<longleftrightarrow> arr t"
       by (metis arrI conE null_is_zero(2) sources_are_con arrE src_def src_in_sources)
 
-    lemma arr_trg_iff_arr [iff]:
+    lemma arr_trg_iff_arr:
     shows "arr (trg t) \<longleftrightarrow> arr t"
       by (metis arrI arrE arr_resid_iff_con resid_arr_self)
+
+    lemma arr_src_if_arr [simp]:
+    assumes "arr t"
+    shows "arr (src t)"
+      using assms arr_src_iff_arr by blast
+
+    lemma arr_trg_if_arr [simp]:
+    assumes "arr t"
+    shows "arr (trg t)"
+      using assms arr_trg_iff_arr by blast
 
     lemma con_imp_eq_src:
     assumes "t \<frown> u"
@@ -668,22 +678,24 @@ begin
       by (metis arr_resid_iff_con con_implies_arr(2) arr_has_un_source trg_in_targets
                 sources_resid src_in_sources)
 
-    lemma trg_resid_sym:
-    assumes "t \<frown> u"
-    shows "trg (t \\ u) = trg (u \\ t)"
-      using assms
-      by (metis arr_has_un_target arr_resid con_sym targets_resid_sym trg_in_targets)
-
     lemma apex_sym:
     shows "trg (t \\ u) = trg (u \\ t)"
-      using trg_resid_sym con_def by metis
+      by (metis arr_has_un_target con_sym_ax residuation.arr_resid_iff_con residuation.conI
+          residuation_axioms targets_resid_sym trg_in_targets)
+
+    lemma apex_arr_prfx:
+    assumes "prfx t u"
+    shows "trg (u \\ t) = trg u"
+    and "trg (t \\ u) = trg u"
+      using assms
+       apply (metis apex_sym arr_resid_iff_con ideE src_resid)
+      by (metis arr_resid_iff_con assms ideE src_resid)
 
     lemma seqI\<^sub>W\<^sub>E [intro, simp]:
-    assumes "arr u" and "arr t" and "trg t = src u"
-    shows "seq t u"
-      using assms
-      by (metis (mono_tags, lifting) arrE in_sourcesE resid_arr_ide sources_resid
-          resid_arr_self seqI sources_are_con src_in_sources)
+    shows "\<lbrakk>arr t; trg t = src u\<rbrakk> \<Longrightarrow> seq t u"
+    and "\<lbrakk>arr u; trg t = src u\<rbrakk> \<Longrightarrow> seq t u"
+      by (metis arrE arr_src_iff_arr arr_trg_iff_arr in_sourcesE rts.resid_arr_ide
+          rts_axioms seqI(1) sources_resid src_in_sources trg_def)+
 
     lemma seqE\<^sub>W\<^sub>E [elim]:
     assumes "seq t u"
@@ -737,7 +749,7 @@ begin
     lemma trg_ide [simp]:
     assumes "ide a"
     shows "trg a = a"
-      using assms resid_arr_self by force
+      using assms resid_arr_self by auto
 
     lemma ide_iff_src_self:
     assumes "arr a"
@@ -755,8 +767,7 @@ begin
 
     lemma trg_trg [simp]:
     shows "trg (trg t) = trg t"
-      by (metis con_def cong_reflexive ide_def null_is_zero(2) resid_arr_self
-          residuation.con_implies_arr(1) residuation_axioms)
+      by (metis con_def con_implies_arr(2) cong_reflexive ide_def null_is_zero(2) resid_arr_self)
 
     lemma src_trg [simp]:
     shows "src (trg t) = trg t"
@@ -991,6 +1002,16 @@ begin
     shows "composable g f \<longleftrightarrow> seq g f"
       using composable_imp_seq has_composites by blast
 
+    lemma composableI [intro]:
+    assumes "seq g f"
+    shows "composable g f"
+      using assms composable_iff_seq by auto
+
+    lemma composableE [elim]:
+    assumes "composable g f" and "seq g f \<Longrightarrow> T"
+    shows T
+      using assms composable_iff_seq by blast
+
     lemma obtains_composite_of:
     assumes "seq g f"
     obtains h where "composite_of g f h"
@@ -1156,15 +1177,15 @@ begin
     where "t \<cdot> u \<equiv> if composable t u then THE v. composite_of t u v else null"
 
     lemma comp_is_composite_of:
-    assumes "composite_of t u v"
-    shows "composite_of t u (t \<cdot> u)" and "t \<cdot> u = v"
+    shows "composable t u \<Longrightarrow> composite_of t u (t \<cdot> u)"
+    and "composite_of t u v \<Longrightarrow> t \<cdot> u = v"
     proof -
-      show "composite_of t u (t \<cdot> u)"
-        using assms comp_def composite_of_unique the1I2 [of "composite_of t u" "composite_of t u"]
+      show "composable t u \<Longrightarrow> composite_of t u (t \<cdot> u)"
+        using comp_def composite_of_unique the1I2 [of "composite_of t u" "composite_of t u"]
               composable_def
         by metis
-      thus "t \<cdot> u = v"
-        using assms composite_of_unique by simp
+      thus "composite_of t u v \<Longrightarrow> t \<cdot> u = v"
+        using composite_of_unique composable_def by auto
     qed
 
     lemma comp_null [simp]:
@@ -1214,8 +1235,8 @@ begin
 
     lemma con_comp_iff:
     shows "w \<frown> t \<cdot> u \<longleftrightarrow> composable t u \<and> w \\ t \<frown> u"
-      by (meson comp_is_composite_of(1) con_composite_of_iff con_sym con_implies_arr(2)
-                composable_def composable_iff_arr_comp)
+      by (meson comp_is_composite_of(1) composable_iff_arr_comp con_composite_of_iff
+          con_implies_arr(2))
 
     lemma con_compI [intro]:
     assumes "composable t u" and "w \\ t \<frown> u"
@@ -1329,10 +1350,9 @@ begin
       by (metis join_def joinable_iff_arr_join not_arr_null)
 
     lemma join_sym:
-    assumes "t \<squnion> u \<noteq> null"
     shows "t \<squnion> u = u \<squnion> t"
-      using assms
-      by (meson join_def join_is_join_of join_of_symmetric join_of_unique joinable_def)
+      by (metis extensional_rts.join_def extensional_rts.join_of_unique extensional_rts_axioms
+          join_is_join_of join_of_symmetric joinable_def)
 
     lemma src_join:
     assumes "joinable t u"
@@ -1393,7 +1413,7 @@ begin
       using assms joinable_def join_of_arr_src join_is_join_of join_of_unique src_in_sources
       by meson
 
-    lemma join_self:
+    lemma join_arr_self:
     assumes "arr t"
     shows "t \<squnion> t = t"
       using assms joinable_def join_of_arr_self join_is_join_of join_of_unique by blast
@@ -1518,7 +1538,7 @@ begin
         proof -
           have "(u \\ u) \\ (t \\ u) = src (v \\ (t \<squnion> u))"
             by (metis tu_v tu con_sym cube joinable_implies_con src_resid trg_def trg_join
-                trg_resid_sym)
+                apex_sym)
           thus ?thesis
             using tu_v arr_resid_iff_con con_sym join_src joinable_implies_con
             by presburger
@@ -1576,9 +1596,14 @@ begin
     extensional_rts
   begin
 
-    lemma joinable_iff_con:
+    lemma joinable_iff_con [iff]:
     shows "joinable t u \<longleftrightarrow> t \<frown> u"
       by (meson has_joins joinable_implies_con)
+
+    lemma joinableE [elim]:
+    assumes "joinable t u" and "t \<frown> u \<Longrightarrow> T"
+    shows T
+      using assms joinable_iff_con by blast
 
     lemma src_join\<^sub>E\<^sub>J [simp]:
     assumes "t \<frown> u"
@@ -1596,7 +1621,7 @@ begin
     assumes "t \<frown> u" and "v \<frown> t \<squnion> u"
     shows "v \\ (t \<squnion> u) = (v \\ t) \\ (u \\ t)"
     and "(t \<squnion> u) \\ v = (t \\ v) \<squnion> (u \\ v)"
-      using assms has_joins resid_join\<^sub>E by blast+
+      using assms has_joins resid_join\<^sub>E [of t u v] by blast+
 
     lemma join_assoc:
     shows "t \<squnion> (u \<squnion> v) = (t \<squnion> u) \<squnion> v"
@@ -1607,8 +1632,7 @@ begin
         assume 1: "con (t \<squnion> u) v"
         have vt_ut: "v \\ t \<frown> u \\ t"
           using 1
-          by (metis con_implies_arr(1) con_with_join_of_iff(2) join_is_join_of not_arr_null
-              join_def)
+          by (metis con_with_join_of_iff(2) join_def join_is_join_of not_con_null(1))
         have tv_uv: "t \\ v \<frown> u \\ v"
           using vt_ut cube con_sym
           by (metis arr_resid_iff_con)
@@ -1652,7 +1676,7 @@ begin
         using assms
         by (metis ideE prfx_implies_con src_resid trg_ide)
       also have "... = trg v"
-        by (metis assms(2) ide_iff_src_self ide_implies_arr join_self prfx_implies_con
+        by (metis assms(2) ide_iff_src_self ide_implies_arr join_arr_self prfx_implies_con
             src_resid)
       finally have "(t \<squnion> u) \\ v = trg v" by blast
       moreover have "ide (trg v)"
@@ -1715,7 +1739,7 @@ begin
       apply (cases "seq t u")
        apply (metis arr_comp comp_assoc comp_def not_arr_null arr_compE\<^sub>E\<^sub>C arr_comp\<^sub>E\<^sub>C
                     seq_implies_arr_comp trg_comp\<^sub>E\<^sub>C)
-      by (metis comp_def composable_iff_arr_comp seqI\<^sub>W\<^sub>E src_comp arr_compE\<^sub>E\<^sub>C)
+      by (metis comp_def composable_iff_arr_comp seqI\<^sub>W\<^sub>E(1) src_comp arr_compE\<^sub>E\<^sub>C)
 
     lemma diamond_commutes:
     shows "t \<cdot> (u \\ t) = u \<cdot> (t \\ u)"
@@ -1729,9 +1753,9 @@ begin
             resid_comp(2) con_imp_arr_resid con_sym comp_def arr_comp\<^sub>E\<^sub>C src_resid conI)
       moreover have "u \<lesssim> t \<cdot> (u \\ t)"
         by (metis arr_resid_iff_con calculation con cong_reflexive comp_arr_trg resid_arr_self
-            resid_comp(1) trg_resid_sym)
+            resid_comp(1) apex_sym)
       ultimately show ?thesis
-        by (metis comp_eqI con comp_arr_trg resid_arr_self arr_resid trg_resid_sym)
+        by (metis comp_eqI con comp_arr_trg resid_arr_self arr_resid apex_sym)
     qed
 
     lemma mediating_transition:
@@ -1742,7 +1766,7 @@ begin
       hence 2: "arr (u \<cdot> w)"
         using assms by (metis arr_comp\<^sub>E\<^sub>C seqE\<^sub>W\<^sub>E)
       have 3: "v \\ (u \\ t) = ((t \<cdot> v) \\ t) \\ (u \\ t)"
-        by (metis "1" comp_is_composite_of(1) composite_of_def obtains_composite_of extensional)
+        by (metis 2 assms comp_resid_prfx)
       also have "... = (t \<cdot> v) \\ (t \<cdot> (u \\ t))"
         by (metis (no_types, lifting) "2" assms con_comp_iff\<^sub>E\<^sub>C(2) con_imp_eq_src
             con_implies_arr(2) con_sym comp_resid_prfx prfx_comp resid_comp(1)
@@ -1759,7 +1783,7 @@ begin
       have "v \\ (u \\ t) = null"
         using 1
         by (metis (mono_tags, lifting) arr_resid_iff_con coinitial_iff\<^sub>W\<^sub>E con_imp_coinitial
-            seqI\<^sub>W\<^sub>E src_resid conI)
+            seqI\<^sub>W\<^sub>E(2) src_resid conI)
       also have "... = w \\ (t \\ u)"
         by (metis (no_types, lifting) "1" arr_comp\<^sub>E\<^sub>C assms composable_imp_seq con_imp_eq_src
             con_implies_arr(1) con_implies_arr(2) comp_def not_arr_null conI src_resid)
@@ -1804,6 +1828,26 @@ begin
         by (metis "1" con_implies_arr(2) joinable_iff_join_not_null not_arr_null)
     qed
 
+    lemma comp_join\<^sub>E\<^sub>C:
+    assumes "composable t u" and "joinable u u'"
+    shows "composable t (u \<squnion> u')"
+    and "t \<cdot> (u \<squnion> u') = t \<cdot> u \<squnion> t \<cdot> u'"
+    proof -
+      have 1: "u \<squnion> u' = u \<cdot> (u' \\ u) \<and> u \<squnion> u' = u' \<cdot> (u \\ u')"
+        using assms joinable_implies_con diamond_commutes
+        by (metis comp_is_composite_of(2) join_is_join_of join_ofE)
+      show 2: "composable t (u \<squnion> u')"
+        using assms 1 composable_iff_seq arr_comp src_join arr_compE\<^sub>E\<^sub>C joinable_iff_arr_join
+              seqI\<^sub>W\<^sub>E(1)
+        by metis
+      have "con (t \<cdot> u) (t \<cdot> u')"
+        using 1 2 arr_comp arr_compE\<^sub>E\<^sub>C assms(2) comp_assoc\<^sub>E\<^sub>C comp_resid_prfx
+              con_comp_iff joinable_implies_con comp_def not_arr_null
+        by metis
+      thus "t \<cdot> (u \<squnion> u') = t \<cdot> u \<squnion> t \<cdot> u'"
+        using assms comp_join(2) joinable_iff_con by blast
+    qed
+
     lemma join_expansion:
     assumes "t \<frown> u"
     shows "t \<squnion> u = t \<cdot> (u \\ t)" and "seq t (u \\ t)"
@@ -1843,6 +1887,12 @@ begin
       by (metis con_comp_iff con_sym con_comp_iff\<^sub>E\<^sub>C(2) con_implies_arr(2) induced_arrow(1)
           resid_comp(1) resid_comp(2) residuation.arr_resid_iff_con residuation_axioms)
 
+    lemma join_comp:
+    assumes "t \<cdot> u \<frown> v"
+    shows "(t \<cdot> u) \<squnion> v = t \<cdot> (v \\ t) \<cdot> (u \\ (v \\ t))"
+      using assms
+      by (metis comp_assoc\<^sub>E\<^sub>C diamond_commutes join_expansion(1) resid_comp(1))
+
   end
 
   subsection "Confluence"
@@ -1864,13 +1914,21 @@ begin
   locale simulation =
     A: rts A +
     B: rts B
-  for A :: "'a resid"      (infixr "\\\<^sub>A" 70)
-  and B :: "'b resid"      (infixr "\\\<^sub>B" 70)
+  for A :: "'a resid"      (infix "\\\<^sub>A" 70)
+  and B :: "'b resid"      (infix "\\\<^sub>B" 70)
   and F :: "'a \<Rightarrow> 'b" +
   assumes extensional: "\<not> A.arr t \<Longrightarrow> F t = B.null"
   and preserves_con [simp]: "A.con t u \<Longrightarrow> B.con (F t) (F u)"
   and preserves_resid [simp]: "A.con t u \<Longrightarrow> F (t \\\<^sub>A u) = F t \\\<^sub>B F u"
   begin
+
+    notation A.con     (infix "\<frown>\<^sub>A" 50)
+    notation A.prfx    (infix "\<lesssim>\<^sub>A" 50)
+    notation A.cong    (infix "\<sim>\<^sub>A" 50)
+
+    notation B.con     (infix "\<frown>\<^sub>B" 50)
+    notation B.prfx    (infix "\<lesssim>\<^sub>B" 50)
+    notation B.cong    (infix "\<sim>\<^sub>B" 50)
 
     lemma preserves_reflects_arr [iff]:
     shows "B.arr (F t) \<longleftrightarrow> A.arr t"
@@ -1890,9 +1948,9 @@ begin
       by (metis A.arrE B.arrE A.sources_resid B.sources_resid equals0D image_subset_iff
           A.arr_iff_has_target preserves_reflects_arr preserves_resid preserves_sources)
 
-    lemma preserves_trg:
+    lemma preserves_trg [simp]:
     assumes "A.arr t"
-    shows "F (A.trg t) = B.trg (F t)"
+    shows "B.trg (F t) = F (A.trg t)"
       using assms A.trg_def B.trg_def by auto
 
     lemma preserves_composites:
@@ -1909,14 +1967,14 @@ begin
       by (metis A.joinable_implies_con preserves_composites preserves_resid)
 
     lemma preserves_prfx:
-    assumes "A.prfx t u"
-    shows "B.prfx (F t) (F u)"
+    assumes "t \<lesssim>\<^sub>A u"
+    shows "F t \<lesssim>\<^sub>B F u"
       using assms
       by (metis A.prfx_implies_con preserves_ide preserves_resid)
 
     lemma preserves_cong:
-    assumes "A.cong t u"
-    shows "B.cong (F t) (F u)"
+    assumes "t \<sim>\<^sub>A u"
+    shows "F t \<sim>\<^sub>B F u"
       using assms preserves_prfx by simp
 
   end
@@ -1977,12 +2035,12 @@ begin
     B: weakly_extensional_rts B
   begin
 
-    lemma preserves_src:
+    lemma preserves_src [simp]:
     shows "a \<in> A.sources t \<Longrightarrow> B.src (F t) = F a"
       by (metis equals0D image_subset_iff B.arr_iff_has_source
           preserves_sources B.arr_has_un_source B.src_in_sources)
 
-    lemma preserves_trg:
+    lemma preserves_trg [simp]:
     shows "b \<in> A.targets t \<Longrightarrow> B.trg (F t) = F b"
       by (metis equals0D image_subset_iff B.arr_iff_has_target
           preserves_targets B.arr_has_un_target B.trg_in_targets)
@@ -1996,15 +2054,18 @@ begin
     B: extensional_rts B
   begin
 
+    notation B.comp  (infixl "\<cdot>\<^sub>B" 55)
+    notation B.join  (infix "\<squnion>\<^sub>B" 52)
+
     lemma preserves_comp:
     assumes "A.composite_of t u v"
-    shows "F v = B.comp (F t) (F u)"
+    shows "F v = F t \<cdot>\<^sub>B F u"
       using assms
       by (metis preserves_composites B.comp_is_composite_of(2))
 
     lemma preserves_join:
     assumes "A.join_of t u v"
-    shows "F v = B.join (F t) (F u)"
+    shows "F v = F t \<squnion>\<^sub>B F u"
       using assms preserves_joins
       by (meson B.join_is_join_of B.join_of_unique B.joinable_def)
 
@@ -2017,20 +2078,23 @@ begin
     A: extensional_rts A
   begin
 
-    lemma preserves_src:
+    notation A.comp  (infixl "\<cdot>\<^sub>A" 55)
+    notation A.join  (infix "\<squnion>\<^sub>A" 52)
+
+    lemma preserves_src [simp]:
     shows "B.src (F t) = F (A.src t)"
       by (metis A.arr_src_iff_arr A.src_in_sources extensional image_subset_iff
           preserves_reflects_arr preserves_sources B.arr_has_un_source B.src_def
           B.src_in_sources)
 
-    lemma preserves_trg:
+    lemma preserves_trg [simp]:
     shows "B.trg (F t) = F (A.trg t)"
       by (metis A.arr_trg_iff_arr A.residuation_axioms A.trg_def B.null_is_zero(2) B.trg_def
           extensional preserves_resid residuation.arrE)
 
     lemma preserves_comp:
     assumes "A.composable t u"
-    shows "F (A.comp t u) = B.comp (F t) (F u)"
+    shows "F (t \<cdot>\<^sub>A u) = F t \<cdot>\<^sub>B F u"
       using assms
       by (metis A.arr_comp A.comp_resid_prfx A.composableD(2) A.not_arr_null
           A.prfx_comp A.residuation_axioms B.comp_eqI preserves_prfx preserves_resid
@@ -2038,7 +2102,7 @@ begin
 
     lemma preserves_join:
     assumes "A.joinable t u"
-    shows "F (A.join t u) = B.join (F t) (F u)"
+    shows "F (t \<squnion>\<^sub>A u) = F t \<squnion>\<^sub>B F u"
       using assms
       by (meson A.join_is_join_of B.joinable_def preserves_joins B.join_is_join_of
           B.join_of_unique)
@@ -2070,18 +2134,24 @@ begin
     B: weakly_extensional_rts B +
     F: simulation A B F +
     G: simulation A B G
-  for A :: "'a resid"      (infixr "\\\<^sub>A" 70)
-  and B :: "'b resid"      (infixr "\\\<^sub>B" 70)
+  for A :: "'a resid"      (infix "\\\<^sub>A" 70)
+  and B :: "'b resid"      (infix "\\\<^sub>B" 70)
   and F :: "'a \<Rightarrow> 'b"
   and G :: "'a \<Rightarrow> 'b"
   and \<tau> :: "'a \<Rightarrow> 'b" +
   assumes extensional: "\<not> A.arr f \<Longrightarrow> \<tau> f = B.null"
-  and preserves_src: "A.ide f \<Longrightarrow> B.src (\<tau> f) = F (A.src f)"
-  and preserves_trg: "A.ide f \<Longrightarrow> B.trg (\<tau> f) = G (A.trg f)"
+  and preserves_src: "A.ide f \<Longrightarrow> B.src (\<tau> f) = F f"
+  and preserves_trg: "A.ide f \<Longrightarrow> B.trg (\<tau> f) = G f"
   and naturality1_ax: "A.arr f \<Longrightarrow> \<tau> (A.src f) \\\<^sub>B F f = \<tau> (A.trg f)"
   and naturality2_ax: "A.arr f \<Longrightarrow> F f \\\<^sub>B \<tau> (A.src f) = G f"
   and naturality3: "A.arr f \<Longrightarrow> B.join_of (\<tau> (A.src f)) (F f) (\<tau> f)"
   begin
+
+    notation A.con     (infix "\<frown>\<^sub>A" 50)
+    notation A.prfx    (infix "\<lesssim>\<^sub>A" 50)
+
+    notation B.con     (infix "\<frown>\<^sub>B" 50)
+    notation B.prfx    (infix "\<lesssim>\<^sub>B" 50)
 
     lemma naturality1:
     shows "\<tau> (A.src f) \\\<^sub>B F f = \<tau> (A.trg f)"
@@ -2186,7 +2256,7 @@ begin
       by (metis R.comp_is_composite_of(2) composite_closed elements_are_arr
           factor_closed(1-2) R.composable_def R.has_composites R.rts_with_composites_axioms
           R.extensional_rts_axioms extensional_rts_with_composites.arr_compE\<^sub>E\<^sub>C
-          extensional_rts_with_composites_def R.seqI\<^sub>W\<^sub>E)
+          extensional_rts_with_composites_def R.seqI\<^sub>W\<^sub>E(1))
 
   end
 
@@ -2438,7 +2508,7 @@ begin
         by (metis 1 Cong\<^sub>0_subst_left(2) uu'' w'' R.conI)
       have 3: "R.seq u (v'' \\ u'')"
         by (metis (full_types) 2 Cong\<^sub>0_imp_coinitial R.sources_resid
-            Cong\<^sub>0_imp_con R.arr_resid_iff_con R.con_implies_arr(2) R.seqI uu'' R.conI)
+            Cong\<^sub>0_imp_con R.arr_resid_iff_con R.con_implies_arr(2) R.seqI(1) uu'' R.conI)
       have 4: "R.seq v' (u'' \\ v'')"
         by (metis 1 Cong\<^sub>0_imp_coinitial Cong\<^sub>0_imp_con R.arr_resid_iff_con
             R.con_implies_arr(2) R.seq_def R.sources_resid v'v'' R.conI)
@@ -2549,7 +2619,7 @@ begin
         using assms Cong_def by blast
       have seq: "R.seq (u \\ t) ((t' \\ u') \\ (t \\ u)) \<and> R.seq (u' \\ t') ((t \\ u) \\ (t' \\ u'))"
         by (metis R.arr_iff_has_source R.arr_iff_has_target R.conI elements_are_arr R.not_arr_null
-            R.seqI R.sources_resid R.targets_resid_sym uu')
+            R.seqI(2) R.sources_resid R.targets_resid_sym uu')
       obtain v where v: "R.composite_of (u \\ t) ((t' \\ u') \\ (t \\ u)) v"
         using seq composite_closed_right uu' by presburger
       obtain v' where v': "R.composite_of (u' \\ t') ((t \\ u) \\ (t' \\ u')) v'"
@@ -2709,8 +2779,8 @@ begin
     lemma Cong_class_eqI':
     assumes "is_Cong_class \<T>" and "is_Cong_class \<U>" and "\<T> \<inter> \<U> \<noteq> {}"
     shows "\<T> = \<U>"
-      using assms is_Cong_class_def Cong_class_eqI Cong_class_membs_are_Cong
-      by (metis (no_types, lifting) Int_emptyI)
+      using assms is_Cong_class_def Cong_class_eqI Cong_class_membs_are_Cong Int_emptyI
+      by (metis (no_types, lifting))
 
     lemma is_Cong_classE [elim]:
     assumes "is_Cong_class \<T>"
@@ -2833,10 +2903,25 @@ begin
           have "(t \\ w) \\ z \<approx>\<^sub>0 (t \\ w) \\ z'"
           proof -
             have "R.coinitial ((t \\ w) \\ z) ((t \\ w) \\ z')"
-              by (metis Cong\<^sub>0_imp_coinitial Cong_imp_arr(1)
-                  Resid_along_normal_preserves_reflects_con R.arr_def R.coinitialI
-                  R.con_imp_common_source Cong_closure_props(3) R.arr_resid_iff_con R.sources_eqI
-                  R.sources_resid ww' zz')
+            proof -
+              have "R.targets z = R.targets z'"
+                using ww' zz'
+                by (metis Cong\<^sub>0_imp_coinitial Cong\<^sub>0_imp_con R.con_sym_ax R.null_is_zero(2)
+                    R.sources_resid R.conI)
+              moreover have "R.sources ((t \\ w) \\ z) = R.targets z"
+                using ww' zz'
+                by (metis R.con_def R.not_arr_null R.null_is_zero(2)
+                    R.sources_resid elements_are_arr)
+              moreover have "R.sources ((t \\ w) \\ z') = R.targets z'"
+                using ww' zz'
+                by (metis Cong_closure_props(4) Cong_imp_arr(2) R.arr_resid_iff_con
+                    R.coinitial_iff R.con_imp_coinitial R.rts_axioms rts.sources_resid)
+              ultimately show ?thesis
+                using ww' zz'
+                apply (intro R.coinitialI)
+                 apply auto
+                by (meson R.arr_resid_iff_con R.con_implies_arr(2) elements_are_arr)
+            qed
             thus ?thesis
               apply (intro conjI)
               by (metis 1 R.coinitial_iff R.con_imp_coinitial R.arr_resid_iff_con
@@ -2865,7 +2950,12 @@ begin
     and "R.sources v = R.sources w" and "R.sources v' = R.sources w'"
     and "R.targets w = R.targets w'" and "t \\ v \<approx>\<^sub>0 t' \\ v'"
     shows "t \\ w \<approx>\<^sub>0 t' \\ w'"
-      using assms coherent coherent_iff by metis  (* 6 sec *)
+    proof
+      show "(t \\ w) \\ (t' \\ w') \<in> \<NN>"
+        using assms coherent coherent_iff by meson
+      show "(t' \\ w') \\ (t \\ w) \<in> \<NN>"
+        using assms coherent coherent_iff by meson
+    qed
 
     text \<open>
       The relation \<open>\<approx>\<close> is substitutive with respect to both arguments of residuation.
@@ -3259,11 +3349,11 @@ begin
         using 1 Con_witnesses [of "\<U> \<lbrace>\\\<rbrace> \<T>" "\<V> \<lbrace>\\\<rbrace> \<T>" "u \\ t" "v \\ t'"]
         by (metis N.arr_in_Cong_class R.con_sym t'v tu assms Con_sym R.arr_resid_iff_con)
       have "R.seq t x"
-        by (metis R.arr_resid_iff_con R.coinitial_iff R.con_imp_coinitial R.seqI
+        by (metis R.arr_resid_iff_con R.coinitial_iff R.con_imp_coinitial R.seqI(2)
             R.sources_resid xx')
       have "R.seq t' x'"
         by (metis R.arr_resid_iff_con R.sources_resid R.coinitialE R.con_imp_coinitial
-            R.seqI xx')
+            R.seqI(2) xx')
       obtain tx where tx: "R.composite_of t x tx"
         using xx' \<open>R.seq t x\<close> N.composite_closed_right [of x t] R.composable_def by auto
       obtain t'x' where t'x': "R.composite_of t' x' t'x'"
@@ -3295,10 +3385,10 @@ begin
       qed
       obtain z where z: "R.composite_of ?tx_w (?t'x'_w' \\ ?tx_w) z"
         by (metis "2" R.arr_resid_iff_con R.con_implies_arr(2) N.elements_are_arr
-            N.composite_closed_right R.seqI R.sources_resid)
+            N.composite_closed_right R.seqI(1) R.sources_resid)
       obtain z' where z': "R.composite_of ?t'x'_w' (?tx_w \\ ?t'x'_w') z'"
         by (metis "2" R.arr_resid_iff_con R.con_implies_arr(2) N.elements_are_arr
-            N.composite_closed_right R.seqI R.sources_resid)
+            N.composite_closed_right R.seqI(1) R.sources_resid)
       have 3: "z \<approx>\<^sub>0 z'"
         using 2 N.diamond_commutes_upto_Cong\<^sub>0 N.Cong\<^sub>0_imp_con z z' by blast
       have "R.targets z = R.targets z'"
@@ -3340,9 +3430,13 @@ begin
               R.con_imp_coinitial R.con_implies_arr(1) N.forward_stable
               R.sources_composite_of ww' y_comp z)
         have y_coinitial: "R.coinitial y (u \\ tx)"
-          using y R.coinitial_def
-          by (metis Con_z_uw R.con_def R.con_prfx_composite_of(2) R.con_sym R.cube
-              R.sources_composite_of R.con_imp_common_source z)
+          using y R.arr_composite_of R.sources_composite_of
+          apply (intro R.coinitialI)
+           apply auto
+           apply (metis N.Cong\<^sub>0_composite_of_arr_normal N.Cong\<^sub>0_subst_right(1)
+                        R.composite_of_cancel_left R.con_sym R.not_ide_null R.null_is_zero(2)
+                        R.sources_resid R.conI tu tx xx')
+          by (metis R.arr_iff_has_source R.not_arr_null R.sources_resid empty_iff R.conI)
         have y_con: "y \<frown> u \\ tx"
           using y_in_normal y_coinitial
             by (metis R.coinitial_iff N.elements_are_arr N.forward_stable
@@ -3719,8 +3813,8 @@ begin
               by (metis (mono_tags, lifting) Collect_empty_eq N.Cong_class_def N.Cong_imp_arr(1)
                   N.is_Cong_class_def N.sources_are_Cong R.arr_iff_has_source R.sources_def
                   \<T> arr_char mem_Collect_eq)
-            show "\<And>t t'. \<lbrakk>t \<in> ?\<A>; t' \<approx> t\<rbrakk> \<Longrightarrow> t' \<in> ?\<A>"
-              using N.Cong_symmetric N.Cong_transitive by blast
+            show "\<And>a a'. \<lbrakk>a \<in> ?\<A>; a' \<approx> a\<rbrakk> \<Longrightarrow> a' \<in> ?\<A>"
+              using N.Cong_transitive by blast
             show "\<And>a a'. \<lbrakk>a \<in> ?\<A>; a' \<in> ?\<A>\<rbrakk> \<Longrightarrow> a \<approx> a'"
             proof -
               fix a a'
@@ -3767,9 +3861,9 @@ begin
         using arr_resid_iff_con con_char\<^sub>Q\<^sub>C\<^sub>N arr_char arr_def by auto
       also have "... = {\<B>. arr \<T> \<and> ide \<B> \<and>
                            (\<exists>t t' b u. t \<in> \<T> \<and> t' \<in> \<T> \<and> t \<frown> t' \<and> b \<in> \<lbrace>t \\ t'\<rbrace> \<and> u \<in> \<B> \<and> b \<frown> u)}"
-        using arr_char ide_char Resid_by_members [of \<T> \<T>] N.Cong_class_memb_is_arr
-              N.is_Cong_class_def R.arr_def
-        by auto metis+
+        apply auto
+         apply (metis (full_types) Resid_by_members cong_char not_ide_null null_char Con_char)
+        by (metis Resid_by_members arr_char)
       also have "... = {\<B>. arr \<T> \<and> ide \<B> \<and>
                            (\<exists>t t' b. t \<in> \<T> \<and> t' \<in> \<T> \<and> t \<frown> t' \<and> b \<in> \<lbrace>t \\ t'\<rbrace> \<and> b \<in> \<B>)}"
       proof -
@@ -5248,7 +5342,7 @@ begin
             show ?thesis
             proof (cases "V' = []", cases "U' = []", cases "T' = []")
               show "\<lbrakk>V' = []; U' = []; T' = []\<rbrakk> \<Longrightarrow> ?thesis"
-                using T U V R.cube Con_TU Resid.simps(2) Resid.simps(3) R.arr_resid_iff_con
+                using T U V R.cube Con_TU Resid.simps(2-3) R.arr_resid_iff_con
                       R.con_implies_arr Con_sym
                 by metis
               assume T': "T' \<noteq> []" and V': "V' = []" and U': "U' = []"
@@ -5268,7 +5362,7 @@ begin
                                      (V \<^sup>*\\\<^sup>* [t]) \<^sup>*\\\<^sup>* (U \<^sup>*\\\<^sup>* [t]) \<^sup>*\<frown>\<^sup>* T' \<^sup>*\\\<^sup>* (U \<^sup>*\\\<^sup>* [t])"
                   proof (intro iffI conjI)
                     show "(V \<^sup>*\\\<^sup>* [t]) \<^sup>*\\\<^sup>* T' \<^sup>*\<frown>\<^sup>* (U \<^sup>*\\\<^sup>* [t]) \<^sup>*\\\<^sup>* T' \<Longrightarrow> V \<^sup>*\\\<^sup>* [t] \<^sup>*\<frown>\<^sup>* U \<^sup>*\\\<^sup>* [t]"
-                      using T U V T' U' V' 1 ind len Con_TU Con_rec(2) Resid_rec(1)
+                      using T U V T' U' V' 1 ind [of "T'"] len Con_TU Con_rec(2) Resid_rec(1)
                             Resid.simps(1) length_Cons Suc_le_mono add_Suc
                       by (metis (no_types))
                     show "(V \<^sup>*\\\<^sup>* [t]) \<^sup>*\\\<^sup>* T' \<^sup>*\<frown>\<^sup>* (U \<^sup>*\\\<^sup>* [t]) \<^sup>*\\\<^sup>* T' \<Longrightarrow>
@@ -5444,8 +5538,14 @@ begin
                         by metis
                       also have "... \<longleftrightarrow> [v \\ t] \<^sup>*\<frown>\<^sup>* [u \\ t] \<and>
                                          V' \<^sup>*\\\<^sup>* [t \\ v] \<^sup>*\<frown>\<^sup>* [u \\ v] \<^sup>*\\\<^sup>* [t \\ v]"
-                        by (metis T T' V V' Con_VT Con_rec(1-2) Con_sym R.con_def R.cube
-                            Resid.simps(3))
+                      proof -
+                        have "V' \<^sup>*\<frown>\<^sup>* [t \\ v]"
+                          using T T' V V' Con_VT Con_rec(2) by blast
+                        thus ?thesis
+                          using R.con_def R.con_sym R.cube
+                                Con_rec(2) [of "V' \<^sup>*\\\<^sup>* [t \\ v]" "v \\ t" "u \\ t"]
+                          by auto
+                      qed
                       also have "... \<longleftrightarrow> [v \\ t] \<^sup>*\<frown>\<^sup>* [u \\ t] \<and>
                                          V' \<^sup>*\\\<^sup>* [u \\ v] \<^sup>*\<frown>\<^sup>* [t \\ v] \<^sup>*\\\<^sup>* [u \\ v]"
                       proof -
@@ -5623,8 +5723,9 @@ begin
                         have "length [t] + length [u] + length V \<le> n"
                           using T U V T' U' V' len antisym_conv not_less_eq_eq by fastforce
                         thus ?thesis
+                          using ind [of "[t]"]
                           by (metis (full_types) Con_TU Con_VT Con_initial_right Con_sym
-                              Resid_rec(1) T U ind)
+                              Resid_rec(1) T U)
                       qed
                       also have "... \<longleftrightarrow> (V \<^sup>*\\\<^sup>* [u]) \<^sup>*\\\<^sup>* U' \<^sup>*\<frown>\<^sup>* [t \\ u] \<^sup>*\\\<^sup>* U'"
                       proof -
@@ -6035,8 +6136,9 @@ begin
             using T U V Con ind Resid_cons
             by (metis Con_sym Cons_eq_appendI append_is_Nil_conv Con_cons(1))
           also have "... = (v # V) \<^sup>*\\\<^sup>* U @ T \<^sup>*\\\<^sup>* (U \<^sup>*\\\<^sup>* (v # V))"
+            using ind[of T]
             by (metis Con Con_cons(2) Cons_eq_appendI Resid_cons(1) Resid_cons(2) T U V
-                append.assoc append_is_Nil_conv Con_sym ind)
+                append.assoc append_is_Nil_conv Con_sym)
           finally show ?thesis by simp
         qed
         show 2: "T \<^sup>*\<frown>\<^sup>* (v # V) @ U \<Longrightarrow> T \<^sup>*\\\<^sup>* ((v # V) @ U) = (T \<^sup>*\\\<^sup>* (v # V)) \<^sup>*\\\<^sup>* U"
@@ -6440,7 +6542,9 @@ begin
     lemma Ide_append_iff\<^sub>P\<^sub>W\<^sub>E:
     assumes "T \<noteq> []" and "U \<noteq> []"
     shows "Ide (T @ U) \<longleftrightarrow> Ide T \<and> Ide U \<and> Trg T = Src U"
-      using assms Ide_char by auto
+      using assms Ide_char
+      apply (intro iffI)
+      by force auto
 
     lemma Ide_appendI\<^sub>P\<^sub>W\<^sub>E [intro, simp]:
     assumes "Ide T" and "Ide U" and "Trg T = Src U"
@@ -7082,9 +7186,6 @@ begin
           using U ind by blast
         have seq: "R.seq v u"
         proof
-          show "R.arr v"
-            using vU
-            by (metis Con_Arr_self Con_rec(4) NPath_implies_Arr \<open>U \<noteq> []\<close> R.arrI)
           show "R.arr u"
             by (simp add: N.elements_are_arr u)
           show "R.targets v = R.sources u"
@@ -7631,7 +7732,7 @@ begin
 
     lemma ide_char\<^sub>C\<^sub>C:
     shows "ide \<T> \<longleftrightarrow> arr \<T> \<and> (\<forall>T. T \<in> \<T> \<longrightarrow> P.Ide T)"
-      using NPath_char ide_char' by force
+      using NPath_char ide_char' by blast
 
     lemma con_char\<^sub>C\<^sub>C:
     shows "\<T> \<lbrace>\<^sup>*\<frown>\<^sup>*\<rbrace> \<U> \<longleftrightarrow> arr \<T> \<and> arr \<U> \<and> P.Cong_class_rep \<T> \<^sup>*\<frown>\<^sup>* P.Cong_class_rep \<U>"
@@ -8291,7 +8392,7 @@ begin
             by (metis A.Con_rec(1) A.Con_sym A.Con_sym1 A.Residx1_as_Resid A.Resid_rec(1)
                 F.preserves_con F.preserves_resid ind)
           moreover have "B.seq (F u) (map U)"
-            by (metis B.coinitial_iff\<^sub>W\<^sub>E B.con_imp_coinitial B.seqI\<^sub>W\<^sub>E B.src_resid calculation)
+            by (metis B.coinitial_iff\<^sub>W\<^sub>E B.con_imp_coinitial B.seqI\<^sub>W\<^sub>E(1) B.src_resid calculation)
           ultimately have "F t \<frown>\<^sub>B map ([u] @ U)"
             using B.con_comp_iff\<^sub>E\<^sub>C(1) [of "F t" "F u" "map U"] B.con_sym preserves_comp
             by (metis 3 A.Con_cons(2) A.Con_implies_Arr(2)
@@ -8556,13 +8657,21 @@ begin
   and B :: "'b resid"      (infix "\\\<^sub>B" 70)
   begin
 
+    notation A.con     (infix "\<frown>\<^sub>A" 50)
+    notation A.prfx    (infix "\<lesssim>\<^sub>A" 50)
+    notation A.cong    (infix "\<sim>\<^sub>A" 50)
+
+    notation B.con     (infix "\<frown>\<^sub>B" 50)
+    notation B.prfx    (infix "\<lesssim>\<^sub>B" 50)
+    notation B.cong    (infix "\<sim>\<^sub>B" 50)
+
     type_synonym ('c, 'd) arr = "'c * 'd"
 
     abbreviation (input) Null :: "('a, 'b) arr"                                 
     where "Null \<equiv> (A.null, B.null)"
 
     definition resid :: "('a, 'b) arr \<Rightarrow> ('a, 'b) arr \<Rightarrow> ('a, 'b) arr"
-    where "resid t u = (if A.con (fst t) (fst u) \<and> B.con (snd t) (snd u)
+    where "resid t u = (if fst t \<frown>\<^sub>A fst u \<and> snd t \<frown>\<^sub>B snd u
                         then (fst t \\\<^sub>A fst u, snd t \\\<^sub>B snd u)
                         else Null)"
 
@@ -8610,6 +8719,8 @@ begin
     shows "residuation resid"
       ..
 
+    notation con     (infix "\<frown>" 50)
+
     lemma arr_char [iff]:
     shows "arr t \<longleftrightarrow> A.arr (fst t) \<and> B.arr (snd t)"
       by (metis (no_types, lifting) A.arr_def B.arr_def B.conE null_char resid_def
@@ -8622,7 +8733,7 @@ begin
           residuation.ide_def residuation.ide_implies_arr residuation_axioms snd_conv)
 
     lemma con_char [iff]:
-    shows "con t u \<longleftrightarrow> A.con (fst t) (fst u) \<and> B.con (snd t) (snd u)"
+    shows "t \<frown> u \<longleftrightarrow> fst t \<frown>\<^sub>A fst u \<and> snd t \<frown>\<^sub>B snd u"
       by (simp add: B.residuation_axioms con_def resid_def residuation.con_def)
 
     lemma trg_char:
@@ -8633,37 +8744,39 @@ begin
     proof
       show "\<And>t. arr t \<Longrightarrow> ide (trg t)"
         by (simp add: trg_char)
-      show "\<And>a t. \<lbrakk>ide a; con t a\<rbrakk> \<Longrightarrow> t \\ a = t"
+      show 1: "\<And>a t. \<lbrakk>ide a; t \<frown> a\<rbrakk> \<Longrightarrow> t \\ a = t"
         by (simp add: A.resid_arr_ide B.resid_arr_ide resid_def)
-      show "\<And>a t. \<lbrakk>ide a; con a t\<rbrakk> \<Longrightarrow> ide (a \\ t)"
-        by (metis \<open>\<And>t a. \<lbrakk>ide a; con t a\<rbrakk> \<Longrightarrow> t \ a = t\<close> con_sym cube ideE ideI
-            residuation.con_def residuation_axioms)
-      show "\<And>t u. con t u \<Longrightarrow> \<exists>a. ide a \<and> con a t \<and> con a u"
+      thus "\<And>a t. \<lbrakk>ide a; a \<frown> t\<rbrakk> \<Longrightarrow> ide (a \\ t)"
+        using arr_resid cube
+        apply (elim ideE, intro ideI)
+         apply auto
+        by (metis 1 conI con_sym_ax ideI null_is_zero(2))
+      show "\<And>t u. t \<frown> u \<Longrightarrow> \<exists>a. ide a \<and> a \<frown> t \<and> a \<frown> u"
       proof -
         fix t u
-        assume tu: "con t u"
+        assume tu: "t \<frown> u"
         obtain a1 where a1: "a1 \<in> A.sources (fst t) \<inter> A.sources (fst u)"
           by (meson A.con_imp_common_source all_not_in_conv con_char tu)
         obtain a2 where a2: "a2 \<in> B.sources (snd t) \<inter> B.sources (snd u)"
           by (meson B.con_imp_common_source all_not_in_conv con_char tu)
-        have "ide (a1, a2) \<and> con (a1, a2) t \<and> con (a1, a2) u"
+        have "ide (a1, a2) \<and> (a1, a2) \<frown> t \<and> (a1, a2) \<frown> u"
           using a1 a2 ide_char con_char
           by (metis A.con_imp_common_source A.in_sourcesE A.sources_eqI
               B.con_imp_common_source B.in_sourcesE B.sources_eqI con_sym
               fst_conv inf_idem snd_conv tu)
-        thus "\<exists>a. ide a \<and> con a t \<and> con a u" by blast
+        thus "\<exists>a. ide a \<and> a \<frown> t \<and> a \<frown> u" by blast
       qed
-      show "\<And>t u v. \<lbrakk>ide (t \\ u); con u v\<rbrakk> \<Longrightarrow> con (t \\ u) (v \\ u)"
+      show "\<And>t u v. \<lbrakk>ide (t \\ u); u \<frown> v\<rbrakk> \<Longrightarrow> t \\ u \<frown> v \\ u"
       proof -
         fix t u v
         assume tu: "ide (t \\ u)"
-        assume uv: "con u v"
+        assume uv: "u \<frown> v"
         have "A.ide (fst t \\\<^sub>A fst u) \<and> B.ide (snd t \\\<^sub>B snd u)"
           using tu ide_char
           by (metis conI con_char fst_eqD ide_implies_arr not_arr_null resid_def snd_conv)
-        moreover have "A.con (fst u) (fst v) \<and> B.con (snd u) (snd v)"
+        moreover have "fst u \<frown>\<^sub>A fst v \<and> snd u \<frown>\<^sub>B snd v"
           using uv con_char by blast
-        ultimately show "con (t \\ u) (v \\ u)"
+        ultimately show "t \\ u \<frown> v \\ u"
           by (simp add: A.con_target A.con_sym A.prfx_implies_con
               B.con_target B.con_sym B.prfx_implies_con resid_def)
       qed
@@ -8672,6 +8785,9 @@ begin
     lemma is_rts:
     shows "rts resid"
       ..
+
+    notation prfx    (infix "\<lesssim>" 50)
+    notation cong    (infix "\<sim>" 50)
 
     lemma sources_char:
     shows "sources t = A.sources (fst t) \<times> B.sources (snd t)"
@@ -8690,7 +8806,7 @@ begin
         proof
           show "ide a"
             using a ide_char by auto
-          show "con (trg t) a"
+          show "trg t \<frown> a"
             using a trg_char con_char [of "trg t" a]
             by (metis (no_types, lifting) SigmaE arr_char con_char con_implies_arr(1)
                 fst_conv A.in_targetsE B.in_targetsE A.arr_resid_iff_con B.arr_resid_iff_con
@@ -8700,16 +8816,15 @@ begin
     qed
 
     lemma prfx_char:
-    shows "prfx t u \<longleftrightarrow> A.prfx (fst t) (fst u) \<and> B.prfx (snd t) (snd u)"
+    shows "t \<lesssim> u \<longleftrightarrow> fst t \<lesssim>\<^sub>A fst u \<and> snd t \<lesssim>\<^sub>B snd u"
       using A.prfx_implies_con B.prfx_implies_con resid_def by auto
 
     lemma cong_char:
-    shows "cong t u \<longleftrightarrow> A.cong (fst t) (fst u) \<and> B.cong (snd t) (snd u)"
+    shows "t \<sim> u \<longleftrightarrow> fst t \<sim>\<^sub>A fst u \<and> snd t \<sim>\<^sub>B snd u"
       using prfx_char by auto
 
     lemma join_of_char:
-    shows "join_of t u v \<longleftrightarrow>
-           A.join_of (fst t) (fst u) (fst v) \<and> B.join_of (snd t) (snd u) (snd v)"
+    shows "join_of t u v \<longleftrightarrow> A.join_of (fst t) (fst u) (fst v) \<and> B.join_of (snd t) (snd u) (snd v)"
     and "joinable t u \<longleftrightarrow> A.joinable (fst t) (fst u) \<and> B.joinable (snd t) (snd u)"
     proof -
       show "\<And>v. join_of t u v \<longleftrightarrow>
@@ -8719,22 +8834,21 @@ begin
         show "join_of t u v \<Longrightarrow>
                 A.join_of (fst t) (fst u) (fst v) \<and> B.join_of (snd t) (snd u) (snd v)"
         proof -
-          fix v
           assume 1: "join_of t u v"
-          have 2: "con t u \<and> con t v \<and> con u v \<and> con u t \<and> con v t \<and> con v u"
-            by (meson "1" bounded_imp_con con_prfx_composite_of(1) join_ofE con_sym)
+          have 2: "t \<frown> u \<and> t \<frown> v \<and> u \<frown> v \<and> u \<frown> t \<and> v \<frown> t \<and> v \<frown> u"
+            by (meson 1 bounded_imp_con con_prfx_composite_of(1) join_ofE con_sym)
           show "A.join_of (fst t) (fst u) (fst v) \<and> B.join_of (snd t) (snd u) (snd v)"
-            using 1 2 prfx_char resid_def con_char
-            apply (elim join_ofE composite_ofE congE conE, intro conjI
-              A.join_ofI B.join_ofI A.composite_ofI B.composite_ofI)
-            by (metis fst_conv snd_conv)+
+            using 1 2 prfx_char resid_def
+            by (elim conjE join_ofE composite_ofE congE conE,
+                intro conjI A.join_ofI B.join_ofI A.composite_ofI B.composite_ofI)
+               auto
         qed
         show "A.join_of (fst t) (fst u) (fst v) \<and> B.join_of (snd t) (snd u) (snd v)
                 \<Longrightarrow> join_of t u v"
-          using prfx_char cong_char resid_def
-          apply (elim conjE A.join_ofE B.join_ofE A.composite_ofE B.composite_ofE,
-            intro join_ofI composite_ofI)
-          by auto
+          using cong_char resid_def
+          by (elim conjE A.join_ofE B.join_ofE A.composite_ofE B.composite_ofE,
+                 intro join_ofI composite_ofI)
+             auto
       qed
       thus "joinable t u \<longleftrightarrow> A.joinable (fst t) (fst u) \<and> B.joinable (snd t) (snd u)"
         using joinable_def A.joinable_def B.joinable_def by simp
@@ -8750,7 +8864,7 @@ begin
 
     sublocale weakly_extensional_rts resid
     proof
-      show "\<And>t u. \<lbrakk>cong t u; ide t; ide u\<rbrakk> \<Longrightarrow> t = u"
+      show "\<And>t u. \<lbrakk>t \<sim> u; ide t; ide u\<rbrakk> \<Longrightarrow> t = u"
         by (metis cong_char ide_char prod.exhaust_sel A.weak_extensionality B.weak_extensionality)
     qed
 
@@ -8779,7 +8893,7 @@ begin
 
     sublocale extensional_rts resid
     proof
-      show "\<And>t u. cong t u \<Longrightarrow> t = u"
+      show "\<And>t u. t \<sim> u \<Longrightarrow> t = u"
         by (metis A.extensional B.extensional cong_char prod.collapse)
     qed
 
@@ -8842,9 +8956,9 @@ begin
     A: product_rts A1 A0 +
     B: rts B +
     simulation A.resid B F
-  for A1 :: "'a1 resid"    (infixr "\\\<^sub>A\<^sub>1" 70)
-  and A0 :: "'a0 resid"    (infixr "\\\<^sub>A\<^sub>0" 70)
-  and B :: "'b resid"      (infixr "\\\<^sub>B" 70)
+  for A1 :: "'a1 resid"    (infix "\\\<^sub>A\<^sub>1" 70)
+  and A0 :: "'a0 resid"    (infix "\\\<^sub>A\<^sub>0" 70)
+  and B :: "'b resid"      (infix "\\\<^sub>B" 70)
   and F :: "'a1 * 'a0 \<Rightarrow> 'b"
   begin
 
@@ -8887,8 +9001,12 @@ begin
   and resid_closed: "\<lbrakk>Arr t; Arr u; R.con t u\<rbrakk> \<Longrightarrow> Arr (t \\\<^sub>R u)"
   begin
 
+    notation R.con     (infix "\<frown>\<^sub>R" 50)
+    notation R.prfx    (infix "\<lesssim>\<^sub>R" 50)
+    notation R.cong    (infix "\<sim>\<^sub>R" 50)
+
     definition resid  (infix "\\" 70)
-    where "t \\ u \<equiv> (if Arr t \<and> Arr u \<and> R.con t u then t \\\<^sub>R u else R.null)"
+    where "t \\ u \<equiv> (if Arr t \<and> Arr u \<and> t \<frown>\<^sub>R u then t \\\<^sub>R u else R.null)"
 
     sublocale partial_magma resid
       by unfold_locales
@@ -8917,6 +9035,8 @@ begin
     shows "residuation resid"
       ..
 
+    notation con     (infix "\<frown>" 50)
+
     lemma arr_char [iff]:
     shows "arr t \<longleftrightarrow> Arr t"
     proof
@@ -8931,7 +9051,7 @@ begin
       by (metis R.ide_def arrE arr_char conE ide_def null_char resid_def)
 
     lemma con_char [iff]:
-    shows "con t u \<longleftrightarrow> Arr t \<and> Arr u \<and> R.con t u"
+    shows "t \<frown> u \<longleftrightarrow> Arr t \<and> Arr u \<and> t \<frown>\<^sub>R u"
       using con_def resid_def by auto
 
     lemma trg_char:
@@ -8942,14 +9062,14 @@ begin
     proof
       show "\<And>t. arr t \<Longrightarrow> ide (trg t)"
         by (metis R.ide_trg arrE arr_char arr_resid ide_char inclusion trg_char trg_def)
-      show "\<And>a t. \<lbrakk>ide a; con t a\<rbrakk> \<Longrightarrow> t \\ a = t"
+      show "\<And>a t. \<lbrakk>ide a; t \<frown> a\<rbrakk> \<Longrightarrow> t \\ a = t"
         by (simp add: R.resid_arr_ide resid_def)
-      show "\<And>a t. \<lbrakk>ide a; con a t\<rbrakk> \<Longrightarrow> ide (a \\ t)"
+      show "\<And>a t. \<lbrakk>ide a; a \<frown> t\<rbrakk> \<Longrightarrow> ide (a \\ t)"
         by (metis R.resid_ide_arr arr_resid_iff_con arr_char con_char ide_char resid_def)
-      show "\<And>t u. con t u \<Longrightarrow> \<exists>a. ide a \<and> con a t \<and> con a u"
+      show "\<And>t u. t \<frown> u \<Longrightarrow> \<exists>a. ide a \<and> a \<frown> t \<and> a \<frown> u"
         by (metis (full_types) R.con_imp_coinitial_ax R.con_sym R.in_sourcesI
             con_char ide_char in_mono mem_Collect_eq sources_closed)
-      show "\<And>t u v. \<lbrakk>ide (t \\ u); con u v\<rbrakk> \<Longrightarrow> con (t \\ u) (v \\ u)"
+      show "\<And>t u v. \<lbrakk>ide (t \\ u); u \<frown> v\<rbrakk> \<Longrightarrow> t \\ u \<frown> v \\ u"
         by (metis R.con_target arr_resid_iff_con con_char con_sym ide_char
             ide_implies_arr resid_closed resid_def)
     qed
@@ -8957,6 +9077,9 @@ begin
     lemma is_rts:
     shows "rts resid"
       ..
+
+    notation prfx    (infix "\<lesssim>" 50)
+    notation cong    (infix "\<sim>" 50)
 
     lemma sources_char\<^sub>S\<^sub>R\<^sub>T\<^sub>S:
     shows "sources t = {a. Arr t \<and> a \<in> R.sources t}"
@@ -8991,7 +9114,7 @@ begin
             using b
             by (metis R.arrE ide_char inclusion mem_Collect_eq R.sources_resid
                 R.target_is_ide resid_closed sources_closed subset_eq)
-          show "con (trg t) b"
+          show "trg t \<frown> b"
             using b
             using \<open>ide b\<close> ide_trg trg_char by auto
         qed
@@ -8999,11 +9122,11 @@ begin
     qed
 
     lemma prfx_char\<^sub>S\<^sub>R\<^sub>T\<^sub>S:
-    shows "prfx t u \<longleftrightarrow> Arr t \<and> Arr u \<and> R.prfx t u"
+    shows "t \<lesssim> u \<longleftrightarrow> Arr t \<and> Arr u \<and> t \<lesssim>\<^sub>R u"
       by (metis R.prfx_implies_con con_char ide_char prfx_implies_con resid_closed resid_def)
 
     lemma cong_char\<^sub>S\<^sub>R\<^sub>T\<^sub>S:
-    shows "cong t u \<longleftrightarrow> Arr t \<and> Arr u \<and> R.cong t u"
+    shows "t \<sim> u \<longleftrightarrow> Arr t \<and> Arr u \<and> t \<sim>\<^sub>R u"
       using prfx_char\<^sub>S\<^sub>R\<^sub>T\<^sub>S by force
 
     lemma inclusion_is_simulation:
