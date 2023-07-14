@@ -5071,6 +5071,8 @@
   </url><url>
     <loc>/theories/eval_fo/</loc>
   </url><url>
+    <loc>/theories/example-submission/</loc>
+  </url><url>
     <loc>/theories/executable_randomized_algorithms/</loc>
   </url><url>
     <loc>/theories/expander_graphs/</loc>
