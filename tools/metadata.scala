@@ -166,7 +166,7 @@ object Metadata {
     change_history: Change_History = Map.empty,
     extra: Extra = Map.empty,
     releases: List[Release] = Nil,
-    sitegen_ignore: Boolean = false,
+    statistics_ignore: Boolean = false,
     related: List[Reference] = Nil)
 
   object Entry {
@@ -402,7 +402,7 @@ object Metadata {
         "history" -> from_change_history(entry.change_history),
         "extra" -> entry.extra,
         "related" -> from_related(entry.related)) ++
-        (if (entry.sitegen_ignore) T("sitegen_ignore" -> true) else T())
+        (if (entry.statistics_ignore) T("statistics_ignore" -> true) else T())
     }
 
     def to_entry(
@@ -427,7 +427,7 @@ object Metadata {
         change_history = to_change_history(get_as[T](entry, "history")),
         extra = get_as[Extra](entry, "extra"),
         releases = releases,
-        sitegen_ignore = optional_as[Boolean](entry, "sitegen_ignore").getOrElse(false),
+        statistics_ignore = optional_as[Boolean](entry, "statistics_ignore").getOrElse(false),
         related = to_related(get_as[T](entry, "related")))
   }
 }

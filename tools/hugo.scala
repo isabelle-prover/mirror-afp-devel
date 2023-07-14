@@ -90,16 +90,25 @@ object Hugo {
   private lazy val exec =
     Path.explode(proper_string(hugo_home).getOrElse(error("No hugo component found"))) + Path.basic("hugo")
 
-  def build(layout: Layout, out_dir: Path): Process_Result = {
-    Isabelle_System.bash(
-      exec.implode + " -s " + quote(layout.src_dir.implode) + " -d " + quote(out_dir.canonical.implode))
+  private def source_specifier(layout: Layout, out_dir: Path): String =
+    " -s " + quote(layout.src_dir.implode) + " -d " + quote(out_dir.canonical.implode)
+
+  private def build_example(layout: Layout, out_dir: Path): Unit = {
+    val env = Isabelle_System.settings(List("HUGO_IGNOREFILES" -> "[]"))
+    Isabelle_System.bash(exec.implode + source_specifier(layout, out_dir: Path), env = env).check
   }
 
-  def watch(layout: Layout, out_dir: Path, progress: Progress = new Progress()): Process_Result = {
+  def build(layout: Layout, out_dir: Path): Unit = {
+    build_example(layout, out_dir)
+    Isabelle_System.bash(exec.implode + source_specifier(layout, out_dir)).check
+  }
+
+  def watch(layout: Layout, out_dir: Path, progress: Progress = new Progress()): Unit = {
+    build_example(layout, out_dir)
     Isabelle_System.bash(
-      exec.implode + " server -s " + quote(layout.src_dir.implode) + " -d " + quote(out_dir.canonical.implode),
+      exec.implode + " server " + source_specifier(layout, out_dir),
       progress_stdout = progress.echo,
-      progress_stderr = progress.echo_warning)
+      progress_stderr = progress.echo_warning).check
   }
 
   def clean(out_dir: Path): Unit =

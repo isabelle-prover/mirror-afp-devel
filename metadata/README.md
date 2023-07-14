@@ -29,7 +29,7 @@ note = "<text>"
 Optional:
 
 - ```toml
-  sitegen_ignore = <bool>
+  statistics_ignore = <bool>
   ```
 - in `[authors]` and `[contributors]`:
   ```toml
