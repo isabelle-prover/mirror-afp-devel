@@ -862,10 +862,10 @@ proof (vcg_tc, goal_cases)
   case 1 thus ?case  (* outer invar holds initially *)
    by(auto simp: stable_def pref_match_def P\<^sub>a_set card_distinct match_def index_nth_id prefers_def opti\<^sub>a_def)[]
 next
-  case 2 (* outer invar and b ibplies inner invar *)
+  case 2 (* outer invar and b implies inner invar *)
   thus ?case by (auto simp: atLeastLessThanSuc_atLeastAtMost simp flip: atLeastLessThan_eq_atLeastAtMost_diff)
 next
-  case (4 z A B ai a) (* inner invar' and not b ibplies outer invar *)
+  case (4 z A B ai a) (* inner invar' and not b implies outer invar *)
   note inv = 4[THEN conjunct1]
   note invAM = inv[THEN conjunct1]
   note aai = inv[THEN conjunct2,THEN conjunct2]
@@ -1078,10 +1078,10 @@ proof (vcg_tc, goal_cases)
   case 1 thus ?case  (* outer invar holds initially *)
    by(auto simp: pref_match_def P\<^sub>a_set card_distinct match_def index_nth_id prefers_def opti\<^sub>a_def \<alpha>_def cong: conj_cong)
 next
-  case 2 (* outer invar and b ibplies inner invar *)
+  case 2 (* outer invar and b implies inner invar *)
   thus ?case by (auto simp: atLeastLessThanSuc_atLeastAtMost simp flip: atLeastLessThan_eq_atLeastAtMost_diff)
 next
-  case (4 z A B M ai a) (* inner invar' and not b ibplies outer invar *)
+  case (4 z A B M ai a) (* inner invar' and not b implies outer invar *)
   note inv = 4[THEN conjunct1, unfolded invar2_def]
   note invAM = inv[THEN conjunct1,THEN conjunct1]
   note aai = inv[THEN conjunct1, THEN conjunct2, THEN conjunct2]
@@ -1100,7 +1100,7 @@ next
     case 2 thus ?case using 4 by auto
   qed
 next
-  case 5 (* outer invar and not b ibplies post *)
+  case 5 (* outer invar and not b implies post *)
   thus ?case using pref_match_stable unfolding invAM_def invar1_def by(metis le_neq_implies_less)
 next
   case (3 z v A B M ai a) (* preservation of inner invar *)
@@ -1357,7 +1357,7 @@ proof (vcg_tc, goal_cases)
   case 1 thus ?case  (* outer invar holds initially *)
    by(auto simp: stable_def pref_match_def P\<^sub>a_set card_distinct match_def index_nth_id prefers_def opti\<^sub>a_def \<alpha>_def cong: conj_cong)
 next
-  case 2 (* outer invar and b ibplies inner invar *)
+  case 2 (* outer invar and b implies inner invar *)
   thus ?case by (auto simp: atLeastLessThanSuc_atLeastAtMost simp flip: atLeastLessThan_eq_atLeastAtMost_diff)
 next
   case 3 (* preservation of inner invar *)
@@ -1368,7 +1368,7 @@ next
     case 1 show ?case using inner_pres[OF R _ _ refl refl refl] 3 by blast
   qed
 next
-  case 4 (* inner invar' and not b ibplies outer invar *)
+  case 4 (* inner invar' and not b implies outer invar *)
   show ?case
   proof (simp only: mem_Collect_eq prod.case, rule conjI, goal_cases)
     case 1 show ?case using 4 inner_to_outer by blast
@@ -1376,7 +1376,7 @@ next
     case 2 thus ?case using 4 by auto
   qed
 next
-  case 5 (* outer invar and not b ibplies post *)
+  case 5 (* outer invar and not b implies post *)
   thus ?case using pref_match_stable unfolding invAM_def invar1_def by(metis le_neq_implies_less)
 qed
 
@@ -1481,7 +1481,7 @@ proof (vcg_tc, goal_cases)
   case 1 thus ?case  (* outer invar holds initially *)
    by(auto simp: stable_def pref_match_def P\<^sub>a_set card_distinct match_def index_nth_id prefers_def opti\<^sub>a_def \<alpha>_def cong: conj_cong)
 next
-  case 2 (* outer invar and b ibplies inner invar *)
+  case 2 (* outer invar and b implies inner invar *)
   thus ?case by (auto simp: atLeastLessThanSuc_atLeastAtMost simp flip: atLeastLessThan_eq_atLeastAtMost_diff)
 next
   case 3 (* preservation of inner invar *)
@@ -1492,7 +1492,7 @@ next
     case 1 show ?case using inner_pres2[OF R _ _ refl refl refl] 3 by blast
   qed
 next
-  case 4 (* inner invar' and not b ibplies outer invar *)
+  case 4 (* inner invar' and not b implies outer invar *)
   show ?case
   proof (simp only: mem_Collect_eq prod.case, rule conjI, goal_cases)
     case 1 show ?case using 4 inner_to_outer by blast
@@ -1500,7 +1500,7 @@ next
     case 2 thus ?case using 4 by auto
   qed
 next
-  case 5 (* outer invar and not b ibplies post *)
+  case 5 (* outer invar and not b implies post *)
   thus ?case using pref_match_stable unfolding invAM_def invar1_def by(metis le_neq_implies_less)
 qed
 
