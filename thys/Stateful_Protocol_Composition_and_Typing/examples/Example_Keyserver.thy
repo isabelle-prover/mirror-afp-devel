@@ -9,6 +9,7 @@ theory Example_Keyserver
 imports "../Stateful_Compositionality"
 begin
 
+text \<open>\label{sec:Example-Keyserver}\<close>
 declare [[code_timing]]
 
 subsection \<open>Setup\<close>

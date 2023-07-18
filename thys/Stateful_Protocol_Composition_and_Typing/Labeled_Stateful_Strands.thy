@@ -83,6 +83,26 @@ unfolding unlabel_def ik\<^sub>s\<^sub>s\<^sub>t_def by force
 lemma ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t_concat: "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t (concat xs) = \<Union>(ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t ` set xs)"
 by (induct xs) auto
 
+lemma ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t_Cons[simp]:
+  "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t ((l,send\<langle>ts\<rangle>)#A) = ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t A" (is ?A)
+  "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t ((l,receive\<langle>ts\<rangle>)#A) = set ts \<union> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t A" (is ?B)
+  "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t ((l,\<langle>ac: t \<doteq> s\<rangle>)#A) = ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t A" (is ?C)
+  "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t ((l,insert\<langle>t,s\<rangle>)#A) = ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t A" (is ?D)
+  "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t ((l,delete\<langle>t,s\<rangle>)#A) = ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t A" (is ?E)
+  "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t ((l,\<langle>ac: t \<in> s\<rangle>)#A) = ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t A" (is ?F)
+  "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t ((l,\<forall>X\<langle>\<or>\<noteq>: F \<or>\<notin>: G\<rangle>)#A) = ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t A" (is ?G)
+proof -
+  note 0 = ik\<^sub>s\<^sub>s\<^sub>t_append[of _ "unlabel A"]
+  note 1 = in_ik\<^sub>s\<^sub>s\<^sub>t_iff
+  show ?A using 0[of "[send\<langle>ts\<rangle>]"] 1[of _ "[send\<langle>ts\<rangle>]"] by auto
+  show ?B using 0[of "[receive\<langle>ts\<rangle>]"] 1[of _ "[receive\<langle>ts\<rangle>]"] by auto
+  show ?C using 0[of "[\<langle>ac: t \<doteq> s\<rangle>]"] 1[of _ "[\<langle>ac: t \<doteq> s\<rangle>]"] by auto
+  show ?D using 0[of "[insert\<langle>t,s\<rangle>]"] 1[of _ "[insert\<langle>t,s\<rangle>]"] by auto
+  show ?E using 0[of "[delete\<langle>t,s\<rangle>]"] 1[of _ "[delete\<langle>t,s\<rangle>]"] by auto
+  show ?F using 0[of "[\<langle>ac: t \<in> s\<rangle>]"] 1[of _ "[\<langle>ac: t \<in> s\<rangle>]"] by auto
+  show ?G using 0[of "[\<forall>X\<langle>\<or>\<noteq>: F \<or>\<notin>: G\<rangle>]"] 1[of _ "[\<forall>X\<langle>\<or>\<noteq>: F \<or>\<notin>: G\<rangle>]"] by auto
+qed
+
 lemma subst_lsstp_fst_eq:
   "fst (a \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<delta>) = fst a"
 by (cases a) auto
@@ -96,6 +116,15 @@ by (simp add: subst_apply_labeled_stateful_strand_def)
 
 lemma subst_lsst_cons: "a#A \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<delta> = (a \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<delta>)#(A \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<delta>)"
 by (simp add: subst_apply_labeled_stateful_strand_def)
+
+lemma subst_lsstp_id_subst: "a \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p Var = a"
+proof -
+  obtain l b where a: "a = (l,b)" by (metis surj_pair)
+  show ?thesis unfolding a by (cases b) auto
+qed
+
+lemma subst_lsst_id_subst: "A \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t Var = A"
+by (induct A) (simp, metis subst_lsstp_id_subst subst_lsst_cons)
 
 lemma subst_lsst_singleton: "[(l,s)] \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<delta> = [(l,s \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<delta>)]"
 by (simp add: subst_apply_labeled_stateful_strand_def)

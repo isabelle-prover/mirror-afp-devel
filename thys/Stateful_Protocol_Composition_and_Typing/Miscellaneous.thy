@@ -5,7 +5,7 @@
 
 section \<open>Miscellaneous Lemmata\<close>
 theory Miscellaneous
-imports Main "HOL-Library.Sublist" "HOL-Library.While_Combinator"
+  imports Main "HOL-Library.Sublist" "HOL-Library.Infinite_Set" "HOL-Library.While_Combinator"
 begin
 
 subsection \<open>List: zip, filter, map\<close>
@@ -279,8 +279,13 @@ qed
 lemma length_prefix_ex2:
   assumes "i < length xs" "j < length xs" "i < j"
   shows "\<exists>ys zs vs. xs = ys@xs ! i#zs@xs ! j#vs \<and> length ys = i \<and> length zs = j - i - 1"
-by (smt assms length_prefix_ex' nth_append append.assoc append.simps(2) add_diff_cancel_left'
-        diff_Suc_1 length_Cons length_append)
+proof -
+  obtain xs0 vs where xs0: "xs = xs0@xs ! j#vs" "length xs0 = j"
+    using length_prefix_ex'[OF assms(2)] by blast
+  then obtain ys zs where "xs0 = ys@xs ! i#zs" "length ys = i"
+    by (metis assms(3) length_prefix_ex' nth_append[of _ _ i])
+  thus ?thesis using xs0 by force
+qed
 
 lemma prefix_prefix_inv:
   assumes xs: "prefix xs (ys@zs)"
@@ -587,6 +592,98 @@ proof (cases ts)
     case (Cons b ts'') thus ?thesis using * by (cases ts'') simp_all
   qed simp
 qed simp
+
+lemma Max_nat_finite_le:
+  assumes "finite M"
+    and "\<And>m. m \<in> M \<Longrightarrow> f m \<le> (n::nat)"
+  shows "Max (insert 0 (f ` M)) \<le> n"
+proof -
+  have 0: "finite (insert 0 (f ` M))" using assms(1) by blast
+  have 1: "insert 0 (f ` M) \<noteq> {}" by force
+  have 2: "m \<le> n" when "m \<in> insert 0 (f ` M)" for m using assms(2) that by fastforce
+  show ?thesis using Max.boundedI[OF 0 1 2] by blast
+qed
+
+lemma Max_nat_finite_lt:
+  assumes "finite M"
+    and "M \<noteq> {}"
+    and "\<And>m. m \<in> M \<Longrightarrow> f m < (n::nat)"
+  shows "Max (f ` M) < n"
+proof -
+  define g where "g \<equiv> \<lambda>m. Suc (f m)"
+  have 0: "finite (f ` M)" "finite (g ` M)" using assms(1) by (blast, blast)
+  have 1: "f ` M \<noteq> {}" "g ` M \<noteq> {}" using assms(2) by (force, force)
+  have 2: "m \<le> n" when "m \<in> g ` M" for m using assms(3) that unfolding g_def by fastforce
+  have 3: "Max (g ` M) \<le> n" using Max.boundedI[OF 0(2) 1(2) 2] by blast
+  have 4: "Max (f ` M) < Max (g ` M)"
+    using Max_in[OF 0(1) 1(1)] Max_gr_iff[OF 0(2) 1(2), of "Max (f ` M)"]
+    unfolding g_def by blast
+  show ?thesis using 3 4 by linarith
+qed
+
+lemma ex_finite_disj_nat_inj:
+  fixes N N'::"nat set"
+  assumes N: "finite N"
+    and N': "finite N'"
+  shows "\<exists>M::nat set. \<exists>\<delta>::nat \<Rightarrow> nat. inj \<delta> \<and> \<delta> ` N = M \<and> M \<inter> N' = {}"
+using N 
+proof (induction N rule: finite_induct)
+  case empty thus ?case using injI[of "\<lambda>x::nat. x"] by blast
+next
+  case (insert n N)
+  then obtain M \<delta> where M: "inj \<delta>" "\<delta> ` N = M" "M \<inter> N' = {}" by blast
+
+  obtain m where m: "m \<notin> M" "m \<notin> insert n N" "m \<notin> N'"
+    using M(2) finite_imageI[OF insert.hyps(1), of \<delta>] insert.hyps(1) N'
+    by (metis finite_UnI finite_insert UnCI infinite_nat_iff_unbounded_le
+              finite_nat_set_iff_bounded_le)
+
+  define \<sigma> where "\<sigma> \<equiv> \<lambda>k. if k \<in> insert n N then (\<delta>(n := m)) k else Suc (Max (insert m M)) + k"
+
+  have "insert m M \<inter> N' = {}" using m M(3) unfolding \<sigma>_def by auto
+  moreover have "\<sigma> ` insert n N = insert m M" using insert.hyps(2) M(2) unfolding \<sigma>_def by auto
+  moreover have "inj \<sigma>"
+  proof (intro injI)
+    fix i j assume ij: "\<sigma> i = \<sigma> j"
+
+    have 0: "finite (insert m (\<delta> ` N))"
+      using insert.hyps(1) by simp
+
+    have 1: "Suc (Max (insert m (\<delta> ` N))) > k" when k: "k \<in> insert m (\<delta> ` N)" for k
+      using Max_ge[OF 0 k] by linarith
+    
+    have 2: "(\<delta>(n := m)) k \<in> insert m (\<delta> ` N)" when k: "k \<in> insert n N" for k
+      using k by auto
+    
+    have 3: "(\<delta>(n := m)) k \<noteq> Suc (Max (insert m (\<delta> ` N))) + k'" when k: "k \<in> insert n N" for k k'
+      using 1[OF 2[OF k]] by linarith
+
+    have 4: "i \<in> insert n N \<longleftrightarrow> j \<in> insert n N"
+      using ij 3 M(2) unfolding \<sigma>_def by metis
+
+    show "i = j"
+    proof (cases "i \<in> insert n N")
+      case True
+      hence *: "\<sigma> i = (\<delta>(n := m)) i" "\<sigma> j = (\<delta>(n := m)) j"
+               "i \<in> insert n N" "j \<in> insert n N"
+        using ij iffD1[OF 4] unfolding \<sigma>_def by (argo, argo, argo, argo)
+
+      show ?thesis
+      proof (cases "i = n \<or> j = n")
+        case True
+        moreover have ?thesis when "i = n" "j = n" using that by simp
+        moreover have False when "(i = n \<and> j \<noteq> n) \<or> (i \<noteq> n \<and> j = n)"
+          by (metis M(2) that ij * m(1) fun_upd_other fun_upd_same image_eqI insertE)
+        ultimately show ?thesis by argo
+      next
+        case False thus ?thesis using ij injD[OF M(1), of i j] unfolding *(1,2) by simp
+      qed
+    next
+      case False thus ?thesis using ij 4 unfolding \<sigma>_def by force
+    qed
+  qed
+  ultimately show ?case by blast
+qed
 
 
 subsection \<open>Infinite Paths in Relations as Mappings from Naturals to States\<close>

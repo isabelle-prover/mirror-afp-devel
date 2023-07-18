@@ -22,7 +22,7 @@
 %  \begingroup% 
 %  \def\isacharunderscore{\textunderscore}%
 %  \section{#1 (\thy)}%
-%  \def\isacharunderscore{-}%
+%  \def\isacharunderscore-%
 %  \expandafter\label{sec:\isabellecontext}%
 %  \endgroup% 
 %}
@@ -69,9 +69,9 @@
 The rest of this document is automatically generated from the formalization in Isabelle/HOL, i.e., all content is checked by Isabelle.
 The formalization presented in this entry is described in more detail in several publications:
 \begin{itemize}
-\item The typing result (\autoref{sec:Typing{-}Result} ``Typing\_Result'') for stateless protocols, the TLS formalization (\autoref{sec:Example{-}TLS} ``Example\_TLS''), and the theories depending on those (see \autoref{fig:session-graph}) are described in~\cite{hess.ea:formalizing:2017} and~\cite[chapter 3]{hess:typing:2018}.
-\item The typing result for stateful protocols (\autoref{sec:Stateful{-}Typing} ``Stateful\_Typing'') and the keyserver example (\autoref{sec:Example{-}Keyserver} ``Example\_Keyserver'') are described in~\cite{hess.ea:typing:2018} and~\cite[chapter 4]{hess:typing:2018}.
-\item The results on parallel composition for stateless protocols (\autoref{sec:Parallel{-}Compositionality} ``Parallel\_Compositionality'') and stateful protocols (\autoref{sec:Stateful{-}Compositionality} ``Stateful\_Compositionality'') are described in~\cite{hess.ea:stateful:2018} and~\cite[chapter 5]{hess:typing:2018}.
+\item The typing result (\autoref{sec:Typing-Result} ``Typing\_Result'') for stateless protocols, the TLS formalization (\autoref{sec:Example-TLS} ``Example\_TLS''), and the theories depending on those (see \autoref{fig:session-graph}) are described in~\cite{hess.ea:formalizing:2017} and~\cite[chapter 3]{hess:typing:2018}.
+\item The typing result for stateful protocols (\autoref{sec:Stateful-Typing} ``Stateful\_Typing'') and the keyserver example (\autoref{sec:Example-Keyserver} ``Example\_Keyserver'') are described in~\cite{hess.ea:typing:2018} and~\cite[chapter 4]{hess:typing:2018}.
+\item The results on parallel composition for stateless protocols (\autoref{sec:Parallel-Compositionality} ``Parallel\_Compositionality'') and stateful protocols (\autoref{sec:Stateful-Compositionality} ``Stateful\_Compositionality'') are described in~\cite{hess.ea:stateful-protocol-composition:2023,hess.ea:stateful:2018} and~\cite[chapter 5]{hess:typing:2018}.
 \end{itemize}
 Overall, the structure of this document follows the theory dependencies (see \autoref{fig:session-graph}): we start with introducing the technical preliminaries of our formalization (\autoref{cha:preliminaries}).
 Next, we introduce the typing results in \autoref{cha:typing} and \autoref{cha:stateful-typing}.
@@ -134,8 +134,8 @@ This work is an extension of the work described in~\cite{hess.ea:stateful:2018} 
 \chapter{Examples}
 \label{cha:examples}
 In this chapter, we present two examples illustrating our results:
-In \autoref{sec:Example{-}TLS} we show that the TLS example from~\cite{hess.ea:formalizing:2017} is type-flaw resistant.
-In \autoref{sec:Example{-}Keyserver} we show that the keyserver examples from~\cite{hess.ea:typing:2018,hess.ea:stateful:2018} are also type-flaw resistant and that the steps of the composed keyserver protocol from~\cite{hess.ea:stateful:2018} satisfy our conditions for protocol composition. 
+In \autoref{sec:Example-TLS} we show that the TLS example from~\cite{hess.ea:formalizing:2017} is type-flaw resistant.
+In \autoref{sec:Example-Keyserver} we show that the keyserver examples from~\cite{hess.ea:typing:2018,hess.ea:stateful:2018} are also type-flaw resistant and that the steps of the composed keyserver protocol from~\cite{hess.ea:stateful:2018} satisfy our conditions for protocol composition. 
 \input{Example_TLS.tex}
 \input{Example_Keyserver.tex}
 
@@ -149,3 +149,5 @@ In \autoref{sec:Example{-}Keyserver} we show that the keyserver examples from~\c
 %%% mode: latex
 %%% TeX-master: t
 %%% End:
+\endinput
+%:%file=~/devel/LogicalHacking/publications/LazyIntruderFormalization/AFP/Stateful_Protocol_Composition_and_Typing/document/root.tex%:%

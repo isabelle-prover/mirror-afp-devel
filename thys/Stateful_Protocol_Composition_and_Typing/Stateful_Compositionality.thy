@@ -9,6 +9,7 @@ section \<open>Stateful Protocol Compositionality\<close>
 theory Stateful_Compositionality
 imports Stateful_Typing Parallel_Compositionality Labeled_Stateful_Strands
 begin
+text\<open>\label{sec:Stateful-Compositionality}\<close>
 
 subsection \<open>Small Lemmata\<close>
 lemma (in typed_model) wt_subst_sstp_vars_type_subset:
@@ -432,7 +433,7 @@ begin
 lemma declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t_alt_def:
   "declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<I> = {s. \<Union>{set ts | ts. \<langle>\<star>, receive\<langle>ts\<rangle>\<rangle> \<in> set \<A>} \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile> s}"
 proof -
-  have "(l, receive\<langle>ts\<rangle>) \<in> set (\<A> \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<I>) = (\<exists>ts'. (l, receive\<langle>ts'\<rangle>) \<in> set \<A> \<and> ts = ts' \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<I>)"
+  have 0: "(l, receive\<langle>ts\<rangle>) \<in> set (\<A> \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<I>) = (\<exists>ts'. (l, receive\<langle>ts'\<rangle>) \<in> set \<A> \<and> ts = ts' \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<I>)"
     (is "?A \<A> = ?B \<A>")
     for ts l
   proof
@@ -460,9 +461,27 @@ proof -
       qed (use Cons.IH subst_lsst_cons[of a \<A> \<I>] in auto)
     qed simp
   qed
-  thus ?thesis
-    unfolding declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def
-    by (smt Collect_cong image_Union list.set_map setcompr_eq_image)
+
+  let ?M = "\<lambda>A. \<Union>{set ts |ts. \<langle>\<star>, receive\<langle>ts\<rangle>\<rangle> \<in> set A}"
+
+  have 1: "?M (\<A> \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<I>) = ?M \<A> \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>" (is "?A = ?B")
+  proof
+    show "?A \<subseteq> ?B"
+    proof
+      fix t assume t: "t \<in> ?A"
+      then obtain ts where ts: "t \<in> set ts" "\<langle>\<star>, receive\<langle>ts\<rangle>\<rangle> \<in> set (\<A> \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<I>)" by blast
+      thus "t \<in> ?B" using 0[of \<star> ts] by fastforce
+    qed
+    show "?B \<subseteq> ?A"
+    proof
+      fix t assume t: "t \<in> ?B"
+      then obtain ts where ts: "t \<in> set ts \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>" "\<langle>\<star>, receive\<langle>ts\<rangle>\<rangle> \<in> set \<A>" by blast
+      hence "\<langle>\<star>, receive\<langle>ts \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<I>\<rangle>\<rangle> \<in> set (\<A> \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<I>)" using 0[of \<star> "ts \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<I>"] by blast
+      thus "t \<in> ?A" using ts(1) by force
+    qed
+  qed
+
+  show ?thesis using 1 unfolding declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def by argo
 qed
 
 lemma declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t_prefix_subset:

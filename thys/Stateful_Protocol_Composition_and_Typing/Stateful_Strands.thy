@@ -337,11 +337,16 @@ proof -
   thus "?Q \<Longrightarrow> ?Q' \<Longrightarrow> ?Q''" by (metis prefixI prefix_same_cases)
 qed
 
+lemma ik\<^sub>s\<^sub>s\<^sub>t_snoc_no_receive_empty:
+  assumes "\<forall>a \<in> set A. \<not>is_Receive a"
+  shows "ik\<^sub>s\<^sub>s\<^sub>t A \<cdot>\<^sub>s\<^sub>e\<^sub>t I = {}"
+using assms in_ik\<^sub>s\<^sub>s\<^sub>t_iff[of _ A] by fastforce
+
 lemma ik\<^sub>s\<^sub>s\<^sub>t_snoc_no_receive_eq:
   assumes "\<nexists>s. a = receive\<langle>s\<rangle>"
   shows "ik\<^sub>s\<^sub>s\<^sub>t (A@[a]) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> = ik\<^sub>s\<^sub>s\<^sub>t A \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>"
-using assms unfolding ik\<^sub>s\<^sub>s\<^sub>t_def
-by (metis (no_types, lifting) Un_iff append_Nil2 set_ConsD set_append)
+using assms ik\<^sub>s\<^sub>s\<^sub>t_snoc_no_receive_empty[of "[a]" \<I>] ik\<^sub>s\<^sub>s\<^sub>t_append[of A "[a]"]
+unfolding is_Receive_def by auto
 
 lemma db\<^sub>s\<^sub>s\<^sub>t_set_is_dbupd\<^sub>s\<^sub>s\<^sub>t: "set (db'\<^sub>s\<^sub>s\<^sub>t A I D) = dbupd\<^sub>s\<^sub>s\<^sub>t A I (set D)" (is "?A = ?B")
 proof
@@ -355,14 +360,6 @@ proof
     fix t s show "(t,s) \<in> ?B \<Longrightarrow> (t,s) \<in> ?A" by (induct arbitrary: D rule: dbupd\<^sub>s\<^sub>s\<^sub>t.induct) auto
   qed
 qed
-
-lemma dbupd\<^sub>s\<^sub>s\<^sub>t_no_upd:
-  assumes "\<forall>a \<in> set A. \<not>is_Insert a \<and> \<not>is_Delete a"
-  shows "dbupd\<^sub>s\<^sub>s\<^sub>t A I D = D"
-using assms
-proof (induction A)
-  case (Cons a A) thus ?case by (cases a) auto
-qed simp
 
 lemma db\<^sub>s\<^sub>s\<^sub>t_no_upd:
   assumes "\<forall>a \<in> set A. \<not>is_Insert a \<and> \<not>is_Delete a"
@@ -440,6 +437,458 @@ proof (induction A arbitrary: D)
   thus ?case by (cases a) (simp_all add: term_subst_eq[of _ I J])
 qed simp
 
+lemma dbupd\<^sub>s\<^sub>s\<^sub>t_no_upd:
+  assumes "\<forall>a \<in> set A. \<not>is_Insert a \<and> \<not>is_Delete a"
+  shows "dbupd\<^sub>s\<^sub>s\<^sub>t A I D = D"
+using assms
+proof (induction A)
+  case (Cons a A) thus ?case by (cases a) auto
+qed simp
+
+lemma dbupd\<^sub>s\<^sub>s\<^sub>t_no_deletes:
+  assumes "list_all (\<lambda>a. \<not>is_Delete a) A"
+  shows "dbupd\<^sub>s\<^sub>s\<^sub>t A I D = D \<union> {(t \<cdot> I, s \<cdot> I) | t s. insert\<langle>t,s\<rangle> \<in> set A}" (is "?Q A D")
+using assms
+proof (induction A arbitrary: D)
+  case (Cons a A)
+  hence IH: "?Q A D" for D by auto
+  have "\<not>is_Delete a" using Cons.prems by simp
+  thus ?case using IH by (cases a) auto
+qed simp
+
+lemma dbupd\<^sub>s\<^sub>s\<^sub>t_append:
+  "dbupd\<^sub>s\<^sub>s\<^sub>t (A@B) I D = dbupd\<^sub>s\<^sub>s\<^sub>t B I (dbupd\<^sub>s\<^sub>s\<^sub>t A I D)"
+proof (induction A arbitrary: D)
+  case (Cons a A) thus ?case by (cases a) auto
+qed simp
+
+lemma dbupd\<^sub>s\<^sub>s\<^sub>t_filter:
+  "dbupd\<^sub>s\<^sub>s\<^sub>t A I D = dbupd\<^sub>s\<^sub>s\<^sub>t (filter is_Update A) I D"
+by (induct A I D rule: dbupd\<^sub>s\<^sub>s\<^sub>t.induct) simp_all
+
+lemma dbupd\<^sub>s\<^sub>s\<^sub>t_in_cases:
+  assumes "(t,s) \<in> dbupd\<^sub>s\<^sub>s\<^sub>t A I D"
+  shows "(t,s) \<in> D \<or> (\<exists>t' s'. insert\<langle>t',s'\<rangle> \<in> set A \<and> t = t' \<cdot> I \<and> s = s' \<cdot> I)" (is ?P)
+    and "\<forall>u v B. suffix (delete\<langle>u,v\<rangle>#B) A \<and> (t,s) = (u,v) \<cdot>\<^sub>p I \<longrightarrow>
+                  (\<exists>u' v'. (t,s) = (u',v') \<cdot>\<^sub>p I \<and> insert\<langle>u',v'\<rangle> \<in> set B)" (is ?Q)
+proof -
+  show ?P using assms
+  proof (induction A arbitrary: D)
+    case (Cons a A) thus ?case by (cases a) fastforce+
+  qed simp
+
+  show ?Q using assms
+  proof (induction A arbitrary: D rule: List.rev_induct)
+    case (snoc a A)
+    note 0 = snoc.IH snoc.prems
+    note 1 = suffix_snoc[of _ A a]
+
+    have 2: "dbupd\<^sub>s\<^sub>s\<^sub>t (A@[a]) I D = dbupd\<^sub>s\<^sub>s\<^sub>t A I D" when "\<not>is_Update a"
+      using that dbupd\<^sub>s\<^sub>s\<^sub>t_append[of A "[a]" I D] by (cases a) auto
+
+    have 3: "suffix (delete\<langle>u,v\<rangle>#B) A \<Longrightarrow> suffix (delete\<langle>u,v\<rangle>#B@[a]) (A@[a])"
+      when "\<not>is_Update a" for u v B
+      using that by simp
+
+    have 4: "\<exists>C. B = C@[a] \<and> suffix (delete\<langle>u,v\<rangle>#C) A"
+      when a: "\<not>is_Delete a" "suffix (delete\<langle>u,v\<rangle>#B) (A@[a])" for u v B
+    proof -
+      have a': "a \<noteq> delete\<langle>u,v\<rangle>" using a(1) by force
+      obtain C where C: "delete\<langle>u,v\<rangle>#B = C@[a]" "suffix C A" using 1 a(2) by blast
+      show ?thesis using a' C by (cases C) auto
+    qed
+
+    note 5 = dbupd\<^sub>s\<^sub>s\<^sub>t_append[of A "[a]" I]
+
+    show ?case
+    proof (cases "is_Update a")
+      case True
+      then obtain u v where "a = insert\<langle>u,v\<rangle> \<or> a = delete\<langle>u,v\<rangle>" by (cases a) auto
+      thus ?thesis
+      proof
+        assume a: "a = insert\<langle>u,v\<rangle>"
+        hence a': "\<not>is_Delete a" by simp
+
+        have 6: "insert\<langle>u,v\<rangle> \<in> set B"
+          when B: "suffix (delete\<langle>u',v'\<rangle>#B) (A@[a])" for u' v' B
+          using 4[OF a' B] unfolding a by fastforce
+
+        have 7: "(t,s) = (u,v) \<cdot>\<^sub>p I \<or> (t,s) \<in> dbupd\<^sub>s\<^sub>s\<^sub>t A I D" using snoc.prems 5 a by auto
+        show ?thesis
+        proof (cases "(t,s) = (u,v) \<cdot>\<^sub>p I")
+          case True
+          have "insert\<langle>u,v\<rangle> \<in> set B"
+            when B: "suffix (delete\<langle>u',v'\<rangle>#B) (A@[a])" for u' v' B
+            using 4[OF a' B] unfolding a by fastforce
+          thus ?thesis using True by blast
+        next
+          case False
+          hence 8: "(t,s) \<in> dbupd\<^sub>s\<^sub>s\<^sub>t A I D" using 7 by blast
+          have "\<exists>u'' v''. (t,s) = (u'',v'') \<cdot>\<^sub>p I \<and> insert\<langle>u'',v''\<rangle> \<in> set B"
+            when B: "suffix (delete\<langle>u',v'\<rangle>#B) (A @ [a])" "(t,s) = (u',v') \<cdot>\<^sub>p I" for u' v' B
+          proof -
+            obtain C where C: "B = C@[a]" "suffix (delete\<langle>u',v'\<rangle>#C) A" using 4[OF a' B(1)] by blast
+            thus ?thesis using snoc.IH[OF 8] B(2) unfolding a by fastforce
+          qed
+          thus ?thesis by blast
+        qed
+      next
+        assume a: "a = delete\<langle>u,v\<rangle>"
+        hence "(t,s) \<in> dbupd\<^sub>s\<^sub>s\<^sub>t A I D - {((u,v) \<cdot>\<^sub>p I)}" using snoc.prems 5 by auto
+        hence 6: "(t,s) \<in> dbupd\<^sub>s\<^sub>s\<^sub>t A I D" "(t,s) \<noteq> (u,v) \<cdot>\<^sub>p I" by (blast,blast)
+        
+        have "(\<exists>C. B = C@[a] \<and> suffix (delete\<langle>u',v'\<rangle>#C) A) \<or> (B = [] \<and> u' = u \<and> v' = v)"
+          when B: "suffix (delete\<langle>u',v'\<rangle>#B) (A@[a])" for B u' v'
+        proof -
+          obtain C where C: "delete\<langle>u',v'\<rangle>#B = C@[a]" "suffix C A" using B 1 by blast
+          show ?thesis
+          proof (cases "B = []")
+            case True thus ?thesis using C unfolding a by simp
+          next
+            case False
+            then obtain b B' where B': "B = B'@[b]" by (meson rev_exhaust)
+            show ?thesis using C unfolding a B' by auto
+          qed 
+        qed
+        hence "\<exists>C. B = C@[a] \<and> suffix (delete\<langle>u',v'\<rangle>#C) A"
+          when "suffix (delete\<langle>u',v'\<rangle>#B) (A@[a])" "(t,s) = (u',v') \<cdot>\<^sub>p I" for B u' v'
+          using that 6 by blast
+        thus ?thesis using snoc.IH[OF 6(1)] unfolding a by fastforce
+      qed
+    next
+      case False
+      have "\<exists>u' v'. (t,s) = (u',v') \<cdot>\<^sub>p I \<and> insert\<langle>u',v'\<rangle> \<in> set B"
+        when B: "suffix (delete\<langle>u,v\<rangle>#B) (A@[a])" "(t,s) = (u,v) \<cdot>\<^sub>p I" for u v B
+      proof -
+        obtain C where C: "B = C@[a]" "suffix (delete\<langle>u,v\<rangle>#C) A" using 4[OF _ B(1)] False by blast
+        show ?thesis using B(2) snoc.IH[OF snoc.prems[unfolded 2[OF False]]] C by fastforce
+      qed
+      thus ?thesis by blast
+    qed
+  qed simp
+qed
+
+lemma dbupd\<^sub>s\<^sub>s\<^sub>t_in_iff:
+  "(t,s) \<in> dbupd\<^sub>s\<^sub>s\<^sub>t A I D \<longleftrightarrow>
+   ((\<forall>u v B. suffix (delete\<langle>u,v\<rangle>#B) A \<and> (t,s) = (u,v) \<cdot>\<^sub>p I \<longrightarrow>
+              (\<exists>u' v'. (t,s) = (u',v') \<cdot>\<^sub>p I \<and> insert\<langle>u',v'\<rangle> \<in> set B)) \<and>
+    ((t,s) \<in> D \<or> (\<exists>u v. (t,s) = (u,v) \<cdot>\<^sub>p I \<and> insert\<langle>u,v\<rangle> \<in> set A)))"
+  (is "?P A D \<longleftrightarrow> ?Q1 A \<and> ?Q2 A D")
+proof
+  show "?P A D \<Longrightarrow> ?Q1 A \<and> ?Q2 A D" using dbupd\<^sub>s\<^sub>s\<^sub>t_in_cases by fast
+
+  show "?Q1 A \<and> ?Q2 A D \<Longrightarrow> ?P A D"
+  proof (induction A arbitrary: D)
+    case (Cons a A)
+    have Q1: "?Q1 A" using Cons.prems suffix_Cons[of _ a A] by blast
+
+    show ?case
+    proof (cases "is_Update a")
+      case False thus ?thesis using Q1 Cons.IH Cons.prems by (cases a) auto
+    next
+      case True
+      then obtain t' s' where "a = insert\<langle>t',s'\<rangle> \<or> a = delete\<langle>t',s'\<rangle>" by (cases a) auto
+      thus ?thesis
+      proof
+        assume a: "a = insert\<langle>t',s'\<rangle>"
+        hence "?Q2 A (insert ((t',s') \<cdot>\<^sub>p I) D)" using Cons.prems by auto
+        thus ?thesis using Q1 Cons.IH unfolding a by auto
+      next
+        assume a: "a = delete\<langle>t',s'\<rangle>"
+        hence "?Q2 A (D - {(t',s') \<cdot>\<^sub>p I})" using Cons.prems by auto
+        thus ?thesis using Q1 Cons.IH unfolding a by auto
+      qed
+    qed
+  qed simp
+qed
+
+lemma dbupd\<^sub>s\<^sub>s\<^sub>t_in_cases':
+  fixes A::"('a,'b) stateful_strand"
+  assumes "(t,s) \<in> dbupd\<^sub>s\<^sub>s\<^sub>t A I D"
+    and "(t,s) \<notin> D"
+  shows "\<exists>B C t' s'. A = B@insert\<langle>t',s'\<rangle>#C \<and> t = t' \<cdot> I \<and> s = s' \<cdot> I \<and>
+                     (\<forall>t'' s''. delete\<langle>t'',s''\<rangle> \<in> set C \<longrightarrow> t \<noteq> t'' \<cdot> I \<or> s \<noteq> s'' \<cdot> I)"
+using assms(1)
+proof (induction A rule: List.rev_induct)
+  case (snoc a A)
+  note 0 = dbupd\<^sub>s\<^sub>s\<^sub>t_append[of A "[a]" I D]
+  have 1: "(t,s) \<in> dbupd\<^sub>s\<^sub>s\<^sub>t A I D" when "\<not>is_Update a" using that snoc.prems 0 by (cases a) auto
+  show ?case
+  proof (cases "is_Update a")
+    case False
+    obtain B C t' s' where B:
+        "A = B@insert\<langle>t',s'\<rangle>#C" "t = t' \<cdot> I" "s = s' \<cdot> I"
+        "\<forall>t'' s''. delete\<langle>t'',s''\<rangle> \<in> set C \<longrightarrow> t \<noteq> t'' \<cdot> I \<or> s \<noteq> s'' \<cdot> I"
+      using snoc.IH[OF 1[OF False]] by blast
+
+    have "A@[a] = B@insert\<langle>t',s'\<rangle>#(C@[a])"
+         "\<forall>t'' s''. delete\<langle>t'',s''\<rangle> \<in> set (C@[a]) \<longrightarrow> t \<noteq> t'' \<cdot> I \<or> s \<noteq> s'' \<cdot> I"
+      using False B(1,4) by auto
+    thus ?thesis using B(2,3) by blast
+  next
+    case True
+    then obtain t' s' where "a = insert\<langle>t',s'\<rangle> \<or> a = delete\<langle>t',s'\<rangle>" by (cases a) auto
+    thus ?thesis
+    proof
+      assume a: "a = insert\<langle>t',s'\<rangle>"
+      hence "dbupd\<^sub>s\<^sub>s\<^sub>t (A@[a]) I D = insert ((t',s') \<cdot>\<^sub>p I) (dbupd\<^sub>s\<^sub>s\<^sub>t A I D)" using 0 by simp
+      hence "(t,s) = (t',s') \<cdot>\<^sub>p I \<or> (t,s) \<in> dbupd\<^sub>s\<^sub>s\<^sub>t A I D" using snoc.prems by blast
+      thus ?thesis
+      proof
+        assume 2: "(t,s) \<in> dbupd\<^sub>s\<^sub>s\<^sub>t A I D" show ?thesis using snoc.IH[OF 2] unfolding a by force
+      qed (force simp add: a)
+    next
+      assume a: "a = delete\<langle>t',s'\<rangle>"
+      hence 2: "t \<noteq> t' \<cdot> I \<or> s \<noteq> s' \<cdot> I" using 0 snoc.prems by simp
+  
+      have "(t,s) \<in> dbupd\<^sub>s\<^sub>s\<^sub>t A I D" using 0 snoc.prems a by force
+      then obtain B C u v where B:
+          "A = B@insert\<langle>u,v\<rangle>#C" "t = u \<cdot> I" "s = v \<cdot> I"
+          "\<forall>t' s'. delete\<langle>t',s'\<rangle> \<in> set C \<longrightarrow> t \<noteq> t' \<cdot> I \<or> s \<noteq> s' \<cdot> I"
+        using snoc.IH by moura
+  
+      have "A@[a] = B@insert\<langle>u,v\<rangle>#(C@[a])"
+           "\<forall>t' s'. delete\<langle>t',s'\<rangle> \<in> set (C@[a]) \<longrightarrow> t \<noteq> t' \<cdot> I \<or> s \<noteq> s' \<cdot> I"
+        using B(1,4) a 2 by auto
+      thus ?thesis using B(2,3) by blast
+    qed
+  qed
+qed (simp add: assms(2))
+
+lemma dbupd\<^sub>s\<^sub>s\<^sub>t_mono:
+  assumes "D \<subseteq> E"
+  shows "dbupd\<^sub>s\<^sub>s\<^sub>t A I D \<subseteq> dbupd\<^sub>s\<^sub>s\<^sub>t A I E"
+using assms
+proof (induction A arbitrary: D E)
+  case (Cons a A) thus ?case
+  proof (cases a)
+    case (Insert t s)
+    have "insert ((t,s) \<cdot>\<^sub>p I) D \<subseteq> insert ((t,s) \<cdot>\<^sub>p I) E" using Cons.prems by fast
+    thus ?thesis using Cons.IH unfolding Insert by simp
+  next
+    case (Delete t s)
+    have "D - {(t,s) \<cdot>\<^sub>p I} \<subseteq> E - {(t,s) \<cdot>\<^sub>p I}" using Cons.prems by fast
+    thus ?thesis using Cons.IH unfolding Delete by simp
+  qed auto
+qed simp
+
+lemma dbupd\<^sub>s\<^sub>s\<^sub>t_db_narrow:
+  assumes "(t,s) \<in> dbupd\<^sub>s\<^sub>s\<^sub>t A I (D \<union> E)"
+    and "(t,s) \<notin> D"
+  shows "(t,s) \<in> dbupd\<^sub>s\<^sub>s\<^sub>t A I E"
+using assms
+proof (induction A arbitrary: D E)
+  case (Cons a A) thus ?case
+  proof (cases a)
+    case (Delete t' s') thus ?thesis
+      using Cons.prems Cons.IH[of "D - {(t',s') \<cdot>\<^sub>p I}" "E - {(t',s') \<cdot>\<^sub>p I}"] by (simp add: Un_Diff)
+  qed auto
+qed simp
+
+lemma dbupd\<^sub>s\<^sub>s\<^sub>t_set_term_neq_in_iff:
+  assumes f: "f \<noteq> k"
+    and A: "\<forall>t s. insert\<langle>t,s\<rangle> \<in> set A \<longrightarrow> (\<exists>g ts. s = Fun g ts)"
+  shows "(t,Fun f ts) \<in> dbupd\<^sub>s\<^sub>s\<^sub>t A I D \<longleftrightarrow>
+         (t,Fun f ts) \<in> dbupd\<^sub>s\<^sub>s\<^sub>t (filter (\<lambda>a. \<nexists>s ss. a = insert\<langle>s,Fun k ss\<rangle>) A) I D"
+    (is "?P A D \<longleftrightarrow> ?P (?f A) D")
+proof
+  show "?P A D \<Longrightarrow> ?P (?f A) D" using A
+  proof (induction A arbitrary: D)
+    case (Cons a A)
+    have IH: "?P A D \<Longrightarrow> ?P (?f A) D" for D
+      using Cons.prems(2) Cons.IH by simp
+
+    show ?case
+    proof (cases "is_Update a")
+      case True
+      then obtain u s where "a = insert\<langle>u,s\<rangle> \<or> a = delete\<langle>u,s\<rangle>" by (cases a) auto
+      thus ?thesis
+      proof
+        assume a: "a = insert\<langle>u,s\<rangle>"
+        obtain g ss where s: "s = Fun g ss" using a Cons.prems(2) by fastforce
+
+        have 0: "?P A (insert ((u, s) \<cdot>\<^sub>p I) D)" using a Cons.prems(1) by fastforce
+        show ?thesis
+        proof (cases "g = k")
+          case g: True
+          have "?f (a#A) = ?f A" unfolding a s g by force
+          moreover have "(t,Fun f ts) \<noteq> (u, Fun g ss) \<cdot>\<^sub>p I" using f unfolding g by auto
+          ultimately show ?thesis
+            using IH[OF 0] dbupd\<^sub>s\<^sub>s\<^sub>t_db_narrow[of t "Fun f ts" "?f A" I "{(u, s) \<cdot>\<^sub>p I}" D]
+            unfolding a s g by force
+        next
+          case g: False
+          have "?f (a#A) = a#?f A" using g unfolding a s by force
+          thus ?thesis using Cons.prems Cons.IH g unfolding a s by force
+        qed
+      next
+        assume a: "a = delete\<langle>u,s\<rangle>"
+        hence "?f (a#A) = a#?f A" by auto
+        thus ?thesis using Cons.prems Cons.IH unfolding a by fastforce
+      qed
+    next
+      case a: False
+      hence "?P A D" using Cons.prems(1) by (cases a) auto
+      hence "?P (?f A) D" using Cons.IH Cons.prems(2) a by fastforce
+      thus ?thesis using a by (cases a) auto
+    qed
+  qed simp
+
+  have "dbupd\<^sub>s\<^sub>s\<^sub>t (?f A) I D \<subseteq> dbupd\<^sub>s\<^sub>s\<^sub>t A I D"
+  proof (induction A arbitrary: D)
+    case (Cons a A) show ?case
+    proof (cases a)
+      case (Insert t s)
+      have "?f (a#A) = a#?f A \<or> ?f (a#A) = ?f A" unfolding Insert by force
+      hence "dbupd\<^sub>s\<^sub>s\<^sub>t (?f (a#A)) I D \<subseteq> dbupd\<^sub>s\<^sub>s\<^sub>t (?f A) I (insert ((t,s) \<cdot>\<^sub>p I) D)"
+        using dbupd\<^sub>s\<^sub>s\<^sub>t_mono[of D "insert ((t, s) \<cdot>\<^sub>p I) D"] unfolding Insert by auto
+      thus ?thesis using Cons.IH unfolding Insert by fastforce
+    qed (use Cons.prems Cons.IH in auto)
+  qed simp
+  thus "?P (?f A) D \<Longrightarrow> ?P A D" by blast
+qed
+
+lemma dbupd\<^sub>s\<^sub>s\<^sub>t_subst_const_swap:
+  fixes t s
+  defines "fvs \<equiv> \<lambda>A D. fv\<^sub>s\<^sub>s\<^sub>t A \<union> fv t \<union> fv s \<union> \<Union>(fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r ` D)"
+  assumes "(t \<cdot> \<delta>, s \<cdot> \<delta>) \<in> dbupd\<^sub>s\<^sub>s\<^sub>t A \<delta> (D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<delta>)" (is "?in \<delta> A D")
+    and "\<forall>x \<in> fvs A D.
+          \<delta> x = \<theta> x \<or>
+          (\<not>(\<delta> x \<sqsubseteq> t) \<and> \<not>(\<delta> x \<sqsubseteq> s) \<and> \<not>(\<theta> x \<sqsubseteq> t) \<and> \<not>(\<theta> x \<sqsubseteq> s) \<and>
+           (\<forall>(u,v) \<in> D. \<not>(\<delta> x \<sqsubseteq> u) \<and> \<not>(\<delta> x \<sqsubseteq> v) \<and> \<not>(\<theta> x \<sqsubseteq> u) \<and> \<not>(\<theta> x \<sqsubseteq> v)) \<and>
+           (\<forall>u v. insert\<langle>u,v\<rangle> \<in> set A \<or> delete\<langle>u,v\<rangle> \<in> set A \<longrightarrow>
+                    \<not>(\<delta> x \<sqsubseteq> u) \<and> \<not>(\<delta> x \<sqsubseteq> v) \<and> \<not>(\<theta> x \<sqsubseteq> u) \<and> \<not>(\<theta> x \<sqsubseteq> v)))"
+      (is "?A \<delta> \<theta> D")
+    and "\<forall>x \<in> fvs A D. \<exists>c. \<delta> x = Fun c []" (is "?B \<delta>")
+    and "\<forall>x \<in> fvs A D. \<exists>c. \<theta> x = Fun c []" (is "?B \<theta>")
+    and "\<forall>x \<in> fvs A D. \<forall>y \<in> fvs A D. \<delta> x = \<delta> y \<longleftrightarrow> \<theta> x = \<theta> y" (is "?C \<delta> \<theta> A D")
+  shows "(t \<cdot> \<theta>, s \<cdot> \<theta>) \<in> dbupd\<^sub>s\<^sub>s\<^sub>t A \<theta> (D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<theta>)" (is "?in \<theta> A D")
+using assms(2-)
+proof (induction A arbitrary: D rule: List.rev_induct)
+  case Nil
+  then obtain u v where u: "(u,v) \<in> D" "t \<cdot> \<delta> = u \<cdot> \<delta>" "s \<cdot> \<delta> = v \<cdot> \<delta>" by auto
+
+  let ?X = "fv t \<union> fv u"
+  let ?Y = "fv s \<union> fv v"
+
+  have 0: "fv u \<subseteq> fvs [] D" "fv v \<subseteq> fvs [] D" "fv t \<subseteq> fvs [] D" "fv s \<subseteq> fvs [] D"
+    using u(1) unfolding fvs_def by (blast, blast, blast, blast)
+
+  have 1: "\<forall>x \<in> ?X. \<delta> x = \<theta> x \<or> (\<not>(\<delta> x \<sqsubseteq> t) \<and> \<not>(\<delta> x \<sqsubseteq> u))"
+          "\<forall>x \<in> ?Y. \<delta> x = \<theta> x \<or> (\<not>(\<delta> x \<sqsubseteq> s) \<and> \<not>(\<delta> x \<sqsubseteq> v))"
+    using Nil.prems(2) u(1) unfolding fvs_def by (blast,blast)
+
+  have 2: "\<forall>x \<in> ?X. \<exists>c. \<delta> x = Fun c []" "\<forall>x \<in> ?X. \<exists>c. \<theta> x = Fun c []"
+          "\<forall>x \<in> ?Y. \<exists>c. \<delta> x = Fun c []" "\<forall>x \<in> ?Y. \<exists>c. \<theta> x = Fun c []"
+    using Nil.prems(3,4) 0 by (blast,blast,blast,blast)
+
+  have 3: "\<forall>x \<in> ?X. \<forall>y \<in> ?X. \<delta> x = \<delta> y \<longleftrightarrow> \<theta> x = \<theta> y"
+          "\<forall>x \<in> ?Y. \<forall>y \<in> ?Y. \<delta> x = \<delta> y \<longleftrightarrow> \<theta> x = \<theta> y"
+    using Nil.prems(5) 0 by (blast,blast)
+
+  have "t \<cdot> \<theta> = u \<cdot> \<theta>" "s \<cdot> \<theta> = v \<cdot> \<theta>"
+    using subst_const_swap_eq'[OF u(2) 1(1) 2(1,2) 3(1)]
+          subst_const_swap_eq'[OF u(3) 1(2) 2(3,4) 3(2)]
+    by argo+
+  thus ?case using u(1) by force
+next
+  case (snoc a A)
+  have 0: "fvs A D \<subseteq> fvs (A@[a]) D" "set A \<subseteq> set (A@[a])" unfolding fvs_def by auto
+
+  note 1 = dbupd\<^sub>s\<^sub>s\<^sub>t_append[of A "[a]"]
+
+  have IH: "(t \<cdot> \<delta>, s \<cdot> \<delta>) \<in> dbupd\<^sub>s\<^sub>s\<^sub>t A \<delta> (D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<delta>) \<Longrightarrow> (t \<cdot> \<theta>, s \<cdot> \<theta>) \<in> dbupd\<^sub>s\<^sub>s\<^sub>t A \<theta> (D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<theta>)"
+    using snoc.IH[of D] snoc.prems(2-) 0 by blast
+
+  let ?q0 = "\<lambda>t s \<delta> \<theta>. \<forall>x \<in> fv t \<union> fv s. \<delta> x = \<theta> x \<or> (\<not>(\<delta> x \<sqsubseteq> t) \<and> \<not>(\<delta> x \<sqsubseteq> s))"
+  let ?q1 = "\<lambda>t s \<delta>.   \<forall>x \<in> fv t \<union> fv s. \<exists>c. \<delta> x = Fun c []"
+  let ?q2 = "\<lambda>t s \<delta> \<theta>. \<forall>x \<in> fv t \<union> fv s. \<forall>y \<in> fv t \<union> fv s. \<delta> x = \<delta> y \<longleftrightarrow> \<theta> x = \<theta> y"
+
+  show ?case
+  proof (cases "is_Update a")
+    case False
+    hence "dbupd\<^sub>s\<^sub>s\<^sub>t (A@[a]) \<delta> (D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<delta>) = dbupd\<^sub>s\<^sub>s\<^sub>t A \<delta> (D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<delta>)"
+          "dbupd\<^sub>s\<^sub>s\<^sub>t (A@[a]) \<theta> (D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<theta>) = dbupd\<^sub>s\<^sub>s\<^sub>t A \<theta> (D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<theta>)"
+      using 1 by (cases a; auto)+
+    thus ?thesis using IH snoc.prems(1) by blast
+  next
+    case True
+    then obtain u v where u: "a = insert\<langle>u,v\<rangle> \<or> a = delete\<langle>u,v\<rangle>" by (cases a) auto
+
+    have uv_in: "insert\<langle>u,v\<rangle> \<in> set (A@[a]) \<or> delete\<langle>u,v\<rangle> \<in> set (A@[a])" using u by force
+    hence fv_uv: "fv u \<subseteq> fvs (A@[a]) D" "fv v \<subseteq> fvs (A@[a]) D" unfolding fvs_def by (force,force)
+
+    have fv_ts: "fv t \<subseteq> fvs (A@[a]) D" "fv s \<subseteq> fvs (A@[a]) D" unfolding fvs_def by (blast,blast)
+
+    have q0: "?q0 t u \<delta> \<theta>" "?q0 s v \<delta> \<theta>"
+             "?q0 t u \<theta> \<delta>" "?q0 s v \<theta> \<delta>"
+    proof -
+      show "?q0 t u \<delta> \<theta>" "?q0 s v \<delta> \<theta>"
+        using snoc.prems(2) 0 fv_ts fv_uv uv_in by (blast,blast)
+
+      show "?q0 t u \<theta> \<delta>"
+      proof
+        fix x assume "x \<in> fv t \<union> fv u"
+        hence "x \<in> fvs (A@[a]) D" using fv_ts(1) fv_uv(1) by blast
+        thus "\<theta> x = \<delta> x \<or> (\<not>(\<theta> x \<sqsubseteq> t) \<and> \<not>(\<theta> x \<sqsubseteq> u))" 
+          using snoc.prems(2) uv_in by auto
+      qed
+
+      show "?q0 s v \<theta> \<delta>"
+      proof
+        fix x assume "x \<in> fv s \<union> fv v"
+        hence "x \<in> fvs (A@[a]) D" using fv_ts(2) fv_uv(2) by blast
+        thus "\<theta> x = \<delta> x \<or> (\<not>(\<theta> x \<sqsubseteq> s) \<and> \<not>(\<theta> x \<sqsubseteq> v))" 
+          using snoc.prems(2) uv_in by auto
+      qed
+    qed
+
+    have q1: "?q1 t u \<delta>" "?q1 t u \<theta>"
+             "?q1 s v \<delta>" "?q1 s v \<theta>"
+      using snoc.prems(3,4) 0 fv_ts fv_uv by (blast,blast,blast,blast)
+
+    have q2: "?q2 t u \<delta> \<theta>" "?q2 s v \<delta> \<theta>"
+             "?q2 t u \<theta> \<delta>" "?q2 s v \<theta> \<delta>"
+      using snoc.prems(5) 0 fv_ts fv_uv by (blast,blast,blast,blast)
+
+    from u show ?thesis
+    proof
+      assume a: "a = insert\<langle>u,v\<rangle>"
+      show ?thesis
+      proof (cases "(t \<cdot> \<delta>, s \<cdot> \<delta>) = (u,v) \<cdot>\<^sub>p \<delta>")
+        case True
+        hence "(t \<cdot> \<theta>, s \<cdot> \<theta>) = (u,v) \<cdot>\<^sub>p \<theta>"
+          using subst_const_swap_eq'[OF _ q0(1) q1(1,2) q2(1)]
+                subst_const_swap_eq'[OF _ q0(2) q1(3,4) q2(2)]
+          by fast
+        thus ?thesis using 1 unfolding a by simp
+      next
+        case False
+        hence "(t \<cdot> \<delta>, s \<cdot> \<delta>) \<in> dbupd\<^sub>s\<^sub>s\<^sub>t A \<delta> (D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<delta>)"
+          using snoc.prems(1) 1 unfolding a by force
+        hence "(t \<cdot> \<theta>, s \<cdot> \<theta>) \<in> dbupd\<^sub>s\<^sub>s\<^sub>t A \<theta> (D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<theta>)"
+          using IH by blast
+        thus ?thesis using 1 unfolding a by simp
+      qed
+    next
+      assume a: "a = delete\<langle>u,v\<rangle>"
+      have "(t \<cdot> \<delta>, s \<cdot> \<delta>) \<noteq> (u,v) \<cdot>\<^sub>p \<delta>"
+        using snoc.prems(1) dbupd\<^sub>s\<^sub>s\<^sub>t_append[of A "[a]"] unfolding a by fastforce
+      hence 2: "(t \<cdot> \<theta>, s \<cdot> \<theta>) \<noteq> (u,v) \<cdot>\<^sub>p \<theta>"
+        using subst_const_swap_eq'[OF _ q0(3) q1(2,1) q2(3)]
+              subst_const_swap_eq'[OF _ q0(4) q1(4,3) q2(4)]
+        by fast
+
+      have "(t \<cdot> \<delta>, s \<cdot> \<delta>) \<in> dbupd\<^sub>s\<^sub>s\<^sub>t A \<delta> (D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<delta>)"
+        using snoc.prems(1) 1 unfolding a by fastforce
+      hence 3: "(t \<cdot> \<theta>, s \<cdot> \<theta>) \<in> dbupd\<^sub>s\<^sub>s\<^sub>t A \<theta> (D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<theta>)"
+        using IH by blast
+
+      show ?thesis using 2 3 dbupd\<^sub>s\<^sub>s\<^sub>t_append[of A "[a]"] unfolding a by auto
+    qed
+  qed
+qed
+
 lemma subst_sst_cons: "a#A \<cdot>\<^sub>s\<^sub>s\<^sub>t \<delta> = (a \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<delta>)#(A \<cdot>\<^sub>s\<^sub>s\<^sub>t \<delta>)"
 by (simp add: subst_apply_stateful_strand_def)
 
@@ -476,6 +925,12 @@ proof (induction S)
   { case 10 thus ?case using Cons.IH(10) unfolding * by (cases x) auto }
   { case 11 thus ?case using Cons.IH(11) unfolding * by (cases x) auto }
 qed simp_all
+
+lemma subst_sstp_id_subst: "a \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p Var = a"
+by (cases a) auto
+
+lemma subst_sst_id_subst: "A \<cdot>\<^sub>s\<^sub>s\<^sub>t Var = A"
+by (induct A) (simp, metis subst_sstp_id_subst subst_sst_cons)
 
 lemma sst_vars_append_subset:
   "fv\<^sub>s\<^sub>s\<^sub>t A \<subseteq> fv\<^sub>s\<^sub>s\<^sub>t (A@B)" "bvars\<^sub>s\<^sub>s\<^sub>t A \<subseteq> bvars\<^sub>s\<^sub>s\<^sub>t (A@B)"
@@ -583,6 +1038,26 @@ lemma vars\<^sub>s\<^sub>s\<^sub>t_Cons'[simp]:
   "vars\<^sub>s\<^sub>s\<^sub>t (\<forall>X\<langle>\<or>\<noteq>: F \<or>\<notin>: G\<rangle>#A) = vars\<^sub>s\<^sub>s\<^sub>t\<^sub>p (\<forall>X\<langle>\<or>\<noteq>: F \<or>\<notin>: G\<rangle>) \<union> vars\<^sub>s\<^sub>s\<^sub>t A"
 by (simp_all add: vars\<^sub>s\<^sub>s\<^sub>t_def)
 
+lemma fv\<^sub>s\<^sub>s\<^sub>t\<^sub>p_subst_if_no_bvars:
+  assumes a: "bvars\<^sub>s\<^sub>s\<^sub>t\<^sub>p a = []"
+  shows "fv\<^sub>s\<^sub>s\<^sub>t\<^sub>p (a \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<theta>) = fv\<^sub>s\<^sub>e\<^sub>t (\<theta> ` fv\<^sub>s\<^sub>s\<^sub>t\<^sub>p a)"
+proof (cases a)
+  case (NegChecks X F G)
+  hence "set X = {}" using a by fastforce
+  thus ?thesis using fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_subst[of _ \<theta>] unfolding NegChecks by simp
+qed (auto simp add: subst_list_set_fv subst_apply_fv_unfold)
+
+lemma fv\<^sub>s\<^sub>s\<^sub>t_subst_if_no_bvars:
+  assumes A: "bvars\<^sub>s\<^sub>s\<^sub>t A = {}"
+  shows "fv\<^sub>s\<^sub>s\<^sub>t (A \<cdot>\<^sub>s\<^sub>s\<^sub>t \<theta>) = fv\<^sub>s\<^sub>e\<^sub>t (\<theta> ` fv\<^sub>s\<^sub>s\<^sub>t A)"
+using assms
+proof (induction A)
+  case (Cons a A) thus ?case
+    using fv\<^sub>s\<^sub>s\<^sub>t\<^sub>p_subst_if_no_bvars[of a \<theta>] fv\<^sub>s\<^sub>s\<^sub>t_Cons[of a A] bvars\<^sub>s\<^sub>s\<^sub>t_Cons[of a A]
+          subst_sst_cons[of a A \<theta>]
+    by simp
+qed simp
+
 lemma vars\<^sub>s\<^sub>s\<^sub>t\<^sub>p_is_fv\<^sub>s\<^sub>s\<^sub>t\<^sub>p_bvars\<^sub>s\<^sub>s\<^sub>t\<^sub>p:
   fixes x::"('a,'b) stateful_strand_step"
   shows "vars\<^sub>s\<^sub>s\<^sub>t\<^sub>p x = fv\<^sub>s\<^sub>s\<^sub>t\<^sub>p x \<union> set (bvars\<^sub>s\<^sub>s\<^sub>t\<^sub>p x)"
@@ -619,6 +1094,9 @@ lemma fv\<^sub>s\<^sub>s\<^sub>t_append[simp]: "fv\<^sub>s\<^sub>s\<^sub>t (A@B)
 by simp
 
 lemma bvars\<^sub>s\<^sub>s\<^sub>t_append[simp]: "bvars\<^sub>s\<^sub>s\<^sub>t (A@B) = bvars\<^sub>s\<^sub>s\<^sub>t A \<union> bvars\<^sub>s\<^sub>s\<^sub>t B"
+by auto
+
+lemma fv\<^sub>s\<^sub>s\<^sub>t_mono: "set A \<subseteq> set B \<Longrightarrow> fv\<^sub>s\<^sub>s\<^sub>t A \<subseteq> fv\<^sub>s\<^sub>s\<^sub>t B"
 by auto
 
 lemma fv\<^sub>s\<^sub>s\<^sub>t\<^sub>p_is_subterm_trms\<^sub>s\<^sub>s\<^sub>t\<^sub>p:
@@ -1259,6 +1737,54 @@ proof (induction S)
   qed simp
 qed simp
 
+lemma fv\<^sub>s\<^sub>s\<^sub>t\<^sub>p_ground_subst_compose:
+  assumes "subst_domain \<delta> = subst_domain \<sigma>"
+    and "range_vars \<delta> = {}" "range_vars \<sigma> = {}"
+  shows "fv\<^sub>s\<^sub>s\<^sub>t\<^sub>p (a \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<delta> \<circ>\<^sub>s \<theta>) = fv\<^sub>s\<^sub>s\<^sub>t\<^sub>p (a \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<sigma> \<circ>\<^sub>s \<theta>)"
+proof -
+  note 0 = fv_ground_subst_compose
+
+  have 1: "range_vars \<delta> \<inter> set (bvars\<^sub>s\<^sub>s\<^sub>t\<^sub>p a) = {}" "range_vars \<sigma> \<inter> set (bvars\<^sub>s\<^sub>s\<^sub>t\<^sub>p a) = {}"
+    using assms(2,3) by (blast,blast)
+
+  note 2 = 0[OF assms, of _ \<theta>]
+
+  show ?thesis
+  proof (cases a)
+    case (NegChecks X F G)
+    have 3: "range_vars \<delta> \<inter> set X = {}" "range_vars (rm_vars (set X) \<delta>) = {}"
+            "range_vars \<sigma> \<inter> set X = {}" "range_vars (rm_vars (set X) \<sigma>) = {}"
+      using assms(2,3) rm_vars_img_fv_subset[of "set X"] by auto
+
+    have 4: "subst_domain (rm_vars (set X) \<delta>) = subst_domain (rm_vars (set X) \<sigma>)"
+      using assms(1) rm_vars_dom[of "set X"] by blast
+
+    have 5: "fv (t \<cdot> rm_vars (set X) (\<delta> \<circ>\<^sub>s \<theta>)) = fv (t \<cdot> rm_vars (set X) (\<sigma> \<circ>\<^sub>s \<theta>))" for t
+      using 2[of t] rm_vars_comp[OF 3(1), of t \<theta>] rm_vars_comp[OF 3(3), of t \<theta>]
+            0[OF 4 3(2,4), of t "rm_vars (set X) \<theta>"]
+      by argo
+
+    have 6: "fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (H \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s rm_vars (set X) (\<delta> \<circ>\<^sub>s \<theta>)) = fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (H \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s rm_vars (set X) (\<sigma> \<circ>\<^sub>s \<theta>))"
+      for H
+    proof -
+      have "fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r (h \<cdot>\<^sub>p rm_vars (set X) (\<delta> \<circ>\<^sub>s \<theta>)) = fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r (h \<cdot>\<^sub>p rm_vars (set X) (\<sigma> \<circ>\<^sub>s \<theta>))" for h
+      proof -
+        obtain s t where h: "h = (s,t)" by (metis surj_pair)
+        show ?thesis using 5[of s] 5[of t] unfolding h by fast
+      qed
+      thus ?thesis unfolding subst_apply_pairs_def by auto
+    qed
+
+    show ?thesis using 5 6 unfolding NegChecks by simp
+  qed (use 2 in auto)
+qed
+
+lemma fv\<^sub>s\<^sub>s\<^sub>t_ground_subst_compose:
+  assumes "subst_domain \<delta> = subst_domain \<sigma>"
+    and "range_vars \<delta> = {}" "range_vars \<sigma> = {}"
+  shows "fv\<^sub>s\<^sub>s\<^sub>t (S \<cdot>\<^sub>s\<^sub>s\<^sub>t \<delta> \<circ>\<^sub>s \<theta>) = fv\<^sub>s\<^sub>s\<^sub>t (S \<cdot>\<^sub>s\<^sub>s\<^sub>t \<sigma> \<circ>\<^sub>s \<theta>)"
+by (induct S) (auto simp add: fv\<^sub>s\<^sub>s\<^sub>t\<^sub>p_ground_subst_compose[OF assms] fv\<^sub>s\<^sub>s\<^sub>t_Cons subst_sst_cons)
+
 lemma stateful_strand_step_subst_comp:
   assumes "range_vars \<delta> \<inter> set (bvars\<^sub>s\<^sub>s\<^sub>t\<^sub>p x) = {}"
   shows "x \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<delta> \<circ>\<^sub>s \<theta> = (x \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<delta>) \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<theta>"
@@ -1746,6 +2272,79 @@ proof -
     by force
 qed
 
+lemma strand_sem_stateful_if_no_send_or_check:
+  assumes A: "list_all (\<lambda>a. \<not>is_Send a \<and> \<not>is_Check_or_Assignment a) A"
+  shows "\<lbrakk>M; D; A\<rbrakk>\<^sub>s I"
+using A
+proof (induction A rule: List.rev_induct)
+  case (snoc a A)
+  hence IH: "\<lbrakk>M; D; A\<rbrakk>\<^sub>s I" and a: "\<not>is_Send a" "\<not>is_Check_or_Assignment a" by auto
+  from a have "\<lbrakk>M; D; [a]\<rbrakk>\<^sub>s I" for M D by (cases a) auto
+  thus ?case using IH strand_sem_append_stateful[of M D A "[a]" I] by blast
+qed simp
+
+lemma strand_sem_stateful_if_sends_deduct:
+  assumes "list_all is_Send A"
+    and "\<forall>ts. send\<langle>ts\<rangle> \<in> set A \<longrightarrow> (\<forall>t \<in> set ts. M \<turnstile> t \<cdot> I)"
+  shows "\<lbrakk>M; D; A\<rbrakk>\<^sub>s I"
+using assms
+proof (induction A rule: List.rev_induct)
+  case (snoc a A)
+  hence IH: "\<lbrakk>M; D; A\<rbrakk>\<^sub>s I" by auto
+  obtain ts where a: "a = send\<langle>ts\<rangle>" "\<forall>t \<in> set ts. M \<turnstile> t \<cdot> I" using snoc.prems by (cases a) auto
+
+  have "\<lbrakk>M \<union> (ik\<^sub>s\<^sub>s\<^sub>t A \<cdot>\<^sub>s\<^sub>e\<^sub>t I); D; [a]\<rbrakk>\<^sub>s I" for D
+    using ideduct_mono[of M _ "M \<union> (ik\<^sub>s\<^sub>s\<^sub>t A \<cdot>\<^sub>s\<^sub>e\<^sub>t I)"] a by auto
+  thus ?case using IH strand_sem_append_stateful[of M D A "[a]" I] by blast
+qed simp
+
+lemma strand_sem_stateful_if_checks:
+  assumes "list_all is_Check_or_Assignment A"
+    and "\<forall>ac t s. \<langle>ac: t \<doteq> s\<rangle> \<in> set A \<longrightarrow> t \<cdot> I = s \<cdot> I"
+    and "\<forall>ac t s. \<langle>ac: t \<in> s\<rangle> \<in> set A \<longrightarrow> (t \<cdot> I, s \<cdot> I) \<in> D"
+    and "\<forall>X F G. \<forall>X\<langle>\<or>\<noteq>: F \<or>\<notin>: G\<rangle> \<in> set A \<longrightarrow> negchecks_model I D X F G"
+  shows "\<lbrakk>M; D; A\<rbrakk>\<^sub>s I"
+using assms
+proof (induction A rule: List.rev_induct)
+  case (snoc a A)
+  hence IH: "\<lbrakk>M; D; A\<rbrakk>\<^sub>s I" and a: "is_Check_or_Assignment a" by auto
+
+  have 0: "dbupd\<^sub>s\<^sub>s\<^sub>t A I D = D"
+    using snoc.prems(1) dbupd\<^sub>s\<^sub>s\<^sub>t_no_upd[of A I D] unfolding list_all_iff by auto
+
+  have "\<lbrakk>M; D; [a]\<rbrakk>\<^sub>s I" for M using a snoc.prems(2,3,4) by (cases a) auto
+  thus ?case using IH strand_sem_append_stateful[of M D A "[a]" I] unfolding 0 by blast
+qed simp
+
+lemma strand_sem_stateful_sends_deduct:
+  assumes A: "\<lbrakk>M; D; A\<rbrakk>\<^sub>s I"
+    and ts: "send\<langle>ts\<rangle> \<in> set A"
+    and t: "t \<in> set ts"
+  shows "M \<union> (ik\<^sub>s\<^sub>s\<^sub>t A \<cdot>\<^sub>s\<^sub>e\<^sub>t I) \<turnstile> t \<cdot> I"
+using A ts
+proof (induction A arbitrary: M D rule: List.rev_induct)
+  case (snoc a A)
+  have 0: "\<lbrakk>M; D; A\<rbrakk>\<^sub>s I"
+    using strand_sem_append_stateful snoc.prems(1) by fast
+
+  have 1: "M \<union> (ik\<^sub>s\<^sub>s\<^sub>t A \<cdot>\<^sub>s\<^sub>e\<^sub>t I) \<subseteq> M \<union> (ik\<^sub>s\<^sub>s\<^sub>t (A@[a]) \<cdot>\<^sub>s\<^sub>e\<^sub>t I)"
+    by auto
+
+  have 2: "M \<union> (ik\<^sub>s\<^sub>s\<^sub>t (A@[send\<langle>ts\<rangle>]) \<cdot>\<^sub>s\<^sub>e\<^sub>t I) = M \<union> (ik\<^sub>s\<^sub>s\<^sub>t A \<cdot>\<^sub>s\<^sub>e\<^sub>t I)"
+    using in_ik\<^sub>s\<^sub>s\<^sub>t_iff[of _ A] in_ik\<^sub>s\<^sub>s\<^sub>t_iff[of _ "A@[send\<langle>ts\<rangle>]"] by fastforce
+
+  show ?case
+  proof (cases "send\<langle>ts\<rangle> \<in> set A")
+    case True show ?thesis by (rule ideduct_mono[OF snoc.IH[OF 0 True] 1])
+  next
+    case False
+    hence a: "a = send\<langle>ts\<rangle>" using snoc.prems(2) by force
+    show ?thesis
+      using strand_sem_append_stateful[of M D A "[a]" I] snoc.prems(1) t
+      unfolding a 2 by auto
+  qed
+qed simp
+
 end
 
 
@@ -2154,5 +2753,62 @@ next
   then obtain S\<^sub>p\<^sub>r\<^sub>e S\<^sub>s\<^sub>u\<^sub>f where "?P S\<^sub>p\<^sub>r\<^sub>e" "?Q S S\<^sub>p\<^sub>r\<^sub>e S\<^sub>s\<^sub>u\<^sub>f" using ConsDel.IH by moura
   thus ?case by fastforce
 qed (simp add: wfrestrictedvars\<^sub>s\<^sub>s\<^sub>t_def)
+
+lemma wf\<^sub>s\<^sub>s\<^sub>t_vars_mono': "wf'\<^sub>s\<^sub>s\<^sub>t V S \<Longrightarrow> V \<subseteq> W \<Longrightarrow> wf'\<^sub>s\<^sub>s\<^sub>t W S"
+by (metis Diff_partition wf\<^sub>s\<^sub>s\<^sub>t_vars_mono)
+
+lemma wfrestrictedvars\<^sub>s\<^sub>s\<^sub>t_receives_only_eq:
+  assumes "list_all is_Receive S"
+  shows "wfrestrictedvars\<^sub>s\<^sub>s\<^sub>t S = fv\<^sub>s\<^sub>s\<^sub>t S"
+using assms
+proof (induction S)
+  case (Cons a A)
+  obtain ts where a: "a = receive\<langle>ts\<rangle>" using Cons.prems by (cases a) auto
+  have IH: "wfrestrictedvars\<^sub>s\<^sub>s\<^sub>t A = fv\<^sub>s\<^sub>s\<^sub>t A" using Cons.prems Cons.IH by simp
+  show ?case using IH unfolding a wfrestrictedvars\<^sub>s\<^sub>s\<^sub>t_def by simp
+qed (simp add: wfrestrictedvars\<^sub>s\<^sub>s\<^sub>t_def)
+
+lemma wfvarsoccs\<^sub>s\<^sub>s\<^sub>t_receives_only_empty:
+  assumes "list_all is_Receive S"
+  shows "wfvarsoccs\<^sub>s\<^sub>s\<^sub>t S = {}"
+using assms
+proof (induction S)
+  case (Cons a A)
+  obtain ts where a: "a = receive\<langle>ts\<rangle>" using Cons.prems by (cases a) auto
+  have IH: "wfvarsoccs\<^sub>s\<^sub>s\<^sub>t A = {}" using Cons.prems Cons.IH by simp
+  show ?case using IH unfolding a wfvarsoccs\<^sub>s\<^sub>s\<^sub>t_def by simp
+qed (simp add: wfvarsoccs\<^sub>s\<^sub>s\<^sub>t_def)
+
+lemma wf\<^sub>s\<^sub>s\<^sub>t_sends_only:
+  assumes "list_all is_Send S"
+  shows "wf'\<^sub>s\<^sub>s\<^sub>t V S"
+using assms
+proof (induction S arbitrary: V)
+  case (Cons s S) thus ?case by (cases s) auto
+qed simp
+
+lemma wf\<^sub>s\<^sub>s\<^sub>t_sends_only_prepend:
+  assumes "wf'\<^sub>s\<^sub>s\<^sub>t V S"
+    and "list_all is_Send S'"
+  shows "wf'\<^sub>s\<^sub>s\<^sub>t V (S'@S)"
+using wf\<^sub>s\<^sub>s\<^sub>t_append[OF wf\<^sub>s\<^sub>s\<^sub>t_sends_only[OF assms(2), of "{}"] assms(1)] by simp
+
+lemma wf\<^sub>s\<^sub>s\<^sub>t_receives_only_fv_subset:
+  assumes "wf'\<^sub>s\<^sub>s\<^sub>t V S"
+    and "list_all is_Receive S"
+  shows "fv\<^sub>s\<^sub>s\<^sub>t S \<subseteq> V"
+using assms
+proof (induction rule: wf\<^sub>s\<^sub>s\<^sub>t_induct)
+  case (ConsRcv ts S) thus ?case using wfvarsoccs\<^sub>s\<^sub>s\<^sub>t_receives_only_empty[of S] by auto
+qed auto
+
+lemma wf\<^sub>s\<^sub>s\<^sub>t_append_suffix'':
+  assumes "wf'\<^sub>s\<^sub>s\<^sub>t V S"
+    and "wfrestrictedvars\<^sub>s\<^sub>s\<^sub>t S' \<subseteq> wfvarsoccs\<^sub>s\<^sub>s\<^sub>t S \<union> V"
+  shows "wf'\<^sub>s\<^sub>s\<^sub>t V (S@S')"
+using assms
+by (induction V S rule: wf'\<^sub>s\<^sub>s\<^sub>t.induct)
+   (auto simp add: wf\<^sub>s\<^sub>s\<^sub>tI' wf\<^sub>s\<^sub>s\<^sub>t_vars_mono wfvarsoccs\<^sub>s\<^sub>s\<^sub>t_def)
+
 
 end

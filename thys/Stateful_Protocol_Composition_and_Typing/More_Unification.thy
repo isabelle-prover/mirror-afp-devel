@@ -331,6 +331,14 @@ proof -
   thus ?thesis using subst_apply_fv_unfold by metis
 qed
 
+lemma fv\<^sub>s\<^sub>e\<^sub>t_subst:
+  "fv\<^sub>s\<^sub>e\<^sub>t (M \<cdot>\<^sub>s\<^sub>e\<^sub>t \<theta>) = fv\<^sub>s\<^sub>e\<^sub>t (\<theta> ` fv\<^sub>s\<^sub>e\<^sub>t M)"
+using subst_apply_fv_unfold[of _ \<theta>] by auto
+
+lemma subst_list_set_fv:
+  "fv\<^sub>s\<^sub>e\<^sub>t (set (ts \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta>)) = fv\<^sub>s\<^sub>e\<^sub>t (\<theta> ` fv\<^sub>s\<^sub>e\<^sub>t (set ts))"
+using subst_apply_fv_unfold_set[of \<theta> ts] by simp
+
 lemma subst_elimI[intro]: "(\<And>t. v \<notin> fv (t \<cdot> \<sigma>)) \<Longrightarrow> subst_elim \<sigma> v"
 by (auto simp add: subst_elim_def)
 
@@ -1542,6 +1550,22 @@ next
     by fastforce
 qed
 
+lemma fv_ground_subst_compose:
+  assumes "subst_domain \<delta> = subst_domain \<sigma>"
+    and "range_vars \<delta> = {}" "range_vars \<sigma> = {}"
+  shows "fv (t \<cdot> \<delta> \<circ>\<^sub>s \<theta>) = fv (t \<cdot> \<sigma> \<circ>\<^sub>s \<theta>)"
+proof (induction t)
+  case (Var x) show ?case
+  proof (cases "x \<in> subst_domain \<delta>")
+    case True thus ?thesis
+      using assms unfolding range_vars_alt_def by (auto simp add: subst_apply_fv_empty)
+  next
+    case False
+    hence "\<delta> x = Var x" "\<sigma> x = Var x" using assms(1) by (blast,blast)
+    thus ?thesis by simp
+  qed
+qed simp
+
 
 subsection \<open>More Small Lemmata\<close>
 lemma funs_term_subst: "funs_term (t \<cdot> \<theta>) = funs_term t \<union> (\<Union>x \<in> fv t. funs_term (\<theta> x))"
@@ -1718,6 +1742,163 @@ lemma subst_apply_pairs_Var[iff]: "F \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^s
 
 lemma subst_apply_pairs_pset_subst: "set (F \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s \<theta>) = set F \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<theta>"
 unfolding subst_apply_pairs_def by force
+
+lemma subst_subterms:
+  "t \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t M \<Longrightarrow> t \<cdot> \<theta> \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t M \<cdot>\<^sub>s\<^sub>e\<^sub>t \<theta>"
+using subst_mono_neq by fastforce
+
+lemma subst_subterms_fv:
+  "x \<in> fv\<^sub>s\<^sub>e\<^sub>t M \<Longrightarrow> \<theta> x \<in> subterms\<^sub>s\<^sub>e\<^sub>t M \<cdot>\<^sub>s\<^sub>e\<^sub>t \<theta>"
+using fv_subterms_substI by fastforce
+
+lemma subst_subterms_Var:
+  "Var x \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t M \<Longrightarrow> \<theta> x \<in> subterms\<^sub>s\<^sub>e\<^sub>t M \<cdot>\<^sub>s\<^sub>e\<^sub>t \<theta>"
+using subst_subterms_fv[of x M \<theta>] by force
+
+lemma fv_subset_subterms_subset:
+  "\<delta> ` fv\<^sub>s\<^sub>e\<^sub>t M \<subseteq> subterms\<^sub>s\<^sub>e\<^sub>t M \<cdot>\<^sub>s\<^sub>e\<^sub>t \<delta>"
+using subst_subterms_fv by fast
+
+lemma subst_const_swap_eq:
+  fixes \<theta> \<sigma>::"('a,'b) subst"
+  assumes t: "t \<cdot> \<theta> = s \<cdot> \<theta>"
+    and \<theta>: "\<forall>x \<in> fv t \<union> fv s. \<exists>k. \<theta> x = Fun k []"
+           "\<forall>x \<in> fv t. \<not>(\<theta> x \<sqsubseteq> s)"
+           "\<forall>x \<in> fv s. \<not>(\<theta> x \<sqsubseteq> t)"
+    and \<sigma>_def: "\<sigma> \<equiv> \<lambda>x. p (\<theta> x)"
+  shows "t \<cdot> \<sigma> = s \<cdot> \<sigma>"
+using t \<theta>
+proof (induction t arbitrary: s)
+  case (Var x) thus ?case unfolding \<sigma>_def by (cases s) auto
+next
+  case (Fun f ts)
+  note prems = Fun.prems
+
+  obtain ss where s: "s = Fun f ss" and ss: "ts \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta> = ss \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta>" using prems by (cases s) auto
+
+  have "ts ! i \<cdot> \<sigma> = ss ! i \<cdot> \<sigma>" when i: "i < length ts" for i
+  proof -
+    have *: "ts ! i \<in> set ts" using i by simp
+    have **: "ts ! i \<cdot> \<theta> = ss ! i \<cdot> \<theta>" using i prems(1) unfolding s by (metis subst_Fun_index_eq)
+    have ***: "ss ! i \<in> set ss" using i ss by (metis length_map nth_mem)
+
+    show ?thesis using Fun.IH[OF * **] prems(2,3,4) * *** unfolding s by auto
+  qed
+  hence IH: "ts \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<sigma> = ss \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<sigma>"
+    using ss by (metis (mono_tags, lifting) length_map nth_equalityI nth_map)
+
+  show ?case using IH unfolding s by auto
+qed
+
+lemma term_subst_set_eq:
+  assumes "\<And>x. x \<in> fv\<^sub>s\<^sub>e\<^sub>t M \<Longrightarrow> \<delta> x = \<sigma> x"
+  shows "M \<cdot>\<^sub>s\<^sub>e\<^sub>t \<delta> = M \<cdot>\<^sub>s\<^sub>e\<^sub>t \<sigma>"
+proof -
+  have "t \<cdot> \<delta> = t \<cdot> \<sigma>" when "t \<in> M" for t
+    using that assms term_subst_eq[of _ \<delta> \<sigma>] by fastforce
+  thus ?thesis by simp
+qed
+
+lemma subst_const_swap_eq':
+  assumes "t \<cdot> \<theta> = s \<cdot> \<theta>"
+    and "\<forall>x \<in> fv t \<union> fv s. \<theta> x = \<sigma> x \<or> \<not>(\<theta> x \<sqsubseteq> t) \<and> \<not>(\<theta> x \<sqsubseteq> s)" (is "?A t s")
+    and "\<forall>x \<in> fv t \<union> fv s. \<exists>c. \<theta> x = Fun c []" (is "?B t s")
+    and "\<forall>x \<in> fv t \<union> fv s. \<exists>c. \<sigma> x = Fun c []" (is "?C t s")
+    and "\<forall>x \<in> fv t \<union> fv s. \<forall>y \<in> fv t \<union> fv s. \<theta> x = \<theta> y \<longleftrightarrow> \<sigma> x = \<sigma> y" (is "?D t s")
+  shows "t \<cdot> \<sigma> = s \<cdot> \<sigma>"
+using assms
+proof (induction t arbitrary: s)
+  case (Var x)
+  note prems = Var.prems
+  have "(\<exists>y. s = Var y) \<or> (\<exists>c. s = Fun c [])" using prems(1,3) by (cases s) auto
+  thus ?case
+  proof
+    assume "\<exists>y. s = Var y"
+    then obtain y where y: "s = Var y" by blast
+    hence "\<theta> x = \<theta> y" using prems(1) by simp
+    hence "\<sigma> x = \<sigma> y" using prems(5) y by fastforce
+    thus ?thesis using y by force
+  next
+    assume "\<exists>c. s = Fun c []"
+    then obtain c where c: "s = Fun c []" by blast
+    have "\<theta> x = \<sigma> x \<or> \<not>(\<theta> x \<sqsubseteq> Fun c [])" using prems(2) c by auto
+    thus ?thesis using prems(1) c by simp
+  qed
+next
+  case (Fun f ts)
+  note prems = Fun.prems
+  note IH = Fun.IH
+
+  show ?case
+  proof (cases s)
+    case (Var x)
+    note s = this
+    hence ts: "ts = []" using prems(1,3) by auto
+    show ?thesis using prems unfolding s ts by auto
+  next
+    case (Fun g ss)
+    note s = this
+    hence g: "f = g" using prems(1) by fastforce
+
+    have ss: "ts \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta> = ss \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta>" using prems(1) unfolding s by (cases s) auto
+
+    have len: "length ts = length ss" using ss by (metis length_map)
+
+    have "ts ! i \<cdot> \<sigma> = ss ! i \<cdot> \<sigma>" when i: "i < length ts" for i
+    proof -
+      have 0: "ts ! i \<in> set ts" using i by simp
+      have 1: "ts ! i \<cdot> \<theta> = ss ! i \<cdot> \<theta>" using i prems(1) unfolding s by (metis subst_Fun_index_eq)
+      have 2: "ss ! i \<in> set ss" using i by (metis len nth_mem)
+
+      have 3: "fv (ts ! i) \<subseteq> fv (Fun f ts)" "fv (ss ! i) \<subseteq> fv (Fun g ss)"
+              "subterms (ts ! i) \<subseteq> subterms (Fun f ts)" "subterms (ss ! i) \<subseteq> subterms (Fun g ss)"
+        subgoal by (meson index_Fun_fv_subset i)
+        subgoal by (metis index_Fun_fv_subset i len)
+        subgoal using ss i by fastforce
+        subgoal using ss i len by fastforce
+        done
+      
+      have 4: "?A (ts ! i) (ss ! i)" "?B (ts ! i) (ss ! i)"
+              "?C (ts ! i) (ss ! i)" "?D (ts ! i) (ss ! i)"
+        subgoal using 3 prems(2) unfolding s by blast
+        subgoal using 3(1,2) prems(3) unfolding s by blast
+        subgoal using 3(1,2) prems(4) unfolding s by blast
+        subgoal using 3(1,2) prems(5) unfolding s by blast
+        done
+        
+      thus ?thesis using IH[OF 0 1 4] prems(2-) 0 2 unfolding s by blast
+    qed
+    hence "ts \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<sigma> = ss \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<sigma>" by (metis (mono_tags, lifting) ss length_map nth_equalityI nth_map)
+    thus ?thesis unfolding s g by auto
+  qed
+qed
+
+lemma subst_const_swap_eq_mem:
+  assumes "t \<cdot> \<theta> \<in> M \<cdot>\<^sub>s\<^sub>e\<^sub>t \<theta>"
+    and "\<forall>x \<in> fv\<^sub>s\<^sub>e\<^sub>t M \<union> fv t. \<theta> x = \<sigma> x \<or> \<not>(\<theta> x \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t insert t M)"
+    and "\<forall>x \<in> fv\<^sub>s\<^sub>e\<^sub>t M \<union> fv t. \<exists>c. \<theta> x = Fun c []" (is "?B (fv\<^sub>s\<^sub>e\<^sub>t M \<union> fv t)")
+    and "\<forall>x \<in> fv\<^sub>s\<^sub>e\<^sub>t M \<union> fv t. \<exists>c. \<sigma> x = Fun c []" (is "?C (fv\<^sub>s\<^sub>e\<^sub>t M \<union> fv t)")
+    and "\<forall>x \<in> fv\<^sub>s\<^sub>e\<^sub>t M \<union> fv t. \<forall>y \<in> fv\<^sub>s\<^sub>e\<^sub>t M \<union> fv t. \<theta> x = \<theta> y \<longleftrightarrow> \<sigma> x = \<sigma> y" (is "?D (fv\<^sub>s\<^sub>e\<^sub>t M \<union> fv t)")
+  shows "t \<cdot> \<sigma> \<in> M \<cdot>\<^sub>s\<^sub>e\<^sub>t \<sigma>"
+proof -
+  let ?A = "\<lambda>t s. \<forall>x \<in> fv t \<union> fv s. \<theta> x = \<sigma> x \<or> \<not>(\<theta> x \<sqsubseteq> t) \<and> \<not>(\<theta> x \<sqsubseteq> s)" 
+
+  obtain s where s: "s \<in> M" "s \<cdot> \<theta> = t \<cdot> \<theta>" using assms(1) by fastforce
+
+  have 0: "fv s \<subseteq> fv\<^sub>s\<^sub>e\<^sub>t M" "subterms s \<subseteq> subterms\<^sub>s\<^sub>e\<^sub>t (insert t M)"
+          "subterms t \<subseteq> subterms\<^sub>s\<^sub>e\<^sub>t (insert t M)"
+    using s(1) by auto
+
+  have 1: "?A s t" "?B (fv s \<union> fv t)" "?C (fv s \<union> fv t)" "?D (fv s \<union> fv t)"
+    subgoal using assms(2) 0 by fast
+    subgoal using assms(3) 0 by blast
+    subgoal using assms(4) 0 by blast
+    subgoal using assms(5) 0 by blast
+    done
+
+  have "s \<cdot> \<sigma> = t \<cdot> \<sigma>" by (rule subst_const_swap_eq'[OF s(2) 1])
+  thus ?thesis by (metis s(1) imageI)
+qed
 
 
 subsection \<open>Finite Substitutions\<close>

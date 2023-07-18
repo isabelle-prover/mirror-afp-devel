@@ -10,6 +10,7 @@ theory Parallel_Compositionality
 imports Typing_Result Labeled_Strands
 begin
 
+text\<open>\label{sec:Parallel-Compositionality}\<close>
 
 subsection \<open>Definitions: Labeled Typed Model Locale\<close>
 locale labeled_typed_model = typed_model arity public Ana \<Gamma>
@@ -189,7 +190,8 @@ subsection \<open>Lemmata: Intruder Knowledge and Declassification\<close>
 lemma declassified\<^sub>l\<^sub>s\<^sub>t_alt_def:
   "declassified\<^sub>l\<^sub>s\<^sub>t \<A> \<I> = {s. (\<Union>{set ts | ts. (\<star>, Receive ts) \<in> set \<A>}) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile> s}"
 proof -
-  have "(l, receive\<langle>ts\<rangle>\<^sub>s\<^sub>t) \<in> set (\<A> \<cdot>\<^sub>l\<^sub>s\<^sub>t \<I>) = (\<exists>ts'. (l, receive\<langle>ts'\<rangle>\<^sub>s\<^sub>t) \<in> set \<A> \<and> ts = ts' \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<I>)"
+  have 0:
+    "(l, receive\<langle>ts\<rangle>\<^sub>s\<^sub>t) \<in> set (\<A> \<cdot>\<^sub>l\<^sub>s\<^sub>t \<I>) = (\<exists>ts'. (l, receive\<langle>ts'\<rangle>\<^sub>s\<^sub>t) \<in> set \<A> \<and> ts = ts' \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<I>)"
     (is "?A \<A> = ?B \<A>")
     for ts l
   proof
@@ -217,9 +219,28 @@ proof -
       qed (use Cons.IH in auto)
     qed simp
   qed
-  thus ?thesis
-    unfolding declassified\<^sub>l\<^sub>s\<^sub>t_def
-    by (smt Collect_cong image_Union list.set_map setcompr_eq_image)
+
+
+  let ?M = "\<lambda>A. \<Union>{set ts |ts. (\<star>, receive\<langle>ts\<rangle>\<^sub>s\<^sub>t) \<in> set A}"
+
+  have 1: "?M (\<A> \<cdot>\<^sub>l\<^sub>s\<^sub>t \<I>) = ?M \<A> \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>" (is "?A = ?B")
+  proof
+    show "?A \<subseteq> ?B"
+    proof
+      fix t assume t: "t \<in> ?A"
+      then obtain ts where ts: "t \<in> set ts" "(\<star>, receive\<langle>ts\<rangle>\<^sub>s\<^sub>t) \<in> set (\<A> \<cdot>\<^sub>l\<^sub>s\<^sub>t \<I>)" by blast
+      thus "t \<in> ?B" using 0[of \<star> ts] by fastforce
+    qed
+    show "?B \<subseteq> ?A"
+    proof
+      fix t assume t: "t \<in> ?B"
+      then obtain ts where ts: "t \<in> set ts \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>" "(\<star>, receive\<langle>ts\<rangle>\<^sub>s\<^sub>t) \<in> set \<A>" by blast
+      hence "(\<star>, receive\<langle>ts \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<I>\<rangle>\<^sub>s\<^sub>t) \<in> set (\<A> \<cdot>\<^sub>l\<^sub>s\<^sub>t \<I>)" using 0[of \<star> "ts \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<I>"] by blast
+      thus "t \<in> ?A" using ts(1) by force
+    qed
+  qed
+
+  show ?thesis using 1 unfolding declassified\<^sub>l\<^sub>s\<^sub>t_def by argo
 qed
 
 lemma declassified\<^sub>l\<^sub>s\<^sub>t_star_receive_supset:

@@ -7,7 +7,7 @@ section \<open>Proving Type-Flaw Resistance of the TLS Handshake Protocol\<close
 theory Example_TLS
 imports "../Typed_Model"
 begin
-
+text\<open>\label{sec:Example-TLS}\<close>
 declare [[code_timing]]
 
 subsection \<open>TLS example: Datatypes and functions setup\<close>

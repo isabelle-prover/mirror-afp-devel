@@ -1208,9 +1208,14 @@ using assms is_wt_instance_of_condD'' unfolding has_all_wt_instances_of_def by f
 lemma (in typed_model) has_all_instances_of_if_subset:
   assumes "N \<subseteq> M"
   shows "has_all_wt_instances_of \<Gamma> N M"
-using assms inj_onI mgu_same_empty
-unfolding has_all_wt_instances_of_def is_wt_instance_of_cond_def
-by (smt option.case_eq_if option.discI option.sel subsetD term.discI(1) term.inject(1))
+unfolding has_all_wt_instances_of_def
+proof
+  fix t assume t: "t \<in> N"
+  hence "is_wt_instance_of_cond \<Gamma> t t"
+    using inj_onI[of "fv t"] mgu_same_empty[of t]
+    unfolding is_wt_instance_of_cond_def by force
+  thus "\<exists>s \<in> M. is_wt_instance_of_cond \<Gamma> t s" using t assms by blast
+qed
 
 lemma (in typed_model) SMP_I':
   assumes N_wf_trms: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s N"

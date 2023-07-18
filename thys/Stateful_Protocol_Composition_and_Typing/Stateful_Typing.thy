@@ -9,7 +9,7 @@ theory Stateful_Typing
 imports Typing_Result Stateful_Strands
 begin
 
-text \<open>Locale setup\<close>
+text \<open>\label{sec:Stateful-Typing}Locale setup\<close>
 locale stateful_typed_model = typed_model arity public Ana \<Gamma>
   for arity::"'fun \<Rightarrow> nat"
     and public::"'fun \<Rightarrow> bool"
