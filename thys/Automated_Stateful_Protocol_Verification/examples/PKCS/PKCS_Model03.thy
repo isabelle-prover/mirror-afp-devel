@@ -12,7 +12,7 @@ theory PKCS_Model03
 
 begin
 
-declare [[code_timing]]
+declare [[code_timing,pspsp_timing]]
 
 trac\<open>
 Protocol: ATTACK_UNSET

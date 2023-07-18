@@ -12,7 +12,7 @@ theory PKCS_Model09
 
 begin
 
-declare [[code_timing]]
+declare [[code_timing,pspsp_timing]]
 
 trac\<open>
 Protocol: LOSS_KEY_ATT

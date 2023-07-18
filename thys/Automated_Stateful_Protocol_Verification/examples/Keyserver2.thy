@@ -11,7 +11,7 @@ theory Keyserver2
   imports "../PSPSP"
 begin
 
-declare [[code_timing]]
+declare [[pspsp_timing]]
 
 trac\<open>
 Protocol: keyserver2

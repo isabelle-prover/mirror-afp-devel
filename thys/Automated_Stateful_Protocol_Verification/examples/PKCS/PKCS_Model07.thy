@@ -12,7 +12,7 @@ theory PKCS_Model07
 
 begin
 
-declare [[code_timing]]
+declare [[code_timing,pspsp_timing]]
 
 trac\<open>
 Protocol: RE_IMPORT_ATT

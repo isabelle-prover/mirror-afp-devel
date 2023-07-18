@@ -17,9 +17,9 @@ text\<open>
 \<close>
 
 text\<open>
-  In the following, we will illustrate the use of our system by analysing a simple keyserver 
+  In the following, we will illustrate the use of our system by analyzing a simple keyserver 
   protocol (this theory is stored in the file \inlinebash|PSPSP-Manual/KeyserverEx.thy|. When 
-  loadign this theory in Isabelle/jEdit, please ensure that the 
+  loading this theory in Isabelle/jEdit, please ensure that the 
   session @{session "Automated_Stateful_Protocol_Verification"} is active (this session provides
   Isabelle/PSPSP).
 
@@ -133,7 +133,7 @@ HOL definitions. Moreover, basic properties of these definitions are also alread
 automatically (i.e., without any user interaction): for this simple example, already over 350 
 definitions and theorems are automatically generated, respectively, formally proven. For example, 
 the following induction rule is derived:
-@{thm [display] "Keyserver_Ana.pinduct"}
+@{thm [display] "Keyserver_Ana.induct"}
 \<close>
 
 subsection \<open>Protocol Model Setup\<close>
@@ -142,7 +142,7 @@ text\<open>Next, we show that the defined protocol satisfies the requirement of 
 theorems ``for free.''). The underlying instantiation proofs are fully automated by our tool:\<close>
 protocol_model_setup spm: Keyserver
 
-subsection \<open>Fixpoint Computation\<close>
+subsection \<open>Fixed Point Computation\<close>
 text\<open>Now we compute the fixed-point: \<close>
 compute_fixpoint Keyserver_protocol Keyserver_fixpoint
 text\<open>We can inspect the fixed-point with the following command: \<close> 
@@ -159,7 +159,7 @@ on the right-hand side of the window should not have any ```dark red'' markers.
 
 We can do a fully automated security proof using a new command @{command "protocol_security_proof"}:\<close>
 protocol_security_proof ssp: Keyserver 
-text\<open>This command proves the security protol only using Isabelle's simplifier (and, hence, everything 
+text\<open>This command proves the security of the protocol using only Isabelle's simplifier (and, hence, everything 
 is checked by Isabelle's LCF-style kernel).\<close>
 
 text\<open>Moreover, we provide two alternative configuration, one using an approach called 
@@ -189,7 +189,7 @@ use protocol-specific proof strategies (e.g., only partially unfolding the fixed
 \<close>
 
 subsection \<open>Inspecting the Generated Theorems and Definitions\<close>
-text\<open>We can inspect the generated proofs using the @{command "thm"}:\<close>
+text\<open>We can inspect the generated proofs using the @{command "thm"} command:\<close>
 thm ssp.protocol_secure
 thm spm.constraint_model_def
 thm spm.reachable_constraints.simps
