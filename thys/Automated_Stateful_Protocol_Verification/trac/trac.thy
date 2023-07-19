@@ -77,21 +77,25 @@ fun protocol_model_interpretation_defs name =
     (map f [
       "public", "arity", "Ana", "\<Gamma>", "\<Gamma>\<^sub>v", "timpls_transformable_to", "intruder_synth_mod_timpls",
       "analyzed_closed_mod_timpls", "timpls_transformable_to'", "intruder_synth_mod_timpls'",
-      "analyzed_closed_mod_timpls'", "admissible_transaction_terms", "admissible_transaction",
+      "analyzed_closed_mod_timpls'", "admissible_transaction_checks",
+      "admissible_transaction_updates", "admissible_transaction_terms", "admissible_transaction",
+      "admissible_transaction'", "admissible_transaction_no_occurs_msgs",
+      "admissible_transaction_send_occurs_form", "admissible_transaction_occurs_checks",
+      "has_initial_value_producing_transaction", "add_occurs_msgs",
       "abs_substs_set", "abs_substs_fun", "in_trancl", "transaction_poschecks_comp",
       "transaction_negchecks_comp", "transaction_check_comp", "transaction_check'",
       "transaction_check", "transaction_check_pre", "transaction_check_post",
       "compute_fixpoint_fun'", "compute_fixpoint_fun", "compute_fixpoint_with_trace",
       "compute_fixpoint_from_trace", "compute_reduced_attack_trace", "attack_notin_fixpoint",
-      "protocol_covered_by_fixpoint", "analyzed_fixpoint", "wellformed_protocol",
-      "wellformed_protocol'", "wellformed_protocol_SMP_set", "wellformed_fixpoint",
-      "wellformed_fixpoint'", "wellformed_term_implication_graph",
-      "wellformed_composable_protocols", "composable_protocols",
+      "protocol_covered_by_fixpoint", "reduce_fixpoint'", "reduce_fixpoint", "analyzed_fixpoint",
+      "wellformed_protocol''", "wellformed_protocol'", "wellformed_protocol",
+      "wellformed_protocol_SMP_set", "wellformed_fixpoint", "wellformed_fixpoint'",
+      "wellformed_term_implication_graph", "wellformed_composable_protocols",
+      "wellformed_composable_protocols'", "composable_protocols",
       "welltyped_leakage_free_invkey_conditions'", "welltyped_leakage_free_invkey_conditions",
-      "fun_point_inter", "fun_point_Inter", "fun_point_union", "fun_point_Union",
-      "ticl_abs", "ticl_abss", "match_abss'", "match_abss",
-      "synth_abs_substs_constrs_aux", "synth_abs_substs_constrs",
-      "transaction_check_alt1", "protocol_covered_by_fixpoint_alt1"
+      "fun_point_inter", "fun_point_Inter", "fun_point_union", "fun_point_Union", "ticl_abs",
+      "ticl_abss", "match_abss'", "match_abss", "synth_abs_substs_constrs_aux",
+      "synth_abs_substs_constrs", "transaction_check_coverage_rcv", "protocol_covered_by_fixpoint_coverage_rcv"
     ]):string Interpretation.defines
  end
 
@@ -148,58 +152,49 @@ val declare_protocol_check = declare_def_attr "protocol_checks"
 fun declare_protocol_checks print =
   declare_protocol_check "attack_notin_fixpoint" print #>
   declare_protocol_check "protocol_covered_by_fixpoint" print #>
-  declare_protocol_check "protocol_covered_by_fixpoint_alt1" print #>
+  declare_protocol_check "protocol_covered_by_fixpoint_coverage_rcv" print #>
   declare_protocol_check "analyzed_fixpoint" print #>
+  declare_protocol_check "has_initial_value_producing_transaction" print #>
+  declare_protocol_check "wellformed_protocol''" print #>
   declare_protocol_check "wellformed_protocol'" print #>
   declare_protocol_check "wellformed_protocol" print #>
+  declare_protocol_check "wellformed_fixpoint'" print #>
   declare_protocol_check "wellformed_fixpoint" print #>
   declare_protocol_check "compute_fixpoint_fun" print
 
 fun eval_term lthy t =
   Code_Evaluation.dynamic_value_strict lthy t
 
-fun eval_define (name, t) lthy = 
+fun eval_define_declare (name, t) print lthy = 
   let 
     val t' = eval_term lthy t
-    val arg = ((Binding.name name, NoSyn), ((Binding.name (name ^ "_def"),[]), t'))
-    val (_, lthy') = Local_Theory.define arg lthy
+    val arg = ((Binding.name name, NoSyn), ((Binding.name (name ^ "_def"),@{attributes [code]}), t'))
+    val lthy' =  snd ( Local_Theory.begin_nested lthy )
+    val (_, lthy'') = Local_Theory.define arg lthy'
   in
-    (t', lthy')
+    (t', Local_Theory.end_nested lthy'')
   end
 
-fun eval_define_declare (name, t) print =
-  eval_define (name, t) ##> declare_code_eqn name print
-
-fun eval_define_nbe (name, t) lthy = 
+fun eval_define_declare_nbe (name, t) print lthy = 
   let 
     val t' = Nbe.dynamic_value lthy t
-    val arg = ((Binding.name name, NoSyn), ((Binding.name (name ^ "_def"),[]), t'))
-    val (_, lthy') = Local_Theory.define arg lthy
+    val arg = ((Binding.name name, NoSyn), ((Binding.name (name ^ "_def"),@{attributes [code]}), t'))
+    val lthy' =  snd ( Local_Theory.begin_nested lthy )
+    val (_, lthy'') = Local_Theory.define arg lthy'
   in
-    (t', lthy')
+    (t', Local_Theory.end_nested lthy'')
   end
-
-fun eval_define_declare_nbe (name, t) print =
-  eval_define_nbe (name, t) ##> declare_code_eqn name print
 \<close>
 
 ML\<open>
 structure ml_isar_wrapper = struct
-  fun define_constant_definition (constname, trm) lthy = 
-    let
-      val arg = ((Binding.name constname, NoSyn), ((Binding.name (constname^"_def"),[]), trm))
-      val ((_, (_ , thm)), lthy') = Local_Theory.define arg lthy
-    in
-      (thm, lthy')
-    end
-
   fun define_constant_definition' (constname, trm) print lthy = 
     let
-      val arg = ((Binding.name constname, NoSyn), ((Binding.name (constname^"_def"),[]), trm))
-      val ((_, (_ , thm)), lthy') = Local_Theory.define arg lthy
-      val lthy'' = declare_code_eqn constname print lthy'
+      val lthy' =  snd ( Local_Theory.begin_nested lthy )
+      val arg = ((Binding.name constname, NoSyn), ((Binding.name (constname^"_def"),@{attributes [code]}), trm))
+      val ((_, (_ , thm)), lthy'') = Local_Theory.define arg lthy'
     in
-      (thm, lthy'')
+      (thm, Local_Theory.end_nested lthy'')
     end
 
   fun define_simple_abbrev (constname, trm) lthy = 
@@ -1080,7 +1075,7 @@ structure trac_definitorial_package = struct
               (map (mk_rec_eq []) (pub@priv)@
                mk_rec_eq [ctyp'] (enumN,0,NONE)::
                map (fn (_,(ts,f)) => mk_rec_eq ts (f,0,NONE)) (get_user_atom_spec_pre trac)@
-               map (fn (e,_,_) => mk_rec_eq [natT] (infenumN e,1,NONE))
+               map (fn (e,_,_) => mk_rec_eq [natT] (infenumN e,0,NONE))
                    (get_nonunion_infinite_enum_spec trac))
               lthy
         end
@@ -1348,7 +1343,7 @@ structure trac_definitorial_package = struct
 
         val c_to_h = c_to_h' enable_let_bindings
 
-        val abstract_over_enum_vars = fn x => fn y => fn z =>
+        val abstract_over_finenum_vars = fn x => fn y => fn z =>
           abstract_over_finite_enum_vars x y z trac lthy
 
         fun mk_transaction_term (rcvs, chcksingle, chckall, upds, snds, frsh, atcks) =
@@ -1440,7 +1435,7 @@ structure trac_definitorial_package = struct
                   end
 
                 fun mk_trms (lbl,(e,s)) =
-                  abstract_over_enum_vars (mk_evs s) [] (mk_trm (lbl,e,s))
+                  abstract_over_finenum_vars (mk_evs s) [] (mk_trm (lbl,e,s))
               in
                 map mk_trms (map_filter (action_filter maybe_the_NotInAny) chckall)
               end
@@ -1461,9 +1456,9 @@ structure trac_definitorial_package = struct
               in map (lbl_trms_to_h mk_Send) (snds'@map (fn (lbl,_) => (lbl,[cAttack])) atcks) end
           in
             mk_Transaction trac lthy S0 S1 S2 S3 S4 S5 S6
-              |> abstract_over_enum_vars finenum_vars enum_ineqs
+              |> abstract_over_finenum_vars finenum_vars enum_ineqs
               |> (fn trm =>
-                    if not (null nonenum_vars) andalso enable_let_bindings
+                    if not (null nonfinenum_vars) andalso enable_let_bindings
                     then let
                       val typof = Term.fastype_of
                       val xs = nonfinenum_vars@bvars
@@ -1780,34 +1775,36 @@ fun protocol_model_setup_proof_state name prefix lthy =
     proof_state
   end
 
-fun protocol_security_proof_defs manual_proof name prefix opt_defs lthy =
+fun protocol_security_proof_defs manual_proof name prefix opt_defs opt_meth_level lthy =
   let
     fun f x y z = ([((x,Position.none),((y,true),(Expression.Positional z,[])))],[])
     val _ = assert_nonempty_name name
     val num_defs = length opt_defs
     val pparams = protocol_model_interpretation_params prefix lthy
     val default_defs = [prefix ^ "_" ^ "protocol", prefix ^ "_" ^ "fixpoint"]
+    val meth_variant = if String.isSuffix "_coverage_rcv" opt_meth_level then "_coverage_rcv" else ""
     fun g locale_name extra_params = f locale_name name (pparams@map SOME extra_params)
+    fun h locale_variant = g ("secure_stateful_protocol" ^ meth_variant ^ locale_variant)
     val (prot_fp_smp_names, pexpr) = if manual_proof
       then (case num_defs of
-        0 => (default_defs, g "secure_stateful_protocol'" default_defs)
-      | 1 => (opt_defs, g "secure_stateful_protocol''" opt_defs)
-      | 2 => (opt_defs, g "secure_stateful_protocol'" opt_defs)
-      | _ => (opt_defs, g "secure_stateful_protocol" opt_defs))
+        0 => (default_defs, h "'" default_defs)
+      | 1 => (opt_defs, h "''" opt_defs)
+      | 2 => (opt_defs, h "'" opt_defs)
+      | _ => (opt_defs, h "" opt_defs))
       else (case num_defs of
-        0 => (default_defs, g "secure_stateful_protocol''''" default_defs)
-      | 1 => (opt_defs, g "secure_stateful_protocol''" opt_defs)
-      | 2 => (opt_defs, g "secure_stateful_protocol''''" opt_defs)
-      | _ => (opt_defs, g "secure_stateful_protocol'''" opt_defs))
+        0 => (default_defs, h "''''" default_defs)
+      | 1 => (opt_defs, h "''" opt_defs)
+      | 2 => (opt_defs, h "''''" opt_defs)
+      | _ => (opt_defs, h "'''" opt_defs))
     val _ = assert_all_defined lthy prefix prot_fp_smp_names
   in
     (prot_fp_smp_names, pexpr)
   end
 
-fun protocol_security_proof_proof_state manual_proof name prefix opt_defs print lthy =
+fun protocol_security_proof_proof_state manual_proof name prefix opt_defs opt_meth_level print lthy =
   let
     val (prot_fp_smp_names, pexpr) =
-      protocol_security_proof_defs manual_proof name prefix opt_defs lthy
+      protocol_security_proof_defs manual_proof name prefix opt_defs opt_meth_level lthy
     val proof_state = lthy |> declare_protocol_checks print
                            |> Interpretation.global_interpretation_cmd pexpr []
   in
@@ -1835,6 +1832,7 @@ fun protocol_composition_proof_proof_state name prefix params print lthy =
   let
     val pexpr = protocol_composition_proof_defs name prefix params lthy
     val state = lthy |> (declare_protocol_check "wellformed_composable_protocols" print #>
+                         declare_protocol_check "wellformed_composable_protocols'" print #>
                          declare_protocol_check "composable_protocols" print)
                      |> Interpretation.global_interpretation_cmd pexpr []
   in
@@ -1844,15 +1842,42 @@ fun protocol_composition_proof_proof_state name prefix params print lthy =
 val select_proof_method_error_prefix =
   "Error: Invalid option: "
 
+fun select_proof_method_error msg opt_meth_level =
+  error (
+    select_proof_method_error_prefix ^ opt_meth_level ^ "\n\nValid options:\n" ^
+    "1. safe: Instructs Isabelle to " ^ msg ^ " using \"code_simp\" " ^
+    "(this is the default setting).\n" ^
+    "2. nbe: Instructs Isabelle to use \"normalization\" instead of \"code_simp\".\n" ^
+    "3. unsafe: Instructs Isabelle to use \"eval\" instead of \"code_simp\".")
+
 fun select_proof_method _ "safe" = "check_protocol"
+  | select_proof_method _ "safe_coverage_rcv" = "check_protocol"
   | select_proof_method _ "nbe" = "check_protocol_nbe"
+  | select_proof_method _ "nbe_coverage_rcv" = "check_protocol_nbe"
   | select_proof_method _ "unsafe" = "check_protocol_unsafe"
+  | select_proof_method _ "unsafe_coverage_rcv" = "check_protocol_unsafe"
   | select_proof_method msg opt_meth_level = error (
           select_proof_method_error_prefix ^ opt_meth_level ^ "\n\nValid options:\n" ^
           "1. safe: Instructs Isabelle to " ^ msg ^ " using \"code_simp\" " ^
           "(this is the default setting).\n" ^
           "2. nbe: Instructs Isabelle to use \"normalization\" instead of \"code_simp\".\n" ^
-          "3. unsafe: Instructs Isabelle to use \"eval\" instead of \"code_simp\".")
+          "3. unsafe: Instructs Isabelle to use \"eval\" instead of \"code_simp\".\n" ^
+          "4. safe_coverage_rcv: Instructs Isabelle to " ^ msg ^ " using \"code_simp\" " ^
+          "(with alternative coverage check).\n" ^
+          "5. nbe_coverage_rcv: Instructs Isabelle to use \"normalization\" instead of \"code_simp\" " ^
+          "(with alternative coverage check).\n" ^
+          "6. unsafe_coverage_rcv: Instructs Isabelle to use \"eval\" instead of \"code_simp\"" ^
+          "(with alternative coverage check).")
+
+  | select_proof_method msg opt_meth_level =
+      select_proof_method_error msg opt_meth_level
+
+fun select_proof_method_compositionality _ "safe" = "check_protocol_compositionality"
+  | select_proof_method_compositionality _ "nbe" = "check_protocol_compositionality_nbe"
+  | select_proof_method_compositionality _ "unsafe" = "check_protocol_compositionality_unsafe"
+  | select_proof_method_compositionality msg opt_meth_level =
+      select_proof_method_error msg opt_meth_level
+
 
 val _ =
   Outer_Syntax.local_theory \<^command_keyword>\<open>protocol_model_setup\<close>
@@ -1901,12 +1926,12 @@ val _ =
     (security_proof_locale_parser_with_method_choice >> 
     (fn params => fn print => fn lthy =>
     let 
-        val ((_,(name,prefix)),opt_defs) = params
+        val ((opt_meth_level,(name,prefix)),opt_defs) = params
         fun protocol_security_proof (params, print, lthy) = 
         let
           val ((opt_meth_level,(name,prefix)),opt_defs) = params
           val (defs, proof_state) =
-                protocol_security_proof_proof_state false name prefix opt_defs print lthy
+            protocol_security_proof_proof_state false name prefix opt_defs opt_meth_level print lthy
           val num_defs = length defs
           val meth =
               let
@@ -1938,7 +1963,8 @@ val _ =
                     String.isPrefix "error in proof state" msg
             then *)
             let
-              val (def_names,_) = protocol_security_proof_defs false name prefix opt_defs lthy
+              val (def_names,_) =
+                protocol_security_proof_defs false name prefix opt_defs opt_meth_level lthy
               val (prot_name,fp_name,smp_name) = case length def_names of
                   0 => (prefix^"_protocol", prefix^"_fixpoint", prefix^"_SMP")
                 | 1 => (nth def_names 0,    prefix^"_fixpoint", prefix^"_SMP")
@@ -1979,7 +2005,7 @@ val _ =
     let
       val ((name,prefix),opt_defs) = params
       val (defs, proof_state) =
-        protocol_security_proof_proof_state true name prefix opt_defs print lthy
+        protocol_security_proof_proof_state true name prefix opt_defs "safe" print lthy
       val subgoal_proof =
         let
           val m = "code_simp" (* case opt_meth_level of
@@ -2016,7 +2042,7 @@ val _ =
               protocol_composition_proof_proof_state name prefix remaining_params print lthy
         val meth =
           let
-            val m = select_proof_method "use" opt_meth_level
+            val m = select_proof_method_compositionality "use" opt_meth_level
             val _ = Output.information (
                       "Proving composability of protocol " ^ name ^ " with proof method " ^ m)
           in
@@ -2047,6 +2073,7 @@ val _ =
                                                 subgoal_proof^
                                                 subgoal_proof^
                                                 subgoal_proof^
+                                                subgoal_proof^
                                                 "  done\n"))
     in
       proof_state
@@ -2055,14 +2082,20 @@ val _ =
 \<close>
 
 ML\<open>
-fun listterm_to_list _    (Const ("List.list.Nil",_)) = []
-  | listterm_to_list lthy ((Const ("List.list.Cons",_) $ t1) $ t2) = t1::listterm_to_list lthy t2
-  | listterm_to_list lthy t =
+fun listterm_to_list' _    (Const ("List.list.Nil",tau)) = ([],tau)
+  | listterm_to_list' lthy ((Const ("List.list.Cons",_) $ t1) $ t2) =
+    let val (s,tau) = listterm_to_list' lthy t2
+    in (t1::s,tau) end
+  | listterm_to_list' lthy t =
       error ("Unexpected term (expected a list constructor): " ^ Syntax.string_of_term lthy t)
 
-fun pairterm_to_pair _    ((Const ("Product_Type.Pair",_) $ x) $ y) = (x,y)
-  | pairterm_to_pair lthy t = error ("Error: Expected a pair term but got " ^
-                                     Syntax.string_of_term lthy t)
+fun listterm_to_list lthy = fst o listterm_to_list' lthy
+
+fun pairterm_to_pair' _    ((Const ("Product_Type.Pair",tau) $ x) $ y) = ((x,y),tau)
+  | pairterm_to_pair' lthy t =
+      error ("Error: Expected a pair term but got " ^ Syntax.string_of_term lthy t)
+
+fun pairterm_to_pair lthy = fst o pairterm_to_pair' lthy
 
 fun constrexpr_to_string lthy protocol t = let
   val trac = trac_definitorial_package.lookup_trac protocol lthy
@@ -2367,7 +2400,7 @@ val _ = Outer_Syntax.local_theory' @{command_keyword "print_attack_trace"}
               val _ = assert_defined lthy attack_trace
               fun f i b = "X" ^ b ^ "_" ^ Int.toString i
               fun g i (_,b) = f i (Syntax.string_of_term lthy b)
-              val t1 = "map (\<lambda>(i,_). " ^ protocol_def ^ " ! i) " ^ attack_trace
+              val t1 = "map (\<lambda>(i,_). add_occurs_msgs (" ^ protocol_def ^ " ! i)) " ^ attack_trace
               val t2 = "map (map (\<lambda>((_,i),xs). (i,xs))) (map snd " ^ attack_trace ^ ")"
               val s = t2 |> evaltrm
                          |> listterm_to_list lthy
@@ -2424,7 +2457,7 @@ val _ = Outer_Syntax.local_theory' @{command_keyword "print_fixpoint"}
                 val filename =
                       Path.explode (
                         trac.mk_abs_filename (Proof_Context.theory_of lthy) fixpoint_filename)
-                val _ = Output.information ("Evaluation fixed-point term " ^ fixpoint_name)
+                val _ = Output.information ("Evaluating fixed-point term " ^ fixpoint_name)
                 val fp_str = fixpoint_to_string protocol_name fixpoint_name lthy
                 val _ = Output.information (
                           "Writing fixed point to file " ^ Path.print filename)
@@ -2436,6 +2469,81 @@ val _ = Outer_Syntax.local_theory' @{command_keyword "print_fixpoint"}
             trac_time.ap_lthy lthy ("save_fixpoint") save_fixpoint ((protocol_name, fixpoint_name), fixpoint_filename, lthy)
           end)));
 
+
+  (* TODO: move? *)
+  (* TODO: check that chunks are not defined before defining them *)
+  fun eval_define_declare_fixpoint chunk_size chunk_suffix (name, t) print lthy = let 
+    val mk_tuple = trac_definitorial_package.mk_tuple
+    val mk_list = trac_definitorial_package.mk_list
+    val mk_listT = trac_definitorial_package.mk_listT
+    val full_name = trac_definitorial_package.full_name
+
+    fun chunk_name n = name ^ chunk_suffix ^ Int.toString n
+
+    fun arg name t =
+      ((Binding.name name, NoSyn), ((Binding.name (name ^ "_def"),@{attributes [code]}), t))
+
+    fun def_trm (name,trm) lthy = snd (Local_Theory.define (arg name trm) lthy)
+
+    fun append_term tau = Term.Const (@{const_name "append"}, [tau,tau] ---> tau)
+    fun nil_term tau = Term.Const (@{const_name "Nil"}, tau)
+
+    val ((fp,fp_elemT),(occ,occ_elemT),(ti,ti_elemT)) =
+      let fun chop (l,Type (_,[tau])) = (chop_groups chunk_size l, tau)
+            | chop (_,tau) = error ("Expected type with one type-parameter but got " ^
+                                    Syntax.string_of_typ lthy tau)
+          val ltl = chop o listterm_to_list' lthy
+          val (fp,occ_ti) = pairterm_to_pair lthy (eval_term lthy t)
+          val (occ,ti) = pairterm_to_pair lthy occ_ti
+      in (ltl fp, ltl occ, ltl ti) end
+
+    fun mk_chunk_trm ch tau lthy = Term.Const (full_name ch lthy, mk_listT tau)
+
+    datatype ChunksVariant =
+      NoChunks | SingleChunk of term | MultipleChunks of (bstring * term) list
+
+    fun chunk [] _ _ = NoChunks
+      | chunk [ch] tau _ = SingleChunk (mk_list tau ch)
+      | chunk trms tau i =
+          MultipleChunks (map_index (fn (j,ch) => (chunk_name (i+j), mk_list tau ch)) trms)
+
+    fun append_chunks NoChunks tau _ = mk_list tau []
+      | append_chunks (SingleChunk ch) _ _ = ch
+      | append_chunks (MultipleChunks chs) tau lthy = let
+          fun f [] = nil_term (mk_listT tau)
+            | f [ch] = mk_chunk_trm ch tau lthy
+            | f (ch::chs) = append_term (mk_listT tau) $ mk_chunk_trm ch tau lthy $ f chs
+        in f (map fst chs) end
+
+    fun chunks_len (MultipleChunks chs) = length chs
+      | chunks_len _ = 0
+
+    fun def_chunks (MultipleChunks chs) lthy = fold def_trm chs lthy
+      | def_chunks _ lthy = lthy (* we don't use chunks when there would be at most one *)
+
+    val fp_chunks_trms  = chunk fp  fp_elemT  0
+    val occ_chunks_trms = chunk occ occ_elemT (chunks_len fp_chunks_trms)
+    val ti_chunks_trms  = chunk ti  ti_elemT  (chunks_len fp_chunks_trms+chunks_len occ_chunks_trms)
+
+    val lthy = snd (Local_Theory.begin_nested lthy)
+    val lthy = def_chunks fp_chunks_trms lthy
+    val lthy = def_chunks occ_chunks_trms lthy
+    val lthy = def_chunks ti_chunks_trms lthy
+    val lthy = Local_Theory.end_nested lthy
+
+    val lthy = snd (Local_Theory.begin_nested lthy)
+
+    val fpt_trm = mk_tuple [
+      append_chunks fp_chunks_trms fp_elemT lthy,
+      append_chunks occ_chunks_trms occ_elemT lthy,
+      append_chunks ti_chunks_trms ti_elemT lthy]
+
+    val lthy = def_trm (name, fpt_trm) lthy
+  in
+    (fpt_trm, Local_Theory.end_nested lthy)
+  end
+
+  (* TODO: chunks *)
   val _ = Outer_Syntax.local_theory' @{command_keyword "load_fixpoint"} 
           "Import fixpoint from file." 
           ((Parse.name -- Parse.name -- Parse.name >> (
@@ -2467,14 +2575,28 @@ val _ = Outer_Syntax.local_theory' @{command_keyword "print_fixpoint"}
 
 val _ = Outer_Syntax.local_theory' @{command_keyword "compute_fixpoint"} 
         "evaluate and define protocol fixpoint"
-        (Parse.name -- Parse.name -- Scan.option Parse.name >>
-        (fn ((protocol, fixpoint), opt_trace) => fn print => fn lthy =>
+        ((Scan.option (\<^keyword>\<open>[\<close> |-- Parse.name --| \<^keyword>\<open>]\<close>)) --
+         Parse.name -- Parse.name -- Scan.option Parse.name >>
+        (fn (((opt, protocol), fixpoint), opt_trace) => fn print => fn lthy =>
           let fun compute_fixpoint (((protocol,fixpoint),opt_trace), print, lthy) = 
             let
               val _ = assert_defined lthy protocol
               val _ = assert_not_defined lthy fixpoint
               val _ = Option.app (assert_not_defined lthy) opt_trace
               val _ = Output.information ("Computing a fixed point for protocol " ^ protocol)
+              val _ = case opt of (* TODO: don't compute the fixpoint twice *)
+                        NONE => ()
+                      | SOME "check_for_attacks" => 
+                        let val no_attack = eval_term lthy (Syntax.read_term lthy (
+                              "(attack_notin_fixpoint \<circ> compute_fixpoint_fun) " ^ protocol))
+                            val _ = case no_attack of
+                                Term.Const ("HOL.True", _) =>
+                                Output.information "The fixed point is free of attack signals."
+                              | Term.Const ("HOL.False", _) =>
+                                Output.information "The fixed point contains an attack signal."
+                              | _ => error ("Error: Unexpected term: " ^ @{make_string} no_attack)
+                        in () end
+                      | SOME opt => error ("Error: Invalid option " ^ opt)
               val fp = (fixpoint, Syntax.read_term lthy ("compute_fixpoint_fun " ^ protocol))
               val opt_tr = Option.map (* TODO: don't compute the fixpoint twice *)
                             (fn trace =>
@@ -2483,7 +2605,7 @@ val _ = Outer_Syntax.local_theory' @{command_keyword "compute_fixpoint"}
                                          " \<circ> snd \<circ> compute_fixpoint_with_trace) " ^ protocol)))
                             opt_trace
             in
-              ((snd o eval_define_declare fp print) lthy |>
+              ((snd o eval_define_declare_fixpoint 15 "_chunk" fp print) lthy |>
                (fn lthy => case opt_tr of
                               SOME tr => (snd o eval_define_declare tr print) lthy
                             | NONE => lthy))
@@ -2623,6 +2745,7 @@ val _ = Outer_Syntax.local_theory' @{command_keyword "setup_protocol_checks"}
              declare_def_attr a4 (f "wellformed_fixpoint") print #>
              declare_def_attr a4 (f "wellformed_protocol") print #>
              declare_def_attr a4 (f "wellformed_protocol'") print #>
+             declare_def_attr a4 (f "wellformed_protocol''") print #>
              declare_def_attr a4 (f "composable_protocols") print) lthy
           end
         in 

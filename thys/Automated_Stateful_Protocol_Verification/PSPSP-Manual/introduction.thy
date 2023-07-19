@@ -70,7 +70,7 @@ Isabelle's graphical user interface Isabelle/jEdit. For this, it is important th
 you select the session @{session "Automated_Stateful_Protocol_Verification"} as described
 in the following paragraph and \emph{restart} Isabelle. For us, building on the command 
 line has easier to reproduce on different machines.} to ``compile'' Isabelle/PSPSP (in 
-Isabelle lingo: building the session heaps) on the  command line. This can be done by 
+Isabelle lingo: building the session heaps) on the command line. This can be done by 
 executing (please take care of the full qualified path of the
 \inlinebash|isabelle| binary for your operating system):
 \begin{bash}

@@ -123,6 +123,8 @@ type TypeDecl = string * string
 datatype MsgType = TAtom of string
                  | TComp of string * MsgType list
 
+type TypedVars = (string list * MsgType) list
+
 datatype Msg = Var of string
              | Const of string
              | Fun of string * Msg list
@@ -229,14 +231,13 @@ fun certifyMsgType' finite_enums infinite_enums (TAtom a) =
 
 fun certifyMsgType ((finite_enums:string list)
                     ,(infinite_enums:string list)
-                    ,(decls:(string * MsgType) list)
-                    ,(fresh:(string * MsgType option) list)) n =
-  case List.find (fn (v,_) => v = n) decls of
+                    ,(decls:TypedVars)
+                    ,(fresh:TypedVars)) n =
+  case List.find (fn (vs,_) => member (op =) vs n) decls of
     SOME (_,tau) => certifyMsgType' finite_enums infinite_enums tau
   | NONE => (
-      case List.find (fn (v,_) => v = n) fresh of
-        SOME (_,NONE) => ValueType
-      | SOME (_,SOME tau) => certifyMsgType' finite_enums infinite_enums tau
+      case List.find (fn (vs,_) => member (op =) vs n) fresh of
+        SOME (_,tau) => certifyMsgType' finite_enums infinite_enums tau
       | NONE => error ("Error: Missing or invalid type annotation for variable " ^ n))
 
 fun certifyMsg' notypes params (Var n)         =
@@ -307,7 +308,7 @@ type anaT = ruleT list
 
 datatype prot_label = LabelN | LabelS
 
-type Bvars = (string * MsgType) list
+type Bvars = TypedVars
 
 datatype Negcheck = INEQ of Msg * Msg
                   | NOTIN of Msg * (string * Msg list)
@@ -321,22 +322,23 @@ datatype action = RECEIVE of Msg list
                 | NEGCHECKS of Bvars * Negcheck list
                 | INSERT of Msg * (string * Msg list)
                 | DELETE of Msg * (string * Msg list)
-                | NEW of (string * MsgType option) list
+                | NEW of TypedVars
                 | ATTACK
 
 datatype labeled_action =
   LABELED_ACTION of prot_label * action
 | ABBREVIATION of string * Msg list
 
-type transaction_name = string * (string * MsgType) list * (string * string) list
+type transaction_name = string * (string list * MsgType) list * (string * string) list
 
 type transaction={transaction:transaction_name,actions:labeled_action list}
 
+fun typedvars_str xss =
+  let fun f (xs,tau) = String.concatWith "," xs ^ ": " ^ MsgType_str tau
+  in String.concatWith ", " (map f xss) end
+
 val action_str =
   let
-    fun new_param_str (x,NONE) = x
-      | new_param_str (x,SOME tau) = x ^ ": " ^ MsgType_str tau
-    fun bvar_str (x,tau) = x ^ ": " ^ MsgType_str tau
     fun set_action_str (t,(s,ps)) pre mid =
       pre ^ Msg_str t ^ mid ^ s ^ (
       if ps = [] then "" else "(" ^ String.concatWith "," (map Msg_str ps) ^  ")")
@@ -350,10 +352,10 @@ val action_str =
       | to_str (NOTINANY (t,s))       = set_action_str (t,(s,[])) "" " notin " ^ "(_)"
       | to_str (NEGCHECKS (bvars,ns)) = String.concatWith " or " (map negcheck_str ns) ^
                                         (if null bvars then "" else " forall ") ^
-                                        String.concatWith ", " (map bvar_str bvars)
+                                        typedvars_str bvars
       | to_str (INSERT p)             = set_action_str p "insert " " "
       | to_str (DELETE p)             = set_action_str p "delete " " "
-      | to_str (NEW xs)               = "new " ^ String.concatWith ", " (map new_param_str xs)
+      | to_str (NEW xs)               = "new " ^ typedvars_str xs
       | to_str ATTACK                 = "attack"
   in
     to_str
@@ -363,6 +365,9 @@ fun labeled_action_str (LABELED_ACTION (lbl,act)) =
       (case lbl of LabelN => "  " | LabelS => "* ") ^ action_str act
   | labeled_action_str (ABBREVIATION (f,ts)) =
       f ^ "![" ^ String.concatWith "," (map Msg_str ts) ^ "]"
+
+fun typedvars_flatten xss = List.concat (map (fn (xs,tau) => map (fn x => (x,tau)) xs) xss)
+fun typedvars_fvs xss = map fst (typedvars_flatten xss)
 
 fun action_fvs (RECEIVE ts)        = distinct (op =) (List.concat (map msg_vars ts))
   | action_fvs (LETBINDING (t,t')) = distinct (op =) (msg_vars t@msg_vars t')
@@ -374,9 +379,9 @@ fun action_fvs (RECEIVE ts)        = distinct (op =) (List.concat (map msg_vars 
         fun f (INEQ (t,t')) = msg_vars t@msg_vars t'
           | f (NOTIN (t,(_,p))) = msg_vars t@List.concat (map msg_vars p)
       in
-        filter_out (member (op =) (map fst bvars)) (distinct (op =) (List.concat (map f ns)))
+        filter_out (member (op =) (typedvars_fvs bvars)) (distinct (op =) (List.concat (map f ns)))
       end
-  | action_fvs (NEW xs)            = distinct (op =) (map fst xs)
+  | action_fvs (NEW xs)            = distinct (op =) (typedvars_fvs xs)
   | action_fvs (INSERT (t,(_,p)))  = distinct (op =) (msg_vars t@List.concat (map msg_vars p))
   | action_fvs (DELETE (t,(_,p)))  = distinct (op =) (msg_vars t@List.concat (map msg_vars p))
   | action_fvs (SEND ts)           = distinct (op =) (List.concat (map msg_vars ts))
@@ -423,7 +428,8 @@ fun subst_apply_labeled_action d (LABELED_ACTION (lbl,a)) =
       let
         val ap = subst_apply_Msg d
         fun rm_vars_ap ys =
-              subst_apply_Msg (filter (fn (x,_) => List.all (fn (y,_) => x <> y) ys) d)
+          let val zs = typedvars_fvs ys
+          in subst_apply_Msg (filter (fn (x,_) => not (member (op =) zs x)) d) end
         fun ap_negcheck xs (INEQ (t,t')) =
               INEQ (rm_vars_ap xs t, rm_vars_ap xs t')
           | ap_negcheck xs (NOTIN (t,(f,ts))) =
@@ -1062,7 +1068,7 @@ fun certify_fixpoint trac fp =
                     "fixpoint translation")
       end
   in
-    fp |> map (fn (m,t) => certifyMsg (map snd t, [], map (fn (a,b) => (a,TAtom b)) t, []) m)
+    fp |> map (fn (m,t) => certifyMsg (map snd t, [], map (fn (a,b) => ([a],TAtom b)) t, []) m)
        |> ground_enum_variables
        |> map (transform_cMsg trac)
        |> check_no_vars_and_consts
@@ -1085,7 +1091,8 @@ fun certifyAction params              (lbl,SEND ts)           = (lbl,cSend
           | f ValueType = true
           | f _ = false
         val taus = distinct (op =) (map (certifyMsgType params) (action_fvs (IN (x,(s,ps)))))
-        val poscheckvariant = if List.all f taus then cCheck else cAssignment
+        val poscheckvariant = cAssignment (* TODO: fix *)
+            (* if List.all f taus then cCheck else cAssignment *)
       in
         (lbl,cInSet (poscheckvariant, (certifyMsg params x,
                                        cSet (s, map (certifyMsg params) ps))))
@@ -1093,7 +1100,7 @@ fun certifyAction params              (lbl,SEND ts)           = (lbl,cSend
   | certifyAction params              (lbl,NOTINANY (x,s))    = (lbl,cNotInAny
       (certifyMsg params x, s))
   | certifyAction params              (lbl,NEGCHECKS (xs,ns)) = (lbl,cNegChecks
-      (map (fn (x,tau) => (x,certifyMsgType' (#1 params) (#2 params) tau)) xs,
+      (map (fn (x,tau) => (x,certifyMsgType' (#1 params) (#2 params) tau)) (typedvars_flatten xs),
        map (fn n => case n of
                       INEQ (t,t') => cInequality (certifyMsg params t,
                                                   certifyMsg params t')
@@ -1104,23 +1111,23 @@ fun certifyAction params              (lbl,SEND ts)           = (lbl,cSend
       (certifyMsg params x, cSet (s, map (certifyMsg params) ps)))
   | certifyAction params              (lbl,DELETE (x,(s,ps))) = (lbl,cDelete
       (certifyMsg params x, cSet (s, map (certifyMsg params) ps)))
-  | certifyAction (fenums,ienums,_,_) (lbl,NEW xs)          = (lbl,cNew
-      (map (fn (x,tau) => case tau of
-               NONE => (x,ValueType)
-             | SOME (TAtom a) =>
-                if a = value_trac_typeN then (x,ValueType)
-                else if a = enum_trac_typeN
-                then error "Error: The special enum type is not allowed in \"new\" actions"
-                else if List.exists (fn e => a = e) (fenums@ienums)
-                then error "Error: Enumeration annotations are not allowed in \"new\" actions"
-                else (x,AtomicType a)
-             | SOME (TComp _) =>
-                error "Error: Composed type annotations in \"new\" actions are not allowed")
-           xs))
+  | certifyAction (fenums,ienums,_,_) (lbl,NEW xs)            = (lbl,cNew
+      (let
+        val xs = typedvars_flatten xs
+        fun check (TAtom a) =
+              if a = enum_trac_typeN
+              then error "Error: The special enum type is not allowed in \"new\" actions"
+              else if List.exists (fn e => a = e) (fenums@ienums)
+              then error "Error: Enumeration annotations are not allowed in \"new\" actions"
+              else TAtom a
+          | check (TComp _) =
+              error "Error: Composed type annotations in \"new\" actions are not allowed"
+       in map (fn (x,tau) => (x,certifyMsgType' fenums ienums (check tau))) xs end))
   | certifyAction _                   (lbl,ATTACK)            = (lbl,cAssertAttack)
 
 fun certifyTransactionName fenums ienums ((name, vars, ineqs):transaction_name) =
-  (name, map (fn (x,_) => (x,certifyMsgType (fenums, ienums, vars, []) x)) vars, ineqs)
+  let val cert_vars = map (fn x => (x,certifyMsgType (fenums, ienums, vars, []) x))
+  in (name, List.concat (map (cert_vars o fst) vars), ineqs) end
 
 fun certifyTransaction finite_enumerations infinite_enumerations (tr:transaction) =
   let
@@ -1135,23 +1142,24 @@ fun certifyTransaction finite_enumerations infinite_enumerations (tr:transaction
 
     val mk_cOccurs = cOccursFact
     fun mk_Value_cVar x = cVar (x,ValueType)
-    fun mk_cInequality x y = cNegChecks ([],[cInequality (mk_Value_cVar x, mk_Value_cVar y)])
-    val mk_cInequalities = list_triangle_product mk_cInequality
+    fun mk_cInequality star_acs_vars x y =
+      let val mem = member (op =) star_acs_vars
+          val lbl = if mem x andalso mem y then LabelS else LabelN
+      in (lbl, cNegChecks ([],[cInequality (mk_Value_cVar x, mk_Value_cVar y)])) end
+    fun mk_cInequalities star_acs_vars = list_triangle_product (mk_cInequality star_acs_vars)
 
     val fresh_vars = List.concat (map_filter (maybe_the_NEW o snd) tr_acs)
+    val fresh_vars' = typedvars_flatten fresh_vars
     val fresh_vals = map_filter
-      (fn (v,tau) =>
-        if tau = NONE orelse tau = SOME (TAtom value_trac_typeN)
-        then SOME v
-        else NONE)
-      fresh_vars
+      (fn (v,tau) => if tau = TAtom value_trac_typeN then SOME v else NONE)
+      fresh_vars'
     val decl_vars = #2 (#transaction tr)
-    val decl_vars' = map fst decl_vars
+    val decl_vars' = List.concat (map fst decl_vars)
     val neq_constrs = #3 (#transaction tr)
     val bvars = List.concat (map fst (map_filter (maybe_the_NEGCHECKS o snd) tr_acs))
 
-    val _ = if     List.exists (fn x     => List.exists (fn (y,_) => x = y) fresh_vars) decl_vars'
-            orelse List.exists (fn (x,_) => List.exists (fn y     => x = y) decl_vars') fresh_vars
+    val _ = if     List.exists (fn x     => List.exists (fn (y,_) => x = y) fresh_vars') decl_vars'
+            orelse List.exists (fn (x,_) => List.exists (fn y     => x = y) decl_vars') fresh_vars'
             then error "The fresh and the declared variables must not overlap"
             else ()
 
@@ -1159,8 +1167,14 @@ fun certifyTransaction finite_enumerations infinite_enumerations (tr:transaction
               SOME (x,y) => error ("Illegal inequality constraint: " ^ x ^ " != " ^ y)
             | NONE => ()
 
-    val nonfresh_vals =
-      map fst (filter (fn x => snd x = TAtom value_trac_typeN) (#2 (#transaction tr)))
+    val (vars_in_acs, vars_in_star_acs) =
+      let val f = distinct (op =) o List.concat o map (action_fvs o snd)
+      in (f tr_acs, f (filter (fn (l,_) => l = LabelS) tr_acs)) end
+    val nonfresh_vals = List.concat (
+      map fst (filter (fn x => snd x = TAtom value_trac_typeN) (#2 (#transaction tr))))
+    val (nonfresh_vals_in_acs, nonfresh_vals_in_star_acs) =
+      let fun f xs = filter (fn x => member (op =) xs x) nonfresh_vals
+      in (f vars_in_acs, f vars_in_star_acs) end
     val enum_vars =
       map_filter (fn (x,tau) => case tau of
                       TAtom e => if List.exists (fn e' => e = e')
@@ -1174,8 +1188,9 @@ fun certifyTransaction finite_enumerations infinite_enumerations (tr:transaction
     fun lblS t = (LabelS,t)
 
     val cactions =
-      map (certifyAction (finite_enumerations, infinite_enumerations, decl_vars@bvars, fresh_vars))
-          tr_acs
+      let val xs = decl_vars@bvars
+      in map (certifyAction (finite_enumerations, infinite_enumerations, xs, fresh_vars)) tr_acs
+      end
 
     val cname = certifyTransactionName finite_enumerations infinite_enumerations (#transaction tr)
 
@@ -1188,7 +1203,7 @@ fun certifyTransaction finite_enumerations infinite_enumerations (tr:transaction
 
     val nonfresh_occurs = mk_occurs_step cReceive nonfresh_vals
     val receives = filter (is_Receive o snd) cactions
-    val value_inequalities = map lblS (mk_cInequalities nonfresh_vals)
+    val value_inequalities = mk_cInequalities nonfresh_vals_in_star_acs nonfresh_vals_in_acs
     val checksingles = filter is_check1 cactions
     val checkalls = filter (is_NotInAny o snd) cactions
     val updates = filter (fn (_,a) => is_Insert a orelse is_Delete a) cactions
@@ -1198,20 +1213,20 @@ fun certifyTransaction finite_enumerations infinite_enumerations (tr:transaction
     val attack_signals = filter (is_Attack o snd) cactions
   in
     {transaction = cname,
-     receive_actions =
-        case nonfresh_occurs of
+     receive_actions = receives,
+(*         case nonfresh_occurs of
           NONE => receives
-        | SOME occs => occs::receives,
+        | SOME occs => occs::receives, *)
      checksingle_actions = value_inequalities@checksingles,
      checkall_actions = checkalls,
      fresh_actions = fresh,
      update_actions = updates,
-     send_actions =
-        case fresh_occurs of
+     send_actions = sends,
+(*         case fresh_occurs of
           NONE => sends
         | SOME occs => case sends of
             ((LabelS, cSend ts)::sends') => (lblS o cSend) ((the_Send o snd) occs@ts)::sends'
-          | _ => occs::sends,
+          | _ => occs::sends, *)
      attack_actions = attack_signals}:cTransaction
   end
 
@@ -1380,7 +1395,8 @@ fun certifyTransaction finite_enumerations infinite_enumerations (tr:transaction
 
       fun no_value_vars_in_decl_and_new_acs (tr:transaction) =
         no_value_vars_in_decl tr andalso
-        List.all (List.all (fn (_,t) => case t of SOME tau => value_free_type tau | _ => false))
+        List.all (List.all (value_free_type o snd))
+(* (fn (_,t) => case t of SOME tau => value_free_type tau | _ => false) *)
                  (map_filter (maybe_the_NEW o snd) (expand_abbrevs (#actions tr)))
 
       fun is_value_init_transaction (tr:transaction) =
@@ -1388,7 +1404,8 @@ fun certifyTransaction finite_enumerations infinite_enumerations (tr:transaction
           val acs = map snd (expand_abbrevs (#actions tr))
           val priv_funs = case #function_spec trac of SOME fs => map #1 (#private fs) | NONE => []
           val decl = #2 (#transaction tr)
-          fun is_not_value_var x = List.exists (fn (y,t) => x = y andalso value_free_type t) decl
+          fun is_not_value_var x =
+            List.exists (fn (ys,t) => member (op =) ys x andalso value_free_type t) decl
           fun is_not_priv f = List.all (fn g => f <> g) priv_funs
           fun valid_msg (Var x) = is_not_value_var x
             | valid_msg (Const c) = is_not_priv c
@@ -1397,7 +1414,7 @@ fun certifyTransaction finite_enumerations infinite_enumerations (tr:transaction
             | valid_msg Attack = true
           fun NEW_action_with_value_annotations_only a =
             case a of
-              NEW ts => List.all (fn (_,t) => t = NONE orelse t = SOME (TAtom value_trac_typeN)) ts
+              NEW xss => List.all (fn (_,t) => t = TAtom value_trac_typeN) xss
             | _ => false
         in
           no_value_vars_in_decl tr andalso
@@ -1431,37 +1448,15 @@ fun certifyTransaction finite_enumerations infinite_enumerations (tr:transaction
             List.all (fn n => case n of NOTIN (_,(_,ps)) => f ds ps | _ => true) ns
         | set_action_param_check _ _ _ = true
 
-      (* TODO: deprecate *)
-      fun action_vars_check decl _ (RECEIVE ts) = subset (op =) (action_fvs (RECEIVE ts), decl)
-        | action_vars_check decl _ (IN p) = subset (op =) (action_fvs (IN p), decl)
-        | action_vars_check decl _ (LETBINDING p) = subset (op =) (action_fvs (LETBINDING p), decl)
-        | action_vars_check decl _ (EQUATION p) = subset (op =) (action_fvs (EQUATION p), decl)
-        | action_vars_check decl _ (NEGCHECKS p) = subset (op =) (action_fvs (NEGCHECKS p), decl)
-        | action_vars_check decl _ (NOTINANY p) = subset (op =) (action_fvs (NOTINANY p), decl)
-        | action_vars_check decl prev_acs (NEW xs) =
-            not (has_dups (map fst xs)) andalso
-            List.all (fn (x,_) =>
-                        not (member (op =) decl x) andalso
-                        not (member (op =) (List.concat (map action_fvs prev_acs)) x))
-                     xs
-        | action_vars_check decl prev_acs (INSERT p) =
-            subset (op =) (action_fvs (INSERT p), decl@List.concat (map action_fvs prev_acs))
-        | action_vars_check decl prev_acs (DELETE p) =
-            subset (op =) (action_fvs (DELETE p), decl@List.concat (map action_fvs prev_acs))
-        | action_vars_check decl prev_acs (SEND ts) =
-            subset (op =) (action_fvs (SEND ts), decl@List.concat (map action_fvs prev_acs))
-        | action_vars_check _ _ ATTACK = true
-
-      (* TODO: test *)
       fun wfst' xs [] = xs
         | wfst' xs (a::acs) = case a of
             (RECEIVE ts) => wfst' (distinct (op =) (xs@action_fvs (RECEIVE ts))) acs
           | (LETBINDING (t,_)) => wfst' (distinct (op =) (xs@msg_vars t)) acs
           | (IN p) => wfst' (distinct (op =) (xs@action_fvs (IN p))) acs
-          | (NEW ys) => wfst' (xs@map fst ys) acs
+          | (NEW ys) => wfst' (xs@typedvars_fvs ys) acs
           | _ => wfst' xs acs
 
-      fun wfstp decl xs prev_acs a = case a of
+      fun wfstp decl xs prev_fvs insert_send_fvs a = case a of
             (RECEIVE ts) => subset (op =) (action_fvs (RECEIVE ts), decl)
           | (SEND ts) => subset (op =) (action_fvs (SEND ts), xs)
           | (EQUATION p) => subset (op =) (action_fvs (EQUATION p), decl)
@@ -1474,18 +1469,23 @@ fun certifyTransaction finite_enumerations infinite_enumerations (tr:transaction
           | (INSERT p) => subset (op =) (action_fvs (INSERT p), xs)
           | (DELETE p) => subset (op =) (action_fvs (DELETE p), decl@xs)
           | (NEW ys) =>
-              not (has_dups (map fst ys)) andalso
-              List.all (fn (y,_) =>
-                          not (member (op =) decl y) andalso
-                          not (member (op =) (List.concat (map action_fvs prev_acs)) y))
-                       ys
+              let val zs = typedvars_fvs ys
+              in not (has_dups zs) andalso
+                 subset (op =) (zs, insert_send_fvs) andalso
+                 List.all (fn y =>
+                             not (member (op =) decl y) andalso
+                             not (member (op =) prev_fvs y))
+                          zs
+              end
           | ATTACK => true
 
-      fun wfst decl prev_acs a =
+      fun wfst decl prev_acs next_acs a =
         let val f = map fst
             fun g (_,tau) = case tau of TAtom ta => member (op =) enumerations ta | _ => true
-        in wfstp (f decl) (wfst' (f (filter g decl)) prev_acs) prev_acs a end
-
+            val h = List.concat o map action_fvs
+            val prev_fvs = h prev_acs
+            val insert_send_fvs = h (filter (fn b => is_INSERT b orelse is_SEND b) next_acs)
+        in wfstp (f decl) (wfst' (f (filter g decl)) prev_acs) prev_fvs insert_send_fvs a end
 
       fun action_order_check _        (RECEIVE _) = true
         | action_order_check next_acs (LETBINDING _) = List.all (not o is_RECEIVE) next_acs
@@ -1511,7 +1511,7 @@ fun certifyTransaction finite_enumerations infinite_enumerations (tr:transaction
             | f (TComp _) = false
         in
           case a of
-            (NEW ts) => List.all f (map_filter snd ts)
+            (NEW xs) => List.all (f o snd) xs
           | _ => true
         end
 
@@ -1606,20 +1606,22 @@ fun certifyTransaction finite_enumerations infinite_enumerations (tr:transaction
 
       fun check_actions (tr_name,decl,acs) =
         let fun chk i =
-              let val a = nth acs i
+              let val decl_flat = List.concat (map (fn (xs,t) => map (fn x => (x,t)) xs) decl)
+                  val a = nth acs i
                   fun result st = (st,tr_name,a)
                   val fs = invalid_funs_in_action a
                   val gs = invalid_sets_in_action a
+                  val prev_acs = List.take (acs,i)
+                  val next_acs = List.drop (acs,i+1)
               in if fs <> []
                  then result (InvalidFunctionSymbols fs)
                  else if gs <> []
                  then result (InvalidSetSymbols gs)
-                 else if not (set_action_param_check set_action_enum_params decl a)
+                 else if not (set_action_param_check set_action_enum_params decl_flat a)
                  then result InvalidSetParam
-                 else if not (action_order_check (List.drop (acs,i+1)) a)
+                 else if not (action_order_check next_acs a)
                  then result WrongPosition
-                 else if not (action_vars_check (map fst decl) (List.take (acs,i)) a) orelse
-                         not (wfst decl (List.take (acs,i)) a)
+                 else if not (wfst decl_flat prev_acs next_acs a)
                  then result IllformedVars
                  else if not (new_action_legal_type_annotations a)
                  then result InvalidAnnotationNewAction
@@ -1676,31 +1678,6 @@ fun certifyTransaction finite_enumerations infinite_enumerations (tr:transaction
           (fn a => a = status)
           (fn (_,n,a) => "action \"" ^ a ^ "\" in transaction \"" ^ n ^ "\"")
     in
-      (* if not (value_producing_transactions_requirement (#transaction_spec trac))
-      then error (
-        "Missing initial value-producing transaction.\n" ^
-        "If there are any variable occurring in the protocol specification(s) whose type " ^
-        "contains the special atomic type " ^ value_trac_typeN ^
-        "then each Transactions section must declare a transaction satisfying the " ^
-        "following conditions:\n" ^
-        "1. The transaction does not declare " ^ value_trac_typeN ^ "-typed variables in its " ^
-        "head, nor does it declare composed-type variables whose types contain \"" ^
-        value_trac_typeN ^ "\".\n" ^
-        "2. The transaction freshly generates values, i.e., it contains an " ^
-        "action of the form \"new PK\" or an equivalent \"new\" action.\n" ^
-        "3. The transaction does not contain membership constraints or other checks, e.g., it " ^
-        "does not contain an action of the form \"PK in s\", \"PK notin s\", \"t == t'\" or " ^
-        "\"t != t'\".\n" ^
-        (* "4. No received message of the transaction contains a " ^ value_trac_typeN ^ "-typed " ^
-        "variable, a private function symbol, or a term abbreviation.\n" ^ *)
-        "4. The transaction only contains \"new\", \"insert\", and \"send\" actions.\n" ^
-        "5. The transaction only inserts into sets of set families that do not occur in " ^
-        "any membership constraint of any transaction of the protocol(s).\n\n" ^
-        "The following example gives a transaction that satisfies the above requirements " ^
-        "(assuming that no other transaction has the same name and that the set which is being " ^
-        "inserted into does not occur in other transactions):\n" ^
-        "intruderGen():\n  new K\n* insert K intruderValues\n* send K.")
-      else *)
       if has_dups tr_sec_names
       then error (
         "Multiple Transactions sections declared with the same name:\n" ^ dups_str tr_sec_names)
@@ -1757,8 +1734,8 @@ fun certifyTransaction finite_enumerations infinite_enumerations (tr:transaction
               (filter (has_dups o (nth abb_args)) (0 upto (length (#abbreviation_spec trac) - 1)))))
       else if List.exists abb_has_illegal_var_in_body (#abbreviation_spec trac)
       then error (
-        "Variables occurring in the body of an abbreviation declaration must also occur in its head.\n" ^
-        "The abbreviation declarations with the following heads violate this condition:\n" ^
+        "Variables occurring in the body of an abbreviation declaration must also occur in its " ^
+        "head.\nThe abbreviation declarations with the following heads violate this condition:\n" ^
         String.concatWith "\n" (
           map (fn i => nth abb_funs i ^ "![" ^ String.concatWith "," (nth abb_args i) ^ "]")
               (filter (abb_has_illegal_var_in_body o (nth (#abbreviation_spec trac)))
@@ -1785,10 +1762,12 @@ fun certifyTransaction finite_enumerations infinite_enumerations (tr:transaction
         "The following variable declarations violate these requirements:\n" ^
         String.concatWith "\n" (
           map_filter (fn (n,decls) =>
-                            let val ds = filter var_decl_has_illegal_type decls
-                            in if null ds then NONE
+                            let val ds =
+                                  List.concat (map (fn (xs,t) => map (fn x => (x,t)) xs) decls)
+                                val ds' = filter var_decl_has_illegal_type ds
+                            in if null ds' then NONE
                             else SOME (String.concatWith "\n"
-                                        (map (fn (s,t) => s ^ ": " ^ MsgType_str t) ds) ^
+                                        (map (fn (s,t) => s ^ ": " ^ MsgType_str t) ds') ^
                                        " in transaction " ^ n)
                             end)
                      tr_hds))
@@ -1846,7 +1825,8 @@ fun certifyTransaction finite_enumerations infinite_enumerations (tr:transaction
         "be declared in the head of the transaction where these actions occur, or, in the case " ^
         "of negative checks, be bound by a \"forall\" quantifier.\n" ^
         "2. Variables in a \"new\" action must not occur previously in the same transaction, " ^
-        "and they must furthermore be distinct.\n" ^
+        "they must be distinct, and they must each occur in either an \"insert\" or a \"send\" " ^
+        "action in the same transaction.\n" ^
         "3. Variables in \"insert\", \"delete\", and \"send\" actions must occur previously " ^
         "in the same transaction.\n" ^
         "The following actions lead to violations of these requirements:\n" ^
@@ -2054,7 +2034,7 @@ fun certifyProtocol (trac:protocol) =
         fun valuegentr protname = {
           transaction=tr_name protname,
           actions=[
-            LABELED_ACTION (LabelS,NEW [("X",NONE)]),
+            LABELED_ACTION (LabelS,NEW [(["X"],TAtom(value_trac_typeN))]),
             LABELED_ACTION (LabelS,INSERT (Var "X",(#1 set_def,[]))),
             LABELED_ACTION (LabelS,SEND [Var "X"])
           ]}:transaction
@@ -2078,16 +2058,19 @@ fun certifyProtocol (trac:protocol) =
 
         fun has_valuegentr (trs:transaction list) =
           let fun is_valuegentr_variant1 acs = case acs of
-                [LABELED_ACTION (LabelS,NEW [(x,NONE)]),
+                [LABELED_ACTION (LabelS,NEW [([x],TAtom(tau))]),
                  LABELED_ACTION (lbl,SEND ts)]
-                  => member (op =) ts (Var x) andalso (lbl = LabelS orelse spec_atmost1prot)
+                  => tau = value_trac_typeN andalso
+                     member (op =) ts (Var x) andalso
+                     (lbl = LabelS orelse spec_atmost1prot)
               | _ => false
 
               fun is_valuegentr_variant2 acs = case acs of
-                [LABELED_ACTION (LabelS,NEW [(x,NONE)]),
+                [LABELED_ACTION (LabelS,NEW [([x],TAtom(tau))]),
                  LABELED_ACTION (lbl,INSERT (y,(s,[]))),
                  LABELED_ACTION (lbl',SEND ts)]
-                  => member (op =) ts (Var x) andalso
+                  => tau = value_trac_typeN andalso
+                     member (op =) ts (Var x) andalso
                      y = Var x andalso
                      not (member (op =) checks_and_deletes_sets s) andalso
                      ((lbl = LabelS andalso lbl' = LabelS) orelse spec_atmost1prot)

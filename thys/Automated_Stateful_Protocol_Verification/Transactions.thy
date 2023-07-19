@@ -292,6 +292,20 @@ lemma transaction_strand_subst_subsets[simp]:
   "set (unlabel (transaction_send T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)) \<subseteq> set (unlabel (transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>))"
 unfolding transaction_strand_def unlabel_def subst_apply_labeled_stateful_strand_def by force+
 
+lemma transaction_strand_dual_unfold:
+  defines "f \<equiv> \<lambda>S. dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t S"
+  shows "f (transaction_strand T) = 
+         f (transaction_receive T)@f (transaction_checks T)@
+         f (transaction_updates T)@f (transaction_send T)"
+using dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_append unfolding f_def transaction_strand_def by auto
+
+lemma transaction_strand_unlabel_dual_unfold:
+  defines "f \<equiv> \<lambda>S. unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t S)"
+  shows "f (transaction_strand T) = 
+         f (transaction_receive T)@f (transaction_checks T)@
+         f (transaction_updates T)@f (transaction_send T)"
+using unlabel_append dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_append unfolding f_def transaction_strand_def by auto
+
 lemma transaction_dual_subst_unfold:
   "dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>) =
     dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_receive T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)@
@@ -407,12 +421,14 @@ lemma wellformed_transaction_strand_memberD[dest]:
     "x = insert\<langle>t,s\<rangle> \<Longrightarrow> (l,x) \<in> set (transaction_updates T)" (is "?F \<Longrightarrow> ?F'")
     "x = delete\<langle>t,s\<rangle> \<Longrightarrow> (l,x) \<in> set (transaction_updates T)" (is "?G \<Longrightarrow> ?G'")
     "x = send\<langle>ts\<rangle> \<Longrightarrow> (l,x) \<in> set (transaction_send T)" (is "?H \<Longrightarrow> ?H'")
+    "x = \<langle>ac: t \<doteq> s\<rangle> \<Longrightarrow> (l,x) \<in> set (transaction_checks T)" (is "?I \<Longrightarrow> ?I'")
+    "x = \<langle>ac: t \<in> s\<rangle> \<Longrightarrow> (l,x) \<in> set (transaction_checks T)" (is "?J \<Longrightarrow> ?J'")
 proof -
   have "(l,x) \<in> set (transaction_receive T) \<or> (l,x) \<in> set (transaction_checks T) \<or>
         (l,x) \<in> set (transaction_updates T) \<or> (l,x) \<in> set (transaction_send T)"
     using assms(2) by auto
-  thus "?A \<Longrightarrow> ?A'" "?B \<Longrightarrow> ?B'" "?C \<Longrightarrow> ?C'" "?D \<Longrightarrow> ?D'"
-       "?E \<Longrightarrow> ?E'" "?F \<Longrightarrow> ?F'" "?G \<Longrightarrow> ?G'" "?H \<Longrightarrow> ?H'"
+  thus "?A \<Longrightarrow> ?A'" "?B \<Longrightarrow> ?B'" "?C \<Longrightarrow> ?C'" "?D \<Longrightarrow> ?D'" "?E \<Longrightarrow> ?E'"
+       "?F \<Longrightarrow> ?F'" "?G \<Longrightarrow> ?G'" "?H \<Longrightarrow> ?H'" "?I \<Longrightarrow> ?I'" "?J \<Longrightarrow> ?J'"
     using wellformed_transaction_cases[OF assms(1)] by fast+
 qed
 
@@ -427,12 +443,14 @@ lemma wellformed_transaction_strand_unlabel_memberD[dest]:
     "x = insert\<langle>t,s\<rangle> \<Longrightarrow> x \<in> set (unlabel (transaction_updates T))" (is "?F \<Longrightarrow> ?F'")
     "x = delete\<langle>t,s\<rangle> \<Longrightarrow> x \<in> set (unlabel (transaction_updates T))" (is "?G \<Longrightarrow> ?G'")
     "x = send\<langle>ts\<rangle> \<Longrightarrow> x \<in> set (unlabel (transaction_send T))" (is "?H \<Longrightarrow> ?H'")
+    "x = \<langle>ac: t \<doteq> s\<rangle> \<Longrightarrow> x \<in> set (unlabel (transaction_checks T))" (is "?I \<Longrightarrow> ?I'")
+    "x = \<langle>ac: t \<in> s\<rangle> \<Longrightarrow> x \<in> set (unlabel (transaction_checks T))" (is "?J \<Longrightarrow> ?J'")
 proof -
   have "x \<in> set (unlabel (transaction_receive T)) \<or> x \<in> set (unlabel (transaction_checks T)) \<or>
         x \<in> set (unlabel (transaction_updates T)) \<or> x \<in> set (unlabel (transaction_send T))"
     using assms(2) by auto
-  thus "?A \<Longrightarrow> ?A'" "?B \<Longrightarrow> ?B'" "?C \<Longrightarrow> ?C'" "?D \<Longrightarrow> ?D'"
-       "?E \<Longrightarrow> ?E'" "?F \<Longrightarrow> ?F'" "?G \<Longrightarrow> ?G'" "?H \<Longrightarrow> ?H'"
+  thus "?A \<Longrightarrow> ?A'" "?B \<Longrightarrow> ?B'" "?C \<Longrightarrow> ?C'" "?D \<Longrightarrow> ?D'" "?E \<Longrightarrow> ?E'"
+       "?F \<Longrightarrow> ?F'" "?G \<Longrightarrow> ?G'" "?H \<Longrightarrow> ?H'" "?I \<Longrightarrow> ?I'" "?J \<Longrightarrow> ?J'"
     using wellformed_transaction_unlabel_cases[OF assms(1)] by fast+
 qed
 
@@ -456,8 +474,9 @@ proof -
   hence "\<exists>ts. s \<in> set ts \<and> receive\<langle>ts\<rangle> \<in> set (unlabel (transaction_receive T))"
     using wellformed_transaction_send_receive_trm_cases(1)[OF T] by simp
   thus "\<exists>ts. t \<in> set ts \<and> receive\<langle>ts\<rangle> \<in> set (unlabel (transaction_receive T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>))"
-    using s(2) unlabel_subst[of _ \<theta>] stateful_strand_step_subst_inI(2)
-    by (smt image_eqI list.set_map)
+    using s(2) unlabel_subst[of _ \<theta>] subst_set_map[of s _ \<theta>]
+          stateful_strand_step_subst_inI(2)[of _ "unlabel (transaction_receive T)" \<theta>]
+    by metis
 next
   assume "t \<in> trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_send T) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<theta>"
   then obtain s where s: "s \<in> trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_send T)" "t = s \<cdot> \<theta>"
@@ -465,8 +484,9 @@ next
   hence "\<exists>ts. s \<in> set ts \<and> send\<langle>ts\<rangle> \<in> set (unlabel (transaction_send T))"
     using wellformed_transaction_send_receive_trm_cases(2)[OF T] by simp
   thus "\<exists>ts. t \<in> set ts \<and> send\<langle>ts\<rangle> \<in> set (unlabel (transaction_send T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>))"
-    using s(2) unlabel_subst[of _ \<theta>] stateful_strand_step_subst_inI(1)
-    by (smt image_eqI list.set_map) 
+    using s(2) unlabel_subst[of _ \<theta>] subst_set_map[of s _ \<theta>]
+          stateful_strand_step_subst_inI(1)[of _ "unlabel (transaction_send T)" \<theta>]
+    by metis
 qed
 
 lemma wellformed_transaction_send_receive_fv_subset:
@@ -844,6 +864,35 @@ proof -
   thus "?B \<Longrightarrow> ?B'"
     by (metis (no_types) has_LabelS_proj_iff_not_has_LabelN proj_elims_label
         transaction_star_proj_ident_iff transaction_strand_proj)
+qed
+
+lemma transaction_updates_send_ex_iff:
+  fixes T::"('a,'b,'c,'d) prot_transaction"
+  assumes "list_all is_Receive (unlabel (transaction_receive T))"
+          "list_all is_Check_or_Assignment (unlabel (transaction_checks T))"
+          "list_all is_Update (unlabel (transaction_updates T))"
+          "list_all is_Send (unlabel (transaction_send T))"
+  shows "transaction_updates T \<noteq> [] \<or> transaction_send T \<noteq> [] \<longleftrightarrow>
+         list_ex (\<lambda>a. is_Send (snd a) \<or> is_Update (snd a)) (transaction_strand T)"
+proof -
+  define f where "f \<equiv> \<lambda>a::('a,'b,'c,'d) prot_strand_step. is_Send (snd a) \<or> is_Update (snd a)"
+
+  have 0: "list_all (\<lambda>a. \<not>(f a)) (transaction_receive T)"
+          "list_all (\<lambda>a. \<not>(f a)) (transaction_checks T)"
+          "list_all (\<lambda>a. (f a)) (transaction_updates T)"
+          "list_all (\<lambda>a. (f a)) (transaction_send T)"
+    using assms unfolding list_all_iff unlabel_def f_def by auto
+
+  have 1:
+      "list_ex f (transaction_strand T) \<longleftrightarrow>
+       list_ex f (transaction_updates T) \<or> list_ex f (transaction_send T)"
+    using 0 unfolding list_all_iff list_ex_iff transaction_strand_def by auto
+
+  have 2: "A \<noteq> [] \<longleftrightarrow> list_ex f A" when "list_all f A" for A
+    using that by (induct A) auto
+
+  thus ?thesis
+    using 1 2[OF 0(3)] 2[OF 0(4)] unfolding list_all_iff list_ex_iff f_def[symmetric] by meson
 qed
 
 end

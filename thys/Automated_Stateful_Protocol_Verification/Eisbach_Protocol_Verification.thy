@@ -29,7 +29,7 @@ method type_class_instance =
   (intro_classes; auto simp add: type_class_instance_lemmata)
 
 method protocol_model_subgoal =
-  (((rule allI, case_tac f); (erule forw_subst)+)?; simp_all)
+  (((rule allI, case_tac f); (erule forw_subst)+)?; simp)
 
 method protocol_model_interpretation =
   (unfold_locales; protocol_model_subgoal+)
@@ -72,7 +72,7 @@ method check_protocol_intro =
 method check_protocol_intro' =
   ((check_protocol_intro;
     coverage_check_intro?;
-    (unfold protocol_checks'; intro conjI)?),
+    (unfold protocol_checks' Let_def; intro conjI)?),
   tactic distinct_subgoals_tac)
 
 method check_protocol_with methods meth =
@@ -86,5 +86,14 @@ method check_protocol_nbe =
 
 method check_protocol_unsafe =
   (check_protocol_with \<open>coverage_check_intro?; eval\<close>)
+
+method check_protocol_compositionality =
+  (check_protocol_with \<open>coverage_check_intro?; (code_simp; fastforce?)\<close>)
+
+method check_protocol_compositionality_nbe =
+  (check_protocol_with \<open>coverage_check_intro?; (normalization; fastforce?)\<close>)
+
+method check_protocol_compositionality_unsafe =
+  (check_protocol_with \<open>coverage_check_intro?; (eval?; (code_simp; fastforce?))\<close>)
 
 end

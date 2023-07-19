@@ -1347,8 +1347,29 @@ proof
     case (step c d)
     show ?case using step.IH step.hyps(2)
     proof (induction TI a c rule: in_trancl.induct)
-      case (1 TI a b) thus ?case using in_trancl.simps
-        by (smt Bex_set case_prodE case_prodI member_remove prod.sel(2) remove_code(1))
+      case (1 TI a b)
+      have "(a,b) \<in> set TI \<or> (\<exists>e. (a,e) \<in> set TI \<and> in_trancl (removeAll (a,e) TI) e b)"
+        using "1.prems"(1) in_trancl.simps[of TI a b]
+        unfolding list_ex_iff by (cases "(a,b) \<in> set TI") auto
+      show ?case
+      proof (cases "(a,b) \<in> set TI")
+        case True thus ?thesis
+          by (metis (mono_tags, lifting) in_trancl.simps "1.prems"(2) list_ex_iff case_prodI
+                member_remove prod.inject remove_code(1))
+      next
+        case F: False
+        then obtain e where e: "(a,e) \<in> set TI" "in_trancl (removeAll (a,e) TI) e b"
+          using "1.prems"(1) in_trancl.simps[of TI a b]
+          unfolding list_ex_iff by (cases "(a,b) \<in> set TI") auto
+        show ?thesis
+        proof (cases "(b, d) \<in> set (removeAll (a, e) TI)")
+          case True thus ?thesis
+            using in_trancl.simps[of TI a d] e(1) "1.prems"(2) "1.IH"[OF F e(1) _ e(2)]
+            unfolding list_ex_iff by auto
+        next
+          case False thus ?thesis using in_trancl.simps[of TI a d] "1.prems"(2) by simp
+        qed
+      qed
     qed
   qed (metis in_trancl.simps)
 
@@ -1456,8 +1477,10 @@ proof (induction TI s t rule: equal_mod_timpls.induct)
     using "2.prems" by simp_all
 
   show ?case
-    using "2.IH" "2.prems"(1) list.rel_mono_strong[OF *(2)] *(1) in_trancl_mono[of TI TI']
-    by (metis (no_types, lifting) equal_mod_timpls.simps(2) set_rev_mp)
+    using "2.IH"[OF _ _ "2.prems"(1)] list.rel_mono_strong[OF *(2), of "equal_mod_timpls TI'"]
+          *(1) in_trancl_mono[OF "2.prems"(1)] set_rev_mp[OF _ "2.prems"(1)]
+          equal_mod_timpls.simps(2)[of TI' f T g S]
+    by metis
 qed auto
 
 lemma equal_mod_timpls_refl_minus_eq:

@@ -127,11 +127,10 @@ exception NotYetSupported of string
        | transaction_name of TracProtocol.transaction_name
        | typ of Trac_Term.MsgType 
        | typs of Trac_Term.MsgType list 
-       | parameter of string * Trac_Term.MsgType
-       | parameters of (string * Trac_Term.MsgType) list
-       | var_opt of string * Trac_Term.MsgType option
-       | vars_opt of (string * Trac_Term.MsgType option) list
-       | vars of (string * Trac_Term.MsgType) list
+       | vars of string list
+       | vars_typ of string list * Trac_Term.MsgType
+       | vars_typs of (string list * Trac_Term.MsgType) list
+       | vars_opts of (string list * Trac_Term.MsgType) list
        | negcheck_disj of TracProtocol.Negcheck list
        | negcheck of TracProtocol.Negcheck
        | abbrev of string * Trac_Term.Msg list
@@ -216,21 +215,11 @@ ineq: UPPER_STRING_LITERAL ineq_aux                       ((UPPER_STRING_LITERAL
 ineqs: ineq                                               ([ineq])
      | ineq COMMA ineqs                                   ([ineq]@ineqs)
                        
-transaction_name: ident OPENP parameters CLOSEP WHERE ineqs    ((ident,parameters,ineqs))
-                | ident OPENP parameters CLOSEP                ((ident,parameters,[]))
-                | ident OPENP CLOSEP                           ((ident,[],[]))
+transaction_name: ident OPENP vars_typs CLOSEP WHERE ineqs    ((ident,vars_typs,ineqs))
+                | ident OPENP vars_typs CLOSEP                ((ident,vars_typs,[]))
+                | ident OPENP CLOSEP                          ((ident,[],[]))
+   
 
-parameters: parameter                                   ([parameter])
-          | parameter COMMA parameters                  (parameter::parameters)
-                  
-parameter: ident COLON typ                              ((ident, typ))
-
-typ: UPPER_STRING_LITERAL                               (Trac_Term.TAtom(UPPER_STRING_LITERAL))
-   | LOWER_STRING_LITERAL                               (Trac_Term.TAtom(LOWER_STRING_LITERAL))
-   | LOWER_STRING_LITERAL OPENP typs CLOSEP             (Trac_Term.TComp(LOWER_STRING_LITERAL,typs))
-
-typs: typ                                               ([typ])
-    | typ COMMA typs                                    (typ::typs)
 
 abbrev: ident EXCLAM OPENSQB CLOSESQB                   ((ident,[]))
       | ident EXCLAM OPENSQB msgs CLOSESQB              ((ident,msgs))
@@ -245,10 +234,10 @@ action: RECEIVE msgs                                  ((TracProtocol.LabelN,Trac
       | msg IN setexp                                 ((TracProtocol.LabelN,TracProtocol.IN(msg,setexp)))
       | msg NOTIN lident OPENP UNDERSCORE CLOSEP      ((TracProtocol.LabelN,TracProtocol.NOTINANY(msg,lident)))
       | negcheck_disj                                 ((TracProtocol.LabelN,TracProtocol.NEGCHECKS([],negcheck_disj)))
-      | negcheck_disj FORALL vars                     ((TracProtocol.LabelN,TracProtocol.NEGCHECKS(vars,negcheck_disj)))
+      | negcheck_disj FORALL vars_typs                ((TracProtocol.LabelN,TracProtocol.NEGCHECKS(vars_typs,negcheck_disj)))
       | INSERT msg setexp                             ((TracProtocol.LabelN,TracProtocol.INSERT(msg,setexp)))
       | DELETE msg setexp                             ((TracProtocol.LabelN,TracProtocol.DELETE(msg,setexp)))
-      | NEW vars_opt                                  ((TracProtocol.LabelS,TracProtocol.NEW(vars_opt)))
+      | NEW vars_opts                                 ((TracProtocol.LabelS,TracProtocol.NEW(vars_opts)))
       | ATTACK                                        ((TracProtocol.LabelN,TracProtocol.ATTACK))
       | STAR RECEIVE msgs                             ((TracProtocol.LabelS,TracProtocol.RECEIVE(msgs)))
       | STAR SEND msgs                                ((TracProtocol.LabelS,TracProtocol.SEND(msgs)))
@@ -257,7 +246,7 @@ action: RECEIVE msgs                                  ((TracProtocol.LabelN,Trac
       | STAR msg IN setexp                            ((TracProtocol.LabelS,TracProtocol.IN(msg,setexp)))
       | STAR msg NOTIN lident OPENP UNDERSCORE CLOSEP ((TracProtocol.LabelS,TracProtocol.NOTINANY(msg,lident)))
       | STAR negcheck_disj                            ((TracProtocol.LabelS,TracProtocol.NEGCHECKS([],negcheck_disj)))
-      | STAR negcheck_disj FORALL vars                ((TracProtocol.LabelS,TracProtocol.NEGCHECKS(vars,negcheck_disj)))
+      | STAR negcheck_disj FORALL vars_typs           ((TracProtocol.LabelS,TracProtocol.NEGCHECKS(vars_typs,negcheck_disj)))
       | STAR INSERT msg setexp                        ((TracProtocol.LabelS,TracProtocol.INSERT(msg,setexp)))
       | STAR DELETE msg setexp                        ((TracProtocol.LabelS,TracProtocol.DELETE(msg,setexp)))
 
@@ -266,15 +255,24 @@ action_ext: abbrev                                    (TracProtocol.ABBREVIATION
 
 actions_ext: action_ext                               ([action_ext])
            | action_ext actions_ext                   (action_ext::actions_ext)
+          
+typ: UPPER_STRING_LITERAL                             (Trac_Term.TAtom(UPPER_STRING_LITERAL))
+   | LOWER_STRING_LITERAL                             (Trac_Term.TAtom(LOWER_STRING_LITERAL))
+   | LOWER_STRING_LITERAL OPENP typs CLOSEP           (Trac_Term.TComp(LOWER_STRING_LITERAL,typs))
 
-vars_opt: var_opt                                     ([var_opt])
-        | var_opt COMMA vars_opt                      (var_opt::vars_opt)
- 
-var_opt: uident COLON typ                             ((uident, SOME(typ)))
-       | uident                                       ((uident, NONE))
+typs: typ                                             ([typ])
+    | typ COMMA typs                                  (typ::typs)
 
-vars: uident COLON typ                                ([(uident,typ)])
-    | uident COLON typ COMMA vars                     ((uident,typ)::vars)
+vars: uident                                          ([uident])
+    | uident COMMA vars                               (uident::vars)
+
+vars_typ: vars COLON typ                              ((vars,typ))
+
+vars_typs: vars_typ                                   ([vars_typ])
+         | vars_typ COMMA vars_typs                   (vars_typ::vars_typs)
+
+vars_opts: vars                                       ([(vars,Trac_Term.TAtom(Trac_Utils.value_trac_typeN))])
+         | vars_typs                                  (vars_typs)
 
 setexp: lident                                        ((lident,[]))
       | lident OPENP msgs CLOSEP                      ((lident,msgs))

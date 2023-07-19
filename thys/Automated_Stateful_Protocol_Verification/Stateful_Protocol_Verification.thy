@@ -940,16 +940,17 @@ using assms match_abssD by fast
 lemma match_abss_OCC_if_not_fv:
   fixes s t::"(('a,'b,'c,'d) prot_fun, 'v) term"
   assumes \<delta>': "match_abss OCC TI s t = Some \<delta>'"
-    and x: "\<delta>' x \<noteq> {}" "x \<notin> fv s"
+    and x: "x \<notin> fv s"
   shows "\<delta>' x = set OCC"
 proof -
   define f where "f \<equiv> \<lambda>s::(('a,'b,'c,'d) prot_fun, 'v) term. \<lambda>\<delta> x. if x \<in> fv s then \<delta> x else set OCC"
   define g where "g \<equiv> \<lambda>\<delta>. \<lambda>x::'v. \<Inter>(ticl_abs TI ` \<delta> x)"
 
-  obtain \<delta> where "match_abss' s t = Some \<delta>" "\<delta>' = f s (g \<delta>)"
+  obtain \<delta> where \<delta>: "match_abss' s t = Some \<delta>" "\<delta>' = f s (g \<delta>)"
     using match_abssD[OF \<delta>'] unfolding f_def g_def by blast
-  thus ?thesis
-    using x match_abss'_nonempty_is_fv unfolding f_def by presburger
+
+  show ?thesis
+    using x \<delta>(2) unfolding f_def by presburger
 qed
 
 inductive synth_abs_substs_constrs_rel for FP OCC TI where
@@ -973,8 +974,7 @@ inductive synth_abs_substs_constrs_rel for FP OCC TI where
 | SolveComposed:
     "arity f > 0 \<Longrightarrow> length ts = arity f
       \<Longrightarrow> \<forall>\<delta>. \<delta> \<in> \<Delta> \<longleftrightarrow> (\<exists>s \<in> set FP. match_abss OCC TI (Fun f ts) s = Some \<delta>)
-      \<Longrightarrow> \<Theta> = (\<lambda>\<delta> x. if \<delta> x \<noteq> {} then \<delta> x else set OCC)
-      \<Longrightarrow> \<theta>1 = fun_point_Union (\<Theta> ` \<Delta>)
+      \<Longrightarrow> \<theta>1 = fun_point_Union \<Delta>
       \<Longrightarrow> synth_abs_substs_constrs_rel FP OCC TI ts \<theta>2
       \<Longrightarrow> synth_abs_substs_constrs_rel FP OCC TI [Fun f ts] (fun_point_union \<theta>1 \<theta>2)"
 
@@ -985,8 +985,7 @@ fun synth_abs_substs_constrs_aux where
     if ts = []
     then if \<not>public f \<and> Fun f ts \<notin> set FP then (\<lambda>_. {}) else (\<lambda>_. set OCC)
     else let \<Delta> = map the (filter (\<lambda>\<delta>. \<delta> \<noteq> None) (map (match_abss OCC TI (Fun f ts)) FP));
-             \<Theta> = \<lambda>\<delta> x. let as = \<delta> x in if as \<noteq> {} then as else set OCC;
-             \<theta>1 = fun_point_Union_list (map \<Theta> \<Delta>);
+             \<theta>1 = fun_point_Union_list \<Delta>;
              \<theta>2 = fun_point_Inter_list (map (synth_abs_substs_constrs_aux FP OCC TI) ts)
          in fun_point_union \<theta>1 \<theta>2)"
 
@@ -1067,14 +1066,14 @@ definition transaction_check::
 where
   "transaction_check \<equiv> transaction_check' (\<lambda>_ _. True)"
 
-definition transaction_check_alt1::
+definition transaction_check_coverage_rcv::
   "[('fun,'atom,'sets,'lbl) prot_term list \<times>
     'sets set list \<times>
     ('sets set \<times> 'sets set) list,
     ('fun,'atom,'sets,'lbl) prot_transaction]
   \<Rightarrow> bool"
 where
-  "transaction_check_alt1 FPT T \<equiv>
+  "transaction_check_coverage_rcv FPT T \<equiv>
     let msgcs = synth_abs_substs_constrs FPT T
     in transaction_check' (\<lambda>x a. a \<in> msgcs x) FPT T"
 
@@ -1313,7 +1312,7 @@ using T t unfolding transaction_check_pre_def Let_def \<theta>_def by blast
 
 lemma transaction_check_compI[intro]:
   assumes T: "transaction_check_pre (FP, OCC, TI) T \<delta>"
-    and T_adm: "admissible_transaction T"
+    and T_adm: "admissible_transaction' T"
     and x1: "\<forall>x. (x \<in> fv_transaction T - set (transaction_fresh T) \<and> fst x = TAtom Value)
                   \<longrightarrow> \<delta> x \<in> set OCC \<and> msgcs x (\<delta> x)"
     and x2: "\<forall>x. (x \<notin> fv_transaction T - set (transaction_fresh T) \<or> fst x \<noteq> TAtom Value)
@@ -1378,7 +1377,7 @@ begin
 private lemma transaction_check_comp_in_aux:
   fixes T
   defines "C \<equiv> set (unlabel (transaction_checks T))"
-  assumes T_adm: "admissible_transaction T"
+  assumes T_adm: "admissible_transaction' T"
     and a1: "\<forall>x \<in> fv_transaction T - set (transaction_fresh T). fst x = TAtom Value \<longrightarrow> (\<forall>s.
           select\<langle>Var x, Fun (Set s) []\<rangle> \<in> C \<longrightarrow> s \<in> \<alpha> x)"
     and a2: "\<forall>x \<in> fv_transaction T - set (transaction_fresh T). fst x = TAtom Value \<longrightarrow> (\<forall>s.
@@ -1415,7 +1414,7 @@ lemma transaction_check_comp_in:
   fixes T
   defines "\<theta> \<equiv> \<lambda>\<delta> x. if fst x = TAtom Value then (absc \<circ> \<delta>) x else Var x"
     and "C \<equiv> set (unlabel (transaction_checks T))"
-  assumes T_adm: "admissible_transaction T"
+  assumes T_adm: "admissible_transaction' T"
     and a1: "\<forall>x \<in> set (transaction_fresh T). \<alpha> x = {}"
     and a2: "\<forall>t \<in> trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_receive T). intruder_synth_mod_timpls FP TI (t \<cdot> \<theta> \<alpha>)"
     and a3: "\<forall>x \<in> fv_transaction T - set (transaction_fresh T). \<forall>s.
@@ -1518,6 +1517,3963 @@ by (simp add: list_all_iff transaction_check_def transaction_check'_def transact
 end
 
 
+subsection \<open>Soundness of the Occurs-Message Transformation\<close>
+context stateful_protocol_model
+begin
+
+context
+begin
+
+text \<open>The occurs-message transformation, \<open>add_occurs_msgs\<close>, extends a transaction \<open>T\<close> with
+additional message-transmission steps such that the following holds:
+1. for each fresh variable \<open>x\<close> of \<open>T\<close> the message \<open>occurs (Var x)\<close> now occurs in a send-step,
+2. for each of the remaining free variables \<open>x\<close> of \<open>T\<close> the message \<open>occurs (Var x)\<close> now occurs in a
+receive-step.\<close>
+definition add_occurs_msgs where
+  "add_occurs_msgs T \<equiv>
+    let frsh = transaction_fresh T;
+        xs = filter (\<lambda>x. x \<notin> set frsh) (fv_list\<^sub>s\<^sub>s\<^sub>t (unlabel (transaction_strand T)));
+        f = map (\<lambda>x. occurs (Var x));
+        g = \<lambda>C. if xs = [] then C else \<langle>\<star>, receive\<langle>f xs\<rangle>\<rangle>#C;
+        h = \<lambda>F. if frsh = [] then F
+                else if F \<noteq> [] \<and> fst (hd F) = \<star> \<and> is_Send (snd (hd F))
+                then \<langle>\<star>,send\<langle>f frsh@the_msgs (snd (hd F))\<rangle>\<rangle>#tl F
+                else \<langle>\<star>,send\<langle>f frsh\<rangle>\<rangle>#F
+    in case T of Transaction A B C D E F \<Rightarrow> Transaction A B (g C) D E (h F)"
+
+private fun rm_occurs_msgs_constr where
+  "rm_occurs_msgs_constr [] = []"
+| "rm_occurs_msgs_constr ((l,receive\<langle>ts\<rangle>)#A) = (
+    if \<exists>t. occurs t \<in> set ts
+    then if \<exists>t \<in> set ts. \<forall>s. t \<noteq> occurs s
+         then (l,receive\<langle>filter (\<lambda>t. \<forall>s. t \<noteq> occurs s) ts\<rangle>)#rm_occurs_msgs_constr A
+         else rm_occurs_msgs_constr A
+    else (l,receive\<langle>ts\<rangle>)#rm_occurs_msgs_constr A)"
+| "rm_occurs_msgs_constr ((l,send\<langle>ts\<rangle>)#A) = (
+    if \<exists>t. occurs t \<in> set ts
+    then if \<exists>t \<in> set ts. \<forall>s. t \<noteq> occurs s
+         then (l,send\<langle>filter (\<lambda>t. \<forall>s. t \<noteq> occurs s) ts\<rangle>)#rm_occurs_msgs_constr A
+         else rm_occurs_msgs_constr A
+    else (l,send\<langle>ts\<rangle>)#rm_occurs_msgs_constr A)"
+| "rm_occurs_msgs_constr (a#A) = a#rm_occurs_msgs_constr A"
+
+private lemma add_occurs_msgs_cases:
+  fixes T C frsh xs f
+  defines "T' \<equiv> add_occurs_msgs T"
+    and "frsh \<equiv> transaction_fresh T"
+    and "xs \<equiv> filter (\<lambda>x. x \<notin> set frsh) (fv_list\<^sub>s\<^sub>s\<^sub>t (unlabel (transaction_strand T)))"
+    and "xs' \<equiv> fv_transaction T - set frsh"
+    and "f \<equiv> map (\<lambda>x. occurs (Var x))"
+    and "C' \<equiv> if xs = [] then C else \<langle>\<star>, receive\<langle>f xs\<rangle>\<rangle>#C"
+    and "ts' \<equiv> f frsh"
+  assumes T: "T = Transaction A B C D E F"
+  shows "F = \<langle>\<star>,send\<langle>ts\<rangle>\<rangle>#F' \<Longrightarrow> T' = Transaction A B C' D E (\<langle>\<star>,send\<langle>ts'@ts\<rangle>\<rangle>#F')"
+    (is "?A ts F' \<Longrightarrow> ?A' ts F'")
+  and "\<nexists>ts' F'. F = \<langle>\<star>,send\<langle>ts'\<rangle>\<rangle>#F' \<Longrightarrow> frsh \<noteq> [] \<Longrightarrow> T' = Transaction A B C' D E (\<langle>\<star>,send\<langle>ts'\<rangle>\<rangle>#F)"
+    (is "?B \<Longrightarrow> ?B' \<Longrightarrow> ?B''")
+  and "frsh = [] \<Longrightarrow> T' = Transaction A B C' D E F" (is "?C \<Longrightarrow> ?C'")
+  and "transaction_decl T' = transaction_decl T"
+  and "transaction_fresh T' = transaction_fresh T"
+  and "xs = [] \<Longrightarrow> transaction_receive T' = transaction_receive T"
+  and "xs \<noteq> [] \<Longrightarrow> transaction_receive T' = \<langle>\<star>,receive\<langle>f xs\<rangle>\<rangle>#transaction_receive T"
+  and "transaction_checks T' = transaction_checks T"
+  and "transaction_updates T' = transaction_updates T"
+  and "transaction_send T = \<langle>\<star>,send\<langle>ts\<rangle>\<rangle>#F' \<Longrightarrow>
+        transaction_send T' = \<langle>\<star>,send\<langle>ts'@ts\<rangle>\<rangle>#F'" (is "?D ts F' \<Longrightarrow> ?D' ts F'")
+  and "\<nexists>ts' F'. transaction_send T = \<langle>\<star>,send\<langle>ts'\<rangle>\<rangle>#F' \<Longrightarrow> frsh \<noteq> [] \<Longrightarrow>
+        transaction_send T' = \<langle>\<star>,send\<langle>ts'\<rangle>\<rangle>#transaction_send T" (is "?E \<Longrightarrow> ?E' \<Longrightarrow> ?E''")
+  and "frsh = [] \<Longrightarrow> transaction_send T' = transaction_send T" (is "?F \<Longrightarrow> ?F'")
+  and "(xs' \<noteq> {} \<and> transaction_receive T' = \<langle>\<star>, receive\<langle>f xs\<rangle>\<rangle>#transaction_receive T) \<or>
+       (xs' = {} \<and> transaction_receive T' = transaction_receive T)" (is ?G)
+  and "(frsh \<noteq> [] \<and> (\<exists>ts F'.
+          transaction_send T = \<langle>\<star>,send\<langle>ts\<rangle>\<rangle>#F' \<and> transaction_send T' = \<langle>\<star>,send\<langle>ts'@ts\<rangle>\<rangle>#F')) \<or>
+       (frsh \<noteq> [] \<and> transaction_send T' = \<langle>\<star>,send\<langle>ts'\<rangle>\<rangle>#transaction_send T) \<or>
+       (frsh = [] \<and> transaction_send T' = transaction_send T)" (is ?H)
+proof -
+  note defs = T'_def T frsh_def xs_def xs'_def f_def C'_def ts'_def add_occurs_msgs_def Let_def
+
+  show 0: "?A ts F' \<Longrightarrow> ?A' ts F'" for ts F' unfolding defs by simp
+
+  have "F = [] \<or> fst (hd F) \<noteq> \<star> \<or> \<not>is_Send (snd (hd F))" when ?B
+    using that unfolding is_Send_def by (cases F) auto
+  thus 1: "?B \<Longrightarrow> ?B' \<Longrightarrow> ?B''" unfolding defs by force
+
+  show "?C \<Longrightarrow> ?C'" unfolding defs by auto
+
+  show "transaction_decl T' = transaction_decl T"
+       "transaction_fresh T' = transaction_fresh T"
+       "transaction_checks T' = transaction_checks T"
+       "transaction_updates T' = transaction_updates T"
+    unfolding defs by simp_all
+
+  show "xs = [] \<Longrightarrow> transaction_receive T' = transaction_receive T"
+       "xs \<noteq> [] \<Longrightarrow> transaction_receive T' = \<langle>\<star>, receive\<langle>f xs\<rangle>\<rangle>#transaction_receive T"
+    unfolding defs by simp_all
+  moreover have "xs = [] \<longleftrightarrow> xs' = {}"
+    using filter_empty_conv[of "\<lambda>x. x \<notin> set frsh"]
+          fv_list\<^sub>s\<^sub>s\<^sub>t_is_fv\<^sub>s\<^sub>s\<^sub>t[of "unlabel (transaction_strand T)"]
+    unfolding xs_def xs'_def by blast
+  ultimately show ?G by blast
+
+  show 2: "?D ts F' \<Longrightarrow> ?D' ts F'" for ts F' using 0 unfolding T by simp
+  show 3: "?E \<Longrightarrow> ?E' \<Longrightarrow> ?E''" using 1 unfolding T by force
+  show 4: "?F \<Longrightarrow> ?F'" unfolding defs by simp
+
+  show ?H
+  proof (cases "frsh = []")
+    case False thus ?thesis
+      using 2 3[OF _ False] by (cases "\<exists>ts F'. transaction_send T = \<langle>\<star>,send\<langle>ts\<rangle>\<rangle>#F'") (blast,blast)
+  qed (simp add: 4)
+qed
+
+private lemma add_occurs_msgs_transaction_strand_set:
+  fixes T C frsh xs f
+  defines "frsh \<equiv> transaction_fresh T"
+    and "xs \<equiv> filter (\<lambda>x. x \<notin> set frsh) (fv_list\<^sub>s\<^sub>s\<^sub>t (unlabel (transaction_strand T)))"
+    and "f \<equiv> map (\<lambda>x. occurs (Var x))"
+  assumes T: "T = Transaction A B C D E F"
+  shows "F = \<langle>\<star>,send\<langle>ts\<rangle>\<rangle>#F' \<Longrightarrow>
+          set (transaction_strand (add_occurs_msgs T)) \<subseteq>
+          set (transaction_strand T) \<union> {\<langle>\<star>,receive\<langle>f xs\<rangle>\<rangle>,\<langle>\<star>,send\<langle>f frsh@ts\<rangle>\<rangle>}"
+    (is "?A \<Longrightarrow> ?A'")
+  and "F = \<langle>\<star>,send\<langle>ts\<rangle>\<rangle>#F' \<Longrightarrow>
+          set (unlabel (transaction_strand (add_occurs_msgs T))) \<subseteq>
+          set (unlabel (transaction_strand T)) \<union> {receive\<langle>f xs\<rangle>,send\<langle>f frsh@ts\<rangle>}"
+    (is "?B \<Longrightarrow> ?B'")
+  and "\<nexists>ts' F'. F = \<langle>\<star>,send\<langle>ts'\<rangle>\<rangle>#F' \<Longrightarrow>
+          set (transaction_strand (add_occurs_msgs T)) \<subseteq>
+          set (transaction_strand T) \<union> {\<langle>\<star>,receive\<langle>f xs\<rangle>\<rangle>,\<langle>\<star>,send\<langle>f frsh\<rangle>\<rangle>}"
+    (is "?C \<Longrightarrow> ?C'")
+  and "\<nexists>ts' F'. F = \<langle>\<star>,send\<langle>ts'\<rangle>\<rangle>#F' \<Longrightarrow>
+          set (unlabel (transaction_strand (add_occurs_msgs T))) \<subseteq>
+          set (unlabel (transaction_strand T)) \<union> {receive\<langle>f xs\<rangle>,send\<langle>f frsh\<rangle>}"
+    (is "?D \<Longrightarrow> ?D'")
+proof -
+  note 0 = add_occurs_msgs_cases[
+            OF T, unfolded frsh_def[symmetric] xs_def[symmetric] f_def[symmetric]]
+
+  show "?A \<Longrightarrow> ?A'" using 0(1,3) unfolding T transaction_strand_def by (cases "frsh = []") auto
+  thus "?B \<Longrightarrow> ?B'" unfolding unlabel_def by force
+
+  show "?C \<Longrightarrow> ?C'" using 0(2,3) unfolding T transaction_strand_def by (cases "frsh = []") auto
+  thus "?D \<Longrightarrow> ?D'" unfolding unlabel_def by auto
+qed
+
+private lemma add_occurs_msgs_transaction_strand_cases:
+  fixes T T'::"('a,'b,'c,'d) prot_transaction" and C frsh xs f \<theta>
+  defines "T' \<equiv> add_occurs_msgs T"
+    and "S \<equiv> transaction_strand T"
+    and "S' \<equiv> transaction_strand T'"
+    and "frsh \<equiv> transaction_fresh T"
+    and "xs \<equiv> filter (\<lambda>x. x \<notin> set frsh) (fv_list\<^sub>s\<^sub>s\<^sub>t (unlabel (transaction_strand T)))"
+    and "f \<equiv> map (\<lambda>x. occurs (Var x))"
+    and "C \<equiv> transaction_receive T"
+    and "D \<equiv> transaction_checks T"
+    and "E \<equiv> transaction_updates T"
+    and "F \<equiv> transaction_send T"
+    and "C' \<equiv> if xs = [] then C else \<langle>\<star>,receive\<langle>f xs\<rangle>\<rangle>#C"
+    and "C'' \<equiv> if xs = [] then dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t C else \<langle>\<star>,send\<langle>f xs\<rangle>\<rangle>#dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t C"
+    and "C''' \<equiv> if xs = [] then dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (C \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>) else \<langle>\<star>,send\<langle>f xs \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta>\<rangle>\<rangle>#dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (C \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)"
+  shows "frsh = [] \<Longrightarrow> S' = C'@D@E@F"
+      (is "?A \<Longrightarrow> ?A'")
+    and "frsh \<noteq> [] \<Longrightarrow> \<nexists>ts F'. F = \<langle>\<star>,send\<langle>ts\<rangle>\<rangle>#F' \<Longrightarrow> S' = C'@D@E@(\<langle>\<star>,send\<langle>f frsh\<rangle>\<rangle>#F)"
+      (is "?B \<Longrightarrow> ?B' \<Longrightarrow> ?B''")
+    and "frsh \<noteq> [] \<Longrightarrow> \<exists>ts F'. F = \<langle>\<star>,send\<langle>ts\<rangle>\<rangle>#F' \<Longrightarrow>
+          \<exists>ts F'. F = \<langle>\<star>,send\<langle>ts\<rangle>\<rangle>#F' \<and> S' = C'@D@E@(\<langle>\<star>,send\<langle>f frsh@ts\<rangle>\<rangle>#F')"
+      (is "?C \<Longrightarrow> ?C' \<Longrightarrow> ?C''")
+    and "frsh = [] \<Longrightarrow> dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t S' = C''@dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t D@dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t E@dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t F"
+      (is "?D \<Longrightarrow> ?D'")
+    and "frsh \<noteq> [] \<Longrightarrow> \<nexists>ts F'. F = \<langle>\<star>,send\<langle>ts\<rangle>\<rangle>#F' \<Longrightarrow>
+          dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t S' = C''@dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t D@dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t E@(\<langle>\<star>,receive\<langle>f frsh\<rangle>\<rangle>#dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t F)"
+      (is "?E \<Longrightarrow> ?E' \<Longrightarrow> ?E''")
+    and "frsh \<noteq> [] \<Longrightarrow> \<exists>ts F'. F = \<langle>\<star>,send\<langle>ts\<rangle>\<rangle>#F' \<Longrightarrow>
+          \<exists>ts F'. F = \<langle>\<star>,send\<langle>ts\<rangle>\<rangle>#F' \<and>
+                  dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t S' = C''@dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t D@dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t E@(\<langle>\<star>,receive\<langle>f frsh@ts\<rangle>\<rangle>#dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t F')"
+      (is "?F \<Longrightarrow> ?F' \<Longrightarrow> ?F''")
+    and "frsh = [] \<Longrightarrow>
+          dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (S' \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>) = C'''@dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (D \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)@dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (E \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)@dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (F \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)"
+      (is "?G \<Longrightarrow> ?G'")
+    and "frsh \<noteq> [] \<Longrightarrow> \<nexists>ts F'. F = \<langle>\<star>,send\<langle>ts\<rangle>\<rangle>#F' \<Longrightarrow>
+          dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (S' \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>) = C'''@dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (D \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)@dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (E \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)@
+                               (\<langle>\<star>,receive\<langle>f frsh \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta>\<rangle>\<rangle>#dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (F \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>))"
+      (is "?H \<Longrightarrow> ?H' \<Longrightarrow> ?H''")
+    and "frsh \<noteq> [] \<Longrightarrow> \<exists>ts F'. F = \<langle>\<star>,send\<langle>ts\<rangle>\<rangle>#F' \<Longrightarrow>
+          \<exists>ts F'. F = \<langle>\<star>,send\<langle>ts\<rangle>\<rangle>#F' \<and>
+                  dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (S' \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>) = C'''@dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (D \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)@dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (E \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)@
+                                       (\<langle>\<star>,receive\<langle>f frsh@ts \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta>\<rangle>\<rangle>#dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (F' \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>))"
+      (is "?I \<Longrightarrow> ?I' \<Longrightarrow> ?I''")
+proof -
+  obtain A' B' CC' D' E' F' where T: "T = Transaction A' B' CC' D' E' F'" by (cases T) simp
+
+  note 0 = add_occurs_msgs_cases[
+            OF T, unfolded frsh_def[symmetric] xs_def[symmetric] f_def[symmetric] T'_def[symmetric]]
+
+  note defs = S'_def C_def D_def E_def F_def C'_def C''_def T transaction_strand_def
+
+  show A: "?A \<Longrightarrow> ?A'" using 0(3) unfolding defs by simp
+  show B: "?B \<Longrightarrow> ?B' \<Longrightarrow> ?B''" using 0(2) unfolding defs by simp
+  show C: "?C \<Longrightarrow> ?C' \<Longrightarrow> ?C''" using 0(1) unfolding defs by force
+
+  have 1: "C''' = C'' \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>"
+    using subst_lsst_cons[of "\<langle>\<star>, send\<langle>f xs\<rangle>\<rangle>" "dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t C" \<theta>] dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_subst[of C \<theta>]
+    unfolding C'''_def C''_def by (cases "xs = []") auto
+
+  have 2: "(\<langle>\<star>, receive\<langle>ts\<rangle>\<rangle>#dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t G) \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta> = \<langle>\<star>, receive\<langle>ts \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta>\<rangle>\<rangle>#dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (G \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)" 
+    for ts and G::"('a,'b,'c,'d) prot_strand"
+    using dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_subst[of G \<theta>] subst_lsst_cons[of "\<langle>\<star>, receive\<langle>ts\<rangle>\<rangle>" "dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t G" \<theta>]
+    by simp
+
+  note 3 = subst_lsst_append[of _ _ \<theta>] dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_subst[of _ \<theta>]
+
+  show "?D \<Longrightarrow> ?D'" using A unfolding defs by fastforce
+  thus "?G \<Longrightarrow> ?G'" unfolding 1 by (metis 3)
+
+  show "?E \<Longrightarrow> ?E' \<Longrightarrow> ?E''" using B unfolding defs by fastforce
+  thus "?H \<Longrightarrow> ?H' \<Longrightarrow> ?H''" unfolding 1 by (metis 2 3)
+
+  show "?F \<Longrightarrow> ?F' \<Longrightarrow> ?F''" using C unfolding defs by fastforce
+  thus "?I \<Longrightarrow> ?I' \<Longrightarrow> ?I''" unfolding 1 by (metis 2 3)
+qed
+
+private lemma add_occurs_msgs_trms_transaction:
+  fixes T::"('a,'b,'c,'d) prot_transaction"
+  shows "trms_transaction (add_occurs_msgs T) =
+          trms_transaction T \<union> (\<lambda>x. occurs (Var x))`(fv_transaction T \<union> set (transaction_fresh T))"
+    (is "?A = ?B")
+proof
+  let ?occs = "(\<lambda>x. occurs (Var x)) ` (fv_transaction T \<union> set (transaction_fresh T))"
+
+  define frsh where "frsh \<equiv> transaction_fresh T"
+  define xs where "xs \<equiv> filter (\<lambda>x. x \<notin> set frsh) (fv_list\<^sub>s\<^sub>s\<^sub>t (unlabel (transaction_strand T)))"
+  define f where "f \<equiv> map (\<lambda>x. occurs (Var x)::('a,'b,'c,'d) prot_term)"
+
+  obtain A B C D E F where T: "T = Transaction A B C D E F" by (cases T) simp
+
+  note 0 = add_occurs_msgs_transaction_strand_set(2,4)[
+            OF T, unfolded f_def[symmetric] frsh_def[symmetric] xs_def[symmetric]]
+
+  note 1 = add_occurs_msgs_transaction_strand_cases(1,2,3)[
+            of T, unfolded f_def[symmetric] frsh_def[symmetric] xs_def[symmetric]]
+
+  have 2: "set (f xs) \<union> set (f frsh) = ?occs"
+  proof -
+    define ys where "ys \<equiv> fv_list\<^sub>s\<^sub>s\<^sub>t (unlabel (transaction_strand T))"
+    let ?ys' = "fv_transaction T - set frsh"
+    define g where "g \<equiv> filter (\<lambda>x. x \<notin> set frsh)"
+
+    have "set (g ys) = ?ys'"
+      using fv_list\<^sub>s\<^sub>s\<^sub>t_is_fv\<^sub>s\<^sub>s\<^sub>t[of "unlabel (transaction_strand T)"] unfolding ys_def g_def by auto  
+    hence "set (f (g ys)) = (\<lambda>x. occurs (Var x)) ` ?ys'" unfolding f_def by force
+    moreover have "set (f frsh) = (\<lambda>x. occurs (Var x)) ` set frsh" unfolding f_def by force
+    ultimately show ?thesis
+      unfolding xs_def frsh_def[symmetric] ys_def[symmetric] g_def[symmetric] by blast
+  qed
+
+  have 3: "set (f []) = {}" unfolding f_def by blast
+
+  have "trms_transaction (add_occurs_msgs T) \<subseteq> trms_transaction T \<union> set (f xs) \<union> set (f frsh)"
+  proof (cases "\<exists>ts F'. F = \<langle>\<star>, send\<langle>ts\<rangle>\<rangle>#F'")
+    case True
+    then obtain ts F' where F: "F = \<langle>\<star>, send\<langle>ts\<rangle>\<rangle>#F'" by blast
+    have "set ts \<subseteq> trms_transaction T" unfolding T F trms_transaction_unfold by auto
+    thus ?thesis using 0(1)[OF F] by force
+  next
+    case False show ?thesis using 0(2)[OF False] by force
+  qed
+  thus "?A \<subseteq> ?B" using 2 by blast
+
+  have "trms_transaction T \<union> set (f xs) \<union> set (f frsh) \<subseteq> trms_transaction (add_occurs_msgs T)"
+  proof (cases "frsh = []")
+    case True show ?thesis using 1(1)[OF True] 3 unfolding True by (cases xs) (fastforce,force)
+  next
+    case False
+    note * = 1(2-)[OF False]
+    show ?thesis
+    proof (cases "\<exists>ts F'. transaction_send T = \<langle>\<star>, send\<langle>ts\<rangle>\<rangle>#F'")
+      case True show ?thesis using *(2)[OF True] 3 by force
+    next
+      case False show ?thesis using *(1)[OF False] 3 by force
+    qed
+  qed
+  thus "?B \<subseteq> ?A" using 2 by blast
+qed
+
+private lemma add_occurs_msgs_vars_eq:
+  fixes T::"('fun,'var,'sets,'lbl) prot_transaction"
+  assumes T_adm: "admissible_transaction' T"
+  shows "fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_receive (add_occurs_msgs T)) =
+         fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_receive T) \<union> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_checks T)" (is ?A)
+    and "fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_send (add_occurs_msgs T)) =
+         fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_send T) \<union> set (transaction_fresh T)" (is ?B)
+    and "fv_transaction (add_occurs_msgs T) = fv_transaction T" (is ?C)
+    and "bvars_transaction (add_occurs_msgs T) = bvars_transaction T" (is ?D)
+    and "vars_transaction (add_occurs_msgs T) = vars_transaction T" (is ?E)
+    and "fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand (add_occurs_msgs T) \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>) =
+         fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)" (is ?F)
+    and "bvars\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand (add_occurs_msgs T) \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>) =
+         bvars\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)" (is ?G)
+    and "vars\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand (add_occurs_msgs T) \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>) =
+         vars\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)" (is ?H)
+    and "set (transaction_fresh (add_occurs_msgs T)) = set (transaction_fresh T)" (is ?I)
+proof -
+  obtain A B C D E F where T: "T = Transaction A B C D E F" by (cases T) simp
+
+  have T_fresh: "set (transaction_fresh T) \<subseteq> fv_transaction T"
+    using admissible_transactionE(7)[OF T_adm] unfolding fv_transaction_unfold by blast
+
+  note 0 = add_occurs_msgs_cases[OF T]
+
+  define xs where "xs \<equiv>
+    filter (\<lambda>x. x \<notin> set (transaction_fresh T)) (fv_list\<^sub>s\<^sub>s\<^sub>t (unlabel (transaction_strand T)))"
+
+  show D: ?D
+  proof -
+    have "bvars\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_receive (add_occurs_msgs T)) = bvars\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_receive T)"
+      using 0(6,7) by (cases "xs = []") (auto simp add: xs_def)
+    moreover have "bvars\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_send (add_occurs_msgs T)) = bvars\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_send T)"
+    proof (cases "\<exists>ts' F'. F = \<langle>\<star>, send\<langle>ts'\<rangle>\<rangle>#F'")
+      case True thus ?thesis using 0(1) unfolding T by force
+    next
+      case False show ?thesis using 0(2)[OF False] 0(3) unfolding T by (cases "B = []") auto
+    qed
+    ultimately show ?thesis using 0(8,9) unfolding bvars_transaction_unfold by argo
+  qed
+
+  have T_no_bvars:
+      "bvars_transaction T = {}"
+      "bvars\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_receive T) = {}"
+      "bvars\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_checks T) = {}"
+      "bvars\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_send T) = {}"
+      "bvars_transaction (add_occurs_msgs T) = {}"
+    using admissible_transactionE(4)[OF T_adm] D
+    unfolding bvars_transaction_unfold by (blast,blast,blast,blast,blast)
+
+  have T_fv_subst:
+      "fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<delta>) = fv\<^sub>s\<^sub>e\<^sub>t (\<delta> ` fv_transaction T)" (is ?Q1)
+      "fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_receive T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<delta>) = fv\<^sub>s\<^sub>e\<^sub>t (\<delta> ` fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_receive T))" (is ?Q2)
+      "fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_checks T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<delta>) = fv\<^sub>s\<^sub>e\<^sub>t (\<delta> ` fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_checks T))" (is ?Q3)
+      "fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_send T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<delta>) = fv\<^sub>s\<^sub>e\<^sub>t (\<delta> ` fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_send T))" (is ?Q4)
+      "fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand (add_occurs_msgs T) \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<delta>) =
+       fv\<^sub>s\<^sub>e\<^sub>t (\<delta> ` fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand (add_occurs_msgs T)))" (is ?Q5)
+      "fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_receive (add_occurs_msgs T) \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<delta>) =
+       fv\<^sub>s\<^sub>e\<^sub>t (\<delta> ` fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_receive (add_occurs_msgs T)))" (is ?Q6)
+    for \<delta>
+  proof -
+    note * = fv\<^sub>s\<^sub>s\<^sub>t_subst_if_no_bvars
+
+    have **: "bvars\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_receive (add_occurs_msgs T)) = {}"
+      using T_no_bvars(5) unfolding bvars_transaction_unfold by fast
+
+    show ?Q1 using *[OF T_no_bvars(1)] unfolding unlabel_subst by blast
+    show ?Q2 using *[OF T_no_bvars(2)] unfolding unlabel_subst by blast
+    show ?Q3 using *[OF T_no_bvars(3)] unfolding unlabel_subst by blast
+    show ?Q4 using *[OF T_no_bvars(4)] unfolding unlabel_subst by blast
+    show ?Q5 using *[OF T_no_bvars(5)] unfolding unlabel_subst by blast
+    show ?Q6 using *[OF **] unfolding unlabel_subst by blast
+  qed
+
+  have A: "fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_receive (add_occurs_msgs T) \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<delta>) =
+           fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_receive T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<delta>) \<union> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_checks T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<delta>)"
+    for \<delta>
+  proof -
+    define rcv_trms where 
+      "rcv_trms \<equiv> map (\<lambda>x. occurs (Var x)::('fun,'var,'sets,'lbl) prot_term) xs"
+
+    have "fv\<^sub>s\<^sub>e\<^sub>t (set rcv_trms) = fv_transaction T - set (transaction_fresh T)"
+         "rcv_trms = [] \<longleftrightarrow> xs = []"
+      using fv_list\<^sub>s\<^sub>s\<^sub>t_is_fv\<^sub>s\<^sub>s\<^sub>t[of "unlabel (transaction_strand T)"]
+      unfolding rcv_trms_def xs_def by auto
+    hence 1: "fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_receive (add_occurs_msgs T)) =
+              (fv_transaction T - set (transaction_fresh T)) \<union> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_receive T)"
+      using 0(6,7)[unfolded rcv_trms_def[symmetric] xs_def[symmetric]] by (cases "xs = []") auto
+  
+    have 2: "fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_receive T) \<subseteq> fv_transaction T - set (transaction_fresh T)"
+      using admissible_transactionE(12)[OF T_adm] unfolding fv_transaction_unfold by fast
+
+    have 3: "fv_transaction T - set (transaction_fresh T) =
+             fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_receive T) \<union> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_checks T)"
+      using admissible_transactionE(7,10,12,13)[OF T_adm]
+      unfolding fv_transaction_unfold by blast
+  
+    show ?thesis using 1 2 3 T_fv_subst(2,3,6)[of \<delta>] by force
+  qed
+
+  show ?A using A[of Var] unfolding subst_lsst_id_subst by blast
+
+  show B: ?B using 0(14) by fastforce
+
+  have B': "fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_send (add_occurs_msgs T) \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<delta>) =
+            fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_send T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<delta>) \<union> fv\<^sub>s\<^sub>e\<^sub>t (\<delta> ` set (transaction_fresh T))"
+    for \<delta>
+  proof -
+    note * = fv\<^sub>s\<^sub>s\<^sub>t_subst_if_no_bvars[of _ \<delta>]
+
+    have **: "bvars\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_send (add_occurs_msgs T)) = {}"
+      using T_no_bvars(5) unfolding bvars_transaction_unfold by fast
+
+    show ?thesis
+      using B *[OF T_no_bvars(4)] *[OF **]
+      unfolding unlabel_subst by simp
+  qed
+
+  show C: ?C
+    using A[of Var] B T_fresh
+    unfolding fv_transaction_unfold 0(8,9) subst_lsst_id_subst by blast
+
+  show ?E using C D vars\<^sub>s\<^sub>s\<^sub>t_is_fv\<^sub>s\<^sub>s\<^sub>t_bvars\<^sub>s\<^sub>s\<^sub>t by metis
+
+  have "fv\<^sub>s\<^sub>e\<^sub>t (\<theta> ` set (transaction_fresh T)) \<subseteq> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)"
+    using T_fresh
+    unfolding fv\<^sub>s\<^sub>s\<^sub>t_subst_if_no_bvars[OF T_no_bvars(1), of \<theta>, unfolded unlabel_subst]
+    by auto
+  thus F: ?F
+    using A[of \<theta>] B'[of \<theta>] fv\<^sub>s\<^sub>s\<^sub>t_append
+          fv\<^sub>s\<^sub>s\<^sub>t_subst_if_no_bvars[OF T_no_bvars(1), of \<theta>, unfolded unlabel_subst]
+          fv\<^sub>s\<^sub>s\<^sub>t_subst_if_no_bvars[OF T_no_bvars(5), of \<theta>, unfolded unlabel_subst C]
+    unfolding transaction_strand_def by argo
+
+  show G: ?G using D bvars\<^sub>s\<^sub>s\<^sub>t_subst unlabel_subst by metis
+
+  show ?H using F G vars\<^sub>s\<^sub>s\<^sub>t_is_fv\<^sub>s\<^sub>s\<^sub>t_bvars\<^sub>s\<^sub>s\<^sub>t by metis
+
+  show ?I using 0(5) by argo
+qed
+
+private lemma add_occurs_msgs_trms:
+  "trms_transaction (add_occurs_msgs T) =
+    trms_transaction T \<union> (\<lambda>x. occurs (Var x)) ` (set (transaction_fresh T) \<union> fv_transaction T)"
+proof -
+  let ?f = "\<lambda>x. occurs (Var x)"
+  let ?xs = "filter (\<lambda>x. x \<notin> set (transaction_fresh T))
+                    (fv_list\<^sub>s\<^sub>s\<^sub>t (unlabel (transaction_strand T)))"
+
+  obtain A B C D E F where T: "T = Transaction A B C D E F" by (cases T) simp
+
+  note 0 = add_occurs_msgs_cases[OF T]
+
+  have "set ?xs = fv_transaction T - set (transaction_fresh T)"
+    using fv_list\<^sub>s\<^sub>s\<^sub>t_is_fv\<^sub>s\<^sub>s\<^sub>t[of "unlabel (transaction_strand T)"] by auto
+  hence 1: "trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_receive (add_occurs_msgs T)) =
+           trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_receive T) \<union> ?f ` (fv_transaction T - set (transaction_fresh T))"
+    using 0(6,7) by (cases "?xs = []") auto
+
+  have 2: "trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_send (add_occurs_msgs T)) =
+           trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_send T) \<union> ?f ` set (transaction_fresh T)"
+    using 0(10,11,12) by (cases "transaction_fresh T = []") (simp,fastforce)
+
+  have 3: "trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_receive (add_occurs_msgs T)) \<union>
+           trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_send (add_occurs_msgs T)) =
+           trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_receive T) \<union> trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_send T) \<union>
+           ?f ` (set (transaction_fresh T) \<union> fv_transaction T)"
+    using 1 2 by blast
+
+  show ?thesis using 3 unfolding trms_transaction_unfold 0(8,9) by blast
+qed
+
+lemma add_occurs_msgs_admissible_occurs_checks:
+  fixes T::"('fun,'atom,'sets,'lbl) prot_transaction"
+  assumes T_adm: "admissible_transaction' T"
+  shows "admissible_transaction' (add_occurs_msgs T)" (is ?A)
+    and "admissible_transaction_occurs_checks (add_occurs_msgs T)" (is ?B)
+proof -
+  let ?T' = "add_occurs_msgs T"
+
+  obtain A B C D E F where T: "T = Transaction A B C D E F" by (cases T) simp
+
+  note defs = T add_occurs_msgs_def Let_def admissible_transaction'_def
+              admissible_transaction_occurs_checks_def
+
+  note defs' = admissible_transaction_terms_def wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s_code[symmetric]
+
+  note 1 = add_occurs_msgs_cases[OF T]
+  note 2 = add_occurs_msgs_vars_eq[OF T_adm]
+  note 3 = add_occurs_msgs_trms[of T]
+  note 4 = add_occurs_msgs_transaction_strand_set[OF T]
+
+  have occurs_wf: "wf\<^sub>t\<^sub>r\<^sub>m (occurs (Var x))" for x::"('fun,'atom,'sets,'lbl) prot_var" by fastforce
+
+  have occurs_funs: "funs_term (occurs (Var x)) = {OccursFact, OccursSec}"
+    for x::"('fun,'atom,'sets,'lbl) prot_var"
+    by force
+
+  have occurs_funs_not_attack: "\<not>(\<exists>f \<in> \<Union>(funs_term ` trms\<^sub>s\<^sub>s\<^sub>t\<^sub>p r). is_Attack f)"
+    when "r = receive\<langle>map (\<lambda>x. occurs (Var x)) xs\<rangle> \<or> r = send\<langle>map (\<lambda>x. occurs (Var x)) ys\<rangle>"
+    for r::
+      "(('fun,'atom,'sets,'lbl) prot_fun, ('fun,'atom,'sets,'lbl) prot_var) stateful_strand_step"
+    and xs ys::"('fun,'atom,'sets,'lbl) prot_var list"
+    using that by fastforce
+
+  have occurs_funs_not_attack': "\<not>(\<exists>f \<in> \<Union>(funs_term ` trms\<^sub>s\<^sub>s\<^sub>t\<^sub>p r). is_Attack f)"
+    when "r = send\<langle>map (\<lambda>x. occurs (Var x)) xs@ts\<rangle>"
+    and "\<not>(\<exists>f \<in> \<Union>(funs_term ` trms\<^sub>s\<^sub>s\<^sub>t\<^sub>p (send\<langle>ts\<rangle>)). is_Attack f)"
+    for r::
+      "(('fun,'atom,'sets,'lbl) prot_fun, ('fun,'atom,'sets,'lbl) prot_var) stateful_strand_step"
+    and xs::"('fun,'atom,'sets,'lbl) prot_var list"
+    and ts
+    using that by fastforce
+
+  let ?P1 = "\<lambda>T. wellformed_transaction T"
+  let ?P2 = "\<lambda>T. transaction_decl T () = []"
+  let ?P3 = "\<lambda>T. list_all (\<lambda>x. fst x = TAtom Value) (transaction_fresh T)"
+  let ?P4 = "\<lambda>T. \<forall>x \<in> vars_transaction T. is_Var (fst x) \<and> (the_Var (fst x) = Value)"
+  let ?P5 = "\<lambda>T. bvars\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T) = {}"
+  let ?P6 = "\<lambda>T. set (transaction_fresh T) \<subseteq>
+                  fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (filter (is_Insert \<circ> snd) (transaction_updates T)) \<union>
+                  fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_send T)"
+  let ?P7 = "\<lambda>T. \<forall>x \<in> fv_transaction T - set (transaction_fresh T).
+                 \<forall>y \<in> fv_transaction T - set (transaction_fresh T).
+                   x \<noteq> y \<longrightarrow> \<langle>Var x != Var y\<rangle> \<in> set (unlabel (transaction_checks T)) \<or>
+                             \<langle>Var y != Var x\<rangle> \<in> set (unlabel (transaction_checks T))"
+  let ?P8 = "\<lambda>T. fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_updates T) \<union> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_send T)
+                  - set (transaction_fresh T)
+                  \<subseteq> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_receive T) \<union> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_checks T)"
+  let ?P9 = "\<lambda>T. \<forall>r \<in> set (unlabel (transaction_checks T)).
+                  is_Equality r \<longrightarrow> fv (the_rhs r) \<subseteq> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_receive T)"
+  let ?P10 = "\<lambda>T. fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_checks T) \<subseteq>
+                    fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_receive T) \<union>
+                    fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (filter (\<lambda>s. is_InSet (snd s) \<and> the_check (snd s) = Assign)
+                                  (transaction_checks T))"
+  let ?P11 = "\<lambda>T. admissible_transaction_checks T"
+  let ?P12 = "\<lambda>T. admissible_transaction_updates T"
+  let ?P13 = "\<lambda>T. admissible_transaction_terms T"
+  let ?P14 = "\<lambda>T. admissible_transaction_send_occurs_form T"
+  let ?P15 = "\<lambda>T. list_all (\<lambda>a. is_Receive (snd a) \<longrightarrow> the_msgs (snd a) \<noteq> [])
+                           (transaction_receive T)"
+  let ?P16 = "\<lambda>T. list_all (\<lambda>a. is_Send (snd a) \<longrightarrow> the_msgs (snd a) \<noteq> []) (transaction_send T)"
+
+  have T_props:
+      "?P1 T" "?P2 T" "?P3 T" "?P4 T" "?P5 T" "?P6 T" "?P7 T" "?P8 T" "?P9 T" "?P10 T" "?P11 T"
+      "?P12 T" "?P13 T" "?P14 T" "?P15 T" "?P16 T"
+    using T_adm unfolding defs by meson+
+
+  have 5: "wf'\<^sub>s\<^sub>s\<^sub>t (X \<union> Y) (unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand (add_occurs_msgs T))))"
+    when X: "X = fst ` set (transaction_decl T ())"
+      and Y: "Y = set (transaction_fresh T)"
+      and T_wf: "wf'\<^sub>s\<^sub>s\<^sub>t (X \<union> Y) (unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T)))"
+    for X Y
+  proof -
+    define frsh where "frsh \<equiv> transaction_fresh T"
+    define xs where "xs \<equiv> fv_list\<^sub>s\<^sub>s\<^sub>t (unlabel (transaction_strand T))"
+    define ys where "ys \<equiv> filter (\<lambda>x. x \<notin> set frsh) xs"
+
+    let ?snds = "unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_receive T))"
+    let ?snds' = "unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_receive (add_occurs_msgs T)))"
+    let ?chks = "unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_checks T))"
+    let ?chks' = "unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_checks (add_occurs_msgs T)))"
+    let ?upds = "unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_updates T))"
+    let ?upds' = "unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_updates (add_occurs_msgs T)))"
+    let ?rcvs = "unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_send T))"
+    let ?rcvs' = "unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_send (add_occurs_msgs T)))"
+
+    have p0: "set ?snds \<subseteq> set ?snds'" using 1(13) by auto
+
+    have p1: "?chks = ?chks'" "?upds = ?upds'" using 1(8,9) by (argo,argo)
+
+    have p2: "wfvarsoccs\<^sub>s\<^sub>s\<^sub>t ?snds \<subseteq> wfvarsoccs\<^sub>s\<^sub>s\<^sub>t ?snds'"
+             "wfvarsoccs\<^sub>s\<^sub>s\<^sub>t (?snds@?chks@?upds) \<subseteq> wfvarsoccs\<^sub>s\<^sub>s\<^sub>t (?snds'@?chks'@?upds')"
+             "X \<union> Y \<union> wfvarsoccs\<^sub>s\<^sub>s\<^sub>t (?snds@?chks@?upds) \<subseteq>
+              X \<union> Y \<union>  wfvarsoccs\<^sub>s\<^sub>s\<^sub>t (?snds'@?chks'@?upds')"
+      using p0 p1 unfolding wfvarsoccs\<^sub>s\<^sub>s\<^sub>t_def by auto
+
+    have "wf'\<^sub>s\<^sub>s\<^sub>t (X \<union> Y \<union> wfvarsoccs\<^sub>s\<^sub>s\<^sub>t (?snds@?chks@?upds)) ?rcvs"
+      using T_wf wf\<^sub>s\<^sub>s\<^sub>t_append_exec[of "X \<union> Y" "?snds@?chks@?upds" ?rcvs]
+      unfolding transaction_strand_unlabel_dual_unfold by simp
+    hence r0: "wf'\<^sub>s\<^sub>s\<^sub>t (X \<union> Y \<union> wfvarsoccs\<^sub>s\<^sub>s\<^sub>t (?snds'@?chks'@?upds')) ?rcvs"
+      using wf\<^sub>s\<^sub>s\<^sub>t_vars_mono'[OF _ p2(3)] by blast
+
+    have "list_all is_Send (unlabel (transaction_send T))"
+      using admissible_transaction_is_wellformed_transaction(1)[OF T_adm]
+      unfolding wellformed_transaction_def by blast
+    hence "list_all is_Receive ?rcvs" by (metis dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_list_all(2))
+    hence r1: "wfrestrictedvars\<^sub>s\<^sub>s\<^sub>t ?rcvs \<subseteq> X \<union> Y \<union> wfvarsoccs\<^sub>s\<^sub>s\<^sub>t (?snds'@?chks'@?upds')"
+      using wfrestrictedvars\<^sub>s\<^sub>s\<^sub>t_receives_only_eq wf\<^sub>s\<^sub>s\<^sub>t_receives_only_fv_subset[OF r0] by blast
+
+    have "fv\<^sub>s\<^sub>e\<^sub>t ((\<lambda>x. occurs (Var x)) ` set (transaction_fresh T)) \<subseteq> Y"
+      unfolding Y by auto
+    hence r2: "wfrestrictedvars\<^sub>s\<^sub>s\<^sub>t ?rcvs' \<subseteq> X \<union> Y \<union> wfvarsoccs\<^sub>s\<^sub>s\<^sub>t (?snds'@?chks'@?upds')"
+      using 1(14) r1 unfolding wfrestrictedvars\<^sub>s\<^sub>s\<^sub>t_def by fastforce (* TODO: find faster proof *)
+
+    have r3: "wf'\<^sub>s\<^sub>s\<^sub>t (X \<union> Y) (?snds'@?chks'@?upds')"
+    proof -
+      have *: "wf'\<^sub>s\<^sub>s\<^sub>t (X \<union> Y) (?snds@?chks'@?upds')"
+        using T_wf wf\<^sub>s\<^sub>s\<^sub>t_prefix[of "X \<union> Y" "?snds@?chks@?upds" ?rcvs] p1
+        unfolding transaction_strand_unlabel_dual_unfold by simp
+
+      have "?snds' = ?snds \<or> (\<exists>ts. ?snds' = send\<langle>ts\<rangle>#?snds)" using 1(13) by auto
+      thus ?thesis
+      proof
+        assume "?snds' = ?snds" thus ?thesis using * by simp
+      next
+        assume "\<exists>ts. ?snds' = send\<langle>ts\<rangle>#?snds"
+        then obtain ts where "?snds' = send\<langle>ts\<rangle>#?snds" by blast
+        thus ?thesis using wf\<^sub>s\<^sub>s\<^sub>t_sends_only_prepend[OF *, of "[send\<langle>ts\<rangle>]"] by simp
+      qed
+    qed
+
+    have "wf'\<^sub>s\<^sub>s\<^sub>t (X \<union> Y) (?snds'@?chks'@?upds'@?rcvs')"
+      using wf\<^sub>s\<^sub>s\<^sub>t_append_suffix''[OF r3] r2 by auto
+    thus ?thesis
+      using unlabel_append dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_append
+      unfolding transaction_strand_def by auto
+  qed
+
+  have T'_props_1: "?P1 ?T'"
+    unfolding wellformed_transaction_def
+    apply (intro conjI)
+    subgoal using 1(13) T_props(1) unfolding wellformed_transaction_def by force
+    subgoal using 1(8) T_props(1) unfolding wellformed_transaction_def by simp
+    subgoal using 1(9) T_props(1) unfolding wellformed_transaction_def by simp
+    subgoal using 1(14) T_props(1) unfolding wellformed_transaction_def by force
+    subgoal using 1(4) T_props(1) unfolding wellformed_transaction_def by simp
+    subgoal using 1(5) T_props(1) unfolding wellformed_transaction_def by simp
+    subgoal using 1(4,5) T_props(1) unfolding wellformed_transaction_def by simp
+    subgoal using T_props(1) unfolding 2(1) 1(5) wellformed_transaction_def by blast
+    subgoal using 1(5,8) T_props(1) unfolding wellformed_transaction_def by simp
+    subgoal using 1(5) 2(4) T_props(1) unfolding wellformed_transaction_def by simp
+    subgoal using 2(3,4) T_props(1) unfolding wellformed_transaction_def by simp
+    subgoal using 1(4,5) 5 T_props(1) unfolding wellformed_transaction_def by simp 
+    done
+
+  have T'_props_2_12:
+      "?P2 ?T'" "?P3 ?T'" "?P4 ?T'" "?P5 ?T'" "?P6 ?T'" "?P7 ?T'" "?P8 ?T'" "?P9 ?T'" "?P10 ?T'"
+      "?P11 ?T'" "?P12 ?T'"
+    subgoal using T_props(2) unfolding defs by force
+    subgoal using T_props(3) unfolding defs by force
+    subgoal using T_props(4) 2(5) by argo
+    subgoal using T_props(5) 2(4) by argo
+    subgoal using T_props(6) 1(5,8) 2(2) by auto
+    subgoal using T_props(7) 1(5,8) 2(3) by presburger
+    subgoal using T_props(8) 1(5,9) 2(1,2) by auto
+    subgoal using T_props(9) 1(8) 2(1) by auto
+    subgoal using T_props(10) 1(8) 2(1) by auto
+    subgoal using T_props(11) 1(8) unfolding admissible_transaction_checks_def by argo
+    subgoal using T_props(12) 1(9) unfolding admissible_transaction_updates_def by argo
+    done
+
+  (* TODO: clean up? *)
+  have T'_props_13_aux:
+      "transaction_fresh ?T' = []" (is ?Q1)
+      "is_Send r" (is ?Q2)
+      "length (the_msgs r) = 1" (is ?Q3)
+      "is_Fun_Attack (hd (the_msgs r))" (is ?Q4)
+    when r: "r \<in> set (unlabel (transaction_strand (add_occurs_msgs T)))"
+            "\<exists>f \<in> \<Union>(funs_term ` trms\<^sub>s\<^sub>s\<^sub>t\<^sub>p r). is_Attack f" (is "?Q' (trms\<^sub>s\<^sub>s\<^sub>t\<^sub>p r)")
+    for r
+  proof -
+    note q0 = conjunct2[OF conjunct2[OF T_props(13)[unfolded defs']]]
+
+    let ?Q'' = "\<lambda>ts' F'. F = \<langle>\<star>, send\<langle>ts'\<rangle>\<rangle>#F'"
+    let ?f = "map (\<lambda>x. occurs (Var x))"
+    let ?frsh = "transaction_fresh T"
+    let ?xs = "fv_list\<^sub>s\<^sub>s\<^sub>t (unlabel (transaction_strand T))"
+
+    have q1: "r \<noteq> send\<langle>?f ?frsh\<rangle>" "r \<noteq> receive\<langle>?f (filter (\<lambda>x. x \<notin> set ?frsh) ?xs)\<rangle>"
+             "\<forall>f \<in> \<Union>(funs_term ` set (?f ?frsh)). \<not>is_Attack f"
+      using r(2) by (fastforce,fastforce,simp)
+
+    have q2: "send\<langle>ts'\<rangle> \<in> set (unlabel (transaction_strand T))"
+             "r = send\<langle>?f ?frsh@ts'\<rangle> \<or> r \<in> set (unlabel (transaction_strand T))"
+      when "?Q'' ts' F'" for ts' F'
+      subgoal using that unfolding T transaction_strand_def by force
+      subgoal using that r(1) 4(2)[OF that] q1 unfolding T transaction_strand_def by fast
+      done
+
+    have q3: "?Q' (set ts')"
+      when r': "?Q'' ts' F'" "r \<notin> set (unlabel (transaction_strand T))" for ts' F'
+    proof -
+      have "r = send\<langle>?f ?frsh@ts'\<rangle>" using q2(2)[OF r'(1)] r'(2) by argo
+      thus ?thesis using r(2) by fastforce
+    qed
+    
+    have q4: "r \<in> set (unlabel (transaction_strand T))" when "\<nexists>ts' F'. ?Q'' ts' F'"
+      using 4(4)[OF that] r(1) q1(1,2) by blast
+
+    have "\<exists>r' \<in> set (unlabel (transaction_strand T)). ?Q' (trms\<^sub>s\<^sub>s\<^sub>t\<^sub>p r')"
+      when "?Q'' ts' F'" for ts' F'
+      apply (cases "r \<in> set (unlabel (transaction_strand T))")
+      subgoal using q2(2)[OF that] r(2) by metis
+      subgoal using q2(1)[OF that] q3[OF that] trms\<^sub>s\<^sub>s\<^sub>t\<^sub>p.simps(1)[of ts'] by metis
+      done
+    hence "?frsh = []" when "?Q'' ts' F'" for ts' F' using q0 that by blast
+    hence "r = send\<langle>ts'\<rangle> \<or> r \<in> set (unlabel (transaction_strand T))" when "?Q'' ts' F'" for ts' F'
+      using q2(2)[OF that] that by blast
+    hence "r \<in> set (unlabel (transaction_strand T))" using q2(1) q4 by fast
+    thus ?Q1 ?Q2 ?Q3 ?Q4 using r(2) q0 unfolding 1(5) by auto
+  qed
+
+  have T'_props_13: "?P13 ?T'"
+    unfolding defs' 3
+    apply (intro conjI)
+    subgoal using conjunct1[OF T_props(13)[unfolded defs']] occurs_wf by fast
+    subgoal using conjunct1[OF conjunct2[OF T_props(13)[unfolded defs']]] occurs_funs by auto
+    subgoal using T'_props_13_aux by meson
+    done
+
+  have T'_props_14: "?P14 ?T'"
+  proof (cases "\<exists>ts' F'. transaction_send T = \<langle>\<star>,send\<langle>ts'\<rangle>\<rangle>#F'")
+    case True
+    then obtain ts' F' where F': "transaction_send T = \<langle>\<star>,send\<langle>ts'\<rangle>\<rangle>#F'" by meson
+    show ?thesis
+      using T_props(14) 1(10)[OF F'] F' 1(5,12)
+      unfolding admissible_transaction_send_occurs_form_def Let_def
+      by (cases "transaction_fresh T = []") auto
+  next
+    case False show ?thesis
+      using T_props(14) 1(11)[OF False] 1(5,12)
+      unfolding admissible_transaction_send_occurs_form_def Let_def
+      by (cases "transaction_fresh T = []") auto
+  qed
+
+  let ?xs = "fv_list\<^sub>s\<^sub>s\<^sub>t (unlabel (transaction_strand T))"
+
+  have T'_props_15: "?P15 ?T'"
+    using T_props(15) 1(6,7) unfolding Let_def
+    by (cases "filter (\<lambda>x. x \<notin> set (transaction_fresh T)) ?xs = []") (simp,fastforce)
+
+  have T'_props_16: "?P16 ?T'"
+  proof (cases "\<exists>ts' F'. transaction_send T = \<langle>\<star>,send\<langle>ts'\<rangle>\<rangle>#F'")
+    case True
+    then obtain ts' F' where F': "transaction_send T = \<langle>\<star>,send\<langle>ts'\<rangle>\<rangle>#F'" by meson
+    show ?thesis
+      using T_props(16) 1(10)[OF F'] F' 1(5,12)
+      unfolding Let_def by (cases "transaction_fresh T = []") auto
+  next
+    case False show ?thesis
+      using T_props(16) 1(11)[OF False] 1(5,12)
+      unfolding Let_def by (cases "transaction_fresh T = []") auto
+  qed
+
+  note T'_props = T'_props_1 T'_props_2_12 T'_props_13 T'_props_14 T'_props_15 T'_props_16
+
+  show ?A using T'_props unfolding admissible_transaction'_def by meson
+
+  have 5: "set (filter (\<lambda>x. x \<notin> set (transaction_fresh T))
+                       (fv_list\<^sub>s\<^sub>s\<^sub>t (unlabel (transaction_strand T)))) =
+           fv_transaction T - set (transaction_fresh T)"
+    using fv_list\<^sub>s\<^sub>s\<^sub>t_is_fv\<^sub>s\<^sub>s\<^sub>t by fastforce
+
+  have "transaction_receive ?T' \<noteq> []"
+    and "is_Receive (hd (unlabel (transaction_receive ?T')))"
+    and "\<forall>x \<in> fv_transaction ?T' - set (transaction_fresh ?T'). fst x = TAtom Value \<longrightarrow>
+            occurs (Var x) \<in> set (the_msgs (hd (unlabel (transaction_receive ?T'))))"
+    when x: "x \<in> fv_transaction ?T' - set (transaction_fresh ?T')" "fst x = TAtom Value" for x
+    using 1(13) 5 x unfolding 1(5) 2(3) by (force,force,force)
+  moreover have "transaction_send ?T' \<noteq> []" (is ?C)
+    and "is_Send (hd (unlabel (transaction_send ?T')))" (is ?D)
+    and "\<forall>x \<in> set (transaction_fresh ?T').
+           occurs (Var x) \<in> set (the_msgs (hd (unlabel (transaction_send ?T'))))" (is ?E)
+    when T'_frsh: "transaction_fresh ?T' \<noteq> []"
+    using 1(14) T'_frsh unfolding 1(5) by auto
+  ultimately show ?B
+    using T'_props_14 unfolding admissible_transaction_occurs_checks_def Let_def by blast
+qed
+
+private lemma add_occurs_msgs_in_trms_subst_cases:
+  fixes T::"('fun,'atom,'sets,'lbl) prot_transaction"
+  assumes T_adm: "admissible_transaction' T"
+    and t: "t \<in> trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand (add_occurs_msgs T) \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)"  
+  shows "t \<in> trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>) \<or>
+         (\<exists>x \<in> fv_transaction T. t = occurs (\<theta> x))"
+proof -
+  define frsh where "frsh \<equiv> transaction_fresh T"
+  define xs where "xs \<equiv> filter (\<lambda>x. x \<notin> set frsh) (fv_list\<^sub>s\<^sub>s\<^sub>t (unlabel (transaction_strand T)))"
+  define f where "f \<equiv> map (\<lambda>x. occurs (Var x)::('fun,'atom,'sets,'lbl) prot_term)"
+
+  obtain A B C D E F where T: "T = Transaction A B C D E F" by (cases T) simp
+
+  note T'_adm = add_occurs_msgs_admissible_occurs_checks(1)[OF T_adm]
+
+  have 0: "set (transaction_fresh T) \<subseteq> fv_transaction T"
+    using admissible_transactionE(7)[OF T_adm]
+    unfolding fv_transaction_unfold by blast
+  hence 00: "set (f xs) \<union> set (f frsh) = (\<lambda>x. occurs (Var x)) ` fv_transaction T"
+    using fv_list\<^sub>s\<^sub>s\<^sub>t_is_fv\<^sub>s\<^sub>s\<^sub>t[of "unlabel (transaction_strand T)"]
+    unfolding f_def xs_def frsh_def by auto
+
+  note 1 = add_occurs_msgs_transaction_strand_set[OF T]
+
+  have 2: "set (transaction_strand (add_occurs_msgs T)) \<subseteq>
+           set (transaction_strand T) \<union> {\<langle>\<star>,receive\<langle>f xs\<rangle>\<rangle>,\<langle>\<star>,send\<langle>f frsh\<rangle>\<rangle>}"
+    when "\<nexists>ts F'. F = \<langle>\<star>,send\<langle>ts\<rangle>\<rangle>#F'"
+    using 1(3,4)[OF that] unfolding f_def[symmetric] frsh_def[symmetric] xs_def[symmetric] by blast
+
+  have 3: "trms_transaction (add_occurs_msgs T) =
+           trms_transaction T \<union> (\<lambda>x. occurs (Var x)) ` fv_transaction T"
+    using 0 add_occurs_msgs_trms_transaction[of T] by blast
+
+  have 4: "bvars_transaction T \<inter> subst_domain \<theta> = {}"
+          "bvars_transaction (add_occurs_msgs T) \<inter> subst_domain \<theta> = {}"
+    using admissible_transactionE(4)[OF T_adm] admissible_transactionE(4)[OF T'_adm]
+    by (blast,blast)
+
+  note 5 = trms\<^sub>s\<^sub>s\<^sub>t_subst[OF 4(1), unfolded unlabel_subst]
+           trms\<^sub>s\<^sub>s\<^sub>t_subst[OF 4(2), unfolded unlabel_subst]
+
+  note 6 = fv\<^sub>s\<^sub>s\<^sub>t_is_subterm_trms\<^sub>s\<^sub>s\<^sub>t_subst[
+            OF _ 4(1), unfolded add_occurs_msgs_admissible_occurs_checks(1)[OF T_adm] unlabel_subst]
+
+  show ?thesis
+    using t 6 unfolding 3 5 by fastforce
+qed
+
+private lemma add_occurs_msgs_updates_send_filter_iff:
+  fixes f
+  defines "f \<equiv> \<lambda>T. list_ex (\<lambda>a. is_Send (snd a) \<or> is_Update (snd a)) (transaction_strand T)"
+    and "g \<equiv> \<lambda>T. transaction_fresh T = [] \<longrightarrow> f T"
+  shows "map add_occurs_msgs (filter g P) = filter g (map add_occurs_msgs P)"
+proof -
+  have "g T \<longleftrightarrow> g (add_occurs_msgs T)" for T
+  proof -
+    obtain A B C D E F where T: "T = Transaction A B C D E F" by (cases T) simp_all
+    note 0 = add_occurs_msgs_cases[OF T]
+    show ?thesis using 0(6,7,12) unfolding g_def f_def transaction_strand_def 0(5,8,9) by fastforce
+  qed
+  thus ?thesis by (induct P) simp_all
+qed
+
+lemma add_occurs_msgs_updates_send_filter_iff':
+  fixes f
+  defines "f \<equiv> \<lambda>T. list_ex (\<lambda>a. is_Send (snd a) \<or> is_Update (snd a)) (transaction_strand T)"
+    and "g \<equiv> \<lambda>T. transaction_fresh T = [] \<longrightarrow> transaction_updates T \<noteq> [] \<or> transaction_send T \<noteq> []"
+  shows "map add_occurs_msgs (filter g P) = filter g (map add_occurs_msgs P)"
+proof -
+  have "g T \<longleftrightarrow> g (add_occurs_msgs T)" for T
+  proof -
+    obtain A B C D E F where T: "T = Transaction A B C D E F" by (cases T) simp_all
+    note 0 = add_occurs_msgs_cases[OF T]
+    show ?thesis using 0(6,7,12) unfolding g_def f_def transaction_strand_def 0(5,8,9) by argo
+  qed
+  thus ?thesis by (induct P) simp_all
+qed
+
+private lemma rm_occurs_msgs_constr_Cons:
+  defines "f \<equiv> rm_occurs_msgs_constr"
+  shows
+    "\<not>is_Receive a \<Longrightarrow> \<not>is_Send a \<Longrightarrow> f ((l,a)#A) = (l,a)#f A"
+    "is_Receive a \<Longrightarrow> \<nexists>t. occurs t \<in> set (the_msgs a) \<Longrightarrow> f ((l,a)#A) = (l,a)#f A"
+    "is_Receive a \<Longrightarrow> \<exists>t. occurs t \<in> set (the_msgs a) \<Longrightarrow>
+      \<exists>t \<in> set (the_msgs a). \<forall>s. t \<noteq> occurs s \<Longrightarrow>
+      f ((l,a)#A) = (l,receive\<langle>filter (\<lambda>t. \<forall>s. t \<noteq> occurs s) (the_msgs a)\<rangle>)#f A"
+    "is_Receive a \<Longrightarrow> \<exists>t. occurs t \<in> set (the_msgs a) \<Longrightarrow>
+      \<forall>t \<in> set (the_msgs a). \<exists>s. t = occurs s \<Longrightarrow> f ((l,a)#A) = f A"
+    "is_Send a \<Longrightarrow> \<nexists>t. occurs t \<in> set (the_msgs a) \<Longrightarrow> f ((l,a)#A) = (l,a)#f A"
+    "is_Send a \<Longrightarrow> \<exists>t. occurs t \<in> set (the_msgs a) \<Longrightarrow>
+      \<exists>t \<in> set (the_msgs a). \<forall>s. t \<noteq> occurs s \<Longrightarrow>
+      f ((l,a)#A) = (l,send\<langle>filter (\<lambda>t. \<forall>s. t \<noteq> occurs s) (the_msgs a)\<rangle>)#f A"
+    "is_Send a \<Longrightarrow> \<exists>t. occurs t \<in> set (the_msgs a) \<Longrightarrow>
+      \<forall>t \<in> set (the_msgs a). \<exists>s. t = occurs s \<Longrightarrow> f ((l,a)#A) = f A"
+unfolding f_def by (cases a; auto)+
+
+private lemma rm_occurs_msgs_constr_Cons':
+  defines "f \<equiv> rm_occurs_msgs_constr"
+    and "g \<equiv> filter (\<lambda>t. \<forall>s. t \<noteq> occurs s)"
+  assumes a: "is_Receive a \<or> is_Send a"
+  shows
+    "\<nexists>t. occurs t \<in> set (the_msgs a) \<Longrightarrow> f ((l,a)#A) = (l,a)#f A"
+    "\<exists>t. occurs t \<in> set (the_msgs a) \<Longrightarrow>
+      \<exists>t \<in> set (the_msgs a). \<forall>s. t \<noteq> occurs s \<Longrightarrow>
+      is_Send a \<Longrightarrow> f ((l,a)#A) = (l,send\<langle>g (the_msgs a)\<rangle>)#f A"
+    "\<exists>t. occurs t \<in> set (the_msgs a) \<Longrightarrow>
+      \<exists>t \<in> set (the_msgs a). \<forall>s. t \<noteq> occurs s \<Longrightarrow>
+      is_Receive a \<Longrightarrow> f ((l,a)#A) = (l,receive\<langle>g (the_msgs a)\<rangle>)#f A"
+    "\<exists>t. occurs t \<in> set (the_msgs a) \<Longrightarrow>
+      \<forall>t \<in> set (the_msgs a). \<exists>s. t = occurs s \<Longrightarrow> f ((l,a)#A) = f A"
+using a unfolding f_def g_def by (cases a; auto)+
+
+private lemma rm_occurs_msgs_constr_Cons'':
+  defines "f \<equiv> rm_occurs_msgs_constr"
+    and "g \<equiv> filter (\<lambda>t. \<forall>s. t \<noteq> occurs s)"
+  assumes a: "a = receive\<langle>ts\<rangle> \<or> a = send\<langle>ts\<rangle>"
+  shows "f ((l,a)#A) = (l,a)#f A \<or> f ((l,a)#A) = (l,receive\<langle>g ts\<rangle>)#f A \<or>
+         f ((l,a)#A) = (l,send\<langle>g ts\<rangle>)#f A \<or> f ((l,a)#A) = f A"
+using rm_occurs_msgs_constr_Cons(2-)[of a l A] a unfolding f_def g_def by (cases a) auto
+
+private lemma rm_occurs_msgs_constr_ik_subset:
+  "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t (rm_occurs_msgs_constr A) \<subseteq> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t A"
+proof (induction A)
+  case (Cons a A)
+  let ?f = "filter (\<lambda>t. \<forall>s. t \<noteq> occurs s)"
+
+  note IH = Cons.IH
+
+  obtain l b where a: "a = (l,b)" by (metis surj_pair)
+
+  have 0: "set (unlabel A) \<subseteq> set (unlabel (a#A))" by auto
+
+  note 1 = rm_occurs_msgs_constr_Cons[of b l A]
+  note 2 = in_ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t_iff
+  note 3 = ik\<^sub>s\<^sub>s\<^sub>t_set_subset[OF 0]
+  note 4 = ik\<^sub>s\<^sub>s\<^sub>t_append
+  note 5 = 4[of "unlabel [a]" "unlabel A"] 4[of "unlabel [a]" "unlabel (rm_occurs_msgs_constr A)"]
+
+  show ?case
+  proof (cases "is_Send b \<or> is_Receive b")
+    case True
+    note b_cases = this
+
+    define ts where "ts \<equiv> the_msgs b"
+
+    have ts_cases: "is_Send b \<Longrightarrow> b = send\<langle>ts\<rangle>" "is_Receive b \<Longrightarrow> b = receive\<langle>ts\<rangle>"
+      unfolding ts_def by simp_all
+
+    have 6:
+        "is_Send b \<Longrightarrow> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t [(l,b)] = {}"
+        "is_Send b \<Longrightarrow> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t [(l,send\<langle>the_msgs b\<rangle>)] = {}"
+        "is_Send b \<Longrightarrow> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t [(l,send\<langle>?f (the_msgs b)\<rangle>)] = {}"
+        "is_Receive b \<Longrightarrow> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t [(l,b)] = set ts"
+        "is_Receive b \<Longrightarrow> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t [(l,receive\<langle>the_msgs b\<rangle>)] = set ts"
+        "is_Receive b \<Longrightarrow> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t [(l,receive\<langle>?f (the_msgs b)\<rangle>)] = set (?f ts)"
+      using 2[of _ "[(l, send\<langle>the_msgs b\<rangle>)]"]
+            2[of _ "[(l, send\<langle>?f (the_msgs b)\<rangle>)]"]
+            2[of _ "[(l, receive\<langle>the_msgs b\<rangle>)]"]
+            2[of _ "[(l, receive\<langle>?f (the_msgs b)\<rangle>)]"]
+            b_cases ts_cases
+      by auto
+
+    have "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t (rm_occurs_msgs_constr (a#A)) = ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t (rm_occurs_msgs_constr A)"
+      when b: "is_Send b"
+    proof (cases "\<exists>t. occurs t \<in> set (the_msgs b)")
+      case True
+      note 7 = 1(6,7)[OF b True]
+
+      show ?thesis
+      proof (cases "\<exists>t \<in> set (the_msgs b). \<forall>s. t \<noteq> occurs s")
+        case True show ?thesis
+          using 4[of "unlabel [(l,send\<langle>?f (the_msgs b)\<rangle>)]"
+                     "unlabel (rm_occurs_msgs_constr A)"]
+          unfolding a 7(1)[OF True] 6(3)[OF b] by simp
+      next
+        case False
+        hence F: "\<forall>t \<in> set (the_msgs b). \<exists>s. t = occurs s" by simp
+        show ?thesis
+          using 4[of "unlabel [(l,send\<langle>the_msgs b\<rangle>)]" "unlabel (rm_occurs_msgs_constr A)"]
+          unfolding a 7(2)[OF F] 6(2)[OF b] by simp
+      qed
+    next
+      case False show ?thesis
+        using 4[of "unlabel [(l,b)]" "unlabel (rm_occurs_msgs_constr A)"]
+        unfolding a 1(5)[OF b False] 6(1)[OF b] by auto
+    qed
+    moreover have "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t (rm_occurs_msgs_constr (a#A)) \<subseteq> set ts \<union> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t (rm_occurs_msgs_constr A)"
+      when b: "is_Receive b"
+    proof (cases "\<exists>t. occurs t \<in> set (the_msgs b)")
+      case True
+      note 8 = 1(3,4)[OF b True]
+
+      show ?thesis
+      proof (cases "\<exists>t \<in> set (the_msgs b). \<forall>s. t \<noteq> occurs s")
+        case True show ?thesis
+          using 4[of "unlabel [(l,receive\<langle>?f (the_msgs b)\<rangle>)]"
+                     "unlabel (rm_occurs_msgs_constr A)"]
+          unfolding a 8(1)[OF True] 6(6)[OF b] by auto
+      next
+        case False
+        hence F: "\<forall>t \<in> set (the_msgs b). \<exists>s. t = occurs s" by simp
+        show ?thesis
+          using 4[of "unlabel [(l,receive\<langle>the_msgs b\<rangle>)]" "unlabel (rm_occurs_msgs_constr A)"]
+          unfolding a 8(2)[OF F] 6(5)[OF b] by simp
+      qed
+    next
+      case False show ?thesis
+        using 4[of "unlabel [(l,b)]" "unlabel (rm_occurs_msgs_constr A)"]
+        unfolding a 1(2)[OF b False] 6(4)[OF b] by auto
+    qed
+    moreover have "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t (a#A) = set ts \<union> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t A" when b: "is_Receive b"
+      using ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t_Cons(2)[of l ts A] unfolding a ts_cases(2)[OF b] by blast
+    ultimately show ?thesis using IH 3 b_cases by blast
+  qed (use 1(1) IH 5 a in auto)
+qed simp
+
+private lemma rm_occurs_msgs_constr_append:
+  "rm_occurs_msgs_constr (A@B) = rm_occurs_msgs_constr A@rm_occurs_msgs_constr B"
+by (induction A rule: rm_occurs_msgs_constr.induct) auto
+
+private lemma rm_occurs_msgs_constr_dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t:
+  "rm_occurs_msgs_constr (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A) = dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (rm_occurs_msgs_constr A)"
+proof (induction A)
+  case (Cons a A)
+  obtain l b where a: "a = (l,b)" by (metis surj_pair)
+  show ?case using Cons.IH unfolding a by (cases b) auto
+qed simp
+
+private lemma rm_occurs_msgs_constr_dbupd\<^sub>s\<^sub>s\<^sub>t_eq:
+  "dbupd\<^sub>s\<^sub>s\<^sub>t (unlabel (rm_occurs_msgs_constr A)) I D = dbupd\<^sub>s\<^sub>s\<^sub>t (unlabel A) I D"
+proof (induction A arbitrary: I D)
+  case (Cons a A)
+  obtain l b where a: "a = (l,b)" by (metis surj_pair)
+  show ?case
+  proof (cases "is_Receive b \<or> is_Send b")
+    case True
+    then obtain ts where b: "b = receive\<langle>ts\<rangle> \<or> b = send\<langle>ts\<rangle>" by (cases b) simp_all
+    show ?thesis using rm_occurs_msgs_constr_Cons''[OF b, of l A] Cons.IH b unfolding a by fastforce
+  next
+    case False thus ?thesis using Cons.IH unfolding a by (cases b) auto
+  qed
+qed simp
+
+private lemma rm_occurs_msgs_constr_subst:
+  fixes A::"('a,'b,'c,'d) prot_strand" and \<theta>::"('a,'b,'c,'d) prot_subst"
+  assumes "\<forall>x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t A. \<nexists>t. \<theta> x = occurs t" "\<forall>x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t A. \<theta> x \<noteq> Fun OccursSec []"
+  shows "rm_occurs_msgs_constr (A \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>) = (rm_occurs_msgs_constr A) \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>"
+    (is "?f (A \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>) = (?f A) \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>")
+using assms
+proof (induction A)
+  case (Cons a A)
+  note 0 = rm_occurs_msgs_constr_Cons
+  note 1 = rm_occurs_msgs_constr_Cons'
+
+  define f where "f \<equiv> ?f"
+  define not_occ where "not_occ \<equiv> \<lambda>t::('a,'b,'c,'d) prot_term. \<forall>s. t \<noteq> occurs s"
+  define flt where "flt \<equiv> filter not_occ"
+
+  obtain l b where a: "a = (l,b)" by (metis surj_pair)
+
+  have 2: "\<nexists>t. \<theta> x = occurs t" "\<theta> x \<noteq> Fun OccursSec []"
+    when b: "is_Receive b \<or> is_Send b" and t: "t \<in> set (the_msgs b)" and x: "x \<in> fv t" for x t
+    using Cons.prems x t b unfolding a by (cases b; auto)+
+
+  have IH: "f (A \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>) = (f A) \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>"
+    using Cons.prems Cons.IH unfolding f_def by simp
+
+  show ?case
+  proof (cases "is_Receive b \<or> is_Send b")
+    case True
+    note T = this
+    then obtain ts where ts: "b = receive\<langle>ts\<rangle> \<or> b = send\<langle>ts\<rangle>" by (cases b) simp_all
+    hence ts': "b \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<theta> = receive\<langle>ts \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta>\<rangle> \<or> b \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<theta> = send\<langle>ts \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta>\<rangle>" by auto
+
+    have the_msgs_b: "the_msgs b = ts" "the_msgs (b \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<theta>) = ts \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta>"
+      using ts ts' by auto
+
+    have 4: "is_Receive (b \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<theta>) \<or> is_Send (b \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<theta>)"
+      using T by (cases b) simp_all
+
+    note 6 = 1[OF T, of l A, unfolded f_def[symmetric]]
+    note 7 = 1[OF 4, of l "A \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>", unfolded f_def[symmetric]]
+    note 8 = ts IH subst_lsst_cons[of _ _ \<theta>]
+
+    have 9: "t \<cdot> \<theta> \<in> set (the_msgs (b \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<theta>))" "not_occ (t \<cdot> \<theta>)"
+      when t: "t \<in> set (the_msgs b)" "not_occ t" for t
+    proof -
+      show "t \<cdot> \<theta> \<in> set (the_msgs (b \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<theta>))" using t ts ts' by auto
+      moreover have "not_occ (t \<cdot> \<theta>)" when "t = Var x" for x
+        using 2[OF T t(1)] t(2) unfolding that not_occ_def by simp
+      moreover have "not_occ (t \<cdot> \<theta>)" when "t = Fun g ss" "g \<noteq> OccursFact" for g ss
+        using 2[OF T t(1)] t(2) that(2) unfolding that(1) not_occ_def by simp
+      moreover have "not_occ (t \<cdot> \<theta>)"
+        when "t = Fun OccursFact ss" "\<nexists>s1 s2. ss = [s1,s2]" for ss
+        using 2[OF T t(1)] t(2) that(2) unfolding that(1) not_occ_def by auto
+      moreover have "not_occ (t \<cdot> \<theta>)"
+        when "t = Fun OccursFact [s1,s2]" for s1 s2
+        using 2[OF T t(1)] t(2) unfolding that not_occ_def by (cases s1) auto
+      ultimately show "not_occ (t \<cdot> \<theta>)" by (cases t) (metis, metis)
+    qed
+
+    have 10: "not_occ t"
+      when t: "t \<in> set (the_msgs b)" "not_occ (t \<cdot> \<theta>)" for t
+    proof -
+      have "t \<cdot> \<theta> \<in> set (the_msgs (b \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<theta>))" using t ts ts' by auto
+      moreover have "not_occ t" when "t = Var x" for x
+        using 2[OF T t(1)] t(2) unfolding that not_occ_def by simp
+      moreover have "not_occ t" when "t = Fun g ss" "g \<noteq> OccursFact" for g ss
+        using 2[OF T t(1)] t(2) that(2) unfolding that(1) not_occ_def by simp
+      moreover have "not_occ t"
+        when "t = Fun OccursFact ss" "\<nexists>s1 s2. ss = [s1,s2]" for ss
+        using 2[OF T t(1)] t(2) that(2) unfolding that(1) not_occ_def by auto
+      moreover have "not_occ t"
+        when "t = Fun OccursFact [s1,s2]" for s1 s2
+        using 2[OF T t(1)] t(2) unfolding that not_occ_def by (cases s1) auto
+      ultimately show "not_occ t" unfolding not_occ_def by force
+    qed
+
+    have 11: "not_occ (t \<cdot> \<theta>) \<longleftrightarrow> not_occ t" when "t \<in> set ts" for t
+      using that 9 10 unfolding the_msgs_b by blast
+
+    have 5: "(\<exists>t. occurs t \<in> set ts) \<longleftrightarrow> (\<exists>t. occurs t \<in> set ts \<cdot>\<^sub>s\<^sub>e\<^sub>t \<theta>)"
+      using 11 image_iff unfolding not_occ_def by fastforce
+
+    have 12: "flt (ts \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta>) = (flt ts) \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta>" using 11 
+    proof (induction ts)
+      case (Cons t ts)
+      hence "not_occ (t \<cdot> \<theta>) = not_occ t" "flt (ts \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta>) = (flt ts) \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta>" by auto
+      thus ?case unfolding flt_def by auto
+    qed (metis flt_def filter.simps(1) map_is_Nil_conv)
+
+    show ?thesis
+    proof (cases "\<exists>t. occurs t \<in> set (the_msgs b)")
+      case True
+      note T1 = this
+      hence T2: "\<exists>t. occurs t \<in> set (the_msgs (b \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<theta>))" using 5 unfolding the_msgs_b by simp
+
+      show ?thesis
+      proof (cases "\<exists>t \<in> set (the_msgs b). \<forall>s. t \<noteq> occurs s")
+        case True
+        note T1' = this
+        have T2': "\<exists>t \<in> set (the_msgs (b \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<theta>)). \<forall>s. t \<noteq> occurs s"
+          using T1' 11 unfolding the_msgs_b not_occ_def by auto
+
+        show ?thesis using T
+        proof
+          assume b: "is_Receive b"
+          hence b\<theta>: "is_Receive (b \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<theta>)" using ts by fastforce
+
+          show ?thesis
+            using 6(3)[OF T1 T1' b] 7(3)[OF T2 T2' b\<theta>] IH 12
+            unfolding f_def[symmetric] a flt_def[symmetric] not_occ_def[symmetric] the_msgs_b
+            by (simp add: subst_lsst_cons)
+        next
+          assume b: "is_Send b"
+          hence b\<theta>: "is_Send (b \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<theta>)" using ts by fastforce
+
+          show ?thesis
+            using 6(2)[OF T1 T1' b] 7(2)[OF T2 T2' b\<theta>] IH 12
+            unfolding f_def[symmetric] a flt_def[symmetric] not_occ_def[symmetric] the_msgs_b
+            by (simp add: subst_lsst_cons)
+        qed
+      next
+        case False
+        hence F: "\<forall>t \<in> set (the_msgs b). \<exists>s. t = occurs s" by blast
+        hence F': "\<forall>t \<in> set (the_msgs (b \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<theta>)). \<exists>s. t = occurs s" unfolding the_msgs_b by auto
+
+        have *: "\<exists>t. occurs t \<in> set (the_msgs b)" when "the_msgs b \<noteq> []"
+          using that F by (cases "the_msgs b") auto
+        hence **: "\<exists>t. occurs t \<in> set (the_msgs (b \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<theta>))" when "the_msgs b \<noteq> []"
+          using that 5 unfolding the_msgs_b by simp
+
+        show ?thesis
+        proof (cases "ts = []")
+          case True
+          hence ***: "\<nexists>t. occurs t \<in> set (the_msgs b)" "\<nexists>t. occurs t \<in> set (the_msgs (b \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<theta>))"
+            unfolding the_msgs_b by simp_all
+
+          show ?thesis
+            using IH 6(1)[OF ***(1)] 7(1)[OF ***(2)]
+            unfolding a f_def[symmetric] True
+            by (simp add: subst_lsst_cons)
+        next
+          case False thus ?thesis
+            using IH 6(4)[OF * F] 7(4)[OF ** F']
+            unfolding f_def[symmetric] not_occ_def[symmetric] a the_msgs_b
+            by (simp add: subst_lsst_cons)
+        qed
+      qed
+    next
+      case False
+      note F = this
+      have F': "\<nexists>t. occurs t \<in> set (the_msgs (b \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<theta>))"
+        using F 11 unfolding not_occ_def the_msgs_b by fastforce
+
+      show ?thesis
+        using IH 6(1)[OF F] 7(1)[OF F']
+        unfolding a f_def[symmetric] True
+        by (simp add: subst_lsst_cons)
+    qed
+  next
+    case False
+    hence *: "\<not>is_Receive b" "\<not>is_Send b" "\<not>is_Receive (b \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<theta>)" "\<not>is_Send (b \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<theta>)"
+      by (cases b; auto)+
+
+    show ?thesis
+      using IH 0(1)[OF *(1,2), of l A] 0(1)[OF *(3,4), of l "A \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>"] subst_lsst_cons[of a _ \<theta>]
+      unfolding a f_def by simp
+  qed
+qed simp
+
+private lemma rm_occurs_msgs_constr_transaction_strand:
+  assumes T_adm: "admissible_transaction' T"
+  shows "rm_occurs_msgs_constr (transaction_checks T) = transaction_checks T" (is ?A)
+    and "rm_occurs_msgs_constr (transaction_updates T) = transaction_updates T" (is ?B)
+    and "admissible_transaction_no_occurs_msgs T \<Longrightarrow>
+          rm_occurs_msgs_constr (transaction_receive T) = transaction_receive T" (is "?C \<Longrightarrow> ?C'")
+    and "admissible_transaction_no_occurs_msgs T \<Longrightarrow>
+          rm_occurs_msgs_constr (transaction_send T) = transaction_send T" (is "?D \<Longrightarrow> ?D'")
+proof -
+  note 0 = admissible_transaction_is_wellformed_transaction(1)[OF T_adm]
+  note 1 = wellformed_transaction_cases[OF 0]
+
+  have 2: "\<exists>ts. b = receive\<langle>ts\<rangle> \<and> (\<nexists>t. occurs t \<in> set ts)"
+    when "admissible_transaction_no_occurs_msgs T" "(l,b) \<in> set (transaction_receive T)" for l b
+    using that 1(1)[OF that(2)]
+    unfolding admissible_transaction_no_occurs_msgs_def Let_def list_all_iff by fastforce
+
+  have 3: "\<exists>ts. b = send\<langle>ts\<rangle> \<and> (\<nexists>t. occurs t \<in> set ts)"
+    when "admissible_transaction_no_occurs_msgs T" "(l,b) \<in> set (transaction_send T)" for l b
+    using that 1(4)[OF that(2)]
+    unfolding admissible_transaction_no_occurs_msgs_def Let_def list_all_iff by fastforce
+
+  define A where "A \<equiv> transaction_receive T"
+  define B where "B \<equiv> transaction_checks T"
+  define C where "C \<equiv> transaction_updates T"
+  define D where "D \<equiv> transaction_send T"
+
+  show ?A using 1(2) unfolding B_def[symmetric]
+  proof (induction B)
+    case (Cons a A)
+    hence IH: "rm_occurs_msgs_constr A = A" by (meson list.set_intros(2))
+    obtain l b where a: "a = (l,b)" by (metis surj_pair)
+    show ?case using Cons.prems IH unfolding a by (cases b) auto
+  qed simp
+
+  show ?B using 1(3) unfolding C_def[symmetric]
+  proof (induction C)
+    case (Cons a A)
+    hence IH: "rm_occurs_msgs_constr A = A" by (meson list.set_intros(2))
+    obtain l b where a: "a = (l,b)" by (metis surj_pair)
+    show ?case using Cons.prems IH unfolding a by (cases b) auto
+  qed simp
+
+  show ?C' when ?C using 2[OF that] unfolding A_def[symmetric]
+  proof (induction A)
+    case (Cons a A)
+    hence IH: "rm_occurs_msgs_constr A = A" by (meson list.set_intros(2))
+    obtain l b where a: "a = (l,b)" by (metis surj_pair)
+    obtain ts where b: "b = receive\<langle>ts\<rangle>" using Cons.prems unfolding a by auto
+    show ?case using Cons.prems IH unfolding a b by fastforce
+  qed simp
+
+
+  show ?D' when ?D using 3[OF that] unfolding D_def[symmetric]
+  proof (induction D)
+    case (Cons a A)
+    hence IH: "rm_occurs_msgs_constr A = A" by (meson list.set_intros(2))
+    obtain l b where a: "a = (l,b)" by (metis surj_pair)
+    obtain ts where b: "b = send\<langle>ts\<rangle>" using Cons.prems unfolding a by auto
+    show ?case using Cons.prems IH unfolding a b by fastforce
+  qed simp
+qed
+
+private lemma rm_occurs_msgs_constr_transaction_strand':
+  fixes T::"('fun,'atom,'sets,'lbl) prot_transaction"
+  assumes T_adm: "admissible_transaction' T"
+    and T_no_occ: "admissible_transaction_no_occurs_msgs T"
+  shows "rm_occurs_msgs_constr (transaction_strand (add_occurs_msgs T)) = transaction_strand T"
+    (is "?f (?g (?h T)) = ?g T")
+proof -
+  obtain A B C D E F where T: "T = Transaction A B C D E F" by (cases T) simp
+
+  have B: "B = transaction_fresh T" unfolding T by simp
+  have F: "F = transaction_send T" unfolding T by simp
+
+  define xs where "xs \<equiv> filter (\<lambda>x. x \<notin> set B) (fv_list\<^sub>s\<^sub>s\<^sub>t (unlabel (transaction_strand T)))"
+
+  note 0 = rm_occurs_msgs_constr_transaction_strand
+  note 1 = add_occurs_msgs_admissible_occurs_checks[OF T_adm]
+  note 2 = 0(3,4)[OF T_adm T_no_occ]
+  note 3 = add_occurs_msgs_cases[OF T]
+  note 4 = 0(1,2)[OF 1(1)]
+
+  have 5: "?f (transaction_checks (?h T)) = transaction_checks T"
+          "?f (transaction_updates (?h T)) = transaction_updates T"
+    using 4 3(8,9) by (argo, argo)
+
+  have 6: "?f (transaction_receive (?h T)) = transaction_receive T"
+  proof (cases "xs = []")
+    case True show ?thesis using 3(6)[OF True[unfolded xs_def B]] 2(1) by simp
+  next
+    case False show ?thesis
+      using False 3(7)[OF False[unfolded xs_def B]] 2(1)
+            rm_occurs_msgs_constr_Cons(4)[
+              of "receive\<langle>map (\<lambda>x. occurs (Var x)) xs\<rangle>" \<star> "transaction_receive T"]
+      unfolding B[symmetric] xs_def[symmetric] 
+      by (cases xs) (blast, auto)
+  qed
+
+  have 7: "?f (transaction_send (?h T)) = transaction_send T"
+  proof (cases "\<exists>ts' F'. F = \<langle>\<star>, send\<langle>ts'\<rangle>\<rangle>#F'")
+    case True
+    then obtain ts' F' where F': "F = \<langle>\<star>, send\<langle>ts'\<rangle>\<rangle>#F'" by blast
+
+    have *: "transaction_send (?h T) = \<langle>\<star>, send\<langle>map (\<lambda>x. occurs (Var x)) B@ts'\<rangle>\<rangle>#F'"
+      using 3(1)[OF F'] unfolding T by fastforce
+
+    have **: "ts' \<noteq> []" using admissible_transactionE(17)[OF T_adm] unfolding T F' by auto
+
+    have ***: "\<forall>s. t \<noteq> occurs s" when t: "t \<in> set ts'" for t
+      using that T_no_occ
+      unfolding T F' admissible_transaction_no_occurs_msgs_def Let_def list_all_iff by auto
+
+    let ?ts = "map (\<lambda>x. occurs (Var x)) B@ts'"
+
+    have "\<exists>t \<in> set ?ts. \<forall>s. t \<noteq> occurs s" using ** *** by (cases ts') auto
+    moreover have "filter (\<lambda>t. \<forall>s. t \<noteq> occurs s) ?ts = ts'" using *** by simp
+    moreover have "\<exists>t. occurs t \<in> set ?ts" when "B \<noteq> []" using that by (cases B) auto
+    moreover have "?f [\<langle>\<star>, send\<langle>ts'\<rangle>\<rangle>] = [\<langle>\<star>, send\<langle>ts'\<rangle>\<rangle>]"
+      using 2(2) ** *** unfolding F[symmetric] F' by force
+    hence "?f F' = F'"
+      using 2(2) rm_occurs_msgs_constr_append[of "[\<langle>\<star>, send\<langle>ts'\<rangle>\<rangle>]" F']
+      unfolding F[symmetric] F' by fastforce
+    ultimately have "?f (\<langle>\<star>, send\<langle>?ts\<rangle>\<rangle>#F') = \<langle>\<star>, send\<langle>ts'\<rangle>\<rangle>#F'"
+      using 2(2) 3(10)[OF F'[unfolded F]] 3(12)
+            rm_occurs_msgs_constr.simps(3)[of \<star> ts' F']
+            rm_occurs_msgs_constr_append[of "[\<langle>\<star>, send\<langle>ts'\<rangle>\<rangle>]" F']
+      unfolding F[symmetric] F' B[symmetric] by auto
+    thus ?thesis using F * unfolding F' by argo
+  next
+    case False show ?thesis
+      using 3(2)[OF False] 3(3) 2(2)
+      unfolding B[symmetric] xs_def[symmetric] F[symmetric]
+      by (cases B) auto
+  qed
+
+  show ?thesis
+    using 5 6 7 rm_occurs_msgs_constr_append
+    unfolding transaction_strand_def by metis
+qed
+
+private lemma rm_occurs_msgs_constr_transaction_strand'':
+  fixes T::"('fun,'atom,'sets,'lbl) prot_transaction"
+  assumes T_adm: "admissible_transaction' T"
+    and T_no_occ: "admissible_transaction_no_occurs_msgs T"
+    and \<theta>: "\<forall>x \<in> fv_transaction (add_occurs_msgs T). \<nexists>t. \<theta> x = occurs t"
+           "\<forall>x \<in> fv_transaction (add_occurs_msgs T). \<theta> x \<noteq> Fun OccursSec []"
+  shows "rm_occurs_msgs_constr (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand (add_occurs_msgs T) \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)) =
+         dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)"
+using rm_occurs_msgs_constr_dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t[of "transaction_strand (add_occurs_msgs T) \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>"]
+      rm_occurs_msgs_constr_subst[OF \<theta>] rm_occurs_msgs_constr_transaction_strand'[OF T_adm T_no_occ]
+by argo
+
+private lemma rm_occurs_msgs_constr_bvars_subst_eq:
+  "bvars\<^sub>l\<^sub>s\<^sub>s\<^sub>t (rm_occurs_msgs_constr A \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>) = bvars\<^sub>l\<^sub>s\<^sub>s\<^sub>t (A \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)"
+proof -
+  have "bvars\<^sub>l\<^sub>s\<^sub>s\<^sub>t (rm_occurs_msgs_constr A) = bvars\<^sub>l\<^sub>s\<^sub>s\<^sub>t A"
+  proof (induction A)
+    case (Cons a A)
+    obtain l b where a: "a = (l,b)" by (metis surj_pair)
+    show ?case using Cons.IH unfolding a by (cases b) auto
+  qed simp
+  thus ?thesis by (metis bvars\<^sub>s\<^sub>s\<^sub>t_subst unlabel_subst)
+qed
+
+private lemma rm_occurs_msgs_constr_reachable_constraints_fv_eq:
+  assumes P: "\<forall>T \<in> set P. admissible_transaction' T"
+             "\<forall>T \<in> set P. admissible_transaction_no_occurs_msgs T"
+    and A: "A \<in> reachable_constraints (map add_occurs_msgs P)"
+  shows "fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (rm_occurs_msgs_constr A) = fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t A"
+using A
+proof (induction A rule: reachable_constraints.induct)
+  case (step \<A> T \<xi> \<sigma> \<alpha>)
+  let ?f = rm_occurs_msgs_constr
+  let ?B = "dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>)"
+
+  define \<theta> where "\<theta> \<equiv> \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>"
+
+  obtain T' where T': "T' \<in> set P" "T = add_occurs_msgs T'"
+    using step.hyps(2) by auto
+
+  have T_adm: "admissible_transaction' T"
+    using add_occurs_msgs_admissible_occurs_checks(1) step.hyps(2) P by auto
+
+  have T'_adm: "admissible_transaction' T'"
+    and T'_no_occ: "admissible_transaction_no_occurs_msgs T'"
+    using T'(1) P by (blast,blast)
+
+  have "?f (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)) = dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T' \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)"
+    using rm_occurs_msgs_constr_transaction_strand''[OF T'_adm T'_no_occ, of \<theta>]
+          admissible_transaction_decl_fresh_renaming_subst_not_occurs[OF T_adm step.hyps(3,4,5)]
+    unfolding T'(2) \<theta>_def[symmetric] by blast
+  moreover have "fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>) = fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T' \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)"
+    using add_occurs_msgs_vars_eq(6)[OF T'_adm, of \<theta>] unfolding T'(2) by blast
+  ultimately have "fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (?f ?B) = fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t ?B"
+    using fv\<^sub>s\<^sub>s\<^sub>t_unlabel_dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_eq unfolding T'(2) \<theta>_def[symmetric] by metis
+  thus ?case
+    using step.IH fv\<^sub>s\<^sub>s\<^sub>t_append[of "unlabel \<A>" "unlabel ?B"]
+          rm_occurs_msgs_constr_append[of \<A> ?B]
+    by force
+qed simp
+
+private lemma rm_occurs_msgs_constr_reachable_constraints_vars_eq:
+  assumes P: "\<forall>T \<in> set P. admissible_transaction' T"
+             "\<forall>T \<in> set P. admissible_transaction_no_occurs_msgs T"
+    and A: "A \<in> reachable_constraints (map add_occurs_msgs P)"
+  shows "vars\<^sub>l\<^sub>s\<^sub>s\<^sub>t (rm_occurs_msgs_constr A) = vars\<^sub>l\<^sub>s\<^sub>s\<^sub>t A"
+using rm_occurs_msgs_constr_bvars_subst_eq[of _ Var]
+      rm_occurs_msgs_constr_reachable_constraints_fv_eq[OF P A]
+by (metis vars\<^sub>s\<^sub>s\<^sub>t_is_fv\<^sub>s\<^sub>s\<^sub>t_bvars\<^sub>s\<^sub>s\<^sub>t subst_lsst_id_subst)
+
+private lemma rm_occurs_msgs_constr_reachable_constraints_trms_cases_aux:
+  assumes A: "x \<in> fv\<^sub>s\<^sub>s\<^sub>t A" "bvars\<^sub>s\<^sub>s\<^sub>t A = {}"
+    and t: "t = occurs (\<theta> x)"
+    and \<theta>: "(\<exists>y. \<theta> x = Var y) \<or> (\<exists>c. \<theta> x = Fun c [])"
+  shows "(\<exists>x \<in> fv\<^sub>s\<^sub>s\<^sub>t (A \<cdot>\<^sub>s\<^sub>s\<^sub>t \<theta>). t = occurs (Var x)) \<or>
+         (\<exists>c. Fun c [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t trms\<^sub>s\<^sub>s\<^sub>t (A \<cdot>\<^sub>s\<^sub>s\<^sub>t \<theta>) \<and> t = occurs (Fun c []))"
+using A
+proof (induction A)
+  case (Cons a A)
+  have 0: "bvars\<^sub>s\<^sub>s\<^sub>t A = {}" "set (bvars\<^sub>s\<^sub>s\<^sub>t\<^sub>p a) = {}" "set (bvars\<^sub>s\<^sub>s\<^sub>t\<^sub>p a) \<inter> subst_domain \<theta> = {}"
+    using Cons.prems(2) by auto
+
+  note 1 = fv\<^sub>s\<^sub>s\<^sub>t_Cons[of a A] trms\<^sub>s\<^sub>s\<^sub>t_cons[of a A] subst_sst_cons[of a A \<theta>]
+
+  show ?case
+  proof (cases "x \<in> fv\<^sub>s\<^sub>s\<^sub>t A")
+    case False
+    hence x: "x \<in> fv\<^sub>s\<^sub>s\<^sub>t\<^sub>p a" using Cons.prems(1) by simp
+
+    note 2 = x t \<theta>
+
+    have 3: "\<theta> x \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t trms\<^sub>s\<^sub>s\<^sub>t\<^sub>p (a \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<theta>)"
+      using subst_subterms[OF fv\<^sub>s\<^sub>s\<^sub>t\<^sub>p_is_subterm_trms\<^sub>s\<^sub>s\<^sub>t\<^sub>p[OF x]] trms\<^sub>s\<^sub>s\<^sub>t\<^sub>p_subst[OF 0(3)] by auto
+
+    have "Fun c [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t trms\<^sub>s\<^sub>s\<^sub>t\<^sub>p (a \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<theta>)" when "\<theta> x = Fun c []" for c
+      using that 3 t by argo
+    moreover have "y \<in> fv\<^sub>s\<^sub>s\<^sub>t\<^sub>p (a \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<theta>)" when "\<theta> x = Var y" for y
+      using that 3 var_subterm_trms\<^sub>s\<^sub>s\<^sub>t\<^sub>p_is_vars\<^sub>s\<^sub>s\<^sub>t\<^sub>p[of y "a \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<theta>"] 0(2) 
+      unfolding vars\<^sub>s\<^sub>s\<^sub>t\<^sub>p_is_fv\<^sub>s\<^sub>s\<^sub>t\<^sub>p_bvars\<^sub>s\<^sub>s\<^sub>t\<^sub>p bvars\<^sub>s\<^sub>s\<^sub>t\<^sub>p_subst by simp
+    ultimately have
+        "(\<exists>x \<in> fv\<^sub>s\<^sub>s\<^sub>t\<^sub>p (a \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<theta>). t = occurs (Var x)) \<or>
+         (\<exists>c. Fun c [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t trms\<^sub>s\<^sub>s\<^sub>t\<^sub>p (a \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<theta>) \<and> t = occurs (Fun c []))"
+      using t \<theta> by fast
+    thus ?thesis using 1 by auto
+  qed (use Cons.IH[OF _ 0(1)] 1 in force)
+qed simp
+
+private lemma rm_occurs_msgs_constr_reachable_constraints_trms_cases:
+  assumes P: "\<forall>T \<in> set P. admissible_transaction' T"
+             "\<forall>T \<in> set P. admissible_transaction_no_occurs_msgs T"
+    and A: "A = rm_occurs_msgs_constr B"
+    and B: "B \<in> reachable_constraints (map add_occurs_msgs P)"
+    and t: "t \<in> trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t B"
+  shows "t \<in> trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t A \<or> (\<exists>x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t A. t = occurs (Var x)) \<or>
+         (\<exists>c. Fun c [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t A) \<and> t = occurs (Fun c []))"
+    (is "?A A \<or> ?B A \<or> ?C A")
+proof -
+  define rm_occs where
+    "rm_occs \<equiv> \<lambda>A::('fun,'atom,'sets,'lbl) prot_strand. rm_occurs_msgs_constr A"
+  define Q where "Q \<equiv> \<lambda>A. ?A A \<or> ?B A \<or> ?C A"
+
+  have 0: "Q B" when "Q A" "set A \<subseteq> set B" for A B
+    using that unfolding Q_def fv\<^sub>s\<^sub>s\<^sub>t_def trms\<^sub>s\<^sub>s\<^sub>t_def unlabel_def by auto
+
+  have "Q A" using B t unfolding A
+  proof (induction rule: reachable_constraints.induct)
+    case (step \<A> T \<xi> \<sigma> \<alpha>)
+    define \<theta> where "\<theta> \<equiv> \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>"
+    define \<B> where "\<B> \<equiv> dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)"
+
+    obtain T' where T': "T' \<in> set P" "T = add_occurs_msgs T'"
+      using step.hyps(2) by auto
+
+    note T'_adm = bspec[OF P(1) T'(1)] bspec[OF P(2) T'(1)]
+    note T_adm = add_occurs_msgs_admissible_occurs_checks[OF T'_adm(1), unfolded T'(2)[symmetric]]
+
+    note 1 = \<theta>_def[symmetric] \<B>_def[symmetric] rm_occs_def[symmetric]
+    note 2 = rm_occurs_msgs_constr_append[of \<A> \<B>, unfolded rm_occs_def[symmetric]]
+
+    note 3 = admissible_transaction_decl_fresh_renaming_subst_not_occurs[
+                OF T_adm(1) step.hyps(3,4,5)]
+
+    have 4: "rm_occs (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)) =
+             dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T' \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)"
+      using 3 rm_occurs_msgs_constr_transaction_strand''[OF T'_adm]
+      unfolding T'(2) 1 by blast 
+
+    have 5: "(\<exists>y. \<theta> x = Var y) \<or> (\<exists>c. \<theta> x = Fun c [])" for x
+      using transaction_decl_fresh_renaming_substs_range'(1)[OF step.hyps(3,4,5)]
+      unfolding \<theta>_def[symmetric] by blast
+
+    show ?case
+    proof (cases "t \<in> trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>")
+      case True show ?thesis using 0[OF step.IH[OF True]] unfolding 1 2 by simp
+    next
+      case False
+      hence "t \<in> trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>" using step.prems unfolding \<B>_def \<theta>_def by simp
+      hence "t \<in> trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T' \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>) \<or>
+             (\<exists>x \<in> fv_transaction T'. t = occurs (\<theta> x))"
+        using add_occurs_msgs_in_trms_subst_cases[OF T'_adm(1), of t \<theta>]
+        unfolding \<B>_def trms\<^sub>s\<^sub>s\<^sub>t_unlabel_dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_eq T'(2) by blast
+      moreover have "(\<exists>y. \<theta> x = Var y) \<or> (\<exists>c. \<theta> x = Fun c [])" for x
+        using transaction_decl_fresh_renaming_substs_range'(1)[OF step.hyps(3,4,5)]
+        unfolding \<theta>_def[symmetric] by blast
+      ultimately have "Q (rm_occs \<B>)"
+        using rm_occurs_msgs_constr_reachable_constraints_trms_cases_aux[
+                of _ "unlabel (transaction_strand T')" t \<theta>]
+              admissible_transactionE(4)[OF T'_adm(1)]
+        unfolding Q_def \<B>_def 4 trms\<^sub>s\<^sub>s\<^sub>t_unlabel_dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_eq fv\<^sub>s\<^sub>s\<^sub>t_unlabel_dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_eq unlabel_subst
+        by fast
+      thus ?thesis using 0[of "rm_occs \<B>"] unfolding 1 2 by auto
+    qed
+  qed simp
+  thus ?thesis unfolding Q_def by blast
+qed
+
+private lemma rm_occurs_msgs_constr_receive_attack_iff:
+  fixes A::"('a,'b,'c,'d) prot_strand"
+  shows "(\<exists>ts. attack\<langle>n\<rangle> \<in> set ts \<and> receive\<langle>ts\<rangle> \<in> set (unlabel A)) \<longleftrightarrow>
+         (\<exists>ts. attack\<langle>n\<rangle> \<in> set ts \<and> receive\<langle>ts\<rangle> \<in> set (unlabel (rm_occurs_msgs_constr A)))"
+  (is "(\<exists>ts. attack\<langle>n\<rangle> \<in> set ts \<and> ?A A ts) \<longleftrightarrow> (\<exists>ts. attack\<langle>n\<rangle> \<in> set ts \<and> ?B A ts)")
+proof
+  let ?att = "\<lambda>ts. attack\<langle>n\<rangle> \<in> set ts"
+
+  define f where "f \<equiv> \<lambda>ts::('a,'b,'c,'d) prot_term list. filter (\<lambda>t. \<forall>s. t \<noteq> occurs s) ts"
+
+  have 0: "?att ts \<longleftrightarrow> ?att (f ts)"
+          "?att ts \<Longrightarrow> \<exists>t. occurs t \<in> set ts \<Longrightarrow> \<exists>t \<in> set ts. \<forall>s. t \<noteq> occurs s"
+          "\<nexists>t. occurs t \<in> set ts \<Longrightarrow> f ts = ts"
+    for ts::"('a,'b,'c,'d) prot_term list"
+    unfolding f_def
+    subgoal by simp
+    subgoal by auto
+    subgoal by (induct ts) auto
+    done
+
+  have "?B A (f ts)" when A: "?A A ts" and ts: "?att ts" for ts using A
+  proof (induction A)
+    case (Cons a A)
+    obtain l b where a: "a = (l,b)" by (metis surj_pair)
+
+    show ?case
+    proof (cases "?A A ts")
+      case True thus ?thesis using Cons.IH unfolding a by (cases b) simp_all
+    next
+      case False
+      hence b: "b = receive\<langle>ts\<rangle>" using Cons.prems unfolding a by simp
+      show ?thesis using 0(2)[OF ts] 0(3) unfolding a b f_def by simp
+    qed
+  qed simp
+  thus "(\<exists>ts. ?att ts \<and> ?A A ts) \<Longrightarrow> (\<exists>ts. ?att ts \<and> ?B A ts)" using 0(1) by fast
+
+  have "\<exists>ts'. ts = f ts' \<and> ?A A ts'" when B: "?B A ts" and ts: "?att ts" for ts using B
+  proof (induction A)
+    case (Cons a A)
+    obtain l b where a: "a = (l,b)" by (metis surj_pair)
+
+    note 1 = rm_occurs_msgs_constr_Cons
+
+    have 2: "receive\<langle>ts\<rangle> \<in> set (unlabel (rm_occurs_msgs_constr A))"
+      when rcv_ts: "receive\<langle>ts\<rangle> \<in> set (unlabel (rm_occurs_msgs_constr ((l,send\<langle>ts'\<rangle>)#A)))"
+      for l ts ts' and A::"('a,'b,'c,'d) prot_strand"
+    proof -
+      have *: "is_Send (send\<langle>ts'\<rangle>)" by simp
+
+      have "set (unlabel (rm_occurs_msgs_constr [(l, send\<langle>ts'\<rangle>)])) \<subseteq> {send\<langle>ts'\<rangle>, send\<langle>f ts'\<rangle>}"
+        using 1(5-7)[OF *, of l "[]"] unfolding f_def by auto
+      thus ?thesis using rcv_ts rm_occurs_msgs_constr_append[of "[(l,send\<langle>ts'\<rangle>)]" A] by auto
+    qed
+
+    show ?case
+    proof (cases "?B A ts")
+      case True thus ?thesis using Cons.IH by auto
+    next
+      case False
+      hence 3: "receive\<langle>ts\<rangle> \<in> set (unlabel (rm_occurs_msgs_constr [a]))"
+        using rm_occurs_msgs_constr_append[of "[a]" A] Cons.prems by simp
+
+      obtain ts' where b: "b = receive\<langle>ts'\<rangle>" and b': "is_Receive b"
+        using 2[of ts l _ A] Cons.prems False
+        unfolding a by (cases b) auto
+
+      have ts': "the_msgs (receive\<langle>ts'\<rangle>) = ts'" by simp
+
+      have "\<exists>t \<in> set (the_msgs b). \<forall>s. t \<noteq> occurs s" when "\<exists>t. occurs t \<in> set (the_msgs b)"
+        using that 3 1(4)[OF b' that, of l "[]"] unfolding a by force
+      hence "ts = f ts'"
+        using 3 0(3)[of ts'] 1(3)[OF b', of l "[]", unfolded rm_occurs_msgs_constr.simps(1)]
+        unfolding a b ts' f_def[symmetric] by fastforce
+      thus ?thesis unfolding a b by auto
+    qed
+  qed simp
+  thus "(\<exists>ts. ?att ts \<and> ?B A ts) \<Longrightarrow> (\<exists>ts. ?att ts \<and> ?A A ts)" using 0 by fast
+qed
+
+private lemma add_occurs_msgs_soundness_aux1:
+  fixes P::"('fun,'atom,'sets,'lbl) prot"
+  defines "wt_attack \<equiv> \<lambda>\<I> \<A> l n. welltyped_constraint_model \<I> (\<A>@[(l, send\<langle>[attack\<langle>n\<rangle>]\<rangle>)])"
+  assumes P: "\<forall>T \<in> set P. admissible_transaction' T"
+    and P_val: "has_initial_value_producing_transaction P"
+    and A: "\<A> \<in> reachable_constraints P" "wt_attack \<I> \<A> l n"
+  shows "\<exists>\<B> \<in> reachable_constraints P. \<exists>\<J>.
+          wt_attack \<J> \<B> l n \<and> (\<forall>x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>. \<exists>n. \<J> x = Fun (Val n) [])"
+proof -
+  let ?f = "\<lambda>(T,\<xi>,\<sigma>,\<alpha>). dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>)"
+  let ?g = "concat \<circ> map ?f"
+  let ?rcv_att = "\<lambda>A n. receive\<langle>[attack\<langle>n\<rangle>]\<rangle> \<in> set (unlabel A)"
+  let ?wt_model = welltyped_constraint_model
+
+  define valconst_cases where "valconst_cases \<equiv>
+    \<lambda>I::('fun,'atom,'sets,'lbl) prot_subst. \<lambda>x.
+      (\<exists>n. I x = Fun (Val n) []) \<or> (\<exists>n. I x = Fun (PubConst Value n) [])"
+
+  define valconsts_only where "valconsts_only \<equiv>
+    \<lambda>X. \<lambda>I::('fun,'atom,'sets,'lbl) prot_subst. \<forall>x \<in> X. \<exists>n. I x = Fun (Val n) []"
+
+  define db_eq where "db_eq \<equiv>
+    \<lambda>A B::('fun,'atom,'sets,'lbl) prot_constr. \<lambda>s. \<lambda>upds::('fun,'atom,'sets,'lbl) prot_constr.
+      let f = filter is_Update \<circ> unlabel;
+          g = filter (\<lambda>a. \<nexists>l t ts. a = (l,insert\<langle>t,Fun (Set s) ts\<rangle>))
+      in (upds = [] \<and> f A = f B) \<or> (upds \<noteq> [] \<and> f (g A) = f (g B))"
+
+  define db_upds_consts_fresh where "db_upds_consts_fresh \<equiv>
+    \<lambda>A::('fun,'atom,'sets,'lbl) prot_constr. \<lambda>X. \<lambda>J::('fun,'atom,'sets,'lbl) prot_subst. 
+      \<forall>x \<in> X. (\<exists>n. \<I> x = Fun (PubConst Value n) []) \<longrightarrow> (\<forall>n s.
+        insert\<langle>Fun (Val n) [],s\<rangle> \<in> set (unlabel A) \<or>
+        delete\<langle>Fun (Val n) [],s\<rangle> \<in> set (unlabel A) \<longrightarrow>
+          J x \<noteq> Fun (Val n) [])"
+
+  define subst_eq_on_privvals where "subst_eq_on_privvals \<equiv> \<lambda>X \<J>.
+    \<forall>x \<in> X. (\<exists>n. \<I> x = Fun (Val n) []) \<longrightarrow> \<I> x = \<J> x"
+
+  define subst_in_ik_if_subst_pubval where "subst_in_ik_if_subst_pubval \<equiv>
+    \<lambda>X \<J>. \<lambda>\<B>::('fun,'atom,'sets,'lbl) prot_constr.
+      \<forall>x \<in> X. (\<exists>n. \<I> x = Fun (PubConst Value n) []) \<longrightarrow> \<J> x \<in> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>"
+
+  define subst_eq_iff where "subst_eq_iff \<equiv> \<lambda>X. \<lambda>\<J>::('fun,'atom,'sets,'lbl) prot_subst.
+    \<forall>x \<in> X. \<forall>y \<in> X. \<I> x = \<I> y \<longleftrightarrow> \<J> x = \<J> y"
+
+  obtain x_val T_val T_upds s_val ts_val l1_val l2_val where x_val:
+      "T_val \<in> set P" "Var x_val \<in> set ts_val" "\<Gamma>\<^sub>v x_val = TAtom Value"
+      "fv\<^sub>s\<^sub>e\<^sub>t (set ts_val) = {x_val}" "\<forall>n. \<not>(Fun (Val n) [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t set ts_val)"
+      "T_val = Transaction (\<lambda>(). []) [x_val] [] [] T_upds [(l1_val,send\<langle>ts_val\<rangle>)]"
+      "T_upds = [] \<or>
+       (T_upds = [(l2_val,insert\<langle>Var x_val,\<langle>s_val\<rangle>\<^sub>s\<rangle>)] \<and>
+        (\<forall>T \<in> set P. \<forall>(l,a) \<in> set (transaction_strand T). \<forall>t.
+          a \<noteq> select\<langle>t,\<langle>s_val\<rangle>\<^sub>s\<rangle> \<and> a \<noteq> \<langle>t in \<langle>s_val\<rangle>\<^sub>s\<rangle> \<and> a \<noteq> \<langle>t not in \<langle>s_val\<rangle>\<^sub>s\<rangle> \<and>
+          a \<noteq> delete\<langle>t,\<langle>s_val\<rangle>\<^sub>s\<rangle>))"
+    using has_initial_value_producing_transactionE[OF P_val P, of thesis]
+    by (auto simp add: disj_commute)
+
+  have 0: "\<nexists>n. Fun (PubConst Value n) [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>" when "\<B> \<in> reachable_constraints P" for \<B>
+    using reachable_constraints_val_funs_private(1)[OF that P(1)] funs_term_Fun_subterm'
+    unfolding is_PubConstValue_def by fastforce
+
+  have I: "?wt_model \<I> \<A>" "interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<I>)" "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>"
+    using welltyped_constraint_model_prefix[OF A(2)[unfolded wt_attack_def]]
+          A(2)[unfolded wt_attack_def welltyped_constraint_model_def constraint_model_def]
+    by blast+
+
+  have 1: "\<forall>x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>. valconst_cases \<I> x"
+    using reachable_constraints_fv_Value_const_cases[OF P(1) A(1) I(1)]
+    unfolding valconst_cases_def by blast
+
+  have 2: "?rcv_att \<A> n"
+    using A(2) strand_sem_append_stateful[of "{}" "{}" "unlabel \<A>" "[send\<langle>[attack\<langle>n\<rangle>]\<rangle>]" \<I>]
+          reachable_constraints_receive_attack_if_attack'(2)[OF A(1) P(1) I(1)]
+    unfolding wt_attack_def welltyped_constraint_model_def constraint_model_def by simp
+
+  note \<xi>_empty = admissible_transaction_decl_subst_empty[OF bspec[OF P(1)]]
+
+  have lmm:
+      "\<exists>\<B> \<in> reachable_constraints P. \<exists>\<J>.
+          ?wt_model \<J> \<B> \<and> valconsts_only (fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<union> X) \<J> \<and> (?rcv_att \<A> n \<longrightarrow> ?rcv_att \<B> n) \<and>
+          subst_eq_on_privvals (fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<union> X) \<J> \<and>
+          subst_in_ik_if_subst_pubval (fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<union> X) \<J> \<B> \<and>
+          subst_eq_iff (fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<union> X) \<J> \<and>
+          vars\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> = vars\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> \<and> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> = fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> \<and>
+          (\<forall>n \<in> N. \<not>(Fun (Val n) [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>)) \<and>
+          ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<subseteq> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> \<and> trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<subseteq> trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> \<and>
+          db_eq \<A> \<B> s_val T_upds \<and>
+          db_upds_consts_fresh \<A> (fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<union> X) \<J>"
+    when "finite N" "\<forall>n \<in> N. \<not>(Fun (Val n) [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>)" "X \<inter> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> = {}"
+         "finite X" "\<forall>x \<in> X. valconst_cases \<I> x" "\<forall>x \<in> X. \<Gamma>\<^sub>v x = TAtom Value"
+    for N X
+    using A(1) I(1) 1 that
+  proof (induction arbitrary: N X rule: reachable_constraints.induct)
+    case init
+    define pubvals where "pubvals \<equiv> {n | n x. x \<in> X \<and> \<I> x = Fun (PubConst Value n) []}"
+    define X_vals where "X_vals \<equiv> {n | n x. x \<in> X \<and> \<I> x = Fun (Val n) []}"
+
+    have X_vals_finite: "finite X_vals"
+      using finite_surj[OF init.prems(6),
+                        of X_vals "\<lambda>x. THE n. \<I> x = Fun (Val n) []"]
+      unfolding X_vals_def by force
+
+    have pubvals_finite: "finite pubvals"
+      using finite_surj[OF init.prems(6),
+                        of pubvals "\<lambda>x. THE n. \<I> x = Fun (PubConst Value n) []"]
+      unfolding pubvals_def by force
+
+    obtain T_val_fresh_vals and \<delta>::"nat \<Rightarrow> nat"
+      where T_val_fresh_vals: "T_val_fresh_vals \<inter> (N \<union> X_vals) = {}"
+        and \<delta>: "inj \<delta>" "\<delta> ` pubvals = T_val_fresh_vals"
+      using ex_finite_disj_nat_inj[OF pubvals_finite finite_UnI[OF init.prems(3) X_vals_finite]]
+      by blast
+
+    have T_val_fresh_vals_finite: "finite T_val_fresh_vals"
+      using pubvals_finite \<delta>(2) by blast
+
+    obtain \<B>::"('fun,'atom,'sets,'lbl) prot_constr"
+      where B:
+          "\<B> \<in> reachable_constraints P"
+          "T_upds = [] \<Longrightarrow> list_all is_Receive (unlabel \<B>)"
+          "T_upds \<noteq> [] \<Longrightarrow> list_all (\<lambda>a. is_Insert a \<or> is_Receive a) (unlabel \<B>)"
+          "vars\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> = {}"
+          "\<forall>n. Fun (Val n) [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> \<longrightarrow> Fun (Val n) [] \<in> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>"
+          "T_val_fresh_vals = {n. Fun (Val n) [] \<in> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>}"
+          "\<forall>l a. (l,a) \<in> set \<B> \<and> is_Insert a \<longrightarrow>
+                  (l = l2_val \<and> (\<exists>n. a = insert\<langle>Fun (Val n) [],\<langle>s_val\<rangle>\<^sub>s\<rangle>))"
+      using reachable_constraints_initial_value_transaction[
+              OF P reachable_constraints.init T_val_fresh_vals_finite _ x_val]
+      by auto
+
+    define \<J> where "\<J> \<equiv> \<lambda>x.
+      if x \<in> X \<and> (\<exists>n. \<I> x = Fun (PubConst Value n) [])
+      then Fun (Val (\<delta> (THE n. \<I> x = Fun (PubConst Value n) []))) []
+      else \<I> x"
+
+    have 0: "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t [] \<subseteq> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>" "trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t [] \<subseteq> trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>" "?rcv_att [] n \<longrightarrow> ?rcv_att \<B> n"
+            "vars\<^sub>l\<^sub>s\<^sub>s\<^sub>t [] = vars\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>" "fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t [] = fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>"
+      using B(4) vars\<^sub>s\<^sub>s\<^sub>t_is_fv\<^sub>s\<^sub>s\<^sub>t_bvars\<^sub>s\<^sub>s\<^sub>t[of "unlabel \<B>"] by auto
+
+    have 1: "db_eq [] \<B> s_val T_upds" using B(2,3,7)
+    proof (induction \<B>)
+      case (Cons a B)
+      then obtain l b where a: "a = (l,b)" by (metis surj_pair)
+
+      have IH: "db_eq [] B s_val T_upds" using Cons.prems Cons.IH by auto
+
+      show ?case
+      proof (cases "T_upds = []")
+        case True
+        hence "is_Receive b" using a Cons.prems(1) by simp
+        thus ?thesis using IH unfolding a db_eq_def Let_def by auto
+      next
+        case False
+        hence "is_Insert b \<or> is_Receive b" using a Cons.prems(2) by simp
+        hence "\<exists>t. a = (l2_val,insert\<langle>t,\<langle>s_val\<rangle>\<^sub>s\<rangle>)" when b: "\<not>is_Receive b"
+          using b Cons.prems(3) unfolding a by (metis list.set_intros(1))
+        thus ?thesis using IH False unfolding a db_eq_def Let_def by auto
+      qed
+    qed (simp add: db_eq_def)
+
+    have 2: "?wt_model \<J> \<B>"
+      unfolding welltyped_constraint_model_def constraint_model_def
+    proof (intro conjI)
+      show "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<J>" using I(4) init.prems(8) unfolding \<J>_def wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t_def by fastforce
+
+      show "strand_sem_stateful {} {} (unlabel \<B>) \<J>"
+        using B(2,3) strand_sem_stateful_if_no_send_or_check[of "unlabel \<B>" "{}" "{}" \<J>]
+        unfolding list_all_iff by blast
+
+      show "subst_domain \<J> = UNIV" "ground (subst_range \<J>)"
+        using I(2) unfolding \<J>_def subst_domain_def by auto
+
+      show "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<J>)"
+        using I(3) unfolding \<J>_def by fastforce
+    qed
+
+    have 3: "valconsts_only (fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t [] \<union> X) \<J>"
+      using init.prems(7) unfolding \<J>_def valconsts_only_def valconst_cases_def by fastforce
+
+    have 4: "subst_eq_on_privvals (fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t [] \<union> X) \<J>"
+      unfolding subst_eq_on_privvals_def \<J>_def by force
+
+    have 5: "subst_in_ik_if_subst_pubval (fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t [] \<union> X) \<J> \<B>"
+    proof (unfold subst_in_ik_if_subst_pubval_def; intro ballI impI)
+      fix x assume x: "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t [] \<union> X" and "\<exists>n. \<I> x = Fun (PubConst Value n) []"
+      then obtain n where n: "\<I> x = Fun (PubConst Value n) []" by blast 
+
+      have "n \<in> pubvals" using x n unfolding pubvals_def by fastforce
+      hence "\<delta> n \<in> T_val_fresh_vals" using \<delta>(2) by fast
+      hence "Fun (Val (\<delta> n)) [] \<in> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>" using B(6) by fast
+      thus "\<J> x \<in> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>" using x n unfolding \<J>_def by simp
+    qed
+
+    have 6: "subst_eq_iff (fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t [] \<union> X) \<J>"
+    proof (unfold subst_eq_iff_def; intro ballI)
+      fix x y assume "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t [] \<union> X" "y \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t [] \<union> X"
+      hence x: "x \<in> X" and y: "y \<in> X" by auto
+
+      show "\<I> x = \<I> y \<longleftrightarrow> \<J> x = \<J> y"
+      proof
+        show "\<I> x = \<I> y \<Longrightarrow> \<J> x = \<J> y" using x y unfolding \<J>_def by presburger
+      next
+        assume J_eq: "\<J> x = \<J> y" show "\<I> x = \<I> y"
+        proof (cases "\<exists>n. \<I> x = Fun (PubConst Value n) []")
+          case True
+          then obtain n where n: "\<I> x = Fun (PubConst Value n) []" by blast
+          hence J_x: "\<J> x = Fun (Val (\<delta> n)) []" using x unfolding \<J>_def by simp
+
+          show ?thesis
+          proof (cases "\<exists>m. \<I> y = Fun (PubConst Value m) []")
+            case True
+            then obtain m where m: "\<I> y = Fun (PubConst Value m) []" by blast
+            have J_y: "\<J> y = Fun (Val (\<delta> m)) []" using y m unfolding \<J>_def by simp
+            show ?thesis using J_eq J_x J_y injD[OF \<delta>(1), of n m] n m by auto
+          next
+            case False
+            then obtain m where m: "\<I> y = Fun (Val m) []"
+              using init.prems(7) y unfolding valconst_cases_def by blast
+            moreover have "\<delta> n \<in> T_val_fresh_vals" using \<delta>(2) x n unfolding pubvals_def by blast
+            moreover have "m \<in> X_vals" using y m unfolding X_vals_def by blast
+            ultimately have "\<J> x \<noteq> \<I> y" using m J_x T_val_fresh_vals by auto
+            moreover have "\<J> y = \<I> y" using m unfolding \<J>_def by simp
+            ultimately show ?thesis using J_eq by argo
+          qed
+        next
+          case False
+          then obtain n where n: "\<I> x = Fun (Val n) []"
+            using init.prems(7) x unfolding valconst_cases_def by blast
+          hence J_x: "\<J> x = \<I> x" unfolding \<J>_def by auto
+
+          show ?thesis
+          proof (cases "\<exists>m. \<I> y = Fun (PubConst Value m) []")
+            case False
+            then obtain m where m: "\<I> y = Fun (Val m) []"
+              using init.prems(7) y unfolding valconst_cases_def by blast
+            have J_y: "\<J> y = \<I> y" using y m unfolding \<J>_def by simp
+            show ?thesis using J_x J_y J_eq by presburger
+          next
+            case True
+            then obtain m where m: "\<I> y = Fun (PubConst Value m) []" by blast
+            hence "\<J> y = Fun (Val (\<delta> m)) []" using y unfolding \<J>_def by fastforce
+            moreover have "\<delta> m \<in> T_val_fresh_vals" using \<delta>(2) y m unfolding pubvals_def by blast
+            moreover have "n \<in> X_vals" using x n unfolding X_vals_def by blast
+            ultimately have "\<J> y \<noteq> \<I> x" using n J_x T_val_fresh_vals by auto
+            thus ?thesis using J_x J_eq by argo
+          qed
+        qed
+      qed
+    qed
+
+    have 7: "\<forall>n \<in> N. Fun (Val n) [] \<notin> subterms\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>)"
+      using B(5,6) T_val_fresh_vals by blast
+
+    have 8: "db_upds_consts_fresh [] (fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t [] \<union> X) \<J>" unfolding db_upds_consts_fresh_def by simp
+
+    show ?case using B(1) 0 1 2 3 4 5 6 7 8 by blast
+  next
+    case (step \<A> T \<xi> \<sigma> \<alpha> N X')
+    define \<theta> where "\<theta> \<equiv> \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>"
+    define T' where "T' \<equiv> dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)"
+    define T'_pubvals where "T'_pubvals \<equiv> {n. \<exists>x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'. \<I> x = Fun (PubConst Value n) []}"
+    define \<A>_vals where "\<A>_vals \<equiv> {n. Fun (Val n) [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>}"
+    define \<I>_vals where "\<I>_vals \<equiv> {n. \<exists>x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<union> X' \<union> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'. \<I> x = Fun (Val n) []}"
+    define \<sigma>_vals where "\<sigma>_vals \<equiv> {n. Fun (Val n) [] \<in> subst_range \<sigma>}"
+
+    have 3: "welltyped_constraint_model \<I> \<A>"
+            "\<forall>x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>. valconst_cases \<I> x"
+            "\<forall>x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'. valconst_cases \<I> x"
+            "strand_sem_stateful (ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>) (dbupd\<^sub>s\<^sub>s\<^sub>t (unlabel \<A>) \<I> {}) (unlabel T') \<I>"
+            "\<forall>x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<union> X'. valconst_cases \<I> x"
+      using step.prems(2) welltyped_constraint_model_prefix[OF step.prems(1)]
+            step.prems(1)[unfolded welltyped_constraint_model_def constraint_model_def]
+            strand_sem_append_stateful[of "{}" "{}" "unlabel \<A>" "unlabel T'" \<I>]
+            step.prems(7)
+      unfolding \<theta>_def[symmetric] T'_def[symmetric] unlabel_append fv\<^sub>s\<^sub>s\<^sub>t_append
+      by (blast,blast,blast,simp,blast)
+
+    note T_adm = bspec[OF P step.hyps(2)]
+    note T_wf = admissible_transaction_is_wellformed_transaction[OF T_adm]
+    note \<xi>_empty = admissible_transaction_decl_subst_empty[OF T_adm step.hyps(3)]
+
+    note 4 = admissible_transaction_sem_iff
+    note 5 = iffD1[OF 4[OF T_adm I(2,3), of "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>" "dbupd\<^sub>s\<^sub>s\<^sub>t (unlabel \<A>) \<I> {}" \<theta>,
+                        unfolded T'_def[symmetric]]
+                      3(4)]
+
+    note \<sigma>_dom = transaction_fresh_subst_domain[OF step.hyps(4)]
+
+    have \<sigma>_ran: "\<exists>n. t = Fun (Val n) []" when t: "t \<in> subst_range \<sigma>" for t
+    proof -
+      obtain x where x: "x \<in> set (transaction_fresh T)" "t = \<sigma> x"
+        using \<sigma>_dom t by auto
+      show ?thesis
+        using x(1) admissible_transactionE(2)[OF T_adm]
+              transaction_fresh_subst_sends_to_val[OF step.hyps(4) x(1)]
+        unfolding x(2) by meson
+    qed
+
+    have T'_vals_in_\<sigma>: "Fun (Val k) [] \<in> subst_range \<sigma>"
+      when k: "Fun (Val k) [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'" for k
+    proof -
+      have "Fun (Val k) [] \<in> (subterms\<^sub>s\<^sub>e\<^sub>t (trms_transaction T)) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<theta>"
+        using k admissible_transactionE(4)[OF T_adm]
+              transaction_decl_fresh_renaming_substs_trms[
+                OF step.hyps(3,4,5), of "transaction_strand T"]
+        unfolding T'_def \<theta>_def[symmetric] trms\<^sub>s\<^sub>s\<^sub>t_unlabel_dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_eq by fast
+      then obtain t where t: "t \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t trms_transaction T" "t \<cdot> \<theta> = Fun (Val k) []" by force
+      hence "Fun (Val k) [] \<in> subst_range \<theta>"
+        using admissible_transactions_no_Value_consts(1)[OF T_adm] by (cases t) force+
+      thus ?thesis
+        using transaction_decl_fresh_renaming_substs_range'(4)[OF step.hyps(3,4,5)] \<xi>_empty
+        unfolding \<theta>_def[symmetric] by blast
+    qed
+
+    have \<sigma>_vals_is_T'_vals: "k \<in> \<sigma>_vals \<longleftrightarrow> Fun (Val k) [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'" for k
+    proof
+      show "k \<in> \<sigma>_vals" when "Fun (Val k) [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'"
+        using that T'_vals_in_\<sigma> unfolding \<sigma>_vals_def by blast
+
+      show "Fun (Val k) [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'" when k: "k \<in> \<sigma>_vals"
+      proof -
+        have "Fun (Val k) [] \<in> subst_range \<sigma>" using k unfolding \<sigma>_vals_def by fast
+        then obtain x where x: "x \<in> fv_transaction T" "\<sigma> x = Fun (Val k) []"
+          using admissible_transactionE(7)[OF T_adm]
+                transaction_fresh_subst_domain[OF step.hyps(4)]
+         unfolding fv_transaction_unfold by fastforce
+
+        have "\<theta> x = Fun (Val k) []" using x(2) unfolding \<theta>_def \<xi>_empty subst_compose_def by auto
+        thus ?thesis
+          using fv\<^sub>s\<^sub>s\<^sub>t_is_subterm_trms\<^sub>s\<^sub>s\<^sub>t_subst[OF x(1), of \<theta>]
+                admissible_transactionE(4)[OF T_adm]
+          unfolding T'_def trms\<^sub>s\<^sub>s\<^sub>t_unlabel_dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_eq unlabel_subst by simp
+      qed
+    qed
+
+    have \<sigma>_vals_N_disj: "N \<inter> \<sigma>_vals = {}"
+      using step.prems(4) \<sigma>_vals_is_T'_vals
+      unfolding \<theta>_def[symmetric] T'_def[symmetric] unlabel_append trms\<^sub>s\<^sub>s\<^sub>t_append by blast
+
+    have T'_pubvals_finite: "finite T'_pubvals"
+      using finite_surj[OF fv\<^sub>s\<^sub>s\<^sub>t_finite[of "unlabel T'"],
+                        of T'_pubvals "\<lambda>x. THE n. \<I> x = Fun (PubConst Value n) []"]
+      unfolding T'_pubvals_def by force
+
+    have \<sigma>_vals_finite: "finite \<sigma>_vals"
+    proof -
+      have *: "finite (subst_range \<sigma>)" using transaction_fresh_subst_domain[OF step.hyps(4)] by simp
+      show ?thesis
+        using finite_surj[OF *, of \<sigma>_vals "\<lambda>t. THE n. t = Fun (Val n) []"]
+        unfolding \<sigma>_vals_def by force
+    qed
+
+    have \<A>_vals_finite: "finite \<A>_vals"
+    proof -
+      have *: "\<A>_vals \<subseteq> (\<lambda>t. THE n. t = Fun (Val n) []) ` subterms\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>)"
+        unfolding \<A>_vals_def by force
+      show ?thesis
+        by (rule finite_surj[OF subterms_union_finite[OF trms\<^sub>s\<^sub>s\<^sub>t_finite] *])
+    qed
+
+    have \<I>_vals_finite: "finite \<I>_vals"
+    proof -
+      define X where "X \<equiv> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<union> X' \<union> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'"
+      have *: "finite X" using fv\<^sub>s\<^sub>s\<^sub>t_finite step.prems(6) unfolding X_def by blast
+      show ?thesis
+        using finite_surj[OF *, of \<I>_vals "\<lambda>x. THE n. \<I> x = Fun (Val n) []"]
+        unfolding \<I>_vals_def X_def[symmetric] by force
+    qed
+
+    obtain T_val_fresh_vals and \<delta>::"nat \<Rightarrow> nat"
+      where T_val_fresh_vals: "T_val_fresh_vals \<inter> (N \<union> \<sigma>_vals \<union> \<A>_vals \<union> \<I>_vals) = {}"
+        and \<delta>: "inj \<delta>" "\<delta> ` T'_pubvals = T_val_fresh_vals"
+      using step.prems(3) T'_pubvals_finite \<sigma>_vals_finite \<A>_vals_finite \<I>_vals_finite
+      by (metis finite_UnI ex_finite_disj_nat_inj)
+
+    define N' where "N' \<equiv> N \<union> \<sigma>_vals \<union> T_val_fresh_vals"
+
+    have T_val_fresh_vals_finite: "finite T_val_fresh_vals"
+      using T'_pubvals_finite \<delta>(2) by blast
+
+    have N'_finite: "finite N'"
+      using step.prems(3) T'_pubvals_finite T_val_fresh_vals_finite \<sigma>_vals_finite
+      unfolding N'_def by auto
+
+    have \<A>_vals_trms_in: "n \<in> \<A>_vals" when "Fun (Val n) [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>" for n
+      using that unfolding \<A>_vals_def by blast
+
+    have N'_notin_\<A>: "\<not>(Fun (Val n) [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>)" when n: "n \<in> N'" for n
+    proof -
+      have ?thesis when n': "n \<in> N"
+        using n' step.prems(4) unfolding N'_def unlabel_append trms\<^sub>s\<^sub>s\<^sub>t_append by blast
+      moreover have ?thesis when n': "n \<in> \<sigma>_vals"
+        using n' step.hyps(4) unfolding \<sigma>_vals_def transaction_fresh_subst_def by blast
+      moreover have ?thesis when n': "n \<in> T_val_fresh_vals"
+        using n' T_val_fresh_vals \<A>_vals_trms_in by blast
+      ultimately show ?thesis using n unfolding N'_def by blast
+    qed
+
+    have T'_fv_\<A>_disj: "fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<inter> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T' = {}"
+      using transaction_decl_fresh_renaming_substs_vars_disj(8)[OF step.hyps(3,4,5)]
+            transaction_decl_fresh_renaming_substs_vars_subset(4)[OF step.hyps(3,4,5,2)]
+      unfolding \<theta>_def[symmetric] T'_def fv\<^sub>s\<^sub>s\<^sub>t_unlabel_dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_eq by blast
+
+    have X'_disj: "X' \<inter> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> = {}" "X' \<inter> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T' = {}"
+      using step.prems(5)
+      unfolding \<theta>_def[symmetric] T'_def[symmetric] unlabel_append fv\<^sub>s\<^sub>s\<^sub>t_append
+      by (blast, blast)
+
+    have X'_disj': "(X' \<union> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T') \<inter> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> = {}"
+      using X'_disj(1) T'_fv_\<A>_disj by blast
+
+    have X'_finite: "finite (X' \<union> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T')"
+      using step.prems(6) fv\<^sub>s\<^sub>s\<^sub>t_finite by blast
+
+    have \<A>_X'_valconstcases: "\<forall>x \<in> X' \<union> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'. valconst_cases \<I> x"
+      using 3(3,5) by blast
+
+    have T'_value_vars: "\<Gamma>\<^sub>v x = TAtom Value" when x: "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'" for x
+      using x reachable_constraints_fv_Value_typed[
+                OF P reachable_constraints.step[OF step.hyps]]
+      unfolding \<theta>_def[symmetric] T'_def[symmetric] unlabel_append fv\<^sub>s\<^sub>s\<^sub>t_append by blast
+
+    have X'_T'_value_vars: "\<forall>x \<in> X' \<union> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'. \<Gamma>\<^sub>v x = TAtom Value"
+      using step.prems(8) T'_value_vars by blast
+
+    have N'_not_subterms_\<A>: "\<forall>n \<in> N'. \<not>(Fun (Val n) [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>)"
+      using N'_notin_\<A> by blast
+
+    obtain \<B> \<J> where B:
+        "\<B> \<in> reachable_constraints P" "?wt_model \<J> \<B>"
+        "valconsts_only (fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<union> X' \<union> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T') \<J>" "?rcv_att \<A> n \<longrightarrow> ?rcv_att \<B> n"
+        "subst_eq_on_privvals (fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<union> X' \<union> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T') \<J>"
+        "subst_in_ik_if_subst_pubval (fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<union> X' \<union> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T') \<J> \<B>"
+        "subst_eq_iff (fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<union> X' \<union> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T') \<J>"
+        "vars\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> = vars\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>" "fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> = fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>" "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<subseteq> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>" "trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<subseteq> trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>"
+        "\<forall>n \<in> N'. \<not>(Fun (Val n) [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>)"
+        "db_eq \<A> \<B> s_val T_upds"
+        "db_upds_consts_fresh \<A> (fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<union> X' \<union> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T') \<J>"
+      using step.IH[OF 3(1,2) N'_finite N'_not_subterms_\<A> X'_disj' X'_finite
+                       \<A>_X'_valconstcases X'_T'_value_vars]
+      unfolding Un_assoc by fast
+
+    have J:
+        "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<J>" "constr_sem_stateful \<J> (unlabel \<B>)"
+        "interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<J>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<J>)"
+      using B(2) unfolding welltyped_constraint_model_def constraint_model_def by blast+
+
+    have T_val_fresh_vals_notin_\<B>: "\<not>(Fun (Val n) [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>)"
+        when "n \<in> T_val_fresh_vals" for n
+      using that B(12) unfolding N'_def by blast
+    hence "\<forall>n \<in> T_val_fresh_vals. \<not>(Fun (Val n) [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>)" by blast
+    then obtain T_val_constr::"('fun,'atom,'sets,'lbl) prot_constr"
+      where T_val_constr:
+          "\<B>@T_val_constr \<in> reachable_constraints P"
+          "T_val_constr \<in> reachable_constraints P"
+          "T_upds = [] \<Longrightarrow> list_all is_Receive (unlabel T_val_constr)"
+          "T_upds \<noteq> [] \<Longrightarrow> list_all (\<lambda>a. is_Insert a \<or> is_Receive a) (unlabel T_val_constr)"
+          "vars\<^sub>l\<^sub>s\<^sub>s\<^sub>t T_val_constr = {}"
+          "\<forall>n. Fun (Val n) [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> \<longrightarrow> Fun (Val n) [] \<notin> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t T_val_constr"
+          "\<forall>n. Fun (Val n) [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t T_val_constr \<longrightarrow> Fun (Val n) [] \<in> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t T_val_constr"
+          "T_val_fresh_vals = {n. Fun (Val n) [] \<in> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t T_val_constr}"
+          "\<forall>l a. (l,a) \<in> set T_val_constr \<and> is_Insert a \<longrightarrow>
+                  (l = l2_val \<and> (\<exists>n. a = insert\<langle>Fun (Val n) [],\<langle>s_val\<rangle>\<^sub>s\<rangle>))"
+      using reachable_constraints_initial_value_transaction[
+              OF P B(1) T_val_fresh_vals_finite _ x_val]
+      by blast
+
+    have T_val_constr_no_upds_if_no_T_upds:
+        "filter is_Update (unlabel T_val_constr) = []"
+      when "T_upds = []"
+      using T_val_constr(3)[OF that] by (induct T_val_constr) auto
+
+    have T_val_fresh_vals_is_T_val_constr_vals:
+        "k \<in> T_val_fresh_vals \<longleftrightarrow> Fun (Val k) [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t T_val_constr"
+      for k
+      using that T_val_constr(7,8) ik\<^sub>s\<^sub>s\<^sub>t_trms\<^sub>s\<^sub>s\<^sub>t_subset by fast
+
+    have T_val_constr_no_fv: "fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T_val_constr = {}"
+      using T_val_constr(5) vars\<^sub>s\<^sub>s\<^sub>t_is_fv\<^sub>s\<^sub>s\<^sub>t_bvars\<^sub>s\<^sub>s\<^sub>t by fast
+
+    have T_val_\<sigma>: "transaction_fresh_subst \<sigma> T (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (\<B>@T_val_constr))"
+    proof -
+      have "\<not>(t \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (\<B>@T_val_constr))" when t: "t \<in> subst_range \<sigma>" for t
+      proof -
+        obtain k where k: "t = Fun (Val k) []" using t \<sigma>_ran by fast
+        have "k \<in> \<sigma>_vals" using t unfolding k \<sigma>_vals_def by blast
+        thus ?thesis
+          using B(12) T_val_fresh_vals T_val_constr(7,8)
+          unfolding N'_def k unlabel_append trms\<^sub>s\<^sub>s\<^sub>t_append by blast
+      qed
+      thus ?thesis using step.hyps(4) unfolding transaction_fresh_subst_def by fast
+    qed
+
+    have T_val_\<alpha>: "transaction_renaming_subst \<alpha> P (vars\<^sub>l\<^sub>s\<^sub>s\<^sub>t (\<B>@T_val_constr))"
+      using step.hyps B(8) T_val_constr(5) by auto
+
+    define \<B>' where "\<B>' \<equiv> \<B>@T_val_constr@T'"
+
+    define \<K> where "\<K> \<equiv> \<lambda>x.
+      if x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'
+      then if \<exists>n. \<I> x = Fun (PubConst Value n) []
+           then if \<exists>y \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> \<union> X'. \<I> y = \<I> x
+                then \<J> (SOME y. y \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> \<union> X' \<and> \<I> y = \<I> x)
+                else Fun (Val (\<delta> (THE n. \<I> x = Fun (PubConst Value n) []))) []
+           else \<I> x
+      else \<J> x"
+
+    have \<sigma>_ground_ran: "ground (subst_range \<sigma>)" "range_vars \<sigma> = {}" 
+      and \<xi>_ran_bvars_disj: "range_vars \<xi> \<inter> bvars_transaction T = {}"
+      using transaction_fresh_subst_domain[OF step.hyps(4)]
+            transaction_fresh_subst_range_vars_empty[OF step.hyps(4)]
+            transaction_decl_subst_range_vars_empty[OF step.hyps(3)]
+      by (metis range_vars_alt_def, argo, blast)
+
+    have \<B>_T'_fv_disj: "fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> \<inter> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T' = {}"
+      using T'_fv_\<A>_disj unfolding B(9) by argo
+    hence \<J>_\<K>_fv_\<B>_eq: "\<J> x = \<K> x" when x: "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> \<union> X'" for x
+      using x X'_disj unfolding \<K>_def by auto
+
+    have B'1: "\<B>' \<in> reachable_constraints P"
+      using reachable_constraints.step[OF T_val_constr(1) step.hyps(2,3) T_val_\<sigma> T_val_\<alpha>]
+      unfolding \<B>'_def T'_def \<theta>_def by simp
+
+    have "\<exists>n. \<K> x = Fun (Val n) []" when x: "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (\<A>@T') \<union> X'" for x
+    proof (cases "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'")
+      case True
+      note T = this
+      show ?thesis
+      proof (cases "\<exists>n. \<I> x = Fun (PubConst Value n) []")
+        case True thus ?thesis
+          using T B(3,9) someI_ex[of "\<lambda>y. y \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> \<union> X' \<and> \<I> y = \<I> x"]
+          unfolding \<K>_def valconsts_only_def
+          by (cases "\<exists>y \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> \<union> X'. \<I> y = \<I> x") (meson, auto)
+      next
+        case False thus ?thesis
+          using T 3(3) unfolding \<K>_def valconst_cases_def by fastforce
+      qed
+    next
+      case False thus ?thesis using x B(3) unfolding \<K>_def valconsts_only_def by auto
+    qed
+    hence B'3: "valconsts_only (fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (\<A>@T') \<union> X') \<K>" unfolding valconsts_only_def by blast
+
+    have B'4: "?rcv_att \<B>' n" when "?rcv_att (\<A>@T') n"
+      using that B(4) unfolding \<B>'_def by auto
+
+    have "\<I> x = \<K> x" when x: "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (\<A>@T') \<union> X'" "\<I> x = Fun (Val n) []" for x n
+    proof -
+      have "\<K> x = \<J> x" when "x \<notin> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'" using that unfolding \<K>_def by meson
+      moreover have "\<K> x = \<I> x" when "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'" using that x unfolding \<K>_def by simp
+      ultimately show ?thesis
+        using B(5) x
+        unfolding subst_eq_on_privvals_def unlabel_append fv\<^sub>s\<^sub>s\<^sub>t_append
+        by (cases "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'") auto
+    qed
+    hence B'5: "subst_eq_on_privvals (fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (\<A>@T') \<union> X') \<K>"
+      unfolding subst_eq_on_privvals_def by blast
+
+    have \<A>_fv_\<K>_eq_\<J>: "\<K> x = \<J> x" when x: "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<union> X'" for x
+    proof -
+      have "x \<notin> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'" using x T'_fv_\<A>_disj X'_disj by blast
+      thus ?thesis unfolding \<K>_def by argo
+    qed
+
+    have T'_fv_\<I>_val_\<K>_eq_\<J>: "\<K> x = \<I> x" 
+      when x: "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'" "\<nexists>n. \<I> x = Fun (PubConst Value n) []" for x
+      using x B'5 3(3) unfolding unlabel_append fv\<^sub>s\<^sub>s\<^sub>t_append valconst_cases_def \<K>_def by meson
+
+    have T'_fv_\<I>_pubval_\<K>_eq_\<delta>_fresh_val:
+        "\<K> x = Fun (Val (\<delta> n)) []" "\<delta> n \<in> T_val_fresh_vals" 
+      when x: "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'" "\<I> x = Fun (PubConst Value n) []" "\<forall>y \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> \<union> X'. \<I> y \<noteq> \<I> x"
+      for x n
+    proof -
+      show "\<K> x = Fun (Val (\<delta> n)) []" using x unfolding \<K>_def by auto
+      show "\<delta> n \<in> T_val_fresh_vals" using \<delta>(2) x unfolding T'_pubvals_def by blast
+    qed
+
+    have T'_fv_\<I>_pubval_\<K>_eq_\<J>_val:
+        "\<exists>y \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> \<union> X'. \<exists>m. \<I> y = \<I> x \<and> \<K> x = \<J> y \<and> \<K> x = Fun (Val m) []"
+      when x: "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'" "\<I> x = Fun (PubConst Value n) []" "\<exists>y \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> \<union> X'. \<I> y = \<I> x"
+      for x n
+    proof -
+      have "\<K> x = \<J> (SOME y. y \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> \<union> X' \<and> \<I> y = \<I> x)" using x unfolding \<K>_def by meson
+      then obtain y where y: "y \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> \<union> X'" "\<I> y = \<I> x" "\<K> x = \<J> y"
+        using x(3) someI_ex[of "\<lambda>y. y \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> \<union> X' \<and> \<I> y = \<I> x"] by blast
+      thus ?thesis using B(3,9) unfolding valconsts_only_def by auto
+    qed
+
+    have T'_fv_\<I>_pubval_\<K>_eq_val: "\<exists>n. \<K> x = Fun (Val n) []"
+      when x: "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'" "\<I> x = Fun (PubConst Value n) []" for x n
+      using T'_fv_\<I>_pubval_\<K>_eq_\<delta>_fresh_val[OF x] T'_fv_\<I>_pubval_\<K>_eq_\<J>_val[OF x] by auto
+
+    have B'6': "\<K> x \<in> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>"
+      when x: "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<union> X'" "\<I> x = Fun (PubConst Value n) []" for x n
+      using x B(6) \<A>_fv_\<K>_eq_\<J> x(2) unfolding B(8) subst_in_ik_if_subst_pubval_def by simp
+
+    have B'6'': "\<K> x \<in> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> \<union> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t T_val_constr"
+      when x: "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'" "\<I> x = Fun (PubConst Value n) []" for x n
+    proof (cases "\<exists>y \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> \<union> X'. \<I> y = \<I> x")
+      case True thus ?thesis
+        using B(6) x(2) T'_fv_\<I>_pubval_\<K>_eq_\<J>_val[OF x True]
+        unfolding B(9) subst_in_ik_if_subst_pubval_def by force
+    next
+      case False thus ?thesis
+        using T_val_constr(8) T'_fv_\<I>_pubval_\<K>_eq_\<delta>_fresh_val[OF x] by force
+    qed
+
+    have "\<K> x \<in> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>'"
+      when x: "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (\<A>@T') \<union> X'" "\<I> x = Fun (PubConst Value n) []" for x n
+    proof (cases "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'")
+      case True thus ?thesis using B'6''[OF _ x(2)] unfolding \<B>'_def by auto
+    next
+      case False
+      hence "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<union> X'"
+        using x(1) unfolding unlabel_append fv\<^sub>s\<^sub>s\<^sub>t_append by blast
+      thus ?thesis using B'6' x(2) unfolding \<B>'_def by simp
+    qed
+    hence B'6: "subst_in_ik_if_subst_pubval (fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (\<A>@T') \<union> X') \<K> \<B>'"
+      unfolding subst_in_ik_if_subst_pubval_def by blast
+
+    have B'7: "subst_eq_iff (fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (\<A>@T') \<union> X') \<K>"
+    proof (unfold subst_eq_iff_def; intro ballI)
+      fix x y assume xy: "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (\<A>@T') \<union> X'" "y \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (\<A>@T') \<union> X'"
+
+      let ?Q = "\<lambda>x y. \<I> x = \<I> y \<longleftrightarrow> \<K> x = \<K> y"
+
+      have *: "?Q x y"
+        when xy: "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<union> X'" "x \<notin> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'" "y \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<union> X'" "y \<notin> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'" for x y
+        using B(7) xy unfolding \<K>_def subst_eq_iff_def by force
+
+      have **: "?Q x y" when x: "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<union> X'" and y: "y \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'" for x y
+      proof -
+        have xy_neq: "x \<noteq> y" using x y T'_fv_\<A>_disj X'_disj by blast
+
+        have x_eq: "\<K> x = \<J> x"
+          using \<A>_fv_\<K>_eq_\<J> x by blast
+
+        have x_eq_if_val: "\<I> x = \<J> x" when "\<I> x = Fun (Val n) []" for n
+          using that x B(5) unfolding subst_eq_on_privvals_def by blast
+
+        have x_neq_if_neq_val: "\<I> x \<noteq> \<J> x" when "\<I> x = Fun (PubConst Value n) []" for n
+          by (metis that B(3) x UnI1 prot_fun.distinct(37) term.inject(2) valconsts_only_def)
+
+        have y_eq_if_val: "\<I> y = \<K> y" when "\<I> y = Fun (Val n) []" for n
+          using that y B'5 unfolding subst_eq_on_privvals_def by simp
+
+        have y_eq: "\<K> y = Fun (Val (\<delta> n)) []"
+          when "\<I> y = Fun (PubConst Value n) []" "\<forall>z \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> \<union> X'. \<I> z \<noteq> \<I> y" for n
+          by (rule T'_fv_\<I>_pubval_\<K>_eq_\<delta>_fresh_val(1)[OF y that])
+
+        have y_eq': "\<exists>z \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> \<union> X'. \<exists>m. \<I> z = \<I> y \<and> \<K> y = \<J> z \<and> \<K> y = Fun (Val m) []"
+          when "\<I> y = Fun (PubConst Value n) []" "\<exists>z \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> \<union> X'. \<I> z = \<I> y" for n
+          by (rule T'_fv_\<I>_pubval_\<K>_eq_\<J>_val[OF y that])
+
+        have K_eq_if_I_eq: "\<I> x = \<I> y \<Longrightarrow> \<K> x = \<K> y"
+          apply (cases "\<exists>n. \<I> x = Fun (PubConst Value n) []")
+          subgoal using B(7,9) unfolding subst_eq_iff_def by (metis UnI1 x x_eq y_eq')
+          subgoal by (metis x_eq x T'_fv_\<I>_val_\<K>_eq_\<J>[OF y] 3(5) valconst_cases_def x_eq_if_val)
+          done
+
+        have K_neq_if_I_neq_val: "\<K> x \<noteq> \<K> y"
+          when n: "\<I> y = Fun (Val n) []"
+            and m: "\<I> x = Fun (PubConst Value m) []"
+          for n m
+        proof -
+          have I_neq: "\<I> x \<noteq> \<I> y" using n m by simp
+
+          note y_eq'' = y_eq_if_val[OF n]
+          note x_neq = x_neq_if_neq_val[OF m]
+
+          have x_ex: "\<exists>z \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> \<union> X'. \<I> z = \<I> x" using x unfolding B(9) by blast
+          have J1: "\<J> x \<in> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>" using B(6) x m unfolding subst_in_ik_if_subst_pubval_def by fast
+          have J2: "\<I> x \<noteq> \<J> x"
+            by (metis m B(3) x UnI1 prot_fun.distinct(37) term.inject(2) valconsts_only_def)
+          have J3: "\<I> y = \<J> y" using B(5) n y unfolding subst_eq_on_privvals_def by blast
+          have K_x: "\<K> x \<noteq> \<I> x" using J2 x_eq by presburger
+          have x_notin: "x \<notin> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'" using x T'_fv_\<A>_disj X'_disj by blast
+          have K_x': "\<K> x = \<J> x" using x_notin unfolding \<K>_def by argo
+          have K_y: "\<K> y = \<J> y" using y_eq'' J3 by argo
+
+          have "\<J> x \<noteq> \<J> y" using I_neq x y B(7) unfolding subst_eq_iff_def by blast
+          thus ?thesis using K_x' K_y by argo
+        qed
+
+        show ?thesis
+        proof
+          show "\<I> x = \<I> y \<Longrightarrow> \<K> x = \<K> y" by (rule K_eq_if_I_eq)
+        next
+          assume xy_eq: "\<K> x = \<K> y" show "\<I> x = \<I> y"
+          proof (cases "\<exists>n. \<I> y = Fun (PubConst Value n) []")
+            case True
+            then obtain n where n: "\<I> y = Fun (PubConst Value n) []" by blast
+
+            show ?thesis
+            proof (cases "\<exists>z \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> \<union> X'. \<I> z = \<I> y")
+              case True thus ?thesis
+                using B(7,9) unfolding subst_eq_iff_def by (metis xy_eq UnI1 x x_eq y_eq'[OF n])
+            next
+              case False
+              hence F: "\<forall>z \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> \<union> X'. \<I> z \<noteq> \<I> y" by blast
+              note y_eq'' = y_eq[OF n F]
+
+              have n_in: "\<delta> n \<in> T_val_fresh_vals"
+                using  \<delta>(2) x_eq xy_eq T_val_fresh_vals_notin_\<B> y n
+                unfolding T'_pubvals_def by blast
+              hence y_notin: "\<not>(\<K> y \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>)"
+                using T_val_fresh_vals_notin_\<B> y_eq'' ik\<^sub>s\<^sub>s\<^sub>t_trms\<^sub>s\<^sub>s\<^sub>t_subset[of "unlabel \<B>"]
+                by auto
+
+              show ?thesis
+              proof (cases "\<exists>m. \<I> x = Fun (PubConst Value m) []")
+                case True thus ?thesis
+                  using y_notin B(6) x xy_eq x_eq
+                  unfolding B(9) subst_in_ik_if_subst_pubval_def
+                  by fastforce
+              next
+                case False
+                then obtain m where m: "\<I> x = Fun (Val m) []"
+                  using 3(5) x unfolding valconst_cases_def by fast
+                hence "\<I> x = \<J> x" using x B(5) unfolding subst_eq_on_privvals_def by blast
+                hence "\<K> x = Fun (Val m) []" using m x_eq by argo
+                moreover have "m \<notin> T_val_fresh_vals"
+                  using m T_val_fresh_vals x unfolding \<I>_vals_def by blast
+                hence "m \<noteq> \<delta> n" using n_in by blast
+                ultimately have False using xy_eq y_eq'' by force
+                thus ?thesis by simp
+              qed
+            qed
+          next
+            case False
+            then obtain n where n: "\<I> y = Fun (Val n) []"
+              using 3(3) y unfolding valconst_cases_def by fast
+
+            note y_eq'' = y_eq_if_val[OF n]
+
+            show ?thesis
+            proof (cases "\<exists>m. \<I> x = Fun (Val m) []")
+              case True thus ?thesis by (metis xy_eq x_eq y_eq'' x_eq_if_val)
+            next
+              case False 
+              then obtain m where m: "\<I> x = Fun (PubConst Value m) []"
+                using 3(5) x unfolding valconst_cases_def by blast
+
+              show ?thesis using K_neq_if_I_neq_val[OF n m] xy_eq by blast
+            qed
+          qed
+        qed
+      qed
+
+      have ***: "?Q x y" when x: "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'" and y: "y \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'" for x y
+      proof
+        assume xy_eq: "\<I> x = \<I> y" show "\<K> x = \<K> y"
+        proof (cases "\<exists>n. \<I> x = Fun (PubConst Value n) []")
+          case True thus ?thesis
+            using xy_eq x y B(7) T'_fv_\<I>_pubval_\<K>_eq_\<delta>_fresh_val(1) T'_fv_\<I>_pubval_\<K>_eq_\<J>_val
+            unfolding B(9) subst_eq_iff_def by (metis (no_types) UnI1)
+        qed (metis xy_eq x y T'_fv_\<I>_val_\<K>_eq_\<J>)
+      next
+        assume xy_eq: "\<K> x = \<K> y"
+
+        have case1: False
+          when x': "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'"
+            and y': "y \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'"
+            and xy_eq': "\<K> x = \<K> y"
+            and m: "\<I> x = Fun (PubConst Value m) []"
+            and n: "\<I> y = Fun (Val n) []"
+          for x y n m
+        proof -
+          have F: "\<nexists>n. \<I> y = Fun (PubConst Value n) []" using n by auto
+
+          note x_eq = T'_fv_\<I>_pubval_\<K>_eq_\<delta>_fresh_val[OF x' m]
+          note y_eq = T'_fv_\<I>_val_\<K>_eq_\<J>[OF y' F]
+
+          have "\<exists>z \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> \<union> X'. \<I> z = \<I> x"
+          proof (rule ccontr)
+            assume no_z: "\<not>(\<exists>z \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> \<union> X'. \<I> z = \<I> x)"
+            hence "n \<noteq> \<delta> m" using n y' x_eq(2) T_val_fresh_vals unfolding \<I>_vals_def by blast
+            thus False using xy_eq' x_eq y_eq(1) n no_z by auto
+          qed
+          then obtain z k where z:
+              "z \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> \<union> X'" "\<I> z = \<I> x" "\<K> x = \<J> z" "\<K> x = Fun (Val k) []"
+            using T'_fv_\<I>_pubval_\<K>_eq_\<J>_val[OF x' m] by blast
+
+          have "\<I> y = \<J> z" using z(2,3) y_eq xy_eq' by presburger
+          hence "\<I> x = \<I> y" using z(1,2) ** B(9) \<J>_\<K>_fv_\<B>_eq y' y_eq by metis
+          thus False using n m by simp
+        qed
+
+        have case2: "m = n"
+          when x': "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'"
+            and y': "y \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'"
+            and xy_eq': "\<K> x = \<K> y"
+            and m: "\<I> x = Fun (PubConst Value m) []"
+            and n: "\<I> y = Fun (PubConst Value n) []"
+          for x y n m
+        proof (cases "\<forall>z \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> \<union> X'. \<I> z \<noteq> \<I> x")
+          case True show ?thesis
+            apply (cases "\<forall>z \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> \<union> X'. \<I> z \<noteq> \<I> y")
+            subgoal
+              using xy_eq' m n T'_fv_\<I>_pubval_\<K>_eq_\<delta>_fresh_val[OF x' m True]
+                    T'_fv_\<I>_pubval_\<K>_eq_\<delta>_fresh_val[OF y' n] injD[OF \<delta>(1), of m n]
+              by fastforce
+            subgoal by (metis x' y' xy_eq' ** B(9) True)
+            done
+        qed (metis x' y' xy_eq' m n ** B(9) prot_fun.inject(6) term.inject(2))
+
+        have case3: "m = n"
+          when x': "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'"
+            and y': "y \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'"
+            and xy_eq': "\<K> x = \<K> y"
+            and m: "\<I> x = Fun (Val m) []"
+            and n: "\<I> y = Fun (Val n) []"
+          for x y n m
+          using x' y' xy_eq' m n T'_fv_\<I>_val_\<K>_eq_\<J> by fastforce
+
+        show "\<I> x = \<I> y"
+          using x y xy_eq case1 case2 case3 3(3)
+          unfolding valconst_cases_def by metis
+      qed
+
+      have ****: "?Q x y" when xy: "x \<in> X'" "x \<notin> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'" "y \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'" for x y
+      proof -
+        have xy': "y \<notin> X'" "y \<notin> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>" "x \<notin> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>"
+          using xy X'_disj T'_fv_\<A>_disj by (blast, blast, blast)
+
+        have K_x: "\<K> x = \<J> x" using xy(2) unfolding \<K>_def by argo
+
+        have I_iff_J: "\<I> x = \<I> y \<longleftrightarrow> \<J> x = \<J> y" using xy B(7) unfolding subst_eq_iff_def by fast
+
+        show ?thesis using K_x I_iff_J K_x injD[OF \<delta>(1)] xy B(7,9) ** by (meson UnCI)
+      qed
+
+      show "?Q x y"
+        using xy * **[of x y] **[of y x] ***[of x y] ****[of x y] ****[of y x]
+        unfolding unlabel_append fv\<^sub>s\<^sub>s\<^sub>t_append by (metis Un_iff)
+    qed
+
+    have B'8_9: "vars\<^sub>l\<^sub>s\<^sub>s\<^sub>t (\<A>@T') = vars\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>'" "fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (\<A>@T') = fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>'"
+      using B(8,9) T_val_constr(5) vars\<^sub>s\<^sub>s\<^sub>t_is_fv\<^sub>s\<^sub>s\<^sub>t_bvars\<^sub>s\<^sub>s\<^sub>t[of "unlabel T_val_constr"]
+      unfolding \<B>'_def unlabel_append vars\<^sub>s\<^sub>s\<^sub>t_append fv\<^sub>s\<^sub>s\<^sub>t_append by simp_all
+
+    have I': "\<exists>n. \<I> x = Fun (PubConst Value n) []"
+      when x: "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'" "\<nexists>n. \<I> x = Fun (Val n) []" for x
+      using x 3(3) unfolding valconst_cases_def by fast
+
+    have B'10_11: "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t (\<A>@T') \<subseteq> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>'" "trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (\<A>@T') \<subseteq> trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>'"
+      using B(10,11) unfolding N'_def \<B>'_def unlabel_append trms\<^sub>s\<^sub>s\<^sub>t_append ik\<^sub>s\<^sub>s\<^sub>t_append
+      by (blast, blast)
+
+    have B'12: "\<forall>n \<in> N. \<not>(Fun (Val n) [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>')"
+      using B(12) \<sigma>_vals_is_T'_vals \<sigma>_vals_N_disj T_val_fresh_vals
+            T_val_fresh_vals_is_T_val_constr_vals
+      unfolding N'_def \<B>'_def unfolding unlabel_append trms\<^sub>s\<^sub>s\<^sub>t_append ik\<^sub>s\<^sub>s\<^sub>t_append by fast
+
+    have B'13: "db_eq (\<A>@T') \<B>' s_val T_upds"
+    proof -
+      let ?f = "filter is_Update \<circ> unlabel"
+      let ?g = "filter (\<lambda>a. \<nexists>l t ts. a = (l, insert\<langle>t,Fun (Set s_val) ts\<rangle>))"
+
+      have "?f (?g T_val_constr) = []" using T_val_constr(3,4,9)
+      proof (induction T_val_constr)
+        case (Cons a B)
+        then obtain l b where a: "a = (l,b)" by (metis surj_pair)
+  
+        have IH: "?f (?g B) = []" using Cons.prems Cons.IH by auto
+
+        show ?case
+        proof (cases "T_upds = []")
+          case True
+          hence "is_Receive b" using a Cons.prems(1,2) by simp
+          thus ?thesis using IH unfolding a Let_def by auto
+        next
+          case False
+          hence "is_Insert b \<or> is_Receive b" using a Cons.prems(1,2) by simp
+          hence "\<exists>t. a = (l2_val, insert\<langle>t,\<langle>s_val\<rangle>\<^sub>s\<rangle>)" when b: "\<not>is_Receive b"
+            using b Cons.prems(3) unfolding a by (metis list.set_intros(1))
+          thus ?thesis using IH unfolding a Let_def by auto
+        qed
+      qed simp
+      hence "?f (?g (\<A>@T')) = ?f (?g \<A>)@?f (?g T')"
+            "?f (?g (\<B>@T_val_constr@T')) = ?f (?g \<B>)@?f (?g T')"
+        when "T_upds \<noteq> []"
+        by simp_all
+      moreover have "?f T_val_constr = []" when "T_upds = []"
+        using T_val_constr_no_upds_if_no_T_upds[OF that] by force
+      hence "?f (\<A>@T') = ?f \<A>@?f T'"
+            "?f (\<B>@T_val_constr@T') = ?f \<B>@?f T'"
+        when "T_upds = []"
+        using that by auto
+      ultimately show ?thesis using B(13) unfolding \<B>'_def db_eq_def Let_def by presburger  
+    qed
+
+    have B'14: "db_upds_consts_fresh (\<A>@T') (fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (\<A>@T') \<union> X') \<K>"
+    proof (unfold db_upds_consts_fresh_def; intro ballI allI impI; elim exE)
+      fix x s n m
+      assume x: "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (\<A>@T') \<union> X'"
+        and n: "insert\<langle>Fun (Val n) [],s\<rangle> \<in> set (unlabel (\<A>@T')) \<or>
+                delete\<langle>Fun (Val n) [],s\<rangle> \<in> set (unlabel (\<A>@T'))"
+              (is "?A (\<A>@T')")
+        and m: "\<I> x = Fun (PubConst Value m) []"
+
+      have A_cases: "?A \<A> \<or> ?A T'" using n by force
+
+      have n_in_case: "n \<in> \<sigma>_vals" when A: "?A T'"
+      proof -
+        obtain t s' where t:
+          "insert\<langle>t,s'\<rangle> \<in> set (unlabel (transaction_strand T)) \<or>
+           delete\<langle>t,s'\<rangle> \<in> set (unlabel (transaction_strand T))"
+          "Fun (Val n) [] = t \<cdot> \<theta>"
+        using A dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_unlabel_steps_iff(4,5)
+              stateful_strand_step_mem_substD(4,5)[of _ _ _ \<theta>]
+              subst_lsst_unlabel[of _ \<theta>]
+        unfolding T'_def by (metis (no_types, opaque_lifting))
+
+        have "Fun (Val n) [] \<in> subst_range \<theta>"
+          using t transaction_inserts_are_Value_vars(1)[OF T_wf(1,3), of t s']
+                transaction_deletes_are_Value_vars(1)[OF T_wf(1,3), of t s']
+          by force
+        hence "Fun (Val n) [] \<in> subst_range \<sigma>"
+          using transaction_decl_fresh_renaming_substs_range'(4)[
+                  OF step.hyps(3,4,5) _ \<xi>_empty]
+          unfolding \<theta>_def by blast
+        thus ?thesis unfolding \<sigma>_vals_def by fast
+      qed
+
+      have in_A_case: "\<K> x \<noteq> Fun (Val n) []"
+        when y: "y \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<union> X'" "\<I> x = \<I> y" "\<K> x = \<J> y" for y
+        using A_cases
+      proof
+        assume "?A \<A>" thus ?thesis
+          using B(14) m y(1,3) unfolding db_upds_consts_fresh_def y(2) by auto
+      next
+        assume "?A T'"
+        hence "n \<in> N'" using n_in_case unfolding N'_def by blast
+        moreover have "\<J> y \<in> trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>"
+          using B(6) y(1) m ik\<^sub>s\<^sub>s\<^sub>t_trms\<^sub>s\<^sub>s\<^sub>t_subset
+          unfolding y(2) subst_in_ik_if_subst_pubval_def by blast
+        ultimately show ?thesis using B(12) y(3) by fastforce
+      qed
+
+      show "\<K> x \<noteq> Fun (Val n) []"
+      proof (cases "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'")
+        case True
+        note 0 = T'_fv_\<I>_pubval_\<K>_eq_\<delta>_fresh_val[OF True m, unfolded B(9)[symmetric]]
+        note 1 = T'_fv_\<I>_pubval_\<K>_eq_\<J>_val[OF True m, unfolded B(9)[symmetric]]
+
+        show ?thesis
+        proof (cases "\<forall>y\<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<union> X'. \<I> y \<noteq> \<I> x")
+          case True show ?thesis
+            using A_cases 0[OF True] T_val_fresh_vals n_in_case
+            unfolding \<A>_vals_def by force
+        next
+          case False
+          then obtain y where "y \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<union> X'" "\<I> y = \<I> x" "\<K> x = \<J> y" using 1 by blast
+          thus ?thesis using in_A_case by auto
+        qed
+      next
+        case False
+        hence x_in: "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<union> X'" using x unfolding unlabel_append fv\<^sub>s\<^sub>s\<^sub>t_append by fast
+        hence x_eq: "\<K> x = \<J> x" using \<A>_fv_\<K>_eq_\<J> by blast
+
+        show ?thesis using in_A_case[OF x_in _ x_eq] by blast
+      qed
+    qed
+
+    have B'2: "?wt_model \<K> \<B>'"
+    proof (unfold welltyped_constraint_model_def; intro conjI)
+      have "\<Gamma> (\<K> x) = \<Gamma>\<^sub>v x" for x
+      proof -
+        have "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<J>" "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>"
+          using B(2) 3(1) unfolding welltyped_constraint_model_def by (blast,blast)
+        hence *: "\<And>y. \<Gamma> (\<J> y) = \<Gamma>\<^sub>v y" "\<And>y. \<Gamma> (\<I> y) = \<Gamma>\<^sub>v y" unfolding wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t_def by auto
+
+        show ?thesis
+        proof (cases "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'")
+          case True
+          note x = this
+          show ?thesis
+          proof (cases "\<exists>n. \<I> x = Fun (PubConst Value n) []")
+            case True thus ?thesis using T'_fv_\<I>_pubval_\<K>_eq_val[OF x] T'_value_vars[OF x] by force
+          next
+            case False thus ?thesis using x * unfolding \<K>_def by presburger
+          qed
+        next
+          case False thus ?thesis using *(1) unfolding \<K>_def by presburger
+        qed
+      qed
+      thus "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<K>" unfolding \<K>_def wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t_def by force
+
+      show "constraint_model \<K> \<B>'"
+      proof (unfold constraint_model_def; intro conjI)
+        have *: "strand_sem_stateful {} {} (unlabel \<A>) \<I>"
+                "strand_sem_stateful {} {} (unlabel \<B>) \<J>"
+                "interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>" "interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<J>"
+                "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<I>)" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<J>)"
+          using B(2) 3(1) unfolding welltyped_constraint_model_def constraint_model_def by fast+
+
+        show K0: "subst_domain \<K> = UNIV"
+        proof -
+          have "x \<in> subst_domain \<K>" for x
+          proof (cases "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'")
+            case True thus ?thesis
+              using T'_fv_\<I>_pubval_\<K>_eq_val[OF True] T'_fv_\<I>_val_\<K>_eq_\<J>[OF True] *(3)
+              unfolding subst_domain_def by (cases "\<exists>n. \<I> x = Fun (PubConst Value n) []") auto
+          next
+            case False thus ?thesis using *(4) unfolding \<K>_def subst_domain_def by auto
+          qed
+          thus ?thesis by blast
+        qed
+
+        have "fv (\<K> x) = {}" for x
+          using interpretation_grounds_all[OF *(3)]
+                interpretation_grounds_all[OF *(4)]
+          unfolding \<K>_def by simp
+        thus K1: "ground (subst_range \<K>)" by simp
+
+        have "wf\<^sub>t\<^sub>r\<^sub>m (Fun (Val n) [])" for n by fastforce
+        moreover have "wf\<^sub>t\<^sub>r\<^sub>m (\<I> x)" "wf\<^sub>t\<^sub>r\<^sub>m (\<J> x)" for x using *(5,6) by (fastforce,fastforce)
+        ultimately have "wf\<^sub>t\<^sub>r\<^sub>m (\<K> x)" for x unfolding \<K>_def by auto
+        thus K2: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<K>)" by simp
+
+        show "strand_sem_stateful {} {} (unlabel \<B>') \<K>"
+        proof (unfold \<B>'_def unlabel_append strand_sem_append_stateful Un_empty_left; intro conjI)
+          let ?sem = "\<lambda>M D A. strand_sem_stateful M D (unlabel A) \<K>"
+          let ?M1 = "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> \<cdot>\<^sub>s\<^sub>e\<^sub>t \<K>"
+          let ?M2 = "?M1 \<union> (ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t T_val_constr \<cdot>\<^sub>s\<^sub>e\<^sub>t \<K>)"
+          let ?D1 = "dbupd\<^sub>s\<^sub>s\<^sub>t (unlabel \<B>) \<K> {}"
+          let ?D2 = "dbupd\<^sub>s\<^sub>s\<^sub>t (unlabel T_val_constr) \<K> ?D1"
+
+          show "?sem {} {} \<B>"
+            using \<J>_\<K>_fv_\<B>_eq strand_sem_model_swap[OF _ *(2)] by blast
+
+          show "?sem ?M1 ?D1 T_val_constr"
+            using T_val_constr(3,4) strand_sem_stateful_if_no_send_or_check
+            unfolding list_all_iff by blast
+
+          have D2: "?D2 = ?D1 \<union> {(t \<cdot> \<K>, s \<cdot> \<K>) | t s. insert\<langle>t,s\<rangle> \<in> set (unlabel T_val_constr)}"
+            using T_val_constr(3,4) dbupd\<^sub>s\<^sub>s\<^sub>t_no_deletes
+            unfolding list_all_iff by blast
+
+          have K3: "interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<K>"
+            using K0 K1 by argo
+
+          have rcv_\<theta>_is_\<alpha>: "t \<cdot> \<theta> = t \<cdot> \<alpha>"
+            when t: "(l,receive\<langle>ts\<rangle>) \<in> set (transaction_receive T)" "t \<in> set ts" for l ts t
+          proof -
+            have "fv t \<subseteq> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_receive T)"
+              using t(2) stateful_strand_step_fv_subset_cases(2)[OF unlabel_in[OF t(1)]] by auto
+            hence "t \<cdot> \<sigma> = t" using t \<sigma>_dom \<sigma>_ran admissible_transactionE(12,13)[OF T_adm] by blast
+            thus ?thesis unfolding \<theta>_def \<xi>_empty by simp
+          qed
+      
+          have eq_\<theta>_is_\<alpha>: "t \<cdot> \<theta> = t \<cdot> \<alpha>" "s \<cdot> \<theta> = s \<cdot> \<alpha>"
+            when t: "(l,\<langle>ac: t \<doteq> s\<rangle>) \<in> set (transaction_checks T)" for l ac t s
+          proof -
+            have "fv t \<union> fv s \<subseteq> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_checks T)"
+              using stateful_strand_step_fv_subset_cases(3)[OF unlabel_in[OF t]] by auto
+            hence "t \<cdot> \<sigma> = t" "s \<cdot> \<sigma> = s"
+              using t \<sigma>_dom \<sigma>_ran admissible_transactionE(12,13)[OF T_adm] by (blast, blast)
+            thus "t \<cdot> \<theta> = t \<cdot> \<alpha>" "s \<cdot> \<theta> = s \<cdot> \<alpha>" unfolding \<theta>_def \<xi>_empty by simp_all
+          qed
+
+          have noteq_\<theta>_is_\<alpha>: "t \<cdot> \<theta> = t \<cdot> \<alpha>" "s \<cdot> \<theta> = s \<cdot> \<alpha>"
+            when t: "(l,\<langle>t != s\<rangle>) \<in> set (transaction_checks T)" for l t s
+          proof -
+            have "fv t \<union> fv s \<subseteq> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_checks T)"
+              using stateful_strand_step_fv_subset_cases(8)[OF unlabel_in[OF t]] by auto
+            hence "t \<cdot> \<sigma> = t" "s \<cdot> \<sigma> = s"
+              using t \<sigma>_dom \<sigma>_ran admissible_transactionE(12,13)[OF T_adm] by (blast, blast)
+            thus "t \<cdot> \<theta> = t \<cdot> \<alpha>" "s \<cdot> \<theta> = s \<cdot> \<alpha>" unfolding \<theta>_def \<xi>_empty by simp_all
+          qed
+
+          have in_\<theta>_is_\<alpha>: "t \<cdot> \<theta> = t \<cdot> \<alpha>" "s \<cdot> \<theta> = s \<cdot> \<alpha>"
+            when t: "(l,\<langle>ac: t \<in> s\<rangle>) \<in> set (transaction_checks T)" for l ac t s
+          proof -
+            have "fv t \<union> fv s \<subseteq> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_checks T)"
+              using stateful_strand_step_fv_subset_cases(6)[OF unlabel_in[OF t]] by auto
+            hence "t \<cdot> \<sigma> = t" "s \<cdot> \<sigma> = s"
+              using t \<sigma>_dom \<sigma>_ran admissible_transactionE(12,13)[OF T_adm] by (blast, blast)
+            thus "t \<cdot> \<theta> = t \<cdot> \<alpha>" "s \<cdot> \<theta> = s \<cdot> \<alpha>" unfolding \<theta>_def \<xi>_empty by simp_all
+          qed
+
+          have notin_\<theta>_is_\<alpha>: "t \<cdot> \<theta> = t \<cdot> \<alpha>" "s \<cdot> \<theta> = s \<cdot> \<alpha>"
+            when t: "(l,\<langle>t not in s\<rangle>) \<in> set (transaction_checks T)" for l t s
+          proof -
+            have "fv t \<union> fv s \<subseteq> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_checks T)"
+              using stateful_strand_step_fv_subset_cases(9)[OF unlabel_in[OF t]] by auto
+            hence "t \<cdot> \<sigma> = t" "s \<cdot> \<sigma> = s"
+              using t \<sigma>_dom \<sigma>_ran admissible_transactionE(12,13)[OF T_adm] by (blast, blast)
+            thus "t \<cdot> \<theta> = t \<cdot> \<alpha>" "s \<cdot> \<theta> = s \<cdot> \<alpha>" unfolding \<theta>_def \<xi>_empty by simp_all
+          qed
+
+          have T'_trm_no_val: "\<nexists>n. s = Fun (Val n) [] \<or> s = Fun (PubConst Value n) []"
+            when t: "t \<in> trms_transaction T" "s \<sqsubseteq> t \<cdot> \<alpha>" for t s
+          proof -
+            have ?thesis when "s \<sqsubseteq> t"
+              using that t admissible_transactions_no_Value_consts'[OF T_adm]
+                    admissible_transactions_no_PubConsts[OF T_adm]
+              by blast
+            moreover have "Fun k [] \<sqsubseteq> u" when "Fun k [] \<sqsubseteq> u \<cdot> \<alpha>" for k u using that
+            proof (induction u)
+              case (Var x) thus ?case
+                using transaction_renaming_subst_is_renaming(2)[OF step.hyps(5), of x] by fastforce
+            qed auto
+            ultimately show ?thesis using t by blast
+          qed
+
+          define flt1 where "flt1 \<equiv> \<lambda>A::('fun,'atom,'sets,'lbl) prot_constr.
+                                      filter is_Update (unlabel A)"
+          define flt2 where "flt2 \<equiv> \<lambda>A::('fun,'atom,'sets,'lbl) prot_constr.
+                                      filter (\<lambda>a. \<nexists>l t ts. a = (l, insert\<langle>t,\<langle>s_val\<langle>ts\<rangle>\<rangle>\<^sub>s\<rangle>)) A"
+          define flt3 where "flt3 \<equiv> \<lambda>A::(('fun,'atom,'sets,'lbl) prot_fun,
+                                          ('fun,'atom,'sets,'lbl) prot_var) stateful_strand.
+                                      filter (\<lambda>a. \<nexists>t ts. a = insert\<langle>t,\<langle>s_val\<langle>ts\<rangle>\<rangle>\<^sub>s\<rangle>) A"
+
+          have flt2_subset: "set (unlabel (flt2 A)) \<subseteq> set (unlabel A)" for A
+            unfolding flt2_def unlabel_def by auto
+
+          have flt2_unlabel: "unlabel (flt2 A) = flt3 (unlabel A)" for A
+            unfolding flt2_def flt3_def by (induct A) auto
+
+          have flt2_suffix:
+              "suffix (filter (\<lambda>a. \<nexists>t ts. a = insert\<langle>t,\<langle>s_val\<langle>ts\<rangle>\<rangle>\<^sub>s\<rangle>) A) (unlabel (flt2 B))"
+            when "suffix A (unlabel B)" for A B
+            using that unfolding flt2_def by (induct B arbitrary: A rule: List.rev_induct) auto
+
+          have flt_AB: "flt1 (flt2 \<A>) = flt1 (flt2 \<B>)"
+          proof -
+            have *: "flt1 (flt2 \<A>) = filter is_Update (flt3 (unlabel \<A>))"
+                    "flt1 (flt2 \<B>) = filter is_Update (flt3 (unlabel \<B>))"
+              using flt2_unlabel unfolding flt1_def by presburger+
+
+            have **: "filter is_Update (flt3 C) = flt3 (filter is_Update C)" for C
+            proof (induction C)
+              case Nil thus ?case unfolding flt3_def by force
+            next
+              case (Cons c C) thus ?case unfolding flt3_def by (cases c) auto
+            qed
+
+            show ?thesis
+            proof (cases "T_upds = []")
+              case True
+              hence "filter is_Update (unlabel \<A>) = filter is_Update (unlabel \<B>)"
+                using B(13) unfolding db_eq_def by fastforce
+              thus ?thesis using ** unfolding * by presburger
+            next
+              case False thus ?thesis
+                using B(13) unfolding flt1_def flt2_def db_eq_def Let_def by force
+            qed
+          qed
+
+          have A_setops_Fun: "\<forall>t s. insert\<langle>t,s\<rangle> \<in> set (unlabel \<A>) \<longrightarrow> (\<exists>g ts. s = Fun g ts)"
+            using reachable_constraints_setops_form[OF step.hyps(1) P]
+            unfolding setops\<^sub>s\<^sub>s\<^sub>t_def by fastforce
+
+          have A_insert_delete_not_subterm:
+              "\<I> x = \<K> x \<or> (\<not>(\<I> x \<sqsubseteq> t) \<and> \<not>(\<I> x \<sqsubseteq> s) \<and> \<not>(\<K> x \<sqsubseteq> t) \<and> \<not>(\<K> x \<sqsubseteq> s))"
+            when x: "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<union> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T' \<union> fv t \<union> fv s"
+              and x_neq: "\<I> x \<noteq> \<K> x"
+              and ts: "insert\<langle>t,s\<rangle> \<in> set (unlabel \<A>) \<or> delete\<langle>t,s\<rangle> \<in> set (unlabel \<A>)"
+            for x t s
+          proof -
+            have x_in: "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<union> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'"
+              using ts x stateful_strand_step_fv_subset_cases(4,5) by blast
+
+            note ts' = reachable_constraints_insert_delete_form[OF step.hyps(1) P ts]
+
+            have *: "\<I> x = \<K> x" when n: "\<I> x = Fun (Val n) []" for n
+              using n B'5 x_in
+              unfolding subst_eq_on_privvals_def unlabel_append fv\<^sub>s\<^sub>s\<^sub>t_append
+              by blast
+
+            have **: "\<not>(\<I> x \<sqsubseteq> t)" "\<not>(\<I> x \<sqsubseteq> s)" "\<not>(\<K> x \<sqsubseteq> t)" "\<not>(\<K> x \<sqsubseteq> s)"
+              when n: "\<I> x = Fun (PubConst Value n) []" for n
+            proof -
+              show "\<not>(\<I> x \<sqsubseteq> s)"
+                using ts'(1) x_in 3(2,3) unfolding valconst_cases_def by fastforce
+
+              show "\<not>(\<K> x \<sqsubseteq> s)"
+                using ts'(1) x_in B'3
+                unfolding valconsts_only_def unlabel_append fv\<^sub>s\<^sub>s\<^sub>t_append by force
+
+              show "\<not>(\<I> x \<sqsubseteq> t)" using n ts'(3) by fastforce
+
+              from ts'(3) have "\<K> x \<noteq> t"
+              proof
+                assume "\<exists>y. t = Var y" thus ?thesis
+                  using B'3 x_in unfolding valconsts_only_def by force
+              next
+                assume "\<exists>k. t = Fun (Val k) []" thus ?thesis
+                  using B'14 n x_in ts unfolding db_upds_consts_fresh_def by auto
+              qed
+              thus "\<not>(\<K> x \<sqsubseteq> t)" using ts'(3) by auto
+            qed
+
+            show ?thesis using * ** 3(2,3) x_in unfolding valconst_cases_def by fast
+          qed
+
+          have flt2_insert_in_iff:
+              "insert\<langle>u,v\<rangle> \<in> set (unlabel A) \<longleftrightarrow> insert\<langle>u,v\<rangle> \<in> set (unlabel (flt2 A))"
+            (is "?A A \<longleftrightarrow> ?B A")
+            when h: "s = \<langle>h\<rangle>\<^sub>s" "h \<noteq> s_val" and t: "(t \<cdot> I,s \<cdot> I) = (u,v) \<cdot>\<^sub>p I"
+            for t s h u v A and I::"('fun,'atom,'sets,'lbl) prot_subst"
+          proof
+            show "?B A \<Longrightarrow> ?A A" using flt2_subset by fast
+            show "?A A \<Longrightarrow> ?B A"
+            proof (induction A)
+              case (Cons a A)
+              obtain l b where a: "a = (l,b)" by (metis surj_pair)
+              show ?case
+              proof (cases "b = insert\<langle>u,v\<rangle>")
+                case True thus ?thesis using h t unfolding a flt2_def by force
+              next
+                case False thus ?thesis using Cons.prems Cons.IH unfolding a flt2_def by auto
+              qed
+            qed simp
+          qed
+
+          have flt2_inset_iff:
+              "(t \<cdot> \<K>, s \<cdot> \<K>) \<in> dbupd\<^sub>s\<^sub>s\<^sub>t (unlabel (flt2 \<B>)) \<K> {} \<longleftrightarrow>
+               (t \<cdot> \<K>, s \<cdot> \<K>) \<in> dbupd\<^sub>s\<^sub>s\<^sub>t (unlabel \<B>) \<K> {}"
+            (is "?A \<longleftrightarrow> ?B")
+            when h: "s = \<langle>h\<rangle>\<^sub>s" "h \<noteq> s_val"
+            for t s h
+          proof
+            let ?C1 = "\<lambda>u v B C. suffix (delete\<langle>u,v\<rangle>#B) (unlabel C)"
+            let ?C2 = "\<lambda>t s u v. (t,s) = (u,v) \<cdot>\<^sub>p \<K>"
+            let ?C3 = "\<lambda>t s C. \<exists>u v. ?C2 t s u v \<and> insert\<langle>u,v\<rangle> \<in> set C"
+            let ?D = "\<lambda>t s C. \<forall>u v B. ?C1 u v B C \<and> ?C2 t s u v \<longrightarrow> ?C3 t s B"
+
+            let ?db = "\<lambda>C D. dbupd\<^sub>s\<^sub>s\<^sub>t C \<K> D"
+
+            have "?C3 t s B"
+              when "?D t s (flt2 \<B>)" "?C1 u v B \<B>" "?C2 t s u v" for u v B t s
+              using that flt2_suffix flt2_subset by fastforce
+            thus "?A \<Longrightarrow> ?B" using flt2_subset unfolding dbupd\<^sub>s\<^sub>s\<^sub>t_in_iff by blast
+
+            show ?A when ?B using that
+            proof (induction \<B> rule: List.rev_induct)
+              case (snoc a A)
+              obtain l b where a: "a = (l,b)" by (metis surj_pair)
+
+              have *:
+                  "?db (unlabel (A@[a])) {} = ?db [b] (?db (unlabel A) {})"
+                  "?db (unlabel (flt2 (A@[a]))) {} =
+                   ?db (unlabel (flt2 [a])) (?db (unlabel (flt2 A)) {})"
+                using dbupd\<^sub>s\<^sub>s\<^sub>t_append[of _ _ \<K> "{}"] unfolding a flt2_def by auto
+
+              show ?case
+              proof (cases "\<exists>u v. b = insert\<langle>u,v\<rangle> \<and> (t \<cdot> \<K>, s \<cdot> \<K>) = (u,v) \<cdot>\<^sub>p \<K>")
+                case True
+                then obtain u v where "b = insert\<langle>u,v\<rangle>" "(t \<cdot> \<K>, s \<cdot> \<K>) = (u, v) \<cdot>\<^sub>p \<K>" by force
+                thus ?thesis using h *(2) unfolding a flt2_def by auto
+              next
+                case False
+                hence IH: "(t \<cdot> \<K>, s \<cdot> \<K>) \<in> dbupd\<^sub>s\<^sub>s\<^sub>t (unlabel (flt2 A)) \<K> {}"
+                  using snoc.prems snoc.IH unfolding *(1) by (cases b) auto
+
+                show ?thesis
+                proof (cases "is_Delete b")
+                  case True
+                  then obtain u v where b: "b = delete\<langle>u,v\<rangle>" by (cases b) auto
+
+                  have b': "unlabel (flt2 [a]) = [b]"
+                           "unlabel (flt2 (A@[a])) = unlabel (flt2 A)@[b]"
+                    unfolding a flt2_def b by (fastforce,fastforce)
+
+                  have "(t \<cdot> \<K>, s \<cdot> \<K>) \<noteq> (u,v) \<cdot>\<^sub>p \<K>" using *(1) snoc.prems unfolding b' b by simp
+                  thus ?thesis using *(2) IH unfolding b' b by simp
+                next
+                  case False thus ?thesis using *(2) IH unfolding a flt2_def by (cases b) auto
+                qed
+              qed
+            qed simp
+          qed
+
+          have inset_model_swap:
+              "(t \<cdot> \<I>, s \<cdot> \<I>) \<in> dbupd\<^sub>s\<^sub>s\<^sub>t (unlabel \<A>) \<I> {} \<longleftrightarrow>
+               (t \<cdot> \<K>, s \<cdot> \<K>) \<in> dbupd\<^sub>s\<^sub>s\<^sub>t (unlabel \<B>) \<K> {}"
+            (is "?in \<I> (unlabel \<A>) \<longleftrightarrow> ?in \<K> (unlabel \<B>)")
+            when h: "s = \<langle>h\<rangle>\<^sub>s"
+                    "h \<noteq> s_val \<or> filter is_Update (unlabel \<A>) = filter is_Update (unlabel \<B>)"
+              and t: "t = Var tx"
+              and t_s_fv: "fv t \<union> fv s \<subseteq> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'"
+              and q: "\<forall>x \<in> fv t \<union> fv s.
+                        \<I> x = \<K> x \<or> (\<not>(\<I> x \<sqsubseteq> t) \<and> \<not>(\<I> x \<sqsubseteq> s) \<and> \<not>(\<K> x \<sqsubseteq> t) \<and> \<not>(\<K> x \<sqsubseteq> s))"
+                     "\<forall>x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<union> fv t \<union> fv s. \<exists>c. \<I> x = Fun c []"
+                     "\<forall>x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<union> fv t \<union> fv s. \<exists>c. \<K> x = Fun c []"
+                     "\<forall>x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<union> fv t \<union> fv s. \<forall>y \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<union> fv t \<union> fv s.
+                        \<I> x = \<I> y \<longleftrightarrow> \<K> x = \<K> y"
+            for t s h tx
+          proof -
+            let ?upds = "\<lambda>A. filter is_Update (unlabel A)"
+
+            have flt2_fv: "fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (flt2 \<A>) \<subseteq> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>"
+              using fv\<^sub>s\<^sub>s\<^sub>t_mono[OF flt2_subset[of \<A>]] by blast
+
+            have upds_fv: "fv\<^sub>s\<^sub>s\<^sub>t (?upds \<A>) \<subseteq> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>" by auto
+
+            have flt2_upds_fv: "fv\<^sub>s\<^sub>s\<^sub>t (?upds (flt2 \<A>)) \<subseteq> fv\<^sub>s\<^sub>s\<^sub>t (?upds \<A>)"
+              using flt2_subset[of \<A>] by auto
+
+            have h_neq: "Set h \<noteq> (Set s_val::('fun,'atom,'sets,'lbl) prot_fun)"
+              when "h \<noteq> s_val"
+              using that by simp
+
+            have *: "\<Union>(fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r ` {}) = {}" "{} \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I> = {}" "{} \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<K> = {}" by blast+
+
+            have "?in \<I> (?upds (flt2 \<A>)) \<longleftrightarrow> ?in \<K> (?upds (flt2 \<A>))"
+            proof
+              let ?X = "fv\<^sub>s\<^sub>s\<^sub>t (?upds (flt2 \<A>)) \<union> fv t \<union> fv s \<union>
+                         \<Union>(fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r ` ({}::(('fun,'atom,'sets,'lbl) prot_term \<times>
+                                          ('fun,'atom,'sets,'lbl) prot_term) set))"
+
+              let ?q0 = "\<lambda>\<delta> \<theta>.
+                    \<forall>x \<in> ?X.
+                      \<delta> x = \<theta> x \<or>
+                      (\<not>(\<delta> x \<sqsubseteq> t) \<and> \<not>(\<delta> x \<sqsubseteq> s) \<and>\<not>(\<theta> x \<sqsubseteq> t) \<and> \<not>(\<theta> x \<sqsubseteq> s) \<and>
+                       (\<forall>(u,v) \<in> {}. \<not>(\<delta> x \<sqsubseteq> u) \<and> \<not>(\<delta> x \<sqsubseteq> v) \<and> \<not>(\<theta> x \<sqsubseteq> u) \<and> \<not>(\<theta> x \<sqsubseteq> v)) \<and>
+                       (\<forall>u v. insert\<langle>u,v\<rangle> \<in> set (?upds (flt2 \<A>)) \<or>
+                              delete\<langle>u,v\<rangle> \<in> set (?upds (flt2 \<A>)) \<longrightarrow>
+                                \<not>(\<delta> x \<sqsubseteq> u) \<and> \<not>(\<delta> x \<sqsubseteq> v) \<and> \<not>(\<theta> x \<sqsubseteq> u) \<and> \<not>(\<theta> x \<sqsubseteq> v)))"
+
+              let ?q1 = "\<lambda>\<delta>. \<forall>x \<in> ?X. \<exists>c. \<delta> x = Fun c []"
+
+              let ?q2 = "\<lambda>\<delta> \<theta>. \<forall>x \<in> ?X. \<forall>y \<in> ?X. \<delta> x = \<delta> y \<longleftrightarrow> \<theta> x = \<theta> y"
+
+              have q0: "?q0 \<I> \<K>" "?q0 \<K> \<I>"
+              proof -
+                have upd_ex:
+                    "\<exists>u v. x \<in> fv u \<union> fv v \<and>
+                           (insert\<langle>u,v\<rangle> \<in> set (?upds A) \<or> delete\<langle>u,v\<rangle> \<in> set (?upds A))"
+                  when "x \<in> fv\<^sub>s\<^sub>s\<^sub>t (?upds A)" for x and A::"('fun,'atom,'sets,'lbl) prot_constr"
+                  using that
+                proof (induction A)
+                  case (Cons a A)
+                  obtain l b where a: "a = (l,b)" by (metis surj_pair)
+                  show ?case using Cons.IH Cons.prems unfolding a by (cases b) auto
+                qed simp
+                
+                have "\<not>(\<I> x \<sqsubseteq> t)" "\<not>(\<I> x \<sqsubseteq> s)" "\<not>(\<K> x \<sqsubseteq> t)" "\<not>(\<K> x \<sqsubseteq> s)"
+                  when x: "x \<in> fv\<^sub>s\<^sub>s\<^sub>t (?upds (flt2 \<A>)) \<union> fv t \<union> fv s"
+                    and x_neq: "\<I> x \<noteq> \<K> x"
+                  for x
+                proof -
+                  have "\<not>(\<I> x \<sqsubseteq> t) \<and> \<not>(\<I> x \<sqsubseteq> s) \<and> \<not>(\<K> x \<sqsubseteq> t) \<and> \<not>(\<K> x \<sqsubseteq> s)"
+                  proof (cases "x \<in> fv t \<union> fv s")
+                    case True thus ?thesis using q(1) x_neq by blast
+                  next
+                    case False
+                    hence "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>" using x flt2_upds_fv upds_fv by blast
+                    hence "\<exists>n. \<K> x = Fun (Val n) []"
+                          "\<exists>n. \<I> x = Fun (Val n) [] \<or> \<I> x = Fun (PubConst Value n) []"
+                      using B'3 3(2)
+                      unfolding valconst_cases_def valconsts_only_def unlabel_append fv\<^sub>s\<^sub>s\<^sub>t_append
+                      by (blast, blast)
+                    thus ?thesis unfolding t h(1) by auto
+                  qed
+                  thus "\<not>(\<I> x \<sqsubseteq> t)" "\<not>(\<I> x \<sqsubseteq> s)" "\<not>(\<K> x \<sqsubseteq> t)" "\<not>(\<K> x \<sqsubseteq> s)" by simp_all
+                qed
+                moreover have "\<not>(\<I> x \<sqsubseteq> u)" "\<not>(\<I> x \<sqsubseteq> v)" "\<not>(\<K> x \<sqsubseteq> u)" "\<not>(\<K> x \<sqsubseteq> v)"
+                  when x: "x \<in> fv\<^sub>s\<^sub>s\<^sub>t (?upds (flt2 \<A>)) \<union> fv t \<union> fv s"
+                    and x_neq: "\<I> x \<noteq> \<K> x"
+                    and uv: "insert\<langle>u,v\<rangle> \<in> set (?upds (flt2 \<A>)) \<or>
+                             delete\<langle>u,v\<rangle> \<in> set (?upds (flt2 \<A>))"
+                  for x u v
+                proof -
+                  have uv': "insert\<langle>u,v\<rangle> \<in> set (unlabel \<A>) \<or> delete\<langle>u,v\<rangle> \<in> set (unlabel \<A>)"
+                    using uv flt2_subset by auto
+
+                  have x_in: "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<union> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T' \<union> fv u \<union> fv v"
+                    using t_s_fv x flt2_upds_fv upds_fv by blast
+
+                  show "\<not>(\<I> x \<sqsubseteq> u)" "\<not>(\<I> x \<sqsubseteq> v)" "\<not>(\<K> x \<sqsubseteq> u)" "\<not>(\<K> x \<sqsubseteq> v)"
+                    using x_neq A_insert_delete_not_subterm[OF x_in x_neq uv'] by simp_all
+                qed
+                ultimately show "?q0 \<I> \<K>" unfolding upd_ex unfolding *
+                  by (metis (no_types, lifting) empty_iff sup_bot_right)
+                thus "?q0 \<K> \<I>" by (metis (lifting) empty_iff)
+              qed
+
+              have q1: "?q1 \<I>" "?q1 \<K>"
+                using q(2,3) flt2_upds_fv upds_fv by (blast,blast)
+
+              have q2: "?q2 \<I> \<K>" "?q2 \<K> \<I>"
+                using q(4) flt2_upds_fv upds_fv unfolding * by (blast,blast)
+
+              show "?in \<I> (?upds (flt2 \<A>)) \<Longrightarrow> ?in \<K> (?upds (flt2 \<A>))"
+                using dbupd\<^sub>s\<^sub>s\<^sub>t_subst_const_swap[OF _ q0(1) q1(1,2) q2(1)] by force
+
+              show "?in \<K> (?upds (flt2 \<A>)) \<Longrightarrow> ?in \<I> (?upds (flt2 \<A>))"
+                using dbupd\<^sub>s\<^sub>s\<^sub>t_subst_const_swap[OF _ q0(2) q1(2,1) q2(2)] by force
+            qed
+            hence flt2_subst_swap: "?in \<I> (unlabel (flt2 \<A>)) \<longleftrightarrow> ?in \<K> (unlabel (flt2 \<A>))"
+              using dbupd\<^sub>s\<^sub>s\<^sub>t_filter by blast
+
+            (* TODO: merge with similar proof above? *)
+            have "?in \<I> (?upds \<A>) \<longleftrightarrow> ?in \<K> (?upds \<A>)"
+            proof
+              let ?X = "fv\<^sub>s\<^sub>s\<^sub>t (?upds \<A>) \<union> fv t \<union> fv s \<union>
+                         \<Union>(fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r ` ({}::(('fun,'atom,'sets,'lbl) prot_term \<times>
+                                          ('fun,'atom,'sets,'lbl) prot_term) set))"
+
+              let ?q0 = "\<lambda>\<delta> \<theta>.
+                    \<forall>x \<in> ?X.
+                      \<delta> x = \<theta> x \<or>
+                      (\<not>(\<delta> x \<sqsubseteq> t) \<and> \<not>(\<delta> x \<sqsubseteq> s) \<and>\<not>(\<theta> x \<sqsubseteq> t) \<and> \<not>(\<theta> x \<sqsubseteq> s) \<and>
+                       (\<forall>(u,v) \<in> {}. \<not>(\<delta> x \<sqsubseteq> u) \<and> \<not>(\<delta> x \<sqsubseteq> v) \<and> \<not>(\<theta> x \<sqsubseteq> u) \<and> \<not>(\<theta> x \<sqsubseteq> v)) \<and>
+                       (\<forall>u v. insert\<langle>u,v\<rangle> \<in> set (?upds \<A>) \<or>
+                              delete\<langle>u,v\<rangle> \<in> set (?upds \<A>) \<longrightarrow>
+                                \<not>(\<delta> x \<sqsubseteq> u) \<and> \<not>(\<delta> x \<sqsubseteq> v) \<and> \<not>(\<theta> x \<sqsubseteq> u) \<and> \<not>(\<theta> x \<sqsubseteq> v)))"
+
+              let ?q1 = "\<lambda>\<delta>. \<forall>x \<in> ?X. \<exists>c. \<delta> x = Fun c []"
+
+              let ?q2 = "\<lambda>\<delta> \<theta>. \<forall>x \<in> ?X. \<forall>y \<in> ?X. \<delta> x = \<delta> y \<longleftrightarrow> \<theta> x = \<theta> y"
+
+              have q0: "?q0 \<I> \<K>" "?q0 \<K> \<I>"
+              proof -
+                have upd_ex:
+                    "\<exists>u v. x \<in> fv u \<union> fv v \<and>
+                           (insert\<langle>u,v\<rangle> \<in> set (?upds A) \<or> delete\<langle>u,v\<rangle> \<in> set (?upds A))"
+                  when "x \<in> fv\<^sub>s\<^sub>s\<^sub>t (?upds A)" for x and A::"('fun,'atom,'sets,'lbl) prot_constr"
+                  using that
+                proof (induction A)
+                  case (Cons a A)
+                  obtain l b where a: "a = (l,b)" by (metis surj_pair)
+                  show ?case using Cons.IH Cons.prems unfolding a by (cases b) auto
+                qed simp
+                
+                have "\<not>(\<I> x \<sqsubseteq> t)" "\<not>(\<I> x \<sqsubseteq> s)" "\<not>(\<K> x \<sqsubseteq> t)" "\<not>(\<K> x \<sqsubseteq> s)"
+                  when x: "x \<in> fv\<^sub>s\<^sub>s\<^sub>t (?upds \<A>) \<union> fv t \<union> fv s"
+                    and x_neq: "\<I> x \<noteq> \<K> x"
+                  for x
+                proof -
+                  have "\<not>(\<I> x \<sqsubseteq> t) \<and> \<not>(\<I> x \<sqsubseteq> s) \<and> \<not>(\<K> x \<sqsubseteq> t) \<and> \<not>(\<K> x \<sqsubseteq> s)"
+                  proof (cases "x \<in> fv t \<union> fv s")
+                    case True thus ?thesis using q(1) x_neq by blast
+                  next
+                    case False
+                    hence "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>" using x flt2_upds_fv upds_fv by blast
+                    hence "\<exists>n. \<K> x = Fun (Val n) []"
+                          "\<exists>n. \<I> x = Fun (Val n) [] \<or> \<I> x = Fun (PubConst Value n) []"
+                      using B'3 3(2)
+                      unfolding valconst_cases_def valconsts_only_def unlabel_append fv\<^sub>s\<^sub>s\<^sub>t_append
+                      by (blast, blast)
+                    thus ?thesis unfolding t h(1) by auto
+                  qed
+                  thus "\<not>(\<I> x \<sqsubseteq> t)" "\<not>(\<I> x \<sqsubseteq> s)" "\<not>(\<K> x \<sqsubseteq> t)" "\<not>(\<K> x \<sqsubseteq> s)" by simp_all
+                qed
+                moreover have "\<not>(\<I> x \<sqsubseteq> u)" "\<not>(\<I> x \<sqsubseteq> v)" "\<not>(\<K> x \<sqsubseteq> u)" "\<not>(\<K> x \<sqsubseteq> v)"
+                  when x: "x \<in> fv\<^sub>s\<^sub>s\<^sub>t (?upds \<A>) \<union> fv t \<union> fv s"
+                    and x_neq: "\<I> x \<noteq> \<K> x"
+                    and uv: "insert\<langle>u,v\<rangle> \<in> set (?upds \<A>) \<or>
+                             delete\<langle>u,v\<rangle> \<in> set (?upds \<A>)"
+                  for x u v
+                proof -
+                  have uv': "insert\<langle>u,v\<rangle> \<in> set (unlabel \<A>) \<or> delete\<langle>u,v\<rangle> \<in> set (unlabel \<A>)"
+                    using uv flt2_subset by auto
+
+                  have x_in: "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<union> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T' \<union> fv u \<union> fv v"
+                    using t_s_fv x flt2_upds_fv upds_fv by blast
+
+                  show "\<not>(\<I> x \<sqsubseteq> u)" "\<not>(\<I> x \<sqsubseteq> v)" "\<not>(\<K> x \<sqsubseteq> u)" "\<not>(\<K> x \<sqsubseteq> v)"
+                    using x_neq A_insert_delete_not_subterm[OF x_in x_neq uv'] by simp_all
+                qed
+                ultimately show "?q0 \<I> \<K>" unfolding upd_ex unfolding *
+                  by (metis (no_types, lifting) empty_iff sup_bot_right)
+                thus "?q0 \<K> \<I>" by (metis (lifting) empty_iff)
+              qed
+
+              have q1: "?q1 \<I>" "?q1 \<K>"
+                using q(2,3) flt2_upds_fv upds_fv by (blast,blast)
+
+              have q2: "?q2 \<I> \<K>" "?q2 \<K> \<I>"
+                using q(4) flt2_upds_fv upds_fv unfolding * by (blast,blast)
+
+              show "?in \<I> (?upds \<A>) \<Longrightarrow> ?in \<K> (?upds \<A>)"
+                using dbupd\<^sub>s\<^sub>s\<^sub>t_subst_const_swap[OF _ q0(1) q1(1,2) q2(1)] by force
+
+              show "?in \<K> (?upds \<A>) \<Longrightarrow> ?in \<I> (?upds \<A>)"
+                using dbupd\<^sub>s\<^sub>s\<^sub>t_subst_const_swap[OF _ q0(2) q1(2,1) q2(2)] by force
+            qed
+            hence db_subst_swap:
+                "?in \<I> (unlabel \<A>) \<longleftrightarrow> ?in \<K> (unlabel \<A>)"
+              using dbupd\<^sub>s\<^sub>s\<^sub>t_filter by blast
+
+            have "?in \<K> (unlabel \<B>)" when A: "?in \<I> (unlabel \<A>)" using h(2)
+            proof
+              assume h': "h \<noteq> s_val"
+              have "?in \<I> (unlabel (flt2 \<A>))"
+                using A flt2_unlabel dbupd\<^sub>s\<^sub>s\<^sub>t_set_term_neq_in_iff[OF h_neq[OF h'] A_setops_Fun]
+                unfolding h(1) flt3_def by simp
+              hence "?in \<K> (unlabel (flt2 \<A>))" using flt2_subst_swap by blast
+              hence "?in \<K> (flt1 (flt2 \<A>))" using dbupd\<^sub>s\<^sub>s\<^sub>t_filter unfolding flt1_def by blast
+              hence "?in \<K> (flt1 (flt2 \<B>))" using flt_AB by simp
+              hence "?in \<K> (unlabel (flt2 \<B>))" using dbupd\<^sub>s\<^sub>s\<^sub>t_filter unfolding flt1_def by blast
+              thus ?thesis using flt2_inset_iff[OF h(1) h'] by fast
+            next
+              assume h': "filter is_Update (unlabel \<A>) = filter is_Update (unlabel \<B>)"
+              have "?in \<K> (unlabel \<A>)" using A db_subst_swap by blast
+              hence "?in \<K> (flt1 \<A>)" using dbupd\<^sub>s\<^sub>s\<^sub>t_filter unfolding flt1_def by blast
+              hence "?in \<K> (flt1 \<B>)" using h' unfolding flt1_def by simp
+              thus ?thesis using dbupd\<^sub>s\<^sub>s\<^sub>t_filter unfolding flt1_def by blast
+            qed
+            moreover have "\<not>?in \<K> (unlabel \<B>)" when A: "\<not>?in \<I> (unlabel \<A>)" using h(2)
+            proof
+              assume h': "h \<noteq> s_val"
+              have "\<not>?in \<I> (unlabel (flt2 \<A>))"
+                using A flt2_unlabel dbupd\<^sub>s\<^sub>s\<^sub>t_set_term_neq_in_iff[OF h_neq[OF h'] A_setops_Fun]
+                unfolding h(1) flt3_def by simp
+              hence "\<not>?in \<K> (unlabel (flt2 \<A>))" using flt2_subst_swap by blast
+              hence "\<not>?in \<K> (flt1 (flt2 \<A>))" using dbupd\<^sub>s\<^sub>s\<^sub>t_filter unfolding flt1_def by blast
+              hence "\<not>?in \<K> (flt1 (flt2 \<B>))" using flt_AB by simp
+              hence "\<not>?in \<K> (unlabel (flt2 \<B>))" using dbupd\<^sub>s\<^sub>s\<^sub>t_filter unfolding flt1_def by blast
+              thus ?thesis using flt2_inset_iff[OF h(1) h'] by fast
+            next
+              assume h': "filter is_Update (unlabel \<A>) = filter is_Update (unlabel \<B>)"
+              have "\<not>?in \<K> (unlabel \<A>)" using A db_subst_swap by blast
+              hence "\<not>?in \<K> (flt1 \<A>)" using dbupd\<^sub>s\<^sub>s\<^sub>t_filter unfolding flt1_def by blast
+              hence "\<not>?in \<K> (flt1 \<B>)" using h' unfolding flt1_def by simp
+              thus ?thesis using dbupd\<^sub>s\<^sub>s\<^sub>t_filter unfolding flt1_def by blast
+            qed
+            ultimately show ?thesis by blast
+          qed
+
+          have "?M2 \<turnstile> t \<cdot> \<theta> \<cdot> \<K>"
+            when ts: "(l, receive\<langle>ts\<rangle>) \<in> set (transaction_receive T)" "t \<in> set ts" for l t ts
+          proof -
+            have *: "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile> t \<cdot> \<theta> \<cdot> \<I>" using 5 ts by blast
+
+            note t\<theta>\<alpha> = rcv_\<theta>_is_\<alpha>[OF ts]
+
+            have t_T'_trm: "t \<in> trms_transaction T"
+              using trms\<^sub>s\<^sub>s\<^sub>t_memI(2)[OF unlabel_in[OF ts(1)] ts(2)]
+              unfolding trms_transaction_unfold by blast
+
+            have t_T'_trm': "t \<cdot> \<theta> \<in> trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'"
+              using trms\<^sub>s\<^sub>s\<^sub>t_memI(2)[
+                      OF stateful_strand_step_subst_inI(2)[
+                          OF unlabel_in[OF ts(1)], unfolded unlabel_subst]]
+                    ts(2)
+              unfolding T'_def trms\<^sub>s\<^sub>s\<^sub>t_unlabel_dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_eq trms_transaction_subst_unfold by auto
+
+            note t_no_val = T'_trm_no_val[OF t_T'_trm, unfolded t\<theta>\<alpha>[symmetric]]
+
+            have t_fv_T': "fv (t \<cdot> \<theta>) \<subseteq> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'"
+              using ts(2) stateful_strand_step_fv_subset_cases(2)[
+                      OF stateful_strand_step_subst_inI(2)[OF unlabel_in[OF ts(1)], of \<theta>]]
+              unfolding T'_def unlabel_subst fv\<^sub>s\<^sub>s\<^sub>t_unlabel_dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_eq fv_transaction_subst_unfold
+              by auto
+
+            have ik_B_fv_subset: "fv\<^sub>s\<^sub>e\<^sub>t (ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>) \<subseteq> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>"
+              by (meson UnE fv_ik\<^sub>s\<^sub>s\<^sub>t_is_fv\<^sub>s\<^sub>s\<^sub>t subset_iff)
+
+            let ?fresh_vals = "(\<lambda>n. Fun (Val n) []) ` T_val_fresh_vals"
+
+            have q0: "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile> t \<cdot> \<theta> \<cdot> \<I>" using * B(10) by (blast intro: ideduct_mono)
+
+            have q1: "\<forall>x \<in> fv\<^sub>s\<^sub>e\<^sub>t (ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>) \<union> fv (t \<cdot> \<theta>). valconst_cases \<I> x"
+              using 3(2,3) t_fv_T' ik_B_fv_subset unfolding B(9) by blast
+
+            have q2: "\<forall>x \<in> fv\<^sub>s\<^sub>e\<^sub>t (ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>) \<union> fv (t \<cdot> \<theta>). \<exists>n. \<K> x = Fun (Val n) []"
+              using B'3 t_fv_T' ik_B_fv_subset
+              unfolding valconsts_only_def unlabel_append fv\<^sub>s\<^sub>s\<^sub>t_append B(9)
+              by blast
+
+            have T_val_constr_ik:
+              "\<exists>M. ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t T_val_constr = M \<union> ?fresh_vals"
+              "\<exists>M. ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t T_val_constr \<cdot>\<^sub>s\<^sub>e\<^sub>t \<K> = (M \<cdot>\<^sub>s\<^sub>e\<^sub>t \<K>) \<union> ?fresh_vals"
+            proof -
+              obtain M where M: "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t T_val_constr = M \<union> ?fresh_vals"
+                using T_val_constr(8) by blast
+              have "?fresh_vals \<cdot>\<^sub>s\<^sub>e\<^sub>t \<K> = ?fresh_vals" by fastforce
+              thus "\<exists>M. ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t T_val_constr = M \<union> ?fresh_vals"
+                   "\<exists>M. ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t T_val_constr \<cdot>\<^sub>s\<^sub>e\<^sub>t \<K> = (M \<cdot>\<^sub>s\<^sub>e\<^sub>t \<K>) \<union> ?fresh_vals"
+                using M by (fastforce, fastforce)
+            qed
+
+            have "\<K> x \<in> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> \<union> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t T_val_constr"
+              when x: "x \<in> fv\<^sub>s\<^sub>e\<^sub>t (ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>) \<union> fv (t \<cdot> \<theta>)" "\<I> x = Fun (PubConst Value n) []" for x n
+              using x(1) B'6'[OF _ x(2)] B'6''[OF _ x(2)] t_fv_T' ik_B_fv_subset
+              unfolding B(9) unlabel_append fv\<^sub>s\<^sub>s\<^sub>t_append by blast
+            hence q3: "\<forall>x \<in> fv\<^sub>s\<^sub>e\<^sub>t (ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>) \<union> fv (t \<cdot> \<theta>).
+                        (\<exists>n. \<I> x = Fun (PubConst Value n) []) \<longrightarrow> \<K> x \<in> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> \<union> ?fresh_vals"
+              using T_val_constr_ik(1) T_val_constr(8) q2
+              unfolding B(9) \<B>'_def unlabel_append ik\<^sub>s\<^sub>s\<^sub>t_append fv\<^sub>s\<^sub>s\<^sub>t_append
+              by (metis (no_types, lifting) UnE UnI1 UnI2 image_iff mem_Collect_eq)
+
+            have q4: "\<forall>x \<in> fv\<^sub>s\<^sub>e\<^sub>t (ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>) \<union> fv (t \<cdot> \<theta>). (\<exists>n. \<I> x = Fun (Val n) []) \<longrightarrow> \<I> x = \<K> x"
+              using B'5 t_fv_T' ik_B_fv_subset
+              unfolding subst_eq_on_privvals_def B(9) unlabel_append fv\<^sub>s\<^sub>s\<^sub>t_append
+              by blast
+
+            have q5: "\<forall>x \<in> fv\<^sub>s\<^sub>e\<^sub>t (ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>) \<union> fv (t \<cdot> \<theta>). \<forall>y \<in> fv\<^sub>s\<^sub>e\<^sub>t (ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>) \<union> fv (t \<cdot> \<theta>).
+                        \<I> x = \<I> y \<longleftrightarrow> \<K> x = \<K> y"
+              using B'7 t_fv_T' ik_B_fv_subset
+              unfolding subst_eq_iff_def B(9) unlabel_append fv\<^sub>s\<^sub>s\<^sub>t_append
+              by blast
+
+            have q6: "\<forall>n. \<not>(Fun (PubConst Value n) [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t insert (t \<cdot> \<theta>) (ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>))"
+            proof -
+              have "\<nexists>n. s = Fun (PubConst Value n) []" when s: "s \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>'" for s
+              proof -
+                have "f \<noteq> PubConst Value n" when f: "f \<in> funs_term s" for f n
+                  using f s reachable_constraints_val_funs_private(1)[OF B'1 P, of f]
+                  unfolding is_PubConstValue_def is_PubConst_def the_PubConst_type_def
+                  by (metis (mono_tags, lifting) UN_I funs_term_subterms_eq(2) prot_fun.simps(85))
+                thus ?thesis by fastforce
+              qed
+              moreover have "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> \<subseteq> trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>'"
+                using ik\<^sub>s\<^sub>s\<^sub>t_trms\<^sub>s\<^sub>s\<^sub>t_subset unfolding \<B>'_def unlabel_append trms\<^sub>s\<^sub>s\<^sub>t_append by blast
+              ultimately show ?thesis
+                using t_no_val by blast
+            qed
+
+            show ?thesis
+              using deduct_val_const_swap[OF q0 q1[unfolded valconst_cases_def] q2 q3 q4 q5 q6]
+                    T_val_constr_ik(2)
+              by (blast intro: ideduct_mono)
+          qed
+          moreover have "t \<cdot> \<theta> \<cdot> \<K> = s \<cdot> \<theta> \<cdot> \<K>"
+            when ts: "(l, \<langle>ac: t \<doteq> s\<rangle>) \<in> set (transaction_checks T)" for l ac t s
+          proof -
+            have q0: "t \<cdot> \<theta> \<cdot> \<I> = s \<cdot> \<theta> \<cdot> \<I>" using 5 ts by blast
+
+            have "fv\<^sub>s\<^sub>s\<^sub>t\<^sub>p (\<langle>ac: (t \<cdot> \<theta>) \<doteq> (s \<cdot> \<theta>)\<rangle>) \<subseteq> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_checks T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)"
+              using stateful_strand_step_fv_subset_cases(3)[
+                      OF stateful_strand_step_subst_inI(3)[OF unlabel_in[OF ts], of \<theta>]]
+              unfolding unlabel_subst by simp
+            hence t_s_fv: "fv (t \<cdot> \<theta>) \<subseteq> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'" "fv (s \<cdot> \<theta>) \<subseteq> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'"
+              unfolding T'_def fv\<^sub>s\<^sub>s\<^sub>t_unlabel_dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_eq fv_transaction_subst_unfold[of T \<theta>]
+              by (fastforce, fastforce)
+
+            have "t \<in> trms_transaction T" "s \<in> trms_transaction T"
+              using trms\<^sub>s\<^sub>s\<^sub>t_memI(3,4)[OF unlabel_in[OF ts]]
+              unfolding trms_transaction_unfold by (blast, blast)
+            hence "\<nexists>n. u = Fun (Val n) [] \<or> u = Fun (PubConst Value n) []"
+              when u: "u \<sqsubseteq> t \<cdot> \<theta> \<or> u \<sqsubseteq> s \<cdot> \<theta>" for u
+              using u T'_trm_no_val unfolding eq_\<theta>_is_\<alpha>[OF ts] by blast
+            hence "\<not>(\<I> x \<sqsubseteq> t \<cdot> \<theta>)" "\<not>(\<I> x \<sqsubseteq> s \<cdot> \<theta>)"
+              when x: "x \<in> fv (t \<cdot> \<theta>) \<union> fv (s \<cdot> \<theta>)" for x
+              using x t_s_fv I' by (fast, fast)
+            hence q1:
+                "\<forall>x \<in> fv (t \<cdot> \<theta>) \<union> fv (s \<cdot> \<theta>). \<I> x = \<K> x \<or> (\<not>(\<I> x \<sqsubseteq> t \<cdot> \<theta>) \<and> \<not>(\<I> x \<sqsubseteq> s \<cdot> \<theta>))"
+              by blast
+
+            have q2: "\<forall>x \<in> fv (t \<cdot> \<theta>) \<union> fv (s \<cdot> \<theta>). \<exists>c. \<I> x = Fun c []"
+              using t_s_fv 3(3) unfolding valconst_cases_def by blast
+
+            have q3: "\<forall>x \<in> fv (t \<cdot> \<theta>) \<union> fv (s \<cdot> \<theta>). \<exists>c. \<K> x = Fun c []"
+              using t_s_fv B'3 unfolding valconsts_only_def unlabel_append fv\<^sub>s\<^sub>s\<^sub>t_append by blast
+
+            have q4: "\<forall>x \<in> fv (t \<cdot> \<theta>) \<union> fv (s \<cdot> \<theta>). \<forall>y \<in> fv (t \<cdot> \<theta>) \<union> fv (s \<cdot> \<theta>).
+                        \<I> x = \<I> y \<longleftrightarrow> \<K> x = \<K> y"
+              using B'7 t_s_fv unfolding subst_eq_iff_def B(9) unlabel_append fv\<^sub>s\<^sub>s\<^sub>t_append by blast
+
+            show ?thesis by (rule subst_const_swap_eq'[OF q0 q1 q2 q3 q4])
+          qed
+          moreover have "t \<cdot> \<theta> \<cdot> \<K> \<noteq> s \<cdot> \<theta> \<cdot> \<K>"
+            when ts: "(l, \<langle>t != s\<rangle>) \<in> set (transaction_checks T)" for l t s
+          proof -
+            have q0: "t \<cdot> \<theta> \<cdot> \<I> \<noteq> s \<cdot> \<theta> \<cdot> \<I>" using 5 ts by blast
+
+            have "fv\<^sub>s\<^sub>s\<^sub>t\<^sub>p (\<langle>(t \<cdot> \<theta>) != (s \<cdot> \<theta>)\<rangle>) \<subseteq> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_checks T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)"
+              using stateful_strand_step_fv_subset_cases(8)[
+                      OF stateful_strand_step_subst_inI(8)[OF unlabel_in[OF ts], of \<theta>]]
+              unfolding unlabel_subst by simp
+            hence t_s_fv: "fv (t \<cdot> \<theta>) \<subseteq> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'" "fv (s \<cdot> \<theta>) \<subseteq> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'"
+              unfolding T'_def fv\<^sub>s\<^sub>s\<^sub>t_unlabel_dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_eq fv_transaction_subst_unfold[of T \<theta>]
+              by (fastforce, fastforce)
+
+            have "t \<in> trms_transaction T" "s \<in> trms_transaction T"
+              using trms\<^sub>s\<^sub>s\<^sub>t_memI(9)[OF unlabel_in[OF ts]]
+              unfolding trms_transaction_unfold by auto
+            hence "\<nexists>n. u = Fun (Val n) []" when u: "u \<sqsubseteq> t \<cdot> \<theta> \<or> u \<sqsubseteq> s \<cdot> \<theta>" for u
+              using u T'_trm_no_val unfolding noteq_\<theta>_is_\<alpha>[OF ts] by blast
+            hence "\<not>(\<K> x \<sqsubseteq> t \<cdot> \<theta>)" "\<not>(\<K> x \<sqsubseteq> s \<cdot> \<theta>)"
+              when x: "x \<in> fv (t \<cdot> \<theta>) \<union> fv (s \<cdot> \<theta>)" for x
+              using x t_s_fv B'3
+              unfolding valconsts_only_def unlabel_append fv\<^sub>s\<^sub>s\<^sub>t_append
+              by (fast, fast)
+            hence q1: "\<forall>x \<in> fv (t \<cdot> \<theta>) \<union> fv (s \<cdot> \<theta>). \<K> x = \<I> x \<or> (\<not>(\<K> x \<sqsubseteq> t \<cdot> \<theta>) \<and> \<not>(\<K> x \<sqsubseteq> s \<cdot> \<theta>))"
+              by blast
+
+            have q2: "\<forall>x \<in> fv (t \<cdot> \<theta>) \<union> fv (s \<cdot> \<theta>). \<exists>c. \<K> x = Fun c []"
+              using t_s_fv B'3 unfolding valconsts_only_def unlabel_append fv\<^sub>s\<^sub>s\<^sub>t_append by blast
+
+            have q3: "\<forall>x \<in> fv (t \<cdot> \<theta>) \<union> fv (s \<cdot> \<theta>). \<exists>c. \<I> x = Fun c []"
+              using t_s_fv 3(3) unfolding valconst_cases_def by blast
+
+            have q4: "\<forall>x \<in> fv (t \<cdot> \<theta>) \<union> fv (s \<cdot> \<theta>). \<forall>y \<in> fv (t \<cdot> \<theta>) \<union> fv (s \<cdot> \<theta>).
+                        \<K> x = \<K> y \<longleftrightarrow> \<I> x = \<I> y"
+              using B'7 t_s_fv unfolding subst_eq_iff_def B(9) unlabel_append fv\<^sub>s\<^sub>s\<^sub>t_append by blast
+
+            show ?thesis using q0 subst_const_swap_eq'[OF _ q1 q2 q3 q4] by fast
+          qed
+          moreover have "(t \<cdot> \<theta> \<cdot> \<K>, s \<cdot> \<theta> \<cdot> \<K>) \<in> ?D2"
+            when ts: "(l, \<langle>ac: t \<in> s\<rangle>) \<in> set (transaction_checks T)" for l ac t s
+          proof -
+            have s_neq_s_val:
+                "s \<noteq> \<langle>s_val\<rangle>\<^sub>s \<or> filter is_Update (unlabel \<A>) = filter is_Update (unlabel \<B>)"
+            proof (cases "T_upds = []")
+              case False thus ?thesis
+                using step.hyps(2) ts x_val(7)
+                unfolding transaction_strand_def
+                by (cases ac) fastforce+
+            qed (use B(13)[unfolded db_eq_def] in simp)
+
+            have ts': "\<langle>ac: t \<in> s\<rangle> \<in> set (unlabel (transaction_strand T))"
+              using ts unlabel_in[OF ts] unfolding transaction_strand_def by fastforce
+
+            have "fv\<^sub>s\<^sub>s\<^sub>t\<^sub>p (\<langle>ac: (t \<cdot> \<theta>) \<in> (s \<cdot> \<theta>)\<rangle>) \<subseteq> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_checks T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)"
+              using stateful_strand_step_fv_subset_cases(6)[
+                      OF stateful_strand_step_subst_inI(6)[OF unlabel_in[OF ts], of \<theta>]]
+              unfolding unlabel_subst by simp
+            hence t_s_fv: "fv (t \<cdot> \<theta>) \<subseteq> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'" "fv (s \<cdot> \<theta>) \<subseteq> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'"
+              unfolding T'_def fv\<^sub>s\<^sub>s\<^sub>t_unlabel_dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_eq fv_transaction_subst_unfold[of T \<theta>]
+              by (fastforce, fastforce)
+
+            have "t \<in> trms_transaction T" "s \<in> trms_transaction T"
+              using ts' unfolding trms\<^sub>s\<^sub>s\<^sub>t_def by (force, force)
+            hence "\<nexists>n. u = Fun (Val n) [] \<or> u = Fun (PubConst Value n) []"
+              when u: "u \<sqsubseteq> t \<cdot> \<theta> \<or> u \<sqsubseteq> s \<cdot> \<theta>" for u
+              using u T'_trm_no_val unfolding in_\<theta>_is_\<alpha>[OF ts] by blast
+            hence "\<not>(\<K> x \<sqsubseteq> t \<cdot> \<theta>)" "\<not>(\<K> x \<sqsubseteq> s \<cdot> \<theta>)" "\<not>(\<I> x \<sqsubseteq> t \<cdot> \<theta>)" "\<not>(\<I> x \<sqsubseteq> s \<cdot> \<theta>)"
+              when x: "x \<in> fv (t \<cdot> \<theta>) \<union> fv (s \<cdot> \<theta>)" for x
+              using x t_s_fv B'3 I'
+              unfolding valconsts_only_def unlabel_append fv\<^sub>s\<^sub>s\<^sub>t_append
+              by (fast,fast,fast,fast)
+            hence q1: "\<forall>x \<in> fv (t \<cdot> \<theta>) \<union> fv (s \<cdot> \<theta>).
+                        \<I> x = \<K> x \<or>
+                        (\<not>(\<I> x \<sqsubseteq> t \<cdot> \<theta>) \<and> \<not>(\<I> x \<sqsubseteq> s \<cdot> \<theta>) \<and> \<not>(\<K> x \<sqsubseteq> t \<cdot> \<theta>) \<and> \<not>(\<K> x \<sqsubseteq> s \<cdot> \<theta>))"
+              by blast
+
+            have q2: "\<forall>x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<union> fv (t \<cdot> \<theta>) \<union> fv (s \<cdot> \<theta>). \<exists>c. \<I> x = Fun c []"
+              using t_s_fv 3(2,3) unfolding valconst_cases_def by blast
+
+            have q3: "\<forall>x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<union> fv (t \<cdot> \<theta>) \<union> fv (s \<cdot> \<theta>). \<exists>c. \<K> x = Fun c []"
+              using t_s_fv B'3 unfolding valconsts_only_def unlabel_append fv\<^sub>s\<^sub>s\<^sub>t_append by blast
+
+            have q4: "\<forall>x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<union> fv (t \<cdot> \<theta>) \<union> fv (s \<cdot> \<theta>).
+                      \<forall>y \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<union> fv (t \<cdot> \<theta>) \<union> fv (s \<cdot> \<theta>).
+                        \<I> x = \<I> y \<longleftrightarrow> \<K> x = \<K> y"
+              using B'7 t_s_fv unfolding subst_eq_iff_def B(9) unlabel_append fv\<^sub>s\<^sub>s\<^sub>t_append by blast
+
+            obtain h tx where s: "s = \<langle>h\<rangle>\<^sub>s" and tx: "t = Var tx"
+              using ts' transaction_selects_are_Value_vars[OF T_wf(1,2), of t s]
+                    transaction_inset_checks_are_Value_vars[OF T_adm, of t s]
+              by (cases ac) auto
+
+            have h:
+                "s \<cdot> \<theta> = \<langle>h\<rangle>\<^sub>s"
+                "h \<noteq> s_val \<or> filter is_Update (unlabel \<A>) = filter is_Update (unlabel \<B>)"
+              using s s_neq_s_val by (simp,blast)
+
+            obtain ty where ty: "t \<cdot> \<theta> = Var ty"
+              using tx transaction_renaming_subst_is_renaming(2)[OF step.hyps(5), of tx]
+              unfolding in_\<theta>_is_\<alpha>[OF ts] by force
+
+            have "(t \<cdot> \<theta> \<cdot> \<I>, s \<cdot> \<theta> \<cdot> \<I>) \<in> dbupd\<^sub>s\<^sub>s\<^sub>t (unlabel \<A>) \<I> {}" using 5 ts by blast
+            hence "(t \<cdot> \<theta> \<cdot> \<K>, s \<cdot> \<theta> \<cdot> \<K>) \<in> dbupd\<^sub>s\<^sub>s\<^sub>t (unlabel \<B>) \<K> {}"
+              using inset_model_swap[OF h ty _ q1 q2 q3 q4] t_s_fv by simp
+            thus ?thesis unfolding D2 by blast
+          qed
+          moreover have "(t \<cdot> \<theta> \<cdot> \<K>, s \<cdot> \<theta> \<cdot> \<K>) \<notin> ?D2"
+            when ts: "(l, \<langle>t not in s\<rangle>) \<in> set (transaction_checks T)" for l t s
+          proof -
+            have s_neq_s_val:
+                "(T_upds \<noteq> [] \<and> s \<noteq> \<langle>s_val\<rangle>\<^sub>s) \<or>
+                 (T_upds = [] \<and> filter is_Update (unlabel \<A>) = filter is_Update (unlabel \<B>))"
+            proof (cases "T_upds = []")
+              case False thus ?thesis
+                using step.hyps(2) ts x_val(7) unfolding transaction_strand_def by force
+            qed (use B(13)[unfolded db_eq_def] in simp)
+
+            have ts': "\<langle>t not in s\<rangle> \<in> set (unlabel (transaction_strand T))"
+              using ts unlabel_in[OF ts] unfolding transaction_strand_def by fastforce
+
+            have "fv\<^sub>s\<^sub>s\<^sub>t\<^sub>p (\<langle>(t \<cdot> \<theta>) not in (s \<cdot> \<theta>)\<rangle>) \<subseteq> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_checks T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)"
+              using stateful_strand_step_fv_subset_cases(9)[
+                      OF stateful_strand_step_subst_inI(9)[OF unlabel_in[OF ts], of \<theta>]]
+              unfolding unlabel_subst by simp
+            hence t_s_fv: "fv (t \<cdot> \<theta>) \<subseteq> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'" "fv (s \<cdot> \<theta>) \<subseteq> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'"
+              unfolding T'_def fv\<^sub>s\<^sub>s\<^sub>t_unlabel_dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_eq fv_transaction_subst_unfold[of T \<theta>]
+              by (fastforce, fastforce)
+
+            have "t \<in> trms_transaction T" "s \<in> trms_transaction T"
+              using ts' unfolding trms\<^sub>s\<^sub>s\<^sub>t_def by (force, force)
+            hence "\<nexists>n. u = Fun (Val n) [] \<or> u = Fun (PubConst Value n) []"
+              when u: "u \<sqsubseteq> t \<cdot> \<theta> \<or> u \<sqsubseteq> s \<cdot> \<theta>" for u
+              using u T'_trm_no_val unfolding notin_\<theta>_is_\<alpha>[OF ts] by blast
+            hence "\<not>(\<K> x \<sqsubseteq> t \<cdot> \<theta>)" "\<not>(\<K> x \<sqsubseteq> s \<cdot> \<theta>)" "\<not>(\<I> x \<sqsubseteq> t \<cdot> \<theta>)" "\<not>(\<I> x \<sqsubseteq> s \<cdot> \<theta>)"
+              when x: "x \<in> fv (t \<cdot> \<theta>) \<union> fv (s \<cdot> \<theta>)" for x
+              using x t_s_fv B'3 I'
+              unfolding valconsts_only_def unlabel_append fv\<^sub>s\<^sub>s\<^sub>t_append
+              by (fast,fast,fast,fast)
+            hence q1: "\<forall>x \<in> fv (t \<cdot> \<theta>) \<union> fv (s \<cdot> \<theta>).
+                        \<I> x = \<K> x \<or>
+                        (\<not>(\<I> x \<sqsubseteq> t \<cdot> \<theta>) \<and> \<not>(\<I> x \<sqsubseteq> s \<cdot> \<theta>) \<and> \<not>(\<K> x \<sqsubseteq> t \<cdot> \<theta>) \<and> \<not>(\<K> x \<sqsubseteq> s \<cdot> \<theta>))"
+              by blast
+
+            have q2: "\<forall>x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<union> fv (t \<cdot> \<theta>) \<union> fv (s \<cdot> \<theta>). \<exists>c. \<I> x = Fun c []"
+              using t_s_fv 3(2,3) unfolding valconst_cases_def by blast
+
+            have q3: "\<forall>x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<union> fv (t \<cdot> \<theta>) \<union> fv (s \<cdot> \<theta>). \<exists>c. \<K> x = Fun c []"
+              using t_s_fv B'3 unfolding valconsts_only_def unlabel_append fv\<^sub>s\<^sub>s\<^sub>t_append by blast
+
+            have q4: "\<forall>x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<union> fv (t \<cdot> \<theta>) \<union> fv (s \<cdot> \<theta>).
+                      \<forall>y \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<union> fv (t \<cdot> \<theta>) \<union> fv (s \<cdot> \<theta>).
+                        \<I> x = \<I> y \<longleftrightarrow> \<K> x = \<K> y"
+              using B'7 t_s_fv unfolding subst_eq_iff_def B(9) unlabel_append fv\<^sub>s\<^sub>s\<^sub>t_append by blast
+
+            obtain h tx where s: "s = \<langle>h\<rangle>\<^sub>s" and tx: "t = Var tx"
+              using transaction_notinset_checks_are_Value_vars(1,2)[OF T_adm ts', of t s] by auto
+
+            have h:
+                "s \<cdot> \<theta> = \<langle>h\<rangle>\<^sub>s"
+                "h \<noteq> s_val \<or> filter is_Update (unlabel \<A>) = filter is_Update (unlabel \<B>)"
+                "T_upds \<noteq> [] \<Longrightarrow> h \<noteq> s_val"
+              using s s_neq_s_val by (simp,blast,blast)
+
+            obtain ty where ty: "t \<cdot> \<theta> = Var ty"
+              using tx transaction_renaming_subst_is_renaming(2)[OF step.hyps(5), of tx]
+              unfolding notin_\<theta>_is_\<alpha>[OF ts] by force
+
+            have *: "(t \<cdot> \<theta> \<cdot> \<K>, s \<cdot> \<theta> \<cdot> \<K>) \<noteq> (u \<cdot> \<K>, v \<cdot> \<K>)"
+              when u: "insert\<langle>u,v\<rangle> \<in> set (unlabel T_val_constr)"
+                and h': "h \<noteq> s_val"
+              for u v
+            proof -
+              have "v = \<langle>s_val\<rangle>\<^sub>s" using T_val_constr(9) unlabel_mem_has_label[OF u] by force
+              thus ?thesis using h(1) h' by simp
+            qed
+
+            have "(t \<cdot> \<theta> \<cdot> \<I>, s \<cdot> \<theta> \<cdot> \<I>) \<notin> dbupd\<^sub>s\<^sub>s\<^sub>t (unlabel \<A>) \<I> {}" using 5 ts by blast
+            hence **: "(t \<cdot> \<theta> \<cdot> \<K>, s \<cdot> \<theta> \<cdot> \<K>) \<notin> dbupd\<^sub>s\<^sub>s\<^sub>t (unlabel \<B>) \<K> {}"
+              using inset_model_swap[OF h(1,2) ty _ q1 q2 q3 q4] t_s_fv by simp
+            
+            show ?thesis
+            proof (cases "T_upds = []")
+              case True
+              have "dbupd\<^sub>s\<^sub>s\<^sub>t (unlabel T_val_constr) I D = D" for I D
+                using T_val_constr_no_upds_if_no_T_upds[OF True]
+                      dbupd\<^sub>s\<^sub>s\<^sub>t_filter[of "unlabel T_val_constr"]
+                by force
+              thus ?thesis using ** by simp 
+            next
+              case False thus ?thesis
+                using ** * h(3) T_val_constr_no_upds_if_no_T_upds unfolding D2 by blast
+            qed
+          qed
+          ultimately show "?sem ?M2 ?D2 T'"
+            unfolding T'_def 4[OF T_adm K3 K2] by blast
+        qed
+      qed
+    qed
+
+    show ?case
+      using B'1 B'2 B'3 B'4 B'5 B'6 B'7 B'8_9 B'10_11 B'12 B'13 B'14
+      unfolding \<theta>_def[symmetric] T'_def[symmetric] by blast
+  qed
+
+  obtain \<B> \<J> where B:
+      "\<B> \<in> reachable_constraints P" "?wt_model \<J> \<B>"
+      "\<forall>x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>. \<exists>n. \<J> x = Fun (Val n) []" "?rcv_att \<A> n \<longrightarrow> ?rcv_att \<B> n" "fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> = fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>"
+    using lmm[OF finite.emptyI _ _ finite.emptyI] unfolding valconsts_only_def by auto
+ 
+  show ?thesis
+    using B(1,3) welltyped_constraint_model_attack_if_receive_attack[OF B(2)] B(4) 2
+    unfolding wt_attack_def B(5) by (meson list.set_intros(1))
+qed
+
+private lemma add_occurs_msgs_soundness_aux2:
+  assumes P: "\<forall>T \<in> set P. admissible_transaction T"
+    and A: "\<A> \<in> reachable_constraints P"
+  shows "\<exists>\<B> \<in> reachable_constraints (map add_occurs_msgs P). \<A> = rm_occurs_msgs_constr \<B>"
+using A
+proof (induction rule: reachable_constraints.induct)
+  case (step \<A> T \<xi> \<sigma> \<alpha>)
+  define \<theta> where "\<theta> \<equiv> \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>"
+
+  let ?A' = "dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)"
+  let ?B' = "dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand (add_occurs_msgs T) \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)"
+
+  obtain A B C D E F where T: "T = Transaction A B C D E F" by (cases T) simp
+
+  have P': "\<forall>T \<in> set P. admissible_transaction' T"
+             "\<forall>T \<in> set P. admissible_transaction_no_occurs_msgs T"
+    using P admissible_transactionE'(1,2) by (blast,blast)
+
+  note T_adm' = bspec[OF P step.hyps(2)]
+  note T_adm = bspec[OF P'(1) step.hyps(2)]
+  note \<xi>_empty = admissible_transaction_decl_subst_empty[OF T_adm step.hyps(3)]
+  note T_fresh_val = admissible_transactionE(2)[OF T_adm]
+
+  note T_no_occ = admissible_transactionE'(2)[OF T_adm']
+
+  obtain \<B> where B:
+      "\<B> \<in> reachable_constraints (map add_occurs_msgs P)" "\<A> = rm_occurs_msgs_constr \<B>"
+    using step.IH by blast
+
+  note 0 = add_occurs_msgs_cases[OF T]
+  note 1 = add_occurs_msgs_vars_eq[OF bspec[OF P'(1)]]
+  note 2 = add_occurs_msgs_trms[of T]
+  note 3 = add_occurs_msgs_transaction_strand_set[OF T]
+
+  have 4: "add_occurs_msgs T \<in> set (map add_occurs_msgs P)"
+    using step.hyps(2) by simp
+
+  have 5: "transaction_decl_subst \<xi> (add_occurs_msgs T)"
+    using step.hyps(3) 0(4) unfolding transaction_decl_subst_def by argo
+
+  have "t \<notin> subterms\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>)"
+       "t \<notin> subterms\<^sub>s\<^sub>e\<^sub>t (trms_transaction (add_occurs_msgs T))"
+    when t: "t \<in> subst_range \<sigma>" for t
+  proof -
+    obtain c where c: "t = Fun (Val c) []"
+      using t T_fresh_val transaction_fresh_subst_domain[OF step.hyps(4)]
+            transaction_fresh_subst_sends_to_val[OF step.hyps(4), of _ thesis]
+      by fastforce
+
+    have *: "t \<notin> subterms\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>)" "t \<notin> subterms\<^sub>s\<^sub>e\<^sub>t (trms_transaction T)"
+      using t step.hyps(4) unfolding transaction_fresh_subst_def by (fast,fast)
+
+    have "t \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<or> (\<exists>x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>. t \<sqsubseteq> occurs (Var x)) \<or>
+           (\<exists>c. Fun c [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<and> t \<sqsubseteq> occurs (Fun c []))"
+      when t: "t \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>"
+      using t rm_occurs_msgs_constr_reachable_constraints_trms_cases[OF P' B(2,1)] by fast
+    thus "t \<notin> subterms\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>)"
+      using *(1) unfolding c by fastforce
+
+    show "t \<notin> subterms\<^sub>s\<^sub>e\<^sub>t (trms_transaction (add_occurs_msgs T))"
+      using *(2) unfolding 2 c by force
+  qed
+  hence 6: "transaction_fresh_subst \<sigma> (add_occurs_msgs T) (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>)"
+    using step.hyps(4) unfolding transaction_fresh_subst_def 0(5) 2 by fast
+
+  have 7: "transaction_renaming_subst \<alpha> (map add_occurs_msgs P) (vars\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>)"
+    using step.hyps(5) rm_occurs_msgs_constr_reachable_constraints_vars_eq[OF P' B(1)] B(2) 1(5)
+    unfolding transaction_renaming_subst_def by simp
+
+  have "?A' = rm_occurs_msgs_constr ?B'"
+    using admissible_transaction_decl_fresh_renaming_subst_not_occurs[OF T_adm step.hyps(3,4,5)]
+          rm_occurs_msgs_constr_transaction_strand''[OF T_adm T_no_occ]
+    unfolding \<theta>_def[symmetric] by metis
+  hence 8: "\<A>@?A' = rm_occurs_msgs_constr (\<B>@?B')"
+    by (metis rm_occurs_msgs_constr_append B(2))
+
+  show ?case using reachable_constraints.step[OF B(1) 4 5 6 7] 8 unfolding \<theta>_def by blast
+qed (metis reachable_constraints.init rm_occurs_msgs_constr.simps(1))
+
+private lemma add_occurs_msgs_soundness_aux3:
+  assumes P: "\<forall>T \<in> set P. admissible_transaction T"
+    and A: "\<A> \<in> reachable_constraints (map add_occurs_msgs P)"
+           "welltyped_constraint_model \<I> (rm_occurs_msgs_constr \<A>)"
+    and I: "\<forall>x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>. \<exists>n. \<I> x = Fun (Val n) []" (is "?I \<A>")
+  shows "welltyped_constraint_model \<I> \<A>" (is "?Q \<I> \<A>")
+using A I
+proof (induction \<A> rule: reachable_constraints.induct)
+  case (step \<A> T \<xi> \<sigma> \<alpha>)
+  let ?f = rm_occurs_msgs_constr
+  let ?sem = "\<lambda>B. strand_sem_stateful (ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>) (dbupd\<^sub>s\<^sub>s\<^sub>t (unlabel \<A>) \<I> {}) (unlabel B) \<I>"
+
+  define \<theta> where "\<theta> \<equiv> \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>"
+  define \<B> where "\<B> \<equiv> dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)"
+
+  obtain T' where T': "T' \<in> set P" "T = add_occurs_msgs T'"
+    using step.hyps(2) by fastforce
+  then obtain A' B' C' D' E' F' where T'': "T' = Transaction A' B' C' D' E' F'" 
+    using prot_transaction.exhaust by blast
+
+  have P': "\<forall>T \<in> set (map add_occurs_msgs P). admissible_transaction' T"
+           "\<forall>T \<in> set (map add_occurs_msgs P). admissible_transaction_occurs_checks T"
+           "\<forall>T \<in> set P. admissible_transaction' T"
+           "\<forall>T \<in> set P. admissible_transaction_no_occurs_msgs T"
+    using P admissible_transactionE' add_occurs_msgs_admissible_occurs_checks
+    by (fastforce,fastforce,fastforce,fastforce)
+
+  note T_adm = bspec[OF P'(1) step.hyps(2)]
+  note T_wf = admissible_transaction_is_wellformed_transaction(1)[OF T_adm]
+  note T'_adm = bspec[OF P'(3) T'(1)]
+  note T'_no_occ = bspec[OF P'(4) T'(1)]
+  note T'_wf = admissible_transaction_is_wellformed_transaction(1)[OF T'_adm]
+  note \<xi>_empty = admissible_transaction_decl_subst_empty[OF T_adm step.hyps(3)]
+  note T_fresh_val = admissible_transactionE(2)[OF T_adm]
+
+  have 0: "?Q \<I> (?f \<A>)" "?I \<A>" "?I \<B>"
+    by (metis step.prems(1) welltyped_constraint_model_prefix rm_occurs_msgs_constr_append,
+        simp_all add: step.prems(2) \<theta>_def \<B>_def)
+
+  note IH = step.IH[OF 0(1,2)]
+
+  have I': "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>" "interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<I>)"
+    using step.prems(1) unfolding welltyped_constraint_model_def constraint_model_def by blast+
+
+  have 1: "\<forall>x \<in> fv_transaction T. \<nexists>t. \<theta> x = occurs t"
+          "\<forall>x \<in> fv_transaction T. \<theta> x \<noteq> Fun OccursSec []"
+    using admissible_transaction_decl_fresh_renaming_subst_not_occurs[OF T_adm step.hyps(3,4,5)]
+    unfolding \<theta>_def[symmetric] by simp_all
+
+  have "(ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t (?f \<A>) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>) \<union> (ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>) = ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>"
+    using rm_occurs_msgs_constr_ik_subset by fast
+  hence 2: "?sem (?f \<B>)"
+    using step.prems(1) strand_sem_append_stateful[of "{}" "{}" "unlabel (?f \<A>)" "unlabel (?f \<B>)"]
+          rm_occurs_msgs_constr_dbupd\<^sub>s\<^sub>s\<^sub>t_eq[of \<A> \<I> "{}"] rm_occurs_msgs_constr_append[of \<A> \<B>]
+          strand_sem_ik_mono_stateful[of "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t (?f \<A>) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>" _ _ _ "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>"]
+    unfolding welltyped_constraint_model_def constraint_model_def \<theta>_def[symmetric] \<B>_def[symmetric]
+    by auto
+
+  note 3 = rm_occurs_msgs_constr_transaction_strand''[
+            OF T'_adm T'_no_occ 1[unfolded T'(2)], unfolded \<B>_def[symmetric] T'(2)[symmetric]]
+
+  note 4 = add_occurs_msgs_cases[OF T'', unfolded T'(2)[symmetric]]
+
+
+  define xs where "xs \<equiv> fv_list\<^sub>s\<^sub>s\<^sub>t (unlabel (transaction_strand T'))"
+  define flt where "flt \<equiv> filter (\<lambda>x. x \<notin> set (transaction_fresh T'))"
+  define occs where "occs \<equiv> map (\<lambda>x. occurs (Var x)::('fun,'atom,'sets,'lbl) prot_term)"
+
+  note 6 = add_occurs_msgs_transaction_strand_cases(7,8,9)[
+            of T' \<theta>, unfolded xs_def[symmetric] flt_def[symmetric] occs_def[symmetric]
+                              T'(2)[symmetric]]
+
+  have 7: "x \<in> fv_transaction T - set (transaction_fresh T)"
+    when x: "x \<in> set (flt xs)" for x
+    using that fv_list\<^sub>s\<^sub>s\<^sub>t_is_fv\<^sub>s\<^sub>s\<^sub>t add_occurs_msgs_vars_eq(3,9)[OF T'_adm]
+    unfolding xs_def flt_def T'(2) by force
+
+  have 9: "\<exists>y. \<theta> x = Var y"
+    when x: "x \<in> set (flt xs)" for x
+  proof -
+    have *: "x \<notin> fst ` set (transaction_decl T ())"
+      using admissible_transactionE(1)[OF T_adm] by simp
+
+    have **: "x \<notin> set (transaction_fresh T)" using 7[OF x] by simp
+
+    show ?thesis
+      using transaction_decl_fresh_renaming_substs_range(4)[OF step.hyps(3,4,5) * **]
+      unfolding \<theta>_def by blast
+  qed
+
+  have 8: "\<exists>y \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>. \<theta> x = Var y"
+    when x: "x \<in> set (flt xs)" for x
+  proof -
+    note * = 7[OF x]
+
+    obtain y where y: "\<theta> x = Var y" using 9[OF x] by blast
+
+    have "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T))" by (metis * Diff_iff fv\<^sub>s\<^sub>s\<^sub>t_unlabel_dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_eq)
+    have "\<theta> x \<in> \<theta> ` fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T)" using * by fast
+    hence "fv (\<theta> x) \<subseteq> fv\<^sub>s\<^sub>e\<^sub>t (\<theta> ` fv_transaction T)" by force
+    hence "fv (\<theta> x) \<subseteq> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)"
+      using fv\<^sub>s\<^sub>s\<^sub>t_subst_if_no_bvars[OF admissible_transactionE(4)[OF T_adm], of \<theta>]
+      by (metis unlabel_subst)
+    hence "fv (\<theta> x) \<subseteq> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>" by (metis fv\<^sub>s\<^sub>s\<^sub>t_unlabel_dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_eq \<B>_def)
+    thus ?thesis using y by simp
+  qed
+
+  have \<B>_var_is_\<I>_val: "\<exists>n. \<I> x = Fun (Val n) []" when x: "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B>" for x
+    using step.prems(2) x unfolding \<B>_def[symmetric] \<theta>_def[symmetric] by auto
+
+  have T'_var_is_\<theta>\<I>_val: "\<exists>n. \<theta> x \<cdot> \<I> = Fun (Val n) []" when x: "x \<in> set (flt xs)" for x
+    using 8[OF x] \<B>_var_is_\<I>_val by force
+
+
+  (* TODO: extract lemma *)
+  have poschecks_has_occ: "occurs (Fun (Val n) []) \<in> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>"
+    when x: "\<langle>ac: t \<in> s\<rangle> \<in> set (unlabel \<B>)"
+      and n: "t \<cdot> \<I> = Fun (Val n) []"
+    for ac t s n
+  proof -
+    have *: "(t \<cdot> \<I>, s \<cdot> \<I>) \<in> dbupd\<^sub>s\<^sub>s\<^sub>t (unlabel \<A>) \<I> {}"
+    proof -
+      obtain t' s' where t':
+          "\<langle>ac: t' \<in> s'\<rangle> \<in> set (unlabel (transaction_checks T'))" "t = t' \<cdot> \<theta>" "s = s' \<cdot> \<theta>"
+        using 4(8) x stateful_strand_step_mem_substD(6)
+              wellformed_transaction_strand_unlabel_memberD(10)[OF T_wf(1)]
+              dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_unlabel_steps_iff(6)
+        unfolding \<B>_def by (metis (no_types) unlabel_subst dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_subst)
+
+      have "(t' \<cdot> \<theta> \<cdot> \<I>, s' \<cdot> \<theta> \<cdot> \<I>) \<in> dbupd\<^sub>s\<^sub>s\<^sub>t (unlabel \<A>) \<I> {}"
+        using t'(1) 2
+              wellformed_transaction_unlabel_sem_iff[
+                OF T'_wf(1) I'(2,3), of "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>" "dbupd\<^sub>s\<^sub>s\<^sub>t (unlabel \<A>) \<I> {}" \<theta>]
+        unfolding 3 by blast
+      thus ?thesis using t'(2,3) by simp
+    qed
+
+    have "t' \<in> trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>"
+      when "insert\<langle>t',s'\<rangle> \<in> set (unlabel \<A>)" for t' s'
+      using that by force
+
+    have "t \<cdot> \<I> \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>"
+    proof -
+      obtain t' s' where t': "insert\<langle>t',s'\<rangle> \<in> set (unlabel \<A>)" "t \<cdot> \<I> = t' \<cdot> \<I>" "s \<cdot> \<I> = s' \<cdot> \<I>"
+        using * db\<^sub>s\<^sub>s\<^sub>t_in_cases[of "t \<cdot> \<I>" "s \<cdot> \<I>" "unlabel \<A>" \<I> "[]"]
+              db\<^sub>s\<^sub>s\<^sub>t_set_is_dbupd\<^sub>s\<^sub>s\<^sub>t[of "unlabel \<A>" \<I> "[]"]
+        by auto
+
+      have t'': "t' = t \<cdot> \<I> \<or> (\<exists>y \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>. t' = Var y \<and> \<I> y = t \<cdot> \<I>)"
+        using t'(1,2) stateful_strand_step_fv_subset_cases(4)
+        unfolding n by (cases t') (force,force)
+      thus ?thesis
+      proof
+        assume "t' = t \<cdot> \<I>" thus ?thesis using t'(1) by force
+      next
+        assume "\<exists>y \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>. t' = Var y \<and> \<I> y = t \<cdot> \<I>"
+        then obtain y where y: "y \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>" "\<I> y = t \<cdot> \<I>" by blast
+
+        have "\<Gamma>\<^sub>v y = TAtom Value"
+          using y(2) wt_subst_trm''[OF I'(1), of "Var y"] unfolding n by simp
+        hence "\<exists>B. prefix B \<A> \<and> t \<cdot> \<I> \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t B"
+          by (metis y constraint_model_Value_var_in_constr_prefix[OF step.hyps(1) IH P'(1,2)])
+        thus ?thesis unfolding prefix_def by auto
+      qed
+    qed
+    thus ?thesis
+      using reachable_constraints_occurs_fact_ik_case'[OF step.hyps(1) P'(1,2)]
+      unfolding n by blast
+  qed
+
+  (* TODO: extract lemma *)
+  have snds_has_occ: "occurs (Fun (Val n) []) \<in> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>"
+    when ts: "send\<langle>ts\<rangle> \<in> set (unlabel \<B>)"
+      and n: "Fun (Val n) [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t set ts \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>"
+    for ts n
+  proof -
+    have "receive\<langle>ts\<rangle> \<in> set (unlabel (transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>))"
+      using ts dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_unlabel_steps_iff(2) unfolding \<B>_def by metis
+    then obtain ts' where ts':
+        "receive\<langle>ts'\<rangle> \<in> set (unlabel (transaction_strand T))" "ts = ts' \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta>"
+      by (metis subst_lsst_memD(1) unlabel_in unlabel_mem_has_label)
+
+
+    have "?sem (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_receive T' \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>))"
+      using 2 strand_sem_append_stateful[of "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>" "dbupd\<^sub>s\<^sub>s\<^sub>t (unlabel \<A>) \<I> {}"]
+      unfolding 3 transaction_dual_subst_unlabel_unfold by blast
+    moreover have "list_all is_Receive (unlabel (transaction_receive T'))"
+      using T'_wf unfolding wellformed_transaction_def by blast
+    hence "list_all is_Send (unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_receive T' \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)))"
+      by (metis subst_lsst_unlabel subst_sst_list_all(2) dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_list_all(1))
+    hence "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_receive T' \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)) = {}"
+      using in_ik\<^sub>s\<^sub>s\<^sub>t_iff unfolding list_all_iff is_Send_def by fast
+    ultimately have *: "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile> t \<cdot>  \<I>"
+      when "send\<langle>ts\<rangle> \<in> set (unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_receive T' \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)))" "t \<in> set ts"
+      for t ts
+      using strand_sem_stateful_sends_deduct[OF _ that] by simp
+    hence *: "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile> t \<cdot> \<theta> \<cdot> \<I>"
+      when ts: "receive\<langle>ts\<rangle> \<in> set (unlabel (transaction_receive T'))" "t \<in> set ts" for t ts
+      using ts(2) dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_unlabel_steps_iff(2)[of "ts \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta>" "transaction_receive T' \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>"]
+            stateful_strand_step_subst_inI(2)[OF ts(1), of \<theta>, unfolded unlabel_subst]
+      by auto
+
+    have **: "set (flt xs) = fv_transaction T' - set (transaction_fresh T')"
+      using fv_list\<^sub>s\<^sub>s\<^sub>t_is_fv\<^sub>s\<^sub>s\<^sub>t unfolding flt_def xs_def by fastforce
+
+    have rcv_case: ?thesis
+      when "ts = ts' \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta>" "Fun (Val n) [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t set ts \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>"
+           "receive\<langle>ts'\<rangle> \<in> set (unlabel (transaction_receive T'))"
+      for ts ts'
+      using that * reachable_constraints_occurs_fact_ik_case''[OF step.hyps(1) IH P'(1,2)] by auto
+
+    have "receive\<langle>ts'\<rangle> \<in> set (unlabel (transaction_receive T))"
+      using wellformed_transaction_strand_unlabel_memberD(1)[OF T_wf] ts'(1) by blast
+    hence "(ts' = map (\<lambda>x. occurs (Var x)) (flt xs) \<and> ts' \<noteq> []) \<or>
+           receive\<langle>ts'\<rangle> \<in> set (unlabel (transaction_receive T'))"
+      (is "?A \<or> ?B")
+      using ** ts'(1) add_occurs_msgs_cases(13)[OF T'']
+      unfolding T'(2)[symmetric] xs_def[symmetric] flt_def[symmetric] by force
+    thus ?thesis
+    proof
+      assume ?A
+      then obtain x where x: "x \<in> set (flt xs)" "Fun (Val n) [] \<sqsubseteq> \<theta> x \<cdot> \<I>"
+        using ts' n by fastforce
+      
+      have x': "\<theta> x \<cdot> \<I> = Fun (Val n) []" "x \<in> fv_transaction T" "x \<notin> set (transaction_fresh T)"
+               "x \<in> fv_transaction T'" "x \<notin> set (transaction_fresh T')"
+        using x(2) T'_var_is_\<theta>\<I>_val[OF x(1)] 7[OF x(1)] ** x(1) by fastforce+
+
+      let ?snds = "unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_receive T' \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>))"
+      let ?chks = "unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_checks T' \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>))"
+
+      have B_subsets: "set ?chks \<subseteq> set (unlabel \<B>)"
+        unfolding \<B>_def transaction_dual_subst_unlabel_unfold 4(8) by fastforce
+
+      from admissible_transaction_fv_in_receives_or_selects_dual_subst[OF T'_adm x'(4,5), of \<theta>]
+      show ?thesis
+      proof
+        assume "\<exists>ts. send\<langle>ts\<rangle> \<in> set ?snds \<and> \<theta> x \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t set ts"
+        then obtain ss where ss: "send\<langle>ss\<rangle> \<in> set ?snds" "\<theta> x \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t set ss" by blast
+        
+        obtain ss' where ss':
+            "ss = ss' \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta>" "receive\<langle>ss'\<rangle> \<in> set (unlabel (transaction_receive T'))"
+          by (metis ss(1) dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_unlabel_steps_iff(2) subst_lsst_memD(1)
+                    unlabel_in unlabel_mem_has_label)
+
+        show ?thesis
+          using rcv_case[OF ss'(1) _ ss'(2)] subst_subterms[OF ss(2), of \<I>] x'(1) by argo
+      qed (use B_subsets poschecks_has_occ[OF _ x'(1)] in blast)
+    qed (metis rcv_case[OF ts'(2) n])
+  qed
+
+  (* TODO: extract lemma *)
+  have "occurs (\<theta> x \<cdot> \<I>) \<in> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>" when x: "x \<in> set (flt xs)" for x
+  proof -
+    have "(\<exists>ac s. \<langle>ac: \<theta> x \<in> s\<rangle> \<in> set (unlabel \<B>)) \<or>
+           (\<exists>ts. send\<langle>ts\<rangle> \<in> set (unlabel \<B>) \<and> \<theta> x \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t set ts)"
+      (is "(\<exists>ac s. ?A ac s) \<or> (\<exists>ts. ?B1 ts \<and> ?B2 ts)")
+      using 7[OF x] admissible_transaction_fv_in_receives_or_selects_dual_subst[OF T_adm, of x \<theta>]
+      unfolding \<B>_def transaction_dual_subst_unlabel_unfold by auto
+    thus ?thesis
+    proof
+      assume "\<exists>ac s. ?A ac s"
+      then obtain ac s where s: "?A ac s" by blast
+      show ?thesis using poschecks_has_occ[OF s] T'_var_is_\<theta>\<I>_val[OF x] by force
+    next
+      assume "\<exists>ts. ?B1 ts \<and> ?B2 ts"
+      then obtain ts where ts: "?B1 ts" "?B2 ts" by meson
+      have ts': "\<theta> x \<cdot> \<I> \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t set ts \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>" by (metis ts(2) subst_subterms)
+      show ?thesis using snds_has_occ[OF ts(1)] ts' T'_var_is_\<theta>\<I>_val[OF x] by force
+    qed
+  qed
+  hence "occurs (\<theta> x \<cdot> \<I>) \<cdot> \<I> \<in> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>" when "x \<in> set (flt xs)" for x using that by fast
+  moreover have "occurs (\<theta> x \<cdot> \<I>) \<cdot> \<I> = occurs (\<theta> x \<cdot> \<I>)" for x
+    using subst_ground_ident[OF interpretation_grounds[OF I'(2), of "\<theta> x"], of \<I>] by simp
+  ultimately have "occurs (\<theta> x \<cdot> \<I>) \<in> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>" when "x \<in> set (flt xs)" for x
+    using that by auto
+  hence "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile> t \<cdot> \<I>" when "t \<in> set (occs (flt xs) \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta>)" for t
+    using that unfolding occs_def by auto
+  hence occs_sem: "?sem [\<langle>\<star>, send\<langle>occs (flt xs) \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta>\<rangle>\<rangle>]"
+    by auto
+
+
+  (* TODO: extract lemma *)
+  have "?sem \<B>"
+  proof -
+    let ?IK = "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>"
+    let ?DB = "dbupd\<^sub>s\<^sub>s\<^sub>t (unlabel \<A>) \<I> {}"
+    let ?snds = "dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_receive T' \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)"
+    let ?snds_occs = "(\<langle>\<star>, send\<langle>occs (flt xs) \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta>\<rangle>\<rangle>)#?snds"
+    let ?chks = "dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_checks T' \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)"
+    let ?upds = "dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_updates T' \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)"
+    let ?rcvs = "dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_send T' \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)"
+
+    note * = strand_sem_append_stateful[of _ _ _ _ \<I>]
+    note ** = transaction_dual_subst_unlabel_unfold
+    have ***: "\<And>M. M \<union> (ik\<^sub>s\<^sub>s\<^sub>t [] \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>) = M"
+              "\<And>D. dbupd\<^sub>s\<^sub>s\<^sub>t [] \<I> D = D"
+      by simp_all
+
+    have snds_sem:
+        "?sem ?snds"
+        "?sem ?snds_occs"
+      using 2 occs_sem *[of ?IK ?DB]
+      unfolding 3 ** by (blast, fastforce)
+
+    have "list_all is_Receive (unlabel (transaction_receive T'))"
+      using T'_wf unfolding wellformed_transaction_def by blast
+    hence "list_all is_Send (unlabel ?snds)" "list_all is_Send (unlabel ?snds_occs)"
+      using subst_sst_list_all(2) unlabel_subst dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_list_all(1)
+      by (metis, metis (no_types) list.pred_inject(2) stateful_strand_step.disc(1) unlabel_Cons(1))
+    hence "\<forall>a \<in> set (unlabel ?snds). \<not>is_Receive a \<and> \<not>is_Insert a \<and> \<not>is_Delete a"
+          "\<forall>a \<in> set (unlabel ?snds_occs). \<not>is_Receive a \<and> \<not>is_Insert a \<and> \<not>is_Delete a"
+      unfolding list_all_iff by (blast,blast)
+    hence snds_no_upds:
+        "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t ?snds \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> = {}"
+        "dbupd\<^sub>s\<^sub>s\<^sub>t (unlabel ?snds) \<I> ?DB = ?DB"
+        "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t (?snds_occs) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> = {}"
+        "dbupd\<^sub>s\<^sub>s\<^sub>t (unlabel ?snds_occs) \<I> ?DB = ?DB"
+      by (metis ik\<^sub>s\<^sub>s\<^sub>t_snoc_no_receive_empty, metis dbupd\<^sub>s\<^sub>s\<^sub>t_no_upd,
+          metis ik\<^sub>s\<^sub>s\<^sub>t_snoc_no_receive_empty, metis dbupd\<^sub>s\<^sub>s\<^sub>t_no_upd)
+
+    have chks_sem:
+        "?sem ?chks"
+      using 2 snds_no_upds *
+      unfolding 3 ** by auto
+
+    have "list_all is_Check_or_Assignment (unlabel (transaction_checks T'))"
+      using T'_wf unfolding wellformed_transaction_def by blast
+    hence "list_all is_Check_or_Assignment (unlabel ?chks)"
+      by (metis (no_types) subst_sst_list_all(11) unlabel_subst dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_list_all(11))
+    hence "\<forall>a \<in> set (unlabel ?chks). \<not>is_Receive a \<and> \<not>is_Insert a \<and> \<not>is_Delete a"
+      unfolding list_all_iff by blast
+    hence chks_no_upds:
+        "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t ?chks \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> = {}"
+        "dbupd\<^sub>s\<^sub>s\<^sub>t (unlabel ?chks) \<I> ?DB = ?DB"
+      by (metis ik\<^sub>s\<^sub>s\<^sub>t_snoc_no_receive_empty, metis dbupd\<^sub>s\<^sub>s\<^sub>t_no_upd)
+
+    have upds_sem:
+        "?sem ?upds"
+      using 2 snds_no_upds chks_no_upds *
+      unfolding 3 ** by auto
+
+    have "list_all is_Send (unlabel (transaction_send T'))"
+      using T'_wf unfolding wellformed_transaction_def by fast
+    hence "list_all is_Send (unlabel (transaction_send T' \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>))"
+      by (metis (no_types, opaque_lifting) subst_sst_list_all(1) unlabel_subst)
+    hence rcvs_is_rcvs: "list_all is_Receive (unlabel ?rcvs)"
+      using dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_list_all(2) by blast
+
+    have rcvs_sem: "strand_sem_stateful M D (unlabel rcvs) \<I>"
+      when "list_all is_Receive (unlabel rcvs)"
+      for M D and rcvs::"('fun, 'atom, 'sets, 'lbl) prot_strand"
+      using rcvs_is_rcvs strand_sem_receive_prepend_stateful[of M D "[]" \<I>, OF _ that] by auto
+
+    have B_sem: "?sem (?snds@?chks@?upds@rcvs)"
+                "?sem (?snds_occs@?chks@?upds@rcvs)"
+      when "list_all is_Receive (unlabel rcvs)" for rcvs
+      using strand_sem_append_stateful[of _ _ _ _ \<I>]
+            snds_sem snds_no_upds chks_sem chks_no_upds
+            upds_sem rcvs_sem[OF that]
+      by (force, force)
+
+    show ?thesis
+    proof (cases "transaction_fresh T' = []")
+      case True
+      show ?thesis using B_sem[OF rcvs_is_rcvs] unfolding \<B>_def 6(1)[OF True] by force
+    next
+      case False
+      note F = this
+      show ?thesis
+      proof (cases "\<exists>ts F'. transaction_send T' = \<langle>\<star>, send\<langle>ts\<rangle>\<rangle>#F'")
+        case True
+        obtain ts F' rcvs' where F':
+            "transaction_send T' = \<langle>\<star>, send\<langle>ts\<rangle>\<rangle>#F'"
+            "\<B> = (if flt xs = [] then ?snds else ?snds_occs)@?chks@?upds@rcvs'"
+            "rcvs' = \<langle>\<star>, receive\<langle>occs (transaction_fresh T')@ts \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta>\<rangle>\<rangle>#dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (F' \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)"
+          using 6(3)[OF F True] unfolding \<B>_def by blast
+
+        have *: "list_all is_Receive (unlabel rcvs')"
+          using rcvs_is_rcvs dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_Cons(1)[of \<star> ts "F' \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>"]
+                subst_lsst_cons[of "\<langle>\<star>, send\<langle>ts\<rangle>\<rangle>" F' \<theta>]
+          unfolding F'(1,3) list_all_iff by auto
+
+        show ?thesis using B_sem[OF *] unfolding F'(2) by fastforce
+      next
+        case False
+        have *:
+            "list_all is_Receive (unlabel (\<langle>\<star>, receive\<langle>occs (transaction_fresh T') \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta>\<rangle>\<rangle>#?rcvs))"
+          using rcvs_is_rcvs by auto
+
+        show ?thesis using B_sem[OF *] unfolding \<B>_def 6(2)[OF F False] by fastforce
+      qed
+    qed
+  qed
+  thus ?case
+    using IH strand_sem_append_stateful[of "{}" "{}" "unlabel \<A>" "unlabel \<B>" \<I>]
+    unfolding welltyped_constraint_model_def constraint_model_def \<theta>_def[symmetric] \<B>_def[symmetric]
+    by simp
+qed simp
+
+theorem add_occurs_msgs_soundness:
+  defines "wt_attack \<equiv> \<lambda>\<I> \<A> l n. welltyped_constraint_model \<I> (\<A>@[(l, send\<langle>[attack\<langle>n\<rangle>]\<rangle>)])"
+  assumes P: "\<forall>T \<in> set P. admissible_transaction T"
+             "has_initial_value_producing_transaction P"
+    and A: "\<A> \<in> reachable_constraints P" "wt_attack \<I> \<A> l n"
+  shows "\<exists>\<B> \<in> reachable_constraints (map add_occurs_msgs P). \<exists>\<J>. wt_attack \<J> \<B> l n"
+proof -
+  have P': "\<forall>T \<in> set (map add_occurs_msgs P). admissible_transaction' T"
+           "\<forall>T \<in> set (map add_occurs_msgs P). admissible_transaction_occurs_checks T"
+           "\<forall>T \<in> set P. admissible_transaction' T"
+           "\<forall>T \<in> set P. admissible_transaction_no_occurs_msgs T"
+    using P admissible_transactionE' add_occurs_msgs_admissible_occurs_checks
+    by (fastforce,fastforce,fastforce,fastforce)
+
+  obtain \<A>' \<J> where A':
+      "\<A>' \<in> reachable_constraints P" "wt_attack \<J> \<A>' l n" "\<forall>x\<in>fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>'. \<exists>n. \<J> x = Fun (Val n) []"
+    using add_occurs_msgs_soundness_aux1[OF P'(3) P(2) A[unfolded wt_attack_def]]
+    unfolding wt_attack_def by blast
+
+  have J: "welltyped_constraint_model \<J> \<A>'"
+    using A'(2) welltyped_constraint_model_prefix
+    unfolding wt_attack_def by blast
+
+  obtain \<B> where B:
+      "\<B> \<in> reachable_constraints (map add_occurs_msgs P)" "\<A>' = rm_occurs_msgs_constr \<B>"
+    using add_occurs_msgs_soundness_aux2[OF P(1) A'(1)] by blast
+
+  have J': "welltyped_constraint_model \<J> \<B>"
+    using add_occurs_msgs_soundness_aux3[OF P(1) B(1) J[unfolded B(2)]]
+          A'(3) rm_occurs_msgs_constr_reachable_constraints_fv_eq[OF P'(3,4) B(1)]
+    unfolding wt_attack_def B(2) by blast
+
+  obtain ts where ts: "receive\<langle>ts\<rangle> \<in> set (unlabel \<B>)" "attack\<langle>n\<rangle> \<in> set ts"
+    using reachable_constraints_receive_attack_if_attack''[OF P'(3) A'(1,2)[unfolded wt_attack_def]]
+          rm_occurs_msgs_constr_receive_attack_iff[of n \<B>]
+    unfolding B(2)[symmetric] by auto
+
+  have J'': "wt_attack \<J> \<B> l n"
+    using welltyped_constraint_model_attack_if_receive_attack[OF J' ts]
+    unfolding wt_attack_def by fast
+
+  show ?thesis
+    using B(1) J'' by blast
+qed
+
+end
+
+end
+
+
 subsection \<open>Automatically Checking Protocol Security in a Typed Model\<close>
 context stateful_protocol_model
 begin
@@ -1551,9 +5507,8 @@ proof -
                             {t \<in> subterms\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t a) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>. \<exists>n. t = Fun (Val n) []}"
 
   have "M (A@B) = M A \<union> M B"
-    using unlabel_append[of A B] trms\<^sub>s\<^sub>s\<^sub>t_append[of "unlabel A" "unlabel B"]
-          image_Un[of "\<lambda>x. x \<cdot> \<I>" "subterms\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t A)" "subterms\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t B)"]
-    unfolding M_def by force
+    using image_Un[of "\<lambda>x. x \<cdot> \<I>" "subterms\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t A)" "subterms\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t B)"]
+    unfolding M_def unlabel_append[of A B] trms\<^sub>s\<^sub>s\<^sub>t_append[of "unlabel A" "unlabel B"] by blast
   hence "M (A@B) \<cdot>\<^sub>\<alpha>\<^sub>s\<^sub>e\<^sub>t a0 = (M A \<cdot>\<^sub>\<alpha>\<^sub>s\<^sub>e\<^sub>t a0) \<union> (M B \<cdot>\<^sub>\<alpha>\<^sub>s\<^sub>e\<^sub>t a0)" by (simp add: abs_set_union)
   thus ?thesis unfolding abs_value_constants_def a0_def M_def by force 
 qed
@@ -1590,7 +5545,7 @@ qed
 
 lemma reachable_constraints_GSMP_no_pubvals_abss:
   assumes "\<A> \<in> reachable_constraints P"
-    and P: "\<forall>T \<in> set P. admissible_transaction T"
+    and P: "\<forall>T \<in> set P. admissible_transaction' T"
     and \<I>: "interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>" "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<I>)"
            "\<forall>n. PubConst Value n \<notin> \<Union>(funs_term ` (\<I> ` fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>))"
            "\<forall>n. Abs n \<notin> \<Union>(funs_term ` (\<I> ` fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>))"
@@ -1642,6 +5597,13 @@ proof (induction \<A> rule: reachable_constraints.induct)
 
     define \<theta> where "\<theta> \<equiv> rm_vars (set X) (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>)"
 
+    note 0 = pubval_terms_subst_range_comp[OF 
+              transaction_fresh_subst_has_no_pubconsts_abss(1)[OF step.hyps(4) T_fresh]
+              transaction_renaming_subst_has_no_pubconsts_abss(1)[OF step.hyps(5)]]
+             abs_terms_subst_range_comp[OF 
+              transaction_fresh_subst_has_no_pubconsts_abss(2)[OF step.hyps(4) T_fresh]
+              transaction_renaming_subst_has_no_pubconsts_abss(2)[OF step.hyps(5)]]
+
     have 1: "s \<in> trms_P" using step.hyps(2) s(1) unfolding trms_P_def by auto
 
     have s_nin: "s \<notin> pubval_terms" "s \<notin> abs_terms"
@@ -1653,22 +5615,18 @@ proof (induction \<A> rule: reachable_constraints.induct)
             "(\<I> ` fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (\<A>@dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t T')) \<inter> abs_terms = {}"
             "subst_range (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) \<inter> pubval_terms = {}"
             "subst_range (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) \<inter> abs_terms = {}"
-            "subst_range \<theta> \<inter> pubval_terms = {}"
-            "subst_range \<theta> \<inter> abs_terms = {}"
-            "(\<theta> ` fv s) \<inter> pubval_terms = {}"
-            "(\<theta> ` fv s) \<inter> abs_terms = {}"
-      unfolding T'_def \<theta>_def
-      using step.prems funs_term_Fun_subterm
-      apply (fastforce simp add: is_PubConstValue_def is_PubConst_def,
-             fastforce simp add: is_Abs_def)
-      using pubval_terms_subst_range_comp[OF 
-              transaction_fresh_subst_has_no_pubconsts_abss(1)[OF step.hyps(4) T_fresh]
-              transaction_renaming_subst_has_no_pubconsts_abss(1)[OF step.hyps(5)]]
-            abs_terms_subst_range_comp[OF 
-              transaction_fresh_subst_has_no_pubconsts_abss(2)[OF step.hyps(4) T_fresh]
-              transaction_renaming_subst_has_no_pubconsts_abss(2)[OF step.hyps(5)]]
-      unfolding is_PubConstValue_def is_PubConst_def is_Abs_def \<xi>_elim
-      by (force,force,force,force,force,force)
+      using 0 step.prems funs_term_Fun_subterm
+      unfolding T'_def \<theta>_def \<xi>_elim
+      by (fastforce simp add: is_PubConstValue_def is_PubConst_def,
+          fastforce simp add: is_Abs_def,
+          argo, argo)
+
+    have "subst_range \<theta> \<subseteq> subst_range (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>)"
+      using rm_vars_img_subset unfolding \<theta>_def \<xi>_elim by blast 
+    hence 3: "subst_range \<theta> \<inter> pubval_terms = {}"
+             "subst_range \<theta> \<inter> abs_terms = {}"
+      using 2(3,4) step.prems funs_term_Fun_subterm
+      unfolding T'_def \<theta>_def \<xi>_elim by (blast,blast)
     
     have "(\<I> ` fv (s \<cdot> \<theta>)) \<inter> pubval_terms = {}"
          "(\<I> ` fv (s \<cdot> \<theta>)) \<inter> abs_terms = {}"
@@ -1696,10 +5654,11 @@ proof (induction \<A> rule: reachable_constraints.induct)
                     "((\<theta> \<circ>\<^sub>s \<I>) ` fv s) \<inter> abs_terms = {}" 
       using pubval_terms_subst_range_comp'[of \<theta> "fv s" \<I>]
             abs_terms_subst_range_comp'[of \<theta> "fv s" \<I>]
-            2(7,8)
+            pubval_terms_subst_range_disj[OF 3(1), of s]
+            abs_terms_subst_range_disj[OF 3(2), of s]
       by (simp_all add: subst_apply_fv_unfold)
     
-    have 3: "t \<notin> pubval_terms" "t \<notin> abs_terms"
+    have 4: "t \<notin> pubval_terms" "t \<notin> abs_terms"
       using s(2) s_nin \<sigma>\<alpha>\<I>_disj
             pubval_terms_subst[of s "rm_vars (set X) (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) \<circ>\<^sub>s \<I>"]
             pubval_terms_subst_range_disj[of "rm_vars (set X) (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) \<circ>\<^sub>s \<I>" s]
@@ -1712,9 +5671,9 @@ proof (induction \<A> rule: reachable_constraints.induct)
       by (metis s(2) SMP.Substitution[OF SMP.MP[OF 1] wt wftrms, of X], 
           metis s(2) subst_subst_compose[of s "rm_vars (set X) (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>)" \<I>]
                      interpretation_grounds[OF \<I>(1), of "s \<cdot> rm_vars (set X) (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>)"])
-    hence 4: "t \<in> GSMP trms_P" unfolding GSMP_def by simp
+    hence 5: "t \<in> GSMP trms_P" unfolding GSMP_def by simp
     
-    show "t \<in> ?B" using 3 4 by (auto simp add: trms_P_def)
+    show "t \<in> ?B" using 4 5 by (auto simp add: trms_P_def)
   qed
   thus ?case
     using step.IH[OF \<I>'] trms\<^sub>s\<^sub>s\<^sub>t_append[of "unlabel \<A>"] unlabel_append[of \<A>]
@@ -1727,9 +5686,10 @@ lemma \<alpha>\<^sub>t\<^sub>i_covers_\<alpha>\<^sub>0_aux:
     and T: "T \<in> set P"
     and \<I>: "welltyped_constraint_model \<I> (\<A>@dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>))"
     and \<xi>: "transaction_decl_subst \<xi> T"
-    and \<sigma>: "transaction_fresh_subst \<sigma> T \<A>"
-    and \<alpha>: "transaction_renaming_subst \<alpha> P \<A>"
-    and P: "\<forall>T \<in> set P. admissible_transaction T"
+    and \<sigma>: "transaction_fresh_subst \<sigma> T (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>)"
+    and \<alpha>: "transaction_renaming_subst \<alpha> P (vars\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>)"
+    and P: "\<forall>T \<in> set P. admissible_transaction' T"
+    and P_occ: "\<forall>T \<in> set P. admissible_transaction_occurs_checks T"
     and t: "t \<in> subterms\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>)"
            "t = Fun (Val n) [] \<or> t = Var x"
     and neq:
@@ -1750,9 +5710,7 @@ proof -
         metis \<I> welltyped_constraint_model_def,
         metis \<I> welltyped_constraint_model_def constraint_model_def)
 
-  have T_adm: "admissible_transaction T"
-    using T P(1) by blast
-
+  note T_adm = bspec[OF P(1) T]
   note T_wf = admissible_transaction_is_wellformed_transaction(1)[OF T_adm]
   note T_adm_upds = admissible_transaction_is_wellformed_transaction(3)[OF T_adm]
 
@@ -1794,7 +5752,7 @@ proof -
     by blast
   then obtain m where m: "t \<cdot> \<I> = Fun (Val m) []"
     using constraint_model_Value_term_is_Val[
-            OF \<A>_reach welltyped_constraint_model_prefix[OF \<I>] P, of x]
+            OF \<A>_reach welltyped_constraint_model_prefix[OF \<I>] P P_occ, of x]
           t(2) x_val
     by force
   hence 0: "\<alpha>\<^sub>0 (db\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<I>) m \<noteq> \<alpha>\<^sub>0 (db\<^sub>s\<^sub>s\<^sub>t (unlabel \<A>@?\<B>'') \<I>) m"
@@ -1831,7 +5789,7 @@ proof -
   have 4: "\<forall>x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>. \<Gamma>\<^sub>v x = TAtom Value \<longrightarrow>
             (\<exists>B. prefix B \<A> \<and> x \<notin> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t B \<and> \<I> x \<in> subterms\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t B))"
     by (metis welltyped_constraint_model_prefix[OF \<I>]
-              constraint_model_Value_var_in_constr_prefix[OF \<A>_reach _ P])
+              constraint_model_Value_var_in_constr_prefix[OF \<A>_reach _ P P_occ])
 
   have 5: "\<Gamma>\<^sub>v y = TAtom Value"
     using 1 t_val
@@ -1865,9 +5823,10 @@ lemma \<alpha>\<^sub>t\<^sub>i_covers_\<alpha>\<^sub>0_Var:
     and T: "T \<in> set P"
     and \<I>: "welltyped_constraint_model \<I> (\<A>@dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>))"
     and \<xi>: "transaction_decl_subst \<xi> T"
-    and \<sigma>: "transaction_fresh_subst \<sigma> T \<A>"
-    and \<alpha>: "transaction_renaming_subst \<alpha> P \<A>"
-    and P: "\<forall>T \<in> set P. admissible_transaction T"
+    and \<sigma>: "transaction_fresh_subst \<sigma> T (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>)"
+    and \<alpha>: "transaction_renaming_subst \<alpha> P (vars\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>)"
+    and P: "\<forall>T \<in> set P. admissible_transaction' T"
+    and P_occ: "\<forall>T \<in> set P. admissible_transaction_occurs_checks T"
     and x: "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>"
   shows "\<I> x \<cdot>\<^sub>\<alpha> \<alpha>\<^sub>0 (db\<^sub>l\<^sub>s\<^sub>s\<^sub>t (\<A>@dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>)) \<I>) \<in>
             timpl_closure_set {\<I> x \<cdot>\<^sub>\<alpha> \<alpha>\<^sub>0 (db\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<I>)} (\<alpha>\<^sub>t\<^sub>i \<A> T (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) \<I>)"
@@ -1879,10 +5838,8 @@ proof -
   have \<A>_wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>)"
     by (metis reachable_constraints_wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s admissible_transactions_wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s P(1) \<A>_reach)
 
-  have T_adm: "admissible_transaction T" by (metis P(1) T)
-
+  note T_adm = bspec[OF P(1) T]
   note \<xi>_empty = admissible_transaction_decl_subst_empty[OF T_adm \<xi>]
-
   note \<xi>\<sigma>\<alpha>_wt = transaction_decl_fresh_renaming_substs_wt[OF \<xi> \<sigma> \<alpha>]
 
   have \<I>_interp: "interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>"
@@ -1905,7 +5862,7 @@ proof -
       case False
       hence "\<exists>y \<in> fv_transaction T - set (transaction_fresh T).
               \<I> x = (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) y \<cdot> \<I> \<and> \<Gamma>\<^sub>v y = TAtom Value"
-        using \<alpha>\<^sub>t\<^sub>i_covers_\<alpha>\<^sub>0_aux[OF \<A>_reach T \<I> \<xi> \<sigma> \<alpha> P fv\<^sub>s\<^sub>s\<^sub>t_is_subterm_trms\<^sub>s\<^sub>s\<^sub>t[OF x], of _ x]
+        using \<alpha>\<^sub>t\<^sub>i_covers_\<alpha>\<^sub>0_aux[OF \<A>_reach T \<I> \<xi> \<sigma> \<alpha> P P_occ fv\<^sub>s\<^sub>s\<^sub>t_is_subterm_trms\<^sub>s\<^sub>s\<^sub>t[OF x], of _ x]
         unfolding a0_def a0'_def
         by fastforce
       then obtain y where y:
@@ -1918,7 +5875,7 @@ proof -
       then obtain n where n: "(\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) y \<cdot> \<I> = Fun (Val n) []"
         using \<Gamma>\<^sub>v_TAtom''(2)[of y] x x_val
               transaction_var_becomes_Val[
-                OF reachable_constraints.step[OF \<A>_reach T \<xi> \<sigma> \<alpha>] \<I> \<xi> \<sigma> \<alpha> P T, of y]
+                OF reachable_constraints.step[OF \<A>_reach T \<xi> \<sigma> \<alpha>] \<I> \<xi> \<sigma> \<alpha> P P_occ T, of y]
         by force
 
       have "a0 n \<noteq> a0' n"
@@ -1973,9 +5930,10 @@ lemma \<alpha>\<^sub>t\<^sub>i_covers_\<alpha>\<^sub>0_Val:
     and T: "T \<in> set P"
     and \<I>: "welltyped_constraint_model \<I> (\<A>@dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>))"
     and \<xi>: "transaction_decl_subst \<xi> T"
-    and \<sigma>: "transaction_fresh_subst \<sigma> T \<A>"
-    and \<alpha>: "transaction_renaming_subst \<alpha> P \<A>"
-    and P: "\<forall>T \<in> set P. admissible_transaction T"
+    and \<sigma>: "transaction_fresh_subst \<sigma> T (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>)"
+    and \<alpha>: "transaction_renaming_subst \<alpha> P (vars\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>)"
+    and P: "\<forall>T \<in> set P. admissible_transaction' T"
+    and P_occ: "\<forall>T \<in> set P. admissible_transaction_occurs_checks T"
     and n: "Fun (Val n) [] \<in> subterms\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>)"
   shows "Fun (Val n) [] \<cdot>\<^sub>\<alpha> \<alpha>\<^sub>0 (db\<^sub>l\<^sub>s\<^sub>s\<^sub>t (\<A>@dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>)) \<I>) \<in>
             timpl_closure_set {Fun (Val n) [] \<cdot>\<^sub>\<alpha> \<alpha>\<^sub>0 (db\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<I>)} (\<alpha>\<^sub>t\<^sub>i \<A> T (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) \<I>)"
@@ -1988,16 +5946,17 @@ proof -
   have \<A>_wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>)"
     by (metis reachable_constraints_wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s admissible_transactions_wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s P(1) \<A>_reach)
 
-  have T_adm: "admissible_transaction T" by (metis P(1) T)
+  note T_adm = bspec[OF P(1) T]
 
   have "Fun (Abs (a0' n)) [] \<in> timpl_closure_set {Fun (Abs (a0 n)) []} a3"
   proof (cases "a0 n = a0' n")
     case False
     then obtain x where x:
         "x \<in> fv_transaction T - set (transaction_fresh T)" "Fun (Val n) [] = (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) x \<cdot> \<I>"
-      using \<alpha>\<^sub>t\<^sub>i_covers_\<alpha>\<^sub>0_aux[OF \<A>_reach T \<I> \<xi> \<sigma> \<alpha> P n]
+      using \<alpha>\<^sub>t\<^sub>i_covers_\<alpha>\<^sub>0_aux[OF \<A>_reach T \<I> \<xi> \<sigma> \<alpha> P P_occ n]
       by (fastforce simp add: a0_def a0'_def T'_def)
-    hence "absc (a0 n) = (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) x \<cdot> \<I> \<cdot>\<^sub>\<alpha> a0" "absc (a0' n) = (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) x \<cdot> \<I> \<cdot>\<^sub>\<alpha> a0'" by simp_all
+    hence "absc (a0 n) = (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) x \<cdot> \<I> \<cdot>\<^sub>\<alpha> a0" "absc (a0' n) = (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) x \<cdot> \<I> \<cdot>\<^sub>\<alpha> a0'"
+      by simp_all
     hence 1: "(a0 n, a0' n) \<in> a3"
       using False x(1)
       unfolding a0_def a0'_def a3_def abs_term_implications_def T'_def
@@ -2017,9 +5976,10 @@ lemma \<alpha>\<^sub>t\<^sub>i_covers_\<alpha>\<^sub>0_ik:
     and T: "T \<in> set P"
     and \<I>: "welltyped_constraint_model \<I> (\<A>@dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>))"
     and \<xi>: "transaction_decl_subst \<xi> T"
-    and \<sigma>: "transaction_fresh_subst \<sigma> T \<A>"
-    and \<alpha>: "transaction_renaming_subst \<alpha> P \<A>"
-    and P: "\<forall>T \<in> set P. admissible_transaction T"
+    and \<sigma>: "transaction_fresh_subst \<sigma> T (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>)"
+    and \<alpha>: "transaction_renaming_subst \<alpha> P (vars\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>)"
+    and P: "\<forall>T \<in> set P. admissible_transaction' T"
+    and P_occ: "\<forall>T \<in> set P. admissible_transaction_occurs_checks T"
     and t: "t \<in> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>"
   shows "t \<cdot> \<I> \<cdot>\<^sub>\<alpha> \<alpha>\<^sub>0 (db\<^sub>l\<^sub>s\<^sub>s\<^sub>t (\<A>@dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>)) \<I>) \<in>
             timpl_closure_set {t \<cdot> \<I> \<cdot>\<^sub>\<alpha> \<alpha>\<^sub>0 (db\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<I>)} (\<alpha>\<^sub>t\<^sub>i \<A> T (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) \<I>)"
@@ -2033,13 +5993,13 @@ proof -
   have \<A>_wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>)"
     by (metis reachable_constraints_wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s admissible_transactions_wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s P(1) \<A>_reach)
 
-  have T_adm: "admissible_transaction T" by (metis P(1) T)
+  note T_adm = bspec[OF P(1) T]
 
   have "t \<in> subterms\<^sub>s\<^sub>e\<^sub>t (ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>)" "wf\<^sub>t\<^sub>r\<^sub>m t" using \<A>_wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s t ik\<^sub>s\<^sub>s\<^sub>t_trms\<^sub>s\<^sub>s\<^sub>t_subset by force+
   hence "\<forall>t0 \<in> subterms t. t0 \<cdot> \<I> \<cdot>\<^sub>\<alpha> a0' \<in> timpl_closure_set {t0 \<cdot> \<I> \<cdot>\<^sub>\<alpha> a0} a3"
   proof (induction t)
     case (Var x) thus ?case
-      using \<alpha>\<^sub>t\<^sub>i_covers_\<alpha>\<^sub>0_Var[OF \<A>_reach T \<I> \<xi> \<sigma> \<alpha> P, of x]
+      using \<alpha>\<^sub>t\<^sub>i_covers_\<alpha>\<^sub>0_Var[OF \<A>_reach T \<I> \<xi> \<sigma> \<alpha> P P_occ, of x]
             ik\<^sub>s\<^sub>s\<^sub>t_var_is_fv[of x "unlabel \<A>"] vars\<^sub>s\<^sub>s\<^sub>t_is_fv\<^sub>s\<^sub>s\<^sub>t_bvars\<^sub>s\<^sub>s\<^sub>t[of "unlabel \<A>"]
       by (simp add: a0_def a0'_def a3_def)
   next
@@ -2069,7 +6029,7 @@ proof -
       moreover have "Fun f S \<in> subterms\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>)"
         using ik\<^sub>s\<^sub>s\<^sub>t_trms\<^sub>s\<^sub>s\<^sub>t_subset Fun.prems(1) by blast
       ultimately show ?thesis
-        using \<alpha>\<^sub>t\<^sub>i_covers_\<alpha>\<^sub>0_Val[OF \<A>_reach T \<I> \<xi> \<sigma> \<alpha> P]
+        using \<alpha>\<^sub>t\<^sub>i_covers_\<alpha>\<^sub>0_Val[OF \<A>_reach T \<I> \<xi> \<sigma> \<alpha> P P_occ]
         by (simp add: a0_def a0'_def a3_def)
     next
       case False
@@ -2117,7 +6077,8 @@ lemma transaction_prop2:
   assumes \<delta>: "\<delta> \<in> abs_substs_fun ` set (transaction_check_comp msgcs (FP, OCC, TI) T)"
     and x: "x \<in> fv_transaction T" "fst x = TAtom Value"
     and T_check: "transaction_check' msgcs (FP, OCC, TI) T"
-    and T_adm: "admissible_transaction T"
+    and T_adm: "admissible_transaction' T"
+    and T_occ: "admissible_transaction_occurs_checks T"
     and FP:
       "analyzed (timpl_closure_set (set FP) (set TI))"
       "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (set FP)"
@@ -2137,7 +6098,6 @@ proof -
   let ?\<delta>upd = "\<lambda>y. absdbupd (unlabel (transaction_updates T)) y (\<delta> y)"
 
   note T_wf = admissible_transaction_is_wellformed_transaction(1)[OF T_adm]
-  note T_occ = admissible_transaction_is_wellformed_transaction(5)[OF T_adm]
 
   have 0: "{x \<in> fv_transaction T - set (transaction_fresh T). fst x = TAtom Value} = set ?ys"
     using fv_list\<^sub>s\<^sub>s\<^sub>t_is_fv\<^sub>s\<^sub>s\<^sub>t[of "unlabel (transaction_strand T)"]
@@ -2204,8 +6164,8 @@ lemma transaction_prop3:
     and T: "T \<in> set P"
     and \<I>: "welltyped_constraint_model \<I> (\<A>@dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>))"
     and \<xi>: "transaction_decl_subst \<xi> T"
-    and \<sigma>: "transaction_fresh_subst \<sigma> T \<A>"
-    and \<alpha>: "transaction_renaming_subst \<alpha> P \<A>"
+    and \<sigma>: "transaction_fresh_subst \<sigma> T (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>)"
+    and \<alpha>: "transaction_renaming_subst \<alpha> P (vars\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>)"
     and FP:
       "analyzed (timpl_closure_set (set FP) (set TI))"
       "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (set FP)"
@@ -2217,7 +6177,8 @@ lemma transaction_prop3:
     and TI:
       "set TI = {(a,b) \<in> (set TI)\<^sup>+. a \<noteq> b}"
     and P:
-      "\<forall>T \<in> set P. admissible_transaction T"
+      "\<forall>T \<in> set P. admissible_transaction' T"
+    and P_occ: "\<forall>T \<in> set P. admissible_transaction_occurs_checks T"
   shows "\<forall>x \<in> set (transaction_fresh T). (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) x \<cdot> \<I> \<cdot>\<^sub>\<alpha> \<alpha>\<^sub>0 (db\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<I>) = absc {}" (is ?A)
     and "\<forall>t \<in> trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_receive T).
             intruder_synth_mod_timpls FP TI (t \<cdot> (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) \<cdot> \<I> \<cdot>\<^sub>\<alpha> \<alpha>\<^sub>0 (db\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<I>))" (is ?B)
@@ -2240,9 +6201,7 @@ proof -
   define a0' where "a0' \<equiv> \<alpha>\<^sub>0 (db\<^sub>l\<^sub>s\<^sub>s\<^sub>t (\<A>@?T') \<I>)"
   define fv_AT' where "fv_AT' \<equiv> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (\<A>@?T')"
 
-  have T_adm: "admissible_transaction T"
-    using T P(1) by blast
-
+  note T_adm = bspec[OF P(1) T]
   note T_wf = admissible_transaction_is_wellformed_transaction(1)[OF T_adm]
   note T_adm' = admissible_transaction_is_wellformed_transaction(2-4)[OF T_adm]
 
@@ -2255,9 +6214,9 @@ proof -
            "\<forall>n. PubConst Value n \<notin> \<Union>(funs_term ` (\<I> ` fv_AT'))"
            "\<forall>n. Abs n \<notin> \<Union>(funs_term ` (\<I> ` fv_AT'))"
     using \<I> admissible_transaction_occurs_checks_prop'[
-            OF \<A>_reach welltyped_constraint_model_prefix[OF \<I>] P]
+            OF \<A>_reach welltyped_constraint_model_prefix[OF \<I>] P P_occ]
           admissible_transaction_occurs_checks_prop'[
-            OF reachable_constraints.step[OF \<A>_reach T \<xi> \<sigma> \<alpha>] \<I> P]
+            OF reachable_constraints.step[OF \<A>_reach T \<xi> \<sigma> \<alpha>] \<I> P P_occ]
     unfolding welltyped_constraint_model_def constraint_model_def is_Val_def is_Abs_def fv_AT'_def
     by (meson,meson,meson,metis,metis,metis,metis)
 
@@ -2286,11 +6245,12 @@ proof -
   have 3: "\<forall>x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>. \<Gamma>\<^sub>v x = TAtom Value \<longrightarrow>
             (\<exists>B. prefix B \<A> \<and> x \<notin> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t B \<and> \<I> x \<in> subterms\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t B))"
     by (metis welltyped_constraint_model_prefix[OF \<I>]
-              constraint_model_Value_var_in_constr_prefix[OF \<A>_reach _ P])
+              constraint_model_Value_var_in_constr_prefix[OF \<A>_reach _ P P_occ])
 
   have 4: "\<exists>n. ?\<theta> y \<cdot> \<I> = Fun (Val n) []"
     when "y \<in> fv_transaction T" "\<Gamma>\<^sub>v y = TAtom Value" for y
-    using transaction_var_becomes_Val[OF reachable_constraints.step[OF \<A>_reach T \<xi> \<sigma> \<alpha>] \<I> \<xi> \<sigma> \<alpha> P T]
+    using transaction_var_becomes_Val[
+            OF reachable_constraints.step[OF \<A>_reach T \<xi> \<sigma> \<alpha>] \<I> \<xi> \<sigma> \<alpha> P P_occ T]
           that T_fv_const_typed \<Gamma>\<^sub>v_TAtom''[of y]
     by metis
 
@@ -2465,14 +6425,15 @@ proof -
     hence "\<langle>Var y not in Fun (Set s) []\<rangle> \<in> set (unlabel (transaction_strand T))"
       unfolding transaction_strand_def unlabel_def by auto
     hence y_val: "\<Gamma>\<^sub>v y = TAtom Value"
-      using transaction_notinset_checks_are_Value_vars[OF T_adm]
-      by fastforce
+      using transaction_notinset_checks_are_Value_vars(1)[
+              OF T_adm, of "[]" "[]" "[(Var y, Fun (Set s) [])]" "Var y" "Fun (Set s) []"]
+      by force
 
     have "\<langle>?\<theta> y not in Fun (Set s) []\<rangle> \<in> set (unlabel (transaction_checks T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t ?\<theta>))"
       using subst_lsst_unlabel_member[OF s]
       by fastforce
     hence "(?\<theta> y \<cdot> \<I>, Fun (Set s) []) \<notin> set (db\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<I>)"
-      using wellformed_transaction_sem_neg_checks(2)[
+      using wellformed_transaction_sem_neg_checks'(2)[
               OF T_wf \<I>_is_T_model,
               of "[]" "?\<theta> y" "Fun (Set s) []"]
       by simp
@@ -2568,9 +6529,10 @@ lemma transaction_prop4:
     and T: "T \<in> set P"
     and \<I>: "welltyped_constraint_model \<I> (\<A>@dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>))"
     and \<xi>: "transaction_decl_subst \<xi> T"
-    and \<sigma>: "transaction_fresh_subst \<sigma> T \<A>"
-    and \<alpha>: "transaction_renaming_subst \<alpha> P \<A>"
-    and P: "\<forall>T \<in> set P. admissible_transaction T"
+    and \<sigma>: "transaction_fresh_subst \<sigma> T (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>)"
+    and \<alpha>: "transaction_renaming_subst \<alpha> P (vars\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>)"
+    and P: "\<forall>T \<in> set P. admissible_transaction' T"
+    and P_occ: "\<forall>T \<in> set P. admissible_transaction_occurs_checks T"
     and x: "x \<in> set (transaction_fresh T)"
     and y: "y \<in> fv_transaction T - set (transaction_fresh T)" "\<Gamma>\<^sub>v y = TAtom Value"
   shows "(\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) x \<cdot> \<I> \<notin> subterms\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (\<A> \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<I>))" (is ?A)
@@ -2581,16 +6543,13 @@ proof -
   from \<I> have \<I>': "welltyped_constraint_model \<I> \<A>"
     using welltyped_constraint_model_prefix by auto
 
-  have T_P_addm: "admissible_transaction T'" when T': "T' \<in> set P " for T'
-    by (meson T' P)
-
-  have T_adm: "admissible_transaction T"
-    by (metis (full_types) P T)
+  note T_P_adm = bspec[OF P(1)]
+  note T_adm = bspec[OF P(1) T]
 
   note T_wf = admissible_transaction_is_wellformed_transaction(1)[OF T_adm]
 
   have be: "bvars\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> = {}"
-    using T_P_addm \<A>_reach reachable_constraints_no_bvars admissible_transaction_no_bvars(2)
+    using T_P_adm \<A>_reach reachable_constraints_no_bvars admissible_transaction_no_bvars(2)
     by blast
 
   have T_no_bvars: "fv_transaction T = vars_transaction T"
@@ -2622,8 +6581,8 @@ proof -
     have "\<sigma> x \<in> subst_range \<sigma>"
       by (metis transaction_fresh_subst_sends_to_val[OF \<sigma> x b0])
     moreover
-    have "(\<forall>t \<in> subst_range \<sigma>. t \<notin> subterms\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>))"
-      using \<sigma> transaction_fresh_subst_def[of \<sigma> T \<A>] by auto
+    have "\<forall>t \<in> subst_range \<sigma>. t \<notin> subterms\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>)"
+      using \<sigma> transaction_fresh_subst_def[of \<sigma> T "trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>"] by blast
     ultimately
     show ?thesis
       by auto
@@ -2693,7 +6652,7 @@ proof -
     have "\<exists>B. prefix B \<A> \<and> u \<notin> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t B \<and> \<I> u \<in> subterms\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t B)"
       using u u_TA
       by (metis welltyped_constraint_model_prefix[OF \<I>]
-                constraint_model_Value_var_in_constr_prefix[OF \<A>_reach _ P])
+                constraint_model_Value_var_in_constr_prefix[OF \<A>_reach _ P P_occ])
     then obtain B where "prefix B \<A> \<and> u \<notin> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t B \<and> \<I> u \<in> subterms\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t B)"
       by blast
     moreover have "\<Union>(subterms ` trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t xs) \<subseteq> \<Union>(subterms ` trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t ys)"
@@ -2738,7 +6697,7 @@ proof -
 
     obtain zn where zn: "(\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) y \<cdot> \<I> = Fun (Val zn) []"
       using transaction_var_becomes_Val[
-              OF reachable_constraints.step[OF \<A>_reach T \<xi> \<sigma> \<alpha>] \<I> \<xi> \<sigma> \<alpha> P T y_fv y_val]
+              OF reachable_constraints.step[OF \<A>_reach T \<xi> \<sigma> \<alpha>] \<I> \<xi> \<sigma> \<alpha> P P_occ T y_fv y_val]
       by metis
 
     have "(\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) y \<cdot> \<I> \<in> subterms\<^sub>s\<^sub>e\<^sub>t (ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>)"
@@ -2757,7 +6716,7 @@ proof -
 
     obtain z zn where zn: "(\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) y = Var z" "\<I> z = Fun (Val zn) []"
       using transaction_var_becomes_Val[
-              OF reachable_constraints.step[OF \<A>_reach T \<xi> \<sigma> \<alpha>] \<I> \<xi> \<sigma> \<alpha> P T y_fv s(2)]
+              OF reachable_constraints.step[OF \<A>_reach T \<xi> \<sigma> \<alpha>] \<I> \<xi> \<sigma> \<alpha> P P_occ T y_fv s(2)]
             transaction_decl_fresh_renaming_substs_range(4)[OF \<xi> \<sigma> \<alpha> _ *]
             transaction_decl_subst_empty_inv[OF \<xi>[unfolded \<xi>_empty]]
       by auto
@@ -2832,8 +6791,8 @@ lemma transaction_prop5:
     and T: "T \<in> set P"
     and \<I>: "welltyped_constraint_model \<I> (\<A>@T')"
     and \<xi>: "transaction_decl_subst \<xi> T"
-    and \<sigma>: "transaction_fresh_subst \<sigma> T \<A>"
-    and \<alpha>: "transaction_renaming_subst \<alpha> P \<A>"
+    and \<sigma>: "transaction_fresh_subst \<sigma> T (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>)"
+    and \<alpha>: "transaction_renaming_subst \<alpha> P (vars\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>)"
     and FP:
       "analyzed (timpl_closure_set (set FP) (set TI))"
       "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (set FP)"
@@ -2845,7 +6804,9 @@ lemma transaction_prop5:
     and TI:
       "set TI = {(a,b) \<in> (set TI)\<^sup>+. a \<noteq> b}"
     and P:
-      "\<forall>T \<in> set P. admissible_transaction T"
+      "\<forall>T \<in> set P. admissible_transaction' T"
+    and P_occ:
+      "\<forall>T \<in> set P. admissible_transaction_occurs_checks T"
     and step: "list_all (transaction_check (FP, OCC, TI)) P"
   shows "\<exists>\<delta> \<in> abs_substs_fun ` set (transaction_check_comp (\<lambda>_ _. True) (FP, OCC, TI) T).
          \<forall>x \<in> fv_transaction T. \<Gamma>\<^sub>v x = TAtom Value \<longrightarrow>
@@ -2875,10 +6836,7 @@ proof -
           strand_sem_append_stateful[of "{}" "{}" "unlabel \<A>" "unlabel T'" \<I>]
     by (simp add: welltyped_constraint_model_def constraint_model_def db\<^sub>s\<^sub>s\<^sub>t_def)
 
-  have T_adm: "admissible_transaction T"
-    using T P(1) Ball_set[of P "admissible_transaction"]
-    by blast
-
+  note T_adm = bspec[OF P(1) T]
   note T_wf = admissible_transaction_is_wellformed_transaction(1)[OF T_adm]
 
   have T_no_bvars: "fv_transaction T = vars_transaction T" "bvars_transaction T = {}"
@@ -2925,7 +6883,7 @@ proof -
       thus ?thesis
         using x y * T P (* T_vars_const_typed *)
               constraint_model_Value_term_is_Val[
-                OF reachable_constraints.step[OF \<A>_reach T \<xi> \<sigma> \<alpha>] \<I>[unfolded T'_def] P(1), of y]
+                OF reachable_constraints.step[OF \<A>_reach T \<xi> \<sigma> \<alpha>] \<I>[unfolded T'_def] P P_occ, of y]
               admissible_transaction_Value_vars[of T] \<xi>_empty
         by simp
     qed
@@ -2947,7 +6905,7 @@ proof -
     let ?C = "set (unlabel (transaction_checks T))"
     let ?xs = "fv_transaction T - set (transaction_fresh T)"
 
-    note * = transaction_prop3[OF \<A>_reach T \<I>[unfolded T'_def] \<xi> \<sigma> \<alpha> FP OCC TI P(1)]
+    note * = transaction_prop3[OF \<A>_reach T \<I>[unfolded T'_def] \<xi> \<sigma> \<alpha> FP OCC TI P P_occ]
 
     have **:
         "\<forall>x \<in> set (transaction_fresh T). b0 x = {}"
@@ -2997,7 +6955,8 @@ proof -
     using T_vars_absc unfolding b0_def a0_def by fastforce
 
   obtain \<delta> where \<delta>:
-      "\<delta> \<in> comp0" "\<forall>x \<in> fv_transaction T. fst x = TAtom Value \<longrightarrow> (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) x \<cdot> \<I> \<cdot>\<^sub>\<alpha> a0 = absc (\<delta> x)"
+      "\<delta> \<in> comp0"
+      "\<forall>x \<in> fv_transaction T. fst x = TAtom Value \<longrightarrow> (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) x \<cdot> \<I> \<cdot>\<^sub>\<alpha> a0 = absc (\<delta> x)"
     using 1 by moura
 
   have 2: "\<theta> x \<cdot> \<I> \<cdot>\<^sub>\<alpha> \<alpha>\<^sub>0 (db'\<^sub>l\<^sub>s\<^sub>s\<^sub>t (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (A \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)) \<I> D) = absc (absdbupd (unlabel A) x d)"
@@ -3127,11 +7086,11 @@ proof -
       ultimately have ?thesis unfolding inj_on_def by blast
     } moreover have False when "x \<in> set (transaction_fresh T)" "y \<notin> set (transaction_fresh T)"
       using that(2) xy T_no_bvars admissible_transaction_Value_vars[OF bspec[OF P T], of y]
-            transaction_prop4[OF \<A>_reach T \<I>[unfolded T'_def] \<xi> \<sigma> \<alpha> P that(1), of y]
+            transaction_prop4[OF \<A>_reach T \<I>[unfolded T'_def] \<xi> \<sigma> \<alpha> P P_occ that(1), of y]
       by auto
     moreover have False when "x \<notin> set (transaction_fresh T)" "y \<in> set (transaction_fresh T)"
       using that(1) xy T_no_bvars admissible_transaction_Value_vars[OF bspec[OF P T], of x]
-            transaction_prop4[OF \<A>_reach T \<I>[unfolded T'_def] \<xi> \<sigma> \<alpha> P that(2), of x]
+            transaction_prop4[OF \<A>_reach T \<I>[unfolded T'_def] \<xi> \<sigma> \<alpha> P P_occ that(2), of x]
       by fastforce
     ultimately show ?thesis by metis
   qed
@@ -3150,7 +7109,7 @@ proof -
     using that by (simp add: T_vars_vals)
 
   have "list_all wellformed_transaction P" "list_all admissible_transaction_updates P"
-    using P(1) Ball_set[of P "admissible_transaction"] Ball_set[of P wellformed_transaction]
+    using P(1) Ball_set[of P admissible_transaction'] Ball_set[of P wellformed_transaction]
           Ball_set[of P admissible_transaction_updates]
           admissible_transaction_is_wellformed_transaction(1,3)
     by fastforce+
@@ -3182,8 +7141,8 @@ lemma transaction_prop6:
     and T: "T \<in> set P"
     and \<I>: "welltyped_constraint_model \<I> (\<A>@T')"
     and \<xi>: "transaction_decl_subst \<xi> T"
-    and \<sigma>: "transaction_fresh_subst \<sigma> T \<A>"
-    and \<alpha>: "transaction_renaming_subst \<alpha> P \<A>"
+    and \<sigma>: "transaction_fresh_subst \<sigma> T (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>)"
+    and \<alpha>: "transaction_renaming_subst \<alpha> P (vars\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>)"
     and FP:
       "analyzed (timpl_closure_set (set FP) (set TI))"
       "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (set FP)"
@@ -3195,7 +7154,9 @@ lemma transaction_prop6:
     and TI:
       "set TI = {(a,b) \<in> (set TI)\<^sup>+. a \<noteq> b}"
     and P:
-      "\<forall>T \<in> set P. admissible_transaction T"
+      "\<forall>T \<in> set P. admissible_transaction' T"
+    and P_occ:
+      "\<forall>T \<in> set P. admissible_transaction_occurs_checks T"
     and step: "list_all (transaction_check (FP, OCC, TI)) P"
   shows "\<forall>t \<in> timpl_closure_set (\<alpha>\<^sub>i\<^sub>k \<A> \<I>) (\<alpha>\<^sub>t\<^sub>i \<A> T (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) \<I>).
           timpl_closure_set (set FP) (set TI) \<turnstile>\<^sub>c t" (is ?A)
@@ -3213,21 +7174,22 @@ proof -
 
   define \<theta> where "\<theta> \<equiv> \<lambda>\<delta> x. if fst x = TAtom Value then (absc \<circ> \<delta>) x else Var x"
 
-  have T_adm: "admissible_transaction T" using T P(1) by metis
+  note T_adm = bspec[OF P T]
+  note T_occ = bspec[OF P_occ T]
   note T_wf = admissible_transaction_is_wellformed_transaction(1)[OF T_adm]
 
   have \<theta>_prop: "\<theta> \<sigma> x = absc (\<sigma> x)" when "\<Gamma>\<^sub>v x = TAtom Value" for \<sigma> x
     using that \<Gamma>\<^sub>v_TAtom''(2)[of x] unfolding \<theta>_def by simp
 
-  (* The set-membership status of all value constants in T under \<I>, \<sigma>, \<alpha> are covered by the check *)
+   \<comment> \<open>The set-membership status of all value constants in T under \<open>\<I>\<close>, \<open>\<sigma>\<close>, \<open>\<alpha>\<close> are covered by the check\<close>
   have 0: "\<exists>\<delta> \<in> comp0. \<forall>x \<in> fv_transaction T. \<Gamma>\<^sub>v x = TAtom Value \<longrightarrow>
             (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) x \<cdot> \<I> \<cdot>\<^sub>\<alpha> a0 = absc (\<delta> x) \<and>
             (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) x \<cdot> \<I> \<cdot>\<^sub>\<alpha> a0' = absc (upd \<delta> x)"
-    using transaction_prop5[OF \<A>_reach T \<I>[unfolded T'_def] \<xi> \<sigma> \<alpha> FP OCC TI P step]
+    using transaction_prop5[OF \<A>_reach T \<I>[unfolded T'_def] \<xi> \<sigma> \<alpha> FP OCC TI P P_occ step]
     unfolding a0_def a0'_def T'_def upd_def comp0_def
     by blast
 
-  (* All set-membership changes are covered by the term implication graph *)
+  \<comment> \<open>All set-membership changes are covered by the term implication graph\<close>
   have 1: "(\<delta> x, upd \<delta> x) \<in> (set TI)\<^sup>+"
     when "\<delta> \<in> comp0" "\<delta> x \<noteq> upd \<delta> x" "x \<in> fv_transaction T" "x \<notin> set (transaction_fresh T)"
     for x \<delta> 
@@ -3236,11 +7198,11 @@ proof -
     unfolding upd_def comp0_def transaction_check_def
     by blast
 
-  (* All set-membership changes are covered by the fixed point *)
+  \<comment> \<open>All set-membership changes are covered by the fixed point\<close>
   have 2: (* "\<delta> x \<in> set OCC" *) "upd \<delta> x \<in> set OCC"
     when "\<delta> \<in> comp0" "x \<in> fv_transaction T" "fst x = TAtom Value" for x \<delta>
     using T that step Ball_set[of P "transaction_check (FP, OCC, TI)"]
-          T_adm FP OCC TI transaction_prop2[of \<delta> "\<lambda>_ _. True" FP OCC TI T x]
+          T_adm T_occ FP OCC TI transaction_prop2[of \<delta> "\<lambda>_ _. True" FP OCC TI T x]
     unfolding upd_def comp0_def transaction_check_def
     by blast
   
@@ -3317,8 +7279,8 @@ lemma reachable_constraints_covered_step:
     and T: "T \<in> set P"
     and \<I>: "welltyped_constraint_model \<I> (\<A>@dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>))"
     and \<xi>: "transaction_decl_subst \<xi> T"
-    and \<sigma>: "transaction_fresh_subst \<sigma> T \<A>"
-    and \<alpha>: "transaction_renaming_subst \<alpha> P \<A>"
+    and \<sigma>: "transaction_fresh_subst \<sigma> T (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>)"
+    and \<alpha>: "transaction_renaming_subst \<alpha> P (vars\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>)"
     and FP:
       "analyzed (timpl_closure_set (set FP) (set TI))"
       "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (set FP)"
@@ -3331,13 +7293,16 @@ lemma reachable_constraints_covered_step:
     and TI:
       "set TI = {(a,b) \<in> (set TI)\<^sup>+. a \<noteq> b}"
     and P:
-      "\<forall>T \<in> set P. admissible_transaction T"
+      "\<forall>T \<in> set P. admissible_transaction' T"
+    and P_occ:
+      "\<forall>T \<in> set P. admissible_transaction_occurs_checks T"
     and transactions_covered: "list_all (transaction_check (FP, OCC, TI)) P"
   shows "\<forall>t \<in> \<alpha>\<^sub>i\<^sub>k (\<A>@dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>)) \<I>.
           timpl_closure_set (set FP) (set TI) \<turnstile>\<^sub>c t" (is ?A)
     and "\<alpha>\<^sub>v\<^sub>a\<^sub>l\<^sub>s (\<A>@dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>)) \<I> \<subseteq> absc ` set OCC" (is ?B)
 proof -
-  note step_props = transaction_prop6[OF \<A>_reach T \<I> \<xi> \<sigma> \<alpha> FP(1,2,3) OCC TI P transactions_covered]
+  note step_props =
+    transaction_prop6[OF \<A>_reach T \<I> \<xi> \<sigma> \<alpha> FP(1,2,3) OCC TI P P_occ transactions_covered]
 
   define T' where "T' \<equiv> dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>)"
   define a0 where "a0 \<equiv> \<alpha>\<^sub>0 (db\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<I>)"
@@ -3367,7 +7332,7 @@ proof -
   have \<I>_vals: "\<exists>n. \<I> (TAtom Value, m) = Fun (Val n) []"
     when "(TAtom Value, m) \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>" for m
     using constraint_model_Value_term_is_Val'[
-            OF \<A>_reach welltyped_constraint_model_prefix[OF \<I>] P(1)]
+            OF \<A>_reach welltyped_constraint_model_prefix[OF \<I>] P P_occ]
           \<A>_no_bvars vars\<^sub>s\<^sub>s\<^sub>t_is_fv\<^sub>s\<^sub>s\<^sub>t_bvars\<^sub>s\<^sub>s\<^sub>t[of "unlabel \<A>"] that
     by blast
 
@@ -3393,7 +7358,7 @@ proof -
     using that constraint_model_Val_is_Value_term[OF \<I>]
     unfolding vals_def vals_sym_def by fast
 
-  have T_adm: "admissible_transaction T" by (metis P(1) T)
+  note T_adm = bspec[OF P T]
   note T_wf = admissible_transaction_is_wellformed_transaction(1)[OF T_adm]
 
   have 0:
@@ -3435,7 +7400,9 @@ proof -
       by simp
     thus "t \<in> (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) ` fv_transaction T \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>"
       using admissible_transaction_Value_vars_are_fv[OF T_adm **] x *
-      by (metis subst_comp_set_image rev_image_eqI subst_apply_term.simps(1))
+            subst_apply_term.simps(1)[of x "\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha> \<circ>\<^sub>s \<I>"]
+            subst_comp_set_image[of "\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>" \<I> "fv_transaction T"]
+      by blast
   qed
   hence 3: "vals T' \<cdot>\<^sub>\<alpha>\<^sub>s\<^sub>e\<^sub>t a0' \<subseteq> ((\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) ` fv_transaction T \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>) \<cdot>\<^sub>\<alpha>\<^sub>s\<^sub>e\<^sub>t a0'"
     by (simp add: abs_apply_terms_def image_mono)
@@ -3443,7 +7410,7 @@ proof -
   have "t \<cdot> \<I> \<cdot>\<^sub>\<alpha> a0' \<in> timpl_closure_set (\<alpha>\<^sub>i\<^sub>k \<A> \<I>) (\<alpha>\<^sub>t\<^sub>i \<A> T (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) \<I>)"
     when "t \<in> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>" for t
     using that abs_in[OF imageI[OF that]]
-          \<alpha>\<^sub>t\<^sub>i_covers_\<alpha>\<^sub>0_ik[OF \<A>_reach T \<I> \<xi> \<sigma> \<alpha> P(1)]
+          \<alpha>\<^sub>t\<^sub>i_covers_\<alpha>\<^sub>0_ik[OF \<A>_reach T \<I> \<xi> \<sigma> \<alpha> P P_occ]
           timpl_closure_set_mono[of "{t \<cdot> \<I> \<cdot>\<^sub>\<alpha> a0}" "\<alpha>\<^sub>i\<^sub>k \<A> \<I>" "\<alpha>\<^sub>t\<^sub>i \<A> T (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) \<I>"
                                     "\<alpha>\<^sub>t\<^sub>i \<A> T (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) \<I>"]
     unfolding a0_def a0'_def T'_def abs_intruder_knowledge_def by fast
@@ -3466,12 +7433,12 @@ proof -
       assume ?P
       then obtain n where n: "t = Fun (Val n) []" "t \<in> subterms\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>)" by moura
       thus ?thesis 
-        using \<alpha>\<^sub>t\<^sub>i_covers_\<alpha>\<^sub>0_Val[OF \<A>_reach T \<I> \<xi> \<sigma> \<alpha> P(1), of n]
+        using \<alpha>\<^sub>t\<^sub>i_covers_\<alpha>\<^sub>0_Val[OF \<A>_reach T \<I> \<xi> \<sigma> \<alpha> P P_occ, of n]
         unfolding a0_def a0'_def T'_def by fastforce
     next
       assume ?Q
       thus ?thesis
-        using \<alpha>\<^sub>t\<^sub>i_covers_\<alpha>\<^sub>0_Var[OF \<A>_reach T \<I> \<xi> \<sigma> \<alpha> P(1)]
+        using \<alpha>\<^sub>t\<^sub>i_covers_\<alpha>\<^sub>0_Var[OF \<A>_reach T \<I> \<xi> \<sigma> \<alpha> P P_occ]
         unfolding a0_def a0'_def T'_def by fastforce
     qed
   qed
@@ -3523,7 +7490,9 @@ lemma reachable_constraints_covered:
     and TI:
       "set TI = {(a,b) \<in> (set TI)\<^sup>+. a \<noteq> b}"
     and P:
-      "\<forall>T \<in> set P. admissible_transaction T"
+      "\<forall>T \<in> set P. admissible_transaction' T"
+    and P_occ:
+      "\<forall>T \<in> set P. admissible_transaction_occurs_checks T"
     and transactions_covered: "list_all (transaction_check (FP, OCC, TI)) P"
   shows "\<forall>t \<in> \<alpha>\<^sub>i\<^sub>k \<A> \<I>. timpl_closure_set (set FP) (set TI) \<turnstile>\<^sub>c t"
     and "\<alpha>\<^sub>v\<^sub>a\<^sub>l\<^sub>s \<A> \<I> \<subseteq> absc ` set OCC"
@@ -3543,7 +7512,7 @@ next
     show ?case
       using reachable_constraints_covered_step[
               OF step.hyps(1,2) "1.prems" step.hyps(3-5) FP(1,2) IH(1)
-                 FP(3) OCC IH(2) TI P transactions_covered]
+                 FP(3) OCC IH(2) TI P P_occ transactions_covered]
       by metis
   }
   { case 2
@@ -3555,7 +7524,7 @@ next
     show ?case
       using reachable_constraints_covered_step[
               OF step.hyps(1,2) "2.prems" step.hyps(3-5) FP(1,2) IH(1)
-                 FP(3) OCC IH(2) TI P transactions_covered]
+                 FP(3) OCC IH(2) TI P P_occ transactions_covered]
       by metis
   }
 qed
@@ -3594,32 +7563,41 @@ theorem prot_secure_if_fixpoint_covered_typed:
       "set TI = {(a,b) \<in> (set TI)\<^sup>+. a \<noteq> b}"
     and P:
       "\<forall>T \<in> set P. admissible_transaction T"
-    and transactions_covered: "list_all (transaction_check (FP, OCC, TI)) P"
+      "has_initial_value_producing_transaction P"
+    and transactions_covered: "list_all (transaction_check (FP, OCC, TI)) (map add_occurs_msgs P)"
     and attack_notin_FP: "attack\<langle>n\<rangle> \<notin> set FP"
     and \<A>: "\<A> \<in> reachable_constraints P"
-  shows "\<nexists>\<I>. welltyped_constraint_model \<I> (\<A>@[(l, send\<langle>[attack\<langle>n\<rangle>]\<rangle>)])" (is "\<nexists>\<I>. ?P \<I>")
+  shows "\<nexists>\<I>. welltyped_constraint_model \<I> (\<A>@[(l, send\<langle>[attack\<langle>n\<rangle>]\<rangle>)])" (is "\<nexists>\<I>. ?Q \<I>")
 proof
-  assume "\<exists>\<I>. ?P \<I>"
-  then obtain \<I> where \<I>: "welltyped_constraint_model \<I> (\<A>@[(l, send\<langle>[attack\<langle>n\<rangle>]\<rangle>)])"
-    by moura
+  assume "\<exists>\<I>. ?Q \<I>"
+  then obtain \<I> \<B> where
+        \<B>: "\<B> \<in> reachable_constraints (map add_occurs_msgs P)"
+    and \<I>: "welltyped_constraint_model \<I> (\<B>@[(l, send\<langle>[attack\<langle>n\<rangle>]\<rangle>)])"
+    using add_occurs_msgs_soundness[OF P \<A>]
+    unfolding list_all_iff by blast
 
-  have 0: "attack\<langle>n\<rangle> \<notin> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>"
+  have P':
+      "\<forall>T \<in> set (map add_occurs_msgs P). admissible_transaction' T"
+      "\<forall>T \<in> set (map add_occurs_msgs P). admissible_transaction_occurs_checks T"
+    using P add_occurs_msgs_admissible_occurs_checks[OF admissible_transactionE'(1)] by auto
+
+  have 0: "attack\<langle>n\<rangle> \<notin> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>"
     using welltyped_constraint_model_prefix[OF \<I>]
-          reachable_constraints_covered(1)[OF \<A> _ FP OCC TI P transactions_covered]
+          reachable_constraints_covered(1)[OF \<B> _ FP OCC TI P' transactions_covered]
           attack_in_fixpoint_if_attack_in_ik[
-            of "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>" "\<alpha>\<^sub>0 (db\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<I>)" "timpl_closure_set (set FP) (set TI)" n]
+            of "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>" "\<alpha>\<^sub>0 (db\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> \<I>)" "timpl_closure_set (set FP) (set TI)" n]
           attack_in_fixpoint_if_attack_in_timpl_closure_set
           attack_notin_FP
     unfolding abs_intruder_knowledge_def by blast
 
-  have 1: "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile> attack\<langle>n\<rangle>"
-    using \<I> strand_sem_append_stateful[of "{}" "{}" "unlabel \<A>" _ \<I>]
+  have 1: "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<B> \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile> attack\<langle>n\<rangle>"
+    using \<I> strand_sem_append_stateful[of "{}" "{}" "unlabel \<B>" _ \<I>]
     unfolding welltyped_constraint_model_def constraint_model_def by force
 
   show False
     using 0 private_const_deduct[OF _ 1]
           reachable_constraints_receive_attack_if_attack'(1)[
-            OF \<A> P welltyped_constraint_model_prefix[OF \<I>] 1]
+            OF \<B> P'(1) welltyped_constraint_model_prefix[OF \<I>] 1]
     by simp
 qed
 
@@ -3649,7 +7627,8 @@ theorem prot_secure_if_fixpoint_covered:
     and P:
       "\<forall>T \<in> set P. admissible_transaction T"
       "\<forall>T \<in> set P. list_all tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p (unlabel (transaction_strand T))"
-    and transactions_covered: "list_all (transaction_check (FP, OCC, TI)) P"
+      "has_initial_value_producing_transaction P"
+    and transactions_covered: "list_all (transaction_check (FP, OCC, TI)) (map add_occurs_msgs P)"
     and attack_notin_FP: "attack\<langle>n\<rangle> \<notin> set FP"
     and A: "\<A> \<in> reachable_constraints P"
   shows "\<nexists>\<I>. constraint_model \<I> (\<A>@[(l, send\<langle>[attack\<langle>n\<rangle>]\<rangle>)])"
@@ -3658,9 +7637,9 @@ proof
   assume "\<exists>\<I>. constraint_model \<I> ?A"
   then obtain \<I> where "constraint_model \<I> ?A" by moura
   then obtain \<I>\<^sub>\<tau> where I: "welltyped_constraint_model \<I>\<^sub>\<tau> ?A"
-    using reachable_constraints_typing_result[OF M P A] by blast
+    using reachable_constraints_typing_result[OF M P(1,2) A] by blast
 
-  note a = FP OCC TI P(1) transactions_covered attack_notin_FP A
+  note a = FP OCC TI P(1,3) transactions_covered attack_notin_FP A
 
   show False
     using prot_secure_if_fixpoint_covered_typed[OF a] I
@@ -3768,9 +7747,7 @@ proof -
     define flt where
       "flt = (\<lambda>\<delta>::(('fun,'atom,'sets,'lbl) prot_var \<Rightarrow> 'sets set set) option. \<delta> \<noteq> None)"
     define \<Delta> where "\<Delta> = map the (filter flt (map (match_abss OCC TI (Fun f ss)) FP))"
-    define \<Theta> where "\<Theta> = (\<lambda>\<delta>::('fun,'atom,'sets,'lbl) prot_var \<Rightarrow> 'sets set set. \<lambda>x.
-      if \<delta> x \<noteq> {} then \<delta> x else set OCC)"
-    define \<theta>1 where "\<theta>1 = fun_point_Union (\<Theta> ` set \<Delta>)"
+    define \<theta>1 where "\<theta>1 = fun_point_Union (set \<Delta>)"
     define \<theta>2 where "\<theta>2 = fun_point_Inter (?D ` set ss)"
 
     have f: "arity f = length ss" using wf_trm_arity[OF Fun.prems] by simp 
@@ -3821,15 +7798,15 @@ proof -
         using IH synth_abs_substs_constrs_rel.SolveCons[OF ss, of FP OCC TI ?D] by blast
 
       have "?D (Fun f ss) = (
-              fun_point_union (fun_point_Union_list (map \<Theta> \<Delta>)) (fun_point_Inter_list (map ?D ss)))"
+              fun_point_union (fun_point_Union_list \<Delta>) (fun_point_Inter_list (map ?D ss)))"
         using ss synth_abs_substs_constrs_aux.simps(2)[of FP OCC TI f ss]
-        unfolding Let_def \<Delta>_def flt_def \<Theta>_def by argo
+        unfolding Let_def \<Delta>_def flt_def by argo
       hence "?D (Fun f ss) = fun_point_union \<theta>1 \<theta>2"
-        using fun_point_Inter_set_eq[of "map ?D ss"] fun_point_Union_set_eq[of "map \<Theta> \<Delta>"]
+        using fun_point_Inter_set_eq[of "map ?D ss"] fun_point_Union_set_eq[of \<Delta>]
         unfolding \<theta>1_def \<theta>2_def by simp
       thus ?thesis
         using synth_abs_substs_constrs_rel.SolveComposed[
-                OF f' f[symmetric] \<Delta>3 \<Theta>_def \<theta>1_def IH']
+                OF f' f[symmetric] \<Delta>3 \<theta>1_def IH']
         unfolding \<theta>2_def by argo
     qed
   qed
@@ -3937,8 +7914,8 @@ private lemma match_abss'_timpls_transformI:
     and t: "fv t = {}"
     and s: "\<forall>f \<in> funs_term s. \<not>is_Abs f"
            "\<forall>x \<in> fv s. \<exists>a. \<delta> x = \<langle>a\<rangle>\<^sub>a\<^sub>b\<^sub>s"
-         shows "match_abss'_timpls_transform TI \<delta> s t = Some \<sigma>"
-  using \<delta> \<sigma> t s
+  shows "match_abss'_timpls_transform TI \<delta> s t = Some \<sigma>"
+using \<delta> \<sigma> t s
 proof (induction t arbitrary: s \<delta> \<sigma>)
   case (Fun f ts)
   note prems = Fun.prems
@@ -4322,7 +8299,7 @@ proof -
       unfolding SolveValueVar.hyps(1) ticl_abss_def ticl_abs_def
       by force
   next
-    case (SolveComposed g us \<Delta> \<Theta> \<theta>1 \<theta>2) show ?case
+    case (SolveComposed g us \<Delta> \<theta>1 \<theta>2) show ?case
     proof (cases "\<forall>t \<in> set us. intruder_synth_mod_timpls FP TI (t \<cdot> \<theta> \<delta>)")
       case True
       hence "\<delta> x \<in> \<theta>2 x"
@@ -4378,7 +8355,7 @@ proof -
       qed
       hence "\<delta> x \<in> \<delta>' x" when x_in_g: "x \<in> fv (Fun g us)"
         using \<delta>''(2,3) x_in_g unfolding \<delta>''(1) by simp
-      hence "\<delta> x \<in> \<delta>' x" when "\<delta>' x \<noteq> {}" using match_abss_OCC_if_not_fv[OF \<delta>' that] \<delta>x0(1) by blast
+      hence "\<delta> x \<in> \<delta>' x" using match_abss_OCC_if_not_fv[OF \<delta>'] \<delta>x0(1) by blast
       hence "\<delta> x \<in> \<theta>1 x"
         using \<delta>'_\<Delta> \<delta>x0(1) unfolding SolveComposed.hyps(4,5) fun_point_Union_def by auto
       thus ?thesis unfolding fun_point_union_def by simp
@@ -4398,7 +8375,7 @@ private lemma transaction_check_variant_soundness_aux4:
     and "negs \<equiv> transaction_negchecks_comp C"
     and "as \<equiv> map (\<lambda>x. (x, set (filter (\<lambda>ab. poss x \<subseteq> ab \<and> negs x \<inter> ab = {}) OCC))) xs"
     and "f \<equiv> \<lambda>x. case List.find (\<lambda>p. fst p = x) as of Some p \<Rightarrow> snd p | None \<Rightarrow> {}"
-  assumes T_adm: "admissible_transaction T"
+  assumes T_adm: "admissible_transaction' T"
     and TI0: "\<forall>(a,b) \<in> set TI. \<forall>(c,d) \<in> set TI. b = c \<and> a \<noteq> d \<longrightarrow> (a,d) \<in> set TI"
              "\<forall>(a,b) \<in> set TI. a \<noteq> b"
     and OCC: "\<forall>t \<in> set FP. \<forall>a. Abs a \<in> funs_term t \<longrightarrow> a \<in> set OCC"
@@ -4490,7 +8467,7 @@ private lemma transaction_check_variant_soundness_aux5:
     and "xs \<equiv> filter (\<lambda>x. x \<notin> set (transaction_fresh T) \<and> fst x = TAtom Value) (fv_list\<^sub>s\<^sub>s\<^sub>t S)"
     and "poss \<equiv> transaction_poschecks_comp C"
     and "negs \<equiv> transaction_negchecks_comp C"
-  assumes T_adm: "admissible_transaction T"
+  assumes T_adm: "admissible_transaction' T"
     and TI: "\<forall>(a,b) \<in> set TI. \<forall>(c,d) \<in> set TI. b = c \<and> a \<noteq> d \<longrightarrow> (a,d) \<in> set TI"
             "\<forall>(a,b) \<in> set TI. a \<noteq> b"
     and OCC: "\<forall>t \<in> set FP. \<forall>a. Abs a \<in> funs_term t \<longrightarrow> a \<in> set OCC"
@@ -4516,23 +8493,23 @@ proof -
     using abs_substs_has_abs[of xs \<delta> OCC poss negs msgcs] 0 1 2 by blast
 qed
 
-lemma transaction_check_variant_soundness:
-  assumes P_adm: "\<forall>T \<in> set P. admissible_transaction T"
+theorem transaction_check_variant_soundness:
+  assumes P_adm: "\<forall>T \<in> set P. admissible_transaction' T"
     and TI: "\<forall>(a,b) \<in> set TI. \<forall>(c,d) \<in> set TI. b = c \<and> a \<noteq> d \<longrightarrow> (a,d) \<in> set TI"
             "\<forall>(a,b) \<in> set TI. a \<noteq> b"
     and OCC: "\<forall>t \<in> set FP. \<forall>a. Abs a \<in> funs_term t \<longrightarrow> a \<in> set OCC"
     and FP: "ground (set FP)"
             "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (set FP)"
     and T_in: "T \<in> set P"
-    and T_check: "transaction_check_alt1 (FP,OCC,TI) T"
+    and T_check: "transaction_check_coverage_rcv (FP,OCC,TI) T"
   shows "transaction_check (FP,OCC,TI) T"
 proof -
-  have 0: "admissible_transaction T"
+  have 0: "admissible_transaction' T"
     using P_adm T_in by blast
 
   show ?thesis
     using T_check transaction_check_variant_soundness_aux5[OF 0 TI OCC FP]
-    unfolding transaction_check_def transaction_check'_def transaction_check_alt1_def
+    unfolding transaction_check_def transaction_check'_def transaction_check_coverage_rcv_def
               transaction_check_comp_def list_all_iff Let_def
     by force
 qed
@@ -4546,9 +8523,22 @@ subsection \<open>Automatic Fixed-Point Computation\<close>
 context stateful_protocol_model
 begin
 
+fun reduce_fixpoint' where
+  "reduce_fixpoint' FP _ [] = FP"
+| "reduce_fixpoint' FP TI (t#M) = (
+  let FP' = List.removeAll t FP
+  in if intruder_synth_mod_timpls FP' TI t then FP' else reduce_fixpoint' FP TI M)"
+
+definition reduce_fixpoint where
+  "reduce_fixpoint FP TI \<equiv>
+    let f = \<lambda>FP. reduce_fixpoint' FP TI FP
+    in while (\<lambda>M. set (f M) \<noteq> set M) f FP"
+
 definition compute_fixpoint_fun' where
   "compute_fixpoint_fun' P (n::nat option) enable_traces \<Delta> S0 \<equiv>
-    let sy = intruder_synth_mod_timpls;
+    let P' = map add_occurs_msgs P;
+
+        sy = intruder_synth_mod_timpls;
 
         FP' = \<lambda>S. fst (fst S);
         TI' = \<lambda>S. snd (fst S);
@@ -4591,7 +8581,7 @@ definition compute_fixpoint_fun' where
               remdups (filter (\<lambda>s. fst s \<noteq> snd s) (map (\<lambda>x. (\<delta> x, u \<delta> x)) xs)));
         result_tuple = \<lambda>S T \<delta>. (result S T (abs_substs_fun \<delta>), if enable_traces then \<delta> else []);
         update_state = \<lambda>S. if list_ex (\<lambda>t. is_Fun t \<and> is_Attack (the_Fun t)) (FP' S) then S
-          else let results = map (\<lambda>T. map (result_tuple S T) (\<Delta>' S T)) P;
+          else let results = map (\<lambda>T. map (result_tuple S T) (\<Delta>' S T)) P';
                    newtrace_flt = (\<lambda>n. let x = map fst (results ! n); y = map fst x; z = map snd x
                     in set (concat y) - set (FP' S) \<noteq> {} \<or> set (concat z) - set (TI' S) \<noteq> {});
                    trace =
@@ -4611,12 +8601,13 @@ definition compute_fixpoint_fun' where
 
         S = ((\<lambda>h. case n of None \<Rightarrow> while (\<lambda>S. \<not>equal_states S (h S)) h | Some m \<Rightarrow> h ^^ m)
              update_state S0)
-    in ((FP' S, OCC' S, TI' S), trace' S)"
+    in ((reduce_fixpoint (FP' S) (TI' S), OCC' S, TI' S), trace' S)"
 
 definition compute_fixpoint_fun where
   "compute_fixpoint_fun P \<equiv>
     let P' = remdups (filter (\<lambda>T. transaction_updates T \<noteq> [] \<or> transaction_send T \<noteq> []) P);
-        f = transaction_check_comp (\<lambda>_ _. True)
+        f = (\<lambda>FPT T. let msgcs = synth_abs_substs_constrs FPT T
+                    in transaction_check_comp (\<lambda>x a. a \<in> msgcs x) FPT T)
     in fst (compute_fixpoint_fun' P' None False f (([],[]),[]))"
 
 definition compute_fixpoint_with_trace where
@@ -4625,9 +8616,10 @@ definition compute_fixpoint_with_trace where
 
 definition compute_fixpoint_from_trace where
   "compute_fixpoint_from_trace P trace \<equiv>
-    let \<Delta> = \<lambda>FPT T.
+    let P' = map add_occurs_msgs P;
+        \<Delta> = \<lambda>FPT T.
           let pre_check = transaction_check_pre FPT T;
-              \<delta>s = map snd (filter (\<lambda>(i,as). P ! i = T) (concat trace))
+              \<delta>s = map snd (filter (\<lambda>(i,as). P' ! i = T) (concat trace))
           in filter (\<lambda>\<delta>. pre_check (abs_substs_fun \<delta>)) \<delta>s;
         f = compute_fixpoint_fun' \<circ> map (nth P);
         g = \<lambda>L FPT. fst ((f L (Some 1) False \<Delta> ((fst FPT,snd (snd FPT)),[])))
@@ -4675,11 +8667,13 @@ definition "attack_notin_fixpoint (FPT::('fun,'atom,'sets,'lbl) fixpoint_triple)
 
 definition "protocol_covered_by_fixpoint (FPT::('fun,'atom,'sets,'lbl) fixpoint_triple) P \<equiv>
   list_all (transaction_check FPT)
-           (filter (\<lambda>T. transaction_updates T \<noteq> [] \<or> transaction_send T \<noteq> []) P)"
+           (filter (\<lambda>T. transaction_updates T \<noteq> [] \<or> transaction_send T \<noteq> [])
+                   (map add_occurs_msgs P))"
 
-definition "protocol_covered_by_fixpoint_alt1 (FPT::('fun,'atom,'sets,'lbl) fixpoint_triple) P \<equiv>
-  list_all (transaction_check_alt1 FPT)
-           (filter (\<lambda>T. transaction_updates T \<noteq> [] \<or> transaction_send T \<noteq> []) P)"
+definition "protocol_covered_by_fixpoint_coverage_rcv (FPT::('fun,'atom,'sets,'lbl) fixpoint_triple) P \<equiv>
+  list_all (transaction_check_coverage_rcv FPT)
+           (filter (\<lambda>T. transaction_updates T \<noteq> [] \<or> transaction_send T \<noteq> [])
+                   (map add_occurs_msgs P))"
 
 definition "analyzed_fixpoint (FPT::('fun,'atom,'sets,'lbl) fixpoint_triple) \<equiv>
   let (FP, _, TI) = FPT
@@ -4690,9 +8684,20 @@ definition "wellformed_protocol_SMP_set (P::('fun,'atom,'sets,'lbl) prot) N \<eq
   comp_tfr\<^sub>s\<^sub>e\<^sub>t arity Ana \<Gamma> (set N) \<and>
   list_all (\<lambda>T. list_all (comp_tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<Gamma> Pair) (unlabel (transaction_strand T))) P"
 
+(* TODO: try to avoid checking the "list_all is_*" conditions here... *)
+definition "wellformed_protocol'' (P::('fun,'atom,'sets,'lbl) prot) N \<equiv>
+  let f = \<lambda>T. transaction_fresh T = [] \<longrightarrow> transaction_updates T \<noteq> [] \<or> transaction_send T \<noteq> []
+  in list_all (\<lambda>T. list_all is_Receive (unlabel (transaction_receive T)) \<and>
+                   list_all is_Check_or_Assignment (unlabel (transaction_checks T)) \<and>
+                   list_all is_Update (unlabel (transaction_updates T)) \<and>
+                   list_all is_Send (unlabel (transaction_send T)))
+              P \<and>
+     list_all admissible_transaction (filter f P) \<and>
+     wellformed_protocol_SMP_set P N"
+
 definition "wellformed_protocol' (P::('fun,'atom,'sets,'lbl) prot) N \<equiv>
-  list_all admissible_transaction P \<and>
-  wellformed_protocol_SMP_set P N"
+  wellformed_protocol'' P N \<and>
+  has_initial_value_producing_transaction P"
 
 definition "wellformed_protocol (P::('fun,'atom,'sets,'lbl) prot) \<equiv>
   let f = \<lambda>M. remdups (concat (map subterms_list M@map (fst \<circ> Ana) M));
@@ -4723,53 +8728,67 @@ unfolding wellformed_protocol_SMP_set_def comp_tfr\<^sub>s\<^sub>e\<^sub>t_def h
           wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s'_def list_all_iff
 by fast
 
+lemma wellformed_protocol''_mono:
+  assumes "wellformed_protocol'' P S"
+    and "set P' \<subseteq> set P"
+  shows "wellformed_protocol'' P' S"
+using assms wellformed_protocol_SMP_set_mono[of P S P']
+unfolding wellformed_protocol''_def list_all_iff by auto
+
 lemma wellformed_protocol'_mono:
   assumes "wellformed_protocol' P S"
     and "set P' \<subseteq> set P"
+    and "has_initial_value_producing_transaction P'"
   shows "wellformed_protocol' P' S"
-using assms wellformed_protocol_SMP_set_mono[of P S P']
-unfolding wellformed_protocol'_def list_all_iff by blast
+using assms wellformed_protocol_SMP_set_mono[of P S P'] wellformed_protocol''_mono
+unfolding wellformed_protocol'_def by blast
 
-lemma protocol_covered_by_fixpoint_if_protocol_covered_by_fixpoint_alt1:
-  assumes P: "wellformed_protocol' P P_SMP"
+lemma protocol_covered_by_fixpoint_if_protocol_covered_by_fixpoint_coverage_rcv:
+  assumes P: "wellformed_protocol'' P P_SMP"
     and FPT: "wellformed_fixpoint FPT"
-    and covered: "protocol_covered_by_fixpoint_alt1 FPT P"
+    and covered: "protocol_covered_by_fixpoint_coverage_rcv FPT P"
   shows "protocol_covered_by_fixpoint FPT P"
 proof -
   obtain FP OCC TI where FPT': "FPT = (FP,OCC,TI)" by (metis surj_pair)
 
-  note defs = FPT' wellformed_protocol'_def wellformed_fixpoint_def wellformed_fixpoint'_def
+  note defs = FPT' wellformed_protocol''_def wellformed_fixpoint_def wellformed_fixpoint'_def
               wellformed_term_implication_graph_def Let_def
-              list_all_iff wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s_code[symmetric] wf\<^sub>t\<^sub>r\<^sub>m_code[symmetric] 
-              member_def case_prod_unfold
+              wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s_code[symmetric] wf\<^sub>t\<^sub>r\<^sub>m_code[symmetric] 
+              member_def case_prod_unfold list_all_iff
 
-  have P_adm: "\<forall>T \<in> set P. admissible_transaction T"
-      and TI: "\<forall>(a,b) \<in> set TI. \<forall>(c,d) \<in> set TI. b = c \<and> a \<noteq> d \<longrightarrow> (a,d) \<in> set TI"
+  let ?f = "\<lambda>T. transaction_fresh T = [] \<longrightarrow> transaction_updates T \<noteq> [] \<or> transaction_send T \<noteq> []"
+
+  have TI: "\<forall>(a,b) \<in> set TI. \<forall>(c,d) \<in> set TI. b = c \<and> a \<noteq> d \<longrightarrow> (a,d) \<in> set TI"
               "\<forall>(a,b) \<in> set TI. a \<noteq> b"
       and OCC: "\<forall>t \<in> set FP. \<forall>a. Abs a \<in> funs_term t \<longrightarrow> a \<in> set OCC"
       and FP: "ground (set FP)"
               "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (set FP)"
-    using P FPT unfolding defs by (blast, simp, simp, fastforce, simp, simp)
+    using FPT unfolding defs by (simp, simp, fastforce, simp, simp)
+
+  have P_adm: "\<forall>T \<in> set (filter ?f (map add_occurs_msgs P)). admissible_transaction' T"
+    using P add_occurs_msgs_admissible_occurs_checks(1)[OF admissible_transactionE'(1)]
+    unfolding defs add_occurs_msgs_updates_send_filter_iff'[of P, symmetric] by auto
 
   show ?thesis
     using covered transaction_check_variant_soundness[OF P_adm TI OCC FP]
-    unfolding protocol_covered_by_fixpoint_def protocol_covered_by_fixpoint_alt1_def
+    unfolding protocol_covered_by_fixpoint_def protocol_covered_by_fixpoint_coverage_rcv_def
               FPT' list_all_iff
     by fastforce
 qed
 
-lemma protocol_covered_by_fixpoint_if_protocol_covered_by_fixpoint_alt1':
-  assumes P: "wellformed_protocol' P P_SMP"
+lemma protocol_covered_by_fixpoint_if_protocol_covered_by_fixpoint_coverage_rcv':
+  assumes P: "wellformed_protocol'' P P_SMP"
     and P': "set P' \<subseteq> set P"
     and FPT: "wellformed_fixpoint FPT"
-    and covered: "protocol_covered_by_fixpoint_alt1 FPT P'"
+    and covered: "protocol_covered_by_fixpoint_coverage_rcv FPT P'"
   shows "protocol_covered_by_fixpoint FPT P'"
-using protocol_covered_by_fixpoint_if_protocol_covered_by_fixpoint_alt1[OF _ FPT covered]
-      wellformed_protocol'_mono[OF P P']
+using protocol_covered_by_fixpoint_if_protocol_covered_by_fixpoint_coverage_rcv[OF _ FPT covered]
+      wellformed_protocol''_mono[OF P P']
 by simp
 
 lemma protocol_covered_by_fixpoint_trivial_case:
-  assumes "list_all (\<lambda>T. transaction_updates T = [] \<and> transaction_send T = []) P"
+  assumes "list_all (\<lambda>T. transaction_updates T = [] \<and> transaction_send T = [])
+                    (map add_occurs_msgs P)"
   shows "protocol_covered_by_fixpoint FPT P"
 using assms
 by (simp add: list_all_iff transaction_check_trivial_case protocol_covered_by_fixpoint_def)
@@ -4780,13 +8799,13 @@ by (simp add: protocol_covered_by_fixpoint_def)
 
 lemma protocol_covered_by_fixpoint_Cons[simp]:
   "protocol_covered_by_fixpoint FPT (T#P) \<longleftrightarrow>
-    transaction_check FPT T \<and> protocol_covered_by_fixpoint FPT P"
-using transaction_check_trivial_case
+    transaction_check FPT (add_occurs_msgs T) \<and> protocol_covered_by_fixpoint FPT P"
+using transaction_check_trivial_case[of "add_occurs_msgs T"]
 unfolding protocol_covered_by_fixpoint_def case_prod_unfold by simp
 
 lemma protocol_covered_by_fixpoint_append[simp]:
   "protocol_covered_by_fixpoint FPT (P1@P2) \<longleftrightarrow>
-    protocol_covered_by_fixpoint FPT P1 \<and> protocol_covered_by_fixpoint FPT P2"
+   protocol_covered_by_fixpoint FPT P1 \<and> protocol_covered_by_fixpoint FPT P2"
 by (simp add: protocol_covered_by_fixpoint_def case_prod_unfold)
 
 lemma protocol_covered_by_fixpoint_I1[intro]:
@@ -4802,7 +8821,8 @@ using assms by (auto simp add: protocol_covered_by_fixpoint_def)
 
 lemma protocol_covered_by_fixpoint_I3:
   assumes "\<forall>T \<in> set P. \<forall>\<delta>::('fun,'atom,'sets,'lbl) prot_var \<Rightarrow> 'sets set.
-    transaction_check_pre FPT T \<delta> \<longrightarrow> transaction_check_post FPT T \<delta>"
+    transaction_check_pre FPT (add_occurs_msgs T) \<delta> \<longrightarrow>
+    transaction_check_post FPT (add_occurs_msgs T) \<delta>"
   shows "protocol_covered_by_fixpoint FPT P"
 using assms
 unfolding protocol_covered_by_fixpoint_def transaction_check_def transaction_check'_def
@@ -4824,10 +8844,21 @@ lemma prot_secure_if_prot_checks:
     and wellformed_protocol: "wellformed_protocol' P N"
     and wellformed_fixpoint: "wellformed_fixpoint FP_OCC_TI"
   shows "\<forall>\<A> \<in> reachable_constraints P. \<nexists>\<I>. constraint_model \<I> (\<A>@[(l, send\<langle>[attack\<langle>n\<rangle>]\<rangle>)])"
+    (is "?secure P")
 proof -
   define FP where "FP \<equiv> let (FP,_,_) = FP_OCC_TI in FP"
   define OCC where "OCC \<equiv> let (_,OCC,_) = FP_OCC_TI in OCC"
   define TI where "TI \<equiv> let (_,_,TI) = FP_OCC_TI in TI"
+
+  define f where "f \<equiv> \<lambda>T::('fun,'atom,'sets,'lbl) prot_transaction.
+    transaction_fresh T = [] \<longrightarrow> transaction_updates T \<noteq> [] \<or> transaction_send T \<noteq> []"
+
+  define g where "g \<equiv> \<lambda>T::('fun,'atom,'sets,'lbl) prot_transaction.
+    transaction_fresh T = [] \<longrightarrow>
+      list_ex (\<lambda>a. is_Update (snd a) \<or> is_Send (snd a)) (transaction_strand T)"
+
+  note wellformed_prot_defs =
+    wellformed_protocol'_def wellformed_protocol''_def wellformed_protocol_SMP_set_def
 
   have attack_notin_FP: "attack\<langle>n\<rangle> \<notin> set FP"
     using attack_notin_fixpoint[unfolded attack_notin_fixpoint_def]
@@ -4852,19 +8883,24 @@ proof -
     by (fast, fast, blast, fastforce, simp)
 
   have 8: "finite (set N)"
-    and 9: "has_all_wt_instances_of \<Gamma> (\<Union>T \<in> set P. trms_transaction T) (set N)"
+    and 9: "has_all_wt_instances_of \<Gamma> (\<Union>T \<in> set (filter g P). trms_transaction T) (set N)"
     and 10: "tfr\<^sub>s\<^sub>e\<^sub>t (set N)"
-    and 11: "\<forall>T \<in> set P. list_all tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p (unlabel (transaction_strand T))"
-    and 12: "\<forall>T \<in> set P. admissible_transaction T"
-    using wellformed_protocol[unfolded wellformed_protocol'_def wellformed_protocol_SMP_set_def]
+    and 11: "\<forall>T \<in> set (filter f P). list_all tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p (unlabel (transaction_strand T))"
+    and 12: "\<forall>T \<in> set (filter f P). admissible_transaction T"
+    using wellformed_protocol[unfolded wellformed_prot_defs]
           tfr\<^sub>s\<^sub>e\<^sub>t_if_comp_tfr\<^sub>s\<^sub>e\<^sub>t[of "set N"]
-    unfolding Let_def list_all_iff wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s_code[symmetric] tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p_is_comp_tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p[symmetric] by fast+
+    unfolding Let_def list_all_iff wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s_code[symmetric] tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p_is_comp_tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p[symmetric]
+              has_all_wt_instances_of_def f_def[symmetric]
+    by (fast, fastforce, fast, fastforce, fast)
 
   have 13: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (set N)"
-    using wellformed_protocol[unfolded wellformed_protocol'_def wellformed_protocol_SMP_set_def]
+    using wellformed_protocol[unfolded wellformed_prot_defs]
           finite_SMP_representationD
-    unfolding wf\<^sub>t\<^sub>r\<^sub>m_code[symmetric] wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s'_def comp_tfr\<^sub>s\<^sub>e\<^sub>t_def list_all_iff
-    by blast
+    unfolding wf\<^sub>t\<^sub>r\<^sub>m_code[symmetric] wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s'_def comp_tfr\<^sub>s\<^sub>e\<^sub>t_def list_all_iff Let_def by fast
+
+  have 14: "has_initial_value_producing_transaction (filter g P)"
+    using wellformed_protocol has_initial_value_producing_transaction_update_send_ex_filter
+    unfolding wellformed_protocol'_def Let_def g_def by blast
 
   note TI0 = trancl_eqI'[OF 1 2]
 
@@ -4880,21 +8916,42 @@ proof -
 
   note M0 = 9 8 10 13
 
-  have "list_all (transaction_check (FP, OCC, TI)) P"
+  have "f T \<longleftrightarrow> g T" when T: "T \<in> set P" for T
+  proof -
+    have *: "list_all stateful_strand_step.is_Receive (unlabel (transaction_receive T))"
+            "list_all is_Check_or_Assignment (unlabel (transaction_checks T))"
+            "list_all is_Update (unlabel (transaction_updates T))"
+            "list_all stateful_strand_step.is_Send (unlabel (transaction_send T))"
+      using T wellformed_protocol
+      unfolding wellformed_protocol_def wellformed_prot_defs Let_def list_all_iff
+      by (fast, fast, fast, fast)
+
+    show ?thesis
+      using transaction_updates_send_ex_iff[OF *]
+      unfolding f_def g_def by (metis (no_types, lifting) list_ex_cong)
+  qed
+  hence 15: "\<forall>T \<in> set (filter g P). list_all tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p (unlabel (transaction_strand T))"
+    and 16: "\<forall>T \<in> set (filter g P). admissible_transaction T"
+    using 11 12 by auto
+
+  have "list_all (transaction_check (FP, OCC, TI)) (map add_occurs_msgs (filter g P))"
     using transactions_covered[unfolded protocol_covered_by_fixpoint_def]
           transaction_check_trivial_case[of _ FP_OCC_TI]
     unfolding FP_def OCC_def TI_def list_all_iff Let_def case_prod_unfold
     by auto
-  note P0 = 12 11 this attack_notin_FP
+  note P0 = 16 15 14 this attack_notin_FP
 
-  show ?thesis by (metis prot_secure_if_fixpoint_covered[OF FP0 OCC0 TI0 M0 P0])
+  show ?thesis
+    using prot_secure_if_fixpoint_covered[OF FP0 OCC0 TI0 M0 P0]
+          reachable_constraints_secure_if_filter_secure_case[unfolded g_def[symmetric]]
+    by fast
 qed
 
-lemma prot_secure_if_prot_checks_alt1:
+lemma prot_secure_if_prot_checks_coverage_rcv:
   fixes P::"('fun,'atom,'sets,'lbl) prot_transaction list"
     and FP_OCC_TI:: "('fun,'atom,'sets,'lbl) fixpoint_triple"
   assumes attack_notin_fixpoint: "attack_notin_fixpoint FP_OCC_TI"
-    and transactions_covered: "protocol_covered_by_fixpoint_alt1 FP_OCC_TI P"
+    and transactions_covered: "protocol_covered_by_fixpoint_coverage_rcv FP_OCC_TI P"
     and analyzed_fixpoint: "analyzed_fixpoint FP_OCC_TI"
     and wellformed_protocol: "wellformed_protocol' P N"
     and wellformed_fixpoint: "wellformed_fixpoint FP_OCC_TI"
@@ -4902,8 +8959,9 @@ lemma prot_secure_if_prot_checks_alt1:
 using prot_secure_if_prot_checks[
         OF attack_notin_fixpoint _
            analyzed_fixpoint wellformed_protocol wellformed_fixpoint]
-      protocol_covered_by_fixpoint_if_protocol_covered_by_fixpoint_alt1[
-        OF wellformed_protocol wellformed_fixpoint transactions_covered]
+      protocol_covered_by_fixpoint_if_protocol_covered_by_fixpoint_coverage_rcv[
+        OF _ wellformed_fixpoint transactions_covered]
+      wellformed_protocol[unfolded wellformed_protocol'_def]
 by blast
 
 end
@@ -5047,7 +9105,7 @@ using checks''[unfolded Let_def case_prod_unfold] by unfold_locales meson+
 
 end
 
-locale secure_stateful_protocol_alt1 =
+locale secure_stateful_protocol_coverage_rcv =
   pm: stateful_protocol_model arity\<^sub>f arity\<^sub>s public\<^sub>f Ana\<^sub>f \<Gamma>\<^sub>f label_witness1 label_witness2
   for arity\<^sub>f::"'fun \<Rightarrow> nat"
     and arity\<^sub>s::"'sets \<Rightarrow> nat"
@@ -5060,21 +9118,129 @@ locale secure_stateful_protocol_alt1 =
   fixes P::"('fun,'atom,'sets,'lbl) prot_transaction list"
     and FP_OCC_TI:: "('fun,'atom,'sets,'lbl) fixpoint_triple"
     and P_SMP::"('fun,'atom,'sets,'lbl) prot_term list"
-  assumes attack_notin_fixpoint_alt1: "pm.attack_notin_fixpoint FP_OCC_TI"
-    and transactions_covered_alt1: "pm.protocol_covered_by_fixpoint_alt1 FP_OCC_TI P"
-    and analyzed_fixpoint_alt1: "pm.analyzed_fixpoint FP_OCC_TI"
-    and wellformed_protocol_alt1: "pm.wellformed_protocol' P P_SMP"
-    and wellformed_fixpoint_alt1: "pm.wellformed_fixpoint FP_OCC_TI"
+  assumes attack_notin_fixpoint_coverage_rcv: "pm.attack_notin_fixpoint FP_OCC_TI"
+    and transactions_covered_coverage_rcv: "pm.protocol_covered_by_fixpoint_coverage_rcv FP_OCC_TI P"
+    and analyzed_fixpoint_coverage_rcv: "pm.analyzed_fixpoint FP_OCC_TI"
+    and wellformed_protocol_coverage_rcv: "pm.wellformed_protocol' P P_SMP"
+    and wellformed_fixpoint_coverage_rcv: "pm.wellformed_fixpoint FP_OCC_TI"
 begin
 
 sublocale secure_stateful_protocol
   arity\<^sub>f arity\<^sub>s public\<^sub>f Ana\<^sub>f \<Gamma>\<^sub>f label_witness1 label_witness2 P
   FP_OCC_TI P_SMP
-using pm.protocol_covered_by_fixpoint_if_protocol_covered_by_fixpoint_alt1[
-        OF wellformed_protocol_alt1 wellformed_fixpoint_alt1 transactions_covered_alt1]
-      attack_notin_fixpoint_alt1 analyzed_fixpoint_alt1
-      wellformed_protocol_alt1 wellformed_fixpoint_alt1
+using pm.protocol_covered_by_fixpoint_if_protocol_covered_by_fixpoint_coverage_rcv[
+        OF _ wellformed_fixpoint_coverage_rcv transactions_covered_coverage_rcv]
+      attack_notin_fixpoint_coverage_rcv analyzed_fixpoint_coverage_rcv
+      wellformed_protocol_coverage_rcv wellformed_fixpoint_coverage_rcv
+      wellformed_protocol_coverage_rcv[unfolded pm.wellformed_protocol'_def]
 by unfold_locales meson+
+
+end
+
+locale secure_stateful_protocol_coverage_rcv' =
+  pm: stateful_protocol_model arity\<^sub>f arity\<^sub>s public\<^sub>f Ana\<^sub>f \<Gamma>\<^sub>f label_witness1 label_witness2
+  for arity\<^sub>f::"'fun \<Rightarrow> nat"
+    and arity\<^sub>s::"'sets \<Rightarrow> nat"
+    and public\<^sub>f::"'fun \<Rightarrow> bool"
+    and Ana\<^sub>f::"'fun \<Rightarrow> ((('fun,'atom::finite,'sets,'lbl) prot_fun, nat) term list \<times> nat list)"
+    and \<Gamma>\<^sub>f::"'fun \<Rightarrow> 'atom option"
+    and label_witness1::"'lbl"
+    and label_witness2::"'lbl"
+  +
+  fixes P::"('fun,'atom,'sets,'lbl) prot_transaction list"
+    and FP_OCC_TI:: "('fun,'atom,'sets,'lbl) fixpoint_triple"
+  assumes attack_notin_fixpoint_coverage_rcv': "pm.attack_notin_fixpoint FP_OCC_TI"
+    and transactions_covered_coverage_rcv': "pm.protocol_covered_by_fixpoint_coverage_rcv FP_OCC_TI P"
+    and analyzed_fixpoint_coverage_rcv': "pm.analyzed_fixpoint FP_OCC_TI"
+    and wellformed_protocol_coverage_rcv': "pm.wellformed_protocol P"
+    and wellformed_fixpoint_coverage_rcv': "pm.wellformed_fixpoint FP_OCC_TI"
+begin
+
+sublocale secure_stateful_protocol_coverage_rcv
+  arity\<^sub>f arity\<^sub>s public\<^sub>f Ana\<^sub>f \<Gamma>\<^sub>f label_witness1 label_witness2 P
+  FP_OCC_TI
+  "let f = \<lambda>M. remdups (concat (map subterms_list M@map (fst \<circ> pm.Ana) M));
+       N0 = remdups (concat (map (trms_list\<^sub>s\<^sub>s\<^sub>t \<circ> unlabel \<circ> transaction_strand) P))
+   in while (\<lambda>A. set (f A) \<noteq> set A) f N0"
+apply unfold_locales
+using attack_notin_fixpoint_coverage_rcv' transactions_covered_coverage_rcv' analyzed_fixpoint_coverage_rcv'
+      wellformed_protocol_coverage_rcv'[unfolded pm.wellformed_protocol_def Let_def] wellformed_fixpoint_coverage_rcv'
+unfolding Let_def by blast+
+
+end
+
+locale secure_stateful_protocol_coverage_rcv'' =
+  pm: stateful_protocol_model arity\<^sub>f arity\<^sub>s public\<^sub>f Ana\<^sub>f \<Gamma>\<^sub>f label_witness1 label_witness2
+  for arity\<^sub>f::"'fun \<Rightarrow> nat"
+    and arity\<^sub>s::"'sets \<Rightarrow> nat"
+    and public\<^sub>f::"'fun \<Rightarrow> bool"
+    and Ana\<^sub>f::"'fun \<Rightarrow> ((('fun,'atom::finite,'sets,'lbl) prot_fun, nat) term list \<times> nat list)"
+    and \<Gamma>\<^sub>f::"'fun \<Rightarrow> 'atom option"
+    and label_witness1::"'lbl"
+    and label_witness2::"'lbl"
+  +
+  fixes P::"('fun,'atom,'sets,'lbl) prot_transaction list"
+  assumes checks_coverage_rcv: "let FPT = pm.compute_fixpoint_fun P
+    in pm.attack_notin_fixpoint FPT \<and> pm.protocol_covered_by_fixpoint_coverage_rcv FPT P \<and>
+       pm.analyzed_fixpoint FPT \<and> pm.wellformed_protocol P \<and> pm.wellformed_fixpoint FPT"
+begin
+
+sublocale secure_stateful_protocol_coverage_rcv'
+  arity\<^sub>f arity\<^sub>s public\<^sub>f Ana\<^sub>f \<Gamma>\<^sub>f label_witness1 label_witness2 P "pm.compute_fixpoint_fun P"
+using checks_coverage_rcv[unfolded Let_def case_prod_unfold] by unfold_locales meson+
+
+end
+
+locale secure_stateful_protocol_coverage_rcv''' =
+  pm: stateful_protocol_model arity\<^sub>f arity\<^sub>s public\<^sub>f Ana\<^sub>f \<Gamma>\<^sub>f label_witness1 label_witness2
+  for arity\<^sub>f::"'fun \<Rightarrow> nat"
+    and arity\<^sub>s::"'sets \<Rightarrow> nat"
+    and public\<^sub>f::"'fun \<Rightarrow> bool"
+    and Ana\<^sub>f::"'fun \<Rightarrow> ((('fun,'atom::finite,'sets,'lbl) prot_fun, nat) term list \<times> nat list)"
+    and \<Gamma>\<^sub>f::"'fun \<Rightarrow> 'atom option"
+    and label_witness1::"'lbl"
+    and label_witness2::"'lbl"
+  +
+  fixes P::"('fun,'atom,'sets,'lbl) prot_transaction list"
+    and FP_OCC_TI:: "('fun,'atom,'sets,'lbl) fixpoint_triple"
+    and P_SMP::"('fun,'atom,'sets,'lbl) prot_term list"
+  assumes checks_coverage_rcv': "let P' = P; FPT = FP_OCC_TI; P'_SMP = P_SMP
+                         in pm.attack_notin_fixpoint FPT \<and>
+                            pm.protocol_covered_by_fixpoint_coverage_rcv FPT P' \<and>
+                            pm.analyzed_fixpoint FPT \<and>
+                            pm.wellformed_protocol' P' P'_SMP \<and>
+                            pm.wellformed_fixpoint FPT"
+begin
+
+sublocale secure_stateful_protocol_coverage_rcv
+  arity\<^sub>f arity\<^sub>s public\<^sub>f Ana\<^sub>f \<Gamma>\<^sub>f label_witness1 label_witness2 P FP_OCC_TI P_SMP
+using checks_coverage_rcv'[unfolded Let_def case_prod_unfold] by unfold_locales meson+
+
+end
+
+locale secure_stateful_protocol_coverage_rcv'''' =
+  pm: stateful_protocol_model arity\<^sub>f arity\<^sub>s public\<^sub>f Ana\<^sub>f \<Gamma>\<^sub>f label_witness1 label_witness2
+  for arity\<^sub>f::"'fun \<Rightarrow> nat"
+    and arity\<^sub>s::"'sets \<Rightarrow> nat"
+    and public\<^sub>f::"'fun \<Rightarrow> bool"
+    and Ana\<^sub>f::"'fun \<Rightarrow> ((('fun,'atom::finite,'sets,'lbl) prot_fun, nat) term list \<times> nat list)"
+    and \<Gamma>\<^sub>f::"'fun \<Rightarrow> 'atom option"
+    and label_witness1::"'lbl"
+    and label_witness2::"'lbl"
+  +
+  fixes P::"('fun,'atom,'sets,'lbl) prot_transaction list"
+    and FP_OCC_TI:: "('fun,'atom,'sets,'lbl) fixpoint_triple"
+  assumes checks_coverage_rcv'': "let P' = P; FPT = FP_OCC_TI
+                          in pm.attack_notin_fixpoint FPT \<and>
+                             pm.protocol_covered_by_fixpoint_coverage_rcv FPT P' \<and>
+                             pm.analyzed_fixpoint FPT \<and>
+                             pm.wellformed_protocol P' \<and>
+                             pm.wellformed_fixpoint FPT"
+begin
+
+sublocale secure_stateful_protocol_coverage_rcv'
+  arity\<^sub>f arity\<^sub>s public\<^sub>f Ana\<^sub>f \<Gamma>\<^sub>f label_witness1 label_witness2 P FP_OCC_TI
+using checks_coverage_rcv''[unfolded Let_def case_prod_unfold] by unfold_locales meson+
 
 end
 
@@ -5102,16 +9268,9 @@ definition wellformed_composable_protocols where
       has_all_wt_instances_of \<Gamma> MP0 (set N) \<and>
       comp_tfr\<^sub>s\<^sub>e\<^sub>t arity Ana \<Gamma> (set N) \<and>
       list_all (comp_tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<Gamma> Pair \<circ> snd) steps \<and>
-      list_all wellformed_transaction Ts \<and>
       list_all admissible_transaction_terms Ts \<and>
       list_all (list_all (\<lambda>x. \<Gamma>\<^sub>v x = TAtom Value \<or> (is_Var (\<Gamma>\<^sub>v x) \<and> is_Atom (the_Var (\<Gamma>\<^sub>v x)))) \<circ>
                 transaction_fresh)
-               Ts \<and>
-      list_all (list_all
-                  (\<lambda>p. let (x,cs) = p in
-                        is_Var (\<Gamma>\<^sub>v x) \<and> is_Atom (the_Var (\<Gamma>\<^sub>v x)) \<and>
-                        (\<forall>c \<in> cs. \<Gamma>\<^sub>v x = \<Gamma> (Fun (Fu c) []::('fun,'atom,'sets,'lbl) prot_term))) \<circ>
-                (\<lambda>T. transaction_decl T ()))
                Ts \<and>
       list_all (\<lambda>T. \<forall>x \<in> vars_transaction T. \<not>TAtom AttackType \<sqsubseteq> \<Gamma>\<^sub>v x) Ts \<and>
       list_all (\<lambda>T. \<forall>x \<in> vars_transaction T. \<forall>f \<in> funs_term (\<Gamma>\<^sub>v x). f \<noteq> Pair \<and> f \<noteq> OccursFact)
@@ -5129,6 +9288,19 @@ definition wellformed_composable_protocols where
                           is_Var (args t ! 1) \<and> (\<Gamma> (args t ! 1) = TAtom Value)))
                steps"
 
+definition wellformed_composable_protocols' where
+  "wellformed_composable_protocols' (P::('fun,'atom,'sets,'lbl) prot list) \<equiv>
+    let
+      Ts = concat P
+    in
+      list_all wellformed_transaction Ts \<and>
+      list_all (list_all
+                  (\<lambda>p. let (x,cs) = p in
+                        is_Var (\<Gamma>\<^sub>v x) \<and> is_Atom (the_Var (\<Gamma>\<^sub>v x)) \<and>
+                        (\<forall>c \<in> cs. \<Gamma>\<^sub>v x = \<Gamma> (Fun (Fu c) []::('fun,'atom,'sets,'lbl) prot_term))) \<circ>
+                (\<lambda>T. transaction_decl T ()))
+               Ts"
+
 definition composable_protocols where
   "composable_protocols (P::('fun,'atom,'sets,'lbl) prot list) Ms S \<equiv>
     let
@@ -5140,7 +9312,9 @@ lemma composable_protocols_par_comp_constr:
   fixes S f
   defines "f \<equiv> \<lambda>M. {t \<cdot> \<delta> | t \<delta>. t \<in> M \<and> wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta> \<and> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>) \<and> fv (t \<cdot> \<delta>) = {}}"
     and "Sec \<equiv> (f (set S)) - {m. intruder_synth {} m}"
-  assumes Ps_pc: "wellformed_composable_protocols Ps N" "composable_protocols Ps Ms S"
+  assumes Ps_pc: "wellformed_composable_protocols Ps N"
+                 "wellformed_composable_protocols' Ps"
+                 "composable_protocols Ps Ms S"
   shows "\<forall>\<A> \<in> reachable_constraints (concat Ps). \<forall>\<I>. constraint_model \<I> \<A> \<longrightarrow>
             (\<exists>\<I>\<^sub>\<tau>. welltyped_constraint_model \<I>\<^sub>\<tau> \<A> \<and>
                   ((\<forall>n. welltyped_constraint_model \<I>\<^sub>\<tau> (proj n \<A>)) \<or>
@@ -5170,8 +9344,8 @@ proof (intro allI ballI impI)
       "\<forall>T \<in> set ?Ts. list_all tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p (unlabel (transaction_strand T))"
       "comp_par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t public arity Ana \<Gamma> Pair ?steps ?M_fun (set S)"
     using Ps_pc tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p_is_comp_tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p
-    unfolding wellformed_composable_protocols_def composable_protocols_def
-              Let_def list_all_iff unlabel_def wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s_code[symmetric]
+    unfolding wellformed_composable_protocols_def wellformed_composable_protocols'_def
+              composable_protocols_def Let_def list_all_iff unlabel_def wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s_code[symmetric]
               admissible_transaction_terms_def
     by (meson, meson, fastforce, blast)
 
@@ -5456,7 +9630,9 @@ lemma composable_protocols_par_comp_prot_alt:
     and "no_leakage \<equiv> \<lambda>\<A>. \<nexists>\<I>\<^sub>\<tau> \<A>' s.
       prefix \<A>' \<A> \<and> (\<exists>l ts. suffix [(l, receive\<langle>ts\<rangle>)] \<A>') \<and> s \<in> Sec - declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>' \<I>\<^sub>\<tau> \<and>
       welltyped_constraint_model \<I>\<^sub>\<tau> (\<A>'@[\<langle>\<star>, send\<langle>[s]\<rangle>\<rangle>])"
-  assumes Ps_pc: "wellformed_composable_protocols Ps N" "composable_protocols Ps Ms S"
+  assumes Ps_pc: "wellformed_composable_protocols Ps N"
+                 "wellformed_composable_protocols' Ps"
+                 "composable_protocols Ps Ms S"
     and component_secure:
           "\<forall>\<A> \<in> reachable_constraints (map (transaction_proj l) (concat Ps)). \<nexists>\<I>.
               welltyped_constraint_model \<I> (\<A>@[\<langle>l, send\<langle>[attack\<langle>ln l\<rangle>]\<rangle>\<rangle>])"
@@ -5503,9 +9679,9 @@ proof
               is_Fun_Attack (hd (the_msgs (snd s))) \<longrightarrow>
                 the_Attack_label (the_Fun (hd (the_msgs (snd s)))) = fst s"
           "\<forall>T \<in> set (concat Ps). list_all tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p (unlabel (transaction_strand T))"
-    using Ps_pc(1) tfr\<^sub>s\<^sub>e\<^sub>t_if_comp_tfr\<^sub>s\<^sub>e\<^sub>t tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p_is_comp_tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p
-    unfolding wellformed_composable_protocols_def list_all_iff Let_def M_def
-              wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s'_def wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s_code unlabel_def \<Gamma>\<^sub>v_TAtom''(1,2)
+    using Ps_pc(1,2) tfr\<^sub>s\<^sub>e\<^sub>t_if_comp_tfr\<^sub>s\<^sub>e\<^sub>t tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p_is_comp_tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p
+    unfolding wellformed_composable_protocols_def wellformed_composable_protocols'_def
+              list_all_iff Let_def M_def wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s'_def wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s_code unlabel_def \<Gamma>\<^sub>v_TAtom''(1,2)
     by (force, force, fast, fast, fast, fast, fast, simp, simp)
 
   have P_fresh: "\<forall>T \<in> set (concat Ps). \<forall>x \<in> set (transaction_fresh T).
@@ -5561,7 +9737,9 @@ lemma composable_protocols_par_comp_prot:
     and "no_leakage \<equiv> \<lambda>\<A>. \<nexists>\<I>\<^sub>\<tau> s.
       (\<exists>l ts. suffix [(l, receive\<langle>ts\<rangle>)] \<A>) \<and> s \<in> Sec - declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<I>\<^sub>\<tau> \<and>
       welltyped_constraint_model \<I>\<^sub>\<tau> (\<A>@[\<langle>\<star>, send\<langle>[s]\<rangle>\<rangle>])"
-  assumes Ps_pc: "wellformed_composable_protocols Ps N" "composable_protocols Ps Ms S"
+  assumes Ps_pc: "wellformed_composable_protocols Ps N"
+                 "wellformed_composable_protocols' Ps"
+                 "composable_protocols Ps Ms S"
                  "list_all ((list_all (Not \<circ> has_LabelS)) \<circ> tl \<circ> transaction_send) (concat Ps)"
     and component_secure:
           "\<forall>\<A> \<in> reachable_constraints (map (transaction_proj l) (concat Ps)). \<nexists>\<I>.
@@ -5572,15 +9750,15 @@ lemma composable_protocols_par_comp_prot:
             constraint_model \<I> (\<A>@[\<langle>l, send\<langle>[attack\<langle>ln l\<rangle>]\<rangle>\<rangle>])"
 proof -
   have P': "list_all wellformed_transaction (concat Ps)"
-    using Ps_pc(1) unfolding wellformed_composable_protocols_def by meson
+    using Ps_pc(2) unfolding wellformed_composable_protocols'_def by meson
 
   have Sec: "\<forall>s \<in> Sec. \<not>{} \<turnstile>\<^sub>c s" "ground Sec" unfolding Sec_def f_def by auto
 
   note 0 = composable_protocols_par_comp_prot_alt[
-            OF Ps_pc(1,2) component_secure, unfolded lbls_def[symmetric] L_def[symmetric]]
+            OF Ps_pc(1-3) component_secure, unfolded lbls_def[symmetric] L_def[symmetric]]
 
   note 1 = reachable_constraints_no_leakage_alt'[
-            OF P' Ps_pc(3) Sec no_leakage[unfolded no_leakage_def]]
+            OF P' Ps_pc(4) Sec no_leakage[unfolded no_leakage_def]]
 
   show ?thesis using 0 1 unfolding f_def Sec_def by argo
 qed
@@ -5596,6 +9774,7 @@ lemma composable_protocols_par_comp_prot':
     and Ps_wellformed:
       "list_all (list_all (Not \<circ> has_LabelS) \<circ> tl \<circ> transaction_send) Pc"
       "wellformed_composable_protocols Ps N"
+      "wellformed_composable_protocols' Ps"
       "composable_protocols Ps Ms S"
     and Ps_no_leakage:
       "list_all (welltyped_leakage_free_protocol S) Ps_with_stars"
@@ -5607,7 +9786,7 @@ lemma composable_protocols_par_comp_prot':
   shows "\<forall>\<A> \<in> reachable_constraints Pc. \<nexists>\<I>.
           constraint_model \<I> (\<A>@[\<langle>n, send\<langle>[attack\<langle>ln n\<rangle>]\<rangle>\<rangle>])"
 by (rule composable_protocols_par_comp_prot[
-          OF Ps_wellformed(2,3,1)[unfolded P_defs(1)]
+          OF Ps_wellformed(2,3,4,1)[unfolded P_defs(1)]
              P_wt_secure[unfolded P_def[unfolded P_defs(1)]]
              transaction_proj_ball_subst[
                OF P_defs(2)[unfolded P_defs(1)]
@@ -5623,7 +9802,7 @@ begin
 lemma welltyped_constraint_model_leakage_model_swap:
   fixes I \<alpha> \<delta>::"('fun,'atom,'sets,'lbl) prot_subst" and s
   assumes A: "welltyped_constraint_model I (A@[\<langle>\<star>, send\<langle>[s \<cdot> \<delta>]\<rangle>\<rangle>])"
-    and \<alpha>: "transaction_renaming_subst \<alpha> P A"
+    and \<alpha>: "transaction_renaming_subst \<alpha> P (vars\<^sub>l\<^sub>s\<^sub>s\<^sub>t A)"
     and \<delta>: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>)" "subst_domain \<delta> = fv s" "ground (subst_range \<delta>)"
   obtains J
     where "welltyped_constraint_model J (A@[\<langle>\<star>, send\<langle>[s \<cdot> \<delta>]\<rangle>\<rangle>])"
@@ -5840,12 +10019,12 @@ proof (rule ccontr)
   qed
 
   have \<xi>: "transaction_decl_subst Var (Tatt t)"
-    and \<sigma>: "transaction_fresh_subst Var (Tatt t) A"
+    and \<sigma>: "transaction_fresh_subst Var (Tatt t) (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t A)"
     for t
     unfolding transaction_decl_subst_def transaction_fresh_subst_def Tatt_def by simp_all
 
   obtain \<alpha>::"('fun,'atom,'sets,'lbl) prot_subst"
-    where \<alpha>: "transaction_renaming_subst \<alpha> P A"
+    where \<alpha>: "transaction_renaming_subst \<alpha> P (vars\<^sub>l\<^sub>s\<^sub>s\<^sub>t A)"
     unfolding transaction_renaming_subst_def by blast
 
   obtain J where J:
@@ -5944,7 +10123,7 @@ proof (rule ccontr)
   obtain B T \<xi> \<sigma> \<alpha> where B:
       "prefix (B@dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>)) A"
       "B \<in> reachable_constraints P" "T \<in> set P" "transaction_decl_subst \<xi> T"
-      "transaction_fresh_subst \<sigma> T B" "transaction_renaming_subst \<alpha> P B"
+      "transaction_fresh_subst \<sigma> T (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t B)" "transaction_renaming_subst \<alpha> P (vars\<^sub>l\<^sub>s\<^sub>s\<^sub>t B)"
       "s \<in> subst_range \<sigma>"
     using constraint_model_Value_in_constr_prefix_fresh_action'[OF A(1) P(2-) s4[unfolded sn]] sn
     by blast
@@ -6026,7 +10205,8 @@ proof -
           "A = g' Ts" "\<forall>B. prefix B Ts \<longrightarrow> g' B \<in> reachable_constraints P"
           "\<forall>B T \<xi> \<sigma> \<alpha>. prefix (B@[(T,\<xi>,\<sigma>,\<alpha>)]) Ts \<longrightarrow>
                 T \<in> set P \<and> transaction_decl_subst \<xi> T \<and>
-                transaction_fresh_subst \<sigma> T (g' B) \<and> transaction_renaming_subst \<alpha> P (g' B)"
+                transaction_fresh_subst \<sigma> T (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (g' B)) \<and>
+                transaction_renaming_subst \<alpha> P (vars\<^sub>l\<^sub>s\<^sub>s\<^sub>t (g' B))"
         using reachable_constraints_as_transaction_lists[OF A(1)] unfolding g'_def f'_def by blast
     
       have "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t A \<cdot>\<^sub>s\<^sub>e\<^sub>t I \<turnstile> s \<cdot> I" and I_s: "s \<cdot> I = s"
@@ -6160,8 +10340,8 @@ proof -
       hence T_in_P: "T \<in> set P"
           and T_wf: "wellformed_transaction T"
           and \<xi>: "transaction_decl_subst \<xi> T"
-          and \<sigma>: "transaction_fresh_subst \<sigma> T (concat (map f' B))"
-          and \<alpha>: "transaction_renaming_subst \<alpha> P (concat (map f' B))"
+          and \<sigma>: "transaction_fresh_subst \<sigma> T (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (concat (map f' B)))"
+          and \<alpha>: "transaction_renaming_subst \<alpha> P (vars\<^sub>l\<^sub>s\<^sub>s\<^sub>t (concat (map f' B)))"
         using P(6) Ts(3)[unfolded g'_def] unfolding comp_def by (metis,metis,metis,metis,metis)
     
       note \<xi>\<sigma>\<alpha>_wt = transaction_decl_fresh_renaming_substs_wt[OF \<xi> \<sigma> \<alpha>]
@@ -6263,7 +10443,8 @@ proof -
 qed
 
 lemma welltyped_leakage_free_occurs_factI:
-  assumes P: "\<forall>T \<in> set P. admissible_transaction T"
+  assumes P: "\<forall>T \<in> set P. admissible_transaction' T"
+    and P_occ: "\<forall>T \<in> set P. admissible_transaction_occurs_checks T"
     and P_occ_star:
       "\<forall>T \<in> set P. \<forall>r \<in> set (transaction_send T).
         OccursFact \<in> \<Union>(funs_term ` (trms\<^sub>s\<^sub>s\<^sub>t\<^sub>p (snd r))) \<longrightarrow> fst r = \<star>"
@@ -6293,15 +10474,16 @@ proof -
     have occ_I: "occurs k \<cdot> I = occurs k" using A(2) unfolding defs by auto
     hence occ_in_ik: "occurs k \<in> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t A" "occurs k \<in> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t A \<cdot>\<^sub>s\<^sub>e\<^sub>t I"
       using welltyped_constraint_model_deduct_split(2)[OF A(3)]
-            reachable_constraints_occurs_fact_deduct_in_ik[OF A(1) A' P, of k]
+            reachable_constraints_occurs_fact_deduct_in_ik[OF A(1) A' P P_occ, of k]
       by (argo, argo)
     then obtain l ts where ts: "(l,receive\<langle>ts\<rangle>) \<in> set A" "occurs k \<in> set ts"
       using in_ik\<^sub>s\<^sub>s\<^sub>t_iff[of "occurs k" "unlabel A"] unfolding unlabel_def by moura
 
     obtain T a B \<alpha> \<sigma> \<xi>
       where B: "prefix (B@f' (T,\<xi>,\<sigma>,\<alpha>)) A"
-        and T: "T \<in> set P" "transaction_decl_subst \<xi> T" "transaction_fresh_subst \<sigma> T B"
-               "transaction_renaming_subst \<alpha> P B"
+        and T: "T \<in> set P" "transaction_decl_subst \<xi> T"
+               "transaction_fresh_subst \<sigma> T (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t B)"
+               "transaction_renaming_subst \<alpha> P (vars\<^sub>l\<^sub>s\<^sub>s\<^sub>t B)"
         and a: "a \<in> set (transaction_strand T)" "fst (l,receive\<langle>ts\<rangle>) = fst a"
                "(l,receive\<langle>ts\<rangle>) = dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p a \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>"
       using reachable_constraints_transaction_action_obtain[OF A(1) ts(1), of thesis]
@@ -6415,7 +10597,8 @@ lemma welltyped_leakage_free_short_term_secretI:
           []
           [\<langle>n, send\<langle>[attack\<langle>ln n\<rangle>]\<rangle>\<rangle>]"
   assumes P:
-      "\<forall>T \<in> set P. admissible_transaction T"
+      "\<forall>T \<in> set P. admissible_transaction' T"
+      "\<forall>T \<in> set P. admissible_transaction_occurs_checks T"
       "\<forall>T \<in> set P. \<forall>x \<in> set (transaction_fresh T). \<Gamma>\<^sub>v x = TAtom Value \<or> (\<exists>a. \<Gamma>\<^sub>v x = \<langle>a\<rangle>\<^sub>\<tau>\<^sub>a)"
     and subterms_sec:
       "\<forall>\<A> \<in> reachable_constraints P. \<nexists>\<I>\<^sub>\<tau>. welltyped_constraint_model \<I>\<^sub>\<tau> (\<A>@[\<langle>\<star>, send\<langle>[\<langle>c\<rangle>\<^sub>c]\<rangle>\<rangle>])"
@@ -6493,8 +10676,8 @@ proof -
     hence "fk \<in> \<Union>(funs_term ` trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t A) \<or> (\<exists>x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t A. k \<sqsubseteq> I x)"
       using ik\<^sub>s\<^sub>s\<^sub>t_trms\<^sub>s\<^sub>s\<^sub>t_subset by blast
     moreover have "\<Gamma>\<^sub>v x = TAtom Value" when x: "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t A" for x
-      using x reachable_constraints_var_types_in_transactions(1)[OF A(1) P(2)]
-            P(1) admissible_transaction_Value_vars
+      using x reachable_constraints_var_types_in_transactions(1)[OF A(1) P(3)]
+            P(1,2) admissible_transaction_Value_vars
       by force
     ultimately have "fk \<in> \<Union>(funs_term ` trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t A) \<or> (\<exists>x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t A. \<Gamma>\<^sub>v x = TAtom Value \<and> k \<sqsubseteq> I x)"
       by blast
@@ -6503,12 +10686,12 @@ proof -
       unfolding fk wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t_def by (metis \<Gamma>.simps(1) term.distinct(1))
     then obtain kn where kn: "fk = Val kn"
       using reachable_constraints_val_funs_private[OF A(1) P(1), of fk]
-            constraint_model_Value_term_is_Val[OF A(1) A' P(1)]
+            constraint_model_Value_term_is_Val[OF A(1) A' P(1,2)]
             Fun_Value_type_inv[OF k(1)[unfolded fk]]
       unfolding fk is_PubConstValue_def by (cases fk) force+
 
     obtain \<alpha>::"('fun,'atom,'sets,'lbl) prot_subst"
-      where \<alpha>: "transaction_renaming_subst \<alpha> P A"
+      where \<alpha>: "transaction_renaming_subst \<alpha> P (vars\<^sub>l\<^sub>s\<^sub>s\<^sub>t A)"
       unfolding transaction_renaming_subst_def by blast
 
     obtain y' yn' where y':
@@ -6533,7 +10716,7 @@ proof -
       obtain T b B \<alpha> \<sigma> \<xi> where T:
           "prefix (B@dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>)) A"
           "T \<in> set P" "transaction_decl_subst \<xi> T"
-          "transaction_fresh_subst \<sigma> T B" "transaction_renaming_subst \<alpha> P B"
+          "transaction_fresh_subst \<sigma> T (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t B)" "transaction_renaming_subst \<alpha> P (vars\<^sub>l\<^sub>s\<^sub>s\<^sub>t B)"
           "b \<in> set (transaction_strand T)" "(l, insert\<langle>t,t'\<rangle>) = dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p b \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>"
           "fst (l, insert\<langle>t,t'\<rangle>) = fst b"
         using reachable_constraints_transaction_action_obtain[OF A(1) t(1)] by metis
@@ -6633,8 +10816,8 @@ proof -
 
     have 4: "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t A \<cdot>\<^sub>s\<^sub>e\<^sub>t J \<turnstile> occurs (Var y') \<cdot> J"
       using reachable_constraints_occurs_fact_ik_case'[
-                OF A(1) P(1) constraint_model_Val_const_in_constr_prefix'[
-                              OF A(1) A' P(1) k_in_ik[unfolded fk kn]]]
+                OF A(1) P(1,2) constraint_model_Val_const_in_constr_prefix'[
+                                OF A(1) A' P(1) k_in_ik[unfolded fk kn]]]
             intruder_deduct.Axiom[of "occurs k" "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t A \<cdot>\<^sub>s\<^sub>e\<^sub>t J"]
       unfolding J_def fk kn by fastforce
 
@@ -6726,7 +10909,7 @@ proof -
       using fk welltyped_constraint_model_deduct_split(2)[OF A(3)] by auto
 
     obtain \<alpha>::"('fun,'atom,'sets,'lbl) prot_subst"
-      where \<alpha>: "transaction_renaming_subst \<alpha> P A"
+      where \<alpha>: "transaction_renaming_subst \<alpha> P (vars\<^sub>l\<^sub>s\<^sub>s\<^sub>t A)"
       unfolding transaction_renaming_subst_def by blast
 
     obtain y' yn' where y': "\<alpha> (TAtom \<tau>,y) = Var y'" "y \<noteq> yn'" "y' = (TAtom \<tau>,yn')"
@@ -6750,7 +10933,7 @@ proof -
       obtain T b B \<alpha> \<sigma> \<xi> where T:
           "prefix (B@dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>)) A"
           "T \<in> set P" "transaction_decl_subst \<xi> T"
-          "transaction_fresh_subst \<sigma> T B" "transaction_renaming_subst \<alpha> P B"
+          "transaction_fresh_subst \<sigma> T (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t B)" "transaction_renaming_subst \<alpha> P (vars\<^sub>l\<^sub>s\<^sub>s\<^sub>t B)"
           "b \<in> set (transaction_strand T)" "(l, insert\<langle>t,t'\<rangle>) = dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p b \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>"
           "fst (l, insert\<langle>t,t'\<rangle>) = fst b"
         using reachable_constraints_transaction_action_obtain[OF A(1) t(1)] by metis
@@ -6912,8 +11095,9 @@ definition welltyped_leakage_free_invkey_conditions where
                     []
                     [\<langle>n, send\<langle>[attack\<langle>ln n\<rangle>]\<rangle>\<rangle>]
     in welltyped_leakage_free_invkey_conditions' invfun privfunsec declassifiedset S n P \<and>
+       has_initial_value_producing_transaction P \<and>
        (if Tatt [\<langle>\<star>, receive\<langle>[occurs \<langle>0: value\<rangle>\<^sub>v]\<rangle>\<rangle>] \<in> set P
-        then \<forall>T\<in>set P. admissible_transaction T
+        then \<forall>T\<in>set P. admissible_transaction' T \<and> admissible_transaction_occurs_checks T
         else Tatt [] \<in> set P \<and>
              (\<forall>T\<in>set P. wellformed_transaction T) \<and>
              (\<forall>T\<in>set P. admissible_transaction_terms T) \<and>
@@ -6954,8 +11138,9 @@ proof -
   obtain at where 0: "\<not>public\<^sub>f privsec" "arity\<^sub>f privsec = 0" "\<Gamma>\<^sub>f privsec = Some at"
     using a unfolding defs' by fast
 
-  have *: "\<forall>T\<in>set P. admissible_transaction T" when "Tatt1 \<in> set P"
-    using a that unfolding defs Tatts by meson
+  have *: "\<forall>T\<in>set P. admissible_transaction' T" "\<forall>T\<in>set P. admissible_transaction_occurs_checks T"
+    when "Tatt1 \<in> set P"
+    using a that unfolding defs Tatts by (meson,meson)
 
   have **: "Tatt1 \<in> set P \<or> Tatt2 \<in> set P" using a unfolding defs Tatts by argo
 
@@ -7019,14 +11204,8 @@ proof -
     subgoal using * *** admissible_transactionE(3) by fast
     subgoal using * *** admissible_transactionE(2,3) by (cases "Tatt1 \<in> set P") (force, fastforce)
     subgoal using * *** admissible_transactionE(2,3) by (cases "Tatt1 \<in> set P") (force, fastforce)
-    subgoal
-      using a * admissible_transaction_is_wellformed_transaction(5)
-            admissible_transaction_occurs_checksE6
-      unfolding defs by metis
-    subgoal
-      using a * admissible_transaction_is_wellformed_transaction(5)
-            admissible_transaction_occurs_checksE5
-      unfolding defs by metis
+    subgoal using a * admissible_transaction_occurs_checksE6 unfolding defs by metis
+    subgoal using a * admissible_transaction_occurs_checksE5 unfolding defs by metis
     subgoal
       using a * admissible_transaction_no_bvars(2)
       unfolding defs Tatts[symmetric] by fastforce
@@ -7175,6 +11354,7 @@ locale composable_stateful_protocols =
     and Pc_wellformed_composable:
           "list_all (list_all (Not \<circ> has_LabelS) \<circ> tl \<circ> transaction_send) Pc"
           "pm.wellformed_composable_protocols Ps Pc_SMP"
+          "pm.wellformed_composable_protocols' Ps"
           "pm.composable_protocols Ps Ps_GSMPs Sec_symbolic"
 begin
 
