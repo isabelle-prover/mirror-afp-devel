@@ -447,8 +447,8 @@ qed
 
 text \<open>A classic algorithm for computing \<open>x\<^sup>n\<close> works by repeated squaring,
 using the following recurrence:
-  \<^item> \<open>x\<^sup>n = x * x\<^bsup>(n-1)/2\<^esup>\<close> if \<open>n\<close> is odd
-  \<^item> \<open>x\<^sup>n = x\<^bsup>n/2\<^esup>\<close> if \<open>n\<close> is even
+  \<^item> \<open>x\<^sup>n = x * x\<^bsup>(n-1)/2\<^esup>\<^sup>2\<close> if \<open>n\<close> is odd
+  \<^item> \<open>x\<^sup>n = x\<^bsup>n/2\<^esup>\<^sup>2\<close> if \<open>n\<close> is even
 
 \<close>
 program_spec ex_by_sq
@@ -585,10 +585,6 @@ Data Refinement
     Then implement algorithm. Show that it implements the model.
     By transitivity, get: Algorithm is correct!
 
-  
-    
-  Sometimes, abstraction to list may be useful    
-    
 *)
 
 
