@@ -10,7 +10,7 @@ translation from a complete semantic tableau calculus, the proof of
 which is based on the First-Order Logic According to Fitting theory.
 The calculi and proof techniques are taken from Ben-Ari's
 Mathematical Logic for Computer Science.
-Paper: <a href=\"http://ceur-ws.org/Vol-3002/paper7.pdf\">ceur-ws.org/Vol-3002/paper7.pdf</a>."""
+Papers: <a href=\"http://ceur-ws.org/Vol-3002/paper7.pdf\">ceur-ws.org/Vol-3002/paper7.pdf</a> and <a href=\"https://doi.org/10.1093/logcom/exad013\">doi.org/10.1093/logcom/exad013</a>."""
 license = "bsd"
 note = ""
 
