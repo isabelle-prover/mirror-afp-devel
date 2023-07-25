@@ -2822,7 +2822,7 @@ fun process_mk_VLambda_thm mk_VLambda_thm (b, thm) ctxt =
     val thm' = mk_VLambda_thm ctxt thm
     val ((c, thms'), ctxt') = ctxt
       |> Local_Theory.note (b ||> map (Attrib.check_src ctxt), single thm') 
-    val _ = IDE_Utilities.thm_printer ctxt' true c thms'
+    val _ = IDE_Utilities.print_theorem ctxt' c thms'
   in ctxt' end;
 
 fun folder_mk_VLambda (("|vsv", b), thm) ctxt =

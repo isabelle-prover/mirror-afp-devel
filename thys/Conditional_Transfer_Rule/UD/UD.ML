@@ -123,7 +123,7 @@ fun trivial_ud thy b cid' =
       in
         with_thm
         |> single
-        |> CTR_Utilities.thm_printer (Proof_Context.init_global thy') true c
+        |> CTR_Utilities.print_theorem (Proof_Context.init_global thy') c
       end
   in (trivial with_thm, thy') end;
 
@@ -220,7 +220,7 @@ fun nontrivial_ud thy defs (b, mixfix) cid T =
       in
         with_def_thm
         |> single
-        |> CTR_Utilities.thm_printer (Proof_Context.init_global thy'') true c
+        |> CTR_Utilities.print_theorem (Proof_Context.init_global thy'') c
       end
 
     val (with_thm, thy''') =
@@ -237,7 +237,7 @@ fun nontrivial_ud thy defs (b, mixfix) cid T =
       in 
         with_thm
         |> single
-        |> CTR_Utilities.thm_printer (Proof_Context.init_global thy''') true c
+        |> CTR_Utilities.print_theorem (Proof_Context.init_global thy''') c
       end
 
   in (nontrivial (with_def_thm, with_thm), thy''') end;

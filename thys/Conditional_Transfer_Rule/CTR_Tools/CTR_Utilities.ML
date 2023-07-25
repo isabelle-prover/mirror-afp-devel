@@ -7,19 +7,19 @@ A collection of Isabelle/ML utilities for the CTR.
 
 signature CTR_UTILITIES =
 sig
-val thm_printer : Proof.context -> bool -> string -> thm list -> unit
-val qualified_name_of_const_name : string -> string
+  val print_theorem: Proof.context -> string -> thm list -> unit
+  val qualified_name_of_const_name: string -> string
 end;
 
 structure CTR_Utilities : CTR_UTILITIES =
 struct
 
-fun thm_printer ctxt print name thms =
+fun print_theorem ctxt name thms =
   Proof_Display.print_results
-    print
+    true
     (Position.thread_data ())
     ctxt
-    ((Thm.theoremK, ""), single (name, thms));
+    ((Thm.theoremK, ""), [(name, thms)]);
 
 fun qualified_name_of_const_name c =
   if Long_Name.count c = 0

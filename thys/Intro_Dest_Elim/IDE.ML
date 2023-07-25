@@ -125,7 +125,7 @@ fun process_mk_rule mk_rule ((rf, b), thm) ctxt =
         )
     val ((c, thms'), ctxt') = 
       Local_Theory.note (b ||> map (Attrib.check_src ctxt), thms) ctxt
-    val _ = IDE_Utilities.thm_printer ctxt' true c thms'
+    val _ = IDE_Utilities.print_theorem ctxt' c thms'
   in ctxt' end;
 
 fun folder_mk_rule (("|intro", b), (rf, thm)) ctxt =

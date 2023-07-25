@@ -42,7 +42,7 @@ fun register_output ctxt ab out_thms =
           |> Attrib.partial_evaluation ctxt
       in ctxt |> Local_Theory.notes facts' |>> the_single end
 
-    val _ = CTR_Utilities.thm_printer lthy true thmc out_thms
+    val _ = CTR_Utilities.print_theorem lthy thmc out_thms
 
   in (lthy, "") end
 

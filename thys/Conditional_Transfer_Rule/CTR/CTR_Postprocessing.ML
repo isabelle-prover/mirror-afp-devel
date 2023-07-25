@@ -44,7 +44,7 @@ fun postprocess_transfer_rule b thm ctxt =
       in
         thm 
         |> single
-        |> (Local_Theory.full_name lthy_print b |> thm_printer lthy_print true)
+        |> (Local_Theory.full_name lthy_print b |> print_theorem lthy_print)
       end
   in lthy end;
 
@@ -90,7 +90,7 @@ fun postprocess_relativization b mf thm ctxt =
     val (ow_def_thm, lthy') = Local_Theory.raw_theory_result make_with_def lthy
     val _ = ow_def_thm 
       |> single
-      |> (ow_def_thm |> Thm.derivation_name |> thm_printer lthy' true)
+      |> (ow_def_thm |> Thm.derivation_name |> print_theorem lthy')
     val thm' = thm 
       |> singleton (Proof_Context.export ctxt lthy')
       |> Thm.pure_unfold lthy' (ow_def_thm |> Thm.symmetric |> single)

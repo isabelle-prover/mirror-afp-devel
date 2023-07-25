@@ -2,20 +2,17 @@
 
 signature IDE_UTILITIES =
 sig
-
-val thm_printer : Proof.context -> bool -> string -> thm list -> unit
-
+  val print_theorem: Proof.context -> string -> thm list -> unit
 end;
 
 structure IDE_Utilities : IDE_UTILITIES =
 struct
 
-(* standard theorem printer *)
-fun thm_printer ctxt print name thms = 
+fun print_theorem ctxt name thms = 
   Proof_Display.print_results 
-    print 
+    true
     (Position.thread_data ()) 
     ctxt 
-    ((Thm.theoremK, ""), single (name, thms));
+    ((Thm.theoremK, ""), [(name, thms)]);
 
 end;
