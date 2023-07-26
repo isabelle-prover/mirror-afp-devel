@@ -36,7 +36,7 @@ theory Relativization
 
 begin
 
-ML_file\<open>Relativization_Database.ml\<close>
+ML_file\<open>Relativization_Database.ML\<close>
 
 ML\<open>
 structure Absoluteness = Named_Thms
@@ -116,7 +116,7 @@ lemmas datatype_abs =
 
 declare relative_abs[absolut]
 
-ML_file\<open>Relativization.ml\<close>
+ML_file\<open>Relativization.ML\<close>
 
 setup\<open>Relativization.init_db Relativization.db \<close>
 
