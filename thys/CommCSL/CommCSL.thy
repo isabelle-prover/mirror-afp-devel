@@ -722,7 +722,7 @@ definition unambiguous where
 definition all_axioms :: "('v \<Rightarrow> 'w) \<Rightarrow> ('v \<Rightarrow> 'a \<Rightarrow> 'v) \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('i \<Rightarrow> 'v \<Rightarrow> 'b \<Rightarrow> 'v) \<Rightarrow> ('i \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool" where
   "all_axioms \<alpha> sact spre uact upre \<longleftrightarrow>
 
-\<comment>\<open>Every action’s relational precondition is sufficient to preserve the low-ness of the abstract view of the resource value:\<close>
+\<comment>\<open>Every action's relational precondition is sufficient to preserve the low-ness of the abstract view of the resource value:\<close>
   (\<forall>v v' sarg sarg'. \<alpha> v = \<alpha> v' \<and> spre sarg sarg' \<longrightarrow> \<alpha> (sact v sarg) = \<alpha> (sact v' sarg')) \<and>
   (\<forall>v v' uarg uarg' i. \<alpha> v = \<alpha> v' \<and> upre i uarg uarg' \<longrightarrow> \<alpha> (uact i v uarg) = \<alpha> (uact i v' uarg')) \<and>
 

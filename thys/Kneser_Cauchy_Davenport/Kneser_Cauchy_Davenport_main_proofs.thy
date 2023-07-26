@@ -1,4 +1,4 @@
-section\<open>Kneser's Theorem and the Cauchy–Davenport Theorem: main proofs\<close>
+section\<open>Kneser's Theorem and the Cauchy--Davenport Theorem: main proofs\<close>
 
 (*
   Session: Kneser_Cauchy_Davenport
@@ -808,9 +808,9 @@ theorem Kneser_strict:  fixes A and B assumes "A \<subseteq> G" and "B\<subseteq
     card (sumset B (stabilizer (sumset A B))) - card (stabilizer (sumset A B))"
   using Kneser Kneser_strict_aux assms le_antisym nat_less_le by metis
 
-subsection\<open>The Cauchy–Davenport Theorem\<close>
+subsection\<open>The Cauchy--Davenport Theorem\<close>
 
-text\<open>We show the Cauchy–Davenport Theorem as a corollary of Kneser's Theorem, following a comment on
+text\<open>We show the Cauchy--Davenport Theorem as a corollary of Kneser's Theorem, following a comment on
  Theorem 3.2 in \cite{Ruzsa_book}.\<close>
 
 

@@ -1,8 +1,8 @@
 section \<open>Young's Inequality for Increasing Functions\<close>
 
 text \<open>From the following paper: 
-Cunningham, F., and Nathaniel Grossman. “On Young’s Inequality.” 
-The American Mathematical Monthly 78, no. 7 (1971): 781–83. 
+Cunningham, F., and Nathaniel Grossman. ``On Young's Inequality.'' 
+The American Mathematical Monthly 78, no. 7 (1971): 781--83. 
 \url{https://doi.org/10.2307/2318018}\<close>
 
 theory Youngs imports

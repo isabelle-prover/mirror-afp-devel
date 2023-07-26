@@ -787,8 +787,8 @@ section \<open>Section 7: Encryption Schemes\<close>
 
 text \<open>"For the purposes of this document, an encryption scheme consists of an encryption operation
 and a decryption operation, where the encryption operation produces a ciphertext from a message 
-with a recipient’s RSA public key, and the decryption operation recovers the message from the 
-ciphertext with the recipient’s corresponding RSA private key.
+with a recipient's RSA public key, and the decryption operation recovers the message from the 
+ciphertext with the recipient's corresponding RSA private key.
 
 An encryption scheme can be employed in a variety of applications.  A typical application is a key
 establishment protocol, where the message contains key material to be delivered confidentially from
@@ -850,7 +850,7 @@ text\<open>
 RSAES-OAEP-ENCRYPT ((n, e), M, L) 
 "Options: Hash   hash function (hLen denotes the length in octets of the hash function output)
           MGF    mask generation function 
- Input:  (n, e)  recipient’s RSA public key (k denotes the length in octets of the RSA modulus n)
+ Input:  (n, e)  recipient's RSA public key (k denotes the length in octets of the RSA modulus n)
           M      message to be encrypted, an octet string of length mLen,  
                  where  mLen\<le>k – 2hLen – 2
           L      optional label to be associated with the message; the default value for L, if L is
@@ -1016,7 +1016,7 @@ subsubsection \<open>Section 7.1.2: Decryption Operation\<close>
 text\<open> "RSAES-OAEP-DECRYPT (K, C, L)
  Options: Hash  hash function (hLen denotes the length in octets of the hash function output)
           MGF   mask generation function
- Input:   K     recipient’s RSA private key (k denotes the length in octets of the RSA modulus n)
+ Input:   K     recipient's RSA private key (k denotes the length in octets of the RSA modulus n)
           C     ciphertext to be decrypted, an octet string of length k, where  k\<ge> 2hLen + 2
           L     optional label whose association with the message is to be verified;
                 the default value for L, if L is not provided, is the empty string
@@ -1044,11 +1044,11 @@ definition PKCS1_OAEP_decode_dbMask :: "octets \<Rightarrow> octets" where
 definition PKCS1_OAEP_decode_DB :: "octets \<Rightarrow> octets \<Rightarrow> octets" where 
   "PKCS1_OAEP_decode_DB maskedDB dbMask = xor_octets maskedDB dbMask"
 
-text \<open>"Separate DB into an octet string lHash’ of length hLen, a (possibly empty) padding string
+text \<open>"Separate DB into an octet string lHash' of length hLen, a (possibly empty) padding string
 PS consisting of octets with hexadecimal value 0x00, and a message M as 
-      DB = lHash’ || PS || 0x01 || M .
+      DB = lHash' || PS || 0x01 || M .
 If there is no octet with hexadecimal value 0x01 to separate PS from M, if lHash does not equal
-lHash’, or if Y is nonzero, output “decryption error” and stop."\<close>
+lHash', or if Y is nonzero, output ``decryption error'' and stop."\<close>
 
 definition PKCS1_OAEP_decode_lHash :: "octets \<Rightarrow> octets" where
   "PKCS1_OAEP_decode_lHash DB = take hLen DB"

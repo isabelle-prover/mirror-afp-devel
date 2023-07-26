@@ -68,7 +68,7 @@ lemma infinitely_often_lifting:
 subsection \<open>Locales\<close>
 
 text \<open>The passive set of a given clause prover can be organized in different
-ways—e.g., as a priority queue or as a list of queues. This locale abstracts
+ways---e.g., as a priority queue or as a list of queues. This locale abstracts
 over the specific data structure.\<close>
 
 locale prover_queue =

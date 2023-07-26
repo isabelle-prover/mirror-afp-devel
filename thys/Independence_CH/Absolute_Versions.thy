@@ -141,7 +141,7 @@ proof -
     by (simp only:V_simps)
 qed
 
-text\<open>The “relationalized” $\CH$ with respect to \<^term>\<open>\<V>\<close> corresponds
+text\<open>The ``relationalized'' $\CH$ with respect to \<^term>\<open>\<V>\<close> corresponds
     to the real $\CH$.\<close>
 lemma is_ContHyp_iff_CH: "is_ContHyp(\<V>) \<longleftrightarrow> ContHyp"
   using V.is_ContHyp_iff

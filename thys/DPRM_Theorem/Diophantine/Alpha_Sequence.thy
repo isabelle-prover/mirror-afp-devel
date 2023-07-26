@@ -19,7 +19,7 @@ proof -
   define B' X' N' where pushed_defs: "B' ==  (push_param B 8)" "X' ==  (push_param X 8)"
                                       "N' ==  (push_param N 8)"
 
-  (* eqns. (3.41) – (3.55) from YuMat lecture notes (p. 36) where "a" = X and "c" = N here *)
+  (* eqns. (3.41) -- (3.55) from YuMat lecture notes (p. 36) where "a" = X and "c" = N here *)
   (* don't confuse capital X with x == (param 6) here, this is unhappy notation *)
   define DR1 where "DR1 \<equiv> B' [>] (Const 3) [\<and>] (Const 1 [+] B' [*] u [*] t [=] u[^2] [+] t[^2])"
   define DR2 where "DR2 \<equiv> (Const 1 [+] B' [*] s [*] r [=] s[^2] [+] r[^2]) [\<and>] r [<] s" 
