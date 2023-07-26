@@ -156,11 +156,8 @@ by (metis P\<^sub>a_set atLeastLessThan_iff match_def nth_mem subset_eq)
 lemma match_upd_neq: "\<lbrakk> wf A; a < n; a \<noteq> a' \<rbrakk> \<Longrightarrow> match (A[a := b]) a' = match A a'"
 by (simp add: match_def)
 
-definition unstab :: "nat list \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool" where
-"unstab A a a' = (P\<^sub>a ! a \<turnstile> match A a' < match A a \<and> P\<^sub>b ! match A a' \<turnstile> a < a')"
-
 definition stable :: "nat list \<Rightarrow> nat set \<Rightarrow> bool" where
-"stable A M = (\<not>(\<exists>a\<in>M. \<exists>a'\<in>M. a \<noteq> a' \<and> unstab A a a'))"
+"stable A M = (\<not>(\<exists>a\<in>M. \<exists>a'\<in>M. P\<^sub>a ! a \<turnstile> match A a' < match A a \<and> P\<^sub>b ! match A a' \<turnstile> a < a'))"
 
 text \<open>The set of Bs that an A would prefer to its current match,
 i.e. all Bs above its current match \<open>A!a\<close>.\<close>
@@ -327,7 +324,7 @@ unfolding pessi\<^sub>b_def
 proof (safe, goal_cases)
   case (1 A' a a')
   have "\<not> P\<^sub>a!a \<turnstile>  match A a <  match A' a" using 1
-    by (metis atLeast0LessThan unstab_def lessThan_iff prefers_asym stable_def)
+    by (metis atLeast0LessThan lessThan_iff stable_def)
   with 1 \<open>opti\<^sub>a A\<close> show ?case using P\<^sub>a_set match_less_n opti\<^sub>a_def prefers_def unfolding matching_def
     by (metis (no_types) atLeast0LessThan inj_on_contraD lessThan_iff less_not_refl linorder_neqE_nat nth_index)
 qed
@@ -356,8 +353,7 @@ proof (unfold opti\<^sub>a_def matching_def, rule notI, elim exE conjE)
     next
       assume "match A' a = match A a"
       have "a \<noteq> a'" using pref a' by(auto simp: prefers_def)
-      hence "unstab A' a' a" using opti\<^sub>a pref A' same_match \<open>match A' a = match A a\<close> a a'
-        unfolding unstab_def
+      hence "P\<^sub>a ! a' \<turnstile> match A' a < match A' a' \<and> P\<^sub>b ! match A' a \<turnstile> a' < a" using opti\<^sub>a pref A' same_match \<open>match A' a = match A a\<close> a a'
         by (metis P\<^sub>a_set atLeast0LessThan match_less_n inj_onD lessThan_iff linorder_neqE_nat nth_index prefers_def)
       thus False using a a' \<open>a \<noteq> a'\<close> A'(3) by (metis stable_def atLeastLessThan_iff zero_le)
     qed
@@ -368,7 +364,7 @@ qed
 
 lemma pref_match_stable:
   "\<lbrakk> matching A {<n}; pref_match A {<n} \<rbrakk> \<Longrightarrow> stable A {<n}"
-unfolding pref_match_def stable_def unstab_def matching_def
+unfolding pref_match_def stable_def matching_def
 by (metis atLeast0LessThan match_less_n inj_onD lessThan_iff prefers_asym)
 
 
