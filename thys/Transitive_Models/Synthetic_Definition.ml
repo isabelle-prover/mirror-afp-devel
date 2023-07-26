@@ -32,8 +32,8 @@ fun manual_arity intermediate def_name pos lthy =
   let
     val (goal, thm_name, attribs, _, _) = arity_goal intermediate def_name lthy
   in
-    Proof.theorem NONE (fn thmss => Utils.display "theorem" pos
-                                    o Local_Theory.note ((Binding.name thm_name, attribs), hd thmss))
+    Proof.theorem NONE (fn [thms] => Utils.print_theorem pos
+                                    o Local_Theory.note ((Binding.name thm_name, attribs), thms))
     [[(goal, [])]] lthy
   end
 
@@ -56,7 +56,7 @@ fun auto_arity intermediate def_name pos lthy =
               handle ERROR s => help ^ "\n\n" ^ s |> Exn.reraise o ERROR
     val thm = Utils.fix_vars thm (map Utils.freeName vs) lthy
   in
-    Local_Theory.note ((Binding.name thm_name, attribs), [thm]) lthy |> Utils.display "theorem" pos
+    Local_Theory.note ((Binding.name thm_name, attribs), [thm]) lthy |> Utils.print_theorem pos
   end
 
 fun prove_tc_form goal thms ctxt =
@@ -106,7 +106,7 @@ fun synth_thm_sats_gen name lhs hyps pos attribs aux_funs environment lthy =
     val thm = (#prover aux_funs) g_iff ctxt'
     val thm = Utils.fix_vars thm (map Utils.freeName ((#vars environment) @ new_vs)) lthy
   in
-    Local_Theory.note ((name, attribs), [thm]) lthy |> Utils.display "theorem" pos
+    Local_Theory.note ((name, attribs), [thm]) lthy |> Utils.print_theorem pos
   end
 
 fun synth_thm_sats_iff def_name lhs hyps pos environment =
@@ -155,7 +155,7 @@ fun synth_thm_tc def_name term hyps vars pos lthy =
     val name = Binding.name (def_name ^ "_fm_type")
     val thm = Utils.fix_vars thm (map Utils.freeName vars') ctxt2
   in
-    Local_Theory.note ((name, tc_attrib), [thm]) lthy |> Utils.display "theorem" pos
+    Local_Theory.note ((name, tc_attrib), [thm]) lthy |> Utils.print_theorem pos
   end
 
 fun synthetic_def def_name thm_ref pos tc auto thy =
@@ -179,7 +179,7 @@ fun synthetic_def def_name thm_ref pos tc auto thy =
   in
     Local_Theory.define ((Binding.name (def_name ^ "_fm"), NoSyn),
                         ((Binding.name (def_name ^ "_fm_def"), def_attrs), at)) thy
-    |>> (#2 #> I *** single) |> Utils.display "theorem" pos |>
+    |>> (#2 #> I *** single) |> Utils.print_theorem pos |>
     (if tc then synth_thm_tc def_name (def_name ^ "_fm_def") hyps' vs pos else I) |>
     (if auto then
       pre_synth_thm_sats (def_name ^ "_fm_def") set env vars vs
@@ -255,7 +255,7 @@ fun schematic_def def_name target assuming pos lthy =
               handle ERROR s => help ^ "\n\n" ^ s |> Exn.reraise o ERROR
     val thm = Utils.fix_vars thm (map Utils.freeName (set :: env :: vs)) lthy
   in
-    Local_Theory.note ((Binding.name def_name, []), [thm]) lthy |> Utils.display "theorem" pos
+    Local_Theory.note ((Binding.name def_name, []), [thm]) lthy |> Utils.print_theorem pos
   end
 
 fun schematic_synthetic_def def_name target assuming pos tc auto =
@@ -266,8 +266,8 @@ fun manual_schematic def_name target assuming pos lthy =
   let
     val (schematic, _, _, _, _, _) = pre_schematic_def target assuming lthy
   in
-    Proof.theorem NONE (fn thmss => Utils.display "theorem" pos
-                                    o Local_Theory.note ((Binding.name def_name, []), hd thmss))
+    Proof.theorem NONE (fn [thms] => Utils.print_theorem pos
+                                    o Local_Theory.note ((Binding.name def_name, []), thms))
     [[(schematic, [])]] lthy
   end
 

@@ -534,7 +534,7 @@ fun relativize_def is_external is_functional relationalising def_name thm_ref po
     lthy
     |> Local_Theory.define ((Binding.name def_name, NoSyn), ((Binding.name (def_name ^ "_def"), []), at))
     |>> (#2 #> (fn (s,t) => (s,[t])))
-    |> Utils.display "theorem" pos
+    |> Utils.print_theorem pos
     |> Local_Theory.target (add_to_theory o add_to_context)
   end
 
@@ -555,7 +555,7 @@ fun relativize_tm is_functional def_name term pos lthy =
     lthy
     |> Local_Theory.define ((Binding.name def_name, NoSyn), ((Binding.name (def_name ^ "_def"), []), at))
     |>> (#2 #> (fn (s,t) => (s,[t])))
-    |> Utils.display "theorem" pos
+    |> Utils.print_theorem pos
   end
 
 val op $` = curry ((op $) o swap)
@@ -582,8 +582,8 @@ fun rel_closed_goal target pos lthy =
     val goal = Logic.list_implies (hyps, Utils.tp concl)
     val attribs = @{attributes [intro, simp]}
   in
-    Proof.theorem NONE (fn thmss => Utils.display "theorem" pos
-                                    o Local_Theory.note ((Binding.name (target ^ "_rel_closed"), attribs), hd thmss))
+    Proof.theorem NONE (fn [thms] => Utils.print_theorem pos
+                                    o Local_Theory.note ((Binding.name (target ^ "_rel_closed"), attribs), thms))
     [[(goal, [])]] lthy
   end
 
@@ -612,8 +612,8 @@ fun iff_goal target pos lthy =
               $ (if ty = @{typ "i"} then (@{const IFOL.eq(i)} $ the res $ def) else def)
     val goal = Logic.list_implies (hyps, Utils.tp concl)
   in
-    Proof.theorem NONE (fn thmss => Utils.display "theorem" pos
-                                    o Local_Theory.note ((Binding.name ("is_" ^ target ^ "_iff"), []), hd thmss))
+    Proof.theorem NONE (fn [thms] => Utils.print_theorem pos
+                                    o Local_Theory.note ((Binding.name ("is_" ^ target ^ "_iff"), []), thms))
     [[(goal, [])]] lthy
   end
 
@@ -637,8 +637,8 @@ fun univalent_goal target pos lthy =
     val concl = @{const "Relative.univalent"} $ class $ v $ def
     val goal = Logic.list_implies (hyps, Utils.tp concl)
   in
-    Proof.theorem NONE (fn thmss => Utils.display "theorem" pos
-                                    o Local_Theory.note ((Binding.name ("univalent_is_" ^ target), []), hd thmss))
+    Proof.theorem NONE (fn [thms] => Utils.print_theorem pos
+                                    o Local_Theory.note ((Binding.name ("univalent_is_" ^ target), []), thms))
     [[(goal, [])]] lthy
   end
 
