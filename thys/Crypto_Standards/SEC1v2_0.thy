@@ -194,7 +194,7 @@ those primitives below.\<close>
 subsubsection \<open>2.3.1 Bit-String-to-Octet-String Conversion\<close>
 
 text\<open>"Bit strings should be converted to octet strings as described in this section. Informally 
-the idea is to pad the bit string with 0’s on the left to make its length a multiple of 8, then 
+the idea is to pad the bit string with 0's on the left to make its length a multiple of 8, then 
 chop the result up into octets."
 
 This conversion in Words.thy is named bits_to_octets_len.  Note that there is another routine
@@ -3113,15 +3113,15 @@ Here, public-key encryption schemes are described in terms of an encryption oper
 operation, and associated setup and key deployment procedures. Entities U and V should use the
 scheme as follows when they want to communicate. First U and V should use the setup procedure
 to establish which options to use the scheme with, then V should use the key deployment procedure
-to select a key pair and U should obtain V’s public key - U will use V’s public key to control
+to select a key pair and U should obtain V's public key - U will use V's public key to control
 the encryption procedure, and V will use its key pair to control the decryption operation. Then
 each time U wants to send a message M to V, U should apply the encryption operation to M under
-V’s public key to compute an encryption or ciphertext C of M , and convey C to V . Finally when
+V's public key to compute an encryption or ciphertext C of M , and convey C to V . Finally when
 V receives C, entity V should apply the decryption operation to C under its key pair to recover
 the message M.
 
 Loosely speaking, public-key encryption schemes are designed so that it is hard for an adversary
-who does not possess V ’s secret key to recover messages from their ciphertexts. Thereby, 
+who does not possess V 's secret key to recover messages from their ciphertexts. Thereby, 
 public-key encryption schemes provide data confidentiality."\<close>
 
 subsection \<open>5.1 Elliptic Curve Integrated Encryption Scheme\<close>
@@ -3295,8 +3295,8 @@ end (* of ECIES locale *)
 
 section \<open>6 Key Agreement Schemes\<close>
 
-text \<open>"Key agreement schemes are designed to be used by two entities — an entity U and an entity
-V — when U and V want to establish shared keying data that they can later use to control the
+text \<open>"Key agreement schemes are designed to be used by two entities --- an entity U and an entity
+V --- when U and V want to establish shared keying data that they can later use to control the
 operation of a symmetric cryptographic scheme. ... Note that this document does not address how
 specific keys should be derived from keying data established using a key agreement scheme. This
 detail is left to be determined on an application by application basis." \<close>

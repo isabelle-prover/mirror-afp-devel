@@ -13,10 +13,8 @@ infix $`
 
 fun pair f g x = (f x, g x)
 
-fun display kind pos (thms,thy) =
-  let val _ = Proof_Display.print_results true pos thy ((kind,""),[thms])
-  in thy
-end
+fun print_theorem pos (thms, lthy) =
+  (Proof_Display.print_theorem pos lthy thms; lthy)
 
 fun prove_tc_form goal thms ctxt =
   Goal.prove ctxt [] [] goal
@@ -50,7 +48,7 @@ let val (_,tm,ctxt1) = Utils.thm_concl_tm lthy term
     val name = Binding.name (def_name ^ "_iff_sats")
     val thm = Utils.fix_vars thm (map (#1 o dest_Free) vars') lthy
  in
-   Local_Theory.note ((name, []), [thm]) lthy |> display "theorem" pos
+   Local_Theory.note ((name, []), [thm]) lthy |> print_theorem pos
  end
 
 fun synth_thm_tc def_name term hyps vars pos lthy =
@@ -66,7 +64,7 @@ let val (_,tm,ctxt1) = Utils.thm_concl_tm lthy term
     val name = Binding.name (def_name ^ "_type")
     val thm = Utils.fix_vars thm (map (#1 o dest_Free) vars') ctxt2
  in
-   Local_Theory.note ((name, tc_attrib), [thm]) lthy |> display "theorem" pos
+   Local_Theory.note ((name, tc_attrib), [thm]) lthy |> print_theorem pos
  end
 
 

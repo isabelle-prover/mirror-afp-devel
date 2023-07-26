@@ -864,7 +864,7 @@ subsection \<open>Roth's Theorem\<close>
 
 text\<open>We will first need the following corollary of the Triangle Removal Lemma.\<close>
 
-text \<open>See \<^url>\<open>https://en.wikipedia.org/wiki/Ruzsa–Szemerédi_problem\<close>.
+text \<open>See \<^url>\<open>https://en.wikipedia.org/wiki/Ruzsa--Szemerédi_problem\<close>.
 Suggested by Yaël Dillies
 \<close>
 corollary Diamond_free:

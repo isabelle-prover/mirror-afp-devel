@@ -20,8 +20,6 @@ end;
 structure CTR_Postprocessing : CTR_POSTPROCESSING =
 struct
 
-open CTR_Utilities;
-
 (*post-processing of an arbitrary transfer rule*)
 fun postprocess_transfer_rule b thm ctxt = 
   let
@@ -37,15 +35,10 @@ fun postprocess_transfer_rule b thm ctxt =
       |>> #2
       |>> the_single
       |> #2
+    val lthy_print = Bundle.includes ["Transfer.lifting_syntax"] lthy
     val _ =
-      let
-        val lthy_print = 
-          ("Transfer.lifting_syntax" |> single |> Bundle.includes) lthy
-      in
-        thm 
-        |> single
-        |> (Local_Theory.full_name lthy_print b |> thm_printer lthy_print true)
-      end
+      Proof_Display.print_theorem (Position.thread_data ()) lthy_print
+        (Local_Theory.full_name lthy_print b, [thm])
   in lthy end;
 
 (*post-processing of a parametricity property*)
@@ -88,9 +81,9 @@ fun postprocess_relativization b mf thm ctxt =
         |>> the_single
       end
     val (ow_def_thm, lthy') = Local_Theory.raw_theory_result make_with_def lthy
-    val _ = ow_def_thm 
-      |> single
-      |> (ow_def_thm |> Thm.derivation_name |> thm_printer lthy' true)
+    val _ =
+      Proof_Display.print_theorem (Position.thread_data ()) lthy'
+        (Thm.derivation_name ow_def_thm, [ow_def_thm])
     val thm' = thm 
       |> singleton (Proof_Context.export ctxt lthy')
       |> Thm.pure_unfold lthy' (ow_def_thm |> Thm.symmetric |> single)

@@ -206,9 +206,6 @@ fun dp_correct_cmd lthy =
     val memoized_thm'_opt = memoized_thm_opt
       |> Option.map (Drule.infer_instantiate' lthy [NONE, SOME tuple_pat])
 
-    fun display_thms thm_binds ctxt =
-      Proof_Display.print_results true (Position.thread_data ()) ctxt ((Thm.theoremK, ""), [thm_binds])
-
     val crel_thm_name = "crel"
     val memoized_thm_name = "memoized_correct"
 
@@ -219,7 +216,7 @@ fun dp_correct_cmd lthy =
         val (crel_thm_binds, lthy2) = lthy1
           |> Local_Theory.note ((Binding.qualify_name true scope crel_thm_name, []), [crel_thm])
 
-        val _ = display_thms crel_thm_binds lthy2
+        val _ = Proof_Display.print_theorem (Position.thread_data ()) lthy2 crel_thm_binds
       in
         case memoized_thm'_opt of
           NONE => lthy2
@@ -229,7 +226,7 @@ fun dp_correct_cmd lthy =
                 |> Local_Theory.note
                   ((Binding.qualify_name true scope memoized_thm_name, []),
                     [(crel_thm RS memoized_thm') |> Local_Defs.unfold lthy @{thms prod.case}])
-              val _ = display_thms memoized_thm_binds lthy3
+              val _ = Proof_Display.print_theorem (Position.thread_data ()) lthy3 memoized_thm_binds
             in lthy3 end
       end
   in

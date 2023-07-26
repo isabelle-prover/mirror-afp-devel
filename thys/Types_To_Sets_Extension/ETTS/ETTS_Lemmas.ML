@@ -35,14 +35,14 @@ open ETTS_Active;
 fun register_output ctxt ab out_thms = 
   let
 
-    val ((thmc, out_thms), lthy) = 
+    val (res, lthy) = 
       let 
         val facts' = (ab ||> map (Attrib.check_src ctxt), single (out_thms, []))
           |> single
           |> Attrib.partial_evaluation ctxt
       in ctxt |> Local_Theory.notes facts' |>> the_single end
 
-    val _ = CTR_Utilities.thm_printer lthy true thmc out_thms
+    val _ = Proof_Display.print_theorem (Position.thread_data ()) lthy res
 
   in (lthy, "") end
 

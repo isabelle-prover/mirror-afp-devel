@@ -23,12 +23,12 @@ The real-time deque can be in the following states:
 Functions:
 
  \<^descr> \<open>is_empty\<close>: Checks if a deque is in the \<open>Empty\<close> state
- \<^descr> \<open>deqL’\<close>: Dequeues an element on the left end and return the element and the deque without this element. If the deque is in \<open>idle\<close> state and the size invariant is violated either a \<open>rebalancing\<close> is started or if there are 3 or less elements left the respective states are used. On \<open>rebalancing\<close> start, six steps are executed initially. During \<open>rebalancing\<close> state four steps are executed and if it is finished the deque returns to \<open>idle\<close> state.
+ \<^descr> \<open>deqL'\<close>: Dequeues an element on the left end and return the element and the deque without this element. If the deque is in \<open>idle\<close> state and the size invariant is violated either a \<open>rebalancing\<close> is started or if there are 3 or less elements left the respective states are used. On \<open>rebalancing\<close> start, six steps are executed initially. During \<open>rebalancing\<close> state four steps are executed and if it is finished the deque returns to \<open>idle\<close> state.
  \<^descr> \<open>deqL\<close>: Removes one element on the left end and only returns the new deque.
  \<^descr> \<open>firstL\<close>: Removes one element on the left end and only returns the element.
  \<^descr> \<open>enqL\<close>: Enqueues an element on the left and returns the resulting deque. Like in \<open>deqL'\<close> when violating the size invariant in \<open>idle\<close> state, a \<open>rebalancing\<close> with six initial steps is started. During \<open>rebalancing\<close> state four steps are executed and if it is finished the deque returns to \<open>idle\<close> state.
  \<^descr> \<open>swap\<close>: The two ends of the deque are swapped.
- \<^descr> \<open>deqR’\<close>, \<open>deqR\<close>, \<open>firstR\<close>, \<open>enqR\<close>: Same behaviour as the left-counterparts. Implemented using the left-counterparts by swapping the deque before and after the operation.
+ \<^descr> \<open>deqR'\<close>, \<open>deqR\<close>, \<open>firstR\<close>, \<open>enqR\<close>: Same behaviour as the left-counterparts. Implemented using the left-counterparts by swapping the deque before and after the operation.
  \<^descr> \<open>listL\<close>, \<open>listR\<close>: Get all elements of the deque in a list starting at the left or right end. They are needed as list abstractions for the correctness proofs.
 \<close>
 

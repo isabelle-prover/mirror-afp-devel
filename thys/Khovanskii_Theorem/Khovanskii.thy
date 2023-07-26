@@ -4,7 +4,7 @@ text\<open>We formalise the proof of an important theorem in additive combinator
 attesting that the cardinality of the set of all sums of $n$ many elements of $A$,
 where $A$ is a finite subset of an abelian group, is a polynomial in $n$ for all sufficiently large $n$.
 We follow a proof due to Nathanson and Ruzsa as presented in the notes
-“Introduction to Additive Combinatorics” by Timothy Gowers for the University of Cambridge.\<close>
+``Introduction to Additive Combinatorics'' by Timothy Gowers for the University of Cambridge.\<close>
 
 theory Khovanskii
   imports

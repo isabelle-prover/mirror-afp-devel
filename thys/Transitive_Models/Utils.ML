@@ -23,7 +23,7 @@ signature Utils =
     val dest_sats_frm: term -> (term * term) * term
     val dest_eq_tms': term -> term * term
     val dest_trueprop: term -> term
-    val display : string -> Position.T -> (string * thm list) * Proof.context -> Proof.context
+    val print_theorem: Position.T -> (string * thm list) * Proof.context -> Proof.context
     val eq_: term -> term -> term
     val fix_vars: thm -> string list -> Proof.context -> thm
     val flat : ''a list list -> ''a list
@@ -139,10 +139,9 @@ fun fix_vars thm vars ctxt = let
   in singleton (Proof_Context.export ctxt1 ctxt) thm
 end
 
-fun display kind pos (thms,thy) =
-  let val _ = Proof_Display.print_results true pos thy ((kind,""),[thms])
-  in thy
-end
+fun print_theorem pos (thms, lthy) =
+  (Proof_Display.print_theorem pos lthy thms; lthy)
+
 
 (* lists as sets *)
 

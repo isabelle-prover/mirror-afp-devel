@@ -35,7 +35,7 @@ named_theorems arity "Theorems for arity of formulas."
 
 named_theorems arity_aux "Auxiliary theorems for calculating arities."
 
-ML_file\<open>Synthetic_Definition.ml\<close>
+ML_file\<open>Synthetic_Definition.ML\<close>
 
 text\<open>The \<^ML>\<open>synthetic_def\<close> function extracts definitions from
 schematic goals. A new definition is added to the context. \<close>

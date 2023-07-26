@@ -2,7 +2,7 @@
 
 section\<open>\<open>IHOL_IDE\<close>\<close>
 theory IHOL_IDE
-  imports "IDE_Tools/IDE_Tools"
+  imports Main
   keywords "mk_ide" :: thy_defn
     and "rf"
     and "|intro" "|dest" "|elim" 

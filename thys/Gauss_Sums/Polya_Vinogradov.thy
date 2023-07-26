@@ -2,7 +2,7 @@
   File:     Polya_Vinogradov.thy
   Authors:  Rodrigo Raya, EPFL; Manuel Eberl, TUM
 
-  The Pólya–Vinogradov inequality, both the general case and the stronger variant for
+  The Pólya--Vinogradov inequality, both the general case and the stronger variant for
   primitive characters.
 *)
 section \<open>The Pólya--Vinogradov Inequality\<close>

@@ -31,7 +31,7 @@ begin
 
 text\<open>The next fake lemma is intended to explore the instances of the axiom
 schemes that are needed to build our forcing models. They are categorized as
-plain replacements (using \<^term>\<open>strong_replacement\<close>), “lambda-replacements”
+plain replacements (using \<^term>\<open>strong_replacement\<close>), ``lambda-replacements''
 using a higher order function, replacements  to perform
 transfinite and general well-founded recursion (using \<^term>\<open>transrec_replacement\<close> and
 \<^term>\<open>wfrec_replacement\<close> respectively) and for the construction of fixpoints
