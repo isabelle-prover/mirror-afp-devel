@@ -2820,9 +2820,9 @@ val mk_VLambda_parser = Parse.thm --
 fun process_mk_VLambda_thm mk_VLambda_thm (b, thm) ctxt =
   let 
     val thm' = mk_VLambda_thm ctxt thm
-    val ((c, thms'), ctxt') = ctxt
+    val (res, ctxt') = ctxt
       |> Local_Theory.note (b ||> map (Attrib.check_src ctxt), single thm') 
-    val _ = IDE_Utilities.print_theorem ctxt' c thms'
+    val _ = Proof_Display.print_theorem (Position.thread_data ()) ctxt' res
   in ctxt' end;
 
 fun folder_mk_VLambda (("|vsv", b), thm) ctxt =

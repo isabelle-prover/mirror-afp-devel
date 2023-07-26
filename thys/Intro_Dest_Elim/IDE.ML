@@ -123,9 +123,9 @@ fun process_mk_rule mk_rule ((rf, b), thm) ctxt =
             then map (Object_Logic.rulify ctxt) thms 
             else thms
         )
-    val ((c, thms'), ctxt') = 
+    val (res, ctxt') = 
       Local_Theory.note (b ||> map (Attrib.check_src ctxt), thms) ctxt
-    val _ = IDE_Utilities.print_theorem ctxt' c thms'
+    val _ = Proof_Display.print_theorem (Position.thread_data ()) ctxt' res
   in ctxt' end;
 
 fun folder_mk_rule (("|intro", b), (rf, thm)) ctxt =
