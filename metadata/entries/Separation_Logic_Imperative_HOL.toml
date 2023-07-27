@@ -29,6 +29,8 @@ email = "meis_email1"
 
 [contributors]
 
+[contributors.springsklee]
+
 [notify]
 lammich = "lammich_email"
 

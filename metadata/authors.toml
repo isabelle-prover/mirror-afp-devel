@@ -6073,6 +6073,26 @@ host = [
 
 [sprenger.homepages]
 
+
+[springsklee]
+name = "Valentin Springsklee"
+
+[springsklee.emails]
+
+[springsklee.emails.springsklee_email]
+user = [
+  "uidpn>",
+]
+host = [
+  "student",
+  "kit",
+  "edu",
+]
+
+[springsklee.homepages]
+
+
+
 [staats]
 name = "Charles Staats"
 

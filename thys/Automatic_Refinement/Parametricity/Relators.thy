@@ -931,7 +931,21 @@ lemma rel2p_comp: "rel2p A OO rel2p B = rel2p (A O B)"
 
 lemma rel2p_inj[simp]: "rel2p A = rel2p B \<longleftrightarrow> A=B"  
   by (auto simp: rel2p_def[abs_def]; meson)
-    
+
+lemma rel2p_left_unique: "left_unique (rel2p A) = single_valued (A\<inverse>)"
+  unfolding left_unique_def rel2p_def single_valued_def by blast
+
+lemma rel2p_right_unique: "right_unique (rel2p A) = single_valued A"
+  unfolding right_unique_def rel2p_def single_valued_def by blast
+
+lemma rel2p_bi_unique: "bi_unique (rel2p A) \<longleftrightarrow> single_valued A \<and> single_valued (A\<inverse>)"
+  unfolding bi_unique_alt_def by (auto simp: rel2p_left_unique rel2p_right_unique)
+
+lemma p2rel_left_unique: "single_valued ((p2rel A)\<inverse>) = left_unique A"
+  unfolding left_unique_def p2rel_def single_valued_def by blast
+
+lemma p2rel_right_unique: "single_valued (p2rel A) = right_unique A"
+  unfolding right_unique_def p2rel_def single_valued_def by blast
 
 subsection \<open>More Properties\<close>    
 (* TODO: Do compp-lemmas for other standard relations *)

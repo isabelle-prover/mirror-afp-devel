@@ -189,30 +189,26 @@ proof -
 qed
 
 lemma more_choices:
-assumes A: "matching A M" and M: "M \<subseteq> {<n}" "M \<noteq> {<n}"
+assumes A: "wf A" and M: "M \<subseteq> {<n}" "M \<noteq> {<n}"
 and pref_match': "preferred A a \<subseteq> match A ` M"
 and "a < n" and matched: "match A a \<in> match A ` M"
 shows "A ! a + 1 < n"
 proof (rule ccontr)
-  have match: "match A ` M \<subseteq> {<n}" using A M P\<^sub>a_set unfolding matching_def
-    by (smt (verit, best) atLeastLessThan_iff match_def image_subsetI in_mono nth_mem)
-  have "card M < n" using M
-    by (metis card_atLeastLessThan card_seteq diff_zero finite_atLeastLessThan not_less)
   assume "\<not> A ! a + 1 < n"
   hence "A ! a + 1 = n" using A \<open>a < n\<close> unfolding matching_def
     by (metis add.commute wf_less_n linorder_neqE_nat not_less_eq plus_1_eq_Suc)
   hence *: "nth (P\<^sub>a ! a) ` {<n} \<subseteq> match A ` M"
     using pref_match' matched less_Suc_eq match_def by fastforce
   have "nth (P\<^sub>a!a) ` {<n} = {<n}"
-    by (metis \<open>a < n\<close> map_nth P\<^sub>a_set set_map set_upt)
-  hence "match A ` M = {<n}"
-    by (metis * match set_eq_subset)
-  then show False using A M \<open>card M < n\<close> unfolding matching_def
-    by (metis atLeast0LessThan card_image card_lessThan nat_neq_iff)
+    using P\<^sub>a_set[OF  \<open>a < n\<close>] by (metis map_nth set_map set_upt)
+  hence "{<n} \<subseteq> match A ` M" using * by metis
+  hence "card {<n} \<le> card M"
+    using finite_subset[OF \<open>M \<subseteq> {<n}\<close> finite_atLeastLessThan] by (metis surj_card_le)
+  then show False using M card_seteq by blast
 qed
 
 corollary more_choices_matched:
-assumes "matching A M" "M \<subseteq> {<n}" "M \<noteq> {<n}"
+assumes "wf A" "M \<subseteq> {<n}" "M \<noteq> {<n}"
 and "preferred A a \<subseteq> match A ` M" and "a \<in> M"
 shows "A ! a + 1 < n"
 using more_choices[OF assms(1-4)] \<open>a \<in> M\<close> \<open>M \<subseteq> {<n}\<close> atLeastLessThan_iff by blast
@@ -229,7 +225,8 @@ lemma sumA_UB:
 assumes "matching A M" "M \<subseteq> {<n}" "M \<noteq> {<n}" "\<forall>a<n. preferred A a \<subseteq> match A ` M"
 shows "(\<Sum>a<n. A!a) \<le> (n-1)^2"
 proof -
-  have M: "\<forall>a\<in>M. A!a + 1 < n" using more_choices_matched[OF assms(1-3)] assms(4)
+  have "wf A" using assms(1) by(simp)
+  have M: "\<forall>a\<in>M. A!a + 1 < n" using more_choices_matched[OF \<open>wf A\<close> assms(2-3)] assms(4)
     \<open>M \<subseteq> {<n}\<close> atLeastLessThan_iff by blast
   note Ainj = conj12[OF assms(1)[unfolded matching_def]]
   show ?thesis
@@ -442,15 +439,15 @@ proof -
 qed
 
 
-lemma Gale_Shapley1: "VARS M A a a'
+lemma Gale_Shapley1: "VARS M A a a' b
  [M = {} \<and> A = replicate n 0]
  WHILE M \<noteq> {<n}
  INV { invAM A M }
  VAR {var A M}
- DO a := (SOME a. a < n \<and> a \<notin> M);
-  IF match A a \<notin> match A ` M
+ DO a := (SOME a. a < n \<and> a \<notin> M); b := match A a;
+  IF b \<notin> match A ` M
   THEN M := M \<union> {a}
-  ELSE a' := (SOME a'. a' \<in> M \<and> match A a' = match A a);
+  ELSE a' := (SOME a'. a' \<in> M \<and> match A a' = b);
        IF P\<^sub>b ! match A a' \<turnstile> a < a'
        THEN A[a'] := A!a'+1; M := M - {a'} \<union> {a}
        ELSE A[a] := A!a+1
@@ -529,15 +526,15 @@ subsection \<open>Algorithm 2: List of unmatched As\<close>
 abbreviation invas where
 "invas as == (set as \<subseteq> {<n} \<and> distinct as)"
 
-lemma Gale_Shapley2: "VARS A a a' as
+lemma Gale_Shapley2: "VARS A a a' as b
  [as = [0..<n] \<and> A = replicate n 0]
  WHILE as \<noteq> []
  INV { invAM A ({<n} - set as) \<and> invas as}
  VAR {var A ({<n} - set as)}
- DO a := hd as;
-  IF match A a \<notin> match A ` ({<n} - set as)
+ DO a := hd as; b := match A a;
+  IF b \<notin> match A ` ({<n} - set as)
   THEN as := tl as
-  ELSE a' := (SOME a'. a' \<in> {<n} - set as \<and> match A a' = match A a);
+  ELSE a' := (SOME a'. a' \<in> {<n} - set as \<and> match A a' = b);
        IF P\<^sub>b ! match A a' \<turnstile> a < a'
        THEN A[a'] := A!a'+1; as := a' # tl as
        ELSE A[a] := A!a+1
@@ -787,7 +784,7 @@ next
       assume matched: "\<not> ?not_matched"
       hence "match A a \<in> match A ` ({<n} - insert a (set as'))" using  match_less_n[OF A] a invAB
         apply(auto) by (metis (lifting) image_eqI list.simps(15) mem_Collect_eq aseq)
-      hence "Suc(A!a) < n" using more_choices[OF m M, of a] a pref_match1
+      hence "Suc(A!a) < n" using more_choices[OF A M, of a] a pref_match1
         using aseq atLeast0LessThan by auto
       let ?a = "B ! match A a"
       have a': "?a \<in> ?M \<and> match A ?a = match A a"

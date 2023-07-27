@@ -79,7 +79,14 @@ lemma param_finite[param]: "\<lbrakk>
     single_valued R; single_valued (R\<inverse>)
   \<rbrakk> \<Longrightarrow> (finite,finite) \<in> \<langle>R\<rangle>set_rel \<rightarrow> bool_rel"
   using finite_set_rel_transfer finite_set_rel_transfer_back by blast
-    
+
+lemma param_card[param]: "\<lbrakk>single_valued R; single_valued (R\<inverse>)\<rbrakk> 
+  \<Longrightarrow> (card, card) \<in> \<langle>R\<rangle>set_rel \<rightarrow>nat_rel"
+  apply (rule rel2pD)
+  apply (simp only: rel2p)
+  apply (rule card_transfer)
+  by (simp add: rel2p_bi_unique)
+  
   
 subsection \<open>Standard HOL Constructs\<close>  
   

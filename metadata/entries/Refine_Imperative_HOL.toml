@@ -36,6 +36,8 @@ homepage = "lammich_homepage"
 
 [contributors]
 
+[contributors.springsklee]
+
 [notify]
 lammich = "lammich_email"
 

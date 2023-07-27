@@ -417,4 +417,12 @@ begin
     sepref_decl_impl (ismop) ial_contains: ial_contains.refine[FCOMP aial_contains_refine] .
   end
 
+
+
+  interpretation ial_sz: list_custom_empty "ial_assn N A" "ial_empty N" "PR_CONST (op_ial_empty_sz N)"
+    apply unfold_locales
+    apply (rule ial_empty_sz_hnr [unfolded op_ial_empty_sz_def PR_CONST_def])
+    by simp
+
+
 end
