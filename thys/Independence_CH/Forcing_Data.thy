@@ -16,8 +16,8 @@ no_notation Aleph (\<open>\<aleph>_\<close> [90] 90)
 subsection\<open>A forcing locale and generic filters\<close>
 
 text\<open>Ideally, countability should be separated from the assumption of this locale.
-The fact is that our present proofs of the “definition of forces” (and many
-consequences) and of the lemma for “forcing a value” of function
+The fact is that our present proofs of the ``definition of forces'' (and many
+consequences) and of the lemma for ``forcing a value'' of function
 unnecessarily depend on the countability of the ground model. \<close>
 
 locale forcing_data1 = forcing_notion + M_ctm1 +

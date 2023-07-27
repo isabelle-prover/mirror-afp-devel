@@ -97,7 +97,7 @@ text\<open>Lists on a set \<^term>\<open>A\<close> can be characterized by being
 recursively generated from the empty list \<^term>\<open>[]\<close> and the
 operation \<^term>\<open>Cons\<close> that adds a new element to the left end;
 the induction theorem for them shows that the characterization is
-“complete”.\<close>
+``complete''.\<close>
 
 thm Nil Cons list.induct
 text\<open>@{thm [display] Nil Cons list.induct }\<close>
@@ -133,7 +133,7 @@ lemma "\<forall>x[M]. P(x) \<equiv> \<forall>x. M(x) \<longrightarrow> P(x)"
       "\<exists>x[M]. P(x) \<equiv> \<exists>x. M(x) \<and> P(x)"
   unfolding rall_def rex_def .
 
-text\<open>Finally, a set can be viewed (“cast”) as a class using the
+text\<open>Finally, a set can be viewed (``cast'') as a class using the
 following function of type \<^typ>\<open>i\<Rightarrow>(i\<Rightarrow>o)\<close>.\<close>
 thm setclass_iff
 text\<open>@{thm [display] setclass_iff}\<close>
@@ -314,7 +314,7 @@ text\<open>@{thm [display] strong_replacement_def}\<close>
 
 text\<open>Internalized formulas\<close>
 
-text\<open>“Codes” for formulas (as sets) are constructed from natural
+text\<open>``Codes'' for formulas (as sets) are constructed from natural
 numbers using \<^term>\<open>Member\<close>, \<^term>\<open>Equal\<close>, \<^term>\<open>Nand\<close>,
 and \<^term>\<open>Forall\<close>.\<close>
 
@@ -351,7 +351,7 @@ text\<open>@{thm [display] arity.simps}\<close>
 *)
 
 text\<open>We have the satisfaction relation between $\in$-models and
-    first order formulas (given a “environment” list representing
+    first order formulas (given a ``environment'' list representing
     the assignment of free variables),\<close>
 thm mem_iff_sats equal_iff_sats sats_Nand_iff sats_Forall_iff
 text\<open>@{thm [display] mem_iff_sats equal_iff_sats sats_Nand_iff sats_Forall_iff}\<close>

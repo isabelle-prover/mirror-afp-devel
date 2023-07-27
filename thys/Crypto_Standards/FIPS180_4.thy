@@ -20,7 +20,7 @@ below, called Octets, for versions of the secure hash algorithms as functions on
 "This Standard specifies secure hash algorithms, SHA-1, SHA-224, SHA-256, SHA-384, SHA-512,
 SHA-512/224 and SHA-512/256.  All of the algorithms are iterative, one-way hash functions that can
 process a message to produce a condensed representation called a message digest. These algorithms 
-enable the determination of a message’s integrity: any change to the message will, with a very high
+enable the determination of a message's integrity: any change to the message will, with a very high
 probability, result in a different message digest.  This property is useful in the generation and 
 verification of digital signatures and message authentication codes, and in the generation of 
 random numbers or bits.
@@ -544,7 +544,7 @@ The padding for the 32-bit-word SHAs and the padding for the 64-bit-word SHAs ar
 We define it generically here.  From the standard sections 5.1.1 and 5.1.2 only differ in the
 values of X and Y:
 
-"Suppose that the length of the message, M, is l bits.  Append the bit “1” to the end of the
+"Suppose that the length of the message, M, is l bits.  Append the bit ``1'' to the end of the
 message, followed by k zero bits, where k is the smallest, non-negative solution to the equation
 l + 1 + k = [X] mod [X+Y].  Then append the [Y]-bit block that is equal to the number l expressed
 using a  binary  representation."
@@ -763,7 +763,7 @@ end (* SHA_PadParse locale *)
 
 subsubsection \<open>5.1/2.1 SHA-1, SHA-224 and SHA-256\<close>
 
-text \<open>"Suppose that the length of the message, M, is l bits.  Append the bit “1” to the end of the
+text \<open>"Suppose that the length of the message, M, is l bits.  Append the bit ``1'' to the end of the
 message, followed by k zero bits, where k is the smallest, non-negative solution to the equation 
 l + 1 + k = 448 mod 512.  Then append the 64-bit block that is equal to the number l expressed 
 using a binary representation."
@@ -788,7 +788,7 @@ global_interpretation SHA1_PadParse: SHA_PadParse 448 64 32
 
 subsubsection \<open>5.1/2.2 SHA-384, SHA-512, SHA-512/224 and SHA-512/256\<close>
 
-text \<open>"Suppose the length of the message M, in bits, is l bits.  Append the bit “1” to the end of
+text \<open>"Suppose the length of the message M, in bits, is l bits.  Append the bit ``1'' to the end of
 the message, followed by k zero bits, where k is the smallest non-negative solution to the equation
 l + 1 + k = 896 mod 1024.  Then append the 128-bit block that is equal to the number expressed
 using a  binary  representation."
@@ -929,7 +929,7 @@ lemma SHA512_H0_len [simp]: "length SHA512_H0 = 8"
 
 subsubsection \<open>5.3.6 SHA-512/t\<close>
 
-text \<open>"“SHA-512/t” is the general name for a t-bit hash function based on SHA-512 whose output is
+text \<open>"``SHA-512/t'' is the general name for a t-bit hash function based on SHA-512 whose output is
 truncated to t bits.  Each hash function requires a distinct initial hash value. This section
 provides a procedure for determining the initial value for SHA-512/t for a given value of t.
 

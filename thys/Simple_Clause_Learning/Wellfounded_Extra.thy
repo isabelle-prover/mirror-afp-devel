@@ -1,7 +1,6 @@
 theory Wellfounded_Extra
   imports
     Main
-    Relation_Extra
     "Ordered_Resolution_Prover.Lazy_List_Chain"
 begin
 

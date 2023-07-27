@@ -51,7 +51,6 @@ chapter AFP
 
 session "HOL-CSP" = HOLCF +
   description \<open>HOL-CSP based on the original Roscoe-Book.\<close>
-  (* options [document = pdf, document_output = "output", timeout = 1200] *)
   options [timeout = 1200] 
   sessions
     "HOL-Eisbach"

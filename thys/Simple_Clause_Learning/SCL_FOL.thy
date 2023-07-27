@@ -11,7 +11,6 @@ theory SCL_FOL
     First_Order_Terms.Term
     First_Order_Terms.Unification
     Abstract_Renaming_Apart
-    Relation_Extra
     Ordered_Resolution_Prover_Extra
 begin
 

@@ -1,4 +1,4 @@
-subsection\<open>Formal Study of Version No.2 of Gödel’s Argument as 
+subsection\<open>Formal Study of Version No.2 of Gödel's Argument as 
   Reported by Kanckos and Lethen, 2019 \<^cite>\<open>"KanckosLethen19"\<close> (Fig.~11 in \<^cite>\<open>"C85"\<close>)\<close>
 
 theory KanckosLethenNo2Possibilist imports

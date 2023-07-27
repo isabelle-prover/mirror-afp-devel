@@ -422,7 +422,7 @@ proof (insert x, elim derivableE)
   show ?thesis by (auto intro!: derivableI)
 qed
 
-text \<open>The following lemma is derived from Grall’s proof. We simplify the claim so that we
+text \<open>The following lemma is derived from Grall's proof. We simplify the claim so that we
 consider two elements from one derivation, instead of two derivations.\<close>
 
 lemma derivation_useful:
@@ -512,7 +512,7 @@ qed
 
 text \<open>Next one is the main lemma of this section, stating that elements from two possibly different 
 derivations are comparable, and moreover the lower one is in the derivation of the upper one. 
-The latter claim, not found in Grall’s proof, is crucial in proving that the union of all 
+The latter claim, not found in Grall's proof, is crucial in proving that the union of all 
 derivations is well-related.\<close>
 
 lemma derivations_cross_compare:

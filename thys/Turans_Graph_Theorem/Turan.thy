@@ -608,7 +608,7 @@ proof -
   qed
 qed
 
-text \<open>Finally, with this lemma we can turn to this section’s main challenge of increasing the
+text \<open>Finally, with this lemma we can turn to this section's main challenge of increasing the
 greatest clique size of a graph by adding edges.\<close>
 
 lemma clique_add_edges_max :

@@ -5,9 +5,6 @@ theory Trail_Induced_Ordering
 
     (* AFP theories *)
     "List-Index.List_Index"
-
-    (* Local theories *)
-    Relation_Extra
 begin
 
 lemma wf_if_convertible_to_wf:

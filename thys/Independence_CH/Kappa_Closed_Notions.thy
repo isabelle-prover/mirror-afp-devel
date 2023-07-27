@@ -92,7 +92,7 @@ lemma mono_map_lt_leI[intro!]:
   using assms
   unfolding mono_map_lt_le_def by auto
 
-\<comment> \<open>Kunen IV.7.13, with “$\kappa$” in place of “$\lambda$”\<close>
+\<comment> \<open>Kunen IV.7.13, with ``$\kappa$'' in place of ``$\lambda$''\<close>
 definition
   kappa_closed :: "[i,i,i] \<Rightarrow> o" (\<open>_-closed'(_,_')\<close>) where
   "\<kappa>-closed(P,leq) \<equiv> \<forall>\<delta>. \<delta><\<kappa> \<longrightarrow> (\<forall>f\<in>\<delta> \<^sub><\<rightarrow> (P,converse(leq)). \<exists>q\<in>P. \<forall>\<alpha>\<in>\<delta>. \<langle>q,f`\<alpha>\<rangle>\<in>leq)"

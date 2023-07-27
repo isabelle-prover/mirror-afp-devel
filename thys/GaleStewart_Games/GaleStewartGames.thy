@@ -3,7 +3,7 @@ section \<open>Gale Stewart Games\<close>
 text \<open>Gale Stewart Games are infinite two player games.\<close>
 (* [Gale & Stewart 1953] David Gale, F. M. Stewart, Infinite games with perfect information,
    Contributions to the Theory of Games II, ed. H. W. Kuhn and A. W. Tucker,
-   Annals of Mathematics Studies 28, Princeton University Press (1953), pp 245–266. *)
+   Annals of Mathematics Studies 28, Princeton University Press (1953), pp 245--266. *)
 
 theory GaleStewartGames
   imports AlternatingLists MorePrefix MoreENat

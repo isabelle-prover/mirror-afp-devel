@@ -341,7 +341,7 @@ definition overhead_notCH where
 definition overhead_CH where
   "overhead_CH \<equiv> overhead_notCH \<union> { dc_abs_fm }"
 
-text\<open>Hence, the “overhead” to create a proper extension of a ctm by forcing
+text\<open>Hence, the ``overhead'' to create a proper extension of a ctm by forcing
 consists of $7$ replacement instances. To force $\neg\CH$,
 21 instances are need, and one further instance is required to
 force $\CH$.\<close>
