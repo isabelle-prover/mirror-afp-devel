@@ -380,6 +380,16 @@ begin
     lemmas hnr_mop_delete[sepref_fr_rules] = hnr_op_delete[FCOMP mk_mop_rl2_np[OF mop_set_delete_alt]]
   end  
 
+  locale bind_set_size = imp_set_size + bind_set
+  begin
+    lemma hnr_size_aux: "(size, (RETURN o op_set_size))\<in> is_set\<^sup>k \<rightarrow>\<^sub>a nat_assn"
+      by solve_sepl_binding
+  
+    interpretation bind_set_setup by standard
+    lemmas hnr_op_size[sepref_fr_rules] = hnr_size_aux[THEN APAbu,FCOMP op_set_size.fref[where A="the_pure A"]] 
+    lemmas hnr_mop_size[sepref_fr_rules] = hnr_op_size[FCOMP mk_mop_rl1_np[OF mop_set_size_alt]]
+  end
+
   primrec sorted_wrt' where
     "sorted_wrt' R [] \<longleftrightarrow> True"
   | "sorted_wrt' R (x#xs) \<longleftrightarrow> list_all (R x) xs \<and> sorted_wrt' R xs"  
@@ -514,6 +524,30 @@ begin
 
     end  
   end
+
+  locale bind_set_union = imp_set_union +  bind_set +
+    assumes is_prime_set_finite: "h \<Turnstile> is_set S x \<Longrightarrow> finite S"
+  begin
+    lemma hnr_union_aux: "(uncurry union, uncurry (RETURN oo op_set_union)) 
+                \<in> is_set\<^sup>d *\<^sub>a is_set\<^sup>k \<rightarrow>\<^sub>a is_set"
+      apply (sep_auto intro!: is_prime_set_finite )
+      unfolding invalid_assn_def pure_def pure_assn_def hfref_def 
+      apply (solve_sepl_binding) unfolding entails_def
+      using is_prime_set_finite subgoal
+        using mod_starD by blast  
+      apply sep_auto
+      using is_prime_set_finite mod_starD  
+      unfolding hoare_triple_def ex_assn_def   apply sep_auto
+      using  mod_starD union_rule
+      by (metis assn_times_comm mult_1 pure_assn_def pure_true)
+  
+    interpretation bind_set_setup by standard  
+      lemmas hnr_op_union[sepref_fr_rules] = hnr_union_aux[FCOMP op_set_union.fref[where A="the_pure A"]] 
+      lemmas hnr_mop_union[sepref_fr_rules] = hnr_op_union[FCOMP mk_mop_rl2_np[OF mop_set_union_alt]]
+  
+  end
+
+
 
   subsubsection \<open>List\<close>
   locale bind_list = imp_list is_list for is_list :: "('ai list) \<Rightarrow> 'm \<Rightarrow> assn" +
@@ -734,10 +768,18 @@ begin
   interpretation hs: bind_set_delete is_hashset Hash_Set_Impl.hs_delete for A
     by unfold_locales
 
+  interpretation hs: bind_set_size is_hashset hs_size for A
+    by unfold_locales
+
   setup Locale_Code.open_block  
   interpretation hs: bind_set_iterate is_hashset hs_is_it hs_it_init hs_it_has_next hs_it_next for A
     by unfold_locales simp
   setup Locale_Code.close_block  
+
+  interpretation hs: bind_set_union is_hashset hs_is_it hs_it_init hs_it_has_next hs_it_next hs_union 
+    for A
+    by unfold_locales simp
+
 
 
   subsection \<open>Open Singly Linked List (osll)\<close>  

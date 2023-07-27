@@ -139,12 +139,32 @@ lemma hs_iterate_impl: "imp_set_iterate
   apply sep_auto
   apply (sep_auto eintros: hm.quit_iteration)
   done
+
 interpretation hs: imp_set_iterate 
   is_hashset hs_is_it hs_it_init hs_it_has_next hs_it_next
   by (rule hs_iterate_impl)
 
+definition "hs_union 
+    \<equiv> union_loop_ins hs_it_init hs_it_has_next hs_it_next hs_ins"
+
+lemmas hs_union_rule[sep_heap_rules] =
+    set_union_rule[OF hs_iterate_impl hs_ins_impl,
+    folded hs_union_def] 
+
+lemma hs_union_impl: "imp_set_union 
+is_hashset hs_is_it hs_it_init hs_it_has_next hs_it_next hs_union"
+  apply (unfold_locales)
+  by (sep_auto)
+
+interpretation hs: imp_set_union 
+  is_hashset hs_is_it hs_it_init hs_it_has_next hs_it_next hs_union
+  by (rule hs_union_impl)
+
+
+
+
 export_code hs_new hs_memb hs_ins hs_delete hs_isEmpty hs_size 
-  hs_it_init hs_it_has_next hs_it_next
+  hs_it_init hs_it_has_next hs_it_next hs_union
   checking SML_imp
 
 end

@@ -7,10 +7,14 @@ subsection \<open>Operations\<close>
 definition [simp]: "op_set_is_empty s \<equiv> s={}"
 lemma op_set_is_empty_param[param]: "(op_set_is_empty,op_set_is_empty)\<in>\<langle>A\<rangle>set_rel \<rightarrow> bool_rel" by auto
 
+definition op_set_copy :: "'a set \<Rightarrow> 'a set" where [simp]:  "op_set_copy s \<equiv> s"
+
+
 context 
   notes [simp] = IS_LEFT_UNIQUE_def (* Argh, the set parametricity lemmas use single_valued (K\<inverse>) here. *)
 begin
 
+sepref_decl_op (no_def) set_copy: "op_set_copy" :: "\<langle>A\<rangle>set_rel \<rightarrow> \<langle>A\<rangle>set_rel" where "A = Id" .
 sepref_decl_op set_empty: "{}" :: "\<langle>A\<rangle>set_rel" .
 sepref_decl_op (no_def) set_is_empty: op_set_is_empty :: "\<langle>A\<rangle>set_rel \<rightarrow> bool_rel" .
 sepref_decl_op set_member: "(\<in>)" :: "A \<rightarrow> \<langle>A\<rangle>set_rel \<rightarrow> bool_rel" where "IS_LEFT_UNIQUE A" "IS_RIGHT_UNIQUE A" .
@@ -26,6 +30,9 @@ sepref_decl_op set_subset: "(\<subset>)" :: "\<langle>A\<rangle>set_rel \<righta
 (* TODO: We may want different operations here: pick with predicate returning option,
   pick with remove, ... *)    
 sepref_decl_op set_pick: "RES" :: "[\<lambda>s. s\<noteq>{}]\<^sub>f \<langle>K\<rangle>set_rel \<rightarrow> K" by auto
+
+sepref_decl_op set_size: "(card)" :: "\<langle>A\<rangle>set_rel \<rightarrow> nat_rel"  where "IS_LEFT_UNIQUE A" "IS_RIGHT_UNIQUE A" .
+
 
 end
 
