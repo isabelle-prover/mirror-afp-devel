@@ -837,6 +837,11 @@ qed
 
 subsection \<open>Algorithm 4: remove list of unmatched As\<close>
 
+subsubsection \<open>An initial version\<close>
+
+text \<open>The inner variant appears intuitive but complicates the derivation of an overall complexity bound
+because the inner variant also depends on a variable that is modified by the outer loop.\<close>
+
 lemma Gale_Shapley4:
 "VARS A B ai a a'
  [ai = 0 \<and> A = replicate n 0 \<and> B = (\<lambda>_. None)]
@@ -931,11 +936,13 @@ next
   qed
 qed
 
+subsubsection \<open>A better inner variant\<close>
 
-subsubsection "Precise number of actions"
-
-text \<open>This variant shows that the algorithm can at most execute @{term "n^2 - n + 1"}
-basic actions (match, swap, next). To this end the inner loop variant is set to @{term "var2 A"}:\<close>
+text \<open>This is the definitive version of Algorithm 4.
+The inner variant is changed to support the easy derivation of the precise upper bound
+of the number of executed actions.
+This variant shows that the algorithm can at most execute @{term "n^2 - n + 1"}
+basic actions (match, swap, next).\<close>
 
 definition var2 :: "nat list \<Rightarrow> nat" where
 [simp]: "var2 A = (n-1)^2 - (\<Sum>a<n. A!a)"
@@ -944,7 +951,7 @@ text \<open>Because \<open>A\<close> is not changed by the outer loop, the initi
 which is @{term "(n-1)^2"}, is an upper bound of the number of iterations of the inner loop.
 To this we need to add \<open>n\<close> because the outer loop executes additional \<open>n\<close> match actions
 at the end of the loop body.
-Thus at most @{prop "(n-1)^2 + n = n^2 - n + 1"} actions are executed, exactly as before.\<close>
+Thus at most @{prop "(n-1)^2 + n = n^2 - n + 1"} actions are executed, exactly as in the earlier algorithms.\<close>
 
 lemma var2_next:
 assumes "invAM (A[a := A!a + 1]) M" "M \<noteq> {<n}" "a < n"
@@ -1174,6 +1181,8 @@ definition invar1 where
 definition invar2 where
 [simp]: "invar2 A B M ai a \<equiv> (invAM A ({<ai+1} - {a}) \<and> invAB2 A B M ({<ai+1} - {a}) \<and> a \<le> ai \<and> ai < n)"
 
+text \<open>First, the `old' version with the more complicated inner variant:\<close>
+
 lemma Gale_Shapley5:
 "VARS A B M ai a a'
  [ai = 0 \<and> A = replicate n 0 \<and> length B = n \<and> M = replicate n False]
@@ -1264,6 +1273,7 @@ next
   qed
 qed
 
+text \<open>The definitive version with variant @{const var2}:\<close>
 
 lemma Gale_Shapley5_var2:
 "VARS A B M ai a a'
@@ -1534,6 +1544,8 @@ proof -
   qed
 qed
 
+text \<open>First, the `old' version with the more complicated inner variant:\<close>
+
 lemma Gale_Shapley6:
 assumes "R\<^sub>b = map ranking P\<^sub>b"
 shows
@@ -1632,6 +1644,8 @@ proof -
   qed
 qed
 
+text \<open>The definitive version with variant @{const var2}:\<close>
+
 lemma Gale_Shapley6_var2:
 assumes "R\<^sub>b = map ranking P\<^sub>b"
 shows
@@ -1681,8 +1695,9 @@ next
   thus ?case using pref_match_stable unfolding invAM_def invar1_def by(metis le_neq_implies_less)
 qed
 
-text \<open>A version where the inner variant does not depend on variables changed in the outer loop.
-Thus the inner variant is an upper bound on the number of executions of the inner loop test/body.\<close>
+text \<open>A less precise version where the inner variant does not depend on variables changed in the outer loop.
+Thus the inner variant is an upper bound on the number of executions of the inner loop test/body.
+Superseded by the @{const var2} version.\<close>
 
 lemma var0_next2:
 assumes "wf (A[a' := A ! a' + 1])" "a' < n"
