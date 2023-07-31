@@ -17,9 +17,13 @@ const NAVBAR_TYPES = ['fact', 'type', 'const']
 function target(base_href, rel_href) {
   const href_parts = rel_href.split('/')
 
-  if (href_parts.length === 1) return `#${href_parts[0]}`
-  else if (href_parts.length === 3 && href_parts[0] === '..' && href_parts[1] !== '..') {
-    return `../${href_parts[1].toLowerCase()}/#${href_parts[2]}`
+  if (href_parts.length === 1) {
+    const ref_parts = href_parts[0].split('.html')
+    const file_parts = ref_parts[0].split('.')
+    if (file_parts.length == 1) return `#${href_parts[0]}`
+    else {
+      return `../${file_parts[0].toLowerCase()}/#${file_parts.slice(1).join('.')}.html${ref_parts[1]}`
+    }
   }
   else return `${base_href}/../${rel_href}`
 }
