@@ -365,15 +365,16 @@ lemma from_index_geq0_vector_simplex2:
 
 
 (* [c1, ... cm, 01, ... 0n] * X \<ge> [01, ... 0m, b1,...,bn] * X *)
-fun x_times_c_geq_y_times_b where
-  "x_times_c_geq_y_times_b c b = GEQPP (vec_to_lpoly (c @\<^sub>v 0\<^sub>v (dim_vec b)))
-                                       (vec_to_lpoly (0\<^sub>v (dim_vec c) @\<^sub>v b))"
+definition x_times_c_geq_y_times_b where
+  "x_times_c_geq_y_times_b c b = GEQ (
+    vec_to_lpoly (c @\<^sub>v 0\<^sub>v (dim_vec b)) - vec_to_lpoly (0\<^sub>v (dim_vec c) @\<^sub>v b)) 0"
 
 lemma x_times_c_geq_y_times_b_correct:
   assumes "simplex [x_times_c_geq_y_times_b c b] = Sat x"
   shows "((vec_to_lpoly (c @\<^sub>v 0\<^sub>v (dim_vec b))) \<lbrace> \<langle>x\<rangle> \<rbrace>) \<ge>
          ((vec_to_lpoly (0\<^sub>v (dim_vec c) @\<^sub>v b)) \<lbrace> \<langle>x\<rangle> \<rbrace>)"
- using assms simplex(3) by fastforce
+  using simplex(3)[OF assms] unfolding x_times_c_geq_y_times_b_def
+  by (simp add: valuate_minus)
 
 
 (* Splitting an assignment into two vectors *)
@@ -775,7 +776,8 @@ lemma x_times_c_geq_y_times_b_split_dotP:
   assumes "(x, y) = split_n_m_x (dim_vec c) (dim_vec b) X"
   shows "c \<bullet> x \<ge> b \<bullet> y"
   using assms lpoly_of_v_equals_v_append0 eval_lpoly_eq_dot_prod_split2[of x y c b X]
-   eval_lpoly_eq_dot_prod_split1[of x y c b X]  by auto
+   eval_lpoly_eq_dot_prod_split1[of x y c b X] 
+  by (auto simp: x_times_c_geq_y_times_b_def valuate_minus)
 
 lemma mult_right_leq:
   fixes A :: "('a::{comm_semiring_1,ordered_semiring}) mat"
@@ -1109,9 +1111,6 @@ fun nonstrict_constr where
   "nonstrict_constr (LEQ p r) = True" |
   "nonstrict_constr (GEQ p r) = True" |
   "nonstrict_constr (EQ p r) = True" |
-  "nonstrict_constr (LEQPP p q) = True" |
-  "nonstrict_constr (GEQPP p q) = True" |
-  "nonstrict_constr (EQPP p q) = True" |
   "nonstrict_constr _ = False"
 
 abbreviation "nonstrict_constrs cs \<equiv> (\<forall>a \<in> set cs. nonstrict_constr a)"
@@ -1120,9 +1119,6 @@ fun transf_constraint where
   "transf_constraint (LEQ p r) = [LEQ p r]" |
   "transf_constraint (GEQ p r) = [LEQ (-p) (-r)]" |
   "transf_constraint (EQ p r) = [LEQ p r, LEQ (-p) (-r)]" |
-  "transf_constraint (LEQPP p q) = [LEQ (p - q) 0]" |
-  "transf_constraint (GEQPP p q) = [LEQ (-(p - q)) 0]" |
-  "transf_constraint (EQPP p q) = [LEQ (p - q) 0, LEQ (-(p - q)) 0]" |
   "transf_constraint _ = []"
 
 
@@ -1149,30 +1145,19 @@ lemma trans_constraints_creats_LEQ_only:
 lemma non_strict_constr_no_LT: 
   assumes "nonstrict_constrs cs"
   shows "\<forall>x \<in> set cs. \<not>(\<exists>a b. LT a b = x)"
-  using assms nonstrict_constr.simps(7) by blast
+  using assms nonstrict_constr.simps(4) by blast
 
 lemma non_strict_constr_no_GT: 
   assumes "nonstrict_constrs cs"
   shows "\<forall>x \<in> set cs. \<not>(\<exists>a b. GT a b = x)"
-  using assms nonstrict_constr.simps(8) by blast
+  using assms nonstrict_constr.simps(5) by blast
 
-lemma non_strict_constr_no_LTPP: 
-  assumes "nonstrict_constrs cs"
-  shows "\<forall>x \<in> set cs. \<not>(\<exists>a b. LTPP a b = x)"
-  using assms nonstrict_constr.simps(9) by blast
-
-lemma non_strict_constr_no_GTPP: 
-  assumes "nonstrict_constrs cs"
-  shows "\<forall>x \<in> set cs. \<not>(\<exists>a b. GTPP a b = x)"
-  using assms nonstrict_constr.simps(10) by blast
 
 lemma non_strict_consts_cond:
   assumes "\<And>x. x \<in> set cs \<Longrightarrow> \<not>(\<exists>a b. LT a b = x)"
   assumes "\<And>x. x \<in> set cs \<Longrightarrow> \<not>(\<exists>a b. GT a b = x)"
-  assumes "\<And>x. x \<in> set cs \<Longrightarrow> \<not>(\<exists>a b. LTPP a b = x)"
-  assumes "\<And>x. x \<in> set cs \<Longrightarrow> \<not>(\<exists>a b. GTPP a b = x)"
   shows "nonstrict_constrs cs"
-  by (metis assms(1) assms(2) assms(3) assms(4) nonstrict_constr.elims(3))
+  by (metis assms(1-2) nonstrict_constr.elims(3))
 
 lemma sat_constr_sat_transf_constrs:
   assumes "v \<Turnstile>\<^sub>c cs" 

@@ -12,8 +12,8 @@ theory Simplex
     "HOL-Library.Code_Target_Numeral"
 begin
 
-text\<open>Linear constraints are of the form \<open>p \<bowtie> c\<close> or \<open>p\<^sub>1 \<bowtie> p\<^sub>2\<close>, where \<open>p\<close>, \<open>p\<^sub>1\<close>, and \<open>p\<^sub>2\<close>, are
-linear polynomials, \<open>c\<close> is a rational constant and \<open>\<bowtie> \<in>
+text\<open>Linear constraints are of the form \<open>p \<bowtie> c\<close>, where \<open>p\<close> is
+a homogenenous linear polynomial, \<open>c\<close> is a rational constant and \<open>\<bowtie> \<in>
 {<, >, \<le>, \<ge>, =}\<close>. Their abstract syntax is given by the \<open>constraint\<close> type, and semantics is given by the relation \<open>\<Turnstile>\<^sub>c\<close>, defined straightforwardly by primitive recursion over the
 \<open>constraint\<close> type. A set of constraints is satisfied,
 denoted by \<open>\<Turnstile>\<^sub>c\<^sub>s\<close>, if all constraints are. There is also an indexed
@@ -25,11 +25,6 @@ datatype constraint = LT linear_poly rat
   | LEQ linear_poly rat
   | GEQ linear_poly rat
   | EQ linear_poly rat
-  | LTPP linear_poly linear_poly
-  | GTPP linear_poly linear_poly
-  | LEQPP linear_poly linear_poly
-  | GEQPP linear_poly linear_poly
-  | EQPP linear_poly linear_poly
 
 text \<open>Indexed constraints are just pairs of indices and constraints. Indices will be used
   to identify constraints, e.g., to easily specify an unsatisfiable core by a list of indices.\<close>
@@ -56,11 +51,6 @@ primrec
 | "v \<Turnstile>\<^sub>c LEQ l r \<longleftrightarrow> (l\<lbrace>v\<rbrace>) \<le> r *R 1"
 | "v \<Turnstile>\<^sub>c GEQ l r \<longleftrightarrow> (l\<lbrace>v\<rbrace>) \<ge>  r *R 1"
 | "v \<Turnstile>\<^sub>c EQ l r \<longleftrightarrow> (l\<lbrace>v\<rbrace>) = r *R 1"
-| "v \<Turnstile>\<^sub>c LTPP l1 l2 \<longleftrightarrow> (l1\<lbrace>v\<rbrace>) < (l2\<lbrace>v\<rbrace>)"
-| "v \<Turnstile>\<^sub>c GTPP l1 l2 \<longleftrightarrow> (l1\<lbrace>v\<rbrace>) > (l2\<lbrace>v\<rbrace>)"
-| "v \<Turnstile>\<^sub>c LEQPP l1 l2 \<longleftrightarrow> (l1\<lbrace>v\<rbrace>) \<le> (l2\<lbrace>v\<rbrace>)"
-| "v \<Turnstile>\<^sub>c GEQPP l1 l2 \<longleftrightarrow> (l1\<lbrace>v\<rbrace>) \<ge> (l2\<lbrace>v\<rbrace>)"
-| "v \<Turnstile>\<^sub>c EQPP l1 l2 \<longleftrightarrow> (l1\<lbrace>v\<rbrace>) = (l2\<lbrace>v\<rbrace>)"
 
 
 abbreviation satisfies_constraints :: "rat valuation \<Rightarrow> constraint set \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>c\<^sub>s" 100) where
@@ -7794,11 +7784,6 @@ primrec
 | "constraint_to_qdelta_constraint (LEQ l r) = [LEQ_ns l (QDelta.QDelta r 0)]"
 | "constraint_to_qdelta_constraint (GEQ l r) = [GEQ_ns l (QDelta.QDelta r 0)]"
 | "constraint_to_qdelta_constraint (EQ l r) = [LEQ_ns l (QDelta.QDelta r 0), GEQ_ns l (QDelta.QDelta r 0)]"
-| "constraint_to_qdelta_constraint (LTPP l1 l2) = [LEQ_ns (l1 - l2) (QDelta.QDelta 0 (-1))]"
-| "constraint_to_qdelta_constraint (GTPP l1 l2) = [GEQ_ns (l1 - l2) (QDelta.QDelta 0 1)]"
-| "constraint_to_qdelta_constraint (LEQPP l1 l2) = [LEQ_ns (l1 - l2) 0]"
-| "constraint_to_qdelta_constraint (GEQPP l1 l2) = [GEQ_ns (l1 - l2) 0]"
-| "constraint_to_qdelta_constraint (EQPP l1 l2) = [LEQ_ns (l1 - l2) 0, GEQ_ns (l1 - l2) 0]"
 
 primrec
   i_constraint_to_qdelta_constraint:: "'i i_constraint \<Rightarrow> ('i,QDelta) i_ns_constraint list" where
@@ -8030,133 +8015,6 @@ proof unfold_locales
           by (auto simp add: valuate_rat_valuate)
         then show ?case
           by (simp add: val_def)
-      next
-        case (LTPP ll1 ll2)
-        then have "((ll1-ll2)\<lbrace>\<langle>v'\<rangle>\<rbrace>, (QDelta.QDelta 0 (-1)) ) \<in> set ?list" using i unfolding cs_def
-          by (force simp add: to_ns)
-        then have "val ((ll1-ll2)\<lbrace>\<langle>v'\<rangle>\<rbrace>) (\<delta>_min f_list) \<le> val (QDelta.QDelta 0 (-1)) (\<delta>_min f_list)"
-          using l1
-          by simp
-        moreover
-        have "(ll1-ll2)\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> =
-              (ll1-ll2)\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace>"
-        proof (rule valuate_depend, rule)
-          fix x
-          assume "x \<in> vars (ll1 - ll2)"
-          then show "val (\<langle>v'\<rangle> x) (\<delta>_min f_list) = \<langle>from_ns v' ?f_list\<rangle> x"
-            using l2
-            using LTPP
-            by (auto simp add: lookup_tabulate comp_def restrict_map_def set_vars_list to_ns_def map2fun_def')
-        qed
-        ultimately
-        have "(ll1-ll2)\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace> \<le> val (QDelta.QDelta 0 (-1)) (\<delta>_min f_list)"
-          using l1
-          by (simp add: valuate_rat_valuate)
-        then show ?case
-          using delta_gt_zero[of f_list]
-          by (simp add: val_def valuate_minus)
-      next
-        case (GTPP ll1 ll2)
-        then have "((QDelta.QDelta 0 1), (ll1-ll2)\<lbrace>\<langle>v'\<rangle>\<rbrace>) \<in> set ?list" using i unfolding cs_def
-          by (force simp add: to_ns)
-        then have "val ((ll1-ll2)\<lbrace>\<langle>v'\<rangle>\<rbrace>) (\<delta>_min f_list) \<ge> val (QDelta.QDelta 0 1) (\<delta>_min f_list)"
-          using l1
-          by simp
-        moreover
-        have "(ll1-ll2)\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> =
-              (ll1-ll2)\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace>"
-        proof (rule valuate_depend, rule)
-          fix x
-          assume "x \<in> vars (ll1 - ll2)"
-          then show "val (\<langle>v'\<rangle> x) (\<delta>_min f_list) = \<langle>from_ns v' ?f_list\<rangle> x"
-            using l2
-            using GTPP
-            by (auto simp add: lookup_tabulate comp_def restrict_map_def set_vars_list to_ns_def map2fun_def')
-        qed
-        ultimately
-        have "(ll1-ll2)\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace> \<ge> val (QDelta.QDelta 0 1) (\<delta>_min f_list)"
-          using l1
-          by (simp add: valuate_rat_valuate)
-        then show ?case
-          using delta_gt_zero[of f_list]
-          by (simp add: val_def valuate_minus)
-      next
-        case (LEQPP ll1 ll2)
-        then have "((ll1-ll2)\<lbrace>\<langle>v'\<rangle>\<rbrace>, (QDelta.QDelta 0 0) ) \<in> set ?list" using i unfolding cs_def
-          by (force simp add: to_ns zero_QDelta_def)
-        then have "val ((ll1-ll2)\<lbrace>\<langle>v'\<rangle>\<rbrace>) (\<delta>_min f_list) \<le> val (QDelta.QDelta 0 0) (\<delta>_min f_list)"
-          using l1
-          by simp
-        moreover
-        have "(ll1-ll2)\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> =
-              (ll1-ll2)\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace>"
-        proof (rule valuate_depend, rule)
-          fix x
-          assume "x \<in> vars (ll1 - ll2)"
-          then show "val (\<langle>v'\<rangle> x) (\<delta>_min f_list) = \<langle>from_ns v' ?f_list\<rangle> x"
-            using l2
-            using LEQPP
-            by (auto simp add: lookup_tabulate comp_def restrict_map_def set_vars_list to_ns_def map2fun_def')
-        qed
-        ultimately
-        have "(ll1-ll2)\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace> \<le> val (QDelta.QDelta 0 0) (\<delta>_min f_list)"
-          using l1
-          by (simp add: valuate_rat_valuate)
-        then show ?case
-          using delta_gt_zero[of f_list]
-          by (simp add: val_def valuate_minus)
-      next
-        case (GEQPP ll1 ll2)
-        then have "((QDelta.QDelta 0 0), (ll1-ll2)\<lbrace>\<langle>v'\<rangle>\<rbrace>) \<in> set ?list" using i unfolding cs_def
-          by (force simp add: to_ns zero_QDelta_def)
-        then have "val ((ll1-ll2)\<lbrace>\<langle>v'\<rangle>\<rbrace>) (\<delta>_min f_list) \<ge> val (QDelta.QDelta 0 0) (\<delta>_min f_list)"
-          using l1
-          by simp
-        moreover
-        have "(ll1-ll2)\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> =
-              (ll1-ll2)\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace>"
-        proof (rule valuate_depend, rule)
-          fix x
-          assume "x \<in> vars (ll1 - ll2)"
-          then show "val (\<langle>v'\<rangle> x) (\<delta>_min f_list) = \<langle>from_ns v' ?f_list\<rangle> x"
-            using l2
-            using GEQPP
-            by (auto simp add: lookup_tabulate comp_def restrict_map_def set_vars_list to_ns_def map2fun_def')
-        qed
-        ultimately
-        have "(ll1-ll2)\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace> \<ge> val (QDelta.QDelta 0 0) (\<delta>_min f_list)"
-          using l1
-          by (simp add: valuate_rat_valuate)
-        then show ?case
-          using delta_gt_zero[of f_list]
-          by (simp add: val_def valuate_minus)
-      next
-        case (EQPP ll1 ll2)
-        then have "((ll1-ll2)\<lbrace>\<langle>v'\<rangle>\<rbrace>, (QDelta.QDelta 0 0) ) \<in> set ?list" and
-          "((QDelta.QDelta 0 0), (ll1-ll2)\<lbrace>\<langle>v'\<rangle>\<rbrace>) \<in> set ?list" using i unfolding cs_def
-          by (force simp add: to_ns zero_QDelta_def)+
-        then have "val ((ll1-ll2)\<lbrace>\<langle>v'\<rangle>\<rbrace>) (\<delta>_min f_list) \<ge> val (QDelta.QDelta 0 0) (\<delta>_min f_list)" and
-          "val ((ll1-ll2)\<lbrace>\<langle>v'\<rangle>\<rbrace>) (\<delta>_min f_list) \<le> val (QDelta.QDelta 0 0) (\<delta>_min f_list)"
-          using l1
-          by simp_all
-        moreover
-        have "(ll1-ll2)\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> =
-              (ll1-ll2)\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace>"
-        proof (rule valuate_depend, rule)
-          fix x
-          assume "x \<in> vars (ll1 - ll2)"
-          then show "val (\<langle>v'\<rangle> x) (\<delta>_min f_list) = \<langle>from_ns v' ?f_list\<rangle> x"
-            using l2
-            using EQPP
-            by (auto simp add: lookup_tabulate comp_def restrict_map_def set_vars_list to_ns_def map2fun_def')
-        qed
-        ultimately
-        have "(ll1-ll2)\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace> \<ge> val (QDelta.QDelta 0 0) (\<delta>_min f_list)" and
-          "(ll1-ll2)\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace> \<le> val (QDelta.QDelta 0 0) (\<delta>_min f_list)"
-          using l1
-          by (auto simp add: valuate_rat_valuate)
-        then show ?case
-          by (simp add: val_def valuate_minus)
       qed
     qed
   } note sat = this
@@ -8326,7 +8184,7 @@ qed
 
 text \<open>check executability\<close>
 
-lemma "case simplex [LTPP (lp_monom 2 1) (lp_monom 3 2 - lp_monom 3 0), GT (lp_monom 1 1) 5]
+lemma "case simplex [LT (lp_monom 2 1 - lp_monom 3 2 + lp_monom 3 0) 0, GT (lp_monom 1 1) 5]
    of Sat _ \<Rightarrow> True | Unsat _ \<Rightarrow> False"
   by eval
 
@@ -8335,8 +8193,8 @@ text \<open>check unsat core\<close>
 lemma
   "case simplex_index [
     (1 :: int, LT (lp_monom 1 1) 4),
-    (2, GTPP (lp_monom 2 1) (lp_monom 1 2)),
-    (3, EQPP (lp_monom 1 1) (lp_monom 2 2)),
+    (2, GT (lp_monom 2 1 - lp_monom 1 2) 0),
+    (3, EQ (lp_monom 1 1 - lp_monom 2 2) 0),
     (4, GT (lp_monom 2 2) 5),
     (5, GT (lp_monom 3 0) 7)]
     of Sat _ \<Rightarrow> False | Unsat I \<Rightarrow> set I = {1,3,4}" \<comment> \<open>Constraints 1,3,4 are unsat core\<close>

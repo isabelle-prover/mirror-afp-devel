@@ -1084,17 +1084,8 @@ fun scaleRat_constraint :: "rat \<Rightarrow> constraint \<Rightarrow> constrain
     (if (r > 0) then GEQ (r *R p) (r *R c) else LEQ (r *R p) (r *R c))
   | GT p c \<Rightarrow> 
     (if (r > 0) then GT (r *R p) (r *R c) else LT (r *R p) (r *R c))
-  | LTPP p q \<Rightarrow>
-     (if (r < 0) then GT (r *R (p - q)) 0 else LT (r *R (p - q)) 0)
-  | LEQPP p q \<Rightarrow>
-     (if (r < 0) then GEQ (r *R (p - q)) 0 else LEQ (r *R (p - q)) 0)
-  | GTPP p q \<Rightarrow>
-     (if (r > 0) then GT (r *R (p - q)) 0 else LT (r *R (p - q)) 0)
-  | GEQPP p q \<Rightarrow>
-     (if (r > 0) then GEQ (r *R (p - q)) 0 else LEQ (r *R (p - q)) 0)
-  | EQPP p q \<Rightarrow> LEQ (r *R (p - q)) 0 \<comment> \<open>We do not keep equality, since the aim is 
+  | EQ p c \<Rightarrow> LEQ (r *R p) (r *R c) \<comment> \<open>We do not keep equality, since the aim is 
         to convert the scaled constraints into inequalities, which will then be summed up.\<close>
-  | EQ p c \<Rightarrow> LEQ (r *R p) (r *R c) 
 ))"
 
 instance ..

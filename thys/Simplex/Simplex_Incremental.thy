@@ -1015,8 +1015,8 @@ subsection \<open>Test Executability and Example for Incremental Interface\<clos
 
 value (code) "let cs = [
     (1 :: int, LT (lp_monom 1 1) 4), \<comment> \<open>$x_1 < 4$\<close>
-    (2, GTPP (lp_monom 2 1) (lp_monom 1 2)), \<comment> \<open>$2x_1 > x_2$\<close>
-    (3, EQPP (lp_monom 1 1) (lp_monom 2 2)), \<comment> \<open>$x_1 = 2x_2$\<close>
+    (2, GT (lp_monom 2 1 - lp_monom 1 2) 0), \<comment> \<open>$2x_1 - x_2 > 0$\<close>
+    (3, EQ (lp_monom 1 1 - lp_monom 2 2) 0), \<comment> \<open>$x_1 - 2x_2 = 0$\<close>
     (4, GT (lp_monom 2 2) 5), \<comment> \<open>$2x_2 > 5$\<close>
     (5, GT (lp_monom 3 0) 7), \<comment> \<open>$3x_0 > 7$\<close>
     (6, GT (lp_monom 3 3 + lp_monom (1/3) 2) 2)]; \<comment> \<open>$3x_3 + 1/3x_2 > 2$\<close>
