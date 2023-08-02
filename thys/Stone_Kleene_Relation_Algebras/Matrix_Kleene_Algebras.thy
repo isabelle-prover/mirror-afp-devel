@@ -1309,5 +1309,14 @@ proof
   qed
 qed
 
+interpretation matrix_stone_kleene_relation_algebra_consistent: stone_kleene_relation_algebra_consistent where sup = sup_matrix and inf = inf_matrix and less_eq = less_eq_matrix and less = less_matrix and bot = "bot_matrix :: ('a::enum,'b::stone_kleene_relation_algebra_consistent) square" and top = top_matrix and uminus = uminus_matrix and one = one_matrix and times = times_matrix and conv = conv_matrix and star = star_matrix
+  ..
+
+interpretation matrix_stone_kleene_relation_algebra_tarski: stone_kleene_relation_algebra_tarski where sup = sup_matrix and inf = inf_matrix and less_eq = less_eq_matrix and less = less_matrix and bot = "bot_matrix :: ('a::enum,'b::stone_kleene_relation_algebra_tarski) square" and top = top_matrix and uminus = uminus_matrix and one = one_matrix and times = times_matrix and conv = conv_matrix and star = star_matrix
+  ..
+
+interpretation matrix_stone_kleene_relation_algebra_tarski_consistent: stone_kleene_relation_algebra_tarski_consistent where sup = sup_matrix and inf = inf_matrix and less_eq = less_eq_matrix and less = less_matrix and bot = "bot_matrix :: ('a::enum,'b::stone_kleene_relation_algebra_tarski_consistent) square" and top = top_matrix and uminus = uminus_matrix and one = one_matrix and times = times_matrix and conv = conv_matrix and star = star_matrix
+  ..
+
 end
 

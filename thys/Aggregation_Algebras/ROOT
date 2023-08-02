@@ -7,6 +7,7 @@ session Aggregation_Algebras = Stone_Kleene_Relation_Algebras +
     Aggregation_Algebras
     Matrix_Aggregation_Algebras
     Linear_Aggregation_Algebras
+    M_Choose_Component
   document_files
     "root.tex"
     "root.bib"

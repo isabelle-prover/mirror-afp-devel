@@ -142,6 +142,10 @@ lemma lub_sum_iff:
   shows "(\<forall>k . f k \<le> x) \<longleftrightarrow> (\<Squnion>\<^sub>k f k) \<le> x"
   using order.trans ub_sum lub_sum by blast
 
+lemma sum_const:
+  "(\<Squnion>\<^sub>k::'b::finite f) = f"
+  by (metis lub_sum sup.cobounded1 sup_monoid.add_0_right sup_same_context ub_sum)
+
 end
 
 context stone_relation_algebra
@@ -608,6 +612,40 @@ next
       .
   qed
 qed
+
+interpretation matrix_stone_relation_algebra_consistent: stone_relation_algebra_consistent where sup = sup_matrix and inf = inf_matrix and less_eq = less_eq_matrix and less = less_matrix and bot = "bot_matrix :: ('a::finite,'b::stone_relation_algebra_consistent) square" and top = top_matrix and uminus = uminus_matrix and one = one_matrix and times = times_matrix and conv = conv_matrix
+proof
+  show "(mbot::('a,'b) square) \<noteq> mtop"
+    by (metis consistent bot_matrix_def top_matrix_def)
+qed
+
+interpretation matrix_stone_relation_algebra_tarski: stone_relation_algebra_tarski where sup = sup_matrix and inf = inf_matrix and less_eq = less_eq_matrix and less = less_matrix and bot = "bot_matrix :: ('a::finite,'b::stone_relation_algebra_tarski) square" and top = top_matrix and uminus = uminus_matrix and one = one_matrix and times = times_matrix and conv = conv_matrix
+proof
+  fix x :: "('a,'b) square"
+  assume 1: "matrix_p_algebra.regular x"
+  assume "x \<noteq> mbot"
+  from this obtain i j where "x (i,j) \<noteq> bot"
+    by (metis bot_matrix_def ext surj_pair)
+  hence 2: "top * x (i,j) * top = top"
+    using 1 by (metis tarski uminus_matrix_def)
+  show "matrix_bounded_idempotent_semiring.total (mtop \<odot> x)"
+  proof (rule ext, rule prod_cases)
+    fix k l
+    have "top * x (i,j) * top \<le> (\<Squnion>\<^sub>m top * x (m,j)) * top"
+      using comp_inf.ub_sum comp_isotone by fastforce
+    also have "... = (mtop \<odot> x) (k,j) * top"
+      by (simp add: times_matrix_def top_matrix_def)
+    also have "... \<le> (\<Squnion>\<^sub>m (mtop \<odot> x) (k,m) * top)"
+      using comp_inf.ub_sum by force
+    also have "... = (mtop \<odot> x \<odot> mtop) (k,l)"
+      by (simp add: times_matrix_def top_matrix_def)
+    finally show "(mtop \<odot> x \<odot> mtop) (k,l) = mtop (k,l)"
+      using 2 by (simp add: top_matrix_def inf.bot_unique)
+  qed
+qed
+
+interpretation matrix_stone_relation_algebra_tarski_consistent: stone_relation_algebra_tarski_consistent where sup = sup_matrix and inf = inf_matrix and less_eq = less_eq_matrix and less = less_matrix and bot = "bot_matrix :: ('a::finite,'b::stone_relation_algebra_tarski_consistent) square" and top = top_matrix and uminus = uminus_matrix and one = one_matrix and times = times_matrix and conv = conv_matrix
+  ..
 
 end
 

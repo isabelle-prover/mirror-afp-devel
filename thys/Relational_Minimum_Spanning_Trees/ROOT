@@ -1,12 +1,11 @@
 chapter AFP
 
-session Relational_Minimum_Spanning_Trees = Aggregation_Algebras +
+session Relational_Minimum_Spanning_Trees = Relational_Disjoint_Set_Forests +
 
   options [timeout = 600]
 
   sessions
     "HOL-Hoare"
-    Relational_Disjoint_Set_Forests
 
   theories
     Kruskal

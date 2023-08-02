@@ -12,6 +12,7 @@ In this theory we prove partial correctness of Bor\r{u}vka's minimum spanning tr
 theory Boruvka
 
 imports
+  Aggregation_Algebras.M_Choose_Component
   Relational_Disjoint_Set_Forests.Disjoint_Set_Forests
   Kruskal
 
@@ -606,164 +607,11 @@ qed
 
 end
 
-context stone_relation_algebra
-begin
-
-text \<open>
-A \<open>vector_classes\<close> corresponds to one or more equivalence classes and a \<open>unique_vector_class\<close> corresponds to a single equivalence class.
-\<close>
-
-definition vector_classes        :: "'a \<Rightarrow> 'a \<Rightarrow> bool" where "vector_classes x v \<equiv> regular x \<and> regular v \<and> equivalence x \<and> vector v \<and> x * v \<le> v \<and> v \<noteq> bot"
-definition unique_vector_class   :: "'a \<Rightarrow> 'a \<Rightarrow> bool" where "unique_vector_class x v \<equiv> vector_classes x v \<and> v * v\<^sup>T \<le> x"
-
-end
-
 subsection \<open>An operation to select components\<close>
 
 text \<open>
-We introduce the operation \<open>choose_component\<close>.
-\begin{itemize}
-  \item Axiom \<open>component_in_v\<close> expresses that the result of \<open>choose_component\<close> is contained in the set of vertices, $v$, we are selecting from, ignoring the weights.
-  \item Axiom \<open>component_is_vector\<close> states that the result of \<open>choose_component\<close> is a vector.
-  \item Axiom \<open>component_is_regular\<close> states that the result of \<open>choose_component\<close> is regular.
-  \item Axiom \<open>component_is_connected\<close> states that any two vertices from the result of \<open>choose_component\<close> are connected in $e$.
-  \item Axiom \<open>component_single\<close> states that the result of \<open>choose_component\<close> is closed under being connected in $e$.
-  \item Finally, axiom \<open>component_not_bot_when_v_bot_bot\<close> expresses that the operation \<open>choose_component\<close> returns a non-empty component if the input satisfies the given criteria.
-\end{itemize}
+This section has been moved to theories \<open>Stone_Relation_Algebras.Choose_Component\<close> and \<open>Aggregation_Algebras.M_Choose_Component\<close>.
 \<close>
-
-class choose_component =
-  fixes choose_component :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"
-
-class choose_component_algebra = choose_component + stone_relation_algebra +
-  assumes component_is_vector:              "vector (choose_component e v)"
-  assumes component_is_regular:             "regular (choose_component e v)"
-  assumes component_in_v:                   "choose_component e v \<le> --v"
-  assumes component_is_connected:           "choose_component e v * (choose_component e v)\<^sup>T \<le> e"
-  assumes component_single:                 "e * choose_component e v \<le> choose_component e v"
-  assumes component_not_bot_when_v_bot_bot: "vector_classes e v \<longrightarrow> choose_component e v \<noteq> bot"
-
-text \<open>
-Every \<open>m_kleene_algebra\<close> is an instance of \<open>choose_component_algebra\<close> when the \<open>choose_component\<close> operation is defined as follows:
-\<close>
-
-context m_kleene_algebra
-begin
-
-definition "m_choose_component e v \<equiv>
-  if vector_classes e v then
-    e * minarc(v) * top
-  else
-    bot"
-
-sublocale m_choose_component_algebra: choose_component_algebra where choose_component = m_choose_component
-proof
-  fix e v
-  show "m_choose_component e v \<le> -- v"
-  proof (cases "vector_classes e v")
-    case True
-    hence "m_choose_component e v = e * minarc(v) * top"
-      by (simp add: m_choose_component_def)
-    also have "... \<le> e * --v * top"
-      by (simp add: comp_isotone minarc_below)
-    also have "... = e * v * top"
-      using True vector_classes_def by auto
-    also have "... \<le> v * top"
-      using True vector_classes_def mult_assoc by auto
-    finally show ?thesis
-      using True vector_classes_def by auto
-  next
-    case False
-    hence "m_choose_component e v = bot"
-      using False m_choose_component_def by auto
-    thus ?thesis
-      by simp
-  qed
-next
-  fix e v
-  show "vector (m_choose_component e v)"
-  proof (cases "vector_classes e v")
-    case True
-    thus ?thesis
-      by (simp add: mult_assoc m_choose_component_def)
-  next
-    case False
-    thus ?thesis
-      by (simp add: m_choose_component_def)
-  qed
-next
-  fix e v
-  show "regular (m_choose_component e v)"
-    using minarc_regular regular_mult_closed vector_classes_def m_choose_component_def by auto
-next
-  fix e v
-  show "m_choose_component e v * (m_choose_component e v)\<^sup>T \<le> e"
-  proof (cases "vector_classes e v")
-    case True
-    assume 1: "vector_classes e v"
-    hence "m_choose_component e v * (m_choose_component e v)\<^sup>T = e * minarc(v) * top * (e * minarc(v) * top)\<^sup>T"
-      by (simp add: m_choose_component_def)
-    also have "... = e * minarc(v) * top * top\<^sup>T * minarc(v)\<^sup>T * e\<^sup>T"
-      by (metis comp_associative conv_dist_comp)
-    also have "... = e * minarc(v) * top * top * minarc(v)\<^sup>T * e"
-      using True vector_classes_def by auto
-    also have "... = e * minarc(v) * top * minarc(v)\<^sup>T * e"
-      by (simp add: comp_associative)
-    also have "... \<le> e"
-    proof (cases "v = bot")
-      case True
-      thus ?thesis
-        by (simp add: True minarc_bot)
-    next
-      case False
-      assume 3: "v \<noteq> bot"
-      hence "e * minarc(v) * top * minarc(v)\<^sup>T \<le> e * 1"
-        using 3 minarc_arc arc_expanded comp_associative mult_right_isotone by fastforce
-      hence "e * minarc(v) * top * minarc(v)\<^sup>T * e \<le> e * 1 * e"
-        using mult_left_isotone by auto
-      also have "... = e"
-        using True preorder_idempotent vector_classes_def by auto
-      thus ?thesis
-        using calculation by auto
-    qed
-    thus ?thesis
-      by (simp add: calculation)
-  next
-    case False
-    thus ?thesis
-      by (simp add: m_choose_component_def)
-  qed
-next
-  fix e v
-  show "e * m_choose_component e v \<le> m_choose_component e v"
-  proof (cases "vector_classes e v")
-    case True
-    thus ?thesis
-      using comp_right_one dual_order.eq_iff mult_isotone vector_classes_def m_choose_component_def mult_assoc by metis
-  next
-    case False
-    thus ?thesis
-      by (simp add: m_choose_component_def)
-  qed
-next
-  fix e v
-  show "vector_classes e v \<longrightarrow> m_choose_component e v \<noteq> bot"
-  proof (cases "vector_classes e v")
-    case True
-    hence "m_choose_component e v \<ge> minarc(v) * top"
-      using vector_classes_def m_choose_component_def comp_associative minarc_arc shunt_bijective by fastforce
-    also have "... \<ge> minarc(v)"
-      using calculation dual_order.trans top_right_mult_increasing by blast
-    thus ?thesis
-      using le_bot minarc_bot_iff vector_classes_def by fastforce
-  next
-    case False
-    thus ?thesis
-      by blast
-  qed
-qed
-
-end
 
 subsection \<open>m-k-Stone-Kleene relation algebras\<close>
 
@@ -771,9 +619,7 @@ text \<open>
 $m$-$k$-Stone-Kleene relation algebras are an extension of $m$-Kleene algebras where the \<open>choose_component\<close> operation has been added.
 \<close>
 
-class m_kleene_algebra_choose_component =
-  m_kleene_algebra
-  + choose_component_algebra
+context m_kleene_algebra_choose_component
 begin
 
 text \<open>
@@ -910,16 +756,6 @@ subsubsection \<open>Components of forests and forests modulo an equivalence\<cl
 text \<open>
 We prove a number of properties about \<open>forest_modulo_equivalence\<close> and \<open>forest_components\<close>.
 \<close>
-
-lemma component_single_eq:
-  assumes "equivalence x"
-  shows "choose_component x v = x * choose_component x v"
-proof -
-  have 1: "choose_component x v \<le> x * choose_component x v"
-    by (meson component_is_connected ex231c mult_isotone order_lesseq_imp)
-  thus ?thesis
-    by (simp add: component_single order.antisym)
-qed
 
 lemma fc_j_eq_j_inv:
   assumes "forest h"

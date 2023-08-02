@@ -298,6 +298,12 @@ lemma circ_mult_below_circ_circ:
   "(x * y)\<^sup>\<circ> \<le> (x\<^sup>\<circ> * y)\<^sup>\<circ> * x\<^sup>\<circ>"
   by (metis circ_increasing circ_isotone circ_reflexive dual_order.trans mult_left_isotone mult_right_isotone mult_1_right)
 
+lemma power_below_circ:
+  "power x i \<le> x\<^sup>\<circ>"
+  apply (induct rule: nat.induct)
+  apply (simp add: circ_reflexive)
+  by (simp add: circ_increasing circ_mult_upper_bound)
+
 (*
 lemma circ_right_unfold: "1 \<squnion> x\<^sup>\<circ> * x = x\<^sup>\<circ>" nitpick [expect=genuine] oops
 lemma circ_mult: "1 \<squnion> x * (y * x)\<^sup>\<circ> * y = (x * y)\<^sup>\<circ>" nitpick [expect=genuine] oops

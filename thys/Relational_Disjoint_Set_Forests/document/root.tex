@@ -7,7 +7,7 @@
 \isabellestyle{it}
 \renewenvironment{isamarkuptext}{\par\isastyletext\begin{isapar}\justifying\color{blue}}{\end{isapar}}
 \renewcommand\labelitemi{$*$}
-%\urlstyle{rm}
+\urlstyle{rm}
 
 \begin{document}
 
@@ -42,8 +42,9 @@ The make-set operation, find-set with path compression and the naive union-sets 
 Section 5 presents further results on disjoint-set forests and relational array access.
 The initialisation of disjoint-set forests, path halving and path splitting are implemented and verified in Section 6.
 In Section 7 we study relational Peano structures and implement and verify union-by-rank.
+Section 8 instantiates the Peano axioms by Boolean matrices.
 
-This Isabelle/HOL theory formally verifies results in \cite{Guttmann2020b} and in an extended version of that paper.
+This Isabelle/HOL theory formally verifies results in \cite{Guttmann2020b} and an extended version of that paper \cite{Guttmann2023}.
 Theorem numbers from the extended version of the paper are mentioned in the theories for reference.
 See the paper for further details and related work.
 
