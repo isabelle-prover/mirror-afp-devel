@@ -49,9 +49,11 @@ lemma Show_Read_bool'_id: \<open>strL_is_bool' s \<Longrightarrow> (ShowL\<^sub>
 lemma strL_is_bool'_split:  \<open>strL_is_bool' s \<Longrightarrow> s = STR ''False'' \<or> s = STR ''True''\<close>
   by(auto simp: strL_is_bool'_def ReadL\<^sub>b\<^sub>o\<^sub>o\<^sub>l_def ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l_def)
 
-lemma Read_Show_bool'_id: \<open>ReadL\<^sub>b\<^sub>o\<^sub>o\<^sub>l (ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l b) = b\<close>
+lemma Read_Show_bool'_id[simp]: \<open>ReadL\<^sub>b\<^sub>o\<^sub>o\<^sub>l (ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l b) = b\<close>
   by(auto simp: ReadL\<^sub>b\<^sub>o\<^sub>o\<^sub>l_def ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l_def)
 
+lemma true_neq_false[simp]: "ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True \<noteq> ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l False"
+  by (metis Read_Show_bool'_id)
 
 subsubsection\<open>Natural Numbers\<close>
 
@@ -70,6 +72,23 @@ definition  nat_of_digit ::  \<open>char \<Rightarrow> nat\<close> where
     else undefined)\<close>
 
 declare nat_of_digit_def [solidity_symbex]
+
+definition  is_digit ::  \<open>char \<Rightarrow> bool\<close> where
+ \<open>is_digit c = 
+    (if c = CHR ''0'' then True
+    else if c = CHR ''1'' then True
+    else if c = CHR ''2'' then True
+    else if c = CHR ''3'' then True
+    else if c = CHR ''4'' then True
+    else if c = CHR ''5'' then True
+    else if c = CHR ''6'' then True
+    else if c = CHR ''7'' then True
+    else if c = CHR ''8'' then True
+    else if c = CHR ''9'' then True
+    else if c = CHR ''-'' then True
+    else False)\<close>
+
+
 
 definition  digit_of_nat ::  \<open>nat \<Rightarrow> char\<close> where
   \<open>digit_of_nat x =
@@ -382,7 +401,7 @@ value \<open>Show\<^sub>i\<^sub>n\<^sub>t (Read\<^sub>i\<^sub>n\<^sub>t (''-10''
 
 lemma Show_Read_id: \<open>STR_is_int s \<Longrightarrow> (Show\<^sub>i\<^sub>n\<^sub>t (Read\<^sub>i\<^sub>n\<^sub>t s) = s)\<close>
   by(simp add:STR_is_int_def)
-
+                          
 lemma Read_Show_id: \<open>Read\<^sub>i\<^sub>n\<^sub>t(Show\<^sub>i\<^sub>n\<^sub>t(x)) = x\<close>
   apply(code_simp)
   apply(auto simp:Show_nat_not_neg Read_Show_nat_id)[1]

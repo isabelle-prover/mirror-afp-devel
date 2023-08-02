@@ -1,22 +1,27 @@
 chapter AFP
 
-session Solidity = "HOL-Library" +
+session "Solidity" = "HOL-Library" +
   options [timeout = 7200]
   sessions
     "HOL-Eisbach"
+    "Finite-Map-Extras"
   theories
+    Utils
     ReadShow
     StateMonad
     Valuetypes
     Storage
     Accounts
     Environment
+    Contracts
+    Expressions
     Statements
     Solidity_Main
     Solidity_Symbex
     Solidity_Evaluator
-    Constant_Folding
+    Weakest_Precondition
     Reentrancy
+    Constant_Folding
   theories [condition = ISABELLE_GHC]
     Compile_Evaluator
   document_files

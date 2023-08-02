@@ -7,7 +7,7 @@ theory
 begin
 
 
-compile_generated_files _  (in Solidity_Evaluator) export_files  "solidity-evaluator"  (executable)
+compile_generated_files _  (in Solidity_Evaluator) export_files  "solidity-evaluator"  (exe)
   where \<open>fn dir =>
     let
        val modules_src =
@@ -26,13 +26,12 @@ compile_generated_files _  (in Solidity_Evaluator) export_files  "solidity-evalu
            depends =
             [],
            modules = modules_app};
-     val _ = writeln (Path.implode dir)
      val res = Generated_Files.execute dir \<open>Build\<close> (String.concat [
-                  "echo \"\n  default-extensions:  TypeSynonymInstances, FlexibleInstances\" >> solidity-evaluator.cabal"
+              "echo \"\n  default-extensions:  TypeSynonymInstances, FlexibleInstances\" >> solidity-evaluator.cabal"
                  ," && rm -rf src"
                  ," && mv code/solidity-evaluator/src src"
                  ," && mv code/solidity-evaluator/app/* src/"
-                 ," && isabelle ghc_stack install --local-bin-path . `pwd`"])
+                 ," && isabelle ghc_stack install --local-bin-path . ."])
    in
      writeln (res) 
    end\<close> 

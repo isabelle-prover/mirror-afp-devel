@@ -51,10 +51,11 @@
 \subtitle{A deep Embedding of Solidity in Isabelle/HOL}
 \author{Diego Marmsoler\textsuperscript{\orcidlink{0000-0003-2859-7673}}  
         and 
-        Achim D. Brucker\textsuperscript{\orcidlink{0000-0002-6355-1200}}}%
+        Achim D. Brucker\textsuperscript{\orcidlink{0000-0002-6355-1200}}
+		and Billy Thornton}%
 \publishers{
 Department of Computer Science, University of Exeter, Exeter, UK\texorpdfstring{\\}{, }
-  \texttt{\{d.marmsoler,a.brucker\}@exeter.ac.uk}
+  \texttt{\{d.marmsoler, a.brucker, bt319\}@exeter.ac.uk}
 }
 \begin{document}
 \begin{frontmatter}
@@ -74,7 +75,7 @@ Department of Computer Science, University of Exeter, Exeter, UK\texorpdfstring{
     environment for Solidity programs and allows for inspecting them by
     (symbolic) execution. We combine the latter with grammar based fuzzing to
     ensure that our formal semantics complies to the Solidity implementation on
-    the Ethereum Blockchain.  Finally, we demonstrate the formal verification of
+    the Ethereum blockchain.  Finally, we demonstrate the formal verification of
     Solidity programs by two examples: constant folding and a simple verified
     token.
 
@@ -171,15 +172,15 @@ specific to Solidity. This includes, for example, functions to convert
 values of basic types to/from strings.
 
 \input{ReadShow.tex}
-
+\input{Utils}
 \input{StateMonad.tex}
-
 
 \chapter{Types and Accounts}
 In this chapter, we discuss the basic data types of Solidity and the
 representations of accounts. 
 
 \input{Valuetypes.tex}
+\input{Accounts}
 
 \chapter{Stores and Environment}
 In this chapter, we focus on a particular aspect of Solidity that is
@@ -194,9 +195,11 @@ general and, in particular, the different between store and storage.
 In this chapter, we formalize expressions, declarations, and
 statements. The results up to here form the core of our Solidity
 semantics. 
+
+\input{Contracts.tex}
+\input{Expressions.tex}
 \input{Statements.tex}
 \input{Solidity_Main.tex}
-
 
 \chapter{A Solidity Evaluation System}
 This chapter discussed a tactic for symbolically executing Solidity statements
@@ -210,12 +213,17 @@ framework, we use Haskell as a target language.
     \input{Compile_Evaluator.tex}
 }{}
 
+\chapter{Verification Support}
+This chapter presents a weakest precondition calculus and corresponding verification condition generator.
+
+\input{Weakest_Precondition.tex}
+
 \chapter{Applications}
 In this chapter, we discuss various applications of our Solidity
 semantics.
-\input{Constant_Folding.tex}
-\input{Reentrancy.tex}
 
+\input{Reentrancy}
+\input{Constant_Folding.tex}
 
 \IfFileExists{root.bib}{%
     \bibliography{root}

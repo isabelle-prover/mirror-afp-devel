@@ -27,7 +27,7 @@ datatype Types = TSInt nat
                | TAddr
 
 (*Covered*)
-fun createSInt :: "nat \<Rightarrow> int \<Rightarrow> Valuetype"
+definition createSInt :: "nat \<Rightarrow> int \<Rightarrow> Valuetype"
 where
   "createSInt b v =
     (if v \<ge> 0
@@ -96,7 +96,7 @@ proof -
   from assms have "v + 2^(b-1) \<ge> 0" by simp
   moreover from assms have "v + (2^(b-1)) < 2^b" using upper_bound[of b] by auto
   ultimately have "(v + 2^(b-1)) mod (2^b) = v + 2^(b-1)" by simp
-  moreover from assms have "createSInt b v=ShowL\<^sub>i\<^sub>n\<^sub>t (-(2^(b-1)) + (v+2^(b-1)) mod (2^b))" by simp
+  moreover from assms have "createSInt b v=ShowL\<^sub>i\<^sub>n\<^sub>t (-(2^(b-1)) + (v+2^(b-1)) mod (2^b))" unfolding createSInt_def by simp
   ultimately show ?thesis by simp
 qed
 
@@ -111,7 +111,7 @@ proof -
   from assms have "-v + 2^(b-1) - 1 \<ge> 0" by simp
   moreover from assms have "-v + 2^(b-1) - 1 < 2^b" using lower_bound[of b] by auto 
   ultimately have "(-v + 2^(b-1) - 1) mod (2^b) = (-v + 2^(b-1) - 1)" by simp
-  moreover from assms have "createSInt b v= ShowL\<^sub>i\<^sub>n\<^sub>t (2^(b-1) - (-v+2^(b-1)-1) mod (2^b) - 1)" by simp
+  moreover from assms have "createSInt b v= ShowL\<^sub>i\<^sub>n\<^sub>t (2^(b-1) - (-v+2^(b-1)-1) mod (2^b) - 1)" unfolding createSInt_def by simp
   ultimately show ?thesis by simp
 qed
 
@@ -121,46 +121,54 @@ lemma createSInt_id:
   assumes "v < 2^(b-1)"
       and "v \<ge> -(2^(b-1))"
       and "b > 0"
-    shows "createSInt b v = ShowL\<^sub>i\<^sub>n\<^sub>t v" using createSInt_id_g0 createSInt_id_l0 assms by simp
+    shows "createSInt b v = ShowL\<^sub>i\<^sub>n\<^sub>t v" using createSInt_id_g0 createSInt_id_l0 assms unfolding createSInt_def by simp
 
 (*Covered*)
-fun createUInt :: "nat \<Rightarrow> int \<Rightarrow> Valuetype"
+definition createUInt :: "nat \<Rightarrow> int \<Rightarrow> Valuetype"
   where "createUInt b v = ShowL\<^sub>i\<^sub>n\<^sub>t (v mod (2^b))"
 
 lemma createUInt_id:
   assumes "v \<ge> 0"
       and "v < 2^b"
     shows "createUInt b v =  ShowL\<^sub>i\<^sub>n\<^sub>t v"
-by (simp add: assms(1) assms(2))
+unfolding createUInt_def by (simp add: assms(1) assms(2))
 
-fun createBool :: "bool \<Rightarrow> Valuetype"
+definition createBool :: "bool \<Rightarrow> Valuetype"
 where
   "createBool b = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l b"
 
-fun createAddress :: "Address \<Rightarrow> Valuetype"
+definition createAddress :: "Address \<Rightarrow> Valuetype"
 where
   "createAddress ad = ad"
 
-fun convert :: "Types \<Rightarrow> Types \<Rightarrow> Valuetype \<Rightarrow> (Valuetype * Types) option"
+definition checkSInt :: "nat \<Rightarrow> Valuetype \<Rightarrow> bool"
+where
+  "checkSInt b v = ((foldr (\<and>) (map is_digit (String.explode v)) True) \<and>(ReadL\<^sub>i\<^sub>n\<^sub>t v \<ge> -(2^(b-1)) \<and> ReadL\<^sub>i\<^sub>n\<^sub>t v < 2^(b-1)))"
+
+definition checkUInt :: "nat \<Rightarrow> Valuetype \<Rightarrow> bool"
+where
+  "checkUInt b v = ((foldr (\<and>) (map is_digit (String.explode v)) True) \<and> (ReadL\<^sub>i\<^sub>n\<^sub>t v \<ge> 0 \<and> ReadL\<^sub>i\<^sub>n\<^sub>t v < 2^b))"
+
+fun convert :: "Types \<Rightarrow> Types \<Rightarrow> Valuetype \<Rightarrow> Valuetype option"
 where
   "convert (TSInt b1) (TSInt b2) v =
     (if b1 \<le> b2
-      then Some (v, TSInt b2)
+      then Some v
       else None)"
 | "convert (TUInt b1) (TUInt b2) v =
     (if b1 \<le> b2
-      then Some (v, TUInt b2)
+      then Some v
       else None)"
 | "convert (TUInt b1) (TSInt b2) v =
     (if b1 < b2
-      then Some (v, TSInt b2)
+      then Some v
       else None)"
-| "convert TBool TBool v = Some (v, TBool)"
-| "convert TAddr TAddr v = Some (v, TAddr)"
+| "convert TBool TBool v = Some v"
+| "convert TAddr TAddr v = Some v"
 | "convert _ _ _ = None"
 
 lemma convert_id[simp]:
-  "convert tp tp kv = Some (kv, tp)"
+  "convert tp tp kv = Some kv"
     by (metis Types.exhaust convert.simps(1) convert.simps(2) convert.simps(4) convert.simps(5) order_refl)
 
 (*Covered informally*)
@@ -241,12 +249,30 @@ where
       else Some (ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True, TBool))"
 | "vtor _ _ _ _ = None"
 
+definition checkBool :: "Valuetype  \<Rightarrow> bool"
+where
+  "checkBool v = (if (v = STR ''True'' \<or> v = STR ''False'') then True else False)"
+
+definition checkAddress :: "Valuetype  \<Rightarrow> bool"
+  where
+    "checkAddress v = (if (size v = 42 \<and> ((String.explode v !1) = CHR ''x'')) then True else False)"
+
+(*value "checkBool STR ''True''"*)
+(*value "checkAddress STR ''0x0000000000000000000000000000000000000000''"*)
+
 (*Covered informally*)
-fun ival :: "Types \<Rightarrow> Valuetype"
+primrec ival :: "Types \<Rightarrow> Valuetype"
 where
   "ival (TSInt x) = ShowL\<^sub>i\<^sub>n\<^sub>t 0"
 | "ival (TUInt x) = ShowL\<^sub>i\<^sub>n\<^sub>t 0"
 | "ival TBool = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l False"
 | "ival TAddr = STR ''0x0000000000000000000000000000000000000000''"
+
+
+declare convert.simps [simp del]
+declare olift.simps [simp del]
+declare plift.simps [simp del]
+declare vtand.simps [simp del]
+declare vtor.simps [simp del]
 
 end

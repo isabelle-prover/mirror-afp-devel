@@ -1,1530 +1,69 @@
 section \<open>Statements\<close>
 theory Statements
-  imports Environment StateMonad
+  imports Expressions StateMonad
 begin
 
-subsection \<open>Syntax\<close>
-
-subsubsection \<open>Expressions\<close>
-datatype L = Id Identifier
-           | Ref Identifier "E list"
-and      E = INT nat int
-           | UINT nat int
-           | ADDRESS String.literal
-           | BALANCE E
-           | THIS
-           | SENDER
-           | VALUE
-           | TRUE
-           | FALSE
-           | LVAL L
-           | PLUS E E
-           | MINUS E E
-           | EQUAL E E
-           | LESS E E
-           | AND E E
-           | OR E E
-           | NOT E
-           | CALL Identifier "E list"
-           | ECALL E Identifier "E list" E
-
-subsubsection \<open>Statements\<close>
-datatype S = SKIP
-           | BLOCK "(Identifier \<times> Type) \<times> (E option)" S
-           | ASSIGN L E
-           | TRANSFER E E
-           | COMP S S
-           | ITE E S S
-           | WHILE E S
-           | INVOKE Identifier "E list"
-           | EXTERNAL E Identifier "E list" E
-
-abbreviation
-  "vbits\<equiv>{8,16,24,32,40,48,56,64,72,80,88,96,104,112,120,128,
-          136,144,152,160,168,176,184,192,200,208,216,224,232,240,248,256}"
-
-lemma vbits_max[simp]:
-  assumes "b1 \<in> vbits"
-    and "b2 \<in> vbits"
-  shows "(max b1 b2) \<in> vbits"
-proof -
-  consider (b1) "max b1 b2 = b1" | (b2) "max b1 b2 = b2" by (metis max_def)
-  then show ?thesis
-  proof cases
-    case b1
-    then show ?thesis using assms(1) by simp
-  next
-    case b2
-    then show ?thesis using assms(2) by simp
-  qed
-qed
-
-lemma vbits_ge_0: "(x::nat)\<in>vbits \<Longrightarrow> x>0" by auto
-
-subsection \<open>Contracts\<close>
-
-text \<open>
-  A contract consists of methods or storage variables.
-  A method is a triple consisting of
-  \begin{itemize}
-    \item A list of formal parameters
-    \item A statement
-    \item An optional return value
-  \end{itemize}
-\<close>
-
-datatype Member = Method "(Identifier \<times> Type) list \<times> S \<times> E option"
-                  | Var STypes
-
-text \<open>
-  A procedure environment assigns a contract to an address.
-  A contract consists of
-  \begin{itemize}
-    \item An assignment of members to identifiers
-    \item An optional fallback statement which is executed after money is beeing transferred to the contract.
-  \end{itemize}
-  \url{https://docs.soliditylang.org/en/v0.8.6/contracts.html#fallback-function}
-\<close>
-
-type_synonym Environment\<^sub>P = "(Address, (Identifier, Member) fmap \<times> S) fmap"
-
-definition init::"(Identifier, Member) fmap \<Rightarrow> Identifier \<Rightarrow> Environment \<Rightarrow> Environment"
-  where "init ct i e = (case fmlookup ct i of
-                                Some (Var tp) \<Rightarrow> updateEnvDup i (Storage tp) (Storeloc i) e
-                               | _ \<Rightarrow> e)"
-
-lemma init_s11[simp]:
-  assumes "fmlookup ct i = Some (Var tp)"
-  shows "init ct i e = updateEnvDup i (Storage tp) (Storeloc i) e"
-  using assms init_def by simp
-
-lemma init_s12[simp]:
-  assumes "i |\<in>| fmdom (denvalue e)"
-  shows "init ct i e = e"
-proof (cases "fmlookup ct i")
-  case None
-  then show ?thesis using init_def by simp
-next
-  case (Some a)
-  then show ?thesis
-  proof (cases a)
-    case (Method x1)
-    with Some show ?thesis using init_def by simp
-  next
-    case (Var tp)
-    with Some have "init ct i e = updateEnvDup i (Storage tp) (Storeloc i) e" using init_def by simp
-    moreover from assms have "updateEnvDup i (Storage tp) (Storeloc i) e = e" by auto
-    ultimately show ?thesis by simp
-  qed
-qed
-
-lemma init_s13[simp]:
-  assumes "fmlookup ct i = Some (Var tp)"
-      and "\<not> i |\<in>| fmdom (denvalue e)"
-  shows "init ct i e = updateEnv i (Storage tp) (Storeloc i) e"
-  using assms init_def by auto
-
-lemma init_s21[simp]:
-  assumes "fmlookup ct i = None"
-  shows "init ct i e = e"
-  using assms init_def by auto
-
-lemma init_s22[simp]:
-  assumes "fmlookup ct i = Some (Method m)"
-  shows "init ct i e = e"
-  using assms init_def by auto
-
-lemma init_commte: "comp_fun_commute (init ct)"
-proof
-  fix x y
-  show "init ct y \<circ> init ct x = init ct x \<circ> init ct y"
-  proof
-    fix e
-    show "(init ct y \<circ> init ct x) e = (init ct x \<circ> init ct y) e"
-    proof (cases "fmlookup ct x")
-      case None
-      then show ?thesis by simp
-    next
-      case s1: (Some a)
-      then show ?thesis
-      proof (cases a)
-        case (Method x1)
-        with s1 show ?thesis by simp
-      next
-        case v1: (Var tp)
-        then show ?thesis
-        proof (cases "x |\<in>| fmdom (denvalue e)")
-          case True
-          with s1 v1 have *: "init ct x e = e" by auto
-          then show ?thesis
-          proof (cases "fmlookup ct y")
-            case None
-            then show ?thesis by simp
-          next
-            case s2: (Some a)
-            then show ?thesis
-            proof (cases a)
-              case (Method x1)
-              with s2 show ?thesis by simp
-            next
-              case v2: (Var tp')
-              then show ?thesis
-              proof (cases "y |\<in>| fmdom (denvalue e)")
-                case t1: True
-                with s1 v1 True s2 v2 show ?thesis by fastforce
-              next
-                define e' where "e' = updateEnv y (Storage tp') (Storeloc y) e"
-                case False
-                with s2 v2 have "init ct y e = e'" using e'_def by auto
-                with s1 v1 True e'_def * show ?thesis by auto
-              qed
-            qed
-          qed
-        next
-          define e' where "e' = updateEnv x (Storage tp) (Storeloc x) e"
-          case f1: False
-          with s1 v1 have *: "init ct x e = e'" using e'_def by auto
-          then show ?thesis
-          proof (cases "fmlookup ct y")
-            case None
-            then show ?thesis by simp
-          next
-            case s3: (Some a)
-            then show ?thesis
-            proof (cases a)
-              case (Method x1)
-              with s3 show ?thesis by simp
-            next
-              case v2: (Var tp')
-              then show ?thesis
-              proof (cases "y |\<in>| fmdom (denvalue e)")
-                case t1: True
-                with e'_def have "y |\<in>| fmdom (denvalue e')" by simp
-                with s1 s3 v1 f1 v2 show ?thesis using e'_def by fastforce
-              next
-                define f' where "f' = updateEnv y (Storage tp') (Storeloc y) e"
-                define e'' where "e'' = updateEnv y (Storage tp') (Storeloc y) e'"
-                case f2: False
-                with s3 v2 have **: "init ct y e = f'" using f'_def by auto
-                show ?thesis
-                proof (cases "y = x")
-                  case True
-                  with s3 v2 e'_def have "init ct y e' = e'" by simp
-                  moreover from s3 v2 True f'_def have "init ct x f' = f'" by simp
-                  ultimately show ?thesis using True by simp
-                next
-                  define f'' where "f'' = updateEnv x (Storage tp) (Storeloc x) f'"
-                  case f3: False
-                  with f2 have "\<not> y |\<in>| fmdom (denvalue e')" using e'_def by simp
-                  with s3 v2 e''_def have "init ct y e' = e''" by auto
-                  with * have "(init ct y \<circ> init ct x) e = e''" by simp
-                  moreover have "init ct x f' = f''"
-                  proof -
-                    from s1 v1 have "init ct x f' = updateEnvDup x (Storage tp) (Storeloc x) f'" by simp
-                    moreover from f1 f3 have "x |\<notin>| fmdom (denvalue f')" using f'_def by simp
-                    ultimately show ?thesis using f''_def by auto
-                  qed
-                  moreover from f''_def e''_def f'_def e'_def f3 have "Some f'' = Some e''" using env_reorder_neq by simp
-                  ultimately show ?thesis using ** by simp
-                qed
-              qed
-            qed
-          qed
-        qed
-      qed
-    qed
-  qed
-qed
-
-lemma init_address[simp]:
-  "address (init ct i e) = address e \<and> sender (init ct i e) = sender e"
-proof (cases "fmlookup ct i")
-  case None
-  then show ?thesis by simp
-next
-  case (Some a)
-  show ?thesis
-  proof (cases a)
-    case (Method x1)
-    with Some show ?thesis by simp
-  next
-    case (Var tp)
-    with Some show ?thesis using updateEnvDup_address updateEnvDup_sender by simp
-  qed 
-qed
-
-lemma init_sender[simp]:
-"sender (init ct i e) = sender e"
-proof (cases "fmlookup ct i")
-  case None
-  then show ?thesis by simp
-next
-  case (Some a)
-  show ?thesis
-  proof (cases a)
-    case (Method x1)
-    with Some show ?thesis by simp
-  next
-    case (Var tp)
-    with Some show ?thesis using updateEnvDup_sender by simp
-  qed 
-qed
-
-lemma init_svalue[simp]:
-"svalue (init ct i e) = svalue e"
-proof (cases "fmlookup ct i")
-  case None
-  then show ?thesis by simp
-next
-  case (Some a)
-  show ?thesis
-  proof (cases a)
-    case (Method x1)
-    with Some show ?thesis by simp
-  next
-    case (Var tp)
-    with Some show ?thesis using updateEnvDup_svalue by simp
-  qed 
-qed
-
-lemma ffold_init_ad_same[rule_format]: "\<forall>e'. ffold (init ct) e xs = e' \<longrightarrow> address e' = address e \<and> sender e' = sender e \<and> svalue e' = svalue e"
-proof (induct xs)
-  case empty
-  then show ?case by (simp add: ffold_def)
-next
-  case (insert x xs)
-  then have *: "ffold (init ct) e (finsert x xs) =
-    init ct x (ffold (init ct) e xs)" using FSet.comp_fun_commute.ffold_finsert[OF init_commte] by simp
-  show ?case
-  proof (rule allI[OF impI])
-    fix e' assume **: "ffold (init ct) e (finsert x xs) = e'"
-    with * obtain e'' where ***: "ffold (init ct) e xs = e''" by simp
-    with insert have "address e'' = address e \<and> sender e'' = sender e \<and> svalue e'' = svalue e" by blast
-    with * ** *** show "address e' = address e \<and> sender e' = sender e \<and> svalue e' = svalue e" using init_address init_sender init_svalue by metis
-  qed
-qed
-
-lemma ffold_init_dom:
-  "fmdom (denvalue (ffold (init ct) e xs)) |\<subseteq>| fmdom (denvalue e) |\<union>| xs"
-proof (induct "xs")
-  case empty
-  then show ?case
-  proof
-    fix x
-    assume "x |\<in>| fmdom (denvalue (ffold (init ct) e {||}))"
-    moreover have "ffold (init ct) e {||} = e"
-      using FSet.comp_fun_commute.ffold_empty[OF init_commte, of ct e] by simp
-    ultimately show "x |\<in>| fmdom (denvalue e) |\<union>| {||}" by simp
-  qed
-next
-  case (insert x xs)
-  then have *: "ffold (init ct) e (finsert x xs) =
-    init ct x (ffold (init ct) e xs)" using FSet.comp_fun_commute.ffold_finsert[OF init_commte] by simp
-
-  show ?case
-  proof
-    fix x' assume "x' |\<in>| fmdom (denvalue (ffold (init ct) e (finsert x xs)))"
-    with * have **: "x' |\<in>| fmdom (denvalue (init ct x (ffold (init ct) e xs)))" by simp
-    then consider "x' |\<in>| fmdom (denvalue (ffold (init ct) e xs))" | "x'=x"
-    proof (cases "fmlookup ct x")
-      case None
-      then show ?thesis using that ** by simp
-    next
-      case (Some a)
-      then show ?thesis
-      proof (cases a)
-        case (Method x1)
-        then show ?thesis using Some ** that by simp
-      next
-        case (Var x2)
-        show ?thesis
-        proof (cases "x=x'")
-          case True
-          then show ?thesis using that by simp
-        next
-          case False
-          then have "fmlookup (denvalue (updateEnvDup x (Storage x2) (Storeloc x) (ffold (init ct) e xs))) x' = fmlookup (denvalue (ffold (init ct) e xs)) x'" using updateEnvDup_dup by simp
-          moreover from ** Some Var have ***:"x' |\<in>| fmdom (denvalue (updateEnvDup x (Storage x2) (Storeloc x) (ffold (init ct) e xs)))" by simp
-          ultimately have "x' |\<in>| fmdom (denvalue (ffold (init ct) e xs))" by (simp add: fmlookup_dom_iff)
-          then show ?thesis using that by simp
-        qed
-      qed
-    qed
-    then show "x' |\<in>| fmdom (denvalue e) |\<union>| finsert x xs"
-    proof cases
-      case 1
-      then show ?thesis using insert.hyps by auto
-    next
-      case 2
-      then show ?thesis by simp
-    qed
-  qed
-qed
-
-lemma ffold_init_fmap: 
-  assumes "fmlookup ct i = Some (Var tp)"
-      and "i |\<notin>| fmdom (denvalue e)"
-  shows "i|\<in>|xs \<Longrightarrow> fmlookup (denvalue (ffold (init ct) e xs)) i = Some (Storage tp, Storeloc i)"
-proof (induct "xs")
-  case empty
-  then show ?case by simp
-next
-  case (insert x xs)
-  then have *: "ffold (init ct) e (finsert x xs) =
-    init ct x (ffold (init ct) e xs)" using FSet.comp_fun_commute.ffold_finsert[OF init_commte] by simp
-
-  from insert.prems consider (a) "i |\<in>| xs" | (b) "\<not> i |\<in>| xs \<and> i = x" by auto
-  then show "fmlookup (denvalue (ffold (init ct) e (finsert x xs))) i = Some (Storage tp, Storeloc i)"
-  proof cases
-    case a
-    with insert.hyps(2) have "fmlookup (denvalue (ffold (init ct) e xs)) i = Some (Storage tp, Storeloc i)" by simp
-    moreover have "fmlookup (denvalue (init ct x (ffold (init ct) e xs))) i = fmlookup (denvalue (ffold (init ct) e xs)) i"
-    proof (cases "fmlookup ct x")
-      case None
-      then show ?thesis by simp
-    next
-      case (Some a)
-      then show ?thesis
-      proof (cases a)
-        case (Method x1)
-        with Some show ?thesis by simp
-      next
-        case (Var x2)
-        with Some have "init ct x (ffold (init ct) e xs) = updateEnvDup x (Storage x2) (Storeloc x) (ffold (init ct) e xs)" using init_def[of ct x "(ffold (init ct) e xs)"] by simp
-        moreover from insert a have "i\<noteq>x" by auto
-        then have "fmlookup (denvalue (updateEnvDup x (Storage x2) (Storeloc x) (ffold (init ct) e xs))) i = fmlookup (denvalue (ffold (init ct) e xs)) i" using updateEnvDup_dup[of x i] by simp
-        ultimately show ?thesis by simp
-      qed
-    qed
-    ultimately show ?thesis using * by simp
-  next
-    case b
-    with assms(1) have "fmlookup ct x = Some (Var tp)" by simp
-    moreover from b assms(2) have "\<not> x |\<in>| fmdom (denvalue (ffold (init ct) e xs))" using ffold_init_dom by auto
-    ultimately have "init ct x (ffold (init ct) e xs) = updateEnv x (Storage tp) (Storeloc x) (ffold (init ct) e xs)" by auto
-    with b * show ?thesis by simp
-  qed
-qed
-
-text\<open>The following definition allows for a more fine-grained configuration of the 
-     code generator.
-\<close>
-definition ffold_init::"(String.literal, Member) fmap \<Rightarrow> Environment \<Rightarrow> String.literal fset \<Rightarrow> Environment" where
-          \<open>ffold_init ct a c = ffold (init ct) a c\<close>
-declare ffold_init_def [simp]
-
-lemma ffold_init_code [code]:
-     \<open>ffold_init ct a c = fold (init ct) (remdups (sorted_list_of_set (fset c))) a\<close>
-  using  comp_fun_commute_on.fold_set_fold_remdups ffold.rep_eq 
-            ffold_init_def init_commte sorted_list_of_fset.rep_eq 
-            sorted_list_of_fset_simps(1)
-  by (metis comp_fun_commute.comp_fun_commute comp_fun_commute_on.intro order_refl)
-
-lemma bind_case_stackvalue_cong [fundef_cong]:
-  assumes "x = x'"
-      and "\<And>v. x = KValue v \<Longrightarrow> f v s = f' v s"
-      and "\<And>p. x = KCDptr p \<Longrightarrow> g p s = g' p s"
-      and "\<And>p. x = KMemptr p \<Longrightarrow> h p s = h' p s"
-      and "\<And>p. x = KStoptr p \<Longrightarrow> i p s = i' p s"
-    shows "(case x of KValue v \<Rightarrow> f v | KCDptr p \<Rightarrow> g p | KMemptr p \<Rightarrow> h p | KStoptr p \<Rightarrow> i p) s
-         = (case x' of KValue v \<Rightarrow> f' v | KCDptr p \<Rightarrow> g' p | KMemptr p \<Rightarrow> h' p | KStoptr p \<Rightarrow> i' p) s"
-  using assms by (cases x, auto)
-
-lemma bind_case_type_cong [fundef_cong]:
-  assumes "x = x'"
-      and "\<And>t. x = Value t \<Longrightarrow> f t s = f' t s"
-      and "\<And>t. x = Calldata t \<Longrightarrow> g t s = g' t s"
-      and "\<And>t. x = Memory t \<Longrightarrow> h t s = h' t s"
-      and "\<And>t. x = Storage t \<Longrightarrow> i t s = i' t s"
-    shows "(case x of Value t \<Rightarrow> f t | Calldata t \<Rightarrow> g t | Memory t \<Rightarrow> h t | Storage t \<Rightarrow> i t ) s
-         = (case x' of Value t \<Rightarrow> f' t | Calldata t \<Rightarrow> g' t | Memory t \<Rightarrow> h' t | Storage t \<Rightarrow> i' t) s"
-  using assms by (cases x, auto)
-
-lemma bind_case_denvalue_cong [fundef_cong]:
-  assumes "x = x'"
-      and "\<And>a. x = (Stackloc a) \<Longrightarrow> f a s = f' a s"
-      and "\<And>a. x = (Storeloc a) \<Longrightarrow> g a s = g' a s"
-    shows "(case x of (Stackloc a) \<Rightarrow> f a | (Storeloc a) \<Rightarrow> g a) s
-         = (case x' of (Stackloc a) \<Rightarrow> f' a | (Storeloc a) \<Rightarrow> g' a) s"
-  using assms by (cases x, auto)
-
-lemma bind_case_mtypes_cong [fundef_cong]:
-  assumes "x = x'"
-      and "\<And>a t. x = (MTArray a t) \<Longrightarrow> f a t s = f' a t s"
-      and "\<And>p. x = (MTValue p) \<Longrightarrow> g p s = g' p s"
-    shows "(case x of (MTArray a t) \<Rightarrow> f a t | (MTValue p) \<Rightarrow> g p) s
-         = (case x' of (MTArray a t) \<Rightarrow> f' a t | (MTValue p) \<Rightarrow> g' p) s"
-  using assms by (cases x, auto)
-
-lemma bind_case_stypes_cong [fundef_cong]:
-  assumes "x = x'"
-      and "\<And>a t. x = (STArray a t) \<Longrightarrow> f a t s = f' a t s"
-      and "\<And>a t. x = (STMap a t) \<Longrightarrow> g a t s = g' a t s"
-      and "\<And>p. x = (STValue p) \<Longrightarrow> h p s = h' p s"
-    shows "(case x of (STArray a t) \<Rightarrow> f a t | (STMap a t) \<Rightarrow> g a t | (STValue p) \<Rightarrow> h p) s
-         = (case x' of (STArray a t) \<Rightarrow> f' a t | (STMap a t) \<Rightarrow> g' a t | (STValue p) \<Rightarrow> h' p) s"
-  using assms by (cases x, auto)
-
-lemma bind_case_types_cong [fundef_cong]:
-  assumes "x = x'"
-      and "\<And>a. x = (TSInt a) \<Longrightarrow> f a s = f' a s"
-      and "\<And>a. x = (TUInt a) \<Longrightarrow> g a s = g' a s"
-      and "x = TBool \<Longrightarrow> h s = h' s"
-      and "x = TAddr \<Longrightarrow> i s = i' s"
-    shows "(case x of (TSInt a) \<Rightarrow> f a | (TUInt a) \<Rightarrow> g a | TBool \<Rightarrow> h | TAddr \<Rightarrow> i) s
-         = (case x' of (TSInt a) \<Rightarrow> f' a | (TUInt a) \<Rightarrow> g' a | TBool \<Rightarrow> h' | TAddr \<Rightarrow> i') s"
-  using assms by (cases x, auto)
-
-lemma bind_case_contract_cong [fundef_cong]:
-  assumes "x = x'"
-      and "\<And>a. x = Method a \<Longrightarrow> f a s = f' a s"
-      and "\<And>a. x = Var a \<Longrightarrow> g a s = g' a s"
-    shows "(case x of (Method a) \<Rightarrow> f a | (Var a) \<Rightarrow> g a) s
-         = (case x' of (Method a) \<Rightarrow> f' a | (Var a) \<Rightarrow> g' a) s"
-  using assms by (cases x, auto)
-
-lemma bind_case_memoryvalue_cong [fundef_cong]:
-  assumes "x = x'"
-      and "\<And>a. x = MValue a \<Longrightarrow> f a s = f' a s"
-      and "\<And>a. x = MPointer a \<Longrightarrow> g a s = g' a s"
-    shows "(case x of (MValue a) \<Rightarrow> f a | (MPointer a) \<Rightarrow> g a) s
-         = (case x' of (MValue a) \<Rightarrow> f' a | (MPointer a) \<Rightarrow> g' a) s"
-  using assms by (cases x, auto)
-
-abbreviation lift ::
-  "(E \<Rightarrow> Environment\<^sub>P \<Rightarrow> Environment \<Rightarrow> CalldataT \<Rightarrow> (Stackvalue * Type, Ex, State) state_monad)
-  \<Rightarrow> (Types \<Rightarrow> Types \<Rightarrow> Valuetype \<Rightarrow> Valuetype \<Rightarrow> (Valuetype * Types) option)
-  \<Rightarrow> E \<Rightarrow> E \<Rightarrow> Environment\<^sub>P \<Rightarrow> Environment \<Rightarrow> CalldataT \<Rightarrow> (Stackvalue * Type, Ex, State) state_monad"
-where
-  "lift expr f e1 e2 e\<^sub>p e cd \<equiv>
-    (do {
-      kv1 \<leftarrow> expr e1 e\<^sub>p e cd;
-      (case kv1 of
-        (KValue v1, Value t1) \<Rightarrow> (do
-          {
-            kv2 \<leftarrow> expr e2 e\<^sub>p e cd;
-            (case kv2 of
-              (KValue v2, Value t2) \<Rightarrow>
-                (case f t1 t2 v1 v2 of
-                  Some (v, t) \<Rightarrow> return (KValue v, Value t)
-                | None \<Rightarrow> throw Err)
-            | _ \<Rightarrow> (throw Err::(Stackvalue * Type, Ex, State) state_monad))
-          })
-      | _ \<Rightarrow> (throw Err::(Stackvalue * Type, Ex, State) state_monad))
-    })"
-
-abbreviation gascheck ::
-  "(State \<Rightarrow> Gas) \<Rightarrow> (unit, Ex, State) state_monad"
-where
-  "gascheck check \<equiv>
-  do {
-    g \<leftarrow> (applyf check::(Gas, Ex, State) state_monad);
-    (assert Gas (\<lambda>st. gas st \<le> g) (modify (\<lambda>st. st \<lparr>gas:=gas st - g\<rparr>)::(unit, Ex, State) state_monad))
-  }"
-
-subsection \<open>Semantics\<close>
-
-datatype LType = LStackloc Location
-               | LMemloc Location
-               | LStoreloc Location
-
-
-locale statement_with_gas =
-  fixes costs :: "S\<Rightarrow> Environment\<^sub>P \<Rightarrow> Environment \<Rightarrow> CalldataT \<Rightarrow> State \<Rightarrow> Gas"
-    and costs\<^sub>e :: "E\<Rightarrow> Environment\<^sub>P \<Rightarrow> Environment \<Rightarrow> CalldataT \<Rightarrow> State \<Rightarrow> Gas"
-  assumes while_not_zero[termination_simp]: "\<And>e e\<^sub>p cd st ex s0. 0 < (costs (WHILE ex s0) e\<^sub>p e cd st) "
-      and call_not_zero[termination_simp]: "\<And>e e\<^sub>p cd st i ix. 0 < (costs\<^sub>e (CALL i ix) e\<^sub>p e cd st)"
-      and ecall_not_zero[termination_simp]: "\<And>e e\<^sub>p cd st a i ix val. 0 < (costs\<^sub>e (ECALL a i ix val) e\<^sub>p e cd st)"
-      and invoke_not_zero[termination_simp]: "\<And>e e\<^sub>p cd st i xe. 0 < (costs (INVOKE i xe) e\<^sub>p e cd st)"
-      and external_not_zero[termination_simp]: "\<And>e e\<^sub>p cd st ad i xe val. 0 < (costs (EXTERNAL ad i xe val) e\<^sub>p e cd st)"
-      and transfer_not_zero[termination_simp]: "\<And>e e\<^sub>p cd st ex ad. 0 < (costs (TRANSFER ad ex) e\<^sub>p e cd st)"
+locale statement_with_gas = expressions_with_gas +
+  fixes costs :: "S \<Rightarrow> Environment \<Rightarrow> CalldataT \<Rightarrow> State \<Rightarrow> Gas"
+  assumes while_not_zero[termination_simp]: "\<And>e cd st ex s0. 0 < (costs (WHILE ex s0) e cd st) "
+      and invoke_not_zero[termination_simp]: "\<And>e cd st i xe. 0 < (costs (INVOKE i xe) e cd st)"
+      and external_not_zero[termination_simp]: "\<And>e cd st ad i xe val. 0 < (costs (EXTERNAL ad i xe val) e cd st)"
+      and transfer_not_zero[termination_simp]: "\<And>e cd st ex ad. 0 < (costs (TRANSFER ad ex) e cd st)"
+      and new_not_zero[termination_simp]: "\<And>e cd st i xe val. 0 < (costs (NEW i xe val) e cd st)"
 begin
 
-function msel::"bool \<Rightarrow> MTypes \<Rightarrow> Location \<Rightarrow> E list \<Rightarrow> Environment\<^sub>P \<Rightarrow> Environment \<Rightarrow> CalldataT \<Rightarrow> (Location * MTypes, Ex, State) state_monad"
-     and ssel::"STypes \<Rightarrow> Location \<Rightarrow> E list \<Rightarrow> Environment\<^sub>P \<Rightarrow> Environment \<Rightarrow> CalldataT \<Rightarrow> (Location * STypes, Ex, State) state_monad"
-     and lexp :: "L \<Rightarrow> Environment\<^sub>P \<Rightarrow> Environment \<Rightarrow> CalldataT \<Rightarrow> (LType * Type, Ex, State) state_monad"
-     and expr::"E \<Rightarrow> Environment\<^sub>P \<Rightarrow> Environment \<Rightarrow> CalldataT \<Rightarrow> (Stackvalue * Type, Ex, State) state_monad"
-     and load :: "bool \<Rightarrow> (Identifier \<times> Type) list \<Rightarrow> E list \<Rightarrow> Environment\<^sub>P \<Rightarrow> Environment \<Rightarrow> CalldataT \<Rightarrow> State \<Rightarrow> Environment \<Rightarrow> CalldataT \<Rightarrow> (Environment \<times> CalldataT \<times> State, Ex, State) state_monad"
-     and rexp::"L \<Rightarrow> Environment\<^sub>P \<Rightarrow> Environment \<Rightarrow> CalldataT \<Rightarrow> (Stackvalue * Type, Ex, State) state_monad"
-     and stmt :: "S \<Rightarrow> Environment\<^sub>P \<Rightarrow> Environment \<Rightarrow> CalldataT \<Rightarrow> (unit, Ex, State) state_monad"
-where
-  "msel _ _ _ [] _ _ _ st = throw Err st"
-| "msel _ (MTValue _) _ _ _ _ _ st = throw Err st"
-| "msel _ (MTArray al t) loc [x] e\<^sub>p env cd st =
-    (do {
-      kv \<leftarrow> expr x e\<^sub>p env cd;
-      (case kv of
-        (KValue v, Value t') \<Rightarrow>
-          (if less t' (TUInt 256) v (ShowL\<^sub>i\<^sub>n\<^sub>t al) = Some (ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True, TBool)
-            then return (hash loc v, t)
-            else throw Err)
-      | _ \<Rightarrow> throw Err)
-    }) st"
-(*
-  Note that it is indeed possible to modify the state while evaluating the expression
-  to determine the index of the array to look up.
-*)
-| "msel mm (MTArray al t) loc (x # y # ys) e\<^sub>p env cd st =
-    (do {
-      kv \<leftarrow> expr x e\<^sub>p env cd;
-      (case kv of
-        (KValue v, Value t') \<Rightarrow>
-          (if less t' (TUInt 256) v (ShowL\<^sub>i\<^sub>n\<^sub>t al) = Some (ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True, TBool)
-            then do {
-              s \<leftarrow> applyf (\<lambda>st. if mm then memory st else cd);
-              (case accessStore (hash loc v) s of
-                Some (MPointer l) \<Rightarrow> msel mm t l (y#ys) e\<^sub>p env cd
-              | _ \<Rightarrow> throw Err)
-            } else throw Err)
-      | _ \<Rightarrow> throw Err)
-    }) st"
-| "ssel tp loc Nil _ _ _ st = return (loc, tp) st"
-| "ssel (STValue _) _ (_ # _) _ _ _ st = throw Err st"
-| "ssel (STArray al t) loc (x # xs) e\<^sub>p env cd st =
-    (do {
-      kv \<leftarrow> expr x e\<^sub>p env cd;
-      (case kv of
-        (KValue v, Value t') \<Rightarrow>
-          (if less t' (TUInt 256) v (ShowL\<^sub>i\<^sub>n\<^sub>t al) = Some (ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True, TBool)
-            then ssel t (hash loc v) xs e\<^sub>p env cd
-            else throw Err)
-      | _ \<Rightarrow> throw Err)
-    }) st"
-| "ssel (STMap _ t) loc (x # xs) e\<^sub>p env cd st =
-    (do {
-      kv \<leftarrow> expr x e\<^sub>p env cd;
-      (case kv of
-        (KValue v, _) \<Rightarrow> ssel t (hash loc v) xs e\<^sub>p env cd
-      | _ \<Rightarrow> throw Err)
-    }) st"
-| "lexp (Id i) _ e _ st =
-    (case fmlookup (denvalue e) i of
+subsection \<open>Semantics of left expressions\<close>
+
+text \<open>We first introduce lexp.\<close>
+
+fun lexp :: "L \<Rightarrow> Environment \<Rightarrow> CalldataT \<Rightarrow> State \<Rightarrow> (LType * Type, Ex, Gas) state_monad"
+  where "lexp (Id i) e _ st g =
+    (case (denvalue e) $$ i of
       Some (tp, (Stackloc l)) \<Rightarrow> return (LStackloc l, tp)
     | Some (tp, (Storeloc l)) \<Rightarrow> return (LStoreloc l, tp)
-    | _ \<Rightarrow> throw Err) st"
-| "lexp (Ref i r) e\<^sub>p e cd st =
-    (case fmlookup (denvalue e) i of
+    | _ \<Rightarrow> throw Err) g"
+| "lexp (Ref i r) e cd st g =
+    (case (denvalue e) $$ i of
       Some (tp, Stackloc l) \<Rightarrow>
-        do {
-          k \<leftarrow> applyf (\<lambda>st. accessStore l (stack st));
-          (case k of
-            Some (KCDptr _) \<Rightarrow> throw Err
-          | Some (KMemptr l') \<Rightarrow>
-            (case tp of
-              Memory t \<Rightarrow>
-                do {
-                  (l'', t') \<leftarrow> msel True t l' r e\<^sub>p e cd;
-                  return (LMemloc l'', Memory t')
-                }
-            | _ \<Rightarrow> throw Err)
-          | Some (KStoptr l') \<Rightarrow>
-            (case tp of
-              Storage t \<Rightarrow>
-                do {
-                  (l'', t') \<leftarrow> ssel t l' r e\<^sub>p e cd;
-                  return (LStoreloc l'', Storage t')
-                }
-            | _ \<Rightarrow> throw Err)
-          | Some (KValue _) \<Rightarrow> throw Err
-          | None \<Rightarrow> throw Err)
-        }
-      | Some (tp, Storeloc l) \<Rightarrow>
-          (case tp of
-            Storage t \<Rightarrow>
-              do {
-                (l', t') \<leftarrow> ssel t l r e\<^sub>p e cd;
-                return (LStoreloc l', Storage t')
-              }
-          | _ \<Rightarrow> throw Err)
-      | None \<Rightarrow> throw Err) st"
-| "expr (E.INT b x) e\<^sub>p e cd st =
-    (do {
-      gascheck (costs\<^sub>e (E.INT b x) e\<^sub>p e cd);
-      (if (b \<in> vbits)
-        then (return (KValue (createSInt b x), Value (TSInt b)))
-        else (throw Err))
-    }) st"
-| "expr (UINT b x) e\<^sub>p e cd st =
-    (do {
-      gascheck (costs\<^sub>e (UINT b x) e\<^sub>p e cd);
-      (if (b \<in> vbits)
-        then (return (KValue (createUInt b x), Value (TUInt b)))
-        else (throw Err))
-  }) st"
-| "expr (ADDRESS ad) e\<^sub>p e cd st =
-    (do {
-      gascheck (costs\<^sub>e (ADDRESS ad) e\<^sub>p e cd);
-      return (KValue ad, Value TAddr)
-    }) st"
-| "expr (BALANCE ad) e\<^sub>p e cd st =
-    (do {
-      gascheck (costs\<^sub>e (BALANCE ad) e\<^sub>p e cd);
-      kv \<leftarrow> expr ad e\<^sub>p e cd;
-      (case kv of
-        (KValue adv, Value TAddr) \<Rightarrow>
-          return (KValue (accessBalance (accounts st) adv), Value (TUInt 256))
-      | _ \<Rightarrow> throw Err)
-    }) st"
-| "expr THIS e\<^sub>p e cd st =
-    (do {
-      gascheck (costs\<^sub>e THIS e\<^sub>p e cd);
-      return (KValue (address e), Value TAddr)
-    }) st"
-| "expr SENDER e\<^sub>p e cd st =
-    (do {
-      gascheck (costs\<^sub>e SENDER e\<^sub>p e cd);
-      return (KValue (sender e), Value TAddr)
-    }) st"
-| "expr VALUE e\<^sub>p e cd st =
-    (do {
-      gascheck (costs\<^sub>e VALUE e\<^sub>p e cd);
-      return (KValue (svalue e), Value (TUInt 256))
-    }) st"
-| "expr TRUE e\<^sub>p e cd st =
-    (do {
-      gascheck (costs\<^sub>e TRUE e\<^sub>p e cd);
-      return (KValue (ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True), Value TBool)
-    }) st"
-| "expr FALSE e\<^sub>p e cd st =
-    (do {
-      gascheck (costs\<^sub>e FALSE e\<^sub>p e cd);
-      return (KValue (ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l False), Value TBool)
-    }) st"
-| "expr (NOT x) e\<^sub>p e cd st =
-    (do {
-      gascheck (costs\<^sub>e (NOT x) e\<^sub>p e cd);
-      kv \<leftarrow> expr x e\<^sub>p e cd;
-      (case kv of
-        (KValue v, Value t) \<Rightarrow>
-          (if v = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True
-            then expr FALSE e\<^sub>p e cd
-            else (if v = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l False
-              then expr TRUE e\<^sub>p e cd
-              else throw Err))
-      | _ \<Rightarrow> throw Err)
-    }) st"
-| "expr (PLUS e1 e2) e\<^sub>p e cd st = (gascheck (costs\<^sub>e (PLUS e1 e2) e\<^sub>p e cd) \<bind> (\<lambda>_. lift expr add e1 e2 e\<^sub>p e cd)) st"
-| "expr (MINUS e1 e2) e\<^sub>p e cd st = (gascheck (costs\<^sub>e (MINUS e1 e2) e\<^sub>p e cd) \<bind> (\<lambda>_. lift expr sub e1 e2 e\<^sub>p e cd)) st"
-| "expr (LESS e1 e2) e\<^sub>p e cd st = (gascheck (costs\<^sub>e (LESS e1 e2) e\<^sub>p e cd) \<bind> (\<lambda>_. lift expr less e1 e2 e\<^sub>p e cd)) st"
-| "expr (EQUAL e1 e2) e\<^sub>p e cd st = (gascheck (costs\<^sub>e (EQUAL e1 e2) e\<^sub>p e cd) \<bind> (\<lambda>_. lift expr equal e1 e2 e\<^sub>p e cd)) st"
-| "expr (AND e1 e2) e\<^sub>p e cd st = (gascheck (costs\<^sub>e (AND e1 e2) e\<^sub>p e cd) \<bind> (\<lambda>_. lift expr vtand e1 e2 e\<^sub>p e cd)) st"
-| "expr (OR e1 e2) e\<^sub>p e cd st = (gascheck (costs\<^sub>e (OR e1 e2) e\<^sub>p e cd) \<bind> (\<lambda>_. lift expr vtor e1 e2 e\<^sub>p e cd)) st"
-| "expr (LVAL i) e\<^sub>p e cd st =
-    (do {
-      gascheck (costs\<^sub>e (LVAL i) e\<^sub>p e cd);
-      rexp i e\<^sub>p e cd
-    }) st"
-(* Notes about method calls:
-   - Internal method calls use a fresh environment and stack but keep the memory [1]
-   - External method calls use a fresh environment and stack and memory [2]
-   [1]: https://docs.soliditylang.org/en/v0.8.5/control-structures.html#internal-function-calls
-   [2]: https://docs.soliditylang.org/en/v0.8.5/control-structures.html#external-function-calls
-
-TODO: Functions with no return value should be able to execute
-*)
-| "expr (CALL i xe) e\<^sub>p e cd st =
-    (do {
-      gascheck (costs\<^sub>e (CALL i xe) e\<^sub>p e cd);
-      (case fmlookup e\<^sub>p (address e) of
-         Some (ct, _) \<Rightarrow>
-           (case fmlookup ct i of
-             Some (Method (fp, f, Some x)) \<Rightarrow>
-               let e' = ffold_init ct (emptyEnv (address e) (sender e) (svalue e)) (fmdom ct)
-               in (do {
-                 st' \<leftarrow> applyf (\<lambda>st. st\<lparr>stack:=emptyStore\<rparr>);
-                 (e'', cd', st'') \<leftarrow> load False fp xe e\<^sub>p e' emptyStore st' e cd;
-                 st''' \<leftarrow> get;
-                 put st'';
-                 stmt f e\<^sub>p e'' cd';
-                 rv \<leftarrow> expr x e\<^sub>p e'' cd';
-                 modify (\<lambda>st. st\<lparr>stack:=stack st''', memory := memory st'''\<rparr>);
-                 return rv
-               })
-           | _ \<Rightarrow> throw Err)
-       | None \<Rightarrow> throw Err)
-    }) st"
-| "expr (ECALL ad i xe val) e\<^sub>p e cd st =
-    (do {
-      gascheck (costs\<^sub>e (ECALL ad i xe val) e\<^sub>p e cd);
-      kad \<leftarrow> expr ad e\<^sub>p e cd;
-      (case kad of
-        (KValue adv, Value TAddr) \<Rightarrow>
-        (case fmlookup e\<^sub>p adv of
-           Some (ct, _) \<Rightarrow>
-             (case fmlookup ct i of
-               Some (Method (fp, f, Some x)) \<Rightarrow>
-               (do {
-                 kv \<leftarrow> expr val e\<^sub>p e cd;
-                 (case kv of
-                   (KValue v, Value t) \<Rightarrow>
-                     let e' = ffold_init ct (emptyEnv adv (address e) v) (fmdom ct)
-                     in (do {
-                       st' \<leftarrow> applyf (\<lambda>st. st\<lparr>stack:=emptyStore, memory:=emptyStore\<rparr>);
-                       (e'', cd', st'') \<leftarrow> load True fp xe e\<^sub>p e' emptyStore st' e cd;
-                       st''' \<leftarrow> get;
-                       (case transfer (address e) adv v (accounts st'') of
-                         Some acc \<Rightarrow>
-                           do {
-                             put (st''\<lparr>accounts := acc\<rparr>);
-                             stmt f e\<^sub>p e'' cd';
-                             rv \<leftarrow> expr x e\<^sub>p e'' cd';
-                             modify (\<lambda>st. st\<lparr>stack:=stack st''', memory := memory st'''\<rparr>);
-                             return rv
-                          }
-                       | None \<Rightarrow> throw Err)
-                     })
-                 | _ \<Rightarrow> throw Err)
-               })
-             | _ \<Rightarrow> throw Err)
+        (case accessStore l (stack st) of
+          Some (KCDptr _) \<Rightarrow> throw Err
+        | Some (KMemptr l') \<Rightarrow>
+          do {
+            t \<leftarrow> (case tp of Memory t \<Rightarrow> return t | _ \<Rightarrow> throw Err);
+            (l'', t') \<leftarrow> msel True t l' r e cd st;
+            return (LMemloc l'', Memory t')
+          }
+        | Some (KStoptr l') \<Rightarrow>
+          do {
+            t \<leftarrow> (case tp of Storage t \<Rightarrow> return t | _ \<Rightarrow> throw Err);
+            (l'', t') \<leftarrow> ssel t l' r e cd st;
+            return (LStoreloc l'', Storage t')
+          }
+        | Some (KValue _) \<Rightarrow> throw Err
         | None \<Rightarrow> throw Err)
-      | _ \<Rightarrow> throw Err)
-    }) st"
-| "load cp ((i\<^sub>p, t\<^sub>p)#pl) (e#el) e\<^sub>p e\<^sub>v' cd' st' e\<^sub>v cd st =
-    (do {
-      (v, t) \<leftarrow> expr e e\<^sub>p e\<^sub>v cd;
-      st'' \<leftarrow> get;
-      put st';
-      (cd'', e\<^sub>v'') \<leftarrow> decl i\<^sub>p t\<^sub>p (Some (v,t)) cp cd (memory st'') cd' e\<^sub>v';
-      st''' \<leftarrow> get;
-      put st'';
-      load cp pl el e\<^sub>p e\<^sub>v'' cd'' st''' e\<^sub>v cd
-    }) st"
-| "load _ [] (_#_) _ _ _ _ _ _ st = throw Err st"
-| "load _ (_#_) [] _ _ _ _ _ _ st = throw Err st"
-| "load _ [] [] _ e\<^sub>v' cd' st' e\<^sub>v cd st = return (e\<^sub>v', cd', st') st"
-(*TODO: Should be possible to simplify*)
-| "rexp (Id i) e\<^sub>p e cd st =
-    (case fmlookup (denvalue e) i of
-      Some (tp, Stackloc l) \<Rightarrow>
+    | Some (tp, Storeloc l) \<Rightarrow>
         do {
-          s \<leftarrow> applyf (\<lambda>st. accessStore l (stack st));
-          (case s of
-            Some (KValue v) \<Rightarrow> return (KValue v, tp)
-          | Some (KCDptr p) \<Rightarrow> return (KCDptr p, tp)
-          | Some (KMemptr p) \<Rightarrow> return (KMemptr p, tp)
-          | Some (KStoptr p) \<Rightarrow> return (KStoptr p, tp)
-          | _ \<Rightarrow> throw Err)
+          t \<leftarrow> (case tp of Storage t \<Rightarrow> return t | _ \<Rightarrow> throw Err);
+          (l', t') \<leftarrow> ssel t l r e cd st;
+          return (LStoreloc l', Storage t')
         }
-    | Some (Storage (STValue t), Storeloc l) \<Rightarrow>
-      do {
-        so \<leftarrow> applyf (\<lambda>st. fmlookup (storage st) (address e));
-        (case so of
-          Some s \<Rightarrow> return (KValue (accessStorage t l s), Value t)
-        | None \<Rightarrow> throw Err)
-      }
-    | Some (Storage (STArray x t), Storeloc l) \<Rightarrow> return (KStoptr l, Storage (STArray x t))
-    | _ \<Rightarrow> throw Err) st"
-| "rexp (Ref i r) e\<^sub>p e cd st =
-    (case fmlookup (denvalue e) i of
-      Some (tp, (Stackloc l)) \<Rightarrow>
-        do {
-          kv \<leftarrow> applyf (\<lambda>st. accessStore l (stack st));
-          (case kv of
-            Some (KCDptr l') \<Rightarrow>
-              (case tp of
-                Calldata t \<Rightarrow>
-                  do {
-                    (l'', t') \<leftarrow> msel False t l' r e\<^sub>p e cd;
-                    (case t' of
-                      MTValue t'' \<Rightarrow>
-                        (case accessStore l'' cd of
-                          Some (MValue v) \<Rightarrow> return (KValue v, Value t'')
-                        | _ \<Rightarrow> throw Err)
-                    | MTArray x t'' \<Rightarrow>
-                        (case accessStore l'' cd of
-                          Some (MPointer p) \<Rightarrow> return (KCDptr p, Calldata (MTArray x t''))
-                        | _ \<Rightarrow> throw Err))
-                  }
-              | _ \<Rightarrow> throw Err)
-          | Some (KMemptr l') \<Rightarrow>
-              (case tp of
-                Memory t \<Rightarrow>
-                do {
-                  (l'', t') \<leftarrow> msel True t l' r e\<^sub>p e cd;
-                  (case t' of
-                    MTValue t'' \<Rightarrow>
-                    do {
-                      mv \<leftarrow> applyf (\<lambda>st. accessStore l'' (memory st));
-                      (case mv of
-                        Some (MValue v) \<Rightarrow> return (KValue v, Value t'')
-                      | _ \<Rightarrow> throw Err)
-                    }
-                  | MTArray x t'' \<Rightarrow>
-                    do {
-                      mv \<leftarrow> applyf (\<lambda>st. accessStore l'' (memory st));
-                      (case mv of
-                        Some (MPointer p) \<Rightarrow> return (KMemptr p, Memory (MTArray x t''))
-                      | _ \<Rightarrow> throw Err)
-                    }
-                  )
-                }
-              | _ \<Rightarrow> throw Err)
-          | Some (KStoptr l') \<Rightarrow>
-              (case tp of
-                Storage t \<Rightarrow>
-                do {
-                  (l'', t') \<leftarrow> ssel t l' r e\<^sub>p e cd;
-                  (case t' of
-                    STValue t'' \<Rightarrow>
-                      do {
-                        so \<leftarrow> applyf (\<lambda>st. fmlookup (storage st) (address e));
-                        (case so of
-                          Some s \<Rightarrow> return (KValue (accessStorage t'' l'' s), Value t'')
-                        | None \<Rightarrow> throw Err)
-                      }
-                  | STArray _ _ \<Rightarrow> return (KStoptr l'', Storage t')
-                  | STMap _ _ \<Rightarrow> return (KStoptr l'', Storage t'))
-                }
-              | _ \<Rightarrow> throw Err)
-          | _ \<Rightarrow> throw Err)
-        }
-    | Some (tp, (Storeloc l)) \<Rightarrow>
-        (case tp of
-          Storage t \<Rightarrow>
-          do {
-            (l', t') \<leftarrow> ssel t l r e\<^sub>p e cd;
-            (case t' of
-              STValue t'' \<Rightarrow>
-                do {
-                  so \<leftarrow> applyf (\<lambda>st. fmlookup (storage st) (address e));
-                  (case so of
-                    Some s \<Rightarrow> return (KValue (accessStorage t'' l' s), Value t'')
-                  | None \<Rightarrow> throw Err)
-                }
-            | STArray _ _ \<Rightarrow> return (KStoptr l', Storage t')
-            | STMap _ _ \<Rightarrow> return (KStoptr l', Storage t'))
-          }
-        | _ \<Rightarrow> throw Err)
-    | None \<Rightarrow> throw Err) st"
-| "stmt SKIP e\<^sub>p e cd st = gascheck (costs SKIP e\<^sub>p e cd) st"
-| "stmt (ASSIGN lv ex) e\<^sub>p env cd st =
-    (do {
-      gascheck (costs (ASSIGN lv ex) e\<^sub>p env cd);
-      re \<leftarrow> expr ex e\<^sub>p env cd;
-      (case re of
-        (KValue v, Value t) \<Rightarrow>
-          do {
-            rl \<leftarrow> lexp lv e\<^sub>p env cd;
-            (case rl of
-              (LStackloc l, Value t') \<Rightarrow> 
-                (case convert t t' v of
-                   Some (v', _) \<Rightarrow> modify (\<lambda>st. st \<lparr>stack := updateStore l (KValue v') (stack st)\<rparr>)
-                 | None \<Rightarrow> throw Err)
-            | (LStoreloc l, Storage (STValue t')) \<Rightarrow>
-                (case convert t t' v of
-                  Some (v', _) \<Rightarrow>
-                    do {
-                      so \<leftarrow> applyf (\<lambda>st. fmlookup (storage st) (address env));
-                      (case so of
-                        Some s \<Rightarrow> modify (\<lambda>st. st\<lparr>storage := fmupd (address env) (fmupd l v' s) (storage st)\<rparr>)
-                      | None \<Rightarrow> throw Err)
-                  }
-                | None \<Rightarrow> throw Err)
-            | (LMemloc l, Memory (MTValue t')) \<Rightarrow>
-                (case convert t t' v of
-                  Some (v', _) \<Rightarrow> modify (\<lambda>st. st\<lparr>memory := updateStore l (MValue v') (memory st)\<rparr>)
-                | None \<Rightarrow> throw Err)
-            | _ \<Rightarrow> throw Err)
-          }
-        | (KCDptr p, Calldata (MTArray x t)) \<Rightarrow>
-          do {
-            rl \<leftarrow> lexp lv e\<^sub>p env cd;
-            (case rl of
-              (LStackloc l, Memory _) \<Rightarrow> modify (\<lambda>st. st \<lparr>stack := updateStore l (KCDptr p) (stack st)\<rparr>)
-            | (LStackloc l, Storage _) \<Rightarrow>
-                do {
-                  sv \<leftarrow> applyf (\<lambda>st. accessStore l (stack st));
-                  (case sv of
-                    Some (KStoptr p') \<Rightarrow>
-                      do {
-                        so \<leftarrow> applyf (\<lambda>st. fmlookup (storage st) (address env));
-                        (case so of
-                          Some s \<Rightarrow> 
-                            (case cpm2s p p' x t cd s of
-                              Some s' \<Rightarrow> modify (\<lambda>st. st \<lparr>storage := fmupd (address env) s' (storage st)\<rparr>)
-                            | None \<Rightarrow> throw Err)
-                        | None \<Rightarrow> throw Err)
-                    }
-                  | _ \<Rightarrow> throw Err)
-                }
-             | (LStoreloc l, _) \<Rightarrow>
-                do {
-                  so \<leftarrow> applyf (\<lambda>st. fmlookup (storage st) (address env));
-                  (case so of
-                    Some s \<Rightarrow> 
-                      (case cpm2s p l x t cd s of
-                         Some s' \<Rightarrow> modify (\<lambda>st. st \<lparr>storage := fmupd (address env) s' (storage st)\<rparr>)
-                       | None \<Rightarrow> throw Err)
-                  | None \<Rightarrow> throw Err)
-                }
-             | (LMemloc l, _) \<Rightarrow>
-                do {
-                  cs \<leftarrow> applyf (\<lambda>st. cpm2m p l x t cd (memory st));
-                  (case cs of
-                    Some m \<Rightarrow> modify (\<lambda>st. st \<lparr>memory := m\<rparr>)
-                  | None \<Rightarrow> throw Err)
-                }
-             | _ \<Rightarrow> throw Err)
-          }
-        | (KMemptr p, Memory (MTArray x t)) \<Rightarrow>
-            do {
-              rl \<leftarrow> lexp lv e\<^sub>p env cd;
-              (case rl of
-                (LStackloc l, Memory _) \<Rightarrow> modify (\<lambda>st. st\<lparr>stack := updateStore l (KMemptr p) (stack st)\<rparr>)
-              | (LStackloc l, Storage _) \<Rightarrow>
-                  do {
-                    sv \<leftarrow> applyf (\<lambda>st. accessStore l (stack st));
-                    (case sv of
-                      Some (KStoptr p') \<Rightarrow>
-                      do {
-                        so \<leftarrow> applyf (\<lambda>st. fmlookup (storage st) (address env));
-                        (case so of
-                          Some s \<Rightarrow> 
-                            do {
-                              cs \<leftarrow> applyf (\<lambda>st. cpm2s p p' x t (memory st) s);
-                              (case cs of
-                              Some s' \<Rightarrow> modify (\<lambda>st. st \<lparr>storage := fmupd (address env) s' (storage st)\<rparr>)
-                            | None \<Rightarrow> throw Err)
-                            }
-                        | None \<Rightarrow> throw Err)
-                      }
-                    | _ \<Rightarrow> throw Err)
-                  }
-              | (LStoreloc l, _) \<Rightarrow>
-                  do {
-                    so \<leftarrow> applyf (\<lambda>st. fmlookup (storage st) (address env));
-                    (case so of
-                      Some s \<Rightarrow> 
-                        do {
-                          cs \<leftarrow> applyf (\<lambda>st. cpm2s p l x t (memory st) s);
-                          (case cs of
-                            Some s' \<Rightarrow> modify (\<lambda>st. st \<lparr>storage := fmupd (address env) s' (storage st)\<rparr>)
-                          | None \<Rightarrow> throw Err)
-                        }
-                    | None \<Rightarrow> throw Err)
-                  }
-              | (LMemloc l, _) \<Rightarrow> modify (\<lambda>st. st \<lparr>memory := updateStore l (MPointer p) (memory st)\<rparr>)
-              | _ \<Rightarrow> throw Err)
-            }
-        | (KStoptr p, Storage (STArray x t)) \<Rightarrow>
-            do {
-              rl \<leftarrow> lexp lv e\<^sub>p env cd;
-              (case rl of
-                (LStackloc l, Memory _) \<Rightarrow>
-                  do {
-                    sv \<leftarrow> applyf (\<lambda>st. accessStore l (stack st));
-                    (case sv of
-                      Some (KMemptr p') \<Rightarrow>
-                        do {
-                          so \<leftarrow> applyf (\<lambda>st. fmlookup (storage st) (address env));
-                          (case so of
-                            Some s \<Rightarrow> 
-                              do {
-                                cs \<leftarrow> applyf (\<lambda>st. cps2m p p' x t s (memory st));
-                                (case cs of
-                                  Some m \<Rightarrow> modify (\<lambda>st. st\<lparr>memory := m\<rparr>)
-                                | None \<Rightarrow> throw Err)
-                              }
-                          | None \<Rightarrow> throw Err)
-                        }
-                    | _ \<Rightarrow> throw Err)
-                  }
-              | (LStackloc l, Storage _) \<Rightarrow> modify (\<lambda>st. st\<lparr>stack := updateStore l (KStoptr p) (stack st)\<rparr>)
-              | (LStoreloc l, _) \<Rightarrow>
-                  do {
-                    so \<leftarrow> applyf (\<lambda>st. fmlookup (storage st) (address env));
-                    (case so of
-                      Some s \<Rightarrow> 
-                        (case copy p l x t s of
-                          Some s' \<Rightarrow> modify (\<lambda>st. st \<lparr>storage := fmupd (address env) s' (storage st)\<rparr>)
-                        | None \<Rightarrow> throw Err)
-                     | None \<Rightarrow> throw Err)
-                  }
-              | (LMemloc l, _) \<Rightarrow>
-                  do {
-                    so \<leftarrow> applyf (\<lambda>st. fmlookup (storage st) (address env));
-                    (case so of
-                      Some s \<Rightarrow> 
-                        do {
-                          cs \<leftarrow> applyf (\<lambda>st. cps2m p l x t s (memory st));
-                          (case cs of
-                            Some m \<Rightarrow> modify (\<lambda>st. st\<lparr>memory := m\<rparr>)
-                          | None \<Rightarrow> throw Err)
-                        }
-                    | None \<Rightarrow> throw Err)
-                  }
-              | _ \<Rightarrow> throw Err)
-            }
-        | (KStoptr p, Storage (STMap t t')) \<Rightarrow>
-            do {
-              rl \<leftarrow> lexp lv e\<^sub>p env cd;
-              (case rl of
-                (LStackloc l, _) \<Rightarrow> modify (\<lambda>st. st\<lparr>stack := updateStore l (KStoptr p) (stack st)\<rparr>)
-              | _ \<Rightarrow> throw Err)
-            }
-        | _ \<Rightarrow> throw Err)
-    }) st"
-| "stmt (COMP s1 s2) e\<^sub>p e cd st =
-    (do {
-      gascheck (costs (COMP s1 s2) e\<^sub>p e cd);
-      stmt s1 e\<^sub>p e cd;
-      stmt s2 e\<^sub>p e cd
-    }) st"
-| "stmt (ITE ex s1 s2) e\<^sub>p e cd st =
-    (do {
-      gascheck (costs (ITE ex s1 s2)  e\<^sub>p e cd);
-      v \<leftarrow> expr ex e\<^sub>p e cd;
-      (case v of
-        (KValue b, Value TBool) \<Rightarrow>
-            (if b = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True
-              then stmt s1 e\<^sub>p e cd
-              else stmt s2 e\<^sub>p e cd)
-      | _ \<Rightarrow> throw Err)
-    }) st"
-| "stmt (WHILE ex s0) e\<^sub>p e cd st =
-    (do {
-      gascheck (costs (WHILE ex s0) e\<^sub>p e cd);
-      v \<leftarrow> expr ex e\<^sub>p e cd;
-      (case v of
-        (KValue b, Value TBool) \<Rightarrow>
-          (if b = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True
-            then do {
-              stmt s0 e\<^sub>p e cd;
-              stmt (WHILE ex s0) e\<^sub>p e cd
-            }
-            else return ())
-      | _ \<Rightarrow> throw Err)
-    }) st"
-| "stmt (INVOKE i xe) e\<^sub>p e cd st =
-    (do {
-      gascheck (costs (INVOKE i xe) e\<^sub>p e cd);
-      (case fmlookup e\<^sub>p (address e) of
-          Some (ct, _) \<Rightarrow>
-            (case fmlookup ct i of
-              Some (Method (fp, f, None)) \<Rightarrow>
-                 (let e' = ffold_init ct (emptyEnv (address e) (sender e) (svalue e)) (fmdom ct)
-                 in (do {
-                    st' \<leftarrow> applyf (\<lambda>st. (st\<lparr>stack:=emptyStore\<rparr>));
-                    (e'', cd', st'') \<leftarrow> load False fp xe e\<^sub>p e' emptyStore st' e cd;
-                    st''' \<leftarrow> get;
-                    put st'';
-                    stmt f e\<^sub>p e'' cd';
-                    modify (\<lambda>st. st\<lparr>stack:=stack st''', memory := memory st'''\<rparr>)
-                  }))
-            | _ \<Rightarrow> throw Err)
-        | None  \<Rightarrow> throw Err)
-    }) st"
-(*External Method calls allow to send some money val with it*)
-(*However this transfer does NOT trigger a fallback*)
-| "stmt (EXTERNAL ad i xe val) e\<^sub>p e cd st =
-    (do {
-      gascheck (costs (EXTERNAL ad i xe val) e\<^sub>p e cd);
-      kad \<leftarrow> expr ad e\<^sub>p e cd;
-      (case kad of
-        (KValue adv, Value TAddr) \<Rightarrow>
-          (case fmlookup e\<^sub>p adv of
-            Some (ct, fb) \<Rightarrow>
-              (do {
-                kv \<leftarrow> expr val e\<^sub>p e cd;
-                (case kv of
-                  (KValue v, Value t) \<Rightarrow>
-                    (case fmlookup ct i of
-                      Some (Method (fp, f, None)) \<Rightarrow>
-                      let e' = ffold_init ct (emptyEnv adv (address e) v) (fmdom ct)
-                      in (do {
-                        st' \<leftarrow> applyf (\<lambda>st. st\<lparr>stack:=emptyStore, memory:=emptyStore\<rparr>);
-                        (e'', cd', st'') \<leftarrow> load True fp xe e\<^sub>p e' emptyStore st' e cd;
-                        st''' \<leftarrow> get;
-                        (case transfer (address e) adv v (accounts st'') of
-                          Some acc \<Rightarrow>
-                            do {
-                              put (st''\<lparr>accounts := acc\<rparr>);
-                              stmt f e\<^sub>p e'' cd';
-                              modify (\<lambda>st. st\<lparr>stack:=stack st''', memory := memory st'''\<rparr>)
-                            }
-                          | None \<Rightarrow> throw Err)
-                       })
-                    | None \<Rightarrow>
-                      do {
-                        st' \<leftarrow> get;
-                        (case transfer (address e) adv v (accounts st') of
-                          Some acc \<Rightarrow>
-                            do {
-                              st'' \<leftarrow> get;
-                              modify (\<lambda>st. st\<lparr>accounts := acc,stack:=emptyStore, memory:=emptyStore\<rparr>);
-                              stmt fb e\<^sub>p (emptyEnv adv (address e) v) cd;
-                              modify (\<lambda>st. st\<lparr>stack:=stack st'', memory := memory st''\<rparr>)
-                            }
-                        | None \<Rightarrow> throw Err)
-                      }
-                    | _ \<Rightarrow> throw Err)
-                | _ \<Rightarrow> throw Err)
-              })
-          | None \<Rightarrow> throw Err)
-      | _ \<Rightarrow> throw Err)
-    }) st"
-| "stmt (TRANSFER ad ex) e\<^sub>p e cd st =
-    (do {
-      gascheck (costs (TRANSFER ad ex) e\<^sub>p e cd);
-      kv \<leftarrow> expr ex e\<^sub>p e cd;
-      (case kv of
-        (KValue v, Value t) \<Rightarrow>
-          (do {
-            kv' \<leftarrow> expr ad e\<^sub>p e cd;
-            (case kv' of
-              (KValue adv, Value TAddr) \<Rightarrow>
-                (do {
-                  acs \<leftarrow> applyf accounts;
-                  (case transfer (address e) adv v acs of
-                    Some acc \<Rightarrow> (case fmlookup e\<^sub>p adv of
-                                  Some (ct, f) \<Rightarrow>
-                                    let e' = ffold_init ct (emptyEnv adv (address e) v) (fmdom ct)
-                                    in (do {
-                                      st' \<leftarrow> get;
-                                      modify (\<lambda>st. (st\<lparr>accounts := acc, stack:=emptyStore, memory:=emptyStore\<rparr>));
-                                      stmt f e\<^sub>p e' emptyStore;
-                                      modify (\<lambda>st. st\<lparr>stack:=stack st', memory := memory st'\<rparr>)
-                                    })
-                                | None \<Rightarrow> modify (\<lambda>st. (st\<lparr>accounts := acc\<rparr>)))
-                  | None \<Rightarrow> throw Err)
-                })
-            | _ \<Rightarrow> throw Err)
-          })
-      | _ \<Rightarrow> throw Err)
-    }) st"
-| "stmt (BLOCK ((id0, tp), ex) s) e\<^sub>p e\<^sub>v cd st =
-    (do {
-      gascheck (costs (BLOCK ((id0, tp), ex) s) e\<^sub>p e\<^sub>v cd);
-      (case ex of
-         None \<Rightarrow> (do {
-           mem \<leftarrow> applyf memory;
-           (cd', e') \<leftarrow> decl id0 tp None False cd mem cd e\<^sub>v;
-           stmt s e\<^sub>p e' cd'
-         })
-       | Some ex' \<Rightarrow> (do {
-           (v, t) \<leftarrow> expr ex' e\<^sub>p e\<^sub>v cd;
-           mem \<leftarrow> applyf memory;
-           (cd', e') \<leftarrow> decl id0 tp (Some (v, t)) False cd mem cd e\<^sub>v;
-           stmt s e\<^sub>p e' cd'
-         }))
-    }) st"
-  by pat_completeness auto
+    | None \<Rightarrow> throw Err) g"
 
-subsection \<open>Gas Consumption\<close>
-
-lemma lift_gas:
-  assumes "lift expr f e1 e2 e\<^sub>p e cd st = Normal ((v, t), st4')"
-      and "\<And>st4' v4 t4. expr e1 e\<^sub>p e cd st = Normal ((v4, t4), st4') \<Longrightarrow> gas st4' \<le> gas st"
-      and "\<And>x1 x y xa ya x1a x1b st4' v4 t4. expr e1 e\<^sub>p e cd st = Normal (x, y)
-            \<Longrightarrow> (xa, ya) = x
-            \<Longrightarrow> xa = KValue x1a
-            \<Longrightarrow> ya = Value x1b
-            \<Longrightarrow> expr e2 e\<^sub>p e cd y = Normal ((v4, t4), st4')
-          \<Longrightarrow> gas st4' \<le> gas y"
-      shows "gas st4' \<le> gas st"
-proof (cases "expr e1 e\<^sub>p e cd st")
-  case (n a st')
-  then show ?thesis
-  proof (cases a)
-    case (Pair b c)
-    then show ?thesis
-    proof (cases b)
-      case (KValue v1)
-      then show ?thesis
-      proof (cases c)
-        case (Value t1)
-        then show ?thesis
-        proof (cases "expr e2 e\<^sub>p e cd st'")
-          case r2: (n a' st'')
-          then show ?thesis
-          proof (cases a')
-            case p2: (Pair b c)
-            then show ?thesis
-            proof (cases b)
-              case v2: (KValue v2)
-              then show ?thesis
-              proof (cases c)
-                case t2: (Value t2)
-                then show ?thesis
-                proof (cases "f t1 t2 v1 v2")
-                  case None
-                  with assms n Pair KValue Value r2 p2 v2 t2 show ?thesis by simp
-                next
-                  case (Some a'')
-                  then show ?thesis
-                  proof (cases a'')
-                    case p3: (Pair v t)
-                    with assms n Pair KValue Value r2 p2 v2 t2 Some have "gas st4'\<le>gas st''" by simp
-                    moreover from assms n Pair KValue Value r2 p2 v2 t2 Some have "gas st''\<le>gas st'" by simp
-                    moreover from assms n Pair KValue Value r2 p2 v2 t2 Some have "gas st'\<le>gas st" by simp
-                    ultimately show ?thesis by arith
-                  qed
-                qed
-              next
-                case (Calldata x2)
-                with assms n Pair KValue Value r2 p2 v2 show ?thesis by simp
-              next
-                case (Memory x3)
-                with assms n Pair KValue Value r2 p2 v2 show ?thesis by simp
-              next
-                case (Storage x4)
-                with assms n Pair KValue Value r2 p2 v2 show ?thesis by simp
-              qed
-            next
-              case (KCDptr x2)
-              with assms n Pair KValue Value r2 p2 show ?thesis by simp
-            next
-              case (KMemptr x3)
-              with assms n Pair KValue Value r2 p2 show ?thesis by simp
-            next
-              case (KStoptr x4)
-              with assms n Pair KValue Value r2 p2 show ?thesis by simp
-            qed
-          qed
-        next
-          case (e x)
-          with assms n Pair KValue Value show ?thesis by simp
-        qed
-      next
-        case (Calldata x2)
-        with assms n Pair KValue show ?thesis by simp
-      next
-        case (Memory x3)
-        with assms n Pair KValue show ?thesis by simp
-      next
-        case (Storage x4)
-        with assms n Pair KValue show ?thesis by simp
-      qed
-    next
-      case (KCDptr x2)
-      with assms n Pair show ?thesis by simp
-    next
-      case (KMemptr x3)
-      with assms n Pair show ?thesis by simp
-    next
-      case (KStoptr x4)
-      with assms n Pair show ?thesis by simp
-    qed
-  qed
+lemma lexp_gas[rule_format]:
+    "\<forall>l5' t5' g5'. lexp l5 ev5 cd5 st5 g5 = Normal ((l5', t5'), g5') \<longrightarrow> g5' \<le> g5"
+proof (induct rule: lexp.induct[where ?P="\<lambda>l5 ev5 cd5 st5 g5. (\<forall>l5' t5' g5'. lexp l5 ev5 cd5 st5 g5 = Normal ((l5', t5'), g5') \<longrightarrow> g5' \<le> g5)"])
+  case (1 i e uv st g)
+  then show ?case using lexp.simps(1) by (simp split: option.split Denvalue.split prod.split)
 next
-  case (e x)
-  with assms show ?thesis by simp
-qed
- 
-lemma msel_ssel_lexp_expr_load_rexp_stmt_dom_gas:
-    "msel_ssel_lexp_expr_load_rexp_stmt_dom (Inl (Inl (c1, t1, l1, xe1, ep1, ev1, cd1, st1)))
-      \<Longrightarrow> (\<forall>l1' t1' st1'. msel c1 t1 l1 xe1 ep1 ev1 cd1 st1 = Normal ((l1', t1'), st1') \<longrightarrow> gas st1' \<le> gas st1)"
-    "msel_ssel_lexp_expr_load_rexp_stmt_dom (Inl (Inr (Inl (t2, l2, xe2, ep2, ev2, cd2, st2))))
-      \<Longrightarrow> (\<forall>l2' t2' st2'. ssel t2 l2 xe2 ep2 ev2 cd2 st2 = Normal ((l2', t2'), st2') \<longrightarrow> gas st2' \<le> gas st2)"
-    "msel_ssel_lexp_expr_load_rexp_stmt_dom (Inl (Inr (Inr (l5, ep5, ev5, cd5, st5))))
-      \<Longrightarrow> (\<forall>l5' t5' st5'. lexp l5 ep5 ev5 cd5 st5 = Normal ((l5', t5'), st5') \<longrightarrow> gas st5' \<le> gas st5)"
-    "msel_ssel_lexp_expr_load_rexp_stmt_dom (Inr (Inl (Inl (e4, ep4, ev4, cd4, st4))))
-      \<Longrightarrow> (\<forall>st4' v4 t4. expr e4 ep4 ev4 cd4 st4 = Normal ((v4, t4), st4') \<longrightarrow> gas st4' \<le> gas st4)"
-    "msel_ssel_lexp_expr_load_rexp_stmt_dom (Inr (Inl (Inr (lcp, lis, lxs, lep, lev0, lcd0, lst0, lev, lcd, lst))))
-      \<Longrightarrow> (\<forall>ev cd st st'. load lcp lis lxs lep lev0 lcd0 lst0 lev lcd lst = Normal ((ev, cd, st), st') \<longrightarrow> gas st \<le> gas lst0 \<and> gas st' \<le> gas lst \<and> address ev = address lev0)"
-    "msel_ssel_lexp_expr_load_rexp_stmt_dom (Inr (Inr (Inl (l3, ep3, ev3, cd3, st3))))
-      \<Longrightarrow> (\<forall>l3' t3' st3'. rexp l3 ep3 ev3 cd3 st3 = Normal ((l3', t3'), st3') \<longrightarrow> gas st3' \<le> gas st3)"
-    "msel_ssel_lexp_expr_load_rexp_stmt_dom (Inr (Inr (Inr (s6, ep6, ev6, cd6, st6))))
-      \<Longrightarrow> (\<forall>st6'. stmt s6 ep6 ev6 cd6 st6 = Normal((), st6') \<longrightarrow> gas st6' \<le> gas st6)"
-proof (induct rule: msel_ssel_lexp_expr_load_rexp_stmt.pinduct
-[where ?P1.0="\<lambda>c1 t1 l1 xe1 ep1 ev1 cd1 st1. (\<forall>l1' t1' st1'. msel c1 t1 l1 xe1 ep1 ev1 cd1 st1 = Normal ((l1', t1'), st1') \<longrightarrow> gas st1' \<le> gas st1)"
-   and ?P2.0="\<lambda>t2 l2 xe2 ep2 ev2 cd2 st2. (\<forall>l2' t2' st2'. ssel t2 l2 xe2 ep2 ev2 cd2 st2 = Normal ((l2', t2'), st2') \<longrightarrow> gas st2' \<le> gas st2)"
-   and ?P3.0="\<lambda>l5 ep5 ev5 cd5 st5. (\<forall>l5' t5' st5'. lexp l5 ep5 ev5 cd5 st5 = Normal ((l5', t5'), st5') \<longrightarrow> gas st5' \<le> gas st5)"
-   and ?P4.0="\<lambda>e4 ep4 ev4 cd4 st4. (\<forall>st4' v4 t4. expr e4 ep4 ev4 cd4 st4 = Normal ((v4, t4), st4') \<longrightarrow> gas st4' \<le> gas st4)"
-   and ?P5.0="\<lambda>lcp lis lxs lep lev0 lcd0 lst0 lev lcd lst. (\<forall>ev cd st st'. load lcp lis lxs lep lev0 lcd0 lst0 lev lcd lst = Normal ((ev, cd, st), st') \<longrightarrow> gas st \<le> gas lst0 \<and> gas st' \<le> gas lst \<and> address ev = address lev0)"
-   and ?P6.0="\<lambda>l3 ep3 ev3 cd3 st3. (\<forall>l3' t3' st3'. rexp l3 ep3 ev3 cd3 st3 = Normal ((l3', t3'), st3') \<longrightarrow> gas st3' \<le> gas st3)"
-   and ?P7.0="\<lambda>s6 ep6 ev6 cd6 st6. (\<forall>st6'. stmt s6 ep6 ev6 cd6 st6 = Normal ((), st6') \<longrightarrow> gas st6' \<le> gas st6)"
-])
-  case (1 uu uv uw ux uy uz va)
-  then show ?case using msel.psimps(1) by auto
-next
-  case (2 vb vc vd ve vf vg vh vi)
-  then show ?case using msel.psimps(2) by auto
-next                                                                                                                                                                         
-  case (3 vj al t loc x e\<^sub>p env cd st)
-  then show ?case using msel.psimps(3) by (auto split: if_split_asm Type.split_asm Stackvalue.split_asm prod.split_asm StateMonad.result.split_asm)
-next
-  case (4 mm al t loc x y ys e\<^sub>p env cd st)
-  show ?case
-  proof (rule allI[THEN allI, THEN allI, OF impI])
-    fix l1' t1' st1' assume a1: "msel mm (MTArray al t) loc (x # y # ys) e\<^sub>p env cd st = Normal ((l1', t1'), st1')"
-    show "gas st1' \<le> gas st"
-    proof (cases "expr x e\<^sub>p env cd st")
-      case (n a st')
-      then show ?thesis
-      proof (cases a)
-        case (Pair b c)
-        then show ?thesis
-        proof (cases b)
-          case (KValue v)
-          then show ?thesis
-          proof (cases c)
-            case (Value t')
-            then show ?thesis
-            proof (cases)
-              assume l: "less t' (TUInt 256) v (ShowL\<^sub>i\<^sub>n\<^sub>t al) = Some (ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True, TBool)"
-              then show ?thesis
-              proof (cases "accessStore (hash loc v) (if mm then memory st' else cd)")
-                case None
-                with 4 a1 n Pair KValue Value l show ?thesis using msel.psimps(4) by simp
-              next
-                case (Some a)
-                then show ?thesis
-                proof (cases a)
-                  case (MValue x1)
-                  with 4 a1 n Pair KValue Value Some l show ?thesis using msel.psimps(4) by simp
-                next
-                  case (MPointer l)
-                  with n Pair KValue Value l Some
-                  have "msel mm (MTArray al t) loc (x # y # ys) e\<^sub>p env cd st = msel mm t l (y # ys) e\<^sub>p env cd st'"
-                    using msel.psimps(4) 4(1) by simp
-                  moreover from n Pair have "gas st' \<le> gas st" using 4(2) by simp
-                  moreover from a1 MPointer n Pair KValue Value l Some
-                  have "gas st1' \<le> gas st'" using msel.psimps(4) 4(3) 4(1) by simp
-                  ultimately show ?thesis by simp
-                qed
-              qed
-            next
-              assume "\<not> less t' (TUInt 256) v (ShowL\<^sub>i\<^sub>n\<^sub>t al) = Some (ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True, TBool)"
-              with 4 a1 n Pair KValue Value show ?thesis using msel.psimps(4) by simp
-            qed
-          next
-            case (Calldata x2)
-            with 4 a1 n Pair KValue show ?thesis using msel.psimps(4) by simp
-          next
-            case (Memory x3)
-            with 4 a1 n Pair KValue show ?thesis using msel.psimps(4) by simp
-          next
-            case (Storage x4)
-            with 4 a1 n Pair KValue show ?thesis using msel.psimps(4) by simp
-          qed
-        next
-          case (KCDptr x2)
-          with 4 a1 n Pair show ?thesis using msel.psimps(4) by simp
-        next
-          case (KMemptr x3)
-          with 4 a1 n Pair show ?thesis using msel.psimps(4) by simp
-        next
-          case (KStoptr x4)
-          with 4 a1 n Pair show ?thesis using msel.psimps(4) by simp
-        qed
-      qed
-    next
-      case (e x)
-      with 4 a1 show ?thesis using msel.psimps(4) by simp
-    qed
-  qed
-next
-  case (5 tp loc vk vl vm st)
-  then show ?case using ssel.psimps(1) by auto
-next
-  case (6 vn vo vp vq vr vs vt vu)
-  then show ?case using ssel.psimps(2) by auto
-next
-  case (7 al t loc x xs e\<^sub>p env cd st)
-  show ?case
-  proof (rule allI[THEN allI, THEN allI, OF impI])
-    fix l2' t2' st2' assume a1: "ssel (STArray al t) loc (x # xs) e\<^sub>p env cd st = Normal ((l2', t2'), st2')"
-    show "gas st2' \<le> gas st"
-    proof (cases "expr x e\<^sub>p env cd st")
-      case (n a st'')
-      then show ?thesis
-      proof (cases a)
-        case (Pair b c)
-        then show ?thesis
-        proof (cases b)
-          case (KValue v)
-          then show ?thesis
-          proof (cases c)
-            case (Value t')
-            then show ?thesis
-            proof (cases)
-              assume l: "less t' (TUInt 256) v (ShowL\<^sub>i\<^sub>n\<^sub>t al) = Some (ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True, TBool)"
-              with n Pair KValue Value l
-              have "ssel (STArray al t) loc (x # xs) e\<^sub>p env cd st = ssel t (hash loc v) xs e\<^sub>p env cd st''"
-              using ssel.psimps(3) 7(1) by simp
-              moreover from n Pair have "gas st'' \<le> gas st" using 7(2) by simp
-              moreover from a1 n Pair KValue Value l
-              have "gas st2' \<le> gas st''" using ssel.psimps(3) 7(3) 7(1) by simp
-              ultimately show ?thesis by simp
-            next
-              assume "\<not> less t' (TUInt 256) v (ShowL\<^sub>i\<^sub>n\<^sub>t al) = Some (ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True, TBool)"
-              with 7 a1 n Pair KValue Value show ?thesis using ssel.psimps(3) by simp
-            qed
-          next
-            case (Calldata x2)
-            with 7 a1 n Pair KValue show ?thesis using ssel.psimps(3) by simp
-          next
-            case (Memory x3)
-            with 7 a1 n Pair KValue show ?thesis using ssel.psimps(3) by simp
-          next
-            case (Storage x4)
-            with 7 a1 n Pair KValue show ?thesis using ssel.psimps(3) by simp
-          qed
-        next
-          case (KCDptr x2)
-          with 7 a1 n Pair show ?thesis using ssel.psimps(3) by simp
-        next
-          case (KMemptr x3)
-          with 7 a1 n Pair show ?thesis using ssel.psimps(3) by simp
-        next
-          case (KStoptr x4)
-          with 7 a1 n Pair show ?thesis using ssel.psimps(3) by simp
-        qed
-      qed
-    next
-      case (e e)
-      with 7 a1 show ?thesis using ssel.psimps(3) by simp
-    qed
-  qed
-next
-  case (8 vv t loc x xs e\<^sub>p env cd st)
-  show ?case
-  proof (rule allI[THEN allI, THEN allI, OF impI])
-    fix l2' t2' st2' assume a1: "ssel (STMap vv t) loc (x # xs) e\<^sub>p env cd st = Normal ((l2', t2'), st2')"
-    show "gas st2' \<le> gas st"
-    proof (cases "expr x e\<^sub>p env cd st")
-      case (n a st')
-      then show ?thesis
-      proof (cases a)
-        case (Pair b c)
-        then show ?thesis
-        proof (cases b)
-          case (KValue v)
-          with 8 n Pair have "ssel (STMap vv t) loc (x # xs) e\<^sub>p env cd st = ssel t (hash loc v) xs e\<^sub>p env cd st'" using ssel.psimps(4) by simp
-          moreover from n Pair have "gas st' \<le> gas st" using 8(2) by simp
-          moreover from a1 n Pair KValue
-          have "gas st2' \<le> gas st'" using ssel.psimps(4) 8(3) 8(1) by simp
-          ultimately show ?thesis by simp
-        next
-          case (KCDptr x2)
-          with 8 a1 n Pair show ?thesis using ssel.psimps(4) by simp
-        next
-          case (KMemptr x3)
-          with 8 a1 n Pair show ?thesis using ssel.psimps(4) by simp
-        next
-          case (KStoptr x4)
-          with 8 a1 n Pair show ?thesis using ssel.psimps(4) by simp
-        qed
-      qed
-    next
-      case (e x)
-      with 8 a1 show ?thesis using ssel.psimps(4) by simp
-    qed
-  qed
-next
-  case (9 i vw e vx st)
-  then show ?case using lexp.psimps(1)[of i vw e vx st] by (simp split: option.split_asm Denvalue.split_asm prod.split_asm)
-next
-  case (10 i r e\<^sub>p e cd st)
+  case (2 i r e cd st g)
   show ?case
   proof (rule allI[THEN allI, THEN allI, OF impI])
     fix st5' xa xaa
-    assume a1: "lexp (Ref i r) e\<^sub>p e cd st = Normal ((st5', xa), xaa)"
-    then show "gas xaa \<le> gas st"
+    assume a1: "lexp (Ref i r) e cd st g = Normal ((st5', xa), xaa)"
+    then show "xaa \<le> g"
     proof (cases "fmlookup (denvalue e) i")
       case None
-      with 10 a1 show ?thesis using lexp.psimps(2) by simp
+      with a1 show ?thesis using lexp.simps(2) by simp
     next
       case (Some a)
       then show ?thesis
@@ -1536,60 +75,60 @@ next
           then show ?thesis
           proof (cases "accessStore l (stack st)")
             case None
-            with 10 a1 Some Pair Stackloc show ?thesis using lexp.psimps(2) by simp
+            with a1 Some Pair Stackloc show ?thesis using lexp.psimps(2) by simp
           next
             case s2: (Some a)
             then show ?thesis
             proof (cases a)
               case (KValue x1)
-              with 10 a1 Some Pair Stackloc s2 show ?thesis using lexp.psimps(2) by simp
+              with a1 Some Pair Stackloc s2 show ?thesis using lexp.psimps(2) by simp
             next
               case (KCDptr x2)
-              with 10 a1 Some Pair Stackloc s2 show ?thesis using lexp.psimps(2) by simp
+              with a1 Some Pair Stackloc s2 show ?thesis using lexp.psimps(2) by simp
             next
               case (KMemptr l')
               then show ?thesis
               proof (cases tp)
-                case (Value x1)
-                with 10 a1 Some Pair Stackloc s2 KMemptr show ?thesis using lexp.psimps(2) by simp
+                case (Value _)
+                with a1 Some Pair Stackloc s2 KMemptr show ?thesis using lexp.simps(2) by simp
               next
-                case (Calldata x2)
-                with 10 a1 Some Pair Stackloc s2 KMemptr show ?thesis using lexp.psimps(2) by simp
+                case (Calldata _)
+                with a1 Some Pair Stackloc s2 KMemptr show ?thesis using lexp.simps(2) by simp
               next
                 case (Memory t)
                 then show ?thesis
-                proof (cases "msel True t l' r e\<^sub>p e cd st")
-                  case (n a s)
-                  with 10 a1 Some Pair Stackloc s2 KMemptr Memory show ?thesis using lexp.psimps(2) by (simp split: prod.split_asm)
+                proof (cases "msel True t l' r e cd st g")
+                  case (n _ _)
+                  with 2 a1 Some Pair Stackloc s2 KMemptr Memory show ?thesis using msel_ssel_expr_load_rexp_gas(1) by (simp split: prod.split_asm)
                 next
-                  case (e e)
-                  with 10 a1 Some Pair Stackloc s2 KMemptr Memory show ?thesis using lexp.psimps(2) by simp
+                  case (e _)
+                  with a1 Some Pair Stackloc s2 KMemptr Memory show ?thesis using lexp.psimps(2) by simp
                 qed
               next
-                case (Storage x4)
-                with 10 a1 Some Pair Stackloc s2 KMemptr show ?thesis using lexp.psimps(2) by simp
+                case (Storage _)
+                with a1 Some Pair Stackloc s2 KMemptr show ?thesis using lexp.psimps(2) by simp
               qed
             next
               case (KStoptr l')
               then show ?thesis
               proof (cases tp)
-                case (Value x1)
-                with 10 a1 Some Pair Stackloc s2 KStoptr show ?thesis using lexp.psimps(2) by simp
+                case (Value _)
+                with a1 Some Pair Stackloc s2 KStoptr show ?thesis using lexp.psimps(2) by simp
               next
-                case (Calldata x2)
-                with 10 a1 Some Pair Stackloc s2 KStoptr show ?thesis using lexp.psimps(2) by simp
+                case (Calldata _)
+                with a1 Some Pair Stackloc s2 KStoptr show ?thesis using lexp.psimps(2) by simp
               next
-                case (Memory t)
-                with 10 a1 Some Pair Stackloc s2 KStoptr show ?thesis using lexp.psimps(2) by simp
+                case (Memory _)
+                with a1 Some Pair Stackloc s2 KStoptr show ?thesis using lexp.psimps(2) by simp
               next
                 case (Storage t)
                 then show ?thesis
-                proof (cases "ssel t l' r e\<^sub>p e cd st")
-                  case (n a s)
-                  with 10 a1 Some Pair Stackloc s2 KStoptr Storage show ?thesis using lexp.psimps(2) by (auto split: prod.split_asm)
+                proof (cases "ssel t l' r e cd st g")
+                  case (n _ _)
+                  with a1 Some Pair Stackloc s2 KStoptr Storage show ?thesis using msel_ssel_expr_load_rexp_gas(2) by (auto split: prod.split_asm)
                 next
-                  case (e x)
-                  with 10 a1 Some Pair Stackloc s2 KStoptr Storage show ?thesis using lexp.psimps(2) by simp
+                  case (e _)
+                  with a1 Some Pair Stackloc s2 KStoptr Storage show ?thesis using lexp.psimps(2) by simp
                 qed
               qed
             qed
@@ -1598,739 +137,340 @@ next
           case (Storeloc l)
           then show ?thesis
           proof (cases tp)
-            case (Value x1)
-            with 10 a1 Some Pair Storeloc show ?thesis using lexp.psimps(2) by simp
+            case (Value _)
+            with a1 Some Pair Storeloc show ?thesis using lexp.psimps(2) by simp
           next
-            case (Calldata x2)
-            with 10 a1 Some Pair Storeloc show ?thesis using lexp.psimps(2) by simp
+            case (Calldata _)
+            with  a1 Some Pair Storeloc show ?thesis using lexp.psimps(2) by simp
           next
-            case (Memory t)
-            with 10 a1 Some Pair Storeloc show ?thesis using lexp.psimps(2) by simp
+            case (Memory _)
+            with a1 Some Pair Storeloc show ?thesis using lexp.psimps(2) by simp
           next
             case (Storage t)
             then show ?thesis
-            proof (cases "ssel t l r e\<^sub>p e cd st")
-              case (n a s)
-              with 10 a1 Some Pair Storeloc Storage show ?thesis using lexp.psimps(2) by (auto split: prod.split_asm)
+            proof (cases "ssel t l r e cd st g")
+              case (n _ _)
+              with a1 Some Pair Storeloc Storage show ?thesis using msel_ssel_expr_load_rexp_gas(2) by (auto split: prod.split_asm)
             next
-              case (e x)
-              with 10 a1 Some Pair Storeloc Storage show ?thesis using lexp.psimps(2) by simp
+              case (e _)
+              with a1 Some Pair Storeloc Storage show ?thesis using lexp.psimps(2) by simp
             qed
           qed
         qed
       qed
     qed
   qed
-next
-  case (11 b x e\<^sub>p e vy st)
-  then show ?case using expr.psimps(1) by (simp split:if_split_asm)
-next
-  case (12 b x e\<^sub>p e vz st)
-  then show ?case using expr.psimps(2) by (simp split:if_split_asm)
-next
-  case (13 ad e\<^sub>p e wa st)
-  then show ?case using expr.psimps(3) by simp
-next
-  case (14 ad e\<^sub>p e wb st)
-  define g where "g = costs\<^sub>e (BALANCE ad) e\<^sub>p e wb st"
-  show ?case
-  proof (rule allI[THEN allI, THEN allI, OF impI])
-    fix t4 xa xaa
-    assume *: "expr (BALANCE ad) e\<^sub>p e wb st = Normal ((xa, xaa), t4)"
-    show "gas t4 \<le> gas st"
-    proof (cases)
-      assume "gas st \<le> g"
-      with 14 g_def * show ?thesis using expr.psimps(4) by simp
-    next
-      assume gcost: "\<not> gas st \<le> g"
-      then show ?thesis
-      proof (cases "expr ad e\<^sub>p e wb (st\<lparr>gas := gas st - g\<rparr>)")
-        case (n a s)
-        show ?thesis
-        proof (cases a)
-          case (Pair b c)
-          then show ?thesis
-          proof (cases b)
-            case (KValue x1)
-            then show ?thesis
-            proof (cases c)
-              case (Value x1)
-              then show ?thesis
-              proof (cases x1)
-                case (TSInt x1)
-                with 14 g_def * gcost n Pair KValue Value show ?thesis using expr.psimps(4)[of ad e\<^sub>p e wb st] by simp
-              next
-                case (TUInt x2)
-                with 14 g_def * gcost n Pair KValue Value show ?thesis using expr.psimps(4)[of ad e\<^sub>p e wb st] by simp
-              next
-                case TBool
-                with 14 g_def * gcost n Pair KValue Value show ?thesis using expr.psimps(4)[of ad e\<^sub>p e wb st] by simp
-              next
-                case TAddr
-                with 14 g_def * gcost n Pair KValue Value show "gas t4 \<le> gas st" using expr.psimps(4)[of ad e\<^sub>p e wb st] by simp
-              qed
-            next
-              case (Calldata x2)
-              with 14 g_def * gcost n Pair KValue show ?thesis using expr.psimps(4)[of ad e\<^sub>p e wb st] by simp
-            next
-              case (Memory x3)
-              with 14 g_def * gcost n Pair KValue show ?thesis using expr.psimps(4)[of ad e\<^sub>p e wb st] by simp
-            next
-              case (Storage x4)
-              with 14 g_def * gcost n Pair KValue show ?thesis using expr.psimps(4)[of ad e\<^sub>p e wb st] by simp
-            qed
-          next
-            case (KCDptr x2)
-            with 14 g_def * gcost n Pair show ?thesis using expr.psimps(4)[of ad e\<^sub>p e wb st] by simp
-          next
-            case (KMemptr x3)
-            with 14 g_def * gcost n Pair show ?thesis using expr.psimps(4)[of ad e\<^sub>p e wb st] by simp
-          next
-            case (KStoptr x4)
-            with 14 g_def * gcost n Pair show ?thesis using expr.psimps(4)[of ad e\<^sub>p e wb st] by simp
-          qed
-        qed
-      next
-        case (e _)
-        with 14 g_def * gcost show ?thesis using expr.psimps(4)[of ad e\<^sub>p e wb st] by simp
-      qed
-    qed
-  qed
-next
-  case (15 e\<^sub>p e wc st)
-  then show ?case using expr.psimps(5) by simp
-next
-  case (16 e\<^sub>p e wd st)
-  then show ?case using expr.psimps(6) by simp
-next
-  case (17 e\<^sub>p e wd st)
-  then show ?case using expr.psimps(7) by simp
-next
-  case (18 e\<^sub>p e wd st)
-  then show ?case using expr.psimps(8) by simp
-next
-  case (19 e\<^sub>p e wd st)
-  then show ?case using expr.psimps(9) by simp
-next
-  case (20 x e\<^sub>p e cd st)
-  define g where "g = costs\<^sub>e (NOT x) e\<^sub>p e cd st"
-  show ?case
-  proof (rule allI[THEN allI, THEN allI, OF impI])
-    fix st4' v4 t4 assume a1: "expr (NOT x) e\<^sub>p e cd st = Normal ((v4, t4), st4')"
-    show "gas st4' \<le> gas st"
-    proof (cases)
-      assume "gas st \<le> g"
-      with 20 g_def a1 show ?thesis using expr.psimps by simp
-    next
-      assume gcost: "\<not> gas st \<le> g"
-      then show ?thesis
-      proof (cases "expr x e\<^sub>p e cd (st\<lparr>gas := gas st - g\<rparr>)")
-        case (n a st')
-        then show ?thesis
-        proof (cases a)
-          case (Pair b c)
-          then show ?thesis
-          proof (cases b)
-            case (KValue v)
-            then show ?thesis
-            proof (cases c)
-              case (Value t)
-              then show ?thesis
-              proof (cases)
-                assume v_def: "v = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True"
-                with 20(1) g_def gcost n Pair KValue Value have "expr (NOT x) e\<^sub>p e cd st = expr FALSE e\<^sub>p e cd st'" using expr.psimps(10) by simp
-                moreover from 20(2) g_def gcost n Pair have "gas st' \<le> gas st" by simp
-                moreover from 20(1) 20(3) a1 g_def gcost n Pair KValue Value v_def have "gas st4' \<le> gas st'" using expr.psimps(10) by simp
-                ultimately show ?thesis by arith
-               next
-                assume v_def: "\<not> v = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True"
-                then show ?thesis
-                proof (cases)
-                  assume v_def2: "v = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l False"
-                  with 20(1) g_def gcost n Pair KValue Value v_def have "expr (NOT x) e\<^sub>p e cd st = expr TRUE e\<^sub>p e cd st'" using expr.psimps(10) by simp
-                  moreover from 20(2) g_def gcost n Pair have "gas st' \<le> gas st" by simp
-                  moreover from 20 a1 g_def gcost n Pair KValue Value v_def v_def2 have "gas st4' \<le> gas st'" using expr.psimps(10) by simp
-                  ultimately show ?thesis by arith
-                next
-                  assume "\<not> v = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l False"
-                  with 20 a1 g_def gcost n Pair KValue Value v_def show ?thesis using expr.psimps(10) by simp
-                qed
-              qed
-            next
-              case (Calldata x2)
-              with 20 a1 g_def gcost n Pair KValue show ?thesis using expr.psimps(10) by simp
-            next
-              case (Memory x3)
-              with 20 a1 g_def gcost n Pair KValue show ?thesis using expr.psimps(10) by simp
-            next
-              case (Storage x4)
-              with 20 a1 g_def gcost n Pair KValue show ?thesis using expr.psimps(10) by simp
-            qed
-          next
-            case (KCDptr x2)
-            with 20 a1 g_def gcost n Pair show ?thesis using expr.psimps(10) by simp
-          next
-            case (KMemptr x3)
-            with 20 a1 g_def gcost n Pair show ?thesis using expr.psimps(10) by simp
-          next
-            case (KStoptr x4)
-            with 20 a1 g_def gcost n Pair show ?thesis using expr.psimps(10) by simp
-          qed
-        qed
-      next
-        case (e e)
-        with 20 a1 g_def gcost show ?thesis using expr.psimps(10) by simp
-      qed
-    qed
-  qed
-next
-  case (21 e1 e2 e\<^sub>p e cd st)
-  define g where "g = costs\<^sub>e (PLUS e1 e2) e\<^sub>p e cd st"
-  show ?case
-  proof (rule allI[THEN allI, THEN allI, OF impI])
-    fix t4 xa xaa assume e_def: "expr (PLUS e1 e2) e\<^sub>p e cd st = Normal ((xa, xaa), t4)"
-    then show "gas t4 \<le> gas st"
-    proof (cases)
-      assume "gas st \<le> g"
-      with 21(1) e_def show ?thesis using expr.psimps(11) g_def by simp
-    next
-      assume "\<not> gas st \<le> g"
-      with 21(1) e_def g_def have "lift expr add e1 e2 e\<^sub>p e cd (st\<lparr>gas := gas st - g\<rparr>) = Normal ((xa, xaa), t4)" using expr.psimps(11)[of e1 e2 e\<^sub>p e cd st] by simp
-      moreover from 21(2) `\<not> gas st \<le> g` g_def have "(\<And>st4' v4 t4. expr e1 e\<^sub>p e cd (st\<lparr>gas := gas st - g\<rparr>) = Normal ((v4, t4), st4') \<Longrightarrow> gas st4' \<le> gas (st\<lparr>gas := gas st - g\<rparr>))" by simp
-      moreover from 21(3) `\<not> gas st \<le> g` g_def have "(\<And>x1 x y xa ya x1a x1b st4' v4 t4.
-          expr e1 e\<^sub>p e cd (st\<lparr>gas := gas st - g\<rparr>) = Normal (x, y) \<Longrightarrow>
-          (xa, ya) = x \<Longrightarrow>
-          xa = KValue x1a \<Longrightarrow>
-          ya = Value x1b \<Longrightarrow> expr e2 e\<^sub>p e cd y = Normal ((v4, t4), st4') \<Longrightarrow> gas st4' \<le> gas y)" by auto
-      ultimately show "gas t4 \<le> gas st" using lift_gas[of e1 e\<^sub>p e cd e2 "add" "st\<lparr>gas := gas st - g\<rparr>" xa xaa t4] by simp
-    qed
-  qed
-next
-  case (22 e1 e2 e\<^sub>p e cd st)
-  define g where "g = costs\<^sub>e (MINUS e1 e2) e\<^sub>p e cd st"
-  show ?case
-  proof (rule allI[THEN allI, THEN allI, OF impI])
-    fix t4 xa xaa assume e_def: "expr (MINUS e1 e2) e\<^sub>p e cd st = Normal ((xa, xaa), t4)"
-    then show "gas t4 \<le> gas st"
-    proof (cases)
-      assume "gas st \<le> g"
-      with 22(1) e_def show ?thesis using expr.psimps(12) g_def by simp
-    next
-      assume "\<not> gas st \<le> g"
-      with 22(1) e_def g_def have "lift expr sub e1 e2 e\<^sub>p e cd (st\<lparr>gas := gas st - g\<rparr>) = Normal ((xa, xaa), t4)" using expr.psimps(12)[of e1 e2 e\<^sub>p e cd st] by simp
-      moreover from 22(2) `\<not> gas st \<le> g` g_def have "(\<And>st4' v4 t4. expr e1 e\<^sub>p e cd (st\<lparr>gas := gas st - g\<rparr>) = Normal ((v4, t4), st4') \<Longrightarrow> gas st4' \<le> gas (st\<lparr>gas := gas st - g\<rparr>))" by simp
-      moreover from 22(3) `\<not> gas st \<le> g` g_def have "(\<And>x1 x y xa ya x1a x1b st4' v4 t4.
-          expr e1 e\<^sub>p e cd (st\<lparr>gas := gas st - g\<rparr>) = Normal (x, y) \<Longrightarrow>
-          (xa, ya) = x \<Longrightarrow>
-          xa = KValue x1a \<Longrightarrow>
-          ya = Value x1b \<Longrightarrow> expr e2 e\<^sub>p e cd y = Normal ((v4, t4), st4') \<Longrightarrow> gas st4' \<le> gas y)" by auto
-      ultimately show "gas t4 \<le> gas st" using lift_gas[of e1 e\<^sub>p e cd e2 "sub" "st\<lparr>gas := gas st - g\<rparr>" xa xaa t4] by simp
-    qed
-  qed
-next
-  case (23 e1 e2 e\<^sub>p e cd st)
-  define g where "g = costs\<^sub>e (LESS e1 e2) e\<^sub>p e cd st"
-  show ?case
-  proof (rule allI[THEN allI, THEN allI, OF impI])
-    fix t4 xa xaa assume e_def: "expr (LESS e1 e2) e\<^sub>p e cd st = Normal ((xa, xaa), t4)"
-    then show "gas t4 \<le> gas st"
-    proof (cases)
-      assume "gas st \<le> g"
-      with 23(1) e_def show ?thesis using expr.psimps(13) g_def by simp
-    next
-      assume "\<not> gas st \<le> g"
-      with 23(1) e_def g_def have "lift expr less e1 e2 e\<^sub>p e cd (st\<lparr>gas := gas st - g\<rparr>) = Normal ((xa, xaa), t4)" using expr.psimps(13)[of e1 e2 e\<^sub>p e cd st] by simp
-      moreover from 23(2) `\<not> gas st \<le> g` g_def have "(\<And>st4' v4 t4. expr e1 e\<^sub>p e cd (st\<lparr>gas := gas st - g\<rparr>) = Normal ((v4, t4), st4') \<Longrightarrow> gas st4' \<le> gas (st\<lparr>gas := gas st - g\<rparr>))" by simp
-      moreover from 23(3) `\<not> gas st \<le> g` g_def have "(\<And>x1 x y xa ya x1a x1b st4' v4 t4.
-          expr e1 e\<^sub>p e cd (st\<lparr>gas := gas st - g\<rparr>) = Normal (x, y) \<Longrightarrow>
-          (xa, ya) = x \<Longrightarrow>
-          xa = KValue x1a \<Longrightarrow>
-          ya = Value x1b \<Longrightarrow> expr e2 e\<^sub>p e cd y = Normal ((v4, t4), st4') \<Longrightarrow> gas st4' \<le> gas y)" by auto
-      ultimately show "gas t4 \<le> gas st" using lift_gas[of e1 e\<^sub>p e cd e2 "less" "st\<lparr>gas := gas st - g\<rparr>" xa xaa t4] by simp
-    qed
-  qed
-next
-  case (24 e1 e2 e\<^sub>p e cd st)
-  define g where "g = costs\<^sub>e (EQUAL e1 e2) e\<^sub>p e cd st"
-  show ?case
-  proof (rule allI[THEN allI, THEN allI, OF impI])
-    fix t4 xa xaa assume e_def: "expr (EQUAL e1 e2) e\<^sub>p e cd st = Normal ((xa, xaa), t4)"
-    then show "gas t4 \<le> gas st"
-    proof (cases)
-      assume "gas st \<le> g"
-      with 24(1) e_def show ?thesis using expr.psimps(14) g_def by simp
-    next
-      assume "\<not> gas st \<le> g"
-      with 24(1) e_def g_def have "lift expr equal e1 e2 e\<^sub>p e cd (st\<lparr>gas := gas st - g\<rparr>) = Normal ((xa, xaa), t4)" using expr.psimps(14)[of e1 e2 e\<^sub>p e cd st] by simp
-      moreover from 24(2) `\<not> gas st \<le> g` g_def have "(\<And>st4' v4 t4. expr e1 e\<^sub>p e cd (st\<lparr>gas := gas st - g\<rparr>) = Normal ((v4, t4), st4') \<Longrightarrow> gas st4' \<le> gas (st\<lparr>gas := gas st - g\<rparr>))" by simp
-      moreover from 24(3) `\<not> gas st \<le> g` g_def have "(\<And>x1 x y xa ya x1a x1b st4' v4 t4.
-          expr e1 e\<^sub>p e cd (st\<lparr>gas := gas st - g\<rparr>) = Normal (x, y) \<Longrightarrow>
-          (xa, ya) = x \<Longrightarrow>
-          xa = KValue x1a \<Longrightarrow>
-          ya = Value x1b \<Longrightarrow> expr e2 e\<^sub>p e cd y = Normal ((v4, t4), st4') \<Longrightarrow> gas st4' \<le> gas y)" by auto
-      ultimately show "gas t4 \<le> gas st" using lift_gas[of e1 e\<^sub>p e cd e2 "equal" "st\<lparr>gas := gas st - g\<rparr>" xa xaa t4] by simp
-    qed
-  qed
-next
-  case (25 e1 e2 e\<^sub>p e cd st)
-  define g where "g = costs\<^sub>e (AND e1 e2) e\<^sub>p e cd st"
-  show ?case
-  proof (rule allI[THEN allI, THEN allI, OF impI])
-    fix t4 xa xaa assume e_def: "expr (AND e1 e2) e\<^sub>p e cd st = Normal ((xa, xaa), t4)"
-    then show "gas t4 \<le> gas st"
-    proof (cases)
-      assume "gas st \<le> g"
-      with 25(1) e_def show ?thesis using expr.psimps(15) g_def by simp
-    next
-      assume "\<not> gas st \<le> g"
-      with 25(1) e_def g_def have "lift expr vtand e1 e2 e\<^sub>p e cd (st\<lparr>gas := gas st - g\<rparr>) = Normal ((xa, xaa), t4)" using expr.psimps(15)[of e1 e2 e\<^sub>p e cd st] by simp
-      moreover from 25(2) `\<not> gas st \<le> g` g_def have "(\<And>st4' v4 t4. expr e1 e\<^sub>p e cd (st\<lparr>gas := gas st - g\<rparr>) = Normal ((v4, t4), st4') \<Longrightarrow> gas st4' \<le> gas (st\<lparr>gas := gas st - g\<rparr>))" by simp
-      moreover from 25(3) `\<not> gas st \<le> g` g_def have "(\<And>x1 x y xa ya x1a x1b st4' v4 t4.
-          expr e1 e\<^sub>p e cd (st\<lparr>gas := gas st - g\<rparr>) = Normal (x, y) \<Longrightarrow>
-          (xa, ya) = x \<Longrightarrow>
-          xa = KValue x1a \<Longrightarrow>
-          ya = Value x1b \<Longrightarrow> expr e2 e\<^sub>p e cd y = Normal ((v4, t4), st4') \<Longrightarrow> gas st4' \<le> gas y)" by auto
-      ultimately show "gas t4 \<le> gas st" using lift_gas[of e1 e\<^sub>p e cd e2 "vtand" "st\<lparr>gas := gas st - g\<rparr>" xa xaa t4] by simp
-    qed
-  qed
-next
-  case (26 e1 e2 e\<^sub>p e cd st)
-  define g where "g = costs\<^sub>e (OR e1 e2) e\<^sub>p e cd st"
-  show ?case
-  proof (rule allI[THEN allI, THEN allI, OF impI])
-    fix t4 xa xaa assume e_def: "expr (OR e1 e2) e\<^sub>p e cd st = Normal ((xa, xaa), t4)"
-    then show "gas t4 \<le> gas st"
-    proof (cases)
-      assume "gas st \<le> g"
-      with 26(1) e_def show ?thesis using expr.psimps(16) g_def by simp
-    next
-      assume "\<not> gas st \<le> g"
-      with 26(1) e_def g_def have "lift expr vtor e1 e2 e\<^sub>p e cd (st\<lparr>gas := gas st - g\<rparr>) = Normal ((xa, xaa), t4)" using expr.psimps(16)[of e1 e2 e\<^sub>p e cd st] by simp
-      moreover from 26(2) `\<not> gas st \<le> g` g_def have "(\<And>st4' v4 t4. expr e1 e\<^sub>p e cd (st\<lparr>gas := gas st - g\<rparr>) = Normal ((v4, t4), st4') \<Longrightarrow> gas st4' \<le> gas (st\<lparr>gas := gas st - g\<rparr>))" by simp
-      moreover from 26(3) `\<not> gas st \<le> g` g_def have "(\<And>x1 x y xa ya x1a x1b st4' v4 t4.
-          expr e1 e\<^sub>p e cd (st\<lparr>gas := gas st - g\<rparr>) = Normal (x, y) \<Longrightarrow>
-          (xa, ya) = x \<Longrightarrow>
-          xa = KValue x1a \<Longrightarrow>
-          ya = Value x1b \<Longrightarrow> expr e2 e\<^sub>p e cd y = Normal ((v4, t4), st4') \<Longrightarrow> gas st4' \<le> gas y)" by auto
-      ultimately show "gas t4 \<le> gas st" using lift_gas[of e1 e\<^sub>p e cd e2 "vtor" "st\<lparr>gas := gas st - g\<rparr>" xa xaa t4] by simp
-    qed
-  qed
-next
-  case (27 i e\<^sub>p e cd st)
-  then show ?case using expr.psimps(17) by (auto split: prod.split_asm option.split_asm StateMonad.result.split_asm)
-next
-  case (28 i xe e\<^sub>p e cd st)
-  define g where "g = costs\<^sub>e (CALL i xe) e\<^sub>p e cd st"
-  show ?case
-  proof (rule allI[THEN allI, THEN allI, OF impI])
-    fix st4' v4 t4 assume a1: "expr (CALL i xe) e\<^sub>p e cd st = Normal ((v4, t4), st4')"
-    show "gas st4' \<le> gas st"
-    proof (cases)
-      assume "gas st \<le> g"
-      with 28 g_def a1 show ?thesis using expr.psimps by simp
-    next
-      assume gcost: "\<not> gas st \<le> g"
-      then show ?thesis
-      proof (cases "fmlookup e\<^sub>p (address e)")
-        case None
-        with 28(1) a1 g_def gcost show ?thesis using expr.psimps(18) by simp
-      next
-        case (Some a)
-        then show ?thesis
-        proof (cases a)
-          case (Pair ct _)
-          then show ?thesis
-          proof (cases "fmlookup ct i")
-            case None
-            with 28(1) a1 g_def gcost Some Pair show ?thesis using expr.psimps(18) by simp
-          next
-            case s1: (Some a)
-            then show ?thesis
-            proof (cases a)
-              case (Method x1)
-              then show ?thesis
-              proof (cases x1)
-                case (fields fp f c)
-                then show ?thesis
-                proof (cases c)
-                  case None
-                  with 28(1) a1 g_def gcost Some Pair s1 Method fields show ?thesis using expr.psimps(18) by simp
-                next
-                  case s2: (Some x)
-                  define st' e'
-                    where "st' = st\<lparr>gas := gas st - g\<rparr>\<lparr>stack:=emptyStore\<rparr>"
-                      and "e' = ffold (init ct) (emptyEnv (address e) (sender e) (svalue e)) (fmdom ct)"
-                  then show ?thesis
-                  proof (cases "load False fp xe e\<^sub>p e' emptyStore st' e cd (st\<lparr>gas := gas st - g\<rparr>)")
-                    case s4: (n a st''')
-                    then show ?thesis
-                    proof (cases a)
-                      case f2: (fields e'' cd' st'')
-                      then show ?thesis
-                      proof (cases "stmt f e\<^sub>p e'' cd' st''")
-                        case n2: (n a st'''')
-                        then show ?thesis
-                        proof (cases "expr x e\<^sub>p e'' cd' st''''")
-                          case n3: (n a st''''')
-                          then show ?thesis
-                          proof (cases a)
-                            case p1: (Pair sv tp)
-                            with 28(1) a1 g_def gcost Some Pair s1 Method fields s2 st'_def e'_def s4 f2 n2 n3
-                            have "expr (CALL i xe) e\<^sub>p e cd st = Normal ((sv, tp), st'''''\<lparr>stack:=stack st''', memory := memory st'''\<rparr>)" and *: "gas st' \<le> gas (st\<lparr>gas := gas st - g\<rparr>)"
-                                using expr.psimps(18)[of i xe e\<^sub>p e cd st] by (auto simp add: Let_def split: unit.split_asm)
-                            with a1 have "gas st4' \<le> gas st'''''" by auto
-                            also from 28(4)[of "()" "st\<lparr>gas := gas st - g\<rparr>" _ ct] g_def gcost Some Pair s1 Method fields s2 st'_def e'_def s4 f2 n2 n3
-                              have "\<dots> \<le> gas st''''" by auto
-                            also from 28(3)[of "()" "st\<lparr>gas := gas st - g\<rparr>" _ ct _ _ x1 fp _ f c x e' st' "st\<lparr>gas := gas st - g\<rparr>" _ st''' e'' _ cd' st'' st''' st''' "()" st''] a1 g_def gcost Some Pair s1 Method fields s2 st'_def e'_def s4 f2 n2
-                              have "\<dots> \<le> gas st''" by auto
-                            also have "\<dots> \<le> gas st - g"
-                            proof -
-                              from g_def gcost have "(applyf (costs\<^sub>e (CALL i xe) e\<^sub>p e cd) \<bind> (\<lambda>g. assert Gas (\<lambda>st. gas st \<le> g) (modify (\<lambda>st. st\<lparr>gas := gas st - g\<rparr>)))) st = Normal ((), st\<lparr>gas := gas st - g\<rparr>)" by simp
-                              moreover from e'_def have "e' = ffold_init ct (emptyEnv (address e) (sender e) (svalue e)) (fmdom ct)" by simp
-                              moreover from st'_def have "applyf (\<lambda>st. st\<lparr>stack := emptyStore\<rparr>) (st\<lparr>gas := gas st - g\<rparr>) =   Normal (st', st\<lparr>gas := gas st - g\<rparr>)" by simp
-                              ultimately have "\<forall>ev cda sta st'a. load False fp xe e\<^sub>p e' emptyStore st' e cd (st\<lparr>gas := gas st - g\<rparr>) = Normal ((ev, cda, sta), st'a) \<longrightarrow> gas sta \<le> gas st' \<and> gas st'a \<le> gas (st\<lparr>gas := gas st - g\<rparr>) \<and> address ev = address e'" using 28(2)[of "()" "st\<lparr>gas := gas st - g\<rparr>" _ ct _ _ x1 fp "(f,c)" f c x e' st' "st\<lparr>gas := gas st - g\<rparr>"] using Some Pair s1 Method fields s2 by blast
-                              thus ?thesis using st'_def s4 f2 by auto
-                            qed
-                            finally show ?thesis by simp
-                          qed
-                        next
-                          case (e x)
-                          with 28(1) a1 g_def gcost Some Pair s1 Method fields s2 st'_def e'_def s4 f2 n2 show ?thesis using expr.psimps(18)[of i xe e\<^sub>p e cd st] by (auto simp add:Let_def split:unit.split_asm)
-                        qed
-                      next
-                        case (e x)
-                        with 28(1) a1 g_def gcost Some Pair s1 Method fields s2 st'_def e'_def s4 f2 show ?thesis using expr.psimps(18)[of i xe e\<^sub>p e cd st] by (auto split:unit.split_asm)
-                      qed
-                    qed
-                  next
-                    case (e x)
-                    with 28(1) a1 g_def gcost Some Pair s1 Method fields s2 st'_def e'_def show ?thesis using expr.psimps(18)[of i xe e\<^sub>p e cd st] by auto
-                  qed
-                qed
-              qed
-            next
-              case (Var x2)
-              with 28(1) a1 g_def gcost Some Pair s1 show ?thesis using expr.psimps(18) by simp
-            qed
-          qed
-        qed
-      qed
-    qed
-  qed
-next
-  case (29 ad i xe val e\<^sub>p e cd st)
-  define g where "g = costs\<^sub>e (ECALL ad i xe val) e\<^sub>p e cd st"
-  show ?case
-  proof (rule allI[THEN allI, THEN allI, OF impI])
-    fix st4' v4 t4 assume a1: "expr (ECALL ad i xe val) e\<^sub>p e cd st = Normal ((v4, t4), st4')"
-    show "gas st4' \<le> gas st"
-    proof (cases)
-      assume "gas st \<le> g"
-      with 29 g_def a1 show ?thesis using expr.psimps by simp
-    next
-      assume gcost: "\<not> gas st \<le> g"
-      then show ?thesis
-      proof (cases "expr ad e\<^sub>p e cd (st\<lparr>gas := gas st - g\<rparr>)")
-        case (n a st')
-        then show ?thesis
-        proof (cases a)
-          case (Pair a b)
-          then show ?thesis
-          proof (cases a)
-            case (KValue adv)
-            then show ?thesis
-            proof (cases b)
-              case (Value x1)
-              then show ?thesis
-              proof (cases x1)
-                case (TSInt x1)
-                with 29(1) a1 g_def gcost n Pair KValue Value show ?thesis using expr.psimps(19)[of ad i xe val e\<^sub>p e cd st] by simp
-              next
-                case (TUInt x2)
-                with 29(1) a1 g_def gcost n Pair KValue Value show ?thesis using expr.psimps(19)[of ad i xe val e\<^sub>p e cd st] by simp
-              next
-                case TBool
-                with 29(1) a1 g_def gcost n Pair KValue Value show ?thesis using expr.psimps(19)[of ad i xe val e\<^sub>p e cd st] by simp
-              next
-                case TAddr
-                then show ?thesis
-                proof (cases "fmlookup e\<^sub>p adv")
-                  case None
-                  with 29(1) a1 g_def gcost n Pair KValue Value TAddr show ?thesis using expr.psimps(19)[of ad i xe val e\<^sub>p e cd st] by simp
-                next
-                  case (Some a)
-                  then show ?thesis
-                  proof (cases a)
-                    case p2: (Pair ct _)
-                    then show ?thesis
-                    proof (cases "fmlookup ct i")
-                      case None
-                      with 29(1) a1 g_def gcost n Pair KValue Value TAddr Some p2 show ?thesis using expr.psimps(19) by simp
-                    next
-                      case s1: (Some a)
-                      then show ?thesis
-                      proof (cases a)
-                        case (Method x1)
-                        then show ?thesis
-                        proof (cases x1)
-                          case (fields fp f c)
-                          then show ?thesis
-                          proof (cases c)
-                            case None
-                            with 29(1) a1 g_def gcost n Pair KValue Value TAddr Some p2 s1 Method fields show ?thesis using expr.psimps(19) by simp
-                          next
-                            case s2: (Some x)
-                            then show ?thesis
-                            proof (cases "expr val e\<^sub>p e cd st'")
-                              case n1: (n kv st'')
-                              then show ?thesis
-                              proof (cases kv)
-                                case p3: (Pair a b)
-                                then show ?thesis
-                                proof (cases a)
-                                  case k1: (KValue v)
-                                  then show ?thesis
-                                  proof (cases b)
-                                    case v1: (Value t)
-                                    define stl e'
-                                    where "stl = st''\<lparr>stack:=emptyStore, memory:=emptyStore\<rparr>"
-                                      and "e' = ffold (init ct) (emptyEnv adv (address e) v) (fmdom ct)"
-                                    then show ?thesis
-                                    proof (cases "load True fp xe e\<^sub>p e' emptyStore stl e cd st''")
-                                      case s4: (n a st''')
-                                      then show ?thesis
-                                      proof (cases a)
-                                        case f2: (fields e'' cd' st'''')
-                                        then show ?thesis
-                                        proof (cases "transfer (address e) adv v (accounts st'''')")
-                                          case n2: None
-                                          with 29(1) a1 g_def gcost n Pair KValue Value TAddr Some p2 s1 Method fields s2 n1 p3 k1 v1 stl_def e'_def s4 f2 show ?thesis using expr.psimps(19) by simp
-                                        next
-                                          case s3: (Some acc)
-                                          show ?thesis
-                                          proof (cases "stmt f e\<^sub>p e'' cd' (st''''\<lparr>accounts:=acc\<rparr>)")
-                                            case n2: (n a st''''')
-                                            then show ?thesis
-                                            proof (cases "expr x e\<^sub>p e'' cd' st'''''")
-                                              case n3: (n a st'''''')
-                                              then show ?thesis
-                                              proof (cases a)
-                                                case p1: (Pair sv tp)
-                                                with 29(1) a1 g_def gcost n Pair KValue Value TAddr Some p2 s1 Method fields s2 n1 p3 k1 v1 s3 stl_def e'_def s4 f2 n2 n3
-                                                have "expr (ECALL ad i xe val) e\<^sub>p e cd st = Normal ((sv, tp), st''''''\<lparr>stack:=stack st''', memory := memory st'''\<rparr>)"
-                                                    using expr.psimps(19)[of ad i xe val e\<^sub>p e cd st] by (auto simp add: Let_def split: unit.split_asm)
-                                                with a1 have "gas st4' \<le> gas st''''''" by auto
-                                                also from 29(6)[of "()" "st\<lparr>gas := gas st - g\<rparr>" _ st' _ _ adv _ _ ct _ _ x1 fp "(f,c)" f c x kv st'' _ b v t] a1 g_def gcost n Pair KValue Value TAddr Some p2 s1 Method fields s2 n1 p3 k1 v1 s3 stl_def e'_def s4 f2 n2 n3
-                                                  have "\<dots> \<le> gas st'''''" by auto
-                                                also from 29(5)[OF _ n Pair KValue Value TAddr Some p2 s1 Method fields _ s2 n1 p3 k1 v1 _ _ s4 f2 _ _ _, of "()" f cd' st'''' st''' st''' acc]  f2 s3 stl_def e'_def   n2 n3 a1 g_def gcost
-                                                  have "\<dots> \<le> gas (st''''\<lparr>accounts:=acc\<rparr>)" by auto
-                                                also have "\<dots> \<le> gas stl"
-                                                proof -
-                                                  from g_def gcost have "(applyf (costs\<^sub>e (ECALL ad i xe val) e\<^sub>p e cd) \<bind> (\<lambda>g. assert Gas (\<lambda>st. gas st \<le> g) (modify (\<lambda>st. st\<lparr>gas := gas st - g\<rparr>)))) st = Normal ((), st\<lparr>gas := gas st - g\<rparr>)" by simp
-                                                  moreover from e'_def have "e' = ffold_init ct (emptyEnv adv (address e) v) (fmdom ct)" by simp
-                                                  moreover from n1 have "expr val e\<^sub>p e cd st' = Normal (kv, st'')" by simp
-                                                  moreover from stl_def have "applyf (\<lambda>st. st\<lparr>stack := emptyStore, memory := emptyStore\<rparr>) st'' = Normal (stl, st'')" by simp
-                                                  moreover have "applyf accounts st'' = Normal ((accounts st''), st'')" by simp
-                                                  ultimately have "\<forall>ev cda sta st'a. load True fp xe e\<^sub>p e' emptyStore stl e cd st'' = Normal ((ev, cda, sta), st'a) \<longrightarrow> gas sta \<le> gas stl \<and> gas st'a \<le> gas st'' \<and> address ev = address e'" using 29(4)[of "()" "st\<lparr>gas := gas st - g\<rparr>" _ st' _ _ adv _ _ ct _ _ x1 fp "(f,c)" f c x kv st'' _ b v t] a1 g_def gcost n Pair KValue Value TAddr Some p2 s1 Method fields s2 n1 p3 k1 v1 s3 stl_def e'_def s4 f2 n2 n3 by blast
-                                                  thus ?thesis using stl_def s4 f2 by auto
-                                                qed
-                                                also from stl_def have "\<dots> \<le> gas st''" by simp
-                                                also from 29(3)[of "()" "st\<lparr>gas := gas st - g\<rparr>" _ st' _ _ adv _ _ ct _ _ x1 fp "(f,c)" f c x] a1 g_def gcost n Pair KValue Value TAddr Some p2 s1 Method fields s2 n1 p3 k1 v1 s3 stl_def e'_def s4 f2 n2 n3
-                                                  have "\<dots> \<le> gas st'" by (auto split:unit.split_asm)
-                                                also from 29(2)[of "()" "st\<lparr>gas := gas st - g\<rparr>"] a1 g_def gcost n Pair KValue Value TAddr Some p2 s1 Method fields s2 n1 p3 k1 v1 s3 stl_def e'_def s4 f2 n2 n3
-                                                  have "\<dots> \<le> gas (st\<lparr>gas := gas st - g\<rparr>)" by simp
-                                                finally show ?thesis by simp
-                                              qed
-                                            next
-                                              case (e x)
-                                              with 29(1) a1 g_def gcost n Pair KValue Value TAddr Some p2 s1 Method fields s2 n1 p3 k1 v1 s3 stl_def e'_def s4 f2 n2 show ?thesis using expr.psimps(19)[of ad i xe val e\<^sub>p e cd st] by simp
-                                            qed
-                                          next
-                                            case (e x)
-                                            with 29(1) a1 g_def gcost n Pair KValue Value TAddr Some p2 s1 Method fields s2 n1 p3 k1 v1 s3 stl_def e'_def s4 f2 show ?thesis using expr.psimps(19)[of ad i xe val e\<^sub>p e cd st] by simp
-                                          qed
-                                        qed
-                                      qed
-                                    next
-                                      case (e x)
-                                      with 29(1) a1 g_def gcost n Pair KValue Value TAddr Some p2 s1 Method fields s2 n1 p3 k1 v1 stl_def e'_def show ?thesis using expr.psimps(19)[of ad i xe val e\<^sub>p e cd st] by simp
-                                    qed
-                                  next
-                                    case (Calldata x2)
-                                    with 29(1) a1 g_def gcost n Pair KValue Value TAddr Some p2 s1 Method fields s2 n1 p3 k1 show ?thesis using expr.psimps(19)[of ad i xe val e\<^sub>p e cd st] by simp
-                                  next
-                                    case (Memory x3)
-                                    with 29(1) a1 g_def gcost n Pair KValue Value TAddr Some p2 s1 Method fields s2 n1 p3 k1 show ?thesis using expr.psimps(19)[of ad i xe val e\<^sub>p e cd st] by simp
-                                  next
-                                    case (Storage x4)
-                                    with 29(1) a1 g_def gcost n Pair KValue Value TAddr Some p2 s1 Method fields s2 n1 p3 k1 show ?thesis using expr.psimps(19)[of ad i xe val e\<^sub>p e cd st] by simp
-                                  qed
-                                next
-                                  case (KCDptr x2)
-                                  with 29(1) a1 g_def gcost n Pair KValue Value TAddr Some p2 s1 Method fields s2 n1 p3 show ?thesis using expr.psimps(19)[of ad i xe val e\<^sub>p e cd st] by simp
-                                next
-                                  case (KMemptr x3)
-                                  with 29(1) a1 g_def gcost n Pair KValue Value TAddr Some p2 s1 Method fields s2 n1 p3 show ?thesis using expr.psimps(19)[of ad i xe val e\<^sub>p e cd st] by simp
-                                next
-                                  case (KStoptr x4)
-                                  with 29(1) a1 g_def gcost n Pair KValue Value TAddr Some p2 s1 Method fields s2 n1 p3 show ?thesis using expr.psimps(19)[of ad i xe val e\<^sub>p e cd st] by simp
-                                qed
-                              qed
-                            next
-                              case n2: (e x)
-                              with 29(1) a1 g_def gcost n Pair KValue Value TAddr Some p2 s1 Method fields s2 show ?thesis using expr.psimps(19)[of ad i xe val e\<^sub>p e cd st] by simp
-                            qed
-                          qed
-                        qed
-                      next
-                        case (Var x2)
-                        with 29(1) a1 g_def gcost n Pair KValue Value TAddr Some p2 s1 show ?thesis using expr.psimps(19)[of ad i xe val e\<^sub>p e cd st] by simp
-                      qed
-                    qed
-                  qed
-                qed
-              qed
-            next
-              case (Calldata x2)
-              with 29(1) a1 g_def gcost n Pair KValue show ?thesis using expr.psimps(19)[of ad i xe val e\<^sub>p e cd st] by simp
-            next
-              case (Memory x3)
-              with 29(1) a1 g_def gcost n Pair KValue show ?thesis using expr.psimps(19)[of ad i xe val e\<^sub>p e cd st] by simp
-            next
-              case (Storage x4)
-              with 29(1) a1 g_def gcost n Pair KValue show ?thesis using expr.psimps(19)[of ad i xe val e\<^sub>p e cd st] by simp
-            qed
-          next
-            case (KCDptr x2)
-            with 29(1) a1 g_def gcost n Pair show ?thesis using expr.psimps(19)[of ad i xe val e\<^sub>p e cd st] by simp
-          next
-            case (KMemptr x3)
-            with 29(1) a1 g_def gcost n Pair show ?thesis using expr.psimps(19)[of ad i xe val e\<^sub>p e cd st] by simp
-          next
-            case (KStoptr x4)
-            with 29(1) a1 g_def gcost n Pair show ?thesis using expr.psimps(19)[of ad i xe val e\<^sub>p e cd st] by simp
-          qed
-        qed
-      next
-        case (e _)
-        with 29(1) a1 g_def gcost show ?thesis using expr.psimps(19)[of ad i xe val e\<^sub>p e cd st] by simp
-      qed
-    qed
-  qed
-next
-  case (30 cp i\<^sub>p t\<^sub>p pl e el e\<^sub>p e\<^sub>v' cd' st' e\<^sub>v cd st)
-  then show ?case
-  proof (cases "expr e e\<^sub>p e\<^sub>v cd st")
-    case (n a st'')
-    then show ?thesis
-    proof (cases a)
-      case (Pair v t)
-      then show ?thesis
-      proof (cases "decl i\<^sub>p t\<^sub>p (Some (v,t)) cp cd (memory st'') cd' e\<^sub>v' st'")
-        case n2: (n a' st''')
-        then show ?thesis
-        proof (cases a')
-          case f2: (Pair cd'' e\<^sub>v'')
-          show ?thesis
-          proof (rule allI[THEN allI, THEN allI, THEN allI, OF impI])
-            fix ev xa xaa xaaa assume load_def: "load cp ((i\<^sub>p, t\<^sub>p) # pl) (e # el) e\<^sub>p e\<^sub>v' cd' st' e\<^sub>v cd st = Normal ((ev, xa, xaa), xaaa)"
-            with 30(1) n Pair n2 f2 have "load cp ((i\<^sub>p, t\<^sub>p) # pl) (e # el) e\<^sub>p e\<^sub>v' cd' st' e\<^sub>v cd st = load cp pl el e\<^sub>p e\<^sub>v'' cd'' st''' e\<^sub>v cd st''" using load.psimps(1)[of cp i\<^sub>p t\<^sub>p pl e el e\<^sub>p e\<^sub>v' cd' st' e\<^sub>v cd st] by simp
-            with load_def have "load cp pl el e\<^sub>p e\<^sub>v'' cd'' st''' e\<^sub>v cd st'' = Normal ((ev, xa, xaa), xaaa)" by simp
-            with n Pair n2 f2 have "gas xaa \<le> gas st''' \<and> gas xaaa \<le> gas st'' \<and> address ev = address e\<^sub>v''" using 30(3)[of a st'' v t st'' st'' "()" st' a' st''' cd'' e\<^sub>v'' st''' st''' "()" st''] by simp
-            moreover from n Pair have "gas st'' \<le> gas st" using 30(2) by simp
-            moreover from n2 f2 have " address e\<^sub>v'' =  address e\<^sub>v'" and "gas st''' \<le> gas st'" using decl_gas_address by auto
-            ultimately show "gas xaa \<le> gas st' \<and> gas xaaa \<le> gas st \<and> address ev = address e\<^sub>v'" by simp
-          qed
-        qed
-      next
-        case (e x)
-        with 30(1) n Pair show ?thesis using load.psimps(1) by simp
-      qed
-    qed
-  next
-    case (e x)
-    with 30(1) show ?thesis using load.psimps(1) by simp
-  qed
-next
-  case (31 we wf wg wh wi wj wk st)
-  then show ?case using load.psimps(2) by auto
-next
-  case (32 wl wm wn wo wp wq wr st)
-  then show ?case using load.psimps(3)[of wl wm wn wo wp wq wr] by auto
-next
-  case (33 ws wt wu wv cd e\<^sub>v s st)
-  then show ?case using load.psimps(4)[of ws wt wu wv cd e\<^sub>v s st] by auto
-next
-  case (34 i e\<^sub>p e cd st)
-  show ?case
-  proof (rule allI[THEN allI, THEN allI, OF impI])
-    fix st3' xa xaa assume "rexp (L.Id i) e\<^sub>p e cd st = Normal ((st3', xa), xaa)"
-    then show "gas xaa \<le> gas st" using 34(1) rexp.psimps(1) by (simp split: option.split_asm Denvalue.split_asm Stackvalue.split_asm prod.split_asm Type.split_asm STypes.split_asm)
-  qed
-next
-  case (35 i r e\<^sub>p e cd st)
-  show ?case
-  proof (rule allI[THEN allI, THEN allI, OF impI])
-    fix st3' xa xaa assume rexp_def: "rexp (Ref i r) e\<^sub>p e cd st = Normal ((st3', xa), xaa)"
-    show "gas xaa \<le> gas st"
-    proof (cases "fmlookup (denvalue e) i")
-      case None
-      with 35(1) show ?thesis using rexp.psimps rexp_def by simp
-    next
-      case (Some a)
-      then show ?thesis
-      proof (cases a)
-        case (Pair tp b)
-        then show ?thesis
-        proof (cases b)
-          case (Stackloc l)
-          then show ?thesis
-          proof (cases "accessStore l (stack st)")
-            case None
-            with 35(1) Some Pair Stackloc show ?thesis using rexp.psimps(2) rexp_def by simp
-          next
-            case s1: (Some a)
-            then show ?thesis
-            proof (cases a)
-              case (KValue x1)
-              with 35(1) Some Pair Stackloc s1 show ?thesis using rexp.psimps(2) rexp_def by simp
-            next
-              case (KCDptr l')
-              with 35 Some Pair Stackloc s1 show ?thesis using rexp.psimps(2)[of i r e\<^sub>p e cd st] rexp_def by (simp split: option.split_asm Memoryvalue.split_asm MTypes.split_asm prod.split_asm Type.split_asm StateMonad.result.split_asm)
-            next
-              case (KMemptr x3)
-              with 35 Some Pair Stackloc s1 show ?thesis using rexp.psimps(2)[of i r e\<^sub>p e cd st] rexp_def by (simp split: option.split_asm Memoryvalue.split_asm MTypes.split_asm prod.split_asm Type.split_asm StateMonad.result.split_asm)
-            next
-              case (KStoptr x4)
-              with 35 Some Pair Stackloc s1 show ?thesis using rexp.psimps(2)[of i r e\<^sub>p e cd st] rexp_def by (simp split: option.split_asm STypes.split_asm prod.split_asm Type.split_asm StateMonad.result.split_asm)
-            qed
-          qed
-        next
-          case (Storeloc x2)
-          with 35 Some Pair show ?thesis using rexp.psimps rexp_def by (simp split: option.split_asm STypes.split_asm prod.split_asm Type.split_asm  StateMonad.result.split_asm)
-        qed
-      qed
-    qed
-  qed
-next
-  case (36 e\<^sub>p e cd st)
+qed
+
+subsection \<open>Semantics of statements\<close>
+
+text \<open>The following is a helper function to connect the gas monad with the state monad.\<close>
+
+fun
+  toState :: "(State \<Rightarrow> ('a, 'e, Gas) state_monad) \<Rightarrow> ('a, 'e, State) state_monad" where
+ "toState gm = (\<lambda>s. case gm s (gas s) of
+                     Normal (a,g) \<Rightarrow> Normal(a,s\<lparr>gas:=g\<rparr>)
+                    | Exception e \<Rightarrow> Exception e)"
+
+lemma wptoState[wprule]:
+  assumes "\<And>a g. gm s (gas s) = Normal (a, g) \<Longrightarrow> P a (s\<lparr>gas:=g\<rparr>)"
+      and "\<And>e. gm s (gas s) = Exception e \<Longrightarrow> E e"
+    shows "wp (toState gm) P E s"
+  using assms unfolding wp_def by (simp split:result.split result.split_asm)
+
+text \<open>Now we define the semantics of statements.\<close>
+function (domintros) stmt :: "S \<Rightarrow> Environment \<Rightarrow> CalldataT \<Rightarrow> (unit, Ex, State) state_monad"
+  where "stmt SKIP e cd st =
+    (do {
+      assert Gas (\<lambda>st. gas st > costs SKIP e cd st);
+      modify (\<lambda>st. st\<lparr>gas := gas st - costs SKIP e cd st\<rparr>)
+    }) st"
+| "stmt (ASSIGN lv ex) env cd st =
+    (do {
+      assert Gas (\<lambda>st. gas st > costs (ASSIGN lv ex) env cd st);
+      modify (\<lambda>st. st\<lparr>gas := gas st - costs (ASSIGN lv ex) env cd st\<rparr>);
+      re \<leftarrow> toState (expr ex env cd);
+      case re of
+        (KValue v, Value t) \<Rightarrow>
+          do {
+            rl \<leftarrow> toState (lexp lv env cd);
+            case rl of
+              (LStackloc l, Value t') \<Rightarrow>
+                do {
+                  v' \<leftarrow> option Err (\<lambda>_. convert t t' v);
+                  modify (\<lambda>st. st \<lparr>stack := updateStore l (KValue v') (stack st)\<rparr>)
+                }
+            | (LStoreloc l, Storage (STValue t')) \<Rightarrow>
+                do {
+                  v' \<leftarrow> option Err (\<lambda>_. convert t t' v);
+                  modify (\<lambda>st. st\<lparr>storage := (storage st) (address env := fmupd l v' (storage st (address env)))\<rparr>)
+                }
+            | (LMemloc l, Memory (MTValue t')) \<Rightarrow>
+                do {
+                  v' \<leftarrow> option Err (\<lambda>_. convert t t' v);
+                  modify (\<lambda>st. st\<lparr>memory := updateStore l (MValue v') (memory st)\<rparr>)
+                }
+            | _ \<Rightarrow> throw Err
+          }
+      | (KCDptr p, Calldata (MTArray x t)) \<Rightarrow>
+          do {
+            rl \<leftarrow> toState (lexp lv env cd);
+            case rl of
+              (LStackloc l, Memory _) \<Rightarrow>
+                do {
+                  sv \<leftarrow> applyf (\<lambda>st. accessStore l (stack st));
+                  p' \<leftarrow> case sv of Some (KMemptr p') \<Rightarrow> return p' | _ \<Rightarrow> throw Err;
+                  m \<leftarrow> option Err (\<lambda>st. cpm2m p p' x t cd (memory st));
+                  modify (\<lambda>st. st\<lparr>memory := m\<rparr>)
+                }
+            | (LStackloc l, Storage _) \<Rightarrow>
+                do {
+                  sv \<leftarrow> applyf (\<lambda>st. accessStore l (stack st));
+                  p' \<leftarrow> case sv of Some (KStoptr p') \<Rightarrow> return p' | _ \<Rightarrow> throw Err;
+                  s \<leftarrow> option Err (\<lambda>st. cpm2s p p' x t cd (storage st (address env)));
+                  modify (\<lambda>st. st \<lparr>storage := (storage st) (address env := s)\<rparr>)
+                }
+            | (LStoreloc l, _) \<Rightarrow>
+                do {
+                  s \<leftarrow> option Err (\<lambda>st. cpm2s p l x t cd (storage st (address env)));
+                  modify (\<lambda>st. st \<lparr>storage := (storage st) (address env := s)\<rparr>)
+                }
+            | (LMemloc l, _) \<Rightarrow>
+                do {
+                  m \<leftarrow> option Err (\<lambda>st. cpm2m p l x t cd (memory st));
+                  modify (\<lambda>st. st \<lparr>memory := m\<rparr>)
+                }
+            | _ \<Rightarrow> throw Err
+          }
+      | (KMemptr p, Memory (MTArray x t)) \<Rightarrow>
+          do {
+            rl \<leftarrow> toState (lexp lv env cd);
+            case rl of
+              (LStackloc l, Memory _) \<Rightarrow> modify (\<lambda>st. st\<lparr>stack := updateStore l (KMemptr p) (stack st)\<rparr>)
+            | (LStackloc l, Storage _) \<Rightarrow>
+                do {
+                  sv \<leftarrow> applyf (\<lambda>st. accessStore l (stack st));
+                  p' \<leftarrow> case sv of Some (KStoptr p') \<Rightarrow> return p' | _ \<Rightarrow> throw Err;
+                  s \<leftarrow> option Err (\<lambda>st. cpm2s p p' x t (memory st) (storage st (address env)));
+                  modify (\<lambda>st. st \<lparr>storage := (storage st) (address env := s)\<rparr>)
+                }
+            | (LStoreloc l, _) \<Rightarrow>
+                do {
+                  s \<leftarrow> option Err (\<lambda>st. cpm2s p l x t (memory st) (storage st (address env)));
+                  modify (\<lambda>st. st \<lparr>storage := (storage st) (address env := s)\<rparr>)
+                }
+            | (LMemloc l, _) \<Rightarrow> modify (\<lambda>st. st \<lparr>memory := updateStore l (MPointer p) (memory st)\<rparr>)
+            | _ \<Rightarrow> throw Err
+          }
+      | (KStoptr p, Storage (STArray x t)) \<Rightarrow>
+          do {
+            rl \<leftarrow> toState (lexp lv env cd);
+            case rl of
+              (LStackloc l, Memory _) \<Rightarrow>
+                do {
+                  sv \<leftarrow> applyf (\<lambda>st. accessStore l (stack st));
+                  p' \<leftarrow> case sv of Some (KMemptr p') \<Rightarrow> return p' | _ \<Rightarrow> throw Err;
+                  m \<leftarrow> option Err (\<lambda>st. cps2m p p' x t (storage st (address env)) (memory st));
+                  modify (\<lambda>st. st\<lparr>memory := m\<rparr>)
+                }
+            | (LStackloc l, Storage _) \<Rightarrow> modify (\<lambda>st. st\<lparr>stack := updateStore l (KStoptr p) (stack st)\<rparr>)
+            | (LStoreloc l, _) \<Rightarrow>
+                do {
+                  s \<leftarrow> option Err (\<lambda>st. copy p l x t (storage st (address env)));
+                  modify (\<lambda>st. st \<lparr>storage := (storage st) (address env := s)\<rparr>)
+                }
+            | (LMemloc l, _) \<Rightarrow>
+                do {
+                  m \<leftarrow> option Err (\<lambda>st. cps2m p l x t (storage st (address env)) (memory st));
+                  modify (\<lambda>st. st\<lparr>memory := m\<rparr>)
+                }
+            | _ \<Rightarrow> throw Err
+          }
+      | (KStoptr p, Storage (STMap t t')) \<Rightarrow>
+          do {
+            rl \<leftarrow> toState (lexp lv env cd);
+            l \<leftarrow> case rl of (LStackloc l, _) \<Rightarrow> return l | _ \<Rightarrow> throw Err;
+            modify (\<lambda>st. st\<lparr>stack := updateStore l (KStoptr p) (stack st)\<rparr>)
+          }
+      | _ \<Rightarrow> throw Err
+    }) st"
+| "stmt (COMP s1 s2) e cd st =
+    (do {
+      assert Gas (\<lambda>st. gas st > costs (COMP s1 s2) e cd st);
+      modify (\<lambda>st. st\<lparr>gas := gas st - costs (COMP s1 s2) e cd st\<rparr>);
+      stmt s1 e cd;
+      stmt s2 e cd
+    }) st"
+| "stmt (ITE ex s1 s2) e cd st =
+    (do {
+      assert Gas (\<lambda>st. gas st > costs (ITE ex s1 s2) e cd st);
+      modify (\<lambda>st. st\<lparr>gas := gas st - costs (ITE ex s1 s2) e cd st\<rparr>);
+      v \<leftarrow> toState (expr ex e cd);
+      b \<leftarrow> (case v of (KValue b, Value TBool) \<Rightarrow> return b | _ \<Rightarrow> throw Err);
+      if b = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True then stmt s1 e cd
+      else if b = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l False then stmt s2 e cd
+      else throw Err
+    }) st"
+| "stmt (WHILE ex s0) e cd st =
+    (do {
+      assert Gas (\<lambda>st. gas st > costs (WHILE ex s0) e cd st);
+      modify (\<lambda>st. st\<lparr>gas := gas st - costs (WHILE ex s0) e cd st\<rparr>);
+      v \<leftarrow> toState (expr ex e cd);
+      b \<leftarrow> (case v of (KValue b, Value TBool) \<Rightarrow> return b | _ \<Rightarrow> throw Err);
+      if b = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True then
+        do {
+          stmt s0 e cd;
+          stmt (WHILE ex s0) e cd
+        }
+      else if b = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l False then return ()
+      else throw Err
+    }) st"
+| "stmt (INVOKE i xe) e cd st =
+    (do {
+      assert Gas (\<lambda>st. gas st > costs (INVOKE i xe) e cd st);
+      modify (\<lambda>st. st\<lparr>gas := gas st - costs (INVOKE i xe) e cd st\<rparr>);
+      (ct, _) \<leftarrow> option Err (\<lambda>_. ep $$ contract e);
+      (fp, f) \<leftarrow> case ct $$ i of Some (Method (fp, False, f)) \<Rightarrow> return (fp, f) | _ \<Rightarrow> throw Err;
+      let e' = ffold_init ct (emptyEnv (address e) (contract e) (sender e) (svalue e)) (fmdom ct);
+      m\<^sub>o \<leftarrow> applyf memory;
+      (e\<^sub>l, cd\<^sub>l, k\<^sub>l, m\<^sub>l) \<leftarrow> toState (load False fp xe e' emptyStore emptyStore m\<^sub>o e cd);
+      k\<^sub>o \<leftarrow> applyf stack;
+      modify (\<lambda>st. st\<lparr>stack:=k\<^sub>l, memory:=m\<^sub>l\<rparr>);
+      stmt f e\<^sub>l cd\<^sub>l;
+      modify (\<lambda>st. st\<lparr>stack:=k\<^sub>o\<rparr>)
+    }) st"
+(*External Method calls allow to send some money val with it*)
+(*However this transfer does NOT trigger a fallback*)
+(*External methods can only be called from externally*)
+| "stmt (EXTERNAL ad i xe val) e cd st =
+    (do {
+      assert Gas (\<lambda>st. gas st > costs (EXTERNAL ad i xe val) e cd st);
+      modify (\<lambda>st. st\<lparr>gas := gas st - costs (EXTERNAL ad i xe val) e cd st\<rparr>);
+      kad \<leftarrow> toState (expr ad e cd);
+      adv \<leftarrow> case kad of (KValue adv, Value TAddr) \<Rightarrow> return adv | _ \<Rightarrow> throw Err;
+      assert Err (\<lambda>_. adv \<noteq> address e);
+      c \<leftarrow> (\<lambda>st. case type (accounts st adv) of Some (Contract c) \<Rightarrow> return c st | _ \<Rightarrow> throw Err st);
+      (ct, _, fb) \<leftarrow> option Err (\<lambda>_. ep $$ c);
+      kv \<leftarrow> toState (expr val e cd);
+      (v, t) \<leftarrow> case kv of (KValue v, Value t) \<Rightarrow> return (v, t) | _ \<Rightarrow> throw Err;
+      v' \<leftarrow> option Err (\<lambda>_. convert t (TUInt 256) v);
+      let e' = ffold_init ct (emptyEnv adv c (address e) v') (fmdom ct);
+      case ct $$ i of
+        Some (Method (fp, True, f)) \<Rightarrow>
+          do {
+            (e\<^sub>l, cd\<^sub>l, k\<^sub>l, m\<^sub>l) \<leftarrow> toState (load True fp xe e' emptyStore emptyStore emptyStore e cd);
+            acc \<leftarrow> option Err (\<lambda>st. transfer (address e) adv v' (accounts st));
+            (k\<^sub>o, m\<^sub>o) \<leftarrow> applyf (\<lambda>st. (stack st, memory st));
+            modify (\<lambda>st. st\<lparr>accounts := acc, stack:=k\<^sub>l,memory:=m\<^sub>l\<rparr>);
+            stmt f e\<^sub>l cd\<^sub>l;
+            modify (\<lambda>st. st\<lparr>stack:=k\<^sub>o, memory := m\<^sub>o\<rparr>)
+          }
+      | None \<Rightarrow>
+          do {
+            acc \<leftarrow> option Err (\<lambda>st. transfer (address e) adv v' (accounts st));
+            (k\<^sub>o, m\<^sub>o) \<leftarrow> applyf (\<lambda>st. (stack st, memory st));
+            modify (\<lambda>st. st\<lparr>accounts := acc,stack:=emptyStore, memory:=emptyStore\<rparr>);
+            stmt fb e' emptyStore;
+            modify (\<lambda>st. st\<lparr>stack:=k\<^sub>o, memory := m\<^sub>o\<rparr>)
+          }
+      | _ \<Rightarrow> throw Err
+    }) st"
+| "stmt (TRANSFER ad ex) e cd st =
+    (do {
+      assert Gas (\<lambda>st. gas st > costs (TRANSFER ad ex) e cd st);
+      modify (\<lambda>st. st\<lparr>gas := gas st - costs (TRANSFER ad ex) e cd st\<rparr>);
+      kv \<leftarrow> toState (expr ad e cd);
+      adv \<leftarrow> case kv of (KValue adv, Value TAddr) \<Rightarrow> return adv | _ \<Rightarrow> throw Err;
+      kv' \<leftarrow> toState (expr ex e cd);
+      (v, t) \<leftarrow> case kv' of (KValue v, Value t) \<Rightarrow> return (v, t) | _ \<Rightarrow> throw Err;
+      v' \<leftarrow> option Err (\<lambda>_. convert t (TUInt 256) v);
+      acc \<leftarrow> applyf accounts;
+      case type (acc adv) of
+        Some (Contract c) \<Rightarrow>
+          do {
+            (ct, _, f) \<leftarrow> option Err (\<lambda>_. ep $$ c);
+            let e' = ffold_init ct (emptyEnv adv c (address e) v') (fmdom ct);
+            (k\<^sub>o, m\<^sub>o) \<leftarrow> applyf (\<lambda>st. (stack st, memory st));
+            acc' \<leftarrow> option Err (\<lambda>st. transfer (address e) adv v' (accounts st));
+            modify (\<lambda>st. st\<lparr>accounts := acc', stack:=emptyStore, memory:=emptyStore\<rparr>);
+            stmt f e' emptyStore;
+            modify (\<lambda>st. st\<lparr>stack:=k\<^sub>o, memory := m\<^sub>o\<rparr>)
+          }
+      | Some EOA \<Rightarrow>
+          do {
+            acc' \<leftarrow> option Err (\<lambda>st. transfer (address e) adv v' (accounts st));
+            modify (\<lambda>st. (st\<lparr>accounts := acc'\<rparr>))
+          }
+      | None \<Rightarrow> throw Err
+    }) st"
+| "stmt (BLOCK ((id0, tp), None) s) e\<^sub>v cd st =
+    (do {
+      assert Gas (\<lambda>st. gas st > costs (BLOCK ((id0, tp), None) s) e\<^sub>v cd st);
+      modify (\<lambda>st. st\<lparr>gas := gas st - costs (BLOCK ((id0, tp), None) s) e\<^sub>v cd st\<rparr>);
+      (cd', mem', sck', e') \<leftarrow> option Err (\<lambda>st. decl id0 tp None False cd (memory st) (storage st) (cd, memory st, stack st, e\<^sub>v));
+      modify (\<lambda>st. st\<lparr>stack := sck', memory := mem'\<rparr>);
+      stmt s e' cd'
+    }) st"
+| "stmt (BLOCK ((id0, tp), Some ex') s) e\<^sub>v cd st =
+    (do {
+      assert Gas (\<lambda>st. gas st > costs(BLOCK ((id0, tp), Some ex') s) e\<^sub>v cd st);
+      modify (\<lambda>st. st\<lparr>gas := gas st - costs (BLOCK ((id0, tp), Some ex') s) e\<^sub>v cd st\<rparr>);
+      (v, t) \<leftarrow> toState (expr ex' e\<^sub>v cd);
+      (cd', mem', sck', e') \<leftarrow> option Err (\<lambda>st. decl id0 tp (Some (v, t)) False cd (memory st) (storage st) (cd, memory st, stack st, e\<^sub>v));
+      modify (\<lambda>st. st\<lparr>stack := sck', memory := mem'\<rparr>);
+      stmt s e' cd'
+    }) st"
+(*
+  Note: We cannot use (ct, (fp, cn), fb) <- option Err (\<lambda>_. ep $$ i)
+*)
+| "stmt (NEW i xe val) e cd st =
+    (do {
+      assert Gas (\<lambda>st. gas st > costs (NEW i xe val) e cd st);
+      modify (\<lambda>st. st\<lparr>gas := gas st - costs (NEW i xe val) e cd st\<rparr>);
+      adv \<leftarrow> applyf (\<lambda>st. hash (address e) (ShowL\<^sub>n\<^sub>a\<^sub>t (contracts (accounts st (address e)))));
+      assert Err (\<lambda>st. type (accounts st adv) = None);
+      kv \<leftarrow> toState (expr val e cd);
+      (v, t) \<leftarrow> case kv of (KValue v, Value t) \<Rightarrow> return (v, t) | _ \<Rightarrow> throw Err;
+      (ct, cn, _) \<leftarrow> option Err (\<lambda>_. ep $$ i);
+      let e' = ffold_init ct (emptyEnv adv i (address e) v) (fmdom ct);
+      (e\<^sub>l, cd\<^sub>l, k\<^sub>l, m\<^sub>l) \<leftarrow> toState (load True (fst cn) xe e' emptyStore emptyStore emptyStore e cd);
+      modify (\<lambda>st. st\<lparr>accounts := (accounts st)(adv := \<lparr>bal = ShowL\<^sub>i\<^sub>n\<^sub>t 0, type = Some (Contract i), contracts = 0\<rparr>), storage:=(storage st)(adv := {$$})\<rparr>);
+      acc \<leftarrow> option Err (\<lambda>st. transfer (address e) adv v (accounts st));
+      (k\<^sub>o, m\<^sub>o) \<leftarrow> applyf (\<lambda>st. (stack st, memory st));
+      modify (\<lambda>st. st\<lparr>accounts := acc, stack:=k\<^sub>l, memory:=m\<^sub>l\<rparr>);
+      stmt (snd cn) e\<^sub>l cd\<^sub>l;
+      modify (\<lambda>st. st\<lparr>stack:=k\<^sub>o, memory := m\<^sub>o\<rparr>);
+      modify (incrementAccountContracts (address e))
+    }) st"
+by pat_completeness auto
+
+subsection \<open>Termination\<close>
+
+text \<open>Again, to prove termination we need a lemma regarding gas consumption.\<close>
+
+lemma stmt_dom_gas[rule_format]:
+    "stmt_dom (s6, ev6, cd6, st6) \<Longrightarrow> (\<forall>st6'. stmt s6 ev6 cd6 st6 = Normal((), st6') \<longrightarrow> gas st6' \<le> gas st6)"
+proof (induct rule: stmt.pinduct[where ?P="\<lambda>s6 ev6 cd6 st6. (\<forall>st6'. stmt s6 ev6 cd6 st6 = Normal ((), st6') \<longrightarrow> gas st6' \<le> gas st6)"])
+  case (1 e cd st)
   then show ?case using stmt.psimps(1) by simp
 next
-  case (37 lv ex e\<^sub>p env cd st)
-  define g where "g = costs (ASSIGN lv ex) e\<^sub>p env cd st"
+  case (2 lv ex env cd st)
+  define g where "g = costs (ASSIGN lv ex) env cd st"
   show ?case
   proof (rule allI[OF impI])
     fix st6'
-    assume stmt_def: "stmt (ASSIGN lv ex) e\<^sub>p env cd st = Normal ((), st6')"
+    assume stmt_def: "stmt (ASSIGN lv ex) env cd st = Normal ((), st6')"
     then show "gas st6' \<le> gas st"
     proof cases
       assume "gas st \<le> g"
-      with 37 stmt_def show ?thesis using stmt.psimps(2) g_def by simp
+      with 2(1) stmt_def show ?thesis using stmt.psimps(2) g_def by simp
     next
       assume "\<not> gas st \<le> g"
+      define st' where "st' = st\<lparr>gas := gas st - g\<rparr>"
       show ?thesis
-      proof (cases "expr ex e\<^sub>p env cd (st\<lparr>gas := gas st - g\<rparr>)")
-        case (n a st')
+      proof (cases "expr ex env cd st' (gas st - g)")
+        case (n a g')
+        define st'' where "st'' = st'\<lparr>gas := g'\<rparr>"
         then show ?thesis
         proof (cases a)
           case (Pair b c)
@@ -2341,8 +481,8 @@ next
             proof (cases c)
               case (Value t)
               then show ?thesis
-              proof (cases "lexp lv e\<^sub>p env cd st'")
-                case n2: (n a st'')
+              proof (cases "lexp lv env cd st'' g'")
+                case n2: (n a g'')
                 then show ?thesis
                 proof (cases a)
                   case p1: (Pair a b)
@@ -2355,118 +495,99 @@ next
                       then show ?thesis
                       proof (cases "convert t t' v ")
                         case None
-                        with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value n2 p1 LStackloc v2 show ?thesis using stmt.psimps(2) g_def by simp
+                        with stmt_def `\<not> gas st \<le> g` n Pair KValue Value n2 p1 LStackloc v2 show ?thesis using stmt.psimps(2)[OF 2(1)] g_def st'_def st''_def by simp
                       next
-                        case s3: (Some a)
-                        then show ?thesis
-                        proof (cases a)
-                          case p2: (Pair v' b)
-                          with 37(1) `\<not> gas st \<le> g` n Pair KValue Value n2 p1 LStackloc v2 s3
-                          have "stmt (ASSIGN lv ex) e\<^sub>p env cd st = Normal ((), st'' \<lparr>stack := updateStore l (KValue v') (stack st'')\<rparr>)"
-                            using stmt.psimps(2) g_def by simp
-                          with stmt_def have "st6'= (st''\<lparr>stack := updateStore l (KValue v') (stack st'')\<rparr>)" by simp
-                          moreover from 37(3) `\<not> gas st \<le> g` n Pair KValue Value n2 p1 have "gas st'' \<le> gas st'" using g_def by simp
-                          moreover from 37(2) `\<not> gas st \<le> g` n Pair KValue Value n2 p2 have "gas st' \<le> gas st" using g_def by simp
-                          ultimately show ?thesis by simp
-                        qed
+                        case s3: (Some v')
+                        with 2(1) `\<not> gas st \<le> g` n Pair KValue Value n2 p1 LStackloc v2 s3
+                        have "stmt (ASSIGN lv ex) env cd st = Normal ((), st''\<lparr>gas := g'', stack := updateStore l (KValue v') (stack st)\<rparr>)"
+                          using stmt.psimps(2) g_def st'_def st''_def by simp
+                        with stmt_def have "st6'= st''\<lparr>gas := g'', stack := updateStore l (KValue v') (stack st)\<rparr>" by simp
+                        moreover from lexp_gas `\<not> gas st \<le> g` n2 p1 have "gas (st''\<lparr>gas := g'', stack := updateStore l (KValue v') (stack st)\<rparr>) \<le> gas (st'\<lparr>gas := g'\<rparr>)" using g_def st'_def by simp
+                        moreover from msel_ssel_expr_load_rexp_gas(3)[of ex env cd st' "gas st - g"] `\<not> gas st \<le> g` n Pair KValue Value have "gas (st'\<lparr>gas := g'\<rparr>) \<le> gas (st\<lparr>gas := gas st - g\<rparr>)" using g_def by simp
+                        ultimately show ?thesis by simp
                       qed
                     next
                       case (Calldata x2)
-                      with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value n2 p1 LStackloc show ?thesis using stmt.psimps(2) g_def by simp
+                      with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value n2 p1 LStackloc show ?thesis using stmt.psimps(2) g_def st'_def st''_def by simp
                     next
                       case (Memory x3)
-                      with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value n2 p1 LStackloc show ?thesis using stmt.psimps(2) g_def by simp
+                      with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value n2 p1 LStackloc show ?thesis using stmt.psimps(2) g_def st'_def st''_def by simp
                     next
                       case (Storage x4)
-                      with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value n2 p1 LStackloc show ?thesis using stmt.psimps(2) g_def by simp
+                      with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value n2 p1 LStackloc show ?thesis using stmt.psimps(2) g_def st'_def st''_def by simp
                     qed
                   next
                     case (LMemloc l)
                     then show ?thesis
                     proof (cases b)
                       case v2: (Value t')
-                      with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value n2 p1 LMemloc show ?thesis using stmt.psimps(2) g_def by simp
+                      with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value n2 p1 LMemloc show ?thesis using stmt.psimps(2) g_def st'_def st''_def by simp
                     next
                       case (Calldata x2)
-                      with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value n2 p1 LMemloc show ?thesis using stmt.psimps(2) g_def by simp
+                      with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value n2 p1 LMemloc show ?thesis using stmt.psimps(2) g_def st'_def st''_def by simp
                     next
                       case (Memory x3)
                       then show ?thesis
                       proof (cases x3)
                         case (MTArray x11 x12)
-                        with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value n2 p1 LMemloc Memory show ?thesis using stmt.psimps(2) g_def by simp
+                        with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value n2 p1 LMemloc Memory show ?thesis using stmt.psimps(2) g_def st'_def st''_def by simp
                       next
                         case (MTValue t')
                         then show ?thesis
                         proof (cases "convert t t' v ")
                           case None
-                          with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value n2 p1 LMemloc Memory MTValue show ?thesis using stmt.psimps(2) g_def by simp
+                          with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value n2 p1 LMemloc Memory MTValue show ?thesis using stmt.psimps(2) g_def st'_def st''_def by simp
                         next
-                          case s3: (Some a)
-                          then show ?thesis
-                          proof (cases a)
-                            case p2: (Pair v' b)
-                            with 37(1) `\<not> gas st \<le> g` n Pair KValue Value n2 p1 LMemloc Memory MTValue s3
-                            have "stmt (ASSIGN lv ex) e\<^sub>p env cd st = Normal ((), st'' \<lparr>memory := updateStore l (MValue v') (memory st'')\<rparr>)"
-                              using stmt.psimps(2) g_def by simp
-                            with stmt_def have "st6'= (st''\<lparr>memory := updateStore l (MValue v') (memory st'')\<rparr>)" by simp
-                            moreover from 37(3) `\<not> gas st \<le> g` n Pair KValue Value n2 p1 have "gas st'' \<le> gas st'" using g_def by simp
-                            moreover from 37(2) `\<not> gas st \<le> g` n Pair KValue Value n2 p1 have "gas st' \<le> gas st" using g_def by simp
-                            ultimately show ?thesis by simp
-                          qed
+                          case s3: (Some v')
+                          with 2(1) `\<not> gas st \<le> g` n Pair KValue Value n2 p1 LMemloc Memory MTValue s3
+                          have "stmt (ASSIGN lv ex) env cd st = Normal ((), st''\<lparr>gas := g'', memory := updateStore l (MValue v') (memory st'')\<rparr>)"
+                            using stmt.psimps(2) g_def st'_def st''_def by simp
+                          with stmt_def have "st6'= (st''\<lparr>gas := g'', memory := updateStore l (MValue v') (memory st'')\<rparr>)" by simp
+                          moreover from lexp_gas `\<not> gas st \<le> g` n2 p1 have "gas (st''\<lparr>gas := g'', stack := updateStore l (KValue v') (stack st)\<rparr>) \<le> gas (st'\<lparr>gas := g'\<rparr>)" using g_def st'_def by simp
+                          moreover from msel_ssel_expr_load_rexp_gas(3)[of ex env cd st' "gas st - g"] `\<not> gas st \<le> g` n Pair KValue Value n2 p1 have "gas (st'\<lparr>gas := g'\<rparr>) \<le> gas (st\<lparr>gas := gas st - g\<rparr>)" using g_def by simp
+                          ultimately show ?thesis by simp
                         qed
                       qed
                     next
                       case (Storage x4)
-                      with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value n2 p1 LMemloc show ?thesis using stmt.psimps(2) g_def by simp
+                      with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value n2 p1 LMemloc show ?thesis using stmt.psimps(2) g_def st'_def st''_def by simp
                     qed
                   next
                     case (LStoreloc l)
                     then show ?thesis
                     proof (cases b)
                       case v2: (Value t')
-                      with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value n2 p1 LStoreloc show ?thesis using stmt.psimps(2) g_def by simp
+                      with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value n2 p1 LStoreloc show ?thesis using stmt.psimps(2) g_def st'_def st''_def by simp
                     next
                       case (Calldata x2)
-                      with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value n2 p1 LStoreloc show ?thesis using stmt.psimps(2) g_def by simp
+                      with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value n2 p1 LStoreloc show ?thesis using stmt.psimps(2) g_def st'_def st''_def by simp
                     next
                       case (Memory x3)
-                      with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value n2 p1 LStoreloc show ?thesis using stmt.psimps(2) g_def by simp
+                      with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value n2 p1 LStoreloc show ?thesis using stmt.psimps(2) g_def st'_def st''_def by simp
                     next
                       case (Storage x4)
                       then show ?thesis
                       proof (cases x4)
                         case (STArray x11 x12)
-                        with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value n2 p1 LStoreloc Storage show ?thesis using stmt.psimps(2) g_def by simp
+                        with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value n2 p1 LStoreloc Storage show ?thesis using stmt.psimps(2) g_def st'_def st''_def by simp
                       next
                         case (STMap x21 x22)
-                        with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value n2 p1 LStoreloc Storage show ?thesis using stmt.psimps(2) g_def by simp
+                        with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value n2 p1 LStoreloc Storage show ?thesis using stmt.psimps(2) g_def st'_def st''_def by simp
                       next
                         case (STValue t')
                         then show ?thesis
                         proof (cases "convert t t' v ")
                           case None
-                          with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value n2 p1 LStoreloc Storage STValue show ?thesis using stmt.psimps(2) g_def by simp
+                          with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value n2 p1 LStoreloc Storage STValue show ?thesis using stmt.psimps(2) g_def st'_def st''_def by simp
                         next
-                          case s3: (Some a)
-                          then show ?thesis
-                          proof (cases a)
-                            case p2: (Pair v' b)
-                            then show ?thesis
-                            proof (cases "fmlookup (storage st'') (address env)")
-                              case None
-                              with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value n2 p1 LStoreloc Storage STValue s3 p2 show ?thesis using stmt.psimps(2) g_def by simp
-                            next
-                              case s4: (Some s)
-                              with 37(1) `\<not> gas st \<le> g` n Pair KValue Value n2 p1 LStoreloc Storage STValue s3 p2
-                              have "stmt (ASSIGN lv ex) e\<^sub>p env cd st = Normal ((), st'' \<lparr>storage := fmupd (address env) (fmupd l v' s) (storage st'')\<rparr>)"
-                                using stmt.psimps(2) g_def by simp
-                              with stmt_def have "st6'= st'' \<lparr>storage := fmupd (address env) (fmupd l v' s) (storage st'')\<rparr>" by simp
-                              moreover from 37(3) `\<not> gas st \<le> g` n Pair KValue Value n2 p1 have "gas st'' \<le> gas st'" using g_def by simp
-                              moreover from 37(2) `\<not> gas st \<le> g` n Pair KValue Value n2 p1 have "gas st' \<le> gas st" using g_def by simp
-                              ultimately show ?thesis by simp
-                            qed
-                          qed
+                          case s3: (Some v')
+                          with 2(1) `\<not> gas st \<le> g` n Pair KValue Value n2 p1 LStoreloc Storage STValue s3
+                          have "stmt (ASSIGN lv ex) env cd st = Normal ((), st'' \<lparr>gas := g'', storage := (storage st'') (address env := fmupd l v' (storage st'' (address env)))\<rparr>)"
+                            using stmt.psimps(2) g_def st'_def st''_def by simp
+                          with stmt_def have "st6'= st'' \<lparr>gas := g'', storage := (storage st'') (address env := fmupd l v' (storage st'' (address env)))\<rparr>" by simp
+                          moreover from lexp_gas `\<not> gas st \<le> g` n Pair KValue Value n2 p1 have "gas (st''\<lparr>gas := g'', stack := updateStore l (KValue v') (stack st)\<rparr>) \<le> gas (st'\<lparr>gas := g'\<rparr>)" using g_def by simp
+                          moreover from msel_ssel_expr_load_rexp_gas(3)[of ex env cd st' "gas st - g"] `\<not> gas st \<le> g` n Pair KValue Value n2 p1 have "gas (st'\<lparr>gas := g'\<rparr>) \<le> gas (st\<lparr>gas := gas st - g\<rparr>)" using g_def by simp
+                          ultimately show ?thesis by simp
                         qed
                       qed
                     qed
@@ -2474,32 +595,33 @@ next
                 qed
               next
                 case (e x)
-                with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value show ?thesis using stmt.psimps(2) g_def by simp
+                with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value show ?thesis using stmt.psimps(2) g_def st'_def st''_def by simp
               qed
             next
               case (Calldata x2)
-              with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KValue show ?thesis using stmt.psimps(2) g_def by simp
+              with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KValue show ?thesis using stmt.psimps(2) g_def st'_def by simp
             next
               case (Memory x3)
-              with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KValue show ?thesis using stmt.psimps(2) g_def by simp
+              with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KValue show ?thesis using stmt.psimps(2) g_def st'_def by simp
             next
               case (Storage x4)
-              with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KValue show ?thesis using stmt.psimps(2) g_def by simp
+              with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KValue show ?thesis using stmt.psimps(2) g_def st'_def by simp
             qed
           next
             case (KCDptr p)
             then show ?thesis
             proof (cases c)
               case (Value x1)
-              with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KCDptr show ?thesis using stmt.psimps(2) g_def by simp
+              with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KCDptr show ?thesis using stmt.psimps(2) g_def st'_def by simp
             next
               case (Calldata x2)
               then show ?thesis
               proof (cases x2)
                 case (MTArray x t)
                 then show ?thesis
-                proof (cases "lexp lv e\<^sub>p env cd st'")
-                  case n2: (n a st'')
+                proof (cases "lexp lv env cd st'' g'")
+                  case n2: (n a g'')
+                  define st''' where "st''' = st''\<lparr>gas := g''\<rparr>"
                   then show ?thesis
                   proof (cases a)
                     case p2: (Pair a b)
@@ -2509,59 +631,79 @@ next
                       then show ?thesis
                       proof (cases b)
                         case v2: (Value t')
-                        with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray n2 p2 LStackloc show ?thesis using stmt.psimps(2) g_def by simp
+                        with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray n2 p2 LStackloc show ?thesis using stmt.psimps(2) g_def st'_def st''_def by simp
                       next
                         case c2: (Calldata x2)
-                        with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray n2 p2 LStackloc show ?thesis using stmt.psimps(2) g_def by simp
+                        with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray n2 p2 LStackloc show ?thesis using stmt.psimps(2) g_def st'_def st''_def by simp
                       next
                         case (Memory x3)
-                        with 37(1) `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray n2 p2 LStackloc
-                        have "stmt (ASSIGN lv ex) e\<^sub>p env cd st = Normal ((), st'' \<lparr>stack := updateStore l (KCDptr p) (stack st'')\<rparr>)"
-                          using stmt.psimps(2) g_def by simp
-                        with stmt_def have "st6'= (st''\<lparr>stack := updateStore l (KCDptr p) (stack st'')\<rparr>)" by simp
-                        moreover from 37(4) `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray n2 p2 have "gas st'' \<le> gas st'" using g_def by simp
-                        moreover from 37(2) `\<not> gas st \<le> g` n Pair have "gas st' \<le> gas st" using g_def by simp
-                        ultimately show ?thesis by simp
-                      next
-                        case (Storage x4)
                         then show ?thesis
-                        proof (cases "accessStore l (stack st'')")
+                        proof (cases "accessStore l (stack st''')")
                           case None
-                          with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray n2 p2 LStackloc Storage show ?thesis using stmt.psimps(2) g_def by simp
+                          with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray n2 p2 LStackloc Memory show ?thesis using stmt.psimps(2) g_def st'_def st''_def st'''_def by simp
                         next
                           case s3: (Some a)
                           then show ?thesis
                           proof (cases a)
                             case (KValue x1)
-                            with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray n2 p2 LStackloc Storage s3 show ?thesis using stmt.psimps(2) g_def by simp
+                            with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray n2 p2 LStackloc Memory s3 show ?thesis using stmt.psimps(2) g_def st'_def st''_def st'''_def by simp
                           next
                             case c3: (KCDptr x2)
-                            with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray n2 p2 LStackloc Storage s3 show ?thesis using stmt.psimps(2) g_def by simp
+                            with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray n2 p2 LStackloc Memory s3 show ?thesis using stmt.psimps(2) g_def st'_def st''_def st'''_def by simp
+                          next
+                            case (KMemptr p')
+                            then show ?thesis
+                            proof (cases "cpm2m p p' x t cd (memory st''')")
+                              case None
+                              with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray n2 p2 LStackloc Memory s3 KMemptr show ?thesis using stmt.psimps(2) g_def st'_def st''_def st'''_def by (simp split:if_split_asm)
+                            next
+                              case (Some m')
+                              with `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray n2 p2 LStackloc Memory s3 KMemptr
+                              have "stmt (ASSIGN lv ex) env cd st = Normal ((), st''' \<lparr>memory := m'\<rparr>)"
+                                using stmt.psimps(2)[OF 2(1)] g_def st'_def st''_def st'''_def by simp
+                              with stmt_def have "st6'= st''' \<lparr>memory := m'\<rparr>" by simp
+                              moreover from lexp_gas `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray n2 p2 have "gas (st'''\<lparr>memory := m'\<rparr>) \<le> gas st''" using st''_def st'''_def by simp
+                              moreover from msel_ssel_expr_load_rexp_gas(3)[of ex env cd st' "gas st - g"] `\<not> gas st \<le> g` n Pair have "gas st'' \<le> gas st'" using st'_def st''_def by simp
+                              ultimately show ?thesis using st'_def by simp
+                            qed
+                          next
+                            case (KStoptr p')
+                            with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray n2 p2 LStackloc Memory s3 show ?thesis using stmt.psimps(2) g_def st'_def st''_def st'''_def by simp
+                          qed
+                        qed
+                      next
+                        case (Storage x4)
+                        then show ?thesis
+                        proof (cases "accessStore l (stack st'')")
+                          case None
+                          with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray n2 p2 LStackloc Storage show ?thesis using stmt.psimps(2) g_def st'_def st''_def st'''_def by simp
+                        next
+                          case s3: (Some a)
+                          then show ?thesis
+                          proof (cases a)
+                            case (KValue x1)
+                            with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray n2 p2 LStackloc Storage s3 show ?thesis using stmt.psimps(2) g_def st'_def st''_def st'''_def by simp
+                          next
+                            case c3: (KCDptr x2)
+                            with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray n2 p2 LStackloc Storage s3 show ?thesis using stmt.psimps(2) g_def st'_def st''_def st'''_def by simp
                           next
                             case (KMemptr x3)
-                            with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray n2 p2 LStackloc Storage s3 show ?thesis using stmt.psimps(2) g_def by simp
+                            with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray n2 p2 LStackloc Storage s3 show ?thesis using stmt.psimps(2) g_def st'_def st''_def st'''_def by simp
                           next
                             case (KStoptr p')
                             then show ?thesis
-                            proof (cases "fmlookup (storage st'') (address env)")
+                            proof (cases "cpm2s p p' x t cd (storage st'' (address env))")
                               case None
-                              with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray n2 p2 LStackloc Storage s3 KStoptr show ?thesis using stmt.psimps(2) g_def by simp
+                              with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray n2 p2 LStackloc Storage s3 KStoptr show ?thesis using stmt.psimps(2) g_def st'_def st''_def st'''_def by simp
                             next
-                              case s4: (Some s)
-                              then show ?thesis
-                              proof (cases "cpm2s p p' x t cd s")
-                                case None
-                                with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray n2 p2 LStackloc Storage s3 KStoptr s4 show ?thesis using stmt.psimps(2) g_def by simp
-                              next
-                                case (Some s')
-                                with 37(1) `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray n2 p2 LStackloc Storage s3 KStoptr s4
-                                have "stmt (ASSIGN lv ex) e\<^sub>p env cd st = Normal ((), st'' \<lparr>storage := fmupd (address env) s' (storage st'')\<rparr>)"
-                                  using stmt.psimps(2) g_def by simp
-                                with stmt_def have "st6'= st'' \<lparr>storage := fmupd (address env) s' (storage st'')\<rparr>" by simp
-                                moreover from 37(4) `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray n2 p2 have "gas st'' \<le> gas st'" using g_def by simp
-                                moreover from 37(2) `\<not> gas st \<le> g` n Pair have "gas st' \<le> gas st" using g_def by simp
-                                ultimately show ?thesis by simp
-                              qed
+                              case (Some s')
+                              with 2(1) `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray n2 p2 LStackloc Storage s3 KStoptr
+                              have "stmt (ASSIGN lv ex) env cd st = Normal ((), st''' \<lparr>storage := (storage st'') (address env := s')\<rparr>)"
+                                using stmt.psimps(2) g_def st'_def st''_def st'''_def by simp
+                              with stmt_def have "st6'= st''' \<lparr>storage := (storage st'') (address env := s')\<rparr>" by simp
+                              moreover from lexp_gas `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray n2 p2 have "gas st''' \<le> gas st''" using g_def st''_def st'''_def by simp
+                              moreover from msel_ssel_expr_load_rexp_gas(3)[of ex env cd st' "gas st - g"] `\<not> gas st \<le> g` n Pair have "gas st'' \<le> gas st'" using g_def st'_def st''_def by simp
+                              ultimately show ?thesis using st'_def by simp
                             qed
                           qed
                         qed
@@ -2569,76 +711,70 @@ next
                     next
                       case (LMemloc l)
                       then show ?thesis
-                      proof (cases "cpm2m p l x t cd (memory st'')")
+                      proof (cases "cpm2m p l x t cd (memory st''')")
                         case None
-                        with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray n2 p2 LMemloc show ?thesis using stmt.psimps(2) g_def by simp
+                        with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray n2 p2 LMemloc show ?thesis using stmt.psimps(2) g_def st'_def st''_def st'''_def by (simp split:if_split_asm)
                       next
                         case (Some m)
-                        with 37(1) `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray n2 p2 LMemloc
-                        have "stmt (ASSIGN lv ex) e\<^sub>p env cd st = Normal ((), st'' \<lparr>memory := m\<rparr>)"
-                          using stmt.psimps(2) g_def by simp
-                        with stmt_def have "st6'= (st''\<lparr>memory := m\<rparr>)" by simp
-                        moreover from 37(4) `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray n2 p2 have "gas st'' \<le> gas st'" using g_def by simp
-                        moreover from 37(2) `\<not> gas st \<le> g` n Pair have "gas st' \<le> gas st" using g_def by simp
-                        ultimately show ?thesis by simp
+                        with `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray n2 p2 LMemloc
+                        have "stmt (ASSIGN lv ex) env cd st = Normal ((), st'''\<lparr>memory := m\<rparr>)"
+                          using stmt.psimps(2)[OF 2(1)] g_def st'_def st''_def st'''_def by simp
+                        with stmt_def have "st6'= (st'''\<lparr>memory := m\<rparr>)" by simp
+                        moreover from lexp_gas `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray n2 p2 have "gas st''' \<le> gas st''" using st''_def st'''_def by simp
+                        moreover from msel_ssel_expr_load_rexp_gas(3)[of ex env cd st' "gas st - g"] `\<not> gas st \<le> g` n Pair have "gas st'' \<le> gas st'" using st'_def st''_def by simp
+                        ultimately show ?thesis using st'_def by simp
                       qed
                     next
                       case (LStoreloc l)
                       then show ?thesis
-                      proof (cases "fmlookup (storage st'') (address env)")
+                      proof (cases "cpm2s p l x t cd (storage st'' (address env))")
                         case None
-                        with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray n2 p2 LStoreloc show ?thesis using stmt.psimps(2) g_def by simp
+                        with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray n2 p2 LStoreloc show ?thesis using stmt.psimps(2) g_def st'_def st''_def st'''_def by simp
                       next
-                        case s4: (Some s)
-                        then show ?thesis
-                        proof (cases "cpm2s p l x t cd s")
-                          case None
-                          with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray n2 p2 LStoreloc s4 show ?thesis using stmt.psimps(2) g_def by simp
-                        next
-                          case (Some s')
-                          with 37(1) `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray n2 p2 LStoreloc s4
-                          have "stmt (ASSIGN lv ex) e\<^sub>p env cd st = Normal ((), st'' \<lparr>storage := fmupd (address env) s' (storage st'')\<rparr>)"
-                            using stmt.psimps(2) g_def by simp
-                          with stmt_def have "st6'= (st''\<lparr>storage := fmupd (address env) s' (storage st'')\<rparr>)" by simp
-                          moreover from 37(4) `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray n2 p2 have "gas st'' \<le> gas st'" using g_def by simp
-                          moreover from 37(2) `\<not> gas st \<le> g` n Pair have "gas st' \<le> gas st" using g_def by simp
-                          ultimately show ?thesis by simp
-                        qed
+                        case (Some s)
+                        with `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray n2 p2 LStoreloc
+                        have "stmt (ASSIGN lv ex) env cd st = Normal ((), st''' \<lparr>storage := (storage st'') (address env := s)\<rparr>)"
+                          using stmt.psimps(2)[OF 2(1)] g_def st'_def st''_def st'''_def by simp
+                        with stmt_def have "st6'= (st'''\<lparr>storage := (storage st'') (address env := s)\<rparr>)" by simp
+                        moreover from lexp_gas `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray n2 p2 have "gas st''' \<le> gas st''" using st''_def st'''_def by simp
+                        moreover from msel_ssel_expr_load_rexp_gas(3)[of ex env cd st' "gas st - g"] `\<not> gas st \<le> g` n Pair have "gas st'' \<le> gas st'" using st'_def st''_def by simp
+                        ultimately show ?thesis using st'_def by simp
                       qed
                     qed
                   qed
                 next
                   case (e x)
-                  with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray show ?thesis using stmt.psimps(2) g_def by simp
+                  with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KCDptr Calldata MTArray show ?thesis using stmt.psimps(2) g_def st'_def st''_def by simp
                 qed
               next
                 case (MTValue x2)
-                with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KCDptr Calldata show ?thesis using stmt.psimps(2) g_def by simp
+                with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KCDptr Calldata show ?thesis using stmt.psimps(2) g_def st'_def st''_def by simp
               qed
             next
               case (Memory x3)
-              with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KCDptr show ?thesis using stmt.psimps(2) g_def by simp
+              with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KCDptr show ?thesis using stmt.psimps(2) g_def st'_def st''_def by simp
             next
               case (Storage x4)
-              with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KCDptr show ?thesis using stmt.psimps(2) g_def by simp
+              with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KCDptr show ?thesis using stmt.psimps(2) g_def st'_def st''_def by simp
             qed
           next
             case (KMemptr p)
             then show ?thesis
             proof (cases c)
               case (Value x1)
-              with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KMemptr show ?thesis using stmt.psimps(2) g_def by simp
+              with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KMemptr show ?thesis using stmt.psimps(2) g_def st'_def st''_def by simp
             next
               case (Calldata x2)
-              with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KMemptr show ?thesis using stmt.psimps(2) g_def by simp
+              with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KMemptr show ?thesis using stmt.psimps(2) g_def st'_def st''_def by simp
             next
               case (Memory x3)
               then show ?thesis
               proof (cases x3)
                 case (MTArray x t)
                 then show ?thesis
-                proof (cases "lexp lv e\<^sub>p env cd st'")
-                  case n2: (n a st'')
+                proof (cases "lexp lv env cd st'' g'")
+                  case n2: (n a g'')
+                  define st''' where "st''' = st''\<lparr>gas := g''\<rparr>"
                   then show ?thesis
                   proof (cases a)
                     case p2: (Pair a b)
@@ -2648,129 +784,116 @@ next
                       then show ?thesis
                       proof (cases b)
                         case v2: (Value t')
-                        with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KMemptr Memory MTArray n2 p2 LStackloc show ?thesis using stmt.psimps(2) g_def by simp
+                        with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KMemptr Memory MTArray n2 p2 LStackloc show ?thesis using stmt.psimps(2) g_def st'_def st''_def by simp
                       next
                         case c2: (Calldata x2)
-                        with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KMemptr Memory MTArray n2 p2 LStackloc show ?thesis using stmt.psimps(2) g_def by simp
+                        with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KMemptr Memory MTArray n2 p2 LStackloc show ?thesis using stmt.psimps(2) g_def st'_def st''_def by simp
                       next
                         case m2: (Memory x3)
-                        with 37(1) `\<not> gas st \<le> g` n Pair KMemptr Memory MTArray n2 p2 LStackloc
-                        have "stmt (ASSIGN lv ex) e\<^sub>p env cd st = Normal ((), st'' \<lparr>stack := updateStore l (KMemptr p) (stack st'')\<rparr>)"
-                          using stmt.psimps(2) g_def by simp
-                        with stmt_def have "st6'= (st''\<lparr>stack := updateStore l (KMemptr p) (stack st'')\<rparr>)" by simp
-                        moreover from 37(5) `\<not> gas st \<le> g` n Pair KMemptr Memory MTArray n2 p2 have "gas st'' \<le> gas st'" using g_def by simp
-                        moreover from 37(2) `\<not> gas st \<le> g` n Pair have "gas st' \<le> gas st" using g_def by simp
-                        ultimately show ?thesis by simp
+                        with 2(1) `\<not> gas st \<le> g` n Pair KMemptr Memory MTArray n2 p2 LStackloc
+                        have "stmt (ASSIGN lv ex) env cd st = Normal ((), st'''\<lparr>stack := updateStore l (KMemptr p) (stack st'')\<rparr>)"
+                          using stmt.psimps(2)[OF 2(1)] g_def st'_def st''_def st'''_def by simp
+                        with stmt_def have "st6'= st'''\<lparr>stack := updateStore l (KMemptr p) (stack st'')\<rparr>" by simp
+                        moreover from lexp_gas `\<not> gas st \<le> g` n Pair KMemptr Memory MTArray n2 p2 have "gas st''' \<le> gas st''" using st''_def st'''_def by simp
+                        moreover from msel_ssel_expr_load_rexp_gas(3)[of ex env cd st' "gas st - g"] `\<not> gas st \<le> g` n Pair have "gas st'' \<le> gas st'" using st'_def st''_def by simp
+                        ultimately show ?thesis using st'_def by simp
                       next
                         case (Storage x4)
                         then show ?thesis
-                        proof (cases "accessStore l (stack st'')")
+                        proof (cases "accessStore l (stack st''')")
                           case None
-                          with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KMemptr Memory MTArray n2 p2 LStackloc Storage show ?thesis using stmt.psimps(2) g_def by simp
+                          with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KMemptr Memory MTArray n2 p2 LStackloc Storage show ?thesis using stmt.psimps(2) g_def st'_def st''_def st'''_def by simp
                         next
                           case s3: (Some a)
                           then show ?thesis
                           proof (cases a)
                             case (KValue x1)
-                            with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KMemptr Memory MTArray n2 p2 LStackloc Storage s3 show ?thesis using stmt.psimps(2) g_def by simp
+                            with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KMemptr Memory MTArray n2 p2 LStackloc Storage s3 show ?thesis using stmt.psimps(2) g_def st'_def st''_def st'''_def by simp
                           next
                             case c3: (KCDptr x2)
-                            with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KMemptr Memory MTArray n2 p2 LStackloc Storage s3 show ?thesis using stmt.psimps(2) g_def by simp
+                            with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KMemptr Memory MTArray n2 p2 LStackloc Storage s3 show ?thesis using stmt.psimps(2) g_def st'_def st''_def st'''_def by simp
                           next
                             case m3: (KMemptr x3)
-                            with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KMemptr Memory MTArray n2 p2 LStackloc Storage s3 show ?thesis using stmt.psimps(2) g_def by simp
+                            with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KMemptr Memory MTArray n2 p2 LStackloc Storage s3 show ?thesis using stmt.psimps(2) g_def st'_def st''_def st'''_def by simp
                           next
                             case (KStoptr p')
                             then show ?thesis
-                            proof (cases "fmlookup (storage st'') (address env)")
+                            proof (cases "cpm2s p p' x t (memory st''') (storage st''' (address env))")
                               case None
-                              with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KMemptr Memory MTArray n2 p2 LStackloc Storage s3 KStoptr show ?thesis using stmt.psimps(2) g_def by simp
+                              with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KMemptr Memory MTArray n2 p2 LStackloc Storage s3 KStoptr show ?thesis using stmt.psimps(2) g_def st'_def st''_def st'''_def by simp
                             next
-                              case s4: (Some s)
-                              then show ?thesis
-                              proof (cases "cpm2s p p' x t (memory st'') s")
-                                case None
-                                with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KMemptr Memory MTArray n2 p2 LStackloc Storage s3 KStoptr s4 show ?thesis using stmt.psimps(2) g_def by simp
-                              next
-                                case (Some s')
-                                with 37(1) `\<not> gas st \<le> g` n Pair KMemptr Memory MTArray n2 p2 LStackloc Storage s3 KStoptr s4
-                                have "stmt (ASSIGN lv ex) e\<^sub>p env cd st =  Normal ((), st'' \<lparr>storage := fmupd (address env) s' (storage st'')\<rparr>)"
-                                  using stmt.psimps(2) g_def by simp
-                                with stmt_def have "st6'= (st''\<lparr>storage := fmupd (address env) s' (storage st'')\<rparr>)" by simp
-                                moreover from 37(5) `\<not> gas st \<le> g` n Pair KMemptr Memory MTArray n2 p2 have "gas st'' \<le> gas st'" using g_def by simp
-                                moreover from 37(2) `\<not> gas st \<le> g` n Pair have "gas st' \<le> gas st" using g_def by simp
-                                ultimately show ?thesis by simp
-                              qed
+                              case (Some s)
+                              with 2(1) `\<not> gas st \<le> g` n Pair KMemptr Memory MTArray n2 p2 LStackloc Storage s3 KStoptr
+                              have "stmt (ASSIGN lv ex) env cd st = Normal ((), st'''\<lparr>storage := (storage st''') (address env := s)\<rparr>)"
+                                using stmt.psimps(2) g_def st'_def st''_def st'''_def by simp
+                              with stmt_def have "st6'= st'''\<lparr>storage := (storage st''') (address env := s)\<rparr>" by simp
+                              moreover from lexp_gas `\<not> gas st \<le> g` n Pair KMemptr Memory MTArray n2 p2 have "gas st''' \<le> gas st''" using g_def st'_def st''_def st'''_def by simp
+                              moreover from msel_ssel_expr_load_rexp_gas(3)[of ex env cd st' "gas st - g"] `\<not> gas st \<le> g` n Pair have "gas st'' \<le> gas st'" using st'_def st''_def by simp
+                              ultimately show ?thesis using st'_def by simp
                             qed
                           qed
                         qed
                       qed
                     next
                       case (LMemloc l)
-                      with 37(1) `\<not> gas st \<le> g` n Pair KMemptr Memory MTArray n2 p2 LMemloc
-                      have "stmt (ASSIGN lv ex) e\<^sub>p env cd st =  Normal ((), st'' \<lparr>memory := updateStore l (MPointer p) (memory st'')\<rparr>)"
-                        using stmt.psimps(2) g_def by simp
-                      with stmt_def have "st6'= st'' \<lparr>memory := updateStore l (MPointer p) (memory st'')\<rparr>" by simp
-                      moreover from 37(5) `\<not> gas st \<le> g` n Pair KMemptr Memory MTArray n2 p2 have "gas st'' \<le> gas st'" using g_def by simp
-                      moreover from 37(2) `\<not> gas st \<le> g` n Pair have "gas st' \<le> gas st" using g_def by simp
-                      ultimately show ?thesis by simp
+                      with 2(1) `\<not> gas st \<le> g` n Pair KMemptr Memory MTArray n2 p2 LMemloc
+                      have "stmt (ASSIGN lv ex) env cd st =  Normal ((), st'''\<lparr>memory := updateStore l (MPointer p) (memory st''')\<rparr>)"
+                        using stmt.psimps(2) g_def st'_def st''_def st'''_def by simp
+                      with stmt_def have "st6'= st'''\<lparr>memory := updateStore l (MPointer p) (memory st''')\<rparr>" by simp
+                      moreover from lexp_gas `\<not> gas st \<le> g` n Pair KMemptr Memory MTArray n2 p2 have "gas st''' \<le> gas st''" using g_def st'_def st''_def st'''_def by simp
+                      moreover from msel_ssel_expr_load_rexp_gas(3)[of ex env cd st' "gas st - g"] `\<not> gas st \<le> g` n Pair have "gas st'' \<le> gas st'" using st'_def st''_def by simp
+                      ultimately show ?thesis using st'_def by simp
                     next
                       case (LStoreloc l)
                       then show ?thesis
-                      proof (cases "fmlookup (storage st'') (address env)")
+                      proof (cases "cpm2s p l x t (memory st''') (storage st'' (address env))")
                         case None
-                        with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KMemptr Memory MTArray n2 p2 LStoreloc show ?thesis using stmt.psimps(2) g_def by simp
+                        with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KMemptr Memory MTArray n2 p2 LStoreloc show ?thesis using stmt.psimps(2) g_def using st'_def st''_def st'''_def by simp
                       next
-                        case s3: (Some s)
-                        then show ?thesis
-                        proof (cases "cpm2s p l x t (memory st'') s")
-                          case None
-                          with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KMemptr Memory MTArray n2 p2 LStoreloc s3 show ?thesis using stmt.psimps(2) g_def by simp
-                        next
-                          case (Some s')
-                          with 37(1) `\<not> gas st \<le> g` n Pair KMemptr Memory MTArray n2 p2 LStoreloc s3
-                          have "stmt (ASSIGN lv ex) e\<^sub>p env cd st =  Normal ((), st'' \<lparr>storage := fmupd (address env) s' (storage st'')\<rparr>)"
-                            using stmt.psimps(2) g_def by simp
-                          with stmt_def have "st6'= st''\<lparr>storage := fmupd (address env) s' (storage st'')\<rparr>" by simp
-                          moreover from 37(5) `\<not> gas st \<le> g` n Pair KMemptr Memory MTArray n2 p2 have "gas st'' \<le> gas st'" using g_def by simp
-                          moreover from 37(2) `\<not> gas st \<le> g` n Pair have "gas st' \<le> gas st" using g_def by simp
-                          ultimately show ?thesis by simp
-                        qed
+                        case (Some s)
+                        with 2(1) `\<not> gas st \<le> g` n Pair KMemptr Memory MTArray n2 p2 LStoreloc
+                        have "stmt (ASSIGN lv ex) env cd st =  Normal ((), st'''\<lparr>storage := (storage st''') (address env := s)\<rparr>)"
+                          using stmt.psimps(2) g_def st'_def st''_def st'''_def by simp
+                        with stmt_def have "st6'= st'''\<lparr>storage := (storage st''') (address env := s)\<rparr>" by simp
+                        moreover from lexp_gas `\<not> gas st \<le> g` n Pair KMemptr Memory MTArray n2 p2 have "gas st''' \<le> gas st''" using g_def st'_def st''_def st'''_def by simp
+                        moreover from msel_ssel_expr_load_rexp_gas(3)[of ex env cd st' "gas st - g"] `\<not> gas st \<le> g` n Pair have "gas st'' \<le> gas st'" using st'_def st''_def by simp
+                        ultimately show ?thesis using st'_def by simp
                       qed
                     qed
                   qed
                 next
-                  case (e x)
-                  with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KMemptr Memory MTArray show ?thesis using stmt.psimps(2) g_def by simp
+                  case (e _)
+                  with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KMemptr Memory MTArray show ?thesis using stmt.psimps(2) g_def st'_def st''_def by simp
                 qed
               next
-                case (MTValue x2)
-                with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KMemptr Memory show ?thesis using stmt.psimps(2) g_def by simp
+                case (MTValue _)
+                with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KMemptr Memory show ?thesis using stmt.psimps(2) g_def st'_def st''_def by simp
               qed
             next
               case (Storage x4)
-              with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KMemptr show ?thesis using stmt.psimps(2) g_def by simp
+              with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KMemptr show ?thesis using stmt.psimps(2) g_def st'_def st''_def by simp
             qed
           next
             case (KStoptr p)
             then show ?thesis
             proof (cases c)
               case (Value x1)
-              with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KStoptr show ?thesis using stmt.psimps(2) g_def by simp
+              with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KStoptr show ?thesis using stmt.psimps(2) g_def st'_def st''_def by simp
             next
               case (Calldata x2)
-              with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KStoptr show ?thesis using stmt.psimps(2) g_def by simp
+              with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KStoptr show ?thesis using stmt.psimps(2) g_def st'_def st''_def by simp
             next
               case (Memory x3)
-              with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KStoptr show ?thesis using stmt.psimps(2) g_def by simp
+              with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KStoptr show ?thesis using stmt.psimps(2) g_def st'_def st''_def by simp
             next
               case (Storage x4)
               then show ?thesis
               proof (cases x4)
                 case (STArray x t)
                 then show ?thesis
-                proof (cases "lexp lv e\<^sub>p env cd st'")
-                  case n2: (n a st'')
+                proof (cases "lexp lv env cd st'' g'")
+                  case n2: (n a g'')
+                  define st''' where "st''' = st''\<lparr>gas := g''\<rparr>"
                   then show ?thesis
                   proof (cases a)
                     case p2: (Pair a b)
@@ -2780,200 +903,185 @@ next
                       then show ?thesis
                       proof (cases b)
                         case v2: (Value t')
-                        with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KStoptr Storage STArray n2 p2 LStackloc show ?thesis using stmt.psimps(2) g_def by simp
+                        with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KStoptr Storage STArray n2 p2 LStackloc show ?thesis using stmt.psimps(2) g_def st'_def st''_def by simp
                       next
                         case c2: (Calldata x2)
-                        with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KStoptr Storage STArray n2 p2 LStackloc show ?thesis using stmt.psimps(2) g_def by simp
+                        with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KStoptr Storage STArray n2 p2 LStackloc show ?thesis using stmt.psimps(2) g_def st'_def st''_def by simp
                       next
                         case (Memory x3)
                         then show ?thesis
-                        proof (cases "accessStore l (stack st'')")
+                        proof (cases "accessStore l (stack st''')")
                           case None
-                          with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KStoptr Storage STArray n2 p2 LStackloc Memory show ?thesis using stmt.psimps(2) g_def by simp
+                          with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KStoptr Storage STArray n2 p2 LStackloc Memory show ?thesis using stmt.psimps(2) g_def st'_def st''_def st'''_def by simp
                         next
                           case s3: (Some a)
                           then show ?thesis
                           proof (cases a)
                             case (KValue x1)
-                            with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KStoptr Storage STArray n2 p2 LStackloc Memory s3 show ?thesis using stmt.psimps(2) g_def by simp
+                            with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KStoptr Storage STArray n2 p2 LStackloc Memory s3 show ?thesis using stmt.psimps(2) g_def st'_def st''_def st'''_def by simp
                           next
                             case c3: (KCDptr x2)
-                            with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KStoptr Storage STArray n2 p2 LStackloc Memory s3 show ?thesis using stmt.psimps(2) g_def by simp
+                            with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KStoptr Storage STArray n2 p2 LStackloc Memory s3 show ?thesis using stmt.psimps(2) g_def st'_def st''_def st'''_def by simp
                           next
                             case (KMemptr p')
                             then show ?thesis
-                            proof (cases "fmlookup (storage st'') (address env)")
+                            proof (cases "cps2m p p' x t (storage st''' (address env)) (memory st''')")
                               case None
-                              with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KStoptr Storage STArray n2 p2 LStackloc Memory s3 KMemptr show ?thesis using stmt.psimps(2) g_def by simp
+                              with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KStoptr Storage STArray n2 p2 LStackloc Memory s3 KMemptr show ?thesis using stmt.psimps(2) g_def st'_def st''_def st'''_def by simp
                             next
-                              case s4: (Some s)
-                              then show ?thesis
-                              proof (cases "cps2m p p' x t s (memory st'')")
-                                case None
-                                with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KStoptr Storage STArray n2 p2 LStackloc Memory s3 KMemptr s4 show ?thesis using stmt.psimps(2) g_def by simp
-                              next
-                                case (Some m)
-                                with 37(1) `\<not> gas st \<le> g` n Pair KStoptr Storage STArray n2 p2 LStackloc Memory s3 KMemptr s4
-                                have "stmt (ASSIGN lv ex) e\<^sub>p env cd st =  Normal ((), st'' \<lparr>memory := m\<rparr>)"
-                                  using stmt.psimps(2) g_def by simp
-                                with stmt_def have "st6'= (st''\<lparr>memory := m\<rparr>)" by simp
-                                moreover from 37(6) `\<not> gas st \<le> g` n Pair KStoptr Storage STArray n2 p2 have "gas st'' \<le> gas st'" using g_def by simp
-                                moreover from 37(2) `\<not> gas st \<le> g` n Pair have "gas st' \<le> gas st" using g_def by simp
-                                ultimately show ?thesis by simp
-                              qed
+                              case (Some m)
+                              with 2(1) `\<not> gas st \<le> g` n Pair KStoptr Storage STArray n2 p2 LStackloc Memory s3 KMemptr
+                              have "stmt (ASSIGN lv ex) env cd st =  Normal ((), st'''\<lparr>memory := m\<rparr>)"
+                                using stmt.psimps(2) g_def st'_def st''_def st'''_def by simp
+                              with stmt_def have "st6'= st'''\<lparr>memory := m\<rparr>" by simp
+                              moreover from lexp_gas `\<not> gas st \<le> g` n Pair KMemptr Storage STArray n2 p2 have "gas (st'''\<lparr>memory := m\<rparr>) \<le> gas st''" using g_def st'_def st''_def st'''_def by simp
+                              moreover from msel_ssel_expr_load_rexp_gas(3)[of ex env cd st' "gas st - g"] `\<not> gas st \<le> g` n Pair have "gas st'' \<le> gas st'" using st'_def st''_def by simp
+                              ultimately show ?thesis using st'_def by simp
                             qed
                           next
                             case sp2: (KStoptr p')
-                            with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KStoptr Storage STArray n2 p2 LStackloc Memory s3 show ?thesis using stmt.psimps(2) g_def by simp
+                            with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KStoptr Storage STArray n2 p2 LStackloc Memory s3 show ?thesis using stmt.psimps(2) g_def st'_def st''_def st'''_def by simp
                           qed
                         qed
                       next
                         case st2: (Storage x4)
-                        with 37(1) `\<not> gas st \<le> g` n Pair KStoptr Storage STArray n2 p2 LStackloc
-                        have "stmt (ASSIGN lv ex) e\<^sub>p env cd st =  Normal ((), st'' \<lparr>stack := updateStore l (KStoptr p) (stack st'')\<rparr>)"
-                          using stmt.psimps(2) g_def by simp
-                        with stmt_def have "st6'= (st''\<lparr>stack := updateStore l (KStoptr p) (stack st'')\<rparr>)" by simp
-                        moreover from 37(6) `\<not> gas st \<le> g` n Pair KStoptr Storage STArray n2 p2 have "gas st'' \<le> gas st'" using g_def by simp
-                        moreover from 37(2) `\<not> gas st \<le> g` n Pair have "gas st' \<le> gas st" using g_def by simp
-                        ultimately show ?thesis by simp
+                        with 2(1) `\<not> gas st \<le> g` n Pair KStoptr Storage STArray n2 p2 LStackloc
+                        have "stmt (ASSIGN lv ex) env cd st =  Normal ((), st'''\<lparr>stack := updateStore l (KStoptr p) (stack st''')\<rparr>)"
+                          using stmt.psimps(2) g_def st'_def st''_def st'''_def by simp
+                        with stmt_def have "st6'= st'''\<lparr>stack := updateStore l (KStoptr p) (stack st''')\<rparr>" by simp
+                        moreover from lexp_gas `\<not> gas st \<le> g` n Pair KStoptr Storage STArray n2 p2 have "gas (st'''\<lparr>stack := updateStore l (KStoptr p) (stack st''')\<rparr>) \<le> gas st''" using g_def st'_def st''_def st'''_def by simp
+                        moreover from msel_ssel_expr_load_rexp_gas(3)[of ex env cd st' "gas st - g"] `\<not> gas st \<le> g` n Pair have "gas st'' \<le> gas st'" using st'_def st''_def by simp
+                        ultimately show ?thesis using st'_def by simp
                       qed
                     next
                       case (LMemloc l)
                       then show ?thesis
-                      proof (cases "fmlookup (storage st'') (address env)")
+                      proof (cases "cps2m p l x t (storage st'' (address env)) (memory st'')")
                         case None
-                        with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KStoptr Storage STArray n2 p2 LMemloc show ?thesis using stmt.psimps(2) g_def by simp
+                        with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KStoptr Storage STArray n2 p2 LMemloc show ?thesis using stmt.psimps(2) g_def st'_def st''_def st'''_def by simp
                       next
-                        case s4: (Some s)
-                        then show ?thesis
-                        proof (cases "cps2m p l x t s (memory st'')")
-                          case None
-                          with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KStoptr Storage STArray n2 p2 LMemloc s4 show ?thesis using stmt.psimps(2) g_def by simp
-                        next
-                          case (Some m)
-                          with 37(1) `\<not> gas st \<le> g` n Pair KStoptr Storage STArray n2 p2 LMemloc s4
-                          have "stmt (ASSIGN lv ex) e\<^sub>p env cd st =  Normal ((), st'' \<lparr>memory := m\<rparr>)"
-                            using stmt.psimps(2) g_def by simp
-                          with stmt_def have "st6'= (st''\<lparr>memory := m\<rparr>)" by simp
-                          moreover from 37(6) `\<not> gas st \<le> g` n Pair KStoptr Storage STArray n2 p2 have "gas st'' \<le> gas st'" using g_def by simp
-                          moreover from 37(2) `\<not> gas st \<le> g` n Pair have "gas st' \<le> gas st" using g_def by simp
-                          ultimately show ?thesis by simp
-                        qed
+                        case (Some m)
+                        with 2(1) `\<not> gas st \<le> g` n Pair KStoptr Storage STArray n2 p2 LMemloc
+                        have "stmt (ASSIGN lv ex) env cd st =  Normal ((), st'''\<lparr>memory := m\<rparr>)"
+                          using stmt.psimps(2) g_def st'_def st''_def st'''_def by simp
+                        with stmt_def have "st6'= (st'''\<lparr>memory := m\<rparr>)" by simp
+                        moreover from lexp_gas `\<not> gas st \<le> g` n Pair KStoptr Storage STArray n2 p2 have "gas (st'''\<lparr>memory := m\<rparr>) \<le> gas st''" using g_def st'_def st''_def st'''_def by simp
+                        moreover from msel_ssel_expr_load_rexp_gas(3)[of ex env cd st' "gas st - g"] `\<not> gas st \<le> g` n Pair have "gas st'' \<le> gas st'" using st'_def st''_def by simp
+                        ultimately show ?thesis using st'_def by simp
                       qed
                     next
                       case (LStoreloc l)
                       then show ?thesis
-                      proof (cases "fmlookup (storage st'') (address env)")
+                      proof (cases "copy p l x t (storage st'' (address env))")
                         case None
-                        with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KStoptr Storage STArray n2 p2 LStoreloc show ?thesis using stmt.psimps(2) g_def by simp
+                        with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KStoptr Storage STArray n2 p2 LStoreloc show ?thesis using stmt.psimps(2) g_def st'_def st''_def st'''_def by simp
                       next
-                        case s4: (Some s)
-                        then show ?thesis 
-                        proof (cases "copy p l x t s")
-                          case None
-                          with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KStoptr Storage STArray n2 p2 LStoreloc s4 show ?thesis using stmt.psimps(2) g_def by simp
-                        next
-                          case (Some s')
-                          with 37(1) `\<not> gas st \<le> g` n Pair KStoptr Storage STArray n2 p2 LStoreloc s4
-                          have "stmt (ASSIGN lv ex) e\<^sub>p env cd st = Normal ((), st'' \<lparr>storage := fmupd (address env) s' (storage st'')\<rparr>)"
-                            using stmt.psimps(2) g_def by simp
-                          with stmt_def have "st6'= st''\<lparr>storage := fmupd (address env) s' (storage st'')\<rparr>" by simp
-                          moreover from 37(6) `\<not> gas st \<le> g` n Pair KStoptr Storage STArray n2 p2 have "gas st'' \<le> gas st'" using g_def by simp
-                          moreover from 37(2) `\<not> gas st \<le> g` n Pair have "gas st' \<le> gas st" using g_def by simp
-                          ultimately show ?thesis by simp
-                        qed
+                        case (Some s)
+                        with 2(1) `\<not> gas st \<le> g` n Pair KStoptr Storage STArray n2 p2 LStoreloc
+                        have "stmt (ASSIGN lv ex) env cd st = Normal ((), st'''\<lparr>storage := (storage st''') (address env := s)\<rparr>)"
+                          using stmt.psimps(2) g_def st'_def st''_def st'''_def by simp
+                        with stmt_def have "st6'= st'''\<lparr>storage := (storage st''') (address env := s)\<rparr>" by simp
+                        moreover from lexp_gas `\<not> gas st \<le> g` n Pair KStoptr Storage STArray n2 p2 have "gas (st'''\<lparr>storage := (storage st''') (address env := s')\<rparr>) \<le> gas st''" using g_def st'_def st''_def st'''_def by simp
+                        moreover from msel_ssel_expr_load_rexp_gas(3)[of ex env cd st' "gas st - g"] `\<not> gas st \<le> g` n Pair have "gas st'' \<le> gas st'" using st'_def st''_def by simp
+                        ultimately show ?thesis using st'_def by simp
                       qed
                     qed
                   qed
                 next
                   case (e x)
-                  with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KStoptr Storage STArray show ?thesis using stmt.psimps(2) g_def by simp
+                  with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KStoptr Storage STArray show ?thesis using stmt.psimps(2) g_def st'_def st''_def by simp
                 qed
               next
                 case (STMap t t')
                 then show ?thesis
-                proof (cases "lexp lv e\<^sub>p env cd st'")
-                  case n2: (n a st'')
+                proof (cases "lexp lv env cd st'' g'")
+                  case n2: (n a g'')
+                  define st''' where "st''' = st''\<lparr>gas := g''\<rparr>"
                   then show ?thesis
                   proof (cases a)
                     case p2: (Pair a b)
                     then show ?thesis
                     proof (cases a)
                       case (LStackloc l)
-                      with 37(1) `\<not> gas st \<le> g` n Pair KStoptr Storage STMap n2 p2
-                      have "stmt (ASSIGN lv ex) e\<^sub>p env cd st = Normal ((), st'' \<lparr>stack := updateStore l (KStoptr p) (stack st'')\<rparr>)"
-                        using stmt.psimps(2) g_def by simp
-                      with stmt_def have "st6'= st''\<lparr>stack := updateStore l (KStoptr p) (stack st'')\<rparr>" by simp
-                      moreover from 37(7) `\<not> gas st \<le> g` n Pair KStoptr Storage STMap n2 p2 have "gas st'' \<le> gas st'" using g_def by simp
-                      moreover from 37(2) `\<not> gas st \<le> g` n Pair have "gas st' \<le> gas st" using g_def by simp
-                      ultimately show ?thesis by simp
+                      with 2(1) `\<not> gas st \<le> g` n Pair KStoptr Storage STMap n2 p2
+                      have "stmt (ASSIGN lv ex) env cd st = Normal ((), st''' \<lparr>stack := updateStore l (KStoptr p) (stack st''')\<rparr>)"
+                        using stmt.psimps(2) g_def st'_def st''_def st'''_def by simp
+                      with stmt_def have "st6'= st'''\<lparr>stack := updateStore l (KStoptr p) (stack st''')\<rparr>" by simp
+                      moreover from lexp_gas `\<not> gas st \<le> g` n Pair KStoptr Storage STMap n2 p2 have "gas (st'''\<lparr>stack := updateStore l (KStoptr p) (stack st''')\<rparr>) \<le> gas st''" using g_def st'_def st''_def st'''_def by simp
+                      moreover from msel_ssel_expr_load_rexp_gas(3)[of ex env cd st' "gas st - g"] `\<not> gas st \<le> g` n Pair have "gas st'' \<le> gas st'" using st'_def st''_def by simp
+                      ultimately show ?thesis using st'_def by simp
                     next
                       case (LMemloc x2)
-                      with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KStoptr Storage STMap n2 p2 show ?thesis using stmt.psimps(2) g_def by simp
+                      with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KStoptr Storage STMap n2 p2 show ?thesis using stmt.psimps(2) g_def st'_def st''_def by simp
                     next
                       case (LStoreloc x3)
-                      with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KStoptr Storage STMap n2 p2 show ?thesis using stmt.psimps(2) g_def by simp
+                      with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KStoptr Storage STMap n2 p2 show ?thesis using stmt.psimps(2) g_def st'_def st''_def by simp
                     qed
                   qed
                 next
                   case (e x)
-                  with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KStoptr Storage STMap show ?thesis using stmt.psimps(2) g_def by simp
+                  with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KStoptr Storage STMap show ?thesis using stmt.psimps(2) g_def st'_def st''_def by simp
                 qed
               next
                 case (STValue x3)
-                with 37(1) stmt_def `\<not> gas st \<le> g` n Pair KStoptr Storage show ?thesis using stmt.psimps(2) g_def by simp
+                with 2(1) stmt_def `\<not> gas st \<le> g` n Pair KStoptr Storage show ?thesis using stmt.psimps(2) g_def st'_def st''_def by simp
               qed
             qed
           qed
         qed
       next
         case (e x)
-        with 37(1) stmt_def `\<not> gas st \<le> g` show ?thesis using stmt.psimps(2) g_def by (simp split: Ex.split_asm)
+        with 2(1) stmt_def `\<not> gas st \<le> g` show ?thesis using stmt.psimps(2) g_def st'_def by simp
       qed
     qed
   qed
 next
-  case (38 s1 s2 e\<^sub>p e cd st)
-  define g where "g = costs (COMP s1 s2) e\<^sub>p e cd st"
+  case (3 s1 s2 e cd st)
+  define g where "g = costs (COMP s1 s2) e cd st"
   show ?case
   proof (rule allI[OF impI])
     fix st6'
-    assume stmt_def: "stmt (COMP s1 s2) e\<^sub>p e cd st = Normal ((), st6')"
+    assume stmt_def: "stmt (COMP s1 s2) e cd st = Normal ((), st6')"
     then show "gas st6' \<le> gas st"
     proof cases
       assume "gas st \<le> g"
-      with 38 stmt_def g_def show ?thesis using stmt.psimps(3) by simp
+      with 3(1) stmt_def g_def show ?thesis using stmt.psimps(3) by simp
     next
       assume "\<not> gas st \<le> g"
       show ?thesis
-      proof (cases "stmt s1 e\<^sub>p e cd (st\<lparr>gas := gas st - g\<rparr>)")
+      proof (cases "stmt s1 e cd (st\<lparr>gas := gas st - g\<rparr>)")
         case (n a st')
-        with 38(1) stmt_def `\<not> gas st \<le> g` have "stmt (COMP s1 s2) e\<^sub>p e cd st = stmt s2 e\<^sub>p e cd st'" using stmt.psimps(3)[of s1 s2 e\<^sub>p e cd st] g_def by (simp add:Let_def split:unit.split_asm)
-        with 38(3)[of _ "(st\<lparr>gas := gas st - g\<rparr>)" _ st'] stmt_def \<open>\<not> gas st \<le> g\<close> n have "gas st6' \<le> gas st'" using g_def by fastforce
-        moreover from 38(2) \<open>\<not> gas st \<le> g\<close> n have "gas st' \<le> gas st" using g_def by simp
+        with 3(1) stmt_def `\<not> gas st \<le> g` have "stmt (COMP s1 s2) e cd st = stmt s2 e cd st'" using stmt.psimps(3)[of s1 s2 e cd st] g_def by (simp add:Let_def split:unit.split_asm)
+        with 3(3) stmt_def \<open>\<not> gas st \<le> g\<close> n have "gas st6' \<le> gas st'" using g_def by simp
+        moreover from 3(2)[where ?s'a="st\<lparr>gas := gas st - g\<rparr>"] \<open>\<not> gas st \<le> g\<close> n have "gas st' \<le> gas st" using g_def by simp
         ultimately show ?thesis by simp
       next
         case (e x)
-        with 38 stmt_def `\<not> gas st \<le> g` show ?thesis using stmt.psimps(3)[of s1 s2 e\<^sub>p e cd st] g_def by (simp split: Ex.split_asm)
+        with 3 stmt_def `\<not> gas st \<le> g` show ?thesis using stmt.psimps(3)[of s1 s2 e cd st] g_def by (simp split: Ex.split_asm)
       qed
     qed
   qed
 next
-  case (39 ex s1 s2 e\<^sub>p e cd st)
-  define g where "g = costs (ITE ex s1 s2) e\<^sub>p e cd st"
+  case (4 ex s1 s2 e cd st)
+  define g where "g = costs (ITE ex s1 s2) e cd st"
   show ?case
   proof (rule allI[OF impI])
     fix st6'
-    assume stmt_def: "stmt (ITE ex s1 s2) e\<^sub>p e cd st = Normal ((), st6')"
+    assume stmt_def: "stmt (ITE ex s1 s2) e cd st = Normal ((), st6')"
     then show "gas st6' \<le> gas st"
     proof cases
       assume "gas st \<le> g"
-      with 39 stmt_def show ?thesis using stmt.psimps(4) g_def by simp
+      with 4(1) stmt_def show ?thesis using stmt.psimps(4) g_def by simp
     next
       assume "\<not> gas st \<le> g"
+      then have l1: "assert Gas (\<lambda>st. costs (ITE ex s1 s2) e cd st < gas st) st = Normal ((), st) " using g_def by simp
+      define st' where "st' = st\<lparr>gas := gas st - g\<rparr>"
+      then have l2: " modify (\<lambda>st. st\<lparr>gas := gas st - costs (ITE ex s1 s2) e cd st\<rparr>) st = Normal ((), st')" using g_def by simp
       show ?thesis
-      proof (cases "expr ex e\<^sub>p e cd (st\<lparr>gas := gas st - g\<rparr>)")
-        case (n a st')
+      proof (cases "expr ex e cd st' (gas st - g)")
+        case (n a g')
+        define st'' where "st'' = st'\<lparr>gas := g'\<rparr>"
+        with n have l3: "toState (expr ex e cd) st' = Normal (a, st'')" using st'_def by simp
         then show ?thesis
         proof (cases a)
           case (Pair b c)
@@ -2986,73 +1094,85 @@ next
               then show ?thesis
               proof (cases x1)
                 case (TSInt x1)
-                with 39(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value show ?thesis using stmt.psimps(4) g_def by simp
+                with 4(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value show ?thesis using stmt.psimps(4) g_def st'_def by simp
               next
                 case (TUInt x2)
-                with 39(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value show ?thesis using stmt.psimps(4) g_def by simp
+                with 4(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value show ?thesis using stmt.psimps(4) g_def st'_def by simp
               next
                 case TBool
                 then show ?thesis
                 proof cases
                   assume "b = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True"
-                  with 39(1) `\<not> gas st \<le> g` n Pair KValue Value TBool have "stmt (ITE ex s1 s2) e\<^sub>p e cd st = stmt s1 e\<^sub>p e cd st'" using stmt.psimps(4) g_def by simp
-                  with 39(3) stmt_def `\<not> gas st \<le> g` n Pair KValue Value TBool `b = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True` have "gas st6' \<le> gas st'" using g_def by simp
-                  moreover from 39(2) `\<not> gas st \<le> g` n Pair have "gas st' \<le> gas st" using g_def by simp
-                  ultimately show ?thesis by arith
+                  with 4(1) `\<not> gas st \<le> g` n Pair KValue Value TBool have "stmt (ITE ex s1 s2) e cd st = stmt s1 e cd st''" using stmt.psimps(4) g_def st'_def st''_def by simp
+                  with 4(2)[OF l1 l2 l3] stmt_def `\<not> gas st \<le> g` n Pair KValue Value TBool `b = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True` have "gas st6' \<le> gas st''" using g_def by simp
+                  moreover from msel_ssel_expr_load_rexp_gas(3)[of ex e cd st' "gas st - g"] `\<not> gas st \<le> g` n Pair KValue Value TBool have "gas st'' \<le> gas st'" using st'_def st''_def by simp
+                  ultimately show ?thesis using st'_def by simp
                 next
-                  assume "\<not> b = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True"
-                  with 39(1) `\<not> gas st \<le> g` n Pair KValue Value TBool have "stmt (ITE ex s1 s2) e\<^sub>p e cd st = stmt s2 e\<^sub>p e cd st'" using stmt.psimps(4) g_def by simp
-                  with 39(4) stmt_def `\<not> gas st \<le> g` n Pair KValue Value TBool `\<not> b = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True` have "gas st6' \<le> gas st'" using g_def by simp
-                  moreover from 39(2) `\<not> gas st \<le> g` n Pair have "gas st' \<le> gas st" using g_def by simp
-                  ultimately show ?thesis by arith
+                  assume nt: "\<not> b = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True"
+                  show ?thesis
+                  proof cases
+                    assume "b = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l False"
+                    with 4(1) `\<not> gas st \<le> g` n Pair KValue Value TBool nt have "stmt (ITE ex s1 s2) e cd st = stmt s2 e cd st''" using stmt.psimps(4) g_def st'_def st''_def by simp
+                    with 4(3)[OF l1 l2 l3] stmt_def `\<not> gas st \<le> g` n Pair KValue Value TBool nt `b = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l False` have "gas st6' \<le> gas st''" using g_def by simp
+                    moreover from msel_ssel_expr_load_rexp_gas(3)[of ex e cd st' "gas st - g"] `\<not> gas st \<le> g` n Pair KValue Value TBool have "gas st'' \<le> gas st'" using st'_def st''_def by simp
+                    ultimately show ?thesis using st'_def by simp
+                  next
+                    assume "\<not> b = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l False"
+                    with 4(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value TBool nt show ?thesis using stmt.psimps(4) g_def st'_def st''_def by simp
+                  qed
                 qed
               next
                 case TAddr
-                with 39(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value show ?thesis using stmt.psimps(4) g_def by simp
+                with 4(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value show ?thesis using stmt.psimps(4) g_def st'_def st''_def by simp
               qed
             next
               case (Calldata x2)
-              with 39(1) stmt_def `\<not> gas st \<le> g` n Pair KValue show ?thesis using stmt.psimps(4) g_def by simp
+              with 4(1) stmt_def `\<not> gas st \<le> g` n Pair KValue show ?thesis using stmt.psimps(4) g_def st'_def st''_def by simp
             next
               case (Memory x3)
-              with 39(1) stmt_def `\<not> gas st \<le> g` n Pair KValue show ?thesis using stmt.psimps(4) g_def by simp
+              with 4(1) stmt_def `\<not> gas st \<le> g` n Pair KValue show ?thesis using stmt.psimps(4) g_def st'_def st''_def by simp
             next
               case (Storage x4)
-              with 39(1) stmt_def `\<not> gas st \<le> g` n Pair KValue show ?thesis using stmt.psimps(4) g_def by simp
+              with 4(1) stmt_def `\<not> gas st \<le> g` n Pair KValue show ?thesis using stmt.psimps(4) g_def st'_def st''_def by simp
             qed
           next
             case (KCDptr x2)
-            with 39(1) stmt_def `\<not> gas st \<le> g` n Pair show ?thesis using stmt.psimps(4) g_def by simp
+            with 4(1) stmt_def `\<not> gas st \<le> g` n Pair show ?thesis using stmt.psimps(4) g_def st'_def st''_def by simp
           next
             case (KMemptr x3)
-            with 39(1) stmt_def `\<not> gas st \<le> g` n Pair show ?thesis using stmt.psimps(4) g_def by simp
+            with 4(1) stmt_def `\<not> gas st \<le> g` n Pair show ?thesis using stmt.psimps(4) g_def st'_def st''_def by simp
           next
             case (KStoptr x4)
-            with 39(1) stmt_def `\<not> gas st \<le> g` n Pair show ?thesis using stmt.psimps(4) g_def by simp
+            with 4(1) stmt_def `\<not> gas st \<le> g` n Pair show ?thesis using stmt.psimps(4) g_def st'_def st''_def by simp
           qed
         qed
       next
         case (e e)
-        with 39(1) stmt_def `\<not> gas st \<le> g` show ?thesis using stmt.psimps(4) g_def by simp
+        with 4(1) stmt_def `\<not> gas st \<le> g` show ?thesis using stmt.psimps(4) g_def st'_def by simp
       qed
     qed
   qed
 next
-  case (40 ex s0 e\<^sub>p e cd st)
-  define g where "g = costs (WHILE ex s0) e\<^sub>p e cd st"
+  case (5 ex s0 e cd st)
+  define g where "g = costs (WHILE ex s0) e cd st"
   show ?case
   proof (rule allI[OF impI])
     fix st6'
-    assume stmt_def: "stmt (WHILE ex s0) e\<^sub>p e cd st = Normal ((), st6')"
+    assume stmt_def: "stmt (WHILE ex s0) e cd st = Normal ((), st6')"
     then show "gas st6' \<le> gas st"
     proof cases
-      assume "gas st \<le> costs (WHILE ex s0) e\<^sub>p e cd st"
-      with 40(1) stmt_def show ?thesis using stmt.psimps(5) by simp
+      assume "gas st \<le> g"
+      with 5(1) stmt_def show ?thesis using stmt.psimps(5) g_def by simp
     next
-      assume gcost: "\<not> gas st \<le> costs (WHILE ex s0) e\<^sub>p e cd st"
+      assume gcost: "\<not> gas st \<le> g"
+      then have l1: "assert Gas (\<lambda>st. costs (WHILE ex s0) e cd st < gas st) st = Normal ((), st) " using g_def by simp
+      define st' where "st' = st\<lparr>gas := gas st - g\<rparr>"
+      then have l2: " modify (\<lambda>st. st\<lparr>gas := gas st - costs (WHILE ex s0) e cd st\<rparr>) st = Normal ((), st')" using g_def by simp
       show ?thesis
-      proof (cases "expr ex e\<^sub>p e cd (st\<lparr>gas := gas st - g\<rparr>)")
-        case (n a st')
+      proof (cases "expr ex e cd st' (gas st - g)")
+        case (n a g')
+        define st'' where "st'' = st'\<lparr>gas := g'\<rparr>"
+        with n have l3: "toState (expr ex e cd) st' = Normal (a, st'')" using st'_def by simp
         then show ?thesis
         proof (cases a)
           case (Pair b c)
@@ -3065,90 +1185,101 @@ next
               then show ?thesis
               proof (cases x1)
                 case (TSInt x1)
-                with 40(1) stmt_def gcost n Pair KValue Value show ?thesis using stmt.psimps(5) g_def by simp
+                with 5(1) stmt_def gcost n Pair KValue Value show ?thesis using stmt.psimps(5) g_def st'_def by simp
               next
                 case (TUInt x2)
-                with 40(1) stmt_def gcost n Pair KValue Value show ?thesis using stmt.psimps(5) g_def by simp
+                with 5(1) stmt_def gcost n Pair KValue Value show ?thesis using stmt.psimps(5) g_def st'_def by simp
               next
                 case TBool
                 then show ?thesis
                 proof cases
                   assume "b = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True"
                   then show ?thesis
-                  proof (cases "stmt s0 e\<^sub>p e cd st'")
-                    case n2: (n a st'')
-                    with 40(1) gcost n Pair KValue Value TBool `b = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True` have "stmt (WHILE ex s0) e\<^sub>p e cd st = stmt (WHILE ex s0) e\<^sub>p e cd st''" using stmt.psimps(5)[of ex s0 e\<^sub>p e cd st] g_def by (simp add: Let_def split:unit.split_asm)
-                    with 40(4) stmt_def gcost n2 Pair KValue Value TBool `b = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True` n have "gas st6' \<le> gas st''" using g_def by simp
-                    moreover from 40(3) gcost n2 Pair KValue Value TBool `b = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True` n have "gas st'' \<le> gas st'" using g_def by simp
-                    moreover from 40(2)[of _ "st\<lparr>gas := gas st - g\<rparr>"] gcost n Pair have "gas st' \<le> gas st" using g_def by simp
-                    ultimately show ?thesis by simp
+                  proof (cases "stmt s0 e cd st''")
+                    case n2: (n a st''')
+                    with 5(1) gcost n Pair KValue Value TBool `b = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True` have "stmt (WHILE ex s0) e cd st = stmt (WHILE ex s0) e cd st'''" using stmt.psimps(5)[of ex s0 e cd st] g_def st'_def st''_def by (simp add: Let_def split:unit.split_asm)
+                    with 5(3) stmt_def gcost n2 Pair KValue Value TBool `b = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True` n have "gas st6' \<le> gas st'''" using g_def st'_def st''_def by simp
+                    moreover from 5(2)[OF l1 l2 l3] gcost n2 Pair KValue Value TBool `b = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True` n have "gas st''' \<le> gas st''" using g_def by simp
+                    moreover from msel_ssel_expr_load_rexp_gas(3)[of ex e cd st' "gas st - g"] `\<not> gas st \<le> g` n Pair KValue Value TBool have "gas st'' \<le> gas st'" using st'_def st''_def by simp
+                    ultimately show ?thesis using st'_def by simp
                   next
                     case (e x)
-                    with 40(1) stmt_def gcost n Pair KValue Value TBool `b = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True` show ?thesis using stmt.psimps(5) g_def by (simp split: Ex.split_asm)
+                    with 5(1) stmt_def gcost n Pair KValue Value TBool `b = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True` show ?thesis using stmt.psimps(5) g_def st'_def st''_def by simp
                   qed
                 next
-                  assume "\<not> b = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True"
-                  with 40(1) gcost n Pair KValue Value TBool have "stmt (WHILE ex s0) e\<^sub>p e cd st = return () st'" using stmt.psimps(5) g_def by simp
-                  with stmt_def have "gas st6' \<le> gas st'" by simp
-                  moreover from 40(2)[of _ "st\<lparr>gas := gas st - g\<rparr>"] gcost n have "gas st' \<le> gas st" using g_def by simp
-                  ultimately show ?thesis by simp
+                  assume nt: "\<not> b = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True"
+                  show ?thesis
+                  proof cases
+                    assume "b = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l False"
+                    with 5(1) gcost n Pair KValue Value TBool nt have "stmt (WHILE ex s0) e cd st = return () st''" using stmt.psimps(5) g_def st'_def st''_def by simp
+                    with stmt_def have "gas st6' \<le> gas st''" by simp
+                    moreover from msel_ssel_expr_load_rexp_gas(3)[of ex e cd st' "gas st - g"] `\<not> gas st \<le> g` n Pair KValue Value TBool have "gas st'' \<le> gas st'" using st'_def st''_def by simp
+                    ultimately show ?thesis using g_def st'_def st''_def by simp
+                  next
+                    assume "\<not> b = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l False"
+                    with 5(1) stmt_def gcost n Pair KValue Value TBool nt show ?thesis using stmt.psimps(5) g_def st'_def st''_def by simp
+                  qed
                 qed
               next
                 case TAddr
-                with 40(1) stmt_def gcost n Pair KValue Value show ?thesis using stmt.psimps(5) g_def by simp
+                with 5(1) stmt_def gcost n Pair KValue Value show ?thesis using stmt.psimps(5) g_def st'_def st''_def by simp
               qed
             next
               case (Calldata x2)
-              with 40(1) stmt_def gcost n Pair KValue show ?thesis using stmt.psimps(5) g_def by simp
+              with 5(1) stmt_def gcost n Pair KValue show ?thesis using stmt.psimps(5) g_def st'_def st''_def by simp
             next
               case (Memory x3)
-              with 40(1) stmt_def gcost n Pair KValue show ?thesis using stmt.psimps(5) g_def by simp
+              with 5(1) stmt_def gcost n Pair KValue show ?thesis using stmt.psimps(5) g_def st'_def st''_def by simp
             next
               case (Storage x4)
-              with 40(1) stmt_def gcost n Pair KValue show ?thesis using stmt.psimps(5) g_def by simp
+              with 5(1) stmt_def gcost n Pair KValue show ?thesis using stmt.psimps(5) g_def st'_def st''_def by simp
             qed
           next
             case (KCDptr x2)
-            with 40(1) stmt_def gcost n Pair show ?thesis using stmt.psimps(5) g_def by simp
+            with 5(1) stmt_def gcost n Pair show ?thesis using stmt.psimps(5) g_def st'_def st''_def by simp
           next
             case (KMemptr x3)
-            with 40(1) stmt_def gcost n Pair show ?thesis using stmt.psimps(5) g_def by simp
+            with 5(1) stmt_def gcost n Pair show ?thesis using stmt.psimps(5) g_def st'_def st''_def by simp
           next
             case (KStoptr x4)
-            with 40(1) stmt_def gcost n Pair show ?thesis using stmt.psimps(5) g_def by simp
+            with 5(1) stmt_def gcost n Pair show ?thesis using stmt.psimps(5) g_def st'_def st''_def by simp
           qed
         qed
       next
         case (e e)
-        with 40(1) stmt_def gcost show ?thesis using stmt.psimps(5) g_def by simp
+        with 5(1) stmt_def gcost show ?thesis using stmt.psimps(5) g_def st'_def by simp
       qed
     qed
   qed
 next
-  case (41 i xe e\<^sub>p e cd st)
-  define g where "g = costs (INVOKE i xe) e\<^sub>p e cd st"
+  case (6 i xe e cd st)
+  define g where "g = costs (INVOKE i xe) e cd st"
   show ?case
   proof (rule allI[OF impI])
-    fix st6' assume a1: "stmt (INVOKE i xe) e\<^sub>p e cd st = Normal ((), st6')"
+    fix st6' assume a1: "stmt (INVOKE i xe) e cd st = Normal ((), st6')"
     show "gas st6' \<le> gas st"
     proof (cases)
-      assume "gas st \<le> costs (INVOKE i xe) e\<^sub>p e cd st"
-      with 41(1) a1 show ?thesis using stmt.psimps(6) by simp
+      assume "gas st \<le> g"
+      with 6(1) a1 show ?thesis using stmt.psimps(6) g_def by simp
     next
-      assume gcost: "\<not> gas st \<le> costs (INVOKE i xe) e\<^sub>p e cd st"
+      assume gcost: "\<not> gas st \<le> g"
+      then have l1: "assert Gas (\<lambda>st. costs (INVOKE i xe) e cd st < gas st) st = Normal ((), st) " using g_def by simp
+      define st' where "st' = st\<lparr>gas := gas st - g\<rparr>"
+      then have l2: "modify (\<lambda>st. st\<lparr>gas := gas st - costs (INVOKE i xe) e cd st\<rparr>) st = Normal ((), st')" using g_def by simp
       then show ?thesis
-      proof (cases "fmlookup e\<^sub>p (address e)")
+      proof (cases "ep $$ contract e")
         case None
-        with 41(1) a1 gcost show ?thesis using stmt.psimps(6) by simp
+        with 6(1) a1 gcost show ?thesis using stmt.psimps(6) g_def by simp
       next
         case (Some x)
+        then have l3: "option Err (\<lambda>_. ep $$ contract e) st' = Normal (x, st')" by simp
         then show ?thesis
         proof (cases x)
-          case (Pair ct _)
+          case (fields ct _ _)
           then show ?thesis
           proof (cases "fmlookup ct i")
             case None
-            with 41(1) g_def a1 gcost Some Pair show ?thesis using stmt.psimps(6) by simp
+            with 6(1) g_def a1 gcost Some fields show ?thesis using stmt.psimps(6) by simp
           next
             case s1: (Some a)
             then show ?thesis
@@ -3156,55 +1287,55 @@ next
               case (Method x1)
               then show ?thesis
               proof (cases x1)
-                case (fields fp f c)
+                case p1: (fields fp ext f)
                 then show ?thesis
-                proof (cases c)
-                  case None
-                  define st' e'
-                    where "st' = st\<lparr>gas := gas st - g\<rparr>\<lparr>stack:=emptyStore\<rparr>"
-                      and "e' = ffold (init ct) (emptyEnv (address e) (sender e) (svalue e)) (fmdom ct)"
+                proof (cases ext)
+                  case True
+                  with 6(1) a1 g_def gcost Some fields s1 Method p1 show ?thesis using stmt.psimps(6) st'_def by auto
+                next
+                  case False
+                  then have l4: "(case ct $$ i of None \<Rightarrow> throw Err | Some (Method (fp, True, f)) \<Rightarrow> throw Err
+                       | Some (Method (fp, False, f)) \<Rightarrow> return (fp, f) | Some _ \<Rightarrow> throw Err) st' = Normal ((fp,f),st')" using s1 Method p1 by simp
+                  define m\<^sub>o e'
+                  where "m\<^sub>o = memory st'"
+                    and "e' = ffold (init ct) (emptyEnv (address e) (contract e) (sender e) (svalue e)) (fmdom ct)"
                   then show ?thesis
-                  proof (cases "load False fp xe e\<^sub>p e' emptyStore st' e cd (st\<lparr>gas := gas st - g\<rparr>)")
-                    case s3: (n a st''')
+                  proof (cases "load False fp xe e' emptyStore emptyStore m\<^sub>o e cd st' (gas st - g)")
+                    case s4: (n a g')
+                    define st'' where "st'' = st'\<lparr>gas := g'\<rparr>"
                     then show ?thesis
                     proof (cases a)
-                      case f1: (fields e'' cd' st'')
+                      case f2: (fields e\<^sub>l cd\<^sub>l k\<^sub>l m\<^sub>l)
+                      then have l5: "toState (load False fp xe e' emptyStore emptyStore m\<^sub>o e cd) st' = Normal ((e\<^sub>l, cd\<^sub>l, k\<^sub>l, m\<^sub>l), st'')" using st'_def st''_def s4 by simp
+                      define k\<^sub>o where "k\<^sub>o = stack st'"
                       then show ?thesis
-                      proof (cases "stmt f e\<^sub>p e'' cd' st''")
-                        case n2: (n a st'''')
-                        with 41(1) g_def a1 gcost Some Pair s1 Method fields None st'_def e'_def s3 f1
-                        have "stmt (INVOKE i xe) e\<^sub>p e cd st = Normal ((), st''''\<lparr>stack:=stack st''', memory := memory st'''\<rparr>)" and *: "gas st' \<le> gas (st\<lparr>gas := gas st - g\<rparr>)"
-                          using stmt.psimps(6)[of i xe e\<^sub>p e cd st] by (auto simp add:Let_def split:unit.split_asm)
-                        with a1 have "gas st6' \<le> gas st''''" by auto
-                        also from 41(3) gcost g_def Some Pair s1 Method fields None st'_def e'_def s3 f1 n2
-                          have "\<dots> \<le> gas st''" by (auto split:unit.split_asm)
-                        also have "\<dots> \<le> gas st'"
-                          proof -
-                            from g_def gcost have "(applyf (costs (INVOKE i xe) e\<^sub>p e cd) \<bind> (\<lambda>g. assert Gas (\<lambda>st. gas st \<le> g) (modify (\<lambda>st. st\<lparr>gas := gas st - g\<rparr>)))) st = Normal ((), st\<lparr>gas := gas st - g\<rparr>)" by simp
-                            moreover from e'_def have "e' = ffold_init ct (emptyEnv (address e) (sender e) (svalue e)) (fmdom ct)" by simp
-                            moreover from st'_def have "applyf (\<lambda>st. st\<lparr>stack := emptyStore\<rparr>) (st\<lparr>gas := gas st - g\<rparr>) = Normal (st', st\<lparr>gas := gas st - g\<rparr>)" by simp
-                            ultimately have "\<forall>ev cda sta st'a. load False fp xe e\<^sub>p e' emptyStore st' e cd (st\<lparr>gas := gas st - g\<rparr>) = Normal ((ev, cda, sta), st'a) \<longrightarrow> gas sta \<le> gas st' \<and> gas st'a \<le> gas (st\<lparr>gas := gas st - g\<rparr>) \<and> address ev = address e'" using a1 g_def gcost Some Pair s1 Method fields None st'_def e'_def s3 f1 41(2)[of _ "st\<lparr>gas := gas st - g\<rparr>" x ct _ _ x1 fp _ f c e' st' "st\<lparr>gas := gas st - g\<rparr>"] by blast
-                            then show ?thesis using s3 f1 by auto
-                          qed
-                        also from * have "\<dots> \<le> gas (st\<lparr>gas := gas st - g\<rparr>)" .
-                        finally show ?thesis by simp
+                      proof (cases "stmt f e\<^sub>l cd\<^sub>l (st''\<lparr>stack:=k\<^sub>l, memory:=m\<^sub>l\<rparr>)")
+                        case n2: (n a st''')
+                        with  a1 g_def gcost Some fields s1 Method p1 m\<^sub>o_def e'_def s4 f2 k\<^sub>o_def False
+                        have "stmt (INVOKE i xe) e cd st = Normal ((), st'''\<lparr>stack:=k\<^sub>o\<rparr>)"
+                          using stmt.psimps(6)[OF 6(1)] st'_def st''_def by auto
+                        with a1 have "gas st6' \<le> gas st'''" by auto
+                        also from 6(2)[OF l1 l2 l3 fields l4 _ _ _ l5, where ?s'g="st''\<lparr>stack := k\<^sub>l, memory := m\<^sub>l\<rparr>"] n2 m\<^sub>o_def e'_def
+                          have "\<dots> \<le> gas st''" by auto
+                        also from msel_ssel_expr_load_rexp_gas(4)[of False fp xe e' emptyStore emptyStore m\<^sub>o e cd st' "(gas st - g)"] have "\<dots> \<le> gas st'" using s4 st'_def st''_def f2 by auto
+                        finally show ?thesis using st'_def by simp
                       next
                         case (e x)
-                        with 41(1) g_def a1 gcost Some Pair s1 Method fields None st'_def e'_def s3 f1 show ?thesis using stmt.psimps(6)[of i xe e\<^sub>p e cd st] by auto
+                        with 6(1) a1 g_def gcost Some fields s1 Method p1 m\<^sub>o_def e'_def s4 f2 show ?thesis using stmt.psimps(6) st'_def st''_def False by auto
                       qed
                     qed
                   next
-                    case n2: (e x)
-                    with 41(1) g_def a1 gcost Some Pair s1 Method fields None st'_def e'_def show ?thesis using stmt.psimps(6) by auto
+                    case (e x)
+                    with 6(1) a1 g_def gcost Some fields s1 Method p1 m\<^sub>o_def e'_def show ?thesis using stmt.psimps(6) st'_def False by auto
                   qed
-                next
-                  case s2: (Some a)
-                  with 41(1) g_def a1 gcost Some Pair s1 Method fields show ?thesis using stmt.psimps(6) by simp
                 qed
               qed
             next
-              case (Var x2)
-              with 41(1) g_def a1 gcost Some Pair s1 show ?thesis using stmt.psimps(6) by simp
+              case (Function _)
+              with 6(1) g_def a1 gcost Some fields s1 show ?thesis using stmt.psimps(6) by simp
+            next
+              case (Var _)
+              with 6(1) g_def a1 gcost Some fields s1 show ?thesis using stmt.psimps(6) by simp
             qed
           qed
         qed
@@ -3212,22 +1343,27 @@ next
     qed
   qed
 next
-  case (42 ad i xe val e\<^sub>p e cd st)
-  define g where "g = costs (EXTERNAL ad i xe val) e\<^sub>p e cd st"
+  case (7 ad i xe val e cd st)
+  define g where "g = costs (EXTERNAL ad i xe val) e cd st"
   show ?case
   proof (rule allI[OF impI])
-    fix st6' assume a1: "stmt (EXTERNAL ad i xe val) e\<^sub>p e cd st = Normal ((), st6')"
+    fix st6' assume a1: "stmt (EXTERNAL ad i xe val) e cd st = Normal ((), st6')"
     show "gas st6' \<le> gas st"
     proof (cases)
-      assume "gas st \<le> costs (EXTERNAL ad i xe val) e\<^sub>p e cd st"
-      with 42(1) a1 show ?thesis using stmt.psimps(7) by simp
+      assume "gas st \<le> g"
+      with 7(1) a1 show ?thesis using stmt.psimps(7) g_def by simp
     next
-      assume gcost: "\<not> gas st \<le> costs (EXTERNAL ad i xe val) e\<^sub>p e cd st"
+      assume gcost: "\<not> gas st \<le> g"
+      then have l1: "assert Gas (\<lambda>st. costs (EXTERNAL ad i xe val) e cd st < gas st) st = Normal ((), st) " using g_def by simp
+      define st' where "st' = st\<lparr>gas := gas st - g\<rparr>"
+      then have l2: " modify (\<lambda>st. st\<lparr>gas := gas st - costs (EXTERNAL ad i xe val) e cd st\<rparr>) st = Normal ((), st')" using g_def by simp
       then show ?thesis
-      proof (cases "expr ad e\<^sub>p e cd (st\<lparr>gas := gas st - g\<rparr>)")
-        case (n a st')
+      proof (cases "expr ad e cd st' (gas st - g)")
+        case (n a0 g')
+        define st'' where "st'' = st'\<lparr>gas := g'\<rparr>"
+        with n have l3: "toState (expr ad e cd) st' = Normal (a0, st'')" using st'_def by simp
         then show ?thesis
-        proof (cases a)
+        proof (cases a0)
           case (Pair b c)
           then show ?thesis
           proof (cases b)
@@ -3238,690 +1374,1278 @@ next
               then show ?thesis
               proof (cases x1)
                 case (TSInt x1)
-                with 42(1) g_def a1 gcost n Pair KValue Value show ?thesis using stmt.psimps(7) by auto
+                with 7(1) g_def a1 gcost n Pair KValue Value show ?thesis using stmt.psimps(7) st'_def by auto
               next
                 case (TUInt x2)
-                with 42(1) g_def a1 gcost n Pair KValue Value show ?thesis using stmt.psimps(7) by simp
+                with 7(1) g_def a1 gcost n Pair KValue Value show ?thesis using stmt.psimps(7) st'_def by auto
               next
                 case TBool
-                with 42(1) g_def a1 gcost n Pair KValue Value show ?thesis using stmt.psimps(7) by simp
+                with 7(1) g_def a1 gcost n Pair KValue Value show ?thesis using stmt.psimps(7) st'_def by auto
               next
                 case TAddr
+                then have l4: "(case a0 of (KValue adv, Value TAddr) \<Rightarrow> return adv | (KValue adv, Value _) \<Rightarrow> throw Err | (KValue adv, _) \<Rightarrow> throw Err
+                       | (_, b) \<Rightarrow> throw Err) st'' = Normal (adv, st'')" using Pair KValue Value by simp
                 then show ?thesis
-                proof (cases "fmlookup e\<^sub>p adv")
-                  case None
-                  with 42(1) g_def a1 gcost n Pair KValue Value TAddr show ?thesis using stmt.psimps(7) by simp
+                proof (cases "adv = address e")
+                  case True
+                  with 7(1) g_def a1 gcost n Pair KValue Value TAddr show ?thesis using stmt.psimps(7) st'_def by auto
                 next
-                  case (Some x)
+                  case False
+                  then have l5: "assert Err (\<lambda>_. adv \<noteq> address e) st'' = Normal ((), st'')" by simp
                   then show ?thesis
-                  proof (cases x)
-                    case p2: (Pair ct fb)
+                  proof (cases "type (accounts st'' adv)")
+                    case None
+                    with 7(1) g_def a1 gcost n Pair KValue Value TAddr False show ?thesis using stmt.psimps(7) st'_def st''_def by auto
+                  next
+                    case (Some x2)
                     then show ?thesis
-                    proof (cases "expr val e\<^sub>p e cd st'")
-                      case n1: (n kv st'')
+                    proof (cases x2)
+                      case EOA
+                      with 7(1) g_def a1 gcost n Pair KValue Value TAddr False Some show ?thesis using stmt.psimps(7) st'_def st''_def by auto
+                    next
+                      case (Contract c)
+                      then have l6: "(\<lambda>st. case type (accounts st adv) of Some (Contract c) \<Rightarrow> return c st | _ \<Rightarrow> throw Err st) st'' = Normal (c, st'')" using Some by (simp split:atype.split option.split)
                       then show ?thesis
-                      proof (cases kv)
-                        case p3: (Pair a b)
+                      proof (cases "ep $$ c")
+                        case None
+                        with 7(1) g_def a1 gcost n Pair KValue Value TAddr False Contract Some show ?thesis using stmt.psimps(7) st'_def st''_def by auto
+                      next
+                        case s2: (Some x)
                         then show ?thesis
-                        proof (cases a)
-                          case k2: (KValue v)
+                        proof (cases x)
+                          case p2: (fields ct x0 fb)
+                          then have l7: "option Err (\<lambda>_. ep $$ c) st'' = Normal ((ct, x0, fb), st'')" using s2 by simp
                           then show ?thesis
-                          proof (cases b)
-                            case v: (Value t)
-                            show ?thesis
-                            proof (cases "fmlookup ct i")
-                              case None
-                              show ?thesis
-                              proof (cases "transfer (address e) adv v (accounts st'')")
-                                case n2: None
-                                with 42(1) g_def a1 gcost n Pair KValue Value TAddr Some p2 None n1 p3 k2 v show ?thesis using stmt.psimps(7)[of ad i xe val e\<^sub>p e cd st] by simp
-                              next
-                                case s4: (Some acc)
-                                show ?thesis
-                                proof (cases "stmt fb e\<^sub>p (emptyEnv adv (address e) v) cd (st''\<lparr>accounts := acc,stack:=emptyStore, memory:=emptyStore\<rparr>)")
-                                  case n2: (n a st''')
-                                  with 42(1) g_def a1 gcost n Pair KValue Value TAddr Some p2 None n1 p3 k2 v s4
-                                  have "stmt (EXTERNAL ad i xe val) e\<^sub>p e cd st = Normal ((), st'''\<lparr>stack:=stack st'', memory := memory st''\<rparr>)"
-                                    using stmt.psimps(7)[of ad i xe val e\<^sub>p e cd st] by (auto simp add:Let_def split:unit.split_asm)
-                                  with a1 have "gas st6' \<le> gas st'''" by auto
-                                  also from 42(6)[OF _ n Pair KValue Value TAddr Some p2 n1 p3 k2 v None _ s4, of _ st'' st'' st'' "()"] n2 g_def gcost
-                                    have "\<dots> \<le> gas (st''\<lparr>accounts := acc,stack:=emptyStore, memory:=emptyStore\<rparr>)" by auto
-                                  also from 42(3)[of _ "st\<lparr>gas := gas st - g\<rparr>" _ st' _ _ adv _ x ct] g_def a1 gcost n Pair KValue Value TAddr Some p2 None n1 p3 k2 v s4 n2
-                                    have "\<dots> \<le> gas st'" by auto
-                                  also from 42(2)[of _ "st\<lparr>gas := gas st - g\<rparr>"] g_def a1 gcost n Pair KValue Value TAddr Some p2 None n1 p3 k2 v s4 n2
-                                    have "\<dots> \<le> gas (st\<lparr>gas := gas st - g\<rparr>)" by auto
-                                  finally show ?thesis by simp
-                                next
-                                  case (e x)
-                                  with 42(1) g_def a1 gcost n Pair KValue Value TAddr Some p2 None n1 p3 k2 v s4 show ?thesis using stmt.psimps(7)[of ad i xe val e\<^sub>p e cd st] by simp
-                                qed
-                              qed
-                            next
-                              case s1: (Some a)
+                          proof (cases "expr val e cd st'' (gas st'')")
+                            case n1: (n kv g'')
+                            define st''' where "st''' = st''\<lparr>gas := g''\<rparr>"
+                            with n1 have l8: "toState (expr val e cd) st'' = Normal (kv, st''')" by simp
+                            then show ?thesis
+                            proof (cases kv)
+                              case p3: (Pair a b)
                               then show ?thesis
                               proof (cases a)
-                                case (Method x1)
+                                case k2: (KValue v)
                                 then show ?thesis
-                                proof (cases x1)
-                                  case (fields fp f c)
-                                  then show ?thesis
-                                  proof (cases c)
+                                proof (cases b)
+                                  case v: (Value t)
+                                  then have l9: "(case kv of (KValue v, Value t) \<Rightarrow> return (v, t) | (KValue v, _) \<Rightarrow> throw Err | (_, b) \<Rightarrow> throw Err) st''' = Normal ((v,t), st''')" using n1 p3 k2 by simp
+                                  show ?thesis
+                                  proof (cases "convert t (TUInt 256) v")
                                     case None
-                                    define stl e'
-                                    where "stl = st''\<lparr>stack:=emptyStore, memory:=emptyStore\<rparr>"
-                                      and "e' = ffold (init ct) (emptyEnv adv (address e) v) (fmdom ct)"
-                                    then show ?thesis
-                                    proof (cases "load True fp xe e\<^sub>p e' emptyStore stl e cd st''")
-                                      case s3: (n a st''')
-                                      then show ?thesis
-                                      proof (cases a)
-                                        case f1: (fields e'' cd' st'''')
+                                    with 7(1) g_def a1 gcost n Pair KValue Value TAddr False Contract Some s2 p2 None n1 p3 k2 v False show ?thesis using stmt.psimps(7)[OF 7(1)] st'_def st''_def st'''_def by simp
+                                  next
+                                    case s3: (Some v')
+                                    define e' where "e' = ffold (init ct) (emptyEnv adv c (address e) v') (fmdom ct)"
+                                    show ?thesis
+                                    proof (cases "fmlookup ct i")
+                                      case None
+                                      show ?thesis
+                                      proof (cases "transfer (address e) adv v' (accounts st''')")
+                                        case n2: None
+                                        with 7(1) g_def a1 gcost n Pair KValue Value TAddr False Contract Some s2 p2 None n1 p3 k2 v False s3 show ?thesis using stmt.psimps(7)[OF 7(1)] st'_def st''_def st'''_def by simp
+                                      next
+                                        case s4: (Some acc)
+                                        then have l10: "option Err (\<lambda>st. transfer (address e) adv v' (accounts st)) st''' = Normal (acc, st''')" by simp
+                                        define k\<^sub>o m\<^sub>o
+                                          where "k\<^sub>o = stack st'''"
+                                            and "m\<^sub>o = memory st'''"
                                         show ?thesis
-                                        proof (cases "transfer (address e) adv v (accounts st'''')")
-                                          case n2: None
-                                          with 42(1) g_def a1 gcost n Pair KValue Value TAddr Some p2 s1 Method fields None n1 p3 k2 v s3 f1 stl_def e'_def show ?thesis using stmt.psimps(7)[of ad i xe val e\<^sub>p e cd st] by simp
+                                        proof (cases "stmt fb e' emptyStore (st'''\<lparr>accounts := acc, stack:=emptyStore, memory:=emptyStore\<rparr>)")
+                                          case n2: (n a st'''')
+                                          with g_def a1 gcost n Pair KValue Value TAddr False Contract Some s2 p2 None n1 p3 k2 v s4
+                                          have "stmt (EXTERNAL ad i xe val) e cd st = Normal ((), st''''\<lparr>stack:=stack st''', memory := memory st'''\<rparr>)"
+                                            using stmt.psimps(7)[OF 7(1)] st'_def st''_def st'''_def e'_def False s3 by simp
+                                          with a1 have "gas st6' \<le> gas st''''" by auto
+                                          also from 7(3)[OF l1 l2 l3 l4 l5 l6 l7 _ _ l8 l9 _ _ _ None l10, where ?s'k="st'''" and ?s'l="st'''\<lparr>accounts := acc,stack:=emptyStore, memory:=emptyStore\<rparr>" and ?x=e', of "(x0,fb)" x0 fb] n2 
+                                            have "\<dots> \<le> gas (st'''\<lparr>accounts := acc,stack:=emptyStore, memory:=emptyStore\<rparr>)" using e'_def s3 by simp
+                                          also from msel_ssel_expr_load_rexp_gas(3)[of val e cd st'' "gas st''"]
+                                            have "\<dots> \<le> gas st''" using n1 st'_def st''_def st'''_def p3 by simp
+                                          also from msel_ssel_expr_load_rexp_gas(3)[of  ad e cd st' "gas st - g"]
+                                            have "\<dots> \<le> gas st'" using n st'_def st''_def st'''_def p3 by fastforce
+                                          finally show ?thesis using st'_def by simp
                                         next
-                                          case s4: (Some acc)
-                                          show ?thesis
-                                          proof (cases "stmt f e\<^sub>p e'' cd' (st''''\<lparr>accounts := acc\<rparr>)")
-                                            case n2: (n a st''''')
-                                            with 42(1) g_def a1 gcost n Pair KValue Value TAddr Some p2 s1 Method fields None n1 p3 k2 v stl_def e'_def s3 f1 s4
-                                            have "stmt (EXTERNAL ad i xe val) e\<^sub>p e cd st = Normal ((), st'''''\<lparr>stack:=stack st''', memory := memory st'''\<rparr>)"
-                                              using stmt.psimps(7)[of ad i xe val e\<^sub>p e cd st] by (auto simp add:Let_def split:unit.split_asm)
-                                            with a1 have "gas st6' \<le> gas (st''''')" by auto
-                                            also from 42(5)[OF _ n Pair KValue Value TAddr Some p2 n1 p3 k2 v s1 Method fields _ None _ _ s3 _ _ _ _, of "()" f e'' "(cd', st'''')" cd' st'''' st''' st''' acc "()" "st''''\<lparr>accounts := acc\<rparr>"] s4 stl_def e'_def f1 n2 g_def gcost
-                                              have "\<dots> \<le> gas (st''''\<lparr>accounts := acc\<rparr>)" by auto
-                                            also have "\<dots> \<le> gas stl"
-                                            proof -
-                                              from g_def gcost have "(applyf (costs (EXTERNAL ad i xe val) e\<^sub>p e cd) \<bind> (\<lambda>g. assert Gas (\<lambda>st. gas st \<le> g) (modify (\<lambda>st. st\<lparr>gas := gas st - g\<rparr>)))) st = Normal ((), st\<lparr>gas := gas st - g\<rparr>)" by simp
-                                              moreover from e'_def have "e' = ffold_init ct (emptyEnv adv (address e) v) (fmdom ct)" by simp
-                                              moreover from n1 have "expr val e\<^sub>p e cd st' = Normal (kv, st'')" by simp
-                                              moreover from stl_def have "applyf (\<lambda>st. st\<lparr>stack := emptyStore, memory := emptyStore\<rparr>) st'' = Normal (stl, st'')" by simp
-                                              moreover have "applyf accounts st'' = Normal ((accounts st''), st'')" by simp
-                                              ultimately have "\<forall>ev cda sta st'a. load True fp xe e\<^sub>p e' emptyStore stl e cd st'' = Normal ((ev, cda, sta), st'a) \<longrightarrow> gas sta \<le> gas stl \<and> gas st'a \<le> gas st'' \<and> address ev = address e'" using 42(4)[of _ "st\<lparr>gas := gas st - g\<rparr>" _ st' _ _ adv _ x ct _ _ st'' _ b v t _ x1 fp "(f,c)" f c e'] g_def a1 gcost n Pair KValue Value TAddr Some p2 s1 Method fields None n1 p3 k2 v stl_def e'_def s3 f1 s4 n2 by blast
-                                              then show ?thesis using s3 f1 by auto
-                                            qed
-                                            also from stl_def have "\<dots> \<le> gas st''" by simp
-                                            also from 42(3)[of _ "st\<lparr>gas := gas st - g\<rparr>" _ st' _ _ adv _ x ct] g_def a1 gcost n Pair KValue Value TAddr Some p2 s1 Method fields None n1 p3 k2 v stl_def e'_def s3 f1 s4 n2
-                                              have "\<dots> \<le> gas st'" by auto
-                                            also from 42(2)[of _ "st\<lparr>gas := gas st - g\<rparr>"] g_def a1 gcost n Pair KValue Value TAddr Some p2 s1 Method fields None n1 p3 k2 v stl_def e'_def s3 f1 s4 n2
-                                              have "\<dots> \<le> gas (st\<lparr>gas := gas st - g\<rparr>)" by auto
-                                            finally show ?thesis by simp
-                                          next
-                                            case (e x)
-                                            with 42(1) g_def a1 gcost n Pair KValue Value TAddr Some p2 s1 Method fields None n1 p3 k2 v stl_def e'_def s3 f1 s4 show ?thesis using stmt.psimps(7)[of ad i xe val e\<^sub>p e cd st] by simp
-                                          qed
+                                          case (e x)
+                                          with 7(1) g_def a1 gcost n Pair KValue Value TAddr False Some s2 Contract p2 None n1 p3 k2 v s4 s3 show ?thesis using stmt.psimps(7)[of ad i xe val e cd st] st'_def st''_def st'''_def e'_def by simp
                                         qed
                                       qed
                                     next
-                                      case (e x)
-                                      with 42(1) g_def a1 gcost n Pair KValue Value TAddr Some p2 s1 Method fields None n1 p3 k2 v stl_def e'_def show ?thesis using stmt.psimps(7)[of ad i xe val e\<^sub>p e cd st] by simp
+                                      case s1: (Some a)
+                                      then show ?thesis
+                                      proof (cases a)
+                                        case (Method x1)
+                                        then show ?thesis
+                                        proof (cases x1)
+                                          case p4: (fields fp ext f)
+                                          then show ?thesis
+                                          proof (cases ext)
+                                            case True
+                                            then show ?thesis
+                                            proof (cases "load True fp xe e' emptyStore emptyStore emptyStore e cd st''' (gas st''')")
+                                              case s4: (n a g''')
+                                              define st'''' where "st'''' = st'''\<lparr>gas := g'''\<rparr>"
+                                              then show ?thesis
+                                              proof (cases a)
+                                                case f1: (fields e\<^sub>l cd\<^sub>l k\<^sub>l m\<^sub>l)
+                                                then have l10: "toState (load True fp xe e' emptyStore emptyStore emptyStore e cd) st''' = Normal ((e\<^sub>l, cd\<^sub>l, k\<^sub>l, m\<^sub>l), st'''')" using s4 st''''_def by simp
+                                                show ?thesis
+                                                proof (cases "transfer (address e) adv v' (accounts st'''')")
+                                                  case n2: None
+                                                  with 7(1) g_def a1 gcost n Pair KValue Value TAddr False Some s2 Contract p2 s1 Method p4 n1 p3 k2 v s3 f1 e'_def True s4 show ?thesis using stmt.psimps(7)[of ad i xe val e cd st] st'_def st''_def st'''_def st''''_def by simp
+                                                next
+                                                  case s5: (Some acc)
+                                                  then have l11: "option Err (\<lambda>st. transfer (address e) adv v' (accounts st)) st'''' = Normal (acc, st'''')" by simp
+                                                  define k\<^sub>o where "k\<^sub>o = accounts st''''"
+                                                  define m\<^sub>o where "m\<^sub>o = accounts st''''"
+                                                  show ?thesis
+                                                  proof (cases "stmt f e\<^sub>l cd\<^sub>l (st''''\<lparr>accounts := acc, stack:=k\<^sub>l,memory:=m\<^sub>l\<rparr>)")
+                                                    case n2: (n a st''''')
+                                                    with 7(1) g_def a1 gcost n Pair KValue Value TAddr Some s2 Contract p2 s1 Method p4 n1 p3 k2 v k\<^sub>o_def m\<^sub>o_def e'_def s3 f1 s4 s5
+                                                    have "stmt (EXTERNAL ad i xe val) e cd st = Normal ((), st'''''\<lparr>stack:=stack st'''', memory := memory st''''\<rparr>)"
+                                                      using stmt.psimps(7)[of ad i xe val e cd st] st'_def st''_def st'''_def st''''_def True False by simp
+                                                    with a1 have "gas st6' \<le> gas st'''''" by auto
+                                                    also from 7(2)[OF l1 l2 l3 l4 l5 l6 l7 _ _ l8 l9 _ _ _ s1 Method _ _ _ l10 _ _ _ l11, where ?s'm="st''''\<lparr>accounts := acc, stack := k\<^sub>l, memory := m\<^sub>l\<rparr>" and ?s'l=st''''] p4 n2 e'_def True s3
+                                                      have "\<dots> \<le> gas (st''''\<lparr>accounts := acc, stack := k\<^sub>l, memory := m\<^sub>l\<rparr>)" by simp
+                                                    also from msel_ssel_expr_load_rexp_gas(4)[of True fp xe e' emptyStore emptyStore emptyStore e cd st''' "gas st'''"]
+                                                      have "\<dots> \<le> gas st'''" using s3 st'_def st''_def st'''_def st''''_def f1 s4 by simp
+                                                    also from msel_ssel_expr_load_rexp_gas(3)[of val e cd st'' "gas st''"]
+                                                      have "\<dots> \<le> gas st''" using n1 st'_def st''_def st'''_def by fastforce
+                                                    also from msel_ssel_expr_load_rexp_gas(3)[of ad e cd st' "gas st - g"]
+                                                      have "\<dots> \<le> gas st'" using n st'_def st''_def st'''_def by fastforce
+                                                    finally show ?thesis using st'_def by simp
+                                                  next
+                                                    case (e x)
+                                                    with 7(1) g_def a1 gcost n Pair KValue Value TAddr False Some s2 Contract p2 s1 Method p4 n1 p3 k2 v k\<^sub>o_def m\<^sub>o_def e'_def s3 f1 s4 s5 True show ?thesis using stmt.psimps(7) st'_def st''_def st'''_def st''''_def by simp
+                                                  qed
+                                                qed
+                                              qed
+                                            next
+                                              case (e x)
+                                              with 7(1) g_def a1 gcost n Pair KValue Value TAddr False Some s2 Contract p2 s1 Method p4 n1 p3 k2 v e'_def True s3 show ?thesis using stmt.psimps(7) st'_def st''_def st'''_def by simp
+                                            qed
+                                          next
+                                            case f: False
+                                            with 7(1) g_def a1 gcost n Pair KValue Value TAddr False Some s2 Contract p2 s1 Method p4 n1 p3 k2 v s3 show ?thesis using stmt.psimps(7) st'_def st''_def st'''_def by simp
+                                          qed
+                                        qed
+                                      next
+                                        case (Function _)
+                                        with 7(1) g_def a1 gcost n Pair KValue Value TAddr False Some s2 Contract p2 s1 n1 p3 k2 v s3 show ?thesis using stmt.psimps(7) st'_def st''_def st'''_def by simp
+                                      next
+                                        case (Var _)
+                                        with 7(1) g_def a1 gcost n Pair KValue Value TAddr False Some s2 Contract p2 s1 n1 p3 k2 v s3 show ?thesis using stmt.psimps(7) st'_def st''_def st'''_def by simp
+                                      qed
                                     qed
-                                  next
-                                    case s2: (Some a)
-                                    with 42(1) g_def a1 gcost n Pair KValue Value TAddr Some p2 s1 Method fields n1 p3 k2 v show ?thesis using stmt.psimps(7)[of ad i xe val e\<^sub>p e cd st] by simp
                                   qed
+                                next
+                                  case (Calldata x2)
+                                  with 7(1) g_def a1 gcost n Pair KValue Value TAddr False Some s2 Contract p2 n1 p3 k2 show ?thesis using stmt.psimps(7) st'_def st''_def st'''_def by simp
+                                next
+                                  case (Memory x3)
+                                  with 7(1) g_def a1 gcost n Pair KValue Value TAddr False Some s2 Contract p2 n1 p3 k2 show ?thesis using stmt.psimps(7) st'_def st''_def st'''_def by simp
+                                next
+                                  case (Storage x4)
+                                  with 7(1) g_def a1 gcost n Pair KValue Value TAddr False Some s2 Contract p2 n1 p3 k2 show ?thesis using stmt.psimps(7) st'_def st''_def st'''_def by simp
                                 qed
                               next
-                                case (Var x2)
-                                with 42(1) g_def a1 gcost n Pair KValue Value TAddr Some p2 s1 n1 p3 k2 v show ?thesis using stmt.psimps(7)[of ad i xe val e\<^sub>p e cd st] by simp
+                                case (KCDptr x2)
+                                with 7(1) g_def a1 gcost n Pair KValue Value TAddr False Some s2 Contract p2 n1 p3 show ?thesis using stmt.psimps(7) st'_def st''_def st'''_def by simp
+                              next
+                                case (KMemptr x3)
+                                with 7(1) g_def a1 gcost n Pair KValue Value TAddr False Some s2 Contract p2 n1 p3 show ?thesis using stmt.psimps(7) st'_def st''_def st'''_def by simp
+                              next
+                                case (KStoptr x4)
+                                with 7(1) g_def a1 gcost n Pair KValue Value TAddr False Some s2 Contract p2 n1 p3 show ?thesis using stmt.psimps(7) st'_def st''_def st'''_def by simp
                               qed
                             qed
                           next
-                            case (Calldata x2)
-                            with 42(1) g_def a1 gcost n Pair KValue Value TAddr Some p2 n1 p3 k2 show ?thesis using stmt.psimps(7)[of ad i xe val e\<^sub>p e cd st] by simp
-                          next
-                            case (Memory x3)
-                            with 42(1) g_def a1 gcost n Pair KValue Value TAddr Some p2 n1 p3 k2 show ?thesis using stmt.psimps(7)[of ad i xe val e\<^sub>p e cd st] by simp
-                          next
-                            case (Storage x4)
-                            with 42(1) g_def a1 gcost n Pair KValue Value TAddr Some p2 n1 p3 k2 show ?thesis using stmt.psimps(7)[of ad i xe val e\<^sub>p e cd st] by simp
+                            case n2: (e x)
+                            with 7(1) g_def a1 gcost n Pair KValue Value TAddr False Some s2 Contract p2 show ?thesis using stmt.psimps(7) st'_def st''_def by simp
                           qed
-                        next
-                          case (KCDptr x2)
-                          with 42(1) g_def a1 gcost n Pair KValue Value TAddr Some p2 n1 p3 show ?thesis using stmt.psimps(7)[of ad i xe val e\<^sub>p e cd st] by simp
-                        next
-                          case (KMemptr x3)
-                          with 42(1) g_def a1 gcost n Pair KValue Value TAddr Some p2 n1 p3 show ?thesis using stmt.psimps(7)[of ad i xe val e\<^sub>p e cd st] by simp
-                        next
-                          case (KStoptr x4)
-                          with 42(1) g_def a1 gcost n Pair KValue Value TAddr Some p2 n1 p3 show ?thesis using stmt.psimps(7)[of ad i xe val e\<^sub>p e cd st] by simp
                         qed
                       qed
-                    next
-                      case n2: (e x)
-                      with 42(1) g_def a1 gcost n Pair KValue Value TAddr Some p2 show ?thesis using stmt.psimps(7)[of ad i xe val e\<^sub>p e cd st] by simp
                     qed
                   qed
                 qed
               qed
             next
               case (Calldata x2)
-              with 42(1) g_def a1 gcost n Pair KValue show ?thesis using stmt.psimps(7)[of ad i xe val e\<^sub>p e cd st] by simp
+              with 7(1) g_def a1 gcost n Pair KValue show ?thesis using stmt.psimps(7) st'_def st''_def by simp
             next
               case (Memory x3)
-              with 42(1) g_def a1 gcost n Pair KValue show ?thesis using stmt.psimps(7)[of ad i xe val e\<^sub>p e cd st] by simp
+              with 7(1) g_def a1 gcost n Pair KValue show ?thesis using stmt.psimps(7) st'_def st''_def by simp
             next
               case (Storage x4)
-              with 42(1) g_def a1 gcost n Pair KValue show ?thesis using stmt.psimps(7)[of ad i xe val e\<^sub>p e cd st] by simp
+              with 7(1) g_def a1 gcost n Pair KValue show ?thesis using stmt.psimps(7) st'_def st''_def by simp
             qed
           next
             case (KCDptr x2)
-            with 42(1) g_def a1 gcost n Pair show ?thesis using stmt.psimps(7)[of ad i xe val e\<^sub>p e cd st] by simp
+            with 7(1) g_def a1 gcost n Pair show ?thesis using stmt.psimps(7) st'_def st''_def by simp
           next
             case (KMemptr x3)
-            with 42(1) g_def a1 gcost n Pair show ?thesis using stmt.psimps(7)[of ad i xe val e\<^sub>p e cd st] by simp
+            with 7(1) g_def a1 gcost n Pair show ?thesis using stmt.psimps(7) st'_def st''_def by simp
           next
             case (KStoptr x4)
-            with 42(1) g_def a1 gcost n Pair show ?thesis using stmt.psimps(7)[of ad i xe val e\<^sub>p e cd st] by simp
+            with 7(1) g_def a1 gcost n Pair show ?thesis using stmt.psimps(7) st'_def st''_def by simp
           qed
         qed
       next
         case (e _)
-        with 42(1) g_def a1 gcost show ?thesis using stmt.psimps(7)[of ad i xe val e\<^sub>p e cd st] by simp
+        with 7(1) g_def a1 gcost show ?thesis using stmt.psimps(7) st'_def by simp
       qed
     qed
   qed
 next
-  case (43 ad ex e\<^sub>p e cd st)
-  define g where "g = costs (TRANSFER ad ex) e\<^sub>p e cd st"
+  case (8 ad ex e cd st)
+  define g where "g = costs (TRANSFER ad ex) e cd st"
   show ?case
   proof (rule allI[OF impI])
-    fix st6' assume stmt_def: "stmt (TRANSFER ad ex) e\<^sub>p e cd st = Normal ((), st6')"
+    fix st6' assume stmt_def: "stmt (TRANSFER ad ex) e cd st = Normal ((), st6')"
     show "gas st6' \<le> gas st"
     proof cases
       assume "gas st \<le> g"
-      with 43 stmt_def g_def show ?thesis using stmt.psimps(8)[of ad ex e\<^sub>p e cd st] by simp
+      with 8 stmt_def g_def show ?thesis using stmt.psimps(8)[of ad ex e cd st] by simp
     next
       assume "\<not> gas st \<le> g"
+      then have l1: "assert Gas (\<lambda>st. costs (TRANSFER ad ex) e cd st < gas st) st = Normal ((), st) " using g_def by simp
+      define st' where "st' = st\<lparr>gas := gas st - g\<rparr>"
+      then have l2: " modify (\<lambda>st. st\<lparr>gas := gas st - costs (TRANSFER ad ex) e cd st\<rparr>) st = Normal ((), st')" using g_def by simp
       show ?thesis
-      proof (cases "expr ex e\<^sub>p e cd (st\<lparr>gas := gas st - g\<rparr>)")
-        case (n a st')
+      proof (cases "expr ad e cd st' (gas st - g)")
+        case (n a0 g')
+        define st'' where "st'' = st'\<lparr>gas := g'\<rparr>"
+        with n have l3: "toState (expr ad e cd) st' = Normal (a0, st'')" using st'_def by simp
         then show ?thesis
-        proof (cases a)
+        proof (cases a0)
           case (Pair b c)
           then show ?thesis
           proof (cases b)
-            case (KValue v)
+            case (KValue adv)
             then show ?thesis
             proof (cases c)
-              case (Value t)
+              case (Value x1)
               then show ?thesis
-              proof (cases "expr ad e\<^sub>p e cd st'")
-                case n2: (n a st'')
+              proof (cases x1)
+                case (TSInt x1)
+                with 8(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value g_def show ?thesis using stmt.psimps(8) st'_def st''_def by simp
+              next
+                case (TUInt x2)
+                with 8(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value g_def show ?thesis using stmt.psimps(8) st'_def st''_def by simp
+              next
+                case TBool
+                with 8(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value g_def show ?thesis using stmt.psimps(8) st'_def st''_def by simp
+              next
+                case TAddr
+                then have l4: "(case a0 of (KValue adv, Value TAddr) \<Rightarrow> return adv | (KValue adv, Value _) \<Rightarrow> throw Err | (KValue adv, _) \<Rightarrow> throw Err
+                       | (_, b) \<Rightarrow> throw Err) st'' = Normal (adv, st'')" using Pair KValue Value by simp
                 then show ?thesis
-                proof (cases a)
-                  case p2: (Pair b c)
+                proof (cases "expr ex e cd st'' (gas st'')")
+                  case n2: (n a1 g'')
+                  define st''' where "st''' = st''\<lparr>gas := g''\<rparr>"
+                  with n2 have l5: "toState (expr ex e cd) st'' = Normal (a1, st''')" by simp
                   then show ?thesis
-                  proof (cases b)
-                    case k2: (KValue adv)
+                  proof (cases a1)
+                    case p2: (Pair b c)
                     then show ?thesis
-                    proof (cases c)
-                      case v2: (Value x1)
+                    proof (cases b)
+                      case k2: (KValue v)
                       then show ?thesis
-                      proof (cases x1)
-                        case (TSInt x1)
-                        with 43(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value n2 p2 k2 v2 g_def show ?thesis using stmt.psimps(8) by simp
-                      next
-                        case (TUInt x2)
-                        with 43(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value n2 p2 k2 v2 g_def show ?thesis using stmt.psimps(8) by simp
-                      next
-                        case TBool
-                        with 43(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value n2 p2 k2 v2 g_def show ?thesis using stmt.psimps(8) by simp
-                      next
-                        case TAddr
+                      proof (cases c)
+                        case v2: (Value t)
+                        then have l6: "(case a1 of (KValue v, Value t) \<Rightarrow> return (v, t) | (KValue v, _) \<Rightarrow> throw Err | (_, b) \<Rightarrow> throw Err) st''' = Normal ((v,t), st''')" using p2 k2 by simp
                         then show ?thesis
-                        proof (cases "transfer (address e) adv v (accounts st'')")
+                        proof (cases "convert t (TUInt 256) v")
                           case None
-                          with 43(1) stmt_def g_def `\<not> gas st \<le> g` n Pair KValue Value n2 p2 k2 v2 TAddr show ?thesis using stmt.psimps(8) by simp
+                          with 8(1) stmt_def g_def `\<not> gas st \<le> g` n Pair KValue Value n2 p2 k2 v2 TAddr show ?thesis using stmt.psimps(8) st'_def st''_def st'''_def by simp
                         next
-                          case (Some acc)
+                          case (Some v')
                           then show ?thesis
-                          proof (cases "fmlookup e\<^sub>p adv")
+                          proof (cases "type (accounts st''' adv)")
                             case None
-                            with 43(1) `\<not> gas st \<le> g` n Pair KValue Value n2 p2 k2 v2 TAddr Some g_def
-                            have "stmt (TRANSFER ad ex) e\<^sub>p e cd st = Normal ((),st''\<lparr>accounts:=acc\<rparr>)" using stmt.psimps(8)[of ad ex e\<^sub>p e cd st] by simp
-                            with stmt_def have "gas st6' \<le> gas st''" by auto
-                            also from 43(3)[of "()" "(st\<lparr>gas := gas st - g\<rparr>)" _ st'] `\<not> gas st \<le> g` n Pair KValue Value n2 g_def have "\<dots> \<le> gas st'" by simp
-                            also from 43(2)[of "()" "(st\<lparr>gas := gas st - g\<rparr>)"] `\<not> gas st \<le> g` n g_def have "\<dots> \<le> gas st" by simp
-                            finally show ?thesis .
+                            with 8(1) stmt_def g_def `\<not> gas st \<le> g` n Pair KValue Value n2 p2 k2 v2 TAddr Some show ?thesis using stmt.psimps(8) st'_def st''_def st'''_def by simp
                           next
-                            case s2: (Some a)
+                            case s0: (Some a)
                             then show ?thesis
                             proof (cases a)
-                              case p3: (Pair ct f)
-                              define e' where "e' = ffold_init ct (emptyEnv adv (address e) v) (fmdom ct)"
-                              show ?thesis
-                              proof (cases "stmt f e\<^sub>p e' emptyStore (st''\<lparr>accounts := acc, stack:=emptyStore, memory:=emptyStore\<rparr>)")
-                                case n3: (n a st''')
-                                with 43(1) `\<not> gas st \<le> g` n Pair KValue Value n2 p2 k2 v2 TAddr Some s2 p3 g_def
-                                have "stmt (TRANSFER ad ex) e\<^sub>p e cd st = Normal ((),st'''\<lparr>stack:=stack st'', memory := memory st''\<rparr>)" using e'_def stmt.psimps(8)[of ad ex e\<^sub>p e cd st] by simp
-                                with stmt_def have "gas st6' \<le> gas st'''" by auto
-                                also from 43(4)[of "()" "st\<lparr>gas := gas st - g\<rparr>" _ st' _ _ v t _ st'' _ _ adv x1 "accounts st''" st'' acc _ ct f e' _ st'' "()" "st''\<lparr>accounts := acc, stack:=emptyStore, memory:=emptyStore\<rparr>"] `\<not> gas st \<le> g` n Pair KValue Value n2 p2 k2 v2 TAddr Some s2 p3 g_def n2 e'_def n3
-                                  have "\<dots> \<le> gas (st''\<lparr>accounts := acc, stack := emptyStore, memory := emptyStore\<rparr>)" by simp
-                                also from 43(3)[of "()" "(st\<lparr>gas := gas st - g\<rparr>)" _ st'] `\<not> gas st \<le> g` n Pair KValue Value n2 g_def have "\<dots> \<le> gas st'" by simp
-                                also from 43(2)[of "()" "(st\<lparr>gas := gas st - g\<rparr>)"] `\<not> gas st \<le> g` n g_def have "\<dots> \<le> gas st" by simp
-                                finally show ?thesis .
+                              case EOA
+                              then show ?thesis
+                              proof (cases "transfer (address e) adv v' (accounts st''')")
+                                case None
+                                with 8(1) stmt_def g_def `\<not> gas st \<le> g` n Pair KValue Value n2 p2 k2 v2 TAddr Some EOA s0 show ?thesis using stmt.psimps(8) st'_def st''_def st'''_def by simp
                               next
-                                case (e x)
-                                with 43(1) `\<not> gas st \<le> g` n Pair KValue Value n2 p2 k2 v2 TAddr Some s2 p3 g_def e'_def stmt_def show ?thesis using stmt.psimps(8)[of ad ex e\<^sub>p e cd st] by simp
+                                case s1: (Some acc)
+                                then have l7: "option Err (\<lambda>st. transfer (address e) adv v' (accounts st)) st''' = Normal (acc, st''')" using st'''_def by simp
+                                with 8(1) `\<not> gas st \<le> g` n Pair KValue Value n2 p2 k2 v2 TAddr Some EOA g_def s0
+                                  have "stmt (TRANSFER ad ex) e cd st = Normal ((),st'''\<lparr>accounts:=acc\<rparr>)" using stmt.psimps(8)[of ad ex e cd st] st'_def st''_def st'''_def by simp
+                                with stmt_def have "gas st6' = gas (st'''\<lparr>accounts:=acc\<rparr>)" by auto
+                                also from msel_ssel_expr_load_rexp_gas(3)[of ex e cd st'' "gas st''"]
+                                  have "\<dots> \<le> gas st''" using st'_def st''_def st'''_def n2 by fastforce
+                                also from msel_ssel_expr_load_rexp_gas(3)[of ad e cd st' "gas st - g"]
+                                  have "\<dots> \<le> gas st'" using st'_def st''_def n by fastforce
+                                  finally show ?thesis using st'_def by simp
+                              qed
+                            next
+                              case (Contract c)
+                              then show ?thesis
+                              proof (cases "ep $$ c")
+                                case None
+                                with 8(1) stmt_def g_def `\<not> gas st \<le> g` n Pair KValue Value n2 p2 k2 v2 TAddr Contract Some s0 show ?thesis using stmt.psimps(8) st'_def st''_def st'''_def by simp
+                              next
+                                case s2: (Some a)
+                                then show ?thesis
+                                proof (cases a)
+                                  case p3: (fields ct cn f)
+                                  with s2 have l7: "option Err (\<lambda>_. ep $$ c) st''' = Normal ((ct, cn, f), st''')" by simp
+                                  define e' where "e' = ffold_init ct (emptyEnv adv c (address e) v') (fmdom ct)"
+                                  show ?thesis
+                                  proof (cases "transfer (address e) adv v' (accounts st''')")
+                                    case None
+                                    with 8(1) stmt_def g_def `\<not> gas st \<le> g` n Pair KValue Value n2 p2 k2 v2 TAddr Contract Some s2 p3 s0 show ?thesis using stmt.psimps(8) st'_def st''_def st'''_def by simp
+                                  next
+                                    case s3: (Some acc)
+                                    then have l8: "option Err (\<lambda>st. transfer (address e) adv v' (accounts st)) st''' = Normal (acc, st''')" by simp
+                                    then show ?thesis
+                                    proof (cases "stmt f e' emptyStore (st'''\<lparr>accounts := acc, stack:=emptyStore, memory:=emptyStore\<rparr>)")
+                                      case n3: (n a st'''')
+                                      with 8(1) `\<not> gas st \<le> g` n Pair KValue Value n2 p2 k2 v2 TAddr Some s2 p3 g_def Contract s3 s0
+                                      have "stmt (TRANSFER ad ex) e cd st = Normal ((),st''''\<lparr>stack:=stack st''', memory := memory st'''\<rparr>)" using e'_def stmt.psimps(8)[of ad ex e cd st] st'_def st''_def st'''_def by simp
+                                      with stmt_def have "gas st6' \<le> gas st''''" by auto
+                                      also from 8(2)[OF l1 l2 l3 l4 l5 l6, of v t _ _ "accounts st'''" "st'''", OF _ _ _ s0 Contract l7 _ _ _ _ _ l8, where ?s'k="st'''\<lparr>accounts := acc, stack := emptyStore, memory := emptyStore\<rparr>"] `\<not> gas st \<le> g` e'_def n3 Some
+                                        have "\<dots> \<le> gas (st'''\<lparr>accounts := acc, stack := emptyStore, memory := emptyStore\<rparr>)" by simp
+                                      also from msel_ssel_expr_load_rexp_gas(3)[of ex e cd st'' "gas st''"]
+                                        have "\<dots> \<le> gas st''" using st'_def st''_def st'''_def n2 by fastforce
+                                      also from msel_ssel_expr_load_rexp_gas(3)[of ad e cd st' "gas st - g"]
+                                        have "\<dots> \<le> gas st'" using st'_def st''_def n by fastforce
+                                      finally show ?thesis using st'_def by simp
+                                    next
+                                      case (e x)
+                                      with 8(1) `\<not> gas st \<le> g` n Pair KValue Value n2 p2 k2 v2 TAddr Some s2 p3 g_def e'_def stmt_def Contract s3 s0 show ?thesis using stmt.psimps(8)[of ad ex e cd st] st'_def st''_def st'''_def by simp
+                                    qed
+                                  qed
+                                qed
                               qed
                             qed
                           qed
                         qed
+                      next
+                        case (Calldata x2)
+                        with 8(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value TAddr n2 p2 k2 g_def show ?thesis using stmt.psimps(8) st'_def st''_def st'''_def by simp
+                      next
+                        case (Memory x3)
+                        with 8(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value TAddr n2 p2 k2 g_def show ?thesis using stmt.psimps(8) st'_def st''_def st'''_def by simp
+                      next
+                        case (Storage x4)
+                        with 8(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value TAddr n2 p2 k2 g_def show ?thesis using stmt.psimps(8) st'_def st''_def st'''_def by simp
                       qed
                     next
-                      case (Calldata x2)
-                      with 43(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value n2 p2 k2 g_def show ?thesis using stmt.psimps(8) by simp
+                      case (KCDptr x2)
+                      with 8(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value TAddr n2 p2 g_def show ?thesis using stmt.psimps(8) st'_def st''_def st'''_def by simp
                     next
-                      case (Memory x3)
-                      with 43(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value n2 p2 k2 g_def show ?thesis using stmt.psimps(8) by simp
+                      case (KMemptr x3)
+                      with 8(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value TAddr n2 p2 g_def show ?thesis using stmt.psimps(8) st'_def st''_def st'''_def by simp
                     next
-                      case (Storage x4)
-                      with 43(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value n2 p2 k2 g_def show ?thesis using stmt.psimps(8) by simp
+                      case (KStoptr x4)
+                      with 8(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value TAddr n2 p2 g_def show ?thesis using stmt.psimps(8) st'_def st''_def st'''_def by simp
                     qed
-                  next
-                    case (KCDptr x2)
-                    with 43(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value n2 p2 g_def show ?thesis using stmt.psimps(8) by simp
-                  next
-                    case (KMemptr x3)
-                    with 43(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value n2 p2 g_def show ?thesis using stmt.psimps(8) by simp
-                  next
-                    case (KStoptr x4)
-                    with 43(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value n2 p2 g_def show ?thesis using stmt.psimps(8) by simp
                   qed
+                next
+                  case (e e)
+                  with 8(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value TAddr g_def show ?thesis using stmt.psimps(8) st'_def st''_def by simp
                 qed
-              next
-                case (e e)
-                with 43(1) stmt_def `\<not> gas st \<le> g` n Pair KValue Value g_def show ?thesis using stmt.psimps(8) by simp
               qed
             next
               case (Calldata x2)
-              with 43(1) stmt_def `\<not> gas st \<le> g` n Pair KValue g_def show ?thesis using stmt.psimps(8) by simp
+              with 8(1) stmt_def `\<not> gas st \<le> g` n Pair KValue g_def show ?thesis using stmt.psimps(8) st'_def st''_def by simp
             next
               case (Memory x3)
-              with 43(1) stmt_def `\<not> gas st \<le> g` n Pair KValue g_def show ?thesis using stmt.psimps(8) by simp
+              with 8(1) stmt_def `\<not> gas st \<le> g` n Pair KValue g_def show ?thesis using stmt.psimps(8) st'_def st''_def by simp
             next
               case (Storage x4)
-              with 43(1) stmt_def `\<not> gas st \<le> g` n Pair KValue g_def show ?thesis using stmt.psimps(8) by simp
+              with 8(1) stmt_def `\<not> gas st \<le> g` n Pair KValue g_def show ?thesis using stmt.psimps(8) st'_def st''_def by simp
             qed
           next
             case (KCDptr x2)
-            with 43(1) stmt_def `\<not> gas st \<le> g` n Pair g_def show ?thesis using stmt.psimps(8) by simp
+            with 8(1) stmt_def `\<not> gas st \<le> g` n Pair g_def show ?thesis using stmt.psimps(8) st'_def st''_def by simp
           next
             case (KMemptr x3)
-            with 43(1) stmt_def `\<not> gas st \<le> g` n Pair g_def show ?thesis using stmt.psimps(8) by simp
+            with 8(1) stmt_def `\<not> gas st \<le> g` n Pair g_def show ?thesis using stmt.psimps(8) st'_def st''_def by simp
           next
             case (KStoptr x4)
-            with 43(1) stmt_def `\<not> gas st \<le> g` n Pair g_def show ?thesis using stmt.psimps(8) by simp
+            with 8(1) stmt_def `\<not> gas st \<le> g` n Pair g_def show ?thesis using stmt.psimps(8) st'_def st''_def by simp
           qed
         qed
       next
         case (e e)
-        with 43(1) stmt_def `\<not> gas st \<le> g` g_def show ?thesis using stmt.psimps(8) by simp
+        with 8(1) stmt_def `\<not> gas st \<le> g` g_def show ?thesis using stmt.psimps(8) st'_def by simp
       qed
     qed
   qed
 next
-  case (44 id0 tp ex s e\<^sub>p e\<^sub>v cd st)
-  define g where "g = costs (BLOCK ((id0, tp), ex) s) e\<^sub>p e\<^sub>v cd st"
+  case (9 id0 tp s e\<^sub>v cd st)
+  define g where "g = costs (BLOCK ((id0, tp), None) s) e\<^sub>v cd st"
   show ?case
   proof (rule allI[OF impI])
-    fix st6' assume stmt_def: "stmt (BLOCK ((id0, tp), ex) s) e\<^sub>p e\<^sub>v cd st = Normal ((), st6')"
+    fix st6' assume stmt_def: "stmt (BLOCK ((id0, tp), None) s) e\<^sub>v cd st = Normal ((), st6')"
     show "gas st6' \<le> gas st"
     proof cases
       assume "gas st \<le> g"
-      with 44 stmt_def g_def show ?thesis using stmt.psimps(9) by simp
+      with 9 stmt_def g_def show ?thesis using stmt.psimps(9) by simp
     next
       assume "\<not> gas st \<le> g"
+      then have l1: "assert Gas (\<lambda>st. costs (BLOCK ((id0, tp), None) s) e\<^sub>v cd st < gas st) st = Normal ((), st) " using g_def by simp
+      define st' where "st' = st\<lparr>gas := gas st - g\<rparr>"
+      then have l2: "modify (\<lambda>st. st\<lparr>gas := gas st - costs (BLOCK ((id0, tp), None) s) e\<^sub>v cd st\<rparr>) st = Normal ((), st')" using g_def by simp
       show ?thesis
-      proof (cases ex)
-        case None
+      proof (cases "decl id0 tp None False cd (memory st') (storage st') (cd, (memory st'), (stack st'), e\<^sub>v)")
+        case n2: None
+        with 9 stmt_def `\<not> gas st \<le> g` g_def show ?thesis using stmt.psimps(9) st'_def by simp
+      next
+        case (Some a)
+        then have l3: "option Err (\<lambda>st. decl id0 tp None False cd (memory st) (storage st) (cd, memory st, stack st, e\<^sub>v)) st' = Normal (a, st')" by simp
         then show ?thesis
-        proof (cases "decl id0 tp None False cd (memory (st\<lparr>gas := gas st - g\<rparr>)) cd e\<^sub>v (st\<lparr>gas := gas st - g\<rparr>)")
-          case (n a st')
+        proof (cases a)
+          case (fields cd' mem' sck' e')
+          with 9(1) stmt_def `\<not> gas st \<le> g` g_def have "stmt (BLOCK ((id0, tp), None) s) e\<^sub>v cd st = stmt s e' cd' (st\<lparr>gas := gas st - g, stack := sck', memory := mem'\<rparr>)" using stmt.psimps(9)[OF 9(1)] Some st'_def by simp
+          with 9(2)[OF l1 l2 l3] stmt_def `\<not> gas st \<le> g` fields g_def have "gas st6' \<le> gas (st\<lparr>gas := gas st - g, stack := sck', memory := mem'\<rparr>)" using st'_def by fastforce
+          then show ?thesis by simp
+        qed
+      qed
+    qed
+  qed
+next
+  case (10 id0 tp ex' s e\<^sub>v cd st)
+  define g where "g = costs (BLOCK ((id0, tp), Some ex') s) e\<^sub>v cd st"
+  show ?case
+  proof (rule allI[OF impI])
+    fix st6' assume stmt_def: "stmt (BLOCK ((id0, tp), Some ex') s) e\<^sub>v cd st = Normal ((), st6')"
+    show "gas st6' \<le> gas st"
+    proof cases
+      assume "gas st \<le> g"
+      with 10 stmt_def g_def show ?thesis using stmt.psimps(10) by simp
+    next
+      assume "\<not> gas st \<le> g"
+      then have l1: "assert Gas (\<lambda>st. costs (BLOCK ((id0, tp), Some ex') s) e\<^sub>v cd st < gas st) st = Normal ((), st) " using g_def by simp
+      define st' where "st' = st\<lparr>gas := gas st - g\<rparr>"
+      then have l2: "modify (\<lambda>st. st\<lparr>gas := gas st - costs (BLOCK ((id0, tp), Some ex') s) e\<^sub>v cd st\<rparr>) st = Normal ((), st')" using g_def by simp
+      show ?thesis
+      proof (cases "expr ex' e\<^sub>v cd st' (gas st - g)")
+        case (n a g')
+        define st'' where "st'' = st'\<lparr>gas := g'\<rparr>"
+        with n have l3: "toState (expr ex' e\<^sub>v cd) st' = Normal (a, st'')" using st''_def st'_def by simp
+        then show ?thesis
+        proof (cases a)
+          case (Pair v t)
           then show ?thesis
-          proof (cases a)
-            case (Pair cd' e')
-            with 44(1) stmt_def `\<not> gas st \<le> g` None n g_def have "stmt (BLOCK ((id0, tp), ex) s) e\<^sub>p e\<^sub>v cd st = stmt s e\<^sub>p e' cd' st'" using stmt.psimps(9)[of id0 tp ex s e\<^sub>p e\<^sub>v cd st] by (simp split:unit.split_asm)
-            with 44(4)[of "()" "st\<lparr>gas := gas st - g\<rparr>"] stmt_def `\<not> gas st \<le> g` None n Pair g_def have "gas st6' \<le> gas st'" by simp
-            moreover from n Pair have "gas st' \<le> gas st" using decl_gas_address by simp
-            ultimately show ?thesis by simp
+          proof (cases "decl id0 tp (Some (v, t)) False cd (memory st'') (storage st'') (cd, memory st'', stack st'', e\<^sub>v)")
+            case None
+            with 10(1) stmt_def `\<not> gas st \<le> g` n Pair g_def show ?thesis using stmt.psimps(10) st'_def st''_def by simp
+          next
+            case s2: (Some a)
+            then have l4: "option Err (\<lambda>st. decl id0 tp (Some (v, t)) False cd (memory st) (storage st) (cd, memory st, stack st, e\<^sub>v)) st'' = Normal (a, st'')" by simp
+            then show ?thesis
+            proof (cases a)
+              case (fields cd' mem' sck' e')
+              with 10(1) stmt_def `\<not> gas st \<le> g` n Pair s2 g_def have "stmt (BLOCK ((id0, tp), Some ex') s) e\<^sub>v cd st = stmt s e' cd' (st''\<lparr>stack := sck', memory := mem'\<rparr>)" using stmt.psimps(10)[of id0 tp ex' s e\<^sub>v cd st] st'_def st''_def by simp
+              with 10(2)[OF l1 l2 l3 Pair l4 fields, where s'd="st''\<lparr>stack := sck', memory := mem'\<rparr>"] n stmt_def `\<not> gas st \<le> g` s2 fields g_def have "gas st6' \<le> gas st''" by simp
+              moreover from msel_ssel_expr_load_rexp_gas(3)[of ex' e\<^sub>v cd st' "gas st - g"] n have "gas st'' \<le> gas st'" using st'_def st''_def by fastforce
+              ultimately show ?thesis using st'_def by simp
+            qed
           qed
-        next
-          case (e x)
-          with 44 stmt_def `\<not> gas st \<le> g` None g_def show ?thesis using stmt.psimps(9) by simp
         qed
       next
-        case (Some ex')
+        case (e e)
+        with 10 stmt_def `\<not> gas st \<le> g` g_def show ?thesis using stmt.psimps(10) st'_def by simp
+      qed
+    qed
+  qed
+next
+  case (11 i xe val e cd st)
+  define g where "g = costs (NEW i xe val) e cd st"
+  show ?case
+  proof (rule allI[OF impI])
+    fix st6' assume a1: "stmt (NEW i xe val) e cd st = Normal ((), st6')"
+    show "gas st6' \<le> gas st"
+    proof (cases)
+      assume "gas st \<le> g"
+      with 11(1) a1 show ?thesis using stmt.psimps(11) g_def by simp
+    next
+      assume gcost: "\<not> gas st \<le> g"
+      then have l1: "assert Gas (\<lambda>st. costs (NEW i xe val) e cd st < gas st) st = Normal ((), st) " using g_def by simp
+      define st' where "st' = st\<lparr>gas := gas st - g\<rparr>"
+      then have l2: "modify (\<lambda>st. st\<lparr>gas := gas st - costs (NEW i xe val) e cd st\<rparr>) st = Normal ((), st')" using g_def by simp
+      define adv where "adv = hash (address e) (ShowL\<^sub>n\<^sub>a\<^sub>t (contracts (accounts st' (address e))))"
+      then show ?thesis
+      proof (cases "type (accounts st' adv) = None")
+        case True
         then show ?thesis
-        proof (cases "expr ex' e\<^sub>p e\<^sub>v cd (st\<lparr>gas := gas st - g\<rparr>)")
-          case (n a st')
+        proof (cases "expr val e cd st' (gas st')")
+          case n0: (n kv g')
+          define st'' where "st'' = st'\<lparr>gas := g'\<rparr>"
+          then have l4: "toState (expr val e cd) st' = Normal (kv, st'')" using n0 by simp
           then show ?thesis
-          proof (cases a)
-            case (Pair v t)
+          proof (cases kv)
+            case p0: (Pair a b)
             then show ?thesis
-            proof (cases "decl id0 tp (Some (v, t)) False cd (memory st') cd e\<^sub>v st'")
-              case s2: (n a st'')
+            proof (cases a)
+              case k0: (KValue v)
               then show ?thesis
-              proof (cases a)
-                case f2: (Pair cd' e')
-                with 44(1) stmt_def `\<not> gas st \<le> g` Some n Pair s2 g_def have "stmt (BLOCK ((id0, tp), ex) s) e\<^sub>p e\<^sub>v cd st = stmt s e\<^sub>p e' cd' st''" using stmt.psimps(9)[of id0 tp ex s e\<^sub>p e\<^sub>v cd st] by (simp split:unit.split_asm)
-                with 44(3)[of "()" "st\<lparr>gas := gas st - g\<rparr>" ex' _ st'] stmt_def `\<not> gas st \<le> g` Some n Pair s2 f2 g_def have "gas st6' \<le> gas st''" by simp
-                moreover from Some n Pair s2 f2 g_def have "gas st'' \<le> gas st'" using decl_gas_address by simp
-                moreover from 44(2)[of "()" "st\<lparr>gas := gas st - g\<rparr>" ex'] `\<not> gas st \<le> g` Some n Pair g_def have "gas st' \<le> gas st" by simp
-                ultimately show ?thesis by simp
+              proof (cases b)
+                case v0: (Value t)
+                then show ?thesis
+                proof (cases "ep $$ i")
+                  case None
+                  with a1 gcost g_def True n0 p0 k0 v0
+                  show ?thesis using stmt.psimps(11)[OF 11(1)] adv_def st'_def st''_def by simp
+                next
+                  case s0: (Some a)
+                  then have l5: "option Err (\<lambda>_. ep $$ i) st'' = Normal (a, st'')" by simp
+                  then show ?thesis
+                  proof (cases a)
+                    case f0: (fields ct cn _)
+                    define e' where "e' = ffold_init ct (emptyEnv adv i (address e) v) (fmdom ct)"
+                    then show ?thesis
+                    proof (cases "load True (fst cn) xe e' emptyStore emptyStore emptyStore e cd st'' (gas st'')")
+                      case n1: (n a g'')
+                      define st''' where "st''' = st''\<lparr>gas := g''\<rparr>"
+                      then have l6: "toState (load True (fst cn) xe e' emptyStore emptyStore emptyStore e cd) st'' = Normal (a, st''')" using n1 by simp
+                      then show ?thesis
+                      proof (cases a)
+                        case f1: (fields e\<^sub>l cd\<^sub>l k\<^sub>l m\<^sub>l)
+                        define st'''' where "st'''' = st'''\<lparr>accounts:=(accounts st''')(adv := \<lparr>bal = ShowL\<^sub>i\<^sub>n\<^sub>t 0, type = Some (Contract i), contracts = 0\<rparr>), storage:=(storage st''')(adv := {$$})\<rparr>"
+                        then show ?thesis
+                        proof (cases "transfer (address e) adv v (accounts st'''')")
+                          case None
+                          with a1 gcost g_def True n0 p0 k0 v0 s0 f0 n1 f1
+                          show ?thesis using stmt.psimps(11)[OF 11(1)] adv_def e'_def st'_def st''_def st'''_def st''''_def by (simp add:Let_def)
+                        next
+                          case s1: (Some acc)
+                          define st''''' where "st''''' = st''''\<lparr>accounts := acc, stack:=k\<^sub>l, memory:=m\<^sub>l\<rparr>"
+                          then show ?thesis
+                          proof (cases "stmt (snd cn) e\<^sub>l cd\<^sub>l st'''''")
+                            case (n a st'''''')
+                            define st''''''' where "st''''''' = st''''''\<lparr>stack:=stack st'''', memory := memory st''''\<rparr>"
+                            define st'''''''' where "st'''''''' = incrementAccountContracts (address e) st'''''''"
+                            from a1 gcost g_def True n0 p0 k0 v0 s0 f0 n1 f1 s1 n have "st6' = st''''''''"
+                              using st'_def st''_def st'''_def st''''_def st'''''_def st'''''''_def st''''''''_def
+                              stmt.psimps(11)[OF 11(1)] adv_def e'_def by (simp add:Let_def)
+                            then have "gas st6' = gas st''''''''" by simp
+                            also have "\<dots> \<le> gas st'''''''" using st''''''''_def incrementAccountContracts_def by simp
+                            also have "\<dots> \<le> gas st''''''" using st'''''''_def by simp
+                            also have "\<dots> \<le> gas st'''''" using 11(2)[OF l1 l2 _ _ l4 _ _ l5 _ _ e'_def l6, where ?s'h="st''''" and ?s'i="st''''" and ?s'j="st''''" and ?s'k="st''''\<lparr>accounts := acc, stack := k\<^sub>l, memory := m\<^sub>l\<rparr>", of st' "()"] p0 k0 v0 f0 f1 s1 n True st''''_def st'''''_def adv_def by simp
+                            also have "\<dots> \<le> gas st''''" using st'''''_def by simp
+                            also have "\<dots> \<le> gas st'''" using st''''_def by simp
+                            also have "\<dots> \<le> gas st''" using st'''_def msel_ssel_expr_load_rexp_gas(4) n1 f1 by simp
+                            also have "\<dots> \<le> gas st'" using st''_def msel_ssel_expr_load_rexp_gas(3) n0 p0 by simp
+                            also have "\<dots> \<le> gas st" using st'_def by simp
+                            finally show ?thesis .
+                          next
+                            case (e e)
+                            with a1 gcost g_def n0 True p0 k0 v0 s0 f0 n1 f1 s1
+                            show ?thesis using stmt.psimps(11)[OF 11(1)] adv_def e'_def st'_def st''_def st'''_def st''''_def st'''''_def by (simp add:Let_def)
+                          qed
+                        qed
+                      qed
+                    next
+                      case (e e)
+                      with a1 gcost g_def n0 True p0 k0 v0 s0 f0
+                      show ?thesis using stmt.psimps(11)[OF 11(1)] adv_def e'_def st'_def st''_def by (simp add:Let_def)
+                    qed
+                  qed
+                qed
+              next
+                case (Calldata x2)
+                with a1 gcost g_def n0 True p0 k0
+                show ?thesis using stmt.psimps(11)[OF 11(1)] adv_def st'_def by simp
+              next
+                case (Memory x3)
+                with a1 gcost g_def n0 True p0 k0
+                show ?thesis using stmt.psimps(11)[OF 11(1)] adv_def st'_def by simp
+              next
+                case (Storage x4)
+                with a1 gcost g_def n0 True p0 k0
+                show ?thesis using stmt.psimps(11)[OF 11(1)] adv_def st'_def by simp
               qed
             next
-              case (e x)
-              with 44(1) stmt_def `\<not> gas st \<le> g` Some n Pair g_def show ?thesis using stmt.psimps(9) by simp
+              case (KCDptr x2)
+              with a1 gcost g_def n0 True p0
+              show ?thesis using stmt.psimps(11)[OF 11(1)] adv_def st'_def by simp
+            next
+              case (KMemptr x3)
+              with a1 gcost g_def n0 True p0
+              show ?thesis using stmt.psimps(11)[OF 11(1)] adv_def st'_def by simp
+            next
+              case (KStoptr x4)
+              with a1 gcost g_def n0 True p0
+              show ?thesis using stmt.psimps(11)[OF 11(1)] adv_def st'_def by simp
             qed
           qed
         next
           case (e e)
-          with 44 stmt_def `\<not> gas st \<le> g` Some g_def show ?thesis using stmt.psimps(9) by simp
+          with a1 gcost g_def True
+          show ?thesis using stmt.psimps(11)[OF 11(1)] adv_def st'_def by simp
         qed
+      next
+        case False
+        with a1 gcost g_def
+        show ?thesis using stmt.psimps(11)[OF 11(1)] adv_def st'_def by (simp split:if_split_asm)
       qed
     qed
   qed
 qed
 
-subsection \<open>Termination\<close>
+subsection \<open>Termination function\<close>
 
-lemma x1:
-  assumes "expr x e\<^sub>p env cd st = Normal (val, s')"
-      and "msel_ssel_lexp_expr_load_rexp_stmt_dom (Inr (Inl (Inl (x, e\<^sub>p, env, cd, st))))"
-    shows "gas s' < gas st \<or> gas s' = gas st"
-  using assms msel_ssel_lexp_expr_load_rexp_stmt_dom_gas(4)[of x e\<^sub>p env cd st] by auto
+text \<open>Now we can prove termination using the lemma above.\<close>
 
-lemma x2:
-assumes "(if gas st \<le> c then throw Gas st else (get \<bind> (\<lambda>s. put (s\<lparr>gas := gas s - c\<rparr>))) st) = Normal ((), s')"
-    and "expr x e\<^sub>p e cd s' = Normal (val, s'a)"
-    and "msel_ssel_lexp_expr_load_rexp_stmt_dom (Inr (Inl (Inl (x, e\<^sub>p, e, cd, s'))))"
-  shows "gas s'a < gas st \<or> gas s'a = gas st"
-proof -
-  from assms have "gas s' < gas st \<or> gas s' = gas st" by (auto split:if_split_asm)
-  with assms show ?thesis using x1[of x e\<^sub>p e cd s' val s'a] by auto
-qed
+fun sgas
+  where "sgas l = gas (snd (snd (snd l)))"
 
-lemma x2sub:
-  assumes "(if gas st \<le> costs (TRANSFER ad ex) e\<^sub>p e cd st then throw Gas st
-        else (get \<bind> (\<lambda>s. put (s\<lparr>gas := gas s - costs (TRANSFER ad ex) e\<^sub>p e cd st\<rparr>))) st) =
-       Normal ((), s')" and 
-" expr ex e\<^sub>p e cd s' = Normal ((KValue vb, Value t), s'a)"
-and " msel_ssel_lexp_expr_load_rexp_stmt_dom (Inr (Inl (Inl (ex, e\<^sub>p, e, cd, s'))))"
-and "(\<And>ad i xe val e\<^sub>p e cd st. 0 < costs (EXTERNAL ad i xe val) e\<^sub>p e cd st)" and "gas s'a \<noteq> gas st" shows "gas s'a < gas st"
-proof -
-  from assms have "gas s' < gas st \<or> gas s' = gas st" by (auto split:if_split_asm)
-  with assms show ?thesis using x1[of ex e\<^sub>p e cd s' "(KValue vb, Value t)" s'a] by auto
-qed
+fun ssize
+  where "ssize l = size (fst l)"
 
-lemma x3:
-  assumes "(if gas st \<le> c then throw Gas st else (get \<bind> (\<lambda>s. put (s\<lparr>gas := gas s - c\<rparr>))) st) = Normal ((), s')"
-      and "s'\<lparr>stack := emptyStore\<rparr> = va"
-      and "load False ad xe e\<^sub>p(ffold (init aa) \<lparr>address = address e, sender = sender e, svalue = svalue e, denvalue = fmempty\<rparr> (fmdom aa)) emptyStore va e cd s' = Normal ((ag, ah, s'd), vc)"
-      and "msel_ssel_lexp_expr_load_rexp_stmt_dom (Inr (Inl (Inr (False, ad, xe, e\<^sub>p, ffold (init aa) \<lparr>address = address e, sender = sender e, svalue = svalue e, denvalue = fmempty\<rparr> (fmdom aa), emptyStore, va, e, cd, s'))))"
-      and "c>0"
-    shows "gas s'd < gas st"
-proof -
-  from assms have "gas s'd \<le> gas va" using msel_ssel_lexp_expr_load_rexp_stmt_dom_gas(5)[of False ad xe e\<^sub>p "ffold (init aa) \<lparr>address = address e, sender = sender e, svalue = svalue e, denvalue = fmempty\<rparr> (fmdom aa)" emptyStore va e cd s'] by blast
-  also from assms(2) have "\<dots> = gas s'" by auto
-  also from assms(1,5) have "\<dots> < gas st" by (auto split:if_split_asm)
-  finally show ?thesis .
-qed
+method stmt_dom_gas =
+  match premises in s: "stmt _ _ _ _ = Normal (_,_)" and d[thin]: "stmt_dom _" \<Rightarrow> \<open>insert stmt_dom_gas[OF d s]\<close>
+method msel_ssel_expr_load_rexp =
+  match premises in e[thin]: "expr _ _ _ _ _ = Normal (_,_)" \<Rightarrow> \<open>insert msel_ssel_expr_load_rexp_gas(3)[OF e]\<close> |
+  match premises in l[thin]: "load _ _ _ _ _ _ _ _ _ _ _ = Normal (_,_)" \<Rightarrow> \<open>insert msel_ssel_expr_load_rexp_gas(4)[OF l, THEN conjunct1]\<close>
+method costs =
+  match premises in "costs (WHILE ex s0) e cd st < _" for ex s0 and e::Environment and cd::CalldataT and st::State \<Rightarrow> \<open>insert while_not_zero[of (unchecked) ex s0 e cd st]\<close> |
+  match premises in "costs (INVOKE i xe) e cd st < _" for i xe and e::Environment and cd::CalldataT and st::State \<Rightarrow> \<open>insert invoke_not_zero[of (unchecked) i xe e cd st]\<close> |
+  match premises in "costs (EXTERNAL ad i xe val) e cd st < _" for ad i xe val and e::Environment and cd::CalldataT and st::State \<Rightarrow> \<open>insert external_not_zero[of (unchecked) ad i xe val e cd st]\<close> |
+  match premises in "costs (TRANSFER ad ex) e cd st < _" for ad ex and e::Environment and cd::CalldataT and st::State \<Rightarrow> \<open>insert transfer_not_zero[of (unchecked) ad ex e cd st]\<close> |
+  match premises in "costs (NEW i xe val) e cd st < _" for i xe val and e::Environment and cd::CalldataT and st::State \<Rightarrow> \<open>insert new_not_zero[of (unchecked) i xe val e cd st]\<close>
 
-lemma x4:
-  assumes "(if gas st \<le> c then throw Gas st else (get \<bind> (\<lambda>s. put (s\<lparr>gas := gas s - c\<rparr>))) st) = Normal ((), s')"
-      and "s'\<lparr>stack := emptyStore\<rparr> = va"
-      and "load False ad xe e\<^sub>p (ffold (init aa) \<lparr>address = address e, sender = sender e, svalue = svalue e, denvalue = fmempty\<rparr> (fmdom aa)) emptyStore va e cd s' =  Normal ((ag, ah, s'd), vc)"
-      and "stmt ae e\<^sub>p ag ah s'd = Normal ((), s'e)"
-      and "msel_ssel_lexp_expr_load_rexp_stmt_dom (Inr (Inr (Inr (ae, e\<^sub>p, ag, ah, s'd))))"
-      and "msel_ssel_lexp_expr_load_rexp_stmt_dom (Inr (Inl (Inr (False, ad, xe, e\<^sub>p, ffold (init aa) \<lparr>address = address e, sender = sender e, svalue = svalue e, denvalue = fmempty\<rparr> (fmdom aa), emptyStore, va, e, cd, s'))))"
-      and "c>0"
-    shows "gas s'e < gas st"
-proof -
-  from assms have "gas s'e \<le> gas s'd" using msel_ssel_lexp_expr_load_rexp_stmt_dom_gas(7) by blast
-  with assms show ?thesis using x3[OF assms(1) assms(2) assms(3) assms(6)] by simp
-qed
-
-lemma x5:
-  assumes "(if gas st \<le> costs (COMP s1 s2) e\<^sub>p e cd st then throw Gas st else (get \<bind> (\<lambda>s. put (s\<lparr>gas := gas s - costs (COMP s1 s2) e\<^sub>p e cd st\<rparr>))) st) = Normal ((), s')"
-      and "stmt s1 e\<^sub>p e cd s' = Normal ((), s'a)"
-      and "msel_ssel_lexp_expr_load_rexp_stmt_dom (Inr (Inr (Inr (s1, e\<^sub>p, e, cd, s'))))"
-    shows "gas s'a < gas st \<or> gas s'a = gas st"
-    using assms msel_ssel_lexp_expr_load_rexp_stmt_dom_gas(7)[of s1 e\<^sub>p e cd s'] by (auto split:if_split_asm)
-
-lemma x6:
-  assumes "(if gas st \<le> costs (WHILE ex s0) e\<^sub>p e cd st then throw Gas st else (get \<bind> (\<lambda>s. put (s\<lparr>gas := gas s - costs (WHILE ex s0) e\<^sub>p e cd st\<rparr>))) st) = Normal ((), s')"
-      and "expr ex e\<^sub>p e cd s' = Normal (val, s'a)"
-      and "stmt s0 e\<^sub>p e cd s'a = Normal ((), s'b)"
-      and "msel_ssel_lexp_expr_load_rexp_stmt_dom (Inr (Inr (Inr (s0, e\<^sub>p, e, cd, s'a))))"
-      and "msel_ssel_lexp_expr_load_rexp_stmt_dom (Inr (Inl (Inl (ex, e\<^sub>p, e, cd, s'))))"
-    shows "gas s'b < gas st"
-proof -
-  from assms have "gas s'b \<le> gas s'a" using msel_ssel_lexp_expr_load_rexp_stmt_dom_gas(7)[of s0 e\<^sub>p e cd s'a] by blast
-  also from assms have "\<dots> \<le> gas s'" using msel_ssel_lexp_expr_load_rexp_stmt_dom_gas(4)[of ex e\<^sub>p e cd s'] by auto
-  also from assms(1) have "\<dots> < gas st" using while_not_zero by (auto split:if_split_asm)
-  finally show ?thesis .
-qed
-
-lemma x7:
-  assumes "(if gas st \<le> c then throw Gas st else (get \<bind> (\<lambda>s. put (s\<lparr>gas := gas s - c\<rparr>))) st) = Normal ((), s')"
-      and "expr ad e\<^sub>p e cd s' = Normal ((KValue vb, Value TAddr), s'a)"
-      and "expr val e\<^sub>p e cd s'a = Normal ((KValue vd, Value ta), s'b)"
-      and "msel_ssel_lexp_expr_load_rexp_stmt_dom (Inr (Inl (Inl (val, e\<^sub>p, e, cd, s'a))))"
-      and "msel_ssel_lexp_expr_load_rexp_stmt_dom (Inr (Inl (Inl (ad, e\<^sub>p, e, cd, s'))))"
-      and "c>0"
-    shows "gas s'b < gas st"
-proof -
-  from assms(4,3) have "gas s'b \<le> gas s'a" using msel_ssel_lexp_expr_load_rexp_stmt_dom_gas(4)[of val e\<^sub>p e cd s'a] by simp
-  also from assms(5,2) have "\<dots> \<le> gas s'" using msel_ssel_lexp_expr_load_rexp_stmt_dom_gas(4)[of ad e\<^sub>p e cd s'] by simp
-  also from assms(1,6) have "\<dots> < gas st" by (auto split:if_split_asm)
-  finally show ?thesis .
-qed
-
-lemma x8:
-  assumes "(if gas st \<le> costs (TRANSFER ad ex) e\<^sub>p e cd st then throw Gas st else (get \<bind> (\<lambda>s. put (s\<lparr>gas := gas s - costs (TRANSFER ad ex) e\<^sub>p e cd st\<rparr>))) st) = Normal ((), s')"
-      and "expr ex e\<^sub>p e cd s' = Normal ((KValue vb, Value t), s'a)"
-      and "expr ad e\<^sub>p e cd s'a = Normal ((KValue vd, Value TAddr), s'b)"
-      and "s'b\<lparr>accounts := ab, stack := emptyStore, memory := emptyStore\<rparr> = s'e"
-      and "msel_ssel_lexp_expr_load_rexp_stmt_dom (Inr (Inl (Inl (ad, e\<^sub>p, e, cd, s'a))))"
-      and "msel_ssel_lexp_expr_load_rexp_stmt_dom (Inr (Inl (Inl (ex, e\<^sub>p, e, cd, s'))))"
-    shows "gas s'e < gas st"
-proof -
-  from assms(4) have "gas s'e = gas s'b" by auto
-  also from assms(5,3) have "\<dots> \<le> gas s'a" using msel_ssel_lexp_expr_load_rexp_stmt_dom_gas(4)[of ad e\<^sub>p e cd s'a] by simp
-  also from assms(6,2) have "\<dots> \<le> gas s'" using msel_ssel_lexp_expr_load_rexp_stmt_dom_gas(4)[of ex e\<^sub>p e cd s'] by simp
-  also from assms(1) have "\<dots> < gas st" using transfer_not_zero by (auto split:if_split_asm)
-  finally show ?thesis .
-qed
-
-lemma x9:
-  assumes "(if gas st \<le> costs (BLOCK ((id0, tp), Some a) s) e\<^sub>p e\<^sub>v cd st then throw Gas st else (get \<bind> (\<lambda>sa. put (sa\<lparr>gas := gas sa - costs (BLOCK ((id0, tp), Some a) s) e\<^sub>p e\<^sub>v cd st\<rparr>))) st) = Normal ((), s')"
-      and "expr a e\<^sub>p e\<^sub>v cd s' = Normal ((aa, b), s'a)"
-      and "decl id0 tp (Some (aa, b)) False cd vb cd e\<^sub>v s'a = Normal ((ab, ba), s'c)"
-      and "msel_ssel_lexp_expr_load_rexp_stmt_dom (Inr (Inl (Inl (a, e\<^sub>p, e\<^sub>v, cd, s'))))"
-    shows "gas s'c < gas st \<or> gas s'c = gas st"
-proof -
-  from assms have "gas s'c = gas s'a" using decl_gas_address[of id0 tp "(Some (aa, b))" False cd vb cd e\<^sub>v s'a] by simp
-  also from assms have "\<dots> \<le> gas s'" using msel_ssel_lexp_expr_load_rexp_stmt_dom_gas(4)[of a e\<^sub>p e\<^sub>v cd s'] by simp
-  also from assms(1) have "\<dots> \<le> gas st" by (auto split:if_split_asm)
-  finally show ?thesis by auto
-qed
-
-lemma x10:
-  assumes "(if gas st \<le> costs (BLOCK ((id0, tp), None) s) e\<^sub>p e\<^sub>v cd st then throw Gas st else (get \<bind> (\<lambda>sa. put (sa\<lparr>gas := gas sa - costs (BLOCK ((id0, tp), None) s) e\<^sub>p e\<^sub>v cd st\<rparr>))) st) = Normal ((), s')"
-      and "decl id0 tp None False cd va cd e\<^sub>v s' = Normal ((a, b), s'b)"
-    shows "gas s'b < gas st \<or> gas s'b = gas st"
-proof -
-  from assms have "gas s'b = gas s'" using decl_gas_address[of id0 tp None False cd va cd e\<^sub>v s'] by simp
-  also from assms(1) have "\<dots> \<le> gas st" by (auto split:if_split_asm)
-  finally show ?thesis by auto
-qed
-
-lemma x11:
-  assumes "(if gas st \<le> c then throw Gas st else (get \<bind> (\<lambda>s. put (s\<lparr>gas := gas s - c\<rparr>))) st) = Normal ((), s')"
-      and "expr ad e\<^sub>p e cd s' = Normal ((KValue vb, Value TAddr), s'a)"
-      and "expr val e\<^sub>p e cd s'a = Normal ((KValue vd, Value ta), s'b)"
-      and "load True af xe e\<^sub>p (ffold (init ab) \<lparr>address = vb, sender = address e, svalue = vd, denvalue = fmempty\<rparr> (fmdom ab)) emptyStore (s'b\<lparr>stack := emptyStore, memory := emptyStore\<rparr>) e cd s'b = Normal ((ak, al, s'g), vh)"
-      and "msel_ssel_lexp_expr_load_rexp_stmt_dom (Inr (Inl (Inr (True, af, xe, e\<^sub>p, ffold (init ab) \<lparr>address = vb, sender = address e, svalue = vd, denvalue = fmempty\<rparr> (fmdom ab), emptyStore, s'b\<lparr>stack := emptyStore, memory := emptyStore\<rparr>, e, cd, s'b))))"
-      and "msel_ssel_lexp_expr_load_rexp_stmt_dom (Inr (Inl (Inl (val, e\<^sub>p, e, cd, s'a))))"
-      and "msel_ssel_lexp_expr_load_rexp_stmt_dom (Inr (Inl (Inl (ad, e\<^sub>p, e, cd, s'))))"
-      and "c>0"
-    shows "gas s'g < gas st"
-proof -
-  from assms have "gas s'g \<le> gas (s'b\<lparr>stack := emptyStore, memory := emptyStore\<rparr>)" using msel_ssel_lexp_expr_load_rexp_stmt_dom_gas(5)[of True af xe e\<^sub>p "ffold (init ab) \<lparr>address = vb, sender = address e, svalue = vd, denvalue = fmempty\<rparr> (fmdom ab)" emptyStore "s'b\<lparr>stack := emptyStore, memory := emptyStore\<rparr>" e cd s'b] by blast
-  also have "\<dots> = gas s'b" by simp
-  also from assms have "\<dots> < gas st" using x7[OF assms(1) assms(2) assms(3) assms(6)] by auto
-  finally show ?thesis .
-qed
-
-lemma x12:
-  assumes "(if gas st \<le> c then throw Gas st else (get \<bind> (\<lambda>s. put (s\<lparr>gas := gas s - c\<rparr>))) st) = Normal ((), s')"
-      and "expr ad e\<^sub>p e cd s' = Normal ((KValue vb, Value TAddr), s'a)"
-      and "expr val e\<^sub>p e cd s'a = Normal ((KValue vd, Value ta), s'b)"
-      and "load True af xe e\<^sub>p (ffold (init ab) \<lparr>address = vb, sender = address e, svalue = vd, denvalue = fmempty\<rparr> (fmdom ab)) emptyStore (s'b\<lparr>stack := emptyStore, memory := emptyStore\<rparr>) e cd s'b = Normal ((ak, al, s'g), vh)"
-      and "stmt ag e\<^sub>p ak al (s'g\<lparr>accounts := ala\<rparr>) = Normal ((), s'h)"
-      and "msel_ssel_lexp_expr_load_rexp_stmt_dom (Inr (Inl (Inr (True, af, xe, e\<^sub>p, ffold (init ab) \<lparr>address = vb, sender = address e, svalue = vd, denvalue = fmempty\<rparr> (fmdom ab), emptyStore, s'b\<lparr>stack := emptyStore, memory := emptyStore\<rparr>, e, cd, s'b))))"
-      and "msel_ssel_lexp_expr_load_rexp_stmt_dom (Inr (Inl (Inl (val, e\<^sub>p, e, cd, s'a))))"
-      and "msel_ssel_lexp_expr_load_rexp_stmt_dom (Inr (Inl (Inl (ad, e\<^sub>p, e, cd, s'))))"
-      and "msel_ssel_lexp_expr_load_rexp_stmt_dom (Inr (Inr (Inr (ag, e\<^sub>p, ak, al, (s'g\<lparr>accounts := ala\<rparr>)))))"
-      and "c>0"
-    shows "gas s'h < gas st"
-proof -
-  from assms have "gas s'h \<le> gas (s'g\<lparr>accounts := ala\<rparr>)" using msel_ssel_lexp_expr_load_rexp_stmt_dom_gas(7) by blast
-  also from assms have "\<dots> < gas st" using x11[OF assms(1) assms(2) assms(3) assms(4)] by auto
-  finally show ?thesis .
-qed
-
-termination
-  apply (relation
-      "measures [\<lambda>x. case x of Inr (Inr (Inr l)) \<Rightarrow> gas (snd (snd (snd (snd l))))
-                             | Inr (Inr (Inl l)) \<Rightarrow> gas (snd (snd (snd (snd l))))
-                             | Inr (Inl (Inr l)) \<Rightarrow> gas (snd (snd (snd (snd (snd (snd (snd (snd (snd l)))))))))
-                             | Inr (Inl (Inl l)) \<Rightarrow> gas (snd (snd (snd (snd l))))
-                             | Inl (Inr (Inr l)) \<Rightarrow> gas (snd (snd (snd (snd l))))
-                             | Inl (Inr (Inl l)) \<Rightarrow> gas (snd (snd (snd (snd (snd (snd l))))))
-                             | Inl (Inl l) \<Rightarrow> gas (snd (snd (snd (snd (snd (snd (snd l))))))),
-                 \<lambda>x. case x of Inr (Inr (Inr l)) \<Rightarrow> 1
-                             | Inr (Inr (Inl l)) \<Rightarrow> 0
-                             | Inr (Inl (Inr l)) \<Rightarrow> 0
-                             | Inr (Inl (Inl l)) \<Rightarrow> 0
-                             | Inl (Inr (Inr l)) \<Rightarrow> 0
-                             | Inl (Inr (Inl l)) \<Rightarrow> 0
-                             | Inl (Inl l) \<Rightarrow> 0,
-                 \<lambda>x. case x of Inr (Inr (Inr l)) \<Rightarrow> size (fst l)
-                             | Inr (Inr (Inl l)) \<Rightarrow> size (fst l)
-                             | Inr (Inl (Inr l)) \<Rightarrow> size_list size (fst (snd (snd l)))
-                             | Inr (Inl (Inl l)) \<Rightarrow> size (fst l)
-                             | Inl (Inr (Inr l)) \<Rightarrow> size (fst l)
-                             | Inl (Inr (Inl l)) \<Rightarrow> size_list size (fst (snd (snd l)))
-                             | Inl (Inl l) \<Rightarrow> size_list size (fst (snd (snd (snd l))))]
-  ")
-  apply simp_all
-  apply (simp only: x1)
-  apply (simp only: x1)
-  apply (simp only: x1)
-  apply (auto split: if_split_asm)[1]
-  apply (auto split: if_split_asm)[1]
-  apply (simp only: x2)
-  apply (simp only: x2)
-  apply (auto split: if_split_asm)[1]
-  apply (simp only: x2)
-  apply (auto split: if_split_asm)[1]
-  apply (simp only: x2)
-  apply (auto split: if_split_asm)[1]
-  apply (simp only: x2)
-  apply (auto split: if_split_asm)[1]
-  apply (simp only: x2)
-  apply (auto split: if_split_asm)[1]
-  apply (simp only: x2)
-  apply (auto split: if_split_asm)[1]
-  apply (simp only: x2)
-  apply (auto split: if_split_asm)[1]
-  apply (auto split: if_split_asm)[1]
-  using call_not_zero apply (simp only: x3)
-  using call_not_zero apply (simp add: x4)
-  apply (auto split: if_split_asm)[1]
-  apply (simp only: x2)
-  using ecall_not_zero apply (simp add: x7)
-  using ecall_not_zero apply (auto simp add: x11)[1]
-  using ecall_not_zero apply (auto simp add: x12)[1]
-  apply (simp only: x1)
-  apply (auto split: if_split_asm)[1]
-  apply (simp only: x2)
-  apply (simp only: x2)                       
-  apply (simp only: x2)
-  apply (simp only: x2)
-  apply (simp only: x2)
-  apply (auto split: if_split_asm)[1]
-  apply (simp only: x5)
-  apply (auto split: if_split_asm)[1]
-  apply (simp only: x2)
-  apply (simp only: x2)
-  apply (auto split: if_split_asm)[1]
-  apply (simp only: x2)
-  apply (simp only: x6)
-  apply (auto split: if_split_asm)[1]
-  using invoke_not_zero apply (simp only: x3)
-  apply (auto split: if_split_asm)[1]
-  apply (simp only: x2)
-  using external_not_zero apply (simp add: x7)
-  using external_not_zero apply (auto simp add: x11)[1]
-  using external_not_zero apply (auto simp add: x7)[1]
-  apply (auto split: if_split_asm)[1]
-  apply (simp add: x2)
-  apply (simp add: x8)
-  apply (auto split: if_split_asm)[1]
-  apply (simp only: x9)
-  apply (simp only: x10)
+termination stmt
+  apply (relation "measures [sgas, ssize]")
+  apply (auto split: if_split_asm result.split_asm Stackvalue.split_asm Type.split_asm Types.split_asm option.split_asm Member.split_asm bool.split_asm atype.split_asm)
+  apply ((stmt_dom_gas | msel_ssel_expr_load_rexp)+, costs?, simp)+
   done
+
+subsection \<open>Gas Reduction\<close>
+
+text \<open>
+  The following corollary is a generalization of @{thm [source] msel_ssel_expr_load_rexp_dom_gas}.
+  We first prove that the function is defined for all input values and then obtain the final result as a corollary.
+\<close>
+lemma stmt_dom: "stmt_dom (s6, ev6, cd6, st6)"
+  apply (induct rule: stmt.induct[where ?P="\<lambda>s6 ev6 cd6 st6. stmt_dom (s6, ev6, cd6, st6)"])
+  apply (simp_all add: stmt.domintros(1-10))
+  apply (rule stmt.domintros(11), force)
+  done
+
+lemmas stmt_gas = stmt_dom_gas[OF stmt_dom]
+
+lemma skip:
+  assumes "stmt SKIP ev cd st = Normal (x, st')"
+    shows "gas st > costs SKIP ev cd st"
+      and "st' = st\<lparr>gas := gas st - costs SKIP ev cd st\<rparr>"
+  using assms by (auto split:if_split_asm)
+
+lemma assign:
+  assumes "stmt (ASSIGN lv ex) ev cd st  = Normal (xx, st')"
+  obtains (1) v t g l t' g' v'
+    where "expr ex ev cd (st\<lparr>gas := gas st - costs  (ASSIGN lv ex) ev cd st\<rparr>) (gas st - costs  (ASSIGN lv ex) ev cd st) = Normal ((KValue v, Value t), g)"
+      and "lexp lv ev cd (st\<lparr>gas := g\<rparr>) g = Normal((LStackloc l, Value t'),g')"
+      and "convert t t' v = Some v'"
+      and "st' = st\<lparr>gas := g', stack := updateStore l (KValue v') (stack st)\<rparr>"
+  | (2) v t g l t' g' v'
+    where "expr ex ev cd (st\<lparr>gas := gas st - costs  (ASSIGN lv ex) ev cd st\<rparr>) (gas st - costs  (ASSIGN lv ex) ev cd st) = Normal ((KValue v, Value t), g)"
+      and "lexp lv ev cd (st\<lparr>gas := g\<rparr>) g = Normal((LStoreloc l, Storage (STValue t')),g')"
+      and "convert t t' v = Some v'"
+      and "st' = st\<lparr>gas := g', storage := (storage st) (address ev := (fmupd l v' (storage st (address ev))))\<rparr>"
+  | (3) v t g l t' g' v'
+    where "expr ex ev cd (st\<lparr>gas := gas st - costs  (ASSIGN lv ex) ev cd st\<rparr>) (gas st - costs  (ASSIGN lv ex) ev cd st) = Normal ((KValue v, Value t), g)"
+      and "lexp lv ev cd (st\<lparr>gas := g\<rparr>) g = Normal((LMemloc l, Memory (MTValue t')),g')"
+      and "convert t t' v = Some v'"
+      and "st' = st\<lparr>gas := g', memory := updateStore l (MValue v') (memory st)\<rparr>"
+  | (4) p x t g l t' g' p' m
+    where "expr ex ev cd (st\<lparr>gas := gas st - costs  (ASSIGN lv ex) ev cd st\<rparr>) (gas st - costs  (ASSIGN lv ex) ev cd st) = Normal ((KCDptr p, Calldata (MTArray x t)), g)"
+      and "lexp lv ev cd (st\<lparr>gas := g\<rparr>) g = Normal((LStackloc l, Memory t'),g')"
+      and "accessStore l (stack st) = Some (KMemptr p')"
+      and "cpm2m p p' x t cd (memory st) = Some m"
+      and "st' = st\<lparr>gas := g', memory := m\<rparr>"
+  | (5) p x t g l t' g' p' s
+    where "expr ex ev cd (st\<lparr>gas := gas st - costs  (ASSIGN lv ex) ev cd st\<rparr>) (gas st - costs  (ASSIGN lv ex) ev cd st) = Normal ((KCDptr p, Calldata (MTArray x t)), g)"
+      and "lexp lv ev cd (st\<lparr>gas := g\<rparr>) g = Normal((LStackloc l, Storage t'),g')"
+      and "accessStore l (stack st) = Some (KStoptr p')"
+      and "cpm2s p p' x t cd (storage st (address ev)) = Some s"
+      and "st' = st\<lparr>gas := g', storage := (storage st) (address ev := s)\<rparr>"
+  | (6) p x t g l t' g' s
+    where "expr ex ev cd (st\<lparr>gas := gas st - costs  (ASSIGN lv ex) ev cd st\<rparr>) (gas st - costs  (ASSIGN lv ex) ev cd st) = Normal ((KCDptr p, Calldata (MTArray x t)), g)"
+      and "lexp lv ev cd (st\<lparr>gas := g\<rparr>) g = Normal((LStoreloc l, t'),g')"
+      and "cpm2s p l x t cd (storage st (address ev)) = Some s"
+      and "st' = st\<lparr>gas := g', storage := (storage st) (address ev := s)\<rparr>"
+  | (7) p x t g l t' g' m
+    where "expr ex ev cd (st\<lparr>gas := gas st - costs  (ASSIGN lv ex) ev cd st\<rparr>) (gas st - costs  (ASSIGN lv ex) ev cd st) = Normal ((KCDptr p, Calldata (MTArray x t)), g)"
+      and "lexp lv ev cd (st\<lparr>gas := g\<rparr>) g = Normal((LMemloc l, t'),g')"
+      and "cpm2m p l x t cd (memory st) = Some m"
+      and "st' = st\<lparr>gas := g', memory := m\<rparr>"
+  | (8) p x t g l t' g'
+    where "expr ex ev cd (st\<lparr>gas := gas st - costs  (ASSIGN lv ex) ev cd st\<rparr>) (gas st - costs  (ASSIGN lv ex) ev cd st) = Normal ((KMemptr p, Memory (MTArray x t)), g)"
+      and "lexp lv ev cd (st\<lparr>gas := g\<rparr>) g = Normal((LStackloc l, Memory t'),g')"
+      and "st' = st\<lparr>gas := g', stack := updateStore l (KMemptr p) (stack st)\<rparr>"
+  | (9) p x t g l t' g' p' s
+    where "expr ex ev cd (st\<lparr>gas := gas st - costs  (ASSIGN lv ex) ev cd st\<rparr>) (gas st - costs  (ASSIGN lv ex) ev cd st) = Normal ((KMemptr p, Memory (MTArray x t)), g)"
+      and "lexp lv ev cd (st\<lparr>gas := g\<rparr>) g = Normal((LStackloc l, Storage t'),g')"
+      and "accessStore l (stack st) = Some (KStoptr p')"
+      and "cpm2s p p' x t (memory st) (storage st (address ev)) = Some s"
+      and "st' = st\<lparr>gas := g', storage := (storage st) (address ev := s)\<rparr>"
+  | (10) p x t g l t' g' s
+    where "expr ex ev cd (st\<lparr>gas := gas st - costs  (ASSIGN lv ex) ev cd st\<rparr>) (gas st - costs  (ASSIGN lv ex) ev cd st) = Normal ((KMemptr p, Memory (MTArray x t)), g)"
+      and "lexp lv ev cd (st\<lparr>gas := g\<rparr>) g = Normal((LStoreloc l, t'),g')"
+      and "cpm2s p l x t (memory st) (storage st (address ev)) = Some s"
+      and "st' = st\<lparr>gas := g', storage := (storage st) (address ev := s)\<rparr>"
+  | (11) p x t g l t' g'
+    where "expr ex ev cd (st\<lparr>gas := gas st - costs  (ASSIGN lv ex) ev cd st\<rparr>) (gas st - costs  (ASSIGN lv ex) ev cd st) = Normal ((KMemptr p, Memory (MTArray x t)), g)"
+      and "lexp lv ev cd (st\<lparr>gas := g\<rparr>) g = Normal((LMemloc l, t'),g')"
+      and "st' = st\<lparr>gas := g', memory := updateStore l (MPointer p) (memory st)\<rparr>"
+  | (12) p x t g l t' g' p' m
+    where "expr ex ev cd (st\<lparr>gas := gas st - costs  (ASSIGN lv ex) ev cd st\<rparr>) (gas st - costs  (ASSIGN lv ex) ev cd st) = Normal ((KStoptr p, Storage (STArray x t)), g)"
+      and "lexp lv ev cd (st\<lparr>gas := g\<rparr>) g = Normal((LStackloc l, Memory t'),g')"
+      and "accessStore l (stack st) = Some (KMemptr p')"
+      and "cps2m p p' x t (storage st (address ev)) (memory st) = Some m"
+      and "st' = st\<lparr>gas := g', memory := m\<rparr>"
+  | (13) p x t g l t' g'
+    where "expr ex ev cd (st\<lparr>gas := gas st - costs  (ASSIGN lv ex) ev cd st\<rparr>) (gas st - costs  (ASSIGN lv ex) ev cd st) = Normal ((KStoptr p, Storage (STArray x t)), g)"
+      and "lexp lv ev cd (st\<lparr>gas := g\<rparr>) g = Normal((LStackloc l, Storage t'),g')"
+      and "st' = st\<lparr>gas := g', stack := updateStore l (KStoptr p) (stack st)\<rparr>"
+  | (14) p x t g l t' g' s
+    where "expr ex ev cd (st\<lparr>gas := gas st - costs  (ASSIGN lv ex) ev cd st\<rparr>) (gas st - costs  (ASSIGN lv ex) ev cd st) = Normal ((KStoptr p, Storage (STArray x t)), g)"
+      and "lexp lv ev cd (st\<lparr>gas := g\<rparr>) g = Normal((LStoreloc l, t'),g')"
+      and "copy p l x t (storage st (address ev)) = Some s"
+      and "st' = st\<lparr>gas := g', storage := (storage st) (address ev := s)\<rparr>"
+  | (15) p x t g l t' g' m
+    where "expr ex ev cd (st\<lparr>gas := gas st - costs  (ASSIGN lv ex) ev cd st\<rparr>) (gas st - costs  (ASSIGN lv ex) ev cd st) = Normal ((KStoptr p, Storage (STArray x t)), g)"
+      and "lexp lv ev cd (st\<lparr>gas := g\<rparr>) g = Normal((LMemloc l, t'),g')"
+      and "cps2m p l x t (storage st (address ev)) (memory st) = Some m"
+      and "st' = st\<lparr>gas := g', memory := m\<rparr>"
+  | (16) p t t' g l t'' g'
+    where "expr ex ev cd (st\<lparr>gas := gas st - costs  (ASSIGN lv ex) ev cd st\<rparr>) (gas st - costs  (ASSIGN lv ex) ev cd st) = Normal ((KStoptr p, Storage (STMap t t')), g)"
+      and "lexp lv ev cd (st\<lparr>gas := g\<rparr>) g = Normal((LStackloc l, t''),g')"
+      and "st' = st\<lparr>gas := g', stack := updateStore l (KStoptr p) (stack st)\<rparr>"
+proof -
+  from assms consider
+    (1) v t g where "expr ex ev cd (st\<lparr>gas := gas st - costs  (ASSIGN lv ex) ev cd st\<rparr>) (gas st - costs  (ASSIGN lv ex) ev cd st) = Normal ((KValue v, Value t), g)"
+  | (2) p x t g where "expr ex ev cd (st\<lparr>gas := gas st - costs  (ASSIGN lv ex) ev cd st\<rparr>) (gas st - costs  (ASSIGN lv ex) ev cd st) = Normal ((KCDptr p, Calldata (MTArray x t)), g)"
+  | (3) p x t g where "expr ex ev cd (st\<lparr>gas := gas st - costs  (ASSIGN lv ex) ev cd st\<rparr>) (gas st - costs  (ASSIGN lv ex) ev cd st) = Normal ((KMemptr p, Memory (MTArray x t)), g)"
+  | (4) p x t g where "expr ex ev cd (st\<lparr>gas := gas st - costs  (ASSIGN lv ex) ev cd st\<rparr>) (gas st - costs  (ASSIGN lv ex) ev cd st) = Normal ((KStoptr p, Storage (STArray x t)), g)"
+  | (5) p t t' g where "expr ex ev cd (st\<lparr>gas := gas st - costs  (ASSIGN lv ex) ev cd st\<rparr>) (gas st - costs  (ASSIGN lv ex) ev cd st) = Normal ((KStoptr p, Storage (STMap t t')), g)"
+    by (auto split:if_split_asm result.split_asm Stackvalue.split_asm Type.split_asm MTypes.split_asm STypes.split_asm)
+  then show ?thesis
+  proof cases
+    case 1
+    with assms consider
+      (11) l t' g' where "lexp lv ev cd (st\<lparr>gas := g\<rparr>) g = Normal((LStackloc l, Value t'),g')"
+    | (12) l t' g' where "lexp lv ev cd (st\<lparr>gas := g\<rparr>) g = Normal((LStoreloc l, Storage (STValue t')),g')"
+    | (13) l t' g' where "lexp lv ev cd (st\<lparr>gas := g\<rparr>) g = Normal((LMemloc l, Memory (MTValue t')),g')"
+      by (auto split:if_split_asm result.split_asm Type.split_asm LType.split_asm MTypes.split_asm STypes.split_asm)
+    then show ?thesis
+    proof cases
+      case 11
+      with 1 assms show ?thesis using that(1) by (auto split:if_split_asm result.split_asm Type.split_asm LType.split_asm MTypes.split_asm STypes.split_asm option.split_asm)
+    next
+      case 12
+      with 1 assms show ?thesis using that(2) by (auto split:if_split_asm result.split_asm Type.split_asm LType.split_asm MTypes.split_asm STypes.split_asm option.split_asm)
+    next
+      case 13
+      with 1 assms show ?thesis using that(3) by (auto split:if_split_asm result.split_asm Type.split_asm LType.split_asm MTypes.split_asm STypes.split_asm option.split_asm)
+    qed
+  next
+    case 2
+    with assms consider
+      (21) l t' g' where "lexp lv ev cd (st\<lparr>gas := g\<rparr>) g = Normal((LStackloc l, Memory t'),g')"
+    | (22) l t' g' where "lexp lv ev cd (st\<lparr>gas := g\<rparr>) g = Normal((LStackloc l, Storage t'),g')"
+    | (23) l t' g' where "lexp lv ev cd (st\<lparr>gas := g\<rparr>) g = Normal((LStoreloc l, t'),g')"
+    | (24) l t' g' where "lexp lv ev cd (st\<lparr>gas := g\<rparr>) g = Normal((LMemloc l, t'),g')"
+      by (auto split:if_split_asm result.split_asm Type.split_asm LType.split_asm MTypes.split_asm STypes.split_asm)
+    then show ?thesis
+    proof cases
+      case 21
+      moreover from assms 2 21 obtain p' where 3: "accessStore l (stack st) = Some (KMemptr p')"
+        by (auto split:if_split_asm result.split_asm Type.split_asm LType.split_asm MTypes.split_asm STypes.split_asm option.split_asm Stackvalue.split_asm)
+      moreover from assms 2 21 3 obtain m where "cpm2m p p' x t cd (memory st) = Some m"
+        by (auto split:if_split_asm result.split_asm Type.split_asm LType.split_asm MTypes.split_asm STypes.split_asm option.split_asm Stackvalue.split_asm)
+      ultimately show ?thesis using that(4) assms 2 21
+        by (auto split:if_split_asm result.split_asm Type.split_asm LType.split_asm MTypes.split_asm STypes.split_asm option.split_asm Stackvalue.split_asm)
+    next
+      case 22
+      moreover from assms 2 22 obtain p' where 3: "accessStore l (stack st) = Some (KStoptr p')"
+        by (auto split:if_split_asm result.split_asm Type.split_asm LType.split_asm MTypes.split_asm STypes.split_asm option.split_asm Stackvalue.split_asm)
+      moreover from assms 2 22 3 4 obtain s where "cpm2s p p' x t cd (storage st (address ev)) = Some s"
+        by (auto split:if_split_asm result.split_asm Type.split_asm LType.split_asm MTypes.split_asm STypes.split_asm option.split_asm Stackvalue.split_asm)
+      ultimately show ?thesis using that(5) assms 2 22
+        by (auto split:if_split_asm result.split_asm Type.split_asm LType.split_asm MTypes.split_asm STypes.split_asm option.split_asm Stackvalue.split_asm)
+    next
+      case 23
+      moreover from assms 2 23 3 4 obtain s where "cpm2s p l x t cd (storage st (address ev)) = Some s"
+        by (auto split:if_split_asm result.split_asm Type.split_asm LType.split_asm MTypes.split_asm STypes.split_asm option.split_asm Stackvalue.split_asm)
+      ultimately show ?thesis using that(6) assms 2
+        by (auto split:if_split_asm result.split_asm Type.split_asm LType.split_asm MTypes.split_asm STypes.split_asm option.split_asm Stackvalue.split_asm)
+    next
+      case 24
+      moreover from assms 2 24 obtain m where "cpm2m p l x t cd (memory st) = Some m"
+        by (auto split:if_split_asm result.split_asm Type.split_asm LType.split_asm MTypes.split_asm STypes.split_asm option.split_asm Stackvalue.split_asm)
+      ultimately show ?thesis using that(7) assms 2
+        by (auto split:if_split_asm result.split_asm Type.split_asm LType.split_asm MTypes.split_asm STypes.split_asm option.split_asm Stackvalue.split_asm)
+    qed
+  next
+    case 3
+    with assms consider
+      (31) l t' g' where "lexp lv ev cd (st\<lparr>gas := g\<rparr>) g = Normal((LStackloc l, Memory t'),g')"
+    | (32) l t' g' where "lexp lv ev cd (st\<lparr>gas := g\<rparr>) g = Normal((LStackloc l, Storage t'),g')"
+    | (33) l t' g' where "lexp lv ev cd (st\<lparr>gas := g\<rparr>) g = Normal((LStoreloc l, t'),g')"
+    | (34) l t' g' where "lexp lv ev cd (st\<lparr>gas := g\<rparr>) g = Normal((LMemloc l, t'),g')"
+      by (auto split:if_split_asm result.split_asm Type.split_asm LType.split_asm MTypes.split_asm STypes.split_asm)
+    then show ?thesis
+    proof cases
+      case 31
+      then show ?thesis using that(8) assms 3 by (auto split:if_split_asm)
+    next
+      case 32
+      moreover from assms 3 32 obtain p' where 4: "accessStore l (stack st) = Some (KStoptr p')"
+        by (auto split:if_split_asm result.split_asm Type.split_asm LType.split_asm MTypes.split_asm STypes.split_asm option.split_asm Stackvalue.split_asm)
+      moreover from assms 3 32 4 5 obtain s where "cpm2s p p' x t (memory st) (storage st (address ev)) = Some s"
+        by (auto split:if_split_asm result.split_asm Type.split_asm LType.split_asm MTypes.split_asm STypes.split_asm option.split_asm Stackvalue.split_asm)
+      ultimately show ?thesis using that(9) assms 3
+        by (auto split:if_split_asm result.split_asm Type.split_asm LType.split_asm MTypes.split_asm STypes.split_asm option.split_asm Stackvalue.split_asm)
+    next
+      case 33
+      moreover from assms 3 33 3 4 obtain s where "cpm2s p l x t (memory st) (storage st (address ev)) = Some s"
+        by (auto split:if_split_asm result.split_asm Type.split_asm LType.split_asm MTypes.split_asm STypes.split_asm option.split_asm Stackvalue.split_asm)
+      ultimately show ?thesis using that(10) assms 3
+        by (auto split:if_split_asm result.split_asm Type.split_asm LType.split_asm MTypes.split_asm STypes.split_asm option.split_asm Stackvalue.split_asm)
+    next
+      case 34
+      then show ?thesis using that(11) assms 3
+        by (auto split:if_split_asm result.split_asm Type.split_asm LType.split_asm MTypes.split_asm STypes.split_asm option.split_asm Stackvalue.split_asm)
+    qed
+  next
+    case 4
+    with assms consider
+      (41) l t' g' where "lexp lv ev cd (st\<lparr>gas := g\<rparr>) g = Normal((LStackloc l, Memory t'),g')"
+    | (42) l t' g' where "lexp lv ev cd (st\<lparr>gas := g\<rparr>) g = Normal((LStackloc l, Storage t'),g')"
+    | (43) l t' g' where "lexp lv ev cd (st\<lparr>gas := g\<rparr>) g = Normal((LStoreloc l, t'),g')"
+    | (44) l t' g' where "lexp lv ev cd (st\<lparr>gas := g\<rparr>) g = Normal((LMemloc l, t'),g')"
+      by (auto split:if_split_asm result.split_asm Type.split_asm LType.split_asm MTypes.split_asm STypes.split_asm)
+    then show ?thesis
+    proof cases
+      case 41
+      moreover from assms 4 41 obtain p' where 5: "accessStore l (stack st) = Some (KMemptr p')"
+        by (auto split:if_split_asm result.split_asm Type.split_asm LType.split_asm MTypes.split_asm STypes.split_asm option.split_asm Stackvalue.split_asm)
+      moreover from assms 4 41 5 6 obtain m where "cps2m p p' x t (storage st (address ev)) (memory st) = Some m"
+        by (auto split:if_split_asm result.split_asm Type.split_asm LType.split_asm MTypes.split_asm STypes.split_asm option.split_asm Stackvalue.split_asm)
+      ultimately show ?thesis using that(12) assms 4
+        by (auto split:if_split_asm result.split_asm Type.split_asm LType.split_asm MTypes.split_asm STypes.split_asm option.split_asm Stackvalue.split_asm)
+    next
+      case 42
+      then show ?thesis using that(13) assms 4
+        by (auto split:if_split_asm result.split_asm Type.split_asm LType.split_asm MTypes.split_asm STypes.split_asm option.split_asm Stackvalue.split_asm)
+    next
+      case 43
+      moreover from assms 4 43 5 obtain s where "copy p l x t (storage st (address ev)) = Some s"
+        by (auto split:if_split_asm result.split_asm Type.split_asm LType.split_asm MTypes.split_asm STypes.split_asm option.split_asm Stackvalue.split_asm)
+      ultimately show ?thesis using that(14) assms 4
+        by (auto split:if_split_asm result.split_asm Type.split_asm LType.split_asm MTypes.split_asm STypes.split_asm option.split_asm Stackvalue.split_asm)
+    next
+      case 44
+      moreover from assms 4 44 5 obtain m where "cps2m p l x t (storage st (address ev)) (memory st) = Some m"
+        by (auto split:if_split_asm result.split_asm Type.split_asm LType.split_asm MTypes.split_asm STypes.split_asm option.split_asm Stackvalue.split_asm)
+      ultimately show ?thesis using that(15) assms 4
+        by (auto split:if_split_asm result.split_asm Type.split_asm LType.split_asm MTypes.split_asm STypes.split_asm option.split_asm Stackvalue.split_asm)
+    qed
+  next
+    case 5
+    then show ?thesis using that(16) assms
+      by (auto split:if_split_asm result.split_asm Type.split_asm LType.split_asm MTypes.split_asm STypes.split_asm option.split_asm Stackvalue.split_asm)
+  qed
+qed
+
+lemma comp:
+  assumes "stmt (COMP s1 s2) ev cd st = Normal (x, st')"
+  obtains (1) st''
+  where "gas st > costs (COMP s1 s2) ev cd st"
+    and "stmt s1 ev cd (st\<lparr>gas := gas st - costs (COMP s1 s2) ev cd st\<rparr>) = Normal((), st'')"
+    and "stmt s2 ev cd st'' = Normal((), st')"
+  using assms by (simp split:if_split_asm result.split_asm prod.split_asm)
+
+lemma ite:
+  assumes "stmt (ITE ex s1 s2) ev cd st = Normal (x, st')"
+  obtains (True) g
+  where "gas st > costs (ITE ex s1 s2) ev cd st"
+    and "expr ex ev cd (st\<lparr>gas := gas st - costs (ITE ex s1 s2) ev cd st\<rparr>) (gas st - costs (ITE ex s1 s2) ev cd st) = Normal((KValue (ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True), Value TBool), g)"
+    and "stmt s1 ev cd (st\<lparr>gas := g\<rparr>) = Normal((), st')"
+| (False) g
+  where "gas st > costs (ITE ex s1 s2) ev cd st"
+    and "expr ex ev cd (st\<lparr>gas := gas st - costs (ITE ex s1 s2) ev cd st\<rparr>) (gas st - costs (ITE ex s1 s2) ev cd st) = Normal((KValue (ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l False), Value TBool), g)"
+    and "stmt s2 ev cd (st\<lparr>gas := g\<rparr>) = Normal((), st')"
+  using assms by (simp split:if_split_asm result.split_asm prod.split_asm Stackvalue.split_asm Type.split_asm Types.split_asm)
+
+lemma while:           
+  assumes "stmt (WHILE ex s0) ev cd st = Normal (x, st')"
+  obtains (True) g st''
+    where "gas st > costs (WHILE ex s0) ev cd st"
+      and "expr ex ev cd (st\<lparr>gas := gas st - costs (WHILE ex s0) ev cd st\<rparr>) (gas st - costs (WHILE ex s0) ev cd st) = Normal((KValue (ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True), Value TBool), g)"
+      and "stmt s0 ev cd (st\<lparr>gas := g\<rparr>) = Normal((), st'')"
+      and "stmt (WHILE ex s0) ev cd st'' = Normal ((), st')"
+    | (False) g
+  where "gas st > costs (WHILE ex s0) ev cd st"
+    and "expr ex ev cd (st\<lparr>gas := gas st - costs (WHILE ex s0) ev cd st\<rparr>) (gas st - costs (WHILE ex s0) ev cd st) = Normal((KValue (ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l False), Value TBool), g)"
+    and "st' = st\<lparr>gas := g\<rparr>"
+  using assms
+proof -
+  from assms have 1: "gas st > costs (WHILE ex s0) ev cd st" by (simp split:if_split_asm)
+  moreover from assms 1 have 2: "modify (\<lambda>st. st\<lparr>gas := gas st - costs (WHILE ex s0) ev cd st\<rparr>) st = Normal ((), st\<lparr>gas := gas st - costs (WHILE ex s0) ev cd st\<rparr>)" by simp
+  moreover from assms 1 2 obtain b g where 3: "expr ex ev cd (st\<lparr>gas := gas st - costs (WHILE ex s0) ev cd st\<rparr>) (gas st - costs (WHILE ex s0) ev cd st) = Normal ((KValue b, Value TBool), g)" by (simp split:result.split_asm prod.split_asm Stackvalue.split_asm Type.split_asm Types.split_asm)
+  ultimately consider (True) "b = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True" | (False) "b = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l False" | (None) "b \<noteq> ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True \<and> b \<noteq> ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l False" by auto
+  then show ?thesis
+  proof cases
+    case True
+    moreover from assms 1 2 3 True obtain st' where 4: "stmt s0 ev cd (st\<lparr>gas := g\<rparr>) = Normal ((), st')" by (simp split:result.split_asm prod.split_asm)
+    moreover from assms 1 2 3 4 True obtain st'' where 5: "stmt (WHILE ex s0) ev cd st' = Normal ((), st'')" by (simp split:result.split_asm prod.split_asm)
+    ultimately show ?thesis using 1 2 3 that(1) assms by simp
+  next
+    case False
+    then show ?thesis using 1 2 3 that(2) assms true_neq_false by simp
+  next
+    case None
+    then show ?thesis using 1 2 3 assms by simp
+  qed
+qed  
+
+lemma invoke:
+  fixes ev
+  defines "e' members \<equiv> ffold (init members) (emptyEnv (address ev) (contract ev) (sender ev) (svalue ev)) (fmdom members)"
+  assumes "stmt (INVOKE i xe) ev cd st = Normal (x, st')"
+  obtains ct fb fp f e\<^sub>l cd\<^sub>l k\<^sub>l m\<^sub>l g st''
+    where "gas st > costs (INVOKE i xe) ev cd st"
+      and "ep $$ contract ev = Some (ct, fb)"
+      and "ct $$ i = Some (Method (fp, False, f))"
+      and "load False fp xe (e' ct) emptyStore emptyStore (memory (st\<lparr>gas := gas st - costs (INVOKE i xe) ev cd st\<rparr>)) ev cd (st\<lparr>gas := gas st - costs (INVOKE i xe) ev cd st\<rparr>) (gas st - costs (INVOKE i xe) ev cd st) = Normal ((e\<^sub>l, cd\<^sub>l, k\<^sub>l, m\<^sub>l), g)"
+      and "stmt f e\<^sub>l cd\<^sub>l (st\<lparr>gas:= g, stack:=k\<^sub>l, memory:=m\<^sub>l\<rparr>) = Normal ((), st'')"
+      and "st' = st''\<lparr>stack:=stack st\<rparr>"
+proof -
+  from assms have 1: "gas st > costs (INVOKE i xe) ev cd st" by (simp split:if_split_asm)
+  moreover from assms 1 obtain ct fb where 2: "ep $$ (contract ev) = Some (ct, fb)" by (simp split: prod.split_asm result.split_asm option.split_asm)
+  moreover from assms 1 2 obtain fp f where 3: "ct $$ i = Some (Method (fp, False, f))" by (simp split: prod.split_asm result.split_asm option.split_asm Member.split_asm bool.split_asm)
+  moreover from assms 1 2 3 obtain e\<^sub>l cd\<^sub>l k\<^sub>l m\<^sub>l g where 4: "load False fp xe (e' ct) emptyStore emptyStore (memory (st\<lparr>gas := gas st - costs (INVOKE i xe) ev cd st\<rparr>)) ev cd (st\<lparr>gas := gas st - costs (INVOKE i xe) ev cd st\<rparr>) (gas st - costs (INVOKE i xe) ev cd st) = Normal ((e\<^sub>l, cd\<^sub>l, k\<^sub>l, m\<^sub>l), g)" by (simp split: prod.split_asm result.split_asm)
+  moreover from assms 1 2 3 4 obtain st'' where 5: "stmt f e\<^sub>l cd\<^sub>l (st\<lparr>gas:= g, stack:=k\<^sub>l, memory:=m\<^sub>l\<rparr>) = Normal ((), st'')" by (simp split: prod.split_asm result.split_asm)
+  moreover from assms 1 2 3 4 5 have "st' = st''\<lparr>stack:=stack st\<rparr>" by (simp split: prod.split_asm result.split_asm)
+  ultimately show ?thesis using that by simp
+qed
+
+lemma external:
+  fixes ev
+  defines "e' members adv c v \<equiv> ffold (init members) (emptyEnv adv c (address ev) v) (fmdom members)"
+  assumes "stmt (EXTERNAL ad' i xe val) ev cd st = Normal (x, st')"
+  obtains (Some) adv c g ct cn fb' v t g' v' fp f e\<^sub>l cd\<^sub>l k\<^sub>l m\<^sub>l g'' acc st''
+    where "gas st > costs (EXTERNAL ad' i xe val) ev cd st"
+      and "expr ad' ev cd (st\<lparr>gas := gas st - costs (EXTERNAL ad' i xe val) ev cd st\<rparr>) (gas st - costs  (EXTERNAL ad' i xe val) ev cd st) = Normal ((KValue adv, Value TAddr), g)"
+      and "adv \<noteq> address ev"
+      and "type (accounts (st\<lparr>gas := g\<rparr>) adv) = Some (Contract c)"
+      and "ep $$ c = Some (ct, cn, fb')"
+      and "expr val ev cd (st\<lparr>gas := g\<rparr>) g = Normal ((KValue v, Value t), g')"
+      and "convert t (TUInt 256) v = Some v'"
+      and "fmlookup ct i = Some (Method (fp, True, f))"
+      and "load True fp xe (e' ct adv c v') emptyStore emptyStore emptyStore ev cd (st\<lparr>gas := g'\<rparr>) g' = Normal ((e\<^sub>l, cd\<^sub>l, k\<^sub>l, m\<^sub>l), g'')"
+      and "transfer (address ev) adv v' (accounts (st\<lparr>gas := g''\<rparr>)) = Some acc"
+      and "stmt f e\<^sub>l cd\<^sub>l (st\<lparr>gas := g'', accounts := acc, stack:=k\<^sub>l, memory:=m\<^sub>l\<rparr>) = Normal ((), st'')"
+      and "st' = st''\<lparr>stack:=stack st, memory := memory st\<rparr>"
+    | (None) adv c g ct cn fb' v t g' v' acc st''
+    where "gas st > costs (EXTERNAL ad' i xe val) ev cd st"
+      and "expr ad' ev cd (st\<lparr>gas := gas st - costs  (EXTERNAL ad' i xe val) ev cd st\<rparr>) (gas st - costs  (EXTERNAL ad' i xe val) ev cd st) = Normal ((KValue adv, Value TAddr), g)"
+      and "adv \<noteq> address ev"
+      and "type (accounts (st\<lparr>gas := g\<rparr>) adv) = Some (Contract c)"
+      and "ep $$ c = Some (ct, cn, fb')"
+      and "expr val ev cd (st\<lparr>gas := g\<rparr>) g = Normal ((KValue v, Value t), g')"
+      and "convert t (TUInt 256) v = Some v'"
+      and "ct $$ i = None"
+      and "transfer (address ev) adv v' (accounts st) = Some acc"
+      and "stmt fb' (e' ct adv c v') emptyStore (st\<lparr>gas := g', accounts := acc, stack:=emptyStore, memory:=emptyStore\<rparr>) = Normal ((), st'')"
+      and "st' = st''\<lparr>stack:=stack st, memory := memory st\<rparr>"
+proof -
+  from assms have 1: "gas st > costs (EXTERNAL ad' i xe val) ev cd st" by (simp split:if_split_asm)
+  moreover from assms 1 obtain adv g where 2: "expr ad' ev cd (st\<lparr>gas := gas st - costs  (EXTERNAL ad' i xe val) ev cd st\<rparr>) (gas st - costs  (EXTERNAL ad' i xe val) ev cd st) = Normal ((KValue adv, Value TAddr), g)" by (simp split: prod.split_asm result.split_asm Stackvalue.split_asm Type.split_asm Types.split_asm)
+  moreover from assms 1 2 obtain c where 3: "type (accounts (st\<lparr>gas := g\<rparr>) adv) = Some (Contract c)" by (simp split: if_split_asm prod.split_asm result.split_asm Stackvalue.split_asm Type.split_asm Types.split_asm option.split_asm atype.split_asm)
+  moreover from assms 1 2 3 obtain ct cn fb' where 4: "ep $$ c = Some (ct, cn, fb')" by (simp add: Let_def split: if_split_asm prod.split_asm result.split_asm Stackvalue.split_asm Type.split_asm Types.split_asm option.split_asm)
+  moreover from assms 1 2 3 4 obtain v t g' where 5: "expr val ev cd (st\<lparr>gas := g\<rparr>) g = Normal ((KValue v, Value t), g')" using 1 2 by (simp split: if_split_asm prod.split_asm result.split_asm Stackvalue.split_asm Type.split_asm Types.split_asm option.split_asm)
+  moreover from assms 1 2 3 4 5 have 6: "adv \<noteq> address ev" by (simp add: Let_def split: if_split_asm prod.split_asm result.split_asm Stackvalue.split_asm Type.split_asm Types.split_asm option.split_asm)
+  moreover from assms 1 2 3 4 5 6 obtain v' where 7: "convert t (TUInt 256) v = Some v'" by (simp add: Let_def split: if_split_asm prod.split_asm result.split_asm Stackvalue.split_asm Type.split_asm Types.split_asm option.split_asm)
+  ultimately consider (Some) fp f where "ct $$ i = Some (Method (fp, True, f))" | (None) "fmlookup ct i = None" using assms by (simp add: Let_def split: if_split_asm prod.split_asm result.split_asm Stackvalue.split_asm Type.split_asm Types.split_asm option.split_asm Member.split_asm bool.split_asm)
+  then show ?thesis
+  proof cases
+    case (Some fp f)
+    moreover from assms 1 2 3 4 5 6 7 Some obtain e\<^sub>l cd\<^sub>l k\<^sub>l m\<^sub>l g'' where 8: "load True fp xe (e' ct adv c v') emptyStore emptyStore emptyStore ev cd (st\<lparr>gas := g'\<rparr>) g' = Normal ((e\<^sub>l, cd\<^sub>l, k\<^sub>l, m\<^sub>l), g'')" by (simp add: Let_def split: if_split_asm prod.split_asm result.split_asm Stackvalue.split_asm Type.split_asm Types.split_asm option.split_asm Member.split_asm)
+    moreover from assms 1 2 3 4 5 6 7 Some 8 obtain acc where 9: "transfer (address ev) adv v' (accounts st) = Some acc" by (simp add: Let_def split: if_split_asm prod.split_asm result.split_asm Stackvalue.split_asm Type.split_asm Types.split_asm option.split_asm Member.split_asm)
+    moreover from assms 1 2 3 4 5 6 7 Some 8 9 obtain st'' where 10: "stmt f e\<^sub>l cd\<^sub>l (st\<lparr>gas := g'', accounts := acc, stack:=k\<^sub>l, memory:=m\<^sub>l\<rparr>) = Normal ((), st'')" by (simp add: Let_def transfer_def split: if_split_asm prod.split_asm result.split_asm Stackvalue.split_asm Type.split_asm Types.split_asm option.split_asm Member.split_asm)
+    moreover from assms 1 2 3 4 5 6 7 Some 8 9 10 have "st' = st''\<lparr>stack:=stack st, memory := memory st\<rparr>" by (simp add: Let_def transfer_def split: if_split_asm prod.split_asm result.split_asm Stackvalue.split_asm Type.split_asm Types.split_asm option.split_asm Member.split_asm)
+    ultimately show ?thesis using 1 2 3 4 5 6 7 that(1) by simp
+  next
+    case None
+    moreover from assms 1 2 3 4 5 6 7 None obtain acc where 8: "transfer (address ev) adv v' (accounts st) = Some acc" by (simp add: Let_def split: if_split_asm prod.split_asm result.split_asm Stackvalue.split_asm Type.split_asm Types.split_asm option.split_asm Member.split_asm)
+    moreover from assms 1 2 3 4 5 6 7 None 8 obtain st'' where 9: "stmt fb' (e' ct adv c v') emptyStore (st\<lparr>gas := g', accounts := acc, stack:=emptyStore, memory:=emptyStore\<rparr>) = Normal ((), st'')" by (simp add: Let_def transfer_def split: if_split_asm prod.split_asm result.split_asm Stackvalue.split_asm Type.split_asm Types.split_asm option.split_asm Member.split_asm)
+    moreover from assms 1 2 3 4 5 6 7 None 8 9 have "st' = st''\<lparr>stack:=stack st, memory := memory st\<rparr>" by (simp add: Let_def transfer_def split: if_split_asm prod.split_asm result.split_asm Stackvalue.split_asm Type.split_asm Types.split_asm option.split_asm Member.split_asm)
+    ultimately show ?thesis using 1 2 3 4 5 6 7 that(2) by simp
+  qed
+qed
+
+lemma transfer:
+  fixes ev
+  defines "e' members adv c st v \<equiv> ffold (init members) (emptyEnv adv c (address ev) v) (fmdom members)"
+  assumes "stmt (TRANSFER ad ex) ev cd st = Normal (x, st')"
+  obtains (Contract) v t g adv c g' v' acc ct cn f st''
+    where "gas st > costs (TRANSFER ad ex) ev cd st"
+      and "expr ad ev cd (st\<lparr>gas := gas st - costs (TRANSFER ad ex) ev cd st\<rparr>) (gas st - costs (TRANSFER ad ex) ev cd st) = Normal ((KValue adv, Value TAddr), g)"
+      and "expr ex ev cd (st\<lparr>gas := g\<rparr>) g = Normal ((KValue v, Value t), g')"
+      and "convert t (TUInt 256) v = Some v'"
+      and "type (accounts (st\<lparr>gas := g\<rparr>) adv) = Some (Contract c)"
+      and "ep $$ c = Some (ct, cn, f)"
+      and "transfer (address ev) adv v' (accounts st) = Some acc"
+      and "stmt f (e' ct adv c (st\<lparr>gas := g'\<rparr>) v') emptyStore (st\<lparr>gas := g', accounts := acc, stack:=emptyStore, memory:=emptyStore\<rparr>) = Normal ((), st'')"
+      and "st' = st''\<lparr>stack:=stack st, memory := memory st\<rparr>"
+    | (EOA) v t g adv g' v' acc
+    where "gas st > costs (TRANSFER ad ex) ev cd st"
+      and "expr ad ev cd (st\<lparr>gas := gas st - costs  (TRANSFER ad ex) ev cd st\<rparr>) (gas st - costs (TRANSFER ad ex) ev cd st) = Normal ((KValue adv, Value TAddr), g)"
+      and "expr ex ev cd (st\<lparr>gas := g\<rparr>) g = Normal ((KValue v, Value t), g')"
+      and "convert t (TUInt 256) v = Some v'"
+      and "type (accounts (st\<lparr>gas := g\<rparr>) adv) = Some EOA"
+      and "transfer (address ev) adv v' (accounts st) = Some acc"
+      and "st' = st\<lparr>gas:=g', accounts:=acc\<rparr>"
+proof -
+  from assms have 1: "gas st > costs (TRANSFER ad ex) ev cd st" by (simp split:if_split_asm)
+  moreover from assms 1 obtain adv g where 2: "expr ad ev cd (st\<lparr>gas := gas st - costs  (TRANSFER ad ex) ev cd st\<rparr>) (gas st - costs (TRANSFER ad ex) ev cd st) = Normal ((KValue adv, Value TAddr), g)" by (simp add: Let_def split: if_split_asm prod.split_asm result.split_asm Stackvalue.split_asm Type.split_asm Types.split_asm)
+  moreover from assms 1 2 obtain v t g' where 3: "expr ex ev cd (st\<lparr>gas := g\<rparr>) g = Normal ((KValue v, Value t), g')" by (simp add: Let_def split: if_split_asm prod.split_asm result.split_asm Stackvalue.split_asm Type.split_asm Types.split_asm)
+  moreover from assms 1 2 3 obtain v' where 4: "convert t (TUInt 256) v = Some v'" by (simp add: Let_def split: if_split_asm prod.split_asm result.split_asm Stackvalue.split_asm Type.split_asm Types.split_asm option.split_asm)
+  ultimately consider (Contract) c where "type (accounts (st\<lparr>gas := g'\<rparr>) adv) = Some (Contract c)" | (EOA) "type (accounts (st\<lparr>gas := g'\<rparr>) adv) = Some EOA" using assms by (simp add: Let_def split: if_split_asm prod.split_asm result.split_asm Stackvalue.split_asm Type.split_asm Types.split_asm option.split_asm Member.split_asm atype.split_asm)
+  then show ?thesis
+  proof cases
+    case (Contract c)
+    moreover from assms 1 2 3 4 Contract obtain ct cn f where 5: "ep $$ c = Some (ct, cn, f)" by (simp add: Let_def split: if_split_asm prod.split_asm result.split_asm Stackvalue.split_asm Type.split_asm Types.split_asm option.split_asm atype.split_asm atype.split_asm)
+    moreover from assms 1 2 3 4 Contract 5 obtain acc where 6: "transfer (address ev) adv v' (accounts st) = Some acc" by (simp add: Let_def split: if_split_asm prod.split_asm result.split_asm Stackvalue.split_asm Type.split_asm Types.split_asm option.split_asm Member.split_asm)
+    moreover from assms 1 2 3 4 Contract 5 6 obtain st'' where 7: "stmt f (e' ct adv c (st\<lparr>gas := g'\<rparr>) v') emptyStore (st\<lparr>gas := g', accounts := acc, stack:=emptyStore, memory:=emptyStore\<rparr>) = Normal ((), st'')" by (simp add: Let_def split: if_split_asm prod.split_asm result.split_asm Stackvalue.split_asm Type.split_asm Types.split_asm option.split_asm Member.split_asm)
+    moreover from assms 1 2 3 4 Contract 5 6 7 have "st' = st''\<lparr>stack:=stack st, memory := memory st\<rparr>" by (simp add: Let_def split: if_split_asm prod.split_asm result.split_asm Stackvalue.split_asm Type.split_asm Types.split_asm option.split_asm Member.split_asm)
+    ultimately show ?thesis using 1 2 3 4 that(1) by simp
+  next
+    case EOA
+    moreover from assms 1 2 3 4 EOA obtain acc where 5: "transfer (address ev) adv v' (accounts st) = Some acc" by (simp add: Let_def split: if_split_asm prod.split_asm result.split_asm Stackvalue.split_asm Type.split_asm Types.split_asm option.split_asm Member.split_asm)
+    moreover from assms 1 2 3 4 EOA 5 have "st' = st\<lparr>gas:=g', accounts:=acc\<rparr>" by (simp add: Let_def split: if_split_asm prod.split_asm result.split_asm Stackvalue.split_asm Type.split_asm Types.split_asm option.split_asm Member.split_asm)
+    ultimately show ?thesis using 1 2 3 4 that(2) by simp
+  qed
+qed
+
+lemma blockNone:
+  fixes ev
+  assumes "stmt (BLOCK ((id0, tp), None) s) ev cd st = Normal (x, st')"
+  obtains cd' mem' sck' e'
+    where "gas st > costs (BLOCK ((id0, tp), None) s) ev cd st"
+      and "decl id0 tp None False cd (memory (st\<lparr>gas := gas st - costs (BLOCK ((id0, tp), None) s) ev cd st\<rparr>)) (storage (st\<lparr>gas := gas st - costs (BLOCK ((id0, tp), None) s) ev cd st\<rparr>)) (cd, memory (st\<lparr>gas := gas st - costs (BLOCK ((id0, tp), None) s) ev cd st\<rparr>), stack (st\<lparr>gas := gas st - costs (BLOCK ((id0, tp), None) s) ev cd st\<rparr>), ev) = Some (cd', mem', sck', e')"
+      and "stmt s e' cd' (st\<lparr>gas := gas st - costs (BLOCK ((id0, tp), None) s) ev cd st, stack := sck', memory := mem'\<rparr>) = Normal ((), st')"
+  using assms by (simp split:if_split_asm prod.split_asm option.split_asm)
+
+lemma blockSome:
+  fixes ev
+  assumes "stmt (BLOCK ((id0, tp), Some ex') s) ev cd st = Normal (x, st')"
+  obtains v t g cd' mem' sck' e'
+    where "gas st > costs (BLOCK ((id0, tp), Some ex') s) ev cd st"
+      and "expr ex' ev cd (st\<lparr>gas := gas st - costs (BLOCK ((id0, tp), Some ex') s) ev cd st\<rparr>) (gas st - costs (BLOCK ((id0, tp), Some ex') s) ev cd st) = Normal((v,t),g)"
+      and "decl id0 tp (Some (v, t)) False cd (memory (st\<lparr>gas := g\<rparr>)) (storage (st\<lparr>gas := g\<rparr>)) (cd, memory (st\<lparr>gas := g\<rparr>), stack (st\<lparr>gas := g\<rparr>), ev) = Some (cd', mem', sck', e')"
+      and "stmt s e' cd' (st\<lparr>gas := g, stack := sck', memory := mem'\<rparr>) = Normal ((), st')"
+  using assms by (auto split:if_split_asm result.split_asm prod.split_asm option.split_asm)
+
+lemma new:
+  fixes i xe val ev cd st
+  defines "st0 \<equiv> st\<lparr>gas := gas st - costs (NEW i xe val) ev cd st\<rparr>"
+  defines "adv0 \<equiv> hash (address ev) (ShowL\<^sub>n\<^sub>a\<^sub>t (contracts (accounts st0 (address ev))))"
+  defines "st1 g \<equiv> st\<lparr>gas := g, accounts := (accounts st)(adv0 := \<lparr>bal = ShowL\<^sub>i\<^sub>n\<^sub>t 0, type = Some (Contract i), contracts = 0\<rparr>), storage:=(storage st)(adv0 := {$$})\<rparr>"
+  defines "e' members c v \<equiv> ffold (init members) (emptyEnv adv0 c (address ev) v) (fmdom members)"
+  assumes "stmt (NEW i xe val) ev cd st = Normal (x, st')"
+  obtains v t g ct cn fb e\<^sub>l cd\<^sub>l k\<^sub>l m\<^sub>l g' acc st''
+    where "gas st > costs (NEW i xe val) ev cd st"
+      and "type (accounts st adv0) = None"
+      and "expr val ev cd st0 (gas st0) = Normal((KValue v, Value t),g)"
+      and "ep $$ i = Some (ct, cn, fb)"
+      and "load True (fst cn) xe (e' ct i v) emptyStore emptyStore emptyStore ev cd (st0\<lparr>gas := g\<rparr>) g = Normal ((e\<^sub>l, cd\<^sub>l, k\<^sub>l, m\<^sub>l), g')"
+      and "transfer (address ev) adv0 v (accounts (st1 g')) = Some acc"
+      and "stmt (snd cn) e\<^sub>l cd\<^sub>l (st1 g'\<lparr>accounts := acc, stack:=k\<^sub>l, memory:=m\<^sub>l\<rparr>) = Normal ((), st'')"
+      and "st' = incrementAccountContracts (address ev) (st''\<lparr>stack:=stack st, memory := memory st\<rparr>)"
+proof -
+  from assms have 1: "gas st > costs (NEW i xe val) ev cd st" by (simp split:if_split_asm)
+  moreover from st0_def assms 1 have 2: "type (accounts st adv0) = None" by (simp split: if_split_asm)
+  moreover from st0_def assms 1 2 obtain v t g where 3: "expr val ev cd st0 (gas st0) = Normal((KValue v, Value t),g)" by (simp split: prod.split_asm result.split_asm Stackvalue.split_asm Type.split_asm)
+  moreover from assms 1 st0_def 2 3 obtain ct cn fb where 4: "ep $$ i = Some(ct, cn, fb)" by (simp split: prod.split_asm result.split_asm option.split_asm)
+  moreover from st0_def adv0_def e'_def assms 1 2 3 4 obtain e\<^sub>l cd\<^sub>l k\<^sub>l m\<^sub>l g' where 5: "load True (fst cn) xe (e' ct i v) emptyStore emptyStore emptyStore ev cd (st0\<lparr>gas := g\<rparr>) g = Normal ((e\<^sub>l, cd\<^sub>l, k\<^sub>l, m\<^sub>l), g')" by (simp add:Let_def split: prod.split_asm result.split_asm option.split_asm)
+  moreover from st0_def adv0_def e'_def assms 1 2 3 4 5 obtain acc where 6: "transfer (address ev) adv0 v (accounts (st1 g')) = Some acc" by (simp add:Let_def split: prod.split_asm result.split_asm option.split_asm)
+  moreover from st0_def st1_def adv0_def e'_def assms 1 2 3 4 5 6 obtain st'' where "stmt (snd cn) e\<^sub>l cd\<^sub>l (st1 g'\<lparr>accounts := acc, stack:=k\<^sub>l, memory:=m\<^sub>l\<rparr>) = Normal ((), st'')" by (simp add:Let_def split: prod.split_asm result.split_asm option.split_asm)
+  ultimately show ?thesis using that assms by simp
+qed
+
+lemma atype_same:
+  assumes "stmt stm ev cd st = Normal (x, st')"
+      and "type (accounts st ad) = Some ctype"
+    shows "type (accounts st' ad) = Some ctype"
+using assms
+proof (induction arbitrary: st' rule: stmt.induct)
+  case (1 e cd st)
+  then show ?case using skip[OF 1(1)] by auto    
+next
+  case (2 lv ex env cd st)
+  show ?case by (cases rule: assign[OF 2(1)]; simp add: 2(2))
+next
+  case (3 s1 s2 e cd st)
+  show ?case
+  proof (cases rule: comp[OF 3(3)])
+    case (1 st'')
+    then show ?thesis using 3 by simp
+  qed
+next
+  case (4 ex s1 s2 e cd st)
+  show ?case
+  proof (cases rule: ite[OF 4(3)])
+    case (1 g)
+    then show ?thesis using 4 by simp
+  next
+    case (2 g)
+    then show ?thesis using 4 by (simp split: if_split_asm)
+  qed
+next
+  case (5 ex s0 e cd st)
+  show ?case
+  proof (cases rule: while[OF 5(3)])
+    case (1 g st'')
+    then show ?thesis using 5 by simp
+  next
+    case (2 g)
+    then show ?thesis using 5 by simp
+  qed
+next
+  case (6 i xe e cd st)
+  show ?case
+  proof (cases rule: invoke[OF 6(2)])
+    case (1 ct fb fp f e\<^sub>l cd\<^sub>l k\<^sub>l m\<^sub>l g st'')
+    then show ?thesis using 6 by simp
+  qed
+next
+  case (7 ad' i xe val e cd st)
+  show ?case
+  proof (cases rule: external[OF 7(3)])
+    case (1 adv c g ct cn fb' v t g' v' fp f e\<^sub>l cd\<^sub>l k\<^sub>l m\<^sub>l g'' acc st'')
+    moreover from 7(4) have "type (acc ad) = Some ctype" using transfer_type_same[OF 1(10)] by simp
+    ultimately show ?thesis using 7(1) by simp
+  next
+    case (2 adv c g ct cn fb' v t g' v' acc st'')
+    moreover from 7(4) have "type (acc ad) = Some ctype" using transfer_type_same[OF 2(9)] by simp
+    ultimately show ?thesis using 7(2) by simp
+  qed
+next
+  case (8 ad' ex e cd st)
+  show ?case
+  proof (cases rule: transfer[OF 8(2)])
+    case (1 v t g adv c g' v' acc ct cn f st'')
+    moreover from 8(3) have "type (acc ad) = Some ctype" using transfer_type_same[OF 1(7)] by simp
+    ultimately show ?thesis using 8(1) by simp
+  next
+    case (2 v t g adv g' v' acc)
+    moreover from 8(3) have "type (acc ad) = Some ctype" using transfer_type_same[OF 2(6)] by simp
+    ultimately show ?thesis by simp
+  qed
+next
+  case (9 id0 tp s e\<^sub>v cd st)
+  show ?case
+  proof (cases rule: blockNone[OF 9(2)])
+    case (1 cd' mem' sck' e')
+    then show ?thesis using 9 by simp
+  qed
+next
+  case (10 id0 tp ex' s e\<^sub>v cd st)
+  show ?case
+  proof (cases rule: blockSome[OF 10(2)])
+    case (1 v t g cd' mem' sck' e')
+    then show ?thesis using 10 by simp
+  qed
+next
+  case (11 i xe val e cd st)
+  show ?case
+  proof (cases rule: new[OF 11(2)])
+    case (1 v t g ct cn fb e\<^sub>l cd\<^sub>l k\<^sub>l m\<^sub>l g' acc st'')
+    moreover have "hash (address e) \<lfloor>contracts (accounts st (address e))\<rfloor> \<noteq> ad" using 11(3) 1(2) by auto
+    ultimately show ?thesis
+      using 11 transfer_type_same[OF 1(6)] incrementAccountContracts_type by simp
+  qed
+qed
+
+declare lexp.simps[simp del]
+declare stmt.simps[simp del]
+
 end
 
 subsection \<open>A minimal cost model\<close>
 
-fun costs_min :: "S\<Rightarrow> Environment\<^sub>P \<Rightarrow> Environment \<Rightarrow> CalldataT \<Rightarrow> State \<Rightarrow> Gas"
+fun costs_min :: "S \<Rightarrow> Environment \<Rightarrow> CalldataT \<Rightarrow> State \<Rightarrow> Gas"
   where
-  "costs_min SKIP e\<^sub>p e cd st = 0"
-| "costs_min (ASSIGN lv ex) e\<^sub>p e cd st = 0"
-| "costs_min (COMP s1 s2) e\<^sub>p e cd st = 0"
-| "costs_min (ITE ex s1 s2) e\<^sub>p e cd st = 0"
-| "costs_min (WHILE ex s0) e\<^sub>p e cd st = 1"
-| "costs_min (TRANSFER ad ex) e\<^sub>p e cd st = 1"
-| "costs_min (BLOCK ((id0, tp), ex) s) e\<^sub>p e cd st =0"
-| "costs_min (INVOKE _ _) e\<^sub>p e cd st = 1"
-| "costs_min (EXTERNAL _ _ _ _) e\<^sub>p e cd st = 1"
+  "costs_min SKIP e cd st = 0"
+| "costs_min (ASSIGN lv ex) e cd st = 0"
+| "costs_min (COMP s1 s2) e cd st = 0"
+| "costs_min (ITE ex s1 s2) e cd st = 0"
+| "costs_min (WHILE ex s0) e cd st = 1"
+| "costs_min (TRANSFER ad ex) e cd st = 1"
+| "costs_min (BLOCK ((id0, tp), ex) s) e cd st =0"
+| "costs_min (INVOKE _ _) e cd st = 1"
+| "costs_min (EXTERNAL _ _ _ _) e cd st = 1"
+| "costs_min (NEW _ _ _) e cd st = 1"
 
-fun costs_ex :: "E \<Rightarrow> Environment\<^sub>P \<Rightarrow> Environment \<Rightarrow> CalldataT \<Rightarrow> State \<Rightarrow> Gas"
+fun costs_ex :: "E \<Rightarrow> Environment \<Rightarrow> CalldataT \<Rightarrow> State \<Rightarrow> Gas"
   where
-  "costs_ex (E.INT _ _) e\<^sub>p e cd st = 0"
-| "costs_ex (UINT _ _) e\<^sub>p e cd st = 0"
-| "costs_ex (ADDRESS _) e\<^sub>p e cd st = 0"
-| "costs_ex (BALANCE _) e\<^sub>p e cd st = 0"
-| "costs_ex THIS e\<^sub>p e cd st = 0"
-| "costs_ex SENDER e\<^sub>p e cd st = 0"
-| "costs_ex VALUE e\<^sub>p e cd st = 0"
-| "costs_ex (TRUE) e\<^sub>p e cd st = 0"
-| "costs_ex (FALSE) e\<^sub>p e cd st = 0"
-| "costs_ex (LVAL _) e\<^sub>p e cd st = 0"
-| "costs_ex (PLUS _ _) e\<^sub>p e cd st = 0"
-| "costs_ex (MINUS _ _) e\<^sub>p e cd st = 0"
-| "costs_ex (EQUAL _ _) e\<^sub>p e cd st = 0"
-| "costs_ex (LESS _ _) e\<^sub>p e cd st = 0"
-| "costs_ex (AND _ _) e\<^sub>p e cd st = 0"
-| "costs_ex (OR _ _) e\<^sub>p e cd st = 0"
-| "costs_ex (NOT _) e\<^sub>p e cd st = 0"
-| "costs_ex (CALL _ _) e\<^sub>p e cd st = 1"
-| "costs_ex (ECALL _ _ _ _) e\<^sub>p e cd st = 1"
+  "costs_ex (E.INT _ _) e cd st = 0"
+| "costs_ex (UINT _ _) e cd st = 0"
+| "costs_ex (ADDRESS _) e cd st = 0"
+| "costs_ex (BALANCE _) e cd st = 0"
+| "costs_ex THIS e cd st = 0"
+| "costs_ex SENDER e cd st = 0"
+| "costs_ex VALUE e cd st = 0"
+| "costs_ex (TRUE) e cd st = 0"
+| "costs_ex (FALSE) e cd st = 0"
+| "costs_ex (LVAL _) e cd st = 0"
+| "costs_ex (PLUS _ _) e cd st = 0"
+| "costs_ex (MINUS _ _) e cd st = 0"
+| "costs_ex (EQUAL _ _) e cd st = 0"
+| "costs_ex (LESS _ _) e cd st = 0"
+| "costs_ex (AND _ _) e cd st = 0"
+| "costs_ex (OR _ _) e cd st = 0"
+| "costs_ex (NOT _) e cd st = 0"
+| "costs_ex (CALL _ _) e cd st = 1"
+| "costs_ex (ECALL _ _ _) e cd st = 1"
+| "costs_ex CONTRACTS e cd st = 0"
 
-global_interpretation solidity: statement_with_gas costs_min costs_ex
+global_interpretation solidity: statement_with_gas costs_ex fmempty costs_min
   defines stmt = "solidity.stmt" 
-      and lexp   = solidity.lexp
-      and expr   = solidity.expr
-      and ssel   = solidity.ssel
-      and rexp   = solidity.rexp
-      and msel   = solidity.msel
-      and load   = solidity.load
+      and lexp = solidity.lexp
+      and expr = solidity.expr
+      and ssel = solidity.ssel
+      and rexp = solidity.rexp
+      and msel = solidity.msel
+      and load = solidity.load
   by unfold_locales auto
+
+section \<open>Examples\<close>
+
+subsection \<open>msel\<close>
+
+abbreviation mymemory2::MemoryT
+  where "mymemory2 \<equiv>
+    \<lparr>mapping = fmap_of_list
+      [(STR ''3.2'', MPointer STR ''5'')],
+     toploc = 1\<rparr>"
+
+(*
+  FIXME
+
+lemma "msel True (MTArray 5 (MTArray 6 (MTValue TBool))) (STR ''2'') [UINT 8 3] eempty emptyStore (mystate\<lparr>gas:=1\<rparr>) 1
+= Normal ((STR ''3.2'', MTArray 6 (MTValue TBool)), 1)" by Solidity_Symbex.solidity_symbex
+
+lemma "msel True (MTArray 5 (MTArray 6 (MTValue TBool))) (STR ''2'') [UINT 8 3, UINT 8 4] eempty emptyStore (mystate\<lparr>gas:=1,memory:=mymemory2\<rparr>) 1
+= Normal ((STR ''4.5'', MTValue TBool), 2)" by Solidity_Symbex.solidity_symbex
+*)
+
+lemma "msel True (MTArray 5 (MTArray 6 (MTValue TBool))) (STR ''2'') [UINT 8 5] eempty emptyStore (mystate\<lparr>gas:=1,memory:=mymemory2\<rparr>) 1
+= Exception (Err)" by Solidity_Symbex.solidity_symbex
 
 end

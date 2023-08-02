@@ -3,15 +3,14 @@ theory Constant_Folding
 imports
   Solidity_Main 
 begin
-
 text\<open>
   The following function optimizes expressions w.r.t. gas consumption.
 \<close>
-primrec eupdate :: "E \<Rightarrow> E"
+primrec eupdate :: "E \<Rightarrow> E" 
 and lupdate :: "L \<Rightarrow> L"
 where
   "lupdate (Id i) = Id i"
-| "lupdate (Ref i exp) = Ref i (map eupdate exp)"
+| "lupdate (Ref i xs) = Ref i (map eupdate xs)"
 | "eupdate (E.INT b v) =
     (if (b\<in>vbits)
       then if v \<ge> 0
@@ -205,9 +204,9 @@ where
     | FALSE \<Rightarrow> TRUE
     | _ \<Rightarrow> NOT (eupdate ex1))"
 | "eupdate (CALL i xs) = CALL i xs"
-| "eupdate (ECALL e i xs r) = ECALL e i xs r"
+| "eupdate (ECALL e i xs) = ECALL e i xs"
+| "eupdate CONTRACTS = CONTRACTS"
 
-value "eupdate (UINT 8 250)"
 lemma "eupdate (UINT 8 250)
       =UINT 8 250"
   by(simp)
@@ -440,7 +439,10 @@ next
         case (CALL x181 x182)
         with p i `b1\<in>vbits` show ?thesis using assms by simp
       next
-        case (ECALL x191 x192 x193 x194)
+        case (ECALL x191 x192 x193)
+        with p i `b1\<in>vbits` show ?thesis using assms by simp
+      next
+        case CONTRACTS
         with p i `b1\<in>vbits` show ?thesis using assms by simp
       qed
     next
@@ -550,7 +552,10 @@ next
         case (CALL x181 x182)
         with p u `b1\<in>vbits` show ?thesis using assms by simp
       next
-        case (ECALL x191 x192 x193 x194)
+        case (ECALL x191 x192 x193)
+        with p u `b1\<in>vbits` show ?thesis using assms by simp
+      next
+        case CONTRACTS
         with p u `b1\<in>vbits` show ?thesis using assms by simp
       qed
     next
@@ -606,7 +611,10 @@ next
     case (CALL x181 x182)
     with p show ?thesis using assms by simp
   next
-    case (ECALL x191 x192 x193 x194)
+    case (ECALL x191 x192 x193)
+    with p show ?thesis using assms by simp
+  next
+    case CONTRACTS
     with p show ?thesis using assms by simp
   qed
 next
@@ -753,7 +761,10 @@ next
         case (CALL x181 x182)
         with m i `b1\<in>vbits` show ?thesis using assms by simp
       next
-        case (ECALL x191 x192 x193 x194)
+        case (ECALL x191 x192 x193)
+        with m i `b1\<in>vbits` show ?thesis using assms by simp
+      next
+        case CONTRACTS
         with m i `b1\<in>vbits` show ?thesis using assms by simp
       qed
     next
@@ -870,7 +881,10 @@ next
         case (CALL x181 x182)
         with m u `b1\<in>vbits` show ?thesis using assms by simp
       next
-        case (ECALL x191 x192 x193 x194)
+        case (ECALL x191 x192 x193)
+        with m u `b1\<in>vbits` show ?thesis using assms by simp
+      next
+        case CONTRACTS
         with m u `b1\<in>vbits` show ?thesis using assms by simp
       qed
     next
@@ -926,7 +940,10 @@ next
     case (CALL x181 x182)
     with m show ?thesis using assms by simp
   next
-    case (ECALL x191 x192 x193 x194)
+    case (ECALL x191 x192 x193)
+    with m show ?thesis using assms by simp
+  next
+    case CONTRACTS
     with m show ?thesis using assms by simp
   qed
 next
@@ -1028,7 +1045,10 @@ next
         case (CALL x181 x182)
         with e i `b1\<in>vbits` show ?thesis using assms by simp
       next
-        case (ECALL x191 x192 x193 x194)
+        case (ECALL x191 x192 x193)
+        with e i `b1\<in>vbits` show ?thesis using assms by simp
+      next
+        case CONTRACTS
         with e i `b1\<in>vbits` show ?thesis using assms by simp
       qed
     next
@@ -1131,7 +1151,10 @@ next
         case (CALL x181 x182)
         with e u `b1\<in>vbits` show ?thesis using assms by simp
       next
-        case (ECALL x191 x192 x193 x194)
+        case (ECALL x191 x192 x193)
+        with e u `b1\<in>vbits` show ?thesis using assms by simp
+      next
+        case CONTRACTS
         with e u `b1\<in>vbits` show ?thesis using assms by simp
       qed
     next
@@ -1187,7 +1210,10 @@ next
     case (CALL x181 x182)
     with e show ?thesis using assms by simp
   next
-    case (ECALL x191 x192 x193 x194)
+    case (ECALL x191 x192 x193)
+    with e show ?thesis using assms by simp
+  next
+    case CONTRACTS
     with e show ?thesis using assms by simp
   qed
 next
@@ -1289,7 +1315,10 @@ next
         case (CALL x181 x182)
         with l i `b1\<in>vbits` show ?thesis using assms by simp
       next
-        case (ECALL x191 x192 x193 x194)
+        case (ECALL x191 x192 x193)
+        with l i `b1\<in>vbits` show ?thesis using assms by simp
+      next
+        case CONTRACTS
         with l i `b1\<in>vbits` show ?thesis using assms by simp
       qed
     next
@@ -1392,7 +1421,10 @@ next
         case (CALL x181 x182)
         with l u `b1\<in>vbits` show ?thesis using assms by simp
       next
-        case (ECALL x191 x192 x193 x194)
+        case (ECALL x191 x192 x193)
+        with l u `b1\<in>vbits` show ?thesis using assms by simp
+      next
+        case CONTRACTS
         with l u `b1\<in>vbits` show ?thesis using assms by simp
       qed
     next
@@ -1448,7 +1480,10 @@ next
     case (CALL x181 x182)
     with l show ?thesis using assms by simp
   next
-    case (ECALL x191 x192 x193 x194)
+    case (ECALL x191 x192 x193)
+    with l show ?thesis using assms by simp
+  next
+    case CONTRACTS
     with l show ?thesis using assms by simp
   qed
 next
@@ -1533,7 +1568,10 @@ next
       case (CALL x181 x182)
       with a t show ?thesis using assms by simp
     next
-      case (ECALL x191 x192 x193 x194)
+      case (ECALL x191 x192 x193)
+      with a t show ?thesis using assms by simp
+    next
+      case CONTRACTS
       with a t show ?thesis using assms by simp
     qed
   next
@@ -1594,7 +1632,10 @@ next
       case (CALL x181 x182)
       with a f show ?thesis using assms by simp
     next
-      case (ECALL x191 x192 x193 x194)
+      case (ECALL x191 x192 x193)
+      with a f show ?thesis using assms by simp
+    next
+      case CONTRACTS
       with a f show ?thesis using assms by simp
     qed
   next
@@ -1625,7 +1666,10 @@ next
     case (CALL x181 x182)
     with a show ?thesis using assms by simp
   next
-    case (ECALL x191 x192 x193 x194)
+    case (ECALL x191 x192 x193)
+    with a show ?thesis using assms by simp
+  next
+    case CONTRACTS
     with a show ?thesis using assms by simp
   qed
 next
@@ -1710,7 +1754,10 @@ next
       case (CALL x181 x182)
       with o t show ?thesis using assms by simp
     next
-      case (ECALL x191 x192 x193 x194)
+      case (ECALL x191 x192 x193)
+      with o t show ?thesis using assms by simp
+    next
+      case CONTRACTS
       with o t show ?thesis using assms by simp
     qed
   next
@@ -1771,7 +1818,10 @@ next
       case (CALL x181 x182)
       with o f show ?thesis using assms by simp
     next
-      case (ECALL x191 x192 x193 x194)
+      case (ECALL x191 x192 x193)
+      with o f show ?thesis using assms by simp
+    next
+      case CONTRACTS
       with o f show ?thesis using assms by simp
     qed
   next
@@ -1802,7 +1852,10 @@ next
     case (CALL x181 x182)
     with o show ?thesis using assms by simp
   next
-    case (ECALL x191 x192 x193 x194)
+    case (ECALL x191 x192 x193)
+    with o show ?thesis using assms by simp
+  next
+    case CONTRACTS
     with o show ?thesis using assms by simp
   qed
 next
@@ -1863,14 +1916,20 @@ next
     case (CALL x181 x182)
     with o show ?thesis using assms by simp
   next
-    case (ECALL x191 x192 x193 x194)
+    case (ECALL x191 x192 x193)
+    with o show ?thesis using assms by simp
+  next
+    case CONTRACTS
     with o show ?thesis using assms by simp
   qed
 next
   case (CALL x181 x182)
   with assms show ?thesis by simp
 next
-  case (ECALL x191 x192 x193 x194)
+  case (ECALL x191 x192 x193)
+  with assms show ?thesis by simp
+next
+  case CONTRACTS
   with assms show ?thesis by simp
 qed
 
@@ -2029,7 +2088,10 @@ next
         case (CALL x181 x182)
         with p i `b1\<in>vbits` show ?thesis using assms by simp
       next
-        case (ECALL x191 x192 x193 x194)
+        case (ECALL x191 x192 x193)
+        with p i `b1\<in>vbits` show ?thesis using assms by simp
+      next
+        case CONTRACTS
         with p i `b1\<in>vbits` show ?thesis using assms by simp
       qed
     next
@@ -2132,7 +2194,10 @@ next
         case (CALL x181 x182)
         with p u `b1\<in>vbits` show ?thesis using assms by simp
       next
-        case (ECALL x191 x192 x193 x194)
+        case (ECALL x191 x192 x193)
+        with p u `b1\<in>vbits` show ?thesis using assms by simp
+      next
+        case CONTRACTS
         with p u `b1\<in>vbits` show ?thesis using assms by simp
       qed
     next
@@ -2188,7 +2253,10 @@ next
     case (CALL x181 x182)
     with p show ?thesis using assms by simp
   next
-    case (ECALL x191 x192 x193 x194)
+    case (ECALL x191 x192 x193)
+    with p show ?thesis using assms by simp
+  next
+    case CONTRACTS
     with p show ?thesis using assms by simp
   qed
 next
@@ -2292,7 +2360,10 @@ next
         case (CALL x181 x182)
         with m i `b1\<in>vbits` show ?thesis using assms by simp
       next
-        case (ECALL x191 x192 x193 x194)
+        case (ECALL x191 x192 x193)
+        with m i `b1\<in>vbits` show ?thesis using assms by simp
+      next
+        case CONTRACTS
         with m i `b1\<in>vbits` show ?thesis using assms by simp
       qed
     next
@@ -2395,7 +2466,10 @@ next
         case (CALL x181 x182)
         with m u `b1\<in>vbits` show ?thesis using assms by simp
       next
-        case (ECALL x191 x192 x193 x194)
+        case (ECALL x191 x192 x193)
+        with m u `b1\<in>vbits` show ?thesis using assms by simp
+      next
+        case CONTRACTS
         with m u `b1\<in>vbits` show ?thesis using assms by simp
       qed
     next
@@ -2451,7 +2525,10 @@ next
     case (CALL x181 x182)
     with m show ?thesis using assms by simp
   next
-    case (ECALL x191 x192 x193 x194)
+    case (ECALL x191 x192 x193)
+    with m show ?thesis using assms by simp
+  next
+    case CONTRACTS
     with m show ?thesis using assms by simp
   qed
 next
@@ -2553,7 +2630,10 @@ next
         case (CALL x181 x182)
         with e i `b1\<in>vbits` show ?thesis using assms by simp
       next
-        case (ECALL x191 x192 x193 x194)
+        case (ECALL x191 x192 x193)
+        with e i `b1\<in>vbits` show ?thesis using assms by simp
+      next
+        case CONTRACTS
         with e i `b1\<in>vbits` show ?thesis using assms by simp
       qed
     next
@@ -2657,7 +2737,10 @@ next
         case (CALL x181 x182)
         with e u `b1\<in>vbits` show ?thesis using assms by simp
       next
-        case (ECALL x191 x192 x193 x194)
+        case (ECALL x191 x192 x193)
+        with e u `b1\<in>vbits` show ?thesis using assms by simp
+      next
+        case CONTRACTS
         with e u `b1\<in>vbits` show ?thesis using assms by simp
       qed
     next
@@ -2713,7 +2796,10 @@ next
     case (CALL x181 x182)
     with e show ?thesis using assms by simp
   next
-    case (ECALL x191 x192 x193 x194)
+    case (ECALL x191 x192 x193)
+    with e show ?thesis using assms by simp
+  next
+    case CONTRACTS
     with e show ?thesis using assms by simp
   qed
 next
@@ -2815,7 +2901,10 @@ next
         case (CALL x181 x182)
         with l i `b1\<in>vbits` show ?thesis using assms by simp
       next
-        case (ECALL x191 x192 x193 x194)
+        case (ECALL x191 x192 x193)
+        with l i `b1\<in>vbits` show ?thesis using assms by simp
+      next
+        case CONTRACTS
         with l i `b1\<in>vbits` show ?thesis using assms by simp
       qed
     next
@@ -2919,7 +3008,10 @@ next
         case (CALL x181 x182)
         with l u `b1\<in>vbits` show ?thesis using assms by simp
       next
-        case (ECALL x191 x192 x193 x194)
+        case (ECALL x191 x192 x193)
+        with l u `b1\<in>vbits` show ?thesis using assms by simp
+      next
+        case CONTRACTS
         with l u `b1\<in>vbits` show ?thesis using assms by simp
       qed
     next
@@ -2975,7 +3067,10 @@ next
     case (CALL x181 x182)
     with l show ?thesis using assms by simp
   next
-    case (ECALL x191 x192 x193 x194)
+    case (ECALL x191 x192 x193)
+    with l show ?thesis using assms by simp
+  next
+    case CONTRACTS
     with l show ?thesis using assms by simp
   qed
 next
@@ -3060,7 +3155,10 @@ next
       case (CALL x181 x182)
       with a t show ?thesis using assms by simp
     next
-      case (ECALL x191 x192 x193 x194)
+      case (ECALL x191 x192 x193)
+      with a t show ?thesis using assms by simp
+    next
+      case CONTRACTS
       with a t show ?thesis using assms by simp
     qed
   next
@@ -3121,7 +3219,10 @@ next
       case (CALL x181 x182)
       with a f show ?thesis using assms by simp
     next
-      case (ECALL x191 x192 x193 x194)
+      case (ECALL x191 x192 x193)
+      with a f show ?thesis using assms by simp
+    next
+      case CONTRACTS
       with a f show ?thesis using assms by simp
     qed
   next
@@ -3152,7 +3253,10 @@ next
     case (CALL x181 x182)
     with a show ?thesis using assms by simp
   next
-    case (ECALL x191 x192 x193 x194)
+    case (ECALL x191 x192 x193)
+    with a show ?thesis using assms by simp
+  next
+    case CONTRACTS
     with a show ?thesis using assms by simp
   qed
 next
@@ -3237,7 +3341,10 @@ next
       case (CALL x181 x182)
       with o t show ?thesis using assms by simp
     next
-      case (ECALL x191 x192 x193 x194)
+      case (ECALL x191 x192 x193)
+      with o t show ?thesis using assms by simp
+    next
+      case CONTRACTS
       with o t show ?thesis using assms by simp
     qed
   next
@@ -3298,7 +3405,10 @@ next
       case (CALL x181 x182)
       with o f show ?thesis using assms by simp
     next
-      case (ECALL x191 x192 x193 x194)
+      case (ECALL x191 x192 x193)
+      with o f show ?thesis using assms by simp
+    next
+      case CONTRACTS
       with o f show ?thesis using assms by simp
     qed
   next
@@ -3329,7 +3439,10 @@ next
     case (CALL x181 x182)
     with o show ?thesis using assms by simp
   next
-    case (ECALL x191 x192 x193 x194)
+    case (ECALL x191 x192 x193)
+    with o show ?thesis using assms by simp
+  next
+    case CONTRACTS
     with o show ?thesis using assms by simp
   qed
 next
@@ -3390,85 +3503,94 @@ next
     case (CALL x181 x182)
     with o show ?thesis using assms by simp
   next
-    case (ECALL x191 x192 x193 x194)
+    case (ECALL x191 x192 x193)
+    with o show ?thesis using assms by simp
+  next
+    case CONTRACTS
     with o show ?thesis using assms by simp
   qed
 next
   case (CALL x181 x182)
   with assms show ?thesis by simp
 next
-  case (ECALL x191 x192 x193 x194)
+  case (ECALL x191 x192 x193)
+  with assms show ?thesis by simp
+next
+  case CONTRACTS
   with assms show ?thesis by simp
 qed
 
 lemma no_gas:
-  assumes "\<not> gas st > 0"
-  shows "expr ex ep env cd st = Exception Gas"
+  assumes "\<not> g > costs_ex ex env cd st"
+  shows "expr ex env cd st g = Exception Gas"
 proof (cases ex)
   case (INT x11 x12)
-  with assms show ?thesis by simp
+  with assms show ?thesis by (simp add: Statements.solidity.expr.simps)
 next
   case (UINT x21 x22)
-  with assms show ?thesis by simp
+  with assms show ?thesis by (simp add: Statements.solidity.expr.simps)
 next
   case (ADDRESS x3)
-  with assms show ?thesis by simp
+  with assms show ?thesis by (simp add: Statements.solidity.expr.simps)
 next
   case (BALANCE x4)
-  with assms show ?thesis by simp
+  with assms show ?thesis by (simp add: Statements.solidity.expr.simps)
 next
   case THIS
-  with assms show ?thesis by simp
+  with assms show ?thesis by (simp add: Statements.solidity.expr.simps)
 next
   case SENDER
-  with assms show ?thesis by simp
+  with assms show ?thesis by (simp add: Statements.solidity.expr.simps)
 next
   case VALUE
-  with assms show ?thesis by simp
+  with assms show ?thesis by (simp add: Statements.solidity.expr.simps)
 next
   case TRUE
-  with assms show ?thesis by simp
+  with assms show ?thesis by (simp add: Statements.solidity.expr.simps)
 next
   case FALSE
-  with assms show ?thesis by simp
+  with assms show ?thesis by (simp add: Statements.solidity.expr.simps)
 next
   case (LVAL x10)
-  with assms show ?thesis by simp
+  with assms show ?thesis by (simp add: Statements.solidity.expr.simps)
 next
   case (PLUS x111 x112)
-  with assms show ?thesis by simp
+  with assms show ?thesis by (simp add: Statements.solidity.expr.simps)
 next
   case (MINUS x121 x122)
-  with assms show ?thesis by simp
+  with assms show ?thesis by (simp add: Statements.solidity.expr.simps)
 next
   case (EQUAL x131 x132)
-  with assms show ?thesis by simp
+  with assms show ?thesis by (simp add: Statements.solidity.expr.simps)
 next
   case (LESS x141 x142)
-  with assms show ?thesis by simp
+  with assms show ?thesis by (simp add: Statements.solidity.expr.simps)
 next
   case (AND x151 x152)
-  with assms show ?thesis by simp
+  with assms show ?thesis by (simp add: Statements.solidity.expr.simps)
 next
   case (OR x161 x162)
-  with assms show ?thesis by simp
+  with assms show ?thesis by (simp add: Statements.solidity.expr.simps)
 next
   case (NOT x17)
-  with assms show ?thesis by simp
+  with assms show ?thesis by (simp add: Statements.solidity.expr.simps)
 next
   case (CALL x181 x182)
-  with assms show ?thesis by simp
+  with assms show ?thesis by (simp add: Statements.solidity.expr.simps)
 next
-  case (ECALL x191 x192 x193 x194)
-  with assms show ?thesis by simp
+  case (ECALL x191 x192 x193)
+  with assms show ?thesis by (simp add: Statements.solidity.expr.simps)
+next
+  case CONTRACTS
+  with assms show ?thesis by (simp add: Statements.solidity.expr.simps)
 qed
 
 lemma lift_eq:
-  assumes "expr e1 ep env cd st = expr e1' ep env cd st"
-      and "\<And>st' rv. expr e1 ep env cd st = Normal (rv, st') \<Longrightarrow> expr e2 ep env cd st'= expr e2' ep env cd st'"
-    shows "lift expr f e1 e2 ep env cd st=lift expr f e1' e2' ep env cd st"
-proof (cases "expr e1 ep env cd st")
-  case s1: (n a st')
+  assumes "expr e1 env cd st g = expr e1' env cd st g"
+      and "\<And>g' rv. expr e1 env cd st g = Normal (rv, g') \<Longrightarrow> expr e2 env cd st g'= expr e2' env cd st g'"
+    shows "lift expr f e1 e2 env cd st g =lift expr f e1' e2' env cd st g"
+proof (cases "expr e1 env cd st g")
+  case s1: (n a g')
   then show ?thesis
   proof (cases a)
     case f1:(Pair a b)
@@ -3479,8 +3601,8 @@ proof (cases "expr e1 ep env cd st")
       proof (cases b)
         case v1: (Value x1)
         then show ?thesis
-        proof (cases "expr e2 ep env cd st'")
-          case s2: (n a' st'')
+        proof (cases "expr e2 env cd st g'")
+          case s2: (n a' g'')
           then show ?thesis
           proof (cases a')
             case f2:(Pair a' b')
@@ -3530,9 +3652,9 @@ next
 qed
 
 lemma ssel_eq_ssel:
-  "(\<And>i st. i \<in> set ix \<Longrightarrow> expr i ep env cd st = expr (f i) ep env cd st)
-  \<Longrightarrow> ssel tp loc ix ep env cd st = ssel tp loc (map f ix) ep env cd st"
-proof (induction ix arbitrary: tp loc ep env cd st)
+  "(\<And>i g. i \<in> set ix \<Longrightarrow> expr i env cd st g = expr (f i) env cd st g)
+  \<Longrightarrow> ssel tp loc ix env cd st g = ssel tp loc (map f ix) env cd st g"
+proof (induction ix arbitrary: tp loc env cd st g)
   case Nil
   then show ?case by simp
 next
@@ -3541,8 +3663,8 @@ next
   proof (cases tp)
     case tp1: (STArray al tp)
     then show ?thesis
-    proof (cases "expr i ep env cd st")
-      case s1: (n a st')
+    proof (cases "expr i env cd st g")
+      case s1: (n a g')
       then show ?thesis
       proof (cases a)
         case f1: (Pair a b)
@@ -3555,7 +3677,7 @@ next
             then show ?thesis
             proof (cases "less t (TUInt 256) v (ShowL\<^sub>i\<^sub>n\<^sub>t al)")
               case None
-              with v1 k1 tp1 s1 c1.prems f1 show ?thesis by simp
+              with v1 k1 tp1 s1 c1.prems f1 show ?thesis by (simp add:Statements.solidity.ssel.simps)
             next
               case s2: (Some a)
               then show ?thesis
@@ -3564,59 +3686,59 @@ next
                 then show ?thesis
                 proof (cases b)
                   case (TSInt x1)
-                  with s2 p1 v1 k1 tp1 s1 c1.prems f1 show ?thesis by simp
+                  with s2 p1 v1 k1 tp1 s1 c1.prems f1 show ?thesis by (simp add:Statements.solidity.ssel.simps)
                 next
                   case (TUInt x2)
-                  with s2 p1 v1 k1 tp1 s1 c1.prems f1 show ?thesis by simp
+                  with s2 p1 v1 k1 tp1 s1 c1.prems f1 show ?thesis by (simp add:Statements.solidity.ssel.simps)
                 next
                   case b1: TBool
                   show ?thesis
                   proof cases
                     assume "a = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True"
                     from c1.IH[OF c1.prems] have
-                      "ssel tp (hash loc v) ix ep env cd st' = ssel tp (hash loc v) (map f ix) ep env cd st'"
+                      "ssel tp (hash loc v) ix env cd st g' = ssel tp (hash loc v) (map f ix) env cd st g'"
                       by simp
-                    with mp s2 b1 p1 v1 k1 tp1 s1 c1.prems f1 show ?thesis by simp
+                    with mp s2 b1 p1 v1 k1 tp1 s1 c1.prems f1 show ?thesis by (simp add:Statements.solidity.ssel.simps)
                   next
                     assume "\<not> a = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True"
-                    with s2 p1 v1 k1 tp1 s1 c1.prems f1 show ?thesis by simp
+                    with s2 p1 v1 k1 tp1 s1 c1.prems f1 show ?thesis by (simp add:Statements.solidity.ssel.simps)
                   qed
                 next
                   case TAddr
-                  with s2 p1 v1 k1 tp1 s1 c1.prems f1 show ?thesis by simp
+                  with s2 p1 v1 k1 tp1 s1 c1.prems f1 show ?thesis by (simp add:Statements.solidity.ssel.simps)
                 qed
               qed
             qed
           next
             case (Calldata x2)
-            with k1 tp1 s1 c1.prems f1 show ?thesis by simp
+            with k1 tp1 s1 c1.prems f1 show ?thesis by (simp add:Statements.solidity.ssel.simps)
           next
             case (Memory x2)
-            with k1 tp1 s1 c1.prems f1 show ?thesis by simp
+            with k1 tp1 s1 c1.prems f1 show ?thesis by (simp add:Statements.solidity.ssel.simps)
           next
             case (Storage x3)
-            with k1 tp1 s1 c1.prems f1 show ?thesis by simp
+            with k1 tp1 s1 c1.prems f1 show ?thesis by (simp add:Statements.solidity.ssel.simps)
           qed
         next
           case (KCDptr x2)
-          with tp1 s1 c1.prems f1 show ?thesis by simp
+          with tp1 s1 c1.prems f1 show ?thesis by (simp add:Statements.solidity.ssel.simps)
         next
           case (KMemptr x2)
-          with tp1 s1 c1.prems f1 show ?thesis by simp
+          with tp1 s1 c1.prems f1 show ?thesis by (simp add:Statements.solidity.ssel.simps)
         next
           case (KStoptr x3)
-          with tp1 s1 c1.prems f1 show ?thesis by simp
+          with tp1 s1 c1.prems f1 show ?thesis by (simp add:Statements.solidity.ssel.simps)
         qed
       qed
     next
       case (e e)
-      with tp1 c1.prems show ?thesis by simp
+      with tp1 c1.prems show ?thesis by (simp add:Statements.solidity.ssel.simps)
     qed
   next
     case tp1: (STMap _ t)
     then show ?thesis
-    proof (cases "expr i ep env cd st")
-      case s1: (n a s)
+    proof (cases "expr i env cd st g")
+      case s1: (n a g')
       then show ?thesis
       proof (cases a)
         case f1: (Pair a b)
@@ -3624,33 +3746,33 @@ next
         proof (cases a)
           case k1: (KValue v)
           from c1.IH[OF c1.prems] have
-            "ssel tp (hash loc v) ix ep env cd st = ssel tp (hash loc v) (map f ix) ep env cd st" by simp
-          with k1 tp1 s1 c1 f1 show ?thesis by simp
+            "ssel tp (hash loc v) ix env cd st g = ssel tp (hash loc v) (map f ix) env cd st g" by simp
+          with k1 tp1 s1 c1 f1 show ?thesis by (simp add:Statements.solidity.ssel.simps)
         next
           case (KCDptr x2)
-          with tp1 s1 c1.prems f1 show ?thesis by simp
+          with tp1 s1 c1.prems f1 show ?thesis by (simp add:Statements.solidity.ssel.simps)
         next
           case (KMemptr x2)
-          with tp1 s1 c1.prems f1 show ?thesis by simp
+          with tp1 s1 c1.prems f1 show ?thesis by (simp add:Statements.solidity.ssel.simps)
         next
           case (KStoptr x3)
-          with tp1 s1 c1.prems f1 show ?thesis by simp
+          with tp1 s1 c1.prems f1 show ?thesis by (simp add:Statements.solidity.ssel.simps)
         qed
       qed
     next
       case (e e)
-      with tp1 c1.prems show ?thesis by simp
+      with tp1 c1.prems show ?thesis by (simp add:Statements.solidity.ssel.simps)
     qed
   next
     case (STValue x2)
-    then show ?thesis by simp
+    then show ?thesis by (simp add:Statements.solidity.ssel.simps)
   qed
 qed
 
 lemma msel_eq_msel:
-"(\<And>i st. i \<in> set ix \<Longrightarrow> expr i ep env cd st = expr (f i) ep env cd st) \<Longrightarrow>
-          msel c tp loc ix ep env cd st = msel c tp loc (map f ix) ep env cd st"
-proof (induction ix arbitrary: c tp loc ep env cd st)
+"(\<And>i g. i \<in> set ix \<Longrightarrow> expr i env cd st g = expr (f i) env cd st g) \<Longrightarrow>
+          msel c tp loc ix env cd st g = msel c tp loc (map f ix) env cd st g"
+proof (induction ix arbitrary: c tp loc env cd st g)
   case Nil
   then show ?case by simp
 next
@@ -3661,12 +3783,12 @@ next
     then show ?thesis
     proof (cases ix)
       case Nil
-      thus ?thesis using tp1 c1.prems by auto
+      thus ?thesis using tp1 c1.prems by (auto simp add:Statements.solidity.msel.simps)
     next
       case c2: (Cons a list)
       then show ?thesis
-      proof (cases "expr i ep env cd st")
-        case s1: (n a st')
+      proof (cases "expr i env cd st g")
+        case s1: (n a g')
         then show ?thesis
         proof (cases a)
           case f1: (Pair a b)
@@ -3679,7 +3801,7 @@ next
               then show ?thesis
               proof (cases "less t (TUInt 256) v (ShowL\<^sub>i\<^sub>n\<^sub>t al)")
                 case None
-                with v1 k1 tp1 s1 c1.prems f1 show ?thesis using c2 by simp
+                with v1 k1 tp1 s1 c1.prems f1 show ?thesis using c2 by (simp add:Statements.solidity.msel.simps)
               next
                 case s2: (Some a)
                 then show ?thesis
@@ -3688,10 +3810,10 @@ next
                   then show ?thesis
                   proof (cases b)
                     case (TSInt x1)
-                    with s2 p1 v1 k1 tp1 s1 c1.prems f1 show ?thesis using c2 by simp
+                    with s2 p1 v1 k1 tp1 s1 c1.prems f1 show ?thesis using c2 by (simp add:Statements.solidity.msel.simps)
                   next
                     case (TUInt x2)
-                    with s2 p1 v1 k1 tp1 s1 c1.prems f1 show ?thesis using c2 by simp
+                    with s2 p1 v1 k1 tp1 s1 c1.prems f1 show ?thesis using c2 by (simp add:Statements.solidity.msel.simps)
                   next
                     case b1: TBool
                     show ?thesis
@@ -3701,20 +3823,20 @@ next
                       proof (cases c)
                         case True
                         then show ?thesis
-                        proof (cases "accessStore (hash loc v) (memory st')")
+                        proof (cases "accessStore (hash loc v) (memory st)")
                           case None
-                          with s2 b1 p1 v1 k1 tp1 s1 c1.prems f1 True show ?thesis using c2 by simp
+                          with s2 b1 p1 v1 k1 tp1 s1 c1.prems f1 True show ?thesis using c2 by (simp add:Statements.solidity.msel.simps)
                         next
                           case s3: (Some a)
                           then show ?thesis
                           proof (cases a)
                             case (MValue x1)
-                            with s2 s3 b1 p1 v1 k1 tp1 s1 c1.prems f1 True show ?thesis using c2 by simp
+                            with s2 s3 b1 p1 v1 k1 tp1 s1 c1.prems f1 True show ?thesis using c2 by (simp add:Statements.solidity.msel.simps)
                           next
                             case mp: (MPointer l)
                             from c1.IH[OF c1.prems]
-                              have "msel c tp l ix ep env cd st' = msel c tp l (map f ix) ep env cd st'" by simp
-                            with mp s2 s3 b1 p1 v1 k1 tp1 s1 c1.prems f1 True show ?thesis using c2 by simp
+                              have "msel c tp l ix env cd st g' = msel c tp l (map f ix) env cd st g'" by simp
+                            with mp s2 s3 b1 p1 v1 k1 tp1 s1 c1.prems f1 True show ?thesis using c2 by (simp add:Statements.solidity.msel.simps)
                           qed
                         qed
                       next
@@ -3722,69 +3844,69 @@ next
                         then show ?thesis
                         proof (cases "accessStore (hash loc v) cd")
                           case None
-                          with s2 b1 p1 v1 k1 tp1 s1 c1.prems f1 False show ?thesis using c2 by simp
+                          with s2 b1 p1 v1 k1 tp1 s1 c1.prems f1 False show ?thesis using c2 by (simp add:Statements.solidity.msel.simps)
                         next
                           case s3: (Some a)
                           then show ?thesis
                           proof (cases a)
                             case (MValue x1)
-                            with s2 s3 b1 p1 v1 k1 tp1 s1 c1.prems f1 False show ?thesis using c2 by simp
+                            with s2 s3 b1 p1 v1 k1 tp1 s1 c1.prems f1 False show ?thesis using c2 by (simp add:Statements.solidity.msel.simps)
                           next
                             case mp: (MPointer l)
                             from c1.IH[OF c1.prems]
-                              have "msel c tp l ix ep env cd st' = msel c tp l (map f ix) ep env cd st'" by simp
-                            with mp s2 s3 b1 p1 v1 k1 tp1 s1 c1.prems f1 False show ?thesis using c2 by simp
+                              have "msel c tp l ix env cd st g' = msel c tp l (map f ix) env cd st g'" by simp
+                            with mp s2 s3 b1 p1 v1 k1 tp1 s1 c1.prems f1 False show ?thesis using c2 by (simp add:Statements.solidity.msel.simps)
                           qed
                         qed
                       qed
                     next
                       assume "\<not> a = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True"
-                      with s2 p1 v1 k1 tp1 s1 c1.prems f1 show ?thesis using c2 by simp
+                      with s2 p1 v1 k1 tp1 s1 c1.prems f1 show ?thesis using c2 by (simp add:Statements.solidity.msel.simps)
                     qed
                   next
                     case TAddr
-                    with s2 p1 v1 k1 tp1 s1 c1.prems f1 show ?thesis using c2 by simp
+                    with s2 p1 v1 k1 tp1 s1 c1.prems f1 show ?thesis using c2 by (simp add:Statements.solidity.msel.simps)
                   qed
                 qed
               qed
             next
               case (Calldata x2)
-              with k1 tp1 s1 c1.prems f1 show ?thesis using c2 by simp
+              with k1 tp1 s1 c1.prems f1 show ?thesis using c2 by (simp add:Statements.solidity.msel.simps)
             next
               case (Memory x2)
-              with k1 tp1 s1 c1.prems f1 show ?thesis using c2 by simp
+              with k1 tp1 s1 c1.prems f1 show ?thesis using c2 by (simp add:Statements.solidity.msel.simps)
             next
               case (Storage x3)
-              with k1 tp1 s1 c1.prems f1 show ?thesis using c2 by simp
+              with k1 tp1 s1 c1.prems f1 show ?thesis using c2 by (simp add:Statements.solidity.msel.simps)
             qed
           next
             case (KCDptr x2)
-            with tp1 s1 c1.prems f1 show ?thesis using c2 by simp
+            with tp1 s1 c1.prems f1 show ?thesis using c2 by (simp add:Statements.solidity.msel.simps)
           next
             case (KMemptr x2)
-            with tp1 s1 c1.prems f1 show ?thesis using c2 by simp
+            with tp1 s1 c1.prems f1 show ?thesis using c2 by (simp add:Statements.solidity.msel.simps)
           next
             case (KStoptr x3)
-            with tp1 s1 c1.prems f1 show ?thesis using c2 by simp
+            with tp1 s1 c1.prems f1 show ?thesis using c2 by (simp add:Statements.solidity.msel.simps)
           qed
         qed
       next
         case (e e)
-        with tp1 c1.prems show ?thesis using c2 by simp
+        with tp1 c1.prems show ?thesis using c2 by (simp add:Statements.solidity.msel.simps)
       qed
     qed
   next
     case (MTValue x2)
-    then show ?thesis by simp
+    then show ?thesis by (simp add:Statements.solidity.msel.simps)
   qed
 qed
 
 lemma ref_eq:
-  assumes "\<And>e st. e \<in> set ex \<Longrightarrow> expr e ep env cd st = expr (f e) ep env cd st"
-  shows "rexp (Ref i ex) ep env cd st=rexp (Ref i (map f ex)) ep env cd st"
+  assumes "\<And>e g. e \<in> set ex \<Longrightarrow> expr e env cd st g = expr (f e) env cd st g"
+  shows "rexp (Ref i ex) env cd st g = rexp (Ref i (map f ex)) env cd st g"
 proof (cases "fmlookup (denvalue env) i")
   case None
-  then show ?thesis by simp
+  then show ?thesis by (simp add:Statements.solidity.rexp.simps)
 next
   case s1: (Some a)
   then show ?thesis
@@ -3796,70 +3918,70 @@ next
       then show ?thesis
       proof (cases "accessStore l (stack st)")
         case None
-        with s1 p1 k1 show ?thesis by simp
+        with s1 p1 k1 show ?thesis by (simp add:Statements.solidity.rexp.simps)
       next
         case s2: (Some a')
         then show ?thesis
         proof (cases a')
           case (KValue _)
-          with s1 s2 p1 k1 show ?thesis by simp
+          with s1 s2 p1 k1 show ?thesis by (simp add:Statements.solidity.rexp.simps)
         next
           case cp: (KCDptr cp)
           then show ?thesis
           proof (cases tp)
             case (Value x1)
-            with mp s1 s2 p1 k1 show ?thesis by simp
+            with cp s1 s2 p1 k1 show ?thesis by (simp add:Statements.solidity.rexp.simps)
           next
             case mt: (Calldata ct)
             from msel_eq_msel have
-              "msel False ct cp ex ep env cd st=msel False ct cp (map f ex) ep env cd st" using assms by blast
-            thus ?thesis using s1 s2 p1 k1 mt cp by simp
+              "msel False ct cp ex env cd st=msel False ct cp (map f ex) env cd st" using assms by blast
+            thus ?thesis using s1 s2 p1 k1 mt cp by (simp add:Statements.solidity.rexp.simps)
           next
             case mt: (Memory mt)
             from msel_eq_msel have
-              "msel True mt cp ex ep env cd st=msel True mt cp (map f ex) ep env cd st" using assms by blast
-            thus ?thesis using s1 s2 p1 k1 mt cp by simp
+              "msel True mt cp ex env cd st=msel True mt cp (map f ex) env cd st" using assms by blast
+            thus ?thesis using s1 s2 p1 k1 mt cp by (simp add:Statements.solidity.rexp.simps)
           next
             case (Storage x3)
-            with cp s1 s2 p1 k1 show ?thesis by simp
+            with cp s1 s2 p1 k1 show ?thesis by (simp add:Statements.solidity.rexp.simps)
           qed
         next
           case mp: (KMemptr mp)
           then show ?thesis
           proof (cases tp)
             case (Value x1)
-            with mp s1 s2 p1 k1 show ?thesis by simp
+            with mp s1 s2 p1 k1 show ?thesis by (simp add:Statements.solidity.rexp.simps)
           next
             case mt: (Calldata ct)
             from msel_eq_msel have
-              "msel True ct mp ex ep env cd st=msel True ct mp (map f ex) ep env cd st" using assms by blast
-            thus ?thesis using s1 s2 p1 k1 mt mp by simp
+              "msel True ct mp ex env cd st=msel True ct mp (map f ex) env cd st" using assms by blast
+            thus ?thesis using s1 s2 p1 k1 mt mp by (simp add:Statements.solidity.rexp.simps)
           next
             case mt: (Memory mt)
             from msel_eq_msel have
-              "msel True mt mp ex ep env cd st=msel True mt mp (map f ex) ep env cd st" using assms by blast
-            thus ?thesis using s1 s2 p1 k1 mt mp by simp
+              "msel True mt mp ex env cd st=msel True mt mp (map f ex) env cd st" using assms by blast
+            thus ?thesis using s1 s2 p1 k1 mt mp by (simp add:Statements.solidity.rexp.simps)
           next
             case (Storage x3)
-            with mp s1 s2 p1 k1 show ?thesis by simp
+            with mp s1 s2 p1 k1 show ?thesis by (simp add:Statements.solidity.rexp.simps)
           qed
         next
           case sp: (KStoptr sp)
           then show ?thesis
           proof (cases tp)
             case (Value x1)
-            then show ?thesis using s1 s2 p1 k1 sp by simp
+            then show ?thesis using s1 s2 p1 k1 sp by (simp add:Statements.solidity.rexp.simps)
           next
             case (Calldata x2)
-            then show ?thesis using s1 s2 p1 k1 sp by simp
+            then show ?thesis using s1 s2 p1 k1 sp by (simp add:Statements.solidity.rexp.simps)
           next
             case (Memory x2)
-            then show ?thesis using s1 s2 p1 k1 sp by simp
+            then show ?thesis using s1 s2 p1 k1 sp by (simp add:Statements.solidity.rexp.simps)
           next
             case st: (Storage stp)
             from ssel_eq_ssel have
-              "ssel stp sp ex ep env cd st=ssel stp sp (map f ex) ep env cd st" using assms by blast
-            thus ?thesis using s1 s2 p1 k1 st sp by simp
+              "ssel stp sp ex env cd st=ssel stp sp (map f ex) env cd st" using assms by blast
+            thus ?thesis using s1 s2 p1 k1 st sp by (simp add:Statements.solidity.rexp.simps)
           qed
         qed
       qed
@@ -3868,18 +3990,18 @@ next
       then show ?thesis
       proof (cases tp)
         case (Value x1)
-        then show ?thesis using s1 p1 sl by simp
+        then show ?thesis using s1 p1 sl by (simp add:Statements.solidity.rexp.simps)
       next
         case (Calldata x2)
-        then show ?thesis using s1 p1 sl by simp
+        then show ?thesis using s1 p1 sl by (simp add:Statements.solidity.rexp.simps)
       next
         case (Memory x2)
-        then show ?thesis using s1 p1 sl by simp
+        then show ?thesis using s1 p1 sl by (simp add:Statements.solidity.rexp.simps)
       next
         case st: (Storage stp)
         from ssel_eq_ssel have
-          "ssel stp sl ex ep env cd st=ssel stp sl (map f ex) ep env cd st" using assms by blast
-        thus ?thesis using s1 sl p1 st by simp
+          "ssel stp sl ex env cd st=ssel stp sl (map f ex) env cd st" using assms by blast
+        thus ?thesis using s1 sl p1 st by (simp add:Statements.solidity.rexp.simps)
       qed
     qed
   qed
@@ -3889,18 +4011,18 @@ text\<open>
   The following theorem proves that the update function preserves the semantics of expressions.
 \<close>
 theorem update_correctness:
-    "\<And>st lb lv. expr ex ep env cd st = expr (eupdate ex) ep env cd st"
-    "\<And>st. rexp lv ep env cd st = rexp (lupdate lv) ep env cd st"
+    "\<And>g. expr ex env cd st g = expr (eupdate ex) env cd st g"
+    "\<And>g. rexp lv env cd st g = rexp (lupdate lv) env cd st g"
 proof (induction ex and lv)
-  case (Id x)
+  case (Id x g)
   then show ?case by simp
 next
-  case (Ref d ix)
+  case (Ref d ix g)
   then show ?case using ref_eq[where f="eupdate"] by simp
 next
-  case (INT b v)
+  case (INT b v g)
   then show ?case
-  proof (cases "gas st > 0")
+  proof (cases "g > 0")
     case True
     then show ?thesis
     proof cases
@@ -3911,23 +4033,24 @@ next
         assume "v \<ge> 0"
   
         from `b\<in>vbits` True have
-          "expr (E.INT b v) ep env cd st = Normal ((KValue (createSInt b v), Value (TSInt b)), st)" by simp
-        also have "createSInt b v = createSInt b ?m_def" using `b\<in>vbits` `v \<ge> 0` by auto
+          "expr (E.INT b v) env cd st g = Normal ((KValue (createSInt b v), Value (TSInt b)), g)" 
+          by (simp add:Statements.solidity.expr.simps)
+        also have "createSInt b v = createSInt b ?m_def" using `b\<in>vbits` `v \<ge> 0` unfolding createSInt_def by auto
         also from `v \<ge> 0` `b\<in>vbits` True have
-          "Normal ((KValue (createSInt b ?m_def), Value (TSInt b)),st) = expr (eupdate (E.INT b v)) ep env cd st"
-          by simp
-        finally show "expr (E.INT b v) ep env cd st = expr (eupdate (E.INT b v)) ep env cd st" by simp
+          "Normal ((KValue (createSInt b ?m_def), Value (TSInt b)),g) = expr (eupdate (E.INT b v)) env cd st g"
+          by (simp add:Statements.solidity.expr.simps)
+        finally show "expr (E.INT b v) env cd st g = expr (eupdate (E.INT b v)) env cd st g" by simp
       next
         let ?m_def = "(2^(b-1) - (-v+2^(b-1)-1) mod (2^b) - 1)"
         assume "\<not> v \<ge> 0"
   
         from `b\<in>vbits` True have
-          "expr (E.INT b v) ep env cd st = Normal ((KValue (createSInt b v), Value (TSInt b)), st)" by simp
-        also have "createSInt b v = createSInt b ?m_def" using `b\<in>vbits` `\<not> v \<ge> 0` by auto
+          "expr (E.INT b v) env cd st g = Normal ((KValue (createSInt b v), Value (TSInt b)), g)" by (simp add:Statements.solidity.expr.simps)
+        also have "createSInt b v = createSInt b ?m_def" using `b\<in>vbits` `\<not> v \<ge> 0` unfolding createSInt_def by auto
         also from `\<not> v \<ge> 0` `b\<in>vbits` True have
-          "Normal ((KValue (createSInt b ?m_def), Value (TSInt b)),st) =expr (eupdate (E.INT b v)) ep env cd st"
-          by simp
-        finally show "expr (E.INT b v) ep env cd st = expr (eupdate (E.INT b v)) ep env cd st" by simp
+          "Normal ((KValue (createSInt b ?m_def), Value (TSInt b)),g) =expr (eupdate (E.INT b v)) env cd st g"
+          by (simp add:Statements.solidity.expr.simps)
+        finally show "expr (E.INT b v) env cd st g = expr (eupdate (E.INT b v)) env cd st g" by simp
       qed
     next
       assume "\<not> b\<in>vbits"
@@ -3939,7 +4062,7 @@ next
   qed
 next
   case (UINT x1 x2)
-  then show ?case by simp
+  then show ?case by (simp add:Statements.solidity.expr.simps createUInt_def)
 next
   case (ADDRESS x)
   then show ?case by simp
@@ -3963,62 +4086,62 @@ next
   then show ?case by simp
 next
   case (LVAL x)
-  then show ?case by simp
+  then show ?case by (simp add:Statements.solidity.expr.simps createUInt_def)
 next
-  case p: (PLUS e1 e2)
+  case p: (PLUS e1 e2 g)
   show ?case
   proof (cases "eupdate e1")
     case i: (INT b1 v1)
-    with p.IH have expr1: "expr e1 ep env cd st = expr (E.INT b1 v1) ep env cd st" by simp
+    with p.IH have expr1: "expr e1 env cd st g = expr (E.INT b1 v1) env cd st g" by simp
     then show ?thesis
-    proof (cases "gas st > 0")
+    proof (cases "g > 0")
       case True
       then show ?thesis
       proof (cases)
         assume "b1 \<in> vbits"
         with expr1 True
-          have "expr e1 ep env cd st=Normal ((KValue (createSInt b1 v1), Value (TSInt b1)),st)" by simp
+          have "expr e1 env cd st g = Normal ((KValue (createSInt b1 v1), Value (TSInt b1)), g)" by (simp add:Statements.solidity.expr.simps createSInt_def)
         moreover from i `b1 \<in> vbits`
           have "v1 < 2^(b1-1)" and "v1 \<ge> -(2^(b1-1))" using update_bounds_int by auto
         moreover from `b1 \<in> vbits` have "0 < b1" by auto
-        ultimately have r1: "expr e1 ep env cd st = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v1), Value (TSInt b1)),st)"
+        ultimately have r1: "expr e1 env cd st g = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v1), Value (TSInt b1)),g)"
           using createSInt_id[of v1 b1] by simp
         thus ?thesis
         proof (cases "eupdate e2")
           case i2: (INT b2 v2)
-          with p.IH have expr2: "expr e2 ep env cd st = expr (E.INT b2 v2) ep env cd st" by simp
+          with p.IH have expr2: "expr e2 env cd st g = expr (E.INT b2 v2) env cd st g" by simp
           then show ?thesis
           proof (cases)
             let ?v="v1 + v2"
             assume "b2 \<in> vbits"
             with expr2 True
-              have "expr e2 ep env cd st=Normal ((KValue (createSInt b2 v2), Value (TSInt b2)),st)" by simp
+              have "expr e2 env cd st g = Normal ((KValue (createSInt b2 v2), Value (TSInt b2)),g)" by (simp add:Statements.solidity.expr.simps)
             moreover from i2 `b2 \<in> vbits`
               have "v2 < 2^(b2-1)" and "v2 \<ge> -(2^(b2-1))" using update_bounds_int by auto
             moreover from `b2 \<in> vbits` have "0 < b2" by auto
-            ultimately have r2: "expr e2 ep env cd st = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v2), Value (TSInt b2)),st)"
+            ultimately have r2: "expr e2 env cd st g = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v2), Value (TSInt b2)),g)"
               using createSInt_id[of v2 b2] by simp
             thus ?thesis
             proof (cases)
               let ?x="- (2 ^ (max b1 b2 - 1)) + (?v + 2 ^ (max b1 b2 - 1)) mod 2 ^ max b1 b2"
               assume "?v\<ge>0"
-              hence "createSInt (max b1 b2) ?v = (ShowL\<^sub>i\<^sub>n\<^sub>t ?x)" by simp
+              hence "createSInt (max b1 b2) ?v = (ShowL\<^sub>i\<^sub>n\<^sub>t ?x)" by (simp add: createSInt_def)
               moreover have "add (TSInt b1) (TSInt b2) (ShowL\<^sub>i\<^sub>n\<^sub>t v1) (ShowL\<^sub>i\<^sub>n\<^sub>t v2)
                 = Some (createSInt (max b1 b2) ?v, TSInt (max b1 b2))"
                 using Read_ShowL_id add_def olift.simps(1)[of "(+)" b1 b2] by simp
-              ultimately have "expr (PLUS e1 e2) ep env cd st
-                = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt (max b1 b2))),st)" using r1 r2 True by simp
-              moreover have "expr (eupdate (PLUS e1 e2)) ep env cd st
-                = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt (max b1 b2))),st)"
+              ultimately have "expr (PLUS e1 e2) env cd st g
+                = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt (max b1 b2))),g)" using r1 r2 True by (simp add:Statements.solidity.expr.simps)
+              moreover have "expr (eupdate (PLUS e1 e2)) env cd st g
+                = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt (max b1 b2))),g)"
               proof -
                 from `b1 \<in> vbits` `b2 \<in> vbits` `?v\<ge>0`
                   have "eupdate (PLUS e1 e2) = E.INT (max b1 b2) ?x" using i i2 by simp
-                moreover have "expr (E.INT (max b1 b2) ?x) ep env cd st
-                  = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt (max b1 b2))),st)"
+                moreover have "expr (E.INT (max b1 b2) ?x) env cd st g
+                  = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt (max b1 b2))),g)"
                 proof -
                   from `b1 \<in> vbits` `b2 \<in> vbits` have "max b1 b2 \<in> vbits" using vbits_max by simp
-                  with True have "expr (E.INT (max b1 b2) ?x) ep env cd st
-                    = Normal ((KValue (createSInt (max b1 b2) ?x), Value (TSInt (max b1 b2))),st)" by simp
+                  with True have "expr (E.INT (max b1 b2) ?x) env cd st g
+                    = Normal ((KValue (createSInt (max b1 b2) ?x), Value (TSInt (max b1 b2))),g)" by (simp add:Statements.solidity.expr.simps)
                   moreover from `0 < b1`
                     have "?x < 2 ^ (max b1 b2 - 1)" using upper_bound3 by simp
                   moreover from `0 < b1` have "0 < max b1 b2" using max_def by simp
@@ -4030,23 +4153,23 @@ next
             next
               let ?x="2^(max b1 b2 -1) - (-?v+2^(max b1 b2-1)-1) mod (2^max b1 b2) - 1"
               assume "\<not> ?v\<ge>0"
-              hence "createSInt (max b1 b2) ?v = (ShowL\<^sub>i\<^sub>n\<^sub>t ?x)" by simp
+              hence "createSInt (max b1 b2) ?v = (ShowL\<^sub>i\<^sub>n\<^sub>t ?x)" unfolding createSInt_def by simp
               moreover have "add (TSInt b1) (TSInt b2) (ShowL\<^sub>i\<^sub>n\<^sub>t v1) (ShowL\<^sub>i\<^sub>n\<^sub>t v2)
                 = Some (createSInt (max b1 b2) ?v, TSInt (max b1 b2))"
                 using Read_ShowL_id add_def olift.simps(1)[of "(+)" b1 b2] by simp
-              ultimately have "expr (PLUS e1 e2) ep env cd st
-                = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt (max b1 b2))),st)" using True r1 r2 by simp
-              moreover have "expr (eupdate (PLUS e1 e2)) ep env cd st
-                = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt (max b1 b2))),st)"
+              ultimately have "expr (PLUS e1 e2) env cd st g
+                = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt (max b1 b2))),g)" using True r1 r2 by (simp add:Statements.solidity.expr.simps)
+              moreover have "expr (eupdate (PLUS e1 e2)) env cd st g
+                = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt (max b1 b2))),g)"
               proof -
                 from `b1 \<in> vbits` `b2 \<in> vbits` `\<not>?v\<ge>0`
                   have "eupdate (PLUS e1 e2) = E.INT (max b1 b2) ?x" using i i2 by simp
-                moreover have "expr (E.INT (max b1 b2) ?x) ep env cd st
-                  = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt (max b1 b2))),st)"
+                moreover have "expr (E.INT (max b1 b2) ?x) env cd st g
+                  = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt (max b1 b2))),g)"
                 proof -
                   from `b1 \<in> vbits` `b2 \<in> vbits` have "max b1 b2 \<in> vbits" using vbits_max by simp
-                  with True have "expr (E.INT (max b1 b2) ?x) ep env cd st
-                    = Normal ((KValue (createSInt (max b1 b2) ?x), Value (TSInt (max b1 b2))),st)" by simp
+                  with True have "expr (E.INT (max b1 b2) ?x) env cd st g
+                    = Normal ((KValue (createSInt (max b1 b2) ?x), Value (TSInt (max b1 b2))),g)" by (simp add:Statements.solidity.expr.simps)
                   moreover from `0 < b1`
                     have "?x \<ge> - (2 ^ (max b1 b2 - 1))" using lower_bound2[of "max b1 b2" ?v] by simp
                   moreover from `b1 > 0` have "2^(max b1 b2 -1) > (0::nat)" by simp
@@ -4061,21 +4184,21 @@ next
             qed
           next
             assume "\<not> b2 \<in> vbits"
-            with p i i2 show ?thesis by simp
+            with p i i2 show ?thesis by (simp add:Statements.solidity.expr.simps)
           qed
         next
           case u2: (UINT b2 v2)
-          with p.IH have expr2: "expr e2 ep env cd st = expr (UINT b2 v2) ep env cd st" by simp
+          with p.IH have expr2: "expr e2 env cd st g = expr (UINT b2 v2) env cd st g" by simp
           then show ?thesis
           proof (cases)
             let ?v="v1 + v2"
             assume "b2 \<in> vbits"
             with expr2 True
-              have "expr e2 ep env cd st=Normal ((KValue (createUInt b2 v2), Value (TUInt b2)),st)" by simp
+              have "expr e2 env cd st g = Normal ((KValue (createUInt b2 v2), Value (TUInt b2)),g)" by (simp add:Statements.solidity.expr.simps)
             moreover from u2 `b2 \<in> vbits`
               have "v2 < 2^b2" and "v2 \<ge> 0" using update_bounds_uint by auto
             moreover from `b2 \<in> vbits` have "0 < b2" by auto
-            ultimately have r2: "expr e2 ep env cd st = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v2), Value (TUInt b2)),st)"
+            ultimately have r2: "expr e2 env cd st g = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v2), Value (TUInt b2)),g)"
               using createUInt_id[of v2 b2] by simp
             thus ?thesis
             proof (cases)
@@ -4084,22 +4207,22 @@ next
               proof (cases)
                 let ?x="- (2 ^ (b1 - 1)) + (?v + 2 ^ (b1 - 1)) mod 2 ^ b1"
                 assume "?v\<ge>0"
-                hence "createSInt b1 ?v = (ShowL\<^sub>i\<^sub>n\<^sub>t ?x)" using `b2<b1` by auto
+                hence "createSInt b1 ?v = (ShowL\<^sub>i\<^sub>n\<^sub>t ?x)" using `b2<b1` unfolding createSInt_def by auto
                 moreover have "add (TSInt b1) (TUInt b2) (ShowL\<^sub>i\<^sub>n\<^sub>t v1) (ShowL\<^sub>i\<^sub>n\<^sub>t v2)
                   = Some (createSInt b1 ?v, TSInt b1)"
                   using Read_ShowL_id add_def olift.simps(3)[of "(+)" b1 b2] `b2<b1` by simp
-                ultimately have "expr (PLUS e1 e2) ep env cd st
-                  = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b1)),st)" using r1 r2 True by simp
-                moreover have "expr (eupdate (PLUS e1 e2)) ep env cd st
-                  = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b1)),st)"
+                ultimately have "expr (PLUS e1 e2) env cd st g
+                  = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b1)),g)" using r1 r2 True by (simp add:Statements.solidity.expr.simps)
+                moreover have "expr (eupdate (PLUS e1 e2)) env cd st g
+                  = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b1)),g)"
                 proof -
                   from `b1 \<in> vbits` `b2 \<in> vbits` `?v\<ge>0` `b2<b1`
                     have "eupdate (PLUS e1 e2) = E.INT b1 ?x" using i u2 by simp
-                  moreover have "expr (E.INT b1 ?x) ep env cd st
-                    = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b1)),st)"
+                  moreover have "expr (E.INT b1 ?x) env cd st g
+                    = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b1)),g)"
                   proof -
-                    from `b1 \<in> vbits` True have "expr (E.INT b1 ?x) ep env cd st
-                      = Normal ((KValue (createSInt b1 ?x), Value (TSInt b1)),st)" by simp
+                    from `b1 \<in> vbits` True have "expr (E.INT b1 ?x) env cd st g
+                      = Normal ((KValue (createSInt b1 ?x), Value (TSInt b1)),g)" by (simp add:Statements.solidity.expr.simps)
                     moreover from `0 < b1` have "?x < 2 ^ (b1 - 1)" using upper_bound2 by simp
                     ultimately show ?thesis using createSInt_id[of ?x "b1"] `0 < b1` by simp
                   qed
@@ -4109,22 +4232,22 @@ next
               next
                 let ?x="2^(b1 -1) - (-?v+2^(b1-1)-1) mod (2^b1) - 1"
                 assume "\<not> ?v\<ge>0"
-                hence "createSInt b1 ?v = (ShowL\<^sub>i\<^sub>n\<^sub>t ?x)" by simp
+                hence "createSInt b1 ?v = (ShowL\<^sub>i\<^sub>n\<^sub>t ?x)" unfolding createSInt_def by simp
                 moreover have "add (TSInt b1) (TUInt b2) (ShowL\<^sub>i\<^sub>n\<^sub>t v1) (ShowL\<^sub>i\<^sub>n\<^sub>t v2)
                   = Some (createSInt b1 ?v, TSInt b1)"
                   using Read_ShowL_id add_def olift.simps(3)[of "(+)" b1 b2] `b2<b1` by simp
-                ultimately have "expr (PLUS e1 e2) ep env cd st
-                  = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b1)),st)" using r1 r2 True by simp
-                moreover have "expr (eupdate (PLUS e1 e2)) ep env cd st
-                  = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b1)),st)"
+                ultimately have "expr (PLUS e1 e2) env cd st g
+                  = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b1)),g)" using r1 r2 True by (simp add:Statements.solidity.expr.simps)
+                moreover have "expr (eupdate (PLUS e1 e2)) env cd st g
+                  = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b1)),g)"
                 proof -
                   from `b1 \<in> vbits` `b2 \<in> vbits` `\<not>?v\<ge>0` `b2<b1`
                     have "eupdate (PLUS e1 e2) = E.INT b1 ?x" using i u2 by simp
-                  moreover have "expr (E.INT b1 ?x) ep env cd st
-                    = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b1)),st)"
+                  moreover have "expr (E.INT b1 ?x) env cd st g
+                    = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b1)),g)"
                   proof -
-                    from `b1 \<in> vbits` True have "expr (E.INT b1 ?x) ep env cd st
-                      = Normal ((KValue (createSInt b1 ?x), Value (TSInt b1)),st)" by simp
+                    from `b1 \<in> vbits` True have "expr (E.INT b1 ?x) env cd st g
+                      = Normal ((KValue (createSInt b1 ?x), Value (TSInt b1)),g)" by (simp add:Statements.solidity.expr.simps)
                     moreover from `0 < b1` have "?x \<ge> - (2 ^ (b1 - 1))" using upper_bound2 by simp
                     moreover have "2^(b1-1) - (-?v+2^(b1-1)-1) mod (2^b1) - 1 < 2 ^ (b1 - 1)"
                       by (simp add: algebra_simps flip: int_one_le_iff_zero_less)
@@ -4136,67 +4259,71 @@ next
               qed
             next
               assume "\<not> b2 < b1"
-              with p i u2 show ?thesis by simp
+              with i u2 have "eupdate (PLUS e1 e2) = PLUS (eupdate e1) (eupdate e2)" by simp
+              with p i show ?thesis by (simp add:Statements.solidity.expr.simps)
             qed
           next
             assume "\<not> b2 \<in> vbits"
-            with p i u2 show ?thesis by simp
+            with p i u2 show ?thesis by (simp add:Statements.solidity.expr.simps)
           qed
         next
           case (ADDRESS _)
-          with p i show ?thesis by simp
+          with p i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (BALANCE _)
-          with p i show ?thesis by simp
+          with p i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case THIS
-          with p i show ?thesis by simp
+          with p i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case SENDER
-          with p i show ?thesis by simp
+          with p i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case VALUE
-          with p i show ?thesis by simp
+          with p i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case TRUE
-          with p i show ?thesis by simp
+          with p i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case FALSE
-          with p i show ?thesis by simp
+          with p i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (LVAL _)
-          with p i show ?thesis by simp
+          with p i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (PLUS _ _)
-          with p i show ?thesis by simp
+          with p i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (MINUS _ _)
-          with p i show ?thesis by simp
+          with p i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (EQUAL _ _)
-          with p i show ?thesis by simp
+          with p i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (LESS _ _)
-          with p i show ?thesis by simp
+          with p i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (AND _ _)
-          with p i show ?thesis by simp
+          with p i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (OR _ _)
-          with p i show ?thesis by simp
+          with p i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (NOT _)
-          with p i show ?thesis by simp
+          with p i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (CALL x181 x182)
-          with p i show ?thesis by simp
+          with p i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
-          case (ECALL x191 x192 x193 x194)
-          with p i show ?thesis by simp
+          case (ECALL x191 x192 x193)
+          with p i show ?thesis by (simp add:Statements.solidity.expr.simps)
+        next
+          case CONTRACTS
+          with p i show ?thesis by (simp add:Statements.solidity.expr.simps)
         qed
       next
         assume "\<not> b1 \<in> vbits"
-        with p i show ?thesis by simp
+        with p i show ?thesis by (simp add:Statements.solidity.expr.simps)
       qed
     next
       case False
@@ -4204,77 +4331,77 @@ next
     qed
   next
     case u: (UINT b1 v1)
-    with p.IH have expr1: "expr e1 ep env cd st = expr (UINT b1 v1) ep env cd st" by simp
+    with p.IH have expr1: "expr e1 env cd st g = expr (UINT b1 v1) env cd st g" by simp
     then show ?thesis
-    proof (cases "gas st > 0")
+    proof (cases "g > 0")
       case True
       then show ?thesis
       proof (cases)
         assume "b1 \<in> vbits"
         with expr1 True
-          have "expr e1 ep env cd st=Normal ((KValue (createUInt b1 v1), Value (TUInt b1)),st)" by simp
+          have "expr e1 env cd st g = Normal ((KValue (createUInt b1 v1), Value (TUInt b1)),g)" by (simp add:Statements.solidity.expr.simps)
         moreover from u `b1 \<in> vbits`
           have "v1 < 2^b1" and "v1 \<ge> 0" using update_bounds_uint by auto
         moreover from `b1 \<in> vbits` have "0 < b1" by auto
-        ultimately have r1: "expr e1 ep env cd st = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v1), Value (TUInt b1)),st)"
-          by simp
+        ultimately have r1: "expr e1 env cd st g = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v1), Value (TUInt b1)),g)"
+          by (simp add:Statements.solidity.expr.simps createUInt_def)
         thus ?thesis
         proof (cases "eupdate e2")
           case u2: (UINT b2 v2)
-          with p.IH have expr2: "expr e2 ep env cd st = expr (UINT b2 v2) ep env cd st" by simp
+          with p.IH have expr2: "expr e2 env cd st g = expr (UINT b2 v2) env cd st g" by simp
           then show ?thesis
           proof (cases)
             let ?v="v1 + v2"
             let ?x="?v mod 2 ^ max b1 b2"
             assume "b2 \<in> vbits"
             with expr2 True
-              have "expr e2 ep env cd st=Normal ((KValue (createUInt b2 v2), Value (TUInt b2)),st)" by simp
+              have "expr e2 env cd st g = Normal ((KValue (createUInt b2 v2), Value (TUInt b2)),g)" by (simp add:Statements.solidity.expr.simps)
             moreover from u2 `b2 \<in> vbits`
               have "v2 < 2^b2" and "v2 \<ge> 0" using update_bounds_uint by auto
             moreover from `b2 \<in> vbits` have "0 < b2" by auto
-            ultimately have r2: "expr e2 ep env cd st = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v2), Value (TUInt b2)),st)"
-              by simp
+            ultimately have r2: "expr e2 env cd st g = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v2), Value (TUInt b2)),g)"
+              by (simp add:Statements.solidity.expr.simps createUInt_def)
             moreover have "add (TUInt b1) (TUInt b2) (ShowL\<^sub>i\<^sub>n\<^sub>t v1) (ShowL\<^sub>i\<^sub>n\<^sub>t v2)
               = Some (createUInt (max b1 b2) ?v, TUInt (max b1 b2))"
               using Read_ShowL_id add_def olift.simps(2)[of "(+)" b1 b2] by simp
-            ultimately have "expr (PLUS e1 e2) ep env cd st
-              = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TUInt (max b1 b2))),st)" using r1 True by simp
-            moreover have "expr (eupdate (PLUS e1 e2)) ep env cd st
-              = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TUInt (max b1 b2))),st)"
+            ultimately have "expr (PLUS e1 e2) env cd st g
+              = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TUInt (max b1 b2))),g)" using r1 True by (simp add:Statements.solidity.expr.simps createUInt_def)
+            moreover have "expr (eupdate (PLUS e1 e2)) env cd st g
+              = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TUInt (max b1 b2))),g)"
             proof -
               from `b1 \<in> vbits` `b2 \<in> vbits`
                 have "eupdate (PLUS e1 e2) = UINT (max b1 b2) ?x" using u u2 by simp
-              moreover have "expr (UINT (max b1 b2) ?x) ep env cd st
-                = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TUInt (max b1 b2))),st)"
+              moreover have "expr (UINT (max b1 b2) ?x) env cd st g
+                = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TUInt (max b1 b2))),g)"
               proof -
                 from `b1 \<in> vbits` `b2 \<in> vbits` have "max b1 b2 \<in> vbits" using vbits_max by simp
-                with True have "expr (UINT (max b1 b2) ?x) ep env cd st
-                  = Normal ((KValue (createUInt (max b1 b2) ?x), Value (TUInt (max b1 b2))),st)" by simp
+                with True have "expr (UINT (max b1 b2) ?x) env cd st g
+                  = Normal ((KValue (createUInt (max b1 b2) ?x), Value (TUInt (max b1 b2))),g)" by (simp add:Statements.solidity.expr.simps)
                 moreover from `0 < b1`
                   have "?x < 2 ^ (max b1 b2)" by simp
                 moreover from `0 < b1` have "0 < max b1 b2" using max_def by simp
-                ultimately show ?thesis by simp
+                ultimately show ?thesis by (simp add:Statements.solidity.expr.simps createUInt_def)
               qed
               ultimately show ?thesis by simp
             qed
             ultimately show ?thesis by simp
           next
             assume "\<not> b2 \<in> vbits"
-            with p u u2 show ?thesis by simp
+            with p u u2 show ?thesis by (simp add:Statements.solidity.expr.simps)
           qed
         next
           case i2: (INT b2 v2)
-          with p.IH have expr2: "expr e2 ep env cd st = expr (E.INT b2 v2) ep env cd st" by simp
+          with p.IH have expr2: "expr e2 env cd st g = expr (E.INT b2 v2) env cd st g" by simp
           then show ?thesis
           proof (cases)
             let ?v="v1 + v2"
             assume "b2 \<in> vbits"
             with expr2 True
-              have "expr e2 ep env cd st=Normal ((KValue (createSInt b2 v2), Value (TSInt b2)),st)" by simp
+              have "expr e2 env cd st g = Normal ((KValue (createSInt b2 v2), Value (TSInt b2)),g)" by (simp add:Statements.solidity.expr.simps)
             moreover from i2 `b2 \<in> vbits`
               have "v2 < 2^(b2-1)" and "v2 \<ge> -(2^(b2-1))" using update_bounds_int by auto
             moreover from `b2 \<in> vbits` have "0 < b2" by auto
-            ultimately have r2: "expr e2 ep env cd st = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v2), Value (TSInt b2)),st)"
+            ultimately have r2: "expr e2 env cd st g = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v2), Value (TSInt b2)),g)"
               using createSInt_id[of v2 b2] by simp
             thus ?thesis
             proof (cases)
@@ -4283,22 +4410,22 @@ next
               proof (cases)
                 let ?x="- (2 ^ (b2 - 1)) + (?v + 2 ^ (b2 - 1)) mod 2 ^ b2"
                 assume "?v\<ge>0"
-                hence "createSInt b2 ?v = (ShowL\<^sub>i\<^sub>n\<^sub>t ?x)" using `b1<b2` by auto
+                hence "createSInt b2 ?v = (ShowL\<^sub>i\<^sub>n\<^sub>t ?x)" using `b1<b2` unfolding createSInt_def by auto
                 moreover have "add (TUInt b1) (TSInt b2) (ShowL\<^sub>i\<^sub>n\<^sub>t v1) (ShowL\<^sub>i\<^sub>n\<^sub>t v2)
                   = Some (createSInt b2 ?v, TSInt b2)"
                   using Read_ShowL_id add_def olift.simps(4)[of "(+)" b1 b2] `b1<b2` by simp
-                ultimately have "expr (PLUS e1 e2) ep env cd st
-                  = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b2)),st)" using r1 r2 True by simp
-                moreover have "expr (eupdate (PLUS e1 e2)) ep env cd st
-                  = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b2)),st)"
+                ultimately have "expr (PLUS e1 e2) env cd st g
+                  = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b2)),g)" using r1 r2 True by (simp add:Statements.solidity.expr.simps)
+                moreover have "expr (eupdate (PLUS e1 e2)) env cd st g
+                  = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b2)),g)"
                 proof -
                   from `b1 \<in> vbits` `b2 \<in> vbits` `?v\<ge>0` `b1<b2`
                     have "eupdate (PLUS e1 e2) = E.INT b2 ?x" using u i2 by simp
-                  moreover have "expr (E.INT b2 ?x) ep env cd st
-                    = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b2)),st)"
+                  moreover have "expr (E.INT b2 ?x) env cd st g
+                    = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b2)),g)"
                   proof -
-                    from `b2 \<in> vbits` True have "expr (E.INT b2 ?x) ep env cd st
-                      = Normal ((KValue (createSInt b2 ?x), Value (TSInt b2)),st)" by simp
+                    from `b2 \<in> vbits` True have "expr (E.INT b2 ?x) env cd st g
+                      = Normal ((KValue (createSInt b2 ?x), Value (TSInt b2)),g)" by (simp add:Statements.solidity.expr.simps)
                     moreover from `0 < b2` have "?x < 2 ^ (b2 - 1)" using upper_bound2 by simp
                     ultimately show ?thesis using createSInt_id[of ?x "b2"] `0 < b2` by simp
                   qed
@@ -4308,22 +4435,22 @@ next
               next
                 let ?x="2^(b2 -1) - (-?v+2^(b2-1)-1) mod (2^b2) - 1"
                 assume "\<not> ?v\<ge>0"
-                hence "createSInt b2 ?v = (ShowL\<^sub>i\<^sub>n\<^sub>t ?x)" by simp
+                hence "createSInt b2 ?v = (ShowL\<^sub>i\<^sub>n\<^sub>t ?x)" unfolding createSInt_def by simp
                 moreover have "add (TUInt b1) (TSInt b2) (ShowL\<^sub>i\<^sub>n\<^sub>t v1) (ShowL\<^sub>i\<^sub>n\<^sub>t v2)
                   = Some (createSInt b2 ?v, TSInt b2)"
                   using Read_ShowL_id add_def olift.simps(4)[of "(+)" b1 b2] `b1<b2` by simp
-                ultimately have "expr (PLUS e1 e2) ep env cd st
-                  = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b2)),st)" using r1 r2 True by simp
-                moreover have "expr (eupdate (PLUS e1 e2)) ep env cd st
-                  = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b2)),st)"
+                ultimately have "expr (PLUS e1 e2) env cd st g
+                  = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b2)),g)" using r1 r2 True by (simp add:Statements.solidity.expr.simps)
+                moreover have "expr (eupdate (PLUS e1 e2)) env cd st g
+                  = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b2)),g)"
                 proof -
                   from `b1 \<in> vbits` `b2 \<in> vbits` `\<not>?v\<ge>0` `b1<b2`
                     have "eupdate (PLUS e1 e2) = E.INT b2 ?x" using u i2 by simp
-                  moreover have "expr (E.INT b2 ?x) ep env cd st
-                    = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b2)),st)"
+                  moreover have "expr (E.INT b2 ?x) env cd st g
+                    = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b2)),g)"
                   proof -
-                    from `b2 \<in> vbits` True have "expr (E.INT b2 ?x) ep env cd st
-                      = Normal ((KValue (createSInt b2 ?x), Value (TSInt b2)),st)" by simp
+                    from `b2 \<in> vbits` True have "expr (E.INT b2 ?x) env cd st g
+                      = Normal ((KValue (createSInt b2 ?x), Value (TSInt b2)),g)" by (simp add:Statements.solidity.expr.simps)
                     moreover from `0 < b2` have "?x \<ge> - (2 ^ (b2 - 1))" using upper_bound2 by simp
                     moreover have "2^(b2-1) - (-?v+2^(b2-1)-1) mod (2^b2) - 1 < 2 ^ (b2 - 1)"
                       by (simp add: algebra_simps flip: int_one_le_iff_zero_less)
@@ -4335,67 +4462,70 @@ next
               qed
             next
               assume "\<not> b1 < b2"
-              with p u i2 show ?thesis by simp
+              with p u i2 show ?thesis by (simp add:Statements.solidity.expr.simps)
             qed
           next
             assume "\<not> b2 \<in> vbits"
-            with p u i2 show ?thesis by simp
+            with p u i2 show ?thesis by (simp add:Statements.solidity.expr.simps)
           qed
         next
           case (ADDRESS _)
-          with p u show ?thesis by simp
+          with p u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (BALANCE _)
-          with p u show ?thesis by simp
+          with p u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case THIS
-          with p u show ?thesis by simp
+          with p u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case SENDER
-          with p u show ?thesis by simp
+          with p u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case VALUE
-          with p u show ?thesis by simp
+          with p u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case TRUE
-          with p u show ?thesis by simp
+          with p u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case FALSE
-          with p u show ?thesis by simp
+          with p u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (LVAL _)
-          with p u show ?thesis by simp
+          with p u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (PLUS _ _)
-          with p u show ?thesis by simp
+          with p u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (MINUS _ _)
-          with p u show ?thesis by simp
+          with p u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (EQUAL _ _)
-          with p u show ?thesis by simp
+          with p u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (LESS _ _)
-          with p u show ?thesis by simp
+          with p u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (AND _ _)
-          with p u show ?thesis by simp
+          with p u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (OR _ _)
-          with p u show ?thesis by simp
+          with p u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (NOT _)
-          with p u show ?thesis by simp
+          with p u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (CALL x181 x182)
-          with p u show ?thesis by simp
+          with p u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
-          case (ECALL x191 x192 x193 x194)
-          with p u show ?thesis by simp
+          case (ECALL x191 x192 x193)
+          with p u show ?thesis by (simp add:Statements.solidity.expr.simps)
+        next
+          case CONTRACTS
+          with p u show ?thesis by (simp add:Statements.solidity.expr.simps)
         qed
       next
         assume "\<not> b1 \<in> vbits"
-        with p u show ?thesis by simp
+        with p u show ?thesis by (simp add:Statements.solidity.expr.simps)
       qed
     next
       case False
@@ -4403,89 +4533,92 @@ next
     qed
   next
     case (ADDRESS x3)
-    with p show ?thesis by simp
+    with p show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case (BALANCE x4)
-    with p show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with p show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case THIS
-    with p show ?thesis by simp
+    with p show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case SENDER
-    with p show ?thesis by simp
+    with p show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case VALUE
-    with p show ?thesis by simp
+    with p show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case TRUE
-    with p show ?thesis by simp
+    with p show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case FALSE
-    with p show ?thesis by simp
+    with p show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case (LVAL x7)
-    with p show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with p show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (PLUS x81 x82)
-    with p show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with p show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (MINUS x91 x92)
-    with p show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with p show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (EQUAL x101 x102)
-    with p show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with p show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (LESS x111 x112)
-    with p show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with p show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (AND x121 x122)
-    with p show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with p show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (OR x131 x132)
-    with p show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with p show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (NOT x131)
-    with p show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with p show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (CALL x181 x182)
-    with p show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with p show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
-    case (ECALL x191 x192 x193 x194)
-    with p show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    case (ECALL x191 x192 x193)
+    with p show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
+  next
+    case CONTRACTS
+    with p show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   qed
 next
-  case m: (MINUS e1 e2)
+  case m: (MINUS e1 e2 g)
   show ?case
   proof (cases "eupdate e1")
     case i: (INT b1 v1)
-    with m.IH have expr1: "expr e1 ep env cd st = expr (E.INT b1 v1) ep env cd st" by simp
+    with m.IH have expr1: "expr e1 env cd st g = expr (E.INT b1 v1) env cd st g" by simp
     then show ?thesis
-    proof (cases "gas st > 0")
+    proof (cases "g > 0")
       case True
       show ?thesis
       proof (cases)
         assume "b1 \<in> vbits"
         with expr1 True
-          have "expr e1 ep env cd st=Normal ((KValue (createSInt b1 v1), Value (TSInt b1)),st)" by simp
+          have "expr e1 env cd st g = Normal ((KValue (createSInt b1 v1), Value (TSInt b1)),g)" by (simp add:Statements.solidity.expr.simps)
         moreover from i `b1 \<in> vbits`
           have "v1 < 2^(b1-1)" and "v1 \<ge> -(2^(b1-1))" using update_bounds_int by auto
         moreover from `b1 \<in> vbits` have "0 < b1" by auto
-        ultimately have r1: "expr e1 ep env cd st = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v1), Value (TSInt b1)),st)"
+        ultimately have r1: "expr e1 env cd st g = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v1), Value (TSInt b1)),g)"
           using createSInt_id[of v1 b1] by simp
         thus ?thesis
         proof (cases "eupdate e2")
           case i2: (INT b2 v2)
-          with m.IH have expr2: "expr e2 ep env cd st = expr (E.INT b2 v2) ep env cd st" by simp
+          with m.IH have expr2: "expr e2 env cd st g = expr (E.INT b2 v2) env cd st g" by simp
           then show ?thesis
           proof (cases)
             let ?v="v1 - v2"
             assume "b2 \<in> vbits"
             with expr2 True
-              have "expr e2 ep env cd st=Normal ((KValue (createSInt b2 v2), Value (TSInt b2)),st)" by simp
+              have "expr e2 env cd st g = Normal ((KValue (createSInt b2 v2), Value (TSInt b2)),g)" by (simp add:Statements.solidity.expr.simps)
             moreover from i2 `b2 \<in> vbits`
               have "v2 < 2^(b2-1)" and "v2 \<ge> -(2^(b2-1))" using update_bounds_int by auto
             moreover from `b2 \<in> vbits` have "0 < b2" by auto
-            ultimately have r2: "expr e2 ep env cd st = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v2), Value (TSInt b2)),st)"
+            ultimately have r2: "expr e2 env cd st g = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v2), Value (TSInt b2)),g)"
               using createSInt_id[of v2 b2] by simp
   
             from `b1 \<in> vbits` `b2 \<in> vbits` have
@@ -4502,22 +4635,22 @@ next
             proof (cases)
               let ?x="- (2 ^ (max b1 b2 - 1)) + (?v + 2 ^ (max b1 b2 - 1)) mod 2 ^ max b1 b2"
               assume "?v\<ge>0"
-              hence "createSInt (max b1 b2) ?v = (ShowL\<^sub>i\<^sub>n\<^sub>t ?x)" by simp
+              hence "createSInt (max b1 b2) ?v = (ShowL\<^sub>i\<^sub>n\<^sub>t ?x)" unfolding createSInt_def by simp
               moreover have "sub (TSInt b1) (TSInt b2) (ShowL\<^sub>i\<^sub>n\<^sub>t v1) (ShowL\<^sub>i\<^sub>n\<^sub>t v2)
                 = Some (createSInt (max b1 b2) ?v, TSInt (max b1 b2))"
                 using Read_ShowL_id sub_def olift.simps(1)[of "(-)" b1 b2] by simp
-              ultimately have "expr (MINUS e1 e2) ep env cd st
-                = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt (max b1 b2))),st)" using r1 r2 True by simp
-              moreover have "expr (eupdate (MINUS e1 e2)) ep env cd st
-                = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt (max b1 b2))),st)"
+              ultimately have "expr (MINUS e1 e2) env cd st g
+                = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt (max b1 b2))),g)" using r1 r2 True by (simp add:Statements.solidity.expr.simps)
+              moreover have "expr (eupdate (MINUS e1 e2)) env cd st g
+                = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt (max b1 b2))),g)"
               proof -
                 from u_def have "eupdate (MINUS e1 e2) = E.INT (max b1 b2) ?x" using `?v\<ge>0` by simp
-                moreover have "expr (E.INT (max b1 b2) ?x) ep env cd st
-                  = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt (max b1 b2))),st)"
+                moreover have "expr (E.INT (max b1 b2) ?x) env cd st g
+                  = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt (max b1 b2))),g)"
                 proof -
                   from `b1 \<in> vbits` `b2 \<in> vbits` have "max b1 b2 \<in> vbits" using vbits_max by simp
-                  with True have "expr (E.INT (max b1 b2) ?x) ep env cd st
-                    = Normal ((KValue (createSInt (max b1 b2) ?x), Value (TSInt (max b1 b2))),st)" by simp
+                  with True have "expr (E.INT (max b1 b2) ?x) env cd st g
+                    = Normal ((KValue (createSInt (max b1 b2) ?x), Value (TSInt (max b1 b2))),g)" by (simp add:Statements.solidity.expr.simps)
                   moreover from `0 < b1`
                     have "?x < 2 ^ (max b1 b2 - 1)" using upper_bound2 by simp
                   moreover from `0 < b1` have "0 < max b1 b2" using max_def by simp
@@ -4529,22 +4662,22 @@ next
             next
               let ?x="2^(max b1 b2 -1) - (-?v+2^(max b1 b2-1)-1) mod (2^max b1 b2) - 1"
               assume "\<not> ?v\<ge>0"
-              hence "createSInt (max b1 b2) ?v = (ShowL\<^sub>i\<^sub>n\<^sub>t ?x)" by simp
+              hence "createSInt (max b1 b2) ?v = (ShowL\<^sub>i\<^sub>n\<^sub>t ?x)" unfolding createSInt_def by simp
               moreover have "sub (TSInt b1) (TSInt b2) (ShowL\<^sub>i\<^sub>n\<^sub>t v1) (ShowL\<^sub>i\<^sub>n\<^sub>t v2)
                 = Some (createSInt (max b1 b2) ?v, TSInt (max b1 b2))"
                 using Read_ShowL_id sub_def olift.simps(1)[of "(-)" b1 b2] by simp
-              ultimately have "expr (MINUS e1 e2) ep env cd st
-                = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt (max b1 b2))),st)" using r1 r2 True by simp
-              moreover have "expr (eupdate (MINUS e1 e2)) ep env cd st
-                = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt (max b1 b2))),st)"
+              ultimately have "expr (MINUS e1 e2) env cd st g
+                = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt (max b1 b2))),g)" using r1 r2 True by (simp add:Statements.solidity.expr.simps)
+              moreover have "expr (eupdate (MINUS e1 e2)) env cd st g
+                = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt (max b1 b2))),g)"
               proof -
                 from u_def have "eupdate (MINUS e1 e2) = E.INT (max b1 b2) ?x" using `\<not> ?v\<ge>0` by simp
-                moreover have "expr (E.INT (max b1 b2) ?x) ep env cd st
-                  = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt (max b1 b2))),st)"
+                moreover have "expr (E.INT (max b1 b2) ?x) env cd st g
+                  = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt (max b1 b2))),g)"
                 proof -
                   from `b1 \<in> vbits` `b2 \<in> vbits` have "max b1 b2 \<in> vbits" using vbits_max by simp
-                  with True have "expr (E.INT (max b1 b2) ?x) ep env cd st
-                    = Normal ((KValue (createSInt (max b1 b2) ?x), Value (TSInt (max b1 b2))),st)" by simp
+                  with True have "expr (E.INT (max b1 b2) ?x) env cd st g
+                    = Normal ((KValue (createSInt (max b1 b2) ?x), Value (TSInt (max b1 b2))),g)" by (simp add:Statements.solidity.expr.simps createSInt_def)
                   moreover from `0 < b1`
                     have "?x \<ge> - (2 ^ (max b1 b2 - 1))" using lower_bound2[of "max b1 b2" ?v] by simp
                   moreover from `b1 > 0` have "2^(max b1 b2 -1) > (0::nat)" by simp
@@ -4559,21 +4692,21 @@ next
             qed
           next
             assume "\<not> b2 \<in> vbits"
-            with m i i2 show ?thesis by simp
+            with m i i2 show ?thesis by (simp add:Statements.solidity.expr.simps)
           qed
         next
           case u: (UINT b2 v2)
-          with m.IH have expr2: "expr e2 ep env cd st = expr (UINT b2 v2) ep env cd st" by simp
+          with m.IH have expr2: "expr e2 env cd st g = expr (UINT b2 v2) env cd st g" by simp
           then show ?thesis
           proof (cases)
             let ?v="v1 - v2"
             assume "b2 \<in> vbits"
             with expr2 True
-              have "expr e2 ep env cd st=Normal ((KValue (createUInt b2 v2), Value (TUInt b2)),st)" by simp
+              have "expr e2 env cd st g = Normal ((KValue (createUInt b2 v2), Value (TUInt b2)),g)" by (simp add:Statements.solidity.expr.simps)
             moreover from u `b2 \<in> vbits`
               have "v2 < 2^b2" and "v2 \<ge> 0" using update_bounds_uint by auto
             moreover from `b2 \<in> vbits` have "0 < b2" by auto
-            ultimately have r2: "expr e2 ep env cd st = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v2), Value (TUInt b2)),st)"
+            ultimately have r2: "expr e2 env cd st g = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v2), Value (TUInt b2)),g)"
               using createUInt_id[of v2 b2] by simp
             thus ?thesis
             proof (cases)
@@ -4589,21 +4722,21 @@ next
               proof (cases)
                 let ?x="- (2 ^ (b1 - 1)) + (?v + 2 ^ (b1 - 1)) mod 2 ^ b1"
                 assume "?v\<ge>0"
-                hence "createSInt b1 ?v = (ShowL\<^sub>i\<^sub>n\<^sub>t ?x)" using `b2<b1` by auto
+                hence "createSInt b1 ?v = (ShowL\<^sub>i\<^sub>n\<^sub>t ?x)" using `b2<b1` unfolding createSInt_def by auto
                 moreover have "sub (TSInt b1) (TUInt b2) (ShowL\<^sub>i\<^sub>n\<^sub>t v1) (ShowL\<^sub>i\<^sub>n\<^sub>t v2)
                   = Some (createSInt b1 ?v, TSInt b1)"
                   using Read_ShowL_id sub_def olift.simps(3)[of "(-)" b1 b2] `b2<b1` by simp
-                ultimately have "expr (MINUS e1 e2) ep env cd st
-                  = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b1)),st)" using r1 r2 True by simp
-                moreover have "expr (eupdate (MINUS e1 e2)) ep env cd st
-                  = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b1)),st)"
+                ultimately have "expr (MINUS e1 e2) env cd st g
+                  = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b1)),g)" using r1 r2 True by (simp add:Statements.solidity.expr.simps)
+                moreover have "expr (eupdate (MINUS e1 e2)) env cd st g
+                  = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b1)),g)"
                 proof -
                   from u_def have "eupdate (MINUS e1 e2) = E.INT b1 ?x" using `?v\<ge>0` by simp
-                  moreover have "expr (E.INT b1 ?x) ep env cd st
-                    = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b1)),st)"
+                  moreover have "expr (E.INT b1 ?x) env cd st g
+                    = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b1)),g)"
                   proof -
-                    from `b1 \<in> vbits` True have "expr (E.INT b1 ?x) ep env cd st
-                      = Normal ((KValue (createSInt b1 ?x), Value (TSInt b1)),st)" by simp
+                    from `b1 \<in> vbits` True have "expr (E.INT b1 ?x) env cd st g
+                      = Normal ((KValue (createSInt b1 ?x), Value (TSInt b1)),g)" by (simp add:Statements.solidity.expr.simps)
                     moreover from `0 < b1` have "?x < 2 ^ (b1 - 1)" using upper_bound2 by simp
                     ultimately show ?thesis using createSInt_id[of ?x "b1"] `0 < b1` by simp
                   qed
@@ -4613,21 +4746,21 @@ next
               next
                 let ?x="2^(b1 -1) - (-?v+2^(b1-1)-1) mod (2^b1) - 1"
                 assume "\<not> ?v\<ge>0"
-                hence "createSInt b1 ?v = (ShowL\<^sub>i\<^sub>n\<^sub>t ?x)" by simp
+                hence "createSInt b1 ?v = (ShowL\<^sub>i\<^sub>n\<^sub>t ?x)" unfolding createSInt_def by simp
                 moreover have "sub (TSInt b1) (TUInt b2) (ShowL\<^sub>i\<^sub>n\<^sub>t v1) (ShowL\<^sub>i\<^sub>n\<^sub>t v2)
                   = Some (createSInt b1 ?v, TSInt b1)"
                   using Read_ShowL_id sub_def olift.simps(3)[of "(-)" b1 b2] `b2<b1` by simp
-                ultimately have "expr (MINUS e1 e2) ep env cd st
-                  = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b1)),st)" using r1 r2 True by simp
-                moreover have "expr (eupdate (MINUS e1 e2)) ep env cd st
-                  = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b1)),st)"
+                ultimately have "expr (MINUS e1 e2) env cd st g
+                  = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b1)),g)" using r1 r2 True by (simp add:Statements.solidity.expr.simps)
+                moreover have "expr (eupdate (MINUS e1 e2)) env cd st g
+                  = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b1)),g)"
                 proof -
                   from u_def have "eupdate (MINUS e1 e2) = E.INT b1 ?x" using `\<not> ?v\<ge>0` by simp
-                  moreover have "expr (E.INT b1 ?x) ep env cd st
-                    = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b1)),st)"
+                  moreover have "expr (E.INT b1 ?x) env cd st g
+                    = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b1)),g)"
                   proof -
-                    from `b1 \<in> vbits` True have "expr (E.INT b1 ?x) ep env cd st
-                      = Normal ((KValue (createSInt b1 ?x), Value (TSInt b1)),st)" by simp
+                    from `b1 \<in> vbits` True have "expr (E.INT b1 ?x) env cd st g
+                      = Normal ((KValue (createSInt b1 ?x), Value (TSInt b1)),g)" by (simp add:Statements.solidity.expr.simps)
                     moreover from `0 < b1` have "?x \<ge> - (2 ^ (b1 - 1))" using upper_bound2 by simp
                     moreover have "2^(b1-1) - (-?v+2^(b1-1)-1) mod (2^b1) - 1 < 2 ^ (b1 - 1)"
                       by (simp add: algebra_simps flip: int_one_le_iff_zero_less)
@@ -4639,67 +4772,71 @@ next
               qed
             next
               assume "\<not> b2 < b1"
-              with m i u show ?thesis by simp
+              with i u have "eupdate (MINUS e1 e2) = MINUS (eupdate e1) (eupdate e2)" by simp
+              with m i show ?thesis by (simp add:Statements.solidity.expr.simps)
             qed
           next
             assume "\<not> b2 \<in> vbits"
-            with m i u show ?thesis by simp
+            with m i u show ?thesis by (simp add:Statements.solidity.expr.simps)
           qed
         next
           case (ADDRESS _)
-          with m i show ?thesis by simp
+          with m i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (BALANCE _)
-          with m i show ?thesis by simp
+          with m i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case THIS
-          with m i show ?thesis by simp
+          with m i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case SENDER
-          with m i show ?thesis by simp
+          with m i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case VALUE
-          with m i show ?thesis by simp
+          with m i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case TRUE
-          with m i show ?thesis by simp
+          with m i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case FALSE
-          with m i show ?thesis by simp
+          with m i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (LVAL _)
-          with m i show ?thesis by simp
+          with m i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (PLUS _ _)
-          with m i show ?thesis by simp
+          with m i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (MINUS _ _)
-          with m i show ?thesis by simp
+          with m i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (EQUAL _ _)
-          with m i show ?thesis by simp
+          with m i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (LESS _ _)
-          with m i show ?thesis by simp
+          with m i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (AND _ _)
-          with m i show ?thesis by simp
+          with m i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (OR _ _)
-          with m i show ?thesis by simp
+          with m i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (NOT _)
-          with m i show ?thesis by simp
+          with m i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (CALL x181 x182)
-          with m i show ?thesis by simp
+          with m i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
-          case (ECALL x191 x192 x193 x194)
-          with m i show ?thesis by simp
+          case (ECALL x191 x192 x193)
+          with m i show ?thesis by (simp add:Statements.solidity.expr.simps)
+        next
+          case CONTRACTS
+          with m i show ?thesis by (simp add:Statements.solidity.expr.simps)
         qed
       next
         assume "\<not> b1 \<in> vbits"
-        with m i show ?thesis by simp
+        with m i show ?thesis by (simp add:Statements.solidity.expr.simps)
       qed
     next
       case False
@@ -4707,77 +4844,77 @@ next
     qed
   next
     case u: (UINT b1 v1)
-    with m.IH have expr1: "expr e1 ep env cd st = expr (UINT b1 v1) ep env cd st" by simp
+    with m.IH have expr1: "expr e1 env cd st g = expr (UINT b1 v1) env cd st g" by simp
     then show ?thesis
-    proof (cases "gas st > 0")
+    proof (cases "g > 0")
       case True
       show ?thesis
       proof (cases)
         assume "b1 \<in> vbits"
         with expr1 True
-          have "expr e1 ep env cd st=Normal ((KValue (createUInt b1 v1), Value (TUInt b1)),st)" by simp
+          have "expr e1 env cd st g = Normal ((KValue (createUInt b1 v1), Value (TUInt b1)),g)" by (simp add:Statements.solidity.expr.simps)
         moreover from u `b1 \<in> vbits`
           have "v1 < 2^b1" and "v1 \<ge> 0" using update_bounds_uint by auto
         moreover from `b1 \<in> vbits` have "0 < b1" by auto
-        ultimately have r1: "expr e1 ep env cd st = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v1), Value (TUInt b1)),st)"
-          by simp
+        ultimately have r1: "expr e1 env cd st g = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v1), Value (TUInt b1)),g)"
+          by (simp add:Statements.solidity.expr.simps createUInt_def)
         thus ?thesis
         proof (cases "eupdate e2")
           case u2: (UINT b2 v2)
-          with m.IH have expr2: "expr e2 ep env cd st = expr (UINT b2 v2) ep env cd st" by simp
+          with m.IH have expr2: "expr e2 env cd st g = expr (UINT b2 v2) env cd st g" by simp
           then show ?thesis
           proof (cases)
             let ?v="v1 - v2"
             let ?x="?v mod 2 ^ max b1 b2"
             assume "b2 \<in> vbits"
             with expr2 True
-              have "expr e2 ep env cd st=Normal ((KValue (createUInt b2 v2), Value (TUInt b2)),st)" by simp
+              have "expr e2 env cd st g = Normal ((KValue (createUInt b2 v2), Value (TUInt b2)),g)" by (simp add:Statements.solidity.expr.simps)
             moreover from u2 `b2 \<in> vbits`
               have "v2 < 2^b2" and "v2 \<ge> 0" using update_bounds_uint by auto
             moreover from `b2 \<in> vbits` have "0 < b2" by auto
-            ultimately have r2: "expr e2 ep env cd st = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v2), Value (TUInt b2)),st)"
-              by simp
+            ultimately have r2: "expr e2 env cd st g = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v2), Value (TUInt b2)),g)"
+              by (simp add:Statements.solidity.expr.simps createUInt_def)
             moreover have "sub (TUInt b1) (TUInt b2) (ShowL\<^sub>i\<^sub>n\<^sub>t v1) (ShowL\<^sub>i\<^sub>n\<^sub>t v2)
               = Some (createUInt (max b1 b2) ?v, TUInt (max b1 b2))"
               using Read_ShowL_id sub_def olift.simps(2)[of "(-)" b1 b2] by simp
-            ultimately have "expr (MINUS e1 e2) ep env cd st
-              = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TUInt (max b1 b2))),st)" using r1 True by simp
-            moreover have "expr (eupdate (MINUS e1 e2)) ep env cd st
-              = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TUInt (max b1 b2))),st)"
+            ultimately have "expr (MINUS e1 e2) env cd st g
+              = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TUInt (max b1 b2))),g)" using r1 True by (simp add:Statements.solidity.expr.simps createUInt_def)
+            moreover have "expr (eupdate (MINUS e1 e2)) env cd st g
+              = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TUInt (max b1 b2))),g)"
             proof -
               from `b1 \<in> vbits` `b2 \<in> vbits`
                 have "eupdate (MINUS e1 e2) = UINT (max b1 b2) ?x" using u u2 by simp
-              moreover have "expr (UINT (max b1 b2) ?x) ep env cd st
-                = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TUInt (max b1 b2))),st)"
+              moreover have "expr (UINT (max b1 b2) ?x) env cd st g
+                = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TUInt (max b1 b2))),g)"
               proof -
                 from `b1 \<in> vbits` `b2 \<in> vbits` have "max b1 b2 \<in> vbits" using vbits_max by simp
-                with True have "expr (UINT (max b1 b2) ?x) ep env cd st
-                  = Normal ((KValue (createUInt (max b1 b2) ?x), Value (TUInt (max b1 b2))),st)" by simp
+                with True have "expr (UINT (max b1 b2) ?x) env cd st g
+                  = Normal ((KValue (createUInt (max b1 b2) ?x), Value (TUInt (max b1 b2))),g)" by (simp add:Statements.solidity.expr.simps)
                 moreover from `0 < b1`
                   have "?x < 2 ^ (max b1 b2)" by simp
                 moreover from `0 < b1` have "0 < max b1 b2" using max_def by simp
-                ultimately show ?thesis by simp
+                ultimately show ?thesis by (simp add:Statements.solidity.expr.simps createUInt_def)
               qed
               ultimately show ?thesis by simp
             qed
             ultimately show ?thesis by simp
           next
             assume "\<not> b2 \<in> vbits"
-            with m u u2 show ?thesis by simp
+            with m u u2 show ?thesis by (simp add:Statements.solidity.expr.simps)
           qed
         next
           case i: (INT b2 v2)
-          with m.IH have expr2: "expr e2 ep env cd st = expr (E.INT b2 v2) ep env cd st" by simp
+          with m.IH have expr2: "expr e2 env cd st g = expr (E.INT b2 v2) env cd st g" by simp
           then show ?thesis
           proof (cases)
             let ?v="v1 - v2"
             assume "b2 \<in> vbits"
             with expr2 True
-              have "expr e2 ep env cd st=Normal ((KValue (createSInt b2 v2), Value (TSInt b2)),st)" by simp
+              have "expr e2 env cd st g = Normal ((KValue (createSInt b2 v2), Value (TSInt b2)),g)" by (simp add:Statements.solidity.expr.simps)
             moreover from i `b2 \<in> vbits`
               have "v2 < 2^(b2-1)" and "v2 \<ge> -(2^(b2-1))" using update_bounds_int by auto
             moreover from `b2 \<in> vbits` have "0 < b2" by auto
-            ultimately have r2: "expr e2 ep env cd st = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v2), Value (TSInt b2)),st)"
+            ultimately have r2: "expr e2 env cd st g = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v2), Value (TSInt b2)),g)"
               using createSInt_id[of v2 b2] by simp
             thus ?thesis
             proof (cases)
@@ -4793,21 +4930,21 @@ next
               proof (cases)
                 let ?x="- (2 ^ (b2 - 1)) + (?v + 2 ^ (b2 - 1)) mod 2 ^ b2"
                 assume "?v\<ge>0"
-                hence "createSInt b2 ?v = (ShowL\<^sub>i\<^sub>n\<^sub>t ?x)" using `b1<b2` by auto
+                hence "createSInt b2 ?v = (ShowL\<^sub>i\<^sub>n\<^sub>t ?x)" using `b1<b2` unfolding createSInt_def by auto
                 moreover have "sub (TUInt b1) (TSInt b2) (ShowL\<^sub>i\<^sub>n\<^sub>t v1) (ShowL\<^sub>i\<^sub>n\<^sub>t v2)
                   = Some (createSInt b2 ?v, TSInt b2)"
                   using Read_ShowL_id sub_def olift.simps(4)[of "(-)" b1 b2] `b1<b2` by simp
-                ultimately have "expr (MINUS e1 e2) ep env cd st
-                  = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b2)),st)" using r1 r2 True by simp
-                moreover have "expr (eupdate (MINUS e1 e2)) ep env cd st
-                  = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b2)),st)"
+                ultimately have "expr (MINUS e1 e2) env cd st g
+                  = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b2)),g)" using r1 r2 True by (simp add:Statements.solidity.expr.simps)
+                moreover have "expr (eupdate (MINUS e1 e2)) env cd st g
+                  = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b2)),g)"
                 proof -
                   from u_def have "eupdate (MINUS e1 e2) = E.INT b2 ?x" using `?v\<ge>0` by simp
-                  moreover have "expr (E.INT b2 ?x) ep env cd st
-                    = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b2)),st)"
+                  moreover have "expr (E.INT b2 ?x) env cd st g
+                    = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b2)),g)"
                   proof -
-                    from `b2 \<in> vbits` True have "expr (E.INT b2 ?x) ep env cd st
-                      = Normal ((KValue (createSInt b2 ?x), Value (TSInt b2)),st)" by simp
+                    from `b2 \<in> vbits` True have "expr (E.INT b2 ?x) env cd st g
+                      = Normal ((KValue (createSInt b2 ?x), Value (TSInt b2)),g)" by (simp add:Statements.solidity.expr.simps)
                     moreover from `0 < b2` have "?x < 2 ^ (b2 - 1)" using upper_bound2 by simp
                     ultimately show ?thesis using createSInt_id[of ?x "b2"] `0 < b2` by simp
                   qed
@@ -4817,21 +4954,21 @@ next
               next
                 let ?x="2^(b2 -1) - (-?v+2^(b2-1)-1) mod (2^b2) - 1"
                 assume "\<not> ?v\<ge>0"
-                hence "createSInt b2 ?v = (ShowL\<^sub>i\<^sub>n\<^sub>t ?x)" by simp
+                hence "createSInt b2 ?v = (ShowL\<^sub>i\<^sub>n\<^sub>t ?x)" unfolding createSInt_def by simp
                 moreover have "sub (TUInt b1) (TSInt b2) (ShowL\<^sub>i\<^sub>n\<^sub>t v1) (ShowL\<^sub>i\<^sub>n\<^sub>t v2)
                   = Some (createSInt b2 ?v, TSInt b2)"
                   using Read_ShowL_id sub_def olift.simps(4)[of "(-)" b1 b2] `b1<b2` by simp
-                ultimately have "expr (MINUS e1 e2) ep env cd st
-                  = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b2)),st)" using r1 r2 True by simp
-                moreover have "expr (eupdate (MINUS e1 e2)) ep env cd st
-                  = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b2)),st)"
+                ultimately have "expr (MINUS e1 e2) env cd st g
+                  = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b2)),g)" using r1 r2 True by (simp add:Statements.solidity.expr.simps)
+                moreover have "expr (eupdate (MINUS e1 e2)) env cd st g
+                  = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b2)),g)"
                 proof -
                   from u_def have "eupdate (MINUS e1 e2) = E.INT b2 ?x" using `\<not> ?v\<ge>0` by simp
-                  moreover have "expr (E.INT b2 ?x) ep env cd st
-                    = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b2)),st)"
+                  moreover have "expr (E.INT b2 ?x) env cd st g
+                    = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t ?x), Value (TSInt b2)),g)"
                   proof -
-                    from `b2 \<in> vbits` True have "expr (E.INT b2 ?x) ep env cd st
-                      = Normal ((KValue (createSInt b2 ?x), Value (TSInt b2)),st)" by simp
+                    from `b2 \<in> vbits` True have "expr (E.INT b2 ?x) env cd st g
+                      = Normal ((KValue (createSInt b2 ?x), Value (TSInt b2)),g)" by (simp add:Statements.solidity.expr.simps)
                     moreover from `0 < b2` have "?x \<ge> - (2 ^ (b2 - 1))" using upper_bound2 by simp
                     moreover have "2^(b2-1) - (-?v+2^(b2-1)-1) mod (2^b2) - 1 < 2 ^ (b2 - 1)"
                       by (simp add: algebra_simps flip: int_one_le_iff_zero_less)
@@ -4843,67 +4980,70 @@ next
               qed
             next
               assume "\<not> b1 < b2"
-              with m u i show ?thesis by simp
+              with m u i show ?thesis by (simp add:Statements.solidity.expr.simps)
             qed
           next
             assume "\<not> b2 \<in> vbits"
-            with m u i show ?thesis by simp
+            with m u i show ?thesis by (simp add:Statements.solidity.expr.simps)
           qed
         next
           case (ADDRESS _)
-          with m u show ?thesis by simp
+          with m u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (BALANCE _)
-          with m u show ?thesis by simp
+          with m u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case THIS
-          with m u show ?thesis by simp
+          with m u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case SENDER
-          with m u show ?thesis by simp
+          with m u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case VALUE
-          with m u show ?thesis by simp
+          with m u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case TRUE
-          with m u show ?thesis by simp
+          with m u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case FALSE
-          with m u show ?thesis by simp
+          with m u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (LVAL _)
-          with m u show ?thesis by simp
+          with m u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (PLUS _ _)
-          with m u show ?thesis by simp
+          with m u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (MINUS _ _)
-          with m u show ?thesis by simp
+          with m u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (EQUAL _ _)
-          with m u show ?thesis by simp
+          with m u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (LESS _ _)
-          with m u show ?thesis by simp
+          with m u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (AND _ _)
-          with m u show ?thesis by simp
+          with m u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (OR _ _)
-          with m u show ?thesis by simp
+          with m u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (NOT _)
-          with m u show ?thesis by simp
+          with m u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (CALL x181 x182)
-          with m u show ?thesis by simp
+          with m u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
-          case (ECALL x191 x192 x193 x194)
-          with m u show ?thesis by simp
+          case (ECALL x191 x192 x193)
+          with m u show ?thesis by (simp add:Statements.solidity.expr.simps)
+        next
+          case CONTRACTS
+          with m u show ?thesis by (simp add:Statements.solidity.expr.simps)
         qed
       next
         assume "\<not> b1 \<in> vbits"
-        with m u show ?thesis by simp
+        with m u show ?thesis by (simp add:Statements.solidity.expr.simps)
       qed
     next
       case False
@@ -4911,184 +5051,191 @@ next
     qed
   next
     case (ADDRESS x3)
-    with m show ?thesis by simp
+    with m show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case (BALANCE x4)
-    with m show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with m show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case THIS
-    with m show ?thesis by simp
+    with m show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case SENDER
-    with m show ?thesis by simp
+    with m show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case VALUE
-    with m show ?thesis by simp
+    with m show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case TRUE
-    with m show ?thesis by simp
+    with m show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case FALSE
-    with m show ?thesis by simp
+    with m show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case (LVAL x7)
-    with m show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with m show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (PLUS x81 x82)
-    with m show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with m show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (MINUS x91 x92)
-    with m show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with m show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (EQUAL x101 x102)
-    with m show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with m show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (LESS x111 x112)
-    with m show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with m show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (AND x121 x122)
-    with m show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with m show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (OR x131 x132)
-    with m show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with m show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (NOT x131)
-    with m show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with m show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (CALL x181 x182)
-    with m show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by simp
+    with m show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (simp add:Statements.solidity.expr.simps)
   next
-    case (ECALL x191 x192 x193 x194)
-    with m show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by simp
+    case (ECALL x191 x192 x193)
+    with m show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (simp add:Statements.solidity.expr.simps)
+  next
+    case CONTRACTS
+    with m show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   qed
 next
-  case e: (EQUAL e1 e2)
+  case e: (EQUAL e1 e2 g)
   show ?case
   proof (cases "eupdate e1")
     case i: (INT b1 v1)
-    with e.IH have expr1: "expr e1 ep env cd st = expr (E.INT b1 v1) ep env cd st" by simp
+    with e.IH have expr1: "expr e1 env cd st g = expr (E.INT b1 v1) env cd st g" by simp
     then show ?thesis
-    proof (cases "gas st > 0")
+    proof (cases "g > 0")
       case True
       then show ?thesis
       proof (cases)
         assume "b1 \<in> vbits"
         with expr1 True
-          have "expr e1 ep env cd st=Normal ((KValue (createSInt b1 v1), Value (TSInt b1)),st)" by simp
+          have "expr e1 env cd st g = Normal ((KValue (createSInt b1 v1), Value (TSInt b1)),g)" by (simp add:Statements.solidity.expr.simps)
         moreover from i `b1 \<in> vbits`
           have "v1 < 2^(b1-1)" and "v1 \<ge> -(2^(b1-1))" using update_bounds_int by auto
         moreover from `b1 \<in> vbits` have "0 < b1" by auto
-        ultimately have r1: "expr e1 ep env cd st = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v1), Value (TSInt b1)),st)"
+        ultimately have r1: "expr e1 env cd st g = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v1), Value (TSInt b1)),g)"
           using createSInt_id[of v1 b1] by simp
         thus ?thesis
         proof (cases "eupdate e2")
           case i2: (INT b2 v2)
-          with e.IH have expr2: "expr e2 ep env cd st = expr (E.INT b2 v2) ep env cd st" by simp
+          with e.IH have expr2: "expr e2 env cd st g = expr (E.INT b2 v2) env cd st g" by simp
           then show ?thesis
           proof (cases)
             assume "b2 \<in> vbits"
             with expr2 True
-              have "expr e2 ep env cd st=Normal ((KValue (createSInt b2 v2), Value (TSInt b2)),st)" by simp
+              have "expr e2 env cd st g = Normal ((KValue (createSInt b2 v2), Value (TSInt b2)),g)" by (simp add:Statements.solidity.expr.simps)
             moreover from i2 `b2 \<in> vbits`
               have "v2 < 2^(b2-1)" and "v2 \<ge> -(2^(b2-1))" using update_bounds_int by auto
             moreover from `b2 \<in> vbits` have "0 < b2" by auto
-            ultimately have r2: "expr e2 ep env cd st = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v2), Value (TSInt b2)),st)"
+            ultimately have r2: "expr e2 env cd st g = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v2), Value (TSInt b2)),g)"
               using createSInt_id[of v2 b2] by simp
-            with r1 True have "expr (EQUAL e1 e2) ep env cd st=
-              Normal ((KValue (createBool ((ReadL\<^sub>i\<^sub>n\<^sub>t (ShowL\<^sub>i\<^sub>n\<^sub>t v1))=((ReadL\<^sub>i\<^sub>n\<^sub>t (ShowL\<^sub>i\<^sub>n\<^sub>t v2))))), Value TBool),st)"
-              using equal_def plift.simps(1)[of "(=)"] by simp
-            hence "expr (EQUAL e1 e2) ep env cd st=Normal ((KValue (createBool (v1=v2)), Value TBool),st)"
+            with r1 True have "expr (EQUAL e1 e2) env cd st g =
+              Normal ((KValue (createBool ((ReadL\<^sub>i\<^sub>n\<^sub>t (ShowL\<^sub>i\<^sub>n\<^sub>t v1))=((ReadL\<^sub>i\<^sub>n\<^sub>t (ShowL\<^sub>i\<^sub>n\<^sub>t v2))))), Value TBool),g)"
+              using equal_def plift.simps(1)[of "(=)"] by (simp add:Statements.solidity.expr.simps)
+            hence "expr (EQUAL e1 e2) env cd st g = Normal ((KValue (createBool (v1=v2)), Value TBool),g)"
               using Read_ShowL_id by simp
-            with `b1 \<in> vbits` `b2 \<in> vbits` True show ?thesis using i i2 by simp
+            with `b1 \<in> vbits` `b2 \<in> vbits` True show ?thesis using i i2 by (simp add:Statements.solidity.expr.simps createBool_def)
           next
             assume "\<not> b2 \<in> vbits"
-            with e i i2 show ?thesis by simp
+            with e i i2 show ?thesis by (simp add:Statements.solidity.expr.simps)
           qed
         next
           case u: (UINT b2 v2)
-          with e.IH have expr2: "expr e2 ep env cd st = expr (UINT b2 v2) ep env cd st" by simp
+          with e.IH have expr2: "expr e2 env cd st g = expr (UINT b2 v2) env cd st g" by simp
           then show ?thesis
           proof (cases)
             assume "b2 \<in> vbits"
             with expr2 True
-              have "expr e2 ep env cd st=Normal ((KValue (createUInt b2 v2), Value (TUInt b2)),st)" by simp
+              have "expr e2 env cd st g = Normal ((KValue (createUInt b2 v2), Value (TUInt b2)),g)" by (simp add:Statements.solidity.expr.simps)
             moreover from u `b2 \<in> vbits`
               have "v2 < 2^b2" and "v2 \<ge> 0" using update_bounds_uint by auto
             moreover from `b2 \<in> vbits` have "0 < b2" by auto
-            ultimately have r2: "expr e2 ep env cd st = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v2), Value (TUInt b2)),st)"
+            ultimately have r2: "expr e2 env cd st g = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v2), Value (TUInt b2)),g)"
               using createUInt_id[of v2 b2] by simp
             thus ?thesis
             proof (cases)
               assume "b2<b1"
-              with r1 r2 True have "expr (EQUAL e1 e2) ep env cd st=
-                Normal ((KValue (createBool ((ReadL\<^sub>i\<^sub>n\<^sub>t (ShowL\<^sub>i\<^sub>n\<^sub>t v1))=((ReadL\<^sub>i\<^sub>n\<^sub>t (ShowL\<^sub>i\<^sub>n\<^sub>t v2))))), Value TBool),st)"
-                using equal_def plift.simps(3)[of "(=)"] by simp
-              hence "expr (EQUAL e1 e2) ep env cd st=Normal ((KValue (createBool (v1=v2)), Value TBool),st)"
+              with r1 r2 True have "expr (EQUAL e1 e2) env cd st g =
+                Normal ((KValue (createBool ((ReadL\<^sub>i\<^sub>n\<^sub>t (ShowL\<^sub>i\<^sub>n\<^sub>t v1))=((ReadL\<^sub>i\<^sub>n\<^sub>t (ShowL\<^sub>i\<^sub>n\<^sub>t v2))))), Value TBool),g)"
+                using equal_def plift.simps(3)[of "(=)"] by (simp add:Statements.solidity.expr.simps)
+              hence "expr (EQUAL e1 e2) env cd st g = Normal ((KValue (createBool (v1=v2)), Value TBool),g)"
                 using Read_ShowL_id by simp
-              with `b1 \<in> vbits` `b2 \<in> vbits` `b2<b1` True show ?thesis using i u by simp
+              with `b1 \<in> vbits` `b2 \<in> vbits` `b2<b1` True show ?thesis using i u by (simp add:Statements.solidity.expr.simps createBool_def)
             next
               assume "\<not> b2 < b1"
-              with e i u show ?thesis by simp
+              with i u have "eupdate (EQUAL e1 e2) = EQUAL (eupdate e1) (eupdate e2)" by simp
+              with e i show ?thesis by (simp add:Statements.solidity.expr.simps)
             qed
           next
             assume "\<not> b2 \<in> vbits"
-            with e i u show ?thesis by simp
+            with e i u show ?thesis by (simp add:Statements.solidity.expr.simps)
           qed
         next
           case (ADDRESS _)
-          with e i show ?thesis by simp
+          with e i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (BALANCE _)
-          with e i show ?thesis by simp
+          with e i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case THIS
-          with e i show ?thesis by simp
+          with e i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case SENDER
-          with e i show ?thesis by simp
+          with e i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case VALUE
-          with e i show ?thesis by simp
+          with e i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case TRUE
-          with e i show ?thesis by simp
+          with e i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case FALSE
-          with e i show ?thesis by simp
+          with e i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (LVAL _)
-          with e i show ?thesis by simp
+          with e i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (PLUS _ _)
-          with e i show ?thesis by simp
+          with e i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (MINUS _ _)
-          with e i show ?thesis by simp
+          with e i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (EQUAL _ _)
-          with e i show ?thesis by simp
+          with e i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (LESS _ _)
-          with e i show ?thesis by simp
+          with e i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (AND _ _)
-          with e i show ?thesis by simp
+          with e i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (OR _ _)
-          with e i show ?thesis by simp
+          with e i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (NOT _)
-          with e i show ?thesis by simp
+          with e i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (CALL x181 x182)
-          with e i show ?thesis by simp
+          with e i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
-          case (ECALL x191 x192 x193 x194)
-          with e i show ?thesis by simp
+          case (ECALL x191 x192 x193)
+          with e i show ?thesis by (simp add:Statements.solidity.expr.simps)
+        next
+          case CONTRACTS
+          with e i show ?thesis by (simp add:Statements.solidity.expr.simps)
         qed
       next
         assume "\<not> b1 \<in> vbits"
-        with e i show ?thesis by simp
+        with e i show ?thesis by (simp add:Statements.solidity.expr.simps)
       qed
     next
       case False
@@ -5096,130 +5243,133 @@ next
     qed
   next
     case u: (UINT b1 v1)
-    with e.IH have expr1: "expr e1 ep env cd st = expr (UINT b1 v1) ep env cd st" by simp
+    with e.IH have expr1: "expr e1 env cd st g = expr (UINT b1 v1) env cd st g" by simp
     then show ?thesis
-    proof (cases "gas st > 0")
+    proof (cases "g > 0")
       case True
       then show ?thesis
       proof (cases)
         assume "b1 \<in> vbits"
         with expr1 True
-          have "expr e1 ep env cd st=Normal ((KValue (createUInt b1 v1), Value (TUInt b1)),st)" by simp
+          have "expr e1 env cd st g = Normal ((KValue (createUInt b1 v1), Value (TUInt b1)),g)" by (simp add:Statements.solidity.expr.simps)
         moreover from u `b1 \<in> vbits`
           have "v1 < 2^b1" and "v1 \<ge> 0" using update_bounds_uint by auto
         moreover from `b1 \<in> vbits` have "0 < b1" by auto
-        ultimately have r1: "expr e1 ep env cd st = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v1), Value (TUInt b1)),st)"
-          by simp
+        ultimately have r1: "expr e1 env cd st g = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v1), Value (TUInt b1)),g)"
+          by (simp add:Statements.solidity.expr.simps createUInt_def)
         thus ?thesis
         proof (cases "eupdate e2")
           case u2: (UINT b2 v2)
-          with e.IH have expr2: "expr e2 ep env cd st = expr (UINT b2 v2) ep env cd st" by simp
+          with e.IH have expr2: "expr e2 env cd st g = expr (UINT b2 v2) env cd st g" by simp
           then show ?thesis
           proof (cases)
             assume "b2 \<in> vbits"
             with expr2 True
-              have "expr e2 ep env cd st=Normal ((KValue (createUInt b2 v2), Value (TUInt b2)),st)" by simp
+              have "expr e2 env cd st g = Normal ((KValue (createUInt b2 v2), Value (TUInt b2)),g)" by (simp add:Statements.solidity.expr.simps)
             moreover from u2 `b2 \<in> vbits`
               have "v2 < 2^b2" and "v2 \<ge> 0" using update_bounds_uint by auto
             moreover from `b2 \<in> vbits` have "0 < b2" by auto
-            ultimately have r2: "expr e2 ep env cd st = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v2), Value (TUInt b2)),st)"
-              by simp
-            with r1 True have "expr (EQUAL e1 e2) ep env cd st=
-              Normal ((KValue (createBool ((ReadL\<^sub>i\<^sub>n\<^sub>t (ShowL\<^sub>i\<^sub>n\<^sub>t v1))=((ReadL\<^sub>i\<^sub>n\<^sub>t (ShowL\<^sub>i\<^sub>n\<^sub>t v2))))), Value TBool),st)"
-              using equal_def plift.simps(2)[of "(=)"] by simp
-            hence "expr (EQUAL e1 e2) ep env cd st=Normal ((KValue (createBool (v1=v2)), Value TBool),st)"
+            ultimately have r2: "expr e2 env cd st g = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v2), Value (TUInt b2)),g)"
+              by (simp add:Statements.solidity.expr.simps createUInt_def)
+            with r1 True have "expr (EQUAL e1 e2) env cd st g =
+              Normal ((KValue (createBool ((ReadL\<^sub>i\<^sub>n\<^sub>t (ShowL\<^sub>i\<^sub>n\<^sub>t v1))=((ReadL\<^sub>i\<^sub>n\<^sub>t (ShowL\<^sub>i\<^sub>n\<^sub>t v2))))), Value TBool),g)"
+              using equal_def plift.simps(2)[of "(=)"] by (simp add:Statements.solidity.expr.simps createUInt_def)
+            hence "expr (EQUAL e1 e2) env cd st g = Normal ((KValue (createBool (v1=v2)), Value TBool),g)"
               using Read_ShowL_id by simp
-            with `b1 \<in> vbits` `b2 \<in> vbits` show ?thesis using u u2 True by simp
+            with `b1 \<in> vbits` `b2 \<in> vbits` show ?thesis using u u2 True by (simp add:Statements.solidity.expr.simps createBool_def)
           next
             assume "\<not> b2 \<in> vbits"
-            with e u u2 show ?thesis by simp
+            with e u u2 show ?thesis by (simp add:Statements.solidity.expr.simps)
           qed
         next
           case i: (INT b2 v2)
-          with e.IH have expr2: "expr e2 ep env cd st = expr (E.INT b2 v2) ep env cd st" by simp
+          with e.IH have expr2: "expr e2 env cd st g = expr (E.INT b2 v2) env cd st g" by simp
           then show ?thesis
           proof (cases)
             let ?v="v1 + v2"
             assume "b2 \<in> vbits"
             with expr2 True
-              have "expr e2 ep env cd st=Normal ((KValue (createSInt b2 v2), Value (TSInt b2)),st)" by simp
+              have "expr e2 env cd st g = Normal ((KValue (createSInt b2 v2), Value (TSInt b2)),g)" by (simp add:Statements.solidity.expr.simps)
             moreover from i `b2 \<in> vbits`
               have "v2 < 2^(b2-1)" and "v2 \<ge> -(2^(b2-1))" using update_bounds_int by auto
             moreover from `b2 \<in> vbits` have "0 < b2" by auto
-            ultimately have r2: "expr e2 ep env cd st = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v2), Value (TSInt b2)),st)"
+            ultimately have r2: "expr e2 env cd st g = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v2), Value (TSInt b2)),g)"
               using createSInt_id[of v2 b2] by simp
             thus ?thesis
             proof (cases)
               assume "b1<b2"
-              with r1 r2 True have "expr (EQUAL e1 e2) ep env cd st=
-                Normal ((KValue (createBool ((ReadL\<^sub>i\<^sub>n\<^sub>t (ShowL\<^sub>i\<^sub>n\<^sub>t v1))=((ReadL\<^sub>i\<^sub>n\<^sub>t (ShowL\<^sub>i\<^sub>n\<^sub>t v2))))), Value TBool),st)"
-                using equal_def plift.simps(4)[of "(=)"] by simp
-              hence "expr (EQUAL e1 e2) ep env cd st=Normal ((KValue (createBool (v1=v2)), Value TBool),st)"
+              with r1 r2 True have "expr (EQUAL e1 e2) env cd st g =
+                Normal ((KValue (createBool ((ReadL\<^sub>i\<^sub>n\<^sub>t (ShowL\<^sub>i\<^sub>n\<^sub>t v1))=((ReadL\<^sub>i\<^sub>n\<^sub>t (ShowL\<^sub>i\<^sub>n\<^sub>t v2))))), Value TBool),g)"
+                using equal_def plift.simps(4)[of "(=)"] by (simp add:Statements.solidity.expr.simps)
+              hence "expr (EQUAL e1 e2) env cd st g = Normal ((KValue (createBool (v1=v2)), Value TBool),g)"
                 using Read_ShowL_id by simp
-              with `b1 \<in> vbits` `b2 \<in> vbits` `b1<b2` True show ?thesis using u i by simp
+              with `b1 \<in> vbits` `b2 \<in> vbits` `b1<b2` True show ?thesis using u i by (simp add:Statements.solidity.expr.simps createBool_def)
             next
               assume "\<not> b1 < b2"
-              with e u i show ?thesis by simp
+              with e u i show ?thesis by (simp add:Statements.solidity.expr.simps)
             qed
           next
             assume "\<not> b2 \<in> vbits"
-            with e u i show ?thesis by simp
+            with e u i show ?thesis by (simp add:Statements.solidity.expr.simps)
           qed
         next
           case (ADDRESS _)
-          with e u show ?thesis by simp
+          with e u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (BALANCE _)
-          with e u show ?thesis by simp
+          with e u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case THIS
-          with e u show ?thesis by simp
+          with e u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case SENDER
-          with e u show ?thesis by simp
+          with e u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case VALUE
-          with e u show ?thesis by simp
+          with e u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case TRUE
-          with e u show ?thesis by simp
+          with e u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case FALSE
-          with e u show ?thesis by simp
+          with e u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (LVAL _)
-          with e u show ?thesis by simp
+          with e u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (PLUS _ _)
-          with e u show ?thesis by simp
+          with e u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (MINUS _ _)
-          with e u show ?thesis by simp
+          with e u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (EQUAL _ _)
-          with e u show ?thesis by simp
+          with e u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (LESS _ _)
-          with e u show ?thesis by simp
+          with e u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (AND _ _)
-          with e u show ?thesis by simp
+          with e u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (OR _ _)
-          with e u show ?thesis by simp
+          with e u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (NOT _)
-          with e u show ?thesis by simp
+          with e u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (CALL x181 x182)
-          with e u show ?thesis by simp
+          with e u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
-          case (ECALL x191 x192 x193 x194)
-          with e u show ?thesis by simp
+          case (ECALL x191 x192 x193)
+          with e u show ?thesis by (simp add:Statements.solidity.expr.simps)
+        next
+          case CONTRACTS
+          with e u show ?thesis by (simp add:Statements.solidity.expr.simps)
         qed
       next
         assume "\<not> b1 \<in> vbits"
-        with e u show ?thesis by simp
+        with e u show ?thesis by (simp add:Statements.solidity.expr.simps)
       qed
     next
       case False
@@ -5227,312 +5377,322 @@ next
     qed
   next
     case (ADDRESS x3)
-    with e show ?thesis by simp
+    with e show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case (BALANCE x4)
-    with e show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with e show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case THIS
-    with e show ?thesis by simp
+    with e show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case SENDER
-    with e show ?thesis by simp
+    with e show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case VALUE
-    with e show ?thesis by simp
+    with e show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case TRUE
-    with e show ?thesis by simp
+    with e show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case FALSE
-    with e show ?thesis by simp
+    with e show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case (LVAL x7)
-    with e show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with e show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (PLUS x81 x82)
-    with e show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with e show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (MINUS x91 x92)
-    with e show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with e show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (EQUAL x101 x102)
-    with e show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with e show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (LESS x111 x112)
-    with e show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with e show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (AND x121 x122)
-    with e show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with e show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (OR x131 x132)
-    with e show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with e show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (NOT x131)
-    with e show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with e show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (CALL x181 x182)
-    with e show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by simp
+    with e show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (simp add:Statements.solidity.expr.simps)
   next
-    case (ECALL x191 x192 x193 x194)
-    with e show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by simp
+    case (ECALL x191 x192 x193)
+    with e show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (simp add:Statements.solidity.expr.simps)
+  next
+    case CONTRACTS
+    with e show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   qed
 next
   case l: (LESS e1 e2)
   show ?case
   proof (cases "eupdate e1")
     case i: (INT b1 v1)
-    with l.IH have expr1: "expr e1 ep env cd st = expr (E.INT b1 v1) ep env cd st" by simp
+    with l.IH have expr1: "expr e1 env cd st g = expr (E.INT b1 v1) env cd st g" by (simp add:Statements.solidity.expr.simps)
     then show ?thesis
-    proof (cases "gas st > 0")
+    proof (cases "g > 0")
       case True
       then show ?thesis
       proof (cases)
         assume "b1 \<in> vbits"
         with expr1 True
-          have "expr e1 ep env cd st=Normal ((KValue (createSInt b1 v1), Value (TSInt b1)),st)" by simp
+          have "expr e1 env cd st g =Normal ((KValue (createSInt b1 v1), Value (TSInt b1)),g)" by (simp add:Statements.solidity.expr.simps)
         moreover from i `b1 \<in> vbits`
           have "v1 < 2^(b1-1)" and "v1 \<ge> -(2^(b1-1))" using update_bounds_int by auto
         moreover from `b1 \<in> vbits` have "0 < b1" by auto
-        ultimately have r1: "expr e1 ep env cd st = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v1), Value (TSInt b1)),st)"
-          using createSInt_id[of v1 b1] by simp
+        ultimately have r1: "expr e1 env cd st g = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v1), Value (TSInt b1)),g)"
+          using createSInt_id[of v1 b1] by (simp add:Statements.solidity.expr.simps)
         thus ?thesis
         proof (cases "eupdate e2")
           case i2: (INT b2 v2)
-          with l.IH have expr2: "expr e2 ep env cd st = expr (E.INT b2 v2) ep env cd st" by simp
+          with l.IH have expr2: "expr e2 env cd st g = expr (E.INT b2 v2) env cd st g" by simp
           then show ?thesis
           proof (cases)
             assume "b2 \<in> vbits"
             with expr2 True
-              have "expr e2 ep env cd st=Normal ((KValue (createSInt b2 v2), Value (TSInt b2)),st)" by simp
+              have "expr e2 env cd st g = Normal ((KValue (createSInt b2 v2), Value (TSInt b2)),g)" by (simp add:Statements.solidity.expr.simps)
             moreover from i2 `b2 \<in> vbits`
               have "v2 < 2^(b2-1)" and "v2 \<ge> -(2^(b2-1))" using update_bounds_int by auto
             moreover from `b2 \<in> vbits` have "0 < b2" by auto
-            ultimately have r2: "expr e2 ep env cd st = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v2), Value (TSInt b2)),st)"
+            ultimately have r2: "expr e2 env cd st g = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v2), Value (TSInt b2)),g)"
               using createSInt_id[of v2 b2] by simp
-            with r1 True have "expr (LESS e1 e2) ep env cd st=
-              Normal ((KValue (createBool ((ReadL\<^sub>i\<^sub>n\<^sub>t (ShowL\<^sub>i\<^sub>n\<^sub>t v1))<((ReadL\<^sub>i\<^sub>n\<^sub>t (ShowL\<^sub>i\<^sub>n\<^sub>t v2))))), Value TBool),st)"
-              using less_def plift.simps(1)[of "(<)"] by simp
-            hence "expr (LESS e1 e2) ep env cd st=Normal ((KValue (createBool (v1<v2)), Value TBool),st)"
+            with r1 True have "expr (LESS e1 e2) env cd st g =
+              Normal ((KValue (createBool ((ReadL\<^sub>i\<^sub>n\<^sub>t (ShowL\<^sub>i\<^sub>n\<^sub>t v1))<((ReadL\<^sub>i\<^sub>n\<^sub>t (ShowL\<^sub>i\<^sub>n\<^sub>t v2))))), Value TBool),g)"
+              using less_def plift.simps(1)[of "(<)"] by (simp add:Statements.solidity.expr.simps)
+            hence "expr (LESS e1 e2) env cd st g = Normal ((KValue (createBool (v1<v2)), Value TBool),g)"
               using Read_ShowL_id by simp
-            with `b1 \<in> vbits` `b2 \<in> vbits` show ?thesis using i i2 True by simp
+            with `b1 \<in> vbits` `b2 \<in> vbits` show ?thesis using i i2 True by (simp add:Statements.solidity.expr.simps createBool_def)
           next
             assume "\<not> b2 \<in> vbits"
-            with l i i2 show ?thesis by simp
+            with l i i2 show ?thesis by (simp add:Statements.solidity.expr.simps)
           qed
         next
           case u: (UINT b2 v2)
-          with l.IH have expr2: "expr e2 ep env cd st = expr (UINT b2 v2) ep env cd st" by simp
+          with l.IH have expr2: "expr e2 env cd st g = expr (UINT b2 v2) env cd st g" by simp
           then show ?thesis
           proof (cases)
             assume "b2 \<in> vbits"
             with expr2 True
-              have "expr e2 ep env cd st=Normal ((KValue (createUInt b2 v2), Value (TUInt b2)),st)" by simp
+              have "expr e2 env cd st g = Normal ((KValue (createUInt b2 v2), Value (TUInt b2)),g)" by (simp add:Statements.solidity.expr.simps)
             moreover from u `b2 \<in> vbits`
               have "v2 < 2^b2" and "v2 \<ge> 0" using update_bounds_uint by auto
             moreover from `b2 \<in> vbits` have "0 < b2" by auto
-            ultimately have r2: "expr e2 ep env cd st = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v2), Value (TUInt b2)),st)"
+            ultimately have r2: "expr e2 env cd st g = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v2), Value (TUInt b2)),g)"
               using createUInt_id[of v2 b2] by simp
             thus ?thesis
             proof (cases)
               assume "b2<b1"
-              with r1 r2 True have "expr (LESS e1 e2) ep env cd st=
-                Normal ((KValue (createBool ((ReadL\<^sub>i\<^sub>n\<^sub>t (ShowL\<^sub>i\<^sub>n\<^sub>t v1))<((ReadL\<^sub>i\<^sub>n\<^sub>t (ShowL\<^sub>i\<^sub>n\<^sub>t v2))))), Value TBool),st)"
-                using less_def plift.simps(3)[of "(<)"] by simp
-              hence "expr (LESS e1 e2) ep env cd st=Normal ((KValue (createBool (v1<v2)), Value TBool),st)"
+              with r1 r2 True have "expr (LESS e1 e2) env cd st g =
+                Normal ((KValue (createBool ((ReadL\<^sub>i\<^sub>n\<^sub>t (ShowL\<^sub>i\<^sub>n\<^sub>t v1))<((ReadL\<^sub>i\<^sub>n\<^sub>t (ShowL\<^sub>i\<^sub>n\<^sub>t v2))))), Value TBool),g)"
+                using less_def plift.simps(3)[of "(<)"] by (simp add:Statements.solidity.expr.simps)
+              hence "expr (LESS e1 e2) env cd st g = Normal ((KValue (createBool (v1<v2)), Value TBool),g)"
                 using Read_ShowL_id by simp
-              with `b1 \<in> vbits` `b2 \<in> vbits` `b2<b1` show ?thesis using i u True by simp
+              with `b1 \<in> vbits` `b2 \<in> vbits` `b2<b1` show ?thesis using i u True by (simp add:Statements.solidity.expr.simps createBool_def)
             next
               assume "\<not> b2 < b1"
-              with l i u show ?thesis by simp
+              with i u have "eupdate (LESS e1 e2) = LESS (eupdate e1) (eupdate e2)" by simp
+              with l i show ?thesis by (simp add:Statements.solidity.expr.simps)
             qed
           next
             assume "\<not> b2 \<in> vbits"
-            with l i u show ?thesis by simp
+            with l i u show ?thesis by (simp add:Statements.solidity.expr.simps)
           qed
         next
           case (ADDRESS _)
-          with l i show ?thesis by simp
+          with l i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (BALANCE _)
-          with l i show ?thesis by simp
+          with l i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case THIS
-          with l i show ?thesis by simp
+          with l i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case SENDER
-          with l i show ?thesis by simp
+          with l i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case VALUE
-          with l i show ?thesis by simp
+          with l i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case TRUE
-          with l i show ?thesis by simp
+          with l i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case FALSE
-          with l i show ?thesis by simp
+          with l i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (LVAL _)
-          with l i show ?thesis by simp
+          with l i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (PLUS _ _)
-          with l i show ?thesis by simp
+          with l i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (MINUS _ _)
-          with l i show ?thesis by simp
+          with l i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (EQUAL _ _)
-          with l i show ?thesis by simp
+          with l i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (LESS _ _)
-          with l i show ?thesis by simp
+          with l i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (AND _ _)
-          with l i show ?thesis by simp
+          with l i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (OR _ _)
-          with l i show ?thesis by simp
+          with l i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (NOT _)
-          with l i show ?thesis by simp
+          with l i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (CALL x181 x182)
-          with l i show ?thesis by simp
+          with l i show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
-          case (ECALL x191 x192 x193 x194)
-          with l i show ?thesis by simp
+          case (ECALL x191 x192 x193)
+          with l i show ?thesis by (simp add:Statements.solidity.expr.simps)
+        next
+          case CONTRACTS
+          with l i show ?thesis by (simp add:Statements.solidity.expr.simps)
         qed
       next
         assume "\<not> b1 \<in> vbits"
-        with l i show ?thesis by simp
+        with l i show ?thesis by (simp add:Statements.solidity.expr.simps)
       qed
     next
       case False
-      then show ?thesis using no_gas by simp
+      then show ?thesis using no_gas by (simp add:Statements.solidity.expr.simps)
     qed
   next
     case u: (UINT b1 v1)
-    with l.IH have expr1: "expr e1 ep env cd st = expr (UINT b1 v1) ep env cd st" by simp
+    with l.IH have expr1: "expr e1 env cd st g = expr (UINT b1 v1) env cd st g" by simp
     then show ?thesis
-    proof (cases "gas st > 0")
+    proof (cases "g > 0")
       case True
       then show ?thesis
       proof (cases)
         assume "b1 \<in> vbits"
         with expr1 True
-          have "expr e1 ep env cd st=Normal ((KValue (createUInt b1 v1), Value (TUInt b1)),st)" by simp
+          have "expr e1 env cd st g = Normal ((KValue (createUInt b1 v1), Value (TUInt b1)),g)" by (simp add:Statements.solidity.expr.simps)
         moreover from u `b1 \<in> vbits`
           have "v1 < 2^b1" and "v1 \<ge> 0" using update_bounds_uint by auto
         moreover from `b1 \<in> vbits` have "0 < b1" by auto
-        ultimately have r1: "expr e1 ep env cd st = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v1), Value (TUInt b1)),st)"
-          by simp
+        ultimately have r1: "expr e1 env cd st g = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v1), Value (TUInt b1)),g)"
+          by (simp add:Statements.solidity.expr.simps createUInt_def)
         thus ?thesis
         proof (cases "eupdate e2")
           case u2: (UINT b2 v2)
-          with l.IH have expr2: "expr e2 ep env cd st = expr (UINT b2 v2) ep env cd st" by simp
+          with l.IH have expr2: "expr e2 env cd st g = expr (UINT b2 v2) env cd st g" by simp
           then show ?thesis
           proof (cases)
             assume "b2 \<in> vbits"
             with expr2 True
-              have "expr e2 ep env cd st=Normal ((KValue (createUInt b2 v2), Value (TUInt b2)),st)" by simp
+              have "expr e2 env cd st g = Normal ((KValue (createUInt b2 v2), Value (TUInt b2)),g)" by (simp add:Statements.solidity.expr.simps)
             moreover from u2 `b2 \<in> vbits`
               have "v2 < 2^b2" and "v2 \<ge> 0" using update_bounds_uint by auto
             moreover from `b2 \<in> vbits` have "0 < b2" by auto
-            ultimately have r2: "expr e2 ep env cd st = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v2), Value (TUInt b2)),st)"
-              by simp
-            with r1 True have "expr (LESS e1 e2) ep env cd st=Normal ((KValue (createBool ((ReadL\<^sub>i\<^sub>n\<^sub>t (ShowL\<^sub>i\<^sub>n\<^sub>t v1))<((ReadL\<^sub>i\<^sub>n\<^sub>t (ShowL\<^sub>i\<^sub>n\<^sub>t v2))))), Value TBool),st)" using less_def plift.simps(2)[of "(<)"] by simp
-            hence "expr (LESS e1 e2) ep env cd st=Normal ((KValue (createBool (v1<v2)), Value TBool),st)" using Read_ShowL_id by simp
-            with `b1 \<in> vbits` `b2 \<in> vbits` show ?thesis using u u2 True by simp
+            ultimately have r2: "expr e2 env cd st g = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v2), Value (TUInt b2)),g)"
+              by (simp add:Statements.solidity.expr.simps createUInt_def)
+            with r1 True have "expr (LESS e1 e2) env cd st g = Normal ((KValue (createBool ((ReadL\<^sub>i\<^sub>n\<^sub>t (ShowL\<^sub>i\<^sub>n\<^sub>t v1))<((ReadL\<^sub>i\<^sub>n\<^sub>t (ShowL\<^sub>i\<^sub>n\<^sub>t v2))))), Value TBool),g)" using less_def plift.simps(2)[of "(<)"] by (simp add:Statements.solidity.expr.simps)
+            hence "expr (LESS e1 e2) env cd st g = Normal ((KValue (createBool (v1<v2)), Value TBool),g)" using Read_ShowL_id by simp
+            with `b1 \<in> vbits` `b2 \<in> vbits` show ?thesis using u u2 True by (simp add:Statements.solidity.expr.simps createBool_def)
           next
             assume "\<not> b2 \<in> vbits"
-            with l u u2 show ?thesis by simp
+            with l u u2 show ?thesis by (simp add:Statements.solidity.expr.simps)
           qed
         next
           case i: (INT b2 v2)
-          with l.IH have expr2: "expr e2 ep env cd st = expr (E.INT b2 v2) ep env cd st" by simp
+          with l.IH have expr2: "expr e2 env cd st g = expr (E.INT b2 v2) env cd st g" by simp
           then show ?thesis
           proof (cases)
             let ?v="v1 + v2"
             assume "b2 \<in> vbits"
             with expr2 True
-              have "expr e2 ep env cd st=Normal ((KValue (createSInt b2 v2), Value (TSInt b2)),st)" by simp
+              have "expr e2 env cd st g = Normal ((KValue (createSInt b2 v2), Value (TSInt b2)),g)" by (simp add:Statements.solidity.expr.simps)
             moreover from i `b2 \<in> vbits`
               have "v2 < 2^(b2-1)" and "v2 \<ge> -(2^(b2-1))" using update_bounds_int by auto
             moreover from `b2 \<in> vbits` have "0 < b2" by auto
-            ultimately have r2: "expr e2 ep env cd st = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v2), Value (TSInt b2)),st)"
+            ultimately have r2: "expr e2 env cd st g = Normal ((KValue (ShowL\<^sub>i\<^sub>n\<^sub>t v2), Value (TSInt b2)),g)"
               using createSInt_id[of v2 b2] by simp
             thus ?thesis
             proof (cases)
               assume "b1<b2"
-              with r1 r2 True have "expr (LESS e1 e2) ep env cd st=
-                Normal ((KValue (createBool ((ReadL\<^sub>i\<^sub>n\<^sub>t (ShowL\<^sub>i\<^sub>n\<^sub>t v1))<((ReadL\<^sub>i\<^sub>n\<^sub>t (ShowL\<^sub>i\<^sub>n\<^sub>t v2))))), Value TBool),st)"
-                using less_def plift.simps(4)[of "(<)"] by simp
-              hence "expr (LESS e1 e2) ep env cd st=Normal ((KValue (createBool (v1<v2)), Value TBool),st)"
+              with r1 r2 True have "expr (LESS e1 e2) env cd st g =
+                Normal ((KValue (createBool ((ReadL\<^sub>i\<^sub>n\<^sub>t (ShowL\<^sub>i\<^sub>n\<^sub>t v1))<((ReadL\<^sub>i\<^sub>n\<^sub>t (ShowL\<^sub>i\<^sub>n\<^sub>t v2))))), Value TBool),g)"
+                using less_def plift.simps(4)[of "(<)"] by (simp add:Statements.solidity.expr.simps)
+              hence "expr (LESS e1 e2) env cd st g = Normal ((KValue (createBool (v1<v2)), Value TBool),g)"
                 using Read_ShowL_id by simp
-              with `b1 \<in> vbits` `b2 \<in> vbits` `b1<b2` show ?thesis using u i True by simp
+              with `b1 \<in> vbits` `b2 \<in> vbits` `b1<b2` show ?thesis using u i True by (simp add:Statements.solidity.expr.simps createBool_def)
             next
               assume "\<not> b1 < b2"
-              with l u i show ?thesis by simp
+              with l u i show ?thesis by (simp add:Statements.solidity.expr.simps)
             qed
           next
             assume "\<not> b2 \<in> vbits"
-            with l u i show ?thesis by simp
+            with l u i show ?thesis by (simp add:Statements.solidity.expr.simps)
           qed
         next
           case (ADDRESS _)
-          with l u show ?thesis by simp
+          with l u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (BALANCE _)
-          with l u show ?thesis by simp
+          with l u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case THIS
-          with l u show ?thesis by simp
+          with l u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case SENDER
-          with l u show ?thesis by simp
+          with l u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case VALUE
-          with l u show ?thesis by simp
+          with l u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case TRUE
-          with l u show ?thesis by simp
+          with l u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case FALSE
-          with l u show ?thesis by simp
+          with l u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (LVAL _)
-          with l u show ?thesis by simp
+          with l u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (PLUS _ _)
-          with l u show ?thesis by simp
+          with l u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (MINUS _ _)
-          with l u show ?thesis by simp
+          with l u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (EQUAL _ _)
-          with l u show ?thesis by simp
+          with l u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (LESS _ _)
-          with l u show ?thesis by simp
+          with l u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (AND _ _)
-          with l u show ?thesis by simp
+          with l u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (OR _ _)
-          with l u show ?thesis by simp
+          with l u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (NOT _)
-          with l u show ?thesis by simp
+          with l u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
           case (CALL x181 x182)
-          with l u show ?thesis by simp
+          with l u show ?thesis by (simp add:Statements.solidity.expr.simps)
         next
-          case (ECALL x191 x192 x193 x194)
-          with l u show ?thesis by simp
+          case (ECALL x191 x192 x193)
+          with l u show ?thesis by (simp add:Statements.solidity.expr.simps)
+        next
+          case CONTRACTS
+          with l u show ?thesis by (simp add:Statements.solidity.expr.simps)
         qed
       next
         assume "\<not> b1 \<in> vbits"
-        with l u show ?thesis by simp
+        with l u show ?thesis by (simp add:Statements.solidity.expr.simps)
       qed
     next
       case False
@@ -5540,476 +5700,503 @@ next
     qed
   next
     case (ADDRESS x3)
-    with l show ?thesis by simp
+    with l show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case (BALANCE x4)
-    with l show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with l show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case THIS
-    with l show ?thesis by simp
+    with l show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case SENDER
-    with l show ?thesis by simp
+    with l show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case VALUE
-    with l show ?thesis by simp
+    with l show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case TRUE
-    with l show ?thesis by simp
+    with l show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case FALSE
-    with l show ?thesis by simp
+    with l show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case (LVAL x7)
-    with l show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with l show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (PLUS x81 x82)
-    with l show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with l show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (MINUS x91 x92)
-    with l show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with l show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (EQUAL x101 x102)
-    with l show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with l show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (LESS x111 x112)
-    with l show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with l show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (AND x121 x122)
-    with l show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with l show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (OR x131 x132)
-    with l show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with l show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (NOT x131)
-    with l show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with l show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (CALL x181 x182)
-    with l show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by simp
+    with l show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (simp add:Statements.solidity.expr.simps)
   next
-    case (ECALL x191 x192 x193 x194)
-    with l show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by simp
+    case (ECALL x191 x192 x193)
+    with l show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (simp add:Statements.solidity.expr.simps)
+  next
+    case CONTRACTS
+    with l show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   qed
 next
   case a: (AND e1 e2)
   show ?case
   proof (cases "eupdate e1")
     case (INT x11 x12)
-    with a show ?thesis by simp
+    with a show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case (UINT x21 x22)
-    with a show ?thesis by simp
+    with a show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case (ADDRESS x3)
-    with a show ?thesis by simp
+    with a show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case (BALANCE x4)
-    with a show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with a show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case THIS
-    with a show ?thesis by simp
+    with a show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case SENDER
-    with a show ?thesis by simp
+    with a show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case VALUE
-    with a show ?thesis by simp
+    with a show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case t: TRUE
     show ?thesis
     proof (cases "eupdate e2")
       case (INT x11 x12)
-      with a t show ?thesis by simp
+      with a t show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (UINT x21 x22)
-      with a t show ?thesis by simp
+      with a t show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (ADDRESS x3)
-      with a t show ?thesis by simp
+      with a t show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (BALANCE x4)
-      with a t show ?thesis by simp
+      with a t show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case THIS
-      with a t show ?thesis by simp
+      with a t show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case SENDER
-      with a t show ?thesis by simp
+      with a t show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case VALUE
-      with a t show ?thesis by simp
+      with a t show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case TRUE
-      with a t show ?thesis by simp
+      with a t show ?thesis by (simp add:Statements.solidity.expr.simps vtand.simps)
     next
       case FALSE
-      with a t show ?thesis by simp
+      with a t show ?thesis by (simp add:Statements.solidity.expr.simps vtand.simps)
     next
       case (LVAL x7)
-      with a t show ?thesis by simp
+      with a t show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (PLUS x81 x82)
-      with a t show ?thesis by simp
+      with a t show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (MINUS x91 x92)
-      with a t show ?thesis by simp
+      with a t show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (EQUAL x101 x102)
-      with a t show ?thesis by simp
+      with a t show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (LESS x111 x112)
-      with a t show ?thesis by simp
+      with a t show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (AND x121 x122)
-      with a t show ?thesis by simp
+      with a t show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (OR x131 x132)
-      with a t show ?thesis by simp
+      with a t show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (NOT x131)
-      with a t show ?thesis by simp
+      with a t show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (CALL x181 x182)
-      with a t show ?thesis by simp
+      with a t show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
-      case (ECALL x191 x192 x193 x194)
-      with a t show ?thesis by simp
+      case (ECALL x191 x192 x193)
+      with a t show ?thesis by (simp add:Statements.solidity.expr.simps)
+    next
+      case CONTRACTS
+      with a t show ?thesis by (simp add:Statements.solidity.expr.simps)
     qed
   next
     case f: FALSE
     show ?thesis
     proof (cases "eupdate e2")
       case (INT b v)
-      with a f show ?thesis by simp
+      with a f show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (UINT b v)
-      with a f show ?thesis by simp
+      with a f show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (ADDRESS x3)
-      with a f show ?thesis by simp
+      with a f show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (BALANCE x4)
-      with a f show ?thesis by simp
+      with a f show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case THIS
-      with a f show ?thesis by simp
+      with a f show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case SENDER
-      with a f show ?thesis by simp
+      with a f show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case VALUE
-      with a f show ?thesis by simp
+      with a f show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case TRUE
-      with a f show ?thesis by simp
+      with a f show ?thesis by (simp add:Statements.solidity.expr.simps vtand.simps)
     next
       case FALSE
-      with a f show ?thesis by simp
+      with a f show ?thesis by (simp add:Statements.solidity.expr.simps vtand.simps)
     next
       case (LVAL x7)
-      with a f show ?thesis by simp
+      with a f show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (PLUS x81 x82)
-      with a f show ?thesis by simp
+      with a f show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (MINUS x91 x92)
-      with a f show ?thesis by simp
+      with a f show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (EQUAL x101 x102)
-      with a f show ?thesis by simp
+      with a f show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (LESS x111 x112)
-      with a f show ?thesis by simp
+      with a f show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (AND x121 x122)
-      with a f show ?thesis by simp
+      with a f show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (OR x131 x132)
-      with a f show ?thesis by simp
+      with a f show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (NOT x131)
-      with a f show ?thesis by simp
+      with a f show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (CALL x181 x182)
-      with a f show ?thesis by simp
+      with a f show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
-      case (ECALL x191 x192 x193 x194)
-      with a f show ?thesis by simp
+      case (ECALL x191 x192 x193)
+      with a f show ?thesis by (simp add:Statements.solidity.expr.simps)
+    next
+      case CONTRACTS
+      with a f show ?thesis by (simp add:Statements.solidity.expr.simps)
     qed
   next
     case (LVAL x7)
-    with a show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with a show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case p: (PLUS x81 x82)
-    with a show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with a show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (MINUS x91 x92)
-    with a show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with a show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (EQUAL x101 x102)
-    with a show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with a show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (LESS x111 x112)
-    with a show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with a show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (AND x121 x122)
-    with a show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with a show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (OR x131 x132)
-    with a show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with a show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (NOT x131)
-    with a show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with a show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (CALL x181 x182)
-    with a show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by simp
+    with a show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (simp add:Statements.solidity.expr.simps)
   next
-    case (ECALL x191 x192 x193 x194)
-    with a show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by simp
+    case (ECALL x191 x192 x193)
+    with a show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (simp add:Statements.solidity.expr.simps)
+  next
+    case CONTRACTS
+    with a show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   qed
 next
   case o: (OR e1 e2)
   show ?case
   proof (cases "eupdate e1")
     case (INT x11 x12)
-    with o show ?thesis by simp
+    with o show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case (UINT x21 x22)
-    with o show ?thesis by simp
+    with o show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case (ADDRESS x3)
-    with o show ?thesis by simp
+    with o show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case (BALANCE x4)
-    with o show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with o show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case THIS
-    with o show ?thesis by simp
+    with o show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case SENDER
-    with o show ?thesis by simp
+    with o show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case VALUE
-    with o show ?thesis by simp
+    with o show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case t: TRUE
     show ?thesis
     proof (cases "eupdate e2")
       case (INT x11 x12)
-      with o t show ?thesis by simp
+      with o t show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (UINT x21 x22)
-      with o t show ?thesis by simp
+      with o t show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (ADDRESS x3)
-      with o t show ?thesis by simp
+      with o t show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (BALANCE x4)
-      with o t show ?thesis by simp
+      with o t show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case THIS
-      with o t show ?thesis by simp
+      with o t show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case SENDER
-      with o t show ?thesis by simp
+      with o t show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case VALUE
-      with o t show ?thesis by simp
+      with o t show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case TRUE
-      with o t show ?thesis by simp
+      with o t show ?thesis by (simp add:Statements.solidity.expr.simps vtor.simps)
     next
       case FALSE
-      with o t show ?thesis by simp
+      with o t show ?thesis by (simp add:Statements.solidity.expr.simps vtor.simps)
     next
       case (LVAL x7)
-      with o t show ?thesis by simp
+      with o t show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (PLUS x81 x82)
-      with o t show ?thesis by simp
+      with o t show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (MINUS x91 x92)
-      with o t show ?thesis by simp
+      with o t show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (EQUAL x101 x102)
-      with o t show ?thesis by simp
+      with o t show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (LESS x111 x112)
-      with o t show ?thesis by simp
+      with o t show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (AND x121 x122)
-      with o t show ?thesis by simp
+      with o t show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (OR x131 x132)
-      with o t show ?thesis by simp
+      with o t show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (NOT x131)
-      with o t show ?thesis by simp
+      with o t show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (CALL x181 x182)
-      with o t show ?thesis by simp
+      with o t show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
-      case (ECALL x191 x192 x193 x194)
-      with o t show ?thesis by simp
+      case (ECALL x191 x192 x193)
+      with o t show ?thesis by (simp add:Statements.solidity.expr.simps)
+    next
+      case CONTRACTS
+      with o t show ?thesis by (simp add:Statements.solidity.expr.simps)
     qed
   next
     case f: FALSE
     show ?thesis
     proof (cases "eupdate e2")
       case (INT b v)
-      with o f show ?thesis by simp
+      with o f show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (UINT b v)
-      with o f show ?thesis by simp
+      with o f show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (ADDRESS x3)
-      with o f show ?thesis by simp
+      with o f show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (BALANCE x4)
-      with o f show ?thesis by simp
+      with o f show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case THIS
-      with o f show ?thesis by simp
+      with o f show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case SENDER
-      with o f show ?thesis by simp
+      with o f show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case VALUE
-      with o f show ?thesis by simp
+      with o f show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case TRUE
-      with o f show ?thesis by simp
+      with o f show ?thesis by (simp add:Statements.solidity.expr.simps vtor.simps)
     next
       case FALSE
-      with o f show ?thesis by simp
+      with o f show ?thesis by (simp add:Statements.solidity.expr.simps vtor.simps)
     next
       case (LVAL x7)
-      with o f show ?thesis by simp
+      with o f show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (PLUS x81 x82)
-      with o f show ?thesis by simp
+      with o f show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (MINUS x91 x92)
-      with o f show ?thesis by simp
+      with o f show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (EQUAL x101 x102)
-      with o f show ?thesis by simp
+      with o f show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (LESS x111 x112)
-      with o f show ?thesis by simp
+      with o f show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (AND x121 x122)
-      with o f show ?thesis by simp
+      with o f show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (OR x131 x132)
-      with o f show ?thesis by simp
+      with o f show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (NOT x131)
-      with o f show ?thesis by simp
+      with o f show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
       case (CALL x181 x182)
-      with o f show ?thesis by simp
+      with o f show ?thesis by (simp add:Statements.solidity.expr.simps)
     next
-      case (ECALL x191 x192 x193 x194)
-      with o f show ?thesis by simp
+      case (ECALL x191 x192 x193)
+      with o f show ?thesis by (simp add:Statements.solidity.expr.simps)
+    next
+      case CONTRACTS
+      with o f show ?thesis by (simp add:Statements.solidity.expr.simps)
     qed
   next
     case (LVAL x7)
-    with o show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with o show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case p: (PLUS x81 x82)
-    with o show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with o show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (MINUS x91 x92)
-    with o show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with o show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (EQUAL x101 x102)
-    with o show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with o show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (LESS x111 x112)
-    with o show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with o show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (AND x121 x122)
-    with o show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with o show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (OR x131 x132)
-    with o show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with o show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (NOT x131)
-    with o show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by auto
+    with o show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   next
     case (CALL x181 x182)
-    with o show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by simp
+    with o show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (simp add:Statements.solidity.expr.simps)
   next
-    case (ECALL x191 x192 x193 x194)
-    with o show ?thesis using lift_eq[of e1 ep env cd st "eupdate e1" e2 "eupdate e2"] by simp
+    case (ECALL x191 x192 x193)
+    with o show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (simp add:Statements.solidity.expr.simps)
+  next
+    case CONTRACTS
+    with o show ?thesis using lift_eq[of e1 env cd st g "eupdate e1" e2 "eupdate e2"] by (auto simp add:Statements.solidity.expr.simps)
   qed
 next
   case o: (NOT e)
   show ?case
   proof (cases "eupdate e")
     case (INT x11 x12)
-    with o show ?thesis by simp
+    with o show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case (UINT x21 x22)
-    with o show ?thesis by simp
+    with o show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case (ADDRESS x3)
-    with o show ?thesis by simp
+    with o show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case (BALANCE x4)
-    with o show ?thesis by simp
+    with o show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case THIS
-    with o show ?thesis by simp
+    with o show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case SENDER
-    with o show ?thesis by simp
+    with o show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case VALUE
-    with o show ?thesis by simp
+    with o show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case t: TRUE
-    with o show ?thesis by simp
+    with o show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case f: FALSE
-    with o show ?thesis by simp
+    with o show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case (LVAL x7)
-    with o show ?thesis by simp
+    with o show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case p: (PLUS x81 x82)
-    with o show ?thesis by simp
+    with o show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case (MINUS x91 x92)
-    with o show ?thesis by simp
+    with o show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case (EQUAL x101 x102)
-    with o show ?thesis by simp
+    with o show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case (LESS x111 x112)
-    with o show ?thesis by simp
+    with o show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case (AND x121 x122)
-    with o show ?thesis by simp
+    with o show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case (OR x131 x132)
-    with o show ?thesis by simp
+    with o show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case (NOT x131)
-    with o show ?thesis by simp
+    with o show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
     case (CALL x181 x182)
-    with o show ?thesis by simp
+    with o show ?thesis by (simp add:Statements.solidity.expr.simps)
   next
-    case (ECALL x191 x192 x193 x194)
-    with o show ?thesis by simp
+    case (ECALL x191 x192 x193)
+    with o show ?thesis by (simp add:Statements.solidity.expr.simps)
+  next
+    case CONTRACTS
+    with o show ?thesis by (simp add:Statements.solidity.expr.simps)
   qed
 next
   case (CALL x181 x182)
   show ?case by simp
 next
   case (ECALL x191 x192 x193 x194)
+  show ?case by simp
+next
+  case CONTRACTS
   show ?case by simp
 qed
 
