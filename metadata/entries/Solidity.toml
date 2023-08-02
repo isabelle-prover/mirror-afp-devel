@@ -39,6 +39,12 @@ marmsoler = "marmsoler_email1"
 brucker = "brucker_email2"
 
 [history]
+2023-08-02 = """
+Changing expressions do not have side effects anymore.
+Adding support for instantiation of contracts.
+Adding weakest precondition calculus for the verification of statements.
+(revision fb4d111b2dde)<br>
+"""
 
 [extra]
 
