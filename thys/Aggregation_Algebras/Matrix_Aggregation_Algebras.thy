@@ -1013,5 +1013,34 @@ interpretation agg_square_m_kleene_algebra: m_kleene_algebra where sup = sup_mat
 
 interpretation agg_square_m_kleene_algebra_2: m_kleene_algebra where sup = sup_matrix and inf = inf_matrix and less_eq = less_eq_matrix and less = less_matrix and bot = "bot_matrix::('a::enum,'b::linear_aggregation_kleene_algebra) square" and top = top_matrix and uminus = uminus_matrix and one = one_matrix and times = times_matrix and conv = conv_matrix and star = star_matrix and plus = plus_matrix and sum = sum_matrix_2 and minarc = minarc_matrix ..
 
+class linorder_stone_relation_algebra_plus_expansion = linorder_stone_relation_algebra_expansion + plus +
+  assumes plus_def: "plus = sup"
+begin
+
+subclass linear_aggregation_algebra
+  apply unfold_locales
+  using plus_def sup_monoid.add_assoc apply blast
+  using plus_def sup_monoid.add_commute apply blast
+  using comp_inf.semiring.add_mono plus_def apply auto[1]
+  using plus_def apply force
+  using bot_eq_sup_iff plus_def apply blast
+  apply simp
+  apply simp
+  using times_inf apply presburger
+  by simp
+
+end
+
+class linorder_stone_kleene_relation_algebra_plus_expansion = linorder_stone_kleene_relation_algebra_expansion + linorder_stone_relation_algebra_plus_expansion
+begin
+
+subclass linear_aggregation_kleene_algebra
+  apply unfold_locales
+  by simp
+
+end
+
+class linorder_stone_kleene_relation_algebra_tarski_consistent_plus_expansion = linorder_stone_kleene_relation_algebra_tarski_consistent_expansion + linorder_stone_kleene_relation_algebra_plus_expansion
+
 end
 

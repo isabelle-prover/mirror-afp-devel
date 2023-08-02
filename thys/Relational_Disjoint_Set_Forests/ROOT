@@ -1,6 +1,6 @@
 chapter AFP
 
-session Relational_Disjoint_Set_Forests = Stone_Kleene_Relation_Algebras +
+session Relational_Disjoint_Set_Forests = Aggregation_Algebras +
 
   options [timeout = 600]
 
@@ -10,6 +10,7 @@ session Relational_Disjoint_Set_Forests = Stone_Kleene_Relation_Algebras +
   theories
     Disjoint_Set_Forests
     More_Disjoint_Set_Forests
+    Matrix_Peano_Algebras
 
   document_files
     "root.tex"

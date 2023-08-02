@@ -3296,5 +3296,14 @@ subclass relation_algebra_tarski_consistent ..
 
 end
 
+class linorder_stone_kleene_relation_algebra_tarski_consistent_expansion = linorder_stone_kleene_relation_algebra_expansion + non_trivial_bounded_order
+begin
+
+subclass stone_kleene_relation_algebra_tarski_consistent
+  apply unfold_locales
+  by (simp_all add: bot_not_top)
+
+end
+
 end
 

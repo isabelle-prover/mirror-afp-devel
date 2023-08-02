@@ -1914,7 +1914,7 @@ Since only finitely many numbers will be represented, the remaining axioms will 
 That is, the algebra will be able to represent numbers $0, \dots, m-1$ where the successor of $m-1$ is $0$.
 \<close>
 
-class skra_peano_1 = stone_kleene_relation_algebra + stone_relation_algebra_tarski_consistent + peano_signature +
+class skra_peano_1 = stone_kleene_relation_algebra_tarski_consistent + peano_signature +
   assumes Z_point: "point Z"
   assumes S_univalent: "univalent S"
   assumes S_injective: "injective S"
