@@ -807,8 +807,7 @@ subsubsection\<open>Final results\<close>
 interpretation vcg:VCG costs\<^sub>e ep costs cname members const fb "\<lambda>_. True" "\<lambda>_. True" "\<lambda>_ _. True" "\<lambda>_ _. True"
 by (simp add: VCG.intro Calculus_axioms)
 
-lemma safe_external:
-  "external ad iv"
+lemma safe_external: "Qe ad iv (st::State)"
   apply (external cases: cases_ext)
   apply (rule wp_deposit;assumption)
   apply vcg_block_some
@@ -817,7 +816,7 @@ lemma safe_external:
   apply (vcg.vcg_transfer_ext ad fallback_int: wp_true fallback_ext: wp_fallback cases_ext:cases_ext cases_int:cases_fb cases_fb:cases_int invariant:adapt_withdraw)
   done
 
-lemma safe_fallback: "fallback ad iv"
+lemma safe_fallback: "Qfe ad iv st"
   apply (fallback cases: cases_fb)
   apply (rule wp_fallback; assumption)
   done
@@ -829,11 +828,10 @@ lemma safe_constructor: "constructor iv"
   done
 
 theorem safe:
-  assumes "address ev \<noteq> ad"
-      and "type (accounts st ad) = Some (Contract cname) \<longrightarrow> iv (storage st ad) (ReadL\<^sub>i\<^sub>n\<^sub>t (bal (accounts st ad)))"
-    shows "\<forall>(st'::State). stmt f ev cd st = Normal ((), st') \<and> type (accounts st' ad) = Some (Contract cname)
+  assumes "\<forall>ad. address ev \<noteq> ad \<and> type (accounts st ad) = Some (Contract cname) \<longrightarrow> iv (storage st ad) (ReadL\<^sub>i\<^sub>n\<^sub>t (bal (accounts st ad)))"
+    shows "\<forall>(st'::State) ad. stmt f ev cd st = Normal ((), st') \<and> type (accounts st' ad) = Some (Contract cname) \<and> address ev \<noteq> ad
             \<longrightarrow> iv (storage st' ad) (ReadL\<^sub>i\<^sub>n\<^sub>t (bal (accounts st' ad)))"
-  apply (rule sound) using assms safe_external safe_fallback safe_constructor by auto
+  apply (rule invariant) using assms safe_external safe_fallback safe_constructor by auto
 
 end
 

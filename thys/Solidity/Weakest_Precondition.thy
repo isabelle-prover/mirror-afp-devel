@@ -901,7 +901,7 @@ next
           moreover have "ReadL\<^sub>i\<^sub>n\<^sub>t (bal (acc ad)) = ReadL\<^sub>i\<^sub>n\<^sub>t (bal (accounts st ad)) + ReadL\<^sub>i\<^sub>n\<^sub>t v'" using transfer_add[OF 1(10)] l1 True by simp
           ultimately show ?thesis by simp
         qed
-        ultimately have "wpS (local.stmt f e\<^sub>l cd\<^sub>l) (\<lambda>st. iv (storage st ad) (ReadL\<^sub>i\<^sub>n\<^sub>t (bal (accounts st ad)))) (\<lambda>e. e = Gas \<or> e = Err) (st\<lparr>gas := g'', accounts := acc, stack := k\<^sub>l, memory := m\<^sub>l\<rparr>)" unfolding Qe_def using l1 l12 1(2) 1(6-10) by blast
+        ultimately have "wpS (local.stmt f e\<^sub>l cd\<^sub>l) (\<lambda>st. iv (storage st ad) (ReadL\<^sub>i\<^sub>n\<^sub>t (bal (accounts st ad)))) (\<lambda>e. e = Gas \<or> e = Err) (st\<lparr>gas := g'', accounts := acc, stack := k\<^sub>l, memory := m\<^sub>l\<rparr>)" unfolding Qe_def using l1 l12 1(2) 1(6-10) by simp
         moreover have "stmt f e\<^sub>l cd\<^sub>l (st\<lparr>gas := g'', accounts := acc, stack := k\<^sub>l, memory := m\<^sub>l\<rparr>) = Normal ((), st'')" using 1(11) by simp
         ultimately show "iv (storage st' ad) (ReadL\<^sub>i\<^sub>n\<^sub>t (bal (accounts st' ad)))" unfolding wpS_def wp_def using 1(12) by simp
       next
@@ -1329,7 +1329,7 @@ proof (induction st rule: gas_induct)
             assume l0: "gas st' < gas (st\<lparr>gas := g0', accounts := acc0, stack := emptyStore, memory := emptyStore\<rparr>)"
             then have "gas st' < gas st" using msel_ssel_expr_load_rexp_gas(3)[OF None(2)] msel_ssel_expr_load_rexp_gas(3)[OF None(6)] by auto
             then show "?right st'" using assm[OF all_gas_le[OF `gas st' < gas st` "1.IH"], THEN conjunct2, THEN conjunct2, THEN conjunct2] unfolding Qfe_def by simp
-          qed
+          qed                                                                                                                                                                                                                                                                                                            
           ultimately have "iv (storage st0'' ad) (ReadL\<^sub>i\<^sub>n\<^sub>t (bal (accounts st0'' ad)))" using safeStore[of "ffold (init ct0) (emptyEnv adv0 c0 (address ev) v0') (fmdom ct0)" ad "st\<lparr>gas := g0', accounts := acc0, stack := emptyStore, memory := emptyStore\<rparr>" iv fb0' emptyStore "st0''"] None unfolding Qe_def Qfe_def by blast
           then show ?thesis using None(11) by simp
         qed
@@ -1518,9 +1518,9 @@ text \<open>
 \<close>
 
 lemma wp_transfer_ext[rule_format]:
-  assumes "\<And>st::State. \<lbrakk>\<forall>st'::State. gas st' \<le> gas st \<and> type (accounts st' ad) = Some (Contract cname) \<longrightarrow> Pe ad iv st' \<and> Pi ad pre post st' \<and> Pfi ad pref postf st' \<and> Pfe ad iv st'\<rbrakk>
+  assumes "type (accounts st ad) = Some (Contract cname)"
+      and "\<And>st::State. \<lbrakk>\<forall>st'::State. gas st' \<le> gas st \<and> type (accounts st' ad) = Some (Contract cname) \<longrightarrow> Pe ad iv st' \<and> Pi ad pre post st' \<and> Pfi ad pref postf st' \<and> Pfe ad iv st'\<rbrakk>
                     \<Longrightarrow> Qe ad iv st \<and> Qi ad pre post st \<and> Qfi ad pref postf st \<and> Qfe ad iv st"
-      and "type (accounts st ad) = Some (Contract cname)"
     shows "(\<forall>ev ex ad' cd.
        address ev = ad \<and>
        (\<forall>adv g.
@@ -1539,9 +1539,9 @@ proof -
 qed
 
 lemma wp_external[rule_format]:
-  assumes "\<And>st::State. \<lbrakk>\<forall>st'::State. gas st' \<le> gas st \<and> type (accounts st' ad) = Some (Contract cname)\<longrightarrow> Pe ad iv st' \<and> Pi ad pre post st' \<and> Pfi ad pref postf st' \<and> Pfe ad iv st'\<rbrakk>
+  assumes "type (accounts st ad) = Some (Contract cname)"
+     and "\<And>st::State. \<lbrakk>\<forall>st'::State. gas st' \<le> gas st \<and> type (accounts st' ad) = Some (Contract cname)\<longrightarrow> Pe ad iv st' \<and> Pi ad pre post st' \<and> Pfi ad pref postf st' \<and> Pfe ad iv st'\<rbrakk>
                     \<Longrightarrow> Qe ad iv st \<and> Qi ad pre post st \<and> Qfi ad pref postf st \<and> Qfe ad iv st"
-      and "type (accounts st ad) = Some (Contract cname)"
   shows "(\<forall>ev ad' i xe val cd.
        address ev = ad \<and>
        (\<forall>adv c g v t g' v'.
@@ -1559,9 +1559,9 @@ proof -
 qed
 
 lemma wp_invoke[rule_format]:
-  assumes "\<And>st::State. \<lbrakk>\<forall>st'::State. gas st' \<le> gas st \<and> type (accounts st' ad) = Some (Contract cname) \<longrightarrow> Pe ad iv st' \<and> Pi ad pre post st' \<and> Pfi ad pref postf st' \<and> Pfe ad iv st'\<rbrakk>
+  assumes "type (accounts st ad) = Some (Contract cname)"
+      and "\<And>st::State. \<lbrakk>\<forall>st'::State. gas st' \<le> gas st \<and> type (accounts st' ad) = Some (Contract cname) \<longrightarrow> Pe ad iv st' \<and> Pi ad pre post st' \<and> Pfi ad pref postf st' \<and> Pfe ad iv st'\<rbrakk>
                     \<Longrightarrow> Qe ad iv st \<and> Qi ad pre post st \<and> Qfi ad pref postf st \<and> Qfe ad iv st"
-      and "type (accounts st ad) = Some (Contract cname)"
   shows "(\<forall>ev i xe cd.
        address ev = ad \<and>
        contract ev = cname \<and>
@@ -1575,9 +1575,9 @@ proof -
 qed
 
 lemma wp_transfer_int[rule_format]:
-  assumes "\<And>st::State. \<lbrakk>\<forall>st'::State. gas st' \<le> gas st \<and> type (accounts st' ad) = Some (Contract cname) \<longrightarrow> Pe ad iv st' \<and> Pi ad pre post st' \<and> Pfi ad pref postf st' \<and> Pfe ad iv st'\<rbrakk>
+  assumes "type (accounts st ad) = Some (Contract cname)"
+      and "\<And>st::State. \<lbrakk>\<forall>st'::State. gas st' \<le> gas st \<and> type (accounts st' ad) = Some (Contract cname) \<longrightarrow> Pe ad iv st' \<and> Pi ad pre post st' \<and> Pfi ad pref postf st' \<and> Pfe ad iv st'\<rbrakk>
                     \<Longrightarrow> Qe ad iv st \<and> Qi ad pre post st \<and> Qfi ad pref postf st \<and> Qfe ad iv st"
-      and "type (accounts st ad) = Some (Contract cname)"
     shows "(\<forall>ev ex ad' cd.
      address ev = ad \<and>
      (\<forall>adv g.
@@ -1593,32 +1593,6 @@ proof -
   then show ?thesis using Pfi_def by simp
 qed
 
-definition external :: "Address \<Rightarrow> ((String.literal, String.literal) fmap \<Rightarrow> int \<Rightarrow> bool) \<Rightarrow> bool"
-  where "external ad iv \<equiv> (\<forall>acc g'' m\<^sub>l k\<^sub>l cd\<^sub>l e\<^sub>l g' t v v' g val xe cd adex ev f fp i st.
-      type (accounts st ad) = Some (Contract cname) \<and>
-      members $$ i = Some (Method (fp, True, f)) \<and>
-      address ev \<noteq> ad \<and>
-      expr adex ev cd (st\<lparr>gas := gas st - costs (EXTERNAL adex i xe val) ev cd st\<rparr>) (gas st - costs (EXTERNAL adex i xe val) ev cd st) = Normal ((KValue ad, Value TAddr), g) \<and>
-      expr val ev cd (st\<lparr>gas := g\<rparr>) g = Normal ((KValue v, Value t), g') \<and>
-      convert t (TUInt 256) v = Some v' \<and>
-      load True fp xe (ffold (init members) (emptyEnv ad cname (address ev) v') (fmdom members)) emptyStore emptyStore emptyStore ev cd (st\<lparr>gas := g'\<rparr>) g' = Normal ((e\<^sub>l, cd\<^sub>l, k\<^sub>l, m\<^sub>l), g'') \<and>
-      transfer (address ev) ad v' (accounts (st\<lparr>gas := g''\<rparr>)) = Some acc \<and>
-      iv (storage st ad) (ReadL\<^sub>i\<^sub>n\<^sub>t (bal (acc ad)) - ReadL\<^sub>i\<^sub>n\<^sub>t v')
-    \<longrightarrow> (wpS (\<lambda>s. stmt f e\<^sub>l cd\<^sub>l s) (\<lambda>st. iv (storage st ad) (ReadL\<^sub>i\<^sub>n\<^sub>t (bal (accounts st ad)))) (\<lambda>e. e = Gas \<or> e=Err) (st\<lparr>gas := g'', accounts := acc, stack:=k\<^sub>l, memory:=m\<^sub>l\<rparr>)))"
-
-definition fallback :: "Address \<Rightarrow> ((String.literal, String.literal) fmap \<Rightarrow> int \<Rightarrow> bool) \<Rightarrow> bool"
-  where "fallback ad iv \<equiv> (\<forall>acc g' t v v' g val cd adex ev st k.
-    type (accounts st ad) = Some (Contract cname) \<and>
-    address ev \<noteq> ad \<and>
-    local.expr adex ev cd (st\<lparr>gas := gas st - k\<rparr>) (gas st - k) =
-    Normal ((KValue ad, Value TAddr), g) \<and>
-    local.expr val ev cd (st\<lparr>gas := g\<rparr>) g = Normal ((KValue v, Value t), g') \<and>
-    convert t (TUInt 256) v = Some v' \<and>
-    transfer (address ev) ad v' (accounts st) = Some acc \<and>
-    iv (storage st ad) (ReadL\<^sub>i\<^sub>n\<^sub>t (bal (acc ad)) - ReadL\<^sub>i\<^sub>n\<^sub>t v')
-    \<longrightarrow> wpS (local.stmt fb (ffold (init members) (emptyEnv ad cname (address ev) v') (fmdom members)) emptyStore) (\<lambda>st. iv (storage st ad) \<lceil>bal (accounts st ad)\<rceil>) (\<lambda>e. e = Gas \<or> e = Err)
-        (st\<lparr>gas := g', accounts := acc, stack := emptyStore, memory := emptyStore\<rparr>))"
-
 definition constructor :: "((String.literal, String.literal) fmap \<Rightarrow> int \<Rightarrow> bool) \<Rightarrow> bool"
   where "constructor iv \<equiv> (\<forall>acc g'' m\<^sub>l k\<^sub>l cd\<^sub>l e\<^sub>l g' t v xe i cd val st ev adv.
     adv = hash (address ev) (ShowL\<^sub>n\<^sub>a\<^sub>t (contracts (accounts st (address ev)))) \<and>
@@ -1629,10 +1603,10 @@ definition constructor :: "((String.literal, String.literal) fmap \<Rightarrow> 
     \<longrightarrow> wpS (local.stmt (snd const) e\<^sub>l cd\<^sub>l) (\<lambda>st. iv (storage st adv) \<lceil>bal (accounts st adv)\<rceil>) (\<lambda>e. e = Gas \<or> e = Err)
         (st\<lparr>gas := g'', storage:=(storage st)(adv := {$$}), accounts := acc, stack:=k\<^sub>l, memory:=m\<^sub>l\<rparr>))"
 
-lemma sound:
+lemma invariant_rec:
   fixes iv ad
-  assumes "\<forall>ad. external ad iv"
-      and "\<forall>ad. fallback ad iv"
+  assumes "\<forall>ad (st::State). Qe ad iv st"
+      and "\<forall>ad (st::State). Qfe ad iv st"
       and "constructor iv"
       and "address ev \<noteq> ad"
       and "type (accounts st ad) = Some (Contract cname) \<longrightarrow> iv (storage st ad) (ReadL\<^sub>i\<^sub>n\<^sub>t (bal (accounts st ad)))"
@@ -1752,18 +1726,19 @@ next
       proof (cases "adv = ad")
         case True
         then have "type (acc ad) = Some (Contract c)" using transfer_type_same[OF 1(10)] 1(4) by auto
-        then have "type (accounts st' ad) = Some (Contract c)" using atype_same[OF 1(11)] 1(12) by simp
+        moreover from `type (acc ad) = Some (Contract c)` have "type (accounts st' ad) = Some (Contract c)" using atype_same[OF 1(11)] 1(12) by simp
         then have "c = cname" using a2 by simp
-        then have "type (accounts st ad) = Some (Contract cname)" using 1(4) True by simp
         moreover from `c = cname` have "ct = members" using 1 C1 by simp
+        moreover have "g'' \<le> gas st" using msel_ssel_expr_load_rexp_gas(3)[OF 1(2)] msel_ssel_expr_load_rexp_gas(3)[OF 1(6)] msel_ssel_expr_load_rexp_gas(4)[OF 1(9)] by linarith
         moreover have "iv (storage st ad) (ReadL\<^sub>i\<^sub>n\<^sub>t (bal (acc ad)) - ReadL\<^sub>i\<^sub>n\<^sub>t v')"
         proof -
+          from `c = cname` have "type (accounts st ad) = Some (Contract cname)" using 1(4) True by simp
           have "iv (storage st ad) (ReadL\<^sub>i\<^sub>n\<^sub>t (bal (accounts st ad)))" using 7(4) `type (accounts st ad) = Some (Contract cname)` by simp
           moreover have "ReadL\<^sub>i\<^sub>n\<^sub>t (bal (acc ad)) = ReadL\<^sub>i\<^sub>n\<^sub>t (bal (accounts st ad)) + ReadL\<^sub>i\<^sub>n\<^sub>t v'" using transfer_add[OF 1(10)] 7(3) True by simp
           ultimately show ?thesis by simp
         qed
         ultimately have "wpS (local.stmt f e\<^sub>l cd\<^sub>l) (\<lambda>st. iv (storage st ad) \<lceil>bal (accounts st ad)\<rceil>) (\<lambda>e. e = Gas \<or> e = Err)
-        (st\<lparr>gas := g'', accounts := acc, stack := k\<^sub>l, memory := m\<^sub>l\<rparr>)" using assms(1) 1 True 7(3) `c = cname` unfolding external_def by auto
+        (st\<lparr>gas := g'', accounts := acc, stack := k\<^sub>l, memory := m\<^sub>l\<rparr>)" using 1 True  using assms(1) 1(8) 7(3) unfolding Qe_def by simp
         then show ?thesis unfolding wpS_def wp_def using 1(11,12) by simp
       next
         case False
@@ -1787,18 +1762,19 @@ next
       proof (cases "adv = ad")
         case True
         then have "type (acc ad) = Some (Contract c)" using transfer_type_same[OF 2(9)] 2(4) by auto
-        then have "type (accounts st' ad) = Some (Contract c)" using atype_same[OF 2(10)] 2(11) by simp
+        moreover from `type (acc ad) = Some (Contract c)` have "type (accounts st' ad) = Some (Contract c)" using atype_same[OF 2(10)] 2(11) by simp
         then have "c = cname" using a2 by simp
-        then have "type (accounts st ad) = Some (Contract cname)" using 2(4) True by simp
         moreover from `c = cname` have "ct = members" and "fb'=fb" using 2 C1 by simp+
         moreover have "iv (storage st ad) (ReadL\<^sub>i\<^sub>n\<^sub>t (bal (acc ad)) - ReadL\<^sub>i\<^sub>n\<^sub>t v')"
         proof -
-          have "iv (storage st ad) (ReadL\<^sub>i\<^sub>n\<^sub>t (bal (accounts st ad)))" using 7(4) `type (accounts st ad) = Some (Contract cname)` by simp
+          from `c = cname` have "type (accounts st ad) = Some (Contract cname)" using 2(4) True by simp
+          then have "iv (storage st ad) (ReadL\<^sub>i\<^sub>n\<^sub>t (bal (accounts st ad)))" using 7(4) by simp
           moreover have "ReadL\<^sub>i\<^sub>n\<^sub>t (bal (acc ad)) = ReadL\<^sub>i\<^sub>n\<^sub>t (bal (accounts st ad)) + ReadL\<^sub>i\<^sub>n\<^sub>t v'" using transfer_add[OF 2(9)] 7(3) True by simp
           ultimately show "iv (storage st ad) (ReadL\<^sub>i\<^sub>n\<^sub>t (bal (acc ad)) - ReadL\<^sub>i\<^sub>n\<^sub>t v')" by simp
         qed
+        moreover have "g' \<le> gas st" using msel_ssel_expr_load_rexp_gas(3)[OF 2(2)] msel_ssel_expr_load_rexp_gas(3)[OF 2(6)] by linarith
         ultimately have "wpS (local.stmt fb' (ffold (init ct) (emptyEnv adv c (address ev) v') (fmdom ct)) emptyStore) (\<lambda>st. iv (storage st ad) \<lceil>bal (accounts st ad)\<rceil>) (\<lambda>e. e = Gas \<or> e = Err)
-        (st\<lparr>gas := g', accounts := acc, stack := emptyStore, memory := emptyStore\<rparr>)" using assms(2) 7(3) 2 True `c = cname` unfolding fallback_def by blast
+        (st\<lparr>gas := g', accounts := acc, stack := emptyStore, memory := emptyStore\<rparr>)" using assms(2) 7(3) 2 True unfolding Qfe_def by simp
         then show ?thesis unfolding wpS_def wp_def using 2(10,11) by simp
       next
         case False
@@ -1831,18 +1807,19 @@ next
       proof (cases "adv = ad")
         case True
         then have "type (acc ad) = Some (Contract c)" using transfer_type_same[OF 1(7)] 1(5) by auto
-        then have "type (accounts st' ad) = Some (Contract c)" using atype_same[OF 1(8)] 1(9) by simp
+        moreover from `type (acc ad) = Some (Contract c)` have "type (accounts st' ad) = Some (Contract c)" using atype_same[OF 1(8)] 1(9) by simp
         then have "c = cname" using a2 by simp
-        then have "type (accounts st ad) = Some (Contract cname)" using 1(5) True by simp
         moreover from `c = cname` have "ct = members" and "f=fb" using 1 C1 by simp+
+        moreover have "g' \<le> gas st" using msel_ssel_expr_load_rexp_gas(3)[OF 1(2)] msel_ssel_expr_load_rexp_gas(3)[OF 1(3)] by linarith
         moreover have "iv (storage st ad) (ReadL\<^sub>i\<^sub>n\<^sub>t (bal (acc ad)) - ReadL\<^sub>i\<^sub>n\<^sub>t v')"
         proof -
-          have "iv (storage st ad) (ReadL\<^sub>i\<^sub>n\<^sub>t (bal (accounts st ad)))" using 8(3) `type (accounts st ad) = Some (Contract cname)` by simp
+          from `c = cname` have "type (accounts st ad) = Some (Contract cname)" using 1(5) True by simp
+          then have "iv (storage st ad) (ReadL\<^sub>i\<^sub>n\<^sub>t (bal (accounts st ad)))" using 8(3) by simp
           moreover have "ReadL\<^sub>i\<^sub>n\<^sub>t (bal (acc ad)) = ReadL\<^sub>i\<^sub>n\<^sub>t (bal (accounts st ad)) + ReadL\<^sub>i\<^sub>n\<^sub>t v'" using transfer_add[OF 1(7)] 8(2) True by simp
           ultimately show "iv (storage st ad) (ReadL\<^sub>i\<^sub>n\<^sub>t (bal (acc ad)) - ReadL\<^sub>i\<^sub>n\<^sub>t v')" by simp
         qed
         ultimately have "wpS (local.stmt f (ffold (init ct) (emptyEnv adv c (address ev) v') (fmdom ct)) emptyStore) (\<lambda>st. iv (storage st ad) \<lceil>bal (accounts st ad)\<rceil>) (\<lambda>e. e = Gas \<or> e = Err)
-        (st\<lparr>gas := g', accounts := acc, stack := emptyStore, memory := emptyStore\<rparr>)" using assms(2) 8(2) 1 True `c = cname` unfolding fallback_def by blast
+        (st\<lparr>gas := g', accounts := acc, stack := emptyStore, memory := emptyStore\<rparr>)" using assms(2) 8(2) 1 True unfolding Qfe_def by simp
         then show ?thesis unfolding wpS_def wp_def using 1(8,9) by simp
       next
         case False
@@ -1968,15 +1945,15 @@ next
   qed
 qed
 
-lemma sound2:
+theorem invariant:
   fixes iv ad
-  assumes "\<forall>ad. external ad iv"
-      and "\<forall>ad. fallback ad iv"
+  assumes "\<forall>ad (st::State). Qe ad iv st"
+      and "\<forall>ad (st::State). Qfe ad iv st"
       and "constructor iv"
       and "\<forall>ad. address ev \<noteq> ad \<and> type (accounts st ad) = Some (Contract cname) \<longrightarrow> iv (storage st ad) (ReadL\<^sub>i\<^sub>n\<^sub>t (bal (accounts st ad)))"
     shows "\<forall>(st'::State) ad. stmt f ev cd st = Normal ((), st') \<and> type (accounts st' ad) = Some (Contract cname) \<and> address ev \<noteq> ad
             \<longrightarrow> iv (storage st' ad) (ReadL\<^sub>i\<^sub>n\<^sub>t (bal (accounts st' ad)))"
-  using assms sound by blast
+  using assms invariant_rec by blast
 end
 
 context Calculus
@@ -1997,12 +1974,12 @@ begin
     simp
   
   method external uses cases =
-    unfold external_def,
+    unfold Qe_def,
     elims,
     (erule cases;simp)
   
   method fallback uses cases =
-    unfold fallback_def,
+    unfold Qfe_def,
     elims,
     rule cases
   
@@ -2183,16 +2160,11 @@ method vcg_init for ad::Address uses invariant =
   sender ad,
   (rule invariant; assumption)
 
-method vcg_transfer_type for ad::Address =
-  match premises in
-    type: "type (accounts _ ad) = Some (Contract cname)" and transfer: "Accounts.transfer _ ad _ _ = Some _" \<Rightarrow>
-        \<open>insert transfer_type_same[OF transfer, THEN trans, OF type], solve simp\<close>
-
 method vcg_transfer_ext for ad::Address
   uses fallback_int fallback_ext cases_ext cases_int cases_fb invariant =
   rule wp_transfer_ext[where pref = pref and postf = postf and pre = pre and post = post],
+  solve simp,
   (vcg_body fallback_int:fallback_int fallback_ext:fallback_ext cases_ext:cases_ext cases_int:cases_int cases_fb:cases_fb)+,
-  vcg_transfer_type ad,
   vcg_init ad invariant:invariant
 
 end
