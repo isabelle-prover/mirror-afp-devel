@@ -225,7 +225,7 @@ lemma regular_pair_neighbor_bound:
   assumes finG: "finite (uverts G)"
   assumes xss: "X \<subseteq> uverts G" and yss: "Y \<subseteq> uverts G" and "card X > 0"
     and wf: "uwellformed G"
-    and eg0: "\<epsilon> > 0" and "regular_pair X Y G \<epsilon>" and ed: "edge_density X Y G \<ge> 2*\<epsilon>"
+    and eg0: "\<epsilon> > 0" and "\<epsilon>-regular_pair X Y G" and ed: "edge_density X Y G \<ge> 2*\<epsilon>"
   defines "X' \<equiv> {x \<in> X. card (neighbors_ss x Y G) < (edge_density X Y G - \<epsilon>) * card (Y)}"
   shows "card X' < \<epsilon> * card X" 
     (is "card (?X') < \<epsilon> * _")
@@ -277,7 +277,7 @@ shows "card (neighbors_ss x Y G) \<ge> \<epsilon> * card (Y)"
 
 lemma all_edges_btwn_neighbor_sets_lower_bound: 
   fixes \<epsilon>::real 
-  assumes rp2: "regular_pair Y Z G \<epsilon>"
+  assumes rp2: "\<epsilon>-regular_pair Y Z G"
     and ed1: "edge_density X Y G  \<ge> 2*\<epsilon>" and ed2: "edge_density X Z G  \<ge> 2*\<epsilon>" 
     and cond1: "card (neighbors_ss x Y G) \<ge> (edge_density X Y G - \<epsilon>) * card Y"
     and cond2: "card (neighbors_ss x Z G) \<ge> (edge_density X Z G - \<epsilon>) * card Z"
@@ -308,7 +308,7 @@ theorem triangle_counting_lemma:
   fixes \<epsilon>::real 
   assumes xss: "X \<subseteq> uverts G" and yss: "Y \<subseteq> uverts G" and zss: "Z \<subseteq> uverts G" and en0: "\<epsilon> > 0"
     and finG: "finite (uverts G)" and wf: "uwellformed G"    
-    and rp1: "regular_pair X Y G \<epsilon>" and rp2: "regular_pair Y Z G \<epsilon>" and rp3: "regular_pair X Z G \<epsilon>"
+    and rp1: "\<epsilon>-regular_pair X Y G" and rp2: "\<epsilon>-regular_pair Y Z G" and rp3: "\<epsilon>-regular_pair X Z G"
     and ed1: "edge_density X Y G \<ge> 2*\<epsilon>" and ed2: "edge_density X Z G \<ge> 2*\<epsilon>" and ed3: "edge_density Y Z G \<ge> 2*\<epsilon>"
   shows "card (triangle_triples X Y Z G)
         \<ge> (1-2*\<epsilon>) * (edge_density X Y G - \<epsilon>) * (edge_density X Z G - \<epsilon>) * (edge_density Y Z G - \<epsilon>)*
@@ -388,8 +388,9 @@ and @{term Z}.\<close>
 qed
 
 
-definition regular_graph :: "uvert set set \<Rightarrow> ugraph \<Rightarrow> real \<Rightarrow> bool"
-  where "regular_graph P G \<epsilon> \<equiv> \<forall>R S. R\<in>P \<longrightarrow> S\<in>P \<longrightarrow> regular_pair R S G \<epsilon>" for \<epsilon>::real
+definition regular_graph :: "real \<Rightarrow> uvert set set \<Rightarrow> ugraph \<Rightarrow> bool"  
+           ("_-regular'_graph" [999]1000)
+  where "\<epsilon>-regular_graph P G \<equiv> \<forall>R S. R\<in>P \<longrightarrow> S\<in>P \<longrightarrow> \<epsilon>-regular_pair R S G" for \<epsilon>::real
 
 text \<open>A minimum density, but empty edge sets are excluded.\<close>
 
@@ -569,7 +570,7 @@ next
     
     text \<open>Obtain the set of edges meeting condition (a).\<close>
     
-    define irreg_pairs where "irreg_pairs \<equiv> {(R,S). R \<in> P \<and> S \<in> P \<and> \<not> regular_pair R S G (\<epsilon>/4)}"
+    define irreg_pairs where "irreg_pairs \<equiv> {(R,S). R \<in> P \<and> S \<in> P \<and> \<not> (\<epsilon>/4)-regular_pair R S G}"
     define Ea where "Ea \<equiv> (\<Union>(R,S) \<in> irreg_pairs. edge R S)"
     
     text \<open>Obtain the set of edges meeting condition (b).\<close>
@@ -597,7 +598,7 @@ next
         by (meson \<open>finite P\<close> finite_SigmaI finite_subset)
       have "card Ea \<le> (\<Sum>(R,S)\<in>irreg_pairs. card (edge R S))"
         by (simp add: Ea_def card_UN_le [OF \<open>finite irreg_pairs\<close>] case_prod_unfold)
-      also have "\<dots> \<le> (\<Sum>(R,S) \<in> {(R,S). R\<in>P \<and> S\<in>P \<and> \<not> regular_pair R S G (\<epsilon>/4)}. card R * card S)"
+      also have "\<dots> \<le> (\<Sum>(R,S) \<in> {(R,S). R\<in>P \<and> S\<in>P \<and> \<not> (\<epsilon>/4)-regular_pair R S G}. card R * card S)"
         unfolding irreg_pairs_def using \<section> by (force intro: sum_mono)
       also have "\<dots> = (\<Sum>(R,S) \<in> irregular_set (\<epsilon>/4) G P. card R * card S)"
         by (simp add: irregular_set_def)
@@ -750,7 +751,7 @@ next
           by (auto simp add: Gnew_def Ea Eb Ec all_edges_between_E_diff all_edges_between_E_Un)
       qed
 
-      have rp: "regular_pair R S Gnew (\<epsilon>/4)" if ij: "R \<in> P" "S \<in> P"  for R S
+      have rp: "(\<epsilon>/4)-regular_pair R S Gnew" if ij: "R \<in> P" "S \<in> P" for R S
       proof (cases "(R,S) \<in> irreg_pairs")
         case False
         have ed: "edge_density X Y Gnew =
@@ -769,7 +770,7 @@ next
         with egt that show ?thesis
           by (auto simp: regular_pair_def ed)
       qed
-      then have reg_pairs: "regular_graph P Gnew (\<epsilon>/4)"
+      then have reg_pairs: "(\<epsilon>/4)-regular_graph P Gnew"
         by (meson regular_graph_def)
 
       have "edge_dense R S Gnew (\<epsilon>/2)" 
