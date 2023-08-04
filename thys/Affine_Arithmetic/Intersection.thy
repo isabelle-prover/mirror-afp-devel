@@ -1915,7 +1915,7 @@ proof safe
   hence "(\<lambda>n. aform_val (f n) X) \<longlonglongrightarrow> aform_val e X"
     by (auto simp: aform_val_def pdevs_val_sum intro!: tendsto_intros)
   ultimately have "aform_val e X \<in> ?cl"
-    by (rule closed_sequentially)
+    by (meson closed_sequentially)
   thus "det3 (fst ?seg) (snd ?seg) (aform_val e X) \<ge> 0"
     by (auto simp: list_all_iff normal_of_segment_def support_of_segment_def det3_def' field_simps
       inner_prod_def)

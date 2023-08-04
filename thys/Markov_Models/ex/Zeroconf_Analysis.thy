@@ -190,8 +190,6 @@ proof (rule enn2real_nn_integral_eq_integral)
     using \<open>s\<in>states\<close> E_closed[of s] by (intro R_less_top) auto
   then show "AE t in \<tau> s. ennreal (\<rho> s t) + R t = ennreal (\<rho> s t + enn2real (R t))"
     by (auto simp: AE_measure_pmf_iff intro!: ennreal_enn2real[symmetric])
-  show "(\<integral>\<^sup>+ t. ennreal (\<rho> s t) + R t \<partial>\<tau> s) < \<top>"
-    unfolding R_iter[symmetric, OF s(2,3)] by (rule R_less_top) fact
 qed auto
 
 lemma cost_from_start:

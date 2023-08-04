@@ -424,8 +424,9 @@ proof
   then have "\<forall>n. (flow0 z \<circ> s) n \<in> \<omega>_limit_set x"
     using \<omega>_limit_set_in_compact_existence[OF zpx] zpx
     using invariant_def trapped_iff_on_existence_ivl0 by fastforce
-  from closed_sequentially[OF \<omega>_limit_set_closed this s]
-  show "w \<in> \<omega>_limit_set x" .
+  from closed_sequentially[OF \<omega>_limit_set_closed] this s
+  show "w \<in> \<omega>_limit_set x"
+    by blast
 qed
 
 end

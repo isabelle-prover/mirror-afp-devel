@@ -75,7 +75,6 @@ lemmas [integrable_on_simps] =
   integrable_on_cmult_iff
   integrable_on_cmult_left
   integrable_on_cmult_right
-  integrable_on_cdivide
   integrable_on_cmult_iff
   integrable_on_cmult_left_iff
   integrable_on_cmult_right_iff

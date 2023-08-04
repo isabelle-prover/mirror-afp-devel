@@ -927,9 +927,8 @@ proof -
     apply (rewrite enn2real_nn_integral_eq_integral
         [where f="\<lambda>x. ennreal (indicator A x * f x)", THEN sym]; (simp add: assms)?)
     using distributed_emeasure assms
-     apply (smt (verit) emeasure_finite indicator_mult_ennreal mult.commute
+    by (smt (verit) emeasure_finite indicator_mult_ennreal mult.commute
         nn_integral_cong top.not_eq_extremum)
-    by (rewrite nn_integral_set_ennreal, rewrite mult.commute) simp
   ultimately show ?thesis using measure_def by metis
 qed
 
@@ -2528,7 +2527,7 @@ next
     hence "\<And>dt. LBINT s:{t..t+dt}. f s = integral {t..t+dt} f"
       apply (intro set_borel_integral_eq_integral)
       unfolding set_integrable_def
-      apply (rule integrableI_real_bounded; simp)
+      apply (rule integrableI_nonneg; simp)
       by (rule AE_I2, simp add: assms)
     moreover have "((\<lambda>dt. (integral {t..t+dt} f) / dt) \<longlongrightarrow> f t) (at_right 0)"
     proof -

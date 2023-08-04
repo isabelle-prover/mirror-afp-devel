@@ -266,8 +266,7 @@ proof-
   have i: "(t \<inter> s) \<union> (s - (t \<inter> s)) = ( s)"
     using assms by auto
   then have "x islimpt s - (t \<inter> s) = x islimpt s"
-    using islimpt_Un_finite[OF ii,where ?t = "s - (t \<inter> s)"] i assms(1)
-    by force
+    by (metis ii islimpt_Un_finite)
   then show ?thesis using iii by auto
 qed
 
@@ -280,8 +279,7 @@ proof-
     have i: "finite {a,b}" and ii:  "{a, b} \<union> {a<..<b} = {a..b}" using assms by auto
     assume "x \<in>{a,b}"
     then show ?thesis
-      using islimpt_Un_finite[OF i, where ?t= "{a<..<b}"]
-      by (metis assms(2) empty_iff ii insert_iff islimpt_greaterThanLessThan1 islimpt_greaterThanLessThan2)
+      by (meson DiffE assms(2) assms(3) islimpt_Icc)
   next
     assume "x \<notin>{a,b}"
     then show "x islimpt {a..b}" using assms by auto
