@@ -21,7 +21,7 @@ lemmas string_literal_opt = Literal.rep_eq zero_literal.rep_eq plus_literal.rep_
 
 named_theorems solidity_symbex
 method solidity_symbex declares solidity_symbex =
-   ((simp add:solidity_symbex cong:unit.case), (simp add:string_literal_opt)?; (code_simp,simp?)+)
+   ((simp add:solidity_symbex cong:unit.case), (simp add:string_literal_opt)?; (code_simp|simp add:string_literal_opt)+)
 
 declare Let_def [solidity_symbex]
         o_def [solidity_symbex]

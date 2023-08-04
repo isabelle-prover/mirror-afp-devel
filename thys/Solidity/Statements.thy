@@ -2635,15 +2635,11 @@ abbreviation mymemory2::MemoryT
       [(STR ''3.2'', MPointer STR ''5'')],
      toploc = 1\<rparr>"
 
-(*
-  FIXME
-
 lemma "msel True (MTArray 5 (MTArray 6 (MTValue TBool))) (STR ''2'') [UINT 8 3] eempty emptyStore (mystate\<lparr>gas:=1\<rparr>) 1
-= Normal ((STR ''3.2'', MTArray 6 (MTValue TBool)), 1)" by Solidity_Symbex.solidity_symbex
+= Normal ((STR ''3.2'', MTArray 6 (MTValue TBool)), 1)"  by Solidity_Symbex.solidity_symbex
 
 lemma "msel True (MTArray 5 (MTArray 6 (MTValue TBool))) (STR ''2'') [UINT 8 3, UINT 8 4] eempty emptyStore (mystate\<lparr>gas:=1,memory:=mymemory2\<rparr>) 1
-= Normal ((STR ''4.5'', MTValue TBool), 2)" by Solidity_Symbex.solidity_symbex
-*)
+= Normal ((STR ''4.5'', MTValue TBool), 1)" by Solidity_Symbex.solidity_symbex
 
 lemma "msel True (MTArray 5 (MTArray 6 (MTValue TBool))) (STR ''2'') [UINT 8 5] eempty emptyStore (mystate\<lparr>gas:=1,memory:=mymemory2\<rparr>) 1
 = Exception (Err)" by Solidity_Symbex.solidity_symbex
