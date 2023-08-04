@@ -91,8 +91,9 @@ proof -
       proof cases
         assume "l = u"
         have "\<forall>n. x n \<in> ?N" using that(1) by force
-        from closed_sequentially[OF \<open>closed ?N\<close> this \<open>x \<longlonglongrightarrow> l\<close>]
-        show ?thesis by (auto simp: \<open>l = u\<close>)
+        from closed_sequentially[OF \<open>closed ?N\<close>] this \<open>x \<longlonglongrightarrow> l\<close>
+        show ?thesis
+          using \<open>l = u\<close> by blast
       next
         assume "l \<noteq> u" with that have "l < u" by auto
         from order_tendstoD(2)[OF \<open>x \<longlonglongrightarrow> l\<close> \<open>l < u\<close>] obtain n where "x n < u"
@@ -952,7 +953,7 @@ proof cases
     have flow_t: "(\<lambda>n. flow0 x (t n)) \<longlonglongrightarrow> flow0 x tl"
       by (auto intro!: tendsto_eq_intros tl_ex tl)
     ultimately have "flow0 x tl \<in> ?S"
-      by (rule closed_sequentially)
+      by (metis (no_types, lifting) closed_sequentially)
 
     let ?qt = "\<lambda>t. (flow0 x t - flow0 x tl) /\<^sub>R (t - tl)"
     from flow_has_vector_derivative[OF tl_ex, THEN has_vector_derivative_withinD]

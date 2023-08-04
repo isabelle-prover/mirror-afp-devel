@@ -1776,7 +1776,7 @@ qed
 
 lemma pdfTx_set_integrable: "set_integrable lborel A (pdfT x)" if "A \<in> sets lborel"
   unfolding set_integrable_def
-  using that pdfTx_nonneg apply (intro integrableI_real_bounded, simp_all)
+  using that pdfTx_nonneg apply (intro integrableI_nonneg, simp_all)
   apply (rewrite mult.commute)
   using set_nn_integral_pdfTx_PTx that
   by (metis (no_types, lifting) ennreal_indicator ennreal_less_top ennreal_mult' nn_integral_cong)
