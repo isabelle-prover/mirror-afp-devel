@@ -39,14 +39,14 @@ lemmas array_abs = match_array array_list_of_set array_get
 lemma Gale_Shapley7:
 assumes "R = map ranking Q"
 shows
-"VARS A B M ai a a' b r
- [ai = 0 \<and> A = array 0 n \<and> B = array 0 n \<and> M = array False n]
+"VARS A B N ai a a' b r
+ [ai = 0 \<and> A = array 0 n \<and> B = array 0 n \<and> N = array False n]
  WHILE ai < n
- INV { invar1 (list A) (list B) (list M) ai }
+ INV { invar1 (list A) (list B) (list N) ai }
  VAR {z = n - ai}
  DO a := ai; b := match_array A a;
-  WHILE M !! b
-  INV { invar2 (list A) (list B) (list M) ai a \<and> b = match_array A a \<and> z = n-ai }
+  WHILE N !! b
+  INV { invar2 (list A) (list B) (list N) ai a \<and> b = match_array A a \<and> z = n-ai }
   VAR {var (list A) {<ai}}
   DO a' := B !! b; r := R ! match_array A a';
      IF r ! a < r ! a'
@@ -55,7 +55,7 @@ shows
      FI;
      b := match_array A a
   OD;
-  B := B[b ::= a]; M := M[b ::= True]; ai := ai+1
+  B := B[b ::= a]; N := N[b ::= True]; ai := ai+1
  OD
  [matching (list A) {<n} \<and> stable (list A) {<n} \<and> opti\<^sub>a (list A)]"
 proof (vcg_tc, goal_cases)
@@ -91,14 +91,14 @@ subsection \<open>Algorithm 7.1: single-loop variant\<close>
 
 lemma Gale_Shapley7_1:
 assumes "R = map ranking Q"
-shows "VARS A B M a a' ai b r
- [ai = 0 \<and> a = 0 \<and> A = array 0 n \<and> B = array 0 n \<and> M = array False n]
+shows "VARS A B N a a' ai b r
+ [ai = 0 \<and> a = 0 \<and> A = array 0 n \<and> B = array 0 n \<and> N = array False n]
  WHILE ai < n
- INV { invar2' (list A) (list B) (list M) ai a }
+ INV { invar2' (list A) (list B) (list N) ai a }
  VAR {var (list A) ({<ai+1} - {a})}
  DO b := match_array A a;
-  IF \<not> M !! b
-  THEN B := B[b ::= a]; M := M[b ::= True]; ai := ai + 1; a := ai
+  IF \<not> N !! b
+  THEN B := B[b ::= a]; N := N[b ::= True]; ai := ai + 1; a := ai
   ELSE a' := B !! b; r := R ! match_array A a';
        IF r ! a < r ! a'
        THEN B := B[b ::= a]; A := A[a' ::= A!!a' + 1]; a := a'
@@ -113,14 +113,14 @@ proof (vcg_tc, goal_cases)
 next
   case 3 thus ?case using pref_match_stable atLeast0_lessThan_Suc[of n] by force
 next
-  case (2 v A B M a a' ai)
-  have R': "M !! match_array A a \<Longrightarrow>
+  case (2 v A B N a a' ai)
+  have R': "N !! match_array A a \<Longrightarrow>
     (R ! match_array A (B !! match_array A a) ! a < R ! match_array A (B !! match_array A a) ! (B !! match_array A a)) =
      (Q ! match_array A (B !! match_array A a) \<turnstile> a < B !! match_array A a)"
     using R_iff_P 2 assms by (metis array_abs)
   show ?case
     apply(simp only:mem_Collect_eq prod.case)
-    using 2 R' pres2'[of "list A" "list B" "list M" ai a] by (metis array_abs)
+    using 2 R' pres2'[of "list A" "list B" "list N" ai a] by (metis array_abs)
 qed
 
 end
@@ -129,8 +129,8 @@ end
 subsection \<open>Executable functional Code\<close>
 
 definition gs_inner where
-"gs_inner P R M =
-  while (\<lambda>(A,B,a,b). M !! b)
+"gs_inner P R N =
+  while (\<lambda>(A,B,a,b). N !! b)
     (\<lambda>(A,B,a,b).
       let a' = B !! b;
           r = R !! (P !! a' !! (A !! a')) in
@@ -143,26 +143,26 @@ definition gs_inner where
 definition gs :: "nat \<Rightarrow> nat array array \<Rightarrow> nat array array
   \<Rightarrow> nat array \<times> nat array \<times> bool array \<times> nat" where
 "gs n P R =
-  while (\<lambda>(A,B,M,ai). ai < n)
-   (\<lambda>(A,B,M,ai).
-     let (A,B,a,b) = gs_inner P R M (A, B, ai, P !! ai !! (A !! ai))
-     in (A, B[b ::= a], M[b::=True], ai+1))
+  while (\<lambda>(A,B,N,ai). ai < n)
+   (\<lambda>(A,B,N,ai).
+     let (A,B,a,b) = gs_inner P R N (A, B, ai, P !! ai !! (A !! ai))
+     in (A, B[b ::= a], N[b::=True], ai+1))
   (array 0 n, array 0 n, array False n, 0)"
 
 
 definition gs1 :: "nat \<Rightarrow> nat array array \<Rightarrow> nat array array
   \<Rightarrow> nat array \<times> nat array \<times> bool array \<times> nat \<times> nat"  where
 "gs1 n P R =
-  while (\<lambda>(A,B,M,ai,a). ai < n)
-   (\<lambda>(A,B,M,ai,a).
+  while (\<lambda>(A,B,N,ai,a). ai < n)
+   (\<lambda>(A,B,N,ai,a).
      let b = P !! a !! (A !! a)
-     in if \<not> M !! b
-        then (A, B[b ::= a], M[b ::= True], ai+1, ai+1)
+     in if \<not> N !! b
+        then (A, B[b ::= a], N[b ::= True], ai+1, ai+1)
         else let a' = B !! b;
                  r = R !! (P !! a' !! (A !! a'))
              in if r !!  a < r !! a'
-                then (A[a' ::= A!!a' + 1], B[b ::= a], M, ai, a')
-                else (A[a ::= A!!a + 1], B, M, ai, a))
+                then (A[a' ::= A!!a' + 1], B[b ::= a], N, ai, a')
+                else (A[a ::= A!!a + 1], B, N, ai, a))
   (array 0 n, array 0 n, array False n, 0, 0)"
 
 
@@ -212,12 +212,12 @@ begin
 
 lemma gs_inner:
 assumes "R = rank_array Q"
-assumes "invar2 (list A) (list B) (list M) ai a" "b = match_array A a"
-shows "gs_inner (pref_array P) R M (A, B, a, b) = (A',B',a',b')
-  \<longrightarrow> invar1 (list A') ((list B')[b' := a']) ((list M)[b' := True]) (ai+1)"
+assumes "invar2 (list A) (list B) (list N) ai a" "b = match_array A a"
+shows "gs_inner (pref_array P) R N (A, B, a, b) = (A',B',a',b')
+  \<longrightarrow> invar1 (list A') ((list B')[b' := a']) ((list N)[b' := True]) (ai+1)"
 unfolding gs_inner_def
 proof(rule while_rule2[where
-     P = "\<lambda>(A,B,a,b). invar2 (list A) (list B) (list M) ai a \<and> b = match_array A a"
+     P = "\<lambda>(A,B,a,b). invar2 (list A) (list B) (list N) ai a \<and> b = match_array A a"
  and r = "measure (\<lambda>(A, B, a, b). Pref.var0 P (list A) {<n})"], goal_cases)
   case 1
   show ?case using assms unfolding var_def by simp
@@ -241,13 +241,13 @@ next
       using ** by(simp add: \<open>R = _\<close> rank_array_def match_array match_less_n length_Q)
     show ?case
     using inv apply(simp only: s prod.case Let_def split: if_split)
-    using inner_pres[OF R _ _ refl refl refl refl refl, of "list A" "list B" "list M" ai a b]
+    using inner_pres[OF R _ _ refl refl refl refl refl, of "list A" "list B" "list N" ai a b]
     unfolding invar2_def array_abs
       list_list_pref_array[OF **[unfolded n_def]] list_list_pref_array[OF *[unfolded n_def]] nth_map[OF ***]
     unfolding match_def by presburger
     case 2 show ?case
     using inv apply(simp only: s prod.case Let_def in_measure split: if_split)
-    using inner_pres2[OF R _ _ refl refl refl refl refl, of "list A" "list B" "list M" ai a b]
+    using inner_pres2[OF R _ _ refl refl refl refl refl, of "list A" "list B" "list N" ai a b]
     unfolding invar2_def array_abs
       list_list_pref_array[OF **[unfolded n_def]] list_list_pref_array[OF *[unfolded n_def]] nth_map[OF ***]
     unfolding match_def by presburger
@@ -264,17 +264,17 @@ next
 qed
 
 lemma gs: assumes "R = rank_array Q"
-shows "gs n (pref_array P) R = (A,B,M,ai) \<longrightarrow> matching (list A) {<n} \<and> stable (list A) {<n} \<and> opti\<^sub>a (list A)"
+shows "gs n (pref_array P) R = (A,B,N,ai) \<longrightarrow> matching (list A) {<n} \<and> stable (list A) {<n} \<and> opti\<^sub>a (list A)"
 unfolding gs_def
-proof(rule while_rule2[where P = "\<lambda>(A,B,M,ai). invar1 (list A) (list B) (list M) ai"
-  and r = "measure(\<lambda>(A,B,M,ai). n - ai)"], goal_cases)
+proof(rule while_rule2[where P = "\<lambda>(A,B,N,ai). invar1 (list A) (list B) (list N) ai"
+  and r = "measure(\<lambda>(A,B,N,ai). n - ai)"], goal_cases)
   case 1 show ?case
    by(auto simp: pref_match_def P_set card_distinct match_def list_array index_nth_id prefers_def opti\<^sub>a_def \<alpha>_def cong: conj_cong)
 next
   case (2 s)
-  obtain A B M ai where s: "s =  (A, B, M, ai)"
+  obtain A B N ai where s: "s =  (A, B, N, ai)"
     using prod_cases4 by blast
-  have 1: "invar2 (list A) (list B) (list M) ai ai" using 2 s
+  have 1: "invar2 (list A) (list B) (list N) ai ai" using 2 s
     by (auto simp: atLeastLessThanSuc_atLeastAtMost simp flip: atLeastLessThan_eq_atLeastAtMost_diff)
   hence "ai < n" by(simp)
   show ?case using 2 s gs_inner[OF \<open>R = _ \<close> 1]
@@ -290,7 +290,7 @@ qed
 
 
 lemma R_iff_P:
-assumes "R = rank_array Q" "invar2' A B M ai a" "ai < n" "M ! match A a"
+assumes "R = rank_array Q" "invar2' A B N ai a" "ai < n" "N ! match A a"
   "b = match A a" "a' = B ! b"
 shows "(list (list R ! match A a') ! a < list (list R ! match A a') ! a')
        = (Q ! match A a' \<turnstile> a < a')"
@@ -298,35 +298,35 @@ proof -
   have R: "\<forall>b<n. \<forall>a1<n. \<forall>a2<n. R !! b !! a1 < R !! b !! a2 \<longleftrightarrow> Q ! b \<turnstile> a1 < a2"
     by (simp add: Q_set \<open>R = _\<close> length_Q array_of_list_def rank_array_def rank_array1_iff_pref)
   let ?M = "{<ai+1} - {a}"
-  have A: "wf A" and M: "?M \<subseteq> {<n}" and as: "a < n" and invAB: "invAB2 A B M ?M"
+  have A: "wf A" and M: "?M \<subseteq> {<n}" and as: "a < n" and invAB: "invAB2 A B N ?M"
       using assms(2,3) by auto
   have a': "B ! match A a \<in> ?M"
-    using invAB match_less_n[OF A] as \<open>M!match A a\<close> by (metis \<alpha>_Some ranI)
+    using invAB match_less_n[OF A] as \<open>N!match A a\<close> by (metis \<alpha>_Some ranI)
   hence "B ! match A a < n" using M by auto
   thus ?thesis using assms match_less_n R by simp (metis array_get as)
 qed
 
 
 lemma gs1: assumes "R = rank_array Q"
-shows "gs1 n (pref_array P) R = (A,B,M,ai,a) \<longrightarrow> matching (list A) {<n} \<and> stable (list A) {<n} \<and> opti\<^sub>a (list A)"
+shows "gs1 n (pref_array P) R = (A,B,N,ai,a) \<longrightarrow> matching (list A) {<n} \<and> stable (list A) {<n} \<and> opti\<^sub>a (list A)"
 unfolding gs1_def
-proof(rule while_rule2[where P = "\<lambda>(A,B,M,ai,a). invar2' (list A) (list B) (list M) ai a"
-  and r = "measure(\<lambda>(A,B,M,ai,a). Pref.var P (list A) ({<ai+1} - {a}))"], goal_cases)
+proof(rule while_rule2[where P = "\<lambda>(A,B,N,ai,a). invar2' (list A) (list B) (list N) ai a"
+  and r = "measure(\<lambda>(A,B,N,ai,a). Pref.var P (list A) ({<ai+1} - {a}))"], goal_cases)
   case 1 show ?case
    by(auto simp: pref_match_def P_set card_distinct match_def list_array index_nth_id prefers_def opti\<^sub>a_def \<alpha>_def cong: conj_cong)
 next
   case (2 s)
-  obtain A B M ai a where s: "s =  (A, B, M, ai, a)"
+  obtain A B N ai a where s: "s =  (A, B, N, ai, a)"
     using prod_cases5 by blast
-  have 1: "invar2' (list A) (list B) (list M) ai a" using 2(1) s
+  have 1: "invar2' (list A) (list B) (list N) ai a" using 2(1) s
     by (auto simp: atLeastLessThanSuc_atLeastAtMost simp flip: atLeastLessThan_eq_atLeastAtMost_diff)
   have "ai < n" using 2(2) s by(simp)
   hence "a < n" using 1 by simp
   hence "match (list A) a < n" using 1 match_less_n by auto
-  hence *: "list M ! match (list A) a \<Longrightarrow> list B ! match (list A) a < n"
+  hence *: "list N ! match (list A) a \<Longrightarrow> list B ! match (list A) a < n"
     using s 1[unfolded invar2'_def] apply (simp add: array_abs ran_def)
     using atLeast0LessThan by blast
-  have R': "list M ! match (list A) a \<Longrightarrow>
+  have R': "list N ! match (list A) a \<Longrightarrow>
     (list (list R ! match (list A) (list B ! match (list A) a)) ! a
      < list (list R ! match (list A) (list B ! match (list A) a)) ! (list B ! match (list A) a)) =
      (Q ! match (list A) (list B ! match (list A) a) \<turnstile> a < list B ! match (list A) a)"
