@@ -2,7 +2,7 @@ section\<open>Reentrancy\<close>
 
 text \<open>
   In the following we use our calculus to verify a contract implementing a simple token.
-  The contract is defined by definition[solidity_symbex]:*bank* and consist of one state variable and two methods:
+  The contract is defined by definition *bank* and consist of one state variable and two methods:
   \<^item> The state variable "balance" is a mapping which assigns a balance to each address.
   \<^item> Method "deposit" allows to send money to the contract which is then added to the sender's balance.
   \<^item> Method "withdraw" allows to withdraw the callers balance.

@@ -532,7 +532,7 @@ proof -
   then show ?thesis using ffold_init_fmap[OF assms] by simp
 qed
 
-text\<open>The following definition[solidity_symbex]:allows for a more fine-grained configuration of the 
+text\<open>The following definition allows for a more fine-grained configuration of the 
      code generator.
 \<close>
 definition ffold_init::"(String.literal, Member) fmap \<Rightarrow> Environment \<Rightarrow> String.literal fset \<Rightarrow> Environment" where
