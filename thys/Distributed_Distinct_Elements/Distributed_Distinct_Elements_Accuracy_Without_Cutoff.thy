@@ -301,7 +301,7 @@ proof -
     by (subst pair_pmf_prob_left)
 qed
 
-definition E\<^sub>2 where "E\<^sub>2 = (\<lambda>(f,g,h). \<bar>card (R f) - X / 2^(s f)\<bar> \<le> \<delta>/3 * X / 2^(s f))"
+definition E\<^sub>2 where "E\<^sub>2 = (\<lambda>(f,g,h). \<bar>card (R f) - X / 2^(s f)\<bar> \<le> \<epsilon>/3 * X / 2^(s f))"
 
 lemma e_2: "measure \<Psi> {\<psi>. E\<^sub>1 \<psi> \<and> \<not>E\<^sub>2 \<psi>} \<le> 1/2^6" (is "?L \<le> ?R")
 proof -
@@ -380,41 +380,41 @@ proof -
   have r_var: "measure_pmf.variance \<Psi>\<^sub>1 (\<lambda>\<omega>. real (r t \<omega>)) \<le> real X / 2^t" if "t \<in> T" for t
     using r_exp[OF that] r_var by metis
 
-  have "9 = C\<^sub>4 / \<delta>\<^sup>2 * \<delta>^2/2^23"
-    using \<delta>_gt_0 by (simp add:C\<^sub>4_def)
-  also have "... = 2 powr (log 2 (C\<^sub>4 /  \<delta>\<^sup>2)) *  \<delta>^2/2^23"
-    using \<delta>_gt_0 C\<^sub>4_def by (subst powr_log_cancel) auto
-  also have "... \<le> 2 powr b_exp * \<delta>^2/2^23"
+  have "9 = C\<^sub>4 / \<epsilon>\<^sup>2 * \<epsilon>^2/2^23"
+    using \<epsilon>_gt_0 by (simp add:C\<^sub>4_def)
+  also have "... = 2 powr (log 2 (C\<^sub>4 /  \<epsilon>\<^sup>2)) *  \<epsilon>^2/2^23"
+    using \<epsilon>_gt_0 C\<^sub>4_def by (subst powr_log_cancel) auto
+  also have "... \<le> 2 powr b_exp * \<epsilon>^2/2^23"
     unfolding b_exp_def
     by (intro divide_right_mono mult_right_mono powr_mono, linarith) auto
-  also have "... = b * \<delta>^2/2^23"
+  also have "... = b * \<epsilon>^2/2^23"
     using powr_realpow unfolding b_def by simp
-  also have "... = (b/2^16) * (\<delta>^2/2^7)"
+  also have "... = (b/2^16) * (\<epsilon>^2/2^7)"
     by simp
-  also have "... \<le> (X * 2 powr (-t\<^sub>m)) * (\<delta>^2/2^7)"
+  also have "... \<le> (X * 2 powr (-t\<^sub>m)) * (\<epsilon>^2/2^7)"
     by (intro mult_mono c) auto
-  also have "... = X * (2 powr (-t\<^sub>m) * 2 powr (-7)) * \<delta>^2"
+  also have "... = X * (2 powr (-t\<^sub>m) * 2 powr (-7)) * \<epsilon>^2"
     using powr_realpow by simp
-  also have "... = 2 powr (-t\<^sub>m-7) * (\<delta>^2 * X)"
+  also have "... = 2 powr (-t\<^sub>m-7) * (\<epsilon>^2 * X)"
     by (subst powr_add[symmetric]) (simp )
-  finally have "9 \<le> 2 powr (-t\<^sub>m-7) * (\<delta>^2 * X)" by simp
-  hence b: "9/ (\<delta>^2 * X) \<le> 2 powr (-t\<^sub>m -7)"
-    using \<delta>_gt_0 X_ge_1
+  finally have "9 \<le> 2 powr (-t\<^sub>m-7) * (\<epsilon>^2 * X)" by simp
+  hence b: "9/ (\<epsilon>^2 * X) \<le> 2 powr (-t\<^sub>m -7)"
+    using \<epsilon>_gt_0 X_ge_1
     by (subst pos_divide_le_eq) auto
 
-  have a: "measure \<Psi>\<^sub>1 {f.\<bar>real (r t f)-real X/2^t\<bar>> \<delta>/3 *real X/2^t} \<le> 2 powr (real t-t\<^sub>m-7)"
+  have a: "measure \<Psi>\<^sub>1 {f.\<bar>real (r t f)-real X/2^t\<bar>> \<epsilon>/3 *real X/2^t} \<le> 2 powr (real t-t\<^sub>m-7)"
     (is"?L1 \<le> ?R1") if "t \<in> T" for t
   proof -
-    have "?L1 \<le> \<P>(f in \<Psi>\<^sub>1. \<bar>real (r t f) - real X / 2^t\<bar> \<ge>  \<delta>/3 * real X / 2^t)"
+    have "?L1 \<le> \<P>(f in \<Psi>\<^sub>1. \<bar>real (r t f) - real X / 2^t\<bar> \<ge>  \<epsilon>/3 * real X / 2^t)"
       by (intro pmf_mono) auto
-    also have "... = \<P>(f in \<Psi>\<^sub>1. \<bar>real (r t f)-(\<integral>\<omega>. real (r t \<omega>) \<partial> \<Psi>\<^sub>1)\<bar> \<ge> \<delta>/3 * real X/2^t)"
+    also have "... = \<P>(f in \<Psi>\<^sub>1. \<bar>real (r t f)-(\<integral>\<omega>. real (r t \<omega>) \<partial> \<Psi>\<^sub>1)\<bar> \<ge> \<epsilon>/3 * real X/2^t)"
       by (simp add: r_exp[OF that])
-    also have "... \<le> measure_pmf.variance \<Psi>\<^sub>1 (\<lambda>\<omega>. real (r t \<omega>)) / (\<delta>/3 * real X / 2^t)^2"
-      using X_ge_1 \<delta>_gt_0 \<Psi>\<^sub>1.sample_space
+    also have "... \<le> measure_pmf.variance \<Psi>\<^sub>1 (\<lambda>\<omega>. real (r t \<omega>)) / (\<epsilon>/3 * real X / 2^t)^2"
+      using X_ge_1 \<epsilon>_gt_0 \<Psi>\<^sub>1.sample_space
       by (intro measure_pmf.Chebyshev_inequality divide_pos_pos mult_pos_pos) auto
-    also have "... \<le> (X / 2^t) / (\<delta>/3 * X / 2^t)^2"
+    also have "... \<le> (X / 2^t) / (\<epsilon>/3 * X / 2^t)^2"
       by (intro divide_right_mono r_var[OF that]) simp
-    also have "... = 2^t*(9/ ( \<delta>^2 * X))"
+    also have "... = 2^t*(9/ ( \<epsilon>^2 * X))"
       by (simp add:power2_eq_square algebra_simps)
     also have "... \<le> 2^t*(2 powr (-t\<^sub>m-7))"
       by (intro mult_left_mono b) simp
@@ -430,19 +430,19 @@ proof -
   hence T_reindex: "(-) (nat t\<^sub>m) ` {x. x < nat (t\<^sub>m + 1)} = {..<nat (t\<^sub>m + 1)}"
     by (auto simp add: set_eq_iff image_iff)
 
-  have "?L \<le> measure \<Psi> {\<psi>. (\<exists>t \<in> T. \<bar>real (r t (fst \<psi>))-real X/2^t\<bar> > \<delta>/3 * real X / 2^t)}"
+  have "?L \<le> measure \<Psi> {\<psi>. (\<exists>t \<in> T. \<bar>real (r t (fst \<psi>))-real X/2^t\<bar> > \<epsilon>/3 * real X / 2^t)}"
   proof (rule pmf_mono)
     fix \<psi>
     assume "\<psi> \<in> set_pmf (sample_pmf \<Psi>)"
     obtain f g h where \<psi>_def: "\<psi> = (f,g,h)" by (metis prod_cases3)
     assume "\<psi> \<in> {\<psi>. E\<^sub>1 \<psi> \<and> \<not> E\<^sub>2 \<psi>}"
     hence a:"2 powr ( -real_of_int (t f)) * real X \<in> {real b/2^16..real b/2}" and
-      b:"\<bar>card (R f) - real X / 2^(s f)\<bar> >  \<delta>/3 * X / 2^(s f)"
+      b:"\<bar>card (R f) - real X / 2^(s f)\<bar> >  \<epsilon>/3 * X / 2^(s f)"
       unfolding E\<^sub>1_def E\<^sub>2_def by (auto simp add:\<psi>_def)
     have "\<bar>card (R f) - X / 2^(s f)\<bar> = 0" if "s f= 0"
       using that by (simp add:R_def X_def)
-    moreover have "( \<delta>/3) * (X / 2^s f) \<ge> 0"
-      using \<delta>_gt_0 X_ge_1 by (intro mult_nonneg_nonneg) auto
+    moreover have "( \<epsilon>/3) * (X / 2^s f) \<ge> 0"
+      using \<epsilon>_gt_0 X_ge_1 by (intro mult_nonneg_nonneg) auto
     ultimately have "False" if "s f = 0"
       using b that by simp
     hence "s f > 0" by auto
@@ -454,17 +454,17 @@ proof -
     hence "real X / 2 ^ (s f) \<ge> b / 2^16"
       by (subst (asm) powr_realpow, auto)
     hence "s f \<in> T" unfolding T_def by simp
-    moreover have "\<bar>r (s f) f - X / 2^s f\<bar> >  \<delta>/3 * X / 2^s f"
+    moreover have "\<bar>r (s f) f - X / 2^s f\<bar> >  \<epsilon>/3 * X / 2^s f"
       using R_def r_def b by simp
-    ultimately have "\<exists>t \<in> T. \<bar>r t (fst \<psi>) - X / 2^t\<bar> >  \<delta>/3 * X / 2^t"
+    ultimately have "\<exists>t \<in> T. \<bar>r t (fst \<psi>) - X / 2^t\<bar> >  \<epsilon>/3 * X / 2^t"
       using \<psi>_def by (intro bexI[where x="s f"]) simp
-    thus "\<psi> \<in> {\<psi>. (\<exists>t \<in> T. \<bar>r t (fst \<psi>) - X / 2^t\<bar> >  \<delta>/3 * X / 2^t)}" by simp
+    thus "\<psi> \<in> {\<psi>. (\<exists>t \<in> T. \<bar>r t (fst \<psi>) - X / 2^t\<bar> >  \<epsilon>/3 * X / 2^t)}" by simp
   qed
-  also have "... = measure \<Psi>\<^sub>1 {f. (\<exists>t \<in> T. \<bar>real (r t f)-real X / 2^t\<bar> > \<delta>/3 * real X/2^t)}"
+  also have "... = measure \<Psi>\<^sub>1 {f. (\<exists>t \<in> T. \<bar>real (r t f)-real X / 2^t\<bar> > \<epsilon>/3 * real X/2^t)}"
     unfolding sample_pmf_\<Psi> by (intro pair_pmf_prob_left)
-  also have "... = measure \<Psi>\<^sub>1 (\<Union>t \<in> T. {f. \<bar>real (r t f)-real X / 2^t\<bar> > \<delta>/3 * real X/2^t})"
+  also have "... = measure \<Psi>\<^sub>1 (\<Union>t \<in> T. {f. \<bar>real (r t f)-real X / 2^t\<bar> > \<epsilon>/3 * real X/2^t})"
     by (intro measure_pmf_cong) auto
-  also have "... \<le> (\<Sum>t \<in> T. measure \<Psi>\<^sub>1 {f.\<bar>real (r t f)-real X / 2^t\<bar> > \<delta>/3 * real X/2^t})"
+  also have "... \<le> (\<Sum>t \<in> T. measure \<Psi>\<^sub>1 {f.\<bar>real (r t f)-real X / 2^t\<bar> > \<epsilon>/3 * real X/2^t})"
     by (intro measure_UNION_le fin_T) (simp)
   also have "... \<le> (\<Sum>t \<in> T.  2 powr (real t - of_int t\<^sub>m - 7))"
     by (intro sum_mono a)
@@ -498,10 +498,10 @@ lemma R_bound:
   assumes "E\<^sub>2 (f,g,h)"
   shows "card (R f) \<le> 2/3 * b"
 proof -
-  have "real (card (R f)) \<le> ( \<delta> / 3) * (real X / 2 ^ s f) + real X / 2 ^ s f"
+  have "real (card (R f)) \<le> ( \<epsilon> / 3) * (real X / 2 ^ s f) + real X / 2 ^ s f"
     using assms(2) unfolding E\<^sub>2_def by simp
   also have "... \<le> (1/3) * (real X / 2 ^ s f) + real X / 2 ^ s f"
-    using \<delta>_lt_1 by (intro add_mono mult_right_mono) auto
+    using \<epsilon>_lt_1 by (intro add_mono mult_right_mono) auto
   also have "... = (4/3) * (real X / 2 powr s f)"
     using powr_realpow by simp
   also have "... \<le> (4/3) * (real X / 2 powr t f)"
@@ -638,18 +638,18 @@ proof -
   finally show ?thesis by simp
 qed
 
-definition E\<^sub>4 where "E\<^sub>4 = (\<lambda>(f,g,h). \<bar>p (f,g,h) - \<rho> (card (R f))\<bar> \<le>  \<delta>/12 * card (R f))"
+definition E\<^sub>4 where "E\<^sub>4 = (\<lambda>(f,g,h). \<bar>p (f,g,h) - \<rho> (card (R f))\<bar> \<le>  \<epsilon>/12 * card (R f))"
 
-lemma e_4_h: "9 / sqrt b \<le> \<delta> / 12"
+lemma e_4_h: "9 / sqrt b \<le> \<epsilon> / 12"
 proof -
   have "108 \<le> sqrt (C\<^sub>4)"
     unfolding C\<^sub>4_def by (approximation 5)
-  also have "... \<le> sqrt( \<delta>^2 * real b)"
-    using b_lower_bound \<delta>_gt_0
+  also have "... \<le> sqrt( \<epsilon>^2 * real b)"
+    using b_lower_bound \<epsilon>_gt_0
     by (intro real_sqrt_le_mono) (simp add: pos_divide_le_eq algebra_simps)
-  also have "... =  \<delta> * sqrt b"
-    using \<delta>_gt_0 by (simp add:real_sqrt_mult)
-  finally have "108 \<le>  \<delta> * sqrt b"  by simp
+  also have "... =  \<epsilon> * sqrt b"
+    using \<epsilon>_gt_0 by (simp add:real_sqrt_mult)
+  finally have "108 \<le>  \<epsilon> * sqrt b"  by simp
   thus ?thesis
     using b_min by (simp add:pos_divide_le_eq)
 qed
@@ -698,7 +698,7 @@ proof -
     have "?L1 \<le> measure \<Psi>\<^sub>3 {h. \<bar>B.Y h - B.\<mu>\<bar> > 9 * real (card (g ` R f)) / sqrt (card {..<b})}"
     proof (rule pmf_mono)
       fix h assume "h \<in> {h. E\<^sub>1 (f,g,h) \<and> E\<^sub>2 (f,g,h) \<and> E\<^sub>3 (f,g,h) \<and> \<not>E\<^sub>4 (f,g,h)}"
-      hence b: "\<bar>p (f,g,h) -\<rho> (card (R f))\<bar> >  \<delta>/12 * card (R f)"
+      hence b: "\<bar>p (f,g,h) -\<rho> (card (R f))\<bar> >  \<epsilon>/12 * card (R f)"
         unfolding E\<^sub>4_def by simp
       assume "h \<in> set_pmf (sample_pmf \<Psi>\<^sub>3)"
       hence h_range: "h x < b" for x
@@ -721,7 +721,7 @@ proof -
         by simp
       have "9 * real (card (g ` R f)) / sqrt (card {..<b}) = 9/ sqrt b * real (card (R f))"
         using card_image[OF g_inj] by simp
-      also have "... \<le>  \<delta>/12 * card (R f)"
+      also have "... \<le>  \<epsilon>/12 * card (R f)"
         by (intro mult_right_mono e_4_h) simp
       also have "... < \<bar>B.Y h - B.\<mu>\<bar>"
         using b c unfolding B.Y_def p_def b_mu by simp
@@ -875,7 +875,7 @@ proof -
 qed
 
 lemma accuracy_without_cutoff:
-  "measure \<Psi> {(f,g,h). \<bar>Y (f,g,h) - real X\<bar> > \<delta> * X \<or> s f < q_max} \<le> 1/2^4"
+  "measure \<Psi> {(f,g,h). \<bar>Y (f,g,h) - real X\<bar> > \<epsilon> * X \<or> s f < q_max} \<le> 1/2^4"
   (is "?L \<le> ?R")
 proof -
   have "?L \<le> measure \<Psi> {\<psi>. \<not>E\<^sub>1 \<psi> \<or>  \<not>E\<^sub>2 \<psi> \<or>  \<not>E\<^sub>3 \<psi> \<or>  \<not>E\<^sub>4 \<psi>}"
@@ -889,10 +889,10 @@ proof -
 
     define I :: "real set" where "I = {0..59/90*b}"
 
-    have "p (f,g,h) \<le> \<rho> (card (R f)) + \<delta>/12 * card (R f)"
+    have "p (f,g,h) \<le> \<rho> (card (R f)) + \<epsilon>/12 * card (R f)"
       using assms(4) E\<^sub>4_def unfolding abs_le_iff by simp
     also have "... \<le> \<rho>(2/3*b) + 1/12* (2/3*b)"
-      using \<delta>_lt_1 R_bound[OF assms(1,2)]
+      using \<epsilon>_lt_1 R_bound[OF assms(1,2)]
       by (intro add_mono rho_mono mult_mono) auto
     also have "... \<le> 3/5 * b + 1/18*b"
       by (intro add_mono rho_two_thirds) auto
@@ -933,41 +933,41 @@ proof -
     also have "... \<le> \<bar>p (f,g,h) - \<rho> (card (R f))\<bar> * 4"
       using \<xi>_def(1) I_def
       by (intro mult_left_mono \<rho>_inv'_bound) auto
-    also have "... \<le> ( \<delta>/12 * card (R f)) * 4"
+    also have "... \<le> ( \<epsilon>/12 * card (R f)) * 4"
       using assms(4) E\<^sub>4_def by (intro mult_right_mono) auto
-    also have "... = \<delta>/3 * card (R f)" by simp
-    finally have b: "\<bar>\<rho>_inv(p (f,g,h)) - card (R f)\<bar> \<le> \<delta>/3 * card (R f)"  by simp
+    also have "... = \<epsilon>/3 * card (R f)" by simp
+    finally have b: "\<bar>\<rho>_inv(p (f,g,h)) - card (R f)\<bar> \<le> \<epsilon>/3 * card (R f)"  by simp
 
     have "\<bar>\<rho>_inv(p (f,g,h)) - X / 2 ^ (s f)\<bar> \<le>
       \<bar>\<rho>_inv(p (f,g,h)) - card (R f)\<bar> + \<bar>card (R f) - X / 2 ^ (s f)\<bar>"
       by simp
-    also have "... \<le> \<delta>/3 * card (R f) + \<bar>card (R f) - X / 2 ^ (s f)\<bar>"
+    also have "... \<le> \<epsilon>/3 * card (R f) + \<bar>card (R f) - X / 2 ^ (s f)\<bar>"
       by (intro add_mono b) auto
-    also have "... =  \<delta>/3 * \<bar>X / 2 ^ (s f) + (card (R f) - X / 2 ^ (s f))\<bar> +
+    also have "... =  \<epsilon>/3 * \<bar>X / 2 ^ (s f) + (card (R f) - X / 2 ^ (s f))\<bar> +
       \<bar>card (R f) - X / 2 ^ (s f)\<bar>" by simp
-    also have "... \<le>  \<delta>/3 * (\<bar>X / 2 ^ (s f)\<bar> + \<bar>card (R f) - X / 2 ^ (s f)\<bar>) +
+    also have "... \<le>  \<epsilon>/3 * (\<bar>X / 2 ^ (s f)\<bar> + \<bar>card (R f) - X / 2 ^ (s f)\<bar>) +
       \<bar>card (R f) - X / 2 ^ (s f)\<bar>"
-      using \<delta>_gt_0 by (intro mult_left_mono add_mono abs_triangle_ineq) auto
-    also have "... \<le>  \<delta>/3 * \<bar>X / 2 ^ (s f)\<bar> + (1+  \<delta>/3) * \<bar>card (R f) - X / 2 ^ (s f)\<bar>"
-      using \<delta>_gt_0 \<delta>_lt_1 by (simp add:algebra_simps)
-    also have "... \<le>  \<delta>/3 * \<bar>X / 2 ^ s f\<bar> + (4/3) * ( \<delta> / 3 * real X / 2 ^ s f)"
-      using assms(2) \<delta>_gt_0 \<delta>_lt_1
+      using \<epsilon>_gt_0 by (intro mult_left_mono add_mono abs_triangle_ineq) auto
+    also have "... \<le>  \<epsilon>/3 * \<bar>X / 2 ^ (s f)\<bar> + (1+  \<epsilon>/3) * \<bar>card (R f) - X / 2 ^ (s f)\<bar>"
+      using \<epsilon>_gt_0 \<epsilon>_lt_1 by (simp add:algebra_simps)
+    also have "... \<le>  \<epsilon>/3 * \<bar>X / 2 ^ s f\<bar> + (4/3) * ( \<epsilon> / 3 * real X / 2 ^ s f)"
+      using assms(2) \<epsilon>_gt_0 \<epsilon>_lt_1
       unfolding E\<^sub>2_def by (intro add_mono mult_mono) auto
-    also have "... = (7/9) * \<delta> * real X / 2^s f"
+    also have "... = (7/9) * \<epsilon> * real X / 2^s f"
       using X_ge_1 by (subst abs_of_nonneg) auto
-    also have "... \<le> 1 * \<delta> * real X / 2^s f"
-      using \<delta>_gt_0 by (intro mult_mono divide_right_mono) auto
-    also have "... =  \<delta> * real X / 2^s f" by simp
-    finally have a:"\<bar>\<rho>_inv(p (f,g,h)) - X / 2 ^ (s f)\<bar> \<le> \<delta> * X / 2 ^ (s f)"
+    also have "... \<le> 1 * \<epsilon> * real X / 2^s f"
+      using \<epsilon>_gt_0 by (intro mult_mono divide_right_mono) auto
+    also have "... =  \<epsilon> * real X / 2^s f" by simp
+    finally have a:"\<bar>\<rho>_inv(p (f,g,h)) - X / 2 ^ (s f)\<bar> \<le> \<epsilon> * X / 2 ^ (s f)"
       by simp
 
     have "\<bar>Y (f, g, h) - real X\<bar> = \<bar>2 ^ (s f)\<bar> * \<bar>\<rho>_inv(p (f,g,h)) - real X / 2 ^ (s f)\<bar>"
       unfolding Y_def by (subst abs_mult[symmetric]) (simp add:algebra_simps powr_add[symmetric])
-    also have "... \<le> 2 ^ (s f) * (\<delta> * X / 2 ^ (s f))"
+    also have "... \<le> 2 ^ (s f) * (\<epsilon> * X / 2 ^ (s f))"
       by (intro mult_mono a) auto
-    also have "... = \<delta> * X"
+    also have "... = \<epsilon> * X"
       by (simp add:algebra_simps powr_add[symmetric])
-    finally have "\<bar>Y (f, g, h) - real X\<bar> \<le> \<delta> * X" by simp
+    finally have "\<bar>Y (f, g, h) - real X\<bar> \<le> \<epsilon> * X" by simp
     moreover have "2 powr (\<lceil>log 2 (real X)\<rceil> - t f) \<le> 2 powr b_exp" (is "?L1 \<le> ?R1")
     proof -
       have "?L1 \<le> 2 powr (1 + log 2 (real X)- t f)"
@@ -986,7 +986,7 @@ proof -
     hence "\<lceil>log 2 (real X)\<rceil> - t f \<le> real b_exp"
       unfolding not_less[symmetric] using powr_less_mono[where x="2"] by simp
     hence "s f \<ge> q_max" unfolding s_def q_max_def by (intro nat_mono) auto
-    ultimately show "\<psi> \<notin> {(f, g, h). \<delta> * X < \<bar>Y (f, g, h) - real X\<bar> \<or> s f < q_max}"
+    ultimately show "\<psi> \<notin> {(f, g, h). \<epsilon> * X < \<bar>Y (f, g, h) - real X\<bar> \<or> s f < q_max}"
       unfolding \<psi>_def by auto
   qed
   also have "... \<le>

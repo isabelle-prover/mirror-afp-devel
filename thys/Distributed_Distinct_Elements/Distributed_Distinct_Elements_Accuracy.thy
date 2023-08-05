@@ -127,26 +127,26 @@ lemma Y\<^sub>c_eq_Y:
   shows "Y\<^sub>c (f,g,h) \<sigma> = Y (f,g,h)"
   unfolding Y\<^sub>c_def Y_def s\<^sub>c_eq_s[OF assms] p\<^sub>c_eq_p[OF assms] by simp
 
-lemma accuracy_single: "measure \<Psi> {\<psi>. \<exists>\<sigma> \<le> q_max. \<bar>Y\<^sub>c \<psi> \<sigma> - real X\<bar> > \<delta> * X} \<le> 1/2^4"
+lemma accuracy_single: "measure \<Psi> {\<psi>. \<exists>\<sigma> \<le> q_max. \<bar>Y\<^sub>c \<psi> \<sigma> - real X\<bar> > \<epsilon> * X} \<le> 1/2^4"
   (is "?L \<le> ?R")
 proof -
-  have "measure \<Psi> {\<psi>. \<exists>\<sigma> \<le> q_max. \<bar>Y\<^sub>c \<psi> \<sigma> - real X\<bar> > \<delta> * real X} \<le>
-    measure \<Psi> {(f,g,h). \<bar>Y (f,g,h) - real X\<bar> >  \<delta> * real X \<or> s f < q_max}"
+  have "measure \<Psi> {\<psi>. \<exists>\<sigma> \<le> q_max. \<bar>Y\<^sub>c \<psi> \<sigma> - real X\<bar> > \<epsilon> * real X} \<le>
+    measure \<Psi> {(f,g,h). \<bar>Y (f,g,h) - real X\<bar> >  \<epsilon> * real X \<or> s f < q_max}"
   proof (rule pmf_mono)
     fix \<psi>
-    assume a:"\<psi> \<in> {\<psi>. \<exists>\<sigma>\<le>q_max. \<delta> * real X < \<bar>Y\<^sub>c \<psi> \<sigma> - real X\<bar>}"
+    assume a:"\<psi> \<in> {\<psi>. \<exists>\<sigma>\<le>q_max. \<epsilon> * real X < \<bar>Y\<^sub>c \<psi> \<sigma> - real X\<bar>}"
     assume d:"\<psi> \<in> set_pmf (sample_pmf \<Psi>)"
-    obtain \<sigma> where b:"\<sigma> \<le> q_max" and c:" \<delta> * real X < \<bar>Y\<^sub>c \<psi> \<sigma> - real X\<bar>"
+    obtain \<sigma> where b:"\<sigma> \<le> q_max" and c:" \<epsilon> * real X < \<bar>Y\<^sub>c \<psi> \<sigma> - real X\<bar>"
       using a by auto
     obtain f g h where \<psi>_def: "\<psi> = (f,g,h)" by (metis prod_cases3)
     hence e:"(f,g,h) \<in> sample_set \<Psi>"
       using d unfolding sample_space_alt[OF sample_space_\<Psi>] by simp
 
-    show "\<psi> \<in> {(f, g, h). \<delta> * real X < \<bar>Y (f, g, h) - real X\<bar> \<or> s f < q_max}"
+    show "\<psi> \<in> {(f, g, h). \<epsilon> * real X < \<bar>Y (f, g, h) - real X\<bar> \<or> s f < q_max}"
     proof (cases "s f \<ge> q_max")
       case True
       hence f:"\<sigma> \<le> s f" using b by simp
-      have "\<delta> * real X < \<bar>Y \<psi> - real X\<bar>"
+      have "\<epsilon> * real X < \<bar>Y \<psi> - real X\<bar>"
         using Y\<^sub>c_eq_Y[OF e f] c unfolding \<psi>_def by simp
       then show ?thesis unfolding \<psi>_def by simp
     next
@@ -200,16 +200,16 @@ proof -
 qed
 
 lemma estimate_result_1:
-  "measure \<Omega> {\<omega>. (\<exists>\<sigma>\<le>q_max. \<delta>*X < \<bar>estimate (\<tau>\<^sub>2 \<omega> A \<sigma>,\<sigma>)-X\<bar>) } \<le> \<epsilon>/2" (is "?L \<le> ?R")
+  "measure \<Omega> {\<omega>. (\<exists>\<sigma>\<le>q_max. \<epsilon>*X < \<bar>estimate (\<tau>\<^sub>2 \<omega> A \<sigma>,\<sigma>)-X\<bar>) } \<le> \<delta>/2" (is "?L \<le> ?R")
 proof -
-  define I :: "real set" where "I = {x. \<bar>x - real X\<bar> \<le> \<delta>*X}"
+  define I :: "real set" where "I = {x. \<bar>x - real X\<bar> \<le> \<epsilon>*X}"
 
   define \<mu> where "\<mu> = measure \<Psi> {\<psi>. \<exists>\<sigma>\<le>q_max. Y\<^sub>c \<psi> \<sigma>\<notin>I}"
 
   have int_I: "interval I"
     unfolding interval_def I_def by auto
 
-  have "\<mu> = measure \<Psi> {\<psi>. \<exists>\<sigma> \<le> q_max. \<bar>Y\<^sub>c \<psi> \<sigma> - real X\<bar> > \<delta> * X}"
+  have "\<mu> = measure \<Psi> {\<psi>. \<exists>\<sigma> \<le> q_max. \<bar>Y\<^sub>c \<psi> \<sigma> - real X\<bar> > \<epsilon> * X}"
     unfolding \<mu>_def I_def by (simp add:not_le)
   also have "... \<le>  1 / 2 ^ 4"
     by (intro accuracy_single)
@@ -232,7 +232,7 @@ proof -
   hence 3: "\<mu> + \<Lambda> > 0"
     by (intro add_nonneg_pos \<Lambda>_gt_0)
 
-  have "?L = measure \<Omega> {\<omega>. (\<exists>\<sigma>\<le>q_max. \<delta>*X < \<bar>median l (estimate1 (\<tau>\<^sub>2 \<omega> A \<sigma>,\<sigma>))-X\<bar>) }"
+  have "?L = measure \<Omega> {\<omega>. (\<exists>\<sigma>\<le>q_max. \<epsilon>*X < \<bar>median l (estimate1 (\<tau>\<^sub>2 \<omega> A \<sigma>,\<sigma>))-X\<bar>) }"
     by simp
   also have "... = measure \<Omega> {\<omega>. (\<exists>\<sigma>\<le>q_max. median l (estimate1 (\<tau>\<^sub>2 \<omega> A \<sigma>,\<sigma>)) \<notin> I)}"
     unfolding I_def by (intro measure_pmf_cong) auto
@@ -279,29 +279,29 @@ proof -
   also have "... \<le> exp (- (real l * (1/4)))"
     by (intro iffD2[OF exp_le_cancel_iff] le_imp_neg_le mult_left_mono of_nat_0_le_iff)
      (approximation 5)
-  also have "... \<le> exp (- (C\<^sub>6 * ln (2/ \<epsilon>)*(1/4)))"
+  also have "... \<le> exp (- (C\<^sub>6 * ln (2/ \<delta>)*(1/4)))"
     by (intro iffD2[OF exp_le_cancel_iff] le_imp_neg_le mult_right_mono l_lbound) auto
-  also have "... = exp ( - ln (2/ \<epsilon>))"
+  also have "... = exp ( - ln (2/ \<delta>))"
     unfolding C\<^sub>6_def by simp
   also have "... = ?R"
-    using \<epsilon>_gt_0 by (subst ln_inverse[symmetric]) auto
+    using \<delta>_gt_0 by (subst ln_inverse[symmetric]) auto
   finally show ?thesis
     by simp
 qed
 
 theorem estimate_result:
-  "measure \<Omega> {\<omega>. \<bar>estimate (\<tau> \<omega> A)- X\<bar> >  \<delta> * X} \<le>  \<epsilon>"
+  "measure \<Omega> {\<omega>. \<bar>estimate (\<tau> \<omega> A)- X\<bar> >  \<epsilon> * X} \<le>  \<delta>"
   (is "?L \<le> ?R")
 proof -
   let ?P = "measure \<Omega>"
-  have "?L \<le> ?P {\<omega>. (\<exists>\<sigma>\<le>q_max.  \<delta>*real X<\<bar>estimate (\<tau>\<^sub>2 \<omega> A \<sigma>, \<sigma>)-real X\<bar>)\<or>q \<omega> A> q_max}"
+  have "?L \<le> ?P {\<omega>. (\<exists>\<sigma>\<le>q_max.  \<epsilon>*real X<\<bar>estimate (\<tau>\<^sub>2 \<omega> A \<sigma>, \<sigma>)-real X\<bar>)\<or>q \<omega> A> q_max}"
     unfolding \<tau>_def \<tau>\<^sub>3_def not_le[symmetric]
     by (intro pmf_mono) auto
-  also have "...\<le> ?P {\<omega>. (\<exists>\<sigma>\<le>q_max. \<delta>*real X<\<bar>estimate (\<tau>\<^sub>2 \<omega> A \<sigma>,\<sigma>)-X\<bar>)} + ?P {\<omega>. q \<omega> A> q_max}"
+  also have "...\<le> ?P {\<omega>. (\<exists>\<sigma>\<le>q_max. \<epsilon>*real X<\<bar>estimate (\<tau>\<^sub>2 \<omega> A \<sigma>,\<sigma>)-X\<bar>)} + ?P {\<omega>. q \<omega> A> q_max}"
     by (intro pmf_add) auto
-  also have "...\<le>  \<epsilon>/2 +  \<epsilon>/2"
+  also have "...\<le>  \<delta>/2 +  \<delta>/2"
     by (intro add_mono cutoff_level estimate_result_1)
-  also have "... =  \<epsilon>"
+  also have "... =  \<delta>"
     by simp
   finally show ?thesis
     by simp
@@ -311,11 +311,11 @@ end
 
 lemma (in inner_algorithm) estimate_result:
   assumes "A \<subseteq> {..<n}" "A \<noteq> {}"
-  shows "measure \<Omega> {\<omega>. \<bar>estimate (\<tau> \<omega> A)- real (card A)\<bar> > \<delta> * real (card A)} \<le> \<epsilon>" (is "?L \<le> ?R")
+  shows "measure \<Omega> {\<omega>. \<bar>estimate (\<tau> \<omega> A)- real (card A)\<bar> > \<epsilon> * real (card A)} \<le> \<delta>" (is "?L \<le> ?R")
 proof -
   interpret inner_algorithm_fix_A
     using assms by unfold_locales auto
-  have "?L = measure \<Omega> {\<omega>. \<bar>estimate (\<tau> \<omega> A)- X\<bar> > \<delta> * X}"
+  have "?L = measure \<Omega> {\<omega>. \<bar>estimate (\<tau> \<omega> A)- X\<bar> > \<epsilon> * X}"
     unfolding X_def by simp
   also have "... \<le> ?R"
     by (intro estimate_result)

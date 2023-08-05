@@ -259,7 +259,7 @@ proof -
 qed
 
 lemma cutoff_level:
-  "measure \<Omega> {\<omega>. q \<omega> A > q_max} \<le> \<epsilon>/2" (is "?L \<le> ?R")
+  "measure \<Omega> {\<omega>. q \<omega> A > q_max} \<le> \<delta>/2" (is "?L \<le> ?R")
 proof -
   have C\<^sub>1_est: "C\<^sub>1 * l \<le> 30 * real l"
     unfolding C\<^sub>1_def
@@ -443,15 +443,15 @@ proof -
     unfolding C\<^sub>5_def using C\<^sub>1_est by (intro pmf_mono) auto
   also have "... \<le> exp (- real l)"
     by (intro \<Omega>.deviation_bound l_gt_0 0) (simp_all add: \<Lambda>_def)
-  also have "... \<le> exp (- (C\<^sub>6 * ln (2 / \<epsilon>)))"
+  also have "... \<le> exp (- (C\<^sub>6 * ln (2 / \<delta>)))"
     using l_lbound by (intro iffD2[OF exp_le_cancel_iff]) auto
-  also have "... \<le> exp (- (1 * ln (2 / \<epsilon>)))"
-    unfolding C\<^sub>6_def using \<epsilon>_gt_0 \<epsilon>_lt_1
+  also have "... \<le> exp (- (1 * ln (2 / \<delta>)))"
+    unfolding C\<^sub>6_def using \<delta>_gt_0 \<delta>_lt_1
     by (intro iffD2[OF exp_le_cancel_iff] le_imp_neg_le mult_right_mono ln_ge_zero) auto
-  also have "... = exp ( ln ( \<epsilon> / 2))"
-    using \<epsilon>_gt_0 by (simp add: ln_div)
-  also have "... =  \<epsilon>/2"
-    using \<epsilon>_gt_0 by simp
+  also have "... = exp ( ln ( \<delta> / 2))"
+    using \<delta>_gt_0 by (simp add: ln_div)
+  also have "... =  \<delta>/2"
+    using \<delta>_gt_0 by simp
   finally show ?thesis
     by simp
 qed

@@ -41,22 +41,22 @@ definition C\<^sub>7 :: nat where "C\<^sub>7 = 2^5"
 
 locale inner_algorithm =
   fixes n :: nat
-  fixes \<epsilon> :: real
   fixes \<delta> :: real
+  fixes \<epsilon> :: real
   assumes n_gt_0: "n > 0"
-  assumes \<epsilon>_gt_0: "\<epsilon> > 0" and \<epsilon>_lt_1: "\<epsilon> < 1"
   assumes \<delta>_gt_0: "\<delta> > 0" and \<delta>_lt_1: "\<delta> < 1"
+  assumes \<epsilon>_gt_0: "\<epsilon> > 0" and \<epsilon>_lt_1: "\<epsilon> < 1"
 begin
 
-definition b_exp where "b_exp = nat \<lceil>log 2 (C\<^sub>4 / \<delta>^2)\<rceil>"
+definition b_exp where "b_exp = nat \<lceil>log 2 (C\<^sub>4 / \<epsilon>^2)\<rceil>"
 definition b :: nat where "b = 2^b_exp"
-definition l where "l = nat \<lceil>C\<^sub>6 * ln (2/ \<epsilon>)\<rceil>"
+definition l where "l = nat \<lceil>C\<^sub>6 * ln (2/ \<delta>)\<rceil>"
 definition k where "k = nat \<lceil>C\<^sub>2*ln b + C\<^sub>3\<rceil>"
 definition \<Lambda> :: real where "\<Lambda> = min (1/16) (exp (-l * ln l^3))"
 definition \<rho> :: "real \<Rightarrow> real" where "\<rho> x = b * (1 - (1-1/b) powr x)"
 definition \<rho>_inv :: "real \<Rightarrow> real" where "\<rho>_inv x = ln (1-x/b) / ln (1-1/b)"
 
-lemma l_lbound: "C\<^sub>6 * ln (2 / \<epsilon>) \<le> l"
+lemma l_lbound: "C\<^sub>6 * ln (2 / \<delta>) \<le> l"
   unfolding l_def by linarith
 
 lemma k_min: "C\<^sub>2 * ln (real b) + C\<^sub>3 \<le> real k"
@@ -70,8 +70,8 @@ lemma \<Lambda>_le_1: "\<Lambda> \<le> 1"
 
 lemma l_gt_0: "l > 0"
 proof -
-  have "0 < C\<^sub>6 * ln (2 / \<epsilon>)"
-    unfolding C\<^sub>6_def using \<epsilon>_gt_0 \<epsilon>_lt_1
+  have "0 < C\<^sub>6 * ln (2 / \<delta>)"
+    unfolding C\<^sub>6_def using \<delta>_gt_0 \<delta>_lt_1
     by (intro Rings.mult_pos_pos ln_gt_zero) auto
   also have "... \<le> l"
     by (intro l_lbound)
@@ -79,15 +79,15 @@ proof -
     by simp
 qed
 
-lemma l_ubound: "l \<le> C\<^sub>6 * ln(1 / \<epsilon>)+C\<^sub>6*ln 2 + 1"
+lemma l_ubound: "l \<le> C\<^sub>6 * ln(1 / \<delta>)+C\<^sub>6*ln 2 + 1"
 proof -
-  have "l = of_int \<lceil>C\<^sub>6 * ln (2/ \<epsilon>)\<rceil>"
+  have "l = of_int \<lceil>C\<^sub>6 * ln (2/ \<delta>)\<rceil>"
     using l_gt_0 unfolding l_def
     by (intro of_nat_nat) simp
-  also have "... \<le> C\<^sub>6 * ln (1/ \<epsilon>*2)+1"
+  also have "... \<le> C\<^sub>6 * ln (1/ \<delta>*2)+1"
     by simp
-  also have "... = C\<^sub>6 * ln (1/ \<epsilon>)+C\<^sub>6 * ln 2+1"
-    using \<epsilon>_gt_0 \<epsilon>_lt_1
+  also have "... = C\<^sub>6 * ln (1/ \<delta>)+C\<^sub>6 * ln 2+1"
+    using \<delta>_gt_0 \<delta>_lt_1
     by (subst ln_mult) (auto simp add:algebra_simps)
   finally show ?thesis by simp
 qed
@@ -95,14 +95,14 @@ qed
 lemma b_exp_ge_26: "b_exp \<ge> 26"
 proof -
   have "2 powr 25 < C\<^sub>4 / 1 " unfolding C\<^sub>4_def by simp
-  also have "... \<le> C\<^sub>4 / \<delta>^2"
-    using \<delta>_gt_0 \<delta>_lt_1 unfolding C\<^sub>4_def
+  also have "... \<le> C\<^sub>4 / \<epsilon>^2"
+    using \<epsilon>_gt_0 \<epsilon>_lt_1 unfolding C\<^sub>4_def
     by (intro divide_left_mono power_le_one) auto
-  finally have "2 powr 25 < C\<^sub>4 / \<delta>^2" by simp
-  hence "log 2 (C\<^sub>4 / \<delta>^2) > 25"
-    using \<delta>_gt_0 unfolding C\<^sub>4_def
+  finally have "2 powr 25 < C\<^sub>4 / \<epsilon>^2" by simp
+  hence "log 2 (C\<^sub>4 / \<epsilon>^2) > 25"
+    using \<epsilon>_gt_0 unfolding C\<^sub>4_def
     by (intro iffD2[OF less_log_iff] divide_pos_pos zero_less_power) auto
-  hence "\<lceil>log 2 (C\<^sub>4 / \<delta>^2)\<rceil> \<ge> 26" by simp
+  hence "\<lceil>log 2 (C\<^sub>4 / \<epsilon>^2)\<rceil> \<ge> 26" by simp
   thus ?thesis
     unfolding b_exp_def by linarith
 qed
@@ -130,11 +130,11 @@ proof -
     by auto
 qed
 
-lemma b_lower_bound: "C\<^sub>4 / \<delta>^2 \<le> real b"
+lemma b_lower_bound: "C\<^sub>4 / \<epsilon>^2 \<le> real b"
 proof -
-  have "C\<^sub>4 /  \<delta>^2 = 2 powr (log 2 (C\<^sub>4 / \<delta>^2))"
-    using \<delta>_gt_0 unfolding C\<^sub>4_def by (intro powr_log_cancel[symmetric] divide_pos_pos) auto
-  also have "... \<le> 2 powr (nat \<lceil>log 2 (C\<^sub>4 /  \<delta>^2)\<rceil>)"
+  have "C\<^sub>4 /  \<epsilon>^2 = 2 powr (log 2 (C\<^sub>4 / \<epsilon>^2))"
+    using \<epsilon>_gt_0 unfolding C\<^sub>4_def by (intro powr_log_cancel[symmetric] divide_pos_pos) auto
+  also have "... \<le> 2 powr (nat \<lceil>log 2 (C\<^sub>4 /  \<epsilon>^2)\<rceil>)"
     by (intro powr_mono of_nat_ceiling) simp
   also have "... = real b"
     unfolding b_def b_exp_def by (simp add:powr_realpow)
@@ -705,7 +705,7 @@ qed
 
 lemma state_bit_count:
   assumes "\<omega> \<in> sample_set \<Omega>"
-  shows "bit_count (encode_state (\<tau> \<omega> A)) \<le>  2^36 * (ln(1/\<epsilon>)+1)/ \<delta>^2 + log 2 (log 2 n + 3)"
+  shows "bit_count (encode_state (\<tau> \<omega> A)) \<le>  2^36 * (ln(1/\<delta>)+1)/ \<epsilon>^2 + log 2 (log 2 n + 3)"
     (is "?L \<le> ?R")
 proof -
   define t where "t = \<tau>\<^sub>2 \<omega> A (q \<omega> A)"
@@ -778,45 +778,45 @@ proof -
 
   have "C\<^sub>4 \<ge> 1"
     unfolding C\<^sub>4_def by simp
-  moreover have "\<delta>\<^sup>2 \<le> 1"
-    using \<delta>_lt_1 \<delta>_gt_0
+  moreover have "\<epsilon>\<^sup>2 \<le> 1"
+    using \<epsilon>_lt_1 \<epsilon>_gt_0
     by (intro power_le_one) auto
-  ultimately have "0 \<le> log 2 (C\<^sub>4 / \<delta>\<^sup>2)"
-    using \<delta>_gt_0 \<delta>_lt_1
+  ultimately have "0 \<le> log 2 (C\<^sub>4 / \<epsilon>\<^sup>2)"
+    using \<epsilon>_gt_0 \<epsilon>_lt_1
     by (intro iffD2[OF zero_le_log_cancel_iff] divide_pos_pos)auto
-  hence 6: "- 1 < log 2 (C\<^sub>4 / \<delta>\<^sup>2)"
+  hence 6: "- 1 < log 2 (C\<^sub>4 / \<epsilon>\<^sup>2)"
     by simp
 
-  have "b = 2 powr (real (nat \<lceil>log 2 (C\<^sub>4 / \<delta>\<^sup>2)\<rceil>))"
+  have "b = 2 powr (real (nat \<lceil>log 2 (C\<^sub>4 / \<epsilon>\<^sup>2)\<rceil>))"
     unfolding b_def b_exp_def by (simp add:powr_realpow)
-  also have "... = 2 powr (\<lceil>log 2 (C\<^sub>4 / \<delta>^2)\<rceil>)"
+  also have "... = 2 powr (\<lceil>log 2 (C\<^sub>4 / \<epsilon>^2)\<rceil>)"
     using 6 by (intro arg_cong2[where f="(powr)"] of_nat_nat refl) simp
-  also have "... \<le> 2 powr (log 2 (C\<^sub>4 / \<delta>^2) + 1)"
+  also have "... \<le> 2 powr (log 2 (C\<^sub>4 / \<epsilon>^2) + 1)"
     by (intro powr_mono) auto
-  also have "... = 2 * C\<^sub>4 / \<delta>^2"
-    using \<delta>_gt_0 unfolding powr_add C\<^sub>4_def
+  also have "... = 2 * C\<^sub>4 / \<epsilon>^2"
+    using \<epsilon>_gt_0 unfolding powr_add C\<^sub>4_def
     by (subst powr_log_cancel) (auto intro:divide_pos_pos)
-  finally have 7:"b \<le> 2 * C\<^sub>4 / \<delta>^2" by simp
+  finally have 7:"b \<le> 2 * C\<^sub>4 / \<epsilon>^2" by simp
 
-  have "l \<le> C\<^sub>6 * ln (1 / \<epsilon>) + C\<^sub>6 * ln 2 + 1"
+  have "l \<le> C\<^sub>6 * ln (1 / \<delta>) + C\<^sub>6 * ln 2 + 1"
     by (intro l_ubound)
-  also have "... \<le> 4 * ln(1/\<epsilon>) + 3+1"
+  also have "... \<le> 4 * ln(1/\<delta>) + 3+1"
     unfolding C\<^sub>6_def by (intro add_mono order.refl) (approximation 5)
-  also have "... = 4 * (ln(1/\<epsilon>)+1)"
+  also have "... = 4 * (ln(1/\<delta>)+1)"
     by simp
-  finally have 8:"l \<le> 4 * (ln(1/\<epsilon>)+1)"
+  finally have 8:"l \<le> 4 * (ln(1/\<delta>)+1)"
     by simp
 
-  have "\<delta>\<^sup>2 = 0 + \<delta>\<^sup>2"
+  have "\<epsilon>\<^sup>2 = 0 + \<epsilon>\<^sup>2"
     by simp
-  also have "... \<le> ln (1 / \<epsilon>) + 1"
-    using \<epsilon>_gt_0 \<epsilon>_lt_1 \<delta>_gt_0 \<delta>_lt_1
+  also have "... \<le> ln (1 / \<delta>) + 1"
+    using \<delta>_gt_0 \<delta>_lt_1 \<epsilon>_gt_0 \<epsilon>_lt_1
     by (intro add_mono power_le_one) auto
-  finally have 9: "\<delta>\<^sup>2 \<le> ln (1 / \<epsilon>) + 1"
+  finally have 9: "\<epsilon>\<^sup>2 \<le> ln (1 / \<delta>) + 1"
     by simp
 
-  have 10: "0 \<le> ln (1 / \<epsilon>) + 1"
-    using \<epsilon>_gt_0 \<epsilon>_lt_1 by (intro add_nonneg_nonneg) auto
+  have 10: "0 \<le> ln (1 / \<delta>) + 1"
+    using \<delta>_gt_0 \<delta>_lt_1 by (intro add_nonneg_nonneg) auto
 
   have "?L = bit_count (T\<^sub>e (\<tau>\<^sub>2 \<omega> A (q \<omega> A))) + bit_count (Nb\<^sub>e (nat \<lceil>log 2 (real n)\<rceil>+3) (q \<omega> A))"
     unfolding encode_state_def \<tau>_def \<tau>\<^sub>3_def by (simp  add:dependent_bit_count)
@@ -835,27 +835,27 @@ proof -
     by (intro add_mono 5) auto
   also have "... = (2 * C\<^sub>5 + 1) * real b * real l + log 2 (log 2 n + 3) + 1"
     by simp
-  also have "... \<le> (2 * C\<^sub>5 + 1) * (2 * C\<^sub>4 / \<delta>^2) * real l + log 2 (log 2 n + 3) + 1"
+  also have "... \<le> (2 * C\<^sub>5 + 1) * (2 * C\<^sub>4 / \<epsilon>^2) * real l + log 2 (log 2 n + 3) + 1"
     unfolding C\<^sub>5_def
     by (intro ereal_mono mult_right_mono mult_left_mono add_mono 7) auto
-  also have "... = (4 * of_int C\<^sub>5+2)*C\<^sub>4*real l/ \<delta>^2 + log 2 (log 2 n + 3) + 1"
+  also have "... = (4 * of_int C\<^sub>5+2)*C\<^sub>4*real l/ \<epsilon>^2 + log 2 (log 2 n + 3) + 1"
     by simp
-  also have "... \<le> (4 * of_int C\<^sub>5+2)*C\<^sub>4*(4*(ln(1/ \<epsilon>)+1))/ \<delta>^2 + log 2 (log 2 n + 3) + 1"
-    using \<delta>_gt_0 unfolding C\<^sub>5_def C\<^sub>4_def
+  also have "... \<le> (4 * of_int C\<^sub>5+2)*C\<^sub>4*(4*(ln(1/ \<delta>)+1))/ \<epsilon>^2 + log 2 (log 2 n + 3) + 1"
+    using \<epsilon>_gt_0 unfolding C\<^sub>5_def C\<^sub>4_def
     by (intro ereal_mono add_mono order.refl divide_right_mono mult_left_mono 8) auto
-  also have "... = ((2*33+1)*9*2^26)*(ln(1/ \<epsilon>)+1)/ \<delta>^2 + log 2 (log 2 n + 3) + 1"
+  also have "... = ((2*33+1)*9*2^26)*(ln(1/ \<delta>)+1)/ \<epsilon>^2 + log 2 (log 2 n + 3) + 1"
     unfolding C\<^sub>5_def C\<^sub>4_def by simp
-  also have "... \<le> (2^36-1) * (ln(1/\<epsilon>)+1)/ \<delta>^2 + log 2 (log 2 n + 3) + (ln (1/ \<epsilon>)+1)/ \<delta>^2"
-    using \<delta>_gt_0 \<epsilon>_gt_0 \<delta>_lt_1 9 10
+  also have "... \<le> (2^36-1) * (ln(1/\<delta>)+1)/ \<epsilon>^2 + log 2 (log 2 n + 3) + (ln (1/ \<delta>)+1)/ \<epsilon>^2"
+    using \<epsilon>_gt_0 \<delta>_gt_0 \<epsilon>_lt_1 9 10
     by (intro add_mono ereal_mono divide_right_mono mult_right_mono mult_left_mono) simp_all
-  also have "... = 2^36* (ln(1/\<epsilon>)+1)/ \<delta>^2 + log 2 (log 2 n + 3)"
+  also have "... = 2^36* (ln(1/\<delta>)+1)/ \<epsilon>^2 + log 2 (log 2 n + 3)"
     by (simp add:divide_simps)
   finally show ?thesis
     by simp
 qed
 
 lemma random_bit_count:
-  "size \<Omega> \<le> 2 powr (4 * log 2 n + 48 * (log 2 (1 / \<delta>) + 16)^2 + (55 + 60 * ln (1 / \<epsilon>))^3)"
+  "size \<Omega> \<le> 2 powr (4 * log 2 n + 48 * (log 2 (1 / \<epsilon>) + 16)^2 + (55 + 60 * ln (1 / \<delta>))^3)"
   (is "?L \<le> ?R")
 proof -
   have 1:"log 2 (real n) \<ge> 0"
@@ -865,15 +865,15 @@ proof -
 
   have 10: "log 2 C\<^sub>4 \<le> 27"
     unfolding C\<^sub>4_def by (approximation 10)
-  have "\<delta>\<^sup>2 \<le> 1"
-    using \<delta>_gt_0 \<delta>_lt_1 by (intro power_le_one) auto
+  have "\<epsilon>\<^sup>2 \<le> 1"
+    using \<epsilon>_gt_0 \<epsilon>_lt_1 by (intro power_le_one) auto
   also have "... \<le> C\<^sub>4"
     unfolding C\<^sub>4_def by simp
-  finally have " \<delta>\<^sup>2 \<le> C\<^sub>4" by simp
-  hence 9: "0 \<le> log 2 (C\<^sub>4 / \<delta>\<^sup>2)"
-    using \<delta>_gt_0 unfolding C\<^sub>4_def
+  finally have " \<epsilon>\<^sup>2 \<le> C\<^sub>4" by simp
+  hence 9: "0 \<le> log 2 (C\<^sub>4 / \<epsilon>\<^sup>2)"
+    using \<epsilon>_gt_0 unfolding C\<^sub>4_def
     by (intro iffD2[OF zero_le_log_cancel_iff]) simp_all
-  hence 2: "- 1 < log 2 (C\<^sub>4 / \<delta>\<^sup>2)"
+  hence 2: "- 1 < log 2 (C\<^sub>4 / \<epsilon>\<^sup>2)"
     by simp
 
   have 3: "0 < C\<^sub>7 * b\<^sup>2"
@@ -911,15 +911,15 @@ proof -
     using 0 by (subst of_nat_nat) auto
   also have "... \<le> 2 powr ((5 + of_int b_exp * 2 + (log 2 (real n) + 1))*2)"
     by (intro powr_mono mult_right_mono add_mono) simp_all
-  also have "... = 2 powr (12 + 4 * real( nat \<lceil>log 2 (C\<^sub>4 / \<delta>\<^sup>2)\<rceil>) + log 2 (real n) * 2)"
+  also have "... = 2 powr (12 + 4 * real( nat \<lceil>log 2 (C\<^sub>4 / \<epsilon>\<^sup>2)\<rceil>) + log 2 (real n) * 2)"
     unfolding b_exp_def by (simp add:ac_simps)
-  also have "... = 2 powr (12 + 4 * real_of_int \<lceil>log 2 (C\<^sub>4 / \<delta>\<^sup>2)\<rceil> + log 2 (real n) * 2)"
+  also have "... = 2 powr (12 + 4 * real_of_int \<lceil>log 2 (C\<^sub>4 / \<epsilon>\<^sup>2)\<rceil> + log 2 (real n) * 2)"
     using 2 by (subst of_nat_nat) simp_all
-  also have "... \<le> 2 powr (12 + 4 * (log 2 (C\<^sub>4 / \<delta>\<^sup>2) + 1) + log 2 (real n) * 2)"
+  also have "... \<le> 2 powr (12 + 4 * (log 2 (C\<^sub>4 / \<epsilon>\<^sup>2) + 1) + log 2 (real n) * 2)"
     by (intro powr_mono add_mono order.refl mult_left_mono) simp_all
-  also have "... = 2 powr (2 * log 2 n + 4 * log 2 (C\<^sub>4 / \<delta>\<^sup>2) + 16)"
+  also have "... = 2 powr (2 * log 2 n + 4 * log 2 (C\<^sub>4 / \<epsilon>\<^sup>2) + 16)"
     by (simp add:ac_simps)
-  finally have 6:"real (size \<Psi>\<^sub>2) \<le> 2 powr (2 * log 2 n + 4 * log 2 (C\<^sub>4 / \<delta>\<^sup>2) + 16)"
+  finally have 6:"real (size \<Psi>\<^sub>2) \<le> 2 powr (2 * log 2 n + 4 * log 2 (C\<^sub>4 / \<epsilon>\<^sup>2) + 16)"
     by simp
 
   have "real (size \<Psi>\<^sub>3) = 2 ^ (max b_exp (nat \<lceil>log 2 (real C\<^sub>7 * (2 ^ (b_exp*2)))\<rceil>) * k)"
@@ -938,13 +938,13 @@ proof -
     unfolding C\<^sub>7_def by (subst max_absorb2) simp_all
   also have "... = 2 powr ((real b_exp*2 +6) * real k)"
     unfolding C\<^sub>7_def by (subst log_nat_power) (simp_all add:ac_simps)
-  also have "... = 2 powr ((of_int \<lceil>log 2 (C\<^sub>4 / \<delta>\<^sup>2)\<rceil> * 2 + 6) * real k)"
+  also have "... = 2 powr ((of_int \<lceil>log 2 (C\<^sub>4 / \<epsilon>\<^sup>2)\<rceil> * 2 + 6) * real k)"
     using 2 unfolding b_exp_def by (subst of_nat_nat) simp_all
-  also have "... \<le> 2 powr (((log 2 (C\<^sub>4 / \<delta>^2)+1) * 2 + 6) * real k)"
+  also have "... \<le> 2 powr (((log 2 (C\<^sub>4 / \<epsilon>^2)+1) * 2 + 6) * real k)"
     by (intro powr_mono mult_right_mono add_mono) simp_all
-  also have "... = 2 powr ((log 2 (C\<^sub>4 / \<delta>\<^sup>2) * 2 + 8 ) * real k)"
+  also have "... = 2 powr ((log 2 (C\<^sub>4 / \<epsilon>\<^sup>2) * 2 + 8 ) * real k)"
     by (simp add:ac_simps)
-  finally have 7:"real (size \<Psi>\<^sub>3) \<le> 2 powr ((log 2 (C\<^sub>4 / \<delta>\<^sup>2) * 2 + 8 ) * real k)"
+  finally have 7:"real (size \<Psi>\<^sub>3) \<le> 2 powr ((log 2 (C\<^sub>4 / \<epsilon>\<^sup>2) * 2 + 8 ) * real k)"
     by simp
 
   have "ln (real b) \<ge> 0"
@@ -959,44 +959,44 @@ proof -
     unfolding powr_def by simp
   also have "... \<le> real b_exp * 6 + 17"
     by (intro add_mono mult_left_mono order.refl of_nat_0_le_iff) (approximation 5)
-  also have "... = of_int \<lceil>log 2 (C\<^sub>4 / \<delta>\<^sup>2)\<rceil> * 6 + 17"
+  also have "... = of_int \<lceil>log 2 (C\<^sub>4 / \<epsilon>\<^sup>2)\<rceil> * 6 + 17"
     using 2 unfolding b_exp_def by (subst of_nat_nat) simp_all
-  also have "... \<le> (log 2 (C\<^sub>4 / \<delta>^2) + 1) * 6 + 17"
+  also have "... \<le> (log 2 (C\<^sub>4 / \<epsilon>^2) + 1) * 6 + 17"
     by (intro add_mono mult_right_mono) simp_all
-  also have "... = 6 * log 2 (C\<^sub>4 / \<delta>^2) + 23"
+  also have "... = 6 * log 2 (C\<^sub>4 / \<epsilon>^2) + 23"
     by simp
-  finally have 8:"real k \<le> 6 * log 2 (C\<^sub>4 / \<delta>^2) + 23"
+  finally have 8:"real k \<le> 6 * log 2 (C\<^sub>4 / \<epsilon>^2) + 23"
     by simp
 
   have "real (size \<Psi>) = real (size \<Psi>\<^sub>1) * real (size \<Psi>\<^sub>2) * real (size \<Psi>\<^sub>3)"
     unfolding \<Psi>_def prod_sample_space_def by simp
   also have "... \<le>
-    2 powr(2*log 2 n+2)*2 powr (2*log 2 n+4*log 2 (C\<^sub>4/\<delta>\<^sup>2)+16)*2 powr((log 2 (C\<^sub>4/\<delta>\<^sup>2)*2+8)*real k)"
+    2 powr(2*log 2 n+2)*2 powr (2*log 2 n+4*log 2 (C\<^sub>4/\<epsilon>\<^sup>2)+16)*2 powr((log 2 (C\<^sub>4/\<epsilon>\<^sup>2)*2+8)*real k)"
     by (intro mult_mono 5 6 7 mult_nonneg_nonneg) simp_all
-  also have "... = 2 powr (2*log 2 n + 2 + 2 * log 2 n+4*log 2 (C\<^sub>4/\<delta>\<^sup>2)+16+(log 2 (C\<^sub>4/\<delta>\<^sup>2)*2+8)*real k)"
+  also have "... = 2 powr (2*log 2 n + 2 + 2 * log 2 n+4*log 2 (C\<^sub>4/\<epsilon>\<^sup>2)+16+(log 2 (C\<^sub>4/\<epsilon>\<^sup>2)*2+8)*real k)"
     unfolding powr_add by simp
-  also have "... = 2 powr (4*log 2 n + 4*log 2 (C\<^sub>4/\<delta>\<^sup>2) + 18 + (2*log 2 (C\<^sub>4/\<delta>\<^sup>2)+8)*real k)"
+  also have "... = 2 powr (4*log 2 n + 4*log 2 (C\<^sub>4/\<epsilon>\<^sup>2) + 18 + (2*log 2 (C\<^sub>4/\<epsilon>\<^sup>2)+8)*real k)"
     by (simp add:ac_simps)
   also have "... \<le>
-    2 powr (4* log 2 n + 4* log 2 (C\<^sub>4/ \<delta>^2) + 18 + (2*log 2 (C\<^sub>4/\<delta>\<^sup>2)+8)*(6 * log 2 (C\<^sub>4 / \<delta>^2) + 23))"
+    2 powr (4* log 2 n + 4* log 2 (C\<^sub>4/ \<epsilon>^2) + 18 + (2*log 2 (C\<^sub>4/\<epsilon>\<^sup>2)+8)*(6 * log 2 (C\<^sub>4 / \<epsilon>^2) + 23))"
     using 9 by (intro powr_mono add_mono order.refl mult_left_mono 8 add_nonneg_nonneg) simp_all
-  also have "... = 2 powr (4 * log 2 n+12 * log 2 (C\<^sub>4 / \<delta>^2)^2 + 98 * log 2 (C\<^sub>4 / \<delta>^2)+202)"
+  also have "... = 2 powr (4 * log 2 n+12 * log 2 (C\<^sub>4 / \<epsilon>^2)^2 + 98 * log 2 (C\<^sub>4 / \<epsilon>^2)+202)"
     by (simp add:algebra_simps power2_eq_square)
-  also have "... \<le> 2 powr (4 * log 2 n+12 * log 2 (C\<^sub>4 / \<delta>^2)^2 + 120 * log 2 (C\<^sub>4 / \<delta>^2)+300)"
+  also have "... \<le> 2 powr (4 * log 2 n+12 * log 2 (C\<^sub>4 / \<epsilon>^2)^2 + 120 * log 2 (C\<^sub>4 / \<epsilon>^2)+300)"
     using 9 by (intro powr_mono add_mono order.refl mult_right_mono) simp_all
-  also have "... = 2 powr (4 * log 2 n+12 * (log 2 (C\<^sub>4* (1/ \<delta>)^2) + 5)^2)"
+  also have "... = 2 powr (4 * log 2 n+12 * (log 2 (C\<^sub>4* (1/ \<epsilon>)^2) + 5)^2)"
     by (simp add:power2_eq_square algebra_simps)
-  also have "... = 2 powr (4 * log 2 n + 12 * (log 2 C\<^sub>4 + log 2 ((1 / \<delta>)^2) + 5)^2)"
-    unfolding C\<^sub>4_def using \<delta>_gt_0 by (subst log_mult) auto
-  also have "... \<le> 2 powr (4 * log 2 n + 12 * (27 + log 2 ((1/ \<delta>)^2) + 5)^2)"
-    using \<delta>_gt_0 \<delta>_lt_1
+  also have "... = 2 powr (4 * log 2 n + 12 * (log 2 C\<^sub>4 + log 2 ((1 / \<epsilon>)^2) + 5)^2)"
+    unfolding C\<^sub>4_def using \<epsilon>_gt_0 by (subst log_mult) auto
+  also have "... \<le> 2 powr (4 * log 2 n + 12 * (27 + log 2 ((1/ \<epsilon>)^2) + 5)^2)"
+    using \<epsilon>_gt_0 \<epsilon>_lt_1
     by (intro powr_mono add_mono order.refl mult_left_mono power_mono add_nonneg_nonneg 10)
      (simp_all add:C\<^sub>4_def)
-  also have "... = 2 powr (4 * log 2 n + 12 * (2 * (log 2 (1 / \<delta>) + 16))^2)"
-    using \<delta>_gt_0 by (subst log_nat_power)  (simp_all add:ac_simps)
-  also have "... = 2 powr (4 * log 2 n + 48 * (log 2 (1 / \<delta>) + 16)^2)"
+  also have "... = 2 powr (4 * log 2 n + 12 * (2 * (log 2 (1 / \<epsilon>) + 16))^2)"
+    using \<epsilon>_gt_0 by (subst log_nat_power)  (simp_all add:ac_simps)
+  also have "... = 2 powr (4 * log 2 n + 48 * (log 2 (1 / \<epsilon>) + 16)^2)"
     unfolding power_mult_distrib by simp
-  finally have 19:"real (size \<Psi>) \<le> 2 powr (4 * log 2 n + 48 * (log 2 (1 / \<delta>) + 16)^2)"
+  finally have 19:"real (size \<Psi>) \<le> 2 powr (4 * log 2 n + 48 * (log 2 (1 / \<epsilon>) + 16)^2)"
     by simp
 
   have "0 \<le> ln \<Lambda> / ln (19 / 20)"
@@ -1023,12 +1023,12 @@ proof -
   finally have 14:"ln l^3 \<le> 27 * real l"
     by simp
 
-  have 15:"C\<^sub>6 * ln (2 / \<epsilon>) > 0"
-    using \<epsilon>_lt_1 \<epsilon>_gt_0 unfolding C\<^sub>6_def
+  have 15:"C\<^sub>6 * ln (2 / \<delta>) > 0"
+    using \<delta>_lt_1 \<delta>_gt_0 unfolding C\<^sub>6_def
     by (intro Rings.mult_pos_pos ln_gt_zero) auto
-  hence "1 \<le> real_of_int \<lceil>C\<^sub>6 * ln (2 / \<epsilon>)\<rceil>"
+  hence "1 \<le> real_of_int \<lceil>C\<^sub>6 * ln (2 / \<delta>)\<rceil>"
     by simp
-  hence 16: "1 \<le> 3 * real_of_int \<lceil>C\<^sub>6 * ln (2 / \<epsilon>)\<rceil>"
+  hence 16: "1 \<le> 3 * real_of_int \<lceil>C\<^sub>6 * ln (2 / \<delta>)\<rceil>"
     by argo
 
   have 17: "12 * ln 2 \<le> (9::real)"
@@ -1065,34 +1065,34 @@ proof -
     by (intro powr_mono add_mono diff_mono order.refl mult_right_mono) auto
   also have "... = 16 powr (20 * (3*real l - 1)^3)"
     by (simp add: algebra_simps power3_eq_cube power2_eq_square)
-  also have "... = 16 powr (20 * (3 * of_int \<lceil>C\<^sub>6 * ln (2 / \<epsilon>)\<rceil> - 1) ^ 3)"
+  also have "... = 16 powr (20 * (3 * of_int \<lceil>C\<^sub>6 * ln (2 / \<delta>)\<rceil> - 1) ^ 3)"
     using 15 unfolding l_def by (subst of_nat_nat) auto
-  also have "... \<le> 16 powr (20 * (3 * (C\<^sub>6 * ln (2 / \<epsilon>) + 1) - 1) ^ 3)"
+  also have "... \<le> 16 powr (20 * (3 * (C\<^sub>6 * ln (2 / \<delta>) + 1) - 1) ^ 3)"
     using 16 by (intro powr_mono mult_left_mono power_mono diff_mono) auto
-  also have "... = 16 powr (20 * (2 + 12 * ln (2 * (1 / \<epsilon>))) ^ 3)"
+  also have "... = 16 powr (20 * (2 + 12 * ln (2 * (1 / \<delta>))) ^ 3)"
     by (simp add:algebra_simps C\<^sub>6_def)
-  also have "... = (2 powr 4) powr (20 * (2+ 12 * (ln 2 + ln(1/ \<epsilon>)))^3)"
-    using \<epsilon>_gt_0 by (subst ln_mult) auto
-  also have "... = 2 powr (80 * (2 + 12 * ln 2 + 12 * ln (1 / \<epsilon>)) ^ 3)"
+  also have "... = (2 powr 4) powr (20 * (2+ 12 * (ln 2 + ln(1/ \<delta>)))^3)"
+    using \<delta>_gt_0 by (subst ln_mult) auto
+  also have "... = 2 powr (80 * (2 + 12 * ln 2 + 12 * ln (1 / \<delta>)) ^ 3)"
     unfolding powr_powr by (simp add:ac_simps)
-  also have "... \<le> 2 powr (80 * (2 + 9 + 12 * ln (1 / \<epsilon>)) ^ 3)"
-    using \<epsilon>_gt_0 \<epsilon>_lt_1
+  also have "... \<le> 2 powr (80 * (2 + 9 + 12 * ln (1 / \<delta>)) ^ 3)"
+    using \<delta>_gt_0 \<delta>_lt_1
     by (intro powr_mono mult_left_mono power_mono add_mono 17 add_nonneg_nonneg) auto
-  also have "... = 2 powr (80 * (11 + 12 * ln (1 / \<epsilon>)) ^ 3)"
+  also have "... = 2 powr (80 * (11 + 12 * ln (1 / \<delta>)) ^ 3)"
     by simp
-  also have "... \<le> 2 powr (5^3 * (11 + 12 * ln (1 / \<epsilon>)) ^ 3)"
-    using \<epsilon>_gt_0 \<epsilon>_lt_1
+  also have "... \<le> 2 powr (5^3 * (11 + 12 * ln (1 / \<delta>)) ^ 3)"
+    using \<delta>_gt_0 \<delta>_lt_1
     by (intro powr_mono mult_right_mono) (auto intro!:add_nonneg_nonneg)
-  also have "... = 2 powr ((55 + 60 * ln (1 / \<epsilon>))^3)"
+  also have "... = 2 powr ((55 + 60 * ln (1 / \<delta>))^3)"
     unfolding power_mult_distrib[symmetric] by simp
-  finally have 18:"16^((l - 1) * nat\<lceil>ln \<Lambda> / ln (19/20)\<rceil>) \<le> 2 powr ((55 + 60 * ln (1 / \<epsilon>))^3)"
+  finally have 18:"16^((l - 1) * nat\<lceil>ln \<Lambda> / ln (19/20)\<rceil>) \<le> 2 powr ((55 + 60 * ln (1 / \<delta>))^3)"
     by simp
 
   have "?L = real (size \<Psi>) * 16 ^ ((l - 1) * nat \<lceil>ln \<Lambda> / ln (19 / 20)\<rceil>)"
     unfolding \<Omega>.size by simp
-  also have "... \<le> 2 powr (4*log 2 n+48*(log 2 (1/\<delta>)+16)^2)*2 powr ((55 + 60 * ln (1 / \<epsilon>))^3)"
+  also have "... \<le> 2 powr (4*log 2 n+48*(log 2 (1/\<epsilon>)+16)^2)*2 powr ((55 + 60 * ln (1 / \<delta>))^3)"
     by (intro mult_mono 18 19) simp_all
-  also have "... = 2 powr (4 * log 2 n + 48 * (log 2 (1 / \<delta>) + 16)^2 + (55 + 60 * ln (1 / \<epsilon>))^3)"
+  also have "... = 2 powr (4 * log 2 n + 48 * (log 2 (1 / \<epsilon>) + 16)^2 + (55 + 60 * ln (1 / \<delta>))^3)"
     unfolding powr_add[symmetric] by simp
   finally show ?thesis by simp
 qed
