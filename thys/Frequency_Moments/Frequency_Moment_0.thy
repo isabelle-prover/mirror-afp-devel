@@ -9,7 +9,7 @@ theory Frequency_Moment_0
     Frequency_Moments
     Landau_Ext 
     Product_PMF_Ext
-    Universal_Hash_Families.Field
+    Universal_Hash_Families.Universal_Hash_Families_More_Finite_Fields
 begin
 
 text \<open>This section contains a formalization of a new algorithm for the zero-th frequency moment

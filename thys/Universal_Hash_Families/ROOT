@@ -7,10 +7,10 @@ session Universal_Hash_Families = "HOL-Probability" +
     "Finite_Fields"
     "Interpolation_Polynomials_HOL_Algebra"
   theories
-    Definitions
-    Preliminary_Results
+    Universal_Hash_Families
+    Universal_Hash_Families_More_Independent_Families
     Carter_Wegman_Hash_Family
-    Field
+    Universal_Hash_Families_More_Finite_Fields
   document_files
     "root.tex"
     "root.bib"

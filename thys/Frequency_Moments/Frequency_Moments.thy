@@ -3,7 +3,7 @@ section "Frequency Moments"
 theory Frequency_Moments
   imports 
     Frequency_Moments_Preliminary_Results
-    Universal_Hash_Families.Field
+    Universal_Hash_Families.Universal_Hash_Families_More_Finite_Fields
     Interpolation_Polynomials_HOL_Algebra.Interpolation_Polynomial_Cardinalities
 begin
 
@@ -34,14 +34,14 @@ proof -
 qed
 
 definition P\<^sub>e :: "nat \<Rightarrow> nat \<Rightarrow> nat list \<Rightarrow> bool list option" where
-  "P\<^sub>e p n f = (if p > 1 \<and> f \<in> bounded_degree_polynomials (Field.mod_ring p) n then
-    ([0..<n] \<rightarrow>\<^sub>e Nb\<^sub>e p) (\<lambda>i \<in> {..<n}. ring.coeff (Field.mod_ring p) f i) else None)"
+  "P\<^sub>e p n f = (if p > 1 \<and> f \<in> bounded_degree_polynomials (mod_ring p) n then
+    ([0..<n] \<rightarrow>\<^sub>e Nb\<^sub>e p) (\<lambda>i \<in> {..<n}. ring.coeff (mod_ring p) f i) else None)"
 
 lemma poly_encoding:
   "is_encoding (P\<^sub>e p n)"
 proof (cases "p > 1")
   case True
-  interpret cring "Field.mod_ring p"
+  interpret cring "mod_ring p"
     using mod_ring_is_cring True by blast
   have a:"inj_on (\<lambda>x. (\<lambda>i \<in> {..<n}. (coeff x i))) (bounded_degree_polynomials (mod_ring p) n)"
   proof (rule inj_onI)
@@ -81,10 +81,10 @@ qed
 
 lemma bounded_degree_polynomial_bit_count:
   assumes "p > 1"
-  assumes "x \<in> bounded_degree_polynomials (Field.mod_ring p) n"
+  assumes "x \<in> bounded_degree_polynomials (mod_ring p) n"
   shows "bit_count (P\<^sub>e p n x) \<le> ereal (real n * (log 2 p + 1))"
 proof -
-  interpret cring "Field.mod_ring p"
+  interpret cring "mod_ring p"
     using mod_ring_is_cring assms by blast
 
   have a: "x \<in> carrier (poly_ring (mod_ring p))"

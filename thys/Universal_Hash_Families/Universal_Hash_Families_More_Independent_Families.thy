@@ -1,8 +1,8 @@
 section \<open>Preliminary Results\<close>
 
-theory Preliminary_Results
+theory Universal_Hash_Families_More_Independent_Families
   imports
-    "Definitions"
+    Universal_Hash_Families
     "HOL-Probability.Stream_Space"
     "HOL-Probability.Probability_Mass_Function"
 begin

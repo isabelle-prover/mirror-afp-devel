@@ -3,7 +3,7 @@ section \<open>Carter-Wegman Hash Family\label{sec:carter_wegman}\<close>
 theory Carter_Wegman_Hash_Family
   imports
     Interpolation_Polynomials_HOL_Algebra.Interpolation_Polynomial_Cardinalities
-    Preliminary_Results
+    Universal_Hash_Families_More_Independent_Families
 begin
 
 text \<open>The Carter-Wegman hash family is a generic method to obtain

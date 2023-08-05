@@ -1,6 +1,6 @@
 section \<open>Introduction and Definition\<close>
 
-theory Definitions
+theory Universal_Hash_Families
   imports "HOL-Probability.Independent_Family"
 begin
 
