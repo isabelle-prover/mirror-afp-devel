@@ -43,7 +43,7 @@ locale rpo_with_assms = precedence prc prl
 begin
 
 sublocale wpo_with_assms n "{}" UNIV prc prl full_status c False "\<lambda> _. False"
-  by (unfold_locales, auto simp: refl_on_def trans_def simple_arg_pos_def)
+  by (unfold_locales, auto simp: refl_on_def trans_def simple_arg_pos_def irrefl_def)
 
 abbreviation "rpo_pr \<equiv> rpo prc prl c n" 
 abbreviation "rpo_s \<equiv> \<lambda> s t. fst (rpo_pr s t)"

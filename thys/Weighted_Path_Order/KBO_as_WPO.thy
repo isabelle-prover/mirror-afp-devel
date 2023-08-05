@@ -144,9 +144,10 @@ lemma kbo_instance_of_wpo_with_assms: "wpo_with_assms
   apply (unfold_locales)
                       apply (auto simp: weight_lemmas SN_weight_S pr_SN pr_strict_irrefl
       weight_less_stable weight_le_stable weight_le_mono_one weight_less_imp_le
-      simple_arg_pos_weight)
-                 apply (force dest: least_global least_trans simp: pr_strict)+
-            apply (auto simp: pr_strict least dest:pr_weak_trans)
+      simple_arg_pos_weight) 
+         apply (force dest: least_global least_trans simp: pr_strict)+
+  using SN_on_irrefl[OF SN_weight_S]
+     apply (auto simp: pr_strict least irrefl_def dest:pr_weak_trans)
   done
 
 interpretation wpo: wpo_with_assms

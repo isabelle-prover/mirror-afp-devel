@@ -12,6 +12,7 @@ theory WPO
     Status
     Precedence
     Multiset_Extension2
+    HOL.Zorn
 begin
 
 datatype order_tag = Lex | Mul
@@ -69,6 +70,8 @@ lemma wpo_s_imp_ns: "s \<succ> t \<Longrightarrow> s \<succeq> t"
   unfolding wpo.simps[of s t]
   by (auto simp: Let_def mul_ext_stri_imp_nstri split: term.splits if_splits prod.splits)
 
+lemma S_imp_wpo_s: "(s,t) \<in> S \<Longrightarrow> s \<succ> t" by (simp add: wpo.simps)
+
 end
 
 declare wpo.wpo.simps[code]
@@ -78,8 +81,15 @@ definition strictly_simple_status :: "'f status \<Rightarrow> ('f,'v)term rel \<
   "strictly_simple_status \<sigma> rel = 
     (\<forall> f ts i. i \<in> set (status \<sigma> (f,length ts)) \<longrightarrow> (Fun f ts, ts ! i) \<in> rel)" 
 
-locale wpo_with_assms = wpo +
-  SN_order_pair + precedence +
+definition trans_precedence where "trans_precedence prc = (\<forall> f g h. 
+  (fst (prc f g) \<longrightarrow> snd (prc g h) \<longrightarrow> fst (prc f h)) \<and>
+  (snd (prc f g) \<longrightarrow> fst (prc g h) \<longrightarrow> fst (prc f h)) \<and>
+  (snd (prc f g) \<longrightarrow> snd (prc g h) \<longrightarrow> snd (prc f h)))" 
+  
+  
+
+locale wpo_with_basic_assms = wpo +
+  order_pair + irrefl_precedence +
   constrains S :: "('f, 'v) term rel" and NS :: _
     and prc :: "'f \<times> nat \<Rightarrow> 'f \<times> nat \<Rightarrow> bool \<times> bool"
     and prl :: "'f \<times> nat \<Rightarrow> bool"
@@ -90,69 +100,25 @@ locale wpo_with_assms = wpo +
     and \<sigma>\<sigma> :: "'f status"
   assumes subst_S: "(s,t) \<in> S \<Longrightarrow> (s \<cdot> \<sigma>, t \<cdot> \<sigma>) \<in> S"
     and subst_NS: "(s,t) \<in> NS \<Longrightarrow> (s \<cdot> \<sigma>, t \<cdot> \<sigma>) \<in> NS"
-    and ctxt_NS: "(s,t) \<in> NS \<Longrightarrow> (Fun f (bef @ s # aft), Fun f (bef @ t # aft)) \<in> NS" 
+    and irrefl_S: "irrefl S"
     and S_imp_NS: "S \<subseteq> NS"
-    and ws_status: "i \<in> set (status \<sigma>\<sigma> fn) \<Longrightarrow> simple_arg_pos NS fn i"
+    and ss_status: "ssimple \<Longrightarrow> i \<in> set (status \<sigma>\<sigma> fn) \<Longrightarrow> simple_arg_pos S fn i"
     and large: "ssimple \<Longrightarrow> large fn \<Longrightarrow> fst (prc fn gm) \<or> snd (prc fn gm) \<and> status \<sigma>\<sigma> gm = []"  
     and large_trans: "ssimple \<Longrightarrow> large fn \<Longrightarrow> snd (prc gm fn) \<Longrightarrow> large gm"  
-    and ss_status: "ssimple \<Longrightarrow> i \<in> set (status \<sigma>\<sigma> fn) \<Longrightarrow> simple_arg_pos S fn i"
     and ss_S_non_empty: "ssimple \<Longrightarrow> S \<noteq> {}"
 begin
+abbreviation "\<sigma> \<equiv> status \<sigma>\<sigma>"
 
 lemma ss_NS_not_UNIV: "ssimple \<Longrightarrow> NS \<noteq> UNIV"
 proof
   assume "ssimple" "NS = UNIV" 
   with ss_S_non_empty obtain a b where "(a,b) \<in> S" "(b,a) \<in> NS" by auto
   from compat_S_NS_point[OF this] have "(a,a) \<in> S" .
-  with SN show False by fast
+  with irrefl_S show False unfolding irrefl_def by auto
 qed
-
-abbreviation "\<sigma> \<equiv> status \<sigma>\<sigma>"
-
 
 lemmas \<sigma> = status[of \<sigma>\<sigma>]
-
-lemma NS_arg: assumes i: "i \<in> set (\<sigma> (f,length ts))"
-  shows "(Fun f ts, ts ! i) \<in> NS"
-  by (rule ws_status[OF i, unfolded simple_arg_pos_def fst_conv, rule_format],
-      insert \<sigma>[of f "length ts"] i, auto)
-
-lemma NS_subterm: assumes all: "\<And> f k. set (\<sigma> (f,k)) = {0 ..< k}"
-  shows "s \<unrhd> t \<Longrightarrow> (s,t) \<in> NS"
-proof (induct s t rule: supteq.induct)
-  case (refl)
-  from refl_NS show ?case unfolding refl_on_def by blast
-next
-  case (subt s ss t f)
-  from subt(1) obtain i where i: "i < length ss" and s: "s = ss ! i" unfolding set_conv_nth by auto
-  from NS_arg[of i f ss, unfolded all] s i have "(Fun f ss, s) \<in> NS" by auto
-  from trans_NS_point[OF this subt(3)] show ?case .
-qed
-
-
 lemma \<sigma>E: "i \<in> set (\<sigma> (f, length ss)) \<Longrightarrow> ss ! i \<in> set ss" by (rule status_aux)
-
-lemma wpo_ns_refl: 
-  shows "s \<succeq> s"
-proof (induct s)
-  case (Fun f ss)
-  {
-    fix i
-    assume si: "i \<in> set (\<sigma> (f,length ss))"
-    from NS_arg[OF this] have "(Fun f ss, ss ! i) \<in> NS" .
-    with si Fun[OF \<sigma>E[OF si]] have "wpo_s (Fun f ss) (ss ! i)" unfolding wpo.simps[of "Fun f ss" "ss ! i"]
-      by auto
-  } note wpo_s = this
-  let ?ss = "map (\<lambda> i. ss ! i) (\<sigma> (f,length ss))"
-  have rec11: "snd (lex_ext wpo n ?ss ?ss)"
-    by (rule all_nstri_imp_lex_nstri, insert \<sigma>E[of _ f ss], auto simp: Fun)
-  have rec12: "snd (mul_ext wpo ?ss ?ss)"
-    unfolding mul_ext_def Let_def snd_conv 
-    by (intro ns_mul_ext_refl_local,
-        unfold locally_refl_def, auto simp: in_multiset_in_set[of ?ss] intro!: Fun status_aux)
-  from rec11 rec12 show ?case using refl_NS_point prc_refl wpo_s
-    by (cases "c (f,length ss)", auto simp: wpo.simps[of "Fun f ss" "Fun f ss"])
-qed (simp add: wpo.simps refl_NS_point)
 
 lemma wpo_ns_imp_NS: "s \<succeq> t \<Longrightarrow> (s,t) \<in> NS" 
   using S_imp_NS
@@ -161,17 +127,6 @@ lemma wpo_ns_imp_NS: "s \<succeq> t \<Longrightarrow> (s,t) \<in> NS"
 
 lemma wpo_s_imp_NS: "s \<succ> t \<Longrightarrow> (s,t) \<in> NS" 
   by (rule wpo_ns_imp_NS[OF wpo_s_imp_ns])
-
-lemma S_imp_wpo_s: "(s,t) \<in> S \<Longrightarrow> s \<succ> t" by (simp add: wpo.simps)
-
-lemma Var_not_S[simp]: "(Var x, t) \<notin> S" 
-proof 
-  assume st: "(Var x, t) \<in> S" 
-  from SN_imp_minimal[OF SN, rule_format, of undefined UNIV]
-  obtain s where "\<And> u. (s,u) \<notin> S" by blast
-  with subst_S[OF st, of "\<lambda> _. s"]
-  show False by auto
-qed
 
 lemma wpo_least_1: assumes "prl (f,length ss)" 
   and "(t, Fun f ss) \<in> NS"
@@ -208,7 +163,6 @@ next
     by (simp add: wpo.simps[of _ "Fun g ts"] lex_ext_least_2 prc
         mul_ext_def s_mul_ext_bottom_strict Let_def)
 qed
-
 
 lemma wpo_least_3: assumes "prl (f,length ss)" (is "prl ?f") 
   and ns: "Fun f ss \<succeq> t"
@@ -270,8 +224,8 @@ next
 qed
 
 (* Transitivity / compatibility of the orders *)
-lemma wpo_compat: "
-  (s \<succeq> t \<and> t \<succ> u \<longrightarrow> s \<succ> u) \<and>
+lemma wpo_compat': assumes SN: "\<And> f. prl f \<Longrightarrow> SN S" (* it is not clear whether this is really required *)
+  shows "(s \<succeq> t \<and> t \<succ> u \<longrightarrow> s \<succ> u) \<and>
   (s \<succ> t \<and> t \<succeq> u \<longrightarrow> s \<succ> u) \<and>
   (s \<succeq> t \<and> t \<succeq> u \<longrightarrow> s \<succeq> u)" (is "?tran s t u")
 proof (induct "(s,t,u)" arbitrary: s t u rule: wf_induct[OF wf_measures[of "[\<lambda> (s,t,u). size s, \<lambda> (s,t,u). size t, \<lambda> (s,t,u). size u]"]])
@@ -313,7 +267,7 @@ proof (induct "(s,t,u)" arbitrary: s t u rule: wf_induct[OF wf_measures[of "[\<l
           case (Fun h us)
           let ?h = "(h,length us)"
           from Fun ge Var tuS have us: "\<sigma> ?h = []" and pri: "prl ?h" by (auto split: if_splits)
-          from gr Var tuS obtain f ss where s: "s = Fun f ss" by (cases s, auto split: if_splits)
+          from gr Var tuS ge stS obtain f ss where s: "s = Fun f ss" by (cases s, auto split: if_splits)
           let ?f = "(f,length ss)"
           from s gr Var False obtain i where i: "i \<in> set (\<sigma> ?f)" and sit: "ss ! i \<succeq> t" by (auto split: if_splits)        
           from trans_NS_point[OF wpo_ns_imp_NS[OF sit] tuA] have siu: "(ss ! i,u) \<in> NS" .
@@ -327,12 +281,12 @@ proof (induct "(s,t,u)" arbitrary: s t u rule: wf_induct[OF wf_measures[of "[\<l
         show "wpo_ns s u"
         proof (cases u)
           case (Var y)
-          with ge2 \<open>t = Var x\<close> have "t = u" by (auto split: if_splits)
+          with ge2 \<open>t = Var x\<close> tuS have "t = u" by (auto split: if_splits)
           with ge1 show ?thesis by auto
         next
           case (Fun h us)
           let ?h = "(h,length us)"
-          from Fun ge2 Var have us: "\<sigma> ?h = []" and pri: "prl ?h" by (auto split: if_splits)
+          from Fun ge2 Var tuS have us: "\<sigma> ?h = []" and pri: "prl ?h" by (auto split: if_splits)
           show ?thesis unfolding Fun us
             by (rule wpo_least_1[OF pri trans_NS_point[OF wpo_ns_imp_NS[OF ge1] 
                     wpo_ns_imp_NS[OF ge2[unfolded Fun us]]] us]) 
@@ -350,23 +304,25 @@ proof (induct "(s,t,u)" arbitrary: s t u rule: wf_induct[OF wf_measures[of "[\<l
         show ?thesis
         proof safe
           assume gr: "wpo_s s t"
-          with Var Fun show "wpo_s s u" by (auto simp: wpo.simps split: if_splits)
+          with Var Fun stS show "wpo_s s u" by (auto simp: wpo.simps split: if_splits)
         next
           assume ge: "wpo_ns s t" and gr: "wpo_s t u"
-          with Var Fun have pri: "prl ?g" and "\<sigma> ?g = []" by (auto simp: wpo.simps split: if_splits)
+          with Var Fun stS have pri: "prl ?g" and "\<sigma> ?g = []" by (auto simp: wpo.simps split: if_splits)
           with gr Fun show "wpo_s s u" using wpo_least_2[OF pri, of u] False by auto
         next
           assume ge1: "wpo_ns s t" and ge2: "wpo_ns t u"
-          with Var Fun have pri: "prl ?g" and empty: "\<sigma> ?g = []" by (auto simp: wpo.simps split: if_splits)
+          with Var Fun stS have pri: "prl ?g" and empty: "\<sigma> ?g = []" by (auto simp: wpo.simps split: if_splits)
           from wpo_ns_imp_NS[OF ge1] Var Fun empty have ns: "(Var x, Fun g ts) \<in> NS" by simp
           show "wpo_ns s u"
           proof (rule wpo_least_3[OF pri ge2[unfolded Fun empty] 
                 wpo_ns_imp_NS[OF ge1[unfolded Fun empty]] empty _ Var], rule)
             fix v
             assume S: "(Fun g ts, v) \<in> S"
+            from compat_NS_S_point[OF ns S] have xv: "(Var x, v) \<in> S" .
+            from assms[OF pri] have SN: "SN S" .
             from SN_imp_minimal[OF SN, rule_format, of undefined UNIV]
             obtain s where "\<And> u. (s,u) \<notin> S" by blast
-            with compat_NS_S_point[OF subst_NS[OF ns, of "\<lambda> _. s"] subst_S[OF S, of "\<lambda> _. s"]]
+            with subst_S[OF xv, of "\<lambda> _. s"]
             show False by auto
           qed
         qed
@@ -697,7 +653,7 @@ proof (induct "(s,t,u)" arbitrary: s t u rule: wf_induct[OF wf_measures[of "[\<l
                 obtain fgs fgns where prc_fg: "prc ?f ?g = (fgs,fgns)" by (cases "prc ?f ?g", auto) 
                 from ge1 \<open>\<not> ?s1\<close> stS have weak_fg: "snd (prc ?f ?g)" unfolding s t using prc_fg
                   by (auto simp: wpo.simps split: if_splits)
-                from refl_not_SN[of ?f] prc_SN have prc_irrefl: "\<not> fst (prc ?f ?f)" by auto
+                have prc_irrefl: "\<not> fst (prc ?f ?f)" using prc_refl by simp
                 from large have False
                 proof
                   assume "fst (prc ?g ?f)" 
@@ -865,97 +821,37 @@ proof (induct "(s,t,u)" arbitrary: s t u rule: wf_induct[OF wf_measures[of "[\<l
   qed
 qed
 
-lemma subterm_wpo_s_arg: assumes i: "i \<in> set (\<sigma> (f,length ss))"
-  shows "Fun f ss \<succ> ss ! i"
-proof -
-  have refl: "ss ! i \<succeq> ss ! i" by (rule wpo_ns_refl)
-  with i have "\<exists> t \<in> set (\<sigma> (f,length ss)). ss ! i \<succeq> ss ! i" by auto
-  with NS_arg[OF i] i
-  show ?thesis by (auto simp: wpo.simps split: if_splits)
-qed
+context
+  assumes ssimple: "strictly_simple_status \<sigma>\<sigma> NS"
+begin
+lemma NS_arg': 
+  assumes i: "i \<in> set (\<sigma> (f,length ts))"
+  shows "(Fun f ts, ts ! i) \<in> NS" 
+  using assms ssimple unfolding simple_arg_pos_def strictly_simple_status_def by simp
 
-lemma subterm_wpo_ns_arg: assumes i: "i \<in> set (\<sigma> (f,length ss))"
-  shows "Fun f ss \<succeq> ss ! i"
-  by (rule wpo_s_imp_ns[OF subterm_wpo_s_arg[OF i]])
-
-lemma wpo_ns_pre_mono: fixes f and bef aft :: "('f,'v)term list"
-  defines "\<sigma>f \<equiv> \<sigma> (f, Suc (length bef + length aft))"
-  assumes rel: "(wpo_ns s t)"
-  shows "(\<forall>j\<in>set \<sigma>f. Fun f (bef @ s # aft) \<succ> (bef @ t # aft) ! j)
-    \<and> (Fun f (bef @ s # aft), (Fun f (bef @ t # aft))) \<in> NS
-    \<and> (\<forall> i < length \<sigma>f. ((map ((!) (bef @ s # aft)) \<sigma>f) ! i) \<succeq> ((map ((!) (bef @ t # aft)) \<sigma>f) ! i))"
-    (is "_ \<and> _ \<and> ?three")
-proof -
-  let ?ss = "bef @ s # aft"
-  let ?ts = "bef @ t # aft"
-  let ?s = "Fun f ?ss"
-  let ?t = "Fun f ?ts"
-  let ?len = "Suc (length bef + length aft)"
-  let ?f = "(f, ?len)"
-  let ?\<sigma> = "\<sigma> ?f"
-  from wpo_ns_imp_NS[OF rel] have stA: "(s,t) \<in> NS" .
-  have ?three unfolding \<sigma>f_def
-  proof (intro allI impI)
+lemma wpo_ns_refl': 
+  shows "s \<succeq> s"
+proof (induct s)
+  case (Fun f ss)
+  {
     fix i
-    assume "i < length ?\<sigma>"
-    then have id: "\<And> ss. (map ((!) ss) ?\<sigma>) ! i = ss ! (?\<sigma> ! i)" by auto
-    show "wpo_ns ((map ((!) ?ss) ?\<sigma>) ! i) ((map ((!) ?ts) ?\<sigma>) ! i)"
-    proof (cases "?\<sigma> ! i = length bef")
-      case True
-      then show ?thesis unfolding id using rel by auto
-    next
-      case False
-      from append_Cons_nth_not_middle[OF this, of s aft t] wpo_ns_refl 
-      show ?thesis unfolding id by auto
-    qed
-  qed
-  have "\<forall>j\<in>set ?\<sigma>. wpo_s ?s ((bef @ t # aft) ! j)" (is ?one)
-  proof
-    fix j
-    assume j: "j \<in> set ?\<sigma>"
-    then have "j \<in> set (\<sigma> (f,length ?ss))" by simp
-    from subterm_wpo_s_arg[OF this]
-    have s: "wpo_s ?s (?ss ! j)" .
-    show "wpo_s ?s (?ts ! j)"
-    proof (cases "j = length bef")
-      case False
-      then have "?ss ! j = ?ts ! j" by (rule append_Cons_nth_not_middle)
-      with s show ?thesis by simp
-    next
-      case True
-      with s have "wpo_s ?s s" by simp
-      with rel wpo_compat have "wpo_s ?s t" by blast
-      with True show ?thesis by simp
-    qed
-  qed
-  with \<open>?three\<close> ctxt_NS[OF stA] show ?thesis unfolding \<sigma>f_def by auto
-qed
+    assume si: "i \<in> set (\<sigma> (f,length ss))"
+    from NS_arg'[OF this] have "(Fun f ss, ss ! i) \<in> NS" .
+    with si Fun[OF status_aux[OF si]] have "wpo_s (Fun f ss) (ss ! i)" unfolding wpo.simps[of "Fun f ss" "ss ! i"]
+      by auto
+  } note wpo_s = this
+  let ?ss = "map (\<lambda> i. ss ! i) (\<sigma> (f,length ss))"
+  have rec11: "snd (lex_ext wpo n ?ss ?ss)"
+    by (rule all_nstri_imp_lex_nstri, insert \<sigma>E[of _ f ss], auto simp: Fun)
+  have rec12: "snd (mul_ext wpo ?ss ?ss)"
+    unfolding mul_ext_def Let_def snd_conv 
+    by (intro ns_mul_ext_refl_local,
+        unfold locally_refl_def, auto simp: in_multiset_in_set[of ?ss] intro!: Fun status_aux)
+  from rec11 rec12 show ?case using refl_NS_point wpo_s
+    by (cases "c (f,length ss)", auto simp: wpo.simps[of "Fun f ss" "Fun f ss"] prc_refl)
+qed (simp add: wpo.simps refl_NS_point)
 
-lemma wpo_ns_mono:
-  assumes rel: "s \<succeq> t"
-  shows "Fun f (bef @ s # aft) \<succeq> Fun f (bef @ t # aft)"
-proof - 
-  let ?ss = "bef @ s # aft"
-  let ?ts = "bef @ t # aft"
-  let ?s = "Fun f ?ss"
-  let ?t = "Fun f ?ts"  
-  let ?len = "Suc (length bef + length aft)"
-  let ?f = "(f, ?len)"
-  let ?\<sigma> = "\<sigma> ?f"
-  from wpo_ns_pre_mono[OF rel]
-  have id: "(\<forall>j\<in>set ?\<sigma>. wpo_s ?s ((bef @ t # aft) ! j)) = True" 
-    "((?s,?t) \<in> NS) = True" 
-    "length ?ss = ?len" "length ?ts = ?len"
-    by auto 
-  have "snd (lex_ext wpo n (map ((!) ?ss) ?\<sigma>) (map ((!) ?ts) ?\<sigma>))"
-    by (rule all_nstri_imp_lex_nstri, intro allI impI, insert wpo_ns_pre_mono[OF rel], auto)
-  moreover have "snd (mul_ext wpo (map ((!) ?ss) ?\<sigma>) (map ((!) ?ts) ?\<sigma>))"
-    by (rule all_nstri_imp_mul_nstri, intro allI impI, insert wpo_ns_pre_mono[OF rel], auto)
-  ultimately show ?thesis unfolding wpo.simps[of ?s ?t] term.simps id prc_refl
-    using order_tag.exhaust by (auto simp: Let_def)
-qed
-
-lemma wpo_stable: fixes \<delta> :: "('f,'v)subst"
+lemma wpo_stable': fixes \<delta> :: "('f,'v)subst"
   shows "(s \<succ> t \<longrightarrow> s \<cdot> \<delta> \<succ> t \<cdot> \<delta>) \<and> (s \<succeq> t \<longrightarrow> s \<cdot> \<delta> \<succeq> t \<cdot> \<delta>)"
     (is "?p s t")
 proof (induct "(s,t)" arbitrary:s t rule: wf_induct[OF wf_measure[of "\<lambda> (s,t). size s + size t"]])
@@ -994,7 +890,7 @@ proof (induct "(s,t)" arbitrary:s t rule: wf_induct[OF wf_measure[of "\<lambda> 
       show ?thesis
       proof (cases t)
         case (Var y) note t = this
-        show ?thesis unfolding simps(1) unfolding s t using wpo_ns_refl[of "\<delta> y"] by auto
+        show ?thesis unfolding simps(1) unfolding s t using wpo_ns_refl'[of "\<delta> y"] by auto
       next
         case (Fun g ts) note t = this
         let ?g = "(g,length ts)"
@@ -1212,6 +1108,188 @@ proof (induct "(s,t)" arbitrary:s t rule: wf_induct[OF wf_measure[of "\<lambda> 
     qed
   qed
 qed
+
+lemma subterm_wpo_s_arg': assumes i: "i \<in> set (\<sigma> (f,length ss))"
+  shows "Fun f ss \<succ> ss ! i"
+proof -
+  have refl: "ss ! i \<succeq> ss ! i" by (rule wpo_ns_refl')
+  with i have "\<exists> t \<in> set (\<sigma> (f,length ss)). ss ! i \<succeq> ss ! i" by auto
+  with NS_arg'[OF i] i
+  show ?thesis by (auto simp: wpo.simps split: if_splits)
+qed
+
+context
+  fixes f s t bef aft
+  assumes ctxt_NS: "(s,t) \<in> NS \<Longrightarrow> (Fun f (bef @ s # aft), Fun f (bef @ t # aft)) \<in> NS"
+  and SN: "\<And>f. prl f \<Longrightarrow> SN S" 
+begin
+
+lemma wpo_ns_pre_mono': 
+  defines "\<sigma>f \<equiv> \<sigma> (f, Suc (length bef + length aft))"
+  assumes rel: "(wpo_ns s t)"
+  shows "(\<forall>j\<in>set \<sigma>f. Fun f (bef @ s # aft) \<succ> (bef @ t # aft) ! j)
+    \<and> (Fun f (bef @ s # aft), (Fun f (bef @ t # aft))) \<in> NS
+    \<and> (\<forall> i < length \<sigma>f. ((map ((!) (bef @ s # aft)) \<sigma>f) ! i) \<succeq> ((map ((!) (bef @ t # aft)) \<sigma>f) ! i))"
+    (is "_ \<and> _ \<and> ?three")
+proof -
+  let ?ss = "bef @ s # aft"
+  let ?ts = "bef @ t # aft"
+  let ?s = "Fun f ?ss"
+  let ?t = "Fun f ?ts"
+  let ?len = "Suc (length bef + length aft)"
+  let ?f = "(f, ?len)"
+  let ?\<sigma> = "\<sigma> ?f"
+  from wpo_ns_imp_NS[OF rel] have stA: "(s,t) \<in> NS" .
+  have ?three unfolding \<sigma>f_def
+  proof (intro allI impI)
+    fix i
+    assume "i < length ?\<sigma>"
+    then have id: "\<And> ss. (map ((!) ss) ?\<sigma>) ! i = ss ! (?\<sigma> ! i)" by auto
+    show "wpo_ns ((map ((!) ?ss) ?\<sigma>) ! i) ((map ((!) ?ts) ?\<sigma>) ! i)"
+    proof (cases "?\<sigma> ! i = length bef")
+      case True
+      then show ?thesis unfolding id using rel by auto
+    next
+      case False
+      from append_Cons_nth_not_middle[OF this, of s aft t] wpo_ns_refl'
+      show ?thesis unfolding id by auto
+    qed
+  qed
+  have "\<forall>j\<in>set ?\<sigma>. wpo_s ?s ((bef @ t # aft) ! j)" (is ?one)
+  proof
+    fix j
+    assume j: "j \<in> set ?\<sigma>"
+    then have "j \<in> set (\<sigma> (f,length ?ss))" by simp
+    from subterm_wpo_s_arg'[OF this]
+    have s: "wpo_s ?s (?ss ! j)" .
+    show "wpo_s ?s (?ts ! j)"
+    proof (cases "j = length bef")
+      case False
+      then have "?ss ! j = ?ts ! j" by (rule append_Cons_nth_not_middle)
+      with s show ?thesis by simp
+    next
+      case True
+      with s have "wpo_s ?s s" by simp
+      with rel wpo_compat'[OF SN] have "wpo_s ?s t" by fast
+      with True show ?thesis by simp
+    qed
+  qed
+  with \<open>?three\<close> ctxt_NS[OF stA] show ?thesis unfolding \<sigma>f_def by auto
+qed
+
+lemma wpo_ns_mono':
+  assumes rel: "s \<succeq> t"
+  shows "Fun f (bef @ s # aft) \<succeq> Fun f (bef @ t # aft)"
+proof - 
+  let ?ss = "bef @ s # aft"
+  let ?ts = "bef @ t # aft"
+  let ?s = "Fun f ?ss"
+  let ?t = "Fun f ?ts"  
+  let ?len = "Suc (length bef + length aft)"
+  let ?f = "(f, ?len)"
+  let ?\<sigma> = "\<sigma> ?f"
+  from wpo_ns_pre_mono'[OF rel]
+  have id: "(\<forall>j\<in>set ?\<sigma>. wpo_s ?s ((bef @ t # aft) ! j)) = True" 
+    "((?s,?t) \<in> NS) = True" 
+    "length ?ss = ?len" "length ?ts = ?len"
+    by auto 
+  have "snd (lex_ext wpo n (map ((!) ?ss) ?\<sigma>) (map ((!) ?ts) ?\<sigma>))"
+    by (rule all_nstri_imp_lex_nstri, intro allI impI, insert wpo_ns_pre_mono'[OF rel], auto)
+  moreover have "snd (mul_ext wpo (map ((!) ?ss) ?\<sigma>) (map ((!) ?ts) ?\<sigma>))"
+    by (rule all_nstri_imp_mul_nstri, intro allI impI, insert wpo_ns_pre_mono'[OF rel], auto)
+  ultimately show ?thesis unfolding wpo.simps[of ?s ?t] term.simps id prc_refl
+    using order_tag.exhaust by (auto simp: Let_def)
+qed
+
+end
+end
+end
+
+locale wpo_with_assms = wpo_with_basic_assms + SN_order_pair + precedence +
+  constrains S :: "('f, 'v) term rel" and NS :: _
+    and prc :: "'f \<times> nat \<Rightarrow> 'f \<times> nat \<Rightarrow> bool \<times> bool"
+    and prl :: "'f \<times> nat \<Rightarrow> bool"
+    and ssimple :: bool
+    and large :: "'f \<times> nat \<Rightarrow> bool" 
+    and c :: "'f \<times> nat \<Rightarrow> order_tag" 
+    and n :: nat
+    and \<sigma>\<sigma> :: "'f status"
+  assumes ctxt_NS: "(s,t) \<in> NS \<Longrightarrow> (Fun f (bef @ s # aft), Fun f (bef @ t # aft)) \<in> NS" 
+    and ws_status: "i \<in> set (status \<sigma>\<sigma> fn) \<Longrightarrow> simple_arg_pos NS fn i"
+begin
+
+lemma ssimple: "strictly_simple_status \<sigma>\<sigma> NS" 
+   using ws_status set_status_nth unfolding strictly_simple_status_def simple_arg_pos_def by fastforce
+   
+lemma trans_prc: "trans_precedence prc" 
+  unfolding trans_precedence_def 
+proof (intro allI, goal_cases)
+  case (1 f g h)
+  show ?case using prc_compat[of f g _ _ h] by (cases "prc f g"; cases "prc g h"; cases "prc f h", auto)
+qed
+
+lemma NS_arg: assumes i: "i \<in> set (\<sigma> (f,length ts))"
+  shows "(Fun f ts, ts ! i) \<in> NS"
+  using NS_arg'[OF ssimple i] .
+
+lemma NS_subterm: assumes all: "\<And> f k. set (\<sigma> (f,k)) = {0 ..< k}"
+  shows "s \<unrhd> t \<Longrightarrow> (s,t) \<in> NS"
+proof (induct s t rule: supteq.induct)
+  case (refl)
+  from refl_NS show ?case unfolding refl_on_def by blast
+next
+  case (subt s ss t f)
+  from subt(1) obtain i where i: "i < length ss" and s: "s = ss ! i" unfolding set_conv_nth by auto
+  from NS_arg[of i f ss, unfolded all] s i have "(Fun f ss, s) \<in> NS" by auto
+  from trans_NS_point[OF this subt(3)] show ?case .
+qed
+
+lemma wpo_ns_refl: "s \<succeq> s"
+  using wpo_ns_refl'[OF ssimple] .
+
+
+lemma Var_not_S[simp]: "(Var x, t) \<notin> S" 
+proof 
+  assume st: "(Var x, t) \<in> S" 
+  from SN_imp_minimal[OF SN, rule_format, of undefined UNIV]
+  obtain s where "\<And> u. (s,u) \<notin> S" by blast
+  with subst_S[OF st, of "\<lambda> _. s"]
+  show False by auto
+qed
+
+
+(* Transitivity / compatibility of the orders *)
+lemma wpo_compat: "
+  (s \<succeq> t \<and> t \<succ> u \<longrightarrow> s \<succ> u) \<and>
+  (s \<succ> t \<and> t \<succeq> u \<longrightarrow> s \<succ> u) \<and>
+  (s \<succeq> t \<and> t \<succeq> u \<longrightarrow> s \<succeq> u)" 
+  by (rule wpo_compat'[OF SN])
+
+lemma subterm_wpo_s_arg: assumes i: "i \<in> set (\<sigma> (f,length ss))"
+  shows "Fun f ss \<succ> ss ! i"
+  by (rule subterm_wpo_s_arg'[OF ssimple i])
+
+lemma subterm_wpo_ns_arg: assumes i: "i \<in> set (\<sigma> (f,length ss))"
+  shows "Fun f ss \<succeq> ss ! i"
+  by (rule wpo_s_imp_ns[OF subterm_wpo_s_arg[OF i]])
+
+lemma wpo_ns_mono:
+  assumes rel: "s \<succeq> t"
+  shows "Fun f (bef @ s # aft) \<succeq> Fun f (bef @ t # aft)"
+  by (rule wpo_ns_mono'[OF ssimple ctxt_NS SN rel])
+
+lemma wpo_ns_pre_mono: fixes f and bef aft :: "('f,'v)term list"
+  defines "\<sigma>f \<equiv> \<sigma> (f, Suc (length bef + length aft))"
+  assumes rel: "(wpo_ns s t)"
+  shows "(\<forall>j\<in>set \<sigma>f. Fun f (bef @ s # aft) \<succ> (bef @ t # aft) ! j)
+    \<and> (Fun f (bef @ s # aft), (Fun f (bef @ t # aft))) \<in> NS
+    \<and> (\<forall> i < length \<sigma>f. ((map ((!) (bef @ s # aft)) \<sigma>f) ! i) \<succeq> ((map ((!) (bef @ t # aft)) \<sigma>f) ! i))"
+  unfolding \<sigma>f_def
+  by (rule wpo_ns_pre_mono'[OF ssimple ctxt_NS SN rel])
+
+lemma wpo_stable: fixes \<delta> :: "('f,'v)subst"
+  shows "(s \<succ> t \<longrightarrow> s \<cdot> \<delta> \<succ> t \<cdot> \<delta>) \<and> (s \<succeq> t \<longrightarrow> s \<cdot> \<delta> \<succeq> t \<cdot> \<delta>)"
+  by (rule wpo_stable'[OF ssimple])
 
 lemma WPO_S_SN: "SN WPO_S"
 proof - 
