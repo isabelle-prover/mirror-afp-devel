@@ -7,7 +7,7 @@ theory Frequency_Moment_2
     Landau_Ext
     Median_Method.Median
     Product_PMF_Ext
-    Universal_Hash_Families.Field
+    Universal_Hash_Families.Universal_Hash_Families_More_Finite_Fields
     Frequency_Moments 
 begin
 

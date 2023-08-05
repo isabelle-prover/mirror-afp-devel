@@ -1,8 +1,8 @@
 section \<open>Finite Fields\<close>
 
-theory Field
+theory Universal_Hash_Families_More_Finite_Fields
   imports
-    "Finite_Fields.Ring_Characteristic"
+    Finite_Fields.Ring_Characteristic
     "HOL-Algebra.Ring_Divisibility"
     "HOL-Algebra.IntRing"
 begin

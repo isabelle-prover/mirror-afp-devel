@@ -1,7 +1,7 @@
 section \<open>Indexed Products of Probability Mass Functions\<close>
 
 theory Product_PMF_Ext
-  imports Main Probability_Ext "HOL-Probability.Product_PMF" Universal_Hash_Families.Preliminary_Results
+  imports Main Probability_Ext "HOL-Probability.Product_PMF" Universal_Hash_Families.Universal_Hash_Families_More_Independent_Families
 begin
 
 hide_const "Isolated.discrete"

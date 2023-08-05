@@ -4,7 +4,7 @@ theory Median
   imports 
     "HOL-Probability.Probability" 
     "HOL-Library.Multiset" 
-    "Universal_Hash_Families.Preliminary_Results"
+    "Universal_Hash_Families.Universal_Hash_Families_More_Independent_Families"
 begin
 
 text \<open>This section contains a proof that intervals are Borel measurable, where an interval is
