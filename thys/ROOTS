@@ -33,6 +33,7 @@ Attack_Trees
 Auto2_HOL
 Auto2_Imperative_HOL
 AutoFocus-Stream
+Automated_Stateful_Protocol_Verification
 Automatic_Refinement
 AxiomaticCategoryTheory
 BDD
@@ -656,6 +657,7 @@ Sqrt_Babylonian
 Stable_Matching
 Stalnaker_Logic
 Statecharts
+Stateful_Protocol_Composition_and_Typing
 Stellar_Quorums
 Stern_Brocot
 Stewart_Apollonius
