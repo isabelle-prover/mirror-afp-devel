@@ -37,7 +37,7 @@ homepage = "brucker_homepage"
 [notify]
 hess = "hess_email1"
 moedersheim = "moedersheim_email"
-brucker = "brucker_email1"
+brucker = "brucker_email2"
 schlichtkrull = "schlichtkrull_email"
 
 [history]

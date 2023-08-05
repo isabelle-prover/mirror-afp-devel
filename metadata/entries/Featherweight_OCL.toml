@@ -31,7 +31,7 @@ note = ""
 [authors]
 
 [authors.brucker]
-email = "brucker_email1"
+email = "brucker_email2"
 
 [authors.tuong]
 email = "tuong_email"
@@ -42,7 +42,7 @@ email = "wolff_email"
 [contributors]
 
 [notify]
-brucker = "brucker_email1"
+brucker = "brucker_email2"
 tuong = "tuong_email"
 wolff = "wolff_email"
 
