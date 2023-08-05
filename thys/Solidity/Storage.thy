@@ -10,6 +10,8 @@ subsection \<open>Hashing\<close>
 definition hash :: "Location \<Rightarrow> String.literal \<Rightarrow> Location"
   where "hash loc ix = ix + (STR ''.'' + loc)"
 
+declare hash_def [solidity_symbex]
+
 lemma example: "hash (STR ''1.0'') (STR ''2'') = hash (STR ''0'') (STR ''2.1'')" by eval
 
 lemma hash_explode:
@@ -68,6 +70,8 @@ record 'v Store =
 definition accessStore :: "Location \<Rightarrow> 'v Store \<Rightarrow> 'v option"
 where "accessStore loc st = fmlookup (mapping st) loc"
 
+declare accessStore_def[solidity_symbex]
+
 definition emptyStore :: "'v Store"
 where "emptyStore = \<lparr> mapping=fmempty, toploc=0 \<rparr>"
 
@@ -76,11 +80,17 @@ declare emptyStore_def [solidity_symbex]
 definition allocate :: "'v Store \<Rightarrow> Location * ('v Store)"
 where "allocate s = (let ntop = Suc(toploc s) in (ShowL\<^sub>n\<^sub>a\<^sub>t ntop, s \<lparr>toploc := ntop\<rparr>))"
 
+
+
 definition updateStore :: "Location \<Rightarrow> 'v \<Rightarrow> 'v Store \<Rightarrow> 'v Store"
 where "updateStore loc val s = s \<lparr> mapping := fmupd loc val (mapping s)\<rparr>"
 
+declare updateStore_def [solidity_symbex]
+
 definition push :: "'v \<Rightarrow> 'v Store \<Rightarrow> 'v Store"
   where "push val sto = (let s = updateStore (ShowL\<^sub>n\<^sub>a\<^sub>t (toploc sto)) val sto in snd (allocate s))"
+
+declare push_def [solidity_symbex]
 
 subsection \<open>Stack\<close>
 
@@ -119,6 +129,8 @@ where
       Some v \<Rightarrow> v
     | None \<Rightarrow> ival t)"
 
+declare accessStorage_def [solidity_symbex]
+
 subsubsection \<open>Copy from storage to storage\<close>
 
 primrec copyRec :: "Location \<Rightarrow> Location \<Rightarrow> STypes \<Rightarrow> StorageT \<Rightarrow> StorageT option"
@@ -133,6 +145,9 @@ definition copy :: "Location \<Rightarrow> Location \<Rightarrow> int \<Rightarr
 where
   "copy l\<^sub>s l\<^sub>d x t sto =
     iter' (\<lambda>i s'. copyRec (hash l\<^sub>s (ShowL\<^sub>i\<^sub>n\<^sub>t i)) (hash l\<^sub>d (ShowL\<^sub>i\<^sub>n\<^sub>t i)) t s') sto x"
+
+declare copy_def [solidity_symbex]
+
 
 abbreviation mystorage2::StorageT
 where "mystorage2 \<equiv> (fmap_of_list
@@ -191,6 +206,8 @@ where
          m = iter (\<lambda>i m' . minitRec (hash l (ShowL\<^sub>i\<^sub>n\<^sub>t i)) t m') mem x
      in snd (allocate m))"
 
+declare minit_def [solidity_symbex]
+
 subsubsection \<open>Example\<close>
 
 lemma "minit 2 (MTArray 2 (MTValue TBool)) emptyStore =
@@ -220,6 +237,8 @@ where
 definition cpm2m :: "Location \<Rightarrow> Location \<Rightarrow> int \<Rightarrow> MTypes \<Rightarrow> MemoryT \<Rightarrow> MemoryT \<Rightarrow> MemoryT option"
 where
   "cpm2m l\<^sub>s l\<^sub>d x t m\<^sub>s m\<^sub>d = iter' (\<lambda>i m. cpm2mrec (hash l\<^sub>s (ShowL\<^sub>i\<^sub>n\<^sub>t i)) (hash l\<^sub>d (ShowL\<^sub>i\<^sub>n\<^sub>t i)) t m\<^sub>s m) m\<^sub>d x"
+
+declare cpm2m_def [solidity_symbex]
 
 subsubsection \<open>Example\<close>
 
@@ -254,6 +273,8 @@ where
   "cps2m locs locm x t sto mem =
     iter' (\<lambda>i m'. cps2mrec (hash locs (ShowL\<^sub>i\<^sub>n\<^sub>t i)) (hash locm (ShowL\<^sub>i\<^sub>n\<^sub>t i)) t sto m') mem x"
 
+declare cps2m_def [solidity_symbex]
+
 subsubsection \<open>Example\<close>
 
 abbreviation mystorage3::StorageT
@@ -287,15 +308,17 @@ where
   "cpm2s locm locs x t mem sto =
     iter' (\<lambda>i s'. cpm2srec (hash locm (ShowL\<^sub>i\<^sub>n\<^sub>t i)) (hash locs (ShowL\<^sub>i\<^sub>n\<^sub>t i)) t mem s') sto x"
 
+declare cpm2s_def [solidity_symbex]
+
 subsubsection \<open>Example\<close>
 
 lemma "cpm2s (STR ''0'') (STR ''1'') 2 (MTArray 2 (MTValue TBool)) mymemory fmempty = Some mystorage3"
   by eval
 
-declare copyRec.simps [simp del]
-declare minitRec.simps [simp del]
-declare cpm2mrec.simps [simp del]
-declare cps2mrec.simps [simp del]
-declare cpm2srec.simps [simp del]
+declare copyRec.simps [simp del, solidity_symbex add]
+declare minitRec.simps [simp del, solidity_symbex add]
+declare cpm2mrec.simps [simp del, solidity_symbex add]
+declare cps2mrec.simps [simp del, solidity_symbex add]
+declare cpm2srec.simps [simp del, solidity_symbex add]
 
 end

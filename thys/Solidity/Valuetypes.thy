@@ -34,6 +34,8 @@ where
       then ShowL\<^sub>i\<^sub>n\<^sub>t (-(2^(b-1)) + (v+2^(b-1)) mod (2^b))
       else ShowL\<^sub>i\<^sub>n\<^sub>t (2^(b-1) - (-v+2^(b-1)-1) mod (2^b) - 1))"
 
+declare createSInt_def [solidity_symbex]
+
 lemma upper_bound:
   fixes b::nat
     and c::int
@@ -127,6 +129,8 @@ lemma createSInt_id:
 definition createUInt :: "nat \<Rightarrow> int \<Rightarrow> Valuetype"
   where "createUInt b v = ShowL\<^sub>i\<^sub>n\<^sub>t (v mod (2^b))"
 
+declare createUInt_def[solidity_symbex]
+
 lemma createUInt_id:
   assumes "v \<ge> 0"
       and "v < 2^b"
@@ -137,17 +141,24 @@ definition createBool :: "bool \<Rightarrow> Valuetype"
 where
   "createBool b = ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l b"
 
+declare createBool_def [solidity_symbex]
+
 definition createAddress :: "Address \<Rightarrow> Valuetype"
 where
   "createAddress ad = ad"
+
+declare createAddress_def [solidity_symbex]
 
 definition checkSInt :: "nat \<Rightarrow> Valuetype \<Rightarrow> bool"
 where
   "checkSInt b v = ((foldr (\<and>) (map is_digit (String.explode v)) True) \<and>(ReadL\<^sub>i\<^sub>n\<^sub>t v \<ge> -(2^(b-1)) \<and> ReadL\<^sub>i\<^sub>n\<^sub>t v < 2^(b-1)))"
 
+declare checkSInt_def [solidity_symbex]
+
 definition checkUInt :: "nat \<Rightarrow> Valuetype \<Rightarrow> bool"
 where
   "checkUInt b v = ((foldr (\<and>) (map is_digit (String.explode v)) True) \<and> (ReadL\<^sub>i\<^sub>n\<^sub>t v \<ge> 0 \<and> ReadL\<^sub>i\<^sub>n\<^sub>t v < 2^b))"
+declare checkUInt_def  [solidity_symbex]
 
 fun convert :: "Types \<Rightarrow> Types \<Rightarrow> Valuetype \<Rightarrow> Valuetype option"
 where
@@ -225,12 +236,13 @@ definition less :: "Types \<Rightarrow> Types \<Rightarrow> Valuetype \<Rightarr
 where
   "less = plift (<)"
 
-declare less_def [solidity_symbex]
 
 (*Covered informally*)
 definition leq :: "Types \<Rightarrow> Types \<Rightarrow> Valuetype \<Rightarrow> Valuetype \<Rightarrow> (Valuetype * Types) option"
 where
   "leq = plift (\<le>)"
+
+declare add_def sub_def equal_def leq_def less_def [solidity_symbex]
 
 (*Covered*)
 fun vtand :: "Types \<Rightarrow> Types \<Rightarrow> Valuetype \<Rightarrow> Valuetype \<Rightarrow> (Valuetype * Types) option"
@@ -253,9 +265,13 @@ definition checkBool :: "Valuetype  \<Rightarrow> bool"
 where
   "checkBool v = (if (v = STR ''True'' \<or> v = STR ''False'') then True else False)"
 
+declare checkBool_def [solidity_symbex]
+
 definition checkAddress :: "Valuetype  \<Rightarrow> bool"
   where
     "checkAddress v = (if (size v = 42 \<and> ((String.explode v !1) = CHR ''x'')) then True else False)"
+
+declare checkAddress_def [solidity_symbex]
 
 (*value "checkBool STR ''True''"*)
 (*value "checkAddress STR ''0x0000000000000000000000000000000000000000''"*)
@@ -269,10 +285,10 @@ where
 | "ival TAddr = STR ''0x0000000000000000000000000000000000000000''"
 
 
-declare convert.simps [simp del]
-declare olift.simps [simp del]
-declare plift.simps [simp del]
-declare vtand.simps [simp del]
-declare vtor.simps [simp del]
+declare convert.simps [simp del, solidity_symbex add]
+declare olift.simps [simp del, solidity_symbex add]
+declare plift.simps [simp del, solidity_symbex add]
+declare vtand.simps [simp del, solidity_symbex add]
+declare vtor.simps [simp del, solidity_symbex add]
 
 end

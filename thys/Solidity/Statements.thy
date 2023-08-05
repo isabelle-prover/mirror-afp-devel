@@ -2572,8 +2572,8 @@ next
   qed
 qed
 
-declare lexp.simps[simp del]
-declare stmt.simps[simp del]
+declare lexp.simps[simp del, solidity_symbex add]
+declare stmt.simps[simp del, solidity_symbex add]
 
 end
 

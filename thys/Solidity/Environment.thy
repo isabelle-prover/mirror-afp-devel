@@ -26,6 +26,8 @@ fun identifiers :: "Environment \<Rightarrow> Identifier fset"
 definition emptyEnv :: "Address \<Rightarrow> Identifier \<Rightarrow> Address \<Rightarrow> Valuetype \<Rightarrow> Environment"
   where "emptyEnv a c s v = \<lparr>address = a, contract = c, sender = s, svalue = v, denvalue = fmempty\<rparr>"
 
+declare emptyEnv_def [solidity_symbex]
+
 lemma emptyEnv_address[simp]:
   "address (emptyEnv a c s v) = a"
   unfolding emptyEnv_def by simp
@@ -403,5 +405,5 @@ next
   then show ?thesis by simp
 qed
 
-declare decl.simps[simp del]
+declare decl.simps[simp del, solidity_symbex add]
 end

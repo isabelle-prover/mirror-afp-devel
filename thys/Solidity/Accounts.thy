@@ -29,11 +29,15 @@ lemma bind_case_atype_cong [fundef_cong]:
 definition emptyAcc :: account
   where "emptyAcc = \<lparr>bal = ShowL\<^sub>i\<^sub>n\<^sub>t 0, type = None, contracts = 0\<rparr>"
 
+declare emptyAcc_def [solidity_symbex]
+
 type_synonym Accounts = "Address \<Rightarrow> account"
 
 definition emptyAccount :: "Accounts"
 where
   "emptyAccount _ = emptyAcc"
+
+declare emptyAccount_def [solidity_symbex]
 
 definition addBalance :: "Address \<Rightarrow> Valuetype \<Rightarrow> Accounts \<Rightarrow> Accounts option"
 where
@@ -44,6 +48,8 @@ where
            then Some (acc(ad := acc ad \<lparr>bal:=ShowL\<^sub>i\<^sub>n\<^sub>t v\<rparr>))
            else None)
       else None)"
+
+declare addBalance_def [solidity_symbex]
 
 lemma addBalance_val1:
   assumes "addBalance ad val acc = Some acc'"
@@ -119,6 +125,8 @@ definition subBalance :: "Address \<Rightarrow> Valuetype \<Rightarrow> Accounts
            else None)
       else None)"
 
+declare subBalance_def [solidity_symbex]
+
 lemma subBalance_val1:
   assumes "subBalance ad val acc = Some acc'"
     shows "ReadL\<^sub>i\<^sub>n\<^sub>t val \<ge> 0"
@@ -189,6 +197,8 @@ where
     (case subBalance ads val acc of
       Some acc' \<Rightarrow> addBalance addr val acc'
     | None \<Rightarrow> None)"
+
+declare transfer_def [solidity_symbex]
 
 lemma transfer_val1:
   assumes "transfer ads addr val acc = Some acc'"

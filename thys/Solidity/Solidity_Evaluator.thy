@@ -664,6 +664,18 @@ export_code eval0 SKIP main_stub
 
 subsection\<open>Demonstrating the Symbolic Execution of Solidity\<close>
 
+subsubsection\<open>Simple Examples  \<close> 
+lemma "msel True (MTArray 5 (MTArray 6 (MTValue TBool))) (STR ''2'') [UINT 8 3] eempty emptyStore (mystate\<lparr>gas:=1\<rparr>) 1
+= Normal ((STR ''3.2'', MTArray 6 (MTValue TBool)), 1)"  by Solidity_Symbex.solidity_symbex
+
+lemma "msel True (MTArray 5 (MTArray 6 (MTValue TBool))) (STR ''2'') [UINT 8 3, UINT 8 4] eempty emptyStore (mystate\<lparr>gas:=1,memory:=mymemory2\<rparr>) 1
+= Normal ((STR ''4.5'', MTValue TBool), 1)" by Solidity_Symbex.solidity_symbex
+
+lemma "msel True (MTArray 5 (MTArray 6 (MTValue TBool))) (STR ''2'') [UINT 8 5] eempty emptyStore (mystate\<lparr>gas:=1,memory:=mymemory2\<rparr>) 1
+= Exception (Err)" by Solidity_Symbex.solidity_symbex
+
+subsubsection\<open>A More Complex Example Including Memory Copy\<close> 
+
 abbreviation P1::S
   where "P1 \<equiv> COMP (ASSIGN (Id (STR ''sa'')) (LVAL (Id (STR ''ma''))))
                    (ASSIGN (Ref (STR ''sa'') [UINT (8::nat) 0]) TRUE)"
@@ -673,22 +685,24 @@ abbreviation myenv::Environment
                  (emptyEnv (STR ''ad'') EMPTY (STR ''ad'') (STR ''0'')))"
  
 abbreviation mystack::Stack
-  where "mystack \<equiv> updateStore (STR ''1'') (KMemptr (STR ''1 '')) emptyStore"
+  where "mystack \<equiv> updateStore (STR ''1'') (KMemptr (STR ''1'')) emptyStore"
  
-abbreviation mystore::StorageT
-  where "mystore \<equiv> fmempty"
+abbreviation mystore::"Address \<Rightarrow> StorageT"
+  where "mystore \<equiv> \<lambda> _ . fmempty"
  
 abbreviation mymemory::MemoryT
-  where "mymemory \<equiv> updateStore (STR ''0.1'') (MValue (STR ''false'')) emptyStore"
+  where "mymemory \<equiv> updateStore (STR ''0.1'') (MValue (STR ''False'')) emptyStore"
  
 abbreviation mystorage::StorageT
   where "mystorage \<equiv> fmupd (STR ''0.1'') (STR ''True'') fmempty"
 
-(*
-  FIXME:
+declare[[ML_print_depth = 10000]]
+value \<open>(stmt P1 myenv emptyStore \<lparr>accounts=emptyAccount, stack=mystack, memory=mymemory, storage=(mystore ((STR ''ad''):= mystorage)), gas=1000\<rparr>)\<close>  
 
-lemma "( stmt P1 myenv emptyStore \<lparr>accounts=emptyAccount, stack=mystack, memory=mymemory, storage=fmupd (STR ''ad'') mystorage fmempty, gas=1000\<rparr> ) =
-  (Normal ((), \<lparr>accounts=emptyAccount, stack=mystack, memory=mymemory, storage=fmupd (STR ''ad'') mystorage fmempty, gas=1000\<rparr> ))"
-  by(solidity_symbex)
-*)
+
+lemma \<open>(stmt P1 myenv emptyStore \<lparr>accounts=emptyAccount, stack=mystack, memory=mymemory, storage=(mystore ((STR ''ad''):= mystorage)), gas=1000\<rparr>)
+      = Normal ((), \<lparr>accounts = emptyAccount, stack = \<lparr>mapping = fmap_of_list [(STR ''1'', KMemptr STR ''1'')], toploc = 0\<rparr>,
+                   memory = \<lparr>mapping = fmap_of_list [(STR ''0.1'', MValue STR ''False'')], toploc = 0\<rparr>, storage = (mystore ((STR ''ad''):= mystorage)), gas = 1000\<rparr>) \<close>  
+    by(solidity_symbex)
+
 end

@@ -85,6 +85,8 @@ lemma all_gas_less:
 definition incrementAccountContracts :: "Address \<Rightarrow> State \<Rightarrow> State"
   where "incrementAccountContracts ad st = st \<lparr>accounts := (accounts st)(ad := (accounts st ad)\<lparr>contracts := Suc (contracts (accounts st ad))\<rparr>)\<rparr>"
 
+declare incrementAccountContracts_def [solidity_symbex]
+
 lemma incrementAccountContracts_type[simp]:
   "type (accounts (incrementAccountContracts ad st) ad') = type (accounts st ad')"
   using incrementAccountContracts_def by simp
@@ -116,6 +118,8 @@ lemma gas_induct:
 definition emptyStorage :: "Address \<Rightarrow> StorageT"
 where
   "emptyStorage _ = {$$}"
+
+declare emptyStorage_def [solidity_symbex]
 
 abbreviation mystate::State
   where "mystate \<equiv> \<lparr>
@@ -166,6 +170,8 @@ definition init::"(Identifier, Member) fmap \<Rightarrow> Identifier \<Rightarro
   where "init ct i e = (case fmlookup ct i of
                                 Some (Var tp) \<Rightarrow> updateEnvDup i (Storage tp) (Storeloc i) e
                                | _ \<Rightarrow> e)"
+
+declare init_def [solidity_symbex]
 
 lemma init_s11[simp]:
   assumes "fmlookup ct i = Some (Var tp)"
@@ -526,12 +532,12 @@ proof -
   then show ?thesis using ffold_init_fmap[OF assms] by simp
 qed
 
-text\<open>The following definition allows for a more fine-grained configuration of the 
+text\<open>The following definition[solidity_symbex]:allows for a more fine-grained configuration of the 
      code generator.
 \<close>
 definition ffold_init::"(String.literal, Member) fmap \<Rightarrow> Environment \<Rightarrow> String.literal fset \<Rightarrow> Environment" where
           \<open>ffold_init ct a c = ffold (init ct) a c\<close>
-declare ffold_init_def [simp]
+declare ffold_init_def [simp,solidity_symbex]
 
 lemma ffold_init_code [code]:
      \<open>ffold_init ct a c = fold (init ct) (remdups (sorted_list_of_set (fset c))) a\<close>

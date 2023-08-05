@@ -19,7 +19,7 @@ where
       (v, t) \<leftarrow> (option Err (\<lambda>_::Gas. f t1 t2 v1 v2))::(Valuetype * Types, Ex, Gas) state_monad;
       return (KValue v, Value t)::(Stackvalue * Type, Ex, Gas) state_monad
     })"
-declare lift_def[simp]
+declare lift_def[simp, solidity_symbex]
 
 lemma lift_cong [fundef_cong]:
   assumes "expr e1 e cd st g = expr' e1 e cd st g"
@@ -1365,11 +1365,11 @@ lemma expr_sender:
   assumes "expr SENDER e cd st g = Normal ((KValue adv, Value TAddr), g')"
   shows "adv = sender e" using assms by (simp split:if_split_asm)
 
-declare expr.simps[simp del]
-declare load.simps[simp del]
-declare ssel.simps[simp del]
-declare msel.simps[simp del]
-declare rexp.simps[simp del]
+declare expr.simps[simp del, solidity_symbex add]
+declare load.simps[simp del, solidity_symbex add]
+declare ssel.simps[simp del, solidity_symbex add]
+declare msel.simps[simp del, solidity_symbex add]
+declare rexp.simps[simp del, solidity_symbex add]
 
 end
 

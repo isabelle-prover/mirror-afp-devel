@@ -1,5 +1,5 @@
 theory StateMonad
-imports Main "HOL-Library.Monad_Syntax" Utils
+imports Main "HOL-Library.Monad_Syntax" Utils Solidity_Symbex
 begin
 
 section "State Monad with Exceptions"
@@ -243,6 +243,8 @@ definition wp
   where "wp f P E s \<equiv> (case f s of
                    Normal (r,s') \<Rightarrow> P r s'
                  | Exception e \<Rightarrow> E e)"
+
+declare wp_def [solidity_symbex]
 
 lemma wp_valid: assumes "\<And>s. P s \<Longrightarrow> (wp f Q E s)" shows "\<lbrace>P\<rbrace> f \<lbrace>Q\<rbrace>,\<lbrace>E\<rbrace>"
   unfolding valid_def by (metis assms wp_def)
