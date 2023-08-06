@@ -6,6 +6,7 @@ theory Bell_Numbers
 imports
   "HOL-Library.FuncSet"
   "HOL-Library.Monad_Syntax"
+  "HOL-Library.Code_Target_Nat"
   "HOL-Combinatorics.Stirling"
   Card_Partitions.Injectivity_Solver
   Card_Partitions.Card_Partitions
@@ -530,5 +531,80 @@ qed
 corollary Bell_recursive_eq:
   "Bell (n + 1) = (\<Sum>k\<le>n. (n choose k) * Bell k)"
 unfolding Bell_eq[of _ 1] by simp
+
+subsection \<open>Code equations for the computation of Bell numbers\<close> (* contributed by Emin Karayel *)
+
+text \<open>It is slow to compute Bell numbers without dynamic programming (DP). The following is a DP 
+algorithm derived from the previous recursion formula @{thm [source] Bell_recursive_eq}.\<close>
+
+fun Bell_list_aux :: "nat \<Rightarrow> nat list"
+  where 
+  "Bell_list_aux 0 = [1]" |
+  "Bell_list_aux (Suc n) = (
+    let prev_list = Bell_list_aux n; 
+        next_val = (\<Sum>(k,z) \<leftarrow> List.enumerate 0 prev_list. z * (n choose (n-k))) 
+    in next_val#prev_list)"
+
+definition Bell_list :: "nat \<Rightarrow> nat list"
+  where "Bell_list n = rev (Bell_list_aux n)"
+
+lemma bell_list_eq: "Bell_list n = map Bell [0..<n+1]"
+proof -
+  have "Bell_list_aux n = rev (map Bell [0..<Suc n])"
+  proof (induction n)
+    case 0
+    then show ?case by (simp add:Bell_0)
+  next
+    case (Suc n)
+    define x where "x = Bell_list_aux n"
+    define y where "y = (\<Sum>(k,z) \<leftarrow> List.enumerate 0 x. z * (n choose (n-k)))"
+    define sn where "sn = n+1"
+    have b:"x = rev (map Bell [0..<sn])"
+      using Suc x_def sn_def by simp
+    have c: "length x = sn"
+      unfolding b by simp
+
+    have "snd i = Bell (n - fst i)" if "i \<in> set (List.enumerate 0 x)" for i
+    proof -
+      have "fst i < length x" "snd i = x ! fst i" 
+        using iffD1[OF in_set_enumerate_eq that] by auto
+      hence "snd i = Bell (sn - Suc (fst i))"
+        unfolding b by (simp add:rev_nth)
+      thus ?thesis
+        unfolding sn_def by simp
+    qed
+
+    hence "y = (\<Sum>i\<leftarrow>enumerate 0 x. Bell (n - fst i) * (n choose (n - fst i)))"
+      unfolding y_def by (intro arg_cong[where f="sum_list"] map_cong refl)  
+        (simp add:case_prod_beta)
+    also have "... = (\<Sum>i\<leftarrow>map fst (enumerate 0 x). Bell (n - i) * (n choose (n - i)))"
+      by (subst map_map) (simp add:comp_def)
+    also have "... = (\<Sum>i = 0..<length x. Bell (n-i) * (n choose (n-i)))"
+      by (simp add:interv_sum_list_conv_sum_set_nat)
+    also have "... = (\<Sum>i\<le>n. Bell (n-i) * (n choose (n-i)))"
+      using c sn_def by (intro sum.cong) auto
+    also have "... = (\<Sum>i \<in> (\<lambda>k. n- k) ` {..n}. Bell i * (n choose i))"
+      by (subst sum.reindex, auto simp add:inj_on_def)
+    also have "... = (\<Sum>i \<le> n. Bell i * (n choose i))"
+      by (intro sum.cong refl iffD2[OF set_eq_iff] allI)
+        (simp add:image_iff atMost_def, presburger)  
+    also have "... = Bell (Suc n)"
+      using Bell_recursive_eq by (simp add:mult.commute)
+    finally have a: "y = Bell (Suc n)" by simp
+
+    have "Bell_list_aux (Suc n) = y#x"
+      unfolding x_def y_def by (simp add:Let_def)
+    also have "... = Bell (Suc n)#(rev (map Bell [0..<Suc n]))"
+      unfolding a b sn_def by simp
+    also have "... = rev (map Bell [0..<Suc (Suc n)])"
+      by simp
+    finally show ?case by simp
+  qed
+  thus "Bell_list n = map Bell [0..<n+1]"
+    by (simp add:Bell_list_def)
+qed
+
+lemma Bell_eval[code]: "Bell n = last (Bell_list n)"
+  unfolding bell_list_eq by simp
 
 end
