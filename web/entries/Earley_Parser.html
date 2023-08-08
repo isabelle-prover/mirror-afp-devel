@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Earley_Parser - Archive of Formal Proofs</title><meta name="description" content="In 1968 Earley introduced his parsing algorithm capable of parsing all context-free grammars in cubic
+space and time. This entry contains a formalization..."><meta property="og:title" content="Earley_Parser" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/Earley_Parser.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2023-07-16T00:00:00+00:00" />
+<meta property="article:modified_time" content="2023-07-16T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="Earley_Parser"/>
+<meta name="twitter:description" content=""/>
+
+  
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
+</head>
+
+
+<body class='mathjax_ignore '>
+  <aside>
+    <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
+
+  <a href="../" class='logo-link'>
+    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  </a>
+
+  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+      </a>
+      <ul>
+        <a href="../"><li >Home</li></a>
+        <a href="../topics/"><li >Topics</li></a>
+        <a href="../download/"><li >Download</li></a>
+        <a href="../help/"><li >Help</li></a>
+        <a href="../submission/"><li >Submission</li></a>
+        <a href="../statistics/"><li >Statistics</li></a>
+        <a href="../about/"><li >About</li></a>
+      </ul>
+    </div>
+  </nav>
+</div>
+  </aside>
+
+  <div
+    class='content  entries'><header>
+  <form autocomplete="off" action="../search">
+    <div class='form-container'>
+      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
+      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
+      <datalist id="autocomplete">
+      </datalist>
+    </div>
+  </form>
+  <h1 >
+    <span class='first'>E</span>arley_<span class='first'>P</span>arser</h1>
+  <div>
+    
+    <p><a href="../authors/rau">Martin Rau</a> <a class="obfuscated" data="eyJob3N0IjpbInR1bSIsImRlIl0sInVzZXIiOlsibWFydGluIiwicmF1Il19">📧</a>
+    </p>
+    
+    
+    <p class="date">July 16, 2023</p>
+    
+  </div>
+</header><div><main><h3>Abstract</h3>
+
+  <div class="abstract mathjax_process">In 1968 Earley introduced his parsing algorithm capable of parsing all context-free grammars in cubic
+space and time. This entry contains a formalization of an executable Earley parser. We base our development on Jones'
+extensive paper proof of Earley's recognizer and the formalization of context-free grammars
+and derivations of Obua. We implement and prove correct a functional recognizer modeling Earley's
+original imperative implementation and extend it with the necessary data structures to enable the construction
+of parse trees following the work of Scott. We then develop a functional algorithm that
+builds a single parse tree and prove its correctness. Finally, we generalize this approach to an algorithm
+for a complete parse forest and prove soundness.</div>
+
+  <h3>License</h3>
+  <div><a href="https://isa-afp.org/LICENSE">BSD License</a></div><h3>Topics</h3>
+  <ul><li><a href="../topics/computer-science/algorithms">Computer science/Algorithms</a></li></ul>
+  <h3>Session Earley_Parser</h3>
+  <ul>
+    <li><a href="../theories/earley_parser/#Limit">Limit</a></li>
+    <li><a href="../theories/earley_parser/#CFG">CFG</a></li>
+    <li><a href="../theories/earley_parser/#Derivations">Derivations</a></li>
+    <li><a href="../theories/earley_parser/#Earley">Earley</a></li>
+    <li><a href="../theories/earley_parser/#Earley_Fixpoint">Earley_Fixpoint</a></li>
+    <li><a href="../theories/earley_parser/#Earley_Recognizer">Earley_Recognizer</a></li>
+    <li><a href="../theories/earley_parser/#Earley_Parser">Earley_Parser</a></li>
+    <li><a href="../theories/earley_parser/#Examples">Examples</a></li></ul><div class="flex-wrap">
+  
+  
+  </div>
+</main>
+
+<nav class='links'>
+  <a class='popup-button' href="#cite-popup">Cite</a>
+  <a class='popup-button' href="#download-popup">Download</a>
+  <h4>PDFs</h4>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Earley_Parser/outline.pdf">Proof
+    outline</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Earley_Parser/document.pdf">Proof
+    document</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Earley_Parser/session_graph.pdf">Dependencies</a></nav>
+
+<div id="cite-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Cite</h2>
+    <a class="close" href="#">&times;</a>
+    <div>
+      <p style="display:none;" id="bibtex-filename">Earley_Parser-AFP</p><pre id="copy-text">@article{Earley_Parser-AFP,
+  author  = {Martin Rau},
+  title   = {Earley_Parser},
+  journal = {Archive of Formal Proofs},
+  month   = {July},
+  year    = {2023},
+  note    = {\url{https://isa-afp.org/entries/Earley_Parser.html},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+    </div>
+  </div>
+</div>
+
+<div id="download-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Download</h2>
+    <a class="close" href="#">&times;</a>
+    <a href="https://www.isa-afp.org/release//afp-Earley_Parser-current.tar.gz" download>Download latest</a>
+    
+  </div>
+</div>
+    </div>
+  </div>
+</body>
+
+</html>

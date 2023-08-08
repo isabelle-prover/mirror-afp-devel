@@ -1744,6 +1744,15 @@
     </item>
     
     <item>
+      <title>Earley_Parser</title>
+      <link>/theories/earley_parser/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/earley_parser/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Echelon_Form</title>
       <link>/theories/echelon_form/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
