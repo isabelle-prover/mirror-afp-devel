@@ -187,6 +187,7 @@ Dominance_CHK
 DynamicArchitectures
 Dynamic_Tables
 E_Transcendental
+Earley_Parser
 Echelon_Form
 EdmondsKarp_Maxflow
 Edwards_Elliptic_Curves_Group

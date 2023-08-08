@@ -1,0 +1,59 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Earley}
+\author{Martin Rau}
+\maketitle
+
+\begin{abstract}
+In 1968 Earley \cite{Earley:1970} introduced his parsing algorithm capable of parsing all context-free grammars in cubic
+space and time. This entry contains a formalization of an executable Earley parser. We base our development on Jones' \cite{Jones:1972}
+extensive paper proof of Earley's recognizer and the formalization of context-free grammars
+and derivations of Obua \cite{Obua:2017} \cite{LocalLexing-AFP}. We implement and prove correct a functional recognizer modeling Earley's
+original imperative implementation and extend it with the necessary data structures to enable the construction
+of parse trees following the work of Scott \cite{Scott:2008}. We then develop a functional algorithm that
+builds a single parse tree and prove its correctness. Finally, we generalize this approach to an algorithm
+for a complete parse forest and prove soundness.
+\end{abstract}
+
+\tableofcontents
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
