@@ -80,6 +80,10 @@ next
     by simp
 qed
 
+lemma plus_transitive:
+  "x\<^sup>+ * x\<^sup>+ \<le> x\<^sup>+"
+  by (metis mult_right_isotone star_left_induct sup_absorb2 sup_ge2 mult_assoc star_left_unfold_equal)
+
 end
 
 text \<open>
