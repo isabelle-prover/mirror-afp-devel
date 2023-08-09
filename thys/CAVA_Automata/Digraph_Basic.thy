@@ -489,10 +489,7 @@ proof -
     apply clarsimp
     apply (metis in_mono mem_Sigma_iff rtrancl_trans)
     apply auto []
-    apply (erule disjE1)
-    apply clarsimp
     apply (metis in_mono mem_Sigma_iff rtrancl_trans)
-    apply auto []
     done
   with SCC show ?thesis unfolding is_scc_def by blast
 qed

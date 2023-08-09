@@ -866,39 +866,36 @@ lemma AddSA_InitConf [simp]:
 apply (frule InitConf_HAStates2)
 apply (unfold InitConf_def)
 apply (simp del: insert_Times_insert)
-apply auto
-apply (rename_tac T)
-apply (case_tac "T=S")
-apply auto
-prefer 3
-apply (rule_tac R="(HAInitStates A) \<times> (HAInitStates A) \<inter> ChiRel A" in trancl_subseteq)
-apply auto
-apply (rotate_tac 3)
-apply (frule trancl_collect)
-prefer 2
-apply fast
-apply auto
-apply (cut_tac A=SA in InitState_States)
-apply (frule ChiRel_HAStates)
-apply fast
-apply (frule ChiRel_HAStates)
-apply (cut_tac A=SA in InitState_States)
-apply fast
-apply (frule ChiRel_HAStates)
-apply (cut_tac A=SA in InitState_States)
-apply fast
-apply (subst help_InitConf [THEN sym])
-apply fast
-apply auto
+  apply auto
+  apply (rename_tac T)
+   apply (case_tac "T=S")
+  apply auto
+  prefer 3
+   apply (rule_tac R="(HAInitStates A) \<times> (HAInitStates A) \<inter> ChiRel A" in trancl_subseteq)
+ apply auto
+ apply (rotate_tac 3)
+ apply (frule trancl_collect)
+   prefer 2
+   apply fast
+  apply auto
+   apply (cut_tac A=SA in InitState_States)
+   apply (frule ChiRel_HAStates)
+   apply fast
+  apply (frule ChiRel_HAStates)
+  apply (cut_tac A=SA in InitState_States)
+  apply fast
+ apply (subst help_InitConf [THEN sym])
+  apply fast
+ apply auto
 apply (rule_tac b=S in rtrancl_into_rtrancl)
-apply auto
-prefer 2
-apply (erule rtranclE)
-apply auto
-prefer 2
-apply (erule rtranclE)
-apply auto
-apply (rule_tac R="(HAInitStates A) \<times> (HAInitStates A) \<inter> ChiRel A" in trancl_subseteq)
+ apply auto
+  prefer 2
+  apply (erule rtranclE)
+   apply auto
+ prefer 2
+ apply (erule rtranclE)
+  apply auto
+ apply (rule_tac R="(HAInitStates A) \<times> (HAInitStates A) \<inter> ChiRel A" in trancl_subseteq)
 apply auto
 done
 
@@ -910,43 +907,40 @@ lemma AddSA_InitConf2 [simp]:
 apply (unfold InitConf_def)
 apply simp
 apply auto
-apply (rename_tac T)
-prefer 2
-apply (rule_tac R="(HAInitStates A) \<times> (HAInitStates A) \<inter> ChiRel A" in trancl_subseteq)
-apply auto
+ apply (rename_tac T)
+ prefer 2
+ apply (rule_tac R="(HAInitStates A) \<times> (HAInitStates A) \<inter> ChiRel A" in trancl_subseteq)
+  apply auto
 apply (case_tac "T=InitState SA")
-apply auto
-prefer 2
-apply (rotate_tac 3)
-apply (frule trancl_collect)
-prefer 2
-apply fast
-apply auto
-apply (cut_tac A=SA in InitState_States)
-apply (frule ChiRel_HAStates)
-apply fast
-apply (cut_tac A=SA in InitState_States)
-apply (frule ChiRel_HAStates)
-apply fast
-apply (cut_tac A=SA in InitState_States)
-apply (cut_tac A=A in HAInitStates_HAStates)
-apply fast
-apply (subst help_InitConf [THEN sym])
-apply fast
-apply auto
+ apply auto
+ prefer 2
+ apply (rotate_tac 3)
+ apply (frule trancl_collect)
+   prefer 2
+   apply fast
+  apply auto
+   apply (cut_tac A=SA in InitState_States)
+   apply (frule ChiRel_HAStates)
+   apply fast
+  apply (cut_tac A=SA in InitState_States)
+  apply (frule ChiRel_HAStates)
+ apply fast
+ apply (cut_tac A=SA in InitState_States)
+ apply (cut_tac A=A in HAInitStates_HAStates)
+ apply (subst help_InitConf [THEN sym])
+  apply fast
+ apply auto
 apply (rule_tac b="InitState SA" in rtrancl_induct)
-apply auto
-apply (frule ChiRel_HAStates2)
-apply (cut_tac A=SA in InitState_States)
-apply fast
-prefer 2
-apply (frule ChiRel_HAStates)
-apply (cut_tac A=SA in InitState_States)
-apply fast
+  apply auto
+  apply (frule ChiRel_HAStates2)
+  apply (cut_tac A=SA in InitState_States)
+  apply fast
+ prefer 2
+ apply (frule ChiRel_HAStates)
+ apply (cut_tac A=SA in InitState_States)
+ apply fast
 apply (rule rtrancl_into_rtrancl)
-apply auto
-apply (rule rtrancl_into_rtrancl)
-apply auto
+ apply auto
 done
 
 subsection "Theorems for Calculating Wellformedness of HA"
