@@ -833,13 +833,6 @@ lemma mgu_var_disjoint_sum_complete:
     s \<cdot> \<mu>1 = t \<cdot> \<mu>2"
   by (rule mgu_var_disjoint_generic_complete[OF _ _ _ unif_disj], auto simp: inj_on_def)
 
-fun map_vars_subst_ran :: "('w \<Rightarrow> 'u) \<Rightarrow> ('f, 'v, 'w) gsubst \<Rightarrow> ('f, 'v, 'u) gsubst" where
-  "map_vars_subst_ran m \<sigma> = (\<lambda>v. map_vars_term m (\<sigma> v))"
-
-lemma map_vars_subst_ran:
-  shows "map_vars_term m (t \<cdot> \<sigma>) = t \<cdot> map_vars_subst_ran m \<sigma>"
-  by (induct t) (auto)
-
 lemma mgu_var_disjoint_sum_instance:
   fixes \<sigma> :: "('f, 'v) subst" and \<delta> :: "('f, 'v) subst"
   assumes unif_disj: "s \<cdot> \<sigma> = t \<cdot> \<delta>"
@@ -848,10 +841,11 @@ lemma mgu_var_disjoint_sum_instance:
     \<delta> = \<mu>2 \<circ>\<^sub>s \<tau> \<and> 
     s \<cdot> \<mu>1 = t \<cdot> \<mu>2"
 proof -
-  let ?m = "map_vars_subst_ran (Inl :: ('v \<Rightarrow> 'v + 'v))"
-  let ?m' = "map_vars_subst_ran (case_sum (\<lambda> x. x) (\<lambda> x. x))"
+  let ?map = "\<lambda> m \<sigma> v. map_vars_term m (\<sigma> v)"
+  let ?m = "?map (Inl :: ('v \<Rightarrow> 'v + 'v))"
+  let ?m' = "?map (case_sum (\<lambda> x. x) (\<lambda> x. x))"
   from unif_disj have id: "map_vars_term Inl (s \<cdot> \<sigma>) = map_vars_term Inl (t \<cdot> \<delta>)" by simp
-  from mgu_var_disjoint_sum_complete[OF id[unfolded map_vars_subst_ran]]
+  from mgu_var_disjoint_sum_complete[OF id[unfolded map_vars_term_subst]]
   obtain \<mu>1 \<mu>2 \<tau> where mgu: "mgu_var_disjoint_sum s t = Some (\<mu>1,\<mu>2)"
     and \<sigma>: "?m \<sigma> = \<mu>1 \<circ>\<^sub>s \<tau>" 
     and \<delta>: "?m \<delta> = \<mu>2 \<circ>\<^sub>s \<tau>"
@@ -863,7 +857,7 @@ proof -
   {
     fix \<mu> :: "('f,'v,'v+'v)gsubst" and \<tau> :: "('f,'v + 'v)subst"
     have "?m' (\<mu> \<circ>\<^sub>s \<tau>) = \<mu> \<circ>\<^sub>s ?m' \<tau>"
-      by (rule ext, unfold subst_compose_def, simp add: map_vars_subst_ran)
+      by (rule ext, unfold subst_compose_def, simp add: map_vars_term_subst)
   } note id' = this
   from arg_cong[OF \<sigma>, of ?m', unfolded id id'] have \<sigma>: "\<sigma> = \<mu>1 \<circ>\<^sub>s ?m' \<tau>" .
   from arg_cong[OF \<delta>, of ?m', unfolded id id'] have \<delta>: "\<delta> = \<mu>2 \<circ>\<^sub>s ?m' \<tau>" .
