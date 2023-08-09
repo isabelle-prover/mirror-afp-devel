@@ -95,7 +95,6 @@ text \<open>We require a function which adapts the type of variables of a term,
    so that states of the automaton and variables in the term language can be
    chosen independently.\<close>
 
-abbreviation "map_vars_term f \<equiv> map_term (\<lambda> x. x) f"
 abbreviation "map_funs_term f \<equiv> map_term f (\<lambda> x. x)"
 abbreviation "map_both f \<equiv> map_prod f f"
 

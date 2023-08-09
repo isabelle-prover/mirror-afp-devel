@@ -5,15 +5,18 @@ session First_Order_Terms = "Abstract-Rewriting" +
   options [timeout = 300]
   sessions
     "HOL-Library"
+    Fresh_Identifiers
   theories
     Transitive_Closure_More
+  theories
+    Renaming2_String
   theories
     Seq_More
     Fun_More
     Option_Monad
   theories
     Matching
-    Unification
+    Unification_String
     Subsumption
     Subterm_and_Context
   document_files
