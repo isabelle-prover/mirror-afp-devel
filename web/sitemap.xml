@@ -3,37 +3,55 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2023-07-16T00:00:00+00:00</lastmod>
+    <lastmod>2023-07-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2023-07-16T00:00:00+00:00</lastmod>
+    <lastmod>2023-07-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/calk/</loc>
+    <lastmod>2023-07-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/computer-science/</loc>
-    <lastmod>2023-07-16T00:00:00+00:00</lastmod>
+    <lastmod>2023-07-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/entries/Earley_Parser.html</loc>
-    <lastmod>2023-07-16T00:00:00+00:00</lastmod>
+    <loc>/dependencies/</loc>
+    <lastmod>2023-07-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/</loc>
+    <lastmod>2023-07-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/kad/</loc>
+    <lastmod>2023-07-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/kleene_algebra/</loc>
+    <lastmod>2023-07-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2023-07-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Quantales_Converse.html</loc>
+    <lastmod>2023-07-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/quantales/</loc>
+    <lastmod>2023-07-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/struth/</loc>
+    <lastmod>2023-07-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2023-07-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Earley_Parser.html</loc>
     <lastmod>2023-07-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/rau/</loc>
     <lastmod>2023-07-16T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/topics/</loc>
-    <lastmod>2023-07-16T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Gray_Codes.html</loc>
-    <lastmod>2023-07-11T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/mathematics/</loc>
     <lastmod>2023-07-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/spitz/</loc>
     <lastmod>2023-07-11T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/</loc>
-    <lastmod>2023-06-19T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/eberl/</loc>
     <lastmod>2023-06-19T00:00:00+00:00</lastmod>
@@ -93,9 +111,6 @@
     <lastmod>2023-05-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Multirelations_Heterogeneous.html</loc>
-    <lastmod>2023-05-22T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/struth/</loc>
     <lastmod>2023-05-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/cremer/</loc>
@@ -1958,9 +1973,6 @@
     <loc>/entries/Generic_Join.html</loc>
     <lastmod>2019-09-16T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/kad/</loc>
-    <lastmod>2019-09-10T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/kat_and_dra/</loc>
     <lastmod>2019-09-10T00:00:00+00:00</lastmod>
   </url><url>
@@ -2270,16 +2282,10 @@
     <loc>/entries/Constructive_Cryptography.html</loc>
     <lastmod>2018-12-17T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/kleene_algebra/</loc>
-    <lastmod>2018-12-11T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/order_lattice_props/</loc>
     <lastmod>2018-12-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Order_Lattice_Props.html</loc>
-    <lastmod>2018-12-11T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/quantales/</loc>
     <lastmod>2018-12-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Quantales.html</loc>
@@ -5865,6 +5871,8 @@
     <loc>/theories/qr_decomposition/</loc>
   </url><url>
     <loc>/theories/quantales/</loc>
+  </url><url>
+    <loc>/theories/quantales_converse/</loc>
   </url><url>
     <loc>/theories/quantifier_elimination_hybrid/</loc>
   </url><url>

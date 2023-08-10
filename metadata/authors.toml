@@ -1017,6 +1017,13 @@ host = [
 [caballero.homepages]
 caballero_homepage = "https://josephcmac.github.io/"
 
+[calk]
+name = "Cameron Calk"
+
+[calk.emails]
+
+[calk.homepages]
+
 [caminati]
 name = "Marco B. Caminati"
 
