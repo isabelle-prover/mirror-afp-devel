@@ -2211,6 +2211,20 @@ lemma top_S'_sup_conv_Z:
   "top * S' \<squnion> Z\<^sup>T = top"
   by (metis S'_star_Z_top conv_dist_comp conv_involutive conv_star_commute star.circ_back_loop_fixpoint symmetric_top_closed)
 
+lemma S_power_point_or_bot:
+  assumes "regular S'"
+  shows "point (S'\<^sup>T ^ n * Z) \<or> S'\<^sup>T ^ n * Z = bot"
+proof -
+  have 1: "regular (S'\<^sup>T ^ n * Z)"
+    using assms Z_point bijective_regular regular_conv_closed regular_mult_closed regular_power_closed by auto
+  have "injective (S'\<^sup>T ^ n)"
+    by (simp add: injective_power_closed S'_univalent)
+  hence "injective (S'\<^sup>T ^ n * Z)"
+    using Z_point injective_mult_closed by blast
+  thus ?thesis
+    using 1 Z_point comp_associative tarski by force
+qed
+
 end
 
 subsection \<open>Initialising Ranks\<close>

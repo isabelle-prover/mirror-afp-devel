@@ -391,6 +391,24 @@ qed
 
 end
 
+context monoid_mult
+begin
+
+lemma monoid_power_closed:
+  assumes "P 1" "P x" "\<And>y z . P y \<Longrightarrow> P z \<Longrightarrow> P (y * z)"
+    shows "P (x ^ n)"
+proof (induct n)
+  case 0
+  thus ?case
+    by (simp add: assms(1))
+next
+  case (Suc n)
+  thus ?case
+    by (simp add: assms(2,3))
+qed
+
+end
+
 text \<open>
 In the next structure we add full associativity of multiplication, as well as a right unit.
 Still, multiplication does not need to have a right zero and does not need to distribute over addition from the left.
@@ -656,6 +674,16 @@ lemma covector_mult_closed:
 lemma total_mult_closed:
   "total x \<Longrightarrow> total y \<Longrightarrow> total (x * y)"
   by (simp add: mult_assoc)
+
+lemma total_power_closed:
+  "total x \<Longrightarrow> total (x ^ n)"
+  apply (rule monoid_power_closed)
+  using total_mult_closed by auto
+
+lemma surjective_power_closed:
+  "surjective x \<Longrightarrow> surjective (x ^ n)"
+  apply (rule monoid_power_closed)
+  using surjective_mult_closed by auto
 
 end
 

@@ -927,6 +927,38 @@ proof (unfold arc_expanded, intro conjI)
     by (metis assms inf_top_right inf_vector_comp mult_assoc)
 qed
 
+lemma univalent_power_closed:
+  "univalent x \<Longrightarrow> univalent (x ^ n)"
+  apply (rule monoid_power_closed)
+  using univalent_mult_closed by auto
+
+lemma injective_power_closed:
+  "injective x \<Longrightarrow> injective (x ^ n)"
+  apply (rule monoid_power_closed)
+  using injective_mult_closed by auto
+
+lemma mapping_power_closed:
+  "mapping x \<Longrightarrow> mapping (x ^ n)"
+  apply (rule monoid_power_closed)
+  using mapping_mult_closed by auto
+
+lemma bijective_power_closed:
+  "bijective x \<Longrightarrow> bijective (x ^ n)"
+  apply (rule monoid_power_closed)
+  using bijective_mult_closed by auto
+
+lemma power_conv_commute:
+  "x\<^sup>T ^ n = (x ^ n)\<^sup>T"
+proof (induct n)
+  case 0
+  thus ?case
+    by simp
+next
+  case (Suc n)
+  thus ?case
+    using conv_dist_comp power_Suc2 by force
+qed
+
 end
 
 subsection \<open>Single-Object Pseudocomplemented Distributive Allegories\<close>
@@ -1682,6 +1714,11 @@ proof -
     by (simp add: order.antisym pp_increasing)
 qed
 
+lemma regular_power_closed:
+  "regular x \<Longrightarrow> regular (x ^ n)"
+  apply (rule monoid_power_closed)
+  using regular_mult_closed by auto
+
 (*
 lemma conv_complement_0 [simp]: "x\<^sup>T \<squnion> (-x)\<^sup>T = top" nitpick [expect=genuine] oops
 lemma schroeder_3: "x * y \<le> z \<longleftrightarrow> x\<^sup>T * -z \<le> -y" nitpick [expect=genuine] oops
@@ -2011,6 +2048,13 @@ begin
 lemma arc_in_partition_xor:
   "arc x \<Longrightarrow> (x \<le> -y \<and> \<not> x \<le> --y) \<or> (\<not> x \<le> -y \<and> x \<le> --y)"
   by (simp add: non_bot_arc_in_partition_xor arc_not_bot)
+
+lemma regular_injective_vector_point_xor_bot:
+  assumes "regular x"
+      and "vector x"
+      and "injective x"
+    shows "point x \<longleftrightarrow> x \<noteq> bot"
+  using assms comp_associative consistent tarski by fastforce
 
 end
 

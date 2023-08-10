@@ -10,7 +10,8 @@ We define a Boolean matrix representation of natural numbers up to \<open>n\<clo
 Numbers (obtained by \<open>Z_matrix\<close> for \<open>0\<close> and \<open>N_matrix n\<close> for \<open>n\<close>) are represented as relational vectors.
 The total successor function (\<open>S_matrix\<close>, modulo \<open>n\<close>) and the partial successor function (\<open>S'_matrix\<close>, for numbers up to \<open>n-1\<close>) are relations that are (partial) functions.
 
-We show that this representation satisfies the Peano axioms.
+We give an order-embedding of \<open>nat\<close> into this representation.
+We show that this representation satisfies a relational version of the Peano axioms.
 We also implement a function \<open>CP_matrix\<close> that chooses a number in a non-empty set.
 \<close>
 
@@ -20,14 +21,55 @@ imports Aggregation_Algebras.M_Choose_Component Relational_Disjoint_Set_Forests.
 
 begin
 
+no_notation
+  uminus ("- _" [81] 80) and
+  minus_class.minus (infixl "-" 65)
+
 definition Z_matrix :: "('a::enum,'b::{bot,top}) square" ("mZero") where "mZero = (\<lambda>(i,j) . if i = hd enum_class.enum then top else bot)"
 definition S_matrix :: "('a::enum,'b::{bot,top}) square" ("msuccmod") where "msuccmod = (\<lambda>(i,j) . let e = (enum_class.enum :: 'a list) in if (\<exists>k . Suc k<length e \<and> i = e ! k \<and> j = e ! Suc k) \<or> (i = e ! minus_class.minus (length e) 1 \<and> j = hd e) then top else bot)"
 definition S'_matrix :: "('a::enum,'b::{bot,top}) square" ("msucc") where "msucc = (\<lambda>(i,j) . let e = (enum_class.enum :: 'a list) in if \<exists>k . Suc k<length e \<and> i = e ! k \<and> j = e ! Suc k then top else bot)"
 definition N_matrix :: "nat \<Rightarrow> ('a::enum,'b::{bot,top}) square" ("mnat") where "mnat n = (\<lambda>(i,j) . if i = enum_class.enum ! n then top else bot)"
 definition CP_matrix  :: "('a::enum,'b::{bot,uminus}) square \<Rightarrow> ('a,'b) square" ("mcp") where "mcp f = (\<lambda>(i,j) . if Some i = find (\<lambda>x . f (x,x) \<noteq> bot) enum_class.enum then uminus_class.uminus (uminus_class.uminus (f (i,j))) else bot)"
 
+lemma S'_matrix_S_matrix:
+  "(msucc :: ('a::enum,'b::stone_relation_algebra) square) = msuccmod \<ominus> mZero\<^sup>t"
+proof (rule ext, rule prod_cases)
+  let ?e = "enum_class.enum :: 'a list"
+  let ?h = "hd ?e"
+  let ?s = "msuccmod :: ('a,'b) square"
+  let ?s' = "msucc :: ('a,'b) square"
+  let ?z = "mZero :: ('a,'b) square"
+  fix i j
+  have "?s' (i,j) = ?s (i,j) - ?z (j,i)"
+  proof (cases "j = ?h")
+    case True
+    have "?s' (i,j) = bot"
+    proof (unfold S'_matrix_def, clarsimp)
+      fix k
+      assume 1: "Suc k < length ?e" "j = ?e ! Suc k"
+      have "(UNIV :: 'a set) \<noteq> {}"
+        by simp
+      hence "?e ! Suc k = ?e ! 0"
+        using 1 by (simp add: hd_conv_nth UNIV_enum True)
+      hence "Suc k = 0"
+        apply (subst nth_eq_iff_index_eq[THEN sym, of ?e])
+        using 1 enum_distinct by auto
+      thus "top = bot"
+        by simp
+    qed
+    thus ?thesis
+      by (simp add: Z_matrix_def True)
+  next
+    case False
+    thus ?thesis
+      by (simp add: Z_matrix_def S_matrix_def S'_matrix_def)
+  qed
+  thus "?s' (i,j) = (?s \<ominus> ?z\<^sup>t) (i,j)"
+    by (simp add: minus_matrix_def conv_matrix_def Z_matrix_def)
+qed
+
 lemma N_matrix_power_S:
-  "n < length (enum_class.enum :: 'a list) \<longrightarrow> mnat n = (matrix_monoid.power (msuccmod\<^sup>t) n) \<odot> (mZero :: ('a::enum,'b::stone_relation_algebra) square)"
+  "n < length (enum_class.enum :: 'a list) \<longrightarrow> mnat n = matrix_monoid.power (msuccmod\<^sup>t) n \<odot> (mZero :: ('a::enum,'b::stone_relation_algebra) square)"
 proof (induct n)
   let ?z = "mZero :: ('a,'b) square"
   let ?s = "msuccmod :: ('a,'b) square"
@@ -89,7 +131,7 @@ proof (induct n)
 qed
 
 lemma N_matrix_power_S':
-  "n < length (enum_class.enum :: 'a list) \<longrightarrow> mnat n = (matrix_monoid.power (msucc\<^sup>t) n) \<odot> (mZero :: ('a::enum,'b::stone_relation_algebra) square)"
+  "n < length (enum_class.enum :: 'a list) \<longrightarrow> mnat n = matrix_monoid.power (msucc\<^sup>t) n \<odot> (mZero :: ('a::enum,'b::stone_relation_algebra) square)"
 proof (induct n)
   let ?z = "mZero :: ('a,'b) square"
   let ?s = "msucc :: ('a,'b) square"
@@ -142,6 +184,55 @@ proof (induct n)
         by simp
     qed
   qed
+qed
+
+lemma N_matrix_power_S'_hom_zero:
+  "mnat 0 = (mZero :: ('a::enum,'b::stone_relation_algebra) square)"
+proof -
+  let ?e = "enum_class.enum :: 'a list"
+  have "(UNIV :: 'a set) = set ?e"
+    using UNIV_enum by simp
+  hence "0 < length ?e"
+    by auto
+  thus ?thesis
+    using N_matrix_power_S' by force
+qed
+
+lemma N_matrix_power_S'_hom_succ:
+  assumes "Suc n < length (enum_class.enum :: 'a list)"
+    shows "mnat (Suc n) = msucc\<^sup>t \<odot> (mnat n :: ('a::enum,'b::stone_relation_algebra) square)"
+proof -
+  let ?e = "enum_class.enum :: 'a list"
+  let ?z = "mZero :: ('a,'b) square"
+  have 1: "n < length ?e"
+    using assms by simp
+  have "mnat (Suc n) = matrix_monoid.power (msucc\<^sup>t) (Suc n) \<odot> ?z"
+    using assms N_matrix_power_S' by blast
+  also have "... = msucc\<^sup>t \<odot> matrix_monoid.power (msucc\<^sup>t) n \<odot> ?z"
+    by simp
+  also have "... = msucc\<^sup>t \<odot> (matrix_monoid.power (msucc\<^sup>t) n \<odot> ?z)"
+    by (simp add: matrix_monoid.mult_assoc)
+  also have "... = msucc\<^sup>t \<odot> mnat n"
+    using 1 by (metis N_matrix_power_S')
+  finally show ?thesis
+    .
+qed
+
+lemma N_matrix_power_S'_hom_inj:
+  assumes "m < length (enum_class.enum :: 'a list)"
+      and "n < length (enum_class.enum :: 'a list)"
+      and "m \<noteq> n"
+    shows "mnat m \<noteq> (mnat n :: ('a::enum,'b::stone_relation_algebra_consistent) square)"
+proof -
+  let ?e = "enum_class.enum :: 'a list"
+  let ?m = "?e ! m"
+  have 1: "mnat m (?m,?m) = top"
+    by (simp add: N_matrix_def)
+  have "mnat n (?m,?m) = bot"
+    apply (unfold N_matrix_def)
+    using assms enum_distinct nth_eq_iff_index_eq by auto
+  thus ?thesis
+    using 1 by (metis consistent)
 qed
 
 syntax
@@ -492,6 +583,226 @@ proof
   qed
   finally show "?s\<^sup>t\<^sup>\<odot> \<odot> ?z = mtop"
     by (simp add: matrix_order.antisym_conv)
+qed
+
+lemma nat_less_lesseq_pred:
+  "(m :: nat) < n \<Longrightarrow> m \<le> minus_class.minus n 1"
+  by simp
+
+lemma S'_matrix_acyclic:
+  "matrix_stone_kleene_relation_algebra.acyclic (msucc :: ('a::enum,'b::linorder_stone_kleene_relation_algebra_tarski_consistent_expansion) square)"
+proof (rule ccontr)
+  let ?e = "enum_class.enum :: 'a list"
+  let ?l = "length ?e"
+  let ?l1 = "minus_class.minus ?l 1"
+  let ?s = "msucc :: ('a,'b) square"
+  have "(UNIV :: 'a set) \<noteq> {}"
+    by simp
+  hence 1: "?e \<noteq> []"
+    by (simp add: UNIV_enum)
+  hence 2: "?l \<noteq> 0"
+    by simp
+  assume "\<not> matrix_stone_kleene_relation_algebra.acyclic ?s"
+  hence "?s \<odot> ?s\<^sup>\<odot> \<otimes> mone \<noteq> mbot"
+    by (simp add: matrix_p_algebra.pseudo_complement)
+  from this obtain i1 i2 where "(?s \<odot> ?s\<^sup>\<odot> \<otimes> mone) (i1,i2) \<noteq> bot"
+    by (metis bot_matrix_def ext surj_pair)
+  hence 3: "(?s \<odot> ?s\<^sup>\<odot>) (i1,i2) \<sqinter> mone (i1,i2) \<noteq> bot"
+    by (simp add: inf_matrix_def)
+  hence "mone (i1,i2) \<noteq> (bot :: 'b)"
+    by force
+  hence "i1 = i2"
+    by (metis (mono_tags, lifting) prod.simps(2) one_matrix_def)
+  hence "(?s \<odot> ?s\<^sup>\<odot>) (i1,i1) \<noteq> bot"
+    using 3 by force
+  hence "(\<Squnion>\<^sub>k ?s (i1,k) * (?s\<^sup>\<odot>) (k,i1)) \<noteq> bot"
+    by (smt (verit, best) times_matrix_def case_prod_conv sup_monoid.sum.cong)
+  from this obtain i3 where 4: "?s (i1,i3) * (?s\<^sup>\<odot>) (i3,i1) \<noteq> bot"
+    by force
+  hence "?s (i1,i3) \<noteq> bot"
+    by force
+  hence "(if \<exists>j1 . Suc j1<?l \<and> i1 = ?e ! j1 \<and> i3 = ?e ! Suc j1 then top else bot :: 'b) \<noteq> bot"
+    by (simp add: S'_matrix_def)
+  from this obtain j1 where 5: "Suc j1 < ?l \<and> i1 = ?e ! j1 \<and> i3 = ?e ! Suc j1"
+    by meson
+  have "j1 \<noteq> ?l1"
+    using 5 enum_distinct by auto
+  hence "i1 \<noteq> last ?e"
+    apply (subst last_conv_nth)
+    using 1 apply simp
+    apply (subst 5)
+    apply (subst nth_eq_iff_index_eq[of ?e])
+    using 1 5 enum_distinct by auto
+  hence 6: "mone (last ?e,i1) = (bot :: 'b)"
+    by (simp add: one_matrix_def)
+  have 7: "(?s\<^sup>\<odot>) (i3,i1) \<noteq> bot"
+    using 4 by force
+  have "\<And>j2 . Suc j1 + j2 < ?l \<longrightarrow> (?s\<^sup>\<odot>) (?e ! (Suc j1 + j2),i1) \<noteq> bot"
+  proof -
+    fix j2
+    show "Suc j1 + j2 < ?l \<longrightarrow> (?s\<^sup>\<odot>) (?e ! (Suc j1 + j2),i1) \<noteq> bot"
+    proof (induct j2)
+      case 0
+      show ?case
+        using 5 7 by simp
+    next
+      case (Suc j3)
+      show ?case
+      proof
+        assume 8: "Suc j1 + Suc j3 < ?l"
+        hence "(?s\<^sup>\<odot>) (?e ! (Suc j1 + j3),i1) \<noteq> bot"
+          using Suc by simp
+        hence "(mone \<oplus> ?s \<odot> ?s\<^sup>\<odot>) (?e ! (Suc j1 + j3),i1) \<noteq> bot"
+          by (metis matrix_kleene_algebra.star_left_unfold_equal)
+        hence 9: "mone (?e ! (Suc j1 + j3),i1) \<squnion> (?s \<odot> ?s\<^sup>\<odot>) (?e ! (Suc j1 + j3),i1) \<noteq> bot"
+          by (simp add: sup_matrix_def)
+        have "?e ! (Suc j1 + j3) \<noteq> i1"
+          using 5 8 distinct_conv_nth[of ?e] enum_distinct by auto
+        hence "mone (?e ! (Suc j1 + j3),i1) = (bot :: 'b)"
+          by (simp add: one_matrix_def)
+        hence "(?s \<odot> ?s\<^sup>\<odot>) (?e ! (Suc j1 + j3),i1) \<noteq> bot"
+          using 9 by simp
+        hence "(\<Squnion>\<^sub>k ?s (?e ! (Suc j1 + j3),k) * (?s\<^sup>\<odot>) (k,i1)) \<noteq> bot"
+          by (smt (verit, best) times_matrix_def case_prod_conv sup_monoid.sum.cong)
+        from this obtain i4 where 10: "?s (?e ! (Suc j1 + j3),i4) * (?s\<^sup>\<odot>) (i4,i1) \<noteq> bot"
+          by force
+        hence "?s (?e ! (Suc j1 + j3),i4) \<noteq> bot"
+          by force
+        hence "(if \<exists>j4 . Suc j4<?l \<and> ?e ! (Suc j1 + j3) = ?e ! j4 \<and> i4 = ?e ! Suc j4 then top else bot :: 'b) \<noteq> bot"
+          by (simp add: S'_matrix_def)
+        from this obtain j4 where 11: "Suc j4<?l \<and> ?e ! (Suc j1 + j3) = ?e ! j4 \<and> i4 = ?e ! Suc j4"
+          by meson
+        hence "Suc j1 + j3 = j4"
+          apply (subst nth_eq_iff_index_eq[of ?e, THEN sym])
+          using 8 enum_distinct by auto
+        hence "i4 = ?e ! (Suc j1 + Suc j3)"
+          using 11 by simp
+        thus "(?s\<^sup>\<odot>) (?e ! (Suc j1 + Suc j3),i1) \<noteq> bot"
+          using 10 by force
+      qed
+    qed
+  qed
+  hence "\<And>j5 . Suc j1 \<le> j5 \<and> j5 < ?l \<longrightarrow> (?s\<^sup>\<odot>) (?e ! j5,i1) \<noteq> bot"
+    using le_Suc_ex by blast
+  hence "(?s\<^sup>\<odot>) (last ?e,i1) \<noteq> bot"
+    apply (subst last_conv_nth)
+    using 1 2 5 nat_less_lesseq_pred by auto
+  hence "(mone \<oplus> ?s \<odot> ?s\<^sup>\<odot>) (last ?e,i1) \<noteq> bot"
+    by (metis matrix_kleene_algebra.star_left_unfold_equal)
+  hence "mone (last ?e,i1) \<squnion> (?s \<odot> ?s\<^sup>\<odot>) (last ?e,i1) \<noteq> bot"
+    by (simp add: sup_matrix_def)
+  hence "(?s \<odot> ?s\<^sup>\<odot>) (last ?e,i1) \<noteq> bot"
+    using 6 by simp
+  hence "(\<Squnion>\<^sub>k ?s (last ?e,k) * (?s\<^sup>\<odot>) (k,i1)) \<noteq> bot"
+    by (smt (verit, best) times_matrix_def case_prod_conv sup_monoid.sum.cong)
+  from this obtain i5 where "?s (last ?e,i5) * (?s\<^sup>\<odot>) (i5,i1) \<noteq> bot"
+    by force
+  hence "?s (last ?e,i5) \<noteq> bot"
+    by force
+  hence "(if \<exists>j6 . Suc j6<?l \<and> last ?e = ?e ! j6 \<and> i5 = ?e ! Suc j6 then top else bot :: 'b) \<noteq> bot"
+    by (simp add: S'_matrix_def)
+  from this obtain j6 where 12: "Suc j6<?l \<and> last ?e = ?e ! j6 \<and> i5 = ?e ! Suc j6"
+    by force
+  hence "?e ! ?l1 = ?e ! j6"
+    using 1 5 by (metis last_conv_nth)
+  hence "?l1 = j6"
+    apply (subst nth_eq_iff_index_eq[of ?e, THEN sym])
+    using 2 12 enum_distinct by auto
+  thus False
+    using 12 by auto
+qed
+
+lemma N_matrix_point:
+  assumes "n < length (enum_class.enum :: 'a list)"
+    shows "matrix_stone_relation_algebra.point (mnat n :: ('a::enum,'b::linorder_stone_kleene_relation_algebra_tarski_consistent_expansion) square)"
+proof -
+  let ?e = "enum_class.enum :: 'a list"
+  let ?n = "mnat n :: ('a,'b) square"
+  let ?s = "msucc :: ('a,'b) square"
+  let ?z = "mZero :: ('a,'b) square"
+  have 1: "?n = matrix_monoid.power (?s\<^sup>t) n \<odot> ?z"
+    using assms N_matrix_power_S' by blast
+  have "?s = matrix_skra_peano_1.S'"
+    by (simp add: S'_matrix_S_matrix inf_matrix_def minus_matrix_def uminus_matrix_def)
+  hence 2: "matrix_p_algebra.regular ?s"
+    by (metis matrix_skra_peano_2.S'_regular)
+  have "?n \<noteq> mbot"
+  proof
+    assume "?n = mbot"
+    hence "?n (?e ! n,?e ! n) = mbot (?e ! n,?e ! n)"
+      by simp
+    hence "top = (bot :: 'b)"
+      by (simp add: N_matrix_def bot_matrix_def)
+    thus False
+      by (metis bot_not_top)
+  qed
+  thus "matrix_stone_relation_algebra.point ?n"
+    using 1 2 by (metis (no_types, lifting) matrix'_skra_peano_1.S_univalent matrix'_skra_peano_1.Z_point matrix_stone_relation_algebra.injective_power_closed matrix_stone_relation_algebra_tarski_consistent.regular_injective_vector_point_xor_bot matrix_stone_relation_algebra.regular_power_closed matrix_stone_relation_algebra.bijective_regular matrix_stone_relation_algebra.comp_associative matrix_stone_relation_algebra.injective_mult_closed matrix_stone_relation_algebra.regular_conv_closed matrix_stone_relation_algebra.regular_mult_closed matrix_stone_relation_algebra.univalent_conv_injective)
+qed
+
+lemma N_matrix_power_S'_hom_lesseq:
+  assumes "m < length (enum_class.enum :: 'a list)"
+      and "n < length (enum_class.enum :: 'a list)"
+    shows "m < n \<longleftrightarrow> mnat m \<preceq> msucc \<odot> msucc\<^sup>\<odot> \<odot> (mnat n :: ('a::enum,'b::linorder_stone_kleene_relation_algebra_tarski_consistent_expansion) square)"
+proof -
+  let ?m = "mnat m :: ('a,'b) square"
+  let ?n = "mnat n :: ('a,'b) square"
+  let ?s = "msucc :: ('a,'b) square"
+  let ?z = "mZero :: ('a,'b) square"
+  have 1: "?m = matrix_monoid.power (?s\<^sup>t) m \<odot> ?z"
+    using assms(1) N_matrix_power_S' by blast
+  have 2: "?n = matrix_monoid.power (?s\<^sup>t) n \<odot> ?z"
+    using assms(2) N_matrix_power_S' by blast
+  have 3: "matrix_stone_relation_algebra.point ?m"
+    by (simp add: assms(1) N_matrix_point)
+  have 4: "matrix_stone_relation_algebra.point ?n"
+    by (simp add: assms(2) N_matrix_point)
+  show "m < n \<longleftrightarrow> ?m \<preceq> ?s \<odot> ?s\<^sup>\<odot> \<odot> ?n"
+  proof
+    assume "m < n"
+    from this obtain k where "n = Suc k + m"
+      using less_iff_Suc_add by auto
+    hence "?n = matrix_monoid.power (?s\<^sup>t) (Suc k) \<odot> matrix_monoid.power (?s\<^sup>t) m \<odot> ?z"
+      using 2 by (metis matrix_monoid.power_add)
+    also have "... = matrix_monoid.power (?s\<^sup>t) (Suc k) \<odot> ?m"
+      using 1 by (simp add: matrix_monoid.mult_assoc)
+    also have "... = (matrix_monoid.power ?s (Suc k))\<^sup>t \<odot> ?m"
+      by (metis matrix_stone_relation_algebra.power_conv_commute)
+    finally have "?m \<preceq> matrix_monoid.power ?s (Suc k) \<odot> ?n"
+      using 3 4 by (simp add: matrix_stone_relation_algebra.bijective_reverse)
+    also have "... = ?s \<odot> matrix_monoid.power ?s k \<odot> ?n"
+      by simp
+    also have "... \<preceq> ?s \<odot> ?s\<^sup>\<odot> \<odot> ?n"
+      using matrix_idempotent_semiring.mult_left_isotone matrix_idempotent_semiring.mult_right_isotone matrix_kleene_algebra.star.power_below_circ by blast
+    finally show "?m \<preceq> ?s \<odot> ?s\<^sup>\<odot> \<odot> ?n"
+      .
+  next
+    assume 5: "?m \<preceq> ?s \<odot> ?s\<^sup>\<odot> \<odot> ?n"
+    show "m < n"
+    proof (rule ccontr)
+      assume "\<not> m < n"
+      from this obtain k where "m = k + n"
+        by (metis add.commute add_diff_inverse_nat)
+      hence "?m = matrix_monoid.power (?s\<^sup>t) k \<odot> matrix_monoid.power (?s\<^sup>t) n \<odot> ?z"
+        using 1 by (metis matrix_monoid.power_add)
+      also have "... = matrix_monoid.power (?s\<^sup>t) k \<odot> ?n"
+        using 2 by (simp add: matrix_monoid.mult_assoc)
+      also have "... = (matrix_monoid.power ?s k)\<^sup>t \<odot> ?n"
+        by (metis matrix_stone_relation_algebra.power_conv_commute)
+      finally have "?n \<preceq> matrix_monoid.power ?s k \<odot> ?m"
+        using 3 4 by (simp add: matrix_stone_relation_algebra.bijective_reverse)
+      also have "... \<preceq> ?s\<^sup>\<odot> \<odot> ?m"
+        using matrix_kleene_algebra.star.power_below_circ matrix_stone_relation_algebra.comp_left_isotone by blast
+      finally have "?n \<preceq> ?s\<^sup>\<odot> \<odot> ?m"
+        .
+      hence "?m \<preceq> ?s \<odot> ?s\<^sup>\<odot> \<odot> ?s\<^sup>\<odot> \<odot> ?m"
+        using 5 by (metis (no_types, opaque_lifting) matrix_monoid.mult_assoc matrix_order.dual_order.trans matrix_stone_relation_algebra.comp_right_isotone)
+      hence "?m \<preceq> ?s \<odot> ?s\<^sup>\<odot> \<odot> ?m"
+        by (metis matrix_kleene_algebra.star.circ_transitive_equal matrix_monoid.mult_assoc)
+      thus False
+        using 3 S'_matrix_acyclic matrix_stone_kleene_relation_algebra_consistent.acyclic_reachable_different by blast
+    qed
+  qed
 qed
 
 end

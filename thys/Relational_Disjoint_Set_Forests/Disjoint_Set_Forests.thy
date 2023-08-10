@@ -1021,7 +1021,7 @@ If two nodes are mutually reachable from each other in a disjoint-set forest, th
 \<close>
 
 lemma forest_mutually_reachable:
-  assumes "disjoint_set_forest p" "point x" "point y" "x \<le> p\<^sup>\<star> * y" "y \<le> p\<^sup>\<star> * x"
+  assumes "acyclic (p - 1)" "point x" "point y" "x \<le> p\<^sup>\<star> * y" "y \<le> p\<^sup>\<star> * x"
   shows "x = y"
 proof (rule ccontr)
   assume 1: "x \<noteq> y"
@@ -1056,7 +1056,7 @@ proof (rule ccontr)
 qed
 
 lemma forest_mutually_reachable_2:
-  assumes "disjoint_set_forest p" "point x" "point y" "x \<le> p\<^sup>T\<^sup>\<star> * y" "y \<le> p\<^sup>T\<^sup>\<star> * x"
+  assumes "acyclic (p - 1)" "point x" "point y" "x \<le> p\<^sup>T\<^sup>\<star> * y" "y \<le> p\<^sup>T\<^sup>\<star> * x"
   shows "x = y"
 proof -
   have 1: "x \<le> p\<^sup>\<star> * y"

@@ -3279,6 +3279,22 @@ subclass relation_algebra_tarski ..
 end
 
 class stone_kleene_relation_algebra_consistent = stone_kleene_relation_algebra + stone_relation_algebra_consistent
+begin
+
+lemma acyclic_reachable_different:
+  assumes "acyclic p" "bijective y" "x \<le> p\<^sup>+ * y"
+  shows "x \<noteq> y"
+proof (rule ccontr)
+  assume 1: "\<not> x \<noteq> y"
+  have "x * y\<^sup>T \<le> p\<^sup>+"
+    using assms(2,3) shunt_bijective by blast
+  also have "... \<le> -1"
+    by (simp add: assms(1))
+  finally show False
+    using 1 by (metis assms(2) dual_order.antisym le_supI2 mult_1_left order_char_1 point_not_bot schroeder_4_p semiring.mult_not_zero)
+qed
+
+end
 
 class kleene_relation_algebra_consistent = kleene_relation_algebra + stone_kleene_relation_algebra_consistent
 begin
@@ -3288,6 +3304,13 @@ subclass relation_algebra_consistent ..
 end
 
 class stone_kleene_relation_algebra_tarski_consistent = stone_kleene_relation_algebra + stone_relation_algebra_tarski_consistent
+begin
+
+subclass stone_kleene_relation_algebra_tarski ..
+
+subclass stone_kleene_relation_algebra_consistent ..
+
+end
 
 class kleene_relation_algebra_tarski_consistent = kleene_relation_algebra + stone_kleene_relation_algebra_tarski_consistent
 begin
