@@ -9,6 +9,7 @@ theory Unification
   imports
     Abstract_Unification
     Option_Monad
+    Renaming2
 begin
 
 definition
@@ -700,5 +701,188 @@ proof -
     using imgu_range_vars_of_equations_vars_subset[OF imgu_\<mu> fin_E] by metis
   finally show ?thesis .
 qed
+
+
+definition the_mgu :: "('f, 'v) term \<Rightarrow> ('f, 'v) term \<Rightarrow> ('f ,'v) subst" where
+  "the_mgu s t = (case mgu s t of None \<Rightarrow> Var | Some \<delta> \<Rightarrow> \<delta>)"
+
+lemma the_mgu_is_imgu:
+  fixes \<sigma> :: "('f, 'v) subst"
+  assumes "s \<cdot> \<sigma> = t \<cdot> \<sigma>"
+  shows "is_imgu (the_mgu s t) {(s, t)}"
+proof -
+  from assms have "unifiers {(s, t)} \<noteq> {}" by (force simp: unifiers_def)
+  then obtain \<tau> where "mgu s t = Some \<tau>"
+    and "the_mgu s t = \<tau>"
+    using mgu_complete by (auto simp: the_mgu_def)
+  with mgu_sound show ?thesis by blast
+qed
+
+lemma the_mgu:
+  fixes \<sigma> :: "('f, 'v) subst"
+  assumes "s \<cdot> \<sigma> = t \<cdot> \<sigma>"
+  shows "s \<cdot> the_mgu s t = t \<cdot> the_mgu s t \<and> \<sigma> = the_mgu s t \<circ>\<^sub>s \<sigma>" 
+proof -
+  have *: "\<sigma> \<in> unifiers {(s, t)}" by (force simp: assms unifiers_def)
+  show ?thesis
+  proof (cases "mgu s t")
+    assume "mgu s t = None"
+    then have "unifiers {(s, t)} = {}" by (rule mgu_complete)
+    with * show ?thesis by simp
+  next
+    fix \<tau>
+    assume "mgu s t = Some \<tau>"
+    moreover then have "is_imgu \<tau> {(s, t)}" by (rule mgu_sound)
+    ultimately have "is_imgu (the_mgu s t) {(s, t)}" by (unfold the_mgu_def, simp)
+    with * show ?thesis by (auto simp: is_imgu_def unifiers_def)
+  qed
+qed
+
+subsubsection \<open>Unification of two terms where variables should be considered disjoint\<close>
+
+definition
+  mgu_var_disjoint_generic ::
+    "('v \<Rightarrow> 'u) \<Rightarrow> ('w \<Rightarrow> 'u) \<Rightarrow> ('f, 'v) term \<Rightarrow> ('f, 'w) term \<Rightarrow>
+      (('f, 'v, 'u) gsubst \<times> ('f, 'w, 'u) gsubst) option"
+where
+  "mgu_var_disjoint_generic vu wu s t =
+    (case mgu (map_vars_term vu s) (map_vars_term wu t) of
+      None \<Rightarrow> None 
+    | Some \<gamma> \<Rightarrow> Some (\<gamma> \<circ> vu, \<gamma> \<circ> wu))"
+
+lemma mgu_var_disjoint_generic_sound: 
+  assumes unif: "mgu_var_disjoint_generic vu wu s t = Some (\<gamma>1, \<gamma>2)"
+  shows "s \<cdot> \<gamma>1 = t \<cdot> \<gamma>2"
+proof -
+  from unif[unfolded mgu_var_disjoint_generic_def] obtain \<gamma> where
+    unif2: "mgu (map_vars_term vu s) (map_vars_term wu t) = Some \<gamma>"
+    by (cases "mgu (map_vars_term vu s) (map_vars_term wu t)", auto)
+  from mgu_sound[OF unif2[unfolded mgu_var_disjoint_generic_def], unfolded is_imgu_def unifiers_def]
+  have "map_vars_term vu s \<cdot> \<gamma> = map_vars_term wu t \<cdot> \<gamma>" by auto
+  from this[unfolded apply_subst_map_vars_term] unif[unfolded mgu_var_disjoint_generic_def unif2] 
+  show ?thesis by simp
+qed
+
+(* if terms s and t can become identical via two substitutions \<sigma> and \<delta> 
+   then mgu_var_disjoint yields two more general substitutions \<mu>1 \<mu>2 *)
+lemma mgu_var_disjoint_generic_complete:
+  fixes \<sigma> :: "('f, 'v, 'u) gsubst" and \<tau> :: "('f, 'w, 'u) gsubst" 
+    and vu :: "'v \<Rightarrow> 'u" and wu:: "'w \<Rightarrow> 'u"
+  assumes inj: "inj vu" "inj wu"
+    and vwu: "range vu \<inter> range wu = {}"
+    and unif_disj: "s \<cdot> \<sigma> = t \<cdot> \<tau>"
+  shows "\<exists>\<mu>1 \<mu>2 \<delta>. mgu_var_disjoint_generic vu wu s t = Some (\<mu>1, \<mu>2) \<and> 
+    \<sigma> = \<mu>1 \<circ>\<^sub>s \<delta> \<and>
+    \<tau> = \<mu>2 \<circ>\<^sub>s \<delta> \<and>
+    s \<cdot> \<mu>1 = t \<cdot> \<mu>2"
+proof -
+  note inv1[simp] = the_inv_f_f[OF inj(1)]
+  note inv2[simp] = the_inv_f_f[OF inj(2)]
+  obtain \<gamma> :: "('f,'u)subst" where gamma: "\<gamma> = (\<lambda> x. if x \<in> range vu then \<sigma> (the_inv vu x) else \<tau> (the_inv wu x))" by auto 
+  have ids: "s \<cdot> \<sigma> = map_vars_term vu s \<cdot> \<gamma>" unfolding gamma
+    by (induct s, auto)
+  have idt: "t \<cdot> \<tau> = map_vars_term wu t \<cdot> \<gamma>" unfolding gamma
+    by (induct t, insert vwu, auto)
+  from unif_disj ids idt
+  have unif: "map_vars_term vu s \<cdot> \<gamma> = map_vars_term wu t \<cdot> \<gamma>" (is "?s \<cdot> \<gamma> = ?t \<cdot> \<gamma>") by auto
+  from the_mgu[OF unif] have unif2: "?s \<cdot> the_mgu ?s ?t = ?t \<cdot> the_mgu ?s ?t" and inst: "\<gamma> = the_mgu ?s ?t \<circ>\<^sub>s \<gamma>" by auto
+  have "mgu ?s ?t = Some (the_mgu ?s ?t)" unfolding the_mgu_def
+    using mgu_complete[unfolded unifiers_def] unif
+    by (cases "mgu ?s ?t", auto)
+  with inst obtain \<mu> where mu: "mgu ?s ?t = Some \<mu>" and gamma_mu: "\<gamma> = \<mu> \<circ>\<^sub>s \<gamma>" by auto
+  let ?tau1 = "\<mu> \<circ> vu"
+  let ?tau2 = "\<mu> \<circ> wu"
+  show ?thesis unfolding mgu_var_disjoint_generic_def mu option.simps
+  proof (intro exI conjI, rule refl)
+    show "\<sigma> = ?tau1 \<circ>\<^sub>s \<gamma>"
+    proof (rule ext)
+      fix x
+      have "(?tau1 \<circ>\<^sub>s \<gamma>) x = \<gamma> (vu x)" using fun_cong[OF gamma_mu, of "vu x"] by (simp add: subst_compose_def)
+      also have "... = \<sigma> x" unfolding gamma by simp
+      finally show "\<sigma> x = (?tau1 \<circ>\<^sub>s \<gamma>) x" by simp
+    qed
+  next
+    show "\<tau> = ?tau2 \<circ>\<^sub>s \<gamma>"
+    proof (rule ext)
+      fix x
+      have "(?tau2 \<circ>\<^sub>s \<gamma>) x = \<gamma> (wu x)" using fun_cong[OF gamma_mu, of "wu x"] by (simp add: subst_compose_def)
+      also have "... = \<tau> x" unfolding gamma using vwu by auto
+      finally show "\<tau> x = (?tau2 \<circ>\<^sub>s \<gamma>) x" by simp
+    qed
+  next
+    have "s \<cdot> ?tau1 = map_vars_term vu s \<cdot> \<mu>" unfolding apply_subst_map_vars_term ..
+    also have "... = map_vars_term wu t \<cdot> \<mu>"
+      unfolding unif2[unfolded the_mgu_def mu option.simps] ..
+    also have "... = t \<cdot> ?tau2" unfolding apply_subst_map_vars_term ..
+    finally show "s \<cdot> ?tau1 = t \<cdot> ?tau2" .
+  qed
+qed
+
+abbreviation "mgu_var_disjoint_sum \<equiv> mgu_var_disjoint_generic Inl Inr"
+
+lemma mgu_var_disjoint_sum_sound: 
+  "mgu_var_disjoint_sum s t = Some (\<gamma>1, \<gamma>2) \<Longrightarrow> s \<cdot> \<gamma>1 = t \<cdot> \<gamma>2"
+  by (rule mgu_var_disjoint_generic_sound)
+
+lemma mgu_var_disjoint_sum_complete:
+  fixes \<sigma> :: "('f, 'v, 'v + 'w) gsubst" and \<tau> :: "('f, 'w, 'v + 'w) gsubst"
+  assumes unif_disj: "s \<cdot> \<sigma> = t \<cdot> \<tau>"
+  shows "\<exists>\<mu>1 \<mu>2 \<delta>. mgu_var_disjoint_sum s t = Some (\<mu>1, \<mu>2) \<and> 
+    \<sigma> = \<mu>1 \<circ>\<^sub>s \<delta> \<and>
+    \<tau> = \<mu>2 \<circ>\<^sub>s \<delta> \<and>
+    s \<cdot> \<mu>1 = t \<cdot> \<mu>2"
+  by (rule mgu_var_disjoint_generic_complete[OF _ _ _ unif_disj], auto simp: inj_on_def)
+
+lemma mgu_var_disjoint_sum_instance:
+  fixes \<sigma> :: "('f, 'v) subst" and \<delta> :: "('f, 'v) subst"
+  assumes unif_disj: "s \<cdot> \<sigma> = t \<cdot> \<delta>"
+  shows "\<exists>\<mu>1 \<mu>2 \<tau>. mgu_var_disjoint_sum s t = Some (\<mu>1, \<mu>2) \<and>
+    \<sigma> = \<mu>1 \<circ>\<^sub>s \<tau> \<and>
+    \<delta> = \<mu>2 \<circ>\<^sub>s \<tau> \<and> 
+    s \<cdot> \<mu>1 = t \<cdot> \<mu>2"
+proof -
+  let ?map = "\<lambda> m \<sigma> v. map_vars_term m (\<sigma> v)"
+  let ?m = "?map (Inl :: ('v \<Rightarrow> 'v + 'v))"
+  let ?m' = "?map (case_sum (\<lambda> x. x) (\<lambda> x. x))"
+  from unif_disj have id: "map_vars_term Inl (s \<cdot> \<sigma>) = map_vars_term Inl (t \<cdot> \<delta>)" by simp
+  from mgu_var_disjoint_sum_complete[OF id[unfolded map_vars_term_subst]]
+  obtain \<mu>1 \<mu>2 \<tau> where mgu: "mgu_var_disjoint_sum s t = Some (\<mu>1,\<mu>2)"
+    and \<sigma>: "?m \<sigma> = \<mu>1 \<circ>\<^sub>s \<tau>" 
+    and \<delta>: "?m \<delta> = \<mu>2 \<circ>\<^sub>s \<tau>"
+    and unif: "s \<cdot> \<mu>1 = t \<cdot> \<mu>2" by blast
+  {
+    fix \<sigma> :: "('f, 'v) subst"
+    have "?m' (?m \<sigma>) = \<sigma>" by (simp add: map_vars_term_compose o_def term.map_ident)
+  } note id = this
+  {
+    fix \<mu> :: "('f,'v,'v+'v)gsubst" and \<tau> :: "('f,'v + 'v)subst"
+    have "?m' (\<mu> \<circ>\<^sub>s \<tau>) = \<mu> \<circ>\<^sub>s ?m' \<tau>"
+      by (rule ext, unfold subst_compose_def, simp add: map_vars_term_subst)
+  } note id' = this
+  from arg_cong[OF \<sigma>, of ?m', unfolded id id'] have \<sigma>: "\<sigma> = \<mu>1 \<circ>\<^sub>s ?m' \<tau>" .
+  from arg_cong[OF \<delta>, of ?m', unfolded id id'] have \<delta>: "\<delta> = \<mu>2 \<circ>\<^sub>s ?m' \<tau>" .
+  show ?thesis
+    by (intro exI conjI, rule mgu, rule \<sigma>, rule \<delta>, rule unif)
+qed
+
+subsubsection \<open>A variable disjoint unification algorithm without changing the type\<close>
+
+text \<open>We pass the renaming function as additional argument\<close>
+
+definition mgu_vd :: "'v :: infinite renaming2 \<Rightarrow> _ \<Rightarrow> _" where
+  "mgu_vd r = mgu_var_disjoint_generic (rename_1 r) (rename_2 r)" 
+
+lemma mgu_vd_sound: "mgu_vd r s t = Some (\<gamma>1, \<gamma>2) \<Longrightarrow> s \<cdot> \<gamma>1 = t \<cdot> \<gamma>2"
+  unfolding mgu_vd_def by (rule mgu_var_disjoint_generic_sound)
+
+lemma mgu_vd_complete: 
+  fixes \<sigma> :: "('f, 'v :: infinite) subst" and \<tau> :: "('f, 'v) subst" 
+  assumes unif_disj: "s \<cdot> \<sigma> = t \<cdot> \<tau>"
+  shows "\<exists>\<mu>1 \<mu>2 \<delta>. mgu_vd r s t = Some (\<mu>1, \<mu>2) \<and>
+    \<sigma> = \<mu>1 \<circ>\<^sub>s \<delta> \<and>
+    \<tau> = \<mu>2 \<circ>\<^sub>s \<delta> \<and>
+    s \<cdot> \<mu>1 = t \<cdot> \<mu>2"
+  unfolding mgu_vd_def
+  by (rule mgu_var_disjoint_generic_complete[OF rename_12 unif_disj])
 
 end

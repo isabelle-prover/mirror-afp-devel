@@ -713,6 +713,37 @@ proof -
   finally show ?thesis by simp
 qed
 
+text \<open>Just changing the variables in a term\<close>
+
+abbreviation "map_vars_term f \<equiv> term.map_term (\<lambda>x. x) f"
+
+lemma map_vars_term_as_subst:
+  "map_vars_term f t = t \<cdot> (\<lambda> x. Var (f x))"
+  by (induct t) simp_all
+
+lemma map_vars_term_eq:
+  "map_vars_term f s = s \<cdot> (Var \<circ> f)"
+by (induct s) auto
+
+lemma ground_map_vars_term [simp]:
+  "ground (map_vars_term f t) = ground t"
+  by (induct t) simp_all
+
+lemma map_vars_term_subst [simp]:
+  "map_vars_term f (t \<cdot> \<sigma>) = t \<cdot> (\<lambda> x. map_vars_term f (\<sigma> x))"
+  by (induct t) simp_all
+
+lemma map_vars_term_compose:
+  "map_vars_term m1 (map_vars_term m2 t) = map_vars_term (m1 o m2) t"
+  by (induct t) simp_all
+
+lemma map_vars_term_id [simp]:
+  "map_vars_term id t = t"
+  by (induct t) (auto intro: map_idI)
+
+lemma apply_subst_map_vars_term:
+  "map_vars_term m t \<cdot> \<sigma> = t \<cdot> (\<sigma> \<circ> m)"
+  by (induct t) (auto)
 
 
 end
