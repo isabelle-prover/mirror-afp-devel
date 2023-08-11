@@ -1,0 +1,46 @@
+title = "Polygonal Number Theorem"
+date = 2023-08-10
+topics = [
+  "Mathematics/Number theory",
+  "Mathematics/Combinatorics",
+]
+abstract = """
+<p>We formalize the proofs of Cauchy's and Legendre's Polygonal Number Theorems given in Melvyn B. Nathanson's book \"Additive Number Theory: The Classical Bases\".</p>
+  
+<p>For $m \\geq 1$, the $k$-th polygonal number of order $m+2$ is defined to be $p_m(k)=\\frac{mk(k-1)}{2}+k$. The theorems state that:</p>
+
+<p>1. If $m \\ge 4$ and $N \\geq 108m$, then $N$ can be written as the sum of $m+1$ polygonal numbers of order $m+2$, at most four of which are different from $0$ or $1$. If $N \\geq 324$, then $N$ can be written as the sum of five pentagonal numbers, at least one of which is $0$ or $1$.</p>
+
+<p>2. Let $m \\geq 3$ and $N \\geq 28m^3$. If $m$ is odd, then $N$ is the sum of four polygonal numbers of order $m+2$. If $m$ is even, then $N$ is the sum of five polygonal numbers of order $m+2$, at least one of which is $0$ or $1$.</p>
+
+<p>We also formalize the proof of Gauss's theorem which states that every non-negative integer is the sum of three triangular numbers.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.leek]
+email = "leek_email"
+
+[authors.yez]
+email = "yez_email"
+
+[authors.argyraki]
+email = "argyraki_email"
+
+[contributors]
+
+[notify]
+leek = "leek_email"
+yez = "yez_email"
+argyraki = "argyraki_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1007/978-1-4757-3845-2",
+]
+pubs = []

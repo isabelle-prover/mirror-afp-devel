@@ -6,7 +6,16 @@
     <description>Recent content on Archive of Formal Proofs</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Tue, 25 Jul 2023 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 10 Aug 2023 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Polygonal Number Theorem</title>
+      <link>/entries/Polygonal_Number_Theorem.html</link>
+      <pubDate>Thu, 10 Aug 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Polygonal_Number_Theorem.html</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>Modal quantales, involutive quantales, Dedekind Quantales</title>
       <link>/entries/Quantales_Converse.html</link>
@@ -11605,6 +11614,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/poincare_disc/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Polygonal_Number_Theorem</title>
+      <link>/theories/polygonal_number_theorem/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/polygonal_number_theorem/</guid>
       <description></description>
     </item>
     

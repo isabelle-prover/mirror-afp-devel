@@ -1401,106 +1401,111 @@
  },
  {
   "id": 280,
+  "link": "/dependencies/three_squares/",
+  "name": "Three_Squares"
+ },
+ {
+  "id": 281,
   "link": "/dependencies/timed_automata/",
   "name": "Timed_Automata"
  },
  {
-  "id": 281,
+  "id": 282,
   "link": "/dependencies/transformer_semantics/",
   "name": "Transformer_Semantics"
  },
  {
-  "id": 282,
+  "id": 283,
   "link": "/dependencies/transition_systems_and_automata/",
   "name": "Transition_Systems_and_Automata"
  },
  {
-  "id": 283,
+  "id": 284,
   "link": "/dependencies/transitive-closure/",
   "name": "Transitive-Closure"
  },
  {
-  "id": 284,
+  "id": 285,
   "link": "/dependencies/transitive_models/",
   "name": "Transitive_Models"
  },
  {
-  "id": 285,
+  "id": 286,
   "link": "/dependencies/triangle/",
   "name": "Triangle"
  },
  {
-  "id": 286,
+  "id": 287,
   "link": "/dependencies/trie/",
   "name": "Trie"
  },
  {
-  "id": 287,
+  "id": 288,
   "link": "/dependencies/undirected_graph_theory/",
   "name": "Undirected_Graph_Theory"
  },
  {
-  "id": 288,
+  "id": 289,
   "link": "/dependencies/universal_hash_families/",
   "name": "Universal_Hash_Families"
  },
  {
-  "id": 289,
+  "id": 290,
   "link": "/dependencies/upf/",
   "name": "UPF"
  },
  {
-  "id": 290,
+  "id": 291,
   "link": "/dependencies/utp-toolkit/",
   "name": "UTP-Toolkit"
  },
  {
-  "id": 291,
+  "id": 292,
   "link": "/dependencies/vectorspace/",
   "name": "VectorSpace"
  },
  {
-  "id": 292,
+  "id": 293,
   "link": "/dependencies/vericomp/",
   "name": "VeriComp"
  },
  {
-  "id": 293,
+  "id": 294,
   "link": "/dependencies/virtual_substitution/",
   "name": "Virtual_Substitution"
  },
  {
-  "id": 294,
+  "id": 295,
   "link": "/dependencies/weighted_arithmetic_geometric_mean/",
   "name": "Weighted_Arithmetic_Geometric_Mean"
  },
  {
-  "id": 295,
+  "id": 296,
   "link": "/dependencies/weighted_path_order/",
   "name": "Weighted_Path_Order"
  },
  {
-  "id": 296,
+  "id": 297,
   "link": "/dependencies/well_quasi_orders/",
   "name": "Well_Quasi_Orders"
  },
  {
-  "id": 297,
+  "id": 298,
   "link": "/dependencies/winding_number_eval/",
   "name": "Winding_Number_Eval"
  },
  {
-  "id": 298,
+  "id": 299,
   "link": "/dependencies/word_lib/",
   "name": "Word_Lib"
  },
  {
-  "id": 299,
+  "id": 300,
   "link": "/dependencies/zeta_function/",
   "name": "Zeta_Function"
  },
  {
-  "id": 300,
+  "id": 301,
   "link": "/dependencies/zfc_in_hol/",
   "name": "ZFC_in_HOL"
  }
