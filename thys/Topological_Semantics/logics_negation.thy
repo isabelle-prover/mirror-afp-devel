@@ -179,7 +179,7 @@ lemma "CoP0 \<eta> \<Longrightarrow> nADDI\<^sup>a \<eta> \<Longrightarrow> nMUL
 lemma "CoP0 \<eta> \<Longrightarrow> nADDI\<^sup>a \<eta> \<Longrightarrow> nMULT\<^sup>b \<eta> \<Longrightarrow> DNI \<eta> \<Longrightarrow> DNE \<eta> \<Longrightarrow> TNDm \<eta>" nitpick oops \<comment>\<open> counterexample \<close> 
 
 subsubsection \<open>Strong contraposition (axiom-like)\<close>
-text\<open>Observe that the definitions below take implication as an additional parameter: \<iota>.\<close>
+text\<open>Observe that the definitions below take implication as an additional parameter: @{text "\<iota>"}.\<close>
 
 text\<open>lCoP: (local) contraposition (strong 'axiom-like' variants, using local consequence).\<close>
 abbreviation plCoP0 ("lCoP0\<^sup>_\<^sup>_ _ _") where "lCoP0\<^sup>a\<^sup>b \<iota> \<eta> \<equiv> [\<iota> a b \<turnstile> \<iota> (\<eta> b) (\<eta> a)]"

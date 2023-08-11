@@ -44,7 +44,7 @@ definition glb_restr::"('w \<sigma>)\<sigma> \<Rightarrow> ('w \<sigma>)\<sigma>
   where "glb\<^sup>D S \<equiv> \<lambda>L. lb\<^sup>D S L \<and> (\<forall>X. lb\<^sup>D S X \<longrightarrow> X \<^bold>\<le> L)"
 
 text\<open>Both pairs of definitions above are suitably related.
-(Note that the term \<top> below denotes the top element in the algebra of sets of sets (i.e. the powerset).)\<close>
+(Note that the term @{text "\<top>"} below denotes the top element in the algebra of sets of sets (i.e. the powerset).)\<close>
 lemma lub_char: "lub S = (let D=\<^bold>\<top> in lub\<^sup>D S) " by (simp add: lub_def lub_restr_def ub_char)
 lemma glb_char: "glb S = (let D=\<^bold>\<top> in glb\<^sup>D S) " by (simp add: glb_def glb_restr_def lb_char)
 

@@ -102,11 +102,11 @@ declare fixpoints_def[conn2] op_fixpoint_def[conn2]
 text\<open>Interestingly, the fixed-point operation (or transformation) is definable in terms of the others.\<close>
 lemma op_fixpoint_char: "\<phi>\<^sup>f\<^sup>p = (\<phi> \<^bold>\<and>\<^sup>: \<^bold>e) \<^bold>\<or>\<^sup>: (\<phi>\<^sup>- \<^bold>\<and>\<^sup>: \<^bold>n)" unfolding conn2 order conn by blast
 
-text\<open>Given an operator \<phi> the fixed-points of \<phi>'s dual is the set of complements of \<phi>'s fixed-points.\<close>
+text\<open>Given an operator @{text "\<phi>"} the fixed-points of it's dual is the set of complements of @{text "\<phi>'s"} fixed-points.\<close>
 lemma fp_dual: "fp \<phi>\<^sup>d = (fp \<phi>)\<^sup>d\<^sup>-" unfolding order conn conn2 by blast
-text\<open>The fixed-points of \<phi>'s complement is the set of complements of the fixed-points of \<phi>'s dual-complement.\<close>
+text\<open>The fixed-points of @{text "\<phi>'s"} complement is the set of complements of the fixed-points of @{text "\<phi>'s"} dual-complement.\<close>
 lemma fp_compl: "fp \<phi>\<^sup>- = (fp (\<phi>\<^sup>d\<^sup>-))\<^sup>d\<^sup>-" by (simp add: dual_compl_char2 dualcompl_invol fp_dual)
-text\<open>The fixed-points of \<phi>'s dual-complement is the set of complements of the fixed-points of \<phi>'s complement.\<close>
+text\<open>The fixed-points of @{text "\<phi>'s"} dual-complement is the set of complements of the fixed-points of @{text "\<phi>'s"} complement.\<close>
 lemma fp_dcompl: "fp (\<phi>\<^sup>d\<^sup>-) = (fp \<phi>\<^sup>-)\<^sup>d\<^sup>-" by (simp add: dualcompl_invol fp_compl)
 
 text\<open>The fixed-points function and the fixed-point operation are essentially related.\<close>

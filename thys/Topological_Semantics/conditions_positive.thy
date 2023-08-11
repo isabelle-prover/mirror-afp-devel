@@ -5,7 +5,7 @@ begin
 section \<open>Topological Conditions\<close>
 
 text\<open>We define and interrelate some useful axiomatic conditions on unary operations (operators) 
-having a 'w-parametric type ('w)\<sigma>\<Rightarrow>('w)\<sigma>.
+having a 'w-parametric type @{text "('w)\<sigma>\<Rightarrow>('w)\<sigma>"}.
 Boolean algebras extended with such operators give us different sorts of topological Boolean algebras.\<close>
 
 subsection \<open>Positive Conditions\<close>

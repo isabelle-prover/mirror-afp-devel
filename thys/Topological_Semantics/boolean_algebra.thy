@@ -30,26 +30,26 @@ of points as any other kind of object (e.g., they can be sets, functions, sets o
 \<close>
 
 text\<open>We utilize a particular naming convention: The type parameter 'w is employed for the
-domain/universe of 'points'. We conveniently introduce the (parametric) type-alias ('w)\<sigma> 
-as shorthand for 'w\<Rightarrow>bool. Hence, the elements of our algebra are objects of type ('w)\<sigma>,
+domain/universe of 'points'. We conveniently introduce the (parametric) type-alias @{text "('w)\<sigma>"} 
+as shorthand for @{text "'w\<Rightarrow>bool"}. Hence, the elements of our algebra are objects of type @{text "('w)\<sigma>"},
 and thus correspond to (characteristic functions of) sets of 'points'.
 Set-valued (resp. set-domain) functions are thus functions that have sets as their codomain (resp. domain),
-they are basically anything with a (parametric) type 'a\<Rightarrow>('w)\<sigma> (resp. ('w)\<sigma>\<Rightarrow>'a).\<close>
+they are basically anything with a (parametric) type @{text "'a\<Rightarrow>('w)\<sigma>"} (resp. @{text "('w)\<sigma>\<Rightarrow>'a)"}.\<close>
 
 text\<open>Type for (characteristic functions of) sets (of 'points')\<close>
 type_synonym 'w \<sigma> = \<open>'w \<Rightarrow> bool\<close>
 
 text\<open>In the sequel, we will (try to) enforce the following naming convention:\<close>
 
-text\<open>(i) Upper-case latin letters (A, B, D, M, P, S, X, etc.) denote arbitrary sets (type ('w)\<sigma>).
+text\<open>(i) Upper-case latin letters (A, B, D, M, P, S, X, etc.) denote arbitrary sets (type @{text "('w)\<sigma>"}).
 We will employ lower-case letters (p, q, x, w, etc.) to denote variables playing the role of 'points'.
 In some contexts, the letters S and D will be employed to denote sets/domains of sets (of 'points').\<close>
 
-text\<open>(ii) Greek letters denote arbitrary set-valued functions (type 'a\<Rightarrow>('w)\<sigma>).
-We employ the letters \<phi>, \<psi> and \<eta> to denote arbitrary unary operations
-(with type ('w)\<sigma>\<Rightarrow>('w)\<sigma>).\<close>
+text\<open>(ii) Greek letters denote arbitrary set-valued functions (type @{text "'a\<Rightarrow>('w)\<sigma>"}).
+We employ the letters @{text "\<phi>, \<psi> and \<eta>"} to denote arbitrary unary operations
+(with type @{text "('w)\<sigma>\<Rightarrow>('w)\<sigma>)"}.\<close>
 
-text\<open>(iii) Upper-case calligraphic letters (\<B>, \<I>, \<C>, \<F>, etc.) are reserved for unary operations that are
+text\<open>(iii) Upper-case calligraphic letters @{text "(\<B>, \<I>, \<C>, \<F>, etc.)"} are reserved for unary operations that are
 intended to act as 'topological operators' in the given context.\<close>
 
 subsection \<open>Encoding Boolean operations\<close>
@@ -190,7 +190,7 @@ text\<open>Inverse projection maps a unary function to a 'projected' binary func
 abbreviation inv_proj::\<open>('a \<Rightarrow> 'c) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> 'c)\<close> ("(_)\<upharpoonleft>")
   where "D\<upharpoonleft> \<equiv> \<lambda>A B. D A"
 
-text\<open>Image of a mapping \<phi>, with range as an special case.\<close>
+text\<open>Image of a mapping @{text "\<phi>"}, with range as an special case.\<close>
 definition image::"('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> bool)" ("\<lbrakk>_ _\<rbrakk>") 
   where "\<lbrakk>\<phi> S\<rbrakk> \<equiv> \<lambda>y. \<exists>x. (S x) \<and> (\<phi> x) = y"
 definition range::"('a \<Rightarrow> 'b) \<Rightarrow> ('b \<Rightarrow> bool)" ("\<lbrakk>_'_\<rbrakk>") 

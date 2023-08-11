@@ -4,7 +4,7 @@ begin
 
 subsection \<open>Logics of Formal Undeterminedness (LFUs)\<close>
 
-text\<open>The LFUs are a family of paracomplete logics featuring a 'determinedness' operator \<currency>
+text\<open>The LFUs are a family of paracomplete logics featuring a 'determinedness' operator @{text "\<currency>"}
 that can be used to recover some classical properties of negation (in particular TND).
 LFUs behave in a sense dually to LFIs. Both can be semantically embedded as extensions of Boolean algebras.
 We show a shallow semantical embedding of a family of self-extensional LFUs using the closure operator
@@ -12,7 +12,7 @@ as primitive.\<close>
 
 (*Let us assume a concrete type w (for 'worlds' or 'points').*)
 typedecl w
-(*Let us assume the following primitive unary operation \<C> (intended as a closure operator).*)
+(*Let us assume the following primitive unary operation intended as a closure operator.*)
 consts \<C>::"w \<sigma> \<Rightarrow> w \<sigma>"
 
 (*From the topological cube of opposition:*)
@@ -46,7 +46,7 @@ abbreviation op_und_b::"w \<sigma> \<Rightarrow> w \<sigma>" ("\<star>\<^sup>B_"
   where "\<star>\<^sup>BA \<equiv> \<B>\<^sup>d\<^sup>- A"
 
 
-text\<open>Observe that assumming EXPN \<C> we are allowed to exchange A and B variants.\<close>
+text\<open>Observe that assumming EXPN for closure we are allowed to exchange A and B variants.\<close>
 lemma pundAB: "EXPN \<C> \<Longrightarrow> \<star>\<^sup>AA = \<star>\<^sup>BA" using neg_char by (metis BA_deMorgan1 BA_dn L4 L9 dimpl_char impl_char ofp_comm_dc2 op_fixpoint_def sdfun_dcompl_def setequ_ext svfun_compl_def)
 lemma pdetAB: "EXPN \<C> \<Longrightarrow> \<currency>\<^sup>AA = \<currency>\<^sup>BA" by (metis dual_compl_char1 pundAB sfun_compl_invol svfun_compl_def)
 

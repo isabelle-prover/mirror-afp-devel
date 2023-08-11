@@ -4,14 +4,14 @@ begin
 
 subsection \<open>Logics of Formal Inconsistency (LFIs)\<close>
 
-text\<open>The LFIs are a family of paraconsistent logics featuring a 'consistency' operator \<circ>
+text\<open>The LFIs are a family of paraconsistent logics featuring a 'consistency' operator @{text "\<circ>"}
 that can be used to recover some classical properties of negation (in particular ECQ).
 We show a shallow semantical embedding of a family of self-extensional LFIs using the border operator
 as primitive.\<close>
 
 text\<open>Let us assume a concrete type w (for 'worlds' or 'points').\<close>
 typedecl w
-text\<open>Let us assume the following primitive unary operation \<B> (intended as a border operator).\<close>
+text\<open>Let us assume the following primitive unary operation intended as a border operator.\<close>
 consts \<B>::"w \<sigma> \<Rightarrow> w \<sigma>"
 
 text\<open>From the topological cube of opposition we have that:\<close>
@@ -45,7 +45,7 @@ abbreviation op_inc_b::"w \<sigma> \<Rightarrow> w \<sigma>" ("\<bullet>\<^sup>B
 abbreviation op_con_b::"w \<sigma> \<Rightarrow> w \<sigma>" ("\<circ>\<^sup>B_" [57]58) 
   where "\<circ>\<^sup>BA \<equiv> \<B>\<^sup>- A"
 
-text\<open>Observe that assumming CNTR \<B> we are allowed to exchange A and B variants.\<close>
+text\<open>Observe that assumming CNTR for border we are allowed to exchange A and B variants.\<close>
 lemma pincAB: "CNTR \<B> \<Longrightarrow> \<bullet>\<^sup>AA = \<bullet>\<^sup>BA" using neg_char by (metis CNTR_def CNTR_fpc L5 L6 L9 dimpl_char impl_char ofp_invol op_fixpoint_def setequ_ext svfun_compl_def)
 lemma pconAB: "CNTR \<B> \<Longrightarrow> \<circ>\<^sup>AA = \<circ>\<^sup>BA" by (metis pincAB setequ_ext svfun_compl_def) 
 
@@ -116,15 +116,15 @@ text\<open>cl\<close>
 lemma "BORDER \<B> \<Longrightarrow> cl_a" nitpick oops \<comment>\<open> countermodel \<close>
 lemma "BORDER \<B> \<Longrightarrow> cl_b" nitpick oops \<comment>\<open> countermodel \<close>
 
-text\<open>ca_conj\<close>
+text\<open>ca-conj\<close>
 lemma prop_ca_conj_b: "nMULT\<^sup>b \<B> = ca_conj_b" by (metis MULT_b_def nMULTb_compl sfun_compl_invol)
 lemma prop_ca_conj_a: "nMULTr\<^sup>b \<B> = ca_conj_a" unfolding cond op_fixpoint_def by (smt (z3) compl_def dimpl_def join_def meet_def op_fixpoint_def subset_def subset_in_def)
 
-text\<open>ca_disj\<close>
+text\<open>ca-disj\<close>
 lemma prop_ca_disj_b: "ADDI\<^sup>a \<B> = ca_disj_b" by (simp add: nADDI_a_def nADDIa_compl)
 lemma prop_ca_disj_a: "nMULTr\<^sup>a \<B> = ca_disj_a" oops (*TODO*)
 
-text\<open>ca_impl\<close>
+text\<open>ca-impl\<close>
 lemma "BORDER \<B> \<Longrightarrow> ca_impl_a" nitpick oops \<comment>\<open> countermodel \<close>
 lemma "BORDER \<B> \<Longrightarrow> ca_impl_b" nitpick oops \<comment>\<open> countermodel \<close>
 
