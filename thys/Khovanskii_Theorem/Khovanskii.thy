@@ -8,9 +8,7 @@ We follow a proof due to Nathanson and Ruzsa as presented in the notes
 
 theory Khovanskii
   imports
-    Complex_Main
     FiniteProduct
-    "HOL-Library.Equipollence"
     "Pluennecke_Ruzsa_Inequality.Pluennecke_Ruzsa_Inequality"
     "Bernoulli.Bernoulli"               \<comment> \<open>sums of a fixed power are polynomials\<close>
     "HOL-Analysis.Weierstrass_Theorems" \<comment> \<open>needed for polynomial function\<close>
