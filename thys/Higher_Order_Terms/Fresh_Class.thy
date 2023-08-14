@@ -75,8 +75,38 @@ qed
 
 end
 
+primrec fresh_list :: \<open>nat \<Rightarrow> 'a :: fresh set \<Rightarrow> 'a list\<close> where
+\<open>fresh_list 0 _ = []\<close> |
+\<open>fresh_list (Suc n) A = Next A # fresh_list n (insert (Next A) A)\<close>
+
+lemma fresh_list_length[simp]: \<open>length (fresh_list n A) = n\<close>
+  by (induction n arbitrary: A) auto
+
+context
+  fixes A :: \<open>'a :: fresh set\<close>
+  assumes finite: \<open>finite A\<close>
+begin
+
+lemma fresh_list_fresh: \<open>set (fresh_list n A) \<inter> A = {}\<close>
+  using finite
+  by (induction n arbitrary: A) (auto simp: Next_not_member)
+
+lemma fresh_list_fresh_elem: \<open>x \<in> set (fresh_list n A) \<Longrightarrow> x \<notin> A\<close>
+  using fresh_list_fresh by auto
+
+lemma fresh_list_distinct: \<open>distinct (fresh_list n A)\<close>
+using finite proof (induction n arbitrary: A)
+  case (Suc n)
+  then have \<open>Next A \<notin> set (fresh_list n (insert (Next A) A))\<close>
+    by (meson Fresh_Class.fresh_list_fresh_elem finite.insertI insertI1)
+  then show ?case
+    using Suc by auto
+qed simp
+
+end
+
 export_code
-  fresh_create fresh_Next fresh_fNext fresh_frun fresh_run
+  fresh_create fresh_Next fresh_fNext fresh_frun fresh_run fresh_list
   checking Scala? SML?
 
 end
