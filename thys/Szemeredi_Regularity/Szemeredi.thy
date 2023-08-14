@@ -1,7 +1,7 @@
 section \<open>Szemerédi's Regularity Lemma\<close>
 
 theory Szemeredi
-  imports Complex_Main "HOL-Library.Disjoint_Sets" "Girth_Chromatic.Ugraphs" "HOL-Analysis.Convex"
+  imports "HOL-Library.Disjoint_Sets" "Girth_Chromatic.Ugraphs" "HOL-Analysis.Convex"
 
 begin
 
