@@ -181,30 +181,6 @@ proof -
   ultimately show ?thesis by blast
 qed
 
-subsection \<open>Anchord gtt intersection\<close>
-
-definition AGTT_inter where
-  "AGTT_inter \<G>\<^sub>1 \<G>\<^sub>2 \<equiv> (prod_ta (fst \<G>\<^sub>1) (fst \<G>\<^sub>2),
-                       prod_ta (snd \<G>\<^sub>1) (snd \<G>\<^sub>2))"
-
-lemma AGTT_inter_sound:
-  "agtt_lang (AGTT_inter \<G>\<^sub>1 \<G>\<^sub>2) = agtt_lang \<G>\<^sub>1 \<inter> agtt_lang \<G>\<^sub>2" (is "?Ls = ?Rs")
-proof -
-  let ?TA_A = "prod_ta (fst \<G>\<^sub>1) (fst \<G>\<^sub>2)"
-  let ?TA_B = "prod_ta (snd \<G>\<^sub>1) (snd \<G>\<^sub>2)"
-  {fix s t assume ass: "(s, t) \<in> agtt_lang (AGTT_inter \<G>\<^sub>1 \<G>\<^sub>2)"
-    then obtain q where ls: "q |\<in>| ta_der ?TA_A (term_of_gterm s)" and
-      rs: "q |\<in>| ta_der ?TA_B (term_of_gterm t)"
-      by (auto simp add: AGTT_inter_def agtt_lang_def gta_der_def)
-    then have "(s, t) \<in> agtt_lang \<G>\<^sub>1 \<and> (s, t) \<in> agtt_lang \<G>\<^sub>2"
-      using prod_ta_der_to_\<A>_\<B>_der1[of q] prod_ta_der_to_\<A>_\<B>_der2[of q]
-      by (auto simp: agtt_lang_def gta_der_def) blast}
-  then have f: "?Ls \<subseteq> ?Rs" by auto
-  moreover have "?Rs \<subseteq> ?Ls" using \<A>_\<B>_der_to_prod_ta
-    by (fastforce simp: agtt_lang_def AGTT_inter_def gta_der_def)
-  ultimately show ?thesis by blast
-qed
-
 subsection \<open>Anchord gtt triming\<close>
 
 abbreviation "trim_agtt \<equiv> trim_gtt"
