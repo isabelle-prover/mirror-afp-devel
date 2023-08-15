@@ -12,52 +12,57 @@ type_synonym 'node graph = "'node \<Rightarrow> 'node \<Rightarrow> bool"
 type_synonym 'node path = "'node llist"
 
 coinductive_set paths :: "'node graph \<Rightarrow> 'node path set"
-for graph :: "'node graph"
-where
-  Empty: "LNil \<in> paths graph"
-| Single: "LCons x LNil \<in> paths graph"
-| LCons: "\<lbrakk> graph x y; LCons y xs \<in> paths graph \<rbrakk> \<Longrightarrow> LCons x (LCons y xs) \<in> paths graph"
+  for graph :: "'node graph"
+  where
+    Empty: "LNil \<in> paths graph"
+  | Single: "LCons x LNil \<in> paths graph"
+  | LCons: "\<lbrakk> graph x y; LCons y xs \<in> paths graph \<rbrakk> \<Longrightarrow> LCons x (LCons y xs) \<in> paths graph"
 
 definition connected :: "'node graph \<Rightarrow> bool"
-where "connected graph \<longleftrightarrow> (\<forall>n n'. \<exists>xs. llist_of (n # xs @ [n']) \<in> paths graph)"
+  where "connected graph \<longleftrightarrow> (\<forall>n n'. \<exists>xs. llist_of (n # xs @ [n']) \<in> paths graph)"
 
 inductive_set reachable_via :: "'node graph \<Rightarrow> 'node set \<Rightarrow> 'node \<Rightarrow> 'node set"
-for graph :: "'node graph" and ns :: "'node set" and n :: "'node"
-where "\<lbrakk> LCons n xs \<in> paths graph; n' \<in> lset xs; lset xs \<subseteq> ns \<rbrakk> \<Longrightarrow> n' \<in> reachable_via graph ns n"
+  for graph :: "'node graph" and ns :: "'node set" and n :: "'node"
+  where "\<lbrakk> LCons n xs \<in> paths graph; n' \<in> lset xs; lset xs \<subseteq> ns \<rbrakk> \<Longrightarrow> n' \<in> reachable_via graph ns n"
 
 
 lemma connectedD: "connected graph \<Longrightarrow> \<exists>xs. llist_of (n # xs @ [n']) \<in> paths graph"
-unfolding connected_def by blast
+  unfolding connected_def by blast
 
 lemma paths_LConsD: 
   assumes "LCons x xs \<in> paths graph"
   shows "xs \<in> paths graph"
-using assms
-by(coinduct)(fastforce elim: paths.cases del: disjCI)
+  using assms
+  by(coinduct)(fastforce elim: paths.cases del: disjCI)
 
 lemma paths_lappendD1:
   assumes "lappend xs ys \<in> paths graph"
   shows "xs \<in> paths graph"
-using assms
-apply coinduct
-apply(erule paths.cases)
-  apply(simp add: lappend_eq_LNil_iff)
- apply(case_tac x)
-  apply simp
- apply(simp add: lappend_eq_LNil_iff)
-apply(case_tac x)
- apply simp
-apply(case_tac x22)
- apply simp
-apply simp
-done
+  using assms
+proof coinduct
+  case (paths zs)
+  then show ?case
+  proof(rule paths.cases)
+    assume "lappend zs ys = LNil" then show ?thesis
+      by(simp add: lappend_eq_LNil_iff)
+  next
+    fix x assume "lappend zs ys = LCons x LNil"
+    then show ?thesis
+      by (metis LNil_eq_lappend_iff lappend_LNil2 lappend_ltl lnull_def ltl_simps(2))
+  next
+    fix x y ws
+    assume "lappend zs ys = LCons x (LCons y ws)" "graph x y" "LCons y ws \<in> paths graph"
+    then show ?thesis
+      by (metis lappend_ltl llist.disc(2) lprefix_LCons_conv lprefix_lappend ltl_simps(2))
+  qed
+qed
 
 lemma paths_lappendD2:
   assumes "lfinite xs"
-  and "lappend xs ys \<in> paths graph"
+    and "lappend xs ys \<in> paths graph"
   shows "ys \<in> paths graph"
-using assms
-by induct(fastforce elim: paths.cases intro: paths.intros)+
+  using assms
+  by induct (fastforce elim: paths.cases intro: paths.intros)+
 
 lemma path_avoid_node:
   assumes path: "LCons n xs \<in> paths graph"
@@ -104,7 +109,7 @@ qed
 lemma reachable_via_subset_unfold:
   "reachable_via graph ns n \<subseteq> (\<Union>n' \<in> {n'. graph n n'} \<inter> ns. insert n' (reachable_via graph (ns - {n'}) n'))"
   (is "?lhs \<subseteq> ?rhs")
-proof(rule subsetI)
+proof
   fix x
   assume "x \<in> ?lhs"
   then obtain xs where path: "LCons n xs \<in> paths graph"
