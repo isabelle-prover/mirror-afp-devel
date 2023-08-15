@@ -104,7 +104,7 @@ editors. If you would like to handle a submission, simply reply to
 <afp-submit> (= all editors) and say so (e.g. "I'll take it"). At the
 same time update the global list of all submissions at
 <https://www.isa-afp.org/webapp/submissions> by toggling the field
-behind the submission to "Review" (an pressing "update" every time you
+behind the submission to "Review" (and pressing "update" every time you
 toggle this field). If a submission is rejected (either because it
 needs to be improved or terminally), toggle the field to "Rejected".
 Once you have added a submission, toggle the field to "Added".
@@ -120,7 +120,7 @@ proofs. For example, the linter will complain about *_tac proof
 methods because they can refer to system-generated names, a definite
 no-no!. The linter report is listed at the end of the submission
 run. It is up to the editor to decide if and how much the authors
-should revise their proofs accordingly. Editors may also find proofs
+should revise their proofs. Editors may also find proofs
 objectionable for reasons not covered by the linter. In the end, the
 handling editor has to decide how much time they want to spend
 reviewing a submission ...
