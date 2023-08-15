@@ -22,11 +22,15 @@ The editors of the Archive of Formal Proofs are:
 
 * [Manuel Eberl](http://pruvisto.org/), [University of Innsbruck](https://www.uibk.ac.at/)
 * [Gerwin Klein](https://www.cse.unsw.edu.au/~kleing/), [Proofcraft](https://proofcraft.systems) & [UNSW Sydney](https://www.unsw.edu.au/)
+* [Peter Lammich](https://people.utwente.nl/p.lammich),
+    [University of Twente](https://www.utwente.nl/en/)
 * [Andreas Lochbihler](http://www.andreas-lochbihler.de),
     [Digital Asset](https://www.digitalasset.com)
-* [Tobias Nipkow](https://www.in.tum.de/~nipkow/), [Technische Universität München](https://www.tum.de/)
+* [Tobias Nipkow](https://www.in.tum.de/~nipkow/), [Technical
+  University of Munich](https://www.tum.de/en)
 * [Larry Paulson](https://www.cl.cam.ac.uk/users/lcp/), [University of Cambridge](https://www.cam.ac.uk/)
 * [René Thiemann](http://cl-informatik.uibk.ac.at/users/thiemann/), [University of Innsbruck](https://www.uibk.ac.at/)
+* [Dmitriy Traytel](https://traytel.bitbucket.io/), [University of Copenhagen](https://www.ku.dk/english/)
 
 ## Why
 
