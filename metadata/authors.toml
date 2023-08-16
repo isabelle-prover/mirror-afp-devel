@@ -3808,16 +3808,6 @@ name = "Andreas Lochbihler"
 
 [lochbihler.emails]
 
-[lochbihler.emails.lochbihler_email]
-user = [
-  "andreas",
-  "lochbihler",
-]
-host = [
-  "digitalasset",
-  "com",
-]
-
 [lochbihler.emails.lochbihler_email1]
 user = [
   "mail",
@@ -5362,16 +5352,6 @@ user = [
 host = [
   "gmail",
   "com",
-]
-
-[rawson.emails.rawson_email1]
-user = [
-  "mr644",
-]
-host = [
-  "cam",
-  "ac",
-  "uk",
 ]
 
 [rawson.homepages]
@@ -7139,7 +7119,6 @@ host = [
 ]
 
 [wenzel.homepages]
-wenzel_homepage = "https://sketis.net"
 
 [whitley]
 name = "A Whitley"

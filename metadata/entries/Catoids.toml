@@ -1,0 +1,48 @@
+title = "Catoids, Categories, Groupoids"
+date = 2023-08-14
+topics = [
+  "Mathematics/Algebra",
+  "Mathematics/Category theory",
+]
+abstract = """
+This AFP entry formalises catoids, which are generalisations of
+  single-set categories, and groupoids. More specifically, in catoids,
+  the partial composition of arrows in a category is generalised to a
+  multioperation, which sends pairs of elements to sets of elements,
+  and the definedness condition of arrow composition -- two arrows can
+  be composed if and only the target of the first matches the source
+  of the second -- is relaxed. Beyond a library of basic laws for
+  catoids, single-set categories and groupoids, I formalise the facts
+  that every catoid can be lifted to a modal powerset quantale, that
+  every groupoid can be lifted to a Dedekind quantale and to power set
+  relation algebras, a special case of a famous result of Jónsson and
+  Tarski. Finally, I show that single-set categories are equivalent to
+  a standard axiomatisation of categories based on a set of objects
+  and a set of arrows, and compare catoids with related structures
+  such as multimonoid and relational monoids (monoids in the monoidal
+  category Rel)."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.struth]
+email = "struth_email"
+
+[contributors]
+
+[notify]
+struth = "struth_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.48550/arXiv.2002.02321",
+  "10.1007/978-3-030-88701-8_6",
+  "10.1007/s00012-023-00805-9",
+  "10.48550/arXiv.2307.09253",
+]
+pubs = []

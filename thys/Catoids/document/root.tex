@@ -1,0 +1,126 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+%\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Catoids, Categories, Groupoids}
+\author{Georg Struth}
+\maketitle
+
+\begin{abstract}
+  This AFP entry formalises catoids, which are generalisations of
+  single-set categories, and groupoids. More specifically, in catoids,
+  the partial composition of arrows in a category is generalised to a
+  multioperation, which sends pairs of elements to sets of elements,
+  and the definedness condition of arrow composition -- two arrows can
+  be composed if and only the target of the first matches the source
+  of the second -- is relaxed. Beyond a library of basic laws for
+  catoids, single-set categories and groupoids, I formalise the facts
+  that every catoid can be lifted to a modal powerset quantale, that
+  every groupoid can be lifted to a Dedekind quantale and to power set
+  relation algebras, a special case of a famous result of Jónsson and
+  Tarski. Finally, I show that single-set categories are equivalent to
+  a standard axiomatisation of categories based on a set of objects
+  and a set of arrows, and compare catoids with related structures
+  such as multimonoid and relational monoids (monoids in the monoidal
+  category Rel).
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+\section{Introductory Remarks}
+
+These Isabelle theories formalise results on catoids
+from~\cite{CranchDS20,CalkFJSZ21,FahrenbergJSZ23} and groupoids
+from~\cite{CalkMPS23}. Catoids generalise single-set categories, as
+they can be found in Chapter XII of Mac Lane's
+book~\cite{MacLane98}. One particular result, namely that catoids can
+be lifted to (power set) relation algebras, is due to Jónsson and
+Tarski~\cite{JonssonT52}.
+
+A wide-ranging formalisation of category theory
+based on single-set categories formalised as locales can already be
+found in the AFP~\cite{Stark16}. The present type-class-based alternative
+might lend itself to a similar programme.
+
+The multioperation $X\times X\to \mathcal{P} X$ in the definition of
+catoids is obviously isomorphic to a ternary relation
+$X\to X\to X\to 2$. Simple mathematical components for relational
+monoids, which are isomorphic (as categories with suitable morphisms)
+to catoids, can already be found in the AFP~\cite{DongolGHS17}. At
+this stage, I do not integrate the two components. They use different
+formalisations of quantales with Isabelle, which remain to be
+consolidated.
+
+Catoids and groupoids admit many models. Those of catoids range from
+shuffle monoids and generalised effect algebras to base algebras of
+incidence and matrix algebras~\cite{FahrenbergJSZ23}, whereas
+groupoids are so ubiquitous in mathematics that some mathematicians
+have argued for interchanging their names with groups,
+see~\cite{Brown87} for a brief history, which goes decades beyond that
+of category theory.
+
+The mathematical components in this AFP entry are also stepping stones
+towards the formalisation of $(\omega,p)$-catoids, strict
+$(\omega,p)$-categories and $(\omega,p)$-quantales. Components for
+these structures will feature in a separate AFP entry. They contribute
+to a larger programme on the formalisation of higher rewriting
+techniques with proof assistants.
+
+ \vspace{\baselineskip}
+
+ I am grateful for a fellowship at the Collegium de Lyon, Institute
+ for Advanced Study, where this formalisation work has been done.
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+
+
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

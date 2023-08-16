@@ -1,0 +1,20 @@
+chapter AFP
+
+session "Catoids" = Quantales_Converse +
+  options [timeout = 600]
+
+  sessions
+    Relation_Algebra
+    Quantales
+    KAD
+
+  theories
+    Catoid
+    Groupoid
+    Catoid_Lifting
+    Groupoid_Lifting
+    Multimonoid
+
+  document_files
+    "root.tex"
+    "root.bib"

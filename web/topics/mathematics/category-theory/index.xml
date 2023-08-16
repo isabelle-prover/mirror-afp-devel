@@ -7,6 +7,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language><atom:link href="/topics/mathematics/category-theory/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>Catoids, Categories, Groupoids</title>
+      <link>/entries/Catoids.html</link>
+      <pubDate>Mon, 14 Aug 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Catoids.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Strict Omega Categories</title>
       <link>/entries/StrictOmegaCategories.html</link>
       <pubDate>Sat, 14 Jan 2023 00:00:00 +0000</pubDate>

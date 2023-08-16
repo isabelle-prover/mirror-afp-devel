@@ -3,33 +3,51 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2023-08-10T00:00:00+00:00</lastmod>
+    <lastmod>2023-08-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/</loc>
+    <lastmod>2023-08-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Catoids.html</loc>
+    <lastmod>2023-08-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2023-08-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2023-08-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/kad/</loc>
+    <lastmod>2023-08-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2023-08-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/quantales/</loc>
+    <lastmod>2023-08-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/quantales_converse/</loc>
+    <lastmod>2023-08-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/relation_algebra/</loc>
+    <lastmod>2023-08-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/struth/</loc>
+    <lastmod>2023-08-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2023-08-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/argyraki/</loc>
     <lastmod>2023-08-10T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/</loc>
-    <lastmod>2023-08-10T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/</loc>
-    <lastmod>2023-08-10T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/</loc>
-    <lastmod>2023-08-10T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/leek/</loc>
-    <lastmod>2023-08-10T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/mathematics/</loc>
     <lastmod>2023-08-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Polygonal_Number_Theorem.html</loc>
     <lastmod>2023-08-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/three_squares/</loc>
-    <lastmod>2023-08-10T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2023-08-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/yez/</loc>
@@ -41,19 +59,10 @@
     <loc>/topics/computer-science/</loc>
     <lastmod>2023-07-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/kad/</loc>
-    <lastmod>2023-07-25T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/kleene_algebra/</loc>
     <lastmod>2023-07-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Quantales_Converse.html</loc>
-    <lastmod>2023-07-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/quantales/</loc>
-    <lastmod>2023-07-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/struth/</loc>
     <lastmod>2023-07-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Earley_Parser.html</loc>
@@ -1698,9 +1707,6 @@
     <lastmod>2020-07-21T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/hoefner/</loc>
-    <lastmod>2020-07-13T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/relation_algebra/</loc>
     <lastmod>2020-07-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Relational_Paths.html</loc>
@@ -4787,6 +4793,8 @@
     <loc>/theories/category2/</loc>
   </url><url>
     <loc>/theories/category3/</loc>
+  </url><url>
+    <loc>/theories/catoids/</loc>
   </url><url>
     <loc>/theories/cauchy/</loc>
   </url><url>
