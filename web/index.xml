@@ -6,7 +6,16 @@
     <description>Recent content on Archive of Formal Proofs</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Thu, 10 Aug 2023 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 14 Aug 2023 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Catoids, Categories, Groupoids</title>
+      <link>/entries/Catoids.html</link>
+      <pubDate>Mon, 14 Aug 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Catoids.html</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>Polygonal Number Theorem</title>
       <link>/entries/Polygonal_Number_Theorem.html</link>
@@ -7582,6 +7591,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/category3/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Catoids</title>
+      <link>/theories/catoids/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/catoids/</guid>
       <description></description>
     </item>
     
