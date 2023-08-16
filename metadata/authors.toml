@@ -870,15 +870,6 @@ host = [
   "uk",
 ]
 
-[brucker.emails.brucker_email1]
-user = [
-  "brucker",
-]
-host = [
-  "spamfence",
-  "net",
-]
-
 [brucker.emails.brucker_email2]
 user = [
   "adbrucker",
