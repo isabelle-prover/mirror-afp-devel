@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Polygonal_Number_Theorem" (AFP) = "Three_Squares" +
+session "Polygonal_Number_Theorem" = "Three_Squares" +
   options [timeout = 600]
 
   theories

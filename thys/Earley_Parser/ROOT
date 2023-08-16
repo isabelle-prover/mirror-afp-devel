@@ -1,6 +1,6 @@
 chapter AFP
 
-session Earley_Parser (AFP) = HOL +
+session Earley_Parser = HOL +
   options [timeout = 600]
   sessions
     "HOL-Library"

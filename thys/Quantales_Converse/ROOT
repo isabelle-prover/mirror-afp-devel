@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Quantales_Converse" (AFP) = HOL +
+session "Quantales_Converse" = HOL +
   options [timeout = 1200]
 
   sessions
