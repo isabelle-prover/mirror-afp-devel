@@ -1,4 +1,4 @@
-(* 
+(*
 Title: Quantales with converse
 Author: Cameron Calk, Georg Struth
 Maintainer: Georg Struth <g.struth at sheffield.ac.uk>
@@ -7,7 +7,7 @@ Maintainer: Georg Struth <g.struth at sheffield.ac.uk>
 section \<open>Quantales with converse\<close>
 
 theory Quantale_Converse
-  imports Modal_Quantale Modal_Kleene_Algebra_Converse 
+  imports Modal_Quantale Modal_Kleene_Algebra_Converse
 
 begin
 
@@ -133,10 +133,10 @@ lemma inv_qstar_aux [simp]: "(x ^ i)\<^sup>\<circ> = (x\<^sup>\<circ>) ^ i"
 lemma inv_conjugate: "(x\<^sup>\<circ> \<sqinter> y = \<bottom>) = (x \<sqinter> y\<^sup>\<circ> = \<bottom>)"
   using inv_binf invqka.inv_zero by fastforce
 
-text \<open>We define domain and codomain as in relation algebra and compare with the domain 
+text \<open>We define domain and codomain as in relation algebra and compare with the domain
 and codomain axioms above.\<close>
 
-definition do :: "'a \<Rightarrow> 'a" where 
+definition do :: "'a \<Rightarrow> 'a" where
   "do x = 1 \<sqinter> (x \<cdot> x\<^sup>\<circ>)"
 
 definition cd :: "'a \<Rightarrow> 'a" where
@@ -199,7 +199,7 @@ lemma dedekind_modular:
   shows "(x \<cdot> y) \<sqinter> z \<le> (x \<sqinter> (z \<cdot> y\<^sup>\<circ>)) \<cdot> y"
   using assms local.inf.cobounded1 local.mult_isol local.order_trans by blast
 
-lemma modular_eq1: 
+lemma modular_eq1:
   assumes "\<forall>x y z w. (y \<sqinter> (z \<cdot> x\<^sup>\<circ>) \<le> w \<longrightarrow> (y \<cdot> x) \<sqinter> z \<le> w \<cdot> x)"
   shows "\<forall>x y z. (x \<cdot> y) \<sqinter> z \<le> (x \<sqinter> (z \<cdot> y\<^sup>\<circ>)) \<cdot> y"
   using assms by blast
@@ -221,7 +221,7 @@ class boolean_involutive_quantale = involutive_quantale + bool_unital_quantale
 
 begin
 
-lemma res_peirce: 
+lemma res_peirce:
   assumes "\<forall>x y. x\<^sup>\<circ> \<cdot> -(x \<cdot> y) \<le> -y"
   shows  "((x \<cdot> y) \<sqinter> z\<^sup>\<circ> = \<bottom>) = ((y \<cdot> z) \<sqinter> x\<^sup>\<circ> = \<bottom>)"
 proof
@@ -230,7 +230,7 @@ proof
     by (simp add: local.inf.commute local.inf_shunt)
   thus "(y \<cdot> z) \<sqinter> x\<^sup>\<circ> = \<bottom>"
     by (metis assms local.inf_shunt local.inv_conjugate local.inv_contrav local.inv_invol local.mult_isol local.order.trans)
-next 
+next
   assume "(y \<cdot> z) \<sqinter> x\<^sup>\<circ> = \<bottom>"
   hence "x\<^sup>\<circ> \<le> -(y \<cdot> z)"
     using local.compl_le_swap1 local.inf_shunt by blast
@@ -238,7 +238,7 @@ next
     by (metis assms local.dual_order.trans local.inf_shunt local.inv_conjugate local.inv_contrav local.mult_isol)
 qed
 
-lemma res_schroeder1: 
+lemma res_schroeder1:
   assumes "\<forall>x y. x\<^sup>\<circ> \<cdot> -(x \<cdot> y) \<le> -y"
   shows "((x \<cdot> y) \<sqinter> z = \<bottom>) = (y \<sqinter> (x\<^sup>\<circ> \<cdot> z) = \<bottom>)"
 proof
@@ -247,7 +247,7 @@ proof
     by (simp add: local.inf.commute local.inf_shunt)
   thus "y \<sqinter> (x\<^sup>\<circ> \<cdot> z) = \<bottom>"
     by (metis assms local.dual_order.trans local.inf.commute local.inf_shunt local.mult_isol)
-next 
+next
   assume "y \<sqinter> (x\<^sup>\<circ> \<cdot> z) = \<bottom>"
   hence "y \<le> -(x\<^sup>\<circ> \<cdot> z)"
     by (simp add: local.inf_shunt)
@@ -255,7 +255,7 @@ next
     by (metis assms local.inf_shunt local.inv_invol local.order_trans mult_isol)
 qed
 
-lemma res_schroeder2: 
+lemma res_schroeder2:
   assumes "\<forall>x y. x\<^sup>\<circ> \<cdot> -(x \<cdot> y) \<le> -y"
   shows "((x \<cdot> y) \<sqinter> z = \<bottom>) = (x \<sqinter> (z \<cdot> y\<^sup>\<circ>) = \<bottom>)"
   by (metis assms local.inv_invol local.res_peirce local.res_schroeder1)
@@ -279,7 +279,7 @@ qed
 
 end
 
-text \<open>The strong Gelfand property (name by Palmigiano and Re) is important for dioids and Kleene algebras. 
+text \<open>The strong Gelfand property (name by Palmigiano and Re) is important for dioids and Kleene algebras.
 The modular law is a convenient axiom for relational quantales, in a setting where the underlying
 lattice is not boolean.\<close>
 
@@ -292,7 +292,7 @@ lemma do_gelfand [simp]: "do x \<cdot> do x \<cdot> do x = do x"
   apply (rule order.antisym)
   using local.do_subid local.h_seq local.mult_isol apply fastforce
   by (metis local.inv_do local.strong_gelfand)
- 
+
 lemma cd_gelfand [simp]: "cd x \<cdot> cd x \<cdot> cd x = cd x"
   by (metis do_gelfand local.do_inv)
 
@@ -363,7 +363,7 @@ lemma modular3: "(x \<cdot> y) \<sqinter> z \<le> x \<cdot> (y \<sqinter> (x\<^s
   by (metis local.inf.cobounded1 modular_1)
 
 text \<open>The name Dedekind quantale owes to the following formula, which is equivalent to the modular law. Dedekind quantales
-are called modular quantales in Rosenthal's book on quantaloids (to be precise: he discusses modular quantaloids, but the 
+are called modular quantales in Rosenthal's book on quantaloids (to be precise: he discusses modular quantaloids, but the
 notion of modular quantale is then obvious).\<close>
 
 lemma dedekind: "(x \<cdot> y) \<sqinter> z \<le> (x \<sqinter> (z \<cdot> y\<^sup>\<circ>)) \<cdot> (y \<sqinter> (x\<^sup>\<circ> \<cdot> z))"
@@ -417,7 +417,7 @@ proof
   and h1: "x \<le> p \<cdot> x"
   thus "x \<le> p \<cdot> \<top>"
     by (meson local.mult_isol local.order_trans local.top_greatest)
-next 
+next
   assume h: "p \<le> 1"
   and "x \<le> p \<cdot> \<top>"
   hence "x = (p \<cdot> \<top>) \<sqinter> x"
@@ -436,7 +436,7 @@ lemma lra_top_aux: "p \<le> 1 \<Longrightarrow> ((x \<le> x \<cdot> p ) = (x \<l
   by (metis convdqka.subid_conv local.inf.absorb_iff2 local.mult_1_right local.psrpq.subdistl local.sup.absorb_iff2 local.top_greatest modular_eq2)
 
 lemma lla: "p \<le> 1 \<Longrightarrow> ((do x \<le> p) = (x \<le> p \<cdot> \<top>))"
-proof 
+proof
   assume a1: "x \<le> p \<cdot> \<top>"
   assume a2: "p \<le> 1"
   have f3: "x \<cdot> \<top> \<le> p \<cdot> \<top> \<cdot> \<top>"
@@ -447,7 +447,7 @@ proof
     using f3 by (simp add: local.mult.semigroup_axioms semigroup.assoc)
   thus "do x \<le> p"
     using f4 a2 lla_top_aux local.do_le_top local.inf.bounded_iff local.order_trans by blast
-next 
+next
   assume a1: "do x \<le> p"
   assume a2: "p \<le> 1"
   hence  "do x \<cdot> x \<le> p \<cdot> x"
@@ -554,7 +554,7 @@ proof
   assume "do x = x"
   thus "x \<le> 1"
     by (metis local.do_subid)
-next 
+next
   assume a: "x \<le> 1"
   hence "x = do x \<cdot> x"
     by simp
@@ -664,7 +664,7 @@ proof-
   finally show ?thesis.
 qed
 
-lemma subid_complete_heyting: 
+lemma subid_complete_heyting:
   assumes "p \<le> 1"
   and "\<forall>q \<in> Q. q \<le> 1"
   shows "p \<sqinter> (\<Squnion>Q) = (\<Squnion>q \<in> Q. p \<sqinter> q)"
@@ -747,8 +747,8 @@ qed
 lemma subid_meet_prop: "p \<le> 1 \<Longrightarrow> q \<le> 1 \<Longrightarrow> (p \<cdot> x) \<sqinter> (x \<cdot> q) = p \<cdot> x \<cdot> q"
   by (metis do_fix_subid do_meet_prop)
 
-text \<open>Next we consider box and diamond operators like in modal semirings and modal quantales. 
-These are inherited from domain quantales. Diamonds are defined with respect to domain and codomain. 
+text \<open>Next we consider box and diamond operators like in modal semirings and modal quantales.
+These are inherited from domain quantales. Diamonds are defined with respect to domain and codomain.
 The box operators are defined as Sups and hence right adjoints of diamonds.\<close>
 
 abbreviation "do_dia \<equiv> dmq.fd'"
@@ -848,12 +848,12 @@ lemma do_box_subid: "do_box x p \<le> 1"
 lemma cd_box_subid: "p \<le> 1 \<Longrightarrow> cd_box x p \<le> 1"
   by (metis do_box_subid local.do_box_cd_box_conv)
 
-text \<open>Next we prove that boxes and diamonds are adjoints, and then demodalisation laws known 
+text \<open>Next we prove that boxes and diamonds are adjoints, and then demodalisation laws known
 from modal semirings.\<close>
 
-lemma do_dia_do_box_galois: 
+lemma do_dia_do_box_galois:
   assumes "p \<le> 1"
-  and "q \<le> 1" 
+  and "q \<le> 1"
   shows "(do_dia x p \<le> q) = (p \<le> do_box x q)"
 proof
   show "do_dia x p \<le> q \<Longrightarrow> p \<le> do_box x q"
@@ -872,131 +872,131 @@ next
   thus "p \<le> do_box x q \<Longrightarrow> do_dia x p \<le> q".
 qed
 
-lemma cd_dia_cd_box_galois: 
+lemma cd_dia_cd_box_galois:
   assumes "p \<le> 1"
   and "q \<le> 1"
 shows "(cd_dia x p \<le> q) = (p \<le> cd_box x q)"
   by (metis assms do_box_cd_box_conv do_dia_cd_dia_conv do_dia_do_box_galois)
 
-lemma do_dia_demod_subid: 
-  assumes "p \<le> 1" 
+lemma do_dia_demod_subid:
+  assumes "p \<le> 1"
   and "q \<le> 1"
 shows "(do_dia x p \<le> q) = (x \<cdot> p \<le> q \<cdot> x)"
   by (metis assms dmq.dqmsr.fdemodalisation2 local.do_fix_subid)
 
 text \<open>The demodalisation laws have variants based on residuals.\<close>
 
-lemma do_dia_demod_subid_fres: 
-  assumes "p \<le> 1" 
+lemma do_dia_demod_subid_fres:
+  assumes "p \<le> 1"
   and "q \<le> 1"
   shows "(do_dia x p \<le> q) = (p \<le> x \<rightarrow> q \<cdot> x)"
   by (simp add: assms do_dia_demod_subid local.bres_galois)
 
-lemma do_dia_demod_subid_var: 
-  assumes "p \<le> 1" 
+lemma do_dia_demod_subid_var:
+  assumes "p \<le> 1"
   and "q \<le> 1"
 shows "(do_dia x p \<le> q) = (x \<cdot> p \<le> q \<cdot> \<top>)"
   by (simp add: assms(2) dmq.dqmsr.fd_def lla)
 
-lemma do_dia_demod_subid_var_fres: 
-  assumes "p \<le> 1" 
+lemma do_dia_demod_subid_var_fres:
+  assumes "p \<le> 1"
   and "q \<le> 1"
 shows "(do_dia x p \<le> q) = (p \<le> x \<rightarrow> q \<cdot> \<top>)"
   by (simp add: assms do_dia_demod_subid_var local.bres_galois)
 
-lemma cd_dia_demod_subid: 
-  assumes "p \<le> 1" 
+lemma cd_dia_demod_subid:
+  assumes "p \<le> 1"
   and "q \<le> 1"
 shows "(cd_dia x p \<le> q) = (p \<cdot> x \<le> x \<cdot> q)"
   by (metis assms dmq.coddual.dqmsr.fdemodalisation2 local.cd_fix_subid)
 
-lemma cd_dia_demod_subid_fres: 
-  assumes "p \<le> 1" 
+lemma cd_dia_demod_subid_fres:
+  assumes "p \<le> 1"
   and "q \<le> 1"
 shows "(cd_dia x p \<le> q) = (p \<le> x \<cdot> q \<leftarrow> x)"
   by (simp add: assms cd_dia_demod_subid local.fres_galois)
 
-lemma cd_dia_demod_subid_var: 
-  assumes "p \<le> 1" 
+lemma cd_dia_demod_subid_var:
+  assumes "p \<le> 1"
   and "q \<le> 1"
 shows "(cd_dia x p \<le> q) = (p \<cdot> x \<le> \<top> \<cdot> q)"
   by (simp add: assms(2) dmq.coddual.dqmsr.fd_def lra)
 
-lemma cd_dia_demod_subid_var_fres: 
-  assumes "p \<le> 1" 
+lemma cd_dia_demod_subid_var_fres:
+  assumes "p \<le> 1"
   and "q \<le> 1"
 shows "(cd_dia x p \<le> q) = (p \<le> \<top> \<cdot> q \<leftarrow> x)"
   by (simp add: assms cd_dia_demod_subid_var local.fres_galois)
 
-lemma do_box_iso: 
+lemma do_box_iso:
   assumes "p \<le> 1"
-  and "q \<le> 1" 
-  and "p \<le> q" 
+  and "q \<le> 1"
+  and "p \<le> q"
 shows "do_box x p \<le> do_box x q"
   by (meson assms do_box_subid do_dia_do_box_galois local.order.refl local.order.trans)
 
 lemma cd_box_iso:
   assumes "p \<le> 1"
-  and "q \<le> 1" 
-  and "p \<le> q" 
+  and "q \<le> 1"
+  and "p \<le> q"
 shows "cd_box x p \<le> cd_box x q"
   by (metis assms do_box_cd_box_conv do_box_iso)
 
-lemma do_box_demod_subid: 
-  assumes "p \<le> 1" 
+lemma do_box_demod_subid:
+  assumes "p \<le> 1"
   and "q \<le> 1"
   shows "(p \<le> do_box x q) = (x \<cdot> p \<le> q \<cdot> x)"
   using assms do_dia_do_box_galois local.do_dia_demod_subid by force
 
-lemma do_box_demod_subid_bres: 
-  assumes "p \<le> 1" 
+lemma do_box_demod_subid_bres:
+  assumes "p \<le> 1"
   and "q \<le> 1"
   shows "(p \<le> do_box x q) = (p \<le> x \<rightarrow> q \<cdot> x)"
   by (simp add: assms do_box_demod_subid local.bres_galois)
 
-lemma do_box_demod_subid_var: 
-  assumes "p \<le> 1" 
+lemma do_box_demod_subid_var:
+  assumes "p \<le> 1"
   and "q \<le> 1"
   shows "(p \<le> do_box x q) = (x \<cdot> p \<le> q \<cdot> \<top>)"
   using assms do_dia_demod_subid_var do_dia_do_box_galois by auto
 
-lemma do_box_demod_subid_var_bres: 
-  assumes "p \<le> 1" 
+lemma do_box_demod_subid_var_bres:
+  assumes "p \<le> 1"
   and "q \<le> 1"
   shows "(p \<le> do_box x q) = (p \<le> x \<rightarrow> q \<cdot> \<top>)"
   by (simp add: assms do_box_demod_subid_var local.bres_galois)
 
-lemma do_box_demod_subid_var_bres_do: 
-  assumes "p \<le> 1" 
+lemma do_box_demod_subid_var_bres_do:
+  assumes "p \<le> 1"
   and "q \<le> 1"
   shows "(p \<le> do_box x q) = (p \<le> do (x \<rightarrow> q \<cdot> \<top>))"
   by (simp add: assms do_box_demod_subid_var_bres do_top)
 
-lemma cd_box_demod_subid: 
-  assumes "p \<le> 1" 
+lemma cd_box_demod_subid:
+  assumes "p \<le> 1"
   and "q \<le> 1"
   shows "(p \<le> cd_box x q) = (p \<cdot> x \<le> x \<cdot> q)"
   using assms local.cd_dia_cd_box_galois local.cd_dia_demod_subid by force
 
-lemma cd_box_demod_subid_fres: 
-  assumes "p \<le> 1" 
+lemma cd_box_demod_subid_fres:
+  assumes "p \<le> 1"
   and "q \<le> 1"
   shows "(p \<le> cd_box x q) = (p \<le> x \<cdot> q \<leftarrow> x)"
   by (simp add: assms cd_box_demod_subid local.fres_galois)
 
-lemma cd_box_demod_subid_var: 
-  assumes "p \<le> 1" 
+lemma cd_box_demod_subid_var:
+  assumes "p \<le> 1"
   and "q \<le> 1"
   shows "(p \<le> cd_box x q) = (p \<cdot> x \<le> \<top> \<cdot> q)"
   using assms cd_dia_cd_box_galois cd_dia_demod_subid_var by force
 
-lemma cd_box_demod_subid_var_fres: 
-  assumes "p \<le> 1" 
+lemma cd_box_demod_subid_var_fres:
+  assumes "p \<le> 1"
   and "q \<le> 1"
   shows "(p \<le> cd_box x q) = (p \<le> \<top> \<cdot> q \<leftarrow> x)"
   by (simp add: assms cd_box_demod_subid_var local.fres_galois)
 
-text \<open>We substitute demodalisation inequalities for diamonds in the definitions of boxes.\<close> 
+text \<open>We substitute demodalisation inequalities for diamonds in the definitions of boxes.\<close>
 
 lemma do_box_var2: "p \<le> 1 \<Longrightarrow> do_box x p = \<Squnion>{q. x \<cdot> q \<le> p \<cdot> x \<and> q \<le> 1}"
   unfolding do_box_var by (meson do_dia_demod_subid)
@@ -1005,7 +1005,7 @@ lemma do_box_bres1: "p \<le> 1 \<Longrightarrow> do_box x p = \<Squnion>{q. q \<
   unfolding do_box_var by (meson do_dia_demod_subid_fres)
 
 lemma do_box_bres2: "p \<le> 1 \<Longrightarrow> do_box x p = \<Squnion>{q. q \<le> x \<rightarrow> p \<cdot> \<top> \<and> q \<le> 1}"
-  unfolding do_box_var by (simp add: dmq.dqmsr.fd_def lla local.bres_galois) 
+  unfolding do_box_var by (simp add: dmq.dqmsr.fd_def lla local.bres_galois)
 
 lemma do_box_var3: "p \<le> 1 \<Longrightarrow> do_box x p = \<Squnion>{q. x \<cdot> q \<le> p \<cdot> \<top> \<and> q \<le> 1}"
   unfolding do_box_var using dmq.dqmsr.fd_def lla by force
@@ -1032,7 +1032,7 @@ lemma bres_do_box_top: "p \<le> 1 \<Longrightarrow> (do_box x p) \<cdot> \<top> 
 lemma fres_cd_box: "p \<le> 1 \<Longrightarrow> cd_box x p = cd (\<top> \<cdot> p \<leftarrow> x)"
 proof-
   assume h0: "p \<le> 1"
-  {fix q 
+  {fix q
   assume h1: "q \<le> 1"
   have "(q \<le> cd_box x p) = (q \<cdot> x \<le> \<top> \<cdot> p)"
     by (simp add: cd_box_demod_subid_var h0 h1)
@@ -1082,12 +1082,12 @@ lemma do_box_act:
   shows "do_box (x \<cdot> y) p = do_box y (do_box x p)"
   by (smt (verit) assms cd_box_act local.cd_box_do_box_conv local.do_box_subid local.inv_contrav)
 
-text \<open>Next we show that the box operators are Sup reversing in the first and Inf preserving 
+text \<open>Next we show that the box operators are Sup reversing in the first and Inf preserving
 in the second argument.\<close>
 
 lemma do_box_sup_inf: "p \<le> 1 \<Longrightarrow> do_box (x \<squnion> y) p = do_box x p \<cdot> do_box y p"
 proof-
-  assume h1: "p \<le> 1" 
+  assume h1: "p \<le> 1"
   {fix q
   assume h2: "q \<le> 1"
   hence "(q \<le> do_box (x \<squnion> y) p) = (do_dia (x \<squnion> y) q \<le> p)"
@@ -1108,7 +1108,7 @@ qed
 lemma do_box_sup_inf_var: "p \<le> 1 \<Longrightarrow> do_box (x \<squnion> y) p = do_box x p \<sqinter> do_box y p"
   by (simp add: do_box_subid do_box_sup_inf subid_mult_meet)
 
-lemma do_box_Sup_Inf: 
+lemma do_box_Sup_Inf:
   assumes "X \<noteq> {}"
   and "p \<le> 1"
   shows "do_box (\<Squnion>X) p = (\<Sqinter>x \<in> X. do_box x p)"
@@ -1132,7 +1132,7 @@ proof-
     using local.dual_order.antisym by blast
 qed
 
-lemma do_box_Sup_Inf2: 
+lemma do_box_Sup_Inf2:
   assumes "P \<noteq> {}"
   and "\<forall>p \<in> P. p \<le> 1"
   shows "do_box x (\<Sqinter>P) = (\<Sqinter>p \<in> P. do_box x p)"
@@ -1160,7 +1160,7 @@ lemma cd_box_sup_inf: "p \<le> 1 \<Longrightarrow> cd_box (x \<squnion> y) p = c
 lemma cd_box_sup_inf_var: "p \<le> 1 \<Longrightarrow> cd_box (x \<squnion> y) p = cd_box x p \<sqinter> cd_box y p"
   by (simp add: cd_box_subid cd_box_sup_inf subid_mult_meet)
 
-lemma cd_box_Sup_Inf: 
+lemma cd_box_Sup_Inf:
   assumes "X \<noteq> {}"
   and "p \<le> 1"
 shows "cd_box (\<Squnion>X) p = (\<Sqinter>x \<in> X. cd_box x p)"
@@ -1176,7 +1176,7 @@ proof-
   finally show ?thesis.
 qed
 
-lemma cd_box_Sup_Inf2: 
+lemma cd_box_Sup_Inf2:
   assumes "P \<noteq> {}"
   and "\<forall>p \<in> P. p \<le> 1"
 shows "cd_box x (\<Sqinter>P) = (\<Sqinter>p \<in> P. cd_box x p)"
@@ -1190,10 +1190,10 @@ proof-
   finally show ?thesis.
 qed
 
-text \<open>Next we define an antidomain operation in the style of modal semirings. A natural condition is 
-that the antidomain of an element is the greatest test that cannot be left-composed with that elements, 
-and hence a greatest left annihilator. The definition of anticodomain is similar. As we are not in a 
-boolean domain algebra, we cannot expect that the antidomain of the antidomain yields the domain or 
+text \<open>Next we define an antidomain operation in the style of modal semirings. A natural condition is
+that the antidomain of an element is the greatest test that cannot be left-composed with that elements,
+and hence a greatest left annihilator. The definition of anticodomain is similar. As we are not in a
+boolean domain algebra, we cannot expect that the antidomain of the antidomain yields the domain or
 that the union of a domain element with the corresponding antidomain element equals one.\<close>
 
 definition "ado x = \<Squnion>{p. p \<cdot> x = \<bottom> \<and> p \<le> 1}"
@@ -1241,7 +1241,7 @@ proof-
   {fix p
   assume  h: "p \<le> 1"
   hence "(p \<le> ado x) = (p \<cdot> x = \<bottom>)"
-    by (simp add: ado_left_zero_iff) 
+    by (simp add: ado_left_zero_iff)
   also have "\<dots> = (p \<le> \<bottom> \<leftarrow> x)"
     using local.bot_unique local.fres_galois by blast
   also have "\<dots> = (p \<le> 1 \<sqinter> (\<bottom> \<leftarrow> x))"
@@ -1274,7 +1274,7 @@ lemma ado_do_bot: "ado x = do (do x \<rightarrow> \<bottom>)"
   using acd_ado acd_do_bot_var local.cd_inv by auto
 
 lemma "do x = ado (ado x)" (* nitpick[expect=genuine]*)
-  oops 
+  oops
 
 lemma acd_cd_bot: "acd x = cd (\<bottom> \<leftarrow> cd x)"
   by (metis ado_acd ado_cd_bot_var local.cd_inv local.inv_invol)
@@ -1314,7 +1314,7 @@ lemma "cd_box x p = ado (x \<cdot> ado p)" (* nitpick[expect=genuine]*)
 
 lemma ad_do_bot [simp]: "(1 \<sqinter> (do x \<rightarrow> \<bottom>)) \<cdot> do x = \<bottom>"
   using ado_do_bot_var ado_left_zero dmq.dqmsr.dom_weakly_local by presburger
- 
+
 lemma do_heyting_galois: "(do x \<cdot> do y \<le> do z) = (do x \<le> 1 \<sqinter> (do y \<rightarrow> do z))"
   by (metis dmq.dqmsr.dsg4 dmq.mqdual.cod_subid local.bres_galois local.le_inf_iff)
 
@@ -1385,7 +1385,7 @@ proof-
   finally show ?thesis.
 qed
 
-sublocale bdad: antidomain_semiring "\<lambda>x. 1 - do x" "(\<squnion>)" "(\<cdot>)" 1 \<bottom> _ _ 
+sublocale bdad: antidomain_semiring "\<lambda>x. 1 - do x" "(\<squnion>)" "(\<cdot>)" 1 \<bottom> _ _
   by unfold_locales simp_all
 
 sublocale bdadka: antidomain_kleene_algebra "\<lambda>x. 1 - do x" "(\<squnion>)" "(\<cdot>)" 1 \<bottom> _ _ qstar..
@@ -1494,7 +1494,7 @@ class dc_modal_quantale_converse = dc_involutive_modal_quantale + quantale_conve
 
 sublocale dc_modal_quantale_converse \<subseteq> invmqmka: dr_modal_kleene_algebra_converse  "(\<squnion>)" "(\<cdot>)" 1 \<bottom> "(\<le>)" "(<)" qstar invol dom cod..
 
-class dc_modal_quantale_strong_converse = dc_involutive_modal_quantale +  
+class dc_modal_quantale_strong_converse = dc_involutive_modal_quantale +
   assumes weak_dom_def: "dom x \<le> x \<cdot> x\<^sup>\<circ>"
   and weak_cod_def: "cod x \<le> x\<^sup>\<circ> \<cdot> x"
 
@@ -1517,7 +1517,7 @@ lemma cd_cod: "cd x = cod x"
 
 end
 
-class dc_modal_dedekind_quantale = dc_involutive_modal_quantale + dedekind_quantale 
+class dc_modal_dedekind_quantale = dc_involutive_modal_quantale + dedekind_quantale
 
 class cd_distributive_modal_dedekind_quantale = dc_modal_dedekind_quantale + distrib_unital_quantale
 

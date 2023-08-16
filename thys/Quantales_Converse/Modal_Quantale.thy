@@ -1,4 +1,4 @@
-(* 
+(*
 Title: Modal quantales
 Author: Georg Struth
 Maintainer: Georg Struth <g.struth at sheffield.ac.uk>
@@ -13,8 +13,8 @@ begin
 
 subsection \<open>Simplified modal semirings and Kleene algebras\<close>
 
-text \<open>The previous formalisation of modal Kleene algebra in the AFP adds two compatibility axioms between domain and codomain 
-when combining an antidomain semiring with an antirange semiring. But these are unnecessary. They are derivable from the other 
+text \<open>The previous formalisation of modal Kleene algebra in the AFP adds two compatibility axioms between domain and codomain
+when combining an antidomain semiring with an antirange semiring. But these are unnecessary. They are derivable from the other
 axioms. Thus I provide a simpler axiomatisation that should eventually replace the one in the AFP.\<close>
 
 class modal_semiring_simp = antidomain_semiring + antirange_semiring
@@ -65,7 +65,7 @@ class domain_quantale = unital_quantale + domain_op +
   and dom_subid: "dom x \<le> 1"
   and dom_zero [simp]: "dom \<bottom> = \<bottom>"
 
-text \<open>The definition is that of a domain semiring. I cannot extend the quantale class with respect to domain semirings 
+text \<open>The definition is that of a domain semiring. I cannot extend the quantale class with respect to domain semirings
 because of different operations are used for addition/sup. The following sublocale statement brings all those properties into scope.\<close>
 
 sublocale domain_quantale \<subseteq> dqmsr: domain_semiring "(\<squnion>)" "(\<cdot>)" 1 \<bottom> dom "(\<le>)" "(<)"
@@ -240,7 +240,7 @@ end
 subsection \<open>Codomain quantales\<close>
 
 class codomain_quantale = unital_quantale + range_op +
-  assumes cod_absorb: "x \<le> x \<cdot> cod x" 
+  assumes cod_absorb: "x \<le> x \<cdot> cod x"
   and cod_local: "cod (cod x \<cdot> y) = cod (x \<cdot> y)"
   and cod_add: "cod (x \<squnion> y) = cod x \<squnion> cod y"
   and cod_subid: "cod x \<le> 1"
@@ -260,8 +260,8 @@ lemma (in codomain_quantale) bd'_fb_galois_aux: "bd' x (cod p) \<le> cod q \<Lon
 subsection \<open>Modal quantales\<close>
 
 class dc_modal_quantale = domain_quantale + codomain_quantale +
-  assumes dc_compat [simp]: "dom (cod x) = cod x" 
-  and cd_compat [simp]: "cod (dom x) = dom x" 
+  assumes dc_compat [simp]: "dom (cod x) = cod x"
+  and cd_compat [simp]: "cod (dom x) = dom x"
 
 sublocale dc_modal_quantale \<subseteq> mqs: dr_modal_kleene_algebra "(\<squnion>)" "(\<cdot>)" 1 \<bottom> "(\<le>)" "(<)" qstar dom cod
   by unfold_locales simp_all
@@ -271,16 +271,16 @@ sublocale dc_modal_quantale \<subseteq> mqdual: dc_modal_quantale _ "\<lambda>x 
 
 lemma (in dc_modal_quantale) "x \<cdot> \<top> = dom x \<cdot> \<top>"
 (*  nitpick[expect=genuine] *)
-  oops 
+  oops
 
 lemma (in dc_modal_quantale) "\<top> \<cdot> x = \<top> \<cdot> cod x"
 (*  nitpick[expect=genuine] *)
-  oops 
+  oops
 
 
 subsection \<open>Antidomain and anticodomain quantales\<close>
 
-notation antidomain_op ("adom") 
+notation antidomain_op ("adom")
 
 class antidomain_quantale = unital_quantale + antidomain_op +
   assumes as1 [simp]: "adom x \<cdot> x = \<bottom>"
@@ -297,7 +297,7 @@ sublocale antidomain_quantale \<subseteq> adqmka: antidomain_kleene_algebra adom
 sublocale antidomain_quantale \<subseteq> addq: domain_quantale ddom
   by unfold_locales (simp_all add: ddom_def local.adqmsr.ans_d_def)
 
-notation antirange_op ("acod") 
+notation antirange_op ("acod")
 
 class anticodomain_quantale = unital_quantale + antirange_op +
   assumes ars1 [simp]: "x \<cdot> acod x = \<bottom>"

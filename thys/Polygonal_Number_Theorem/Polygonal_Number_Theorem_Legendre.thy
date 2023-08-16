@@ -1,5 +1,5 @@
 subsection \<open> Legendre's Polygonal Number Theorem \<close>
-text\<open>We will use the definition of the polygonal numbers from the Gauss Theorem theory file 
+text\<open>We will use the definition of the polygonal numbers from the Gauss Theorem theory file
 which also imports the Three Squares Theorem AFP entry \cite{Three_Squares-AFP}.\<close>
 
 theory Polygonal_Number_Theorem_Legendre
@@ -27,7 +27,7 @@ proof -
     by (smt (verit, ccfv_threshold) cong_iff_dvd_diff zdvd_zdiffD)
   hence "even (2*(N-b) div m)"
     by (metis div_mult_swap dvd_triv_left)
-  hence "odd a" using a_def assms(3) odd_b by auto 
+  hence "odd a" using a_def assms(3) odd_b by auto
   from assms(1) have "m^3 \<ge> m"
     by (simp add: power3_eq_cube)
   hence "N \<ge> 2 * m" using assms(1,2) by simp
@@ -57,7 +57,7 @@ proof -
   qed
   from \<open>N \<ge> 2 * m\<close> m_pos have "6*N/m - 3 \<ge> 0" by (simp add: mult_imp_le_div_pos)
   hence "1/2 + sqrt (6*N/m - 3) > 0"
-    by (smt (verit, del_insts) divide_le_0_1_iff real_sqrt_ge_zero) 
+    by (smt (verit, del_insts) divide_le_0_1_iff real_sqrt_ge_zero)
   with \<open>b \<in> I\<close> assms(3) I_def have "b \<ge> 1" by auto
   hence b_pos: "b \<ge> 0" by auto
   from \<open>b \<in> I\<close> have b_in_I: "(1/2::real) + sqrt (6* real N / real m - 3) \<le> b \<and> b \<le> (2/3::real) + sqrt (8 * real N/real m - 8)" unfolding I_def by auto
@@ -94,7 +94,7 @@ proof -
   moreover have "1/2 + sqrt (6*Nr/mr-3) \<le> br \<and> br \<le> 2/3 + sqrt (8*Nr/mr-8)" using Nr_def mr_def br_def b_in_I by auto
   ultimately have "br^2 < 4*ar \<and> 3*ar < br^2+2*br+4" using Cauchy_lemma_r_eq_zero
     by auto
-  hence real_ineq:"(real_of_int b)^2 < 4*(real_of_int a) \<and> 3*(real_of_int a) < (real_of_int b)^2 + 2*(real_of_int b) + 4" 
+  hence real_ineq:"(real_of_int b)^2 < 4*(real_of_int a) \<and> 3*(real_of_int a) < (real_of_int b)^2 + 2*(real_of_int b) + 4"
     using br_def ar_def by auto
   hence int_ineq1: "b^2<4*a" using of_int_less_iff by fastforce
   from real_ineq have int_ineq2: "3*a < b^2+2*b+4" using of_int_less_iff by fastforce
@@ -208,7 +208,7 @@ proof -
       ultimately show ?thesis by blast
     qed
     then obtain f::"nat \<Rightarrow> int" where f_def: "(\<forall> i\<in>{0..m-1}. odd (f i)) \<and> (\<forall> i\<in>{1..m-1}. f i = f 0 + 2*i) \<and> (\<forall> i\<in>{0..m-1}. f i \<in> I)" by auto
-    
+
     have inj_lemma: "\<lbrakk>i \<in> {0..m-1}; j \<in> {0..m-1}; [f i = f j] (mod m)\<rbrakk> \<Longrightarrow> i = j" for i j
     proof -
       assume asm1: "i \<in> {0..m-1}"
@@ -266,10 +266,10 @@ proof -
       then have g_inj: "inj_on g {0..m-1}"
         by (meson inj_onI)
       have g_range2: "\<forall> i \<in> {0..m-1}. g i \<in> {0..m-1}" using \<open>g \<equiv> \<lambda>i. f i mod int m\<close>
-        by (metis m_pos Euclidean_Division.pos_mod_bound Euclidean_Division.pos_mod_sign atLeastAtMost_iff mod_by_1 mod_if not_gr0 of_nat_0_less_iff of_nat_1 of_nat_diff verit_comp_simplify1(3) zle_diff1_eq)
+        by (metis m_pos Euclidean_Rings.pos_mod_bound Euclidean_Rings.pos_mod_sign atLeastAtMost_iff mod_by_1 mod_if not_gr0 of_nat_0_less_iff of_nat_1 of_nat_diff verit_comp_simplify1(3) zle_diff1_eq)
       hence image_subset: "g ` {0..m-1} \<subseteq> {0..m-1}" by blast
       have g_range: "i \<in> {0..m-1} \<Longrightarrow> g i \<in> {0..m-1}" using \<open>g \<equiv> \<lambda>i. f i mod int m\<close>
-        by (metis m_pos Euclidean_Division.pos_mod_bound Euclidean_Division.pos_mod_sign atLeastAtMost_iff mod_by_1 mod_if not_gr0 of_nat_0_less_iff of_nat_1 of_nat_diff verit_comp_simplify1(3) zle_diff1_eq)
+        by (metis m_pos Euclidean_Rings.pos_mod_bound Euclidean_Rings.pos_mod_sign atLeastAtMost_iff mod_by_1 mod_if not_gr0 of_nat_0_less_iff of_nat_1 of_nat_diff verit_comp_simplify1(3) zle_diff1_eq)
       have card_ge_m: "card (g ` {0..m-1}) \<ge> m" using g_inj
         by (metis m_pos Suc_diff_1 card_atLeastAtMost card_image minus_nat.diff_0 verit_comp_simplify1(2))
       have "card {0..m-1} = m" using m_pos by force
@@ -282,7 +282,7 @@ proof -
         by (metis card_image card_subset_eq finite_atLeastAtMost_int image_int_atLeastAtMost inj_on_of_nat of_nat_0)
       hence "i \<in> {0..m-1} \<Longrightarrow> \<exists> j \<in> {0..m-1}. i = g j" for i by auto
       hence "i \<in> {0..m-1} \<Longrightarrow> \<exists> j \<in> {0..m-1}. i = (f j) mod m" for i
-        using \<open>g \<equiv> \<lambda>i. f i mod int m\<close> by auto  
+        using \<open>g \<equiv> \<lambda>i. f i mod int m\<close> by auto
       hence surj: "i \<in> {0..m-1} \<Longrightarrow> \<exists> j \<in> {0..m-1}. [i = f j] (mod m)" for i
         by (metis mod_mod_trivial unique_euclidean_semiring_class.cong_def)
       have "S mod m \<ge> 0" using m_pos by simp
@@ -383,10 +383,10 @@ proof -
       then have g_inj: "inj_on g {0..m-1}"
         by (meson inj_onI)
       have g_range2: "\<forall> i \<in> {0..m-1}. g i \<in> {0..m-1}" using \<open>g \<equiv> \<lambda>i. f i mod int m\<close>
-        by (metis m_pos Euclidean_Division.pos_mod_bound Euclidean_Division.pos_mod_sign atLeastAtMost_iff mod_by_1 mod_if not_gr0 of_nat_0_less_iff of_nat_1 of_nat_diff verit_comp_simplify1(3) zle_diff1_eq)
+        by (metis m_pos Euclidean_Rings.pos_mod_bound Euclidean_Rings.pos_mod_sign atLeastAtMost_iff mod_by_1 mod_if not_gr0 of_nat_0_less_iff of_nat_1 of_nat_diff verit_comp_simplify1(3) zle_diff1_eq)
       hence image_subset: "g ` {0..m-1} \<subseteq> {0..m-1}" by blast
       have g_range: "i \<in> {0..m-1} \<Longrightarrow> g i \<in> {0..m-1}" using \<open>g \<equiv> \<lambda>i. f i mod int m\<close>
-        by (metis m_pos Euclidean_Division.pos_mod_bound Euclidean_Division.pos_mod_sign atLeastAtMost_iff mod_by_1 mod_if not_gr0 of_nat_0_less_iff of_nat_1 of_nat_diff verit_comp_simplify1(3) zle_diff1_eq)
+        by (metis m_pos Euclidean_Rings.pos_mod_bound Euclidean_Rings.pos_mod_sign atLeastAtMost_iff mod_by_1 mod_if not_gr0 of_nat_0_less_iff of_nat_1 of_nat_diff verit_comp_simplify1(3) zle_diff1_eq)
       have card_ge_m: "card (g ` {0..m-1}) \<ge> m" using g_inj
         by (metis m_pos Suc_diff_1 card_atLeastAtMost card_image minus_nat.diff_0 verit_comp_simplify1(2))
       have "card {0..m-1} = m" using m_pos by force
@@ -399,7 +399,7 @@ proof -
         by (metis card_image card_subset_eq finite_atLeastAtMost_int image_int_atLeastAtMost inj_on_of_nat of_nat_0)
       hence "i \<in> {0..m-1} \<Longrightarrow> \<exists> j \<in> {0..m-1}. i = g j" for i by auto
       hence "i \<in> {0..m-1} \<Longrightarrow> \<exists> j \<in> {0..m-1}. i = (f j) mod m" for i
-        using \<open>g \<equiv> \<lambda>i. f i mod int m\<close> by auto  
+        using \<open>g \<equiv> \<lambda>i. f i mod int m\<close> by auto
       hence surj: "i \<in> {0..m-1} \<Longrightarrow> \<exists> j \<in> {0..m-1}. [i = f j] (mod m)" for i
         by (metis mod_mod_trivial unique_euclidean_semiring_class.cong_def)
       have "S mod m \<ge> 0" using m_pos by simp
@@ -427,7 +427,7 @@ proof -
           have "even (k*m)" using even_m by auto
           hence "even N" using k_def \<open>even b\<close> by presburger
           thus False using \<open>odd N\<close> by blast
-        qed      
+        qed
         moreover have "b \<in> I" using b_def f_def c_def by auto
         ultimately show ?thesis by auto
       qed
@@ -442,7 +442,7 @@ proof -
       hence "\<exists>k1 k2 k3 k4. N = polygonal_number m k1 + polygonal_number m k2 + polygonal_number m k3 + polygonal_number m k4"
         using sum_of_four_polygonal_numbers assms(1) b_def I_def \<open>N \<ge> 2 * m\<close> \<open>N \<ge> 9\<close> by blast
       then obtain k1 k2 k3 k4 where "N = polygonal_number m k1 + polygonal_number m k2 + polygonal_number m k3 + polygonal_number m k4" by blast
-      moreover have "polygonal_number m 0 = 0" using Polygonal_Number_Theorem_Gauss.polygonal_number_def by auto  
+      moreover have "polygonal_number m 0 = 0" using Polygonal_Number_Theorem_Gauss.polygonal_number_def by auto
       ultimately have "N = polygonal_number m k1 + polygonal_number m k2 + polygonal_number m k3 + polygonal_number m k4 + polygonal_number m 0" by linarith
       thus ?thesis by blast
     qed
@@ -450,7 +450,7 @@ proof -
     proof -
       have "\<exists> b::int. [N-1 = b] (mod m) \<and> odd b \<and> b \<in> I"
       proof -
-        from complete_cong_class have "\<exists> i. i \<in> {0..m-1} \<and> [f i = N-1] (mod m)" by blast 
+        from complete_cong_class have "\<exists> i. i \<in> {0..m-1} \<and> [f i = N-1] (mod m)" by blast
         then obtain c::nat where c_def: "c \<in> {0..m-1} \<and> [f c = N-1] (mod m)" by auto
         define b::int where "b = f c"
         have "[N-1 = b] (mod m)" using b_def c_def by (metis cong_sym)
@@ -476,7 +476,7 @@ proof -
         by (smt (verit, ccfv_threshold) cong_iff_dvd_diff zdvd_zdiffD)
       hence "even (2*(N-1-b) div m)"
         by (metis div_mult_swap dvd_triv_left)
-      hence "odd a" using a_def b_def by auto 
+      hence "odd a" using a_def b_def by auto
       from assms(1) have "m^3 \<ge> m"
         by (simp add: power3_eq_cube)
       hence "N \<ge> 2 * m" using assms(1,2) by simp
@@ -493,7 +493,7 @@ proof -
           by (metis numeral_le_real_of_nat_iff numeral_times_numeral power3_eq_cube power_mono zero_le_numeral)
         hence "N \<ge> 28*3*3*(3::real)" using assms(2) by linarith
         hence "N-6 \<ge> 6" by simp
-        hence "N-6 \<ge> 0" by simp  
+        hence "N-6 \<ge> 0" by simp
         with \<open>N-6 \<ge> 6\<close> have "(N-6)^2 \<ge> 6^2"
           using power2_nat_le_eq_le by blast
         hence "(N-6)^2 \<ge> 24" by simp
@@ -511,7 +511,7 @@ proof -
       qed
       from \<open>N \<ge> 2 * m\<close> m_pos have "6*N/m - 3 \<ge> 0" by (simp add: mult_imp_le_div_pos)
       hence "1/2 + sqrt (6*N/m - 3) > 0"
-        by (smt (verit, del_insts) divide_le_0_1_iff real_sqrt_ge_zero) 
+        by (smt (verit, del_insts) divide_le_0_1_iff real_sqrt_ge_zero)
       with \<open>b \<in> I\<close> b_def I_def have "b \<ge> 1" by auto
       hence b_pos: "b \<ge> 0" by auto
       from \<open>b \<in> I\<close> have b_in_I: "(1/2::real) + sqrt (6* real N / real m - 3) \<le> b \<and> b \<le> (2/3::real) + sqrt (8 * real N/real m - 8)" unfolding I_def by auto
@@ -523,7 +523,7 @@ proof -
       from \<open>int m dvd (N - 1 - b)\<close> have "m dvd 2*(N-1-b)" by fastforce
       have "a = 2*(N-1-b)/m + b" using a_def m_pos
         using \<open>int m dvd 2 * (N - 1 - b)\<close> by fastforce
-      hence "a = 2*(N-1)/m - 2*b/m + b" 
+      hence "a = 2*(N-1)/m - 2*b/m + b"
         by (simp add: assms diff_divide_distrib of_nat_diff)
       hence "(2::real)*(N-1)/m = a + 2*b/m - b" by auto
       hence "(2::real)*(N-1) = (a + 2*b/m - b)*m"
@@ -550,11 +550,11 @@ proof -
       moreover have "1/2 + sqrt (6*Nr/mr-3) \<le> br \<and> br \<le> 2/3 + sqrt (8*Nr/mr-8)" using Nr_def mr_def br_def b_in_I by auto
       ultimately have "br^2 < 4*ar \<and> 3*ar < br^2+2*br+4" using Cauchy_lemma
         by auto
-      hence real_ineq:"(real_of_int b)^2 < 4*(real_of_int a) \<and> 3*(real_of_int a) < (real_of_int b)^2 + 2*(real_of_int b) + 4" 
+      hence real_ineq:"(real_of_int b)^2 < 4*(real_of_int a) \<and> 3*(real_of_int a) < (real_of_int b)^2 + 2*(real_of_int b) + 4"
         using br_def ar_def by auto
       hence int_ineq1: "b^2<4*a" using of_int_less_iff by fastforce
       from real_ineq have int_ineq2: "3*a < b^2+2*b+4" using of_int_less_iff by fastforce
-    
+
       define an:: nat where "an = nat a"
       from a_pos have "an = a" unfolding an_def by auto
       define bn:: nat where "bn = nat b"
