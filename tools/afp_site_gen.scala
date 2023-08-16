@@ -270,11 +270,8 @@ object AFP_Site_Gen {
       val entry = afp_structure.load_entry(name, authors_by_id, topics_by_id, licenses_by_id,
         releases_by_entry)
 
-      if (entry.sitegen_ignore) None
-      else {
-        seen_affiliations = seen_affiliations :++ entry.authors ++ entry.contributors
-        Some(entry)
-      }
+      seen_affiliations = seen_affiliations :++ entry.authors ++ entry.contributors
+      Some(entry)
     }
 
     val authors = Utils.group_sorted(seen_affiliations.distinct, (a: Affiliation) => a.author).map {
@@ -291,7 +288,7 @@ object AFP_Site_Gen {
     progress.echo("Extracting keywords...")
 
     var seen_keywords = Set.empty[String]
-    val entry_keywords = entries.map { entry =>
+    val entry_keywords = entries.filterNot(_.statistics_ignore).map { entry =>
       val scored_keywords = Rake.extract_keywords(entry.`abstract`)
       seen_keywords ++= scored_keywords.map(_._1)
 
@@ -304,7 +301,7 @@ object AFP_Site_Gen {
       JSON.from_keywords(seen_keywords.toList))
 
     def get_keywords(name: Metadata.Entry.Name): List[String] =
-      entry_keywords(name).filter(seen_keywords.contains).take(8)
+      entry_keywords.getOrElse(name, Nil).filter(seen_keywords.contains).take(8)
 
 
     /* add entries and theory listings */
@@ -349,7 +346,8 @@ object AFP_Site_Gen {
 
     progress.echo("Preparing statistics...")
 
-    val statistics_json = afp_stats(sessions_deps, afp_structure, entries)
+    val statistics_json =
+      afp_stats(sessions_deps, afp_structure, entries.filterNot(_.statistics_ignore))
 
     layout.write_data(Path.basic("statistics.json"), statistics_json)
 
@@ -389,12 +387,10 @@ object AFP_Site_Gen {
     }
 
     if (do_watch) {
-      Hugo.watch(layout, out_dir, progress).check
+      Hugo.watch(layout, out_dir, progress)
     } else {
       progress.echo("Building site...")
-
-      Hugo.build(layout, out_dir).check
-
+      Hugo.build(layout, out_dir)
       progress.echo("Build in " + (out_dir + Path.basic("index.html")).absolute.implode)
     }
   }

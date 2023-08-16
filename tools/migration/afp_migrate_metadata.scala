@@ -209,7 +209,7 @@ object AFP_Migrate_Metadata {
     entry: AFP.Entry,
     releases: Map[Entry.Name, List[Release]],
     topics: Map[Topic.ID, Topic],
-    sitegen_ignore: Boolean,
+    statistics_ignore: Boolean,
     context: Context,
     progress: Progress
   ): Entry = {
@@ -233,7 +233,7 @@ object AFP_Migrate_Metadata {
       change_history = change_history,
       extra = extra.toMap,
       releases = releases.getOrElse(entry.name, Nil),
-      sitegen_ignore = sitegen_ignore
+      statistics_ignore = statistics_ignore
     )
   }
 
@@ -357,9 +357,9 @@ object AFP_Migrate_Metadata {
 
     for (entry_metadata <- metadata.entries) {
       val ignore_file = base_dir + Path.make(List("thys", entry_metadata.name, ".sitegen-ignore"))
-      val sitegen_ignore = ignore_file.file.exists
+      val statistics_ignore = ignore_file.file.exists
 
-      val entry = map_entry(entry_metadata, releases_map, topic_map, sitegen_ignore, context, progress)
+      val entry = map_entry(entry_metadata, releases_map, topic_map, statistics_ignore, context, progress)
 
       write(Metadata.TOML.from_entry(entry), Path.make(List("entries", entry.name + ".toml")))
     }
