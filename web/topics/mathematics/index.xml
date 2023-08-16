@@ -26,6 +26,15 @@
     </item>
     
     <item>
+      <title>Formalizing Results on Directed Sets</title>
+      <link>/entries/Directed_Sets.html</link>
+      <pubDate>Wed, 24 May 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Directed_Sets.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Inner Structure, Determinism and Modal Algebra of Multirelations</title>
       <link>/entries/Multirelations_Heterogeneous.html</link>
       <pubDate>Mon, 22 May 2023 00:00:00 +0000</pubDate>
@@ -98,15 +107,6 @@
     </item>
     
     <item>
-      <title>Distributed Distinct Elements</title>
-      <link>/entries/Distributed_Distinct_Elements.html</link>
-      <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Distributed_Distinct_Elements.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>Positional Notation for Natural Numbers in an Arbitrary Base</title>
       <link>/entries/DigitsInBase.html</link>
       <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
@@ -121,15 +121,6 @@
       <pubDate>Sun, 05 Mar 2023 00:00:00 +0000</pubDate>
       
       <guid>/entries/No_FTL_observers_Gen_Rel.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Expander Graphs</title>
-      <link>/entries/Expander_Graphs.html</link>
-      <pubDate>Fri, 03 Mar 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Expander_Graphs.html</guid>
       <description></description>
     </item>
     
@@ -422,15 +413,6 @@
     </item>
     
     <item>
-      <title>Formalization of Randomized Approximation Algorithms for Frequency Moments</title>
-      <link>/entries/Frequency_Moments.html</link>
-      <pubDate>Fri, 08 Apr 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Frequency_Moments.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>Constructing the Reals as Dedekind Cuts of Rationals</title>
       <link>/entries/Dedekind_Real.html</link>
       <pubDate>Thu, 24 Mar 2022 00:00:00 +0000</pubDate>
@@ -445,15 +427,6 @@
       <pubDate>Tue, 15 Mar 2022 00:00:00 +0000</pubDate>
       
       <guid>/entries/Cotangent_PFD_Formula.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Universal Hash Families</title>
-      <link>/entries/Universal_Hash_Families.html</link>
-      <pubDate>Sun, 20 Feb 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Universal_Hash_Families.html</guid>
       <description></description>
     </item>
     
@@ -508,15 +481,6 @@
       <pubDate>Sat, 29 Jan 2022 00:00:00 +0000</pubDate>
       
       <guid>/entries/Interpolation_Polynomials_HOL_Algebra.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Median Method</title>
-      <link>/entries/Median_Method.html</link>
-      <pubDate>Tue, 25 Jan 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Median_Method.html</guid>
       <description></description>
     </item>
     
@@ -1475,7 +1439,7 @@
     </item>
     
     <item>
-      <title>The Budan-Fourier Theorem and Counting Real Roots with Multiplicity</title>
+      <title>The Budan–Fourier Theorem and Counting Real Roots with Multiplicity</title>
       <link>/entries/Budan_Fourier.html</link>
       <pubDate>Sun, 02 Sep 2018 00:00:00 +0000</pubDate>
       
@@ -2519,7 +2483,7 @@
     </item>
     
     <item>
-      <title>The Sturm-Tarski Theorem</title>
+      <title>The Sturm–Tarski Theorem</title>
       <link>/entries/Sturm_Tarski.html</link>
       <pubDate>Fri, 19 Sep 2014 00:00:00 +0000</pubDate>
       

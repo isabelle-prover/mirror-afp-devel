@@ -116,10 +116,17 @@ verification of Solidity programs by two examples: constant folding
 and a simple verified token.</div>
 
   <h3>License</h3>
-  <div><a href="https://isa-afp.org/LICENSE">BSD License</a></div><h3>Topics</h3>
+  <div><a href="https://isa-afp.org/LICENSE">BSD License</a></div><h3>History</h3>
+  <dl><dt>August 2, 2023</dt>
+    <dd>Changing expressions do not have side effects anymore.
+Adding support for instantiation of contracts.
+Adding weakest precondition calculus for the verification of statements.
+(revision fb4d111b2dde)<br>
+</dd></dl><h3>Topics</h3>
   <ul><li><a href="../topics/computer-science/programming-languages">Computer science/Programming languages</a></li><li><a href="../topics/computer-science/semantics-and-reasoning">Computer science/Semantics and reasoning</a></li></ul>
   <h3>Session Solidity</h3>
   <ul>
+    <li><a href="../theories/solidity/#Utils">Utils</a></li>
     <li><a href="../theories/solidity/#Solidity_Symbex">Solidity_Symbex</a></li>
     <li><a href="../theories/solidity/#ReadShow">ReadShow</a></li>
     <li><a href="../theories/solidity/#StateMonad">StateMonad</a></li>
@@ -127,13 +134,36 @@ and a simple verified token.</div>
     <li><a href="../theories/solidity/#Storage">Storage</a></li>
     <li><a href="../theories/solidity/#Accounts">Accounts</a></li>
     <li><a href="../theories/solidity/#Environment">Environment</a></li>
+    <li><a href="../theories/solidity/#Contracts">Contracts</a></li>
+    <li><a href="../theories/solidity/#Expressions">Expressions</a></li>
     <li><a href="../theories/solidity/#Statements">Statements</a></li>
     <li><a href="../theories/solidity/#Solidity_Main">Solidity_Main</a></li>
     <li><a href="../theories/solidity/#Solidity_Evaluator">Solidity_Evaluator</a></li>
-    <li><a href="../theories/solidity/#Constant_Folding">Constant_Folding</a></li>
+    <li><a href="../theories/solidity/#Weakest_Precondition">Weakest_Precondition</a></li>
     <li><a href="../theories/solidity/#Reentrancy">Reentrancy</a></li>
+    <li><a href="../theories/solidity/#Constant_Folding">Constant_Folding</a></li>
     <li><a href="../theories/solidity/#Compile_Evaluator">Compile_Evaluator</a></li></ul><div class="flex-wrap">
+  <div>
+    <h3>Depends on</h3>
+    <ul class="horizontal-list"><li><a href="../entries/Finite-Map-Extras.html">Finite Map Extras</a></li></ul>
+  </div>
   
+  <div>
+    <h3>Auto-related entries</h3>
+    <ul class="horizontal-list">
+      
+      <li><a href="../entries/BTree.html">A Verified Imperative Implementation of B-Trees</a></li>
+      
+      <li><a href="../entries/Flow_Networks.html">Flow Networks and the Min-Cut-Max-Flow Theorem</a></li>
+      
+      <li><a href="../entries/Prpu_Maxflow.html">Formalizing Push-Relabel Algorithms</a></li>
+      
+      <li><a href="../entries/EdmondsKarp_Maxflow.html">Formalizing the Edmonds-Karp Algorithm</a></li>
+      
+      <li><a href="../entries/Pop_Refinement.html">Pop-Refinement</a></li>
+      
+    </ul>
+  </div>
   
   </div>
 </main>

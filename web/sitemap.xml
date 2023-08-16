@@ -92,9 +92,6 @@
     <loc>/entries/Directed_Sets.html</loc>
     <lastmod>2023-05-24T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/topics/mathematics/</loc>
-    <lastmod>2023-05-24T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/yamada/</loc>
     <lastmod>2023-05-24T00:00:00+00:00</lastmod>
   </url><url>
@@ -644,6 +641,9 @@
     <loc>/entries/Nano_JSON.html</loc>
     <lastmod>2022-07-29T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/dependencies/finite-map-extras/</loc>
+    <lastmod>2022-07-18T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/entries/Solidity.html</loc>
     <lastmod>2022-07-18T00:00:00+00:00</lastmod>
   </url><url>
@@ -1124,6 +1124,9 @@
     <loc>/entries/Complex_Bounded_Operators.html</loc>
     <lastmod>2021-09-18T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/dependencies/complex_bounded_operators_dependencies/</loc>
+    <lastmod>2021-09-18T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/dependencies/real_impl/</loc>
     <lastmod>2021-09-18T00:00:00+00:00</lastmod>
   </url><url>
@@ -1457,9 +1460,6 @@
     <loc>/entries/Topological_Semantics.html</loc>
     <lastmod>2020-12-17T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/aggregation_algebras/</loc>
-    <lastmod>2020-12-08T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/brien/</loc>
     <lastmod>2020-12-08T00:00:00+00:00</lastmod>
   </url><url>
@@ -1625,6 +1625,9 @@
     <loc>/entries/Inductive_Inference.html</loc>
     <lastmod>2020-08-31T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/dependencies/aggregation_algebras/</loc>
+    <lastmod>2020-08-26T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/entries/Relational_Disjoint_Set_Forests.html</loc>
     <lastmod>2020-08-26T00:00:00+00:00</lastmod>
   </url><url>
@@ -1698,9 +1701,6 @@
     <lastmod>2020-05-12T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/prime_distribution_elementary/</loc>
-    <lastmod>2020-05-12T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/prime_number_theorem/</loc>
     <lastmod>2020-05-12T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/dunaev/</loc>
@@ -1896,6 +1896,9 @@
     <lastmod>2020-01-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/e_transcendental/</loc>
+    <lastmod>2019-12-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/prime_number_theorem/</loc>
     <lastmod>2019-12-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Zeta_3_Irrational.html</loc>
@@ -4833,6 +4836,8 @@
     <loc>/theories/completeness/</loc>
   </url><url>
     <loc>/theories/complex_bounded_operators/</loc>
+  </url><url>
+    <loc>/theories/complex_bounded_operators_dependencies/</loc>
   </url><url>
     <loc>/theories/complex_geometry/</loc>
   </url><url>
