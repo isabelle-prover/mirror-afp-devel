@@ -1,0 +1,121 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+%\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+\begin{document}
+
+\title{Modal quantales, involutive Quantales, Dedekind Quantales}
+\author{Cameron Calk and Georg Struth}
+\maketitle
+
+\begin{abstract}
+  This AFP entry provides mathematical components for modal quantales,
+  involutive quantales and Dedekind quantales. Modal quantales are
+  simple extensions of modal Kleene algebras useful for the
+  verification of recursive programs. Involutive quantales appear in
+  the study of $C^\ast$-algebras. Dedekind quantales are relatives of
+  Tarski's relation algebras, hence relevant to program verification
+  and beyond that to higher  rewriting. We also provide
+  components for weaker variants such as Kleene algebras with converse
+  and modal Kleene algebras with converse.
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+
+\section{Introductory Remarks}
+
+In this AFP entry we provide mathematical components for modal
+quantales, involutive quantales and Dedekind quantales. Modal
+quantales are simple extensions of modal Kleene algebras that can be
+used in the verification of recursive
+programs~\cite{GomesS16}. Involutive quantales appear in the study of
+$C^\ast$-algebras~\cite{Resende18}. Dedekind quantales,
+categorifications of which are known as \emph{modular
+  quantaloids}~\cite{Rosenthal96}, are relatives of Tarski's relation
+algebras~\cite{Tarski41}, and hence relevant to program verification
+as well. We also provide components for weaker variants such as Kleene
+algebras and modal Kleene algebras with converse.
+
+Our main interest in these structures comes from recent applications
+in higher-dimensional rewriting~\cite{CalkGMS22,CalkMPS23}, where they
+are used in coherence proofs for rewriting systems based on computads
+or polygraphs. This includes proofs of coherent Church-Rosser theorems
+and coherent Newman's lemmas. A more long-term programme considers
+the formalisation of algebraic aspects of higher rewriting with proof
+assistants.
+
+  Modal quantales have previously been studied
+  in~\cite{FahrenbergJSZ23}, where it is shown, for instance, that any
+  category can be lifted to a modal quantale at powerset level. Such
+  lifting results will be formalised in a companion AFP entry.
+
+  Dedekind quantales give also rise to intuitionistic modal algebras,
+  as the results in this AFP entry show. In particular, the set of all
+  subidentities or coreflexives of a Dedekind quantale forms a
+  complete Heyting algebra (aka frame or locale), on which modal box
+  and diamond operators can be defined. A paper explaining these
+  results is in preparation~\cite{PousS23}. A further application of
+  Dedekind quantales lies once again in higher-dimensional
+  rewriting~\cite{CalkGMS22,CalkMPS23}. Any groupoid, in particular,
+  can be lifted to a Dedekind quantale at powerset level, a result
+  which will once again be formalised in a companion AFP entry.
+
+  Our components build on extant AFP components for Kleene
+  algebras~\cite{ArmstrongSW13}, modal Kleene
+  algebras~\cite{GomesGHSW16} and quantales~\cite{Struth18}.
+
+  \vspace{\baselineskip}
+
+  Georg Struth is grateful for an invited professorship at École
+  polytechnique and a fellowship at the Collegium de Lyon, Institute
+  of Advanced Study, during which most of this formalisation work
+  has been done.
+
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

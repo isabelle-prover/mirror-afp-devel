@@ -1,0 +1,78 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+%\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Polygonal Number Theorem}
+\author{Kevin Lee, Zhengkun Ye and Angeliki Koutsoukou-Argyraki}
+\maketitle
+
+\begin{abstract}
+  We formalize the proofs of Cauchy's and Legendre's Polygonal Number Theorems given in Melvyn B. Nathanson's book `Additive Number Theory: The Classical Bases' \cite{nathanson1996}.
+  
+  For $m \geq 1$, the $k$-th polygonal number of order $m+2$ is defined to be $p_m(k)=\frac{mk(k-1)}{2}+k$. The theorems state that:
+  \begin{itemize}
+    \item If $m \ge 4$ and $N \geq 108m$, then $N$ can be written as the sum of $m+1$ polygonal numbers of order $m+2$, at most four of which are different from $0$ or $1$. If $N \geq 324$, then $N$ can be written as the sum of five pentagonal numbers, at least one of which is $0$ or $1$.
+	\item Let $m \geq 3$ and $N \geq 28m^3$. If $m$ is odd, then $N$ is the sum of four polygonal numbers of order $m+2$. If $m$ is even, then $N$ is the sum of five polygonal numbers of order $m+2$, at least one of which is $0$ or $1$.
+  \end{itemize}
+  We also formalize the proof of Gauss's theorem which states that every non-negative integer is the sum of three triangular numbers.
+\end{abstract}
+\newpage
+\tableofcontents
+
+\subsection*{Acknowledgements}
+The project was completed during the 2023 summer internship of the first two authors within the Cambridge
+Mathematics Placements (CMP) Programme, supervised by the third author and hosted at the Department of Computer Science and Technology, University of Cambridge. All three authors were funded by the ERC Advanced Grant ALEXANDRIA (Project GA 742178)
+led by Lawrence C. Paulson.
+
+Kevin Lee and Zhengkun Ye wish to thank the Zulip community for help with beginners' questions.
+\newpage
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

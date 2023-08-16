@@ -867,8 +867,9 @@ object AFP_Submit {
               fieldlabel(ARCHIVE, "Archive file (.tar.gz or .zip)"),
               browse(ARCHIVE, List(".zip", ".tar.gz")),
               explanation(ARCHIVE,
-                "Note: Your zip or tar file should contain one folder with your theories, ROOT, etc. " +
-                "The folder name should be the short/folder name used in the submission form."))))) :::
+                "Note: Your zip or tar file must contain exactly one folder for each entry with your theories, ROOT, etc. " +
+                "The folder name must be the short/folder name used in the submission form. " +
+                "Hidden files and folders (e.g., __MACOSX) are not allowed."))))) :::
           api_button(api.api_url(API_SUBMISSION_CREATE), submit) ::
           render_error(ARCHIVE, Val.err((), upload.error))))))
     }

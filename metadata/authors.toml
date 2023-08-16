@@ -1017,6 +1017,13 @@ host = [
 [caballero.homepages]
 caballero_homepage = "https://josephcmac.github.io/"
 
+[calk]
+name = "Cameron Calk"
+
+[calk.emails]
+
+[calk.homepages]
+
 [caminati]
 name = "Marco B. Caminati"
 
@@ -3656,6 +3663,23 @@ host = [
 ]
 
 [lee.homepages]
+
+[leek]
+name = "Kevin Lee"
+
+[leek.emails]
+
+[leek.emails.leek_email]
+user = [
+  "kfkl2",
+]
+host = [
+  "cam",
+  "ac",
+  "uk",
+]
+
+[leek.homepages]
 
 [leustean]
 name = "Laurentiu Leustean"
@@ -7284,6 +7308,23 @@ host = [
 ]
 
 [ye.homepages]
+
+[yez]
+name = "Zhengkun Ye"
+
+[yez.emails]
+
+[yez.emails.yez_email]
+user = [
+  "zy307",
+]
+host = [
+  "cam",
+  "ac",
+  "uk",
+]
+
+[yez.homepages]
 
 [ying]
 name = "Shenggang Ying"

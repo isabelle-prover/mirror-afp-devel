@@ -1,0 +1,42 @@
+title = "Modal quantales, involutive quantales, Dedekind Quantales"
+date = 2023-07-25
+topics = [
+  "Computer science/Semantics and reasoning",
+  "Mathematics/Algebra",
+  "Mathematics/Order",
+]
+abstract = """
+This AFP entry provides mathematical components for modal quantales,
+  involutive quantales and Dedekind quantales. Modal quantales are
+  simple extensions of modal Kleene algebras useful for the
+  verification of recursive programs. Involutive quantales appear in
+  the study of C*-algebras. Dedekind quantales are relatives of
+  Tarski's relation algebras, hence relevant to program verification
+  and beyond that to higher  rewriting. We also provide
+  components for weaker variants such as Kleene algebras with converse
+  and modal Kleene algebras with converse."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.struth]
+email = "struth_email"
+
+[authors.calk]
+
+[contributors]
+
+[notify]
+struth = "struth_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1007/s00012-023-00805-9",
+  "10.48550/arXiv.2307.09253",
+]
+pubs = []

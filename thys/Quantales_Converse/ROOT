@@ -1,0 +1,20 @@
+chapter AFP
+
+session "Quantales_Converse" (AFP) = HOL +
+  options [timeout = 600]
+
+  sessions
+   Kleene_Algebra
+   KAD 
+   Quantales 
+   
+  theories
+    Modal_Kleene_Algebra_Var
+    Kleene_Algebra_Converse
+    Modal_Kleene_Algebra_Converse
+    Modal_Quantale
+    Quantale_Converse
+    
+  document_files
+   "root.tex"
+   "root.bib"
