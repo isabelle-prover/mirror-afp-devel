@@ -1,5 +1,5 @@
 (*  Title:      Graph Lemma
-    File:       CoW_Graph_Lemma.Graph_Lemma
+    File:       Combinatorics_Words_Graph_Lemma.Graph_Lemma
     Author:     Štěpán Holub, Charles University
     Author:     Martin Raška, Charles University
 
@@ -13,7 +13,7 @@ begin
 
 chapter \<open>Graph Lemma\<close>
 
-text\<open>The Graph Lemma is an important tool for gaining information about systems of word equations. 
+text\<open>The Graph Lemma is an important tool for gaining information about systems of word equations.
 It yields an upper bound on the rank of the solution, that is, on the number of factors into all images of unknowns can be factorized.
 The most straightforward application is showing that a system of equations admits periodic solutions only, which
 in particular holds for any nontrivial equation over two words.
@@ -21,7 +21,7 @@ in particular holds for any nontrivial equation over two words.
 The name refers to a graph whose vertices are the unknowns of the system, and edges connect front letters of the left- and right-
 hand sides of equations. The bound mentioned above is then the number of connected components of the graph.
 
-We formalize the algebraic proof from \<^cite>\<open>Berstel1979\<close>. Key ingredients of the proof are in the theory @{theory Combinatorics_Words_Graph_Lemma.Glued_Codes}\<close>
+We formalize the algebraic proof from @{cite Berstel1979}. Key ingredients of the proof are in the @{theory "Combinatorics_Words_Graph_Lemma.Glued_Codes"}.\<close>
 
 section \<open>Graph lemma\<close>
 
@@ -36,7 +36,7 @@ proof
     assume "\<not> \<BB>\<^sub>F G \<subseteq> {last (Dec \<BB>\<^sub>F G g) |g. g \<in> G \<and> g \<noteq> \<epsilon>}"
     \<comment> \<open>And let w be the not-last\<close>
     then obtain w
-      where "w \<in> \<BB>\<^sub>F G" 
+      where "w \<in> \<BB>\<^sub>F G"
         and hd_dec_neq: "\<And>g. g \<in> G \<Longrightarrow> g \<noteq> \<epsilon> \<Longrightarrow> last (Dec (\<BB>\<^sub>F G) g) \<noteq> w"
       by blast
     \<comment> \<open>For contradiction: We have a free hull which does not contain w but contains G.\<close>
@@ -65,7 +65,7 @@ qed
 section \<open>Binary code\<close>
 
 text \<open>We illustrate the use of the Graph Lemma in an alternative proof of the fact that two non-commuting words form a code.
-See also @{thm no_comm_bin_code [no_vars]} in @{theory Combinatorics_Words.CoWBasic}.
+See also @{thm no_comm_bin_code [no_vars]} in @{theory "Combinatorics_Words.CoWBasic"}.
 
 First, we prove a lemma which is the core of the alternative proof.\<close>
 
@@ -91,7 +91,7 @@ proof
         if "z # zs \<in> lists {u, v}" for z zs
         using that by (elim listsE) (simp del: insert_iff
           add: concat_in_hull' gen_in set_mp[OF hull_sub_free_hull]
-               free_basis_dec_morph * basis_gen_hull_free) 
+               free_basis_dec_morph * basis_gen_hull_free)
       have "hd (Dec \<BB>\<^sub>F {u,v} x) = hd (Dec \<BB>\<^sub>F {u,v} y)"
         using "4.prems" by (simp only: **[symmetric])
       then have "x = y"

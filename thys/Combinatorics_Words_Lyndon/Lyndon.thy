@@ -1,4 +1,4 @@
-(*  Title:      CoW_Lyndon.Lyndon
+(*  Title:      Combinatorics_Words_Lyndon.Lyndon
     Author:     Štěpán Holub, Charles University
     Author:     Štěpán Starosta, CTU in Prague
 
@@ -10,11 +10,11 @@ begin
 
 chapter "Lyndon words"
 
-text\<open>A Lyndon word is a non-empty word that is lexicographically 
+text\<open>A Lyndon word is a non-empty word that is lexicographically
 strictly smaller than any other word in its conjugacy class, i.e., than any its rotations.
-They are named after R. Lyndon who introduced them in \<^cite>\<open>Lyndon54\<close> as ``standard'' sequences.
+They are named after R. Lyndon who introduced them in @{cite Lyndon54} as ``standard'' sequences.
 
-We present elementary results on Lyndon words, mostly covered by results in \<^cite>\<open>\<open>Chapter 5\<close> in Lo83\<close> and \<^cite>\<open>Duval80 and Duval83\<close>.
+We present elementary results on Lyndon words, mostly covered by results in @{cite \<open>Chapter 5\<close> Lo83} and @{cite Duval80 and Duval83}.
 
 This definition assumes a linear order on letters given by the context.
 \<close>
@@ -28,11 +28,9 @@ lemma (in linorder) lexordp_mid_pref: "ord_class.lexordp u v \<Longrightarrow> o
    u \<le>p v"
   by (induct rule: lexordp_induct, simp_all)
 
-lemma (in linorder) lexordp_ext: "ord_class.lexordp u v \<Longrightarrow>  \<not> u \<le>p v \<Longrightarrow> 
+lemma (in linorder) lexordp_ext: "ord_class.lexordp u v \<Longrightarrow>  \<not> u \<le>p v \<Longrightarrow>
   ord_class.lexordp (u\<cdot>w) (v\<cdot>z)"
-  by (induct rule: lexordp_induct, simp_all)                         
-
-lemmas [code] = lexordp_simps
+  by (induct rule: lexordp_induct, simp_all)
 
 context linorder
 begin
@@ -43,14 +41,14 @@ abbreviation Lyndon_less :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" (
 abbreviation Lyndon_le :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" (infixl "\<le>lex" 50)
   where "Lyndon_le xs ys \<equiv> ord_class.lexordp_eq xs ys"
 
-interpretation rlex: linorder "(\<le>lex)" "(<lex)" 
+interpretation rlex: linorder "(\<le>lex)" "(<lex)"
   using lexordp_linorder.
 
-interpretation dual_rlex: linorder "\<lambda> x y. y \<le>lex x" "\<lambda> x y. y <lex x" 
+interpretation dual_rlex: linorder "\<lambda> x y. y \<le>lex x" "\<lambda> x y. y <lex x"
   using rlex.dual_linorder.
 
 lemma sorted_dual_rev_iff: "dual_rlex.sorted ws \<longleftrightarrow> rlex.sorted (rev ws)"
-  unfolding rlex.sorted_rev_iff_nth_mono dual_rlex.sorted_iff_nth_mono by blast 
+  unfolding rlex.sorted_rev_iff_nth_mono dual_rlex.sorted_iff_nth_mono by blast
 
 text \<open>Several useful lemmas that are formulated for relations, interpreted for the default linear order.\<close>
 
@@ -75,7 +73,7 @@ lemma LyndonD_nemp: "Lyndon w \<Longrightarrow> w \<noteq> \<epsilon>"
 lemma LyndonI: "w \<noteq> \<epsilon> \<Longrightarrow> \<forall> n. 0 < n \<and> n < \<^bold>|w\<^bold>| \<longrightarrow> w <lex rotate n w \<Longrightarrow>  Lyndon w"
   unfolding  Lyndon.simps by blast
 
-lemma Lyndon_sing: "Lyndon [a]" 
+lemma Lyndon_sing: "Lyndon [a]"
   unfolding Lyndon.simps by auto
 
 lemma Lyndon_prim: assumes "Lyndon w"
@@ -88,7 +86,7 @@ proof-
 qed
 
 lemma Lyndon_conj_greater: "Lyndon (u\<cdot>v) \<Longrightarrow> u \<noteq> \<epsilon> \<Longrightarrow> v \<noteq> \<epsilon> \<Longrightarrow> u\<cdot>v <lex v\<cdot>u"
-  using LyndonD[of "u\<cdot>v" "\<^bold>|u\<^bold>|", unfolded rotate_append[of u v]] 
+  using LyndonD[of "u\<cdot>v" "\<^bold>|u\<^bold>|", unfolded rotate_append[of u v]]
   by force
 
 subsection "Code equations for Lyndon words"
@@ -116,13 +114,13 @@ proof(induction n, simp)
   have "w <lex rotate (Suc n) w"
     using LyndonD Suc.prems(2) assms by blast
   then show ?case
-    using Suc.IH[OF _ Suc_lessD[OF \<open>Suc n < \<^bold>|w\<^bold>|\<close>], folded neq0_conv] Lyndon_rec.simps(1)[of w] 
+    using Suc.IH[OF _ Suc_lessD[OF \<open>Suc n < \<^bold>|w\<^bold>|\<close>], folded neq0_conv] Lyndon_rec.simps(1)[of w]
     unfolding Lyndon_rec.simps(2)
     by metis
 qed
 
 lemma Lyndon_code [code]:
-    "Lyndon Nil = False" 
+    "Lyndon Nil = False"
     "Lyndon (a # w) = Lyndon_rec (a # w) (\<^bold>|w\<^bold>|)"
 proof-
   show "Lyndon Nil = False" by simp
@@ -151,21 +149,21 @@ theorem Lyndon_unbordered: assumes "Lyndon w" shows "\<not> bordered w"
 proof
   assume "bordered w"
   from bordered_dec[OF this]
-  obtain u v where "u\<cdot>v\<cdot>u = w" and "u \<noteq> \<epsilon>". 
+  obtain u v where "u\<cdot>v\<cdot>u = w" and "u \<noteq> \<epsilon>".
   hence "v \<cdot> u \<noteq> \<epsilon>" and "u \<cdot> v \<noteq> \<epsilon>" by blast+
-  note lyn = \<open>Lyndon w\<close>[folded  \<open>u\<cdot>v\<cdot>u = w\<close>] 
+  note lyn = \<open>Lyndon w\<close>[folded  \<open>u\<cdot>v\<cdot>u = w\<close>]
   have "u\<cdot>v\<cdot>u <lex v\<cdot>u\<cdot>u"
     using Lyndon_conj_greater[of u "v\<cdot>u", OF lyn \<open>u \<noteq> \<epsilon>\<close> \<open>v \<cdot> u \<noteq> \<epsilon>\<close>, unfolded rassoc].
   from this[unfolded lassoc]
-  have "u \<cdot> v \<noteq> v \<cdot> u" 
+  have "u \<cdot> v \<noteq> v \<cdot> u"
     by force
   from lexord_suf_linorder[OF _ this, of u u]
-  have "u\<cdot>v <lex v\<cdot>u" 
+  have "u\<cdot>v <lex v\<cdot>u"
     using  \<open>u\<cdot>v\<cdot>u <lex v\<cdot>u\<cdot>u\<close>  by simp
   from lexord_append_leftI_linorder[of  "u\<cdot>v" "v\<cdot>u", unfolded lassoc, OF this, unfolded rassoc]
   have "u\<cdot>u\<cdot>v <lex u\<cdot>v\<cdot>u".
   from this Lyndon_conj_greater[of "u\<cdot>v" u, unfolded rassoc, OF lyn \<open>u \<cdot> v \<noteq> \<epsilon>\<close>  \<open>u \<noteq> \<epsilon>\<close>]
-  show False 
+  show False
     by simp
 qed
 
@@ -180,18 +178,18 @@ proof-
   let ?ConClass = "{rotate n w | n. 0 \<le> n \<and> n < \<^bold>|w\<^bold>|}"
 
   have "?ConClass \<noteq> {}"
-    using \<open>w \<noteq> \<epsilon>\<close> by blast 
-  have "w \<in> ?ConClass"
-    using \<open>w \<noteq> \<epsilon>\<close> id_apply[of w, folded rotate0]
-    by force
+    using \<open>w \<noteq> \<epsilon>\<close> by blast
   have "finite ?ConClass"
-    by simp
+    by force
+  have "w \<in> ?ConClass"
+    by (rule CollectI)
+    (use  le0[of 0] nemp_pos_len[OF \<open>w \<noteq> \<epsilon>\<close>] id_apply[of w, folded rotate0] in metis)
   have all_rot: "rotate m w \<in> ?ConClass" for m
     using rotate_conv_mod[of _ w] mod_less_divisor[of "\<^bold>|w\<^bold>|"] \<open>w \<noteq> \<epsilon>\<close>
     by blast
 
   obtain w' n where "w' \<in> ?ConClass" and all_b: "\<forall> b \<in> ?ConClass. b \<le>lex w' \<longrightarrow> w' = b" and w': "w' = rotate n w"
-    using rlex.finite_has_minimal[OF \<open>finite ?ConClass\<close> \<open>?ConClass \<noteq> {}\<close>] by auto 
+    using rlex.finite_has_minimal[OF \<open>finite ?ConClass\<close> \<open>?ConClass \<noteq> {}\<close>] by auto
 
   have "rotate n w <lex rotate na (rotate n w)" if  "0 < na" and "na < \<^bold>|w\<^bold>|" for na
   proof-
@@ -201,10 +199,10 @@ proof-
       using all_b[rule_format, OF all_rot[of "na + n", folded rotate_rotate[of na n w]]] unfolding w'
       by auto
     from rlex.not_le_imp_less[OF this]
-    show "rotate n w <lex rotate na (rotate n w)". 
+    show "rotate n w <lex rotate na (rotate n w)".
   qed
   hence "Lyndon (rotate n w)"
-    using \<open>w \<noteq> \<epsilon>\<close> by auto 
+    using \<open>w \<noteq> \<epsilon>\<close> by auto
   from that[OF this] show thesis.
 qed
 
@@ -213,33 +211,33 @@ lemma conjug_Lyndon_ex': assumes "primitive w"
   unfolding conjug_rotate_iff
   using conjug_Lyndon_ex[OF \<open>primitive w\<close>]
   by metis
-  
+
 section "Characterization by suffixes"
 
 lemma Lyndon_suf_less: assumes "Lyndon w" "s \<le>ns w" "s \<noteq> w"
   shows "w <lex s"
 proof-
-  define p where "p = take \<^bold>|s\<^bold>| w" 
-  have "\<^bold>|s\<^bold>| \<le> \<^bold>|w\<^bold>|" 
+  define p where "p = take \<^bold>|s\<^bold>| w"
+  have "\<^bold>|s\<^bold>| \<le> \<^bold>|w\<^bold>|"
     using nsD[OF \<open>s \<le>ns w\<close>]
-    by (simp add: suffix_length_le)  
+    by (simp add: suffix_length_le)
   have "p \<le>p w" and "\<^bold>|p\<^bold>|  = \<^bold>|s\<^bold>|"
     unfolding p_def
-    using take_is_prefix \<open>\<^bold>|s\<^bold>| \<le> \<^bold>|w\<^bold>|\<close> take_len by blast+ 
-  hence "p \<noteq> s" 
-    using Lyndon_unbordered[OF \<open>Lyndon w\<close>] \<open>s \<le>ns w\<close> \<open>s \<noteq> w\<close> assms 
+    using take_is_prefix \<open>\<^bold>|s\<^bold>| \<le> \<^bold>|w\<^bold>|\<close> take_len by blast+
+  hence "p \<noteq> s"
+    using Lyndon_unbordered[OF \<open>Lyndon w\<close>] \<open>s \<le>ns w\<close> \<open>s \<noteq> w\<close> assms
     by auto
   define p' s' where "p' = drop \<^bold>|s\<^bold>| w" and "s' = take \<^bold>|p'\<^bold>| w"
-  have "p \<cdot> p' = w" 
+  have "p \<cdot> p' = w"
     unfolding p'_def p_def s'_def by simp
   have "s' \<cdot> s = w"
     unfolding p'_def p_def s'_def
      using suf_len[OF nsD[OF \<open>s \<le>ns w\<close>]] nsD[OF \<open>s \<le>ns w\<close>]
-     length_drop suffix_take by metis  
+     length_drop suffix_take by metis
   have "\<^bold>|p'\<^bold>| = \<^bold>|s'\<^bold>|"
-    using s'_def \<open>p\<cdot>p' = w\<close> by auto 
+    using s'_def \<open>p\<cdot>p' = w\<close> by auto
   have "w <lex s\<cdot>s'"
-    using Lyndon_conj_greater[of s' s, unfolded \<open>s' \<cdot> s = w\<close>, OF \<open>Lyndon w\<close>] \<open>p \<noteq> s\<close> 
+    using Lyndon_conj_greater[of s' s, unfolded \<open>s' \<cdot> s = w\<close>, OF \<open>Lyndon w\<close>] \<open>p \<noteq> s\<close>
     unfolding \<open>s' \<cdot> s = w\<close> p_def using \<open>s' \<cdot> s = w\<close> assms(3) by fastforce
   from lexord_suf_linorder[OF _ \<open>p \<noteq> s\<close> \<open>\<^bold>|p\<^bold>| = \<^bold>|s\<^bold>|\<close> \<open>\<^bold>|p'\<^bold>| = \<^bold>|s'\<^bold>|\<close>, OF this[folded \<open>p \<cdot> p' = w\<close>]]
   have "p <lex s".
@@ -248,7 +246,6 @@ proof-
     by simp
 qed
 
-(* TODO try using also elsewhere *)
 lemma Lyndon_pref_suf_less:  assumes "Lyndon w" "p \<le>p w" "s \<le>ns w" "s \<noteq> w"
   shows "p <lex s"
 proof(cases "p = w", simp add: Lyndon_suf_less[OF assms(1) assms(3) assms(4)])
@@ -257,7 +254,7 @@ proof(cases "p = w", simp add: Lyndon_suf_less[OF assms(1) assms(3) assms(4)])
   proof(rule rlex.less_trans)
     show "p <lex w"
       using \<open>p \<noteq> w\<close> assms(2) lexordp_append_rightI
-      by (fastforce simp add: prefix_def) 
+      by (fastforce simp add: prefix_def)
     show "w <lex s"
       using Lyndon_suf_less assms(1) assms(3) assms(4) by blast
   qed
@@ -265,7 +262,7 @@ qed
 
 lemma suf_less_Lyndon: assumes "w \<noteq> \<epsilon>" and "\<forall>s. (s \<le>ns w \<longrightarrow> s \<noteq> w \<longrightarrow> w <lex s)"
   shows "Lyndon w"
-proof (cases "primitive w") 
+proof (cases "primitive w")
   assume "\<not> primitive w"
   obtain q k where "q \<noteq> \<epsilon>" "1 < k" "q\<^sup>@k=w" "w\<noteq>q" \<comment> \<open>the exact match of @{thm non_prim} fastens the proof considerably\<close>
     using non_prim[OF \<open>\<not> primitive w\<close> \<open>w \<noteq> \<epsilon>\<close>] by blast
@@ -275,26 +272,26 @@ proof (cases "primitive w")
     by presburger
 
   have "q <p w"
-    using \<open>1 < k\<close>  \<open>q \<^sup>@ k = w\<close> 
+    using \<open>1 < k\<close>  \<open>q \<^sup>@ k = w\<close>
     unfolding pow_eq_if_list[of q k] pow_eq_if_list[of q "k-1"]
     using \<open>w \<noteq> \<epsilon>\<close>  by auto
-  from lexordp_append_rightI[of "q\<inverse>\<^sup>>w" q, 
+  from lexordp_append_rightI[of "q\<inverse>\<^sup>>w" q,
       unfolded lq_pref[OF sprefD1[OF this]], OF lq_spref[OF this]]
   have "q <lex w".
   thus  "Lyndon w"
     unfolding Lyndon.simps using \<open>q \<le>ns w\<close> \<open>w \<noteq> \<epsilon>\<close> assms(2) rlex.order.strict_trans by blast
-next 
+next
   assume "primitive w"
-  have "w <lex rotate l w" if assms_l: "0 < l" "l < \<^bold>|w\<^bold>|" for l  
+  have "w <lex rotate l w" if assms_l: "0 < l" "l < \<^bold>|w\<^bold>|" for l
   proof-
     have "take l w \<le>np w" and "\<^bold>|take l w\<^bold>| = l"
       using assms_l take_is_prefix  \<open>l < \<^bold>|w\<^bold>|\<close> by auto
-    have "drop l w \<le>ns w" 
+    have "drop l w \<le>ns w"
       using \<open>l < \<^bold>|w\<^bold>|\<close> suffix_drop by auto
     have "drop l w \<noteq> w"
       using append_take_drop_id[of l w] npD'[OF \<open>take l w \<le>np w\<close>] by force
     have "drop l w \<cdot> take l w = rotate l w"
-      using rotate_append[of "take l w" "drop l w", symmetric, unfolded \<open>\<^bold>|take l w\<^bold>| = l\<close>, 
+      using rotate_append[of "take l w" "drop l w", symmetric, unfolded \<open>\<^bold>|take l w\<^bold>| = l\<close>,
           unfolded append_take_drop_id].
 
     have "w <lex drop l w"
@@ -324,7 +321,7 @@ proof(standard+)
     hence "u \<cdot> v <lex s \<cdot> v"
       using  Lyndon_suf_less[OF \<open>Lyndon (u \<cdot> v)\<close>, of "s \<cdot> v"] by auto
     have "\<not> s \<le>p u"
-      using \<open>\<not> bordered u\<close> \<open>s \<le>ns u\<close> \<open>s \<noteq> u\<close> by auto 
+      using \<open>\<not> bordered u\<close> \<open>s \<le>ns u\<close> \<open>s \<noteq> u\<close> by auto
     moreover have "\<not> u \<le>p s"
       using suf_pref_eq[OF nsD[OF\<open>s \<le>ns u\<close>]] \<open>s \<noteq> u\<close> by blast
     ultimately show "u <lex s"
@@ -348,7 +345,7 @@ proof-
   next
     assume "\<not> u \<le>p v"
     then show ?thesis
-      using local.lexordp_linear[of v "u\<cdot>v"] 
+      using local.lexordp_linear[of v "u\<cdot>v"]
         local.lexordp_mid_pref[OF \<open>u <lex v\<close>,of v]
         prefixI[of v u v]
       by argo
@@ -396,7 +393,7 @@ lemma longest_Lyndon_suf_ext: "\<not> Lyndon (a # w) \<Longrightarrow> LynSuf w 
 lemma longest_Lyndon_suf_suf: "w \<noteq> \<epsilon> \<Longrightarrow> LynSuf w \<le>s w"
 proof(induction w rule: longest_Lyndon_suffix.induct)
   case 1
-  then show ?case by simp 
+  then show ?case by simp
 next
   case (2 a w)
   show ?case
@@ -411,12 +408,12 @@ next
   qed
 qed
 
-lemma longest_Lyndon_suf_max: 
+lemma longest_Lyndon_suf_max:
   "v \<le>s w  \<Longrightarrow> Lyndon v \<Longrightarrow> v \<le>s (LynSuf w)"
 proof(induction w arbitrary: v rule: longest_Lyndon_suffix.induct)
   case 1
   then show ?case
-    using longest_Lyndon_suffix.simps(1) by presburger 
+    using longest_Lyndon_suffix.simps(1) by presburger
 next
   case (2 a w)
   show ?case
@@ -431,16 +428,16 @@ next
     from "2.IH"[OF False _ "2.prems"(2), unfolded longest_Lyndon_suf_ext[OF False]]
        "2.prems"(1)[unfolded suffix_Cons] this
     show ?thesis by fast
-  qed  
+  qed
 qed
 
-lemma longest_Lyndon_suf_Lyndon_id: assumes "Lyndon w" 
+lemma longest_Lyndon_suf_Lyndon_id: assumes "Lyndon w"
   shows "LynSuf w = w"
 proof(cases "w = \<epsilon>", simp)
   case False
   from longest_Lyndon_suf_suf[OF this]
     suffix_order.order_refl[THEN longest_Lyndon_suf_max[OF _ assms]]
-    suffix_order.antisym 
+    suffix_order.antisym
   show ?thesis by blast
 qed
 
@@ -463,18 +460,18 @@ proof(induction w rule: longest_Lyndon_suffix.induct, blast)
     from "2.IH"[OF this, unfolded longest_Lyndon_suf_ext[OF this]] Lyndon_sing
     show ?thesis by fastforce
   qed
-qed  
+qed
 
 lemma longest_Lyndon_suf_nemp: "w \<noteq> \<epsilon> \<Longrightarrow> LynSuf w \<noteq> \<epsilon>"
   using longest_Lyndon_suf_Lyndon[THEN LyndonD_nemp].
 
 lemma longest_Lyndon_sufI:
-  assumes "q \<le>s w" and "Lyndon q" and all_s: "(\<forall> s. (s \<le>s w \<and> Lyndon s) \<longrightarrow> s \<le>s q)" 
+  assumes "q \<le>s w" and "Lyndon q" and all_s: "(\<forall> s. (s \<le>s w \<and> Lyndon s) \<longrightarrow> s \<le>s q)"
   shows "LynSuf w = q"
 proof(cases "w = \<epsilon>")
   case True
   then show ?thesis
-    using assms(1) longest_Lyndon_suffix.simps(1) suffix_bot.extremum_uniqueI by blast 
+    using assms(1) longest_Lyndon_suffix.simps(1) suffix_bot.extremum_uniqueI by blast
 next
   case False
   from all_s longest_Lyndon_suf_Lyndon[OF this] longest_Lyndon_suf_max[OF assms(1) assms(2)]
@@ -482,17 +479,17 @@ next
   show ?thesis by blast
 qed
 
-corollary longest_Lyndon_sufI': 
-  assumes "q \<le>s w" and "Lyndon q" and all_s: "\<forall> s. (s \<le>s w \<and> Lyndon s) \<longrightarrow> \<^bold>|s\<^bold>| \<le> \<^bold>|q\<^bold>|" 
+corollary longest_Lyndon_sufI':
+  assumes "q \<le>s w" and "Lyndon q" and all_s: "\<forall> s. (s \<le>s w \<and> Lyndon s) \<longrightarrow> \<^bold>|s\<^bold>| \<le> \<^bold>|q\<^bold>|"
   shows "LynSuf w = q"
   using longest_Lyndon_sufI[OF \<open>q \<le>s w\<close> \<open>Lyndon q\<close>] suf_ruler_le all_s \<open>q \<le>s w\<close> by blast
 
 text\<open>The next lemma is fabricated to suit the upcoming definition of longest Lyndon factorization.\<close>
 
-lemma longest_Lyndon_suf_shorter: assumes "w \<noteq> \<epsilon>" 
+lemma longest_Lyndon_suf_shorter: assumes "w \<noteq> \<epsilon>"
   shows "\<^bold>|w\<^sup><\<inverse>(LynSuf w)\<^bold>| < \<^bold>|w\<^bold>|"
-  using nemp_len[OF longest_Lyndon_suf_nemp[OF \<open>w \<noteq> \<epsilon>\<close>]] arg_cong[OF rq_suf[OF longest_Lyndon_suf_suf[OF \<open>w \<noteq> \<epsilon>\<close>]], of length] 
-  unfolding lenmorph by linarith  
+  using nemp_len[OF longest_Lyndon_suf_nemp[OF \<open>w \<noteq> \<epsilon>\<close>]] arg_cong[OF rq_suf[OF longest_Lyndon_suf_suf[OF \<open>w \<noteq> \<epsilon>\<close>]], of length]
+  unfolding lenmorph by linarith
 
 section "Lyndon factorizations"
 
@@ -505,7 +502,7 @@ proof(relation "measure length", simp)
     unfolding measure_def inv_image_def using longest_Lyndon_suf_shorter by blast
 qed
 
-text\<open>The factorization @{term "Lyndon_fac w"} obtained by taking always the longest Lyndon suffix is well defined, 
+text\<open>The factorization @{term "Lyndon_fac w"} obtained by taking always the longest Lyndon suffix is well defined,
 and called ``Lyndon factorization (of $w$)''.\<close>
 
 
@@ -518,7 +515,7 @@ lemma Lyndon_fac_emp: "Lyndon_fac \<epsilon> = \<epsilon>"
 text\<open>Note that the Lyndon factorization of a Lyndon word is trivial.\<close>
 
 lemma Lyndon_fac_longest_Lyndon_id: "Lyndon w \<Longrightarrow> Lyndon_fac w = [w]"
-  by (simp add: longest_Lyndon_suf_Lyndon_id) 
+  by (simp add: longest_Lyndon_suf_Lyndon_id)
 
 text\<open>Lyndon factorization is composed of Lyndon words ...\<close>
 
@@ -576,10 +573,10 @@ proof(induction w arbitrary: us rule:  Lyndon_fac.induct)
     proof(cases)
       case neq
       hence "us \<le>p Lyndon_fac (w\<^sup><\<inverse>LynSuf w)"
-        using "1.prems" last_no_split[of us "Lyndon_fac (w\<^sup><\<inverse>LynSuf w)" "LynSuf w"] 
+        using "1.prems" last_no_split[of us "Lyndon_fac (w\<^sup><\<inverse>LynSuf w)" "LynSuf w"]
         unfolding step[symmetric] by blast
       thus "LynFac (concat us) = us"
-        using "1.IH" \<open>w \<noteq> \<epsilon>\<close> by blast 
+        using "1.IH" \<open>w \<noteq> \<epsilon>\<close> by blast
     next
       case eq
       show "LynFac (concat us) = us"
@@ -608,18 +605,18 @@ lemma Lyndon_mono_empty[simp]: "Lyndon_mono \<epsilon>"
 lemma Lyndon_mono_sing: "Lyndon u \<Longrightarrow> Lyndon_mono [u]"
   unfolding Lyndon_mono_def by auto
 
-lemma Lyndon_mono_fac_Lyndon_mono: 
-  assumes "ps \<le>f ws" and "Lyndon_mono ws" shows "Lyndon_mono ps"  
+lemma Lyndon_mono_fac_Lyndon_mono:
+  assumes "ps \<le>f ws" and "Lyndon_mono ws" shows "Lyndon_mono ps"
 unfolding Lyndon_mono_def
 proof
-  show "\<forall>x \<in> (set ps). Lyndon x" 
+  show "\<forall>x \<in> (set ps). Lyndon x"
     using \<open>Lyndon_mono ws\<close>[unfolded Lyndon_mono_def] set_mono_sublist[OF \<open>ps \<le>f ws\<close>] by blast
   show "linorder.sorted (\<le>lex) (rev ps)"
     using rlex.sorted_append \<open>Lyndon_mono ws\<close>[unfolded Lyndon_mono_def] \<open>ps \<le>f ws\<close>[unfolded sublist_def] by fastforce
 qed
 
-text\<open>Lyndon factorization is monotone! 
-Altogether, we have shown that the Lyndon factorization is a monotone factorization 
+text\<open>Lyndon factorization is monotone!
+Altogether, we have shown that the Lyndon factorization is a monotone factorization
 into Lyndon words.\<close>
 
 theorem fac_Lyndon_mono: "Lyndon_mono (Lyndon_fac w)"
@@ -633,16 +630,16 @@ proof (induct "Lyndon_fac w" arbitrary: w rule: rev_induct, simp)
   proof (cases "xs = \<epsilon>")
     assume "xs = \<epsilon>"
     show "Lyndon_mono (LynFac w)"
-      unfolding Lyndon_mono_def \<open>xs \<cdot> [x] = LynFac w\<close>[symmetric] \<open>xs = \<epsilon>\<close> append.left_neutral 
-                rlex.sorted1[of x]  
+      unfolding Lyndon_mono_def \<open>xs \<cdot> [x] = LynFac w\<close>[symmetric] \<open>xs = \<epsilon>\<close> append.left_neutral
+                rlex.sorted1[of x]
       using \<open>Lyndon x\<close> by force
   next
     assume "xs \<noteq> \<epsilon>"
     have "concat (xs \<cdot> [x]) \<noteq> \<epsilon>" and "w \<noteq> \<epsilon>"
       using Lyndon_fac_longest_dec snoc.hyps(2) by auto
-    have "x = LynSuf w" and "xs = LynFac (w\<^sup><\<inverse>LynSuf w )"           
+    have "x = LynSuf w" and "xs = LynFac (w\<^sup><\<inverse>LynSuf w )"
       using Lyndon_fac.simps[of w, folded snoc.hyps(2)] \<open>w \<noteq> \<epsilon>\<close>
-        Lyndon_fac_longest_dec append1_eq_conv[of xs x "LynFac (w\<^sup><\<inverse>LynSuf w )" "LynSuf w"] by presburger+       
+        Lyndon_fac_longest_dec append1_eq_conv[of xs x "LynFac (w\<^sup><\<inverse>LynSuf w )" "LynSuf w"] by presburger+
     from Lyndon_mono_sorted[OF snoc.hyps(1)[OF \<open>xs = LynFac (w\<^sup><\<inverse>LynSuf w )\<close>], folded this]
     have "dual_rlex.sorted  xs"
       unfolding sorted_dual_rev_iff.
@@ -655,16 +652,16 @@ proof (induct "Lyndon_fac w" arbitrary: w rule: rev_induct, simp)
       have "Lyndon ((last xs) \<cdot> x)".
       have "(last xs) \<cdot> x \<le>s concat (xs \<cdot> [x])"
         using \<open>xs \<noteq> \<epsilon>\<close> concat_last_suf by auto
-      from longest_Lyndon_suf_longest[OF \<open>concat (xs \<cdot> [x]) \<noteq> \<epsilon>\<close>  this \<open>Lyndon ((last xs) \<cdot> x)\<close>, 
+      from longest_Lyndon_suf_longest[OF \<open>concat (xs \<cdot> [x]) \<noteq> \<epsilon>\<close>  this \<open>Lyndon ((last xs) \<cdot> x)\<close>,
           unfolded \<open>concat (xs \<cdot> [x]) = w\<close>, folded \<open>x = LynSuf w\<close>]
       show False
-        using \<open>Lyndon (last xs)\<close> by simp 
-    qed 
+        using \<open>Lyndon (last xs)\<close> by simp
+    qed
     have "dual_rlex.sorted (butlast xs \<cdot> [last xs])"
       by (simp add: \<open>linorder.sorted (\<lambda>x y. y \<le>lex x) xs\<close> \<open>xs \<noteq> \<epsilon>\<close>)
     from this \<open>x \<le>lex last xs\<close>
     have "dual_rlex.sorted (butlast xs \<cdot> [last xs,x])"
-      using dual_rlex.sorted_append by auto   
+      using dual_rlex.sorted_append by auto
     from this[unfolded hd_word[of "last xs" "[x]"] lassoc append_butlast_last_id[OF \<open>xs \<noteq> \<epsilon>\<close>]]
     have "rlex.sorted (rev (LynFac w))"
       unfolding  \<open>xs \<cdot> [x] = LynFac w\<close>[symmetric] sorted_dual_rev_iff[symmetric].
@@ -707,7 +704,7 @@ proof(induct ws arbitrary: s rule: rev_induct, fastforce)
       using \<open>Lyndon_mono (ws\<cdot>[a])\<close> Lyndon_mono_fac_Lyndon_mono
       by blast
     from snoc.hyps[OF this \<open>s' \<le>ns concat ws\<close>]
-    have "last ws \<le>lex s'" 
+    have "last ws \<le>lex s'"
       by auto
     hence "last ws \<le>lex s'\<cdot>a"
       using local.lexordp_eq_trans ord.lexordp_eq_pref by blast
@@ -726,7 +723,7 @@ qed
 text\<open>A monotone list, if seen as a factorization,
 must end with the longest suffix\<close>
 
-lemma Lyndon_mono_last_longest: assumes "ws \<noteq> \<epsilon>" and "Lyndon_mono ws" 
+lemma Lyndon_mono_last_longest: assumes "ws \<noteq> \<epsilon>" and "Lyndon_mono ws"
   shows "LynSuf (concat ws) = last ws"
 proof-
   have "Lyndon (last ws)"
@@ -745,7 +742,7 @@ proof-
   have "LynSuf (concat ws) \<le>ns concat ws"
     unfolding nonempty_suffix_def
     by simp
- 
+
   show ?thesis
     using Lyndon_mono_last_smallest[OF \<open>Lyndon_mono ws\<close> \<open>LynSuf (concat ws) \<le>ns concat ws\<close>]
       Lyndon_suf_le[OF longest_Lyndon_suf_Lyndon[OF \<open>concat ws \<noteq> \<epsilon>\<close>], OF \<open>last ws \<le>ns LynSuf (concat ws)\<close>]
@@ -753,7 +750,7 @@ proof-
     by simp
 qed
 
-text\<open>Therefore, by construction, 
+text\<open>Therefore, by construction,
 any monotone list is the Lyndon factorization of its concatenation\<close>
 
 lemma Lyndon_mono_fac:
@@ -761,9 +758,9 @@ lemma Lyndon_mono_fac:
 proof (induct ws rule: rev_induct, simp)
   case (snoc x xs)
   have "Lyndon_mono xs"
-    using \<open>Lyndon_mono (xs \<cdot> [x])\<close>  
+    using \<open>Lyndon_mono (xs \<cdot> [x])\<close>
     unfolding Lyndon_mono_def
-    by simp 
+    by simp
   from snoc.hyps[OF this]
   have "xs = LynFac (concat xs)".
   have "x = LynSuf (concat (xs \<cdot> [x]))"
@@ -775,7 +772,7 @@ proof (induct ws rule: rev_induct, simp)
   from this
   show ?case
     using Lyndon_fac.simps[of "concat (xs \<cdot> [x])", folded \<open>x = LynSuf (concat (xs \<cdot> [x]))\<close>,
-        unfolded \<open>concat (xs \<cdot> [x])\<^sup><\<inverse>x = concat xs\<close>, folded \<open>xs = LynFac (concat xs)\<close>] 
+        unfolded \<open>concat (xs \<cdot> [x])\<^sup><\<inverse>x = concat xs\<close>, folded \<open>xs = LynFac (concat xs)\<close>]
     by presburger
 qed
 
@@ -788,9 +785,9 @@ the "suffix greedy" factorization (into Lyndon words).
 corollary Lyndon_mono_fac_iff: "Lyndon_mono ws \<longleftrightarrow> ws = LynFac (concat ws)"
   using Lyndon_mono_fac fac_Lyndon_mono[of "concat ws"] by fastforce
 
-corollary Lyndon_mono_unique: assumes "Lyndon_mono ws" and "Lyndon_mono zs" and "concat ws = concat zs" 
+corollary Lyndon_mono_unique: assumes "Lyndon_mono ws" and "Lyndon_mono zs" and "concat ws = concat zs"
   shows "ws = zs"
-  using Lyndon_mono_fac[OF \<open>Lyndon_mono ws\<close>] Lyndon_mono_fac[OF \<open>Lyndon_mono zs\<close>] 
+  using Lyndon_mono_fac[OF \<open>Lyndon_mono ws\<close>] Lyndon_mono_fac[OF \<open>Lyndon_mono zs\<close>]
   unfolding \<open>concat ws = concat zs\<close>  by simp
 
 
@@ -805,58 +802,58 @@ proof-
   hence "Lyndon m"
     using \<open>tl w \<noteq> \<epsilon>\<close> local.longest_Lyndon_suf_Lyndon by blast
   have "m \<le>s w"
-    unfolding m_def 
-    using suffix_order.trans[OF longest_Lyndon_suf_suf[OF \<open>tl w \<noteq> \<epsilon>\<close>] suffix_tl[of w]]. 
+    unfolding m_def
+    using suffix_order.trans[OF longest_Lyndon_suf_suf[OF \<open>tl w \<noteq> \<epsilon>\<close>] suffix_tl[of w]].
   moreover have "m \<noteq> w"
     unfolding m_def using  hd_tl[OF \<open>w \<noteq> \<epsilon>\<close>] longest_Lyndon_suf_suf[OF \<open>tl w \<noteq> \<epsilon>\<close>] same_suffix_nil
     not_Cons_self2 by metis
   ultimately obtain l where "w = l\<cdot>m" and "l \<noteq> \<epsilon>"
-   by (auto simp add: suf_def)
+   by (auto simp add: suffix_def)
 
   have "Lyndon l"
   proof (rule unbordered_pref_Lyndon[OF \<open>Lyndon w\<close>[unfolded \<open>w = l\<cdot>m\<close>] \<open>l \<noteq> \<epsilon>\<close>], rule)
     assume "bordered l"
     from unbordered_border[OF this, unfolded border_def]
     obtain s where "s \<noteq> \<epsilon>" and "s \<noteq> l" and "s \<le>p l" and "s \<le>s l" and "\<not> bordered s"
-      by blast 
-    have "Lyndon s"       
+      by blast
+    have "Lyndon s"
       using unbordered_pref_Lyndon[OF _ \<open>s \<noteq> \<epsilon>\<close> \<open>\<not> bordered s\<close>, of "s\<inverse>\<^sup>>l\<cdot>m", unfolded lassoc lq_pref[OF \<open>s \<le>p l\<close>]]
       \<open>Lyndon w\<close>[unfolded \<open>w = l \<cdot> m\<close>] by blast
     have "s <lex m"
-      using Lyndon_pref_suf_less[OF \<open>Lyndon w\<close> _ nsI[OF LyndonD_nemp[OF \<open>Lyndon m\<close>] \<open>m \<le>s w\<close>] 
-         \<open>m \<noteq> w\<close>, of s] Lyndon.elims(2)[OF \<open>Lyndon m\<close>]  
+      using Lyndon_pref_suf_less[OF \<open>Lyndon w\<close> _ nsI[OF LyndonD_nemp[OF \<open>Lyndon m\<close>] \<open>m \<le>s w\<close>]
+         \<open>m \<noteq> w\<close>, of s] Lyndon.elims(2)[OF \<open>Lyndon m\<close>]
          \<open>s \<le>p l\<close> prefix_append[of s l m, folded \<open>w = l \<cdot> m\<close>]
       by presburger
     from Lyndon_concat[OF \<open>Lyndon s\<close> \<open>Lyndon m\<close> this]
     have "Lyndon (s\<cdot>m)".
-    moreover have "s\<cdot>m \<le>s tl w" 
+    moreover have "s\<cdot>m \<le>s tl w"
       unfolding \<open>w = l \<cdot> m\<close> using \<open>s \<noteq> l\<close> \<open>s \<le>s l\<close> list.collapse[OF \<open>w \<noteq> \<epsilon>\<close>, unfolded \<open>w = l \<cdot> m\<close>]
-      by (auto simp add: suf_def)
+      by (auto simp add: suffix_def)
     ultimately show False
       using m_def \<open>s \<noteq> \<epsilon>\<close> longest_Lyndon_suf_max same_suffix_nil by blast
   qed
 
   have "l <lex m"
-    using Lyndon_pref_suf_less[OF \<open>Lyndon w\<close> prefI[OF \<open>w = l \<cdot> m\<close>[symmetric]] 
+    using Lyndon_pref_suf_less[OF \<open>Lyndon w\<close> prefI[OF \<open>w = l \<cdot> m\<close>[symmetric]]
         nsI[OF longest_Lyndon_suf_nemp[OF \<open>tl w \<noteq> \<epsilon>\<close>, folded  m_def] \<open>m \<le>s w\<close>] \<open>m \<noteq> w\<close>].
   from that[OF \<open>w = l \<cdot> m\<close> \<open>Lyndon l\<close>  \<open>Lyndon m\<close> this]
   show thesis.
 qed
 
-corollary Lyndon_std_iff: 
-  "Lyndon w \<longleftrightarrow> (\<^bold>|w\<^bold>| = 1 \<or> (\<exists> l m. w = l\<cdot>m \<and> Lyndon l \<and> Lyndon m \<and> l <lex m))" 
+corollary Lyndon_std_iff:
+  "Lyndon w \<longleftrightarrow> (\<^bold>|w\<^bold>| = 1 \<or> (\<exists> l m. w = l\<cdot>m \<and> Lyndon l \<and> Lyndon m \<and> l <lex m))"
   (is "?L \<longleftrightarrow> ?R")
 proof
   assume ?L
   show ?R
-    using Lyndon_std[OF \<open>Lyndon w\<close>] 
+    using Lyndon_std[OF \<open>Lyndon w\<close>]
       nemp_le_len[OF LyndonD_nemp[OF \<open>Lyndon w\<close>], unfolded le_eq_less_or_eq]
     by metis
 next
   assume ?R
   thus ?L
   proof(rule disjE, fastforce)
-    show \<open>\<exists>l m. w = l \<cdot> m \<and> Lyndon l \<and> Lyndon m \<and> l <lex m \<Longrightarrow> Lyndon w\<close> 
+    show \<open>\<exists>l m. w = l \<cdot> m \<and> Lyndon l \<and> Lyndon m \<and> l <lex m \<Longrightarrow> Lyndon w\<close>
       using Lyndon_concat by blast
   qed
 qed

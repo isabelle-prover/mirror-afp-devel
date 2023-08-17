@@ -7,6 +7,7 @@ session Binary_Code_Imprimitive = Combinatorics_Words +
   theories
     Binary_Square_Interpretation
     Binary_Code_Imprimitive
+    Binary_Imprimitive_Decision
   document_files
     root.tex
     root.bib

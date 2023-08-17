@@ -13,8 +13,6 @@ session Combinatorics_Words  = "HOL-Eisbach" +
     Equations_Basic
     Binary_Code_Morphisms
     Lyndon_Schutzenberger
-  theories [document = false]
-    CoWAll
   document_files
     root.tex
     root.bib

@@ -1,6 +1,5 @@
 (*  Title:      Glued Codes
-    File:       CoW_Graph_Lemma.Glued_Codes
-    Author:     Štěpán Holub, Charles University
+    File:       Combinatorics_Words_Graph_Lemma.Glued_Codes
     Author:     Martin Raška, Charles University
 
 Part of Combinatorics on Words Formalized. See https://gitlab.com/formalcow/combinatorics-on-words-formalized/
@@ -14,9 +13,9 @@ chapter "Glued codes"
 
 section \<open>Lists that do not end with a fixed letter\<close>
 
-lemma append_last_neq: 
+lemma append_last_neq:
   "us = \<epsilon> \<or> last us \<noteq> w \<Longrightarrow> vs = \<epsilon> \<or> last vs \<noteq> w \<Longrightarrow> us \<cdot> vs = \<epsilon> \<or> last (us \<cdot> vs) \<noteq> w"
-  by (auto simp only: last_append split: if_split)   
+  by (auto simp only: last_append split: if_split)
 
 lemma last_neq_induct [consumes 1, case_names emp hd_eq hd_neq]:
   assumes invariant: "us = \<epsilon> \<or> last us \<noteq> w"
@@ -137,7 +136,7 @@ function gluer :: "'a list \<Rightarrow> 'a list list \<Rightarrow> 'a list list
   termination by (relation "measure (length \<circ> snd)") simp_all
 
 lemma gluer_nemp_def: assumes "us \<noteq> \<epsilon>"
-  shows "gluer w us = 
+  shows "gluer w us =
     (let gluer_butlast = gluer w (butlast us) in
       if last us = w then (butlast gluer_butlast) \<cdot> [last gluer_butlast \<cdot> last us]
       else gluer_butlast \<cdot> [last us])"
@@ -172,7 +171,7 @@ text \<open>The following set will turn out to be the generating set of all word
 
 inductive_set glued_gens :: "'a list \<Rightarrow> 'a list set \<Rightarrow> 'a list set"
   for w G where
-    other_gen: "g \<in> G \<Longrightarrow> g \<noteq> w \<Longrightarrow> g \<in> glued_gens w G" 
+    other_gen: "g \<in> G \<Longrightarrow> g \<noteq> w \<Longrightarrow> g \<in> glued_gens w G"
   | glued [intro!]: "u \<in> glued_gens w G \<Longrightarrow>  w \<cdot> u \<in> glued_gens w G"
 
 lemma in_glued_gensI: assumes "g \<in> G" "g \<noteq> w"
@@ -202,12 +201,12 @@ lemma in_glued_hullE:
 using \<open>u \<in> \<langle>glued_gens w G\<rangle>\<close> proof (induction arbitrary: thesis)
   case (prod_cl v u)
     obtain k g where "g \<in> G" and "g \<noteq> w" and "concat ([w] \<^sup>@ k \<cdot> [g]) = v"
-      using \<open>v \<in> glued_gens w G\<close> by (simp add: concat_pow) (elim in_glued_gensE)
+      using \<open>v \<in> glued_gens w G\<close> by simp (elim in_glued_gensE)
     obtain us where u: "concat us = u" and "us \<in> lists G" and "(us = \<epsilon> \<or> last us \<noteq> w)" by fact
     have "concat ([w] \<^sup>@ k \<cdot> [g] \<cdot> us) = v \<cdot> u"
       by (simp flip: \<open>concat ([w] \<^sup>@ k \<cdot> [g]) = v\<close> \<open>concat us = u\<close>)
     with \<open>(us = \<epsilon> \<or> last us \<noteq> w)\<close> show thesis
-      by (elim prod_cl.prems, intro lists.intros 
+      by (elim prod_cl.prems, intro lists.intros
           append_in_lists pow_in_lists \<open>w \<in> G\<close> \<open>g \<in> G\<close> \<open>us \<in> lists G\<close>)
          (auto simp: \<open>g \<noteq> w\<close>)
 qed (use concat.simps(1) in blast)
@@ -235,7 +234,7 @@ using assms proof (induction us rule: last_neq_block_induct)
   case (block k u us)
     have "k < n" and "\<not> [w] \<^sup>@ n \<le>f us"
       using \<open>\<not> [w] \<^sup>@ n \<le>f [w] \<^sup>@ k \<cdot> u # us\<close>
-      by (blast intro!: not_le_imp_less pref_ext le_exps_pref, blast intro!: fac_ext_pref fac_ext_hd)
+      by (blast intro!: not_le_imp_less le_exps_pref, blast intro!: fac_ext_pref fac_ext_hd)
     then show ?case
       using \<open>[w] \<^sup>@ k \<cdot> u # us \<in> lists G\<close> \<open>u \<noteq> w\<close> unfolding glue_block_append[OF \<open>u \<noteq> w\<close>]
       by (blast intro!: block.IH del: in_listsD in_listsI)
@@ -273,9 +272,9 @@ proof (induction us rule: last_neq_block_induct)
               count_list (glue x us) y + count_list us x = count_list us y"
       using block.prems by (intro block.IH) (simp, blast intro!: fac_ext_pref fac_ext_hd)
     have "\<not> [x] \<^sup>@ Suc (Suc 0) \<le>f [x] \<^sup>@ k \<cdot> u # us"
-      using block.prems(2) by auto 
+      using block.prems(2) by auto
     then have "k < Suc (Suc 0)"
-      by (blast intro!: not_le_imp_less pref_ext le_exps_pref)
+      by (blast intro!: not_le_imp_less le_exps_pref)
     then show ?case unfolding \<open>u = y\<close> glue_block_append[OF \<open>x \<noteq> y\<close>[symmetric]]
       by (elim less_SucE less_zeroE) (simp_all add: \<open>x \<noteq> y\<close> \<open>x \<noteq> y\<close>[symmetric] \<open>x \<noteq> \<epsilon>\<close> IH)
 qed simp
@@ -295,7 +294,7 @@ lemma glued_hull_last_dec: assumes "w \<in> \<C>" and  "u \<in> \<langle>glued_g
 lemma in_glued_hullI [intro]:
   assumes "u \<in> \<langle>\<C>\<rangle>" and "(u = \<epsilon> \<or> last (Dec \<C> u) \<noteq> w)"
   shows "u \<in> \<langle>glued_gens w \<C>\<rangle>"
-  using concat_in_glued_hull[OF dec_in_lists[OF \<open>u \<in> \<langle>\<C>\<rangle>\<close>], of w]  
+  using concat_in_glued_hull[OF dec_in_lists[OF \<open>u \<in> \<langle>\<C>\<rangle>\<close>], of w]
   by (simp add: \<open>u \<in> \<langle>\<C>\<rangle>\<close> \<open>u = \<epsilon> \<or> last (Dec \<C> u) \<noteq> w\<close>)
 
 lemma code_glued_hull_conv: assumes "w \<in> \<C>"
@@ -314,10 +313,10 @@ lemma in_glued_hull_iff:
 
 lemma glued_not_in_glued_hull: "w \<in> \<C> \<Longrightarrow> w \<notin> \<langle>glued_gens w \<C>\<rangle>"
   unfolding in_glued_hull_iff[OF _ gen_in] code_el_dec
-  by (simp add: in_code_nemp)
+  by (simp add: nemp)
 
 lemma glued_gens_nemp: assumes "u \<in> glued_gens w \<C>" shows "u \<noteq> \<epsilon>"
-  using assms by (induction) (auto simp add: in_code_nemp) 
+  using assms by (induction) (auto simp add: nemp)
 
 lemma glued_gens_code: assumes "w \<in> \<C>" shows "code (glued_gens w \<C>)"
 proof
@@ -332,12 +331,12 @@ proof
           and "v' \<in> \<C>" "v' \<noteq> w" "w \<^sup>@ l \<cdot> v' = v"
         using "4.prems"(1-2) by simp (elim conjE in_glued_gensE)
       from this(3, 6) "4.prems" \<open>w \<in> \<C>\<close>
-      have "concat (([w] \<^sup>@ k \<cdot> [u']) \<cdot> (Ref \<C> us)) = concat (([w] \<^sup>@ l \<cdot> [v']) \<cdot> (Ref \<C> vs))" 
-        by (simp add: concat_ref * concat_pow lassoc)
+      have "concat (([w] \<^sup>@ k \<cdot> [u']) \<cdot> (Ref \<C> us)) = concat (([w] \<^sup>@ l \<cdot> [v']) \<cdot> (Ref \<C> vs))"
+        by (simp add: concat_ref * lassoc)
       with \<open>w \<in> \<C>\<close> \<open>u' \<in> \<C>\<close> \<open>v' \<in> \<C>\<close> "4.prems"(1-2)
-      have "[w] \<^sup>@ k \<cdot> [u'] \<bowtie> [w] \<^sup>@ l \<cdot> [v']" 
+      have "[w] \<^sup>@ k \<cdot> [u'] \<bowtie> [w] \<^sup>@ l \<cdot> [v']"
         by (elim eqd_comp[OF is_code, rotated 2])
-        (simp_all add: "*" pow_in_lists ref_in') 
+        (simp_all add: "*" pow_in_lists ref_in')
       with \<open>u' \<noteq> w\<close> \<open>v' \<noteq> w\<close> \<open>w \<^sup>@ k \<cdot> u' = u\<close> \<open>w \<^sup>@ l \<cdot> v' = v\<close>
       have "u = v"
         by (elim sing_pref_comp_mismatch[rotated 2, elim_format]) blast+
@@ -351,14 +350,13 @@ text \<open>A crucial lemma showing the relation between gluing and the decompos
 lemma dec_glued_gens: assumes "w \<in> \<C>" and "u \<in> \<langle>glued_gens w \<C>\<rangle>"
   shows "Dec (glued_gens w \<C>) u = glue w (Dec \<C> u)"
   using \<open>u \<in> \<langle>glued_gens w \<C>\<rangle>\<close> glued_hull_sub_hull'[OF \<open>w \<in> \<C>\<close> \<open>u \<in> \<langle>glued_gens w \<C>\<rangle>\<close>]
-  by (intro code.code_unique_dec glued_gens_code) 
+  by (intro code.code_unique_dec glued_gens_code)
      (simp_all add: in_glued_hull_iff \<open>w \<in> \<C>\<close>)
 
 lemma ref_glue: "us = \<epsilon> \<or> last us \<noteq> w \<Longrightarrow> us \<in> lists \<C> \<Longrightarrow> Ref \<C> (glue w us) = us"
   by (intro refI glue_in_lists_hull) simp_all
 
-end (* end of context code *)
-
+end
 theorem glued_code:
   assumes "code C" and "w \<in> C"
   shows "code {w \<^sup>@ k \<cdot> u |k u. u \<in> C \<and> u \<noteq> w}"
@@ -418,7 +416,7 @@ using assms proof (induction us rule: last_neq_block_induct)
     show thesis using \<open>b \<in> set (glue w ([w] \<^sup>@ k \<cdot> u # us))\<close>
       proof (auto simp add: glue_block_append \<open>u \<noteq> w\<close>)
         show "b = w \<^sup>@ k \<cdot> u \<Longrightarrow> thesis"
-          by (auto simp add: concat_pow intro!: block.prems(1) glue_blockI[OF _ \<open>u \<noteq> w\<close> _ refl])
+          by (auto  intro!: block.prems(1) glue_blockI[OF _ \<open>u \<noteq> w\<close> _ refl])
         show "b \<in> set (glue w us) \<Longrightarrow> thesis"
           by (auto intro!: block.IH[OF block.prems(1)] glue_block_of_block_append \<open>u \<noteq> w\<close>)
       qed
@@ -447,7 +445,7 @@ using assms proof (induction us rule: last_neq_block_induct)
           elim!: in_set_glueE[OF \<open>us = \<epsilon> \<or> last us \<noteq> w\<close>], intro the_equality)
          (simp_all only: the_equality block.prems glue_block_of_block_append[OF \<open>u \<noteq> w\<close>])
     show "concat (map (unglue w ([w] \<^sup>@ k \<cdot> u # us)) (glue w ([w] \<^sup>@ k \<cdot> u # us))) = [w] \<^sup>@ k \<cdot> u # us"
-      by (auto simp add: concat_pow glue_block_append[OF \<open>u \<noteq> w\<close>] * IH
+      by (auto simp add: glue_block_append[OF \<open>u \<noteq> w\<close>] * IH
           intro!: unglueI intro: glue_blockI[OF _ \<open>u \<noteq> w\<close>] block.prems)
 qed simp
 
@@ -470,7 +468,7 @@ lemma bin_glue_blockE:
 lemma unique_bin_glue_blocks:
   assumes "us \<in> lists {x, y}" and "x \<noteq> \<epsilon>"
   shows "glue_block x us bs\<^sub>1 \<Longrightarrow> glue_block x us bs\<^sub>2 \<Longrightarrow> concat bs\<^sub>1 = concat bs\<^sub>2 \<Longrightarrow> bs\<^sub>1 = bs\<^sub>2"
-  by (auto simp: concat_pow eq_pow_exp[OF \<open>x \<noteq> \<epsilon>\<close>] elim!: bin_glue_blockE[OF \<open>us \<in> lists {x, y}\<close>])
+  by (auto simp: eq_pow_exp[OF \<open>x \<noteq> \<epsilon>\<close>] elim!: bin_glue_blockE[OF \<open>us \<in> lists {x, y}\<close>])
 
 lemma prim_bin_glue:
   assumes "us \<in> lists {x, y}" and "x \<noteq> \<epsilon>"

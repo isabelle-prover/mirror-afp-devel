@@ -28,6 +28,9 @@ holub = "holub_email"
 starosta = "starosta_email"
 
 [history]
+2023-08-17 = """
+Updated to version v1.10.1.
+"""
 
 [extra]
 

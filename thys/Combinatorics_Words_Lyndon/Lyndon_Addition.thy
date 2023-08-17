@@ -1,4 +1,4 @@
-(*  Title:      CoW_Lyndon.Lyndon_Addition
+(*  Title:      Combinatorics_Words_Lyndon.Lyndon_Addition
     Author:     Štěpán Holub, Charles University
     Author:     Štěpán Starosta, CTU in Prague
 
@@ -12,7 +12,7 @@ begin
 
 subsection "The minimal relation"
 
-text \<open>We define the minimal relation which guarantees the lexicographic minimality of w compared to its 
+text \<open>We define the minimal relation which guarantees the lexicographic minimality of w compared to its
 nontrivial conjugates.\<close>
 
 inductive_set rotate_rel :: "'a list \<Rightarrow> 'a rel" for w
@@ -28,29 +28,29 @@ proof
     fix  x assume "x \<in> rotate_rel w"
     then obtain n where "x = mismatch_pair w (rotate n w)" and "0 < n" and "n < \<^bold>|w\<^bold>|"
       using rotate_rel.cases by blast
-    have "w <lex rotate n w" 
-      using LyndonD[OF \<open>Lyndon w\<close> \<open>0 < n\<close> \<open>n < \<^bold>|w\<^bold>|\<close>]. 
-    from this[unfolded lexordp_conv_lexord] 
+    have "w <lex rotate n w"
+      using LyndonD[OF \<open>Lyndon w\<close> \<open>0 < n\<close> \<open>n < \<^bold>|w\<^bold>|\<close>].
+    from this[unfolded lexordp_conv_lexord]
       prim_no_rotate[OF Lyndon_prim[OF \<open>Lyndon w\<close>] \<open>0 < n\<close>  \<open>n < \<^bold>|w\<^bold>|\<close>]
-    show "x \<in> {(a, b). a < b}" 
+    show "x \<in> {(a, b). a < b}"
       using lexord_mismatch[of w "rotate n w" "{(a,b). a < b}", folded \<open>x = mismatch_pair w (rotate n w)\<close>]
-        \<open>rotate n w \<noteq> w\<close> rotate_comp_eq[of w n] 
+        \<open>rotate n w \<noteq> w\<close> rotate_comp_eq[of w n]
       unfolding irrefl_def by blast
   qed
 next
-  assume "?R" 
+  assume "?R"
   show "?L"
     unfolding Lyndon.simps
   proof(simp add: assms)
-    have "w <lex rotate n w" if "0 < n"  "n < \<^bold>|w\<^bold>|" for n 
+    have "w <lex rotate n w" if "0 < n"  "n < \<^bold>|w\<^bold>|" for n
     proof-
-      have "\<not> w \<bowtie> rotate n w" 
+      have "\<not> w \<bowtie> rotate n w"
         using rotate_comp_eq[of w n] subsetD[OF \<open>?R\<close>, OF rotate_rel.intros[OF \<open>0 < n\<close> \<open>n < \<^bold>|w\<^bold>|\<close>]]
           mismatch_pair_lcp[of w "rotate n w"] by fastforce
       from mismatch_lexord_linorder[OF this subsetD[OF \<open>?R\<close>, OF rotate_rel.intros[OF \<open>0 < n\<close> \<open>n < \<^bold>|w\<^bold>|\<close>]]]
       show "w <lex rotate n w".
-    qed 
-    thus "\<forall>n. 0 < n \<and> n < \<^bold>|w\<^bold>| \<longrightarrow> w <lex rotate n w"  by blast 
+    qed
+    thus "\<forall>n. 0 < n \<and> n < \<^bold>|w\<^bold>| \<longrightarrow> w <lex rotate n w"  by blast
   qed
 qed
 
@@ -77,10 +77,10 @@ text\<open>Application examples\<close>
 lemma assumes "w \<noteq> \<epsilon>" and "acyclic (rotate_rel w)" shows "primitive w"
 proof-
   obtain r where "strict_linear_order r" and "rotate_rel w \<subseteq> r"
-    using Lyndon_rotate_rel_iff assms by auto
+    using Lyndon_rotate_rel_iff assms by blast
 
-  interpret r: linorder "\<lambda> a b. (a,b) \<in> r\<^sup>=" "\<lambda> a b. (a,b) \<in> r" 
-    using slo_linorder[OF \<open>strict_linear_order r\<close>]. 
+  interpret r: linorder "\<lambda> a b. (a,b) \<in> r\<^sup>=" "\<lambda> a b. (a,b) \<in> r"
+    using slo_linorder[OF \<open>strict_linear_order r\<close>].
 
   have "r.Lyndon w"
     using r.rotate_rel_iff[OF \<open>w \<noteq> \<epsilon>\<close>] \<open>rotate_rel w \<subseteq> r\<close> by blast
@@ -93,10 +93,10 @@ qed
 lemma assumes "w \<noteq> \<epsilon>" and "acyclic (rotate_rel w)" shows "\<not> bordered w"
 proof-
   obtain r where "strict_linear_order r" and "rotate_rel w \<subseteq> r"
-    using Lyndon_rotate_rel_iff assms by auto
+    using Lyndon_rotate_rel_iff assms by blast
 
-  interpret r: linorder "\<lambda> a b. (a,b) \<in> r\<^sup>=" "\<lambda> a b. (a,b) \<in> r" 
-    using slo_linorder[OF \<open>strict_linear_order r\<close>]. 
+  interpret r: linorder "\<lambda> a b. (a,b) \<in> r\<^sup>=" "\<lambda> a b. (a,b) \<in> r"
+    using slo_linorder[OF \<open>strict_linear_order r\<close>].
 
   have "r.Lyndon w"
     using r.rotate_rel_iff[OF \<open>w \<noteq> \<epsilon>\<close>] \<open>rotate_rel w \<subseteq> r\<close> by blast

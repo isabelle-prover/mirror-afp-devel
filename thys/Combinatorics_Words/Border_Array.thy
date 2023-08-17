@@ -1,5 +1,5 @@
 (*  Title:      Border Array
-    File:       CoW.Border_Array
+    File:       Combinatorics_Words.Border_Array
     Author:     Štěpán Holub, Charles University
 
 Part of Combinatorics on Words Formalized. See https://gitlab.com/formalcow/combinatorics-on-words-formalized/
@@ -12,12 +12,11 @@ imports
 
 begin
 
-
 subsection \<open>Auxiliary lemmas on suffix and border extension\<close>
 
-lemma border_ConsD: assumes "b#x \<le>b a#w" 
-  shows "a = b" and 
-        "x \<noteq> \<epsilon> \<Longrightarrow> x \<le>b w" and 
+lemma border_ConsD: assumes "b#x \<le>b a#w"
+  shows "a = b" and
+        "x \<noteq> \<epsilon> \<Longrightarrow> x \<le>b w" and
         border_ConsD_neq: "x \<noteq> w" and
         border_ConsD_pref: "x \<le>p w" and
         border_ConsD_suf: "x \<le>s w"
@@ -37,7 +36,7 @@ lemma ext_suf_Cons:
 proof-
   assume "Suc i + \<^bold>|u\<^bold>| = \<^bold>|w\<^bold>|" and "u \<le>s w"
   hence "u = drop (Suc i) w"
-    unfolding suf_def using \<open>Suc i + \<^bold>|u\<^bold>| = \<^bold>|w\<^bold>|\<close> by auto 
+    unfolding suffix_def using \<open>Suc i + \<^bold>|u\<^bold>| = \<^bold>|w\<^bold>|\<close> by auto
   have "i < \<^bold>|w\<^bold>|"
     using \<open>Suc i + \<^bold>|u\<^bold>| = \<^bold>|w\<^bold>|\<close> by auto
   from id_take_nth_drop[OF this, folded \<open>u = drop (Suc i) w\<close>]
@@ -87,7 +86,7 @@ proof (cases "(Suc k) + i < \<^bold>|w\<^bold>|", simp_all)
   show ?thesis
     unfolding \<open>(drop i w)!(\<^bold>|w\<^bold>| - Suc i - k) = w ! i\<close>
       \<open>take (Suc k) (drop i w) = w!i#take k (drop (Suc i) w)\<close>
-    unfolding suf_def by auto
+    unfolding suffix_def by auto
 qed
 
 lemma ext_border_Cons:
@@ -101,7 +100,7 @@ proof-
   then obtain v' where "v = a#v'"
     using  borderD_pref[OF \<open>v \<le>b (a#w)\<close>, unfolded prefix_Cons] by blast
   show "\<^bold>|v\<^bold>| \<le> Suc \<^bold>|u\<^bold>|"
-  proof (cases "v' = \<epsilon>", simp add: \<open>v = a#v'\<close>)
+  proof (cases "v' = \<epsilon>")
     assume "v' \<noteq> \<epsilon>"
     have "w \<noteq> \<epsilon>"
       using  borderedI[OF \<open>v \<le>b (a#w)\<close>] sing_not_bordered[of a] by blast
@@ -111,7 +110,7 @@ proof-
       unfolding \<open>v = a # v'\<close> length_Cons Suc_le_mono
       using \<open>max_borderP u w\<close>[unfolded max_borderP_def]
         prefix_length_le by blast
-  qed
+  qed (simp add: \<open>v = a#v'\<close>)
 qed
 
 section \<open>Computing the Border Array\<close>
@@ -123,74 +122,78 @@ text\<open>
 \<^item> w: processed word does not change; it is processed starting from the last letter
 \<^item> pos: actually examined pos-th letter; that is, it is w!(pos-1)
 \<^item> arr: already calculated suffix-border-array of w;
-       that is, the length of array is (|w| - pos) 
+       that is, the length of array is (|w| - pos)
        and arr!(|w| - pos - bord) is the max border length of the suffix of w of length bord
 \<^item> bord: length of the current max border length candidate
        to see whether it can be extended we compare: w!(pos-1) ?= w!(|w| - (Suc bord));
        (Suc bord) is the length of the max border if the comparison is succesful
-\<^item>      if the comparison fails we move to the max border of the suffix of length bord; 
+\<^item>      if the comparison fails we move to the max border of the suffix of length bord;
        its max border length is stored in arr!(|w| - pos - bord)
-\<^item>      if bord was 0 and the comparison failed, the word is unbordered  
+\<^item>      if bord was 0 and the comparison failed, the word is unbordered
 \<close>
 
 fun   KMP_arr :: "'a list \<Rightarrow> nat list \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat list"
-  and KMP_bord :: "'a list \<Rightarrow> nat list \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat"  
-  and KMP_pos :: "'a list \<Rightarrow> nat list \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat"  
-  where
-    "KMP_arr _ arr _ 0 = arr" |
-    "KMP_bord _ _ bord 0 = bord" |
-    "KMP_pos _ _ _ 0 = 0" |
-    "KMP_arr w arr bord (Suc i) = 
-          (if w!i = w!(\<^bold>|w\<^bold>| - (Suc bord)) 
-          then  (Suc bord) # arr 
+  where    "KMP_arr _ arr _ 0 = arr" |
+    "KMP_arr w arr bord (Suc i) =
+          (if w!i = w!(\<^bold>|w\<^bold>| - (Suc bord))
+          then  (Suc bord) # arr
           else (if bord = 0
                 then  0#arr
-                else (if (arr!(\<^bold>|w\<^bold>| - (Suc i) - bord)) < bord
-                      then arr 
+                else (if (arr!(\<^bold>|w\<^bold>| - (Suc i) - bord)) < bord \<comment> \<open>always True, for sake of termination\<close>
+                      then arr
                       else  undefined#arr \<comment> \<open>else: dummy termination condition\<close>
-                      )  
-                ) 
-          )" |
-    "KMP_bord w arr bord (Suc i) = 
-          (if w!i = w!(\<^bold>|w\<^bold>| - (Suc bord)) 
+                      )
+                )
+          )"
+
+fun KMP_bord :: "'a list \<Rightarrow> nat list \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat"
+  where     "KMP_bord _ _ bord 0 = bord" |
+    "KMP_bord w arr bord (Suc i) =
+          (if w!i = w!(\<^bold>|w\<^bold>| - (Suc bord))
           then Suc bord
           else (if bord = 0
                  then  0
-                 else (if (arr!(\<^bold>|w\<^bold>| - (Suc i) - bord)) < bord
-                       then arr!(\<^bold>|w\<^bold>| - (Suc i) - bord) 
-                       else  0 \<comment> \<open>else: dummy termination condition\<close>
-                      )  
-                 ) 
-          )" |
-    "KMP_pos w arr bord (Suc i) = 
-          (if w!i = w!(\<^bold>|w\<^bold>| - (Suc bord)) 
+                 else (if (arr!(\<^bold>|w\<^bold>| - (Suc i) - bord)) < bord \<comment> \<open>always True, for sake of termination\<close>
+                       then arr!(\<^bold>|w\<^bold>| - (Suc i) - bord)
+                       else  0 \<comment> \<open>dummy termination condition\<close>
+                      )
+                 )
+          )"
+
+fun KMP_pos :: "'a list \<Rightarrow> nat list \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat"
+  where
+    "KMP_pos _ _ _ 0 = 0" |
+    "KMP_pos w arr bord (Suc i) =
+          (if w!i = w!(\<^bold>|w\<^bold>| - (Suc bord))
           then i
           else (if bord = 0
                  then  i
-                 else (if (arr!(\<^bold>|w\<^bold>| - (Suc i) - bord)) < bord
-                       then Suc i 
+                 else (if (arr!(\<^bold>|w\<^bold>| - (Suc i) - bord)) < bord \<comment> \<open>always True, for sake of termination\<close>
+                       then Suc i
                        else  i \<comment> \<open>else: dummy termination condition\<close>
-                      )  
-                 ) 
-          )" 
+                      )
+                 )
+          )"
+
+thm prod_cases
+    nat.exhaust
+    prod.exhaust
+    prod_cases3
 
 function KMP :: "'a list \<Rightarrow> nat list \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat list" where
   "KMP w arr bord 0 = arr"  |
-  "KMP w arr bord (Suc i) = KMP w (KMP_arr w arr bord (Suc i)) (KMP_bord w arr bord (Suc i)) (KMP_pos w arr bord (Suc i))" 
+  "KMP w arr bord (Suc i) = KMP w (KMP_arr w arr bord (Suc i)) (KMP_bord w arr bord (Suc i)) (KMP_pos w arr bord (Suc i))"
   using not0_implies_Suc by (force+)
-termination 
+termination
   by (relation "measures [\<lambda>(_, _ , compar, pos). pos,\<lambda>(_, _ , compar, pos). compar]", simp_all)
 
 lemma KMP_len: "\<^bold>|KMP w arr bord pos\<^bold>| = \<^bold>|arr\<^bold>| + pos"
-proof (induct rule: KMP.induct[of "\<lambda> w arr bord pos. \<^bold>|KMP w arr bord pos\<^bold>| = \<^bold>|arr\<^bold>| + pos"], simp)
-  case (2 w arr bord i)
-  then show ?case using KMP.simps(2)[of w arr bord i] by force
-qed
+  by (induct w arr bord pos rule: KMP.induct, auto)
 
 value[nbe] "KMP [a] [0] 0 0"
 
 value "KMP [ 0::nat] [0] 0 0"
-value "KMP [5,4::nat,5,3,5,5] [0] 0 5"
+value "KMP [5,4,5,3,5,5::nat] [0] 0 5"
 value "KMP [5,4::nat,5,3,5,5] [1,0] 1 4"
 value "KMP [0,1,1,0::nat,0,0,1,1,1] [0] 0 8"
 value "KMP [0::nat,1] [0] 0 1"
@@ -199,13 +202,13 @@ subsection \<open>Verification of the computation\<close>
 
 definition KMP_valid :: "'a list \<Rightarrow> nat list \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool"
   where "KMP_valid w arr bord pos = (\<^bold>|arr\<^bold>| + pos = \<^bold>|w\<^bold>|  \<and>
-                                    \<comment> \<open>bord is the length of a border of (drop pos w), or 0\<close>    
-                                    pos + bord < \<^bold>|w\<^bold>| \<and> 
+                                    \<comment> \<open>bord is the length of a border of (drop pos w), or 0\<close>
+                                    pos + bord < \<^bold>|w\<^bold>| \<and>
                                     take bord (drop pos w) \<le>p (drop pos w) \<and>
-                                    take bord (drop pos w) \<le>s (drop pos w) \<and>  
+                                    take bord (drop pos w) \<le>s (drop pos w) \<and>
                                     \<comment> \<open>... and no longer border can be extended\<close>
-                                    (\<forall> v. v \<le>b w!(pos - 1)#(drop pos w) \<longrightarrow> \<^bold>|v\<^bold>| \<le> Suc bord) \<and>  
-                                    \<comment> \<open>the array gives maximal border lengths of corresponding suffixes\<close>   
+                                    (\<forall> v. v \<le>b w!(pos - 1)#(drop pos w) \<longrightarrow> \<^bold>|v\<^bold>| \<le> Suc bord) \<and>
+                                    \<comment> \<open>the array gives maximal border lengths of corresponding suffixes\<close>
                                     (\<forall> k < \<^bold>|arr\<^bold>|. max_borderP (take (arr!k) (drop (pos + k) w)) (drop (pos + k) w))
                                     )"
 
@@ -214,7 +217,7 @@ lemma " KMP_valid w arr bord pos  \<Longrightarrow> w \<noteq> \<epsilon>"
   using le_antisym less_imp_le_nat less_not_refl2 take_Nil take_all_iff by metis
 
 lemma KMP_valid_base: assumes "w \<noteq> \<epsilon>" shows "KMP_valid w [0] 0 (\<^bold>|w\<^bold>|-1)"
-proof (unfold KMP_valid_def, intro conjI) 
+proof (unfold KMP_valid_def, intro conjI)
   show "\<^bold>|[0]\<^bold>| + (\<^bold>|w\<^bold>| - 1) = \<^bold>|w\<^bold>|"
     by (simp add: assms)
   show "\<^bold>|w\<^bold>| - 1 + 0 < \<^bold>|w\<^bold>|"
@@ -234,20 +237,19 @@ proof (unfold KMP_valid_def, intro conjI)
   qed
   have  "\<^bold>|w\<^bold>| - Suc 0 = \<^bold>|butlast w\<^bold>|"
     by simp
+  have all: "\<forall>v. v \<le>b [last w] \<longrightarrow> v \<le>p \<epsilon>"
+      by (meson borderedI sing_not_bordered)
   have "butlast w \<cdot> [last w] = w"
     by (simp add: assms)
   hence last:  "drop (\<^bold>|w\<^bold>| - Suc 0) w = [last w]"
-    unfolding \<open>\<^bold>|w\<^bold>| - Suc 0 = \<^bold>|butlast w\<^bold>|\<close> using drop_pref by metis  
-  show "\<forall>k<\<^bold>|[0]\<^bold>|. max_borderP (take ([0] ! k) (drop (\<^bold>|w\<^bold>| - 1 + k) w)) (drop (\<^bold>|w\<^bold>| - 1 + k) w)"
-  proof (simp add: last, unfold max_borderP_def)
-    have "\<forall>v. v \<le>b [last w] \<longrightarrow> v \<le>p \<epsilon>"
-      by (meson borderedI sing_not_bordered)
-    thus "\<epsilon> \<le>p [last w] \<and> \<epsilon> \<le>s [last w] \<and> (\<epsilon> = [last w] \<longrightarrow> [last w] = \<epsilon>) \<and> (\<forall>v. v \<le>b [last w] \<longrightarrow> v \<le>p \<epsilon>)"
-      by simp
-  qed
+    unfolding \<open>\<^bold>|w\<^bold>| - Suc 0 = \<^bold>|butlast w\<^bold>|\<close> using drop_pref by metis
+  hence "max_borderP \<epsilon> (drop (\<^bold>|w\<^bold>| - Suc 0) w)"
+    unfolding max_borderP_def using all by simp
+  thus "\<forall>k<\<^bold>|[0]\<^bold>|. max_borderP (take ([0] ! k) (drop (\<^bold>|w\<^bold>| - 1 + k) w)) (drop (\<^bold>|w\<^bold>| - 1 + k) w)"
+    by simp
 qed
 
-lemma KMP_valid_step: assumes "KMP_valid w arr bord (Suc i)" 
+lemma KMP_valid_step: assumes "KMP_valid w arr bord (Suc i)"
   shows "KMP_valid  w (KMP_arr w arr bord (Suc i)) (KMP_bord w arr bord (Suc i)) (KMP_pos w arr bord (Suc i))"
 proof-
   \<comment> \<open>Consequences of the assumption\<close>
@@ -262,24 +264,24 @@ proof-
     all_k_pref: "\<And> k. k < \<^bold>|arr\<^bold>| \<Longrightarrow> take (arr ! k) (drop (Suc i + k) w) \<le>p drop (Suc i + k) w" and
     all_k_suf: "\<And> k. k < \<^bold>|arr\<^bold>| \<Longrightarrow> take (arr ! k) (drop (Suc i + k) w) \<le>s drop (Suc i + k) w" and
     all_k_v: "\<And> k v. k < \<^bold>|arr\<^bold>| \<Longrightarrow> v \<le>b drop (Suc i + k) w \<Longrightarrow> v \<le>p take (arr ! k) (drop (Suc i + k) w)"
-    using assms[unfolded KMP_valid_def max_borderP_def diff_Suc_1] by blast+ 
+    using assms[unfolded KMP_valid_def max_borderP_def diff_Suc_1] by blast+
   have all_k_neq: "\<And> k. k < \<^bold>|arr\<^bold>| \<Longrightarrow> take (arr ! k) (drop (Suc i + k) w) \<noteq> drop (Suc i + k) w"
     using \<open>Suc i + bord < \<^bold>|w\<^bold>|\<close> \<open>\<^bold>|arr\<^bold>| + Suc i = \<^bold>|w\<^bold>|\<close> all_k_neq0
-    add.commute add_le_imp_le_left drop_all_iff le_antisym less_imp_le_nat less_not_refl2 by metis 
+    add.commute add_le_imp_le_left drop_all_iff le_antisym less_imp_le_nat less_not_refl2 by metis
 
-  have "w \<noteq> \<epsilon>" 
+  have "w \<noteq> \<epsilon>"
     using \<open>\<^bold>|arr\<^bold>| + Suc i = \<^bold>|w\<^bold>|\<close> by auto
   have "Suc i < \<^bold>|w\<^bold>|"
     using \<open>Suc i + bord < \<^bold>|w\<^bold>|\<close>  by simp
   have pop_i: "drop i w = (w!i)# (drop (Suc i) w)"
     by (simp add: Cons_nth_drop_Suc Suc_lessD \<open>Suc i < \<^bold>|w\<^bold>|\<close>)
   have "drop (Suc i) w \<noteq> \<epsilon>"
-    using \<open>Suc i < \<^bold>|w\<^bold>|\<close> by fastforce  
+    using \<open>Suc i < \<^bold>|w\<^bold>|\<close> by fastforce
   have "Suc i + (\<^bold>|w\<^bold>| - Suc i - bord) = \<^bold>|w\<^bold>| - bord"
     unfolding diff_right_commute[of _ _ bord] using \<open>Suc i + bord < \<^bold>|w\<^bold>|\<close>  by linarith
 
   show "KMP_valid  w (KMP_arr w arr bord (Suc i)) (KMP_bord w arr bord (Suc i)) (KMP_pos w arr bord (Suc i))"
-  proof (cases "w ! i = w ! (\<^bold>|w\<^bold>| - Suc bord)") 
+  proof (cases "w ! i = w ! (\<^bold>|w\<^bold>| - Suc bord)")
     assume match: "w ! i = w ! (\<^bold>|w\<^bold>| - Suc bord)" \<comment> \<open>The current candidate is extendable\<close>
     show ?thesis
     proof (unfold KMP_valid_def KMP_arr.simps KMP_bord.simps KMP_pos.simps if_P[OF match], intro conjI)
@@ -293,28 +295,29 @@ proof-
         using \<open>take bord (drop (Suc i) w) \<le>s drop (Suc i) w\<close> ext_suf_Cons_take_drop match by blast
           \<comment> \<open>The new border array is correct\<close>
       show all_k_new: "\<forall>k<\<^bold>|Suc bord # arr\<^bold>|. max_borderP (take ((Suc bord # arr) ! k) (drop (i + k) w)) (drop (i + k) w)"
-      proof (rule allI, rule impI)       
+      proof (rule allI, rule impI)
         fix k assume "k < \<^bold>|Suc bord # arr\<^bold>|"
         show "max_borderP (take ((Suc bord # arr) ! k) (drop (i + k) w)) (drop (i + k) w)"
         proof (cases "0 < k")
           assume "0 < k" \<comment> \<open>old entries are valid:\<close>
           thus ?thesis using all_k
             by (metis Suc_less_eq \<open>k < \<^bold>|Suc bord # arr\<^bold>|\<close> add.right_neutral add_Suc_shift gr0_implies_Suc list.size(4) nth_Cons_Suc)
-        next 
-          assume "\<not> 0 < k" hence "k = 0" by simp 
+        next
+          assume "\<not> 0 < k" hence "k = 0" by simp
           show ?thesis \<comment> \<open>the extended border is maximal:\<close>
-          proof (simp add: \<open>k = 0\<close>, unfold max_borderP_def, intro conjI)
-            show "take (Suc bord) (drop i w) = drop i w \<longrightarrow> drop i w = \<epsilon>"
+            unfolding max_borderP_def \<open>k = 0\<close>
+          proof (intro conjI)
+            show "take ((Suc bord # arr) ! 0) (drop (i + 0) w) = drop (i + 0) w \<longrightarrow> drop (i + 0) w = \<epsilon>"
               using \<open>i + Suc bord < \<^bold>|w\<^bold>|\<close> by fastforce
-            show "take (Suc bord) (drop i w) \<le>p drop i w"
-              using \<open>take (Suc bord) (drop i w) \<le>p drop i w\<close> by blast
-            show "take (Suc bord) (drop i w) \<le>s drop i w" by fact
-            show "\<forall>v. v \<le>b drop i w \<longrightarrow> v \<le>p take (Suc bord) (drop i w)"
+            show "take ((Suc bord # arr) ! 0) (drop (i + 0) w) \<le>p drop (i + 0) w"
+              using \<open>take (Suc bord) (drop i w) \<le>p drop i w\<close> by auto
+            show "take ((Suc bord # arr) ! 0) (drop (i + 0) w) \<le>s drop (i + 0) w"
+              by simp fact
+            show "\<forall>v. v \<le>b drop (i + 0) w \<longrightarrow> v \<le>p take ((Suc bord # arr) ! 0) (drop (i + 0) w)"
             proof (rule allI, rule impI)
-              fix v assume "v \<le>b drop i w"
+              fix v assume "v \<le>b drop (i + 0) w" hence "v \<le>b drop i w" by simp
               from borderD_pref[OF this] up_bord[OF this[unfolded pop_i]]
-              (* have "v \<le>p drop i w". *)
-              show "v \<le>p take (Suc bord) (drop i w)"
+              show "v \<le>p take ((Suc bord # arr) ! 0) (drop (i + 0) w)"
                  unfolding prefix_def by force
             qed
           qed
@@ -325,9 +328,9 @@ proof-
         using  all_k_new[rule_format, of 0, unfolded length_Cons nth_Cons_0 add_0_right, OF zero_less_Suc].
       from border_add_Cons_len[OF this] max_borderP_D_max[OF this] max_borderP_D_neq[OF _ this]
       show "\<forall>v. v \<le>b w ! (i - 1) # drop i w \<longrightarrow> \<^bold>|v\<^bold>| \<le> Suc (Suc bord)"
-        using nat_le_linear take_all take_len list.discI pop_i by metis 
+        using nat_le_linear take_all take_len list.discI pop_i by metis
     qed
-  next 
+  next
     assume mismatch: "w ! i \<noteq> w ! (\<^bold>|w\<^bold>| - Suc bord)" \<comment> \<open>The current candidate is not extendable\<close>
     show ?thesis
     proof (cases "bord = 0")
@@ -335,8 +338,8 @@ proof-
         let ?k  =  "\<^bold>|w\<^bold>| - Suc i - bord" and
             ?w' = "drop (Suc i) w"
         have "?k < \<^bold>|arr\<^bold>|"
-        using \<open>Suc i + bord < \<^bold>|w\<^bold>|\<close> \<open>\<^bold>|arr\<^bold>| + Suc i = \<^bold>|w\<^bold>|\<close> \<open>bord \<noteq> 0\<close> by linarith 
-      from all_k_neq[OF this] 
+        using \<open>Suc i + bord < \<^bold>|w\<^bold>|\<close> \<open>\<^bold>|arr\<^bold>| + Suc i = \<^bold>|w\<^bold>|\<close> \<open>bord \<noteq> 0\<close> by linarith
+      from all_k_neq[OF this]
       have "arr ! ?k < bord" \<comment> \<open>... which is stored in the array, and is shorter\<close>
         by (simp add: \<open>take (arr ! ?k) (drop (Suc i + ?k) w) \<noteq> drop (Suc i + ?k) w\<close> \<open>Suc i + ?k = \<^bold>|w\<^bold>| - bord\<close> \<open>Suc i + bord < \<^bold>|w\<^bold>|\<close> add_diff_inverse_nat diff_add_inverse2 gr0I less_diff_conv nat_diff_split_asm )
         let ?old_pref = "take bord ?w'" and
@@ -348,7 +351,7 @@ proof-
           using \<open>\<^bold>|arr\<^bold>| + Suc i = \<^bold>|w\<^bold>|\<close> by auto
         show "Suc i + arr ! ?k < \<^bold>|w\<^bold>|"
           using \<open>Suc i + bord < \<^bold>|w\<^bold>|\<close> \<open>arr ! ?k < bord\<close> by linarith
-        show "take (arr ! ?k) (drop (Suc i) w) \<le>p drop (Suc i) w"    
+        show "take (arr ! ?k) (drop (Suc i) w) \<le>p drop (Suc i) w"
           using take_is_prefix by blast
 
         \<comment> \<open>Next goal: the new border is a suffix\<close>
@@ -356,11 +359,11 @@ proof-
         have "?old_suf \<le>s ?w'"
           by (meson \<open>Suc i + bord < \<^bold>|w\<^bold>|\<close> le_suf_drop less_diff_conv nat_less_le)
         have "\<^bold>|?old_pref\<^bold>| = bord"
-          using \<open>Suc i + bord < \<^bold>|w\<^bold>|\<close> take_len len_after_drop nat_less_le by blast 
+          using \<open>Suc i + bord < \<^bold>|w\<^bold>|\<close> take_len len_after_drop nat_less_le by blast
         also have "... = \<^bold>|?old_suf\<^bold>|"
-          using \<open>Suc i + bord < \<^bold>|w\<^bold>|\<close>  by simp 
+          using \<open>Suc i + bord < \<^bold>|w\<^bold>|\<close>  by simp
         ultimately have eq1: "?old_pref = ?old_suf" \<comment> \<open>bord defines a border\<close>
-          using \<open>take bord (drop (Suc i) w) \<le>s drop (Suc i) w\<close> \<open>drop (\<^bold>|w\<^bold>| - bord) w \<le>s drop (Suc i) w\<close> suf_ruler_eq_len by metis 
+          using \<open>take bord (drop (Suc i) w) \<le>s drop (Suc i) w\<close> \<open>drop (\<^bold>|w\<^bold>| - bord) w \<le>s drop (Suc i) w\<close> suf_ruler_eq_len by metis
 
 
         have "\<^bold>|?new_pref\<^bold>| = arr!?k"
@@ -368,12 +371,12 @@ proof-
         have "take (arr ! ?k) ?old_suf \<le>p ?old_pref"
           using take_is_prefix \<open>?old_pref = ?old_suf\<close> by metis
         from pref_take[OF pref_trans[OF this take_is_prefix], unfolded \<open>\<^bold>|?new_pref\<^bold>| = arr!?k\<close>, symmetric]
-        have "take (arr ! ?k) ?old_suf = take (arr ! ?k) ?w'" 
+        have "take (arr ! ?k) ?old_suf = take (arr ! ?k) ?w'"
           using take_len \<open>arr ! ?k < bord\<close> \<open>bord = \<^bold>|drop (\<^bold>|w\<^bold>| - bord) w\<^bold>|\<close> less_imp_le_nat by metis
         from all_k_suf[OF \<open>?k < \<^bold>|arr\<^bold>|\<close>, unfolded \<open>Suc i + ?k = \<^bold>|w\<^bold>| - bord\<close>] this
         have "take (arr ! ?k) ?w' \<le>s ?old_suf" by simp \<comment> \<open>The new prefix is a suffix of the old suffix\<close>
 
-        with \<open>?old_pref \<le>s ?w'\<close>[unfolded \<open>?old_pref = ?old_suf\<close>] 
+        with \<open>?old_pref \<le>s ?w'\<close>[unfolded \<open>?old_pref = ?old_suf\<close>]
         show "take (arr ! ?k) ?w' \<le>s ?w'"
           using suf_trans by blast
 
@@ -382,16 +385,16 @@ proof-
               using \<open>bord \<noteq> 0\<close> \<open>\<^bold>|?old_pref\<^bold>| = bord\<close> by force
             moreover have "?old_pref \<noteq> ?w'"
               using \<open>Suc i + bord < \<^bold>|w\<^bold>|\<close>
-              by (intro lenarg_not, unfold length_drop \<open>\<^bold>|take bord ?w'\<^bold>| = bord\<close>, linarith)  
+              by (intro lenarg_not, unfold length_drop \<open>\<^bold>|take bord ?w'\<^bold>| = bord\<close>, linarith)
             ultimately have "?old_pref \<le>b ?w'" \<comment> \<open>bord is the length of a border\<close>
-              by (intro borderI[OF bord_pref bord_suf]) 
- 
+              by (intro borderI[OF bord_pref bord_suf])
+
         \<comment> \<open>We want to prove that the new border is the longest candidate\<close>
            show "\<forall>v. v \<le>b w !i # ?w' \<longrightarrow> \<^bold>|v\<^bold>| \<le> Suc (arr ! ?k)"
              proof (rule allI,rule impI)
                have extendable: "w ! i # v' \<le>b w ! i # ?w' \<Longrightarrow> v' \<noteq> \<epsilon> \<Longrightarrow> \<^bold>|v'\<^bold>| \<le> arr ! ?k" for v' \<comment> \<open>First consider a border of w', which is extendable\<close>
-               proof-  
-                 assume "w!i # v' \<le>b w!i # ?w'" and "v' \<noteq> \<epsilon>"   
+               proof-
+                 assume "w!i # v' \<le>b w!i # ?w'" and "v' \<noteq> \<epsilon>"
                  from suf_trans[OF borderD_suf[OF \<open>w!i # v' \<le>b w ! i # ?w'\<close>, folded pop_i] suffix_drop]
                  have "w!i # v' \<le>s w".
                  from this[unfolded suf_drop_conv, THEN nth_via_drop] mismatch
@@ -400,44 +403,44 @@ proof-
                  with up_bord[OF \<open>w!i # v' \<le>b w ! i # ?w'\<close>]
                  have "\<^bold>|v'\<^bold>| < bord"  \<comment> \<open>It is shorter than the old candidate border\<close>
                    by simp
-                 from border_ConsD(2)[OF \<open>w!i # v' \<le>b w ! i # ?w'\<close> \<open>v' \<noteq> \<epsilon>\<close>] 
+                 from border_ConsD(2)[OF \<open>w!i # v' \<le>b w ! i # ?w'\<close> \<open>v' \<noteq> \<epsilon>\<close>]
                  have "v' \<le>b ?w'".
                  from borders_compare[OF \<open>?old_pref \<le>b ?w'\<close> this, unfolded  \<open>\<^bold>|?old_pref\<^bold>| = bord\<close>, unfolded \<open>?old_pref = ?old_suf\<close>, OF \<open>\<^bold>|v'\<^bold>| < bord\<close>]
                  have "v' \<le>b ?old_suf". \<comment> \<open>... and therefore its border\<close>
                  from prefix_length_le[OF max_borderP_D_max[OF all_k[rule_format, OF \<open>?k < \<^bold>|arr\<^bold>|\<close>], unfolded \<open>Suc i + ?k = \<^bold>|w\<^bold>| - bord\<close>, OF this]]
                  show "\<^bold>|v'\<^bold>| \<le> arr!?k" \<comment> \<open>... and hence short\<close>
-                   using len_take1[of "arr!?k", of w] by simp 
+                   using len_take1[of "arr!?k", of w] by simp
                qed
-            fix v assume "v \<le>b w!i # ?w'"  \<comment> \<open>Now consider a border of the extended word\<close> 
+            fix v assume "v \<le>b w!i # ?w'"  \<comment> \<open>Now consider a border of the extended word\<close>
             show "\<^bold>|v\<^bold>| \<le> Suc (arr ! ?k)"
-            proof (cases "\<^bold>|v\<^bold>| \<le> Suc 0", simp, drule not_le_imp_less)   
-              assume "Suc 0 < \<^bold>|v\<^bold>|"
-              from hd_tl_longE[OF this] 
+            proof (cases "\<^bold>|v\<^bold>| \<le> Suc 0")
+              assume "\<not> \<^bold>|v\<^bold>| \<le> Suc 0" hence "Suc 0 < \<^bold>|v\<^bold>|" by simp
+              from hd_tl_longE[OF this]
               obtain a v' where "v = a#v'" and "v' \<noteq> \<epsilon>"
                 by blast
               with borderD_pref[OF \<open>v \<le>b w!i # ?w'\<close>, unfolded prefix_Cons]
-              have "v = w!i#v'" 
+              have "v = w!i#v'"
                 by simp
               from extendable[OF \<open>v \<le>b w!i # ?w'\<close>[unfolded \<open>v = w!i#v'\<close>] \<open>v' \<noteq> \<epsilon>\<close>]
               show ?thesis
-                by (simp add: \<open>v = a # v'\<close>) 
-          qed
+                by (simp add: \<open>v = a # v'\<close>)
+          qed simp
         qed
         show " \<forall>k<\<^bold>|arr\<^bold>|. max_borderP (take (arr ! k) (drop (Suc i + k) w)) (drop (Suc i + k) w)"
           using all_k by blast
       qed
     next
       assume "bord = 0" \<comment> \<open>End of recursion.\<close>
-      show ?thesis 
+      show ?thesis
       proof (unfold KMP_valid_def KMP_arr.simps KMP_bord.simps KMP_pos.simps if_not_P[OF mismatch] if_P[OF \<open>bord = 0\<close>], intro conjI)
         show "\<^bold>|0 # arr\<^bold>| + i = \<^bold>|w\<^bold>|"
-          using \<open>\<^bold>|arr\<^bold>| + Suc i = \<^bold>|w\<^bold>|\<close> by auto 
+          using \<open>\<^bold>|arr\<^bold>| + Suc i = \<^bold>|w\<^bold>|\<close> by auto
         show "i + 0 < \<^bold>|w\<^bold>|"
           by (simp add: Suc_lessD \<open>Suc i < \<^bold>|w\<^bold>|\<close>)
         show "take 0 (drop i w) \<le>p drop i w"
           by simp
         show "take 0 (drop i w) \<le>s drop i w"
-          using ext_suf_Cons_take_drop by simp 
+          using ext_suf_Cons_take_drop by simp
             \<comment> \<open>The extension is unbordered\<close>
         have "max_borderP \<epsilon> (drop i w)"
         proof(rule ccontr)
@@ -450,10 +453,10 @@ proof-
           have "[a] \<le>b drop i w".
           from borderD_pref[OF this]
           have "w!i = a"
-            by (simp add: pop_i)        
+            by (simp add: pop_i)
           moreover have "w!(\<^bold>|w\<^bold>| - 1) = a"
-            using  borderD_suf[OF \<open>[a] \<le>b drop i w\<close>] nth_via_drop sing_len suf_drop_conv suf_share_take suffix_drop suffix_length_le by metis 
-          ultimately show False 
+            using  borderD_suf[OF \<open>[a] \<le>b drop i w\<close>] nth_via_drop sing_len suf_drop_conv suf_share_take suffix_drop suffix_length_le by metis
+          ultimately show False
             using mismatch[unfolded \<open>bord = 0\<close>] by simp
         qed
         thus "\<forall>v. v \<le>b w ! (i - 1) # drop i w \<longrightarrow> \<^bold>|v\<^bold>| \<le> Suc 0"
@@ -467,10 +470,10 @@ proof-
             assume "0 < k"
             thus ?thesis using all_k
               by (metis Suc_less_eq \<open>k < \<^bold>|0 # arr\<^bold>|\<close> add.right_neutral add_Suc_shift gr0_implies_Suc list.size(4) nth_Cons_Suc)
-          next 
+          next
             assume "\<not> 0 < k" hence "k = 0" by simp
             thus ?thesis
-              using \<open>max_borderP \<epsilon> (drop i w)\<close> by auto 
+              using \<open>max_borderP \<epsilon> (drop i w)\<close> by auto
           qed
         qed
       qed
@@ -478,24 +481,19 @@ proof-
   qed
 qed
 
-lemma KMP_valid_max:  "\<forall> k. KMP_valid w arr bord pos \<longrightarrow> k < \<^bold>|w\<^bold>| \<longrightarrow> max_borderP (take ((KMP w arr bord pos)!k) (drop k w)) (drop k w)"
-proof (induct
-    rule: KMP.induct[of "\<lambda> w arr bord pos. 
-(\<forall> k. KMP_valid w arr bord pos \<longrightarrow> k < \<^bold>|w\<^bold>| \<longrightarrow> max_borderP (take ((KMP w arr bord pos)!k) (drop k w)) (drop k w))"]
-      )
-  case (1 w arr bord)
-  then show ?case  
-    unfolding KMP.simps KMP_valid_def by simp
-next
+lemma KMP_valid_max: assumes  "KMP_valid w arr bord pos" "k < \<^bold>|w\<^bold>|"
+  shows "max_borderP (take ((KMP w arr bord pos)!k) (drop k w)) (drop k w)"
+  using assms
+proof (induct w arr bord pos arbitrary: k rule: KMP.induct)
   case (2 w arr bord i)
-  then show ?case 
-    unfolding KMP.simps using KMP_valid_step by blast
-qed
+  then show ?case
+    unfolding KMP.simps using KMP_valid_step  by blast
+qed (simp add: KMP_valid_def)
 
 section \<open>Border array\<close>
 
 fun border_array :: "'a list \<Rightarrow> nat list" where
-  "border_array \<epsilon> = \<epsilon>" 
+  "border_array \<epsilon> = \<epsilon>"
 | "border_array (a#w) = rev (KMP (rev (a#w)) [0] 0 (\<^bold>|a#w\<^bold>|-1))"
 
 lemma border_array_len: "\<^bold>|border_array w\<^bold>| = \<^bold>|w\<^bold>|"
@@ -509,16 +507,16 @@ proof-
   have "rev w \<noteq> \<epsilon>" and "k < \<^bold>|rev w\<^bold>|"
     using \<open>Suc k \<le> \<^bold>|w\<^bold>|\<close> by auto
   hence "w = hd w#tl w"
-    by simp 
+    by simp
   from arg_cong[OF border_array.simps(2)[of "hd w" "tl w", folded this], of rev, unfolded rev_rev_ident]
-  have "rev (border_array w) =  (KMP (rev w) [0] 0 (\<^bold>|w\<^bold>|-1))". 
+  have "rev (border_array w) =  (KMP (rev w) [0] 0 (\<^bold>|w\<^bold>|-1))".
   hence "max_borderP (take (rev (border_array w)!m) (drop m (rev w))) (drop m (rev w))"
     using KMP_valid_max[rule_format, OF KMP_valid_base[OF \<open>rev w \<noteq> \<epsilon>\<close>] \<open>m < \<^bold>|rev w\<^bold>|\<close>] by simp
   hence  "max_border (drop m (rev w)) = take (rev (border_array w)!m) (drop m (rev w))"
     using max_borderP_max_border by blast
   hence  "\<^bold>|max_border (drop m (rev w))\<^bold>| =  rev (border_array w)!m"
     by (metis \<open>m < \<^bold>|rev w\<^bold>|\<close> drop_all_iff leD max_border_nemp_neq nat_le_linear take_all take_len)
-  thus ?thesis 
+  thus ?thesis
     using m_def
     by (metis Suc_diff_Suc \<open>k < \<^bold>|rev w\<^bold>|\<close> \<open>m < \<^bold>|rev w\<^bold>|\<close> border_array_len diff_diff_cancel drop_rev length_rev less_imp_le_nat max_border_len_rev rev_nth)
 qed
@@ -530,7 +528,7 @@ proof (cases "w = \<epsilon>")
     using max_bord_take take_Nil by metis
 next
   assume "w \<noteq> \<epsilon>"
-  hence "Suc (\<^bold>|w\<^bold>| - 1) \<le> \<^bold>|w\<^bold>|" by simp   
+  hence "Suc (\<^bold>|w\<^bold>| - 1) \<le> \<^bold>|w\<^bold>|" by simp
   from bord_array[OF this]
   have "(border_array w)!(\<^bold>|w\<^bold>|-1) = \<^bold>|max_border w\<^bold>|"
     by (simp add: \<open>w \<noteq> \<epsilon>\<close>)
@@ -540,28 +538,42 @@ qed
 
 value[nbe] "primitive [a,b,a]"
 
-value "primitive [0::nat,1,0]"
+value "primitive [0,1,0::nat]"
 
-value "border_array [5,4::nat,5,3,5,5,5,4,5]"
+value "border_array [5,4,5,3,5,5,5,4,5::nat]"
 
-value "primitive [5,4::nat,5,3,5,5,5,4,5]"
+value "primitive [5,4,5,3,5,5,5,4,5::nat]"
 
-value "primitive [5,4::nat,5,3,5,5,5,4,5]"
+value "primitive [5,4,5,3,5,5,5,4,5::nat]"
 
 value[nbe] "bordered []"
 
-value "border_array [0::nat,1,1,0,0,0,1,1,1,1,1,0,0,0,1,1,1,0,1,1,0,0,0,1,1,1,1,1,1,0,0,0,1,1,1,0,1,1,0,0,0,1,1,1,0,1,1,0,0,0,1,1,1,0,0,1,0]"
+value "border_array [0,1,1,0,0,0,1,1,1,1,1,0,0,0,1,1,1,0,1,1,0,0,0,1,1,1,1,1,1,0,0,0,1,1,1,0,1,1,0,0,0,1,1,1,0,1,1,0,0,0,1,1,1,0,0,1,0::nat]"
 
 value[nbe] "border_array \<epsilon>"
 
-value "border_array [1,0::nat,1,0,1,1,0,0]"
+value "border_array [1,0,1,0,1,1,0,0::nat]"
 
-value "max_border [1,0::nat,1,0,1,1,0,0,1,0,1,1,0::nat,1,0,1,1,0,0,1,0,1,1,0::nat,1,0,1,1,0,0,1,0,1,0,0,1]"
+value "max_border [1,0,1,0,1,1,0,0,1,0,1,1,0,1,0,1,1,0,0,1,0,1,1,0,1,0,1,1,0,0,1,0,1,0,0,1::nat]"
+
+thm max_border_comp \<comment> \<open>code for @{term max_border}, based on @{term border_array}\<close>
 
 value "bordered [1,0::nat,1,0,1,1,0,1]"
 
+value "\<pi> [1::nat,0,1,0,1,1,0,1]"
+
+thm  min_per_root_take \<comment> \<open>code for @{term \<pi>}, based on @{term max_border}\<close>
+
 value "\<^bold>|\<pi> [1::nat,0,1,0,1,1,0,1]\<^bold>|"
 
+value "\<rho> [1::nat,0,1,1,0,1,1,0,1]"
+
+thm primroot_code  \<comment> \<open>code for @{term \<rho>}, based on @{term \<pi>}\<close>
+
+value "\<rho> [1::nat,0,1,1,0,1,1,0]"
+
+
+value[nbe] "\<pi> \<epsilon>"
 
 
 end

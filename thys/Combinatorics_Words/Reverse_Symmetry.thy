@@ -30,7 +30,7 @@ quantification @{term "\<forall>xs\<in>rev ` A. P (rev xs)"}, similarly for boun
   5. final correctional rewrites related to reversion of @{const "Cons"} are performed.
 
 List of reversal rules is maintained by declaration attribute ``reversal\_rule'' with standard
-``add'' and ``del'' options. 
+``add'' and ``del'' options.
 
 See examples at the end of the file.
 \<close>
@@ -57,7 +57,7 @@ proof
   assume "\<exists>x. P (f x)"
   then obtain x where "P (f x)"..
   then show "\<exists>x. P x"..
-next 
+next
   assume "\<exists>y. P y"
   then obtain y where "P y"..
   then have "P (f (inv f y))" unfolding surj_f_inv_f[OF assms].
@@ -132,14 +132,14 @@ private lemmas final_correct3 =
 subsection \<open>Declaration attribute \<open>reversal_rule\<close>\<close>
 
 ML \<open>
-structure Reversal_Rules = 
+structure Reversal_Rules =
   Named_Thms(
     val name = @{binding "reversal_rule"}
     val description = "Rules performing reverse-symmetry transformation on theorems on lists"
   )
 \<close>
 
-attribute_setup reversal_rule = 
+attribute_setup reversal_rule =
   \<open>Attrib.add_del
     (Thm.declaration_attribute Reversal_Rules.add_thm)
     (Thm.declaration_attribute Reversal_Rules.del_thm)\<close>
@@ -288,7 +288,7 @@ in
     ((Conv.try_conv o Conv.arg_conv o Conv.rewr_conv) map_Nil_thm
     then_conv (Conv.try_conv o Conv.rewr_conv) rev_Nil_thm) (subst ctxt T ct)
       |> Thm.symmetric
-  
+
   fun empty_cv ctxt T ct =
     (Conv.try_conv o Conv.rewr_conv) image_empty_thm (subst ctxt T ct)
       |> Thm.symmetric
@@ -318,11 +318,11 @@ fun trace_rule_prems_proof ctxt rule goals rule_prems rule' =
       val sendback = Active.make_markup Markup.sendbackN
         {implicit = false, properties = [Markup.padding_command]}
       val _ = [
-        [ 
+        [
           "Trying to use conditional reverse rule:" |> Pretty.para,
           rule |> pretty_thm
         ] |> Pretty.fbreaks |> Pretty.block,
-        [(if null ctxt_prems 
+        [(if null ctxt_prems
           then "No context premises."
           else "Context premises:"
          ) |> Pretty.para
@@ -481,13 +481,16 @@ lemma Bex_image_comp: "Bex (f ` A) g = Bex A (g \<circ> f)"
 
 lemma Bex_image [reversal_rule]: assumes "(g \<circ> f) ` A = A" shows "Bex (f ` A) (P \<circ> g) = Bex A P"
   unfolding Bex_image_comp[symmetric] image_comp \<open>(g \<circ> f) ` A = A\<close>..
-                      
+
   \<comment> \<open>\<^const>\<open>insert\<close>\<close>
 lemma insert_image [reversal_rule]: "insert (f x) (f ` X) = f ` (insert x X)"
   by blast
 
   \<comment> \<open>\<^const>\<open>List.member\<close>\<close>
 lemmas [reversal_rule] = inj_image_mem_iff
+
+  \<comment> \<open>\<^const>\<open>subset_eq\<close>\<close>
+lemmas [reversal_rule] = inj_image_subset_iff
 
 subsection \<open>\<^theory>\<open>HOL.List\<close>\<close>
 
@@ -541,7 +544,7 @@ lemmas [reversal_rule] = concat_rev_map_rev concat_rev_map_rev'
 
   \<comment> \<open>\<^const>\<open>drop\<close>\<close>
 lemmas [reversal_rule] = drop_rev drop_map
-  
+
   \<comment> \<open>\<^const>\<open>take\<close>\<close>
 lemmas [reversal_rule] = take_rev take_map
 
@@ -564,7 +567,7 @@ qed (simp add: List.union_def)
 
   \<comment> \<open>\<^const>\<open>length\<close>\<close>
 lemmas [reversal_rule] = length_rev length_map
- 
+
   \<comment> \<open>\<^const>\<open>rotate\<close>\<close>
 lemmas [reversal_rule] = rotate_rev rotate_map
 
@@ -576,6 +579,12 @@ lemma map_in_lists: "inj f \<Longrightarrow> map f u \<in> lists (f ` A) \<longl
   by (simp add: lists_image inj_image_mem_iff inj_mapI)
 
 lemmas [reversal_rule] = rev_in_lists map_in_lists
+
+  \<comment> \<open>\<^const>\<open>list_all\<close>\<close>
+lemmas [reversal_rule] = list_all_rev
+
+  \<comment> \<open>\<^const>\<open>list_ex\<close>\<close>
+lemmas [reversal_rule] = list_ex_rev
 
 subsection \<open>Reverse Symmetry\<close>
 
@@ -646,13 +655,11 @@ subsection \<open>Induction rules\<close>
 
 thm
   list_nonempty_induct
-  list_nonempty_induct[reversed] (* needs work *)
-  list_nonempty_induct[reversed, where P="\<lambda>x. P (rev x)" for P, unfolded rev_rev_ident] 
+  list_nonempty_induct[reversed]   list_nonempty_induct[reversed, where P="\<lambda>x. P (rev x)" for P, unfolded rev_rev_ident]
 
 thm
   list_induct2
-  list_induct2[reversed] (* needs work *)
-  list_induct2[reversed, where P="\<lambda>x y. P (rev x) (rev y)" for P, unfolded rev_rev_ident]
+  list_induct2[reversed]   list_induct2[reversed, where P="\<lambda>x y. P (rev x) (rev y)" for P, unfolded rev_rev_ident]
 
 subsection \<open>hd, tl, last, butlast\<close>
 
