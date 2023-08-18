@@ -813,7 +813,7 @@ proof (rule ccontr)
 
   have 2: "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t (B \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t I) \<turnstile> s"
     using B(2,3) Sec strand_sem_append_stateful[of "{}" "{}" "unlabel B" "[send\<langle>[s]\<rangle>]" I]
-          trm_subst_ident[of s I] unlabel_subst[of B] ik\<^sub>s\<^sub>s\<^sub>t_subst[of "unlabel B"]
+          subst_apply_term_ident[of s I] unlabel_subst[of B] ik\<^sub>s\<^sub>s\<^sub>t_subst[of "unlabel B"]
     by force
 
   have "l = \<star>" when "(l,c) \<in> set B" for l c

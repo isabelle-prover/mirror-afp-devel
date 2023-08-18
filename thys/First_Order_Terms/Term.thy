@@ -85,16 +85,40 @@ lemma finite_Union_vars_term:
   "finite (\<Union>t \<in> set ts. vars_term t)"
   by auto
 
+text \<open>We define the evaluation of terms, under interpretation of function symbols and assignment of
+  variables, as follows:\<close>
+
+fun eval_term ("_\<lbrakk>(2_)\<rbrakk>_" [999,1,100]100) where
+  "I\<lbrakk>Var x\<rbrakk>\<alpha> = \<alpha> x"
+| "I\<lbrakk>Fun f ss\<rbrakk>\<alpha> = I f [I\<lbrakk>s\<rbrakk>\<alpha>. s \<leftarrow> ss]"
+
+notation eval_term ("_\<lbrakk>(2_)\<rbrakk>" [999,1]100)
+
+lemma eval_same_vars:
+  assumes "\<forall>x \<in> vars_term s. \<alpha> x = \<beta> x"
+  shows "I\<lbrakk>s\<rbrakk>\<alpha> = I\<lbrakk>s\<rbrakk>\<beta>"
+  by (insert assms, induct s, auto intro!:map_cong[OF refl] cong[of "I _"])
+
+lemma eval_same_vars_cong:
+  assumes ref: "s = t" and v: "\<And>x. x \<in> vars_term s \<Longrightarrow> \<alpha> x = \<beta> x"
+  shows "I\<lbrakk>s\<rbrakk>\<alpha> = I\<lbrakk>t\<rbrakk>\<beta>"
+  by (fold ref, rule eval_same_vars, auto dest:v)
+
+lemma eval_with_fresh_var: "x \<notin> vars_term s \<Longrightarrow> I\<lbrakk>s\<rbrakk>\<alpha>(x:=a) = I\<lbrakk>s\<rbrakk>\<alpha>"
+  by (auto intro: eval_same_vars)
+
+lemma eval_map_term: "I\<lbrakk>map_term ff fv s\<rbrakk>\<alpha> = (I \<circ> ff)\<lbrakk>s\<rbrakk>(\<alpha> \<circ> fv)"
+  by (induct s, auto intro: cong[of "I _"])
+
+
 text \<open>A substitution is a mapping \<open>\<sigma>\<close> from variables to terms. We call a substitution that
   alters the type of variables a generalized substitution, since it does not have all properties
   that are expected of (standard) substitutions (e.g., there is no empty substitution).\<close>
 type_synonym ('f, 'v, 'w) gsubst = "'v \<Rightarrow> ('f, 'w) term"
 type_synonym ('f, 'v) subst  = "('f, 'v, 'v) gsubst"
 
-fun subst_apply_term :: "('f, 'v) term \<Rightarrow> ('f, 'v, 'w) gsubst \<Rightarrow> ('f, 'w) term" (infixl "\<cdot>" 67)
-  where
-    "Var x \<cdot> \<sigma> = \<sigma> x"
-  | "Fun f ss \<cdot> \<sigma> = Fun f (map (\<lambda>t. t \<cdot> \<sigma>) ss)"
+abbreviation subst_apply_term :: "('f, 'v) term \<Rightarrow> ('f, 'v, 'w) gsubst \<Rightarrow> ('f, 'w) term"  (infixl "\<cdot>" 67)
+  where "subst_apply_term \<equiv> eval_term Fun"
 
 definition
   subst_compose :: "('f, 'u, 'v) gsubst \<Rightarrow> ('f, 'v, 'w) gsubst \<Rightarrow> ('f, 'u, 'w) gsubst"
@@ -104,7 +128,7 @@ definition
 
 lemma subst_subst_compose [simp]:
   "t \<cdot> (\<sigma> \<circ>\<^sub>s \<tau>) = t \<cdot> \<sigma> \<cdot> \<tau>"
-  by (induct t \<sigma> rule: subst_apply_term.induct) (simp_all add: subst_compose_def)
+  by (induct t) (simp_all add: subst_compose_def)
 
 lemma subst_compose_assoc:
   "\<sigma> \<circ>\<^sub>s \<tau> \<circ>\<^sub>s \<mu> = \<sigma> \<circ>\<^sub>s (\<tau> \<circ>\<^sub>s \<mu>)"
@@ -138,7 +162,7 @@ lemma term_subst_eq_rev:
 
 lemma term_subst_eq_conv:
   "t \<cdot> \<sigma> = t \<cdot> \<tau> \<longleftrightarrow> (\<forall>x \<in> vars_term t. \<sigma> x = \<tau> x)"
-  using term_subst_eq [of t \<sigma> \<tau>] and term_subst_eq_rev [of t \<sigma> \<tau>] by auto
+  by (auto intro!: term_subst_eq term_subst_eq_rev)
 
 lemma subst_term_eqI:
   assumes "(\<And>t. t \<cdot> \<sigma> = t \<cdot> \<tau>)"
@@ -427,9 +451,7 @@ next
     unfolding term_subst_eq_conv
     using \<open>range_vars \<sigma> \<inter> subst_domain \<delta> = {}\<close>
     by (simp add: disjoint_iff subst_domain_def)
-  hence "Fun f ys \<cdot> \<delta> = Fun f ys"
-    by simp
-  with Fun show ?thesis
+  from this[unfolded subst_apply_term_empty] Fun show ?thesis
     by (simp add: subst_compose_def)
 qed
 
@@ -440,7 +462,7 @@ proof -
   from assms have "\<And>x. x \<in> vars_term t \<Longrightarrow> (\<sigma> \<circ>\<^sub>s \<delta>) x = \<sigma> x"
     using subst_compose_apply_eq_apply_lhs by fastforce
   hence "t \<cdot> \<sigma> \<circ>\<^sub>s \<delta> = t \<cdot> \<sigma>"
-    using term_subst_eq_conv[of t "\<sigma> \<circ>\<^sub>s \<delta>" \<sigma>] by metis
+    using term_subst_eq_conv by metis
   thus ?thesis
     by simp
 qed

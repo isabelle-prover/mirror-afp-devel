@@ -150,7 +150,7 @@ proof
   proof (induction t)
     case (Fun f T)
     hence "wf\<^sub>t\<^sub>r\<^sub>m t" when "t \<in> set (map (\<lambda>s. s \<cdot> \<delta>) T)" for t
-      by (metis that wf\<^sub>t\<^sub>r\<^sub>m_def Fun_param_is_subterm term.order_trans subst_apply_term.simps(2)) 
+      by (metis that wf\<^sub>t\<^sub>r\<^sub>m_def Fun_param_is_subterm term.order_trans eval_term.simps(2)) 
     hence "wf\<^sub>t\<^sub>r\<^sub>m t" when "t \<in> set T" for t using that Fun.IH by auto
     moreover have "length (map (\<lambda>t. t \<cdot> \<delta>) T) = arity f"
       using Fun.prems unfolding wf\<^sub>t\<^sub>r\<^sub>m_def by auto
@@ -208,9 +208,7 @@ lemma wf_trm_subst_compose:
   shows "wf\<^sub>t\<^sub>r\<^sub>m ((\<theta> \<circ>\<^sub>s \<delta>) x)"
 using wf_trm_subst[of \<delta> "\<theta> x", OF wf_trm_subst_rangeI[OF assms(2)]] assms(1)
       subst_subst_compose[of "Var x" \<theta> \<delta>]
-      subst_apply_term.simps(1)[of x \<theta>]
-      subst_apply_term.simps(1)[of x "\<theta> \<circ>\<^sub>s \<delta>"]
-by argo
+by auto
 
 lemma wf_trms_Var_range:
   assumes "subst_range \<delta> \<subseteq> range Var"

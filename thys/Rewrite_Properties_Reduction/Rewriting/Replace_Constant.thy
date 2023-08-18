@@ -66,7 +66,7 @@ proof -
         using varposs_r varposs poss const poss_pos_diffI[OF varposs(2) poss]
         using subt_at_append_dist[of q' "q -\<^sub>p v" "r \<cdot> \<sigma>"]
         by (auto simp: poss_append_poss varposs_imp_poss[THEN subst_subt_at_dist] varposs_imp_poss[THEN subsetD[OF subst_poss_mono]])
-          (metis pos_les_eq_append_diff subst_apply_term.simps(1) subst_subt_at_dist subt_at_append_dist varposs_imp_poss)
+          (metis pos_les_eq_append_diff eval_term.simps(1) subst_subt_at_dist subt_at_append_dist varposs_imp_poss)
       ultimately show ?thesis by auto
     next
       case False

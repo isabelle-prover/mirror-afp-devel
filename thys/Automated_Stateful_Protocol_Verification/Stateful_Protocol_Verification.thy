@@ -5777,7 +5777,7 @@ proof -
           transaction_deletes_are_Value_vars[OF T_wf T_adm_upds, of u' s']
           stateful_strand_step_fv_subset_cases(4,5)[of u' s' "unlabel (transaction_strand T)"]
     by auto
-  hence 1: "t \<cdot> \<I> = (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) y \<cdot> \<I>" using y s(1) s'(1) by (metis subst_apply_term.simps(1)) 
+  hence 1: "t \<cdot> \<I> = (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) y \<cdot> \<I>" using y s(1) s'(1) by (metis eval_term.simps(1)) 
 
   have 2: "y \<notin> set (transaction_fresh T)" when "(\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) y \<cdot> \<I> \<noteq> \<sigma> y"
     using transaction_fresh_subst_grounds_domain[OF \<sigma>, of y] subst_compose[of \<sigma> \<alpha> y] that \<xi>_empty
@@ -6667,7 +6667,7 @@ proof -
       using \<sigma>_x_nin_A by auto
   qed
   then show ?A
-    using subst_apply_term.simps(1)[of x \<sigma>]
+    using eval_term.simps(1)[of _ x \<sigma>]
     unfolding subst_compose_def xn \<xi>_empty by auto
 
   from ** show ?B
@@ -7389,7 +7389,7 @@ proof -
             trms\<^sub>s\<^sub>s\<^sub>t_unlabel_dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_eq[of "transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>"]
       unfolding T'_def by blast
 
-    have *: "t = u \<cdot> (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha> \<circ>\<^sub>s \<I>)" by (metis subst_subst_compose s(2) u(2)) 
+    have *: "t = u \<cdot> (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha> \<circ>\<^sub>s \<I>)" using s(2) u(2) subst_subst_compose by simp
     then obtain x where x: "u = Var x"
       using s(3) admissible_transactions_no_Value_consts(1)[OF T_adm u(1)] by (cases u) force+
     hence **: "x \<in> vars_transaction T"
@@ -7400,7 +7400,7 @@ proof -
       by simp
     thus "t \<in> (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) ` fv_transaction T \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>"
       using admissible_transaction_Value_vars_are_fv[OF T_adm **] x *
-            subst_apply_term.simps(1)[of x "\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha> \<circ>\<^sub>s \<I>"]
+            eval_term.simps(1)[of _ x "\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha> \<circ>\<^sub>s \<I>"]
             subst_comp_set_image[of "\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>" \<I> "fv_transaction T"]
       by blast
   qed
@@ -7931,7 +7931,7 @@ proof (induction t arbitrary: s \<delta> \<sigma>)
       unfolding Var by auto
   next
     case (Fun g ss)
-    note 0 = timpls_transformable_to_inv[OF prems(1)[unfolded Fun subst_apply_term.simps(2)]]
+    note 0 = timpls_transformable_to_inv[OF prems(1)[unfolded Fun eval_term.simps(2)]]
     note 1 = match_abss'_Fun_inv[OF prems(2)[unfolded Fun]]
 
     obtain \<theta> where \<theta>: "those (map2 match_abss' ss ts) = Some \<theta>" "\<sigma> = fun_point_Union_list \<theta>"
@@ -9838,7 +9838,7 @@ proof
         using y \<alpha>'(3)[OF x] \<alpha>_invertible
               vars_term_subset_subst_eq[of "Var y" s "\<alpha> \<circ>\<^sub>s \<alpha>inv" Var]
         unfolding \<delta>'_def \<alpha>inv_def
-        by (metis (no_types, lifting) fv_subst_subset subst_apply_term.simps(1)
+        by (metis (no_types, lifting) fv_subst_subset eval_term.simps(1)
                   subst_apply_term_empty subst_compose) 
       ultimately show ?thesis using \<delta>(4) by fastforce
     qed
@@ -9904,8 +9904,7 @@ proof
     have "J x = \<delta>' x" when x: "x \<in> fv (s \<cdot> \<alpha>)" for x using x unfolding J_def by argo
     hence "s \<cdot> \<alpha> \<cdot> J = s \<cdot> \<alpha> \<cdot> \<delta>'" using subst_agreement[of "s \<cdot> \<alpha>" J \<delta>'] by force
     thus ?thesis
-      using \<alpha>_invertible unfolding \<delta>'_def
-      by (metis rm_vars_subst_eq' subst_subst_compose)
+      using \<alpha>_invertible unfolding \<delta>'_def rm_vars_subst_eq'[symmetric] by (metis subst_subst_compose)
   qed
   hence "s \<cdot> \<alpha> \<cdot> J = s \<cdot> \<delta>" by auto
   ultimately show "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t A \<cdot>\<^sub>s\<^sub>e\<^sub>t J \<turnstile> s \<cdot> \<alpha> \<cdot> J" by argo
@@ -10270,7 +10269,7 @@ proof -
       proof -
         have m_fun: "is_Fun m"
           using m M Ana_subterm' vars_iff_subtermeq_set
-          unfolding s_def is_Var_def by (metis subst_apply_term.simps(1))
+          unfolding s_def is_Var_def by (metis eval_term.simps(1))
         
         obtain f K R ts i where f:
             "m = \<langle>f ts\<rangle>\<^sub>t" "arity\<^sub>f f = length ts" "arity\<^sub>f f > 0" "Ana\<^sub>f f = (K, R)"
@@ -10498,8 +10497,7 @@ proof -
     have occ_t: "OccursFact \<in> funs_term t"
     proof (cases t)
       case (Var y) thus ?thesis
-        using t(2) subst_apply_term.simps(1)[of y "\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>"]
-              transaction_decl_fresh_renaming_substs_range'(1)[OF T(2-), of "occurs k"]
+        using t(2) transaction_decl_fresh_renaming_substs_range'(1)[OF T(2-), of "occurs k"]
         by fastforce
     qed (use t(2) in simp)
 

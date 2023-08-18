@@ -336,7 +336,7 @@ lemma supteq_subst [simp, intro]:
 proof (induct rule: supteq.induct)
   case (subt u ss t f)
   from \<open>u \<in> set ss\<close> have "u \<cdot> \<sigma> \<in> set (map (\<lambda>t. t \<cdot> \<sigma>) ss)" "u \<cdot> \<sigma> \<unrhd> u \<cdot> \<sigma>" by auto
-  then have "Fun f ss \<cdot> \<sigma> \<unrhd> u \<cdot> \<sigma>" unfolding subst_apply_term.simps by blast
+  then have "Fun f ss \<cdot> \<sigma> \<unrhd> u \<cdot> \<sigma>" unfolding eval_term.simps by blast
   from this and \<open>u \<cdot> \<sigma> \<unrhd> t \<cdot> \<sigma>\<close> show ?case by (rule supteq_trans)
 qed auto
 
@@ -346,11 +346,11 @@ lemma supt_subst [simp, intro]:
 proof (induct rule: supt.induct)
   case (arg s ss f)
   then have "s \<cdot> \<sigma> \<in> set (map (\<lambda>t. t \<cdot> \<sigma>) ss)" by simp
-  then show ?case unfolding subst_apply_term.simps by (rule supt.arg)
+  then show ?case unfolding eval_term.simps by (rule supt.arg)
 next
   case (subt u ss t f)
   from \<open>u \<in> set ss\<close> have "u \<cdot> \<sigma> \<in> set (map (\<lambda>t. t \<cdot> \<sigma>) ss)" by simp
-  then have "Fun f ss \<cdot> \<sigma> \<rhd> u \<cdot> \<sigma>" unfolding subst_apply_term.simps by (rule supt.arg)
+  then have "Fun f ss \<cdot> \<sigma> \<rhd> u \<cdot> \<sigma>" unfolding eval_term.simps by (rule supt.arg)
   with \<open>u \<cdot> \<sigma> \<rhd> t \<cdot> \<sigma>\<close> show ?case by (metis supt_trans)
 qed
 

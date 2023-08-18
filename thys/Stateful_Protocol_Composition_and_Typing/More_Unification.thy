@@ -228,7 +228,7 @@ lemma var_comp[simp]: "\<sigma> \<circ>\<^sub>s Var = \<sigma>" "Var \<circ>\<^s
 unfolding subst_compose_def by simp_all
 
 lemma subst_comp_all: "M \<cdot>\<^sub>s\<^sub>e\<^sub>t (\<delta> \<circ>\<^sub>s \<theta>) = (M \<cdot>\<^sub>s\<^sub>e\<^sub>t \<delta>) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<theta>"
-using subst_subst_compose[of _ \<delta> \<theta>] by auto
+unfolding subst_subst_compose by auto
 
 lemma subst_all_mono: "M \<subseteq> M' \<Longrightarrow> M \<cdot>\<^sub>s\<^sub>e\<^sub>t s \<subseteq> M' \<cdot>\<^sub>s\<^sub>e\<^sub>t s"
 by auto
@@ -242,7 +242,7 @@ by (induct t, simp, metis subst_agreement empty_iff subst_apply_term_empty)
 lemma subst_ground_ident_compose:
   "fv (\<sigma> x) = {} \<Longrightarrow> (\<sigma> \<circ>\<^sub>s \<theta>) x = \<sigma> x"
   "fv (t \<cdot> \<sigma>) = {} \<Longrightarrow> t \<cdot> (\<sigma> \<circ>\<^sub>s \<theta>) = t \<cdot> \<sigma>"
-using subst_subst_compose[of t \<sigma> \<theta>]
+unfolding subst_subst_compose
 by (simp_all add: subst_compose_def subst_ground_ident)
 
 lemma subst_all_ground_ident[dest?]: "ground M \<Longrightarrow> M \<cdot>\<^sub>s\<^sub>e\<^sub>t s = M"
@@ -252,13 +252,6 @@ proof -
   hence "\<And>t. t \<in> M \<Longrightarrow> t \<cdot> s = t" by (metis subst_ground_ident)
   moreover have "\<And>t. t \<in> M \<Longrightarrow> t \<cdot> s \<in> M \<cdot>\<^sub>s\<^sub>e\<^sub>t s" by (metis imageI)
   ultimately show "M \<cdot>\<^sub>s\<^sub>e\<^sub>t s = M" by (simp add: image_cong)
-qed
-
-lemma subst_eqI[intro]: "(\<And>t. t \<cdot> \<sigma> = t \<cdot> \<theta>) \<Longrightarrow> \<sigma> = \<theta>"
-proof -
-  assume "\<And>t. t \<cdot> \<sigma> = t \<cdot> \<theta>"
-  hence "\<And>v. Var v \<cdot> \<sigma> = Var v \<cdot> \<theta>" by auto
-  thus "\<sigma> = \<theta>" by auto
 qed
 
 lemma subst_cong: "\<lbrakk>\<sigma> = \<sigma>'; \<theta> = \<theta>'\<rbrakk> \<Longrightarrow> (\<sigma> \<circ>\<^sub>s \<theta>) = (\<sigma>' \<circ>\<^sub>s \<theta>')"
@@ -333,7 +326,7 @@ qed
 
 lemma fv\<^sub>s\<^sub>e\<^sub>t_subst:
   "fv\<^sub>s\<^sub>e\<^sub>t (M \<cdot>\<^sub>s\<^sub>e\<^sub>t \<theta>) = fv\<^sub>s\<^sub>e\<^sub>t (\<theta> ` fv\<^sub>s\<^sub>e\<^sub>t M)"
-using subst_apply_fv_unfold[of _ \<theta>] by auto
+by (simp add: subst_apply_fv_unfold)
 
 lemma subst_list_set_fv:
   "fv\<^sub>s\<^sub>e\<^sub>t (set (ts \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta>)) = fv\<^sub>s\<^sub>e\<^sub>t (\<theta> ` fv\<^sub>s\<^sub>e\<^sub>t (set ts))"
@@ -349,10 +342,10 @@ lemma subst_elimD[dest]: "subst_elim \<sigma> v \<Longrightarrow> v \<notin> fv 
 by (auto simp add: subst_elim_def)
 
 lemma subst_elimD'[dest]: "subst_elim \<sigma> v \<Longrightarrow> \<sigma> v \<noteq> Var v"
-by (metis subst_elim_def subst_apply_term.simps(1) term.set_intros(3))
+by (metis subst_elim_def eval_term.simps(1) term.set_intros(3))
 
 lemma subst_elimD''[dest]: "subst_elim \<sigma> v \<Longrightarrow> v \<notin> fv (\<sigma> w)"
-by (metis subst_elim_def subst_apply_term.simps(1))
+by (metis subst_elim_def eval_term.simps(1))
 
 lemma subst_elim_rm_vars_dest[dest]:
   "subst_elim (\<sigma>::('a,'b) subst) v \<Longrightarrow> v \<notin> vs \<Longrightarrow> subst_elim (rm_vars vs \<sigma>) v"
@@ -396,14 +389,7 @@ by (simp add: subst_idem_def)
 
 lemma var_upd_subst_idem:
   assumes "\<not>Var v \<sqsubseteq> t" shows "subst_idem (Var(v := t))"
-unfolding subst_idem_def
-proof
-  let ?\<theta> = "Var(v := t)"
-  from assms have t_\<theta>_id: "t \<cdot> ?\<theta> = t" by blast
-  fix s show "s \<cdot> (?\<theta> \<circ>\<^sub>s ?\<theta>) = s \<cdot> ?\<theta>"
-    unfolding subst_compose_def
-    by (induction s, metis t_\<theta>_id fun_upd_def subst_apply_term.simps(1), simp) 
-qed
+  using subst_no_occs[OF assms] by (simp add: subst_idem_def subst_def[symmetric])
 
 lemma zip_map_subst:
   "zip xs (xs \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<delta>) = map (\<lambda>t. (t, t \<cdot> \<delta>)) xs"
@@ -517,7 +503,7 @@ next
 qed
 
 lemma subst_fv_unfold_ground_img: "range_vars s = {} \<Longrightarrow> fv (t \<cdot> s) = fv t - subst_domain s"
-using subst_fv_unfold[of t s] unfolding range_vars_alt_def by auto
+by (auto simp: range_vars_alt_def subst_fv_unfold)
 
 lemma subst_img_update:
   "\<lbrakk>\<sigma> v = Var v; t \<noteq> Var v\<rbrakk> \<Longrightarrow> range_vars (\<sigma>(v := t)) = range_vars \<sigma> \<union> fv t"
@@ -620,22 +606,16 @@ proof (induction t)
   thus ?case using Fun.IH by auto
 qed (simp add: subst_domain_def)
 
-lemma trm_subst_ident[intro]: "fv t \<inter> subst_domain \<theta> = {} \<Longrightarrow> t \<cdot> \<theta> = t"
-proof -
-  assume "fv t \<inter> subst_domain \<theta> = {}"
-  hence "\<forall>v \<in> fv t. \<forall>w \<in> subst_domain \<theta>. v \<noteq> w" by auto
-  thus ?thesis
-    by (metis subst_agreement subst_apply_term.simps(1) subst_apply_term_empty subst_domI)
-qed
+declare subst_apply_term_ident[intro]
 
 lemma trm_subst_ident'[intro]: "v \<notin> subst_domain \<theta> \<Longrightarrow> (Var v) \<cdot> \<theta> = Var v"
-using trm_subst_ident by (simp add: subst_domain_def)
+using subst_apply_term_ident by (simp add: subst_domain_def)
 
 lemma trm_subst_ident''[intro]: "(\<And>x. x \<in> fv t \<Longrightarrow> \<theta> x = Var x) \<Longrightarrow> t \<cdot> \<theta> = t"
 proof -
   assume "\<And>x. x \<in> fv t \<Longrightarrow> \<theta> x = Var x"
   hence "fv t \<inter> subst_domain \<theta> = {}" by (auto simp add: subst_domain_def)
-  thus ?thesis using trm_subst_ident by auto
+  thus ?thesis using subst_apply_term_ident by auto
 qed
 
 lemma set_subst_ident: "fv\<^sub>s\<^sub>e\<^sub>t M \<inter> subst_domain \<theta> = {} \<Longrightarrow> M \<cdot>\<^sub>s\<^sub>e\<^sub>t \<theta> = M"
@@ -869,7 +849,8 @@ using assms
 proof (induction t)
   case (Var x) thus ?case
   proof (cases "x \<in> vs")
-    case True thus ?thesis using Var by auto
+    case True thus ?thesis using Var
+      by (simp add: subst_compose_def)
   next
     case False
     have "subst_domain (rm_vars vs \<theta>) \<inter> vs = {}" by (auto simp add: subst_domain_def)
@@ -878,7 +859,7 @@ proof (induction t)
     ultimately have "\<delta> x \<cdot> (rm_vars vs \<theta>) = \<delta> x \<cdot> \<theta>"
       using rm_vars_ident by (simp add: subst_domain_def)
     moreover have "(rm_vars vs (\<delta> \<circ>\<^sub>s \<theta>)) x = (\<delta> \<circ>\<^sub>s \<theta>) x" by (metis False)
-    ultimately show ?thesis using subst_compose by auto
+    ultimately show ?thesis by (auto simp: subst_compose)
   qed
 next
   case Fun thus ?case by auto
@@ -1010,7 +991,7 @@ using subst_fv_bounded_if_img_bounded'[of \<theta> M]
 unfolding range_vars_alt_def by auto
 
 lemma subst_to_var_is_var[elim]: "t \<cdot> s = Var v \<Longrightarrow> \<exists>w. t = Var w"
-using subst_apply_term.elims by blast
+by (auto elim!: eval_term.elims)
 
 lemma subst_dom_comp_inI:
   assumes "y \<notin> subst_domain \<sigma>"
@@ -1059,7 +1040,7 @@ proof
 
   { assume "x \<notin> ?img \<theta>1" hence "x \<in> ?img \<theta>2"
       by (metis (no_types, opaque_lifting) fv_in_subst_img Un_iff subst_compose_def 
-                vt subsetCE subst_apply_term.simps(1) subst_sends_fv_to_img)
+                vt subsetCE eval_term.simps(1) subst_sends_fv_to_img)
   }
   thus "x \<in> ?img \<theta>1 \<union> ?img \<theta>2" by auto
 qed
@@ -1109,8 +1090,8 @@ proof
   proof (cases "x \<in> subst_domain \<theta>1")
     case True
     hence "Fun f T \<in> (subterms\<^sub>s\<^sub>e\<^sub>t (subst_range \<theta>2)) \<union> (subterms (\<theta>1 x) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<theta>2)"
-      using x(2) subterms_subst[of "\<theta>1 x" \<theta>2]
-      unfolding subst_compose[of \<theta>1 \<theta>2 x] by auto
+      using x(2)
+      by (auto simp: subst_compose subterms_subst)
     moreover have ?thesis when *: "Fun f T \<in> subterms (\<theta>1 x) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<theta>2"
     proof -
       obtain s where s: "s \<in> subterms (\<theta>1 x)" "Fun f T = s \<cdot> \<theta>2" using * by moura
@@ -1211,7 +1192,7 @@ proof -
       hence "(s(v := t)) w = s w" by simp
       moreover have "s w \<cdot> Var(v := t) = s w" using \<open>w \<noteq> v\<close> \<open>v \<notin> range_vars s\<close> 
         by (metis fv_in_subst_img fun_upd_apply insert_absorb insert_subset
-                  repl_invariance subst_apply_term.simps(1) subst_apply_term_empty)
+                  repl_invariance eval_term.simps(1) subst_apply_term_empty)
       ultimately show ?thesis ..
     qed
   }
@@ -1407,11 +1388,11 @@ proof -
     hence "v \<in> fv\<^sub>s\<^sub>e\<^sub>t M" using * by auto
     then obtain t' where "t' \<in> M" "v \<in> fv t'" by auto
     hence "fv (\<theta> v) \<subseteq> fv (t' \<cdot> \<theta>)"
-      by (metis subst_apply_term.simps(1) subst_apply_fv_subset subst_apply_fv_unfold
+      by (metis eval_term.simps(1) subst_apply_fv_subset subst_apply_fv_unfold
                 subtermeq_vars_subset vars_iff_subtermeq) 
     hence "fv (\<theta> v) \<subseteq> fv\<^sub>s\<^sub>e\<^sub>t (M \<cdot>\<^sub>s\<^sub>e\<^sub>t \<theta>)" using \<open>t' \<in> M\<close> by auto
   }
-  thus ?thesis using subst_apply_fv_unfold[of t \<theta>] by auto
+  thus ?thesis by (auto simp: subst_apply_fv_unfold)
 qed
 
 lemma subst_support_if_mgt_subst_idem:
@@ -1419,7 +1400,7 @@ lemma subst_support_if_mgt_subst_idem:
   shows "\<theta> supports \<delta>"
 proof -
   from \<open>\<theta> \<preceq>\<^sub>\<circ> \<delta>\<close> obtain \<sigma> where \<sigma>: "\<delta> = \<theta> \<circ>\<^sub>s \<sigma>" by blast
-  hence "\<And>v. \<theta> v \<cdot> \<delta> = Var v \<cdot> (\<theta> \<circ>\<^sub>s \<theta> \<circ>\<^sub>s \<sigma>)" by simp
+  hence "\<And>v. \<theta> v \<cdot> \<delta> = Var v \<cdot> (\<theta> \<circ>\<^sub>s \<theta> \<circ>\<^sub>s \<sigma>)" by (simp add: subst_compose)
   hence "\<And>v. \<theta> v \<cdot> \<delta> = Var v \<cdot> (\<theta> \<circ>\<^sub>s \<sigma>)" using \<open>subst_idem \<theta> \<close> unfolding subst_idem_def by simp
   hence "\<And>v. \<theta> v \<cdot> \<delta> = Var v \<cdot> \<delta>" using \<sigma> by simp
   thus "\<theta> supports \<delta>" by simp
@@ -1437,7 +1418,7 @@ lemma subst_support_comp:
   fixes \<theta> \<delta> \<I>::"('a,'b) subst"
   assumes "\<theta> supports \<I>" "\<delta> supports \<I>"
   shows "(\<theta> \<circ>\<^sub>s \<delta>) supports \<I>"
-by (metis (no_types) assms subst_agreement subst_apply_term.simps(1) subst_subst_compose)
+by (metis (no_types) assms subst_agreement eval_term.simps(1) subst_subst_compose)
 
 lemma subst_support_comp':
   fixes \<theta> \<delta> \<sigma>::"('a,'b) subst"
@@ -1460,7 +1441,7 @@ next
   moreover have "\<forall>v \<in> subst_domain (\<theta> \<circ>\<^sub>s \<delta>). (\<theta> \<circ>\<^sub>s \<delta>) v \<cdot> \<I> = \<I> v" using assms by metis
   ultimately have "\<forall>v \<in> subst_domain \<delta>. \<delta> v \<cdot> \<I> = \<I> v"
     using var_not_in_subst_dom unfolding subst_compose_def
-    by (metis IntI empty_iff subst_apply_term.simps(1))
+    by (metis IntI empty_iff eval_term.simps(1))
   thus "\<delta> supports \<I>" by force
 qed
 
@@ -1546,7 +1527,7 @@ proof (cases s)
 next
   case (Fun f T)
   thus ?thesis
-    using subst_subterm[of f T t \<theta>] assms
+    using subst_subterm assms
     by fastforce
 qed
 
@@ -1558,11 +1539,11 @@ proof (induction t)
   case (Var x) show ?case
   proof (cases "x \<in> subst_domain \<delta>")
     case True thus ?thesis
-      using assms unfolding range_vars_alt_def by (auto simp add: subst_apply_fv_empty)
+      using assms unfolding range_vars_alt_def by (auto simp: subst_compose subst_apply_fv_empty)
   next
     case False
     hence "\<delta> x = Var x" "\<sigma> x = Var x" using assms(1) by (blast,blast)
-    thus ?thesis by simp
+    thus ?thesis by (simp add: subst_compose)
   qed
 qed simp
 
@@ -1709,7 +1690,7 @@ proof (induction F)
   hence "fv (t \<cdot> \<delta>) \<subseteq> subst_domain \<sigma>" "fv (t' \<cdot> \<delta>) \<subseteq> subst_domain \<sigma>"
     using Cons.prems by (simp_all add: subst_apply_pairs_def)
   hence "fv t \<subseteq> subst_domain \<sigma> \<union> subst_domain \<delta>" "fv t' \<subseteq> subst_domain \<sigma> \<union> subst_domain \<delta>"
-    using subst_apply_fv_unfold[of _ \<delta>] by force+
+    unfolding subst_apply_fv_unfold by force+
   thus ?case using IH g by (simp add: subst_apply_pairs_def)
 qed (simp add: subst_apply_pairs_def)
 
@@ -1982,7 +1963,7 @@ lemma MGUD[dest]:
   fixes \<sigma>::"('f,'v) subst" and f g::'f and X Y::"('f,'v) term list"
   assumes "MGU \<sigma> (Fun f X) (Fun g Y)"
   shows "f = g" "length X = length Y"
-using assms by (auto intro!: UnifierD[of f X \<sigma> g Y])
+using assms by (auto dest: map_eq_imp_length_eq)
 
 lemma MGU_sym[sym]: "MGU \<sigma> s t \<Longrightarrow> MGU \<sigma> t s" by auto
 lemma Unifier_sym[sym]: "Unifier \<sigma> s t \<Longrightarrow> Unifier \<sigma> t s" by auto
@@ -2016,9 +1997,7 @@ proof (intro MGUI exI)
 next
   fix \<theta>::"('a,'b) subst" assume th: "Var v \<cdot> \<theta> = t \<cdot> \<theta>" 
   show "\<theta> = (Var(v := t)) \<circ>\<^sub>s \<theta>" 
-  proof
-    fix s show "s \<cdot> \<theta> = s \<cdot> ((Var(v := t)) \<circ>\<^sub>s \<theta>)" using th by (induct s) auto
-  qed
+    using th by (auto simp: subst_compose_def)
 qed
 
 lemma MGU_Var2: "v \<notin> fv t \<Longrightarrow> MGU (Var(v := t)) (Var v) t"
@@ -2340,7 +2319,7 @@ proof (induction \<theta> rule: wf\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t_induc
   case (Insert \<theta> v' t')
   hence "\<And>q. v \<notin> fv (Var q \<cdot> \<theta>(v' := t'))" using subst_elimD by blast
   hence "\<And>q. v \<notin> fv (Var q \<cdot> \<theta>(v' := t', w := t))" using \<open>v \<notin> fv t\<close> by simp
-  thus ?case by (metis subst_elimI' subst_apply_term.simps(1)) 
+  thus ?case by (metis subst_elimI' eval_term.simps(1)) 
 qed (simp add: subst_elim_def)
 
 lemma wf_subst_elim_dom:
@@ -2356,7 +2335,7 @@ proof (induction \<theta> rule: wf\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t_induc
   moreover have "w \<notin> fv t" using Insert.hyps(4) by simp
   hence "\<And>q. w \<notin> fv (Var q \<cdot> \<theta>(w := t))"
     by (metis fv_simps(1) fv_in_subst_img Insert.hyps(3) contra_subsetD 
-              fun_upd_def singletonD subst_apply_term.simps(1)) 
+              fun_upd_def singletonD eval_term.simps(1)) 
   hence "subst_elim (\<theta>(w := t)) w" by (metis subst_elimI')
   ultimately show ?case using dom_insert by blast
 qed simp
@@ -2396,7 +2375,7 @@ lemma interpretation_comp:
 proof -
   have \<theta>_fv: "fv (\<theta> v) = {}" for v using interpretation_grounds_all[OF assms] by simp
   hence \<theta>_fv': "fv (t \<cdot> \<theta>) = {}" for t
-    by (metis all_not_in_conv subst_elimD subst_elimI' subst_apply_term.simps(1))
+    by (metis all_not_in_conv subst_elimD subst_elimI' eval_term.simps(1))
 
   from assms have "(\<sigma> \<circ>\<^sub>s \<theta>) v \<noteq> Var v" for v
     unfolding subst_compose_def by (metis fv_simps(1) \<theta>_fv' insert_not_empty)
@@ -2409,7 +2388,7 @@ proof -
     unfolding subst_compose_def by (metis fv_simps(1) \<theta>_fv insert_not_empty subst_to_var_is_var)
   hence "subst_domain (\<theta> \<circ>\<^sub>s \<sigma>) = UNIV" by (simp add: subst_domain_def)
   moreover have "fv ((\<theta> \<circ>\<^sub>s \<sigma>) v) = {}" for v
-    unfolding subst_compose_def by (simp add: \<theta>_fv trm_subst_ident) 
+    unfolding subst_compose_def by (simp add: \<theta>_fv subst_apply_term_ident) 
   hence "ground (subst_range (\<theta> \<circ>\<^sub>s \<sigma>))" by simp
   ultimately show "interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t (\<theta> \<circ>\<^sub>s \<sigma>)" ..
 qed
@@ -2438,8 +2417,8 @@ qed
 lemma interpretation_subst_idem:
   "interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<theta> \<Longrightarrow> subst_idem \<theta>"
 unfolding subst_idem_def
-using interpretation_grounds_all[of \<theta>] trm_subst_ident subst_eq_if_eq_vars
-by fastforce
+  using interpretation_grounds_all[of \<theta>] subst_apply_term_ident subst_eq_if_eq_vars
+by (fastforce simp: subst_compose)
 
 lemma subst_idem_comp_upd_eq:
   assumes "v \<notin> subst_domain \<I>" "subst_idem \<theta>"
@@ -2486,7 +2465,7 @@ proof (induction L rule: List.rev_induct)
   case (snoc x L)
   then obtain v t where x: "x = (v,t)" by (metis surj_pair)
   hence "subst_of (L@[x]) = Var(v := t) \<circ>\<^sub>s subst_of L"
-    unfolding subst_of_def subst_def by (induct L) auto
+    unfolding subst_of_def subst_def by (induct L) (auto simp: subst_compose)
   hence "subst_domain (subst_of (L@[x])) \<subseteq> insert v (subst_domain (subst_of L))"
     using x subst_domain_compose[of "Var(v := t)" "subst_of L"]
     by (auto simp add: subst_domain_def)
@@ -2676,6 +2655,7 @@ qed
 
 lemma mgu_None_commutes:
   "mgu s t = None \<Longrightarrow> mgu t s = None"
+  thm mgu_complete[of s t] Unifier_in_unifiers_singleton[of ]
 using mgu_complete[of s t]
       Unifier_in_unifiers_singleton[of s _ t]
       Unifier_sym[of t _ s]
@@ -3029,7 +3009,7 @@ proof -
         by (auto simp add: subst_domain_def)
       moreover have "x' \<notin> subst_domain \<delta>"
         using x'(2) mgu_eliminates_dom[OF \<delta>]
-        by (metis (no_types) subst_elim_def subst_apply_term.simps(1) vars_iff_subterm_or_eq)
+        by (metis (no_types) subst_elim_def eval_term.simps(1) vars_iff_subterm_or_eq)
       moreover have "(\<delta> \<circ>\<^sub>s \<tau>) x = \<theta> x" "(\<delta> \<circ>\<^sub>s \<tau>) x' = \<theta> x'" using \<tau> x(2) x'(1) by auto
       ultimately show False
         using subterm_inj_on_imp_inj_on[OF \<theta>(1)] *
@@ -3158,7 +3138,7 @@ proof -
       hence "(\<delta> \<circ>\<^sub>s \<tau>) x' \<sqsubseteq> (\<delta> \<circ>\<^sub>s \<tau>) x" "\<tau> x' = (\<delta> \<circ>\<^sub>s \<tau>) x'"
         using \<tau> x(2) x'(2)
         by (metis subst_compose subst_mono vars_iff_subtermeq x'(1),
-            metis subst_apply_term.simps(1) subst_compose_def)
+            metis eval_term.simps(1) subst_compose_def)
       hence "\<theta> x' \<sqsubseteq> \<theta> x" using \<tau> x(2) x'(2) by auto
       thus False
         using \<theta>(1) x'(2) x(2) \<open>x \<noteq> x'\<close>
@@ -3235,11 +3215,11 @@ proof -
     have "Var yj' \<sqsubseteq> \<delta> xi"
       using term.order_trans[OF _ g(2)] j(1) len unfolding yj' by auto
     hence "\<tau> yj' \<sqsubseteq> \<theta> xi"
-      using \<tau> xi_\<theta> by (metis subst_apply_term.simps(1) subst_compose_def subst_mono) 
+      using \<tau> xi_\<theta> by (metis eval_term.simps(1) subst_compose_def subst_mono) 
     moreover have \<delta>_xj_var: "Var yj' = \<delta> xj"
       using X(1) len j(1) nth_map
       unfolding xj yj' by metis
-    hence "\<tau> yj' = \<theta> xj" using \<tau> xj_\<theta> by (metis subst_apply_term.simps(1) subst_compose_def) 
+    hence "\<tau> yj' = \<theta> xj" using \<tau> xj_\<theta> by (metis eval_term.simps(1) subst_compose_def) 
     moreover have "xi \<noteq> xj" using \<delta>_xi_comp \<delta>_xj_var by auto
     ultimately show False using \<theta>(1) xi_\<theta> xj_\<theta> unfolding subterm_inj_on_def by blast
   qed

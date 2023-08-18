@@ -2047,7 +2047,7 @@ proof -
   show ?thesis
     using 0 1 2[of _ "unlabel (transaction_receive T)"]
           3[of _ _ "unlabel (transaction_checks T)"]
-    unfolding unlabel_subst by (metis subst_apply_term.simps(1)) 
+    unfolding unlabel_subst by (metis eval_term.simps(1)) 
 qed
 
 lemma admissible_transaction_fv_in_receives_or_selects_dual_subst:
@@ -2220,7 +2220,7 @@ proof -
            unlabel (A@dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (?S' T1))@[\<langle>\<alpha> (?x n) in ?s\<rangle>]"
       using T a \<sigma> dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_append subst_lsst_append unlabel_append \<xi>_empty
       by (fastforce simp add: transaction_fresh_subst_def unlabel_def dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def
-                              subst_apply_labeled_stateful_strand_def)
+                              subst_apply_labeled_stateful_strand_def subst_compose)
     moreover have "db\<^sub>s\<^sub>s\<^sub>t (unlabel A) = db\<^sub>s\<^sub>s\<^sub>t (unlabel (A@dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (?S' T1)))"
       by (simp add: T1 db\<^sub>s\<^sub>s\<^sub>t_transaction_prefix_eq[OF T_wf] del: unlabel_append)
     ultimately have "\<exists>M. strand_sem_stateful M (set (db\<^sub>s\<^sub>s\<^sub>t (unlabel A) \<I>)) [\<langle>\<alpha> (?x n) in ?s\<rangle>] \<I>"
@@ -2247,7 +2247,7 @@ proof -
            unlabel (A@dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (?S' T1))@[\<langle>\<alpha> (?x n) not in ?s\<rangle>]"
       using T a \<sigma> dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_append subst_lsst_append unlabel_append \<xi>_empty
       by (fastforce simp add: transaction_fresh_subst_def unlabel_def dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def
-                              subst_apply_labeled_stateful_strand_def)
+                              subst_apply_labeled_stateful_strand_def subst_compose)
     moreover have "db\<^sub>s\<^sub>s\<^sub>t (unlabel A) = db\<^sub>s\<^sub>s\<^sub>t (unlabel (A@dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (?S' T1)))"
       by (simp add: T1 db\<^sub>s\<^sub>s\<^sub>t_transaction_prefix_eq[OF T_wf] del: unlabel_append)
     ultimately have "\<exists>M. strand_sem_stateful M (set (db\<^sub>s\<^sub>s\<^sub>t (unlabel A) \<I>)) [\<langle>\<alpha> (?x n) not in ?s\<rangle>] \<I>"
@@ -2308,7 +2308,7 @@ proof -
            unlabel (A@dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (?S' T1))@[select\<langle>\<alpha> (?x n), ?s\<rangle>]"
       using T a \<sigma> dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_append subst_lsst_append unlabel_append \<xi>_empty
       by (fastforce simp add: transaction_fresh_subst_def unlabel_def dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def
-                              subst_apply_labeled_stateful_strand_def)
+                              subst_apply_labeled_stateful_strand_def subst_compose)
     moreover have "db\<^sub>s\<^sub>s\<^sub>t (unlabel A) = db\<^sub>s\<^sub>s\<^sub>t (unlabel (A@dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (?S' T1)))"
       by (simp add: T1 db\<^sub>s\<^sub>s\<^sub>t_transaction_prefix_eq[OF T_wf] del: unlabel_append)
     ultimately have "\<exists>M. strand_sem_stateful M (set (db\<^sub>s\<^sub>s\<^sub>t (unlabel A) \<I>)) [\<langle>\<alpha> (?x n) in ?s\<rangle>] \<I>"
@@ -3617,7 +3617,7 @@ proof -
     proof
       assume "x \<in> set (transaction_fresh T)"
       hence "\<Gamma> t = TAtom Value \<or> (\<exists>a. \<Gamma> t = TAtom (Atom a))"
-        using T x_type(2) x by (metis \<Gamma>.simps(1) subst_apply_term.simps(1))
+        using T x_type(2) x by (metis \<Gamma>.simps(1) eval_term.simps(1))
       thus ?thesis by auto
     next
       assume "x \<in> fst ` set (transaction_decl T ())"
@@ -3626,7 +3626,7 @@ proof -
 
       have "\<Gamma> t = TAtom Bottom \<or> (\<exists>a. \<Gamma> t = TAtom (Atom a))"
         using c(1) \<Gamma>_consts_simps(1)[OF c(2)] x x_type
-              subst_apply_term.simps(1)[of x \<xi>] subst_apply_term.simps(1)[of x "\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>"]
+              eval_term.simps(1)[of _ x \<xi>] eval_term.simps(1)[of _ x "\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>"]
         by (cases "\<Gamma>\<^sub>f c") simp_all
       thus ?thesis by auto
     qed
@@ -4764,7 +4764,7 @@ proof -
       by force
     thus "\<exists>a. \<Gamma> (I x) = TAtom a \<and> a \<noteq> OccursSecType"
       using wt_subst_trm''[OF 3(1)[OF T \<xi>\<sigma>\<alpha>]] wt_subst_trm''[OF \<I>_wt] t(2) 
-      by (metis subst_apply_term.simps(1))
+      by (metis eval_term.simps(1))
     thus "I x \<noteq> Fun OccursSec []" "\<nexists>t. I x = occurs t"
       by auto
   qed
@@ -4789,7 +4789,7 @@ proof -
       by force
     thus "\<exists>a. \<Gamma> (I x) = TAtom a \<and> a \<noteq> OccursSecType"
       using wt_subst_trm''[OF 3(1)[OF T \<xi>\<sigma>\<alpha>]] wt_subst_trm''[OF \<I>_wt] y'
-      by (metis subst_apply_term.simps(1))
+      by (metis eval_term.simps(1))
     thus "I x \<noteq> Fun OccursSec []" "\<nexists>t. I x = occurs t"
       by auto
   qed
@@ -4811,7 +4811,7 @@ proof -
       by force
     thus "\<exists>a. \<Gamma> (I x) = TAtom a \<and> a \<noteq> OccursSecType"
       using wt_subst_trm''[OF 3(1)[OF T \<xi>\<sigma>\<alpha>]] wt_subst_trm''[OF \<I>_wt] t(2) 
-      by (metis subst_apply_term.simps(1))
+      by (metis eval_term.simps(1))
     thus "I x \<noteq> Fun OccursSec []" "\<nexists>t. I x = occurs t"
       by auto
   qed
@@ -4880,7 +4880,7 @@ proof -
       hence **: "OccursFact \<notin> \<Union>(funs_term ` set (snd (Ana s)))"
       proof (cases u)
         case (Var xu)
-        hence "s = (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) xu" using su(4) by (metis subst_apply_term.simps(1))
+        hence "s = (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) xu" using su(4) by (metis eval_term.simps(1))
         thus ?thesis using *(3) by fastforce
       qed (use su(4) KTu Ana_subst'[of _ _ Ku Tu "\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>"] in simp)
       
@@ -4958,7 +4958,7 @@ proof -
       hence **: "OccursSec \<notin> \<Union>(funs_term ` set (snd (Ana s)))"
       proof (cases u)
         case (Var xu)
-        hence "s = (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) xu" using su(4) by (metis subst_apply_term.simps(1))
+        hence "s = (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) xu" using su(4) by (metis eval_term.simps(1))
         thus ?thesis using *(3) by fastforce
       qed (use su(4) KTu Ana_subst'[of _ _ Ku Tu "\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>"] in simp)
       
@@ -5159,7 +5159,7 @@ proof (induction A rule: reachable_constraints.induct)
       using transaction_decl_fresh_renaming_substs_occurs_fact_send_receive(2)[
               OF step.hyps(3-5) T_adm]
             subst_to_var_is_var[of _ \<theta> x] step.prems(2)
-      unfolding \<theta>_def by (metis subst_apply_term.simps(1))
+      unfolding \<theta>_def by (metis eval_term.simps(1))
     hence "occurs (Var y) \<cdot> \<theta> \<in> set ts' \<cdot>\<^sub>s\<^sub>e\<^sub>t \<theta>"
           "receive\<langle>ts' \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta>\<rangle> \<in> set (unlabel (transaction_receive T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>))"
       using subst_lsst_unlabel_member[of "receive\<langle>ts'\<rangle>" "transaction_receive T" \<theta>]
@@ -5478,7 +5478,7 @@ proof -
   proof (cases t)
     case (Var x)
     hence "attack\<langle>n\<rangle> \<in> subst_range (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>)"
-      by (metis (no_types, lifting) t subst_apply_term.simps(1) subst_imgI term.distinct(1))  
+      by (metis (no_types, lifting) t eval_term.simps(1) subst_imgI term.distinct(1))  
     thus ?thesis
       using transaction_decl_fresh_renaming_substs_range_no_attack_const[OF hyps T]
       by blast
@@ -5662,7 +5662,7 @@ proof (induction \<A> rule: reachable_constraints.induct)
 
     have "Fun n [] = (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) y \<cdot> \<I>" using n y_x by simp
     hence y_n: "Fun n [] = (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha> \<circ>\<^sub>s \<I>) y"
-      by (metis subst_subst_compose[of "Var y" "\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>" \<I>] subst_apply_term.simps(1))
+      by (metis subst_subst_compose[of "Var y" "\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>" \<I>] eval_term.simps(1))
 
     have \<A>_ik_\<I>_vals: "\<forall>x \<in> fv\<^sub>s\<^sub>e\<^sub>t (ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>). \<exists>f. \<I> x = Fun f []"
     proof -
@@ -5673,7 +5673,7 @@ proof (induction \<A> rule: reachable_constraints.induct)
       hence "\<exists>f. \<I> x = Fun f []" when "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>" for x
         using that wf_trm_subst[OF \<I>_wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s, of "Var x"] wf_trm_Var[of x] const_type_inv_wf
               empty_fv_exists_fun[OF interpretation_grounds[OF \<I>_interp], of "Var x"] 
-        by (metis subst_apply_term.simps(1)[of x \<I>])
+        by (metis eval_term.simps(1)[of _ x \<I>])
       thus ?thesis
         using fv_ik_subset_fv_sst'[of "unlabel \<A>"] vars\<^sub>s\<^sub>s\<^sub>t_is_fv\<^sub>s\<^sub>s\<^sub>t_bvars\<^sub>s\<^sub>s\<^sub>t[of "unlabel \<A>"]
         by blast
@@ -5999,7 +5999,7 @@ proof -
   hence "\<exists>f. \<I> x = Fun f []"
     using x(1) wf_trm_subst[OF \<I>_wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s, of "Var x"] wf_trm_Var[of x] const_type_inv_wf
           empty_fv_exists_fun[OF interpretation_grounds[OF \<I>_interp], of "Var x"] 
-    by (metis subst_apply_term.simps(1)[of x \<I>])
+    by (metis eval_term.simps(1)[of _ x \<I>])
   hence 2: "\<I> x = Fun f []" using x(2) by force
 
   have 3: "\<Gamma>\<^sub>v x \<noteq> TAtom AbsValue" using 0 by force
@@ -6331,7 +6331,7 @@ proof -
                    admissible_transactionE(2)[OF T_adm],
                 of t]
         by (cases "t \<in> subst_range (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>)")
-           (blast, metis subst_apply_term.simps(1) subst_imgI)
+           (blast, metis eval_term.simps(1) subst_imgI)
     qed (use step.IH in fastforce)
   qed simp
 qed
@@ -7413,11 +7413,11 @@ next
     using subst_lsst_cons[of "(l2,insert\<langle>Var x,\<langle>k\<rangle>\<^sub>s\<rangle>)" "[]" \<theta>] T(6,7) unfolding dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_subst by auto
   hence "(T_upds = [] \<and> dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_updates T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>) = []) \<or>
          (T_upds \<noteq> [] \<and> dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_updates T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>) = [(l2,insert\<langle>Fun (Val n) [],\<langle>k\<rangle>\<^sub>s\<rangle>)])"
-    using subst_apply_term.simps(1)[of x \<theta>] unfolding \<theta>_def \<xi>_def \<sigma>_def by auto
+    unfolding \<theta>_def \<xi>_def \<sigma>_def by (auto simp: subst_compose)
   moreover have "dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_send T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>) = [(l1, receive\<langle>T_ts \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta>\<rangle>)]"
     using subst_lsst_cons[of "(l1, receive\<langle>T_ts\<rangle>)" "[]" \<theta>] T(6) unfolding dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_subst by auto
   hence "dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_send T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>) = [(l1, receive\<langle>T_ts \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta>\<rangle>)]"
-    using subst_apply_term.simps(1)[of x \<theta>] by auto
+    by auto
   ultimately have C:
       "(T_upds = [] \<and> C = [(l1, receive\<langle>T_ts \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta>\<rangle>)]) \<or>
        (T_upds \<noteq> [] \<and> C = [(l2, insert\<langle>Fun (Val n) [],\<langle>k\<rangle>\<^sub>s\<rangle>), (l1, receive\<langle>T_ts \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta>\<rangle>)])"

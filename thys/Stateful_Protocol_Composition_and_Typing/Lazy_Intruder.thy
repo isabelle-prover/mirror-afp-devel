@@ -589,12 +589,12 @@ next
   then obtain \<sigma> where \<sigma>: "\<theta> \<circ>\<^sub>s \<delta> \<circ>\<^sub>s \<sigma> = \<I>" unfolding subst_compose_def by auto
 
   have \<theta>fun_id: "Fun f U \<cdot> \<theta> = Fun f U" "Fun f T \<cdot> \<theta> = Fun f T"
-    using Unify.prems(1) trm_subst_ident[of "Fun f U" \<theta>]
+    using Unify.prems(1) subst_apply_term_ident[of "Fun f U" \<theta>]
           fv_subset_if_in_strand_ik[of "Fun f U" S] Unify.hyps(2)
           fv_snd_rcv_strand_subset(2)[of S]
           strand_vars_split(1)[of S "Send [Fun f T]#S'"]
     unfolding wf\<^sub>c\<^sub>o\<^sub>n\<^sub>s\<^sub>t\<^sub>r_def apply blast
-    using Unify.prems(1) trm_subst_ident[of "Fun f T" \<theta>]
+    using Unify.prems(1) subst_apply_term_ident[of "Fun f T" \<theta>]
     unfolding wf\<^sub>c\<^sub>o\<^sub>n\<^sub>s\<^sub>t\<^sub>r_def by fastforce
   hence \<theta>\<delta>_disj:
       "subst_domain \<theta> \<inter> subst_domain \<delta> = {}"
@@ -663,9 +663,7 @@ next
     by auto
   moreover have "subst_domain \<theta> \<inter> vars\<^sub>s\<^sub>t (S@Equality a t t'#S') = {}"
     using Equality.prems(1) unfolding wf\<^sub>c\<^sub>o\<^sub>n\<^sub>s\<^sub>t\<^sub>r_def by auto
-  ultimately have \<theta>fun_id: "t \<cdot> \<theta> = t" "t' \<cdot> \<theta> = t'"
-    using trm_subst_ident[of t \<theta>] trm_subst_ident[of t' \<theta>]
-    by auto
+  ultimately have \<theta>fun_id: "t \<cdot> \<theta> = t" "t' \<cdot> \<theta> = t'" by auto
   hence \<theta>\<delta>_disj:
       "subst_domain \<theta> \<inter> subst_domain \<delta> = {}"
       "subst_domain \<theta> \<inter> range_vars \<delta> = {}"

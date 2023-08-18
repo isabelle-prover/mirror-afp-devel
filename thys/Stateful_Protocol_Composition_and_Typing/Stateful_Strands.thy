@@ -1629,7 +1629,7 @@ lemma fv\<^sub>s\<^sub>s\<^sub>t_is_subterm_trms\<^sub>s\<^sub>s\<^sub>t_subst:
   shows "\<theta> x \<in> subterms\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>s\<^sub>s\<^sub>t (T \<cdot>\<^sub>s\<^sub>s\<^sub>t \<theta>))"
 using trms\<^sub>s\<^sub>s\<^sub>t_subst[OF assms(2)] subterms_subst_subset'[of \<theta> "trms\<^sub>s\<^sub>s\<^sub>t T"]
       fv\<^sub>s\<^sub>s\<^sub>t_is_subterm_trms\<^sub>s\<^sub>s\<^sub>t[OF assms(1)]
-by (metis (no_types, lifting) image_iff subset_iff subst_apply_term.simps(1))
+by (metis (no_types, lifting) image_iff subset_iff eval_term.simps(1))
 
 lemma fv\<^sub>s\<^sub>s\<^sub>t_subst_fv_subset:
   assumes "x \<in> fv\<^sub>s\<^sub>s\<^sub>t S" "x \<notin> bvars\<^sub>s\<^sub>s\<^sub>t S" "fv (\<theta> x) \<inter> bvars\<^sub>s\<^sub>s\<^sub>t S = {}"
