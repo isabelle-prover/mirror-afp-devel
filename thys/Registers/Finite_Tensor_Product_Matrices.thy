@@ -142,8 +142,9 @@ lemma mat_of_cblinfun_tensor_op:
   fixes a :: \<open>'a::enum ell2 \<Rightarrow>\<^sub>C\<^sub>L 'b::enum ell2\<close> and b :: \<open>'c::enum ell2 \<Rightarrow>\<^sub>C\<^sub>L 'd::enum ell2\<close>
   shows \<open>mat_of_cblinfun (tensor_op a b) = tensor_op_jnf (mat_of_cblinfun a) (mat_of_cblinfun b)\<close>
   apply (rule eq_matI, simp_all add: )
-  apply (subst mat_of_cblinfun_tensor_op_index, simp_all)
-  by (simp add: tensor_op_jnf_def case_prod_beta Let_def)
+    apply (subst mat_of_cblinfun_tensor_op_index)
+      apply (simp_all add: canonical_basis_length)
+  by (simp add: tensor_op_jnf_def case_prod_beta Let_def canonical_basis_length)
 
 
 lemma mat_of_cblinfun_assoc_ell2'[simp]: 
@@ -153,10 +154,10 @@ proof  (rule mat_eq_iff[THEN iffD2], intro conjI allI impI)
 
   show \<open>dim_row (mat_of_cblinfun ?assoc) =
     dim_row (1\<^sub>m (CARD('a) * CARD('b) * CARD('c)))\<close>
-    by (simp)
+    by (simp add: canonical_basis_length)
   show \<open>dim_col (mat_of_cblinfun ?assoc) =
     dim_col (1\<^sub>m (CARD('a) * CARD('b) * CARD('c)))\<close>
-    by (simp)
+    by (simp add: canonical_basis_length)
 
   fix i j
   let ?i = "Enum.enum ! i :: (('a\<times>'b)\<times>'c)" and ?j = "Enum.enum ! j :: ('a\<times>('b\<times>'c))"
@@ -242,7 +243,7 @@ proof -
     by simp
   also have \<open>\<dots> = mat_of_cblinfun ?assoc\<close>
     apply (rule right_mult_one_mat')
-    by (simp)
+    by (simp add: canonical_basis_length)
   finally show ?thesis
     by simp
 qed
