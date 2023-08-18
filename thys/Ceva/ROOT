@@ -1,0 +1,10 @@
+chapter AFP
+
+session Ceva (AFP) = "HOL-Analysis" +
+  options [timeout = 300]
+  sessions
+    Triangle
+  theories
+    Ceva
+  document_files
+    "root.tex"
