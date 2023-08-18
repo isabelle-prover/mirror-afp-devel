@@ -7,6 +7,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language><atom:link href="/topics/mathematics/geometry/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>Ceva&#39;s Theorem</title>
+      <link>/entries/Ceva.html</link>
+      <pubDate>Wed, 16 Aug 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Ceva.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Foundation of geometry in planes, and some complements: Excluding the parallel axioms</title>
       <link>/entries/Foundation_of_geometry.html</link>
       <pubDate>Mon, 22 Nov 2021 00:00:00 +0000</pubDate>

@@ -5200,6 +5200,22 @@ name = "Markus N. Rabe"
 [rabe.homepages]
 rabe_homepage = "http://www.react.uni-saarland.de/people/rabe.html"
 
+[rabing]
+name = "Mathias Schack Rabing"
+
+[rabing.emails]
+
+[rabing.emails.rabing_email]
+user = [
+  "mathiasrabing",
+]
+host = [
+  "outlook",
+  "com",
+]
+
+[rabing.homepages]
+
 [raedle]
 name = "Jonas Rädle"
 

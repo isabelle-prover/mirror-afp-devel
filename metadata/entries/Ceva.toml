@@ -1,0 +1,29 @@
+title = "Ceva's Theorem"
+date = 2023-08-16
+topics = [
+  "Mathematics/Geometry",
+]
+abstract = """
+This entry contains a definition of the area the triangle constructed by three points.
+Building on this, some basic geometric properties about the area of a triangle are derived.
+These properties are used to prove Ceva's theorem."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.rabing]
+email = "rabing_email"
+
+[contributors]
+
+[notify]
+rabing = "rabing_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []
