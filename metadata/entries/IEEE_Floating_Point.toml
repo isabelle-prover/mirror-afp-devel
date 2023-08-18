@@ -20,9 +20,13 @@ email = "hellauer_email"
 [contributors.immler]
 homepage = "immler_homepage"
 
+[contributors.weber]
+email = "weber_email"
+
 [notify]
 paulson = "paulson_email"
 immler = "immler_email"
+weber = "weber_email"
 
 [history]
 2017-09-25 = """
@@ -32,7 +36,17 @@ Added conversions from and to software floating point numbers
 2018-02-05 = """
 'Modernized' representation following the formalization in HOL4:
 former \"float_format\" and predicate \"is_valid\" is now encoded in a type \"('e, 'f) float\" where
-'e and 'f encode the size of exponent and fraction."""
+'e and 'f encode the size of exponent and fraction.<br>
+"""
+2023-05-10 = """
+Added the IEEE rounding mode \"roundNearestTiesToAway\".<br>
+"""
+2023-05-22 = """
+Added a model of floating-point arithmetic with a single NaN value.<br>
+"""
+2023-05-22 = """
+Added a translation of floating-point arithmetic into SMT-LIB.<br>
+"""
 
 [extra]
 
