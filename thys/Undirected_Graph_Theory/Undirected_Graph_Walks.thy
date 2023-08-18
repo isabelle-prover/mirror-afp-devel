@@ -540,7 +540,7 @@ proof -
       using paths_def is_path_def by simp_all
     then have eq: "length x = card (set x)"
       by (simp add: distinct_card)
-    then show "length x \<le> order" using a 1
+    then show "length x \<le> gorder" using a 1
       by (simp add: card_mono finV) 
   qed
   have "finite {xs. set xs \<subseteq> V \<and> length xs \<le> (card (V))}"

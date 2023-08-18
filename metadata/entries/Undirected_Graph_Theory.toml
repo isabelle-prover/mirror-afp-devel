@@ -38,6 +38,7 @@ homepage = "edmonds_homepage"
 edmonds = "edmonds_email"
 
 [history]
+2023-08-18 = "Renamed incident to vincident (vertex incident) and order to gorder to enable inheritance from design theory library"
 
 [extra]
 

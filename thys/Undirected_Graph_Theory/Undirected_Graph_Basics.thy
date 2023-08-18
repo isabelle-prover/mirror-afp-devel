@@ -238,20 +238,20 @@ locale graph_system =
 begin
 
 (* Basic incidence and adjacency definitions *)
-abbreviation order :: "nat" where
-"order \<equiv> card (V)"
+abbreviation gorder :: "nat" where
+"gorder \<equiv> card (V)"
 
 abbreviation graph_size :: "nat" where
 "graph_size \<equiv> card E"
 
-definition incident :: "'a \<Rightarrow> 'a edge \<Rightarrow> bool" where
-"incident v e \<equiv> v \<in> e"
+definition vincident :: "'a \<Rightarrow> 'a edge \<Rightarrow> bool" where
+"vincident v e \<equiv> v \<in> e"
 
-lemma incident_edge_in_wf: "e \<in> E \<Longrightarrow> incident v e \<Longrightarrow> v \<in> V"
-  using wellformed incident_def by auto
+lemma incident_edge_in_wf: "e \<in> E \<Longrightarrow> vincident v e \<Longrightarrow> v \<in> V"
+  using wellformed vincident_def by auto
 
 definition incident_edges :: "'a \<Rightarrow> 'a edge set" where
-"incident_edges v \<equiv>{e . e \<in> E \<and> incident v e}"
+"incident_edges v \<equiv>{e . e \<in> E \<and> vincident v e}"
 
 lemma incident_edges_empty: "\<not> (v \<in> V) \<Longrightarrow> incident_edges v = {}"
   using incident_edges_def incident_edge_in_wf by auto 
@@ -324,8 +324,8 @@ lemma vert_adj_sym: "vert_adj v1 v2 \<longleftrightarrow> vert_adj v2 v1"
 lemma vert_adj_imp_inV: "vert_adj v1 v2 \<Longrightarrow> v1 \<in> V \<and> v2 \<in> V"
   using vert_adj_def wellformed by auto
 
-lemma vert_adj_inc_edge_iff: "vert_adj v1 v2 \<longleftrightarrow> incident v1 {v1, v2} \<and> incident v2 {v1, v2} \<and> {v1, v2} \<in> E"
-  unfolding vert_adj_def incident_def by auto
+lemma vert_adj_inc_edge_iff: "vert_adj v1 v2 \<longleftrightarrow> vincident v1 {v1, v2} \<and> vincident v2 {v1, v2} \<and> {v1, v2} \<in> E"
+  unfolding vert_adj_def vincident_def by auto
 
 lemma not_vert_adj[simp]: "\<not> vert_adj v u \<Longrightarrow> {v, u} \<notin> E"
   by (simp add: vert_adj_def)
@@ -335,34 +335,34 @@ definition neighborhood :: "'a \<Rightarrow> 'a set" where \<comment> \<open> Ne
 
 lemma neighborhood_incident: "u \<in> neighborhood v \<longleftrightarrow> {u, v} \<in> incident_edges v"
   unfolding neighborhood_def incident_edges_def
-  by (smt (verit) incident_def insert_commute insert_subset mem_Collect_eq subset_insertI vert_adj_def wellformed) 
+  by (smt (verit) vincident_def insert_commute insert_subset mem_Collect_eq subset_insertI vert_adj_def wellformed) 
 
 definition neighbors_ss :: "'a \<Rightarrow> 'a set \<Rightarrow> 'a set" where
 "neighbors_ss x Y \<equiv> {y \<in> Y . vert_adj x y}"
 
 lemma vert_adj_edge_iff2: 
   assumes "v1 \<noteq> v2"
-  shows "vert_adj v1 v2 \<longleftrightarrow> (\<exists> e \<in> E . incident v1 e \<and> incident v2 e)"
+  shows "vert_adj v1 v2 \<longleftrightarrow> (\<exists> e \<in> E . vincident v1 e \<and> vincident v2 e)"
 proof (intro iffI)
-  show "vert_adj v1 v2 \<Longrightarrow> \<exists>e\<in>E. incident v1 e \<and> incident v2 e" using vert_adj_inc_edge_iff by blast
-  assume "\<exists>e\<in>E. incident v1 e \<and> incident v2 e"
-  then obtain e where ein: "e \<in> E" and "incident v1 e" and "incident v2 e"
+  show "vert_adj v1 v2 \<Longrightarrow> \<exists>e\<in>E. vincident v1 e \<and> vincident v2 e" using vert_adj_inc_edge_iff by blast
+  assume "\<exists>e\<in>E. vincident v1 e \<and> vincident v2 e"
+  then obtain e where ein: "e \<in> E" and "vincident v1 e" and "vincident v2 e"
   using vert_adj_inc_edge_iff assms alt_edge_size by auto 
   then have "e = {v1, v2}" using alt_edge_size assms
-    by (smt (verit) card_1_singletonE card_2_iff incident_def insertE insert_commute singletonD) 
+    by (smt (verit) card_1_singletonE card_2_iff vincident_def insertE insert_commute singletonD) 
   then show "vert_adj v1 v2" using ein vert_adj_def
     by simp 
 qed
 
 text \<open>Incident simple edges, i.e. excluding loops \<close>
 definition incident_sedges :: "'a \<Rightarrow> 'a edge set" where
-"incident_sedges v \<equiv> {e \<in> E . incident v e \<and> card e = 2}"
+"incident_sedges v \<equiv> {e \<in> E . vincident v e \<and> card e = 2}"
 
 lemma finite_inc_sedges: "finite E \<Longrightarrow> finite (incident_sedges v)"
   by (simp add: incident_sedges_def)
 
 lemma incident_sedges_empty[simp]: "v \<notin> V \<Longrightarrow> incident_sedges v = {}"
-  unfolding incident_sedges_def using incident_def wellformed by fastforce 
+  unfolding incident_sedges_def using vincident_def wellformed by fastforce 
 
 definition has_loop :: "'a \<Rightarrow> bool" where
 "has_loop v \<equiv> {v} \<in> E"
@@ -387,11 +387,11 @@ qed
 definition incident_loops :: "'a \<Rightarrow> 'a edge set" where
 "incident_loops v \<equiv> {e \<in> E. e = {v}}"
 
-lemma card1_incident_imp_vert: "incident v e \<and> card e = 1 \<Longrightarrow> e = {v}"
-  by (metis card_1_singletonE incident_def singleton_iff)
+lemma card1_incident_imp_vert: "vincident v e \<and> card e = 1 \<Longrightarrow> e = {v}"
+  by (metis card_1_singletonE vincident_def singleton_iff)
 
-lemma incident_loops_alt: "incident_loops v = {e \<in> E. incident v e \<and> card e = 1}"
-  unfolding incident_loops_def using card1_incident_imp_vert incident_def by auto 
+lemma incident_loops_alt: "incident_loops v = {e \<in> E. vincident v e \<and> card e = 1}"
+  unfolding incident_loops_def using card1_incident_imp_vert vincident_def by auto 
 
 lemma incident_loops_simp: "has_loop v \<Longrightarrow> incident_loops v = {{v}}" "\<not> has_loop v \<Longrightarrow> incident_loops v = {}"
   unfolding incident_loops_def has_loop_def by auto
@@ -431,7 +431,7 @@ next
   then have xin: "x \<in> E" and c2: "card x = 2" using is_sedge_def by auto
   then obtain v where "v \<in> x" and vin: "v \<in> V" using wellformed
     by (meson card_2_iff' subsetD) 
-  then have "x \<in> incident_sedges v" unfolding incident_sedges_def incident_def using xin c2 by auto
+  then have "x \<in> incident_sedges v" unfolding incident_sedges_def vincident_def using xin c2 by auto
   then show "x \<in> \<Union> (incident_sedges ` V)" using vin by auto
 qed
 
@@ -466,7 +466,7 @@ qed
 lemma incident_edges_neighbors_img: "incident_edges v = (\<lambda> u . {v, u}) ` (neighborhood v)"
 proof (intro subset_antisym subsetI)
   fix x assume a: "x \<in> incident_edges v"
-  then have xE: "x \<in> E" and vx: "v \<in> x" using incident_edges_def incident_def by auto
+  then have xE: "x \<in> E" and vx: "v \<in> x" using incident_edges_def vincident_def by auto
   then obtain u where "x = {u, v}" using alt_edge_size
     by (smt (verit, best) card_1_singletonE card_2_iff insertE insert_absorb2 insert_commute singletonD) 
   then have "u \<in> neighborhood v"
@@ -497,9 +497,9 @@ lemma degree0_neighborhood_empt_iff:
 definition is_isolated_vertex:: "'a \<Rightarrow> bool" where
 "is_isolated_vertex v \<equiv> v \<in> V \<and> (\<forall> u \<in> V . \<not> vert_adj u v)"
 
-lemma is_isolated_vertex_edge: "is_isolated_vertex v \<Longrightarrow> (\<And> e. e \<in> E \<Longrightarrow> \<not> (incident v e))"
+lemma is_isolated_vertex_edge: "is_isolated_vertex v \<Longrightarrow> (\<And> e. e \<in> E \<Longrightarrow> \<not> (vincident v e))"
   unfolding is_isolated_vertex_def
-  by (metis (full_types) all_not_in_conv incident_def insert_absorb insert_iff mk_disjoint_insert 
+  by (metis (full_types) all_not_in_conv vincident_def insert_absorb insert_iff mk_disjoint_insert 
       vert_adj_def vert_adj_edge_iff2 vert_adj_imp_inV) 
 
 lemma is_isolated_vertex_no_loop: "is_isolated_vertex v \<Longrightarrow> \<not> has_loop v"
@@ -510,7 +510,7 @@ proof -
   assume assm: "is_isolated_vertex v"
   then have "\<not> has_loop v" using is_isolated_vertex_no_loop by simp
   then have "degree v = card (incident_edges v)" using degree_no_loops by auto
-  moreover have "\<And> e. e \<in> E \<Longrightarrow> \<not> (incident v e)"
+  moreover have "\<And> e. e \<in> E \<Longrightarrow> \<not> (vincident v e)"
     using is_isolated_vertex_edge assm by auto
   then have "(incident_edges v) = {}" unfolding incident_edges_def by auto
   ultimately show "degree v = 0" by simp
@@ -812,7 +812,7 @@ definition degree_set :: "'a set \<Rightarrow> nat" where
 "degree_set vs \<equiv> card {e \<in> E. vs \<subseteq> e}"
 
 definition is_complete_n_graph:: "nat \<Rightarrow> bool" where 
-"is_complete_n_graph n \<equiv> order = n \<and> E = all_edges V"
+"is_complete_n_graph n \<equiv> gorder = n \<and> E = all_edges V"
 
 text \<open> The complement of a graph is a basic concept \<close>
 
@@ -857,7 +857,7 @@ locale subgraph = H: graph_system "V\<^sub>H :: 'a set" E\<^sub>H + G: graph_sys
 (* An intro rule *)
 lemma is_subgraphI[intro]: "V' \<subseteq> V \<Longrightarrow> E' \<subseteq> E \<Longrightarrow> graph_system V' E' \<Longrightarrow> graph_system V E \<Longrightarrow> subgraph V' E' V E"
   using graph_system_def by (unfold_locales) 
-    (auto simp add: graph_system.incident_def graph_system.incident_edge_in_wf)
+    (auto simp add: graph_system.vincident_def graph_system.incident_edge_in_wf)
 
 context subgraph
 begin

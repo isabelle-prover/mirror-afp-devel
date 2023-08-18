@@ -38,7 +38,7 @@ proof (unfold_locales)
     unfolding degree_set_def points_index_def by (simp add: fin_edges) 
 next
   have "size {#b \<in># (mset_set E) . x \<in> b#} = card (incident_edges x)"
-    unfolding incident_edges_def incident_def
+    unfolding incident_edges_def vincident_def
     by (simp add: fin_edges) 
   then show "mset_set E rep x = degree x" using alt_degree_def point_replication_number_def
     by metis
