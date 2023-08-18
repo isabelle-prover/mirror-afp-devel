@@ -2181,7 +2181,7 @@ next
     by auto
 qed
 
-lemma riesz_frechet_representation_existence:
+lemma riesz_representation_existence:
   \<comment> \<open>Theorem 3.4 in \<^cite>\<open>conway2013course\<close>\<close>
   fixes f::\<open>'a::chilbert_space \<Rightarrow> complex\<close>
   assumes a1: \<open>bounded_clinear f\<close>
@@ -2218,7 +2218,7 @@ next
     by blast
 qed
 
-lemma riesz_frechet_representation_unique:
+lemma riesz_representation_unique:
   \<comment> \<open>Theorem 3.4 in \<^cite>\<open>conway2013course\<close>\<close>
   fixes f::\<open>'a::complex_inner \<Rightarrow> complex\<close>
   assumes \<open>\<And>x. f x = (t \<bullet>\<^sub>C x)\<close>
@@ -2272,7 +2272,7 @@ proof -
       using bounded_clinear_axioms_def by blast
   qed
   hence \<open>\<forall>x. \<exists>t. \<forall>y.  g x y = (t \<bullet>\<^sub>C y)\<close>
-    using riesz_frechet_representation_existence by blast
+    using riesz_representation_existence by blast
   then obtain F where \<open>\<forall>x. \<forall>y. g x y = (F x \<bullet>\<^sub>C y)\<close>
     by metis
   then have \<open>is_cadjoint F G\<close>
@@ -2291,7 +2291,7 @@ lemma is_cadjoint_unique:
   assumes \<open>is_cadjoint F1 G\<close>
   assumes \<open>is_cadjoint F2 G\<close>
   shows \<open>F1 = F2\<close>
-  by (metis (full_types) assms(1) assms(2) ext is_cadjoint_def riesz_frechet_representation_unique)
+  by (metis (full_types) assms(1) assms(2) ext is_cadjoint_def riesz_representation_unique)
 
 lemma cadjoint_univ_prop:
   fixes G :: "'b::chilbert_space \<Rightarrow> 'a::complex_inner"

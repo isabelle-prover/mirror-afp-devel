@@ -258,7 +258,7 @@ proof (induct ws arbitrary: us us')
 qed simp
 
 text \<open>This is a variant of \<^term>\<open>Gram_Schmidt.gram_schmidt\<close> that does not require the input vectors
-  \<^term>\<open>ws\<close> to be distinct or orthogonal. (In comparison to \<^term>\<open>Gram_Schmidt.gram_schmidt\<close>,
+  \<^term>\<open>ws\<close> to be distinct or linearly independent. (In comparison to \<^term>\<open>Gram_Schmidt.gram_schmidt\<close>,
   our version also returns the result in reversed order.)\<close>
 definition "gram_schmidt0 n ws = gram_schmidt_sub0 n [] ws"
 

@@ -1687,32 +1687,22 @@ qed
 lemma ccsubspace_Times_top_top[simp]: \<open>ccsubspace_Times top top = top\<close>
   by transfer simp
 
+lemma is_ortho_set_prod:
+  assumes \<open>is_ortho_set B\<close> \<open>is_ortho_set B'\<close>
+  shows \<open>is_ortho_set ((B \<times> {0}) \<union> ({0} \<times> B'))\<close>
+  using assms unfolding is_ortho_set_def
+  apply (auto simp: is_onb_def is_ortho_set_def zero_prod_def)
+  by (meson is_onb_def is_ortho_set_def)+
+
+lemma ccsubspace_Times_ccspan:
+  assumes \<open>ccspan B = S\<close> and \<open>ccspan B' = S'\<close>
+  shows \<open>ccspan ((B \<times> {0}) \<union> ({0} \<times> B')) = ccsubspace_Times S S'\<close>
+  by (smt (z3) Diff_eq_empty_iff Sigma_cong assms(1) assms(2) ccspan.rep_eq ccspan_0 ccspan_Times_sing1 ccspan_Times_sing2 ccspan_of_empty ccspan_remove_0 ccspan_superset ccspan_union ccsubspace_Times_sup complex_vector.span_insert_0 space_as_set_bot sup_bot_left sup_bot_right)
+
 lemma is_onb_prod:
   assumes \<open>is_onb B\<close> \<open>is_onb B'\<close>
   shows \<open>is_onb ((B \<times> {0}) \<union> ({0} \<times> B'))\<close>
-proof -
-  from assms
-  have 1: \<open>is_ortho_set ((B \<times> {0}) \<union> ({0} \<times> B'))\<close>
-    unfolding is_ortho_set_def
-    apply (auto simp: is_onb_def is_ortho_set_def zero_prod_def)
-    by (meson is_onb_def is_ortho_set_def)+
-
-  have 2: \<open>(l, r) \<in> B \<times> {0} \<Longrightarrow> norm (l, r) = 1\<close> for l :: 'a and r :: 'b
-    using \<open>is_onb B\<close> is_onb_def by auto
-
-  have 3: \<open>(l, r) \<in> {0} \<times> B' \<Longrightarrow> norm (l, r) = 1\<close> for l :: 'a and r :: 'b
-    using \<open>is_onb B'\<close> is_onb_def by auto
-
-  have [simp]: \<open>ccspan B = top\<close> \<open>ccspan B' = top\<close>
-    using assms is_onb_def by auto
-
-  have 4: \<open>ccspan ((B \<times> {0}) \<union> ({0} \<times> B')) = top\<close>
-    by (auto simp: ccspan_Times_sing1 ccspan_Times_sing2 ccsubspace_Times_sup simp flip: ccspan_union)
-
-  from 1 2 3 4
-  show \<open>is_onb ((B \<times> {0}) \<union> ({0} \<times> B'))\<close>
-    by (auto simp add: is_onb_def)
-qed
+  using assms by (auto intro!: is_ortho_set_prod simp add: is_onb_def ccsubspace_Times_ccspan)
 
 subsection \<open>Images\<close>
 
@@ -2212,12 +2202,12 @@ lemma sandwich_id[simp]: "sandwich id_cblinfun = id_cblinfun"
   apply (rule cblinfun_eqI)
   by (auto simp: sandwich_apply)
 
-lemma sandwich_compose: \<open>sandwich A o\<^sub>C\<^sub>L sandwich B = sandwich (A o\<^sub>C\<^sub>L B)\<close>
+lemma sandwich_compose: \<open>sandwich (A o\<^sub>C\<^sub>L B) = sandwich A o\<^sub>C\<^sub>L sandwich B\<close>
   by (auto intro!: cblinfun_eqI simp: sandwich_apply)
 
 lemma inj_sandwich_isometry: \<open>inj (sandwich U)\<close> if [simp]: \<open>isometry U\<close> for U :: \<open>'a::chilbert_space \<Rightarrow>\<^sub>C\<^sub>L 'b::chilbert_space\<close>
   apply (rule inj_on_inverseI[where g=\<open>(*\<^sub>V) (sandwich (U*))\<close>])
-  by (auto simp: sandwich_compose simp flip: cblinfun_apply_cblinfun_compose)
+  by (auto simp flip: cblinfun_apply_cblinfun_compose sandwich_compose)
 
 lemma sandwich_isometry_id: \<open>isometry (U*) \<Longrightarrow> sandwich U id_cblinfun = id_cblinfun\<close>
   by (simp add: sandwich_apply isometry_def)
@@ -2745,9 +2735,9 @@ lemma Proj_on_image [simp]: \<open>Proj S *\<^sub>S S = S\<close>
 
 subsection \<open>Kernel / eigenspaces\<close>
 
-lift_definition kernel :: "'a::complex_normed_vector \<Rightarrow>\<^sub>C\<^sub>L'b::complex_normed_vector
+lift_definition kernel :: "'a::complex_normed_vector \<Rightarrow>\<^sub>C\<^sub>L 'b::complex_normed_vector
    \<Rightarrow> 'a ccsubspace"
-  is "\<lambda> f. f -` {0}"
+  is "\<lambda>f. f -` {0}"
   by (metis kernel_is_closed_csubspace)
 
 definition eigenspace :: "complex \<Rightarrow> 'a::complex_normed_vector \<Rightarrow>\<^sub>C\<^sub>L'a \<Rightarrow> 'a ccsubspace" where
@@ -3140,12 +3130,13 @@ definition iso_cblinfun :: \<open>('a::complex_normed_vector, 'b::complex_normed
 definition \<open>invertible_cblinfun A \<longleftrightarrow> (\<exists>B. B o\<^sub>C\<^sub>L A = id_cblinfun)\<close>
 
 definition cblinfun_inv :: \<open>('a::complex_normed_vector, 'b::complex_normed_vector) cblinfun \<Rightarrow> ('b,'a) cblinfun\<close> where
-  \<open>cblinfun_inv A = (SOME B. B o\<^sub>C\<^sub>L A = id_cblinfun)\<close>
+  \<open>cblinfun_inv A = (if invertible_cblinfun A then SOME B. B o\<^sub>C\<^sub>L A = id_cblinfun else 0)\<close>
 
 lemma cblinfun_inv_left:
   assumes \<open>invertible_cblinfun A\<close>
   shows \<open>cblinfun_inv A o\<^sub>C\<^sub>L A = id_cblinfun\<close>
-  unfolding cblinfun_inv_def apply (rule someI_ex)
+  apply (simp add: assms cblinfun_inv_def)
+  apply (rule someI_ex)
   using assms by (simp add: invertible_cblinfun_def)
 
 lemma inv_cblinfun_invertible:  \<open>iso_cblinfun A \<Longrightarrow> invertible_cblinfun A\<close>
@@ -3159,7 +3150,7 @@ proof -
   obtain B where AB: \<open>A o\<^sub>C\<^sub>L B = id_cblinfun\<close> and BA: \<open>B o\<^sub>C\<^sub>L A = id_cblinfun\<close>
     using iso_cblinfun_def by blast
   from BA have \<open>cblinfun_inv A o\<^sub>C\<^sub>L A = id_cblinfun\<close>
-    by (metis (mono_tags, lifting) cblinfun_inv_def someI_ex)
+    by (simp add: assms cblinfun_inv_left inv_cblinfun_invertible)
   with AB BA have \<open>cblinfun_inv A = B\<close>
     by (metis cblinfun_assoc_left(1) cblinfun_compose_id_right)
   with AB show \<open>A o\<^sub>C\<^sub>L cblinfun_inv A = id_cblinfun\<close>
@@ -3194,7 +3185,7 @@ qed
 
 lemma infsum_cblinfun_apply_invertible:
   assumes \<open>invertible_cblinfun A\<close>
-  shows \<open>infsum (\<lambda>x. A *\<^sub>V g x) S = A *\<^sub>V (infsum g S)\<close>
+  shows \<open>(\<Sum>\<^sub>\<infinity>x\<in>S. A *\<^sub>V g x) = A *\<^sub>V (\<Sum>\<^sub>\<infinity>x\<in>S. g x)\<close>
 proof (cases \<open>g summable_on S\<close>)
   case True
   then show ?thesis
@@ -3397,7 +3388,7 @@ lemma heterogenous_same_type_cblinfun[simp]: \<open>heterogenous_same_type_cblin
   unfolding heterogenous_same_type_cblinfun_def by auto
 
 instantiation cblinfun :: (chilbert_space, chilbert_space) ord begin
-definition less_eq_cblinfun_def_heterogenous: \<open>A \<le> B =
+definition less_eq_cblinfun_def_heterogenous: \<open>A \<le> B \<longleftrightarrow>
   (if heterogenous_same_type_cblinfun TYPE('a) TYPE('b) then
     \<forall>\<psi>::'b. cinner \<psi> ((B-A) *\<^sub>V heterogenous_cblinfun_id *\<^sub>V \<psi>) \<ge> 0 else (A=B))\<close>
 definition \<open>(A :: 'a \<Rightarrow>\<^sub>C\<^sub>L 'b) < B \<longleftrightarrow> A \<le> B \<and> \<not> B \<le> A\<close>
@@ -4234,21 +4225,21 @@ qed
 
 subsection \<open>Riesz-representation theorem\<close>
 
-theorem riesz_frechet_representation_cblinfun_existence:
+theorem riesz_representation_cblinfun_existence:
   \<comment> \<open>Theorem 3.4 in \<^cite>\<open>conway2013course\<close>\<close>
   fixes f::\<open>'a::chilbert_space \<Rightarrow>\<^sub>C\<^sub>L complex\<close>
   shows \<open>\<exists>t. \<forall>x.  f *\<^sub>V x = (t \<bullet>\<^sub>C x)\<close>
-  by transfer (rule riesz_frechet_representation_existence)
+  by transfer (rule riesz_representation_existence)
 
-lemma riesz_frechet_representation_cblinfun_unique:
+lemma riesz_representation_cblinfun_unique:
   \<comment> \<open>Theorem 3.4 in \<^cite>\<open>conway2013course\<close>\<close>
   fixes f::\<open>'a::complex_inner \<Rightarrow>\<^sub>C\<^sub>L complex\<close>
   assumes \<open>\<And>x. f *\<^sub>V x = (t \<bullet>\<^sub>C x)\<close>
   assumes \<open>\<And>x. f *\<^sub>V x = (u \<bullet>\<^sub>C x)\<close>
   shows \<open>t = u\<close>
-  using assms by (rule riesz_frechet_representation_unique)
+  using assms by (rule riesz_representation_unique)
 
-theorem riesz_frechet_representation_cblinfun_norm:
+theorem riesz_representation_cblinfun_norm:
   includes notation_norm
   fixes f::\<open>'a::chilbert_space \<Rightarrow>\<^sub>C\<^sub>L complex\<close>
   assumes \<open>\<And>x.  f *\<^sub>V x = (t \<bullet>\<^sub>C x)\<close>
@@ -4306,12 +4297,12 @@ definition the_riesz_rep :: \<open>('a::chilbert_space \<Rightarrow>\<^sub>C\<^s
 lemma the_riesz_rep[simp]: \<open>the_riesz_rep f \<bullet>\<^sub>C x = f *\<^sub>V x\<close>
   unfolding the_riesz_rep_def
   apply (rule someI2_ex)
-  by (simp_all add: riesz_frechet_representation_cblinfun_existence)
+  by (simp_all add: riesz_representation_cblinfun_existence)
 
 lemma the_riesz_rep_unique:
   assumes \<open>\<And>x. f *\<^sub>V x = t \<bullet>\<^sub>C x\<close>
   shows \<open>t = the_riesz_rep f\<close>
-  using assms riesz_frechet_representation_cblinfun_unique the_riesz_rep by metis
+  using assms riesz_representation_cblinfun_unique the_riesz_rep by metis
 
 lemma the_riesz_rep_scaleC: \<open>the_riesz_rep (c *\<^sub>C f) = cnj c *\<^sub>C the_riesz_rep f\<close>
   apply (rule the_riesz_rep_unique[symmetric])
@@ -4322,7 +4313,7 @@ lemma the_riesz_rep_add: \<open>the_riesz_rep (f + g) = the_riesz_rep f + the_ri
   by (auto simp: cinner_add_left cblinfun.add_left)
 
 lemma the_riesz_rep_norm[simp]: \<open>norm (the_riesz_rep f) = norm f\<close>
-  apply (rule riesz_frechet_representation_cblinfun_norm[symmetric])
+  apply (rule riesz_representation_cblinfun_norm[symmetric])
   by simp
 
 lemma bounded_antilinear_the_riesz_rep[bounded_antilinear]: \<open>bounded_antilinear the_riesz_rep\<close>
@@ -4384,13 +4375,13 @@ proof -
       apply (subst CBlinfun_inverse)
       by (auto intro!: bounded_linear_intros)
     obtain y'' where \<open>y' z = y'' \<bullet>\<^sub>C z\<close> for z
-      using riesz_frechet_representation_cblinfun_existence by blast
+      using riesz_representation_cblinfun_existence by blast
     then have y'': \<open>z \<bullet>\<^sub>C y'' = cnj (y' z)\<close> for z
       by auto
     have \<open>(bidual_embedding *\<^sub>V y'') *\<^sub>V f = y *\<^sub>V f\<close> for f :: \<open>'a \<Rightarrow>\<^sub>C\<^sub>L complex\<close>
     proof -
       obtain f' where f': \<open>f z = f' \<bullet>\<^sub>C z\<close> for z
-        using riesz_frechet_representation_cblinfun_existence by blast
+        using riesz_representation_cblinfun_existence by blast
       then have f'2: \<open>f = cblinfun_cinner_right f'\<close>
         using cblinfun_apply_inject by force
       show ?thesis

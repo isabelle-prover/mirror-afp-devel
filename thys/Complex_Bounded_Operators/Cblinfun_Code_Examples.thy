@@ -33,6 +33,8 @@ value "id_cblinfun - id_cblinfun :: bool ell2 \<Rightarrow>\<^sub>C\<^sub>L bool
 
 value "classical_operator (\<lambda>b. Some (\<not> b))"
 
+value \<open>explicit_cblinfun (\<lambda>x y :: bool. of_bool (x \<and> y))\<close>
+
 value "id_cblinfun = (0 :: bool ell2 \<Rightarrow>\<^sub>C\<^sub>L bool ell2)"
 
 value "2 *\<^sub>R id_cblinfun :: bool ell2 \<Rightarrow>\<^sub>C\<^sub>L bool ell2"

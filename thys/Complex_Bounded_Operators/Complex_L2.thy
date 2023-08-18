@@ -947,7 +947,7 @@ lemma cinner_ket: \<open>(ket i \<bullet>\<^sub>C ket j) = of_bool (i=j)\<close>
 lemma ket_injective[simp]: \<open>ket i = ket j \<longleftrightarrow> i = j\<close>
   by (metis cinner_ket one_neq_zero of_bool_def)
 
-lemma inj_ket[simp]: \<open>inj ket\<close>
+lemma inj_ket[simp]: \<open>inj_on ket M\<close>
   by (simp add: inj_on_def)
 
 lemma trunc_ell2_ket_cspan:
@@ -1322,31 +1322,30 @@ end
 subsection \<open>Explicit bounded operators\<close>
 
 definition explicit_cblinfun :: \<open>('a \<Rightarrow> 'b \<Rightarrow> complex) \<Rightarrow> ('b ell2, 'a ell2) cblinfun\<close> where
-  \<open>explicit_cblinfun m = cblinfun_extension (range ket) (\<lambda>a. Abs_ell2 (\<lambda>j. m j (inv ket a)))\<close>
+  \<open>explicit_cblinfun M = cblinfun_extension (range ket) (\<lambda>a. Abs_ell2 (\<lambda>j. M j (inv ket a)))\<close>
 
 definition explicit_cblinfun_exists :: \<open>('a \<Rightarrow> 'b \<Rightarrow> complex) \<Rightarrow> bool\<close> where
-  \<open>explicit_cblinfun_exists m \<longleftrightarrow> 
-    (\<forall>a. has_ell2_norm (\<lambda>j. m j a)) \<and> 
-      cblinfun_extension_exists (range ket) (\<lambda>a. Abs_ell2 (\<lambda>j. m j (inv ket a)))\<close>
+  \<open>explicit_cblinfun_exists M \<longleftrightarrow> 
+    (\<forall>a. has_ell2_norm (\<lambda>j. M j a)) \<and> 
+      cblinfun_extension_exists (range ket) (\<lambda>a. Abs_ell2 (\<lambda>j. M j (inv ket a)))\<close>
 
 lemma explicit_cblinfun_exists_bounded:
-  fixes B :: real
   assumes \<open>\<And>S T \<psi>. finite S \<Longrightarrow> finite T \<Longrightarrow> (\<And>a. a\<notin>T \<Longrightarrow> \<psi> a = 0) \<Longrightarrow>
-            (\<Sum>b\<in>S. (cmod (\<Sum>a\<in>T. \<psi> a *\<^sub>C m b a))\<^sup>2) \<le> B * (\<Sum>a\<in>T. (cmod (\<psi> a))\<^sup>2)\<close>
-  shows \<open>explicit_cblinfun_exists m\<close>
+            (\<Sum>b\<in>S. (cmod (\<Sum>a\<in>T. \<psi> a *\<^sub>C M b a))\<^sup>2) \<le> B * (\<Sum>a\<in>T. (cmod (\<psi> a))\<^sup>2)\<close>
+  shows \<open>explicit_cblinfun_exists M\<close>
 proof -
   define F f where \<open>F = complex_vector.construct (range ket) f\<close>
-    and \<open>f = (\<lambda>a. Abs_ell2 (\<lambda>j. m j (inv ket a)))\<close>
+    and \<open>f = (\<lambda>a. Abs_ell2 (\<lambda>j. M j (inv ket a)))\<close>
   from assms[where S=\<open>{}\<close> and T=\<open>{undefined}\<close> and \<psi>=\<open>\<lambda>x. of_bool (x=undefined)\<close>]
   have \<open>B \<ge> 0\<close>
     by auto
-  have has_norm: \<open>has_ell2_norm (\<lambda>b. m b a)\<close> for a
+  have has_norm: \<open>has_ell2_norm (\<lambda>b. M b a)\<close> for a
   proof (unfold has_ell2_norm_def, intro nonneg_bdd_above_summable_on bdd_aboveI)
-    show \<open>0 \<le> cmod ((m x a)\<^sup>2)\<close> for x
+    show \<open>0 \<le> cmod ((M x a)\<^sup>2)\<close> for x
       by simp
     fix B'
-    assume \<open>B' \<in> sum (\<lambda>x. cmod ((m x a)\<^sup>2)) ` {F. F \<subseteq> UNIV \<and> finite F}\<close>
-    then obtain S where [simp]: \<open>finite S\<close> and B'_def: \<open>B' = (\<Sum>x\<in>S. cmod ((m x a)\<^sup>2))\<close>
+    assume \<open>B' \<in> sum (\<lambda>x. cmod ((M x a)\<^sup>2)) ` {F. F \<subseteq> UNIV \<and> finite F}\<close>
+    then obtain S where [simp]: \<open>finite S\<close> and B'_def: \<open>B' = (\<Sum>x\<in>S. cmod ((M x a)\<^sup>2))\<close>
       by blast
     from assms[where S=S and T=\<open>{a}\<close> and \<psi>=\<open>\<lambda>x. of_bool (x=a)\<close>]
     show \<open>B' \<le> B\<close>
@@ -1402,14 +1401,14 @@ proof -
       have \<open>(norm (trunc_ell2 S (F \<psi>)))\<^sup>2 = (norm (trunc_ell2 S (\<Sum>x\<in>T. Rep_ell2 \<psi> x *\<^sub>C f (ket x))))\<^sup>2\<close>
         apply (rule arg_cong[where f=\<open>\<lambda>x. (norm (trunc_ell2 _ x))\<^sup>2\<close>])
         by (simp add: F_def * )
-      also have \<open>\<dots> = (norm (trunc_ell2 S (\<Sum>x\<in>T. Rep_ell2 \<psi> x *\<^sub>C Abs_ell2 (\<lambda>b. m b x))))\<^sup>2\<close>
+      also have \<open>\<dots> = (norm (trunc_ell2 S (\<Sum>x\<in>T. Rep_ell2 \<psi> x *\<^sub>C Abs_ell2 (\<lambda>b. M b x))))\<^sup>2\<close>
         by (simp add: f_def)
-      also have \<open>\<dots> = (\<Sum>i\<in>S. (cmod (Rep_ell2 (\<Sum>x\<in>T. Rep_ell2 \<psi> x *\<^sub>C Abs_ell2 (\<lambda>b. m b x)) i))\<^sup>2)\<close>
+      also have \<open>\<dots> = (\<Sum>i\<in>S. (cmod (Rep_ell2 (\<Sum>x\<in>T. Rep_ell2 \<psi> x *\<^sub>C Abs_ell2 (\<lambda>b. M b x)) i))\<^sup>2)\<close>
         by (simp add: that norm_trunc_ell2_finite real_sqrt_pow2 sum_nonneg)
-      also have \<open>\<dots> = (\<Sum>i\<in>S. (cmod (\<Sum>x\<in>T. Rep_ell2 \<psi> x *\<^sub>C Rep_ell2 (Abs_ell2 (\<lambda>b. m b x)) i))\<^sup>2)\<close>
+      also have \<open>\<dots> = (\<Sum>i\<in>S. (cmod (\<Sum>x\<in>T. Rep_ell2 \<psi> x *\<^sub>C Rep_ell2 (Abs_ell2 (\<lambda>b. M b x)) i))\<^sup>2)\<close>
         by (simp add: complex_vector.linear_sum[OF clinear_Rep_ell2]
             clinear.scaleC[OF clinear_Rep_ell2])
-      also have \<open>\<dots> = (\<Sum>i\<in>S. (cmod (\<Sum>x\<in>T. Rep_ell2 \<psi> x *\<^sub>C m i x))\<^sup>2)\<close>
+      also have \<open>\<dots> = (\<Sum>i\<in>S. (cmod (\<Sum>x\<in>T. Rep_ell2 \<psi> x *\<^sub>C M i x))\<^sup>2)\<close>
         using has_norm by (simp add: Abs_ell2_inverse)
       also have \<open>\<dots> \<le> B * (\<Sum>x\<in>T. (cmod (Rep_ell2 \<psi> x))\<^sup>2)\<close>
         using \<open>finite S\<close> \<open>finite T\<close> Rep_\<psi> by (rule assms)
@@ -1435,13 +1434,13 @@ proof -
     using explicit_cblinfun_exists_def f_def by blast
 qed
 
-lemma explicit_cblinfun_exists_finite_dim[simp]: \<open>explicit_cblinfun_exists m\<close> for m :: "_::finite \<Rightarrow> _ :: finite \<Rightarrow> _"
+lemma explicit_cblinfun_exists_finite_dim[simp]: \<open>explicit_cblinfun_exists m\<close> for m :: "_::finite \<Rightarrow> _::finite \<Rightarrow> _"
   by (auto simp: explicit_cblinfun_exists_def cblinfun_extension_exists_finite_dim)
 
-lemma explicit_cblinfun_ket: \<open>explicit_cblinfun m *\<^sub>V ket a = Abs_ell2 (\<lambda>b. m b a)\<close> if \<open>explicit_cblinfun_exists m\<close>
+lemma explicit_cblinfun_ket: \<open>explicit_cblinfun M *\<^sub>V ket a = Abs_ell2 (\<lambda>b. M b a)\<close> if \<open>explicit_cblinfun_exists M\<close>
   using that by (auto simp: explicit_cblinfun_exists_def explicit_cblinfun_def cblinfun_extension_apply)
 
-lemma Rep_ell2_explicit_cblinfun_ket[simp]: \<open>Rep_ell2 (explicit_cblinfun m *\<^sub>V ket a) b = m b a\<close> if \<open>explicit_cblinfun_exists m\<close>
+lemma Rep_ell2_explicit_cblinfun_ket[simp]: \<open>Rep_ell2 (explicit_cblinfun M *\<^sub>V ket a) b = M b a\<close> if \<open>explicit_cblinfun_exists M\<close>
   using that apply (simp add: explicit_cblinfun_ket)
   by (simp add: Abs_ell2_inverse explicit_cblinfun_exists_def)
 

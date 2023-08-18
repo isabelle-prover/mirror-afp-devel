@@ -44,12 +44,12 @@ lemma dim_vec_of_basis_enum'[simp]:
 definition basis_enum_of_vec :: \<open>complex vec \<Rightarrow> 'a::basis_enum\<close> where
   \<open>basis_enum_of_vec v =
     (if dim_vec v = length (canonical_basis :: 'a list)
-     then sum_list (map2 (*\<^sub>C) (list_of_vec v) (canonical_basis::'a list))
+     then sum_list (map2 (*\<^sub>C) (list_of_vec v) (canonical_basis :: 'a list))
      else 0)\<close>
 
 lemma vec_of_basis_enum_inverse[simp]:
-  fixes w::"'a::basis_enum"
-  shows  "basis_enum_of_vec (vec_of_basis_enum w) = w"
+  fixes \<psi> :: "'a::basis_enum"
+  shows  "basis_enum_of_vec (vec_of_basis_enum \<psi>) = \<psi>"
   unfolding vec_of_basis_enum_def basis_enum_of_vec_def
   unfolding list_vec zip_map1 zip_same_conv_map map_map
   apply (simp add: o_def)
@@ -58,7 +58,7 @@ lemma vec_of_basis_enum_inverse[simp]:
   using  is_generator_set by auto
 
 lemma basis_enum_of_vec_inverse[simp]:
-  fixes v::"complex vec"
+  fixes v :: "complex vec"
   defines "n \<equiv> length (canonical_basis :: 'a::basis_enum list)"
   assumes f1: "dim_vec v = n"
   shows "vec_of_basis_enum ((basis_enum_of_vec v)::'a) = v"
@@ -100,9 +100,16 @@ lemma basis_enum_eq_vec_of_basis_enumI:
   shows "a = b"
   by (metis assms vec_of_basis_enum_inverse)
 
-lemma vec_of_basis_enum_carrier_vec[simp]: \<open>vec_of_basis_enum v \<in> carrier_vec CARD('a)\<close> for v :: \<open>'a::enum ell2\<close>
+lemma vec_of_basis_enum_carrier_vec[simp]: \<open>vec_of_basis_enum v \<in> carrier_vec (canonical_basis_length TYPE('a))\<close> for v :: \<open>'a::basis_enum\<close>
   apply (simp only: dim_vec_of_basis_enum' carrier_vec_def vec_of_basis_enum_def)
-  by simp
+  by (simp add: canonical_basis_length)
+
+lemma vec_of_basis_enum_inj: "inj vec_of_basis_enum"
+  by (simp add: basis_enum_eq_vec_of_basis_enumI injI)
+
+lemma basis_enum_of_vec_inj: "inj_on (basis_enum_of_vec :: complex vec \<Rightarrow> 'a)
+      (carrier_vec (length (canonical_basis :: 'a::{basis_enum,complex_normed_vector} list)))"
+  by (metis basis_enum_of_vec_inverse carrier_dim_vec inj_on_inverseI)
 
 subsection \<open>Operations on vectors\<close>
 
@@ -134,7 +141,7 @@ proof -
 qed
 
 lemma vec_of_basis_enum_add:
-  "vec_of_basis_enum (b1 + b2) = vec_of_basis_enum b1 + vec_of_basis_enum b2"
+  \<open>vec_of_basis_enum (a + b) = vec_of_basis_enum a + vec_of_basis_enum b\<close>
   by (auto simp: vec_of_basis_enum_def complex_vector.representation_add)
 
 lemma vec_of_basis_enum_scaleC:
@@ -188,7 +195,7 @@ lemma cscalar_prod_vec_of_basis_enum: "cscalar_prod (vec_of_basis_enum \<phi>) (
 
 definition \<open>norm_vec \<psi> = sqrt (\<Sum> i \<in> {0 ..< dim_vec \<psi>}. let z = vec_index \<psi> i in (Re z)\<^sup>2 + (Im z)\<^sup>2)\<close>
 
-lemma norm_ell2_vec_of_basis_enum: \<open>norm \<psi> = norm_vec (vec_of_basis_enum \<psi>)\<close> for \<psi> :: "'a::onb_enum"
+lemma norm_vec_of_basis_enum: \<open>norm \<psi> = norm_vec (vec_of_basis_enum \<psi>)\<close> for \<psi> :: "'a::onb_enum"
 proof -
   have "norm \<psi> = sqrt (cmod (\<Sum>i = 0..<dim_vec (vec_of_basis_enum \<psi>).
             vec_of_basis_enum \<psi> $ i * conjugate (vec_of_basis_enum \<psi>) $ i))"
@@ -606,18 +613,18 @@ definition mat_of_cblinfun :: \<open>'a::{basis_enum,complex_normed_vector} \<Ri
   for f
 
 lift_definition cblinfun_of_mat :: \<open>complex mat \<Rightarrow> 'a::{basis_enum,complex_normed_vector} \<Rightarrow>\<^sub>C\<^sub>L'b::{basis_enum,complex_normed_vector}\<close> is
-  \<open>\<lambda>M. \<lambda>v. (if M\<in>carrier_mat (length (canonical_basis :: 'b list)) (length (canonical_basis :: 'a list))
-           then basis_enum_of_vec (M *\<^sub>v vec_of_basis_enum v)
-           else 0)\<close>
-proof
+  \<open>\<lambda>M. if M\<in>carrier_mat (length (canonical_basis :: 'b list)) (length (canonical_basis :: 'a list))
+           then \<lambda>v. basis_enum_of_vec (M *\<^sub>v vec_of_basis_enum v)
+           else (\<lambda>v. 0)\<close>
+proof (intro bounded_clinear_finite_dim clinearI)
   fix M :: "complex mat"
   define m where "m = length (canonical_basis :: 'b list)"
   define n where "n = length (canonical_basis :: 'a list)"
   define f::"complex mat \<Rightarrow> 'a \<Rightarrow> 'b"
-    where "f M v = (if M\<in>carrier_mat m n
-        then basis_enum_of_vec (M *\<^sub>v vec_of_basis_enum (v::'a))
-        else (0::'b))"
-    for M::"complex mat" and v::'a
+    where "f M = (if M\<in>carrier_mat m n
+        then \<lambda>v. basis_enum_of_vec (M *\<^sub>v vec_of_basis_enum (v::'a))
+        else (\<lambda>v. 0))"
+    for M::"complex mat"
 
   show add: \<open>f M (b1 + b2) = f M b1 + f M b2\<close> for b1 b2
     apply (auto simp: f_def)
@@ -626,29 +633,6 @@ proof
   show scale: \<open>f M (c *\<^sub>C b) = c *\<^sub>C f M b\<close> for c b
     apply (auto simp: f_def)
     by (metis carrier_matD(1) carrier_vec_dim_vec dim_mult_mat_vec dim_vec_of_basis_enum' m_def mult_mat_vec n_def basis_enum_of_vec_mult vec_of_basis_enum_scaleC)
-
-  from add scale have \<open>clinear (f M)\<close>
-    by (simp add: clinear_iff)
-
-  show \<open>\<exists>K. \<forall>b. norm (f M b) \<le> norm b * K\<close>
-  proof (cases "M\<in>carrier_mat m n")
-    case True
-    have f_def': "f M v = basis_enum_of_vec (M *\<^sub>v (vec_of_basis_enum v))" for v
-      using True f_def
-        m_def n_def by auto
-    have M_carrier_mat:
-      "M \<in> carrier_mat m n"
-      by (simp add: True)
-    have "bounded_clinear (f M)"
-      apply (rule bounded_clinear_finite_dim) using \<open>clinear (f M)\<close> by auto
-    thus ?thesis
-      by (simp add: bounded_clinear.bounded)
-  next
-    case False
-    thus ?thesis
-      unfolding f_def m_def n_def
-      by (metis (full_types) order_refl mult_eq_0_iff norm_eq_zero)
-  qed
 qed
 
 lemma cblinfun_of_mat_invalid: 
@@ -657,18 +641,26 @@ lemma cblinfun_of_mat_invalid:
   apply (transfer fixing: M)
   using assms by (simp add: canonical_basis_length)
 
-lemma mat_of_cblinfun_ell2_carrier[simp]: \<open>mat_of_cblinfun (a::'a::enum ell2 \<Rightarrow>\<^sub>C\<^sub>L 'b::enum ell2) \<in> carrier_mat CARD('b) CARD('a)\<close>
-  by (simp add: mat_of_cblinfun_def)
+lemma dim_row_mat_of_cblinfun[simp]: \<open>dim_row (mat_of_cblinfun (a::'a::{basis_enum,complex_normed_vector} \<Rightarrow>\<^sub>C\<^sub>L 'b::{basis_enum,complex_normed_vector})) = canonical_basis_length TYPE('b)\<close>
+  by (simp add: mat_of_cblinfun_def canonical_basis_length)
 
-lemma dim_row_mat_of_cblinfun[simp]: \<open>dim_row (mat_of_cblinfun (a::'a::enum ell2 \<Rightarrow>\<^sub>C\<^sub>L 'b::enum ell2)) = CARD('b)\<close>
-  by (simp add: mat_of_cblinfun_def)
+lemma dim_col_mat_of_cblinfun[simp]: \<open>dim_col (mat_of_cblinfun (a::'a::{basis_enum,complex_normed_vector} \<Rightarrow>\<^sub>C\<^sub>L 'b::{basis_enum,complex_normed_vector})) = canonical_basis_length TYPE('a)\<close>
+  by (simp add: mat_of_cblinfun_def canonical_basis_length)
 
-lemma dim_col_mat_of_cblinfun[simp]: \<open>dim_col (mat_of_cblinfun (a::'a::enum ell2 \<Rightarrow>\<^sub>C\<^sub>L 'b::enum ell2)) = CARD('a)\<close>
-  by (simp add: mat_of_cblinfun_def)
+lemma mat_of_cblinfun_ell2_carrier[simp]: \<open>mat_of_cblinfun (a::'a::{basis_enum,complex_normed_vector} \<Rightarrow>\<^sub>C\<^sub>L 'b::{basis_enum,complex_normed_vector}) \<in> carrier_mat (canonical_basis_length TYPE('b)) (canonical_basis_length TYPE('a))\<close>
+  by (auto intro!: carrier_matI)
+
+lemma basis_enum_of_vec_cblinfun_apply:
+  fixes M :: "complex mat"
+  defines "nA \<equiv> length (canonical_basis :: 'a::{basis_enum,complex_normed_vector} list)"
+    and "nB \<equiv> length (canonical_basis :: 'b::{basis_enum,complex_normed_vector} list)"
+  assumes "M \<in> carrier_mat nB nA" and "dim_vec x = nA"
+  shows "basis_enum_of_vec (M *\<^sub>v x) = (cblinfun_of_mat M :: 'a \<Rightarrow>\<^sub>C\<^sub>L 'b) *\<^sub>V basis_enum_of_vec x"
+  by (metis assms basis_enum_of_vec_inverse cblinfun_of_mat.rep_eq)
 
 lemma mat_of_cblinfun_cblinfun_apply:
-  "vec_of_basis_enum (F *\<^sub>V u) = mat_of_cblinfun F *\<^sub>v vec_of_basis_enum u"
-  for F::"'a::{basis_enum,complex_normed_vector}  \<Rightarrow>\<^sub>C\<^sub>L 'b::{basis_enum,complex_normed_vector}" and u::'a
+  \<open>vec_of_basis_enum (F *\<^sub>V u) = mat_of_cblinfun F *\<^sub>v vec_of_basis_enum u\<close>
+  for F::"'a::{basis_enum,complex_normed_vector} \<Rightarrow>\<^sub>C\<^sub>L 'b::{basis_enum,complex_normed_vector}" and u::'a
 proof (rule eq_vecI)
   show \<open>dim_vec (vec_of_basis_enum (F *\<^sub>V u)) = dim_vec (mat_of_cblinfun F *\<^sub>v vec_of_basis_enum u)\<close>
     by (simp add: dim_vec_of_basis_enum' mat_of_cblinfun_def)
@@ -683,7 +675,7 @@ next
     by (simp add: mat_of_cblinfun_def nB_def)
   define v where \<open>v = BasisB ! i\<close>
 
-  have [simp]: \<open>dim_row (mat_of_cblinfun F) = nB\<close>
+  have dim_row_F[simp]: \<open>dim_row (mat_of_cblinfun F) = nB\<close>
     by (simp add: mat_of_cblinfun_def nB_def)
   have [simp]: \<open>length BasisB = nB\<close>
     by (simp add: nB_def BasisB_def)
@@ -700,7 +692,7 @@ next
 
   have \<open>(mat_of_cblinfun F *\<^sub>v vec_of_basis_enum u) $ i =
           (\<Sum>j = 0..<nA. row (mat_of_cblinfun F) i $ j * crepresentation (set BasisA) u (vec_of_list BasisA $ j))\<close>
-    by (auto simp: vec_of_basis_enum_def scalar_prod_def simp flip: BasisA_def)
+    using dim_row_F by (auto simp: mult_mat_vec_def vec_of_basis_enum_def scalar_prod_def simp flip: BasisA_def)
   also have \<open>\<dots> = (\<Sum>j = 0..<nA. crepresentation (set BasisB) (F *\<^sub>V BasisA ! j) v
                                  * crepresentation (set BasisA) u (BasisA ! j))\<close>
     apply (rule sum.cong[OF refl])
@@ -741,14 +733,6 @@ next
   finally show \<open>vec_of_basis_enum (F *\<^sub>V u) $ i = (mat_of_cblinfun F *\<^sub>v vec_of_basis_enum u) $ i\<close>
     by simp
 qed
-
-lemma basis_enum_of_vec_cblinfun_apply:
-  fixes M :: "complex mat"
-  defines "nA \<equiv> length (canonical_basis :: 'a::{basis_enum,complex_normed_vector} list)"
-    and "nB \<equiv> length (canonical_basis :: 'b::{basis_enum,complex_normed_vector} list)"
-  assumes "M \<in> carrier_mat nB nA" and "dim_vec x = nA"
-  shows "basis_enum_of_vec (M *\<^sub>v x) = (cblinfun_of_mat M :: 'a \<Rightarrow>\<^sub>C\<^sub>L 'b) *\<^sub>V basis_enum_of_vec x"
-  by (metis assms basis_enum_of_vec_inverse cblinfun_of_mat.rep_eq)
 
 lemma mat_of_cblinfun_inverse:
   "cblinfun_of_mat (mat_of_cblinfun B) = B"
@@ -956,6 +940,101 @@ proof (rule adjoint_eqI)
   qed
 qed
 
+lemma mat_of_cblinfun_compose:
+  "mat_of_cblinfun (F o\<^sub>C\<^sub>L G) = mat_of_cblinfun F * mat_of_cblinfun G"
+  for F::"'b::{basis_enum,complex_normed_vector} \<Rightarrow>\<^sub>C\<^sub>L 'c::{basis_enum,complex_normed_vector}"
+    and G::"'a::{basis_enum,complex_normed_vector}  \<Rightarrow>\<^sub>C\<^sub>L 'b"
+  by (smt (verit, del_insts) cblinfun_of_mat_inverse mat_carrier mat_of_cblinfun_def mat_of_cblinfun_inverse cblinfun_of_mat_times mult_carrier_mat)
+
+lemma mat_of_cblinfun_scaleC:
+  "mat_of_cblinfun ((a::complex) *\<^sub>C F) = a \<cdot>\<^sub>m (mat_of_cblinfun F)"
+  for F :: "'a::{basis_enum,complex_normed_vector} \<Rightarrow>\<^sub>C\<^sub>L 'b::{basis_enum,complex_normed_vector}"
+  by (auto simp add: complex_vector.representation_scale mat_of_cblinfun_def)
+
+lemma mat_of_cblinfun_scaleR:
+  "mat_of_cblinfun ((a::real) *\<^sub>R F) = (complex_of_real a) \<cdot>\<^sub>m (mat_of_cblinfun F)"
+  unfolding scaleR_scaleC by (rule mat_of_cblinfun_scaleC)
+
+lemma mat_of_cblinfun_adj:
+  "mat_of_cblinfun (F*) = mat_adjoint (mat_of_cblinfun F)"
+  for F :: "'a::onb_enum \<Rightarrow>\<^sub>C\<^sub>L 'b::onb_enum"
+  by (metis (no_types, lifting) cblinfun_of_mat_inverse map_carrier_mat mat_adjoint_def' mat_carrier cblinfun_of_mat_adjoint mat_of_cblinfun_def mat_of_cblinfun_inverse transpose_carrier_mat)
+
+lemma mat_of_cblinfun_vector_to_cblinfun:
+  "mat_of_cblinfun (vector_to_cblinfun \<psi>)
+       = mat_of_cols (length (canonical_basis :: 'a list)) [vec_of_basis_enum \<psi>]"
+  for \<psi>::"'a::{basis_enum,complex_normed_vector}"
+  by (auto simp: mat_of_cols_Cons_index_0 mat_of_cblinfun_def vec_of_basis_enum_def vec_of_list_index)
+
+lemma mat_of_cblinfun_proj:
+  fixes a::"'a::onb_enum"
+  defines   "d \<equiv> length (canonical_basis :: 'a list)"
+    and "norm2 \<equiv> (vec_of_basis_enum a) \<bullet>c (vec_of_basis_enum a)"
+  shows  "mat_of_cblinfun (proj a) =
+      1 / norm2 \<cdot>\<^sub>m (mat_of_cols d [vec_of_basis_enum a]
+                 * mat_of_rows d [conjugate (vec_of_basis_enum a)])" (is \<open>_ = ?rhs\<close>)
+proof (cases "a = 0")
+  case False
+  have norm2: \<open>norm2 = (norm a)\<^sup>2\<close>
+    by (simp add: cscalar_prod_vec_of_basis_enum norm2_def cdot_square_norm[symmetric, simplified])
+  have [simp]: \<open>vec_of_basis_enum a \<in> carrier_vec d\<close>
+    by (simp add: carrier_vecI d_def)
+
+  have \<open>mat_of_cblinfun (proj a) = mat_of_cblinfun (proj (a /\<^sub>R norm a))\<close>
+    by (metis (mono_tags, opaque_lifting) ccspan_singleton_scaleC complex_vector.scale_eq_0_iff
+        nonzero_imp_inverse_nonzero norm_eq_zero scaleR_scaleC scale_left_imp_eq)
+  also have \<open>\<dots> = mat_of_cblinfun (selfbutter (a /\<^sub>R norm a))\<close>
+    apply (subst butterfly_eq_proj)
+    by (auto simp add: False)
+  also have \<open>\<dots> = 1/norm2 \<cdot>\<^sub>m mat_of_cblinfun (selfbutter a)\<close>
+    apply (simp add: mat_of_cblinfun_scaleC norm2)
+    by (simp add: inverse_eq_divide power2_eq_square)
+  also have \<open>\<dots> = 1 / norm2 \<cdot>\<^sub>m (mat_of_cblinfun (vector_to_cblinfun a :: complex \<Rightarrow>\<^sub>C\<^sub>L 'a) * mat_adjoint (mat_of_cblinfun (vector_to_cblinfun a :: complex \<Rightarrow>\<^sub>C\<^sub>L 'a)))\<close>
+    by (simp add: butterfly_def mat_of_cblinfun_compose mat_of_cblinfun_adj)
+  also have \<open>\<dots> = ?rhs\<close>
+    by (simp add: mat_of_cblinfun_vector_to_cblinfun mat_adjoint_def flip: d_def)
+  finally show ?thesis
+    by -
+next
+  case True
+  show ?thesis
+    apply (rule eq_matI)
+    by (auto simp: True mat_of_cblinfun_zero vec_of_basis_enum_zero scalar_prod_def  mat_of_rows_index
+        simp flip: d_def)
+qed
+
+lemma mat_of_cblinfun_ell2_component:
+  fixes a :: \<open>'a::enum ell2 \<Rightarrow>\<^sub>C\<^sub>L 'b::enum ell2\<close>
+  assumes [simp]: \<open>i < CARD('b)\<close> \<open>j < CARD('a)\<close>
+  shows \<open>mat_of_cblinfun a $$ (i,j) = Rep_ell2 (a *\<^sub>V ket (Enum.enum ! j)) (Enum.enum ! i)\<close>
+proof -
+  let ?i = \<open>Enum.enum ! i\<close> and ?j = \<open>Enum.enum ! j\<close> and ?aj = \<open>a *\<^sub>V ket (Enum.enum ! j)\<close>
+  have \<open>Rep_ell2 ?aj (Enum.enum ! i) = vec_of_basis_enum ?aj $ i\<close>
+    by (rule vec_of_basis_enum_ell2_component[symmetric], simp)
+  also have \<open>\<dots> = (mat_of_cblinfun a *\<^sub>v vec_of_basis_enum (ket (enum_class.enum ! j) :: 'a ell2)) $ i\<close>
+    by (simp add: mat_of_cblinfun_cblinfun_apply)
+  also have \<open>\<dots> = (mat_of_cblinfun a *\<^sub>v unit_vec CARD('a) j) $ i\<close>
+    by (simp add: vec_of_basis_enum_ket enum_idx_enum)
+  also have \<open>\<dots> = mat_of_cblinfun a $$ (i, j)\<close>
+    apply (subst mat_entry_explicit[where m=\<open>CARD('b)\<close>])
+    by (auto intro!: simp: canonical_basis_length)
+  finally show ?thesis
+    by auto
+qed
+
+lemma cblinfun_of_mat_mat:
+  shows \<open>cblinfun_of_mat (mat (CARD('b)) (CARD('a)) f) = explicit_cblinfun (\<lambda>(r::'b::enum) (c::'a::enum). f (enum_idx r, enum_idx c))\<close>
+  apply (intro equal_ket basis_enum_eq_vec_of_basis_enumI)
+  by (auto intro!: eq_vecI simp: enum_idx_correct enum_idx_enum vec_of_basis_enum_ket
+      mat_of_cblinfun_ell2_component canonical_basis_length cblinfun_of_mat_inverse index_row
+      mat_of_cblinfun_cblinfun_apply)
+
+lemma mat_of_cblinfun_explicit_cblinfun:
+  fixes f :: \<open>'a::enum \<Rightarrow> 'b::enum \<Rightarrow> complex\<close>
+  shows \<open>mat_of_cblinfun (explicit_cblinfun f) = mat (CARD('a)) (CARD('b)) (\<lambda>(r,c). f (Enum.enum!r) (Enum.enum!c))\<close>
+  by (auto intro!: cblinfun_of_mat_inj[where 'a=\<open>'b ell2\<close> and 'b=\<open>'a ell2\<close>, THEN inj_onD]
+      simp: cblinfun_of_mat_mat canonical_basis_length enum_idx_correct mat_of_cblinfun_inverse)
+
 lemma mat_of_cblinfun_classical_operator:
   fixes f::"'a::enum \<Rightarrow> 'b::enum option"
   shows "mat_of_cblinfun (classical_operator f) = mat (CARD('b)) (CARD('a))
@@ -966,7 +1045,7 @@ proof -
   define BasisA where "BasisA = (canonical_basis::'a ell2 list)"
   define BasisB where "BasisB = (canonical_basis::'b ell2 list)"
   have "mat_of_cblinfun (classical_operator f) \<in> carrier_mat nB nA"
-    unfolding nA_def nB_def by simp
+    by (auto simp: canonical_basis_length nA_def nB_def)
   moreover have "nA = CARD ('a)"
     unfolding nA_def
     by (simp add:)
@@ -1135,87 +1214,6 @@ proof -
     apply (rule_tac eq_matI) by auto
 qed
 
-lemma mat_of_cblinfun_compose:
-  "mat_of_cblinfun (F o\<^sub>C\<^sub>L G) = mat_of_cblinfun F * mat_of_cblinfun G"
-  for F::"'b::{basis_enum,complex_normed_vector} \<Rightarrow>\<^sub>C\<^sub>L 'c::{basis_enum,complex_normed_vector}"
-    and G::"'a::{basis_enum,complex_normed_vector}  \<Rightarrow>\<^sub>C\<^sub>L 'b"
-  by (smt (verit, del_insts) cblinfun_of_mat_inverse mat_carrier mat_of_cblinfun_def mat_of_cblinfun_inverse cblinfun_of_mat_times mult_carrier_mat)
-
-lemma mat_of_cblinfun_scaleC:
-  "mat_of_cblinfun ((a::complex) *\<^sub>C F) = a \<cdot>\<^sub>m (mat_of_cblinfun F)"
-  for F :: "'a::{basis_enum,complex_normed_vector} \<Rightarrow>\<^sub>C\<^sub>L 'b::{basis_enum,complex_normed_vector}"
-  by (auto simp add: complex_vector.representation_scale mat_of_cblinfun_def)
-
-lemma mat_of_cblinfun_scaleR:
-  "mat_of_cblinfun ((a::real) *\<^sub>R F) = (complex_of_real a) \<cdot>\<^sub>m (mat_of_cblinfun F)"
-  unfolding scaleR_scaleC by (rule mat_of_cblinfun_scaleC)
-
-lemma mat_of_cblinfun_adj:
-  "mat_of_cblinfun (F*) = mat_adjoint (mat_of_cblinfun F)"
-  for F :: "'a::onb_enum \<Rightarrow>\<^sub>C\<^sub>L 'b::onb_enum"
-  by (metis (no_types, lifting) cblinfun_of_mat_inverse map_carrier_mat mat_adjoint_def' mat_carrier cblinfun_of_mat_adjoint mat_of_cblinfun_def mat_of_cblinfun_inverse transpose_carrier_mat)
-
-lemma mat_of_cblinfun_vector_to_cblinfun:
-  "mat_of_cblinfun (vector_to_cblinfun \<psi>)
-       = mat_of_cols (length (canonical_basis :: 'a list)) [vec_of_basis_enum \<psi>]"
-  for \<psi>::"'a::{basis_enum,complex_normed_vector}"
-  by (auto simp: mat_of_cols_Cons_index_0 mat_of_cblinfun_def vec_of_basis_enum_def vec_of_list_index)
-
-lemma mat_of_cblinfun_proj:
-  fixes a::"'a::onb_enum"
-  defines   "d \<equiv> length (canonical_basis :: 'a list)"
-    and "norm2 \<equiv> (vec_of_basis_enum a) \<bullet>c (vec_of_basis_enum a)"
-  shows  "mat_of_cblinfun (proj a) =
-      1 / norm2 \<cdot>\<^sub>m (mat_of_cols d [vec_of_basis_enum a]
-                 * mat_of_rows d [conjugate (vec_of_basis_enum a)])" (is \<open>_ = ?rhs\<close>)
-proof (cases "a = 0")
-  case False
-  have norm2: \<open>norm2 = (norm a)\<^sup>2\<close>
-    by (simp add: cscalar_prod_vec_of_basis_enum norm2_def cdot_square_norm[symmetric, simplified])
-  have [simp]: \<open>vec_of_basis_enum a \<in> carrier_vec d\<close>
-    by (simp add: carrier_vecI d_def)
-
-  have \<open>mat_of_cblinfun (proj a) = mat_of_cblinfun (proj (a /\<^sub>R norm a))\<close>
-    by (metis (mono_tags, opaque_lifting) ccspan_singleton_scaleC complex_vector.scale_eq_0_iff
-        nonzero_imp_inverse_nonzero norm_eq_zero scaleR_scaleC scale_left_imp_eq)
-  also have \<open>\<dots> = mat_of_cblinfun (selfbutter (a /\<^sub>R norm a))\<close>
-    apply (subst butterfly_eq_proj)
-    by (auto simp add: False)
-  also have \<open>\<dots> = 1/norm2 \<cdot>\<^sub>m mat_of_cblinfun (selfbutter a)\<close>
-    apply (simp add: mat_of_cblinfun_scaleC norm2)
-    by (simp add: inverse_eq_divide power2_eq_square)
-  also have \<open>\<dots> = 1 / norm2 \<cdot>\<^sub>m (mat_of_cblinfun (vector_to_cblinfun a :: complex \<Rightarrow>\<^sub>C\<^sub>L 'a) * mat_adjoint (mat_of_cblinfun (vector_to_cblinfun a :: complex \<Rightarrow>\<^sub>C\<^sub>L 'a)))\<close>
-    by (simp add: butterfly_def mat_of_cblinfun_compose mat_of_cblinfun_adj)
-  also have \<open>\<dots> = ?rhs\<close>
-    by (simp add: mat_of_cblinfun_vector_to_cblinfun mat_adjoint_def flip: d_def)
-  finally show ?thesis
-    by -
-next
-  case True
-  show ?thesis
-    apply (rule eq_matI)
-    by (auto simp: True mat_of_cblinfun_zero vec_of_basis_enum_zero scalar_prod_def  mat_of_rows_index
-        simp flip: d_def)
-qed
-
-lemma mat_of_cblinfun_ell2_component:
-  fixes a :: \<open>'a::enum ell2 \<Rightarrow>\<^sub>C\<^sub>L 'b::enum ell2\<close>
-  assumes [simp]: \<open>i < CARD('b)\<close> \<open>j < CARD('a)\<close>
-  shows \<open>mat_of_cblinfun a $$ (i,j) = Rep_ell2 (a *\<^sub>V ket (Enum.enum ! j)) (Enum.enum ! i)\<close>
-proof -
-  let ?i = \<open>Enum.enum ! i\<close> and ?j = \<open>Enum.enum ! j\<close> and ?aj = \<open>a *\<^sub>V ket (Enum.enum ! j)\<close>
-  have \<open>Rep_ell2 ?aj (Enum.enum ! i) = vec_of_basis_enum ?aj $ i\<close>
-    by (rule vec_of_basis_enum_ell2_component[symmetric], simp)
-  also have \<open>\<dots> = (mat_of_cblinfun a *\<^sub>v vec_of_basis_enum (ket (enum_class.enum ! j) :: 'a ell2)) $ i\<close>
-    by (simp add: mat_of_cblinfun_cblinfun_apply)
-  also have \<open>\<dots> = (mat_of_cblinfun a *\<^sub>v unit_vec CARD('a) j) $ i\<close>
-    by (simp add: vec_of_basis_enum_ket enum_idx_enum)
-  also have \<open>\<dots> = mat_of_cblinfun a $$ (i, j)\<close>
-    apply (subst mat_entry_explicit[where m=\<open>CARD('b)\<close>])
-    by auto
-  finally show ?thesis
-    by auto
-qed
 
 lemma mat_of_cblinfun_sandwich:
   fixes a :: "(_::onb_enum, _::onb_enum) cblinfun"
@@ -1266,10 +1264,10 @@ definition "is_subspace_of_vec_list n vs ws =
      \<forall>v\<in>set vs. adjuster n v ws' = - v)"
 
 lemma ccspan_leq_using_vec:
-  fixes A B :: "'a::{basis_enum,complex_normed_vector} list"
-  shows "(ccspan (set A) \<le> ccspan (set B)) \<longleftrightarrow>
+  fixes A B :: \<open>'a::{basis_enum,complex_normed_vector} list\<close>
+  shows \<open>(ccspan (set A) \<le> ccspan (set B)) \<longleftrightarrow>
     is_subspace_of_vec_list (length (canonical_basis :: 'a list))
-      (map vec_of_basis_enum A) (map vec_of_basis_enum B)"
+      (map vec_of_basis_enum A) (map vec_of_basis_enum B)\<close>
 proof -
   define d Av Bv Bo
     where "d = length (canonical_basis :: 'a list)"
@@ -1339,7 +1337,7 @@ proof -
     by simp
 qed
 
-lemma cblinfun_apply_ccspan_using_vec:
+lemma cblinfun_image_ccspan_using_vec:
   "A *\<^sub>S ccspan (set S) = ccspan (basis_enum_of_vec ` set (map ((*\<^sub>v) (mat_of_cblinfun A)) (map vec_of_basis_enum S)))"
   apply (auto simp: cblinfun_image_ccspan image_image)
   by (metis mat_of_cblinfun_cblinfun_apply vec_of_basis_enum_inverse)
@@ -1512,11 +1510,11 @@ proof -
     by -
 qed
 
+definition \<open>mk_projector d vs = mk_projector_orthog d (gram_schmidt0 d vs)\<close>
+
 lemma mat_of_cblinfun_Proj_ccspan:
-  fixes S :: "'a::onb_enum list"
-  shows "mat_of_cblinfun (Proj (ccspan (set S))) =
-    (let d = length (canonical_basis :: 'a list) in
-      mk_projector_orthog d (gram_schmidt0 d (map vec_of_basis_enum S)))"
+  fixes S :: \<open>'a::onb_enum list\<close>
+  shows \<open>mat_of_cblinfun (Proj (ccspan (set S))) = mk_projector (length (canonical_basis :: 'a list)) (map vec_of_basis_enum S)\<close>
 proof-
   define d gs
     where "d = length (canonical_basis :: 'a list)"
@@ -1545,7 +1543,7 @@ proof-
     apply (subst ccspan_gram_schmidt0_invariant)
     by (auto simp add: carrier_vecI dim_vec_of_basis_enum')
   finally show ?thesis
-    unfolding d_def gs_def by auto
+    by (simp add: d_def gs_def mk_projector_def)
 qed
 
 unbundle no_jnf_notation

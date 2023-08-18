@@ -144,12 +144,6 @@ lemma has_sum_bounded_linear:
   using assms blinfun_apply_induct blinfun.additive_right apply auto
   using isCont_def linear_continuous_at by fastforce
 
-lemma summable_on_bounded_linear:
-  assumes \<open>bounded_linear f\<close>
-  assumes \<open>g summable_on S\<close>
-  shows \<open>(f o g) summable_on S\<close>
-  by (metis assms(1) assms(2) has_sum_bounded_linear infsum_bounded_linear summable_iff_has_sum_infsum)
-
 lemma abs_summable_on_bounded_linear:
   assumes \<open>bounded_linear f\<close>
   assumes \<open>g abs_summable_on S\<close>

@@ -78,6 +78,9 @@ declare mat_of_cblinfun_minus[code]
 declare mat_of_cblinfun_classical_operator[code]
   \<comment> \<open>Code equation for computing the "classical operator"\<close>
 
+declare mat_of_cblinfun_explicit_cblinfun[code]
+  \<comment> \<open>Code equation for computing the \<^const>\<open>explicit_cblinfun\<close>\<close>
+
 declare mat_of_cblinfun_compose[code]
   \<comment> \<open>Code equation for computing the composition/product of cblinfun's\<close>
 
@@ -145,6 +148,8 @@ instance
 end
 
 lemma vec_of_ell2_carrier_vec[simp]: \<open>vec_of_ell2 v \<in> carrier_vec CARD('a)\<close> for v :: \<open>'a::enum ell2\<close>
+  using vec_of_basis_enum_carrier_vec[of v]
+  apply (simp only: canonical_basis_length canonical_basis_length_ell2)
   by (simp add: vec_of_ell2_def)
 
 lemma vec_of_ell2_zero[code]:
@@ -192,7 +197,7 @@ lemma cinner_ell2_code [code]: "cinner \<psi> \<phi> = cscalar_prod (vec_of_ell2
 lemma norm_ell2_code [code]: 
   \<comment> \<open>Code equation for the norm of a vector\<close>
   "norm \<psi> = norm_vec (vec_of_ell2 \<psi>)"
-  by (simp add: norm_ell2_vec_of_basis_enum vec_of_ell2_def)
+  by (simp add: norm_vec_of_basis_enum vec_of_ell2_def)
 
 lemma times_ell2_code[code]: 
   \<comment> \<open>Code equation for the product in the algebra of one-dimensional vectors\<close>
@@ -322,10 +327,9 @@ lemma mat_of_cblinfun_Proj_code_code[code]:
      We first make the vectors S into an orthonormal basis using
      the Gram-Schmidt procedure and then compute the projector
      as the sum of the "butterflies" \<open>x * x*\<close> of the vectors \<open>x\<in>S\<close>
-     (done by \<^term>\<open>mk_projector_orthog\<close>).\<close>
+     (done by \<^term>\<open>mk_projector\<close>).\<close>
   "mat_of_cblinfun_Proj_code (SPAN S :: 'a::onb_enum ccsubspace) = 
-    (let d = length (canonical_basis :: 'a list) in mk_projector_orthog d 
-              (gram_schmidt0 d (filter (\<lambda>v. dim_vec v = d) S)))"
+    (let d = length (canonical_basis :: 'a list) in mk_projector d (filter (\<lambda>v. dim_vec v = d) S))"
 proof -
   have *: "map_option vec_of_basis_enum (if dim_vec x = length (canonical_basis :: 'a list) then Some (basis_enum_of_vec x :: 'a) else None)
       = (if dim_vec x = length (canonical_basis :: 'a list) then Some x else None)" for x
@@ -422,7 +426,7 @@ lemma equal_ccsubspace_code[code]:
   "HOL.equal (A::_ ccsubspace) B = (A\<le>B \<and> B\<le>A)"
   unfolding equal_ccsubspace_def by auto
 
-lemma apply_cblinfun_code[code]:
+lemma cblinfun_image_code[code]:
   \<comment> \<open>Code equation for applying an operator \<^term>\<open>A\<close> to a subspace. 
       Simply by multiplying each generator with \<^term>\<open>A\<close>\<close>
   "A *\<^sub>S SPAN S = (let d = length (canonical_basis :: 'a list) in
@@ -440,7 +444,7 @@ proof -
     by simp
   also have "\<dots> = ccspan ((\<lambda>x. basis_enum_of_vec 
             (mat_of_cblinfun A *\<^sub>v vec_of_basis_enum (basis_enum_of_vec x :: 'a))) ` set S')"
-    apply (subst cblinfun_apply_ccspan_using_vec)
+    apply (subst cblinfun_image_ccspan_using_vec)
     by (simp add: image_image)
   also have "\<dots> = ccspan ((\<lambda>x. basis_enum_of_vec (mat_of_cblinfun A *\<^sub>v x)) ` set S')"
     apply (subst image_cong[OF refl])
@@ -480,7 +484,7 @@ proof -
     unfolding range_cblinfun_code_def
     by (metis dA_def top_ccsubspace_code)
   also have "\<dots> = SPAN (map (\<lambda>i. mat_of_cblinfun A *\<^sub>v unit_vec dA i) [0..<dA])"
-    unfolding apply_cblinfun_code dA_def[symmetric] Let_def
+    unfolding cblinfun_image_code dA_def[symmetric] Let_def
     apply (subst filter_True)
      apply (meson carrier_vecD subset_code(1) unit_vecs_carrier)
     by (simp add: unit_vecs_def o_def)
