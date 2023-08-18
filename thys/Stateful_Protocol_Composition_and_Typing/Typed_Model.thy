@@ -1248,8 +1248,8 @@ lemma var_rename_inv_comp: "t \<cdot> (var_rename n \<circ>\<^sub>s var_rename_i
 proof (induction t)
   case (Fun f T)
   hence "map (\<lambda>t. t \<cdot> var_rename n \<circ>\<^sub>s var_rename_inv n) T = T" by (simp add: map_idI) 
-  thus ?case by (metis subst_apply_term.simps(2)) 
-qed (simp add: var_rename_def var_rename_inv_def)
+  thus ?case by (metis eval_term.simps(2)) 
+qed (simp add: var_rename_def var_rename_inv_def subst_compose)
 
 lemma var_rename_fv_disjoint:
   "fv s \<inter> fv (t \<cdot> var_rename (max_var s)) = {}"
@@ -1371,7 +1371,7 @@ proof -
 
   have "\<forall>i<length T. U ! i \<cdot> \<theta> = T ! i"
     using \<theta> 1 U(1) UT distinct_Ex1[OF U(2)] in_set_conv_nth
-    by (metis (no_types, lifting) subst_apply_term.simps(1))
+    by (metis (no_types, lifting) eval_term.simps(1))
   hence "T = map (\<lambda>t. t \<cdot> \<theta>) U" by (simp add: UT nth_equalityI)
   hence 3: "Fun g T = Fun g U \<cdot> \<theta>" by simp
 
@@ -1733,9 +1733,9 @@ next
       then obtain x where x: "m'' = Var x" by moura
       hence "\<exists>y \<in> fv\<^sub>s\<^sub>e\<^sub>t M. \<Gamma> (Var x) = \<Gamma> (Var y)" "t' \<sqsubseteq> (\<theta> \<circ>\<^sub>s \<delta>) x"
             "\<Gamma> (Var x) = Fun f (map \<Gamma> T)" "wf\<^sub>t\<^sub>r\<^sub>m ((\<theta> \<circ>\<^sub>s \<delta>) x)"
-        using \<theta>\<delta> t'_m'' \<theta>(3) fv_subset[OF \<theta>(3)] fT(3) subst_apply_term.simps(1)[of x "\<theta> \<circ>\<^sub>s \<delta>"]
+        using \<theta>\<delta> t'_m'' \<theta>(3) fv_subset[OF \<theta>(3)] fT(3) eval_term.simps(1)[of _ "\<theta> \<circ>\<^sub>s \<delta>"]
               wt_subst_trm''[OF \<theta>\<delta>(1), of "Var x"]
-        by (fastforce, blast, argo, fastforce)
+           by force+
       thus ?thesis
         using x TComp_var_instance_closed_has_Fun[
                 of M "\<theta> \<circ>\<^sub>s \<delta>" x t' f "map \<Gamma> T", OF closed(2) M_wf _ _ _ \<theta>\<delta>(1) fT(3) prems]

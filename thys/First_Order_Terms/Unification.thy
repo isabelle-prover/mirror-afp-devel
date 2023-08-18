@@ -623,7 +623,7 @@ proof (intro Set.subsetI)
     hence "\<mu> x \<cdot> \<tau> = Var x"
       using \<mu>_comp_\<tau>[of x] by (simp add: subst_compose)
     thus ?thesis
-    proof (rule subst_apply_eq_Var[of "\<mu> x" \<tau> x])
+    proof (rule subst_apply_eq_Var)
       show "\<And>y. \<mu> x = Var y \<Longrightarrow> \<tau> y = Var x \<Longrightarrow> ?thesis"
         using \<open>\<mu> x \<noteq> Var x\<close> range_vars_\<tau> mem_range_varsI[of \<tau> _ x] by auto
     qed

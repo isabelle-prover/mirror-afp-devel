@@ -1205,7 +1205,7 @@ next
   thus ?thesis
     using assms fv_strand_subst'
     unfolding subst_elim_def
-    by (metis (mono_tags, opaque_lifting) fv\<^sub>s\<^sub>e\<^sub>t.simps imageE mem_simps(8) subst_apply_term.simps(1))
+    by (metis (mono_tags, opaque_lifting) fv\<^sub>s\<^sub>e\<^sub>t.simps imageE mem_simps(8) eval_term.simps(1))
 qed
 
 lemma strand_fv_subst_subset_if_subst_elim':

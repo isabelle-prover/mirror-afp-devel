@@ -1180,7 +1180,7 @@ proof -
       hence S_sat: "\<lbrakk>M; S\<rbrakk>\<^sub>c (\<theta> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<I>)" and "\<theta> v = Var v" by auto
       hence *: "\<And>M. M \<turnstile>\<^sub>c Var v \<cdot> (\<theta> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<I>)"
         using \<I>_deduct \<sigma>_deduct
-        by (metis ideduct_synth_subst_apply subst_apply_term.simps(1)
+        by (metis ideduct_synth_subst_apply eval_term.simps(1)
                   subst_subst_compose trm_subst_ident')
 
       define M' where "M' \<equiv> M \<union> (ik\<^sub>s\<^sub>t S \<cdot>\<^sub>s\<^sub>e\<^sub>t \<theta> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<I>)"

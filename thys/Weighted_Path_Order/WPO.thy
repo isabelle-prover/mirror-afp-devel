@@ -1099,7 +1099,7 @@ proof (induct "(s,t)" arbitrary:s t rule: wf_induct[OF wf_measure[of "\<lambda> 
               from ge gr
               show ?thesis 
                 using ss_ts \<open>prns\<close> unfolding simps 
-                unfolding s t term.simps p split subst_apply_term.simps length_map Mul
+                unfolding s t term.simps p split eval_term.simps length_map Mul
                 by (simp add: id_map id)
             qed
           qed
