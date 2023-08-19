@@ -91,11 +91,7 @@ lemma indexes_from_index[simp]: \<open>indexes ! from_index i = i\<close>
   unfolding indexes_def by auto
 
 lemma to_index_inj_on: \<open>inj_on to_index {0..<CARD('a)}\<close>
-
-  apply rule
-  apply auto
-  apply (erule from_indexE)+
-  by (metis from_to_index)
+  by (rule inj_onI) (force elim: from_indexE)
 
 
 end
@@ -144,13 +140,10 @@ instance
   subgoal
     by (simp add: to_index_bit0_def from_index_bit0_def bit0.of_nat_eq Abs_bit0_inverse)
   subgoal for n
-    unfolding from_index_bit0_def apply auto
-    apply (rule exI[where x = \<open>Abs_bit0 (int n)\<close>])
-    apply (subst Abs_bit0_inverse)
-    by auto
-  subgoal
-    apply (simp add: from_index_bit0_def)
-    by (metis Rep_bit0 atLeastLessThan_iff bit0.Rep_less_n card_bit0 nat_less_iff)
+    unfolding from_index_bit0_def by (auto simp: Abs_bit0_inverse intro!: exI[where x = \<open>Abs_bit0 (int n)\<close>])
+  subgoal for n
+    using Rep_bit0[of n]
+    by (simp add: from_index_bit0_def nat_less_iff)
   subgoal
     unfolding from_index_bit0_def inj_on_def
     by (metis Rep_bit0 Rep_bit0_inverse atLeastLessThan_iff int_nat_eq)
@@ -170,13 +163,10 @@ instance
   subgoal
     by (simp add: to_index_bit1_def from_index_bit1_def bit1.of_nat_eq Abs_bit1_inverse)
   subgoal for n
-    unfolding from_index_bit1_def apply auto
-    apply (rule exI[where x = \<open>Abs_bit1 (int n)\<close>])
-    apply (subst Abs_bit1_inverse)
-    by auto
-  subgoal
-    apply (simp add: from_index_bit1_def)
-    by (metis Rep_bit1 atLeastLessThan_iff bit1.Rep_less_n card_bit1 nat_less_iff)
+    unfolding from_index_bit1_def by (auto simp: Abs_bit1_inverse intro!: exI[where x = \<open>Abs_bit1 (int n)\<close>])
+  subgoal for n
+    using Rep_bit1[of n]
+    by (simp add: from_index_bit1_def nat_less_iff)
   subgoal
     unfolding from_index_bit1_def inj_on_def
     by (metis Rep_bit1 Rep_bit1_inverse atLeastLessThan_iff eq_nat_nat_iff)
@@ -199,16 +189,11 @@ instance num1 :: index_enum
   by standard (auto simp: indexes_def enum_num1_def)
 
 instance bit0 :: (finite) index_enum
-  apply standard
-  apply (auto simp: indexes_def to_index_bit0_def enum_bit0_def)
-  by (metis Abs_bit0'_def bit0.of_nat_eq)
+  by standard (auto simp: indexes_def to_index_bit0_def enum_bit0_def Abs_bit0'_def bit0.of_nat_eq)
 
 
 instance bit1 :: (finite) index_enum
-  apply standard
-  apply (auto simp: indexes_def to_index_bit1_def enum_bit1_def)
-  apply (metis Abs_bit1'_def bit1.of_nat_eq)
-  by (metis Abs_bit1'_def bit1.of_nat_eq of_nat_mult of_nat_numeral)
+  by standard (auto simp: indexes_def to_index_bit1_def enum_bit1_def Abs_bit1'_def bit1.of_nat_eq)
 
 section \<open>Type definition and BNF setup\<close>
 
@@ -264,10 +249,10 @@ bnf \<open>('a, 'b) vec\<close>
   subgoal by (fact regularCard_natLeq)
   subgoal
     apply transfer'
-    apply (tactic \<open>resolve_tac @{context} (BNF_Def.bnf_of @{context} "List.list" |> the |> BNF_Def.set_bd_of_bnf) 1\<close>)
+    apply (simp flip: finite_iff_ordLess_natLeq)
     done
   subgoal
-    apply auto
+    apply (rule predicate2I)
     apply transfer'
     by (smt (verit) list_all2_trans relcompp.relcompI)
   subgoal
@@ -352,10 +337,7 @@ lemma vec_eq_if: "list_of_vec f = list_of_vec g \<Longrightarrow> f = g"
   by (metis list_of_vec_inverse)
 
 lemma vec_cong: "(\<And>i. f $ i = g $ i) \<Longrightarrow> f = g"
-  apply transfer
-  apply simp
-  apply (rule list_cong_index; assumption)
-  done
+  by transfer (simp add: list_cong_index)
 
 lemma finite_set_vec[intro, simp]: \<open>finite (set_vec v)\<close>
   by transfer' auto
@@ -449,7 +431,7 @@ proof (induction n)
   case (Suc n)
   moreover have \<open>bounded_lists (Suc n) A \<subseteq> (\<lambda>(x, xs). x # xs) ` (A \<times> bounded_lists n A)\<close>
     unfolding bounded_lists_def
-    by (auto intro!: image_eqI simp: length_Suc_conv split_beta)
+    by (force simp: length_Suc_conv split_beta)
   ultimately show ?case
     using assms by (meson finite_SigmaI finite_imageI finite_subset)
 qed (simp add: bounded_lists_def)
@@ -536,10 +518,7 @@ lemma sum_vec_lambda: \<open>sum_vec (vec_lambda v) = sum_list (map v indexes)\<
 lemma elem_le_sum_vec:
   fixes f :: \<open>'a :: canonically_ordered_monoid_add ^ 'b :: index1\<close>
   shows "f $ i \<le> sum_vec f"
-  apply transfer
-  apply simp
-  apply (rule elem_le_sum_list)
-  by auto
+  by transfer (simp add: elem_le_sum_list)
 
 
 section \<open>Code setup\<close>
