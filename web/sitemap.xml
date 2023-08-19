@@ -32,6 +32,15 @@
     <loc>/entries/Catoids.html</loc>
     <lastmod>2023-08-14T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/topics/computer-science/</loc>
+    <lastmod>2023-08-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Fixed_Length_Vector.html</loc>
+    <lastmod>2023-08-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/hupel/</loc>
+    <lastmod>2023-08-14T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/dependencies/kad/</loc>
     <lastmod>2023-08-14T00:00:00+00:00</lastmod>
   </url><url>
@@ -63,9 +72,6 @@
     <lastmod>2023-08-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/calk/</loc>
-    <lastmod>2023-07-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/computer-science/</loc>
     <lastmod>2023-07-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/kleene_algebra/</loc>
@@ -1863,9 +1869,6 @@
     <lastmod>2020-03-07T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Hello_World.html</loc>
-    <lastmod>2020-03-07T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/hupel/</loc>
     <lastmod>2020-03-07T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Goodstein_Lambda.html</loc>
@@ -5159,6 +5162,8 @@
     <loc>/theories/fisher_yates/</loc>
   </url><url>
     <loc>/theories/fishers_inequality/</loc>
+  </url><url>
+    <loc>/theories/fixed_length_vector/</loc>
   </url><url>
     <loc>/theories/flow_networks/</loc>
   </url><url>
