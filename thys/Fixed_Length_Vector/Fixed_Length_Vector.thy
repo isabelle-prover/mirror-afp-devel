@@ -2,20 +2,6 @@ theory Fixed_Length_Vector
   imports "HOL-Library.Numeral_Type" "HOL-Library.Code_Cardinality"
 begin
 
-text \<open>
-  This theory introduces a type constructor for lists with known length, also known as \<^emph>\<open>vectors\<close>.
-  Those vectors are indexed with a numeral type that represent their length.
-
-  This can be employed to avoid carrying around length constraints on lists. Instead, those
-  constraints are discharged by the type checker.
-
-  As compared to the vectors defined in the distribution, this definition can easily work with unit
-  vectors. We exploit the fact that the cardinality of an infinite type is defined to be \<open>0\<close>: thus
-  any infinite length index type represents a unit vector.
-
-  Furthermore, we set up automation and BNF support.
-\<close>
-
 lemma zip_map_same: \<open>zip (map f xs) (map g xs) = map (\<lambda>x. (f x, g x)) xs\<close>
   by (induction xs) auto
 
