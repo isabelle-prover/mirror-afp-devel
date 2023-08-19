@@ -548,4 +548,22 @@ export_code
 lifting_update vec.lifting
 lifting_forget vec.lifting
 
+bundle vec_syntax begin
+type_notation
+  vec (infixl "^" 15)
+notation
+  nth_vec (infixl "$" 90) and
+  vec_lambda (binder "\<chi>" 10)
+end
+
+bundle no_vec_syntax begin
+no_type_notation
+  vec (infixl "^" 15)
+no_notation
+  nth_vec (infixl "$" 90) and
+  vec_lambda (binder "\<chi>" 10)
+end
+
+unbundle no_vec_syntax
+
 end
