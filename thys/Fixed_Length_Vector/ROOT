@@ -1,0 +1,10 @@
+chapter AFP
+
+session Fixed_Length_Vector (AFP) = HOL +
+  options [timeout = 600]
+  sessions
+    "HOL-Library"
+  theories
+    Fixed_Length_Vector
+  document_files
+    "root.tex"
