@@ -24,8 +24,8 @@ lemma (in fin_ulgraph) finite_loops: "finite loops"
 lemma (in fin_ulgraph) finite_sedges: "finite sedges"
   unfolding sedges_def using fin_edges by auto
 
-lemma (in ulgraph) edge_incident_vert: "e \<in> E \<Longrightarrow> \<exists>v\<in>V. incident v e"
-  using edge_size wellformed by (metis empty_not_edge equals0I incident_def incident_edge_in_wf)
+lemma (in ulgraph) edge_incident_vert: "e \<in> E \<Longrightarrow> \<exists>v\<in>V. vincident v e"
+  using edge_size wellformed by (metis empty_not_edge equals0I vincident_def incident_edge_in_wf)
 
 lemma (in ulgraph) Union_incident_edges: "(\<Union>v\<in>V. incident_edges v) = E"
   unfolding incident_edges_def using edge_incident_vert by auto
@@ -35,14 +35,14 @@ lemma (in ulgraph) induced_edges_mono: "V\<^sub>1 \<subseteq> V\<^sub>2 \<Longri
   using induced_edges_def by auto
 
 definition (in graph_system) remove_vertex :: "'a \<Rightarrow> 'a pregraph" where
-  "remove_vertex v = (V - {v}, {e\<in>E. \<not> incident v e})"
+  "remove_vertex v = (V - {v}, {e\<in>E. \<not> vincident v e})"
 
 lemma (in ulgraph) ex_neighbor_degree_not_0:
   assumes degree_non_0: "degree v \<noteq> 0"
     shows "\<exists>u\<in>V. vert_adj v u"
 proof-
   have "\<exists>e\<in>E. v \<in> e" using degree_non_0 elem_exists_non_empty_set
-    unfolding degree_def incident_sedges_def incident_loops_def incident_def by auto
+    unfolding degree_def incident_sedges_def incident_loops_def vincident_def by auto
   then show ?thesis
     by (metis degree_non_0 in_mono is_isolated_vertex_def is_isolated_vertex_degree0 vert_adj_sym wellformed)
 qed
@@ -56,14 +56,14 @@ proof-
   then have card_incident_sedges: "card (incident_sedges v) = 1" using degree_1 unfolding degree_def by simp
   obtain u where vert_adj: "vert_adj v u" using degree_1 ex_neighbor_degree_not_0 by force
   then have "u \<noteq> v" using incident_loops unfolding incident_loops_def vert_adj_def by blast
-  then have u_incident: "{v,u} \<in> incident_sedges v" using vert_adj unfolding incident_sedges_def vert_adj_def incident_def by simp
+  then have u_incident: "{v,u} \<in> incident_sedges v" using vert_adj unfolding incident_sedges_def vert_adj_def vincident_def by simp
   then have incident_sedges: "incident_sedges v = {{v,u}}" using card_incident_sedges
-    by (simp add: comp_sgraph.card1_incident_imp_vert comp_sgraph.incident_def)
+    by (simp add: comp_sgraph.card1_incident_imp_vert comp_sgraph.vincident_def)
   have "vert_adj v u' \<Longrightarrow> u' = u" for u'
   proof-
     assume v_u'_adj: "vert_adj v u'"
     then have "u' \<noteq> v" using incident_loops unfolding incident_loops_def vert_adj_def by blast
-    then have "{v,u'} \<in> incident_sedges v" using v_u'_adj unfolding incident_sedges_def vert_adj_def incident_def by simp
+    then have "{v,u'} \<in> incident_sedges v" using v_u'_adj unfolding incident_sedges_def vert_adj_def vincident_def by simp
     then show "u' = u" using incident_sedges by force
   qed
   then show ?thesis using vert_adj by blast
@@ -80,7 +80,7 @@ proof-
   obtain u where vert_adj: "vert_adj v u" using ex1_neighbor_degree_1 degree_1 by blast
   then have "{v, u} \<in> {e \<in> E. v \<in> e}" unfolding vert_adj_def by blast
   then have edges_incident_v: "{e \<in> E. v \<in> e} = {{v, u}}" using card_incident_edges card_1_singletonE singletonD
-    unfolding incident_edges_def incident_def by metis
+    unfolding incident_edges_def vincident_def by metis
   have u: "u = (THE u. vert_adj v u)" using vert_adj ex1_neighbor_degree_1 degree_1
     by (simp add: the1_equality)
   show ?thesis using edges_incident_v u by blast
@@ -127,16 +127,16 @@ next
     have inc_loops: "\<And>v. g'.incident_loops v = g.incident_loops v"
       unfolding g'.incident_loops_alt g.incident_loops_alt using False is_loop_def by auto
     have "\<And>v. v \<noteq> u \<Longrightarrow> v \<noteq> w \<Longrightarrow> g'.incident_sedges v = g.incident_sedges v"
-      unfolding g'.incident_sedges_def g.incident_sedges_def g.incident_def using e by auto
+      unfolding g'.incident_sedges_def g.incident_sedges_def g.vincident_def using e by auto
     then have degree_not_u_w: "\<And>v. v \<noteq> u \<Longrightarrow> v \<noteq> w \<Longrightarrow> g'.degree v = g.degree v"
       unfolding g'.degree_def g.degree_def using inc_loops by auto
     have "g'.incident_sedges u = g.incident_sedges u \<union> {e}"
-      unfolding g'.incident_sedges_def g.incident_sedges_def g.incident_def using e card_e by auto
+      unfolding g'.incident_sedges_def g.incident_sedges_def g.vincident_def using e card_e by auto
     then have degree_u: "g'.degree u = g.degree u + 1"
       using inc_loops insert(2) g.fin_edges g.finite_inc_sedges g.incident_sedges_def
       unfolding g'.degree_def g.degree_def by auto
     have "g'.incident_sedges w = g.incident_sedges w \<union> {e}"
-      unfolding g'.incident_sedges_def g.incident_sedges_def g.incident_def using e card_e by auto
+      unfolding g'.incident_sedges_def g.incident_sedges_def g.vincident_def using e card_e by auto
     then have degree_w: "g'.degree w = g.degree w + 1"
       using inc_loops insert(2) g.fin_edges g.finite_inc_sedges g.incident_sedges_def
       unfolding g'.degree_def g.degree_def by auto
@@ -157,17 +157,17 @@ lemma (in fin_ulgraph) degree_remove_adj_ne_vert:
     and remove_vertex: "remove_vertex u = (V',E')"
   shows "ulgraph.degree E' v = degree v - 1"
 proof-
-  interpret G': fin_ulgraph V' E' using remove_vertex wellformed edge_size finV unfolding remove_vertex_def incident_def
+  interpret G': fin_ulgraph V' E' using remove_vertex wellformed edge_size finV unfolding remove_vertex_def vincident_def
     by (unfold_locales, auto)
-  have E': "E' = {e \<in> E. u \<notin> e}" using remove_vertex unfolding remove_vertex_def incident_def by simp
+  have E': "E' = {e \<in> E. u \<notin> e}" using remove_vertex unfolding remove_vertex_def vincident_def by simp
   have incident_loops': "G'.incident_loops v = incident_loops v" unfolding incident_loops_def
     using \<open>u\<noteq>v\<close> E' G'.incident_loops_def by auto
-  have uv_incident: "{u,v} \<in> incident_sedges v" using vert_adj \<open>u\<noteq>v\<close> unfolding vert_adj_def incident_sedges_def incident_def by simp
-  have uv_incident': "{u, v} \<notin> G'.incident_sedges v" unfolding G'.incident_sedges_def incident_def using E' by blast
+  have uv_incident: "{u,v} \<in> incident_sedges v" using vert_adj \<open>u\<noteq>v\<close> unfolding vert_adj_def incident_sedges_def vincident_def by simp
+  have uv_incident': "{u, v} \<notin> G'.incident_sedges v" unfolding G'.incident_sedges_def vincident_def using E' by blast
   have "e \<in> E \<Longrightarrow> u \<in> e \<Longrightarrow> v \<in> e \<Longrightarrow> card e = 2 \<Longrightarrow> e = {u,v}" for e
     using \<open>u\<noteq>v\<close> obtain_edge_pair_adj by blast
   then have "{e \<in> E. u \<in> e \<and> v \<in> e \<and> card e = 2} = {{u,v}}" using uv_incident unfolding incident_sedges_def by blast
-  then have "incident_sedges v = G'.incident_sedges v \<union> {{u,v}}" unfolding G'.incident_sedges_def incident_sedges_def incident_def using E' by blast
+  then have "incident_sedges v = G'.incident_sedges v \<union> {{u,v}}" unfolding G'.incident_sedges_def incident_sedges_def vincident_def using E' by blast
   then show ?thesis unfolding G'.degree_def degree_def using incident_loops' uv_incident' G'.finite_inc_sedges G'.fin_edges by auto
 qed
 
@@ -177,13 +177,13 @@ lemma (in ulgraph) degree_remove_non_adj_vert:
     and remove_vertex: "remove_vertex u = (V', E')"
   shows "ulgraph.degree E' v = degree v"
 proof-
-  interpret G': ulgraph V' E' using remove_vertex wellformed edge_size unfolding remove_vertex_def incident_def
+  interpret G': ulgraph V' E' using remove_vertex wellformed edge_size unfolding remove_vertex_def vincident_def
     by (unfold_locales, auto)
-  have E': "E' = {e \<in> E. u \<notin> e}" using remove_vertex unfolding remove_vertex_def incident_def by simp
+  have E': "E' = {e \<in> E. u \<notin> e}" using remove_vertex unfolding remove_vertex_def vincident_def by simp
   have incident_loops': "G'.incident_loops v = incident_loops v" unfolding incident_loops_def
     using \<open>u\<noteq>v\<close> E' G'.incident_loops_def by auto
-  have "G'.incident_sedges v = incident_sedges v" unfolding G'.incident_sedges_def incident_sedges_def incident_def
-    using E' \<open>u\<noteq>v\<close> incident_def vert_adj_edge_iff2 vert_non_adj by auto
+  have "G'.incident_sedges v = incident_sedges v" unfolding G'.incident_sedges_def incident_sedges_def vincident_def
+    using E' \<open>u\<noteq>v\<close> vincident_def vert_adj_edge_iff2 vert_non_adj by auto
   then show ?thesis using incident_loops' unfolding G'.degree_def degree_def by simp
 qed
 
@@ -237,7 +237,7 @@ proof-
   then have inV: "u \<in> V" "v \<in> V" using \<open>e\<in>E\<close> wellformed by auto
   then have path_ex: "is_path [u,v]" using e \<open>e\<in>E\<close> unfolding is_path_def is_open_walk_def is_walk_def by simp
   obtain p where p_is_path: "is_path p" and p_longest_path: "\<forall>s. is_path s \<longrightarrow> length s \<le> length p"
-    using path_ex length_path_card_V ex_has_greatest_nat[of is_path "[u,v]" length order] by force
+    using path_ex length_path_card_V ex_has_greatest_nat[of is_path "[u,v]" length gorder] by force
   then show ?thesis ..
 qed
 
@@ -308,7 +308,7 @@ lemma is_connected_set: "H.is_connected_set V' \<Longrightarrow> G.is_connected_
 end
 
 lemma (in graph_system) subgraph_remove_vertex: "remove_vertex v = (V', E') \<Longrightarrow> subgraph V' E' V E"
-  using wellformed unfolding remove_vertex_def incident_def by (unfold_locales, auto)
+  using wellformed unfolding remove_vertex_def vincident_def by (unfold_locales, auto)
 
 subsection \<open>Connectivity\<close>
 
@@ -358,7 +358,7 @@ proof
   then obtain w p' where "p = v#w#p'" using walk_length_conv conn_path unfolding connecting_path_def
     by (metis assms(2) is_gen_path_def is_walk_not_empty2 last_ConsL list.collapse)
   then have inE: "{v,w} \<in> E" using conn_path unfolding connecting_path_def is_gen_path_def is_walk_def by simp
-  then have "{v,w} \<in> incident_edges v" unfolding incident_edges_def incident_def by simp
+  then have "{v,w} \<in> incident_edges v" unfolding incident_edges_def vincident_def by simp
   then show False using degree0_inc_edges_empt_iff fin_edges degree_0 by blast
 qed
 
@@ -447,9 +447,9 @@ lemma (in connected_ulgraph) connected_remove_leaf:
   shows "ulgraph.is_connected_set V' E' V'"
 proof-
   interpret g': ulgraph V' E' using remove_vertex wellformed edge_size
-    unfolding remove_vertex_def incident_def by (unfold_locales, auto)
+    unfolding remove_vertex_def vincident_def by (unfold_locales, auto)
   have V': "V' = V - {l}" using remove_vertex unfolding remove_vertex_def by simp
-  have E': "E' = {e\<in>E. l \<notin> e}" using remove_vertex unfolding remove_vertex_def incident_def by simp
+  have E': "E' = {e\<in>E. l \<notin> e}" using remove_vertex unfolding remove_vertex_def vincident_def by simp
   have "u \<in> V' \<Longrightarrow> v \<in> V' \<Longrightarrow> g'.vert_connected u v" for u v
   proof-
     assume inV': "u \<in> V'" "v \<in> V'"
@@ -473,14 +473,14 @@ proof-
         have "{x,l} \<in> set (walk_edges p)" using walk_edges_append_union \<open>xs\<noteq>[]\<close> unfolding p
           by (simp add: walk_edges_append_union last_xs)
         then have xl_incident: "{x,l} \<in> incident_sedges l" using conn_path \<open>x\<noteq>l\<close>
-          unfolding connecting_path_def is_gen_path_def is_walk_def incident_sedges_def incident_def by auto
+          unfolding connecting_path_def is_gen_path_def is_walk_def incident_sedges_def vincident_def by auto
 
         have "ys \<noteq> []" using \<open>l\<noteq>v\<close> p conn_path unfolding connecting_path_def by fastforce
         then obtain y ys' where ys: "ys = y # ys'" by (meson list.exhaust)
         then have "y \<noteq> l" using distinct p by auto
         then have "{y,l} \<in> set (walk_edges p)" using p ys conn_path walk_edges_append_ss1 by fastforce
         then have yl_incident: "{y,l} \<in> incident_sedges l" using conn_path \<open>y\<noteq>l\<close>
-          unfolding connecting_path_def is_gen_path_def is_walk_def incident_sedges_def incident_def by auto
+          unfolding connecting_path_def is_gen_path_def is_walk_def incident_sedges_def vincident_def by auto
 
         have card_loops: "card (incident_loops l) = 0" using degree unfolding degree_def by auto
         have "x \<noteq> y" using distinct last_xs \<open>xs\<noteq>[]\<close> unfolding p ys by fastforce
@@ -722,7 +722,7 @@ lemma (in connected_ulgraph) exists_adj_vert_removed:
     and conn_component: "C \<in> ulgraph.connected_components V' E'"
   shows "\<exists>u\<in>C. vert_adj v u"
 proof-
-  have V': "V' = V - {v}" and E': "E' = {e\<in>E. v \<notin> e}" using remove_vertex unfolding remove_vertex_def incident_def by auto
+  have V': "V' = V - {v}" and E': "E' = {e\<in>E. v \<notin> e}" using remove_vertex unfolding remove_vertex_def vincident_def by auto
   interpret subg: subgraph "V - {v}" "{e\<in>E. v \<notin> e}" V E using subgraph_remove_vertex remove_vertex V' E' by metis
   interpret g': ulgraph "V - {v}" "{e\<in>E. v \<notin> e}" using subg.is_subgraph_ulgraph ulgraph_axioms by blast
   obtain c where "c \<in> C" using g'.connected_component_non_empty conn_component V' E' by blast
@@ -824,7 +824,7 @@ proof-
   then obtain l v xs where p: "p = l#v#xs"
     by (metis is_open_walk_def is_path_def is_walk_not_empty2 last_ConsL list.exhaust_sel)
   then have lv_incident: "{l,v} \<in> incident_edges l" using is_path
-    unfolding incident_edges_def incident_def is_path_def is_open_walk_def is_walk_def by simp
+    unfolding incident_edges_def vincident_def is_path_def is_open_walk_def is_walk_def by simp
   have "\<And>e. e\<in>E \<Longrightarrow> e \<noteq> {l,v} \<Longrightarrow> e \<notin> incident_edges l"
   proof
     fix e
@@ -832,7 +832,7 @@ proof-
       and not_lv: "e \<noteq> {l,v}"
       and incident: "e \<in> incident_edges l"
     obtain u where e: "e = {l,u}" using e_in_E obtain_edge_pair_adj incident
-      unfolding incident_edges_def incident_def by auto
+      unfolding incident_edges_def vincident_def by auto
     then have "u \<noteq> l" using e_in_E edge_vertices_not_equal by blast
     have "u \<noteq> v" using e not_lv by auto
     have u_in_V: "u \<in> V" using e_in_E e wellformed by blast
@@ -863,16 +863,16 @@ lemma tree_remove_leaf:
     and remove_vertex: "remove_vertex l = (V',E')"
   shows "tree V' E'"
 proof-
-  interpret g': ulgraph V' E' using remove_vertex wellformed edge_size unfolding remove_vertex_def incident_def
+  interpret g': ulgraph V' E' using remove_vertex wellformed edge_size unfolding remove_vertex_def vincident_def
     by (unfold_locales, auto)
   interpret subg: ulsubgraph V' E' V E using subgraph_remove_vertex ulgraph_axioms remove_vertex
     unfolding ulsubgraph_def by blast
   have V': "V' = V - {l}" using remove_vertex unfolding remove_vertex_def by blast
-  have E': "E' = {e\<in>E. l \<notin> e}" using remove_vertex unfolding remove_vertex_def incident_def by blast
+  have E': "E' = {e\<in>E. l \<notin> e}" using remove_vertex unfolding remove_vertex_def vincident_def by blast
   have "\<exists>v\<in>V. v \<noteq> l" using leaf unfolding leaf_def
     by (metis One_nat_def is_independent_alt is_isolated_vertex_def is_isolated_vertex_degree0
         n_not_Suc_n radius_obtains singletonI singleton_independent_set)
-  then have "V' \<noteq> {}" using remove_vertex unfolding remove_vertex_def incident_def by blast
+  then have "V' \<noteq> {}" using remove_vertex unfolding remove_vertex_def vincident_def by blast
   then have "g'.is_connected_set V'" using connected_remove_leaf leaf remove_vertex unfolding leaf_def by blast
   then show ?thesis using \<open>V'\<noteq>{}\<close> finV subg.is_cycle2 V' E' no_cycles by (unfold_locales, auto)
 qed
@@ -898,7 +898,7 @@ next
     case True
     then obtain v where V: "V = {v}" using card_1_singletonE by blast
     then have "E = {}"
-      using True subset_antisym t.edge_incident_vert t.incident_def t.singleton_not_edge t.wellformed
+      using True subset_antisym t.edge_incident_vert t.vincident_def t.singleton_not_edge t.wellformed
       by fastforce
     then show ?thesis using trivial t.tree_axioms V by simp
   next
@@ -908,7 +908,7 @@ next
     then obtain e where inc_edges: "t.incident_edges l = {e}"
       unfolding t.leaf_def t.alt_degree_def using card_1_singletonE by blast
     then have e_in_E: "e \<in> E" unfolding t.incident_edges_def by blast
-    then obtain u where e: "e = {l,u}" using t.two_edges card_2_iff inc_edges unfolding t.incident_edges_def t.incident_def
+    then obtain u where e: "e = {l,u}" using t.two_edges card_2_iff inc_edges unfolding t.incident_edges_def t.vincident_def
       by (metis (no_types, lifting) empty_iff insert_commute insert_iff mem_Collect_eq)
     then have "l \<noteq> u" using e_in_E t.edge_vertices_not_equal by blast
     have "u \<in> V" using e e_in_E t.wellformed by blast
@@ -978,7 +978,7 @@ proof -
     unfolding t'.is_connected_set_def
     using subg.vert_connected t'.vert_connected_neighbors t'.vert_connected_trans
       t'.vert_connected_id vertices_connected t'.ulgraph_axioms ulgraph_axioms assms t'.vert_connected_rev
-    by (auto, metis+)
+    by simp metis
 
   then have fin_connected_ulgraph: "fin_connected_ulgraph ?V' ?E'" using finV by (unfold_locales, auto)
 

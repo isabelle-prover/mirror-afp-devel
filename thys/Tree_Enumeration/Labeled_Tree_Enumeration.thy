@@ -32,7 +32,7 @@ subsection \<open>Correctness\<close>
 text \<open>Tree to Prüfer sequence\<close>
 
 definition remove_vertex_edges :: "'a \<Rightarrow> 'a edge set \<Rightarrow> 'a edge set" where
-  "remove_vertex_edges v E = {e\<in>E. \<not> graph_system.incident v e}"
+  "remove_vertex_edges v E = {e\<in>E. \<not> graph_system.vincident v e}"
 
 lemma find_in_list[termination_simp]: "find P verts = Some v \<Longrightarrow> v \<in> set verts"
   by (metis find_Some_iff nth_mem)
@@ -203,7 +203,7 @@ lemma count_list_prufer_seq_degree: "v \<in> set verts \<Longrightarrow> Suc (co
 proof (induction rule: prufer_seq_of_tree_induct')
   case (1 u v)
   then interpret ctx: prufer_seq_of_tree_context "[u, v]" "{{u, v}}" by simp
-  show ?case using 1(1) unfolding ctx.alt_degree_def ctx.incident_edges_def ctx.incident_def
+  show ?case using 1(1) unfolding ctx.alt_degree_def ctx.incident_edges_def ctx.vincident_def
     by (simp add: Collect_conv_if)
 next
   case (2 verts E l)
@@ -255,7 +255,7 @@ next
   then have "tree_edges_of_prufer_seq verts (prufer_seq_of_tree verts E)
     = insert {The (ctx.vert_adj l), l} (tree_edges_of_prufer_seq (remove1 l verts) (prufer_seq_of_tree (remove1 l verts) (remove_vertex_edges l E)))"
     using 2 by auto
-  also have "\<dots> = E" using 2 ctx.degree_1_edge_partition unfolding remove_vertex_edges_def incident_def ctx.leaf_def by simp
+  also have "\<dots> = E" using 2 ctx.degree_1_edge_partition unfolding remove_vertex_edges_def vincident_def ctx.leaf_def by simp
   finally show ?case .
 qed
 
@@ -282,7 +282,7 @@ proof (induction rule: tree_edges_of_prufer_seq_induct')
   case (1 u w)
   then interpret tree_of_prufer_seq_ctx "[u, w]" "[]" by simp
   interpret tree "{u,w}" "{{u,w}}" using tree_edges_of_prufer_seq_tree by simp
-  show ?case using 1(1) by (auto simp add: incident_edges_def incident_def Collect_conv_if)
+  show ?case using 1(1) by (auto simp add: incident_edges_def vincident_def Collect_conv_if)
 next
   case (2 verts b seq a)
   interpret tree_of_prufer_seq_ctx verts "b # seq" using 2(8) .
@@ -297,9 +297,9 @@ next
     have ab_not_in_T': "{a, b} \<notin> tree_edges_of_prufer_seq (remove1 a verts) seq"
       using T'.wellformed_alt_snd distinct_verts by (auto, metis doubleton_eq_iff)
     have "incident_edges v = insert {a,b} {e \<in> tree_edges_of_prufer_seq (remove1 a verts) seq. v \<in> e}"
-      unfolding incident_edges_def incident_def using 2(1) True by auto
+      unfolding incident_edges_def vincident_def using 2(1) True by auto
     then have "degree v = Suc (T'.degree v)"
-      unfolding T'.alt_degree_def alt_degree_def T'.incident_edges_def incident_def
+      unfolding T'.alt_degree_def alt_degree_def T'.incident_edges_def vincident_def
       using ab_not_in_T' T'.fin_edges by (simp del: tree_edges_of_prufer_seq.simps)
     then show ?thesis using 2 True by auto
   next
@@ -307,13 +307,13 @@ next
     then show ?thesis
     proof (cases "v = a")
       case True
-      also have "incident_edges a = {{a,b}}" unfolding incident_edges_def incident_def
+      also have "incident_edges a = {{a,b}}" unfolding incident_edges_def vincident_def
         using 2(1) T'.wellformed distinct_verts by auto
       then show ?thesis unfolding alt_degree_def True using 2(3) by auto
     next
       case False
       then have "incident_edges v = T'.incident_edges v"
-        unfolding incident_edges_def T'.incident_edges_def incident_def using 2(1) \<open>v \<noteq> b\<close> by auto
+        unfolding incident_edges_def T'.incident_edges_def vincident_def using 2(1) \<open>v \<noteq> b\<close> by auto
       then show ?thesis using False \<open>v \<noteq> b\<close> 2 unfolding alt_degree_def by simp
     qed
   qed
