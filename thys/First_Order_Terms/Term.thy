@@ -93,6 +93,7 @@ fun eval_term ("_\<lbrakk>(2_)\<rbrakk>_" [999,1,100]100) where
 | "I\<lbrakk>Fun f ss\<rbrakk>\<alpha> = I f [I\<lbrakk>s\<rbrakk>\<alpha>. s \<leftarrow> ss]"
 
 notation eval_term ("_\<lbrakk>(2_)\<rbrakk>" [999,1]100)
+notation eval_term ("_\<lbrakk>(2_)\<rbrakk>_" [999,1,100]100)
 
 lemma eval_same_vars:
   assumes "\<forall>x \<in> vars_term s. \<alpha> x = \<beta> x"
