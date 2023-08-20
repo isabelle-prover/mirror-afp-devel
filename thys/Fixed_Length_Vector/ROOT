@@ -1,6 +1,6 @@
 chapter AFP
 
-session Fixed_Length_Vector (AFP) = HOL +
+session Fixed_Length_Vector = HOL +
   options [timeout = 600]
   sessions
     "HOL-Library"

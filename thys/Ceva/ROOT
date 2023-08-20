@@ -1,6 +1,6 @@
 chapter AFP
 
-session Ceva (AFP) = "HOL-Analysis" +
+session Ceva = "HOL-Analysis" +
   options [timeout = 300]
   sessions
     Triangle
