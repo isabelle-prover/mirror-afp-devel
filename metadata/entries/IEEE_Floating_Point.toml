@@ -43,8 +43,6 @@ Added the IEEE rounding mode \"roundNearestTiesToAway\".<br>
 """
 2023-05-22 = """
 Added a model of floating-point arithmetic with a single NaN value.<br>
-"""
-2023-05-22 = """
 Added a translation of floating-point arithmetic into SMT-LIB.<br>
 """
 
