@@ -7,6 +7,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language><atom:link href="/topics/computer-science/data-structures/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>Fixed-length vectors</title>
+      <link>/entries/Fixed_Length_Vector.html</link>
+      <pubDate>Mon, 14 Aug 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Fixed_Length_Vector.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Nano JSON: Working with JSON formatted data in Isabelle/HOL and Isabelle/ML</title>
       <link>/entries/Nano_JSON.html</link>
       <pubDate>Fri, 29 Jul 2022 00:00:00 +0000</pubDate>

@@ -3,24 +3,45 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2023-08-14T00:00:00+00:00</lastmod>
+    <lastmod>2023-08-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2023-08-14T00:00:00+00:00</lastmod>
+    <lastmod>2023-08-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Ceva.html</loc>
+    <lastmod>2023-08-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2023-08-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2023-08-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2023-08-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/rabing/</loc>
+    <lastmod>2023-08-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2023-08-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/triangle/</loc>
+    <lastmod>2023-08-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Catoids.html</loc>
     <lastmod>2023-08-14T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/</loc>
+    <loc>/topics/computer-science/</loc>
     <lastmod>2023-08-14T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/entries/</loc>
+    <loc>/entries/Fixed_Length_Vector.html</loc>
+    <lastmod>2023-08-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/hupel/</loc>
     <lastmod>2023-08-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/kad/</loc>
-    <lastmod>2023-08-14T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/mathematics/</loc>
     <lastmod>2023-08-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/quantales/</loc>
@@ -33,9 +54,6 @@
     <lastmod>2023-08-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/struth/</loc>
-    <lastmod>2023-08-14T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2023-08-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/argyraki/</loc>
@@ -54,9 +72,6 @@
     <lastmod>2023-08-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/calk/</loc>
-    <lastmod>2023-07-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/computer-science/</loc>
     <lastmod>2023-07-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/kleene_algebra/</loc>
@@ -1868,9 +1883,6 @@
     <loc>/entries/Hello_World.html</loc>
     <lastmod>2020-03-07T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/hupel/</loc>
-    <lastmod>2020-03-07T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Goodstein_Lambda.html</loc>
     <lastmod>2020-02-21T00:00:00+00:00</lastmod>
   </url><url>
@@ -2733,9 +2745,6 @@
     <lastmod>2017-08-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Stewart_Apollonius.html</loc>
-    <lastmod>2017-07-31T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/triangle/</loc>
     <lastmod>2017-07-31T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/DynamicArchitectures.html</loc>
@@ -4812,6 +4821,8 @@
   </url><url>
     <loc>/theories/certification_monads/</loc>
   </url><url>
+    <loc>/theories/ceva/</loc>
+  </url><url>
     <loc>/theories/chandy_lamport/</loc>
   </url><url>
     <loc>/theories/cheri-c_memory_model/</loc>
@@ -5167,6 +5178,8 @@
     <loc>/theories/fisher_yates/</loc>
   </url><url>
     <loc>/theories/fishers_inequality/</loc>
+  </url><url>
+    <loc>/theories/fixed_length_vector/</loc>
   </url><url>
     <loc>/theories/flow_networks/</loc>
   </url><url>
