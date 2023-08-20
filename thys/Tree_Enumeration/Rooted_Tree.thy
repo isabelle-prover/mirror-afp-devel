@@ -636,7 +636,7 @@ proof (induction "(V,E,r)" arbitrary: V E r rule: stree_of_graph.induct)
     unfolding t.subtrees_def by simp
   then have "tree_graph_edges (stree_of_graph (V\<^sub>T,E\<^sub>T,r)) = {e\<in>E\<^sub>T. r \<in> e} \<union> E'"
     using root_edges 1(2) by simp
-  then show ?case using VE' unfolding t.remove_vertex_def t.incident_def by blast
+  then show ?case using VE' unfolding t.remove_vertex_def t.vincident_def by blast
 qed
 
 lemma (in rtree) tree_graph_stree_of_graph[simp]: "tree_graph_stree (stree_of_graph (V,E,r)) = (V,E,r)"
@@ -1067,7 +1067,7 @@ lemma V': "V' = nodes_stree t - {r}"
   using remove_vertex distinct_nodes unfolding t.remove_vertex_def by blast
 
 lemma E': "E' = \<Union> (tree_graph_edges ` fset ts)"
-  using tree_graph_edges_wf distinct_nodes remove_vertex t unfolding t.remove_vertex_def t.incident_def by auto
+  using tree_graph_edges_wf distinct_nodes remove_vertex t unfolding t.remove_vertex_def t.vincident_def by auto
 
 lemma subtrees_not_connected:
   assumes s_in_ts: "s \<in> fset ts"
