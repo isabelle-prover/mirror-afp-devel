@@ -101,7 +101,7 @@ show up on the front page when the next Isabelle version is released.
 
 New submissions are automatically announced by email to all
 editors. If you would like to handle a submission, simply reply to
-<afp-submit> (= all editors) and say so (e.g. "I'll take it"). At the
+[afp-submit] (= all editors) and say so (e.g. "I'll take it"). At the
 same time update the global list of all submissions at
 <https://www.isa-afp.org/webapp/submissions> by toggling the field
 behind the submission to "Review" (and pressing "update" every time you
@@ -131,4 +131,6 @@ the proofs come from (if the authors did not invent them)?
 *Contents* We rarely reject submissions because of the
 contents, but it does happen. Possible reasons: triviality and duplication.
 
-If in doubt, submissions can be discussed on the mailing list <afp-submit>.
+If in doubt, submissions can be discussed on the mailing list [afp-submit].
+
+[afp-submit]: mailto:afp-submit@in.tum.de
