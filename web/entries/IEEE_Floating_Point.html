@@ -88,7 +88,7 @@
   <div>
     
     <p><a href="../authors/yu">Lei Yu</a> <a class="obfuscated" data="eyJob3N0IjpbImNhbSIsImFjIiwidWsiXSwidXNlciI6WyJseTI3MSJdfQ==">📧</a>
-      with contributions from <a href="../authors/hellauer">Fabian Hellauer</a> <a class="obfuscated" data="eyJob3N0IjpbImluIiwidHVtIiwiZGUiXSwidXNlciI6WyJoZWxsYXVlciJdfQ==">📧</a> and <a href="../authors/immler">Fabian Immler</a> <a href="https://home.in.tum.de/~immler/">🌐</a>
+      with contributions from <a href="../authors/hellauer">Fabian Hellauer</a> <a class="obfuscated" data="eyJob3N0IjpbImluIiwidHVtIiwiZGUiXSwidXNlciI6WyJoZWxsYXVlciJdfQ==">📧</a>, <a href="../authors/immler">Fabian Immler</a> <a href="https://home.in.tum.de/~immler/">🌐</a> and <a href="../authors/weber">Tjark Weber</a> <a class="obfuscated" data="eyJob3N0IjpbIml0IiwidXUiLCJzZSJdLCJ1c2VyIjpbInRqYXJrIiwid2ViZXIiXX0=">📧</a>
     </p>
     
     
@@ -101,10 +101,16 @@
 
   <h3>License</h3>
   <div><a href="https://isa-afp.org/LICENSE">BSD License</a></div><h3>History</h3>
-  <dl><dt>February 5, 2018</dt>
+  <dl><dt>May 22, 2023</dt>
+    <dd>Added a model of floating-point arithmetic with a single NaN value.<br>
+Added a translation of floating-point arithmetic into SMT-LIB.<br>
+</dd><dt>May 10, 2023</dt>
+    <dd>Added the IEEE rounding mode "roundNearestTiesToAway".<br>
+</dd><dt>February 5, 2018</dt>
     <dd>'Modernized' representation following the formalization in HOL4:
 former "float_format" and predicate "is_valid" is now encoded in a type "('e, 'f) float" where
-'e and 'f encode the size of exponent and fraction.</dd><dt>September 25, 2017</dt>
+'e and 'f encode the size of exponent and fraction.<br>
+</dd><dt>September 25, 2017</dt>
     <dd>Added conversions from and to software floating point numbers
 (by Fabian Hellauer and Fabian Immler).<br>
 </dd></dl><h3>Topics</h3>
