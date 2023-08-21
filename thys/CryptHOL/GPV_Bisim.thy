@@ -835,7 +835,7 @@ proof -
       done
   qed
   note this(1)[OF go]
-  finally show ?thesis by(rule rel_pmf_mono)(auto elim!: option.rel_cases)
+  finally show ?thesis by(rule pmf.rel_mono_strong)(auto elim!: option.rel_cases)
 qed
 
 end
