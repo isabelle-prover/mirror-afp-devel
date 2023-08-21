@@ -227,7 +227,7 @@ lemma scale_spmf_None_iff:
   using
     inverse_nonpositive_iff_nonpositive
     weight_0_spmf
-    weight_spmf_le_0
+    measure_le_0_iff
   by smt
 
 lemma spmf_of_pmf_the:
