@@ -18,8 +18,6 @@ This section contains further results about directed acyclic graphs and relation
 context stone_relation_algebra
 begin
 
-text \<open>Theorem 6.4\<close>
-
 lemma update_square:
   assumes "point y"
     shows "x[y\<longmapsto>x[[x[[y]]]]] \<le> x * x \<squnion> x"
@@ -34,19 +32,13 @@ proof -
     .
 qed
 
-text \<open>Theorem 2.13\<close>
-
 lemma update_ub:
   "x[y\<longmapsto>z] \<le> x \<squnion> z\<^sup>T"
   by (meson dual_order.trans inf.cobounded2 le_supI sup.cobounded1 sup_ge2)
 
-text \<open>Theorem 6.7\<close>
-
 lemma update_square_ub:
   "x[y\<longmapsto>(x * x)\<^sup>T] \<le> x \<squnion> x * x"
   by (metis conv_involutive update_ub)
-
-text \<open>Theorem 2.14\<close>
 
 lemma update_same_sub:
   assumes "u \<sqinter> x = u \<sqinter> z"
@@ -55,25 +47,17 @@ lemma update_same_sub:
     shows "x[y\<longmapsto>z\<^sup>T] = x"
   by (smt (z3) assms conv_involutive inf.sup_monoid.add_commute inf.sup_relative_same_increasing maddux_3_11_pp)
 
-text \<open>Theorem 2.15\<close>
-
 lemma update_point_get:
   "point y \<Longrightarrow> x[y\<longmapsto>z[[y]]] = x[y\<longmapsto>z\<^sup>T]"
   by (metis conv_involutive get_put inf_commute update_inf_same)
-
-text \<open>Theorem 2.11\<close>
 
 lemma update_bot:
   "x[bot\<longmapsto>z] = x"
   by simp
 
-text \<open>Theorem 2.12\<close>
-
 lemma update_top:
   "x[top\<longmapsto>z] = z\<^sup>T"
   by simp
-
-text \<open>Theorem 2.6\<close>
 
 lemma update_same:
   assumes "regular u"
@@ -95,14 +79,10 @@ lemma update_same_3:
     shows "((x[y\<longmapsto>z])[u\<longmapsto>z])[v\<longmapsto>z] = x[y \<squnion> u \<squnion> v\<longmapsto>z]"
   by (metis assms update_same)
 
-text \<open>Theorem 2.7\<close>
-
 lemma update_split:
   assumes "regular w"
     shows "x[y\<longmapsto>z] = (x[y - w\<longmapsto>z])[y \<sqinter> w\<longmapsto>z]"
   by (smt (z3) assms comp_inf.semiring.distrib_left inf.left_commute inf.sup_monoid.add_commute inf_import_p maddux_3_11_pp maddux_3_12 p_dist_inf sup_assoc)
-
-text \<open>Theorem 2.8\<close>
 
 lemma update_injective_swap:
   assumes "injective x"
@@ -174,8 +154,6 @@ lemma update_injective_swap_2:
     shows "injective ((x[y\<longmapsto>x[[bot]]])[bot\<longmapsto>x[[y]]])"
   by (simp add: assms inf.sup_monoid.add_commute injective_inf_closed)
 
-text \<open>Theorem 2.9\<close>
-
 lemma update_univalent_swap:
   assumes "univalent x"
       and "injective y"
@@ -185,8 +163,6 @@ lemma update_univalent_swap:
     shows "univalent ((x[y\<longmapsto>x[[z]]])[z\<longmapsto>x[[y]]])"
   by (simp add: assms read_injective update_univalent)
 
-text \<open>Theorem 2.10\<close>
-
 lemma update_mapping_swap:
   assumes "mapping x"
       and "point y"
@@ -194,7 +170,7 @@ lemma update_mapping_swap:
     shows "mapping ((x[y\<longmapsto>x[[z]]])[z\<longmapsto>x[[y]]])"
   by (simp add: assms bijective_regular read_injective read_surjective update_total update_univalent)
 
-text \<open>Theorem 2.16 \<open>mapping_inf_point_arc\<close> has been moved to theory \<open>Relation_Algebras\<close> in entry \<open>Stone_Relation_Algebras\<close>\<close>
+text \<open>lemma \<open>mapping_inf_point_arc\<close> has been moved to theory \<open>Relation_Algebras\<close> in entry \<open>Stone_Relation_Algebras\<close>\<close>
 
 end
 
@@ -235,14 +211,10 @@ proof -
     using 1 by (metis maddux_3_11_pp regular_one_closed)
 qed
 
-text \<open>Theorem 5.3\<close>
-
 lemma omit_redundant_points_3:
   assumes "point p"
   shows "p \<sqinter> x\<^sup>\<star> = (p \<sqinter> 1) \<squnion> (p \<sqinter> (x \<sqinter> -p\<^sup>T)\<^sup>+)"
   by (simp add: assms inf_assoc vector_inf_comp omit_redundant_points_2)
-
-text \<open>Theorem 6.1\<close>
 
 lemma even_odd_root:
   assumes "acyclic (x - 1)"
@@ -336,8 +308,6 @@ lemma update_square_ub_plus:
   "x[y\<longmapsto>(x * x)\<^sup>T] \<le> x\<^sup>+"
   by (simp add: comp_isotone inf.coboundedI2 star.circ_increasing star.circ_mult_increasing)
 
-text \<open>Theorem 6.2\<close>
-
 lemma acyclic_square:
   assumes "acyclic (x - 1)"
     shows "x * x \<sqinter> 1 = x \<sqinter> 1"
@@ -381,8 +351,6 @@ proof -
     using 1 by (metis inf.absorb2 inf.left_commute inf.sup_monoid.add_commute)
 qed
 
-text \<open>Theorem 6.5\<close>
-
 lemma diagonal_update_square:
   assumes "acyclic (x - 1)"
       and "point y"
@@ -402,8 +370,6 @@ proof -
   finally show ?thesis
     .
 qed
-
-text \<open>Theorem 6.6\<close>
 
 lemma fc_update_square:
   assumes "mapping x"
@@ -455,8 +421,6 @@ proof (rule order.antisym)
     by (smt (z3) assms fc_equivalence fc_isotone fc_wcc read_injective star.circ_decompose_9 star_decompose_1 update_univalent)
 qed
 
-text \<open>Theorem 6.2\<close>
-
 lemma acyclic_plus_loop:
   assumes "acyclic (x - 1)"
   shows "x\<^sup>+ \<sqinter> 1 = x \<sqinter> 1"
@@ -489,8 +453,6 @@ lemma star_irreflexive_part_eq:
   "x\<^sup>\<star> - 1 = (x - 1)\<^sup>+ - 1"
   by (metis reachable_without_loops star_plus_without_loops)
 
-text \<open>Theorem 6.3\<close>
-
 lemma star_irreflexive_part:
   "x\<^sup>\<star> - 1 \<le> (x - 1)\<^sup>+"
   using star_irreflexive_part_eq by auto
@@ -516,13 +478,9 @@ proof -
     .
 qed
 
-text \<open>Theorem 6.3\<close>
-
 lemma square_irreflexive_part_2:
   "x * x - 1 \<le> x\<^sup>\<star> - 1"
   using comp_inf.mult_left_isotone star.circ_increasing star.circ_mult_upper_bound by blast
-
-text \<open>Theorem 6.8\<close>
 
 lemma acyclic_update_square:
   assumes "acyclic (x - 1)"
@@ -539,8 +497,6 @@ proof -
   finally show ?thesis
     .
 qed
-
-text \<open>Theorem 6.9\<close>
 
 lemma disjoint_set_forest_update_square:
   assumes "disjoint_set_forest x"
@@ -1925,8 +1881,6 @@ lemma conv_Z_Z:
   "Z\<^sup>T * Z = top"
   by (simp add: Z_point point_conv_comp)
 
-text \<open>Theorem 9.2\<close>
-
 lemma Z_below_S_star:
   "Z \<le> S\<^sup>\<star>"
 proof -
@@ -1936,19 +1890,13 @@ proof -
     using Z_point conv_order conv_star_commute vector_conv_covector by force
 qed
 
-text \<open>Theorem 9.3\<close>
-
 lemma S_connected:
   "S\<^sup>T\<^sup>\<star> * S\<^sup>\<star> = top"
   by (metis Z_below_S_star S_star_Z_top mult_left_dist_sup sup.orderE sup_commute top.extremum)
 
-text \<open>Theorem 9.4\<close>
-
 lemma S_star_connex:
   "S\<^sup>\<star> \<squnion> S\<^sup>T\<^sup>\<star> = top"
   using S_connected S_univalent cancel_separate_eq sup_commute by auto
-
-text \<open>Theorem 9.5\<close>
 
 lemma Z_sup_conv_S_top:
   "Z \<squnion> S\<^sup>T * top = top"
@@ -1957,8 +1905,6 @@ lemma Z_sup_conv_S_top:
 lemma top_S_sup_conv_Z:
   "top * S \<squnion> Z\<^sup>T = top"
   by (metis S_star_Z_top conv_dist_comp conv_involutive conv_star_commute star.circ_back_loop_fixpoint symmetric_top_closed)
-
-text \<open>Theorem 9.1\<close>
 
 lemma S_inf_1_below_Z:
   "S \<sqinter> 1 \<le> Z"
@@ -1991,8 +1937,6 @@ If $S$ is not surjective (like for the set of all natural numbers), \<open>M = b
 abbreviation "S' \<equiv> S - Z\<^sup>T"
 abbreviation "M \<equiv> S * Z"
 
-text \<open>Theorem 11.1\<close>
-
 lemma M_point_iff_S_surjective:
   "point M \<longleftrightarrow> surjective S"
 proof
@@ -2015,25 +1959,17 @@ next
     by (metis S_injective Z_point comp_associative injective_mult_closed)
 qed
 
-text \<open>Theorem 10.1\<close>
-
 lemma S'_univalent:
   "univalent S'"
   by (simp add: S_univalent univalent_inf_closed)
-
-text \<open>Theorem 10.2\<close>
 
 lemma S'_injective:
   "injective S'"
   by (simp add: S_injective injective_inf_closed)
 
-text \<open>Theorem 10.9\<close>
-
 lemma S'_Z:
   "S' * Z = bot"
   by (simp add: Z_point covector_vector_comp injective_comp_right_dist_inf)
-
-text \<open>Theorem 10.4\<close>
 
 lemma S'_irreflexive:
   "irreflexive S'"
@@ -2048,8 +1984,6 @@ begin
 lemma S_mapping:
   "mapping S"
   by (simp add: S_total S_univalent)
-
-text \<open>Theorem 11.2\<close>
 
 lemma M_bot_iff_S_not_surjective:
   "M \<noteq> bot \<longleftrightarrow> surjective S"
@@ -2067,15 +2001,11 @@ next
     using M_point_iff_S_surjective consistent covector_bot_closed by force
 qed
 
-text \<open>Theorem 11.3\<close>
-
 lemma M_point_or_bot:
   "point M \<or> M = bot"
   using M_bot_iff_S_not_surjective M_point_iff_S_surjective by blast
 
 text \<open>Alternative way to express \<open>S'\<close>\<close>
-
-text \<open>Theorem 12.1\<close>
 
 lemma S'_var:
   "S' = S - M"
@@ -2094,8 +2024,6 @@ qed
 
 text \<open>Special case of just $1$ number\<close>
 
-text \<open>Theorem 12.2\<close>
-
 lemma M_is_Z_iff_1_is_top:
   "M = Z \<longleftrightarrow> 1 = top"
 proof
@@ -2109,8 +2037,6 @@ next
   thus "M = Z"
     using S_mapping comp_right_one mult_1_left by auto
 qed
-
-text \<open>Theorem 12.3\<close>
 
 lemma S_irreflexive:
   assumes "M \<noteq> Z"
@@ -2143,8 +2069,6 @@ lemma M_regular:
 lemma S'_regular:
   "regular S'"
   using S_mapping mapping_regular by auto
-
-text \<open>Theorem 10.3\<close>
 
 lemma S'_star_Z_top:
   "S'\<^sup>T\<^sup>\<star> * Z = top"
@@ -2183,25 +2107,17 @@ proof -
     using S_star_Z_top top_le by auto
 qed
 
-text \<open>Theorem 10.5\<close>
-
 lemma Z_below_S'_star:
   "Z \<le> S'\<^sup>\<star>"
   by (metis S'_star_Z_top Z_point comp_associative comp_right_one conv_order conv_star_commute mult_right_isotone vector_conv_covector)
-
-text \<open>Theorem 10.6\<close>
 
 lemma S'_connected:
   "S'\<^sup>T\<^sup>\<star> * S'\<^sup>\<star> = top"
   by (metis Z_below_S'_star S'_star_Z_top mult_left_dist_sup sup.orderE sup_commute top.extremum)
 
-text \<open>Theorem 10.7\<close>
-
 lemma S'_star_connex:
   "S'\<^sup>\<star> \<squnion> S'\<^sup>T\<^sup>\<star> = top"
   using S'_connected S'_univalent cancel_separate_eq sup_commute by auto
-
-text \<open>Theorem 10.8\<close>
 
 lemma Z_sup_conv_S'_top:
   "Z \<squnion> S'\<^sup>T * top = top"
