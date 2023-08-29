@@ -9,7 +9,7 @@ object AFP_Build_Hugo {
 
   def make_component_name(version: String): String = "hugo-" + version
 
-  def make_archive_name(release: String, platform: Platform.Family.Value): String = {
+  def make_archive_name(release: String, platform: Platform.Family): String = {
     val arch = platform match {
       case isabelle.Platform.Family.linux => "Linux-64bit"
       case isabelle.Platform.Family.macos => "macOS-64bit"
