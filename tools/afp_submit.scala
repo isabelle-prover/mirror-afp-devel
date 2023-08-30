@@ -1287,12 +1287,15 @@ object AFP_Submit {
             case Prefix(prefix) => prefix
             case _ => ""
           }
+          val updated_authors = model.updated_authors(authors)
+
           var ident = suffix.toLowerCase
-          for (c <- prefix.toLowerCase) {
-            if (model.updated_authors(authors).contains(ident)) ident += c.toString
-            else return ident
-          }
-          Utils.make_unique(ident, model.updated_authors(authors).keySet)
+          for {
+            c <- prefix.toLowerCase
+            if updated_authors.contains(ident)
+          } ident += c.toString
+
+          Utils.make_unique(ident, updated_authors.keySet)
         }
 
         val id = make_author_id(name)
