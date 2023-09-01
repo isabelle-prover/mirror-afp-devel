@@ -4,9 +4,7 @@ requirements = \
   env:ISABELLE_SCALA_JAR \
   $ISABELLE_CI_EXTRAS_JAR
 sources = \
-  tools/admin/afp_build_hugo.scala \
-  tools/migration/afp_migrate_metadata.scala \
-  tools/migration/afp_obfuscate_emails.scala \
+  tools/admin/afp_component_hugo.scala \
   tools/afp_build.scala \
   tools/afp_check_metadata.scala \
   tools/afp_check_roots.scala \
@@ -22,8 +20,7 @@ sources = \
   tools/utils.scala \
   tools/web_app.scala
 resources = \
-  tools/SmartStoplist.txt:SmartStoplist.txt \
-  tools/migration/public_suffix_list.dat:public_suffix_list.dat
+  tools/SmartStoplist.txt:SmartStoplist.txt
 services = \
   afp.Tools \
   afp.CI_Builds

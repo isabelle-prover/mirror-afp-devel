@@ -27,6 +27,9 @@ guttmann = "guttmann_email"
 2021-06-19 = """
 added path halving, path splitting, relational Peano structures, union by rank
 (revision 98c7aa03457d)"""
+2023-08-10 = """
+added matrix model of Peano structures and order-embedding from nat
+(revision 9933c1ff260f)"""
 
 [extra]
 

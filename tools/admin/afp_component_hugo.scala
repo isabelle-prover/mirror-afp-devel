@@ -4,12 +4,12 @@ package afp
 import isabelle._
 
 
-object AFP_Build_Hugo {
+object AFP_Component_Hugo {
   val default_mirror = "https://github.com/gohugoio/hugo/releases/download/v0.88.1"
 
   def make_component_name(version: String): String = "hugo-" + version
 
-  def make_archive_name(release: String, platform: Platform.Family.Value): String = {
+  def make_archive_name(release: String, platform: Platform.Family): String = {
     val arch = platform match {
       case isabelle.Platform.Family.linux => "Linux-64bit"
       case isabelle.Platform.Family.macos => "macOS-64bit"
@@ -90,14 +90,14 @@ ISABELLE_HUGO="$COMPONENT/$ISABELLE_PLATFORM64"
     }
   }
 
-  val isabelle_tool = Isabelle_Tool("afp_build_hugo", "build afp hugo component",
+  val isabelle_tool = Isabelle_Tool("afp_component_hugo", "build afp hugo component",
     Scala_Project.here,
   { args =>
     var target_dir = Path.current
     var mirror = default_mirror
 
     val getopts = Getopts("""
-Usage: isabelle afp_build_hugo [OPTIONS]
+Usage: isabelle afp_component_hugo [OPTIONS]
 
   Options are:
     -D DIR       target directory (default ".")
