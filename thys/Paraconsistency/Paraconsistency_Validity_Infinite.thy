@@ -104,7 +104,7 @@ section \<open>Extension of Paraconsistency theory\<close>
 
 text 
 \<open>
-The Paraconsistency theory is extended with abbreviation is_det and a number of lemmas that are 
+The Paraconsistency theory is extended with abbreviation \<open>is_det\<close> and a number of lemmas that are 
 or generalizations of previous lemmas
 \<close>
 
@@ -117,7 +117,7 @@ theorem valid_iff_valid_in:
 
 text 
 \<open>
-Generalization of change_tv_injection
+Generalization of \<open>change_tv_injection\<close>
 \<close>
 
 lemma change_tv_injection_on:
@@ -132,7 +132,7 @@ qed
 
 text 
 \<open>
-Similar to change_tv_injection_on
+Similar to \<open>change_tv_injection_on\<close>
 \<close>
 
 lemma change_tv_injection_from_to:
@@ -156,7 +156,7 @@ qed
 
 text 
 \<open>
-Similar to eval_change_inj_on
+Similar to \<open>eval_change_inj_on\<close>
 \<close>
 
 lemma change_tv_surj_on:
@@ -187,7 +187,7 @@ qed
 
 text 
 \<open>
-Similar to eval_change_inj_on
+Similar to \<open>eval_change_inj_on\<close>
 \<close>
 
 lemma change_tv_bij_betw:
@@ -197,7 +197,7 @@ lemma change_tv_bij_betw:
 
 text 
 \<open>
-Generalization of eval_change
+Generalization of \<open>eval_change\<close>
 \<close>
 
 lemma eval_change_inj_on:
@@ -838,4 +838,4 @@ corollary "valid = valid_in {n..}"
 corollary "\<not> (\<exists>n m. \<forall>p. valid p \<longleftrightarrow> valid_in {m..n} p)"
   using extend by fast
 
-end \<comment> \<open>Paraconsistency_Validity_Infinite file\<close>
+end \<comment> \<open>\<open>Paraconsistency_Validity_Infinite\<close> file\<close>

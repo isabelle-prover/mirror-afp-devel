@@ -1151,7 +1151,7 @@ subsection \<open>Only a Finite Number of Truth Values Needed\<close>
 
 text
 \<open>
-Theorem valid_in_valid is a kind of the reverse of valid_valid_in (or its transfer variant).
+Theorem \<open>valid_in_valid\<close> is a kind of the reverse of \<open>valid_valid_in\<close> (or its transfer variant).
 \<close>
 
 abbreviation is_indet :: "tv \<Rightarrow> bool"
@@ -1530,4 +1530,4 @@ text
 Thanks to the Isabelle developers for making a superb system and for always being willing to help.
 \<close>
 
-end \<comment> \<open>Paraconsistency file\<close>
+end \<comment> \<open>\<open>Paraconsistency\<close> file\<close>
