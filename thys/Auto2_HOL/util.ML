@@ -149,7 +149,6 @@ sig
   val cterm_pat_setup: theory -> theory
   val type_pat_setup: theory -> theory
   val timer: string * (unit -> 'a) -> 'a
-  val exn_trace: (unit -> 'a) -> 'a
 end;
 
 structure Util : UTIL =
@@ -909,11 +908,6 @@ fun timer (msg, f) =
     in
       (writeln (msg ^ (Timing.message t_end)); res)
     end
-
-(* When exception is shown when running function f : unit -> 'a, print
-   stack trace.
- *)
-fun exn_trace f = Runtime.exn_trace f
 
 end  (* structure Util. *)
 
