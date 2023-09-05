@@ -193,8 +193,7 @@ fun or_ok :: "'a check \<Rightarrow> 'a check \<Rightarrow> 'a check" where
   "or_ok (Inl a) b = b" |
   "or_ok (Inr a) b = Inr a" 
 
-lemma or_is_or: "isOK (or_ok a b) = isOK a \<or> isOK b" using or_ok.elims by blast
-
+lemma or_is_or[simp]: "isOK (or_ok a b) \<longleftrightarrow> isOK a \<or> isOK b" by (cases a, auto)
 
 end
 
