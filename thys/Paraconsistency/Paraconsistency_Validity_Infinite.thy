@@ -75,7 +75,7 @@ Strategy: We define a formula that is valid in the sets {0..<1}, {0..<2}, ..., {
 not valid in the set {0..<n}
 \<close>
 
-section \<open>Injections from sets to sets\<close>
+section \<open>Injections From Sets to Sets\<close>
 
 text 
 \<open>
@@ -100,7 +100,7 @@ lemma inj_from_to_if_card:
   unfolding inj_from_to_def
   by (metis assms card_image card_le_inj card_subset_eq obtain_subset_with_card_n order_refl)
 
-section \<open>Extension of Paraconsistency theory\<close>
+section \<open>Extension of Paraconsistency Theory\<close>
 
 text 
 \<open>
@@ -247,7 +247,7 @@ next
       eval_negation ranges by smt
 qed (simp_all add: change_int_def)
 
-section \<open>Logics of equal cardinality are equal\<close>
+section \<open>Logics of Equal Cardinality Are Equal\<close>
 
 text 
 \<open>
@@ -333,7 +333,7 @@ theorem infinite_valid_in:
   shows "valid_in U p \<longleftrightarrow> valid_in W p"
   using eql_finite_eql_card_valid_in by (simp add: assms)
 
-section \<open>Conversions between nats and strings\<close>
+section \<open>Conversions Between Nats and Strings\<close>
 
 definition nat_of_digit :: "char \<Rightarrow> nat" where
   "nat_of_digit c =
@@ -406,7 +406,7 @@ qed
 lemma "inj string_of_nat"
   using inj_on_inverseI nat_of_string_of_nat by metis
 
-section \<open>Derived formula constructors\<close>
+section \<open>Derived Formula Constructors\<close>
 
 definition PRO :: "id list \<Rightarrow> fm list" where
   "PRO ids \<equiv> map Pro ids"
@@ -502,7 +502,7 @@ lemma eval_ExiEql:
   unfolding off_diagonal_product_def ExiEql_def List_off_diagonal_product_def
   by auto
 
-section \<open>Pigeon hole formula\<close>
+section \<open>Pigeon Hole Formula\<close>
 
 definition pigeonhole_fm :: "nat \<Rightarrow> fm" where
   "pigeonhole_fm n \<equiv> [\<^bold>\<nabla>] \<langle>[0..<n]\<rangle>\<^sub>1\<^sub>2\<^sub>3 \<^bold>\<Rightarrow> [\<^bold>\<exists>\<^bold>=] \<langle>[0..<n]\<rangle>\<^sub>1\<^sub>2\<^sub>3"
@@ -715,7 +715,7 @@ theorem valid_in_pigeonhole_fm_n_gt_card:
   shows "valid_in U (pigeonhole_fm n)"
   using assms ex_bij_betw_finite_nat bij_betw_valid_in valid_in_lt_n_pigeonhole_fm by metis
 
-section \<open>Validity is the intersection of the finite logics\<close>
+section \<open>Validity Is the Intersection of the Finite Logics\<close>
 
 lemma "valid p \<longleftrightarrow> (\<forall>U. finite U \<longrightarrow> valid_in U p)"
 proof
@@ -730,7 +730,7 @@ next
     using reduce by simp
 qed
 
-section \<open>Logics of different cardinalities are different\<close>
+section \<open>Logics of Different Cardinalities Are Different\<close>
 
 lemma finite_card_lt_valid_in_not_valid_in:
   assumes "finite U"
@@ -808,7 +808,7 @@ proof -
     using assms neqE by metis
 qed
 
-section \<open>Finite logics are different from infinite logics\<close>
+section \<open>Finite Logics Are Different from Infinite Logics\<close>
 
 theorem extend: "valid \<noteq> valid_in U" if "finite U"
   using that not_valid_pigeonhole_fm valid_in_pigeonhole_fm_n_gt_card by fastforce
