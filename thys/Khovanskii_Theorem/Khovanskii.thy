@@ -1110,7 +1110,7 @@ proof -
     define SUM1 where "SUM1 \<equiv> \<Sum>I | I \<subseteq> C n ` X \<and> I \<noteq> {}. (- 1) ^ (card I + 1) * int (card (\<Inter>I))"
     define SUM2 where "SUM2 \<equiv> \<Sum>Y | Y \<subseteq> X \<and> Y \<noteq> {}. (- 1) ^ (card Y + 1) * int (card (\<Inter>(C n ` Y)))"
     have SUM1_card: "card(length_sum_set r n \<inter> {x. useless x}) = nat SUM1"
-      unfolding SUM1_def using \<open>finite X\<close> by (simp add: finC 2 card_UNION)
+      unfolding SUM1_def 2 using \<open>finite X\<close> finC by (intro card_UNION; force)
     have "SUM1 \<ge> 0"
       unfolding SUM1_def using card_UNION_nonneg finC \<open>finite X\<close> by auto
     have C_empty_iff: "C n x' = {} \<longleftrightarrow> \<sigma> x' > n" if "length x' \<noteq> 0" for x'
