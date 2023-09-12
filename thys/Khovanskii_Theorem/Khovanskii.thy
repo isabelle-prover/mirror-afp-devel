@@ -15,29 +15,6 @@ theory Khovanskii
     "HOL-Library.List_Lenlexorder"      \<comment> \<open>lexicographic ordering for the type @{typ \<open>nat list\<close>}\<close>
 begin
 
-(*FIXME: move this, and Transcendental's sum_up_index_split maybe to Set_Interval*)
-lemma sum_diff_split:
-  fixes f:: "nat \<Rightarrow> 'a::ab_group_add"
-  assumes "m \<le> n"
-  shows "(\<Sum>i\<le>n - m. f(n - i)) = (\<Sum>i\<le>n. f i) - (\<Sum>i<m. f i)"
-proof -
-  have inj: "inj_on ((-) n) {m..n}"
-    by (auto simp: inj_on_def)
-  have "(\<Sum>i\<le>n - m. f(n - i)) = (\<Sum>i\<in>(-) n ` {m..n}. f(n - i))"
-  proof (rule sum.cong)
-    have "\<And>x. x \<le> n - m \<Longrightarrow> \<exists>k\<ge>m. k \<le> n \<and> x = n - k"
-      by (metis assms diff_diff_cancel diff_le_mono2 diff_le_self le_trans)
-    then show "{..n - m} = (-) n ` {m..n}"
-      by (auto simp: image_iff Bex_def)
-  qed auto
-  also have "\<dots> = (\<Sum>i=m..n. f i)"
-    by (smt (verit) atLeastAtMost_iff diff_diff_cancel sum.reindex_cong [OF inj])
-  also have "\<dots> = (\<Sum>i\<le>n. f i) - (\<Sum>i<m. f i)"
-    using sum_diff_nat_ivl[of 0 "m" "Suc n" f] assms 
-    by (simp only: atLeast0AtMost atLeast0LessThan atLeastLessThanSuc_atLeastAtMost)
-  finally show ?thesis .
-qed
-
 text \<open>The sum of the elements of a list\<close>
 abbreviation "\<sigma> \<equiv> sum_list"
 
