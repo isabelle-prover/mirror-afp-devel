@@ -65,7 +65,7 @@ object AFP_Release {
       var isabelle = Isabelle_System.isabelle_identifier().getOrElse("")
       var date = LocalDate.now()
       var options = Options.init()
-      var releases: String = "afpweb@isa-afp.org:/var/www/afp/release"
+      var releases: String = "afpweb@isa-afp.org:/srv/afp/release"
       var import_releases = false
 
       val getopts = Getopts("""
