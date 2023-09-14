@@ -3821,7 +3821,7 @@
   "used_by": 1
  },
  {
-  "abstract": "We introduce a generalized topological semantics for paraconsistent and paracomplete logics by drawing upon early works on topological Boolean algebras (cf. works by Kuratowski, Zarycki, McKinsey \u0026 Tarski, etc.). In particular, this work exemplarily illustrates the shallow semantical embeddings approach (\u003ca href=\"http://dx.doi.org/10.1007/s11787-012-0052-y\"\u003eSSE\u003c/a\u003e) employing the proof assistant Isabelle/HOL. By means of the SSE technique we can effectively harness theorem provers, model finders and 'hammers' for reasoning with quantified non-classical logics.",
+  "abstract": "We investigate mathematical structures that provide natural semantics for families of (quantified) non-classical logics featuring special unary connectives, known as recovery operators, that allow us to 'recover' the properties of classical logic in a controlled manner. These structures are known as topological Boolean algebras, which are Boolean algebras extended with additional operations subject to specific conditions of a topological nature. In this study we focus on the paradigmatic case of negation. We demonstrate how these algebras are well-suited to provide a semantics for some families of paraconsistent Logics of Formal Inconsistency and paracomplete Logics of Formal Undeterminedness. These logics feature recovery operators used to earmark propositions that behave 'classically' when interacting with non-classical negations. We refer to the \u003ca href=\"https://arxiv.org/abs/2104.04284\"\u003ecompanion paper\u003c/a\u003e for more information. ",
   "authors": [
    "David Fuenmayor"
   ],
