@@ -97,6 +97,10 @@ type_synonym 'a bins = "'a bin list"
 definition items :: "'a bin \<Rightarrow> 'a item list" where
   "items b \<equiv> map item b"
 
+lemma length_items_eq:
+  \<open>length (items b) = length b\<close>
+  by (simp add: items_def)
+
 definition pointers :: "'a bin \<Rightarrow> pointer list" where
   "pointers b \<equiv> map pointer b"
 

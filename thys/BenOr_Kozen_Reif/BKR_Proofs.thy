@@ -369,10 +369,22 @@ proof (induct ls arbitrary: i)
   then show ?case
     by simp
 next
+  from assms have \<open>n > 0\<close>
+    by (cases \<open>n = 0\<close>) simp_all
   case (Cons a ls)
-  then show ?case
-    apply (auto simp add: nth_append)
-    using div_if mod_geq by auto
+  show ?case
+  proof (cases \<open>n \<le> i\<close>)
+    case False
+    with Cons show ?thesis
+      by (simp add: nth_append)
+  next
+    case True
+    moreover define j where \<open>j = i - n\<close>
+    ultimately have \<open>i = n + j\<close>
+      by simp
+    with Cons \<open>n > 0\<close> show ?thesis
+      by (simp add: nth_append div_add_self1)
+  qed
 qed
 
 lemma z_append:

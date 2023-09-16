@@ -418,7 +418,8 @@ proof (induction i rule: Earley\<^sub>L_bin'_induct[OF assms(1), case_names Base
     k' < k \<and> pre < length (bs!k') \<and> red < i+1 \<and> completes k (item (bs!k'!pre)) (item e) (item (bs!k!red))"
     by force
   hence 3: "\<forall>e \<in> set (Complete\<^sub>L k x bs i). sound_prered_ptr bs k e"
-    unfolding sound_prered_ptr_def using Complete\<^sub>F.hyps(1) items_def by (smt (verit) discrete dual_order.strict_trans1 leI length_map)
+    using Complete\<^sub>F.hyps(1)
+    by (simp add: not_le length_items_eq sound_prered_ptr_def) fastforce
   have 4: "distinct (items (Complete\<^sub>L k x bs i))"
     using distinct_Complete\<^sub>L x Complete\<^sub>F.prems(1) wf_earley_input_elim wf_bin_def wf_bin_items_def wf_bins_def wf_item_def
     by (metis order_le_less_trans)

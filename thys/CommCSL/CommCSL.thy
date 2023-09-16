@@ -291,7 +291,8 @@ proof (rule PRE_uniqueI)
     by (metis PRE_unique_def assms diff_Suc_1 length_Cons)
   fix i assume "0 \<le> i \<and> i < length qb"
   then have "upre ((ta # qa) ! (i + 1)) ((tb # qb) ! (i + 1))"
-    by (metis PRE_unique_def add_nonneg_nonneg assms discrete le_imp_less_Suc length_Cons zero_less_one_class.zero_le_one)
+    using assms PRE_unique_def [of upre \<open>ta # qa\<close> \<open>tb # qb\<close>]
+    by (auto simp add: less_Suc_eq_le dest: spec [of _ \<open>Suc i\<close>])
   then show "upre (qa ! i) (qb ! i)"
     by simp
 qed

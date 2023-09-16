@@ -1266,6 +1266,10 @@ next
     using Suc.hyps(2) Suc.prems(1) Suc.prems(2) by auto
   have "?subt' = butlast ?subt" 
     by (metis Suc.prems(2) Suc_eq_plus1 butlast_drop butlast_take drop_take less_imp_le_nat)
+  have \<open>i < length t\<close>
+    using \<open>postrecording_event t i\<close> postrecording_event [of t i] by simp
+  then have step: \<open>S t i \<turnstile> t ! i \<mapsto> S t (Suc i)\<close>
+    using \<open>trace init t final\<close> by (rule step_Suc)
   have "?t = t ! i # ?subt @ [t ! j]" 
   proof -
     have f1: "Suc j - i = Suc (j - i)"
@@ -1284,7 +1288,8 @@ next
   then have "trace (S t i) ?t (S t (j+1))" 
     by (metis Suc.prems(1) Suc.prems(6) Suc_eq_plus1 exists_trace_for_any_i_j less_SucI nat_less_le)
   then have reg_tr_1:  "trace (S t i) (t ! i # ?subt) (S t j)" 
-    by (metis (no_types, opaque_lifting) Suc.hyps(2) Suc.prems(1) Suc.prems(4) Suc.prems(6) Suc_eq_plus1 discrete exists_trace_for_any_i_j postrecording_event step_Suc tr_step)
+    using \<open>i < j\<close> \<open>i < length t\<close> \<open>trace init t final\<close> step
+    by simp (meson exists_trace_for_any_i_j less_eq_Suc_le trace.simps)
   have reg_st_2: "(S t j) \<turnstile> (t ! j) \<mapsto> (S t (j+1))" 
     using Suc.prems(2) Suc.prems(6) step_Suc by auto
   have "?subt = ?subt' @ [t ! (j-1)]"
@@ -2135,8 +2140,8 @@ proof -
   show ?thesis
   proof (rule ccontr)
     let ?t = "take (i - (j+1)) (drop (j+1) t)"
-    have tr_j: "trace (S t (j+1)) ?t (S t i)" 
-      by (metis \<open>j < i\<close> assms(1) discrete exists_trace_for_any_i_j)
+    have tr_j: "trace (S t (j+1)) ?t (S t i)"
+      using assms(1) exists_trace_for_any_i_j jj(1) by fastforce
     assume "~ Marker : set (msgs (S t i) cid)"
     then obtain ev where "ev \<in> set ?t" "\<exists>p q. ev = RecvMarker cid p q" 
       using \<open>Marker \<in> set (msgs (S t (j + 1)) cid)\<close> marker_must_be_delivered_2_trace tr_j assms by blast
@@ -2152,11 +2157,13 @@ proof -
       using \<open>\<exists>p q. ev = RecvMarker cid p q\<close> \<open>t ! k = ev\<close> by auto
     then have "snd (cs (S t (k+1)) cid) = Done" 
       using \<open>k < i\<close> \<open>t ! k = ev\<close> assms(1) assms(4) recv_marker_means_cs_Done by auto
-    moreover have "trace (S t (k+1)) (take (i - (k+1)) (drop (k+1) t)) (S t i)" 
-      by (meson \<open>k < i\<close> assms(1) discrete exists_trace_for_any_i_j)
-    ultimately have "snd (cs (S t i) cid) = Done" 
-      by (metis \<open>k < i\<close> assms(1) assms(4) assms(5) cs_done_implies_same_snapshots discrete)
-    then show False using assms by simp
+    moreover have "trace (S t (k+1)) (take (i - (k+1)) (drop (k+1) t)) (S t i)"
+      using \<open>k < i\<close> \<open>trace init t final\<close> exists_trace_for_any_i_j by fastforce 
+    ultimately have \<open>snd (cs (S t i) cid) = Done\<close>
+      using cs_done_implies_same_snapshots [of t \<open>Suc k\<close> i cid p q] \<open>k < i\<close> assms(1) assms(4) assms(5)
+      by simp
+    then show False
+      using assms by simp
   qed
 qed
 
@@ -2197,8 +2204,8 @@ proof (rule ccontr)
       by (meson assms(1) computation.no_change_if_ge_length_t computation_axioms le_add1 not_less)
   qed
   let ?t = "take (length t - (i+1)) (drop (i+1) t)"
-  have tr: "trace (S t (i+1)) ?t (S t (length t))" 
-    by (meson \<open>i < length t\<close> assms(1) discrete exists_trace_for_any_i_j)
+  have tr: "trace (S t (i+1)) ?t (S t (length t))"
+    using \<open>i < length t\<close> assms(1) exists_trace_for_any_i_j less_eq_Suc_le by fastforce 
   have "Marker \<in> set (msgs (S t (i+1)) cid)"
   proof -
     have n_done: "snd (cs (S t (i+1)) cid) \<noteq> Done"
@@ -3194,7 +3201,9 @@ next
     then have "has_snapshotted (S t (i+1)) p" 
       using local.step snapshot_state_unchanged by auto
     then have "Marker \<notin> set (msgs (S t j) cid)"
-      by (metis Suc.hyps(2) Suc.prems(1) Suc.prems(3) Suc.prems(6) asm discrete no_marker_and_snapshotted_implies_no_more_markers_trace zero_less_Suc zero_less_diff)
+      using Suc.hyps(2) Suc.prems(1) Suc.prems(3) Suc.prems(6) asm
+        no_marker_and_snapshotted_implies_no_more_markers_trace [of t \<open>Suc i\<close> j p cid q]
+      by simp
     then show False using Suc.prems by simp
   qed
   then show ?case
@@ -3232,7 +3241,8 @@ next
   then have step: "(S t i) \<turnstile> (t ! i) \<mapsto> (S t (i+1))" 
     by (metis (no_types, opaque_lifting) Suc_eq_plus1 distributed_system.step_Suc distributed_system_axioms less_le_trans)
   have marker_present: "Marker : set (msgs (S t (i+1)) cid)" 
-    by (meson Suc.prems(1) Suc.prems(2) Suc.prems(3) Suc.prems(5) Suc.prems(6) Suc.prems(8) discrete le_add1 less_imp_le_nat marker_not_vanishing_means_always_present)
+    using Suc.prems
+      marker_not_vanishing_means_always_present [of t i j cid p q] by simp
   moreover have "Marker = last (msgs (S t (i+1)) cid)"
   proof (rule ccontr)
     assume asm: "~ Marker = last (msgs (S t (i+1)) cid)"
@@ -3603,11 +3613,10 @@ next
   moreover have "\<forall>k. i+1 \<le> k \<and> k < j \<and> regular_event (t ! k) \<longrightarrow> ~ occurs_on (t ! k) = p"
     using Suc by simp
   moreover have "has_snapshotted (S t (i+1)) p" 
-    by (meson Suc.prems(1) Suc.prems(5) discrete less_not_refl nat_le_linear snapshot_stable_ver_3)
-  moreover have "i+1 \<le> j" using Suc by simp
-  moreover have "j \<le> length t" using Suc by simp
+    using Suc.prems(5) local.step snapshot_state_unchanged [of \<open>S t i\<close> \<open>t ! i\<close> \<open>S t (Suc i)\<close>]
+    by simp
   moreover have "j - (i+1) = n" using Suc by linarith
-  ultimately show ?case using Suc by blast
+  ultimately show ?case using Suc by auto
 qed
 
 lemma last_unchanged_or_empty_if_no_events:
@@ -4867,10 +4876,14 @@ proof -
     qed
   qed
 
-  have sum_decomp_f: "sum ?f {0..<length t} = sum ?f {0..<i} + sum ?f {i..<j+1} + sum ?f {j+1..<length t}"
-    by (metis (no_types, lifting) One_nat_def add.right_neutral add_Suc_right assms(3) assms(4) discrete le_add2 less_SucI less_or_eq_imp_le sum.atLeastLessThan_concat)
-  have sum_decomp_f': "sum ?f' {0..<length t} = sum ?f' {0..<i} + sum ?f' {i..<j+1} + sum ?f' {j+1..<length t}"
-    by (metis (no_types, lifting) One_nat_def add.right_neutral add_Suc_right assms(3) assms(4) discrete le_add2 less_SucI less_or_eq_imp_le sum.atLeastLessThan_concat)
+  have sum_decomp_g: \<open>sum g {0..<length t} = sum g {0..<i} + sum g {i..<j+1} + sum g {j+1..<length t}\<close>
+    for g :: \<open>nat \<Rightarrow> nat\<close>
+    using sum.atLeastLessThan_concat [of 0 i \<open>j + 1\<close> g] sum.atLeastLessThan_concat [of 0 \<open>j + 1\<close> \<open>length t\<close> g] assms
+    by simp
+  from sum_decomp_g [of ?f]
+  have sum_decomp_f: \<open>sum ?f {0..<length t} = sum ?f {0..<i} + sum ?f {i..<j+1} + sum ?f {j+1..<length t}\<close> .
+  from sum_decomp_g [of ?f']
+  have sum_decomp_f': \<open>sum ?f' {0..<length t} = sum ?f' {0..<i} + sum ?f' {i..<j+1} + sum ?f' {j+1..<length t}\<close> .
 
   have prefix_sum: "sum ?f {0..<i} = sum ?f' {0..<i}"
   proof -
@@ -4953,10 +4966,10 @@ proof -
 
   have infix_sum: "sum ?f {i..<j+1} = sum ?f' {i..<j+1} + 1"
   proof -
-    have sum_decomp_f: "sum ?f {i..<j+1} = sum ?f {i..<i+2} + sum ?f {i+2..<j+1}" 
-      by (metis (no_types, lifting) Suc_eq_plus1 Suc_leI add_2_eq_Suc' assms(3) less_Suc_eq linorder_not_le sum.atLeastLessThan_concat)
+    have sum_decomp_f: "sum ?f {i..<j+1} = sum ?f {i..<i+2} + sum ?f {i+2..<j+1}"
+      by (rule sym, rule sum.atLeastLessThan_concat) (use \<open>i < j\<close> in simp_all)
     have sum_decomp_f': "sum ?f' {i..<j+1} = sum ?f' {i..<i+2} + sum ?f' {i+2..<j+1}" 
-      by (metis (no_types, lifting) Suc_eq_plus1 Suc_mono add.assoc assms(3) discrete le_add1 one_add_one sum.atLeastLessThan_concat)
+      by (rule sym, rule sum.atLeastLessThan_concat) (use \<open>i < j\<close> in simp_all)
     have "sum ?f {i+2..<j+1} = sum ?f' {i+2..<j+1}"
     proof -
       have "\<forall>l. i+2 \<le> l \<and> l < j+1 \<longrightarrow> ?f l = ?f' l"
@@ -5086,7 +5099,7 @@ proof -
       qed
     qed
     then have "\<forall>k. j+1 \<le> k \<and> k < length t \<longrightarrow> ?f k = ?f' k"
-      using discrete by blast
+      by simp
     moreover have "length t = length ?t" 
       using assms(3) assms(4) swap_identical_length by blast
     ultimately show ?thesis by (blast intro:sum_eq_if_same_subterms)
@@ -5167,7 +5180,8 @@ using assms proof (induct "count_violations t" arbitrary: t)
           moreover have "card {l \<in> {j+1..<length t}. prerecording_event t l} > 0"
           proof -
             have "j + 1 \<le> ?i \<and> ?i < length t" 
-              using \<open>Max {i. prerecording_event t i} < length t\<close> \<open>j < Max {i. prerecording_event t i}\<close> discrete by blast
+              using \<open>Max {i. prerecording_event t i} < length t\<close> \<open>j < Max {i. prerecording_event t i}\<close>
+              by simp
             moreover have "prerecording_event t ?i" using pi by simp
             ultimately have "{l \<in> {j+1..<length t}. prerecording_event t l} \<noteq> empty" by fastforce
             then show ?thesis by fastforce
@@ -5180,7 +5194,7 @@ using assms proof (induct "count_violations t" arbitrary: t)
       then show ?thesis by auto
     qed
     moreover have "?i+1 \<le> length t" 
-      using calculation(2) discrete by blast
+      using calculation(2) by simp
     ultimately show ?thesis using "0.prems" by blast
   qed
 next

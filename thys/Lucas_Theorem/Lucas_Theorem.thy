@@ -155,9 +155,8 @@ lemma fps_middle_coeffs:
   shows "((1 + fps_X :: int fps) ^p) $ n mod p = 0 mod p"
 proof -
   let ?f = "(1 + fps_X :: int fps)^p"
-  have "\<forall> n. n > 0 \<and> n < p \<longrightarrow> (p choose n) mod p = 0" using pn_choose_k_modp_0
-    by (metis (no_types, lifting) add_le_imp_le_diff assms(1) diff_diff_cancel diff_is_0_eq' 
-        discrete le_add_diff_inverse le_numeral_extra(4) power_one_right zero_le_one zero_less_one)
+  have "\<forall> n. n > 0 \<and> n < p \<longrightarrow> (p choose n) mod p = 0"
+    using pn_choose_k_modp_0 [of p _ 1] \<open>prime p\<close> by auto
   then have middle_0: "\<forall> n. n > 0 \<and> n < p \<longrightarrow> (?f $ n) mod p = 0" 
     using binomial_coeffs_induct by (metis of_nat_0 zmod_int) 
   have "\<forall> n. n > p \<longrightarrow> ?f $ n mod p = 0" 

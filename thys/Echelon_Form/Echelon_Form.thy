@@ -1547,8 +1547,7 @@ proof (rule is_zero_row_upt_k_suc)
       show "nrows A - Suc 0 < nrows ?interchange" unfolding nrows_def by simp
       show "j < from_nat k" by (metis from_nat_mono from_nat_to_nat_id j_less_k k ncols_def)
       show "to_nat (from_nat i::'rows) \<le> nrows A - Suc 0"
-        by (metis Suc_eq_plus1 Suc_le_mono Suc_pred 
-          discrete nrows_def to_nat_less_card zero_less_card_finite)
+        by (simp add: nrows_def le_diff_conv2 Suc_le_eq to_nat_less_card)
       show "k < ncols ?interchange" using k unfolding ncols_def by auto
       show "is_zero_row_upt_k (from_nat i) k ?interchange" using zero_interchange .
     qed
@@ -1602,8 +1601,7 @@ proof (rule is_zero_row_upt_k_suc)
       show "nrows A - Suc 0 < nrows ?interchange" unfolding nrows_def by simp
       show "j < from_nat k" by (metis from_nat_mono from_nat_to_nat_id j_less_k k ncols_def)
       show "to_nat (from_nat i::'rows) \<le> nrows A - Suc 0"
-        by (metis Suc_eq_plus1 Suc_le_mono Suc_pred 
-          discrete nrows_def to_nat_less_card zero_less_card_finite)
+        by (simp add: nrows_def le_diff_conv2 Suc_le_eq to_nat_less_card)
       show "k < ncols ?interchange" using k unfolding ncols_def by auto
       show "is_zero_row_upt_k (from_nat i) k ?interchange" by (rule zero_interchange)
     qed
@@ -2573,8 +2571,7 @@ proof (induct k)
         show "0 < b" using b .
         show "0 < ncols (?interchange)" unfolding ncols_def by auto
         show "to_nat b \<le> nrows A - Suc 0"
-          by (metis Suc_eq_plus1 discrete less_one add.left_neutral not_le 
-            nrows_def nrows_not_0 le_diff_conv2 to_nat_less_card)
+          by (simp add: nrows_def le_diff_conv2 Suc_le_eq to_nat_less_card)
         show "is_zero_row_upt_k 0 0 (?interchange)" by (metis is_zero_row_utp_0)
       qed
       finally show "bezout_iterate (interchange_rows A 0 (LEAST n. A $ n $ 0 \<noteq> 0)) 

@@ -61,9 +61,7 @@ lemma octet_len_p':
 text \<open>The term "carrier" might be unknown to the non-math reader.  For the finite field with p 
 elements, where p is prime, the carrier is integers mod p, or simply the interval [0, p-1].\<close>
 lemma inCarrier: "(a \<in> carrier R) = (0 \<le> a \<and> a < p)"
-  by (metis int_ops(1) mod_pos_pos_trivial not_one_less_zero of_int_closed of_nat_le_0_iff 
-            pos_mod_conj r_one res_mult_eq res_of_integer_eq residues_axioms residues_def 
-            verit_comp_simplify1(3))
+  by (simp add: res_carrier_eq)
 
 text \<open>The carrier R is a ring of integers.  But also, it's only the integers in [0,p-1].
 Isabelle/HOL is a typed language, so we might need to convert an integer (int) in the carrier to a
@@ -72,8 +70,7 @@ So we can convert to a nat and back to an int and we are back to where we starte
 lemma inCarrierNatInt: 
   assumes "a \<in> carrier R"
   shows   "int (nat a) = a"
-  by (metis assms local.minus_minus m_gt_one nat_eq_iff2 nat_int of_nat_1 of_nat_less_iff 
-            pos_mod_conj res_neg_eq zless_nat_conj)
+  using assms by (simp add: inCarrier)
 
 text \<open>The term nonsingular is defined in Elliptic_Locale.thy and is done for a generic type
 of curve.  Then Elliptic_Test.thy builds on Elliptic_Locale.thy builds on that theory
@@ -759,13 +756,14 @@ proof -
   let ?y' = "int (if ?\<beta> mod 2 = ?y then ?\<beta> else (p-?\<beta>))"
   let ?P  = "Point ?x ?y'"
   have A2: "octets_to_point_comp a b M = Some ?P"  by (smt (verit) A1 octets_to_point_comp_def) 
-  show "octets_to_point_comp a b M = Some P"       proof (cases "?\<alpha> = 0")
+  show "octets_to_point_comp a b M = Some P"
+  proof (cases "?\<alpha> = 0")
     case T0: True
     have T1: "y = 0"   by (metis ZeroSqrtMod y4 y3 p_prime T0 prime_nat_int_transfer) 
     show ?thesis       using A2 T0 T1 ZeroSqrtMod' assms(2) p_prime x3 y7 by force
   next
     case False
-    then have "0 < ?\<alpha>" by (smt (verit, best) m_gt_one pos_mod_conj)
+    then have "0 < ?\<alpha>" using m_gt_one by (auto intro: le_neq_trans)
     then have "(nat y) = ?\<beta> \<or> (nat y) = p - ?\<beta>"
       by (metis Euclidean_Rings.pos_mod_bound QuadResHasExactlyTwoRoots2 a1 gt2 int_ops(1)
                 nat_int not_less of_nat_le_0_iff p_prime y2 y3) 

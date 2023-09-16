@@ -168,46 +168,33 @@ next
 qed
 
 lemma even_square_cong_4_int:
-  fixes x :: int
-  assumes "even x"
-  shows   "[x ^ 2 = 0] (mod 4)"
+  \<open>[x\<^sup>2 = 0] (mod 4)\<close> if \<open>even x\<close> for x :: int
 proof -
-  from assms have "even \<bar>x\<bar>"
-    by simp
-  hence [simp]: "\<bar>x\<bar> mod 2 = 0"
-    by presburger
-  have "(\<bar>x\<bar> ^ 2) mod 4 = ((\<bar>x\<bar> mod 4) ^ 2) mod 4"
-    by (simp add: power_mod)
-  also from assms have "\<bar>x\<bar> mod 4 = 0 \<or> \<bar>x\<bar> mod 4 = 2"
-    using mod_double_modulus[of 2 "\<bar>x\<bar>"] by simp
-  hence "((\<bar>x\<bar> mod 4) ^ 2) mod 4 = 0"
-    by auto
-  finally show ?thesis by (simp add: cong_def)
+  from that obtain y where \<open>x = 2 * y\<close> ..
+  then show ?thesis by (simp add: cong_def)
 qed
 
-lemma even_square_cong_4_nat: "even (x::nat) \<Longrightarrow> [x ^ 2 = 0] (mod 4)"
-  using even_square_cong_4_int[of "int x"] by (auto simp flip: cong_int_iff)
+lemma even_square_cong_4_nat:
+  \<open>[x\<^sup>2 = 0] (mod 4)\<close> if \<open>even x\<close> for x :: nat
+  using that even_square_cong_4_int [of \<open>int x\<close>] by (simp flip: cong_int_iff)
 
 lemma odd_square_cong_4_int:
-  fixes x :: int
-  assumes "odd x"
-  shows   "[x ^ 2 = 1] (mod 4)"
+  \<open>[x\<^sup>2 = 1] (mod 4)\<close> if \<open>odd x\<close> for x :: int
 proof -
-  from assms have "odd \<bar>x\<bar>"
+  from that obtain y where \<open>x = 2 * y + 1\<close> ..
+  then have \<open>x\<^sup>2 = 4 * (y\<^sup>2 + y) + 1\<close>
+    by (simp add: power2_eq_square algebra_simps)
+  also have \<open>\<dots> mod 4 = ((4 * (y\<^sup>2 + y)) mod 4 + 1 mod 4) mod 4\<close>
+    by (simp only: mod_simps)
+  also have \<open>\<dots> = 1 mod 4\<close>
     by simp
-  hence [simp]: "\<bar>x\<bar> mod 2 = 1"
-    by presburger
-  have "(\<bar>x\<bar> ^ 2) mod 4 = ((\<bar>x\<bar> mod 4) ^ 2) mod 4"
-    by (simp add: power_mod)
-  also from assms have "\<bar>x\<bar> mod 4 = 1 \<or> \<bar>x\<bar> mod 4 = 3"
-    using mod_double_modulus[of 2 "\<bar>x\<bar>"] by simp
-  hence "((\<bar>x\<bar> mod 4) ^ 2) mod 4 = 1"
-    by auto
-  finally show ?thesis by (simp add: cong_def)
+  finally show ?thesis
+    by (simp only: cong_def)
 qed
 
-lemma odd_square_cong_4_nat: "odd (x::nat) \<Longrightarrow> [x ^ 2 = 1] (mod 4)"
-  using odd_square_cong_4_int[of "int x"] by (auto simp flip: cong_int_iff)
+lemma odd_square_cong_4_nat:
+  \<open>[x\<^sup>2 = 1] (mod 4)\<close> if \<open>odd x\<close> for x :: nat
+  using that odd_square_cong_4_int [of \<open>int x\<close>] by (simp flip: cong_int_iff)
 
 
 text \<open>

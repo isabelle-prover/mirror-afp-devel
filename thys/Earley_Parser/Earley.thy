@@ -353,7 +353,7 @@ proof (standard, standard, standard, standard, standard, standard, standard, sta
       ultimately have "j = i+1"
         using slice_singleton by metis
       hence "i < length \<omega>"
-        using \<open>j \<le> length \<omega>\<close> discrete by blast
+        using \<open>j \<le> length \<omega>\<close> by simp
       hence "\<omega>!i = a"
         using slice_nth \<open>[a] = slice i j \<omega>\<close> \<open>j = i + 1\<close> by fastforce
       hence "Item r (b + 1) i' j \<in> Earley \<G> \<omega>"

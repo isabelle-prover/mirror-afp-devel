@@ -955,8 +955,9 @@ lemma add_eq_h2:
            "twoy1 = nat ((2*y1) mod (int p))" "inv_2y1 = int (inv_mod p twoy1)"
            "l = ((3 * x1^2 + (int a)) * inv_2y1) mod p" "x3 = (l^2 - 2*x1) mod (int p)"
            "y3 = (- y1 - l * (x3 - x1)) mod (int p)"
-  shows    "point_madd a p\<^sub>1 p\<^sub>2 = Point x3 y3"
-  unfolding point_madd_def Let_def using assms point.distinct by simp
+         shows    "point_madd a p\<^sub>1 p\<^sub>2 = Point x3 y3"
+  by (simp add: assms(1-2) assms(4) assms(8-9) point_madd_def Let_def
+    flip: assms(3) assms(5) assms(6) assms(7))
 
 lemma point_add_eq [code]: "add a p\<^sub>1 p\<^sub>2 = point_madd a p\<^sub>1 p\<^sub>2"
 proof (cases p\<^sub>1)

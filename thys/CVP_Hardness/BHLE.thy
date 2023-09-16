@@ -1448,9 +1448,8 @@ text \<open>Rule out the all zero solution.\<close>
       qed
       have "x$j = 0" if "j<5*n" "j mod 5 = 0" for j
       proof -
-        obtain i where "i*5 = j" "i<n" 
-        by (metis \<open>j < 5 * n\<close> \<open>j mod 5 = 0\<close> mod_eq_0D mult.commute nat_mult_less_cancel1 
-          zero_less_numeral)
+        from \<open>j mod 5 = 0\<close> \<open>j < 5 * n\<close> obtain i where "i*5 = j" "i<n"
+          by auto
         then show ?thesis unfolding \<open>i*5 = j\<close>[symmetric] using p_zero[OF \<open>i<n\<close>] by auto
       qed
 

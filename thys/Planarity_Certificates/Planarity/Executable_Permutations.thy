@@ -71,7 +71,8 @@ proof -
   { assume A: "index xs x \<ge> length xs"
     then have "x \<notin> set xs" by (metis index_less less_irrefl)
     then have ?thesis by (auto simp: list_succ_def) }
-  ultimately show ?thesis by (metis discrete le_less not_less) 
+  ultimately show ?thesis 
+    by linarith 
 qed
 
 lemma inj_list_succ: "distinct xs \<Longrightarrow> inj (list_succ xs)"

@@ -1764,13 +1764,13 @@ next
     from MatchF.prems(1) obtain j where "\<tau> \<sigma> i + b + 1 \<le> \<tau> \<sigma> j" "j \<le> plen \<pi>"
       by atomize_elim (auto 0 4 simp add: less_eq_Suc_le not_le dest!: le_cInf_iff[THEN iffD1, rotated -1])
     then have 1: "k < plen \<pi>" if "\<tau> \<sigma> k \<le> \<tau> \<sigma> i + b" for k
-      by (meson \<tau>_mono discrete not_le order.strict_trans2 that)
+      using that le_less_trans [of \<open>\<tau> \<sigma> k\<close> _ \<open>\<tau> \<sigma> j\<close>] less_\<tau>D [of \<sigma> k j] by simp
     from MatchF.prems have "i < progress \<sigma>' P (Formula.MatchF I r) (plen \<pi>)"
       unfolding progress_prefix_conv[OF assms(1,2)] by blast
     then obtain j where "\<tau> \<sigma>' i + b + 1 \<le> \<tau> \<sigma>' j" "j \<le> plen \<pi>"
       by atomize_elim (auto 0 4 simp add: less_eq_Suc_le not_le dest!: le_cInf_iff[THEN iffD1, rotated -1])
     then have 2: "k < plen \<pi>" if "\<tau> \<sigma>' k \<le> \<tau> \<sigma>' i + b" for k
-      by (meson \<tau>_mono discrete not_le order.strict_trans2 that)
+      using that le_less_trans [of \<open>\<tau> \<sigma>' k\<close> _ \<open>\<tau> \<sigma>' j\<close>] less_\<tau>D [of \<sigma>' k j] by simp
     from MatchF.prems(1,4) True show ?thesis
       unfolding sat.simps conj_commute[of "left I \<le> _" "_ \<le> _"]
     proof (intro ex_cong conj_cong match_cong_strong, goal_cases left right sat)
