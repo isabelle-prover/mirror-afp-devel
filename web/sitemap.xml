@@ -3,10 +3,25 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2023-08-16T00:00:00+00:00</lastmod>
+    <lastmod>2023-09-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2023-08-16T00:00:00+00:00</lastmod>
+    <lastmod>2023-09-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2023-09-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Euler_Polyhedron_Formula.html</loc>
+    <lastmod>2023-09-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2023-09-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/paulson/</loc>
+    <lastmod>2023-09-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2023-09-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Ceva.html</loc>
     <lastmod>2023-08-16T00:00:00+00:00</lastmod>
@@ -14,16 +29,7 @@
     <loc>/dependencies/</loc>
     <lastmod>2023-08-16T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/entries/</loc>
-    <lastmod>2023-08-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/mathematics/</loc>
-    <lastmod>2023-08-16T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/rabing/</loc>
-    <lastmod>2023-08-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2023-08-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/triangle/</loc>
@@ -651,9 +657,6 @@
     <lastmod>2022-09-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Khovanskii_Theorem.html</loc>
-    <lastmod>2022-09-02T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/paulson/</loc>
     <lastmod>2022-09-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/sulejmani/</loc>
@@ -5126,6 +5129,8 @@
     <loc>/theories/euler_maclaurin/</loc>
   </url><url>
     <loc>/theories/euler_partition/</loc>
+  </url><url>
+    <loc>/theories/euler_polyhedron_formula/</loc>
   </url><url>
     <loc>/theories/eval_fo/</loc>
   </url><url>

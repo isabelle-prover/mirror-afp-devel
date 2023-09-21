@@ -1,0 +1,36 @@
+title = "Euler's Polyhedron Formula"
+date = 2023-09-16
+topics = [
+  "Mathematics/Topology",
+]
+abstract = """
+Euler stated in 1752 that every convex polyhedron satisfied the formula $V - E + F = 2$ 
+where $V$, $E$ and $F$ are the numbers of its vertices, edges, and faces. For three dimensions,
+the well-known proof involves removing one face and then flattening the remainder to form a planar graph,
+which then is iteratively transformed to leave a single triangle. The history of that proof is extensively
+discussed and elaborated by Imre Lakatos, leaving one finally wondering whether
+the theorem even holds. The formal proof provided here has been ported from HOL Light, 
+where it is credited to Lawrence. The proof generalises Euler's observation
+from solid polyhedra to convex polytopes of arbitrary dimension."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.paulson]
+email = "paulson_email"
+
+[contributors]
+
+[notify]
+paulson = "paulson_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.4153/CMB-1997-056-4",
+]
+pubs = []
