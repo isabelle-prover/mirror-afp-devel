@@ -6,7 +6,25 @@
     <description>Recent content on Archive of Formal Proofs</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Sat, 16 Sep 2023 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 20 Sep 2023 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>General Probabilistic Techniques for Combinatorics and the Lovasz Local Lemma</title>
+      <link>/entries/Lovasz_Local.html</link>
+      <pubDate>Wed, 20 Sep 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Lovasz_Local.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Hypergraphs</title>
+      <link>/entries/Hypergraph_Basics.html</link>
+      <pubDate>Wed, 20 Sep 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Hypergraph_Basics.html</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>Euler&#39;s Polyhedron Formula</title>
       <link>/entries/Euler_Polyhedron_Formula.html</link>
@@ -9809,6 +9827,15 @@
     </item>
     
     <item>
+      <title>Hypergraph_Basics</title>
+      <link>/theories/hypergraph_basics/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/hypergraph_basics/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>HyperHoareLogic</title>
       <link>/theories/hyperhoarelogic/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -10714,6 +10741,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/lorenz_c1/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Lovasz_Local</title>
+      <link>/theories/lovasz_local/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/lovasz_local/</guid>
       <description></description>
     </item>
     
