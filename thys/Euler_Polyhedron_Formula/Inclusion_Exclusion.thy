@@ -27,7 +27,8 @@ lemma f_empty [simp]: "f{} = 0"
   using disj_add empty by fastforce
 
 lemma f_Un_Int: "\<lbrakk>P S; P T\<rbrakk> \<Longrightarrow> f(S \<union> T) + f(S \<inter> T) = f S + f T"
-  by (smt (verit, ccfv_threshold) Groups.add_ac(2) Incl_Excl.Diff Incl_Excl.Int Incl_Excl_axioms Int_Diff_Un Int_Diff_disjoint Int_absorb Un_Diff Un_Int_eq(2) disj_add disjnt_def group_cancel.add2 sup_bot.right_neutral)
+  by (smt (verit, ccfv_threshold) Diff Int Groups.add_ac Incl_Excl.Diff Incl_Excl.Int Incl_Excl_axioms Int_Diff_Un Int_Diff_disjoint Int_absorb Un_Diff Un_Int_eq disj_add disjnt_def group_cancel.add2 sup_bot.right_neutral)
+
 
 lemma restricted_indexed:
   assumes "finite A" and X: "\<And>a. a \<in> A \<Longrightarrow> P(X a)"
