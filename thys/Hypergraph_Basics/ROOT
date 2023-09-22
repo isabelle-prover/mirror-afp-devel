@@ -1,0 +1,14 @@
+chapter AFP
+
+session Hypergraph_Basics (AFP) = "HOL-Library" + 
+  options [timeout = 600]
+  sessions
+    Design_Theory
+    Fishers_Inequality
+    Undirected_Graph_Theory
+  theories
+    Hypergraph_Basics_Root
+  document_files
+    "root.bib"
+    "root.tex"
+

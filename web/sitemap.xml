@@ -3,27 +3,54 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2023-08-16T00:00:00+00:00</lastmod>
+    <lastmod>2023-09-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2023-08-16T00:00:00+00:00</lastmod>
+    <lastmod>2023-09-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/card_partitions/</loc>
+    <lastmod>2023-09-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2023-09-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/design_theory/</loc>
+    <lastmod>2023-09-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/edmonds/</loc>
+    <lastmod>2023-09-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2023-09-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/fishers_inequality/</loc>
+    <lastmod>2023-09-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Lovasz_Local.html</loc>
+    <lastmod>2023-09-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Hypergraph_Basics.html</loc>
+    <lastmod>2023-09-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2023-09-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2023-09-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/undirected_graph_theory/</loc>
+    <lastmod>2023-09-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Euler_Polyhedron_Formula.html</loc>
+    <lastmod>2023-09-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/paulson/</loc>
+    <lastmod>2023-09-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Ceva.html</loc>
     <lastmod>2023-08-16T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/</loc>
-    <lastmod>2023-08-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/</loc>
-    <lastmod>2023-08-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/mathematics/</loc>
-    <lastmod>2023-08-16T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/rabing/</loc>
-    <lastmod>2023-08-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2023-08-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/triangle/</loc>
@@ -168,9 +195,6 @@
     <lastmod>2023-05-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Tree_Enumeration.html</loc>
-    <lastmod>2023-05-09T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/undirected_graph_theory/</loc>
     <lastmod>2023-05-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/fresh_identifiers/</loc>
@@ -548,9 +572,6 @@
     <loc>/entries/Combinatorial_Enumeration_Algorithms.html</loc>
     <lastmod>2022-11-11T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/edmonds/</loc>
-    <lastmod>2022-11-11T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/falling_factorial_sum/</loc>
     <lastmod>2022-11-11T00:00:00+00:00</lastmod>
   </url><url>
@@ -583,9 +604,6 @@
   </url><url>
     <loc>/entries/Query_Optimization.html</loc>
     <lastmod>2022-10-04T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/design_theory/</loc>
-    <lastmod>2022-09-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Maximum_Segment_Sum.html</loc>
     <lastmod>2022-09-29T00:00:00+00:00</lastmod>
@@ -651,9 +669,6 @@
     <lastmod>2022-09-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Khovanskii_Theorem.html</loc>
-    <lastmod>2022-09-02T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/paulson/</loc>
     <lastmod>2022-09-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/sulejmani/</loc>
@@ -1285,9 +1300,6 @@
   </url><url>
     <loc>/entries/Fresh_Identifiers.html</loc>
     <lastmod>2021-08-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/card_partitions/</loc>
-    <lastmod>2021-08-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Design_Theory.html</loc>
     <lastmod>2021-08-13T00:00:00+00:00</lastmod>
@@ -5127,6 +5139,8 @@
   </url><url>
     <loc>/theories/euler_partition/</loc>
   </url><url>
+    <loc>/theories/euler_polyhedron_formula/</loc>
+  </url><url>
     <loc>/theories/eval_fo/</loc>
   </url><url>
     <loc>/theories/example-submission/</loc>
@@ -5357,6 +5371,8 @@
   </url><url>
     <loc>/theories/hyperdual/</loc>
   </url><url>
+    <loc>/theories/hypergraph_basics/</loc>
+  </url><url>
     <loc>/theories/hyperhoarelogic/</loc>
   </url><url>
     <loc>/theories/ieee_floating_point/</loc>
@@ -5586,6 +5602,8 @@
     <loc>/theories/lorenz_c0/</loc>
   </url><url>
     <loc>/theories/lorenz_c1/</loc>
+  </url><url>
+    <loc>/theories/lovasz_local/</loc>
   </url><url>
     <loc>/theories/lowe_ontological_argument/</loc>
   </url><url>

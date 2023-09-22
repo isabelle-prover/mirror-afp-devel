@@ -204,6 +204,7 @@ Ergodic_Theory
 Error_Function
 Euler_MacLaurin
 Euler_Partition
+Euler_Polyhedron_Formula
 Eval_FO
 Example-Submission
 Executable_Randomized_Algorithms
@@ -314,6 +315,7 @@ Hybrid_Systems_VCs
 HyperCTL
 HyperHoareLogic
 Hyperdual
+Hypergraph_Basics
 IEEE_Floating_Point
 IFC_Tracking
 IMAP-CRDT
@@ -413,6 +415,7 @@ LocalLexing
 Localization_Ring
 Locally-Nameless-Sigma
 Logging_Independent_Anonymity
+Lovasz_Local
 Lowe_Ontological_Argument
 Lower_Semicontinuous
 Lp

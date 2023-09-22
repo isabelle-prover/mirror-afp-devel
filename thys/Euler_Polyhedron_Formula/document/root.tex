@@ -1,0 +1,45 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amssymb}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Euler's Polyhedron Formula}
+\author{Lawrence C. Paulson}
+\maketitle
+
+\begin{abstract}
+Euler stated in 1752 that every convex polyhedron satisfied the formula $V - E + F = 2$ 
+where $V$, $E$ and $F$ are the numbers of its vertices, edges, and faces. For three dimensions,
+the well-known proof involves removing one face and then flattening the remainder to form a planar graph,
+which then is iteratively transformed to leave a single triangle. The history of that proof is extensively
+discussed and elaborated by Imre Lakatos~\cite{lakatos}, leaving one finally wondering whether
+the theorem even holds. The formal proof provided here has been ported from HOL Light, 
+where it is credited to Lawrence~\cite{lawrence-short}. The proof generalises Euler's observation
+from solid polyhedra to convex polytopes of arbitrary dimension.
+\end{abstract}
+
+\newpage
+\tableofcontents
+
+\paragraph*{Acknowledgements}
+The author was supported by the ERC Advanced Grant ALEXANDRIA (Project 742178) funded by the European Research Council. 
+
+\newpage
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

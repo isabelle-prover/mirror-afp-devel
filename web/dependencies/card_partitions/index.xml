@@ -6,7 +6,16 @@
     <description>Recent content in Card_Partitions on Archive of Formal Proofs</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Fri, 13 Aug 2021 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/card_partitions/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 20 Sep 2023 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/card_partitions/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>General Probabilistic Techniques for Combinatorics and the Lovasz Local Lemma</title>
+      <link>/entries/Lovasz_Local.html</link>
+      <pubDate>Wed, 20 Sep 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Lovasz_Local.html</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>Combinatorial Design Theory</title>
       <link>/entries/Design_Theory.html</link>

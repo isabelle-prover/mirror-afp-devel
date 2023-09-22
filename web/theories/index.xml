@@ -1906,6 +1906,15 @@
     </item>
     
     <item>
+      <title>Euler_Polyhedron_Formula</title>
+      <link>/theories/euler_polyhedron_formula/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/euler_polyhedron_formula/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Eval_FO</title>
       <link>/theories/eval_fo/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -2932,6 +2941,15 @@
     </item>
     
     <item>
+      <title>Hypergraph_Basics</title>
+      <link>/theories/hypergraph_basics/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/hypergraph_basics/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>HyperHoareLogic</title>
       <link>/theories/hyperhoarelogic/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -3837,6 +3855,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/lorenz_c1/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Lovasz_Local</title>
+      <link>/theories/lovasz_local/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/lovasz_local/</guid>
       <description></description>
     </item>
     
