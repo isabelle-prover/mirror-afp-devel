@@ -23,9 +23,7 @@ edmonds = "edmonds_email"
 [extra]
 
 [related]
-dois = [
-  "10.5555/3002498",
-]
 pubs = [
+  "https://dl.acm.org/doi/book/10.5555/3002498",
   "https://yufeizhao.com/pm/probmethod_notes.pdf",
 ]
