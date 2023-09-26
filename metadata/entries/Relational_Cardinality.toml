@@ -1,0 +1,28 @@
+title = "Cardinality and Representation of Stone Relation Algebras"
+date = 2023-09-22
+topics = [
+  "Mathematics/Algebra",
+]
+abstract = "In relation algebras, which model unweighted graphs, the cardinality operation counts the number of edges of a graph. We generalise the cardinality axioms to Stone relation algebras, which model weighted graphs, and study the relationships between various axioms for cardinality. We also give a representation theorem for Stone relation algebras."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.guttmann]
+email = "guttmann_email"
+
+[contributors]
+
+[notify]
+guttmann = "guttmann_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.48550/arxiv.2309.11676",
+]
+pubs = []
