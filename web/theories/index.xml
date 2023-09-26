@@ -5497,6 +5497,15 @@
     </item>
     
     <item>
+      <title>Relational_Cardinality</title>
+      <link>/theories/relational_cardinality/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/relational_cardinality/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Relational_Disjoint_Set_Forests</title>
       <link>/theories/relational_disjoint_set_forests/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>

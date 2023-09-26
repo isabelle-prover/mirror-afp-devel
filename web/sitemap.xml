@@ -3,24 +3,42 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2023-09-20T00:00:00+00:00</lastmod>
+    <lastmod>2023-09-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2023-09-20T00:00:00+00:00</lastmod>
+    <lastmod>2023-09-22T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/card_partitions/</loc>
-    <lastmod>2023-09-20T00:00:00+00:00</lastmod>
+    <loc>/entries/Relational_Cardinality.html</loc>
+    <lastmod>2023-09-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/</loc>
+    <lastmod>2023-09-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2023-09-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/guttmann/</loc>
+    <lastmod>2023-09-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/list-infinite/</loc>
+    <lastmod>2023-09-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2023-09-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/stone_relation_algebras/</loc>
+    <lastmod>2023-09-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2023-09-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/card_partitions/</loc>
     <lastmod>2023-09-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/design_theory/</loc>
     <lastmod>2023-09-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/edmonds/</loc>
-    <lastmod>2023-09-20T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/</loc>
     <lastmod>2023-09-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/fishers_inequality/</loc>
@@ -30,12 +48,6 @@
     <lastmod>2023-09-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Hypergraph_Basics.html</loc>
-    <lastmod>2023-09-20T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/mathematics/</loc>
-    <lastmod>2023-09-20T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2023-09-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/undirected_graph_theory/</loc>
@@ -184,9 +196,6 @@
   </url><url>
     <loc>/authors/yamada/</loc>
     <lastmod>2023-05-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/guttmann/</loc>
-    <lastmod>2023-05-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Multirelations_Heterogeneous.html</loc>
     <lastmod>2023-05-22T00:00:00+00:00</lastmod>
@@ -2795,9 +2804,6 @@
     <loc>/entries/Stone_Kleene_Relation_Algebras.html</loc>
     <lastmod>2017-07-06T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/stone_relation_algebras/</loc>
-    <lastmod>2017-07-06T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Propositional_Proof_Systems.html</loc>
     <lastmod>2017-06-21T00:00:00+00:00</lastmod>
   </url><url>
@@ -4197,9 +4203,6 @@
     <lastmod>2011-02-23T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Nat-Interval-Logic.html</loc>
-    <lastmod>2011-02-23T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/list-infinite/</loc>
     <lastmod>2011-02-23T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/nat-interval-logic/</loc>
@@ -5996,6 +5999,8 @@
     <loc>/theories/relation_algebra/</loc>
   </url><url>
     <loc>/theories/relational-incorrectness-logic/</loc>
+  </url><url>
+    <loc>/theories/relational_cardinality/</loc>
   </url><url>
     <loc>/theories/relational_disjoint_set_forests/</loc>
   </url><url>

@@ -6,7 +6,16 @@
     <description>Recent content on Archive of Formal Proofs</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Wed, 20 Sep 2023 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 22 Sep 2023 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Cardinality and Representation of Stone Relation Algebras</title>
+      <link>/entries/Relational_Cardinality.html</link>
+      <pubDate>Fri, 22 Sep 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Relational_Cardinality.html</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>General Probabilistic Techniques for Combinatorics and the Lovasz Local Lemma</title>
       <link>/entries/Lovasz_Local.html</link>
@@ -12379,6 +12388,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/relational-incorrectness-logic/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Relational_Cardinality</title>
+      <link>/theories/relational_cardinality/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/relational_cardinality/</guid>
       <description></description>
     </item>
     
