@@ -555,10 +555,9 @@ ML \<open>
           val _ = warning m
         in context end 
       in
-        declare_natural_relator (natural_relator_from_term t) context
-        handle 
-          TERM (msg,_) => warn msg
-        | exn => if Exn.is_interrupt exn then Exn.reraise exn else warn ""
+        \<^try>\<open>declare_natural_relator (natural_relator_from_term t) context
+          catch TERM (msg,_) => warn msg
+            | exn => warn ""\<close>
       end
     in
       val natural_relator_attr = Scan.repeat1 Args.term >> (fn ts => 
