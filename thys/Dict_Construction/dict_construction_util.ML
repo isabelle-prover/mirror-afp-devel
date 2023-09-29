@@ -297,7 +297,7 @@ fun note_thms binding thms =
 (* timing *)
 
 fun with_timeout time f x =
-  case Exn.interruptible_capture (Timeout.apply time f) x of
+  case Exn.result (Timeout.apply time f) x of
     Exn.Res y => y
   | Exn.Exn (Timeout.TIMEOUT _) => x
   | Exn.Exn e => Exn.reraise e
