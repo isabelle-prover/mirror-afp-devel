@@ -11,68 +11,14 @@ theory Lovasz_Local_Lemma
     Digraph_Extensions
 begin
 
-(* The following two lemmas were taken from Gauss_Sums.Polya_Vinogradov AFP entry. 
-  Adding in entire dependency caused a significant slow down, could these be moved to the Analysis 
-  library at some point? *)
-lemma ln_add_one_self_less_self:
-  fixes x :: real
-  assumes "x > 0" 
-  shows "ln (1 + x) < x"
-proof -
-  have "0 \<le> x" "0 < x" "exp x > 0" "1+x > 0" using assms by simp+
-  have "1 + x < 1 + x + x\<^sup>2 / 2"
-    using \<open>0 < x\<close> by auto
-  also have "\<dots> \<le> exp x"
-    using exp_lower_Taylor_quadratic[OF \<open>0 \<le> x\<close>] by blast
-  finally have "1 + x < exp (x)" by blast
-  then have "ln (1 + x) < ln (exp (x))" 
-    using ln_less_cancel_iff[OF \<open>1+x > 0\<close> \<open>exp(x) > 0\<close>] by auto
-  also have "\<dots> = x" using ln_exp by blast
-  finally show ?thesis by auto
-qed
-
-lemma exp_1_bounds:
-  assumes "x > (0::real)"
-  shows   "exp 1 > (1 + 1 / x) powr x" and "exp 1 < (1 + 1 / x) powr (x+1)"
-proof -
-  have "ln (1 + 1 / x) < 1 / x"
-    using ln_add_one_self_less_self assms by simp
-  thus "exp 1 > (1 + 1 / x) powr x" using assms
-    by (simp add: field_simps powr_def)
-next
-  have "1 < (x + 1) * ln ((x + 1) / x)" (is "_ < ?f x")
-  proof (rule DERIV_neg_imp_decreasing_at_top[where ?f = ?f])
-    fix t assume t: "x \<le> t"
-    have "(?f has_field_derivative (ln (1 + 1 / t) - 1 / t)) (at t)"
-      using t assms by (auto intro!: derivative_eq_intros simp:divide_simps)
-    moreover have "ln (1 + 1 / t) - 1 / t < 0"
-      using ln_add_one_self_less_self[of "1 / t"] t assms by auto
-    ultimately show "\<exists>y. ((\<lambda>t. (t + 1) * ln ((t + 1) / t)) has_real_derivative y) (at t) \<and> y < 0"
-      by blast
-  qed real_asymp
-  thus "exp 1 < (1 + 1 / x) powr (x + 1)"
-    using assms by (simp add: powr_def field_simps)
-qed
-
-
 subsection \<open>Random Lemmas on Product Operator \<close>
 
 lemma prod_constant_ge: 
   fixes y :: "'b :: {comm_monoid_mult, linordered_semidom}"
   assumes "card A \<le> k"
   assumes "y \<ge> 0" and "y < 1"
-  shows "(\<Prod>x\<in> A. y) \<ge> y ^ k"
-using assms(1) proof (induct A rule: infinite_finite_induct)
-  case (infinite A)
-  then show ?case using assms(2) assms(3) by (simp add: power_le_one) 
-next
-  case empty
-  then show ?case using assms(2) assms(3) by (simp add: power_le_one) 
-next
-  case (insert x F)
-  then show ?case using assms(2) assms(3)
-    by (metis nless_le power_decreasing prod_constant) 
-qed
+  shows "(\<Prod>x\<in>A. y) \<ge> y ^ k"
+  using assms power_decreasing by fastforce
 
 lemma (in linordered_idom) prod_mono3:
   assumes "finite J" "I \<subseteq> J" "\<And>i. i \<in> J \<Longrightarrow> 0 \<le> f i"  "(\<And>i. i \<in> J \<Longrightarrow> f i \<le> 1)"
@@ -95,12 +41,7 @@ lemma bij_on_ss_proper_image:
   assumes "A \<subset> B"
   assumes "bij_betw g B B'"
   shows "g ` A \<subset> B'"
-proof (intro psubsetI subsetI)
-  fix x assume "x \<in> g ` A"
-  then show "x \<in> B'" using assms bij_betw_apply subsetD by fastforce 
-next
-  show "g ` A \<noteq> B'" using assms by (auto) (smt (verit, best) bij_betw_iff_bijections imageE subset_eq) 
-qed
+  by (smt (verit, ccfv_SIG) assms bij_betw_iff_bijections bij_betw_subset leD psubsetD psubsetI subsetI)
 
 
 subsection \<open>Dependency Graph Concept \<close>
@@ -529,7 +470,7 @@ next
     have d_bounds2: "(1 - (1 /(d + 1)))^d < 1" using False 
       by(simp add: field_simps) (smt (verit) of_nat_0_le_iff power_mono_iff)
     have d_bounds0: "(1 - (1 /(d + 1)))^d > 0" using False by (simp)
-    have "exp(1) > (1 + 1/d) powr d" using exp_1_bounds(1) False by simp
+    have "exp(1) > (1 + 1/d) powr d" using exp_1_gt_powr False by simp
     then have "exp(1) > (1 + 1/d)^d" using False by (simp add: powr_realpow zero_compare_simps(2))
     moreover have "1/(1+ 1/d)^d = (1 - (1/(d+1)))^d"
     proof -

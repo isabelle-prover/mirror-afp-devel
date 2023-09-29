@@ -22,33 +22,10 @@ text \<open>
   logarithms, exponentials, and the harmonic numbers:
 \<close>
 
-(* TODO: Move? *)
-lemma ln_add_one_self_less_self:
-  fixes x :: real
-  assumes "x > 0" 
-  shows "ln (1 + x) < x"
-proof -
-  have "0 \<le> x" "0 < x" "exp x > 0" "1+x > 0" using assms by simp+
-  have "1 + x < 1 + x + x\<^sup>2 / 2"
-    using \<open>0 < x\<close> by auto
-  also have "\<dots> \<le> exp x"
-    using exp_lower_Taylor_quadratic[OF \<open>0 \<le> x\<close>] by blast
-  finally have "1 + x < exp (x)" by blast
-  then have "ln (1 + x) < ln (exp (x))" 
-    using ln_less_cancel_iff[OF \<open>1+x > 0\<close> \<open>exp(x) > 0\<close>] by auto
-  also have "\<dots> = x" using ln_exp by blast
-  finally show ?thesis by auto
-qed
-
-lemma exp_1_bounds:
+lemma exp_1_less_powr:
   assumes "x > (0::real)"
-  shows   "exp 1 > (1 + 1 / x) powr x" and "exp 1 < (1 + 1 / x) powr (x+1)"
+  shows   "exp 1 < (1 + 1 / x) powr (x+1)"
 proof -
-  have "ln (1 + 1 / x) < 1 / x"
-    using ln_add_one_self_less_self assms by simp
-  thus "exp 1 > (1 + 1 / x) powr x" using assms
-    by (simp add: field_simps powr_def)
-next
   have "1 < (x + 1) * ln ((x + 1) / x)" (is "_ < ?f x")
   proof (rule DERIV_neg_imp_decreasing_at_top[where ?f = ?f])
     fix t assume t: "x \<le> t"
@@ -69,15 +46,14 @@ lemma harm_aux_ineq_1:
   shows "1 / k < ln (1 + 1 / (k - 1))" 
 proof -   
   have "k-1 > 0" \<open>k > 0\<close> using assms by simp+
-  from exp_1_bounds(2)[OF \<open>k-1 > 0\<close>]
-  have "exp 1 < (1 + 1 / (k - 1)) powr k" by simp
+  from exp_1_less_powr[OF \<open>k-1 > 0\<close>]
+  have eless: "exp 1 < (1 + 1 / (k - 1)) powr k" by simp
   then have n_z: "(1 + 1 / (k - 1)) powr k > 0" 
       using assms not_exp_less_zero by auto
   
   have "(1::real) = ln (exp(1))" using ln_exp by auto
   also have "\<dots> < ln ((1 + 1 / (k - 1)) powr k)"
-    using ln_less_cancel_iff[of "exp(1)",simplified,OF \<open>(1 + 1 / (k - 1)) powr k > 0\<close>]
-          exp_1_bounds[OF \<open>k - 1 > 0\<close>] by simp
+    by (meson eless dual_order.strict_trans exp_gt_zero ln_less_cancel_iff)
   also have "\<dots> = k * ln (1 + 1 / (k - 1))" 
     using ln_powr n_z by simp
   finally have "1 < k * ln (1 + 1 / (k - 1))" 
