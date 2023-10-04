@@ -129,11 +129,11 @@
   <a class='popup-button' href="#cite-popup">Cite</a>
   <a class='popup-button' href="#download-popup">Download</a>
   <h4>PDFs</h4>
-  <a href="{{- $path -}}/{{- $entry_name -}}/outline.pdf">Proof
+  <a href="{{- $path -}}/AFP/{{- $entry_name -}}/outline.pdf">Proof
     outline</a>
-  <a href="{{- $path -}}/{{- $entry_name -}}/document.pdf">Proof
+  <a href="{{- $path -}}/AFP/{{- $entry_name -}}/document.pdf">Proof
     document</a>
-  <a href="{{- $path -}}/{{- $entry_name -}}/session_graph.pdf">Dependencies</a>
+  <a href="{{- $path -}}/AFP/{{- $entry_name -}}/session_graph.pdf">Dependencies</a>
 
   {{- if isset .Site.Data "status" -}}
   {{- $status := "none" -}}
@@ -182,7 +182,7 @@
   <div class="popup">
     <h2>Download</h2>
     <a class="close" href="#">&times;</a>
-    <a href="{{ $site.Site.Params.afpUrls.releases }}//afp-{{- $entry_name -}}-current.tar.gz" download>Download latest</a>
+    <a href="{{ $site.Site.Params.afpUrls.releases }}/afp-{{- $entry_name -}}-current.tar.gz" download>Download latest</a>
     {{ with .Params.releases -}}
     <p>Older releases:</p>
     <ul>
