@@ -24,7 +24,7 @@ edmonds = "edmonds_email"
 
 [related]
 pubs = [
-  "https://dl.acm.org/doi/book/10.5555/3002498",
+  "<a href=\"https://dl.acm.org/doi/book/10.5555/3002498\">Agon and Spencer. The Probabilistic Method<a>",
   "<a href=\"https://yufeizhao.com/pm/probmethod_notes.pdf\">Lecture notes by Yufei Zhao</a>",
   "<a href=\"https://en.wikipedia.org/wiki/Lovász-Local-Lemma\">Wikipedia</a>"
 ]
