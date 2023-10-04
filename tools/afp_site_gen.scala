@@ -313,8 +313,12 @@ object AFP_Site_Gen {
 
     val sessions_structure = afp_structure.sessions_structure
     val sessions_deps = Sessions.deps(sessions_structure)
-    def theories_of(session_name: String) =
+    val browser_info = Browser_Info.context(sessions_structure)
+
+    def theories_of(session_name: String): List[String] =
       sessions_deps(session_name).proper_session_theories.map(_.theory_base_name)
+    def theory_path(session_name: String, thy_name: String): Path =
+      browser_info.session_dir(session_name) + Path.basic(thy_name).html
 
     val cache = new Cache(layout)
 
@@ -335,16 +339,22 @@ object AFP_Site_Gen {
 
       val theories =
         afp_structure.entry_sessions(entry.name).map { session =>
-          val theories = theories_of(session.name)
+          val thy_names = theories_of(session.name)
+
           val session_json =
             isabelle.JSON.Object(
               "title" -> session.name,
               "entry" -> entry.name,
               "url" -> ("/theories/" + session.name.toLowerCase),
-              "theories" -> theories)
-
+              "theories" -> thy_names.map(thy_name => isabelle.JSON.Object(
+                "name" -> thy_name,
+                "path" -> theory_path(session.name, thy_name).implode
+              )))
           layout.write_content(Path.make(List("theories", session.name + ".md")), session_json)
-          isabelle.JSON.Object("session" -> session.name, "theories" -> theories)
+
+          isabelle.JSON.Object(
+            "session" -> session.name,
+            "theories" -> thy_names)
         }
 
       val entry_json =
