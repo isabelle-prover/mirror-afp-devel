@@ -201,7 +201,7 @@ object AFP_Site_Gen {
         case((last, acc), s) => (s, acc :+ (if (last == s) to else s))
       }._2
 
-    isabelle.JSON.Object(
+    JSON.Object(
       "years" -> all_years,
       "num_lemmas" -> num_lemmas,
       "num_loc" -> num_lines,
@@ -317,8 +317,18 @@ object AFP_Site_Gen {
 
     def theories_of(session_name: String): List[String] =
       sessions_deps(session_name).proper_session_theories.map(_.theory_base_name)
-    def theory_path(session_name: String, thy_name: String): Path =
-      browser_info.session_dir(session_name) + Path.basic(thy_name).html
+
+    def write_session_json(session_name: String, base: JSON.Object.T): Unit = {
+      val session_json =
+        base ++ JSON.Object(
+          "title" -> session_name,
+          "url" -> ("/theories/" + session_name.toLowerCase),
+          "theories" -> theories_of(session_name).map(thy_name => JSON.Object(
+            "name" -> thy_name,
+            "path" -> (browser_info.session_dir(session_name) + Path.basic(thy_name).html).implode
+          )))
+      layout.write_content(Path.make(List("theories", session_name + ".md")), session_json)
+    }
 
     val cache = new Cache(layout)
 
@@ -339,26 +349,14 @@ object AFP_Site_Gen {
 
       val theories =
         afp_structure.entry_sessions(entry.name).map { session =>
-          val thy_names = theories_of(session.name)
-
-          val session_json =
-            isabelle.JSON.Object(
-              "title" -> session.name,
-              "entry" -> entry.name,
-              "url" -> ("/theories/" + session.name.toLowerCase),
-              "theories" -> thy_names.map(thy_name => isabelle.JSON.Object(
-                "name" -> thy_name,
-                "path" -> theory_path(session.name, thy_name).implode
-              )))
-          layout.write_content(Path.make(List("theories", session.name + ".md")), session_json)
-
-          isabelle.JSON.Object(
+          write_session_json(session.name, JSON.Object("entry" -> entry.name))
+          JSON.Object(
             "session" -> session.name,
-            "theories" -> thy_names)
+            "theories" -> theories_of(session.name))
         }
 
       val entry_json =
-        JSON.from_entry(entry, cache) ++ isabelle.JSON.Object(
+        JSON.from_entry(entry, cache) ++ JSON.Object(
           "dependencies" -> deps.distinct,
           "sessions" -> theories,
           "url" -> ("/entries/" + entry.name + ".html"),
@@ -366,6 +364,11 @@ object AFP_Site_Gen {
 
       layout.write_content(Path.make(List("entries", entry.name + ".md")), entry_json)
     }
+
+    for {
+      (session_name, (info, _)) <- sessions_structure.imports_graph.iterator
+      if !info.groups.contains("AFP")
+    } write_session_json(session_name, JSON.Object("rss" -> false))
 
 
     /* add statistics */

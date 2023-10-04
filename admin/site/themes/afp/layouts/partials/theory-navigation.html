@@ -17,10 +17,11 @@
       <img src="{{- .Site.BaseURL -}}images/afp.png" alt='Logo of the Archive of Formal Proofs'
         class="logo">
     </a>
-    {{ $currentPage := . -}}
+    {{ $currentPage := . }}
+    {{- with $entry_name -}}
     <ul id="return">
-      <li><a href="{{- .Site.BaseURL -}}entries/{{- $entry_name -}}.html">Return to entry</a></li>
-    </ul>
+      <li><a href="{{- $currentPage.Site.BaseURL -}}entries/{{- . -}}.html">Return to entry</a></li>
+    </ul>{{ end }}
     <hr>
     <ul id="theory-navbar" class="list-group"></ul>
   </div>
