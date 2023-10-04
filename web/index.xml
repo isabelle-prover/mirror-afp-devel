@@ -35,6 +35,15 @@
     </item>
     
     <item>
+      <title>Unification Utilities for Isabelle/ML</title>
+      <link>/entries/ML_Unification.html</link>
+      <pubDate>Tue, 19 Sep 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/ML_Unification.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Euler&#39;s Polyhedron Formula</title>
       <link>/entries/Euler_Polyhedron_Formula.html</link>
       <pubDate>Sat, 16 Sep 2023 00:00:00 +0000</pubDate>
@@ -11083,6 +11092,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/minsky_machines/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ML_Unification</title>
+      <link>/theories/ml_unification/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/ml_unification/</guid>
       <description></description>
     </item>
     

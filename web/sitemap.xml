@@ -53,6 +53,18 @@
     <loc>/dependencies/undirected_graph_theory/</loc>
     <lastmod>2023-09-20T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/authors/kappelmann/</loc>
+    <lastmod>2023-09-19T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/speccheck/</loc>
+    <lastmod>2023-09-19T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/tools/</loc>
+    <lastmod>2023-09-19T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/ML_Unification.html</loc>
+    <lastmod>2023-09-19T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/entries/Euler_Polyhedron_Formula.html</loc>
     <lastmod>2023-09-16T00:00:00+00:00</lastmod>
   </url><url>
@@ -516,9 +528,6 @@
     <lastmod>2022-12-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/sutcliffe/</loc>
-    <lastmod>2022-12-05T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/tools/</loc>
     <lastmod>2022-12-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Multitape_To_Singletape_TM.html</loc>
@@ -1253,9 +1262,6 @@
     <loc>/authors/milehins/</loc>
     <lastmod>2021-09-06T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/speccheck/</loc>
-    <lastmod>2021-09-06T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Dominance_CHK.html</loc>
     <lastmod>2021-09-05T00:00:00+00:00</lastmod>
   </url><url>
@@ -1335,9 +1341,6 @@
     <lastmod>2021-07-07T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/bulwahn/</loc>
-    <lastmod>2021-07-01T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/kappelmann/</loc>
     <lastmod>2021-07-01T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/SpecCheck.html</loc>
@@ -5709,6 +5712,8 @@
     <loc>/theories/minkowskis_theorem/</loc>
   </url><url>
     <loc>/theories/minsky_machines/</loc>
+  </url><url>
+    <loc>/theories/ml_unification/</loc>
   </url><url>
     <loc>/theories/mlss_decision_proc/</loc>
   </url><url>
