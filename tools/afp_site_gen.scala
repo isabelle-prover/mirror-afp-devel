@@ -266,20 +266,22 @@ object AFP_Site_Gen {
 
     var seen_affiliations: List[Affiliation] = Nil
 
-    val entries = afp_structure.entries.flatMap { name =>
-      val entry = afp_structure.load_entry(name, authors_by_id, topics_by_id, licenses_by_id,
-        releases_by_entry)
+    val entries =
+      afp_structure.entries.flatMap { name =>
+        val entry = afp_structure.load_entry(name, authors_by_id, topics_by_id, licenses_by_id,
+          releases_by_entry)
 
-      seen_affiliations = seen_affiliations :++ entry.authors ++ entry.contributors
-      Some(entry)
-    }
+        seen_affiliations = seen_affiliations :++ entry.authors ++ entry.contributors
+        Some(entry)
+      }
 
-    val authors = Utils.group_sorted(seen_affiliations.distinct, (a: Affiliation) => a.author).map {
-      case (id, affiliations) =>
-        val seen_emails = affiliations.collect { case e: Email => e }
-        val seen_homepages = affiliations.collect { case h: Homepage => h }
-        authors_by_id(id).copy(emails = seen_emails, homepages = seen_homepages)
-    }
+    val authors =
+      Utils.group_sorted(seen_affiliations.distinct, (a: Affiliation) => a.author).map {
+        case (id, affiliations) =>
+          val seen_emails = affiliations.collect { case e: Email => e }
+          val seen_homepages = affiliations.collect { case h: Homepage => h }
+          authors_by_id(id).copy(emails = seen_emails, homepages = seen_homepages)
+      }
 
     layout.write_data(Path.basic("authors.json"), JSON.from_authors(authors.toList))
 
@@ -288,12 +290,13 @@ object AFP_Site_Gen {
     progress.echo("Extracting keywords...")
 
     var seen_keywords = Set.empty[String]
-    val entry_keywords = entries.filterNot(_.statistics_ignore).map { entry =>
-      val scored_keywords = Rake.extract_keywords(entry.`abstract`)
-      seen_keywords ++= scored_keywords.map(_._1)
+    val entry_keywords =
+      entries.filterNot(_.statistics_ignore).map { entry =>
+        val scored_keywords = Rake.extract_keywords(entry.`abstract`)
+        seen_keywords ++= scored_keywords.map(_._1)
 
-      entry.name -> scored_keywords.map(_._1)
-    }.toMap
+        entry.name -> scored_keywords.map(_._1)
+      }.toMap
 
     seen_keywords =
       seen_keywords.filter(k => !k.endsWith("s") || !seen_keywords.contains(k.stripSuffix("s")))
@@ -330,22 +333,26 @@ object AFP_Site_Gen {
           if dep != entry
         } yield dep.name
 
-      val theories = afp_structure.entry_sessions(entry.name).map { session =>
-        val theories = theories_of(session.name)
-        val session_json = isabelle.JSON.Object(
-            "title" -> session.name,
-            "entry" -> entry.name,
-            "url" -> ("/theories/" + session.name.toLowerCase),
-            "theories" -> theories)
-        layout.write_content(Path.make(List("theories", session.name + ".md")), session_json)
-        isabelle.JSON.Object("session" -> session.name, "theories" -> theories)
-      }
+      val theories =
+        afp_structure.entry_sessions(entry.name).map { session =>
+          val theories = theories_of(session.name)
+          val session_json =
+            isabelle.JSON.Object(
+              "title" -> session.name,
+              "entry" -> entry.name,
+              "url" -> ("/theories/" + session.name.toLowerCase),
+              "theories" -> theories)
 
-      val entry_json = JSON.from_entry(entry, cache) ++ isabelle.JSON.Object(
-      "dependencies" -> deps.distinct,
-      "sessions" -> theories,
-      "url" -> ("/entries/" + entry.name + ".html"),
-      "keywords" -> get_keywords(entry.name))
+          layout.write_content(Path.make(List("theories", session.name + ".md")), session_json)
+          isabelle.JSON.Object("session" -> session.name, "theories" -> theories)
+        }
+
+      val entry_json =
+        JSON.from_entry(entry, cache) ++ isabelle.JSON.Object(
+          "dependencies" -> deps.distinct,
+          "sessions" -> theories,
+          "url" -> ("/entries/" + entry.name + ".html"),
+          "keywords" -> get_keywords(entry.name))
 
       layout.write_content(Path.make(List("entries", entry.name + ".md")), entry_json)
     }
