@@ -310,19 +310,28 @@ object AFP_Site_Gen {
 
     val sessions_structure = afp_structure.sessions_structure
     val sessions_deps = Sessions.deps(sessions_structure)
+    def theories_of(session_name: String) =
+      sessions_deps(session_name).proper_session_theories.map(_.theory_base_name)
+
     val cache = new Cache(layout)
+
+    val entry_sessions =
+      entries.map(entry => entry -> afp_structure.entry_sessions(entry.name)).toMap
+    val session_entry = entry_sessions.flatMap((entry, sessions) =>
+      sessions.map(session => session.name -> entry)).toMap
 
     entries.foreach { entry =>
       val deps =
         for {
-          session <- afp_structure.entry_sessions(entry.name)
-          dep <- sessions_structure.imports_graph.imm_preds(session.name)
-          if session.name != dep && sessions_structure(dep).groups.contains("AFP")
-        } yield dep
+          session <- entry_sessions(entry)
+          dep_session <- sessions_structure.imports_graph.imm_preds(session.name)
+          if sessions_structure(dep_session).groups.contains("AFP")
+          dep <- session_entry.get(dep_session)
+          if dep != entry
+        } yield dep.name
 
       val theories = afp_structure.entry_sessions(entry.name).map { session =>
-        val base = sessions_deps(session.name)
-        val theories = base.proper_session_theories.map(_.theory_base_name)
+        val theories = theories_of(session.name)
         val session_json = isabelle.JSON.Object(
             "title" -> session.name,
             "entry" -> entry.name,
