@@ -1,8 +1,8 @@
 {{- define "main" -}}
 {{- $site := . -}}
-{{- $path := .Site.Params.afpUrls.html -}}
+{{- $html_url := .Site.Params.afpUrls.html -}}
 {{- if isset .Site.Data "status" -}}
-  {{- $path = .Site.Params.afpUrls.htmlDevel -}}
+  {{- $html_url = .Site.Params.afpUrls.htmlDevel -}}
 {{- end -}}
 {{- $entry_name := .File.BaseFileName -}}
 <main>
@@ -129,11 +129,11 @@
   <a class='popup-button' href="#cite-popup">Cite</a>
   <a class='popup-button' href="#download-popup">Download</a>
   <h4>PDFs</h4>
-  <a href="{{- $path -}}/AFP/{{- $entry_name -}}/outline.pdf">Proof
+  <a href="{{- $html_url -}}/AFP/{{- $entry_name -}}/outline.pdf">Proof
     outline</a>
-  <a href="{{- $path -}}/AFP/{{- $entry_name -}}/document.pdf">Proof
+  <a href="{{- $html_url -}}/AFP/{{- $entry_name -}}/document.pdf">Proof
     document</a>
-  <a href="{{- $path -}}/AFP/{{- $entry_name -}}/session_graph.pdf">Dependencies</a>
+  <a href="{{- $html_url -}}/AFP/{{- $entry_name -}}/session_graph.pdf">Dependencies</a>
 
   {{- if isset .Site.Data "status" -}}
   {{- $status := "none" -}}

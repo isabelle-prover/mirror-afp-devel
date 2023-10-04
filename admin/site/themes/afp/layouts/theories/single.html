@@ -1,12 +1,12 @@
 {{- define "main" -}}
 {{- $site := . -}}
-{{- $path := .Site.Params.afpUrls.html -}}
+{{- $html_url := .Site.Params.afpUrls.html -}}
 {{- if isset .Site.Data "status" -}}
-  {{- $path = .Site.Params.afpUrls.htmlDevel -}}
+{{- $html_url = .Site.Params.afpUrls.htmlDevel -}}
 {{- end -}}
 <main id="theories">
   {{- range .Params.theories }}
-  <a id="{{ . }}" href="{{ $path }}/AFP/{{ $site.File.BaseFileName }}/{{ . }}.html"><h2>{{ . }}</h2></a>
+  <a id="{{ . }}" href="{{ $html_url }}/AFP/{{ $site.File.BaseFileName }}/{{ . }}.html"><h2>{{ . }}</h2></a>
   {{- end -}}
 </main>
 
