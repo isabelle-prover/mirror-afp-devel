@@ -7954,7 +7954,7 @@
   "topics": [
    "Mathematics/Analysis"
   ],
-  "used_by": 1
+  "used_by": 0
  },
  {
   "abstract": "\u003cp\u003eThis entry builds upon the results about formal and analytic Dirichlet series to define the Hurwitz \u0026zeta; function \u0026zeta;(\u003cem\u003ea\u003c/em\u003e,\u003cem\u003es\u003c/em\u003e) and, based on that, the Riemann \u0026zeta; function \u0026zeta;(\u003cem\u003es\u003c/em\u003e). This is done by first defining them for \u0026real;(\u003cem\u003ez\u003c/em\u003e) \u003e 1 and then successively extending the domain to the left using the Euler\u0026ndash;MacLaurin formula.\u003c/p\u003e \u003cp\u003eApart from the most basic facts such as analyticity, the following results are provided:\u003c/p\u003e \u003cul\u003e \u003cli\u003ethe Stieltjes constants and the Laurent expansion of \u0026zeta;(\u003cem\u003es\u003c/em\u003e) at \u003cem\u003es\u003c/em\u003e = 1\u003c/li\u003e \u003cli\u003ethe non-vanishing of \u0026zeta;(\u003cem\u003es\u003c/em\u003e) for \u0026real;(\u003cem\u003ez\u003c/em\u003e) \u0026ge; 1\u003c/li\u003e \u003cli\u003ethe relationship between \u0026zeta;(\u003cem\u003ea\u003c/em\u003e,\u003cem\u003es\u003c/em\u003e) and \u0026Gamma;\u003c/li\u003e \u003cli\u003ethe special values at negative integers and positive even integers\u003c/li\u003e \u003cli\u003eHurwitz's formula and the reflection formula for \u0026zeta;(\u003cem\u003es\u003c/em\u003e)\u003c/li\u003e \u003cli\u003ethe \u003ca href=\"https://arxiv.org/abs/math/0405478\"\u003e Hadjicostas\u0026ndash;Chapman formula\u003c/a\u003e\u003c/li\u003e \u003c/ul\u003e \u003cp\u003eThe entry also contains Euler's analytic proof of the infinitude of primes, based on the fact that \u0026zeta;(\u003ci\u003es\u003c/i\u003e) has a pole at \u003ci\u003es\u003c/i\u003e = 1.\u003c/p\u003e",
@@ -9496,7 +9496,7 @@
   "topics": [
    "Computer science/Networks"
   ],
-  "used_by": 2
+  "used_by": 1
  },
  {
   "abstract": "We provide a formalization of a variant of the superposition calculus, together with formal proofs of soundness and refutational completeness (w.r.t. the usual redundancy criteria based on clause ordering). This version of the calculus uses all the standard restrictions of the superposition rules, together with the following refinement, inspired by the basic superposition calculus: each clause is associated with a set of terms which are assumed to be in normal form -- thus any application of the replacement rule on these terms is blocked. The set is initially empty and terms may be added or removed at each inference step. The set of terms that are assumed to be in normal form includes any term introduced by previous unifiers as well as any term occurring in the parent clauses at a position that is smaller (according to some given ordering on positions) than a previously replaced term. The standard superposition calculus corresponds to the case where the set of irreducible terms is always empty.",
@@ -9656,7 +9656,7 @@
    "Computer science/Semantics and reasoning",
    "Computer science/Data structures"
   ],
-  "used_by": 5
+  "used_by": 10
  },
  {
   "abstract": "This entry provides an analytic proof to Ptolemy's Theorem using polar form transformation and trigonometric identities. In this formalization, we use ideas from John Harrison's HOL Light formalization and the proof sketch on the Wikipedia entry of Ptolemy's Theorem. This theorem is the 95th theorem of the Top 100 Theorems list.",
@@ -11175,7 +11175,7 @@
    "Computer science/Automata and formal languages",
    "Logic/General logic/Decidability of theories"
   ],
-  "used_by": 1
+  "used_by": 0
  },
  {
   "abstract": "Numerous models of probabilistic systems are studied in the literature. Coalgebra has been used to classify them into system types and compare their expressiveness.  We formalize the resulting hierarchy of probabilistic system types by modeling the semantics of the different systems as codatatypes. This approach yields simple and concise proofs, as bisimilarity coincides with equality for codatatypes. \u003cp\u003e This work is described in detail in the ITP 2015 publication by the authors.",
@@ -12927,7 +12927,7 @@
   "topics": [
    "Computer science/Data structures"
   ],
-  "used_by": 9
+  "used_by": 8
  },
  {
   "abstract": "\u003cp\u003eDealing with binders, renaming of bound variables, capture-avoiding substitution, etc., is very often a major problem in formal proofs, especially in proofs by structural and rule induction. Nominal Isabelle is designed to make such proofs easy to formalise: it provides an infrastructure for declaring nominal datatypes (that is alpha-equivalence classes) and for defining functions over them by structural recursion. It also provides induction principles that have Barendregt’s variable convention already built in. \u003c/p\u003e\u003cp\u003e This entry can be used as a more advanced replacement for HOL/Nominal in the Isabelle distribution. \u003c/p\u003e",
@@ -14384,7 +14384,7 @@
   "topics": [
    "Computer science/Data structures"
   ],
-  "used_by": 19
+  "used_by": 18
  },
  {
   "abstract": "This work presents a machine-checked tree automata library for Standard-ML, OCaml and Haskell. The algorithms are efficient by using appropriate data structures like RB-trees. The available algorithms for non-deterministic automata include membership query, reduction, intersection, union, and emptiness check with computation of a witness for non-emptiness. The executable algorithms are derived from less-concrete, non-executable algorithms using data-refinement techniques. The concrete data structures are from the Isabelle Collections Framework. Moreover, this work contains a formalization of the class of tree-regular languages and its closure properties under set operations.",
@@ -15063,7 +15063,7 @@
   "topics": [
    "Mathematics/Graph theory"
   ],
-  "used_by": 1
+  "used_by": 0
  },
  {
   "abstract": "We present an operational semantics and type safety proof for multiple inheritance in C++. The semantics models the behavior of method calls, field accesses, and two forms of casts in C++ class hierarchies. For explanations see the OOPSLA 2006 paper by Wasserrab, Nipkow, Snelting and Tip.",
