@@ -1,0 +1,54 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{Unification Utilities for Isabelle/ML}
+\author{Kevin Kappelmann}
+\maketitle
+
+\begin{abstract}
+This article provides various unification utilities for Isabelle/ML, most prominently:
+\begin{enumerate}
+\item First-order and higher-order pattern
+\href{https://en.wikipedia.org/wiki/Unification_(computer_science)#E-unification}{E-unification}
+and E-matching.
+While unifiers in Isabelle/ML only consider the $\alpha\beta\eta$-equational theory of the $\lambda$-calculus,
+unifiers in this article
+may take an extra background theory, in the form of an equational prover, into account.
+For example, the unification problem $n + 1 \equiv {}?m + Suc\; 0$
+may be solved by providing a prover for the background theory $\forall n.\ n + 1 \equiv n + Suc\; 0$.
+\item Tactics, methods, and attributes with adjustable unifiers (e.g.\ resolution, fact, assumption, OF).
+\item A generalisation of unification hints~\cite{unif-hints}.
+Unification hints are a flexible extension for unifiers.
+Among other things, they can be used for reflective tactics,
+to provide canonical unification instances,
+or to simply strengthen the background theory of a unifier in a controlled manner.
+\item Simplifier integration for e-unifiers.
+\item Practical combinations of unification algorithms, e.g. a combination of first-order and
+higher-order pattern unification.
+\item A hierarchical logger for Isabelle/ML,
+including per logger configurations with log levels, output channels, message filters.
+\end{enumerate}
+While this entry works with every object logic,
+some extra setup for Isabelle/HOL and application examples are provided.
+All unifiers are tested with SpecCheck~\cite{speccheck}.
+\end{abstract}
+
+\tableofcontents
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
