@@ -4784,6 +4784,8 @@
   </url><url>
     <loc>/theories/cayley_hamilton/</loc>
   </url><url>
+    <loc>/theories/ccl/</loc>
+  </url><url>
     <loc>/theories/ccs/</loc>
   </url><url>
     <loc>/theories/certification_monads/</loc>
@@ -4800,6 +4802,8 @@
   </url><url>
     <loc>/theories/cisc-kernel/</loc>
   </url><url>
+    <loc>/theories/classes/</loc>
+  </url><url>
     <loc>/theories/clean/</loc>
   </url><url>
     <loc>/theories/clique_and_monotone_circuits/</loc>
@@ -4809,6 +4813,8 @@
     <loc>/theories/closest_pair_points/</loc>
   </url><url>
     <loc>/theories/cocon/</loc>
+  </url><url>
+    <loc>/theories/codegen/</loc>
   </url><url>
     <loc>/theories/cofgroups/</loc>
   </url><url>
@@ -4948,6 +4954,8 @@
   </url><url>
     <loc>/theories/core_sc_dom/</loc>
   </url><url>
+    <loc>/theories/corec/</loc>
+  </url><url>
     <loc>/theories/corec&#43;&#43;/</loc>
   </url><url>
     <loc>/theories/correctness_algebras/</loc>
@@ -4972,6 +4980,10 @@
   </url><url>
     <loc>/theories/csp_reftk/</loc>
   </url><url>
+    <loc>/theories/ctt/</loc>
+  </url><url>
+    <loc>/theories/cube/</loc>
+  </url><url>
     <loc>/theories/cubic_quartic_equations/</loc>
   </url><url>
     <loc>/theories/cvp_hardness/</loc>
@@ -4988,6 +5000,8 @@
   </url><url>
     <loc>/theories/datatype_order_generator/</loc>
   </url><url>
+    <loc>/theories/datatypes/</loc>
+  </url><url>
     <loc>/theories/dcr-executionequivalence/</loc>
   </url><url>
     <loc>/theories/decl_sem_fun_pl/</loc>
@@ -5001,6 +5015,16 @@
     <loc>/theories/deep_learning/</loc>
   </url><url>
     <loc>/theories/delta_system_lemma/</loc>
+  </url><url>
+    <loc>/theories/demo_easychair/</loc>
+  </url><url>
+    <loc>/theories/demo_eptcs/</loc>
+  </url><url>
+    <loc>/theories/demo_foiltex/</loc>
+  </url><url>
+    <loc>/theories/demo_lipics/</loc>
+  </url><url>
+    <loc>/theories/demo_llncs/</loc>
   </url><url>
     <loc>/theories/density_compiler/</loc>
   </url><url>
@@ -5075,6 +5099,8 @@
     <loc>/theories/efficient-mergesort/</loc>
   </url><url>
     <loc>/theories/efficient_weighted_path_order/</loc>
+  </url><url>
+    <loc>/theories/eisbach/</loc>
   </url><url>
     <loc>/theories/elliptic_curves_group_law/</loc>
   </url><url>
@@ -5164,6 +5190,10 @@
   </url><url>
     <loc>/theories/focusstreamscasestudies/</loc>
   </url><url>
+    <loc>/theories/fol/</loc>
+  </url><url>
+    <loc>/theories/fol-ex/</loc>
+  </url><url>
     <loc>/theories/fol-fitting/</loc>
   </url><url>
     <loc>/theories/fol_axiomatic/</loc>
@@ -5175,6 +5205,10 @@
     <loc>/theories/fol_seq_calc2/</loc>
   </url><url>
     <loc>/theories/fol_seq_calc3/</loc>
+  </url><url>
+    <loc>/theories/folp/</loc>
+  </url><url>
+    <loc>/theories/folp-ex/</loc>
   </url><url>
     <loc>/theories/forcing/</loc>
   </url><url>
@@ -5203,6 +5237,8 @@
     <loc>/theories/functional-automata/</loc>
   </url><url>
     <loc>/theories/functional_ordered_resolution_prover/</loc>
+  </url><url>
+    <loc>/theories/functions/</loc>
   </url><url>
     <loc>/theories/funwithfunctions/</loc>
   </url><url>
@@ -5278,6 +5314,8 @@
   </url><url>
     <loc>/theories/hales_jewett/</loc>
   </url><url>
+    <loc>/theories/haskell/</loc>
+  </url><url>
     <loc>/theories/heard_of/</loc>
   </url><url>
     <loc>/theories/hello_world/</loc>
@@ -5298,7 +5336,93 @@
   </url><url>
     <loc>/theories/hoarefordivergence/</loc>
   </url><url>
+    <loc>/theories/hol/</loc>
+  </url><url>
+    <loc>/theories/hol-algebra/</loc>
+  </url><url>
+    <loc>/theories/hol-analysis/</loc>
+  </url><url>
+    <loc>/theories/hol-analysis-ex/</loc>
+  </url><url>
+    <loc>/theories/hol-auth/</loc>
+  </url><url>
+    <loc>/theories/hol-bali/</loc>
+  </url><url>
+    <loc>/theories/hol-cardinals/</loc>
+  </url><url>
+    <loc>/theories/hol-codegenerator_test/</loc>
+  </url><url>
+    <loc>/theories/hol-combinatorics/</loc>
+  </url><url>
+    <loc>/theories/hol-complex_analysis/</loc>
+  </url><url>
+    <loc>/theories/hol-computational_algebra/</loc>
+  </url><url>
+    <loc>/theories/hol-corec_examples/</loc>
+  </url><url>
     <loc>/theories/hol-csp/</loc>
+  </url><url>
+    <loc>/theories/hol-data_structures/</loc>
+  </url><url>
+    <loc>/theories/hol-datatype_examples/</loc>
+  </url><url>
+    <loc>/theories/hol-decision_procs/</loc>
+  </url><url>
+    <loc>/theories/hol-eisbach/</loc>
+  </url><url>
+    <loc>/theories/hol-ex/</loc>
+  </url><url>
+    <loc>/theories/hol-examples/</loc>
+  </url><url>
+    <loc>/theories/hol-hahn_banach/</loc>
+  </url><url>
+    <loc>/theories/hol-hoare/</loc>
+  </url><url>
+    <loc>/theories/hol-hoare_parallel/</loc>
+  </url><url>
+    <loc>/theories/hol-homology/</loc>
+  </url><url>
+    <loc>/theories/hol-imp/</loc>
+  </url><url>
+    <loc>/theories/hol-imperative_hol/</loc>
+  </url><url>
+    <loc>/theories/hol-import/</loc>
+  </url><url>
+    <loc>/theories/hol-impp/</loc>
+  </url><url>
+    <loc>/theories/hol-induct/</loc>
+  </url><url>
+    <loc>/theories/hol-ioa/</loc>
+  </url><url>
+    <loc>/theories/hol-isar_examples/</loc>
+  </url><url>
+    <loc>/theories/hol-lattice/</loc>
+  </url><url>
+    <loc>/theories/hol-library/</loc>
+  </url><url>
+    <loc>/theories/hol-matrix_lp/</loc>
+  </url><url>
+    <loc>/theories/hol-metis_examples/</loc>
+  </url><url>
+    <loc>/theories/hol-microjava/</loc>
+  </url><url>
+    <loc>/theories/hol-mirabelle-ex/</loc>
+  </url><url>
+    <loc>/theories/hol-mutabelle/</loc>
+  </url><url>
+    <loc>/theories/hol-nanojava/</loc>
+  </url><url>
+    <loc>/theories/hol-nitpick_examples/</loc>
+  </url><url>
+    <loc>/theories/hol-nominal/</loc>
+  </url><url>
+    <loc>/theories/hol-nominal-examples/</loc>
+  </url><url>
+    <loc>/theories/hol-nonstandard_analysis/</loc>
+  </url><url>
+    <loc>/theories/hol-nonstandard_analysis-examples/</loc>
+  </url><url>
+    <loc>/theories/hol-number_theory/</loc>
   </url><url>
     <loc>/theories/hol-ode-arch-comp/</loc>
   </url><url>
@@ -5306,11 +5430,79 @@
   </url><url>
     <loc>/theories/hol-ode-numerics/</loc>
   </url><url>
+    <loc>/theories/hol-predicate_compile_examples/</loc>
+  </url><url>
+    <loc>/theories/hol-probability/</loc>
+  </url><url>
+    <loc>/theories/hol-probability-ex/</loc>
+  </url><url>
+    <loc>/theories/hol-prolog/</loc>
+  </url><url>
+    <loc>/theories/hol-proofs/</loc>
+  </url><url>
+    <loc>/theories/hol-proofs-ex/</loc>
+  </url><url>
+    <loc>/theories/hol-proofs-extraction/</loc>
+  </url><url>
+    <loc>/theories/hol-proofs-lambda/</loc>
+  </url><url>
+    <loc>/theories/hol-quickcheck_examples/</loc>
+  </url><url>
+    <loc>/theories/hol-quotient_examples/</loc>
+  </url><url>
+    <loc>/theories/hol-real_asymp/</loc>
+  </url><url>
+    <loc>/theories/hol-real_asymp-manual/</loc>
+  </url><url>
+    <loc>/theories/hol-set_protocol/</loc>
+  </url><url>
+    <loc>/theories/hol-smt_examples/</loc>
+  </url><url>
+    <loc>/theories/hol-spark/</loc>
+  </url><url>
+    <loc>/theories/hol-spark-examples/</loc>
+  </url><url>
+    <loc>/theories/hol-spark-manual/</loc>
+  </url><url>
+    <loc>/theories/hol-statespace/</loc>
+  </url><url>
+    <loc>/theories/hol-tla/</loc>
+  </url><url>
+    <loc>/theories/hol-tla-buffer/</loc>
+  </url><url>
+    <loc>/theories/hol-tla-inc/</loc>
+  </url><url>
+    <loc>/theories/hol-tla-memory/</loc>
+  </url><url>
+    <loc>/theories/hol-tptp/</loc>
+  </url><url>
+    <loc>/theories/hol-types_to_sets/</loc>
+  </url><url>
+    <loc>/theories/hol-unity/</loc>
+  </url><url>
+    <loc>/theories/hol-unix/</loc>
+  </url><url>
+    <loc>/theories/hol-zf/</loc>
+  </url><url>
+    <loc>/theories/holcf/</loc>
+  </url><url>
+    <loc>/theories/holcf-ex/</loc>
+  </url><url>
+    <loc>/theories/holcf-focus/</loc>
+  </url><url>
+    <loc>/theories/holcf-imp/</loc>
+  </url><url>
+    <loc>/theories/holcf-library/</loc>
+  </url><url>
     <loc>/theories/holcf-prelude/</loc>
+  </url><url>
+    <loc>/theories/holcf-tutorial/</loc>
   </url><url>
     <loc>/theories/hood_melville_queue/</loc>
   </url><url>
     <loc>/theories/hotelkeycards/</loc>
+  </url><url>
+    <loc>/theories/how_to_prove_it/</loc>
   </url><url>
     <loc>/theories/hrb-slicing/</loc>
   </url><url>
@@ -5348,6 +5540,8 @@
   </url><url>
     <loc>/theories/imperative_insertion_sort/</loc>
   </url><url>
+    <loc>/theories/implementation/</loc>
+  </url><url>
     <loc>/theories/implicational_logic/</loc>
   </url><url>
     <loc>/theories/impossible_geometry/</loc>
@@ -5376,9 +5570,21 @@
   </url><url>
     <loc>/theories/interval_arithmetic_word32/</loc>
   </url><url>
+    <loc>/theories/intro/</loc>
+  </url><url>
     <loc>/theories/intro_dest_elim/</loc>
   </url><url>
     <loc>/theories/involutions2squares/</loc>
+  </url><url>
+    <loc>/theories/ioa/</loc>
+  </url><url>
+    <loc>/theories/ioa-abp/</loc>
+  </url><url>
+    <loc>/theories/ioa-ex/</loc>
+  </url><url>
+    <loc>/theories/ioa-ntp/</loc>
+  </url><url>
+    <loc>/theories/ioa-storage/</loc>
   </url><url>
     <loc>/theories/ip_addresses/</loc>
   </url><url>
@@ -5404,7 +5610,11 @@
   </url><url>
     <loc>/theories/isanet/</loc>
   </url><url>
+    <loc>/theories/isar_ref/</loc>
+  </url><url>
     <loc>/theories/jacobson_basic_algebra/</loc>
+  </url><url>
+    <loc>/theories/jedit/</loc>
   </url><url>
     <loc>/theories/jinja/</loc>
   </url><url>
@@ -5478,6 +5688,8 @@
   </url><url>
     <loc>/theories/lazy_case/</loc>
   </url><url>
+    <loc>/theories/lcf/</loc>
+  </url><url>
     <loc>/theories/lehmer/</loc>
   </url><url>
     <loc>/theories/lem/</loc>
@@ -5513,6 +5725,8 @@
     <loc>/theories/lll_basis_reduction/</loc>
   </url><url>
     <loc>/theories/lll_factorization/</loc>
+  </url><url>
+    <loc>/theories/locales/</loc>
   </url><url>
     <loc>/theories/localization_ring/</loc>
   </url><url>
@@ -5552,6 +5766,10 @@
   </url><url>
     <loc>/topics/logic/set-theory/</loc>
   </url><url>
+    <loc>/theories/logics/</loc>
+  </url><url>
+    <loc>/theories/logics_zf/</loc>
+  </url><url>
     <loc>/theories/lorenz_approximation/</loc>
   </url><url>
     <loc>/theories/lorenz_c0/</loc>
@@ -5579,6 +5797,8 @@
     <loc>/theories/ltl_to_gba/</loc>
   </url><url>
     <loc>/theories/lucas_theorem/</loc>
+  </url><url>
+    <loc>/theories/main/</loc>
   </url><url>
     <loc>/theories/markov_models/</loc>
   </url><url>
@@ -5702,6 +5922,10 @@
   </url><url>
     <loc>/theories/nano_json/</loc>
   </url><url>
+    <loc>/theories/naproche/</loc>
+  </url><url>
+    <loc>/theories/naproche-test/</loc>
+  </url><url>
     <loc>/theories/nash_williams/</loc>
   </url><url>
     <loc>/theories/nat-interval-logic/</loc>
@@ -5713,6 +5937,8 @@
     <loc>/theories/network_security_policy_verification/</loc>
   </url><url>
     <loc>/theories/neumann_morgenstern_utility/</loc>
+  </url><url>
+    <loc>/theories/nitpick/</loc>
   </url><url>
     <loc>/theories/no_ftl_observers/</loc>
   </url><url>
@@ -5862,6 +6088,8 @@
   </url><url>
     <loc>/theories/probability_inequality_completeness/</loc>
   </url><url>
+    <loc>/theories/prog_prove/</loc>
+  </url><url>
     <loc>/theories/program-conflict-analysis/</loc>
   </url><url>
     <loc>/theories/progress_tracking/</loc>
@@ -5891,6 +6119,12 @@
     <loc>/theories/ptolemys_theorem/</loc>
   </url><url>
     <loc>/theories/public_announcement_logic/</loc>
+  </url><url>
+    <loc>/theories/pure/</loc>
+  </url><url>
+    <loc>/theories/pure-ex/</loc>
+  </url><url>
+    <loc>/theories/pure-examples/</loc>
   </url><url>
     <loc>/theories/qhlprover/</loc>
   </url><url>
@@ -6053,6 +6287,8 @@
   </url><url>
     <loc>/theories/sequentinvertibility/</loc>
   </url><url>
+    <loc>/theories/sequents/</loc>
+  </url><url>
     <loc>/theories/shadow_dom/</loc>
   </url><url>
     <loc>/theories/shadow_sc_dom/</loc>
@@ -6087,6 +6323,8 @@
   </url><url>
     <loc>/theories/skip_lists/</loc>
   </url><url>
+    <loc>/theories/sledgehammer/</loc>
+  </url><url>
     <loc>/theories/slicing/</loc>
   </url><url>
     <loc>/theories/sliding_window_algorithm/</loc>
@@ -6096,6 +6334,8 @@
     <loc>/theories/sm_base/</loc>
   </url><url>
     <loc>/theories/smith_normal_form/</loc>
+  </url><url>
+    <loc>/theories/sml/</loc>
   </url><url>
     <loc>/theories/smooth_manifolds/</loc>
   </url><url>
@@ -6167,6 +6407,8 @@
   </url><url>
     <loc>/theories/subset_boolean_algebras/</loc>
   </url><url>
+    <loc>/theories/sugar/</loc>
+  </url><url>
     <loc>/theories/sumsquares/</loc>
   </url><url>
     <loc>/theories/sunflowers/</loc>
@@ -6182,6 +6424,8 @@
     <loc>/theories/syntax_independent_logic/</loc>
   </url><url>
     <loc>/theories/synthetic_completeness/</loc>
+  </url><url>
+    <loc>/theories/system/</loc>
   </url><url>
     <loc>/theories/szemeredi_regularity/</loc>
   </url><url>
@@ -6204,6 +6448,8 @@
     <loc>/theories/timed_automata/</loc>
   </url><url>
     <loc>/theories/tla/</loc>
+  </url><url>
+    <loc>/theories/tools/</loc>
   </url><url>
     <loc>/theories/topological_semantics/</loc>
   </url><url>
@@ -6239,11 +6485,15 @@
   </url><url>
     <loc>/theories/turans_graph_theorem/</loc>
   </url><url>
+    <loc>/theories/tutorial/</loc>
+  </url><url>
     <loc>/theories/twelvefold_way/</loc>
   </url><url>
     <loc>/theories/two_generated_word_monoids_intersection/</loc>
   </url><url>
     <loc>/theories/tycon/</loc>
+  </url><url>
+    <loc>/theories/typeclass_hierarchy/</loc>
   </url><url>
     <loc>/theories/types_tableaus_and_goedels_god/</loc>
   </url><url>
@@ -6324,6 +6574,24 @@
     <loc>/theories/zeta_3_irrational/</loc>
   </url><url>
     <loc>/theories/zeta_function/</loc>
+  </url><url>
+    <loc>/theories/zf/</loc>
+  </url><url>
+    <loc>/theories/zf-ac/</loc>
+  </url><url>
+    <loc>/theories/zf-coind/</loc>
+  </url><url>
+    <loc>/theories/zf-constructible/</loc>
+  </url><url>
+    <loc>/theories/zf-ex/</loc>
+  </url><url>
+    <loc>/theories/zf-imp/</loc>
+  </url><url>
+    <loc>/theories/zf-induct/</loc>
+  </url><url>
+    <loc>/theories/zf-resid/</loc>
+  </url><url>
+    <loc>/theories/zf-unity/</loc>
   </url><url>
     <loc>/theories/zfc_in_hol/</loc>
   </url>
