@@ -16,7 +16,7 @@
 {{- end -}}
 {{- end -}}
 
-{{- range (.Data.Pages).GroupByDate "2006" -}}
+{{- range (where (uniq .Data.Pages) "Params.topics" "intersect" (slice $site.Title)).GroupByDate "2006" -}}
 {{- if ne .Key "0001" -}}
 <h2 class="head">{{- .Key -}}</h2>
 {{- range .Pages -}}
