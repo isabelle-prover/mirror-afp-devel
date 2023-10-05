@@ -27,7 +27,6 @@
 
 <h2>Entries</h2>
 {{- range (.Data.Pages).GroupByDate "2006" -}}
-{{- if ne .Key "0001" -}}
 <h3 class="head">{{- .Key -}}</h3>
 {{- range .Pages -}}
 <article class="entry">
@@ -41,6 +40,6 @@
   </span>
 </article>
 {{ end }}
-{{ end }}
+
 {{ end }}
 {{ end }}

@@ -1,5 +1,7 @@
 ---
 title: Submission
-rss: false
+_build:
+  list: never
+  publishResources: false
 ---
 {{< submission endpoint="submission" >}}
