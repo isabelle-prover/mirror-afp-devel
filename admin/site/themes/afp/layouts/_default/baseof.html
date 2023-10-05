@@ -10,7 +10,9 @@
         {{ partial "theory-navigation.html" . }}
       {{- end }}
     </aside>
-    <div class='content {{ if (eq .Section "entries") }}entries {{ end }} {{ if (eq .File.BaseFileName "search") }} search-page{{ end }}'>
+    <div class='content
+      {{- if (eq .Section "entries") }} entries{{ end }}
+      {{- if eq .RelPermalink "/search/" }} search-page{{ end }}'>
       {{ partial "header.html" . }}
       <div>
         {{ block "main" . }}{{ end }}

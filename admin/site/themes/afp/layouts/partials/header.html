@@ -1,5 +1,5 @@
 <header>
-  {{- if and (ne .Kind "home") (ne .File.BaseFileName "search") }}
+  {{- if and (ne .Kind "home") (ne .RelPermalink "/search/") }}
     <form autocomplete="off" action="{{ "search" | absURL }}">
       <div class='form-container'>
         <input id="search-input" type="search" size="31" maxlength="255" value=""
@@ -17,7 +17,7 @@
     {{- .Scratch.Set "title" (index (index .Site.Data.authors (.Scratch.Get "title")) "name") }}
   {{- end }}
   <h1
-    {{- if or (eq .Kind "home" ) (eq .File.BaseFileName "search" ) }}
+    {{- if or (eq .Kind "home" ) (eq .RelPermalink "/search/") }}
       class="large-top-margin"
     {{- end }}>
     {{ (.Scratch.Get "title") | replaceRE "[A-Z]" "<span class='first'>$0</span>" | safeHTML }}

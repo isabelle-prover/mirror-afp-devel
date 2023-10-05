@@ -36,7 +36,7 @@
 
   <link rel="icon" href="{{ .Site.BaseURL }}images/favicon.ico" type="image/icon">
 
-  {{- if or (eq .Section "entries") (eq .File.BaseFileName "search") }}
+  {{- if or (eq .Section "entries") (eq .RelPermalink "/search/") }}
     {{/*
       The following is the MathJax configuration.
       This means that formulae can be enclosed in either $ … $ or \( … \)
@@ -66,7 +66,7 @@
   <script src="{{ .Site.BaseURL }}js/theory.js"></script>
   <script src="{{ .Site.BaseURL }}js/util.js"></script>
 
-  {{- if (eq .File.BaseFileName "search") }}
+  {{- if eq .RelPermalink "/search/" }}
     <script src="{{ .Site.BaseURL }}js/search.js"></script>
   {{- else }}
     <script src="{{ .Site.BaseURL }}js/header-search.js"></script>

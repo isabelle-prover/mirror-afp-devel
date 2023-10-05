@@ -1,19 +1,21 @@
 {{- $Scratch := newScratch }}
-{{- $site := .site}}
+{{- $site := .site }}
 
 {{- $affiliations := .affiliations }}
 {{- range .authors }}
-
+  {{- $author := . }}
   {{- $affils := "" }}
-  {{- if eq (isset $affiliations .) true }}
-    {{- $affil := index $affiliations . }}
-    {{- if eq (isset $affil "homepage") true }}
-      {{- $affils = printf "%s [🌐](%s)" $affils (index $affil "homepage") }}
-    {{- end }}
-    {{- if eq (isset $affil "email") true }}
-      {{- with (index $affil "email") }}
-      {{- $affils = printf "%s <a class=\"obfuscated\" data=\"%s\">📧</a>" $affils
-          (. | jsonify | base64Encode) }}
+  {{- with $affiliations }}
+    {{- if isset . $author }}
+      {{- $affil := index . $author }}
+      {{- if eq (isset $affil "homepage") true }}
+        {{- $affils = printf "%s [🌐](%s)" $affils (index $affil "homepage") }}
+      {{- end }}
+      {{- if eq (isset $affil "email") true }}
+        {{- with (index $affil "email") }}
+        {{- $affils = printf "%s <a class=\"obfuscated\" data=\"%s\">📧</a>" $affils
+            (. | jsonify | base64Encode) }}
+        {{- end }}
       {{- end }}
     {{- end }}
   {{- end }}

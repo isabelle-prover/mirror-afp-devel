@@ -4,7 +4,8 @@
   {{- if isset .Site.Data "status" }}
     {{- $html_url = .Site.Params.afpUrls.htmlDevel }}
   {{- end }}
-  {{- $entry_name := .File.BaseFileName }}
+  {{- $entry_name := "" }}
+  {{- with .File }}{{- $entry_name = .BaseFileName }}{{ end }}
   <main>
     {{- if isset .Site.Data "status" }}
       <strong>
@@ -110,23 +111,23 @@
       </div>
     {{- end }}
 
-    {{- $related :=
-      (where (.Site.RegularPages.Related .) ".File.BaseFileName" "not in" $uses)
-      | complement $used_by
-      | first 5 }}
-    {{- with $related }}
-      <div>
-        <h3>Auto-related entries</h3>
-        <ul class="horizontal-list">
-          {{- range . }}
-            <li>
-              {{ printf "[%s](%s)" .Title .RelPermalink | $.Page.RenderString }}
-            </li>
-          {{- end }}
-        </ul>
+    {{- with .File }}
+      {{- $related :=
+        (where ($site.Site.RegularPages.Related $site) ".BaseFileName" "not in" $uses)
+        | complement $used_by
+        | first 5 }}
+      {{- with $related }}
+        <div>
+          <h3>Auto-related entries</h3>
+          <ul class="horizontal-list">
+            {{- range . }}
+              <li>{{ printf "[%s](%s)" .Title .RelPermalink | $.Page.RenderString }}</li>
+            {{- end }}
+          </ul>
+        </div>
+      {{- end }}
       </div>
-    {{- end }}
-    </div>
+    {{ end }}
   </main>
 
   <nav class='links'>
