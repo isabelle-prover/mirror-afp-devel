@@ -33,4 +33,4 @@ paulson = "paulson_email"
 dois = [
   "10.4153/CMB-1997-056-4",
 ]
-pubs = []
+pubs = [ "<a href=\"https://en.wikipedia.org/wiki/Euler_characteristic\">Wikipedia</a>" ]
