@@ -17,13 +17,18 @@ rss: false
 *   If your theories contain calls to `nitpick`, `quickcheck`, or `nunchaku` those calls must include the `expect` parameter. Alternatively the `expect` parameter must be set globally via, e.g. `nitpick_params`.
 *   `apply` scripts should be indented by subgoal as in the Isabelle distribution. If an `apply` command is applied to a state with `n+1` subgoals, it must be indented by `n` spaces relative to the first `apply` in the sequence.
 *   Only named lemmas should carry attributes such as `[simp]`.
+*   The submission process employs the [Isabelle linter](https://github.com/isabelle-prover/isabelle-linter) that checks for most violations. It will also warn you about other anti-patterns (check the end of your build log).
 *   We prefer structured Isar proofs over apply style, but do not mandate them.
 *   If there are proof steps that take significant time, i.e. longer than roughly 1 min, please add a short comment to that step, so maintainers will know what to expect.
 *   The entry must contain a ROOT file with one session that has the name of the entry. We strongly encourage precisely one session per entry, but exceptions can be made. All sessions must be in chapter AFP, and all theory files of the submission must be contained in at least one session. See also the example [ROOT](https://foss.heptapod.net/isa-afp/afp-2023/-/blob/branch/default/thys/Example-Submission/ROOT) file in the [Example submission](/entries/Example-Submission.html).
+*   The submission should run in the current Isabelle/AFP release and produce a PDF document. To test this, you can run the following [Isabelle command on the command line](https://isabelle.in.tum.de/installation.html): 
+  ```
+  <isabelle> build -v -o browser_info -o "document=pdf" -o "document_variants=document:outline=/proof,/ML" -D <entry dir>
+  ```
 *   The entry should cite all sources that the theories are based on, for example textbooks or research articles containing informal versions of the proofs.
 *   All sessions must have a timeout after which they are assumed to be in a non-terminating state. Timeouts may be no finer than five-minute increments, i.e. must be divisible by 300.
 
-Your submission must contain an abstract to be displayed on the web site – usually this will be the same as the abstract of your proof document in the root.tex file. You can use LaTeX formulae in this web site abstract, either inline formulae in the form $a+b$ or \\(a+b\\) or display formulae in the form $$a + b$$ or \\\[a + b\\\]. Other occurrences of these characters must be escaped (e.g. \\$ or \\\\(). Note that LaTeX in the title of an entry is _not_ allowed. Most basic LaTeX functionality should be supported. For details on what parts of LaTeX are supported, see the [MathJax documentation.](https://docs.mathjax.org/en/v2.7-latest/tex.html)
+Your submission must contain an abstract to be displayed on the web site – usually this will be the same as the abstract of your proof document in the root.tex file. You can use MathJax formulae in this web site abstract, either inline formulae in the form $a+b$ or \\(a+b\\) or display formulae in the form $$a + b$$ or \\\[a + b\\\]. Other occurrences of these characters must be escaped (e.g. \\$ or \\\\(). Note that MathJax in the title of an entry is _not_ allowed. MathJax supports most basic LaTeX functionality. For details on what parts of LaTeX are supported, see the [MathJax documentation.](https://docs.mathjax.org/en/v2.7-latest/tex.html)
 
 It is possible and encouraged to build on other archive entries in your submission. There is a standardised way to [refer to other AFP entries](/help) in your theories.
 
@@ -33,7 +38,7 @@ It is possible and encouraged to build on other archive entries in your submissi
 
 Your submission will be refereed and you will receive notification as soon as possible. If accepted, you must agree to maintain your archive entry or nominate someone else to maintain it. The Isabelle development team will assist with maintenance, but it does not have the resources to fully maintain the complete archive.
 
-If you have questions regarding your submission, please email [afp-submit@in.tum.de](mailto:afp-submit@in.tum.de). If you need help with Isabelle, please use the [isabelle-users@cl.cam.ac.uk](mailto:isabelle-users@cl.cam.ac.uk) mailing list. It is always a good idea to [subscribe](https://lists.cam.ac.uk/mailman/listinfo/cl-isabelle-users).
+If you have questions regarding your submission, please email [afp-submit@in.tum.de](mailto:afp-submit@in.tum.de). If your submission can only run on the development version of Isabelle or the AFP, notify us after submitting. If you need help with Isabelle, please use the [isabelle-users@cl.cam.ac.uk](mailto:isabelle-users@cl.cam.ac.uk) mailing list. It is always a good idea to [subscribe](https://lists.cam.ac.uk/mailman/listinfo/cl-isabelle-users).
 
 # Updating Entries
 
