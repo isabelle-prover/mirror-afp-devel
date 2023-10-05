@@ -8,8 +8,6 @@ Lawrence, J. (1997). A Short Proof of Euler's Relation for Convex Polytopes.
 theory Euler_Formula
   imports 
     "HOL-Analysis.Analysis" 
-    Library_Extras
-    Inclusion_Exclusion
 begin
 
 
