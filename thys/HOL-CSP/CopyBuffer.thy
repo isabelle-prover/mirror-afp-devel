@@ -44,11 +44,12 @@
 
 chapter\<open> Annex: Refinement Example with Buffer over infinite Alphabet\<close>
 
-theory     CopyBuffer
- imports    "Assertions"
+theory     CopyBuffer 
+ imports   CSP "Assertions"
 begin 
 
 section\<open> Defining the Copy-Buffer Example \<close>
+
 
 datatype 'a channel = left 'a | right 'a | mid 'a | ack
 
@@ -157,7 +158,7 @@ subsection\<open>Deadlock Freeness Proof \<close>
 text\<open>HOL-CSP can be used to prove deadlock-freeness of processes with infinite alphabet. In the
 case of the @{term COPY} - process, this can be formulated as the following refinement problem:\<close>
 
-lemma "(DF (range left \<union> range right)) \<sqsubseteq>\<^sub>F\<^sub>D COPY"
+lemma DF_COPY : "(DF (range left \<union> range right)) \<sqsubseteq>\<^sub>F\<^sub>D COPY"
   apply(simp add:DF_def,rule fix_ind2)
 proof -
   show "adm (\<lambda>a. a \<sqsubseteq>\<^sub>F\<^sub>D COPY)"   by(rule le_FD_adm, simp_all add: monofunI)

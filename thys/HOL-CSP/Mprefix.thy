@@ -3,7 +3,7 @@
  * Project         : HOL-CSP - A Shallow Embedding of CSP in  Isabelle/HOL
  * Version         : 2.0
  *
- * Author          : Burkhart Wolff, Safouan Taha, Lina Ye.
+ * Author          : Burkhart Wolff.
  *                   (Based on HOL-CSP 1.0 by Haykal Tej and Burkhart Wolff)
  *
  * This file       : A Combined CSP Theory
@@ -51,36 +51,19 @@ begin
 
 subsection\<open> The Definition and some Consequences \<close>
 
-definition   Mprefix     :: "['a set,'a => 'a process] => 'a process" where
-  "Mprefix A P \<equiv>  Abs_process(  
-                              {(tr,ref). tr = [] \<and> ref Int (ev ` A) = {}} \<union>
-                              {(tr,ref). tr \<noteq> [] \<and> hd tr \<in> (ev ` A) \<and>
-                                         (\<exists> a. ev a = (hd tr)\<and>(tl tr,ref)\<in>\<F>(P a))},
-                              {d. d \<noteq> [] \<and>  hd d  \<in> (ev ` A) \<and>
-                                         (\<exists> a. ev a = hd d \<and> tl d \<in> \<D> (P a))})"
-
-syntax
-  "_Mprefix" :: "[pttrn,'a set,'a process] \<Rightarrow> 'a process"	("(3\<box>(_/\<in>_)/ \<rightarrow> (_))"[0,0,64]64)
-
-term "Ball A (\<lambda>x. P)"
-
-translations
-  "\<box>x\<in>A \<rightarrow> P" \<rightleftharpoons> "CONST Mprefix A (\<lambda>x. P)"
-
-text\<open>Syntax Check:\<close>
-term \<open>\<box>x\<in>A \<rightarrow> \<box>y\<in>A \<rightarrow> \<box>z\<in>A \<rightarrow> P z x y = Q\<close>
-
-subsection\<open> Well-foundedness of Mprefix \<close>
-
-lemma is_process_REP_Mprefix  :
-"is_process ({(tr,ref). tr=[] \<and>  ref \<inter> (ev ` A) = {}} \<union>
-             {(tr,ref). tr \<noteq> [] \<and> hd tr \<in> (ev ` A) \<and>
-                        (\<exists> a. ev a = (hd tr) \<and> (tl tr,ref) \<in> \<F>(P a))},
-             {d. d \<noteq>  [] \<and>  hd d \<in> (ev ` A) \<and>
-                        (\<exists> a. ev a = hd d  \<and> tl d \<in> \<D>(P a))})"
- (is "is_process(?f, ?d)")
-proof  (simp only:is_process_def FAILURES_def DIVERGENCES_def
-                  Product_Type.fst_conv Product_Type.snd_conv,
+lift_definition   Mprefix     :: "['a set,'a => 'a process] => 'a process"
+  is "\<lambda>A P. ({(tr,ref). tr = [] \<and> ref Int (ev ` A) = {}} \<union>
+             {(tr,ref). tr \<noteq> [] \<and> hd tr \<in> (ev ` A) \<and> 
+                        (\<exists> a. ev a = (hd tr)\<and>(tl tr,ref)\<in>\<F>(P a))},
+             {d. d \<noteq> [] \<and>  hd d  \<in> (ev ` A) \<and> (\<exists> a. ev a = hd d \<and> tl d \<in> \<D> (P a))})"
+proof -
+  show \<open>is_process ({(tr, ref). tr = [] \<and> ref \<inter> ev ` (A :: 'a set) = {}} \<union>
+                    {(tr, ref). tr \<noteq> [] \<and> hd tr \<in> ev ` A \<and> 
+                                (\<exists>a. ev a = hd tr \<and> (tl tr, ref) \<in> \<F> (P a))},
+                    {d. d \<noteq> [] \<and> hd d \<in> ev ` A \<and> (\<exists>a. ev a = hd d \<and> tl d \<in> \<D> (P a))}) \<close> 
+    (is \<open>is_process(?f, ?d)\<close>) for A P
+proof  (simp only: is_process_def FAILURES_def DIVERGENCES_def
+                   Product_Type.fst_conv Product_Type.snd_conv,
         intro conjI allI impI)
     show "([],{}) \<in> ?f" by(simp)
 next  
@@ -132,7 +115,20 @@ next
                apply(cases s, auto intro: is_processT9[rule_format])
                done
 
-qed
+           qed
+         qed
+
+
+syntax
+  "_Mprefix" :: "[pttrn,'a set,'a process] \<Rightarrow> 'a process"	("(3\<box>(_/\<in>_)/ \<rightarrow> (_))"[0,0,64]64)
+
+term "Ball A (\<lambda>x. P)"
+
+translations
+  "\<box>x\<in>A \<rightarrow> P" \<rightleftharpoons> "CONST Mprefix A (\<lambda>x. P)"
+
+text\<open>Syntax Check:\<close>
+term \<open>\<box>x\<in>A \<rightarrow> \<box>y\<in>A \<rightarrow> \<box>z\<in>A \<rightarrow> P z x y = Q\<close>
 
 
 (* bizarre exercise in style proposed by Makarius... *)
@@ -196,8 +192,6 @@ next
     then show "s \<in> ?d" by(auto)
 qed
 
-lemmas  Rep_Abs_Mprefix[simp] = Abs_process_inverse[simplified, OF is_process_REP_Mprefix]
-thm Rep_Abs_Mprefix
    
 lemma Rep_Abs_Mprefix'' : 
 assumes H1 : "f = {(tr, ref). tr = [] \<and> ref \<inter> ev ` A = {}} \<union>
@@ -205,9 +199,9 @@ assumes H1 : "f = {(tr, ref). tr = [] \<and> ref \<inter> ev ` A = {}} \<union>
                              \<and> (\<exists>a. ev a = hd tr \<and> (tl tr, ref) \<in> \<F> (P a))}"
     and H2 : "d = {d. d \<noteq>  [] \<and>  hd d \<in> (ev ` A) \<and> 
                      (\<exists> a. ev a = hd d  \<and> tl d \<in> \<D>(P a))}"
-shows "Rep_process (Abs_process (f,d)) = (f,d)"
-by(subst Abs_process_inverse, 
-   simp_all only: H1 H2 CollectI Rep_process is_process_REP_Mprefix)
+  shows "Rep_process (Abs_process (f,d)) = (f,d)"
+  using Abs_process_inverse H1 H2 is_process_REP_Mprefix' by blast
+
 
 
 subsection \<open> Projections in Prefix \<close>
@@ -216,18 +210,19 @@ lemma F_Mprefix :
   "\<F> (\<box> x \<in> A \<rightarrow> P x) = {(tr,ref). tr=[] \<and>  ref \<inter> (ev ` A) = {}} \<union>
                          {(tr,ref). tr \<noteq> [] \<and> hd tr \<in> (ev ` A) \<and> 
                                    (\<exists> a. ev a = (hd tr) \<and> (tl tr,ref) \<in> \<F>(P a))}"
-  by(simp add:Mprefix_def Failures_def Rep_Abs_Mprefix'' FAILURES_def)
-
+  by (subst Failures.rep_eq, simp add: Mprefix.rep_eq FAILURES_def)
 
 lemma D_Mprefix:
   "\<D> (\<box> x \<in> A \<rightarrow> P x) = {d. d \<noteq>  [] \<and>  hd d \<in> (ev ` A) \<and> 
-                           (\<exists> a. ev a = hd d  \<and> tl d \<in> \<D>(P a))}"
-  by(simp add:Mprefix_def D_def Rep_Abs_Mprefix'' DIVERGENCES_def)
+                             (\<exists> a. ev a = hd d  \<and> tl d \<in> \<D>(P a))}"
+  by (subst Divergences.rep_eq, simp add: Mprefix.rep_eq DIVERGENCES_def)
 
 
 lemma T_Mprefix:
   "\<T> (\<box> x \<in> A \<rightarrow> P x)={s. s=[] \<or> (\<exists> a. a\<in>A \<and> s\<noteq>[] \<and> hd s = ev a \<and> tl s \<in> \<T>(P a))}"
-  by(auto simp: T_F_spec[symmetric] F_Mprefix)
+  by (subst Traces.rep_eq, auto simp add: TRACES_def Failures.rep_eq[symmetric] F_Mprefix)
+     (use F_T T_F in \<open>blast+\<close>)
+  
 
 subsection \<open> Basic Properties \<close>
 

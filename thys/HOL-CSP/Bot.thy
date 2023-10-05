@@ -3,7 +3,7 @@
  * Project         : HOL-CSP - A Shallow Embedding of CSP in  Isabelle/HOL
  * Version         : 2.0
  *
- * Author          : Burkhart Wolff, Safouan Taha, Lina Ye.
+ * Author          : Burkhart Wolff, Safouan Taha.
  *                   (Based on HOL-CSP 1.0 by Haykal Tej and Burkhart Wolff)
  *
  * This file       : A Combined CSP Theory
@@ -50,50 +50,50 @@ theory     Bot
 imports    Process
 begin 
 
-definition BOT :: "'\<alpha> process"  
-where     "BOT \<equiv> Abs_process ({(s,X). front_tickFree s}, {d. front_tickFree d})"
-
-lemma is_process_REP_Bot : 
-  "is_process  ({(s,X). front_tickFree s}, {d. front_tickFree d})"
-by(auto simp: tickFree_implies_front_tickFree is_process_def 
-              FAILURES_def DIVERGENCES_def
-        elim: Process.front_tickFree_dw_closed 
-        elim: Process.front_tickFree_append)
+lift_definition BOT :: \<open>'\<alpha> process\<close> 
+  is \<open>({(s,X). front_tickFree s}, {d. front_tickFree d})\<close>
+  unfolding is_process_def FAILURES_def DIVERGENCES_def
+  by (auto simp: tickFree_implies_front_tickFree 
+           elim: front_tickFree_dw_closed front_tickFree_append)
 
 
-lemma Rep_Abs_Bot :"Rep_process (Abs_process ({(s,X). front_tickFree s},{d. front_tickFree d})) = 
-                    ({(s,X). front_tickFree s},{d. front_tickFree d})"
-by(subst Abs_process_inverse, simp_all only: CollectI Rep_process is_process_REP_Bot)
+lemma F_BOT: "\<F> BOT = {(s,X). front_tickFree s}"
+  by (simp add: BOT.rep_eq FAILURES_def Failures.rep_eq)
 
-lemma F_Bot: "\<F> BOT = {(s,X). front_tickFree s}"
-by(simp add: BOT_def FAILURES_def Failures_def Rep_Abs_Bot)
+lemma D_BOT: "\<D> BOT = {d. front_tickFree d}"
+  by (simp add: BOT.rep_eq DIVERGENCES_def Divergences.rep_eq)
 
-lemma D_Bot: "\<D> BOT = {d. front_tickFree d}"
-by(simp add: BOT_def DIVERGENCES_def D_def Rep_Abs_Bot)
+lemma T_BOT: "\<T> BOT = {s. front_tickFree s}"
+  by (simp add: Traces.rep_eq TRACES_def Failures.rep_eq[symmetric] F_BOT)
 
-lemma T_Bot: "\<T> BOT = {s. front_tickFree s}"
-by(simp add: BOT_def TRACES_def Traces_def FAILURES_def Rep_Abs_Bot)
 
 text\<open> This is the key result: @{term "\<bottom>"} --- which we know to exist 
-from the process instantiation --- is equal Bot .
+from the process instantiation --- is equal \<^const>\<open>BOT\<close> .
 \<close>
 
 lemma BOT_is_UU[simp]: "BOT = \<bottom>"
 apply(auto simp: Pcpo.eq_bottom_iff Process.le_approx_def Ra_def 
                  min_elems_Collect_ftF_is_Nil Process.Nil_elem_T 
-                 F_Bot D_Bot T_Bot
+                 F_BOT D_BOT T_BOT
            elim: D_imp_front_tickFree)
 apply(metis Process.is_processT2)
 done
 
 lemma F_UU: "\<F> \<bottom> = {(s,X). front_tickFree s}"
-  using F_Bot by auto
+  using F_BOT by auto
 
 lemma D_UU: "\<D> \<bottom> = {d. front_tickFree d}"
-  using D_Bot by auto
+  using D_BOT by auto
 
 lemma T_UU: "\<T> \<bottom> = {s. front_tickFree s}"
-  using T_Bot by auto
+  using T_BOT by auto
+
+
+lemma BOT_iff_D: \<open>P = \<bottom> \<longleftrightarrow> [] \<in> \<D> P\<close>
+  apply (intro iffI, simp add: D_UU)
+  apply (subst Process_eq_spec, safe)
+  by (simp_all add: F_UU D_UU is_processT2 D_imp_front_tickFree)
+     (metis append_Nil is_processT tickFree_Nil)+
 
 
 end

@@ -3,7 +3,7 @@
  * Project         : HOL-CSP - A Shallow Embedding of CSP in  Isabelle/HOL
  * Version         : 2.0
  *
- * Author          : Burkhart Wolff, Safouan Taha, Lina Ye.
+ * Author          : Burkhart Wolff, Safouan Taha.
  *                   (Based on HOL-CSP 1.0 by Haykal Tej and Burkhart Wolff)
  *
  * This file       : A Combined CSP Theory
@@ -48,23 +48,11 @@ begin
 
 section\<open>Multiple non deterministic operator\<close>
 
-definition
-        Mndetprefix   :: "['\<alpha> set, '\<alpha> \<Rightarrow> '\<alpha> process] \<Rightarrow> '\<alpha> process" 
-        where   "Mndetprefix A P \<equiv> if A = {} 
-                                   then STOP
-                                   else Abs_process(\<Union> x\<in>A.  \<F>(x \<rightarrow> P x),
-                                                    \<Union> x\<in>A.  \<D>(x \<rightarrow> P x))"
-syntax
-  "_Mndetprefix"       :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'a process \<Rightarrow> 'a process" 
-                          ("(3\<sqinter>_\<in>_ \<rightarrow> / _)" [0, 0, 70] 70)
-
-translations
-  "\<sqinter>x\<in>A\<rightarrow> P" \<rightleftharpoons> "CONST Mndetprefix A (\<lambda>x. P)"
-
-lemma mt_Mndetprefix[simp] : "Mndetprefix {} P = STOP"
-  unfolding Mndetprefix_def   by simp
-
-lemma Mndetprefix_is_process : "A \<noteq> {} \<Longrightarrow> is_process (\<Union> x\<in>A. \<F>(x \<rightarrow> P x), \<Union> x\<in>A.   \<D>(x \<rightarrow> P x))"
+lift_definition Mndetprefix   :: "['\<alpha> set, '\<alpha> \<Rightarrow> '\<alpha> process] \<Rightarrow> '\<alpha> process" 
+  is "\<lambda>A P.   if A = {} then Rep_process STOP 
+            else (\<Union> x\<in>A.  \<F>(x \<rightarrow> P x), \<Union> x\<in>A.  \<D>(x \<rightarrow> P x))"
+  apply auto
+  using Rep_process apply blast
   unfolding is_process_def FAILURES_def DIVERGENCES_def
   apply auto
   using is_processT1 apply auto[1]
@@ -77,38 +65,33 @@ lemma Mndetprefix_is_process : "A \<noteq> {} \<Longrightarrow> is_process (\<Un
   using NF_ND apply auto[1]
   using is_processT9 by blast  
 
-lemma T_Mndetprefix1 : "\<T> (Mndetprefix {} P) = {[]}"
-  unfolding Mndetprefix_def by(simp add: T_STOP)
+syntax
+  "_Mndetprefix"       :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'a process \<Rightarrow> 'a process" 
+                          ("(3\<sqinter>_\<in>_ \<rightarrow> / _)" [0, 0, 70] 70)
 
-lemma rep_abs_Mndetprefix[simp]: "A \<noteq> {} \<Longrightarrow>
+translations
+  "\<sqinter>x\<in>A\<rightarrow> P" \<rightleftharpoons> "CONST Mndetprefix A (\<lambda>x. P)"
+
+lemma mt_Mndetprefix[simp] : "Mndetprefix {} P = STOP"
+  by (simp add: Mndetprefix_def Rep_process_inverse)
+
+lemma rep_abs_Mndetprefix: "A \<noteq> {} \<Longrightarrow>
      (Rep_process (Abs_process(\<Union>x\<in>A. \<F>(x \<rightarrow> P x),\<Union>x\<in>A. \<D> (x \<rightarrow> P x)))) = 
       (\<Union>x\<in>A. \<F>(x \<rightarrow> P x), \<Union>x\<in>A. \<D> (x \<rightarrow> P x))"
-  apply(subst Process.process.Abs_process_inverse)
-  by(auto intro: Mndetprefix_is_process[simplified])
+  by (metis (mono_tags, lifting) Abs_process_inverse Mndetprefix.rep_eq Rep_process)
   
-lemma T_Mndetprefix: "A\<noteq>{} \<Longrightarrow> \<T> (Mndetprefix A P) = (\<Union> x\<in>A. \<T> (x \<rightarrow> P x))"
-  unfolding Mndetprefix_def
-  apply(simp, subst Traces_def, simp add: TRACES_def FAILURES_def)
-  apply(auto intro: Mndetprefix_is_process[simplified])
-  unfolding TRACES_def FAILURES_def apply(cases "A = {}") 
-   apply(auto intro: F_T D_T simp: Nil_elem_T)
-  using NF_NT by blast
-
-lemma F_Mndetprefix1 : "\<F> (Mndetprefix {} P) = {(s, X). s = []}"
-  unfolding Mndetprefix_def by(simp add: F_STOP)
-
-lemma F_Mndetprefix: "A\<noteq>{} \<Longrightarrow> \<F> (Mndetprefix A P) = (\<Union> x\<in>A. \<F>(x \<rightarrow> P x))"
-  unfolding Mndetprefix_def 
-  by(simp, subst Failures_def, auto simp : FAILURES_def F_Mndetprefix1)
 
 
-lemma D_Mndetprefix1 : "\<D> (Mndetprefix {} P) = {}"
-  unfolding Mndetprefix_def by(simp add: D_STOP)
+lemma F_Mndetprefix:
+  "\<F> (Mndetprefix A P) = (if A = {} then {(s, X). s = []} else \<Union> x\<in>A. \<F> (x \<rightarrow> P x))"
+  by (simp add: Failures.rep_eq FAILURES_def STOP.rep_eq Mndetprefix.rep_eq)
 
-lemma D_Mndetprefix : "A\<noteq>{} \<Longrightarrow> \<D>(Mndetprefix A P) = (\<Union> x\<in>A. \<D> (x \<rightarrow> P x))"
-  unfolding Mndetprefix_def 
-  apply(simp, subst D_def, subst Process.process.Abs_process_inverse)
-   by(auto intro: Mndetprefix_is_process[simplified] simp: DIVERGENCES_def)
+lemma D_Mndetprefix : "\<D> (Mndetprefix A P) = (if A = {} then {} else \<Union> x\<in>A. \<D> (x \<rightarrow> P x))"
+  by (simp add: Divergences.rep_eq DIVERGENCES_def STOP.rep_eq Mndetprefix.rep_eq)
+
+lemma T_Mndetprefix: "\<T> (Mndetprefix A P) = (if A = {} then {[]} else \<Union> x\<in>A. \<T> (x \<rightarrow> P x))"
+  by (auto simp add: Traces.rep_eq TRACES_def Failures.rep_eq[symmetric] F_Mndetprefix)
+
   
 
 text\<open> Thus we know now, that Mndetprefix yields processes. Direct consequences are the following

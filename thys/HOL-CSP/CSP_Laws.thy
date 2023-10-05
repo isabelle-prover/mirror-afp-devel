@@ -46,7 +46,7 @@
 chapter\<open> The "Laws" of CSP \<close>
 
 theory CSP_Laws                                               
-  imports Bot Skip Stop Det Ndet Mprefix Mndetprefix Seq Hiding Sync  
+  imports Bot Skip Stop Det Ndet Mprefix Mndetprefix Seq Hiding Sync Renaming
           "HOL-Eisbach.Eisbach"
 begin 
 
@@ -135,7 +135,8 @@ definition F_minus_D_Seq where
                                 {(t, X). \<exists>t1 t2. t = t1 @ t2 \<and> t1 @ [tick] \<in> \<T> P \<and> (t2, X) \<in> \<F> Q}"
 
 lemma F_minus_D_Seq_opt: "(a,b) \<in> \<F>(P \<^bold>; Q) = (a \<in> \<D>(P \<^bold>; Q) \<or> (a,b) \<in> F_minus_D_Seq P Q)"
-  by (auto simp add: F_Seq D_Seq F_minus_D_Seq_def)
+  using NF_ND by (auto simp add: F_Seq D_Seq F_minus_D_Seq_def) blast+
+  
 
 lemma Process_eq_spec_optimized_Seq : 
 "((P \<^bold>; Q) = (U \<^bold>; S)) = (\<D> (P \<^bold>; Q) = \<D> (U \<^bold>; S) \<and> 
@@ -154,27 +155,23 @@ lemma mono_Seq_ref: " \<lbrakk>P \<sqsubseteq> P'; S \<sqsubseteq> S'\<rbrakk> \
   using below_trans mono_Seq mono_Seq_sym by blast
 
 lemma BOT_Seq: "(\<bottom> \<^bold>; P) = \<bottom>"
-  apply(auto simp add: Process_eq_spec D_Seq F_Seq front_tickFree_append F_UU D_UU T_UU)
-      using front_tickFree_append front_tickFree_implies_tickFree is_processT2 apply blast
-     using D_imp_front_tickFree front_tickFree_append front_tickFree_implies_tickFree apply blast
-    using front_tickFree_charn tickFree_Nil apply blast
-   using D_imp_front_tickFree front_tickFree_append front_tickFree_implies_tickFree apply blast 
-  using front_tickFree_Nil tickFree_Nil by blast
+  by (simp add: BOT_iff_D D_Seq D_UU)
+   
 
 lemma Seq_SKIP: "(P \<^bold>; SKIP) = P"
-  apply (auto simp add: Process_eq_spec F_Seq D_Seq F_SKIP D_SKIP is_processT7 is_processT8_S 
-                        T_F_spec is_processT6_S1)
-      apply (meson insertI2 is_processT4 subsetI)
-     apply (meson append_T_imp_tickFree is_processT5_S7 non_tickFree_tick not_Cons_self2 tickFree_append)
-    using T_F_spec insert_absorb is_processT5_S2 apply fastforce
-   apply (metis F_T is_processT nonTickFree_n_frontTickFree)
-  by (metis append_Nil2 front_tickFree_mono is_processT nonTickFree_n_frontTickFree not_Cons_self)
+  apply (auto simp add: Process_eq_spec F_Seq F_SKIP D_Seq D_SKIP T_F_spec is_processT6_S1)
+      apply (use is_processT4 in blast)
+     apply (meson append_single_T_imp_tickFree is_processT5_S7 non_tickFree_tick tickFree_append)
+    apply (meson is_processT8)
+   apply (use T_F_spec insert_absorb is_processT5_S2 in fastforce)
+  by (metis F_T is_processT nonTickFree_n_frontTickFree)
 
 lemma SKIP_Seq: "(SKIP \<^bold>; P) = P"
   by (auto simp add: Process_eq_spec D_Seq T_SKIP F_Seq F_SKIP D_SKIP is_processT8_Pair)
 
 lemma STOP_Seq: "(STOP \<^bold>; P) = STOP"
-  by (auto simp: Process_eq_spec F_Seq D_Seq F_STOP D_STOP T_STOP Un_def)
+  by (simp add: STOP_iff_T T_Seq T_STOP F_STOP D_STOP Collect_conv_if)
+
 
 subsection\<open> Multi-Operators laws  \<close>
 
@@ -186,41 +183,22 @@ lemma Seq_Ndet_distrL: "(P \<^bold>; (Q \<sqinter> S)) = ((P \<^bold>; Q) \<sqin
 
 lemma Seq_assoc_D: "\<D> (P \<^bold>; (Q \<^bold>; S)) = \<D> ((P \<^bold>; Q) \<^bold>; S)"
 proof(safe, goal_cases)
-  case (1 x)
-  then show ?case 
-    apply(auto simp add:D_Seq T_Seq) 
-      using front_tickFree_Nil apply blast
-     apply (metis append.assoc append_single_T_imp_tickFree tickFree_append)
-    by (metis append.assoc)
+  show \<open>s \<in> \<D> (P \<^bold>; (Q \<^bold>; S)) \<Longrightarrow> s \<in> \<D> (P \<^bold>; Q \<^bold>; S)\<close> for s
+    by (simp add: D_Seq T_Seq) (metis append.assoc)
 next
-  case (2 x)
-  then show ?case 
+  fix s
+  assume \<open>s \<in> \<D> (P \<^bold>; Q \<^bold>; S)\<close>
+  thus \<open>s \<in> \<D> (P \<^bold>; (Q \<^bold>; S))\<close>
   proof(auto simp add:D_Seq T_Seq, goal_cases)
-    case (1 t2 t1a t2a)
-    then show ?case using front_tickFree_append by fastforce 
+    case (1 t1 t2 t1a t2a)
+    from "1"(1)[rule_format, OF "1"(5)] show ?case
+      apply (cases \<open>tickFree t2a\<close>)
+       apply (metis "1"(4) "1"(5) append_single_T_imp_tickFree non_tickFree_tick tickFree_append)
+      by (metis "1"(3) "1"(4) "1"(6) T_nonTickFree_imp_decomp append.assoc butlast_snoc)
   next
-    case (2 t1 t2 t1a t2a)
-    then obtain t2b where  "t2a = t2b@[tick]"
-      by (metis T_nonTickFree_imp_decomp append_single_T_imp_tickFree non_tickFree_tick tickFree_append)
-    with 2 show ?case by auto
-  next
-    case (3 t1 t2 t1a t2a)
-    then show ?case by (metis front_tickFree_implies_tickFree process_charn)
-  next
-    case (4 t1 t2 t1a t2a)
-    then obtain t2b where  "t2a = t2b@[tick]" 
-      by (metis D_T T_nonTickFree_imp_decomp append_single_T_imp_tickFree non_tickFree_tick tickFree_append)
-    with 4 show ?case 
-      by (metis D_imp_front_tickFree append.assoc butlast_snoc front_tickFree_implies_tickFree process_charn)
-  next
-    case (5 t1 t2 t1a t2a)
-    then show ?case by (metis front_tickFree_implies_tickFree process_charn)
-  next
-    case (6 t1 t2 t1a t2a)
-    then obtain t2b where  "t2a = t2b@[tick]"
-      by (metis D_T T_nonTickFree_imp_decomp append_single_T_imp_tickFree non_tickFree_tick tickFree_append)
-    with 6 show ?case
-      by (metis D_imp_front_tickFree append.assoc butlast_snoc front_tickFree_implies_tickFree process_charn)
+    case (2 t1 t2)
+    then show ?case 
+      by (meson D_imp_front_tickFree front_tickFree_implies_tickFree is_processT7 is_processT9_S_swap)
   qed
 qed
   
@@ -228,7 +206,8 @@ lemma Seq_assoc: "(P \<^bold>; (Q \<^bold>; S)) = ((P \<^bold>; Q) \<^bold>; S)"
 proof (auto simp: Process_eq_spec_optimized_Seq Seq_assoc_D, goal_cases)
   case (1 a b)
   then show ?case
-  proof(auto simp add:F_minus_D_Seq_def Seq_assoc_D F_minus_D_Seq_opt append_single_T_imp_tickFree del:conjI, 
+  proof(auto simp add:F_minus_D_Seq_def Seq_assoc_D F_minus_D_Seq_opt append_single_T_imp_tickFree 
+             del:conjI, 
         goal_cases 11 12)
     case (11 t1 t2)
     then show ?case by (metis (mono_tags, lifting) D_Seq Seq_assoc_D UnCI mem_Collect_eq)
@@ -241,36 +220,22 @@ proof (auto simp: Process_eq_spec_optimized_Seq Seq_assoc_D, goal_cases)
 next
   case (2 a b)
   then show ?case
-  proof(auto simp add:F_minus_D_Seq_def Seq_assoc_D F_minus_D_Seq_opt append_single_T_imp_tickFree T_Seq del:conjI, 
-      goal_cases 21 22 23 24 25 26)
+  proof(auto simp add:F_minus_D_Seq_def Seq_assoc_D F_minus_D_Seq_opt 
+                       append_single_T_imp_tickFree T_Seq del:conjI, 
+      goal_cases 21 22 23)
     case 21
-    then show ?case 
-      by (metis (mono_tags, lifting) D_Seq UnCI append_Nil2 front_tickFree_Nil mem_Collect_eq)
+    then show ?case
+      using D_Seq by force
   next
     case (22 t1 t2 t1a t2a)
     then obtain t2b where  "t2a = t2b@[tick]"
       by (metis T_nonTickFree_imp_decomp append_single_T_imp_tickFree non_tickFree_tick tickFree_append)
     with 22 show ?case using append.assoc butlast_snoc by auto
   next
-    case (23 t1 t2 t1a t2a)
+    case (23 t1 t2)
     hence "t1 \<in> \<D> (P \<^bold>; (Q \<^bold>; S))" 
-      by (simp add:D_Seq) (metis append_Nil2 front_tickFree_implies_tickFree process_charn)
+      by (simp add: D_Seq) (meson is_processT9_S_swap)
     with 23 Seq_assoc_D show ?case by (metis front_tickFree_implies_tickFree process_charn)
-  next
-    case (24 t1 t2 t1a t2a)
-    then obtain t2b where  "t2a = t2b@[tick]"
-      by (metis D_T T_nonTickFree_imp_decomp append_single_T_imp_tickFree non_tickFree_tick tickFree_append)
-    with 24 show ?case by (metis D_T append.assoc butlast_snoc)
-  next 
-    case (25 t1 t2 t1a t2a)
-    hence "t1 \<in> \<D> (P \<^bold>; (Q \<^bold>; S))" 
-      by (simp add:D_Seq) (metis append_Nil2 front_tickFree_implies_tickFree process_charn)
-    with 25 Seq_assoc_D show ?case by (metis front_tickFree_implies_tickFree process_charn)
-  next
-    case (26 t1 t2 t1a t2a)
-    then obtain t2b where  "t2a = t2b@[tick]"
-      by (metis D_T T_nonTickFree_imp_decomp append_single_T_imp_tickFree non_tickFree_tick tickFree_append)
-    with 26 show ?case by (metis D_T append.assoc butlast_snoc)
   qed
 qed
 
@@ -301,8 +266,7 @@ proof (unfold Process_eq_spec, rule conjI, rule subset_antisym, goal_cases)
         apply(rule disjI1, simp, meson tickFree_tl)
        apply (rule disjI2, rule conjI, simp) apply auto[1]
       apply (auto simp add:hd_append)[1]
-   using tickFree_tl apply fastforce
-  by (auto simp add: hd_append)[1]
+   using tickFree_tl by fastforce
 next
   case 2
   then show ?case 
@@ -316,26 +280,17 @@ next
       apply(rule_tac disjI2, rule_tac disjI1, rule_tac x="(ev a)#t1" in exI) 
       using hd_Cons_tl image_iff by fastforce
   next
-    case (2 x a t1 t2)
-    then show ?case       
-      apply(rule_tac disjI2, rule_tac disjI2, rule_tac disjI1, rule_tac x="(ev a)#t1" in exI) 
-      using hd_Cons_tl image_iff by fastforce
-  next
-    case (3 x a t1 t2)
-    then show ?case 
-      apply(rule_tac disjI2, rule_tac disjI2, rule_tac disjI2, rule_tac x="(ev a)#t1" in exI) 
-      using hd_Cons_tl image_iff by fastforce
+    case (2 x a)
+    then show ?case     
+      by (metis prod.collapse)
   qed
 next
   case 3
   then show ?case     
     apply (auto simp add: D_Mprefix D_Seq T_Mprefix)
-        using tickFree_tl apply blast
-       apply (metis event.distinct(1) hd_append image_iff list.sel(1))
-      apply (metis event.distinct(1) hd_append list.sel(1) tl_append2)
-     apply (metis (no_types, opaque_lifting) append_Cons event.distinct(1) image_eqI list.distinct(1) 
-                      list.exhaust_sel list.sel(1) list.sel(3) tickFree_Cons)
-    by (metis append_Cons list.exhaust_sel list.sel(1) list.sel(3))
+      apply (metis event.distinct(1) hd_append image_iff list.sel(1))
+     apply (metis event.distinct(1) hd_append list.sel(1) tl_append2)
+    by (metis Cons_eq_appendI hd_Cons_tl list.sel(1) list.sel(3))
 qed
 
 subsection\<open> Derivative Operators laws  \<close>
@@ -447,8 +402,10 @@ qed
 lemma Hiding_Un_D1: \<open>\<D> (P \ (A \<union> B)) \<subseteq> \<D> ((P \ A) \ B)\<close>
 proof (simp add:conj_commute D_Hiding, intro conjI subset_antisym subsetI, simp_all, goal_cases)
   case (1 x)
-  then obtain t u where B1:"x = trace_hide t (ev ` (A \<union> B)) @ u" and B2:"tickFree t" and B3:"front_tickFree u" and 
-             B4:"(t \<in> \<D> P \<or> (\<exists>(f:: nat \<Rightarrow> 'a event list). isInfHiddenRun f P (A \<union> B) \<and> t \<in> range f))" by auto
+  then obtain t u where B1:"x = trace_hide t (ev ` (A \<union> B)) @ u" 
+                    and B2:"tickFree t" and B3:"front_tickFree u" 
+                    and B4:"(t \<in> \<D> P \<or> (\<exists>(f:: nat \<Rightarrow> 'a event list). isInfHiddenRun f P (A \<union> B) 
+                                                                      \<and> t \<in> range f))" by auto
   thus ?case
     apply(erule_tac  disjE)
     apply(rule_tac x="trace_hide t (ev ` A)" in exI, rule_tac x=u in exI)
@@ -483,11 +440,13 @@ proof (simp add:conj_commute D_Hiding, intro conjI subset_antisym subsetI, simp_
       hence "(f i) \<ge> (f 0)" using strict_mono_less_eq by blast
       hence "take (i + length (f 0)) (f i) \<ge> (f 0)"
         by (metis add.commute append_eq_conv_conj le_list_def take_add)
-      hence a:"[x\<leftarrow>take (i + length (f 0)) (f i) . x \<notin> ev ` A \<and> x \<notin> ev ` B] \<ge> [x\<leftarrow>f 0 . x \<notin> ev ` A \<and> x \<notin> ev ` B]"
+      hence a:"   [x\<leftarrow>take (i + length (f 0)) (f i) . x \<notin> ev ` A \<and> x \<notin> ev ` B] 
+                \<ge> [x\<leftarrow>f 0 . x \<notin> ev ` A \<and> x \<notin> ev ` B]"
         by (metis (no_types, lifting) filter_append le_list_def)
       have "take (i + length (f 0)) (f i) \<le> f i"
         using append_take_drop_id le_list_def by blast
-      hence "[x\<leftarrow>take (i + length (f 0)) (f i) . x \<notin> ev ` A \<and> x \<notin> ev ` B] \<le> [x\<leftarrow>f i . x \<notin> ev ` A \<and> x \<notin> ev ` B]"
+      hence "  [x\<leftarrow>take (i + length (f 0)) (f i) . x \<notin> ev ` A \<and> x \<notin> ev ` B] 
+             \<le> [x\<leftarrow>f i . x \<notin> ev ` A \<and> x \<notin> ev ` B]"
         by (metis (no_types, lifting) filter_append le_list_def)
       with a 3(4) show ?case by (metis (no_types, lifting) dual_order.antisym)
     next
@@ -523,7 +482,8 @@ proof (simp add:conj_commute D_Hiding, intro conjI subset_antisym subsetI, simp_
           next
             case (Suc i)
             then obtain tt where tc:"(ff (i + m)) = (ff m) @ tt \<and> set tt \<subseteq> (ev ` A)" by blast
-            from ffc ff_def length_strict_mono[of ff] have lc:"length (ff (Suc i + m)) = Suc (length (ff (i + m)))" 
+            from ffc ff_def length_strict_mono[of ff] have lc:"length (ff (Suc i + m)) 
+                                                              = Suc (length (ff (i + m)))" 
               by (metis (no_types, lifting) add_Suc fc length_strict_mono length_take min.absorb2)
             from True obtain l where lc2:"l = last (ff (Suc i + m)) \<and> l \<in> (ev ` A)"
               by (meson less_add_same_cancel2 mc zero_less_Suc)
@@ -592,8 +552,8 @@ proof (simp add:conj_commute D_Hiding, intro conjI subset_antisym subsetI, simp_
   then obtain t u where B1:"x = trace_hide t (ev ` B) @ u" 
                    and  B2:"tickFree t" 
                    and  B3:"front_tickFree u" 
-                   and  B4:"(t \<in> \<D> (P \\ A) \<or> 
-                            (\<exists>(f:: nat \<Rightarrow> 'a event list). isInfHiddenRun f (P \\ A) B \<and> t \<in> range f))" 
+                   and  B4:\<open>(t \<in> \<D> (P \ A) \<or> 
+                            (\<exists>(f:: nat \<Rightarrow> 'a event list). isInfHiddenRun f (P \ A) B \<and> t \<in> range f))\<close>
     by (simp add:D_Hiding) blast
   thus ?case
   proof(erule_tac disjE, auto simp add:D_Hiding, goal_cases)
@@ -612,7 +572,7 @@ proof (simp add:conj_commute D_Hiding, intro conjI subset_antisym subsetI, simp_
     case (3 f xx)
     note "3a" = 3
     then show ?case
-    proof(cases "\<exists>i. f i \<in> \<D> (P \\ A)")
+    proof(cases \<open>\<exists>i. f i \<in> \<D> (P \ A)\<close>)
       case True
       with 3 show ?thesis 
       proof(auto simp add:D_Hiding, goal_cases)
@@ -635,7 +595,7 @@ proof (simp add:conj_commute D_Hiding, intro conjI subset_antisym subsetI, simp_
       qed
     next
       case False
-      with 3 have Falsebis:"\<forall>i. (f i \<in> \<T> (P \\ A) \<and> f i \<notin> \<D> (P \\ A))" by blast
+      with 3 have Falsebis:\<open>\<forall>i. (f i \<in> \<T> (P \ A) \<and> f i \<notin> \<D> (P \ A))\<close> by blast
       with T_Hiding[of P A] D_Hiding[of P A] 
       have "\<forall>i. (f i \<in> {trace_hide t (ev ` A) |t. (t, ev ` A) \<in> \<F> P})" 
         by (metis (no_types, lifting) UnE)
@@ -722,8 +682,9 @@ proof (simp add:conj_commute D_Hiding, intro conjI subset_antisym subsetI, simp_
         assume aa:"\<forall>i. trace_hide (f' i) (ev ` A) \<le> f 0"
         with aa mono_constant have "\<exists>i. \<forall>j\<ge>i. ff' j = ff' i" using \<open>mono ff'\<close> ff'_def by blast
         then obtain m where bb:"\<forall>j\<ge>m. ff' j = ff' m" by blast
-        have "ff' m \<in> \<D> (P \\ A)" 
-        proof(simp add:D_Hiding, rule_tac x="f' m" in exI, rule_tac x="[]" in exI, intro conjI, simp, goal_cases)
+        have \<open>ff' m \<in> \<D> (P \ A)\<close> 
+        proof(simp add:D_Hiding, rule_tac x="f' m" in exI, rule_tac x="[]" in exI, 
+              intro conjI, simp, goal_cases)
           case 1
           from gg have "f' m < f' (Suc m)" by (meson lessI strict_monoD)
           moreover from gg obtain k where "f' (Suc m) \<le> ff k" by blast
@@ -862,7 +823,7 @@ next
   then show ?case by (simp add: Hiding_Un_D)
 qed
 
-lemma Hiding_set_BOT: "(\<bottom> \\ A) = \<bottom>"
+lemma Hiding_set_BOT: \<open>(\<bottom> \ A) = \<bottom>\<close>
   apply(auto simp add:Process_eq_spec D_Hiding F_Hiding F_UU D_UU)
         using Hiding_fronttickFree apply blast
        using front_tickFree_append Hiding_tickFree apply blast
@@ -872,11 +833,11 @@ lemma Hiding_set_BOT: "(\<bottom> \\ A) = \<bottom>"
    using front_tickFree_append Hiding_tickFree apply blast
   using tickFree_Nil by fastforce 
 
-lemma Hiding_set_STOP: "(STOP \\ A) = STOP"
+lemma Hiding_set_STOP: \<open>(STOP \ A) = STOP\<close>
   apply(auto simp add:Process_eq_spec D_Hiding F_Hiding F_STOP D_STOP T_STOP)
   by (metis (full_types) lessI less_irrefl strict_mono_eq) +
 
-lemma Hiding_set_SKIP: "(SKIP \\ A) = SKIP"  
+lemma Hiding_set_SKIP: \<open>(SKIP \ A) = SKIP\<close> 
   apply(auto simp add:Process_eq_spec D_Hiding F_Hiding F_SKIP D_SKIP T_SKIP split:if_splits)
        apply (metis filter.simps(1) non_tickFree_tick)
       apply (metis (full_types) Hiding_tickFree n_not_Suc_n non_tickFree_tick strict_mono_eq)
@@ -885,14 +846,14 @@ lemma Hiding_set_SKIP: "(SKIP \\ A) = SKIP"
    apply (metis event.distinct(1) filter.simps(1) filter.simps(2) imageE)
   by (metis (full_types) Hiding_tickFree n_not_Suc_n non_tickFree_tick strict_mono_eq)
 
-lemma Hiding_set_empty: "(P \\ {}) = P"
+lemma Hiding_set_empty: \<open>(P \ {}) = P\<close>
   apply(auto simp add:Process_eq_spec D_Hiding F_Hiding is_processT7 is_processT8_S strict_mono_eq)
   by (metis append_Nil2 front_tickFree_implies_tickFree front_tickFree_single is_processT 
             nonTickFree_n_frontTickFree)
 
 subsection\<open> Multi-Operators laws  \<close>
 
-lemma Hiding_Ndet: "(P \<sqinter> Q) \\ A = ((P \\ A) \<sqinter> (Q \\ A))"  
+lemma Hiding_Ndet: \<open>(P \<sqinter> Q) \ A = ((P \ A) \<sqinter> (Q \ A))\<close>  
 proof(auto simp add:Process_eq_spec D_Hiding F_Hiding, 
       simp_all add: F_Ndet T_Ndet D_Ndet D_Hiding F_Hiding, goal_cases)
   case (1 b t)
@@ -928,7 +889,7 @@ next
 qed
 
 lemma Hiding_Mprefix_distr: 
-  "(B \<inter> A) = {} \<Longrightarrow> ((Mprefix A P) \\ B) = (Mprefix A (\<lambda>x. ((P x) \\ B)))"
+  \<open>(B \<inter> A) = {} \<Longrightarrow> ((Mprefix A P) \ B) = (Mprefix A (\<lambda>x. ((P x) \ B)))\<close>
 proof (auto simp add: Process_eq_spec, 
      simp_all add: F_Mprefix T_Mprefix D_Mprefix D_Hiding F_Hiding,
      goal_cases)
@@ -1076,13 +1037,13 @@ next
   qed
 qed
 
-lemma no_Hiding_read: "(\<forall>y. c y \<notin> B) \<Longrightarrow> ((c\<^bold>?x \<rightarrow> (P x)) \\ B) = (c\<^bold>?x \<rightarrow> ((P x) \\ B))"
+lemma no_Hiding_read: \<open>(\<forall>y. c y \<notin> B) \<Longrightarrow> ((c\<^bold>?x \<rightarrow> (P x)) \ B) = (c\<^bold>?x \<rightarrow> ((P x) \ B))\<close>
   by (simp add: read_def o_def, subst Hiding_Mprefix_distr, auto)
 
-lemma no_Hiding_write0: "a \<notin> B \<Longrightarrow> ((a \<rightarrow> P) \\ B) = (a \<rightarrow> (P \\ B))"
+lemma no_Hiding_write0: \<open>a \<notin> B \<Longrightarrow> ((a \<rightarrow> P) \ B) = (a \<rightarrow> (P \ B))\<close>
   by (simp add: Hiding_Mprefix_distr write0_def)
 
-lemma Hiding_write0: "a \<in> B  \<Longrightarrow> ((a \<rightarrow> P) \\ B) = (P \\ B)"
+lemma Hiding_write0: \<open>a \<in> B  \<Longrightarrow> ((a \<rightarrow> P) \ B) = (P \ B)\<close>
 proof (auto simp add: write0_def Process_eq_spec, 
        simp_all add: F_Mprefix T_Mprefix D_Mprefix D_Hiding F_Hiding,
        goal_cases)
@@ -1167,10 +1128,10 @@ next
   qed
 qed
 
-lemma no_Hiding_write: "(\<forall>y. c y \<notin> B) \<Longrightarrow> ((c\<^bold>!a \<rightarrow> P) \\ B) = (c\<^bold>!a \<rightarrow> (P \\ B))"
+lemma no_Hiding_write: \<open>(\<forall>y. c y \<notin> B) \<Longrightarrow> ((c\<^bold>!a \<rightarrow> P) \ B) = (c\<^bold>!a \<rightarrow> (P \ B))\<close>
   by(simp add: write_def, subst Hiding_Mprefix_distr, auto)
 
-lemma Hiding_write: "(c a) \<in> B ==> ((c\<^bold>!a \<rightarrow> P) \\ B) = (P \\ B)"
+lemma Hiding_write: \<open>(c a) \<in> B \<Longrightarrow> ((c\<^bold>!a \<rightarrow> P) \ B) = (P \ B)\<close>
   by (simp add: write_def Hiding_write0 Mprefix_singl)
 
 
@@ -1244,7 +1205,8 @@ proof(goal_cases)
   from 1(1,2,6,8,11,13) have aa1: "hd t\<in>insert tick (ev ` S)\<and>hd u\<in>insert tick (ev ` S)"   
     by blast
   from 1(5,6,7,8,11,13) aa1 have aa2: " hd x \<in> ev ` (A \<inter> B)"  
-    by (metis (no_types, lifting) IntI empty_setinterleaving event.inject hd_append2 image_iff SyncSameHdTl)
+    by (metis (no_types, lifting) IntI empty_setinterleaving event.inject 
+                                  hd_append2 image_iff SyncSameHdTl)
   then show ?case  
     using 1(3,4,5,6,7,9,10,13,14) by (metis (no_types, lifting)  Nil_is_append_conv aa1 
                                             empty_setinterleaving event.inject hd_append2 
@@ -1730,7 +1692,8 @@ next
         proof(auto split:if_splits, goal_cases)
           case (1 tulist)
           from Cons_tuv(1)[OF 1(5) 1(10)] obtain uvlist 
-            where "uvlist setinterleaves ((ulist, vlist), A) \<and> tuv setinterleaves ((tlist, uvlist), A)" by blast
+            where "  uvlist setinterleaves ((ulist, vlist), A) 
+                   \<and> tuv setinterleaves ((tlist, uvlist), A)" by blast
           with 1 show ?case by(exI "va#uvlist", simp)
         next
           case (2 u)
@@ -1855,1204 +1818,283 @@ qed
 
 subsection\<open> Multi-Operators laws  \<close>
 
-lemma Mprefix_Sync_distr: 
-  "\<lbrakk>A \<inter> S = {}; A' \<subseteq> S; B \<inter> S = {}; B' \<subseteq> S\<rbrakk> \<Longrightarrow> 
-       (\<box> x \<in> A \<union> A' \<rightarrow> P x) \<lbrakk> S \<rbrakk> (\<box> y \<in> B \<union> B' \<rightarrow> Q y) = (\<box> x \<in> A       \<rightarrow> (                 P x  \<lbrakk> S \<rbrakk> (\<box> y \<in> B \<union> B' \<rightarrow> Q y)))
-                                                         \<box> (\<box> y \<in> B       \<rightarrow> ((\<box> x \<in> A \<union> A' \<rightarrow> P x) \<lbrakk> S \<rbrakk>                  Q y))
-                                                         \<box> (\<box> x \<in> A' \<inter> B' \<rightarrow> (                 P x  \<lbrakk> S \<rbrakk>                  Q x))"    
-proof(auto simp add:Process_eq_spec, simp_all add:D_Sync F_Sync D_Mprefix F_Mprefix T_Mprefix D_Det F_Det T_Det,
-      elim exE disjE conjE, goal_cases)
-  case (1 a b t u X Y)
-  then show ?case by auto
-next
-  case (2 a b t u X Y aa)
-  have 21:\<open>a = u\<close> 
-    using 2(5,7) EmptyLeftSync by blast
-  hence 22:\<open>hd a \<in> ev ` B\<close>  
-    using emptyLeftNonSync[rule_format, of a \<open>insert tick (ev ` S)\<close> u \<open>hd u\<close>, simplified]
-          2(10,4,5,7,9) by auto
-   with 2 show ?case 
-     apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, simp add:21)
-     apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, simp add:21) 
-     apply(intro disjI2 conjI, simp_all add:21 22) 
-     apply(exI aa, simp add:21) 
-     apply(rule_tac disjI1, exI t, exI \<open>tl u\<close>, exI X, rule_tac conjI, simp, exI Y, simp) 
-     by (meson SyncTlEmpty)
-next
-  case (3 a b t u X Y aa)
-  have 31:\<open>a = t\<close>
-     using "3"(6) "3"(8) EmptyLeftSync Sync.sym by blast
-  hence 32:\<open>hd a \<in> ev ` A\<close>  
-    using emptyLeftNonSync[rule_format, of a \<open>insert tick (ev ` S)\<close> t \<open>hd t\<close>] 
-          3(10,2,5,6,8) Sync.sym by auto blast
-  with 3 show ?case 
-    apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, simp add:31)
-    apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, simp add:31) 
-    apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, simp_all add:31 32) 
-    apply(exI aa, simp) 
-    apply(rule_tac disjI1, exI \<open>tl t\<close>, exI u, exI X, rule_tac conjI, simp, exI Y, simp) 
-    by (simp add: Sync.sym SyncTlEmpty)
-next
-  case (4 a b t u X Y aa ab)
-  hence \<open>   (hd a = ev aa \<and> hd a \<in> ev ` A \<and> tl a setinterleaves ((tl t, u), insert tick (ev ` S))) 
-             \<or> (hd a = ev ab \<and> hd a \<in> ev ` B \<and> tl a setinterleaves ((t, tl u), insert tick (ev ` S)))
-             \<or> (hd a = ev ab \<and> aa = ab \<and> hd a \<in> ev ` (A' \<inter> B') \<and> tl a setinterleaves ((tl t, tl u), insert tick (ev ` S)))\<close> 
-    using si_neq[of \<open>hd t\<close> \<open>tl t\<close> \<open>insert tick (ev ` S)\<close> \<open>hd u\<close> \<open>tl u\<close>]
-    apply (simp del:si_neq split:if_splits) 
-    apply (metis (no_types, lifting) IntI UnE disjoint_iff event.simps(1) event.simps(3) imageE imageI list.sel(1) list.sel(3))
-    by(metis (no_types, opaque_lifting) UnE image_Un list.sel(1) list.sel(3) subset_eq subset_image_iff)+
-  with 4 show ?case 
-  proof(elim disjE conjE, goal_cases)
-    case 41:1
-    then show ?case
-      apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis empty_setinterleaving)
-      apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis empty_setinterleaving) 
-      apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis empty_setinterleaving, simp_all)
-      apply(exI aa, simp) 
-      apply(rule_tac disjI1, exI \<open>tl t\<close>, exI u, exI X, rule_tac conjI, simp, exI Y, simp) 
-      by blast
-  next
-    case 42:2
-    then show ?case
-      apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis empty_setinterleaving)
-      apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis empty_setinterleaving) 
-      apply(rule_tac disjI2, rule_tac disjI2, rule_tac disjI2, rule_tac conjI, metis empty_setinterleaving, simp_all)
-      apply(exI ab, simp) 
-      apply(rule_tac disjI1, exI t, exI \<open>tl u\<close>, exI X, rule_tac conjI)
-      by blast+
-  next
-    case 43:3
-    then show ?case
-      apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis empty_setinterleaving)
-      apply(rule_tac disjI2, rule_tac disjI2, rule_tac disjI2, rule_tac disjI2, rule_tac conjI, metis empty_setinterleaving, simp) 
-      by(exI aa, simp, rule_tac disjI1, exI \<open>tl t\<close>, exI \<open>tl u\<close>, exI X, rule_tac conjI, simp, exI Y, simp)
-  qed
-next
-  case (5 a b t u r v aa)
-  have 51:\<open>a = t@v\<close>
-     using 5(7,8,11) EmptyLeftSync Sync.sym by blast
-  hence 52:\<open>hd a \<in> ev ` A\<close>  
-    using emptyLeftNonSync[rule_format, of r \<open>insert tick (ev ` S)\<close> t \<open>hd t\<close>] 
-          5(10,11,2,8,9) Sync.sym by auto blast
-  with 5 show ?case 
-    apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, simp add:51)
-    apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, simp_all add:51) 
-    apply(rule_tac disjI1, exI aa, simp)
-    apply(rule_tac disjI2, exI \<open>tl t\<close>, exI u, exI \<open>tl r\<close>, exI v, simp)
-    by (simp add: Sync.sym SyncTlEmpty tickFree_tl)
-next
-  case (6 a b t u r v aa ab)
-  hence \<open>(hd r = ev aa \<and> hd r \<in> ev ` A \<and> tl r setinterleaves ((tl t, u), insert tick (ev ` S))) 
-         \<or> (hd r = ev ab \<and> hd r \<in> ev ` B \<and> tl r setinterleaves ((t, tl u), insert tick (ev ` S)))\<close>  
-    using si_neq[of \<open>hd t\<close> \<open>tl t\<close> \<open>insert tick (ev ` S)\<close> \<open>hd u\<close> \<open>tl u\<close>]
-    apply(simp del:si_neq split:if_splits, blast, metis empty_iff list.collapse) 
-      apply(metis (no_types, lifting) event.simps(3) image_eqI insert_iff SyncHd_Tl)
-     defer
-     apply blast
-
-  proof -
-    assume a1: \<open>hd t \<notin> ev ` S\<close>
-       and a2: \<open>setinterleaving (t, insert tick (ev ` S), ev ab # tl u) =
-                {hd t # ua |ua. ua setinterleaves ((tl t, ev ab # tl u), insert tick (ev ` S))}
-                \<union> {ev ab # ua |ua. ua setinterleaves ((t, tl u), insert tick (ev ` S))}\<close>
-    have f3: "ev ab \<in> ev ` B"
-      using "6"(13) by blast
-    have f4: "hd t \<in> ev ` A"
-      using a1 "6"(10) "6"(2) by blast
-    show \<open>hd r = hd t \<and> hd r \<in> ev ` A \<and> tl r setinterleaves ((tl t, u), insert tick (ev ` S)) \<or>
-          hd r = ev ab \<and> hd r \<in> ev ` B \<and> tl r setinterleaves ((t, tl u), insert tick (ev ` S))\<close>
-      apply auto
-      using "6"(8) a2 "6"(14) "6"(15) hd_Cons_tl apply fastforce
-      using "6"(8) a2 "6"(14) "6"(15) f4 hd_Cons_tl apply fastforce
-      using "6"(8) a2 "6"(14) "6"(15) hd_Cons_tl apply fastforce
-      using "6"(8) a2 "6"(14) "6"(15) f3 hd_Cons_tl apply fastforce
-      using "6"(8) a2 "6"(14) "6"(15) f3 hd_Cons_tl apply fastforce
-      using "6"(8) a2 "6"(14) "6"(15) f4 f3 hd_Cons_tl apply fastforce
-      using "6"(13) "6"(8) a2 "6"(14) "6"(15) hd_Cons_tl apply fastforce
-      using "6"(8) a2 "6"(14) "6"(15) f4 hd_Cons_tl apply fastforce
-      using "6"(8) a2 "6"(14) "6"(15) hd_Cons_tl by fastforce
-  qed
-  with 6 show ?case
-  proof(elim disjE conjE, goal_cases)
-    case 61:1
-    then show ?case
-      apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving) 
-      apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving) 
-      apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving, simp_all)
-      apply(rule_tac conjI, metis empty_setinterleaving hd_append2)
-      apply(exI aa, rule_tac conjI, metis empty_setinterleaving hd_append2)   
-      apply(rule_tac disjI2, exI \<open>tl t\<close>, exI u, exI \<open>tl r\<close>, exI v) 
-      by (metis empty_setinterleaving tickFree_tl tl_append2)    
-  next
-    case 62:2
-    then show ?case
-      apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving)
-      apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving) 
-      apply(rule_tac disjI2, rule_tac disjI2, rule_tac disjI2, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving)
-      apply(rule_tac conjI, metis empty_setinterleaving hd_append2)
-      apply(exI ab, rule_tac conjI, metis empty_setinterleaving hd_append2) 
-      apply(rule_tac disjI2, exI t, exI \<open>tl u\<close>, exI \<open>tl r\<close>, exI v)       
-      by (metis empty_setinterleaving tickFree_tl tl_append2)    
-  qed
-next
-  case (7 a b t u r v aa ab)
-  hence \<open>   (hd r = ev aa \<and> hd r \<in> ev ` A \<and> tl r setinterleaves ((tl t, u), insert tick (ev ` S))) 
-             \<or> (hd r = ev ab \<and> aa = ab \<and> hd r \<in> ev ` (A' \<inter> B') \<and> tl r setinterleaves ((tl t, tl u), insert tick (ev ` S)))\<close> 
-    using si_neq[of \<open>hd t\<close> \<open>tl t\<close> \<open>insert tick (ev ` S)\<close> \<open>hd u\<close> \<open>tl u\<close>]
-    apply (simp del:si_neq split:if_splits)
-    apply (metis (no_types, opaque_lifting) IntI UnE empty_iff event.inject imageE imageI insert_iff SyncSameHdTl) 
-       apply (metis empty_iff hd_Cons_tl, blast, blast) 
-  proof
-    assume a1: "ev ab \<in> ev ` S"
-    assume a2: "hd t \<notin> ev ` S"
-    assume a3: "hd t \<noteq> tick"
-    assume a4: "hd u = ev ab"
-    assume a5: "hd t \<in> ev ` (A \<union> A')"
-    assume a7: "A' \<subseteq> S"
-    show \<open>hd r = hd t \<and> hd r \<in> ev ` A \<and> tl r setinterleaves ((tl t, u), insert tick (ev ` S))\<close>
-      apply safe
-        apply (metis "7"(8) Sync.sym a1 a2 a3 a4 insertCI insertE SyncHd_Tl)
-       apply (metis "7"(8) Sync.sym Un_iff a1 a2 a4 a5 a7 image_Un insert_iff sup.absorb_iff2 SyncHd_Tl SyncSameHdTl)
-      by (metis "7"(8) Sync.sym a1 a2 a3 a4 insertCI insertE SyncHd_Tl)
-  qed
-  with 7 show ?case 
-  proof(elim disjE conjE, goal_cases)
-    case 71:1
-    then show ?case
-      apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving) 
-      apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving) 
-      apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving, simp_all)
-      apply(rule_tac conjI, metis empty_setinterleaving hd_append2)
-      apply(exI aa, rule_tac conjI, metis empty_setinterleaving hd_append2)   
-      apply(rule_tac disjI2, exI \<open>tl t\<close>, exI u, exI \<open>tl r\<close>, exI v) 
-      by (metis empty_setinterleaving tickFree_tl tl_append2)    
-  next
-    case 72:2
-    then show ?case
-      apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving)
-      apply(rule_tac disjI2, rule_tac disjI2, rule_tac disjI2, rule_tac disjI2, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving) 
-      apply(rule_tac conjI, metis empty_setinterleaving hd_append2)
-      apply (exI aa, rule_tac conjI, metis empty_setinterleaving hd_append2)
-      apply (rule_tac disjI2, exI \<open>tl t\<close>, exI \<open>tl u\<close>, exI \<open>tl r\<close>, exI v) 
-      by (metis empty_setinterleaving tickFree_tl tl_append2)    
-  qed    
-next
-  case (8 a b u t r v aa)
-  have 81:\<open>r = u\<close>
-     using 8 EmptyLeftSync Sync.sym by blast
-  hence 82:\<open>hd r \<in> ev ` B\<close>  
-    using emptyLeftNonSync[rule_format, of r \<open>insert tick (ev ` S)\<close> u \<open>hd u\<close>] 
-          8 Sync.sym by auto blast
-  with 8 show ?case 
-     apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, simp add:81) 
-     apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving) 
-     apply(intro disjI2 conjI, simp_all add:81 82) 
-     apply(exI aa, simp add:81) 
-     apply(rule_tac disjI2,  exI \<open>tl u\<close>, exI t, exI \<open>tl r\<close>, exI v) 
-    by (simp add: "81" Sync.sym SyncTlEmpty tickFree_tl)
-next
-  case (9 a b u t r v ab aa)
-  hence \<open>(hd r = ev aa \<and> hd r \<in> ev ` A \<and> tl r setinterleaves ((tl t, u), insert tick (ev ` S))) 
-         \<or> (hd r = ev ab \<and> hd r \<in> ev ` B \<and> tl r setinterleaves ((t, tl u), insert tick (ev ` S)))\<close>  
-    using si_neq[of \<open>hd t\<close> \<open>tl t\<close> \<open>insert tick (ev ` S)\<close> \<open>hd u\<close> \<open>tl u\<close>]
-    apply(simp del:si_neq split:if_splits, metis disjoint_iff event.inject image_iff, blast, blast) 
-     apply (simp add: Sync.sym image_Un list.exhaust_sel rev_image_eqI sup.absorb_iff2)
-     defer
-    apply (metis (no_types, lifting) Sync.sym event.simps(3) imageI insertE insertI2 SyncHd_Tl) 
-  proof -
-    assume a1: "hd u \<in> ev ` B \<or> hd u \<in> ev ` B'"
-    assume a2: "r setinterleaves ((t, u), insert tick (ev ` S))"
-    assume a3: "setinterleaving (u, insert tick (ev ` S), ev aa # tl t) = 
-                {ev aa # ua |ua. ua setinterleaves ((u, tl t), insert tick (ev ` S))} \<union> 
-                {hd u # ua |ua. ua setinterleaves ((tl u, ev aa # tl t), insert tick (ev ` S))}"
-    assume a4: "hd t = ev aa"
-    assume a5: "t \<noteq> []"
-    assume a6: "aa \<in> A"
-    assume a7: "hd u \<notin> ev ` S"
-    assume a8: "B' \<union> S = S"
-    obtain ees :: "'a event list \<Rightarrow> 'a event list" where
-      f9: "((\<nexists>es. r = hd u # es \<and> es setinterleaves ((tl u, ev aa # tl t), insert tick (ev ` S))) \<or> 
-           r = hd u # ees r \<and> ees r setinterleaves ((tl u, ev aa # tl t), insert tick (ev ` S))) \<and> 
-          ((\<exists>es. r = hd u # es \<and> es setinterleaves ((tl u, ev aa # tl t), insert tick (ev ` S))) \<or> 
-          (\<forall>es. r \<noteq> hd u # es \<or> es \<notin> setinterleaving (tl u, insert tick (ev ` S), ev aa # tl t)))"
-      by fastforce
-    have f10: "ev aa # tl t = t"
-      using a5 a4 hd_Cons_tl by fastforce
-    then have f11: "r \<in> {ev aa # es |es. es setinterleaves ((u, tl t), insert tick (ev ` S))} \<union> 
-                        {hd u # es |es. es setinterleaves ((tl u, ev aa # tl t), insert tick (ev ` S))}"
-      using a3 a2 by (simp add: Sync.sym)
-    have f12: "\<forall>e f a A. (e::'a event) \<noteq> f (a::'a) \<or> a \<notin> A \<or> e \<in> f ` A"
-      by (meson image_eqI)
-    moreover
-    { assume "r \<noteq> hd u # ees r \<or> ees r \<notin> setinterleaving (tl u, insert tick (ev ` S), ev aa # tl t)"
-      then obtain eesa :: "'a event list \<Rightarrow> 'a event list" where
-        "r = ev aa # eesa r \<and> eesa r setinterleaves ((u, tl t), insert tick (ev ` S))"
-        using f11 f9 by fast
-      then have "hd r = ev aa \<and> hd r \<in> ev ` A \<and> tl r setinterleaves ((u, tl t), insert tick (ev ` S)) \<or> hd r = hd u \<and> hd r \<in> ev ` B \<and> tl r setinterleaves ((t, tl u), insert tick (ev ` S))"
-        using f12 a6 by (metis list.sel(1) list.sel(3)) }
-    ultimately show "hd r = ev aa \<and> hd r \<in> ev ` A \<and> tl r setinterleaves ((u, tl t), insert tick (ev ` S)) \<or> hd r = hd u \<and> hd r \<in> ev ` B \<and> tl r setinterleaves ((t, tl u), insert tick (ev ` S))"
-      using f10 a8 a7 a1 by (metis Sync.sym UnI1 image_Un list.sel(1) list.sel(3))
-  qed
-  with 9 show ?case 
-  proof(elim disjE conjE, goal_cases)
-    case 91:1
-    then show ?case
-      apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving) 
-      apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving) 
-      apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving, simp)
-      apply(rule_tac conjI, metis empty_setinterleaving hd_append image_eqI)
-      apply(exI aa, rule_tac conjI, metis empty_setinterleaving hd_append2)   
-      apply(rule_tac disjI2, exI u, exI \<open>tl t\<close>, exI \<open>tl r\<close>, exI v, simp)  
-      by (metis Sync.sym empty_setinterleaving tickFree_tl tl_append2)
-  next
-    case 92:2
-    then show ?case
-      apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving) 
-      apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving) 
-      apply(rule_tac disjI2, rule_tac disjI2, rule_tac disjI2, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving, simp)
-      apply(rule_tac conjI, metis empty_setinterleaving hd_append)
-      apply(exI ab, rule_tac conjI, metis empty_setinterleaving hd_append2)   
-      apply(rule_tac disjI2, exI \<open>tl u\<close>, exI \<open>t\<close>, exI \<open>tl r\<close>, exI v, simp)  
-      by (metis Sync.sym empty_setinterleaving tickFree_tl tl_append2)
-  qed 
-next
-  case (10 a b u t r v ab aa)
-  hence \<open>   (hd r = ev ab \<and> hd r \<in> ev ` B \<and> tl r setinterleaves ((t, tl u), insert tick (ev ` S))) 
-             \<or> (hd r = ev ab \<and> aa = ab \<and> hd r \<in> ev ` (A' \<inter> B') \<and> tl r setinterleaves ((tl t, tl u), insert tick (ev ` S)))\<close> 
-    using si_neq[of \<open>hd t\<close> \<open>tl t\<close> \<open>insert tick (ev ` S)\<close> \<open>hd u\<close> \<open>tl u\<close>]
-    apply (simp del:si_neq split:if_splits) 
-    apply (metis (no_types, opaque_lifting) IntI Sync.sym UnE empty_iff event.inject image_iff insert_iff SyncSameHdTl)
-       apply (metis insert_iff SyncSameHdTl)
-    defer
-      apply (metis imageI subsetD)
-     apply (metis imageI subsetD)
-  proof 
-    assume a1: "hd u \<noteq> tick \<and> hd u \<notin> ev ` S"
-    assume a2: "ev aa \<in> ev ` S"
-    assume a3: "hd t = ev aa"
-    assume a4: "r setinterleaves ((u, t), insert tick (ev ` S))"
-    assume a5: "B' \<subseteq> S"
-    show \<open>hd r = hd u \<and> hd r \<in> ev ` B \<and> tl r setinterleaves ((t, tl u), insert tick (ev ` S))\<close>
-      apply safe
-        apply (metis "10"(8) Sync.sym a1 a2 a3 insertCI insertE SyncHd_Tl)
-       apply (metis (no_types, opaque_lifting) "10"(10) "10"(8) Sync.sym UnE a1 a2 a3 a5 image_Un insert_iff subset_eq subset_image_iff SyncHd_Tl)
-      by (metis Sync.sym a1 a2 a3 a4 insertCI insertE SyncHd_Tl)
-  qed
-  with 10 show ?case 
-  proof(elim disjE conjE, goal_cases)
-    case 101:1
-    then show ?case
-      apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving) 
-      apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving) 
-      apply(rule_tac disjI2, rule_tac disjI2, rule_tac disjI2, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving, simp)
-      apply(rule_tac conjI, metis empty_setinterleaving hd_append)
-      apply(exI ab, rule_tac conjI, metis empty_setinterleaving hd_append2)   
-      apply(rule_tac disjI2, exI \<open>tl u\<close>, exI \<open>t\<close>, exI \<open>tl r\<close>, exI v, simp)  
-      by (metis Sync.sym empty_setinterleaving tickFree_tl tl_append2)   
-  next
-    case 102:2
-    then show ?case
-      apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving)
-      apply(rule_tac disjI2, rule_tac disjI2, rule_tac disjI2, rule_tac disjI2, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving) 
-      apply(rule_tac conjI, metis empty_setinterleaving hd_append2)
-      apply (exI aa, rule_tac conjI, metis empty_setinterleaving hd_append2)
-      apply (rule_tac disjI2, exI \<open>tl u\<close>, exI \<open>tl t\<close>, exI \<open>tl r\<close>, exI v, simp)
-      by (metis Sync.sym empty_setinterleaving tickFree_tl tl_append2)
-  qed    
-next
-  case (11 a b t u r v aa)
-  have 111:\<open>a = t@v\<close>
-     using 11(7,8,11) EmptyLeftSync Sync.sym by blast
-  hence 112:\<open>hd a \<in> ev ` A\<close>  
-    using emptyLeftNonSync[rule_format, of r \<open>insert tick (ev ` S)\<close> t \<open>hd t\<close>] 
-          11(10,11,2,8,9) Sync.sym by auto blast
-  with 11 show ?case 
-    apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, simp add:111)
-    apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, simp_all add:111) 
-    apply(rule_tac disjI1, exI aa, simp)
-    apply(rule_tac disjI2, exI \<open>tl t\<close>, exI u, exI \<open>tl r\<close>, exI v, simp)
-    by (simp add: Sync.sym SyncTlEmpty tickFree_tl)
-next
-  case (12 a b t u r v aa ab)
-  hence \<open>(hd r = ev aa \<and> hd r \<in> ev ` A \<and> tl r setinterleaves ((tl t, u), insert tick (ev ` S))) 
-         \<or> (hd r = ev ab \<and> hd r \<in> ev ` B \<and> tl r setinterleaves ((t, tl u), insert tick (ev ` S)))\<close>  
-    using si_neq[of \<open>hd t\<close> \<open>tl t\<close> \<open>insert tick (ev ` S)\<close> \<open>hd u\<close> \<open>tl u\<close>] 
-    apply(simp del:si_neq split:if_splits, metis disjoint_iff event.inject image_iff, blast) 
-      apply (metis (no_types, lifting) event.simps(3) imageI insert_iff SyncHd_Tl)
-     defer apply blast
-  proof -
-    assume a1: "ab \<in> B"
-    assume a2: "r setinterleaves ((t, u), insert tick (ev ` S))"
-    assume a3: "setinterleaving (t, insert tick (ev ` S), ev ab # tl u) = 
-                {hd t # ua |ua. ua setinterleaves ((tl t, ev ab # tl u), insert tick (ev ` S))} \<union> 
-                {ev ab # ua |ua. ua setinterleaves ((t, tl u), insert tick (ev ` S))}"
-    assume a4: "hd u = ev ab"
-    assume a5: "u \<noteq> []"
-    assume a6: "hd t \<in> ev ` (A \<union> A')"
-    assume a7: "A' \<subseteq> S"
-    assume a8: "hd t \<notin> ev ` S"
-    have f9: "hd t \<in> ev ` A"
-      using a8 a7 a6 by blast
-    show "hd r = hd t \<and> hd r \<in> ev ` A \<and> tl r setinterleaves ((tl t, u), insert tick (ev ` S)) \<or> 
-          hd r = ev ab \<and> hd r \<in> ev ` B \<and> tl r setinterleaves ((t, tl u), insert tick (ev ` S))"
-    proof -
-      obtain ees :: "'a event list \<Rightarrow> 'a event list" where
-        f1: "((\<nexists>es. r = hd t # es \<and> es setinterleaves ((tl t, ev ab # tl u), insert tick (ev ` S))) \<or> 
-              r = hd t # ees r \<and> ees r setinterleaves ((tl t, ev ab # tl u), insert tick (ev ` S))) \<and> 
-             ((\<exists>es. r = hd t # es \<and> es setinterleaves ((tl t, ev ab # tl u), insert tick (ev ` S))) \<or> 
-              (\<forall>es. r \<noteq> hd t # es \<or> es \<notin> setinterleaving (tl t, insert tick (ev ` S), ev ab # tl u)))"
-        by meson
-      have f2: "ev ab # tl u = u"
-        using a5 by (subst a4[symmetric], rule list.collapse)
-      moreover
-      { assume "r \<noteq> hd t # ees r \<or> ees r \<notin> setinterleaving (tl t, insert tick (ev ` S), ev ab # tl u)"
-        then obtain eesa :: "'a event list \<Rightarrow> 'a event list" where
-          "r = ev ab # eesa r \<and> eesa r setinterleaves ((t, tl u), insert tick (ev ` S))"
-          using f2 f1 a2 a3 by fastforce
-        then have ?thesis
-          by (metis a1 imageI list.sel(1) list.sel(3)) }
-      ultimately show ?thesis
-        by (metis (no_types) f9 list.sel(1) list.sel(3))
-    qed 
-  qed    
-  with 12 show ?case 
-  proof(elim disjE conjE, goal_cases)
-    case 121:1
-    then show ?case
-      apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving) 
-      apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving) 
-      apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving, simp)
-      apply(exI aa, rule_tac conjI, simp)   
-      by (rule_tac disjI2, exI \<open>tl t\<close>, exI u, exI \<open>tl r\<close>, exI v, simp)  
-  next
-    case 122:2
-    then show ?case
-      apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving) 
-      apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving) 
-      apply(rule_tac disjI2, rule_tac disjI2, rule_tac disjI2, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving, simp)
-      by (rule_tac disjI2, exI \<open>t\<close>, exI \<open>tl u\<close>, exI \<open>tl r\<close>, exI v, simp)  blast
-  qed
-next
-  case (13 a b t u r v aa ab)
-  hence \<open>   (hd r = ev aa \<and> hd r \<in> ev ` A \<and> tl r setinterleaves ((tl t, u), insert tick (ev ` S))) 
-             \<or> (hd r = ev ab \<and> aa = ab \<and> hd r \<in> ev ` (A' \<inter> B') \<and> tl r setinterleaves ((tl t, tl u), insert tick (ev ` S)))\<close> 
-    using si_neq[of \<open>hd t\<close> \<open>tl t\<close> \<open>insert tick (ev ` S)\<close> \<open>hd u\<close> \<open>tl u\<close>]
-    apply (simp del:si_neq split:if_splits)
-    apply (metis (no_types, opaque_lifting) IntI UnE empty_iff event.inject image_iff insert_iff SyncSameHdTl) 
-       apply (metis empty_iff hd_Cons_tl, blast, blast) 
-  proof
-    assume a1: \<open>r setinterleaves ((t, u), insert tick (ev ` S))\<close>
-    assume a2: \<open>hd t \<in> ev ` (A \<union> A')\<close>
-    assume a3: \<open>hd t \<noteq> tick\<close>
-    assume a4: \<open>hd t \<notin> ev ` S\<close>
-    assume a5: \<open>ev ab \<in> ev ` S\<close>
-    assume a6: \<open>setinterleaving (t, insert tick (ev ` S), ev ab # tl u) = {hd t # ua |ua. ua setinterleaves ((tl t, ev ab # tl u), insert tick (ev ` S))}\<close>
-    show \<open>hd r = hd t \<and> hd r \<in> ev ` A \<and> tl r setinterleaves ((tl t, u), insert tick (ev ` S))\<close>
-      apply safe
-      using "13"(14) "13"(15) "13"(8) a6 list.collapse apply fastforce 
-      using "13"(14) "13"(15) "13"(2) a1 a2 a4 a6 list.collapse apply fastforce
-      by (metis "13"(15) Sync.sym a5 a3 a4 a1 insertCI insertE SyncHd_Tl)
-  qed
-  with 13 show ?case 
-  proof(elim disjE conjE, goal_cases)
-    case 131:1
-    then show ?case
-      apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving) 
-      apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving) 
-      apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving, simp_all)
-      apply(exI aa, rule_tac conjI, simp)   
-      apply(rule_tac disjI2, exI \<open>tl t\<close>, exI u, exI \<open>tl r\<close>, exI v)
-      using 131(5) by blast 
-  next
-    case 132:2
-    then show ?case
-      apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving)
-      apply(rule_tac disjI2, rule_tac disjI2, rule_tac disjI2, rule_tac disjI2, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving) 
-      apply(rule_tac conjI, metis empty_setinterleaving hd_append2)
-      apply (exI aa, rule_tac conjI, metis empty_setinterleaving hd_append2)
-      apply (rule_tac disjI2, exI \<open>tl t\<close>, exI \<open>tl u\<close>, exI \<open>tl r\<close>, exI v) 
-      by (metis empty_setinterleaving tl_append2)    
-  qed    
-next
-  case (14 a b u t r v aa)
-  have 141:\<open>r = u\<close>
-     using 14 EmptyLeftSync Sync.sym by blast
-  hence 142:\<open>hd r \<in> ev ` B\<close>  
-    using emptyLeftNonSync[rule_format, of r \<open>insert tick (ev ` S)\<close> u \<open>hd u\<close>] 
-          14 Sync.sym by auto blast
-  with 14 show ?case 
-     apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, simp add:141) 
-     apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving) 
-     apply(intro disjI2 conjI, simp_all add:141 142) 
-     apply(exI aa, simp add:141) 
-     apply(rule_tac disjI2,  exI \<open>tl u\<close>, exI t, exI \<open>tl r\<close>, exI v) 
-    by (simp add: "141" Sync.sym SyncTlEmpty tickFree_tl)
-next
-  case (15 a b u t r v ab aa)
-  hence \<open>(hd r = ev aa \<and> hd r \<in> ev ` A \<and> tl r setinterleaves ((tl t, u), insert tick (ev ` S))) 
-         \<or> (hd r = ev ab \<and> hd r \<in> ev ` B \<and> tl r setinterleaves ((t, tl u), insert tick (ev ` S)))\<close>  
-    using si_neq[of \<open>hd t\<close> \<open>tl t\<close> \<open>insert tick (ev ` S)\<close> \<open>hd u\<close> \<open>tl u\<close>]
-    apply(simp del:si_neq split:if_splits, metis disjoint_iff event.inject image_iff, blast, blast) 
-    defer
-     apply (metis (no_types, lifting) Sync.sym event.simps(3) imageI insertE insertI2 SyncHd_Tl)
-  proof -
-    assume a1: "hd u \<in> ev ` (B \<union> B')"
-    assume a2: "B' \<subseteq> S"
-    assume a3: "hd u \<notin> ev ` S"
-    assume a4: "r setinterleaves ((u, t), insert tick (ev ` S))"
-    assume a5: "setinterleaving (ev aa # tl t, insert tick (ev ` S), u) = 
-                {ev aa # ua |ua. ua setinterleaves ((tl t, u), insert tick (ev ` S))} \<union> 
-                {hd u # ua |ua. ua setinterleaves ((ev aa # tl t, tl u), insert tick (ev ` S))}"
-    assume a6: "hd t = ev aa"
-    assume a7: "t \<noteq> []"
-    assume a8: "aa \<in> A"
-    have f9: "hd u \<in> ev ` B"
-      using a3 a2 a1 by fast
-    have f10: "ev aa # tl t = t"
-      using a7 a6 hd_Cons_tl by fastforce
-    then have "r \<in> {ev aa # es |es. es setinterleaves ((tl t, u), insert tick (ev ` S))} \<union> 
-                   {hd u # es |es. es setinterleaves ((ev aa # tl t, tl u), insert tick (ev ` S))}"
-      using a5 a4 by (simp add: Sync.sym)
-    then show "hd r = ev aa \<and> hd r \<in> ev ` A \<and> tl r setinterleaves ((tl t, u), insert tick (ev ` S)) \<or> 
-               hd r = hd u \<and> hd r \<in> ev ` B \<and> tl r setinterleaves ((t, tl u), insert tick (ev ` S))"
-      using f10 f9 a8 by fastforce
-  qed  
-  with 15 show ?case 
-  proof(elim disjE conjE, goal_cases)
-    case 151:1
-    then show ?case
-      apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving) 
-      apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving) 
-      apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving, simp)
-      apply(rule_tac disjI2, exI u, exI \<open>tl t\<close>, exI \<open>tl r\<close>, exI v, simp)
-      using Sync.sym by blast
-  next
-    case 152:2
-    then show ?case
-      apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving) 
-      apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving) 
-      apply(rule_tac disjI2, rule_tac disjI2, rule_tac disjI2, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving, simp)
-      apply(exI ab, rule_tac conjI, simp)   
-      apply(rule_tac disjI2, exI \<open>tl u\<close>, exI \<open>t\<close>, exI \<open>tl r\<close>, exI v, simp)  
-      by (metis Sync.sym)
-  qed 
-next
-  case (16 a b u t r v ab aa)
-  hence \<open>   (hd r = ev ab \<and> hd r \<in> ev ` B \<and> tl r setinterleaves ((t, tl u), insert tick (ev ` S))) 
-             \<or> (hd r = ev ab \<and> aa = ab \<and> hd r \<in> ev ` (A' \<inter> B') \<and> tl r setinterleaves ((tl t, tl u), insert tick (ev ` S)))\<close> 
-    using si_neq[of \<open>hd t\<close> \<open>tl t\<close> \<open>insert tick (ev ` S)\<close> \<open>hd u\<close> \<open>tl u\<close>]
-    apply (simp del:si_neq split:if_splits) 
-        apply (metis (no_types, opaque_lifting) "16"(11) "16"(3) Int_iff Sync.sym UnE empty_iff event.inject imageE imageI insertCI SyncSameHdTl)
-       apply (metis insert_iff SyncSameHdTl)
-      defer
-      apply (metis imageI subsetD)
-     apply (metis imageI subsetD)
-  proof -
-    assume a1: "hd u \<noteq> tick \<and> hd u \<notin> ev ` S"
-    assume a2: "B' \<subseteq> S"
-    assume a3: "hd u \<in> ev ` (B \<union> B')"
-    assume a4: "r setinterleaves ((u, t), insert tick (ev ` S))"
-    assume a5: "setinterleaving (ev aa # tl t, insert tick (ev ` S), u) = 
-                {hd u # ua |ua. ua setinterleaves ((ev aa # tl t, tl u), insert tick (ev ` S))}"
-    assume a6: "hd t = ev aa"
-    assume a7: "t \<noteq> []"
-    have f8: "B' \<union> S = S"
-      using a2 by blast
-    have f9: "ev aa # tl t = t"
-      using a7 a6 hd_Cons_tl by fastforce
-    then have "\<exists>es. r = hd u # es \<and> es setinterleaves ((ev aa # tl t, tl u), insert tick (ev ` S))"
-      using a5 a4 by (simp add: Sync.sym)
-    then show "hd r = hd u \<and> hd r \<in> ev ` B \<and> tl r setinterleaves ((t, tl u), insert tick (ev ` S)) \<or> 
-               hd r = hd u \<and> aa = ab \<and> hd r \<in> ev ` (A' \<inter> B') \<and> tl r setinterleaves ((tl t, tl u), insert tick (ev ` S))"
-      using f9 f8 a3 a1 by (metis Un_iff image_Un list.sel(1) list.sel(3))
-  qed
-  with 16 show ?case 
-  proof(elim disjE conjE, goal_cases)
-    case 161:1
-    then show ?case
-      apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving) 
-      apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving) 
-      apply(rule_tac disjI2, rule_tac disjI2, rule_tac disjI2, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving, simp)
-      apply(exI ab, rule_tac conjI, simp)   
-      apply(rule_tac disjI2, exI \<open>tl u\<close>, exI \<open>t\<close>, exI \<open>tl r\<close>, exI v, simp)  
-      by (metis Sync.sym)   
-  next
-    case 162:2
-    then show ?case
-      apply(rule_tac disjI2, rule_tac disjI1, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving)
-      apply(rule_tac disjI2, rule_tac disjI2, rule_tac disjI2, rule_tac disjI2, rule_tac conjI, metis append_is_Nil_conv empty_setinterleaving) 
-      apply(rule_tac conjI, metis empty_setinterleaving hd_append2)
-      apply (exI aa, rule_tac conjI, metis empty_setinterleaving hd_append2)
-      apply (rule_tac disjI2, exI \<open>tl u\<close>, exI \<open>tl t\<close>, exI \<open>tl r\<close>, exI v, simp)
-      by (metis Sync.sym)
-  qed 
-next 
-  case (17 aA bB)
-  have tact:\<open>\<And>P Q. \<nexists>t u r v. P t u r v \<Longrightarrow> Q \<or> (\<exists> t u r v. P t u r v) \<Longrightarrow> Q\<close>
-    by fastforce
-  from 17 show ?case 
-  proof (safe, goal_cases)
+lemma Mprefix_Sync_distr:
+  \<open>(\<box> x \<in> A \<union> A' \<rightarrow> P x) \<lbrakk> S \<rbrakk> (\<box> y \<in> B \<union> B' \<rightarrow> Q y) =     
+   (\<box> x \<in> A       \<rightarrow> (                 P x  \<lbrakk> S \<rbrakk> (\<box> y \<in> B \<union> B' \<rightarrow> Q y))) \<box>
+   (\<box> y \<in> B       \<rightarrow> ((\<box> x \<in> A \<union> A' \<rightarrow> P x) \<lbrakk> S \<rbrakk>                  Q y))  \<box> 
+   (\<box> x \<in> A' \<inter> B' \<rightarrow> (                 P x  \<lbrakk> S \<rbrakk>                  Q x))\<close>
+  (is \<open>?lhs A A' P B B' Q = ?rhs A A' P B B' Q\<close>) 
+  if sets_assms: \<open>A \<inter> S = {}\<close> \<open>A' \<subseteq> S\<close> \<open>B \<inter> S = {}\<close> \<open>B' \<subseteq> S\<close>
+  (* new proof by Benoît Ballenghien *)
+proof (subst Process_eq_spec_optimized, safe)
+  fix s X
+  assume \<open>(s, X) \<in> \<F> (?lhs A A' P B B' Q)\<close>
+     and same_div : \<open>\<D> (?lhs A A' P B B' Q) = \<D> (?rhs A A' P B B' Q)\<close>
+  from this(1) consider 
+    \<open>\<exists>s_P s_Q X_P X_Q. (s_P, X_P) \<in> \<F> (Mprefix (A \<union> A') P) \<and>
+                       (s_Q, X_Q) \<in> \<F> (Mprefix (B \<union> B') Q) \<and>
+                       s setinterleaves ((s_P, s_Q), insert tick (ev ` S)) \<and> 
+                       X = (X_P \<union> X_Q) \<inter> insert tick (ev ` S) \<union> X_P \<inter> X_Q\<close>
+    | \<open>s \<in> \<D> (?lhs A A' P B B' Q)\<close>
+    by (simp add: F_Sync D_Sync) blast
+  thus \<open>(s, X) \<in> \<F> (?rhs A A' P B B' Q)\<close>
+  proof cases
     case 1
-    obtain X where 11: "(X::'a event set)= bB - ev ` A'" by auto 
-    obtain Y where 12: "(Y::'a event set)= bB - ev ` B'" by auto 
-    from 1 11 12 have 13: "bB = (X \<union> Y) \<inter> insert tick (ev ` S) \<union> X \<inter> Y" 
-      by auto
-    with 11 12 1 show ?case 
-      apply(exI \<open>[]\<close>, exI \<open>[]\<close>, exI X, rule_tac conjI) 
-       apply safe
-            apply (metis disjoint_iff_not_equal imageI)
-           apply (metis image_iff)
-          apply (metis disjoint_iff imageI)  
-         apply (metis IntI image_eqI)
-        apply (metis image_eqI)
-       apply (metis rev_image_eqI)
-      by (exI Y) (simp add: disjoint_iff image_Un)
+    then obtain s_P s_Q X_P X_Q 
+      where * : \<open>(s_P, X_P) \<in> \<F> (Mprefix (A \<union> A') P)\<close> \<open>(s_Q, X_Q) \<in> \<F> (Mprefix (B \<union> B') Q)\<close>
+                \<open>s setinterleaves ((s_P, s_Q), insert tick (ev ` S))\<close>
+                \<open>X = (X_P \<union> X_Q) \<inter> insert tick (ev ` S) \<union> X_P \<inter> X_Q\<close> by blast
+    thus \<open>(s, X) \<in> \<F> (?rhs A A' P B B' Q)\<close>
+    proof (cases \<open>s = [] \<or> hd s = tick\<close>)
+      case True
+      with *(1, 2, 3) have ** : \<open>s = [] \<and> s_P = [] \<and> s_Q = []\<close>
+        by (cases s_P; cases s_Q; force simp add: F_Mprefix subset_iff split: if_split_asm)
+      with *(1, 2, 4) sets_assms(1, 3) show \<open>(s, X) \<in> \<F> (?rhs A A' P B B' Q)\<close>
+        by (auto simp add: subset_iff F_Det D_Det T_Det F_Mprefix image_Un)[1]
+    next
+      case False
+      then obtain e where *** : \<open>s \<noteq> []\<close> \<open>hd s = ev e\<close> by (meson event.exhaust)
+      from *(1, 2, 3) *** sets_assms consider
+        \<open>e \<in> A \<and> s_P \<noteq> [] \<and> hd s_P = ev e \<and> (tl s_P, X_P) \<in> \<F> (P e) \<and> 
+         tl s setinterleaves ((tl s_P, s_Q), insert tick (ev ` S))\<close> | 
+        \<open>e \<in> B \<and> s_Q \<noteq> [] \<and> hd s_Q = ev e \<and> (tl s_Q, X_Q) \<in> \<F> (Q e) \<and> 
+         tl s setinterleaves ((s_P, tl s_Q), insert tick (ev ` S))\<close> | 
+        \<open>e \<in> A' \<and> e \<in> B' \<and> s_P \<noteq> [] \<and> s_Q \<noteq> [] \<and> hd s_P = ev e \<and> hd s_Q = ev e \<and> (tl s_P, X_P) \<in> \<F> (P e) \<and> 
+         (tl s_Q, X_Q) \<in> \<F> (Q e) \<and> tl s setinterleaves ((tl s_P, tl s_Q), insert tick (ev ` S))\<close>
+        by (cases s_P; cases s_Q; auto simp add: F_Mprefix split: if_split_asm)
+      thus \<open>(s, X) \<in> \<F> (?rhs A A' P B B' Q)\<close>
+        apply cases
+          apply (simp_all add: F_Det ***(1))
+          apply (rule disjI1, simp add: F_Mprefix ***, simp add: F_Sync, rule disjI1)
+          apply (rule_tac x = \<open>tl s_P\<close> in exI, rule_tac x = s_Q in exI, rule_tac x = X_P in exI,
+                 simp, rule_tac x = X_Q in exI, simp add: *(2, 4))
+          apply (rule disjI2, rule disjI1, simp add: F_Mprefix ***, simp add: F_Sync, rule disjI1)
+         apply (rule_tac x = s_P in exI, rule_tac x = \<open>tl s_Q\<close> in exI, rule_tac x = X_P in exI,
+                simp add: *(1), rule_tac x = X_Q in exI, simp add: *(4))
+        apply (rule disjI2, rule disjI2, simp add: F_Mprefix *** F_Sync, rule disjI1)
+        by (rule_tac x = \<open>tl s_P\<close> in exI, rule_tac x = \<open>tl s_Q\<close> in exI, rule_tac x = X_P in exI, 
+            simp, rule_tac x = X_Q in exI, simp add: *(4))
+    qed
   next
-    case (2 x a t u X Y)
-    then show ?case
-      apply(erule_tac tact)
-      apply(rule_tac disjI1, exI \<open>ev x#t\<close>, exI \<open>[]\<close>, exI X, rule conjI, simp)
-      by (exI Y, simp, metis disjoint_iff event.inject hd_Cons_tl imageE)
-  next
-    case (3 x a t u X Y xa aa)
-    then show ?case 
-      apply(erule_tac tact)
-      apply(rule_tac disjI1, exI \<open>ev x#t\<close>, exI \<open>u\<close>, exI X, rule conjI, simp)
-      apply (exI Y, simp)
-      using hd_Cons_tl SyncSingleHeadAdd by fastforce+
-  next
-    case (4 x a t u X Y xa aa)
-    then show ?case
-      apply(erule_tac tact)
-      apply(rule_tac disjI1, exI \<open>ev x#t\<close>, exI \<open>u\<close>, exI X, rule conjI, simp)
-      apply (exI Y, simp)
-      using hd_Cons_tl SyncSingleHeadAdd by fastforce+
-  next
-    case (5 x a t u r v)
-    then show ?case
-      apply(erule_tac tact)
-      apply(rule_tac disjI2, exI \<open>ev x#t\<close>, exI \<open>[]\<close>, exI \<open>ev x#r\<close>, exI v, simp)   
-      by (metis disjoint_iff event.inject hd_Cons_tl imageE)
-  next
-    case (6 x a t u r v aa)
-    then show ?case
-      apply(erule_tac tact)
-      apply(rule_tac disjI2, exI \<open>ev x#t\<close>, exI \<open>u\<close>, exI \<open>ev x#r\<close>, exI v, simp)      
-      using hd_Cons_tl SyncSingleHeadAdd by fastforce+
-  next
-    case (7 x a t u r v aa)
-    then show ?case
-      apply(erule_tac tact)
-      apply(rule_tac disjI2, exI \<open>ev x#t\<close>, exI \<open>u\<close>, exI \<open>ev x#r\<close>, exI v, simp)      
-      using hd_Cons_tl SyncSingleHeadAdd by fastforce+
-  next
-    case (8 x a u t r v xa aa)
-    then show ?case 
-      apply(erule_tac tact)
-      apply(rule_tac disjI2, exI \<open>u\<close>, exI \<open>ev x#t\<close>, exI \<open>ev x#r\<close>, exI \<open>v\<close>, simp)           
-      using si_neq[of \<open>ev x\<close> \<open>t\<close> \<open>insert tick (ev ` S)\<close> \<open>hd u\<close> \<open>tl u\<close>]    
-      apply (simp add: SyncSingleHeadAdd split: if_splits, blast, blast)
-      by (metis Sync.sym SyncSingleHeadAdd event.distinct(1) insert_iff list.collapse) blast
-  next
-    case (9 x a u t r v xa aa)
-    then show ?case      
-      apply(erule_tac tact)
-      apply(rule_tac disjI2, exI \<open>u\<close>, exI \<open>ev x#t\<close>, exI \<open>ev x#r\<close>, exI \<open>v\<close>, simp)           
-      using si_neq[of \<open>ev x\<close> \<open>t\<close> \<open>insert tick (ev ` S)\<close> \<open>hd u\<close> \<open>tl u\<close>]    
-      apply (simp add: SyncSingleHeadAdd split: if_splits, blast, blast, blast) 
-      by (metis SyncHdAdd1 event.distinct(1) insert_iff list.collapse)
-  next
-    case (10 x a t u r v)
-    then show ?case 
-      apply(erule_tac tact)
-      apply(rule_tac disjI2, exI \<open>ev x#t\<close>, exI \<open>[]\<close>, exI \<open>ev x#r\<close>, exI \<open>[]\<close>, simp)      
-      by (metis disjoint_iff event.inject hd_Cons_tl imageE)
-  next
-    case (11 x a t u r v aa)
-    then show ?case
-      apply(erule_tac tact)
-      apply(rule_tac disjI2, exI \<open>ev x#t\<close>, exI \<open>u\<close>, exI \<open>ev x#r\<close>, exI \<open>[]\<close>, simp)
-      using SyncSingleHeadAdd list.collapse by fastforce
-  next
-    case (12 x a t u r v aa)
-    then show ?case 
-      apply(erule_tac tact)
-      apply(rule_tac disjI2, exI \<open>ev x#t\<close>, exI \<open>u\<close>, exI \<open>ev x#r\<close>, exI \<open>[]\<close>, simp)
-      using SyncSingleHeadAdd list.collapse by fastforce
-  next
-    case (13 x a u t r v xa aa)
-    then show ?case
-      apply(erule_tac tact)
-      apply(rule_tac disjI2, exI \<open>u\<close>, exI \<open>ev x#t\<close>, exI \<open>ev x#r\<close>, exI \<open>[]\<close>, simp)      
-      using si_neq[of \<open>ev x\<close> \<open>t\<close> \<open>insert tick (ev ` S)\<close> \<open>hd u\<close> \<open>tl u\<close>]
-      apply (simp add: SyncSingleHeadAdd split: if_splits, blast, blast)
-      by (metis Sync.sym SyncSingleHeadAdd event.distinct(1) insert_iff list.collapse) blast
-  next
-    case (14 x a u t r v xa aa)
-    then show ?case 
-      apply(erule_tac tact)
-      apply(rule_tac disjI2, exI \<open>u\<close>, exI \<open>ev x#t\<close>, exI \<open>ev x#r\<close>, exI \<open>[]\<close>, simp)   
-      using si_neq[of \<open>ev x\<close> \<open>t\<close> \<open>insert tick (ev ` S)\<close> \<open>hd u\<close> \<open>tl u\<close>]    
-      apply (simp add: SyncSingleHeadAdd split: if_splits, blast, blast, blast)
-      by (metis SyncHdAdd1 event.distinct(1) insert_iff list.collapse)
-  next
-    case (15 x a t u X Y)
-    then show ?case 
-      apply(erule_tac tact)
-      apply(rule_tac disjI1, exI \<open>[]\<close>, exI \<open>ev x#u\<close>, exI X, rule conjI, simp)
-      by (exI Y, simp, metis disjoint_iff event.inject hd_Cons_tl imageE)
-  next
-    case (16 x a t u X Y xa aa)
-    then show ?case 
-      apply(erule_tac tact)
-      apply(rule_tac disjI1, exI \<open>t\<close>, exI \<open>ev x#u\<close>, exI X, rule conjI, simp, exI Y, simp)
-      using si_neq[of \<open>hd t\<close> \<open>tl t\<close> \<open>insert tick (ev ` S)\<close> \<open>ev x\<close> \<open>tl u\<close>]    
-      apply (simp add: SyncSingleHeadAdd split: if_splits, blast, blast, blast)
-      by (metis Sync.sym SyncSingleHeadAdd event.distinct(1) insert_iff list.collapse) blast
-  next
-    case (17 x a t u X Y xa aa)
-    then show ?case 
-      apply(erule_tac tact)
-      apply(rule_tac disjI1, exI \<open>t\<close>, exI \<open>ev x#u\<close>, exI X, rule conjI, simp)      
-      apply (exI Y, simp) 
-      using si_neq[of \<open>hd t\<close> \<open>tl t\<close> \<open>insert tick (ev ` S)\<close> \<open>ev x\<close> \<open>tl u\<close>]    
-      apply (simp add: SyncSingleHeadAdd split: if_splits, blast, blast) sledgehammer
-      using SyncHdAdd by fastforce blast+
-  next
-    case (18 x a t u r v xa aa)
-    then show ?case
-      apply(erule_tac tact)
-      apply(rule_tac disjI2, exI \<open>t\<close>, exI \<open>ev x#u\<close>, exI \<open>ev x#r\<close>, exI \<open>v\<close>, simp)           
-      using si_neq[of \<open>hd t\<close> \<open>tl t\<close> \<open>insert tick (ev ` S)\<close> \<open>ev x\<close> \<open>u\<close>]    
-      apply (simp add: SyncSingleHeadAdd split: if_splits, blast, blast, blast)
-      by (metis Sync.sym SyncSingleHeadAdd event.distinct(1) insert_iff list.collapse) blast
-  next
-    case (19 x a t u r v xa aa)
-    then show ?case 
-      apply(erule_tac tact)
-      apply(rule_tac disjI2, exI \<open>t\<close>, exI \<open>ev x#u\<close>, exI \<open>ev x#r\<close>, exI \<open>v\<close>, simp)           
-      using si_neq[of \<open>hd t\<close> \<open>tl t\<close> \<open>insert tick (ev ` S)\<close> \<open>ev x\<close> \<open>u\<close>]    
-      apply (simp add: SyncSingleHeadAdd split: if_splits, blast, blast)
-      by (metis SyncHdAdd1 event.distinct(1) insert_iff list.collapse) blast+
-  next
-    case (20 x a u t r v)
-    then show ?case 
-      apply(erule_tac tact)
-      apply(rule_tac disjI2, exI \<open>ev x#u\<close>, exI \<open>[]\<close>, exI \<open>ev x#r\<close>, exI \<open>v\<close>, simp)      
-      by (metis disjoint_iff event.inject hd_Cons_tl imageE)
-  next
-    case (21 x a u t r v aa)
-    then show ?case 
-      apply(erule_tac tact)
-      apply(rule_tac disjI2, exI \<open>ev x#u\<close>, exI \<open>t\<close>, exI \<open>ev x#r\<close>, exI \<open>v\<close>, simp)
-      using si_neq[of \<open>hd t\<close> \<open>tl t\<close> \<open>insert tick (ev ` S)\<close> \<open>ev x\<close> \<open>u\<close>]
-      apply (simp add: SyncSingleHeadAdd split: if_splits, blast, blast, blast)
-      by (metis list.collapse) blast
-  next
-    case (22 x a u t r v aa)
-    then show ?case
-      apply(erule_tac tact) 
-      apply(rule_tac disjI2, exI \<open>ev x#u\<close>, exI \<open>t\<close>, exI \<open>ev x#r\<close>, exI \<open>v\<close>, simp)      
-      using si_neq[of \<open>hd t\<close> \<open>tl t\<close> \<open>insert tick (ev ` S)\<close> \<open>ev x\<close> \<open>u\<close>]    
-      apply (simp add: SyncSingleHeadAdd split: if_splits, blast, blast)
-      by (metis list.exhaust_sel) blast+
-  next
-    case (23 x a t u r v xa aa)
-    then show ?case
-      apply(erule_tac tact)
-      apply(rule_tac disjI2, exI \<open>t\<close>, exI \<open>ev x#u\<close>, exI \<open>ev x#r\<close>, exI \<open>[]\<close>, simp)           
-      using si_neq[of \<open>hd t\<close> \<open>tl t\<close> \<open>insert tick (ev ` S)\<close> \<open>ev x\<close> \<open>u\<close>]    
-      apply (simp add: SyncSingleHeadAdd split: if_splits, blast, blast, blast)
-      by (metis Sync.sym SyncSingleHeadAdd event.distinct(1) insert_iff list.collapse) blast   
-  next
-    case (24 x a t u r v xa aa)
-    then show ?case 
-      apply(erule_tac tact)
-      apply(rule_tac disjI2, exI \<open>t\<close>, exI \<open>ev x#u\<close>, exI \<open>ev x#r\<close>, exI \<open>[]\<close>, simp)           
-      using si_neq[of \<open>hd t\<close> \<open>tl t\<close> \<open>insert tick (ev ` S)\<close> \<open>ev x\<close> \<open>u\<close>]    
-      apply (simp add: SyncSingleHeadAdd split: if_splits, blast, blast) sledgehammer
-      using SyncHdAdd1 list.collapse by fastforce blast+
-  next
-    case (25 x a t u r v)
-    then show ?case 
-      apply(erule_tac tact)
-      apply(rule_tac disjI2, exI \<open>ev x#t\<close>, exI \<open>[]\<close>, exI \<open>ev x#r\<close>, exI \<open>[]\<close>, simp)      
-      by (metis disjoint_iff event.inject hd_Cons_tl imageE)
-  next
-    case (26 x a u t r v aa)
-    then show ?case 
-      apply(erule_tac tact) 
-      apply(rule_tac disjI2, exI \<open>ev x#u\<close>, exI \<open>t\<close>, exI \<open>ev x#r\<close>, exI \<open>[]\<close>, simp)      
-      using si_neq[of \<open>hd t\<close> \<open>tl t\<close> \<open>insert tick (ev ` S)\<close> \<open>ev x\<close> \<open>u\<close>]    
-      apply (simp add: SyncSingleHeadAdd split: if_splits, blast, blast, blast)
-      by (metis list.collapse) blast
-  next
-    case (27 x a u t r v aa)
-    then show ?case 
-      apply(erule_tac tact) 
-      apply(rule_tac disjI2, exI \<open>ev x#u\<close>, exI \<open>t\<close>, exI \<open>ev x#r\<close>, exI \<open>[]\<close>, simp)      
-      using si_neq[of \<open>hd t\<close> \<open>tl t\<close> \<open>insert tick (ev ` S)\<close> \<open>ev x\<close> \<open>u\<close>]    
-      apply (simp add: SyncSingleHeadAdd split: if_splits, blast, blast) sledgehammer
-      by (metis list.collapse) blast+
-  next
-    case (28 x a t u X Y)
-    then show ?case 
-      apply(erule_tac tact)
-      apply(rule_tac disjI1, exI \<open>ev x#t\<close>, exI \<open>ev x#u\<close>, exI X, rule conjI, simp)
-      by (exI Y, simp, metis hd_Cons_tl image_eqI in_mono)
-  next
-    case (29 x a t u r v)
-    then show ?case 
-      apply(erule_tac tact)
-      apply(rule_tac disjI2, exI \<open>ev x#t\<close>, exI \<open>ev x#u\<close>, exI \<open>ev x#r\<close>, exI \<open>v\<close>, simp)  
-      by (metis image_eqI list.exhaust_sel subsetD)  
-  next
-    case (30 x a t u r v)
-    then show ?case 
-      apply(erule_tac tact)
-      apply(rule_tac disjI2, exI \<open>ev x#t\<close>, exI \<open>ev x#u\<close>, exI \<open>ev x#r\<close>, exI \<open>v\<close>, simp)  
-      by (metis image_eqI list.exhaust_sel subsetD)  
-  next
-    case (31 x a t u r v)
-    then show ?case       
-      apply(erule_tac tact)
-      apply(rule_tac disjI2, exI \<open>ev x#t\<close>, exI \<open>ev x#u\<close>, exI \<open>ev x#r\<close>, exI \<open>[]\<close>, simp)  
-      by (metis image_eqI list.exhaust_sel subsetD) 
-  next
-    case (32 x a t u r v)
-    then show ?case 
-      apply(erule_tac tact)
-      apply(rule_tac disjI2, exI \<open>ev x#t\<close>, exI \<open>ev x#u\<close>, exI \<open>ev x#r\<close>, exI \<open>[]\<close>, simp)  
-      by (metis image_eqI list.exhaust_sel subsetD) 
+    show \<open>s \<in> \<D> (?lhs A A' P B B' Q) \<Longrightarrow> (s, X) \<in> \<F> (?rhs A A' P B B' Q)\<close> 
+      using same_div NF_ND by blast
   qed
 next
-  case (18 aA)
-  then show ?case
-  proof(elim exE disjE conjE, goal_cases)
-    case (1 t u r v a)
-      have 11:\<open>r = t\<close>
-        using 1 EmptyLeftSync Sync.sym by blast
-      hence 12:\<open>hd aA \<in> ev ` A\<close>  
-        using emptyLeftNonSync[rule_format, of r \<open>insert tick (ev ` S)\<close> t \<open>hd t\<close>] 
-          1 Sync.sym by auto blast
-    with 1 11 show ?case 
-      apply(rule_tac disjI1, simp) 
-      by (metis Sync.sym SyncTlEmpty tickFree_tl)
-  next
-    case (2 t u r v a aa)
-    hence \<open>(hd r = ev a \<and> hd r \<in> ev ` A \<and> tl r setinterleaves ((tl t, u), insert tick (ev ` S))) 
-         \<or> (hd r = ev aa \<and> hd r \<in> ev ` B \<and> tl r setinterleaves ((t, tl u), insert tick (ev ` S)))\<close>  
-      using si_neq[of \<open>hd t\<close> \<open>tl t\<close> \<open>insert tick (ev ` S)\<close> \<open>hd u\<close> \<open>tl u\<close>]
-      apply(simp del:si_neq split:if_splits, blast , metis empty_iff hd_Cons_tl) 
-        apply (metis (no_types, lifting) event.simps(3) imageI insert_iff SyncHd_Tl) 
-       defer
-       apply blast
-    proof(safe, simp_all add: in_mono, goal_cases)
-      case (1 x)
-      show ?case
-        using "1"(18) "1"(21) "2"(14) "2"(15) "2"(8) list.collapse by fastforce
+  
+  fix s X
+  { fix P Q A A' B B'
+    assume assms : \<open>s \<noteq> []\<close> \<open>(s, X) \<in> \<F> (\<box>x \<in> A \<rightarrow> (P x \<lbrakk>S\<rbrakk> Mprefix (B \<union> B') Q))\<close>
+                   \<open>A \<inter> S = {}\<close> \<open>A' \<subseteq> S\<close> \<open>B \<inter> S = {}\<close> \<open>B' \<subseteq> S\<close>
+       and same_div : \<open>\<D> (?lhs A A' P B B' Q) = \<D> (?rhs A A' P B B' Q)\<close>
+    from assms(1, 2) obtain e 
+      where * : \<open>e \<in> A\<close> \<open>hd s = ev e\<close> \<open>(tl s, X) \<in> \<F> (P e \<lbrakk>S\<rbrakk> Mprefix (B \<union> B') Q)\<close>
+      by (auto simp add: F_Mprefix)
+    from "*" assms(1) consider 
+        \<open>\<exists>s_P s_Q X_P X_Q. (s_P, X_P) \<in> \<F> (P e) \<and> (s_Q, X_Q) \<in> \<F> (Mprefix (B \<union> B') Q) \<and> 
+         tl s setinterleaves ((s_P, s_Q), ev ` S \<union> {tick}) \<and> X = (X_P \<union> X_Q) \<inter> (ev ` S \<union> {tick}) \<union> X_P \<inter> X_Q\<close>
+        | \<open>s \<in> \<D> (\<box>x \<in> A \<rightarrow> (P x \<lbrakk>S\<rbrakk> Mprefix (B \<union> B') Q))\<close> 
+      by (force simp add: F_Sync D_Mprefix D_Sync)
+    hence \<open>(s, X) \<in> \<F> (?lhs A A' P B B' Q)\<close>
+    proof cases
+      case 1
+      then obtain s_P s_Q X_P X_Q 
+        where ** : \<open>(s_P, X_P) \<in> \<F> (P e)\<close> \<open>(s_Q, X_Q) \<in> \<F> (Mprefix (B \<union> B') Q)\<close> 
+                   \<open>tl s setinterleaves ((s_P, s_Q), ev ` S \<union> {tick})\<close> 
+                   \<open>X = (X_P \<union> X_Q) \<inter> (ev ` S \<union> {tick}) \<union> X_P \<inter> X_Q\<close> by blast
+      show \<open>(s, X) \<in> \<F> (?lhs A A' P B B' Q)\<close>
+        apply (simp add: F_Sync, rule disjI1)
+        apply (rule_tac x = \<open>ev e # s_P\<close> in exI, rule_tac x = s_Q in exI,
+               rule_tac x = X_P in exI, intro conjI)
+         apply (simp add: F_Mprefix image_iff "*"(1) "**"(1))
+        apply (rule_tac x = X_Q in exI, simp add: "**"(2, 4))
+        apply (subst list.collapse[OF assms(1), symmetric])
+        using "*"(1, 2) "**"(3) assms(3) by (cases s_Q) auto 
     next
-      case (2 x)
-      show ?case
-        using "2"(13) "2"(14) "2"(18) "2"(20) "2"(21) "2"(8) list.collapse by fastforce
-    next
-      case (3 x)
-      show ?case
-        using "2"(14) "2"(15) "2"(8) "3"(18) "3"(21) list.collapse by fastforce
-    next
-      case (4 x)
-      show ?case
-        using "2"(13) "2"(14) "2"(15) "2"(8) "4"(18) "4"(21) list.collapse by fastforce 
-    next
-      case (5 x)
-      show ?case
-        using "2"(14) "2"(15) "2"(8) "5"(18) "5"(21) list.collapse by fastforce
-    next
-      case (6 x)
-      show ?case
-        using "6"(13) "6"(14) "6"(18) "6"(8) hd_Cons_tl "2"(13) "6"(20) "6"(21) by fastforce
-    next
-      case (7 x)
-      show ?case
-        using "2"(13) "2"(14) "2"(15) "2"(8) "7"(18) "7"(21) list.collapse by fastforce 
-    next
-      case (8 x)
-      show ?case
-        using "8"(20) "8"(21) "8"(13) "8"(14) "8"(18) "8"(8) hd_Cons_tl by fastforce
-    next
-      case (9 x)
-      show ?case
-        using "9"(21) "9"(13) "9"(14) "9"(13) "9"(14) "9"(18) "9"(8) hd_Cons_tl by fastforce
+      assume \<open>s \<in> \<D> (\<box>x\<in>A \<rightarrow> (P x \<lbrakk>S\<rbrakk> Mprefix (B \<union> B') Q))\<close>
+      hence \<open>s \<in> \<D> (?lhs A A' P B B' Q)\<close> by (simp add: same_div D_Det)
+      thus \<open>(s, X) \<in> \<F> (?lhs A A' P B B' Q)\<close> using NF_ND by blast
     qed
-    with 2 show ?case 
-      by (simp add: hd_append) (metis empty_setinterleaving tickFree_tl)
-  next
-    case (3 t u r v a aa)
-    hence \<open>   (hd r = ev a \<and> hd r \<in> ev ` A \<and> tl r setinterleaves ((tl t, u), insert tick (ev ` S))) 
-               \<or> (hd r = ev aa \<and> aa = a \<and> hd r \<in> ev ` (A' \<inter> B') \<and> tl r setinterleaves ((tl t, tl u), insert tick (ev ` S)))\<close> 
-      using si_neq[of \<open>hd t\<close> \<open>tl t\<close> \<open>insert tick (ev ` S)\<close> \<open>hd u\<close> \<open>tl u\<close>]
-      apply (simp del:si_neq split:if_splits) 
-            apply (simp add:  UnE disjoint_iff imageE insertI2 rev_image_eqI)
-            apply (metis (no_types, lifting) Int_iff Un_iff event.inject imageE image_eqI insertCI SyncSameHdTl)
-         apply (metis insert_iff SyncSameHdTl)
-        apply (metis imageI subsetD)
-       apply (metis imageI subsetD) 
-      by (metis (no_types, opaque_lifting) "3"(10) "3"(2) Sync.sym Un_iff image_Un subset_insertI sup.orderE SyncHd_Tl SyncSameHdTl)
-    with 3 show ?case 
-      by (simp add: hd_append) (metis Sync.sym empty_setinterleaving tickFree_tl)
-  next
-    case (4 u t r v a)
-    have 41:\<open>r = u\<close>
-      using 4 EmptyLeftSync Sync.sym by blast
-    hence 42:\<open>hd aA \<in> ev ` B\<close>  
-      using emptyLeftNonSync[rule_format, of r \<open>insert tick (ev ` S)\<close> u \<open>hd u\<close>] 
-            4 Sync.sym by auto blast
-    with 4 41 show ?case 
-      apply(rule_tac disjI2, rule_tac disjI1, simp)       
-      by (metis Sync.sym SyncTlEmpty tickFree_tl)
-  next
-    case (5 u t r v aa a)
-    hence \<open>(hd r = ev a \<and> hd r \<in> ev ` A \<and> tl r setinterleaves ((tl t, u), insert tick (ev ` S))) 
-         \<or> (hd r = ev aa \<and> hd r \<in> ev ` B \<and> tl r setinterleaves ((t, tl u), insert tick (ev ` S)))\<close>  
-      using si_neq[of \<open>hd u\<close> \<open>tl u\<close> \<open>insert tick (ev ` S)\<close> \<open>hd t\<close> \<open>tl t\<close> ]
-      apply(simp del:si_neq split:if_splits, blast, blast) 
-        apply (metis (no_types, lifting) Sync.sym event.simps(3) imageI insert_iff SyncHd_Tl)
-       defer
-       apply blast
-      proof(safe, simp_all add: in_mono, goal_cases)
-      case (1 x)
-      show ?case
-        using "1"(13) "1"(14) "1"(18) "1"(21) "5"(8) list.collapse by fastforce
+  } note * = this
+
+  { assume assms : \<open>s \<noteq> []\<close> \<open>(s, X) \<in> \<F> (\<box>x\<in>A' \<inter> B' \<rightarrow> (P x \<lbrakk>S\<rbrakk> Q x))\<close>
+       and same_div : \<open>\<D> (?lhs A A' P B B' Q) = \<D> (?rhs A A' P B B' Q)\<close>
+    then obtain e where * : \<open>e \<in> A'\<close> \<open>e \<in> B'\<close> \<open>hd s = ev e\<close> \<open>(tl s, X) \<in> \<F> (P e \<lbrakk>S\<rbrakk> Q e)\<close>
+      by (auto simp add: F_Mprefix)
+    have inside: \<open>e \<in> S\<close> using "*"(2) that(4) by blast
+    from "*" assms(1) consider 
+        \<open>\<exists>s_P s_Q X_P X_Q. (s_P, X_P) \<in> \<F> (P e) \<and> (s_Q, X_Q) \<in> \<F> (Q e) \<and>
+         tl s setinterleaves ((s_P, s_Q), ev ` S \<union> {tick}) \<and>
+         X = (X_P \<union> X_Q) \<inter> (ev ` S \<union> {tick}) \<union> X_P \<inter> X_Q\<close>
+        | \<open>s \<in> \<D> (\<box>x\<in>A' \<inter> B' \<rightarrow> (P x \<lbrakk>S\<rbrakk> Q x))\<close>
+      by (force simp add: F_Sync D_Mprefix D_Sync)
+    hence \<open>(s, X) \<in> \<F> (?lhs A A' P B B' Q)\<close>
+    proof cases
+      case 1
+      then obtain s_P s_Q X_P X_Q 
+        where ** : \<open>(s_P, X_P) \<in> \<F> (P e)\<close> \<open>(s_Q, X_Q) \<in> \<F> (Q e)\<close> 
+                   \<open>tl s setinterleaves ((s_P, s_Q), ev ` S \<union> {tick})\<close> 
+                   \<open>X = (X_P \<union> X_Q) \<inter> (ev ` S \<union> {tick}) \<union> X_P \<inter> X_Q\<close> by blast
+      show \<open>(s, X) \<in> \<F> (?lhs A A' P B B' Q)\<close>
+        apply (subst list.collapse[OF assms(1), symmetric], simp add: F_Sync "*"(3), rule disjI1)
+        apply (rule_tac x = \<open>ev e # s_P\<close> in exI, rule_tac x = \<open>ev e # s_Q\<close> in exI)
+        apply (rule_tac x = X_P in exI, intro conjI, simp add: F_Mprefix "*"(1) "**"(1))
+        using "**"(3) by (rule_tac x = X_Q in exI) (simp add: "*"(2) "**"(2, 4) inside F_Mprefix)
     next
-      case (2 x)
-      show ?case
-        using "5"(14) "5"(15) "2"(18) "5"(8) "2"(21) "5"(13) list.collapse by fastforce 
-    next
-      case (3 x)
-      show ?case
-        using "3"(18) "3"(21) "5"(14) "5"(15) "5"(8) Sync.sym hd_Cons_tl by fastforce 
-    next 
-      case (4 x)
-      show ?case
-        using "4"(18) "4"(20) "4"(21) "5"(14) "5"(15) "5"(8) list.collapse by fastforce 
-    next
-      case (5 x)
-      show ?case
-        using "5"(13) "5"(14) "5"(18) "5"(21) "5"(8) Sync.sym hd_Cons_tl by fastforce
-    next
-      case (6 x)
-      show ?case
-        using "6"(20) "6"(21) "6"(13) "6"(14) "6"(18) "6"(8) "6"(12) Sync.sym hd_Cons_tl by fastforce
-    next
-      case (7 x)
-      show ?case
-        using "7"(18) "7"(13) "7"(14) "7"(8) "7"(20) "7"(21) Sync.sym hd_Cons_tl by fastforce
-    next
-      case (8 x)
-      show ?case
-        using "8"(13) "8"(14) hd_Cons_tl Sync.sym "8"(18) "8"(8) "8"(21) "8"(12) by fastforce
-    next
-      case (9 x)
-      show ?case
-        using "9"(14) "9"(13) list.collapse "9"(21) Sync.sym "9"(18) "9"(8) by fastforce
+      assume \<open>s \<in> \<D> (\<box>x\<in>A' \<inter> B' \<rightarrow> (P x \<lbrakk>S\<rbrakk> Q x))\<close>
+      hence \<open>s \<in> \<D> (?lhs A A' P B B' Q)\<close> by (simp add: same_div D_Det)
+      thus \<open>(s, X) \<in> \<F> (?lhs A A' P B B' Q)\<close> using NF_ND by blast
     qed
-    with 5 show ?case
-      by (simp add: hd_append) (metis Sync.sym empty_setinterleaving tickFree_tl)
-  next
-    case (6 u t r v aa a)
-      hence \<open>   (hd r = ev aa \<and> hd r \<in> ev ` B \<and> tl r setinterleaves ((t, tl u), insert tick (ev ` S))) 
-               \<or> (hd r = ev aa \<and> aa = a \<and> hd r \<in> ev ` (A' \<inter> B') \<and> tl r setinterleaves ((tl t, tl u), insert tick (ev ` S)))\<close> 
-        using si_neq[of \<open>hd t\<close> \<open>tl t\<close> \<open>insert tick (ev ` S)\<close> \<open>hd u\<close> \<open>tl u\<close>]
-        apply (simp del:si_neq split:if_splits) 
-            apply (simp add:  UnE disjoint_iff imageE insertI2 rev_image_eqI)
-            apply (metis (no_types, lifting) Int_iff Sync.sym Un_iff event.inject imageE image_eqI insertCI SyncSameHdTl)
-           apply (metis insert_iff SyncSameHdTl)
-          apply (metis (no_types, opaque_lifting) Sync.sym UnE image_Un insert_iff subset_eq subset_image_iff SyncHd_Tl SyncSameHdTl) 
-         apply (metis imageI subsetD) 
-        by (metis image_eqI subsetD)
-      with 6 show ?case
-        by (simp add: hd_append) (metis Sync.sym empty_setinterleaving tickFree_tl)
-  next
-    case (7 t u r v a)
-    have 71:\<open>r = t\<close>
-      using 7 EmptyLeftSync Sync.sym by blast
-    hence 72:\<open>hd aA \<in> ev ` A\<close>  
-      using emptyLeftNonSync[rule_format, of r \<open>insert tick (ev ` S)\<close> t \<open>hd t\<close>] 
-        7 Sync.sym by auto blast
-    with 7 71 show ?case 
-      apply(rule_tac disjI1, simp) 
-      by (metis Sync.sym append_self_conv front_tickFree_Nil SyncTlEmpty)
-  next
-    case (8 t u r v a aa)
-    hence \<open>(hd r = ev a \<and> hd r \<in> ev ` A \<and> tl r setinterleaves ((tl t, u), insert tick (ev ` S))) 
-         \<or> (hd r = ev aa \<and> hd r \<in> ev ` B \<and> tl r setinterleaves ((t, tl u), insert tick (ev ` S)))\<close>  
-      using si_neq[of \<open>hd t\<close> \<open>tl t\<close> \<open>insert tick (ev ` S)\<close> \<open>hd u\<close> \<open>tl u\<close>]
-      apply(simp del:si_neq split:if_splits, blast , metis empty_iff hd_Cons_tl) 
-        apply (metis (no_types, lifting) event.simps(3) imageI insert_iff SyncHd_Tl) 
-       defer
-       apply blast
-    proof(safe, simp_all add: in_mono, goal_cases)
-      case (1 x)
-      show ?case
-        using "1"(17) "1"(20) "8"(14) "8"(15) "8"(8) list.collapse by fastforce
-    next
-      case (2 x)
-      show ?case
-        using "2"(12) "2"(13) hd_Cons_tl "2"(11) "8"(8) "2"(17) "2"(20) "2"(19) by fastforce
-    next
-      case (3 x)
-      show ?case
-        using "3"(12) "3"(13) "3"(17) "3"(20) "3"(7) "3"(8) Sync.sym hd_Cons_tl by fastforce
-    next
-      case (4 x)
-      show ?case
-        using "4"(11) "4"(17) "4"(20) "8"(14) "8"(15) "8"(8) list.collapse by fastforce
-    next
-      case (5 x)
-      show ?case
-        using "5"(17) "5"(12) "5"(13) "5"(7) "5"(8) "5"(20) list.collapse Sync.sym hd_Cons_tl by fastforce
-    next
-      case (6 x)
-      show ?case
-        using "6"(11) "6"(12) "6"(13) "6"(17) "6"(19) "6"(20) "6"(7) list.collapse by fastforce
-    next
-      case (7 x)
-      show ?case
-        using "7"(17) "7"(20) "8"(13) "8"(14) "8"(15) "8"(8) list.collapse by fastforce
-    next
-      case (8 x)
-      show ?case
-        using "8"(12) "8"(13) "8"(17) "8"(19) "8"(20) "8"(7) list.collapse by fastforce
-    next
-      case (9 x)
-      show ?case
-        using "9"(20) Sync.sym "9"(12) "9"(13) list.exhaust_sel "9"(12) "9"(13) "9"(17) "9"(7) Sync.sym hd_Cons_tl by fastforce
-    qed
-    with 8 show ?case 
-      by (metis empty_setinterleaving self_append_conv)
-  next
-    case (9 t u r v a aa)
-      hence \<open>   (hd r = ev a \<and> hd r \<in> ev ` A \<and> tl r setinterleaves ((tl t, u), insert tick (ev ` S))) 
-               \<or> (hd r = ev aa \<and> aa = a \<and> hd r \<in> ev ` (A' \<inter> B') \<and> tl r setinterleaves ((tl t, tl u), insert tick (ev ` S)))\<close> 
-        using si_neq[of \<open>hd t\<close> \<open>tl t\<close> \<open>insert tick (ev ` S)\<close> \<open>hd u\<close> \<open>tl u\<close>]
-        apply (simp del:si_neq split:if_splits) 
-            apply (simp add: disjoint_iff)
-            apply (metis (no_types, lifting) Int_iff Un_iff event.inject imageE image_eqI insertCI SyncSameHdTl)
-           apply (metis insert_iff SyncSameHdTl)
-          apply (metis rev_image_eqI subsetD)
-         apply (metis imageI subsetD) 
-        by (metis (no_types, opaque_lifting) Sync.sym Un_iff image_Un insert_iff sup.absorb_iff2 SyncHd_Tl)
-      with 9 show ?case
-        by (metis empty_setinterleaving self_append_conv)
-    next
-      case (10 u t r v a)
-      have 101:\<open>r = u\<close>
-        using 10 EmptyLeftSync Sync.sym by blast
-      hence 102:\<open>hd aA \<in> ev ` B\<close>  
-        using emptyLeftNonSync[rule_format, of r \<open>insert tick (ev ` S)\<close> u \<open>hd u\<close>] 
-            10 Sync.sym by auto blast
-      with 10 101 show ?case 
-        apply(rule_tac disjI2, rule_tac disjI1, simp) 
-        by (metis Sync.sym append.right_neutral front_tickFree_Nil SyncTlEmpty)   
-    next
-      case (11 u t r v aa a)
-      hence \<open>(hd r = ev a \<and> hd r \<in> ev ` A \<and> tl r setinterleaves ((tl t, u), insert tick (ev ` S))) 
-         \<or> (hd r = ev aa \<and> hd r \<in> ev ` B \<and> tl r setinterleaves ((t, tl u), insert tick (ev ` S)))\<close>  
-        using si_neq[of \<open>hd u\<close> \<open>tl u\<close> \<open>insert tick (ev ` S)\<close> \<open>hd t\<close> \<open>tl t\<close> ]
-        apply(simp del:si_neq split:if_splits, blast, blast) 
-          apply (metis (no_types, lifting) Sync.sym event.simps(3) imageI insert_iff SyncHd_Tl)
-         defer
-         apply blast
-      proof(safe, simp_all add: in_mono, goal_cases)
-        case (1 x)
-        show ?case
-          using "1"(17) "1"(20) "11"(14) "11"(15) "11"(8) list.collapse by fastforce
-      next
-        case (2 x)
-        show ?case
-          using "2"(12) "2"(13) hd_Cons_tl "2"(11) "11"(8) "2"(17) "2"(20) by fastforce
-      next
-        case (3 x)
-        show ?case
-          using "3"(12) "3"(13) "3"(17) "3"(20) "3"(7) "3"(8) Sync.sym hd_Cons_tl by fastforce
-      next
-        case (4 x)
-        show ?case
-          using "11"(14) "11"(15) "11"(8) "4"(17) "4"(19) "4"(20) list.collapse by fastforce
-      next
-        case (5 x)
-        show ?case
-          using "5"(17) "5"(12) "5"(13) "5"(7) "5"(8) "5"(20) list.collapse Sync.sym hd_Cons_tl by fastforce
-      next
-        case (6 x)
-        show ?case
-          using "6"(11) "6"(12) "6"(13) "6"(17) "6"(19) "6"(20) "6"(7) list.collapse by fastforce
-      next
-        case (7 x)
-        show ?case
-          using "7"(12) "7"(13) "7"(17) "7"(19) "7"(20) "7"(7) Sync.sym list.collapse by fastforce
-      next
-        case (8 x)
-        show ?case
-          using "8"(20) "8"(12) "8"(11) "8"(13) list.collapse Sync.sym "8"(12) "8"(13) "8"(17) "8"(7) hd_Cons_tl by fastforce
-      next
-        case (9 x)
-        show ?case
-          using "9"(20) Sync.sym "9"(12) "9"(13) list.exhaust_sel "9"(12) "9"(13) "9"(17) "9"(7) Sync.sym hd_Cons_tl by fastforce
-      qed
-      with 11 show ?case
-        by (metis Sync.sym append.right_neutral empty_setinterleaving)
-    next
-      case (12 u t r v aa a)
-      hence \<open>   (hd r = ev aa \<and> hd r \<in> ev ` B \<and> tl r setinterleaves ((t, tl u), insert tick (ev ` S))) 
-             \<or> (hd r = ev aa \<and> aa = a \<and> hd r \<in> ev ` (A' \<inter> B') \<and> tl r setinterleaves ((tl t, tl u), insert tick (ev ` S)))\<close> 
-      using si_neq[of \<open>hd t\<close> \<open>tl t\<close> \<open>insert tick (ev ` S)\<close> \<open>hd u\<close> \<open>tl u\<close>]
-      apply (simp del:si_neq split:if_splits) 
-            apply (simp add:  UnE disjoint_iff imageE insertI2 rev_image_eqI)
-            apply (metis (no_types, lifting) Int_iff Sync.sym Un_iff event.inject imageE image_eqI insertCI SyncSameHdTl)
-           apply (metis insert_iff SyncSameHdTl)
-          apply (metis (no_types, opaque_lifting) Sync.sym UnE image_Un insert_iff subset_eq subset_image_iff SyncHd_Tl SyncSameHdTl) 
-         apply (metis imageI subsetD) 
-        by (metis image_eqI subsetD)
-    with 12 show ?case
-      by (metis (no_types, lifting) Sync.sym append_Nil2 empty_setinterleaving)
-  qed    
+  } note ** = this
+  
+  have *** : \<open>X \<inter> ev ` (A' \<inter> B') = {} \<Longrightarrow> X \<inter> ev ` A = {} \<Longrightarrow> X \<inter> ev ` B = {} \<Longrightarrow> 
+              ([], X) \<in> \<F> (?lhs A A' P B B' Q)\<close>
+    apply (simp add: F_Sync, rule disjI1)
+    apply (rule_tac x = \<open>[]\<close> in exI, rule_tac x = \<open>[]\<close> in exI, simp add: F_Mprefix)
+    apply (rule_tac x = \<open>X - (ev ` (A' - B'))\<close> in exI, intro conjI, fastforce)
+    apply (rule_tac x = \<open>X - (ev ` (B' - A'))\<close> in exI, intro conjI, fastforce)
+    using sets_assms(2, 4) by auto
+
+  assume same_div : \<open>\<D> (?lhs A A' P B B' Q) = \<D> (?rhs A A' P B B' Q)\<close>
+  hence same_div_sym : \<open>\<D> (?lhs B B' Q A A' P) = \<D> (?rhs B B' Q A A' P)\<close>
+    by (subst Sync_commute, subst Int_commute, subst Det_commute, simp add: Sync_commute)
+  show \<open>(s, X) \<in> \<F> (?rhs A A' P B B' Q) \<Longrightarrow> (s, X) \<in> \<F> (?lhs A A' P B B' Q)\<close>
+    apply (auto simp add: F_Det)
+         apply (rule "***"; simp add: F_Mprefix)
+        apply (rule "*"; simp add: sets_assms same_div)
+       apply (subst (asm) Sync_commute, subst Sync_commute)
+       apply (rule "*"; simp add: sets_assms same_div_sym)
+      apply (erule "**", assumption, rule same_div)
+     apply (simp add: D_Mprefix D_Det)[1]
+    by (simp add: T_Mprefix T_Det)
 next
-  case (19 x)
-  then show ?case 
-  proof(elim exE disjE conjE, goal_cases)
-    case (1 a t u r v)
-    then show ?case 
-      apply(exI \<open>ev a#t\<close>, exI u, exI \<open>ev a#r\<close>, exI v, simp)
-      apply (safe, simp_all add: disjoint_iff image_iff SyncSingleHeadAdd)
-       by (metis list.exhaust_sel)
-  next
-    case (2 a t u r v aa)
-    then show ?case 
-      apply(exI \<open>ev a#t\<close>, exI u, exI \<open>ev a#r\<close>, exI v, simp) 
-      apply (safe, simp_all add: disjoint_iff image_iff SyncSingleHeadAdd)
-       by (metis list.exhaust_sel)
-  next
-    case (3 a t u r v aa)
-    then show ?case 
-      apply(exI \<open>ev a#t\<close>, exI u, exI \<open>ev a#r\<close>, exI v, simp) 
-      apply (safe, simp_all add: disjoint_iff image_iff SyncSingleHeadAdd)
-       by (metis list.exhaust_sel)
-  next
-    case (4 a t u r v aa)
-    then show ?case 
-      apply(exI \<open>t\<close>, exI  \<open>ev a#u\<close>, exI \<open>ev a#r\<close>, exI v, simp)
-      apply (safe, simp_all add: disjoint_iff image_iff in_mono SyncHdAdd1 SyncSingleHeadAdd)
-        apply (metis list.exhaust_sel)
-      apply (metis (no_types, opaque_lifting) Sync.sym event.inject event.simps(3) imageE insertE SyncSingleHeadAdd)
-       by (metis list.exhaust_sel)
-  next
-    case (5 a t u r v)
-    then show ?case
-      apply(exI \<open>ev a#t\<close>, exI u, exI \<open>ev a#r\<close>, exI v, simp)
-      apply (safe, simp_all)
-       apply blast
-      by (metis list.exhaust_sel)
-  next
-    case (6 a t u r v aa)
-    then show ?case
-      apply(exI \<open>ev a#t\<close>, exI u, exI \<open>ev a#r\<close>, exI v, simp) 
-      apply (safe, simp_all add: disjoint_iff_not_equal image_iff SyncSingleHeadAdd)
-       by (metis list.exhaust_sel)
-  next
-    case (7 a t u r v aa)
-    then show ?case 
-      apply(exI \<open>ev a#t\<close>, exI u, exI \<open>ev a#r\<close>, exI v, simp) 
-      apply (safe, simp_all add: disjoint_iff_not_equal image_iff SyncSingleHeadAdd)
-       by (metis list.exhaust_sel)
-  next
-    case (8 a t u r v aa)
-    then show ?case 
-      apply(exI \<open>t\<close>, exI  \<open>ev a#u\<close>, exI \<open>ev a#r\<close>, exI v, simp)
-      apply (safe, simp_all add: disjoint_iff image_iff in_mono SyncHdAdd1)
-        apply (metis list.exhaust_sel)
-       apply (metis (no_types, lifting) Sync.sym event.distinct(1) event.inject imageE insertE SyncSingleHeadAdd)
-      by (metis list.collapse)
-  next
-    case (9 a t u r v aa)
-    then show ?case 
-      apply(exI \<open>t\<close>, exI  \<open>ev a#u\<close>, exI \<open>ev a#r\<close>, exI v, simp)
-      apply (safe, simp_all add: disjoint_iff image_iff in_mono SyncHdAdd1)
-        apply (metis list.exhaust_sel)
-       apply (metis (no_types, lifting) Sync.sym event.distinct(1) event.inject imageE insertE SyncSingleHeadAdd)
-      by (metis list.collapse)
-  next
-    case (10 a t u r v)
-    then show ?case 
-      apply(exI \<open>ev a#t\<close>, exI u, exI \<open>ev a#r\<close>, exI v, simp)
-      apply (safe, simp_all add: disjoint_iff image_iff SyncSingleHeadAdd)
-      by (metis list.exhaust_sel)
-  next
-    case (11 a t u r v aa)
-    then show ?case 
-      apply(exI \<open>ev a#t\<close>, exI  \<open>u\<close>, exI \<open>ev a#r\<close>, exI v, simp) 
-      apply (safe, simp_all add: disjoint_iff image_iff SyncSingleHeadAdd)
-      by (metis list.exhaust_sel)
-  next
-    case (12 a t u r v aa)
-    then show ?case      
-      apply(exI \<open>ev a#t\<close>, exI  \<open>u\<close>, exI \<open>ev a#r\<close>, exI v, simp) 
-      apply (safe, simp_all add: disjoint_iff image_iff SyncSingleHeadAdd)
-      by (metis list.exhaust_sel)
-  next
-    case (13 a t u r v aa)
-    then show ?case
-      apply(exI \<open>t\<close>, exI  \<open>ev a#u\<close>, exI \<open>ev a#r\<close>, exI v, simp)
-      apply (safe, auto simp add: disjoint_iff image_iff subset_eq SyncHdAdd1)
-         apply (metis list.exhaust_sel)
-        apply (metis (no_types, lifting) Sync.sym  event.inject event.simps(3) imageE insertE SyncSingleHeadAdd)
-       by (metis hd_Cons_tl)
-  next
-    case (14 a t u r v)
-    then show ?case 
-      apply(exI \<open>ev a#t\<close>, exI u, exI \<open>ev a#r\<close>, exI v, simp)
-      apply (safe, simp_all add: disjoint_iff image_iff SyncSingleHeadAdd)
-      by (metis list.collapse)
-  next
-    case (15 a t u r v aa)
-    then show ?case 
-      apply(exI \<open>ev a#t\<close>, exI  \<open>u\<close>, exI \<open>ev a#r\<close>, exI v, simp) 
-      apply (safe, simp_all add: disjoint_iff image_iff SyncSingleHeadAdd)
-      by (metis list.exhaust_sel)
-  next
-    case (16 a t u r v aa)
-    then show ?case 
-      apply(exI \<open>ev a#t\<close>, exI  \<open>u\<close>, exI \<open>ev a#r\<close>, exI v, simp) 
-      apply (safe, simp_all add: disjoint_iff image_iff SyncSingleHeadAdd)
-      by (metis list.exhaust_sel)
-  next
-    case (17 a t u r v)
-    then show ?case 
-      apply(exI \<open>ev a#t\<close>, exI  \<open>ev a#u\<close>, exI \<open>ev a#r\<close>, exI v, simp) 
-      apply (safe, simp_all)
-        apply (metis list.exhaust_sel)
-      by blast+
-  next
-    case (18 a t u r v)
-    then show ?case 
-      apply(exI \<open>ev a#t\<close>, exI  \<open>ev a#u\<close>, exI \<open>ev a#r\<close>, exI v, simp) 
-      apply (safe, simp_all)
-        apply (metis list.exhaust_sel)
-      by blast+
-  next
-    case (19 a t u r v)
-    then show ?case 
-      apply(exI \<open>ev a#t\<close>, exI  \<open>ev a#u\<close>, exI \<open>ev a#r\<close>, exI v, simp) 
-      apply (safe, simp_all)
-        apply (metis list.exhaust_sel)
-      by blast+
-  next
-    case (20 a t u r v)
-    then show ?case 
-      apply(exI \<open>ev a#t\<close>, exI  \<open>ev a#u\<close>, exI \<open>ev a#r\<close>, exI v, simp) 
-      apply (safe, simp_all)
-        apply (metis list.exhaust_sel)
-      by blast+
+
+  { fix s t u r v P Q A A' B B'
+    assume assms : \<open>front_tickFree v\<close> \<open>tickFree r \<or> v = []\<close> \<open>s = r @ v\<close> 
+                   \<open>r setinterleaves ((t, u), insert tick (ev ` S))\<close> 
+                   \<open>t \<in> \<D> (Mprefix (A \<union> A') P)\<close> \<open>u \<in> \<T> (Mprefix (B \<union> B') Q)\<close>
+                   \<open>A \<inter> S = {}\<close> \<open>A' \<subseteq> S\<close> \<open>B \<inter> S = {}\<close> \<open>B' \<subseteq> S\<close>
+    from assms(5) obtain e where * : \<open>t \<noteq> []\<close> \<open>hd t = ev e\<close> \<open>tl t \<in> \<D> (P e)\<close> \<open>e \<in> A \<or> e \<in> A'\<close>
+      by (force simp add: D_Mprefix)
+    have nonNil: \<open>r \<noteq> [] \<and> s \<noteq> []\<close>
+      using *(1) assms(3, 4) empty_setinterleaving by blast
+    have \<open>s \<in> \<D> (?rhs A A' P B B' Q)\<close>
+    proof (cases \<open>u = []\<close>)
+      case True
+      hence \<open>hd s = ev e\<close> by (metis "*"(2) EmptyLeftSync Sync.sym assms(3, 4) hd_append nonNil)
+      also from "*"(1, 2, 4) Sync.sym assms(4, 8)[simplified True] have \<open>e \<in> A\<close> 
+        using emptyLeftNonSync hd_in_set by fastforce
+      ultimately show \<open>s \<in> \<D> (?rhs A A' P B B' Q)\<close>
+        apply (simp add: D_Det)
+        apply (rule disjI1, simp add: D_Mprefix nonNil D_Sync)
+        apply (rule_tac x = \<open>tl t\<close> in exI, rule_tac x = \<open>[]\<close> in exI,
+               rule_tac x = \<open>tl r\<close> in exI, rule_tac x = v in exI)
+        apply (auto simp add: assms(1, 3, 6)[simplified True] * nonNil)[1]
+         apply (metis assms(2) tickFree_tl)
+        using Sync.sym SyncTlEmpty True assms(4) by blast
+    next
+      case False
+      with assms(6) obtain e' where ** : \<open>hd u = ev e'\<close> \<open>tl u \<in> \<T> (Q e')\<close> \<open>e' \<in> B \<or> e' \<in> B'\<close>
+        by (auto simp add: T_Mprefix)
+      consider \<open>e  \<in> A \<and> hd s = ev e  \<and> tl r setinterleaves ((tl t, u), insert tick (ev ` S))\<close> | 
+               \<open>e' \<in> B \<and> hd s = ev e' \<and> tl r setinterleaves ((t, tl u), insert tick (ev ` S))\<close> | 
+               \<open>e = e' \<and> e \<in> A' \<and> e \<in> B' \<and> hd s = ev e \<and> 
+                tl r setinterleaves ((tl t, tl u), insert tick (ev ` S))\<close>
+        using assms(4) 
+        apply (subst (asm) list.collapse[OF nonNil[THEN conjunct1], symmetric],
+               subst (asm) list.collapse[OF *(1), symmetric, simplified *(2)],
+               subst (asm) list.collapse[OF False, symmetric, simplified **(1)])
+        apply (simp add: assms(3) nonNil image_iff split: if_split_asm)
+           apply (metis (no_types, opaque_lifting) *(4) **(3) Int_iff 
+                        assms(7, 9) empty_iff list.sel(1, 3))
+          apply (metis (no_types, opaque_lifting) *(1, 2) **(3) Int_iff 
+                       assms(10) inf.order_iff list.exhaust_sel list.sel(1, 3))
+         apply (metis (no_types, opaque_lifting) *(1, 2, 4) **(1, 3) Int_iff
+                      False assms(8, 10) inf.order_iff list.exhaust_sel list.sel(1, 3))
+        by (metis (no_types, opaque_lifting) *(4) **(1) False assms(8) 
+                  list.collapse list.sel(1, 3) subsetD)
+      thus \<open>s \<in> \<D> (?rhs A A' P B B' Q)\<close>
+        apply cases
+          apply (simp_all add: D_Det)
+          apply (rule disjI1, simp add: D_Mprefix nonNil D_Sync)
+          apply (rule_tac x = \<open>tl t\<close> in exI, rule_tac x = u in exI,
+                 rule_tac x = \<open>tl r\<close> in exI, rule_tac x = v in exI)
+          apply (simp add: assms(1, 3, 6) *(3) nonNil, use assms(2) nonNil tickFree_tl in blast)
+         apply (rule disjI2, rule disjI1, simp add: D_Mprefix nonNil D_Sync)
+         apply (rule_tac x = t in exI, rule_tac x = \<open>tl u\<close> in exI,
+                rule_tac x = \<open>tl r\<close> in exI, rule_tac x = v in exI)
+         apply (simp add: assms(1, 3, 5) **(2) nonNil,
+                metis "*" UnCI assms(2) image_eqI tickFree_tl)
+        apply (rule disjI2, rule disjI2, auto simp add: D_Mprefix nonNil image_iff)
+        apply (simp add: D_Sync)
+        apply (rule_tac x = \<open>tl t\<close> in exI, rule_tac x = \<open>tl u\<close> in exI,
+               rule_tac x = \<open>tl r\<close> in exI, rule_tac x = v in exI)
+        by (use *(3) **(2) assms(1, 2, 3) nonNil tickFree_tl in \<open>auto simp add: nonNil\<close>)
+    qed
+  } note * = this
+
+  fix s
+  assume \<open>s \<in> \<D> (?lhs A A' P B B' Q)\<close>
+  then obtain t u r v
+    where ** : \<open>front_tickFree v\<close> \<open>tickFree r \<or> v = []\<close> \<open>s = r @ v\<close> 
+               \<open>r setinterleaves ((t, u), insert tick (ev ` S))\<close> 
+               \<open>t \<in> \<D> (Mprefix (A \<union> A') P) \<and> u \<in> \<T> (Mprefix (B \<union> B') Q) \<or>
+                t \<in> \<D> (Mprefix (B \<union> B') Q) \<and> u \<in> \<T> (Mprefix (A \<union> A') P)\<close> 
+    by (simp add: D_Sync) blast
+  have same_div : \<open>\<D> (?rhs A A' P B B' Q) = \<D> (?rhs B B' Q A A' P)\<close>
+    by (subst Det_commute, subst Int_commute, simp add: Sync_commute)
+  from **(5) show \<open>s \<in> \<D> (?rhs A A' P B B' Q)\<close>
+    apply (rule disjE)
+    by (rule *[OF **(1, 2, 3, 4)]; simp add: sets_assms)
+       (subst same_div, rule *[OF **(1, 2, 3, 4)]; simp add: sets_assms)
+next
+
+  { fix A A' B B' P Q s
+    assume set_assm : \<open>A \<inter> S = {}\<close>
+    have \<open>s \<in> \<D> (\<box>x\<in>A \<rightarrow> (P x \<lbrakk>S\<rbrakk> Mprefix (B \<union> B') Q)) \<Longrightarrow> s \<in> \<D> (?lhs A A' P B B' Q)\<close>
+    proof (auto simp add: D_Mprefix)
+      fix e
+      assume assms: \<open>s \<noteq> []\<close> \<open>hd s = ev e\<close> \<open>e \<in> A\<close> \<open>tl s \<in> \<D> (P e \<lbrakk>S\<rbrakk> Mprefix (B \<union> B') Q)\<close>
+      from assms(4) obtain t u r v 
+        where * : \<open>front_tickFree v\<close> \<open>tickFree r \<or> v = []\<close> \<open>tl s = r @ v\<close>
+                  \<open>r setinterleaves ((t, u), insert tick (ev ` S))\<close>
+                  \<open>t \<in> \<D> (P e) \<and> u \<in> \<T> (Mprefix (B \<union> B') Q) \<or> 
+                   t \<in> \<D> (Mprefix (B \<union> B') Q) \<and> u \<in> \<T> (P e)\<close> by (simp add: D_Sync) blast
+      have notin: \<open>e \<notin> S\<close> using assms(3) set_assm by blast
+      show \<open>s \<in> \<D> (?lhs A A' P B B' Q)\<close>
+        apply (subst list.collapse[OF assms(1), symmetric], simp add: D_Sync assms(2))
+        using *(5) apply (rule disjE)
+  
+         apply (rule_tac x = \<open>ev e # t\<close> in exI, rule_tac x = u in exI, 
+                rule_tac x = \<open>ev e # r\<close> in exI, rule_tac x = v in exI)
+         apply (simp add: *(1, 2, 3, 4))
+         apply (cases u; simp add: notin image_iff T_Mprefix D_Mprefix)
+        using *(4) assms(3) apply (fast+)[2]
+  
+        apply (rule_tac x = t          in exI, rule_tac x = \<open>ev e # u\<close> in exI,
+               rule_tac x = \<open>ev e # r\<close> in exI, rule_tac x = v          in exI)
+         apply (simp add: *(1, 2, 3, 4))
+        apply (cases t; simp add: notin image_iff T_Mprefix D_Mprefix)
+        using *(4) assms(3) by blast
+    qed
+  } note * = this
+
+  show \<open>s \<in> \<D> (?rhs A A' P B B' Q) \<Longrightarrow> s \<in> \<D> (?lhs A A' P B B' Q)\<close> for s
+    apply (simp add: D_Det)
+    apply (erule disjE, rule *, simp_all add: sets_assms(1))
+    apply (erule disjE, subst Sync_commute, rule *, simp_all add: sets_assms(3) Sync_commute)
+  proof -
+    assume \<open>s \<in> \<D> (\<box>x \<in> A' \<inter> B' \<rightarrow> (P x \<lbrakk>S\<rbrakk> Q x))\<close>
+    then obtain e t u r v
+      where * : \<open>e \<in> A'\<close> \<open>e \<in> B'\<close> \<open>s \<noteq> []\<close> \<open>hd s = ev e\<close> \<open>front_tickFree v\<close> \<open>tickFree r \<or> v = []\<close>
+                \<open>tl s = r @ v\<close> \<open>r setinterleaves ((t, u), insert tick (ev ` S))\<close>
+                \<open>t \<in> \<D> (P e) \<and> u \<in> \<T> (Q e) \<or> t \<in> \<D> (Q e) \<and> u \<in> \<T> (P e)\<close> 
+      by (simp add: D_Mprefix D_Sync) force
+    have inside: \<open>e \<in> S\<close> using *(1) sets_assms(2) by blast
+    show \<open>s \<in> \<D> (?lhs A A' P B B' Q)\<close>
+      apply (subst list.collapse[OF *(3), symmetric], simp add: D_Sync)
+      apply (rule_tac x = \<open>ev e # t\<close> in exI, rule_tac x = \<open>ev e # u\<close> in exI,
+             rule_tac x = \<open>ev e # r\<close> in exI, rule_tac x = v in exI)
+      by (simp add: * inside D_Mprefix T_Mprefix)
   qed
 qed
 
@@ -3060,15 +2102,21 @@ qed
 (* useful version for later *)
 lemma Mprefix_Sync_distr_bis: 
   \<open>(Mprefix A P) \<lbrakk>S\<rbrakk> (Mprefix B Q) =
-   (\<box>x\<in>A - S \<rightarrow> (P x \<lbrakk>S\<rbrakk> Mprefix B Q)) \<box> (\<box>y\<in>B - S \<rightarrow> (Mprefix A P \<lbrakk>S\<rbrakk> Q y)) \<box> (\<box>x\<in>A \<inter> B \<inter> S \<rightarrow> (P x \<lbrakk>S\<rbrakk> Q x))\<close>
+       (\<box>x\<in>A - S \<rightarrow> (P x \<lbrakk>S\<rbrakk> Mprefix B Q)) 
+    \<box> (\<box>y\<in>B - S \<rightarrow> (Mprefix A P \<lbrakk>S\<rbrakk> Q y)) 
+    \<box> (\<box>x\<in>A \<inter> B \<inter> S \<rightarrow> (P x \<lbrakk>S\<rbrakk> Q x))\<close>
   by (subst Mprefix_Sync_distr[of \<open>A - S\<close> S \<open>A \<inter> S\<close> \<open>B - S\<close> \<open>B \<inter> S\<close>, simplified Un_Diff_Int])
      (simp_all add: Int_commute inf_left_commute)
 
 
-lemmas Mprefix_Sync_distr_subset = Mprefix_Sync_distr[where A = \<open>{}\<close> and B = \<open>{}\<close>, simplified, simplified Mprefix_STOP Det_STOP trans[OF Det_commute Det_STOP]]
-   and  Mprefix_Sync_distr_indep = Mprefix_Sync_distr[where A'= \<open>{}\<close> and B'= \<open>{}\<close>, simplified, simplified Mprefix_STOP Det_STOP] 
-   and  Mprefix_Sync_distr_right = Mprefix_Sync_distr[where A = \<open>{}\<close> and B'= \<open>{}\<close>, simplified, simplified Mprefix_STOP Det_STOP trans[OF Det_commute Det_STOP], rotated] 
-   and   Mprefix_Sync_distr_left = Mprefix_Sync_distr[where A'= \<open>{}\<close> and B = \<open>{}\<close>, simplified, simplified Mprefix_STOP Det_STOP trans[OF Det_commute Det_STOP]]
+lemmas Mprefix_Sync_distr_subset = Mprefix_Sync_distr[where A = \<open>{}\<close> 
+       and B = \<open>{}\<close>, simplified, simplified Mprefix_STOP Det_STOP trans[OF Det_commute Det_STOP]]
+   and Mprefix_Sync_distr_indep = Mprefix_Sync_distr[where A'= \<open>{}\<close> 
+       and B'= \<open>{}\<close>, simplified, simplified Mprefix_STOP Det_STOP] 
+   and Mprefix_Sync_distr_right = Mprefix_Sync_distr[where A = \<open>{}\<close> 
+       and B'= \<open>{}\<close>, simplified, simplified Mprefix_STOP Det_STOP trans[OF Det_commute Det_STOP], rotated] 
+   and Mprefix_Sync_distr_left = Mprefix_Sync_distr[where A'= \<open>{}\<close> 
+       and B = \<open>{}\<close>, simplified, simplified Mprefix_STOP Det_STOP trans[OF Det_commute Det_STOP]]
 
 
 lemma Mprefix_Sync_SKIP: "(Mprefix B P \<lbrakk> S \<rbrakk> SKIP) = (\<box> x \<in>  B - S \<rightarrow> (P x \<lbrakk> S \<rbrakk> SKIP))"
@@ -3081,14 +2129,23 @@ proof (auto simp add:Process_eq_spec_optimized, goal_cases)
         apply(intro conjI) 
           using empty_setinterleaving apply blast
          apply(elim disjE)
-            apply (metis (no_types, lifting) DiffI Sync.sym emptyLeftProperty empty_iff hd_append2 image_diff_subset insertI2 list.exhaust_sel setinterleaving.simps(2) subsetCE)
-           apply (metis D_imp_front_tickFree Sync.sym TickLeftSync empty_iff empty_setinterleaving event.distinct(1) ftf_Sync21 insertI1 list.expand list.sel(1) list.set_intros(1) SyncHd_Tl SyncSameHdTl tickFree_def)
+          apply (metis (no_types, lifting) DiffI Sync.sym emptyLeftProperty 
+                           empty_iff hd_append2 image_diff_subset insertI2 list.exhaust_sel 
+                           setinterleaving.simps(2) subsetCE)
+          apply (metis D_imp_front_tickFree Sync.sym TickLeftSync empty_iff 
+                          empty_setinterleaving event.distinct(1) ftf_Sync21 insertI1 SyncHd_Tl
+                          list.expand list.sel(1) list.set_intros(1)  SyncSameHdTl tickFree_def)
           using Sync.sym emptyLeftNonSync emptyLeftProperty hd_in_set apply fastforce
-         apply (metis (no_types, lifting) DiffI Sync.sym append_Nil2 event.distinct(1) image_diff_subset insertI1 insertI2 list.sel(1) subsetCE SyncHd_Tl SyncSameHdTl)
+          apply (metis (no_types, lifting) DiffI Sync.sym append_Nil2 event.distinct(1) 
+                        image_diff_subset insertI1 insertI2 list.sel(1) subsetCE SyncHd_Tl SyncSameHdTl)
         apply(rule_tac x="a" in exI, intro conjI) 
-         apply (metis Sync.sym emptyLeftProperty empty_setinterleaving hd_append2 insertI1 list.sel(1) SyncHd_Tl SyncSameHdTl)
-        apply(rule_tac x="tl t" in exI, rule_tac x="u" in exI, rule_tac x="tl r" in exI, rule_tac x="v" in exI)
-        by (metis (no_types, lifting) Sync.sym empty_setinterleaving event.distinct(1) insertI1 list.sel(1) SyncHd_Tl SyncSameHdTl SyncTlEmpty tickFree_tl tl_append2)
+           apply (metis Sync.sym emptyLeftProperty empty_setinterleaving hd_append2 insertI1 
+                       list.sel(1) SyncHd_Tl SyncSameHdTl)
+          apply(rule_tac x="tl t" in exI, rule_tac x="u" in exI, 
+                rule_tac x="tl r" in exI, rule_tac x="v" in exI)
+          by (metis (no_types, lifting) Sync.sym empty_setinterleaving 
+                    event.distinct(1) insertI1 list.sel(1) SyncHd_Tl SyncSameHdTl 
+                    SyncTlEmpty tickFree_tl tl_append2)
   qed
 next
   case (2 x)
@@ -3286,11 +2343,14 @@ next
           case 2111
           have "\<exists>t'\<in>range ft. t = take i t' \<longrightarrow> (set t \<subseteq> set (f 0) \<union> ev ` A \<and> length t \<le> i)" for i
             by simp (metis "211"(9) b)
-          hence "{t. \<exists>t'\<in>range ft. t = take i t'} \<subseteq> {t. set t \<subseteq> set (f 0) \<union> ev ` A \<and> length t \<le> i} " for i 
+          hence "   {t. \<exists>t'\<in>range ft. t = take i t'} 
+                 \<subseteq> {t. set t \<subseteq> set (f 0) \<union> ev ` A \<and> length t \<le> i} " for i 
             by auto (meson UnE c in_set_takeD subsetCE sup.boundedE)
-          with 2(1) finite_lists_length_le[of "set (f 0) \<union> ev ` A"] have "finite {t. \<exists>t'\<in>range ft. t = take i t'}" for i
+          with 2(1) finite_lists_length_le[of "set (f 0) \<union> ev ` A"]
+            have "finite {t. \<exists>t'\<in>range ft. t = take i t'}" for i
             by (meson List.finite_set finite_Un finite_imageI finite_subset)
-          from KoenigLemma[of "range ft", OF 2111(2), rule_format, OF this] obtain ftf::"nat \<Rightarrow> 'a event list" where 
+          from KoenigLemma[of "range ft", OF 2111(2), rule_format, OF this] 
+          obtain ftf::"nat \<Rightarrow> 'a event list" where 
             d:"strict_mono ftf \<and> range ftf \<subseteq> {t. \<exists>t'\<in>range ft. t \<le> t'}" by blast
           with c d[THEN conjunct2] have e:"range ftf \<subseteq> \<T> P" using is_processT3_ST_pref by blast
           define ftfs where f:"ftfs = ftf \<circ> (\<lambda>n. n + length (f 0))"
@@ -3315,7 +2375,8 @@ next
           } note f3 = this
           from d[THEN conjunct2] f obtain i where f4:"ftfs 0 \<le> ft i" by simp blast
           show ?case 
-            apply(rule_tac x="trace_hide (ft i) (ev ` A)" in exI, rule_tac x="trace_hide (fu i) (ev ` A)" in exI)
+            apply(rule_tac x="trace_hide (ft i) (ev ` A)" in exI, 
+                  rule_tac x="trace_hide (fu i) (ev ` A)" in exI)
             apply(rule_tac x="trace_hide (f i) (ev ` A)" in exI, rule_tac x="u" in exI)
           proof (intro conjI, goal_cases 21111 21112 21113 21114 21115)
             case 21111
@@ -3340,7 +2401,8 @@ next
             show ?case
               apply (rule disjI1, rule conjI, simp)
                apply(rule_tac x="ftfs 0" in exI, rule_tac x="trace_hide u (ev ` A)" in exI, intro conjI)
-              apply (metis f5 front_tickFree_Nil front_tickFree_mono ft_fu_f Hiding_fronttickFree is_processT2_TR)
+                  apply (metis f5 front_tickFree_Nil front_tickFree_mono ft_fu_f
+                               Hiding_fronttickFree is_processT2_TR)
               apply (metis f5 f6 tickFree_append)
                 apply (simp add: f5, rule disjI2, rule_tac x=ftfs in exI)  
                using f1 f2 f3 apply blast
@@ -3350,11 +2412,14 @@ next
           case 2112
           have "\<exists>t'\<in>range fu. t = take i t' \<longrightarrow> (set t \<subseteq> set (f 0) \<union> ev ` A \<and> length t \<le> i)" for i
             by simp (metis "211"(9) b)
-          hence "{t. \<exists>t'\<in>range fu. t = take i t'} \<subseteq> {t. set t \<subseteq> set (f 0) \<union> ev ` A \<and> length t \<le> i} " for i 
+          hence "   {t. \<exists>t'\<in>range fu. t = take i t'} 
+                  \<subseteq> {t. set t \<subseteq> set (f 0) \<union> ev ` A \<and> length t \<le> i} " for i 
             by auto (meson UnE c in_set_takeD subsetCE sup.boundedE)
-          with 2(1) finite_lists_length_le[of "set (f 0) \<union> ev ` A"] have "finite {t. \<exists>t'\<in>range fu. t = take i t'}" for i
+          with 2(1) finite_lists_length_le[of "set (f 0) \<union> ev ` A"] 
+          have "finite {t. \<exists>t'\<in>range fu. t = take i t'}" for i
             by (meson List.finite_set finite_Un finite_imageI finite_subset)
-          from KoenigLemma[of "range fu", OF 2112(2), rule_format, OF this] obtain fuf::"nat \<Rightarrow> 'a event list" where 
+          from KoenigLemma[of "range fu", OF 2112(2), rule_format, OF this] 
+          obtain fuf::"nat \<Rightarrow> 'a event list" where 
             d:"strict_mono fuf \<and> range fuf \<subseteq> {t. \<exists>t'\<in>range fu. t \<le> t'}" by blast
           with c d[THEN conjunct2] have e:"range fuf \<subseteq> \<T> Q" using is_processT3_ST_pref by blast
           define fufs where f:"fufs = fuf \<circ> (\<lambda>n. n + length (f 0))"
@@ -3405,7 +2470,8 @@ next
             show ?case
               apply (rule disjI2, rule conjI, simp)
                apply(rule_tac x="fufs 0" in exI, rule_tac x="trace_hide u (ev ` A)" in exI, intro conjI)
-              apply (metis f5 front_tickFree_Nil front_tickFree_mono ft_fu_f Hiding_fronttickFree is_processT2_TR)
+                  apply (metis f5 front_tickFree_Nil front_tickFree_mono ft_fu_f 
+                                  Hiding_fronttickFree is_processT2_TR)
               apply (metis f5 f6 tickFree_append)
                 apply (simp add: f5, rule disjI2, rule_tac x=fufs in exI)  
                using f1 f2 f3 apply blast
@@ -3504,9 +2570,9 @@ lemma Hiding_Sync_D2:
   shows     \<open>\<D> ((P \ A) \<lbrakk>S\<rbrakk> (Q \ A)) \<subseteq> \<D> ((P \<lbrakk>S\<rbrakk> Q) \ A)\<close>
 proof -
   { fix P Q   
-    have "{s. \<exists>t u r v. front_tickFree v \<and> (tickFree r \<or> v = []) \<and>
+    have \<open>{s. \<exists>t u r v. front_tickFree v \<and> (tickFree r \<or> v = []) \<and>
            s = r @ v \<and> r setinterleaves ((t, u), insert tick (ev ` S)) \<and>
-           (t \<in> \<D> (P \\ A) \<and> u \<in> \<T> (Q \\ A))} \<subseteq> \<D> ((P \<lbrakk>S\<rbrakk> Q) \\ A)"
+           (t \<in> \<D> (P \ A) \<and> u \<in> \<T> (Q \ A))} \<subseteq> \<D> ((P \<lbrakk>S\<rbrakk> Q) \ A)\<close>
     proof(simp add:D_Hiding D_Sync, intro subsetI CollectI, elim exE conjE CollectE, goal_cases a)
       case (a x t u r v ta1 ta2)
       from a(1,3-9) show ?case
@@ -3528,7 +2594,8 @@ proof -
             using * by blast
           from a(2) 11 a5 a6 show ?case
             apply(exI ra1, exI "r2@v", intro conjI, simp_all (asm_lr))
-              apply (metis a(5) append_Nil2 front_tickFree_append front_tickFree_mono ftf_Sync is_processT2_TR)
+              apply (metis a(5) append_Nil2 front_tickFree_append 
+                           front_tickFree_mono ftf_Sync is_processT2_TR)
              apply (metis equals0D ftf_Sync1 ftf_Sync21 insertI1 tickFree_def)
             using front_tickFree_Nil by blast
         next
@@ -3594,7 +2661,8 @@ proof -
             obtain uaa1 where a5:"u1 = trace_hide uaa1 (ev ` A) \<and> uaa1 \<le> (fa xa) \<and> uaa1 \<in> \<T> Q"
               by (metis "13"(17) is_processT3_ST le_list_def)
             from interleave_Hiding[OF _ 13(10)[simplified a5]] obtain rr1
-              where a6:"r1 = trace_hide rr1 (ev ` A) \<and> rr1 setinterleaves ((ta1, uaa1), insert tick (ev ` S))"
+              where a6:"  r1 = trace_hide rr1 (ev ` A) 
+                        \<and> rr1 setinterleaves ((ta1, uaa1), insert tick (ev ` S))"
               using * by blast
             from a(2) 13 a5 a6 show ?thesis
             apply(exI rr1, exI "r2@v", intro conjI, simp_all (asm_lr))
@@ -3719,11 +2787,13 @@ proof -
               using "22"(17) D_T is_processT3_ST le_list_def by blast
             from interleave_Hiding[OF _ a3[simplified a5]] 
             obtain ra1
-              where a6:"r1 = trace_hide ra1 (ev ` A) \<and> ra1 setinterleaves ((ta1, uaa1), insert tick (ev ` S))"
+              where a6:"  r1 = trace_hide ra1 (ev ` A) 
+                        \<and> ra1 setinterleaves ((ta1, uaa1), insert tick (ev ` S))"
               using * by blast
             from a(2) 22 a5 a6 show ?thesis
               apply(exI ra1, exI "r2@v", intro conjI, simp_all (asm_lr))
-                apply (metis a(5) append_Nil2 front_tickFree_append front_tickFree_mono ftf_Sync is_processT2_TR)
+                apply (metis a(5) append_Nil2 front_tickFree_append 
+                                  front_tickFree_mono ftf_Sync is_processT2_TR)
                apply (metis equals0D ftf_Sync1 ftf_Sync21 insertI1 tickFree_def)
              proof (rule_tac disjI2, exI "\<lambda>i. ra1@(tlf i)", intro conjI, goal_cases 211 212 213 214)
                case 211
@@ -3765,8 +2835,8 @@ proof -
               using * by blast
             from a(2) 22 a5 show ?thesis
               apply(exI rr1, exI "ra2@r2@v", intro conjI, simp_all (asm_lr))
-                 apply (metis a(5) a(8) aa2 front_tickFree_append front_tickFree_mono ftf_Sync Hiding_tickFree 
-                              is_processT2_TR self_append_conv tickFree_append)                
+                 apply (metis a(5) a(8) aa2 front_tickFree_append front_tickFree_mono is_processT2_TR
+                              ftf_Sync Hiding_tickFree   self_append_conv tickFree_append)                
                 apply (metis a6 ftf_Sync1 le_list_def tickFree_append tickFree_def)
                using a6 aa2 apply blast 
               using Sync.sym a6[THEN conjunct2] front_tickFree_Nil by (metis append_Nil2)
@@ -3797,11 +2867,13 @@ proof -
               using * by blast
             from a(2) 23 a5 a6 show ?thesis
             apply(exI rr1, exI "r2@v", intro conjI, simp_all (asm_lr))
-              apply (metis a(5) append_Nil2 front_tickFree_append front_tickFree_mono ftf_Sync is_processT2_TR)
-             apply (metis equals0D ftf_Sync1 ftf_Sync21 insertI1 tickFree_def)
+            apply (metis a(5) append_Nil2 front_tickFree_append front_tickFree_mono 
+                                  ftf_Sync is_processT2_TR)
+            apply (metis equals0D ftf_Sync1 ftf_Sync21 insertI1 tickFree_def)
             proof (rule_tac disjI2, exI "\<lambda>i. rr1@(tlf i)", intro conjI, goal_cases 211 212 213 214)
                case 211
-               then show ?case apply(rule_tac strict_monoI, drule_tac tlf_strict_mono, rule_tac less_append) by assumption
+               then show ?case 
+                 apply(rule_tac strict_monoI, drule_tac tlf_strict_mono, rule_tac less_append) by assumption
              next
                case 212
                have "(rr1@tlf i) setinterleaves ((f i, uaa1),insert tick (ev ` S))" for i
@@ -3824,7 +2896,9 @@ proof -
             case False
             with 23(16) obtain uaa1 where "u1 = trace_hide (fa 0) (ev ` A)@uaa1"
               by (metis "23"(20) append_eq_append_conv2 le_list_def)
-            with a3 interleave_append_sym[of r1 "trace_hide ta1 (ev ` A)" "insert tick (ev ` S)"  "trace_hide (fa 0) (ev ` A)" uaa1]  
+            with a3 interleave_append_sym[of r1 "trace_hide ta1 (ev ` A)" 
+                                                "insert tick (ev ` S)"  
+                                                "trace_hide (fa 0) (ev ` A)" uaa1]  
             obtain taa1 taa2 ra1 ra2
               where aa1:"trace_hide ta1 (ev ` A) = taa1 @ taa2" and aa2:"r1 = ra1 @ ra2" and 
                 aa3:"ra1 setinterleaves ((taa1, trace_hide (fa 0) (ev ` A)), insert tick (ev ` S))" and
@@ -3904,7 +2978,7 @@ proof(auto simp add: Process_eq_spec_optimized subset_antisym[OF Hiding_Sync_D1 
         by (metis (mono_tags, opaque_lifting) D_imp_front_tickFree append_Nil2 
                   front_tickFree_append ftf_Sync is_processT2_TR)
       from 112 have "t \<in> \<D> (P \<lbrakk>S\<rbrakk> Q)" by (simp add:D_Sync)
-      with 112(1,2,3) have "a \<in> \<D> ((P \<lbrakk>S\<rbrakk> Q) \\ A)" 
+      with 112(1,2,3) have \<open>a \<in> \<D> ((P \<lbrakk>S\<rbrakk> Q) \ A)\<close>
         apply (simp add:D_Hiding)
         proof(case_tac "tickFree t", goal_cases 1121 1122)
           case 1121
@@ -3920,14 +2994,14 @@ proof(auto simp add: Process_eq_spec_optimized subset_antisym[OF Hiding_Sync_D1 
         qed
       then show ?case
         apply(rule_tac disjI2)
-        using Hiding_Sync_D1[of A S P Q, OF 112(1,2)] D_Sync[of "P \\ A" S "Q \\ A"] by auto
+        using Hiding_Sync_D1[of A S P Q, OF 112(1,2)] D_Sync[of \<open>P \ A\<close> S \<open>Q \ A\<close>] by auto
     qed
   next
     case 12
-    hence "a \<in> \<D> ((P \<lbrakk>S\<rbrakk> Q) \\ A)" by (simp add:D_Hiding)
+    hence \<open>a \<in> \<D> ((P \<lbrakk>S\<rbrakk> Q) \ A)\<close> by (simp add:D_Hiding)
     then show ?case
       apply(rule_tac disjI2)
-      using Hiding_Sync_D1[of A S P Q, OF 12(1,2)] D_Sync[of "P \\ A" S "Q \\ A"] by auto
+      using Hiding_Sync_D1[of A S P Q, OF 12(1,2)] D_Sync[of \<open>P \ A\<close> S \<open>Q \ A\<close>] by auto
   qed 
 next
   case (2 a b)
@@ -3949,10 +3023,10 @@ next
         apply(rule_tac x="Y \<union> ev ` A" in exI, rule conjI) using is_processT4 by blast+
     next
       case (212 t u X Y)
-      hence "u \<in> \<D> (Q \\ A)" and "t \<in> \<T> (P \\ A)"  
+      hence \<open>u \<in> \<D> (Q \ A)\<close> and \<open>t \<in> \<T> (P \ A)\<close>  
          apply (simp add:D_Hiding)
         using "212"(8) F_T elemTIselemHT by blast
-      with 212(3,8) have "a \<in> \<D> (((P \\ A) \<lbrakk>S\<rbrakk> (Q \\ A)))" 
+      with 212(3,8) have \<open>a \<in> \<D> (((P \ A) \<lbrakk>S\<rbrakk> (Q \ A)))\<close> 
         apply (simp add:D_Sync)
         using Sync.sym front_tickFree_charn by blast
       then show ?case
@@ -3960,9 +3034,9 @@ next
         using Hiding_Sync_D2[of A S P Q, OF 2(2)] D_Hiding[of "(P \<lbrakk>S\<rbrakk> Q)", simplified] by auto
     next
       case (213 t u X Y)
-      hence "u \<in> \<T> (Q \\ A)" and "t \<in> \<D> (P \\ A)"  
+      hence \<open>u \<in> \<T> (Q \ A)\<close> and \<open>t \<in> \<D> (P \ A)\<close>  
         by (simp_all add:D_Hiding, metis F_T elemTIselemHT)
-      with 213(3,8) have "a \<in> \<D> (((P \\ A) \<lbrakk>S\<rbrakk> (Q \\ A)))"
+      with 213(3,8) have \<open>a \<in> \<D> (((P \ A) \<lbrakk>S\<rbrakk> (Q \ A)))\<close>
         apply (simp add:D_Sync)
         using Sync.sym front_tickFree_charn by blast
       then show ?case
@@ -3970,9 +3044,9 @@ next
         using Hiding_Sync_D2[of A S P Q, OF 2(2)] D_Hiding[of "(P \<lbrakk>S\<rbrakk> Q)", simplified] by auto
     next
       case (214 t u X Y)
-      hence "u \<in> \<T> (Q \\ A)" and "t \<in> \<D> (P \\ A)"
+      hence \<open>u \<in> \<T> (Q \ A)\<close> and \<open>t \<in> \<D> (P \ A)\<close>
         by (simp_all add:D_Hiding T_Hiding)
-      with 214(3,8) have "a \<in> \<D> (((P \\ A) \<lbrakk>S\<rbrakk> (Q \\ A)))"
+      with 214(3,8) have \<open>a \<in> \<D> (((P \ A) \<lbrakk>S\<rbrakk> (Q \ A)))\<close>
         apply (simp add:D_Sync)
         using Sync.sym front_tickFree_charn by blast
       then show ?case
@@ -4320,16 +3394,16 @@ next
   then show ?case using EmptyLeftSync Sync.sym tickFree_def by fastforce
 next
   case (3 b t r v)
-  then show ?case using EmptyLeftSync Sync.sym tickFree_def by blast
+  then show ?case using EmptyLeftSync Sync.sym is_processT7 by blast
 next
   case (4 t r v)
-  then show ?case using EmptyLeftSync Sync.sym by blast
+  then show ?case using EmptyLeftSync Sync.sym is_processT7 by blast
 next
   case (5 b t r)
-  then show ?case by (metis EmptyLeftSync Sync.sym is_processT)
+  then show ?case using EmptyLeftSync Sync.sym is_processT7 by blast
 next
   case (6 t r)
-  then show ?case using EmptyLeftSync Sync.sym tickFree_def by fastforce
+  then show ?case using EmptyLeftSync Sync.sym is_processT7 by blast
 next
   case (7 a b)
   then show ?case 
@@ -4346,27 +3420,28 @@ next
      apply (metis append_T_imp_tickFree list.distinct(1) singletonD)
     by blast
 next
-  case (9 b t1 t2)
-  hence "t1 setinterleaves ((t1, []), {tick})"
-    using emptyLeftSelf[of t1 "{tick}"] Sync.sym tickFree_def by fastforce
-  with 9(1)[THEN spec, THEN spec, of t1 t1, simplified] have False
-    using "9"(2) "9"(3) "9"(4) by blast
-  then show ?case ..
+  case (9 t X)
+  then show ?case
+    apply (cases \<open>tickFree t\<close>)
+    by (metis Sync.sym append.right_neutral emptyLeftSelf front_tickFree_Nil singletonD tickFree_def)
+       (metis D_T D_imp_front_tickFree Sync.sym append_single_T_imp_tickFree emptyLeftSelf 
+        front_tickFree_single is_processT9_S_swap nonTickFree_n_frontTickFree singletonD tickFree_def)
 next
   case (10 t r v)
-  then show ?case
-    apply(rule_tac x=r in exI, rule_tac x="v" in exI, auto)
-    using EmptyLeftSync Sync.sym by blast
+  then show ?case using EmptyLeftSync Sync.sym is_processT7 by blast
 next
   case (11 t r)
-  then show ?case
-    apply(rule_tac x=r in exI, rule_tac x="[]" in exI, simp)
-    using EmptyLeftSync Sync.sym tickFree_def by fastforce
+  then show ?case using Sync.sym emptyLeftProperty by blast
 next
-  case (12 t1 t2)
+  case (12 t)
   then show ?case
-    apply(rule_tac x=t1 in exI, rule_tac x=t1 in exI, rule_tac x=t2 in exI, simp)
-    by (metis Sync.sym emptyLeftSelf singletonD tickFree_def)
+    apply (cases \<open>tickFree t\<close>)
+     apply (rule_tac x = t in exI, rule_tac x = t in exI, simp,
+            metis Sync.sym emptyLeftSelf singletonD tickFree_def)
+    by (rule_tac x = \<open>butlast t\<close> in exI, rule_tac x = \<open>butlast t\<close> in exI, 
+        rule_tac x = \<open>[tick]\<close> in exI, simp,
+        metis D_imp_front_tickFree Sync.sym emptyLeftSelf front_tickFree_implies_tickFree tickFree_def
+              is_processT9_S_swap nonTickFree_n_frontTickFree singletonD snoc_eq_iff_butlast)
 qed
 
 
@@ -4582,7 +3657,245 @@ lemma write0_write_non_Sync:
   by (auto simp: Mprefix_Sync_distr_right)
 
 
+
+
+section \<open>Renaming operator laws\<close>
+
+lemma Renaming_BOT: \<open>Renaming \<bottom> f = \<bottom>\<close>
+  by (fastforce simp add: F_UU D_UU F_Renaming D_Renaming EvExt_tF EvExt_ftF
+                          Process_eq_spec front_tickFree_append intro: tickFree_Nil)+
   
+
+lemma Renaming_STOP: \<open>Renaming STOP f = STOP\<close>
+  by (subst Process_eq_spec) (simp add: EvExt_ftF F_STOP D_STOP F_Renaming D_Renaming)
+
+
+lemma Renaming_SKIP: \<open>Renaming SKIP f = SKIP\<close>
+  by (subst Process_eq_spec) (force simp add: EvExt_def F_SKIP D_SKIP F_Renaming D_Renaming)
+
+
+
+lemma Renaming_Ndet: \<open>Renaming (P \<sqinter> Q) f = Renaming P f \<sqinter> Renaming Q f\<close>
+  by (subst Process_eq_spec) (auto simp add: F_Renaming D_Renaming F_Ndet D_Ndet)
+
+
+lemma Renaming_Det:  \<open>Renaming (P \<box> Q) f = Renaming P f \<box> Renaming Q f\<close>
+proof (subst Process_eq_spec, intro iffI conjI subset_antisym)
+  show \<open>\<F> (Renaming (P \<box> Q) f) \<subseteq> \<F> (Renaming P f \<box> Renaming Q f)\<close>
+    apply (simp add: F_Renaming D_Renaming T_Renaming F_Det D_Det, safe,
+           simp_all add: is_processT6_S2)
+    by blast+ (metis EvExt_eq_tick, meson map_EvExt_tick)+
+next 
+  show \<open>\<F> (Renaming P f \<box> Renaming Q f) \<subseteq> \<F> (Renaming (P \<box> Q) f)\<close>
+    apply (simp add: F_Renaming D_Renaming T_Renaming F_Det D_Det, safe, simp_all)
+    by blast+ (metis EvExt_eq_tick, metis Cons_eq_append_conv EvExt_tF 
+                     list.map_disc_iff tickFree_Cons)+
+next
+  show \<open>\<D> (Renaming (P \<box> Q) f) \<subseteq> \<D> (Renaming P f \<box> Renaming Q f)\<close>
+    by (auto simp add: D_Renaming D_Det)
+next
+  show \<open>\<D> (Renaming P f \<box> Renaming Q f) \<subseteq> \<D> (Renaming (P \<box> Q) f)\<close>
+    by (auto simp add: D_Renaming D_Det)
+qed
+
+
+
+
+(* lemma THE_inj_trivial: \<open>inj f \<Longrightarrow> (THE x. f x = f a) = a\<close> by (simp add: inj_eq)
+
+lemma THE_inj_on_trivial: \<open>inj_on f A \<Longrightarrow> a \<in> A \<Longrightarrow> (THE x. x  \<in> A \<and> f x = f a) = a\<close> 
+  by (simp add: inj_onD the_equality)
+ *)
+
+(* TODO: Move this in Mprefix and Mndetprefix theories *)
+
+lemma mono_Mprefix_eq: \<open>\<forall>a \<in> A. P a = Q a \<Longrightarrow> Mprefix A P = Mprefix A Q\<close>
+  by (subst Process_eq_spec, auto simp add: F_Mprefix D_Mprefix)
+
+lemma mono_Mndetprefix_eq: \<open>\<forall>a \<in> A. P a = Q a \<Longrightarrow> Mndetprefix A P = Mndetprefix A Q\<close>
+  by (cases \<open>A = {}\<close>, simp) (subst Process_eq_spec, auto simp add: F_Mndetprefix D_Mndetprefix)
+
+
+
+
+lemma Renaming_Mprefix: \<open>Renaming (\<box> a \<in> A \<rightarrow> P (f a)) f = \<box> b \<in> f ` A \<rightarrow> Renaming (P b) f\<close>
+proof (subst Process_eq_spec, intro conjI subset_antisym)
+  show \<open>\<F> (Renaming (\<box> a \<in> A \<rightarrow> P (f a)) f) \<subseteq> \<F> (\<box> b \<in> f ` A \<rightarrow> Renaming (P b) f)\<close>
+    apply (simp add: F_Renaming F_Mprefix D_Mprefix, safe; 
+           auto simp add: hd_map_EvExt map_tl tickFree_tl)
+    by ((meson disjoint_iff ev_elem_anteced1 image_eqI)+)[3]
+next
+  show \<open>\<F> (\<box> b \<in> f ` A \<rightarrow> Renaming (P b) f) \<subseteq> \<F> (Renaming (\<box> a \<in> A \<rightarrow> P (f a)) f)\<close>
+    apply (simp add: F_Renaming F_Mprefix D_Mprefix, safe, simp_all)
+      apply (auto simp add: vimage_def image_def, insert hd_map_EvExt, fastforce)[1]
+     apply (rule_tac x = \<open>ev xa # s1\<close> in exI, simp,
+            metis hd_map hd_map_EvExt list.collapse list.discI list.sel(1))
+  proof goal_cases
+    case (1 a b xa aa s1 s2)
+    have \<open>s1 \<notin> \<D> (P (f xa))\<close>
+      apply (rule "1"(1)[rule_format, of \<open>ev xa # s1\<close> s2, simplified])
+      by (simp_all add: "1"(4, 6, 7)) 
+         (metis "1"(2, 3, 8) hd_map_EvExt list.collapse list.distinct(1) list.sel(1) list.simps(9))
+    with \<open>s1 \<in> \<D> (P (f xa))\<close> show ?case by blast
+  qed
+next
+  show \<open>\<D> (Renaming (\<box> a \<in> A \<rightarrow> P (f a)) f) \<subseteq> \<D> (\<box> b \<in> f ` A \<rightarrow> Renaming (P b) f)\<close>
+    apply (auto simp add: D_Mprefix D_Renaming hd_map_EvExt)
+    by (rule_tac x = \<open>tl s1\<close> in exI, simp add: map_tl tickFree_tl)
+next
+  show \<open>\<D> (\<box> b \<in> f ` A \<rightarrow> Renaming (P b) f) \<subseteq> \<D> (Renaming (\<box> a \<in> A \<rightarrow> P (f a)) f)\<close>
+    apply (auto simp add: D_Mprefix D_Renaming)
+    by (rule_tac x = \<open>ev xb # s1\<close> in exI, simp, rule_tac x = s2 in exI, simp)
+       (metis EvExt_def event.case(1) list.collapse o_apply)
+qed
+
+
+
+lemma Renaming_Mprefix_inj_on:
+  \<open>Renaming (Mprefix A P) f = \<box> b \<in> f ` A \<rightarrow> Renaming (P (THE a. a \<in> A \<and> f a = b)) f\<close> 
+  if inj_on_f: \<open>inj_on f A\<close>
+  apply (subst Renaming_Mprefix[symmetric])
+  apply (intro arg_cong[where f = \<open>\<lambda>Q. Renaming Q f\<close>] mono_Mprefix_eq)
+  by (metis that the_inv_into_def the_inv_into_f_f)
+
+
+corollary Renaming_Mprefix_inj:
+  \<open>Renaming (Mprefix A P) f = \<box> b \<in> f ` A \<rightarrow> Renaming (P (THE a. f a = b)) f\<close> if inj_f: \<open>inj f\<close>
+  apply (subst Renaming_Mprefix_inj_on, metis inj_eq inj_onI that)
+  apply (rule mono_Mprefix_eq[rule_format])
+  by (metis imageE inj_eq[OF inj_f])
+
+
+
+text \<open>A smart application (as \<^term>\<open>f\<close> is of course injective on the singleton \<^term>\<open>{a}\<close>)\<close>
+
+corollary Renaming_prefix: \<open>Renaming (a \<rightarrow> P) f = (f a \<rightarrow> Renaming P f)\<close>
+  unfolding write0_def by (simp add: Renaming_Mprefix_inj_on)
+
+(* TODO: write corollaries on read and write *)
+
+
+
+lemma Renaming_Mndetprefix: \<open>Renaming (\<sqinter> a \<in> A \<rightarrow> P (f a)) f = \<sqinter> b \<in> f ` A \<rightarrow> Renaming (P b) f\<close>
+  apply (cases \<open>A = {}\<close>, simp add: Renaming_STOP)
+  by (subst Process_eq_spec)
+     (auto simp add: F_Renaming F_Mndetprefix D_Renaming D_Mndetprefix Renaming_prefix[symmetric])
+
+
+corollary Renaming_Mndetprefix_inj_on:
+  \<open>Renaming (Mndetprefix A P) f = \<sqinter> b \<in> f ` A \<rightarrow> Renaming (P (THE a. a \<in> A \<and> f a = b)) f\<close> 
+  if inj_on_f: \<open>inj_on f A\<close>
+  apply (subst Renaming_Mndetprefix[symmetric])
+  apply (intro arg_cong[where f = \<open>\<lambda>Q. Renaming Q f\<close>] mono_Mndetprefix_eq)
+  by (metis that the_inv_into_def the_inv_into_f_f)
+  
+
+
+corollary Renaming_Mndetprefix_inj:
+  \<open>Renaming (Mndetprefix A P) f = \<sqinter> b \<in> f ` A \<rightarrow>  Renaming (P (THE a. f a = b)) f\<close> 
+  if inj_f: \<open>inj f\<close>
+  apply (subst Renaming_Mndetprefix_inj_on, metis inj_eq inj_onI that)
+  apply (rule mono_Mndetprefix_eq[rule_format])
+  by (metis imageE inj_eq[OF inj_f])
+
+
+
+
+
+
+lemma Renaming_Seq: \<open>Renaming (P \<^bold>; Q) f = Renaming P f \<^bold>; Renaming Q f\<close>
+proof (subst Process_eq_spec, intro conjI impI subset_antisym)
+  show \<open>\<F> (Renaming (P \<^bold>; Q) f) \<subseteq> \<F> (Renaming P f \<^bold>; Renaming Q f)\<close>
+    apply (simp add: F_Seq D_Seq F_Renaming D_Renaming T_Renaming, safe;
+           auto simp add: EvExt_tF append_single_T_imp_tickFree)
+          apply (rule_tac x = s1 in exI)
+          apply (metis Diff_insert_absorb Diff_single_insert anteced_EvExt_diff_tick
+                       insert_absorb insert_absorb2 is_processT4 subset_insertI)
+         apply (rule_tac x = \<open>t1 @ t2\<close> in exI, metis map_EvExt_tick map_append)
+        apply (metis map_EvExt_tick map_append)
+       apply (metis NF_ND)
+      apply (metis EvExt_ftF front_tickFree_mono map_append nonTickFree_n_frontTickFree
+                   non_tickFree_tick process_charn tickFree_Nil)
+     apply (rule_tac x = \<open>t1 @ t2\<close> in exI)
+    by (metis map_EvExt_tick map_append)+
+next
+  show \<open>\<F> (Renaming P f \<^bold>; Renaming Q f) \<subseteq> \<F> (Renaming (P \<^bold>; Q) f)\<close>
+  proof ((simp add: F_Seq D_Seq F_Renaming D_Renaming T_Renaming subset_iff, safe; auto), 
+         goal_cases)
+    case (1 Y s1)
+    then show ?case
+      apply (rule_tac x = \<open>s1\<close> in exI, safe; simp add: EvExt_tF)
+      by (metis (no_types, lifting) Diff_insert_absorb anteced_EvExt_diff_tick insert_Diff 
+                                    insert_absorb insert_iff tick_elem_anteced1)
+  next
+    case (2 Y t1 t1a s1)
+    then show ?case 
+      apply (rule_tac x = \<open>butlast t1a @ s1\<close> in exI)
+      by (metis (no_types, opaque_lifting) EvExt_tF T_nonTickFree_imp_decomp butlast_snoc 
+                                           map_append map_butlast non_tickFree_tick tickFree_append)
+  next
+    case (3 Y t1 t1a s1 s2)
+    have \<open>butlast t1a @ s1 \<notin> \<D> P \<and> 
+          (\<forall>t1. t1 @ [tick] \<in> \<T> P \<longrightarrow> (\<forall>t2. butlast t1a @ s1 = t1 @ t2 \<longrightarrow> t2 \<notin> \<D> Q))\<close>
+      apply (rule "3"(1)[rule_format, of \<open>butlast t1a @ s1\<close>, rotated 2, OF "3"(5)])
+      using "3"(2) "3"(4) front_tickFree_butlast is_processT2_TR tickFree_append apply blast
+      by (metis "3"(3) append.assoc butlast_snoc map_append map_butlast)
+    then show ?case 
+      by (metis "3"(2, 3, 6) EvExt_tF T_nonTickFree_imp_decomp snoc_eq_iff_butlast tickFree_butlast)
+  next
+    case (4 Y t1 t1a t2a s1)
+    have \<open>(if t2a = [] then butlast t1a else t1a) \<notin> \<D> P \<and> 
+          (\<forall>t1. t1 @ [tick] \<in> \<T> P \<longrightarrow> 
+                (\<forall>t2. (if t2a = [] then butlast t1a else t1a) = t1 @ t2 \<longrightarrow> t2 \<notin> \<D> Q))\<close>
+      apply (rule "4"(1)[rule_format, of _ \<open>butlast t2a @ map (EvExt f) s1\<close>])
+      using "4"(2) front_tickFree_butlast tickFree_implies_front_tickFree apply fastforce
+       apply (auto, metis "4"(4) append.right_neutral butlast_snoc map_butlast, 
+                    metis "4"(4) butlast_append butlast_snoc)
+      by (metis "4"(3, 6) EvExt_ftF front_tickFree_append front_tickFree_butlast is_processT2)
+    then show ?case
+      by (metis "4"(2, 4, 5) EvExt_tF append.right_neutral tickFree_Cons tickFree_append)
+  next
+    case (5 Y t1 t1a t2a s1 s2)
+    have \<open>(if t2a = [] then butlast t1a else t1a) \<notin> \<D> P \<and> 
+          (\<forall>t1. t1 @ [tick] \<in> \<T> P \<longrightarrow> 
+                (\<forall>t2. (if t2a = [] then butlast t1a else t1a) = t1 @ t2 \<longrightarrow> t2 \<notin> \<D> Q))\<close>
+      apply (rule "5"(1)[rule_format, of _ \<open>butlast t2a @ map (EvExt f) s1 @ s2\<close>])
+      using "5"(2) tickFree_butlast apply fastforce
+       apply (auto, metis "5"(4) append.right_neutral butlast_snoc map_butlast, 
+                    metis "5"(4) butlast_append butlast_snoc)
+      by (metis "5"(3, 6, 7) EvExt_tF front_tickFree_append front_tickFree_butlast)
+    then show ?case
+      by (metis "5"(2, 4, 5) EvExt_tF append_Nil2 non_tickFree_tick tickFree_append)
+  qed
+next
+  show \<open>\<D> (Renaming (P \<^bold>; Q) f) \<subseteq> \<D> (Renaming P f \<^bold>; Renaming Q f)\<close>
+    apply (auto simp add: D_Seq D_Renaming T_Renaming)
+    by (metis map_EvExt_tick map_append)
+next
+  show \<open>\<D> (Renaming P f \<^bold>; Renaming Q f) \<subseteq> \<D> (Renaming (P \<^bold>; Q) f)\<close>
+    apply (auto simp add: D_Seq D_Renaming T_Renaming)
+     apply (rule_tac x = \<open>butlast t1a @ s1\<close> in exI, auto,
+            metis append_butlast_last_id append_single_T_imp_tickFree butlast.simps(1) tickFree_Nil)
+     apply (rule_tac x = s2 in exI, auto, metis butlast_snoc map_butlast,
+            metis EvExt_tF T_nonTickFree_imp_decomp snoc_eq_iff_butlast tickFree_butlast)
+    apply (rule_tac x = \<open>t1a\<close> in exI, simp)
+    apply (rule_tac x = \<open>butlast t2a @ map (EvExt f) s1 @ s2\<close> in exI, auto)
+     apply (meson EvExt_tF front_tickFree_append front_tickFree_butlast)
+    by (metis EvExt_tF butlast_append butlast_snoc non_tickFree_tick tickFree_append)
+qed
+
+
+(* TODO: Renaming of Hiding and Renaming of Sync *)
+
+
+
+
+
+
+
+  
+
+
 
 
 (* ************************************************************************* *)

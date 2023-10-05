@@ -101,8 +101,11 @@ Roscoe's Book@{cite "roscoe:csp:1998" }. It contains a number of new theorems an
 \<^enum> @{term \<open>P \ (A \<union> B) = (P \ A) \ B\<close>} is true for @{term "finite A"} (see @{thm Hiding_Un});
   this was not even proven in HOL-CSP 1.0 for the singleton case! It can be considered as the
   most complex theorem of this theory.
-\<^enum> distribution laws of hiding over synchronisation @{thm Hiding_Sync}; 
+\<^enum> distribution laws of \<^const>\<open>Hiding\<close> over \<^const>\<open>Sync\<close> @{thm Hiding_Sync}; 
   however, this works only in the finite case. A true monster proof.
+\<^enum> distribution of \<^const>\<open>Mprefix\<close> over \<^const>\<open>Sync\<close> @{thm Mprefix_Sync_distr} in the most
+  generalized case. Also a true monster proof, but reworked using symmetries and
+  abstractions to be more reasonable (and faster) 
 \<^enum> the synchronization operator is associative @{thm "Sync_assoc"}.
   (In HOL-CSP 1.0, this had only be shown for special cases like @{thm "Par_assoc"}).
 \<^enum> the generalized non-deterministic choice operator --- relevant for proofs of deadlock-freeness ---

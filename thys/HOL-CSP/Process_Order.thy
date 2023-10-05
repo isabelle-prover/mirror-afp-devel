@@ -3,7 +3,7 @@
  * Project         : CSP-RefTK - A Refinement Toolkit for HOL-CSP
  * Version         : 1.0
  *
- * Author          : Burkhart Wolff, Safouan Taha, Lina Ye, Benoît Ballenghien, Catherine Dubois
+ * Author          : Burkhart Wolff, Safouan Taha, Lina Ye, Benoît Ballenghien
  *
  * This file       : A Normalization Theory
  *
