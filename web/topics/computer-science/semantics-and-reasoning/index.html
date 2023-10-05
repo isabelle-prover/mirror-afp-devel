@@ -1,213 +1,280 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Computer science/Semantics and reasoning - Archive of Formal Proofs</title><meta name="description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."><link rel="alternate" type="application/rss+xml" href="../../../topics/computer-science/semantics-and-reasoning/index.xml" title="Archive of Formal Proofs" /><meta property="og:title" content="Computer science/Semantics and reasoning" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Computer science/Semantics and reasoning - Archive of Formal Proofs</title>
+    <meta name="description" content="A collection of proof libraries, examples, and larger
+     scientific developments, mechanically checked in the theorem prover Isabelle.">
+  <link rel="alternate" type="application/rss+xml" href="../../../topics/computer-science/semantics-and-reasoning/index.xml" title="Archive of Formal Proofs" />
+
+  <meta property="og:title" content="Computer science/Semantics and reasoning" />
 <meta property="og:description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="/topics/computer-science/semantics-and-reasoning/" /><meta property="og:image" content="/images/afp.png"/><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="Computer science/Semantics and reasoning"/>
 <meta name="twitter:description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."/>
 
-  
   <link rel="stylesheet" type="text/css" href="../../../css/front.min.css">
 
-  <link rel="icon" href="../../../images/favicon.ico" type="image/icon"><script src="../../../js/obfuscate.js"></script>
+  <link rel="icon" href="../../../images/favicon.ico" type="image/icon">
+
+  <script src="../../../js/obfuscate.js"></script>
   <script src="../../../js/flexsearch.bundle.js"></script>
   <script src="../../../js/scroll-spy.js"></script>
   <script src="../../../js/theory.js"></script>
-  <script src="../../../js/util.js"></script><script src="../../../js/header-search.js"></script><script src="../../../js/search-autocomplete.js"></script>
+  <script src="../../../js/util.js"></script>
+    <script src="../../../js/header-search.js"></script>
+  <script src="../../../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../../../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../../../" class='logo-link'>
-    <img src="../../../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../../../" class="logo-link">
+    <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../../../search"><img src="../../../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../../../" class='logo-link'>
-        <img src="../../../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../../../"><li >Home</li></a>
-        <a href="../../../topics/"><li >Topics</li></a>
-        <a href="../../../download/"><li >Download</li></a>
-        <a href="../../../help/"><li >Help</li></a>
-        <a href="../../../submission/"><li >Submission</li></a>
-        <a href="../../../statistics/"><li >Statistics</li></a>
-        <a href="../../../about/"><li >About</li></a>
+          <a href="../../../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../../../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../../../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../../../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../../../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../../../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../../../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content '><header>
-  <form autocomplete="off" action="../../../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../../../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>C</span>omputer science/<span class='first'>S</span>emantics and reasoning</h1>
+    </aside>
+    <div class='content'>
+      <header>
+    <form autocomplete="off" action="../../../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../../../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>C</span>omputer science/<span class='first'>S</span>emantics and reasoning
+    
+  </h1>
   <div>
-    
-    
   </div>
-</header><div><h2>Subject Classification</h2><p>ACM: <a href="https://dl.acm.org/topic/ccs2012/10003752.10010124">Theory of computation~Semantics and reasoning</a></p><p>AMS: <a href="https://mathscinet.ams.org/mathscinet/msc/msc2020.html?t=68Q55">Computer science / Theory of computing / Semantics in the theory of computing</a></p><h2 class="head">2023</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Quantales_Converse.html">Modal quantales, involutive quantales, Dedekind Quantales</a></h5> <br>by <a href="../../../authors/struth">Georg Struth</a> and <a href="../../../authors/calk">Cameron Calk</a></div>
-  <span class="date">
-    Jul 25
-  </span>
-</article>
+</header>
+      <div>
+        
+    <h2>Subject Classification</h2>
+      <p>ACM: <a href="https://dl.acm.org/topic/ccs2012/10003752.10010124">Theory of computation~Semantics and reasoning</a></p>
+      <p>AMS: <a href="https://mathscinet.ams.org/mathscinet/msc/msc2020.html?t=68Q55">Computer science / Theory of computing / Semantics in the theory of computing</a></p>
+    <h2 class="head">2023</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Quantales_Converse.html">Modal quantales, involutive quantales, Dedekind Quantales</a></h5>
+          <br>
+            by <a href="../../../authors/struth">Georg Struth</a> and <a href="../../../authors/calk">Cameron Calk</a>
 
+        </div>
+        <span class="date">Jul 25</span>
+      </article>
+    <h2 class="head">2022</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/CHERI-C_Memory_Model.html">A Formal CHERI-C Memory Model</a></h5>
+          <br>
+            by <a href="../../../authors/park">Seung Hoon Park</a>
 
-<h2 class="head">2022</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/CHERI-C_Memory_Model.html">A Formal CHERI-C Memory Model</a></h5> <br>by <a href="../../../authors/park">Seung Hoon Park</a></div>
-  <span class="date">
-    Nov 25
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Solidity.html">Isabelle/Solidity: A deep Embedding of Solidity in Isabelle/HOL</a></h5> <br>by <a href="../../../authors/marmsoler">Diego Marmsoler</a> and <a href="../../../authors/brucker">Achim D. Brucker</a></div>
-  <span class="date">
-    Jul 18
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Quasi_Borel_Spaces.html">Quasi-Borel Spaces</a></h5> <br>by <a href="../../../authors/hirata">Michikazu Hirata</a>, <a href="../../../authors/minamide">Yasuhiko Minamide</a> and <a href="../../../authors/sato">Tetsuya Sato</a></div>
-  <span class="date">
-    Feb 03
-  </span>
-</article>
+        </div>
+        <span class="date">Nov 25</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Solidity.html">Isabelle/Solidity: A deep Embedding of Solidity in Isabelle/HOL</a></h5>
+          <br>
+            by <a href="../../../authors/marmsoler">Diego Marmsoler</a> and <a href="../../../authors/brucker">Achim D. Brucker</a>
 
+        </div>
+        <span class="date">Jul 18</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Quasi_Borel_Spaces.html">Quasi-Borel Spaces</a></h5>
+          <br>
+            by <a href="../../../authors/hirata">Michikazu Hirata</a>, <a href="../../../authors/minamide">Yasuhiko Minamide</a> and <a href="../../../authors/sato">Tetsuya Sato</a>
 
-<h2 class="head">2021</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Registers.html">Quantum and Classical Registers</a></h5> <br>by <a href="../../../authors/unruh">Dominique Unruh</a></div>
-  <span class="date">
-    Oct 28
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/X86_Semantics.html">X86 instruction semantics and basic block symbolic execution</a></h5> <br>by <a href="../../../authors/verbeek">Freek Verbeek</a>, <a href="../../../authors/bharadwaj">Abhijith Bharadwaj</a>, <a href="../../../authors/bockenek">Joshua Bockenek</a>, <a href="../../../authors/roessle">Ian Roessle</a>, <a href="../../../authors/weerwag">Timmy Weerwag</a> and <a href="../../../authors/ravindran">Binoy Ravindran</a></div>
-  <span class="date">
-    Oct 13
-  </span>
-</article>
+        </div>
+        <span class="date">Feb 03</span>
+      </article>
+    <h2 class="head">2021</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Registers.html">Quantum and Classical Registers</a></h5>
+          <br>
+            by <a href="../../../authors/unruh">Dominique Unruh</a>
 
+        </div>
+        <span class="date">Oct 28</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/X86_Semantics.html">X86 instruction semantics and basic block symbolic execution</a></h5>
+          <br>
+            by <a href="../../../authors/verbeek">Freek Verbeek</a>, <a href="../../../authors/bharadwaj">Abhijith Bharadwaj</a>, <a href="../../../authors/bockenek">Joshua Bockenek</a>, <a href="../../../authors/roessle">Ian Roessle</a>, <a href="../../../authors/weerwag">Timmy Weerwag</a> and <a href="../../../authors/ravindran">Binoy Ravindran</a>
 
-<h2 class="head">2020</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/CSP_RefTK.html">The HOL-CSP Refinement Toolkit</a></h5> <br>by <a href="../../../authors/taha">Safouan Taha</a>, <a href="../../../authors/wolff">Burkhart Wolff</a> and <a href="../../../authors/ye">Lina Ye</a></div>
-  <span class="date">
-    Nov 19
-  </span>
-</article>
+        </div>
+        <span class="date">Oct 13</span>
+      </article>
+    <h2 class="head">2020</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/CSP_RefTK.html">The HOL-CSP Refinement Toolkit</a></h5>
+          <br>
+            by <a href="../../../authors/taha">Safouan Taha</a>, <a href="../../../authors/wolff">Burkhart Wolff</a> and <a href="../../../authors/ye">Lina Ye</a>
 
+        </div>
+        <span class="date">Nov 19</span>
+      </article>
+    <h2 class="head">2019</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Isabelle_C.html">Isabelle/C</a></h5>
+          <br>
+            by <a href="../../../authors/tuong">Frédéric Tuong</a> and <a href="../../../authors/wolff">Burkhart Wolff</a>
 
-<h2 class="head">2019</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Isabelle_C.html">Isabelle/C</a></h5> <br>by <a href="../../../authors/tuong">Frédéric Tuong</a> and <a href="../../../authors/wolff">Burkhart Wolff</a></div>
-  <span class="date">
-    Oct 22
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Clean.html">Clean - An Abstract Imperative Programming Language and its Theory</a></h5> <br>by <a href="../../../authors/tuong">Frédéric Tuong</a> and <a href="../../../authors/wolff">Burkhart Wolff</a></div>
-  <span class="date">
-    Oct 04
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/TESL_Language.html">A Formal Development of a Polychronous Polytimed Coordination Language</a></h5> <br>by <a href="../../../authors/van">Hai Nguyen Van</a>, <a href="../../../authors/boulanger">Frédéric Boulanger</a> and <a href="../../../authors/wolff">Burkhart Wolff</a></div>
-  <span class="date">
-    Jul 30
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/HOL-CSP.html">HOL-CSP Version 2.0</a></h5> <br>by <a href="../../../authors/taha">Safouan Taha</a>, <a href="../../../authors/ye">Lina Ye</a> and <a href="../../../authors/wolff">Burkhart Wolff</a></div>
-  <span class="date">
-    Apr 26
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/QHLProver.html">Quantum Hoare Logic</a></h5> <br>by <a href="../../../authors/liu">Junyi Liu</a>, <a href="../../../authors/zhan">Bohua Zhan</a>, <a href="../../../authors/wang">Shuling Wang</a>, <a href="../../../authors/ying">Shenggang Ying</a>, <a href="../../../authors/liut">Tao Liu</a>, <a href="../../../authors/liy">Yangjia Li</a>, <a href="../../../authors/yingm">Mingsheng Ying</a> and <a href="../../../authors/zhann">Naijun Zhan</a></div>
-  <span class="date">
-    Mar 24
-  </span>
-</article>
+        </div>
+        <span class="date">Oct 22</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Clean.html">Clean - An Abstract Imperative Programming Language and its Theory</a></h5>
+          <br>
+            by <a href="../../../authors/tuong">Frédéric Tuong</a> and <a href="../../../authors/wolff">Burkhart Wolff</a>
 
+        </div>
+        <span class="date">Oct 04</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/TESL_Language.html">A Formal Development of a Polychronous Polytimed Coordination Language</a></h5>
+          <br>
+            by <a href="../../../authors/van">Hai Nguyen Van</a>, <a href="../../../authors/boulanger">Frédéric Boulanger</a> and <a href="../../../authors/wolff">Burkhart Wolff</a>
 
-<h2 class="head">2018</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Transformer_Semantics.html">Transformer Semantics</a></h5> <br>by <a href="../../../authors/struth">Georg Struth</a></div>
-  <span class="date">
-    Dec 11
-  </span>
-</article>
+        </div>
+        <span class="date">Jul 30</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/HOL-CSP.html">HOL-CSP Version 2.0</a></h5>
+          <br>
+            by <a href="../../../authors/taha">Safouan Taha</a>, <a href="../../../authors/ye">Lina Ye</a> and <a href="../../../authors/wolff">Burkhart Wolff</a>
 
+        </div>
+        <span class="date">Apr 26</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/QHLProver.html">Quantum Hoare Logic</a></h5>
+          <br>
+            by <a href="../../../authors/liu">Junyi Liu</a>, <a href="../../../authors/zhan">Bohua Zhan</a>, <a href="../../../authors/wang">Shuling Wang</a>, <a href="../../../authors/ying">Shenggang Ying</a>, <a href="../../../authors/liut">Tao Liu</a>, <a href="../../../authors/liy">Yangjia Li</a>, <a href="../../../authors/yingm">Mingsheng Ying</a> and <a href="../../../authors/zhann">Naijun Zhan</a>
 
-<h2 class="head">2016</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Refine_Imperative_HOL.html">The Imperative Refinement Framework</a></h5> <br>by <a href="../../../authors/lammich">Peter Lammich</a></div>
-  <span class="date">
-    Aug 08
-  </span>
-</article>
+        </div>
+        <span class="date">Mar 24</span>
+      </article>
+    <h2 class="head">2018</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Transformer_Semantics.html">Transformer Semantics</a></h5>
+          <br>
+            by <a href="../../../authors/struth">Georg Struth</a>
 
+        </div>
+        <span class="date">Dec 11</span>
+      </article>
+    <h2 class="head">2016</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Refine_Imperative_HOL.html">The Imperative Refinement Framework</a></h5>
+          <br>
+            by <a href="../../../authors/lammich">Peter Lammich</a>
 
-<h2 class="head">2013</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Launchbury.html">The Correctness of Launchbury&#39;s Natural Semantics for Lazy Evaluation</a></h5> <br>by <a href="../../../authors/breitner">Joachim Breitner</a></div>
-  <span class="date">
-    Jan 31
-  </span>
-</article>
+        </div>
+        <span class="date">Aug 08</span>
+      </article>
+    <h2 class="head">2013</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Launchbury.html">The Correctness of Launchbury&#39;s Natural Semantics for Lazy Evaluation</a></h5>
+          <br>
+            by <a href="../../../authors/breitner">Joachim Breitner</a>
 
+        </div>
+        <span class="date">Jan 31</span>
+      </article>
+    <h2 class="head">2012</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Refine_Monadic.html">Refinement for Monadic Programs</a></h5>
+          <br>
+            by <a href="../../../authors/lammich">Peter Lammich</a>
 
-<h2 class="head">2012</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Refine_Monadic.html">Refinement for Monadic Programs</a></h5> <br>by <a href="../../../authors/lammich">Peter Lammich</a></div>
-  <span class="date">
-    Jan 30
-  </span>
-</article>
-
-
-
-
+        </div>
+        <span class="date">Jan 30</span>
+      </article>
+        
+      </div>
     </div>
-  </div>
-</body>
-
+  </body>
 </html>

@@ -1,266 +1,345 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Logic/Proof theory - Archive of Formal Proofs</title><meta name="description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."><link rel="alternate" type="application/rss+xml" href="../../../topics/logic/proof-theory/index.xml" title="Archive of Formal Proofs" /><meta property="og:title" content="Logic/Proof theory" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Logic/Proof theory - Archive of Formal Proofs</title>
+    <meta name="description" content="A collection of proof libraries, examples, and larger
+     scientific developments, mechanically checked in the theorem prover Isabelle.">
+  <link rel="alternate" type="application/rss+xml" href="../../../topics/logic/proof-theory/index.xml" title="Archive of Formal Proofs" />
+
+  <meta property="og:title" content="Logic/Proof theory" />
 <meta property="og:description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="/topics/logic/proof-theory/" /><meta property="og:image" content="/images/afp.png"/><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="Logic/Proof theory"/>
 <meta name="twitter:description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."/>
 
-  
   <link rel="stylesheet" type="text/css" href="../../../css/front.min.css">
 
-  <link rel="icon" href="../../../images/favicon.ico" type="image/icon"><script src="../../../js/obfuscate.js"></script>
+  <link rel="icon" href="../../../images/favicon.ico" type="image/icon">
+
+  <script src="../../../js/obfuscate.js"></script>
   <script src="../../../js/flexsearch.bundle.js"></script>
   <script src="../../../js/scroll-spy.js"></script>
   <script src="../../../js/theory.js"></script>
-  <script src="../../../js/util.js"></script><script src="../../../js/header-search.js"></script><script src="../../../js/search-autocomplete.js"></script>
+  <script src="../../../js/util.js"></script>
+    <script src="../../../js/header-search.js"></script>
+  <script src="../../../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../../../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../../../" class='logo-link'>
-    <img src="../../../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../../../" class="logo-link">
+    <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../../../search"><img src="../../../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../../../" class='logo-link'>
-        <img src="../../../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../../../"><li >Home</li></a>
-        <a href="../../../topics/"><li >Topics</li></a>
-        <a href="../../../download/"><li >Download</li></a>
-        <a href="../../../help/"><li >Help</li></a>
-        <a href="../../../submission/"><li >Submission</li></a>
-        <a href="../../../statistics/"><li >Statistics</li></a>
-        <a href="../../../about/"><li >About</li></a>
+          <a href="../../../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../../../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../../../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../../../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../../../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../../../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../../../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content '><header>
-  <form autocomplete="off" action="../../../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../../../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>L</span>ogic/<span class='first'>P</span>roof theory</h1>
+    </aside>
+    <div class='content'>
+      <header>
+    <form autocomplete="off" action="../../../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../../../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>L</span>ogic/<span class='first'>P</span>roof theory
+    
+  </h1>
   <div>
-    
-    
   </div>
-</header><div><h2>Subject Classification</h2><p>ACM: <a href="https://dl.acm.org/topic/ccs2012/10003752.10003790.10003792">Theory of computation~Proof theory</a></p><p>AMS: <a href="https://mathscinet.ams.org/mathscinet/msc/msc2020.html?t=03Fxx">Mathematical logic and foundations / Proof theory and constructive mathematics</a></p><h2 class="head">2023</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Synthetic_Completeness.html">Synthetic Completeness</a></h5> <br>by <a href="../../../authors/from">Asta Halkjær From</a></div>
-  <span class="date">
-    Jan 09
-  </span>
-</article>
+</header>
+      <div>
+        
+    <h2>Subject Classification</h2>
+      <p>ACM: <a href="https://dl.acm.org/topic/ccs2012/10003752.10003790.10003792">Theory of computation~Proof theory</a></p>
+      <p>AMS: <a href="https://mathscinet.ams.org/mathscinet/msc/msc2020.html?t=03Fxx">Mathematical logic and foundations / Proof theory and constructive mathematics</a></p>
+    <h2 class="head">2023</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Synthetic_Completeness.html">Synthetic Completeness</a></h5>
+          <br>
+            by <a href="../../../authors/from">Asta Halkjær From</a>
 
+        </div>
+        <span class="date">Jan 09</span>
+      </article>
+    <h2 class="head">2022</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Propositional_Logic_Class.html">Class-based Classical Propositional Logic</a></h5>
+          <br>
+            by <a href="../../../authors/doty">Matthew Doty</a>
 
-<h2 class="head">2022</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Propositional_Logic_Class.html">Class-based Classical Propositional Logic</a></h5> <br>by <a href="../../../authors/doty">Matthew Doty</a></div>
-  <span class="date">
-    Dec 15
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Boolos_Curious_Inference_Automated.html">Automation of Boolos&#39; Curious Inference in Isabelle/HOL</a></h5> <br>by <a href="../../../authors/benzmueller">Christoph Benzmüller</a>, <a href="../../../authors/fuenmayor">David Fuenmayor</a>, <a href="../../../authors/steen">Alexander Steen</a> and <a href="../../../authors/sutcliffe">Geoff Sutcliffe</a></div>
-  <span class="date">
-    Dec 05
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Implicational_Logic.html">Soundness and Completeness of Implicational Logic</a></h5> <br>by <a href="../../../authors/from">Asta Halkjær From</a> and <a href="../../../authors/villadsen">Jørgen Villadsen</a></div>
-  <span class="date">
-    Sep 13
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/FOL_Seq_Calc3.html">A Naive Prover for First-Order Logic</a></h5> <br>by <a href="../../../authors/from">Asta Halkjær From</a></div>
-  <span class="date">
-    Mar 22
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/FO_Theory_Rewriting.html">First-Order Theory of Rewriting</a></h5> <br>by <a href="../../../authors/lochmann">Alexander Lochmann</a> and <a href="../../../authors/felgenhauer">Bertram Felgenhauer</a></div>
-  <span class="date">
-    Feb 02
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/FOL_Seq_Calc2.html">A Sequent Calculus Prover for First-Order Logic with Functions</a></h5> <br>by <a href="../../../authors/from">Asta Halkjær From</a> and <a href="../../../authors/jacobsen">Frederik Krogsdal Jacobsen</a></div>
-  <span class="date">
-    Jan 31
-  </span>
-</article>
+        </div>
+        <span class="date">Dec 15</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Boolos_Curious_Inference_Automated.html">Automation of Boolos&#39; Curious Inference in Isabelle/HOL</a></h5>
+          <br>
+            by <a href="../../../authors/benzmueller">Christoph Benzmüller</a>, <a href="../../../authors/fuenmayor">David Fuenmayor</a>, <a href="../../../authors/steen">Alexander Steen</a> and <a href="../../../authors/sutcliffe">Geoff Sutcliffe</a>
 
+        </div>
+        <span class="date">Dec 05</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Implicational_Logic.html">Soundness and Completeness of Implicational Logic</a></h5>
+          <br>
+            by <a href="../../../authors/from">Asta Halkjær From</a> and <a href="../../../authors/villadsen">Jørgen Villadsen</a>
 
-<h2 class="head">2021</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/FOL_Axiomatic.html">Soundness and Completeness of an Axiomatic System for First-Order Logic</a></h5> <br>by <a href="../../../authors/from">Asta Halkjær From</a></div>
-  <span class="date">
-    Sep 24
-  </span>
-</article>
+        </div>
+        <span class="date">Sep 13</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/FOL_Seq_Calc3.html">A Naive Prover for First-Order Logic</a></h5>
+          <br>
+            by <a href="../../../authors/from">Asta Halkjær From</a>
 
+        </div>
+        <span class="date">Mar 22</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/FO_Theory_Rewriting.html">First-Order Theory of Rewriting</a></h5>
+          <br>
+            by <a href="../../../authors/lochmann">Alexander Lochmann</a> and <a href="../../../authors/felgenhauer">Bertram Felgenhauer</a>
 
-<h2 class="head">2020</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Syntax_Independent_Logic.html">Syntax-Independent Logic Infrastructure</a></h5> <br>by <a href="../../../authors/popescu">Andrei Popescu</a> and <a href="../../../authors/traytel">Dmitriy Traytel</a></div>
-  <span class="date">
-    Sep 16
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Robinson_Arithmetic.html">Robinson Arithmetic</a></h5> <br>by <a href="../../../authors/popescu">Andrei Popescu</a> and <a href="../../../authors/traytel">Dmitriy Traytel</a></div>
-  <span class="date">
-    Sep 16
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Goedel_HFSet_Semanticless.html">From Abstract to Concrete Gödel&#39;s Incompleteness Theorems—Part II</a></h5> <br>by <a href="../../../authors/popescu">Andrei Popescu</a> and <a href="../../../authors/traytel">Dmitriy Traytel</a></div>
-  <span class="date">
-    Sep 16
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Goedel_HFSet_Semantic.html">From Abstract to Concrete Gödel&#39;s Incompleteness Theorems—Part I</a></h5> <br>by <a href="../../../authors/popescu">Andrei Popescu</a> and <a href="../../../authors/traytel">Dmitriy Traytel</a></div>
-  <span class="date">
-    Sep 16
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Goedel_Incompleteness.html">An Abstract Formalization of Gödel&#39;s Incompleteness Theorems</a></h5> <br>by <a href="../../../authors/popescu">Andrei Popescu</a> and <a href="../../../authors/traytel">Dmitriy Traytel</a></div>
-  <span class="date">
-    Sep 16
-  </span>
-</article>
+        </div>
+        <span class="date">Feb 02</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/FOL_Seq_Calc2.html">A Sequent Calculus Prover for First-Order Logic with Functions</a></h5>
+          <br>
+            by <a href="../../../authors/from">Asta Halkjær From</a> and <a href="../../../authors/jacobsen">Frederik Krogsdal Jacobsen</a>
 
+        </div>
+        <span class="date">Jan 31</span>
+      </article>
+    <h2 class="head">2021</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/FOL_Axiomatic.html">Soundness and Completeness of an Axiomatic System for First-Order Logic</a></h5>
+          <br>
+            by <a href="../../../authors/from">Asta Halkjær From</a>
 
-<h2 class="head">2019</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/FOL_Seq_Calc1.html">A Sequent Calculus for First-Order Logic</a></h5> <br>by <a href="../../../authors/from">Asta Halkjær From</a></div>
-  <span class="date">
-    Jul 18
-  </span>
-</article>
+        </div>
+        <span class="date">Sep 24</span>
+      </article>
+    <h2 class="head">2020</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Syntax_Independent_Logic.html">Syntax-Independent Logic Infrastructure</a></h5>
+          <br>
+            by <a href="../../../authors/popescu">Andrei Popescu</a> and <a href="../../../authors/traytel">Dmitriy Traytel</a>
 
+        </div>
+        <span class="date">Sep 16</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Robinson_Arithmetic.html">Robinson Arithmetic</a></h5>
+          <br>
+            by <a href="../../../authors/popescu">Andrei Popescu</a> and <a href="../../../authors/traytel">Dmitriy Traytel</a>
 
-<h2 class="head">2017</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Propositional_Proof_Systems.html">Propositional Proof Systems</a></h5> <br>by <a href="../../../authors/michaelis">Julius Michaelis</a> and <a href="../../../authors/nipkow">Tobias Nipkow</a></div>
-  <span class="date">
-    Jun 21
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Abstract_Soundness.html">Abstract Soundness</a></h5> <br>by <a href="../../../authors/blanchette">Jasmin Christian Blanchette</a>, <a href="../../../authors/popescu">Andrei Popescu</a> and <a href="../../../authors/traytel">Dmitriy Traytel</a></div>
-  <span class="date">
-    Feb 10
-  </span>
-</article>
+        </div>
+        <span class="date">Sep 16</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Goedel_HFSet_Semanticless.html">From Abstract to Concrete Gödel&#39;s Incompleteness Theorems—Part II</a></h5>
+          <br>
+            by <a href="../../../authors/popescu">Andrei Popescu</a> and <a href="../../../authors/traytel">Dmitriy Traytel</a>
 
+        </div>
+        <span class="date">Sep 16</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Goedel_HFSet_Semantic.html">From Abstract to Concrete Gödel&#39;s Incompleteness Theorems—Part I</a></h5>
+          <br>
+            by <a href="../../../authors/popescu">Andrei Popescu</a> and <a href="../../../authors/traytel">Dmitriy Traytel</a>
 
-<h2 class="head">2016</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/SuperCalc.html">A Variant of the Superposition Calculus</a></h5> <br>by <a href="../../../authors/peltier">Nicolas Peltier</a></div>
-  <span class="date">
-    Sep 06
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Surprise_Paradox.html">Surprise Paradox</a></h5> <br>by <a href="../../../authors/breitner">Joachim Breitner</a></div>
-  <span class="date">
-    Jul 17
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Incredible_Proof_Machine.html">The meta theory of the Incredible Proof Machine</a></h5> <br>by <a href="../../../authors/breitner">Joachim Breitner</a> and <a href="../../../authors/lohner">Denis Lohner</a></div>
-  <span class="date">
-    May 20
-  </span>
-</article>
+        </div>
+        <span class="date">Sep 16</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Goedel_Incompleteness.html">An Abstract Formalization of Gödel&#39;s Incompleteness Theorems</a></h5>
+          <br>
+            by <a href="../../../authors/popescu">Andrei Popescu</a> and <a href="../../../authors/traytel">Dmitriy Traytel</a>
 
+        </div>
+        <span class="date">Sep 16</span>
+      </article>
+    <h2 class="head">2019</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/FOL_Seq_Calc1.html">A Sequent Calculus for First-Order Logic</a></h5>
+          <br>
+            by <a href="../../../authors/from">Asta Halkjær From</a>
 
-<h2 class="head">2014</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Abstract_Completeness.html">Abstract Completeness</a></h5> <br>by <a href="../../../authors/blanchette">Jasmin Christian Blanchette</a>, <a href="../../../authors/popescu">Andrei Popescu</a> and <a href="../../../authors/traytel">Dmitriy Traytel</a></div>
-  <span class="date">
-    Apr 16
-  </span>
-</article>
+        </div>
+        <span class="date">Jul 18</span>
+      </article>
+    <h2 class="head">2017</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Propositional_Proof_Systems.html">Propositional Proof Systems</a></h5>
+          <br>
+            by <a href="../../../authors/michaelis">Julius Michaelis</a> and <a href="../../../authors/nipkow">Tobias Nipkow</a>
 
+        </div>
+        <span class="date">Jun 21</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Abstract_Soundness.html">Abstract Soundness</a></h5>
+          <br>
+            by <a href="../../../authors/blanchette">Jasmin Christian Blanchette</a>, <a href="../../../authors/popescu">Andrei Popescu</a> and <a href="../../../authors/traytel">Dmitriy Traytel</a>
 
-<h2 class="head">2013</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Incompleteness.html">Gödel&#39;s Incompleteness Theorems</a></h5> <br>by <a href="../../../authors/paulson">Lawrence C. Paulson</a></div>
-  <span class="date">
-    Nov 17
-  </span>
-</article>
+        </div>
+        <span class="date">Feb 10</span>
+      </article>
+    <h2 class="head">2016</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/SuperCalc.html">A Variant of the Superposition Calculus</a></h5>
+          <br>
+            by <a href="../../../authors/peltier">Nicolas Peltier</a>
 
+        </div>
+        <span class="date">Sep 06</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Surprise_Paradox.html">Surprise Paradox</a></h5>
+          <br>
+            by <a href="../../../authors/breitner">Joachim Breitner</a>
 
-<h2 class="head">2009</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/SequentInvertibility.html">Invertibility in Sequent Calculi</a></h5> <br>by <a href="../../../authors/chapman">Peter Chapman</a></div>
-  <span class="date">
-    Aug 28
-  </span>
-</article>
+        </div>
+        <span class="date">Jul 17</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Incredible_Proof_Machine.html">The meta theory of the Incredible Proof Machine</a></h5>
+          <br>
+            by <a href="../../../authors/breitner">Joachim Breitner</a> and <a href="../../../authors/lohner">Denis Lohner</a>
 
+        </div>
+        <span class="date">May 20</span>
+      </article>
+    <h2 class="head">2014</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Abstract_Completeness.html">Abstract Completeness</a></h5>
+          <br>
+            by <a href="../../../authors/blanchette">Jasmin Christian Blanchette</a>, <a href="../../../authors/popescu">Andrei Popescu</a> and <a href="../../../authors/traytel">Dmitriy Traytel</a>
 
-<h2 class="head">2004</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Completeness.html">Completeness theorem</a></h5> <br>by <a href="../../../authors/margetson">James Margetson</a> and <a href="../../../authors/ridge">Tom Ridge</a></div>
-  <span class="date">
-    Sep 20
-  </span>
-</article>
+        </div>
+        <span class="date">Apr 16</span>
+      </article>
+    <h2 class="head">2013</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Incompleteness.html">Gödel&#39;s Incompleteness Theorems</a></h5>
+          <br>
+            by <a href="../../../authors/paulson">Lawrence C. Paulson</a>
 
+        </div>
+        <span class="date">Nov 17</span>
+      </article>
+    <h2 class="head">2009</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/SequentInvertibility.html">Invertibility in Sequent Calculi</a></h5>
+          <br>
+            by <a href="../../../authors/chapman">Peter Chapman</a>
 
+        </div>
+        <span class="date">Aug 28</span>
+      </article>
+    <h2 class="head">2004</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Completeness.html">Completeness theorem</a></h5>
+          <br>
+            by <a href="../../../authors/margetson">James Margetson</a> and <a href="../../../authors/ridge">Tom Ridge</a>
 
-
+        </div>
+        <span class="date">Sep 20</span>
+      </article>
+        
+      </div>
     </div>
-  </div>
-</body>
-
+  </body>
 </html>

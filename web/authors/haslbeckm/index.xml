@@ -1,38 +1,38 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>haslbeckm on Archive of Formal Proofs</title>
+    <title>haslbeckm on Archive of Formal Proofs
+    </title>
     <link>/authors/haslbeckm/</link>
-    <description>Recent content in haslbeckm on Archive of Formal Proofs</description>
+    <description>
+        Recent content in haslbeckm 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Thu, 14 Feb 2019 00:00:00 +0000</lastBuildDate><atom:link href="/authors/haslbeckm/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Kruskal&#39;s Algorithm for Minimum Spanning Forest</title>
-      <link>/entries/Kruskal.html</link>
-      <pubDate>Thu, 14 Feb 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Kruskal.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>Hoare Logics for Time Bounds</title>
-      <link>/entries/Hoare_Time.html</link>
-      <pubDate>Mon, 26 Feb 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Hoare_Time.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Analysis of List Update Algorithms</title>
-      <link>/entries/List_Update.html</link>
-      <pubDate>Wed, 17 Feb 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/List_Update.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Thu, 14 Feb 2019 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/haslbeckm/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Kruskal&#39;s Algorithm for Minimum Spanning Forest</title>
+          <link>/entries/Kruskal.html</link>
+          <pubDate>Thu, 14 Feb 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Kruskal.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Hoare Logics for Time Bounds</title>
+          <link>/entries/Hoare_Time.html</link>
+          <pubDate>Mon, 26 Feb 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Hoare_Time.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Analysis of List Update Algorithms</title>
+          <link>/entries/List_Update.html</link>
+          <pubDate>Wed, 17 Feb 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/List_Update.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

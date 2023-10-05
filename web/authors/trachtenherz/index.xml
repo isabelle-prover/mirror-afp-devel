@@ -1,38 +1,38 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>trachtenherz on Archive of Formal Proofs</title>
+    <title>trachtenherz on Archive of Formal Proofs
+    </title>
     <link>/authors/trachtenherz/</link>
-    <description>Recent content in trachtenherz on Archive of Formal Proofs</description>
+    <description>
+        Recent content in trachtenherz 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Wed, 23 Feb 2011 00:00:00 +0000</lastBuildDate><atom:link href="/authors/trachtenherz/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>AutoFocus Stream Processing for Single-Clocking and Multi-Clocking Semantics</title>
-      <link>/entries/AutoFocus-Stream.html</link>
-      <pubDate>Wed, 23 Feb 2011 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/AutoFocus-Stream.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>Infinite Lists</title>
-      <link>/entries/List-Infinite.html</link>
-      <pubDate>Wed, 23 Feb 2011 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/List-Infinite.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Interval Temporal Logic on Natural Numbers</title>
-      <link>/entries/Nat-Interval-Logic.html</link>
-      <pubDate>Wed, 23 Feb 2011 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Nat-Interval-Logic.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Wed, 23 Feb 2011 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/trachtenherz/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>AutoFocus Stream Processing for Single-Clocking and Multi-Clocking Semantics</title>
+          <link>/entries/AutoFocus-Stream.html</link>
+          <pubDate>Wed, 23 Feb 2011 00:00:00 +0000</pubDate>
+          <guid>/entries/AutoFocus-Stream.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Infinite Lists</title>
+          <link>/entries/List-Infinite.html</link>
+          <pubDate>Wed, 23 Feb 2011 00:00:00 +0000</pubDate>
+          <guid>/entries/List-Infinite.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Interval Temporal Logic on Natural Numbers</title>
+          <link>/entries/Nat-Interval-Logic.html</link>
+          <pubDate>Wed, 23 Feb 2011 00:00:00 +0000</pubDate>
+          <guid>/entries/Nat-Interval-Logic.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

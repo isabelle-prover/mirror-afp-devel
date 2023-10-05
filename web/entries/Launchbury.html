@@ -1,25 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>The Correctness of Launchbury&#39;s Natural Semantics for Lazy Evaluation - Archive of Formal Proofs</title><meta name="description" content="In his seminal paper &#34;Natural Semantics for Lazy Evaluation&#34;, John Launchbury proves his semantics correct with respect to a denotational semantics, and..."><meta property="og:title" content="The Correctness of Launchbury&#39;s Natural Semantics for Lazy Evaluation" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>The Correctness of Launchbury&#39;s Natural Semantics for Lazy Evaluation - Archive of Formal Proofs</title>
+    <meta name="description" content="In his seminal paper &#34;Natural Semantics for Lazy Evaluation&#34;, John Launchbury proves his semantics correct with respect to a denotational semantics, and...">
+
+  <meta property="og:title" content="The Correctness of Launchbury&#39;s Natural Semantics for Lazy Evaluation" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="/entries/Launchbury.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
 <meta property="article:published_time" content="2013-01-31T00:00:00+00:00" />
 <meta property="article:modified_time" content="2013-01-31T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="The Correctness of Launchbury&#39;s Natural Semantics for Lazy Evaluation"/>
 <meta name="twitter:description" content=""/>
 
-  
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
     <script>
       MathJax = {
         tex: {
@@ -31,223 +36,352 @@
         }
       };
     </script>
-    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
   <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
-  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../" class='logo-link'>
-    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../" class='logo-link'>
-        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../"><li >Home</li></a>
-        <a href="../topics/"><li >Topics</li></a>
-        <a href="../download/"><li >Download</li></a>
-        <a href="../help/"><li >Help</li></a>
-        <a href="../submission/"><li >Submission</li></a>
-        <a href="../statistics/"><li >Statistics</li></a>
-        <a href="../about/"><li >About</li></a>
+          <a href="../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content  entries'><header>
-  <form autocomplete="off" action="../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>T</span>he <span class='first'>C</span>orrectness of <span class='first'>L</span>aunchbury's <span class='first'>N</span>atural <span class='first'>S</span>emantics for <span class='first'>L</span>azy <span class='first'>E</span>valuation</h1>
+    </aside>
+    <div class='content entries'>
+      <header>
+    <form autocomplete="off" action="../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>T</span>he <span class='first'>C</span>orrectness of <span class='first'>L</span>aunchbury's <span class='first'>N</span>atural <span class='first'>S</span>emantics for <span class='first'>L</span>azy <span class='first'>E</span>valuation
+    
+  </h1>
   <div>
-    
-    <p><a href="../authors/breitner">Joachim Breitner</a> <a href="http://pp.ipd.kit.edu/~breitner">🌐</a>
-    </p>
-    
-    
-    <p class="date">January 31, 2013</p>
-    
-  </div>
-</header><div><main><h3>Abstract</h3>
+      <p>
+        <a href="../authors/breitner">Joachim Breitner</a> <a href="http://pp.ipd.kit.edu/~breitner">🌐</a>
 
-  <div class="abstract mathjax_process">In his seminal paper "Natural Semantics for Lazy Evaluation", John Launchbury proves his semantics correct with respect to a denotational semantics, and outlines an adequacy proof. We have formalized both semantics and machine-checked the correctness proof, clarifying some details. Furthermore, we provide a new and more direct adequacy proof that does not require intermediate operational semantics.</div>
-
-  <h3>License</h3>
-  <div><a href="https://isa-afp.org/LICENSE">BSD License</a></div><h3>History</h3>
-  <dl><dt>March 16, 2015</dt>
-    <dd>Booleans and if-then-else added to syntax and semantics, making this entry suitable to be used by the entry "Call_Arity".</dd><dt>May 24, 2014</dt>
-    <dd>Added the proof of adequacy, as well as simplified and improved the existing proofs. Adjusted abstract accordingly.</dd></dl><h3>Topics</h3>
-  <ul><li><a href="../topics/computer-science/programming-languages/lambda-calculi">Computer science/Programming languages/Lambda calculi</a></li><li><a href="../topics/computer-science/semantics-and-reasoning">Computer science/Semantics and reasoning</a></li></ul>
-  <h3>Session Launchbury</h3>
-  <ul>
-    <li><a href="../theories/launchbury/#AList-Utils">AList-Utils</a></li>
-    <li><a href="../theories/launchbury/#HOLCF-Join">HOLCF-Join</a></li>
-    <li><a href="../theories/launchbury/#HOLCF-Join-Classes">HOLCF-Join-Classes</a></li>
-    <li><a href="../theories/launchbury/#Env">Env</a></li>
-    <li><a href="../theories/launchbury/#Pointwise">Pointwise</a></li>
-    <li><a href="../theories/launchbury/#HOLCF-Utils">HOLCF-Utils</a></li>
-    <li><a href="../theories/launchbury/#EvalHeap">EvalHeap</a></li>
-    <li><a href="../theories/launchbury/#Nominal-Utils">Nominal-Utils</a></li>
-    <li><a href="../theories/launchbury/#AList-Utils-Nominal">AList-Utils-Nominal</a></li>
-    <li><a href="../theories/launchbury/#Nominal-HOLCF">Nominal-HOLCF</a></li>
-    <li><a href="../theories/launchbury/#Env-HOLCF">Env-HOLCF</a></li>
-    <li><a href="../theories/launchbury/#HasESem">HasESem</a></li>
-    <li><a href="../theories/launchbury/#Iterative">Iterative</a></li>
-    <li><a href="../theories/launchbury/#Env-Nominal">Env-Nominal</a></li>
-    <li><a href="../theories/launchbury/#HeapSemantics">HeapSemantics</a></li>
-    <li><a href="../theories/launchbury/#Vars">Vars</a></li>
-    <li><a href="../theories/launchbury/#Terms">Terms</a></li>
-    <li><a href="../theories/launchbury/#AbstractDenotational">AbstractDenotational</a></li>
-    <li><a href="../theories/launchbury/#Substitution">Substitution</a></li>
-    <li><a href="../theories/launchbury/#Abstract-Denotational-Props">Abstract-Denotational-Props</a></li>
-    <li><a href="../theories/launchbury/#Value">Value</a></li>
-    <li><a href="../theories/launchbury/#Value-Nominal">Value-Nominal</a></li>
-    <li><a href="../theories/launchbury/#Denotational">Denotational</a></li>
-    <li><a href="../theories/launchbury/#Launchbury">Launchbury</a></li>
-    <li><a href="../theories/launchbury/#CorrectnessOriginal">CorrectnessOriginal</a></li>
-    <li><a href="../theories/launchbury/#Mono-Nat-Fun">Mono-Nat-Fun</a></li>
-    <li><a href="../theories/launchbury/#C">C</a></li>
-    <li><a href="../theories/launchbury/#CValue">CValue</a></li>
-    <li><a href="../theories/launchbury/#CValue-Nominal">CValue-Nominal</a></li>
-    <li><a href="../theories/launchbury/#HOLCF-Meet">HOLCF-Meet</a></li>
-    <li><a href="../theories/launchbury/#C-Meet">C-Meet</a></li>
-    <li><a href="../theories/launchbury/#C-restr">C-restr</a></li>
-    <li><a href="../theories/launchbury/#ResourcedDenotational">ResourcedDenotational</a></li>
-    <li><a href="../theories/launchbury/#CorrectnessResourced">CorrectnessResourced</a></li>
-    <li><a href="../theories/launchbury/#ResourcedAdequacy">ResourcedAdequacy</a></li>
-    <li><a href="../theories/launchbury/#ValueSimilarity">ValueSimilarity</a></li>
-    <li><a href="../theories/launchbury/#Denotational-Related">Denotational-Related</a></li>
-    <li><a href="../theories/launchbury/#Adequacy">Adequacy</a></li>
-    <li><a href="../theories/launchbury/#EverythingAdequacy">EverythingAdequacy</a></li></ul><div class="flex-wrap">
-  <div>
-    <h3>Depends on</h3>
-    <ul class="horizontal-list"><li><a href="../entries/FinFun.html">Code Generation for Functions as Data</a></li><li><a href="../entries/Nominal2.html">Nominal 2</a></li></ul>
-  </div><div>
-    <h3>Used by</h3>
-    <ul class="horizontal-list"><li><a href="../entries/Call_Arity.html">The Safety of Call Arity</a></li></ul>
+      </p>
+      <p class="date">January 31, 2013</p>
   </div>
-  
-  <div>
-    <h3>Auto-related entries</h3>
-    <ul class="horizontal-list">
-      
-      <li><a href="../entries/TESL_Language.html">A Formal Development of a Polychronous Polytimed Coordination Language</a></li>
-      
-      <li><a href="../entries/QHLProver.html">Quantum Hoare Logic</a></li>
-      
-      <li><a href="../entries/HyperCTL.html">A shallow embedding of HyperCTL*</a></li>
-      
-    </ul>
-  </div>
-  
-  </div>
-</main>
+</header>
+      <div>
+        
+  <main>
+    <h3>Abstract</h3>
 
-<nav class='links'>
-  <a class='popup-button' href="#cite-popup">Cite</a>
-  <a class='popup-button' href="#download-popup">Download</a>
-  <h4>PDFs</h4>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Launchbury/outline.pdf">Proof
-    outline</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Launchbury/document.pdf">Proof
-    document</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Launchbury/session_graph.pdf">Dependencies</a></nav>
+    <div class="abstract mathjax_process">In his seminal paper "Natural Semantics for Lazy Evaluation", John Launchbury proves his semantics correct with respect to a denotational semantics, and outlines an adequacy proof. We have formalized both semantics and machine-checked the correctness proof, clarifying some details. Furthermore, we provide a new and more direct adequacy proof that does not require intermediate operational semantics.</div>
 
-<div id="cite-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Cite</h2>
-    <a class="close" href="#">&times;</a>
+    <h3>License</h3>
     <div>
-      <p style="display:none;" id="bibtex-filename">Launchbury-AFP</p><pre id="copy-text">@article{Launchbury-AFP,
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>History</h3>
+      <dl>
+        <dt>March 16, 2015</dt>
+        <dd>Booleans and if-then-else added to syntax and semantics, making this entry suitable to be used by the entry "Call_Arity".</dd>
+        <dt>May 24, 2014</dt>
+        <dd>Added the proof of adequacy, as well as simplified and improved the existing proofs. Adjusted abstract accordingly.</dd>
+      </dl>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/computer-science/programming-languages/lambda-calculi">Computer science/Programming languages/Lambda calculi</a></li>
+          <li><a href="../topics/computer-science/semantics-and-reasoning">Computer science/Semantics and reasoning</a></li>
+      </ul>
+      <h3>Session Launchbury</h3>
+      <ul>
+          <li><a href="../theories/launchbury/#AList-Utils">AList-Utils</a></li>
+          <li><a href="../theories/launchbury/#HOLCF-Join">HOLCF-Join</a></li>
+          <li><a href="../theories/launchbury/#HOLCF-Join-Classes">HOLCF-Join-Classes</a></li>
+          <li><a href="../theories/launchbury/#Env">Env</a></li>
+          <li><a href="../theories/launchbury/#Pointwise">Pointwise</a></li>
+          <li><a href="../theories/launchbury/#HOLCF-Utils">HOLCF-Utils</a></li>
+          <li><a href="../theories/launchbury/#EvalHeap">EvalHeap</a></li>
+          <li><a href="../theories/launchbury/#Nominal-Utils">Nominal-Utils</a></li>
+          <li><a href="../theories/launchbury/#AList-Utils-Nominal">AList-Utils-Nominal</a></li>
+          <li><a href="../theories/launchbury/#Nominal-HOLCF">Nominal-HOLCF</a></li>
+          <li><a href="../theories/launchbury/#Env-HOLCF">Env-HOLCF</a></li>
+          <li><a href="../theories/launchbury/#HasESem">HasESem</a></li>
+          <li><a href="../theories/launchbury/#Iterative">Iterative</a></li>
+          <li><a href="../theories/launchbury/#Env-Nominal">Env-Nominal</a></li>
+          <li><a href="../theories/launchbury/#HeapSemantics">HeapSemantics</a></li>
+          <li><a href="../theories/launchbury/#Vars">Vars</a></li>
+          <li><a href="../theories/launchbury/#Terms">Terms</a></li>
+          <li><a href="../theories/launchbury/#AbstractDenotational">AbstractDenotational</a></li>
+          <li><a href="../theories/launchbury/#Substitution">Substitution</a></li>
+          <li><a href="../theories/launchbury/#Abstract-Denotational-Props">Abstract-Denotational-Props</a></li>
+          <li><a href="../theories/launchbury/#Value">Value</a></li>
+          <li><a href="../theories/launchbury/#Value-Nominal">Value-Nominal</a></li>
+          <li><a href="../theories/launchbury/#Denotational">Denotational</a></li>
+          <li><a href="../theories/launchbury/#Launchbury">Launchbury</a></li>
+          <li><a href="../theories/launchbury/#CorrectnessOriginal">CorrectnessOriginal</a></li>
+          <li><a href="../theories/launchbury/#Mono-Nat-Fun">Mono-Nat-Fun</a></li>
+          <li><a href="../theories/launchbury/#C">C</a></li>
+          <li><a href="../theories/launchbury/#CValue">CValue</a></li>
+          <li><a href="../theories/launchbury/#CValue-Nominal">CValue-Nominal</a></li>
+          <li><a href="../theories/launchbury/#HOLCF-Meet">HOLCF-Meet</a></li>
+          <li><a href="../theories/launchbury/#C-Meet">C-Meet</a></li>
+          <li><a href="../theories/launchbury/#C-restr">C-restr</a></li>
+          <li><a href="../theories/launchbury/#ResourcedDenotational">ResourcedDenotational</a></li>
+          <li><a href="../theories/launchbury/#CorrectnessResourced">CorrectnessResourced</a></li>
+          <li><a href="../theories/launchbury/#ResourcedAdequacy">ResourcedAdequacy</a></li>
+          <li><a href="../theories/launchbury/#ValueSimilarity">ValueSimilarity</a></li>
+          <li><a href="../theories/launchbury/#Denotational-Related">Denotational-Related</a></li>
+          <li><a href="../theories/launchbury/#Adequacy">Adequacy</a></li>
+          <li><a href="../theories/launchbury/#EverythingAdequacy">EverythingAdequacy</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+      <div>
+        <h3>Depends on</h3>
+        <ul class="horizontal-list">
+              <li><a href="../entries/FinFun.html">Code Generation for Functions as Data</a></li>
+              <li><a href="../entries/Nominal2.html">Nominal 2</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Used by</h3>
+        <ul class="horizontal-list">
+            <li>
+              <a href="../entries/Call_Arity.html">The Safety of Call Arity</a>
+            </li>
+        </ul>
+      </div>
+        <div>
+          <h3>Auto-related entries</h3>
+          <ul class="horizontal-list">
+              <li><a href="../entries/TESL_Language.html">A Formal Development of a Polychronous Polytimed Coordination Language</a></li>
+              <li><a href="../entries/QHLProver.html">Quantum Hoare Logic</a></li>
+              <li><a href="../entries/HyperCTL.html">A shallow embedding of HyperCTL*</a></li>
+          </ul>
+        </div>
+      </div>
+    
+  </main>
+
+  <nav class='links'>
+    <a class='popup-button' href="#cite-popup">Cite</a>
+    <a class='popup-button' href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Launchbury/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Launchbury/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Launchbury/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Launchbury-AFP</p>
+        <pre id="copy-text">@article{Launchbury-AFP,
   author  = {Joachim Breitner},
   title   = {The Correctness of Launchbury&#39;s Natural Semantics for Lazy Evaluation},
   journal = {Archive of Formal Proofs},
   month   = {January},
   year    = {2013},
   note    = {\url{https://isa-afp.org/entries/Launchbury.html},
-            Formal proof development},
+             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
     </div>
   </div>
-</div>
 
-<div id="download-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Download</h2>
-    <a class="close" href="#">&times;</a>
-    <a href="https://www.isa-afp.org/release/afp-Launchbury-current.tar.gz" download>Download latest</a>
-    <p>Older releases:</p>
-    <ul><li>
-        <a href="https://www.isa-afp.org/release/afp-Launchbury-2023-09-13.tar.gz">Sep 13, 2023</a>: Isabelle2023
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Launchbury-2022-10-27.tar.gz">Oct 27, 2022</a>: Isabelle2022
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Launchbury-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021-1
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Launchbury-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Launchbury-2020-04-18.tar.gz">Apr 18, 2020</a>: Isabelle2020
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Launchbury-2019-06-11.tar.gz">Jun 11, 2019</a>: Isabelle2019
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Launchbury-2018-08-16.tar.gz">Aug 16, 2018</a>: Isabelle2018
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Launchbury-2017-10-10.tar.gz">Oct 10, 2017</a>: Isabelle2017
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Launchbury-2016-12-17.tar.gz">Dec 17, 2016</a>: Isabelle2016-1
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Launchbury-2016-02-22.tar.gz">Feb 22, 2016</a>: Isabelle2016
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Launchbury-2015-05-27.tar.gz">May 27, 2015</a>: Isabelle2015
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Launchbury-2014-08-28.tar.gz">Aug 28, 2014</a>: Isabelle2014
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Launchbury-2014-05-25.tar.gz">May 25, 2014</a>: Isabelle2013-2
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Launchbury-2014-05-24.tar.gz">May 24, 2014</a>: Isabelle2013-2
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Launchbury-2013-12-11.tar.gz">Dec 11, 2013</a>: Isabelle2013-2
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Launchbury-2013-11-17.tar.gz">Nov 17, 2013</a>: Isabelle2013-1
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Launchbury-2013-02-25.tar.gz">Feb 25, 2013</a>: Isabelle2013
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Launchbury-2013-02-24.tar.gz">Feb 24, 2013</a>: Isabelle2013
-      </li></ul>
-  </div>
-</div>
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-Launchbury-current.tar.gz"
+         download>Download latest</a>
+        <p>Older releases:</p>
+        <ul>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Launchbury-2023-09-13.tar.gz">
+                Sep 13, 2023
+              </a>
+              : Isabelle2023
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Launchbury-2022-10-27.tar.gz">
+                Oct 27, 2022
+              </a>
+              : Isabelle2022
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Launchbury-2021-12-14.tar.gz">
+                Dec 14, 2021
+              </a>
+              : Isabelle2021-1
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Launchbury-2021-02-23.tar.gz">
+                Feb 23, 2021
+              </a>
+              : Isabelle2021
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Launchbury-2020-04-18.tar.gz">
+                Apr 18, 2020
+              </a>
+              : Isabelle2020
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Launchbury-2019-06-11.tar.gz">
+                Jun 11, 2019
+              </a>
+              : Isabelle2019
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Launchbury-2018-08-16.tar.gz">
+                Aug 16, 2018
+              </a>
+              : Isabelle2018
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Launchbury-2017-10-10.tar.gz">
+                Oct 10, 2017
+              </a>
+              : Isabelle2017
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Launchbury-2016-12-17.tar.gz">
+                Dec 17, 2016
+              </a>
+              : Isabelle2016-1
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Launchbury-2016-02-22.tar.gz">
+                Feb 22, 2016
+              </a>
+              : Isabelle2016
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Launchbury-2015-05-27.tar.gz">
+                May 27, 2015
+              </a>
+              : Isabelle2015
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Launchbury-2014-08-28.tar.gz">
+                Aug 28, 2014
+              </a>
+              : Isabelle2014
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Launchbury-2014-05-25.tar.gz">
+                May 25, 2014
+              </a>
+              : Isabelle2013-2
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Launchbury-2014-05-24.tar.gz">
+                May 24, 2014
+              </a>
+              : Isabelle2013-2
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Launchbury-2013-12-11.tar.gz">
+                Dec 11, 2013
+              </a>
+              : Isabelle2013-2
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Launchbury-2013-11-17.tar.gz">
+                Nov 17, 2013
+              </a>
+              : Isabelle2013-1
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Launchbury-2013-02-25.tar.gz">
+                Feb 25, 2013
+              </a>
+              : Isabelle2013
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Launchbury-2013-02-24.tar.gz">
+                Feb 24, 2013
+              </a>
+              : Isabelle2013
+            </li>
+        </ul>
     </div>
   </div>
-</body>
-
+        
+      </div>
+    </div>
+  </body>
 </html>

@@ -1,29 +1,31 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Abstract_Soundness on Archive of Formal Proofs</title>
+    <title>Abstract_Soundness on Archive of Formal Proofs
+    </title>
     <link>/dependencies/abstract_soundness/</link>
-    <description>Recent content in Abstract_Soundness on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Abstract_Soundness 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Tue, 22 Mar 2022 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/abstract_soundness/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>A Naive Prover for First-Order Logic</title>
-      <link>/entries/FOL_Seq_Calc3.html</link>
-      <pubDate>Tue, 22 Mar 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/FOL_Seq_Calc3.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>A Sequent Calculus Prover for First-Order Logic with Functions</title>
-      <link>/entries/FOL_Seq_Calc2.html</link>
-      <pubDate>Mon, 31 Jan 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/FOL_Seq_Calc2.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Tue, 22 Mar 2022 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/abstract_soundness/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>A Naive Prover for First-Order Logic</title>
+          <link>/entries/FOL_Seq_Calc3.html</link>
+          <pubDate>Tue, 22 Mar 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/FOL_Seq_Calc3.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Sequent Calculus Prover for First-Order Logic with Functions</title>
+          <link>/entries/FOL_Seq_Calc2.html</link>
+          <pubDate>Mon, 31 Jan 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/FOL_Seq_Calc2.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

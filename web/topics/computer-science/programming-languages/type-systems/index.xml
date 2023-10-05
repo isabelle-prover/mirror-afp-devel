@@ -1,100 +1,86 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Computer science/Programming languages/Type systems on Archive of Formal Proofs</title>
+    <title>Computer science/Programming languages/Type systems on Archive of Formal Proofs
+    </title>
     <link>/topics/computer-science/programming-languages/type-systems/</link>
-    <description>Recent content in Computer science/Programming languages/Type systems on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Computer science/Programming languages/Type systems 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language><atom:link href="/topics/computer-science/programming-languages/type-systems/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>MiniSail - A kernel language for the ISA specification language SAIL</title>
-      <link>/entries/MiniSail.html</link>
-      <pubDate>Fri, 18 Jun 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/MiniSail.html</guid>
-      <description></description>
-    </item>
+    <language>en-gb</language>
     
-    <item>
-      <title>A Sound Type System for Physical Quantities, Units, and Measurements</title>
-      <link>/entries/Physical_Quantities.html</link>
-      <pubDate>Tue, 20 Oct 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Physical_Quantities.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Verified Metatheory and Type Inference for a Name-Carrying Simply-Typed Lambda Calculus</title>
-      <link>/entries/Name_Carrying_Type_Inference.html</link>
-      <pubDate>Sun, 09 Jul 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Name_Carrying_Type_Inference.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Dependent Security Type System for Concurrent Imperative Programs</title>
-      <link>/entries/Dependent_SIFUM_Type_Systems.html</link>
-      <pubDate>Sat, 25 Jun 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Dependent_SIFUM_Type_Systems.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Formalization of Assumptions and Guarantees for Compositional Noninterference</title>
-      <link>/entries/SIFUM_Type_Systems.html</link>
-      <pubDate>Wed, 23 Apr 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/SIFUM_Type_Systems.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Formalization of Declassification with WHAT-and-WHERE-Security</title>
-      <link>/entries/WHATandWHERE_Security.html</link>
-      <pubDate>Wed, 23 Apr 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/WHATandWHERE_Security.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Formalization of Strong Security</title>
-      <link>/entries/Strong_Security.html</link>
-      <pubDate>Wed, 23 Apr 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Strong_Security.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Possibilistic Noninterference</title>
-      <link>/entries/Possibilistic_Noninterference.html</link>
-      <pubDate>Mon, 10 Sep 2012 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Possibilistic_Noninterference.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Correctness Proof for the Volpano/Smith Security Typing System</title>
-      <link>/entries/VolpanoSmith.html</link>
-      <pubDate>Tue, 02 Sep 2008 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/VolpanoSmith.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Mini ML</title>
-      <link>/entries/MiniML.html</link>
-      <pubDate>Fri, 19 Mar 2004 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/MiniML.html</guid>
-      <description></description>
-    </item>
-    
+      <atom:link href="/topics/computer-science/programming-languages/type-systems/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>MiniSail - A kernel language for the ISA specification language SAIL</title>
+          <link>/entries/MiniSail.html</link>
+          <pubDate>Fri, 18 Jun 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/MiniSail.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Sound Type System for Physical Quantities, Units, and Measurements</title>
+          <link>/entries/Physical_Quantities.html</link>
+          <pubDate>Tue, 20 Oct 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Physical_Quantities.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Verified Metatheory and Type Inference for a Name-Carrying Simply-Typed Lambda Calculus</title>
+          <link>/entries/Name_Carrying_Type_Inference.html</link>
+          <pubDate>Sun, 09 Jul 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Name_Carrying_Type_Inference.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Dependent Security Type System for Concurrent Imperative Programs</title>
+          <link>/entries/Dependent_SIFUM_Type_Systems.html</link>
+          <pubDate>Sat, 25 Jun 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Dependent_SIFUM_Type_Systems.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Formalization of Assumptions and Guarantees for Compositional Noninterference</title>
+          <link>/entries/SIFUM_Type_Systems.html</link>
+          <pubDate>Wed, 23 Apr 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/SIFUM_Type_Systems.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Formalization of Declassification with WHAT-and-WHERE-Security</title>
+          <link>/entries/WHATandWHERE_Security.html</link>
+          <pubDate>Wed, 23 Apr 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/WHATandWHERE_Security.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Formalization of Strong Security</title>
+          <link>/entries/Strong_Security.html</link>
+          <pubDate>Wed, 23 Apr 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Strong_Security.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Possibilistic Noninterference</title>
+          <link>/entries/Possibilistic_Noninterference.html</link>
+          <pubDate>Mon, 10 Sep 2012 00:00:00 +0000</pubDate>
+          <guid>/entries/Possibilistic_Noninterference.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Correctness Proof for the Volpano/Smith Security Typing System</title>
+          <link>/entries/VolpanoSmith.html</link>
+          <pubDate>Tue, 02 Sep 2008 00:00:00 +0000</pubDate>
+          <guid>/entries/VolpanoSmith.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Mini ML</title>
+          <link>/entries/MiniML.html</link>
+          <pubDate>Fri, 19 Mar 2004 00:00:00 +0000</pubDate>
+          <guid>/entries/MiniML.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

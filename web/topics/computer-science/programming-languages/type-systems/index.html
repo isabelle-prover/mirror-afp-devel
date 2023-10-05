@@ -1,169 +1,224 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Computer science/Programming languages/Type systems - Archive of Formal Proofs</title><meta name="description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."><link rel="alternate" type="application/rss+xml" href="../../../../topics/computer-science/programming-languages/type-systems/index.xml" title="Archive of Formal Proofs" /><meta property="og:title" content="Computer science/Programming languages/Type systems" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Computer science/Programming languages/Type systems - Archive of Formal Proofs</title>
+    <meta name="description" content="A collection of proof libraries, examples, and larger
+     scientific developments, mechanically checked in the theorem prover Isabelle.">
+  <link rel="alternate" type="application/rss+xml" href="../../../../topics/computer-science/programming-languages/type-systems/index.xml" title="Archive of Formal Proofs" />
+
+  <meta property="og:title" content="Computer science/Programming languages/Type systems" />
 <meta property="og:description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="/topics/computer-science/programming-languages/type-systems/" /><meta property="og:image" content="/images/afp.png"/><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="Computer science/Programming languages/Type systems"/>
 <meta name="twitter:description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."/>
 
-  
   <link rel="stylesheet" type="text/css" href="../../../../css/front.min.css">
 
-  <link rel="icon" href="../../../../images/favicon.ico" type="image/icon"><script src="../../../../js/obfuscate.js"></script>
+  <link rel="icon" href="../../../../images/favicon.ico" type="image/icon">
+
+  <script src="../../../../js/obfuscate.js"></script>
   <script src="../../../../js/flexsearch.bundle.js"></script>
   <script src="../../../../js/scroll-spy.js"></script>
   <script src="../../../../js/theory.js"></script>
-  <script src="../../../../js/util.js"></script><script src="../../../../js/header-search.js"></script><script src="../../../../js/search-autocomplete.js"></script>
+  <script src="../../../../js/util.js"></script>
+    <script src="../../../../js/header-search.js"></script>
+  <script src="../../../../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../../../../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../../../../" class='logo-link'>
-    <img src="../../../../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../../../../" class="logo-link">
+    <img src="../../../../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../../../../search"><img src="../../../../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../../../../" class='logo-link'>
-        <img src="../../../../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../../../../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../../../../"><li >Home</li></a>
-        <a href="../../../../topics/"><li >Topics</li></a>
-        <a href="../../../../download/"><li >Download</li></a>
-        <a href="../../../../help/"><li >Help</li></a>
-        <a href="../../../../submission/"><li >Submission</li></a>
-        <a href="../../../../statistics/"><li >Statistics</li></a>
-        <a href="../../../../about/"><li >About</li></a>
+          <a href="../../../../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../../../../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../../../../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../../../../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../../../../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../../../../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../../../../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content '><header>
-  <form autocomplete="off" action="../../../../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../../../../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>C</span>omputer science/<span class='first'>P</span>rogramming languages/<span class='first'>T</span>ype systems</h1>
+    </aside>
+    <div class='content'>
+      <header>
+    <form autocomplete="off" action="../../../../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../../../../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>C</span>omputer science/<span class='first'>P</span>rogramming languages/<span class='first'>T</span>ype systems
+    
+  </h1>
   <div>
-    
-    
   </div>
-</header><div><h2>Subject Classification</h2><p>ACM: <a href="https://dl.acm.org/topic/ccs2012/10011007.10011006.10011008.10011024.10011028">Software and its engineering~Data types and structures</a></p><h2 class="head">2021</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/MiniSail.html">MiniSail - A kernel language for the ISA specification language SAIL</a></h5> <br>by <a href="../../../../authors/wassell">Mark Wassell</a></div>
-  <span class="date">
-    Jun 18
-  </span>
-</article>
+</header>
+      <div>
+        
+    <h2>Subject Classification</h2>
+      <p>ACM: <a href="https://dl.acm.org/topic/ccs2012/10011007.10011006.10011008.10011024.10011028">Software and its engineering~Data types and structures</a></p>
+    <h2 class="head">2021</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/MiniSail.html">MiniSail - A kernel language for the ISA specification language SAIL</a></h5>
+          <br>
+            by <a href="../../../../authors/wassell">Mark Wassell</a>
 
+        </div>
+        <span class="date">Jun 18</span>
+      </article>
+    <h2 class="head">2020</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Physical_Quantities.html">A Sound Type System for Physical Quantities, Units, and Measurements</a></h5>
+          <br>
+            by <a href="../../../../authors/fosters">Simon Foster</a> and <a href="../../../../authors/wolff">Burkhart Wolff</a>
 
-<h2 class="head">2020</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Physical_Quantities.html">A Sound Type System for Physical Quantities, Units, and Measurements</a></h5> <br>by <a href="../../../../authors/fosters">Simon Foster</a> and <a href="../../../../authors/wolff">Burkhart Wolff</a></div>
-  <span class="date">
-    Oct 20
-  </span>
-</article>
+        </div>
+        <span class="date">Oct 20</span>
+      </article>
+    <h2 class="head">2017</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Name_Carrying_Type_Inference.html">Verified Metatheory and Type Inference for a Name-Carrying Simply-Typed Lambda Calculus</a></h5>
+          <br>
+            by <a href="../../../../authors/rawson">Michael Rawson</a>
 
+        </div>
+        <span class="date">Jul 09</span>
+      </article>
+    <h2 class="head">2016</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Dependent_SIFUM_Type_Systems.html">A Dependent Security Type System for Concurrent Imperative Programs</a></h5>
+          <br>
+            by <a href="../../../../authors/murray">Toby Murray</a>, <a href="../../../../authors/sison">Robert Sison</a>, <a href="../../../../authors/pierzchalski">Edward Pierzchalski</a> and <a href="../../../../authors/rizkallah">Christine Rizkallah</a>
 
-<h2 class="head">2017</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Name_Carrying_Type_Inference.html">Verified Metatheory and Type Inference for a Name-Carrying Simply-Typed Lambda Calculus</a></h5> <br>by <a href="../../../../authors/rawson">Michael Rawson</a></div>
-  <span class="date">
-    Jul 09
-  </span>
-</article>
+        </div>
+        <span class="date">Jun 25</span>
+      </article>
+    <h2 class="head">2014</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Strong_Security.html">A Formalization of Strong Security</a></h5>
+          <br>
+            by <a href="../../../../authors/grewe">Sylvia Grewe</a>, <a href="../../../../authors/lux">Alexander Lux</a>, <a href="../../../../authors/mantel">Heiko Mantel</a> and <a href="../../../../authors/sauer">Jens Sauer</a>
 
+        </div>
+        <span class="date">Apr 23</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/WHATandWHERE_Security.html">A Formalization of Declassification with WHAT-and-WHERE-Security</a></h5>
+          <br>
+            by <a href="../../../../authors/grewe">Sylvia Grewe</a>, <a href="../../../../authors/lux">Alexander Lux</a>, <a href="../../../../authors/mantel">Heiko Mantel</a> and <a href="../../../../authors/sauer">Jens Sauer</a>
 
-<h2 class="head">2016</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Dependent_SIFUM_Type_Systems.html">A Dependent Security Type System for Concurrent Imperative Programs</a></h5> <br>by <a href="../../../../authors/murray">Toby Murray</a>, <a href="../../../../authors/sison">Robert Sison</a>, <a href="../../../../authors/pierzchalski">Edward Pierzchalski</a> and <a href="../../../../authors/rizkallah">Christine Rizkallah</a></div>
-  <span class="date">
-    Jun 25
-  </span>
-</article>
+        </div>
+        <span class="date">Apr 23</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/SIFUM_Type_Systems.html">A Formalization of Assumptions and Guarantees for Compositional Noninterference</a></h5>
+          <br>
+            by <a href="../../../../authors/grewe">Sylvia Grewe</a>, <a href="../../../../authors/mantel">Heiko Mantel</a> and <a href="../../../../authors/schoepe">Daniel Schoepe</a>
 
+        </div>
+        <span class="date">Apr 23</span>
+      </article>
+    <h2 class="head">2012</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Possibilistic_Noninterference.html">Possibilistic Noninterference</a></h5>
+          <br>
+            by <a href="../../../../authors/popescu">Andrei Popescu</a> and <a href="../../../../authors/hoelzl">Johannes Hölzl</a>
 
-<h2 class="head">2014</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Strong_Security.html">A Formalization of Strong Security</a></h5> <br>by <a href="../../../../authors/grewe">Sylvia Grewe</a>, <a href="../../../../authors/lux">Alexander Lux</a>, <a href="../../../../authors/mantel">Heiko Mantel</a> and <a href="../../../../authors/sauer">Jens Sauer</a></div>
-  <span class="date">
-    Apr 23
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/WHATandWHERE_Security.html">A Formalization of Declassification with WHAT-and-WHERE-Security</a></h5> <br>by <a href="../../../../authors/grewe">Sylvia Grewe</a>, <a href="../../../../authors/lux">Alexander Lux</a>, <a href="../../../../authors/mantel">Heiko Mantel</a> and <a href="../../../../authors/sauer">Jens Sauer</a></div>
-  <span class="date">
-    Apr 23
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/SIFUM_Type_Systems.html">A Formalization of Assumptions and Guarantees for Compositional Noninterference</a></h5> <br>by <a href="../../../../authors/grewe">Sylvia Grewe</a>, <a href="../../../../authors/mantel">Heiko Mantel</a> and <a href="../../../../authors/schoepe">Daniel Schoepe</a></div>
-  <span class="date">
-    Apr 23
-  </span>
-</article>
+        </div>
+        <span class="date">Sep 10</span>
+      </article>
+    <h2 class="head">2008</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/VolpanoSmith.html">A Correctness Proof for the Volpano/Smith Security Typing System</a></h5>
+          <br>
+            by <a href="../../../../authors/snelting">Gregor Snelting</a> and <a href="../../../../authors/wasserrab">Daniel Wasserrab</a>
 
+        </div>
+        <span class="date">Sep 02</span>
+      </article>
+    <h2 class="head">2004</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/MiniML.html">Mini ML</a></h5>
+          <br>
+            by <a href="../../../../authors/naraschewski">Wolfgang Naraschewski</a> and <a href="../../../../authors/nipkow">Tobias Nipkow</a>
 
-<h2 class="head">2012</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Possibilistic_Noninterference.html">Possibilistic Noninterference</a></h5> <br>by <a href="../../../../authors/popescu">Andrei Popescu</a> and <a href="../../../../authors/hoelzl">Johannes Hölzl</a></div>
-  <span class="date">
-    Sep 10
-  </span>
-</article>
-
-
-<h2 class="head">2008</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/VolpanoSmith.html">A Correctness Proof for the Volpano/Smith Security Typing System</a></h5> <br>by <a href="../../../../authors/snelting">Gregor Snelting</a> and <a href="../../../../authors/wasserrab">Daniel Wasserrab</a></div>
-  <span class="date">
-    Sep 02
-  </span>
-</article>
-
-
-<h2 class="head">2004</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/MiniML.html">Mini ML</a></h5> <br>by <a href="../../../../authors/naraschewski">Wolfgang Naraschewski</a> and <a href="../../../../authors/nipkow">Tobias Nipkow</a></div>
-  <span class="date">
-    Mar 19
-  </span>
-</article>
-
-
-
-
+        </div>
+        <span class="date">Mar 19</span>
+      </article>
+        
+      </div>
     </div>
-  </div>
-</body>
-
+  </body>
 </html>

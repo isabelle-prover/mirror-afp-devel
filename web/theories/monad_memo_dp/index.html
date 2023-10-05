@@ -1,36 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Monad_Memo_DP - Archive of Formal Proofs</title><meta name="description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."><meta property="og:title" content="Monad_Memo_DP" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Monad_Memo_DP - Archive of Formal Proofs</title>
+    <meta name="description" content="A collection of proof libraries, examples, and larger
+     scientific developments, mechanically checked in the theorem prover Isabelle.">
+
+  <meta property="og:title" content="Monad_Memo_DP" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="/theories/monad_memo_dp/" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="theories" />
 
 <meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="Monad_Memo_DP"/>
 <meta name="twitter:description" content=""/>
 
-  
-  <link rel="stylesheet" type="text/css" href="../../css/front.min.css"><link rel="stylesheet" type="text/css" href="../../css/isabelle.css">
-  
+  <link rel="stylesheet" type="text/css" href="../../css/front.min.css">
+    <link rel="stylesheet" type="text/css" href="../../css/isabelle.css">
 
-  <link rel="icon" href="../../images/favicon.ico" type="image/icon"><script src="../../js/obfuscate.js"></script>
+  <link rel="icon" href="../../images/favicon.ico" type="image/icon">
+
+  <script src="../../js/obfuscate.js"></script>
   <script src="../../js/flexsearch.bundle.js"></script>
   <script src="../../js/scroll-spy.js"></script>
   <script src="../../js/theory.js"></script>
-  <script src="../../js/util.js"></script><script src="../../js/header-search.js"></script><script src="../../js/search-autocomplete.js"></script>
+  <script src="../../js/util.js"></script>
+    <script src="../../js/header-search.js"></script>
+  <script src="../../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore theories'>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore theories'>
+    <aside>
+        
+<div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
@@ -38,74 +47,80 @@
   </label>
 
   <a href="../../" class='logo-link'>
-    <img src="../../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+    <img src="../../images/afp.png" alt='Logo of the Archive of Formal Proofs'
+         class="logo">
   </a>
 
   <nav id="menu">
   <div>
     <a href="../../" class='logo-link'>
       <img src="../../images/afp.png" alt='Logo of the Archive of Formal Proofs'
-        class="logo">
+           class="logo">
     </a>
-    <ul id="return">
-      <li><a href="../../entries/Monad_Memo_DP.html">Return to entry</a></li>
-    </ul>
+      <ul id="return">
+        <li><a href="../../entries/Monad_Memo_DP.html">Return to entry</a></li>
+      </ul>
     <hr>
     <ul id="theory-navbar" class="list-group"></ul>
   </div>
   </nav>
 </div>
-
-  </aside>
-
-  <div
-    class='content '><header>
-  <form autocomplete="off" action="../../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>M</span>onad_<span class='first'>M</span>emo_<span class='first'>D</span><span class='first'>P</span></h1>
+    </aside>
+    <div class='content'>
+      <header>
+    <form autocomplete="off" action="../../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>M</span>onad_<span class='first'>M</span>emo_<span class='first'>D</span><span class='first'>P</span>
+    
+  </h1>
   <div>
-    
-    
   </div>
-</header><div><main id="theories">
-  <a id="State_Monad_Ext" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/State_Monad_Ext.html"><h2>State_Monad_Ext</h2></a>
-  <a id="Pure_Monad" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/Pure_Monad.html"><h2>Pure_Monad</h2></a>
-  <a id="DP_CRelVS" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/DP_CRelVS.html"><h2>DP_CRelVS</h2></a>
-  <a id="State_Heap_Misc" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/State_Heap_Misc.html"><h2>State_Heap_Misc</h2></a>
-  <a id="Heap_Monad_Ext" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/Heap_Monad_Ext.html"><h2>Heap_Monad_Ext</h2></a>
-  <a id="State_Heap" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/State_Heap.html"><h2>State_Heap</h2></a>
-  <a id="DP_CRelVH" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/DP_CRelVH.html"><h2>DP_CRelVH</h2></a>
-  <a id="Memory" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/Memory.html"><h2>Memory</h2></a>
-  <a id="Pair_Memory" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/Pair_Memory.html"><h2>Pair_Memory</h2></a>
-  <a id="Indexing" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/Indexing.html"><h2>Indexing</h2></a>
-  <a id="Memory_Heap" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/Memory_Heap.html"><h2>Memory_Heap</h2></a>
-  <a id="Transform_Cmd" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/Transform_Cmd.html"><h2>Transform_Cmd</h2></a>
-  <a id="Bottom_Up_Computation" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/Bottom_Up_Computation.html"><h2>Bottom_Up_Computation</h2></a>
-  <a id="Bottom_Up_Computation_Heap" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/Bottom_Up_Computation_Heap.html"><h2>Bottom_Up_Computation_Heap</h2></a>
-  <a id="Solve_Cong" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/Solve_Cong.html"><h2>Solve_Cong</h2></a>
-  <a id="Heap_Main" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/Heap_Main.html"><h2>Heap_Main</h2></a>
-  <a id="State_Main" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/State_Main.html"><h2>State_Main</h2></a>
-  <a id="Example_Misc" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/Example_Misc.html"><h2>Example_Misc</h2></a>
-  <a id="Tracing" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/Tracing.html"><h2>Tracing</h2></a>
-  <a id="Ground_Function" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/Ground_Function.html"><h2>Ground_Function</h2></a>
-  <a id="Bellman_Ford" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/Bellman_Ford.html"><h2>Bellman_Ford</h2></a>
-  <a id="Heap_Default" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/Heap_Default.html"><h2>Heap_Default</h2></a>
-  <a id="Knapsack" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/Knapsack.html"><h2>Knapsack</h2></a>
-  <a id="Counting_Tiles" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/Counting_Tiles.html"><h2>Counting_Tiles</h2></a>
-  <a id="CYK" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/CYK.html"><h2>CYK</h2></a>
-  <a id="Min_Ed_Dist0" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/Min_Ed_Dist0.html"><h2>Min_Ed_Dist0</h2></a>
-  <a id="OptBST" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/OptBST.html"><h2>OptBST</h2></a>
-  <a id="Longest_Common_Subsequence" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/Longest_Common_Subsequence.html"><h2>Longest_Common_Subsequence</h2></a>
-  <a id="All_Examples" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/All_Examples.html"><h2>All_Examples</h2></a></main>
+</header>
+      <div>
+        
+  <main id="theories">
+      <a id="State_Monad_Ext" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/State_Monad_Ext.html"><h2>State_Monad_Ext</h2></a>
+      <a id="Pure_Monad" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/Pure_Monad.html"><h2>Pure_Monad</h2></a>
+      <a id="DP_CRelVS" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/DP_CRelVS.html"><h2>DP_CRelVS</h2></a>
+      <a id="State_Heap_Misc" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/State_Heap_Misc.html"><h2>State_Heap_Misc</h2></a>
+      <a id="Heap_Monad_Ext" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/Heap_Monad_Ext.html"><h2>Heap_Monad_Ext</h2></a>
+      <a id="State_Heap" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/State_Heap.html"><h2>State_Heap</h2></a>
+      <a id="DP_CRelVH" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/DP_CRelVH.html"><h2>DP_CRelVH</h2></a>
+      <a id="Memory" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/Memory.html"><h2>Memory</h2></a>
+      <a id="Pair_Memory" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/Pair_Memory.html"><h2>Pair_Memory</h2></a>
+      <a id="Indexing" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/Indexing.html"><h2>Indexing</h2></a>
+      <a id="Memory_Heap" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/Memory_Heap.html"><h2>Memory_Heap</h2></a>
+      <a id="Transform_Cmd" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/Transform_Cmd.html"><h2>Transform_Cmd</h2></a>
+      <a id="Bottom_Up_Computation" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/Bottom_Up_Computation.html"><h2>Bottom_Up_Computation</h2></a>
+      <a id="Bottom_Up_Computation_Heap" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/Bottom_Up_Computation_Heap.html"><h2>Bottom_Up_Computation_Heap</h2></a>
+      <a id="Solve_Cong" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/Solve_Cong.html"><h2>Solve_Cong</h2></a>
+      <a id="Heap_Main" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/Heap_Main.html"><h2>Heap_Main</h2></a>
+      <a id="State_Main" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/State_Main.html"><h2>State_Main</h2></a>
+      <a id="Example_Misc" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/Example_Misc.html"><h2>Example_Misc</h2></a>
+      <a id="Tracing" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/Tracing.html"><h2>Tracing</h2></a>
+      <a id="Ground_Function" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/Ground_Function.html"><h2>Ground_Function</h2></a>
+      <a id="Bellman_Ford" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/Bellman_Ford.html"><h2>Bellman_Ford</h2></a>
+      <a id="Heap_Default" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/Heap_Default.html"><h2>Heap_Default</h2></a>
+      <a id="Knapsack" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/Knapsack.html"><h2>Knapsack</h2></a>
+      <a id="Counting_Tiles" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/Counting_Tiles.html"><h2>Counting_Tiles</h2></a>
+      <a id="CYK" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/CYK.html"><h2>CYK</h2></a>
+      <a id="Min_Ed_Dist0" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/Min_Ed_Dist0.html"><h2>Min_Ed_Dist0</h2></a>
+      <a id="OptBST" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/OptBST.html"><h2>OptBST</h2></a>
+      <a id="Longest_Common_Subsequence" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/Longest_Common_Subsequence.html"><h2>Longest_Common_Subsequence</h2></a>
+      <a id="All_Examples" href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/All_Examples.html"><h2>All_Examples</h2></a>
+  </main>
+        
+      </div>
     </div>
-  </div>
-</body>
-
+  </body>
 </html>

@@ -1,224 +1,291 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Computer science/Algorithms/Graph - Archive of Formal Proofs</title><meta name="description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."><link rel="alternate" type="application/rss+xml" href="../../../../topics/computer-science/algorithms/graph/index.xml" title="Archive of Formal Proofs" /><meta property="og:title" content="Computer science/Algorithms/Graph" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Computer science/Algorithms/Graph - Archive of Formal Proofs</title>
+    <meta name="description" content="A collection of proof libraries, examples, and larger
+     scientific developments, mechanically checked in the theorem prover Isabelle.">
+  <link rel="alternate" type="application/rss+xml" href="../../../../topics/computer-science/algorithms/graph/index.xml" title="Archive of Formal Proofs" />
+
+  <meta property="og:title" content="Computer science/Algorithms/Graph" />
 <meta property="og:description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="/topics/computer-science/algorithms/graph/" /><meta property="og:image" content="/images/afp.png"/><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="Computer science/Algorithms/Graph"/>
 <meta name="twitter:description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."/>
 
-  
   <link rel="stylesheet" type="text/css" href="../../../../css/front.min.css">
 
-  <link rel="icon" href="../../../../images/favicon.ico" type="image/icon"><script src="../../../../js/obfuscate.js"></script>
+  <link rel="icon" href="../../../../images/favicon.ico" type="image/icon">
+
+  <script src="../../../../js/obfuscate.js"></script>
   <script src="../../../../js/flexsearch.bundle.js"></script>
   <script src="../../../../js/scroll-spy.js"></script>
   <script src="../../../../js/theory.js"></script>
-  <script src="../../../../js/util.js"></script><script src="../../../../js/header-search.js"></script><script src="../../../../js/search-autocomplete.js"></script>
+  <script src="../../../../js/util.js"></script>
+    <script src="../../../../js/header-search.js"></script>
+  <script src="../../../../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../../../../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../../../../" class='logo-link'>
-    <img src="../../../../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../../../../" class="logo-link">
+    <img src="../../../../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../../../../search"><img src="../../../../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../../../../" class='logo-link'>
-        <img src="../../../../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../../../../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../../../../"><li >Home</li></a>
-        <a href="../../../../topics/"><li >Topics</li></a>
-        <a href="../../../../download/"><li >Download</li></a>
-        <a href="../../../../help/"><li >Help</li></a>
-        <a href="../../../../submission/"><li >Submission</li></a>
-        <a href="../../../../statistics/"><li >Statistics</li></a>
-        <a href="../../../../about/"><li >About</li></a>
+          <a href="../../../../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../../../../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../../../../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../../../../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../../../../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../../../../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../../../../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content '><header>
-  <form autocomplete="off" action="../../../../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../../../../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>C</span>omputer science/<span class='first'>A</span>lgorithms/<span class='first'>G</span>raph</h1>
+    </aside>
+    <div class='content'>
+      <header>
+    <form autocomplete="off" action="../../../../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../../../../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>C</span>omputer science/<span class='first'>A</span>lgorithms/<span class='first'>G</span>raph
+    
+  </h1>
   <div>
-    
-    
   </div>
-</header><div><h2>Subject Classification</h2><p>ACM: <a href="https://dl.acm.org/topic/ccs2012/10003752.10003809.10003635">Theory of computation~Graph algorithms analysis</a></p><p>AMS: <a href="https://mathscinet.ams.org/mathscinet/msc/msc2020.html?t=05C85">Combinatorics / Graph theory / Graph algorithms</a></p><h2 class="head">2023</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Tree_Enumeration.html">Tree Enumeration</a></h5> <br>by <a href="../../../../authors/cremer">Nils Cremer</a></div>
-  <span class="date">
-    May 09
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Expander_Graphs.html">Expander Graphs</a></h5> <br>by <a href="../../../../authors/karayel">Emin Karayel</a></div>
-  <span class="date">
-    Mar 03
-  </span>
-</article>
+</header>
+      <div>
+        
+    <h2>Subject Classification</h2>
+      <p>ACM: <a href="https://dl.acm.org/topic/ccs2012/10003752.10003809.10003635">Theory of computation~Graph algorithms analysis</a></p>
+      <p>AMS: <a href="https://mathscinet.ams.org/mathscinet/msc/msc2020.html?t=05C85">Combinatorics / Graph theory / Graph algorithms</a></p>
+    <h2 class="head">2023</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Tree_Enumeration.html">Tree Enumeration</a></h5>
+          <br>
+            by <a href="../../../../authors/cremer">Nils Cremer</a>
 
+        </div>
+        <span class="date">May 09</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Expander_Graphs.html">Expander Graphs</a></h5>
+          <br>
+            by <a href="../../../../authors/karayel">Emin Karayel</a>
 
-<h2 class="head">2022</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/SCC_Bloemen_Sequential.html">Correctness of a Set-based Algorithm for Computing Strongly Connected Components of a Graph</a></h5> <br>by <a href="../../../../authors/merz">Stephan Merz</a> and <a href="../../../../authors/trelat">Vincent Trélat</a></div>
-  <span class="date">
-    Aug 17
-  </span>
-</article>
+        </div>
+        <span class="date">Mar 03</span>
+      </article>
+    <h2 class="head">2022</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/SCC_Bloemen_Sequential.html">Correctness of a Set-based Algorithm for Computing Strongly Connected Components of a Graph</a></h5>
+          <br>
+            by <a href="../../../../authors/merz">Stephan Merz</a> and <a href="../../../../authors/trelat">Vincent Trélat</a>
 
+        </div>
+        <span class="date">Aug 17</span>
+      </article>
+    <h2 class="head">2020</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Relational_Minimum_Spanning_Trees.html">Relational Minimum Spanning Tree Algorithms</a></h5>
+          <br>
+            by <a href="../../../../authors/guttmann">Walter Guttmann</a> and <a href="../../../../authors/brien">Nicolas Robinson-O&rsquo;Brien</a>
 
-<h2 class="head">2020</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Relational_Minimum_Spanning_Trees.html">Relational Minimum Spanning Tree Algorithms</a></h5> <br>by <a href="../../../../authors/guttmann">Walter Guttmann</a> and <a href="../../../../authors/brien">Nicolas Robinson-O&rsquo;Brien</a></div>
-  <span class="date">
-    Dec 08
-  </span>
-</article>
+        </div>
+        <span class="date">Dec 08</span>
+      </article>
+    <h2 class="head">2019</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Prim_Dijkstra_Simple.html">Purely Functional, Simple, and Efficient Implementation of Prim and Dijkstra</a></h5>
+          <br>
+            by <a href="../../../../authors/lammich">Peter Lammich</a> and <a href="../../../../authors/nipkow">Tobias Nipkow</a>
 
+        </div>
+        <span class="date">Jun 25</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Kruskal.html">Kruskal&#39;s Algorithm for Minimum Spanning Forest</a></h5>
+          <br>
+            by <a href="../../../../authors/haslbeckm">Maximilian P. L. Haslbeck</a>, <a href="../../../../authors/lammich">Peter Lammich</a> and <a href="../../../../authors/biendarra">Julian Biendarra</a>
 
-<h2 class="head">2019</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Prim_Dijkstra_Simple.html">Purely Functional, Simple, and Efficient Implementation of Prim and Dijkstra</a></h5> <br>by <a href="../../../../authors/lammich">Peter Lammich</a> and <a href="../../../../authors/nipkow">Tobias Nipkow</a></div>
-  <span class="date">
-    Jun 25
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Kruskal.html">Kruskal&#39;s Algorithm for Minimum Spanning Forest</a></h5> <br>by <a href="../../../../authors/haslbeckm">Maximilian P. L. Haslbeck</a>, <a href="../../../../authors/lammich">Peter Lammich</a> and <a href="../../../../authors/biendarra">Julian Biendarra</a></div>
-  <span class="date">
-    Feb 14
-  </span>
-</article>
+        </div>
+        <span class="date">Feb 14</span>
+      </article>
+    <h2 class="head">2017</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Prpu_Maxflow.html">Formalizing Push-Relabel Algorithms</a></h5>
+          <br>
+            by <a href="../../../../authors/lammich">Peter Lammich</a> and <a href="../../../../authors/sefidgar">S. Reza Sefidgar</a>
 
+        </div>
+        <span class="date">Jun 01</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Floyd_Warshall.html">The Floyd-Warshall Algorithm for Shortest Paths</a></h5>
+          <br>
+            by <a href="../../../../authors/wimmer">Simon Wimmer</a> and <a href="../../../../authors/lammich">Peter Lammich</a>
 
-<h2 class="head">2017</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Prpu_Maxflow.html">Formalizing Push-Relabel Algorithms</a></h5> <br>by <a href="../../../../authors/lammich">Peter Lammich</a> and <a href="../../../../authors/sefidgar">S. Reza Sefidgar</a></div>
-  <span class="date">
-    Jun 01
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Floyd_Warshall.html">The Floyd-Warshall Algorithm for Shortest Paths</a></h5> <br>by <a href="../../../../authors/wimmer">Simon Wimmer</a> and <a href="../../../../authors/lammich">Peter Lammich</a></div>
-  <span class="date">
-    May 08
-  </span>
-</article>
+        </div>
+        <span class="date">May 08</span>
+      </article>
+    <h2 class="head">2016</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/EdmondsKarp_Maxflow.html">Formalizing the Edmonds-Karp Algorithm</a></h5>
+          <br>
+            by <a href="../../../../authors/lammich">Peter Lammich</a> and <a href="../../../../authors/sefidgar">S. Reza Sefidgar</a>
 
+        </div>
+        <span class="date">Aug 12</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/DFS_Framework.html">A Framework for Verifying Depth-First Search Algorithms</a></h5>
+          <br>
+            by <a href="../../../../authors/lammich">Peter Lammich</a> and <a href="../../../../authors/neumann">René Neumann</a>
 
-<h2 class="head">2016</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/EdmondsKarp_Maxflow.html">Formalizing the Edmonds-Karp Algorithm</a></h5> <br>by <a href="../../../../authors/lammich">Peter Lammich</a> and <a href="../../../../authors/sefidgar">S. Reza Sefidgar</a></div>
-  <span class="date">
-    Aug 12
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/DFS_Framework.html">A Framework for Verifying Depth-First Search Algorithms</a></h5> <br>by <a href="../../../../authors/lammich">Peter Lammich</a> and <a href="../../../../authors/neumann">René Neumann</a></div>
-  <span class="date">
-    Jul 05
-  </span>
-</article>
+        </div>
+        <span class="date">Jul 05</span>
+      </article>
+    <h2 class="head">2014</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Gabow_SCC.html">Verified Efficient Implementation of Gabow&#39;s Strongly Connected Components Algorithm</a></h5>
+          <br>
+            by <a href="../../../../authors/lammich">Peter Lammich</a>
 
+        </div>
+        <span class="date">May 28</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Roy_Floyd_Warshall.html">Transitive closure according to Roy-Floyd-Warshall</a></h5>
+          <br>
+            by <a href="../../../../authors/wenzel">Makarius Wenzel</a>
 
-<h2 class="head">2014</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Gabow_SCC.html">Verified Efficient Implementation of Gabow&#39;s Strongly Connected Components Algorithm</a></h5> <br>by <a href="../../../../authors/lammich">Peter Lammich</a></div>
-  <span class="date">
-    May 28
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Roy_Floyd_Warshall.html">Transitive closure according to Roy-Floyd-Warshall</a></h5> <br>by <a href="../../../../authors/wenzel">Makarius Wenzel</a></div>
-  <span class="date">
-    May 23
-  </span>
-</article>
+        </div>
+        <span class="date">May 23</span>
+      </article>
+    <h2 class="head">2012</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Transitive-Closure-II.html">Executable Transitive Closures</a></h5>
+          <br>
+            by <a href="../../../../authors/thiemann">René Thiemann</a>
 
+        </div>
+        <span class="date">Feb 29</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Dijkstra_Shortest_Path.html">Dijkstra&#39;s Shortest Path Algorithm</a></h5>
+          <br>
+            by <a href="../../../../authors/nordhoff">Benedikt Nordhoff</a> and <a href="../../../../authors/lammich">Peter Lammich</a>
 
-<h2 class="head">2012</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Transitive-Closure-II.html">Executable Transitive Closures</a></h5> <br>by <a href="../../../../authors/thiemann">René Thiemann</a></div>
-  <span class="date">
-    Feb 29
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Dijkstra_Shortest_Path.html">Dijkstra&#39;s Shortest Path Algorithm</a></h5> <br>by <a href="../../../../authors/nordhoff">Benedikt Nordhoff</a> and <a href="../../../../authors/lammich">Peter Lammich</a></div>
-  <span class="date">
-    Jan 30
-  </span>
-</article>
+        </div>
+        <span class="date">Jan 30</span>
+      </article>
+    <h2 class="head">2011</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Transitive-Closure.html">Executable Transitive Closures of Finite Relations</a></h5>
+          <br>
+            by <a href="../../../../authors/sternagel">Christian Sternagel</a> and <a href="../../../../authors/thiemann">René Thiemann</a>
 
+        </div>
+        <span class="date">Mar 14</span>
+      </article>
+    <h2 class="head">2010</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/GraphMarkingIBP.html">Verification of the Deutsch-Schorr-Waite Graph Marking Algorithm using Data Refinement</a></h5>
+          <br>
+            by <a href="../../../../authors/preoteasa">Viorel Preoteasa</a> and <a href="../../../../authors/back">Ralph-Johan Back</a>
 
-<h2 class="head">2011</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Transitive-Closure.html">Executable Transitive Closures of Finite Relations</a></h5> <br>by <a href="../../../../authors/sternagel">Christian Sternagel</a> and <a href="../../../../authors/thiemann">René Thiemann</a></div>
-  <span class="date">
-    Mar 14
-  </span>
-</article>
+        </div>
+        <span class="date">May 28</span>
+      </article>
+    <h2 class="head">2004</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Depth-First-Search.html">Depth First Search</a></h5>
+          <br>
+            by <a href="../../../../authors/nishihara">Toshiaki Nishihara</a> and <a href="../../../../authors/minamide">Yasuhiko Minamide</a>
 
-
-<h2 class="head">2010</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/GraphMarkingIBP.html">Verification of the Deutsch-Schorr-Waite Graph Marking Algorithm using Data Refinement</a></h5> <br>by <a href="../../../../authors/preoteasa">Viorel Preoteasa</a> and <a href="../../../../authors/back">Ralph-Johan Back</a></div>
-  <span class="date">
-    May 28
-  </span>
-</article>
-
-
-<h2 class="head">2004</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Depth-First-Search.html">Depth First Search</a></h5> <br>by <a href="../../../../authors/nishihara">Toshiaki Nishihara</a> and <a href="../../../../authors/minamide">Yasuhiko Minamide</a></div>
-  <span class="date">
-    Jun 24
-  </span>
-</article>
-
-
-
-
+        </div>
+        <span class="date">Jun 24</span>
+      </article>
+        
+      </div>
     </div>
-  </div>
-</body>
-
+  </body>
 </html>

@@ -1,47 +1,45 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Zeta_Function on Archive of Formal Proofs</title>
+    <title>Zeta_Function on Archive of Formal Proofs
+    </title>
     <link>/dependencies/zeta_function/</link>
-    <description>Recent content in Zeta_Function on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Zeta_Function 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Mon, 19 Jun 2023 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/zeta_function/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Executable Randomized Algorithms</title>
-      <link>/entries/Executable_Randomized_Algorithms.html</link>
-      <pubDate>Mon, 19 Jun 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Executable_Randomized_Algorithms.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>Elementary Facts About the Distribution of Primes</title>
-      <link>/entries/Prime_Distribution_Elementary.html</link>
-      <pubDate>Thu, 21 Feb 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Prime_Distribution_Elementary.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Prime Number Theorem</title>
-      <link>/entries/Prime_Number_Theorem.html</link>
-      <pubDate>Wed, 19 Sep 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Prime_Number_Theorem.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Dirichlet L-Functions and Dirichlet&#39;s Theorem</title>
-      <link>/entries/Dirichlet_L.html</link>
-      <pubDate>Thu, 21 Dec 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Dirichlet_L.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Mon, 19 Jun 2023 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/zeta_function/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Executable Randomized Algorithms</title>
+          <link>/entries/Executable_Randomized_Algorithms.html</link>
+          <pubDate>Mon, 19 Jun 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Executable_Randomized_Algorithms.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Elementary Facts About the Distribution of Primes</title>
+          <link>/entries/Prime_Distribution_Elementary.html</link>
+          <pubDate>Thu, 21 Feb 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Prime_Distribution_Elementary.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Prime Number Theorem</title>
+          <link>/entries/Prime_Number_Theorem.html</link>
+          <pubDate>Wed, 19 Sep 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Prime_Number_Theorem.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Dirichlet L-Functions and Dirichlet&#39;s Theorem</title>
+          <link>/entries/Dirichlet_L.html</link>
+          <pubDate>Thu, 21 Dec 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Dirichlet_L.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

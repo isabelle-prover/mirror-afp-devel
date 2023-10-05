@@ -1,27 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>HOLCF-Prelude - Archive of Formal Proofs</title><meta name="description" content="The Isabelle/HOLCF-Prelude is a formalization of a large part of
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HOLCF-Prelude - Archive of Formal Proofs</title>
+    <meta name="description" content="The Isabelle/HOLCF-Prelude is a formalization of a large part of
 Haskell&#39;s standard prelude in Isabelle/HOLCF. We use it to prove
-the correctness of the..."><meta property="og:title" content="HOLCF-Prelude" />
+the correctness of the...">
+
+  <meta property="og:title" content="HOLCF-Prelude" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="/entries/HOLCF-Prelude.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
 <meta property="article:published_time" content="2017-07-15T00:00:00+00:00" />
 <meta property="article:modified_time" content="2017-07-15T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="HOLCF-Prelude"/>
 <meta name="twitter:description" content=""/>
 
-  
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
     <script>
       MathJax = {
         tex: {
@@ -33,72 +38,111 @@ the correctness of the..."><meta property="og:title" content="HOLCF-Prelude" />
         }
       };
     </script>
-    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
   <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
-  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../" class='logo-link'>
-    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../" class='logo-link'>
-        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../"><li >Home</li></a>
-        <a href="../topics/"><li >Topics</li></a>
-        <a href="../download/"><li >Download</li></a>
-        <a href="../help/"><li >Help</li></a>
-        <a href="../submission/"><li >Submission</li></a>
-        <a href="../statistics/"><li >Statistics</li></a>
-        <a href="../about/"><li >About</li></a>
+          <a href="../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content  entries'><header>
-  <form autocomplete="off" action="../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>H</span><span class='first'>O</span><span class='first'>L</span><span class='first'>C</span><span class='first'>F</span>-<span class='first'>P</span>relude</h1>
+    </aside>
+    <div class='content entries'>
+      <header>
+    <form autocomplete="off" action="../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>H</span><span class='first'>O</span><span class='first'>L</span><span class='first'>C</span><span class='first'>F</span>-<span class='first'>P</span>relude
+    
+  </h1>
   <div>
-    
-    <p><a href="../authors/breitner">Joachim Breitner</a> <a class="obfuscated" data="eyJob3N0IjpbImNpcyIsInVwZW5uIiwiZWR1Il0sInVzZXIiOlsiam9hY2hpbSJdfQ==">📧</a>, <a href="../authors/huffman">Brian Huffman</a>, <a href="../authors/mitchell">Neil Mitchell</a> and <a href="../authors/sternagel">Christian Sternagel</a> <a class="obfuscated" data="eyJob3N0IjpbImdtYWlsIiwiY29tIl0sInVzZXIiOlsiYyIsInN0ZXJuYWdlbCJdfQ==">📧</a>
-    </p>
-    
-    
-    <p class="date">July 15, 2017</p>
-    
-  </div>
-</header><div><main><h3>Abstract</h3>
+      <p>
+        <a href="../authors/breitner">Joachim Breitner</a> <a class="obfuscated" data="eyJob3N0IjpbImNpcyIsInVwZW5uIiwiZWR1Il0sInVzZXIiOlsiam9hY2hpbSJdfQ==">📧</a>, <a href="../authors/huffman">Brian Huffman</a>, <a href="../authors/mitchell">Neil Mitchell</a> and <a href="../authors/sternagel">Christian Sternagel</a> <a class="obfuscated" data="eyJob3N0IjpbImdtYWlsIiwiY29tIl0sInVzZXIiOlsiYyIsInN0ZXJuYWdlbCJdfQ==">📧</a>
 
-  <div class="abstract mathjax_process">The Isabelle/HOLCF-Prelude is a formalization of a large part of
+      </p>
+      <p class="date">July 15, 2017</p>
+  </div>
+</header>
+      <div>
+        
+  <main>
+    <h3>Abstract</h3>
+
+    <div class="abstract mathjax_process">The Isabelle/HOLCF-Prelude is a formalization of a large part of
 Haskell's standard prelude in Isabelle/HOLCF. We use it to prove
 the correctness of the Eratosthenes' Sieve, in its
 self-referential implementation commonly used to showcase
@@ -106,97 +150,147 @@ Haskell's laziness; prove correctness of GHC's
 "fold/build" rule and related rewrite rules; and certify a
 number of hints suggested by HLint.</div>
 
-  <h3>License</h3>
-  <div><a href="https://isa-afp.org/LICENSE">BSD License</a></div><h3>Topics</h3>
-  <ul><li><a href="../topics/computer-science/functional-programming">Computer science/Functional programming</a></li></ul>
-  <h3>Session HOLCF-Prelude</h3>
-  <ul>
-    <li><a href="../theories/holcf-prelude/#HOLCF_Main">HOLCF_Main</a></li>
-    <li><a href="../theories/holcf-prelude/#Type_Classes">Type_Classes</a></li>
-    <li><a href="../theories/holcf-prelude/#Numeral_Cpo">Numeral_Cpo</a></li>
-    <li><a href="../theories/holcf-prelude/#Data_Function">Data_Function</a></li>
-    <li><a href="../theories/holcf-prelude/#Data_Bool">Data_Bool</a></li>
-    <li><a href="../theories/holcf-prelude/#Data_Tuple">Data_Tuple</a></li>
-    <li><a href="../theories/holcf-prelude/#Data_Integer">Data_Integer</a></li>
-    <li><a href="../theories/holcf-prelude/#Data_List">Data_List</a></li>
-    <li><a href="../theories/holcf-prelude/#Data_Maybe">Data_Maybe</a></li>
-    <li><a href="../theories/holcf-prelude/#Definedness">Definedness</a></li>
-    <li><a href="../theories/holcf-prelude/#List_Comprehension">List_Comprehension</a></li>
-    <li><a href="../theories/holcf-prelude/#Num_Class">Num_Class</a></li>
-    <li><a href="../theories/holcf-prelude/#HOLCF_Prelude">HOLCF_Prelude</a></li>
-    <li><a href="../theories/holcf-prelude/#Fibs">Fibs</a></li>
-    <li><a href="../theories/holcf-prelude/#Sieve_Primes">Sieve_Primes</a></li>
-    <li><a href="../theories/holcf-prelude/#GHC_Rewrite_Rules">GHC_Rewrite_Rules</a></li>
-    <li><a href="../theories/holcf-prelude/#HLint">HLint</a></li></ul><div class="flex-wrap">
-  <div>
-    <h3>Used by</h3>
-    <ul class="horizontal-list"><li><a href="../entries/BirdKMP.html">Putting the `K' into Bird&rsquo;s derivation of Knuth-Morris-Pratt string matching</a></li></ul>
-  </div>
-  
-  </div>
-</main>
-
-<nav class='links'>
-  <a class='popup-button' href="#cite-popup">Cite</a>
-  <a class='popup-button' href="#download-popup">Download</a>
-  <h4>PDFs</h4>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/HOLCF-Prelude/outline.pdf">Proof
-    outline</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/HOLCF-Prelude/document.pdf">Proof
-    document</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/HOLCF-Prelude/session_graph.pdf">Dependencies</a></nav>
-
-<div id="cite-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Cite</h2>
-    <a class="close" href="#">&times;</a>
+    <h3>License</h3>
     <div>
-      <p style="display:none;" id="bibtex-filename">HOLCF-Prelude-AFP</p><pre id="copy-text">@article{HOLCF-Prelude-AFP,
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/computer-science/functional-programming">Computer science/Functional programming</a></li>
+      </ul>
+      <h3>Session HOLCF-Prelude</h3>
+      <ul>
+          <li><a href="../theories/holcf-prelude/#HOLCF_Main">HOLCF_Main</a></li>
+          <li><a href="../theories/holcf-prelude/#Type_Classes">Type_Classes</a></li>
+          <li><a href="../theories/holcf-prelude/#Numeral_Cpo">Numeral_Cpo</a></li>
+          <li><a href="../theories/holcf-prelude/#Data_Function">Data_Function</a></li>
+          <li><a href="../theories/holcf-prelude/#Data_Bool">Data_Bool</a></li>
+          <li><a href="../theories/holcf-prelude/#Data_Tuple">Data_Tuple</a></li>
+          <li><a href="../theories/holcf-prelude/#Data_Integer">Data_Integer</a></li>
+          <li><a href="../theories/holcf-prelude/#Data_List">Data_List</a></li>
+          <li><a href="../theories/holcf-prelude/#Data_Maybe">Data_Maybe</a></li>
+          <li><a href="../theories/holcf-prelude/#Definedness">Definedness</a></li>
+          <li><a href="../theories/holcf-prelude/#List_Comprehension">List_Comprehension</a></li>
+          <li><a href="../theories/holcf-prelude/#Num_Class">Num_Class</a></li>
+          <li><a href="../theories/holcf-prelude/#HOLCF_Prelude">HOLCF_Prelude</a></li>
+          <li><a href="../theories/holcf-prelude/#Fibs">Fibs</a></li>
+          <li><a href="../theories/holcf-prelude/#Sieve_Primes">Sieve_Primes</a></li>
+          <li><a href="../theories/holcf-prelude/#GHC_Rewrite_Rules">GHC_Rewrite_Rules</a></li>
+          <li><a href="../theories/holcf-prelude/#HLint">HLint</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+      <div>
+        <h3>Used by</h3>
+        <ul class="horizontal-list">
+            <li>
+              <a href="../entries/BirdKMP.html">Putting the `K' into Bird&rsquo;s derivation of Knuth-Morris-Pratt string matching</a>
+            </li>
+        </ul>
+      </div>
+      </div>
+    
+  </main>
+
+  <nav class='links'>
+    <a class='popup-button' href="#cite-popup">Cite</a>
+    <a class='popup-button' href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/HOLCF-Prelude/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/HOLCF-Prelude/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/HOLCF-Prelude/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">HOLCF-Prelude-AFP</p>
+        <pre id="copy-text">@article{HOLCF-Prelude-AFP,
   author  = {Joachim Breitner and Brian Huffman and Neil Mitchell and Christian Sternagel},
   title   = {HOLCF-Prelude},
   journal = {Archive of Formal Proofs},
   month   = {July},
   year    = {2017},
   note    = {\url{https://isa-afp.org/entries/HOLCF-Prelude.html},
-            Formal proof development},
+             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
     </div>
   </div>
-</div>
 
-<div id="download-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Download</h2>
-    <a class="close" href="#">&times;</a>
-    <a href="https://www.isa-afp.org/release/afp-HOLCF-Prelude-current.tar.gz" download>Download latest</a>
-    <p>Older releases:</p>
-    <ul><li>
-        <a href="https://www.isa-afp.org/release/afp-HOLCF-Prelude-2023-09-13.tar.gz">Sep 13, 2023</a>: Isabelle2023
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-HOLCF-Prelude-2022-10-27.tar.gz">Oct 27, 2022</a>: Isabelle2022
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-HOLCF-Prelude-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021-1
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-HOLCF-Prelude-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-HOLCF-Prelude-2020-04-18.tar.gz">Apr 18, 2020</a>: Isabelle2020
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-HOLCF-Prelude-2019-06-11.tar.gz">Jun 11, 2019</a>: Isabelle2019
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-HOLCF-Prelude-2018-08-16.tar.gz">Aug 16, 2018</a>: Isabelle2018
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-HOLCF-Prelude-2017-10-10.tar.gz">Oct 10, 2017</a>: Isabelle2017
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-HOLCF-Prelude-2017-07-15.tar.gz">Jul 15, 2017</a>: Isabelle2016-1
-      </li></ul>
-  </div>
-</div>
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-HOLCF-Prelude-current.tar.gz"
+         download>Download latest</a>
+        <p>Older releases:</p>
+        <ul>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-HOLCF-Prelude-2023-09-13.tar.gz">
+                Sep 13, 2023
+              </a>
+              : Isabelle2023
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-HOLCF-Prelude-2022-10-27.tar.gz">
+                Oct 27, 2022
+              </a>
+              : Isabelle2022
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-HOLCF-Prelude-2021-12-14.tar.gz">
+                Dec 14, 2021
+              </a>
+              : Isabelle2021-1
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-HOLCF-Prelude-2021-02-23.tar.gz">
+                Feb 23, 2021
+              </a>
+              : Isabelle2021
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-HOLCF-Prelude-2020-04-18.tar.gz">
+                Apr 18, 2020
+              </a>
+              : Isabelle2020
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-HOLCF-Prelude-2019-06-11.tar.gz">
+                Jun 11, 2019
+              </a>
+              : Isabelle2019
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-HOLCF-Prelude-2018-08-16.tar.gz">
+                Aug 16, 2018
+              </a>
+              : Isabelle2018
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-HOLCF-Prelude-2017-10-10.tar.gz">
+                Oct 10, 2017
+              </a>
+              : Isabelle2017
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-HOLCF-Prelude-2017-07-15.tar.gz">
+                Jul 15, 2017
+              </a>
+              : Isabelle2016-1
+            </li>
+        </ul>
     </div>
   </div>
-</body>
-
+        
+      </div>
+    </div>
+  </body>
 </html>

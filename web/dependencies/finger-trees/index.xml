@@ -1,38 +1,38 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Finger-Trees on Archive of Formal Proofs</title>
+    <title>Finger-Trees on Archive of Formal Proofs
+    </title>
     <link>/dependencies/finger-trees/</link>
-    <description>Recent content in Finger-Trees on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Finger-Trees 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Mon, 15 Apr 2013 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/finger-trees/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Light-weight Containers</title>
-      <link>/entries/Containers.html</link>
-      <pubDate>Mon, 15 Apr 2013 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Containers.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>Collections Framework</title>
-      <link>/entries/Collections.html</link>
-      <pubDate>Wed, 25 Nov 2009 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Collections.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Jinja with Threads</title>
-      <link>/entries/JinjaThreads.html</link>
-      <pubDate>Mon, 03 Dec 2007 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/JinjaThreads.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Mon, 15 Apr 2013 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/finger-trees/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Light-weight Containers</title>
+          <link>/entries/Containers.html</link>
+          <pubDate>Mon, 15 Apr 2013 00:00:00 +0000</pubDate>
+          <guid>/entries/Containers.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Collections Framework</title>
+          <link>/entries/Collections.html</link>
+          <pubDate>Wed, 25 Nov 2009 00:00:00 +0000</pubDate>
+          <guid>/entries/Collections.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Jinja with Threads</title>
+          <link>/entries/JinjaThreads.html</link>
+          <pubDate>Mon, 03 Dec 2007 00:00:00 +0000</pubDate>
+          <guid>/entries/JinjaThreads.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

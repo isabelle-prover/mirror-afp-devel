@@ -1,27 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Transitive Models of Fragments of ZFC - Archive of Formal Proofs</title><meta name="description" content="We extend the ZF-Constructibility library by relativizing theories of
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Transitive Models of Fragments of ZFC - Archive of Formal Proofs</title>
+    <meta name="description" content="We extend the ZF-Constructibility library by relativizing theories of
 the Isabelle/ZF and Delta System Lemma sessions to a transitive class.
-We also..."><meta property="og:title" content="Transitive Models of Fragments of ZFC" />
+We also...">
+
+  <meta property="og:title" content="Transitive Models of Fragments of ZFC" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="/entries/Transitive_Models.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
 <meta property="article:published_time" content="2022-03-03T00:00:00+00:00" />
 <meta property="article:modified_time" content="2022-03-03T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="Transitive Models of Fragments of ZFC"/>
 <meta name="twitter:description" content=""/>
 
-  
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
     <script>
       MathJax = {
         tex: {
@@ -33,187 +38,252 @@ We also..."><meta property="og:title" content="Transitive Models of Fragments of
         }
       };
     </script>
-    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
   <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
-  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../" class='logo-link'>
-    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../" class='logo-link'>
-        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../"><li >Home</li></a>
-        <a href="../topics/"><li >Topics</li></a>
-        <a href="../download/"><li >Download</li></a>
-        <a href="../help/"><li >Help</li></a>
-        <a href="../submission/"><li >Submission</li></a>
-        <a href="../statistics/"><li >Statistics</li></a>
-        <a href="../about/"><li >About</li></a>
+          <a href="../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content  entries'><header>
-  <form autocomplete="off" action="../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>T</span>ransitive <span class='first'>M</span>odels of <span class='first'>F</span>ragments of <span class='first'>Z</span><span class='first'>F</span><span class='first'>C</span></h1>
+    </aside>
+    <div class='content entries'>
+      <header>
+    <form autocomplete="off" action="../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>T</span>ransitive <span class='first'>M</span>odels of <span class='first'>F</span>ragments of <span class='first'>Z</span><span class='first'>F</span><span class='first'>C</span>
+    
+  </h1>
   <div>
-    
-    <p><a href="../authors/gunther">Emmanuel Gunther</a> <a class="obfuscated" data="eyJob3N0IjpbImZhbWFmIiwidW5jIiwiZWR1IiwiYXIiXSwidXNlciI6WyJndW50aGVyIl19">📧</a>, <a href="../authors/pagano">Miguel Pagano</a> <a href="https://cs.famaf.unc.edu.ar/~mpagano/">🌐</a>, <a href="../authors/terraf">Pedro Sánchez Terraf</a> <a href="https://cs.famaf.unc.edu.ar/~pedro/home_en.html">🌐</a> and <a href="../authors/steinberg">Matías Steinberg</a> <a class="obfuscated" data="eyJob3N0IjpbIm1pIiwidW5jIiwiZWR1IiwiYXIiXSwidXNlciI6WyJtYXRpYXMiLCJzdGVpbmJlcmciXX0=">📧</a>
-    </p>
-    
-    
-    <p class="date">March 3, 2022</p>
-    
-  </div>
-</header><div><main><h3>Abstract</h3>
+      <p>
+        <a href="../authors/gunther">Emmanuel Gunther</a> <a class="obfuscated" data="eyJob3N0IjpbImZhbWFmIiwidW5jIiwiZWR1IiwiYXIiXSwidXNlciI6WyJndW50aGVyIl19">📧</a>, <a href="../authors/pagano">Miguel Pagano</a> <a href="https://cs.famaf.unc.edu.ar/~mpagano/">🌐</a>, <a href="../authors/terraf">Pedro Sánchez Terraf</a> <a href="https://cs.famaf.unc.edu.ar/~pedro/home_en.html">🌐</a> and <a href="../authors/steinberg">Matías Steinberg</a> <a class="obfuscated" data="eyJob3N0IjpbIm1pIiwidW5jIiwiZWR1IiwiYXIiXSwidXNlciI6WyJtYXRpYXMiLCJzdGVpbmJlcmciXX0=">📧</a>
 
-  <div class="abstract mathjax_process">We extend the ZF-Constructibility library by relativizing theories of
+      </p>
+      <p class="date">March 3, 2022</p>
+  </div>
+</header>
+      <div>
+        
+  <main>
+    <h3>Abstract</h3>
+
+    <div class="abstract mathjax_process">We extend the ZF-Constructibility library by relativizing theories of
 the Isabelle/ZF and Delta System Lemma sessions to a transitive class.
 We also relativize Paulson's work on Aleph and our former
 treatment of the Axiom of Dependent Choices. This work is a
 prerrequisite to our formalization of the independence of the
 Continuum Hypothesis.</div>
 
-  <h3>License</h3>
-  <div><a href="https://isa-afp.org/LICENSE">BSD License</a></div><h3>Topics</h3>
-  <ul><li><a href="../topics/logic/set-theory">Logic/Set theory</a></li></ul>
-  <h3>Session Transitive_Models</h3>
-  <ul>
-    <li><a href="../theories/transitive_models/#Utils">Utils</a></li>
-    <li><a href="../theories/transitive_models/#Nat_Miscellanea">Nat_Miscellanea</a></li>
-    <li><a href="../theories/transitive_models/#ZF_Miscellanea">ZF_Miscellanea</a></li>
-    <li><a href="../theories/transitive_models/#Renaming">Renaming</a></li>
-    <li><a href="../theories/transitive_models/#Renaming_Auto">Renaming_Auto</a></li>
-    <li><a href="../theories/transitive_models/#M_Basic_No_Repl">M_Basic_No_Repl</a></li>
-    <li><a href="../theories/transitive_models/#Eclose_Absolute">Eclose_Absolute</a></li>
-    <li><a href="../theories/transitive_models/#Recursion_Thms">Recursion_Thms</a></li>
-    <li><a href="../theories/transitive_models/#Datatype_absolute">Datatype_absolute</a></li>
-    <li><a href="../theories/transitive_models/#Internalize">Internalize</a></li>
-    <li><a href="../theories/transitive_models/#Rec_Separation">Rec_Separation</a></li>
-    <li><a href="../theories/transitive_models/#Satisfies_absolute">Satisfies_absolute</a></li>
-    <li><a href="../theories/transitive_models/#DPow_absolute">DPow_absolute</a></li>
-    <li><a href="../theories/transitive_models/#Synthetic_Definition">Synthetic_Definition</a></li>
-    <li><a href="../theories/transitive_models/#Internalizations">Internalizations</a></li>
-    <li><a href="../theories/transitive_models/#Least">Least</a></li>
-    <li><a href="../theories/transitive_models/#Higher_Order_Constructs">Higher_Order_Constructs</a></li>
-    <li><a href="../theories/transitive_models/#Relativization">Relativization</a></li>
-    <li><a href="../theories/transitive_models/#Discipline_Base">Discipline_Base</a></li>
-    <li><a href="../theories/transitive_models/#Arities">Arities</a></li>
-    <li><a href="../theories/transitive_models/#Discipline_Function">Discipline_Function</a></li>
-    <li><a href="../theories/transitive_models/#Lambda_Replacement">Lambda_Replacement</a></li>
-    <li><a href="../theories/transitive_models/#Discipline_Cardinal">Discipline_Cardinal</a></li>
-    <li><a href="../theories/transitive_models/#Univ_Relative">Univ_Relative</a></li>
-    <li><a href="../theories/transitive_models/#Cardinal_Relative">Cardinal_Relative</a></li>
-    <li><a href="../theories/transitive_models/#CardinalArith_Relative">CardinalArith_Relative</a></li>
-    <li><a href="../theories/transitive_models/#Aleph_Relative">Aleph_Relative</a></li>
-    <li><a href="../theories/transitive_models/#Cardinal_AC_Relative">Cardinal_AC_Relative</a></li>
-    <li><a href="../theories/transitive_models/#FiniteFun_Relative">FiniteFun_Relative</a></li>
-    <li><a href="../theories/transitive_models/#ZF_Library_Relative">ZF_Library_Relative</a></li>
-    <li><a href="../theories/transitive_models/#Replacement_Lepoll">Replacement_Lepoll</a></li>
-    <li><a href="../theories/transitive_models/#Cardinal_Library_Relative">Cardinal_Library_Relative</a></li>
-    <li><a href="../theories/transitive_models/#Delta_System_Relative">Delta_System_Relative</a></li>
-    <li><a href="../theories/transitive_models/#Pointed_DC_Relative">Pointed_DC_Relative</a></li>
-    <li><a href="../theories/transitive_models/#Partial_Functions_Relative">Partial_Functions_Relative</a></li></ul><div class="flex-wrap">
-  <div>
-    <h3>Depends on</h3>
-    <ul class="horizontal-list"><li><a href="../entries/Delta_System_Lemma.html">Cofinality and the Delta System Lemma</a></li></ul>
-  </div><div>
-    <h3>Used by</h3>
-    <ul class="horizontal-list"><li><a href="../entries/Independence_CH.html">The Independence of the Continuum Hypothesis in Isabelle/ZF</a></li></ul>
-  </div>
-  
-  <div>
-    <h3>Auto-related entries</h3>
-    <ul class="horizontal-list">
-      
-      <li><a href="../entries/Independence_CH.html">The Independence of the Continuum Hypothesis in Isabelle/ZF</a></li>
-      
-    </ul>
-  </div>
-  
-  </div>
-</main>
-
-<nav class='links'>
-  <a class='popup-button' href="#cite-popup">Cite</a>
-  <a class='popup-button' href="#download-popup">Download</a>
-  <h4>PDFs</h4>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Transitive_Models/outline.pdf">Proof
-    outline</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Transitive_Models/document.pdf">Proof
-    document</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Transitive_Models/session_graph.pdf">Dependencies</a></nav>
-
-<div id="cite-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Cite</h2>
-    <a class="close" href="#">&times;</a>
+    <h3>License</h3>
     <div>
-      <p style="display:none;" id="bibtex-filename">Transitive_Models-AFP</p><pre id="copy-text">@article{Transitive_Models-AFP,
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/logic/set-theory">Logic/Set theory</a></li>
+      </ul>
+      <h3>Session Transitive_Models</h3>
+      <ul>
+          <li><a href="../theories/transitive_models/#Utils">Utils</a></li>
+          <li><a href="../theories/transitive_models/#Nat_Miscellanea">Nat_Miscellanea</a></li>
+          <li><a href="../theories/transitive_models/#ZF_Miscellanea">ZF_Miscellanea</a></li>
+          <li><a href="../theories/transitive_models/#Renaming">Renaming</a></li>
+          <li><a href="../theories/transitive_models/#Renaming_Auto">Renaming_Auto</a></li>
+          <li><a href="../theories/transitive_models/#M_Basic_No_Repl">M_Basic_No_Repl</a></li>
+          <li><a href="../theories/transitive_models/#Eclose_Absolute">Eclose_Absolute</a></li>
+          <li><a href="../theories/transitive_models/#Recursion_Thms">Recursion_Thms</a></li>
+          <li><a href="../theories/transitive_models/#Datatype_absolute">Datatype_absolute</a></li>
+          <li><a href="../theories/transitive_models/#Internalize">Internalize</a></li>
+          <li><a href="../theories/transitive_models/#Rec_Separation">Rec_Separation</a></li>
+          <li><a href="../theories/transitive_models/#Satisfies_absolute">Satisfies_absolute</a></li>
+          <li><a href="../theories/transitive_models/#DPow_absolute">DPow_absolute</a></li>
+          <li><a href="../theories/transitive_models/#Synthetic_Definition">Synthetic_Definition</a></li>
+          <li><a href="../theories/transitive_models/#Internalizations">Internalizations</a></li>
+          <li><a href="../theories/transitive_models/#Least">Least</a></li>
+          <li><a href="../theories/transitive_models/#Higher_Order_Constructs">Higher_Order_Constructs</a></li>
+          <li><a href="../theories/transitive_models/#Relativization">Relativization</a></li>
+          <li><a href="../theories/transitive_models/#Discipline_Base">Discipline_Base</a></li>
+          <li><a href="../theories/transitive_models/#Arities">Arities</a></li>
+          <li><a href="../theories/transitive_models/#Discipline_Function">Discipline_Function</a></li>
+          <li><a href="../theories/transitive_models/#Lambda_Replacement">Lambda_Replacement</a></li>
+          <li><a href="../theories/transitive_models/#Discipline_Cardinal">Discipline_Cardinal</a></li>
+          <li><a href="../theories/transitive_models/#Univ_Relative">Univ_Relative</a></li>
+          <li><a href="../theories/transitive_models/#Cardinal_Relative">Cardinal_Relative</a></li>
+          <li><a href="../theories/transitive_models/#CardinalArith_Relative">CardinalArith_Relative</a></li>
+          <li><a href="../theories/transitive_models/#Aleph_Relative">Aleph_Relative</a></li>
+          <li><a href="../theories/transitive_models/#Cardinal_AC_Relative">Cardinal_AC_Relative</a></li>
+          <li><a href="../theories/transitive_models/#FiniteFun_Relative">FiniteFun_Relative</a></li>
+          <li><a href="../theories/transitive_models/#ZF_Library_Relative">ZF_Library_Relative</a></li>
+          <li><a href="../theories/transitive_models/#Replacement_Lepoll">Replacement_Lepoll</a></li>
+          <li><a href="../theories/transitive_models/#Cardinal_Library_Relative">Cardinal_Library_Relative</a></li>
+          <li><a href="../theories/transitive_models/#Delta_System_Relative">Delta_System_Relative</a></li>
+          <li><a href="../theories/transitive_models/#Pointed_DC_Relative">Pointed_DC_Relative</a></li>
+          <li><a href="../theories/transitive_models/#Partial_Functions_Relative">Partial_Functions_Relative</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+      <div>
+        <h3>Depends on</h3>
+        <ul class="horizontal-list">
+              <li><a href="../entries/Delta_System_Lemma.html">Cofinality and the Delta System Lemma</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Used by</h3>
+        <ul class="horizontal-list">
+            <li>
+              <a href="../entries/Independence_CH.html">The Independence of the Continuum Hypothesis in Isabelle/ZF</a>
+            </li>
+        </ul>
+      </div>
+        <div>
+          <h3>Auto-related entries</h3>
+          <ul class="horizontal-list">
+              <li><a href="../entries/Independence_CH.html">The Independence of the Continuum Hypothesis in Isabelle/ZF</a></li>
+          </ul>
+        </div>
+      </div>
+    
+  </main>
+
+  <nav class='links'>
+    <a class='popup-button' href="#cite-popup">Cite</a>
+    <a class='popup-button' href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Transitive_Models/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Transitive_Models/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Transitive_Models/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Transitive_Models-AFP</p>
+        <pre id="copy-text">@article{Transitive_Models-AFP,
   author  = {Emmanuel Gunther and Miguel Pagano and Pedro Sánchez Terraf and Matías Steinberg},
   title   = {Transitive Models of Fragments of ZFC},
   journal = {Archive of Formal Proofs},
   month   = {March},
   year    = {2022},
   note    = {\url{https://isa-afp.org/entries/Transitive_Models.html},
-            Formal proof development},
+             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
     </div>
   </div>
-</div>
 
-<div id="download-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Download</h2>
-    <a class="close" href="#">&times;</a>
-    <a href="https://www.isa-afp.org/release/afp-Transitive_Models-current.tar.gz" download>Download latest</a>
-    <p>Older releases:</p>
-    <ul><li>
-        <a href="https://www.isa-afp.org/release/afp-Transitive_Models-2023-09-13.tar.gz">Sep 13, 2023</a>: Isabelle2023
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Transitive_Models-2022-10-27.tar.gz">Oct 27, 2022</a>: Isabelle2022
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Transitive_Models-2022-03-04.tar.gz">Mar 4, 2022</a>: Isabelle2021-1
-      </li></ul>
-  </div>
-</div>
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-Transitive_Models-current.tar.gz"
+         download>Download latest</a>
+        <p>Older releases:</p>
+        <ul>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Transitive_Models-2023-09-13.tar.gz">
+                Sep 13, 2023
+              </a>
+              : Isabelle2023
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Transitive_Models-2022-10-27.tar.gz">
+                Oct 27, 2022
+              </a>
+              : Isabelle2022
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Transitive_Models-2022-03-04.tar.gz">
+                Mar 4, 2022
+              </a>
+              : Isabelle2021-1
+            </li>
+        </ul>
     </div>
   </div>
-</body>
-
+        
+      </div>
+    </div>
+  </body>
 </html>

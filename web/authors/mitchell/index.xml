@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>mitchell on Archive of Formal Proofs</title>
+    <title>mitchell on Archive of Formal Proofs
+    </title>
     <link>/authors/mitchell/</link>
-    <description>Recent content in mitchell on Archive of Formal Proofs</description>
+    <description>
+        Recent content in mitchell 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Sat, 15 Jul 2017 00:00:00 +0000</lastBuildDate><atom:link href="/authors/mitchell/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>HOLCF-Prelude</title>
-      <link>/entries/HOLCF-Prelude.html</link>
-      <pubDate>Sat, 15 Jul 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/HOLCF-Prelude.html</guid>
-      <description></description>
-    </item>
     
+      <lastBuildDate>Sat, 15 Jul 2017 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/mitchell/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>HOLCF-Prelude</title>
+          <link>/entries/HOLCF-Prelude.html</link>
+          <pubDate>Sat, 15 Jul 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/HOLCF-Prelude.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

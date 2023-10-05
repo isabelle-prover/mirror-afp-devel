@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>snelting on Archive of Formal Proofs</title>
+    <title>snelting on Archive of Formal Proofs
+    </title>
     <link>/authors/snelting/</link>
-    <description>Recent content in snelting on Archive of Formal Proofs</description>
+    <description>
+        Recent content in snelting 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Tue, 02 Sep 2008 00:00:00 +0000</lastBuildDate><atom:link href="/authors/snelting/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>A Correctness Proof for the Volpano/Smith Security Typing System</title>
-      <link>/entries/VolpanoSmith.html</link>
-      <pubDate>Tue, 02 Sep 2008 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/VolpanoSmith.html</guid>
-      <description></description>
-    </item>
     
+      <lastBuildDate>Tue, 02 Sep 2008 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/snelting/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>A Correctness Proof for the Volpano/Smith Security Typing System</title>
+          <link>/entries/VolpanoSmith.html</link>
+          <pubDate>Tue, 02 Sep 2008 00:00:00 +0000</pubDate>
+          <guid>/entries/VolpanoSmith.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

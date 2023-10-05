@@ -1,579 +1,738 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Computer science/Data structures - Archive of Formal Proofs</title><meta name="description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."><link rel="alternate" type="application/rss+xml" href="../../../topics/computer-science/data-structures/index.xml" title="Archive of Formal Proofs" /><meta property="og:title" content="Computer science/Data structures" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Computer science/Data structures - Archive of Formal Proofs</title>
+    <meta name="description" content="A collection of proof libraries, examples, and larger
+     scientific developments, mechanically checked in the theorem prover Isabelle.">
+  <link rel="alternate" type="application/rss+xml" href="../../../topics/computer-science/data-structures/index.xml" title="Archive of Formal Proofs" />
+
+  <meta property="og:title" content="Computer science/Data structures" />
 <meta property="og:description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="/topics/computer-science/data-structures/" /><meta property="og:image" content="/images/afp.png"/><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="Computer science/Data structures"/>
 <meta name="twitter:description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."/>
 
-  
   <link rel="stylesheet" type="text/css" href="../../../css/front.min.css">
 
-  <link rel="icon" href="../../../images/favicon.ico" type="image/icon"><script src="../../../js/obfuscate.js"></script>
+  <link rel="icon" href="../../../images/favicon.ico" type="image/icon">
+
+  <script src="../../../js/obfuscate.js"></script>
   <script src="../../../js/flexsearch.bundle.js"></script>
   <script src="../../../js/scroll-spy.js"></script>
   <script src="../../../js/theory.js"></script>
-  <script src="../../../js/util.js"></script><script src="../../../js/header-search.js"></script><script src="../../../js/search-autocomplete.js"></script>
+  <script src="../../../js/util.js"></script>
+    <script src="../../../js/header-search.js"></script>
+  <script src="../../../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../../../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../../../" class='logo-link'>
-    <img src="../../../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../../../" class="logo-link">
+    <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../../../search"><img src="../../../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../../../" class='logo-link'>
-        <img src="../../../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../../../"><li >Home</li></a>
-        <a href="../../../topics/"><li >Topics</li></a>
-        <a href="../../../download/"><li >Download</li></a>
-        <a href="../../../help/"><li >Help</li></a>
-        <a href="../../../submission/"><li >Submission</li></a>
-        <a href="../../../statistics/"><li >Statistics</li></a>
-        <a href="../../../about/"><li >About</li></a>
+          <a href="../../../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../../../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../../../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../../../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../../../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../../../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../../../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content '><header>
-  <form autocomplete="off" action="../../../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../../../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>C</span>omputer science/<span class='first'>D</span>ata structures</h1>
+    </aside>
+    <div class='content'>
+      <header>
+    <form autocomplete="off" action="../../../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../../../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>C</span>omputer science/<span class='first'>D</span>ata structures
+    
+  </h1>
   <div>
-    
-    
   </div>
-</header><div><h2>Subject Classification</h2><p>ACM: <a href="https://dl.acm.org/topic/ccs2012/10003752.10003809.10010031">Theory of computation~Data structures design and analysis</a></p><p>AMS: <a href="https://mathscinet.ams.org/mathscinet/msc/msc2020.html?t=68P05">Computer science / Theory of data / Data structures</a></p><h2 class="head">2023</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Fixed_Length_Vector.html">Fixed-length vectors</a></h5> <br>by <a href="../../../authors/hupel">Lars Hupel</a></div>
-  <span class="date">
-    Aug 14
-  </span>
-</article>
+</header>
+      <div>
+        
+    <h2>Subject Classification</h2>
+      <p>ACM: <a href="https://dl.acm.org/topic/ccs2012/10003752.10003809.10010031">Theory of computation~Data structures design and analysis</a></p>
+      <p>AMS: <a href="https://mathscinet.ams.org/mathscinet/msc/msc2020.html?t=68P05">Computer science / Theory of data / Data structures</a></p>
+    <h2 class="head">2023</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Fixed_Length_Vector.html">Fixed-length vectors</a></h5>
+          <br>
+            by <a href="../../../authors/hupel">Lars Hupel</a>
 
+        </div>
+        <span class="date">Aug 14</span>
+      </article>
+    <h2 class="head">2022</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Nano_JSON.html">Nano JSON: Working with JSON formatted data in Isabelle/HOL and Isabelle/ML</a></h5>
+          <br>
+            by <a href="../../../authors/brucker">Achim D. Brucker</a>
 
-<h2 class="head">2022</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Nano_JSON.html">Nano JSON: Working with JSON formatted data in Isabelle/HOL and Isabelle/ML</a></h5> <br>by <a href="../../../authors/brucker">Achim D. Brucker</a></div>
-  <span class="date">
-    Jul 29
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Real_Time_Deque.html">Real-Time Double-Ended Queue</a></h5> <br>by <a href="../../../authors/toth">Balazs Toth</a> and <a href="../../../authors/nipkow">Tobias Nipkow</a></div>
-  <span class="date">
-    Jun 23
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Prefix_Free_Code_Combinators.html">A Combinator Library for Prefix-Free Codes</a></h5> <br>by <a href="../../../authors/karayel">Emin Karayel</a></div>
-  <span class="date">
-    Apr 08
-  </span>
-</article>
+        </div>
+        <span class="date">Jul 29</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Real_Time_Deque.html">Real-Time Double-Ended Queue</a></h5>
+          <br>
+            by <a href="../../../authors/toth">Balazs Toth</a> and <a href="../../../authors/nipkow">Tobias Nipkow</a>
 
+        </div>
+        <span class="date">Jun 23</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Prefix_Free_Code_Combinators.html">A Combinator Library for Prefix-Free Codes</a></h5>
+          <br>
+            by <a href="../../../authors/karayel">Emin Karayel</a>
 
-<h2 class="head">2021</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Van_Emde_Boas_Trees.html">van Emde Boas Trees</a></h5> <br>by <a href="../../../authors/ammer">Thomas Ammer</a> and <a href="../../../authors/lammich">Peter Lammich</a></div>
-  <span class="date">
-    Nov 23
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Fresh_Identifiers.html">Fresh identifiers</a></h5> <br>by <a href="../../../authors/popescu">Andrei Popescu</a> and <a href="../../../authors/bauereiss">Thomas Bauereiss</a></div>
-  <span class="date">
-    Aug 16
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/BTree.html">A Verified Imperative Implementation of B-Trees</a></h5> <br>by <a href="../../../authors/muendler">Niels Mündler</a></div>
-  <span class="date">
-    Feb 24
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Hood_Melville_Queue.html">Hood-Melville Queue</a></h5> <br>by <a href="../../../authors/londono">Alejandro Gómez-Londoño</a></div>
-  <span class="date">
-    Jan 18
-  </span>
-</article>
+        </div>
+        <span class="date">Apr 08</span>
+      </article>
+    <h2 class="head">2021</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Van_Emde_Boas_Trees.html">van Emde Boas Trees</a></h5>
+          <br>
+            by <a href="../../../authors/ammer">Thomas Ammer</a> and <a href="../../../authors/lammich">Peter Lammich</a>
 
+        </div>
+        <span class="date">Nov 23</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Fresh_Identifiers.html">Fresh identifiers</a></h5>
+          <br>
+            by <a href="../../../authors/popescu">Andrei Popescu</a> and <a href="../../../authors/bauereiss">Thomas Bauereiss</a>
 
-<h2 class="head">2020</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Finite-Map-Extras.html">Finite Map Extras</a></h5> <br>by <a href="../../../authors/diaz">Javier Díaz</a></div>
-  <span class="date">
-    Oct 12
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Core_SC_DOM.html">The Safely Composable DOM</a></h5> <br>by <a href="../../../authors/brucker">Achim D. Brucker</a> and <a href="../../../authors/herzberg">Michael Herzberg</a></div>
-  <span class="date">
-    Sep 28
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/DOM_Components.html">A Formalization of Web Components</a></h5> <br>by <a href="../../../authors/brucker">Achim D. Brucker</a> and <a href="../../../authors/herzberg">Michael Herzberg</a></div>
-  <span class="date">
-    Sep 28
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/SC_DOM_Components.html">A Formalization of Safely Composable Web Components</a></h5> <br>by <a href="../../../authors/brucker">Achim D. Brucker</a> and <a href="../../../authors/herzberg">Michael Herzberg</a></div>
-  <span class="date">
-    Sep 28
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Shadow_SC_DOM.html">A Formal Model of the Safely Composable Document Object Model with Shadow Roots</a></h5> <br>by <a href="../../../authors/brucker">Achim D. Brucker</a> and <a href="../../../authors/herzberg">Michael Herzberg</a></div>
-  <span class="date">
-    Sep 28
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Shadow_DOM.html">A Formal Model of the Document Object Model with Shadow Roots</a></h5> <br>by <a href="../../../authors/brucker">Achim D. Brucker</a> and <a href="../../../authors/herzberg">Michael Herzberg</a></div>
-  <span class="date">
-    Sep 28
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Relational_Disjoint_Set_Forests.html">Relational Disjoint-Set Forests</a></h5> <br>by <a href="../../../authors/guttmann">Walter Guttmann</a></div>
-  <span class="date">
-    Aug 26
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/ADS_Functor.html">Authenticated Data Structures As Functors</a></h5> <br>by <a href="../../../authors/lochbihler">Andreas Lochbihler</a> and <a href="../../../authors/maric">Ognjen Marić</a></div>
-  <span class="date">
-    Apr 16
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Skip_Lists.html">Skip Lists</a></h5> <br>by <a href="../../../authors/haslbeck">Max W. Haslbeck</a> and <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Jan 09
-  </span>
-</article>
+        </div>
+        <span class="date">Aug 16</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/BTree.html">A Verified Imperative Implementation of B-Trees</a></h5>
+          <br>
+            by <a href="../../../authors/muendler">Niels Mündler</a>
 
+        </div>
+        <span class="date">Feb 24</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Hood_Melville_Queue.html">Hood-Melville Queue</a></h5>
+          <br>
+            by <a href="../../../authors/londono">Alejandro Gómez-Londoño</a>
 
-<h2 class="head">2019</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Interval_Arithmetic_Word32.html">Interval Arithmetic on 32-bit Words</a></h5> <br>by <a href="../../../authors/bohrer">Rose Bohrer</a></div>
-  <span class="date">
-    Nov 27
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Priority_Search_Trees.html">Priority Search Trees</a></h5> <br>by <a href="../../../authors/lammich">Peter Lammich</a> and <a href="../../../authors/nipkow">Tobias Nipkow</a></div>
-  <span class="date">
-    Jun 25
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/IMP2_Binary_Heap.html">Binary Heaps for IMP2</a></h5> <br>by <a href="../../../authors/griebel">Simon Griebel</a></div>
-  <span class="date">
-    Jun 13
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/KD_Tree.html">Multidimensional Binary Search Trees</a></h5> <br>by <a href="../../../authors/rau">Martin Rau</a></div>
-  <span class="date">
-    May 30
-  </span>
-</article>
+        </div>
+        <span class="date">Jan 18</span>
+      </article>
+    <h2 class="head">2020</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Finite-Map-Extras.html">Finite Map Extras</a></h5>
+          <br>
+            by <a href="../../../authors/diaz">Javier Díaz</a>
 
+        </div>
+        <span class="date">Oct 12</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Core_SC_DOM.html">The Safely Composable DOM</a></h5>
+          <br>
+            by <a href="../../../authors/brucker">Achim D. Brucker</a> and <a href="../../../authors/herzberg">Michael Herzberg</a>
 
-<h2 class="head">2018</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Core_DOM.html">A Formal Model of the Document Object Model</a></h5> <br>by <a href="../../../authors/brucker">Achim D. Brucker</a> and <a href="../../../authors/herzberg">Michael Herzberg</a></div>
-  <span class="date">
-    Dec 26
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Auto2_Imperative_HOL.html">Verifying Imperative Programs using Auto2</a></h5> <br>by <a href="../../../authors/zhan">Bohua Zhan</a></div>
-  <span class="date">
-    Dec 21
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Generic_Deriving.html">Deriving generic class instances for datatypes</a></h5> <br>by <a href="../../../authors/raedle">Jonas Rädle</a> and <a href="../../../authors/hupel">Lars Hupel</a></div>
-  <span class="date">
-    Nov 06
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Randomised_BSTs.html">Randomised Binary Search Trees</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Oct 19
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Optimal_BST.html">Optimal Binary Search Trees</a></h5> <br>by <a href="../../../authors/nipkow">Tobias Nipkow</a> and <a href="../../../authors/somogyi">Dániel Somogyi</a></div>
-  <span class="date">
-    May 27
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/OpSets.html">OpSets: Sequential Specifications for Replicated Datatypes</a></h5> <br>by <a href="../../../authors/kleppmann">Martin Kleppmann</a>, <a href="../../../authors/gomes">Victor B. F. Gomes</a>, <a href="../../../authors/mulligan">Dominic P. Mulligan</a> and <a href="../../../authors/beresford">Alastair R. Beresford</a></div>
-  <span class="date">
-    May 10
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Weight_Balanced_Trees.html">Weight-Balanced Trees</a></h5> <br>by <a href="../../../authors/nipkow">Tobias Nipkow</a> and <a href="../../../authors/dirix">Stefan Dirix</a></div>
-  <span class="date">
-    Mar 13
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Treaps.html">Treaps</a></h5> <br>by <a href="../../../authors/haslbeck">Max W. Haslbeck</a>, <a href="../../../authors/eberl">Manuel Eberl</a> and <a href="../../../authors/nipkow">Tobias Nipkow</a></div>
-  <span class="date">
-    Feb 06
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Taylor_Models.html">Taylor Models</a></h5> <br>by <a href="../../../authors/traut">Christoph Traut</a> and <a href="../../../authors/immler">Fabian Immler</a></div>
-  <span class="date">
-    Jan 08
-  </span>
-</article>
+        </div>
+        <span class="date">Sep 28</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/DOM_Components.html">A Formalization of Web Components</a></h5>
+          <br>
+            by <a href="../../../authors/brucker">Achim D. Brucker</a> and <a href="../../../authors/herzberg">Michael Herzberg</a>
 
+        </div>
+        <span class="date">Sep 28</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/SC_DOM_Components.html">A Formalization of Safely Composable Web Components</a></h5>
+          <br>
+            by <a href="../../../authors/brucker">Achim D. Brucker</a> and <a href="../../../authors/herzberg">Michael Herzberg</a>
 
-<h2 class="head">2017</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/IMAP-CRDT.html">The IMAP CmRDT</a></h5> <br>by <a href="../../../authors/jungnickel">Tim Jungnickel</a>, <a href="../../../authors/oldenburg">Lennart Oldenburg</a> and <a href="../../../authors/loibl">Matthias Loibl</a></div>
-  <span class="date">
-    Nov 09
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Root_Balanced_Tree.html">Root-Balanced Tree</a></h5> <br>by <a href="../../../authors/nipkow">Tobias Nipkow</a></div>
-  <span class="date">
-    Aug 20
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/CRDT.html">A framework for establishing Strong Eventual Consistency for Conflict-free Replicated Datatypes</a></h5> <br>by <a href="../../../authors/gomes">Victor B. F. Gomes</a>, <a href="../../../authors/kleppmann">Martin Kleppmann</a>, <a href="../../../authors/mulligan">Dominic P. Mulligan</a> and <a href="../../../authors/beresford">Alastair R. Beresford</a></div>
-  <span class="date">
-    Jul 07
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Random_BSTs.html">Expected Shape of Random Binary Search Trees</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Apr 04
-  </span>
-</article>
+        </div>
+        <span class="date">Sep 28</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Shadow_SC_DOM.html">A Formal Model of the Safely Composable Document Object Model with Shadow Roots</a></h5>
+          <br>
+            by <a href="../../../authors/brucker">Achim D. Brucker</a> and <a href="../../../authors/herzberg">Michael Herzberg</a>
 
+        </div>
+        <span class="date">Sep 28</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Shadow_DOM.html">A Formal Model of the Document Object Model with Shadow Roots</a></h5>
+          <br>
+            by <a href="../../../authors/brucker">Achim D. Brucker</a> and <a href="../../../authors/herzberg">Michael Herzberg</a>
 
-<h2 class="head">2016</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Refine_Imperative_HOL.html">The Imperative Refinement Framework</a></h5> <br>by <a href="../../../authors/lammich">Peter Lammich</a></div>
-  <span class="date">
-    Aug 08
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Pairing_Heap.html">Pairing Heap</a></h5> <br>by <a href="../../../authors/brinkop">Hauke Brinkop</a> and <a href="../../../authors/nipkow">Tobias Nipkow</a></div>
-  <span class="date">
-    Jul 14
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Word_Lib.html">Finite Machine Word Library</a></h5> <br>by <a href="../../../authors/beeren">Joel Beeren</a>, <a href="../../../authors/fernandez">Matthew Fernandez</a>, <a href="../../../authors/gao">Xin Gao</a>, <a href="../../../authors/klein">Gerwin Klein</a>, <a href="../../../authors/kolanski">Rafal Kolanski</a>, <a href="../../../authors/lim">Japheth Lim</a>, <a href="../../../authors/lewis">Corey Lewis</a>, <a href="../../../authors/matichuk">Daniel Matichuk</a> and <a href="../../../authors/sewell">Thomas Sewell</a></div>
-  <span class="date">
-    Jun 09
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/ROBDD.html">Algorithms for Reduced Ordered Binary Decision Diagrams</a></h5> <br>by <a href="../../../authors/michaelis">Julius Michaelis</a>, <a href="../../../authors/haslbeck">Max W. Haslbeck</a>, <a href="../../../authors/lammich">Peter Lammich</a> and <a href="../../../authors/hupel">Lars Hupel</a></div>
-  <span class="date">
-    Apr 27
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Matrix_Tensor.html">Tensor Product of Matrices</a></h5> <br>by <a href="../../../authors/prathamesh">T.V.H. Prathamesh</a></div>
-  <span class="date">
-    Jan 18
-  </span>
-</article>
+        </div>
+        <span class="date">Sep 28</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Relational_Disjoint_Set_Forests.html">Relational Disjoint-Set Forests</a></h5>
+          <br>
+            by <a href="../../../authors/guttmann">Walter Guttmann</a>
 
+        </div>
+        <span class="date">Aug 26</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/ADS_Functor.html">Authenticated Data Structures As Functors</a></h5>
+          <br>
+            by <a href="../../../authors/lochbihler">Andreas Lochbihler</a> and <a href="../../../authors/maric">Ognjen Marić</a>
 
-<h2 class="head">2015</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/List_Interleaving.html">Reasoning about Lists via List Interleaving</a></h5> <br>by <a href="../../../authors/noce">Pasquale Noce</a></div>
-  <span class="date">
-    Jun 11
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Dynamic_Tables.html">Parameterized Dynamic Tables</a></h5> <br>by <a href="../../../authors/nipkow">Tobias Nipkow</a></div>
-  <span class="date">
-    Jun 07
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Trie.html">Trie</a></h5> <br>by <a href="../../../authors/lochbihler">Andreas Lochbihler</a> and <a href="../../../authors/nipkow">Tobias Nipkow</a></div>
-  <span class="date">
-    Mar 30
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Deriving.html">Deriving class instances for datatypes</a></h5> <br>by <a href="../../../authors/sternagel">Christian Sternagel</a> and <a href="../../../authors/thiemann">René Thiemann</a></div>
-  <span class="date">
-    Mar 11
-  </span>
-</article>
+        </div>
+        <span class="date">Apr 16</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Skip_Lists.html">Skip Lists</a></h5>
+          <br>
+            by <a href="../../../authors/haslbeck">Max W. Haslbeck</a> and <a href="../../../authors/eberl">Manuel Eberl</a>
 
+        </div>
+        <span class="date">Jan 09</span>
+      </article>
+    <h2 class="head">2019</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Interval_Arithmetic_Word32.html">Interval Arithmetic on 32-bit Words</a></h5>
+          <br>
+            by <a href="../../../authors/bohrer">Rose Bohrer</a>
 
-<h2 class="head">2014</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/XML.html">XML</a></h5> <br>by <a href="../../../authors/sternagel">Christian Sternagel</a> and <a href="../../../authors/thiemann">René Thiemann</a></div>
-  <span class="date">
-    Oct 03
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Priority_Queue_Braun.html">Priority Queues Based on Braun Trees</a></h5> <br>by <a href="../../../authors/nipkow">Tobias Nipkow</a></div>
-  <span class="date">
-    Sep 04
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Skew_Heap.html">Skew Heap</a></h5> <br>by <a href="../../../authors/nipkow">Tobias Nipkow</a></div>
-  <span class="date">
-    Aug 13
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Splay_Tree.html">Splay Tree</a></h5> <br>by <a href="../../../authors/nipkow">Tobias Nipkow</a></div>
-  <span class="date">
-    Aug 12
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Amortized_Complexity.html">Amortized Complexity Verified</a></h5> <br>by <a href="../../../authors/nipkow">Tobias Nipkow</a></div>
-  <span class="date">
-    Jul 07
-  </span>
-</article>
+        </div>
+        <span class="date">Nov 27</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Priority_Search_Trees.html">Priority Search Trees</a></h5>
+          <br>
+            by <a href="../../../authors/lammich">Peter Lammich</a> and <a href="../../../authors/nipkow">Tobias Nipkow</a>
 
+        </div>
+        <span class="date">Jun 25</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/IMP2_Binary_Heap.html">Binary Heaps for IMP2</a></h5>
+          <br>
+            by <a href="../../../authors/griebel">Simon Griebel</a>
 
-<h2 class="head">2013</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Native_Word.html">Native Word</a></h5> <br>by <a href="../../../authors/lochbihler">Andreas Lochbihler</a></div>
-  <span class="date">
-    Sep 17
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/IEEE_Floating_Point.html">A Formal Model of IEEE Floating Point Arithmetic</a></h5> <br>by <a href="../../../authors/yu">Lei Yu</a></div>
-  <span class="date">
-    Jul 27
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Containers.html">Light-weight Containers</a></h5> <br>by <a href="../../../authors/lochbihler">Andreas Lochbihler</a></div>
-  <span class="date">
-    Apr 15
-  </span>
-</article>
+        </div>
+        <span class="date">Jun 13</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/KD_Tree.html">Multidimensional Binary Search Trees</a></h5>
+          <br>
+            by <a href="../../../authors/rau">Martin Rau</a>
 
+        </div>
+        <span class="date">May 30</span>
+      </article>
+    <h2 class="head">2018</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Core_DOM.html">A Formal Model of the Document Object Model</a></h5>
+          <br>
+            by <a href="../../../authors/brucker">Achim D. Brucker</a> and <a href="../../../authors/herzberg">Michael Herzberg</a>
 
-<h2 class="head">2012</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Datatype_Order_Generator.html">Generating linear orders for datatypes</a></h5> <br>by <a href="../../../authors/thiemann">René Thiemann</a></div>
-  <span class="date">
-    Aug 07
-  </span>
-</article>
+        </div>
+        <span class="date">Dec 26</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Auto2_Imperative_HOL.html">Verifying Imperative Programs using Auto2</a></h5>
+          <br>
+            by <a href="../../../authors/zhan">Bohua Zhan</a>
 
+        </div>
+        <span class="date">Dec 21</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Generic_Deriving.html">Deriving generic class instances for datatypes</a></h5>
+          <br>
+            by <a href="../../../authors/raedle">Jonas Rädle</a> and <a href="../../../authors/hupel">Lars Hupel</a>
 
-<h2 class="head">2011</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/List-Infinite.html">Infinite Lists</a></h5> <br>by <a href="../../../authors/trachtenherz">David Trachtenherz</a></div>
-  <span class="date">
-    Feb 23
-  </span>
-</article>
+        </div>
+        <span class="date">Nov 06</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Randomised_BSTs.html">Randomised Binary Search Trees</a></h5>
+          <br>
+            by <a href="../../../authors/eberl">Manuel Eberl</a>
 
+        </div>
+        <span class="date">Oct 19</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Optimal_BST.html">Optimal Binary Search Trees</a></h5>
+          <br>
+            by <a href="../../../authors/nipkow">Tobias Nipkow</a> and <a href="../../../authors/somogyi">Dániel Somogyi</a>
 
-<h2 class="head">2010</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Binomial-Queues.html">Functional Binomial Queues</a></h5> <br>by <a href="../../../authors/neumann">René Neumann</a></div>
-  <span class="date">
-    Oct 28
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Finger-Trees.html">Finger Trees</a></h5> <br>by <a href="../../../authors/nordhoff">Benedikt Nordhoff</a>, <a href="../../../authors/koerner">Stefan Körner</a> and <a href="../../../authors/lammich">Peter Lammich</a></div>
-  <span class="date">
-    Oct 28
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Binomial-Heaps.html">Binomial Heaps and Skew Binomial Heaps</a></h5> <br>by <a href="../../../authors/meis">Rene Meis</a>, <a href="../../../authors/nielsen">Finn Nielsen</a> and <a href="../../../authors/lammich">Peter Lammich</a></div>
-  <span class="date">
-    Oct 28
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Matrix.html">Executable Matrix Operations on Matrices of Arbitrary Dimensions</a></h5> <br>by <a href="../../../authors/sternagel">Christian Sternagel</a> and <a href="../../../authors/thiemann">René Thiemann</a></div>
-  <span class="date">
-    Jun 17
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/List-Index.html">List Index</a></h5> <br>by <a href="../../../authors/nipkow">Tobias Nipkow</a></div>
-  <span class="date">
-    Feb 20
-  </span>
-</article>
+        </div>
+        <span class="date">May 27</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/OpSets.html">OpSets: Sequential Specifications for Replicated Datatypes</a></h5>
+          <br>
+            by <a href="../../../authors/kleppmann">Martin Kleppmann</a>, <a href="../../../authors/gomes">Victor B. F. Gomes</a>, <a href="../../../authors/mulligan">Dominic P. Mulligan</a> and <a href="../../../authors/beresford">Alastair R. Beresford</a>
 
+        </div>
+        <span class="date">May 10</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Weight_Balanced_Trees.html">Weight-Balanced Trees</a></h5>
+          <br>
+            by <a href="../../../authors/nipkow">Tobias Nipkow</a> and <a href="../../../authors/dirix">Stefan Dirix</a>
 
-<h2 class="head">2009</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Collections.html">Collections Framework</a></h5> <br>by <a href="../../../authors/lammich">Peter Lammich</a></div>
-  <span class="date">
-    Nov 25
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/FinFun.html">Code Generation for Functions as Data</a></h5> <br>by <a href="../../../authors/lochbihler">Andreas Lochbihler</a></div>
-  <span class="date">
-    May 06
-  </span>
-</article>
+        </div>
+        <span class="date">Mar 13</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Treaps.html">Treaps</a></h5>
+          <br>
+            by <a href="../../../authors/haslbeck">Max W. Haslbeck</a>, <a href="../../../authors/eberl">Manuel Eberl</a> and <a href="../../../authors/nipkow">Tobias Nipkow</a>
 
+        </div>
+        <span class="date">Feb 06</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Taylor_Models.html">Taylor Models</a></h5>
+          <br>
+            by <a href="../../../authors/traut">Christoph Traut</a> and <a href="../../../authors/immler">Fabian Immler</a>
 
-<h2 class="head">2008</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Huffman.html">The Textbook Proof of Huffman&#39;s Algorithm</a></h5> <br>by <a href="../../../authors/blanchette">Jasmin Christian Blanchette</a></div>
-  <span class="date">
-    Oct 15
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/BDD.html">BDD Normalisation</a></h5> <br>by <a href="../../../authors/ortner">Veronika Ortner</a> and <a href="../../../authors/schirmer">Norbert Schirmer</a></div>
-  <span class="date">
-    Feb 29
-  </span>
-</article>
+        </div>
+        <span class="date">Jan 08</span>
+      </article>
+    <h2 class="head">2017</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/IMAP-CRDT.html">The IMAP CmRDT</a></h5>
+          <br>
+            by <a href="../../../authors/jungnickel">Tim Jungnickel</a>, <a href="../../../authors/oldenburg">Lennart Oldenburg</a> and <a href="../../../authors/loibl">Matthias Loibl</a>
 
+        </div>
+        <span class="date">Nov 09</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Root_Balanced_Tree.html">Root-Balanced Tree</a></h5>
+          <br>
+            by <a href="../../../authors/nipkow">Tobias Nipkow</a>
 
-<h2 class="head">2004</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/FileRefinement.html">File Refinement</a></h5> <br>by <a href="../../../authors/zee">Karen Zee</a> and <a href="../../../authors/kuncak">Viktor Kuncak</a></div>
-  <span class="date">
-    Dec 09
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Lazy-Lists-II.html">Lazy Lists II</a></h5> <br>by <a href="../../../authors/friedrich">Stefan Friedrich</a></div>
-  <span class="date">
-    Apr 26
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/BinarySearchTree.html">Binary Search Trees</a></h5> <br>by <a href="../../../authors/kuncak">Viktor Kuncak</a></div>
-  <span class="date">
-    Apr 05
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/AVL-Trees.html">AVL Trees</a></h5> <br>by <a href="../../../authors/nipkow">Tobias Nipkow</a> and <a href="../../../authors/pusch">Cornelia Pusch</a></div>
-  <span class="date">
-    Mar 19
-  </span>
-</article>
+        </div>
+        <span class="date">Aug 20</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/CRDT.html">A framework for establishing Strong Eventual Consistency for Conflict-free Replicated Datatypes</a></h5>
+          <br>
+            by <a href="../../../authors/gomes">Victor B. F. Gomes</a>, <a href="../../../authors/kleppmann">Martin Kleppmann</a>, <a href="../../../authors/mulligan">Dominic P. Mulligan</a> and <a href="../../../authors/beresford">Alastair R. Beresford</a>
 
+        </div>
+        <span class="date">Jul 07</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Random_BSTs.html">Expected Shape of Random Binary Search Trees</a></h5>
+          <br>
+            by <a href="../../../authors/eberl">Manuel Eberl</a>
 
+        </div>
+        <span class="date">Apr 04</span>
+      </article>
+    <h2 class="head">2016</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Refine_Imperative_HOL.html">The Imperative Refinement Framework</a></h5>
+          <br>
+            by <a href="../../../authors/lammich">Peter Lammich</a>
 
+        </div>
+        <span class="date">Aug 08</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Pairing_Heap.html">Pairing Heap</a></h5>
+          <br>
+            by <a href="../../../authors/brinkop">Hauke Brinkop</a> and <a href="../../../authors/nipkow">Tobias Nipkow</a>
 
+        </div>
+        <span class="date">Jul 14</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Word_Lib.html">Finite Machine Word Library</a></h5>
+          <br>
+            by <a href="../../../authors/beeren">Joel Beeren</a>, <a href="../../../authors/fernandez">Matthew Fernandez</a>, <a href="../../../authors/gao">Xin Gao</a>, <a href="../../../authors/klein">Gerwin Klein</a>, <a href="../../../authors/kolanski">Rafal Kolanski</a>, <a href="../../../authors/lim">Japheth Lim</a>, <a href="../../../authors/lewis">Corey Lewis</a>, <a href="../../../authors/matichuk">Daniel Matichuk</a> and <a href="../../../authors/sewell">Thomas Sewell</a>
+
+        </div>
+        <span class="date">Jun 09</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/ROBDD.html">Algorithms for Reduced Ordered Binary Decision Diagrams</a></h5>
+          <br>
+            by <a href="../../../authors/michaelis">Julius Michaelis</a>, <a href="../../../authors/haslbeck">Max W. Haslbeck</a>, <a href="../../../authors/lammich">Peter Lammich</a> and <a href="../../../authors/hupel">Lars Hupel</a>
+
+        </div>
+        <span class="date">Apr 27</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Matrix_Tensor.html">Tensor Product of Matrices</a></h5>
+          <br>
+            by <a href="../../../authors/prathamesh">T.V.H. Prathamesh</a>
+
+        </div>
+        <span class="date">Jan 18</span>
+      </article>
+    <h2 class="head">2015</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/List_Interleaving.html">Reasoning about Lists via List Interleaving</a></h5>
+          <br>
+            by <a href="../../../authors/noce">Pasquale Noce</a>
+
+        </div>
+        <span class="date">Jun 11</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Dynamic_Tables.html">Parameterized Dynamic Tables</a></h5>
+          <br>
+            by <a href="../../../authors/nipkow">Tobias Nipkow</a>
+
+        </div>
+        <span class="date">Jun 07</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Trie.html">Trie</a></h5>
+          <br>
+            by <a href="../../../authors/lochbihler">Andreas Lochbihler</a> and <a href="../../../authors/nipkow">Tobias Nipkow</a>
+
+        </div>
+        <span class="date">Mar 30</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Deriving.html">Deriving class instances for datatypes</a></h5>
+          <br>
+            by <a href="../../../authors/sternagel">Christian Sternagel</a> and <a href="../../../authors/thiemann">René Thiemann</a>
+
+        </div>
+        <span class="date">Mar 11</span>
+      </article>
+    <h2 class="head">2014</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/XML.html">XML</a></h5>
+          <br>
+            by <a href="../../../authors/sternagel">Christian Sternagel</a> and <a href="../../../authors/thiemann">René Thiemann</a>
+
+        </div>
+        <span class="date">Oct 03</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Priority_Queue_Braun.html">Priority Queues Based on Braun Trees</a></h5>
+          <br>
+            by <a href="../../../authors/nipkow">Tobias Nipkow</a>
+
+        </div>
+        <span class="date">Sep 04</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Skew_Heap.html">Skew Heap</a></h5>
+          <br>
+            by <a href="../../../authors/nipkow">Tobias Nipkow</a>
+
+        </div>
+        <span class="date">Aug 13</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Splay_Tree.html">Splay Tree</a></h5>
+          <br>
+            by <a href="../../../authors/nipkow">Tobias Nipkow</a>
+
+        </div>
+        <span class="date">Aug 12</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Amortized_Complexity.html">Amortized Complexity Verified</a></h5>
+          <br>
+            by <a href="../../../authors/nipkow">Tobias Nipkow</a>
+
+        </div>
+        <span class="date">Jul 07</span>
+      </article>
+    <h2 class="head">2013</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Native_Word.html">Native Word</a></h5>
+          <br>
+            by <a href="../../../authors/lochbihler">Andreas Lochbihler</a>
+
+        </div>
+        <span class="date">Sep 17</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/IEEE_Floating_Point.html">A Formal Model of IEEE Floating Point Arithmetic</a></h5>
+          <br>
+            by <a href="../../../authors/yu">Lei Yu</a>
+
+        </div>
+        <span class="date">Jul 27</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Containers.html">Light-weight Containers</a></h5>
+          <br>
+            by <a href="../../../authors/lochbihler">Andreas Lochbihler</a>
+
+        </div>
+        <span class="date">Apr 15</span>
+      </article>
+    <h2 class="head">2012</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Datatype_Order_Generator.html">Generating linear orders for datatypes</a></h5>
+          <br>
+            by <a href="../../../authors/thiemann">René Thiemann</a>
+
+        </div>
+        <span class="date">Aug 07</span>
+      </article>
+    <h2 class="head">2011</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/List-Infinite.html">Infinite Lists</a></h5>
+          <br>
+            by <a href="../../../authors/trachtenherz">David Trachtenherz</a>
+
+        </div>
+        <span class="date">Feb 23</span>
+      </article>
+    <h2 class="head">2010</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Binomial-Queues.html">Functional Binomial Queues</a></h5>
+          <br>
+            by <a href="../../../authors/neumann">René Neumann</a>
+
+        </div>
+        <span class="date">Oct 28</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Finger-Trees.html">Finger Trees</a></h5>
+          <br>
+            by <a href="../../../authors/nordhoff">Benedikt Nordhoff</a>, <a href="../../../authors/koerner">Stefan Körner</a> and <a href="../../../authors/lammich">Peter Lammich</a>
+
+        </div>
+        <span class="date">Oct 28</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Binomial-Heaps.html">Binomial Heaps and Skew Binomial Heaps</a></h5>
+          <br>
+            by <a href="../../../authors/meis">Rene Meis</a>, <a href="../../../authors/nielsen">Finn Nielsen</a> and <a href="../../../authors/lammich">Peter Lammich</a>
+
+        </div>
+        <span class="date">Oct 28</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Matrix.html">Executable Matrix Operations on Matrices of Arbitrary Dimensions</a></h5>
+          <br>
+            by <a href="../../../authors/sternagel">Christian Sternagel</a> and <a href="../../../authors/thiemann">René Thiemann</a>
+
+        </div>
+        <span class="date">Jun 17</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/List-Index.html">List Index</a></h5>
+          <br>
+            by <a href="../../../authors/nipkow">Tobias Nipkow</a>
+
+        </div>
+        <span class="date">Feb 20</span>
+      </article>
+    <h2 class="head">2009</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Collections.html">Collections Framework</a></h5>
+          <br>
+            by <a href="../../../authors/lammich">Peter Lammich</a>
+
+        </div>
+        <span class="date">Nov 25</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/FinFun.html">Code Generation for Functions as Data</a></h5>
+          <br>
+            by <a href="../../../authors/lochbihler">Andreas Lochbihler</a>
+
+        </div>
+        <span class="date">May 06</span>
+      </article>
+    <h2 class="head">2008</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Huffman.html">The Textbook Proof of Huffman&#39;s Algorithm</a></h5>
+          <br>
+            by <a href="../../../authors/blanchette">Jasmin Christian Blanchette</a>
+
+        </div>
+        <span class="date">Oct 15</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/BDD.html">BDD Normalisation</a></h5>
+          <br>
+            by <a href="../../../authors/ortner">Veronika Ortner</a> and <a href="../../../authors/schirmer">Norbert Schirmer</a>
+
+        </div>
+        <span class="date">Feb 29</span>
+      </article>
+    <h2 class="head">2004</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/FileRefinement.html">File Refinement</a></h5>
+          <br>
+            by <a href="../../../authors/zee">Karen Zee</a> and <a href="../../../authors/kuncak">Viktor Kuncak</a>
+
+        </div>
+        <span class="date">Dec 09</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Lazy-Lists-II.html">Lazy Lists II</a></h5>
+          <br>
+            by <a href="../../../authors/friedrich">Stefan Friedrich</a>
+
+        </div>
+        <span class="date">Apr 26</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/BinarySearchTree.html">Binary Search Trees</a></h5>
+          <br>
+            by <a href="../../../authors/kuncak">Viktor Kuncak</a>
+
+        </div>
+        <span class="date">Apr 05</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/AVL-Trees.html">AVL Trees</a></h5>
+          <br>
+            by <a href="../../../authors/nipkow">Tobias Nipkow</a> and <a href="../../../authors/pusch">Cornelia Pusch</a>
+
+        </div>
+        <span class="date">Mar 19</span>
+      </article>
+        
+      </div>
     </div>
-  </div>
-</body>
-
+  </body>
 </html>

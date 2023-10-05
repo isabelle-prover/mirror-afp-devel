@@ -1,201 +1,262 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Logic/General logic/Mechanization of proofs - Archive of Formal Proofs</title><meta name="description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."><link rel="alternate" type="application/rss+xml" href="../../../../topics/logic/general-logic/mechanization-of-proofs/index.xml" title="Archive of Formal Proofs" /><meta property="og:title" content="Logic/General logic/Mechanization of proofs" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Logic/General logic/Mechanization of proofs - Archive of Formal Proofs</title>
+    <meta name="description" content="A collection of proof libraries, examples, and larger
+     scientific developments, mechanically checked in the theorem prover Isabelle.">
+  <link rel="alternate" type="application/rss+xml" href="../../../../topics/logic/general-logic/mechanization-of-proofs/index.xml" title="Archive of Formal Proofs" />
+
+  <meta property="og:title" content="Logic/General logic/Mechanization of proofs" />
 <meta property="og:description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="/topics/logic/general-logic/mechanization-of-proofs/" /><meta property="og:image" content="/images/afp.png"/><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="Logic/General logic/Mechanization of proofs"/>
 <meta name="twitter:description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."/>
 
-  
   <link rel="stylesheet" type="text/css" href="../../../../css/front.min.css">
 
-  <link rel="icon" href="../../../../images/favicon.ico" type="image/icon"><script src="../../../../js/obfuscate.js"></script>
+  <link rel="icon" href="../../../../images/favicon.ico" type="image/icon">
+
+  <script src="../../../../js/obfuscate.js"></script>
   <script src="../../../../js/flexsearch.bundle.js"></script>
   <script src="../../../../js/scroll-spy.js"></script>
   <script src="../../../../js/theory.js"></script>
-  <script src="../../../../js/util.js"></script><script src="../../../../js/header-search.js"></script><script src="../../../../js/search-autocomplete.js"></script>
+  <script src="../../../../js/util.js"></script>
+    <script src="../../../../js/header-search.js"></script>
+  <script src="../../../../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../../../../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../../../../" class='logo-link'>
-    <img src="../../../../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../../../../" class="logo-link">
+    <img src="../../../../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../../../../search"><img src="../../../../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../../../../" class='logo-link'>
-        <img src="../../../../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../../../../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../../../../"><li >Home</li></a>
-        <a href="../../../../topics/"><li >Topics</li></a>
-        <a href="../../../../download/"><li >Download</li></a>
-        <a href="../../../../help/"><li >Help</li></a>
-        <a href="../../../../submission/"><li >Submission</li></a>
-        <a href="../../../../statistics/"><li >Statistics</li></a>
-        <a href="../../../../about/"><li >About</li></a>
+          <a href="../../../../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../../../../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../../../../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../../../../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../../../../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../../../../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../../../../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content '><header>
-  <form autocomplete="off" action="../../../../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../../../../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>L</span>ogic/<span class='first'>G</span>eneral logic/<span class='first'>M</span>echanization of proofs</h1>
+    </aside>
+    <div class='content'>
+      <header>
+    <form autocomplete="off" action="../../../../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../../../../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>L</span>ogic/<span class='first'>G</span>eneral logic/<span class='first'>M</span>echanization of proofs
+    
+  </h1>
   <div>
-    
-    
   </div>
-</header><div><h2>Subject Classification</h2><p>AMS: <a href="https://mathscinet.ams.org/mathscinet/msc/msc2020.html?t=03B35">Mathematical logic and foundations / General logic / Mechanization of proofs and logical operations</a></p><h2 class="head">2023</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Simple_Clause_Learning.html">A Formalization of the SCL(FOL) Calculus: Simple Clause Learning for First-Order Logic</a></h5> <br>by <a href="../../../../authors/desharnais">Martin Desharnais</a></div>
-  <span class="date">
-    Apr 20
-  </span>
-</article>
+</header>
+      <div>
+        
+    <h2>Subject Classification</h2>
+      <p>AMS: <a href="https://mathscinet.ams.org/mathscinet/msc/msc2020.html?t=03B35">Mathematical logic and foundations / General logic / Mechanization of proofs and logical operations</a></p>
+    <h2 class="head">2023</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Simple_Clause_Learning.html">A Formalization of the SCL(FOL) Calculus: Simple Clause Learning for First-Order Logic</a></h5>
+          <br>
+            by <a href="../../../../authors/desharnais">Martin Desharnais</a>
 
+        </div>
+        <span class="date">Apr 20</span>
+      </article>
+    <h2 class="head">2022</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/FOL_Seq_Calc3.html">A Naive Prover for First-Order Logic</a></h5>
+          <br>
+            by <a href="../../../../authors/from">Asta Halkjær From</a>
 
-<h2 class="head">2022</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/FOL_Seq_Calc3.html">A Naive Prover for First-Order Logic</a></h5> <br>by <a href="../../../../authors/from">Asta Halkjær From</a></div>
-  <span class="date">
-    Mar 22
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/FOL_Seq_Calc2.html">A Sequent Calculus Prover for First-Order Logic with Functions</a></h5> <br>by <a href="../../../../authors/from">Asta Halkjær From</a> and <a href="../../../../authors/jacobsen">Frederik Krogsdal Jacobsen</a></div>
-  <span class="date">
-    Jan 31
-  </span>
-</article>
+        </div>
+        <span class="date">Mar 22</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/FOL_Seq_Calc2.html">A Sequent Calculus Prover for First-Order Logic with Functions</a></h5>
+          <br>
+            by <a href="../../../../authors/from">Asta Halkjær From</a> and <a href="../../../../authors/jacobsen">Frederik Krogsdal Jacobsen</a>
 
+        </div>
+        <span class="date">Jan 31</span>
+      </article>
+    <h2 class="head">2020</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Saturation_Framework_Extensions.html">Extensions to the Comprehensive Framework for Saturation Theorem Proving</a></h5>
+          <br>
+            by <a href="../../../../authors/blanchette">Jasmin Christian Blanchette</a> and <a href="../../../../authors/tourret">Sophie Tourret</a>
 
-<h2 class="head">2020</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Saturation_Framework_Extensions.html">Extensions to the Comprehensive Framework for Saturation Theorem Proving</a></h5> <br>by <a href="../../../../authors/blanchette">Jasmin Christian Blanchette</a> and <a href="../../../../authors/tourret">Sophie Tourret</a></div>
-  <span class="date">
-    Aug 25
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Saturation_Framework.html">A Comprehensive Framework for Saturation Theorem Proving</a></h5> <br>by <a href="../../../../authors/tourret">Sophie Tourret</a></div>
-  <span class="date">
-    Apr 09
-  </span>
-</article>
+        </div>
+        <span class="date">Aug 25</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Saturation_Framework.html">A Comprehensive Framework for Saturation Theorem Proving</a></h5>
+          <br>
+            by <a href="../../../../authors/tourret">Sophie Tourret</a>
 
+        </div>
+        <span class="date">Apr 09</span>
+      </article>
+    <h2 class="head">2019</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Binding_Syntax_Theory.html">A General Theory of Syntax with Bindings</a></h5>
+          <br>
+            by <a href="../../../../authors/gheri">Lorenzo Gheri</a> and <a href="../../../../authors/popescu">Andrei Popescu</a>
 
-<h2 class="head">2019</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Binding_Syntax_Theory.html">A General Theory of Syntax with Bindings</a></h5> <br>by <a href="../../../../authors/gheri">Lorenzo Gheri</a> and <a href="../../../../authors/popescu">Andrei Popescu</a></div>
-  <span class="date">
-    Apr 06
-  </span>
-</article>
+        </div>
+        <span class="date">Apr 06</span>
+      </article>
+    <h2 class="head">2018</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Functional_Ordered_Resolution_Prover.html">A Verified Functional Implementation of Bachmair and Ganzinger&#39;s Ordered Resolution Prover</a></h5>
+          <br>
+            by <a href="../../../../authors/schlichtkrull">Anders Schlichtkrull</a>, <a href="../../../../authors/blanchette">Jasmin Christian Blanchette</a> and <a href="../../../../authors/traytel">Dmitriy Traytel</a>
 
+        </div>
+        <span class="date">Nov 23</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Ordered_Resolution_Prover.html">Formalization of Bachmair and Ganzinger&#39;s Ordered Resolution Prover</a></h5>
+          <br>
+            by <a href="../../../../authors/schlichtkrull">Anders Schlichtkrull</a>, <a href="../../../../authors/blanchette">Jasmin Christian Blanchette</a>, <a href="../../../../authors/traytel">Dmitriy Traytel</a> and <a href="../../../../authors/waldmann">Uwe Waldmann</a>
 
-<h2 class="head">2018</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Functional_Ordered_Resolution_Prover.html">A Verified Functional Implementation of Bachmair and Ganzinger&#39;s Ordered Resolution Prover</a></h5> <br>by <a href="../../../../authors/schlichtkrull">Anders Schlichtkrull</a>, <a href="../../../../authors/blanchette">Jasmin Christian Blanchette</a> and <a href="../../../../authors/traytel">Dmitriy Traytel</a></div>
-  <span class="date">
-    Nov 23
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Ordered_Resolution_Prover.html">Formalization of Bachmair and Ganzinger&#39;s Ordered Resolution Prover</a></h5> <br>by <a href="../../../../authors/schlichtkrull">Anders Schlichtkrull</a>, <a href="../../../../authors/blanchette">Jasmin Christian Blanchette</a>, <a href="../../../../authors/traytel">Dmitriy Traytel</a> and <a href="../../../../authors/waldmann">Uwe Waldmann</a></div>
-  <span class="date">
-    Jan 18
-  </span>
-</article>
+        </div>
+        <span class="date">Jan 18</span>
+      </article>
+    <h2 class="head">2017</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/FOL_Harrison.html">First-Order Logic According to Harrison</a></h5>
+          <br>
+            by <a href="../../../../authors/jensen">Alexander Birch Jensen</a>, <a href="../../../../authors/schlichtkrull">Anders Schlichtkrull</a> and <a href="../../../../authors/villadsen">Jørgen Villadsen</a>
 
+        </div>
+        <span class="date">Jan 01</span>
+      </article>
+    <h2 class="head">2016</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Resolution_FOL.html">The Resolution Calculus for First-Order Logic</a></h5>
+          <br>
+            by <a href="../../../../authors/schlichtkrull">Anders Schlichtkrull</a>
 
-<h2 class="head">2017</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/FOL_Harrison.html">First-Order Logic According to Harrison</a></h5> <br>by <a href="../../../../authors/jensen">Alexander Birch Jensen</a>, <a href="../../../../authors/schlichtkrull">Anders Schlichtkrull</a> and <a href="../../../../authors/villadsen">Jørgen Villadsen</a></div>
-  <span class="date">
-    Jan 01
-  </span>
-</article>
+        </div>
+        <span class="date">Jun 30</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/PropResPI.html">Propositional Resolution and Prime Implicates Generation</a></h5>
+          <br>
+            by <a href="../../../../authors/peltier">Nicolas Peltier</a>
 
+        </div>
+        <span class="date">Mar 11</span>
+      </article>
+    <h2 class="head">2014</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Boolean_Expression_Checkers.html">Boolean Expression Checkers</a></h5>
+          <br>
+            by <a href="../../../../authors/nipkow">Tobias Nipkow</a>
 
-<h2 class="head">2016</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Resolution_FOL.html">The Resolution Calculus for First-Order Logic</a></h5> <br>by <a href="../../../../authors/schlichtkrull">Anders Schlichtkrull</a></div>
-  <span class="date">
-    Jun 30
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/PropResPI.html">Propositional Resolution and Prime Implicates Generation</a></h5> <br>by <a href="../../../../authors/peltier">Nicolas Peltier</a></div>
-  <span class="date">
-    Mar 11
-  </span>
-</article>
+        </div>
+        <span class="date">Jun 08</span>
+      </article>
+    <h2 class="head">2013</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Sort_Encodings.html">Sound and Complete Sort Encodings for First-Order Logic</a></h5>
+          <br>
+            by <a href="../../../../authors/blanchette">Jasmin Christian Blanchette</a> and <a href="../../../../authors/popescu">Andrei Popescu</a>
 
+        </div>
+        <span class="date">Jun 27</span>
+      </article>
+    <h2 class="head">2004</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Verified-Prover.html">A Mechanically Verified, Efficient, Sound and Complete Theorem Prover For First Order Logic</a></h5>
+          <br>
+            by <a href="../../../../authors/ridge">Tom Ridge</a>
 
-<h2 class="head">2014</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Boolean_Expression_Checkers.html">Boolean Expression Checkers</a></h5> <br>by <a href="../../../../authors/nipkow">Tobias Nipkow</a></div>
-  <span class="date">
-    Jun 08
-  </span>
-</article>
-
-
-<h2 class="head">2013</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Sort_Encodings.html">Sound and Complete Sort Encodings for First-Order Logic</a></h5> <br>by <a href="../../../../authors/blanchette">Jasmin Christian Blanchette</a> and <a href="../../../../authors/popescu">Andrei Popescu</a></div>
-  <span class="date">
-    Jun 27
-  </span>
-</article>
-
-
-<h2 class="head">2004</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Verified-Prover.html">A Mechanically Verified, Efficient, Sound and Complete Theorem Prover For First Order Logic</a></h5> <br>by <a href="../../../../authors/ridge">Tom Ridge</a></div>
-  <span class="date">
-    Sep 28
-  </span>
-</article>
-
-
-
-
+        </div>
+        <span class="date">Sep 28</span>
+      </article>
+        
+      </div>
     </div>
-  </div>
-</body>
-
+  </body>
 </html>

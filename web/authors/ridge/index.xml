@@ -1,38 +1,38 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>ridge on Archive of Formal Proofs</title>
+    <title>ridge on Archive of Formal Proofs
+    </title>
     <link>/authors/ridge/</link>
-    <description>Recent content in ridge on Archive of Formal Proofs</description>
+    <description>
+        Recent content in ridge 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Tue, 28 Sep 2004 00:00:00 +0000</lastBuildDate><atom:link href="/authors/ridge/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>A Mechanically Verified, Efficient, Sound and Complete Theorem Prover For First Order Logic</title>
-      <link>/entries/Verified-Prover.html</link>
-      <pubDate>Tue, 28 Sep 2004 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Verified-Prover.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>Completeness theorem</title>
-      <link>/entries/Completeness.html</link>
-      <pubDate>Mon, 20 Sep 2004 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Completeness.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Ramsey&#39;s theorem, infinitary version</title>
-      <link>/entries/Ramsey-Infinite.html</link>
-      <pubDate>Mon, 20 Sep 2004 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Ramsey-Infinite.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Tue, 28 Sep 2004 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/ridge/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>A Mechanically Verified, Efficient, Sound and Complete Theorem Prover For First Order Logic</title>
+          <link>/entries/Verified-Prover.html</link>
+          <pubDate>Tue, 28 Sep 2004 00:00:00 +0000</pubDate>
+          <guid>/entries/Verified-Prover.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Completeness theorem</title>
+          <link>/entries/Completeness.html</link>
+          <pubDate>Mon, 20 Sep 2004 00:00:00 +0000</pubDate>
+          <guid>/entries/Completeness.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Ramsey&#39;s theorem, infinitary version</title>
+          <link>/entries/Ramsey-Infinite.html</link>
+          <pubDate>Mon, 20 Sep 2004 00:00:00 +0000</pubDate>
+          <guid>/entries/Ramsey-Infinite.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

@@ -1,36 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Amortized_Complexity - Archive of Formal Proofs</title><meta name="description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."><meta property="og:title" content="Amortized_Complexity" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Amortized_Complexity - Archive of Formal Proofs</title>
+    <meta name="description" content="A collection of proof libraries, examples, and larger
+     scientific developments, mechanically checked in the theorem prover Isabelle.">
+
+  <meta property="og:title" content="Amortized_Complexity" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="/theories/amortized_complexity/" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="theories" />
 
 <meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="Amortized_Complexity"/>
 <meta name="twitter:description" content=""/>
 
-  
-  <link rel="stylesheet" type="text/css" href="../../css/front.min.css"><link rel="stylesheet" type="text/css" href="../../css/isabelle.css">
-  
+  <link rel="stylesheet" type="text/css" href="../../css/front.min.css">
+    <link rel="stylesheet" type="text/css" href="../../css/isabelle.css">
 
-  <link rel="icon" href="../../images/favicon.ico" type="image/icon"><script src="../../js/obfuscate.js"></script>
+  <link rel="icon" href="../../images/favicon.ico" type="image/icon">
+
+  <script src="../../js/obfuscate.js"></script>
   <script src="../../js/flexsearch.bundle.js"></script>
   <script src="../../js/scroll-spy.js"></script>
   <script src="../../js/theory.js"></script>
-  <script src="../../js/util.js"></script><script src="../../js/header-search.js"></script><script src="../../js/search-autocomplete.js"></script>
+  <script src="../../js/util.js"></script>
+    <script src="../../js/header-search.js"></script>
+  <script src="../../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore theories'>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore theories'>
+    <aside>
+        
+<div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
@@ -38,61 +47,67 @@
   </label>
 
   <a href="../../" class='logo-link'>
-    <img src="../../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+    <img src="../../images/afp.png" alt='Logo of the Archive of Formal Proofs'
+         class="logo">
   </a>
 
   <nav id="menu">
   <div>
     <a href="../../" class='logo-link'>
       <img src="../../images/afp.png" alt='Logo of the Archive of Formal Proofs'
-        class="logo">
+           class="logo">
     </a>
-    <ul id="return">
-      <li><a href="../../entries/Amortized_Complexity.html">Return to entry</a></li>
-    </ul>
+      <ul id="return">
+        <li><a href="../../entries/Amortized_Complexity.html">Return to entry</a></li>
+      </ul>
     <hr>
     <ul id="theory-navbar" class="list-group"></ul>
   </div>
   </nav>
 </div>
-
-  </aside>
-
-  <div
-    class='content '><header>
-  <form autocomplete="off" action="../../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>A</span>mortized_<span class='first'>C</span>omplexity</h1>
+    </aside>
+    <div class='content'>
+      <header>
+    <form autocomplete="off" action="../../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>A</span>mortized_<span class='first'>C</span>omplexity
+    
+  </h1>
   <div>
-    
-    
   </div>
-</header><div><main id="theories">
-  <a id="Amortized_Framework0" href="https://www.isa-afp.org/browser_info/current/AFP/Amortized_Complexity/Amortized_Framework0.html"><h2>Amortized_Framework0</h2></a>
-  <a id="Amortized_Framework" href="https://www.isa-afp.org/browser_info/current/AFP/Amortized_Complexity/Amortized_Framework.html"><h2>Amortized_Framework</h2></a>
-  <a id="Amortized_Examples" href="https://www.isa-afp.org/browser_info/current/AFP/Amortized_Complexity/Amortized_Examples.html"><h2>Amortized_Examples</h2></a>
-  <a id="Priority_Queue_ops_merge" href="https://www.isa-afp.org/browser_info/current/AFP/Amortized_Complexity/Priority_Queue_ops_merge.html"><h2>Priority_Queue_ops_merge</h2></a>
-  <a id="Skew_Heap_Analysis" href="https://www.isa-afp.org/browser_info/current/AFP/Amortized_Complexity/Skew_Heap_Analysis.html"><h2>Skew_Heap_Analysis</h2></a>
-  <a id="Lemmas_log" href="https://www.isa-afp.org/browser_info/current/AFP/Amortized_Complexity/Lemmas_log.html"><h2>Lemmas_log</h2></a>
-  <a id="Splay_Tree_Analysis_Base" href="https://www.isa-afp.org/browser_info/current/AFP/Amortized_Complexity/Splay_Tree_Analysis_Base.html"><h2>Splay_Tree_Analysis_Base</h2></a>
-  <a id="Splay_Tree_Analysis" href="https://www.isa-afp.org/browser_info/current/AFP/Amortized_Complexity/Splay_Tree_Analysis.html"><h2>Splay_Tree_Analysis</h2></a>
-  <a id="Splay_Tree_Analysis_Optimal" href="https://www.isa-afp.org/browser_info/current/AFP/Amortized_Complexity/Splay_Tree_Analysis_Optimal.html"><h2>Splay_Tree_Analysis_Optimal</h2></a>
-  <a id="Priority_Queue_ops" href="https://www.isa-afp.org/browser_info/current/AFP/Amortized_Complexity/Priority_Queue_ops.html"><h2>Priority_Queue_ops</h2></a>
-  <a id="Splay_Heap_Analysis" href="https://www.isa-afp.org/browser_info/current/AFP/Amortized_Complexity/Splay_Heap_Analysis.html"><h2>Splay_Heap_Analysis</h2></a>
-  <a id="Pairing_Heap_Tree_Analysis" href="https://www.isa-afp.org/browser_info/current/AFP/Amortized_Complexity/Pairing_Heap_Tree_Analysis.html"><h2>Pairing_Heap_Tree_Analysis</h2></a>
-  <a id="Pairing_Heap_Tree_Analysis2" href="https://www.isa-afp.org/browser_info/current/AFP/Amortized_Complexity/Pairing_Heap_Tree_Analysis2.html"><h2>Pairing_Heap_Tree_Analysis2</h2></a>
-  <a id="Pairing_Heap_List1_Analysis" href="https://www.isa-afp.org/browser_info/current/AFP/Amortized_Complexity/Pairing_Heap_List1_Analysis.html"><h2>Pairing_Heap_List1_Analysis</h2></a>
-  <a id="Pairing_Heap_List1_Analysis2" href="https://www.isa-afp.org/browser_info/current/AFP/Amortized_Complexity/Pairing_Heap_List1_Analysis2.html"><h2>Pairing_Heap_List1_Analysis2</h2></a>
-  <a id="Pairing_Heap_List2_Analysis" href="https://www.isa-afp.org/browser_info/current/AFP/Amortized_Complexity/Pairing_Heap_List2_Analysis.html"><h2>Pairing_Heap_List2_Analysis</h2></a></main>
+</header>
+      <div>
+        
+  <main id="theories">
+      <a id="Amortized_Framework0" href="https://www.isa-afp.org/browser_info/current/AFP/Amortized_Complexity/Amortized_Framework0.html"><h2>Amortized_Framework0</h2></a>
+      <a id="Amortized_Framework" href="https://www.isa-afp.org/browser_info/current/AFP/Amortized_Complexity/Amortized_Framework.html"><h2>Amortized_Framework</h2></a>
+      <a id="Amortized_Examples" href="https://www.isa-afp.org/browser_info/current/AFP/Amortized_Complexity/Amortized_Examples.html"><h2>Amortized_Examples</h2></a>
+      <a id="Priority_Queue_ops_merge" href="https://www.isa-afp.org/browser_info/current/AFP/Amortized_Complexity/Priority_Queue_ops_merge.html"><h2>Priority_Queue_ops_merge</h2></a>
+      <a id="Skew_Heap_Analysis" href="https://www.isa-afp.org/browser_info/current/AFP/Amortized_Complexity/Skew_Heap_Analysis.html"><h2>Skew_Heap_Analysis</h2></a>
+      <a id="Lemmas_log" href="https://www.isa-afp.org/browser_info/current/AFP/Amortized_Complexity/Lemmas_log.html"><h2>Lemmas_log</h2></a>
+      <a id="Splay_Tree_Analysis_Base" href="https://www.isa-afp.org/browser_info/current/AFP/Amortized_Complexity/Splay_Tree_Analysis_Base.html"><h2>Splay_Tree_Analysis_Base</h2></a>
+      <a id="Splay_Tree_Analysis" href="https://www.isa-afp.org/browser_info/current/AFP/Amortized_Complexity/Splay_Tree_Analysis.html"><h2>Splay_Tree_Analysis</h2></a>
+      <a id="Splay_Tree_Analysis_Optimal" href="https://www.isa-afp.org/browser_info/current/AFP/Amortized_Complexity/Splay_Tree_Analysis_Optimal.html"><h2>Splay_Tree_Analysis_Optimal</h2></a>
+      <a id="Priority_Queue_ops" href="https://www.isa-afp.org/browser_info/current/AFP/Amortized_Complexity/Priority_Queue_ops.html"><h2>Priority_Queue_ops</h2></a>
+      <a id="Splay_Heap_Analysis" href="https://www.isa-afp.org/browser_info/current/AFP/Amortized_Complexity/Splay_Heap_Analysis.html"><h2>Splay_Heap_Analysis</h2></a>
+      <a id="Pairing_Heap_Tree_Analysis" href="https://www.isa-afp.org/browser_info/current/AFP/Amortized_Complexity/Pairing_Heap_Tree_Analysis.html"><h2>Pairing_Heap_Tree_Analysis</h2></a>
+      <a id="Pairing_Heap_Tree_Analysis2" href="https://www.isa-afp.org/browser_info/current/AFP/Amortized_Complexity/Pairing_Heap_Tree_Analysis2.html"><h2>Pairing_Heap_Tree_Analysis2</h2></a>
+      <a id="Pairing_Heap_List1_Analysis" href="https://www.isa-afp.org/browser_info/current/AFP/Amortized_Complexity/Pairing_Heap_List1_Analysis.html"><h2>Pairing_Heap_List1_Analysis</h2></a>
+      <a id="Pairing_Heap_List1_Analysis2" href="https://www.isa-afp.org/browser_info/current/AFP/Amortized_Complexity/Pairing_Heap_List1_Analysis2.html"><h2>Pairing_Heap_List1_Analysis2</h2></a>
+      <a id="Pairing_Heap_List2_Analysis" href="https://www.isa-afp.org/browser_info/current/AFP/Amortized_Complexity/Pairing_Heap_List2_Analysis.html"><h2>Pairing_Heap_List2_Analysis</h2></a>
+  </main>
+        
+      </div>
     </div>
-  </div>
-</body>
-
+  </body>
 </html>

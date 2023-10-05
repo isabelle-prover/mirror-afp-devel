@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Sunflowers on Archive of Formal Proofs</title>
+    <title>Sunflowers on Archive of Formal Proofs
+    </title>
     <link>/dependencies/sunflowers/</link>
-    <description>Recent content in Sunflowers on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Sunflowers 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Sun, 08 May 2022 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/sunflowers/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Clique is not solvable by monotone circuits of polynomial size</title>
-      <link>/entries/Clique_and_Monotone_Circuits.html</link>
-      <pubDate>Sun, 08 May 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Clique_and_Monotone_Circuits.html</guid>
-      <description></description>
-    </item>
     
+      <lastBuildDate>Sun, 08 May 2022 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/sunflowers/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Clique is not solvable by monotone circuits of polynomial size</title>
+          <link>/entries/Clique_and_Monotone_Circuits.html</link>
+          <pubDate>Sun, 08 May 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Clique_and_Monotone_Circuits.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

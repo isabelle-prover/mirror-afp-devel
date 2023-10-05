@@ -1,47 +1,45 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>zhan on Archive of Formal Proofs</title>
+    <title>zhan on Archive of Formal Proofs
+    </title>
     <link>/authors/zhan/</link>
-    <description>Recent content in zhan on Archive of Formal Proofs</description>
+    <description>
+        Recent content in zhan 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Sun, 24 Mar 2019 00:00:00 +0000</lastBuildDate><atom:link href="/authors/zhan/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Quantum Hoare Logic</title>
-      <link>/entries/QHLProver.html</link>
-      <pubDate>Sun, 24 Mar 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/QHLProver.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>Verifying Imperative Programs using Auto2</title>
-      <link>/entries/Auto2_Imperative_HOL.html</link>
-      <pubDate>Fri, 21 Dec 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Auto2_Imperative_HOL.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Auto2 Prover</title>
-      <link>/entries/Auto2_HOL.html</link>
-      <pubDate>Tue, 20 Nov 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Auto2_HOL.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Smooth Manifolds</title>
-      <link>/entries/Smooth_Manifolds.html</link>
-      <pubDate>Mon, 22 Oct 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Smooth_Manifolds.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Sun, 24 Mar 2019 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/zhan/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Quantum Hoare Logic</title>
+          <link>/entries/QHLProver.html</link>
+          <pubDate>Sun, 24 Mar 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/QHLProver.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Verifying Imperative Programs using Auto2</title>
+          <link>/entries/Auto2_Imperative_HOL.html</link>
+          <pubDate>Fri, 21 Dec 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Auto2_Imperative_HOL.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Auto2 Prover</title>
+          <link>/entries/Auto2_HOL.html</link>
+          <pubDate>Tue, 20 Nov 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Auto2_HOL.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Smooth Manifolds</title>
+          <link>/entries/Smooth_Manifolds.html</link>
+          <pubDate>Mon, 22 Oct 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Smooth_Manifolds.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

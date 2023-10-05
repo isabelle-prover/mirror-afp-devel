@@ -1,146 +1,122 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>brucker on Archive of Formal Proofs</title>
+    <title>brucker on Archive of Formal Proofs
+    </title>
     <link>/authors/brucker/</link>
-    <description>Recent content in brucker on Archive of Formal Proofs</description>
+    <description>
+        Recent content in brucker 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Fri, 29 Jul 2022 00:00:00 +0000</lastBuildDate><atom:link href="/authors/brucker/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Nano JSON: Working with JSON formatted data in Isabelle/HOL and Isabelle/ML</title>
-      <link>/entries/Nano_JSON.html</link>
-      <pubDate>Fri, 29 Jul 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Nano_JSON.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>Isabelle/Solidity: A deep Embedding of Solidity in Isabelle/HOL</title>
-      <link>/entries/Solidity.html</link>
-      <pubDate>Mon, 18 Jul 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Solidity.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Formal Model of the Document Object Model with Shadow Roots</title>
-      <link>/entries/Shadow_DOM.html</link>
-      <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Shadow_DOM.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Formal Model of the Safely Composable Document Object Model with Shadow Roots</title>
-      <link>/entries/Shadow_SC_DOM.html</link>
-      <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Shadow_SC_DOM.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Formalization of Safely Composable Web Components</title>
-      <link>/entries/SC_DOM_Components.html</link>
-      <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/SC_DOM_Components.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Formalization of Web Components</title>
-      <link>/entries/DOM_Components.html</link>
-      <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/DOM_Components.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Safely Composable DOM</title>
-      <link>/entries/Core_SC_DOM.html</link>
-      <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Core_SC_DOM.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Formal Model of Extended Finite State Machines</title>
-      <link>/entries/Extended_Finite_State_Machines.html</link>
-      <pubDate>Mon, 07 Sep 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Extended_Finite_State_Machines.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Inference of Extended Finite State Machines</title>
-      <link>/entries/Extended_Finite_State_Machine_Inference.html</link>
-      <pubDate>Mon, 07 Sep 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Extended_Finite_State_Machine_Inference.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Automated Stateful Protocol Verification</title>
-      <link>/entries/Automated_Stateful_Protocol_Verification.html</link>
-      <pubDate>Wed, 08 Apr 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Automated_Stateful_Protocol_Verification.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Stateful Protocol Composition and Typing</title>
-      <link>/entries/Stateful_Protocol_Composition_and_Typing.html</link>
-      <pubDate>Wed, 08 Apr 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Stateful_Protocol_Composition_and_Typing.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Formal Model of the Document Object Model</title>
-      <link>/entries/Core_DOM.html</link>
-      <pubDate>Wed, 26 Dec 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Core_DOM.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Formal Network Models and Their Application to Firewall Policies</title>
-      <link>/entries/UPF_Firewall.html</link>
-      <pubDate>Sun, 08 Jan 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/UPF_Firewall.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Unified Policy Framework (UPF)</title>
-      <link>/entries/UPF.html</link>
-      <pubDate>Fri, 28 Nov 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/UPF.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Featherweight OCL: A Proposal for a Machine-Checked Formal Semantics for OCL 2.5</title>
-      <link>/entries/Featherweight_OCL.html</link>
-      <pubDate>Thu, 16 Jan 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Featherweight_OCL.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Fri, 29 Jul 2022 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/brucker/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Nano JSON: Working with JSON formatted data in Isabelle/HOL and Isabelle/ML</title>
+          <link>/entries/Nano_JSON.html</link>
+          <pubDate>Fri, 29 Jul 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Nano_JSON.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Isabelle/Solidity: A deep Embedding of Solidity in Isabelle/HOL</title>
+          <link>/entries/Solidity.html</link>
+          <pubDate>Mon, 18 Jul 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Solidity.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Formal Model of the Document Object Model with Shadow Roots</title>
+          <link>/entries/Shadow_DOM.html</link>
+          <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Shadow_DOM.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Formal Model of the Safely Composable Document Object Model with Shadow Roots</title>
+          <link>/entries/Shadow_SC_DOM.html</link>
+          <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Shadow_SC_DOM.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Formalization of Safely Composable Web Components</title>
+          <link>/entries/SC_DOM_Components.html</link>
+          <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/SC_DOM_Components.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Formalization of Web Components</title>
+          <link>/entries/DOM_Components.html</link>
+          <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/DOM_Components.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Safely Composable DOM</title>
+          <link>/entries/Core_SC_DOM.html</link>
+          <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Core_SC_DOM.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Formal Model of Extended Finite State Machines</title>
+          <link>/entries/Extended_Finite_State_Machines.html</link>
+          <pubDate>Mon, 07 Sep 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Extended_Finite_State_Machines.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Inference of Extended Finite State Machines</title>
+          <link>/entries/Extended_Finite_State_Machine_Inference.html</link>
+          <pubDate>Mon, 07 Sep 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Extended_Finite_State_Machine_Inference.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Automated Stateful Protocol Verification</title>
+          <link>/entries/Automated_Stateful_Protocol_Verification.html</link>
+          <pubDate>Wed, 08 Apr 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Automated_Stateful_Protocol_Verification.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Stateful Protocol Composition and Typing</title>
+          <link>/entries/Stateful_Protocol_Composition_and_Typing.html</link>
+          <pubDate>Wed, 08 Apr 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Stateful_Protocol_Composition_and_Typing.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Formal Model of the Document Object Model</title>
+          <link>/entries/Core_DOM.html</link>
+          <pubDate>Wed, 26 Dec 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Core_DOM.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formal Network Models and Their Application to Firewall Policies</title>
+          <link>/entries/UPF_Firewall.html</link>
+          <pubDate>Sun, 08 Jan 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/UPF_Firewall.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Unified Policy Framework (UPF)</title>
+          <link>/entries/UPF.html</link>
+          <pubDate>Fri, 28 Nov 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/UPF.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Featherweight OCL: A Proposal for a Machine-Checked Formal Semantics for OCL 2.5</title>
+          <link>/entries/Featherweight_OCL.html</link>
+          <pubDate>Thu, 16 Jan 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Featherweight_OCL.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

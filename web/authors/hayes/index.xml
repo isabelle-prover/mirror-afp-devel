@@ -1,29 +1,31 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>hayes on Archive of Formal Proofs</title>
+    <title>hayes on Archive of Formal Proofs
+    </title>
     <link>/authors/hayes/</link>
-    <description>Recent content in hayes on Archive of Formal Proofs</description>
+    <description>
+        Recent content in hayes 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Tue, 13 Jun 2017 00:00:00 +0000</lastBuildDate><atom:link href="/authors/hayes/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Partial Semigroups and Convolution Algebras</title>
-      <link>/entries/PSemigroupsConvolution.html</link>
-      <pubDate>Tue, 13 Jun 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/PSemigroupsConvolution.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>Concurrent Refinement Algebra and Rely Quotients</title>
-      <link>/entries/Concurrent_Ref_Alg.html</link>
-      <pubDate>Fri, 30 Dec 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Concurrent_Ref_Alg.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Tue, 13 Jun 2017 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/hayes/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Partial Semigroups and Convolution Algebras</title>
+          <link>/entries/PSemigroupsConvolution.html</link>
+          <pubDate>Tue, 13 Jun 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/PSemigroupsConvolution.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Concurrent Refinement Algebra and Rely Quotients</title>
+          <link>/entries/Concurrent_Ref_Alg.html</link>
+          <pubDate>Fri, 30 Dec 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Concurrent_Ref_Alg.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

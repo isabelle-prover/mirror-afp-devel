@@ -1,266 +1,342 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Tools - Archive of Formal Proofs</title><meta name="description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."><link rel="alternate" type="application/rss+xml" href="../../topics/tools/index.xml" title="Archive of Formal Proofs" /><meta property="og:title" content="Tools" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tools - Archive of Formal Proofs</title>
+    <meta name="description" content="A collection of proof libraries, examples, and larger
+     scientific developments, mechanically checked in the theorem prover Isabelle.">
+  <link rel="alternate" type="application/rss+xml" href="../../topics/tools/index.xml" title="Archive of Formal Proofs" />
+
+  <meta property="og:title" content="Tools" />
 <meta property="og:description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="/topics/tools/" /><meta property="og:image" content="/images/afp.png"/><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="Tools"/>
 <meta name="twitter:description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."/>
 
-  
   <link rel="stylesheet" type="text/css" href="../../css/front.min.css">
 
-  <link rel="icon" href="../../images/favicon.ico" type="image/icon"><script src="../../js/obfuscate.js"></script>
+  <link rel="icon" href="../../images/favicon.ico" type="image/icon">
+
+  <script src="../../js/obfuscate.js"></script>
   <script src="../../js/flexsearch.bundle.js"></script>
   <script src="../../js/scroll-spy.js"></script>
   <script src="../../js/theory.js"></script>
-  <script src="../../js/util.js"></script><script src="../../js/header-search.js"></script><script src="../../js/search-autocomplete.js"></script>
+  <script src="../../js/util.js"></script>
+    <script src="../../js/header-search.js"></script>
+  <script src="../../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../../" class='logo-link'>
-    <img src="../../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../../" class="logo-link">
+    <img src="../../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../../search"><img src="../../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../../" class='logo-link'>
-        <img src="../../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../../"><li >Home</li></a>
-        <a href="../../topics/"><li >Topics</li></a>
-        <a href="../../download/"><li >Download</li></a>
-        <a href="../../help/"><li >Help</li></a>
-        <a href="../../submission/"><li >Submission</li></a>
-        <a href="../../statistics/"><li >Statistics</li></a>
-        <a href="../../about/"><li >About</li></a>
+          <a href="../../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content '><header>
-  <form autocomplete="off" action="../../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>T</span>ools</h1>
+    </aside>
+    <div class='content'>
+      <header>
+    <form autocomplete="off" action="../../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>T</span>ools
+    
+  </h1>
   <div>
-    
-    
   </div>
-</header><div><h2 class="head">2023</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../entries/ML_Unification.html">Unification Utilities for Isabelle/ML</a></h5> <br>by <a href="../../authors/kappelmann">Kevin Kappelmann</a></div>
-  <span class="date">
-    Sep 19
-  </span>
-</article>
+</header>
+      <div>
+        
+    <h2 class="head">2023</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../entries/ML_Unification.html">Unification Utilities for Isabelle/ML</a></h5>
+          <br>
+            by <a href="../../authors/kappelmann">Kevin Kappelmann</a>
 
+        </div>
+        <span class="date">Sep 19</span>
+      </article>
+    <h2 class="head">2022</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../entries/Boolos_Curious_Inference_Automated.html">Automation of Boolos&#39; Curious Inference in Isabelle/HOL</a></h5>
+          <br>
+            by <a href="../../authors/benzmueller">Christoph Benzmüller</a>, <a href="../../authors/fuenmayor">David Fuenmayor</a>, <a href="../../authors/steen">Alexander Steen</a> and <a href="../../authors/sutcliffe">Geoff Sutcliffe</a>
 
-<h2 class="head">2022</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../entries/Boolos_Curious_Inference_Automated.html">Automation of Boolos&#39; Curious Inference in Isabelle/HOL</a></h5> <br>by <a href="../../authors/benzmueller">Christoph Benzmüller</a>, <a href="../../authors/fuenmayor">David Fuenmayor</a>, <a href="../../authors/steen">Alexander Steen</a> and <a href="../../authors/sutcliffe">Geoff Sutcliffe</a></div>
-  <span class="date">
-    Dec 05
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../entries/Nano_JSON.html">Nano JSON: Working with JSON formatted data in Isabelle/HOL and Isabelle/ML</a></h5> <br>by <a href="../../authors/brucker">Achim D. Brucker</a></div>
-  <span class="date">
-    Jul 29
-  </span>
-</article>
+        </div>
+        <span class="date">Dec 05</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../entries/Nano_JSON.html">Nano JSON: Working with JSON formatted data in Isabelle/HOL and Isabelle/ML</a></h5>
+          <br>
+            by <a href="../../authors/brucker">Achim D. Brucker</a>
 
+        </div>
+        <span class="date">Jul 29</span>
+      </article>
+    <h2 class="head">2021</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../entries/Intro_Dest_Elim.html">IDE: Introduction, Destruction, Elimination</a></h5>
+          <br>
+            by <a href="../../authors/milehins">Mihails Milehins</a>
 
-<h2 class="head">2021</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../entries/Intro_Dest_Elim.html">IDE: Introduction, Destruction, Elimination</a></h5> <br>by <a href="../../authors/milehins">Mihails Milehins</a></div>
-  <span class="date">
-    Sep 06
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../entries/Types_To_Sets_Extension.html">Extension of Types-To-Sets</a></h5> <br>by <a href="../../authors/milehins">Mihails Milehins</a></div>
-  <span class="date">
-    Sep 06
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../entries/Conditional_Transfer_Rule.html">Conditional Transfer Rule</a></h5> <br>by <a href="../../authors/milehins">Mihails Milehins</a></div>
-  <span class="date">
-    Sep 06
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../entries/Conditional_Simplification.html">Conditional Simplification</a></h5> <br>by <a href="../../authors/milehins">Mihails Milehins</a></div>
-  <span class="date">
-    Sep 06
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../entries/SpecCheck.html">SpecCheck - Specification-Based Testing for Isabelle/ML</a></h5> <br>by <a href="../../authors/kappelmann">Kevin Kappelmann</a>, <a href="../../authors/bulwahn">Lukas Bulwahn</a> and <a href="../../authors/willenbrink">Sebastian Willenbrink</a></div>
-  <span class="date">
-    Jul 01
-  </span>
-</article>
+        </div>
+        <span class="date">Sep 06</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../entries/Types_To_Sets_Extension.html">Extension of Types-To-Sets</a></h5>
+          <br>
+            by <a href="../../authors/milehins">Mihails Milehins</a>
 
+        </div>
+        <span class="date">Sep 06</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../entries/Conditional_Transfer_Rule.html">Conditional Transfer Rule</a></h5>
+          <br>
+            by <a href="../../authors/milehins">Mihails Milehins</a>
 
-<h2 class="head">2020</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../entries/Automated_Stateful_Protocol_Verification.html">Automated Stateful Protocol Verification</a></h5> <br>by <a href="../../authors/hess">Andreas V. Hess</a>, <a href="../../authors/moedersheim">Sebastian Mödersheim</a>, <a href="../../authors/brucker">Achim D. Brucker</a> and <a href="../../authors/schlichtkrull">Anders Schlichtkrull</a></div>
-  <span class="date">
-    Apr 08
-  </span>
-</article>
+        </div>
+        <span class="date">Sep 06</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../entries/Conditional_Simplification.html">Conditional Simplification</a></h5>
+          <br>
+            by <a href="../../authors/milehins">Mihails Milehins</a>
 
+        </div>
+        <span class="date">Sep 06</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../entries/SpecCheck.html">SpecCheck - Specification-Based Testing for Isabelle/ML</a></h5>
+          <br>
+            by <a href="../../authors/kappelmann">Kevin Kappelmann</a>, <a href="../../authors/bulwahn">Lukas Bulwahn</a> and <a href="../../authors/willenbrink">Sebastian Willenbrink</a>
 
-<h2 class="head">2019</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../entries/Isabelle_C.html">Isabelle/C</a></h5> <br>by <a href="../../authors/tuong">Frédéric Tuong</a> and <a href="../../authors/wolff">Burkhart Wolff</a></div>
-  <span class="date">
-    Oct 22
-  </span>
-</article>
+        </div>
+        <span class="date">Jul 01</span>
+      </article>
+    <h2 class="head">2020</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../entries/Automated_Stateful_Protocol_Verification.html">Automated Stateful Protocol Verification</a></h5>
+          <br>
+            by <a href="../../authors/hess">Andreas V. Hess</a>, <a href="../../authors/moedersheim">Sebastian Mödersheim</a>, <a href="../../authors/brucker">Achim D. Brucker</a> and <a href="../../authors/schlichtkrull">Anders Schlichtkrull</a>
 
+        </div>
+        <span class="date">Apr 08</span>
+      </article>
+    <h2 class="head">2019</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../entries/Isabelle_C.html">Isabelle/C</a></h5>
+          <br>
+            by <a href="../../authors/tuong">Frédéric Tuong</a> and <a href="../../authors/wolff">Burkhart Wolff</a>
 
-<h2 class="head">2018</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../entries/Auto2_HOL.html">Auto2 Prover</a></h5> <br>by <a href="../../authors/zhan">Bohua Zhan</a></div>
-  <span class="date">
-    Nov 20
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../entries/BNF_CC.html">Bounded Natural Functors with Covariance and Contravariance</a></h5> <br>by <a href="../../authors/lochbihler">Andreas Lochbihler</a> and <a href="../../authors/schneider">Joshua Schneider</a></div>
-  <span class="date">
-    Apr 24
-  </span>
-</article>
+        </div>
+        <span class="date">Oct 22</span>
+      </article>
+    <h2 class="head">2018</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../entries/Auto2_HOL.html">Auto2 Prover</a></h5>
+          <br>
+            by <a href="../../authors/zhan">Bohua Zhan</a>
 
+        </div>
+        <span class="date">Nov 20</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../entries/BNF_CC.html">Bounded Natural Functors with Covariance and Contravariance</a></h5>
+          <br>
+            by <a href="../../authors/lochbihler">Andreas Lochbihler</a> and <a href="../../authors/schneider">Joshua Schneider</a>
 
-<h2 class="head">2017</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../entries/BNF_Operations.html">Operations on Bounded Natural Functors</a></h5> <br>by <a href="../../authors/blanchette">Jasmin Christian Blanchette</a>, <a href="../../authors/popescu">Andrei Popescu</a> and <a href="../../authors/traytel">Dmitriy Traytel</a></div>
-  <span class="date">
-    Dec 19
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../entries/Diophantine_Eqns_Lin_Hom.html">Homogeneous Linear Diophantine Equations</a></h5> <br>by <a href="../../authors/messner">Florian Messner</a>, <a href="../../authors/parsert">Julian Parsert</a>, <a href="../../authors/schoepf">Jonas Schöpf</a> and <a href="../../authors/sternagel">Christian Sternagel</a></div>
-  <span class="date">
-    Oct 14
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../entries/Dict_Construction.html">Dictionary Construction</a></h5> <br>by <a href="../../authors/hupel">Lars Hupel</a></div>
-  <span class="date">
-    May 24
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../entries/Monad_Normalisation.html">Monad normalisation</a></h5> <br>by <a href="../../authors/schneider">Joshua Schneider</a>, <a href="../../authors/eberl">Manuel Eberl</a> and <a href="../../authors/lochbihler">Andreas Lochbihler</a></div>
-  <span class="date">
-    May 05
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../entries/Constructor_Funs.html">Constructor Functions</a></h5> <br>by <a href="../../authors/hupel">Lars Hupel</a></div>
-  <span class="date">
-    Apr 19
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../entries/Lazy_Case.html">Lazifying case constants</a></h5> <br>by <a href="../../authors/hupel">Lars Hupel</a></div>
-  <span class="date">
-    Apr 18
-  </span>
-</article>
+        </div>
+        <span class="date">Apr 24</span>
+      </article>
+    <h2 class="head">2017</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../entries/BNF_Operations.html">Operations on Bounded Natural Functors</a></h5>
+          <br>
+            by <a href="../../authors/blanchette">Jasmin Christian Blanchette</a>, <a href="../../authors/popescu">Andrei Popescu</a> and <a href="../../authors/traytel">Dmitriy Traytel</a>
 
+        </div>
+        <span class="date">Dec 19</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../entries/Diophantine_Eqns_Lin_Hom.html">Homogeneous Linear Diophantine Equations</a></h5>
+          <br>
+            by <a href="../../authors/messner">Florian Messner</a>, <a href="../../authors/parsert">Julian Parsert</a>, <a href="../../authors/schoepf">Jonas Schöpf</a> and <a href="../../authors/sternagel">Christian Sternagel</a>
 
-<h2 class="head">2016</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../entries/Proof_Strategy_Language.html">Proof Strategy Language</a></h5> <br>by <a href="../../authors/nagashima">Yutaka Nagashima</a></div>
-  <span class="date">
-    Dec 20
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../entries/Separata.html">Separata: Isabelle tactics for Separation Algebra</a></h5> <br>by <a href="../../authors/hou">Zhe Hou</a>, <a href="../../authors/sanan">David Sanan</a>, <a href="../../authors/tiu">Alwen Tiu</a>, <a href="../../authors/gore">Rajeev Gore</a> and <a href="../../authors/clouston">Ranald Clouston</a></div>
-  <span class="date">
-    Nov 16
-  </span>
-</article>
+        </div>
+        <span class="date">Oct 14</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../entries/Dict_Construction.html">Dictionary Construction</a></h5>
+          <br>
+            by <a href="../../authors/hupel">Lars Hupel</a>
 
+        </div>
+        <span class="date">May 24</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../entries/Monad_Normalisation.html">Monad normalisation</a></h5>
+          <br>
+            by <a href="../../authors/schneider">Joshua Schneider</a>, <a href="../../authors/eberl">Manuel Eberl</a> and <a href="../../authors/lochbihler">Andreas Lochbihler</a>
 
-<h2 class="head">2015</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../entries/Case_Labeling.html">Generating Cases from Labeled Subgoals</a></h5> <br>by <a href="../../authors/noschinski">Lars Noschinski</a></div>
-  <span class="date">
-    Jul 21
-  </span>
-</article>
+        </div>
+        <span class="date">May 05</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../entries/Constructor_Funs.html">Constructor Functions</a></h5>
+          <br>
+            by <a href="../../authors/hupel">Lars Hupel</a>
 
+        </div>
+        <span class="date">Apr 19</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../entries/Lazy_Case.html">Lazifying case constants</a></h5>
+          <br>
+            by <a href="../../authors/hupel">Lars Hupel</a>
 
-<h2 class="head">2013</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../entries/Nominal2.html">Nominal 2</a></h5> <br>by <a href="../../authors/urban">Christian Urban</a>, <a href="../../authors/berghofer">Stefan Berghofer</a> and <a href="../../authors/kaliszyk">Cezary Kaliszyk</a></div>
-  <span class="date">
-    Feb 21
-  </span>
-</article>
+        </div>
+        <span class="date">Apr 18</span>
+      </article>
+    <h2 class="head">2016</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../entries/Proof_Strategy_Language.html">Proof Strategy Language</a></h5>
+          <br>
+            by <a href="../../authors/nagashima">Yutaka Nagashima</a>
 
+        </div>
+        <span class="date">Dec 20</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../entries/Separata.html">Separata: Isabelle tactics for Separation Algebra</a></h5>
+          <br>
+            by <a href="../../authors/hou">Zhe Hou</a>, <a href="../../authors/sanan">David Sanan</a>, <a href="../../authors/tiu">Alwen Tiu</a>, <a href="../../authors/gore">Rajeev Gore</a> and <a href="../../authors/clouston">Ranald Clouston</a>
 
-<h2 class="head">2009</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../entries/DPT-SAT-Solver.html">A Fast SAT Solver for Isabelle in Standard ML</a></h5> <br>by <a href="../../authors/heller">Armin Heller</a></div>
-  <span class="date">
-    Dec 09
-  </span>
-</article>
+        </div>
+        <span class="date">Nov 16</span>
+      </article>
+    <h2 class="head">2015</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../entries/Case_Labeling.html">Generating Cases from Labeled Subgoals</a></h5>
+          <br>
+            by <a href="../../authors/noschinski">Lars Noschinski</a>
 
+        </div>
+        <span class="date">Jul 21</span>
+      </article>
+    <h2 class="head">2013</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../entries/Nominal2.html">Nominal 2</a></h5>
+          <br>
+            by <a href="../../authors/urban">Christian Urban</a>, <a href="../../authors/berghofer">Stefan Berghofer</a> and <a href="../../authors/kaliszyk">Cezary Kaliszyk</a>
 
+        </div>
+        <span class="date">Feb 21</span>
+      </article>
+    <h2 class="head">2009</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../entries/DPT-SAT-Solver.html">A Fast SAT Solver for Isabelle in Standard ML</a></h5>
+          <br>
+            by <a href="../../authors/heller">Armin Heller</a>
 
-
+        </div>
+        <span class="date">Dec 09</span>
+      </article>
+        
+      </div>
     </div>
-  </div>
-</body>
-
+  </body>
 </html>

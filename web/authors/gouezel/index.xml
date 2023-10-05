@@ -1,38 +1,38 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>gouezel on Archive of Formal Proofs</title>
+    <title>gouezel on Archive of Formal Proofs
+    </title>
     <link>/authors/gouezel/</link>
-    <description>Recent content in gouezel on Archive of Formal Proofs</description>
+    <description>
+        Recent content in gouezel 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Tue, 16 Jan 2018 00:00:00 +0000</lastBuildDate><atom:link href="/authors/gouezel/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Gromov Hyperbolicity</title>
-      <link>/entries/Gromov_Hyperbolicity.html</link>
-      <pubDate>Tue, 16 Jan 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Gromov_Hyperbolicity.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>Lp spaces</title>
-      <link>/entries/Lp.html</link>
-      <pubDate>Wed, 05 Oct 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Lp.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Ergodic Theory</title>
-      <link>/entries/Ergodic_Theory.html</link>
-      <pubDate>Tue, 01 Dec 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Ergodic_Theory.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Tue, 16 Jan 2018 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/gouezel/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Gromov Hyperbolicity</title>
+          <link>/entries/Gromov_Hyperbolicity.html</link>
+          <pubDate>Tue, 16 Jan 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Gromov_Hyperbolicity.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Lp spaces</title>
+          <link>/entries/Lp.html</link>
+          <pubDate>Wed, 05 Oct 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Lp.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Ergodic Theory</title>
+          <link>/entries/Ergodic_Theory.html</link>
+          <pubDate>Tue, 01 Dec 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Ergodic_Theory.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

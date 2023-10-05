@@ -1,83 +1,73 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>gomes on Archive of Formal Proofs</title>
+    <title>gomes on Archive of Formal Proofs
+    </title>
     <link>/authors/gomes/</link>
-    <description>Recent content in gomes on Archive of Formal Proofs</description>
+    <description>
+        Recent content in gomes 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Thu, 10 May 2018 00:00:00 +0000</lastBuildDate><atom:link href="/authors/gomes/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>OpSets: Sequential Specifications for Replicated Datatypes</title>
-      <link>/entries/OpSets.html</link>
-      <pubDate>Thu, 10 May 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/OpSets.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>The LambdaMu-calculus</title>
-      <link>/entries/LambdaMu.html</link>
-      <pubDate>Wed, 16 Aug 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/LambdaMu.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A framework for establishing Strong Eventual Consistency for Conflict-free Replicated Datatypes</title>
-      <link>/entries/CRDT.html</link>
-      <pubDate>Fri, 07 Jul 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/CRDT.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Partial Semigroups and Convolution Algebras</title>
-      <link>/entries/PSemigroupsConvolution.html</link>
-      <pubDate>Tue, 13 Jun 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/PSemigroupsConvolution.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Program Construction and Verification Components Based on Kleene Algebra</title>
-      <link>/entries/Algebraic_VCs.html</link>
-      <pubDate>Sat, 18 Jun 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Algebraic_VCs.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Kleene Algebras with Domain</title>
-      <link>/entries/KAD.html</link>
-      <pubDate>Tue, 12 Apr 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/KAD.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Residuated Lattices</title>
-      <link>/entries/Residuated_Lattices.html</link>
-      <pubDate>Wed, 15 Apr 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Residuated_Lattices.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Kleene Algebra with Tests and Demonic Refinement Algebras</title>
-      <link>/entries/KAT_and_DRA.html</link>
-      <pubDate>Thu, 23 Jan 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/KAT_and_DRA.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Thu, 10 May 2018 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/gomes/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>OpSets: Sequential Specifications for Replicated Datatypes</title>
+          <link>/entries/OpSets.html</link>
+          <pubDate>Thu, 10 May 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/OpSets.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The LambdaMu-calculus</title>
+          <link>/entries/LambdaMu.html</link>
+          <pubDate>Wed, 16 Aug 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/LambdaMu.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A framework for establishing Strong Eventual Consistency for Conflict-free Replicated Datatypes</title>
+          <link>/entries/CRDT.html</link>
+          <pubDate>Fri, 07 Jul 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/CRDT.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Partial Semigroups and Convolution Algebras</title>
+          <link>/entries/PSemigroupsConvolution.html</link>
+          <pubDate>Tue, 13 Jun 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/PSemigroupsConvolution.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Program Construction and Verification Components Based on Kleene Algebra</title>
+          <link>/entries/Algebraic_VCs.html</link>
+          <pubDate>Sat, 18 Jun 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Algebraic_VCs.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Kleene Algebras with Domain</title>
+          <link>/entries/KAD.html</link>
+          <pubDate>Tue, 12 Apr 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/KAD.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Residuated Lattices</title>
+          <link>/entries/Residuated_Lattices.html</link>
+          <pubDate>Wed, 15 Apr 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Residuated_Lattices.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Kleene Algebra with Tests and Demonic Refinement Algebras</title>
+          <link>/entries/KAT_and_DRA.html</link>
+          <pubDate>Thu, 23 Jan 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/KAT_and_DRA.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

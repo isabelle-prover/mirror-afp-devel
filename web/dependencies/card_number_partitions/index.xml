@@ -1,38 +1,38 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Card_Number_Partitions on Archive of Formal Proofs</title>
+    <title>Card_Number_Partitions on Archive of Formal Proofs
+    </title>
     <link>/dependencies/card_number_partitions/</link>
-    <description>Recent content in Card_Number_Partitions on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Card_Number_Partitions 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Fri, 11 Nov 2022 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/card_number_partitions/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Combinatorial Enumeration Algorithms</title>
-      <link>/entries/Combinatorial_Enumeration_Algorithms.html</link>
-      <pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Combinatorial_Enumeration_Algorithms.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>The Twelvefold Way</title>
-      <link>/entries/Twelvefold_Way.html</link>
-      <pubDate>Thu, 29 Dec 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Twelvefold_Way.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Euler&#39;s Partition Theorem</title>
-      <link>/entries/Euler_Partition.html</link>
-      <pubDate>Thu, 19 Nov 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Euler_Partition.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Fri, 11 Nov 2022 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/card_number_partitions/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Combinatorial Enumeration Algorithms</title>
+          <link>/entries/Combinatorial_Enumeration_Algorithms.html</link>
+          <pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Combinatorial_Enumeration_Algorithms.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Twelvefold Way</title>
+          <link>/entries/Twelvefold_Way.html</link>
+          <pubDate>Thu, 29 Dec 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Twelvefold_Way.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Euler&#39;s Partition Theorem</title>
+          <link>/entries/Euler_Partition.html</link>
+          <pubDate>Thu, 19 Nov 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Euler_Partition.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

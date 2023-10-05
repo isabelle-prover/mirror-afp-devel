@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>yu on Archive of Formal Proofs</title>
+    <title>yu on Archive of Formal Proofs
+    </title>
     <link>/authors/yu/</link>
-    <description>Recent content in yu on Archive of Formal Proofs</description>
+    <description>
+        Recent content in yu 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Sat, 27 Jul 2013 00:00:00 +0000</lastBuildDate><atom:link href="/authors/yu/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>A Formal Model of IEEE Floating Point Arithmetic</title>
-      <link>/entries/IEEE_Floating_Point.html</link>
-      <pubDate>Sat, 27 Jul 2013 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/IEEE_Floating_Point.html</guid>
-      <description></description>
-    </item>
     
+      <lastBuildDate>Sat, 27 Jul 2013 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/yu/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>A Formal Model of IEEE Floating Point Arithmetic</title>
+          <link>/entries/IEEE_Floating_Point.html</link>
+          <pubDate>Sat, 27 Jul 2013 00:00:00 +0000</pubDate>
+          <guid>/entries/IEEE_Floating_Point.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

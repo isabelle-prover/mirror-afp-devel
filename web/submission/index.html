@@ -1,9 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Entry Submission - Archive of Formal Proofs</title><meta name="description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."><meta property="og:title" content="Entry Submission" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Entry Submission - Archive of Formal Proofs</title>
+    <meta name="description" content="A collection of proof libraries, examples, and larger
+     scientific developments, mechanically checked in the theorem prover Isabelle.">
+
+  <meta property="og:title" content="Entry Submission" />
 <meta property="og:description" content="Submission Guidelines The submission must follow the following Isabelle style rules. For additional guidelines on Isabelle proofs, also see the this guide (feel free to follow all of these; only the below are mandatory). Technical details about the submission process and the format of the submission are explained on the submission site.
  No use of the commands sorry or back. Instantiations must not use Isabelle-generated names such as xa — use Isar, the subgoal command or rename_tac to avoid such names." />
 <meta property="og:type" content="article" />
@@ -11,75 +16,112 @@
 
 <meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="Entry Submission"/>
 <meta name="twitter:description" content="Submission Guidelines The submission must follow the following Isabelle style rules. For additional guidelines on Isabelle proofs, also see the this guide (feel free to follow all of these; only the below are mandatory). Technical details about the submission process and the format of the submission are explained on the submission site.
  No use of the commands sorry or back. Instantiations must not use Isabelle-generated names such as xa — use Isar, the subgoal command or rename_tac to avoid such names."/>
 
-  
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
-  <link rel="icon" href="../images/favicon.ico" type="image/icon"><script src="../js/obfuscate.js"></script>
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+
+  <script src="../js/obfuscate.js"></script>
   <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
-  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../" class='logo-link'>
-    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../" class='logo-link'>
-        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../"><li >Home</li></a>
-        <a href="../topics/"><li >Topics</li></a>
-        <a href="../download/"><li >Download</li></a>
-        <a href="../help/"><li >Help</li></a>
-        <a href="../submission/"><li class="active" >Submission</li></a>
-        <a href="../statistics/"><li >Statistics</li></a>
-        <a href="../about/"><li >About</li></a>
+          <a href="../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../submission/">
+            <li class="active" >
+              Submission
+            </li>
+          </a>
+          <a href="../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content '><header>
-  <form autocomplete="off" action="../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>E</span>ntry <span class='first'>S</span>ubmission</h1>
+    </aside>
+    <div class='content'>
+      <header>
+    <form autocomplete="off" action="../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>E</span>ntry <span class='first'>S</span>ubmission
+    
+  </h1>
   <div>
-    
-    
   </div>
-</header><div><div>
-  <h2 id="submission-guidelines">Submission Guidelines</h2>
+</header>
+      <div>
+        
+  <div>
+    <h2 id="submission-guidelines">Submission Guidelines</h2>
 <p><strong>The submission must follow the following Isabelle style rules.</strong> For additional guidelines on Isabelle proofs, also see the this <a href="https://proofcraft.org/blog/isabelle-style.html">guide</a> (feel free to follow all of these; only the below are mandatory). <strong>Technical details about the submission process and the format of the submission are explained on the submission site.</strong></p>
 <ul>
 <li>No use of the commands <code>sorry</code> or <code>back</code>.</li>
@@ -124,9 +166,9 @@
 <p>To achieve this, you should base your changes on the <a href="https:/foss.heptapod.net/isa-afp/afp-devel/">mercurial development version</a> of your AFP entry and test it against the current <a href="https://isabelle.in.tum.de/devel/">Isabelle development version</a>.</p>
 <p>If you would like to get write access to your entry in the mercurial repository or if you need assistance, please contact the <a href="../about#editors">editors</a>.</p>
 
-</div>
-    </div>
   </div>
-</body>
-
+        
+      </div>
+    </div>
+  </body>
 </html>

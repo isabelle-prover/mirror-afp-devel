@@ -1,47 +1,45 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Sqrt_Babylonian on Archive of Formal Proofs</title>
+    <title>Sqrt_Babylonian on Archive of Formal Proofs
+    </title>
     <link>/dependencies/sqrt_babylonian/</link>
-    <description>Recent content in Sqrt_Babylonian on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Sqrt_Babylonian 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Fri, 29 Jan 2016 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/sqrt_babylonian/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Polynomial Factorization</title>
-      <link>/entries/Polynomial_Factorization.html</link>
-      <pubDate>Fri, 29 Jan 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Polynomial_Factorization.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>Polynomial Interpolation</title>
-      <link>/entries/Polynomial_Interpolation.html</link>
-      <pubDate>Fri, 29 Jan 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Polynomial_Interpolation.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>QR Decomposition</title>
-      <link>/entries/QR_Decomposition.html</link>
-      <pubDate>Thu, 12 Feb 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/QR_Decomposition.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Implementing field extensions of the form Q[sqrt(b)]</title>
-      <link>/entries/Real_Impl.html</link>
-      <pubDate>Thu, 06 Feb 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Real_Impl.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Fri, 29 Jan 2016 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/sqrt_babylonian/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Polynomial Factorization</title>
+          <link>/entries/Polynomial_Factorization.html</link>
+          <pubDate>Fri, 29 Jan 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Polynomial_Factorization.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Polynomial Interpolation</title>
+          <link>/entries/Polynomial_Interpolation.html</link>
+          <pubDate>Fri, 29 Jan 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Polynomial_Interpolation.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>QR Decomposition</title>
+          <link>/entries/QR_Decomposition.html</link>
+          <pubDate>Thu, 12 Feb 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/QR_Decomposition.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Implementing field extensions of the form Q[sqrt(b)]</title>
+          <link>/entries/Real_Impl.html</link>
+          <pubDate>Thu, 06 Feb 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Real_Impl.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

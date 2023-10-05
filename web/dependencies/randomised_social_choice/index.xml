@@ -1,38 +1,38 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Randomised_Social_Choice on Archive of Formal Proofs</title>
+    <title>Randomised_Social_Choice on Archive of Formal Proofs
+    </title>
     <link>/dependencies/randomised_social_choice/</link>
-    <description>Recent content in Randomised_Social_Choice on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Randomised_Social_Choice 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Thu, 10 Nov 2022 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/randomised_social_choice/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>The Incompatibility of Strategy-Proofness and Representation in Party-Approval Multi-Winner Elections</title>
-      <link>/entries/PAPP_Impossibility.html</link>
-      <pubDate>Thu, 10 Nov 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/PAPP_Impossibility.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>The Incompatibility of Fishburn-Strategyproofness and Pareto-Efficiency</title>
-      <link>/entries/Fishburn_Impossibility.html</link>
-      <pubDate>Thu, 22 Mar 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Fishburn_Impossibility.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Incompatibility of SD-Efficiency and SD-Strategy-Proofness</title>
-      <link>/entries/SDS_Impossibility.html</link>
-      <pubDate>Wed, 04 May 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/SDS_Impossibility.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Thu, 10 Nov 2022 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/randomised_social_choice/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>The Incompatibility of Strategy-Proofness and Representation in Party-Approval Multi-Winner Elections</title>
+          <link>/entries/PAPP_Impossibility.html</link>
+          <pubDate>Thu, 10 Nov 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/PAPP_Impossibility.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Incompatibility of Fishburn-Strategyproofness and Pareto-Efficiency</title>
+          <link>/entries/Fishburn_Impossibility.html</link>
+          <pubDate>Thu, 22 Mar 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Fishburn_Impossibility.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Incompatibility of SD-Efficiency and SD-Strategy-Proofness</title>
+          <link>/entries/SDS_Impossibility.html</link>
+          <pubDate>Wed, 04 May 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/SDS_Impossibility.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

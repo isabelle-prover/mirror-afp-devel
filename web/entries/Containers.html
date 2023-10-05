@@ -1,25 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Light-weight Containers - Archive of Formal Proofs</title><meta name="description" content="This development provides a framework for container types like sets and maps such that generated code implements these containers with different..."><meta property="og:title" content="Light-weight Containers" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Light-weight Containers - Archive of Formal Proofs</title>
+    <meta name="description" content="This development provides a framework for container types like sets and maps such that generated code implements these containers with different...">
+
+  <meta property="og:title" content="Light-weight Containers" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="/entries/Containers.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
 <meta property="article:published_time" content="2013-04-15T00:00:00+00:00" />
 <meta property="article:modified_time" content="2013-04-15T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="Light-weight Containers"/>
 <meta name="twitter:description" content=""/>
 
-  
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
     <script>
       MathJax = {
         tex: {
@@ -31,73 +36,114 @@
         }
       };
     </script>
-    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
   <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
-  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../" class='logo-link'>
-    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../" class='logo-link'>
-        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../"><li >Home</li></a>
-        <a href="../topics/"><li >Topics</li></a>
-        <a href="../download/"><li >Download</li></a>
-        <a href="../help/"><li >Help</li></a>
-        <a href="../submission/"><li >Submission</li></a>
-        <a href="../statistics/"><li >Statistics</li></a>
-        <a href="../about/"><li >About</li></a>
+          <a href="../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content  entries'><header>
-  <form autocomplete="off" action="../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>L</span>ight-weight <span class='first'>C</span>ontainers</h1>
+    </aside>
+    <div class='content entries'>
+      <header>
+    <form autocomplete="off" action="../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>L</span>ight-weight <span class='first'>C</span>ontainers
+    
+  </h1>
   <div>
-    
-    <p><a href="../authors/lochbihler">Andreas Lochbihler</a> <a href="http://www.andreas-lochbihler.de/">🌐</a>
-      with contributions from <a href="../authors/thiemann">René Thiemann</a> <a class="obfuscated" data="eyJob3N0IjpbInVpYmsiLCJhYyIsImF0Il0sInVzZXIiOlsicmVuZSIsInRoaWVtYW5uIl19">📧</a>
-    </p>
-    
-    
-    <p class="date">April 15, 2013</p>
-    
-  </div>
-</header><div><main><h3>Abstract</h3>
+      <p>
+        <a href="../authors/lochbihler">Andreas Lochbihler</a> <a href="http://www.andreas-lochbihler.de/">🌐</a>
 
-  <div class="abstract mathjax_process">This development provides a framework for container types like sets and maps such that generated code implements these containers with different (efficient) data structures.
+          with contributions from
+          <a href="../authors/thiemann">René Thiemann</a> <a class="obfuscated" data="eyJob3N0IjpbInVpYmsiLCJhYyIsImF0Il0sInVzZXIiOlsicmVuZSIsInRoaWVtYW5uIl19">📧</a>
+
+      </p>
+      <p class="date">April 15, 2013</p>
+  </div>
+</header>
+      <div>
+        
+  <main>
+    <h3>Abstract</h3>
+
+    <div class="abstract mathjax_process">This development provides a framework for container types like sets and maps such that generated code implements these containers with different (efficient) data structures.
 Thanks to type classes and refinement during code generation, this light-weight approach can seamlessly replace Isabelle's default setup for code generation.
 Heuristics automatically pick one of the available data structures depending on the type of elements to be stored, but users can also choose on their own.
 The extensible design permits to add more implementations at any time.
@@ -105,158 +151,262 @@ The extensible design permits to add more implementations at any time.
 To support arbitrary nesting of sets, we define a linear order on sets based on a linear order of the elements and provide efficient implementations.
 It even allows to compare complements with non-complements.</div>
 
-  <h3>License</h3>
-  <div><a href="https://isa-afp.org/LICENSE">BSD License</a></div><h3>History</h3>
-  <dl><dt>March 5, 2018</dt>
-    <dd>add two application examples: depth-first search and 2SAT (revision e5e1a1da2411)</dd><dt>July 8, 2014</dt>
-    <dd>add support for going from partial functions to mappings (revision 7a6fc957e8ed)<br></dd><dt>September 20, 2013</dt>
-    <dd>provide generators for canonical type class instantiations
-(revision 159f4401f4a8 by René Thiemann)<br>
-</dd><dt>July 11, 2013</dt>
-    <dd>add pretty printing for sets (revision 7f3f52c5f5fa)<br></dd></dl><h3>Topics</h3>
-  <ul><li><a href="../topics/computer-science/data-structures">Computer science/Data structures</a></li></ul>
-  <h3>Session Containers</h3>
-  <ul>
-    <li><a href="../theories/containers/#Containers_Auxiliary">Containers_Auxiliary</a></li>
-    <li><a href="../theories/containers/#Card_Datatype">Card_Datatype</a></li>
-    <li><a href="../theories/containers/#List_Fusion">List_Fusion</a></li>
-    <li><a href="../theories/containers/#Lexicographic_Order">Lexicographic_Order</a></li>
-    <li><a href="../theories/containers/#Extend_Partial_Order">Extend_Partial_Order</a></li>
-    <li><a href="../theories/containers/#Set_Linorder">Set_Linorder</a></li>
-    <li><a href="../theories/containers/#Containers_Generator">Containers_Generator</a></li>
-    <li><a href="../theories/containers/#Collection_Order">Collection_Order</a></li>
-    <li><a href="../theories/containers/#List_Proper_Interval">List_Proper_Interval</a></li>
-    <li><a href="../theories/containers/#Collection_Eq">Collection_Eq</a></li>
-    <li><a href="../theories/containers/#Collection_Enum">Collection_Enum</a></li>
-    <li><a href="../theories/containers/#Equal">Equal</a></li>
-    <li><a href="../theories/containers/#RBT_ext">RBT_ext</a></li>
-    <li><a href="../theories/containers/#RBT_Mapping2">RBT_Mapping2</a></li>
-    <li><a href="../theories/containers/#AssocList">AssocList</a></li>
-    <li><a href="../theories/containers/#DList_Set">DList_Set</a></li>
-    <li><a href="../theories/containers/#RBT_Set2">RBT_Set2</a></li>
-    <li><a href="../theories/containers/#Closure_Set">Closure_Set</a></li>
-    <li><a href="../theories/containers/#Set_Impl">Set_Impl</a></li>
-    <li><a href="../theories/containers/#Mapping_Impl">Mapping_Impl</a></li>
-    <li><a href="../theories/containers/#Map_To_Mapping">Map_To_Mapping</a></li>
-    <li><a href="../theories/containers/#Containers">Containers</a></li>
-    <li><a href="../theories/containers/#Compatibility_Containers_Regular_Sets">Compatibility_Containers_Regular_Sets</a></li>
-    <li><a href="../theories/containers/#Containers_Userguide">Containers_Userguide</a></li>
-    <li><a href="../theories/containers/#Card_Datatype_Ex">Card_Datatype_Ex</a></li>
-    <li><a href="../theories/containers/#Map_To_Mapping_Ex">Map_To_Mapping_Ex</a></li>
-    <li><a href="../theories/containers/#TwoSat_Ex">TwoSat_Ex</a></li>
-    <li><a href="../theories/containers/#Containers_DFS_Ex">Containers_DFS_Ex</a></li>
-    <li><a href="../theories/containers/#Containers_TwoSat_Ex">Containers_TwoSat_Ex</a></li></ul>
-  <h3>Session Containers-Benchmarks</h3>
-  <ul>
-    <li><a href="../theories/containers-benchmarks/#Benchmark_Bool">Benchmark_Bool</a></li>
-    <li><a href="../theories/containers-benchmarks/#Benchmark_Comparison">Benchmark_Comparison</a></li>
-    <li><a href="../theories/containers-benchmarks/#Benchmark_LC">Benchmark_LC</a></li>
-    <li><a href="../theories/containers-benchmarks/#Benchmark_Default">Benchmark_Default</a></li>
-    <li><a href="../theories/containers-benchmarks/#Benchmark_ICF">Benchmark_ICF</a></li>
-    <li><a href="../theories/containers-benchmarks/#Benchmark_RBT">Benchmark_RBT</a></li>
-    <li><a href="../theories/containers-benchmarks/#Benchmark_Set">Benchmark_Set</a></li>
-    <li><a href="../theories/containers-benchmarks/#Benchmark_Set_Default">Benchmark_Set_Default</a></li>
-    <li><a href="../theories/containers-benchmarks/#Benchmark_Set_LC">Benchmark_Set_LC</a></li>
-    <li><a href="../theories/containers-benchmarks/#Clauses">Clauses</a></li></ul><div class="flex-wrap">
-  <div>
-    <h3>Depends on</h3>
-    <ul class="horizontal-list"><li><a href="../entries/Automatic_Refinement.html">Automatic Data Refinement</a></li><li><a href="../entries/Collections.html">Collections Framework</a></li><li><a href="../entries/Deriving.html">Deriving class instances for datatypes</a></li><li><a href="../entries/Finger-Trees.html">Finger Trees</a></li><li><a href="../entries/Regular-Sets.html">Regular Sets and Expressions</a></li><li><a href="../entries/Trie.html">Trie</a></li></ul>
-  </div><div>
-    <h3>Used by</h3>
-    <ul class="horizontal-list"><li><a href="../entries/CHERI-C_Memory_Model.html">A Formal CHERI-C Memory Model</a></li><li><a href="../entries/FSM_Tests.html">Verified Complete Test Strategies for Finite State Machines</a></li><li><a href="../entries/Eval_FO.html">First-Order Query Evaluation</a></li><li><a href="../entries/VYDRA_MDL.html">Multi-Head Monitoring of Metric Dynamic Logic</a></li><li><a href="../entries/AI_Planning_Languages_Semantics.html">AI Planning Languages Semantics</a></li><li><a href="../entries/MFOTL_Monitor.html">Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic</a></li><li><a href="../entries/Polynomial_Factorization.html">Polynomial Factorization</a></li><li><a href="../entries/Collections.html">Collections Framework</a></li></ul>
-  </div>
-  
-  <div>
-    <h3>Auto-related entries</h3>
-    <ul class="horizontal-list">
-      
-      <li><a href="../entries/CakeML_Codegen.html">A Verified Code Generator from Isabelle/HOL to CakeML</a></li>
-      
-      <li><a href="../entries/XML.html">XML</a></li>
-      
-      <li><a href="../entries/Imperative_Insertion_Sort.html">Imperative Insertion Sort</a></li>
-      
-      <li><a href="../entries/Native_Word.html">Native Word</a></li>
-      
-    </ul>
-  </div>
-  
-  </div>
-</main>
-
-<nav class='links'>
-  <a class='popup-button' href="#cite-popup">Cite</a>
-  <a class='popup-button' href="#download-popup">Download</a>
-  <h4>PDFs</h4>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Containers/outline.pdf">Proof
-    outline</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Containers/document.pdf">Proof
-    document</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Containers/session_graph.pdf">Dependencies</a></nav>
-
-<div id="cite-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Cite</h2>
-    <a class="close" href="#">&times;</a>
+    <h3>License</h3>
     <div>
-      <p style="display:none;" id="bibtex-filename">Containers-AFP</p><pre id="copy-text">@article{Containers-AFP,
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>History</h3>
+      <dl>
+        <dt>March 5, 2018</dt>
+        <dd>add two application examples: depth-first search and 2SAT (revision e5e1a1da2411)</dd>
+        <dt>July 8, 2014</dt>
+        <dd>add support for going from partial functions to mappings (revision 7a6fc957e8ed)<br></dd>
+        <dt>September 20, 2013</dt>
+        <dd>provide generators for canonical type class instantiations
+(revision 159f4401f4a8 by René Thiemann)<br>
+</dd>
+        <dt>July 11, 2013</dt>
+        <dd>add pretty printing for sets (revision 7f3f52c5f5fa)<br></dd>
+      </dl>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/computer-science/data-structures">Computer science/Data structures</a></li>
+      </ul>
+      <h3>Session Containers</h3>
+      <ul>
+          <li><a href="../theories/containers/#Containers_Auxiliary">Containers_Auxiliary</a></li>
+          <li><a href="../theories/containers/#Card_Datatype">Card_Datatype</a></li>
+          <li><a href="../theories/containers/#List_Fusion">List_Fusion</a></li>
+          <li><a href="../theories/containers/#Lexicographic_Order">Lexicographic_Order</a></li>
+          <li><a href="../theories/containers/#Extend_Partial_Order">Extend_Partial_Order</a></li>
+          <li><a href="../theories/containers/#Set_Linorder">Set_Linorder</a></li>
+          <li><a href="../theories/containers/#Containers_Generator">Containers_Generator</a></li>
+          <li><a href="../theories/containers/#Collection_Order">Collection_Order</a></li>
+          <li><a href="../theories/containers/#List_Proper_Interval">List_Proper_Interval</a></li>
+          <li><a href="../theories/containers/#Collection_Eq">Collection_Eq</a></li>
+          <li><a href="../theories/containers/#Collection_Enum">Collection_Enum</a></li>
+          <li><a href="../theories/containers/#Equal">Equal</a></li>
+          <li><a href="../theories/containers/#RBT_ext">RBT_ext</a></li>
+          <li><a href="../theories/containers/#RBT_Mapping2">RBT_Mapping2</a></li>
+          <li><a href="../theories/containers/#AssocList">AssocList</a></li>
+          <li><a href="../theories/containers/#DList_Set">DList_Set</a></li>
+          <li><a href="../theories/containers/#RBT_Set2">RBT_Set2</a></li>
+          <li><a href="../theories/containers/#Closure_Set">Closure_Set</a></li>
+          <li><a href="../theories/containers/#Set_Impl">Set_Impl</a></li>
+          <li><a href="../theories/containers/#Mapping_Impl">Mapping_Impl</a></li>
+          <li><a href="../theories/containers/#Map_To_Mapping">Map_To_Mapping</a></li>
+          <li><a href="../theories/containers/#Containers">Containers</a></li>
+          <li><a href="../theories/containers/#Compatibility_Containers_Regular_Sets">Compatibility_Containers_Regular_Sets</a></li>
+          <li><a href="../theories/containers/#Containers_Userguide">Containers_Userguide</a></li>
+          <li><a href="../theories/containers/#Card_Datatype_Ex">Card_Datatype_Ex</a></li>
+          <li><a href="../theories/containers/#Map_To_Mapping_Ex">Map_To_Mapping_Ex</a></li>
+          <li><a href="../theories/containers/#TwoSat_Ex">TwoSat_Ex</a></li>
+          <li><a href="../theories/containers/#Containers_DFS_Ex">Containers_DFS_Ex</a></li>
+          <li><a href="../theories/containers/#Containers_TwoSat_Ex">Containers_TwoSat_Ex</a></li>
+      </ul>
+      <h3>Session Containers-Benchmarks</h3>
+      <ul>
+          <li><a href="../theories/containers-benchmarks/#Benchmark_Bool">Benchmark_Bool</a></li>
+          <li><a href="../theories/containers-benchmarks/#Benchmark_Comparison">Benchmark_Comparison</a></li>
+          <li><a href="../theories/containers-benchmarks/#Benchmark_LC">Benchmark_LC</a></li>
+          <li><a href="../theories/containers-benchmarks/#Benchmark_Default">Benchmark_Default</a></li>
+          <li><a href="../theories/containers-benchmarks/#Benchmark_ICF">Benchmark_ICF</a></li>
+          <li><a href="../theories/containers-benchmarks/#Benchmark_RBT">Benchmark_RBT</a></li>
+          <li><a href="../theories/containers-benchmarks/#Benchmark_Set">Benchmark_Set</a></li>
+          <li><a href="../theories/containers-benchmarks/#Benchmark_Set_Default">Benchmark_Set_Default</a></li>
+          <li><a href="../theories/containers-benchmarks/#Benchmark_Set_LC">Benchmark_Set_LC</a></li>
+          <li><a href="../theories/containers-benchmarks/#Clauses">Clauses</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+      <div>
+        <h3>Depends on</h3>
+        <ul class="horizontal-list">
+              <li><a href="../entries/Automatic_Refinement.html">Automatic Data Refinement</a></li>
+              <li><a href="../entries/Collections.html">Collections Framework</a></li>
+              <li><a href="../entries/Deriving.html">Deriving class instances for datatypes</a></li>
+              <li><a href="../entries/Finger-Trees.html">Finger Trees</a></li>
+              <li><a href="../entries/Regular-Sets.html">Regular Sets and Expressions</a></li>
+              <li><a href="../entries/Trie.html">Trie</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Used by</h3>
+        <ul class="horizontal-list">
+            <li>
+              <a href="../entries/CHERI-C_Memory_Model.html">A Formal CHERI-C Memory Model</a>
+            </li>
+            <li>
+              <a href="../entries/FSM_Tests.html">Verified Complete Test Strategies for Finite State Machines</a>
+            </li>
+            <li>
+              <a href="../entries/Eval_FO.html">First-Order Query Evaluation</a>
+            </li>
+            <li>
+              <a href="../entries/VYDRA_MDL.html">Multi-Head Monitoring of Metric Dynamic Logic</a>
+            </li>
+            <li>
+              <a href="../entries/AI_Planning_Languages_Semantics.html">AI Planning Languages Semantics</a>
+            </li>
+            <li>
+              <a href="../entries/MFOTL_Monitor.html">Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic</a>
+            </li>
+            <li>
+              <a href="../entries/Polynomial_Factorization.html">Polynomial Factorization</a>
+            </li>
+            <li>
+              <a href="../entries/Collections.html">Collections Framework</a>
+            </li>
+        </ul>
+      </div>
+        <div>
+          <h3>Auto-related entries</h3>
+          <ul class="horizontal-list">
+              <li><a href="../entries/CakeML_Codegen.html">A Verified Code Generator from Isabelle/HOL to CakeML</a></li>
+              <li><a href="../entries/XML.html">XML</a></li>
+              <li><a href="../entries/Imperative_Insertion_Sort.html">Imperative Insertion Sort</a></li>
+              <li><a href="../entries/Native_Word.html">Native Word</a></li>
+          </ul>
+        </div>
+      </div>
+    
+  </main>
+
+  <nav class='links'>
+    <a class='popup-button' href="#cite-popup">Cite</a>
+    <a class='popup-button' href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Containers/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Containers/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Containers/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Containers-AFP</p>
+        <pre id="copy-text">@article{Containers-AFP,
   author  = {Andreas Lochbihler},
   title   = {Light-weight Containers},
   journal = {Archive of Formal Proofs},
   month   = {April},
   year    = {2013},
   note    = {\url{https://isa-afp.org/entries/Containers.html},
-            Formal proof development},
+             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
     </div>
   </div>
-</div>
 
-<div id="download-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Download</h2>
-    <a class="close" href="#">&times;</a>
-    <a href="https://www.isa-afp.org/release/afp-Containers-current.tar.gz" download>Download latest</a>
-    <p>Older releases:</p>
-    <ul><li>
-        <a href="https://www.isa-afp.org/release/afp-Containers-2023-09-13.tar.gz">Sep 13, 2023</a>: Isabelle2023
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Containers-2022-10-27.tar.gz">Oct 27, 2022</a>: Isabelle2022
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Containers-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021-1
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Containers-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Containers-2020-04-18.tar.gz">Apr 18, 2020</a>: Isabelle2020
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Containers-2019-06-11.tar.gz">Jun 11, 2019</a>: Isabelle2019
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Containers-2018-08-16.tar.gz">Aug 16, 2018</a>: Isabelle2018
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Containers-2017-10-10.tar.gz">Oct 10, 2017</a>: Isabelle2017
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Containers-2016-12-17.tar.gz">Dec 17, 2016</a>: Isabelle2016-1
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Containers-2016-02-22.tar.gz">Feb 22, 2016</a>: Isabelle2016
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Containers-2015-05-27.tar.gz">May 27, 2015</a>: Isabelle2015
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Containers-2014-08-28.tar.gz">Aug 28, 2014</a>: Isabelle2014
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Containers-2013-12-11.tar.gz">Dec 11, 2013</a>: Isabelle2013-2
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Containers-2013-11-17.tar.gz">Nov 17, 2013</a>: Isabelle2013-1
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Containers-2013-04-23.tar.gz">Apr 23, 2013</a>: Isabelle2013
-      </li></ul>
-  </div>
-</div>
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-Containers-current.tar.gz"
+         download>Download latest</a>
+        <p>Older releases:</p>
+        <ul>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Containers-2023-09-13.tar.gz">
+                Sep 13, 2023
+              </a>
+              : Isabelle2023
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Containers-2022-10-27.tar.gz">
+                Oct 27, 2022
+              </a>
+              : Isabelle2022
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Containers-2021-12-14.tar.gz">
+                Dec 14, 2021
+              </a>
+              : Isabelle2021-1
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Containers-2021-02-23.tar.gz">
+                Feb 23, 2021
+              </a>
+              : Isabelle2021
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Containers-2020-04-18.tar.gz">
+                Apr 18, 2020
+              </a>
+              : Isabelle2020
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Containers-2019-06-11.tar.gz">
+                Jun 11, 2019
+              </a>
+              : Isabelle2019
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Containers-2018-08-16.tar.gz">
+                Aug 16, 2018
+              </a>
+              : Isabelle2018
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Containers-2017-10-10.tar.gz">
+                Oct 10, 2017
+              </a>
+              : Isabelle2017
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Containers-2016-12-17.tar.gz">
+                Dec 17, 2016
+              </a>
+              : Isabelle2016-1
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Containers-2016-02-22.tar.gz">
+                Feb 22, 2016
+              </a>
+              : Isabelle2016
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Containers-2015-05-27.tar.gz">
+                May 27, 2015
+              </a>
+              : Isabelle2015
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Containers-2014-08-28.tar.gz">
+                Aug 28, 2014
+              </a>
+              : Isabelle2014
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Containers-2013-12-11.tar.gz">
+                Dec 11, 2013
+              </a>
+              : Isabelle2013-2
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Containers-2013-11-17.tar.gz">
+                Nov 17, 2013
+              </a>
+              : Isabelle2013-1
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Containers-2013-04-23.tar.gz">
+                Apr 23, 2013
+              </a>
+              : Isabelle2013
+            </li>
+        </ul>
     </div>
   </div>
-</body>
-
+        
+      </div>
+    </div>
+  </body>
 </html>

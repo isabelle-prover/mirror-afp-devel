@@ -1,29 +1,31 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Comparison_Sort_Lower_Bound on Archive of Formal Proofs</title>
+    <title>Comparison_Sort_Lower_Bound on Archive of Formal Proofs
+    </title>
     <link>/dependencies/comparison_sort_lower_bound/</link>
-    <description>Recent content in Comparison_Sort_Lower_Bound on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Comparison_Sort_Lower_Bound 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Tue, 06 Feb 2018 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/comparison_sort_lower_bound/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Treaps</title>
-      <link>/entries/Treaps.html</link>
-      <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Treaps.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>The number of comparisons in QuickSort</title>
-      <link>/entries/Quick_Sort_Cost.html</link>
-      <pubDate>Wed, 15 Mar 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Quick_Sort_Cost.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Tue, 06 Feb 2018 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/comparison_sort_lower_bound/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Treaps</title>
+          <link>/entries/Treaps.html</link>
+          <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Treaps.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The number of comparisons in QuickSort</title>
+          <link>/entries/Quick_Sort_Cost.html</link>
+          <pubDate>Wed, 15 Mar 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Quick_Sort_Cost.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

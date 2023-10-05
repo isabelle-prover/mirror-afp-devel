@@ -1,29 +1,31 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Bell_Numbers_Spivey on Archive of Formal Proofs</title>
+    <title>Bell_Numbers_Spivey on Archive of Formal Proofs
+    </title>
     <link>/dependencies/bell_numbers_spivey/</link>
-    <description>Recent content in Bell_Numbers_Spivey on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Bell_Numbers_Spivey 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Thu, 29 Dec 2016 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/bell_numbers_spivey/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>The Twelvefold Way</title>
-      <link>/entries/Twelvefold_Way.html</link>
-      <pubDate>Thu, 29 Dec 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Twelvefold_Way.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>Cardinality of Equivalence Relations</title>
-      <link>/entries/Card_Equiv_Relations.html</link>
-      <pubDate>Tue, 24 May 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Card_Equiv_Relations.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Thu, 29 Dec 2016 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/bell_numbers_spivey/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>The Twelvefold Way</title>
+          <link>/entries/Twelvefold_Way.html</link>
+          <pubDate>Thu, 29 Dec 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Twelvefold_Way.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Cardinality of Equivalence Relations</title>
+          <link>/entries/Card_Equiv_Relations.html</link>
+          <pubDate>Tue, 24 May 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Card_Equiv_Relations.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

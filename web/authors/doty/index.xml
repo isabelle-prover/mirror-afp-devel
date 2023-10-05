@@ -1,65 +1,59 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>doty on Archive of Formal Proofs</title>
+    <title>doty on Archive of Formal Proofs
+    </title>
     <link>/authors/doty/</link>
-    <description>Recent content in doty on Archive of Formal Proofs</description>
+    <description>
+        Recent content in doty 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Mon, 20 Feb 2023 00:00:00 +0000</lastBuildDate><atom:link href="/authors/doty/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>A Sound and Complete Calculus for Probability Inequalities</title>
-      <link>/entries/Probability_Inequality_Completeness.html</link>
-      <pubDate>Mon, 20 Feb 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Probability_Inequality_Completeness.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>Suppes&#39; Theorem For Probability Logic</title>
-      <link>/entries/Suppes_Theorem.html</link>
-      <pubDate>Sun, 22 Jan 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Suppes_Theorem.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Class-based Classical Propositional Logic</title>
-      <link>/entries/Propositional_Logic_Class.html</link>
-      <pubDate>Thu, 15 Dec 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Propositional_Logic_Class.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Birkhoff&#39;s Representation Theorem For Finite Distributive Lattices</title>
-      <link>/entries/Birkhoff_Finite_Distributive_Lattices.html</link>
-      <pubDate>Tue, 06 Dec 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Birkhoff_Finite_Distributive_Lattices.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Risk-Free Lending</title>
-      <link>/entries/Risk_Free_Lending.html</link>
-      <pubDate>Sun, 18 Sep 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Risk_Free_Lending.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Complete Proof of the Robbins Conjecture</title>
-      <link>/entries/Robbins-Conjecture.html</link>
-      <pubDate>Sat, 22 May 2010 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Robbins-Conjecture.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Mon, 20 Feb 2023 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/doty/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>A Sound and Complete Calculus for Probability Inequalities</title>
+          <link>/entries/Probability_Inequality_Completeness.html</link>
+          <pubDate>Mon, 20 Feb 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Probability_Inequality_Completeness.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Suppes&#39; Theorem For Probability Logic</title>
+          <link>/entries/Suppes_Theorem.html</link>
+          <pubDate>Sun, 22 Jan 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Suppes_Theorem.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Class-based Classical Propositional Logic</title>
+          <link>/entries/Propositional_Logic_Class.html</link>
+          <pubDate>Thu, 15 Dec 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Propositional_Logic_Class.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Birkhoff&#39;s Representation Theorem For Finite Distributive Lattices</title>
+          <link>/entries/Birkhoff_Finite_Distributive_Lattices.html</link>
+          <pubDate>Tue, 06 Dec 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Birkhoff_Finite_Distributive_Lattices.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Risk-Free Lending</title>
+          <link>/entries/Risk_Free_Lending.html</link>
+          <pubDate>Sun, 18 Sep 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Risk_Free_Lending.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Complete Proof of the Robbins Conjecture</title>
+          <link>/entries/Robbins-Conjecture.html</link>
+          <pubDate>Sat, 22 May 2010 00:00:00 +0000</pubDate>
+          <guid>/entries/Robbins-Conjecture.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

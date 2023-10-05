@@ -1,29 +1,31 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>moedersheim on Archive of Formal Proofs</title>
+    <title>moedersheim on Archive of Formal Proofs
+    </title>
     <link>/authors/moedersheim/</link>
-    <description>Recent content in moedersheim on Archive of Formal Proofs</description>
+    <description>
+        Recent content in moedersheim 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Wed, 08 Apr 2020 00:00:00 +0000</lastBuildDate><atom:link href="/authors/moedersheim/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Automated Stateful Protocol Verification</title>
-      <link>/entries/Automated_Stateful_Protocol_Verification.html</link>
-      <pubDate>Wed, 08 Apr 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Automated_Stateful_Protocol_Verification.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>Stateful Protocol Composition and Typing</title>
-      <link>/entries/Stateful_Protocol_Composition_and_Typing.html</link>
-      <pubDate>Wed, 08 Apr 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Stateful_Protocol_Composition_and_Typing.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Wed, 08 Apr 2020 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/moedersheim/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Automated Stateful Protocol Verification</title>
+          <link>/entries/Automated_Stateful_Protocol_Verification.html</link>
+          <pubDate>Wed, 08 Apr 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Automated_Stateful_Protocol_Verification.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Stateful Protocol Composition and Typing</title>
+          <link>/entries/Stateful_Protocol_Composition_and_Typing.html</link>
+          <pubDate>Wed, 08 Apr 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Stateful_Protocol_Composition_and_Typing.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

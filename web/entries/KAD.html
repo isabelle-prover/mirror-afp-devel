@@ -1,27 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Kleene Algebras with Domain - Archive of Formal Proofs</title><meta name="description" content="Kleene algebras with domain are Kleene algebras endowed with an
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Kleene Algebras with Domain - Archive of Formal Proofs</title>
+    <meta name="description" content="Kleene algebras with domain are Kleene algebras endowed with an
 operation that maps each element of the algebra to its domain of
-definition (or its..."><meta property="og:title" content="Kleene Algebras with Domain" />
+definition (or its...">
+
+  <meta property="og:title" content="Kleene Algebras with Domain" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="/entries/KAD.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
 <meta property="article:published_time" content="2016-04-12T00:00:00+00:00" />
 <meta property="article:modified_time" content="2016-04-12T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="Kleene Algebras with Domain"/>
 <meta name="twitter:description" content=""/>
 
-  
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
     <script>
       MathJax = {
         tex: {
@@ -33,72 +38,111 @@ definition (or its..."><meta property="og:title" content="Kleene Algebras with D
         }
       };
     </script>
-    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
   <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
-  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../" class='logo-link'>
-    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../" class='logo-link'>
-        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../"><li >Home</li></a>
-        <a href="../topics/"><li >Topics</li></a>
-        <a href="../download/"><li >Download</li></a>
-        <a href="../help/"><li >Help</li></a>
-        <a href="../submission/"><li >Submission</li></a>
-        <a href="../statistics/"><li >Statistics</li></a>
-        <a href="../about/"><li >About</li></a>
+          <a href="../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content  entries'><header>
-  <form autocomplete="off" action="../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>K</span>leene <span class='first'>A</span>lgebras with <span class='first'>D</span>omain</h1>
+    </aside>
+    <div class='content entries'>
+      <header>
+    <form autocomplete="off" action="../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>K</span>leene <span class='first'>A</span>lgebras with <span class='first'>D</span>omain
+    
+  </h1>
   <div>
-    
-    <p><a href="../authors/gomes">Victor B. F. Gomes</a> <a href="http://www.dcs.shef.ac.uk/~victor">🌐</a>, <a href="../authors/guttmann">Walter Guttmann</a> <a href="https://www.cosc.canterbury.ac.nz/walter.guttmann/">🌐</a>, <a href="../authors/hoefner">Peter Höfner</a> <a href="http://www.hoefner-online.de/">🌐</a>, <a href="../authors/struth">Georg Struth</a> <a href="http://staffwww.dcs.shef.ac.uk/people/G.Struth/">🌐</a> and <a href="../authors/weber">Tjark Weber</a> <a href="http://user.it.uu.se/~tjawe125/">🌐</a>
-    </p>
-    
-    
-    <p class="date">April 12, 2016</p>
-    
-  </div>
-</header><div><main><h3>Abstract</h3>
+      <p>
+        <a href="../authors/gomes">Victor B. F. Gomes</a> <a href="http://www.dcs.shef.ac.uk/~victor">🌐</a>, <a href="../authors/guttmann">Walter Guttmann</a> <a href="https://www.cosc.canterbury.ac.nz/walter.guttmann/">🌐</a>, <a href="../authors/hoefner">Peter Höfner</a> <a href="http://www.hoefner-online.de/">🌐</a>, <a href="../authors/struth">Georg Struth</a> <a href="http://staffwww.dcs.shef.ac.uk/people/G.Struth/">🌐</a> and <a href="../authors/weber">Tjark Weber</a> <a href="http://user.it.uu.se/~tjawe125/">🌐</a>
 
-  <div class="abstract mathjax_process">Kleene algebras with domain are Kleene algebras endowed with an
+      </p>
+      <p class="date">April 12, 2016</p>
+  </div>
+</header>
+      <div>
+        
+  <main>
+    <h3>Abstract</h3>
+
+    <div class="abstract mathjax_process">Kleene algebras with domain are Kleene algebras endowed with an
 operation that maps each element of the algebra to its domain of
 definition (or its complement) in abstract fashion. They form a simple
 algebraic basis for Hoare logics, dynamic logics or predicate
@@ -110,108 +154,169 @@ algebras with models of binary relations and program traces. We
 include some examples from modal logics, termination and program
 analysis.</div>
 
-  <h3>License</h3>
-  <div><a href="https://isa-afp.org/LICENSE">BSD License</a></div><h3>Topics</h3>
-  <ul><li><a href="../topics/computer-science/programming-languages/logics">Computer science/Programming languages/Logics</a></li><li><a href="../topics/computer-science/automata-and-formal-languages">Computer science/Automata and formal languages</a></li><li><a href="../topics/mathematics/algebra">Mathematics/Algebra</a></li></ul>
-  <h3>Session KAD</h3>
-  <ul>
-    <li><a href="../theories/kad/#Domain_Semiring">Domain_Semiring</a></li>
-    <li><a href="../theories/kad/#Antidomain_Semiring">Antidomain_Semiring</a></li>
-    <li><a href="../theories/kad/#Range_Semiring">Range_Semiring</a></li>
-    <li><a href="../theories/kad/#Modal_Kleene_Algebra">Modal_Kleene_Algebra</a></li>
-    <li><a href="../theories/kad/#Modal_Kleene_Algebra_Models">Modal_Kleene_Algebra_Models</a></li>
-    <li><a href="../theories/kad/#Modal_Kleene_Algebra_Applications">Modal_Kleene_Algebra_Applications</a></li></ul><div class="flex-wrap">
-  <div>
-    <h3>Depends on</h3>
-    <ul class="horizontal-list"><li><a href="../entries/Kleene_Algebra.html">Kleene Algebra</a></li></ul>
-  </div><div>
-    <h3>Used by</h3>
-    <ul class="horizontal-list"><li><a href="../entries/Catoids.html">Catoids, Categories, Groupoids</a></li><li><a href="../entries/Quantales_Converse.html">Modal quantales, involutive quantales, Dedekind Quantales</a></li><li><a href="../entries/Hybrid_Systems_VCs.html">Verification Components for Hybrid Systems</a></li><li><a href="../entries/Algebraic_VCs.html">Program Construction and Verification Components Based on Kleene Algebra</a></li></ul>
-  </div>
-  
-  <div>
-    <h3>Auto-related entries</h3>
-    <ul class="horizontal-list">
-      
-      <li><a href="../entries/Transformer_Semantics.html">Transformer Semantics</a></li>
-      
-      <li><a href="../entries/Algebraic_VCs.html">Program Construction and Verification Components Based on Kleene Algebra</a></li>
-      
-      <li><a href="../entries/Multirelations.html">Binary Multirelations</a></li>
-      
-      <li><a href="../entries/Relation_Algebra.html">Relation Algebra</a></li>
-      
-      <li><a href="../entries/DataRefinementIBP.html">Semantics and Data Refinement of Invariant Based Programs</a></li>
-      
-    </ul>
-  </div>
-  
-  </div>
-</main>
-
-<nav class='links'>
-  <a class='popup-button' href="#cite-popup">Cite</a>
-  <a class='popup-button' href="#download-popup">Download</a>
-  <h4>PDFs</h4>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/KAD/outline.pdf">Proof
-    outline</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/KAD/document.pdf">Proof
-    document</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/KAD/session_graph.pdf">Dependencies</a></nav>
-
-<div id="cite-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Cite</h2>
-    <a class="close" href="#">&times;</a>
+    <h3>License</h3>
     <div>
-      <p style="display:none;" id="bibtex-filename">KAD-AFP</p><pre id="copy-text">@article{KAD-AFP,
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/computer-science/programming-languages/logics">Computer science/Programming languages/Logics</a></li>
+          <li><a href="../topics/computer-science/automata-and-formal-languages">Computer science/Automata and formal languages</a></li>
+          <li><a href="../topics/mathematics/algebra">Mathematics/Algebra</a></li>
+      </ul>
+      <h3>Session KAD</h3>
+      <ul>
+          <li><a href="../theories/kad/#Domain_Semiring">Domain_Semiring</a></li>
+          <li><a href="../theories/kad/#Antidomain_Semiring">Antidomain_Semiring</a></li>
+          <li><a href="../theories/kad/#Range_Semiring">Range_Semiring</a></li>
+          <li><a href="../theories/kad/#Modal_Kleene_Algebra">Modal_Kleene_Algebra</a></li>
+          <li><a href="../theories/kad/#Modal_Kleene_Algebra_Models">Modal_Kleene_Algebra_Models</a></li>
+          <li><a href="../theories/kad/#Modal_Kleene_Algebra_Applications">Modal_Kleene_Algebra_Applications</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+      <div>
+        <h3>Depends on</h3>
+        <ul class="horizontal-list">
+              <li><a href="../entries/Kleene_Algebra.html">Kleene Algebra</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Used by</h3>
+        <ul class="horizontal-list">
+            <li>
+              <a href="../entries/Catoids.html">Catoids, Categories, Groupoids</a>
+            </li>
+            <li>
+              <a href="../entries/Quantales_Converse.html">Modal quantales, involutive quantales, Dedekind Quantales</a>
+            </li>
+            <li>
+              <a href="../entries/Hybrid_Systems_VCs.html">Verification Components for Hybrid Systems</a>
+            </li>
+            <li>
+              <a href="../entries/Algebraic_VCs.html">Program Construction and Verification Components Based on Kleene Algebra</a>
+            </li>
+        </ul>
+      </div>
+        <div>
+          <h3>Auto-related entries</h3>
+          <ul class="horizontal-list">
+              <li><a href="../entries/Transformer_Semantics.html">Transformer Semantics</a></li>
+              <li><a href="../entries/Algebraic_VCs.html">Program Construction and Verification Components Based on Kleene Algebra</a></li>
+              <li><a href="../entries/Multirelations.html">Binary Multirelations</a></li>
+              <li><a href="../entries/Relation_Algebra.html">Relation Algebra</a></li>
+              <li><a href="../entries/DataRefinementIBP.html">Semantics and Data Refinement of Invariant Based Programs</a></li>
+          </ul>
+        </div>
+      </div>
+    
+  </main>
+
+  <nav class='links'>
+    <a class='popup-button' href="#cite-popup">Cite</a>
+    <a class='popup-button' href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/KAD/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/KAD/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/KAD/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">KAD-AFP</p>
+        <pre id="copy-text">@article{KAD-AFP,
   author  = {Victor B. F. Gomes and Walter Guttmann and Peter Höfner and Georg Struth and Tjark Weber},
   title   = {Kleene Algebras with Domain},
   journal = {Archive of Formal Proofs},
   month   = {April},
   year    = {2016},
   note    = {\url{https://isa-afp.org/entries/KAD.html},
-            Formal proof development},
+             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
     </div>
   </div>
-</div>
 
-<div id="download-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Download</h2>
-    <a class="close" href="#">&times;</a>
-    <a href="https://www.isa-afp.org/release/afp-KAD-current.tar.gz" download>Download latest</a>
-    <p>Older releases:</p>
-    <ul><li>
-        <a href="https://www.isa-afp.org/release/afp-KAD-2023-09-13.tar.gz">Sep 13, 2023</a>: Isabelle2023
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-KAD-2022-10-27.tar.gz">Oct 27, 2022</a>: Isabelle2022
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-KAD-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021-1
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-KAD-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-KAD-2020-04-18.tar.gz">Apr 18, 2020</a>: Isabelle2020
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-KAD-2019-06-11.tar.gz">Jun 11, 2019</a>: Isabelle2019
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-KAD-2018-08-16.tar.gz">Aug 16, 2018</a>: Isabelle2018
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-KAD-2017-10-10.tar.gz">Oct 10, 2017</a>: Isabelle2017
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-KAD-2016-12-17.tar.gz">Dec 17, 2016</a>: Isabelle2016-1
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-KAD-2016-04-12.tar.gz">Apr 12, 2016</a>: Isabelle2016
-      </li></ul>
-  </div>
-</div>
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-KAD-current.tar.gz"
+         download>Download latest</a>
+        <p>Older releases:</p>
+        <ul>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-KAD-2023-09-13.tar.gz">
+                Sep 13, 2023
+              </a>
+              : Isabelle2023
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-KAD-2022-10-27.tar.gz">
+                Oct 27, 2022
+              </a>
+              : Isabelle2022
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-KAD-2021-12-14.tar.gz">
+                Dec 14, 2021
+              </a>
+              : Isabelle2021-1
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-KAD-2021-02-23.tar.gz">
+                Feb 23, 2021
+              </a>
+              : Isabelle2021
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-KAD-2020-04-18.tar.gz">
+                Apr 18, 2020
+              </a>
+              : Isabelle2020
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-KAD-2019-06-11.tar.gz">
+                Jun 11, 2019
+              </a>
+              : Isabelle2019
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-KAD-2018-08-16.tar.gz">
+                Aug 16, 2018
+              </a>
+              : Isabelle2018
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-KAD-2017-10-10.tar.gz">
+                Oct 10, 2017
+              </a>
+              : Isabelle2017
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-KAD-2016-12-17.tar.gz">
+                Dec 17, 2016
+              </a>
+              : Isabelle2016-1
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-KAD-2016-04-12.tar.gz">
+                Apr 12, 2016
+              </a>
+              : Isabelle2016
+            </li>
+        </ul>
     </div>
   </div>
-</body>
-
+        
+      </div>
+    </div>
+  </body>
 </html>

@@ -1,155 +1,129 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Show on Archive of Formal Proofs</title>
+    <title>Show on Archive of Formal Proofs
+    </title>
     <link>/dependencies/show/</link>
-    <description>Recent content in Show on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Show 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Fri, 18 Jun 2021 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/show/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>MiniSail - A kernel language for the ISA specification language SAIL</title>
-      <link>/entries/MiniSail.html</link>
-      <pubDate>Fri, 18 Jun 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/MiniSail.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>Two algorithms based on modular arithmetic: lattice basis reduction and Hermite normal form computation</title>
-      <link>/entries/Modular_arithmetic_LLL_and_HNF_algorithms.html</link>
-      <pubDate>Fri, 12 Mar 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Modular_arithmetic_LLL_and_HNF_algorithms.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>AI Planning Languages Semantics</title>
-      <link>/entries/AI_Planning_Languages_Semantics.html</link>
-      <pubDate>Thu, 29 Oct 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/AI_Planning_Languages_Semantics.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Verified Code Generator from Isabelle/HOL to CakeML</title>
-      <link>/entries/CakeML_Codegen.html</link>
-      <pubDate>Mon, 08 Jul 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/CakeML_Codegen.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Monadification, Memoization and Dynamic Programming</title>
-      <link>/entries/Monad_Memo_DP.html</link>
-      <pubDate>Tue, 22 May 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Monad_Memo_DP.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>CakeML</title>
-      <link>/entries/CakeML.html</link>
-      <pubDate>Mon, 12 Mar 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/CakeML.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Dictionary Construction</title>
-      <link>/entries/Dict_Construction.html</link>
-      <pubDate>Wed, 24 May 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Dict_Construction.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Factorization Algorithm of Berlekamp and Zassenhaus</title>
-      <link>/entries/Berlekamp_Zassenhaus.html</link>
-      <pubDate>Fri, 14 Oct 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Berlekamp_Zassenhaus.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Polynomial Factorization</title>
-      <link>/entries/Polynomial_Factorization.html</link>
-      <pubDate>Fri, 29 Jan 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Polynomial_Factorization.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Derivatives of Logical Formulas</title>
-      <link>/entries/Formula_Derivatives.html</link>
-      <pubDate>Thu, 28 May 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Formula_Derivatives.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Certification Monads</title>
-      <link>/entries/Certification_Monads.html</link>
-      <pubDate>Fri, 03 Oct 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Certification_Monads.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>XML</title>
-      <link>/entries/XML.html</link>
-      <pubDate>Fri, 03 Oct 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/XML.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Affine Arithmetic</title>
-      <link>/entries/Affine_Arithmetic.html</link>
-      <pubDate>Fri, 07 Feb 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Affine_Arithmetic.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Implementing field extensions of the form Q[sqrt(b)]</title>
-      <link>/entries/Real_Impl.html</link>
-      <pubDate>Thu, 06 Feb 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Real_Impl.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Ordinary Differential Equations</title>
-      <link>/entries/Ordinary_Differential_Equations.html</link>
-      <pubDate>Thu, 26 Apr 2012 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Ordinary_Differential_Equations.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Executable Multivariate Polynomials</title>
-      <link>/entries/Polynomials.html</link>
-      <pubDate>Tue, 10 Aug 2010 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Polynomials.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Fri, 18 Jun 2021 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/show/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>MiniSail - A kernel language for the ISA specification language SAIL</title>
+          <link>/entries/MiniSail.html</link>
+          <pubDate>Fri, 18 Jun 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/MiniSail.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Two algorithms based on modular arithmetic: lattice basis reduction and Hermite normal form computation</title>
+          <link>/entries/Modular_arithmetic_LLL_and_HNF_algorithms.html</link>
+          <pubDate>Fri, 12 Mar 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Modular_arithmetic_LLL_and_HNF_algorithms.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>AI Planning Languages Semantics</title>
+          <link>/entries/AI_Planning_Languages_Semantics.html</link>
+          <pubDate>Thu, 29 Oct 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/AI_Planning_Languages_Semantics.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Verified Code Generator from Isabelle/HOL to CakeML</title>
+          <link>/entries/CakeML_Codegen.html</link>
+          <pubDate>Mon, 08 Jul 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/CakeML_Codegen.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Monadification, Memoization and Dynamic Programming</title>
+          <link>/entries/Monad_Memo_DP.html</link>
+          <pubDate>Tue, 22 May 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Monad_Memo_DP.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>CakeML</title>
+          <link>/entries/CakeML.html</link>
+          <pubDate>Mon, 12 Mar 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/CakeML.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Dictionary Construction</title>
+          <link>/entries/Dict_Construction.html</link>
+          <pubDate>Wed, 24 May 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Dict_Construction.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Factorization Algorithm of Berlekamp and Zassenhaus</title>
+          <link>/entries/Berlekamp_Zassenhaus.html</link>
+          <pubDate>Fri, 14 Oct 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Berlekamp_Zassenhaus.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Polynomial Factorization</title>
+          <link>/entries/Polynomial_Factorization.html</link>
+          <pubDate>Fri, 29 Jan 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Polynomial_Factorization.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Derivatives of Logical Formulas</title>
+          <link>/entries/Formula_Derivatives.html</link>
+          <pubDate>Thu, 28 May 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Formula_Derivatives.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Certification Monads</title>
+          <link>/entries/Certification_Monads.html</link>
+          <pubDate>Fri, 03 Oct 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Certification_Monads.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>XML</title>
+          <link>/entries/XML.html</link>
+          <pubDate>Fri, 03 Oct 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/XML.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Affine Arithmetic</title>
+          <link>/entries/Affine_Arithmetic.html</link>
+          <pubDate>Fri, 07 Feb 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Affine_Arithmetic.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Implementing field extensions of the form Q[sqrt(b)]</title>
+          <link>/entries/Real_Impl.html</link>
+          <pubDate>Thu, 06 Feb 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Real_Impl.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Ordinary Differential Equations</title>
+          <link>/entries/Ordinary_Differential_Equations.html</link>
+          <pubDate>Thu, 26 Apr 2012 00:00:00 +0000</pubDate>
+          <guid>/entries/Ordinary_Differential_Equations.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Executable Multivariate Polynomials</title>
+          <link>/entries/Polynomials.html</link>
+          <pubDate>Tue, 10 Aug 2010 00:00:00 +0000</pubDate>
+          <guid>/entries/Polynomials.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

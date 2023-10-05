@@ -1,27 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Lyndon words - Archive of Formal Proofs</title><meta name="description" content="Lyndon words are words lexicographically minimal in their conjugacy
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lyndon words - Archive of Formal Proofs</title>
+    <meta name="description" content="Lyndon words are words lexicographically minimal in their conjugacy
 class. We formalize their basic properties and characterizations, in
-particular the..."><meta property="og:title" content="Lyndon words" />
+particular the...">
+
+  <meta property="og:title" content="Lyndon words" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="/entries/Combinatorics_Words_Lyndon.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
 <meta property="article:published_time" content="2021-05-24T00:00:00+00:00" />
 <meta property="article:modified_time" content="2021-05-24T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="Lyndon words"/>
 <meta name="twitter:description" content=""/>
 
-  
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
     <script>
       MathJax = {
         tex: {
@@ -33,153 +38,226 @@ particular the..."><meta property="og:title" content="Lyndon words" />
         }
       };
     </script>
-    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
   <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
-  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../" class='logo-link'>
-    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../" class='logo-link'>
-        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../"><li >Home</li></a>
-        <a href="../topics/"><li >Topics</li></a>
-        <a href="../download/"><li >Download</li></a>
-        <a href="../help/"><li >Help</li></a>
-        <a href="../submission/"><li >Submission</li></a>
-        <a href="../statistics/"><li >Statistics</li></a>
-        <a href="../about/"><li >About</li></a>
+          <a href="../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content  entries'><header>
-  <form autocomplete="off" action="../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>L</span>yndon words</h1>
+    </aside>
+    <div class='content entries'>
+      <header>
+    <form autocomplete="off" action="../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>L</span>yndon words
+    
+  </h1>
   <div>
-    
-    <p><a href="../authors/holub">Štěpán Holub</a> <a href="https://www2.karlin.mff.cuni.cz/~holub/">🌐</a> and <a href="../authors/starosta">Štěpán Starosta</a> <a href="https://staroste.pages.fit/">🌐</a>
-    </p>
-    
-    
-    <p class="date">May 24, 2021</p>
-    
-  </div>
-</header><div><main><h3>Abstract</h3>
+      <p>
+        <a href="../authors/holub">Štěpán Holub</a> <a href="https://www2.karlin.mff.cuni.cz/~holub/">🌐</a> and <a href="../authors/starosta">Štěpán Starosta</a> <a href="https://staroste.pages.fit/">🌐</a>
 
-  <div class="abstract mathjax_process">Lyndon words are words lexicographically minimal in their conjugacy
+      </p>
+      <p class="date">May 24, 2021</p>
+  </div>
+</header>
+      <div>
+        
+  <main>
+    <h3>Abstract</h3>
+
+    <div class="abstract mathjax_process">Lyndon words are words lexicographically minimal in their conjugacy
 class. We formalize their basic properties and characterizations, in
 particular the concepts of the longest Lyndon suffix and the Lyndon
 factorization. Most of the work assumes a fixed lexicographical order.
 Nevertheless we also define the smallest relation guaranteeing
 lexicographical minimality of a given word (in its conjugacy class).</div>
 
-  <h3>License</h3>
-  <div><a href="https://isa-afp.org/LICENSE">BSD License</a></div><h3>History</h3>
-  <dl><dt>August 17, 2023</dt>
-    <dd>Updated to version v1.10.1.
-</dd></dl><h3>Topics</h3>
-  <ul><li><a href="../topics/computer-science/automata-and-formal-languages">Computer science/Automata and formal languages</a></li></ul><h3>Related publications</h3>
-  <ul><li>
-      Holub, Š., & Starosta, Š. (2021). Lyndon Words Formalized in Isabelle/HOL. Lecture Notes in Computer Science, 217–228. <a href="https://doi.org/10.1007/978-3-030-81508-0_18">https://doi.org/10.1007/978-3-030-81508-0_18</a>
-
-    </li><li>
-      <a  href="https://gitlab.com/formalcow/combinatorics-on-words-formalized">Development repository</a>
-    </li></ul>
-  <h3>Session Combinatorics_Words_Lyndon</h3>
-  <ul>
-    <li><a href="../theories/combinatorics_words_lyndon/#Lyndon">Lyndon</a></li>
-    <li><a href="../theories/combinatorics_words_lyndon/#Lyndon_Addition">Lyndon_Addition</a></li></ul><div class="flex-wrap">
-  <div>
-    <h3>Depends on</h3>
-    <ul class="horizontal-list"><li><a href="../entries/Combinatorics_Words.html">Combinatorics on Words Basics</a></li><li><a href="../entries/Szpilrajn.html">Order Extension and Szpilrajn&rsquo;s Extension Theorem</a></li></ul>
-  </div>
-  
-  </div>
-</main>
-
-<nav class='links'>
-  <a class='popup-button' href="#cite-popup">Cite</a>
-  <a class='popup-button' href="#download-popup">Download</a>
-  <h4>PDFs</h4>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Combinatorics_Words_Lyndon/outline.pdf">Proof
-    outline</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Combinatorics_Words_Lyndon/document.pdf">Proof
-    document</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Combinatorics_Words_Lyndon/session_graph.pdf">Dependencies</a></nav>
-
-<div id="cite-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Cite</h2>
-    <a class="close" href="#">&times;</a>
+    <h3>License</h3>
     <div>
-      <p style="display:none;" id="bibtex-filename">Combinatorics_Words_Lyndon-AFP</p><pre id="copy-text">@article{Combinatorics_Words_Lyndon-AFP,
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>History</h3>
+      <dl>
+        <dt>August 17, 2023</dt>
+        <dd>Updated to version v1.10.1.
+</dd>
+      </dl>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/computer-science/automata-and-formal-languages">Computer science/Automata and formal languages</a></li>
+      </ul>
+      <h3>Related publications</h3>
+      <ul>
+        <li>Holub, Š., & Starosta, Š. (2021). Lyndon Words Formalized in Isabelle/HOL. Lecture Notes in Computer Science, 217–228. <a href="https://doi.org/10.1007/978-3-030-81508-0_18">https://doi.org/10.1007/978-3-030-81508-0_18</a>
+
+        </li>
+        <li><a  href="https://gitlab.com/formalcow/combinatorics-on-words-formalized">Development repository</a>
+        </li>
+      </ul>
+      <h3>Session Combinatorics_Words_Lyndon</h3>
+      <ul>
+          <li><a href="../theories/combinatorics_words_lyndon/#Lyndon">Lyndon</a></li>
+          <li><a href="../theories/combinatorics_words_lyndon/#Lyndon_Addition">Lyndon_Addition</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+      <div>
+        <h3>Depends on</h3>
+        <ul class="horizontal-list">
+              <li><a href="../entries/Combinatorics_Words.html">Combinatorics on Words Basics</a></li>
+              <li><a href="../entries/Szpilrajn.html">Order Extension and Szpilrajn&rsquo;s Extension Theorem</a></li>
+        </ul>
+      </div>
+      </div>
+    
+  </main>
+
+  <nav class='links'>
+    <a class='popup-button' href="#cite-popup">Cite</a>
+    <a class='popup-button' href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Combinatorics_Words_Lyndon/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Combinatorics_Words_Lyndon/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Combinatorics_Words_Lyndon/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Combinatorics_Words_Lyndon-AFP</p>
+        <pre id="copy-text">@article{Combinatorics_Words_Lyndon-AFP,
   author  = {Štěpán Holub and Štěpán Starosta},
   title   = {Lyndon words},
   journal = {Archive of Formal Proofs},
   month   = {May},
   year    = {2021},
   note    = {\url{https://isa-afp.org/entries/Combinatorics_Words_Lyndon.html},
-            Formal proof development},
+             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
     </div>
   </div>
-</div>
 
-<div id="download-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Download</h2>
-    <a class="close" href="#">&times;</a>
-    <a href="https://www.isa-afp.org/release/afp-Combinatorics_Words_Lyndon-current.tar.gz" download>Download latest</a>
-    <p>Older releases:</p>
-    <ul><li>
-        <a href="https://www.isa-afp.org/release/afp-Combinatorics_Words_Lyndon-2023-09-13.tar.gz">Sep 13, 2023</a>: Isabelle2023
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Combinatorics_Words_Lyndon-2022-10-27.tar.gz">Oct 27, 2022</a>: Isabelle2022
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Combinatorics_Words_Lyndon-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021-1
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Combinatorics_Words_Lyndon-2021-05-26.tar.gz">May 26, 2021</a>: Isabelle2021
-      </li></ul>
-  </div>
-</div>
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-Combinatorics_Words_Lyndon-current.tar.gz"
+         download>Download latest</a>
+        <p>Older releases:</p>
+        <ul>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Combinatorics_Words_Lyndon-2023-09-13.tar.gz">
+                Sep 13, 2023
+              </a>
+              : Isabelle2023
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Combinatorics_Words_Lyndon-2022-10-27.tar.gz">
+                Oct 27, 2022
+              </a>
+              : Isabelle2022
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Combinatorics_Words_Lyndon-2021-12-14.tar.gz">
+                Dec 14, 2021
+              </a>
+              : Isabelle2021-1
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Combinatorics_Words_Lyndon-2021-05-26.tar.gz">
+                May 26, 2021
+              </a>
+              : Isabelle2021
+            </li>
+        </ul>
     </div>
   </div>
-</body>
-
+        
+      </div>
+    </div>
+  </body>
 </html>
