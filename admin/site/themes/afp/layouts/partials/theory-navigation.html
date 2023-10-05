@@ -1,27 +1,29 @@
-{{- $entry_name := .Params.entry -}}
-{{- $site := . -}}
+{{- $entry_name := .Params.entry }}
+{{- $site := . }}
 <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
-    <img src="{{- .Site.BaseURL -}}images/menu.svg" alt="Menu" />
+    <img src="{{ .Site.BaseURL }}images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="{{- .Site.BaseURL -}}" class='logo-link'>
-    <img src="{{- .Site.BaseURL -}}images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="{{ .Site.BaseURL }}" class='logo-link'>
+    <img src="{{ .Site.BaseURL }}images/afp.png" alt='Logo of the Archive of Formal Proofs'
+         class="logo">
   </a>
 
   <nav id="menu">
   <div>
-    <a href="{{- .Site.BaseURL -}}" class='logo-link'>
-      <img src="{{- .Site.BaseURL -}}images/afp.png" alt='Logo of the Archive of Formal Proofs'
-        class="logo">
+    <a href="{{ .Site.BaseURL }}" class='logo-link'>
+      <img src="{{ .Site.BaseURL }}images/afp.png" alt='Logo of the Archive of Formal Proofs'
+           class="logo">
     </a>
-    {{ $currentPage := . }}
-    {{- with $entry_name -}}
-    <ul id="return">
-      <li><a href="{{- $currentPage.Site.BaseURL -}}entries/{{- . -}}.html">Return to entry</a></li>
-    </ul>{{ end }}
+    {{- $currentPage := . }}
+    {{- with $entry_name }}
+      <ul id="return">
+        <li><a href="{{ $currentPage.Site.BaseURL }}entries/{{ . }}.html">Return to entry</a></li>
+      </ul>
+    {{- end }}
     <hr>
     <ul id="theory-navbar" class="list-group"></ul>
   </div>

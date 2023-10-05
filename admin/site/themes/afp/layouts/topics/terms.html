@@ -1,40 +1,41 @@
-{{ define "main" }}
-  {{ $topics := .Site.Taxonomies.topics }}
-  {{- range $firstLevel, $first := .Site.Data.topics -}}
-    {{- $topic := urlize $firstLevel -}}
-    {{- $count := (index $topics $topic).Pages | uniq | len -}}
+{{- define "main" }}
+  {{- $topics := .Site.Taxonomies.topics }}
+  {{- range $firstLevel, $first := .Site.Data.topics }}
+    {{- $topic := urlize $firstLevel }}
+    {{- $count := (index $topics $topic).Pages | uniq | len }}
     <h2>
-      {{- if gt $count 0 -}}
+      {{- if gt $count 0 }}
         <a href="/topics/{{ $topic }}">{{ $firstLevel }} ({{ $count }})</a>
-      {{- else -}}
+      {{- else }}
         {{ $firstLevel }}
-      {{- end -}}
+      {{- end }}
     </h2>
     <ul>
-    {{- range $secondLevel, $second := $first.topics -}}
-      {{- $topic := printf "%s/%s" (urlize $firstLevel) (urlize $secondLevel) -}}
-      {{- $count := (index $topics $topic).Pages | uniq | len -}}
+    {{- range $secondLevel, $second := $first.topics }}
+      {{- $topic := printf "%s/%s" (urlize $firstLevel) (urlize $secondLevel) }}
+      {{- $count := (index $topics $topic).Pages | uniq | len }}
       <li><h3>
-        {{- if gt $count 0 -}}
+        {{- if gt $count 0 }}
           <a href="/topics/{{ $topic }}">{{ $secondLevel }} ({{ $count }})</a>
-        {{- else -}}
+        {{- else }}
           {{ $secondLevel }}
-        {{- end -}}
+        {{- end }}
       </h3></li>
       <ul>
-      {{- range $thirdLevel, $ignored := $second.topics -}}
-        {{- $topic = (printf "%s/%s/%s" (urlize $firstLevel) (urlize $secondLevel) (urlize $thirdLevel)) -}}
-        {{- $count := (index $topics $topic).Pages | uniq | len -}}
+      {{- range $thirdLevel, $ignored := $second.topics }}
+        {{- $topic = (printf "%s/%s/%s" (urlize $firstLevel) (urlize $secondLevel)
+           (urlize $thirdLevel)) }}
+        {{- $count := (index $topics $topic).Pages | uniq | len }}
         <li>
-          {{- if gt $count 0 -}}
+          {{- if gt $count 0 }}
             <a href="/topics/{{ $topic }}">{{ $thirdLevel }} ({{ $count }})</a>
-          {{- else -}}
+          {{- else }}
             {{ $thirdLevel }}
-          {{- end -}}
+          {{- end }}
         </li>
-      {{- end -}}
+      {{- end }}
       </ul>
-    {{- end -}}
+    {{- end }}
     </ul>
-  {{- end -}}
-{{ end }}
+  {{- end }}
+{{- end }}

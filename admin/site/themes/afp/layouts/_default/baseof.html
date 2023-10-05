@@ -1,24 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
-{{ partial "head.html" . }}
+  {{ partial "head.html" . }}
 
-<body class='mathjax_ignore {{ if (eq .Section "theories") }}theories{{- end -}}'>
-  <aside>
-    {{ if ne .Section "theories"}}
-    {{- partial "navigation.html" . -}}
-    {{ else }}
-    {{- partial "theory-navigation.html" . -}}
-    {{ end }}
-  </aside>
-
-  <div
-    class='content {{ if (eq .Section "entries") }} entries{{- end -}} {{ if (eq .File.BaseFileName "search") }}search-page{{- end -}}'>
-    {{- partial "header.html" . -}}
-    <div>
-      {{- block "main" . }}{{- end }}
-      {{- block "footerfiles" . }}{{- end }}
+  <body class='mathjax_ignore{{ if (eq .Section "theories") }} theories{{ end }}'>
+    <aside>
+      {{- if ne .Section "theories" }}
+        {{ partial "navigation.html" . }}
+      {{- else }}
+        {{ partial "theory-navigation.html" . }}
+      {{- end }}
+    </aside>
+    <div class='content {{ if (eq .Section "entries") }}entries {{ end }} {{ if (eq .File.BaseFileName "search") }} search-page{{ end }}'>
+      {{ partial "header.html" . }}
+      <div>
+        {{ block "main" . }}{{ end }}
+        {{ block "footerfiles" . }}{{ end }}
+      </div>
     </div>
-  </div>
-</body>
-
+  </body>
 </html>

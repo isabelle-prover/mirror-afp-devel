@@ -1,13 +1,12 @@
-{{- define "main" -}}
-{{- $site := . -}}
-{{- $html_url := .Site.Params.afpUrls.html -}}
-{{- if isset .Site.Data "status" -}}
-{{- $html_url = .Site.Params.afpUrls.htmlDevel -}}
-{{- end -}}
-<main id="theories">
-  {{- range .Params.theories }}
-  <a id="{{ .name }}" href="{{ $html_url }}/{{ .path }}"><h2>{{ .name }}</h2></a>
-  {{- end -}}
-</main>
-
-{{- end -}}
+{{- define "main" }}
+  {{- $site := . }}
+  {{- $html_url := .Site.Params.afpUrls.html }}
+  {{- if isset .Site.Data "status" }}
+    {{- $html_url = .Site.Params.afpUrls.htmlDevel }}
+  {{- end }}
+  <main id="theories">
+    {{- range .Params.theories }}
+      <a id="{{ .name }}" href="{{ $html_url }}/{{ .path }}"><h2>{{ .name }}</h2></a>
+    {{- end }}
+  </main>
+{{- end }}

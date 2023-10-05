@@ -2,27 +2,32 @@
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
-    <img src="{{- .Site.BaseURL -}}images/menu.svg" alt="Menu" />
+    <img src="{{ .Site.BaseURL }}images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="{{- .Site.BaseURL -}}" class='logo-link'>
-    <img src="{{- .Site.BaseURL -}}images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="{{ .Site.BaseURL }}" class="logo-link">
+    <img src="{{ .Site.BaseURL }}images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  {{ if and (ne .Kind "home") (ne .File.TranslationBaseName "search") -}}
-  <a href="/search"><img src="{{- .Site.BaseURL -}}images/search.svg" alt="Search" /></a>
-  {{ end -}}
+  {{- if and (ne .Kind "home") (ne .File.TranslationBaseName "search") }}
+    <a href="/search"><img src="{{ .Site.BaseURL }}images/search.svg" alt="Search" /></a>
+  {{- end }}
 
   <nav id="menu">
     <div>
-      <a href="{{- .Site.BaseURL -}}" class='logo-link'>
-        <img src="{{- .Site.BaseURL -}}images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+      <a href="{{ .Site.BaseURL }}" class='logo-link'>
+        <img src="{{ .Site.BaseURL }}images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
-      {{ $currentPage := . -}}
+      {{- $currentPage := . }}
       <ul>
         {{- range .Site.Menus.main }}
-        <a href="{{- .URL -}}"><li {{ if $currentPage.IsMenuCurrent "main" . }}class="active" {{ end }}>{{- .Name -}}
-          </li></a>
+          <a href="{{ .URL }}">
+            <li {{ if $currentPage.IsMenuCurrent "main" . }}class="active" {{ end }}>
+              {{ .Name }}
+            </li>
+          </a>
         {{- end }}
       </ul>
     </div>
