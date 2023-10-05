@@ -87,16 +87,15 @@ as AFP submission  @{cite "HOL-CSP-AFP"} and whose development is hosted at
 \<^url>\<open>https://gitlri.lri.fr/burkhart.wolff/hol-csp2.0\<close>. 
 
 The present AFP Module is an add-on on this work and develops some support for 
-\<^enum> advanced induction schemes (mutual fixed-point Induction, K-induction),
-\<^enum> bridge-Lemmas between the classical refinement relations in the FD-semantics,
-  which allow for reduced refinement proof complexity in certain cases, and
+\<^enum> example of induction schemes (mutual fixed-point Induction, K-induction),
 \<^enum> a theory of explicit state normalisation which allows for proofs over certain
   communicating networks of arbitrary size.
 
 \newpage
 \<close>
 
-
+(* \<^enum> bridge-Lemmas between the classical refinement relations in the FD-semantics,
+  which allow for reduced refinement proof complexity in certain cases, and *)
 
 section\<open>The Global Architecture of CSP\_RefTk\<close>
 text\<open>
@@ -113,9 +112,11 @@ The entire package resides on:
 \<^enum> \<^session>\<open>HOL-Eisbach\<close> from the Isabelle/HOL distribution,
 \<^enum> \<^session>\<open>HOLCF\<close> from the Isabelle/HOL distribution, and
 \<^enum> \<^session>\<open>HOL-CSP\<close> 2.0 from the Isabelle Archive of Formal Proofs.
+\<close>
 
+(* 
 \<^noindent> The theories \<^verbatim>\<open>Assertion_ext\<close> and \<^verbatim>\<open>Fixind_ext\<close> are extensions of the 
-corresponding theories in \<^session>\<open>HOL-CSP\<close>.\<close>
+corresponding theories in \<^session>\<open>HOL-CSP\<close>. *)
 
 
 (*<*)

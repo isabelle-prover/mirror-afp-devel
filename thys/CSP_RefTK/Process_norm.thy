@@ -45,7 +45,7 @@ chapter\<open> Normalisation of Deterministic CSP Processes \<close>
 
 theory Process_norm
 
-imports "Properties" "HOL-CSP.Induction_ext"
+imports "HOL-CSP.Assertions" "HOL-CSP.CSP_Induct"
 
 begin
 
