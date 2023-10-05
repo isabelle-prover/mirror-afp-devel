@@ -30,7 +30,7 @@
   {{- $options := (dict "targetPath" "css/front.css") }}
   {{- $style := resources.Get "sass/main.scss" | toCSS $options | minify }}
   <link rel="stylesheet" type="text/css" href="{{ $style.Permalink }}">
-  {{- if (eq .Section "theories") }}
+  {{- if (eq .Section "sessions") }}
     <link rel="stylesheet" type="text/css" href="{{ .Site.BaseURL }}css/isabelle.css">
   {{- end }}
 

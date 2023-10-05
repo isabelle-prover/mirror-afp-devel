@@ -2,9 +2,9 @@
 <html lang="en">
   {{ partial "head.html" . }}
 
-  <body class='mathjax_ignore{{ if (eq .Section "theories") }} theories{{ end }}'>
+  <body class='mathjax_ignore{{ if (eq .Section "sessions") }} theories{{ end }}'>
     <aside>
-      {{- if ne .Section "theories" }}
+      {{- if ne .Section "sessions" }}
         {{ partial "navigation.html" . }}
       {{- else }}
         {{ partial "theory-navigation.html" . }}

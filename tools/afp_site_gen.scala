@@ -322,12 +322,12 @@ object AFP_Site_Gen {
       val session_json =
         base ++ JSON.Object(
           "title" -> session_name,
-          "url" -> ("/theories/" + session_name.toLowerCase),
+          "url" -> ("/sessions/" + session_name.toLowerCase),
           "theories" -> theories_of(session_name).map(thy_name => JSON.Object(
             "name" -> thy_name,
             "path" -> (browser_info.session_dir(session_name) + Path.basic(thy_name).html).implode
           )))
-      layout.write_content(Path.make(List("theories", session_name + ".md")), session_json)
+      layout.write_content(Path.make(List("sessions", session_name + ".md")), session_json)
     }
 
     val cache = new Cache(layout)
@@ -347,7 +347,7 @@ object AFP_Site_Gen {
           if dep != entry
         } yield dep.name
 
-      val theories =
+      val sessions =
         afp_structure.entry_sessions(entry.name).map { session =>
           write_session_json(session.name, JSON.Object("entry" -> entry.name))
           JSON.Object(
@@ -358,7 +358,7 @@ object AFP_Site_Gen {
       val entry_json =
         JSON.from_entry(entry, cache) ++ JSON.Object(
           "dependencies" -> deps.distinct,
-          "sessions" -> theories,
+          "sessions" -> sessions,
           "url" -> ("/entries/" + entry.name + ".html"),
           "keywords" -> get_keywords(entry.name))
 

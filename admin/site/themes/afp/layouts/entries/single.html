@@ -76,7 +76,7 @@
       <h3>Session {{ $session }}</h3>
       <ul>
         {{- range .theories }}
-          <li><a href="/theories/{{ urlize $session }}/#{{ . }}">{{ . }}</a></li>
+          <li><a href="/sessions/{{ urlize $session }}/#{{ . }}">{{ . }}</a></li>
         {{- end }}
       </ul>
     {{- end }}
