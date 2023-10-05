@@ -4600,263 +4600,263 @@
   </url><url>
     <loc>/webapp/</loc>
   </url><url>
-    <loc>/theories/abortable_linearizable_modules/</loc>
+    <loc>/sessions/abortable_linearizable_modules/</loc>
   </url><url>
     <loc>/about/</loc>
   </url><url>
-    <loc>/theories/abs_int_itp2012/</loc>
+    <loc>/sessions/abs_int_itp2012/</loc>
   </url><url>
-    <loc>/theories/abstract-hoare-logics/</loc>
+    <loc>/sessions/abstract-hoare-logics/</loc>
   </url><url>
-    <loc>/theories/abstract-rewriting/</loc>
+    <loc>/sessions/abstract-rewriting/</loc>
   </url><url>
-    <loc>/theories/abstract_completeness/</loc>
+    <loc>/sessions/abstract_completeness/</loc>
   </url><url>
-    <loc>/theories/abstract_soundness/</loc>
+    <loc>/sessions/abstract_soundness/</loc>
   </url><url>
-    <loc>/theories/aby3_protocols/</loc>
+    <loc>/sessions/aby3_protocols/</loc>
   </url><url>
-    <loc>/theories/ackermanns_not_pr/</loc>
+    <loc>/sessions/ackermanns_not_pr/</loc>
   </url><url>
-    <loc>/theories/actuarial_mathematics/</loc>
+    <loc>/sessions/actuarial_mathematics/</loc>
   </url><url>
-    <loc>/theories/adaptive_state_counting/</loc>
+    <loc>/sessions/adaptive_state_counting/</loc>
   </url><url>
-    <loc>/theories/ads_functor/</loc>
+    <loc>/sessions/ads_functor/</loc>
   </url><url>
-    <loc>/theories/affine_arithmetic/</loc>
+    <loc>/sessions/affine_arithmetic/</loc>
   </url><url>
-    <loc>/theories/aggregation_algebras/</loc>
+    <loc>/sessions/aggregation_algebras/</loc>
   </url><url>
-    <loc>/theories/ai_planning_languages_semantics/</loc>
+    <loc>/sessions/ai_planning_languages_semantics/</loc>
   </url><url>
-    <loc>/theories/akra_bazzi/</loc>
+    <loc>/sessions/akra_bazzi/</loc>
   </url><url>
-    <loc>/theories/algebraic_numbers/</loc>
+    <loc>/sessions/algebraic_numbers/</loc>
   </url><url>
-    <loc>/theories/algebraic_vcs/</loc>
+    <loc>/sessions/algebraic_vcs/</loc>
   </url><url>
-    <loc>/theories/allen_calculus/</loc>
+    <loc>/sessions/allen_calculus/</loc>
   </url><url>
-    <loc>/theories/amicable_numbers/</loc>
+    <loc>/sessions/amicable_numbers/</loc>
   </url><url>
-    <loc>/theories/amortized_complexity/</loc>
+    <loc>/sessions/amortized_complexity/</loc>
   </url><url>
-    <loc>/theories/anselmgod/</loc>
+    <loc>/sessions/anselmgod/</loc>
   </url><url>
-    <loc>/theories/aodv/</loc>
+    <loc>/sessions/aodv/</loc>
   </url><url>
-    <loc>/theories/aot/</loc>
+    <loc>/sessions/aot/</loc>
   </url><url>
-    <loc>/theories/applicative_lifting/</loc>
+    <loc>/sessions/applicative_lifting/</loc>
   </url><url>
-    <loc>/theories/approximation_algorithms/</loc>
+    <loc>/sessions/approximation_algorithms/</loc>
   </url><url>
-    <loc>/theories/architectural_design_patterns/</loc>
+    <loc>/sessions/architectural_design_patterns/</loc>
   </url><url>
-    <loc>/theories/aristotles_assertoric_syllogistic/</loc>
+    <loc>/sessions/aristotles_assertoric_syllogistic/</loc>
   </url><url>
-    <loc>/theories/arith_prog_rel_primes/</loc>
+    <loc>/sessions/arith_prog_rel_primes/</loc>
   </url><url>
-    <loc>/theories/arrowimpossibilitygs/</loc>
+    <loc>/sessions/arrowimpossibilitygs/</loc>
   </url><url>
-    <loc>/theories/attack_trees/</loc>
+    <loc>/sessions/attack_trees/</loc>
   </url><url>
-    <loc>/theories/auto2_hol/</loc>
+    <loc>/sessions/auto2_hol/</loc>
   </url><url>
-    <loc>/theories/auto2_imperative_hol/</loc>
+    <loc>/sessions/auto2_imperative_hol/</loc>
   </url><url>
-    <loc>/theories/autofocus-stream/</loc>
+    <loc>/sessions/autofocus-stream/</loc>
   </url><url>
-    <loc>/theories/automated_stateful_protocol_verification/</loc>
+    <loc>/sessions/automated_stateful_protocol_verification/</loc>
   </url><url>
-    <loc>/theories/automatic_refinement/</loc>
+    <loc>/sessions/automatic_refinement/</loc>
   </url><url>
-    <loc>/theories/avl-trees/</loc>
+    <loc>/sessions/avl-trees/</loc>
   </url><url>
-    <loc>/theories/awn/</loc>
+    <loc>/sessions/awn/</loc>
   </url><url>
-    <loc>/theories/axiomaticcategorytheory/</loc>
+    <loc>/sessions/axiomaticcategorytheory/</loc>
   </url><url>
-    <loc>/theories/balog_szemeredi_gowers/</loc>
+    <loc>/sessions/balog_szemeredi_gowers/</loc>
   </url><url>
-    <loc>/theories/banach_steinhaus/</loc>
+    <loc>/sessions/banach_steinhaus/</loc>
   </url><url>
-    <loc>/theories/bd_security_compositional/</loc>
+    <loc>/sessions/bd_security_compositional/</loc>
   </url><url>
-    <loc>/theories/bdd/</loc>
+    <loc>/sessions/bdd/</loc>
   </url><url>
-    <loc>/theories/belief_revision/</loc>
+    <loc>/sessions/belief_revision/</loc>
   </url><url>
-    <loc>/theories/bell_numbers_spivey/</loc>
+    <loc>/sessions/bell_numbers_spivey/</loc>
   </url><url>
-    <loc>/theories/benor_kozen_reif/</loc>
+    <loc>/sessions/benor_kozen_reif/</loc>
   </url><url>
-    <loc>/theories/berlekamp_zassenhaus/</loc>
+    <loc>/sessions/berlekamp_zassenhaus/</loc>
   </url><url>
-    <loc>/theories/bernoulli/</loc>
+    <loc>/sessions/bernoulli/</loc>
   </url><url>
-    <loc>/theories/bertrands_postulate/</loc>
+    <loc>/sessions/bertrands_postulate/</loc>
   </url><url>
-    <loc>/theories/bicategory/</loc>
+    <loc>/sessions/bicategory/</loc>
   </url><url>
-    <loc>/theories/binary_code_imprimitive/</loc>
+    <loc>/sessions/binary_code_imprimitive/</loc>
   </url><url>
-    <loc>/theories/binarysearchtree/</loc>
+    <loc>/sessions/binarysearchtree/</loc>
   </url><url>
-    <loc>/theories/binding_syntax_theory/</loc>
+    <loc>/sessions/binding_syntax_theory/</loc>
   </url><url>
-    <loc>/theories/binomial-heaps/</loc>
+    <loc>/sessions/binomial-heaps/</loc>
   </url><url>
-    <loc>/theories/binomial-queues/</loc>
+    <loc>/sessions/binomial-queues/</loc>
   </url><url>
-    <loc>/theories/birdkmp/</loc>
+    <loc>/sessions/birdkmp/</loc>
   </url><url>
-    <loc>/theories/birkhoff_finite_distributive_lattices/</loc>
+    <loc>/sessions/birkhoff_finite_distributive_lattices/</loc>
   </url><url>
-    <loc>/theories/blue_eyes/</loc>
+    <loc>/sessions/blue_eyes/</loc>
   </url><url>
-    <loc>/theories/bnf_cc/</loc>
+    <loc>/sessions/bnf_cc/</loc>
   </url><url>
-    <loc>/theories/bnf_operations/</loc>
+    <loc>/sessions/bnf_operations/</loc>
   </url><url>
-    <loc>/theories/bondy/</loc>
+    <loc>/sessions/bondy/</loc>
   </url><url>
-    <loc>/theories/boolean_expression_checkers/</loc>
+    <loc>/sessions/boolean_expression_checkers/</loc>
   </url><url>
-    <loc>/theories/boolos_curious_inference/</loc>
+    <loc>/sessions/boolos_curious_inference/</loc>
   </url><url>
-    <loc>/theories/boolos_curious_inference_automated/</loc>
+    <loc>/sessions/boolos_curious_inference_automated/</loc>
   </url><url>
-    <loc>/theories/bounded_deducibility_security/</loc>
+    <loc>/sessions/bounded_deducibility_security/</loc>
   </url><url>
-    <loc>/theories/btree/</loc>
+    <loc>/sessions/btree/</loc>
   </url><url>
-    <loc>/theories/buchi_complementation/</loc>
+    <loc>/sessions/buchi_complementation/</loc>
   </url><url>
-    <loc>/theories/budan_fourier/</loc>
+    <loc>/sessions/budan_fourier/</loc>
   </url><url>
-    <loc>/theories/buffons_needle/</loc>
+    <loc>/sessions/buffons_needle/</loc>
   </url><url>
-    <loc>/theories/buildings/</loc>
+    <loc>/sessions/buildings/</loc>
   </url><url>
-    <loc>/theories/bytecodelogicjmltypes/</loc>
+    <loc>/sessions/bytecodelogicjmltypes/</loc>
   </url><url>
-    <loc>/theories/c2ka_distributedsystems/</loc>
+    <loc>/sessions/c2ka_distributedsystems/</loc>
   </url><url>
-    <loc>/theories/cakeml/</loc>
+    <loc>/sessions/cakeml/</loc>
   </url><url>
-    <loc>/theories/cakeml_codegen/</loc>
+    <loc>/sessions/cakeml_codegen/</loc>
   </url><url>
-    <loc>/theories/call_arity/</loc>
+    <loc>/sessions/call_arity/</loc>
   </url><url>
-    <loc>/theories/card_equiv_relations/</loc>
+    <loc>/sessions/card_equiv_relations/</loc>
   </url><url>
-    <loc>/theories/card_multisets/</loc>
+    <loc>/sessions/card_multisets/</loc>
   </url><url>
-    <loc>/theories/card_number_partitions/</loc>
+    <loc>/sessions/card_number_partitions/</loc>
   </url><url>
-    <loc>/theories/card_partitions/</loc>
+    <loc>/sessions/card_partitions/</loc>
   </url><url>
-    <loc>/theories/cartan_fp/</loc>
+    <loc>/sessions/cartan_fp/</loc>
   </url><url>
-    <loc>/theories/case_labeling/</loc>
+    <loc>/sessions/case_labeling/</loc>
   </url><url>
-    <loc>/theories/catalan_numbers/</loc>
+    <loc>/sessions/catalan_numbers/</loc>
   </url><url>
-    <loc>/theories/category/</loc>
+    <loc>/sessions/category/</loc>
   </url><url>
-    <loc>/theories/category2/</loc>
+    <loc>/sessions/category2/</loc>
   </url><url>
-    <loc>/theories/category3/</loc>
+    <loc>/sessions/category3/</loc>
   </url><url>
-    <loc>/theories/catoids/</loc>
+    <loc>/sessions/catoids/</loc>
   </url><url>
-    <loc>/theories/cauchy/</loc>
+    <loc>/sessions/cauchy/</loc>
   </url><url>
-    <loc>/theories/cava_automata/</loc>
+    <loc>/sessions/cava_automata/</loc>
   </url><url>
-    <loc>/theories/cava_base/</loc>
+    <loc>/sessions/cava_base/</loc>
   </url><url>
-    <loc>/theories/cava_ltl_modelchecker/</loc>
+    <loc>/sessions/cava_ltl_modelchecker/</loc>
   </url><url>
-    <loc>/theories/cava_setup/</loc>
+    <loc>/sessions/cava_setup/</loc>
   </url><url>
-    <loc>/theories/cayley_hamilton/</loc>
+    <loc>/sessions/cayley_hamilton/</loc>
   </url><url>
-    <loc>/theories/ccl/</loc>
+    <loc>/sessions/ccl/</loc>
   </url><url>
-    <loc>/theories/ccs/</loc>
+    <loc>/sessions/ccs/</loc>
   </url><url>
-    <loc>/theories/certification_monads/</loc>
+    <loc>/sessions/certification_monads/</loc>
   </url><url>
-    <loc>/theories/ceva/</loc>
+    <loc>/sessions/ceva/</loc>
   </url><url>
-    <loc>/theories/chandy_lamport/</loc>
+    <loc>/sessions/chandy_lamport/</loc>
   </url><url>
-    <loc>/theories/cheri-c_memory_model/</loc>
+    <loc>/sessions/cheri-c_memory_model/</loc>
   </url><url>
-    <loc>/theories/chord_segments/</loc>
+    <loc>/sessions/chord_segments/</loc>
   </url><url>
-    <loc>/theories/circus/</loc>
+    <loc>/sessions/circus/</loc>
   </url><url>
-    <loc>/theories/cisc-kernel/</loc>
+    <loc>/sessions/cisc-kernel/</loc>
   </url><url>
-    <loc>/theories/classes/</loc>
+    <loc>/sessions/classes/</loc>
   </url><url>
-    <loc>/theories/clean/</loc>
+    <loc>/sessions/clean/</loc>
   </url><url>
-    <loc>/theories/clique_and_monotone_circuits/</loc>
+    <loc>/sessions/clique_and_monotone_circuits/</loc>
   </url><url>
-    <loc>/theories/clocksynchinst/</loc>
+    <loc>/sessions/clocksynchinst/</loc>
   </url><url>
-    <loc>/theories/closest_pair_points/</loc>
+    <loc>/sessions/closest_pair_points/</loc>
   </url><url>
-    <loc>/theories/cocon/</loc>
+    <loc>/sessions/cocon/</loc>
   </url><url>
-    <loc>/theories/codegen/</loc>
+    <loc>/sessions/codegen/</loc>
   </url><url>
-    <loc>/theories/cofgroups/</loc>
+    <loc>/sessions/cofgroups/</loc>
   </url><url>
-    <loc>/theories/coinductive/</loc>
+    <loc>/sessions/coinductive/</loc>
   </url><url>
-    <loc>/theories/coinductive_languages/</loc>
+    <loc>/sessions/coinductive_languages/</loc>
   </url><url>
-    <loc>/theories/collections/</loc>
+    <loc>/sessions/collections/</loc>
   </url><url>
-    <loc>/theories/collections_examples/</loc>
+    <loc>/sessions/collections_examples/</loc>
   </url><url>
-    <loc>/theories/combinable_wands/</loc>
+    <loc>/sessions/combinable_wands/</loc>
   </url><url>
-    <loc>/theories/combinatorial_enumeration_algorithms/</loc>
+    <loc>/sessions/combinatorial_enumeration_algorithms/</loc>
   </url><url>
-    <loc>/theories/combinatorics_words/</loc>
+    <loc>/sessions/combinatorics_words/</loc>
   </url><url>
-    <loc>/theories/combinatorics_words_graph_lemma/</loc>
+    <loc>/sessions/combinatorics_words_graph_lemma/</loc>
   </url><url>
-    <loc>/theories/combinatorics_words_lyndon/</loc>
+    <loc>/sessions/combinatorics_words_lyndon/</loc>
   </url><url>
-    <loc>/theories/commcsl/</loc>
+    <loc>/sessions/commcsl/</loc>
   </url><url>
-    <loc>/theories/commuting_hermitian/</loc>
+    <loc>/sessions/commuting_hermitian/</loc>
   </url><url>
-    <loc>/theories/comparison_sort_lower_bound/</loc>
+    <loc>/sessions/comparison_sort_lower_bound/</loc>
   </url><url>
-    <loc>/theories/compiling-exceptions-correctly/</loc>
+    <loc>/sessions/compiling-exceptions-correctly/</loc>
   </url><url>
-    <loc>/theories/complete_non_orders/</loc>
+    <loc>/sessions/complete_non_orders/</loc>
   </url><url>
-    <loc>/theories/completeness/</loc>
+    <loc>/sessions/completeness/</loc>
   </url><url>
-    <loc>/theories/complex_bounded_operators/</loc>
+    <loc>/sessions/complex_bounded_operators/</loc>
   </url><url>
-    <loc>/theories/complex_bounded_operators_dependencies/</loc>
+    <loc>/sessions/complex_bounded_operators_dependencies/</loc>
   </url><url>
-    <loc>/theories/complex_geometry/</loc>
+    <loc>/sessions/complex_geometry/</loc>
   </url><url>
-    <loc>/theories/complx/</loc>
+    <loc>/sessions/complx/</loc>
   </url><url>
-    <loc>/theories/componentdependencies/</loc>
+    <loc>/sessions/componentdependencies/</loc>
   </url><url>
     <loc>/topics/computer-science/algorithms/</loc>
   </url><url>
@@ -4924,819 +4924,819 @@
   </url><url>
     <loc>/topics/computer-science/system-description-languages/</loc>
   </url><url>
-    <loc>/theories/concurrent_ref_alg/</loc>
+    <loc>/sessions/concurrent_ref_alg/</loc>
   </url><url>
-    <loc>/theories/concurrent_revisions/</loc>
+    <loc>/sessions/concurrent_revisions/</loc>
   </url><url>
-    <loc>/theories/concurrentgc/</loc>
+    <loc>/sessions/concurrentgc/</loc>
   </url><url>
-    <loc>/theories/concurrentimp/</loc>
+    <loc>/sessions/concurrentimp/</loc>
   </url><url>
-    <loc>/theories/conditional_simplification/</loc>
+    <loc>/sessions/conditional_simplification/</loc>
   </url><url>
-    <loc>/theories/conditional_transfer_rule/</loc>
+    <loc>/sessions/conditional_transfer_rule/</loc>
   </url><url>
-    <loc>/theories/consensus_refined/</loc>
+    <loc>/sessions/consensus_refined/</loc>
   </url><url>
-    <loc>/theories/constructive_cryptography/</loc>
+    <loc>/sessions/constructive_cryptography/</loc>
   </url><url>
-    <loc>/theories/constructive_cryptography_cm/</loc>
+    <loc>/sessions/constructive_cryptography_cm/</loc>
   </url><url>
-    <loc>/theories/constructor_funs/</loc>
+    <loc>/sessions/constructor_funs/</loc>
   </url><url>
-    <loc>/theories/containers/</loc>
+    <loc>/sessions/containers/</loc>
   </url><url>
-    <loc>/theories/containers-benchmarks/</loc>
+    <loc>/sessions/containers-benchmarks/</loc>
   </url><url>
-    <loc>/theories/cook_levin/</loc>
+    <loc>/sessions/cook_levin/</loc>
   </url><url>
-    <loc>/theories/core_dom/</loc>
+    <loc>/sessions/core_dom/</loc>
   </url><url>
-    <loc>/theories/core_sc_dom/</loc>
+    <loc>/sessions/core_sc_dom/</loc>
   </url><url>
-    <loc>/theories/corec/</loc>
+    <loc>/sessions/corec/</loc>
   </url><url>
-    <loc>/theories/corec&#43;&#43;/</loc>
+    <loc>/sessions/corec&#43;&#43;/</loc>
   </url><url>
-    <loc>/theories/correctness_algebras/</loc>
+    <loc>/sessions/correctness_algebras/</loc>
   </url><url>
-    <loc>/theories/cosmed/</loc>
+    <loc>/sessions/cosmed/</loc>
   </url><url>
-    <loc>/theories/cosmedis/</loc>
+    <loc>/sessions/cosmedis/</loc>
   </url><url>
-    <loc>/theories/cotangent_pfd_formula/</loc>
+    <loc>/sessions/cotangent_pfd_formula/</loc>
   </url><url>
-    <loc>/theories/count_complex_roots/</loc>
+    <loc>/sessions/count_complex_roots/</loc>
   </url><url>
-    <loc>/theories/crdt/</loc>
+    <loc>/sessions/crdt/</loc>
   </url><url>
-    <loc>/theories/crypthol/</loc>
+    <loc>/sessions/crypthol/</loc>
   </url><url>
-    <loc>/theories/crypto_standards/</loc>
+    <loc>/sessions/crypto_standards/</loc>
   </url><url>
-    <loc>/theories/cryptobasedcompositionalproperties/</loc>
+    <loc>/sessions/cryptobasedcompositionalproperties/</loc>
   </url><url>
-    <loc>/theories/crystals-kyber/</loc>
+    <loc>/sessions/crystals-kyber/</loc>
   </url><url>
-    <loc>/theories/csp_reftk/</loc>
+    <loc>/sessions/csp_reftk/</loc>
   </url><url>
-    <loc>/theories/ctt/</loc>
+    <loc>/sessions/ctt/</loc>
   </url><url>
-    <loc>/theories/cube/</loc>
+    <loc>/sessions/cube/</loc>
   </url><url>
-    <loc>/theories/cubic_quartic_equations/</loc>
+    <loc>/sessions/cubic_quartic_equations/</loc>
   </url><url>
-    <loc>/theories/cvp_hardness/</loc>
+    <loc>/sessions/cvp_hardness/</loc>
   </url><url>
-    <loc>/theories/cyk/</loc>
+    <loc>/sessions/cyk/</loc>
   </url><url>
-    <loc>/theories/czh_elementary_categories/</loc>
+    <loc>/sessions/czh_elementary_categories/</loc>
   </url><url>
-    <loc>/theories/czh_foundations/</loc>
+    <loc>/sessions/czh_foundations/</loc>
   </url><url>
-    <loc>/theories/czh_universal_constructions/</loc>
+    <loc>/sessions/czh_universal_constructions/</loc>
   </url><url>
-    <loc>/theories/datarefinementibp/</loc>
+    <loc>/sessions/datarefinementibp/</loc>
   </url><url>
-    <loc>/theories/datatype_order_generator/</loc>
+    <loc>/sessions/datatype_order_generator/</loc>
   </url><url>
-    <loc>/theories/datatypes/</loc>
+    <loc>/sessions/datatypes/</loc>
   </url><url>
-    <loc>/theories/dcr-executionequivalence/</loc>
+    <loc>/sessions/dcr-executionequivalence/</loc>
   </url><url>
-    <loc>/theories/decl_sem_fun_pl/</loc>
+    <loc>/sessions/decl_sem_fun_pl/</loc>
   </url><url>
-    <loc>/theories/decreasing-diagrams/</loc>
+    <loc>/sessions/decreasing-diagrams/</loc>
   </url><url>
-    <loc>/theories/decreasing-diagrams-ii/</loc>
+    <loc>/sessions/decreasing-diagrams-ii/</loc>
   </url><url>
-    <loc>/theories/dedekind_real/</loc>
+    <loc>/sessions/dedekind_real/</loc>
   </url><url>
-    <loc>/theories/deep_learning/</loc>
+    <loc>/sessions/deep_learning/</loc>
   </url><url>
-    <loc>/theories/delta_system_lemma/</loc>
+    <loc>/sessions/delta_system_lemma/</loc>
   </url><url>
-    <loc>/theories/demo_easychair/</loc>
+    <loc>/sessions/demo_easychair/</loc>
   </url><url>
-    <loc>/theories/demo_eptcs/</loc>
+    <loc>/sessions/demo_eptcs/</loc>
   </url><url>
-    <loc>/theories/demo_foiltex/</loc>
+    <loc>/sessions/demo_foiltex/</loc>
   </url><url>
-    <loc>/theories/demo_lipics/</loc>
+    <loc>/sessions/demo_lipics/</loc>
   </url><url>
-    <loc>/theories/demo_llncs/</loc>
+    <loc>/sessions/demo_llncs/</loc>
   </url><url>
-    <loc>/theories/density_compiler/</loc>
+    <loc>/sessions/density_compiler/</loc>
   </url><url>
-    <loc>/theories/dependent_sifum_refinement/</loc>
+    <loc>/sessions/dependent_sifum_refinement/</loc>
   </url><url>
-    <loc>/theories/dependent_sifum_type_systems/</loc>
+    <loc>/sessions/dependent_sifum_type_systems/</loc>
   </url><url>
-    <loc>/theories/depth-first-search/</loc>
+    <loc>/sessions/depth-first-search/</loc>
   </url><url>
-    <loc>/theories/derangements/</loc>
+    <loc>/sessions/derangements/</loc>
   </url><url>
-    <loc>/theories/deriving/</loc>
+    <loc>/sessions/deriving/</loc>
   </url><url>
-    <loc>/theories/descartes_sign_rule/</loc>
+    <loc>/sessions/descartes_sign_rule/</loc>
   </url><url>
-    <loc>/theories/design_theory/</loc>
+    <loc>/sessions/design_theory/</loc>
   </url><url>
-    <loc>/theories/dfs_framework/</loc>
+    <loc>/sessions/dfs_framework/</loc>
   </url><url>
-    <loc>/theories/dict_construction/</loc>
+    <loc>/sessions/dict_construction/</loc>
   </url><url>
-    <loc>/theories/differential_dynamic_logic/</loc>
+    <loc>/sessions/differential_dynamic_logic/</loc>
   </url><url>
-    <loc>/theories/differential_game_logic/</loc>
+    <loc>/sessions/differential_game_logic/</loc>
   </url><url>
-    <loc>/theories/digit_expansions/</loc>
+    <loc>/sessions/digit_expansions/</loc>
   </url><url>
-    <loc>/theories/digitsinbase/</loc>
+    <loc>/sessions/digitsinbase/</loc>
   </url><url>
-    <loc>/theories/dijkstra_shortest_path/</loc>
+    <loc>/sessions/dijkstra_shortest_path/</loc>
   </url><url>
-    <loc>/theories/diophantine_eqns_lin_hom/</loc>
+    <loc>/sessions/diophantine_eqns_lin_hom/</loc>
   </url><url>
-    <loc>/theories/directed_sets/</loc>
+    <loc>/sessions/directed_sets/</loc>
   </url><url>
-    <loc>/theories/dirichlet_l/</loc>
+    <loc>/sessions/dirichlet_l/</loc>
   </url><url>
-    <loc>/theories/dirichlet_series/</loc>
+    <loc>/sessions/dirichlet_series/</loc>
   </url><url>
-    <loc>/theories/discrete_summation/</loc>
+    <loc>/sessions/discrete_summation/</loc>
   </url><url>
-    <loc>/theories/discretepricing/</loc>
+    <loc>/sessions/discretepricing/</loc>
   </url><url>
-    <loc>/theories/diskpaxos/</loc>
+    <loc>/sessions/diskpaxos/</loc>
   </url><url>
-    <loc>/theories/distributed_distinct_elements/</loc>
+    <loc>/sessions/distributed_distinct_elements/</loc>
   </url><url>
-    <loc>/theories/dom_components/</loc>
+    <loc>/sessions/dom_components/</loc>
   </url><url>
-    <loc>/theories/dominance_chk/</loc>
+    <loc>/sessions/dominance_chk/</loc>
   </url><url>
     <loc>/download/</loc>
   </url><url>
-    <loc>/theories/dprm_theorem/</loc>
+    <loc>/sessions/dprm_theorem/</loc>
   </url><url>
-    <loc>/theories/dpt-sat-solver/</loc>
+    <loc>/sessions/dpt-sat-solver/</loc>
   </url><url>
-    <loc>/theories/dynamic_tables/</loc>
+    <loc>/sessions/dynamic_tables/</loc>
   </url><url>
-    <loc>/theories/dynamicarchitectures/</loc>
+    <loc>/sessions/dynamicarchitectures/</loc>
   </url><url>
-    <loc>/theories/e_transcendental/</loc>
+    <loc>/sessions/e_transcendental/</loc>
   </url><url>
-    <loc>/theories/earley_parser/</loc>
+    <loc>/sessions/earley_parser/</loc>
   </url><url>
-    <loc>/theories/echelon_form/</loc>
+    <loc>/sessions/echelon_form/</loc>
   </url><url>
-    <loc>/theories/edmondskarp_maxflow/</loc>
+    <loc>/sessions/edmondskarp_maxflow/</loc>
   </url><url>
-    <loc>/theories/edwards_elliptic_curves_group/</loc>
+    <loc>/sessions/edwards_elliptic_curves_group/</loc>
   </url><url>
-    <loc>/theories/efficient-mergesort/</loc>
+    <loc>/sessions/efficient-mergesort/</loc>
   </url><url>
-    <loc>/theories/efficient_weighted_path_order/</loc>
+    <loc>/sessions/efficient_weighted_path_order/</loc>
   </url><url>
-    <loc>/theories/eisbach/</loc>
+    <loc>/sessions/eisbach/</loc>
   </url><url>
-    <loc>/theories/elliptic_curves_group_law/</loc>
+    <loc>/sessions/elliptic_curves_group_law/</loc>
   </url><url>
-    <loc>/theories/encodability_process_calculi/</loc>
+    <loc>/sessions/encodability_process_calculi/</loc>
   </url><url>
     <loc>/submission/</loc>
   </url><url>
-    <loc>/theories/epistemic_logic/</loc>
+    <loc>/sessions/epistemic_logic/</loc>
   </url><url>
-    <loc>/theories/equivalence_relation_enumeration/</loc>
+    <loc>/sessions/equivalence_relation_enumeration/</loc>
   </url><url>
-    <loc>/theories/ergodic_theory/</loc>
+    <loc>/sessions/ergodic_theory/</loc>
   </url><url>
-    <loc>/theories/error_function/</loc>
+    <loc>/sessions/error_function/</loc>
   </url><url>
-    <loc>/theories/euler_maclaurin/</loc>
+    <loc>/sessions/euler_maclaurin/</loc>
   </url><url>
-    <loc>/theories/euler_partition/</loc>
+    <loc>/sessions/euler_partition/</loc>
   </url><url>
-    <loc>/theories/euler_polyhedron_formula/</loc>
+    <loc>/sessions/euler_polyhedron_formula/</loc>
   </url><url>
-    <loc>/theories/eval_fo/</loc>
+    <loc>/sessions/eval_fo/</loc>
   </url><url>
-    <loc>/theories/example-submission/</loc>
+    <loc>/sessions/example-submission/</loc>
   </url><url>
-    <loc>/theories/executable_randomized_algorithms/</loc>
+    <loc>/sessions/executable_randomized_algorithms/</loc>
   </url><url>
-    <loc>/theories/expander_graphs/</loc>
+    <loc>/sessions/expander_graphs/</loc>
   </url><url>
-    <loc>/theories/extended_finite_state_machine_inference/</loc>
+    <loc>/sessions/extended_finite_state_machine_inference/</loc>
   </url><url>
-    <loc>/theories/extended_finite_state_machines/</loc>
+    <loc>/sessions/extended_finite_state_machines/</loc>
   </url><url>
-    <loc>/theories/factor_algebraic_polynomial/</loc>
+    <loc>/sessions/factor_algebraic_polynomial/</loc>
   </url><url>
-    <loc>/theories/factored_transition_system_bounding/</loc>
+    <loc>/sessions/factored_transition_system_bounding/</loc>
   </url><url>
-    <loc>/theories/falling_factorial_sum/</loc>
+    <loc>/sessions/falling_factorial_sum/</loc>
   </url><url>
-    <loc>/theories/farkas/</loc>
+    <loc>/sessions/farkas/</loc>
   </url><url>
-    <loc>/theories/featherweight_ocl/</loc>
+    <loc>/sessions/featherweight_ocl/</loc>
   </url><url>
-    <loc>/theories/featherweightjava/</loc>
+    <loc>/sessions/featherweightjava/</loc>
   </url><url>
-    <loc>/theories/fermat3_4/</loc>
+    <loc>/sessions/fermat3_4/</loc>
   </url><url>
-    <loc>/theories/fft/</loc>
+    <loc>/sessions/fft/</loc>
   </url><url>
-    <loc>/theories/filerefinement/</loc>
+    <loc>/sessions/filerefinement/</loc>
   </url><url>
-    <loc>/theories/finfun/</loc>
+    <loc>/sessions/finfun/</loc>
   </url><url>
-    <loc>/theories/finger-trees/</loc>
+    <loc>/sessions/finger-trees/</loc>
   </url><url>
-    <loc>/theories/finite-map-extras/</loc>
+    <loc>/sessions/finite-map-extras/</loc>
   </url><url>
-    <loc>/theories/finite_automata_hf/</loc>
+    <loc>/sessions/finite_automata_hf/</loc>
   </url><url>
-    <loc>/theories/finite_fields/</loc>
+    <loc>/sessions/finite_fields/</loc>
   </url><url>
-    <loc>/theories/finitely_generated_abelian_groups/</loc>
+    <loc>/sessions/finitely_generated_abelian_groups/</loc>
   </url><url>
-    <loc>/theories/first_order_terms/</loc>
+    <loc>/sessions/first_order_terms/</loc>
   </url><url>
-    <loc>/theories/first_welfare_theorem/</loc>
+    <loc>/sessions/first_welfare_theorem/</loc>
   </url><url>
-    <loc>/theories/fishburn_impossibility/</loc>
+    <loc>/sessions/fishburn_impossibility/</loc>
   </url><url>
-    <loc>/theories/fisher_yates/</loc>
+    <loc>/sessions/fisher_yates/</loc>
   </url><url>
-    <loc>/theories/fishers_inequality/</loc>
+    <loc>/sessions/fishers_inequality/</loc>
   </url><url>
-    <loc>/theories/fixed_length_vector/</loc>
+    <loc>/sessions/fixed_length_vector/</loc>
   </url><url>
-    <loc>/theories/flow_networks/</loc>
+    <loc>/sessions/flow_networks/</loc>
   </url><url>
-    <loc>/theories/floyd_warshall/</loc>
+    <loc>/sessions/floyd_warshall/</loc>
   </url><url>
-    <loc>/theories/flp/</loc>
+    <loc>/sessions/flp/</loc>
   </url><url>
-    <loc>/theories/flyspeck-tame/</loc>
+    <loc>/sessions/flyspeck-tame/</loc>
   </url><url>
-    <loc>/theories/flyspeck-tame-computation/</loc>
+    <loc>/sessions/flyspeck-tame-computation/</loc>
   </url><url>
-    <loc>/theories/fo_theory_rewriting/</loc>
+    <loc>/sessions/fo_theory_rewriting/</loc>
   </url><url>
-    <loc>/theories/focusstreamscasestudies/</loc>
+    <loc>/sessions/focusstreamscasestudies/</loc>
   </url><url>
-    <loc>/theories/fol/</loc>
+    <loc>/sessions/fol/</loc>
   </url><url>
-    <loc>/theories/fol-ex/</loc>
+    <loc>/sessions/fol-ex/</loc>
   </url><url>
-    <loc>/theories/fol-fitting/</loc>
+    <loc>/sessions/fol-fitting/</loc>
   </url><url>
-    <loc>/theories/fol_axiomatic/</loc>
+    <loc>/sessions/fol_axiomatic/</loc>
   </url><url>
-    <loc>/theories/fol_harrison/</loc>
+    <loc>/sessions/fol_harrison/</loc>
   </url><url>
-    <loc>/theories/fol_seq_calc1/</loc>
+    <loc>/sessions/fol_seq_calc1/</loc>
   </url><url>
-    <loc>/theories/fol_seq_calc2/</loc>
+    <loc>/sessions/fol_seq_calc2/</loc>
   </url><url>
-    <loc>/theories/fol_seq_calc3/</loc>
+    <loc>/sessions/fol_seq_calc3/</loc>
   </url><url>
-    <loc>/theories/folp/</loc>
+    <loc>/sessions/folp/</loc>
   </url><url>
-    <loc>/theories/folp-ex/</loc>
+    <loc>/sessions/folp-ex/</loc>
   </url><url>
-    <loc>/theories/forcing/</loc>
+    <loc>/sessions/forcing/</loc>
   </url><url>
-    <loc>/theories/formal_puiseux_series/</loc>
+    <loc>/sessions/formal_puiseux_series/</loc>
   </url><url>
-    <loc>/theories/formal_ssa/</loc>
+    <loc>/sessions/formal_ssa/</loc>
   </url><url>
-    <loc>/theories/formula_derivatives/</loc>
+    <loc>/sessions/formula_derivatives/</loc>
   </url><url>
-    <loc>/theories/formula_derivatives-examples/</loc>
+    <loc>/sessions/formula_derivatives-examples/</loc>
   </url><url>
-    <loc>/theories/foundation_of_geometry/</loc>
+    <loc>/sessions/foundation_of_geometry/</loc>
   </url><url>
-    <loc>/theories/fourier/</loc>
+    <loc>/sessions/fourier/</loc>
   </url><url>
-    <loc>/theories/free-boolean-algebra/</loc>
+    <loc>/sessions/free-boolean-algebra/</loc>
   </url><url>
-    <loc>/theories/free-groups/</loc>
+    <loc>/sessions/free-groups/</loc>
   </url><url>
-    <loc>/theories/frequency_moments/</loc>
+    <loc>/sessions/frequency_moments/</loc>
   </url><url>
-    <loc>/theories/fresh_identifiers/</loc>
+    <loc>/sessions/fresh_identifiers/</loc>
   </url><url>
-    <loc>/theories/fsm_tests/</loc>
+    <loc>/sessions/fsm_tests/</loc>
   </url><url>
-    <loc>/theories/functional-automata/</loc>
+    <loc>/sessions/functional-automata/</loc>
   </url><url>
-    <loc>/theories/functional_ordered_resolution_prover/</loc>
+    <loc>/sessions/functional_ordered_resolution_prover/</loc>
   </url><url>
-    <loc>/theories/functions/</loc>
+    <loc>/sessions/functions/</loc>
   </url><url>
-    <loc>/theories/funwithfunctions/</loc>
+    <loc>/sessions/funwithfunctions/</loc>
   </url><url>
-    <loc>/theories/funwithtilings/</loc>
+    <loc>/sessions/funwithtilings/</loc>
   </url><url>
-    <loc>/theories/furstenberg_topology/</loc>
+    <loc>/sessions/furstenberg_topology/</loc>
   </url><url>
-    <loc>/theories/gabow_scc/</loc>
+    <loc>/sessions/gabow_scc/</loc>
   </url><url>
-    <loc>/theories/gale_shapley/</loc>
+    <loc>/sessions/gale_shapley/</loc>
   </url><url>
-    <loc>/theories/galestewart_games/</loc>
+    <loc>/sessions/galestewart_games/</loc>
   </url><url>
-    <loc>/theories/game_based_crypto/</loc>
+    <loc>/sessions/game_based_crypto/</loc>
   </url><url>
-    <loc>/theories/gauss-jordan-elim-fun/</loc>
+    <loc>/sessions/gauss-jordan-elim-fun/</loc>
   </url><url>
-    <loc>/theories/gauss_jordan/</loc>
+    <loc>/sessions/gauss_jordan/</loc>
   </url><url>
-    <loc>/theories/gauss_sums/</loc>
+    <loc>/sessions/gauss_sums/</loc>
   </url><url>
-    <loc>/theories/gaussian_integers/</loc>
+    <loc>/sessions/gaussian_integers/</loc>
   </url><url>
-    <loc>/theories/genclock/</loc>
+    <loc>/sessions/genclock/</loc>
   </url><url>
-    <loc>/theories/general-triangle/</loc>
+    <loc>/sessions/general-triangle/</loc>
   </url><url>
-    <loc>/theories/generalized_counting_sort/</loc>
+    <loc>/sessions/generalized_counting_sort/</loc>
   </url><url>
-    <loc>/theories/generic_deriving/</loc>
+    <loc>/sessions/generic_deriving/</loc>
   </url><url>
-    <loc>/theories/generic_join/</loc>
+    <loc>/sessions/generic_join/</loc>
   </url><url>
-    <loc>/theories/gewirthpgcproof/</loc>
+    <loc>/sessions/gewirthpgcproof/</loc>
   </url><url>
-    <loc>/theories/girth_chromatic/</loc>
+    <loc>/sessions/girth_chromatic/</loc>
   </url><url>
-    <loc>/theories/given_clause_loops/</loc>
+    <loc>/sessions/given_clause_loops/</loc>
   </url><url>
-    <loc>/theories/goedel_hfset_semantic/</loc>
+    <loc>/sessions/goedel_hfset_semantic/</loc>
   </url><url>
-    <loc>/theories/goedel_hfset_semanticless/</loc>
+    <loc>/sessions/goedel_hfset_semanticless/</loc>
   </url><url>
-    <loc>/theories/goedel_incompleteness/</loc>
+    <loc>/sessions/goedel_incompleteness/</loc>
   </url><url>
-    <loc>/theories/goedelgod/</loc>
+    <loc>/sessions/goedelgod/</loc>
   </url><url>
-    <loc>/theories/goodstein_lambda/</loc>
+    <loc>/sessions/goodstein_lambda/</loc>
   </url><url>
-    <loc>/theories/gpu_kernel_pl/</loc>
+    <loc>/sessions/gpu_kernel_pl/</loc>
   </url><url>
-    <loc>/theories/graph_saturation/</loc>
+    <loc>/sessions/graph_saturation/</loc>
   </url><url>
-    <loc>/theories/graph_theory/</loc>
+    <loc>/sessions/graph_theory/</loc>
   </url><url>
-    <loc>/theories/graphmarkingibp/</loc>
+    <loc>/sessions/graphmarkingibp/</loc>
   </url><url>
-    <loc>/theories/gray_codes/</loc>
+    <loc>/sessions/gray_codes/</loc>
   </url><url>
-    <loc>/theories/green/</loc>
+    <loc>/sessions/green/</loc>
   </url><url>
-    <loc>/theories/groebner_bases/</loc>
+    <loc>/sessions/groebner_bases/</loc>
   </url><url>
-    <loc>/theories/groebner_macaulay/</loc>
+    <loc>/sessions/groebner_macaulay/</loc>
   </url><url>
-    <loc>/theories/gromov_hyperbolicity/</loc>
+    <loc>/sessions/gromov_hyperbolicity/</loc>
   </url><url>
-    <loc>/theories/grothendieck_schemes/</loc>
+    <loc>/sessions/grothendieck_schemes/</loc>
   </url><url>
-    <loc>/theories/group-ring-module/</loc>
+    <loc>/sessions/group-ring-module/</loc>
   </url><url>
-    <loc>/theories/hahn_jordan_decomposition/</loc>
+    <loc>/sessions/hahn_jordan_decomposition/</loc>
   </url><url>
-    <loc>/theories/hales_jewett/</loc>
+    <loc>/sessions/hales_jewett/</loc>
   </url><url>
-    <loc>/theories/haskell/</loc>
+    <loc>/sessions/haskell/</loc>
   </url><url>
-    <loc>/theories/heard_of/</loc>
+    <loc>/sessions/heard_of/</loc>
   </url><url>
-    <loc>/theories/hello_world/</loc>
+    <loc>/sessions/hello_world/</loc>
   </url><url>
     <loc>/help/</loc>
   </url><url>
-    <loc>/theories/hereditarilyfinite/</loc>
+    <loc>/sessions/hereditarilyfinite/</loc>
   </url><url>
-    <loc>/theories/hermite/</loc>
+    <loc>/sessions/hermite/</loc>
   </url><url>
-    <loc>/theories/hermite_lindemann/</loc>
+    <loc>/sessions/hermite_lindemann/</loc>
   </url><url>
-    <loc>/theories/hidden_markov_models/</loc>
+    <loc>/sessions/hidden_markov_models/</loc>
   </url><url>
-    <loc>/theories/higher_order_terms/</loc>
+    <loc>/sessions/higher_order_terms/</loc>
   </url><url>
-    <loc>/theories/hoare_time/</loc>
+    <loc>/sessions/hoare_time/</loc>
   </url><url>
-    <loc>/theories/hoarefordivergence/</loc>
+    <loc>/sessions/hoarefordivergence/</loc>
   </url><url>
-    <loc>/theories/hol/</loc>
+    <loc>/sessions/hol/</loc>
   </url><url>
-    <loc>/theories/hol-algebra/</loc>
+    <loc>/sessions/hol-algebra/</loc>
   </url><url>
-    <loc>/theories/hol-analysis/</loc>
+    <loc>/sessions/hol-analysis/</loc>
   </url><url>
-    <loc>/theories/hol-analysis-ex/</loc>
+    <loc>/sessions/hol-analysis-ex/</loc>
   </url><url>
-    <loc>/theories/hol-auth/</loc>
+    <loc>/sessions/hol-auth/</loc>
   </url><url>
-    <loc>/theories/hol-bali/</loc>
+    <loc>/sessions/hol-bali/</loc>
   </url><url>
-    <loc>/theories/hol-cardinals/</loc>
+    <loc>/sessions/hol-cardinals/</loc>
   </url><url>
-    <loc>/theories/hol-codegenerator_test/</loc>
+    <loc>/sessions/hol-codegenerator_test/</loc>
   </url><url>
-    <loc>/theories/hol-combinatorics/</loc>
+    <loc>/sessions/hol-combinatorics/</loc>
   </url><url>
-    <loc>/theories/hol-complex_analysis/</loc>
+    <loc>/sessions/hol-complex_analysis/</loc>
   </url><url>
-    <loc>/theories/hol-computational_algebra/</loc>
+    <loc>/sessions/hol-computational_algebra/</loc>
   </url><url>
-    <loc>/theories/hol-corec_examples/</loc>
+    <loc>/sessions/hol-corec_examples/</loc>
   </url><url>
-    <loc>/theories/hol-csp/</loc>
+    <loc>/sessions/hol-csp/</loc>
   </url><url>
-    <loc>/theories/hol-data_structures/</loc>
+    <loc>/sessions/hol-data_structures/</loc>
   </url><url>
-    <loc>/theories/hol-datatype_examples/</loc>
+    <loc>/sessions/hol-datatype_examples/</loc>
   </url><url>
-    <loc>/theories/hol-decision_procs/</loc>
+    <loc>/sessions/hol-decision_procs/</loc>
   </url><url>
-    <loc>/theories/hol-eisbach/</loc>
+    <loc>/sessions/hol-eisbach/</loc>
   </url><url>
-    <loc>/theories/hol-ex/</loc>
+    <loc>/sessions/hol-ex/</loc>
   </url><url>
-    <loc>/theories/hol-examples/</loc>
+    <loc>/sessions/hol-examples/</loc>
   </url><url>
-    <loc>/theories/hol-hahn_banach/</loc>
+    <loc>/sessions/hol-hahn_banach/</loc>
   </url><url>
-    <loc>/theories/hol-hoare/</loc>
+    <loc>/sessions/hol-hoare/</loc>
   </url><url>
-    <loc>/theories/hol-hoare_parallel/</loc>
+    <loc>/sessions/hol-hoare_parallel/</loc>
   </url><url>
-    <loc>/theories/hol-homology/</loc>
+    <loc>/sessions/hol-homology/</loc>
   </url><url>
-    <loc>/theories/hol-imp/</loc>
+    <loc>/sessions/hol-imp/</loc>
   </url><url>
-    <loc>/theories/hol-imperative_hol/</loc>
+    <loc>/sessions/hol-imperative_hol/</loc>
   </url><url>
-    <loc>/theories/hol-import/</loc>
+    <loc>/sessions/hol-import/</loc>
   </url><url>
-    <loc>/theories/hol-impp/</loc>
+    <loc>/sessions/hol-impp/</loc>
   </url><url>
-    <loc>/theories/hol-induct/</loc>
+    <loc>/sessions/hol-induct/</loc>
   </url><url>
-    <loc>/theories/hol-ioa/</loc>
+    <loc>/sessions/hol-ioa/</loc>
   </url><url>
-    <loc>/theories/hol-isar_examples/</loc>
+    <loc>/sessions/hol-isar_examples/</loc>
   </url><url>
-    <loc>/theories/hol-lattice/</loc>
+    <loc>/sessions/hol-lattice/</loc>
   </url><url>
-    <loc>/theories/hol-library/</loc>
+    <loc>/sessions/hol-library/</loc>
   </url><url>
-    <loc>/theories/hol-matrix_lp/</loc>
+    <loc>/sessions/hol-matrix_lp/</loc>
   </url><url>
-    <loc>/theories/hol-metis_examples/</loc>
+    <loc>/sessions/hol-metis_examples/</loc>
   </url><url>
-    <loc>/theories/hol-microjava/</loc>
+    <loc>/sessions/hol-microjava/</loc>
   </url><url>
-    <loc>/theories/hol-mirabelle-ex/</loc>
+    <loc>/sessions/hol-mirabelle-ex/</loc>
   </url><url>
-    <loc>/theories/hol-mutabelle/</loc>
+    <loc>/sessions/hol-mutabelle/</loc>
   </url><url>
-    <loc>/theories/hol-nanojava/</loc>
+    <loc>/sessions/hol-nanojava/</loc>
   </url><url>
-    <loc>/theories/hol-nitpick_examples/</loc>
+    <loc>/sessions/hol-nitpick_examples/</loc>
   </url><url>
-    <loc>/theories/hol-nominal/</loc>
+    <loc>/sessions/hol-nominal/</loc>
   </url><url>
-    <loc>/theories/hol-nominal-examples/</loc>
+    <loc>/sessions/hol-nominal-examples/</loc>
   </url><url>
-    <loc>/theories/hol-nonstandard_analysis/</loc>
+    <loc>/sessions/hol-nonstandard_analysis/</loc>
   </url><url>
-    <loc>/theories/hol-nonstandard_analysis-examples/</loc>
+    <loc>/sessions/hol-nonstandard_analysis-examples/</loc>
   </url><url>
-    <loc>/theories/hol-number_theory/</loc>
+    <loc>/sessions/hol-number_theory/</loc>
   </url><url>
-    <loc>/theories/hol-ode-arch-comp/</loc>
+    <loc>/sessions/hol-ode-arch-comp/</loc>
   </url><url>
-    <loc>/theories/hol-ode-examples/</loc>
+    <loc>/sessions/hol-ode-examples/</loc>
   </url><url>
-    <loc>/theories/hol-ode-numerics/</loc>
+    <loc>/sessions/hol-ode-numerics/</loc>
   </url><url>
-    <loc>/theories/hol-predicate_compile_examples/</loc>
+    <loc>/sessions/hol-predicate_compile_examples/</loc>
   </url><url>
-    <loc>/theories/hol-probability/</loc>
+    <loc>/sessions/hol-probability/</loc>
   </url><url>
-    <loc>/theories/hol-probability-ex/</loc>
+    <loc>/sessions/hol-probability-ex/</loc>
   </url><url>
-    <loc>/theories/hol-prolog/</loc>
+    <loc>/sessions/hol-prolog/</loc>
   </url><url>
-    <loc>/theories/hol-proofs/</loc>
+    <loc>/sessions/hol-proofs/</loc>
   </url><url>
-    <loc>/theories/hol-proofs-ex/</loc>
+    <loc>/sessions/hol-proofs-ex/</loc>
   </url><url>
-    <loc>/theories/hol-proofs-extraction/</loc>
+    <loc>/sessions/hol-proofs-extraction/</loc>
   </url><url>
-    <loc>/theories/hol-proofs-lambda/</loc>
+    <loc>/sessions/hol-proofs-lambda/</loc>
   </url><url>
-    <loc>/theories/hol-quickcheck_examples/</loc>
+    <loc>/sessions/hol-quickcheck_examples/</loc>
   </url><url>
-    <loc>/theories/hol-quotient_examples/</loc>
+    <loc>/sessions/hol-quotient_examples/</loc>
   </url><url>
-    <loc>/theories/hol-real_asymp/</loc>
+    <loc>/sessions/hol-real_asymp/</loc>
   </url><url>
-    <loc>/theories/hol-real_asymp-manual/</loc>
+    <loc>/sessions/hol-real_asymp-manual/</loc>
   </url><url>
-    <loc>/theories/hol-set_protocol/</loc>
+    <loc>/sessions/hol-set_protocol/</loc>
   </url><url>
-    <loc>/theories/hol-smt_examples/</loc>
+    <loc>/sessions/hol-smt_examples/</loc>
   </url><url>
-    <loc>/theories/hol-spark/</loc>
+    <loc>/sessions/hol-spark/</loc>
   </url><url>
-    <loc>/theories/hol-spark-examples/</loc>
+    <loc>/sessions/hol-spark-examples/</loc>
   </url><url>
-    <loc>/theories/hol-spark-manual/</loc>
+    <loc>/sessions/hol-spark-manual/</loc>
   </url><url>
-    <loc>/theories/hol-statespace/</loc>
+    <loc>/sessions/hol-statespace/</loc>
   </url><url>
-    <loc>/theories/hol-tla/</loc>
+    <loc>/sessions/hol-tla/</loc>
   </url><url>
-    <loc>/theories/hol-tla-buffer/</loc>
+    <loc>/sessions/hol-tla-buffer/</loc>
   </url><url>
-    <loc>/theories/hol-tla-inc/</loc>
+    <loc>/sessions/hol-tla-inc/</loc>
   </url><url>
-    <loc>/theories/hol-tla-memory/</loc>
+    <loc>/sessions/hol-tla-memory/</loc>
   </url><url>
-    <loc>/theories/hol-tptp/</loc>
+    <loc>/sessions/hol-tptp/</loc>
   </url><url>
-    <loc>/theories/hol-types_to_sets/</loc>
+    <loc>/sessions/hol-types_to_sets/</loc>
   </url><url>
-    <loc>/theories/hol-unity/</loc>
+    <loc>/sessions/hol-unity/</loc>
   </url><url>
-    <loc>/theories/hol-unix/</loc>
+    <loc>/sessions/hol-unix/</loc>
   </url><url>
-    <loc>/theories/hol-zf/</loc>
+    <loc>/sessions/hol-zf/</loc>
   </url><url>
-    <loc>/theories/holcf/</loc>
+    <loc>/sessions/holcf/</loc>
   </url><url>
-    <loc>/theories/holcf-ex/</loc>
+    <loc>/sessions/holcf-ex/</loc>
   </url><url>
-    <loc>/theories/holcf-focus/</loc>
+    <loc>/sessions/holcf-focus/</loc>
   </url><url>
-    <loc>/theories/holcf-imp/</loc>
+    <loc>/sessions/holcf-imp/</loc>
   </url><url>
-    <loc>/theories/holcf-library/</loc>
+    <loc>/sessions/holcf-library/</loc>
   </url><url>
-    <loc>/theories/holcf-prelude/</loc>
+    <loc>/sessions/holcf-prelude/</loc>
   </url><url>
-    <loc>/theories/holcf-tutorial/</loc>
+    <loc>/sessions/holcf-tutorial/</loc>
   </url><url>
-    <loc>/theories/hood_melville_queue/</loc>
+    <loc>/sessions/hood_melville_queue/</loc>
   </url><url>
-    <loc>/theories/hotelkeycards/</loc>
+    <loc>/sessions/hotelkeycards/</loc>
   </url><url>
-    <loc>/theories/how_to_prove_it/</loc>
+    <loc>/sessions/how_to_prove_it/</loc>
   </url><url>
-    <loc>/theories/hrb-slicing/</loc>
+    <loc>/sessions/hrb-slicing/</loc>
   </url><url>
-    <loc>/theories/huffman/</loc>
+    <loc>/sessions/huffman/</loc>
   </url><url>
-    <loc>/theories/hybrid_logic/</loc>
+    <loc>/sessions/hybrid_logic/</loc>
   </url><url>
-    <loc>/theories/hybrid_multi_lane_spatial_logic/</loc>
+    <loc>/sessions/hybrid_multi_lane_spatial_logic/</loc>
   </url><url>
-    <loc>/theories/hybrid_systems_vcs/</loc>
+    <loc>/sessions/hybrid_systems_vcs/</loc>
   </url><url>
-    <loc>/theories/hyperctl/</loc>
+    <loc>/sessions/hyperctl/</loc>
   </url><url>
-    <loc>/theories/hyperdual/</loc>
+    <loc>/sessions/hyperdual/</loc>
   </url><url>
-    <loc>/theories/hypergraph_basics/</loc>
+    <loc>/sessions/hypergraph_basics/</loc>
   </url><url>
-    <loc>/theories/hyperhoarelogic/</loc>
+    <loc>/sessions/hyperhoarelogic/</loc>
   </url><url>
-    <loc>/theories/ieee_floating_point/</loc>
+    <loc>/sessions/ieee_floating_point/</loc>
   </url><url>
-    <loc>/theories/ifc_tracking/</loc>
+    <loc>/sessions/ifc_tracking/</loc>
   </url><url>
-    <loc>/theories/imap-crdt/</loc>
+    <loc>/sessions/imap-crdt/</loc>
   </url><url>
-    <loc>/theories/imo2019/</loc>
+    <loc>/sessions/imo2019/</loc>
   </url><url>
-    <loc>/theories/imp2/</loc>
+    <loc>/sessions/imp2/</loc>
   </url><url>
-    <loc>/theories/imp2_binary_heap/</loc>
+    <loc>/sessions/imp2_binary_heap/</loc>
   </url><url>
-    <loc>/theories/imp_compiler/</loc>
+    <loc>/sessions/imp_compiler/</loc>
   </url><url>
-    <loc>/theories/imp_compiler_reuse/</loc>
+    <loc>/sessions/imp_compiler_reuse/</loc>
   </url><url>
-    <loc>/theories/imperative_insertion_sort/</loc>
+    <loc>/sessions/imperative_insertion_sort/</loc>
   </url><url>
-    <loc>/theories/implementation/</loc>
+    <loc>/sessions/implementation/</loc>
   </url><url>
-    <loc>/theories/implicational_logic/</loc>
+    <loc>/sessions/implicational_logic/</loc>
   </url><url>
-    <loc>/theories/impossible_geometry/</loc>
+    <loc>/sessions/impossible_geometry/</loc>
   </url><url>
-    <loc>/theories/incompleteness/</loc>
+    <loc>/sessions/incompleteness/</loc>
   </url><url>
-    <loc>/theories/incredible_proof_machine/</loc>
+    <loc>/sessions/incredible_proof_machine/</loc>
   </url><url>
-    <loc>/theories/independence_ch/</loc>
+    <loc>/sessions/independence_ch/</loc>
   </url><url>
-    <loc>/theories/inductive_confidentiality/</loc>
+    <loc>/sessions/inductive_confidentiality/</loc>
   </url><url>
-    <loc>/theories/inductive_inference/</loc>
+    <loc>/sessions/inductive_inference/</loc>
   </url><url>
-    <loc>/theories/informationflowslicing/</loc>
+    <loc>/sessions/informationflowslicing/</loc>
   </url><url>
-    <loc>/theories/informationflowslicing_inter/</loc>
+    <loc>/sessions/informationflowslicing_inter/</loc>
   </url><url>
-    <loc>/theories/infpathelimination/</loc>
+    <loc>/sessions/infpathelimination/</loc>
   </url><url>
-    <loc>/theories/integration/</loc>
+    <loc>/sessions/integration/</loc>
   </url><url>
-    <loc>/theories/interpolation_polynomials_hol_algebra/</loc>
+    <loc>/sessions/interpolation_polynomials_hol_algebra/</loc>
   </url><url>
-    <loc>/theories/interpreter_optimizations/</loc>
+    <loc>/sessions/interpreter_optimizations/</loc>
   </url><url>
-    <loc>/theories/interval_arithmetic_word32/</loc>
+    <loc>/sessions/interval_arithmetic_word32/</loc>
   </url><url>
-    <loc>/theories/intro/</loc>
+    <loc>/sessions/intro/</loc>
   </url><url>
-    <loc>/theories/intro_dest_elim/</loc>
+    <loc>/sessions/intro_dest_elim/</loc>
   </url><url>
-    <loc>/theories/involutions2squares/</loc>
+    <loc>/sessions/involutions2squares/</loc>
   </url><url>
-    <loc>/theories/ioa/</loc>
+    <loc>/sessions/ioa/</loc>
   </url><url>
-    <loc>/theories/ioa-abp/</loc>
+    <loc>/sessions/ioa-abp/</loc>
   </url><url>
-    <loc>/theories/ioa-ex/</loc>
+    <loc>/sessions/ioa-ex/</loc>
   </url><url>
-    <loc>/theories/ioa-ntp/</loc>
+    <loc>/sessions/ioa-ntp/</loc>
   </url><url>
-    <loc>/theories/ioa-storage/</loc>
+    <loc>/sessions/ioa-storage/</loc>
   </url><url>
-    <loc>/theories/ip_addresses/</loc>
+    <loc>/sessions/ip_addresses/</loc>
   </url><url>
-    <loc>/theories/iptables_semantics/</loc>
+    <loc>/sessions/iptables_semantics/</loc>
   </url><url>
-    <loc>/theories/iptables_semantics_examples/</loc>
+    <loc>/sessions/iptables_semantics_examples/</loc>
   </url><url>
-    <loc>/theories/iptables_semantics_examples_big/</loc>
+    <loc>/sessions/iptables_semantics_examples_big/</loc>
   </url><url>
-    <loc>/theories/irrational_series_erdos_straus/</loc>
+    <loc>/sessions/irrational_series_erdos_straus/</loc>
   </url><url>
-    <loc>/theories/irrationality_j_hancl/</loc>
+    <loc>/sessions/irrationality_j_hancl/</loc>
   </url><url>
-    <loc>/theories/irrationals_from_thebook/</loc>
+    <loc>/sessions/irrationals_from_thebook/</loc>
   </url><url>
-    <loc>/theories/isabelle_c/</loc>
+    <loc>/sessions/isabelle_c/</loc>
   </url><url>
-    <loc>/theories/isabelle_marries_dirac/</loc>
+    <loc>/sessions/isabelle_marries_dirac/</loc>
   </url><url>
-    <loc>/theories/isabelle_meta_model/</loc>
+    <loc>/sessions/isabelle_meta_model/</loc>
   </url><url>
-    <loc>/theories/isageocoq/</loc>
+    <loc>/sessions/isageocoq/</loc>
   </url><url>
-    <loc>/theories/isanet/</loc>
+    <loc>/sessions/isanet/</loc>
   </url><url>
-    <loc>/theories/isar_ref/</loc>
+    <loc>/sessions/isar_ref/</loc>
   </url><url>
-    <loc>/theories/jacobson_basic_algebra/</loc>
+    <loc>/sessions/jacobson_basic_algebra/</loc>
   </url><url>
-    <loc>/theories/jedit/</loc>
+    <loc>/sessions/jedit/</loc>
   </url><url>
-    <loc>/theories/jinja/</loc>
+    <loc>/sessions/jinja/</loc>
   </url><url>
-    <loc>/theories/jinjadci/</loc>
+    <loc>/sessions/jinjadci/</loc>
   </url><url>
-    <loc>/theories/jinjathreads/</loc>
+    <loc>/sessions/jinjathreads/</loc>
   </url><url>
-    <loc>/theories/jivedatastoremodel/</loc>
+    <loc>/sessions/jivedatastoremodel/</loc>
   </url><url>
-    <loc>/theories/jordan_hoelder/</loc>
+    <loc>/sessions/jordan_hoelder/</loc>
   </url><url>
-    <loc>/theories/jordan_normal_form/</loc>
+    <loc>/sessions/jordan_normal_form/</loc>
   </url><url>
-    <loc>/theories/kad/</loc>
+    <loc>/sessions/kad/</loc>
   </url><url>
-    <loc>/theories/kat_and_dra/</loc>
+    <loc>/sessions/kat_and_dra/</loc>
   </url><url>
-    <loc>/theories/kbps/</loc>
+    <loc>/sessions/kbps/</loc>
   </url><url>
-    <loc>/theories/kd_tree/</loc>
+    <loc>/sessions/kd_tree/</loc>
   </url><url>
-    <loc>/theories/key_agreement_strong_adversaries/</loc>
+    <loc>/sessions/key_agreement_strong_adversaries/</loc>
   </url><url>
-    <loc>/theories/khovanskii_theorem/</loc>
+    <loc>/sessions/khovanskii_theorem/</loc>
   </url><url>
-    <loc>/theories/kleene_algebra/</loc>
+    <loc>/sessions/kleene_algebra/</loc>
   </url><url>
-    <loc>/theories/kneser_cauchy_davenport/</loc>
+    <loc>/sessions/kneser_cauchy_davenport/</loc>
   </url><url>
-    <loc>/theories/knights_tour/</loc>
+    <loc>/sessions/knights_tour/</loc>
   </url><url>
-    <loc>/theories/knot_theory/</loc>
+    <loc>/sessions/knot_theory/</loc>
   </url><url>
-    <loc>/theories/knuth_bendix_order/</loc>
+    <loc>/sessions/knuth_bendix_order/</loc>
   </url><url>
-    <loc>/theories/knuth_morris_pratt/</loc>
+    <loc>/sessions/knuth_morris_pratt/</loc>
   </url><url>
-    <loc>/theories/koenigsberg_friendship/</loc>
+    <loc>/sessions/koenigsberg_friendship/</loc>
   </url><url>
-    <loc>/theories/kruskal/</loc>
+    <loc>/sessions/kruskal/</loc>
   </url><url>
-    <loc>/theories/kuratowski_closure_complement/</loc>
+    <loc>/sessions/kuratowski_closure_complement/</loc>
   </url><url>
-    <loc>/theories/lam-ml-normalization/</loc>
+    <loc>/sessions/lam-ml-normalization/</loc>
   </url><url>
-    <loc>/theories/lambda_free_epo/</loc>
+    <loc>/sessions/lambda_free_epo/</loc>
   </url><url>
-    <loc>/theories/lambda_free_kbos/</loc>
+    <loc>/sessions/lambda_free_kbos/</loc>
   </url><url>
-    <loc>/theories/lambda_free_rpos/</loc>
+    <loc>/sessions/lambda_free_rpos/</loc>
   </url><url>
-    <loc>/theories/lambdaauth/</loc>
+    <loc>/sessions/lambdaauth/</loc>
   </url><url>
-    <loc>/theories/lambdamu/</loc>
+    <loc>/sessions/lambdamu/</loc>
   </url><url>
-    <loc>/theories/lambert_w/</loc>
+    <loc>/sessions/lambert_w/</loc>
   </url><url>
-    <loc>/theories/landau_symbols/</loc>
+    <loc>/sessions/landau_symbols/</loc>
   </url><url>
-    <loc>/theories/laplace_transform/</loc>
+    <loc>/sessions/laplace_transform/</loc>
   </url><url>
-    <loc>/theories/latin_square/</loc>
+    <loc>/sessions/latin_square/</loc>
   </url><url>
-    <loc>/theories/latticeproperties/</loc>
+    <loc>/sessions/latticeproperties/</loc>
   </url><url>
-    <loc>/theories/launchbury/</loc>
+    <loc>/sessions/launchbury/</loc>
   </url><url>
-    <loc>/theories/laws_of_large_numbers/</loc>
+    <loc>/sessions/laws_of_large_numbers/</loc>
   </url><url>
-    <loc>/theories/lazy-lists-ii/</loc>
+    <loc>/sessions/lazy-lists-ii/</loc>
   </url><url>
-    <loc>/theories/lazy_case/</loc>
+    <loc>/sessions/lazy_case/</loc>
   </url><url>
-    <loc>/theories/lcf/</loc>
+    <loc>/sessions/lcf/</loc>
   </url><url>
-    <loc>/theories/lehmer/</loc>
+    <loc>/sessions/lehmer/</loc>
   </url><url>
-    <loc>/theories/lem/</loc>
+    <loc>/sessions/lem/</loc>
   </url><url>
-    <loc>/theories/lifting_definition_option/</loc>
+    <loc>/sessions/lifting_definition_option/</loc>
   </url><url>
-    <loc>/theories/lifting_the_exponent/</loc>
+    <loc>/sessions/lifting_the_exponent/</loc>
   </url><url>
-    <loc>/theories/lightweightjava/</loc>
+    <loc>/sessions/lightweightjava/</loc>
   </url><url>
-    <loc>/theories/linear_inequalities/</loc>
+    <loc>/sessions/linear_inequalities/</loc>
   </url><url>
-    <loc>/theories/linear_programming/</loc>
+    <loc>/sessions/linear_programming/</loc>
   </url><url>
-    <loc>/theories/linear_recurrences/</loc>
+    <loc>/sessions/linear_recurrences/</loc>
   </url><url>
-    <loc>/theories/linear_recurrences_solver/</loc>
+    <loc>/sessions/linear_recurrences_solver/</loc>
   </url><url>
-    <loc>/theories/linearquantifierelim/</loc>
+    <loc>/sessions/linearquantifierelim/</loc>
   </url><url>
-    <loc>/theories/liouville_numbers/</loc>
+    <loc>/sessions/liouville_numbers/</loc>
   </url><url>
-    <loc>/theories/list-index/</loc>
+    <loc>/sessions/list-index/</loc>
   </url><url>
-    <loc>/theories/list-infinite/</loc>
+    <loc>/sessions/list-infinite/</loc>
   </url><url>
-    <loc>/theories/list_interleaving/</loc>
+    <loc>/sessions/list_interleaving/</loc>
   </url><url>
-    <loc>/theories/list_inversions/</loc>
+    <loc>/sessions/list_inversions/</loc>
   </url><url>
-    <loc>/theories/list_update/</loc>
+    <loc>/sessions/list_update/</loc>
   </url><url>
-    <loc>/theories/lll_basis_reduction/</loc>
+    <loc>/sessions/lll_basis_reduction/</loc>
   </url><url>
-    <loc>/theories/lll_factorization/</loc>
+    <loc>/sessions/lll_factorization/</loc>
   </url><url>
-    <loc>/theories/locales/</loc>
+    <loc>/sessions/locales/</loc>
   </url><url>
-    <loc>/theories/localization_ring/</loc>
+    <loc>/sessions/localization_ring/</loc>
   </url><url>
-    <loc>/theories/locallexing/</loc>
+    <loc>/sessions/locallexing/</loc>
   </url><url>
-    <loc>/theories/locally-nameless-sigma/</loc>
+    <loc>/sessions/locally-nameless-sigma/</loc>
   </url><url>
-    <loc>/theories/loft/</loc>
+    <loc>/sessions/loft/</loc>
   </url><url>
-    <loc>/theories/logging_independent_anonymity/</loc>
+    <loc>/sessions/logging_independent_anonymity/</loc>
   </url><url>
     <loc>/topics/logic/computability/</loc>
   </url><url>
@@ -5766,45 +5766,45 @@
   </url><url>
     <loc>/topics/logic/set-theory/</loc>
   </url><url>
-    <loc>/theories/logics/</loc>
+    <loc>/sessions/logics/</loc>
   </url><url>
-    <loc>/theories/logics_zf/</loc>
+    <loc>/sessions/logics_zf/</loc>
   </url><url>
-    <loc>/theories/lorenz_approximation/</loc>
+    <loc>/sessions/lorenz_approximation/</loc>
   </url><url>
-    <loc>/theories/lorenz_c0/</loc>
+    <loc>/sessions/lorenz_c0/</loc>
   </url><url>
-    <loc>/theories/lorenz_c1/</loc>
+    <loc>/sessions/lorenz_c1/</loc>
   </url><url>
-    <loc>/theories/lovasz_local/</loc>
+    <loc>/sessions/lovasz_local/</loc>
   </url><url>
-    <loc>/theories/lowe_ontological_argument/</loc>
+    <loc>/sessions/lowe_ontological_argument/</loc>
   </url><url>
-    <loc>/theories/lower_semicontinuous/</loc>
+    <loc>/sessions/lower_semicontinuous/</loc>
   </url><url>
-    <loc>/theories/lp/</loc>
+    <loc>/sessions/lp/</loc>
   </url><url>
-    <loc>/theories/lp_duality/</loc>
+    <loc>/sessions/lp_duality/</loc>
   </url><url>
-    <loc>/theories/ltl/</loc>
+    <loc>/sessions/ltl/</loc>
   </url><url>
-    <loc>/theories/ltl_master_theorem/</loc>
+    <loc>/sessions/ltl_master_theorem/</loc>
   </url><url>
-    <loc>/theories/ltl_normal_form/</loc>
+    <loc>/sessions/ltl_normal_form/</loc>
   </url><url>
-    <loc>/theories/ltl_to_dra/</loc>
+    <loc>/sessions/ltl_to_dra/</loc>
   </url><url>
-    <loc>/theories/ltl_to_gba/</loc>
+    <loc>/sessions/ltl_to_gba/</loc>
   </url><url>
-    <loc>/theories/lucas_theorem/</loc>
+    <loc>/sessions/lucas_theorem/</loc>
   </url><url>
-    <loc>/theories/main/</loc>
+    <loc>/sessions/main/</loc>
   </url><url>
-    <loc>/theories/markov_models/</loc>
+    <loc>/sessions/markov_models/</loc>
   </url><url>
-    <loc>/theories/marriage/</loc>
+    <loc>/sessions/marriage/</loc>
   </url><url>
-    <loc>/theories/mason_stothers/</loc>
+    <loc>/sessions/mason_stothers/</loc>
   </url><url>
     <loc>/topics/mathematics/algebra/</loc>
   </url><url>
@@ -5836,761 +5836,761 @@
   </url><url>
     <loc>/topics/mathematics/topology/</loc>
   </url><url>
-    <loc>/theories/matrices_for_odes/</loc>
+    <loc>/sessions/matrices_for_odes/</loc>
   </url><url>
-    <loc>/theories/matrix/</loc>
+    <loc>/sessions/matrix/</loc>
   </url><url>
-    <loc>/theories/matrix_tensor/</loc>
+    <loc>/sessions/matrix_tensor/</loc>
   </url><url>
-    <loc>/theories/matroids/</loc>
+    <loc>/sessions/matroids/</loc>
   </url><url>
-    <loc>/theories/max-card-matching/</loc>
+    <loc>/sessions/max-card-matching/</loc>
   </url><url>
-    <loc>/theories/maximum_segment_sum/</loc>
+    <loc>/sessions/maximum_segment_sum/</loc>
   </url><url>
-    <loc>/theories/mdp-algorithms/</loc>
+    <loc>/sessions/mdp-algorithms/</loc>
   </url><url>
-    <loc>/theories/mdp-rewards/</loc>
+    <loc>/sessions/mdp-rewards/</loc>
   </url><url>
-    <loc>/theories/median_method/</loc>
+    <loc>/sessions/median_method/</loc>
   </url><url>
-    <loc>/theories/median_of_medians_selection/</loc>
+    <loc>/sessions/median_of_medians_selection/</loc>
   </url><url>
-    <loc>/theories/menger/</loc>
+    <loc>/sessions/menger/</loc>
   </url><url>
-    <loc>/theories/mereology/</loc>
+    <loc>/sessions/mereology/</loc>
   </url><url>
-    <loc>/theories/mersenne_primes/</loc>
+    <loc>/sessions/mersenne_primes/</loc>
   </url><url>
-    <loc>/theories/metalogic_proofchecker/</loc>
+    <loc>/sessions/metalogic_proofchecker/</loc>
   </url><url>
-    <loc>/theories/mfmc_countable/</loc>
+    <loc>/sessions/mfmc_countable/</loc>
   </url><url>
-    <loc>/theories/mfodl_monitor_optimized/</loc>
+    <loc>/sessions/mfodl_monitor_optimized/</loc>
   </url><url>
-    <loc>/theories/mfotl_monitor/</loc>
+    <loc>/sessions/mfotl_monitor/</loc>
   </url><url>
-    <loc>/theories/mhcomputation/</loc>
+    <loc>/sessions/mhcomputation/</loc>
   </url><url>
-    <loc>/theories/minimal_ssa/</loc>
+    <loc>/sessions/minimal_ssa/</loc>
   </url><url>
-    <loc>/theories/miniml/</loc>
+    <loc>/sessions/miniml/</loc>
   </url><url>
-    <loc>/theories/minisail/</loc>
+    <loc>/sessions/minisail/</loc>
   </url><url>
-    <loc>/theories/minkowskis_theorem/</loc>
+    <loc>/sessions/minkowskis_theorem/</loc>
   </url><url>
-    <loc>/theories/minsky_machines/</loc>
+    <loc>/sessions/minsky_machines/</loc>
   </url><url>
-    <loc>/theories/ml_unification/</loc>
+    <loc>/sessions/ml_unification/</loc>
   </url><url>
-    <loc>/theories/mlss_decision_proc/</loc>
+    <loc>/sessions/mlss_decision_proc/</loc>
   </url><url>
-    <loc>/theories/modal_logics_for_nts/</loc>
+    <loc>/sessions/modal_logics_for_nts/</loc>
   </url><url>
-    <loc>/theories/modular_arithmetic_lll_and_hnf_algorithms/</loc>
+    <loc>/sessions/modular_arithmetic_lll_and_hnf_algorithms/</loc>
   </url><url>
-    <loc>/theories/modular_assembly_kit_security/</loc>
+    <loc>/sessions/modular_assembly_kit_security/</loc>
   </url><url>
-    <loc>/theories/monad_memo_dp/</loc>
+    <loc>/sessions/monad_memo_dp/</loc>
   </url><url>
-    <loc>/theories/monad_normalisation/</loc>
+    <loc>/sessions/monad_normalisation/</loc>
   </url><url>
-    <loc>/theories/monobooltranalgebra/</loc>
+    <loc>/sessions/monobooltranalgebra/</loc>
   </url><url>
-    <loc>/theories/monoidalcategory/</loc>
+    <loc>/sessions/monoidalcategory/</loc>
   </url><url>
-    <loc>/theories/monomorphic_monad/</loc>
+    <loc>/sessions/monomorphic_monad/</loc>
   </url><url>
-    <loc>/theories/mso_regex_equivalence/</loc>
+    <loc>/sessions/mso_regex_equivalence/</loc>
   </url><url>
-    <loc>/theories/muchadoabouttwo/</loc>
+    <loc>/sessions/muchadoabouttwo/</loc>
   </url><url>
-    <loc>/theories/multi_party_computation/</loc>
+    <loc>/sessions/multi_party_computation/</loc>
   </url><url>
-    <loc>/theories/multirelations/</loc>
+    <loc>/sessions/multirelations/</loc>
   </url><url>
-    <loc>/theories/multirelations_heterogeneous/</loc>
+    <loc>/sessions/multirelations_heterogeneous/</loc>
   </url><url>
-    <loc>/theories/multiset_ordering_npc/</loc>
+    <loc>/sessions/multiset_ordering_npc/</loc>
   </url><url>
-    <loc>/theories/multitape_to_singletape_tm/</loc>
+    <loc>/sessions/multitape_to_singletape_tm/</loc>
   </url><url>
-    <loc>/theories/myhill-nerode/</loc>
+    <loc>/sessions/myhill-nerode/</loc>
   </url><url>
-    <loc>/theories/name_carrying_type_inference/</loc>
+    <loc>/sessions/name_carrying_type_inference/</loc>
   </url><url>
-    <loc>/theories/nano_json/</loc>
+    <loc>/sessions/nano_json/</loc>
   </url><url>
-    <loc>/theories/naproche/</loc>
+    <loc>/sessions/naproche/</loc>
   </url><url>
-    <loc>/theories/naproche-test/</loc>
+    <loc>/sessions/naproche-test/</loc>
   </url><url>
-    <loc>/theories/nash_williams/</loc>
+    <loc>/sessions/nash_williams/</loc>
   </url><url>
-    <loc>/theories/nat-interval-logic/</loc>
+    <loc>/sessions/nat-interval-logic/</loc>
   </url><url>
-    <loc>/theories/native_word/</loc>
+    <loc>/sessions/native_word/</loc>
   </url><url>
-    <loc>/theories/nested_multisets_ordinals/</loc>
+    <loc>/sessions/nested_multisets_ordinals/</loc>
   </url><url>
-    <loc>/theories/network_security_policy_verification/</loc>
+    <loc>/sessions/network_security_policy_verification/</loc>
   </url><url>
-    <loc>/theories/neumann_morgenstern_utility/</loc>
+    <loc>/sessions/neumann_morgenstern_utility/</loc>
   </url><url>
-    <loc>/theories/nitpick/</loc>
+    <loc>/sessions/nitpick/</loc>
   </url><url>
-    <loc>/theories/no_ftl_observers/</loc>
+    <loc>/sessions/no_ftl_observers/</loc>
   </url><url>
-    <loc>/theories/no_ftl_observers_gen_rel/</loc>
+    <loc>/sessions/no_ftl_observers_gen_rel/</loc>
   </url><url>
-    <loc>/theories/nominal2/</loc>
+    <loc>/sessions/nominal2/</loc>
   </url><url>
-    <loc>/theories/noninterference_concurrent_composition/</loc>
+    <loc>/sessions/noninterference_concurrent_composition/</loc>
   </url><url>
-    <loc>/theories/noninterference_csp/</loc>
+    <loc>/sessions/noninterference_csp/</loc>
   </url><url>
-    <loc>/theories/noninterference_generic_unwinding/</loc>
+    <loc>/sessions/noninterference_generic_unwinding/</loc>
   </url><url>
-    <loc>/theories/noninterference_inductive_unwinding/</loc>
+    <loc>/sessions/noninterference_inductive_unwinding/</loc>
   </url><url>
-    <loc>/theories/noninterference_ipurge_unwinding/</loc>
+    <loc>/sessions/noninterference_ipurge_unwinding/</loc>
   </url><url>
-    <loc>/theories/noninterference_sequential_composition/</loc>
+    <loc>/sessions/noninterference_sequential_composition/</loc>
   </url><url>
-    <loc>/theories/normbyeval/</loc>
+    <loc>/sessions/normbyeval/</loc>
   </url><url>
-    <loc>/theories/nullstellensatz/</loc>
+    <loc>/sessions/nullstellensatz/</loc>
   </url><url>
-    <loc>/theories/number_theoretic_transform/</loc>
+    <loc>/sessions/number_theoretic_transform/</loc>
   </url><url>
-    <loc>/theories/octonions/</loc>
+    <loc>/sessions/octonions/</loc>
   </url><url>
-    <loc>/theories/old_datatype_show/</loc>
+    <loc>/sessions/old_datatype_show/</loc>
   </url><url>
-    <loc>/theories/open_induction/</loc>
+    <loc>/sessions/open_induction/</loc>
   </url><url>
-    <loc>/theories/opsets/</loc>
+    <loc>/sessions/opsets/</loc>
   </url><url>
-    <loc>/theories/optics/</loc>
+    <loc>/sessions/optics/</loc>
   </url><url>
-    <loc>/theories/optimal_bst/</loc>
+    <loc>/sessions/optimal_bst/</loc>
   </url><url>
-    <loc>/theories/orbit_stabiliser/</loc>
+    <loc>/sessions/orbit_stabiliser/</loc>
   </url><url>
-    <loc>/theories/order_lattice_props/</loc>
+    <loc>/sessions/order_lattice_props/</loc>
   </url><url>
-    <loc>/theories/ordered_resolution_prover/</loc>
+    <loc>/sessions/ordered_resolution_prover/</loc>
   </url><url>
-    <loc>/theories/ordinal/</loc>
+    <loc>/sessions/ordinal/</loc>
   </url><url>
-    <loc>/theories/ordinal_partitions/</loc>
+    <loc>/sessions/ordinal_partitions/</loc>
   </url><url>
-    <loc>/theories/ordinals_and_cardinals/</loc>
+    <loc>/sessions/ordinals_and_cardinals/</loc>
   </url><url>
-    <loc>/theories/ordinary_differential_equations/</loc>
+    <loc>/sessions/ordinary_differential_equations/</loc>
   </url><url>
-    <loc>/theories/pac_checker/</loc>
+    <loc>/sessions/pac_checker/</loc>
   </url><url>
-    <loc>/theories/package_logic/</loc>
+    <loc>/sessions/package_logic/</loc>
   </url><url>
-    <loc>/theories/padic_field/</loc>
+    <loc>/sessions/padic_field/</loc>
   </url><url>
-    <loc>/theories/padic_ints/</loc>
+    <loc>/sessions/padic_ints/</loc>
   </url><url>
-    <loc>/theories/pairing_heap/</loc>
+    <loc>/sessions/pairing_heap/</loc>
   </url><url>
-    <loc>/theories/pal/</loc>
+    <loc>/sessions/pal/</loc>
   </url><url>
-    <loc>/theories/papp_impossibility/</loc>
+    <loc>/sessions/papp_impossibility/</loc>
   </url><url>
-    <loc>/theories/paraconsistency/</loc>
+    <loc>/sessions/paraconsistency/</loc>
   </url><url>
-    <loc>/theories/parity_game/</loc>
+    <loc>/sessions/parity_game/</loc>
   </url><url>
-    <loc>/theories/partial_function_mr/</loc>
+    <loc>/sessions/partial_function_mr/</loc>
   </url><url>
-    <loc>/theories/partial_order_reduction/</loc>
+    <loc>/sessions/partial_order_reduction/</loc>
   </url><url>
-    <loc>/theories/password_authentication_protocol/</loc>
+    <loc>/sessions/password_authentication_protocol/</loc>
   </url><url>
-    <loc>/theories/pcf/</loc>
+    <loc>/sessions/pcf/</loc>
   </url><url>
-    <loc>/theories/pell/</loc>
+    <loc>/sessions/pell/</loc>
   </url><url>
-    <loc>/theories/perfect-number-thm/</loc>
+    <loc>/sessions/perfect-number-thm/</loc>
   </url><url>
-    <loc>/theories/perron_frobenius/</loc>
+    <loc>/sessions/perron_frobenius/</loc>
   </url><url>
-    <loc>/theories/pgcl/</loc>
+    <loc>/sessions/pgcl/</loc>
   </url><url>
-    <loc>/theories/physical_quantities/</loc>
+    <loc>/sessions/physical_quantities/</loc>
   </url><url>
-    <loc>/theories/pi_calculus/</loc>
+    <loc>/sessions/pi_calculus/</loc>
   </url><url>
-    <loc>/theories/pi_transcendental/</loc>
+    <loc>/sessions/pi_transcendental/</loc>
   </url><url>
-    <loc>/theories/planarity_certificates/</loc>
+    <loc>/sessions/planarity_certificates/</loc>
   </url><url>
-    <loc>/theories/plm/</loc>
+    <loc>/sessions/plm/</loc>
   </url><url>
-    <loc>/theories/pluennecke_ruzsa_inequality/</loc>
+    <loc>/sessions/pluennecke_ruzsa_inequality/</loc>
   </url><url>
-    <loc>/theories/poincare_bendixson/</loc>
+    <loc>/sessions/poincare_bendixson/</loc>
   </url><url>
-    <loc>/theories/poincare_disc/</loc>
+    <loc>/sessions/poincare_disc/</loc>
   </url><url>
-    <loc>/theories/polygonal_number_theorem/</loc>
+    <loc>/sessions/polygonal_number_theorem/</loc>
   </url><url>
-    <loc>/theories/polynomial_factorization/</loc>
+    <loc>/sessions/polynomial_factorization/</loc>
   </url><url>
-    <loc>/theories/polynomial_interpolation/</loc>
+    <loc>/sessions/polynomial_interpolation/</loc>
   </url><url>
-    <loc>/theories/polynomials/</loc>
+    <loc>/sessions/polynomials/</loc>
   </url><url>
-    <loc>/theories/pop_refinement/</loc>
+    <loc>/sessions/pop_refinement/</loc>
   </url><url>
-    <loc>/theories/poplmark-debruijn/</loc>
+    <loc>/sessions/poplmark-debruijn/</loc>
   </url><url>
-    <loc>/theories/posix-lexing/</loc>
+    <loc>/sessions/posix-lexing/</loc>
   </url><url>
-    <loc>/theories/possibilistic_noninterference/</loc>
+    <loc>/sessions/possibilistic_noninterference/</loc>
   </url><url>
-    <loc>/theories/power_sum_polynomials/</loc>
+    <loc>/sessions/power_sum_polynomials/</loc>
   </url><url>
-    <loc>/theories/pratt_certificate/</loc>
+    <loc>/sessions/pratt_certificate/</loc>
   </url><url>
-    <loc>/theories/prefix_free_code_combinators/</loc>
+    <loc>/sessions/prefix_free_code_combinators/</loc>
   </url><url>
-    <loc>/theories/presburger-automata/</loc>
+    <loc>/sessions/presburger-automata/</loc>
   </url><url>
-    <loc>/theories/prim_dijkstra_simple/</loc>
+    <loc>/sessions/prim_dijkstra_simple/</loc>
   </url><url>
-    <loc>/theories/prime_distribution_elementary/</loc>
+    <loc>/sessions/prime_distribution_elementary/</loc>
   </url><url>
-    <loc>/theories/prime_harmonic_series/</loc>
+    <loc>/sessions/prime_harmonic_series/</loc>
   </url><url>
-    <loc>/theories/prime_number_theorem/</loc>
+    <loc>/sessions/prime_number_theorem/</loc>
   </url><url>
-    <loc>/theories/priority_queue_braun/</loc>
+    <loc>/sessions/priority_queue_braun/</loc>
   </url><url>
-    <loc>/theories/priority_search_trees/</loc>
+    <loc>/sessions/priority_search_trees/</loc>
   </url><url>
-    <loc>/theories/probabilistic_noninterference/</loc>
+    <loc>/sessions/probabilistic_noninterference/</loc>
   </url><url>
-    <loc>/theories/probabilistic_prime_tests/</loc>
+    <loc>/sessions/probabilistic_prime_tests/</loc>
   </url><url>
-    <loc>/theories/probabilistic_system_zoo/</loc>
+    <loc>/sessions/probabilistic_system_zoo/</loc>
   </url><url>
-    <loc>/theories/probabilistic_timed_automata/</loc>
+    <loc>/sessions/probabilistic_timed_automata/</loc>
   </url><url>
-    <loc>/theories/probabilistic_while/</loc>
+    <loc>/sessions/probabilistic_while/</loc>
   </url><url>
-    <loc>/theories/probability_inequality_completeness/</loc>
+    <loc>/sessions/probability_inequality_completeness/</loc>
   </url><url>
-    <loc>/theories/prog_prove/</loc>
+    <loc>/sessions/prog_prove/</loc>
   </url><url>
-    <loc>/theories/program-conflict-analysis/</loc>
+    <loc>/sessions/program-conflict-analysis/</loc>
   </url><url>
-    <loc>/theories/progress_tracking/</loc>
+    <loc>/sessions/progress_tracking/</loc>
   </url><url>
-    <loc>/theories/projective_geometry/</loc>
+    <loc>/sessions/projective_geometry/</loc>
   </url><url>
-    <loc>/theories/projective_measurements/</loc>
+    <loc>/sessions/projective_measurements/</loc>
   </url><url>
-    <loc>/theories/promela/</loc>
+    <loc>/sessions/promela/</loc>
   </url><url>
-    <loc>/theories/proof_strategy_language/</loc>
+    <loc>/sessions/proof_strategy_language/</loc>
   </url><url>
-    <loc>/theories/propositional_logic_class/</loc>
+    <loc>/sessions/propositional_logic_class/</loc>
   </url><url>
-    <loc>/theories/propositional_proof_systems/</loc>
+    <loc>/sessions/propositional_proof_systems/</loc>
   </url><url>
-    <loc>/theories/proprespi/</loc>
+    <loc>/sessions/proprespi/</loc>
   </url><url>
-    <loc>/theories/prpu_maxflow/</loc>
+    <loc>/sessions/prpu_maxflow/</loc>
   </url><url>
-    <loc>/theories/psemigroupsconvolution/</loc>
+    <loc>/sessions/psemigroupsconvolution/</loc>
   </url><url>
-    <loc>/theories/pseudohoops/</loc>
+    <loc>/sessions/pseudohoops/</loc>
   </url><url>
-    <loc>/theories/psi_calculi/</loc>
+    <loc>/sessions/psi_calculi/</loc>
   </url><url>
-    <loc>/theories/ptolemys_theorem/</loc>
+    <loc>/sessions/ptolemys_theorem/</loc>
   </url><url>
-    <loc>/theories/public_announcement_logic/</loc>
+    <loc>/sessions/public_announcement_logic/</loc>
   </url><url>
-    <loc>/theories/pure/</loc>
+    <loc>/sessions/pure/</loc>
   </url><url>
-    <loc>/theories/pure-ex/</loc>
+    <loc>/sessions/pure-ex/</loc>
   </url><url>
-    <loc>/theories/pure-examples/</loc>
+    <loc>/sessions/pure-examples/</loc>
   </url><url>
-    <loc>/theories/qhlprover/</loc>
+    <loc>/sessions/qhlprover/</loc>
   </url><url>
-    <loc>/theories/qr_decomposition/</loc>
+    <loc>/sessions/qr_decomposition/</loc>
   </url><url>
-    <loc>/theories/quantales/</loc>
+    <loc>/sessions/quantales/</loc>
   </url><url>
-    <loc>/theories/quantales_converse/</loc>
+    <loc>/sessions/quantales_converse/</loc>
   </url><url>
-    <loc>/theories/quantifier_elimination_hybrid/</loc>
+    <loc>/sessions/quantifier_elimination_hybrid/</loc>
   </url><url>
-    <loc>/theories/quasi_borel_spaces/</loc>
+    <loc>/sessions/quasi_borel_spaces/</loc>
   </url><url>
-    <loc>/theories/quaternions/</loc>
+    <loc>/sessions/quaternions/</loc>
   </url><url>
-    <loc>/theories/query_optimization/</loc>
+    <loc>/sessions/query_optimization/</loc>
   </url><url>
-    <loc>/theories/quick_sort_cost/</loc>
+    <loc>/sessions/quick_sort_cost/</loc>
   </url><url>
-    <loc>/theories/ramsey-infinite/</loc>
+    <loc>/sessions/ramsey-infinite/</loc>
   </url><url>
-    <loc>/theories/random_bsts/</loc>
+    <loc>/sessions/random_bsts/</loc>
   </url><url>
-    <loc>/theories/random_graph_subgraph_threshold/</loc>
+    <loc>/sessions/random_graph_subgraph_threshold/</loc>
   </url><url>
-    <loc>/theories/randomised_bsts/</loc>
+    <loc>/sessions/randomised_bsts/</loc>
   </url><url>
-    <loc>/theories/randomised_social_choice/</loc>
+    <loc>/sessions/randomised_social_choice/</loc>
   </url><url>
-    <loc>/theories/rank_nullity_theorem/</loc>
+    <loc>/sessions/rank_nullity_theorem/</loc>
   </url><url>
-    <loc>/theories/real_impl/</loc>
+    <loc>/sessions/real_impl/</loc>
   </url><url>
-    <loc>/theories/real_power/</loc>
+    <loc>/sessions/real_power/</loc>
   </url><url>
-    <loc>/theories/real_time_deque/</loc>
+    <loc>/sessions/real_time_deque/</loc>
   </url><url>
-    <loc>/theories/recursion-addition/</loc>
+    <loc>/sessions/recursion-addition/</loc>
   </url><url>
-    <loc>/theories/recursion-theory-i/</loc>
+    <loc>/sessions/recursion-theory-i/</loc>
   </url><url>
-    <loc>/theories/refine_imperative_hol/</loc>
+    <loc>/sessions/refine_imperative_hol/</loc>
   </url><url>
-    <loc>/theories/refine_monadic/</loc>
+    <loc>/sessions/refine_monadic/</loc>
   </url><url>
-    <loc>/theories/refinementreactive/</loc>
+    <loc>/sessions/refinementreactive/</loc>
   </url><url>
-    <loc>/theories/regex_equivalence/</loc>
+    <loc>/sessions/regex_equivalence/</loc>
   </url><url>
-    <loc>/theories/registers/</loc>
+    <loc>/sessions/registers/</loc>
   </url><url>
-    <loc>/theories/regression_test_selection/</loc>
+    <loc>/sessions/regression_test_selection/</loc>
   </url><url>
-    <loc>/theories/regular-sets/</loc>
+    <loc>/sessions/regular-sets/</loc>
   </url><url>
-    <loc>/theories/regular_algebras/</loc>
+    <loc>/sessions/regular_algebras/</loc>
   </url><url>
-    <loc>/theories/regular_tree_relations/</loc>
+    <loc>/sessions/regular_tree_relations/</loc>
   </url><url>
-    <loc>/theories/relation_algebra/</loc>
+    <loc>/sessions/relation_algebra/</loc>
   </url><url>
-    <loc>/theories/relational-incorrectness-logic/</loc>
+    <loc>/sessions/relational-incorrectness-logic/</loc>
   </url><url>
-    <loc>/theories/relational_cardinality/</loc>
+    <loc>/sessions/relational_cardinality/</loc>
   </url><url>
-    <loc>/theories/relational_disjoint_set_forests/</loc>
+    <loc>/sessions/relational_disjoint_set_forests/</loc>
   </url><url>
-    <loc>/theories/relational_forests/</loc>
+    <loc>/sessions/relational_forests/</loc>
   </url><url>
-    <loc>/theories/relational_method/</loc>
+    <loc>/sessions/relational_method/</loc>
   </url><url>
-    <loc>/theories/relational_minimum_spanning_trees/</loc>
+    <loc>/sessions/relational_minimum_spanning_trees/</loc>
   </url><url>
-    <loc>/theories/relational_paths/</loc>
+    <loc>/sessions/relational_paths/</loc>
   </url><url>
-    <loc>/theories/rensets/</loc>
+    <loc>/sessions/rensets/</loc>
   </url><url>
-    <loc>/theories/rep_fin_groups/</loc>
+    <loc>/sessions/rep_fin_groups/</loc>
   </url><url>
-    <loc>/theories/residuated_lattices/</loc>
+    <loc>/sessions/residuated_lattices/</loc>
   </url><url>
-    <loc>/theories/residuatedtransitionsystem/</loc>
+    <loc>/sessions/residuatedtransitionsystem/</loc>
   </url><url>
-    <loc>/theories/resolution_fol/</loc>
+    <loc>/sessions/resolution_fol/</loc>
   </url><url>
-    <loc>/theories/rewrite_properties_reduction/</loc>
+    <loc>/sessions/rewrite_properties_reduction/</loc>
   </url><url>
-    <loc>/theories/rewriting_z/</loc>
+    <loc>/sessions/rewriting_z/</loc>
   </url><url>
-    <loc>/theories/ribbon_proofs/</loc>
+    <loc>/sessions/ribbon_proofs/</loc>
   </url><url>
-    <loc>/theories/ripemd-160-spark/</loc>
+    <loc>/sessions/ripemd-160-spark/</loc>
   </url><url>
-    <loc>/theories/risk_free_lending/</loc>
+    <loc>/sessions/risk_free_lending/</loc>
   </url><url>
-    <loc>/theories/robbins-conjecture/</loc>
+    <loc>/sessions/robbins-conjecture/</loc>
   </url><url>
-    <loc>/theories/robdd/</loc>
+    <loc>/sessions/robdd/</loc>
   </url><url>
-    <loc>/theories/robinson_arithmetic/</loc>
+    <loc>/sessions/robinson_arithmetic/</loc>
   </url><url>
-    <loc>/theories/root_balanced_tree/</loc>
+    <loc>/sessions/root_balanced_tree/</loc>
   </url><url>
-    <loc>/theories/roth_arithmetic_progressions/</loc>
+    <loc>/sessions/roth_arithmetic_progressions/</loc>
   </url><url>
-    <loc>/theories/routing/</loc>
+    <loc>/sessions/routing/</loc>
   </url><url>
-    <loc>/theories/roy_floyd_warshall/</loc>
+    <loc>/sessions/roy_floyd_warshall/</loc>
   </url><url>
-    <loc>/theories/rsapss/</loc>
+    <loc>/sessions/rsapss/</loc>
   </url><url>
-    <loc>/theories/safe_distance/</loc>
+    <loc>/sessions/safe_distance/</loc>
   </url><url>
-    <loc>/theories/safe_ocl/</loc>
+    <loc>/sessions/safe_ocl/</loc>
   </url><url>
-    <loc>/theories/safe_range_rc/</loc>
+    <loc>/sessions/safe_range_rc/</loc>
   </url><url>
-    <loc>/theories/satsolververification/</loc>
+    <loc>/sessions/satsolververification/</loc>
   </url><url>
-    <loc>/theories/saturation_framework/</loc>
+    <loc>/sessions/saturation_framework/</loc>
   </url><url>
-    <loc>/theories/saturation_framework_extensions/</loc>
+    <loc>/sessions/saturation_framework_extensions/</loc>
   </url><url>
-    <loc>/theories/sauer_shelah_lemma/</loc>
+    <loc>/sessions/sauer_shelah_lemma/</loc>
   </url><url>
-    <loc>/theories/sc_dom_components/</loc>
+    <loc>/sessions/sc_dom_components/</loc>
   </url><url>
-    <loc>/theories/scc_bloemen_sequential/</loc>
+    <loc>/sessions/scc_bloemen_sequential/</loc>
   </url><url>
-    <loc>/theories/schutz_spacetime/</loc>
+    <loc>/sessions/schutz_spacetime/</loc>
   </url><url>
-    <loc>/theories/schwartz_zippel/</loc>
+    <loc>/sessions/schwartz_zippel/</loc>
   </url><url>
-    <loc>/theories/sds_impossibility/</loc>
+    <loc>/sessions/sds_impossibility/</loc>
   </url><url>
     <loc>/search/</loc>
     <priority>0.1</priority>
   </url><url>
-    <loc>/theories/secondary_sylow/</loc>
+    <loc>/sessions/secondary_sylow/</loc>
   </url><url>
-    <loc>/theories/security_protocol_refinement/</loc>
+    <loc>/sessions/security_protocol_refinement/</loc>
   </url><url>
-    <loc>/theories/selection_heap_sort/</loc>
+    <loc>/sessions/selection_heap_sort/</loc>
   </url><url>
-    <loc>/theories/sensocialchoice/</loc>
+    <loc>/sessions/sensocialchoice/</loc>
   </url><url>
-    <loc>/theories/separata/</loc>
+    <loc>/sessions/separata/</loc>
   </url><url>
-    <loc>/theories/separation_algebra/</loc>
+    <loc>/sessions/separation_algebra/</loc>
   </url><url>
-    <loc>/theories/separation_logic_imperative_hol/</loc>
+    <loc>/sessions/separation_logic_imperative_hol/</loc>
   </url><url>
-    <loc>/theories/separation_logic_unbounded/</loc>
+    <loc>/sessions/separation_logic_unbounded/</loc>
   </url><url>
-    <loc>/theories/sepref_basic/</loc>
+    <loc>/sessions/sepref_basic/</loc>
   </url><url>
-    <loc>/theories/sepref_iicf/</loc>
+    <loc>/sessions/sepref_iicf/</loc>
   </url><url>
-    <loc>/theories/sepref_prereq/</loc>
+    <loc>/sessions/sepref_prereq/</loc>
   </url><url>
-    <loc>/theories/sequentinvertibility/</loc>
+    <loc>/sessions/sequentinvertibility/</loc>
   </url><url>
-    <loc>/theories/sequents/</loc>
+    <loc>/sessions/sequents/</loc>
   </url><url>
-    <loc>/theories/shadow_dom/</loc>
+    <loc>/sessions/</loc>
   </url><url>
-    <loc>/theories/shadow_sc_dom/</loc>
+    <loc>/sessions/shadow_dom/</loc>
   </url><url>
-    <loc>/theories/shivers-cfa/</loc>
+    <loc>/sessions/shadow_sc_dom/</loc>
   </url><url>
-    <loc>/theories/shortestpath/</loc>
+    <loc>/sessions/shivers-cfa/</loc>
   </url><url>
-    <loc>/theories/show/</loc>
+    <loc>/sessions/shortestpath/</loc>
   </url><url>
-    <loc>/theories/sifpl/</loc>
+    <loc>/sessions/show/</loc>
   </url><url>
-    <loc>/theories/sifum_type_systems/</loc>
+    <loc>/sessions/sifpl/</loc>
   </url><url>
-    <loc>/theories/sigma_commit_crypto/</loc>
+    <loc>/sessions/sifum_type_systems/</loc>
   </url><url>
-    <loc>/theories/signature_groebner/</loc>
+    <loc>/sessions/sigma_commit_crypto/</loc>
   </url><url>
-    <loc>/theories/simpl/</loc>
+    <loc>/sessions/signature_groebner/</loc>
   </url><url>
-    <loc>/theories/simple_clause_learning/</loc>
+    <loc>/sessions/simpl/</loc>
   </url><url>
-    <loc>/theories/simple_firewall/</loc>
+    <loc>/sessions/simple_clause_learning/</loc>
   </url><url>
-    <loc>/theories/simplex/</loc>
+    <loc>/sessions/simple_firewall/</loc>
   </url><url>
-    <loc>/theories/simplicial_complexes_and_boolean_functions/</loc>
+    <loc>/sessions/simplex/</loc>
   </url><url>
-    <loc>/theories/simplifiedontologicalargument/</loc>
+    <loc>/sessions/simplicial_complexes_and_boolean_functions/</loc>
   </url><url>
-    <loc>/theories/skew_heap/</loc>
+    <loc>/sessions/simplifiedontologicalargument/</loc>
   </url><url>
-    <loc>/theories/skip_lists/</loc>
+    <loc>/sessions/skew_heap/</loc>
   </url><url>
-    <loc>/theories/sledgehammer/</loc>
+    <loc>/sessions/skip_lists/</loc>
   </url><url>
-    <loc>/theories/slicing/</loc>
+    <loc>/sessions/sledgehammer/</loc>
   </url><url>
-    <loc>/theories/sliding_window_algorithm/</loc>
+    <loc>/sessions/slicing/</loc>
   </url><url>
-    <loc>/theories/sm/</loc>
+    <loc>/sessions/sliding_window_algorithm/</loc>
   </url><url>
-    <loc>/theories/sm_base/</loc>
+    <loc>/sessions/sm/</loc>
   </url><url>
-    <loc>/theories/smith_normal_form/</loc>
+    <loc>/sessions/sm_base/</loc>
   </url><url>
-    <loc>/theories/sml/</loc>
+    <loc>/sessions/smith_normal_form/</loc>
   </url><url>
-    <loc>/theories/smooth_manifolds/</loc>
+    <loc>/sessions/sml/</loc>
   </url><url>
-    <loc>/theories/solidity/</loc>
+    <loc>/sessions/smooth_manifolds/</loc>
   </url><url>
-    <loc>/theories/sophomores_dream/</loc>
+    <loc>/sessions/solidity/</loc>
   </url><url>
-    <loc>/theories/sort_encodings/</loc>
+    <loc>/sessions/sophomores_dream/</loc>
   </url><url>
-    <loc>/theories/source_coding_theorem/</loc>
+    <loc>/sessions/sort_encodings/</loc>
   </url><url>
-    <loc>/theories/sparcv8/</loc>
+    <loc>/sessions/source_coding_theorem/</loc>
   </url><url>
-    <loc>/theories/speccheck/</loc>
+    <loc>/sessions/sparcv8/</loc>
   </url><url>
-    <loc>/theories/special_function_bounds/</loc>
+    <loc>/sessions/speccheck/</loc>
   </url><url>
-    <loc>/theories/splay_tree/</loc>
+    <loc>/sessions/special_function_bounds/</loc>
   </url><url>
-    <loc>/theories/sqrt_babylonian/</loc>
+    <loc>/sessions/splay_tree/</loc>
   </url><url>
-    <loc>/theories/stable_matching/</loc>
+    <loc>/sessions/sqrt_babylonian/</loc>
   </url><url>
-    <loc>/theories/stalnaker_logic/</loc>
+    <loc>/sessions/stable_matching/</loc>
   </url><url>
-    <loc>/theories/statecharts/</loc>
+    <loc>/sessions/stalnaker_logic/</loc>
   </url><url>
-    <loc>/theories/stateful_protocol_composition_and_typing/</loc>
+    <loc>/sessions/statecharts/</loc>
+  </url><url>
+    <loc>/sessions/stateful_protocol_composition_and_typing/</loc>
   </url><url>
     <loc>/statistics/</loc>
   </url><url>
-    <loc>/theories/stellar_quorums/</loc>
+    <loc>/sessions/stellar_quorums/</loc>
   </url><url>
-    <loc>/theories/stern_brocot/</loc>
+    <loc>/sessions/stern_brocot/</loc>
   </url><url>
-    <loc>/theories/stewart_apollonius/</loc>
+    <loc>/sessions/stewart_apollonius/</loc>
   </url><url>
-    <loc>/theories/stirling_formula/</loc>
+    <loc>/sessions/stirling_formula/</loc>
   </url><url>
-    <loc>/theories/stochastic_matrices/</loc>
+    <loc>/sessions/stochastic_matrices/</loc>
   </url><url>
-    <loc>/theories/stone_algebras/</loc>
+    <loc>/sessions/stone_algebras/</loc>
   </url><url>
-    <loc>/theories/stone_kleene_relation_algebras/</loc>
+    <loc>/sessions/stone_kleene_relation_algebras/</loc>
   </url><url>
-    <loc>/theories/stone_relation_algebras/</loc>
+    <loc>/sessions/stone_relation_algebras/</loc>
   </url><url>
-    <loc>/theories/store_buffer_reduction/</loc>
+    <loc>/sessions/store_buffer_reduction/</loc>
   </url><url>
-    <loc>/theories/stream-fusion/</loc>
+    <loc>/sessions/stream-fusion/</loc>
   </url><url>
-    <loc>/theories/stream_fusion_code/</loc>
+    <loc>/sessions/stream_fusion_code/</loc>
   </url><url>
-    <loc>/theories/strictomegacategories/</loc>
+    <loc>/sessions/strictomegacategories/</loc>
   </url><url>
-    <loc>/theories/strong_security/</loc>
+    <loc>/sessions/strong_security/</loc>
   </url><url>
-    <loc>/theories/sturm_sequences/</loc>
+    <loc>/sessions/sturm_sequences/</loc>
   </url><url>
-    <loc>/theories/sturm_tarski/</loc>
+    <loc>/sessions/sturm_tarski/</loc>
   </url><url>
-    <loc>/theories/stuttering_equivalence/</loc>
+    <loc>/sessions/stuttering_equivalence/</loc>
   </url><url>
     <loc>/webapp/submit/</loc>
   </url><url>
-    <loc>/theories/subresultants/</loc>
+    <loc>/sessions/subresultants/</loc>
   </url><url>
-    <loc>/theories/subset_boolean_algebras/</loc>
+    <loc>/sessions/subset_boolean_algebras/</loc>
   </url><url>
-    <loc>/theories/sugar/</loc>
+    <loc>/sessions/sugar/</loc>
   </url><url>
-    <loc>/theories/sumsquares/</loc>
+    <loc>/sessions/sumsquares/</loc>
   </url><url>
-    <loc>/theories/sunflowers/</loc>
+    <loc>/sessions/sunflowers/</loc>
   </url><url>
-    <loc>/theories/supercalc/</loc>
+    <loc>/sessions/supercalc/</loc>
   </url><url>
-    <loc>/theories/suppes_theorem/</loc>
+    <loc>/sessions/suppes_theorem/</loc>
   </url><url>
-    <loc>/theories/surprise_paradox/</loc>
+    <loc>/sessions/surprise_paradox/</loc>
   </url><url>
-    <loc>/theories/symmetric_polynomials/</loc>
+    <loc>/sessions/symmetric_polynomials/</loc>
   </url><url>
-    <loc>/theories/syntax_independent_logic/</loc>
+    <loc>/sessions/syntax_independent_logic/</loc>
   </url><url>
-    <loc>/theories/synthetic_completeness/</loc>
+    <loc>/sessions/synthetic_completeness/</loc>
   </url><url>
-    <loc>/theories/system/</loc>
+    <loc>/sessions/system/</loc>
   </url><url>
-    <loc>/theories/szemeredi_regularity/</loc>
+    <loc>/sessions/szemeredi_regularity/</loc>
   </url><url>
-    <loc>/theories/szpilrajn/</loc>
+    <loc>/sessions/szpilrajn/</loc>
   </url><url>
-    <loc>/theories/tail_recursive_functions/</loc>
+    <loc>/sessions/tail_recursive_functions/</loc>
   </url><url>
-    <loc>/theories/tarskis_geometry/</loc>
+    <loc>/sessions/tarskis_geometry/</loc>
   </url><url>
-    <loc>/theories/taylor_models/</loc>
+    <loc>/sessions/taylor_models/</loc>
   </url><url>
-    <loc>/theories/tesl_language/</loc>
+    <loc>/sessions/tesl_language/</loc>
   </url><url>
-    <loc>/theories/</loc>
+    <loc>/sessions/three_circles/</loc>
   </url><url>
-    <loc>/theories/three_circles/</loc>
+    <loc>/sessions/three_squares/</loc>
   </url><url>
-    <loc>/theories/three_squares/</loc>
+    <loc>/sessions/timed_automata/</loc>
   </url><url>
-    <loc>/theories/timed_automata/</loc>
+    <loc>/sessions/tla/</loc>
   </url><url>
-    <loc>/theories/tla/</loc>
+    <loc>/sessions/tools/</loc>
   </url><url>
-    <loc>/theories/tools/</loc>
+    <loc>/sessions/topological_semantics/</loc>
   </url><url>
-    <loc>/theories/topological_semantics/</loc>
+    <loc>/sessions/topology/</loc>
   </url><url>
-    <loc>/theories/topology/</loc>
+    <loc>/sessions/tortoisehare/</loc>
   </url><url>
-    <loc>/theories/tortoisehare/</loc>
+    <loc>/sessions/transcendence_series_hancl_rucki/</loc>
   </url><url>
-    <loc>/theories/transcendence_series_hancl_rucki/</loc>
+    <loc>/sessions/transformer_semantics/</loc>
   </url><url>
-    <loc>/theories/transformer_semantics/</loc>
+    <loc>/sessions/transition_systems_and_automata/</loc>
   </url><url>
-    <loc>/theories/transition_systems_and_automata/</loc>
+    <loc>/sessions/transitive-closure/</loc>
   </url><url>
-    <loc>/theories/transitive-closure/</loc>
+    <loc>/sessions/transitive-closure-ii/</loc>
   </url><url>
-    <loc>/theories/transitive-closure-ii/</loc>
+    <loc>/sessions/transitive_models/</loc>
   </url><url>
-    <loc>/theories/transitive_models/</loc>
+    <loc>/sessions/treaps/</loc>
   </url><url>
-    <loc>/theories/treaps/</loc>
+    <loc>/sessions/tree-automata/</loc>
   </url><url>
-    <loc>/theories/tree-automata/</loc>
+    <loc>/sessions/tree_decomposition/</loc>
   </url><url>
-    <loc>/theories/tree_decomposition/</loc>
+    <loc>/sessions/tree_enumeration/</loc>
   </url><url>
-    <loc>/theories/tree_enumeration/</loc>
+    <loc>/sessions/triangle/</loc>
   </url><url>
-    <loc>/theories/triangle/</loc>
+    <loc>/sessions/trie/</loc>
   </url><url>
-    <loc>/theories/trie/</loc>
+    <loc>/sessions/tsirelsonbound/</loc>
   </url><url>
-    <loc>/theories/tsirelsonbound/</loc>
+    <loc>/sessions/turans_graph_theorem/</loc>
   </url><url>
-    <loc>/theories/turans_graph_theorem/</loc>
+    <loc>/sessions/tutorial/</loc>
   </url><url>
-    <loc>/theories/tutorial/</loc>
+    <loc>/sessions/twelvefold_way/</loc>
   </url><url>
-    <loc>/theories/twelvefold_way/</loc>
+    <loc>/sessions/two_generated_word_monoids_intersection/</loc>
   </url><url>
-    <loc>/theories/two_generated_word_monoids_intersection/</loc>
+    <loc>/sessions/tycon/</loc>
   </url><url>
-    <loc>/theories/tycon/</loc>
+    <loc>/sessions/typeclass_hierarchy/</loc>
   </url><url>
-    <loc>/theories/typeclass_hierarchy/</loc>
+    <loc>/sessions/types_tableaus_and_goedels_god/</loc>
   </url><url>
-    <loc>/theories/types_tableaus_and_goedels_god/</loc>
+    <loc>/sessions/types_to_sets_extension/</loc>
   </url><url>
-    <loc>/theories/types_to_sets_extension/</loc>
+    <loc>/sessions/undirected_graph_theory/</loc>
   </url><url>
-    <loc>/theories/undirected_graph_theory/</loc>
+    <loc>/sessions/universal_hash_families/</loc>
   </url><url>
-    <loc>/theories/universal_hash_families/</loc>
+    <loc>/sessions/universal_turing_machine/</loc>
   </url><url>
-    <loc>/theories/universal_turing_machine/</loc>
+    <loc>/sessions/updown_scheme/</loc>
   </url><url>
-    <loc>/theories/updown_scheme/</loc>
+    <loc>/sessions/upf/</loc>
   </url><url>
-    <loc>/theories/upf/</loc>
+    <loc>/sessions/upf_firewall/</loc>
   </url><url>
-    <loc>/theories/upf_firewall/</loc>
+    <loc>/sessions/utp/</loc>
   </url><url>
-    <loc>/theories/utp/</loc>
+    <loc>/sessions/utp-toolkit/</loc>
   </url><url>
-    <loc>/theories/utp-toolkit/</loc>
+    <loc>/sessions/valuation/</loc>
   </url><url>
-    <loc>/theories/valuation/</loc>
+    <loc>/sessions/van_der_waerden/</loc>
   </url><url>
-    <loc>/theories/van_der_waerden/</loc>
+    <loc>/sessions/van_emde_boas_trees/</loc>
   </url><url>
-    <loc>/theories/van_emde_boas_trees/</loc>
+    <loc>/sessions/vectorspace/</loc>
   </url><url>
-    <loc>/theories/vectorspace/</loc>
+    <loc>/sessions/vericomp/</loc>
   </url><url>
-    <loc>/theories/vericomp/</loc>
+    <loc>/sessions/verified-prover/</loc>
   </url><url>
-    <loc>/theories/verified-prover/</loc>
+    <loc>/sessions/verified_sat_based_ai_planning/</loc>
   </url><url>
-    <loc>/theories/verified_sat_based_ai_planning/</loc>
+    <loc>/sessions/verifythis2018/</loc>
   </url><url>
-    <loc>/theories/verifythis2018/</loc>
+    <loc>/sessions/verifythis2019/</loc>
   </url><url>
-    <loc>/theories/verifythis2019/</loc>
+    <loc>/sessions/vickrey_clarke_groves/</loc>
   </url><url>
-    <loc>/theories/vickrey_clarke_groves/</loc>
+    <loc>/sessions/virtual_substitution/</loc>
   </url><url>
-    <loc>/theories/virtual_substitution/</loc>
+    <loc>/sessions/volpanosmith/</loc>
   </url><url>
-    <loc>/theories/volpanosmith/</loc>
+    <loc>/sessions/vydra_mdl/</loc>
   </url><url>
-    <loc>/theories/vydra_mdl/</loc>
+    <loc>/sessions/webassembly/</loc>
   </url><url>
-    <loc>/theories/webassembly/</loc>
+    <loc>/sessions/weight_balanced_trees/</loc>
   </url><url>
-    <loc>/theories/weight_balanced_trees/</loc>
+    <loc>/sessions/weighted_arithmetic_geometric_mean/</loc>
   </url><url>
-    <loc>/theories/weighted_arithmetic_geometric_mean/</loc>
+    <loc>/sessions/weighted_path_order/</loc>
   </url><url>
-    <loc>/theories/weighted_path_order/</loc>
+    <loc>/sessions/well_quasi_orders/</loc>
   </url><url>
-    <loc>/theories/well_quasi_orders/</loc>
+    <loc>/sessions/wetzels_problem/</loc>
   </url><url>
-    <loc>/theories/wetzels_problem/</loc>
+    <loc>/sessions/whatandwhere_security/</loc>
   </url><url>
-    <loc>/theories/whatandwhere_security/</loc>
+    <loc>/sessions/winding_number_eval/</loc>
   </url><url>
-    <loc>/theories/winding_number_eval/</loc>
+    <loc>/sessions/woot_strong_eventual_consistency/</loc>
   </url><url>
-    <loc>/theories/woot_strong_eventual_consistency/</loc>
+    <loc>/sessions/word_lib/</loc>
   </url><url>
-    <loc>/theories/word_lib/</loc>
+    <loc>/sessions/workerwrapper/</loc>
   </url><url>
-    <loc>/theories/workerwrapper/</loc>
+    <loc>/sessions/x86_semantics/</loc>
   </url><url>
-    <loc>/theories/x86_semantics/</loc>
+    <loc>/sessions/xml/</loc>
   </url><url>
-    <loc>/theories/xml/</loc>
+    <loc>/sessions/youngs_inequality/</loc>
   </url><url>
-    <loc>/theories/youngs_inequality/</loc>
+    <loc>/sessions/zeckendorf/</loc>
   </url><url>
-    <loc>/theories/zeckendorf/</loc>
+    <loc>/sessions/zeta_3_irrational/</loc>
   </url><url>
-    <loc>/theories/zeta_3_irrational/</loc>
+    <loc>/sessions/zeta_function/</loc>
   </url><url>
-    <loc>/theories/zeta_function/</loc>
+    <loc>/sessions/zf/</loc>
   </url><url>
-    <loc>/theories/zf/</loc>
+    <loc>/sessions/zf-ac/</loc>
   </url><url>
-    <loc>/theories/zf-ac/</loc>
+    <loc>/sessions/zf-coind/</loc>
   </url><url>
-    <loc>/theories/zf-coind/</loc>
+    <loc>/sessions/zf-constructible/</loc>
   </url><url>
-    <loc>/theories/zf-constructible/</loc>
+    <loc>/sessions/zf-ex/</loc>
   </url><url>
-    <loc>/theories/zf-ex/</loc>
+    <loc>/sessions/zf-imp/</loc>
   </url><url>
-    <loc>/theories/zf-imp/</loc>
+    <loc>/sessions/zf-induct/</loc>
   </url><url>
-    <loc>/theories/zf-induct/</loc>
+    <loc>/sessions/zf-resid/</loc>
   </url><url>
-    <loc>/theories/zf-resid/</loc>
+    <loc>/sessions/zf-unity/</loc>
   </url><url>
-    <loc>/theories/zf-unity/</loc>
-  </url><url>
-    <loc>/theories/zfc_in_hol/</loc>
+    <loc>/sessions/zfc_in_hol/</loc>
   </url>
 </urlset>
