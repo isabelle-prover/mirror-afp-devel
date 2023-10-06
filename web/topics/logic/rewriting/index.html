@@ -1,238 +1,308 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Logic/Rewriting - Archive of Formal Proofs</title><meta name="description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."><link rel="alternate" type="application/rss+xml" href="../../../topics/logic/rewriting/index.xml" title="Archive of Formal Proofs" /><meta property="og:title" content="Logic/Rewriting" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Logic/Rewriting - Archive of Formal Proofs</title>
+    <meta name="description" content="A collection of proof libraries, examples, and larger
+     scientific developments, mechanically checked in the theorem prover Isabelle.">
+  <link rel="alternate" type="application/rss+xml" href="../../../topics/logic/rewriting/index.xml" title="Archive of Formal Proofs" />
+
+  <meta property="og:title" content="Logic/Rewriting" />
 <meta property="og:description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="/topics/logic/rewriting/" /><meta property="og:image" content="/images/afp.png"/><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="Logic/Rewriting"/>
 <meta name="twitter:description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."/>
 
-  
   <link rel="stylesheet" type="text/css" href="../../../css/front.min.css">
 
-  <link rel="icon" href="../../../images/favicon.ico" type="image/icon"><script src="../../../js/obfuscate.js"></script>
+  <link rel="icon" href="../../../images/favicon.ico" type="image/icon">
+
+  <script src="../../../js/obfuscate.js"></script>
   <script src="../../../js/flexsearch.bundle.js"></script>
   <script src="../../../js/scroll-spy.js"></script>
   <script src="../../../js/theory.js"></script>
-  <script src="../../../js/util.js"></script><script src="../../../js/header-search.js"></script><script src="../../../js/search-autocomplete.js"></script>
+  <script src="../../../js/util.js"></script>
+    <script src="../../../js/header-search.js"></script>
+  <script src="../../../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../../../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../../../" class='logo-link'>
-    <img src="../../../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../../../" class="logo-link">
+    <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../../../search"><img src="../../../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../../../" class='logo-link'>
-        <img src="../../../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../../../"><li >Home</li></a>
-        <a href="../../../topics/"><li >Topics</li></a>
-        <a href="../../../download/"><li >Download</li></a>
-        <a href="../../../help/"><li >Help</li></a>
-        <a href="../../../submission/"><li >Submission</li></a>
-        <a href="../../../statistics/"><li >Statistics</li></a>
-        <a href="../../../about/"><li >About</li></a>
+          <a href="../../../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../../../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../../../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../../../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../../../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../../../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../../../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content '><header>
-  <form autocomplete="off" action="../../../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../../../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>L</span>ogic/<span class='first'>R</span>ewriting</h1>
+    </aside>
+    <div class='content'>
+      <header>
+    <form autocomplete="off" action="../../../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../../../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>L</span>ogic/<span class='first'>R</span>ewriting
+    
+  </h1>
   <div>
-    
-    
   </div>
-</header><div><h2>Subject Classification</h2><p>ACM: <a href="https://dl.acm.org/topic/ccs2012/10003752.10003790.10003798">Theory of computation~Equational logic and rewriting</a></p><h2 class="head">2023</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Efficient_Weighted_Path_Order.html">A Verified Efficient Implementation of the Weighted Path Order</a></h5> <br>by <a href="../../../authors/thiemann">René Thiemann</a> and <a href="../../../authors/wenninger">Elias Wenninger</a></div>
-  <span class="date">
-    Jun 01
-  </span>
-</article>
+</header>
+      <div>
+        
+    <h2>Subject Classification</h2>
+      <p>ACM: <a href="https://dl.acm.org/topic/ccs2012/10003752.10003790.10003798">Theory of computation~Equational logic and rewriting</a></p>
+    <h2 class="head">2023</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Efficient_Weighted_Path_Order.html">A Verified Efficient Implementation of the Weighted Path Order</a></h5>
+          <br>
+            by <a href="../../../authors/thiemann">René Thiemann</a> and <a href="../../../authors/wenninger">Elias Wenninger</a>
 
+        </div>
+        <span class="date">Jun 01</span>
+      </article>
+    <h2 class="head">2022</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Rewrite_Properties_Reduction.html">Reducing Rewrite Properties to Properties on Ground Terms</a></h5>
+          <br>
+            by <a href="../../../authors/lochmann">Alexander Lochmann</a>
 
-<h2 class="head">2022</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Rewrite_Properties_Reduction.html">Reducing Rewrite Properties to Properties on Ground Terms</a></h5> <br>by <a href="../../../authors/lochmann">Alexander Lochmann</a></div>
-  <span class="date">
-    Jun 02
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Multiset_Ordering_NPC.html">The Generalized Multiset Ordering is NP-Complete</a></h5> <br>by <a href="../../../authors/thiemann">René Thiemann</a> and <a href="../../../authors/schmidinger">Lukas Schmidinger</a></div>
-  <span class="date">
-    Apr 20
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/FO_Theory_Rewriting.html">First-Order Theory of Rewriting</a></h5> <br>by <a href="../../../authors/lochmann">Alexander Lochmann</a> and <a href="../../../authors/felgenhauer">Bertram Felgenhauer</a></div>
-  <span class="date">
-    Feb 02
-  </span>
-</article>
+        </div>
+        <span class="date">Jun 02</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Multiset_Ordering_NPC.html">The Generalized Multiset Ordering is NP-Complete</a></h5>
+          <br>
+            by <a href="../../../authors/thiemann">René Thiemann</a> and <a href="../../../authors/schmidinger">Lukas Schmidinger</a>
 
+        </div>
+        <span class="date">Apr 20</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/FO_Theory_Rewriting.html">First-Order Theory of Rewriting</a></h5>
+          <br>
+            by <a href="../../../authors/lochmann">Alexander Lochmann</a> and <a href="../../../authors/felgenhauer">Bertram Felgenhauer</a>
 
-<h2 class="head">2021</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Weighted_Path_Order.html">A Formalization of Weighted Path Orders and Recursive Path Orders</a></h5> <br>by <a href="../../../authors/sternagel">Christian Sternagel</a>, <a href="../../../authors/thiemann">René Thiemann</a> and <a href="../../../authors/yamada">Akihisa Yamada</a></div>
-  <span class="date">
-    Sep 16
-  </span>
-</article>
+        </div>
+        <span class="date">Feb 02</span>
+      </article>
+    <h2 class="head">2021</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Weighted_Path_Order.html">A Formalization of Weighted Path Orders and Recursive Path Orders</a></h5>
+          <br>
+            by <a href="../../../authors/sternagel">Christian Sternagel</a>, <a href="../../../authors/thiemann">René Thiemann</a> and <a href="../../../authors/yamada">Akihisa Yamada</a>
 
+        </div>
+        <span class="date">Sep 16</span>
+      </article>
+    <h2 class="head">2020</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Knuth_Bendix_Order.html">A Formalization of Knuth–Bendix Orders</a></h5>
+          <br>
+            by <a href="../../../authors/sternagel">Christian Sternagel</a> and <a href="../../../authors/thiemann">René Thiemann</a>
 
-<h2 class="head">2020</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Knuth_Bendix_Order.html">A Formalization of Knuth–Bendix Orders</a></h5> <br>by <a href="../../../authors/sternagel">Christian Sternagel</a> and <a href="../../../authors/thiemann">René Thiemann</a></div>
-  <span class="date">
-    May 13
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Goodstein_Lambda.html">Implementing the Goodstein Function in λ-Calculus</a></h5> <br>by <a href="../../../authors/felgenhauer">Bertram Felgenhauer</a></div>
-  <span class="date">
-    Feb 21
-  </span>
-</article>
+        </div>
+        <span class="date">May 13</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Goodstein_Lambda.html">Implementing the Goodstein Function in λ-Calculus</a></h5>
+          <br>
+            by <a href="../../../authors/felgenhauer">Bertram Felgenhauer</a>
 
+        </div>
+        <span class="date">Feb 21</span>
+      </article>
+    <h2 class="head">2019</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/CakeML_Codegen.html">A Verified Code Generator from Isabelle/HOL to CakeML</a></h5>
+          <br>
+            by <a href="../../../authors/hupel">Lars Hupel</a>
 
-<h2 class="head">2019</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/CakeML_Codegen.html">A Verified Code Generator from Isabelle/HOL to CakeML</a></h5> <br>by <a href="../../../authors/hupel">Lars Hupel</a></div>
-  <span class="date">
-    Jul 08
-  </span>
-</article>
+        </div>
+        <span class="date">Jul 08</span>
+      </article>
+    <h2 class="head">2018</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Graph_Saturation.html">Graph Saturation</a></h5>
+          <br>
+            by <a href="../../../authors/joosten">Sebastiaan J. C. Joosten</a>
 
+        </div>
+        <span class="date">Nov 23</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Lambda_Free_EPO.html">Formalization of the Embedding Path Order for Lambda-Free Higher-Order Terms</a></h5>
+          <br>
+            by <a href="../../../authors/bentkamp">Alexander Bentkamp</a>
 
-<h2 class="head">2018</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Graph_Saturation.html">Graph Saturation</a></h5> <br>by <a href="../../../authors/joosten">Sebastiaan J. C. Joosten</a></div>
-  <span class="date">
-    Nov 23
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Lambda_Free_EPO.html">Formalization of the Embedding Path Order for Lambda-Free Higher-Order Terms</a></h5> <br>by <a href="../../../authors/bentkamp">Alexander Bentkamp</a></div>
-  <span class="date">
-    Oct 19
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/First_Order_Terms.html">First-Order Terms</a></h5> <br>by <a href="../../../authors/sternagel">Christian Sternagel</a> and <a href="../../../authors/thiemann">René Thiemann</a></div>
-  <span class="date">
-    Feb 06
-  </span>
-</article>
+        </div>
+        <span class="date">Oct 19</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/First_Order_Terms.html">First-Order Terms</a></h5>
+          <br>
+            by <a href="../../../authors/sternagel">Christian Sternagel</a> and <a href="../../../authors/thiemann">René Thiemann</a>
 
+        </div>
+        <span class="date">Feb 06</span>
+      </article>
+    <h2 class="head">2017</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Monad_Normalisation.html">Monad normalisation</a></h5>
+          <br>
+            by <a href="../../../authors/schneider">Joshua Schneider</a>, <a href="../../../authors/eberl">Manuel Eberl</a> and <a href="../../../authors/lochbihler">Andreas Lochbihler</a>
 
-<h2 class="head">2017</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Monad_Normalisation.html">Monad normalisation</a></h5> <br>by <a href="../../../authors/schneider">Joshua Schneider</a>, <a href="../../../authors/eberl">Manuel Eberl</a> and <a href="../../../authors/lochbihler">Andreas Lochbihler</a></div>
-  <span class="date">
-    May 05
-  </span>
-</article>
+        </div>
+        <span class="date">May 05</span>
+      </article>
+    <h2 class="head">2016</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Nested_Multisets_Ordinals.html">Formalization of Nested Multisets, Hereditary Multisets, and Syntactic Ordinals</a></h5>
+          <br>
+            by <a href="../../../authors/blanchette">Jasmin Christian Blanchette</a>, <a href="../../../authors/fleury">Mathias Fleury</a> and <a href="../../../authors/traytel">Dmitriy Traytel</a>
 
+        </div>
+        <span class="date">Nov 12</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Lambda_Free_KBOs.html">Formalization of Knuth–Bendix Orders for Lambda-Free Higher-Order Terms</a></h5>
+          <br>
+            by <a href="../../../authors/becker">Heiko Becker</a>, <a href="../../../authors/blanchette">Jasmin Christian Blanchette</a>, <a href="../../../authors/waldmann">Uwe Waldmann</a> and <a href="../../../authors/wand">Daniel Wand</a>
 
-<h2 class="head">2016</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Nested_Multisets_Ordinals.html">Formalization of Nested Multisets, Hereditary Multisets, and Syntactic Ordinals</a></h5> <br>by <a href="../../../authors/blanchette">Jasmin Christian Blanchette</a>, <a href="../../../authors/fleury">Mathias Fleury</a> and <a href="../../../authors/traytel">Dmitriy Traytel</a></div>
-  <span class="date">
-    Nov 12
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Lambda_Free_KBOs.html">Formalization of Knuth–Bendix Orders for Lambda-Free Higher-Order Terms</a></h5> <br>by <a href="../../../authors/becker">Heiko Becker</a>, <a href="../../../authors/blanchette">Jasmin Christian Blanchette</a>, <a href="../../../authors/waldmann">Uwe Waldmann</a> and <a href="../../../authors/wand">Daniel Wand</a></div>
-  <span class="date">
-    Nov 12
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Lambda_Free_RPOs.html">Formalization of Recursive Path Orders for Lambda-Free Higher-Order Terms</a></h5> <br>by <a href="../../../authors/blanchette">Jasmin Christian Blanchette</a>, <a href="../../../authors/waldmann">Uwe Waldmann</a> and <a href="../../../authors/wand">Daniel Wand</a></div>
-  <span class="date">
-    Sep 23
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Rewriting_Z.html">The Z Property</a></h5> <br>by <a href="../../../authors/felgenhauer">Bertram Felgenhauer</a>, <a href="../../../authors/nagele">Julian Nagele</a>, <a href="../../../authors/oostrom">Vincent van Oostrom</a> and <a href="../../../authors/sternagel">Christian Sternagel</a></div>
-  <span class="date">
-    Jun 30
-  </span>
-</article>
+        </div>
+        <span class="date">Nov 12</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Lambda_Free_RPOs.html">Formalization of Recursive Path Orders for Lambda-Free Higher-Order Terms</a></h5>
+          <br>
+            by <a href="../../../authors/blanchette">Jasmin Christian Blanchette</a>, <a href="../../../authors/waldmann">Uwe Waldmann</a> and <a href="../../../authors/wand">Daniel Wand</a>
 
+        </div>
+        <span class="date">Sep 23</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Rewriting_Z.html">The Z Property</a></h5>
+          <br>
+            by <a href="../../../authors/felgenhauer">Bertram Felgenhauer</a>, <a href="../../../authors/nagele">Julian Nagele</a>, <a href="../../../authors/oostrom">Vincent van Oostrom</a> and <a href="../../../authors/sternagel">Christian Sternagel</a>
 
-<h2 class="head">2015</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Decreasing-Diagrams-II.html">Decreasing Diagrams II</a></h5> <br>by <a href="../../../authors/felgenhauer">Bertram Felgenhauer</a></div>
-  <span class="date">
-    Aug 20
-  </span>
-</article>
+        </div>
+        <span class="date">Jun 30</span>
+      </article>
+    <h2 class="head">2015</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Decreasing-Diagrams-II.html">Decreasing Diagrams II</a></h5>
+          <br>
+            by <a href="../../../authors/felgenhauer">Bertram Felgenhauer</a>
 
+        </div>
+        <span class="date">Aug 20</span>
+      </article>
+    <h2 class="head">2013</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Decreasing-Diagrams.html">Decreasing Diagrams</a></h5>
+          <br>
+            by <a href="../../../authors/zankl">Harald Zankl</a>
 
-<h2 class="head">2013</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Decreasing-Diagrams.html">Decreasing Diagrams</a></h5> <br>by <a href="../../../authors/zankl">Harald Zankl</a></div>
-  <span class="date">
-    Nov 01
-  </span>
-</article>
+        </div>
+        <span class="date">Nov 01</span>
+      </article>
+    <h2 class="head">2010</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Abstract-Rewriting.html">Abstract Rewriting</a></h5>
+          <br>
+            by <a href="../../../authors/sternagel">Christian Sternagel</a> and <a href="../../../authors/thiemann">René Thiemann</a>
 
-
-<h2 class="head">2010</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Abstract-Rewriting.html">Abstract Rewriting</a></h5> <br>by <a href="../../../authors/sternagel">Christian Sternagel</a> and <a href="../../../authors/thiemann">René Thiemann</a></div>
-  <span class="date">
-    Jun 14
-  </span>
-</article>
-
-
-
-
+        </div>
+        <span class="date">Jun 14</span>
+      </article>
+        
+      </div>
     </div>
-  </div>
-</body>
-
+  </body>
 </html>

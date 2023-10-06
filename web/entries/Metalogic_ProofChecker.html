@@ -1,25 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Isabelle&#39;s Metalogic: Formalization and Proof Checker - Archive of Formal Proofs</title><meta name="description" content="In this entry we formalize Isabelle&#39;s metalogic in Isabelle/HOL. Furthermore, we define a language of proof terms and an executable proof checker and prove..."><meta property="og:title" content="Isabelle&#39;s Metalogic: Formalization and Proof Checker" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Isabelle&#39;s Metalogic: Formalization and Proof Checker - Archive of Formal Proofs</title>
+    <meta name="description" content="In this entry we formalize Isabelle&#39;s metalogic in Isabelle/HOL. Furthermore, we define a language of proof terms and an executable proof checker and prove...">
+
+  <meta property="og:title" content="Isabelle&#39;s Metalogic: Formalization and Proof Checker" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="/entries/Metalogic_ProofChecker.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
 <meta property="article:published_time" content="2021-04-27T00:00:00+00:00" />
 <meta property="article:modified_time" content="2021-04-27T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="Isabelle&#39;s Metalogic: Formalization and Proof Checker"/>
 <meta name="twitter:description" content=""/>
 
-  
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
     <script>
       MathJax = {
         tex: {
@@ -31,72 +36,111 @@
         }
       };
     </script>
-    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
   <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
-  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../" class='logo-link'>
-    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../" class='logo-link'>
-        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../"><li >Home</li></a>
-        <a href="../topics/"><li >Topics</li></a>
-        <a href="../download/"><li >Download</li></a>
-        <a href="../help/"><li >Help</li></a>
-        <a href="../submission/"><li >Submission</li></a>
-        <a href="../statistics/"><li >Statistics</li></a>
-        <a href="../about/"><li >About</li></a>
+          <a href="../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content  entries'><header>
-  <form autocomplete="off" action="../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>I</span>sabelle's <span class='first'>M</span>etalogic: <span class='first'>F</span>ormalization and <span class='first'>P</span>roof <span class='first'>C</span>hecker</h1>
+    </aside>
+    <div class='content entries'>
+      <header>
+    <form autocomplete="off" action="../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>I</span>sabelle's <span class='first'>M</span>etalogic: <span class='first'>F</span>ormalization and <span class='first'>P</span>roof <span class='first'>C</span>hecker
+    
+  </h1>
   <div>
-    
-    <p><a href="../authors/nipkow">Tobias Nipkow</a> <a href="https://www.in.tum.de/~nipkow/">🌐</a> and <a href="../authors/rosskopf">Simon Roßkopf</a> <a href="http://www21.in.tum.de/~rosskops">🌐</a>
-    </p>
-    
-    
-    <p class="date">April 27, 2021</p>
-    
-  </div>
-</header><div><main><h3>Abstract</h3>
+      <p>
+        <a href="../authors/nipkow">Tobias Nipkow</a> <a href="https://www.in.tum.de/~nipkow/">🌐</a> and <a href="../authors/rosskopf">Simon Roßkopf</a> <a href="http://www21.in.tum.de/~rosskops">🌐</a>
 
-  <div class="abstract mathjax_process">In this entry we formalize Isabelle's metalogic in Isabelle/HOL.
+      </p>
+      <p class="date">April 27, 2021</p>
+  </div>
+</header>
+      <div>
+        
+  <main>
+    <h3>Abstract</h3>
+
+    <div class="abstract mathjax_process">In this entry we formalize Isabelle's metalogic in Isabelle/HOL.
 Furthermore, we define a language of proof terms and an executable
 proof checker and prove its soundness wrt. the metalogic.  The
 formalization is intentionally kept close to the Isabelle
@@ -105,97 +149,127 @@ integration of generated code with the Isabelle system without a
 complicated translation layer.  The formalization is described in our
 <a href="https://arxiv.org/pdf/2104.12224.pdf">CADE 28 paper</a>.</div>
 
-  <h3>License</h3>
-  <div><a href="https://isa-afp.org/LICENSE">BSD License</a></div><h3>Topics</h3>
-  <ul><li><a href="../topics/logic/general-logic">Logic/General logic</a></li></ul><h3>Related publications</h3>
-  <ul><li>
-      Nipkow, T., & Roßkopf, S. (2021). Isabelle’s Metalogic: Formalization and Proof Checker. Lecture Notes in Computer Science, 93–110. <a href="https://doi.org/10.1007/978-3-030-79876-5_6">https://doi.org/10.1007/978-3-030-79876-5_6</a>
-
-    </li><li>
-      Roßkopf, S., & Nipkow, T. (2022). A Formalization and Proof Checker for Isabelle’s Metalogic. Journal of Automated Reasoning, 67(1). <a href="https://doi.org/10.1007/s10817-022-09648-w">https://doi.org/10.1007/s10817-022-09648-w</a>
-
-    </li></ul>
-  <h3>Session Metalogic_ProofChecker</h3>
-  <ul>
-    <li><a href="../theories/metalogic_proofchecker/#Core">Core</a></li>
-    <li><a href="../theories/metalogic_proofchecker/#Preliminaries">Preliminaries</a></li>
-    <li><a href="../theories/metalogic_proofchecker/#Term">Term</a></li>
-    <li><a href="../theories/metalogic_proofchecker/#Sorts">Sorts</a></li>
-    <li><a href="../theories/metalogic_proofchecker/#SortConstants">SortConstants</a></li>
-    <li><a href="../theories/metalogic_proofchecker/#Theory">Theory</a></li>
-    <li><a href="../theories/metalogic_proofchecker/#Term_Subst">Term_Subst</a></li>
-    <li><a href="../theories/metalogic_proofchecker/#Name">Name</a></li>
-    <li><a href="../theories/metalogic_proofchecker/#BetaNorm">BetaNorm</a></li>
-    <li><a href="../theories/metalogic_proofchecker/#BetaNormProof">BetaNormProof</a></li>
-    <li><a href="../theories/metalogic_proofchecker/#EtaNorm">EtaNorm</a></li>
-    <li><a href="../theories/metalogic_proofchecker/#EtaNormProof">EtaNormProof</a></li>
-    <li><a href="../theories/metalogic_proofchecker/#Logic">Logic</a></li>
-    <li><a href="../theories/metalogic_proofchecker/#EqualityProof">EqualityProof</a></li>
-    <li><a href="../theories/metalogic_proofchecker/#ProofTerm">ProofTerm</a></li>
-    <li><a href="../theories/metalogic_proofchecker/#SortsExe">SortsExe</a></li>
-    <li><a href="../theories/metalogic_proofchecker/#Instances">Instances</a></li>
-    <li><a href="../theories/metalogic_proofchecker/#TheoryExe">TheoryExe</a></li>
-    <li><a href="../theories/metalogic_proofchecker/#CheckerExe">CheckerExe</a></li>
-    <li><a href="../theories/metalogic_proofchecker/#CodeGen">CodeGen</a></li></ul><div class="flex-wrap">
-  <div>
-    <h3>Depends on</h3>
-    <ul class="horizontal-list"><li><a href="../entries/List-Index.html">List Index</a></li></ul>
-  </div>
-  
-  </div>
-</main>
-
-<nav class='links'>
-  <a class='popup-button' href="#cite-popup">Cite</a>
-  <a class='popup-button' href="#download-popup">Download</a>
-  <h4>PDFs</h4>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Metalogic_ProofChecker/outline.pdf">Proof
-    outline</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Metalogic_ProofChecker/document.pdf">Proof
-    document</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Metalogic_ProofChecker/session_graph.pdf">Dependencies</a></nav>
-
-<div id="cite-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Cite</h2>
-    <a class="close" href="#">&times;</a>
+    <h3>License</h3>
     <div>
-      <p style="display:none;" id="bibtex-filename">Metalogic_ProofChecker-AFP</p><pre id="copy-text">@article{Metalogic_ProofChecker-AFP,
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/logic/general-logic">Logic/General logic</a></li>
+      </ul>
+      <h3>Related publications</h3>
+      <ul>
+        <li>Nipkow, T., & Roßkopf, S. (2021). Isabelle’s Metalogic: Formalization and Proof Checker. Lecture Notes in Computer Science, 93–110. <a href="https://doi.org/10.1007/978-3-030-79876-5_6">https://doi.org/10.1007/978-3-030-79876-5_6</a>
+
+        </li>
+        <li>Roßkopf, S., & Nipkow, T. (2022). A Formalization and Proof Checker for Isabelle’s Metalogic. Journal of Automated Reasoning, 67(1). <a href="https://doi.org/10.1007/s10817-022-09648-w">https://doi.org/10.1007/s10817-022-09648-w</a>
+
+        </li>
+      </ul>
+      <h3>Session Metalogic_ProofChecker</h3>
+      <ul>
+          <li><a href="../sessions/metalogic_proofchecker/#Core">Core</a></li>
+          <li><a href="../sessions/metalogic_proofchecker/#Preliminaries">Preliminaries</a></li>
+          <li><a href="../sessions/metalogic_proofchecker/#Term">Term</a></li>
+          <li><a href="../sessions/metalogic_proofchecker/#Sorts">Sorts</a></li>
+          <li><a href="../sessions/metalogic_proofchecker/#SortConstants">SortConstants</a></li>
+          <li><a href="../sessions/metalogic_proofchecker/#Theory">Theory</a></li>
+          <li><a href="../sessions/metalogic_proofchecker/#Term_Subst">Term_Subst</a></li>
+          <li><a href="../sessions/metalogic_proofchecker/#Name">Name</a></li>
+          <li><a href="../sessions/metalogic_proofchecker/#BetaNorm">BetaNorm</a></li>
+          <li><a href="../sessions/metalogic_proofchecker/#BetaNormProof">BetaNormProof</a></li>
+          <li><a href="../sessions/metalogic_proofchecker/#EtaNorm">EtaNorm</a></li>
+          <li><a href="../sessions/metalogic_proofchecker/#EtaNormProof">EtaNormProof</a></li>
+          <li><a href="../sessions/metalogic_proofchecker/#Logic">Logic</a></li>
+          <li><a href="../sessions/metalogic_proofchecker/#EqualityProof">EqualityProof</a></li>
+          <li><a href="../sessions/metalogic_proofchecker/#ProofTerm">ProofTerm</a></li>
+          <li><a href="../sessions/metalogic_proofchecker/#SortsExe">SortsExe</a></li>
+          <li><a href="../sessions/metalogic_proofchecker/#Instances">Instances</a></li>
+          <li><a href="../sessions/metalogic_proofchecker/#TheoryExe">TheoryExe</a></li>
+          <li><a href="../sessions/metalogic_proofchecker/#CheckerExe">CheckerExe</a></li>
+          <li><a href="../sessions/metalogic_proofchecker/#CodeGen">CodeGen</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+      <div>
+        <h3>Depends on</h3>
+        <ul class="horizontal-list">
+              <li><a href="../entries/List-Index.html">List Index</a></li>
+        </ul>
+      </div>
+      </div>
+    
+  </main>
+
+  <nav class='links'>
+    <a class='popup-button' href="#cite-popup">Cite</a>
+    <a class='popup-button' href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Metalogic_ProofChecker/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Metalogic_ProofChecker/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Metalogic_ProofChecker/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Metalogic_ProofChecker-AFP</p>
+        <pre id="copy-text">@article{Metalogic_ProofChecker-AFP,
   author  = {Tobias Nipkow and Simon Roßkopf},
   title   = {Isabelle&#39;s Metalogic: Formalization and Proof Checker},
   journal = {Archive of Formal Proofs},
   month   = {April},
   year    = {2021},
   note    = {\url{https://isa-afp.org/entries/Metalogic_ProofChecker.html},
-            Formal proof development},
+             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
     </div>
   </div>
-</div>
 
-<div id="download-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Download</h2>
-    <a class="close" href="#">&times;</a>
-    <a href="https://www.isa-afp.org/release//afp-Metalogic_ProofChecker-current.tar.gz" download>Download latest</a>
-    <p>Older releases:</p>
-    <ul><li>
-        <a href="https://www.isa-afp.org/release/afp-Metalogic_ProofChecker-2023-09-13.tar.gz">Sep 13, 2023</a>: Isabelle2023
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Metalogic_ProofChecker-2022-10-27.tar.gz">Oct 27, 2022</a>: Isabelle2022
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Metalogic_ProofChecker-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021-1
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Metalogic_ProofChecker-2021-04-28.tar.gz">Apr 28, 2021</a>: Isabelle2021
-      </li></ul>
-  </div>
-</div>
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-Metalogic_ProofChecker-current.tar.gz"
+         download>Download latest</a>
+        <p>Older releases:</p>
+        <ul>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Metalogic_ProofChecker-2023-09-13.tar.gz">
+                Sep 13, 2023
+              </a>
+              : Isabelle2023
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Metalogic_ProofChecker-2022-10-27.tar.gz">
+                Oct 27, 2022
+              </a>
+              : Isabelle2022
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Metalogic_ProofChecker-2021-12-14.tar.gz">
+                Dec 14, 2021
+              </a>
+              : Isabelle2021-1
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Metalogic_ProofChecker-2021-04-28.tar.gz">
+                Apr 28, 2021
+              </a>
+              : Isabelle2021
+            </li>
+        </ul>
     </div>
   </div>
-</body>
-
+        
+      </div>
+    </div>
+  </body>
 </html>

@@ -1,201 +1,263 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Computer science/Algorithms/Distributed - Archive of Formal Proofs</title><meta name="description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."><link rel="alternate" type="application/rss+xml" href="../../../../topics/computer-science/algorithms/distributed/index.xml" title="Archive of Formal Proofs" /><meta property="og:title" content="Computer science/Algorithms/Distributed" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Computer science/Algorithms/Distributed - Archive of Formal Proofs</title>
+    <meta name="description" content="A collection of proof libraries, examples, and larger
+     scientific developments, mechanically checked in the theorem prover Isabelle.">
+  <link rel="alternate" type="application/rss+xml" href="../../../../topics/computer-science/algorithms/distributed/index.xml" title="Archive of Formal Proofs" />
+
+  <meta property="og:title" content="Computer science/Algorithms/Distributed" />
 <meta property="og:description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="/topics/computer-science/algorithms/distributed/" /><meta property="og:image" content="/images/afp.png"/><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="Computer science/Algorithms/Distributed"/>
 <meta name="twitter:description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."/>
 
-  
   <link rel="stylesheet" type="text/css" href="../../../../css/front.min.css">
 
-  <link rel="icon" href="../../../../images/favicon.ico" type="image/icon"><script src="../../../../js/obfuscate.js"></script>
+  <link rel="icon" href="../../../../images/favicon.ico" type="image/icon">
+
+  <script src="../../../../js/obfuscate.js"></script>
   <script src="../../../../js/flexsearch.bundle.js"></script>
   <script src="../../../../js/scroll-spy.js"></script>
   <script src="../../../../js/theory.js"></script>
-  <script src="../../../../js/util.js"></script><script src="../../../../js/header-search.js"></script><script src="../../../../js/search-autocomplete.js"></script>
+  <script src="../../../../js/util.js"></script>
+    <script src="../../../../js/header-search.js"></script>
+  <script src="../../../../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../../../../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../../../../" class='logo-link'>
-    <img src="../../../../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../../../../" class="logo-link">
+    <img src="../../../../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../../../../search"><img src="../../../../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../../../../" class='logo-link'>
-        <img src="../../../../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../../../../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../../../../"><li >Home</li></a>
-        <a href="../../../../topics/"><li >Topics</li></a>
-        <a href="../../../../download/"><li >Download</li></a>
-        <a href="../../../../help/"><li >Help</li></a>
-        <a href="../../../../submission/"><li >Submission</li></a>
-        <a href="../../../../statistics/"><li >Statistics</li></a>
-        <a href="../../../../about/"><li >About</li></a>
+          <a href="../../../../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../../../../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../../../../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../../../../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../../../../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../../../../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../../../../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content '><header>
-  <form autocomplete="off" action="../../../../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../../../../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>C</span>omputer <span class='first'>S</span>cience/<span class='first'>A</span>lgorithms/<span class='first'>D</span>istributed</h1>
+    </aside>
+    <div class='content'>
+      <header>
+    <form autocomplete="off" action="../../../../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../../../../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>C</span>omputer science/<span class='first'>A</span>lgorithms/<span class='first'>D</span>istributed
+    
+  </h1>
   <div>
-    
-    
   </div>
-</header><div><h2>Subject Classification</h2><p>ACM: <a href="https://dl.acm.org/topic/ccs2012/10003752.10003809.10010172">Theory of computation~Distributed algorithms</a></p><p>AMS: <a href="https://mathscinet.ams.org/mathscinet/msc/msc2020.html?t=68W15">Computer science / Algorithms in computer science / Distributed algorithms</a></p><h2 class="head">2023</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Distributed_Distinct_Elements.html">Distributed Distinct Elements</a></h5> <br>by <a href="../../../../authors/karayel">Emin Karayel</a></div>
-  <span class="date">
-    Apr 03
-  </span>
-</article>
+</header>
+      <div>
+        
+    <h2>Subject Classification</h2>
+      <p>ACM: <a href="https://dl.acm.org/topic/ccs2012/10003752.10003809.10010172">Theory of computation~Distributed algorithms</a></p>
+      <p>AMS: <a href="https://mathscinet.ams.org/mathscinet/msc/msc2020.html?t=68W15">Computer science / Algorithms in computer science / Distributed algorithms</a></p>
+    <h2 class="head">2023</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Distributed_Distinct_Elements.html">Distributed Distinct Elements</a></h5>
+          <br>
+            by <a href="../../../../authors/karayel">Emin Karayel</a>
 
+        </div>
+        <span class="date">Apr 03</span>
+      </article>
+    <h2 class="head">2021</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Progress_Tracking.html">Formalization of Timely Dataflow&#39;s Progress Tracking Protocol</a></h5>
+          <br>
+            by <a href="../../../../authors/brun">Matthias Brun</a>, <a href="../../../../authors/decova">Sára Decova</a>, <a href="../../../../authors/lattuada">Andrea Lattuada</a> and <a href="../../../../authors/traytel">Dmitriy Traytel</a>
 
-<h2 class="head">2021</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Progress_Tracking.html">Formalization of Timely Dataflow&#39;s Progress Tracking Protocol</a></h5> <br>by <a href="../../../../authors/brun">Matthias Brun</a>, <a href="../../../../authors/decova">Sára Decova</a>, <a href="../../../../authors/lattuada">Andrea Lattuada</a> and <a href="../../../../authors/traytel">Dmitriy Traytel</a></div>
-  <span class="date">
-    Apr 13
-  </span>
-</article>
+        </div>
+        <span class="date">Apr 13</span>
+      </article>
+    <h2 class="head">2020</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Chandy_Lamport.html">A Formal Proof of The Chandy--Lamport Distributed Snapshot Algorithm</a></h5>
+          <br>
+            by <a href="../../../../authors/fiedler">Ben Fiedler</a> and <a href="../../../../authors/traytel">Dmitriy Traytel</a>
 
+        </div>
+        <span class="date">Jul 21</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/WOOT_Strong_Eventual_Consistency.html">Strong Eventual Consistency of the Collaborative Editing Framework WOOT</a></h5>
+          <br>
+            by <a href="../../../../authors/karayel">Emin Karayel</a> and <a href="../../../../authors/gonzalez">Edgar Gonzàlez</a>
 
-<h2 class="head">2020</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Chandy_Lamport.html">A Formal Proof of The Chandy--Lamport Distributed Snapshot Algorithm</a></h5> <br>by <a href="../../../../authors/fiedler">Ben Fiedler</a> and <a href="../../../../authors/traytel">Dmitriy Traytel</a></div>
-  <span class="date">
-    Jul 21
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/WOOT_Strong_Eventual_Consistency.html">Strong Eventual Consistency of the Collaborative Editing Framework WOOT</a></h5> <br>by <a href="../../../../authors/karayel">Emin Karayel</a> and <a href="../../../../authors/gonzalez">Edgar Gonzàlez</a></div>
-  <span class="date">
-    Mar 25
-  </span>
-</article>
+        </div>
+        <span class="date">Mar 25</span>
+      </article>
+    <h2 class="head">2019</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Stellar_Quorums.html">Stellar Quorum Systems</a></h5>
+          <br>
+            by <a href="../../../../authors/losa">Giuliano Losa</a>
 
+        </div>
+        <span class="date">Aug 01</span>
+      </article>
+    <h2 class="head">2018</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/OpSets.html">OpSets: Sequential Specifications for Replicated Datatypes</a></h5>
+          <br>
+            by <a href="../../../../authors/kleppmann">Martin Kleppmann</a>, <a href="../../../../authors/gomes">Victor B. F. Gomes</a>, <a href="../../../../authors/mulligan">Dominic P. Mulligan</a> and <a href="../../../../authors/beresford">Alastair R. Beresford</a>
 
-<h2 class="head">2019</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Stellar_Quorums.html">Stellar Quorum Systems</a></h5> <br>by <a href="../../../../authors/losa">Giuliano Losa</a></div>
-  <span class="date">
-    Aug 01
-  </span>
-</article>
+        </div>
+        <span class="date">May 10</span>
+      </article>
+    <h2 class="head">2017</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/IMAP-CRDT.html">The IMAP CmRDT</a></h5>
+          <br>
+            by <a href="../../../../authors/jungnickel">Tim Jungnickel</a>, <a href="../../../../authors/oldenburg">Lennart Oldenburg</a> and <a href="../../../../authors/loibl">Matthias Loibl</a>
 
+        </div>
+        <span class="date">Nov 09</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/CRDT.html">A framework for establishing Strong Eventual Consistency for Conflict-free Replicated Datatypes</a></h5>
+          <br>
+            by <a href="../../../../authors/gomes">Victor B. F. Gomes</a>, <a href="../../../../authors/kleppmann">Martin Kleppmann</a>, <a href="../../../../authors/mulligan">Dominic P. Mulligan</a> and <a href="../../../../authors/beresford">Alastair R. Beresford</a>
 
-<h2 class="head">2018</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/OpSets.html">OpSets: Sequential Specifications for Replicated Datatypes</a></h5> <br>by <a href="../../../../authors/kleppmann">Martin Kleppmann</a>, <a href="../../../../authors/gomes">Victor B. F. Gomes</a>, <a href="../../../../authors/mulligan">Dominic P. Mulligan</a> and <a href="../../../../authors/beresford">Alastair R. Beresford</a></div>
-  <span class="date">
-    May 10
-  </span>
-</article>
+        </div>
+        <span class="date">Jul 07</span>
+      </article>
+    <h2 class="head">2015</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Consensus_Refined.html">Consensus Refined</a></h5>
+          <br>
+            by <a href="../../../../authors/maric">Ognjen Marić</a> and <a href="../../../../authors/sprenger">Christoph Sprenger</a>
 
+        </div>
+        <span class="date">Mar 18</span>
+      </article>
+    <h2 class="head">2012</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Heard_Of.html">Verifying Fault-Tolerant Distributed Algorithms in the Heard-Of Model</a></h5>
+          <br>
+            by <a href="../../../../authors/debrat">Henri Debrat</a> and <a href="../../../../authors/merz">Stephan Merz</a>
 
-<h2 class="head">2017</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/IMAP-CRDT.html">The IMAP CmRDT</a></h5> <br>by <a href="../../../../authors/jungnickel">Tim Jungnickel</a>, <a href="../../../../authors/oldenburg">Lennart Oldenburg</a> and <a href="../../../../authors/loibl">Matthias Loibl</a></div>
-  <span class="date">
-    Nov 09
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/CRDT.html">A framework for establishing Strong Eventual Consistency for Conflict-free Replicated Datatypes</a></h5> <br>by <a href="../../../../authors/gomes">Victor B. F. Gomes</a>, <a href="../../../../authors/kleppmann">Martin Kleppmann</a>, <a href="../../../../authors/mulligan">Dominic P. Mulligan</a> and <a href="../../../../authors/beresford">Alastair R. Beresford</a></div>
-  <span class="date">
-    Jul 07
-  </span>
-</article>
+        </div>
+        <span class="date">Jul 27</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Abortable_Linearizable_Modules.html">Abortable Linearizable Modules</a></h5>
+          <br>
+            by <a href="../../../../authors/guerraoui">Rachid Guerraoui</a>, <a href="../../../../authors/kuncak">Viktor Kuncak</a> and <a href="../../../../authors/losa">Giuliano Losa</a>
 
+        </div>
+        <span class="date">Mar 01</span>
+      </article>
+    <h2 class="head">2006</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/ClockSynchInst.html">Instances of Schneider&#39;s generalized protocol of clock synchronization</a></h5>
+          <br>
+            by <a href="../../../../authors/barsotti">Damián Barsotti</a>
 
-<h2 class="head">2015</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Consensus_Refined.html">Consensus Refined</a></h5> <br>by <a href="../../../../authors/maric">Ognjen Marić</a> and <a href="../../../../authors/sprenger">Christoph Sprenger</a></div>
-  <span class="date">
-    Mar 18
-  </span>
-</article>
+        </div>
+        <span class="date">Mar 15</span>
+      </article>
+    <h2 class="head">2005</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/GenClock.html">Formalization of a Generalized Protocol for Clock Synchronization</a></h5>
+          <br>
+            by <a href="../../../../authors/tiu">Alwen Tiu</a>
 
+        </div>
+        <span class="date">Jun 24</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/DiskPaxos.html">Proving the Correctness of Disk Paxos</a></h5>
+          <br>
+            by <a href="../../../../authors/jaskelioff">Mauro Jaskelioff</a> and <a href="../../../../authors/merz">Stephan Merz</a>
 
-<h2 class="head">2012</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Heard_Of.html">Verifying Fault-Tolerant Distributed Algorithms in the Heard-Of Model</a></h5> <br>by <a href="../../../../authors/debrat">Henri Debrat</a> and <a href="../../../../authors/merz">Stephan Merz</a></div>
-  <span class="date">
-    Jul 27
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Abortable_Linearizable_Modules.html">Abortable Linearizable Modules</a></h5> <br>by <a href="../../../../authors/guerraoui">Rachid Guerraoui</a>, <a href="../../../../authors/kuncak">Viktor Kuncak</a> and <a href="../../../../authors/losa">Giuliano Losa</a></div>
-  <span class="date">
-    Mar 01
-  </span>
-</article>
-
-
-<h2 class="head">2006</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/ClockSynchInst.html">Instances of Schneider&#39;s generalized protocol of clock synchronization</a></h5> <br>by <a href="../../../../authors/barsotti">Damián Barsotti</a></div>
-  <span class="date">
-    Mar 15
-  </span>
-</article>
-
-
-<h2 class="head">2005</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/GenClock.html">Formalization of a Generalized Protocol for Clock Synchronization</a></h5> <br>by <a href="../../../../authors/tiu">Alwen Tiu</a></div>
-  <span class="date">
-    Jun 24
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/DiskPaxos.html">Proving the Correctness of Disk Paxos</a></h5> <br>by <a href="../../../../authors/jaskelioff">Mauro Jaskelioff</a> and <a href="../../../../authors/merz">Stephan Merz</a></div>
-  <span class="date">
-    Jun 22
-  </span>
-</article>
-
-
-
-
+        </div>
+        <span class="date">Jun 22</span>
+      </article>
+        
+      </div>
     </div>
-  </div>
-</body>
-
+  </body>
 </html>

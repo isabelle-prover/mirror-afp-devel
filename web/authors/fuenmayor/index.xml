@@ -1,56 +1,52 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>fuenmayor on Archive of Formal Proofs</title>
+    <title>fuenmayor on Archive of Formal Proofs
+    </title>
     <link>/authors/fuenmayor/</link>
-    <description>Recent content in fuenmayor on Archive of Formal Proofs</description>
+    <description>
+        Recent content in fuenmayor 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Mon, 05 Dec 2022 00:00:00 +0000</lastBuildDate><atom:link href="/authors/fuenmayor/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Automation of Boolos&#39; Curious Inference in Isabelle/HOL</title>
-      <link>/entries/Boolos_Curious_Inference_Automated.html</link>
-      <pubDate>Mon, 05 Dec 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Boolos_Curious_Inference_Automated.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>Topological semantics for paraconsistent and paracomplete logics</title>
-      <link>/entries/Topological_Semantics.html</link>
-      <pubDate>Thu, 17 Dec 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Topological_Semantics.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Formalisation and Evaluation of Alan Gewirth&#39;s Proof for the Principle of Generic Consistency in Isabelle/HOL</title>
-      <link>/entries/GewirthPGCProof.html</link>
-      <pubDate>Tue, 30 Oct 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/GewirthPGCProof.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Computer-assisted Reconstruction and Assessment of E. J. Lowe&#39;s Modal Ontological Argument</title>
-      <link>/entries/Lowe_Ontological_Argument.html</link>
-      <pubDate>Thu, 21 Sep 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Lowe_Ontological_Argument.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Types, Tableaus and Gödel’s God in Isabelle/HOL</title>
-      <link>/entries/Types_Tableaus_and_Goedels_God.html</link>
-      <pubDate>Mon, 01 May 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Types_Tableaus_and_Goedels_God.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Mon, 05 Dec 2022 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/fuenmayor/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Automation of Boolos&#39; Curious Inference in Isabelle/HOL</title>
+          <link>/entries/Boolos_Curious_Inference_Automated.html</link>
+          <pubDate>Mon, 05 Dec 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Boolos_Curious_Inference_Automated.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Topological semantics for paraconsistent and paracomplete logics</title>
+          <link>/entries/Topological_Semantics.html</link>
+          <pubDate>Thu, 17 Dec 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Topological_Semantics.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formalisation and Evaluation of Alan Gewirth&#39;s Proof for the Principle of Generic Consistency in Isabelle/HOL</title>
+          <link>/entries/GewirthPGCProof.html</link>
+          <pubDate>Tue, 30 Oct 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/GewirthPGCProof.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Computer-assisted Reconstruction and Assessment of E. J. Lowe&#39;s Modal Ontological Argument</title>
+          <link>/entries/Lowe_Ontological_Argument.html</link>
+          <pubDate>Thu, 21 Sep 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Lowe_Ontological_Argument.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Types, Tableaus and Gödel’s God in Isabelle/HOL</title>
+          <link>/entries/Types_Tableaus_and_Goedels_God.html</link>
+          <pubDate>Mon, 01 May 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Types_Tableaus_and_Goedels_God.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

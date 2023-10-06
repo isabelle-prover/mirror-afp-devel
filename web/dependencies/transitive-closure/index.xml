@@ -1,38 +1,38 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Transitive-Closure on Archive of Formal Proofs</title>
+    <title>Transitive-Closure on Archive of Formal Proofs
+    </title>
     <link>/dependencies/transitive-closure/</link>
-    <description>Recent content in Transitive-Closure on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Transitive-Closure 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Wed, 11 Nov 2015 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/transitive-closure/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Planarity Certificates</title>
-      <link>/entries/Planarity_Certificates.html</link>
-      <pubDate>Wed, 11 Nov 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Planarity_Certificates.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>Network Security Policy Verification</title>
-      <link>/entries/Network_Security_Policy_Verification.html</link>
-      <pubDate>Fri, 04 Jul 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Network_Security_Policy_Verification.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Knowledge-based programs</title>
-      <link>/entries/KBPs.html</link>
-      <pubDate>Tue, 17 May 2011 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/KBPs.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Wed, 11 Nov 2015 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/transitive-closure/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Planarity Certificates</title>
+          <link>/entries/Planarity_Certificates.html</link>
+          <pubDate>Wed, 11 Nov 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Planarity_Certificates.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Network Security Policy Verification</title>
+          <link>/entries/Network_Security_Policy_Verification.html</link>
+          <pubDate>Fri, 04 Jul 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Network_Security_Policy_Verification.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Knowledge-based programs</title>
+          <link>/entries/KBPs.html</link>
+          <pubDate>Tue, 17 May 2011 00:00:00 +0000</pubDate>
+          <guid>/entries/KBPs.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

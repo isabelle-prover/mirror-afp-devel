@@ -1,27 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>The Safely Composable DOM - Archive of Formal Proofs</title><meta name="description" content="In this AFP entry, we formalize the core of the Safely Composable
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>The Safely Composable DOM - Archive of Formal Proofs</title>
+    <meta name="description" content="In this AFP entry, we formalize the core of the Safely Composable
 Document Object Model (SC DOM). The SC DOM improve the standard DOM
-(as formalized in the..."><meta property="og:title" content="The Safely Composable DOM" />
+(as formalized in the...">
+
+  <meta property="og:title" content="The Safely Composable DOM" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="/entries/Core_SC_DOM.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
 <meta property="article:published_time" content="2020-09-28T00:00:00+00:00" />
 <meta property="article:modified_time" content="2020-09-28T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="The Safely Composable DOM"/>
 <meta name="twitter:description" content=""/>
 
-  
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
     <script>
       MathJax = {
         tex: {
@@ -33,72 +38,111 @@ Document Object Model (SC DOM). The SC DOM improve the standard DOM
         }
       };
     </script>
-    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
   <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
-  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../" class='logo-link'>
-    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../" class='logo-link'>
-        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../"><li >Home</li></a>
-        <a href="../topics/"><li >Topics</li></a>
-        <a href="../download/"><li >Download</li></a>
-        <a href="../help/"><li >Help</li></a>
-        <a href="../submission/"><li >Submission</li></a>
-        <a href="../statistics/"><li >Statistics</li></a>
-        <a href="../about/"><li >About</li></a>
+          <a href="../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content  entries'><header>
-  <form autocomplete="off" action="../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>T</span>he <span class='first'>S</span>afely <span class='first'>C</span>omposable <span class='first'>D</span><span class='first'>O</span><span class='first'>M</span></h1>
+    </aside>
+    <div class='content entries'>
+      <header>
+    <form autocomplete="off" action="../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>T</span>he <span class='first'>S</span>afely <span class='first'>C</span>omposable <span class='first'>D</span><span class='first'>O</span><span class='first'>M</span>
+    
+  </h1>
   <div>
-    
-    <p><a href="../authors/brucker">Achim D. Brucker</a> <a href="https://www.brucker.ch/">🌐</a> and <a href="../authors/herzberg">Michael Herzberg</a> <a href="http://www.dcs.shef.ac.uk/cgi-bin/makeperson?M.Herzberg">🌐</a>
-    </p>
-    
-    
-    <p class="date">September 28, 2020</p>
-    
-  </div>
-</header><div><main><h3>Abstract</h3>
+      <p>
+        <a href="../authors/brucker">Achim D. Brucker</a> <a href="https://www.brucker.ch/">🌐</a> and <a href="../authors/herzberg">Michael Herzberg</a> <a href="http://www.dcs.shef.ac.uk/cgi-bin/makeperson?M.Herzberg">🌐</a>
 
-  <div class="abstract mathjax_process">In this AFP entry, we formalize the core of the Safely Composable
+      </p>
+      <p class="date">September 28, 2020</p>
+  </div>
+</header>
+      <div>
+        
+  <main>
+    <h3>Abstract</h3>
+
+    <div class="abstract mathjax_process">In this AFP entry, we formalize the core of the Safely Composable
 Document Object Model (SC DOM). The SC DOM improve the standard DOM
 (as formalized in the AFP entry “Core DOM”) by strengthening
 the tree boundaries set by shadow roots: in the SC DOM, the shadow
@@ -113,104 +157,138 @@ that operate on shadow trees more predictable for the developer and
 allows them to make more assumptions about other code accessing the
 DOM.</div>
 
-  <h3>License</h3>
-  <div><a href="https://isa-afp.org/LICENSE">BSD License</a></div><h3>Topics</h3>
-  <ul><li><a href="../topics/computer-science/data-structures">Computer science/Data structures</a></li></ul>
-  <h3>Session Core_SC_DOM</h3>
-  <ul>
-    <li><a href="../theories/core_sc_dom/#Hiding_Type_Variables">Hiding_Type_Variables</a></li>
-    <li><a href="../theories/core_sc_dom/#Ref">Ref</a></li>
-    <li><a href="../theories/core_sc_dom/#Core_DOM_Basic_Datatypes">Core_DOM_Basic_Datatypes</a></li>
-    <li><a href="../theories/core_sc_dom/#BaseClass">BaseClass</a></li>
-    <li><a href="../theories/core_sc_dom/#Heap_Error_Monad">Heap_Error_Monad</a></li>
-    <li><a href="../theories/core_sc_dom/#BaseMonad">BaseMonad</a></li>
-    <li><a href="../theories/core_sc_dom/#ObjectPointer">ObjectPointer</a></li>
-    <li><a href="../theories/core_sc_dom/#ObjectClass">ObjectClass</a></li>
-    <li><a href="../theories/core_sc_dom/#ObjectMonad">ObjectMonad</a></li>
-    <li><a href="../theories/core_sc_dom/#NodePointer">NodePointer</a></li>
-    <li><a href="../theories/core_sc_dom/#NodeClass">NodeClass</a></li>
-    <li><a href="../theories/core_sc_dom/#NodeMonad">NodeMonad</a></li>
-    <li><a href="../theories/core_sc_dom/#ElementPointer">ElementPointer</a></li>
-    <li><a href="../theories/core_sc_dom/#CharacterDataPointer">CharacterDataPointer</a></li>
-    <li><a href="../theories/core_sc_dom/#DocumentPointer">DocumentPointer</a></li>
-    <li><a href="../theories/core_sc_dom/#ShadowRootPointer">ShadowRootPointer</a></li>
-    <li><a href="../theories/core_sc_dom/#ElementClass">ElementClass</a></li>
-    <li><a href="../theories/core_sc_dom/#ElementMonad">ElementMonad</a></li>
-    <li><a href="../theories/core_sc_dom/#CharacterDataClass">CharacterDataClass</a></li>
-    <li><a href="../theories/core_sc_dom/#CharacterDataMonad">CharacterDataMonad</a></li>
-    <li><a href="../theories/core_sc_dom/#DocumentClass">DocumentClass</a></li>
-    <li><a href="../theories/core_sc_dom/#DocumentMonad">DocumentMonad</a></li>
-    <li><a href="../theories/core_sc_dom/#Core_DOM_Functions">Core_DOM_Functions</a></li>
-    <li><a href="../theories/core_sc_dom/#Core_DOM_Heap_WF">Core_DOM_Heap_WF</a></li>
-    <li><a href="../theories/core_sc_dom/#Core_DOM">Core_DOM</a></li>
-    <li><a href="../theories/core_sc_dom/#Testing_Utils">Testing_Utils</a></li>
-    <li><a href="../theories/core_sc_dom/#Core_DOM_BaseTest">Core_DOM_BaseTest</a></li>
-    <li><a href="../theories/core_sc_dom/#Document_adoptNode">Document_adoptNode</a></li>
-    <li><a href="../theories/core_sc_dom/#Document_getElementById">Document_getElementById</a></li>
-    <li><a href="../theories/core_sc_dom/#Node_insertBefore">Node_insertBefore</a></li>
-    <li><a href="../theories/core_sc_dom/#Node_removeChild">Node_removeChild</a></li>
-    <li><a href="../theories/core_sc_dom/#Core_DOM_Tests">Core_DOM_Tests</a></li></ul><div class="flex-wrap">
-  <div>
-    <h3>Used by</h3>
-    <ul class="horizontal-list"><li><a href="../entries/Shadow_SC_DOM.html">A Formal Model of the Safely Composable Document Object Model with Shadow Roots</a></li></ul>
-  </div>
-  
-  </div>
-</main>
-
-<nav class='links'>
-  <a class='popup-button' href="#cite-popup">Cite</a>
-  <a class='popup-button' href="#download-popup">Download</a>
-  <h4>PDFs</h4>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Core_SC_DOM/outline.pdf">Proof
-    outline</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Core_SC_DOM/document.pdf">Proof
-    document</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Core_SC_DOM/session_graph.pdf">Dependencies</a></nav>
-
-<div id="cite-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Cite</h2>
-    <a class="close" href="#">&times;</a>
+    <h3>License</h3>
     <div>
-      <p style="display:none;" id="bibtex-filename">Core_SC_DOM-AFP</p><pre id="copy-text">@article{Core_SC_DOM-AFP,
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/computer-science/data-structures">Computer science/Data structures</a></li>
+      </ul>
+      <h3>Session Core_SC_DOM</h3>
+      <ul>
+          <li><a href="../sessions/core_sc_dom/#Hiding_Type_Variables">Hiding_Type_Variables</a></li>
+          <li><a href="../sessions/core_sc_dom/#Ref">Ref</a></li>
+          <li><a href="../sessions/core_sc_dom/#Core_DOM_Basic_Datatypes">Core_DOM_Basic_Datatypes</a></li>
+          <li><a href="../sessions/core_sc_dom/#BaseClass">BaseClass</a></li>
+          <li><a href="../sessions/core_sc_dom/#Heap_Error_Monad">Heap_Error_Monad</a></li>
+          <li><a href="../sessions/core_sc_dom/#BaseMonad">BaseMonad</a></li>
+          <li><a href="../sessions/core_sc_dom/#ObjectPointer">ObjectPointer</a></li>
+          <li><a href="../sessions/core_sc_dom/#ObjectClass">ObjectClass</a></li>
+          <li><a href="../sessions/core_sc_dom/#ObjectMonad">ObjectMonad</a></li>
+          <li><a href="../sessions/core_sc_dom/#NodePointer">NodePointer</a></li>
+          <li><a href="../sessions/core_sc_dom/#NodeClass">NodeClass</a></li>
+          <li><a href="../sessions/core_sc_dom/#NodeMonad">NodeMonad</a></li>
+          <li><a href="../sessions/core_sc_dom/#ElementPointer">ElementPointer</a></li>
+          <li><a href="../sessions/core_sc_dom/#CharacterDataPointer">CharacterDataPointer</a></li>
+          <li><a href="../sessions/core_sc_dom/#DocumentPointer">DocumentPointer</a></li>
+          <li><a href="../sessions/core_sc_dom/#ShadowRootPointer">ShadowRootPointer</a></li>
+          <li><a href="../sessions/core_sc_dom/#ElementClass">ElementClass</a></li>
+          <li><a href="../sessions/core_sc_dom/#ElementMonad">ElementMonad</a></li>
+          <li><a href="../sessions/core_sc_dom/#CharacterDataClass">CharacterDataClass</a></li>
+          <li><a href="../sessions/core_sc_dom/#CharacterDataMonad">CharacterDataMonad</a></li>
+          <li><a href="../sessions/core_sc_dom/#DocumentClass">DocumentClass</a></li>
+          <li><a href="../sessions/core_sc_dom/#DocumentMonad">DocumentMonad</a></li>
+          <li><a href="../sessions/core_sc_dom/#Core_DOM_Functions">Core_DOM_Functions</a></li>
+          <li><a href="../sessions/core_sc_dom/#Core_DOM_Heap_WF">Core_DOM_Heap_WF</a></li>
+          <li><a href="../sessions/core_sc_dom/#Core_DOM">Core_DOM</a></li>
+          <li><a href="../sessions/core_sc_dom/#Testing_Utils">Testing_Utils</a></li>
+          <li><a href="../sessions/core_sc_dom/#Core_DOM_BaseTest">Core_DOM_BaseTest</a></li>
+          <li><a href="../sessions/core_sc_dom/#Document_adoptNode">Document_adoptNode</a></li>
+          <li><a href="../sessions/core_sc_dom/#Document_getElementById">Document_getElementById</a></li>
+          <li><a href="../sessions/core_sc_dom/#Node_insertBefore">Node_insertBefore</a></li>
+          <li><a href="../sessions/core_sc_dom/#Node_removeChild">Node_removeChild</a></li>
+          <li><a href="../sessions/core_sc_dom/#Core_DOM_Tests">Core_DOM_Tests</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+      <div>
+        <h3>Used by</h3>
+        <ul class="horizontal-list">
+            <li>
+              <a href="../entries/Shadow_SC_DOM.html">A Formal Model of the Safely Composable Document Object Model with Shadow Roots</a>
+            </li>
+        </ul>
+      </div>
+      </div>
+    
+  </main>
+
+  <nav class='links'>
+    <a class='popup-button' href="#cite-popup">Cite</a>
+    <a class='popup-button' href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Core_SC_DOM/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Core_SC_DOM/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Core_SC_DOM/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Core_SC_DOM-AFP</p>
+        <pre id="copy-text">@article{Core_SC_DOM-AFP,
   author  = {Achim D. Brucker and Michael Herzberg},
   title   = {The Safely Composable DOM},
   journal = {Archive of Formal Proofs},
   month   = {September},
   year    = {2020},
   note    = {\url{https://isa-afp.org/entries/Core_SC_DOM.html},
-            Formal proof development},
+             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
     </div>
   </div>
-</div>
 
-<div id="download-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Download</h2>
-    <a class="close" href="#">&times;</a>
-    <a href="https://www.isa-afp.org/release//afp-Core_SC_DOM-current.tar.gz" download>Download latest</a>
-    <p>Older releases:</p>
-    <ul><li>
-        <a href="https://www.isa-afp.org/release/afp-Core_SC_DOM-2023-09-13.tar.gz">Sep 13, 2023</a>: Isabelle2023
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Core_SC_DOM-2022-10-27.tar.gz">Oct 27, 2022</a>: Isabelle2022
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Core_SC_DOM-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021-1
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Core_SC_DOM-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Core_SC_DOM-2020-11-26.tar.gz">Nov 26, 2020</a>: Isabelle2020
-      </li></ul>
-  </div>
-</div>
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-Core_SC_DOM-current.tar.gz"
+         download>Download latest</a>
+        <p>Older releases:</p>
+        <ul>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Core_SC_DOM-2023-09-13.tar.gz">
+                Sep 13, 2023
+              </a>
+              : Isabelle2023
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Core_SC_DOM-2022-10-27.tar.gz">
+                Oct 27, 2022
+              </a>
+              : Isabelle2022
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Core_SC_DOM-2021-12-14.tar.gz">
+                Dec 14, 2021
+              </a>
+              : Isabelle2021-1
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Core_SC_DOM-2021-02-23.tar.gz">
+                Feb 23, 2021
+              </a>
+              : Isabelle2021
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Core_SC_DOM-2020-11-26.tar.gz">
+                Nov 26, 2020
+              </a>
+              : Isabelle2020
+            </li>
+        </ul>
     </div>
   </div>
-</body>
-
+        
+      </div>
+    </div>
+  </body>
 </html>

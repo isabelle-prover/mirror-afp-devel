@@ -1,371 +1,297 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>thiemann on Archive of Formal Proofs</title>
+    <title>thiemann on Archive of Formal Proofs
+    </title>
     <link>/authors/thiemann/</link>
-    <description>Recent content in thiemann on Archive of Formal Proofs</description>
+    <description>
+        Recent content in thiemann 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Thu, 01 Jun 2023 00:00:00 +0000</lastBuildDate><atom:link href="/authors/thiemann/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>A Verified Efficient Implementation of the Weighted Path Order</title>
-      <link>/entries/Efficient_Weighted_Path_Order.html</link>
-      <pubDate>Thu, 01 Jun 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Efficient_Weighted_Path_Order.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>A Verified Translation of Multitape Turing Machines into Singletape Turing Machines</title>
-      <link>/entries/Multitape_To_Singletape_TM.html</link>
-      <pubDate>Wed, 30 Nov 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Multitape_To_Singletape_TM.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Clique is not solvable by monotone circuits of polynomial size</title>
-      <link>/entries/Clique_and_Monotone_Circuits.html</link>
-      <pubDate>Sun, 08 May 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Clique_and_Monotone_Circuits.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Generalized Multiset Ordering is NP-Complete</title>
-      <link>/entries/Multiset_Ordering_NPC.html</link>
-      <pubDate>Wed, 20 Apr 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Multiset_Ordering_NPC.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Duality of Linear Programming</title>
-      <link>/entries/LP_Duality.html</link>
-      <pubDate>Thu, 03 Feb 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/LP_Duality.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Regular Tree Relations</title>
-      <link>/entries/Regular_Tree_Relations.html</link>
-      <pubDate>Wed, 15 Dec 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Regular_Tree_Relations.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Factorization of Polynomials with Algebraic Coefficients</title>
-      <link>/entries/Factor_Algebraic_Polynomial.html</link>
-      <pubDate>Mon, 08 Nov 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Factor_Algebraic_Polynomial.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Formalization of Weighted Path Orders and Recursive Path Orders</title>
-      <link>/entries/Weighted_Path_Order.html</link>
-      <pubDate>Thu, 16 Sep 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Weighted_Path_Order.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Solving Cubic and Quartic Equations</title>
-      <link>/entries/Cubic_Quartic_Equations.html</link>
-      <pubDate>Fri, 03 Sep 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Cubic_Quartic_Equations.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Two algorithms based on modular arithmetic: lattice basis reduction and Hermite normal form computation</title>
-      <link>/entries/Modular_arithmetic_LLL_and_HNF_algorithms.html</link>
-      <pubDate>Fri, 12 Mar 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Modular_arithmetic_LLL_and_HNF_algorithms.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Sunflower Lemma of Erdős and Rado</title>
-      <link>/entries/Sunflowers.html</link>
-      <pubDate>Thu, 25 Feb 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Sunflowers.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Formalization of Knuth–Bendix Orders</title>
-      <link>/entries/Knuth_Bendix_Order.html</link>
-      <pubDate>Wed, 13 May 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Knuth_Bendix_Order.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Linear Inequalities</title>
-      <link>/entries/Linear_Inequalities.html</link>
-      <pubDate>Fri, 21 Jun 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Linear_Inequalities.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Farkas&#39; Lemma and Motzkin&#39;s Transposition Theorem</title>
-      <link>/entries/Farkas.html</link>
-      <pubDate>Thu, 17 Jan 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Farkas.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>An Incremental Simplex Algorithm with Unsatisfiable Core Generation</title>
-      <link>/entries/Simplex.html</link>
-      <pubDate>Fri, 24 Aug 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Simplex.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A verified factorization algorithm for integer polynomials with polynomial complexity</title>
-      <link>/entries/LLL_Factorization.html</link>
-      <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/LLL_Factorization.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>First-Order Terms</title>
-      <link>/entries/First_Order_Terms.html</link>
-      <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/First_Order_Terms.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A verified LLL algorithm</title>
-      <link>/entries/LLL_Basis_Reduction.html</link>
-      <pubDate>Fri, 02 Feb 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/LLL_Basis_Reduction.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Stochastic Matrices and the Perron-Frobenius Theorem</title>
-      <link>/entries/Stochastic_Matrices.html</link>
-      <pubDate>Wed, 22 Nov 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Stochastic_Matrices.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Subresultants</title>
-      <link>/entries/Subresultants.html</link>
-      <pubDate>Thu, 06 Apr 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Subresultants.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Factorization Algorithm of Berlekamp and Zassenhaus</title>
-      <link>/entries/Berlekamp_Zassenhaus.html</link>
-      <pubDate>Fri, 14 Oct 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Berlekamp_Zassenhaus.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Perron-Frobenius Theorem for Spectral Radius Analysis</title>
-      <link>/entries/Perron_Frobenius.html</link>
-      <pubDate>Fri, 20 May 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Perron_Frobenius.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Polynomial Factorization</title>
-      <link>/entries/Polynomial_Factorization.html</link>
-      <pubDate>Fri, 29 Jan 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Polynomial_Factorization.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Polynomial Interpolation</title>
-      <link>/entries/Polynomial_Interpolation.html</link>
-      <pubDate>Fri, 29 Jan 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Polynomial_Interpolation.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Algebraic Numbers in Isabelle/HOL</title>
-      <link>/entries/Algebraic_Numbers.html</link>
-      <pubDate>Tue, 22 Dec 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Algebraic_Numbers.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Matrices, Jordan Normal Forms, and Spectral Radius Theory</title>
-      <link>/entries/Jordan_Normal_Form.html</link>
-      <pubDate>Fri, 21 Aug 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Jordan_Normal_Form.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Deriving class instances for datatypes</title>
-      <link>/entries/Deriving.html</link>
-      <pubDate>Wed, 11 Mar 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Deriving.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Lifting Definition Option</title>
-      <link>/entries/Lifting_Definition_Option.html</link>
-      <pubDate>Mon, 13 Oct 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Lifting_Definition_Option.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Certification Monads</title>
-      <link>/entries/Certification_Monads.html</link>
-      <pubDate>Fri, 03 Oct 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Certification_Monads.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>XML</title>
-      <link>/entries/XML.html</link>
-      <pubDate>Fri, 03 Oct 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/XML.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Haskell&#39;s Show Class in Isabelle/HOL</title>
-      <link>/entries/Show.html</link>
-      <pubDate>Tue, 29 Jul 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Show.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Mutually Recursive Partial Functions</title>
-      <link>/entries/Partial_Function_MR.html</link>
-      <pubDate>Tue, 18 Feb 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Partial_Function_MR.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Implementing field extensions of the form Q[sqrt(b)]</title>
-      <link>/entries/Real_Impl.html</link>
-      <pubDate>Thu, 06 Feb 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Real_Impl.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Computing N-th Roots using the Babylonian Method</title>
-      <link>/entries/Sqrt_Babylonian.html</link>
-      <pubDate>Thu, 03 Jan 2013 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Sqrt_Babylonian.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Generating linear orders for datatypes</title>
-      <link>/entries/Datatype_Order_Generator.html</link>
-      <pubDate>Tue, 07 Aug 2012 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Datatype_Order_Generator.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Executable Transitive Closures</title>
-      <link>/entries/Transitive-Closure-II.html</link>
-      <pubDate>Wed, 29 Feb 2012 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Transitive-Closure-II.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Executable Transitive Closures of Finite Relations</title>
-      <link>/entries/Transitive-Closure.html</link>
-      <pubDate>Mon, 14 Mar 2011 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Transitive-Closure.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Executable Multivariate Polynomials</title>
-      <link>/entries/Polynomials.html</link>
-      <pubDate>Tue, 10 Aug 2010 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Polynomials.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Executable Matrix Operations on Matrices of Arbitrary Dimensions</title>
-      <link>/entries/Matrix.html</link>
-      <pubDate>Thu, 17 Jun 2010 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Matrix.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Abstract Rewriting</title>
-      <link>/entries/Abstract-Rewriting.html</link>
-      <pubDate>Mon, 14 Jun 2010 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Abstract-Rewriting.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Thu, 01 Jun 2023 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/thiemann/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>A Verified Efficient Implementation of the Weighted Path Order</title>
+          <link>/entries/Efficient_Weighted_Path_Order.html</link>
+          <pubDate>Thu, 01 Jun 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Efficient_Weighted_Path_Order.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Verified Translation of Multitape Turing Machines into Singletape Turing Machines</title>
+          <link>/entries/Multitape_To_Singletape_TM.html</link>
+          <pubDate>Wed, 30 Nov 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Multitape_To_Singletape_TM.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Clique is not solvable by monotone circuits of polynomial size</title>
+          <link>/entries/Clique_and_Monotone_Circuits.html</link>
+          <pubDate>Sun, 08 May 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Clique_and_Monotone_Circuits.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Generalized Multiset Ordering is NP-Complete</title>
+          <link>/entries/Multiset_Ordering_NPC.html</link>
+          <pubDate>Wed, 20 Apr 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Multiset_Ordering_NPC.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Duality of Linear Programming</title>
+          <link>/entries/LP_Duality.html</link>
+          <pubDate>Thu, 03 Feb 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/LP_Duality.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Regular Tree Relations</title>
+          <link>/entries/Regular_Tree_Relations.html</link>
+          <pubDate>Wed, 15 Dec 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Regular_Tree_Relations.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Factorization of Polynomials with Algebraic Coefficients</title>
+          <link>/entries/Factor_Algebraic_Polynomial.html</link>
+          <pubDate>Mon, 08 Nov 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Factor_Algebraic_Polynomial.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Formalization of Weighted Path Orders and Recursive Path Orders</title>
+          <link>/entries/Weighted_Path_Order.html</link>
+          <pubDate>Thu, 16 Sep 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Weighted_Path_Order.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Solving Cubic and Quartic Equations</title>
+          <link>/entries/Cubic_Quartic_Equations.html</link>
+          <pubDate>Fri, 03 Sep 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Cubic_Quartic_Equations.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Two algorithms based on modular arithmetic: lattice basis reduction and Hermite normal form computation</title>
+          <link>/entries/Modular_arithmetic_LLL_and_HNF_algorithms.html</link>
+          <pubDate>Fri, 12 Mar 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Modular_arithmetic_LLL_and_HNF_algorithms.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Sunflower Lemma of Erdős and Rado</title>
+          <link>/entries/Sunflowers.html</link>
+          <pubDate>Thu, 25 Feb 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Sunflowers.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Formalization of Knuth–Bendix Orders</title>
+          <link>/entries/Knuth_Bendix_Order.html</link>
+          <pubDate>Wed, 13 May 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Knuth_Bendix_Order.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Linear Inequalities</title>
+          <link>/entries/Linear_Inequalities.html</link>
+          <pubDate>Fri, 21 Jun 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Linear_Inequalities.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Farkas&#39; Lemma and Motzkin&#39;s Transposition Theorem</title>
+          <link>/entries/Farkas.html</link>
+          <pubDate>Thu, 17 Jan 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Farkas.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>An Incremental Simplex Algorithm with Unsatisfiable Core Generation</title>
+          <link>/entries/Simplex.html</link>
+          <pubDate>Fri, 24 Aug 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Simplex.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A verified factorization algorithm for integer polynomials with polynomial complexity</title>
+          <link>/entries/LLL_Factorization.html</link>
+          <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/LLL_Factorization.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>First-Order Terms</title>
+          <link>/entries/First_Order_Terms.html</link>
+          <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/First_Order_Terms.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A verified LLL algorithm</title>
+          <link>/entries/LLL_Basis_Reduction.html</link>
+          <pubDate>Fri, 02 Feb 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/LLL_Basis_Reduction.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Stochastic Matrices and the Perron-Frobenius Theorem</title>
+          <link>/entries/Stochastic_Matrices.html</link>
+          <pubDate>Wed, 22 Nov 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Stochastic_Matrices.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Subresultants</title>
+          <link>/entries/Subresultants.html</link>
+          <pubDate>Thu, 06 Apr 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Subresultants.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Factorization Algorithm of Berlekamp and Zassenhaus</title>
+          <link>/entries/Berlekamp_Zassenhaus.html</link>
+          <pubDate>Fri, 14 Oct 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Berlekamp_Zassenhaus.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Perron-Frobenius Theorem for Spectral Radius Analysis</title>
+          <link>/entries/Perron_Frobenius.html</link>
+          <pubDate>Fri, 20 May 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Perron_Frobenius.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Polynomial Factorization</title>
+          <link>/entries/Polynomial_Factorization.html</link>
+          <pubDate>Fri, 29 Jan 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Polynomial_Factorization.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Polynomial Interpolation</title>
+          <link>/entries/Polynomial_Interpolation.html</link>
+          <pubDate>Fri, 29 Jan 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Polynomial_Interpolation.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Algebraic Numbers in Isabelle/HOL</title>
+          <link>/entries/Algebraic_Numbers.html</link>
+          <pubDate>Tue, 22 Dec 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Algebraic_Numbers.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Matrices, Jordan Normal Forms, and Spectral Radius Theory</title>
+          <link>/entries/Jordan_Normal_Form.html</link>
+          <pubDate>Fri, 21 Aug 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Jordan_Normal_Form.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Deriving class instances for datatypes</title>
+          <link>/entries/Deriving.html</link>
+          <pubDate>Wed, 11 Mar 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Deriving.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Lifting Definition Option</title>
+          <link>/entries/Lifting_Definition_Option.html</link>
+          <pubDate>Mon, 13 Oct 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Lifting_Definition_Option.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Certification Monads</title>
+          <link>/entries/Certification_Monads.html</link>
+          <pubDate>Fri, 03 Oct 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Certification_Monads.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>XML</title>
+          <link>/entries/XML.html</link>
+          <pubDate>Fri, 03 Oct 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/XML.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Haskell&#39;s Show Class in Isabelle/HOL</title>
+          <link>/entries/Show.html</link>
+          <pubDate>Tue, 29 Jul 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Show.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Mutually Recursive Partial Functions</title>
+          <link>/entries/Partial_Function_MR.html</link>
+          <pubDate>Tue, 18 Feb 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Partial_Function_MR.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Implementing field extensions of the form Q[sqrt(b)]</title>
+          <link>/entries/Real_Impl.html</link>
+          <pubDate>Thu, 06 Feb 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Real_Impl.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Computing N-th Roots using the Babylonian Method</title>
+          <link>/entries/Sqrt_Babylonian.html</link>
+          <pubDate>Thu, 03 Jan 2013 00:00:00 +0000</pubDate>
+          <guid>/entries/Sqrt_Babylonian.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Generating linear orders for datatypes</title>
+          <link>/entries/Datatype_Order_Generator.html</link>
+          <pubDate>Tue, 07 Aug 2012 00:00:00 +0000</pubDate>
+          <guid>/entries/Datatype_Order_Generator.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Executable Transitive Closures</title>
+          <link>/entries/Transitive-Closure-II.html</link>
+          <pubDate>Wed, 29 Feb 2012 00:00:00 +0000</pubDate>
+          <guid>/entries/Transitive-Closure-II.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Executable Transitive Closures of Finite Relations</title>
+          <link>/entries/Transitive-Closure.html</link>
+          <pubDate>Mon, 14 Mar 2011 00:00:00 +0000</pubDate>
+          <guid>/entries/Transitive-Closure.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Executable Multivariate Polynomials</title>
+          <link>/entries/Polynomials.html</link>
+          <pubDate>Tue, 10 Aug 2010 00:00:00 +0000</pubDate>
+          <guid>/entries/Polynomials.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Executable Matrix Operations on Matrices of Arbitrary Dimensions</title>
+          <link>/entries/Matrix.html</link>
+          <pubDate>Thu, 17 Jun 2010 00:00:00 +0000</pubDate>
+          <guid>/entries/Matrix.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Abstract Rewriting</title>
+          <link>/entries/Abstract-Rewriting.html</link>
+          <pubDate>Mon, 14 Jun 2010 00:00:00 +0000</pubDate>
+          <guid>/entries/Abstract-Rewriting.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

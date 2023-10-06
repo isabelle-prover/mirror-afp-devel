@@ -15,17 +15,28 @@ const NAVBAR_TYPES = ['fact', 'type', 'const']
 /* routing */
 
 function target(base_href, rel_href) {
-  const href_parts = rel_href.split('/')
+  const resolved = new URL(rel_href, base_href).href
+  const base = new URL('../..', base_href).href
+  const thy_path = strip_prefix(resolved, base)
+  // chapter/session/[home_session.]theory.html
 
-  if (href_parts.length === 1) {
-    const ref_parts = href_parts[0].split('.html')
+  const href_parts = thy_path.split('/')
+  if (href_parts.length === 3) {
+    var session = href_parts[1]
+    const ref = href_parts[2]
+    const ref_parts = ref.split('.html')
+    var theory
     const file_parts = ref_parts[0].split('.')
-    if (file_parts.length == 1) return `#${href_parts[0]}`
-    else {
-      return `../${file_parts[0].toLowerCase()}/#${file_parts.slice(1).join('.')}.html${ref_parts[1]}`
+    if (file_parts.length == 1) theory = file_parts[0]
+    else if (file_parts.length == 2) {
+      session = file_parts[0]
+      theory = file_parts[1]
     }
+    else return resolved
+
+    return `../${session.toLowerCase()}/#${theory}.html${ref_parts[1]}`
   }
-  else return `${base_href}/../${rel_href}`
+  else return resolved
 }
 
 function to_id(thy_name, ref) {

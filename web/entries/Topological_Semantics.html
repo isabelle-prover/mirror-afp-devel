@@ -1,25 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Topological semantics for paraconsistent and paracomplete logics - Archive of Formal Proofs</title><meta name="description" content="We investigate mathematical structures that provide natural semantics for families of (quantified) non-classical logics featuring special unary..."><meta property="og:title" content="Topological semantics for paraconsistent and paracomplete logics" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Topological semantics for paraconsistent and paracomplete logics - Archive of Formal Proofs</title>
+    <meta name="description" content="We investigate mathematical structures that provide natural semantics for families of (quantified) non-classical logics featuring special unary...">
+
+  <meta property="og:title" content="Topological semantics for paraconsistent and paracomplete logics" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="/entries/Topological_Semantics.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
 <meta property="article:published_time" content="2020-12-17T00:00:00+00:00" />
 <meta property="article:modified_time" content="2020-12-17T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="Topological semantics for paraconsistent and paracomplete logics"/>
 <meta name="twitter:description" content=""/>
 
-  
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
     <script>
       MathJax = {
         tex: {
@@ -31,153 +36,221 @@
         }
       };
     </script>
-    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
   <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
-  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../" class='logo-link'>
-    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../" class='logo-link'>
-        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../"><li >Home</li></a>
-        <a href="../topics/"><li >Topics</li></a>
-        <a href="../download/"><li >Download</li></a>
-        <a href="../help/"><li >Help</li></a>
-        <a href="../submission/"><li >Submission</li></a>
-        <a href="../statistics/"><li >Statistics</li></a>
-        <a href="../about/"><li >About</li></a>
+          <a href="../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content  entries'><header>
-  <form autocomplete="off" action="../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>T</span>opological <span class='first'>S</span>emantics for <span class='first'>P</span>araconsistent and <span class='first'>P</span>aracomplete <span class='first'>L</span>ogics</h1>
+    </aside>
+    <div class='content entries'>
+      <header>
+    <form autocomplete="off" action="../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>T</span>opological semantics for paraconsistent and paracomplete logics
+    
+  </h1>
   <div>
-    
-    <p><a href="../authors/fuenmayor">David Fuenmayor</a> <a class="obfuscated" data="eyJob3N0IjpbImdtYWlsIiwiY29tIl0sInVzZXIiOlsiZGF2ZnVlbm1heW9yIl19">📧</a>
-    </p>
-    
-    
-    <p class="date">December 17, 2020</p>
-    
-  </div>
-</header><div><main><h3>Abstract</h3>
+      <p>
+        <a href="../authors/fuenmayor">David Fuenmayor</a> <a class="obfuscated" data="eyJob3N0IjpbImdtYWlsIiwiY29tIl0sInVzZXIiOlsiZGF2ZnVlbm1heW9yIl19">📧</a>
 
-  <div class="abstract mathjax_process">We investigate mathematical structures that provide natural semantics for families of (quantified) non-classical logics featuring special unary connectives, known as recovery operators, that allow us to 'recover' the properties of classical logic in a controlled manner. These structures are known as topological Boolean algebras, which are Boolean algebras extended with additional operations subject to specific conditions of a topological nature. In this study we focus on the paradigmatic case of negation. We demonstrate how these algebras are well-suited to provide a semantics for some families of paraconsistent Logics of Formal Inconsistency and paracomplete Logics of Formal Undeterminedness. These logics feature recovery operators used to earmark propositions that behave 'classically' when interacting with non-classical negations.
+      </p>
+      <p class="date">December 17, 2020</p>
+  </div>
+</header>
+      <div>
+        
+  <main>
+    <h3>Abstract</h3>
+
+    <div class="abstract mathjax_process">We investigate mathematical structures that provide natural semantics for families of (quantified) non-classical logics featuring special unary connectives, known as recovery operators, that allow us to 'recover' the properties of classical logic in a controlled manner. These structures are known as topological Boolean algebras, which are Boolean algebras extended with additional operations subject to specific conditions of a topological nature. In this study we focus on the paradigmatic case of negation. We demonstrate how these algebras are well-suited to provide a semantics for some families of paraconsistent Logics of Formal Inconsistency and paracomplete Logics of Formal Undeterminedness. These logics feature recovery operators used to earmark propositions that behave 'classically' when interacting with non-classical negations.
 We refer to the <a href="https://arxiv.org/abs/2104.04284">companion paper</a> for more information.</div>
 
-  <h3>License</h3>
-  <div><a href="https://isa-afp.org/LICENSE">BSD License</a></div><h3>Topics</h3>
-  <ul><li><a href="../topics/logic/general-logic">Logic/General logic</a></li></ul>
-  <h3>Session Topological_Semantics</h3>
-  <ul>
-    <li><a href="../theories/topological_semantics/#boolean_algebra">boolean_algebra</a></li>
-    <li><a href="../theories/topological_semantics/#boolean_algebra_operators">boolean_algebra_operators</a></li>
-    <li><a href="../theories/topological_semantics/#boolean_algebra_infinitary">boolean_algebra_infinitary</a></li>
-    <li><a href="../theories/topological_semantics/#conditions_positive">conditions_positive</a></li>
-    <li><a href="../theories/topological_semantics/#conditions_positive_infinitary">conditions_positive_infinitary</a></li>
-    <li><a href="../theories/topological_semantics/#conditions_negative">conditions_negative</a></li>
-    <li><a href="../theories/topological_semantics/#conditions_negative_infinitary">conditions_negative_infinitary</a></li>
-    <li><a href="../theories/topological_semantics/#conditions_relativized">conditions_relativized</a></li>
-    <li><a href="../theories/topological_semantics/#conditions_relativized_infinitary">conditions_relativized_infinitary</a></li>
-    <li><a href="../theories/topological_semantics/#logics_consequence">logics_consequence</a></li>
-    <li><a href="../theories/topological_semantics/#logics_operators">logics_operators</a></li>
-    <li><a href="../theories/topological_semantics/#logics_negation">logics_negation</a></li>
-    <li><a href="../theories/topological_semantics/#logics_quantifiers">logics_quantifiers</a></li>
-    <li><a href="../theories/topological_semantics/#logics_quantifiers_example">logics_quantifiers_example</a></li>
-    <li><a href="../theories/topological_semantics/#logics_LFI">logics_LFI</a></li>
-    <li><a href="../theories/topological_semantics/#logics_LFU">logics_LFU</a></li></ul><div class="flex-wrap">
-  
-  
-  </div>
-</main>
-
-<nav class='links'>
-  <a class='popup-button' href="#cite-popup">Cite</a>
-  <a class='popup-button' href="#download-popup">Download</a>
-  <h4>PDFs</h4>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Topological_Semantics/outline.pdf">Proof
-    outline</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Topological_Semantics/document.pdf">Proof
-    document</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Topological_Semantics/session_graph.pdf">Dependencies</a></nav>
-
-<div id="cite-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Cite</h2>
-    <a class="close" href="#">&times;</a>
+    <h3>License</h3>
     <div>
-      <p style="display:none;" id="bibtex-filename">Topological_Semantics-AFP</p><pre id="copy-text">@article{Topological_Semantics-AFP,
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/logic/general-logic">Logic/General logic</a></li>
+      </ul>
+      <h3>Session Topological_Semantics</h3>
+      <ul>
+          <li><a href="../sessions/topological_semantics/#boolean_algebra">boolean_algebra</a></li>
+          <li><a href="../sessions/topological_semantics/#boolean_algebra_operators">boolean_algebra_operators</a></li>
+          <li><a href="../sessions/topological_semantics/#boolean_algebra_infinitary">boolean_algebra_infinitary</a></li>
+          <li><a href="../sessions/topological_semantics/#conditions_positive">conditions_positive</a></li>
+          <li><a href="../sessions/topological_semantics/#conditions_positive_infinitary">conditions_positive_infinitary</a></li>
+          <li><a href="../sessions/topological_semantics/#conditions_negative">conditions_negative</a></li>
+          <li><a href="../sessions/topological_semantics/#conditions_negative_infinitary">conditions_negative_infinitary</a></li>
+          <li><a href="../sessions/topological_semantics/#conditions_relativized">conditions_relativized</a></li>
+          <li><a href="../sessions/topological_semantics/#conditions_relativized_infinitary">conditions_relativized_infinitary</a></li>
+          <li><a href="../sessions/topological_semantics/#logics_consequence">logics_consequence</a></li>
+          <li><a href="../sessions/topological_semantics/#logics_operators">logics_operators</a></li>
+          <li><a href="../sessions/topological_semantics/#logics_negation">logics_negation</a></li>
+          <li><a href="../sessions/topological_semantics/#logics_quantifiers">logics_quantifiers</a></li>
+          <li><a href="../sessions/topological_semantics/#logics_quantifiers_example">logics_quantifiers_example</a></li>
+          <li><a href="../sessions/topological_semantics/#logics_LFI">logics_LFI</a></li>
+          <li><a href="../sessions/topological_semantics/#logics_LFU">logics_LFU</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+      </div>
+    
+  </main>
+
+  <nav class='links'>
+    <a class='popup-button' href="#cite-popup">Cite</a>
+    <a class='popup-button' href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Topological_Semantics/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Topological_Semantics/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Topological_Semantics/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Topological_Semantics-AFP</p>
+        <pre id="copy-text">@article{Topological_Semantics-AFP,
   author  = {David Fuenmayor},
   title   = {Topological semantics for paraconsistent and paracomplete logics},
   journal = {Archive of Formal Proofs},
   month   = {December},
   year    = {2020},
   note    = {\url{https://isa-afp.org/entries/Topological_Semantics.html},
-            Formal proof development},
+             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
     </div>
   </div>
-</div>
 
-<div id="download-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Download</h2>
-    <a class="close" href="#">&times;</a>
-    <a href="https://www.isa-afp.org/release//afp-Topological_Semantics-current.tar.gz" download>Download latest</a>
-    <p>Older releases:</p>
-    <ul><li>
-        <a href="https://www.isa-afp.org/release/afp-Topological_Semantics-2023-09-13.tar.gz">Sep 13, 2023</a>: Isabelle2023
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Topological_Semantics-2022-10-27.tar.gz">Oct 27, 2022</a>: Isabelle2022
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Topological_Semantics-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021-1
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Topological_Semantics-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Topological_Semantics-2020-12-22.tar.gz">Dec 22, 2020</a>: Isabelle2020
-      </li></ul>
-  </div>
-</div>
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-Topological_Semantics-current.tar.gz"
+         download>Download latest</a>
+        <p>Older releases:</p>
+        <ul>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Topological_Semantics-2023-09-13.tar.gz">
+                Sep 13, 2023
+              </a>
+              : Isabelle2023
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Topological_Semantics-2022-10-27.tar.gz">
+                Oct 27, 2022
+              </a>
+              : Isabelle2022
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Topological_Semantics-2021-12-14.tar.gz">
+                Dec 14, 2021
+              </a>
+              : Isabelle2021-1
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Topological_Semantics-2021-02-23.tar.gz">
+                Feb 23, 2021
+              </a>
+              : Isabelle2021
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Topological_Semantics-2020-12-22.tar.gz">
+                Dec 22, 2020
+              </a>
+              : Isabelle2020
+            </li>
+        </ul>
     </div>
   </div>
-</body>
-
+        
+      </div>
+    </div>
+  </body>
 </html>

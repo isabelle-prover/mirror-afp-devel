@@ -1,182 +1,143 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Collections on Archive of Formal Proofs</title>
+    <title>Collections on Archive of Formal Proofs
+    </title>
     <link>/dependencies/collections/</link>
-    <description>Recent content in Collections on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Collections 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Wed, 28 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/collections/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Making Arbitrary Relational Calculus Queries Safe-Range</title>
-      <link>/entries/Safe_Range_RC.html</link>
-      <pubDate>Wed, 28 Sep 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Safe_Range_RC.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>A Sequent Calculus Prover for First-Order Logic with Functions</title>
-      <link>/entries/FOL_Seq_Calc2.html</link>
-      <pubDate>Mon, 31 Jan 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/FOL_Seq_Calc2.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Gale-Shapley Algorithm</title>
-      <link>/entries/Gale_Shapley.html</link>
-      <pubDate>Wed, 29 Dec 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Gale_Shapley.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Kruskal&#39;s Algorithm for Minimum Spanning Forest</title>
-      <link>/entries/Kruskal.html</link>
-      <pubDate>Thu, 14 Feb 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Kruskal.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Transition Systems and Automata</title>
-      <link>/entries/Transition_Systems_and_Automata.html</link>
-      <pubDate>Thu, 19 Oct 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Transition_Systems_and_Automata.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Imperative Refinement Framework</title>
-      <link>/entries/Refine_Imperative_HOL.html</link>
-      <pubDate>Mon, 08 Aug 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Refine_Imperative_HOL.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Algorithms for Reduced Ordered Binary Decision Diagrams</title>
-      <link>/entries/ROBDD.html</link>
-      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/ROBDD.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Verified Construction of Static Single Assignment Form</title>
-      <link>/entries/Formal_SSA.html</link>
-      <pubDate>Fri, 05 Feb 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Formal_SSA.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Deriving class instances for datatypes</title>
-      <link>/entries/Deriving.html</link>
-      <pubDate>Wed, 11 Mar 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Deriving.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The CAVA Automata Library</title>
-      <link>/entries/CAVA_Automata.html</link>
-      <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/CAVA_Automata.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Abstract Completeness</title>
-      <link>/entries/Abstract_Completeness.html</link>
-      <pubDate>Wed, 16 Apr 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Abstract_Completeness.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Light-weight Containers</title>
-      <link>/entries/Containers.html</link>
-      <pubDate>Mon, 15 Apr 2013 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Containers.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Separation Logic Framework for Imperative HOL</title>
-      <link>/entries/Separation_Logic_Imperative_HOL.html</link>
-      <pubDate>Wed, 14 Nov 2012 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Separation_Logic_Imperative_HOL.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Ordinary Differential Equations</title>
-      <link>/entries/Ordinary_Differential_Equations.html</link>
-      <pubDate>Thu, 26 Apr 2012 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Ordinary_Differential_Equations.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Dijkstra&#39;s Shortest Path Algorithm</title>
-      <link>/entries/Dijkstra_Shortest_Path.html</link>
-      <pubDate>Mon, 30 Jan 2012 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Dijkstra_Shortest_Path.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Executable Transitive Closures of Finite Relations</title>
-      <link>/entries/Transitive-Closure.html</link>
-      <pubDate>Mon, 14 Mar 2011 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Transitive-Closure.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Collections Framework</title>
-      <link>/entries/Collections.html</link>
-      <pubDate>Wed, 25 Nov 2009 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Collections.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Tree Automata</title>
-      <link>/entries/Tree-Automata.html</link>
-      <pubDate>Wed, 25 Nov 2009 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Tree-Automata.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Jinja with Threads</title>
-      <link>/entries/JinjaThreads.html</link>
-      <pubDate>Mon, 03 Dec 2007 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/JinjaThreads.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Wed, 28 Sep 2022 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/collections/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Making Arbitrary Relational Calculus Queries Safe-Range</title>
+          <link>/entries/Safe_Range_RC.html</link>
+          <pubDate>Wed, 28 Sep 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Safe_Range_RC.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Sequent Calculus Prover for First-Order Logic with Functions</title>
+          <link>/entries/FOL_Seq_Calc2.html</link>
+          <pubDate>Mon, 31 Jan 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/FOL_Seq_Calc2.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Gale-Shapley Algorithm</title>
+          <link>/entries/Gale_Shapley.html</link>
+          <pubDate>Wed, 29 Dec 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Gale_Shapley.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Kruskal&#39;s Algorithm for Minimum Spanning Forest</title>
+          <link>/entries/Kruskal.html</link>
+          <pubDate>Thu, 14 Feb 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Kruskal.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Transition Systems and Automata</title>
+          <link>/entries/Transition_Systems_and_Automata.html</link>
+          <pubDate>Thu, 19 Oct 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Transition_Systems_and_Automata.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Imperative Refinement Framework</title>
+          <link>/entries/Refine_Imperative_HOL.html</link>
+          <pubDate>Mon, 08 Aug 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Refine_Imperative_HOL.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Algorithms for Reduced Ordered Binary Decision Diagrams</title>
+          <link>/entries/ROBDD.html</link>
+          <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/ROBDD.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Verified Construction of Static Single Assignment Form</title>
+          <link>/entries/Formal_SSA.html</link>
+          <pubDate>Fri, 05 Feb 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Formal_SSA.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Deriving class instances for datatypes</title>
+          <link>/entries/Deriving.html</link>
+          <pubDate>Wed, 11 Mar 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Deriving.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The CAVA Automata Library</title>
+          <link>/entries/CAVA_Automata.html</link>
+          <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/CAVA_Automata.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Abstract Completeness</title>
+          <link>/entries/Abstract_Completeness.html</link>
+          <pubDate>Wed, 16 Apr 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Abstract_Completeness.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Light-weight Containers</title>
+          <link>/entries/Containers.html</link>
+          <pubDate>Mon, 15 Apr 2013 00:00:00 +0000</pubDate>
+          <guid>/entries/Containers.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Separation Logic Framework for Imperative HOL</title>
+          <link>/entries/Separation_Logic_Imperative_HOL.html</link>
+          <pubDate>Wed, 14 Nov 2012 00:00:00 +0000</pubDate>
+          <guid>/entries/Separation_Logic_Imperative_HOL.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Ordinary Differential Equations</title>
+          <link>/entries/Ordinary_Differential_Equations.html</link>
+          <pubDate>Thu, 26 Apr 2012 00:00:00 +0000</pubDate>
+          <guid>/entries/Ordinary_Differential_Equations.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Dijkstra&#39;s Shortest Path Algorithm</title>
+          <link>/entries/Dijkstra_Shortest_Path.html</link>
+          <pubDate>Mon, 30 Jan 2012 00:00:00 +0000</pubDate>
+          <guid>/entries/Dijkstra_Shortest_Path.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Executable Transitive Closures of Finite Relations</title>
+          <link>/entries/Transitive-Closure.html</link>
+          <pubDate>Mon, 14 Mar 2011 00:00:00 +0000</pubDate>
+          <guid>/entries/Transitive-Closure.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Tree Automata</title>
+          <link>/entries/Tree-Automata.html</link>
+          <pubDate>Wed, 25 Nov 2009 00:00:00 +0000</pubDate>
+          <guid>/entries/Tree-Automata.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Jinja with Threads</title>
+          <link>/entries/JinjaThreads.html</link>
+          <pubDate>Mon, 03 Dec 2007 00:00:00 +0000</pubDate>
+          <guid>/entries/JinjaThreads.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

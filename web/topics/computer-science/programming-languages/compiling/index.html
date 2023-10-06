@@ -1,164 +1,217 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Computer science/Programming languages/Compiling - Archive of Formal Proofs</title><meta name="description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."><link rel="alternate" type="application/rss+xml" href="../../../../topics/computer-science/programming-languages/compiling/index.xml" title="Archive of Formal Proofs" /><meta property="og:title" content="Computer science/Programming languages/Compiling" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Computer science/Programming languages/Compiling - Archive of Formal Proofs</title>
+    <meta name="description" content="A collection of proof libraries, examples, and larger
+     scientific developments, mechanically checked in the theorem prover Isabelle.">
+  <link rel="alternate" type="application/rss+xml" href="../../../../topics/computer-science/programming-languages/compiling/index.xml" title="Archive of Formal Proofs" />
+
+  <meta property="og:title" content="Computer science/Programming languages/Compiling" />
 <meta property="og:description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="/topics/computer-science/programming-languages/compiling/" /><meta property="og:image" content="/images/afp.png"/><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="Computer science/Programming languages/Compiling"/>
 <meta name="twitter:description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."/>
 
-  
   <link rel="stylesheet" type="text/css" href="../../../../css/front.min.css">
 
-  <link rel="icon" href="../../../../images/favicon.ico" type="image/icon"><script src="../../../../js/obfuscate.js"></script>
+  <link rel="icon" href="../../../../images/favicon.ico" type="image/icon">
+
+  <script src="../../../../js/obfuscate.js"></script>
   <script src="../../../../js/flexsearch.bundle.js"></script>
   <script src="../../../../js/scroll-spy.js"></script>
   <script src="../../../../js/theory.js"></script>
-  <script src="../../../../js/util.js"></script><script src="../../../../js/header-search.js"></script><script src="../../../../js/search-autocomplete.js"></script>
+  <script src="../../../../js/util.js"></script>
+    <script src="../../../../js/header-search.js"></script>
+  <script src="../../../../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../../../../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../../../../" class='logo-link'>
-    <img src="../../../../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../../../../" class="logo-link">
+    <img src="../../../../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../../../../search"><img src="../../../../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../../../../" class='logo-link'>
-        <img src="../../../../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../../../../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../../../../"><li >Home</li></a>
-        <a href="../../../../topics/"><li >Topics</li></a>
-        <a href="../../../../download/"><li >Download</li></a>
-        <a href="../../../../help/"><li >Help</li></a>
-        <a href="../../../../submission/"><li >Submission</li></a>
-        <a href="../../../../statistics/"><li >Statistics</li></a>
-        <a href="../../../../about/"><li >About</li></a>
+          <a href="../../../../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../../../../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../../../../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../../../../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../../../../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../../../../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../../../../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content '><header>
-  <form autocomplete="off" action="../../../../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../../../../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>C</span>omputer <span class='first'>S</span>cience/<span class='first'>P</span>rogramming <span class='first'>L</span>anguages/<span class='first'>C</span>ompiling</h1>
+    </aside>
+    <div class='content'>
+      <header>
+    <form autocomplete="off" action="../../../../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../../../../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>C</span>omputer science/<span class='first'>P</span>rogramming languages/<span class='first'>C</span>ompiling
+    
+  </h1>
   <div>
-    
-    
   </div>
-</header><div><h2>Subject Classification</h2><p>ACM: <a href="https://dl.acm.org/topic/ccs2012/10011007.10011006.10011041">Software and its engineering~Compilers</a></p><p>AMS: <a href="https://mathscinet.ams.org/mathscinet/msc/msc2020.html?t=68N20">Computer science / Theory of software / Theory of compilers and interpreters</a></p><h2 class="head">2022</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/IMP_Compiler_Reuse.html">A Reuse-Based Multi-Stage Compiler Verification for Language IMP</a></h5> <br>by <a href="../../../../authors/noce">Pasquale Noce</a></div>
-  <span class="date">
-    Jul 10
-  </span>
-</article>
+</header>
+      <div>
+        
+    <h2>Subject Classification</h2>
+      <p>ACM: <a href="https://dl.acm.org/topic/ccs2012/10011007.10011006.10011041">Software and its engineering~Compilers</a></p>
+      <p>AMS: <a href="https://mathscinet.ams.org/mathscinet/msc/msc2020.html?t=68N20">Computer science / Theory of software / Theory of compilers and interpreters</a></p>
+    <h2 class="head">2022</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/IMP_Compiler_Reuse.html">A Reuse-Based Multi-Stage Compiler Verification for Language IMP</a></h5>
+          <br>
+            by <a href="../../../../authors/noce">Pasquale Noce</a>
 
+        </div>
+        <span class="date">Jul 10</span>
+      </article>
+    <h2 class="head">2021</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/IMP_Compiler.html">A Shorter Compiler Correctness Proof for Language IMP</a></h5>
+          <br>
+            by <a href="../../../../authors/noce">Pasquale Noce</a>
 
-<h2 class="head">2021</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/IMP_Compiler.html">A Shorter Compiler Correctness Proof for Language IMP</a></h5> <br>by <a href="../../../../authors/noce">Pasquale Noce</a></div>
-  <span class="date">
-    Jun 04
-  </span>
-</article>
+        </div>
+        <span class="date">Jun 04</span>
+      </article>
+    <h2 class="head">2020</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/VeriComp.html">A Generic Framework for Verified Compilers</a></h5>
+          <br>
+            by <a href="../../../../authors/desharnais">Martin Desharnais</a>
 
+        </div>
+        <span class="date">Feb 10</span>
+      </article>
+    <h2 class="head">2019</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/CakeML_Codegen.html">A Verified Code Generator from Isabelle/HOL to CakeML</a></h5>
+          <br>
+            by <a href="../../../../authors/hupel">Lars Hupel</a>
 
-<h2 class="head">2020</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/VeriComp.html">A Generic Framework for Verified Compilers</a></h5> <br>by <a href="../../../../authors/desharnais">Martin Desharnais</a></div>
-  <span class="date">
-    Feb 10
-  </span>
-</article>
+        </div>
+        <span class="date">Jul 08</span>
+      </article>
+    <h2 class="head">2017</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Minimal_SSA.html">Minimal Static Single Assignment Form</a></h5>
+          <br>
+            by <a href="../../../../authors/wagner">Max Wagner</a> and <a href="../../../../authors/lohner">Denis Lohner</a>
 
+        </div>
+        <span class="date">Jan 17</span>
+      </article>
+    <h2 class="head">2016</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Formal_SSA.html">Verified Construction of Static Single Assignment Form</a></h5>
+          <br>
+            by <a href="../../../../authors/ullrich">Sebastian Ullrich</a> and <a href="../../../../authors/lohner">Denis Lohner</a>
 
-<h2 class="head">2019</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/CakeML_Codegen.html">A Verified Code Generator from Isabelle/HOL to CakeML</a></h5> <br>by <a href="../../../../authors/hupel">Lars Hupel</a></div>
-  <span class="date">
-    Jul 08
-  </span>
-</article>
+        </div>
+        <span class="date">Feb 05</span>
+      </article>
+    <h2 class="head">2014</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Density_Compiler.html">A Verified Compiler for Probability Density Functions</a></h5>
+          <br>
+            by <a href="../../../../authors/eberl">Manuel Eberl</a>, <a href="../../../../authors/hoelzl">Johannes Hölzl</a> and <a href="../../../../authors/nipkow">Tobias Nipkow</a>
 
+        </div>
+        <span class="date">Oct 09</span>
+      </article>
+    <h2 class="head">2008</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/NormByEval.html">Normalization by Evaluation</a></h5>
+          <br>
+            by <a href="../../../../authors/aehlig">Klaus Aehlig</a> and <a href="../../../../authors/nipkow">Tobias Nipkow</a>
 
-<h2 class="head">2017</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Minimal_SSA.html">Minimal Static Single Assignment Form</a></h5> <br>by <a href="../../../../authors/wagner">Max Wagner</a> and <a href="../../../../authors/lohner">Denis Lohner</a></div>
-  <span class="date">
-    Jan 17
-  </span>
-</article>
+        </div>
+        <span class="date">Feb 18</span>
+      </article>
+    <h2 class="head">2004</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Compiling-Exceptions-Correctly.html">Compiling Exceptions Correctly</a></h5>
+          <br>
+            by <a href="../../../../authors/nipkow">Tobias Nipkow</a>
 
-
-<h2 class="head">2016</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Formal_SSA.html">Verified Construction of Static Single Assignment Form</a></h5> <br>by <a href="../../../../authors/ullrich">Sebastian Ullrich</a> and <a href="../../../../authors/lohner">Denis Lohner</a></div>
-  <span class="date">
-    Feb 05
-  </span>
-</article>
-
-
-<h2 class="head">2014</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Density_Compiler.html">A Verified Compiler for Probability Density Functions</a></h5> <br>by <a href="../../../../authors/eberl">Manuel Eberl</a>, <a href="../../../../authors/hoelzl">Johannes Hölzl</a> and <a href="../../../../authors/nipkow">Tobias Nipkow</a></div>
-  <span class="date">
-    Oct 09
-  </span>
-</article>
-
-
-<h2 class="head">2008</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/NormByEval.html">Normalization by Evaluation</a></h5> <br>by <a href="../../../../authors/aehlig">Klaus Aehlig</a> and <a href="../../../../authors/nipkow">Tobias Nipkow</a></div>
-  <span class="date">
-    Feb 18
-  </span>
-</article>
-
-
-<h2 class="head">2004</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Compiling-Exceptions-Correctly.html">Compiling Exceptions Correctly</a></h5> <br>by <a href="../../../../authors/nipkow">Tobias Nipkow</a></div>
-  <span class="date">
-    Jul 09
-  </span>
-</article>
-
-
-
-
+        </div>
+        <span class="date">Jul 09</span>
+      </article>
+        
+      </div>
     </div>
-  </div>
-</body>
-
+  </body>
 </html>

@@ -1,209 +1,178 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Tools on Archive of Formal Proofs</title>
+    <title>Tools on Archive of Formal Proofs
+    </title>
     <link>/topics/tools/</link>
-    <description>Recent content in Tools on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Tools 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Mon, 05 Dec 2022 00:00:00 +0000</lastBuildDate><atom:link href="/topics/tools/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Automation of Boolos&#39; Curious Inference in Isabelle/HOL</title>
-      <link>/entries/Boolos_Curious_Inference_Automated.html</link>
-      <pubDate>Mon, 05 Dec 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Boolos_Curious_Inference_Automated.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>Nano JSON: Working with JSON formatted data in Isabelle/HOL and Isabelle/ML</title>
-      <link>/entries/Nano_JSON.html</link>
-      <pubDate>Fri, 29 Jul 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Nano_JSON.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Conditional Simplification</title>
-      <link>/entries/Conditional_Simplification.html</link>
-      <pubDate>Mon, 06 Sep 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Conditional_Simplification.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Conditional Transfer Rule</title>
-      <link>/entries/Conditional_Transfer_Rule.html</link>
-      <pubDate>Mon, 06 Sep 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Conditional_Transfer_Rule.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Extension of Types-To-Sets</title>
-      <link>/entries/Types_To_Sets_Extension.html</link>
-      <pubDate>Mon, 06 Sep 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Types_To_Sets_Extension.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>IDE: Introduction, Destruction, Elimination</title>
-      <link>/entries/Intro_Dest_Elim.html</link>
-      <pubDate>Mon, 06 Sep 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Intro_Dest_Elim.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>SpecCheck - Specification-Based Testing for Isabelle/ML</title>
-      <link>/entries/SpecCheck.html</link>
-      <pubDate>Thu, 01 Jul 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/SpecCheck.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Automated Stateful Protocol Verification</title>
-      <link>/entries/Automated_Stateful_Protocol_Verification.html</link>
-      <pubDate>Wed, 08 Apr 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Automated_Stateful_Protocol_Verification.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Isabelle/C</title>
-      <link>/entries/Isabelle_C.html</link>
-      <pubDate>Tue, 22 Oct 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Isabelle_C.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Auto2 Prover</title>
-      <link>/entries/Auto2_HOL.html</link>
-      <pubDate>Tue, 20 Nov 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Auto2_HOL.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Bounded Natural Functors with Covariance and Contravariance</title>
-      <link>/entries/BNF_CC.html</link>
-      <pubDate>Tue, 24 Apr 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/BNF_CC.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Operations on Bounded Natural Functors</title>
-      <link>/entries/BNF_Operations.html</link>
-      <pubDate>Tue, 19 Dec 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/BNF_Operations.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Homogeneous Linear Diophantine Equations</title>
-      <link>/entries/Diophantine_Eqns_Lin_Hom.html</link>
-      <pubDate>Sat, 14 Oct 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Diophantine_Eqns_Lin_Hom.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Dictionary Construction</title>
-      <link>/entries/Dict_Construction.html</link>
-      <pubDate>Wed, 24 May 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Dict_Construction.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Monad normalisation</title>
-      <link>/entries/Monad_Normalisation.html</link>
-      <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Monad_Normalisation.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Constructor Functions</title>
-      <link>/entries/Constructor_Funs.html</link>
-      <pubDate>Wed, 19 Apr 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Constructor_Funs.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Lazifying case constants</title>
-      <link>/entries/Lazy_Case.html</link>
-      <pubDate>Tue, 18 Apr 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Lazy_Case.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Proof Strategy Language</title>
-      <link>/entries/Proof_Strategy_Language.html</link>
-      <pubDate>Tue, 20 Dec 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Proof_Strategy_Language.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Separata: Isabelle tactics for Separation Algebra</title>
-      <link>/entries/Separata.html</link>
-      <pubDate>Wed, 16 Nov 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Separata.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Generating Cases from Labeled Subgoals</title>
-      <link>/entries/Case_Labeling.html</link>
-      <pubDate>Tue, 21 Jul 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Case_Labeling.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Nominal 2</title>
-      <link>/entries/Nominal2.html</link>
-      <pubDate>Thu, 21 Feb 2013 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Nominal2.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Fast SAT Solver for Isabelle in Standard ML</title>
-      <link>/entries/DPT-SAT-Solver.html</link>
-      <pubDate>Wed, 09 Dec 2009 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/DPT-SAT-Solver.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Tue, 19 Sep 2023 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/topics/tools/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Unification Utilities for Isabelle/ML</title>
+          <link>/entries/ML_Unification.html</link>
+          <pubDate>Tue, 19 Sep 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/ML_Unification.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Automation of Boolos&#39; Curious Inference in Isabelle/HOL</title>
+          <link>/entries/Boolos_Curious_Inference_Automated.html</link>
+          <pubDate>Mon, 05 Dec 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Boolos_Curious_Inference_Automated.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Nano JSON: Working with JSON formatted data in Isabelle/HOL and Isabelle/ML</title>
+          <link>/entries/Nano_JSON.html</link>
+          <pubDate>Fri, 29 Jul 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Nano_JSON.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Conditional Simplification</title>
+          <link>/entries/Conditional_Simplification.html</link>
+          <pubDate>Mon, 06 Sep 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Conditional_Simplification.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Conditional Transfer Rule</title>
+          <link>/entries/Conditional_Transfer_Rule.html</link>
+          <pubDate>Mon, 06 Sep 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Conditional_Transfer_Rule.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Extension of Types-To-Sets</title>
+          <link>/entries/Types_To_Sets_Extension.html</link>
+          <pubDate>Mon, 06 Sep 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Types_To_Sets_Extension.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>IDE: Introduction, Destruction, Elimination</title>
+          <link>/entries/Intro_Dest_Elim.html</link>
+          <pubDate>Mon, 06 Sep 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Intro_Dest_Elim.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>SpecCheck - Specification-Based Testing for Isabelle/ML</title>
+          <link>/entries/SpecCheck.html</link>
+          <pubDate>Thu, 01 Jul 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/SpecCheck.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Automated Stateful Protocol Verification</title>
+          <link>/entries/Automated_Stateful_Protocol_Verification.html</link>
+          <pubDate>Wed, 08 Apr 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Automated_Stateful_Protocol_Verification.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Isabelle/C</title>
+          <link>/entries/Isabelle_C.html</link>
+          <pubDate>Tue, 22 Oct 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Isabelle_C.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Auto2 Prover</title>
+          <link>/entries/Auto2_HOL.html</link>
+          <pubDate>Tue, 20 Nov 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Auto2_HOL.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Bounded Natural Functors with Covariance and Contravariance</title>
+          <link>/entries/BNF_CC.html</link>
+          <pubDate>Tue, 24 Apr 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/BNF_CC.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Operations on Bounded Natural Functors</title>
+          <link>/entries/BNF_Operations.html</link>
+          <pubDate>Tue, 19 Dec 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/BNF_Operations.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Homogeneous Linear Diophantine Equations</title>
+          <link>/entries/Diophantine_Eqns_Lin_Hom.html</link>
+          <pubDate>Sat, 14 Oct 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Diophantine_Eqns_Lin_Hom.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Dictionary Construction</title>
+          <link>/entries/Dict_Construction.html</link>
+          <pubDate>Wed, 24 May 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Dict_Construction.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Monad normalisation</title>
+          <link>/entries/Monad_Normalisation.html</link>
+          <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Monad_Normalisation.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Constructor Functions</title>
+          <link>/entries/Constructor_Funs.html</link>
+          <pubDate>Wed, 19 Apr 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Constructor_Funs.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Lazifying case constants</title>
+          <link>/entries/Lazy_Case.html</link>
+          <pubDate>Tue, 18 Apr 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Lazy_Case.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Proof Strategy Language</title>
+          <link>/entries/Proof_Strategy_Language.html</link>
+          <pubDate>Tue, 20 Dec 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Proof_Strategy_Language.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Separata: Isabelle tactics for Separation Algebra</title>
+          <link>/entries/Separata.html</link>
+          <pubDate>Wed, 16 Nov 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Separata.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Generating Cases from Labeled Subgoals</title>
+          <link>/entries/Case_Labeling.html</link>
+          <pubDate>Tue, 21 Jul 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Case_Labeling.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Nominal 2</title>
+          <link>/entries/Nominal2.html</link>
+          <pubDate>Thu, 21 Feb 2013 00:00:00 +0000</pubDate>
+          <guid>/entries/Nominal2.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Fast SAT Solver for Isabelle in Standard ML</title>
+          <link>/entries/DPT-SAT-Solver.html</link>
+          <pubDate>Wed, 09 Dec 2009 00:00:00 +0000</pubDate>
+          <guid>/entries/DPT-SAT-Solver.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

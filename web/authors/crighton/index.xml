@@ -1,29 +1,31 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>crighton on Archive of Formal Proofs</title>
+    <title>crighton on Archive of Formal Proofs
+    </title>
     <link>/authors/crighton/</link>
-    <description>Recent content in crighton on Archive of Formal Proofs</description>
+    <description>
+        Recent content in crighton 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Thu, 22 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="/authors/crighton/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>p-adic Fields and p-adic Semialgebraic Sets</title>
-      <link>/entries/Padic_Field.html</link>
-      <pubDate>Thu, 22 Sep 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Padic_Field.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>Hensel&#39;s Lemma for the p-adic Integers</title>
-      <link>/entries/Padic_Ints.html</link>
-      <pubDate>Tue, 23 Mar 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Padic_Ints.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Thu, 22 Sep 2022 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/crighton/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>p-adic Fields and p-adic Semialgebraic Sets</title>
+          <link>/entries/Padic_Field.html</link>
+          <pubDate>Thu, 22 Sep 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Padic_Field.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Hensel&#39;s Lemma for the p-adic Integers</title>
+          <link>/entries/Padic_Ints.html</link>
+          <pubDate>Tue, 23 Mar 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Padic_Ints.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

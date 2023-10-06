@@ -1,25 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Jinja is not Java - Archive of Formal Proofs</title><meta name="description" content="We introduce Jinja, a Java-like programming language with a formal semantics designed to exhibit core features of the Java language architecture. Jinja is..."><meta property="og:title" content="Jinja is not Java" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Jinja is not Java - Archive of Formal Proofs</title>
+    <meta name="description" content="We introduce Jinja, a Java-like programming language with a formal semantics designed to exhibit core features of the Java language architecture. Jinja is...">
+
+  <meta property="og:title" content="Jinja is not Java" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="/entries/Jinja.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
 <meta property="article:published_time" content="2005-06-01T00:00:00+00:00" />
 <meta property="article:modified_time" content="2005-06-01T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="Jinja is not Java"/>
 <meta name="twitter:description" content=""/>
 
-  
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
     <script>
       MathJax = {
         tex: {
@@ -31,269 +36,433 @@
         }
       };
     </script>
-    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
   <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
-  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../" class='logo-link'>
-    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../" class='logo-link'>
-        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../"><li >Home</li></a>
-        <a href="../topics/"><li >Topics</li></a>
-        <a href="../download/"><li >Download</li></a>
-        <a href="../help/"><li >Help</li></a>
-        <a href="../submission/"><li >Submission</li></a>
-        <a href="../statistics/"><li >Statistics</li></a>
-        <a href="../about/"><li >About</li></a>
+          <a href="../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content  entries'><header>
-  <form autocomplete="off" action="../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>J</span>inja <span class='first'>I</span>s <span class='first'>N</span>ot <span class='first'>J</span>ava</h1>
+    </aside>
+    <div class='content entries'>
+      <header>
+    <form autocomplete="off" action="../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>J</span>inja is not <span class='first'>J</span>ava
+    
+  </h1>
   <div>
-    
-    <p><a href="../authors/klein">Gerwin Klein</a> <a href="http://www.cse.unsw.edu.au/~kleing/">🌐</a> and <a href="../authors/nipkow">Tobias Nipkow</a> <a href="https://www.in.tum.de/~nipkow/">🌐</a>
-    </p>
-    
-    
-    <p class="date">June 1, 2005</p>
-    
+      <p>
+        <a href="../authors/klein">Gerwin Klein</a> <a href="http://www.cse.unsw.edu.au/~kleing/">🌐</a> and <a href="../authors/nipkow">Tobias Nipkow</a> <a href="https://www.in.tum.de/~nipkow/">🌐</a>
+
+      </p>
+      <p class="date">June 1, 2005</p>
   </div>
-</header><div><main><h3>Abstract</h3>
+</header>
+      <div>
+        
+  <main>
+    <h3>Abstract</h3>
 
-  <div class="abstract mathjax_process">We introduce Jinja, a Java-like programming language with a formal semantics designed to exhibit core features of the Java language architecture. Jinja is a compromise between realism of the language and tractability and clarity of the formal semantics. The following aspects are formalised: a big and a small step operational semantics for Jinja and a proof of their equivalence; a type system and a definite initialisation analysis; a type safety proof of the small step semantics; a virtual machine (JVM), its operational semantics and its type system; a type safety proof for the JVM; a bytecode verifier, i.e. data flow analyser for the JVM; a correctness proof of the bytecode verifier w.r.t. the type system; a compiler and a proof that it preserves semantics and well-typedness. The emphasis of this work is not on particular language features but on providing a unified model of the source language, the virtual machine and the compiler. The whole development has been carried out in the theorem prover Isabelle/HOL.</div>
+    <div class="abstract mathjax_process">We introduce Jinja, a Java-like programming language with a formal semantics designed to exhibit core features of the Java language architecture. Jinja is a compromise between realism of the language and tractability and clarity of the formal semantics. The following aspects are formalised: a big and a small step operational semantics for Jinja and a proof of their equivalence; a type system and a definite initialisation analysis; a type safety proof of the small step semantics; a virtual machine (JVM), its operational semantics and its type system; a type safety proof for the JVM; a bytecode verifier, i.e. data flow analyser for the JVM; a correctness proof of the bytecode verifier w.r.t. the type system; a compiler and a proof that it preserves semantics and well-typedness. The emphasis of this work is not on particular language features but on providing a unified model of the source language, the virtual machine and the compiler. The whole development has been carried out in the theorem prover Isabelle/HOL.</div>
 
-  <h3>License</h3>
-  <div><a href="https://isa-afp.org/LICENSE">BSD License</a></div><h3>Topics</h3>
-  <ul><li><a href="../topics/computer-science/programming-languages/language-definitions">Computer science/Programming languages/Language definitions</a></li></ul><h3>Related publications</h3>
-  <ul><li>
-      Klein, G., & Nipkow, T. (2006). A machine-checked model for a Java-like language, virtual machine, and compiler. ACM Transactions on Programming Languages and Systems, 28(4), 619–695. <a href="https://doi.org/10.1145/1146809.1146811">https://doi.org/10.1145/1146809.1146811</a>
-
-    </li><li>
-      <a href="https://www.proof.cit.tum.de/~nipkow/pubs/Jinja/">Alternate versions</a>
-    </li></ul>
-  <h3>Session Jinja</h3>
-  <ul>
-    <li><a href="../theories/jinja/#Auxiliary">Auxiliary</a></li>
-    <li><a href="../theories/jinja/#Type">Type</a></li>
-    <li><a href="../theories/jinja/#Decl">Decl</a></li>
-    <li><a href="../theories/jinja/#TypeRel">TypeRel</a></li>
-    <li><a href="../theories/jinja/#Value">Value</a></li>
-    <li><a href="../theories/jinja/#Objects">Objects</a></li>
-    <li><a href="../theories/jinja/#Exceptions">Exceptions</a></li>
-    <li><a href="../theories/jinja/#Expr">Expr</a></li>
-    <li><a href="../theories/jinja/#State">State</a></li>
-    <li><a href="../theories/jinja/#BigStep">BigStep</a></li>
-    <li><a href="../theories/jinja/#SmallStep">SmallStep</a></li>
-    <li><a href="../theories/jinja/#SystemClasses">SystemClasses</a></li>
-    <li><a href="../theories/jinja/#WellForm">WellForm</a></li>
-    <li><a href="../theories/jinja/#WWellForm">WWellForm</a></li>
-    <li><a href="../theories/jinja/#Equivalence">Equivalence</a></li>
-    <li><a href="../theories/jinja/#WellType">WellType</a></li>
-    <li><a href="../theories/jinja/#WellTypeRT">WellTypeRT</a></li>
-    <li><a href="../theories/jinja/#DefAss">DefAss</a></li>
-    <li><a href="../theories/jinja/#Conform">Conform</a></li>
-    <li><a href="../theories/jinja/#Progress">Progress</a></li>
-    <li><a href="../theories/jinja/#JWellForm">JWellForm</a></li>
-    <li><a href="../theories/jinja/#TypeSafe">TypeSafe</a></li>
-    <li><a href="../theories/jinja/#Annotate">Annotate</a></li>
-    <li><a href="../theories/jinja/#Examples">Examples</a></li>
-    <li><a href="../theories/jinja/#execute_Bigstep">execute_Bigstep</a></li>
-    <li><a href="../theories/jinja/#execute_WellType">execute_WellType</a></li>
-    <li><a href="../theories/jinja/#JVMState">JVMState</a></li>
-    <li><a href="../theories/jinja/#JVMInstructions">JVMInstructions</a></li>
-    <li><a href="../theories/jinja/#JVMExecInstr">JVMExecInstr</a></li>
-    <li><a href="../theories/jinja/#JVMExceptions">JVMExceptions</a></li>
-    <li><a href="../theories/jinja/#JVMExec">JVMExec</a></li>
-    <li><a href="../theories/jinja/#JVMDefensive">JVMDefensive</a></li>
-    <li><a href="../theories/jinja/#JVMListExample">JVMListExample</a></li>
-    <li><a href="../theories/jinja/#Semilat">Semilat</a></li>
-    <li><a href="../theories/jinja/#Err">Err</a></li>
-    <li><a href="../theories/jinja/#Opt">Opt</a></li>
-    <li><a href="../theories/jinja/#Product">Product</a></li>
-    <li><a href="../theories/jinja/#Listn">Listn</a></li>
-    <li><a href="../theories/jinja/#Semilattices">Semilattices</a></li>
-    <li><a href="../theories/jinja/#Typing_Framework_1">Typing_Framework_1</a></li>
-    <li><a href="../theories/jinja/#SemilatAlg">SemilatAlg</a></li>
-    <li><a href="../theories/jinja/#Typing_Framework_err">Typing_Framework_err</a></li>
-    <li><a href="../theories/jinja/#Kildall_1">Kildall_1</a></li>
-    <li><a href="../theories/jinja/#Kildall_2">Kildall_2</a></li>
-    <li><a href="../theories/jinja/#LBVSpec">LBVSpec</a></li>
-    <li><a href="../theories/jinja/#LBVCorrect">LBVCorrect</a></li>
-    <li><a href="../theories/jinja/#LBVComplete">LBVComplete</a></li>
-    <li><a href="../theories/jinja/#Abstract_BV">Abstract_BV</a></li>
-    <li><a href="../theories/jinja/#SemiType">SemiType</a></li>
-    <li><a href="../theories/jinja/#JVM_SemiType">JVM_SemiType</a></li>
-    <li><a href="../theories/jinja/#Effect">Effect</a></li>
-    <li><a href="../theories/jinja/#EffectMono">EffectMono</a></li>
-    <li><a href="../theories/jinja/#BVSpec">BVSpec</a></li>
-    <li><a href="../theories/jinja/#TF_JVM">TF_JVM</a></li>
-    <li><a href="../theories/jinja/#Typing_Framework_2">Typing_Framework_2</a></li>
-    <li><a href="../theories/jinja/#BVExec">BVExec</a></li>
-    <li><a href="../theories/jinja/#LBVJVM">LBVJVM</a></li>
-    <li><a href="../theories/jinja/#BVConform">BVConform</a></li>
-    <li><a href="../theories/jinja/#BVSpecTypeSafe">BVSpecTypeSafe</a></li>
-    <li><a href="../theories/jinja/#BVNoTypeError">BVNoTypeError</a></li>
-    <li><a href="../theories/jinja/#BVExample">BVExample</a></li>
-    <li><a href="../theories/jinja/#J1">J1</a></li>
-    <li><a href="../theories/jinja/#J1WellForm">J1WellForm</a></li>
-    <li><a href="../theories/jinja/#PCompiler">PCompiler</a></li>
-    <li><a href="../theories/jinja/#Hidden">Hidden</a></li>
-    <li><a href="../theories/jinja/#Compiler1">Compiler1</a></li>
-    <li><a href="../theories/jinja/#Correctness1">Correctness1</a></li>
-    <li><a href="../theories/jinja/#Compiler2">Compiler2</a></li>
-    <li><a href="../theories/jinja/#Correctness2">Correctness2</a></li>
-    <li><a href="../theories/jinja/#Compiler">Compiler</a></li>
-    <li><a href="../theories/jinja/#TypeComp">TypeComp</a></li>
-    <li><a href="../theories/jinja/#Jinja">Jinja</a></li></ul><div class="flex-wrap">
-  <div>
-    <h3>Depends on</h3>
-    <ul class="horizontal-list"><li><a href="../entries/List-Index.html">List Index</a></li></ul>
-  </div><div>
-    <h3>Used by</h3>
-    <ul class="horizontal-list"><li><a href="../entries/Dominance_CHK.html">A data flow analysis algorithm for computing dominators</a></li><li><a href="../entries/JinjaDCI.html">JinjaDCI: a Java semantics with dynamic class initialization</a></li><li><a href="../entries/HRB-Slicing.html">Backing up Slicing: Verifying the Interprocedural Two-Phase Horwitz-Reps-Binkley Slicer</a></li><li><a href="../entries/Slicing.html">Towards Certified Slicing</a></li></ul>
-  </div>
-  
-  <div>
-    <h3>Auto-related entries</h3>
-    <ul class="horizontal-list">
-      
-      <li><a href="../entries/CoreC++.html">CoreC++</a></li>
-      
-    </ul>
-  </div>
-  
-  </div>
-</main>
-
-<nav class='links'>
-  <a class='popup-button' href="#cite-popup">Cite</a>
-  <a class='popup-button' href="#download-popup">Download</a>
-  <h4>PDFs</h4>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Jinja/outline.pdf">Proof
-    outline</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Jinja/document.pdf">Proof
-    document</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Jinja/session_graph.pdf">Dependencies</a></nav>
-
-<div id="cite-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Cite</h2>
-    <a class="close" href="#">&times;</a>
+    <h3>License</h3>
     <div>
-      <p style="display:none;" id="bibtex-filename">Jinja-AFP</p><pre id="copy-text">@article{Jinja-AFP,
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/computer-science/programming-languages/language-definitions">Computer science/Programming languages/Language definitions</a></li>
+      </ul>
+      <h3>Related publications</h3>
+      <ul>
+        <li>Klein, G., & Nipkow, T. (2006). A machine-checked model for a Java-like language, virtual machine, and compiler. ACM Transactions on Programming Languages and Systems, 28(4), 619–695. <a href="https://doi.org/10.1145/1146809.1146811">https://doi.org/10.1145/1146809.1146811</a>
+
+        </li>
+        <li><a href="https://www.proof.cit.tum.de/~nipkow/pubs/Jinja/">Alternate versions</a>
+        </li>
+      </ul>
+      <h3>Session Jinja</h3>
+      <ul>
+          <li><a href="../sessions/jinja/#Auxiliary">Auxiliary</a></li>
+          <li><a href="../sessions/jinja/#Type">Type</a></li>
+          <li><a href="../sessions/jinja/#Decl">Decl</a></li>
+          <li><a href="../sessions/jinja/#TypeRel">TypeRel</a></li>
+          <li><a href="../sessions/jinja/#Value">Value</a></li>
+          <li><a href="../sessions/jinja/#Objects">Objects</a></li>
+          <li><a href="../sessions/jinja/#Exceptions">Exceptions</a></li>
+          <li><a href="../sessions/jinja/#Expr">Expr</a></li>
+          <li><a href="../sessions/jinja/#State">State</a></li>
+          <li><a href="../sessions/jinja/#BigStep">BigStep</a></li>
+          <li><a href="../sessions/jinja/#SmallStep">SmallStep</a></li>
+          <li><a href="../sessions/jinja/#SystemClasses">SystemClasses</a></li>
+          <li><a href="../sessions/jinja/#WellForm">WellForm</a></li>
+          <li><a href="../sessions/jinja/#WWellForm">WWellForm</a></li>
+          <li><a href="../sessions/jinja/#Equivalence">Equivalence</a></li>
+          <li><a href="../sessions/jinja/#WellType">WellType</a></li>
+          <li><a href="../sessions/jinja/#WellTypeRT">WellTypeRT</a></li>
+          <li><a href="../sessions/jinja/#DefAss">DefAss</a></li>
+          <li><a href="../sessions/jinja/#Conform">Conform</a></li>
+          <li><a href="../sessions/jinja/#Progress">Progress</a></li>
+          <li><a href="../sessions/jinja/#JWellForm">JWellForm</a></li>
+          <li><a href="../sessions/jinja/#TypeSafe">TypeSafe</a></li>
+          <li><a href="../sessions/jinja/#Annotate">Annotate</a></li>
+          <li><a href="../sessions/jinja/#Examples">Examples</a></li>
+          <li><a href="../sessions/jinja/#execute_Bigstep">execute_Bigstep</a></li>
+          <li><a href="../sessions/jinja/#execute_WellType">execute_WellType</a></li>
+          <li><a href="../sessions/jinja/#JVMState">JVMState</a></li>
+          <li><a href="../sessions/jinja/#JVMInstructions">JVMInstructions</a></li>
+          <li><a href="../sessions/jinja/#JVMExecInstr">JVMExecInstr</a></li>
+          <li><a href="../sessions/jinja/#JVMExceptions">JVMExceptions</a></li>
+          <li><a href="../sessions/jinja/#JVMExec">JVMExec</a></li>
+          <li><a href="../sessions/jinja/#JVMDefensive">JVMDefensive</a></li>
+          <li><a href="../sessions/jinja/#JVMListExample">JVMListExample</a></li>
+          <li><a href="../sessions/jinja/#Semilat">Semilat</a></li>
+          <li><a href="../sessions/jinja/#Err">Err</a></li>
+          <li><a href="../sessions/jinja/#Opt">Opt</a></li>
+          <li><a href="../sessions/jinja/#Product">Product</a></li>
+          <li><a href="../sessions/jinja/#Listn">Listn</a></li>
+          <li><a href="../sessions/jinja/#Semilattices">Semilattices</a></li>
+          <li><a href="../sessions/jinja/#Typing_Framework_1">Typing_Framework_1</a></li>
+          <li><a href="../sessions/jinja/#SemilatAlg">SemilatAlg</a></li>
+          <li><a href="../sessions/jinja/#Typing_Framework_err">Typing_Framework_err</a></li>
+          <li><a href="../sessions/jinja/#Kildall_1">Kildall_1</a></li>
+          <li><a href="../sessions/jinja/#Kildall_2">Kildall_2</a></li>
+          <li><a href="../sessions/jinja/#LBVSpec">LBVSpec</a></li>
+          <li><a href="../sessions/jinja/#LBVCorrect">LBVCorrect</a></li>
+          <li><a href="../sessions/jinja/#LBVComplete">LBVComplete</a></li>
+          <li><a href="../sessions/jinja/#Abstract_BV">Abstract_BV</a></li>
+          <li><a href="../sessions/jinja/#SemiType">SemiType</a></li>
+          <li><a href="../sessions/jinja/#JVM_SemiType">JVM_SemiType</a></li>
+          <li><a href="../sessions/jinja/#Effect">Effect</a></li>
+          <li><a href="../sessions/jinja/#EffectMono">EffectMono</a></li>
+          <li><a href="../sessions/jinja/#BVSpec">BVSpec</a></li>
+          <li><a href="../sessions/jinja/#TF_JVM">TF_JVM</a></li>
+          <li><a href="../sessions/jinja/#Typing_Framework_2">Typing_Framework_2</a></li>
+          <li><a href="../sessions/jinja/#BVExec">BVExec</a></li>
+          <li><a href="../sessions/jinja/#LBVJVM">LBVJVM</a></li>
+          <li><a href="../sessions/jinja/#BVConform">BVConform</a></li>
+          <li><a href="../sessions/jinja/#BVSpecTypeSafe">BVSpecTypeSafe</a></li>
+          <li><a href="../sessions/jinja/#BVNoTypeError">BVNoTypeError</a></li>
+          <li><a href="../sessions/jinja/#BVExample">BVExample</a></li>
+          <li><a href="../sessions/jinja/#J1">J1</a></li>
+          <li><a href="../sessions/jinja/#J1WellForm">J1WellForm</a></li>
+          <li><a href="../sessions/jinja/#PCompiler">PCompiler</a></li>
+          <li><a href="../sessions/jinja/#Hidden">Hidden</a></li>
+          <li><a href="../sessions/jinja/#Compiler1">Compiler1</a></li>
+          <li><a href="../sessions/jinja/#Correctness1">Correctness1</a></li>
+          <li><a href="../sessions/jinja/#Compiler2">Compiler2</a></li>
+          <li><a href="../sessions/jinja/#Correctness2">Correctness2</a></li>
+          <li><a href="../sessions/jinja/#Compiler">Compiler</a></li>
+          <li><a href="../sessions/jinja/#TypeComp">TypeComp</a></li>
+          <li><a href="../sessions/jinja/#Jinja">Jinja</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+      <div>
+        <h3>Depends on</h3>
+        <ul class="horizontal-list">
+              <li><a href="../entries/List-Index.html">List Index</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Used by</h3>
+        <ul class="horizontal-list">
+            <li>
+              <a href="../entries/Dominance_CHK.html">A data flow analysis algorithm for computing dominators</a>
+            </li>
+            <li>
+              <a href="../entries/JinjaDCI.html">JinjaDCI: a Java semantics with dynamic class initialization</a>
+            </li>
+            <li>
+              <a href="../entries/HRB-Slicing.html">Backing up Slicing: Verifying the Interprocedural Two-Phase Horwitz-Reps-Binkley Slicer</a>
+            </li>
+            <li>
+              <a href="../entries/Slicing.html">Towards Certified Slicing</a>
+            </li>
+        </ul>
+      </div>
+        <div>
+          <h3>Auto-related entries</h3>
+          <ul class="horizontal-list">
+              <li><a href="../entries/CoreC++.html">CoreC++</a></li>
+          </ul>
+        </div>
+      </div>
+    
+  </main>
+
+  <nav class='links'>
+    <a class='popup-button' href="#cite-popup">Cite</a>
+    <a class='popup-button' href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Jinja/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Jinja/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Jinja/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Jinja-AFP</p>
+        <pre id="copy-text">@article{Jinja-AFP,
   author  = {Gerwin Klein and Tobias Nipkow},
   title   = {Jinja is not Java},
   journal = {Archive of Formal Proofs},
   month   = {June},
   year    = {2005},
   note    = {\url{https://isa-afp.org/entries/Jinja.html},
-            Formal proof development},
+             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
     </div>
   </div>
-</div>
 
-<div id="download-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Download</h2>
-    <a class="close" href="#">&times;</a>
-    <a href="https://www.isa-afp.org/release//afp-Jinja-current.tar.gz" download>Download latest</a>
-    <p>Older releases:</p>
-    <ul><li>
-        <a href="https://www.isa-afp.org/release/afp-Jinja-2023-09-13.tar.gz">Sep 13, 2023</a>: Isabelle2023
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Jinja-2022-10-27.tar.gz">Oct 27, 2022</a>: Isabelle2022
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Jinja-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021-1
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Jinja-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Jinja-2020-04-18.tar.gz">Apr 18, 2020</a>: Isabelle2020
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Jinja-2019-06-11.tar.gz">Jun 11, 2019</a>: Isabelle2019
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Jinja-2018-08-16.tar.gz">Aug 16, 2018</a>: Isabelle2018
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Jinja-2017-10-10.tar.gz">Oct 10, 2017</a>: Isabelle2017
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Jinja-2016-12-17.tar.gz">Dec 17, 2016</a>: Isabelle2016-1
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Jinja-2016-02-22.tar.gz">Feb 22, 2016</a>: Isabelle2016
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Jinja-2015-05-27.tar.gz">May 27, 2015</a>: Isabelle2015
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Jinja-2014-08-28.tar.gz">Aug 28, 2014</a>: Isabelle2014
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Jinja-2013-12-11.tar.gz">Dec 11, 2013</a>: Isabelle2013-2
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Jinja-2013-11-17.tar.gz">Nov 17, 2013</a>: Isabelle2013-1
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Jinja-2013-02-16.tar.gz">Feb 16, 2013</a>: Isabelle2013
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Jinja-2012-05-24.tar.gz">May 24, 2012</a>: Isabelle2012
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Jinja-2011-10-11.tar.gz">Oct 11, 2011</a>: Isabelle2011-1
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Jinja-2011-02-11.tar.gz">Feb 11, 2011</a>: Isabelle2011
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Jinja-2010-07-01.tar.gz">Jul 1, 2010</a>: Isabelle2009-2
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Jinja-2009-12-12.tar.gz">Dec 12, 2009</a>: Isabelle2009-1
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Jinja-2009-04-29.tar.gz">Apr 29, 2009</a>: Isabelle2009
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Jinja-2008-06-10.tar.gz">Jun 10, 2008</a>: Isabelle2008
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Jinja-2007-11-27.tar.gz">Nov 27, 2007</a>: Isabelle2007
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Jinja-2006-08-08.tar.gz">Aug 8, 2006</a>: Isabelle2005
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Jinja-2005-10-14.tar.gz">Oct 14, 2005</a>: Isabelle2005
-      </li></ul>
-  </div>
-</div>
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-Jinja-current.tar.gz"
+         download>Download latest</a>
+        <p>Older releases:</p>
+        <ul>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Jinja-2023-09-13.tar.gz">
+                Sep 13, 2023
+              </a>
+              : Isabelle2023
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Jinja-2022-10-27.tar.gz">
+                Oct 27, 2022
+              </a>
+              : Isabelle2022
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Jinja-2021-12-14.tar.gz">
+                Dec 14, 2021
+              </a>
+              : Isabelle2021-1
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Jinja-2021-02-23.tar.gz">
+                Feb 23, 2021
+              </a>
+              : Isabelle2021
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Jinja-2020-04-18.tar.gz">
+                Apr 18, 2020
+              </a>
+              : Isabelle2020
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Jinja-2019-06-11.tar.gz">
+                Jun 11, 2019
+              </a>
+              : Isabelle2019
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Jinja-2018-08-16.tar.gz">
+                Aug 16, 2018
+              </a>
+              : Isabelle2018
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Jinja-2017-10-10.tar.gz">
+                Oct 10, 2017
+              </a>
+              : Isabelle2017
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Jinja-2016-12-17.tar.gz">
+                Dec 17, 2016
+              </a>
+              : Isabelle2016-1
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Jinja-2016-02-22.tar.gz">
+                Feb 22, 2016
+              </a>
+              : Isabelle2016
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Jinja-2015-05-27.tar.gz">
+                May 27, 2015
+              </a>
+              : Isabelle2015
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Jinja-2014-08-28.tar.gz">
+                Aug 28, 2014
+              </a>
+              : Isabelle2014
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Jinja-2013-12-11.tar.gz">
+                Dec 11, 2013
+              </a>
+              : Isabelle2013-2
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Jinja-2013-11-17.tar.gz">
+                Nov 17, 2013
+              </a>
+              : Isabelle2013-1
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Jinja-2013-02-16.tar.gz">
+                Feb 16, 2013
+              </a>
+              : Isabelle2013
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Jinja-2012-05-24.tar.gz">
+                May 24, 2012
+              </a>
+              : Isabelle2012
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Jinja-2011-10-11.tar.gz">
+                Oct 11, 2011
+              </a>
+              : Isabelle2011-1
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Jinja-2011-02-11.tar.gz">
+                Feb 11, 2011
+              </a>
+              : Isabelle2011
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Jinja-2010-07-01.tar.gz">
+                Jul 1, 2010
+              </a>
+              : Isabelle2009-2
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Jinja-2009-12-12.tar.gz">
+                Dec 12, 2009
+              </a>
+              : Isabelle2009-1
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Jinja-2009-04-29.tar.gz">
+                Apr 29, 2009
+              </a>
+              : Isabelle2009
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Jinja-2008-06-10.tar.gz">
+                Jun 10, 2008
+              </a>
+              : Isabelle2008
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Jinja-2007-11-27.tar.gz">
+                Nov 27, 2007
+              </a>
+              : Isabelle2007
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Jinja-2006-08-08.tar.gz">
+                Aug 8, 2006
+              </a>
+              : Isabelle2005
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Jinja-2005-10-14.tar.gz">
+                Oct 14, 2005
+              </a>
+              : Isabelle2005
+            </li>
+        </ul>
     </div>
   </div>
-</body>
-
+        
+      </div>
+    </div>
+  </body>
 </html>

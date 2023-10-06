@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Matroids on Archive of Formal Proofs</title>
+    <title>Matroids on Archive of Formal Proofs
+    </title>
     <link>/dependencies/matroids/</link>
-    <description>Recent content in Matroids on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Matroids 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Thu, 14 Feb 2019 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/matroids/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Kruskal&#39;s Algorithm for Minimum Spanning Forest</title>
-      <link>/entries/Kruskal.html</link>
-      <pubDate>Thu, 14 Feb 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Kruskal.html</guid>
-      <description></description>
-    </item>
     
+      <lastBuildDate>Thu, 14 Feb 2019 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/matroids/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Kruskal&#39;s Algorithm for Minimum Spanning Forest</title>
+          <link>/entries/Kruskal.html</link>
+          <pubDate>Thu, 14 Feb 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Kruskal.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

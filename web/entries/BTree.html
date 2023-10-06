@@ -1,25 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>A Verified Imperative Implementation of B-Trees - Archive of Formal Proofs</title><meta name="description" content="In this work, we use the interactive theorem prover Isabelle/HOL to verify an imperative implementation of the classical B-tree data structure invented by..."><meta property="og:title" content="A Verified Imperative Implementation of B-Trees" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>A Verified Imperative Implementation of B-Trees - Archive of Formal Proofs</title>
+    <meta name="description" content="In this work, we use the interactive theorem prover Isabelle/HOL to verify an imperative implementation of the classical B-tree data structure invented by...">
+
+  <meta property="og:title" content="A Verified Imperative Implementation of B-Trees" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="/entries/BTree.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
 <meta property="article:published_time" content="2021-02-24T00:00:00+00:00" />
 <meta property="article:modified_time" content="2021-02-24T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="A Verified Imperative Implementation of B-Trees"/>
 <meta name="twitter:description" content=""/>
 
-  
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
     <script>
       MathJax = {
         tex: {
@@ -31,72 +36,111 @@
         }
       };
     </script>
-    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
   <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
-  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../" class='logo-link'>
-    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../" class='logo-link'>
-        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../"><li >Home</li></a>
-        <a href="../topics/"><li >Topics</li></a>
-        <a href="../download/"><li >Download</li></a>
-        <a href="../help/"><li >Help</li></a>
-        <a href="../submission/"><li >Submission</li></a>
-        <a href="../statistics/"><li >Statistics</li></a>
-        <a href="../about/"><li >About</li></a>
+          <a href="../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content  entries'><header>
-  <form autocomplete="off" action="../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>A</span> <span class='first'>V</span>erified <span class='first'>I</span>mperative <span class='first'>I</span>mplementation of <span class='first'>B</span>-<span class='first'>T</span>rees</h1>
+    </aside>
+    <div class='content entries'>
+      <header>
+    <form autocomplete="off" action="../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>A</span> <span class='first'>V</span>erified <span class='first'>I</span>mperative <span class='first'>I</span>mplementation of <span class='first'>B</span>-<span class='first'>T</span>rees
+    
+  </h1>
   <div>
-    
-    <p><a href="../authors/muendler">Niels Mündler</a> <a class="obfuscated" data="eyJob3N0IjpbInR1bSIsImRlIl0sInVzZXIiOlsibiIsIm11ZW5kbGVyIl19">📧</a>
-    </p>
-    
-    
-    <p class="date">February 24, 2021</p>
-    
-  </div>
-</header><div><main><h3>Abstract</h3>
+      <p>
+        <a href="../authors/muendler">Niels Mündler</a> <a class="obfuscated" data="eyJob3N0IjpbInR1bSIsImRlIl0sInVzZXIiOlsibiIsIm11ZW5kbGVyIl19">📧</a>
 
-  <div class="abstract mathjax_process">In this work, we use the interactive theorem prover Isabelle/HOL to
+      </p>
+      <p class="date">February 24, 2021</p>
+  </div>
+</header>
+      <div>
+        
+  <main>
+    <h3>Abstract</h3>
+
+    <div class="abstract mathjax_process">In this work, we use the interactive theorem prover Isabelle/HOL to
 verify an imperative implementation of the classical B-tree data
 structure invented by Bayer and McCreight [ACM 1970]. The
 implementation supports set membership, insertion, deletion, iteration and range queries with efficient binary search for intra-node navigation. This is
@@ -121,119 +165,144 @@ Thesis</a>.</dd>
 Change history:
 [2022-08-16]: Added formalisations of B+-Trees</div>
 
-  <h3>License</h3>
-  <div><a href="https://isa-afp.org/LICENSE">BSD License</a></div><h3>History</h3>
-  <dl><dt>May 2, 2021</dt>
-    <dd>Add implementation and proof of correctness of imperative deletion operations.
-Further add the option to export code to OCaml.
-<br></dd></dl><h3>Topics</h3>
-  <ul><li><a href="../topics/computer-science/data-management-systems">Computer science/Data management systems</a></li><li><a href="../topics/computer-science/data-structures">Computer science/Data structures</a></li></ul>
-  <h3>Session BTree</h3>
-  <ul>
-    <li><a href="../theories/btree/#BTree">BTree</a></li>
-    <li><a href="../theories/btree/#BTree_Height">BTree_Height</a></li>
-    <li><a href="../theories/btree/#BTree_Set">BTree_Set</a></li>
-    <li><a href="../theories/btree/#BTree_Split">BTree_Split</a></li>
-    <li><a href="../theories/btree/#BPlusTree">BPlusTree</a></li>
-    <li><a href="../theories/btree/#BPlusTree_Split">BPlusTree_Split</a></li>
-    <li><a href="../theories/btree/#BPlusTree_Set">BPlusTree_Set</a></li>
-    <li><a href="../theories/btree/#BPlusTree_Range">BPlusTree_Range</a></li>
-    <li><a href="../theories/btree/#BPlusTree_SplitCE">BPlusTree_SplitCE</a></li>
-    <li><a href="../theories/btree/#Array_SBlit">Array_SBlit</a></li>
-    <li><a href="../theories/btree/#Partially_Filled_Array">Partially_Filled_Array</a></li>
-    <li><a href="../theories/btree/#Basic_Assn">Basic_Assn</a></li>
-    <li><a href="../theories/btree/#BTree_Imp">BTree_Imp</a></li>
-    <li><a href="../theories/btree/#BTree_ImpSet">BTree_ImpSet</a></li>
-    <li><a href="../theories/btree/#Imperative_Loops">Imperative_Loops</a></li>
-    <li><a href="../theories/btree/#BTree_ImpSplit">BTree_ImpSplit</a></li>
-    <li><a href="../theories/btree/#Flatten_Iter_Spec">Flatten_Iter_Spec</a></li>
-    <li><a href="../theories/btree/#Flatten_Iter">Flatten_Iter</a></li>
-    <li><a href="../theories/btree/#Inst_Ex_Assn">Inst_Ex_Assn</a></li>
-    <li><a href="../theories/btree/#BPlusTree_Imp">BPlusTree_Imp</a></li>
-    <li><a href="../theories/btree/#BPlusTree_ImpSplit">BPlusTree_ImpSplit</a></li>
-    <li><a href="../theories/btree/#BPlusTree_ImpSet">BPlusTree_ImpSet</a></li>
-    <li><a href="../theories/btree/#Partially_Filled_Array_Iter">Partially_Filled_Array_Iter</a></li>
-    <li><a href="../theories/btree/#BPlusTree_Iter_OneWay">BPlusTree_Iter_OneWay</a></li>
-    <li><a href="../theories/btree/#Subst_Mod_Mult_AC">Subst_Mod_Mult_AC</a></li>
-    <li><a href="../theories/btree/#BPlusTree_Iter">BPlusTree_Iter</a></li>
-    <li><a href="../theories/btree/#BPlusTree_ImpRange">BPlusTree_ImpRange</a></li>
-    <li><a href="../theories/btree/#BPlusTree_ImpSplitCE">BPlusTree_ImpSplitCE</a></li></ul><div class="flex-wrap">
-  <div>
-    <h3>Depends on</h3>
-    <ul class="horizontal-list"><li><a href="../entries/Refine_Imperative_HOL.html">The Imperative Refinement Framework</a></li></ul>
-  </div>
-  
-  <div>
-    <h3>Auto-related entries</h3>
-    <ul class="horizontal-list">
-      
-      <li><a href="../entries/Solidity.html">Isabelle/Solidity: A deep Embedding of Solidity in Isabelle/HOL</a></li>
-      
-      <li><a href="../entries/Flow_Networks.html">Flow Networks and the Min-Cut-Max-Flow Theorem</a></li>
-      
-      <li><a href="../entries/Prpu_Maxflow.html">Formalizing Push-Relabel Algorithms</a></li>
-      
-      <li><a href="../entries/EdmondsKarp_Maxflow.html">Formalizing the Edmonds-Karp Algorithm</a></li>
-      
-      <li><a href="../entries/Pop_Refinement.html">Pop-Refinement</a></li>
-      
-    </ul>
-  </div>
-  
-  </div>
-</main>
-
-<nav class='links'>
-  <a class='popup-button' href="#cite-popup">Cite</a>
-  <a class='popup-button' href="#download-popup">Download</a>
-  <h4>PDFs</h4>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/BTree/outline.pdf">Proof
-    outline</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/BTree/document.pdf">Proof
-    document</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/BTree/session_graph.pdf">Dependencies</a></nav>
-
-<div id="cite-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Cite</h2>
-    <a class="close" href="#">&times;</a>
+    <h3>License</h3>
     <div>
-      <p style="display:none;" id="bibtex-filename">BTree-AFP</p><pre id="copy-text">@article{BTree-AFP,
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>History</h3>
+      <dl>
+        <dt>May 2, 2021</dt>
+        <dd>Add implementation and proof of correctness of imperative deletion operations.
+Further add the option to export code to OCaml.
+<br></dd>
+      </dl>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/computer-science/data-management-systems">Computer science/Data management systems</a></li>
+          <li><a href="../topics/computer-science/data-structures">Computer science/Data structures</a></li>
+      </ul>
+      <h3>Session BTree</h3>
+      <ul>
+          <li><a href="../sessions/btree/#BTree">BTree</a></li>
+          <li><a href="../sessions/btree/#BTree_Height">BTree_Height</a></li>
+          <li><a href="../sessions/btree/#BTree_Set">BTree_Set</a></li>
+          <li><a href="../sessions/btree/#BTree_Split">BTree_Split</a></li>
+          <li><a href="../sessions/btree/#BPlusTree">BPlusTree</a></li>
+          <li><a href="../sessions/btree/#BPlusTree_Split">BPlusTree_Split</a></li>
+          <li><a href="../sessions/btree/#BPlusTree_Set">BPlusTree_Set</a></li>
+          <li><a href="../sessions/btree/#BPlusTree_Range">BPlusTree_Range</a></li>
+          <li><a href="../sessions/btree/#BPlusTree_SplitCE">BPlusTree_SplitCE</a></li>
+          <li><a href="../sessions/btree/#Array_SBlit">Array_SBlit</a></li>
+          <li><a href="../sessions/btree/#Partially_Filled_Array">Partially_Filled_Array</a></li>
+          <li><a href="../sessions/btree/#Basic_Assn">Basic_Assn</a></li>
+          <li><a href="../sessions/btree/#BTree_Imp">BTree_Imp</a></li>
+          <li><a href="../sessions/btree/#BTree_ImpSet">BTree_ImpSet</a></li>
+          <li><a href="../sessions/btree/#Imperative_Loops">Imperative_Loops</a></li>
+          <li><a href="../sessions/btree/#BTree_ImpSplit">BTree_ImpSplit</a></li>
+          <li><a href="../sessions/btree/#Flatten_Iter_Spec">Flatten_Iter_Spec</a></li>
+          <li><a href="../sessions/btree/#Flatten_Iter">Flatten_Iter</a></li>
+          <li><a href="../sessions/btree/#Inst_Ex_Assn">Inst_Ex_Assn</a></li>
+          <li><a href="../sessions/btree/#BPlusTree_Imp">BPlusTree_Imp</a></li>
+          <li><a href="../sessions/btree/#BPlusTree_ImpSplit">BPlusTree_ImpSplit</a></li>
+          <li><a href="../sessions/btree/#BPlusTree_ImpSet">BPlusTree_ImpSet</a></li>
+          <li><a href="../sessions/btree/#Partially_Filled_Array_Iter">Partially_Filled_Array_Iter</a></li>
+          <li><a href="../sessions/btree/#BPlusTree_Iter_OneWay">BPlusTree_Iter_OneWay</a></li>
+          <li><a href="../sessions/btree/#Subst_Mod_Mult_AC">Subst_Mod_Mult_AC</a></li>
+          <li><a href="../sessions/btree/#BPlusTree_Iter">BPlusTree_Iter</a></li>
+          <li><a href="../sessions/btree/#BPlusTree_ImpRange">BPlusTree_ImpRange</a></li>
+          <li><a href="../sessions/btree/#BPlusTree_ImpSplitCE">BPlusTree_ImpSplitCE</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+      <div>
+        <h3>Depends on</h3>
+        <ul class="horizontal-list">
+              <li><a href="../entries/Refine_Imperative_HOL.html">The Imperative Refinement Framework</a></li>
+        </ul>
+      </div>
+        <div>
+          <h3>Auto-related entries</h3>
+          <ul class="horizontal-list">
+              <li><a href="../entries/Solidity.html">Isabelle/Solidity: A deep Embedding of Solidity in Isabelle/HOL</a></li>
+              <li><a href="../entries/Flow_Networks.html">Flow Networks and the Min-Cut-Max-Flow Theorem</a></li>
+              <li><a href="../entries/Prpu_Maxflow.html">Formalizing Push-Relabel Algorithms</a></li>
+              <li><a href="../entries/EdmondsKarp_Maxflow.html">Formalizing the Edmonds-Karp Algorithm</a></li>
+              <li><a href="../entries/Pop_Refinement.html">Pop-Refinement</a></li>
+          </ul>
+        </div>
+      </div>
+    
+  </main>
+
+  <nav class='links'>
+    <a class='popup-button' href="#cite-popup">Cite</a>
+    <a class='popup-button' href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/BTree/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/BTree/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/BTree/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">BTree-AFP</p>
+        <pre id="copy-text">@article{BTree-AFP,
   author  = {Niels Mündler},
   title   = {A Verified Imperative Implementation of B-Trees},
   journal = {Archive of Formal Proofs},
   month   = {February},
   year    = {2021},
   note    = {\url{https://isa-afp.org/entries/BTree.html},
-            Formal proof development},
+             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
     </div>
   </div>
-</div>
 
-<div id="download-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Download</h2>
-    <a class="close" href="#">&times;</a>
-    <a href="https://www.isa-afp.org/release//afp-BTree-current.tar.gz" download>Download latest</a>
-    <p>Older releases:</p>
-    <ul><li>
-        <a href="https://www.isa-afp.org/release/afp-BTree-2023-09-13.tar.gz">Sep 13, 2023</a>: Isabelle2023
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-BTree-2022-10-27.tar.gz">Oct 27, 2022</a>: Isabelle2022
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-BTree-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021-1
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-BTree-2021-02-26.tar.gz">Feb 26, 2021</a>: Isabelle2021
-      </li></ul>
-  </div>
-</div>
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-BTree-current.tar.gz"
+         download>Download latest</a>
+        <p>Older releases:</p>
+        <ul>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-BTree-2023-09-13.tar.gz">
+                Sep 13, 2023
+              </a>
+              : Isabelle2023
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-BTree-2022-10-27.tar.gz">
+                Oct 27, 2022
+              </a>
+              : Isabelle2022
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-BTree-2021-12-14.tar.gz">
+                Dec 14, 2021
+              </a>
+              : Isabelle2021-1
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-BTree-2021-02-26.tar.gz">
+                Feb 26, 2021
+              </a>
+              : Isabelle2021
+            </li>
+        </ul>
     </div>
   </div>
-</body>
-
+        
+      </div>
+    </div>
+  </body>
 </html>

@@ -1,874 +1,688 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Computer science/Programming languages on Archive of Formal Proofs</title>
+    <title>Computer science/Programming languages on Archive of Formal Proofs
+    </title>
     <link>/topics/computer-science/programming-languages/</link>
-    <description>Recent content in Computer science/Programming languages on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Computer science/Programming languages 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language><atom:link href="/topics/computer-science/programming-languages/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Formalization of Hyper Hoare Logic: A Logic to (Dis-)Prove Program Hyperproperties</title>
-      <link>/entries/HyperHoareLogic.html</link>
-      <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/HyperHoareLogic.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Formalization of CommCSL: A Relational Concurrent Separation Logic for Proving Information Flow Security in Concurrent Programs</title>
-      <link>/entries/CommCSL.html</link>
-      <pubDate>Wed, 15 Mar 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/CommCSL.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Renaming-Enriched Sets (Rensets) and Renaming-Based Recursion</title>
-      <link>/entries/Rensets.html</link>
-      <pubDate>Tue, 28 Feb 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Rensets.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Hoare Logic for Diverging Programs</title>
-      <link>/entries/HoareForDivergence.html</link>
-      <pubDate>Fri, 20 Jan 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/HoareForDivergence.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Unbounded Separation Logic</title>
-      <link>/entries/Separation_Logic_Unbounded.html</link>
-      <pubDate>Mon, 05 Sep 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Separation_Logic_Unbounded.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Isabelle/Solidity: A deep Embedding of Solidity in Isabelle/HOL</title>
-      <link>/entries/Solidity.html</link>
-      <pubDate>Mon, 18 Jul 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Solidity.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Reuse-Based Multi-Stage Compiler Verification for Language IMP</title>
-      <link>/entries/IMP_Compiler_Reuse.html</link>
-      <pubDate>Sun, 10 Jul 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/IMP_Compiler_Reuse.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Restricted Definition of the Magic Wand to Soundly Combine Fractions of a Wand</title>
-      <link>/entries/Combinable_Wands.html</link>
-      <pubDate>Mon, 30 May 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Combinable_Wands.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Formalization of a Framework for the Sound Automation of Magic Wands</title>
-      <link>/entries/Package_logic.html</link>
-      <pubDate>Wed, 18 May 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Package_logic.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Residuated Transition Systems</title>
-      <link>/entries/ResiduatedTransitionSystem.html</link>
-      <pubDate>Mon, 28 Feb 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/ResiduatedTransitionSystem.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Quantum and Classical Registers</title>
-      <link>/entries/Registers.html</link>
-      <pubDate>Thu, 28 Oct 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Registers.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Algebras for Iteration, Infinite Executions and Correctness of Sequential Computations</title>
-      <link>/entries/Correctness_Algebras.html</link>
-      <pubDate>Tue, 12 Oct 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Correctness_Algebras.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A data flow analysis algorithm for computing dominators</title>
-      <link>/entries/Dominance_CHK.html</link>
-      <pubDate>Sun, 05 Sep 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Dominance_CHK.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>MiniSail - A kernel language for the ISA specification language SAIL</title>
-      <link>/entries/MiniSail.html</link>
-      <pubDate>Fri, 18 Jun 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/MiniSail.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Shorter Compiler Correctness Proof for Language IMP</title>
-      <link>/entries/IMP_Compiler.html</link>
-      <pubDate>Fri, 04 Jun 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/IMP_Compiler.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>JinjaDCI: a Java semantics with dynamic class initialization</title>
-      <link>/entries/JinjaDCI.html</link>
-      <pubDate>Mon, 11 Jan 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/JinjaDCI.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Inline Caching and Unboxing Optimization for Interpreters</title>
-      <link>/entries/Interpreter_Optimizations.html</link>
-      <pubDate>Mon, 07 Dec 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Interpreter_Optimizations.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Sound Type System for Physical Quantities, Units, and Measurements</title>
-      <link>/entries/Physical_Quantities.html</link>
-      <pubDate>Tue, 20 Oct 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Physical_Quantities.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>An Under-Approximate Relational Logic</title>
-      <link>/entries/Relational-Incorrectness-Logic.html</link>
-      <pubDate>Thu, 12 Mar 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Relational-Incorrectness-Logic.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Generic Framework for Verified Compilers</title>
-      <link>/entries/VeriComp.html</link>
-      <pubDate>Mon, 10 Feb 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/VeriComp.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Isabelle/C</title>
-      <link>/entries/Isabelle_C.html</link>
-      <pubDate>Tue, 22 Oct 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Isabelle_C.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Clean - An Abstract Imperative Programming Language and its Theory</title>
-      <link>/entries/Clean.html</link>
-      <pubDate>Fri, 04 Oct 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Clean.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Verified Code Generator from Isabelle/HOL to CakeML</title>
-      <link>/entries/CakeML_Codegen.html</link>
-      <pubDate>Mon, 08 Jul 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/CakeML_Codegen.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Differential Game Logic</title>
-      <link>/entries/Differential_Game_Logic.html</link>
-      <pubDate>Mon, 03 Jun 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Differential_Game_Logic.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Formalization of Generic Authenticated Data Structures</title>
-      <link>/entries/LambdaAuth.html</link>
-      <pubDate>Tue, 14 May 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/LambdaAuth.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A General Theory of Syntax with Bindings</title>
-      <link>/entries/Binding_Syntax_Theory.html</link>
-      <pubDate>Sat, 06 Apr 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Binding_Syntax_Theory.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Quantum Hoare Logic</title>
-      <link>/entries/QHLProver.html</link>
-      <pubDate>Sun, 24 Mar 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/QHLProver.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Safe OCL</title>
-      <link>/entries/Safe_OCL.html</link>
-      <pubDate>Sat, 09 Mar 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Safe_OCL.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Isabelle/UTP: Mechanised Theory Engineering for Unifying Theories of Programming</title>
-      <link>/entries/UTP.html</link>
-      <pubDate>Fri, 01 Feb 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/UTP.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>An Algebra for Higher-Order Terms</title>
-      <link>/entries/Higher_Order_Terms.html</link>
-      <pubDate>Tue, 15 Jan 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Higher_Order_Terms.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>IMP2 – Simple Program Verification in Isabelle/HOL</title>
-      <link>/entries/IMP2.html</link>
-      <pubDate>Tue, 15 Jan 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/IMP2.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>WebAssembly</title>
-      <link>/entries/WebAssembly.html</link>
-      <pubDate>Sun, 29 Apr 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/WebAssembly.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>CakeML</title>
-      <link>/entries/CakeML.html</link>
-      <pubDate>Mon, 12 Mar 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/CakeML.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Hoare Logics for Time Bounds</title>
-      <link>/entries/Hoare_Time.html</link>
-      <pubDate>Mon, 26 Feb 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Hoare_Time.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The LambdaMu-calculus</title>
-      <link>/entries/LambdaMu.html</link>
-      <pubDate>Wed, 16 Aug 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/LambdaMu.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Declarative Semantics for Functional Languages</title>
-      <link>/entries/Decl_Sem_Fun_PL.html</link>
-      <pubDate>Fri, 21 Jul 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Decl_Sem_Fun_PL.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Verified Metatheory and Type Inference for a Name-Carrying Simply-Typed Lambda Calculus</title>
-      <link>/entries/Name_Carrying_Type_Inference.html</link>
-      <pubDate>Sun, 09 Jul 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Name_Carrying_Type_Inference.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Differential Dynamic Logic</title>
-      <link>/entries/Differential_Dynamic_Logic.html</link>
-      <pubDate>Mon, 13 Feb 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Differential_Dynamic_Logic.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Minimal Static Single Assignment Form</title>
-      <link>/entries/Minimal_SSA.html</link>
-      <pubDate>Tue, 17 Jan 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Minimal_SSA.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>COMPLX: A Verification Framework for Concurrent Imperative Programs</title>
-      <link>/entries/Complx.html</link>
-      <pubDate>Tue, 29 Nov 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Complx.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>COMPLX: A Verification Framework for Concurrent Imperative Programs</title>
-      <link>/entries/Complx.html</link>
-      <pubDate>Tue, 29 Nov 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Complx.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Abstract Interpretation of Annotated Commands</title>
-      <link>/entries/Abs_Int_ITP2012.html</link>
-      <pubDate>Wed, 23 Nov 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Abs_Int_ITP2012.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Separata: Isabelle tactics for Separation Algebra</title>
-      <link>/entries/Separata.html</link>
-      <pubDate>Wed, 16 Nov 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Separata.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Infeasible Paths Elimination by Symbolic Execution Techniques: Proof of Correctness and Preservation of Paths</title>
-      <link>/entries/InfPathElimination.html</link>
-      <pubDate>Thu, 18 Aug 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/InfPathElimination.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Dependent Security Type System for Concurrent Imperative Programs</title>
-      <link>/entries/Dependent_SIFUM_Type_Systems.html</link>
-      <pubDate>Sat, 25 Jun 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Dependent_SIFUM_Type_Systems.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Kleene Algebras with Domain</title>
-      <link>/entries/KAD.html</link>
-      <pubDate>Tue, 12 Apr 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/KAD.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Verified Construction of Static Single Assignment Form</title>
-      <link>/entries/Formal_SSA.html</link>
-      <pubDate>Fri, 05 Feb 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Formal_SSA.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Meta-Model for the Isabelle API</title>
-      <link>/entries/Isabelle_Meta_Model.html</link>
-      <pubDate>Wed, 16 Sep 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Isabelle_Meta_Model.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Generating Cases from Labeled Subgoals</title>
-      <link>/entries/Case_Labeling.html</link>
-      <pubDate>Tue, 21 Jul 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Case_Labeling.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Concurrent IMP</title>
-      <link>/entries/ConcurrentIMP.html</link>
-      <pubDate>Mon, 13 Apr 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/ConcurrentIMP.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Safety of Call Arity</title>
-      <link>/entries/Call_Arity.html</link>
-      <pubDate>Fri, 20 Feb 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Call_Arity.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Verified Compiler for Probability Density Functions</title>
-      <link>/entries/Density_Compiler.html</link>
-      <pubDate>Thu, 09 Oct 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Density_Compiler.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Formalization of Refinement Calculus for Reactive Systems</title>
-      <link>/entries/RefinementReactive.html</link>
-      <pubDate>Wed, 08 Oct 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/RefinementReactive.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>pGCL for Isabelle</title>
-      <link>/entries/pGCL.html</link>
-      <pubDate>Sun, 13 Jul 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/pGCL.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Pop-Refinement</title>
-      <link>/entries/Pop_Refinement.html</link>
-      <pubDate>Thu, 03 Jul 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Pop_Refinement.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Formalization of Assumptions and Guarantees for Compositional Noninterference</title>
-      <link>/entries/SIFUM_Type_Systems.html</link>
-      <pubDate>Wed, 23 Apr 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/SIFUM_Type_Systems.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Formalization of Declassification with WHAT-and-WHERE-Security</title>
-      <link>/entries/WHATandWHERE_Security.html</link>
-      <pubDate>Wed, 23 Apr 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/WHATandWHERE_Security.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Formalization of Strong Security</title>
-      <link>/entries/Strong_Security.html</link>
-      <pubDate>Wed, 23 Apr 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Strong_Security.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Syntax and semantics of a GPU kernel programming language</title>
-      <link>/entries/GPU_Kernel_PL.html</link>
-      <pubDate>Thu, 03 Apr 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/GPU_Kernel_PL.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Kleene Algebra with Tests and Demonic Refinement Algebras</title>
-      <link>/entries/KAT_and_DRA.html</link>
-      <pubDate>Thu, 23 Jan 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/KAT_and_DRA.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Stream Processing Components: Isabelle/HOL Formalisation and Case Studies</title>
-      <link>/entries/FocusStreamsCaseStudies.html</link>
-      <pubDate>Thu, 14 Nov 2013 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/FocusStreamsCaseStudies.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Automatic Data Refinement</title>
-      <link>/entries/Automatic_Refinement.html</link>
-      <pubDate>Wed, 02 Oct 2013 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Automatic_Refinement.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Correctness of Launchbury&#39;s Natural Semantics for Lazy Evaluation</title>
-      <link>/entries/Launchbury.html</link>
-      <pubDate>Thu, 31 Jan 2013 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Launchbury.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Ribbon Proofs</title>
-      <link>/entries/Ribbon_Proofs.html</link>
-      <pubDate>Sat, 19 Jan 2013 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Ribbon_Proofs.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Kleene Algebra</title>
-      <link>/entries/Kleene_Algebra.html</link>
-      <pubDate>Tue, 15 Jan 2013 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Kleene_Algebra.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Separation Logic Framework for Imperative HOL</title>
-      <link>/entries/Separation_Logic_Imperative_HOL.html</link>
-      <pubDate>Wed, 14 Nov 2012 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Separation_Logic_Imperative_HOL.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Possibilistic Noninterference</title>
-      <link>/entries/Possibilistic_Noninterference.html</link>
-      <pubDate>Mon, 10 Sep 2012 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Possibilistic_Noninterference.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Logical Relations for PCF</title>
-      <link>/entries/PCF.html</link>
-      <pubDate>Sun, 01 Jul 2012 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/PCF.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Separation Algebra</title>
-      <link>/entries/Separation_Algebra.html</link>
-      <pubDate>Fri, 11 May 2012 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Separation_Algebra.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Definitional Encoding of TLA* in Isabelle/HOL</title>
-      <link>/entries/TLA.html</link>
-      <pubDate>Sat, 19 Nov 2011 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/TLA.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Algebra of Monotonic Boolean Transformers</title>
-      <link>/entries/MonoBoolTranAlgebra.html</link>
-      <pubDate>Thu, 22 Sep 2011 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/MonoBoolTranAlgebra.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>AutoFocus Stream Processing for Single-Clocking and Multi-Clocking Semantics</title>
-      <link>/entries/AutoFocus-Stream.html</link>
-      <pubDate>Wed, 23 Feb 2011 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/AutoFocus-Stream.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Lightweight Java</title>
-      <link>/entries/LightweightJava.html</link>
-      <pubDate>Mon, 07 Feb 2011 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/LightweightJava.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>RIPEMD-160</title>
-      <link>/entries/RIPEMD-160-SPARK.html</link>
-      <pubDate>Mon, 10 Jan 2011 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/RIPEMD-160-SPARK.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Shivers&#39; Control Flow Analysis</title>
-      <link>/entries/Shivers-CFA.html</link>
-      <pubDate>Tue, 16 Nov 2010 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Shivers-CFA.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Strong Normalization of Moggis&#39;s Computational Metalanguage</title>
-      <link>/entries/Lam-ml-Normalization.html</link>
-      <pubDate>Sun, 29 Aug 2010 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Lam-ml-Normalization.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Semantics and Data Refinement of Invariant Based Programs</title>
-      <link>/entries/DataRefinementIBP.html</link>
-      <pubDate>Fri, 28 May 2010 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/DataRefinementIBP.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Locally Nameless Sigma Calculus</title>
-      <link>/entries/Locally-Nameless-Sigma.html</link>
-      <pubDate>Fri, 30 Apr 2010 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Locally-Nameless-Sigma.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Backing up Slicing: Verifying the Interprocedural Two-Phase Horwitz-Reps-Binkley Slicer</title>
-      <link>/entries/HRB-Slicing.html</link>
-      <pubDate>Fri, 13 Nov 2009 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/HRB-Slicing.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Bytecode Logic for JML and Types</title>
-      <link>/entries/BytecodeLogicJmlTypes.html</link>
-      <pubDate>Fri, 12 Dec 2008 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/BytecodeLogicJmlTypes.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Secure information flow and program logics</title>
-      <link>/entries/SIFPL.html</link>
-      <pubDate>Mon, 10 Nov 2008 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/SIFPL.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Towards Certified Slicing</title>
-      <link>/entries/Slicing.html</link>
-      <pubDate>Tue, 16 Sep 2008 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Slicing.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Correctness Proof for the Volpano/Smith Security Typing System</title>
-      <link>/entries/VolpanoSmith.html</link>
-      <pubDate>Tue, 02 Sep 2008 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/VolpanoSmith.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Sequential Imperative Programming Language Syntax, Semantics, Hoare Logics and Verification Environment</title>
-      <link>/entries/Simpl.html</link>
-      <pubDate>Fri, 29 Feb 2008 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Simpl.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Sequential Imperative Programming Language Syntax, Semantics, Hoare Logics and Verification Environment</title>
-      <link>/entries/Simpl.html</link>
-      <pubDate>Fri, 29 Feb 2008 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Simpl.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Normalization by Evaluation</title>
-      <link>/entries/NormByEval.html</link>
-      <pubDate>Mon, 18 Feb 2008 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/NormByEval.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Formalization of Conflict Analysis of Programs with Procedures, Thread Creation, and Monitors</title>
-      <link>/entries/Program-Conflict-Analysis.html</link>
-      <pubDate>Fri, 14 Dec 2007 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Program-Conflict-Analysis.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Jinja with Threads</title>
-      <link>/entries/JinjaThreads.html</link>
-      <pubDate>Mon, 03 Dec 2007 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/JinjaThreads.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>POPLmark Challenge Via de Bruijn Indices</title>
-      <link>/entries/POPLmark-deBruijn.html</link>
-      <pubDate>Thu, 02 Aug 2007 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/POPLmark-deBruijn.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Abstract Hoare Logics</title>
-      <link>/entries/Abstract-Hoare-Logics.html</link>
-      <pubDate>Tue, 08 Aug 2006 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Abstract-Hoare-Logics.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>CoreC&#43;&#43;</title>
-      <link>/entries/CoreC&#43;&#43;.html</link>
-      <pubDate>Mon, 15 May 2006 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/CoreC&#43;&#43;.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Theory of Featherweight Java in Isabelle/HOL</title>
-      <link>/entries/FeatherweightJava.html</link>
-      <pubDate>Fri, 31 Mar 2006 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/FeatherweightJava.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Jive Data and Store Model</title>
-      <link>/entries/JiveDataStoreModel.html</link>
-      <pubDate>Mon, 20 Jun 2005 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/JiveDataStoreModel.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Jinja is not Java</title>
-      <link>/entries/Jinja.html</link>
-      <pubDate>Wed, 01 Jun 2005 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Jinja.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Compiling Exceptions Correctly</title>
-      <link>/entries/Compiling-Exceptions-Correctly.html</link>
-      <pubDate>Fri, 09 Jul 2004 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Compiling-Exceptions-Correctly.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Mini ML</title>
-      <link>/entries/MiniML.html</link>
-      <pubDate>Fri, 19 Mar 2004 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/MiniML.html</guid>
-      <description></description>
-    </item>
-    
+    <language>en-gb</language>
+    
+      <atom:link href="/topics/computer-science/programming-languages/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Formalization of Hyper Hoare Logic: A Logic to (Dis-)Prove Program Hyperproperties</title>
+          <link>/entries/HyperHoareLogic.html</link>
+          <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/HyperHoareLogic.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formalization of CommCSL: A Relational Concurrent Separation Logic for Proving Information Flow Security in Concurrent Programs</title>
+          <link>/entries/CommCSL.html</link>
+          <pubDate>Wed, 15 Mar 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/CommCSL.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Renaming-Enriched Sets (Rensets) and Renaming-Based Recursion</title>
+          <link>/entries/Rensets.html</link>
+          <pubDate>Tue, 28 Feb 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Rensets.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Hoare Logic for Diverging Programs</title>
+          <link>/entries/HoareForDivergence.html</link>
+          <pubDate>Fri, 20 Jan 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/HoareForDivergence.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Unbounded Separation Logic</title>
+          <link>/entries/Separation_Logic_Unbounded.html</link>
+          <pubDate>Mon, 05 Sep 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Separation_Logic_Unbounded.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Isabelle/Solidity: A deep Embedding of Solidity in Isabelle/HOL</title>
+          <link>/entries/Solidity.html</link>
+          <pubDate>Mon, 18 Jul 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Solidity.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Reuse-Based Multi-Stage Compiler Verification for Language IMP</title>
+          <link>/entries/IMP_Compiler_Reuse.html</link>
+          <pubDate>Sun, 10 Jul 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/IMP_Compiler_Reuse.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Restricted Definition of the Magic Wand to Soundly Combine Fractions of a Wand</title>
+          <link>/entries/Combinable_Wands.html</link>
+          <pubDate>Mon, 30 May 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Combinable_Wands.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formalization of a Framework for the Sound Automation of Magic Wands</title>
+          <link>/entries/Package_logic.html</link>
+          <pubDate>Wed, 18 May 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Package_logic.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Residuated Transition Systems</title>
+          <link>/entries/ResiduatedTransitionSystem.html</link>
+          <pubDate>Mon, 28 Feb 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/ResiduatedTransitionSystem.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Quantum and Classical Registers</title>
+          <link>/entries/Registers.html</link>
+          <pubDate>Thu, 28 Oct 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Registers.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Algebras for Iteration, Infinite Executions and Correctness of Sequential Computations</title>
+          <link>/entries/Correctness_Algebras.html</link>
+          <pubDate>Tue, 12 Oct 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Correctness_Algebras.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A data flow analysis algorithm for computing dominators</title>
+          <link>/entries/Dominance_CHK.html</link>
+          <pubDate>Sun, 05 Sep 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Dominance_CHK.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>MiniSail - A kernel language for the ISA specification language SAIL</title>
+          <link>/entries/MiniSail.html</link>
+          <pubDate>Fri, 18 Jun 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/MiniSail.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Shorter Compiler Correctness Proof for Language IMP</title>
+          <link>/entries/IMP_Compiler.html</link>
+          <pubDate>Fri, 04 Jun 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/IMP_Compiler.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>JinjaDCI: a Java semantics with dynamic class initialization</title>
+          <link>/entries/JinjaDCI.html</link>
+          <pubDate>Mon, 11 Jan 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/JinjaDCI.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Inline Caching and Unboxing Optimization for Interpreters</title>
+          <link>/entries/Interpreter_Optimizations.html</link>
+          <pubDate>Mon, 07 Dec 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Interpreter_Optimizations.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Sound Type System for Physical Quantities, Units, and Measurements</title>
+          <link>/entries/Physical_Quantities.html</link>
+          <pubDate>Tue, 20 Oct 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Physical_Quantities.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>An Under-Approximate Relational Logic</title>
+          <link>/entries/Relational-Incorrectness-Logic.html</link>
+          <pubDate>Thu, 12 Mar 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Relational-Incorrectness-Logic.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Generic Framework for Verified Compilers</title>
+          <link>/entries/VeriComp.html</link>
+          <pubDate>Mon, 10 Feb 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/VeriComp.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Isabelle/C</title>
+          <link>/entries/Isabelle_C.html</link>
+          <pubDate>Tue, 22 Oct 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Isabelle_C.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Clean - An Abstract Imperative Programming Language and its Theory</title>
+          <link>/entries/Clean.html</link>
+          <pubDate>Fri, 04 Oct 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Clean.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Verified Code Generator from Isabelle/HOL to CakeML</title>
+          <link>/entries/CakeML_Codegen.html</link>
+          <pubDate>Mon, 08 Jul 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/CakeML_Codegen.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Differential Game Logic</title>
+          <link>/entries/Differential_Game_Logic.html</link>
+          <pubDate>Mon, 03 Jun 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Differential_Game_Logic.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formalization of Generic Authenticated Data Structures</title>
+          <link>/entries/LambdaAuth.html</link>
+          <pubDate>Tue, 14 May 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/LambdaAuth.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A General Theory of Syntax with Bindings</title>
+          <link>/entries/Binding_Syntax_Theory.html</link>
+          <pubDate>Sat, 06 Apr 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Binding_Syntax_Theory.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Quantum Hoare Logic</title>
+          <link>/entries/QHLProver.html</link>
+          <pubDate>Sun, 24 Mar 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/QHLProver.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Safe OCL</title>
+          <link>/entries/Safe_OCL.html</link>
+          <pubDate>Sat, 09 Mar 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Safe_OCL.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Isabelle/UTP: Mechanised Theory Engineering for Unifying Theories of Programming</title>
+          <link>/entries/UTP.html</link>
+          <pubDate>Fri, 01 Feb 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/UTP.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>An Algebra for Higher-Order Terms</title>
+          <link>/entries/Higher_Order_Terms.html</link>
+          <pubDate>Tue, 15 Jan 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Higher_Order_Terms.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>IMP2 – Simple Program Verification in Isabelle/HOL</title>
+          <link>/entries/IMP2.html</link>
+          <pubDate>Tue, 15 Jan 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/IMP2.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>WebAssembly</title>
+          <link>/entries/WebAssembly.html</link>
+          <pubDate>Sun, 29 Apr 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/WebAssembly.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>CakeML</title>
+          <link>/entries/CakeML.html</link>
+          <pubDate>Mon, 12 Mar 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/CakeML.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Hoare Logics for Time Bounds</title>
+          <link>/entries/Hoare_Time.html</link>
+          <pubDate>Mon, 26 Feb 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Hoare_Time.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The LambdaMu-calculus</title>
+          <link>/entries/LambdaMu.html</link>
+          <pubDate>Wed, 16 Aug 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/LambdaMu.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Declarative Semantics for Functional Languages</title>
+          <link>/entries/Decl_Sem_Fun_PL.html</link>
+          <pubDate>Fri, 21 Jul 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Decl_Sem_Fun_PL.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Verified Metatheory and Type Inference for a Name-Carrying Simply-Typed Lambda Calculus</title>
+          <link>/entries/Name_Carrying_Type_Inference.html</link>
+          <pubDate>Sun, 09 Jul 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Name_Carrying_Type_Inference.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Differential Dynamic Logic</title>
+          <link>/entries/Differential_Dynamic_Logic.html</link>
+          <pubDate>Mon, 13 Feb 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Differential_Dynamic_Logic.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Minimal Static Single Assignment Form</title>
+          <link>/entries/Minimal_SSA.html</link>
+          <pubDate>Tue, 17 Jan 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Minimal_SSA.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>COMPLX: A Verification Framework for Concurrent Imperative Programs</title>
+          <link>/entries/Complx.html</link>
+          <pubDate>Tue, 29 Nov 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Complx.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>COMPLX: A Verification Framework for Concurrent Imperative Programs</title>
+          <link>/entries/Complx.html</link>
+          <pubDate>Tue, 29 Nov 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Complx.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Abstract Interpretation of Annotated Commands</title>
+          <link>/entries/Abs_Int_ITP2012.html</link>
+          <pubDate>Wed, 23 Nov 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Abs_Int_ITP2012.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Separata: Isabelle tactics for Separation Algebra</title>
+          <link>/entries/Separata.html</link>
+          <pubDate>Wed, 16 Nov 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Separata.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Infeasible Paths Elimination by Symbolic Execution Techniques: Proof of Correctness and Preservation of Paths</title>
+          <link>/entries/InfPathElimination.html</link>
+          <pubDate>Thu, 18 Aug 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/InfPathElimination.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Dependent Security Type System for Concurrent Imperative Programs</title>
+          <link>/entries/Dependent_SIFUM_Type_Systems.html</link>
+          <pubDate>Sat, 25 Jun 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Dependent_SIFUM_Type_Systems.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Kleene Algebras with Domain</title>
+          <link>/entries/KAD.html</link>
+          <pubDate>Tue, 12 Apr 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/KAD.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Verified Construction of Static Single Assignment Form</title>
+          <link>/entries/Formal_SSA.html</link>
+          <pubDate>Fri, 05 Feb 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Formal_SSA.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Meta-Model for the Isabelle API</title>
+          <link>/entries/Isabelle_Meta_Model.html</link>
+          <pubDate>Wed, 16 Sep 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Isabelle_Meta_Model.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Generating Cases from Labeled Subgoals</title>
+          <link>/entries/Case_Labeling.html</link>
+          <pubDate>Tue, 21 Jul 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Case_Labeling.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Concurrent IMP</title>
+          <link>/entries/ConcurrentIMP.html</link>
+          <pubDate>Mon, 13 Apr 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/ConcurrentIMP.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Safety of Call Arity</title>
+          <link>/entries/Call_Arity.html</link>
+          <pubDate>Fri, 20 Feb 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Call_Arity.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Verified Compiler for Probability Density Functions</title>
+          <link>/entries/Density_Compiler.html</link>
+          <pubDate>Thu, 09 Oct 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Density_Compiler.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formalization of Refinement Calculus for Reactive Systems</title>
+          <link>/entries/RefinementReactive.html</link>
+          <pubDate>Wed, 08 Oct 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/RefinementReactive.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>pGCL for Isabelle</title>
+          <link>/entries/pGCL.html</link>
+          <pubDate>Sun, 13 Jul 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/pGCL.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Pop-Refinement</title>
+          <link>/entries/Pop_Refinement.html</link>
+          <pubDate>Thu, 03 Jul 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Pop_Refinement.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Formalization of Assumptions and Guarantees for Compositional Noninterference</title>
+          <link>/entries/SIFUM_Type_Systems.html</link>
+          <pubDate>Wed, 23 Apr 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/SIFUM_Type_Systems.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Formalization of Declassification with WHAT-and-WHERE-Security</title>
+          <link>/entries/WHATandWHERE_Security.html</link>
+          <pubDate>Wed, 23 Apr 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/WHATandWHERE_Security.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Formalization of Strong Security</title>
+          <link>/entries/Strong_Security.html</link>
+          <pubDate>Wed, 23 Apr 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Strong_Security.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Syntax and semantics of a GPU kernel programming language</title>
+          <link>/entries/GPU_Kernel_PL.html</link>
+          <pubDate>Thu, 03 Apr 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/GPU_Kernel_PL.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Kleene Algebra with Tests and Demonic Refinement Algebras</title>
+          <link>/entries/KAT_and_DRA.html</link>
+          <pubDate>Thu, 23 Jan 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/KAT_and_DRA.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Stream Processing Components: Isabelle/HOL Formalisation and Case Studies</title>
+          <link>/entries/FocusStreamsCaseStudies.html</link>
+          <pubDate>Thu, 14 Nov 2013 00:00:00 +0000</pubDate>
+          <guid>/entries/FocusStreamsCaseStudies.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Automatic Data Refinement</title>
+          <link>/entries/Automatic_Refinement.html</link>
+          <pubDate>Wed, 02 Oct 2013 00:00:00 +0000</pubDate>
+          <guid>/entries/Automatic_Refinement.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Correctness of Launchbury&#39;s Natural Semantics for Lazy Evaluation</title>
+          <link>/entries/Launchbury.html</link>
+          <pubDate>Thu, 31 Jan 2013 00:00:00 +0000</pubDate>
+          <guid>/entries/Launchbury.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Ribbon Proofs</title>
+          <link>/entries/Ribbon_Proofs.html</link>
+          <pubDate>Sat, 19 Jan 2013 00:00:00 +0000</pubDate>
+          <guid>/entries/Ribbon_Proofs.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Kleene Algebra</title>
+          <link>/entries/Kleene_Algebra.html</link>
+          <pubDate>Tue, 15 Jan 2013 00:00:00 +0000</pubDate>
+          <guid>/entries/Kleene_Algebra.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Separation Logic Framework for Imperative HOL</title>
+          <link>/entries/Separation_Logic_Imperative_HOL.html</link>
+          <pubDate>Wed, 14 Nov 2012 00:00:00 +0000</pubDate>
+          <guid>/entries/Separation_Logic_Imperative_HOL.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Possibilistic Noninterference</title>
+          <link>/entries/Possibilistic_Noninterference.html</link>
+          <pubDate>Mon, 10 Sep 2012 00:00:00 +0000</pubDate>
+          <guid>/entries/Possibilistic_Noninterference.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Logical Relations for PCF</title>
+          <link>/entries/PCF.html</link>
+          <pubDate>Sun, 01 Jul 2012 00:00:00 +0000</pubDate>
+          <guid>/entries/PCF.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Separation Algebra</title>
+          <link>/entries/Separation_Algebra.html</link>
+          <pubDate>Fri, 11 May 2012 00:00:00 +0000</pubDate>
+          <guid>/entries/Separation_Algebra.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Definitional Encoding of TLA* in Isabelle/HOL</title>
+          <link>/entries/TLA.html</link>
+          <pubDate>Sat, 19 Nov 2011 00:00:00 +0000</pubDate>
+          <guid>/entries/TLA.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Algebra of Monotonic Boolean Transformers</title>
+          <link>/entries/MonoBoolTranAlgebra.html</link>
+          <pubDate>Thu, 22 Sep 2011 00:00:00 +0000</pubDate>
+          <guid>/entries/MonoBoolTranAlgebra.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>AutoFocus Stream Processing for Single-Clocking and Multi-Clocking Semantics</title>
+          <link>/entries/AutoFocus-Stream.html</link>
+          <pubDate>Wed, 23 Feb 2011 00:00:00 +0000</pubDate>
+          <guid>/entries/AutoFocus-Stream.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Lightweight Java</title>
+          <link>/entries/LightweightJava.html</link>
+          <pubDate>Mon, 07 Feb 2011 00:00:00 +0000</pubDate>
+          <guid>/entries/LightweightJava.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>RIPEMD-160</title>
+          <link>/entries/RIPEMD-160-SPARK.html</link>
+          <pubDate>Mon, 10 Jan 2011 00:00:00 +0000</pubDate>
+          <guid>/entries/RIPEMD-160-SPARK.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Shivers&#39; Control Flow Analysis</title>
+          <link>/entries/Shivers-CFA.html</link>
+          <pubDate>Tue, 16 Nov 2010 00:00:00 +0000</pubDate>
+          <guid>/entries/Shivers-CFA.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Strong Normalization of Moggis&#39;s Computational Metalanguage</title>
+          <link>/entries/Lam-ml-Normalization.html</link>
+          <pubDate>Sun, 29 Aug 2010 00:00:00 +0000</pubDate>
+          <guid>/entries/Lam-ml-Normalization.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Semantics and Data Refinement of Invariant Based Programs</title>
+          <link>/entries/DataRefinementIBP.html</link>
+          <pubDate>Fri, 28 May 2010 00:00:00 +0000</pubDate>
+          <guid>/entries/DataRefinementIBP.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Locally Nameless Sigma Calculus</title>
+          <link>/entries/Locally-Nameless-Sigma.html</link>
+          <pubDate>Fri, 30 Apr 2010 00:00:00 +0000</pubDate>
+          <guid>/entries/Locally-Nameless-Sigma.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Backing up Slicing: Verifying the Interprocedural Two-Phase Horwitz-Reps-Binkley Slicer</title>
+          <link>/entries/HRB-Slicing.html</link>
+          <pubDate>Fri, 13 Nov 2009 00:00:00 +0000</pubDate>
+          <guid>/entries/HRB-Slicing.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Bytecode Logic for JML and Types</title>
+          <link>/entries/BytecodeLogicJmlTypes.html</link>
+          <pubDate>Fri, 12 Dec 2008 00:00:00 +0000</pubDate>
+          <guid>/entries/BytecodeLogicJmlTypes.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Secure information flow and program logics</title>
+          <link>/entries/SIFPL.html</link>
+          <pubDate>Mon, 10 Nov 2008 00:00:00 +0000</pubDate>
+          <guid>/entries/SIFPL.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Towards Certified Slicing</title>
+          <link>/entries/Slicing.html</link>
+          <pubDate>Tue, 16 Sep 2008 00:00:00 +0000</pubDate>
+          <guid>/entries/Slicing.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Correctness Proof for the Volpano/Smith Security Typing System</title>
+          <link>/entries/VolpanoSmith.html</link>
+          <pubDate>Tue, 02 Sep 2008 00:00:00 +0000</pubDate>
+          <guid>/entries/VolpanoSmith.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Sequential Imperative Programming Language Syntax, Semantics, Hoare Logics and Verification Environment</title>
+          <link>/entries/Simpl.html</link>
+          <pubDate>Fri, 29 Feb 2008 00:00:00 +0000</pubDate>
+          <guid>/entries/Simpl.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Sequential Imperative Programming Language Syntax, Semantics, Hoare Logics and Verification Environment</title>
+          <link>/entries/Simpl.html</link>
+          <pubDate>Fri, 29 Feb 2008 00:00:00 +0000</pubDate>
+          <guid>/entries/Simpl.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Normalization by Evaluation</title>
+          <link>/entries/NormByEval.html</link>
+          <pubDate>Mon, 18 Feb 2008 00:00:00 +0000</pubDate>
+          <guid>/entries/NormByEval.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formalization of Conflict Analysis of Programs with Procedures, Thread Creation, and Monitors</title>
+          <link>/entries/Program-Conflict-Analysis.html</link>
+          <pubDate>Fri, 14 Dec 2007 00:00:00 +0000</pubDate>
+          <guid>/entries/Program-Conflict-Analysis.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Jinja with Threads</title>
+          <link>/entries/JinjaThreads.html</link>
+          <pubDate>Mon, 03 Dec 2007 00:00:00 +0000</pubDate>
+          <guid>/entries/JinjaThreads.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>POPLmark Challenge Via de Bruijn Indices</title>
+          <link>/entries/POPLmark-deBruijn.html</link>
+          <pubDate>Thu, 02 Aug 2007 00:00:00 +0000</pubDate>
+          <guid>/entries/POPLmark-deBruijn.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Abstract Hoare Logics</title>
+          <link>/entries/Abstract-Hoare-Logics.html</link>
+          <pubDate>Tue, 08 Aug 2006 00:00:00 +0000</pubDate>
+          <guid>/entries/Abstract-Hoare-Logics.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>CoreC&#43;&#43;</title>
+          <link>/entries/CoreC&#43;&#43;.html</link>
+          <pubDate>Mon, 15 May 2006 00:00:00 +0000</pubDate>
+          <guid>/entries/CoreC&#43;&#43;.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Theory of Featherweight Java in Isabelle/HOL</title>
+          <link>/entries/FeatherweightJava.html</link>
+          <pubDate>Fri, 31 Mar 2006 00:00:00 +0000</pubDate>
+          <guid>/entries/FeatherweightJava.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Jive Data and Store Model</title>
+          <link>/entries/JiveDataStoreModel.html</link>
+          <pubDate>Mon, 20 Jun 2005 00:00:00 +0000</pubDate>
+          <guid>/entries/JiveDataStoreModel.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Jinja is not Java</title>
+          <link>/entries/Jinja.html</link>
+          <pubDate>Wed, 01 Jun 2005 00:00:00 +0000</pubDate>
+          <guid>/entries/Jinja.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Compiling Exceptions Correctly</title>
+          <link>/entries/Compiling-Exceptions-Correctly.html</link>
+          <pubDate>Fri, 09 Jul 2004 00:00:00 +0000</pubDate>
+          <guid>/entries/Compiling-Exceptions-Correctly.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Mini ML</title>
+          <link>/entries/MiniML.html</link>
+          <pubDate>Fri, 19 Mar 2004 00:00:00 +0000</pubDate>
+          <guid>/entries/MiniML.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

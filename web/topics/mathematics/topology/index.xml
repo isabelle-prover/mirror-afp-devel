@@ -1,64 +1,58 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Mathematics/Topology on Archive of Formal Proofs</title>
+    <title>Mathematics/Topology on Archive of Formal Proofs
+    </title>
     <link>/topics/mathematics/topology/</link>
-    <description>Recent content in Mathematics/Topology on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Mathematics/Topology 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language><atom:link href="/topics/mathematics/topology/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Euler&#39;s Polyhedron Formula</title>
-      <link>/entries/Euler_Polyhedron_Formula.html</link>
-      <pubDate>Sat, 16 Sep 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Euler_Polyhedron_Formula.html</guid>
-      <description></description>
-    </item>
+    <language>en-gb</language>
     
-    <item>
-      <title>Simplicial Complexes and Boolean functions</title>
-      <link>/entries/Simplicial_complexes_and_boolean_functions.html</link>
-      <pubDate>Mon, 29 Nov 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Simplicial_complexes_and_boolean_functions.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Smooth Manifolds</title>
-      <link>/entries/Smooth_Manifolds.html</link>
-      <pubDate>Mon, 22 Oct 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Smooth_Manifolds.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Kuratowski Closure-Complement Theorem</title>
-      <link>/entries/Kuratowski_Closure_Complement.html</link>
-      <pubDate>Thu, 26 Oct 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Kuratowski_Closure_Complement.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Knot Theory</title>
-      <link>/entries/Knot_Theory.html</link>
-      <pubDate>Wed, 20 Jan 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Knot_Theory.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Topology</title>
-      <link>/entries/Topology.html</link>
-      <pubDate>Mon, 26 Apr 2004 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Topology.html</guid>
-      <description></description>
-    </item>
-    
+      <atom:link href="/topics/mathematics/topology/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Euler&#39;s Polyhedron Formula</title>
+          <link>/entries/Euler_Polyhedron_Formula.html</link>
+          <pubDate>Sat, 16 Sep 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Euler_Polyhedron_Formula.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Simplicial Complexes and Boolean functions</title>
+          <link>/entries/Simplicial_complexes_and_boolean_functions.html</link>
+          <pubDate>Mon, 29 Nov 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Simplicial_complexes_and_boolean_functions.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Smooth Manifolds</title>
+          <link>/entries/Smooth_Manifolds.html</link>
+          <pubDate>Mon, 22 Oct 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Smooth_Manifolds.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Kuratowski Closure-Complement Theorem</title>
+          <link>/entries/Kuratowski_Closure_Complement.html</link>
+          <pubDate>Thu, 26 Oct 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Kuratowski_Closure_Complement.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Knot Theory</title>
+          <link>/entries/Knot_Theory.html</link>
+          <pubDate>Wed, 20 Jan 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Knot_Theory.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Topology</title>
+          <link>/entries/Topology.html</link>
+          <pubDate>Mon, 26 Apr 2004 00:00:00 +0000</pubDate>
+          <guid>/entries/Topology.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

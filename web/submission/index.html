@@ -1,9 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Entry Submission - Archive of Formal Proofs</title><meta name="description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."><meta property="og:title" content="Entry Submission" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Entry Submission - Archive of Formal Proofs</title>
+    <meta name="description" content="A collection of proof libraries, examples, and larger
+     scientific developments, mechanically checked in the theorem prover Isabelle.">
+
+  <meta property="og:title" content="Entry Submission" />
 <meta property="og:description" content="Submission Guidelines The submission must follow the following Isabelle style rules. For additional guidelines on Isabelle proofs, also see the this guide (feel free to follow all of these; only the below are mandatory). Technical details about the submission process and the format of the submission are explained on the submission site.
  No use of the commands sorry or back. Instantiations must not use Isabelle-generated names such as xa — use Isar, the subgoal command or rename_tac to avoid such names." />
 <meta property="og:type" content="article" />
@@ -11,75 +16,112 @@
 
 <meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="Entry Submission"/>
 <meta name="twitter:description" content="Submission Guidelines The submission must follow the following Isabelle style rules. For additional guidelines on Isabelle proofs, also see the this guide (feel free to follow all of these; only the below are mandatory). Technical details about the submission process and the format of the submission are explained on the submission site.
  No use of the commands sorry or back. Instantiations must not use Isabelle-generated names such as xa — use Isar, the subgoal command or rename_tac to avoid such names."/>
 
-  
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
-  <link rel="icon" href="../images/favicon.ico" type="image/icon"><script src="../js/obfuscate.js"></script>
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+
+  <script src="../js/obfuscate.js"></script>
   <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
-  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../" class='logo-link'>
-    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../" class='logo-link'>
-        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../"><li >Home</li></a>
-        <a href="../topics/"><li >Topics</li></a>
-        <a href="../download/"><li >Download</li></a>
-        <a href="../help/"><li >Help</li></a>
-        <a href="../submission/"><li class="active" >Submission</li></a>
-        <a href="../statistics/"><li >Statistics</li></a>
-        <a href="../about/"><li >About</li></a>
+          <a href="../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../submission/">
+            <li class="active" >
+              Submission
+            </li>
+          </a>
+          <a href="../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content '><header>
-  <form autocomplete="off" action="../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>E</span>ntry <span class='first'>S</span>ubmission</h1>
+    </aside>
+    <div class='content'>
+      <header>
+    <form autocomplete="off" action="../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>E</span>ntry <span class='first'>S</span>ubmission
+    
+  </h1>
   <div>
-    
-    
   </div>
-</header><div><div>
-  <h2 id="submission-guidelines">Submission Guidelines</h2>
+</header>
+      <div>
+        
+  <div>
+    <h2 id="submission-guidelines">Submission Guidelines</h2>
 <p><strong>The submission must follow the following Isabelle style rules.</strong> For additional guidelines on Isabelle proofs, also see the this <a href="https://proofcraft.org/blog/isabelle-style.html">guide</a> (feel free to follow all of these; only the below are mandatory). <strong>Technical details about the submission process and the format of the submission are explained on the submission site.</strong></p>
 <ul>
 <li>No use of the commands <code>sorry</code> or <code>back</code>.</li>
@@ -88,18 +130,23 @@
 <li>If your theories contain calls to <code>nitpick</code>, <code>quickcheck</code>, or <code>nunchaku</code> those calls must include the <code>expect</code> parameter. Alternatively the <code>expect</code> parameter must be set globally via, e.g. <code>nitpick_params</code>.</li>
 <li><code>apply</code> scripts should be indented by subgoal as in the Isabelle distribution. If an <code>apply</code> command is applied to a state with <code>n+1</code> subgoals, it must be indented by <code>n</code> spaces relative to the first <code>apply</code> in the sequence.</li>
 <li>Only named lemmas should carry attributes such as <code>[simp]</code>.</li>
+<li>The submission process employs the <a href="https://github.com/isabelle-prover/isabelle-linter">Isabelle linter</a> that checks for most violations. It will also warn you about other anti-patterns (check the end of your build log).</li>
 <li>We prefer structured Isar proofs over apply style, but do not mandate them.</li>
 <li>If there are proof steps that take significant time, i.e. longer than roughly 1 min, please add a short comment to that step, so maintainers will know what to expect.</li>
 <li>The entry must contain a ROOT file with one session that has the name of the entry. We strongly encourage precisely one session per entry, but exceptions can be made. All sessions must be in chapter AFP, and all theory files of the submission must be contained in at least one session. See also the example <a href="https://foss.heptapod.net/isa-afp/afp-2023/-/blob/branch/default/thys/Example-Submission/ROOT">ROOT</a> file in the <a href="../entries/Example-Submission.html">Example submission</a>.</li>
+<li>The submission should run in the current Isabelle/AFP release and produce a PDF document. To test this, you can run the following <a href="https://isabelle.in.tum.de/installation.html">Isabelle command on the command line</a>:</li>
+</ul>
+<pre tabindex="0"><code>&lt;isabelle&gt; build -v -o browser_info -o &quot;document=pdf&quot; -o &quot;document_variants=document:outline=/proof,/ML&quot; -D &lt;entry dir&gt;
+</code></pre><ul>
 <li>The entry should cite all sources that the theories are based on, for example textbooks or research articles containing informal versions of the proofs.</li>
 <li>All sessions must have a timeout after which they are assumed to be in a non-terminating state. Timeouts may be no finer than five-minute increments, i.e. must be divisible by 300.</li>
 </ul>
-<p>Your submission must contain an abstract to be displayed on the web site – usually this will be the same as the abstract of your proof document in the root.tex file. You can use LaTeX formulae in this web site abstract, either inline formulae in the form $a+b$ or \(a+b\) or display formulae in the form $$a + b$$ or \[a + b\]. Other occurrences of these characters must be escaped (e.g. \$ or \\(). Note that LaTeX in the title of an entry is <em>not</em> allowed. Most basic LaTeX functionality should be supported. For details on what parts of LaTeX are supported, see the <a href="https://docs.mathjax.org/en/v2.7-latest/tex.html">MathJax documentation.</a></p>
+<p>Your submission must contain an abstract to be displayed on the web site – usually this will be the same as the abstract of your proof document in the root.tex file. You can use MathJax formulae in this web site abstract, either inline formulae in the form $a+b$ or \(a+b\) or display formulae in the form $$a + b$$ or \[a + b\]. Other occurrences of these characters must be escaped (e.g. \$ or \\(). Note that MathJax in the title of an entry is <em>not</em> allowed. MathJax supports most basic LaTeX functionality. For details on what parts of LaTeX are supported, see the <a href="https://docs.mathjax.org/en/v2.7-latest/tex.html">MathJax documentation.</a></p>
 <p>It is possible and encouraged to build on other archive entries in your submission. There is a standardised way to <a href="../help">refer to other AFP entries</a> in your theories.</p>
 <h2 id="submission-form">Submission Form</h2>
 <p><a href="../webapp/submit">Submission form</a></p>
 <p>Your submission will be refereed and you will receive notification as soon as possible. If accepted, you must agree to maintain your archive entry or nominate someone else to maintain it. The Isabelle development team will assist with maintenance, but it does not have the resources to fully maintain the complete archive.</p>
-<p>If you have questions regarding your submission, please email <a href="mailto:afp-submit@in.tum.de">afp-submit@in.tum.de</a>. If you need help with Isabelle, please use the <a href="mailto:isabelle-users@cl.cam.ac.uk">isabelle-users@cl.cam.ac.uk</a> mailing list. It is always a good idea to <a href="https://lists.cam.ac.uk/mailman/listinfo/cl-isabelle-users">subscribe</a>.</p>
+<p>If you have questions regarding your submission, please email <a href="mailto:afp-submit@in.tum.de">afp-submit@in.tum.de</a>. If your submission can only run on the development version of Isabelle or the AFP, notify us after submitting. If you need help with Isabelle, please use the <a href="mailto:isabelle-users@cl.cam.ac.uk">isabelle-users@cl.cam.ac.uk</a> mailing list. It is always a good idea to <a href="https://lists.cam.ac.uk/mailman/listinfo/cl-isabelle-users">subscribe</a>.</p>
 <h1 id="updating-entries">Updating Entries</h1>
 <h2 id="change">Change</h2>
 <p>The Archive of Formal Proofs is an online resource and therefore more dynamic than a normal scientific journal. Existing entries can and do evolve and can also be updated significantly by their authors.</p>
@@ -119,9 +166,9 @@
 <p>To achieve this, you should base your changes on the <a href="https:/foss.heptapod.net/isa-afp/afp-devel/">mercurial development version</a> of your AFP entry and test it against the current <a href="https://isabelle.in.tum.de/devel/">Isabelle development version</a>.</p>
 <p>If you would like to get write access to your entry in the mercurial repository or if you need assistance, please contact the <a href="../about#editors">editors</a>.</p>
 
-</div>
-    </div>
   </div>
-</body>
-
+        
+      </div>
+    </div>
+  </body>
 </html>

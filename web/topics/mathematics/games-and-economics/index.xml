@@ -1,154 +1,128 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Mathematics/Games and economics on Archive of Formal Proofs</title>
+    <title>Mathematics/Games and economics on Archive of Formal Proofs
+    </title>
     <link>/topics/mathematics/games-and-economics/</link>
-    <description>Recent content in Mathematics/Games and economics on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Mathematics/Games and economics 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language><atom:link href="/topics/mathematics/games-and-economics/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>The Incompatibility of Strategy-Proofness and Representation in Party-Approval Multi-Winner Elections</title>
-      <link>/entries/PAPP_Impossibility.html</link>
-      <pubDate>Thu, 10 Nov 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/PAPP_Impossibility.html</guid>
-      <description></description>
-    </item>
+    <language>en-gb</language>
     
-    <item>
-      <title>Risk-Free Lending</title>
-      <link>/entries/Risk_Free_Lending.html</link>
-      <pubDate>Sun, 18 Sep 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Risk_Free_Lending.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Actuarial Mathematics</title>
-      <link>/entries/Actuarial_Mathematics.html</link>
-      <pubDate>Sun, 23 Jan 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Actuarial_Mathematics.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Gale-Shapley Algorithm</title>
-      <link>/entries/Gale_Shapley.html</link>
-      <pubDate>Wed, 29 Dec 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Gale_Shapley.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Gale-Stewart Games</title>
-      <link>/entries/GaleStewart_Games.html</link>
-      <pubDate>Fri, 23 Apr 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/GaleStewart_Games.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Pricing in discrete financial models</title>
-      <link>/entries/DiscretePricing.html</link>
-      <pubDate>Mon, 16 Jul 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/DiscretePricing.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Von-Neumann-Morgenstern Utility Theorem</title>
-      <link>/entries/Neumann_Morgenstern_Utility.html</link>
-      <pubDate>Wed, 04 Jul 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Neumann_Morgenstern_Utility.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Incompatibility of Fishburn-Strategyproofness and Pareto-Efficiency</title>
-      <link>/entries/Fishburn_Impossibility.html</link>
-      <pubDate>Thu, 22 Mar 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Fishburn_Impossibility.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Microeconomics and the First Welfare Theorem</title>
-      <link>/entries/First_Welfare_Theorem.html</link>
-      <pubDate>Fri, 01 Sep 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/First_Welfare_Theorem.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Stable Matching</title>
-      <link>/entries/Stable_Matching.html</link>
-      <pubDate>Mon, 24 Oct 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Stable_Matching.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Randomised Social Choice Theory</title>
-      <link>/entries/Randomised_Social_Choice.html</link>
-      <pubDate>Thu, 05 May 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Randomised_Social_Choice.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Incompatibility of SD-Efficiency and SD-Strategy-Proofness</title>
-      <link>/entries/SDS_Impossibility.html</link>
-      <pubDate>Wed, 04 May 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/SDS_Impossibility.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Positional Determinacy of Parity Games</title>
-      <link>/entries/Parity_Game.html</link>
-      <pubDate>Mon, 02 Nov 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Parity_Game.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>VCG - Combinatorial Vickrey-Clarke-Groves Auctions</title>
-      <link>/entries/Vickrey_Clarke_Groves.html</link>
-      <pubDate>Thu, 30 Apr 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Vickrey_Clarke_Groves.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Some classical results in Social Choice Theory</title>
-      <link>/entries/SenSocialChoice.html</link>
-      <pubDate>Sun, 09 Nov 2008 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/SenSocialChoice.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Arrow and Gibbard-Satterthwaite</title>
-      <link>/entries/ArrowImpossibilityGS.html</link>
-      <pubDate>Mon, 01 Sep 2008 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/ArrowImpossibilityGS.html</guid>
-      <description></description>
-    </item>
-    
+      <atom:link href="/topics/mathematics/games-and-economics/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>The Incompatibility of Strategy-Proofness and Representation in Party-Approval Multi-Winner Elections</title>
+          <link>/entries/PAPP_Impossibility.html</link>
+          <pubDate>Thu, 10 Nov 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/PAPP_Impossibility.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Risk-Free Lending</title>
+          <link>/entries/Risk_Free_Lending.html</link>
+          <pubDate>Sun, 18 Sep 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Risk_Free_Lending.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Actuarial Mathematics</title>
+          <link>/entries/Actuarial_Mathematics.html</link>
+          <pubDate>Sun, 23 Jan 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Actuarial_Mathematics.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Gale-Shapley Algorithm</title>
+          <link>/entries/Gale_Shapley.html</link>
+          <pubDate>Wed, 29 Dec 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Gale_Shapley.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Gale-Stewart Games</title>
+          <link>/entries/GaleStewart_Games.html</link>
+          <pubDate>Fri, 23 Apr 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/GaleStewart_Games.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Pricing in discrete financial models</title>
+          <link>/entries/DiscretePricing.html</link>
+          <pubDate>Mon, 16 Jul 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/DiscretePricing.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Von-Neumann-Morgenstern Utility Theorem</title>
+          <link>/entries/Neumann_Morgenstern_Utility.html</link>
+          <pubDate>Wed, 04 Jul 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Neumann_Morgenstern_Utility.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Incompatibility of Fishburn-Strategyproofness and Pareto-Efficiency</title>
+          <link>/entries/Fishburn_Impossibility.html</link>
+          <pubDate>Thu, 22 Mar 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Fishburn_Impossibility.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Microeconomics and the First Welfare Theorem</title>
+          <link>/entries/First_Welfare_Theorem.html</link>
+          <pubDate>Fri, 01 Sep 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/First_Welfare_Theorem.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Stable Matching</title>
+          <link>/entries/Stable_Matching.html</link>
+          <pubDate>Mon, 24 Oct 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Stable_Matching.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Randomised Social Choice Theory</title>
+          <link>/entries/Randomised_Social_Choice.html</link>
+          <pubDate>Thu, 05 May 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Randomised_Social_Choice.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Incompatibility of SD-Efficiency and SD-Strategy-Proofness</title>
+          <link>/entries/SDS_Impossibility.html</link>
+          <pubDate>Wed, 04 May 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/SDS_Impossibility.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Positional Determinacy of Parity Games</title>
+          <link>/entries/Parity_Game.html</link>
+          <pubDate>Mon, 02 Nov 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Parity_Game.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>VCG - Combinatorial Vickrey-Clarke-Groves Auctions</title>
+          <link>/entries/Vickrey_Clarke_Groves.html</link>
+          <pubDate>Thu, 30 Apr 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Vickrey_Clarke_Groves.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Some classical results in Social Choice Theory</title>
+          <link>/entries/SenSocialChoice.html</link>
+          <pubDate>Sun, 09 Nov 2008 00:00:00 +0000</pubDate>
+          <guid>/entries/SenSocialChoice.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Arrow and Gibbard-Satterthwaite</title>
+          <link>/entries/ArrowImpossibilityGS.html</link>
+          <pubDate>Mon, 01 Sep 2008 00:00:00 +0000</pubDate>
+          <guid>/entries/ArrowImpossibilityGS.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

@@ -1,47 +1,45 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>bentkamp on Archive of Formal Proofs</title>
+    <title>bentkamp on Archive of Formal Proofs
+    </title>
     <link>/authors/bentkamp/</link>
-    <description>Recent content in bentkamp on Archive of Formal Proofs</description>
+    <description>
+        Recent content in bentkamp 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Fri, 19 Oct 2018 00:00:00 +0000</lastBuildDate><atom:link href="/authors/bentkamp/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Formalization of the Embedding Path Order for Lambda-Free Higher-Order Terms</title>
-      <link>/entries/Lambda_Free_EPO.html</link>
-      <pubDate>Fri, 19 Oct 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Lambda_Free_EPO.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>Expressiveness of Deep Learning</title>
-      <link>/entries/Deep_Learning.html</link>
-      <pubDate>Thu, 10 Nov 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Deep_Learning.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Latin Square</title>
-      <link>/entries/Latin_Square.html</link>
-      <pubDate>Wed, 02 Dec 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Latin_Square.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Executable Multivariate Polynomials</title>
-      <link>/entries/Polynomials.html</link>
-      <pubDate>Tue, 10 Aug 2010 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Polynomials.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Fri, 19 Oct 2018 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/bentkamp/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Formalization of the Embedding Path Order for Lambda-Free Higher-Order Terms</title>
+          <link>/entries/Lambda_Free_EPO.html</link>
+          <pubDate>Fri, 19 Oct 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Lambda_Free_EPO.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Expressiveness of Deep Learning</title>
+          <link>/entries/Deep_Learning.html</link>
+          <pubDate>Thu, 10 Nov 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Deep_Learning.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Latin Square</title>
+          <link>/entries/Latin_Square.html</link>
+          <pubDate>Wed, 02 Dec 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Latin_Square.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Executable Multivariate Polynomials</title>
+          <link>/entries/Polynomials.html</link>
+          <pubDate>Tue, 10 Aug 2010 00:00:00 +0000</pubDate>
+          <guid>/entries/Polynomials.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

@@ -1,26 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Verified Approximation Algorithms - Archive of Formal Proofs</title><meta name="description" content="We present the first formal verification of approximation algorithms
-for NP-complete optimization problems: vertex cover, set cover, independent set,..."><meta property="og:title" content="Verified Approximation Algorithms" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Verified Approximation Algorithms - Archive of Formal Proofs</title>
+    <meta name="description" content="We present the first formal verification of approximation algorithms
+for NP-complete optimization problems: vertex cover, set cover, independent set,...">
+
+  <meta property="og:title" content="Verified Approximation Algorithms" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="/entries/Approximation_Algorithms.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
 <meta property="article:published_time" content="2020-01-16T00:00:00+00:00" />
 <meta property="article:modified_time" content="2020-01-16T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="Verified Approximation Algorithms"/>
 <meta name="twitter:description" content=""/>
 
-  
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
     <script>
       MathJax = {
         tex: {
@@ -32,154 +37,232 @@ for NP-complete optimization problems: vertex cover, set cover, independent set,
         }
       };
     </script>
-    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
   <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
-  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../" class='logo-link'>
-    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../" class='logo-link'>
-        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../"><li >Home</li></a>
-        <a href="../topics/"><li >Topics</li></a>
-        <a href="../download/"><li >Download</li></a>
-        <a href="../help/"><li >Help</li></a>
-        <a href="../submission/"><li >Submission</li></a>
-        <a href="../statistics/"><li >Statistics</li></a>
-        <a href="../about/"><li >About</li></a>
+          <a href="../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content  entries'><header>
-  <form autocomplete="off" action="../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>V</span>erified <span class='first'>A</span>pproximation <span class='first'>A</span>lgorithms</h1>
+    </aside>
+    <div class='content entries'>
+      <header>
+    <form autocomplete="off" action="../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>V</span>erified <span class='first'>A</span>pproximation <span class='first'>A</span>lgorithms
+    
+  </h1>
   <div>
-    
-    <p><a href="../authors/essmann">Robin Eßmann</a> <a class="obfuscated" data="eyJob3N0IjpbInR1bSIsImRlIl0sInVzZXIiOlsicm9iaW4iLCJlc3NtYW5uIl19">📧</a>, <a href="../authors/nipkow">Tobias Nipkow</a> <a href="https://www.in.tum.de/~nipkow/">🌐</a>, <a href="../authors/robillard">Simon Robillard</a> <a href="https://simon-robillard.net/">🌐</a> and <a href="../authors/sulejmani">Ujkan Sulejmani</a>
-    </p>
-    
-    
-    <p class="date">January 16, 2020</p>
-    
-  </div>
-</header><div><main><h3>Abstract</h3>
+      <p>
+        <a href="../authors/essmann">Robin Eßmann</a> <a class="obfuscated" data="eyJob3N0IjpbInR1bSIsImRlIl0sInVzZXIiOlsicm9iaW4iLCJlc3NtYW5uIl19">📧</a>, <a href="../authors/nipkow">Tobias Nipkow</a> <a href="https://www.in.tum.de/~nipkow/">🌐</a>, <a href="../authors/robillard">Simon Robillard</a> <a href="https://simon-robillard.net/">🌐</a> and <a href="../authors/sulejmani">Ujkan Sulejmani</a>
 
-  <div class="abstract mathjax_process">We present the first formal verification of approximation algorithms
+      </p>
+      <p class="date">January 16, 2020</p>
+  </div>
+</header>
+      <div>
+        
+  <main>
+    <h3>Abstract</h3>
+
+    <div class="abstract mathjax_process">We present the first formal verification of approximation algorithms
 for NP-complete optimization problems: vertex cover, set cover, independent set,
 center selection, load balancing, and bin packing. The proofs correct incompletenesses
 in existing proofs and improve the approximation ratio in one case.</div>
 
-  <h3>License</h3>
-  <div><a href="https://isa-afp.org/LICENSE">BSD License</a></div><h3>History</h3>
-  <dl><dt>June 29, 2021</dt>
-    <dd>added theory Center_Selection by Ujkan Sulejmani</dd><dt>February 8, 2021</dt>
-    <dd>added theory Approx_SC_Hoare (Set Cover) by Robin Eßmann<br></dd></dl><h3>Topics</h3>
-  <ul><li><a href="../topics/computer-science/algorithms/approximation">Computer science/Algorithms/Approximation</a></li></ul><h3>Related publications</h3>
-  <ul><li>
-      Eßmann, R., Nipkow, T., Robillard, S., & Sulejmani, U. (2022). Verified Approximation Algorithms. Logical Methods in Computer Science, Volume 18, Issue 1. <a href="https://doi.org/10.46298/lmcs-18(1:36)2022">https://doi.org/10.46298/lmcs-18(1:36)2022</a>
-
-    </li></ul>
-  <h3>Session Approximation_Algorithms</h3>
-  <ul>
-    <li><a href="../theories/approximation_algorithms/#Approx_VC_Hoare">Approx_VC_Hoare</a></li>
-    <li><a href="../theories/approximation_algorithms/#Approx_SC_Hoare">Approx_SC_Hoare</a></li>
-    <li><a href="../theories/approximation_algorithms/#Approx_MIS_Hoare">Approx_MIS_Hoare</a></li>
-    <li><a href="../theories/approximation_algorithms/#Approx_LB_Hoare">Approx_LB_Hoare</a></li>
-    <li><a href="../theories/approximation_algorithms/#Approx_BP_Hoare">Approx_BP_Hoare</a></li>
-    <li><a href="../theories/approximation_algorithms/#Center_Selection">Center_Selection</a></li></ul><div class="flex-wrap">
-  
-  
-  </div>
-</main>
-
-<nav class='links'>
-  <a class='popup-button' href="#cite-popup">Cite</a>
-  <a class='popup-button' href="#download-popup">Download</a>
-  <h4>PDFs</h4>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Approximation_Algorithms/outline.pdf">Proof
-    outline</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Approximation_Algorithms/document.pdf">Proof
-    document</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Approximation_Algorithms/session_graph.pdf">Dependencies</a></nav>
-
-<div id="cite-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Cite</h2>
-    <a class="close" href="#">&times;</a>
+    <h3>License</h3>
     <div>
-      <p style="display:none;" id="bibtex-filename">Approximation_Algorithms-AFP</p><pre id="copy-text">@article{Approximation_Algorithms-AFP,
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>History</h3>
+      <dl>
+        <dt>June 29, 2021</dt>
+        <dd>added theory Center_Selection by Ujkan Sulejmani</dd>
+        <dt>February 8, 2021</dt>
+        <dd>added theory Approx_SC_Hoare (Set Cover) by Robin Eßmann<br></dd>
+      </dl>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/computer-science/algorithms/approximation">Computer science/Algorithms/Approximation</a></li>
+      </ul>
+      <h3>Related publications</h3>
+      <ul>
+        <li>Eßmann, R., Nipkow, T., Robillard, S., & Sulejmani, U. (2022). Verified Approximation Algorithms. Logical Methods in Computer Science, Volume 18, Issue 1. <a href="https://doi.org/10.46298/lmcs-18(1:36)2022">https://doi.org/10.46298/lmcs-18(1:36)2022</a>
+
+        </li>
+      </ul>
+      <h3>Session Approximation_Algorithms</h3>
+      <ul>
+          <li><a href="../sessions/approximation_algorithms/#Approx_VC_Hoare">Approx_VC_Hoare</a></li>
+          <li><a href="../sessions/approximation_algorithms/#Approx_SC_Hoare">Approx_SC_Hoare</a></li>
+          <li><a href="../sessions/approximation_algorithms/#Approx_MIS_Hoare">Approx_MIS_Hoare</a></li>
+          <li><a href="../sessions/approximation_algorithms/#Approx_LB_Hoare">Approx_LB_Hoare</a></li>
+          <li><a href="../sessions/approximation_algorithms/#Approx_BP_Hoare">Approx_BP_Hoare</a></li>
+          <li><a href="../sessions/approximation_algorithms/#Center_Selection">Center_Selection</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+      </div>
+    
+  </main>
+
+  <nav class='links'>
+    <a class='popup-button' href="#cite-popup">Cite</a>
+    <a class='popup-button' href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Approximation_Algorithms/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Approximation_Algorithms/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Approximation_Algorithms/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Approximation_Algorithms-AFP</p>
+        <pre id="copy-text">@article{Approximation_Algorithms-AFP,
   author  = {Robin Eßmann and Tobias Nipkow and Simon Robillard and Ujkan Sulejmani},
   title   = {Verified Approximation Algorithms},
   journal = {Archive of Formal Proofs},
   month   = {January},
   year    = {2020},
   note    = {\url{https://isa-afp.org/entries/Approximation_Algorithms.html},
-            Formal proof development},
+             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
     </div>
   </div>
-</div>
 
-<div id="download-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Download</h2>
-    <a class="close" href="#">&times;</a>
-    <a href="https://www.isa-afp.org/release//afp-Approximation_Algorithms-current.tar.gz" download>Download latest</a>
-    <p>Older releases:</p>
-    <ul><li>
-        <a href="https://www.isa-afp.org/release/afp-Approximation_Algorithms-2023-09-13.tar.gz">Sep 13, 2023</a>: Isabelle2023
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Approximation_Algorithms-2022-10-27.tar.gz">Oct 27, 2022</a>: Isabelle2022
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Approximation_Algorithms-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021-1
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Approximation_Algorithms-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Approximation_Algorithms-2020-04-18.tar.gz">Apr 18, 2020</a>: Isabelle2020
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Approximation_Algorithms-2020-01-16.tar.gz">Jan 16, 2020</a>: Isabelle2019
-      </li></ul>
-  </div>
-</div>
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-Approximation_Algorithms-current.tar.gz"
+         download>Download latest</a>
+        <p>Older releases:</p>
+        <ul>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Approximation_Algorithms-2023-09-13.tar.gz">
+                Sep 13, 2023
+              </a>
+              : Isabelle2023
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Approximation_Algorithms-2022-10-27.tar.gz">
+                Oct 27, 2022
+              </a>
+              : Isabelle2022
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Approximation_Algorithms-2021-12-14.tar.gz">
+                Dec 14, 2021
+              </a>
+              : Isabelle2021-1
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Approximation_Algorithms-2021-02-23.tar.gz">
+                Feb 23, 2021
+              </a>
+              : Isabelle2021
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Approximation_Algorithms-2020-04-18.tar.gz">
+                Apr 18, 2020
+              </a>
+              : Isabelle2020
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Approximation_Algorithms-2020-01-16.tar.gz">
+                Jan 16, 2020
+              </a>
+              : Isabelle2019
+            </li>
+        </ul>
     </div>
   </div>
-</body>
-
+        
+      </div>
+    </div>
+  </body>
 </html>

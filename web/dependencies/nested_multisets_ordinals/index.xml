@@ -1,74 +1,66 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Nested_Multisets_Ordinals on Archive of Formal Proofs</title>
+    <title>Nested_Multisets_Ordinals on Archive of Formal Proofs
+    </title>
     <link>/dependencies/nested_multisets_ordinals/</link>
-    <description>Recent content in Nested_Multisets_Ordinals on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Nested_Multisets_Ordinals 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Fri, 13 Aug 2021 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/nested_multisets_ordinals/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Combinatorial Design Theory</title>
-      <link>/entries/Design_Theory.html</link>
-      <pubDate>Fri, 13 Aug 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Design_Theory.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>Formalization of Timely Dataflow&#39;s Progress Tracking Protocol</title>
-      <link>/entries/Progress_Tracking.html</link>
-      <pubDate>Tue, 13 Apr 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Progress_Tracking.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Practical Algebraic Calculus Checker</title>
-      <link>/entries/PAC_Checker.html</link>
-      <pubDate>Mon, 31 Aug 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/PAC_Checker.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Verified Functional Implementation of Bachmair and Ganzinger&#39;s Ordered Resolution Prover</title>
-      <link>/entries/Functional_Ordered_Resolution_Prover.html</link>
-      <pubDate>Fri, 23 Nov 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Functional_Ordered_Resolution_Prover.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Formalization of Bachmair and Ganzinger&#39;s Ordered Resolution Prover</title>
-      <link>/entries/Ordered_Resolution_Prover.html</link>
-      <pubDate>Thu, 18 Jan 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Ordered_Resolution_Prover.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Formalization of Knuth–Bendix Orders for Lambda-Free Higher-Order Terms</title>
-      <link>/entries/Lambda_Free_KBOs.html</link>
-      <pubDate>Sat, 12 Nov 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Lambda_Free_KBOs.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Formalization of Recursive Path Orders for Lambda-Free Higher-Order Terms</title>
-      <link>/entries/Lambda_Free_RPOs.html</link>
-      <pubDate>Fri, 23 Sep 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Lambda_Free_RPOs.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Fri, 13 Aug 2021 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/nested_multisets_ordinals/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Combinatorial Design Theory</title>
+          <link>/entries/Design_Theory.html</link>
+          <pubDate>Fri, 13 Aug 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Design_Theory.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formalization of Timely Dataflow&#39;s Progress Tracking Protocol</title>
+          <link>/entries/Progress_Tracking.html</link>
+          <pubDate>Tue, 13 Apr 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Progress_Tracking.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Practical Algebraic Calculus Checker</title>
+          <link>/entries/PAC_Checker.html</link>
+          <pubDate>Mon, 31 Aug 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/PAC_Checker.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Verified Functional Implementation of Bachmair and Ganzinger&#39;s Ordered Resolution Prover</title>
+          <link>/entries/Functional_Ordered_Resolution_Prover.html</link>
+          <pubDate>Fri, 23 Nov 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Functional_Ordered_Resolution_Prover.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formalization of Bachmair and Ganzinger&#39;s Ordered Resolution Prover</title>
+          <link>/entries/Ordered_Resolution_Prover.html</link>
+          <pubDate>Thu, 18 Jan 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Ordered_Resolution_Prover.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formalization of Knuth–Bendix Orders for Lambda-Free Higher-Order Terms</title>
+          <link>/entries/Lambda_Free_KBOs.html</link>
+          <pubDate>Sat, 12 Nov 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Lambda_Free_KBOs.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formalization of Recursive Path Orders for Lambda-Free Higher-Order Terms</title>
+          <link>/entries/Lambda_Free_RPOs.html</link>
+          <pubDate>Fri, 23 Sep 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Lambda_Free_RPOs.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

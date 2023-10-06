@@ -1,55 +1,51 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Logic/General logic/Decidability of theories on Archive of Formal Proofs</title>
+    <title>Logic/General logic/Decidability of theories on Archive of Formal Proofs
+    </title>
     <link>/topics/logic/general-logic/decidability-of-theories/</link>
-    <description>Recent content in Logic/General logic/Decidability of theories on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Logic/General logic/Decidability of theories 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language><atom:link href="/topics/logic/general-logic/decidability-of-theories/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>MLSS Decision Procedure</title>
-      <link>/entries/MLSS_Decision_Proc.html</link>
-      <pubDate>Fri, 05 May 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/MLSS_Decision_Proc.html</guid>
-      <description></description>
-    </item>
+    <language>en-gb</language>
     
-    <item>
-      <title>Derivatives of Logical Formulas</title>
-      <link>/entries/Formula_Derivatives.html</link>
-      <pubDate>Thu, 28 May 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Formula_Derivatives.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Decision Procedures for MSO on Words Based on Derivatives of Regular Expressions</title>
-      <link>/entries/MSO_Regex_Equivalence.html</link>
-      <pubDate>Thu, 12 Jun 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/MSO_Regex_Equivalence.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Formalizing the Logic-Automaton Connection</title>
-      <link>/entries/Presburger-Automata.html</link>
-      <pubDate>Thu, 03 Dec 2009 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Presburger-Automata.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Quantifier Elimination for Linear Arithmetic</title>
-      <link>/entries/LinearQuantifierElim.html</link>
-      <pubDate>Fri, 11 Jan 2008 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/LinearQuantifierElim.html</guid>
-      <description></description>
-    </item>
-    
+      <atom:link href="/topics/logic/general-logic/decidability-of-theories/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>MLSS Decision Procedure</title>
+          <link>/entries/MLSS_Decision_Proc.html</link>
+          <pubDate>Fri, 05 May 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/MLSS_Decision_Proc.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Derivatives of Logical Formulas</title>
+          <link>/entries/Formula_Derivatives.html</link>
+          <pubDate>Thu, 28 May 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Formula_Derivatives.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Decision Procedures for MSO on Words Based on Derivatives of Regular Expressions</title>
+          <link>/entries/MSO_Regex_Equivalence.html</link>
+          <pubDate>Thu, 12 Jun 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/MSO_Regex_Equivalence.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formalizing the Logic-Automaton Connection</title>
+          <link>/entries/Presburger-Automata.html</link>
+          <pubDate>Thu, 03 Dec 2009 00:00:00 +0000</pubDate>
+          <guid>/entries/Presburger-Automata.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Quantifier Elimination for Linear Arithmetic</title>
+          <link>/entries/LinearQuantifierElim.html</link>
+          <pubDate>Fri, 11 Jan 2008 00:00:00 +0000</pubDate>
+          <guid>/entries/LinearQuantifierElim.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

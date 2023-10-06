@@ -1,91 +1,79 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Computer science/Programming languages/Compiling on Archive of Formal Proofs</title>
+    <title>Computer science/Programming languages/Compiling on Archive of Formal Proofs
+    </title>
     <link>/topics/computer-science/programming-languages/compiling/</link>
-    <description>Recent content in Computer science/Programming languages/Compiling on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Computer science/Programming languages/Compiling 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language><atom:link href="/topics/computer-science/programming-languages/compiling/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>A Reuse-Based Multi-Stage Compiler Verification for Language IMP</title>
-      <link>/entries/IMP_Compiler_Reuse.html</link>
-      <pubDate>Sun, 10 Jul 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/IMP_Compiler_Reuse.html</guid>
-      <description></description>
-    </item>
+    <language>en-gb</language>
     
-    <item>
-      <title>A Shorter Compiler Correctness Proof for Language IMP</title>
-      <link>/entries/IMP_Compiler.html</link>
-      <pubDate>Fri, 04 Jun 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/IMP_Compiler.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Generic Framework for Verified Compilers</title>
-      <link>/entries/VeriComp.html</link>
-      <pubDate>Mon, 10 Feb 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/VeriComp.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Verified Code Generator from Isabelle/HOL to CakeML</title>
-      <link>/entries/CakeML_Codegen.html</link>
-      <pubDate>Mon, 08 Jul 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/CakeML_Codegen.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Minimal Static Single Assignment Form</title>
-      <link>/entries/Minimal_SSA.html</link>
-      <pubDate>Tue, 17 Jan 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Minimal_SSA.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Verified Construction of Static Single Assignment Form</title>
-      <link>/entries/Formal_SSA.html</link>
-      <pubDate>Fri, 05 Feb 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Formal_SSA.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Verified Compiler for Probability Density Functions</title>
-      <link>/entries/Density_Compiler.html</link>
-      <pubDate>Thu, 09 Oct 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Density_Compiler.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Normalization by Evaluation</title>
-      <link>/entries/NormByEval.html</link>
-      <pubDate>Mon, 18 Feb 2008 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/NormByEval.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Compiling Exceptions Correctly</title>
-      <link>/entries/Compiling-Exceptions-Correctly.html</link>
-      <pubDate>Fri, 09 Jul 2004 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Compiling-Exceptions-Correctly.html</guid>
-      <description></description>
-    </item>
-    
+      <atom:link href="/topics/computer-science/programming-languages/compiling/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>A Reuse-Based Multi-Stage Compiler Verification for Language IMP</title>
+          <link>/entries/IMP_Compiler_Reuse.html</link>
+          <pubDate>Sun, 10 Jul 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/IMP_Compiler_Reuse.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Shorter Compiler Correctness Proof for Language IMP</title>
+          <link>/entries/IMP_Compiler.html</link>
+          <pubDate>Fri, 04 Jun 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/IMP_Compiler.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Generic Framework for Verified Compilers</title>
+          <link>/entries/VeriComp.html</link>
+          <pubDate>Mon, 10 Feb 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/VeriComp.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Verified Code Generator from Isabelle/HOL to CakeML</title>
+          <link>/entries/CakeML_Codegen.html</link>
+          <pubDate>Mon, 08 Jul 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/CakeML_Codegen.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Minimal Static Single Assignment Form</title>
+          <link>/entries/Minimal_SSA.html</link>
+          <pubDate>Tue, 17 Jan 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Minimal_SSA.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Verified Construction of Static Single Assignment Form</title>
+          <link>/entries/Formal_SSA.html</link>
+          <pubDate>Fri, 05 Feb 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Formal_SSA.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Verified Compiler for Probability Density Functions</title>
+          <link>/entries/Density_Compiler.html</link>
+          <pubDate>Thu, 09 Oct 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Density_Compiler.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Normalization by Evaluation</title>
+          <link>/entries/NormByEval.html</link>
+          <pubDate>Mon, 18 Feb 2008 00:00:00 +0000</pubDate>
+          <guid>/entries/NormByEval.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Compiling Exceptions Correctly</title>
+          <link>/entries/Compiling-Exceptions-Correctly.html</link>
+          <pubDate>Fri, 09 Jul 2004 00:00:00 +0000</pubDate>
+          <guid>/entries/Compiling-Exceptions-Correctly.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

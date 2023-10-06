@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Noninterference_Sequential_Composition on Archive of Formal Proofs</title>
+    <title>Noninterference_Sequential_Composition on Archive of Formal Proofs
+    </title>
     <link>/dependencies/noninterference_sequential_composition/</link>
-    <description>Recent content in Noninterference_Sequential_Composition on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Noninterference_Sequential_Composition 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Mon, 13 Jun 2016 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/noninterference_sequential_composition/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Conservation of CSP Noninterference Security under Concurrent Composition</title>
-      <link>/entries/Noninterference_Concurrent_Composition.html</link>
-      <pubDate>Mon, 13 Jun 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Noninterference_Concurrent_Composition.html</guid>
-      <description></description>
-    </item>
     
+      <lastBuildDate>Mon, 13 Jun 2016 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/noninterference_sequential_composition/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Conservation of CSP Noninterference Security under Concurrent Composition</title>
+          <link>/entries/Noninterference_Concurrent_Composition.html</link>
+          <pubDate>Mon, 13 Jun 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Noninterference_Concurrent_Composition.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

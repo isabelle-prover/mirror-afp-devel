@@ -201,7 +201,7 @@ object AFP_Site_Gen {
         case((last, acc), s) => (s, acc :+ (if (last == s) to else s))
       }._2
 
-    isabelle.JSON.Object(
+    JSON.Object(
       "years" -> all_years,
       "num_lemmas" -> num_lemmas,
       "num_loc" -> num_lines,
@@ -266,20 +266,22 @@ object AFP_Site_Gen {
 
     var seen_affiliations: List[Affiliation] = Nil
 
-    val entries = afp_structure.entries.flatMap { name =>
-      val entry = afp_structure.load_entry(name, authors_by_id, topics_by_id, licenses_by_id,
-        releases_by_entry)
+    val entries =
+      afp_structure.entries.flatMap { name =>
+        val entry = afp_structure.load_entry(name, authors_by_id, topics_by_id, licenses_by_id,
+          releases_by_entry)
 
-      seen_affiliations = seen_affiliations :++ entry.authors ++ entry.contributors
-      Some(entry)
-    }
+        seen_affiliations = seen_affiliations :++ entry.authors ++ entry.contributors
+        Some(entry)
+      }
 
-    val authors = Utils.group_sorted(seen_affiliations.distinct, (a: Affiliation) => a.author).map {
-      case (id, affiliations) =>
-        val seen_emails = affiliations.collect { case e: Email => e }
-        val seen_homepages = affiliations.collect { case h: Homepage => h }
-        authors_by_id(id).copy(emails = seen_emails, homepages = seen_homepages)
-    }
+    val authors =
+      Utils.group_sorted(seen_affiliations.distinct, (a: Affiliation) => a.author).map {
+        case (id, affiliations) =>
+          val seen_emails = affiliations.collect { case e: Email => e }
+          val seen_homepages = affiliations.collect { case h: Homepage => h }
+          authors_by_id(id).copy(emails = seen_emails, homepages = seen_homepages)
+      }
 
     layout.write_data(Path.basic("authors.json"), JSON.from_authors(authors.toList))
 
@@ -288,12 +290,13 @@ object AFP_Site_Gen {
     progress.echo("Extracting keywords...")
 
     var seen_keywords = Set.empty[String]
-    val entry_keywords = entries.filterNot(_.statistics_ignore).map { entry =>
-      val scored_keywords = Rake.extract_keywords(entry.`abstract`)
-      seen_keywords ++= scored_keywords.map(_._1)
+    val entry_keywords =
+      entries.filterNot(_.statistics_ignore).map { entry =>
+        val scored_keywords = Rake.extract_keywords(entry.`abstract`)
+        seen_keywords ++= scored_keywords.map(_._1)
 
-      entry.name -> scored_keywords.map(_._1)
-    }.toMap
+        entry.name -> scored_keywords.map(_._1)
+      }.toMap
 
     seen_keywords =
       seen_keywords.filter(k => !k.endsWith("s") || !seen_keywords.contains(k.stripSuffix("s")))
@@ -310,36 +313,62 @@ object AFP_Site_Gen {
 
     val sessions_structure = afp_structure.sessions_structure
     val sessions_deps = Sessions.deps(sessions_structure)
+    val browser_info = Browser_Info.context(sessions_structure)
+
+    def theories_of(session_name: String): List[String] =
+      sessions_deps(session_name).proper_session_theories.map(_.theory_base_name)
+
+    def write_session_json(session_name: String, base: JSON.Object.T): Unit = {
+      val session_json =
+        base ++ JSON.Object(
+          "title" -> session_name,
+          "url" -> ("/sessions/" + session_name.toLowerCase),
+          "theories" -> theories_of(session_name).map(thy_name => JSON.Object(
+            "name" -> thy_name,
+            "path" -> (browser_info.session_dir(session_name) + Path.basic(thy_name).html).implode
+          )))
+      layout.write_content(Path.make(List("sessions", session_name + ".md")), session_json)
+    }
+
     val cache = new Cache(layout)
+
+    val entry_sessions =
+      entries.map(entry => entry -> afp_structure.entry_sessions(entry.name)).toMap
+    val session_entry = entry_sessions.flatMap((entry, sessions) =>
+      sessions.map(session => session.name -> entry)).toMap
 
     entries.foreach { entry =>
       val deps =
         for {
-          session <- afp_structure.entry_sessions(entry.name)
-          dep <- sessions_structure.imports_graph.imm_preds(session.name)
-          if session.name != dep && sessions_structure(dep).groups.contains("AFP")
-        } yield dep
+          session <- entry_sessions(entry)
+          dep_session <- sessions_structure.imports_graph.imm_preds(session.name)
+          if sessions_structure(dep_session).groups.contains("AFP")
+          dep <- session_entry.get(dep_session)
+          if dep != entry
+        } yield dep.name
 
-      val theories = afp_structure.entry_sessions(entry.name).map { session =>
-        val base = sessions_deps(session.name)
-        val theories = base.proper_session_theories.map(_.theory_base_name)
-        val session_json = isabelle.JSON.Object(
-            "title" -> session.name,
-            "entry" -> entry.name,
-            "url" -> ("/theories/" + session.name.toLowerCase),
-            "theories" -> theories)
-        layout.write_content(Path.make(List("theories", session.name + ".md")), session_json)
-        isabelle.JSON.Object("session" -> session.name, "theories" -> theories)
-      }
+      val sessions =
+        afp_structure.entry_sessions(entry.name).map { session =>
+          write_session_json(session.name, JSON.Object("entry" -> entry.name))
+          JSON.Object(
+            "session" -> session.name,
+            "theories" -> theories_of(session.name))
+        }
 
-      val entry_json = JSON.from_entry(entry, cache) ++ isabelle.JSON.Object(
-      "dependencies" -> deps.distinct,
-      "sessions" -> theories,
-      "url" -> ("/entries/" + entry.name + ".html"),
-      "keywords" -> get_keywords(entry.name))
+      val entry_json =
+        JSON.from_entry(entry, cache) ++ JSON.Object(
+          "dependencies" -> deps.distinct,
+          "sessions" -> sessions,
+          "url" -> ("/entries/" + entry.name + ".html"),
+          "keywords" -> get_keywords(entry.name))
 
       layout.write_content(Path.make(List("entries", entry.name + ".md")), entry_json)
     }
+
+    for {
+      (session_name, (info, _)) <- sessions_structure.imports_graph.iterator
+      if !info.groups.contains("AFP")
+    } write_session_json(session_name, JSON.Object("rss" -> false))
 
 
     /* add statistics */

@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Complete_Non_Orders on Archive of Formal Proofs</title>
+    <title>Complete_Non_Orders on Archive of Formal Proofs
+    </title>
     <link>/dependencies/complete_non_orders/</link>
-    <description>Recent content in Complete_Non_Orders on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Complete_Non_Orders 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Wed, 24 May 2023 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/complete_non_orders/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Formalizing Results on Directed Sets</title>
-      <link>/entries/Directed_Sets.html</link>
-      <pubDate>Wed, 24 May 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Directed_Sets.html</guid>
-      <description></description>
-    </item>
     
+      <lastBuildDate>Wed, 24 May 2023 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/complete_non_orders/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Formalizing Results on Directed Sets</title>
+          <link>/entries/Directed_Sets.html</link>
+          <pubDate>Wed, 24 May 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Directed_Sets.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

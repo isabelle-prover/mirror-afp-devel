@@ -1,128 +1,108 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>hupel on Archive of Formal Proofs</title>
+    <title>hupel on Archive of Formal Proofs
+    </title>
     <link>/authors/hupel/</link>
-    <description>Recent content in hupel on Archive of Formal Proofs</description>
+    <description>
+        Recent content in hupel 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Mon, 14 Aug 2023 00:00:00 +0000</lastBuildDate><atom:link href="/authors/hupel/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Fixed-length vectors</title>
-      <link>/entries/Fixed_Length_Vector.html</link>
-      <pubDate>Mon, 14 Aug 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Fixed_Length_Vector.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>Hello World</title>
-      <link>/entries/Hello_World.html</link>
-      <pubDate>Sat, 07 Mar 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Hello_World.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Verified Code Generator from Isabelle/HOL to CakeML</title>
-      <link>/entries/CakeML_Codegen.html</link>
-      <pubDate>Mon, 08 Jul 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/CakeML_Codegen.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>An Algebra for Higher-Order Terms</title>
-      <link>/entries/Higher_Order_Terms.html</link>
-      <pubDate>Tue, 15 Jan 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Higher_Order_Terms.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Deriving generic class instances for datatypes</title>
-      <link>/entries/Generic_Deriving.html</link>
-      <pubDate>Tue, 06 Nov 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Generic_Deriving.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>CakeML</title>
-      <link>/entries/CakeML.html</link>
-      <pubDate>Mon, 12 Mar 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/CakeML.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Dictionary Construction</title>
-      <link>/entries/Dict_Construction.html</link>
-      <pubDate>Wed, 24 May 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Dict_Construction.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Constructor Functions</title>
-      <link>/entries/Constructor_Funs.html</link>
-      <pubDate>Wed, 19 Apr 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Constructor_Funs.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Lazifying case constants</title>
-      <link>/entries/Lazy_Case.html</link>
-      <pubDate>Tue, 18 Apr 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Lazy_Case.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Iptables Semantics</title>
-      <link>/entries/Iptables_Semantics.html</link>
-      <pubDate>Fri, 09 Sep 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Iptables_Semantics.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>IP Addresses</title>
-      <link>/entries/IP_Addresses.html</link>
-      <pubDate>Tue, 28 Jun 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/IP_Addresses.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Algorithms for Reduced Ordered Binary Decision Diagrams</title>
-      <link>/entries/ROBDD.html</link>
-      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/ROBDD.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Properties of Random Graphs -- Subgraph Containment</title>
-      <link>/entries/Random_Graph_Subgraph_Threshold.html</link>
-      <pubDate>Thu, 13 Feb 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Random_Graph_Subgraph_Threshold.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Mon, 14 Aug 2023 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/hupel/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Fixed-length vectors</title>
+          <link>/entries/Fixed_Length_Vector.html</link>
+          <pubDate>Mon, 14 Aug 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Fixed_Length_Vector.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Hello World</title>
+          <link>/entries/Hello_World.html</link>
+          <pubDate>Sat, 07 Mar 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Hello_World.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Verified Code Generator from Isabelle/HOL to CakeML</title>
+          <link>/entries/CakeML_Codegen.html</link>
+          <pubDate>Mon, 08 Jul 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/CakeML_Codegen.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>An Algebra for Higher-Order Terms</title>
+          <link>/entries/Higher_Order_Terms.html</link>
+          <pubDate>Tue, 15 Jan 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Higher_Order_Terms.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Deriving generic class instances for datatypes</title>
+          <link>/entries/Generic_Deriving.html</link>
+          <pubDate>Tue, 06 Nov 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Generic_Deriving.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>CakeML</title>
+          <link>/entries/CakeML.html</link>
+          <pubDate>Mon, 12 Mar 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/CakeML.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Dictionary Construction</title>
+          <link>/entries/Dict_Construction.html</link>
+          <pubDate>Wed, 24 May 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Dict_Construction.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Constructor Functions</title>
+          <link>/entries/Constructor_Funs.html</link>
+          <pubDate>Wed, 19 Apr 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Constructor_Funs.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Lazifying case constants</title>
+          <link>/entries/Lazy_Case.html</link>
+          <pubDate>Tue, 18 Apr 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Lazy_Case.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Iptables Semantics</title>
+          <link>/entries/Iptables_Semantics.html</link>
+          <pubDate>Fri, 09 Sep 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Iptables_Semantics.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>IP Addresses</title>
+          <link>/entries/IP_Addresses.html</link>
+          <pubDate>Tue, 28 Jun 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/IP_Addresses.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Algorithms for Reduced Ordered Binary Decision Diagrams</title>
+          <link>/entries/ROBDD.html</link>
+          <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/ROBDD.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Properties of Random Graphs -- Subgraph Containment</title>
+          <link>/entries/Random_Graph_Subgraph_Threshold.html</link>
+          <pubDate>Thu, 13 Feb 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Random_Graph_Subgraph_Threshold.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Smith_Normal_Form on Archive of Formal Proofs</title>
+    <title>Smith_Normal_Form on Archive of Formal Proofs
+    </title>
     <link>/dependencies/smith_normal_form/</link>
-    <description>Recent content in Smith_Normal_Form on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Smith_Normal_Form 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Fri, 12 Mar 2021 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/smith_normal_form/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Two algorithms based on modular arithmetic: lattice basis reduction and Hermite normal form computation</title>
-      <link>/entries/Modular_arithmetic_LLL_and_HNF_algorithms.html</link>
-      <pubDate>Fri, 12 Mar 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Modular_arithmetic_LLL_and_HNF_algorithms.html</guid>
-      <description></description>
-    </item>
     
+      <lastBuildDate>Fri, 12 Mar 2021 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/smith_normal_form/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Two algorithms based on modular arithmetic: lattice basis reduction and Hermite normal form computation</title>
+          <link>/entries/Modular_arithmetic_LLL_and_HNF_algorithms.html</link>
+          <pubDate>Fri, 12 Mar 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Modular_arithmetic_LLL_and_HNF_algorithms.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

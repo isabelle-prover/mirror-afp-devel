@@ -1,47 +1,45 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Triangle on Archive of Formal Proofs</title>
+    <title>Triangle on Archive of Formal Proofs
+    </title>
     <link>/dependencies/triangle/</link>
-    <description>Recent content in Triangle on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Triangle 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Wed, 16 Aug 2023 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/triangle/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Ceva&#39;s Theorem</title>
-      <link>/entries/Ceva.html</link>
-      <pubDate>Wed, 16 Aug 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Ceva.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>Stewart&#39;s Theorem and Apollonius&#39; Theorem</title>
-      <link>/entries/Stewart_Apollonius.html</link>
-      <pubDate>Mon, 31 Jul 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Stewart_Apollonius.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Intersecting Chords Theorem</title>
-      <link>/entries/Chord_Segments.html</link>
-      <pubDate>Tue, 11 Oct 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Chord_Segments.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Ordinary Differential Equations</title>
-      <link>/entries/Ordinary_Differential_Equations.html</link>
-      <pubDate>Thu, 26 Apr 2012 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Ordinary_Differential_Equations.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Wed, 16 Aug 2023 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/triangle/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Ceva&#39;s Theorem</title>
+          <link>/entries/Ceva.html</link>
+          <pubDate>Wed, 16 Aug 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Ceva.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Stewart&#39;s Theorem and Apollonius&#39; Theorem</title>
+          <link>/entries/Stewart_Apollonius.html</link>
+          <pubDate>Mon, 31 Jul 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Stewart_Apollonius.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Intersecting Chords Theorem</title>
+          <link>/entries/Chord_Segments.html</link>
+          <pubDate>Tue, 11 Oct 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Chord_Segments.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Ordinary Differential Equations</title>
+          <link>/entries/Ordinary_Differential_Equations.html</link>
+          <pubDate>Thu, 26 Apr 2012 00:00:00 +0000</pubDate>
+          <guid>/entries/Ordinary_Differential_Equations.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

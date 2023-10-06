@@ -1,29 +1,31 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>bohrer on Archive of Formal Proofs</title>
+    <title>bohrer on Archive of Formal Proofs
+    </title>
     <link>/authors/bohrer/</link>
-    <description>Recent content in bohrer on Archive of Formal Proofs</description>
+    <description>
+        Recent content in bohrer 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Wed, 27 Nov 2019 00:00:00 +0000</lastBuildDate><atom:link href="/authors/bohrer/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Interval Arithmetic on 32-bit Words</title>
-      <link>/entries/Interval_Arithmetic_Word32.html</link>
-      <pubDate>Wed, 27 Nov 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Interval_Arithmetic_Word32.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>Differential Dynamic Logic</title>
-      <link>/entries/Differential_Dynamic_Logic.html</link>
-      <pubDate>Mon, 13 Feb 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Differential_Dynamic_Logic.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Wed, 27 Nov 2019 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/bohrer/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Interval Arithmetic on 32-bit Words</title>
+          <link>/entries/Interval_Arithmetic_Word32.html</link>
+          <pubDate>Wed, 27 Nov 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Interval_Arithmetic_Word32.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Differential Dynamic Logic</title>
+          <link>/entries/Differential_Dynamic_Logic.html</link>
+          <pubDate>Mon, 13 Feb 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Differential_Dynamic_Logic.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

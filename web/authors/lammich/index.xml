@@ -1,299 +1,241 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>lammich on Archive of Formal Proofs</title>
+    <title>lammich on Archive of Formal Proofs
+    </title>
     <link>/authors/lammich/</link>
-    <description>Recent content in lammich on Archive of Formal Proofs</description>
+    <description>
+        Recent content in lammich 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Tue, 23 Nov 2021 00:00:00 +0000</lastBuildDate><atom:link href="/authors/lammich/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>van Emde Boas Trees</title>
-      <link>/entries/Van_Emde_Boas_Trees.html</link>
-      <pubDate>Tue, 23 Nov 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Van_Emde_Boas_Trees.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>CoCon: A Confidentiality-Verified Conference Management System</title>
-      <link>/entries/CoCon.html</link>
-      <pubDate>Mon, 16 Aug 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/CoCon.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>AI Planning Languages Semantics</title>
-      <link>/entries/AI_Planning_Languages_Semantics.html</link>
-      <pubDate>Thu, 29 Oct 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/AI_Planning_Languages_Semantics.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>VerifyThis 2019 -- Polished Isabelle Solutions</title>
-      <link>/entries/VerifyThis2019.html</link>
-      <pubDate>Wed, 16 Oct 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/VerifyThis2019.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Priority Search Trees</title>
-      <link>/entries/Priority_Search_Trees.html</link>
-      <pubDate>Tue, 25 Jun 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Priority_Search_Trees.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Purely Functional, Simple, and Efficient Implementation of Prim and Dijkstra</title>
-      <link>/entries/Prim_Dijkstra_Simple.html</link>
-      <pubDate>Tue, 25 Jun 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Prim_Dijkstra_Simple.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Kruskal&#39;s Algorithm for Minimum Spanning Forest</title>
-      <link>/entries/Kruskal.html</link>
-      <pubDate>Thu, 14 Feb 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Kruskal.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>IMP2 – Simple Program Verification in Isabelle/HOL</title>
-      <link>/entries/IMP2.html</link>
-      <pubDate>Tue, 15 Jan 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/IMP2.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>VerifyThis 2018 - Polished Isabelle Solutions</title>
-      <link>/entries/VerifyThis2018.html</link>
-      <pubDate>Fri, 27 Apr 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/VerifyThis2018.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The string search algorithm by Knuth, Morris and Pratt</title>
-      <link>/entries/Knuth_Morris_Pratt.html</link>
-      <pubDate>Mon, 18 Dec 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Knuth_Morris_Pratt.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Flow Networks and the Min-Cut-Max-Flow Theorem</title>
-      <link>/entries/Flow_Networks.html</link>
-      <pubDate>Thu, 01 Jun 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Flow_Networks.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Formalizing Push-Relabel Algorithms</title>
-      <link>/entries/Prpu_Maxflow.html</link>
-      <pubDate>Thu, 01 Jun 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Prpu_Maxflow.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Floyd-Warshall Algorithm for Shortest Paths</title>
-      <link>/entries/Floyd_Warshall.html</link>
-      <pubDate>Mon, 08 May 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Floyd_Warshall.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Formalizing the Edmonds-Karp Algorithm</title>
-      <link>/entries/EdmondsKarp_Maxflow.html</link>
-      <pubDate>Fri, 12 Aug 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/EdmondsKarp_Maxflow.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Imperative Refinement Framework</title>
-      <link>/entries/Refine_Imperative_HOL.html</link>
-      <pubDate>Mon, 08 Aug 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Refine_Imperative_HOL.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Framework for Verifying Depth-First Search Algorithms</title>
-      <link>/entries/DFS_Framework.html</link>
-      <pubDate>Tue, 05 Jul 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/DFS_Framework.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Algorithms for Reduced Ordered Binary Decision Diagrams</title>
-      <link>/entries/ROBDD.html</link>
-      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/ROBDD.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Fully Verified Executable LTL Model Checker</title>
-      <link>/entries/CAVA_LTL_Modelchecker.html</link>
-      <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/CAVA_LTL_Modelchecker.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Converting Linear-Time Temporal Logic to Generalized Büchi Automata</title>
-      <link>/entries/LTL_to_GBA.html</link>
-      <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/LTL_to_GBA.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The CAVA Automata Library</title>
-      <link>/entries/CAVA_Automata.html</link>
-      <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/CAVA_Automata.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Verified Efficient Implementation of Gabow&#39;s Strongly Connected Components Algorithm</title>
-      <link>/entries/Gabow_SCC.html</link>
-      <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Gabow_SCC.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Bounded-Deducibility Security</title>
-      <link>/entries/Bounded_Deducibility_Security.html</link>
-      <pubDate>Tue, 22 Apr 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Bounded_Deducibility_Security.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A shallow embedding of HyperCTL*</title>
-      <link>/entries/HyperCTL.html</link>
-      <pubDate>Wed, 16 Apr 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/HyperCTL.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Automatic Data Refinement</title>
-      <link>/entries/Automatic_Refinement.html</link>
-      <pubDate>Wed, 02 Oct 2013 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Automatic_Refinement.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Separation Logic Framework for Imperative HOL</title>
-      <link>/entries/Separation_Logic_Imperative_HOL.html</link>
-      <pubDate>Wed, 14 Nov 2012 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Separation_Logic_Imperative_HOL.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Dijkstra&#39;s Shortest Path Algorithm</title>
-      <link>/entries/Dijkstra_Shortest_Path.html</link>
-      <pubDate>Mon, 30 Jan 2012 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Dijkstra_Shortest_Path.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Refinement for Monadic Programs</title>
-      <link>/entries/Refine_Monadic.html</link>
-      <pubDate>Mon, 30 Jan 2012 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Refine_Monadic.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Binomial Heaps and Skew Binomial Heaps</title>
-      <link>/entries/Binomial-Heaps.html</link>
-      <pubDate>Thu, 28 Oct 2010 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Binomial-Heaps.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Finger Trees</title>
-      <link>/entries/Finger-Trees.html</link>
-      <pubDate>Thu, 28 Oct 2010 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Finger-Trees.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Collections Framework</title>
-      <link>/entries/Collections.html</link>
-      <pubDate>Wed, 25 Nov 2009 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Collections.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Tree Automata</title>
-      <link>/entries/Tree-Automata.html</link>
-      <pubDate>Wed, 25 Nov 2009 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Tree-Automata.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Formalization of Conflict Analysis of Programs with Procedures, Thread Creation, and Monitors</title>
-      <link>/entries/Program-Conflict-Analysis.html</link>
-      <pubDate>Fri, 14 Dec 2007 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Program-Conflict-Analysis.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Tue, 23 Nov 2021 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/lammich/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>van Emde Boas Trees</title>
+          <link>/entries/Van_Emde_Boas_Trees.html</link>
+          <pubDate>Tue, 23 Nov 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Van_Emde_Boas_Trees.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>CoCon: A Confidentiality-Verified Conference Management System</title>
+          <link>/entries/CoCon.html</link>
+          <pubDate>Mon, 16 Aug 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/CoCon.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>AI Planning Languages Semantics</title>
+          <link>/entries/AI_Planning_Languages_Semantics.html</link>
+          <pubDate>Thu, 29 Oct 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/AI_Planning_Languages_Semantics.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>VerifyThis 2019 -- Polished Isabelle Solutions</title>
+          <link>/entries/VerifyThis2019.html</link>
+          <pubDate>Wed, 16 Oct 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/VerifyThis2019.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Priority Search Trees</title>
+          <link>/entries/Priority_Search_Trees.html</link>
+          <pubDate>Tue, 25 Jun 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Priority_Search_Trees.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Purely Functional, Simple, and Efficient Implementation of Prim and Dijkstra</title>
+          <link>/entries/Prim_Dijkstra_Simple.html</link>
+          <pubDate>Tue, 25 Jun 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Prim_Dijkstra_Simple.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Kruskal&#39;s Algorithm for Minimum Spanning Forest</title>
+          <link>/entries/Kruskal.html</link>
+          <pubDate>Thu, 14 Feb 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Kruskal.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>IMP2 – Simple Program Verification in Isabelle/HOL</title>
+          <link>/entries/IMP2.html</link>
+          <pubDate>Tue, 15 Jan 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/IMP2.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>VerifyThis 2018 - Polished Isabelle Solutions</title>
+          <link>/entries/VerifyThis2018.html</link>
+          <pubDate>Fri, 27 Apr 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/VerifyThis2018.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The string search algorithm by Knuth, Morris and Pratt</title>
+          <link>/entries/Knuth_Morris_Pratt.html</link>
+          <pubDate>Mon, 18 Dec 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Knuth_Morris_Pratt.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Flow Networks and the Min-Cut-Max-Flow Theorem</title>
+          <link>/entries/Flow_Networks.html</link>
+          <pubDate>Thu, 01 Jun 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Flow_Networks.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formalizing Push-Relabel Algorithms</title>
+          <link>/entries/Prpu_Maxflow.html</link>
+          <pubDate>Thu, 01 Jun 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Prpu_Maxflow.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Floyd-Warshall Algorithm for Shortest Paths</title>
+          <link>/entries/Floyd_Warshall.html</link>
+          <pubDate>Mon, 08 May 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Floyd_Warshall.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formalizing the Edmonds-Karp Algorithm</title>
+          <link>/entries/EdmondsKarp_Maxflow.html</link>
+          <pubDate>Fri, 12 Aug 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/EdmondsKarp_Maxflow.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Imperative Refinement Framework</title>
+          <link>/entries/Refine_Imperative_HOL.html</link>
+          <pubDate>Mon, 08 Aug 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Refine_Imperative_HOL.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Framework for Verifying Depth-First Search Algorithms</title>
+          <link>/entries/DFS_Framework.html</link>
+          <pubDate>Tue, 05 Jul 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/DFS_Framework.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Algorithms for Reduced Ordered Binary Decision Diagrams</title>
+          <link>/entries/ROBDD.html</link>
+          <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/ROBDD.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Fully Verified Executable LTL Model Checker</title>
+          <link>/entries/CAVA_LTL_Modelchecker.html</link>
+          <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/CAVA_LTL_Modelchecker.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Converting Linear-Time Temporal Logic to Generalized Büchi Automata</title>
+          <link>/entries/LTL_to_GBA.html</link>
+          <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/LTL_to_GBA.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The CAVA Automata Library</title>
+          <link>/entries/CAVA_Automata.html</link>
+          <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/CAVA_Automata.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Verified Efficient Implementation of Gabow&#39;s Strongly Connected Components Algorithm</title>
+          <link>/entries/Gabow_SCC.html</link>
+          <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Gabow_SCC.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Bounded-Deducibility Security</title>
+          <link>/entries/Bounded_Deducibility_Security.html</link>
+          <pubDate>Tue, 22 Apr 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Bounded_Deducibility_Security.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A shallow embedding of HyperCTL*</title>
+          <link>/entries/HyperCTL.html</link>
+          <pubDate>Wed, 16 Apr 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/HyperCTL.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Automatic Data Refinement</title>
+          <link>/entries/Automatic_Refinement.html</link>
+          <pubDate>Wed, 02 Oct 2013 00:00:00 +0000</pubDate>
+          <guid>/entries/Automatic_Refinement.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Separation Logic Framework for Imperative HOL</title>
+          <link>/entries/Separation_Logic_Imperative_HOL.html</link>
+          <pubDate>Wed, 14 Nov 2012 00:00:00 +0000</pubDate>
+          <guid>/entries/Separation_Logic_Imperative_HOL.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Dijkstra&#39;s Shortest Path Algorithm</title>
+          <link>/entries/Dijkstra_Shortest_Path.html</link>
+          <pubDate>Mon, 30 Jan 2012 00:00:00 +0000</pubDate>
+          <guid>/entries/Dijkstra_Shortest_Path.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Refinement for Monadic Programs</title>
+          <link>/entries/Refine_Monadic.html</link>
+          <pubDate>Mon, 30 Jan 2012 00:00:00 +0000</pubDate>
+          <guid>/entries/Refine_Monadic.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Binomial Heaps and Skew Binomial Heaps</title>
+          <link>/entries/Binomial-Heaps.html</link>
+          <pubDate>Thu, 28 Oct 2010 00:00:00 +0000</pubDate>
+          <guid>/entries/Binomial-Heaps.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Finger Trees</title>
+          <link>/entries/Finger-Trees.html</link>
+          <pubDate>Thu, 28 Oct 2010 00:00:00 +0000</pubDate>
+          <guid>/entries/Finger-Trees.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Collections Framework</title>
+          <link>/entries/Collections.html</link>
+          <pubDate>Wed, 25 Nov 2009 00:00:00 +0000</pubDate>
+          <guid>/entries/Collections.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Tree Automata</title>
+          <link>/entries/Tree-Automata.html</link>
+          <pubDate>Wed, 25 Nov 2009 00:00:00 +0000</pubDate>
+          <guid>/entries/Tree-Automata.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formalization of Conflict Analysis of Programs with Procedures, Thread Creation, and Monitors</title>
+          <link>/entries/Program-Conflict-Analysis.html</link>
+          <pubDate>Fri, 14 Dec 2007 00:00:00 +0000</pubDate>
+          <guid>/entries/Program-Conflict-Analysis.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

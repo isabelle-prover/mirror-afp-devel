@@ -1,795 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Computer science/Programming languages - Archive of Formal Proofs</title><meta name="description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."><link rel="alternate" type="application/rss+xml" href="../../../topics/computer-science/programming-languages/index.xml" title="Archive of Formal Proofs" /><meta property="og:title" content="Computer science/Programming languages" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Computer science/Programming languages - Archive of Formal Proofs</title>
+    <meta name="description" content="A collection of proof libraries, examples, and larger
+     scientific developments, mechanically checked in the theorem prover Isabelle.">
+  <link rel="alternate" type="application/rss+xml" href="../../../topics/computer-science/programming-languages/index.xml" title="Archive of Formal Proofs" />
+
+  <meta property="og:title" content="Computer science/Programming languages" />
 <meta property="og:description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="/topics/computer-science/programming-languages/" /><meta property="og:image" content="/images/afp.png"/><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="Computer science/Programming languages"/>
 <meta name="twitter:description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."/>
 
-  
   <link rel="stylesheet" type="text/css" href="../../../css/front.min.css">
 
-  <link rel="icon" href="../../../images/favicon.ico" type="image/icon"><script src="../../../js/obfuscate.js"></script>
+  <link rel="icon" href="../../../images/favicon.ico" type="image/icon">
+
+  <script src="../../../js/obfuscate.js"></script>
   <script src="../../../js/flexsearch.bundle.js"></script>
   <script src="../../../js/scroll-spy.js"></script>
   <script src="../../../js/theory.js"></script>
-  <script src="../../../js/util.js"></script><script src="../../../js/header-search.js"></script><script src="../../../js/search-autocomplete.js"></script>
+  <script src="../../../js/util.js"></script>
+    <script src="../../../js/header-search.js"></script>
+  <script src="../../../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../../../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../../../" class='logo-link'>
-    <img src="../../../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../../../" class="logo-link">
+    <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../../../search"><img src="../../../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../../../" class='logo-link'>
-        <img src="../../../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../../../"><li >Home</li></a>
-        <a href="../../../topics/"><li >Topics</li></a>
-        <a href="../../../download/"><li >Download</li></a>
-        <a href="../../../help/"><li >Help</li></a>
-        <a href="../../../submission/"><li >Submission</li></a>
-        <a href="../../../statistics/"><li >Statistics</li></a>
-        <a href="../../../about/"><li >About</li></a>
+          <a href="../../../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../../../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../../../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../../../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../../../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../../../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../../../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content '><header>
-  <form autocomplete="off" action="../../../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../../../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>C</span>omputer <span class='first'>S</span>cience/<span class='first'>P</span>rogramming <span class='first'>L</span>anguages</h1>
+    </aside>
+    <div class='content'>
+      <header>
+    <form autocomplete="off" action="../../../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../../../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>C</span>omputer science/<span class='first'>P</span>rogramming languages
+    
+  </h1>
   <div>
-    
-    
   </div>
-</header><div><h2>Subject Classification</h2><p>ACM: <a href="https://dl.acm.org/topic/ccs2012/10011007.10011006.10011008">Software and its engineering~General programming languages</a></p><p>AMS: <a href="https://mathscinet.ams.org/mathscinet/msc/msc2020.html?t=68N15">Computer science / Theory of software / Theory of programming languages</a></p><h2 class="head">2023</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/HyperHoareLogic.html">Formalization of Hyper Hoare Logic: A Logic to (Dis-)Prove Program Hyperproperties</a></h5> <br>by <a href="../../../authors/dardinier">Thibault Dardinier</a></div>
-  <span class="date">
-    Apr 03
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/CommCSL.html">Formalization of CommCSL: A Relational Concurrent Separation Logic for Proving Information Flow Security in Concurrent Programs</a></h5> <br>by <a href="../../../authors/dardinier">Thibault Dardinier</a></div>
-  <span class="date">
-    Mar 15
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Rensets.html">Renaming-Enriched Sets (Rensets) and Renaming-Based Recursion</a></h5> <br>by <a href="../../../authors/popescu">Andrei Popescu</a></div>
-  <span class="date">
-    Feb 28
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/HoareForDivergence.html">A Hoare Logic for Diverging Programs</a></h5> <br>by <a href="../../../authors/pohjola">Johannes Åman Pohjola</a>, <a href="../../../authors/myreen">Magnus O. Myreen</a> and <a href="../../../authors/tanaka">Miki Tanaka</a></div>
-  <span class="date">
-    Jan 20
-  </span>
-</article>
+</header>
+      <div>
+        
+    <h2>Subject Classification</h2>
+      <p>ACM: <a href="https://dl.acm.org/topic/ccs2012/10011007.10011006.10011008">Software and its engineering~General programming languages</a></p>
+      <p>AMS: <a href="https://mathscinet.ams.org/mathscinet/msc/msc2020.html?t=68N15">Computer science / Theory of software / Theory of programming languages</a></p>
+    <h2 class="head">2022</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Solidity.html">Isabelle/Solidity: A deep Embedding of Solidity in Isabelle/HOL</a></h5>
+          <br>
+            by <a href="../../../authors/marmsoler">Diego Marmsoler</a> and <a href="../../../authors/brucker">Achim D. Brucker</a>
 
+        </div>
+        <span class="date">Jul 18</span>
+      </article>
+    <h2 class="head">2019</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Clean.html">Clean - An Abstract Imperative Programming Language and its Theory</a></h5>
+          <br>
+            by <a href="../../../authors/tuong">Frédéric Tuong</a> and <a href="../../../authors/wolff">Burkhart Wolff</a>
 
-<h2 class="head">2022</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Separation_Logic_Unbounded.html">Unbounded Separation Logic</a></h5> <br>by <a href="../../../authors/dardinier">Thibault Dardinier</a></div>
-  <span class="date">
-    Sep 05
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Solidity.html">Isabelle/Solidity: A deep Embedding of Solidity in Isabelle/HOL</a></h5> <br>by <a href="../../../authors/marmsoler">Diego Marmsoler</a> and <a href="../../../authors/brucker">Achim D. Brucker</a></div>
-  <span class="date">
-    Jul 18
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/IMP_Compiler_Reuse.html">A Reuse-Based Multi-Stage Compiler Verification for Language IMP</a></h5> <br>by <a href="../../../authors/noce">Pasquale Noce</a></div>
-  <span class="date">
-    Jul 10
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Combinable_Wands.html">A Restricted Definition of the Magic Wand to Soundly Combine Fractions of a Wand</a></h5> <br>by <a href="../../../authors/dardinier">Thibault Dardinier</a></div>
-  <span class="date">
-    May 30
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Package_logic.html">Formalization of a Framework for the Sound Automation of Magic Wands</a></h5> <br>by <a href="../../../authors/dardinier">Thibault Dardinier</a></div>
-  <span class="date">
-    May 18
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/ResiduatedTransitionSystem.html">Residuated Transition Systems</a></h5> <br>by <a href="../../../authors/stark">Eugene W. Stark</a></div>
-  <span class="date">
-    Feb 28
-  </span>
-</article>
+        </div>
+        <span class="date">Oct 04</span>
+      </article>
+    <h2 class="head">2017</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Decl_Sem_Fun_PL.html">Declarative Semantics for Functional Languages</a></h5>
+          <br>
+            by <a href="../../../authors/siek">Jeremy Siek</a>
 
-
-<h2 class="head">2021</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Registers.html">Quantum and Classical Registers</a></h5> <br>by <a href="../../../authors/unruh">Dominique Unruh</a></div>
-  <span class="date">
-    Oct 28
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Correctness_Algebras.html">Algebras for Iteration, Infinite Executions and Correctness of Sequential Computations</a></h5> <br>by <a href="../../../authors/guttmann">Walter Guttmann</a></div>
-  <span class="date">
-    Oct 12
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Dominance_CHK.html">A data flow analysis algorithm for computing dominators</a></h5> <br>by <a href="../../../authors/jiang">Nan Jiang</a></div>
-  <span class="date">
-    Sep 05
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/MiniSail.html">MiniSail - A kernel language for the ISA specification language SAIL</a></h5> <br>by <a href="../../../authors/wassell">Mark Wassell</a></div>
-  <span class="date">
-    Jun 18
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/IMP_Compiler.html">A Shorter Compiler Correctness Proof for Language IMP</a></h5> <br>by <a href="../../../authors/noce">Pasquale Noce</a></div>
-  <span class="date">
-    Jun 04
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/JinjaDCI.html">JinjaDCI: a Java semantics with dynamic class initialization</a></h5> <br>by <a href="../../../authors/mansky">Susannah Mansky</a></div>
-  <span class="date">
-    Jan 11
-  </span>
-</article>
-
-
-<h2 class="head">2020</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Interpreter_Optimizations.html">Inline Caching and Unboxing Optimization for Interpreters</a></h5> <br>by <a href="../../../authors/desharnais">Martin Desharnais</a></div>
-  <span class="date">
-    Dec 07
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Physical_Quantities.html">A Sound Type System for Physical Quantities, Units, and Measurements</a></h5> <br>by <a href="../../../authors/fosters">Simon Foster</a> and <a href="../../../authors/wolff">Burkhart Wolff</a></div>
-  <span class="date">
-    Oct 20
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Relational-Incorrectness-Logic.html">An Under-Approximate Relational Logic</a></h5> <br>by <a href="../../../authors/murray">Toby Murray</a></div>
-  <span class="date">
-    Mar 12
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/VeriComp.html">A Generic Framework for Verified Compilers</a></h5> <br>by <a href="../../../authors/desharnais">Martin Desharnais</a></div>
-  <span class="date">
-    Feb 10
-  </span>
-</article>
-
-
-<h2 class="head">2019</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Isabelle_C.html">Isabelle/C</a></h5> <br>by <a href="../../../authors/tuong">Frédéric Tuong</a> and <a href="../../../authors/wolff">Burkhart Wolff</a></div>
-  <span class="date">
-    Oct 22
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Clean.html">Clean - An Abstract Imperative Programming Language and its Theory</a></h5> <br>by <a href="../../../authors/tuong">Frédéric Tuong</a> and <a href="../../../authors/wolff">Burkhart Wolff</a></div>
-  <span class="date">
-    Oct 04
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/CakeML_Codegen.html">A Verified Code Generator from Isabelle/HOL to CakeML</a></h5> <br>by <a href="../../../authors/hupel">Lars Hupel</a></div>
-  <span class="date">
-    Jul 08
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Differential_Game_Logic.html">Differential Game Logic</a></h5> <br>by <a href="../../../authors/platzer">André Platzer</a></div>
-  <span class="date">
-    Jun 03
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/LambdaAuth.html">Formalization of Generic Authenticated Data Structures</a></h5> <br>by <a href="../../../authors/brun">Matthias Brun</a> and <a href="../../../authors/traytel">Dmitriy Traytel</a></div>
-  <span class="date">
-    May 14
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Binding_Syntax_Theory.html">A General Theory of Syntax with Bindings</a></h5> <br>by <a href="../../../authors/gheri">Lorenzo Gheri</a> and <a href="../../../authors/popescu">Andrei Popescu</a></div>
-  <span class="date">
-    Apr 06
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/QHLProver.html">Quantum Hoare Logic</a></h5> <br>by <a href="../../../authors/liu">Junyi Liu</a>, <a href="../../../authors/zhan">Bohua Zhan</a>, <a href="../../../authors/wang">Shuling Wang</a>, <a href="../../../authors/ying">Shenggang Ying</a>, <a href="../../../authors/liut">Tao Liu</a>, <a href="../../../authors/liy">Yangjia Li</a>, <a href="../../../authors/yingm">Mingsheng Ying</a> and <a href="../../../authors/zhann">Naijun Zhan</a></div>
-  <span class="date">
-    Mar 24
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Safe_OCL.html">Safe OCL</a></h5> <br>by <a href="../../../authors/nikiforov">Denis Nikiforov</a></div>
-  <span class="date">
-    Mar 09
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/UTP.html">Isabelle/UTP: Mechanised Theory Engineering for Unifying Theories of Programming</a></h5> <br>by <a href="../../../authors/fosters">Simon Foster</a>, <a href="../../../authors/zeyda">Frank Zeyda</a>, <a href="../../../authors/nemouchi">Yakoub Nemouchi</a>, <a href="../../../authors/ribeiro">Pedro Ribeiro</a> and <a href="../../../authors/wolff">Burkhart Wolff</a></div>
-  <span class="date">
-    Feb 01
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/IMP2.html">IMP2 – Simple Program Verification in Isabelle/HOL</a></h5> <br>by <a href="../../../authors/lammich">Peter Lammich</a> and <a href="../../../authors/wimmer">Simon Wimmer</a></div>
-  <span class="date">
-    Jan 15
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Higher_Order_Terms.html">An Algebra for Higher-Order Terms</a></h5> <br>by <a href="../../../authors/hupel">Lars Hupel</a></div>
-  <span class="date">
-    Jan 15
-  </span>
-</article>
-
-
-<h2 class="head">2018</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/WebAssembly.html">WebAssembly</a></h5> <br>by <a href="../../../authors/watt">Conrad Watt</a></div>
-  <span class="date">
-    Apr 29
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/CakeML.html">CakeML</a></h5> <br>by <a href="../../../authors/hupel">Lars Hupel</a> and <a href="../../../authors/zhang">Yu Zhang</a></div>
-  <span class="date">
-    Mar 12
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Hoare_Time.html">Hoare Logics for Time Bounds</a></h5> <br>by <a href="../../../authors/haslbeckm">Maximilian P. L. Haslbeck</a> and <a href="../../../authors/nipkow">Tobias Nipkow</a></div>
-  <span class="date">
-    Feb 26
-  </span>
-</article>
-
-
-<h2 class="head">2017</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/LambdaMu.html">The LambdaMu-calculus</a></h5> <br>by <a href="../../../authors/matache">Cristina Matache</a>, <a href="../../../authors/gomes">Victor B. F. Gomes</a> and <a href="../../../authors/mulligan">Dominic P. Mulligan</a></div>
-  <span class="date">
-    Aug 16
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Decl_Sem_Fun_PL.html">Declarative Semantics for Functional Languages</a></h5> <br>by <a href="../../../authors/siek">Jeremy Siek</a></div>
-  <span class="date">
-    Jul 21
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Name_Carrying_Type_Inference.html">Verified Metatheory and Type Inference for a Name-Carrying Simply-Typed Lambda Calculus</a></h5> <br>by <a href="../../../authors/rawson">Michael Rawson</a></div>
-  <span class="date">
-    Jul 09
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Differential_Dynamic_Logic.html">Differential Dynamic Logic</a></h5> <br>by <a href="../../../authors/bohrer">Rose Bohrer</a></div>
-  <span class="date">
-    Feb 13
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Minimal_SSA.html">Minimal Static Single Assignment Form</a></h5> <br>by <a href="../../../authors/wagner">Max Wagner</a> and <a href="../../../authors/lohner">Denis Lohner</a></div>
-  <span class="date">
-    Jan 17
-  </span>
-</article>
-
-
-<h2 class="head">2016</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Complx.html">COMPLX: A Verification Framework for Concurrent Imperative Programs</a></h5> <br>by <a href="../../../authors/amani">Sidney Amani</a>, <a href="../../../authors/andronick">June Andronick</a>, <a href="../../../authors/bortin">Maksym Bortin</a>, <a href="../../../authors/lewis">Corey Lewis</a>, <a href="../../../authors/rizkallah">Christine Rizkallah</a> and <a href="../../../authors/tuongj">Joseph Tuong</a></div>
-  <span class="date">
-    Nov 29
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Complx.html">COMPLX: A Verification Framework for Concurrent Imperative Programs</a></h5> <br>by <a href="../../../authors/amani">Sidney Amani</a>, <a href="../../../authors/andronick">June Andronick</a>, <a href="../../../authors/bortin">Maksym Bortin</a>, <a href="../../../authors/lewis">Corey Lewis</a>, <a href="../../../authors/rizkallah">Christine Rizkallah</a> and <a href="../../../authors/tuongj">Joseph Tuong</a></div>
-  <span class="date">
-    Nov 29
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Abs_Int_ITP2012.html">Abstract Interpretation of Annotated Commands</a></h5> <br>by <a href="../../../authors/nipkow">Tobias Nipkow</a></div>
-  <span class="date">
-    Nov 23
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Separata.html">Separata: Isabelle tactics for Separation Algebra</a></h5> <br>by <a href="../../../authors/hou">Zhe Hou</a>, <a href="../../../authors/sanan">David Sanan</a>, <a href="../../../authors/tiu">Alwen Tiu</a>, <a href="../../../authors/gore">Rajeev Gore</a> and <a href="../../../authors/clouston">Ranald Clouston</a></div>
-  <span class="date">
-    Nov 16
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/InfPathElimination.html">Infeasible Paths Elimination by Symbolic Execution Techniques: Proof of Correctness and Preservation of Paths</a></h5> <br>by <a href="../../../authors/aissat">Romain Aissat</a>, <a href="../../../authors/voisin">Frederic Voisin</a> and <a href="../../../authors/wolff">Burkhart Wolff</a></div>
-  <span class="date">
-    Aug 18
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Dependent_SIFUM_Type_Systems.html">A Dependent Security Type System for Concurrent Imperative Programs</a></h5> <br>by <a href="../../../authors/murray">Toby Murray</a>, <a href="../../../authors/sison">Robert Sison</a>, <a href="../../../authors/pierzchalski">Edward Pierzchalski</a> and <a href="../../../authors/rizkallah">Christine Rizkallah</a></div>
-  <span class="date">
-    Jun 25
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/KAD.html">Kleene Algebras with Domain</a></h5> <br>by <a href="../../../authors/gomes">Victor B. F. Gomes</a>, <a href="../../../authors/guttmann">Walter Guttmann</a>, <a href="../../../authors/hoefner">Peter Höfner</a>, <a href="../../../authors/struth">Georg Struth</a> and <a href="../../../authors/weber">Tjark Weber</a></div>
-  <span class="date">
-    Apr 12
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Formal_SSA.html">Verified Construction of Static Single Assignment Form</a></h5> <br>by <a href="../../../authors/ullrich">Sebastian Ullrich</a> and <a href="../../../authors/lohner">Denis Lohner</a></div>
-  <span class="date">
-    Feb 05
-  </span>
-</article>
-
-
-<h2 class="head">2015</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Isabelle_Meta_Model.html">A Meta-Model for the Isabelle API</a></h5> <br>by <a href="../../../authors/tuong">Frédéric Tuong</a> and <a href="../../../authors/wolff">Burkhart Wolff</a></div>
-  <span class="date">
-    Sep 16
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Case_Labeling.html">Generating Cases from Labeled Subgoals</a></h5> <br>by <a href="../../../authors/noschinski">Lars Noschinski</a></div>
-  <span class="date">
-    Jul 21
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/ConcurrentIMP.html">Concurrent IMP</a></h5> <br>by <a href="../../../authors/gammie">Peter Gammie</a></div>
-  <span class="date">
-    Apr 13
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Call_Arity.html">The Safety of Call Arity</a></h5> <br>by <a href="../../../authors/breitner">Joachim Breitner</a></div>
-  <span class="date">
-    Feb 20
-  </span>
-</article>
-
-
-<h2 class="head">2014</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Density_Compiler.html">A Verified Compiler for Probability Density Functions</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a>, <a href="../../../authors/hoelzl">Johannes Hölzl</a> and <a href="../../../authors/nipkow">Tobias Nipkow</a></div>
-  <span class="date">
-    Oct 09
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/RefinementReactive.html">Formalization of Refinement Calculus for Reactive Systems</a></h5> <br>by <a href="../../../authors/preoteasa">Viorel Preoteasa</a></div>
-  <span class="date">
-    Oct 08
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/pGCL.html">pGCL for Isabelle</a></h5> <br>by <a href="../../../authors/cock">David Cock</a></div>
-  <span class="date">
-    Jul 13
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Pop_Refinement.html">Pop-Refinement</a></h5> <br>by <a href="../../../authors/coglio">Alessandro Coglio</a></div>
-  <span class="date">
-    Jul 03
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Strong_Security.html">A Formalization of Strong Security</a></h5> <br>by <a href="../../../authors/grewe">Sylvia Grewe</a>, <a href="../../../authors/lux">Alexander Lux</a>, <a href="../../../authors/mantel">Heiko Mantel</a> and <a href="../../../authors/sauer">Jens Sauer</a></div>
-  <span class="date">
-    Apr 23
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/WHATandWHERE_Security.html">A Formalization of Declassification with WHAT-and-WHERE-Security</a></h5> <br>by <a href="../../../authors/grewe">Sylvia Grewe</a>, <a href="../../../authors/lux">Alexander Lux</a>, <a href="../../../authors/mantel">Heiko Mantel</a> and <a href="../../../authors/sauer">Jens Sauer</a></div>
-  <span class="date">
-    Apr 23
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/SIFUM_Type_Systems.html">A Formalization of Assumptions and Guarantees for Compositional Noninterference</a></h5> <br>by <a href="../../../authors/grewe">Sylvia Grewe</a>, <a href="../../../authors/mantel">Heiko Mantel</a> and <a href="../../../authors/schoepe">Daniel Schoepe</a></div>
-  <span class="date">
-    Apr 23
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/GPU_Kernel_PL.html">Syntax and semantics of a GPU kernel programming language</a></h5> <br>by <a href="../../../authors/wickerson">John Wickerson</a></div>
-  <span class="date">
-    Apr 03
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/KAT_and_DRA.html">Kleene Algebra with Tests and Demonic Refinement Algebras</a></h5> <br>by <a href="../../../authors/armstrong">Alasdair Armstrong</a>, <a href="../../../authors/gomes">Victor B. F. Gomes</a> and <a href="../../../authors/struth">Georg Struth</a></div>
-  <span class="date">
-    Jan 23
-  </span>
-</article>
-
-
-<h2 class="head">2013</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/FocusStreamsCaseStudies.html">Stream Processing Components: Isabelle/HOL Formalisation and Case Studies</a></h5> <br>by <a href="../../../authors/spichkova">Maria Spichkova</a></div>
-  <span class="date">
-    Nov 14
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Automatic_Refinement.html">Automatic Data Refinement</a></h5> <br>by <a href="../../../authors/lammich">Peter Lammich</a></div>
-  <span class="date">
-    Oct 02
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Launchbury.html">The Correctness of Launchbury&#39;s Natural Semantics for Lazy Evaluation</a></h5> <br>by <a href="../../../authors/breitner">Joachim Breitner</a></div>
-  <span class="date">
-    Jan 31
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Ribbon_Proofs.html">Ribbon Proofs</a></h5> <br>by <a href="../../../authors/wickerson">John Wickerson</a></div>
-  <span class="date">
-    Jan 19
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Kleene_Algebra.html">Kleene Algebra</a></h5> <br>by <a href="../../../authors/armstrong">Alasdair Armstrong</a>, <a href="../../../authors/struth">Georg Struth</a> and <a href="../../../authors/weber">Tjark Weber</a></div>
-  <span class="date">
-    Jan 15
-  </span>
-</article>
-
-
-<h2 class="head">2012</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Separation_Logic_Imperative_HOL.html">A Separation Logic Framework for Imperative HOL</a></h5> <br>by <a href="../../../authors/lammich">Peter Lammich</a> and <a href="../../../authors/meis">Rene Meis</a></div>
-  <span class="date">
-    Nov 14
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Possibilistic_Noninterference.html">Possibilistic Noninterference</a></h5> <br>by <a href="../../../authors/popescu">Andrei Popescu</a> and <a href="../../../authors/hoelzl">Johannes Hölzl</a></div>
-  <span class="date">
-    Sep 10
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/PCF.html">Logical Relations for PCF</a></h5> <br>by <a href="../../../authors/gammie">Peter Gammie</a></div>
-  <span class="date">
-    Jul 01
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Separation_Algebra.html">Separation Algebra</a></h5> <br>by <a href="../../../authors/klein">Gerwin Klein</a>, <a href="../../../authors/kolanski">Rafal Kolanski</a> and <a href="../../../authors/boyton">Andrew Boyton</a></div>
-  <span class="date">
-    May 11
-  </span>
-</article>
-
-
-<h2 class="head">2011</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/TLA.html">A Definitional Encoding of TLA* in Isabelle/HOL</a></h5> <br>by <a href="../../../authors/grov">Gudmund Grov</a> and <a href="../../../authors/merz">Stephan Merz</a></div>
-  <span class="date">
-    Nov 19
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/MonoBoolTranAlgebra.html">Algebra of Monotonic Boolean Transformers</a></h5> <br>by <a href="../../../authors/preoteasa">Viorel Preoteasa</a></div>
-  <span class="date">
-    Sep 22
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/AutoFocus-Stream.html">AutoFocus Stream Processing for Single-Clocking and Multi-Clocking Semantics</a></h5> <br>by <a href="../../../authors/trachtenherz">David Trachtenherz</a></div>
-  <span class="date">
-    Feb 23
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/LightweightJava.html">Lightweight Java</a></h5> <br>by <a href="../../../authors/strnisa">Rok Strniša</a> and <a href="../../../authors/parkinson">Matthew Parkinson</a></div>
-  <span class="date">
-    Feb 07
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/RIPEMD-160-SPARK.html">RIPEMD-160</a></h5> <br>by <a href="../../../authors/immler">Fabian Immler</a></div>
-  <span class="date">
-    Jan 10
-  </span>
-</article>
-
-
-<h2 class="head">2010</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Shivers-CFA.html">Shivers&#39; Control Flow Analysis</a></h5> <br>by <a href="../../../authors/breitner">Joachim Breitner</a></div>
-  <span class="date">
-    Nov 16
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Lam-ml-Normalization.html">Strong Normalization of Moggis&#39;s Computational Metalanguage</a></h5> <br>by <a href="../../../authors/doczkal">Christian Doczkal</a></div>
-  <span class="date">
-    Aug 29
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/DataRefinementIBP.html">Semantics and Data Refinement of Invariant Based Programs</a></h5> <br>by <a href="../../../authors/preoteasa">Viorel Preoteasa</a> and <a href="../../../authors/back">Ralph-Johan Back</a></div>
-  <span class="date">
-    May 28
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Locally-Nameless-Sigma.html">Locally Nameless Sigma Calculus</a></h5> <br>by <a href="../../../authors/henrio">Ludovic Henrio</a>, <a href="../../../authors/kammueller">Florian Kammüller</a>, <a href="../../../authors/lutz">Bianca Lutz</a> and <a href="../../../authors/sudhof">Henry Sudhof</a></div>
-  <span class="date">
-    Apr 30
-  </span>
-</article>
-
-
-<h2 class="head">2009</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/HRB-Slicing.html">Backing up Slicing: Verifying the Interprocedural Two-Phase Horwitz-Reps-Binkley Slicer</a></h5> <br>by <a href="../../../authors/wasserrab">Daniel Wasserrab</a></div>
-  <span class="date">
-    Nov 13
-  </span>
-</article>
-
-
-<h2 class="head">2008</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/BytecodeLogicJmlTypes.html">A Bytecode Logic for JML and Types</a></h5> <br>by <a href="../../../authors/beringer">Lennart Beringer</a> and <a href="../../../authors/hofmann">Martin Hofmann</a></div>
-  <span class="date">
-    Dec 12
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/SIFPL.html">Secure information flow and program logics</a></h5> <br>by <a href="../../../authors/beringer">Lennart Beringer</a> and <a href="../../../authors/hofmann">Martin Hofmann</a></div>
-  <span class="date">
-    Nov 10
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Slicing.html">Towards Certified Slicing</a></h5> <br>by <a href="../../../authors/wasserrab">Daniel Wasserrab</a></div>
-  <span class="date">
-    Sep 16
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/VolpanoSmith.html">A Correctness Proof for the Volpano/Smith Security Typing System</a></h5> <br>by <a href="../../../authors/snelting">Gregor Snelting</a> and <a href="../../../authors/wasserrab">Daniel Wasserrab</a></div>
-  <span class="date">
-    Sep 02
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Simpl.html">A Sequential Imperative Programming Language Syntax, Semantics, Hoare Logics and Verification Environment</a></h5> <br>by <a href="../../../authors/schirmer">Norbert Schirmer</a></div>
-  <span class="date">
-    Feb 29
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Simpl.html">A Sequential Imperative Programming Language Syntax, Semantics, Hoare Logics and Verification Environment</a></h5> <br>by <a href="../../../authors/schirmer">Norbert Schirmer</a></div>
-  <span class="date">
-    Feb 29
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/NormByEval.html">Normalization by Evaluation</a></h5> <br>by <a href="../../../authors/aehlig">Klaus Aehlig</a> and <a href="../../../authors/nipkow">Tobias Nipkow</a></div>
-  <span class="date">
-    Feb 18
-  </span>
-</article>
-
-
-<h2 class="head">2007</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Program-Conflict-Analysis.html">Formalization of Conflict Analysis of Programs with Procedures, Thread Creation, and Monitors</a></h5> <br>by <a href="../../../authors/lammich">Peter Lammich</a> and <a href="../../../authors/olm">Markus Müller-Olm</a></div>
-  <span class="date">
-    Dec 14
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/JinjaThreads.html">Jinja with Threads</a></h5> <br>by <a href="../../../authors/lochbihler">Andreas Lochbihler</a></div>
-  <span class="date">
-    Dec 03
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/POPLmark-deBruijn.html">POPLmark Challenge Via de Bruijn Indices</a></h5> <br>by <a href="../../../authors/berghofer">Stefan Berghofer</a></div>
-  <span class="date">
-    Aug 02
-  </span>
-</article>
-
-
-<h2 class="head">2006</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Abstract-Hoare-Logics.html">Abstract Hoare Logics</a></h5> <br>by <a href="../../../authors/nipkow">Tobias Nipkow</a></div>
-  <span class="date">
-    Aug 08
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/CoreC&#43;&#43;.html">CoreC&#43;&#43;</a></h5> <br>by <a href="../../../authors/wasserrab">Daniel Wasserrab</a></div>
-  <span class="date">
-    May 15
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/FeatherweightJava.html">A Theory of Featherweight Java in Isabelle/HOL</a></h5> <br>by <a href="../../../authors/fosterj">J. Nathan Foster</a> and <a href="../../../authors/vytiniotis">Dimitrios Vytiniotis</a></div>
-  <span class="date">
-    Mar 31
-  </span>
-</article>
-
-
-<h2 class="head">2005</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/JiveDataStoreModel.html">Jive Data and Store Model</a></h5> <br>by <a href="../../../authors/rauch">Nicole Rauch</a> and <a href="../../../authors/schirmer">Norbert Schirmer</a></div>
-  <span class="date">
-    Jun 20
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Jinja.html">Jinja is not Java</a></h5> <br>by <a href="../../../authors/klein">Gerwin Klein</a> and <a href="../../../authors/nipkow">Tobias Nipkow</a></div>
-  <span class="date">
-    Jun 01
-  </span>
-</article>
-
-
-<h2 class="head">2004</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Compiling-Exceptions-Correctly.html">Compiling Exceptions Correctly</a></h5> <br>by <a href="../../../authors/nipkow">Tobias Nipkow</a></div>
-  <span class="date">
-    Jul 09
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/MiniML.html">Mini ML</a></h5> <br>by <a href="../../../authors/naraschewski">Wolfgang Naraschewski</a> and <a href="../../../authors/nipkow">Tobias Nipkow</a></div>
-  <span class="date">
-    Mar 19
-  </span>
-</article>
-
-
-
-
+        </div>
+        <span class="date">Jul 21</span>
+      </article>
+        
+      </div>
     </div>
-  </div>
-</body>
-
+  </body>
 </html>

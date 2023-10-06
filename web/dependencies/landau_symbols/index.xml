@@ -1,110 +1,94 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Landau_Symbols on Archive of Formal Proofs</title>
+    <title>Landau_Symbols on Archive of Formal Proofs
+    </title>
     <link>/dependencies/landau_symbols/</link>
-    <description>Recent content in Landau_Symbols on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Landau_Symbols 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Tue, 06 Feb 2018 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/landau_symbols/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>The Error Function</title>
-      <link>/entries/Error_Function.html</link>
-      <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Error_Function.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>Dirichlet L-Functions and Dirichlet&#39;s Theorem</title>
-      <link>/entries/Dirichlet_L.html</link>
-      <pubDate>Thu, 21 Dec 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Dirichlet_L.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Dirichlet Series</title>
-      <link>/entries/Dirichlet_Series.html</link>
-      <pubDate>Thu, 12 Oct 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Dirichlet_Series.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>CryptHOL</title>
-      <link>/entries/CryptHOL.html</link>
-      <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/CryptHOL.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Expected Shape of Random Binary Search Trees</title>
-      <link>/entries/Random_BSTs.html</link>
-      <pubDate>Tue, 04 Apr 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Random_BSTs.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Lower bound on comparison-based sorting algorithms</title>
-      <link>/entries/Comparison_Sort_Lower_Bound.html</link>
-      <pubDate>Wed, 15 Mar 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Comparison_Sort_Lower_Bound.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The number of comparisons in QuickSort</title>
-      <link>/entries/Quick_Sort_Cost.html</link>
-      <pubDate>Wed, 15 Mar 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Quick_Sort_Cost.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Euler–MacLaurin Formula</title>
-      <link>/entries/Euler_MacLaurin.html</link>
-      <pubDate>Fri, 10 Mar 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Euler_MacLaurin.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Stirling&#39;s formula</title>
-      <link>/entries/Stirling_Formula.html</link>
-      <pubDate>Thu, 01 Sep 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Stirling_Formula.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Catalan Numbers</title>
-      <link>/entries/Catalan_Numbers.html</link>
-      <pubDate>Tue, 21 Jun 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Catalan_Numbers.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Akra-Bazzi theorem and the Master theorem</title>
-      <link>/entries/Akra_Bazzi.html</link>
-      <pubDate>Tue, 14 Jul 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Akra_Bazzi.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Tue, 06 Feb 2018 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/landau_symbols/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>The Error Function</title>
+          <link>/entries/Error_Function.html</link>
+          <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Error_Function.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Dirichlet L-Functions and Dirichlet&#39;s Theorem</title>
+          <link>/entries/Dirichlet_L.html</link>
+          <pubDate>Thu, 21 Dec 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Dirichlet_L.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Dirichlet Series</title>
+          <link>/entries/Dirichlet_Series.html</link>
+          <pubDate>Thu, 12 Oct 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Dirichlet_Series.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>CryptHOL</title>
+          <link>/entries/CryptHOL.html</link>
+          <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/CryptHOL.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Expected Shape of Random Binary Search Trees</title>
+          <link>/entries/Random_BSTs.html</link>
+          <pubDate>Tue, 04 Apr 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Random_BSTs.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Lower bound on comparison-based sorting algorithms</title>
+          <link>/entries/Comparison_Sort_Lower_Bound.html</link>
+          <pubDate>Wed, 15 Mar 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Comparison_Sort_Lower_Bound.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The number of comparisons in QuickSort</title>
+          <link>/entries/Quick_Sort_Cost.html</link>
+          <pubDate>Wed, 15 Mar 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Quick_Sort_Cost.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Euler–MacLaurin Formula</title>
+          <link>/entries/Euler_MacLaurin.html</link>
+          <pubDate>Fri, 10 Mar 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Euler_MacLaurin.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Stirling&#39;s formula</title>
+          <link>/entries/Stirling_Formula.html</link>
+          <pubDate>Thu, 01 Sep 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Stirling_Formula.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Catalan Numbers</title>
+          <link>/entries/Catalan_Numbers.html</link>
+          <pubDate>Tue, 21 Jun 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Catalan_Numbers.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Akra-Bazzi theorem and the Master theorem</title>
+          <link>/entries/Akra_Bazzi.html</link>
+          <pubDate>Tue, 14 Jul 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Akra_Bazzi.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

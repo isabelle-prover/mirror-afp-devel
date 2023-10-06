@@ -1,25 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Infinite Lists - Archive of Formal Proofs</title><meta name="description" content="We introduce a theory of infinite lists in HOL formalized as functions over naturals (folder ListInf, theories ListInf and ListInf_Prefix). It also..."><meta property="og:title" content="Infinite Lists" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Infinite Lists - Archive of Formal Proofs</title>
+    <meta name="description" content="We introduce a theory of infinite lists in HOL formalized as functions over naturals (folder ListInf, theories ListInf and ListInf_Prefix). It also...">
+
+  <meta property="og:title" content="Infinite Lists" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="/entries/List-Infinite.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
 <meta property="article:published_time" content="2011-02-23T00:00:00+00:00" />
 <meta property="article:modified_time" content="2011-02-23T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="Infinite Lists"/>
 <meta name="twitter:description" content=""/>
 
-  
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
     <script>
       MathJax = {
         tex: {
@@ -31,180 +36,312 @@
         }
       };
     </script>
-    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
   <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
-  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../" class='logo-link'>
-    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../" class='logo-link'>
-        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../"><li >Home</li></a>
-        <a href="../topics/"><li >Topics</li></a>
-        <a href="../download/"><li >Download</li></a>
-        <a href="../help/"><li >Help</li></a>
-        <a href="../submission/"><li >Submission</li></a>
-        <a href="../statistics/"><li >Statistics</li></a>
-        <a href="../about/"><li >About</li></a>
+          <a href="../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content  entries'><header>
-  <form autocomplete="off" action="../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>I</span>nfinite <span class='first'>L</span>ists</h1>
+    </aside>
+    <div class='content entries'>
+      <header>
+    <form autocomplete="off" action="../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>I</span>nfinite <span class='first'>L</span>ists
+    
+  </h1>
   <div>
-    
-    <p><a href="../authors/trachtenherz">David Trachtenherz</a>
-    </p>
-    
-    
-    <p class="date">February 23, 2011</p>
-    
+      <p>
+        <a href="../authors/trachtenherz">David Trachtenherz</a>
+
+      </p>
+      <p class="date">February 23, 2011</p>
   </div>
-</header><div><main><h3>Abstract</h3>
+</header>
+      <div>
+        
+  <main>
+    <h3>Abstract</h3>
 
-  <div class="abstract mathjax_process">We introduce a theory of infinite lists in HOL formalized as functions over naturals (folder ListInf, theories ListInf and ListInf_Prefix). It also provides additional results for finite lists (theory ListInf/List2), natural numbers (folder CommonArith, esp. division/modulo, naturals with infinity), sets (folder CommonSet, esp. cutting/truncating sets, traversing sets of naturals).</div>
+    <div class="abstract mathjax_process">We introduce a theory of infinite lists in HOL formalized as functions over naturals (folder ListInf, theories ListInf and ListInf_Prefix). It also provides additional results for finite lists (theory ListInf/List2), natural numbers (folder CommonArith, esp. division/modulo, naturals with infinity), sets (folder CommonSet, esp. cutting/truncating sets, traversing sets of naturals).</div>
 
-  <h3>License</h3>
-  <div><a href="https://isa-afp.org/LICENSE">BSD License</a></div><h3>Topics</h3>
-  <ul><li><a href="../topics/computer-science/data-structures">Computer science/Data structures</a></li></ul>
-  <h3>Session List-Infinite</h3>
-  <ul>
-    <li><a href="../theories/list-infinite/#Util_Set">Util_Set</a></li>
-    <li><a href="../theories/list-infinite/#Util_MinMax">Util_MinMax</a></li>
-    <li><a href="../theories/list-infinite/#Util_NatInf">Util_NatInf</a></li>
-    <li><a href="../theories/list-infinite/#Util_Nat">Util_Nat</a></li>
-    <li><a href="../theories/list-infinite/#Util_Div">Util_Div</a></li>
-    <li><a href="../theories/list-infinite/#SetInterval2">SetInterval2</a></li>
-    <li><a href="../theories/list-infinite/#SetIntervalCut">SetIntervalCut</a></li>
-    <li><a href="../theories/list-infinite/#SetIntervalStep">SetIntervalStep</a></li>
-    <li><a href="../theories/list-infinite/#List2">List2</a></li>
-    <li><a href="../theories/list-infinite/#InfiniteSet2">InfiniteSet2</a></li>
-    <li><a href="../theories/list-infinite/#ListInf">ListInf</a></li>
-    <li><a href="../theories/list-infinite/#ListInf_Prefix">ListInf_Prefix</a></li>
-    <li><a href="../theories/list-infinite/#ListInfinite">ListInfinite</a></li></ul><div class="flex-wrap">
-  <div>
-    <h3>Used by</h3>
-    <ul class="horizontal-list"><li><a href="../entries/Nat-Interval-Logic.html">Interval Temporal Logic on Natural Numbers</a></li></ul>
-  </div>
-  
-  </div>
-</main>
-
-<nav class='links'>
-  <a class='popup-button' href="#cite-popup">Cite</a>
-  <a class='popup-button' href="#download-popup">Download</a>
-  <h4>PDFs</h4>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/List-Infinite/outline.pdf">Proof
-    outline</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/List-Infinite/document.pdf">Proof
-    document</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/List-Infinite/session_graph.pdf">Dependencies</a></nav>
-
-<div id="cite-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Cite</h2>
-    <a class="close" href="#">&times;</a>
+    <h3>License</h3>
     <div>
-      <p style="display:none;" id="bibtex-filename">List-Infinite-AFP</p><pre id="copy-text">@article{List-Infinite-AFP,
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/computer-science/data-structures">Computer science/Data structures</a></li>
+      </ul>
+      <h3>Session List-Infinite</h3>
+      <ul>
+          <li><a href="../sessions/list-infinite/#Util_Set">Util_Set</a></li>
+          <li><a href="../sessions/list-infinite/#Util_MinMax">Util_MinMax</a></li>
+          <li><a href="../sessions/list-infinite/#Util_NatInf">Util_NatInf</a></li>
+          <li><a href="../sessions/list-infinite/#Util_Nat">Util_Nat</a></li>
+          <li><a href="../sessions/list-infinite/#Util_Div">Util_Div</a></li>
+          <li><a href="../sessions/list-infinite/#SetInterval2">SetInterval2</a></li>
+          <li><a href="../sessions/list-infinite/#SetIntervalCut">SetIntervalCut</a></li>
+          <li><a href="../sessions/list-infinite/#SetIntervalStep">SetIntervalStep</a></li>
+          <li><a href="../sessions/list-infinite/#List2">List2</a></li>
+          <li><a href="../sessions/list-infinite/#InfiniteSet2">InfiniteSet2</a></li>
+          <li><a href="../sessions/list-infinite/#ListInf">ListInf</a></li>
+          <li><a href="../sessions/list-infinite/#ListInf_Prefix">ListInf_Prefix</a></li>
+          <li><a href="../sessions/list-infinite/#ListInfinite">ListInfinite</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+      <div>
+        <h3>Used by</h3>
+        <ul class="horizontal-list">
+            <li>
+              <a href="../entries/Relational_Cardinality.html">Cardinality and Representation of Stone Relation Algebras</a>
+            </li>
+            <li>
+              <a href="../entries/Nat-Interval-Logic.html">Interval Temporal Logic on Natural Numbers</a>
+            </li>
+        </ul>
+      </div>
+      </div>
+    
+  </main>
+
+  <nav class='links'>
+    <a class='popup-button' href="#cite-popup">Cite</a>
+    <a class='popup-button' href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/List-Infinite/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/List-Infinite/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/List-Infinite/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">List-Infinite-AFP</p>
+        <pre id="copy-text">@article{List-Infinite-AFP,
   author  = {David Trachtenherz},
   title   = {Infinite Lists},
   journal = {Archive of Formal Proofs},
   month   = {February},
   year    = {2011},
   note    = {\url{https://isa-afp.org/entries/List-Infinite.html},
-            Formal proof development},
+             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
     </div>
   </div>
-</div>
 
-<div id="download-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Download</h2>
-    <a class="close" href="#">&times;</a>
-    <a href="https://www.isa-afp.org/release//afp-List-Infinite-current.tar.gz" download>Download latest</a>
-    <p>Older releases:</p>
-    <ul><li>
-        <a href="https://www.isa-afp.org/release/afp-List-Infinite-2023-09-13.tar.gz">Sep 13, 2023</a>: Isabelle2023
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-List-Infinite-2022-10-27.tar.gz">Oct 27, 2022</a>: Isabelle2022
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-List-Infinite-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021-1
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-List-Infinite-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-List-Infinite-2020-04-20.tar.gz">Apr 20, 2020</a>: Isabelle2020
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-List-Infinite-2019-06-11.tar.gz">Jun 11, 2019</a>: Isabelle2019
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-List-Infinite-2018-08-16.tar.gz">Aug 16, 2018</a>: Isabelle2018
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-List-Infinite-2017-10-10.tar.gz">Oct 10, 2017</a>: Isabelle2017
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-List-Infinite-2016-12-17.tar.gz">Dec 17, 2016</a>: Isabelle2016-1
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-List-Infinite-2016-02-22.tar.gz">Feb 22, 2016</a>: Isabelle2016
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-List-Infinite-2015-05-27.tar.gz">May 27, 2015</a>: Isabelle2015
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-List-Infinite-2014-08-28.tar.gz">Aug 28, 2014</a>: Isabelle2014
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-List-Infinite-2013-12-11.tar.gz">Dec 11, 2013</a>: Isabelle2013-2
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-List-Infinite-2013-11-17.tar.gz">Nov 17, 2013</a>: Isabelle2013-1
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-List-Infinite-2013-03-02.tar.gz">Mar 2, 2013</a>: Isabelle2013
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-List-Infinite-2013-02-16.tar.gz">Feb 16, 2013</a>: Isabelle2013
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-List-Infinite-2012-05-24.tar.gz">May 24, 2012</a>: Isabelle2012
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-List-Infinite-2011-10-11.tar.gz">Oct 11, 2011</a>: Isabelle2011-1
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-List-Infinite-2011-02-24.tar.gz">Feb 24, 2011</a>: Isabelle2011
-      </li></ul>
-  </div>
-</div>
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-List-Infinite-current.tar.gz"
+         download>Download latest</a>
+        <p>Older releases:</p>
+        <ul>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-List-Infinite-2023-09-13.tar.gz">
+                Sep 13, 2023
+              </a>
+              : Isabelle2023
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-List-Infinite-2022-10-27.tar.gz">
+                Oct 27, 2022
+              </a>
+              : Isabelle2022
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-List-Infinite-2021-12-14.tar.gz">
+                Dec 14, 2021
+              </a>
+              : Isabelle2021-1
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-List-Infinite-2021-02-23.tar.gz">
+                Feb 23, 2021
+              </a>
+              : Isabelle2021
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-List-Infinite-2020-04-20.tar.gz">
+                Apr 20, 2020
+              </a>
+              : Isabelle2020
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-List-Infinite-2019-06-11.tar.gz">
+                Jun 11, 2019
+              </a>
+              : Isabelle2019
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-List-Infinite-2018-08-16.tar.gz">
+                Aug 16, 2018
+              </a>
+              : Isabelle2018
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-List-Infinite-2017-10-10.tar.gz">
+                Oct 10, 2017
+              </a>
+              : Isabelle2017
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-List-Infinite-2016-12-17.tar.gz">
+                Dec 17, 2016
+              </a>
+              : Isabelle2016-1
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-List-Infinite-2016-02-22.tar.gz">
+                Feb 22, 2016
+              </a>
+              : Isabelle2016
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-List-Infinite-2015-05-27.tar.gz">
+                May 27, 2015
+              </a>
+              : Isabelle2015
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-List-Infinite-2014-08-28.tar.gz">
+                Aug 28, 2014
+              </a>
+              : Isabelle2014
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-List-Infinite-2013-12-11.tar.gz">
+                Dec 11, 2013
+              </a>
+              : Isabelle2013-2
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-List-Infinite-2013-11-17.tar.gz">
+                Nov 17, 2013
+              </a>
+              : Isabelle2013-1
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-List-Infinite-2013-03-02.tar.gz">
+                Mar 2, 2013
+              </a>
+              : Isabelle2013
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-List-Infinite-2013-02-16.tar.gz">
+                Feb 16, 2013
+              </a>
+              : Isabelle2013
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-List-Infinite-2012-05-24.tar.gz">
+                May 24, 2012
+              </a>
+              : Isabelle2012
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-List-Infinite-2011-10-11.tar.gz">
+                Oct 11, 2011
+              </a>
+              : Isabelle2011-1
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-List-Infinite-2011-02-24.tar.gz">
+                Feb 24, 2011
+              </a>
+              : Isabelle2011
+            </li>
+        </ul>
     </div>
   </div>
-</body>
-
+        
+      </div>
+    </div>
+  </body>
 </html>

@@ -1,56 +1,52 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Ordered_Resolution_Prover on Archive of Formal Proofs</title>
+    <title>Ordered_Resolution_Prover on Archive of Formal Proofs
+    </title>
     <link>/dependencies/ordered_resolution_prover/</link>
-    <description>Recent content in Ordered_Resolution_Prover on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Ordered_Resolution_Prover 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Thu, 20 Apr 2023 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/ordered_resolution_prover/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>A Formalization of the SCL(FOL) Calculus: Simple Clause Learning for First-Order Logic</title>
-      <link>/entries/Simple_Clause_Learning.html</link>
-      <pubDate>Thu, 20 Apr 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Simple_Clause_Learning.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>Extensions to the Comprehensive Framework for Saturation Theorem Proving</title>
-      <link>/entries/Saturation_Framework_Extensions.html</link>
-      <pubDate>Tue, 25 Aug 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Saturation_Framework_Extensions.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Formal Proof of The Chandy--Lamport Distributed Snapshot Algorithm</title>
-      <link>/entries/Chandy_Lamport.html</link>
-      <pubDate>Tue, 21 Jul 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Chandy_Lamport.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Comprehensive Framework for Saturation Theorem Proving</title>
-      <link>/entries/Saturation_Framework.html</link>
-      <pubDate>Thu, 09 Apr 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Saturation_Framework.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Verified Functional Implementation of Bachmair and Ganzinger&#39;s Ordered Resolution Prover</title>
-      <link>/entries/Functional_Ordered_Resolution_Prover.html</link>
-      <pubDate>Fri, 23 Nov 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Functional_Ordered_Resolution_Prover.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Thu, 20 Apr 2023 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/ordered_resolution_prover/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>A Formalization of the SCL(FOL) Calculus: Simple Clause Learning for First-Order Logic</title>
+          <link>/entries/Simple_Clause_Learning.html</link>
+          <pubDate>Thu, 20 Apr 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Simple_Clause_Learning.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Extensions to the Comprehensive Framework for Saturation Theorem Proving</title>
+          <link>/entries/Saturation_Framework_Extensions.html</link>
+          <pubDate>Tue, 25 Aug 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Saturation_Framework_Extensions.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Formal Proof of The Chandy--Lamport Distributed Snapshot Algorithm</title>
+          <link>/entries/Chandy_Lamport.html</link>
+          <pubDate>Tue, 21 Jul 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Chandy_Lamport.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Comprehensive Framework for Saturation Theorem Proving</title>
+          <link>/entries/Saturation_Framework.html</link>
+          <pubDate>Thu, 09 Apr 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Saturation_Framework.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Verified Functional Implementation of Bachmair and Ganzinger&#39;s Ordered Resolution Prover</title>
+          <link>/entries/Functional_Ordered_Resolution_Prover.html</link>
+          <pubDate>Fri, 23 Nov 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Functional_Ordered_Resolution_Prover.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

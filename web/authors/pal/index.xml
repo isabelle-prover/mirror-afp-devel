@@ -1,29 +1,31 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>pal on Archive of Formal Proofs</title>
+    <title>pal on Archive of Formal Proofs
+    </title>
     <link>/authors/pal/</link>
-    <description>Recent content in pal on Archive of Formal Proofs</description>
+    <description>
+        Recent content in pal 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Mon, 06 Jun 2022 00:00:00 +0000</lastBuildDate><atom:link href="/authors/pal/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Diophantine Equations and the DPRM Theorem</title>
-      <link>/entries/DPRM_Theorem.html</link>
-      <pubDate>Mon, 06 Jun 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/DPRM_Theorem.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>Digit Expansions</title>
-      <link>/entries/Digit_Expansions.html</link>
-      <pubDate>Wed, 20 Apr 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Digit_Expansions.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Mon, 06 Jun 2022 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/pal/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Diophantine Equations and the DPRM Theorem</title>
+          <link>/entries/DPRM_Theorem.html</link>
+          <pubDate>Mon, 06 Jun 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/DPRM_Theorem.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Digit Expansions</title>
+          <link>/entries/Digit_Expansions.html</link>
+          <pubDate>Wed, 20 Apr 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Digit_Expansions.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

@@ -1,65 +1,59 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>aransay on Archive of Formal Proofs</title>
+    <title>aransay on Archive of Formal Proofs
+    </title>
     <link>/authors/aransay/</link>
-    <description>Recent content in aransay on Archive of Formal Proofs</description>
+    <description>
+        Recent content in aransay 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Mon, 29 Nov 2021 00:00:00 +0000</lastBuildDate><atom:link href="/authors/aransay/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Simplicial Complexes and Boolean functions</title>
-      <link>/entries/Simplicial_complexes_and_boolean_functions.html</link>
-      <pubDate>Mon, 29 Nov 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Simplicial_complexes_and_boolean_functions.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>Hermite Normal Form</title>
-      <link>/entries/Hermite.html</link>
-      <pubDate>Tue, 07 Jul 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Hermite.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Echelon Form</title>
-      <link>/entries/Echelon_Form.html</link>
-      <pubDate>Thu, 12 Feb 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Echelon_Form.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>QR Decomposition</title>
-      <link>/entries/QR_Decomposition.html</link>
-      <pubDate>Thu, 12 Feb 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/QR_Decomposition.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Gauss-Jordan Algorithm and Its Applications</title>
-      <link>/entries/Gauss_Jordan.html</link>
-      <pubDate>Wed, 03 Sep 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Gauss_Jordan.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Rank-Nullity Theorem in Linear Algebra</title>
-      <link>/entries/Rank_Nullity_Theorem.html</link>
-      <pubDate>Wed, 16 Jan 2013 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Rank_Nullity_Theorem.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Mon, 29 Nov 2021 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/aransay/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Simplicial Complexes and Boolean functions</title>
+          <link>/entries/Simplicial_complexes_and_boolean_functions.html</link>
+          <pubDate>Mon, 29 Nov 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Simplicial_complexes_and_boolean_functions.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Hermite Normal Form</title>
+          <link>/entries/Hermite.html</link>
+          <pubDate>Tue, 07 Jul 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Hermite.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Echelon Form</title>
+          <link>/entries/Echelon_Form.html</link>
+          <pubDate>Thu, 12 Feb 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Echelon_Form.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>QR Decomposition</title>
+          <link>/entries/QR_Decomposition.html</link>
+          <pubDate>Thu, 12 Feb 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/QR_Decomposition.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Gauss-Jordan Algorithm and Its Applications</title>
+          <link>/entries/Gauss_Jordan.html</link>
+          <pubDate>Wed, 03 Sep 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Gauss_Jordan.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Rank-Nullity Theorem in Linear Algebra</title>
+          <link>/entries/Rank_Nullity_Theorem.html</link>
+          <pubDate>Wed, 16 Jan 2013 00:00:00 +0000</pubDate>
+          <guid>/entries/Rank_Nullity_Theorem.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

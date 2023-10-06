@@ -1,218 +1,178 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>traytel on Archive of Formal Proofs</title>
+    <title>traytel on Archive of Formal Proofs
+    </title>
     <link>/authors/traytel/</link>
-    <description>Recent content in traytel on Archive of Formal Proofs</description>
+    <description>
+        Recent content in traytel 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Wed, 28 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="/authors/traytel/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Making Arbitrary Relational Calculus Queries Safe-Range</title>
-      <link>/entries/Safe_Range_RC.html</link>
-      <pubDate>Wed, 28 Sep 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Safe_Range_RC.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>Formalization of Timely Dataflow&#39;s Progress Tracking Protocol</title>
-      <link>/entries/Progress_Tracking.html</link>
-      <pubDate>Tue, 13 Apr 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Progress_Tracking.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>An Abstract Formalization of G&amp;ouml;del&#39;s Incompleteness Theorems</title>
-      <link>/entries/Goedel_Incompleteness.html</link>
-      <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Goedel_Incompleteness.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>From Abstract to Concrete G&amp;ouml;del&#39;s Incompleteness Theorems&amp;mdash;Part I</title>
-      <link>/entries/Goedel_HFSet_Semantic.html</link>
-      <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Goedel_HFSet_Semantic.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>From Abstract to Concrete G&amp;ouml;del&#39;s Incompleteness Theorems&amp;mdash;Part II</title>
-      <link>/entries/Goedel_HFSet_Semanticless.html</link>
-      <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Goedel_HFSet_Semanticless.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Robinson Arithmetic</title>
-      <link>/entries/Robinson_Arithmetic.html</link>
-      <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Robinson_Arithmetic.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Syntax-Independent Logic Infrastructure</title>
-      <link>/entries/Syntax_Independent_Logic.html</link>
-      <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Syntax_Independent_Logic.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Formal Proof of The Chandy--Lamport Distributed Snapshot Algorithm</title>
-      <link>/entries/Chandy_Lamport.html</link>
-      <pubDate>Tue, 21 Jul 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Chandy_Lamport.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Formalization of an Algorithm for Greedily Computing Associative Aggregations on Sliding Windows</title>
-      <link>/entries/Sliding_Window_Algorithm.html</link>
-      <pubDate>Fri, 10 Apr 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Sliding_Window_Algorithm.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Formalization of an Optimized Monitoring Algorithm for Metric First-Order Dynamic Logic with Aggregations</title>
-      <link>/entries/MFODL_Monitor_Optimized.html</link>
-      <pubDate>Thu, 09 Apr 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/MFODL_Monitor_Optimized.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic</title>
-      <link>/entries/MFOTL_Monitor.html</link>
-      <pubDate>Thu, 04 Jul 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/MFOTL_Monitor.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Formalization of Generic Authenticated Data Structures</title>
-      <link>/entries/LambdaAuth.html</link>
-      <pubDate>Tue, 14 May 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/LambdaAuth.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Verified Functional Implementation of Bachmair and Ganzinger&#39;s Ordered Resolution Prover</title>
-      <link>/entries/Functional_Ordered_Resolution_Prover.html</link>
-      <pubDate>Fri, 23 Nov 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Functional_Ordered_Resolution_Prover.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Formalization of Bachmair and Ganzinger&#39;s Ordered Resolution Prover</title>
-      <link>/entries/Ordered_Resolution_Prover.html</link>
-      <pubDate>Thu, 18 Jan 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Ordered_Resolution_Prover.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Operations on Bounded Natural Functors</title>
-      <link>/entries/BNF_Operations.html</link>
-      <pubDate>Tue, 19 Dec 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/BNF_Operations.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Abstract Soundness</title>
-      <link>/entries/Abstract_Soundness.html</link>
-      <pubDate>Fri, 10 Feb 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Abstract_Soundness.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Formalization of Nested Multisets, Hereditary Multisets, and Syntactic Ordinals</title>
-      <link>/entries/Nested_Multisets_Ordinals.html</link>
-      <pubDate>Sat, 12 Nov 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Nested_Multisets_Ordinals.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Derivatives of Logical Formulas</title>
-      <link>/entries/Formula_Derivatives.html</link>
-      <pubDate>Thu, 28 May 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Formula_Derivatives.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Zoo of Probabilistic Systems</title>
-      <link>/entries/Probabilistic_System_Zoo.html</link>
-      <pubDate>Wed, 27 May 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Probabilistic_System_Zoo.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Decision Procedures for MSO on Words Based on Derivatives of Regular Expressions</title>
-      <link>/entries/MSO_Regex_Equivalence.html</link>
-      <pubDate>Thu, 12 Jun 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/MSO_Regex_Equivalence.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Abstract Completeness</title>
-      <link>/entries/Abstract_Completeness.html</link>
-      <pubDate>Wed, 16 Apr 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Abstract_Completeness.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Unified Decision Procedures for Regular Expression Equivalence</title>
-      <link>/entries/Regex_Equivalence.html</link>
-      <pubDate>Thu, 30 Jan 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Regex_Equivalence.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Codatatype of Formal Languages</title>
-      <link>/entries/Coinductive_Languages.html</link>
-      <pubDate>Fri, 15 Nov 2013 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Coinductive_Languages.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Wed, 28 Sep 2022 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/traytel/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Making Arbitrary Relational Calculus Queries Safe-Range</title>
+          <link>/entries/Safe_Range_RC.html</link>
+          <pubDate>Wed, 28 Sep 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Safe_Range_RC.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formalization of Timely Dataflow&#39;s Progress Tracking Protocol</title>
+          <link>/entries/Progress_Tracking.html</link>
+          <pubDate>Tue, 13 Apr 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Progress_Tracking.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>An Abstract Formalization of G&amp;ouml;del&#39;s Incompleteness Theorems</title>
+          <link>/entries/Goedel_Incompleteness.html</link>
+          <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Goedel_Incompleteness.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>From Abstract to Concrete G&amp;ouml;del&#39;s Incompleteness Theorems&amp;mdash;Part I</title>
+          <link>/entries/Goedel_HFSet_Semantic.html</link>
+          <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Goedel_HFSet_Semantic.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>From Abstract to Concrete G&amp;ouml;del&#39;s Incompleteness Theorems&amp;mdash;Part II</title>
+          <link>/entries/Goedel_HFSet_Semanticless.html</link>
+          <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Goedel_HFSet_Semanticless.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Robinson Arithmetic</title>
+          <link>/entries/Robinson_Arithmetic.html</link>
+          <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Robinson_Arithmetic.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Syntax-Independent Logic Infrastructure</title>
+          <link>/entries/Syntax_Independent_Logic.html</link>
+          <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Syntax_Independent_Logic.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Formal Proof of The Chandy--Lamport Distributed Snapshot Algorithm</title>
+          <link>/entries/Chandy_Lamport.html</link>
+          <pubDate>Tue, 21 Jul 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Chandy_Lamport.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formalization of an Algorithm for Greedily Computing Associative Aggregations on Sliding Windows</title>
+          <link>/entries/Sliding_Window_Algorithm.html</link>
+          <pubDate>Fri, 10 Apr 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Sliding_Window_Algorithm.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formalization of an Optimized Monitoring Algorithm for Metric First-Order Dynamic Logic with Aggregations</title>
+          <link>/entries/MFODL_Monitor_Optimized.html</link>
+          <pubDate>Thu, 09 Apr 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/MFODL_Monitor_Optimized.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic</title>
+          <link>/entries/MFOTL_Monitor.html</link>
+          <pubDate>Thu, 04 Jul 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/MFOTL_Monitor.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formalization of Generic Authenticated Data Structures</title>
+          <link>/entries/LambdaAuth.html</link>
+          <pubDate>Tue, 14 May 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/LambdaAuth.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Verified Functional Implementation of Bachmair and Ganzinger&#39;s Ordered Resolution Prover</title>
+          <link>/entries/Functional_Ordered_Resolution_Prover.html</link>
+          <pubDate>Fri, 23 Nov 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Functional_Ordered_Resolution_Prover.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formalization of Bachmair and Ganzinger&#39;s Ordered Resolution Prover</title>
+          <link>/entries/Ordered_Resolution_Prover.html</link>
+          <pubDate>Thu, 18 Jan 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Ordered_Resolution_Prover.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Operations on Bounded Natural Functors</title>
+          <link>/entries/BNF_Operations.html</link>
+          <pubDate>Tue, 19 Dec 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/BNF_Operations.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Abstract Soundness</title>
+          <link>/entries/Abstract_Soundness.html</link>
+          <pubDate>Fri, 10 Feb 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Abstract_Soundness.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formalization of Nested Multisets, Hereditary Multisets, and Syntactic Ordinals</title>
+          <link>/entries/Nested_Multisets_Ordinals.html</link>
+          <pubDate>Sat, 12 Nov 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Nested_Multisets_Ordinals.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Derivatives of Logical Formulas</title>
+          <link>/entries/Formula_Derivatives.html</link>
+          <pubDate>Thu, 28 May 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Formula_Derivatives.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Zoo of Probabilistic Systems</title>
+          <link>/entries/Probabilistic_System_Zoo.html</link>
+          <pubDate>Wed, 27 May 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Probabilistic_System_Zoo.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Decision Procedures for MSO on Words Based on Derivatives of Regular Expressions</title>
+          <link>/entries/MSO_Regex_Equivalence.html</link>
+          <pubDate>Thu, 12 Jun 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/MSO_Regex_Equivalence.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Abstract Completeness</title>
+          <link>/entries/Abstract_Completeness.html</link>
+          <pubDate>Wed, 16 Apr 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Abstract_Completeness.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Unified Decision Procedures for Regular Expression Equivalence</title>
+          <link>/entries/Regex_Equivalence.html</link>
+          <pubDate>Thu, 30 Jan 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Regex_Equivalence.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Codatatype of Formal Languages</title>
+          <link>/entries/Coinductive_Languages.html</link>
+          <pubDate>Fri, 15 Nov 2013 00:00:00 +0000</pubDate>
+          <guid>/entries/Coinductive_Languages.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Network_Security_Policy_Verification - Archive of Formal Proofs</title>
+    <meta name="description" content="A collection of proof libraries, examples, and larger
+     scientific developments, mechanically checked in the theorem prover Isabelle.">
+
+  <meta property="og:title" content="Network_Security_Policy_Verification" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/sessions/network_security_policy_verification/" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="sessions" />
+
+<meta property="og:site_name" content="Archive of Formal Proofs" />
+
+
+  <meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="Network_Security_Policy_Verification"/>
+<meta name="twitter:description" content=""/>
+
+  <link rel="stylesheet" type="text/css" href="../../css/front.min.css">
+    <link rel="stylesheet" type="text/css" href="../../css/isabelle.css">
+
+  <link rel="icon" href="../../images/favicon.ico" type="image/icon">
+
+  <script src="../../js/obfuscate.js"></script>
+  <script src="../../js/flexsearch.bundle.js"></script>
+  <script src="../../js/scroll-spy.js"></script>
+  <script src="../../js/theory.js"></script>
+  <script src="../../js/util.js"></script>
+    <script src="../../js/header-search.js"></script>
+  <script src="../../js/search-autocomplete.js"></script>
+</head>
+
+  <body class='mathjax_ignore theories'>
+    <aside>
+        
+<div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../../images/menu.svg" alt="Menu" />
+  </label>
+
+  <a href="../../" class='logo-link'>
+    <img src="../../images/afp.png" alt='Logo of the Archive of Formal Proofs'
+         class="logo">
+  </a>
+
+  <nav id="menu">
+  <div>
+    <a href="../../" class='logo-link'>
+      <img src="../../images/afp.png" alt='Logo of the Archive of Formal Proofs'
+           class="logo">
+    </a>
+      <ul id="return">
+        <li><a href="../../entries/Network_Security_Policy_Verification.html">Return to entry</a></li>
+      </ul>
+    <hr>
+    <ul id="theory-navbar" class="list-group"></ul>
+  </div>
+  </nav>
+</div>
+    </aside>
+    <div class='content'>
+      <header>
+    <form autocomplete="off" action="../../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>N</span>etwork_<span class='first'>S</span>ecurity_<span class='first'>P</span>olicy_<span class='first'>V</span>erification
+    
+  </h1>
+  <div>
+  </div>
+</header>
+      <div>
+        
+  <main id="theories">
+      <a id="ML_GraphViz" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/ML_GraphViz.html"><h2>ML_GraphViz</h2></a>
+      <a id="ML_GraphViz_Disable" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/ML_GraphViz_Disable.html"><h2>ML_GraphViz_Disable</h2></a>
+      <a id="FiniteGraph" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/FiniteGraph.html"><h2>FiniteGraph</h2></a>
+      <a id="FiniteListGraph" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/FiniteListGraph.html"><h2>FiniteListGraph</h2></a>
+      <a id="TopoS_Util" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/TopoS_Util.html"><h2>TopoS_Util</h2></a>
+      <a id="Efficient_Distinct" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/Efficient_Distinct.html"><h2>Efficient_Distinct</h2></a>
+      <a id="FiniteListGraph_Impl" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/FiniteListGraph_Impl.html"><h2>FiniteListGraph_Impl</h2></a>
+      <a id="TopoS_Vertices" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/TopoS_Vertices.html"><h2>TopoS_Vertices</h2></a>
+      <a id="TopoS_Interface" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/TopoS_Interface.html"><h2>TopoS_Interface</h2></a>
+      <a id="TopoS_withOffendingFlows" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/TopoS_withOffendingFlows.html"><h2>TopoS_withOffendingFlows</h2></a>
+      <a id="TopoS_ENF" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/TopoS_ENF.html"><h2>TopoS_ENF</h2></a>
+      <a id="vertex_example_simps" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/vertex_example_simps.html"><h2>vertex_example_simps</h2></a>
+      <a id="TopoS_Helper" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/TopoS_Helper.html"><h2>TopoS_Helper</h2></a>
+      <a id="SINVAR_Subnets2" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/SINVAR_Subnets2.html"><h2>SINVAR_Subnets2</h2></a>
+      <a id="SINVAR_BLPstrict" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/SINVAR_BLPstrict.html"><h2>SINVAR_BLPstrict</h2></a>
+      <a id="SINVAR_Tainting" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/SINVAR_Tainting.html"><h2>SINVAR_Tainting</h2></a>
+      <a id="SINVAR_BLPbasic" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/SINVAR_BLPbasic.html"><h2>SINVAR_BLPbasic</h2></a>
+      <a id="SINVAR_TaintingTrusted" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/SINVAR_TaintingTrusted.html"><h2>SINVAR_TaintingTrusted</h2></a>
+      <a id="SINVAR_BLPtrusted" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/SINVAR_BLPtrusted.html"><h2>SINVAR_BLPtrusted</h2></a>
+      <a id="Analysis_Tainting" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/Analysis_Tainting.html"><h2>Analysis_Tainting</h2></a>
+      <a id="TopoS_Interface_impl" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/TopoS_Interface_impl.html"><h2>TopoS_Interface_impl</h2></a>
+      <a id="SINVAR_BLPbasic_impl" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/SINVAR_BLPbasic_impl.html"><h2>SINVAR_BLPbasic_impl</h2></a>
+      <a id="SINVAR_Subnets" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/SINVAR_Subnets.html"><h2>SINVAR_Subnets</h2></a>
+      <a id="SINVAR_Subnets_impl" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/SINVAR_Subnets_impl.html"><h2>SINVAR_Subnets_impl</h2></a>
+      <a id="SINVAR_DomainHierarchyNG" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/SINVAR_DomainHierarchyNG.html"><h2>SINVAR_DomainHierarchyNG</h2></a>
+      <a id="SINVAR_DomainHierarchyNG_impl" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/SINVAR_DomainHierarchyNG_impl.html"><h2>SINVAR_DomainHierarchyNG_impl</h2></a>
+      <a id="SINVAR_BLPtrusted_impl" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/SINVAR_BLPtrusted_impl.html"><h2>SINVAR_BLPtrusted_impl</h2></a>
+      <a id="SINVAR_SecGwExt" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/SINVAR_SecGwExt.html"><h2>SINVAR_SecGwExt</h2></a>
+      <a id="SINVAR_SecGwExt_impl" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/SINVAR_SecGwExt_impl.html"><h2>SINVAR_SecGwExt_impl</h2></a>
+      <a id="SINVAR_Sink" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/SINVAR_Sink.html"><h2>SINVAR_Sink</h2></a>
+      <a id="SINVAR_Sink_impl" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/SINVAR_Sink_impl.html"><h2>SINVAR_Sink_impl</h2></a>
+      <a id="SINVAR_SubnetsInGW" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/SINVAR_SubnetsInGW.html"><h2>SINVAR_SubnetsInGW</h2></a>
+      <a id="SINVAR_SubnetsInGW_impl" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/SINVAR_SubnetsInGW_impl.html"><h2>SINVAR_SubnetsInGW_impl</h2></a>
+      <a id="SINVAR_CommunicationPartners" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/SINVAR_CommunicationPartners.html"><h2>SINVAR_CommunicationPartners</h2></a>
+      <a id="SINVAR_CommunicationPartners_impl" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/SINVAR_CommunicationPartners_impl.html"><h2>SINVAR_CommunicationPartners_impl</h2></a>
+      <a id="SINVAR_NoRefl" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/SINVAR_NoRefl.html"><h2>SINVAR_NoRefl</h2></a>
+      <a id="SINVAR_NoRefl_impl" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/SINVAR_NoRefl_impl.html"><h2>SINVAR_NoRefl_impl</h2></a>
+      <a id="SINVAR_Tainting_impl" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/SINVAR_Tainting_impl.html"><h2>SINVAR_Tainting_impl</h2></a>
+      <a id="SINVAR_TaintingTrusted_impl" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/SINVAR_TaintingTrusted_impl.html"><h2>SINVAR_TaintingTrusted_impl</h2></a>
+      <a id="SINVAR_Dependability" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/SINVAR_Dependability.html"><h2>SINVAR_Dependability</h2></a>
+      <a id="SINVAR_Dependability_impl" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/SINVAR_Dependability_impl.html"><h2>SINVAR_Dependability_impl</h2></a>
+      <a id="SINVAR_NonInterference" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/SINVAR_NonInterference.html"><h2>SINVAR_NonInterference</h2></a>
+      <a id="SINVAR_NonInterference_impl" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/SINVAR_NonInterference_impl.html"><h2>SINVAR_NonInterference_impl</h2></a>
+      <a id="SINVAR_ACLcommunicateWith" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/SINVAR_ACLcommunicateWith.html"><h2>SINVAR_ACLcommunicateWith</h2></a>
+      <a id="SINVAR_ACLnotCommunicateWith" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/SINVAR_ACLnotCommunicateWith.html"><h2>SINVAR_ACLnotCommunicateWith</h2></a>
+      <a id="SINVAR_ACLnotCommunicateWith_impl" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/SINVAR_ACLnotCommunicateWith_impl.html"><h2>SINVAR_ACLnotCommunicateWith_impl</h2></a>
+      <a id="SINVAR_ACLcommunicateWith_impl" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/SINVAR_ACLcommunicateWith_impl.html"><h2>SINVAR_ACLcommunicateWith_impl</h2></a>
+      <a id="SINVAR_Dependability_norefl" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/SINVAR_Dependability_norefl.html"><h2>SINVAR_Dependability_norefl</h2></a>
+      <a id="SINVAR_Dependability_norefl_impl" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/SINVAR_Dependability_norefl_impl.html"><h2>SINVAR_Dependability_norefl_impl</h2></a>
+      <a id="TopoS_Library" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/TopoS_Library.html"><h2>TopoS_Library</h2></a>
+      <a id="TopoS_Composition_Theory" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/TopoS_Composition_Theory.html"><h2>TopoS_Composition_Theory</h2></a>
+      <a id="TopoS_Stateful_Policy" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/TopoS_Stateful_Policy.html"><h2>TopoS_Stateful_Policy</h2></a>
+      <a id="TopoS_Composition_Theory_impl" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/TopoS_Composition_Theory_impl.html"><h2>TopoS_Composition_Theory_impl</h2></a>
+      <a id="TopoS_Stateful_Policy_Algorithm" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/TopoS_Stateful_Policy_Algorithm.html"><h2>TopoS_Stateful_Policy_Algorithm</h2></a>
+      <a id="TopoS_Stateful_Policy_impl" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/TopoS_Stateful_Policy_impl.html"><h2>TopoS_Stateful_Policy_impl</h2></a>
+      <a id="METASINVAR_SystemBoundary" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/METASINVAR_SystemBoundary.html"><h2>METASINVAR_SystemBoundary</h2></a>
+      <a id="TopoS_Impl" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/TopoS_Impl.html"><h2>TopoS_Impl</h2></a>
+      <a id="Network_Security_Policy_Verification" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/Network_Security_Policy_Verification.html"><h2>Network_Security_Policy_Verification</h2></a>
+      <a id="Example_BLP" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/Example_BLP.html"><h2>Example_BLP</h2></a>
+      <a id="TopoS_generateCode" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/TopoS_generateCode.html"><h2>TopoS_generateCode</h2></a>
+      <a id="attic" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/attic.html"><h2>attic</h2></a>
+      <a id="Impl_List_Playground_ChairNetwork" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/Impl_List_Playground_ChairNetwork.html"><h2>Impl_List_Playground_ChairNetwork</h2></a>
+      <a id="Impl_List_Playground_statefulpolicycompliance" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/Impl_List_Playground_statefulpolicycompliance.html"><h2>Impl_List_Playground_statefulpolicycompliance</h2></a>
+      <a id="Example" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/Example.html"><h2>Example</h2></a>
+      <a id="Example_NetModel" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/Example_NetModel.html"><h2>Example_NetModel</h2></a>
+      <a id="Example_Forte14" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/Example_Forte14.html"><h2>Example_Forte14</h2></a>
+      <a id="Distributed_WebApp" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/Distributed_WebApp.html"><h2>Distributed_WebApp</h2></a>
+      <a id="I8_SSH_Landscape" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/I8_SSH_Landscape.html"><h2>I8_SSH_Landscape</h2></a>
+      <a id="Impl_List_Playground" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/Impl_List_Playground.html"><h2>Impl_List_Playground</h2></a>
+      <a id="Impl_List_Playground_ChairNetwork_statefulpolicy_example" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/Impl_List_Playground_ChairNetwork_statefulpolicy_example.html"><h2>Impl_List_Playground_ChairNetwork_statefulpolicy_example</h2></a>
+      <a id="CryptoDB" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/CryptoDB.html"><h2>CryptoDB</h2></a>
+      <a id="IDEM" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/IDEM.html"><h2>IDEM</h2></a>
+      <a id="MeasrDroid" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/MeasrDroid.html"><h2>MeasrDroid</h2></a>
+      <a id="SINVAR_Examples" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/SINVAR_Examples.html"><h2>SINVAR_Examples</h2></a>
+      <a id="Imaginary_Factory_Network" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/Imaginary_Factory_Network.html"><h2>Imaginary_Factory_Network</h2></a>
+  </main>
+        
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>zankl on Archive of Formal Proofs</title>
+    <title>zankl on Archive of Formal Proofs
+    </title>
     <link>/authors/zankl/</link>
-    <description>Recent content in zankl on Archive of Formal Proofs</description>
+    <description>
+        Recent content in zankl 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Fri, 01 Nov 2013 00:00:00 +0000</lastBuildDate><atom:link href="/authors/zankl/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Decreasing Diagrams</title>
-      <link>/entries/Decreasing-Diagrams.html</link>
-      <pubDate>Fri, 01 Nov 2013 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Decreasing-Diagrams.html</guid>
-      <description></description>
-    </item>
     
+      <lastBuildDate>Fri, 01 Nov 2013 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/zankl/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Decreasing Diagrams</title>
+          <link>/entries/Decreasing-Diagrams.html</link>
+          <pubDate>Fri, 01 Nov 2013 00:00:00 +0000</pubDate>
+          <guid>/entries/Decreasing-Diagrams.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

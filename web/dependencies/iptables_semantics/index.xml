@@ -1,29 +1,24 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Iptables_Semantics on Archive of Formal Proofs</title>
+    <title>Iptables_Semantics on Archive of Formal Proofs
+    </title>
     <link>/dependencies/iptables_semantics/</link>
-    <description>Recent content in Iptables_Semantics on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Iptables_Semantics 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Fri, 21 Oct 2016 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/iptables_semantics/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>LOFT — Verified Migration of Linux Firewalls to SDN</title>
-      <link>/entries/LOFT.html</link>
-      <pubDate>Fri, 21 Oct 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/LOFT.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>Iptables Semantics</title>
-      <link>/entries/Iptables_Semantics.html</link>
-      <pubDate>Fri, 09 Sep 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Iptables_Semantics.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Fri, 21 Oct 2016 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/iptables_semantics/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>LOFT — Verified Migration of Linux Firewalls to SDN</title>
+          <link>/entries/LOFT.html</link>
+          <pubDate>Fri, 21 Oct 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/LOFT.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

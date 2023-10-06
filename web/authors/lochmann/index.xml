@@ -1,38 +1,38 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>lochmann on Archive of Formal Proofs</title>
+    <title>lochmann on Archive of Formal Proofs
+    </title>
     <link>/authors/lochmann/</link>
-    <description>Recent content in lochmann on Archive of Formal Proofs</description>
+    <description>
+        Recent content in lochmann 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Thu, 02 Jun 2022 00:00:00 +0000</lastBuildDate><atom:link href="/authors/lochmann/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Reducing Rewrite Properties to Properties on Ground Terms</title>
-      <link>/entries/Rewrite_Properties_Reduction.html</link>
-      <pubDate>Thu, 02 Jun 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Rewrite_Properties_Reduction.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>First-Order Theory of Rewriting</title>
-      <link>/entries/FO_Theory_Rewriting.html</link>
-      <pubDate>Wed, 02 Feb 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/FO_Theory_Rewriting.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Regular Tree Relations</title>
-      <link>/entries/Regular_Tree_Relations.html</link>
-      <pubDate>Wed, 15 Dec 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Regular_Tree_Relations.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Thu, 02 Jun 2022 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/lochmann/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Reducing Rewrite Properties to Properties on Ground Terms</title>
+          <link>/entries/Rewrite_Properties_Reduction.html</link>
+          <pubDate>Thu, 02 Jun 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Rewrite_Properties_Reduction.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>First-Order Theory of Rewriting</title>
+          <link>/entries/FO_Theory_Rewriting.html</link>
+          <pubDate>Wed, 02 Feb 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/FO_Theory_Rewriting.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Regular Tree Relations</title>
+          <link>/entries/Regular_Tree_Relations.html</link>
+          <pubDate>Wed, 15 Dec 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Regular_Tree_Relations.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

@@ -1,92 +1,80 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>from on Archive of Formal Proofs</title>
+    <title>from on Archive of Formal Proofs
+    </title>
     <link>/authors/from/</link>
-    <description>Recent content in from on Archive of Formal Proofs</description>
+    <description>
+        Recent content in from 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Mon, 09 Jan 2023 00:00:00 +0000</lastBuildDate><atom:link href="/authors/from/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Synthetic Completeness</title>
-      <link>/entries/Synthetic_Completeness.html</link>
-      <pubDate>Mon, 09 Jan 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Synthetic_Completeness.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>Soundness and Completeness of Implicational Logic</title>
-      <link>/entries/Implicational_Logic.html</link>
-      <pubDate>Tue, 13 Sep 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Implicational_Logic.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Naive Prover for First-Order Logic</title>
-      <link>/entries/FOL_Seq_Calc3.html</link>
-      <pubDate>Tue, 22 Mar 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/FOL_Seq_Calc3.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Sequent Calculus Prover for First-Order Logic with Functions</title>
-      <link>/entries/FOL_Seq_Calc2.html</link>
-      <pubDate>Mon, 31 Jan 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/FOL_Seq_Calc2.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Soundness and Completeness of an Axiomatic System for First-Order Logic</title>
-      <link>/entries/FOL_Axiomatic.html</link>
-      <pubDate>Fri, 24 Sep 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/FOL_Axiomatic.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Public Announcement Logic</title>
-      <link>/entries/Public_Announcement_Logic.html</link>
-      <pubDate>Thu, 17 Jun 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Public_Announcement_Logic.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Formalizing a Seligman-Style Tableau System for Hybrid Logic</title>
-      <link>/entries/Hybrid_Logic.html</link>
-      <pubDate>Fri, 20 Dec 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Hybrid_Logic.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Sequent Calculus for First-Order Logic</title>
-      <link>/entries/FOL_Seq_Calc1.html</link>
-      <pubDate>Thu, 18 Jul 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/FOL_Seq_Calc1.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Epistemic Logic: Completeness of Modal Logics</title>
-      <link>/entries/Epistemic_Logic.html</link>
-      <pubDate>Mon, 29 Oct 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Epistemic_Logic.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Mon, 09 Jan 2023 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/from/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Synthetic Completeness</title>
+          <link>/entries/Synthetic_Completeness.html</link>
+          <pubDate>Mon, 09 Jan 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Synthetic_Completeness.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Soundness and Completeness of Implicational Logic</title>
+          <link>/entries/Implicational_Logic.html</link>
+          <pubDate>Tue, 13 Sep 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Implicational_Logic.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Naive Prover for First-Order Logic</title>
+          <link>/entries/FOL_Seq_Calc3.html</link>
+          <pubDate>Tue, 22 Mar 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/FOL_Seq_Calc3.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Sequent Calculus Prover for First-Order Logic with Functions</title>
+          <link>/entries/FOL_Seq_Calc2.html</link>
+          <pubDate>Mon, 31 Jan 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/FOL_Seq_Calc2.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Soundness and Completeness of an Axiomatic System for First-Order Logic</title>
+          <link>/entries/FOL_Axiomatic.html</link>
+          <pubDate>Fri, 24 Sep 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/FOL_Axiomatic.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Public Announcement Logic</title>
+          <link>/entries/Public_Announcement_Logic.html</link>
+          <pubDate>Thu, 17 Jun 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Public_Announcement_Logic.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formalizing a Seligman-Style Tableau System for Hybrid Logic</title>
+          <link>/entries/Hybrid_Logic.html</link>
+          <pubDate>Fri, 20 Dec 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Hybrid_Logic.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Sequent Calculus for First-Order Logic</title>
+          <link>/entries/FOL_Seq_Calc1.html</link>
+          <pubDate>Thu, 18 Jul 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/FOL_Seq_Calc1.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Epistemic Logic: Completeness of Modal Logics</title>
+          <link>/entries/Epistemic_Logic.html</link>
+          <pubDate>Mon, 29 Oct 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Epistemic_Logic.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

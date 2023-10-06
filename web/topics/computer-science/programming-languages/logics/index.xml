@@ -1,316 +1,254 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Computer science/Programming languages/Logics on Archive of Formal Proofs</title>
+    <title>Computer science/Programming languages/Logics on Archive of Formal Proofs
+    </title>
     <link>/topics/computer-science/programming-languages/logics/</link>
-    <description>Recent content in Computer science/Programming languages/Logics on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Computer science/Programming languages/Logics 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language><atom:link href="/topics/computer-science/programming-languages/logics/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Formalization of Hyper Hoare Logic: A Logic to (Dis-)Prove Program Hyperproperties</title>
-      <link>/entries/HyperHoareLogic.html</link>
-      <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/HyperHoareLogic.html</guid>
-      <description></description>
-    </item>
+    <language>en-gb</language>
     
-    <item>
-      <title>Formalization of CommCSL: A Relational Concurrent Separation Logic for Proving Information Flow Security in Concurrent Programs</title>
-      <link>/entries/CommCSL.html</link>
-      <pubDate>Wed, 15 Mar 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/CommCSL.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Renaming-Enriched Sets (Rensets) and Renaming-Based Recursion</title>
-      <link>/entries/Rensets.html</link>
-      <pubDate>Tue, 28 Feb 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Rensets.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Hoare Logic for Diverging Programs</title>
-      <link>/entries/HoareForDivergence.html</link>
-      <pubDate>Fri, 20 Jan 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/HoareForDivergence.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Unbounded Separation Logic</title>
-      <link>/entries/Separation_Logic_Unbounded.html</link>
-      <pubDate>Mon, 05 Sep 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Separation_Logic_Unbounded.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Restricted Definition of the Magic Wand to Soundly Combine Fractions of a Wand</title>
-      <link>/entries/Combinable_Wands.html</link>
-      <pubDate>Mon, 30 May 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Combinable_Wands.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Formalization of a Framework for the Sound Automation of Magic Wands</title>
-      <link>/entries/Package_logic.html</link>
-      <pubDate>Wed, 18 May 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Package_logic.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Quantum and Classical Registers</title>
-      <link>/entries/Registers.html</link>
-      <pubDate>Thu, 28 Oct 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Registers.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Algebras for Iteration, Infinite Executions and Correctness of Sequential Computations</title>
-      <link>/entries/Correctness_Algebras.html</link>
-      <pubDate>Tue, 12 Oct 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Correctness_Algebras.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>An Under-Approximate Relational Logic</title>
-      <link>/entries/Relational-Incorrectness-Logic.html</link>
-      <pubDate>Thu, 12 Mar 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Relational-Incorrectness-Logic.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Differential Game Logic</title>
-      <link>/entries/Differential_Game_Logic.html</link>
-      <pubDate>Mon, 03 Jun 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Differential_Game_Logic.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Quantum Hoare Logic</title>
-      <link>/entries/QHLProver.html</link>
-      <pubDate>Sun, 24 Mar 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/QHLProver.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Isabelle/UTP: Mechanised Theory Engineering for Unifying Theories of Programming</title>
-      <link>/entries/UTP.html</link>
-      <pubDate>Fri, 01 Feb 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/UTP.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>IMP2 – Simple Program Verification in Isabelle/HOL</title>
-      <link>/entries/IMP2.html</link>
-      <pubDate>Tue, 15 Jan 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/IMP2.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Hoare Logics for Time Bounds</title>
-      <link>/entries/Hoare_Time.html</link>
-      <pubDate>Mon, 26 Feb 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Hoare_Time.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Differential Dynamic Logic</title>
-      <link>/entries/Differential_Dynamic_Logic.html</link>
-      <pubDate>Mon, 13 Feb 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Differential_Dynamic_Logic.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>COMPLX: A Verification Framework for Concurrent Imperative Programs</title>
-      <link>/entries/Complx.html</link>
-      <pubDate>Tue, 29 Nov 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Complx.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Separata: Isabelle tactics for Separation Algebra</title>
-      <link>/entries/Separata.html</link>
-      <pubDate>Wed, 16 Nov 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Separata.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Kleene Algebras with Domain</title>
-      <link>/entries/KAD.html</link>
-      <pubDate>Tue, 12 Apr 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/KAD.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Concurrent IMP</title>
-      <link>/entries/ConcurrentIMP.html</link>
-      <pubDate>Mon, 13 Apr 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/ConcurrentIMP.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Formalization of Refinement Calculus for Reactive Systems</title>
-      <link>/entries/RefinementReactive.html</link>
-      <pubDate>Wed, 08 Oct 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/RefinementReactive.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Kleene Algebra with Tests and Demonic Refinement Algebras</title>
-      <link>/entries/KAT_and_DRA.html</link>
-      <pubDate>Thu, 23 Jan 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/KAT_and_DRA.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Automatic Data Refinement</title>
-      <link>/entries/Automatic_Refinement.html</link>
-      <pubDate>Wed, 02 Oct 2013 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Automatic_Refinement.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Ribbon Proofs</title>
-      <link>/entries/Ribbon_Proofs.html</link>
-      <pubDate>Sat, 19 Jan 2013 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Ribbon_Proofs.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Kleene Algebra</title>
-      <link>/entries/Kleene_Algebra.html</link>
-      <pubDate>Tue, 15 Jan 2013 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Kleene_Algebra.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Separation Logic Framework for Imperative HOL</title>
-      <link>/entries/Separation_Logic_Imperative_HOL.html</link>
-      <pubDate>Wed, 14 Nov 2012 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Separation_Logic_Imperative_HOL.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Separation Algebra</title>
-      <link>/entries/Separation_Algebra.html</link>
-      <pubDate>Fri, 11 May 2012 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Separation_Algebra.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Definitional Encoding of TLA* in Isabelle/HOL</title>
-      <link>/entries/TLA.html</link>
-      <pubDate>Sat, 19 Nov 2011 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/TLA.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Algebra of Monotonic Boolean Transformers</title>
-      <link>/entries/MonoBoolTranAlgebra.html</link>
-      <pubDate>Thu, 22 Sep 2011 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/MonoBoolTranAlgebra.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Semantics and Data Refinement of Invariant Based Programs</title>
-      <link>/entries/DataRefinementIBP.html</link>
-      <pubDate>Fri, 28 May 2010 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/DataRefinementIBP.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Bytecode Logic for JML and Types</title>
-      <link>/entries/BytecodeLogicJmlTypes.html</link>
-      <pubDate>Fri, 12 Dec 2008 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/BytecodeLogicJmlTypes.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Secure information flow and program logics</title>
-      <link>/entries/SIFPL.html</link>
-      <pubDate>Mon, 10 Nov 2008 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/SIFPL.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Sequential Imperative Programming Language Syntax, Semantics, Hoare Logics and Verification Environment</title>
-      <link>/entries/Simpl.html</link>
-      <pubDate>Fri, 29 Feb 2008 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Simpl.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Abstract Hoare Logics</title>
-      <link>/entries/Abstract-Hoare-Logics.html</link>
-      <pubDate>Tue, 08 Aug 2006 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Abstract-Hoare-Logics.html</guid>
-      <description></description>
-    </item>
-    
+      <atom:link href="/topics/computer-science/programming-languages/logics/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Formalization of Hyper Hoare Logic: A Logic to (Dis-)Prove Program Hyperproperties</title>
+          <link>/entries/HyperHoareLogic.html</link>
+          <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/HyperHoareLogic.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formalization of CommCSL: A Relational Concurrent Separation Logic for Proving Information Flow Security in Concurrent Programs</title>
+          <link>/entries/CommCSL.html</link>
+          <pubDate>Wed, 15 Mar 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/CommCSL.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Renaming-Enriched Sets (Rensets) and Renaming-Based Recursion</title>
+          <link>/entries/Rensets.html</link>
+          <pubDate>Tue, 28 Feb 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Rensets.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Hoare Logic for Diverging Programs</title>
+          <link>/entries/HoareForDivergence.html</link>
+          <pubDate>Fri, 20 Jan 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/HoareForDivergence.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Unbounded Separation Logic</title>
+          <link>/entries/Separation_Logic_Unbounded.html</link>
+          <pubDate>Mon, 05 Sep 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Separation_Logic_Unbounded.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Restricted Definition of the Magic Wand to Soundly Combine Fractions of a Wand</title>
+          <link>/entries/Combinable_Wands.html</link>
+          <pubDate>Mon, 30 May 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Combinable_Wands.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formalization of a Framework for the Sound Automation of Magic Wands</title>
+          <link>/entries/Package_logic.html</link>
+          <pubDate>Wed, 18 May 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Package_logic.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Quantum and Classical Registers</title>
+          <link>/entries/Registers.html</link>
+          <pubDate>Thu, 28 Oct 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Registers.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Algebras for Iteration, Infinite Executions and Correctness of Sequential Computations</title>
+          <link>/entries/Correctness_Algebras.html</link>
+          <pubDate>Tue, 12 Oct 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Correctness_Algebras.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>An Under-Approximate Relational Logic</title>
+          <link>/entries/Relational-Incorrectness-Logic.html</link>
+          <pubDate>Thu, 12 Mar 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Relational-Incorrectness-Logic.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Differential Game Logic</title>
+          <link>/entries/Differential_Game_Logic.html</link>
+          <pubDate>Mon, 03 Jun 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Differential_Game_Logic.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Quantum Hoare Logic</title>
+          <link>/entries/QHLProver.html</link>
+          <pubDate>Sun, 24 Mar 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/QHLProver.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Isabelle/UTP: Mechanised Theory Engineering for Unifying Theories of Programming</title>
+          <link>/entries/UTP.html</link>
+          <pubDate>Fri, 01 Feb 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/UTP.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>IMP2 – Simple Program Verification in Isabelle/HOL</title>
+          <link>/entries/IMP2.html</link>
+          <pubDate>Tue, 15 Jan 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/IMP2.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Hoare Logics for Time Bounds</title>
+          <link>/entries/Hoare_Time.html</link>
+          <pubDate>Mon, 26 Feb 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Hoare_Time.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Differential Dynamic Logic</title>
+          <link>/entries/Differential_Dynamic_Logic.html</link>
+          <pubDate>Mon, 13 Feb 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Differential_Dynamic_Logic.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>COMPLX: A Verification Framework for Concurrent Imperative Programs</title>
+          <link>/entries/Complx.html</link>
+          <pubDate>Tue, 29 Nov 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Complx.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Separata: Isabelle tactics for Separation Algebra</title>
+          <link>/entries/Separata.html</link>
+          <pubDate>Wed, 16 Nov 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Separata.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Kleene Algebras with Domain</title>
+          <link>/entries/KAD.html</link>
+          <pubDate>Tue, 12 Apr 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/KAD.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Concurrent IMP</title>
+          <link>/entries/ConcurrentIMP.html</link>
+          <pubDate>Mon, 13 Apr 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/ConcurrentIMP.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formalization of Refinement Calculus for Reactive Systems</title>
+          <link>/entries/RefinementReactive.html</link>
+          <pubDate>Wed, 08 Oct 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/RefinementReactive.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Kleene Algebra with Tests and Demonic Refinement Algebras</title>
+          <link>/entries/KAT_and_DRA.html</link>
+          <pubDate>Thu, 23 Jan 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/KAT_and_DRA.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Automatic Data Refinement</title>
+          <link>/entries/Automatic_Refinement.html</link>
+          <pubDate>Wed, 02 Oct 2013 00:00:00 +0000</pubDate>
+          <guid>/entries/Automatic_Refinement.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Ribbon Proofs</title>
+          <link>/entries/Ribbon_Proofs.html</link>
+          <pubDate>Sat, 19 Jan 2013 00:00:00 +0000</pubDate>
+          <guid>/entries/Ribbon_Proofs.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Kleene Algebra</title>
+          <link>/entries/Kleene_Algebra.html</link>
+          <pubDate>Tue, 15 Jan 2013 00:00:00 +0000</pubDate>
+          <guid>/entries/Kleene_Algebra.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Separation Logic Framework for Imperative HOL</title>
+          <link>/entries/Separation_Logic_Imperative_HOL.html</link>
+          <pubDate>Wed, 14 Nov 2012 00:00:00 +0000</pubDate>
+          <guid>/entries/Separation_Logic_Imperative_HOL.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Separation Algebra</title>
+          <link>/entries/Separation_Algebra.html</link>
+          <pubDate>Fri, 11 May 2012 00:00:00 +0000</pubDate>
+          <guid>/entries/Separation_Algebra.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Definitional Encoding of TLA* in Isabelle/HOL</title>
+          <link>/entries/TLA.html</link>
+          <pubDate>Sat, 19 Nov 2011 00:00:00 +0000</pubDate>
+          <guid>/entries/TLA.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Algebra of Monotonic Boolean Transformers</title>
+          <link>/entries/MonoBoolTranAlgebra.html</link>
+          <pubDate>Thu, 22 Sep 2011 00:00:00 +0000</pubDate>
+          <guid>/entries/MonoBoolTranAlgebra.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Semantics and Data Refinement of Invariant Based Programs</title>
+          <link>/entries/DataRefinementIBP.html</link>
+          <pubDate>Fri, 28 May 2010 00:00:00 +0000</pubDate>
+          <guid>/entries/DataRefinementIBP.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Bytecode Logic for JML and Types</title>
+          <link>/entries/BytecodeLogicJmlTypes.html</link>
+          <pubDate>Fri, 12 Dec 2008 00:00:00 +0000</pubDate>
+          <guid>/entries/BytecodeLogicJmlTypes.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Secure information flow and program logics</title>
+          <link>/entries/SIFPL.html</link>
+          <pubDate>Mon, 10 Nov 2008 00:00:00 +0000</pubDate>
+          <guid>/entries/SIFPL.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Sequential Imperative Programming Language Syntax, Semantics, Hoare Logics and Verification Environment</title>
+          <link>/entries/Simpl.html</link>
+          <pubDate>Fri, 29 Feb 2008 00:00:00 +0000</pubDate>
+          <guid>/entries/Simpl.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Abstract Hoare Logics</title>
+          <link>/entries/Abstract-Hoare-Logics.html</link>
+          <pubDate>Tue, 08 Aug 2006 00:00:00 +0000</pubDate>
+          <guid>/entries/Abstract-Hoare-Logics.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

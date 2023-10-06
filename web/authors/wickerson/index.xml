@@ -1,29 +1,31 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>wickerson on Archive of Formal Proofs</title>
+    <title>wickerson on Archive of Formal Proofs
+    </title>
     <link>/authors/wickerson/</link>
-    <description>Recent content in wickerson on Archive of Formal Proofs</description>
+    <description>
+        Recent content in wickerson 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Thu, 03 Apr 2014 00:00:00 +0000</lastBuildDate><atom:link href="/authors/wickerson/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Syntax and semantics of a GPU kernel programming language</title>
-      <link>/entries/GPU_Kernel_PL.html</link>
-      <pubDate>Thu, 03 Apr 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/GPU_Kernel_PL.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>Ribbon Proofs</title>
-      <link>/entries/Ribbon_Proofs.html</link>
-      <pubDate>Sat, 19 Jan 2013 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Ribbon_Proofs.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Thu, 03 Apr 2014 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/wickerson/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Syntax and semantics of a GPU kernel programming language</title>
+          <link>/entries/GPU_Kernel_PL.html</link>
+          <pubDate>Thu, 03 Apr 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/GPU_Kernel_PL.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Ribbon Proofs</title>
+          <link>/entries/Ribbon_Proofs.html</link>
+          <pubDate>Sat, 19 Jan 2013 00:00:00 +0000</pubDate>
+          <guid>/entries/Ribbon_Proofs.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

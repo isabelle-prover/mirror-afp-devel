@@ -1,25 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>The Balog–Szemerédi–Gowers Theorem - Archive of Formal Proofs</title><meta name="description" content="We formalise the Balog–Szemerédi–Gowers Theorem, a profound result in additive combinatorics which played a central role in Gowers&#39;s proof deriving the..."><meta property="og:title" content="The Balog–Szemerédi–Gowers Theorem" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>The Balog–Szemerédi–Gowers Theorem - Archive of Formal Proofs</title>
+    <meta name="description" content="We formalise the Balog–Szemerédi–Gowers Theorem, a profound result in additive combinatorics which played a central role in Gowers&#39;s proof deriving the...">
+
+  <meta property="og:title" content="The Balog–Szemerédi–Gowers Theorem" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="/entries/Balog_Szemeredi_Gowers.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
 <meta property="article:published_time" content="2022-11-11T00:00:00+00:00" />
 <meta property="article:modified_time" content="2022-11-11T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="The Balog–Szemerédi–Gowers Theorem"/>
 <meta name="twitter:description" content=""/>
 
-  
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
     <script>
       MathJax = {
         tex: {
@@ -31,72 +36,111 @@
         }
       };
     </script>
-    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
   <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
-  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../" class='logo-link'>
-    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../" class='logo-link'>
-        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../"><li >Home</li></a>
-        <a href="../topics/"><li >Topics</li></a>
-        <a href="../download/"><li >Download</li></a>
-        <a href="../help/"><li >Help</li></a>
-        <a href="../submission/"><li >Submission</li></a>
-        <a href="../statistics/"><li >Statistics</li></a>
-        <a href="../about/"><li >About</li></a>
+          <a href="../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content  entries'><header>
-  <form autocomplete="off" action="../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>T</span>he <span class='first'>B</span>alog–<span class='first'>S</span>zemerédi–<span class='first'>G</span>owers <span class='first'>T</span>heorem</h1>
+    </aside>
+    <div class='content entries'>
+      <header>
+    <form autocomplete="off" action="../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>T</span>he <span class='first'>B</span>alog–<span class='first'>S</span>zemerédi–<span class='first'>G</span>owers <span class='first'>T</span>heorem
+    
+  </h1>
   <div>
-    
-    <p><a href="../authors/argyraki">Angeliki Koutsoukou-Argyraki</a> <a href="https://www.cl.cam.ac.uk/~ak2110/">🌐</a>, <a href="../authors/baksys">Mantas Bakšys</a> <a href="https://github.com/MantasBaksys">🌐</a> and <a href="../authors/edmonds">Chelsea Edmonds</a> <a href="https://www.cst.cam.ac.uk/people/cle47">🌐</a>
-    </p>
-    
-    
-    <p class="date">November 11, 2022</p>
-    
-  </div>
-</header><div><main><h3>Abstract</h3>
+      <p>
+        <a href="../authors/argyraki">Angeliki Koutsoukou-Argyraki</a> <a href="https://www.cl.cam.ac.uk/~ak2110/">🌐</a>, <a href="../authors/baksys">Mantas Bakšys</a> <a href="https://github.com/MantasBaksys">🌐</a> and <a href="../authors/edmonds">Chelsea Edmonds</a> <a href="https://www.cst.cam.ac.uk/people/cle47">🌐</a>
 
-  <div class="abstract mathjax_process">We formalise the Balog–Szemerédi–Gowers Theorem, a profound result in additive combinatorics which played a central role in
+      </p>
+      <p class="date">November 11, 2022</p>
+  </div>
+</header>
+      <div>
+        
+  <main>
+    <h3>Abstract</h3>
+
+    <div class="abstract mathjax_process">We formalise the Balog–Szemerédi–Gowers Theorem, a profound result in additive combinatorics which played a central role in
 <a href="https://link.springer.com/article/10.1007/s00039-001-0332-9">Gowers's proof deriving the first effective bounds for Szemerédi's Theorem</a>.
 The proof is of great mathematical interest given that it involves an interplay between different mathematical areas, namely applications of graph theory and probability theory to additive combinatorics involving algebraic objects.
 This interplay is what made the process of the formalisation, for which we had to develop formalisations of new background material in the aforementioned areas, more rich and technically challenging.  We demonstrate how locales, Isabelle’s module system, can be employed to handle such interplays. To treat the graph-theoretic aspects of the proof, we make use of a new, more general <a href="https://www.isa-afp.org/entries/Undirected_Graph_Theory.html">undirected graph theory library</a> developed recently by Chelsea Edmonds, which is both flexible and extensible.
@@ -110,91 +154,111 @@ We moreover formalise a few
 additional results in additive combinatorics that are not used in the proof of the main theorem.
 This is the first formalisation of the Balog–Szemerédi–Gowers Theorem in any proof assistant to our knowledge.</div>
 
-  <h3>License</h3>
-  <div><a href="https://isa-afp.org/LICENSE">BSD License</a></div><h3>Topics</h3>
-  <ul><li><a href="../topics/mathematics/combinatorics">Mathematics/Combinatorics</a></li><li><a href="../topics/mathematics/graph-theory">Mathematics/Graph theory</a></li></ul><h3>Related publications</h3>
-  <ul><li>
-      Gowers, W. T. (2001). A new proof of Szemerédi’s theorem. GAFA Geometric And Functional Analysis, 11(3), 465–588. <a href="https://doi.org/10.1007/s00039-001-0332-9">https://doi.org/10.1007/s00039-001-0332-9</a>
-
-    </li></ul>
-  <h3>Session Balog_Szemeredi_Gowers</h3>
-  <ul>
-    <li><a href="../theories/balog_szemeredi_gowers/#Miscellaneous_Lemmas">Miscellaneous_Lemmas</a></li>
-    <li><a href="../theories/balog_szemeredi_gowers/#Graph_Theory_Preliminaries">Graph_Theory_Preliminaries</a></li>
-    <li><a href="../theories/balog_szemeredi_gowers/#Prob_Space_Lemmas">Prob_Space_Lemmas</a></li>
-    <li><a href="../theories/balog_szemeredi_gowers/#Sumset_Triangle_Inequality">Sumset_Triangle_Inequality</a></li>
-    <li><a href="../theories/balog_szemeredi_gowers/#Additive_Combinatorics_Preliminaries">Additive_Combinatorics_Preliminaries</a></li>
-    <li><a href="../theories/balog_szemeredi_gowers/#Additive_Energy_Lower_Bounds">Additive_Energy_Lower_Bounds</a></li>
-    <li><a href="../theories/balog_szemeredi_gowers/#Balog_Szemeredi_Gowers_Main_Proof">Balog_Szemeredi_Gowers_Main_Proof</a></li>
-    <li><a href="../theories/balog_szemeredi_gowers/#Balog_Szemeredi_Gowers_Supplementary">Balog_Szemeredi_Gowers_Supplementary</a></li></ul><div class="flex-wrap">
-  <div>
-    <h3>Depends on</h3>
-    <ul class="horizontal-list"><li><a href="../entries/Pluennecke_Ruzsa_Inequality.html">The Plünnecke-Ruzsa Inequality</a></li><li><a href="../entries/Random_Graph_Subgraph_Threshold.html">Properties of Random Graphs &ndash; Subgraph Containment</a></li><li><a href="../entries/Undirected_Graph_Theory.html">Undirected Graph Theory</a></li></ul>
-  </div>
-  
-  <div>
-    <h3>Auto-related entries</h3>
-    <ul class="horizontal-list">
-      
-      <li><a href="../entries/Khovanskii_Theorem.html">Khovanskii's Theorem</a></li>
-      
-      <li><a href="../entries/Turans_Graph_Theorem.html">Turán&rsquo;s Graph Theorem</a></li>
-      
-      <li><a href="../entries/IMO2019.html">Selected Problems from the International Mathematical Olympiad 2019</a></li>
-      
-    </ul>
-  </div>
-  
-  </div>
-</main>
-
-<nav class='links'>
-  <a class='popup-button' href="#cite-popup">Cite</a>
-  <a class='popup-button' href="#download-popup">Download</a>
-  <h4>PDFs</h4>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Balog_Szemeredi_Gowers/outline.pdf">Proof
-    outline</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Balog_Szemeredi_Gowers/document.pdf">Proof
-    document</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Balog_Szemeredi_Gowers/session_graph.pdf">Dependencies</a></nav>
-
-<div id="cite-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Cite</h2>
-    <a class="close" href="#">&times;</a>
+    <h3>License</h3>
     <div>
-      <p style="display:none;" id="bibtex-filename">Balog_Szemeredi_Gowers-AFP</p><pre id="copy-text">@article{Balog_Szemeredi_Gowers-AFP,
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/mathematics/combinatorics">Mathematics/Combinatorics</a></li>
+          <li><a href="../topics/mathematics/graph-theory">Mathematics/Graph theory</a></li>
+      </ul>
+      <h3>Related publications</h3>
+      <ul>
+        <li>Gowers, W. T. (2001). A new proof of Szemerédi’s theorem. GAFA Geometric And Functional Analysis, 11(3), 465–588. <a href="https://doi.org/10.1007/s00039-001-0332-9">https://doi.org/10.1007/s00039-001-0332-9</a>
+
+        </li>
+      </ul>
+      <h3>Session Balog_Szemeredi_Gowers</h3>
+      <ul>
+          <li><a href="../sessions/balog_szemeredi_gowers/#Miscellaneous_Lemmas">Miscellaneous_Lemmas</a></li>
+          <li><a href="../sessions/balog_szemeredi_gowers/#Graph_Theory_Preliminaries">Graph_Theory_Preliminaries</a></li>
+          <li><a href="../sessions/balog_szemeredi_gowers/#Prob_Space_Lemmas">Prob_Space_Lemmas</a></li>
+          <li><a href="../sessions/balog_szemeredi_gowers/#Sumset_Triangle_Inequality">Sumset_Triangle_Inequality</a></li>
+          <li><a href="../sessions/balog_szemeredi_gowers/#Additive_Combinatorics_Preliminaries">Additive_Combinatorics_Preliminaries</a></li>
+          <li><a href="../sessions/balog_szemeredi_gowers/#Additive_Energy_Lower_Bounds">Additive_Energy_Lower_Bounds</a></li>
+          <li><a href="../sessions/balog_szemeredi_gowers/#Balog_Szemeredi_Gowers_Main_Proof">Balog_Szemeredi_Gowers_Main_Proof</a></li>
+          <li><a href="../sessions/balog_szemeredi_gowers/#Balog_Szemeredi_Gowers_Supplementary">Balog_Szemeredi_Gowers_Supplementary</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+      <div>
+        <h3>Depends on</h3>
+        <ul class="horizontal-list">
+              <li><a href="../entries/Pluennecke_Ruzsa_Inequality.html">The Plünnecke-Ruzsa Inequality</a></li>
+              <li><a href="../entries/Random_Graph_Subgraph_Threshold.html">Properties of Random Graphs &ndash; Subgraph Containment</a></li>
+              <li><a href="../entries/Undirected_Graph_Theory.html">Undirected Graph Theory</a></li>
+        </ul>
+      </div>
+        <div>
+          <h3>Auto-related entries</h3>
+          <ul class="horizontal-list">
+              <li><a href="../entries/Khovanskii_Theorem.html">Khovanskii's Theorem</a></li>
+              <li><a href="../entries/Turans_Graph_Theorem.html">Turán&rsquo;s Graph Theorem</a></li>
+              <li><a href="../entries/IMO2019.html">Selected Problems from the International Mathematical Olympiad 2019</a></li>
+          </ul>
+        </div>
+      </div>
+    
+  </main>
+
+  <nav class='links'>
+    <a class='popup-button' href="#cite-popup">Cite</a>
+    <a class='popup-button' href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Balog_Szemeredi_Gowers/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Balog_Szemeredi_Gowers/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Balog_Szemeredi_Gowers/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Balog_Szemeredi_Gowers-AFP</p>
+        <pre id="copy-text">@article{Balog_Szemeredi_Gowers-AFP,
   author  = {Angeliki Koutsoukou-Argyraki and Mantas Bakšys and Chelsea Edmonds},
   title   = {The Balog–Szemerédi–Gowers Theorem},
   journal = {Archive of Formal Proofs},
   month   = {November},
   year    = {2022},
   note    = {\url{https://isa-afp.org/entries/Balog_Szemeredi_Gowers.html},
-            Formal proof development},
+             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
     </div>
   </div>
-</div>
 
-<div id="download-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Download</h2>
-    <a class="close" href="#">&times;</a>
-    <a href="https://www.isa-afp.org/release//afp-Balog_Szemeredi_Gowers-current.tar.gz" download>Download latest</a>
-    <p>Older releases:</p>
-    <ul><li>
-        <a href="https://www.isa-afp.org/release/afp-Balog_Szemeredi_Gowers-2023-09-13.tar.gz">Sep 13, 2023</a>: Isabelle2023
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Balog_Szemeredi_Gowers-2022-11-16.tar.gz">Nov 16, 2022</a>: Isabelle2022
-      </li></ul>
-  </div>
-</div>
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-Balog_Szemeredi_Gowers-current.tar.gz"
+         download>Download latest</a>
+        <p>Older releases:</p>
+        <ul>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Balog_Szemeredi_Gowers-2023-09-13.tar.gz">
+                Sep 13, 2023
+              </a>
+              : Isabelle2023
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Balog_Szemeredi_Gowers-2022-11-16.tar.gz">
+                Nov 16, 2022
+              </a>
+              : Isabelle2022
+            </li>
+        </ul>
     </div>
   </div>
-</body>
-
+        
+      </div>
+    </div>
+  </body>
 </html>

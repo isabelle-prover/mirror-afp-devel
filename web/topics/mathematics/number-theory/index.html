@@ -1,413 +1,533 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Mathematics/Number theory - Archive of Formal Proofs</title><meta name="description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."><link rel="alternate" type="application/rss+xml" href="../../../topics/mathematics/number-theory/index.xml" title="Archive of Formal Proofs" /><meta property="og:title" content="Mathematics/Number theory" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mathematics/Number theory - Archive of Formal Proofs</title>
+    <meta name="description" content="A collection of proof libraries, examples, and larger
+     scientific developments, mechanically checked in the theorem prover Isabelle.">
+  <link rel="alternate" type="application/rss+xml" href="../../../topics/mathematics/number-theory/index.xml" title="Archive of Formal Proofs" />
+
+  <meta property="og:title" content="Mathematics/Number theory" />
 <meta property="og:description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="/topics/mathematics/number-theory/" /><meta property="og:image" content="/images/afp.png"/><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="Mathematics/Number theory"/>
 <meta name="twitter:description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."/>
 
-  
   <link rel="stylesheet" type="text/css" href="../../../css/front.min.css">
 
-  <link rel="icon" href="../../../images/favicon.ico" type="image/icon"><script src="../../../js/obfuscate.js"></script>
+  <link rel="icon" href="../../../images/favicon.ico" type="image/icon">
+
+  <script src="../../../js/obfuscate.js"></script>
   <script src="../../../js/flexsearch.bundle.js"></script>
   <script src="../../../js/scroll-spy.js"></script>
   <script src="../../../js/theory.js"></script>
-  <script src="../../../js/util.js"></script><script src="../../../js/header-search.js"></script><script src="../../../js/search-autocomplete.js"></script>
+  <script src="../../../js/util.js"></script>
+    <script src="../../../js/header-search.js"></script>
+  <script src="../../../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../../../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../../../" class='logo-link'>
-    <img src="../../../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../../../" class="logo-link">
+    <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../../../search"><img src="../../../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../../../" class='logo-link'>
-        <img src="../../../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../../../"><li >Home</li></a>
-        <a href="../../../topics/"><li >Topics</li></a>
-        <a href="../../../download/"><li >Download</li></a>
-        <a href="../../../help/"><li >Help</li></a>
-        <a href="../../../submission/"><li >Submission</li></a>
-        <a href="../../../statistics/"><li >Statistics</li></a>
-        <a href="../../../about/"><li >About</li></a>
+          <a href="../../../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../../../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../../../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../../../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../../../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../../../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../../../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content '><header>
-  <form autocomplete="off" action="../../../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../../../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>M</span>athematics/<span class='first'>N</span>umber <span class='first'>T</span>heory</h1>
+    </aside>
+    <div class='content'>
+      <header>
+    <form autocomplete="off" action="../../../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../../../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>M</span>athematics/<span class='first'>N</span>umber theory
+    
+  </h1>
   <div>
-    
-    
   </div>
-</header><div><h2>Subject Classification</h2><p>AMS: <a href="https://mathscinet.ams.org/mathscinet/msc/msc2020.html?t=11-XX">Number theory</a></p><h2 class="head">2023</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Polygonal_Number_Theorem.html">Polygonal Number Theorem</a></h5> <br>by <a href="../../../authors/leek">Kevin Lee</a>, <a href="../../../authors/yez">Zhengkun Ye</a> and <a href="../../../authors/argyraki">Angeliki Koutsoukou-Argyraki</a></div>
-  <span class="date">
-    Aug 10
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Zeckendorf.html">Zeckendorf’s Theorem</a></h5> <br>by <a href="../../../authors/dalvit">Christian Dalvit</a></div>
-  <span class="date">
-    Jun 12
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Three_Squares.html">Three Squares Theorem</a></h5> <br>by <a href="../../../authors/danilkin">Anton Danilkin</a> and <a href="../../../authors/chevalier">Loïc Chevalier</a></div>
-  <span class="date">
-    May 03
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/DigitsInBase.html">Positional Notation for Natural Numbers in an Arbitrary Base</a></h5> <br>by <a href="../../../authors/staats">Charles Staats</a></div>
-  <span class="date">
-    Apr 03
-  </span>
-</article>
+</header>
+      <div>
+        
+    <h2>Subject Classification</h2>
+      <p>AMS: <a href="https://mathscinet.ams.org/mathscinet/msc/msc2020.html?t=11-XX">Number theory</a></p>
+    <h2 class="head">2023</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Polygonal_Number_Theorem.html">Polygonal Number Theorem</a></h5>
+          <br>
+            by <a href="../../../authors/leek">Kevin Lee</a>, <a href="../../../authors/yez">Zhengkun Ye</a> and <a href="../../../authors/argyraki">Angeliki Koutsoukou-Argyraki</a>
 
+        </div>
+        <span class="date">Aug 10</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Zeckendorf.html">Zeckendorf’s Theorem</a></h5>
+          <br>
+            by <a href="../../../authors/dalvit">Christian Dalvit</a>
 
-<h2 class="head">2022</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Padic_Field.html">p-adic Fields and p-adic Semialgebraic Sets</a></h5> <br>by <a href="../../../authors/crighton">Aaron Crighton</a></div>
-  <span class="date">
-    Sep 22
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Involutions2Squares.html">From THE BOOK: Two Squares via Involutions</a></h5> <br>by <a href="../../../authors/bortin">Maksym Bortin</a></div>
-  <span class="date">
-    Aug 15
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/DPRM_Theorem.html">Diophantine Equations and the DPRM Theorem</a></h5> <br>by <a href="../../../authors/bayer">Jonas Bayer</a>, <a href="../../../authors/david">Marco David</a>, <a href="../../../authors/stock">Benedikt Stock</a>, <a href="../../../authors/pal">Abhik Pal</a>, <a href="../../../authors/matiyasevich">Yuri Matiyasevich</a> and <a href="../../../authors/schleicher">Dierk Schleicher</a></div>
-  <span class="date">
-    Jun 06
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Digit_Expansions.html">Digit Expansions</a></h5> <br>by <a href="../../../authors/bayer">Jonas Bayer</a>, <a href="../../../authors/david">Marco David</a>, <a href="../../../authors/pal">Abhik Pal</a> and <a href="../../../authors/stock">Benedikt Stock</a></div>
-  <span class="date">
-    Apr 20
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Irrationals_From_THEBOOK.html">Irrational numbers from THE BOOK</a></h5> <br>by <a href="../../../authors/paulson">Lawrence C. Paulson</a></div>
-  <span class="date">
-    Jan 08
-  </span>
-</article>
+        </div>
+        <span class="date">Jun 12</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Three_Squares.html">Three Squares Theorem</a></h5>
+          <br>
+            by <a href="../../../authors/danilkin">Anton Danilkin</a> and <a href="../../../authors/chevalier">Loïc Chevalier</a>
 
+        </div>
+        <span class="date">May 03</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/DigitsInBase.html">Positional Notation for Natural Numbers in an Arbitrary Base</a></h5>
+          <br>
+            by <a href="../../../authors/staats">Charles Staats</a>
 
-<h2 class="head">2021</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Lifting_the_Exponent.html">Lifting the Exponent</a></h5> <br>by <a href="../../../authors/kadzioka">Maya Kądziołka</a></div>
-  <span class="date">
-    Apr 27
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Padic_Ints.html">Hensel&#39;s Lemma for the p-adic Integers</a></h5> <br>by <a href="../../../authors/crighton">Aaron Crighton</a></div>
-  <span class="date">
-    Mar 23
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Hermite_Lindemann.html">The Hermite–Lindemann–Weierstraß Transcendence Theorem</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Mar 03
-  </span>
-</article>
+        </div>
+        <span class="date">Apr 03</span>
+      </article>
+    <h2 class="head">2022</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Padic_Field.html">p-adic Fields and p-adic Semialgebraic Sets</a></h5>
+          <br>
+            by <a href="../../../authors/crighton">Aaron Crighton</a>
 
+        </div>
+        <span class="date">Sep 22</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Involutions2Squares.html">From THE BOOK: Two Squares via Involutions</a></h5>
+          <br>
+            by <a href="../../../authors/bortin">Maksym Bortin</a>
 
-<h2 class="head">2020</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Amicable_Numbers.html">Amicable Numbers</a></h5> <br>by <a href="../../../authors/argyraki">Angeliki Koutsoukou-Argyraki</a></div>
-  <span class="date">
-    Aug 04
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Irrational_Series_Erdos_Straus.html">Irrationality Criteria for Series by Erdős and Straus</a></h5> <br>by <a href="../../../authors/argyraki">Angeliki Koutsoukou-Argyraki</a> and <a href="../../../authors/li">Wenda Li</a></div>
-  <span class="date">
-    May 12
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Gaussian_Integers.html">Gaussian Integers</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Apr 24
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Lucas_Theorem.html">Lucas&#39;s Theorem</a></h5> <br>by <a href="../../../authors/edmonds">Chelsea Edmonds</a></div>
-  <span class="date">
-    Apr 07
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Furstenberg_Topology.html">Furstenberg&#39;s topology and his proof of the infinitude of primes</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Mar 22
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Arith_Prog_Rel_Primes.html">Arithmetic progressions and relative primes</a></h5> <br>by <a href="../../../authors/caballero">José Manuel Rodríguez Caballero</a></div>
-  <span class="date">
-    Feb 01
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Mersenne_Primes.html">Mersenne primes and the Lucas–Lehmer test</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Jan 17
-  </span>
-</article>
+        </div>
+        <span class="date">Aug 15</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/DPRM_Theorem.html">Diophantine Equations and the DPRM Theorem</a></h5>
+          <br>
+            by <a href="../../../authors/bayer">Jonas Bayer</a>, <a href="../../../authors/david">Marco David</a>, <a href="../../../authors/stock">Benedikt Stock</a>, <a href="../../../authors/pal">Abhik Pal</a>, <a href="../../../authors/matiyasevich">Yuri Matiyasevich</a> and <a href="../../../authors/schleicher">Dierk Schleicher</a>
 
+        </div>
+        <span class="date">Jun 06</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Digit_Expansions.html">Digit Expansions</a></h5>
+          <br>
+            by <a href="../../../authors/bayer">Jonas Bayer</a>, <a href="../../../authors/david">Marco David</a>, <a href="../../../authors/pal">Abhik Pal</a> and <a href="../../../authors/stock">Benedikt Stock</a>
 
-<h2 class="head">2019</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Zeta_3_Irrational.html">The Irrationality of ζ(3)</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Dec 27
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Gauss_Sums.html">Gauss Sums and the Pólya–Vinogradov Inequality</a></h5> <br>by <a href="../../../authors/raya">Rodrigo Raya</a> and <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Dec 10
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Transcendence_Series_Hancl_Rucki.html">The Transcendence of Certain Infinite Series</a></h5> <br>by <a href="../../../authors/argyraki">Angeliki Koutsoukou-Argyraki</a> and <a href="../../../authors/li">Wenda Li</a></div>
-  <span class="date">
-    Mar 27
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Prime_Distribution_Elementary.html">Elementary Facts About the Distribution of Primes</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Feb 21
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Probabilistic_Prime_Tests.html">Probabilistic Primality Testing</a></h5> <br>by <a href="../../../authors/stuewe">Daniel Stüwe</a> and <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Feb 11
-  </span>
-</article>
+        </div>
+        <span class="date">Apr 20</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Irrationals_From_THEBOOK.html">Irrational numbers from THE BOOK</a></h5>
+          <br>
+            by <a href="../../../authors/paulson">Lawrence C. Paulson</a>
 
+        </div>
+        <span class="date">Jan 08</span>
+      </article>
+    <h2 class="head">2021</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Lifting_the_Exponent.html">Lifting the Exponent</a></h5>
+          <br>
+            by <a href="../../../authors/kadzioka">Maya Kądziołka</a>
 
-<h2 class="head">2018</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Pi_Transcendental.html">The Transcendence of π</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Sep 28
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Prime_Number_Theorem.html">The Prime Number Theorem</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a> and <a href="../../../authors/paulson">Lawrence C. Paulson</a></div>
-  <span class="date">
-    Sep 19
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Pell.html">Pell&#39;s Equation</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Jun 23
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Irrationality_J_Hancl.html">Irrational Rapidly Convergent Series</a></h5> <br>by <a href="../../../authors/argyraki">Angeliki Koutsoukou-Argyraki</a> and <a href="../../../authors/li">Wenda Li</a></div>
-  <span class="date">
-    May 23
-  </span>
-</article>
+        </div>
+        <span class="date">Apr 27</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Padic_Ints.html">Hensel&#39;s Lemma for the p-adic Integers</a></h5>
+          <br>
+            by <a href="../../../authors/crighton">Aaron Crighton</a>
 
+        </div>
+        <span class="date">Mar 23</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Hermite_Lindemann.html">The Hermite–Lindemann–Weierstraß Transcendence Theorem</a></h5>
+          <br>
+            by <a href="../../../authors/eberl">Manuel Eberl</a>
 
-<h2 class="head">2017</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Dirichlet_L.html">Dirichlet L-Functions and Dirichlet&#39;s Theorem</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Dec 21
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Diophantine_Eqns_Lin_Hom.html">Homogeneous Linear Diophantine Equations</a></h5> <br>by <a href="../../../authors/messner">Florian Messner</a>, <a href="../../../authors/parsert">Julian Parsert</a>, <a href="../../../authors/schoepf">Jonas Schöpf</a> and <a href="../../../authors/sternagel">Christian Sternagel</a></div>
-  <span class="date">
-    Oct 14
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Zeta_Function.html">The Hurwitz and Riemann ζ Functions</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Oct 12
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Dirichlet_Series.html">Dirichlet Series</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Oct 12
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Minkowskis_Theorem.html">Minkowski&#39;s Theorem</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Jul 13
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Bernoulli.html">Bernoulli Numbers</a></h5> <br>by <a href="../../../authors/bulwahn">Lukas Bulwahn</a> and <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Jan 24
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Bertrands_Postulate.html">Bertrand&#39;s postulate</a></h5> <br>by <a href="../../../authors/biendarra">Julian Biendarra</a> and <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Jan 17
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/E_Transcendental.html">The Transcendence of e</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Jan 12
-  </span>
-</article>
+        </div>
+        <span class="date">Mar 03</span>
+      </article>
+    <h2 class="head">2020</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Amicable_Numbers.html">Amicable Numbers</a></h5>
+          <br>
+            by <a href="../../../authors/argyraki">Angeliki Koutsoukou-Argyraki</a>
 
+        </div>
+        <span class="date">Aug 04</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Irrational_Series_Erdos_Straus.html">Irrationality Criteria for Series by Erdős and Straus</a></h5>
+          <br>
+            by <a href="../../../authors/argyraki">Angeliki Koutsoukou-Argyraki</a> and <a href="../../../authors/li">Wenda Li</a>
 
-<h2 class="head">2015</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Prime_Harmonic_Series.html">The Divergence of the Prime Harmonic Series</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Dec 28
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Liouville_Numbers.html">Liouville numbers</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Dec 28
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Stern_Brocot.html">The Stern-Brocot Tree</a></h5> <br>by <a href="../../../authors/gammie">Peter Gammie</a> and <a href="../../../authors/lochbihler">Andreas Lochbihler</a></div>
-  <span class="date">
-    Dec 22
-  </span>
-</article>
+        </div>
+        <span class="date">May 12</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Gaussian_Integers.html">Gaussian Integers</a></h5>
+          <br>
+            by <a href="../../../authors/eberl">Manuel Eberl</a>
 
+        </div>
+        <span class="date">Apr 24</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Lucas_Theorem.html">Lucas&#39;s Theorem</a></h5>
+          <br>
+            by <a href="../../../authors/edmonds">Chelsea Edmonds</a>
 
-<h2 class="head">2013</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Pratt_Certificate.html">Pratt&#39;s Primality Certificates</a></h5> <br>by <a href="../../../authors/wimmer">Simon Wimmer</a> and <a href="../../../authors/noschinski">Lars Noschinski</a></div>
-  <span class="date">
-    Jul 22
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Lehmer.html">Lehmer&#39;s Theorem</a></h5> <br>by <a href="../../../authors/wimmer">Simon Wimmer</a> and <a href="../../../authors/noschinski">Lars Noschinski</a></div>
-  <span class="date">
-    Jul 22
-  </span>
-</article>
+        </div>
+        <span class="date">Apr 07</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Furstenberg_Topology.html">Furstenberg&#39;s topology and his proof of the infinitude of primes</a></h5>
+          <br>
+            by <a href="../../../authors/eberl">Manuel Eberl</a>
 
+        </div>
+        <span class="date">Mar 22</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Arith_Prog_Rel_Primes.html">Arithmetic progressions and relative primes</a></h5>
+          <br>
+            by <a href="../../../authors/caballero">José Manuel Rodríguez Caballero</a>
 
-<h2 class="head">2009</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Perfect-Number-Thm.html">Perfect Number Theorem</a></h5> <br>by <a href="../../../authors/ijbema">Mark Ijbema</a></div>
-  <span class="date">
-    Nov 22
-  </span>
-</article>
+        </div>
+        <span class="date">Feb 01</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Mersenne_Primes.html">Mersenne primes and the Lucas–Lehmer test</a></h5>
+          <br>
+            by <a href="../../../authors/eberl">Manuel Eberl</a>
 
+        </div>
+        <span class="date">Jan 17</span>
+      </article>
+    <h2 class="head">2019</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Zeta_3_Irrational.html">The Irrationality of ζ(3)</a></h5>
+          <br>
+            by <a href="../../../authors/eberl">Manuel Eberl</a>
 
-<h2 class="head">2007</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/SumSquares.html">Sums of Two and Four Squares</a></h5> <br>by <a href="../../../authors/oosterhuis">Roelof Oosterhuis</a></div>
-  <span class="date">
-    Aug 12
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Fermat3_4.html">Fermat&#39;s Last Theorem for Exponents 3 and 4 and the Parametrisation of Pythagorean Triples</a></h5> <br>by <a href="../../../authors/oosterhuis">Roelof Oosterhuis</a></div>
-  <span class="date">
-    Aug 12
-  </span>
-</article>
+        </div>
+        <span class="date">Dec 27</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Gauss_Sums.html">Gauss Sums and the Pólya–Vinogradov Inequality</a></h5>
+          <br>
+            by <a href="../../../authors/raya">Rodrigo Raya</a> and <a href="../../../authors/eberl">Manuel Eberl</a>
 
+        </div>
+        <span class="date">Dec 10</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Transcendence_Series_Hancl_Rucki.html">The Transcendence of Certain Infinite Series</a></h5>
+          <br>
+            by <a href="../../../authors/argyraki">Angeliki Koutsoukou-Argyraki</a> and <a href="../../../authors/li">Wenda Li</a>
 
+        </div>
+        <span class="date">Mar 27</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Prime_Distribution_Elementary.html">Elementary Facts About the Distribution of Primes</a></h5>
+          <br>
+            by <a href="../../../authors/eberl">Manuel Eberl</a>
 
+        </div>
+        <span class="date">Feb 21</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Probabilistic_Prime_Tests.html">Probabilistic Primality Testing</a></h5>
+          <br>
+            by <a href="../../../authors/stuewe">Daniel Stüwe</a> and <a href="../../../authors/eberl">Manuel Eberl</a>
 
+        </div>
+        <span class="date">Feb 11</span>
+      </article>
+    <h2 class="head">2018</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Pi_Transcendental.html">The Transcendence of π</a></h5>
+          <br>
+            by <a href="../../../authors/eberl">Manuel Eberl</a>
+
+        </div>
+        <span class="date">Sep 28</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Prime_Number_Theorem.html">The Prime Number Theorem</a></h5>
+          <br>
+            by <a href="../../../authors/eberl">Manuel Eberl</a> and <a href="../../../authors/paulson">Lawrence C. Paulson</a>
+
+        </div>
+        <span class="date">Sep 19</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Pell.html">Pell&#39;s Equation</a></h5>
+          <br>
+            by <a href="../../../authors/eberl">Manuel Eberl</a>
+
+        </div>
+        <span class="date">Jun 23</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Irrationality_J_Hancl.html">Irrational Rapidly Convergent Series</a></h5>
+          <br>
+            by <a href="../../../authors/argyraki">Angeliki Koutsoukou-Argyraki</a> and <a href="../../../authors/li">Wenda Li</a>
+
+        </div>
+        <span class="date">May 23</span>
+      </article>
+    <h2 class="head">2017</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Dirichlet_L.html">Dirichlet L-Functions and Dirichlet&#39;s Theorem</a></h5>
+          <br>
+            by <a href="../../../authors/eberl">Manuel Eberl</a>
+
+        </div>
+        <span class="date">Dec 21</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Diophantine_Eqns_Lin_Hom.html">Homogeneous Linear Diophantine Equations</a></h5>
+          <br>
+            by <a href="../../../authors/messner">Florian Messner</a>, <a href="../../../authors/parsert">Julian Parsert</a>, <a href="../../../authors/schoepf">Jonas Schöpf</a> and <a href="../../../authors/sternagel">Christian Sternagel</a>
+
+        </div>
+        <span class="date">Oct 14</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Zeta_Function.html">The Hurwitz and Riemann ζ Functions</a></h5>
+          <br>
+            by <a href="../../../authors/eberl">Manuel Eberl</a>
+
+        </div>
+        <span class="date">Oct 12</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Dirichlet_Series.html">Dirichlet Series</a></h5>
+          <br>
+            by <a href="../../../authors/eberl">Manuel Eberl</a>
+
+        </div>
+        <span class="date">Oct 12</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Minkowskis_Theorem.html">Minkowski&#39;s Theorem</a></h5>
+          <br>
+            by <a href="../../../authors/eberl">Manuel Eberl</a>
+
+        </div>
+        <span class="date">Jul 13</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Bernoulli.html">Bernoulli Numbers</a></h5>
+          <br>
+            by <a href="../../../authors/bulwahn">Lukas Bulwahn</a> and <a href="../../../authors/eberl">Manuel Eberl</a>
+
+        </div>
+        <span class="date">Jan 24</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Bertrands_Postulate.html">Bertrand&#39;s postulate</a></h5>
+          <br>
+            by <a href="../../../authors/biendarra">Julian Biendarra</a> and <a href="../../../authors/eberl">Manuel Eberl</a>
+
+        </div>
+        <span class="date">Jan 17</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/E_Transcendental.html">The Transcendence of e</a></h5>
+          <br>
+            by <a href="../../../authors/eberl">Manuel Eberl</a>
+
+        </div>
+        <span class="date">Jan 12</span>
+      </article>
+    <h2 class="head">2015</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Prime_Harmonic_Series.html">The Divergence of the Prime Harmonic Series</a></h5>
+          <br>
+            by <a href="../../../authors/eberl">Manuel Eberl</a>
+
+        </div>
+        <span class="date">Dec 28</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Liouville_Numbers.html">Liouville numbers</a></h5>
+          <br>
+            by <a href="../../../authors/eberl">Manuel Eberl</a>
+
+        </div>
+        <span class="date">Dec 28</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Stern_Brocot.html">The Stern-Brocot Tree</a></h5>
+          <br>
+            by <a href="../../../authors/gammie">Peter Gammie</a> and <a href="../../../authors/lochbihler">Andreas Lochbihler</a>
+
+        </div>
+        <span class="date">Dec 22</span>
+      </article>
+    <h2 class="head">2013</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Pratt_Certificate.html">Pratt&#39;s Primality Certificates</a></h5>
+          <br>
+            by <a href="../../../authors/wimmer">Simon Wimmer</a> and <a href="../../../authors/noschinski">Lars Noschinski</a>
+
+        </div>
+        <span class="date">Jul 22</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Lehmer.html">Lehmer&#39;s Theorem</a></h5>
+          <br>
+            by <a href="../../../authors/wimmer">Simon Wimmer</a> and <a href="../../../authors/noschinski">Lars Noschinski</a>
+
+        </div>
+        <span class="date">Jul 22</span>
+      </article>
+    <h2 class="head">2009</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Perfect-Number-Thm.html">Perfect Number Theorem</a></h5>
+          <br>
+            by <a href="../../../authors/ijbema">Mark Ijbema</a>
+
+        </div>
+        <span class="date">Nov 22</span>
+      </article>
+    <h2 class="head">2007</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/SumSquares.html">Sums of Two and Four Squares</a></h5>
+          <br>
+            by <a href="../../../authors/oosterhuis">Roelof Oosterhuis</a>
+
+        </div>
+        <span class="date">Aug 12</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Fermat3_4.html">Fermat&#39;s Last Theorem for Exponents 3 and 4 and the Parametrisation of Pythagorean Triples</a></h5>
+          <br>
+            by <a href="../../../authors/oosterhuis">Roelof Oosterhuis</a>
+
+        </div>
+        <span class="date">Aug 12</span>
+      </article>
+        
+      </div>
     </div>
-  </div>
-</body>
-
+  </body>
 </html>

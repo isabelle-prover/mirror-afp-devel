@@ -1,477 +1,609 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Mathematics/Analysis - Archive of Formal Proofs</title><meta name="description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."><link rel="alternate" type="application/rss+xml" href="../../../topics/mathematics/analysis/index.xml" title="Archive of Formal Proofs" /><meta property="og:title" content="Mathematics/Analysis" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mathematics/Analysis - Archive of Formal Proofs</title>
+    <meta name="description" content="A collection of proof libraries, examples, and larger
+     scientific developments, mechanically checked in the theorem prover Isabelle.">
+  <link rel="alternate" type="application/rss+xml" href="../../../topics/mathematics/analysis/index.xml" title="Archive of Formal Proofs" />
+
+  <meta property="og:title" content="Mathematics/Analysis" />
 <meta property="og:description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="/topics/mathematics/analysis/" /><meta property="og:image" content="/images/afp.png"/><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="Mathematics/Analysis"/>
 <meta name="twitter:description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."/>
 
-  
   <link rel="stylesheet" type="text/css" href="../../../css/front.min.css">
 
-  <link rel="icon" href="../../../images/favicon.ico" type="image/icon"><script src="../../../js/obfuscate.js"></script>
+  <link rel="icon" href="../../../images/favicon.ico" type="image/icon">
+
+  <script src="../../../js/obfuscate.js"></script>
   <script src="../../../js/flexsearch.bundle.js"></script>
   <script src="../../../js/scroll-spy.js"></script>
   <script src="../../../js/theory.js"></script>
-  <script src="../../../js/util.js"></script><script src="../../../js/header-search.js"></script><script src="../../../js/search-autocomplete.js"></script>
+  <script src="../../../js/util.js"></script>
+    <script src="../../../js/header-search.js"></script>
+  <script src="../../../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../../../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../../../" class='logo-link'>
-    <img src="../../../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../../../" class="logo-link">
+    <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../../../search"><img src="../../../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../../../" class='logo-link'>
-        <img src="../../../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../../../"><li >Home</li></a>
-        <a href="../../../topics/"><li >Topics</li></a>
-        <a href="../../../download/"><li >Download</li></a>
-        <a href="../../../help/"><li >Help</li></a>
-        <a href="../../../submission/"><li >Submission</li></a>
-        <a href="../../../statistics/"><li >Statistics</li></a>
-        <a href="../../../about/"><li >About</li></a>
+          <a href="../../../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../../../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../../../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../../../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../../../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../../../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../../../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content '><header>
-  <form autocomplete="off" action="../../../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../../../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>M</span>athematics/<span class='first'>A</span>nalysis</h1>
+    </aside>
+    <div class='content'>
+      <header>
+    <form autocomplete="off" action="../../../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../../../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>M</span>athematics/<span class='first'>A</span>nalysis
+    
+  </h1>
   <div>
-    
-    
   </div>
-</header><div><h2>Subject Classification</h2><p>ACM: <a href="https://dl.acm.org/topic/ccs2012/10002950.10003714">Mathematics of computing~Mathematical analysis</a></p><h2 class="head">2022</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Weighted_Arithmetic_Geometric_Mean.html">Pólya’s Proof of the Weighted Arithmetic–Geometric Mean Inequality</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Jul 11
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Sophomores_Dream.html">The Sophomore&#39;s Dream</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Apr 10
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Dedekind_Real.html">Constructing the Reals as Dedekind Cuts of Rationals</a></h5> <br>by <a href="../../../authors/fleuriot">Jacques D. Fleuriot</a> and <a href="../../../authors/paulson">Lawrence C. Paulson</a></div>
-  <span class="date">
-    Mar 24
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Cotangent_PFD_Formula.html">A Proof from THE BOOK: The Partial Fraction Expansion of the Cotangent</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Mar 15
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Wetzels_Problem.html">Wetzel&#39;s Problem and the Continuum Hypothesis</a></h5> <br>by <a href="../../../authors/paulson">Lawrence C. Paulson</a></div>
-  <span class="date">
-    Feb 18
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Youngs_Inequality.html">Young&#39;s Inequality for Increasing Functions</a></h5> <br>by <a href="../../../authors/paulson">Lawrence C. Paulson</a></div>
-  <span class="date">
-    Jan 31
-  </span>
-</article>
+</header>
+      <div>
+        
+    <h2>Subject Classification</h2>
+      <p>ACM: <a href="https://dl.acm.org/topic/ccs2012/10002950.10003714">Mathematics of computing~Mathematical analysis</a></p>
+    <h2 class="head">2022</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Weighted_Arithmetic_Geometric_Mean.html">Pólya’s Proof of the Weighted Arithmetic–Geometric Mean Inequality</a></h5>
+          <br>
+            by <a href="../../../authors/eberl">Manuel Eberl</a>
 
+        </div>
+        <span class="date">Jul 11</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Sophomores_Dream.html">The Sophomore&#39;s Dream</a></h5>
+          <br>
+            by <a href="../../../authors/eberl">Manuel Eberl</a>
 
-<h2 class="head">2021</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Hyperdual.html">Hyperdual Numbers and Forward Differentiation</a></h5> <br>by <a href="../../../authors/smola">Filip Smola</a> and <a href="../../../authors/fleuriot">Jacques D. Fleuriot</a></div>
-  <span class="date">
-    Dec 31
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Real_Power.html">Real Exponents as the Limits of Sequences of Rational Exponents</a></h5> <br>by <a href="../../../authors/fleuriot">Jacques D. Fleuriot</a></div>
-  <span class="date">
-    Nov 08
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Complex_Bounded_Operators.html">Complex Bounded Operators</a></h5> <br>by <a href="../../../authors/caballero">José Manuel Rodríguez Caballero</a> and <a href="../../../authors/unruh">Dominique Unruh</a></div>
-  <span class="date">
-    Sep 18
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Cubic_Quartic_Equations.html">Solving Cubic and Quartic Equations</a></h5> <br>by <a href="../../../authors/thiemann">René Thiemann</a></div>
-  <span class="date">
-    Sep 03
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Three_Circles.html">The Theorem of Three Circles</a></h5> <br>by <a href="../../../authors/thomson">Fox Thomson</a> and <a href="../../../authors/li">Wenda Li</a></div>
-  <span class="date">
-    Aug 21
-  </span>
-</article>
+        </div>
+        <span class="date">Apr 10</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Dedekind_Real.html">Constructing the Reals as Dedekind Cuts of Rationals</a></h5>
+          <br>
+            by <a href="../../../authors/fleuriot">Jacques D. Fleuriot</a> and <a href="../../../authors/paulson">Lawrence C. Paulson</a>
 
+        </div>
+        <span class="date">Mar 24</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Cotangent_PFD_Formula.html">A Proof from THE BOOK: The Partial Fraction Expansion of the Cotangent</a></h5>
+          <br>
+            by <a href="../../../authors/eberl">Manuel Eberl</a>
 
-<h2 class="head">2020</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Irrational_Series_Erdos_Straus.html">Irrationality Criteria for Series by Erdős and Straus</a></h5> <br>by <a href="../../../authors/argyraki">Angeliki Koutsoukou-Argyraki</a> and <a href="../../../authors/li">Wenda Li</a></div>
-  <span class="date">
-    May 12
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Banach_Steinhaus.html">Banach-Steinhaus Theorem</a></h5> <br>by <a href="../../../authors/unruh">Dominique Unruh</a> and <a href="../../../authors/caballero">José Manuel Rodríguez Caballero</a></div>
-  <span class="date">
-    May 02
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Lambert_W.html">The Lambert W Function on the Reals</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Apr 24
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Matrices_for_ODEs.html">Matrices for ODEs</a></h5> <br>by <a href="../../../authors/munive">Jonathan Julian Huerta y Munive</a></div>
-  <span class="date">
-    Apr 19
-  </span>
-</article>
+        </div>
+        <span class="date">Mar 15</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Wetzels_Problem.html">Wetzel&#39;s Problem and the Continuum Hypothesis</a></h5>
+          <br>
+            by <a href="../../../authors/paulson">Lawrence C. Paulson</a>
 
+        </div>
+        <span class="date">Feb 18</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Youngs_Inequality.html">Young&#39;s Inequality for Increasing Functions</a></h5>
+          <br>
+            by <a href="../../../authors/paulson">Lawrence C. Paulson</a>
 
-<h2 class="head">2019</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Poincare_Bendixson.html">The Poincaré-Bendixson Theorem</a></h5> <br>by <a href="../../../authors/immler">Fabian Immler</a> and <a href="../../../authors/tan">Yong Kiam Tan</a></div>
-  <span class="date">
-    Dec 18
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Hybrid_Systems_VCs.html">Verification Components for Hybrid Systems</a></h5> <br>by <a href="../../../authors/munive">Jonathan Julian Huerta y Munive</a></div>
-  <span class="date">
-    Sep 10
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Fourier.html">Fourier Series</a></h5> <br>by <a href="../../../authors/paulson">Lawrence C. Paulson</a></div>
-  <span class="date">
-    Sep 06
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Laplace_Transform.html">Laplace Transform</a></h5> <br>by <a href="../../../authors/immler">Fabian Immler</a></div>
-  <span class="date">
-    Aug 14
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Transcendence_Series_Hancl_Rucki.html">The Transcendence of Certain Infinite Series</a></h5> <br>by <a href="../../../authors/argyraki">Angeliki Koutsoukou-Argyraki</a> and <a href="../../../authors/li">Wenda Li</a></div>
-  <span class="date">
-    Mar 27
-  </span>
-</article>
+        </div>
+        <span class="date">Jan 31</span>
+      </article>
+    <h2 class="head">2021</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Hyperdual.html">Hyperdual Numbers and Forward Differentiation</a></h5>
+          <br>
+            by <a href="../../../authors/smola">Filip Smola</a> and <a href="../../../authors/fleuriot">Jacques D. Fleuriot</a>
 
+        </div>
+        <span class="date">Dec 31</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Real_Power.html">Real Exponents as the Limits of Sequences of Rational Exponents</a></h5>
+          <br>
+            by <a href="../../../authors/fleuriot">Jacques D. Fleuriot</a>
 
-<h2 class="head">2018</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Smooth_Manifolds.html">Smooth Manifolds</a></h5> <br>by <a href="../../../authors/immler">Fabian Immler</a> and <a href="../../../authors/zhan">Bohua Zhan</a></div>
-  <span class="date">
-    Oct 22
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Budan_Fourier.html">The Budan–Fourier Theorem and Counting Real Roots with Multiplicity</a></h5> <br>by <a href="../../../authors/li">Wenda Li</a></div>
-  <span class="date">
-    Sep 02
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Irrationality_J_Hancl.html">Irrational Rapidly Convergent Series</a></h5> <br>by <a href="../../../authors/argyraki">Angeliki Koutsoukou-Argyraki</a> and <a href="../../../authors/li">Wenda Li</a></div>
-  <span class="date">
-    May 23
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Error_Function.html">The Error Function</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Feb 06
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Green.html">An Isabelle/HOL formalisation of Green&#39;s Theorem</a></h5> <br>by <a href="../../../authors/abdulaziz">Mohammad Abdulaziz</a> and <a href="../../../authors/paulson">Lawrence C. Paulson</a></div>
-  <span class="date">
-    Jan 11
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Taylor_Models.html">Taylor Models</a></h5> <br>by <a href="../../../authors/traut">Christoph Traut</a> and <a href="../../../authors/immler">Fabian Immler</a></div>
-  <span class="date">
-    Jan 08
-  </span>
-</article>
+        </div>
+        <span class="date">Nov 08</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Complex_Bounded_Operators.html">Complex Bounded Operators</a></h5>
+          <br>
+            by <a href="../../../authors/caballero">José Manuel Rodríguez Caballero</a> and <a href="../../../authors/unruh">Dominique Unruh</a>
 
+        </div>
+        <span class="date">Sep 18</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Cubic_Quartic_Equations.html">Solving Cubic and Quartic Equations</a></h5>
+          <br>
+            by <a href="../../../authors/thiemann">René Thiemann</a>
 
-<h2 class="head">2017</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Winding_Number_Eval.html">Evaluate Winding Numbers through Cauchy Indices</a></h5> <br>by <a href="../../../authors/li">Wenda Li</a></div>
-  <span class="date">
-    Oct 17
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Count_Complex_Roots.html">Count the Number of Complex Roots</a></h5> <br>by <a href="../../../authors/li">Wenda Li</a></div>
-  <span class="date">
-    Oct 17
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Zeta_Function.html">The Hurwitz and Riemann ζ Functions</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Oct 12
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Linear_Recurrences.html">Linear Recurrences</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Oct 12
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Euler_MacLaurin.html">The Euler–MacLaurin Formula</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Mar 10
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Bernoulli.html">Bernoulli Numbers</a></h5> <br>by <a href="../../../authors/bulwahn">Lukas Bulwahn</a> and <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Jan 24
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/E_Transcendental.html">The Transcendence of e</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Jan 12
-  </span>
-</article>
+        </div>
+        <span class="date">Sep 03</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Three_Circles.html">The Theorem of Three Circles</a></h5>
+          <br>
+            by <a href="../../../authors/thomson">Fox Thomson</a> and <a href="../../../authors/li">Wenda Li</a>
 
+        </div>
+        <span class="date">Aug 21</span>
+      </article>
+    <h2 class="head">2020</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Irrational_Series_Erdos_Straus.html">Irrationality Criteria for Series by Erdős and Straus</a></h5>
+          <br>
+            by <a href="../../../authors/argyraki">Angeliki Koutsoukou-Argyraki</a> and <a href="../../../authors/li">Wenda Li</a>
 
-<h2 class="head">2016</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Deep_Learning.html">Expressiveness of Deep Learning</a></h5> <br>by <a href="../../../authors/bentkamp">Alexander Bentkamp</a></div>
-  <span class="date">
-    Nov 10
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Lp.html">Lp spaces</a></h5> <br>by <a href="../../../authors/gouezel">Sebastien Gouezel</a></div>
-  <span class="date">
-    Oct 05
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Stirling_Formula.html">Stirling&#39;s formula</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Sep 01
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Cartan_FP.html">The Cartan Fixed Point Theorems</a></h5> <br>by <a href="../../../authors/paulson">Lawrence C. Paulson</a></div>
-  <span class="date">
-    Mar 08
-  </span>
-</article>
+        </div>
+        <span class="date">May 12</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Banach_Steinhaus.html">Banach-Steinhaus Theorem</a></h5>
+          <br>
+            by <a href="../../../authors/unruh">Dominique Unruh</a> and <a href="../../../authors/caballero">José Manuel Rodríguez Caballero</a>
 
+        </div>
+        <span class="date">May 02</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Lambert_W.html">The Lambert W Function on the Reals</a></h5>
+          <br>
+            by <a href="../../../authors/eberl">Manuel Eberl</a>
 
-<h2 class="head">2015</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Liouville_Numbers.html">Liouville numbers</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Dec 28
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Descartes_Sign_Rule.html">Descartes&#39; Rule of Signs</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Dec 28
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Akra_Bazzi.html">The Akra-Bazzi theorem and the Master theorem</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Jul 14
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Landau_Symbols.html">Landau Symbols</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Jul 14
-  </span>
-</article>
+        </div>
+        <span class="date">Apr 24</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Matrices_for_ODEs.html">Matrices for ODEs</a></h5>
+          <br>
+            by <a href="../../../authors/munive">Jonathan Julian Huerta y Munive</a>
 
+        </div>
+        <span class="date">Apr 19</span>
+      </article>
+    <h2 class="head">2019</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Poincare_Bendixson.html">The Poincaré-Bendixson Theorem</a></h5>
+          <br>
+            by <a href="../../../authors/immler">Fabian Immler</a> and <a href="../../../authors/tan">Yong Kiam Tan</a>
 
-<h2 class="head">2014</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Sturm_Tarski.html">The Sturm–Tarski Theorem</a></h5> <br>by <a href="../../../authors/li">Wenda Li</a></div>
-  <span class="date">
-    Sep 19
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Special_Function_Bounds.html">Real-Valued Special Functions: Upper and Lower Bounds</a></h5> <br>by <a href="../../../authors/paulson">Lawrence C. Paulson</a></div>
-  <span class="date">
-    Aug 29
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Affine_Arithmetic.html">Affine Arithmetic</a></h5> <br>by <a href="../../../authors/immler">Fabian Immler</a></div>
-  <span class="date">
-    Feb 07
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Real_Impl.html">Implementing field extensions of the form Q[sqrt(b)]</a></h5> <br>by <a href="../../../authors/thiemann">René Thiemann</a></div>
-  <span class="date">
-    Feb 06
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Sturm_Sequences.html">Sturm&#39;s Theorem</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Jan 11
-  </span>
-</article>
+        </div>
+        <span class="date">Dec 18</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Hybrid_Systems_VCs.html">Verification Components for Hybrid Systems</a></h5>
+          <br>
+            by <a href="../../../authors/munive">Jonathan Julian Huerta y Munive</a>
 
+        </div>
+        <span class="date">Sep 10</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Fourier.html">Fourier Series</a></h5>
+          <br>
+            by <a href="../../../authors/paulson">Lawrence C. Paulson</a>
 
-<h2 class="head">2013</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Sqrt_Babylonian.html">Computing N-th Roots using the Babylonian Method</a></h5> <br>by <a href="../../../authors/thiemann">René Thiemann</a></div>
-  <span class="date">
-    Jan 03
-  </span>
-</article>
+        </div>
+        <span class="date">Sep 06</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Laplace_Transform.html">Laplace Transform</a></h5>
+          <br>
+            by <a href="../../../authors/immler">Fabian Immler</a>
 
+        </div>
+        <span class="date">Aug 14</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Transcendence_Series_Hancl_Rucki.html">The Transcendence of Certain Infinite Series</a></h5>
+          <br>
+            by <a href="../../../authors/argyraki">Angeliki Koutsoukou-Argyraki</a> and <a href="../../../authors/li">Wenda Li</a>
 
-<h2 class="head">2012</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Ordinary_Differential_Equations.html">Ordinary Differential Equations</a></h5> <br>by <a href="../../../authors/immler">Fabian Immler</a> and <a href="../../../authors/hoelzl">Johannes Hölzl</a></div>
-  <span class="date">
-    Apr 26
-  </span>
-</article>
+        </div>
+        <span class="date">Mar 27</span>
+      </article>
+    <h2 class="head">2018</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Smooth_Manifolds.html">Smooth Manifolds</a></h5>
+          <br>
+            by <a href="../../../authors/immler">Fabian Immler</a> and <a href="../../../authors/zhan">Bohua Zhan</a>
 
+        </div>
+        <span class="date">Oct 22</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Budan_Fourier.html">The Budan–Fourier Theorem and Counting Real Roots with Multiplicity</a></h5>
+          <br>
+            by <a href="../../../authors/li">Wenda Li</a>
 
-<h2 class="head">2011</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Lower_Semicontinuous.html">Lower Semicontinuous Functions</a></h5> <br>by <a href="../../../authors/grechuk">Bogdan Grechuk</a></div>
-  <span class="date">
-    Jan 08
-  </span>
-</article>
+        </div>
+        <span class="date">Sep 02</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Irrationality_J_Hancl.html">Irrational Rapidly Convergent Series</a></h5>
+          <br>
+            by <a href="../../../authors/argyraki">Angeliki Koutsoukou-Argyraki</a> and <a href="../../../authors/li">Wenda Li</a>
 
+        </div>
+        <span class="date">May 23</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Error_Function.html">The Error Function</a></h5>
+          <br>
+            by <a href="../../../authors/eberl">Manuel Eberl</a>
 
-<h2 class="head">2010</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Polynomials.html">Executable Multivariate Polynomials</a></h5> <br>by <a href="../../../authors/sternagel">Christian Sternagel</a>, <a href="../../../authors/thiemann">René Thiemann</a>, <a href="../../../authors/maletzky">Alexander Maletzky</a>, <a href="../../../authors/immler">Fabian Immler</a>, <a href="../../../authors/haftmann">Florian Haftmann</a>, <a href="../../../authors/lochbihler">Andreas Lochbihler</a> and <a href="../../../authors/bentkamp">Alexander Bentkamp</a></div>
-  <span class="date">
-    Aug 10
-  </span>
-</article>
+        </div>
+        <span class="date">Feb 06</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Green.html">An Isabelle/HOL formalisation of Green&#39;s Theorem</a></h5>
+          <br>
+            by <a href="../../../authors/abdulaziz">Mohammad Abdulaziz</a> and <a href="../../../authors/paulson">Lawrence C. Paulson</a>
 
+        </div>
+        <span class="date">Jan 11</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Taylor_Models.html">Taylor Models</a></h5>
+          <br>
+            by <a href="../../../authors/traut">Christoph Traut</a> and <a href="../../../authors/immler">Fabian Immler</a>
 
-<h2 class="head">2006</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Cauchy.html">Cauchy&#39;s Mean Theorem and the Cauchy-Schwarz Inequality</a></h5> <br>by <a href="../../../authors/porter">Benjamin Porter</a></div>
-  <span class="date">
-    Mar 14
-  </span>
-</article>
+        </div>
+        <span class="date">Jan 08</span>
+      </article>
+    <h2 class="head">2017</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Winding_Number_Eval.html">Evaluate Winding Numbers through Cauchy Indices</a></h5>
+          <br>
+            by <a href="../../../authors/li">Wenda Li</a>
 
+        </div>
+        <span class="date">Oct 17</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Count_Complex_Roots.html">Count the Number of Complex Roots</a></h5>
+          <br>
+            by <a href="../../../authors/li">Wenda Li</a>
 
-<h2 class="head">2004</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Integration.html">Integration theory and random variables</a></h5> <br>by <a href="../../../authors/richter">Stefan Richter</a></div>
-  <span class="date">
-    Nov 19
-  </span>
-</article>
+        </div>
+        <span class="date">Oct 17</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Zeta_Function.html">The Hurwitz and Riemann ζ Functions</a></h5>
+          <br>
+            by <a href="../../../authors/eberl">Manuel Eberl</a>
 
+        </div>
+        <span class="date">Oct 12</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Linear_Recurrences.html">Linear Recurrences</a></h5>
+          <br>
+            by <a href="../../../authors/eberl">Manuel Eberl</a>
 
+        </div>
+        <span class="date">Oct 12</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Euler_MacLaurin.html">The Euler–MacLaurin Formula</a></h5>
+          <br>
+            by <a href="../../../authors/eberl">Manuel Eberl</a>
 
+        </div>
+        <span class="date">Mar 10</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Bernoulli.html">Bernoulli Numbers</a></h5>
+          <br>
+            by <a href="../../../authors/bulwahn">Lukas Bulwahn</a> and <a href="../../../authors/eberl">Manuel Eberl</a>
 
+        </div>
+        <span class="date">Jan 24</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/E_Transcendental.html">The Transcendence of e</a></h5>
+          <br>
+            by <a href="../../../authors/eberl">Manuel Eberl</a>
+
+        </div>
+        <span class="date">Jan 12</span>
+      </article>
+    <h2 class="head">2016</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Deep_Learning.html">Expressiveness of Deep Learning</a></h5>
+          <br>
+            by <a href="../../../authors/bentkamp">Alexander Bentkamp</a>
+
+        </div>
+        <span class="date">Nov 10</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Lp.html">Lp spaces</a></h5>
+          <br>
+            by <a href="../../../authors/gouezel">Sebastien Gouezel</a>
+
+        </div>
+        <span class="date">Oct 05</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Stirling_Formula.html">Stirling&#39;s formula</a></h5>
+          <br>
+            by <a href="../../../authors/eberl">Manuel Eberl</a>
+
+        </div>
+        <span class="date">Sep 01</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Cartan_FP.html">The Cartan Fixed Point Theorems</a></h5>
+          <br>
+            by <a href="../../../authors/paulson">Lawrence C. Paulson</a>
+
+        </div>
+        <span class="date">Mar 08</span>
+      </article>
+    <h2 class="head">2015</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Liouville_Numbers.html">Liouville numbers</a></h5>
+          <br>
+            by <a href="../../../authors/eberl">Manuel Eberl</a>
+
+        </div>
+        <span class="date">Dec 28</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Descartes_Sign_Rule.html">Descartes&#39; Rule of Signs</a></h5>
+          <br>
+            by <a href="../../../authors/eberl">Manuel Eberl</a>
+
+        </div>
+        <span class="date">Dec 28</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Akra_Bazzi.html">The Akra-Bazzi theorem and the Master theorem</a></h5>
+          <br>
+            by <a href="../../../authors/eberl">Manuel Eberl</a>
+
+        </div>
+        <span class="date">Jul 14</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Landau_Symbols.html">Landau Symbols</a></h5>
+          <br>
+            by <a href="../../../authors/eberl">Manuel Eberl</a>
+
+        </div>
+        <span class="date">Jul 14</span>
+      </article>
+    <h2 class="head">2014</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Sturm_Tarski.html">The Sturm–Tarski Theorem</a></h5>
+          <br>
+            by <a href="../../../authors/li">Wenda Li</a>
+
+        </div>
+        <span class="date">Sep 19</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Special_Function_Bounds.html">Real-Valued Special Functions: Upper and Lower Bounds</a></h5>
+          <br>
+            by <a href="../../../authors/paulson">Lawrence C. Paulson</a>
+
+        </div>
+        <span class="date">Aug 29</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Affine_Arithmetic.html">Affine Arithmetic</a></h5>
+          <br>
+            by <a href="../../../authors/immler">Fabian Immler</a>
+
+        </div>
+        <span class="date">Feb 07</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Real_Impl.html">Implementing field extensions of the form Q[sqrt(b)]</a></h5>
+          <br>
+            by <a href="../../../authors/thiemann">René Thiemann</a>
+
+        </div>
+        <span class="date">Feb 06</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Sturm_Sequences.html">Sturm&#39;s Theorem</a></h5>
+          <br>
+            by <a href="../../../authors/eberl">Manuel Eberl</a>
+
+        </div>
+        <span class="date">Jan 11</span>
+      </article>
+    <h2 class="head">2013</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Sqrt_Babylonian.html">Computing N-th Roots using the Babylonian Method</a></h5>
+          <br>
+            by <a href="../../../authors/thiemann">René Thiemann</a>
+
+        </div>
+        <span class="date">Jan 03</span>
+      </article>
+    <h2 class="head">2012</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Ordinary_Differential_Equations.html">Ordinary Differential Equations</a></h5>
+          <br>
+            by <a href="../../../authors/immler">Fabian Immler</a> and <a href="../../../authors/hoelzl">Johannes Hölzl</a>
+
+        </div>
+        <span class="date">Apr 26</span>
+      </article>
+    <h2 class="head">2011</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Lower_Semicontinuous.html">Lower Semicontinuous Functions</a></h5>
+          <br>
+            by <a href="../../../authors/grechuk">Bogdan Grechuk</a>
+
+        </div>
+        <span class="date">Jan 08</span>
+      </article>
+    <h2 class="head">2010</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Polynomials.html">Executable Multivariate Polynomials</a></h5>
+          <br>
+            by <a href="../../../authors/sternagel">Christian Sternagel</a>, <a href="../../../authors/thiemann">René Thiemann</a>, <a href="../../../authors/maletzky">Alexander Maletzky</a>, <a href="../../../authors/immler">Fabian Immler</a>, <a href="../../../authors/haftmann">Florian Haftmann</a>, <a href="../../../authors/lochbihler">Andreas Lochbihler</a> and <a href="../../../authors/bentkamp">Alexander Bentkamp</a>
+
+        </div>
+        <span class="date">Aug 10</span>
+      </article>
+    <h2 class="head">2006</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Cauchy.html">Cauchy&#39;s Mean Theorem and the Cauchy-Schwarz Inequality</a></h5>
+          <br>
+            by <a href="../../../authors/porter">Benjamin Porter</a>
+
+        </div>
+        <span class="date">Mar 14</span>
+      </article>
+    <h2 class="head">2004</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Integration.html">Integration theory and random variables</a></h5>
+          <br>
+            by <a href="../../../authors/richter">Stefan Richter</a>
+
+        </div>
+        <span class="date">Nov 19</span>
+      </article>
+        
+      </div>
     </div>
-  </div>
-</body>
-
+  </body>
 </html>

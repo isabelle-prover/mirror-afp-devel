@@ -1,27 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Finitely Generated Abelian Groups - Archive of Formal Proofs</title><meta name="description" content="This article deals with the formalisation of some group-theoretic
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Finitely Generated Abelian Groups - Archive of Formal Proofs</title>
+    <meta name="description" content="This article deals with the formalisation of some group-theoretic
 results including the fundamental theorem of finitely generated
-abelian groups..."><meta property="og:title" content="Finitely Generated Abelian Groups" />
+abelian groups...">
+
+  <meta property="og:title" content="Finitely Generated Abelian Groups" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="/entries/Finitely_Generated_Abelian_Groups.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
 <meta property="article:published_time" content="2021-07-07T00:00:00+00:00" />
 <meta property="article:modified_time" content="2021-07-07T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="Finitely Generated Abelian Groups"/>
 <meta name="twitter:description" content=""/>
 
-  
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
     <script>
       MathJax = {
         tex: {
@@ -33,72 +38,111 @@ abelian groups..."><meta property="og:title" content="Finitely Generated Abelian
         }
       };
     </script>
-    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
   <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
-  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../" class='logo-link'>
-    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../" class='logo-link'>
-        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../"><li >Home</li></a>
-        <a href="../topics/"><li >Topics</li></a>
-        <a href="../download/"><li >Download</li></a>
-        <a href="../help/"><li >Help</li></a>
-        <a href="../submission/"><li >Submission</li></a>
-        <a href="../statistics/"><li >Statistics</li></a>
-        <a href="../about/"><li >About</li></a>
+          <a href="../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content  entries'><header>
-  <form autocomplete="off" action="../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>F</span>initely <span class='first'>G</span>enerated <span class='first'>A</span>belian <span class='first'>G</span>roups</h1>
+    </aside>
+    <div class='content entries'>
+      <header>
+    <form autocomplete="off" action="../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>F</span>initely <span class='first'>G</span>enerated <span class='first'>A</span>belian <span class='first'>G</span>roups
+    
+  </h1>
   <div>
-    
-    <p><a href="../authors/thommes">Joseph Thommes</a> and <a href="../authors/eberl">Manuel Eberl</a> <a href="https://pruvisto.org/">🌐</a>
-    </p>
-    
-    
-    <p class="date">July 7, 2021</p>
-    
-  </div>
-</header><div><main><h3>Abstract</h3>
+      <p>
+        <a href="../authors/thommes">Joseph Thommes</a> and <a href="../authors/eberl">Manuel Eberl</a> <a href="https://pruvisto.org/">🌐</a>
 
-  <div class="abstract mathjax_process">This article deals with the formalisation of some group-theoretic
+      </p>
+      <p class="date">July 7, 2021</p>
+  </div>
+</header>
+      <div>
+        
+  <main>
+    <h3>Abstract</h3>
+
+    <div class="abstract mathjax_process">This article deals with the formalisation of some group-theoretic
 results including the fundamental theorem of finitely generated
 abelian groups characterising the structure of these groups as a
 uniquely determined product of cyclic groups. Both the invariant
@@ -106,81 +150,111 @@ factor decomposition and the primary decomposition are covered.
 Additional work includes results about the direct product, the
 internal direct product and more group-theoretic lemmas.</div>
 
-  <h3>License</h3>
-  <div><a href="https://isa-afp.org/LICENSE">BSD License</a></div><h3>Topics</h3>
-  <ul><li><a href="../topics/mathematics/algebra">Mathematics/Algebra</a></li></ul>
-  <h3>Session Finitely_Generated_Abelian_Groups</h3>
-  <ul>
-    <li><a href="../theories/finitely_generated_abelian_groups/#Set_Multiplication">Set_Multiplication</a></li>
-    <li><a href="../theories/finitely_generated_abelian_groups/#Miscellaneous_Groups">Miscellaneous_Groups</a></li>
-    <li><a href="../theories/finitely_generated_abelian_groups/#Generated_Groups_Extend">Generated_Groups_Extend</a></li>
-    <li><a href="../theories/finitely_generated_abelian_groups/#General_Auxiliary">General_Auxiliary</a></li>
-    <li><a href="../theories/finitely_generated_abelian_groups/#IDirProds">IDirProds</a></li>
-    <li><a href="../theories/finitely_generated_abelian_groups/#Finite_Product_Extend">Finite_Product_Extend</a></li>
-    <li><a href="../theories/finitely_generated_abelian_groups/#Group_Hom">Group_Hom</a></li>
-    <li><a href="../theories/finitely_generated_abelian_groups/#Finite_And_Cyclic_Groups">Finite_And_Cyclic_Groups</a></li>
-    <li><a href="../theories/finitely_generated_abelian_groups/#DirProds">DirProds</a></li>
-    <li><a href="../theories/finitely_generated_abelian_groups/#Group_Relations">Group_Relations</a></li>
-    <li><a href="../theories/finitely_generated_abelian_groups/#Finitely_Generated_Abelian_Groups">Finitely_Generated_Abelian_Groups</a></li></ul><div class="flex-wrap">
-  <div>
-    <h3>Used by</h3>
-    <ul class="horizontal-list"><li><a href="../entries/Dirichlet_L.html">Dirichlet L-Functions and Dirichlet&rsquo;s Theorem</a></li></ul>
-  </div>
-  
-  </div>
-</main>
-
-<nav class='links'>
-  <a class='popup-button' href="#cite-popup">Cite</a>
-  <a class='popup-button' href="#download-popup">Download</a>
-  <h4>PDFs</h4>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Finitely_Generated_Abelian_Groups/outline.pdf">Proof
-    outline</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Finitely_Generated_Abelian_Groups/document.pdf">Proof
-    document</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Finitely_Generated_Abelian_Groups/session_graph.pdf">Dependencies</a></nav>
-
-<div id="cite-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Cite</h2>
-    <a class="close" href="#">&times;</a>
+    <h3>License</h3>
     <div>
-      <p style="display:none;" id="bibtex-filename">Finitely_Generated_Abelian_Groups-AFP</p><pre id="copy-text">@article{Finitely_Generated_Abelian_Groups-AFP,
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/mathematics/algebra">Mathematics/Algebra</a></li>
+      </ul>
+      <h3>Session Finitely_Generated_Abelian_Groups</h3>
+      <ul>
+          <li><a href="../sessions/finitely_generated_abelian_groups/#Set_Multiplication">Set_Multiplication</a></li>
+          <li><a href="../sessions/finitely_generated_abelian_groups/#Miscellaneous_Groups">Miscellaneous_Groups</a></li>
+          <li><a href="../sessions/finitely_generated_abelian_groups/#Generated_Groups_Extend">Generated_Groups_Extend</a></li>
+          <li><a href="../sessions/finitely_generated_abelian_groups/#General_Auxiliary">General_Auxiliary</a></li>
+          <li><a href="../sessions/finitely_generated_abelian_groups/#IDirProds">IDirProds</a></li>
+          <li><a href="../sessions/finitely_generated_abelian_groups/#Finite_Product_Extend">Finite_Product_Extend</a></li>
+          <li><a href="../sessions/finitely_generated_abelian_groups/#Group_Hom">Group_Hom</a></li>
+          <li><a href="../sessions/finitely_generated_abelian_groups/#Finite_And_Cyclic_Groups">Finite_And_Cyclic_Groups</a></li>
+          <li><a href="../sessions/finitely_generated_abelian_groups/#DirProds">DirProds</a></li>
+          <li><a href="../sessions/finitely_generated_abelian_groups/#Group_Relations">Group_Relations</a></li>
+          <li><a href="../sessions/finitely_generated_abelian_groups/#Finitely_Generated_Abelian_Groups">Finitely_Generated_Abelian_Groups</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+      <div>
+        <h3>Used by</h3>
+        <ul class="horizontal-list">
+            <li>
+              <a href="../entries/Dirichlet_L.html">Dirichlet L-Functions and Dirichlet&rsquo;s Theorem</a>
+            </li>
+        </ul>
+      </div>
+      </div>
+    
+  </main>
+
+  <nav class='links'>
+    <a class='popup-button' href="#cite-popup">Cite</a>
+    <a class='popup-button' href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Finitely_Generated_Abelian_Groups/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Finitely_Generated_Abelian_Groups/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Finitely_Generated_Abelian_Groups/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Finitely_Generated_Abelian_Groups-AFP</p>
+        <pre id="copy-text">@article{Finitely_Generated_Abelian_Groups-AFP,
   author  = {Joseph Thommes and Manuel Eberl},
   title   = {Finitely Generated Abelian Groups},
   journal = {Archive of Formal Proofs},
   month   = {July},
   year    = {2021},
   note    = {\url{https://isa-afp.org/entries/Finitely_Generated_Abelian_Groups.html},
-            Formal proof development},
+             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
     </div>
   </div>
-</div>
 
-<div id="download-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Download</h2>
-    <a class="close" href="#">&times;</a>
-    <a href="https://www.isa-afp.org/release//afp-Finitely_Generated_Abelian_Groups-current.tar.gz" download>Download latest</a>
-    <p>Older releases:</p>
-    <ul><li>
-        <a href="https://www.isa-afp.org/release/afp-Finitely_Generated_Abelian_Groups-2023-09-13.tar.gz">Sep 13, 2023</a>: Isabelle2023
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Finitely_Generated_Abelian_Groups-2022-10-27.tar.gz">Oct 27, 2022</a>: Isabelle2022
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Finitely_Generated_Abelian_Groups-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021-1
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Finitely_Generated_Abelian_Groups-2021-07-13.tar.gz">Jul 13, 2021</a>: Isabelle2021
-      </li></ul>
-  </div>
-</div>
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-Finitely_Generated_Abelian_Groups-current.tar.gz"
+         download>Download latest</a>
+        <p>Older releases:</p>
+        <ul>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Finitely_Generated_Abelian_Groups-2023-09-13.tar.gz">
+                Sep 13, 2023
+              </a>
+              : Isabelle2023
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Finitely_Generated_Abelian_Groups-2022-10-27.tar.gz">
+                Oct 27, 2022
+              </a>
+              : Isabelle2022
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Finitely_Generated_Abelian_Groups-2021-12-14.tar.gz">
+                Dec 14, 2021
+              </a>
+              : Isabelle2021-1
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Finitely_Generated_Abelian_Groups-2021-07-13.tar.gz">
+                Jul 13, 2021
+              </a>
+              : Isabelle2021
+            </li>
+        </ul>
     </div>
   </div>
-</body>
-
+        
+      </div>
+    </div>
+  </body>
 </html>

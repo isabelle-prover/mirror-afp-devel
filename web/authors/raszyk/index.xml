@@ -1,47 +1,45 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>raszyk on Archive of Formal Proofs</title>
+    <title>raszyk on Archive of Formal Proofs
+    </title>
     <link>/authors/raszyk/</link>
-    <description>Recent content in raszyk on Archive of Formal Proofs</description>
+    <description>
+        Recent content in raszyk 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Wed, 28 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="/authors/raszyk/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Making Arbitrary Relational Calculus Queries Safe-Range</title>
-      <link>/entries/Safe_Range_RC.html</link>
-      <pubDate>Wed, 28 Sep 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Safe_Range_RC.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>First-Order Query Evaluation</title>
-      <link>/entries/Eval_FO.html</link>
-      <pubDate>Tue, 15 Feb 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Eval_FO.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Multi-Head Monitoring of Metric Dynamic Logic</title>
-      <link>/entries/VYDRA_MDL.html</link>
-      <pubDate>Sun, 13 Feb 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/VYDRA_MDL.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Formalization of an Optimized Monitoring Algorithm for Metric First-Order Dynamic Logic with Aggregations</title>
-      <link>/entries/MFODL_Monitor_Optimized.html</link>
-      <pubDate>Thu, 09 Apr 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/MFODL_Monitor_Optimized.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Wed, 28 Sep 2022 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/raszyk/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Making Arbitrary Relational Calculus Queries Safe-Range</title>
+          <link>/entries/Safe_Range_RC.html</link>
+          <pubDate>Wed, 28 Sep 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Safe_Range_RC.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>First-Order Query Evaluation</title>
+          <link>/entries/Eval_FO.html</link>
+          <pubDate>Tue, 15 Feb 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Eval_FO.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Multi-Head Monitoring of Metric Dynamic Logic</title>
+          <link>/entries/VYDRA_MDL.html</link>
+          <pubDate>Sun, 13 Feb 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/VYDRA_MDL.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formalization of an Optimized Monitoring Algorithm for Metric First-Order Dynamic Logic with Aggregations</title>
+          <link>/entries/MFODL_Monitor_Optimized.html</link>
+          <pubDate>Thu, 09 Apr 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/MFODL_Monitor_Optimized.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

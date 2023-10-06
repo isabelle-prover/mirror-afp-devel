@@ -1,208 +1,170 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Mathematics/Geometry on Archive of Formal Proofs</title>
+    <title>Mathematics/Geometry on Archive of Formal Proofs
+    </title>
     <link>/topics/mathematics/geometry/</link>
-    <description>Recent content in Mathematics/Geometry on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Mathematics/Geometry 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language><atom:link href="/topics/mathematics/geometry/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Ceva&#39;s Theorem</title>
-      <link>/entries/Ceva.html</link>
-      <pubDate>Wed, 16 Aug 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Ceva.html</guid>
-      <description></description>
-    </item>
+    <language>en-gb</language>
     
-    <item>
-      <title>Foundation of geometry in planes, and some complements: Excluding the parallel axioms</title>
-      <link>/entries/Foundation_of_geometry.html</link>
-      <pubDate>Mon, 22 Nov 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Foundation_of_geometry.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Schutz&#39; Independent Axioms for Minkowski Spacetime</title>
-      <link>/entries/Schutz_Spacetime.html</link>
-      <pubDate>Tue, 27 Jul 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Schutz_Spacetime.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Grothendieck&#39;s Schemes in Algebraic Geometry</title>
-      <link>/entries/Grothendieck_Schemes.html</link>
-      <pubDate>Mon, 29 Mar 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Grothendieck_Schemes.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Tarski&#39;s Parallel Postulate implies the 5th Postulate of Euclid, the Postulate of Playfair and the original Parallel Postulate of Euclid</title>
-      <link>/entries/IsaGeoCoq.html</link>
-      <pubDate>Sun, 31 Jan 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/IsaGeoCoq.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Complex Geometry</title>
-      <link>/entries/Complex_Geometry.html</link>
-      <pubDate>Mon, 16 Dec 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Complex_Geometry.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Poincaré Disc Model</title>
-      <link>/entries/Poincare_Disc.html</link>
-      <pubDate>Mon, 16 Dec 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Poincare_Disc.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Hilbert&#39;s Nullstellensatz</title>
-      <link>/entries/Nullstellensatz.html</link>
-      <pubDate>Sun, 16 Jun 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Nullstellensatz.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Octonions</title>
-      <link>/entries/Octonions.html</link>
-      <pubDate>Fri, 14 Sep 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Octonions.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Quaternions</title>
-      <link>/entries/Quaternions.html</link>
-      <pubDate>Wed, 05 Sep 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Quaternions.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Projective Geometry</title>
-      <link>/entries/Projective_Geometry.html</link>
-      <pubDate>Thu, 14 Jun 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Projective_Geometry.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Gromov Hyperbolicity</title>
-      <link>/entries/Gromov_Hyperbolicity.html</link>
-      <pubDate>Tue, 16 Jan 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Gromov_Hyperbolicity.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Stewart&#39;s Theorem and Apollonius&#39; Theorem</title>
-      <link>/entries/Stewart_Apollonius.html</link>
-      <pubDate>Mon, 31 Jul 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Stewart_Apollonius.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Minkowski&#39;s Theorem</title>
-      <link>/entries/Minkowskis_Theorem.html</link>
-      <pubDate>Thu, 13 Jul 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Minkowskis_Theorem.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Buffon&#39;s Needle Problem</title>
-      <link>/entries/Buffons_Needle.html</link>
-      <pubDate>Tue, 06 Jun 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Buffons_Needle.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Intersecting Chords Theorem</title>
-      <link>/entries/Chord_Segments.html</link>
-      <pubDate>Tue, 11 Oct 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Chord_Segments.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Ptolemy&#39;s Theorem</title>
-      <link>/entries/Ptolemys_Theorem.html</link>
-      <pubDate>Sun, 07 Aug 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Ptolemys_Theorem.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Chamber Complexes, Coxeter Systems, and Buildings</title>
-      <link>/entries/Buildings.html</link>
-      <pubDate>Fri, 01 Jul 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Buildings.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Basic Geometric Properties of Triangles</title>
-      <link>/entries/Triangle.html</link>
-      <pubDate>Mon, 28 Dec 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Triangle.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The independence of Tarski&#39;s Euclidean axiom</title>
-      <link>/entries/Tarskis_Geometry.html</link>
-      <pubDate>Tue, 30 Oct 2012 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Tarskis_Geometry.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Proving the Impossibility of Trisecting an Angle and Doubling the Cube</title>
-      <link>/entries/Impossible_Geometry.html</link>
-      <pubDate>Sun, 05 Aug 2012 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Impossible_Geometry.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The General Triangle Is Unique</title>
-      <link>/entries/General-Triangle.html</link>
-      <pubDate>Fri, 01 Apr 2011 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/General-Triangle.html</guid>
-      <description></description>
-    </item>
-    
+      <atom:link href="/topics/mathematics/geometry/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Ceva&#39;s Theorem</title>
+          <link>/entries/Ceva.html</link>
+          <pubDate>Wed, 16 Aug 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Ceva.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Foundation of geometry in planes, and some complements: Excluding the parallel axioms</title>
+          <link>/entries/Foundation_of_geometry.html</link>
+          <pubDate>Mon, 22 Nov 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Foundation_of_geometry.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Schutz&#39; Independent Axioms for Minkowski Spacetime</title>
+          <link>/entries/Schutz_Spacetime.html</link>
+          <pubDate>Tue, 27 Jul 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Schutz_Spacetime.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Grothendieck&#39;s Schemes in Algebraic Geometry</title>
+          <link>/entries/Grothendieck_Schemes.html</link>
+          <pubDate>Mon, 29 Mar 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Grothendieck_Schemes.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Tarski&#39;s Parallel Postulate implies the 5th Postulate of Euclid, the Postulate of Playfair and the original Parallel Postulate of Euclid</title>
+          <link>/entries/IsaGeoCoq.html</link>
+          <pubDate>Sun, 31 Jan 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/IsaGeoCoq.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Complex Geometry</title>
+          <link>/entries/Complex_Geometry.html</link>
+          <pubDate>Mon, 16 Dec 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Complex_Geometry.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Poincaré Disc Model</title>
+          <link>/entries/Poincare_Disc.html</link>
+          <pubDate>Mon, 16 Dec 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Poincare_Disc.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Hilbert&#39;s Nullstellensatz</title>
+          <link>/entries/Nullstellensatz.html</link>
+          <pubDate>Sun, 16 Jun 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Nullstellensatz.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Octonions</title>
+          <link>/entries/Octonions.html</link>
+          <pubDate>Fri, 14 Sep 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Octonions.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Quaternions</title>
+          <link>/entries/Quaternions.html</link>
+          <pubDate>Wed, 05 Sep 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Quaternions.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Projective Geometry</title>
+          <link>/entries/Projective_Geometry.html</link>
+          <pubDate>Thu, 14 Jun 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Projective_Geometry.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Gromov Hyperbolicity</title>
+          <link>/entries/Gromov_Hyperbolicity.html</link>
+          <pubDate>Tue, 16 Jan 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Gromov_Hyperbolicity.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Stewart&#39;s Theorem and Apollonius&#39; Theorem</title>
+          <link>/entries/Stewart_Apollonius.html</link>
+          <pubDate>Mon, 31 Jul 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Stewart_Apollonius.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Minkowski&#39;s Theorem</title>
+          <link>/entries/Minkowskis_Theorem.html</link>
+          <pubDate>Thu, 13 Jul 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Minkowskis_Theorem.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Buffon&#39;s Needle Problem</title>
+          <link>/entries/Buffons_Needle.html</link>
+          <pubDate>Tue, 06 Jun 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Buffons_Needle.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Intersecting Chords Theorem</title>
+          <link>/entries/Chord_Segments.html</link>
+          <pubDate>Tue, 11 Oct 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Chord_Segments.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Ptolemy&#39;s Theorem</title>
+          <link>/entries/Ptolemys_Theorem.html</link>
+          <pubDate>Sun, 07 Aug 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Ptolemys_Theorem.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Chamber Complexes, Coxeter Systems, and Buildings</title>
+          <link>/entries/Buildings.html</link>
+          <pubDate>Fri, 01 Jul 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Buildings.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Basic Geometric Properties of Triangles</title>
+          <link>/entries/Triangle.html</link>
+          <pubDate>Mon, 28 Dec 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Triangle.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The independence of Tarski&#39;s Euclidean axiom</title>
+          <link>/entries/Tarskis_Geometry.html</link>
+          <pubDate>Tue, 30 Oct 2012 00:00:00 +0000</pubDate>
+          <guid>/entries/Tarskis_Geometry.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Proving the Impossibility of Trisecting an Angle and Doubling the Cube</title>
+          <link>/entries/Impossible_Geometry.html</link>
+          <pubDate>Sun, 05 Aug 2012 00:00:00 +0000</pubDate>
+          <guid>/entries/Impossible_Geometry.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The General Triangle Is Unique</title>
+          <link>/entries/General-Triangle.html</link>
+          <pubDate>Fri, 01 Apr 2011 00:00:00 +0000</pubDate>
+          <guid>/entries/General-Triangle.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

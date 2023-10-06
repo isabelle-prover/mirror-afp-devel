@@ -1,83 +1,73 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>CAVA_Automata on Archive of Formal Proofs</title>
+    <title>CAVA_Automata on Archive of Formal Proofs
+    </title>
     <link>/dependencies/cava_automata/</link>
-    <description>Recent content in CAVA_Automata on Archive of Formal Proofs</description>
+    <description>
+        Recent content in CAVA_Automata 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Thu, 01 Jun 2017 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/cava_automata/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Flow Networks and the Min-Cut-Max-Flow Theorem</title>
-      <link>/entries/Flow_Networks.html</link>
-      <pubDate>Thu, 01 Jun 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Flow_Networks.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>A Framework for Verifying Depth-First Search Algorithms</title>
-      <link>/entries/DFS_Framework.html</link>
-      <pubDate>Tue, 05 Jul 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/DFS_Framework.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Verified Construction of Static Single Assignment Form</title>
-      <link>/entries/Formal_SSA.html</link>
-      <pubDate>Fri, 05 Feb 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Formal_SSA.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Fully Verified Executable LTL Model Checker</title>
-      <link>/entries/CAVA_LTL_Modelchecker.html</link>
-      <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/CAVA_LTL_Modelchecker.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Converting Linear-Time Temporal Logic to Generalized Büchi Automata</title>
-      <link>/entries/LTL_to_GBA.html</link>
-      <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/LTL_to_GBA.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Promela Formalization</title>
-      <link>/entries/Promela.html</link>
-      <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Promela.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Verified Efficient Implementation of Gabow&#39;s Strongly Connected Components Algorithm</title>
-      <link>/entries/Gabow_SCC.html</link>
-      <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Gabow_SCC.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Collections Framework</title>
-      <link>/entries/Collections.html</link>
-      <pubDate>Wed, 25 Nov 2009 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Collections.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Thu, 01 Jun 2017 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/cava_automata/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Flow Networks and the Min-Cut-Max-Flow Theorem</title>
+          <link>/entries/Flow_Networks.html</link>
+          <pubDate>Thu, 01 Jun 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Flow_Networks.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Framework for Verifying Depth-First Search Algorithms</title>
+          <link>/entries/DFS_Framework.html</link>
+          <pubDate>Tue, 05 Jul 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/DFS_Framework.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Verified Construction of Static Single Assignment Form</title>
+          <link>/entries/Formal_SSA.html</link>
+          <pubDate>Fri, 05 Feb 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Formal_SSA.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Fully Verified Executable LTL Model Checker</title>
+          <link>/entries/CAVA_LTL_Modelchecker.html</link>
+          <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/CAVA_LTL_Modelchecker.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Converting Linear-Time Temporal Logic to Generalized Büchi Automata</title>
+          <link>/entries/LTL_to_GBA.html</link>
+          <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/LTL_to_GBA.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Promela Formalization</title>
+          <link>/entries/Promela.html</link>
+          <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Promela.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Verified Efficient Implementation of Gabow&#39;s Strongly Connected Components Algorithm</title>
+          <link>/entries/Gabow_SCC.html</link>
+          <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Gabow_SCC.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Collections Framework</title>
+          <link>/entries/Collections.html</link>
+          <pubDate>Wed, 25 Nov 2009 00:00:00 +0000</pubDate>
+          <guid>/entries/Collections.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

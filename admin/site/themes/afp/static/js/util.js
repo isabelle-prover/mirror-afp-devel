@@ -6,6 +6,11 @@ const CLASS_COLLAPSIBLE = 'collapsible'
 const CLASS_INVERTIBLE = 'invertible'
 const CLASS_COLLAPSE_CONTAINER = 'collapse-container'
 
+const strip_prefix = (str, prefix) => {
+  if (str.startsWith(prefix)) return str.slice(prefix.length)
+  else return str
+}
+
 const strip_suffix = (str, suffix) => {
   if (str.endsWith(suffix)) return str.slice(0, -suffix.length)
   else return str

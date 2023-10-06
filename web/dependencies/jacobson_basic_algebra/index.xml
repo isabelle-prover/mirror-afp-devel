@@ -1,47 +1,45 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Jacobson_Basic_Algebra on Archive of Formal Proofs</title>
+    <title>Jacobson_Basic_Algebra on Archive of Formal Proofs
+    </title>
     <link>/dependencies/jacobson_basic_algebra/</link>
-    <description>Recent content in Jacobson_Basic_Algebra on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Jacobson_Basic_Algebra 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Mon, 21 Nov 2022 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/jacobson_basic_algebra/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Kneser&#39;s Theorem and the Cauchy–Davenport Theorem</title>
-      <link>/entries/Kneser_Cauchy_Davenport.html</link>
-      <pubDate>Mon, 21 Nov 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Kneser_Cauchy_Davenport.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>Khovanskii&amp;#x27;s Theorem</title>
-      <link>/entries/Khovanskii_Theorem.html</link>
-      <pubDate>Fri, 02 Sep 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Khovanskii_Theorem.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Plünnecke-Ruzsa Inequality</title>
-      <link>/entries/Pluennecke_Ruzsa_Inequality.html</link>
-      <pubDate>Thu, 26 May 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Pluennecke_Ruzsa_Inequality.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Grothendieck&#39;s Schemes in Algebraic Geometry</title>
-      <link>/entries/Grothendieck_Schemes.html</link>
-      <pubDate>Mon, 29 Mar 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Grothendieck_Schemes.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Mon, 21 Nov 2022 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/jacobson_basic_algebra/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Kneser&#39;s Theorem and the Cauchy–Davenport Theorem</title>
+          <link>/entries/Kneser_Cauchy_Davenport.html</link>
+          <pubDate>Mon, 21 Nov 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Kneser_Cauchy_Davenport.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Khovanskii&amp;#x27;s Theorem</title>
+          <link>/entries/Khovanskii_Theorem.html</link>
+          <pubDate>Fri, 02 Sep 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Khovanskii_Theorem.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Plünnecke-Ruzsa Inequality</title>
+          <link>/entries/Pluennecke_Ruzsa_Inequality.html</link>
+          <pubDate>Thu, 26 May 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Pluennecke_Ruzsa_Inequality.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Grothendieck&#39;s Schemes in Algebraic Geometry</title>
+          <link>/entries/Grothendieck_Schemes.html</link>
+          <pubDate>Mon, 29 Mar 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Grothendieck_Schemes.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

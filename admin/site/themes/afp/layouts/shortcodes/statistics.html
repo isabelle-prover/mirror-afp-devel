@@ -8,11 +8,15 @@
     <td><a href="/authors/">Authors</a></td>
   </tr>
   <tr>
-    <td class="statsnumber">~{{ lang.NumFmt 0 (mul (math.Round (div .Site.Data.statistics.num_lemmas 100)) 100) }}</td>
+    <td class="statsnumber">
+      ~{{ lang.NumFmt 0 (mul (math.Round (div .Site.Data.statistics.num_lemmas 100)) 100) }}
+    </td>
     <td>Lemmas</td>
   </tr>
   <tr>
-    <td class="statsnumber">~{{ lang.NumFmt 0 (mul (math.Round (div .Site.Data.statistics.num_loc 100)) 100) }}</td>
+    <td class="statsnumber">
+      ~{{ lang.NumFmt 0 (mul (math.Round (div .Site.Data.statistics.num_loc 100)) 100) }}
+    </td>
     <td>Lines of Code</td>
   </tr>
 </table>
@@ -28,21 +32,21 @@
   {{ range $index, $element := first 12 .Site.Taxonomies.dependencies.ByCount }}
   <tr>
     <td>{{ add $index 1}}.</td>
-    <td><a href="/entries/{{- $element.Page.Title -}}.html">{{ $element.Page.Title }}</a></td>
-    <td><a href="{{- $element.Page.RelPermalink -}}">{{ $element.Count }}</a></td>
+    <td><a href="/entries/{{ $element.Page.Title }}.html">{{ $element.Page.Title }}</a></td>
+    <td><a href="{{ $element.Page.RelPermalink }}">{{ $element.Count }}</a></td>
   </tr>
   {{ end }}
 </table>
 
 <script>
-  const years = [{{- delimit .Site.Data.statistics.years "," | safeJS -}}]
-  const no_articles = [{{- delimit .Site.Data.statistics.articles_year "," | safeJS -}}]
-  const no_loc = [{{- delimit .Site.Data.statistics.loc_years  "," | safeJS -}} ]
-  const no_authors = [{{- delimit .Site.Data.statistics.author_years  "," | safeJS -}}]
-  const no_authors_series = [{{- delimit .Site.Data.statistics.author_years_cumulative  "," | safeJS -}}]
-  const all_articles = [{{- delimit (apply .Site.Data.statistics.all_articles "printf" "'%s'" ".") "," | safeJS -}}]
-  const article_years_unique = [{{- delimit (apply .Site.Data.statistics.article_years_unique "printf" "'%s'" ".") "," | safeJS -}}]
-  const loc_articles = [{{- delimit .Site.Data.statistics.loc_articles "," | safeJS -}}]
+  const years = [{{ delimit .Site.Data.statistics.years "," | safeJS }}]
+  const no_articles = [{{ delimit .Site.Data.statistics.articles_year "," | safeJS }}]
+  const no_loc = [{{ delimit .Site.Data.statistics.loc_years  "," | safeJS }} ]
+  const no_authors = [{{ delimit .Site.Data.statistics.author_years  "," | safeJS }}]
+  const no_authors_series = [{{ delimit .Site.Data.statistics.author_years_cumulative  "," | safeJS }}]
+  const all_articles = [{{ delimit (apply .Site.Data.statistics.all_articles "printf" "'%s'" ".") "," | safeJS }}]
+  const article_years_unique = [{{ delimit (apply .Site.Data.statistics.article_years_unique "printf" "'%s'" ".") "," | safeJS }}]
+  const loc_articles = [{{ delimit .Site.Data.statistics.loc_articles "," | safeJS }}]
 </script>
 <h4>Growth in number of entries:</h4>
 <script src="/js/Chart.js"></script>

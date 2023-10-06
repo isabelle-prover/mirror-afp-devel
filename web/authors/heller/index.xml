@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>heller on Archive of Formal Proofs</title>
+    <title>heller on Archive of Formal Proofs
+    </title>
     <link>/authors/heller/</link>
-    <description>Recent content in heller on Archive of Formal Proofs</description>
+    <description>
+        Recent content in heller 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Wed, 09 Dec 2009 00:00:00 +0000</lastBuildDate><atom:link href="/authors/heller/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>A Fast SAT Solver for Isabelle in Standard ML</title>
-      <link>/entries/DPT-SAT-Solver.html</link>
-      <pubDate>Wed, 09 Dec 2009 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/DPT-SAT-Solver.html</guid>
-      <description></description>
-    </item>
     
+      <lastBuildDate>Wed, 09 Dec 2009 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/heller/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>A Fast SAT Solver for Isabelle in Standard ML</title>
+          <link>/entries/DPT-SAT-Solver.html</link>
+          <pubDate>Wed, 09 Dec 2009 00:00:00 +0000</pubDate>
+          <guid>/entries/DPT-SAT-Solver.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

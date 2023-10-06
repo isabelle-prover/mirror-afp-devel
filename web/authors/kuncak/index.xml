@@ -1,38 +1,38 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>kuncak on Archive of Formal Proofs</title>
+    <title>kuncak on Archive of Formal Proofs
+    </title>
     <link>/authors/kuncak/</link>
-    <description>Recent content in kuncak on Archive of Formal Proofs</description>
+    <description>
+        Recent content in kuncak 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Thu, 01 Mar 2012 00:00:00 +0000</lastBuildDate><atom:link href="/authors/kuncak/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Abortable Linearizable Modules</title>
-      <link>/entries/Abortable_Linearizable_Modules.html</link>
-      <pubDate>Thu, 01 Mar 2012 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Abortable_Linearizable_Modules.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>File Refinement</title>
-      <link>/entries/FileRefinement.html</link>
-      <pubDate>Thu, 09 Dec 2004 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/FileRefinement.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Binary Search Trees</title>
-      <link>/entries/BinarySearchTree.html</link>
-      <pubDate>Mon, 05 Apr 2004 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/BinarySearchTree.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Thu, 01 Mar 2012 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/kuncak/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Abortable Linearizable Modules</title>
+          <link>/entries/Abortable_Linearizable_Modules.html</link>
+          <pubDate>Thu, 01 Mar 2012 00:00:00 +0000</pubDate>
+          <guid>/entries/Abortable_Linearizable_Modules.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>File Refinement</title>
+          <link>/entries/FileRefinement.html</link>
+          <pubDate>Thu, 09 Dec 2004 00:00:00 +0000</pubDate>
+          <guid>/entries/FileRefinement.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Binary Search Trees</title>
+          <link>/entries/BinarySearchTree.html</link>
+          <pubDate>Mon, 05 Apr 2004 00:00:00 +0000</pubDate>
+          <guid>/entries/BinarySearchTree.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>
