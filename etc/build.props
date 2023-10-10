@@ -4,7 +4,6 @@ requirements = \
   env:ISABELLE_SCALA_JAR \
   $ISABELLE_CI_EXTRAS_JAR
 sources = \
-  tools/admin/afp_component_hugo.scala \
   tools/afp_build.scala \
   tools/afp_check_metadata.scala \
   tools/afp_check_roots.scala \
