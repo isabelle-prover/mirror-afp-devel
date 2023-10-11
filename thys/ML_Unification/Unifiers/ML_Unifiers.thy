@@ -26,11 +26,6 @@ local_setup \<open>Standard_Unification_Combine.setup_attribute NONE\<close>
 
 paragraph \<open>Standard Unifiers\<close>
 
-(*the following is a copy of unify.ML from the Isabelle distribution that includes the
-patch 3c57995c255c (since it required here but not included in Isabelle2023).
-FIXME: delete for next release version*)
-ML_file\<open>unify_copy.ML\<close>
-
 ML_file\<open>higher_order_unification.ML\<close>
 ML_file\<open>higher_order_pattern_unification.ML\<close>
 ML_file\<open>first_order_unification.ML\<close>

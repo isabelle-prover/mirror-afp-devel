@@ -38,9 +38,7 @@ fun unify binders ctxt tp env =
           |> Seq.map (pair env o Goal.conclude)
       in
         (*find the unifiers*)
-        Unify_Copy.hounifiers (map fst binders) (Context.Proof ctxt, env, [tp])
-        (*FIXME: replace above line by the following one for the next Isabelle release*)
-        (*Unify.hounifiers (map fst binders) (Context.Proof ctxt, env, [tp])*)
+        Unify.hounifiers (map fst binders) (Context.Proof ctxt, env, [tp])
         (*add the flex-flex pairs to the theorem*)
         |> Seq.maps (create_env_thmq o fst)
       end
