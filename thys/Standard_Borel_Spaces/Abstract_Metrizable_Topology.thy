@@ -839,10 +839,14 @@ proof -
   define K where Keq:"K = {(x,y). x \<in> topspace X \<and> y \<in> gdb \<and> x = g' y}"
   define A' where "A' \<equiv> fst ` (H \<inter> K)"
   define B' where "B' \<equiv> snd ` (H \<inter> K)"
-  have A'eq: "A' = {x \<in> gda. (x, f' x) \<in> K}"
-    using h(4) by(auto simp: A'_def Keq Heq image_def continuous_map_def) (metis (mono_tags, lifting) IntI case_prod_conv fst_conv mem_Collect_eq)
+  have A'eq: "A' = {x \<in> gda. (x, f' x) \<in> K}"    
+    using h(4)
+    by (auto simp: A'_def Keq Heq image_def continuous_map_def Pi_def)
+       (metis (mono_tags, lifting) IntI case_prod_conv fst_conv mem_Collect_eq)
   have B'eq: "B' = {y \<in> gdb. (g' y, y) \<in> H}"
-    using h(8) by(auto simp: B'_def Keq Heq image_def continuous_map_def) (metis (mono_tags, lifting) IntI case_prod_conv snd_conv mem_Collect_eq)
+    using h(8)
+    by (auto simp: B'_def Keq Heq image_def continuous_map_def Pi_def)
+       (metis (mono_tags, lifting) IntI case_prod_conv snd_conv mem_Collect_eq)
   have A'_gd: "g_delta_of X A'"
   proof -
     have K_gd:"g_delta_of (prod_topology X Y) K"

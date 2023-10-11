@@ -1201,16 +1201,20 @@ proof -
         from i have "topspace (product_topology T I) = {}"
           by auto
         with h(1) have "V = {}"
-          by(simp add: open_in_topspace_empty)
+          using openin_subset by blast
         thus "x \<in> {}"
           using h(2) by auto
       qed
     qed auto
   next
     case 2
-    then have "\<exists>x. \<forall>i\<in>I. x i \<in> topspace (T i)" "\<exists>U. \<forall>i\<in>I. countable (U i) \<and> dense_of (T i) (U i)"
+    then have "\<exists>x. \<forall>i\<in>I. x i \<in> topspace (T i)"
+      by (meson all_not_in_conv)
+    moreover from "2"
+    have "\<exists>U. \<forall>i\<in>I. countable (U i) \<and> dense_of (T i) (U i)"
       using assms(2) by(auto intro!: bchoice simp: separable_def)
-    then obtain x U where hxu:
+    ultimately
+    obtain x U where hxu:
      "\<And>i. i \<in> I \<Longrightarrow> x i \<in> topspace (T i)" "\<And>i. i \<in> I \<Longrightarrow> countable (U i)" "\<And>i. i \<in> I \<Longrightarrow> dense_of (T i) (U i)"
       by auto
     define U' where "U' \<equiv> (\<lambda>J i. if i \<in> J then U i else {x i})"
@@ -1314,7 +1318,7 @@ proof -
       then have "U \<inter> (f -` V \<inter> topspace X) = {}"
         by blast
       moreover have "f -` V \<inter> topspace X \<noteq> {}"
-        using h(3) openin_subset[OF h(1)] by (metis (no_types, lifting) continuous_map_def disjoint_iff fg(2) fg(4) subsetD vimageI)
+        using continuous_map_preimage_topspace fg(2) fg(4) h(1) h(3) openin_subset by fastforce
       moreover have "openin X (f -` V \<inter> topspace X)"
         using h(1) fg(1) by auto
       ultimately show "x \<in> {}"

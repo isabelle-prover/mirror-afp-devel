@@ -16,12 +16,12 @@ definition cmaps_dist :: "['a topology, 'b topology, 'b \<Rightarrow> 'b \<Right
 lemma cmaps_X_empty:
   assumes "topspace X = {}"
   shows "cmaps X Y = {\<lambda>x. undefined}"
-  by(auto simp: cmaps_def assms)
+  by(auto simp: cmaps_def assms simp flip: null_topspace_iff_trivial)
 
 lemma cmaps_Y_empty:
   assumes "topspace X \<noteq> {}" "topspace Y = {}"
   shows "cmaps X Y = {}"
-  by(auto simp: cmaps_def assms continuous_map_def)
+  by(auto simp: cmaps_def assms continuous_map_def Pi_def simp flip: null_topspace_iff_trivial)
 
 lemma cmaps_dist_X_empty:
   assumes "topspace X = {}"
@@ -64,7 +64,8 @@ next
   show ?thesis
   proof
     show "(cmaps_dist X mtopology dist) f g \<ge> 0" for f g
-      by(auto simp: cmaps_dist_def dist_geq0 intro!: cSup_upper2[where x="dist _ _"])
+      by(auto simp: cmaps_dist_def dist_geq0 intro!: cSup_upper2[where x="dist _ _"]
+              simp flip: null_topspace_iff_trivial)
   next
     fix f g
     assume "f \<notin> (cmaps X mtopology)"
@@ -115,7 +116,7 @@ next
             by(auto intro!: exI[where x="dist (f x) (g x) + dist (g x) (h x)"] exI[where x=x] dist_tr cm_dest fgh)
         }
         thus ?thesis
-          by(auto simp: cmaps_dist_def fgh h intro!: cSup_mono bdd1)
+          by(auto simp: cmaps_dist_def fgh h intro!: cSup_mono bdd1 simp flip: null_topspace_iff_trivial)
       qed
       also have "... \<le> ?rhs"
         by(auto simp: cSup_le_iff[OF nen1 bdd1] cmaps_dist_def fgh h intro!: add_mono cSup_upper)
@@ -168,7 +169,8 @@ proof -
       qed
     qed
     have "convergent_inS (\<lambda>n. fn n x)" if x:"x \<in> topspace X" for x
-      by(rule convergence,auto simp: Cauchy_inS_def,insert c x fn_cm) (auto simp: cmaps_def continuous_map_def mtopology_topspace, meson)
+      by (rule convergence,auto simp: Cauchy_inS_def,insert c x fn_cm)
+         (auto simp: cmaps_def continuous_map_def mtopology_topspace, blast, meson)
     then obtain f where f:"\<And>x. x \<in> topspace X \<Longrightarrow> converge_to_inS (\<lambda>n. fn n x) (f x)"
       by(auto simp: convergent_inS_def) metis
     define f' where "f' \<equiv> (\<lambda>x\<in>topspace X. f x)"
@@ -273,7 +275,7 @@ proof -
       then obtain Xm where Xm: "\<And>m. finite (Xm m)" "\<And>m. (Xm m) \<subseteq> topspace X" "\<And>m. topspace X = (\<Union>a\<in>Xm m. dx.open_ball a (1 / Suc m))"
         by metis
       have Xm_nem:"\<And>m. (Xm m) \<noteq> {}"
-        using XS_nem Xm(3) by auto
+        using XS_nem Xm(3) by fastforce
       define xmk where "xmk \<equiv> (\<lambda>m. from_nat_into (Xm m))"
       define km where "km \<equiv> (\<lambda>m. card (Xm m))"
       have km_pos:"km m > 0" for m
@@ -395,7 +397,7 @@ proof -
             have g_cm:"g \<in> cm"
               using g(1) Dmn_subset[of m n] by(auto simp: Cmn_def)
             hence "cm_dist f g = (\<Squnion> {dist (f x) (g x) |x. x \<in> topspace X})"
-              by(auto simp: cmaps_dist_def h XS_nem)
+              by(auto simp: cmaps_dist_def h XS_nem simp flip: null_topspace_iff_trivial)
             also have "... \<le> 3 * e / 4"
             proof -
               have 1:"{dist (f x) (g x) |x. x \<in> topspace X} \<noteq> {}"

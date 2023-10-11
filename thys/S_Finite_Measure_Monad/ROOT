@@ -6,10 +6,12 @@ session "S_Finite_Measure_Monad" = "HOL-Probability" +
   theories
     "Lemmas_S_Finite_Measure_Monad"
     "Kernels"
-    "QuasiBorel" "QBS_Morphism"
+    "QuasiBorel"
+    "QBS_Morphism"
     "Measure_QuasiBorel_Adjunction"
     "Monad_QuasiBorel"
-    "Montecarlo" "Query"
+    "Montecarlo"
+    "Query"
   document_files
     "root.tex"
     "root.bib"
