@@ -1,0 +1,75 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+\usepackage{amsmath}
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+\usepackage[only,bigsqcap]{stmaryrd}
+%for \<Sqinter>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{S-Finite Measure Monad on Quasi-Borel Spaces}
+\author{Michikazu Hirata, Yasuhiko Minamide}
+\maketitle
+\begin{abstract}
+  The s-finite measure monad on quasi-Borel spaces provides
+  a suitable denotational model for higher-order probabilistic programs
+  with conditioning.
+  This entry is a formalization of the s-finite measure monad and related notions,
+  including s-finite measures, s-finite kernels, and a proof automation for quasi-Borel spaces which is an
+  extension of our previous entry \textit{quasi-Borel spaces}.
+  We also implement several examples of probabilistic programs in previous works and prove their property.
+
+  This work is a part of the work by Hirata, Minamide, and Sato,
+  \textit{Semantic Foundations of Higher-Order Probabilistic Programs in Isabelle/HOL}
+   which will be presented at the 14th Conference on Interactive Theorem Proving (ITP2023).
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

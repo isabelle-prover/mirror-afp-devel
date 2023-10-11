@@ -623,6 +623,7 @@ SDS_Impossibility
 SIFPL
 SIFUM_Type_Systems
 SPARCv8
+S_Finite_Measure_Monad
 Safe_Distance
 Safe_OCL
 Safe_Range_RC
@@ -669,6 +670,7 @@ Splay_Tree
 Sqrt_Babylonian
 Stable_Matching
 Stalnaker_Logic
+Standard_Borel_Spaces
 Statecharts
 Stateful_Protocol_Composition_and_Typing
 Stellar_Quorums
