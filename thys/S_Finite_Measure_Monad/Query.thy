@@ -526,9 +526,9 @@ proof -
     qed
   qed
   also have "... \<longlonglongrightarrow> 0"
-    apply(rule tendsto_eq_intros(32)[of _ 1])
+    apply(rule tendsto_eq_intros(33)[of _ 1])
       apply(rule Topological_Spaces.tendsto_eq_intros(25)[of _ "b * d" _ _ "b * d",OF LIMSEQ_Suc[OF Topological_Spaces.tendsto_eq_intros(18)[of _ b _ _ d]] LIMSEQ_Suc[OF Topological_Spaces.tendsto_eq_intros(18)[of _ d _ _ b]]])
-             apply(intro Topological_Spaces.tendsto_eq_intros | auto)+
+             apply(intro Topological_Spaces.tendsto_eq_intros | auto)+  
     done
   finally show ?thesis
     by(rule LIMSEQ_imp_Suc)
