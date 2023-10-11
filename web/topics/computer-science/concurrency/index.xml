@@ -13,6 +13,13 @@
     
       <atom:link href="/topics/computer-science/concurrency/index.xml" rel="self" type="application/rss+xml" />
         <item>
+          <title>Coupled Similarity and Contrasimilarity, and How to Compute Them</title>
+          <link>/entries/Coupledsim_Contrasim.html</link>
+          <pubDate>Fri, 18 Aug 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Coupledsim_Contrasim.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Formalization of CommCSL: A Relational Concurrent Separation Logic for Proving Information Flow Security in Concurrent Programs</title>
           <link>/entries/CommCSL.html</link>
           <pubDate>Wed, 15 Mar 2023 00:00:00 +0000</pubDate>

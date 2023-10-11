@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Thu, 01 Jun 2023 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Fri, 18 Aug 2023 00:00:00 +0000</lastBuildDate>
       <atom:link href="/topics/logic/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Coupled Similarity and Contrasimilarity, and How to Compute Them</title>
+          <link>/entries/Coupledsim_Contrasim.html</link>
+          <pubDate>Fri, 18 Aug 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Coupledsim_Contrasim.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>A Verified Efficient Implementation of the Weighted Path Order</title>
           <link>/entries/Efficient_Weighted_Path_Order.html</link>

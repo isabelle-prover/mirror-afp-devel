@@ -1,0 +1,193 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{url}
+\usepackage{csquotes}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{isabelle,isabellesym}
+
+\usepackage{color}
+
+\usepackage[top=3cm,bottom=4.5cm]{geometry}
+
+%tikz libs
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+\usetikzlibrary{shapes.geometric, arrows, arrows.meta}
+\usetikzlibrary{calc,decorations.pathmorphing,shapes}
+
+\definecolor{keyword}{RGB}{0,153,102}
+\definecolor{command}{RGB}{0,102,153}
+\isabellestyle{tt}
+\renewcommand{\isacommand}[1]{\textcolor{command}{\textbf{#1}}}
+\renewcommand{\isakeyword}[1]{\textcolor{keyword}{\textbf{#1}}}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in isabelle-similar-similar type-writer
+\urlstyle{rm}
+\isabellestyle{tt}
+
+\title{ \textbf{Coupled Similarity and Contrasimilarity,} \\ \Large and How to Compute Them }
+\author{ Benjamin Bisping%
+  \footnote{TU Berlin, Germany,
+    \url{https://bbisping.de}, \texttt{benjamin.bisping@tu-berlin.de}.}%
+  \qquad Luisa Montanari%
+ }
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\noindent
+This theory surveys and extends characterizations of \emph{coupled similarity} and \emph{contrasimilarity},
+and proves properties relevant for algorithms computing their simulation preorders and equivalences.
+
+Coupled similarity and contrasimilarity are two weak forms of bisimilarity for systems with
+internal behavior.
+They have outstanding applications in contexts where internal choices must transparently be
+distributed in time or space, for example, in process calculi encodings or in action refinements.
+
+Our key contribution is to characterize the coupled simulation and contrasimulation preorders by \emph{reachability games}.
+We also show how preexisting definitions coincide and that they can be reformulated using \emph{coupled delay simulations}.
+We moreover verify a polynomial-time coinductive fixed-point algorithm computing the coupled simulation preorder.
+Through reduction proofs, we establish that deciding coupled similarity is at least as complex
+as computing weak similarity; and that contrasimilarity checking is at least as hard as trace inclusion
+checking.
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}
+
+Coupled similarity and contrasimilarity are among the weakest abstractions of bisimilarity for systems
+with silent steps presented in van Glabbeek's \emph{linear-time--branching-time spectrum} of behavioral
+equivalences~\cite{glabbeek1993ltbt}.
+In particular, they are \emph{weaker than weak bisimilarity} in that they impose a weaker form of
+symmetry on the bisimulation link between compared states; coupled similarity implies
+contrasimilarity. They are weak bisimilarities, however, in the sense
+that, on systems with no internal behavior, they coincide with strong bisimilarity.
+
+\subsection{This Theory}
+
+This theory contains the Isabelle/HOL formalization for two related lines of publication, which present
+the first algorithms to check coupled similarity and contrasimilarity for pairs of states:
+
+\begin{itemize}
+  \item \emph{Computing coupled similarity:} Bisping and Nestmann's TACAS 2019 paper~%
+    \cite{bn2019coupledsimTacas} and Bisping's master thesis~\cite{bisping2018coupledsim}
+    establish the first decision procedures for coupled similarity checking.
+    This is done through a game-based approach.
+    Also, the work introduces the idea that $\tau$-sinks can be used to reduce from weak simulation
+    preorder to coupled simulation preorder.
+  \item \emph{Game characterization of contrasimilarity:} Bisping and Montanari's
+    EXPRESS/SOS 2021 paper~\cite{bm2021contrasimilarity} and Montanari's bachelor thesis provide
+    the first game characterization of contrasimilarity.
+    The present Isabelle theory extends this work by also showing a reduction from weak trace preorder to
+    contrasimulation preorder and by linking the game to a modal characterization of contrasimilarity.
+\end{itemize}
+
+\begin{figure}[t]
+  \begin{centering}
+
+\pgfdeclarelayer{background}
+\pgfsetlayers{background,main}
+
+\begin{tikzpicture}[->,auto,node distance=1.5cm]
+
+\node (SB){strong bisimulation};
+\node (SS) [below right of=SB, node distance=3.2cm] {strong simulation};
+\node (WB) [below left of=SB, node distance=2.1cm] {weak bisimulation};
+\node (CS) [below left of=WB, node distance=2.1cm] {\textbf{coupled simulation}};
+\node (WS) [below right of=CS, node distance=3.2cm] {weak simulation};
+\node (C) [below left of=CS, node distance=2.1cm] {\textbf{contrasimulation}};
+\node (IF) [below of=C] {impossible futures};
+\node (WT) [below right of=IF, node distance=2.1cm] {weak traces};
+
+\path
+(SB) edge (WB)
+(SB) edge[line width=1.2pt] (SS)
+(SS) edge (WS)
+(WB) edge (CS)
+(CS) edge (C)
+(CS) edge[line width=1.2pt] (WS)
+(C) edge[line width=1.2pt] (IF)
+(IF) edge[line width=1.2pt] (WT)
+(WS) edge[line width=1.2pt] (WT);
+
+\begin{pgfonlayer}{background}
+    \draw[blue,thick,dotted,-] (CS.south west)++(-.5,.5)
+    node[label={[font=\itshape, xshift=1.0cm, yshift=0.3cm]cubic}]
+    [label={[font=\itshape,xshift=-.5cm, yshift=-1.2cm]PSPACE}] {}
+    -- ++(3.8,-3.8);
+    \draw[blue,thick,dotted,-] (WB.south west)++(-.5,.5)
+    node[label={[font=\itshape,xshift=1.0cm, yshift=0.3cm]subcubic}] {}
+    -- ++(2.1,-2.1) -- ++(3.8,3.8);
+\end{pgfonlayer}
+
+\end{tikzpicture}
+\par\end{centering}
+\caption{Hierarchy of weak behavioral preorders/equivalences. Arrows denote implication of preordering.
+Thinner arrows collapse into bi-implication for systems without internal steps.
+Blue parts indicate a slope of decision problem complexities.
+\label{fig:equivalences}}
+\end{figure}
+
+\noindent
+Combined, the results establish a slope of complexity between weak bisimilarity, coupled similarity,
+and contrasimilarity with the equivalence problems becoming harder for coarser equivalences.
+See Figure~\ref{fig:equivalences} for a graphical representation.
+
+\subsection{Coupled Similarity vs.\ Weak Bisimilarity vs.\ Contrasimilarity in a Nutshell}
+
+In coupled simulation semantics, the CCS process $\tau \ldotp a + \tau \ldotp\!(\tau \ldotp b + \tau \ldotp c)$
+with gradual internal choice equals $\tau \ldotp a + \tau \ldotp b + \tau \ldotp c$, whcih has just
+one internal choice point.
+In weak bisimulation semantics, this equality does not hold as the intermediate choice point
+$\tau \ldotp b + \tau \ldotp c$ of the first process does not match symmetrically to any state of
+the second process.
+
+The equality also holds in contrasimulation semantics. Contrasimulation moreover blurs the lines
+between non-determinism of visble behavior and internal non-deterministic choice by considering
+$a \ldotp b + a \ldotp c$ to be indistinguishable from $a \ldotp\!(\tau \ldotp b + \tau \ldotp c)$.
+This equality does not hold under coupled similarity. Therefore, contrasimilarity is strictly coarser
+than coupled similarity.
+
+For a more detailed exposition about the nuances of coupled similarity and contrasimilarity we refer
+to our publications \cite{bn2019coupledsimTacas,bnp2020coupledsim32,bm2021contrasimilarity}.
+
+\subsection{Modal Intuition}
+
+The modal characterization of contrasimilarity at the end of this theory gives a nice intuition
+for why contrasimilarity is a sensible weakening for bisimilarity. We show that the following
+Hennessy--Milner logic (with $\langle \varepsilon \rangle$ denoting places of possible internal
+behavior) characterizes contrasimilarity.
+\[
+  \varphi  ::= \quad \langle \varepsilon \rangle \langle a\rangle \varphi
+    \quad \mid \quad \langle \varepsilon \rangle \bigwedge_{i \in I} \neg \varphi_i
+       \qquad \text{(with $a \neq \tau$).}
+\]
+It is a ``nice'' abstraction of strong bisimilarity, since it can be obtained from the following
+complete fragment of Hennessy--Milner logic by inserting places for unobservable behavior in front of
+each constructor.
+\[
+    \varphi  ::= \quad \langle a \rangle \varphi
+      \quad \mid \quad \bigwedge_{i \in I} \neg \varphi_i .
+\]
+This modal formulation is important for a unified algorithmic treatment of weak behavioral equivalences
+in~\cite{bj2023ltbtsSilentSteps}.
+
+% include generated text of all theories
+\input{session}
+
+\phantomsection
+\addcontentsline{toc}{section}{References}
+\bibliographystyle{splncs04}
+\bibliography{root}
+
+\end{document}

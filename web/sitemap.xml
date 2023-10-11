@@ -71,6 +71,21 @@
     <loc>/authors/paulson/</loc>
     <lastmod>2023-09-16T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/authors/bisping/</loc>
+    <lastmod>2023-08-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/computer-science/</loc>
+    <lastmod>2023-08-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Coupledsim_Contrasim.html</loc>
+    <lastmod>2023-08-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/logic/</loc>
+    <lastmod>2023-08-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/montanari/</loc>
+    <lastmod>2023-08-18T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/entries/Ceva.html</loc>
     <lastmod>2023-08-16T00:00:00+00:00</lastmod>
   </url><url>
@@ -81,9 +96,6 @@
     <lastmod>2023-08-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Catoids.html</loc>
-    <lastmod>2023-08-14T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/computer-science/</loc>
     <lastmod>2023-08-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Fixed_Length_Vector.html</loc>
@@ -183,9 +195,6 @@
     <lastmod>2023-06-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Efficient_Weighted_Path_Order.html</loc>
-    <lastmod>2023-06-01T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/logic/</loc>
     <lastmod>2023-06-01T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/thiemann/</loc>
@@ -3302,9 +3311,6 @@
     <loc>/entries/FLP.html</loc>
     <lastmod>2016-05-18T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/bisping/</loc>
-    <lastmod>2016-05-18T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/brodmann/</loc>
     <lastmod>2016-05-18T00:00:00+00:00</lastmod>
   </url><url>
@@ -4967,6 +4973,8 @@
     <loc>/sessions/cotangent_pfd_formula/</loc>
   </url><url>
     <loc>/sessions/count_complex_roots/</loc>
+  </url><url>
+    <loc>/sessions/coupledsim_contrasim/</loc>
   </url><url>
     <loc>/sessions/crdt/</loc>
   </url><url>
