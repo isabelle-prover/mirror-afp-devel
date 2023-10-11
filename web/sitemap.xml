@@ -140,6 +140,21 @@
     <loc>/authors/yez/</loc>
     <lastmod>2023-08-10T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/authors/hirata/</loc>
+    <lastmod>2023-08-08T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/minamide/</loc>
+    <lastmod>2023-08-08T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/S_Finite_Measure_Monad.html</loc>
+    <lastmod>2023-08-08T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Standard_Borel_Spaces.html</loc>
+    <lastmod>2023-08-08T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/standard_borel_spaces/</loc>
+    <lastmod>2023-08-08T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/authors/calk/</loc>
     <lastmod>2023-07-25T00:00:00+00:00</lastmod>
   </url><url>
@@ -977,13 +992,7 @@
     <loc>/entries/LP_Duality.html</loc>
     <lastmod>2022-02-03T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/hirata/</loc>
-    <lastmod>2022-02-03T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/linear_inequalities/</loc>
-    <lastmod>2022-02-03T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/minamide/</loc>
     <lastmod>2022-02-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Quasi_Borel_Spaces.html</loc>
@@ -6249,6 +6258,8 @@
   </url><url>
     <loc>/sessions/rsapss/</loc>
   </url><url>
+    <loc>/sessions/s_finite_measure_monad/</loc>
+  </url><url>
     <loc>/sessions/safe_distance/</loc>
   </url><url>
     <loc>/sessions/safe_ocl/</loc>
@@ -6375,6 +6386,8 @@
     <loc>/sessions/stable_matching/</loc>
   </url><url>
     <loc>/sessions/stalnaker_logic/</loc>
+  </url><url>
+    <loc>/sessions/standard_borel_spaces/</loc>
   </url><url>
     <loc>/sessions/statecharts/</loc>
   </url><url>
