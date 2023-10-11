@@ -1,0 +1,30 @@
+title = "Conformance Relations between Input/Output Languages"
+date = 2023-09-01
+topics = [
+  "Computer science/Automata and formal languages",
+]
+abstract = """
+This entry formalises the paper of the same name by Huang et al. and presents a unifying characterisation of well-known conformance relations such as equivalence and language inclusion (reduction) on languages over input/output pairs.
+This characterisation simplifies comparisons between conformance relations and from it a fundamental necessary and sufficient criterion for conformance testing is developed."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.sachtleben]
+email = "sachtleben_email"
+
+[contributors]
+
+[notify]
+sachtleben = "sachtleben_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1007/978-3-031-40132-9_4",
+]
+pubs = []

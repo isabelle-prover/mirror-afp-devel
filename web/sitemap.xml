@@ -71,10 +71,16 @@
     <loc>/authors/paulson/</loc>
     <lastmod>2023-09-16T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/bisping/</loc>
-    <lastmod>2023-08-18T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/topics/computer-science/</loc>
+    <lastmod>2023-09-01T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/IO_Language_Conformance.html</loc>
+    <lastmod>2023-09-01T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/sachtleben/</loc>
+    <lastmod>2023-09-01T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/bisping/</loc>
     <lastmod>2023-08-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Coupledsim_Contrasim.html</loc>
@@ -726,9 +732,6 @@
     <lastmod>2022-08-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/native_word/</loc>
-    <lastmod>2022-08-09T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/sachtleben/</loc>
     <lastmod>2022-08-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/FSM_Tests.html</loc>
@@ -5583,6 +5586,8 @@
     <loc>/sessions/intro_dest_elim/</loc>
   </url><url>
     <loc>/sessions/involutions2squares/</loc>
+  </url><url>
+    <loc>/sessions/io_language_conformance/</loc>
   </url><url>
     <loc>/sessions/ioa/</loc>
   </url><url>
