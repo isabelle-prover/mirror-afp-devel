@@ -42,7 +42,7 @@ locale rpo_with_assms = precedence prc prl
     and n :: nat
 begin
 
-sublocale wpo_with_assms n "{}" UNIV prc prl full_status c False "\<lambda> _. False"
+sublocale wpo_with_SN_assms n "{}" UNIV prc prl full_status c False "\<lambda> _. False"
   by (unfold_locales, auto simp: refl_on_def trans_def simple_arg_pos_def irrefl_def)
 
 abbreviation "rpo_pr \<equiv> rpo prc prl c n" 
@@ -102,7 +102,7 @@ abbreviation "RPO_S \<equiv> {(s,t). rpo_s s t}"
 abbreviation "RPO_NS \<equiv> {(s,t). rpo_ns s t}"
 
 theorem RPO_SN_order_pair: "SN_order_pair RPO_S RPO_NS"
-  unfolding rpo_eq_wpo by (rule WPO_SN_order_pair)
+  unfolding rpo_eq_wpo by (rule wpo_SN_order_pair)
 
 theorem RPO_S_subst: "(s,t) \<in> RPO_S \<Longrightarrow> (s \<cdot> \<sigma>, t \<cdot> \<sigma>) \<in> RPO_S" for \<sigma> :: "('f,'a)subst" 
   using WPO_S_subst unfolding rpo_eq_wpo .

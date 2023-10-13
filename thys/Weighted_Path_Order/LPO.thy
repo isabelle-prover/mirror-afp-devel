@@ -39,7 +39,7 @@ locale lpo_with_assms = precedence prc prl
     and n :: nat
 begin
 
-sublocale wpo_with_assms n "{}" UNIV prc prl full_status "\<lambda> _. Lex" False "\<lambda> _. False"
+sublocale wpo_with_SN_assms n "{}" UNIV prc prl full_status "\<lambda> _. Lex" False "\<lambda> _. False"
   by (unfold_locales, auto simp: refl_on_def trans_def simple_arg_pos_def irrefl_def)
 
 abbreviation "lpo_pr \<equiv> lpo prc prl n" 
@@ -89,7 +89,7 @@ abbreviation "LPO_S \<equiv> {(s,t). lpo_s s t}"
 abbreviation "LPO_NS \<equiv> {(s,t). lpo_ns s t}"
 
 theorem LPO_SN_order_pair: "SN_order_pair LPO_S LPO_NS"
-  unfolding lpo_eq_wpo by (rule WPO_SN_order_pair)
+  unfolding lpo_eq_wpo by (rule wpo_SN_order_pair)
 
 theorem LPO_S_subst: "(s,t) \<in> LPO_S \<Longrightarrow> (s \<cdot> \<sigma>, t \<cdot> \<sigma>) \<in> LPO_S" for \<sigma> :: "('f,'a)subst" 
   using WPO_S_subst unfolding lpo_eq_wpo .
