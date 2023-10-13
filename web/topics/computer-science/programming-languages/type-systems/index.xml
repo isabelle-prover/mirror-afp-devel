@@ -13,6 +13,13 @@
     
       <atom:link href="/topics/computer-science/programming-languages/type-systems/index.xml" rel="self" type="application/rss+xml" />
         <item>
+          <title>Transport via Partial Galois Connections and Equivalences</title>
+          <link>/entries/Transport.html</link>
+          <pubDate>Wed, 11 Oct 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Transport.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>MiniSail - A kernel language for the ISA specification language SAIL</title>
           <link>/entries/MiniSail.html</link>
           <pubDate>Fri, 18 Jun 2021 00:00:00 +0000</pubDate>

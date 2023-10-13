@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Tue, 19 Sep 2023 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Wed, 11 Oct 2023 00:00:00 +0000</lastBuildDate>
       <atom:link href="/authors/kappelmann/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Transport via Partial Galois Connections and Equivalences</title>
+          <link>/entries/Transport.html</link>
+          <pubDate>Wed, 11 Oct 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Transport.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Unification Utilities for Isabelle/ML</title>
           <link>/entries/ML_Unification.html</link>

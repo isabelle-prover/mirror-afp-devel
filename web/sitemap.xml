@@ -3,18 +3,36 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2023-09-22T00:00:00+00:00</lastmod>
+    <lastmod>2023-10-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2023-09-22T00:00:00+00:00</lastmod>
+    <lastmod>2023-10-11T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/entries/Relational_Cardinality.html</loc>
-    <lastmod>2023-09-22T00:00:00+00:00</lastmod>
+    <loc>/topics/computer-science/</loc>
+    <lastmod>2023-10-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/</loc>
-    <lastmod>2023-09-22T00:00:00+00:00</lastmod>
+    <lastmod>2023-10-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/</loc>
+    <lastmod>2023-10-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/kappelmann/</loc>
+    <lastmod>2023-10-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2023-10-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/ml_unification/</loc>
+    <lastmod>2023-10-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2023-10-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Transport.html</loc>
+    <lastmod>2023-10-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Relational_Cardinality.html</loc>
     <lastmod>2023-09-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/guttmann/</loc>
@@ -23,13 +41,7 @@
     <loc>/dependencies/list-infinite/</loc>
     <lastmod>2023-09-22T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/topics/mathematics/</loc>
-    <lastmod>2023-09-22T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/stone_relation_algebras/</loc>
-    <lastmod>2023-09-22T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2023-09-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/card_partitions/</loc>
@@ -53,9 +65,6 @@
     <loc>/dependencies/undirected_graph_theory/</loc>
     <lastmod>2023-09-20T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/kappelmann/</loc>
-    <lastmod>2023-09-19T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/speccheck/</loc>
     <lastmod>2023-09-19T00:00:00+00:00</lastmod>
   </url><url>
@@ -70,9 +79,6 @@
   </url><url>
     <loc>/authors/paulson/</loc>
     <lastmod>2023-09-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/computer-science/</loc>
-    <lastmod>2023-09-01T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/IO_Language_Conformance.html</loc>
     <lastmod>2023-09-01T00:00:00+00:00</lastmod>
@@ -6492,6 +6498,8 @@
     <loc>/sessions/transitive-closure-ii/</loc>
   </url><url>
     <loc>/sessions/transitive_models/</loc>
+  </url><url>
+    <loc>/sessions/transport/</loc>
   </url><url>
     <loc>/sessions/treaps/</loc>
   </url><url>

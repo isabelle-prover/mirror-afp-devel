@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Fri, 22 Sep 2023 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Wed, 11 Oct 2023 00:00:00 +0000</lastBuildDate>
       <atom:link href="/topics/mathematics/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Transport via Partial Galois Connections and Equivalences</title>
+          <link>/entries/Transport.html</link>
+          <pubDate>Wed, 11 Oct 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Transport.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Cardinality and Representation of Stone Relation Algebras</title>
           <link>/entries/Relational_Cardinality.html</link>

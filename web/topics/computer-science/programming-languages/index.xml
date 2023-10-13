@@ -13,6 +13,20 @@
     
       <atom:link href="/topics/computer-science/programming-languages/index.xml" rel="self" type="application/rss+xml" />
         <item>
+          <title>Transport via Partial Galois Connections and Equivalences</title>
+          <link>/entries/Transport.html</link>
+          <pubDate>Wed, 11 Oct 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Transport.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Transport via Partial Galois Connections and Equivalences</title>
+          <link>/entries/Transport.html</link>
+          <pubDate>Wed, 11 Oct 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Transport.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Formalization of Hyper Hoare Logic: A Logic to (Dis-)Prove Program Hyperproperties</title>
           <link>/entries/HyperHoareLogic.html</link>
           <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
