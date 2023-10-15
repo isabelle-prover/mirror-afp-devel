@@ -147,6 +147,7 @@ Core_SC_DOM
 Correctness_Algebras
 Cotangent_PFD_Formula
 Count_Complex_Roots
+Coupledsim_Contrasim
 CryptHOL
 CryptoBasedCompositionalProperties
 Crypto_Standards
@@ -324,6 +325,7 @@ IMP2
 IMP2_Binary_Heap
 IMP_Compiler
 IMP_Compiler_Reuse
+IO_Language_Conformance
 IP_Addresses
 Imperative_Insertion_Sort
 Implicational_Logic
@@ -621,6 +623,7 @@ SDS_Impossibility
 SIFPL
 SIFUM_Type_Systems
 SPARCv8
+S_Finite_Measure_Monad
 Safe_Distance
 Safe_OCL
 Safe_Range_RC
@@ -667,6 +670,7 @@ Splay_Tree
 Sqrt_Babylonian
 Stable_Matching
 Stalnaker_Logic
+Standard_Borel_Spaces
 Statecharts
 Stateful_Protocol_Composition_and_Typing
 Stellar_Quorums
@@ -715,6 +719,7 @@ Transition_Systems_and_Automata
 Transitive-Closure
 Transitive-Closure-II
 Transitive_Models
+Transport
 Treaps
 Tree-Automata
 Tree_Decomposition

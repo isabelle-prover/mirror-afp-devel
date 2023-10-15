@@ -11,13 +11,55 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Mon, 14 Aug 2023 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Wed, 11 Oct 2023 00:00:00 +0000</lastBuildDate>
       <atom:link href="/topics/computer-science/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Transport via Partial Galois Connections and Equivalences</title>
+          <link>/entries/Transport.html</link>
+          <pubDate>Wed, 11 Oct 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Transport.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Transport via Partial Galois Connections and Equivalences</title>
+          <link>/entries/Transport.html</link>
+          <pubDate>Wed, 11 Oct 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Transport.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Transport via Partial Galois Connections and Equivalences</title>
+          <link>/entries/Transport.html</link>
+          <pubDate>Wed, 11 Oct 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Transport.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Conformance Relations between Input/Output Languages</title>
+          <link>/entries/IO_Language_Conformance.html</link>
+          <pubDate>Fri, 01 Sep 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/IO_Language_Conformance.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Coupled Similarity and Contrasimilarity, and How to Compute Them</title>
+          <link>/entries/Coupledsim_Contrasim.html</link>
+          <pubDate>Fri, 18 Aug 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Coupledsim_Contrasim.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Fixed-length vectors</title>
           <link>/entries/Fixed_Length_Vector.html</link>
           <pubDate>Mon, 14 Aug 2023 00:00:00 +0000</pubDate>
           <guid>/entries/Fixed_Length_Vector.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>S-Finite Measure Monad on Quasi-Borel Spaces</title>
+          <link>/entries/S_Finite_Measure_Monad.html</link>
+          <pubDate>Tue, 08 Aug 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/S_Finite_Measure_Monad.html</guid>
           <description></description>
         </item>
         <item>

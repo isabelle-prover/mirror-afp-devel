@@ -1,0 +1,9 @@
+chapter AFP
+
+session IO_Language_Conformance = "HOL-Library" +
+  options [timeout = 300]
+  theories
+    "Input_Output_Language_Conformance"
+  document_files
+    "root.tex"
+    "root.bib"

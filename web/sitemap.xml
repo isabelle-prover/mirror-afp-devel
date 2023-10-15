@@ -3,18 +3,36 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2023-09-22T00:00:00+00:00</lastmod>
+    <lastmod>2023-10-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2023-09-22T00:00:00+00:00</lastmod>
+    <lastmod>2023-10-11T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/entries/Relational_Cardinality.html</loc>
-    <lastmod>2023-09-22T00:00:00+00:00</lastmod>
+    <loc>/topics/computer-science/</loc>
+    <lastmod>2023-10-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/</loc>
-    <lastmod>2023-09-22T00:00:00+00:00</lastmod>
+    <lastmod>2023-10-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/</loc>
+    <lastmod>2023-10-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/kappelmann/</loc>
+    <lastmod>2023-10-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2023-10-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/ml_unification/</loc>
+    <lastmod>2023-10-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2023-10-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Transport.html</loc>
+    <lastmod>2023-10-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Relational_Cardinality.html</loc>
     <lastmod>2023-09-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/guttmann/</loc>
@@ -23,13 +41,7 @@
     <loc>/dependencies/list-infinite/</loc>
     <lastmod>2023-09-22T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/topics/mathematics/</loc>
-    <lastmod>2023-09-22T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/stone_relation_algebras/</loc>
-    <lastmod>2023-09-22T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2023-09-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/card_partitions/</loc>
@@ -53,9 +65,6 @@
     <loc>/dependencies/undirected_graph_theory/</loc>
     <lastmod>2023-09-20T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/kappelmann/</loc>
-    <lastmod>2023-09-19T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/speccheck/</loc>
     <lastmod>2023-09-19T00:00:00+00:00</lastmod>
   </url><url>
@@ -71,6 +80,24 @@
     <loc>/authors/paulson/</loc>
     <lastmod>2023-09-16T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/entries/IO_Language_Conformance.html</loc>
+    <lastmod>2023-09-01T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/sachtleben/</loc>
+    <lastmod>2023-09-01T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/bisping/</loc>
+    <lastmod>2023-08-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Coupledsim_Contrasim.html</loc>
+    <lastmod>2023-08-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/logic/</loc>
+    <lastmod>2023-08-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/montanari/</loc>
+    <lastmod>2023-08-18T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/entries/Ceva.html</loc>
     <lastmod>2023-08-16T00:00:00+00:00</lastmod>
   </url><url>
@@ -81,9 +108,6 @@
     <lastmod>2023-08-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Catoids.html</loc>
-    <lastmod>2023-08-14T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/computer-science/</loc>
     <lastmod>2023-08-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Fixed_Length_Vector.html</loc>
@@ -121,6 +145,21 @@
   </url><url>
     <loc>/authors/yez/</loc>
     <lastmod>2023-08-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/hirata/</loc>
+    <lastmod>2023-08-08T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/minamide/</loc>
+    <lastmod>2023-08-08T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/S_Finite_Measure_Monad.html</loc>
+    <lastmod>2023-08-08T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Standard_Borel_Spaces.html</loc>
+    <lastmod>2023-08-08T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/standard_borel_spaces/</loc>
+    <lastmod>2023-08-08T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/calk/</loc>
     <lastmod>2023-07-25T00:00:00+00:00</lastmod>
@@ -183,9 +222,6 @@
     <lastmod>2023-06-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Efficient_Weighted_Path_Order.html</loc>
-    <lastmod>2023-06-01T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/logic/</loc>
     <lastmod>2023-06-01T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/thiemann/</loc>
@@ -719,9 +755,6 @@
     <loc>/dependencies/native_word/</loc>
     <lastmod>2022-08-09T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/sachtleben/</loc>
-    <lastmod>2022-08-09T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/FSM_Tests.html</loc>
     <lastmod>2022-08-09T00:00:00+00:00</lastmod>
   </url><url>
@@ -965,13 +998,7 @@
     <loc>/entries/LP_Duality.html</loc>
     <lastmod>2022-02-03T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/hirata/</loc>
-    <lastmod>2022-02-03T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/linear_inequalities/</loc>
-    <lastmod>2022-02-03T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/minamide/</loc>
     <lastmod>2022-02-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Quasi_Borel_Spaces.html</loc>
@@ -3302,9 +3329,6 @@
     <loc>/entries/FLP.html</loc>
     <lastmod>2016-05-18T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/bisping/</loc>
-    <lastmod>2016-05-18T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/brodmann/</loc>
     <lastmod>2016-05-18T00:00:00+00:00</lastmod>
   </url><url>
@@ -4968,6 +4992,8 @@
   </url><url>
     <loc>/sessions/count_complex_roots/</loc>
   </url><url>
+    <loc>/sessions/coupledsim_contrasim/</loc>
+  </url><url>
     <loc>/sessions/crdt/</loc>
   </url><url>
     <loc>/sessions/crypthol/</loc>
@@ -5575,6 +5601,8 @@
     <loc>/sessions/intro_dest_elim/</loc>
   </url><url>
     <loc>/sessions/involutions2squares/</loc>
+  </url><url>
+    <loc>/sessions/io_language_conformance/</loc>
   </url><url>
     <loc>/sessions/ioa/</loc>
   </url><url>
@@ -6236,6 +6264,8 @@
   </url><url>
     <loc>/sessions/rsapss/</loc>
   </url><url>
+    <loc>/sessions/s_finite_measure_monad/</loc>
+  </url><url>
     <loc>/sessions/safe_distance/</loc>
   </url><url>
     <loc>/sessions/safe_ocl/</loc>
@@ -6363,6 +6393,8 @@
   </url><url>
     <loc>/sessions/stalnaker_logic/</loc>
   </url><url>
+    <loc>/sessions/standard_borel_spaces/</loc>
+  </url><url>
     <loc>/sessions/statecharts/</loc>
   </url><url>
     <loc>/sessions/stateful_protocol_composition_and_typing/</loc>
@@ -6466,6 +6498,8 @@
     <loc>/sessions/transitive-closure-ii/</loc>
   </url><url>
     <loc>/sessions/transitive_models/</loc>
+  </url><url>
+    <loc>/sessions/transport/</loc>
   </url><url>
     <loc>/sessions/treaps/</loc>
   </url><url>

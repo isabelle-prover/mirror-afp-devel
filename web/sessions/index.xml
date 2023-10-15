@@ -1035,6 +1035,13 @@
           <description></description>
         </item>
         <item>
+          <title>Coupledsim_Contrasim</title>
+          <link>/sessions/coupledsim_contrasim/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/coupledsim_contrasim/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>CRDT</title>
           <link>/sessions/crdt/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -2481,6 +2488,13 @@
           <link>/sessions/involutions2squares/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/involutions2squares/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>IO_Language_Conformance</title>
+          <link>/sessions/io_language_conformance/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/io_language_conformance/</guid>
           <description></description>
         </item>
         <item>
@@ -4458,6 +4472,13 @@
           <description></description>
         </item>
         <item>
+          <title>S_Finite_Measure_Monad</title>
+          <link>/sessions/s_finite_measure_monad/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/s_finite_measure_monad/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Safe_Distance</title>
           <link>/sessions/safe_distance/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -4864,6 +4885,13 @@
           <description></description>
         </item>
         <item>
+          <title>Standard_Borel_Spaces</title>
+          <link>/sessions/standard_borel_spaces/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/standard_borel_spaces/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Statecharts</title>
           <link>/sessions/statecharts/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -5190,6 +5218,13 @@
           <link>/sessions/transitive_models/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/transitive_models/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Transport</title>
+          <link>/sessions/transport/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/transport/</guid>
           <description></description>
         </item>
         <item>

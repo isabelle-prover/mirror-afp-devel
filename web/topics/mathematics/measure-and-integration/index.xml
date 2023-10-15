@@ -13,6 +13,13 @@
     
       <atom:link href="/topics/mathematics/measure-and-integration/index.xml" rel="self" type="application/rss+xml" />
         <item>
+          <title>S-Finite Measure Monad on Quasi-Borel Spaces</title>
+          <link>/entries/S_Finite_Measure_Monad.html</link>
+          <pubDate>Tue, 08 Aug 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/S_Finite_Measure_Monad.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>The Hahn and Jordan Decomposition Theorems</title>
           <link>/entries/Hahn_Jordan_Decomposition.html</link>
           <pubDate>Fri, 19 Nov 2021 00:00:00 +0000</pubDate>

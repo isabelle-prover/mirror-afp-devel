@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>S-Finite Measure Monad on Quasi-Borel Spaces - Archive of Formal Proofs</title>
+    <meta name="description" content="The s-finite measure monad on quasi-Borel spaces provides a suitable denotational model for higher-order probabilistic programs with conditioning. This...">
+
+  <meta property="og:title" content="S-Finite Measure Monad on Quasi-Borel Spaces" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/S_Finite_Measure_Monad.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2023-08-08T00:00:00+00:00" />
+<meta property="article:modified_time" content="2023-08-08T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+
+  <meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="S-Finite Measure Monad on Quasi-Borel Spaces"/>
+<meta name="twitter:description" content=""/>
+
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
+</head>
+
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
+
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
+  </a>
+
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
+      </a>
+      <ul>
+          <a href="../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../about/">
+            <li >
+              About
+            </li>
+          </a>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+    <div class='content entries'>
+      <header>
+    <form autocomplete="off" action="../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>S</span>-<span class='first'>F</span>inite <span class='first'>M</span>easure <span class='first'>M</span>onad on <span class='first'>Q</span>uasi-<span class='first'>B</span>orel <span class='first'>S</span>paces
+    
+  </h1>
+  <div>
+      <p>
+        <a href="../authors/hirata">Michikazu Hirata</a> <a class="obfuscated" data="eyJob3N0IjpbIm0iLCJ0aXRlY2giLCJhYyIsImpwIl0sInVzZXIiOlsiaGlyYXRhIiwibSIsImFjIl19">📧</a> and <a href="../authors/minamide">Yasuhiko Minamide</a> <a class="obfuscated" data="eyJob3N0IjpbImlzIiwidGl0ZWNoIiwiYWMiLCJqcCJdLCJ1c2VyIjpbIm1pbmFtaWRlIl19">📧</a>
+
+      </p>
+      <p class="date">August 8, 2023</p>
+  </div>
+</header>
+      <div>
+        
+  <main>
+    <h3>Abstract</h3>
+
+    <div class="abstract mathjax_process">The s-finite measure monad on quasi-Borel spaces provides a suitable denotational model for higher-order probabilistic programs with conditioning. This entry is a formalization of the s-finite measure monad and related notions, including s-finite measures, s-finite kernels, and a proof automation for quasi-Borel spaces which is an extension of our previous entry <a href="https://www.isa-afp.org/entries/Quasi_Borel_Spaces.html"><i>Quasi-Borel Spaces</i></a>. We also implement several examples of probabilistic programs in previous works and prove their property.
+This work is a part of the work by Hirata, Minamide, and Sato, <i>Semantic Foundations of Higher-Order Probabilistic Programs in Isabelle/HOL</i> presented at the 14th Conference on Interactive Theorem Proving (ITP2023).</div>
+
+    <h3>License</h3>
+    <div>
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/computer-science/semantics-and-reasoning">Computer science/Semantics and reasoning</a></li>
+          <li><a href="../topics/mathematics/measure-and-integration">Mathematics/Measure and integration</a></li>
+          <li><a href="../topics/mathematics/probability-theory">Mathematics/Probability theory</a></li>
+      </ul>
+      <h3>Related publications</h3>
+      <ul>
+        <li>Hirata, M., Minamide, Y., &amp; Sato, T. (2023). Semantic Foundations of Higher-Order Probabilistic Programs in Isabelle/HOL. <i>Schloss Dagstuhl - Leibniz-Zentrum Für Informatik</i>. https://doi.org/10.4230/LIPICS.ITP.2023.18
+        </li>
+      </ul>
+      <h3>Session S_Finite_Measure_Monad</h3>
+      <ul>
+          <li><a href="../sessions/s_finite_measure_monad/#Lemmas_S_Finite_Measure_Monad">Lemmas_S_Finite_Measure_Monad</a></li>
+          <li><a href="../sessions/s_finite_measure_monad/#Kernels">Kernels</a></li>
+          <li><a href="../sessions/s_finite_measure_monad/#QuasiBorel">QuasiBorel</a></li>
+          <li><a href="../sessions/s_finite_measure_monad/#QBS_Morphism">QBS_Morphism</a></li>
+          <li><a href="../sessions/s_finite_measure_monad/#Measure_QuasiBorel_Adjunction">Measure_QuasiBorel_Adjunction</a></li>
+          <li><a href="../sessions/s_finite_measure_monad/#Monad_QuasiBorel">Monad_QuasiBorel</a></li>
+          <li><a href="../sessions/s_finite_measure_monad/#Montecarlo">Montecarlo</a></li>
+          <li><a href="../sessions/s_finite_measure_monad/#Query">Query</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+      <div>
+        <h3>Depends on</h3>
+        <ul class="horizontal-list">
+              <li><a href="../entries/Standard_Borel_Spaces.html">Standard Borel Spaces</a></li>
+        </ul>
+      </div>
+        <div>
+          <h3>Auto-related entries</h3>
+          <ul class="horizontal-list">
+              <li><a href="../entries/Quasi_Borel_Spaces.html">Quasi-Borel Spaces</a></li>
+              <li><a href="../entries/Automated_Stateful_Protocol_Verification.html">Automated Stateful Protocol Verification</a></li>
+              <li><a href="../entries/Proof_Strategy_Language.html">Proof Strategy Language</a></li>
+          </ul>
+        </div>
+      </div>
+    
+  </main>
+
+  <nav class='links'>
+    <a class='popup-button' href="#cite-popup">Cite</a>
+    <a class='popup-button' href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/S_Finite_Measure_Monad/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/S_Finite_Measure_Monad/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/S_Finite_Measure_Monad/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">S_Finite_Measure_Monad-AFP</p>
+        <pre id="copy-text">@article{S_Finite_Measure_Monad-AFP,
+  author  = {Michikazu Hirata and Yasuhiko Minamide},
+  title   = {S-Finite Measure Monad on Quasi-Borel Spaces},
+  journal = {Archive of Formal Proofs},
+  month   = {August},
+  year    = {2023},
+  note    = {\url{https://isa-afp.org/entries/S_Finite_Measure_Monad.html},
+             Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-S_Finite_Measure_Monad-current.tar.gz"
+         download>Download latest</a>
+    </div>
+  </div>
+        
+      </div>
+    </div>
+  </body>
+</html>
