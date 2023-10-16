@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Sat, 16 Sep 2023 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Sat, 23 Sep 2023 00:00:00 +0000</lastBuildDate>
       <atom:link href="/authors/paulson/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Hypergraph Colouring Bounds</title>
+          <link>/entries/Hypergraph_Colourings.html</link>
+          <pubDate>Sat, 23 Sep 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Hypergraph_Colourings.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Euler&#39;s Polyhedron Formula</title>
           <link>/entries/Euler_Polyhedron_Formula.html</link>

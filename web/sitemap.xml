@@ -32,6 +32,30 @@
     <loc>/entries/Transport.html</loc>
     <lastmod>2023-10-11T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/dependencies/card_partitions/</loc>
+    <lastmod>2023-09-23T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/edmonds/</loc>
+    <lastmod>2023-09-23T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/girth_chromatic/</loc>
+    <lastmod>2023-09-23T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Hypergraph_Colourings.html</loc>
+    <lastmod>2023-09-23T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/hypergraph_basics/</loc>
+    <lastmod>2023-09-23T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/lovasz_local/</loc>
+    <lastmod>2023-09-23T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/paulson/</loc>
+    <lastmod>2023-09-23T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/twelvefold_way/</loc>
+    <lastmod>2023-09-23T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/entries/Relational_Cardinality.html</loc>
     <lastmod>2023-09-22T00:00:00+00:00</lastmod>
   </url><url>
@@ -44,13 +68,7 @@
     <loc>/dependencies/stone_relation_algebras/</loc>
     <lastmod>2023-09-22T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/card_partitions/</loc>
-    <lastmod>2023-09-20T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/design_theory/</loc>
-    <lastmod>2023-09-20T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/edmonds/</loc>
     <lastmod>2023-09-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/fishers_inequality/</loc>
@@ -75,9 +93,6 @@
     <lastmod>2023-09-19T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Euler_Polyhedron_Formula.html</loc>
-    <lastmod>2023-09-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/paulson/</loc>
     <lastmod>2023-09-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/IO_Language_Conformance.html</loc>
@@ -607,9 +622,6 @@
   </url><url>
     <loc>/dependencies/pluennecke_ruzsa_inequality/</loc>
     <lastmod>2022-11-21T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/girth_chromatic/</loc>
-    <lastmod>2022-11-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/lauermann/</loc>
     <lastmod>2022-11-14T00:00:00+00:00</lastmod>
@@ -5545,6 +5557,8 @@
     <loc>/sessions/hyperdual/</loc>
   </url><url>
     <loc>/sessions/hypergraph_basics/</loc>
+  </url><url>
+    <loc>/sessions/hypergraph_colourings/</loc>
   </url><url>
     <loc>/sessions/hyperhoarelogic/</loc>
   </url><url>

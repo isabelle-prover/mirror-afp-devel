@@ -317,6 +317,7 @@ HyperCTL
 HyperHoareLogic
 Hyperdual
 Hypergraph_Basics
+Hypergraph_Colourings
 IEEE_Floating_Point
 IFC_Tracking
 IMAP-CRDT

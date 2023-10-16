@@ -1,0 +1,17 @@
+chapter AFP
+
+session Hypergraph_Colourings (AFP) = "HOL-Probability"  + 
+  options [timeout = 600]
+  sessions
+    Card_Partitions
+    "HOL-Library"
+    Girth_Chromatic
+    Twelvefold_Way
+    Lovasz_Local
+    Hypergraph_Basics
+  theories
+    Hypergraph_Colourings_Root
+  document_files
+    "root.bib"
+    "root.tex"
+
