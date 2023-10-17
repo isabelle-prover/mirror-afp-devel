@@ -302,15 +302,15 @@ lemmas [mpoly_simps] = Pm_fmap_sum
 
 text \<open>A simproc for postprocessing with \<open>mpoly_simps\<close> and not polluting \<open>[code_post]\<close>:\<close>
 
-ML \<open>val mpoly_simproc = Simplifier.make_simproc @{context} "multivariate polynomials"
-      {lhss = [@{term "Pm_fmap mpp::(_ \<Rightarrow>\<^sub>0 nat) \<Rightarrow>\<^sub>0 _"}],
-       proc = (K (fn ctxt => fn ct =>
-          SOME (Simplifier.rewrite (put_simpset HOL_basic_ss ctxt addsimps
-            (Named_Theorems.get ctxt (\<^named_theorems>\<open>mpoly_simps\<close>))) ct)))}\<close>
+simproc_setup mpoly ("Pm_fmap mpp::(_ \<Rightarrow>\<^sub>0 nat) \<Rightarrow>\<^sub>0 _") =
+  \<open>K (fn ctxt => fn ct =>
+        SOME (Simplifier.rewrite (put_simpset HOL_basic_ss ctxt addsimps
+          (Named_Theorems.get ctxt (\<^named_theorems>\<open>mpoly_simps\<close>))) ct))\<close>
+  (passive)
 
 (* The simproc slows down computations *a lot*, so it is deactivated by default. *)
 
-(* setup \<open>Code_Preproc.map_post (fn ctxt => ctxt addsimprocs [mpoly_simproc])\<close> *)
+(* setup \<open>Code_Preproc.map_post (fn ctxt => ctxt addsimprocs [\<^simproc>\<open>mpoly\<close>])\<close> *)
 
 
 subsubsection \<open>Ordered Power-Products\<close>
