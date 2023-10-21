@@ -492,15 +492,9 @@ struct
   \<close>
   
   val assn_simproc =
-    Simplifier.make_simproc @{context} "assn_simproc"
-     {lhss =
-      [@{term "h \<Turnstile> P"},
-       @{term "P \<Longrightarrow>\<^sub>A Q"},
-       @{term "P \<Longrightarrow>\<^sub>t Q"},
-       @{term "Hoare_Triple.hoare_triple P c Q"},
-       @{term "(P::assn) = Q"}],
-      proc = K assn_simproc_fun};
-
+    \<^simproc_setup>\<open>passive assn
+      ("h \<Turnstile> P" | "P \<Longrightarrow>\<^sub>A Q" | "P \<Longrightarrow>\<^sub>t Q" | "Hoare_Triple.hoare_triple P c R" | "P = Q") =
+      \<open>K assn_simproc_fun\<close>\<close>;
 
 
   (***********************************)
