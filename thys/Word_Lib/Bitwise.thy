@@ -445,9 +445,11 @@ fun nat_get_Suc_simproc_fn n_sucs ctxt ct =
   end handle TERM _ => NONE;
 
 fun nat_get_Suc_simproc n_sucs ts =
-  Simplifier.make_simproc \<^context> "nat_get_Suc"
-   {lhss = map (fn t => t $ \<^term>\<open>n :: nat\<close>) ts,
-    proc = K (nat_get_Suc_simproc_fn n_sucs)};
+  Simplifier.make_simproc \<^context>
+   {name = "nat_get_Suc",
+    lhss = map (fn t => t $ \<^term>\<open>n :: nat\<close>) ts,
+    proc = K (nat_get_Suc_simproc_fn n_sucs),
+    identifier = []};
 
 val no_split_ss =
   simpset_of (put_simpset HOL_ss \<^context>
