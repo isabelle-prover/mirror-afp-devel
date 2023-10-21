@@ -58,7 +58,7 @@ declare eq_map_apply[symmetric, abs_def, containers_post]
 
 text \<open>We cannot use @{thm [source] eq_map_apply} as a fold rule for operator identification,
   because it would loop. We use a simproc instead.\<close>
-simproc_setup map_apply ("f x :: 'a option") = \<open>
+simproc_setup passive map_apply ("f x :: 'a option") = \<open>
   fn _ => fn ctxt => fn ct =>
     (case Thm.term_of ct of
       Const (@{const_name map_apply}, _) $ _ $ _ => NONE
@@ -75,7 +75,7 @@ simproc_setup map_apply ("f x :: 'a option") = \<open>
           SOME (Thm.instantiate' [SOME cTr, SOME cTx] cts @{thm eq_map_apply})
         end
     | _ => NONE)
-\<close> (passive)
+\<close>
 
 lemma map_apply_parametric [transfer_rule]:
   "((A ===> B) ===> A ===> B) map_apply map_apply"

@@ -302,11 +302,10 @@ lemmas [mpoly_simps] = Pm_fmap_sum
 
 text \<open>A simproc for postprocessing with \<open>mpoly_simps\<close> and not polluting \<open>[code_post]\<close>:\<close>
 
-simproc_setup mpoly ("Pm_fmap mpp::(_ \<Rightarrow>\<^sub>0 nat) \<Rightarrow>\<^sub>0 _") =
+simproc_setup passive mpoly ("Pm_fmap mpp::(_ \<Rightarrow>\<^sub>0 nat) \<Rightarrow>\<^sub>0 _") =
   \<open>K (fn ctxt => fn ct =>
         SOME (Simplifier.rewrite (put_simpset HOL_basic_ss ctxt addsimps
           (Named_Theorems.get ctxt (\<^named_theorems>\<open>mpoly_simps\<close>))) ct))\<close>
-  (passive)
 
 (* The simproc slows down computations *a lot*, so it is deactivated by default. *)
 
