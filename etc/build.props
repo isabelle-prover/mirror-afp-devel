@@ -1,8 +1,7 @@
 title = AFP/Tools
 module = $AFP_BASE/tools/lib/classes/afp_tools.jar
 requirements = \
-  env:ISABELLE_SCALA_JAR \
-  $ISABELLE_CI_EXTRAS_JAR
+  env:ISABELLE_SCALA_JAR
 sources = \
   tools/afp_build.scala \
   tools/afp_check_metadata.scala \
