@@ -52,6 +52,20 @@ qed simp_all
 lemma null_measure_distr: "distr (null_measure M) N f = null_measure N"
   by(auto intro!: measure_eqI simp: distr_def emeasure_sigma)
 
+lemma integral_measurable_subprob_algebra2:
+  fixes f :: "_ \<Rightarrow> _ \<Rightarrow> _::{banach,second_countable_topology}"
+  assumes [measurable]: "(\<lambda>(x, y). f x y) \<in> borel_measurable (M \<Otimes>\<^sub>M N)" "L \<in> measurable M (subprob_algebra N)"
+  shows "(\<lambda>x. integral\<^sup>L (L x) (f x)) \<in> borel_measurable M"
+proof -
+  note integral_measurable_subprob_algebra[measurable]
+  note measurable_distr2[measurable]
+  have "(\<lambda>x. integral\<^sup>L (distr (L x) (M \<Otimes>\<^sub>M N) (\<lambda>y. (x, y))) (\<lambda>(x, y). f x y)) \<in> borel_measurable M"
+    by measurable
+  then show "(\<lambda>x. integral\<^sup>L (L x) (f x)) \<in> borel_measurable M"
+    by (rule measurable_cong[THEN iffD1, rotated])
+       (simp add: integral_distr)
+qed
+
 lemma distr_id':
   assumes "sets N = sets M"
       and "\<And>x. x \<in> space N \<Longrightarrow> f x = x"

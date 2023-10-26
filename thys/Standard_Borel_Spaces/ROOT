@@ -8,7 +8,6 @@ session "Standard_Borel_Spaces" = "HOL-Probability" +
     "Set_Based_Metric_Product"
     "Abstract_Metrizable_Topology"
     "StandardBorel"
-    "Space_of_Continuous_Maps"
   document_files
     "root.tex"
     "root.bib"

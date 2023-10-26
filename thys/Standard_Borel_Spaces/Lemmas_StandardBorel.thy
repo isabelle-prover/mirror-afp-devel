@@ -338,6 +338,9 @@ definition perfect_set :: "'a topology \<Rightarrow> 'a set \<Rightarrow> bool" 
 
 abbreviation "perfect_space X \<equiv> perfect_set X (topspace X)"
 
+lemma perfect_space_euclidean: "perfect_space (euclidean :: 'a :: perfect_space topology)"
+  by(auto simp: isolated_points_of_def perfect_set_def derived_set_of_eq closure_interior)
+
 lemma perfect_setI:
   assumes "closedin X A"
       and "\<And>x T. \<lbrakk>x \<in> A; x \<in> T; openin X T\<rbrakk> \<Longrightarrow> \<exists>y\<noteq>x. y \<in> T \<and> y \<in> A"
@@ -364,32 +367,37 @@ lemma perfect_set_subtopology:
   using perfect_setD[OF assms] by(auto intro!: perfect_setI simp: inf.absorb_iff2 openin_subtopology)
 
 subsubsection \<open> Bases and Sub-Bases in Abstract Topology\<close>
-definition subbase_of :: "['a topology, 'a set set] \<Rightarrow> bool" where
-"subbase_of S \<O> \<longleftrightarrow> S = topology_generated_by \<O>"
+definition subbase_in :: "['a topology, 'a set set] \<Rightarrow> bool" where
+"subbase_in S \<O> \<longleftrightarrow> S = topology_generated_by \<O>"
 
-definition base_of :: "['a topology, 'a set set] \<Rightarrow> bool" where
-"base_of S \<O> \<longleftrightarrow> (\<forall>U. openin S U \<longleftrightarrow> (\<exists>\<U>. U = \<Union>\<U> \<and> \<U> \<subseteq> \<O>))"
+definition base_in :: "['a topology, 'a set set] \<Rightarrow> bool" where
+"base_in S \<O> \<longleftrightarrow> (\<forall>U. openin S U \<longleftrightarrow> (\<exists>\<U>. U = \<Union>\<U> \<and> \<U> \<subseteq> \<O>))"
 
-definition second_countable :: "'a topology \<Rightarrow> bool" where
-"second_countable S \<longleftrightarrow> (\<exists>\<O>. countable \<O> \<and> base_of S \<O>)"
+lemma second_countable_base_in: "second_countable S \<longleftrightarrow> (\<exists>\<O>. countable \<O> \<and> base_in S \<O>)"
+proof -
+  have [simp]:"\<And>\<B>. (openin S = arbitrary union_of (\<lambda>x. x \<in> \<B>)) \<longleftrightarrow> (\<forall>U. openin S U \<longleftrightarrow> (\<exists>\<U>. U = \<Union>\<U> \<and> \<U> \<subseteq> \<B>))"
+    by(simp add: arbitrary_def union_of_def fun_eq_iff) metis
+  show ?thesis
+    by(auto simp: second_countable base_in_def)
+qed
 
 definition zero_dimensional :: "'a topology \<Rightarrow> bool" where
-"zero_dimensional S \<longleftrightarrow> (\<exists>\<O>. base_of S \<O> \<and> (\<forall>u\<in>\<O>. openin S u \<and> closedin S u))"
+"zero_dimensional S \<longleftrightarrow> (\<exists>\<O>. base_in S \<O> \<and> (\<forall>u\<in>\<O>. openin S u \<and> closedin S u))"
 
 lemma openin_base:
-  assumes "base_of S \<O> " "U = \<Union>\<U>" and "\<U> \<subseteq> \<O>"
+  assumes "base_in S \<O> " "U = \<Union>\<U>" and "\<U> \<subseteq> \<O>"
   shows "openin S U"
-  using assms by(auto simp: base_of_def)
+  using assms by(auto simp: base_in_def)
 
 lemma base_is_subbase:
-  assumes "base_of S \<O>"
-  shows "subbase_of S \<O>"
-  unfolding subbase_of_def topology_eq openin_topology_generated_by_iff
+  assumes "base_in S \<O>"
+  shows "subbase_in S \<O>"
+  unfolding subbase_in_def topology_eq openin_topology_generated_by_iff
 proof safe
   fix U
   assume "openin S U"
   then obtain \<U> where hu:"U = \<Union>\<U>" "\<U> \<subseteq> \<O>"
-    using assms by(auto simp: base_of_def)
+    using assms by(auto simp: base_in_def)
   thus "generate_topology_on \<O> U"
     by(auto intro!: generate_topology_on.UN) (auto intro!:  generate_topology_on.Basis)
 next
@@ -404,38 +412,38 @@ next
   qed auto
 qed
 
-lemma subbase_of_subset:
-  assumes "subbase_of S \<O>" and "U \<in> \<O>"
+lemma subbase_in_subset:
+  assumes "subbase_in S \<O>" and "U \<in> \<O>"
   shows "U \<subseteq> topspace S"
-  using assms(1)[simplified subbase_of_def] topology_generated_by_topspace assms
+  using assms(1)[simplified subbase_in_def] topology_generated_by_topspace assms
   by auto
 
-lemma subbase_of_openin:
-  assumes "subbase_of S \<O>" and "U \<in> \<O>"
+lemma subbase_in_openin:
+  assumes "subbase_in S \<O>" and "U \<in> \<O>"
   shows "openin S U"
-  using assms by(simp add: subbase_of_def openin_topology_generated_by_iff generate_topology_on.Basis)
+  using assms by(simp add: subbase_in_def openin_topology_generated_by_iff generate_topology_on.Basis)
 
-lemma base_of_subset:
-  assumes "base_of S \<O>" and "U \<in> \<O>"
+lemma base_in_subset:
+  assumes "base_in S \<O>" and "U \<in> \<O>"
   shows "U \<subseteq> topspace S"
-  using subbase_of_subset[OF base_is_subbase[OF assms(1)] assms(2)] .
+  using subbase_in_subset[OF base_is_subbase[OF assms(1)] assms(2)] .
 
-lemma base_of_openin:
-  assumes "base_of S \<O>" and "U \<in> \<O>"
+lemma base_in_openin:
+  assumes "base_in S \<O>" and "U \<in> \<O>"
   shows "openin S U"
-  using subbase_of_openin[OF base_is_subbase[OF assms(1)] assms(2)] .
+  using subbase_in_openin[OF base_is_subbase[OF assms(1)] assms(2)] .
 
-lemma base_of_def2:
+lemma base_in_def2:
   assumes "\<And>U. U \<in> \<O> \<Longrightarrow> openin S U"
-  shows "base_of S \<O> \<longleftrightarrow> (\<forall>U. openin S U \<longrightarrow> (\<forall>x\<in>U. \<exists>W\<in>\<O>. x \<in> W \<and> W \<subseteq> U))"
+  shows "base_in S \<O> \<longleftrightarrow> (\<forall>U. openin S U \<longrightarrow> (\<forall>x\<in>U. \<exists>W\<in>\<O>. x \<in> W \<and> W \<subseteq> U))"
 proof
-  assume h:"base_of S \<O>"
+  assume h:"base_in S \<O>"
   show "\<forall>U. openin S U \<longrightarrow> (\<forall>x\<in>U. \<exists>W\<in>\<O>. x \<in> W \<and> W \<subseteq> U)"
   proof safe
     fix U x
     assume h':"openin S U" "x \<in> U"
     then obtain \<U> where hu: "U = \<Union>\<U>" "\<U> \<subseteq> \<O>"
-      using h by(auto simp: base_of_def)
+      using h by(auto simp: base_in_def)
     then obtain W where "x \<in> W" "W \<in> \<U>"
       using h'(2) by blast
     thus "\<exists>W\<in>\<O>. x \<in> W \<and> W \<subseteq> U"
@@ -443,8 +451,8 @@ proof
   qed
 next
   assume h:"\<forall>U. openin S U \<longrightarrow> (\<forall>x\<in>U. \<exists>W\<in>\<O>. x \<in> W \<and> W \<subseteq> U)"
-  show "base_of S \<O>"
-    unfolding base_of_def
+  show "base_in S \<O>"
+    unfolding base_in_def
   proof safe
     fix U
     assume "openin S U"
@@ -463,22 +471,22 @@ next
   qed
 qed
 
-lemma base_of_def2':
- "base_of S \<O> \<longleftrightarrow> (\<forall>b\<in>\<O>. openin S b) \<and> (\<forall>x. openin S x \<longrightarrow> (\<exists>B'\<subseteq>\<O>. \<Union> B' = x))"
+lemma base_in_def2':
+ "base_in S \<O> \<longleftrightarrow> (\<forall>b\<in>\<O>. openin S b) \<and> (\<forall>x. openin S x \<longrightarrow> (\<exists>B'\<subseteq>\<O>. \<Union> B' = x))"
 proof
-  assume h:"base_of S \<O>"
+  assume h:"base_in S \<O>"
   show "(\<forall>b\<in>\<O>. openin S b) \<and> (\<forall>x. openin S x \<longrightarrow> (\<exists>B'\<subseteq>\<O>. \<Union> B' = x))"
   proof(rule conjI)
     show "\<forall>b\<in>\<O>. openin S b"
       using openin_base[OF h,of _ "{_}"] by auto
   next
     show "\<forall>x. openin S x \<longrightarrow> (\<exists>B'\<subseteq>\<O>. \<Union> B' = x)"
-      using h by(auto simp: base_of_def)
+      using h by(auto simp: base_in_def)
   qed
 next
   assume h:"(\<forall>b\<in>\<O>. openin S b) \<and> (\<forall>x. openin S x \<longrightarrow> (\<exists>B'\<subseteq>\<O>. \<Union> B' = x))"
-  show "base_of S \<O>"
-    unfolding base_of_def
+  show "base_in S \<O>"
+    unfolding base_in_def
   proof safe
     fix U
     assume "openin S U"
@@ -493,49 +501,49 @@ next
   qed
 qed
 
-corollary base_of_in_subset:
-  assumes "base_of S \<O>" "openin S u" "x \<in> u"
+corollary base_in_in_subset:
+  assumes "base_in S \<O>" "openin S u" "x \<in> u"
   shows "\<exists>v\<in>\<O>. x \<in> v \<and> v \<subseteq> u"
-  using assms base_of_def2 base_of_def2' by fastforce
+  using assms base_in_def2 base_in_def2' by fastforce
 
-lemma base_of_without_empty:
-  assumes "base_of S \<O>"
-  shows "base_of S {U \<in> \<O>. U \<noteq> {}}"
-  unfolding base_of_def2'
+lemma base_in_without_empty:
+  assumes "base_in S \<O>"
+  shows "base_in S {U \<in> \<O>. U \<noteq> {}}"
+  unfolding base_in_def2'
 proof safe
   fix x
   assume "x \<in> \<O>" " \<not> openin S x"
   thus "\<And>y. y \<in> {}"
-    using base_of_openin[OF assms \<open>x \<in> \<O>\<close>] by simp
+    using base_in_openin[OF assms \<open>x \<in> \<O>\<close>] by simp
 next
   fix x
   assume "openin S x"
   then obtain B' where "B' \<subseteq>\<O>" "\<Union> B' = x"
-    using assms by(simp add: base_of_def2') metis
+    using assms by(simp add: base_in_def2') metis
   thus "\<exists>B'\<subseteq>{U \<in> \<O>. U \<noteq> {}}. \<Union> B' = x"
     by(auto intro!: exI[where x="{y \<in> B'. y \<noteq> {}}"])
 qed
 
 lemma second_countable_ex_without_empty:
   assumes "second_countable S"
-  shows "\<exists>\<O>. countable \<O> \<and> base_of S \<O> \<and> (\<forall>U\<in>\<O>. U \<noteq> {})"
+  shows "\<exists>\<O>. countable \<O> \<and> base_in S \<O> \<and> (\<forall>U\<in>\<O>. U \<noteq> {})"
 proof -
-  obtain \<O> where "countable \<O>" "base_of S \<O>"
-    using assms second_countable_def by blast
+  obtain \<O> where "countable \<O>" "base_in S \<O>"
+    using assms second_countable_base_in by blast
   thus ?thesis
-    by(auto intro!: exI[where x="{U \<in> \<O>. U \<noteq> {}}"] base_of_without_empty)
+    by(auto intro!: exI[where x="{U \<in> \<O>. U \<noteq> {}}"] base_in_without_empty)
 qed
 
-lemma subtopology_subbase_of:
-  assumes "subbase_of S \<O>"
-  shows "subbase_of (subtopology S T) {T \<inter> U | U. U \<in> \<O>}"
+lemma subtopology_subbase_in:
+  assumes "subbase_in S \<O>"
+  shows "subbase_in (subtopology S T) {T \<inter> U | U. U \<in> \<O>}"
   using assms subtopology_generated_by
-  by(auto simp: subbase_of_def)
+  by(auto simp: subbase_in_def)
 
-lemma subtopology_base_of:
-  assumes "base_of S \<O>"
-  shows "base_of (subtopology S T) {T \<inter> U | U. U \<in> \<O>}"
-  unfolding base_of_def
+lemma subtopology_base_in:
+  assumes "base_in S \<O>"
+  shows "base_in (subtopology S T) {T \<inter> U | U. U \<in> \<O>}"
+  unfolding base_in_def
 proof
   fix L
   show "openin (subtopology S T) L = (\<exists>\<U>. L = \<Union> \<U> \<and> \<U> \<subseteq> {T \<inter> U |U. U \<in> \<O>})"
@@ -546,7 +554,7 @@ proof
       by(auto simp: openin_subtopology)
     then obtain \<U> where hu:
       "T' = (\<Union> \<U>)" "\<U> \<subseteq> \<O>"
-      using assms by(auto simp: base_of_def)
+      using assms by(auto simp: base_in_def)
     show "\<exists>\<U>. L = \<Union> \<U> \<and> \<U> \<subseteq> {T \<inter> U |U. U \<in> \<O>}"
       using hu ht by(auto intro!: exI[where x="{T \<inter> U | U. U \<in> \<U>}"])
   next
@@ -561,7 +569,7 @@ proof
     also have "... = \<Union> {k U |U. U \<in> \<U>} \<inter> T" by auto
     finally have 1:"L = \<Union> {k U |U. U \<in> \<U>} \<inter> T" .
     moreover have "openin S (\<Union> {k U |U. U \<in> \<U>})"
-      using hu hk assms by(auto simp: base_of_def)
+      using hu hk assms by(auto simp: base_in_def)
     ultimately show "openin (subtopology S T) L"
       by(auto intro!: exI[where x="\<Union> {k U |U. U \<in> \<U>}"] simp: openin_subtopology)
   qed
@@ -571,49 +579,21 @@ lemma second_countable_subtopology:
   assumes "second_countable S"
   shows "second_countable (subtopology S T)"
 proof -
-  obtain \<O> where "countable \<O>" "base_of S \<O>"
-    using assms second_countable_def by blast
+  obtain \<O> where "countable \<O>" "base_in S \<O>"
+    using assms second_countable_base_in by blast
   thus ?thesis
-    by(auto intro!: exI[where x="{T \<inter> U | U. U \<in> \<O>}"] simp: second_countable_def Setcompr_eq_image dest: subtopology_base_of)
-qed
-
-lemma Lindelof_of:
-  assumes "second_countable S" "\<And>u. u \<in> U \<Longrightarrow> openin S u" "\<Union> U = topspace S"
-  shows "\<exists>U'. countable U' \<and> U' \<subseteq> U \<and> \<Union> U' = topspace S"
-proof -
-  from assms(1) obtain \<O> where h: "countable \<O>" "base_of S \<O>"
-    by(auto simp: second_countable_def)
-  define B' where "B' \<equiv> {v\<in>\<O>. \<exists>u\<in>U. v \<subseteq> u}"
-  have B': "countable B'"
-    using h(1) by(auto simp: B'_def)
-  have "\<forall>v. v \<in> B' \<longrightarrow> (\<exists>u\<in>U. v \<subseteq> u)" by(auto simp: B'_def)
-  then obtain U' where U':"\<And>v. v \<in> B' \<Longrightarrow> U' v \<in> U" "\<And>v. v \<in> B' \<Longrightarrow> v \<subseteq> U' v"
-    by metis
-  show ?thesis
-  proof(rule exI[where x="U' ` B'"])
-    show "countable (U' ` B') \<and> U' ` B' \<subseteq> U \<and> \<Union> (U' ` B') = topspace S"
-    proof safe
-      fix x
-      assume "x \<in> topspace S"
-      then obtain u where u:"x \<in> u" "u \<in> U"
-        using assms(3) by auto
-      obtain v where v:"x \<in> v" "v \<in> \<O>" "v \<subseteq> u"
-        using base_of_in_subset[OF h(2) assms(2)[OF u(2)] u(1)] by auto      
-      show "x \<in> \<Union> (U' ` B')"
-        using u v U' by(auto intro!: bexI[where x=v]) (auto simp: B'_def intro!: exI[where x=u])
-    qed(use B' U' assms(2) openin_subset in blast)+
-  qed
+    by(auto intro!: exI[where x="{T \<inter> U | U. U \<in> \<O>}"] simp: second_countable_base_in Setcompr_eq_image dest: subtopology_base_in)
 qed
 
 lemma open_map_with_base:
-  assumes "base_of S \<O>" "\<And>A. A \<in> \<O> \<Longrightarrow> openin S' (f ` A)"
+  assumes "base_in S \<O>" "\<And>A. A \<in> \<O> \<Longrightarrow> openin S' (f ` A)"
   shows "open_map S S' f"
   unfolding open_map_def
 proof safe
   fix U
   assume "openin S U"
   then obtain \<U> where "U = \<Union>\<U>" "\<U> \<subseteq> \<O>"
-    using assms(1) by(auto simp: base_of_def)
+    using assms(1) by(auto simp: base_in_def)
   hence "f ` U = \<Union>{ f ` A | A. A \<in> \<U>}" by blast
   also have "openin S' ..."
     using assms(2) \<open>\<U> \<subseteq> \<O>\<close> by auto
@@ -621,36 +601,35 @@ proof safe
 qed
 
 text \<open> Construct a base from a subbase.\<close>
-definition finite_intersections :: "'a set set \<Rightarrow> 'a set set" where
-"finite_intersections \<O> \<equiv> { \<Inter>\<O>' | \<O>'. \<O>' \<noteq> {} \<and> finite \<O>' \<and> \<O>' \<subseteq> \<O>}"
 
-lemma finite_intersections_inI:
-  assumes "U = \<Inter>\<O>'" "\<O>' \<noteq> {}" " finite \<O>'" and "\<O>' \<subseteq> \<O>"
-  shows "U \<in> finite_intersections \<O>"
-  using assms by(auto simp: finite_intersections_def)
-
-lemma finite_intersections_Uin:
-  assumes "U \<in> \<O>"
-  shows "U \<in> finite_intersections \<O>"
-  using assms by(auto intro!: finite_intersections_inI[of U "{U}"])
-
-lemma finite_intersections_int:
-  assumes "U \<in> finite_intersections \<O>" and "V \<in> finite_intersections \<O>"
-  shows "U \<inter> V \<in> finite_intersections \<O>"
-proof -
-  obtain \<O>U \<O>V where
-   "U = \<Inter>\<O>U" "\<O>U \<noteq> {}" "finite \<O>U" "\<O>U \<subseteq> \<O>" "V = \<Inter>\<O>V" "finite \<O>V" "\<O>V \<subseteq> \<O>"
-    using assms by(auto simp: finite_intersections_def)
-  thus ?thesis
-    by(auto intro!: finite_intersections_inI[of _ "\<O>U \<union> \<O>V"])
+lemma finite'_intersection_of_idempot [simp]:
+   "finite' intersection_of finite' intersection_of P = finite' intersection_of P"
+proof
+  fix A
+  show "(finite' intersection_of finite' intersection_of P) A = (finite' intersection_of P) A"
+  proof
+    assume "(finite' intersection_of finite' intersection_of P) A"
+    then obtain \<U> where \<U>:"finite' \<U> \<and> \<U> \<subseteq> Collect (finite' intersection_of P) \<and> \<Inter>\<U> = A"
+      by(auto simp: intersection_of_def)
+    hence "\<forall>U\<in>\<U>. \<exists>\<U>'. finite' \<U>' \<and> \<U>' \<subseteq> Collect P \<and> \<Inter>\<U>' = U"
+      by(auto simp: intersection_of_def)
+    then obtain \<U>' where \<U>':
+     "\<And>U. U \<in> \<U> \<Longrightarrow> finite' (\<U>' U)" "\<And>U. U \<in> \<U> \<Longrightarrow> \<U>' U \<subseteq> Collect P" "\<And>U. U \<in> \<U> \<Longrightarrow> \<Inter>(\<U>' U) = U"
+      by metis
+    have 1: "\<Inter> (\<Union> (\<U>' ` \<U>)) = A"
+      using  \<U> \<U>'(3) by blast
+    show "(finite' intersection_of P) A"
+      unfolding intersection_of_def
+      using \<U> \<U>'(1,2) 1 by(auto intro!: exI[where x="\<Union>U\<in>\<U>. \<U>' U"])
+  qed(rule finite'_intersection_of_inc)
 qed
 
-lemma finite_intersections_countable:
+lemma finite'_intersection_of_countable:
   assumes "countable \<O>"
-  shows "countable (finite_intersections \<O>)"
+  shows "countable (Collect (finite' intersection_of (\<lambda>x. x \<in> \<O>)))"
 proof -
-  have "finite_intersections \<O> = (\<Union>i\<in>{\<O>'. \<O>' \<noteq> {} \<and> finite \<O>' \<and> \<O>' \<subseteq> \<O>}. {\<Inter> i})"
-    by(auto simp: finite_intersections_def)
+  have "Collect (finite' intersection_of (\<lambda>x. x \<in> \<O>)) = (\<Union>i\<in>{\<O>'. \<O>' \<noteq> {} \<and> finite \<O>' \<and> \<O>' \<subseteq> \<O>}. {\<Inter> i})"
+    by(auto simp: intersection_of_def)
   also have "countable ..."
     using  countable_Collect_finite_subset[OF assms] 
     by(auto intro!: countable_UN[of "{ \<O>'. \<O>' \<noteq> {} \<and> finite \<O>' \<and> \<O>' \<subseteq> \<O>}" "\<lambda>\<O>'. {\<Inter>\<O>'}"])
@@ -658,88 +637,35 @@ proof -
   finally show ?thesis .
 qed
 
-lemma finite_intersections_openin:
-  assumes "U \<in> finite_intersections \<O>"
+lemma finite'_intersection_of_openin:
+  assumes "(finite' intersection_of (\<lambda>x. x \<in> \<O>)) U"
   shows "openin (topology_generated_by \<O>) U"
-proof -
-  obtain \<O>U where hu:
-   "U = \<Inter>\<O>U" "\<O>U \<noteq> {}" "finite \<O>U" "\<O>U \<subseteq> \<O>"
-    using assms by(auto simp: finite_intersections_def)
-  show ?thesis
-    using hu by(auto intro: topology_generated_by_Basis)
-qed
+  unfolding openin_topology_generated_by_iff
+  using assms by(auto simp: generate_topology_on_eq arbitrary_union_of_inc)
 
 lemma topology_generated_by_finite_intersections:
- "topology_generated_by \<O> = topology_generated_by (finite_intersections \<O>)"
-proof(rule topology_generated_by_eq)
-  fix U
-  assume "U \<in> \<O>"
-  then show "openin (topology_generated_by (finite_intersections \<O>)) U"
-    by(auto intro!: topology_generated_by_Basis simp: finite_intersections_Uin)
-qed (rule finite_intersections_openin)
-
-lemma topology_generated_by_is_union_of_finite_intersections:
- "openin (topology_generated_by \<O>) U \<longleftrightarrow> (\<exists>\<U>. U = \<Union>\<U> \<and> \<U> \<subseteq> finite_intersections \<O>)"
-proof
-  assume "openin (topology_generated_by \<O>) U"
-  then have "generate_topology_on \<O> U"
-    by (simp add: openin_topology_generated_by_iff)
-  thus "\<exists>\<U>. U = \<Union> \<U> \<and> \<U> \<subseteq> finite_intersections \<O>"
-  proof induction
-    case Empty
-    then show ?case
-      by auto
-  next
-    case (Int a b)
-    then obtain \<U>a \<U>b where hab:
-     "a = \<Union> \<U>a" "\<U>a \<subseteq> finite_intersections \<O>" "b = \<Union> \<U>b" "\<U>b \<subseteq> finite_intersections \<O>"
-      by auto
-    then have "a \<inter> b = \<Union>{ Ua \<inter> Ub | Ua Ub. Ua \<in> \<U>a \<and> Ub \<in> \<U>b}"
-      by blast
-    moreover have "{ Ua \<inter> Ub | Ua Ub. Ua \<in> \<U>a \<and> Ub \<in> \<U>b} \<subseteq> finite_intersections \<O>"
-      using hab(2,4) finite_intersections_int by blast
-    ultimately show ?case by auto
-  next
-    case (UN K)
-    then have "\<exists>\<U>. \<forall>k\<in>K. k = \<Union> (\<U> k) \<and> \<U> k \<subseteq> finite_intersections \<O>"
-      by(auto intro!: bchoice)
-    then obtain \<U> where
-     "\<forall>k\<in>K. k = \<Union> (\<U> k) \<and> \<U> k \<subseteq> finite_intersections \<O>" by auto
-    thus ?case
-      by(auto intro!: exI[where x="\<Union>k\<in>K. (\<U> k)"]) (metis UnionE)
-  next
-    case (Basis s)
-    then show ?case
-      by(auto intro!: exI[where x="{s}"] finite_intersections_Uin)
-  qed
-next
-  assume "\<exists>\<U>. U = \<Union> \<U> \<and> \<U> \<subseteq> finite_intersections \<O>"
-  then obtain \<U> where
-   "U = \<Union> \<U>" "\<U> \<subseteq> finite_intersections \<O>" by auto
-  thus "openin (topology_generated_by \<O>) U"
-    using finite_intersections_openin
-    by(auto simp: openin_topology_generated_by_iff intro!:  generate_topology_on.UN)
-qed
+ "topology_generated_by \<O> = topology_generated_by (Collect (finite' intersection_of (\<lambda>x. x \<in> \<O>)))"
+  unfolding topology_eq openin_topology_generated_by_iff by(simp add: generate_topology_on_eq)
 
 lemma base_from_subbase:
-  assumes "subbase_of S \<O>"
-  shows "base_of S (finite_intersections \<O>)"
-  using topology_generated_by_is_union_of_finite_intersections[of \<O>,simplified assms[simplified subbase_of_def,symmetric]]
-  by(simp add: base_of_def)
+  assumes "subbase_in S \<O>"
+  shows "base_in S (Collect (finite' intersection_of (\<lambda>x. x \<in> \<O>)))"
+  unfolding subbase_in_def base_in_def assms[simplified subbase_in_def] openin_topology_generated_by_iff
+  by(auto simp: arbitrary_def union_of_def generate_topology_on_eq)
 
 lemma countable_base_from_countable_subbase:
-  assumes "countable \<O>" and "subbase_of S \<O>"
+  assumes "countable \<O>" and "subbase_in S \<O>"
   shows "second_countable S"
-  using finite_intersections_countable[OF assms(1)] base_from_subbase[OF assms(2)]
-  by(auto simp: second_countable_def)
+  using finite'_intersection_of_countable[OF assms(1)] base_from_subbase[OF assms(2)]
+  by(auto simp: second_countable_base_in)
 
 lemma prod_topology_second_countable:
   assumes "second_countable S" and "second_countable S'"
   shows "second_countable (prod_topology S S')"
 proof -
   obtain \<O> \<O>' where ho:
-   "countable \<O>" "base_of S \<O>" "countable \<O>'" "base_of S' \<O>'"
-    using assms by(auto simp: second_countable_def)
+   "countable \<O>" "base_in S \<O>" "countable \<O>'" "base_in S' \<O>'"
+    using assms by(auto simp: second_countable_base_in)
   show ?thesis
   proof(rule countable_base_from_countable_subbase[where \<O>="{ U \<times> V | U V. U \<in> \<O> \<and> V \<in> \<O>'}"])
     have "{U \<times> V |U V. U \<in> \<O> \<and> V \<in> \<O>'} = (\<lambda>(U,V). U \<times> V) ` (\<O> \<times> \<O>')"
@@ -748,23 +674,23 @@ proof -
       using ho(1,3) by auto
     finally show "countable {U \<times> V |U V. U \<in> \<O> \<and> V \<in> \<O>'}" .
   next
-    show "subbase_of (prod_topology S S') {U \<times> V |U V. U \<in> \<O> \<and> V \<in> \<O>'}"
+    show "subbase_in (prod_topology S S') {U \<times> V |U V. U \<in> \<O> \<and> V \<in> \<O>'}"
       using base_is_subbase[OF ho(2)] base_is_subbase[OF ho(4)]
-      by(simp add: subbase_of_def prod_topology_generated_by)
+      by(simp add: subbase_in_def prod_topology_generated_by)
   qed
 qed
 
 text \<open> Abstract version of the theorem @{thm product_topology_countable_basis}.\<close>
-lemma product_topology_countable_base_of:
+lemma product_topology_countable_base_in:
   assumes "countable I" and "\<And>i. i \<in> I \<Longrightarrow> second_countable (S i)"
-  shows "\<exists>\<O>'. countable \<O>' \<and> base_of (product_topology S I) \<O>' \<and>
+  shows "\<exists>\<O>'. countable \<O>' \<and> base_in (product_topology S I) \<O>' \<and>
              (\<forall>k \<in> \<O>'. \<exists>X. k = (\<Pi>\<^sub>E i\<in>I. X i) \<and> (\<forall>i. openin (S i) (X i)) \<and> finite {i. X i \<noteq> topspace (S i)} \<and> {i. X i \<noteq> topspace (S i)} \<subseteq> I)"
 proof -
   obtain \<O> where ho:
-  "\<And>i. i \<in> I \<Longrightarrow> countable (\<O> i)" "\<And>i. i \<in> I \<Longrightarrow> base_of (S i) (\<O> i)"
-    using assms(2)[simplified second_countable_def] by metis
+  "\<And>i. i \<in> I \<Longrightarrow> countable (\<O> i)" "\<And>i. i \<in> I \<Longrightarrow> base_in (S i) (\<O> i)"
+    using assms(2)[simplified second_countable_base_in] by metis
   show ?thesis
-    unfolding second_countable_def
+    unfolding second_countable_base_in
   proof(intro exI[where x="{\<Pi>\<^sub>E i\<in>I. U i | U. finite {i\<in>I. U i \<noteq> topspace (S i)} \<and> (\<forall>i\<in>{i\<in>I. U i \<noteq> topspace (S i)}. U i \<in> \<O> i)}"] conjI)
     show "countable {\<Pi>\<^sub>E i\<in>I. U i | U. finite {i\<in>I. U i \<noteq> topspace (S i)} \<and> (\<forall>i\<in>{i\<in>I. U i \<noteq> topspace (S i)}. U i \<in> \<O> i)}"
          (is "countable ?X")
@@ -860,9 +786,9 @@ proof -
       finally show ?thesis .
     qed
   next
-    show "base_of (product_topology S I) {\<Pi>\<^sub>E i\<in>I. U i |U. finite {i \<in> I. U i \<noteq> topspace (S i)} \<and> (\<forall>i\<in>{i \<in> I. U i \<noteq> topspace (S i)}. U i \<in> \<O> i)}"
-         (is "base_of (product_topology S I) ?X")
-      unfolding base_of_def
+    show "base_in (product_topology S I) {\<Pi>\<^sub>E i\<in>I. U i |U. finite {i \<in> I. U i \<noteq> topspace (S i)} \<and> (\<forall>i\<in>{i \<in> I. U i \<noteq> topspace (S i)}. U i \<in> \<O> i)}"
+         (is "base_in (product_topology S I) ?X")
+      unfolding base_in_def
     proof safe
       fix U
       assume "openin (product_topology S I) U"
@@ -874,7 +800,7 @@ proof -
        "\<And>x. x \<in> U \<Longrightarrow> finite {i \<in> I. Ux x i \<noteq> topspace (S i)}" "\<And>x i. x \<in> U \<Longrightarrow> i \<in> I \<Longrightarrow> openin (S i) (Ux x i)" "\<And>x. x \<in> U \<Longrightarrow> x \<in> Pi\<^sub>E I (Ux x)" "\<And>x. x \<in> U \<Longrightarrow> Pi\<^sub>E I (Ux x) \<subseteq> U"
         by fastforce
       then have 1:"\<forall>x\<in>U. \<forall>i\<in>{i \<in> I. Ux x i \<noteq> topspace (S i)}. \<exists>\<U>xj. \<U>xj \<subseteq> \<O> i \<and> Ux x i = \<Union> \<U>xj"
-        using ho[simplified base_of_def] by (metis (no_types, lifting) mem_Collect_eq) 
+        using ho[simplified base_in_def] by (metis (no_types, lifting) mem_Collect_eq) 
       have "\<forall>x\<in>U. \<exists>\<U>xj. \<forall>i\<in>{i \<in> I. Ux x i \<noteq> topspace (S i)}. \<U>xj i \<subseteq> \<O> i \<and> Ux x i = \<Union> (\<U>xj i)"
         by(standard, rule bchoice) (use 1 in simp)
       hence "\<exists>\<U>xj. \<forall>x\<in>U. \<forall>i\<in>{i \<in> I. Ux x i \<noteq> topspace (S i)}. \<U>xj x i \<subseteq> \<O> i \<and> Ux x i = \<Union> (\<U>xj x i)"
@@ -966,7 +892,7 @@ proof -
           proof cases
             case 1
             then show ?thesis
-              using hUoi ho(2)[of i] base_of_openin[of "S i" "\<O> i" "U' i"] hUi
+              using hUoi ho(2)[of i] base_in_openin[of "S i" "\<O> i" "U' i"] hUi
               by auto
           next
             case 2
@@ -992,7 +918,7 @@ proof -
       have hX1: "k = (\<Pi>\<^sub>E i\<in>I. X i)"
         using hu(1) by(auto simp: X_def PiE_def Pi_def)
       have hX2: "openin (S i) (X i)" for i
-        using hu(3) base_of_openin[of "S i" _ "U i",OF ho(2)]
+        using hu(3) base_in_openin[of "S i" _ "U i",OF ho(2)]
         by(auto simp: X_def)
       have hX3: "finite {i. X i \<noteq> topspace (S i)}"
         using hu(2) by(auto simp: X_def)
@@ -1007,26 +933,30 @@ qed
 lemma product_topology_second_countable:
   assumes "countable I" and "\<And>i. i \<in> I \<Longrightarrow> second_countable (S i)"
   shows "second_countable (product_topology S I)"
-  using product_topology_countable_base_of[OF assms(1)] assms(2)
-  by(fastforce simp: second_countable_def)
+  using product_topology_countable_base_in[OF assms(1)] assms(2)
+  by(fastforce simp: second_countable_base_in)
+
+lemma second_countable_euclidean[simp]:
+ "second_countable (euclidean :: 'a :: second_countable_topology topology)"
+  using ex_countable_basis second_countable_def topological_basis_def by fastforce
 
 lemma Cantor_Bendixon:
   assumes "second_countable X"
   shows "\<exists>U P. countable U \<and> openin X U \<and> perfect_set X P \<and> U \<union> P = topspace X \<and> U \<inter> P = {} \<and> (\<forall>a\<noteq>{}. openin (subtopology X P) a \<longrightarrow> uncountable a)"
 proof -
-  obtain \<O> where o: "countable \<O>" "base_of X \<O>"
-    using assms by(auto simp: second_countable_def)
+  obtain \<O> where o: "countable \<O>" "base_in X \<O>"
+    using assms by(auto simp: second_countable_base_in)
   define U where "U \<equiv> \<Union> {u\<in>\<O>. countable u}"
   define P where "P \<equiv> topspace X - U"
   have 1: "countable U"
     using o(1) by(auto simp: U_def intro!: countable_UN[of _ id,simplified])
   have 2: "openin X U"
-    using base_of_openin[OF o(2)] by(auto simp: U_def)
+    using base_in_openin[OF o(2)] by(auto simp: U_def)
   have openin_c:"countable v \<longleftrightarrow> v \<subseteq> U" if "openin X v" for v
   proof
     assume "countable v"
     obtain \<U> where "v = \<Union>\<U>" "\<U> \<subseteq> \<O>"
-      using \<open>openin X v\<close> o(2) by(auto simp: base_of_def)
+      using \<open>openin X v\<close> o(2) by(auto simp: base_in_def)
     with \<open>countable v\<close> have "\<And>u. u \<in> \<U> \<Longrightarrow> countable u"
       by (meson Sup_upper countable_subset)
     thus "v \<subseteq> U"
@@ -1039,7 +969,7 @@ proof -
     have T_unc:"uncountable T"
       using openin_c[OF h(3)] h(1,2) by(auto simp: P_def)
     obtain \<U> where U:"T = \<Union>\<U>" "\<U> \<subseteq> \<O>"
-      using h(3) o(2) by(auto simp: base_of_def)
+      using h(3) o(2) by(auto simp: base_in_def)
     then obtain u where u:"u \<in> \<U>" "uncountable u"
       using T_unc U_def h(3) openin_c by auto
     hence "uncountable (u - {x})" by simp
@@ -1048,7 +978,7 @@ proof -
     then obtain y where "y \<in> u - {x}" "y \<notin> U"
       by blast
     thus "\<exists>y. y \<noteq> x \<and> y \<in> T \<and> y \<in> P"
-      using U u base_of_subset[OF o(2),of u] by(auto intro!: exI[where x=y] simp:P_def)
+      using U u base_in_subset[OF o(2),of u] by(auto intro!: exI[where x=y] simp:P_def)
   qed(use 2 P_def in auto)
   have 4 : "uncountable a" if "openin (subtopology X P) a" "a \<noteq> {}" for a
   proof
@@ -1064,73 +994,50 @@ proof -
     using 1 2 3 4 by(auto simp: P_def)
 qed
 
-subsubsection \<open> Dense and Separable in Abstract Topology\<close>
-definition dense_of :: "['a topology, 'a set] \<Rightarrow> bool" where
-"dense_of S U \<longleftrightarrow> (U \<subseteq> topspace S \<and> (\<forall>V. openin S V \<longrightarrow> V \<noteq> {} \<longrightarrow> U \<inter> V \<noteq> {}))"
+subsubsection \<open> Separable Spaces \<close>
+definition dense_in :: "['a topology, 'a set] \<Rightarrow> bool" where
+"dense_in S U \<longleftrightarrow> (U \<subseteq> topspace S \<and> (\<forall>V. openin S V \<longrightarrow> V \<noteq> {} \<longrightarrow> U \<inter> V \<noteq> {}))"
 
-lemma dense_of_def2:
- "dense_of S U \<longleftrightarrow> (U \<subseteq> topspace S \<and> (S closure_of U) = topspace S)"
-  using dense_intersects_open by(auto simp: dense_of_def closure_of_subset_topspace in_closure_of) auto
+lemma dense_in_def2:
+ "dense_in S U \<longleftrightarrow> (U \<subseteq> topspace S \<and> (S closure_of U) = topspace S)"
+  using dense_intersects_open by(auto simp: dense_in_def closure_of_subset_topspace in_closure_of) auto
 
-lemma dense_of_subset:
-  assumes "dense_of S U"
+lemma dense_in_topspace[simp]: "dense_in S (topspace S)"
+  by(auto simp: dense_in_def2)
+
+lemma dense_in_subset:
+  assumes "dense_in S U"
   shows "U \<subseteq> topspace S"
-  using assms by(simp add: dense_of_def)
+  using assms by(simp add: dense_in_def)
 
-lemma dense_of_nonempty:
-  assumes "topspace S \<noteq> {}" "dense_of S U"
+lemma dense_in_nonempty:
+  assumes "topspace S \<noteq> {}" "dense_in S U"
   shows "U \<noteq> {}"
-  using assms by(auto simp: dense_of_def)
+  using assms by(auto simp: dense_in_def)
 
-definition separable :: "'a topology \<Rightarrow> bool" where
-"separable S \<longleftrightarrow> (\<exists>U. countable U \<and> dense_of S U)"
-
-lemma dense_ofI:
+lemma dense_inI:
   assumes "U \<subseteq> topspace S"
       and "\<And>V. openin S V \<Longrightarrow> V \<noteq> {} \<Longrightarrow> U \<inter> V \<noteq> {}"
-    shows "dense_of S U"
-  using assms by(auto simp: dense_of_def)
+    shows "dense_in S U"
+  using assms by(auto simp: dense_in_def)
 
-lemma separable_if_second_countable:
-  assumes "second_countable S"
-  shows "separable S"
-proof -
-  obtain \<O> where ho:
-    "countable \<O>" "base_of S \<O>" "\<And>u. u \<in> \<O> \<Longrightarrow> u \<noteq> {}"
-    using second_countable_ex_without_empty[OF assms] by auto
-  then obtain x where hx: "\<And>u. u \<in> \<O> \<Longrightarrow> x u \<in> u"
-    by (metis all_not_in_conv)
-  show ?thesis
-    unfolding separable_def
-  proof(intro exI[where x="{x u|u. u \<in> \<O>}"] conjI)
-    show "countable {x u |u. u \<in> \<O>}"
-      using ho(1) by (simp add: Setcompr_eq_image)
-  next
-    show "dense_of S {x u |u. u \<in> \<O>}"
-    proof(rule dense_ofI)
-      show "{x u |u. u \<in> \<O>} \<subseteq> topspace S"
-        using  hx base_of_subset[OF ho(2)] by auto
-    next
-      fix V
-      assume "openin S V" "V \<noteq> {}"
-      then obtain B where hb:"B \<subseteq> \<O>" "V = \<Union> B"
-        using base_of_def2' ho(2) by metis
-      with \<open>V \<noteq> {}\<close> obtain b where "b \<in> B"
-        by auto
-      hence "{x u |u. u \<in> \<O>} \<inter> b \<subseteq> {x u |u. u \<in> \<O>} \<inter> V"
-        using hb(2) by auto
-      moreover have "x b \<in> {x u |u. u \<in> \<O>} \<inter> b"
-        using hb(1) \<open>b \<in> B\<close> hx[of b] by auto
-      ultimately show "{x u |u. u \<in> \<O>} \<inter> V \<noteq> {}"
-        by auto
-    qed
-  qed
+lemma dense_in_infinite:
+  assumes "t1_space X" "infinite (topspace X)" "dense_in X U"
+  shows "infinite U"
+proof
+  assume fin: "finite U"
+  then have "closedin X U"
+    by (metis assms(1,3) dense_in_def t1_space_closedin_finite)
+  hence "X closure_of U = U"
+    by (simp add: closure_of_eq)
+  thus False
+    by (metis assms(2) assms(3) dense_in_def2 fin)
 qed
 
-lemma dense_of_prod:
-  assumes "dense_of S U" and "dense_of S' U'"
-  shows "dense_of (prod_topology S S') (U \<times> U')"
-proof(rule dense_ofI)
+lemma dense_in_prod:
+  assumes "dense_in S U" and "dense_in S' U'"
+  shows "dense_in (prod_topology S S') (U \<times> U')"
+proof(rule dense_inI)
   fix V
   assume h:"openin (prod_topology S S') V" "V \<noteq> {}"
   then obtain x y where hxy:"(x,y) \<in> V" by auto
@@ -1139,29 +1046,37 @@ proof(rule dense_ofI)
     using h(1) openin_prod_topology_alt[of S S' V] by blast
   hence "V1 \<noteq> {}" "V2 \<noteq> {}" by auto
   hence "U \<inter> V1 \<noteq> {}" "U' \<inter> V2 \<noteq> {}"
-    using assms hv12 by(auto simp: dense_of_def)
+    using assms hv12 by(auto simp: dense_in_def)
   thus "U \<times> U' \<inter> V \<noteq> {}"
     using hv12 by auto
 next
   show "U \<times> U' \<subseteq> topspace (prod_topology S S')"
-    using assms by(auto simp add: dense_of_def)
+    using assms by(auto simp add: dense_in_def)
 qed
 
-lemma separable_prod:
-  assumes "separable S" and "separable S'"
-  shows "separable (prod_topology S S')"
+lemma separable_space_def2:"separable_space S \<longleftrightarrow> (\<exists>U. countable U \<and> dense_in S U)"
+  by(auto simp: separable_space_def dense_in_def2)
+
+lemma countable_space_separable_space:
+  assumes "countable (topspace S)"
+  shows "separable_space S"
+  using assms by(auto simp: separable_space_def2 intro!: exI[where x="topspace S"])
+
+lemma separable_space_prod:
+  assumes "separable_space S" and "separable_space S'"
+  shows "separable_space (prod_topology S S')"
 proof -
   obtain U U' where
-    "countable U" "dense_of S U" "countable U'" "dense_of S' U'"
-    using assms by(auto simp: separable_def)
+    "countable U" "dense_in S U" "countable U'" "dense_in S' U'"
+    using assms by(auto simp: separable_space_def2)
   thus ?thesis
-    by(auto intro!: exI[where x="U\<times>U'"] dense_of_prod simp: separable_def)
+    by(auto intro!: exI[where x="U\<times>U'"] dense_in_prod simp: separable_space_def2)
 qed
 
-lemma dense_of_product:
-  assumes "\<And>i. i \<in> I \<Longrightarrow> dense_of (T i) (U i)"
-  shows "dense_of (product_topology T I) (\<Pi>\<^sub>E i\<in>I. U i)"
-proof(rule dense_ofI)
+lemma dense_in_product:
+  assumes "\<And>i. i \<in> I \<Longrightarrow> dense_in (T i) (U i)"
+  shows "dense_in (product_topology T I) (\<Pi>\<^sub>E i\<in>I. U i)"
+proof(rule dense_inI)
   fix V
   assume h:"openin (product_topology T I) V" "V \<noteq> {}"
   then obtain x where hx:"x \<in> V" by auto
@@ -1170,21 +1085,21 @@ proof(rule dense_ofI)
     using h(1) openin_product_topology_alt[of T I V] by auto
   hence "\<And>i. i \<in> I \<Longrightarrow> K i \<noteq> {}" by auto
   hence "\<And>i. i \<in> I \<Longrightarrow> U i \<inter> K i \<noteq> {}"
-    using assms hk by(auto simp: dense_of_def)
+    using assms hk by(auto simp: dense_in_def)
   hence "(\<Pi>\<^sub>E i\<in>I. U i) \<inter> (\<Pi>\<^sub>E i\<in>I. K i) \<noteq> {}"
     by (simp add: PiE_Int PiE_eq_empty_iff) 
   thus "(\<Pi>\<^sub>E i\<in>I. U i) \<inter> V \<noteq> {}"
     using hk by auto
 next
   show "(\<Pi>\<^sub>E i\<in>I. U i) \<subseteq> topspace (product_topology T I)"
-    using assms by(auto simp: dense_of_def)
+    using assms by(auto simp: dense_in_def)
 qed
 
 lemma separable_countable_product:
-  assumes "countable I" and "\<And>i. i \<in> I \<Longrightarrow> separable (T i)"
-  shows "separable (product_topology T I)"
+  assumes "countable I" and "\<And>i. i \<in> I \<Longrightarrow> separable_space (T i)"
+  shows "separable_space (product_topology T I)"
 proof -
-  consider "\<exists>i\<in>I. topspace (T i) = {}" | "\<And>i. i \<in> I \<Longrightarrow> topspace (T i) \<noteq> {}"
+  consider "\<exists>i\<in>I. T i = trivial_topology" | "\<And>i. i \<in> I \<Longrightarrow> T i \<noteq> trivial_topology"
     by auto
   thus ?thesis
   proof cases
@@ -1192,35 +1107,31 @@ proof -
     then obtain i where i:"i \<in> I" "topspace (T i) = {}"
       by auto
     show ?thesis
-      unfolding separable_def dense_of_def
+      unfolding separable_space_def2 dense_in_def
     proof(intro exI[where x="{}"] conjI)
-      show " \<forall>V. openin (product_topology T I) V \<longrightarrow> V \<noteq> {} \<longrightarrow> {} \<inter> V \<noteq> {}"
+      show "\<forall>V. openin (product_topology T I) V \<longrightarrow> V \<noteq> {} \<longrightarrow> {} \<inter> V \<noteq> {}"
       proof safe
         fix V x
         assume h: "openin (product_topology T I) V" "x \<in> V"
-        from i have "topspace (product_topology T I) = {}"
-          by auto
+        from i have "(product_topology T I) = trivial_topology"
+          using product_topology_trivial_iff by auto
         with h(1) have "V = {}"
-          using openin_subset by blast
+          by simp
         thus "x \<in> {}"
           using h(2) by auto
       qed
     qed auto
   next
     case 2
-    then have "\<exists>x. \<forall>i\<in>I. x i \<in> topspace (T i)"
-      by (meson all_not_in_conv)
-    moreover from "2"
-    have "\<exists>U. \<forall>i\<in>I. countable (U i) \<and> dense_of (T i) (U i)"
-      using assms(2) by(auto intro!: bchoice simp: separable_def)
-    ultimately
-    obtain x U where hxu:
-     "\<And>i. i \<in> I \<Longrightarrow> x i \<in> topspace (T i)" "\<And>i. i \<in> I \<Longrightarrow> countable (U i)" "\<And>i. i \<in> I \<Longrightarrow> dense_of (T i) (U i)"
+    then have "\<exists>x. \<forall>i\<in>I. x i \<in> topspace (T i)" "\<exists>U. \<forall>i\<in>I. countable (U i) \<and> dense_in (T i) (U i)"
+      using assms(2) by(auto intro!: bchoice simp: separable_space_def2 ex_in_conv)
+    then obtain x U where hxu:
+     "\<And>i. i \<in> I \<Longrightarrow> x i \<in> topspace (T i)" "\<And>i. i \<in> I \<Longrightarrow> countable (U i)" "\<And>i. i \<in> I \<Longrightarrow> dense_in (T i) (U i)"
       by auto
     define U' where "U' \<equiv> (\<lambda>J i. if i \<in> J then U i else {x i})"
     show ?thesis
-      unfolding separable_def
-    proof(intro exI[where x="\<Union>{ \<Pi>\<^sub>E i\<in>I. U' J i | J. finite J \<and> J \<subseteq> I}"] conjI)
+      unfolding separable_space_def2
+    proof(intro exI[where x="\<Union>{\<Pi>\<^sub>E i\<in>I. U' J i | J. finite J \<and> J \<subseteq> I}"] conjI)
       have "(\<Union>{ \<Pi>\<^sub>E i\<in>I. U' J i | J. finite J \<and> J \<subseteq> I}) = (\<Union> ((\<lambda>J. \<Pi>\<^sub>E i\<in>I. U' J i) ` {J. finite J \<and> J \<subseteq> I}))"
         by auto
       also have "countable ..."
@@ -1259,8 +1170,8 @@ proof -
       qed(rule countable_Collect_finite_subset[OF assms(1)])
       finally show "countable (\<Union>{ \<Pi>\<^sub>E i\<in>I. U' J i | J. finite J \<and> J \<subseteq> I})" .
     next
-      show "dense_of (product_topology T I) (\<Union> {\<Pi>\<^sub>E i\<in>I. U' J i |J. finite J \<and> J \<subseteq> I})"
-      proof(rule dense_ofI)
+      show "dense_in (product_topology T I) (\<Union> {\<Pi>\<^sub>E i\<in>I. U' J i |J. finite J \<and> J \<subseteq> I})"
+      proof(rule dense_inI)
         fix V
         assume h:"openin (product_topology T I) V" "V \<noteq> {}"
         then obtain y where hx:"y \<in> V" by auto
@@ -1269,7 +1180,7 @@ proof -
           using h(1) openin_product_topology_alt[of T I V] by auto
         hence 3:"\<And>i. i \<in> I \<Longrightarrow> K i \<noteq> {}" by auto
         hence 4:"i \<in> {i \<in> I. K i \<noteq> topspace (T i)} \<Longrightarrow> K i \<inter> U' {i \<in> I. K i \<noteq> topspace (T i)} i \<noteq> {}" for i
-          using hxu(3)[of i] hk(2)[of i] by(auto simp: U'_def dense_of_def)
+          using hxu(3)[of i] hk(2)[of i] by(auto simp: U'_def dense_in_def)
         have "\<exists>z. \<forall>i\<in>{i \<in> I. K i \<noteq> topspace (T i)}. z i \<in> K i \<inter> U' {i \<in> I. K i \<noteq> topspace (T i)} i"
           by(rule bchoice) (use 4 in auto)
         then obtain z where hz: "\<forall>i\<in>{i \<in> I. K i \<noteq> topspace (T i)}. z i \<in> K i \<inter> U' {i \<in> I. K i \<noteq> topspace (T i)} i"
@@ -1282,7 +1193,7 @@ proof -
           using hk(1,4) by blast
       next
         have "\<And>J. J \<subseteq> I \<Longrightarrow> (\<Pi>\<^sub>E i\<in>I. U' J i) \<subseteq> topspace (product_topology T I)"
-          using hxu by(auto simp: dense_of_def U'_def PiE_def Pi_def) (metis subsetD)
+          using hxu by(auto simp: dense_in_def U'_def PiE_def Pi_def) (metis subsetD)
         thus "(\<Union> {\<Pi>\<^sub>E i\<in>I. U' J i |J. finite J \<and> J \<subseteq> I}) \<subseteq> topspace (product_topology T I)"
           by auto
       qed
@@ -1291,119 +1202,35 @@ proof -
 qed
 
 lemma separable_finite_product:
-  assumes "finite I" and "\<And>i. i \<in> I \<Longrightarrow> separable (T i)"
-  shows "separable (product_topology T I)"
+  assumes "finite I" and "\<And>i. i \<in> I \<Longrightarrow> separable_space (T i)"
+  shows "separable_space (product_topology T I)"
   using separable_countable_product[OF countable_finite[OF assms(1)]] assms by auto
 
-lemma homeomorphic_separable:
-  assumes "separable X" "X homeomorphic_space Y"
-  shows "separable Y"
-proof -
-  obtain f g where "homeomorphic_maps X Y f g"
-    using assms(2) by(auto simp: homeomorphic_space_def)
-  hence fg:"continuous_map X Y f" "continuous_map Y X g" "\<And>x. x \<in> topspace X \<Longrightarrow> g(f x) = x" "\<And>y. y \<in> topspace Y \<Longrightarrow> f(g y) = y"
-    by(auto simp: homeomorphic_maps_def)
-  obtain U where U: "countable U" "dense_of X U"
-    using assms(1) by(auto simp: separable_def)
-  show ?thesis
-    unfolding separable_def dense_of_def countable_image[OF U(1)]
-  proof(intro exI[where x="f ` U"] conjI)
-    show "f ` U \<subseteq> topspace Y"
-      using U(2) fg(1) by(auto simp: dense_of_def continuous_map_def)
-  next
-    show "\<forall>V. openin Y V \<longrightarrow> V \<noteq> {} \<longrightarrow> f ` U \<inter> V \<noteq> {}"
-    proof safe
-      fix V x
-      assume h:"openin Y V" "f ` U \<inter> V = {}" "x \<in> V"
-      then have "U \<inter> (f -` V \<inter> topspace X) = {}"
-        by blast
-      moreover have "f -` V \<inter> topspace X \<noteq> {}"
-        using continuous_map_preimage_topspace fg(2) fg(4) h(1) h(3) openin_subset by fastforce
-      moreover have "openin X (f -` V \<inter> topspace X)"
-        using h(1) fg(1) by auto
-      ultimately show "x \<in> {}"
-        using U(2) by(auto simp: dense_of_def)
-    qed
-  qed(rule countable_image[OF U(1)])
-qed
-
-subsubsection \<open> $G_{\delta}$ Set in Abstract Topology\<close>
-definition g_delta_of :: "['a topology, 'a set] \<Rightarrow> bool" where
-"g_delta_of S A \<longleftrightarrow> (\<exists>\<U>. \<U> \<noteq> {} \<and> countable \<U> \<and> (\<forall>b\<in>\<U>. openin S b) \<and> A = \<Inter> \<U>)"
-
-lemma g_delta_ofI:
-  assumes "U \<noteq> {}" "countable U" "\<And>b. b \<in> U \<Longrightarrow> openin S b" "A = \<Inter> U"
-  shows "g_delta_of S A"
-  using assms by(auto simp: g_delta_of_def)
-
-lemma g_delta_ofD:
-  assumes "g_delta_of S A"
+subsubsection \<open> $G_{\delta}$ Set \<close>
+lemma gdelta_inD:
+  assumes "gdelta_in S A"
   shows "\<exists>\<U>. \<U> \<noteq> {} \<and> countable \<U> \<and> (\<forall>b\<in>\<U>. openin S b) \<and> A = \<Inter> \<U>"
-  using assms by(simp add: g_delta_of_def)
+  using assms unfolding gdelta_in_def relative_to_def intersection_of_def
+  by (metis IntD1 Int_insert_right_if1 complete_lattice_class.Inf_insert countable_insert empty_not_insert inf.absorb_iff2 mem_Collect_eq openin_topspace)
 
-lemma g_delta_ofD':
-  assumes "g_delta_of S A"
+lemma gdelta_inD':
+  assumes "gdelta_in S A"
   shows "\<exists>U. (\<forall>n::nat. openin S (U n)) \<and> A = \<Inter> (range U)"
 proof-
   obtain \<U> where h:"\<U> \<noteq> {}" "countable \<U>" "\<And>b. b\<in>\<U> \<Longrightarrow> openin S b" "A = \<Inter> \<U>"
-    using g_delta_ofD[OF assms] by metis
+    using gdelta_inD[OF assms] by metis
   show ?thesis
     using range_from_nat_into[OF h(1,2)] h(3,4)
     by(auto intro!: exI[where x="from_nat_into \<U>"])
 qed
 
-lemma g_delta_of_subset:
-  assumes "g_delta_of S A"
-  shows "A \<subseteq> topspace S"
-  using assms openin_subset by(auto simp: g_delta_of_def)
-
-lemma g_delta_of_open_set[simp]:
-  assumes "openin S A"
-  shows "g_delta_of S A"
-  using assms by(auto simp: g_delta_of_def intro!: exI[where x="{A}"])
-
-lemma g_delta_of_empty[simp]: "g_delta_of S {}"
-  by simp
-
-lemma g_delta_of_topspace[simp]: "g_delta_of S (topspace S)"
-  by simp
-
-lemma g_delta_of_inter:
-  assumes "g_delta_of S A" and "g_delta_of S B"
-  shows "g_delta_of S (A \<inter> B)"
-proof -
-  obtain Ua Ub where hu:
-  "Ua \<noteq> {}" "countable Ua" "\<And>b. b \<in> Ua \<Longrightarrow> openin S b" "A = \<Inter> Ua"
-  "countable Ub" "\<And>b. b \<in> Ub \<Longrightarrow> openin S b" "B = \<Inter> Ub"
-    using assms by(auto simp: g_delta_of_def)
-  thus ?thesis
-    by(auto intro!: g_delta_ofI[where U="Ua \<union> Ub"])
-qed
-
-lemma g_delta_of_Int:
-  assumes "\<And>a. a \<in> \<U> \<Longrightarrow> g_delta_of X a" "countable \<U>" "\<U> \<noteq> {}"
-  shows "g_delta_of X (\<Inter> \<U>)"
-proof -
-  obtain Ua where u:
-  "\<And>a. a \<in> \<U> \<Longrightarrow> Ua a \<noteq> {}" "\<And>a. a \<in> \<U> \<Longrightarrow> countable (Ua a)" "\<And>a b. a \<in> \<U> \<Longrightarrow> b \<in> Ua a \<Longrightarrow> openin X b" "\<And>a. a \<in> \<U> \<Longrightarrow> a = \<Inter> (Ua a)"
-    using g_delta_ofD[OF assms(1)] by metis
-  have 1: "\<Union> {Ua a |a. a \<in> \<U>} \<noteq> {}"
-    using assms(3) u(1) by auto
-  have 2: "countable (\<Union> {Ua a |a. a \<in> \<U>})"
-    by (simp add: Setcompr_eq_image assms(2) u(2))
-  have 3: "\<And>b. b \<in> \<Union> {Ua a |a. a \<in> \<U>} \<Longrightarrow> openin X b"
-    using u(3) by auto
-  show ?thesis
-    using u(4) by(fastforce intro!: g_delta_ofI[OF 1 2 3])
-qed
-
-lemma g_delta_of_continuous_map:
-  assumes "continuous_map X Y f" "g_delta_of Y a"
-  shows "g_delta_of X (f -` a \<inter> topspace X)"
+lemma gdelta_in_continuous_map:
+  assumes "continuous_map X Y f" "gdelta_in Y a"
+  shows "gdelta_in X (f -` a \<inter> topspace X)"
 proof -
   obtain Ua where u:
   "Ua \<noteq> {}" "countable Ua" "\<And>b. b \<in> Ua \<Longrightarrow> openin Y b" "a = \<Inter> Ua"
-    using g_delta_ofD[OF assms(2)] by metis
+    using gdelta_inD[OF assms(2)] by metis
   then have 0:"f -` a \<inter> topspace X = \<Inter> {f -` b \<inter> topspace X|b. b \<in> Ua}"
     by auto
   have 1: "{f -` b \<inter> topspace X |b. b \<in> Ua} \<noteq> {}"
@@ -1413,16 +1240,16 @@ proof -
   have 3:"\<And>c. c \<in> {f -` b \<inter> topspace X|b. b \<in> Ua} \<Longrightarrow> openin X c"
     using assms u(3) by blast
   show ?thesis
-    using g_delta_ofI[OF 1 2 3] by(simp add: 0)
+    by (metis (mono_tags, lifting) "0" "1" "2" "3" gdelta_in_Inter open_imp_gdelta_in)
 qed
 
 lemma g_delta_of_inj_open_map:
-  assumes "open_map X Y f" "inj_on f (topspace X)" "g_delta_of X a"
-  shows "g_delta_of Y (f ` a)"
+  assumes "open_map X Y f" "inj_on f (topspace X)" "gdelta_in X a"
+  shows "gdelta_in Y (f ` a)"
 proof -
   obtain Ua where u:
   "Ua \<noteq> {}" "countable Ua" "\<And>b. b \<in> Ua \<Longrightarrow> openin X b" "a = \<Inter> Ua"
-    using g_delta_ofD[OF assms(3)] by metis
+    using gdelta_inD[OF assms(3)] by metis
   then obtain j where "j \<in> Ua" by auto
   have "f ` a = f ` \<Inter> Ua" by(simp add: u(4))
   also have "... = \<Inter> ((`) f ` Ua)"
@@ -1436,22 +1263,17 @@ proof -
   have 3: "\<And>c. c \<in> {f ` u |u. u \<in> Ua} \<Longrightarrow> openin Y c"
     using assms(1) u(3) by(auto simp: open_map_def)
   show ?thesis
-    using g_delta_ofI[OF 1 2 3] by(simp add: 0)
+    by (metis (no_types, lifting) "0" "1" "2" "3" gdelta_in_Inter open_imp_gdelta_in)
 qed
 
-lemma g_delta_of_homeo_morphic:
-  assumes "g_delta_of X a" "homeomorphic_map X Y f"
-  shows "g_delta_of Y (f ` a)"
-  by(auto intro!: g_delta_of_inj_open_map[of X Y f] simp: assms(1) homeomorphic_imp_injective_map[OF assms(2)] homeomorphic_imp_open_map[OF assms(2)])
-
-lemma g_delta_of_prod:
-  assumes "g_delta_of X A" "g_delta_of Y B"
-  shows "g_delta_of (prod_topology X Y) (A \<times> B)"
+lemma gdelta_in_prod:
+  assumes "gdelta_in X A" "gdelta_in Y B"
+  shows "gdelta_in (prod_topology X Y) (A \<times> B)"
 proof -
   obtain Ua Ub where hu:
   "Ua \<noteq> {}" "countable Ua" "\<And>b. b \<in> Ua \<Longrightarrow> openin X b" "A = \<Inter> Ua"
   "Ub \<noteq> {}" "countable Ub" "\<And>b. b \<in> Ub \<Longrightarrow> openin Y b" "B = \<Inter> Ub"
-    using assms by(auto simp: g_delta_of_def)
+    by (meson gdelta_inD assms) 
   then have 0:"A \<times> B = \<Inter> {a \<times> b | a b. a \<in> Ua \<and> b \<in> Ub}" by blast
   have 1: "{a \<times> b | a b. a \<in> Ua \<and> b \<in> Ub} \<noteq> {}"
     using hu(1,5) by auto
@@ -1465,61 +1287,25 @@ proof -
   have 3: "\<And>c. c \<in> {a \<times> b | a b. a \<in> Ua \<and> b \<in> Ub} \<Longrightarrow> openin (prod_topology X Y) c"
     using hu(3,7) by(auto simp: openin_prod_Times_iff)
   show ?thesis
-    using g_delta_ofI[OF 1 2 3] by(simp add: 0)
+    by (metis (no_types, lifting) gdelta_in_Inter open_imp_gdelta_in 0 1 2 3)
 qed
 
-lemma g_delta_of_prod1:
-  assumes "g_delta_of X A"
-  shows "g_delta_of (prod_topology X Y) (A \<times> topspace Y)"
-  by(auto intro!: g_delta_of_prod assms)
+corollary gdelta_in_prod1:
+  assumes "gdelta_in X A"
+  shows "gdelta_in (prod_topology X Y) (A \<times> topspace Y)"
+  by(auto intro!: gdelta_in_prod assms)
 
-lemma g_delta_of_prod2:
-  assumes "g_delta_of Y B"
-  shows "g_delta_of (prod_topology X Y) (topspace X \<times> B)"
-  by(auto intro!: g_delta_of_prod assms)
-
-lemma g_delta_of_subtopology:
-  assumes "g_delta_of X A" "A \<subseteq> S"
-  shows "g_delta_of (subtopology X S) A"
-proof -
-  obtain Ua where u:
-  "Ua \<noteq> {}" "countable Ua" "\<And>b. b \<in> Ua \<Longrightarrow> openin X b" "A = \<Inter> Ua"
-    using g_delta_ofD[OF assms(1)] by metis
-  have 0: "\<Inter> Ua = \<Inter> {ua \<inter> S | ua. ua \<in> Ua } "
-    using assms(2) u(4) by auto
-  have 1: "{ua \<inter> S | ua. ua \<in> Ua } \<noteq> {}"
-    using u(1) by auto
-  have 2: "countable {ua \<inter> S | ua. ua \<in> Ua }"
-    using u(2) by (simp add: Setcompr_eq_image)
-  have 3: "\<And>b. b \<in> {ua \<inter> S | ua. ua \<in> Ua } \<Longrightarrow> openin (subtopology X S) b"
-    using u(3) by(auto simp: openin_subtopology)
-  show ?thesis
-    using g_delta_ofI[OF 1 2 3 0] by(simp add: u(4))
-qed
-
-lemma g_delta_of_subtopology_inverse:
-  assumes "g_delta_of (subtopology X S) A" "g_delta_of X S"
-  shows "g_delta_of X A"
-proof -
-  obtain Ua where ua:
-  "Ua \<noteq> {}" "countable Ua" "\<And>b. b \<in> Ua \<Longrightarrow> openin (subtopology X S) b" "A = \<Inter> Ua"
-    using g_delta_ofD[OF assms(1)] by metis
-  then obtain T where t: "\<And>b. b \<in> Ua \<Longrightarrow> openin X (T b)" "\<And>b. b \<in> Ua \<Longrightarrow> b = T b \<inter> S"
-    by(auto simp: openin_subtopology) metis
-  have 0: "A = \<Inter> {T b|b. b \<in> Ua} \<inter> S"
-    using ua(1,4) t(2) by blast
-  have "{T b |b. b \<in> Ua} \<noteq> {}" "countable {T b |b. b \<in> Ua}"
-    using ua(1,2) by(simp_all add: Setcompr_eq_image)
-  from g_delta_ofI[OF this] t(1) show ?thesis
-    by(auto intro!: g_delta_of_inter[OF _ assms(2)] simp: 0)
-qed
+corollary gdelta_in_prod2:
+  assumes "gdelta_in Y B"
+  shows "gdelta_in (prod_topology X Y) (topspace X \<times> B)"
+  by(auto intro!: gdelta_in_prod assms)
 
 lemma continuous_map_imp_closed_graph':
   assumes "continuous_map X Y f" "Hausdorff_space Y"
   shows "closedin (prod_topology Y X) ((\<lambda>x. (f x,x)) ` topspace X)"
   using assms closed_map_def closed_map_paired_continuous_map_left by blast
 
-subsubsection \<open> Upper-Semicontinuous \<close>
+subsubsection \<open> Upper-Semicontinuous Functions \<close>
 definition upper_semicontinuous_map :: "['a topology, 'a \<Rightarrow> 'b :: linorder_topology] \<Rightarrow> bool" where
 "upper_semicontinuous_map X f \<longleftrightarrow> (\<forall>a. openin X {x\<in>topspace X. f x < a})"
 
@@ -1570,171 +1356,59 @@ next
   ultimately show "openin X {x \<in> topspace X. f x < a}" by auto
 qed
 
-subsection \<open> Lemmas for Limits\<close>
-lemma qlim_eq_lim_mono_at_bot:
-  fixes g :: "rat \<Rightarrow> 'a :: linorder_topology"
-  assumes "mono f" "(g \<longlongrightarrow> a) at_bot" "\<And>r::rat. f (real_of_rat r) = g r"
-  shows "(f \<longlongrightarrow> a) at_bot"
-proof -
-  have "mono g"
-    by(metis assms(1,3) mono_def of_rat_less_eq)
-  have ga:"\<And>r. g r \<ge> a"
-  proof(rule ccontr)
-    fix r
-    assume "\<not> a \<le> g r"
-    then have "g r < a" by simp
-    from order_topology_class.order_tendstoD(1)[OF assms(2) this]
-    obtain Q :: rat where q: "\<And>q. q \<le> Q \<Longrightarrow> g r < g q"
-      by(auto simp: eventually_at_bot_linorder)
-    define q where "q \<equiv> min r Q"
-    show False
-      using q[of q] \<open>mono g\<close>
-      by(auto simp: q_def mono_def) (meson linorder_not_less min.cobounded1)
-  qed
-  show ?thesis
-  proof(rule decreasing_tendsto)
-    show "\<forall>\<^sub>F n in at_bot. a \<le> f n"
-      unfolding eventually_at_bot_linorder
-      by(rule exI[where x=undefined],auto) (metis Ratreal_def assms(1,3) dual_order.trans ga less_eq_real_def lt_ex monoD of_rat_dense) (*metis assms(1) assms(3) ga less_eq_real_def lfp.leq_trans lt_ex monoD of_rat_dense*)
-  next
-    fix x
-    assume "a < x"
-    with topological_space_class.topological_tendstoD[OF assms(2),of "{..<x}"]
-    obtain Q :: rat where q: "\<And>q. q \<le> Q \<Longrightarrow> g q < x"
-      by(auto simp: eventually_at_bot_linorder)
-    show "\<forall>\<^sub>F n in at_bot. f n < x"
-      using q assms(1,3) by(auto intro!: exI[where x="real_of_rat Q"] simp: eventually_at_bot_linorder) (metis dual_order.refl monoD order_le_less_trans)
-  qed
+subsubsection \<open> Lower-Semicontinuous Functions \<close>
+definition lower_semicontinuous_map :: "['a topology, 'a \<Rightarrow> 'b :: linorder_topology] \<Rightarrow> bool" where
+"lower_semicontinuous_map X f \<longleftrightarrow> (\<forall>a. openin X {x\<in>topspace X. a < f x})"
+
+lemma continuous_lower_semicontinuous:
+  assumes "continuous_map X (euclidean :: ('b :: linorder_topology) topology) f"
+  shows "lower_semicontinuous_map X f"
+  unfolding lower_semicontinuous_map_def
+proof safe
+  fix a :: 'b
+  have *:"openin euclidean U \<Longrightarrow> openin X {x \<in> topspace X. f x \<in> U}" for U
+    using assms by(simp add: continuous_map)
+  have "openin euclidean {a<..}" by auto
+  with *[of "{a<..}"] show "openin X {x \<in> topspace X. a < f x}" by auto
 qed
 
-lemma qlim_eq_lim_mono_at_top:
-  fixes g :: "rat \<Rightarrow> 'a :: linorder_topology"
-  assumes "mono f" "(g \<longlongrightarrow> a) at_top" "\<And>r::rat. f (real_of_rat r) = g r"
-  shows "(f \<longlongrightarrow> a) at_top"
+lemma lower_semicontinuous_map_iff_closed:
+ "lower_semicontinuous_map X f \<longleftrightarrow> (\<forall>a. closedin X {x\<in>topspace X. f x \<le> a})"
 proof -
-  have "mono g"
-    by(metis assms(1,3) mono_def of_rat_less_eq)
-  have ga:"\<And>r. g r \<le> a"
-  proof(rule ccontr)
-    fix r
-    assume "\<not> g r \<le> a"
-    then have "a < g r" by simp
-    from order_topology_class.order_tendstoD(2)[OF assms(2) this]
-    obtain Q :: rat where q: "\<And>q. Q \<le> q \<Longrightarrow> g q < g r"
-      by(auto simp: eventually_at_top_linorder)
-    define q where "q \<equiv> max r Q"
-    show False
-      using q[of q] \<open>mono g\<close> by(auto simp: q_def mono_def leD)
-  qed
-  show ?thesis
-  proof(rule increasing_tendsto)
-    show "\<forall>\<^sub>F n in at_top. f n \<le> a"
-      unfolding eventually_at_top_linorder
-      by(rule exI[where x=undefined],auto) (metis (no_types, opaque_lifting) assms(1) assms(3) dual_order.trans ga gt_ex monoD of_rat_dense order_le_less)
-  next
-    fix x
-    assume "x < a"
-    with topological_space_class.topological_tendstoD[OF assms(2),of "{x<..}"]
-    obtain Q :: rat where q: "\<And>q. Q \<le> q \<Longrightarrow> x < g q"
-      by(auto simp: eventually_at_top_linorder)
-    show "\<forall>\<^sub>F n in at_top. x < f n"
-      using q assms(1,3) by(auto simp: eventually_at_top_linorder intro!: exI[where x="real_of_rat Q"]) (metis dual_order.refl monoD order_less_le_trans)
-  qed
+  have "{x \<in> topspace X. a < f x} = topspace X - {x \<in> topspace X. f x \<le> a}" for a
+    by auto
+  thus ?thesis
+    by (simp add: closedin_def lower_semicontinuous_map_def)
 qed
 
-lemma tendsto_enn2real:
-  assumes "k < top" and "(f \<longlongrightarrow> k) F"
-  shows "((\<lambda>n. enn2real  (f n)) \<longlongrightarrow>  enn2real k) F"
-proof -
-  have 1:"ennreal (enn2real k) = k" "enn2real k \<ge> 0"
-    using assms(1) by auto
-  show ?thesis
-    using assms tendsto_enn2real[OF _ 1(2),of f]
-    by(simp add: 1(1))
-qed
-
-lemma LIMSEQ_inverse_not0:
-  fixes xn :: "nat \<Rightarrow> real"
-  assumes "\<And>n. xn n \<noteq> 0" "xn \<longlonglongrightarrow> x" "(\<lambda>n. 1 / (xn n)) \<longlonglongrightarrow> b"
-  shows "x \<noteq> 0"
-proof
-  assume x:"x = 0"
-  then have xn:"\<And>e. e > 0 \<Longrightarrow> \<exists>N. \<forall>n\<ge>N. \<bar>xn n\<bar> < e"
-    using LIMSEQ_D[OF assms(2)] by simp
-  have "\<exists>N. \<forall>n\<ge>N. \<bar>1 / (xn n) - b\<bar> \<ge> r" if r:"r > 0" for r
-  proof -
-    have "0 < 1 / (r + \<bar>b\<bar>)"
-      using that by auto
-    with xn[OF this] obtain N where N':"\<And>n. n \<ge> N \<Longrightarrow> \<bar>xn n\<bar> < 1 / (r + \<bar>b\<bar>)"
-      by auto
-    show ?thesis
-    proof(rule exI[where x=N])
-      show "\<forall>n\<ge>N. r \<le> \<bar>1 / xn n - b\<bar>"
-      proof safe
-        fix n
-        assume "n \<ge> N"
-        note N'[OF this]
-        hence "(r + \<bar>b\<bar>) * \<bar>xn n\<bar> < 1"
-          by (metis \<open>0 < 1 / (r + \<bar>b\<bar>)\<close> mult.commute pos_less_divide_eq zero_less_divide_1_iff) 
-        hence "1 / \<bar>xn n\<bar> > r + \<bar>b\<bar>"
-          using assms(1)[of n] by (simp add: less_divide_eq)
-        hence "r + \<bar>b\<bar> - \<bar>b\<bar> < 1 / \<bar>xn n\<bar> - \<bar>b\<bar>"
-          by simp
-        also have "... = \<bar>1 / xn n\<bar> - \<bar>b\<bar>" by simp
-        also have "... \<le> \<bar>1 / xn n - b\<bar>" by simp
-        finally show  "r \<le> \<bar>1 / xn n - b\<bar>"
-          by simp
-      qed
-    qed
-  qed
-  with LIMSEQ_D[OF assms(3)] show False
-    by (metis less_le_not_le linorder_le_cases real_norm_def zero_less_one)
-qed
-
-lemma obtain_subsequence:
-  fixes xn :: "nat \<Rightarrow> _"
-  assumes "infinite {n. P n (xn n)}"
-  obtains a :: "nat \<Rightarrow> nat" where "strict_mono a" "\<And>n. P (a n) (xn (a n))"
-proof -
-  have inf: "infinite {n. n > m \<and> P n (xn n)}" for m
-  proof
-    assume "finite {n. n > m \<and> P n (xn n)}"
-    then have "finite ({..m} \<union> {n. n > m \<and> P n (xn n)})" by auto
-    hence "finite {n. P n (xn n)}"
-      by(auto intro!: finite_subset[where B="{..m} \<union> {n. n > m \<and> P n (xn n)}"])
-    with assms show False by simp
-  qed
-  define an where "an \<equiv> rec_nat (SOME n. P n (xn n)) (\<lambda>n an. SOME m. m > an \<and> P m (xn m))"
-  have anSome: "an (Suc n) = (SOME m. m > an n \<and> P m (xn m))" for n
-    by(auto simp: an_def)
-  have an1: "P (an n) (xn (an n))" for n
-  proof(cases n)
-    case 0
-    obtain m where m:"P m (xn m)"
-      using assms not_finite_existsD by blast
-    show ?thesis 
-      by(simp add: an_def 0,rule someI,rule m)
-  next
-    case (Suc n')
-    obtain m where m:"m > an n'" "P m (xn m)"
-      using inf not_finite_existsD by blast
-    show ?thesis
-      by(simp add: Suc anSome, rule someI2[where a=m],auto simp: m)
-  qed
-  have an2: "strict_mono an"
-    unfolding strict_mono_Suc_iff anSome
-  proof safe
-    fix n
-    obtain m where m:"m > an n" "P m (xn m)"
-      using inf not_finite_existsD by blast
-    show "an n < (SOME m. an n < m \<and> P m (xn m))"
-      by (rule someI2[where a=m],auto simp: m)
-  qed
-  show ?thesis
-    using an1 that[OF an2] by auto
+lemma lower_semicontinuous_map_real_iff:
+  fixes f :: "'a \<Rightarrow> real"
+  shows "lower_semicontinuous_map X f \<longleftrightarrow> lower_semicontinuous_map X (\<lambda>x. ereal (f x))"
+  unfolding lower_semicontinuous_map_def
+proof safe
+  fix a :: ereal
+  assume h:"\<forall>a::real. openin X {x \<in> topspace X. a < f x}"
+  consider "a = - \<infinity>" | "a = \<infinity>" | "a \<noteq> - \<infinity> \<and> a \<noteq> \<infinity>" by auto
+  then show "openin X {x \<in> topspace X. a < ereal (f x)}"
+  proof cases
+    case 3
+    then have "a < ereal (f x) \<longleftrightarrow> real_of_ereal a < f x" for x
+      by (metis ereal_less_eq(3) linorder_not_less real_of_ereal.elims)
+    thus ?thesis
+      using h by simp
+  qed simp_all
+next
+  fix a :: real
+  assume h:"\<forall>a::ereal. openin X {x \<in> topspace X. a < ereal (f x)}"
+  then have "openin X {x \<in> topspace X. ereal (f x) > ereal a}"
+    by blast
+  moreover have"ereal (f x) > real_of_ereal a \<longleftrightarrow> a < f x" for x
+    by auto
+  ultimately show "openin X {x \<in> topspace X. f x > a}" by auto
 qed
 
 subsection \<open>Lemmas for Measure Theory\<close>
+subsubsection \<open> Lemmas for Measurable Sets\<close>
 lemma measurable_preserve_sigma_sets:
   assumes "sets M = sigma_sets \<Omega> S" "S \<subseteq> Pow \<Omega>"
           "\<And>a. a \<in> S \<Longrightarrow> f ` a \<in> sets N" "inj_on f (space M)" "f ` space M \<in> sets N"
@@ -1761,20 +1435,6 @@ proof -
     then show ?case
       by (simp add: image_UN)
   qed
-qed
-
-lemma integral_measurable_subprob_algebra2:
-  fixes f :: "_ \<Rightarrow> _ \<Rightarrow> _::{banach,second_countable_topology}"
-  assumes [measurable]: "(\<lambda>(x, y). f x y) \<in> borel_measurable (M \<Otimes>\<^sub>M N)" "L \<in> measurable M (subprob_algebra N)"
-  shows "(\<lambda>x. integral\<^sup>L (L x) (f x)) \<in> borel_measurable M"
-proof -
-  note integral_measurable_subprob_algebra[measurable]
-  note measurable_distr2[measurable]
-  have "(\<lambda>x. integral\<^sup>L (distr (L x) (M \<Otimes>\<^sub>M N) (\<lambda>y. (x, y))) (\<lambda>(x, y). f x y)) \<in> borel_measurable M"
-    by measurable
-  then show "(\<lambda>x. integral\<^sup>L (L x) (f x)) \<in> borel_measurable M"
-    by (rule measurable_cong[THEN iffD1, rotated])
-       (simp add: integral_distr)
 qed
 
 inductive_set sigma_sets_cinter :: "'a set \<Rightarrow> 'a set set \<Rightarrow> 'a set set"
@@ -1838,7 +1498,160 @@ proof -
     unfolding 1 by(rule Union_c,use assms in auto)
 qed
 
-text \<open> Measurable isomorphisms.\<close>
+lemma sigma_sets_eq_cinter_dunion:
+  assumes "metrizable_space X"
+  shows "sigma_sets (topspace X) {U. openin X U} = sigma_sets_cinter_dunion (topspace X) {U. openin X U}"
+proof safe
+  fix a
+  interpret sa: sigma_algebra "topspace X" "sigma_sets (topspace X) {U. openin X U}"
+    by(auto intro!: sigma_algebra_sigma_sets openin_subset)
+  assume "a \<in> sigma_sets_cinter_dunion (topspace X) {U. openin X U}"
+  then show "a \<in> sigma_sets (topspace X) {U. openin X U}"
+    by induction auto
+next
+  have c:"sigma_sets_cinter_dunion (topspace X) {U. openin X U} \<subseteq> {U\<in>sigma_sets_cinter_dunion (topspace X) {U. openin X U}. topspace X - U \<in> sigma_sets_cinter_dunion (topspace X) {U. openin X U}}"
+  proof
+    fix a
+    assume a: "a \<in> sigma_sets_cinter_dunion (topspace X) {U. openin X U}"
+    then show "a \<in> {U \<in> sigma_sets_cinter_dunion (topspace X) {U. openin X U}. topspace X - U \<in> sigma_sets_cinter_dunion (topspace X) {U. openin X U}}"
+    proof induction
+      case a:(Basic_cd a)
+      then have "gdelta_in X (topspace X - a)"
+        by(auto intro!: closed_imp_gdelta_in assms)
+      from gdelta_inD'[OF this] obtain U where U:
+       "\<And>n :: nat. openin X (U n)" "topspace X - a = \<Inter> (range U)" by auto
+      show ?case
+        using a U(1) by(auto simp: U(2) intro!: Inter_cd)
+    next
+      case Top_cd
+      then show ?case by auto
+    next
+      case ca:(Inter_cd a)
+      define b where "b \<equiv> (\<lambda>n. (topspace X - a n) \<inter> (\<Inter>i. if i < n then a i else topspace X))"
+      have bd:"disjoint_family b"
+        using nat_neq_iff by(fastforce simp: disjoint_family_on_def b_def)
+      have bin:"b i \<in> sigma_sets_cinter_dunion (topspace X) {U. openin X U}" for i
+        unfolding b_def
+        apply(rule sigma_sets_cinter_dunion_int)
+        using ca(2)[of i]
+         apply auto[1]
+        apply(rule Inter_cd) using ca by auto
+      have bun:"topspace X - (\<Inter> (range a)) = (\<Union>i. b i)" (is "?lhs = ?rhs")
+      proof -
+        { fix x
+          have "x \<in> ?lhs \<longleftrightarrow> x \<in> topspace X \<and> x \<in> (\<Union>i. topspace X - a i)"
+            by auto
+          also have "... \<longleftrightarrow> x \<in> topspace X \<and> (\<exists>n. x \<in> topspace X - a n)"
+            by auto
+          also have "... \<longleftrightarrow> x \<in> topspace X \<and> (\<exists>n. x \<in> topspace X - a n \<and> (\<forall>i<n. x \<in> a i))"
+          proof safe
+            fix n
+            assume 1:"x \<notin> a n" "x \<in> topspace X"
+            define N where "N \<equiv> Min {m. m \<le> n \<and> x \<notin> a m}"
+            have N:"x \<notin> a N" "N \<le> n"
+              using linorder_class.Min_in[of "{m. m \<le> n \<and> x \<notin> a m}"] 1
+              by(auto simp: N_def)
+            have N':"x \<in> a i" if "i < N" for i
+            proof(rule ccontr)
+              assume "x \<notin> a i"
+              then have "N \<le> i"
+                using linorder_class.Min_le[of "{m. m \<le> n \<and> x \<notin> a m}" i] that N(2)
+                by(auto simp: N_def)
+              with that show False by auto
+            qed
+            show "\<exists>n. x \<in> topspace X - a n \<and> (\<forall>i<n. x \<in> a i)"
+              using N N' by(auto intro!: exI[where x=N] 1)
+          qed auto
+          also have "... \<longleftrightarrow> x \<in> ?rhs"
+            by(auto simp: b_def)
+          finally have "x \<in> ?lhs \<longleftrightarrow> x \<in> ?rhs" . }
+        thus ?thesis by auto
+      qed
+      have "... \<in> sigma_sets_cinter_dunion (topspace X) {U. openin X U}"
+        by(rule Union_cd) (use bin bd in auto)
+      thus ?case
+        using Inter_cd[of a,OF ca(1)] by(auto simp: bun)
+    next
+      case ca:(Union_cd a)
+      have "topspace X - (\<Union> (range a)) = (\<Inter>i. (topspace X - a i))"
+        by simp
+      have "... \<in> sigma_sets_cinter_dunion (topspace X) {U. openin X U}"
+        by(rule Inter_cd) (use ca in auto)
+      then show ?case
+        using Union_cd[of a,OF ca(1,2)] by auto 
+    qed
+  qed
+  fix a
+  assume "a \<in> sigma_sets (topspace X) {U. openin X U}"
+  then show "a \<in> sigma_sets_cinter_dunion (topspace X) {U. openin X U}"
+  proof induction
+    case a:(Union a)
+    define b where "b \<equiv> (\<lambda>n. a n \<inter>  (\<Inter>i. if i < n then topspace X - a i else topspace X))"
+    have bd:"disjoint_family b"
+      by(auto simp: disjoint_family_on_def b_def) (metis Diff_iff UnCI image_eqI linorder_neqE_nat mem_Collect_eq)
+    have bin:"b i \<in> sigma_sets_cinter_dunion (topspace X) {U. openin X U}" for i
+      unfolding b_def
+      apply(rule sigma_sets_cinter_dunion_int)
+      using a(2)[of i]
+       apply auto[1]
+      apply(rule Inter_cd) using c a by auto
+    have bun:"(\<Union>i. a i) = (\<Union>i. b i)" (is "?lhs = ?rhs")
+    proof -
+      {
+        fix x
+        have "x \<in> ?lhs \<longleftrightarrow> x \<in> topspace X \<and> x \<in> ?lhs"
+          using sigma_sets_cinter_dunion_into_sp[OF _ a(2)]
+          by (metis UN_iff subsetD subset_Pow_Union topspace_def)
+        also have "... \<longleftrightarrow> x \<in> topspace X \<and> (\<exists>n. x \<in> a n)" by auto
+        also have "... \<longleftrightarrow> x \<in> topspace X \<and> (\<exists>n. x \<in> a n \<and> (\<forall>i<n. x \<in> topspace X - a i))"
+        proof safe
+          fix n
+          assume 1:"x \<in> topspace X" "x \<in> a n"
+          define N where "N \<equiv> Min {m. m \<le> n \<and> x \<in> a m}"
+          have N:"x \<in> a N" "N \<le> n"
+            using linorder_class.Min_in[of "{m. m \<le> n \<and> x \<in> a m}"] 1
+            by(auto simp: N_def)
+          have N':"x \<notin> a i" if "i < N" for i
+          proof(rule ccontr)
+            assume "\<not> x \<notin> a i"
+            then have "N \<le> i"
+              using linorder_class.Min_le[of "{m. m \<le> n \<and> x \<in> a m}" i] that N(2)
+              by(auto simp: N_def)
+            with that show False by auto
+          qed
+          show "\<exists>n. x \<in> a n \<and> (\<forall>i<n. x \<in> topspace X - a i)"
+            using N N' 1 by(auto intro!: exI[where x=N])
+        qed auto
+        also have "... \<longleftrightarrow> x \<in> ?rhs"
+        proof safe
+          fix m
+          assume "x \<in> b m"
+          then show "x \<in> topspace X" "\<exists>n. x \<in> a n \<and> (\<forall>i<n. x \<in> topspace X - a i)"
+            by(auto intro!: exI[where x=m] simp: b_def)
+        qed(auto simp: b_def)
+        finally have "x \<in> ?lhs \<longleftrightarrow> x \<in> ?rhs" . }
+      thus ?thesis by auto
+    qed
+    have "... \<in> sigma_sets_cinter_dunion (topspace X) {U. openin X U}"
+      by(rule Union_cd) (use bin bd in auto)
+    thus ?case
+      by(auto simp: bun)
+  qed(use c in auto)
+qed
+
+lemma sigma_sets_eq_cinter:
+  assumes "metrizable_space X"
+  shows "sigma_sets (topspace X) {U. openin X U} = sigma_sets_cinter (topspace X) {U. openin X U}"
+proof safe
+  fix a
+  interpret sa: sigma_algebra "topspace X" "sigma_sets (topspace X) {U. openin X U}"
+    by(auto intro!: sigma_algebra_sigma_sets openin_subset)
+  assume "a \<in> sigma_sets_cinter (topspace X) {U. openin X U}"
+  then show "a \<in> sigma_sets (topspace X) {U. openin X U}"
+    by induction auto
+qed (use sigma_sets_cinter_dunion_subset sigma_sets_eq_cinter_dunion[OF assms] in auto)
+
+subsubsection \<open> Measurable Isomorphisms \<close>
 definition measurable_isomorphic_map::"['a measure, 'b measure, 'a \<Rightarrow> 'b] \<Rightarrow> bool" where
 "measurable_isomorphic_map M N f \<longleftrightarrow> bij_betw f (space M) (space N) \<and> f \<in> M \<rightarrow>\<^sub>M N \<and> the_inv_into (space M) f \<in> N \<rightarrow>\<^sub>M M"
 
@@ -1962,12 +1775,25 @@ lemma measurable_isomorphic_sets_cong:
   using measurable_isomorphic_map_sets_cong[OF assms]
   by(auto simp: measurable_isomorphic_def)
 
-
 lemma measurable_isomorphicD:
   assumes "M measurable_isomorphic N"
   shows "\<exists>f g. f \<in> M \<rightarrow>\<^sub>M N \<and> g \<in> N \<rightarrow>\<^sub>M M \<and> (\<forall>x\<in>space M. g (f x) = x) \<and> (\<forall>y\<in>space N. f (g y) = y) \<and> (\<forall>A\<in>sets M. f ` A \<in> sets N) \<and> (\<forall>A\<in>sets N. g ` A \<in> sets M)"
   using assms measurable_isomorphic_mapD'[of M N]
   by (metis (mono_tags, lifting) measurable_isomorphic_def)
+
+lemma measurable_isomorphic_cardinality_eq:
+  assumes "M measurable_isomorphic N"
+  shows "space M \<approx> space N"
+  by (meson assms eqpoll_def measurable_isomorphic_def measurable_isomorphic_map_def)
+
+lemma measurable_isomorphic_count_spaces: "count_space A measurable_isomorphic count_space B \<longleftrightarrow> A \<approx> B"
+proof
+  assume "A \<approx> B"
+  then obtain f where f:"bij_betw f A B"
+    by(auto simp: eqpoll_def)
+  then show "count_space A measurable_isomorphic count_space B"
+    by(auto simp: measurable_isomorphic_def measurable_isomorphic_map_def bij_betw_def the_inv_into_into intro!: exI[where x=f])
+qed(use measurable_isomorphic_cardinality_eq in fastforce)
 
 lemma measurable_isomorphic_byWitness:
   assumes "f \<in> M \<rightarrow>\<^sub>M N" "\<And>x. x\<in>space M \<Longrightarrow> g (f x) = x"
@@ -2323,5 +2149,428 @@ proof -
       by induction (auto simp: assms(1) h(1))
   qed
 qed
+
+subsubsection \<open>Borel Spaces Genereted from Abstract Topologies\<close>
+definition borel_of :: "'a topology \<Rightarrow> 'a measure" where
+"borel_of X \<equiv> sigma (topspace X) {U. openin X U}"
+
+lemma emeasure_borel_of: "emeasure (borel_of X) A = 0"
+  by (simp add: borel_of_def emeasure_sigma)
+
+lemma borel_of_euclidean: "borel_of euclidean = borel"
+  by(simp add: borel_of_def borel_def)
+
+lemma space_borel_of: "space (borel_of X) = topspace X"
+  by(simp add: space_measure_of_conv borel_of_def)
+
+lemma sets_borel_of: "sets (borel_of X) = sigma_sets (topspace X) {U. openin X U}"
+  by (simp add: subset_Pow_Union topspace_def borel_of_def)
+
+lemma sets_borel_of_closed: "sets (borel_of X) = sigma_sets (topspace X) {U. closedin X U}"
+  unfolding sets_borel_of
+proof(safe intro!: sigma_sets_eqI)
+  fix a
+  assume a:"openin X a"
+  have "topspace X - (topspace X - a) \<in> sigma_sets (topspace X) {U. closedin X U}"
+    by(rule sigma_sets.Compl) (use a in auto)
+  thus "a \<in> sigma_sets (topspace X) {U. closedin X U}"
+    using openin_subset[OF a] by (simp add: Diff_Diff_Int inf.absorb_iff2) 
+next
+  fix b
+  assume b:"closedin X b"
+  have "topspace X - (topspace X - b) \<in> sigma_sets (topspace X) {U. openin X U}"
+    by(rule sigma_sets.Compl) (use b in auto)
+  thus "b \<in> sigma_sets (topspace X) {U. openin X U}"
+    using closedin_subset[OF b] by (simp add: Diff_Diff_Int inf.absorb_iff2) 
+qed
+
+lemma borel_of_open:
+  assumes "openin X U"
+  shows "U \<in> sets (borel_of X)"
+  using assms by (simp add: subset_Pow_Union topspace_def borel_of_def)
+
+lemma borel_of_closed:
+  assumes "closedin X U"
+  shows "U \<in> sets (borel_of X)"
+  using assms sigma_sets.Compl[of "topspace X - U" "topspace X"]
+  by (simp add: closedin_def double_diff sets_borel_of)
+
+lemma(in Metric_space) nbh_sets[measurable]: "(\<Union>a\<in>A. mball a e) \<in> sets (borel_of mtopology)"
+  by(auto intro!: borel_of_open openin_clauses(3))
+
+lemma borel_of_gdelta_in:
+  assumes "gdelta_in X U"
+  shows "U \<in> sets (borel_of X)"
+  using gdelta_inD[OF assms] borel_of_open
+  by(auto intro!: sets.countable_INT'[of _ id,simplified])
+
+lemma borel_of_subtopology:
+ "borel_of (subtopology X U) = restrict_space (borel_of X) U"
+proof(rule measure_eqI)
+  show "sets (borel_of (subtopology X U)) = sets (restrict_space (borel_of X) U)"
+    unfolding restrict_space_eq_vimage_algebra' sets_vimage_algebra sets_borel_of topspace_subtopology space_borel_of Int_commute[of U]
+  proof(rule sigma_sets_eqI)
+    fix a
+    assume "a \<in> Collect (openin (subtopology X U))"
+    then obtain T where "openin X T" "a = T \<inter> U"
+      by(auto simp: openin_subtopology)
+    show "a \<in> sigma_sets (topspace X \<inter> U) {(\<lambda>x. x) -` A \<inter> (topspace X \<inter> U) |A. A \<in> sigma_sets (topspace X) (Collect (openin X))}"
+      using openin_subset[OF \<open>openin X T\<close>] \<open>a = T \<inter> U\<close> by(auto intro!: exI[where x=T] \<open>openin X T\<close>)
+  next
+    fix b
+    assume "b \<in> {(\<lambda>x. x) -` A \<inter> (topspace X \<inter> U) |A. A \<in> sigma_sets (topspace X) (Collect (openin X))}"
+    then obtain T where ht:"b = T \<inter> (topspace X \<inter> U)" "T \<in> sigma_sets (topspace X) (Collect (openin X))"
+      by auto
+    hence "b = T \<inter> U"
+    proof -
+      have "T \<subseteq> topspace X"
+        by(rule sigma_sets_into_sp[OF _ ht(2)]) (simp add: subset_Pow_Union topspace_def)
+      thus ?thesis
+        by(auto simp: ht(1))
+    qed
+    with ht(2) show "b \<in> sigma_sets (topspace X \<inter> U) (Collect (openin (subtopology X U)))"
+    proof(induction arbitrary: b U)
+      case (Basic a)
+      then show ?case
+        by(auto simp: openin_subtopology)
+    next
+      case Empty
+      then show ?case by simp
+    next
+      case ih:(Compl a)
+      then show ?case
+        by (simp add: Diff_Int_distrib2 sigma_sets.Compl)
+    next
+      case (Union a)
+      then show ?case
+        by (metis UN_extend_simps(4) sigma_sets.Union)
+    qed
+  qed
+qed(simp add: emeasure_borel_of restrict_space_def emeasure_measure_of_conv)
+
+lemma sets_borel_of_discrete_topology: "sets (borel_of (discrete_topology I)) = sets (count_space I)"
+  by (metis Pow_UNIV UNIV_eq_I borel_of_open borel_of_subtopology inf.absorb_iff2 openin_discrete_topology sets_count_space sets_restrict_space sets_restrict_space_count_space subtopology_discrete_topology top_greatest)
+
+lemma continuous_map_measurable:
+  assumes "continuous_map X Y f"
+  shows "f \<in> borel_of X \<rightarrow>\<^sub>M borel_of Y"
+proof(rule measurable_sigma_sets[OF sets_borel_of[of Y]])
+  show "{U. openin Y U} \<subseteq> Pow (topspace Y)"
+    by (simp add: subset_Pow_Union topspace_def)
+next
+  show "f \<in> space (borel_of X) \<rightarrow> topspace Y"
+    using continuous_map_image_subset_topspace[OF assms]
+    by(auto simp: space_borel_of)
+next
+  fix U
+  assume "U \<in> {U. openin Y U}"
+  then have "openin X (f -` U \<inter> topspace X)"
+    using continuous_map[of X Y f] assms by auto
+  thus "f -` U \<inter> space (borel_of X) \<in> sets (borel_of X)"
+    by(simp add: space_borel_of sets_borel_of)
+qed
+
+lemma upper_semicontinuous_map_measurable:
+  fixes f :: "'a \<Rightarrow> 'b :: {linorder_topology, second_countable_topology}"
+  assumes "upper_semicontinuous_map X f"
+  shows "f \<in> borel_measurable (borel_of X)"
+  using assms by(auto intro!: borel_measurableI_less borel_of_open simp: space_borel_of upper_semicontinuous_map_def)
+
+lemma lower_semicontinuous_map_measurable:
+  fixes f :: "'a \<Rightarrow> 'b :: {linorder_topology, second_countable_topology}"
+  assumes "lower_semicontinuous_map X f"
+  shows "f \<in> borel_measurable (borel_of X)"
+  using assms by(auto intro!: borel_measurableI_greater borel_of_open simp: space_borel_of lower_semicontinuous_map_def)
+
+lemma open_map_preserves_sets:
+  assumes "open_map S T f" "inj_on f (topspace S)" "A \<in> sets (borel_of S)"
+  shows "f ` A \<in> sets (borel_of T)"
+  using assms(3)[simplified sets_borel_of]
+proof(induction)
+  case (Basic a)
+  with assms(1) show ?case
+    by(auto simp: sets_borel_of open_map_def)
+next
+  case Empty
+  show ?case by simp
+next
+  case (Compl a)
+  moreover have "f ` (topspace S - a) = f ` (topspace S) - f ` a"
+    by (metis Diff_subset assms(2) calculation(1) inj_on_image_set_diff sigma_sets_into_sp subset_Pow_Union topspace_def)
+  moreover have "f ` (topspace S) \<in> sets (borel_of T)"
+    by (meson assms(1) borel_of_open open_map_def openin_topspace)
+  ultimately show ?case
+    by auto
+next
+  case (Union a)
+  then show ?case
+    by (simp add: image_UN)
+qed
+
+lemma open_map_preserves_sets':
+  assumes "open_map S (subtopology T (f ` (topspace S))) f" "inj_on f (topspace S)" "f ` (topspace S) \<in> sets (borel_of T)" "A \<in> sets (borel_of S)"
+  shows "f ` A \<in> sets (borel_of T)"
+  using assms(4)[simplified sets_borel_of]
+proof(induction)
+  case (Basic a)
+  then have "openin (subtopology T (f ` (topspace S))) (f ` a)"
+    using assms(1) by(auto simp: open_map_def)
+  hence "f ` a \<in> sets (borel_of (subtopology T (f ` (topspace S))))"
+    by(simp add: sets_borel_of)
+  hence "f ` a \<in> sets (restrict_space (borel_of T) (f ` (topspace S)))"
+    by(simp add: borel_of_subtopology)
+  thus ?case
+    by (metis sets_restrict_space_iff assms(3) sets.Int_space_eq2)
+next
+  case Empty
+  show ?case by simp
+next
+  case (Compl a)
+  moreover have "f ` (topspace S - a) = f ` (topspace S) - f ` a"
+    by (metis Diff_subset assms(2) calculation(1) inj_on_image_set_diff sigma_sets_into_sp subset_Pow_Union topspace_def)
+  ultimately show ?case
+    using assms(3) by auto
+next
+  case (Union a)
+  then show ?case
+    by (simp add: image_UN)
+qed
+
+
+text \<open> Abstract topology version of @{thm second_countable_borel_measurable}. \<close>
+lemma borel_of_second_countable':
+  assumes "second_countable S" and "subbase_in S \<U>"
+  shows "borel_of S = sigma (topspace S) \<U>"
+  unfolding borel_of_def
+proof(rule sigma_eqI)
+  show "{U. openin S U} \<subseteq> Pow (topspace S)"
+    by (simp add: subset_Pow_Union topspace_def)
+next
+  show "\<U> \<subseteq> Pow (topspace S)"
+    using subbase_in_subset[OF assms(2)] by auto
+next
+  interpret s: sigma_algebra "topspace S" "sigma_sets (topspace S) \<U>"
+    using subbase_in_subset[OF assms(2)] by(auto intro!: sigma_algebra_sigma_sets)
+  obtain \<O> where ho: "countable \<O>" "base_in S \<O>"
+    using assms(1) by(auto simp: second_countable_base_in)
+  show "sigma_sets (topspace S) {U. openin S U} = sigma_sets (topspace S) \<U>"
+  proof(rule sigma_sets_eqI)
+    fix U
+    assume "U \<in> {U. openin S U}"
+    then have "generate_topology_on \<U> U"
+      using assms(2) by(simp add: subbase_in_def openin_topology_generated_by_iff)
+    thus "U \<in> sigma_sets (topspace S) \<U>"
+    proof induction
+      case (UN K)
+      with ho(2) obtain V where hv:
+       "\<And>k. k \<in> K \<Longrightarrow> V k \<subseteq> \<O>" "\<And>k. k \<in> K \<Longrightarrow> \<Union> (V k) = k"
+        by(simp add: base_in_def openin_topology_generated_by_iff[symmetric] assms(2)[simplified subbase_in_def,symmetric]) metis
+      define \<U>k where "\<U>k = (\<Union>k\<in>K. V k)"
+      have 0:"countable \<U>k"
+        using hv by(auto intro!: countable_subset[OF _ ho(1)] simp: \<U>k_def)
+      have "\<Union> \<U>k = (\<Union>A\<in>\<U>k. A)" by auto
+      also have "... = \<Union> K"
+        unfolding \<U>k_def UN_simps by(simp add: hv(2))
+      finally have 1:"\<Union> \<U>k = \<Union> K" .
+      have "\<forall>b\<in>\<U>k. \<exists>k\<in>K. b \<subseteq> k"
+        using hv by (auto simp: \<U>k_def)
+      then obtain V' where hv': "\<And>b. b \<in> \<U>k \<Longrightarrow> V' b \<in> K" and "\<And>b. b \<in> \<U>k \<Longrightarrow> b \<subseteq> V' b"
+        by metis
+      then have "(\<Union>b\<in>\<U>k. V' b) \<subseteq> \<Union>K" "\<Union>\<U>k \<subseteq> (\<Union>b\<in>\<U>k. V' b)"
+        by auto
+      then have "\<Union>K = (\<Union>b\<in>\<U>k. V' b)"
+        unfolding 1 by auto
+      also have "\<dots> \<in> sigma_sets (topspace S) \<U>"
+        using hv' UN by(auto intro!: s.countable_UN' simp: 0)
+      finally show "\<Union>K \<in> sigma_sets (topspace S) \<U>" .
+    qed auto
+  next
+    fix U
+    assume "U \<in> \<U>"
+    from assms(2)[simplified subbase_in_def] openin_topology_generated_by_iff generate_topology_on.Basis[OF this]
+    show "U \<in> sigma_sets (topspace S) {U. openin S U}"
+      by auto
+  qed
+qed
+
+text \<open> Abstract topology version @{thm borel_prod}.\<close>
+lemma borel_of_prod:
+  assumes "second_countable S" and "second_countable S'"
+  shows "borel_of S \<Otimes>\<^sub>M borel_of S' = borel_of (prod_topology S S')"
+proof -
+  have "borel_of S \<Otimes>\<^sub>M borel_of S' = sigma (topspace S \<times> topspace S') {a \<times> b |a b. a \<in> {a. openin S a} \<and> b \<in> {b. openin S' b}}"
+  proof -
+    obtain \<O> \<O>' where ho:
+    "countable \<O>" "base_in S \<O>" "countable \<O>'" "base_in S' \<O>'"
+      using assms by(auto simp: second_countable_base_in)
+    show ?thesis
+      unfolding borel_of_def
+      apply(rule sigma_prod)
+      using topology_generated_by_topspace[of \<O>,simplified base_is_subbase[OF ho(2),simplified subbase_in_def,symmetric]] topology_generated_by_topspace[of \<O>',simplified base_is_subbase[OF ho(4),simplified subbase_in_def,symmetric]]
+              base_in_openin[OF ho(2)] base_in_openin[OF ho(4)]
+      by(auto intro!: exI[where x=\<O>] exI[where x=\<O>'] simp: ho subset_Pow_Union topspace_def)
+  qed
+  also have "... = borel_of (prod_topology S S')"
+    using borel_of_second_countable'[OF prod_topology_second_countable[OF assms],simplified subbase_in_def,OF prod_topology_generated_by_open]
+    by simp
+  finally show ?thesis .
+qed
+
+lemma product_borel_of_measurable:
+  assumes "i \<in> I"
+  shows "(\<lambda>x. x i) \<in> (borel_of (product_topology S I)) \<rightarrow>\<^sub>M borel_of (S i)"
+  by(auto intro!: continuous_map_measurable simp: assms)
+
+
+text \<open> Abstract topology version of @{thm sets_PiM_subset_borel} \<close>
+lemma sets_PiM_subset_borel_of:
+  "sets (\<Pi>\<^sub>M i\<in>I. borel_of (S i)) \<subseteq> sets (borel_of (product_topology S I))"
+proof -
+  have *: "(\<Pi>\<^sub>E i\<in>I. X i) \<in> sets (borel_of (product_topology S I))" if [measurable]:"\<And>i. X i \<in> sets (borel_of (S i))" "finite {i. X i \<noteq> topspace (S i)}" for X
+  proof -
+    note [measurable] = product_borel_of_measurable
+    define I' where "I' = {i. X i \<noteq> topspace (S i)} \<inter> I"
+    have "finite I'" unfolding I'_def using that by simp
+    have "(\<Pi>\<^sub>E i\<in>I. X i) = (\<Inter>i\<in>I'. (\<lambda>x. x i)-`(X i) \<inter> space (borel_of (product_topology S I))) \<inter> space (borel_of (product_topology S I))"
+    proof(standard;standard)
+      fix x
+      assume "x \<in> Pi\<^sub>E I X"
+      then show "x \<in> (\<Inter>i\<in>I'. (\<lambda>x. x i) -` X i \<inter> space (borel_of (product_topology S I))) \<inter> space (borel_of (product_topology S I))"
+        using sets.sets_into_space[OF that(1)] by(auto simp: PiE_def I'_def Pi_def space_borel_of)
+    next
+      fix x
+      assume 1:"x \<in> (\<Inter>i\<in>I'. (\<lambda>x. x i) -` X i \<inter> space (borel_of (product_topology S I))) \<inter> space (borel_of (product_topology S I))"
+      have "x i \<in> X i" if hi:"i \<in> I" for i
+      proof -
+        consider "i \<in> I' \<and> I' \<noteq> {}" | "i \<notin> I' \<and> I' = {}" | "i \<notin> I' \<and> I' \<noteq> {}" by auto
+        then show ?thesis
+          apply cases
+          using sets.sets_into_space[OF \<open>\<And>i. X i \<in> sets (borel_of (S i))\<close>] 1 that
+          by(auto simp: space_borel_of I'_def)
+      qed
+      then show "x \<in> Pi\<^sub>E I X"
+        using 1 by(auto simp: space_borel_of)
+    qed
+    also have "... \<in> sets (borel_of (product_topology S I))"
+     using that \<open>finite I'\<close> by(auto simp: I'_def)
+    finally show ?thesis .
+  qed
+  then have "{Pi\<^sub>E I X |X. (\<forall>i. X i \<in> sets (borel_of (S i))) \<and> finite {i. X i \<noteq> space (borel_of (S i))}} \<subseteq> sets (borel_of (product_topology S I))"
+    by(auto simp: space_borel_of)
+  show ?thesis unfolding sets_PiM_finite
+    by(rule sets.sigma_sets_subset',fact) (simp add: borel_of_open[OF openin_topspace, of "product_topology S I",simplified] space_borel_of)
+qed
+
+text \<open> Abstract topology version of @{thm sets_PiM_equal_borel}.\<close>
+lemma sets_PiM_equal_borel_of:
+  assumes "countable I" and "\<And>i. i \<in> I \<Longrightarrow> second_countable (S i)"
+  shows "sets (\<Pi>\<^sub>M i\<in>I. borel_of (S i)) = sets (borel_of (product_topology S I))"
+proof
+  obtain K where hk:
+  "countable K" "base_in (product_topology S I) K"
+  "\<And>k. k \<in> K \<Longrightarrow> \<exists>X. (k = (\<Pi>\<^sub>E i\<in>I. X i)) \<and> (\<forall>i. openin (S i) (X i)) \<and> finite {i. X i \<noteq> topspace (S i)} \<and> {i. X i \<noteq> topspace (S i)} \<subseteq> I"
+    using product_topology_countable_base_in[OF assms(1)] assms(2)
+    by force
+  have *:"k \<in> sets (\<Pi>\<^sub>M i\<in>I. borel_of (S i))" if "k \<in> K" for k
+  proof -
+    obtain X where H: "k = (\<Pi>\<^sub>E i\<in>I. X i)" "\<And>i. openin (S i) (X i)" "finite {i. X i \<noteq> topspace (S i)}" "{i. X i \<noteq> topspace (S i)} \<subseteq> I"
+      using hk(3)[OF \<open>k \<in> K\<close>] by blast
+    show ?thesis unfolding H(1) sets_PiM_finite
+      using borel_of_open[OF H(2)] H(3) by(auto simp: space_borel_of)
+  qed
+  have **: "U \<in> sets (\<Pi>\<^sub>M i\<in>I. borel_of (S i))" if "openin (product_topology S I) U" for U
+  proof -
+    obtain B where "B \<subseteq> K" "U = (\<Union>B)"
+      using \<open>openin (product_topology S I) U\<close> \<open>base_in (product_topology S I) K\<close> by (metis base_in_def)
+    have "countable B" using \<open>B \<subseteq> K\<close> \<open>countable K\<close> countable_subset by blast
+    moreover have "k \<in> sets (\<Pi>\<^sub>M i\<in>I. borel_of (S i))" if "k \<in> B" for k
+      using \<open>B \<subseteq> K\<close> * that by auto
+    ultimately show ?thesis unfolding \<open>U = (\<Union>B)\<close> by auto
+  qed
+  have "sigma_sets (topspace (product_topology S I)) {U. openin (product_topology S I) U} \<subseteq> sets (\<Pi>\<^sub>M i\<in>I. borel_of (S i))"
+    apply (rule sets.sigma_sets_subset') using ** by(auto intro!: sets_PiM_I_countable[OF assms(1)] simp: borel_of_open[OF openin_topspace])
+  thus " sets (borel_of (product_topology S I)) \<subseteq> sets (\<Pi>\<^sub>M i\<in>I. borel_of (S i))"
+    by (simp add: subset_Pow_Union topspace_def borel_of_def) 
+qed(rule sets_PiM_subset_borel_of)
+
+lemma homeomorphic_map_borel_isomorphic:
+  assumes "homeomorphic_map X Y f"
+  shows "measurable_isomorphic_map (borel_of X) (borel_of Y) f"
+proof -
+  obtain g where "homeomorphic_maps X Y f g"
+    using assms by(auto simp: homeomorphic_map_maps)
+  hence "continuous_map X Y f" "continuous_map Y X g"
+        "\<And>x. x \<in> topspace X \<Longrightarrow> g (f x) = x"
+        "\<And>y. y \<in> topspace Y \<Longrightarrow> f (g y) = y"
+    by(auto simp: homeomorphic_maps_def)
+  thus ?thesis
+    by(auto intro!: measurable_isomorphic_map_byWitness dest: continuous_map_measurable simp: space_borel_of)
+qed
+
+lemma homeomorphic_space_measurable_isomorphic:
+  assumes "S homeomorphic_space T"
+  shows "borel_of S measurable_isomorphic borel_of T"
+  using homeomorphic_map_borel_isomorphic[of S T] assms by(auto simp: measurable_isomorphic_def homeomorphic_space)
+
+lemma measurable_isomorphic_borel_map:
+  assumes "sets M = sets (borel_of S)" and f: "measurable_isomorphic_map M N f"
+  shows "\<exists>S'. homeomorphic_map S S' f \<and> sets N = sets (borel_of S')"
+proof -
+  obtain g where fg:"f \<in> M \<rightarrow>\<^sub>M N" "g \<in> N \<rightarrow>\<^sub>M M" "\<And>x. x\<in>space M \<Longrightarrow> g (f x) = x" "\<And>y. y\<in>space N \<Longrightarrow> f (g y) = y" "\<And>A. A\<in>sets M \<Longrightarrow> f ` A \<in> sets N" "\<And>A. A\<in>sets N \<Longrightarrow> g ` A \<in> sets M" "bij_betw g (space N) (space M)"
+    using measurable_isomorphic_mapD'[OF f] by metis
+  have g:"measurable_isomorphic_map N M g"
+    by(auto intro!: measurable_isomorphic_map_byWitness fg)
+  have g':"bij_betw g (space N) (topspace S)"
+    using fg(7) sets_eq_imp_space_eq[OF assms(1)] by(auto simp: space_borel_of)
+  show ?thesis
+  proof(intro exI[where x="pullback_topology (space N) g S"] conjI)
+    have [simp]: "{U. openin (pullback_topology (space N) g S) U} = (`) f ` {U. openin S U}"
+      unfolding openin_pullback_topology'[OF g']
+    proof safe
+      fix u
+      assume u:"openin S u"
+      then have 1:"u \<subseteq> space M"
+        by(simp add: sets_eq_imp_space_eq[OF assms(1)] space_borel_of openin_subset)
+      with fg(3) have "g ` f ` u = u"
+        by(fastforce simp: image_def)
+      with u show "openin S (g ` f ` u)" by simp
+      fix x
+      assume "x \<in> u"
+      with 1 fg(1) show "f x \<in> space N" by(auto simp: measurable_space)
+    next
+      fix u
+      assume "openin S (g ` u)" "u \<subseteq> space N"
+      with fg(4) show "u \<in> (`) f ` {U. openin S U}"
+        by(auto simp: image_def intro!: exI[where x="g ` u"]) (metis in_mono)
+    qed
+    have [simp]:"g -` topspace S \<inter> space N = space N"
+      using bij_betw_imp_surj_on g' by blast
+    show "sets N = sets (borel_of (pullback_topology (space N) g S))"
+      by(auto simp: sets_borel_of topspace_pullback_topology intro!: measurable_isomorphic_map_sigma_sets[OF assms(1)[simplified sets_borel_of space_borel_of[symmetric] sets_eq_imp_space_eq[OF assms(1),symmetric]] f])
+  next
+    show "homeomorphic_map S (pullback_topology (space N) g S) f"
+    proof(rule homeomorphic_maps_imp_map[where g=g])
+      obtain f' where f':"homeomorphic_maps (pullback_topology (space N) g S) S g f'"
+        using topology_from_bij(1)[OF g'] homeomorphic_map_maps by blast
+      have f'2:"f' y = f y" if y:"y \<in> topspace S" for y
+      proof -
+        have [simp]:"g -` topspace S \<inter> space N = space N"
+          using bij_betw_imp_surj_on g' by blast
+        obtain x where "x \<in> space N" "y = g x"
+          using g' y by(auto simp: bij_betw_def image_def)
+        thus ?thesis
+          using fg(4) f' by(auto simp: homeomorphic_maps_def topspace_pullback_topology)
+      qed
+      thus "homeomorphic_maps S (pullback_topology (space N) g S) f g"
+        by(auto intro!: homeomorphic_maps_eq[OF f'] simp: homeomorphic_maps_sym[of S])
+    qed
+  qed
+qed
+
+lemma measurable_isomorphic_borels:
+  assumes "sets M = sets (borel_of S)" "M measurable_isomorphic N"
+  shows "\<exists>S'. S homeomorphic_space S' \<and> sets N = sets (borel_of S')"
+  using measurable_isomorphic_borel_map[OF assms(1)] assms(2) homeomorphic_map_maps
+  by(fastforce simp: measurable_isomorphic_def homeomorphic_space_def )
 
 end

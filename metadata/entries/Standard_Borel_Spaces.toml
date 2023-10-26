@@ -19,6 +19,8 @@ email = "hirata_email"
 hirata = "hirata_email"
 
 [history]
+2023-10-26 = """adjust theories to the set-based metric space library in Isabelle2023<br>
+"""
 
 [extra]
 
