@@ -3268,6 +3268,94 @@ A Kleene relation algebra is based on a relation algebra.
 \<close>
 
 class kleene_relation_algebra = relation_algebra + stone_kleene_relation_algebra
+begin
+
+text \<open>See \<^url>\<open>https://arxiv.org/abs/2310.08946\<close> for the following results \<open>scc_1\<close>-\<open>scc_4\<close>.\<close>
+
+lemma scc_1:
+  assumes "1 \<sqinter> y \<le> z"
+      and "x\<^sup>T * y \<le> y"
+      and "y * z\<^sup>T \<le> y"
+      and "(x \<sqinter> y) * z \<le> z"
+    shows "x\<^sup>\<star> \<sqinter> y \<le> z"
+proof -
+  have "x * (-y \<squnion> z) \<sqinter> y = x * z \<sqinter> y"
+  proof (rule order.antisym)
+    have "x * (-y \<squnion> z) \<sqinter> y \<le> x * ((-y \<squnion> z) \<sqinter> x\<^sup>T * y)"
+      by (simp add: dedekind_1)
+    also have "... \<le> x * ((-y \<squnion> z) \<sqinter> y)"
+      by (simp add: assms(2) le_infI2 mult_right_isotone)
+    also have "... \<le> x * z"
+      by (simp add: inf.sup_monoid.add_commute mult_right_isotone)
+    finally show "x * (-y \<squnion> z) \<sqinter> y \<le> x * z \<sqinter> y"
+      by simp
+    show "x * z \<sqinter> y \<le> x * (-y \<squnion> z) \<sqinter> y"
+      by (simp add: inf_commute le_infI2 mult_right_isotone)
+  qed
+  also have "... \<le> (x \<sqinter> y * z\<^sup>T) * z"
+    by (simp add: dedekind_2)
+  also have "... \<le> (x \<sqinter> y) * z"
+    by (simp add: assms(3) le_infI2 mult_left_isotone)
+  also have "... \<le> z"
+    by (simp add: assms(4))
+  finally have 1: "x * (-y \<squnion> z) \<sqinter> y \<le> z"
+    .
+  have "(1 \<squnion> x * (-y \<squnion> z)) \<sqinter> y = (1 \<sqinter> y) \<squnion> (x * (-y \<squnion> z) \<sqinter> y)"
+    by (simp add: comp_inf.mult_right_dist_sup)
+  also have "... \<le> z"
+    using 1 by (simp add: assms(1))
+  finally have "1 \<squnion> x * (-y \<squnion> z) \<le> -y \<squnion> z"
+    using shunt1 by blast
+  hence "x\<^sup>\<star> \<le> -y \<squnion> z"
+    using star_left_induct by fastforce
+  thus ?thesis
+    by (simp add: shunt1)
+qed
+
+lemma scc_2:
+  assumes "x\<^sup>T * y \<le> y"
+      and "y * (x \<sqinter> y)\<^sup>\<star>\<^sup>T \<le> y"
+    shows "x\<^sup>\<star> \<sqinter> y \<le> (x \<sqinter> y)\<^sup>\<star>"
+proof -
+  have 1: "1 \<sqinter> y \<le> (x \<sqinter> y)\<^sup>\<star>"
+    by (simp add: inf.coboundedI1 star.circ_reflexive)
+  have "(x \<sqinter> y) * (x \<sqinter> y)\<^sup>\<star> \<le> (x \<sqinter> y)\<^sup>\<star>"
+    by (simp add: star.left_plus_below_circ)
+  thus ?thesis
+    using 1 assms scc_1 by blast
+qed
+
+lemma scc_3:
+  "x\<^sup>\<star> \<sqinter> x\<^sup>T\<^sup>\<star> \<le> (x \<sqinter> x\<^sup>T\<^sup>\<star>)\<^sup>\<star>"
+proof -
+  have 1: "x\<^sup>T * x\<^sup>T\<^sup>\<star> \<le> x\<^sup>T\<^sup>\<star>"
+    by (simp add: star.left_plus_below_circ)
+  have "x\<^sup>T\<^sup>\<star> * (x \<sqinter> x\<^sup>T\<^sup>\<star>)\<^sup>\<star>\<^sup>T \<le> x\<^sup>T\<^sup>\<star> * x\<^sup>\<star>\<^sup>T"
+    by (simp add: star_isotone conv_isotone mult_right_isotone)
+  also have "... = x\<^sup>T\<^sup>\<star> * x\<^sup>T\<^sup>\<star>"
+    by (simp add: conv_star_commute)
+  finally have "x\<^sup>T\<^sup>\<star> * (x \<sqinter> x\<^sup>T\<^sup>\<star>)\<^sup>\<star>\<^sup>T \<le> x\<^sup>T\<^sup>\<star>"
+    by (simp add: star.circ_transitive_equal)
+  thus ?thesis
+    using 1 scc_2 by auto
+qed
+
+lemma scc_4:
+  "x\<^sup>\<star> \<sqinter> x\<^sup>T\<^sup>\<star> = (x \<sqinter> x\<^sup>T\<^sup>\<star>)\<^sup>\<star>"
+proof (rule order.antisym)
+  show "x\<^sup>\<star> \<sqinter> x\<^sup>T\<^sup>\<star> \<le> (x \<sqinter> x\<^sup>T\<^sup>\<star>)\<^sup>\<star>"
+    by (simp add: scc_3)
+  have 1: "(x \<sqinter> x\<^sup>T\<^sup>\<star>)\<^sup>\<star> \<le> x\<^sup>\<star>"
+    by (simp add: star_isotone)
+  have "(x \<sqinter> x\<^sup>T\<^sup>\<star>)\<^sup>\<star> \<le> x\<^sup>T\<^sup>\<star>\<^sup>\<star>"
+    by (simp add: star_isotone)
+  also have "... = x\<^sup>T\<^sup>\<star>"
+    using star_involutive by auto
+  finally show "(x \<sqinter> x\<^sup>T\<^sup>\<star>)\<^sup>\<star> \<le> x\<^sup>\<star> \<sqinter> x\<^sup>T\<^sup>\<star>"
+    using 1 by simp
+qed
+
+end
 
 class stone_kleene_relation_algebra_tarski = stone_kleene_relation_algebra + stone_relation_algebra_tarski
 

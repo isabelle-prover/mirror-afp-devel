@@ -959,6 +959,92 @@ next
     using conv_dist_comp power_Suc2 by force
 qed
 
+text \<open>A relation is a permutation if and only if it has a left inverse and a right inverse.\<close>
+
+lemma invertible_total:
+  assumes "\<exists>z . 1 \<le> x * z"
+  shows "total x"
+proof -
+  from assms obtain z where "1 \<le> x * z"
+    by auto
+  hence "top \<le> x * z * top"
+    using mult_isotone by fastforce
+  also have "... \<le> x * top"
+    by (simp add: mult_right_isotone mult_assoc)
+  finally show ?thesis
+    using top_le by auto
+qed
+
+lemma invertible_surjective:
+  assumes "\<exists>y . 1 \<le> y * x"
+  shows "surjective x"
+proof -
+  from assms obtain y where "1 \<le> y * x"
+    by auto
+  hence "top \<le> top * y * x"
+    using mult_right_isotone mult_assoc by fastforce
+  also have "... \<le> top * x"
+    by (simp add: mult_left_isotone)
+  finally show ?thesis
+    by (simp add: top_le)
+qed
+
+lemma invertible_univalent:
+  assumes "\<exists>y . y * x = 1"
+      and "\<exists>z . x * z = 1"
+  shows "univalent x"
+proof -
+  from assms obtain y where 1: "y * x = 1"
+    by auto
+  from assms obtain z where 2: "x * z = 1"
+    by auto
+  have "y = y * x * z"
+    using 2 comp_associative comp_right_one by force
+  also have "... = z"
+    using 1 by auto
+  finally have 3: "y = z"
+    .
+  hence "total z"
+    using 1 invertible_total by blast
+  hence "x \<le> x * z * z\<^sup>T"
+    using mult_right_isotone total_var mult_assoc by fastforce
+  also have "... = z\<^sup>T"
+    using 2 by auto
+  finally have 4: "x \<le> z\<^sup>T"
+    .
+  have "total x"
+    using 2 invertible_total by blast
+  hence "z \<le> z * x * x\<^sup>T"
+    using comp_associative mult_right_isotone total_var by fastforce
+  also have "... = x\<^sup>T"
+    using 1 3 by auto
+  finally have "z \<le> x\<^sup>T"
+    .
+  hence "z = x\<^sup>T"
+    using 4 conv_order by force
+  thus ?thesis
+    using 1 3 by blast
+  (* this already shows permutation, but proving univalent seems to need all assumptions *)
+qed
+
+lemma invertible_injective:
+  assumes "\<exists>y . y * x = 1"
+      and "\<exists>z . x * z = 1"
+    shows "injective x"
+  by (metis assms invertible_univalent conv_dist_comp conv_involutive mult_left_one)
+
+lemma invertible_mapping:
+  assumes "\<exists>y . y * x = 1"
+      and "\<exists>z . x * z = 1"
+    shows "mapping x"
+  using assms invertible_total invertible_univalent dual_order.eq_iff by auto
+
+lemma invertible_bijective:
+  assumes "\<exists>y . y * x = 1"
+      and "\<exists>z . x * z = 1"
+    shows "bijective x"
+  using assms invertible_injective invertible_surjective by blast
+
 end
 
 subsection \<open>Single-Object Pseudocomplemented Distributive Allegories\<close>
