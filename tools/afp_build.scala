@@ -14,62 +14,12 @@ import java.time.{Instant, ZoneId}
 import java.time.format.DateTimeFormatter
 import java.util.{Map => JMap, Properties => JProperties}
 
-import javax.mail.internet.{InternetAddress, MimeMessage}
-import javax.mail.{Authenticator, Message, MessagingException, PasswordAuthentication, Transport, Session => JSession}
-
 
 object AFP_Build {
   /* mailing */
 
-  case class Mail(subject: String, recipients: List[String], text: String) {
-    def send(options: Options): Unit = {
-      val user = options.string("ci_mail_user")
-      val sender = options.string("ci_mail_sender")
-      val password = options.string("ci_mail_password")
-      val auth = user.nonEmpty && password.nonEmpty
 
-      val smtp_host = options.string("ci_mail_smtp_host")
-      val smtp_port = options.int("ci_mail_smtp_port")
-      val ssl = options.bool("ci_mail_ssl")
-
-      val props = new JProperties()
-      props.setProperty("mail.smtp.host", smtp_host)
-      props.setProperty("mail.smtp.port", smtp_port.toString)
-      props.setProperty("mail.smtp.auth", auth.toString)
-      props.setProperty("mail.smtp.ssl.enable", ssl.toString)
-      props.setProperty("mail.smtp.ssl.protocols", "TLSv1.2")
-
-
-      val authenticator = new Authenticator() {
-        override def getPasswordAuthentication = new PasswordAuthentication(user, password)
-      }
-
-      val session = JSession.getDefaultInstance(props, authenticator)
-
-      val message = new MimeMessage(session)
-      message.setFrom(new InternetAddress("ci@isabelle.systems", "Isabelle/Jenkins"))
-      message.setSender(new InternetAddress(sender))
-      message.setSubject(subject)
-      message.setText(text, "UTF-8")
-      message.setSentDate(new java.util.Date())
-
-      recipients.foreach { recipient =>
-        message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient))
-      }
-
-      try {
-        Transport.send(message)
-      } catch {
-        case ex: MessagingException => println(s"Sending mail failed: ${ex.getMessage}")
-      }
-    }
-  }
-
-  object Mail {
-    def check(options: Options): Boolean = options.string("ci_mail_smtp_host").nonEmpty
-    def apply(subject: String, recipients: List[String], text: String) =
-      new Mail(subject, recipients, text)
-
+  object Mailer {
     def failed_subject(name: Entry.Name): String = s"Build of AFP entry $name failed"
 
     def failed_text(session_name: String, entry: Entry.Name, isabelle_id: String,
@@ -104,8 +54,11 @@ ${result.err_lines.takeRight(50).mkString("\n")}
 
   /* metadata tooling */
 
-  case class Metadata_Tools private(structure: AFP_Structure, entries: Map[Entry.Name, Entry]) {
-
+  class Metadata_Tools private(
+    val structure: AFP_Structure,
+    val server: Mail.Server,
+    val entries: Map[Entry.Name, Entry]
+  ) {
     def maintainers(name: Entry.Name): List[Email] = {
       entries.get(name) match {
         case None => Nil
@@ -125,17 +78,23 @@ ${result.err_lines.takeRight(50).mkString("\n")}
     def by_entry(sessions: List[String]): Map[Option[Entry.Name], List[String]] =
       sessions.groupBy(session_entry)
 
-    def notify(options: Options, name: Entry.Name, subject: String, text: String): Boolean = {
+    def notify(name: Entry.Name, subject: String, text: String): Boolean = {
       val recipients = entries.get(name).map(_.notifies).getOrElse(Nil)
-      if (recipients.nonEmpty) Mail(subject, recipients.map(_.address), text).send(options)
+      if (recipients.nonEmpty) {
+        val from = Some(Mail.address("ci@isabelle.systems"))
+        val to = recipients.map(mail => Mail.address(mail.address))
+        val mail = Mail(subject, to, text, from, "Jenkins Admin")
+        server.send(mail)
+      }
       recipients.nonEmpty
     }
   }
 
   object Metadata_Tools {
-    def apply(structure: AFP_Structure, entries: List[Entry]): Metadata_Tools =
-      new Metadata_Tools(structure, entries.map(entry => entry.name -> entry).toMap)
-    def load(afp: AFP_Structure): Metadata_Tools = Metadata_Tools(afp, afp.load())
+    def load(afp: AFP_Structure, options: Options): Metadata_Tools = {
+      val entries = afp.load().map(entry => entry.name -> entry).toMap
+      new Metadata_Tools(afp, CI_Build.mail_server(options), entries)
+    }
   }
 
 
@@ -213,7 +172,7 @@ ${result.err_lines.takeRight(50).mkString("\n")}
             session_groups = List("AFP"),
             exclude_session_groups = List("slow")))
       })
-  
+
   val all =
     Job("all", "builds Isabelle + AFP (without slow)", Profile.from_host,
       {
@@ -225,6 +184,7 @@ ${result.err_lines.takeRight(50).mkString("\n")}
         val report_file = Path.explode("$ISABELLE_HOME/report.html").file
         val deps_file = Path.explode("$ISABELLE_HOME/dependencies.json").file
 
+
         def pre_hook(options: Options): Result = {
           println(s"AFP id ${ afp.hg_id }")
           if (status_file.exists())
@@ -234,10 +194,13 @@ ${result.err_lines.takeRight(50).mkString("\n")}
 
           File.write(report_file, "")
 
-          if (!Mail.check(options)) {
+          val server = CI_Build.mail_server(options)
+          if (!server.defined) {
             println(s"Mail configuration not found.")
             Result.error
-          } else {
+          }
+          else {
+            server.check()
             Result.ok
           }
         }
@@ -250,7 +213,7 @@ ${result.err_lines.takeRight(50).mkString("\n")}
           println("Writing dependencies file ...")
           File.write(deps_file, result.out)
 
-          val metadata = Metadata_Tools.load(afp)
+          val metadata = Metadata_Tools.load(afp, options)
 
           val status = metadata.by_entry(results.sessions.toList).view.mapValues { sessions =>
             Status.merge(sessions.map(Status.from_results(results, _)))
@@ -282,11 +245,11 @@ ${result.err_lines.takeRight(50).mkString("\n")}
             print_section("NOTIFICATIONS")
             for (session_name <- results.sessions) {
               val result = results(session_name)
-              if (!result.ok && !results.cancelled(session_name) && Mail.check(options)) {
+              if (!result.ok && !results.cancelled(session_name) && metadata.server.defined) {
                 metadata.session_entry(session_name).foreach { entry =>
-                  val subject = Mail.failed_subject(entry)
-                  val text = Mail.failed_text(session_name, entry, isabelle_id, afp.hg_id, result)
-                  val notified = metadata.notify(options, entry, subject, text)
+                  val subject = Mailer.failed_subject(entry)
+                  val text = Mailer.failed_text(session_name, entry, isabelle_id, afp.hg_id, result)
+                  val notified = metadata.notify(entry, subject, text)
                   if (!notified) println(s"Entry $entry: WARNING no maintainers specified")
                 }
               }
@@ -354,7 +317,7 @@ ${result.err_lines.takeRight(50).mkString("\n")}
         }
 
         def post_hook(results: Build.Results, options: Options, start_time: Time): Result = {
-          val metadata = Metadata_Tools.load(afp)
+          val metadata = Metadata_Tools.load(afp, options)
 
           val status = metadata.by_entry(results.sessions.toList).view.mapValues { sessions =>
             Status.merge(sessions.map(Status.from_results(results, _)))
