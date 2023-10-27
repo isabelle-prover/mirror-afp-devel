@@ -1768,6 +1768,27 @@ proof -
 qed
 
 
+subsection \<open>Some rules are right unique\<close>
+
+lemma right_unique_skip: "right_unique (skip N \<beta>)"
+proof (rule right_uniqueI)
+  fix S S' S''
+  assume step1: "skip N \<beta> S S'" and step2: "skip N \<beta> S S''"
+  show "S' = S''"
+    using step1
+  proof (cases N \<beta> S S' rule: skip.cases)
+    case hyps1: (skipI L D \<sigma> n \<Gamma> U)
+    show ?thesis
+      using step2[unfolded hyps1]
+    proof (cases N \<beta> "((L, n) # \<Gamma>, U, Some (D, \<sigma>))" S'' rule: skip.cases)
+      case skipI
+      with hyps1 show ?thesis
+        by simp
+    qed
+  qed
+qed
+
+
 subsection \<open>Miscellaneous Lemmas\<close>
 
 lemma conflict_set_after_factorization:
