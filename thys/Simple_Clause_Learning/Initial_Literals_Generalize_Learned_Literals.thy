@@ -142,7 +142,7 @@ next
   qed
 qed
 
-corollary
+corollary groundings_of_learned_subset_groundings_of_initial:
   assumes "initial_lits_generalize_learned_trail_conflict N S"
   defines "U \<equiv> state_learned S"
   shows "{L | L C. add_mset L C \<in> grounding_of_clss (fset U)} \<subseteq>
