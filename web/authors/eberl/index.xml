@@ -1,560 +1,444 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>eberl on Archive of Formal Proofs</title>
+    <title>eberl on Archive of Formal Proofs
+    </title>
     <link>/authors/eberl/</link>
-    <description>Recent content in eberl on Archive of Formal Proofs</description>
+    <description>
+        Recent content in eberl 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Mon, 19 Jun 2023 00:00:00 +0000</lastBuildDate><atom:link href="/authors/eberl/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Executable Randomized Algorithms</title>
-      <link>/entries/Executable_Randomized_Algorithms.html</link>
-      <pubDate>Mon, 19 Jun 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Executable_Randomized_Algorithms.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>The Incompatibility of Strategy-Proofness and Representation in Party-Approval Multi-Winner Elections</title>
-      <link>/entries/PAPP_Impossibility.html</link>
-      <pubDate>Thu, 10 Nov 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/PAPP_Impossibility.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Hales–Jewett Theorem</title>
-      <link>/entries/Hales_Jewett.html</link>
-      <pubDate>Fri, 02 Sep 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Hales_Jewett.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Pólya’s Proof of the Weighted Arithmetic–Geometric Mean Inequality</title>
-      <link>/entries/Weighted_Arithmetic_Geometric_Mean.html</link>
-      <pubDate>Mon, 11 Jul 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Weighted_Arithmetic_Geometric_Mean.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Sophomore&#39;s Dream</title>
-      <link>/entries/Sophomores_Dream.html</link>
-      <pubDate>Sun, 10 Apr 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Sophomores_Dream.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Proof from THE BOOK: The Partial Fraction Expansion of the Cotangent</title>
-      <link>/entries/Cotangent_PFD_Formula.html</link>
-      <pubDate>Tue, 15 Mar 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Cotangent_PFD_Formula.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Factorization of Polynomials with Algebraic Coefficients</title>
-      <link>/entries/Factor_Algebraic_Polynomial.html</link>
-      <pubDate>Mon, 08 Nov 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Factor_Algebraic_Polynomial.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Finitely Generated Abelian Groups</title>
-      <link>/entries/Finitely_Generated_Abelian_Groups.html</link>
-      <pubDate>Wed, 07 Jul 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Finitely_Generated_Abelian_Groups.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Van der Waerden&#39;s Theorem</title>
-      <link>/entries/Van_der_Waerden.html</link>
-      <pubDate>Tue, 22 Jun 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Van_der_Waerden.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Hermite–Lindemann–Weierstraß Transcendence Theorem</title>
-      <link>/entries/Hermite_Lindemann.html</link>
-      <pubDate>Wed, 03 Mar 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Hermite_Lindemann.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Formal Puiseux Series</title>
-      <link>/entries/Formal_Puiseux_Series.html</link>
-      <pubDate>Wed, 17 Feb 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Formal_Puiseux_Series.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Laws of Large Numbers</title>
-      <link>/entries/Laws_of_Large_Numbers.html</link>
-      <pubDate>Wed, 10 Feb 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Laws_of_Large_Numbers.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Gaussian Integers</title>
-      <link>/entries/Gaussian_Integers.html</link>
-      <pubDate>Fri, 24 Apr 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Gaussian_Integers.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Power Sum Polynomials</title>
-      <link>/entries/Power_Sum_Polynomials.html</link>
-      <pubDate>Fri, 24 Apr 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Power_Sum_Polynomials.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Lambert W Function on the Reals</title>
-      <link>/entries/Lambert_W.html</link>
-      <pubDate>Fri, 24 Apr 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Lambert_W.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Furstenberg&#39;s topology and his proof of the infinitude of primes</title>
-      <link>/entries/Furstenberg_Topology.html</link>
-      <pubDate>Sun, 22 Mar 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Furstenberg_Topology.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Mersenne primes and the Lucas–Lehmer test</title>
-      <link>/entries/Mersenne_Primes.html</link>
-      <pubDate>Fri, 17 Jan 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Mersenne_Primes.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Skip Lists</title>
-      <link>/entries/Skip_Lists.html</link>
-      <pubDate>Thu, 09 Jan 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Skip_Lists.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Irrationality of ζ(3)</title>
-      <link>/entries/Zeta_3_Irrational.html</link>
-      <pubDate>Fri, 27 Dec 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Zeta_3_Irrational.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Gauss Sums and the Pólya–Vinogradov Inequality</title>
-      <link>/entries/Gauss_Sums.html</link>
-      <pubDate>Tue, 10 Dec 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Gauss_Sums.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Selected Problems from the International Mathematical Olympiad 2019</title>
-      <link>/entries/IMO2019.html</link>
-      <pubDate>Mon, 05 Aug 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/IMO2019.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Elementary Facts About the Distribution of Primes</title>
-      <link>/entries/Prime_Distribution_Elementary.html</link>
-      <pubDate>Thu, 21 Feb 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Prime_Distribution_Elementary.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Probabilistic Primality Testing</title>
-      <link>/entries/Probabilistic_Prime_Tests.html</link>
-      <pubDate>Mon, 11 Feb 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Probabilistic_Prime_Tests.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Inversions of a List</title>
-      <link>/entries/List_Inversions.html</link>
-      <pubDate>Fri, 01 Feb 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/List_Inversions.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Randomised Binary Search Trees</title>
-      <link>/entries/Randomised_BSTs.html</link>
-      <pubDate>Fri, 19 Oct 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Randomised_BSTs.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Transcendence of π</title>
-      <link>/entries/Pi_Transcendental.html</link>
-      <pubDate>Fri, 28 Sep 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Pi_Transcendental.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Symmetric Polynomials</title>
-      <link>/entries/Symmetric_Polynomials.html</link>
-      <pubDate>Tue, 25 Sep 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Symmetric_Polynomials.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Prime Number Theorem</title>
-      <link>/entries/Prime_Number_Theorem.html</link>
-      <pubDate>Wed, 19 Sep 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Prime_Number_Theorem.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Pell&#39;s Equation</title>
-      <link>/entries/Pell.html</link>
-      <pubDate>Sat, 23 Jun 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Pell.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Incompatibility of Fishburn-Strategyproofness and Pareto-Efficiency</title>
-      <link>/entries/Fishburn_Impossibility.html</link>
-      <pubDate>Thu, 22 Mar 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Fishburn_Impossibility.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Error Function</title>
-      <link>/entries/Error_Function.html</link>
-      <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Error_Function.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Treaps</title>
-      <link>/entries/Treaps.html</link>
-      <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Treaps.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Dirichlet L-Functions and Dirichlet&#39;s Theorem</title>
-      <link>/entries/Dirichlet_L.html</link>
-      <pubDate>Thu, 21 Dec 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Dirichlet_L.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Mason–Stothers Theorem</title>
-      <link>/entries/Mason_Stothers.html</link>
-      <pubDate>Thu, 21 Dec 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Mason_Stothers.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Median-of-Medians Selection Algorithm</title>
-      <link>/entries/Median_Of_Medians_Selection.html</link>
-      <pubDate>Thu, 21 Dec 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Median_Of_Medians_Selection.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Dirichlet Series</title>
-      <link>/entries/Dirichlet_Series.html</link>
-      <pubDate>Thu, 12 Oct 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Dirichlet_Series.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Linear Recurrences</title>
-      <link>/entries/Linear_Recurrences.html</link>
-      <pubDate>Thu, 12 Oct 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Linear_Recurrences.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Hurwitz and Riemann ζ Functions</title>
-      <link>/entries/Zeta_Function.html</link>
-      <pubDate>Thu, 12 Oct 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Zeta_Function.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Minkowski&#39;s Theorem</title>
-      <link>/entries/Minkowskis_Theorem.html</link>
-      <pubDate>Thu, 13 Jul 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Minkowskis_Theorem.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Buffon&#39;s Needle Problem</title>
-      <link>/entries/Buffons_Needle.html</link>
-      <pubDate>Tue, 06 Jun 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Buffons_Needle.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Monad normalisation</title>
-      <link>/entries/Monad_Normalisation.html</link>
-      <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Monad_Normalisation.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Expected Shape of Random Binary Search Trees</title>
-      <link>/entries/Random_BSTs.html</link>
-      <pubDate>Tue, 04 Apr 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Random_BSTs.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Lower bound on comparison-based sorting algorithms</title>
-      <link>/entries/Comparison_Sort_Lower_Bound.html</link>
-      <pubDate>Wed, 15 Mar 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Comparison_Sort_Lower_Bound.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The number of comparisons in QuickSort</title>
-      <link>/entries/Quick_Sort_Cost.html</link>
-      <pubDate>Wed, 15 Mar 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Quick_Sort_Cost.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Euler–MacLaurin Formula</title>
-      <link>/entries/Euler_MacLaurin.html</link>
-      <pubDate>Fri, 10 Mar 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Euler_MacLaurin.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Bernoulli Numbers</title>
-      <link>/entries/Bernoulli.html</link>
-      <pubDate>Tue, 24 Jan 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Bernoulli.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Bertrand&#39;s postulate</title>
-      <link>/entries/Bertrands_Postulate.html</link>
-      <pubDate>Tue, 17 Jan 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Bertrands_Postulate.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Transcendence of e</title>
-      <link>/entries/E_Transcendental.html</link>
-      <pubDate>Thu, 12 Jan 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/E_Transcendental.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Fisher–Yates shuffle</title>
-      <link>/entries/Fisher_Yates.html</link>
-      <pubDate>Fri, 30 Sep 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Fisher_Yates.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Stirling&#39;s formula</title>
-      <link>/entries/Stirling_Formula.html</link>
-      <pubDate>Thu, 01 Sep 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Stirling_Formula.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Catalan Numbers</title>
-      <link>/entries/Catalan_Numbers.html</link>
-      <pubDate>Tue, 21 Jun 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Catalan_Numbers.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Randomised Social Choice Theory</title>
-      <link>/entries/Randomised_Social_Choice.html</link>
-      <pubDate>Thu, 05 May 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Randomised_Social_Choice.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Incompatibility of SD-Efficiency and SD-Strategy-Proofness</title>
-      <link>/entries/SDS_Impossibility.html</link>
-      <pubDate>Wed, 04 May 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/SDS_Impossibility.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Basic Geometric Properties of Triangles</title>
-      <link>/entries/Triangle.html</link>
-      <pubDate>Mon, 28 Dec 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Triangle.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Descartes&#39; Rule of Signs</title>
-      <link>/entries/Descartes_Sign_Rule.html</link>
-      <pubDate>Mon, 28 Dec 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Descartes_Sign_Rule.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Liouville numbers</title>
-      <link>/entries/Liouville_Numbers.html</link>
-      <pubDate>Mon, 28 Dec 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Liouville_Numbers.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Divergence of the Prime Harmonic Series</title>
-      <link>/entries/Prime_Harmonic_Series.html</link>
-      <pubDate>Mon, 28 Dec 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Prime_Harmonic_Series.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Landau Symbols</title>
-      <link>/entries/Landau_Symbols.html</link>
-      <pubDate>Tue, 14 Jul 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Landau_Symbols.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Akra-Bazzi theorem and the Master theorem</title>
-      <link>/entries/Akra_Bazzi.html</link>
-      <pubDate>Tue, 14 Jul 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Akra_Bazzi.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Verified Compiler for Probability Density Functions</title>
-      <link>/entries/Density_Compiler.html</link>
-      <pubDate>Thu, 09 Oct 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Density_Compiler.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Sturm&#39;s Theorem</title>
-      <link>/entries/Sturm_Sequences.html</link>
-      <pubDate>Sat, 11 Jan 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Sturm_Sequences.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Mon, 19 Jun 2023 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/eberl/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Executable Randomized Algorithms</title>
+          <link>/entries/Executable_Randomized_Algorithms.html</link>
+          <pubDate>Mon, 19 Jun 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Executable_Randomized_Algorithms.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Incompatibility of Strategy-Proofness and Representation in Party-Approval Multi-Winner Elections</title>
+          <link>/entries/PAPP_Impossibility.html</link>
+          <pubDate>Thu, 10 Nov 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/PAPP_Impossibility.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Hales–Jewett Theorem</title>
+          <link>/entries/Hales_Jewett.html</link>
+          <pubDate>Fri, 02 Sep 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Hales_Jewett.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Pólya’s Proof of the Weighted Arithmetic–Geometric Mean Inequality</title>
+          <link>/entries/Weighted_Arithmetic_Geometric_Mean.html</link>
+          <pubDate>Mon, 11 Jul 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Weighted_Arithmetic_Geometric_Mean.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Sophomore&#39;s Dream</title>
+          <link>/entries/Sophomores_Dream.html</link>
+          <pubDate>Sun, 10 Apr 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Sophomores_Dream.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Proof from THE BOOK: The Partial Fraction Expansion of the Cotangent</title>
+          <link>/entries/Cotangent_PFD_Formula.html</link>
+          <pubDate>Tue, 15 Mar 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Cotangent_PFD_Formula.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Factorization of Polynomials with Algebraic Coefficients</title>
+          <link>/entries/Factor_Algebraic_Polynomial.html</link>
+          <pubDate>Mon, 08 Nov 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Factor_Algebraic_Polynomial.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Finitely Generated Abelian Groups</title>
+          <link>/entries/Finitely_Generated_Abelian_Groups.html</link>
+          <pubDate>Wed, 07 Jul 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Finitely_Generated_Abelian_Groups.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Van der Waerden&#39;s Theorem</title>
+          <link>/entries/Van_der_Waerden.html</link>
+          <pubDate>Tue, 22 Jun 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Van_der_Waerden.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Hermite–Lindemann–Weierstraß Transcendence Theorem</title>
+          <link>/entries/Hermite_Lindemann.html</link>
+          <pubDate>Wed, 03 Mar 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Hermite_Lindemann.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formal Puiseux Series</title>
+          <link>/entries/Formal_Puiseux_Series.html</link>
+          <pubDate>Wed, 17 Feb 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Formal_Puiseux_Series.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Laws of Large Numbers</title>
+          <link>/entries/Laws_of_Large_Numbers.html</link>
+          <pubDate>Wed, 10 Feb 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Laws_of_Large_Numbers.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Gaussian Integers</title>
+          <link>/entries/Gaussian_Integers.html</link>
+          <pubDate>Fri, 24 Apr 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Gaussian_Integers.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Power Sum Polynomials</title>
+          <link>/entries/Power_Sum_Polynomials.html</link>
+          <pubDate>Fri, 24 Apr 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Power_Sum_Polynomials.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Lambert W Function on the Reals</title>
+          <link>/entries/Lambert_W.html</link>
+          <pubDate>Fri, 24 Apr 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Lambert_W.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Furstenberg&#39;s topology and his proof of the infinitude of primes</title>
+          <link>/entries/Furstenberg_Topology.html</link>
+          <pubDate>Sun, 22 Mar 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Furstenberg_Topology.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Mersenne primes and the Lucas–Lehmer test</title>
+          <link>/entries/Mersenne_Primes.html</link>
+          <pubDate>Fri, 17 Jan 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Mersenne_Primes.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Skip Lists</title>
+          <link>/entries/Skip_Lists.html</link>
+          <pubDate>Thu, 09 Jan 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Skip_Lists.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Irrationality of ζ(3)</title>
+          <link>/entries/Zeta_3_Irrational.html</link>
+          <pubDate>Fri, 27 Dec 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Zeta_3_Irrational.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Gauss Sums and the Pólya–Vinogradov Inequality</title>
+          <link>/entries/Gauss_Sums.html</link>
+          <pubDate>Tue, 10 Dec 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Gauss_Sums.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Selected Problems from the International Mathematical Olympiad 2019</title>
+          <link>/entries/IMO2019.html</link>
+          <pubDate>Mon, 05 Aug 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/IMO2019.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Elementary Facts About the Distribution of Primes</title>
+          <link>/entries/Prime_Distribution_Elementary.html</link>
+          <pubDate>Thu, 21 Feb 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Prime_Distribution_Elementary.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Probabilistic Primality Testing</title>
+          <link>/entries/Probabilistic_Prime_Tests.html</link>
+          <pubDate>Mon, 11 Feb 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Probabilistic_Prime_Tests.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Inversions of a List</title>
+          <link>/entries/List_Inversions.html</link>
+          <pubDate>Fri, 01 Feb 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/List_Inversions.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Randomised Binary Search Trees</title>
+          <link>/entries/Randomised_BSTs.html</link>
+          <pubDate>Fri, 19 Oct 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Randomised_BSTs.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Transcendence of π</title>
+          <link>/entries/Pi_Transcendental.html</link>
+          <pubDate>Fri, 28 Sep 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Pi_Transcendental.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Symmetric Polynomials</title>
+          <link>/entries/Symmetric_Polynomials.html</link>
+          <pubDate>Tue, 25 Sep 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Symmetric_Polynomials.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Prime Number Theorem</title>
+          <link>/entries/Prime_Number_Theorem.html</link>
+          <pubDate>Wed, 19 Sep 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Prime_Number_Theorem.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Pell&#39;s Equation</title>
+          <link>/entries/Pell.html</link>
+          <pubDate>Sat, 23 Jun 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Pell.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Incompatibility of Fishburn-Strategyproofness and Pareto-Efficiency</title>
+          <link>/entries/Fishburn_Impossibility.html</link>
+          <pubDate>Thu, 22 Mar 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Fishburn_Impossibility.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Error Function</title>
+          <link>/entries/Error_Function.html</link>
+          <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Error_Function.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Treaps</title>
+          <link>/entries/Treaps.html</link>
+          <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Treaps.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Dirichlet L-Functions and Dirichlet&#39;s Theorem</title>
+          <link>/entries/Dirichlet_L.html</link>
+          <pubDate>Thu, 21 Dec 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Dirichlet_L.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Mason–Stothers Theorem</title>
+          <link>/entries/Mason_Stothers.html</link>
+          <pubDate>Thu, 21 Dec 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Mason_Stothers.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Median-of-Medians Selection Algorithm</title>
+          <link>/entries/Median_Of_Medians_Selection.html</link>
+          <pubDate>Thu, 21 Dec 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Median_Of_Medians_Selection.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Dirichlet Series</title>
+          <link>/entries/Dirichlet_Series.html</link>
+          <pubDate>Thu, 12 Oct 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Dirichlet_Series.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Linear Recurrences</title>
+          <link>/entries/Linear_Recurrences.html</link>
+          <pubDate>Thu, 12 Oct 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Linear_Recurrences.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Hurwitz and Riemann ζ Functions</title>
+          <link>/entries/Zeta_Function.html</link>
+          <pubDate>Thu, 12 Oct 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Zeta_Function.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Minkowski&#39;s Theorem</title>
+          <link>/entries/Minkowskis_Theorem.html</link>
+          <pubDate>Thu, 13 Jul 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Minkowskis_Theorem.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Buffon&#39;s Needle Problem</title>
+          <link>/entries/Buffons_Needle.html</link>
+          <pubDate>Tue, 06 Jun 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Buffons_Needle.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Monad normalisation</title>
+          <link>/entries/Monad_Normalisation.html</link>
+          <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Monad_Normalisation.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Expected Shape of Random Binary Search Trees</title>
+          <link>/entries/Random_BSTs.html</link>
+          <pubDate>Tue, 04 Apr 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Random_BSTs.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Lower bound on comparison-based sorting algorithms</title>
+          <link>/entries/Comparison_Sort_Lower_Bound.html</link>
+          <pubDate>Wed, 15 Mar 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Comparison_Sort_Lower_Bound.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The number of comparisons in QuickSort</title>
+          <link>/entries/Quick_Sort_Cost.html</link>
+          <pubDate>Wed, 15 Mar 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Quick_Sort_Cost.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Euler–MacLaurin Formula</title>
+          <link>/entries/Euler_MacLaurin.html</link>
+          <pubDate>Fri, 10 Mar 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Euler_MacLaurin.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Bernoulli Numbers</title>
+          <link>/entries/Bernoulli.html</link>
+          <pubDate>Tue, 24 Jan 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Bernoulli.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Bertrand&#39;s postulate</title>
+          <link>/entries/Bertrands_Postulate.html</link>
+          <pubDate>Tue, 17 Jan 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Bertrands_Postulate.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Transcendence of e</title>
+          <link>/entries/E_Transcendental.html</link>
+          <pubDate>Thu, 12 Jan 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/E_Transcendental.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Fisher–Yates shuffle</title>
+          <link>/entries/Fisher_Yates.html</link>
+          <pubDate>Fri, 30 Sep 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Fisher_Yates.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Stirling&#39;s formula</title>
+          <link>/entries/Stirling_Formula.html</link>
+          <pubDate>Thu, 01 Sep 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Stirling_Formula.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Catalan Numbers</title>
+          <link>/entries/Catalan_Numbers.html</link>
+          <pubDate>Tue, 21 Jun 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Catalan_Numbers.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Randomised Social Choice Theory</title>
+          <link>/entries/Randomised_Social_Choice.html</link>
+          <pubDate>Thu, 05 May 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Randomised_Social_Choice.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Incompatibility of SD-Efficiency and SD-Strategy-Proofness</title>
+          <link>/entries/SDS_Impossibility.html</link>
+          <pubDate>Wed, 04 May 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/SDS_Impossibility.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Basic Geometric Properties of Triangles</title>
+          <link>/entries/Triangle.html</link>
+          <pubDate>Mon, 28 Dec 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Triangle.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Descartes&#39; Rule of Signs</title>
+          <link>/entries/Descartes_Sign_Rule.html</link>
+          <pubDate>Mon, 28 Dec 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Descartes_Sign_Rule.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Liouville numbers</title>
+          <link>/entries/Liouville_Numbers.html</link>
+          <pubDate>Mon, 28 Dec 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Liouville_Numbers.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Divergence of the Prime Harmonic Series</title>
+          <link>/entries/Prime_Harmonic_Series.html</link>
+          <pubDate>Mon, 28 Dec 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Prime_Harmonic_Series.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Landau Symbols</title>
+          <link>/entries/Landau_Symbols.html</link>
+          <pubDate>Tue, 14 Jul 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Landau_Symbols.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Akra-Bazzi theorem and the Master theorem</title>
+          <link>/entries/Akra_Bazzi.html</link>
+          <pubDate>Tue, 14 Jul 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Akra_Bazzi.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Verified Compiler for Probability Density Functions</title>
+          <link>/entries/Density_Compiler.html</link>
+          <pubDate>Thu, 09 Oct 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Density_Compiler.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Sturm&#39;s Theorem</title>
+          <link>/entries/Sturm_Sequences.html</link>
+          <pubDate>Sat, 11 Jan 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Sturm_Sequences.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

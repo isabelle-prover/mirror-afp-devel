@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>EdmondsKarp_Maxflow on Archive of Formal Proofs</title>
+    <title>EdmondsKarp_Maxflow on Archive of Formal Proofs
+    </title>
     <link>/dependencies/edmondskarp_maxflow/</link>
-    <description>Recent content in EdmondsKarp_Maxflow on Archive of Formal Proofs</description>
+    <description>
+        Recent content in EdmondsKarp_Maxflow 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Mon, 09 May 2016 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/edmondskarp_maxflow/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>A Formal Proof of the Max-Flow Min-Cut Theorem for Countable Networks</title>
-      <link>/entries/MFMC_Countable.html</link>
-      <pubDate>Mon, 09 May 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/MFMC_Countable.html</guid>
-      <description></description>
-    </item>
     
+      <lastBuildDate>Mon, 09 May 2016 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/edmondskarp_maxflow/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>A Formal Proof of the Max-Flow Min-Cut Theorem for Countable Networks</title>
+          <link>/entries/MFMC_Countable.html</link>
+          <pubDate>Mon, 09 May 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/MFMC_Countable.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

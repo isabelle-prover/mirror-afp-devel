@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>rawson on Archive of Formal Proofs</title>
+    <title>rawson on Archive of Formal Proofs
+    </title>
     <link>/authors/rawson/</link>
-    <description>Recent content in rawson on Archive of Formal Proofs</description>
+    <description>
+        Recent content in rawson 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Sun, 09 Jul 2017 00:00:00 +0000</lastBuildDate><atom:link href="/authors/rawson/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Verified Metatheory and Type Inference for a Name-Carrying Simply-Typed Lambda Calculus</title>
-      <link>/entries/Name_Carrying_Type_Inference.html</link>
-      <pubDate>Sun, 09 Jul 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Name_Carrying_Type_Inference.html</guid>
-      <description></description>
-    </item>
     
+      <lastBuildDate>Sun, 09 Jul 2017 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/rawson/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Verified Metatheory and Type Inference for a Name-Carrying Simply-Typed Lambda Calculus</title>
+          <link>/entries/Name_Carrying_Type_Inference.html</link>
+          <pubDate>Sun, 09 Jul 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Name_Carrying_Type_Inference.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

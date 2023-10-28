@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>somogyi on Archive of Formal Proofs</title>
+    <title>somogyi on Archive of Formal Proofs
+    </title>
     <link>/authors/somogyi/</link>
-    <description>Recent content in somogyi on Archive of Formal Proofs</description>
+    <description>
+        Recent content in somogyi 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Sun, 27 May 2018 00:00:00 +0000</lastBuildDate><atom:link href="/authors/somogyi/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Optimal Binary Search Trees</title>
-      <link>/entries/Optimal_BST.html</link>
-      <pubDate>Sun, 27 May 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Optimal_BST.html</guid>
-      <description></description>
-    </item>
     
+      <lastBuildDate>Sun, 27 May 2018 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/somogyi/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Optimal Binary Search Trees</title>
+          <link>/entries/Optimal_BST.html</link>
+          <pubDate>Sun, 27 May 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Optimal_BST.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

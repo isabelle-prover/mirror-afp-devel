@@ -408,7 +408,7 @@ struct
     if success then SOME t' else NONE
   end;
 
-  fun assn_simproc_fun ctxt credex = let
+  fun assn_simproc_fun ctxt credex = \<^try>\<open>let
     val ([redex],ctxt') = Variable.import_terms true [Thm.term_of credex] ctxt;
     (*val _ = tracing (tr_term redex);*)
     val export = singleton (Variable.export ctxt' ctxt)
@@ -491,22 +491,15 @@ struct
 
   in 
     result
-  end handle exc =>
-    if Exn.is_interrupt exc then Exn.reraise exc
-    else
-      (tracing ("assn_simproc failed with exception\n:" ^ Runtime.exn_message exc);
-        NONE) (* Fail silently *);
+  end catch exc =>
+    (tracing ("assn_simproc failed with exception\n:" ^ Runtime.exn_message exc);
+      NONE) (* Fail silently *)
+  \<close>
   
   val assn_simproc =
-    Simplifier.make_simproc @{context} "assn_simproc"
-     {lhss =
-      [@{term "h \<Turnstile> P"},
-       @{term "P \<Longrightarrow>\<^sub>A Q"},
-       @{term "P \<Longrightarrow>\<^sub>t Q"},
-       @{term "Hoare_Triple.hoare_triple P c Q"},
-       @{term "(P::assn) = Q"}],
-      proc = K assn_simproc_fun};
-
+    \<^simproc_setup>\<open>passive assn
+      ("h \<Turnstile> P" | "P \<Longrightarrow>\<^sub>A Q" | "P \<Longrightarrow>\<^sub>t Q" | "Hoare_Triple.hoare_triple P c R" | "P = Q") =
+      \<open>K assn_simproc_fun\<close>\<close>;
 
 
   (***********************************)

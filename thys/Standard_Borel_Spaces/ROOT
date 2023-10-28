@@ -1,0 +1,13 @@
+chapter AFP
+
+session "Standard_Borel_Spaces" = "HOL-Probability" +
+  options [timeout = 600]
+  theories
+    "Lemmas_StandardBorel"
+    "Set_Based_Metric_Space"
+    "Set_Based_Metric_Product"
+    "Abstract_Metrizable_Topology"
+    "StandardBorel"
+  document_files
+    "root.tex"
+    "root.bib"

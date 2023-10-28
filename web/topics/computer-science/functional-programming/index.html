@@ -1,271 +1,353 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Computer science/Functional programming - Archive of Formal Proofs</title><meta name="description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."><link rel="alternate" type="application/rss+xml" href="../../../topics/computer-science/functional-programming/index.xml" title="Archive of Formal Proofs" /><meta property="og:title" content="Computer science/Functional programming" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Computer science/Functional programming - Archive of Formal Proofs</title>
+    <meta name="description" content="A collection of proof libraries, examples, and larger
+     scientific developments, mechanically checked in the theorem prover Isabelle.">
+  <link rel="alternate" type="application/rss+xml" href="../../../topics/computer-science/functional-programming/index.xml" title="Archive of Formal Proofs" />
+
+  <meta property="og:title" content="Computer science/Functional programming" />
 <meta property="og:description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="/topics/computer-science/functional-programming/" /><meta property="og:image" content="/images/afp.png"/><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="Computer science/Functional programming"/>
 <meta name="twitter:description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."/>
 
-  
   <link rel="stylesheet" type="text/css" href="../../../css/front.min.css">
 
-  <link rel="icon" href="../../../images/favicon.ico" type="image/icon"><script src="../../../js/obfuscate.js"></script>
+  <link rel="icon" href="../../../images/favicon.ico" type="image/icon">
+
+  <script src="../../../js/obfuscate.js"></script>
   <script src="../../../js/flexsearch.bundle.js"></script>
   <script src="../../../js/scroll-spy.js"></script>
   <script src="../../../js/theory.js"></script>
-  <script src="../../../js/util.js"></script><script src="../../../js/header-search.js"></script><script src="../../../js/search-autocomplete.js"></script>
+  <script src="../../../js/util.js"></script>
+    <script src="../../../js/header-search.js"></script>
+  <script src="../../../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../../../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../../../" class='logo-link'>
-    <img src="../../../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../../../" class="logo-link">
+    <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../../../search"><img src="../../../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../../../" class='logo-link'>
-        <img src="../../../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../../../"><li >Home</li></a>
-        <a href="../../../topics/"><li >Topics</li></a>
-        <a href="../../../download/"><li >Download</li></a>
-        <a href="../../../help/"><li >Help</li></a>
-        <a href="../../../submission/"><li >Submission</li></a>
-        <a href="../../../statistics/"><li >Statistics</li></a>
-        <a href="../../../about/"><li >About</li></a>
+          <a href="../../../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../../../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../../../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../../../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../../../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../../../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../../../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content '><header>
-  <form autocomplete="off" action="../../../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../../../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>C</span>omputer <span class='first'>S</span>cience/<span class='first'>F</span>unctional <span class='first'>P</span>rogramming</h1>
+    </aside>
+    <div class='content'>
+      <header>
+    <form autocomplete="off" action="../../../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../../../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>C</span>omputer science/<span class='first'>F</span>unctional programming
+    
+  </h1>
   <div>
-    
-    
   </div>
-</header><div><h2>Subject Classification</h2><p>ACM: <a href="https://dl.acm.org/topic/ccs2012/10011007.10011006.10011008.10011009.10011012">Software and its engineering~Functional languages</a></p><p>AMS: <a href="https://mathscinet.ams.org/mathscinet/msc/msc2020.html?t=68N18">Computer science / Theory of software / Functional programming and lambda calculus</a></p><h2 class="head">2020</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/BirdKMP.html">Putting the `K&#39; into Bird&#39;s derivation of Knuth-Morris-Pratt string matching</a></h5> <br>by <a href="../../../authors/gammie">Peter Gammie</a></div>
-  <span class="date">
-    Aug 25
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Hello_World.html">Hello World</a></h5> <br>by <a href="../../../authors/diekmann">Cornelius Diekmann</a> and <a href="../../../authors/hupel">Lars Hupel</a></div>
-  <span class="date">
-    Mar 07
-  </span>
-</article>
+</header>
+      <div>
+        
+    <h2>Subject Classification</h2>
+      <p>ACM: <a href="https://dl.acm.org/topic/ccs2012/10011007.10011006.10011008.10011009.10011012">Software and its engineering~Functional languages</a></p>
+      <p>AMS: <a href="https://mathscinet.ams.org/mathscinet/msc/msc2020.html?t=68N18">Computer science / Theory of software / Functional programming and lambda calculus</a></p>
+    <h2 class="head">2020</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/BirdKMP.html">Putting the `K&#39; into Bird&#39;s derivation of Knuth-Morris-Pratt string matching</a></h5>
+          <br>
+            by <a href="../../../authors/gammie">Peter Gammie</a>
 
+        </div>
+        <span class="date">Aug 25</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Hello_World.html">Hello World</a></h5>
+          <br>
+            by <a href="../../../authors/diekmann">Cornelius Diekmann</a> and <a href="../../../authors/hupel">Lars Hupel</a>
 
-<h2 class="head">2019</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Generalized_Counting_Sort.html">An Efficient Generalization of Counting Sort for Large, possibly Infinite Key Ranges</a></h5> <br>by <a href="../../../authors/noce">Pasquale Noce</a></div>
-  <span class="date">
-    Dec 04
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Binding_Syntax_Theory.html">A General Theory of Syntax with Bindings</a></h5> <br>by <a href="../../../authors/gheri">Lorenzo Gheri</a> and <a href="../../../authors/popescu">Andrei Popescu</a></div>
-  <span class="date">
-    Apr 06
-  </span>
-</article>
+        </div>
+        <span class="date">Mar 07</span>
+      </article>
+    <h2 class="head">2019</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Generalized_Counting_Sort.html">An Efficient Generalization of Counting Sort for Large, possibly Infinite Key Ranges</a></h5>
+          <br>
+            by <a href="../../../authors/noce">Pasquale Noce</a>
 
+        </div>
+        <span class="date">Dec 04</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Binding_Syntax_Theory.html">A General Theory of Syntax with Bindings</a></h5>
+          <br>
+            by <a href="../../../authors/gheri">Lorenzo Gheri</a> and <a href="../../../authors/popescu">Andrei Popescu</a>
 
-<h2 class="head">2018</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Monad_Memo_DP.html">Monadification, Memoization and Dynamic Programming</a></h5> <br>by <a href="../../../authors/wimmer">Simon Wimmer</a>, <a href="../../../authors/hu">Shuwei Hu</a> and <a href="../../../authors/nipkow">Tobias Nipkow</a></div>
-  <span class="date">
-    May 22
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/BNF_CC.html">Bounded Natural Functors with Covariance and Contravariance</a></h5> <br>by <a href="../../../authors/lochbihler">Andreas Lochbihler</a> and <a href="../../../authors/schneider">Joshua Schneider</a></div>
-  <span class="date">
-    Apr 24
-  </span>
-</article>
+        </div>
+        <span class="date">Apr 06</span>
+      </article>
+    <h2 class="head">2018</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Monad_Memo_DP.html">Monadification, Memoization and Dynamic Programming</a></h5>
+          <br>
+            by <a href="../../../authors/wimmer">Simon Wimmer</a>, <a href="../../../authors/hu">Shuwei Hu</a> and <a href="../../../authors/nipkow">Tobias Nipkow</a>
 
+        </div>
+        <span class="date">May 22</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/BNF_CC.html">Bounded Natural Functors with Covariance and Contravariance</a></h5>
+          <br>
+            by <a href="../../../authors/lochbihler">Andreas Lochbihler</a> and <a href="../../../authors/schneider">Joshua Schneider</a>
 
-<h2 class="head">2017</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/HOLCF-Prelude.html">HOLCF-Prelude</a></h5> <br>by <a href="../../../authors/breitner">Joachim Breitner</a>, <a href="../../../authors/huffman">Brian Huffman</a>, <a href="../../../authors/mitchell">Neil Mitchell</a> and <a href="../../../authors/sternagel">Christian Sternagel</a></div>
-  <span class="date">
-    Jul 15
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Optics.html">Optics</a></h5> <br>by <a href="../../../authors/fosters">Simon Foster</a>, <a href="../../../authors/laursen">Christian Pardillo-Laursen</a> and <a href="../../../authors/zeyda">Frank Zeyda</a></div>
-  <span class="date">
-    May 25
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Probabilistic_While.html">Probabilistic while loop</a></h5> <br>by <a href="../../../authors/lochbihler">Andreas Lochbihler</a></div>
-  <span class="date">
-    May 05
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Monad_Normalisation.html">Monad normalisation</a></h5> <br>by <a href="../../../authors/schneider">Joshua Schneider</a>, <a href="../../../authors/eberl">Manuel Eberl</a> and <a href="../../../authors/lochbihler">Andreas Lochbihler</a></div>
-  <span class="date">
-    May 05
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Monomorphic_Monad.html">Effect polymorphism in higher-order logic</a></h5> <br>by <a href="../../../authors/lochbihler">Andreas Lochbihler</a></div>
-  <span class="date">
-    May 05
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/CryptHOL.html">CryptHOL</a></h5> <br>by <a href="../../../authors/lochbihler">Andreas Lochbihler</a></div>
-  <span class="date">
-    May 05
-  </span>
-</article>
+        </div>
+        <span class="date">Apr 24</span>
+      </article>
+    <h2 class="head">2017</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/HOLCF-Prelude.html">HOLCF-Prelude</a></h5>
+          <br>
+            by <a href="../../../authors/breitner">Joachim Breitner</a>, <a href="../../../authors/huffman">Brian Huffman</a>, <a href="../../../authors/mitchell">Neil Mitchell</a> and <a href="../../../authors/sternagel">Christian Sternagel</a>
 
+        </div>
+        <span class="date">Jul 15</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Optics.html">Optics</a></h5>
+          <br>
+            by <a href="../../../authors/fosters">Simon Foster</a>, <a href="../../../authors/laursen">Christian Pardillo-Laursen</a> and <a href="../../../authors/zeyda">Frank Zeyda</a>
 
-<h2 class="head">2015</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Applicative_Lifting.html">Applicative Lifting</a></h5> <br>by <a href="../../../authors/lochbihler">Andreas Lochbihler</a> and <a href="../../../authors/schneider">Joshua Schneider</a></div>
-  <span class="date">
-    Dec 22
-  </span>
-</article>
+        </div>
+        <span class="date">May 25</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Probabilistic_While.html">Probabilistic while loop</a></h5>
+          <br>
+            by <a href="../../../authors/lochbihler">Andreas Lochbihler</a>
 
+        </div>
+        <span class="date">May 05</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Monad_Normalisation.html">Monad normalisation</a></h5>
+          <br>
+            by <a href="../../../authors/schneider">Joshua Schneider</a>, <a href="../../../authors/eberl">Manuel Eberl</a> and <a href="../../../authors/lochbihler">Andreas Lochbihler</a>
 
-<h2 class="head">2014</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Lifting_Definition_Option.html">Lifting Definition Option</a></h5> <br>by <a href="../../../authors/thiemann">René Thiemann</a></div>
-  <span class="date">
-    Oct 13
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Stream_Fusion_Code.html">Stream Fusion in HOL with Code Generation</a></h5> <br>by <a href="../../../authors/lochbihler">Andreas Lochbihler</a> and <a href="../../../authors/maximova">Alexandra Maximova</a></div>
-  <span class="date">
-    Oct 10
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/XML.html">XML</a></h5> <br>by <a href="../../../authors/sternagel">Christian Sternagel</a> and <a href="../../../authors/thiemann">René Thiemann</a></div>
-  <span class="date">
-    Oct 03
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Certification_Monads.html">Certification Monads</a></h5> <br>by <a href="../../../authors/sternagel">Christian Sternagel</a> and <a href="../../../authors/thiemann">René Thiemann</a></div>
-  <span class="date">
-    Oct 03
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Show.html">Haskell&#39;s Show Class in Isabelle/HOL</a></h5> <br>by <a href="../../../authors/sternagel">Christian Sternagel</a> and <a href="../../../authors/thiemann">René Thiemann</a></div>
-  <span class="date">
-    Jul 29
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Partial_Function_MR.html">Mutually Recursive Partial Functions</a></h5> <br>by <a href="../../../authors/thiemann">René Thiemann</a></div>
-  <span class="date">
-    Feb 18
-  </span>
-</article>
+        </div>
+        <span class="date">May 05</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Monomorphic_Monad.html">Effect polymorphism in higher-order logic</a></h5>
+          <br>
+            by <a href="../../../authors/lochbihler">Andreas Lochbihler</a>
 
+        </div>
+        <span class="date">May 05</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/CryptHOL.html">CryptHOL</a></h5>
+          <br>
+            by <a href="../../../authors/lochbihler">Andreas Lochbihler</a>
 
-<h2 class="head">2013</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Tail_Recursive_Functions.html">A General Method for the Proof of Theorems on Tail-recursive Functions</a></h5> <br>by <a href="../../../authors/noce">Pasquale Noce</a></div>
-  <span class="date">
-    Dec 01
-  </span>
-</article>
+        </div>
+        <span class="date">May 05</span>
+      </article>
+    <h2 class="head">2015</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Applicative_Lifting.html">Applicative Lifting</a></h5>
+          <br>
+            by <a href="../../../authors/lochbihler">Andreas Lochbihler</a> and <a href="../../../authors/schneider">Joshua Schneider</a>
 
+        </div>
+        <span class="date">Dec 22</span>
+      </article>
+    <h2 class="head">2014</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Lifting_Definition_Option.html">Lifting Definition Option</a></h5>
+          <br>
+            by <a href="../../../authors/thiemann">René Thiemann</a>
 
-<h2 class="head">2012</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Tycon.html">Type Constructor Classes and Monad Transformers</a></h5> <br>by <a href="../../../authors/huffman">Brian Huffman</a></div>
-  <span class="date">
-    Jun 26
-  </span>
-</article>
+        </div>
+        <span class="date">Oct 13</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Stream_Fusion_Code.html">Stream Fusion in HOL with Code Generation</a></h5>
+          <br>
+            by <a href="../../../authors/lochbihler">Andreas Lochbihler</a> and <a href="../../../authors/maximova">Alexandra Maximova</a>
 
+        </div>
+        <span class="date">Oct 10</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/XML.html">XML</a></h5>
+          <br>
+            by <a href="../../../authors/sternagel">Christian Sternagel</a> and <a href="../../../authors/thiemann">René Thiemann</a>
 
-<h2 class="head">2010</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Coinductive.html">Coinductive</a></h5> <br>by <a href="../../../authors/lochbihler">Andreas Lochbihler</a></div>
-  <span class="date">
-    Feb 12
-  </span>
-</article>
+        </div>
+        <span class="date">Oct 03</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Certification_Monads.html">Certification Monads</a></h5>
+          <br>
+            by <a href="../../../authors/sternagel">Christian Sternagel</a> and <a href="../../../authors/thiemann">René Thiemann</a>
 
+        </div>
+        <span class="date">Oct 03</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Show.html">Haskell&#39;s Show Class in Isabelle/HOL</a></h5>
+          <br>
+            by <a href="../../../authors/sternagel">Christian Sternagel</a> and <a href="../../../authors/thiemann">René Thiemann</a>
 
-<h2 class="head">2009</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/WorkerWrapper.html">The Worker/Wrapper Transformation</a></h5> <br>by <a href="../../../authors/gammie">Peter Gammie</a></div>
-  <span class="date">
-    Oct 30
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Stream-Fusion.html">Stream Fusion</a></h5> <br>by <a href="../../../authors/huffman">Brian Huffman</a></div>
-  <span class="date">
-    Apr 29
-  </span>
-</article>
+        </div>
+        <span class="date">Jul 29</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Partial_Function_MR.html">Mutually Recursive Partial Functions</a></h5>
+          <br>
+            by <a href="../../../authors/thiemann">René Thiemann</a>
 
+        </div>
+        <span class="date">Feb 18</span>
+      </article>
+    <h2 class="head">2013</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Tail_Recursive_Functions.html">A General Method for the Proof of Theorems on Tail-recursive Functions</a></h5>
+          <br>
+            by <a href="../../../authors/noce">Pasquale Noce</a>
 
+        </div>
+        <span class="date">Dec 01</span>
+      </article>
+    <h2 class="head">2012</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Tycon.html">Type Constructor Classes and Monad Transformers</a></h5>
+          <br>
+            by <a href="../../../authors/huffman">Brian Huffman</a>
 
+        </div>
+        <span class="date">Jun 26</span>
+      </article>
+    <h2 class="head">2010</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Coinductive.html">Coinductive</a></h5>
+          <br>
+            by <a href="../../../authors/lochbihler">Andreas Lochbihler</a>
 
+        </div>
+        <span class="date">Feb 12</span>
+      </article>
+    <h2 class="head">2009</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/WorkerWrapper.html">The Worker/Wrapper Transformation</a></h5>
+          <br>
+            by <a href="../../../authors/gammie">Peter Gammie</a>
+
+        </div>
+        <span class="date">Oct 30</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Stream-Fusion.html">Stream Fusion</a></h5>
+          <br>
+            by <a href="../../../authors/huffman">Brian Huffman</a>
+
+        </div>
+        <span class="date">Apr 29</span>
+      </article>
+        
+      </div>
     </div>
-  </div>
-</body>
-
+  </body>
 </html>

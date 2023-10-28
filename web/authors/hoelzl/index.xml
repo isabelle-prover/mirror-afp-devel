@@ -1,83 +1,73 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>hoelzl on Archive of Formal Proofs</title>
+    <title>hoelzl on Archive of Formal Proofs
+    </title>
     <link>/authors/hoelzl/</link>
-    <description>Recent content in hoelzl on Archive of Formal Proofs</description>
+    <description>
+        Recent content in hoelzl 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Thu, 24 May 2018 00:00:00 +0000</lastBuildDate><atom:link href="/authors/hoelzl/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Probabilistic Timed Automata</title>
-      <link>/entries/Probabilistic_Timed_Automata.html</link>
-      <pubDate>Thu, 24 May 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Probabilistic_Timed_Automata.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>A Zoo of Probabilistic Systems</title>
-      <link>/entries/Probabilistic_System_Zoo.html</link>
-      <pubDate>Wed, 27 May 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Probabilistic_System_Zoo.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Verification of the UpDown Scheme</title>
-      <link>/entries/UpDown_Scheme.html</link>
-      <pubDate>Wed, 28 Jan 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/UpDown_Scheme.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Verified Compiler for Probability Density Functions</title>
-      <link>/entries/Density_Compiler.html</link>
-      <pubDate>Thu, 09 Oct 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Density_Compiler.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Probabilistic Noninterference</title>
-      <link>/entries/Probabilistic_Noninterference.html</link>
-      <pubDate>Tue, 11 Mar 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Probabilistic_Noninterference.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Possibilistic Noninterference</title>
-      <link>/entries/Possibilistic_Noninterference.html</link>
-      <pubDate>Mon, 10 Sep 2012 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Possibilistic_Noninterference.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Ordinary Differential Equations</title>
-      <link>/entries/Ordinary_Differential_Equations.html</link>
-      <pubDate>Thu, 26 Apr 2012 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Ordinary_Differential_Equations.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Markov Models</title>
-      <link>/entries/Markov_Models.html</link>
-      <pubDate>Tue, 03 Jan 2012 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Markov_Models.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Thu, 24 May 2018 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/hoelzl/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Probabilistic Timed Automata</title>
+          <link>/entries/Probabilistic_Timed_Automata.html</link>
+          <pubDate>Thu, 24 May 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Probabilistic_Timed_Automata.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Zoo of Probabilistic Systems</title>
+          <link>/entries/Probabilistic_System_Zoo.html</link>
+          <pubDate>Wed, 27 May 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Probabilistic_System_Zoo.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Verification of the UpDown Scheme</title>
+          <link>/entries/UpDown_Scheme.html</link>
+          <pubDate>Wed, 28 Jan 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/UpDown_Scheme.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Verified Compiler for Probability Density Functions</title>
+          <link>/entries/Density_Compiler.html</link>
+          <pubDate>Thu, 09 Oct 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Density_Compiler.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Probabilistic Noninterference</title>
+          <link>/entries/Probabilistic_Noninterference.html</link>
+          <pubDate>Tue, 11 Mar 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Probabilistic_Noninterference.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Possibilistic Noninterference</title>
+          <link>/entries/Possibilistic_Noninterference.html</link>
+          <pubDate>Mon, 10 Sep 2012 00:00:00 +0000</pubDate>
+          <guid>/entries/Possibilistic_Noninterference.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Ordinary Differential Equations</title>
+          <link>/entries/Ordinary_Differential_Equations.html</link>
+          <pubDate>Thu, 26 Apr 2012 00:00:00 +0000</pubDate>
+          <guid>/entries/Ordinary_Differential_Equations.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Markov Models</title>
+          <link>/entries/Markov_Models.html</link>
+          <pubDate>Tue, 03 Jan 2012 00:00:00 +0000</pubDate>
+          <guid>/entries/Markov_Models.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

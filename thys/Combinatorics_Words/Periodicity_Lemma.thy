@@ -361,7 +361,7 @@ proof (induction "p + p + q" arbitrary: p q rule: less_induct)
       have "?d' < q - p"
         using  gcd_le2_pos[OF per_not_zero[OF \<open>period (FW_word p (q - p)) (q - p)\<close>], of p]  divhyp2[unfolded  gcd_nat.absorb_iff2] nat_less_le by blast
       hence "p \<le> \<^bold>|(FW_word p (q - p))\<^bold>|"
-        unfolding  \<open>\<^bold>|FW_word p (q - p)\<^bold>| = p + (q - p) - ?d' - 1\<close>  diff_diff_left discrete by linarith
+        unfolding  \<open>\<^bold>|FW_word p (q - p)\<^bold>| = p + (q - p) - ?d' - 1\<close> by linarith
       have "FW_word p (q - p) \<noteq> \<epsilon>"
         unfolding length_0_conv[symmetric] using  \<open>p \<le> \<^bold>|FW_word p (q - p)\<^bold>|\<close> \<open>p \<noteq> 0\<close>[folded le_zero_eq]
         by linarith

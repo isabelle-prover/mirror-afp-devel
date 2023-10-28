@@ -138,7 +138,7 @@ context
   fixes n :: nat
 begin
 
-lemma kbo_instance_of_wpo_with_assms: "wpo_with_assms 
+lemma kbo_instance_of_wpo_with_SN_assms: "wpo_with_SN_assms 
   weight_S weight_NS (\<lambda>f g. (pr_strict f g, pr_weak f g))
      (\<lambda>(f, n). n = 0 \<and> least f) full_status False (\<lambda>f. False)" 
   apply (unfold_locales)
@@ -150,13 +150,13 @@ lemma kbo_instance_of_wpo_with_assms: "wpo_with_assms
      apply (auto simp: pr_strict least irrefl_def dest:pr_weak_trans)
   done
 
-interpretation wpo: wpo_with_assms
+interpretation wpo: wpo_with_SN_assms
   where S = weight_S and NS = weight_NS
     and prc = "\<lambda>f g. (pr_strict f g, pr_weak f g)" and prl = "\<lambda>(f,n). n = 0 \<and> least f"
     and c = "\<lambda>_. Lex"
     and ssimple = False and large = "\<lambda>f. False" and \<sigma>\<sigma> = full_status
     and n = n 
-  by (rule kbo_instance_of_wpo_with_assms)
+  by (rule kbo_instance_of_wpo_with_SN_assms)
 
 lemma kbo_as_wpo_with_assms: assumes "bounded_arity n (funas_term t)"
   shows "kbo s t = wpo.wpo s t"
@@ -305,11 +305,11 @@ text \<open>This is the main theorem. It tells us that KBO can be seen as an ins
 lemma defines "prec \<equiv> ((\<lambda>f g. (pr_strict' f g, pr_weak' f g)))" 
   and "prl \<equiv> (\<lambda>(f, n). n = 0 \<and> least f)" 
   shows 
-    kbo_encoding_is_valid_wpo: "wpo_with_assms weight_S weight_NS prec prl full_status False (\<lambda>f. False)"
+    kbo_encoding_is_valid_wpo: "wpo_with_SN_assms weight_S weight_NS prec prl full_status False (\<lambda>f. False)"
   and 
     kbo_as_wpo: "bounded_arity n (funas_term t) \<Longrightarrow> kbo s t = wpo.wpo n weight_S weight_NS prec prl full_status (\<lambda>_. Lex) False (\<lambda>f. False) s t" 
   unfolding prec_def prl_def
-  subgoal by (intro admissible_kbo.kbo_instance_of_wpo_with_assms[OF admissible_kbo'] 
+  subgoal by (intro admissible_kbo.kbo_instance_of_wpo_with_SN_assms[OF admissible_kbo'] 
         least_pr_weak' least_pr_weak'_trans)
   apply (subst kbo'_eq_kbo[symmetric])
   apply (subst admissible_kbo.kbo_as_wpo_with_assms[OF admissible_kbo' least_pr_weak' least_pr_weak'_trans, symmetric], (auto)[3])
@@ -334,7 +334,7 @@ proof -
   define n where "n = max_list (map snd F)" 
 
   (* now get a WPO for this choice of n *)
-  interpret wpo: wpo_with_assms
+  interpret wpo: wpo_with_SN_assms
   where S = weight_S and NS = weight_NS
     and prc = ?prec and prl = ?prl
     and c = "\<lambda>_. Lex"
@@ -400,7 +400,7 @@ proof
   let ?prl = "(\<lambda>(f, n). n = 0 \<and> least f)" 
 
   (* now get a WPO for this choice of n *)
-  interpret wpo: wpo_with_assms
+  interpret wpo: wpo_with_SN_assms
   where S = weight_S and NS = weight_NS
     and prc = ?prec and prl = ?prl
     and c = "\<lambda>_. Lex"

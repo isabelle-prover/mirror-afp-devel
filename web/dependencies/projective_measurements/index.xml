@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Projective_Measurements on Archive of Formal Proofs</title>
+    <title>Projective_Measurements on Archive of Formal Proofs
+    </title>
     <link>/dependencies/projective_measurements/</link>
-    <description>Recent content in Projective_Measurements on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Projective_Measurements 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Mon, 18 Jul 2022 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/projective_measurements/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Simultaneous diagonalization of pairwise commuting Hermitian matrices</title>
-      <link>/entries/Commuting_Hermitian.html</link>
-      <pubDate>Mon, 18 Jul 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Commuting_Hermitian.html</guid>
-      <description></description>
-    </item>
     
+      <lastBuildDate>Mon, 18 Jul 2022 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/projective_measurements/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Simultaneous diagonalization of pairwise commuting Hermitian matrices</title>
+          <link>/entries/Commuting_Hermitian.html</link>
+          <pubDate>Mon, 18 Jul 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Commuting_Hermitian.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

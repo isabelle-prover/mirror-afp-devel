@@ -1,27 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Schutz&#39; Independent Axioms for Minkowski Spacetime - Archive of Formal Proofs</title><meta name="description" content="This is a formalisation of Schutz&#39; system of axioms for Minkowski
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Schutz&#39; Independent Axioms for Minkowski Spacetime - Archive of Formal Proofs</title>
+    <meta name="description" content="This is a formalisation of Schutz&#39; system of axioms for Minkowski
 spacetime published under the name &#34;Independent axioms for
-Minkowski space-time&#34; in 1997,..."><meta property="og:title" content="Schutz&#39; Independent Axioms for Minkowski Spacetime" />
+Minkowski space-time&#34; in 1997,...">
+
+  <meta property="og:title" content="Schutz&#39; Independent Axioms for Minkowski Spacetime" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="/entries/Schutz_Spacetime.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
 <meta property="article:published_time" content="2021-07-27T00:00:00+00:00" />
 <meta property="article:modified_time" content="2021-07-27T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="Schutz&#39; Independent Axioms for Minkowski Spacetime"/>
 <meta name="twitter:description" content=""/>
 
-  
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
     <script>
       MathJax = {
         tex: {
@@ -33,72 +38,111 @@ Minkowski space-time&#34; in 1997,..."><meta property="og:title" content="Schutz
         }
       };
     </script>
-    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
   <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
-  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../" class='logo-link'>
-    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../" class='logo-link'>
-        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../"><li >Home</li></a>
-        <a href="../topics/"><li >Topics</li></a>
-        <a href="../download/"><li >Download</li></a>
-        <a href="../help/"><li >Help</li></a>
-        <a href="../submission/"><li >Submission</li></a>
-        <a href="../statistics/"><li >Statistics</li></a>
-        <a href="../about/"><li >About</li></a>
+          <a href="../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content  entries'><header>
-  <form autocomplete="off" action="../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>S</span>chutz' <span class='first'>I</span>ndependent <span class='first'>A</span>xioms for <span class='first'>M</span>inkowski <span class='first'>S</span>pacetime</h1>
+    </aside>
+    <div class='content entries'>
+      <header>
+    <form autocomplete="off" action="../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>S</span>chutz' <span class='first'>I</span>ndependent <span class='first'>A</span>xioms for <span class='first'>M</span>inkowski <span class='first'>S</span>pacetime
+    
+  </h1>
   <div>
-    
-    <p><a href="../authors/schmoetten">Richard Schmoetten</a> <a class="obfuscated" data="eyJob3N0IjpbInNtcyIsImVkIiwiYWMiLCJ1ayJdLCJ1c2VyIjpbInMxMzExMzI1Il19">📧</a>, <a href="../authors/palmer">Jake Palmer</a> <a class="obfuscated" data="eyJob3N0IjpbImVkIiwiYWMiLCJ1ayJdLCJ1c2VyIjpbImpha2UiLCJwYWxtZXIiXX0=">📧</a> and <a href="../authors/fleuriot">Jacques D. Fleuriot</a> <a href="https://www.inf.ed.ac.uk/people/staff/Jacques_Fleuriot.html">🌐</a>
-    </p>
-    
-    
-    <p class="date">July 27, 2021</p>
-    
-  </div>
-</header><div><main><h3>Abstract</h3>
+      <p>
+        <a href="../authors/schmoetten">Richard Schmoetten</a> <a class="obfuscated" data="eyJob3N0IjpbInNtcyIsImVkIiwiYWMiLCJ1ayJdLCJ1c2VyIjpbInMxMzExMzI1Il19">📧</a>, <a href="../authors/palmer">Jake Palmer</a> <a class="obfuscated" data="eyJob3N0IjpbImVkIiwiYWMiLCJ1ayJdLCJ1c2VyIjpbImpha2UiLCJwYWxtZXIiXX0=">📧</a> and <a href="../authors/fleuriot">Jacques D. Fleuriot</a> <a href="https://www.inf.ed.ac.uk/people/staff/Jacques_Fleuriot.html">🌐</a>
 
-  <div class="abstract mathjax_process">This is a formalisation of Schutz' system of axioms for Minkowski
+      </p>
+      <p class="date">July 27, 2021</p>
+  </div>
+</header>
+      <div>
+        
+  <main>
+    <h3>Abstract</h3>
+
+    <div class="abstract mathjax_process">This is a formalisation of Schutz' system of axioms for Minkowski
 spacetime published under the name "Independent axioms for
 Minkowski space-time" in 1997, as well as most of the results in
 the third chapter ("Temporal Order on a Path") of the above
@@ -106,71 +150,97 @@ monograph. Many results are proven here that cannot be found in
 Schutz, either preceding the theorem they are needed for, or within
 their own thematic section.</div>
 
-  <h3>License</h3>
-  <div><a href="https://isa-afp.org/LICENSE">BSD License</a></div><h3>Topics</h3>
-  <ul><li><a href="../topics/mathematics/physics">Mathematics/Physics</a></li><li><a href="../topics/mathematics/geometry">Mathematics/Geometry</a></li></ul>
-  <h3>Session Schutz_Spacetime</h3>
-  <ul>
-    <li><a href="../theories/schutz_spacetime/#Util">Util</a></li>
-    <li><a href="../theories/schutz_spacetime/#TernaryOrdering">TernaryOrdering</a></li>
-    <li><a href="../theories/schutz_spacetime/#Minkowski">Minkowski</a></li>
-    <li><a href="../theories/schutz_spacetime/#TemporalOrderOnPath">TemporalOrderOnPath</a></li></ul><div class="flex-wrap">
-  
-  
-  </div>
-</main>
-
-<nav class='links'>
-  <a class='popup-button' href="#cite-popup">Cite</a>
-  <a class='popup-button' href="#download-popup">Download</a>
-  <h4>PDFs</h4>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Schutz_Spacetime/outline.pdf">Proof
-    outline</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Schutz_Spacetime/document.pdf">Proof
-    document</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Schutz_Spacetime/session_graph.pdf">Dependencies</a></nav>
-
-<div id="cite-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Cite</h2>
-    <a class="close" href="#">&times;</a>
+    <h3>License</h3>
     <div>
-      <p style="display:none;" id="bibtex-filename">Schutz_Spacetime-AFP</p><pre id="copy-text">@article{Schutz_Spacetime-AFP,
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/mathematics/physics">Mathematics/Physics</a></li>
+          <li><a href="../topics/mathematics/geometry">Mathematics/Geometry</a></li>
+      </ul>
+      <h3>Session Schutz_Spacetime</h3>
+      <ul>
+          <li><a href="../sessions/schutz_spacetime/#Util">Util</a></li>
+          <li><a href="../sessions/schutz_spacetime/#TernaryOrdering">TernaryOrdering</a></li>
+          <li><a href="../sessions/schutz_spacetime/#Minkowski">Minkowski</a></li>
+          <li><a href="../sessions/schutz_spacetime/#TemporalOrderOnPath">TemporalOrderOnPath</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+      </div>
+    
+  </main>
+
+  <nav class='links'>
+    <a class='popup-button' href="#cite-popup">Cite</a>
+    <a class='popup-button' href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Schutz_Spacetime/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Schutz_Spacetime/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Schutz_Spacetime/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Schutz_Spacetime-AFP</p>
+        <pre id="copy-text">@article{Schutz_Spacetime-AFP,
   author  = {Richard Schmoetten and Jake Palmer and Jacques D. Fleuriot},
   title   = {Schutz&#39; Independent Axioms for Minkowski Spacetime},
   journal = {Archive of Formal Proofs},
   month   = {July},
   year    = {2021},
   note    = {\url{https://isa-afp.org/entries/Schutz_Spacetime.html},
-            Formal proof development},
+             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
     </div>
   </div>
-</div>
 
-<div id="download-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Download</h2>
-    <a class="close" href="#">&times;</a>
-    <a href="https://www.isa-afp.org/release//afp-Schutz_Spacetime-current.tar.gz" download>Download latest</a>
-    <p>Older releases:</p>
-    <ul><li>
-        <a href="https://www.isa-afp.org/release/afp-Schutz_Spacetime-2023-09-13.tar.gz">Sep 13, 2023</a>: Isabelle2023
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Schutz_Spacetime-2022-10-27.tar.gz">Oct 27, 2022</a>: Isabelle2022
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Schutz_Spacetime-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021-1
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Schutz_Spacetime-2021-09-06.tar.gz">Sep 6, 2021</a>: Isabelle2021
-      </li></ul>
-  </div>
-</div>
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-Schutz_Spacetime-current.tar.gz"
+         download>Download latest</a>
+        <p>Older releases:</p>
+        <ul>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Schutz_Spacetime-2023-09-13.tar.gz">
+                Sep 13, 2023
+              </a>
+              : Isabelle2023
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Schutz_Spacetime-2022-10-27.tar.gz">
+                Oct 27, 2022
+              </a>
+              : Isabelle2022
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Schutz_Spacetime-2021-12-14.tar.gz">
+                Dec 14, 2021
+              </a>
+              : Isabelle2021-1
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Schutz_Spacetime-2021-09-06.tar.gz">
+                Sep 6, 2021
+              </a>
+              : Isabelle2021
+            </li>
+        </ul>
     </div>
   </div>
-</body>
-
+        
+      </div>
+    </div>
+  </body>
 </html>

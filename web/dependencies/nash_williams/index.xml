@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Nash_Williams on Archive of Formal Proofs</title>
+    <title>Nash_Williams on Archive of Formal Proofs
+    </title>
     <link>/dependencies/nash_williams/</link>
-    <description>Recent content in Nash_Williams on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Nash_Williams 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Mon, 03 Aug 2020 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/nash_williams/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Ordinal Partitions</title>
-      <link>/entries/Ordinal_Partitions.html</link>
-      <pubDate>Mon, 03 Aug 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Ordinal_Partitions.html</guid>
-      <description></description>
-    </item>
     
+      <lastBuildDate>Mon, 03 Aug 2020 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/nash_williams/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Ordinal Partitions</title>
+          <link>/entries/Ordinal_Partitions.html</link>
+          <pubDate>Mon, 03 Aug 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Ordinal_Partitions.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

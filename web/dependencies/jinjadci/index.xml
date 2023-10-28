@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>JinjaDCI on Archive of Formal Proofs</title>
+    <title>JinjaDCI on Archive of Formal Proofs
+    </title>
     <link>/dependencies/jinjadci/</link>
-    <description>Recent content in JinjaDCI on Archive of Formal Proofs</description>
+    <description>
+        Recent content in JinjaDCI 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Fri, 30 Apr 2021 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/jinjadci/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Regression Test Selection</title>
-      <link>/entries/Regression_Test_Selection.html</link>
-      <pubDate>Fri, 30 Apr 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Regression_Test_Selection.html</guid>
-      <description></description>
-    </item>
     
+      <lastBuildDate>Fri, 30 Apr 2021 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/jinjadci/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Regression Test Selection</title>
+          <link>/entries/Regression_Test_Selection.html</link>
+          <pubDate>Fri, 30 Apr 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Regression_Test_Selection.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

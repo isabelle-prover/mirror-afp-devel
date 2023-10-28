@@ -3,7 +3,7 @@
  * Project         : HOL-CSP - A Shallow Embedding of CSP in  Isabelle/HOL
  * Version         : 2.0
  *
- * Author          : Benoit Ballenghien, Safouan Taha, Burkhart Wolff & Lina Ye
+ * Author          : Benoit Ballenghien, Safouan Taha, Burkhart Wolff
  *                   (Based on HOL-CSP 1.0 by Haykal Tej and Burkhart Wolff)
  *
  * This file       : A Combined CSP Theory
@@ -190,7 +190,7 @@ by(simp add: tickFree_def)
 lemma tickFree_Cons [simp]: "tickFree (a # t) = (a \<noteq> tick \<and> tickFree t)"
 by(auto simp add: tickFree_def)
 
-lemma tickFree_tl : "[|s ~= [] ; tickFree s|] ==> tickFree(tl s)"
+lemma tickFree_tl : "tickFree s \<Longrightarrow> tickFree(tl s)"
 by(case_tac s, simp_all)
   
 lemma tickFree_append[simp]: "tickFree(s@t) = (tickFree s \<and> tickFree t)"
@@ -257,6 +257,13 @@ done
 lemma front_tickFree_mono: "front_tickFree (t @ r) \<and> r \<noteq> [] \<longrightarrow> tickFree t \<and> front_tickFree r"
 by(metis append_assoc append_butlast_last_id front_tickFree_charn 
          front_tickFree_implies_tickFree tickFree_append)
+
+
+lemma tickFree_butlast: \<open>tickFree s \<longleftrightarrow> tickFree (butlast s) \<and> (s \<noteq> [] \<longrightarrow> last s \<noteq> tick)\<close>
+  by (induct s, simp_all)
+
+lemma front_tickFree_butlast: \<open>front_tickFree s \<longleftrightarrow> tickFree (butlast s)\<close>
+  by (induct s, auto simp add: front_tickFree_def)
 
 
 section\<open> Basic Types, Traces, Failures and Divergences \<close>
@@ -429,39 +436,44 @@ section \<open> The Abstraction to the process-Type \<close>
 typedef 
   '\<alpha> process = "{p :: '\<alpha> process\<^sub>0 . is_process p}"
 proof - 
-   have "({(s, X). s = []},{}) \<in> {p::'\<alpha> process\<^sub>0. is_process p}"
-        by(simp add: is_process_def  front_tickFree_def
-                     FAILURES_def TRACES_def DIVERGENCES_def )
-   thus ?thesis by auto
+  have "({(s, X). s = []},{}) \<in> {p::'\<alpha> process\<^sub>0. is_process p}"
+    by(simp add: is_process_def  front_tickFree_def
+                 FAILURES_def TRACES_def DIVERGENCES_def )
+  thus ?thesis by auto
 qed
 
-definition Failures :: "'\<alpha> process \<Rightarrow>  ('\<alpha> failure set)" ("\<F>")
-  where "\<F> P = FAILURES (Rep_process P)"
+setup_lifting type_definition_process
 
-definition Traces :: "'\<alpha> process \<Rightarrow>  ('\<alpha> trace set)"   ("\<T>")
-  where "\<T> P = TRACES (Rep_process P)"
+text \<open>This is where we differ from previous versions: we lift definitions 
+      using Isabelle's machinery instead of doing it by hand.\<close>
 
-definition Divergences :: "'\<alpha> process \<Rightarrow> '\<alpha> divergence"     ("\<D>")
-  where "\<D> P = DIVERGENCES (Rep_process P)"
+lift_definition Failures :: "'\<alpha> process \<Rightarrow> ('\<alpha> failure set)" ("\<F>")
+  is "\<lambda>P. FAILURES P" .
 
-lemmas D_def = Divergences_def
 
-definition R :: "'\<alpha> process \<Rightarrow> ('\<alpha> refusal set)"  ("\<R>")
-  where "\<R> P = REFUSALS (Rep_process P)"
+lift_definition Traces :: "'\<alpha> process \<Rightarrow>  ('\<alpha> trace set)"   ("\<T>")
+  is "\<lambda>P. TRACES P" .
+
+
+lift_definition Divergences :: "'\<alpha> process \<Rightarrow> '\<alpha> divergence"     ("\<D>")
+  is "\<lambda>P. DIVERGENCES P" .
+
+
+lift_definition Refusals :: "'\<alpha> process \<Rightarrow> ('\<alpha> refusal set)"  ("\<R>")
+  is "\<lambda>P. REFUSALS P" .
+
 
 
 lemma is_process_Rep : "is_process (Rep_process P)"
-by(rule_tac P=is_process in CollectD, rule Rep_process)
+  using Rep_process by blast
+
 
 lemma Process_spec: "Abs_process (\<F> P, \<D> P) = P"
-by(simp add: Failures_def FAILURES_def D_def 
-             DIVERGENCES_def Rep_process_inverse)
+  by (simp add: Divergences.rep_eq Failures.rep_eq Rep_process_inverse process_surj_pair)
+
 
 lemma Process_eq_spec: "(P = Q) = (\<F> P = \<F> Q \<and> \<D> P = \<D> Q)"
-  apply(rule iffI,simp)
-  apply(rule_tac t=P in Process_spec[THEN subst])
-  apply(rule_tac t=Q in Process_spec[THEN subst])
-  by simp
+  by (metis Process_spec)
   
 
 lemma Process_eq_spec_optimized: "(P = Q) = (\<D> P = \<D> Q \<and> (\<D> P = \<D> Q \<longrightarrow> \<F> P = \<F> Q))"
@@ -476,11 +488,11 @@ lemma is_processT:
  (\<forall> s X. (s@[tick],{}) \<in> \<F> P \<longrightarrow> (s, X-{tick}) \<in> \<F> P) \<and>
  (\<forall> s t. s \<in> \<D> P \<and> tickFree s \<and> front_tickFree t \<longrightarrow> s @ t \<in> \<D> P) \<and>
  (\<forall> s X. s \<in> \<D> P \<longrightarrow> (s,X) \<in> \<F> P) \<and>
- (\<forall> s. s@[tick] \<in> \<D> P \<longrightarrow> s \<in> \<D> P)"
-apply(simp only: Failures_def D_def Traces_def)
-apply(rule is_process_def[THEN iffD1])
-apply(rule is_process_Rep)
-done
+ (\<forall> s. s@[tick] \<in> \<D> P \<longrightarrow> s \<in> \<D> P)" 
+  apply (simp add: Divergences.rep_eq Failures.rep_eq)
+  by (meson is_process_spec[of \<open>Rep_process P\<close>, simplified Rep_process[simplified]])
+  
+ 
 
 lemma process_charn:
   "([], {}) \<in> \<F> P \<and>
@@ -491,6 +503,7 @@ lemma process_charn:
     (\<forall>s X. (s @ [tick], {}) \<in> \<F> P \<longrightarrow> (s, X - {tick}) \<in> \<F> P) \<and>
     (\<forall>s t. s \<notin> \<D> P \<or> \<not> tickFree s \<or> \<not> front_tickFree t \<or> s @ t \<in> \<D> P) \<and>
     (\<forall>s X. s \<notin> \<D> P \<or> (s, X) \<in> \<F> P) \<and> (\<forall>s. s @ [tick] \<notin> \<D> P \<or> s \<in> \<D> P)"
+  (* by (meson is_processT) *)
 proof -
   {
     have A: "(\<forall>s t. (s @ t, {}) \<notin> \<F> P \<or>  (s, {}) \<in> \<F> P) = 
@@ -533,9 +546,9 @@ lemma is_processT2: "\<forall>s X. (s, X) \<in> \<F> P \<longrightarrow> front_t
 by(simp add:process_charn)
 
 lemma  is_processT2_TR : "\<forall>s. s \<in> \<T> P \<longrightarrow> front_tickFree s"
-apply(simp add: Failures_def [symmetric] Traces_def TRACES_def, safe)
-apply (drule is_processT2[rule_format], assumption)
-done
+  apply (simp add: Traces.rep_eq Traces_def TRACES_def Failures.rep_eq[symmetric])
+  using is_processT2 by blast
+  
 
 lemma is_proT2:
   assumes A : " (s, X) \<in> \<F> P" and B : " s \<noteq> []"
@@ -1075,7 +1088,7 @@ lemma F_LUB: "chain S \<Longrightarrow> \<F>(lim_proc(range S)) = \<Inter> (\<F>
 by(simp add: lim_proc_def , subst Failures_def, auto simp: FAILURES_def Rep_Abs_LUB)
 
 lemma D_LUB: "chain S \<Longrightarrow> \<D>(lim_proc(range S)) = \<Inter> (\<D> ` range S)"
-by(simp add: lim_proc_def , subst D_def, auto simp: DIVERGENCES_def Rep_Abs_LUB)
+by(simp add: lim_proc_def , subst Divergences_def, auto simp: DIVERGENCES_def Rep_Abs_LUB)
 
 lemma T_LUB: "chain S \<Longrightarrow> \<T> (lim_proc(range S)) = \<Inter> (\<T>  ` range S)"
 apply(simp add: lim_proc_def , subst Traces_def) 
@@ -1168,9 +1181,9 @@ lemma lim_proc_is_lub2:
 
 lemma lim_proc_is_lub3a: "front_tickFree s \<Longrightarrow> s \<notin> \<D> P \<longrightarrow> (\<forall>t. t \<in> \<D> P \<longrightarrow> \<not> t < s @ [c])" 
 apply(rule impI, erule contrapos_np, auto)
-apply(auto simp: le_list_def  less_list_def)
-by (metis D_def butlast_append butlast_snoc 
-          front_tickFree_mono is_process7 is_process_Rep self_append_conv)
+  apply(auto simp: le_list_def  less_list_def)
+  by (metis butlast_append butlast_snoc front_tickFree_mono is_processT self_append_conv)
+
 
 
 lemma lim_proc_is_lub3b:
@@ -1226,7 +1239,7 @@ qed
 instance
    process :: (type) pcpo
 proof
-   show "\<exists> x::'a process. \<forall> y::'a process. x \<sqsubseteq> y" 
+  show "\<exists> x::'a process. \<forall> y::'a process. x \<sqsubseteq> y" 
    proof -
       have is_process_witness : 
            "is_process({(s,X). front_tickFree s},{d. front_tickFree d})"
@@ -1240,7 +1253,7 @@ proof
            by(subst Abs_process_inverse, simp_all add: Rep_process is_process_witness)
       have divergences_frontTickFree:
            "\<And>y x. x \<in> snd (Rep_process y) \<Longrightarrow> front_tickFree x" 
-           by(rule D_imp_front_tickFree, simp add: D_def DIVERGENCES_def)
+           by(rule D_imp_front_tickFree, simp add: Divergences_def DIVERGENCES_def)
       have failures_frontTickFree:
            "\<And>y s x. (s, x) \<in> fst (Rep_process y) \<Longrightarrow> front_tickFree s"
            by(rule is_processT2[rule_format], 
@@ -1253,7 +1266,7 @@ proof
       apply(rule_tac x="Abs_process ({(s,X). front_tickFree s},{d. front_tickFree d})" 
             in exI)
       apply(auto simp: le_approx_def bot_inverse Ra_def 
-                       Failures_def D_def FAILURES_def DIVERGENCES_def
+                       Failures_def Divergences_def FAILURES_def DIVERGENCES_def
                        divergences_frontTickFree failures_frontTickFree)
       apply (metis minelems_contains_mt Nil_elem_T )
       done

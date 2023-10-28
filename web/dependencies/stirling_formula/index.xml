@@ -1,65 +1,59 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Stirling_Formula on Archive of Formal Proofs</title>
+    <title>Stirling_Formula on Archive of Formal Proofs
+    </title>
     <link>/dependencies/stirling_formula/</link>
-    <description>Recent content in Stirling_Formula on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Stirling_Formula 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Mon, 03 Apr 2023 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/stirling_formula/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Distributed Distinct Elements</title>
-      <link>/entries/Distributed_Distinct_Elements.html</link>
-      <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Distributed_Distinct_Elements.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>Clique is not solvable by monotone circuits of polynomial size</title>
-      <link>/entries/Clique_and_Monotone_Circuits.html</link>
-      <pubDate>Sun, 08 May 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Clique_and_Monotone_Circuits.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Irrational numbers from THE BOOK</title>
-      <link>/entries/Irrationals_From_THEBOOK.html</link>
-      <pubDate>Sat, 08 Jan 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Irrationals_From_THEBOOK.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Lambert W Function on the Reals</title>
-      <link>/entries/Lambert_W.html</link>
-      <pubDate>Fri, 24 Apr 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Lambert_W.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Prime Number Theorem</title>
-      <link>/entries/Prime_Number_Theorem.html</link>
-      <pubDate>Wed, 19 Sep 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Prime_Number_Theorem.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Lower bound on comparison-based sorting algorithms</title>
-      <link>/entries/Comparison_Sort_Lower_Bound.html</link>
-      <pubDate>Wed, 15 Mar 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Comparison_Sort_Lower_Bound.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Mon, 03 Apr 2023 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/stirling_formula/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Distributed Distinct Elements</title>
+          <link>/entries/Distributed_Distinct_Elements.html</link>
+          <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Distributed_Distinct_Elements.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Clique is not solvable by monotone circuits of polynomial size</title>
+          <link>/entries/Clique_and_Monotone_Circuits.html</link>
+          <pubDate>Sun, 08 May 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Clique_and_Monotone_Circuits.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Irrational numbers from THE BOOK</title>
+          <link>/entries/Irrationals_From_THEBOOK.html</link>
+          <pubDate>Sat, 08 Jan 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Irrationals_From_THEBOOK.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Lambert W Function on the Reals</title>
+          <link>/entries/Lambert_W.html</link>
+          <pubDate>Fri, 24 Apr 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Lambert_W.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Prime Number Theorem</title>
+          <link>/entries/Prime_Number_Theorem.html</link>
+          <pubDate>Wed, 19 Sep 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Prime_Number_Theorem.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Lower bound on comparison-based sorting algorithms</title>
+          <link>/entries/Comparison_Sort_Lower_Bound.html</link>
+          <pubDate>Wed, 15 Mar 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Comparison_Sort_Lower_Bound.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

@@ -1,0 +1,30 @@
+title = "General Probabilistic Techniques for Combinatorics and the Lovasz Local Lemma"
+date = 2023-09-20
+topics = [
+  "Mathematics/Probability theory",
+  "Mathematics/Combinatorics",
+]
+abstract = "This entry aims to formalise several useful general techniques for using the probabilistic method for combinatorial structures (or discrete spaces more generally). In particular, it focuses on bounding tools for combinatorics, such as the union and complete independence bounds, and the first formalisation of the pivotal Lov&aacutesz local lemma. The formalisation focuses on the general lemma, however also proves several useful variations, including the more well-known symmetric version. Both the original formalisation and several of the variations used dependency graphs, which were formalised using Noschinski's general directed graph library. Additionally, the entry provides several useful existence lemmas, required at the end of most probabilistic proofs on combinatorial structures. Finally, the entry includes several significant extensions to the existing probability libraries, particularly for conditional probability (such as Bayes theorem) and independent events. The formalisation is primarily based on Alon and Spencer's textbook \"The Probabilistic Method\", as well as Zhao's course notes on the subject."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.edmonds]
+email = "edmonds_email"
+
+[contributors]
+
+[notify]
+edmonds = "edmonds_email"
+
+[history]
+
+[extra]
+
+[related]
+pubs = [
+  "<a href=\"https://dl.acm.org/doi/book/10.5555/3002498\">Alon and Spencer. The Probabilistic Method<a>",
+  "<a href=\"https://yufeizhao.com/pm/probmethod_notes.pdf\">Lecture notes by Yufei Zhao</a>",
+  "<a href=\"https://en.wikipedia.org/wiki/Lov%C3%A1sz_Local_Lemma\">Wikipedia</a>"
+]

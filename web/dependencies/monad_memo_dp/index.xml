@@ -1,29 +1,31 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Monad_Memo_DP on Archive of Formal Proofs</title>
+    <title>Monad_Memo_DP on Archive of Formal Proofs
+    </title>
     <link>/dependencies/monad_memo_dp/</link>
-    <description>Recent content in Monad_Memo_DP on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Monad_Memo_DP 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Sun, 27 May 2018 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/monad_memo_dp/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Optimal Binary Search Trees</title>
-      <link>/entries/Optimal_BST.html</link>
-      <pubDate>Sun, 27 May 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Optimal_BST.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>Hidden Markov Models</title>
-      <link>/entries/Hidden_Markov_Models.html</link>
-      <pubDate>Fri, 25 May 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Hidden_Markov_Models.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Sun, 27 May 2018 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/monad_memo_dp/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Optimal Binary Search Trees</title>
+          <link>/entries/Optimal_BST.html</link>
+          <pubDate>Sun, 27 May 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Optimal_BST.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Hidden Markov Models</title>
+          <link>/entries/Hidden_Markov_Models.html</link>
+          <pubDate>Fri, 25 May 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Hidden_Markov_Models.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

@@ -810,7 +810,7 @@ fun command_c ({lines, pos, ...}: Token.file) =
 fun C get_file gthy =
   command_c (get_file (Context.theory_of gthy)) gthy;
 
-fun command_ml environment debug get_file gthy =
+fun command_ml environment catch_all debug get_file gthy =
   let
     val file = get_file (Context.theory_of gthy);
     val source = Token.file_source file;
@@ -818,7 +818,7 @@ fun command_ml environment debug get_file gthy =
     val _ = Document_Output.check_comments (Context.proof_of gthy) (Input.source_explode source);
 
     val flags: ML_Compiler.flags =
-      {environment = environment, redirect = true, verbose = true,
+      {environment = environment, redirect = true, verbose = true, catch_all = catch_all,
         debug = debug, writeln = writeln, warning = warning};
   in
     gthy
@@ -826,8 +826,8 @@ fun command_ml environment debug get_file gthy =
     |> Local_Theory.propagate_ml_env
   end;
 
-val ML = command_ml "";
-val SML = command_ml ML_Env.SML;
+val ML = command_ml "" false;
+val SML = command_ml ML_Env.SML true;
 end;
 \<close>
 

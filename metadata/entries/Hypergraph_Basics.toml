@@ -1,0 +1,26 @@
+title = "Hypergraphs"
+date = 2023-09-20
+topics = [
+  "Mathematics/Combinatorics",
+]
+abstract = "This entry is a simple extension of the Combinatorial design theory library, which presents new and existing concepts using hypergraph language. Both designs and hypergraphs are types of incidence set systems and hence have the same underlying foundation. However, they are often used in different contexts, and some definitions are unique. This library uses locales to rewrite equivalent definitions and build a basic hypergraph hierarchy with direct links to equivalent design theory concepts to avoid repetition, further demonstrating the power of the \"locale-centric\" approach. The library includes all standard definitions (order, degree etc.), as well as some extensions on hypergraph decompositions and spanning subhypergraphs."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.edmonds]
+email = "edmonds_email"
+
+[contributors]
+
+[notify]
+edmonds = "edmonds_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

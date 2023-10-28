@@ -1,254 +1,213 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>paulson on Archive of Formal Proofs</title>
+    <title>paulson on Archive of Formal Proofs
+    </title>
     <link>/authors/paulson/</link>
-    <description>Recent content in paulson on Archive of Formal Proofs</description>
+    <description>
+        Recent content in paulson 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Fri, 02 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="/authors/paulson/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Khovanskii&amp;#x27;s Theorem</title>
-      <link>/entries/Khovanskii_Theorem.html</link>
-      <pubDate>Fri, 02 Sep 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Khovanskii_Theorem.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>The Plünnecke-Ruzsa Inequality</title>
-      <link>/entries/Pluennecke_Ruzsa_Inequality.html</link>
-      <pubDate>Thu, 26 May 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Pluennecke_Ruzsa_Inequality.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Fisher&#39;s Inequality: Linear Algebraic Proof Techniques for Combinatorics</title>
-      <link>/entries/Fishers_Inequality.html</link>
-      <pubDate>Thu, 21 Apr 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Fishers_Inequality.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Constructing the Reals as Dedekind Cuts of Rationals</title>
-      <link>/entries/Dedekind_Real.html</link>
-      <pubDate>Thu, 24 Mar 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Dedekind_Real.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Ackermann&#39;s Function Is Not Primitive Recursive</title>
-      <link>/entries/Ackermanns_not_PR.html</link>
-      <pubDate>Wed, 23 Mar 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Ackermanns_not_PR.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Wetzel&#39;s Problem and the Continuum Hypothesis</title>
-      <link>/entries/Wetzels_Problem.html</link>
-      <pubDate>Fri, 18 Feb 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Wetzels_Problem.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Young&#39;s Inequality for Increasing Functions</title>
-      <link>/entries/Youngs_Inequality.html</link>
-      <pubDate>Mon, 31 Jan 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Youngs_Inequality.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Irrational numbers from THE BOOK</title>
-      <link>/entries/Irrationals_From_THEBOOK.html</link>
-      <pubDate>Sat, 08 Jan 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Irrationals_From_THEBOOK.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Roth&#39;s Theorem on Arithmetic Progressions</title>
-      <link>/entries/Roth_Arithmetic_Progressions.html</link>
-      <pubDate>Tue, 28 Dec 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Roth_Arithmetic_Progressions.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Szemerédi&#39;s Regularity Lemma</title>
-      <link>/entries/Szemeredi_Regularity.html</link>
-      <pubDate>Fri, 05 Nov 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Szemeredi_Regularity.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Combinatorial Design Theory</title>
-      <link>/entries/Design_Theory.html</link>
-      <pubDate>Fri, 13 Aug 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Design_Theory.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Grothendieck&#39;s Schemes in Algebraic Geometry</title>
-      <link>/entries/Grothendieck_Schemes.html</link>
-      <pubDate>Mon, 29 Mar 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Grothendieck_Schemes.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Ordinal Partitions</title>
-      <link>/entries/Ordinal_Partitions.html</link>
-      <pubDate>Mon, 03 Aug 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Ordinal_Partitions.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Nash-Williams Partition Theorem</title>
-      <link>/entries/Nash_Williams.html</link>
-      <pubDate>Sat, 16 May 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Nash_Williams.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Zermelo Fraenkel Set Theory in Higher-Order Logic</title>
-      <link>/entries/ZFC_in_HOL.html</link>
-      <pubDate>Thu, 24 Oct 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/ZFC_in_HOL.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Fourier Series</title>
-      <link>/entries/Fourier.html</link>
-      <pubDate>Fri, 06 Sep 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Fourier.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Prime Number Theorem</title>
-      <link>/entries/Prime_Number_Theorem.html</link>
-      <pubDate>Wed, 19 Sep 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Prime_Number_Theorem.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Quaternions</title>
-      <link>/entries/Quaternions.html</link>
-      <pubDate>Wed, 05 Sep 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Quaternions.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>An Isabelle/HOL formalisation of Green&#39;s Theorem</title>
-      <link>/entries/Green.html</link>
-      <pubDate>Thu, 11 Jan 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Green.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Source Coding Theorem</title>
-      <link>/entries/Source_Coding_Theorem.html</link>
-      <pubDate>Wed, 19 Oct 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Source_Coding_Theorem.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Cartan Fixed Point Theorems</title>
-      <link>/entries/Cartan_FP.html</link>
-      <pubDate>Tue, 08 Mar 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Cartan_FP.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Finite Automata in Hereditarily Finite Set Theory</title>
-      <link>/entries/Finite_Automata_HF.html</link>
-      <pubDate>Thu, 05 Feb 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Finite_Automata_HF.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Real-Valued Special Functions: Upper and Lower Bounds</title>
-      <link>/entries/Special_Function_Bounds.html</link>
-      <pubDate>Fri, 29 Aug 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Special_Function_Bounds.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Gödel&#39;s Incompleteness Theorems</title>
-      <link>/entries/Incompleteness.html</link>
-      <pubDate>Sun, 17 Nov 2013 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Incompleteness.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Hereditarily Finite Sets</title>
-      <link>/entries/HereditarilyFinite.html</link>
-      <pubDate>Sun, 17 Nov 2013 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/HereditarilyFinite.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Proving the Impossibility of Trisecting an Angle and Doubling the Cube</title>
-      <link>/entries/Impossible_Geometry.html</link>
-      <pubDate>Sun, 05 Aug 2012 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Impossible_Geometry.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Fun With Tilings</title>
-      <link>/entries/FunWithTilings.html</link>
-      <pubDate>Fri, 07 Nov 2008 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/FunWithTilings.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Sat, 16 Sep 2023 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/paulson/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Euler&#39;s Polyhedron Formula</title>
+          <link>/entries/Euler_Polyhedron_Formula.html</link>
+          <pubDate>Sat, 16 Sep 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Euler_Polyhedron_Formula.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Khovanskii&amp;#x27;s Theorem</title>
+          <link>/entries/Khovanskii_Theorem.html</link>
+          <pubDate>Fri, 02 Sep 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Khovanskii_Theorem.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Plünnecke-Ruzsa Inequality</title>
+          <link>/entries/Pluennecke_Ruzsa_Inequality.html</link>
+          <pubDate>Thu, 26 May 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Pluennecke_Ruzsa_Inequality.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Fisher&#39;s Inequality: Linear Algebraic Proof Techniques for Combinatorics</title>
+          <link>/entries/Fishers_Inequality.html</link>
+          <pubDate>Thu, 21 Apr 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Fishers_Inequality.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Constructing the Reals as Dedekind Cuts of Rationals</title>
+          <link>/entries/Dedekind_Real.html</link>
+          <pubDate>Thu, 24 Mar 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Dedekind_Real.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Ackermann&#39;s Function Is Not Primitive Recursive</title>
+          <link>/entries/Ackermanns_not_PR.html</link>
+          <pubDate>Wed, 23 Mar 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Ackermanns_not_PR.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Wetzel&#39;s Problem and the Continuum Hypothesis</title>
+          <link>/entries/Wetzels_Problem.html</link>
+          <pubDate>Fri, 18 Feb 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Wetzels_Problem.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Young&#39;s Inequality for Increasing Functions</title>
+          <link>/entries/Youngs_Inequality.html</link>
+          <pubDate>Mon, 31 Jan 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Youngs_Inequality.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Irrational numbers from THE BOOK</title>
+          <link>/entries/Irrationals_From_THEBOOK.html</link>
+          <pubDate>Sat, 08 Jan 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Irrationals_From_THEBOOK.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Roth&#39;s Theorem on Arithmetic Progressions</title>
+          <link>/entries/Roth_Arithmetic_Progressions.html</link>
+          <pubDate>Tue, 28 Dec 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Roth_Arithmetic_Progressions.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Szemerédi&#39;s Regularity Lemma</title>
+          <link>/entries/Szemeredi_Regularity.html</link>
+          <pubDate>Fri, 05 Nov 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Szemeredi_Regularity.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Combinatorial Design Theory</title>
+          <link>/entries/Design_Theory.html</link>
+          <pubDate>Fri, 13 Aug 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Design_Theory.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Grothendieck&#39;s Schemes in Algebraic Geometry</title>
+          <link>/entries/Grothendieck_Schemes.html</link>
+          <pubDate>Mon, 29 Mar 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Grothendieck_Schemes.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Ordinal Partitions</title>
+          <link>/entries/Ordinal_Partitions.html</link>
+          <pubDate>Mon, 03 Aug 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Ordinal_Partitions.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Nash-Williams Partition Theorem</title>
+          <link>/entries/Nash_Williams.html</link>
+          <pubDate>Sat, 16 May 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Nash_Williams.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Zermelo Fraenkel Set Theory in Higher-Order Logic</title>
+          <link>/entries/ZFC_in_HOL.html</link>
+          <pubDate>Thu, 24 Oct 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/ZFC_in_HOL.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Fourier Series</title>
+          <link>/entries/Fourier.html</link>
+          <pubDate>Fri, 06 Sep 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Fourier.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Prime Number Theorem</title>
+          <link>/entries/Prime_Number_Theorem.html</link>
+          <pubDate>Wed, 19 Sep 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Prime_Number_Theorem.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Quaternions</title>
+          <link>/entries/Quaternions.html</link>
+          <pubDate>Wed, 05 Sep 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Quaternions.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>An Isabelle/HOL formalisation of Green&#39;s Theorem</title>
+          <link>/entries/Green.html</link>
+          <pubDate>Thu, 11 Jan 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Green.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Source Coding Theorem</title>
+          <link>/entries/Source_Coding_Theorem.html</link>
+          <pubDate>Wed, 19 Oct 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Source_Coding_Theorem.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Cartan Fixed Point Theorems</title>
+          <link>/entries/Cartan_FP.html</link>
+          <pubDate>Tue, 08 Mar 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Cartan_FP.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Finite Automata in Hereditarily Finite Set Theory</title>
+          <link>/entries/Finite_Automata_HF.html</link>
+          <pubDate>Thu, 05 Feb 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Finite_Automata_HF.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Real-Valued Special Functions: Upper and Lower Bounds</title>
+          <link>/entries/Special_Function_Bounds.html</link>
+          <pubDate>Fri, 29 Aug 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Special_Function_Bounds.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Gödel&#39;s Incompleteness Theorems</title>
+          <link>/entries/Incompleteness.html</link>
+          <pubDate>Sun, 17 Nov 2013 00:00:00 +0000</pubDate>
+          <guid>/entries/Incompleteness.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Hereditarily Finite Sets</title>
+          <link>/entries/HereditarilyFinite.html</link>
+          <pubDate>Sun, 17 Nov 2013 00:00:00 +0000</pubDate>
+          <guid>/entries/HereditarilyFinite.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Proving the Impossibility of Trisecting an Angle and Doubling the Cube</title>
+          <link>/entries/Impossible_Geometry.html</link>
+          <pubDate>Sun, 05 Aug 2012 00:00:00 +0000</pubDate>
+          <guid>/entries/Impossible_Geometry.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Fun With Tilings</title>
+          <link>/entries/FunWithTilings.html</link>
+          <pubDate>Fri, 07 Nov 2008 00:00:00 +0000</pubDate>
+          <guid>/entries/FunWithTilings.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

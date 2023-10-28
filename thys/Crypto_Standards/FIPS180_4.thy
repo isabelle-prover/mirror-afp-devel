@@ -82,8 +82,7 @@ lemma SHL_n_ge_w:
 lemma SHL_bnd:
   assumes "n < w"
   shows   "SHL w n x < 2^w"
-  by (metis SHL_def assms less_imp_le mult_exp_mod_exp_eq pos_mod_bound zero_less_numeral 
-            zero_less_power) 
+  using assms by (simp add: SHL_def flip: mult_exp_mod_exp_eq)
 
 lemma SHL_mod: "(SHL w n x) mod 2^n = 0"
   by (simp add: SHL_def)

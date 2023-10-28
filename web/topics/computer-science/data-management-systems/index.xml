@@ -1,55 +1,51 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Computer science/Data management systems on Archive of Formal Proofs</title>
+    <title>Computer science/Data management systems on Archive of Formal Proofs
+    </title>
     <link>/topics/computer-science/data-management-systems/</link>
-    <description>Recent content in Computer science/Data management systems on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Computer science/Data management systems 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language><atom:link href="/topics/computer-science/data-management-systems/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Verification of Query Optimization Algorithms</title>
-      <link>/entries/Query_Optimization.html</link>
-      <pubDate>Tue, 04 Oct 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Query_Optimization.html</guid>
-      <description></description>
-    </item>
+    <language>en-gb</language>
     
-    <item>
-      <title>Making Arbitrary Relational Calculus Queries Safe-Range</title>
-      <link>/entries/Safe_Range_RC.html</link>
-      <pubDate>Wed, 28 Sep 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Safe_Range_RC.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>First-Order Query Evaluation</title>
-      <link>/entries/Eval_FO.html</link>
-      <pubDate>Tue, 15 Feb 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Eval_FO.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Verified Imperative Implementation of B-Trees</title>
-      <link>/entries/BTree.html</link>
-      <pubDate>Wed, 24 Feb 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/BTree.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Formalization of Multiway-Join Algorithms</title>
-      <link>/entries/Generic_Join.html</link>
-      <pubDate>Mon, 16 Sep 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Generic_Join.html</guid>
-      <description></description>
-    </item>
-    
+      <atom:link href="/topics/computer-science/data-management-systems/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Verification of Query Optimization Algorithms</title>
+          <link>/entries/Query_Optimization.html</link>
+          <pubDate>Tue, 04 Oct 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Query_Optimization.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Making Arbitrary Relational Calculus Queries Safe-Range</title>
+          <link>/entries/Safe_Range_RC.html</link>
+          <pubDate>Wed, 28 Sep 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Safe_Range_RC.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>First-Order Query Evaluation</title>
+          <link>/entries/Eval_FO.html</link>
+          <pubDate>Tue, 15 Feb 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Eval_FO.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Verified Imperative Implementation of B-Trees</title>
+          <link>/entries/BTree.html</link>
+          <pubDate>Wed, 24 Feb 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/BTree.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formalization of Multiway-Join Algorithms</title>
+          <link>/entries/Generic_Join.html</link>
+          <pubDate>Mon, 16 Sep 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Generic_Join.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

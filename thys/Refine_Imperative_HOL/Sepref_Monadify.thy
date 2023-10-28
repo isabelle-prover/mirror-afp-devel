@@ -135,11 +135,8 @@ ML \<open>
         )
       *)  
 
-      val monadify_simproc = 
-        Simplifier.make_simproc @{context} "monadify_simproc"
-         {lhss =
-          [Logic.varify_global @{term "EVAL$a"}],
-          proc = K (try o monadify_conv_aux)};
+      val monadify_simproc =
+        \<^simproc_setup>\<open>passive monadify ("EVAL$a") = \<open>K (try o monadify_conv_aux)\<close>\<close>;
 
     end
 

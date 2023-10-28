@@ -487,6 +487,7 @@ name = "Julian Biendarra"
 
 [bisping]
 name = "Benjamin Bisping"
+orcid = "0000-0002-0637-0171"
 
 [bisping.emails]
 
@@ -496,12 +497,12 @@ user = [
   "bisping",
 ]
 host = [
-  "campus",
   "tu-berlin",
   "de",
 ]
 
 [bisping.homepages]
+bisping_homepage = "https://bbisping.de"
 
 [blanchette]
 name = "Jasmin Christian Blanchette"
@@ -4382,6 +4383,14 @@ name = "Bernhard Möller"
 
 [moeller.homepages]
 moeller_homepage = "https://www.informatik.uni-augsburg.de/en/chairs/dbis/pmi/staff/moeller/"
+
+[montanari]
+name = "Luisa Montanari"
+orcid = "0000-0002-5270-0290"
+
+[montanari.emails]
+
+[montanari.homepages]
 
 [mori]
 name = "Coraline Mori"

@@ -31,9 +31,7 @@ struct
 type 'a pred = 'a -> bool
 type 'a prop = 'a -> SpecCheck_Base.result_single
 
-fun apply f x = SpecCheck_Base.Result (f x)
-  (*testcode may throw arbitrary exceptions; interrupts must not be caught!*)
-  handle exn => if Exn.is_interrupt exn then Exn.reraise exn else SpecCheck_Base.Exception exn
+fun apply f x = \<^try>\<open>SpecCheck_Base.Result (f x) catch exn => SpecCheck_Base.Exception exn\<close>
 
 fun prop f x = apply f x
 
@@ -47,8 +45,6 @@ fun ==> (p1, p2) = implies p1 (prop p2)
 fun eq_exn (exn, exn') = exnName exn = exnName exn' andalso exnMessage exn = exnMessage exn'
 
 fun expect_failure exp_exn f = prop (fn x =>
-    (f x; false)
-    handle exn => if Exn.is_interrupt exn then Exn.reraise exn else eq_exn (exn, exp_exn)
-  )
+    \<^try>\<open>(f x; false) catch exn => eq_exn (exn, exp_exn)\<close>)
 
 end

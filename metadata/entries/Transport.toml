@@ -1,0 +1,40 @@
+title = "Transport via Partial Galois Connections and Equivalences"
+date = 2023-10-11
+topics = [
+  "Computer science/Programming languages/Lambda calculi",
+  "Computer science/Programming languages/Type systems",
+  "Computer science/Semantics and reasoning",
+  "Mathematics/Order",
+]
+abstract = """
+This entry contains the accompanying formalisation of the paper
+<a href=\"https://conf.researchr.org/details/aplas-2023/aplas-2023-research-papers/15/Transport-via-Partial-Galois-Connections-and-Equivalences\">\"Transport via Partial Galois Connections and Equivalences\" (APLAS 2023)</a>.
+It contains a theoretical framework to transport programs via equivalences,
+subsuming the theory of <a href=\"https://doi.org/10.1007/978-3-319-03545-1_9\">Isabelle's Lifting package</a>.
+It also contains a prototype to automate transports using this framework in Isabelle/HOL,
+but this prototype is not yet ready for production.
+Finally, it contains a library on top of Isabelle/HOL's axioms,
+including various relativised concepts on orders, functions, binary relations,
+and Galois connections and equivalences."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.kappelmann]
+email = "kappelmann_email"
+
+[contributors]
+
+[notify]
+kappelmann = "kappelmann_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.48550/arXiv.2303.05244",
+]
+pubs = []

@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>rauch on Archive of Formal Proofs</title>
+    <title>rauch on Archive of Formal Proofs
+    </title>
     <link>/authors/rauch/</link>
-    <description>Recent content in rauch on Archive of Formal Proofs</description>
+    <description>
+        Recent content in rauch 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Mon, 20 Jun 2005 00:00:00 +0000</lastBuildDate><atom:link href="/authors/rauch/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Jive Data and Store Model</title>
-      <link>/entries/JiveDataStoreModel.html</link>
-      <pubDate>Mon, 20 Jun 2005 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/JiveDataStoreModel.html</guid>
-      <description></description>
-    </item>
     
+      <lastBuildDate>Mon, 20 Jun 2005 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/rauch/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Jive Data and Store Model</title>
+          <link>/entries/JiveDataStoreModel.html</link>
+          <pubDate>Mon, 20 Jun 2005 00:00:00 +0000</pubDate>
+          <guid>/entries/JiveDataStoreModel.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

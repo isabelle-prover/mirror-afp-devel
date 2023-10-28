@@ -1,201 +1,205 @@
-{{- define "main" -}}
-{{- $site := . -}}
-{{- $path := .Site.Params.afpUrls.html -}}
-{{- if isset .Site.Data "status" -}}
-  {{- $path = .Site.Params.afpUrls.htmlDevel -}}
-{{- end -}}
-{{- $entry_name := .File.BaseFileName -}}
-<main>
-  {{- if isset .Site.Data "status" -}}
-  <strong>
-    This is a development version of this entry. It might change over time and is not stable. Please refer to release versions for citations.
-  </strong>
-  {{- end -}}
-  <h3>Abstract</h3>
+{{- define "main" }}
+  {{- $site := . }}
+  {{- $html_url := .Site.Params.afpUrls.html }}
+  {{- if isset .Site.Data "status" }}
+    {{- $html_url = .Site.Params.afpUrls.htmlDevel }}
+  {{- end }}
+  {{- $entry_name := "" }}
+  {{- with .File }}{{- $entry_name = .BaseFileName }}{{ end }}
+  <main>
+    {{- if isset .Site.Data "status" }}
+      <strong>
+        This is a development version of this entry. It might change over time and is not stable.
+        Please refer to release versions for citations.
+      </strong>
+    {{- end }}
+    <h3>Abstract</h3>
 
-  <div class="abstract mathjax_process">{{- trim .Params.abstract "\n" | safeHTML -}}</div>
+    <div class="abstract mathjax_process">{{ trim .Params.abstract "\n" | safeHTML }}</div>
 
-  <h3>License</h3>
-  <div>
-  {{- if (eq .Params.license "BSD") -}}
-  <a href="https://isa-afp.org/LICENSE">BSD License</a>
-  {{- else if (eq .Params.license "LGPL") -}}
-  <a href="https://isa-afp.org/LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a>
-  {{- else -}}
-    {{- printf "%s License" .Params.license -}}
-  {{- end -}}
-  </div>
-
-  {{- with .Params.note -}}
-  <p><em>{{ . }}</em></p>
-  {{- end -}}
-
-  {{- with.Params.history -}}
-  <h3>History</h3>
-  <dl>
-  {{- range . -}}
-    <dt>{{ dateFormat "January 2, 2006" .date }}</dt>
-    <dd>{{ safeHTML .value }}</dd>
-  {{- end -}}
-  </dl>
-  {{- end -}}
-
-  {{- with .Params.extra -}}
-  {{- range $key, $value := . -}}
-  <h3>{{- humanize $key -}}</h3>
-
-  <p>{{- $value | safeHTML -}}</p>
-  {{- end -}}
-  {{- end -}}
-
-  {{- $Scratch := newScratch -}}
-  
-  {{- with .Params.topics -}}
-  <h3>Topics</h3>
-  <ul>
-    {{- range . -}}
-    <li>{{- printf "[%s](/topics/%s)" . (urlize .) | $.Page.RenderString -}}</li>
-    {{- end -}}
-  </ul>
-  {{- end -}}
-
-  {{- with .Params.related -}}
-  <h3>Related publications</h3>
-  <ul>
-  {{- range . -}}
-    <li>
-      {{ safeHTML . }}
-    </li>
-  {{- end -}}
-  </ul>
-  {{- end -}}
-
-  {{- range .Params.sessions -}}
-  {{ $session := .session }}
-  <h3>Session {{ $session }}</h3>
-  <ul>
-    {{- range .theories }}
-    <li><a href="/theories/{{ urlize $session }}/#{{ . }}">{{ . }}</a></li>
-    {{- end -}}
-  </ul>
-  {{- end -}}
-
-  <div class="flex-wrap">
-  {{ $uses := .Params.dependencies }}
-  {{- with $uses -}}
-  <div>
-    <h3>Depends on</h3>
-    <ul class="horizontal-list">
-      {{- range . -}}
-      {{- $path := printf "/entries/%s.html" . -}}
-      {{- with $site.Site.GetPage $path -}}
-      <li>{{- printf "[%s](%s)" .Title $path | $.Page.RenderString -}}</li>
-      {{- end -}}
-      {{- end -}}
-    </ul>
-  </div>
-  {{- end -}}
-
-  {{- $used_by := (index .Site.Taxonomies.dependencies (urlize $entry_name)) -}}
-  {{- with $used_by -}}
-  <div>
-    <h3>Used by</h3>
-    <ul class="horizontal-list">
-      {{- range . -}}
-      <li>{{- printf "[%s](%s)" .Title .RelPermalink | $.Page.RenderString -}}</li>
-      {{- end -}}
-    </ul>
-  </div>
-  {{- end -}}
-  
-  {{ $related :=
-    (where (.Site.RegularPages.Related .) ".File.BaseFileName" "not in" $uses)
-    | complement $used_by
-    | first 5 }}
-  {{ with $related }}
-  <div>
-    <h3>Auto-related entries</h3>
-    <ul class="horizontal-list">
-      {{ range . }}
-      <li>{{- printf "[%s](%s)" .Title .RelPermalink | $.Page.RenderString -}}</li>
-      {{ end }}
-    </ul>
-  </div>
-  {{ end }}
-  </div>
-</main>
-
-<nav class='links'>
-  <a class='popup-button' href="#cite-popup">Cite</a>
-  <a class='popup-button' href="#download-popup">Download</a>
-  <h4>PDFs</h4>
-  <a href="{{- $path -}}/{{- $entry_name -}}/outline.pdf">Proof
-    outline</a>
-  <a href="{{- $path -}}/{{- $entry_name -}}/document.pdf">Proof
-    document</a>
-  <a href="{{- $path -}}/{{- $entry_name -}}/session_graph.pdf">Dependencies</a>
-
-  {{- if isset .Site.Data "status" -}}
-  {{- $status := "none" -}}
-  {{- range where .Site.Data.status.entries "entry" $entry_name -}}
-  {{- $status = .status -}}
-  {{- end -}}
-  <h4>Build status</h4>
-  <div class="status-{{ $status }}">
-  <strong>{{- $status -}}</strong>
-  <p>{{ .Site.Data.status.build_data.time }}</p>
-  <p>Isabelle/<wbr>{{ .Site.Data.status.build_data.isabelle_id }}</p>
-  <p>AFP/<wbr>{{ .Site.Data.status.build_data.afp_id }}</p>
-  <a href="{{ .Site.Data.status.build_data.url }}">{{ .Site.Data.status.build_data.job }}</a>
-  </div>
-  {{- end -}}
-</nav>
-
-<div id="cite-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Cite</h2>
-    <a class="close" href="#">&times;</a>
+    <h3>License</h3>
     <div>
-      <p style="display:none;" id="bibtex-filename">{{- $entry_name -}}-AFP</p>
-      {{- $authors := slice }}
-      {{- range .Params.authors -}}
-        {{- $authors = $authors | append (index (index $site.Site.Data.authors .) "name") -}}
-      {{- end -}}
-      <pre id="copy-text">@article{{- "{" -}}{{- $entry_name -}}-AFP,
-  author  = {{ "{" -}}{{- delimit $authors " and " -}}},
-  title   = {{ "{" -}}{{- htmlUnescape .Params.title -}}},
+      {{- if (eq .Params.license "BSD") }}
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+      {{- else if (eq .Params.license "LGPL") }}
+        <a href="https://isa-afp.org/LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a>
+      {{- else }}
+        {{ printf "%s License" .Params.license }}
+      {{- end }}
+    </div>
+
+    {{- with .Params.note }}
+      <p><em>{{ . }}</em></p>
+    {{- end }}
+
+    {{- with.Params.history }}
+      <h3>History</h3>
+      <dl>
+      {{- range . }}
+        <dt>{{ dateFormat "January 2, 2006" .date }}</dt>
+        <dd>{{ safeHTML .value }}</dd>
+      {{- end }}
+      </dl>
+    {{- end }}
+
+    {{- with .Params.extra }}
+      {{- range $key, $value := . }}
+        <h3>{{ humanize $key }}</h3>
+        <p>{{ $value | safeHTML }}</p>
+      {{- end }}
+    {{- end }}
+
+    {{- $Scratch := newScratch }}
+
+    {{- with .Params.topics }}
+      <h3>Topics</h3>
+      <ul>
+        {{- range . }}
+          <li>{{ printf "[%s](/topics/%s)" . (urlize .) | $.Page.RenderString }}</li>
+        {{- end }}
+      </ul>
+    {{- end }}
+
+    {{- with .Params.related }}
+      <h3>Related publications</h3>
+      <ul>
+      {{- range . }}
+        <li>
+          {{- safeHTML . }}
+        </li>
+      {{- end }}
+      </ul>
+    {{- end }}
+
+    {{- range .Params.sessions }}
+      {{- $session := .session }}
+      <h3>Session {{ $session }}</h3>
+      <ul>
+        {{- range .theories }}
+          <li><a href="/sessions/{{ urlize $session }}/#{{ . }}">{{ . }}</a></li>
+        {{- end }}
+      </ul>
+    {{- end }}
+
+    <div class="flex-wrap">
+    {{- $uses := .Params.dependencies }}
+    {{- with $uses }}
+      <div>
+        <h3>Depends on</h3>
+        <ul class="horizontal-list">
+          {{- range . }}
+            {{- $path := printf "/entries/%s.html" . }}
+            {{- with $site.Site.GetPage $path }}
+              <li>{{ printf "[%s](%s)" .Title $path | $.Page.RenderString }}</li>
+            {{- end }}
+          {{- end }}
+        </ul>
+      </div>
+    {{- end }}
+
+    {{- $used_by := (index .Site.Taxonomies.dependencies (urlize $entry_name)) }}
+    {{- with $used_by }}
+      <div>
+        <h3>Used by</h3>
+        <ul class="horizontal-list">
+          {{- range . }}
+            <li>
+              {{ printf "[%s](%s)" .Title .RelPermalink | $.Page.RenderString }}
+            </li>
+          {{- end }}
+        </ul>
+      </div>
+    {{- end }}
+
+    {{- with .File }}
+      {{- $related :=
+        (where ($site.Site.RegularPages.Related $site) ".BaseFileName" "not in" $uses)
+        | complement $used_by
+        | first 5 }}
+      {{- with $related }}
+        <div>
+          <h3>Auto-related entries</h3>
+          <ul class="horizontal-list">
+            {{- range . }}
+              <li>{{ printf "[%s](%s)" .Title .RelPermalink | $.Page.RenderString }}</li>
+            {{- end }}
+          </ul>
+        </div>
+      {{- end }}
+      </div>
+    {{ end }}
+  </main>
+
+  <nav class='links'>
+    <a class='popup-button' href="#cite-popup">Cite</a>
+    <a class='popup-button' href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="{{ $html_url }}/AFP/{{ $entry_name }}/outline.pdf">Proof outline</a>
+    <a href="{{ $html_url }}/AFP/{{ $entry_name }}/document.pdf">Proof document</a>
+    <a href="{{ $html_url }}/AFP/{{ $entry_name }}/session_graph.pdf">Dependencies</a>
+
+    {{- if isset .Site.Data "status" }}
+      {{- $status := "none" }}
+      {{- range where .Site.Data.status.entries "entry" $entry_name }}
+        {{- $status = .status }}
+      {{- end }}
+      <h4>Build status</h4>
+      <div class="status-{{ $status }}">
+      <strong>{{ $status }}</strong>
+      <p>{{ .Site.Data.status.build_data.time }}</p>
+      <p>Isabelle/<wbr>{{ .Site.Data.status.build_data.isabelle_id }}</p>
+      <p>AFP/<wbr>{{ .Site.Data.status.build_data.afp_id }}</p>
+      <a href="{{ .Site.Data.status.build_data.url }}">{{ .Site.Data.status.build_data.job }}</a>
+      </div>
+    {{- end }}
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">{{ $entry_name }}-AFP</p>
+        {{- $authors := slice }}
+        {{- range .Params.authors }}
+          {{- $authors = $authors | append (index (index $site.Site.Data.authors .) "name") }}
+        {{- end }}
+        <pre id="copy-text">@article{{ "{" }}{{ $entry_name }}-AFP,
+  author  = {{ "{" }}{{ delimit $authors " and " }}},
+  title   = {{ "{" }}{{ htmlUnescape .Params.title }}},
   journal = {Archive of Formal Proofs},
-  month   = { {{- dateFormat "January" .Params.date -}} },
-  year    = { {{- dateFormat "2006" .Params.date -}} },
-  note    = {\url{https://isa-afp.org/entries/{{- $entry_name -}}.html},
-            Formal proof development},
+  month   = { {{- dateFormat "January" .Params.date }}},
+  year    = { {{- dateFormat "2006" .Params.date }}},
+  note    = {\url{https://isa-afp.org/entries/{{ $entry_name }}.html},
+             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
     </div>
   </div>
-</div>
 
-<div id="download-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Download</h2>
-    <a class="close" href="#">&times;</a>
-    <a href="{{ $site.Site.Params.afpUrls.releases }}//afp-{{- $entry_name -}}-current.tar.gz" download>Download latest</a>
-    {{ with .Params.releases -}}
-    <p>Older releases:</p>
-    <ul>
-      {{- range . -}}
-      <li>
-        <a href="{{ $site.Site.Params.afpUrls.releases }}/afp-{{- $entry_name -}}-{{- .date -}}.tar.gz">
-          {{- dateFormat "Jan 2, 2006" .date -}}
-        </a>: Isabelle{{ .isabelle }}
-      </li>
-      {{- end -}}
-    </ul>
-    {{- end }}
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="{{ $site.Site.Params.afpUrls.releases }}/afp-{{ $entry_name }}-current.tar.gz"
+         download>Download latest</a>
+      {{- with .Params.releases }}
+        <p>Older releases:</p>
+        <ul>
+          {{- range . }}
+            <li>
+              <a href="{{ $site.Site.Params.afpUrls.releases }}/afp-{{ $entry_name }}-{{ .date }}.tar.gz">
+                {{ dateFormat "Jan 2, 2006" .date }}
+              </a>
+              : Isabelle{{ .isabelle }}
+            </li>
+          {{- end }}
+        </ul>
+      {{- end }}
+    </div>
   </div>
-</div>
-
-{{- end -}}
+{{- end }}

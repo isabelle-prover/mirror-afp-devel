@@ -130,18 +130,22 @@ using assms proof (induction ds arbitrary:v e)
     by (metis One_nat_def Tensor.lookup_base_Nil length_0_conv length_Suc_conv list.sel(1) prod_list.Nil valid_index.Nil)
 next
   case (Cons a ds)
-  then have "a * prod_list ds = length v" by auto
+  then have \<open>length v = prod_list ds * a\<close> by auto
   {
-    fix i assume "i<a"
-    then have "prod_list ds * (i+1) \<le> length v" using \<open>a * prod_list ds = length v\<close> using discrete mult.commute mult_le_mono1 by metis
+    fix i assume \<open>i < a\<close>
+    then have \<open>Suc i \<le> a\<close>
+      by simp
+    then have "prod_list ds * Suc i \<le> length v"
+      using \<open>length v = prod_list ds * a\<close>
+      by (simp only: mult_le_mono2)
     have "\<And>is'. is' \<lhd> ds \<Longrightarrow> e (i # is') = lookup_base ds (fixed_length_sublist v (prod_list ds) i) is'"
       using \<open>i<a\<close> by (metis Cons.prems(2) Tensor.lookup_base_Cons valid_index.simps)
     then have "tensor_vec_from_lookup ds (\<lambda>is'. e (i # is')) = fixed_length_sublist v (prod_list ds) i"
-      using Cons using \<open>prod_list ds * (i + 1) \<le> length v\<close> by (simp add: Cons.IH fixed_length_sublist_def)
+      using Cons using \<open>prod_list ds * Suc i \<le> length v\<close> by (simp add: Cons.IH fixed_length_sublist_def)
   }
   then show ?case unfolding tensor_vec_from_lookup_Cons lookup_base_Cons
-    using   concat_parts_eq[OF \<open>a * prod_list ds = length v\<close>]
-     atLeastLessThan_iff map_eq_conv set_upt Cons by (metis (no_types, lifting))
+    using atLeastLessThan_iff map_eq_conv set_upt Cons concat_parts_eq prod_list.Cons
+    by (metis (no_types, lifting))
 qed
 
 lemma tensor_lookup:

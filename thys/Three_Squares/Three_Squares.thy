@@ -1108,7 +1108,7 @@ next
     moreover have "coprime 2 (int p)" using \<open>odd (int p)\<close> by auto
     ultimately have "(int (2 * p)) dvd (x\<^sup>2 - - d')" by (simp add: divides_mult)
     hence "(x\<^sup>2 - - d') mod (int (2 * p)) = 0" by simp
-    hence "\<exists>y. x\<^sup>2 - - d' = int (2 * p) * y" by (simp add: zmod_eq_0D)
+    hence "\<exists>y. x\<^sup>2 - - d' = int (2 * p) * y" by auto
     hence "\<exists>y. x\<^sup>2 - - d' = y * int (2 * p)" by (simp add: algebra_simps)
     thus "\<exists>x y. x\<^sup>2 - - d' = y * int (2 * p)" by (rule exI[where ?x=x])
   qed

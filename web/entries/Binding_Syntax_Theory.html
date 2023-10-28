@@ -1,27 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>A General Theory of Syntax with Bindings - Archive of Formal Proofs</title><meta name="description" content="We formalize a theory of syntax with bindings that has been developed
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>A General Theory of Syntax with Bindings - Archive of Formal Proofs</title>
+    <meta name="description" content="We formalize a theory of syntax with bindings that has been developed
 and refined over the last decade to support several large
-formalization efforts...."><meta property="og:title" content="A General Theory of Syntax with Bindings" />
+formalization efforts....">
+
+  <meta property="og:title" content="A General Theory of Syntax with Bindings" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="/entries/Binding_Syntax_Theory.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
 <meta property="article:published_time" content="2019-04-06T00:00:00+00:00" />
 <meta property="article:modified_time" content="2019-04-06T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="A General Theory of Syntax with Bindings"/>
 <meta name="twitter:description" content=""/>
 
-  
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
     <script>
       MathJax = {
         tex: {
@@ -33,72 +38,111 @@ formalization efforts...."><meta property="og:title" content="A General Theory o
         }
       };
     </script>
-    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
   <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
-  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../" class='logo-link'>
-    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../" class='logo-link'>
-        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../"><li >Home</li></a>
-        <a href="../topics/"><li >Topics</li></a>
-        <a href="../download/"><li >Download</li></a>
-        <a href="../help/"><li >Help</li></a>
-        <a href="../submission/"><li >Submission</li></a>
-        <a href="../statistics/"><li >Statistics</li></a>
-        <a href="../about/"><li >About</li></a>
+          <a href="../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content  entries'><header>
-  <form autocomplete="off" action="../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>A</span> <span class='first'>G</span>eneral <span class='first'>T</span>heory of <span class='first'>S</span>yntax <span class='first'>W</span>ith <span class='first'>B</span>indings</h1>
+    </aside>
+    <div class='content entries'>
+      <header>
+    <form autocomplete="off" action="../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>A</span> <span class='first'>G</span>eneral <span class='first'>T</span>heory of <span class='first'>S</span>yntax with <span class='first'>B</span>indings
+    
+  </h1>
   <div>
-    
-    <p><a href="../authors/gheri">Lorenzo Gheri</a> <a class="obfuscated" data="eyJob3N0IjpbImdtYWlsIiwiY29tIl0sInVzZXIiOlsibG9yIiwiZ2hlcmkiXX0=">📧</a> and <a href="../authors/popescu">Andrei Popescu</a> <a href="https://www.andreipopescu.uk">🌐</a>
-    </p>
-    
-    
-    <p class="date">April 6, 2019</p>
-    
-  </div>
-</header><div><main><h3>Abstract</h3>
+      <p>
+        <a href="../authors/gheri">Lorenzo Gheri</a> <a class="obfuscated" data="eyJob3N0IjpbImdtYWlsIiwiY29tIl0sInVzZXIiOlsibG9yIiwiZ2hlcmkiXX0=">📧</a> and <a href="../authors/popescu">Andrei Popescu</a> <a href="https://www.andreipopescu.uk">🌐</a>
 
-  <div class="abstract mathjax_process">We formalize a theory of syntax with bindings that has been developed
+      </p>
+      <p class="date">April 6, 2019</p>
+  </div>
+</header>
+      <div>
+        
+  <main>
+    <h3>Abstract</h3>
+
+    <div class="abstract mathjax_process">We formalize a theory of syntax with bindings that has been developed
 and refined over the last decade to support several large
 formalization efforts. Terms are defined for an arbitrary number of
 constructors of varying numbers of inputs, quotiented to
@@ -109,85 +153,124 @@ induction and recursion principles and support for semantic
 interpretation. This work has been presented in the ITP 2017 paper “A
 Formalized General Theory of Syntax with Bindings”.</div>
 
-  <h3>License</h3>
-  <div><a href="https://isa-afp.org/LICENSE">BSD License</a></div><h3>Topics</h3>
-  <ul><li><a href="../topics/computer-science/programming-languages/lambda-calculi">Computer science/Programming languages/Lambda calculi</a></li><li><a href="../topics/computer-science/functional-programming">Computer science/Functional programming</a></li><li><a href="../topics/logic/general-logic/mechanization-of-proofs">Logic/General logic/Mechanization of proofs</a></li></ul>
-  <h3>Session Binding_Syntax_Theory</h3>
-  <ul>
-    <li><a href="../theories/binding_syntax_theory/#Preliminaries">Preliminaries</a></li>
-    <li><a href="../theories/binding_syntax_theory/#QuasiTerms_Swap_Fresh">QuasiTerms_Swap_Fresh</a></li>
-    <li><a href="../theories/binding_syntax_theory/#QuasiTerms_PickFresh_Alpha">QuasiTerms_PickFresh_Alpha</a></li>
-    <li><a href="../theories/binding_syntax_theory/#QuasiTerms_Environments_Substitution">QuasiTerms_Environments_Substitution</a></li>
-    <li><a href="../theories/binding_syntax_theory/#Pick">Pick</a></li>
-    <li><a href="../theories/binding_syntax_theory/#Equiv_Relation2">Equiv_Relation2</a></li>
-    <li><a href="../theories/binding_syntax_theory/#Transition_QuasiTerms_Terms">Transition_QuasiTerms_Terms</a></li>
-    <li><a href="../theories/binding_syntax_theory/#Terms">Terms</a></li>
-    <li><a href="../theories/binding_syntax_theory/#Well_Sorted_Terms">Well_Sorted_Terms</a></li>
-    <li><a href="../theories/binding_syntax_theory/#Iteration">Iteration</a></li>
-    <li><a href="../theories/binding_syntax_theory/#Semantic_Domains">Semantic_Domains</a></li>
-    <li><a href="../theories/binding_syntax_theory/#Recursion">Recursion</a></li></ul><div class="flex-wrap">
-  
-  
-  </div>
-</main>
-
-<nav class='links'>
-  <a class='popup-button' href="#cite-popup">Cite</a>
-  <a class='popup-button' href="#download-popup">Download</a>
-  <h4>PDFs</h4>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Binding_Syntax_Theory/outline.pdf">Proof
-    outline</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Binding_Syntax_Theory/document.pdf">Proof
-    document</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Binding_Syntax_Theory/session_graph.pdf">Dependencies</a></nav>
-
-<div id="cite-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Cite</h2>
-    <a class="close" href="#">&times;</a>
+    <h3>License</h3>
     <div>
-      <p style="display:none;" id="bibtex-filename">Binding_Syntax_Theory-AFP</p><pre id="copy-text">@article{Binding_Syntax_Theory-AFP,
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/computer-science/programming-languages/lambda-calculi">Computer science/Programming languages/Lambda calculi</a></li>
+          <li><a href="../topics/computer-science/functional-programming">Computer science/Functional programming</a></li>
+          <li><a href="../topics/logic/general-logic/mechanization-of-proofs">Logic/General logic/Mechanization of proofs</a></li>
+      </ul>
+      <h3>Session Binding_Syntax_Theory</h3>
+      <ul>
+          <li><a href="../sessions/binding_syntax_theory/#Preliminaries">Preliminaries</a></li>
+          <li><a href="../sessions/binding_syntax_theory/#QuasiTerms_Swap_Fresh">QuasiTerms_Swap_Fresh</a></li>
+          <li><a href="../sessions/binding_syntax_theory/#QuasiTerms_PickFresh_Alpha">QuasiTerms_PickFresh_Alpha</a></li>
+          <li><a href="../sessions/binding_syntax_theory/#QuasiTerms_Environments_Substitution">QuasiTerms_Environments_Substitution</a></li>
+          <li><a href="../sessions/binding_syntax_theory/#Pick">Pick</a></li>
+          <li><a href="../sessions/binding_syntax_theory/#Equiv_Relation2">Equiv_Relation2</a></li>
+          <li><a href="../sessions/binding_syntax_theory/#Transition_QuasiTerms_Terms">Transition_QuasiTerms_Terms</a></li>
+          <li><a href="../sessions/binding_syntax_theory/#Terms">Terms</a></li>
+          <li><a href="../sessions/binding_syntax_theory/#Well_Sorted_Terms">Well_Sorted_Terms</a></li>
+          <li><a href="../sessions/binding_syntax_theory/#Iteration">Iteration</a></li>
+          <li><a href="../sessions/binding_syntax_theory/#Semantic_Domains">Semantic_Domains</a></li>
+          <li><a href="../sessions/binding_syntax_theory/#Recursion">Recursion</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+      </div>
+    
+  </main>
+
+  <nav class='links'>
+    <a class='popup-button' href="#cite-popup">Cite</a>
+    <a class='popup-button' href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Binding_Syntax_Theory/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Binding_Syntax_Theory/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Binding_Syntax_Theory/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Binding_Syntax_Theory-AFP</p>
+        <pre id="copy-text">@article{Binding_Syntax_Theory-AFP,
   author  = {Lorenzo Gheri and Andrei Popescu},
   title   = {A General Theory of Syntax with Bindings},
   journal = {Archive of Formal Proofs},
   month   = {April},
   year    = {2019},
   note    = {\url{https://isa-afp.org/entries/Binding_Syntax_Theory.html},
-            Formal proof development},
+             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
     </div>
   </div>
-</div>
 
-<div id="download-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Download</h2>
-    <a class="close" href="#">&times;</a>
-    <a href="https://www.isa-afp.org/release//afp-Binding_Syntax_Theory-current.tar.gz" download>Download latest</a>
-    <p>Older releases:</p>
-    <ul><li>
-        <a href="https://www.isa-afp.org/release/afp-Binding_Syntax_Theory-2023-09-13.tar.gz">Sep 13, 2023</a>: Isabelle2023
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Binding_Syntax_Theory-2022-10-27.tar.gz">Oct 27, 2022</a>: Isabelle2022
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Binding_Syntax_Theory-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021-1
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Binding_Syntax_Theory-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Binding_Syntax_Theory-2020-04-18.tar.gz">Apr 18, 2020</a>: Isabelle2020
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Binding_Syntax_Theory-2019-06-11.tar.gz">Jun 11, 2019</a>: Isabelle2019
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Binding_Syntax_Theory-2019-04-08.tar.gz">Apr 8, 2019</a>: Isabelle2018
-      </li></ul>
-  </div>
-</div>
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-Binding_Syntax_Theory-current.tar.gz"
+         download>Download latest</a>
+        <p>Older releases:</p>
+        <ul>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Binding_Syntax_Theory-2023-09-13.tar.gz">
+                Sep 13, 2023
+              </a>
+              : Isabelle2023
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Binding_Syntax_Theory-2022-10-27.tar.gz">
+                Oct 27, 2022
+              </a>
+              : Isabelle2022
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Binding_Syntax_Theory-2021-12-14.tar.gz">
+                Dec 14, 2021
+              </a>
+              : Isabelle2021-1
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Binding_Syntax_Theory-2021-02-23.tar.gz">
+                Feb 23, 2021
+              </a>
+              : Isabelle2021
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Binding_Syntax_Theory-2020-04-18.tar.gz">
+                Apr 18, 2020
+              </a>
+              : Isabelle2020
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Binding_Syntax_Theory-2019-06-11.tar.gz">
+                Jun 11, 2019
+              </a>
+              : Isabelle2019
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Binding_Syntax_Theory-2019-04-08.tar.gz">
+                Apr 8, 2019
+              </a>
+              : Isabelle2018
+            </li>
+        </ul>
     </div>
   </div>
-</body>
-
+        
+      </div>
+    </div>
+  </body>
 </html>

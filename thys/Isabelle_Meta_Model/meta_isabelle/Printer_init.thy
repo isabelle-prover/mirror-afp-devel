@@ -261,7 +261,7 @@ structure CodeConst = struct
       val () = if File.exists pfile then error ("File exists \"" ^ file ^ "\"\n") else ()
       val oc = Unsynchronized.ref []
       val _ = f (fn a => fn b => SOME (oc := Printf.sprintf1 a b :: (Unsynchronized.! oc))) in
-      SOME (File.write_list pfile (rev (Unsynchronized.! oc))) handle _ => NONE
+      try (fn () => File.write_list pfile (rev (Unsynchronized.! oc))) ()
     end
 
   fun outStand1 f = outFile1 f (Unsynchronized.! stdout_file)

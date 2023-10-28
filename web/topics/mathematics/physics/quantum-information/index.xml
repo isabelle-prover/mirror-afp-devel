@@ -1,37 +1,37 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Mathematics/Physics/Quantum information on Archive of Formal Proofs</title>
+    <title>Mathematics/Physics/Quantum information on Archive of Formal Proofs
+    </title>
     <link>/topics/mathematics/physics/quantum-information/</link>
-    <description>Recent content in Mathematics/Physics/Quantum information on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Mathematics/Physics/Quantum information 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language><atom:link href="/topics/mathematics/physics/quantum-information/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>The CHSH inequality: Tsirelson&#39;s upper-bound and other results</title>
-      <link>/entries/TsirelsonBound.html</link>
-      <pubDate>Tue, 18 Apr 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/TsirelsonBound.html</guid>
-      <description></description>
-    </item>
+    <language>en-gb</language>
     
-    <item>
-      <title>Quantum projective measurements and the CHSH inequality</title>
-      <link>/entries/Projective_Measurements.html</link>
-      <pubDate>Wed, 03 Mar 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Projective_Measurements.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Isabelle Marries Dirac: a Library for Quantum Computation and Quantum Information</title>
-      <link>/entries/Isabelle_Marries_Dirac.html</link>
-      <pubDate>Sun, 22 Nov 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Isabelle_Marries_Dirac.html</guid>
-      <description></description>
-    </item>
-    
+      <atom:link href="/topics/mathematics/physics/quantum-information/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>The CHSH inequality: Tsirelson&#39;s upper-bound and other results</title>
+          <link>/entries/TsirelsonBound.html</link>
+          <pubDate>Tue, 18 Apr 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/TsirelsonBound.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Quantum projective measurements and the CHSH inequality</title>
+          <link>/entries/Projective_Measurements.html</link>
+          <pubDate>Wed, 03 Mar 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Projective_Measurements.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Isabelle Marries Dirac: a Library for Quantum Computation and Quantum Information</title>
+          <link>/entries/Isabelle_Marries_Dirac.html</link>
+          <pubDate>Sun, 22 Nov 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Isabelle_Marries_Dirac.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

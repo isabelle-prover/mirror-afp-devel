@@ -1,47 +1,45 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Dirichlet_Series on Archive of Formal Proofs</title>
+    <title>Dirichlet_Series on Archive of Formal Proofs
+    </title>
     <link>/dependencies/dirichlet_series/</link>
-    <description>Recent content in Dirichlet_Series on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Dirichlet_Series 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Wed, 08 Jun 2022 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/dirichlet_series/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Finite Fields</title>
-      <link>/entries/Finite_Fields.html</link>
-      <pubDate>Wed, 08 Jun 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Finite_Fields.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>Gauss Sums and the Pólya–Vinogradov Inequality</title>
-      <link>/entries/Gauss_Sums.html</link>
-      <pubDate>Tue, 10 Dec 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Gauss_Sums.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Dirichlet L-Functions and Dirichlet&#39;s Theorem</title>
-      <link>/entries/Dirichlet_L.html</link>
-      <pubDate>Thu, 21 Dec 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Dirichlet_L.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Hurwitz and Riemann ζ Functions</title>
-      <link>/entries/Zeta_Function.html</link>
-      <pubDate>Thu, 12 Oct 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Zeta_Function.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Wed, 08 Jun 2022 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/dirichlet_series/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Finite Fields</title>
+          <link>/entries/Finite_Fields.html</link>
+          <pubDate>Wed, 08 Jun 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Finite_Fields.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Gauss Sums and the Pólya–Vinogradov Inequality</title>
+          <link>/entries/Gauss_Sums.html</link>
+          <pubDate>Tue, 10 Dec 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Gauss_Sums.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Dirichlet L-Functions and Dirichlet&#39;s Theorem</title>
+          <link>/entries/Dirichlet_L.html</link>
+          <pubDate>Thu, 21 Dec 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Dirichlet_L.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Hurwitz and Riemann ζ Functions</title>
+          <link>/entries/Zeta_Function.html</link>
+          <pubDate>Thu, 12 Oct 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Zeta_Function.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

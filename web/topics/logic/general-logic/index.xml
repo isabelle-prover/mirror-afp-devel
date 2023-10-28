@@ -1,523 +1,422 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Logic/General logic on Archive of Formal Proofs</title>
+    <title>Logic/General logic on Archive of Formal Proofs
+    </title>
     <link>/topics/logic/general-logic/</link>
-    <description>Recent content in Logic/General logic on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Logic/General logic 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language><atom:link href="/topics/logic/general-logic/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>MLSS Decision Procedure</title>
-      <link>/entries/MLSS_Decision_Proc.html</link>
-      <pubDate>Fri, 05 May 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/MLSS_Decision_Proc.html</guid>
-      <description></description>
-    </item>
+    <language>en-gb</language>
     
-    <item>
-      <title>MLSS Decision Procedure</title>
-      <link>/entries/MLSS_Decision_Proc.html</link>
-      <pubDate>Fri, 05 May 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/MLSS_Decision_Proc.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Formalization of the SCL(FOL) Calculus: Simple Clause Learning for First-Order Logic</title>
-      <link>/entries/Simple_Clause_Learning.html</link>
-      <pubDate>Thu, 20 Apr 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Simple_Clause_Learning.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Sound and Complete Calculus for Probability Inequalities</title>
-      <link>/entries/Probability_Inequality_Completeness.html</link>
-      <pubDate>Mon, 20 Feb 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Probability_Inequality_Completeness.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Sound and Complete Calculus for Probability Inequalities</title>
-      <link>/entries/Probability_Inequality_Completeness.html</link>
-      <pubDate>Mon, 20 Feb 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Probability_Inequality_Completeness.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Given Clause Loops</title>
-      <link>/entries/Given_Clause_Loops.html</link>
-      <pubDate>Wed, 25 Jan 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Given_Clause_Loops.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Suppes&#39; Theorem For Probability Logic</title>
-      <link>/entries/Suppes_Theorem.html</link>
-      <pubDate>Sun, 22 Jan 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Suppes_Theorem.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Synthetic Completeness</title>
-      <link>/entries/Synthetic_Completeness.html</link>
-      <pubDate>Mon, 09 Jan 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Synthetic_Completeness.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Class-based Classical Propositional Logic</title>
-      <link>/entries/Propositional_Logic_Class.html</link>
-      <pubDate>Thu, 15 Dec 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Propositional_Logic_Class.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Automation of Boolos&#39; Curious Inference in Isabelle/HOL</title>
-      <link>/entries/Boolos_Curious_Inference_Automated.html</link>
-      <pubDate>Mon, 05 Dec 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Boolos_Curious_Inference_Automated.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Abstract Object Theory</title>
-      <link>/entries/AOT.html</link>
-      <pubDate>Mon, 28 Nov 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/AOT.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Making Arbitrary Relational Calculus Queries Safe-Range</title>
-      <link>/entries/Safe_Range_RC.html</link>
-      <pubDate>Wed, 28 Sep 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Safe_Range_RC.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Stalnaker&#39;s Epistemic Logic</title>
-      <link>/entries/Stalnaker_Logic.html</link>
-      <pubDate>Fri, 23 Sep 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Stalnaker_Logic.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Soundness and Completeness of Implicational Logic</title>
-      <link>/entries/Implicational_Logic.html</link>
-      <pubDate>Tue, 13 Sep 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Implicational_Logic.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Naive Prover for First-Order Logic</title>
-      <link>/entries/FOL_Seq_Calc3.html</link>
-      <pubDate>Tue, 22 Mar 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/FOL_Seq_Calc3.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Naive Prover for First-Order Logic</title>
-      <link>/entries/FOL_Seq_Calc3.html</link>
-      <pubDate>Tue, 22 Mar 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/FOL_Seq_Calc3.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>First-Order Query Evaluation</title>
-      <link>/entries/Eval_FO.html</link>
-      <pubDate>Tue, 15 Feb 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Eval_FO.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Sequent Calculus Prover for First-Order Logic with Functions</title>
-      <link>/entries/FOL_Seq_Calc2.html</link>
-      <pubDate>Mon, 31 Jan 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/FOL_Seq_Calc2.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Sequent Calculus Prover for First-Order Logic with Functions</title>
-      <link>/entries/FOL_Seq_Calc2.html</link>
-      <pubDate>Mon, 31 Jan 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/FOL_Seq_Calc2.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Automating Public Announcement Logic and the Wise Men Puzzle in Isabelle/HOL</title>
-      <link>/entries/PAL.html</link>
-      <pubDate>Mon, 08 Nov 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/PAL.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Exploring Simplified Variants of Gödel’s Ontological Argument in Isabelle/HOL</title>
-      <link>/entries/SimplifiedOntologicalArgument.html</link>
-      <pubDate>Mon, 08 Nov 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/SimplifiedOntologicalArgument.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Belief Revision Theory</title>
-      <link>/entries/Belief_Revision.html</link>
-      <pubDate>Tue, 19 Oct 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Belief_Revision.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Soundness and Completeness of an Axiomatic System for First-Order Logic</title>
-      <link>/entries/FOL_Axiomatic.html</link>
-      <pubDate>Fri, 24 Sep 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/FOL_Axiomatic.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Public Announcement Logic</title>
-      <link>/entries/Public_Announcement_Logic.html</link>
-      <pubDate>Thu, 17 Jun 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Public_Announcement_Logic.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Isabelle&#39;s Metalogic: Formalization and Proof Checker</title>
-      <link>/entries/Metalogic_ProofChecker.html</link>
-      <pubDate>Tue, 27 Apr 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Metalogic_ProofChecker.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Solution to the xkcd Blue Eyes puzzle</title>
-      <link>/entries/Blue_Eyes.html</link>
-      <pubDate>Sat, 30 Jan 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Blue_Eyes.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Topological semantics for paraconsistent and paracomplete logics</title>
-      <link>/entries/Topological_Semantics.html</link>
-      <pubDate>Thu, 17 Dec 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Topological_Semantics.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Extensions to the Comprehensive Framework for Saturation Theorem Proving</title>
-      <link>/entries/Saturation_Framework_Extensions.html</link>
-      <pubDate>Tue, 25 Aug 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Saturation_Framework_Extensions.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>An Efficient Normalisation Procedure for Linear Temporal Logic: Isabelle/HOL Formalisation</title>
-      <link>/entries/LTL_Normal_Form.html</link>
-      <pubDate>Fri, 08 May 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/LTL_Normal_Form.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Comprehensive Framework for Saturation Theorem Proving</title>
-      <link>/entries/Saturation_Framework.html</link>
-      <pubDate>Thu, 09 Apr 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Saturation_Framework.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Formalization of an Optimized Monitoring Algorithm for Metric First-Order Dynamic Logic with Aggregations</title>
-      <link>/entries/MFODL_Monitor_Optimized.html</link>
-      <pubDate>Thu, 09 Apr 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/MFODL_Monitor_Optimized.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Formalizing a Seligman-Style Tableau System for Hybrid Logic</title>
-      <link>/entries/Hybrid_Logic.html</link>
-      <pubDate>Fri, 20 Dec 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Hybrid_Logic.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic</title>
-      <link>/entries/MFOTL_Monitor.html</link>
-      <pubDate>Thu, 04 Jul 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/MFOTL_Monitor.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A General Theory of Syntax with Bindings</title>
-      <link>/entries/Binding_Syntax_Theory.html</link>
-      <pubDate>Sat, 06 Apr 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Binding_Syntax_Theory.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Verified Functional Implementation of Bachmair and Ganzinger&#39;s Ordered Resolution Prover</title>
-      <link>/entries/Functional_Ordered_Resolution_Prover.html</link>
-      <pubDate>Fri, 23 Nov 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Functional_Ordered_Resolution_Prover.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Epistemic Logic: Completeness of Modal Logics</title>
-      <link>/entries/Epistemic_Logic.html</link>
-      <pubDate>Mon, 29 Oct 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Epistemic_Logic.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Formalization of Bachmair and Ganzinger&#39;s Ordered Resolution Prover</title>
-      <link>/entries/Ordered_Resolution_Prover.html</link>
-      <pubDate>Thu, 18 Jan 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Ordered_Resolution_Prover.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Hybrid Multi-Lane Spatial Logic</title>
-      <link>/entries/Hybrid_Multi_Lane_Spatial_Logic.html</link>
-      <pubDate>Mon, 06 Nov 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Hybrid_Multi_Lane_Spatial_Logic.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Differential Dynamic Logic</title>
-      <link>/entries/Differential_Dynamic_Logic.html</link>
-      <pubDate>Mon, 13 Feb 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Differential_Dynamic_Logic.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>First-Order Logic According to Harrison</title>
-      <link>/entries/FOL_Harrison.html</link>
-      <pubDate>Sun, 01 Jan 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/FOL_Harrison.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Paraconsistency</title>
-      <link>/entries/Paraconsistency.html</link>
-      <pubDate>Wed, 07 Dec 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Paraconsistency.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Modal Logics for Nominal Transition Systems</title>
-      <link>/entries/Modal_Logics_for_NTS.html</link>
-      <pubDate>Tue, 25 Oct 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Modal_Logics_for_NTS.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Allen&#39;s Interval Calculus</title>
-      <link>/entries/Allen_Calculus.html</link>
-      <pubDate>Thu, 29 Sep 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Allen_Calculus.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Resolution Calculus for First-Order Logic</title>
-      <link>/entries/Resolution_FOL.html</link>
-      <pubDate>Thu, 30 Jun 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Resolution_FOL.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Propositional Resolution and Prime Implicates Generation</title>
-      <link>/entries/PropResPI.html</link>
-      <pubDate>Fri, 11 Mar 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/PropResPI.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Linear Temporal Logic</title>
-      <link>/entries/LTL.html</link>
-      <pubDate>Tue, 01 Mar 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/LTL.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Derivatives of Logical Formulas</title>
-      <link>/entries/Formula_Derivatives.html</link>
-      <pubDate>Thu, 28 May 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Formula_Derivatives.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Decision Procedures for MSO on Words Based on Derivatives of Regular Expressions</title>
-      <link>/entries/MSO_Regex_Equivalence.html</link>
-      <pubDate>Thu, 12 Jun 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/MSO_Regex_Equivalence.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Boolean Expression Checkers</title>
-      <link>/entries/Boolean_Expression_Checkers.html</link>
-      <pubDate>Sun, 08 Jun 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Boolean_Expression_Checkers.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A shallow embedding of HyperCTL*</title>
-      <link>/entries/HyperCTL.html</link>
-      <pubDate>Wed, 16 Apr 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/HyperCTL.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Sound and Complete Sort Encodings for First-Order Logic</title>
-      <link>/entries/Sort_Encodings.html</link>
-      <pubDate>Thu, 27 Jun 2013 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Sort_Encodings.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Interval Temporal Logic on Natural Numbers</title>
-      <link>/entries/Nat-Interval-Logic.html</link>
-      <pubDate>Wed, 23 Feb 2011 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Nat-Interval-Logic.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Free Boolean Algebra</title>
-      <link>/entries/Free-Boolean-Algebra.html</link>
-      <pubDate>Mon, 29 Mar 2010 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Free-Boolean-Algebra.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Formalizing the Logic-Automaton Connection</title>
-      <link>/entries/Presburger-Automata.html</link>
-      <pubDate>Thu, 03 Dec 2009 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Presburger-Automata.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Quantifier Elimination for Linear Arithmetic</title>
-      <link>/entries/LinearQuantifierElim.html</link>
-      <pubDate>Fri, 11 Jan 2008 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/LinearQuantifierElim.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>First-Order Logic According to Fitting</title>
-      <link>/entries/FOL-Fitting.html</link>
-      <pubDate>Thu, 02 Aug 2007 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/FOL-Fitting.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Mechanically Verified, Efficient, Sound and Complete Theorem Prover For First Order Logic</title>
-      <link>/entries/Verified-Prover.html</link>
-      <pubDate>Tue, 28 Sep 2004 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Verified-Prover.html</guid>
-      <description></description>
-    </item>
-    
+      <atom:link href="/topics/logic/general-logic/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Coupled Similarity and Contrasimilarity, and How to Compute Them</title>
+          <link>/entries/Coupledsim_Contrasim.html</link>
+          <pubDate>Fri, 18 Aug 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Coupledsim_Contrasim.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>MLSS Decision Procedure</title>
+          <link>/entries/MLSS_Decision_Proc.html</link>
+          <pubDate>Fri, 05 May 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/MLSS_Decision_Proc.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>MLSS Decision Procedure</title>
+          <link>/entries/MLSS_Decision_Proc.html</link>
+          <pubDate>Fri, 05 May 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/MLSS_Decision_Proc.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Formalization of the SCL(FOL) Calculus: Simple Clause Learning for First-Order Logic</title>
+          <link>/entries/Simple_Clause_Learning.html</link>
+          <pubDate>Thu, 20 Apr 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Simple_Clause_Learning.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Sound and Complete Calculus for Probability Inequalities</title>
+          <link>/entries/Probability_Inequality_Completeness.html</link>
+          <pubDate>Mon, 20 Feb 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Probability_Inequality_Completeness.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Sound and Complete Calculus for Probability Inequalities</title>
+          <link>/entries/Probability_Inequality_Completeness.html</link>
+          <pubDate>Mon, 20 Feb 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Probability_Inequality_Completeness.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Given Clause Loops</title>
+          <link>/entries/Given_Clause_Loops.html</link>
+          <pubDate>Wed, 25 Jan 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Given_Clause_Loops.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Suppes&#39; Theorem For Probability Logic</title>
+          <link>/entries/Suppes_Theorem.html</link>
+          <pubDate>Sun, 22 Jan 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Suppes_Theorem.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Synthetic Completeness</title>
+          <link>/entries/Synthetic_Completeness.html</link>
+          <pubDate>Mon, 09 Jan 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Synthetic_Completeness.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Class-based Classical Propositional Logic</title>
+          <link>/entries/Propositional_Logic_Class.html</link>
+          <pubDate>Thu, 15 Dec 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Propositional_Logic_Class.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Automation of Boolos&#39; Curious Inference in Isabelle/HOL</title>
+          <link>/entries/Boolos_Curious_Inference_Automated.html</link>
+          <pubDate>Mon, 05 Dec 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Boolos_Curious_Inference_Automated.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Abstract Object Theory</title>
+          <link>/entries/AOT.html</link>
+          <pubDate>Mon, 28 Nov 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/AOT.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Making Arbitrary Relational Calculus Queries Safe-Range</title>
+          <link>/entries/Safe_Range_RC.html</link>
+          <pubDate>Wed, 28 Sep 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Safe_Range_RC.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Stalnaker&#39;s Epistemic Logic</title>
+          <link>/entries/Stalnaker_Logic.html</link>
+          <pubDate>Fri, 23 Sep 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Stalnaker_Logic.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Soundness and Completeness of Implicational Logic</title>
+          <link>/entries/Implicational_Logic.html</link>
+          <pubDate>Tue, 13 Sep 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Implicational_Logic.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Naive Prover for First-Order Logic</title>
+          <link>/entries/FOL_Seq_Calc3.html</link>
+          <pubDate>Tue, 22 Mar 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/FOL_Seq_Calc3.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Naive Prover for First-Order Logic</title>
+          <link>/entries/FOL_Seq_Calc3.html</link>
+          <pubDate>Tue, 22 Mar 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/FOL_Seq_Calc3.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>First-Order Query Evaluation</title>
+          <link>/entries/Eval_FO.html</link>
+          <pubDate>Tue, 15 Feb 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Eval_FO.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Sequent Calculus Prover for First-Order Logic with Functions</title>
+          <link>/entries/FOL_Seq_Calc2.html</link>
+          <pubDate>Mon, 31 Jan 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/FOL_Seq_Calc2.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Sequent Calculus Prover for First-Order Logic with Functions</title>
+          <link>/entries/FOL_Seq_Calc2.html</link>
+          <pubDate>Mon, 31 Jan 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/FOL_Seq_Calc2.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Automating Public Announcement Logic and the Wise Men Puzzle in Isabelle/HOL</title>
+          <link>/entries/PAL.html</link>
+          <pubDate>Mon, 08 Nov 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/PAL.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Exploring Simplified Variants of Gödel’s Ontological Argument in Isabelle/HOL</title>
+          <link>/entries/SimplifiedOntologicalArgument.html</link>
+          <pubDate>Mon, 08 Nov 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/SimplifiedOntologicalArgument.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Belief Revision Theory</title>
+          <link>/entries/Belief_Revision.html</link>
+          <pubDate>Tue, 19 Oct 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Belief_Revision.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Soundness and Completeness of an Axiomatic System for First-Order Logic</title>
+          <link>/entries/FOL_Axiomatic.html</link>
+          <pubDate>Fri, 24 Sep 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/FOL_Axiomatic.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Public Announcement Logic</title>
+          <link>/entries/Public_Announcement_Logic.html</link>
+          <pubDate>Thu, 17 Jun 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Public_Announcement_Logic.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Isabelle&#39;s Metalogic: Formalization and Proof Checker</title>
+          <link>/entries/Metalogic_ProofChecker.html</link>
+          <pubDate>Tue, 27 Apr 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Metalogic_ProofChecker.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Solution to the xkcd Blue Eyes puzzle</title>
+          <link>/entries/Blue_Eyes.html</link>
+          <pubDate>Sat, 30 Jan 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Blue_Eyes.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Topological semantics for paraconsistent and paracomplete logics</title>
+          <link>/entries/Topological_Semantics.html</link>
+          <pubDate>Thu, 17 Dec 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Topological_Semantics.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Extensions to the Comprehensive Framework for Saturation Theorem Proving</title>
+          <link>/entries/Saturation_Framework_Extensions.html</link>
+          <pubDate>Tue, 25 Aug 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Saturation_Framework_Extensions.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>An Efficient Normalisation Procedure for Linear Temporal Logic: Isabelle/HOL Formalisation</title>
+          <link>/entries/LTL_Normal_Form.html</link>
+          <pubDate>Fri, 08 May 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/LTL_Normal_Form.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Comprehensive Framework for Saturation Theorem Proving</title>
+          <link>/entries/Saturation_Framework.html</link>
+          <pubDate>Thu, 09 Apr 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Saturation_Framework.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formalization of an Optimized Monitoring Algorithm for Metric First-Order Dynamic Logic with Aggregations</title>
+          <link>/entries/MFODL_Monitor_Optimized.html</link>
+          <pubDate>Thu, 09 Apr 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/MFODL_Monitor_Optimized.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formalizing a Seligman-Style Tableau System for Hybrid Logic</title>
+          <link>/entries/Hybrid_Logic.html</link>
+          <pubDate>Fri, 20 Dec 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Hybrid_Logic.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic</title>
+          <link>/entries/MFOTL_Monitor.html</link>
+          <pubDate>Thu, 04 Jul 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/MFOTL_Monitor.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A General Theory of Syntax with Bindings</title>
+          <link>/entries/Binding_Syntax_Theory.html</link>
+          <pubDate>Sat, 06 Apr 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Binding_Syntax_Theory.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Verified Functional Implementation of Bachmair and Ganzinger&#39;s Ordered Resolution Prover</title>
+          <link>/entries/Functional_Ordered_Resolution_Prover.html</link>
+          <pubDate>Fri, 23 Nov 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Functional_Ordered_Resolution_Prover.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Epistemic Logic: Completeness of Modal Logics</title>
+          <link>/entries/Epistemic_Logic.html</link>
+          <pubDate>Mon, 29 Oct 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Epistemic_Logic.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formalization of Bachmair and Ganzinger&#39;s Ordered Resolution Prover</title>
+          <link>/entries/Ordered_Resolution_Prover.html</link>
+          <pubDate>Thu, 18 Jan 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Ordered_Resolution_Prover.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Hybrid Multi-Lane Spatial Logic</title>
+          <link>/entries/Hybrid_Multi_Lane_Spatial_Logic.html</link>
+          <pubDate>Mon, 06 Nov 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Hybrid_Multi_Lane_Spatial_Logic.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Differential Dynamic Logic</title>
+          <link>/entries/Differential_Dynamic_Logic.html</link>
+          <pubDate>Mon, 13 Feb 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Differential_Dynamic_Logic.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>First-Order Logic According to Harrison</title>
+          <link>/entries/FOL_Harrison.html</link>
+          <pubDate>Sun, 01 Jan 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/FOL_Harrison.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Paraconsistency</title>
+          <link>/entries/Paraconsistency.html</link>
+          <pubDate>Wed, 07 Dec 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Paraconsistency.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Modal Logics for Nominal Transition Systems</title>
+          <link>/entries/Modal_Logics_for_NTS.html</link>
+          <pubDate>Tue, 25 Oct 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Modal_Logics_for_NTS.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Allen&#39;s Interval Calculus</title>
+          <link>/entries/Allen_Calculus.html</link>
+          <pubDate>Thu, 29 Sep 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Allen_Calculus.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Resolution Calculus for First-Order Logic</title>
+          <link>/entries/Resolution_FOL.html</link>
+          <pubDate>Thu, 30 Jun 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Resolution_FOL.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Propositional Resolution and Prime Implicates Generation</title>
+          <link>/entries/PropResPI.html</link>
+          <pubDate>Fri, 11 Mar 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/PropResPI.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Linear Temporal Logic</title>
+          <link>/entries/LTL.html</link>
+          <pubDate>Tue, 01 Mar 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/LTL.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Derivatives of Logical Formulas</title>
+          <link>/entries/Formula_Derivatives.html</link>
+          <pubDate>Thu, 28 May 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Formula_Derivatives.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Decision Procedures for MSO on Words Based on Derivatives of Regular Expressions</title>
+          <link>/entries/MSO_Regex_Equivalence.html</link>
+          <pubDate>Thu, 12 Jun 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/MSO_Regex_Equivalence.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Boolean Expression Checkers</title>
+          <link>/entries/Boolean_Expression_Checkers.html</link>
+          <pubDate>Sun, 08 Jun 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Boolean_Expression_Checkers.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A shallow embedding of HyperCTL*</title>
+          <link>/entries/HyperCTL.html</link>
+          <pubDate>Wed, 16 Apr 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/HyperCTL.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Sound and Complete Sort Encodings for First-Order Logic</title>
+          <link>/entries/Sort_Encodings.html</link>
+          <pubDate>Thu, 27 Jun 2013 00:00:00 +0000</pubDate>
+          <guid>/entries/Sort_Encodings.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Interval Temporal Logic on Natural Numbers</title>
+          <link>/entries/Nat-Interval-Logic.html</link>
+          <pubDate>Wed, 23 Feb 2011 00:00:00 +0000</pubDate>
+          <guid>/entries/Nat-Interval-Logic.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Free Boolean Algebra</title>
+          <link>/entries/Free-Boolean-Algebra.html</link>
+          <pubDate>Mon, 29 Mar 2010 00:00:00 +0000</pubDate>
+          <guid>/entries/Free-Boolean-Algebra.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formalizing the Logic-Automaton Connection</title>
+          <link>/entries/Presburger-Automata.html</link>
+          <pubDate>Thu, 03 Dec 2009 00:00:00 +0000</pubDate>
+          <guid>/entries/Presburger-Automata.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Quantifier Elimination for Linear Arithmetic</title>
+          <link>/entries/LinearQuantifierElim.html</link>
+          <pubDate>Fri, 11 Jan 2008 00:00:00 +0000</pubDate>
+          <guid>/entries/LinearQuantifierElim.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>First-Order Logic According to Fitting</title>
+          <link>/entries/FOL-Fitting.html</link>
+          <pubDate>Thu, 02 Aug 2007 00:00:00 +0000</pubDate>
+          <guid>/entries/FOL-Fitting.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Mechanically Verified, Efficient, Sound and Complete Theorem Prover For First Order Logic</title>
+          <link>/entries/Verified-Prover.html</link>
+          <pubDate>Tue, 28 Sep 2004 00:00:00 +0000</pubDate>
+          <guid>/entries/Verified-Prover.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

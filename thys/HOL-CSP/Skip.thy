@@ -3,7 +3,7 @@
  * Project         : HOL-CSP - A Shallow Embedding of CSP in  Isabelle/HOL
  * Version         : 2.0
  *
- * Author          : Burkhart Wolff, Safouan Taha, Lina Ye.
+ * Author          : Burkhart Wolff.
  *                   (Based on HOL-CSP 1.0 by Haykal Tej and Burkhart Wolff)
  *
  * This file       : A Combined CSP Theory
@@ -44,37 +44,25 @@
 
 section\<open>The SKIP Process\<close>
 
-theory Skip 
+theory Skip
 imports Process
 begin
 
-definition SKIP :: "'a process"
-where     "SKIP \<equiv> Abs_process ({(s, X). s = [] \<and> tick \<notin> X} \<union> {(s, X). s = [tick]}, {})"
+lift_definition SKIP :: \<open>'\<alpha> process\<close>
+  is \<open>({(s, X). s = [] \<and> tick \<notin> X} \<union> {(s, X). s = [tick]}, {})\<close>
+  unfolding is_process_def FAILURES_def DIVERGENCES_def
+  by (auto simp add: append_eq_Cons_conv)
 
-lemma is_process_REP_SKIP:
-" is_process ({(s, X). s = [] \<and> tick \<notin> X} \<union> {(s, X). s = [tick]}, {})"
-apply(auto simp: FAILURES_def DIVERGENCES_def front_tickFree_def is_process_def)
-apply(erule contrapos_np,drule neq_Nil_conv[THEN iffD1], auto)
-done
-
-lemma is_process_REP_SKIP2:
-"is_process ({[]} \<times> {X. tick \<notin> X} \<union> {(s, X). s = [tick]}, {})"
-using is_process_REP_SKIP by auto
-
-
-lemmas process_prover = Rep_process Abs_process_inverse 
-	                       FAILURES_def TRACES_def 
-	                       DIVERGENCES_def is_process_REP_SKIP
 
 lemma F_SKIP:
-"\<F> SKIP = {(s, X). s = [] \<and> tick \<notin> X} \<union> {(s, X). s = [tick]}"
-by(simp add:  process_prover SKIP_def Failures_def is_process_REP_SKIP2)
+  "\<F> SKIP = {(s, X). s = [] \<and> tick \<notin> X} \<union> {(s, X). s = [tick]}"
+  by (simp add: FAILURES_def Failures.rep_eq SKIP.rep_eq)
 
 lemma D_SKIP: "\<D> SKIP = {}"
-by(simp add:  process_prover SKIP_def D_def is_process_REP_SKIP2)
+  by (simp add: DIVERGENCES_def Divergences.rep_eq SKIP.rep_eq)
 
-lemma T_SKIP: "\<T> SKIP ={[],[tick]}"
-by(auto simp:  process_prover SKIP_def Traces_def is_process_REP_SKIP2)
+lemma T_SKIP: "\<T> SKIP ={[], [tick]}"
+  by (auto simp add: Traces.rep_eq TRACES_def Failures.rep_eq[symmetric] F_SKIP)
 
 
 end

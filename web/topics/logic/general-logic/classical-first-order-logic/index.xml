@@ -1,73 +1,65 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Logic/General logic/Classical first-order logic on Archive of Formal Proofs</title>
+    <title>Logic/General logic/Classical first-order logic on Archive of Formal Proofs
+    </title>
     <link>/topics/logic/general-logic/classical-first-order-logic/</link>
-    <description>Recent content in Logic/General logic/Classical first-order logic on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Logic/General logic/Classical first-order logic 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language><atom:link href="/topics/logic/general-logic/classical-first-order-logic/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Given Clause Loops</title>
-      <link>/entries/Given_Clause_Loops.html</link>
-      <pubDate>Wed, 25 Jan 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Given_Clause_Loops.html</guid>
-      <description></description>
-    </item>
+    <language>en-gb</language>
     
-    <item>
-      <title>Making Arbitrary Relational Calculus Queries Safe-Range</title>
-      <link>/entries/Safe_Range_RC.html</link>
-      <pubDate>Wed, 28 Sep 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Safe_Range_RC.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Naive Prover for First-Order Logic</title>
-      <link>/entries/FOL_Seq_Calc3.html</link>
-      <pubDate>Tue, 22 Mar 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/FOL_Seq_Calc3.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>First-Order Query Evaluation</title>
-      <link>/entries/Eval_FO.html</link>
-      <pubDate>Tue, 15 Feb 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Eval_FO.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Sequent Calculus Prover for First-Order Logic with Functions</title>
-      <link>/entries/FOL_Seq_Calc2.html</link>
-      <pubDate>Mon, 31 Jan 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/FOL_Seq_Calc2.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Soundness and Completeness of an Axiomatic System for First-Order Logic</title>
-      <link>/entries/FOL_Axiomatic.html</link>
-      <pubDate>Fri, 24 Sep 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/FOL_Axiomatic.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>First-Order Logic According to Fitting</title>
-      <link>/entries/FOL-Fitting.html</link>
-      <pubDate>Thu, 02 Aug 2007 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/FOL-Fitting.html</guid>
-      <description></description>
-    </item>
-    
+      <atom:link href="/topics/logic/general-logic/classical-first-order-logic/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Given Clause Loops</title>
+          <link>/entries/Given_Clause_Loops.html</link>
+          <pubDate>Wed, 25 Jan 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Given_Clause_Loops.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Making Arbitrary Relational Calculus Queries Safe-Range</title>
+          <link>/entries/Safe_Range_RC.html</link>
+          <pubDate>Wed, 28 Sep 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Safe_Range_RC.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Naive Prover for First-Order Logic</title>
+          <link>/entries/FOL_Seq_Calc3.html</link>
+          <pubDate>Tue, 22 Mar 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/FOL_Seq_Calc3.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>First-Order Query Evaluation</title>
+          <link>/entries/Eval_FO.html</link>
+          <pubDate>Tue, 15 Feb 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Eval_FO.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Sequent Calculus Prover for First-Order Logic with Functions</title>
+          <link>/entries/FOL_Seq_Calc2.html</link>
+          <pubDate>Mon, 31 Jan 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/FOL_Seq_Calc2.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Soundness and Completeness of an Axiomatic System for First-Order Logic</title>
+          <link>/entries/FOL_Axiomatic.html</link>
+          <pubDate>Fri, 24 Sep 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/FOL_Axiomatic.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>First-Order Logic According to Fitting</title>
+          <link>/entries/FOL-Fitting.html</link>
+          <pubDate>Thu, 02 Aug 2007 00:00:00 +0000</pubDate>
+          <guid>/entries/FOL-Fitting.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

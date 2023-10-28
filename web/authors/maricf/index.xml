@@ -1,47 +1,45 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>maricf on Archive of Formal Proofs</title>
+    <title>maricf on Archive of Formal Proofs
+    </title>
     <link>/authors/maricf/</link>
-    <description>Recent content in maricf on Archive of Formal Proofs</description>
+    <description>
+        Recent content in maricf 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Mon, 16 Dec 2019 00:00:00 +0000</lastBuildDate><atom:link href="/authors/maricf/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Complex Geometry</title>
-      <link>/entries/Complex_Geometry.html</link>
-      <pubDate>Mon, 16 Dec 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Complex_Geometry.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>Poincaré Disc Model</title>
-      <link>/entries/Poincare_Disc.html</link>
-      <pubDate>Mon, 16 Dec 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Poincare_Disc.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>An Incremental Simplex Algorithm with Unsatisfiable Core Generation</title>
-      <link>/entries/Simplex.html</link>
-      <pubDate>Fri, 24 Aug 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Simplex.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Formal Verification of Modern SAT Solvers</title>
-      <link>/entries/SATSolverVerification.html</link>
-      <pubDate>Wed, 23 Jul 2008 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/SATSolverVerification.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Mon, 16 Dec 2019 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/maricf/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Complex Geometry</title>
+          <link>/entries/Complex_Geometry.html</link>
+          <pubDate>Mon, 16 Dec 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Complex_Geometry.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Poincaré Disc Model</title>
+          <link>/entries/Poincare_Disc.html</link>
+          <pubDate>Mon, 16 Dec 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Poincare_Disc.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>An Incremental Simplex Algorithm with Unsatisfiable Core Generation</title>
+          <link>/entries/Simplex.html</link>
+          <pubDate>Fri, 24 Aug 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Simplex.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formal Verification of Modern SAT Solvers</title>
+          <link>/entries/SATSolverVerification.html</link>
+          <pubDate>Wed, 23 Jul 2008 00:00:00 +0000</pubDate>
+          <guid>/entries/SATSolverVerification.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

@@ -973,6 +973,8 @@ proof -
   proof-
     {
       fix i assume i: "i < degree u"
+      then have \<open>u \<noteq> 0\<close>
+        by auto
       let ?c= "power_polys (power_poly_f_mod u [:0, 1:] CARD('a)) u 1 (degree u) ! i"
       let ?coeffs_c="(coeffs ?c)"
       have "?c = 1*([:0, 1:] ^ CARD('a) mod u)^i mod u"
@@ -991,8 +993,8 @@ proof -
           have "length ?coeffs_c = degree (?c) + 1" by (rule length_coeffs[OF False])
           also have "... = degree ([:0, 1:] ^ (CARD('a) * i) mod u) + 1" using c_rw by simp
           also have "... \<le> degree u"
-            by (metis One_nat_def add.right_neutral add_Suc_right c_rw calculation coeffs_def degree_0
-              degree_mod_less discrete gr_implies_not0 k list.size(3) one_neq_zero)
+            using \<open>i < degree u\<close> \<open>u \<noteq> 0\<close> degree_mod_less [of u \<open>pCons 0 1 ^ (CARD('a) * i)\<close>]
+            by auto
           finally show ?thesis .
         qed
       qed

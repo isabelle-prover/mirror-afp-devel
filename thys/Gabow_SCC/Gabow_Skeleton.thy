@@ -2368,12 +2368,9 @@ begin
     show ?thesis
       unfolding collapse_impl_def
       apply (refine_rcg SPEC_refine refine_vcg order_trans[OF idx_of_correct])
-
-      apply fact
-      apply (metis discrete)
-
-      apply (simp add: collapse_def \<alpha>_def find_seg_impl)
-      unfolding GS_rel_def
+        apply fact
+       apply simp
+      apply (simp add: collapse_def \<alpha>_def find_seg_impl GS_rel_def)
       apply (rule brI)
         apply (rule ABS)
         apply (rule INV)

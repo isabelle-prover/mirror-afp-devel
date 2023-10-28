@@ -1,74 +1,66 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Algebraic_Numbers on Archive of Formal Proofs</title>
+    <title>Algebraic_Numbers on Archive of Formal Proofs
+    </title>
     <link>/dependencies/algebraic_numbers/</link>
-    <description>Recent content in Algebraic_Numbers on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Algebraic_Numbers 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Thu, 15 Dec 2022 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/algebraic_numbers/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>A First Complete Algorithm for Real Quantifier Elimination in Isabelle/HOL</title>
-      <link>/entries/Quantifier_Elimination_Hybrid.html</link>
-      <pubDate>Thu, 15 Dec 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Quantifier_Elimination_Hybrid.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>Factorization of Polynomials with Algebraic Coefficients</title>
-      <link>/entries/Factor_Algebraic_Polynomial.html</link>
-      <pubDate>Mon, 08 Nov 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Factor_Algebraic_Polynomial.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Solving Cubic and Quartic Equations</title>
-      <link>/entries/Cubic_Quartic_Equations.html</link>
-      <pubDate>Fri, 03 Sep 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Cubic_Quartic_Equations.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The BKR Decision Procedure for Univariate Real Arithmetic</title>
-      <link>/entries/BenOr_Kozen_Reif.html</link>
-      <pubDate>Sat, 24 Apr 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/BenOr_Kozen_Reif.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Hermite–Lindemann–Weierstraß Transcendence Theorem</title>
-      <link>/entries/Hermite_Lindemann.html</link>
-      <pubDate>Wed, 03 Mar 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Hermite_Lindemann.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A verified LLL algorithm</title>
-      <link>/entries/LLL_Basis_Reduction.html</link>
-      <pubDate>Fri, 02 Feb 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/LLL_Basis_Reduction.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Linear Recurrences</title>
-      <link>/entries/Linear_Recurrences.html</link>
-      <pubDate>Thu, 12 Oct 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Linear_Recurrences.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Thu, 15 Dec 2022 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/algebraic_numbers/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>A First Complete Algorithm for Real Quantifier Elimination in Isabelle/HOL</title>
+          <link>/entries/Quantifier_Elimination_Hybrid.html</link>
+          <pubDate>Thu, 15 Dec 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Quantifier_Elimination_Hybrid.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Factorization of Polynomials with Algebraic Coefficients</title>
+          <link>/entries/Factor_Algebraic_Polynomial.html</link>
+          <pubDate>Mon, 08 Nov 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Factor_Algebraic_Polynomial.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Solving Cubic and Quartic Equations</title>
+          <link>/entries/Cubic_Quartic_Equations.html</link>
+          <pubDate>Fri, 03 Sep 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Cubic_Quartic_Equations.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The BKR Decision Procedure for Univariate Real Arithmetic</title>
+          <link>/entries/BenOr_Kozen_Reif.html</link>
+          <pubDate>Sat, 24 Apr 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/BenOr_Kozen_Reif.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Hermite–Lindemann–Weierstraß Transcendence Theorem</title>
+          <link>/entries/Hermite_Lindemann.html</link>
+          <pubDate>Wed, 03 Mar 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Hermite_Lindemann.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A verified LLL algorithm</title>
+          <link>/entries/LLL_Basis_Reduction.html</link>
+          <pubDate>Fri, 02 Feb 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/LLL_Basis_Reduction.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Linear Recurrences</title>
+          <link>/entries/Linear_Recurrences.html</link>
+          <pubDate>Thu, 12 Oct 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Linear_Recurrences.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

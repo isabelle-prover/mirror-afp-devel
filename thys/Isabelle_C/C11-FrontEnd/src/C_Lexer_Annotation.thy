@@ -807,7 +807,6 @@ sig
 (**)
   val group: (unit -> string) -> (T list -> 'a) -> T list -> 'a
   val !!! : (T list -> 'a) -> T list -> 'a
-  val !!!! : (T list -> 'a) -> T list -> 'a
   val not_eof: T parser
   val token: 'a parser -> T parser
   val range: 'a parser -> ('a * Position.range) parser
@@ -965,7 +964,6 @@ fun cut kind scan =
   in Scan.!! err scan end;
 
 fun !!! scan = cut "Annotation syntax error" scan;
-fun !!!! scan = cut "Corrupted annotation syntax in presentation" scan;
 
 
 

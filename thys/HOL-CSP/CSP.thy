@@ -3,7 +3,7 @@
  * Project         : CSP-RefTK - A Refinement Toolkit for HOL-CSP
  * Version         : 1.0
  *
- * Author          : Burkhart Wolff, Safouan Taha, Lina Ye, Benoît Ballenghien, Catherine Dubois
+ * Author          : Burkhart Wolff, Safouan Taha, Lina Ye, Benoît Ballenghien
  *
  * This file       : A Normalization Theory
  *
@@ -42,10 +42,10 @@
 (*>*)
 
 
-chapter\<open> Generalisation of Normalisation of Non Deterministic CSP Processes \<close>
+chapter\<open> The refinements laws \<close>
 
 theory CSP
-  imports CSP_Laws Process_Order (*Induction*)
+  imports Process_Order CSP_Laws CSP_Induct
 begin
 
 
@@ -120,15 +120,13 @@ corollary  mono_Ndet_Det_F[simp]: \<open>(P \<sqinter> S) \<sqsubseteq>\<^sub>F 
 
 
 lemma mono_Seq_F_right[simp]: \<open>S \<sqsubseteq>\<^sub>F S' \<Longrightarrow> (P \<^bold>; S) \<sqsubseteq>\<^sub>F (P \<^bold>; S')\<close>
-  apply (auto simp: failure_refine_def F_Seq append_single_T_imp_tickFree)
-  using NF_ND by fastforce+
+  by (auto simp: failure_refine_def F_Seq append_single_T_imp_tickFree)
 
 lemma mono_Seq_D_right[simp]: \<open>S \<sqsubseteq>\<^sub>D S' \<Longrightarrow> (P \<^bold>; S) \<sqsubseteq>\<^sub>D (P \<^bold>; S')\<close>
   by (auto simp: divergence_refine_def D_Seq)
 
 lemma  mono_Seq_T_right[simp]: \<open>S \<sqsubseteq>\<^sub>T S' \<Longrightarrow> (P \<^bold>; S) \<sqsubseteq>\<^sub>T (P \<^bold>; S')\<close>
-  apply (auto simp: trace_refine_def T_Seq append_single_T_imp_tickFree)
-  using D_T by fastforce+
+  by (auto simp: trace_refine_def T_Seq append_single_T_imp_tickFree)
 
 corollary mono_Seq_DT_right[simp]: \<open>S \<sqsubseteq>\<^sub>D\<^sub>T S' \<Longrightarrow> (P \<^bold>; S)  \<sqsubseteq>\<^sub>D\<^sub>T (P \<^bold>; S')\<close>
   by (simp add: trace_divergence_refine_def)
@@ -268,7 +266,6 @@ lemmas mono_Sync_FD[simp] = mono_Sync_FD[folded failure_divergence_refine_def]
 \<comment>\<open>Synchronization monotony doesn't hold for \<open>\<sqsubseteq>\<^sub>F\<close>, \<open>\<sqsubseteq>\<^sub>D\<close> and \<open>\<sqsubseteq>\<^sub>T\<close>\<close>
 
 
-(* choose between mono_Mndetprefix_F and mono_mndet_F *)
 lemma mono_Mndetprefix_F[simp]: \<open>\<forall>x\<in>A. P x \<sqsubseteq>\<^sub>F Q x \<Longrightarrow> Mndetprefix A P \<sqsubseteq>\<^sub>F Mndetprefix A Q\<close>
   by (cases \<open>A = {}\<close>, auto simp: failure_refine_def F_Mndetprefix write0_def F_Mprefix) 
 
@@ -286,7 +283,6 @@ lemmas mono_Mndetprefix_FD[simp] = mono_Mndetprefix_FD[folded failure_divergence
 lemmas mono_Mndetprefix_FD_set[simp] = Mndetprefix_FD_subset[folded failure_divergence_refine_def]
 
 corollary mono_Mndetprefix_F_set[simp] : \<open>A \<noteq> {} \<Longrightarrow> A \<subseteq> B \<Longrightarrow> Mndetprefix B P \<sqsubseteq>\<^sub>F Mndetprefix A P\<close>
-      (* removed nonempty hypothesis in the 3 following propositions *)
       and mono_Mndetprefix_D_set[simp] : \<open>A \<subseteq> B \<Longrightarrow> Mndetprefix B P \<sqsubseteq>\<^sub>D  Mndetprefix A P\<close>
       and mono_Mndetprefix_T_set[simp] : \<open>A \<subseteq> B \<Longrightarrow> Mndetprefix B P \<sqsubseteq>\<^sub>T  Mndetprefix A P\<close>
       and mono_Mndetprefix_DT_set[simp]: \<open>A \<subseteq> B \<Longrightarrow> Mndetprefix B P \<sqsubseteq>\<^sub>D\<^sub>T Mndetprefix A P\<close>
@@ -303,7 +299,7 @@ corollary Mprefix_refines_Mndetprefix_F[simp] : \<open>Mndetprefix A P \<sqsubse
 
 
 
-(* see where we put this *)
+
 
 
 lemma mono_read_FD[simp, elim]: "(\<And>x. P x \<sqsubseteq>\<^sub>F\<^sub>D Q x) \<Longrightarrow> (c\<^bold>?x \<rightarrow> (P x)) \<sqsubseteq>\<^sub>F\<^sub>D (c\<^bold>?x \<rightarrow> (Q x))"
@@ -327,7 +323,105 @@ lemma mono_write0_DT[simp, elim]: "P \<sqsubseteq>\<^sub>D\<^sub>T Q \<Longright
 
 
 
-\<comment> \<open>The following result is very useful, but we are not sure about where is its place\<close>
+
+lemma mono_Renaming_D: \<open>P \<sqsubseteq>\<^sub>D Q \<Longrightarrow> Renaming P f \<sqsubseteq>\<^sub>D Renaming Q f\<close>
+  unfolding divergence_refine_def D_Renaming by blast
+
+
+lemma mono_Renaming_FD: \<open>P \<sqsubseteq>\<^sub>F\<^sub>D Q \<Longrightarrow> Renaming P f \<sqsubseteq>\<^sub>F\<^sub>D Renaming Q f\<close>
+  unfolding failure_divergence_refine_def le_ref_def
+  apply (simp add: mono_Renaming_D[unfolded divergence_refine_def])
+  unfolding F_Renaming D_Renaming by blast
+
+
+lemma mono_Renaming_DT: \<open>P \<sqsubseteq>\<^sub>D\<^sub>T Q \<Longrightarrow> Renaming P f \<sqsubseteq>\<^sub>D\<^sub>T Renaming Q f\<close>
+  unfolding trace_divergence_refine_def 
+  apply (simp add: mono_Renaming_D)
+  unfolding trace_refine_def divergence_refine_def T_Renaming by blast
+
+
+
+
+text \<open>Some new and very useful results\<close>
+
+lemma Ndet_is_STOP_iff: \<open>P \<sqinter> Q = STOP \<longleftrightarrow> P = STOP \<and> Q = STOP\<close>
+  using Nil_subset_T by (simp add: STOP_iff_T T_Ndet, blast)
+
+lemma Det_is_STOP_iff: \<open>P \<box> Q = STOP \<longleftrightarrow> P = STOP \<and> Q = STOP\<close>
+  using Nil_subset_T by (simp add: STOP_iff_T T_Det, blast)
+
+
+lemma Det_is_BOT_iff: \<open>P \<box> Q = \<bottom> \<longleftrightarrow> P = \<bottom> \<or> Q = \<bottom>\<close>
+  by (simp add: BOT_iff_D D_Det)
+
+lemma Ndet_is_BOT_iff: \<open>P \<sqinter> Q = \<bottom> \<longleftrightarrow> P = \<bottom> \<or> Q = \<bottom>\<close>
+  by (simp add: BOT_iff_D D_Ndet)
+
+lemma Sync_is_BOT_iff: \<open>P \<lbrakk>S\<rbrakk> Q = \<bottom> \<longleftrightarrow> P = \<bottom> \<or> Q = \<bottom>\<close>
+  by (rule HOL.sym, intro iffI, metis Sync_BOT Sync_commute)
+     (use empty_setinterleaving in \<open>auto simp add: BOT_iff_D D_Sync\<close>)
+
+
+lemma STOP_neq_BOT: \<open>STOP \<noteq> \<bottom>\<close>
+  by (simp add: D_STOP BOT_iff_D)
+
+lemma SKIP_neq_BOT: \<open>SKIP \<noteq> \<bottom>\<close>
+  by (simp add: D_SKIP BOT_iff_D)
+
+
+lemma Mprefix_neq_BOT: \<open>Mprefix A P \<noteq> \<bottom>\<close>
+  by (simp add: BOT_iff_D)
+
+lemma Mndetprefix_neq_BOT: \<open>Mndetprefix A P \<noteq> \<bottom>\<close>
+  by (cases \<open>A = {}\<close>) (simp_all add: D_STOP BOT_iff_D D_Mndetprefix write0_def)
+
+
+lemma STOP_T_iff: \<open>STOP \<sqsubseteq>\<^sub>T P \<longleftrightarrow> P = STOP\<close>
+  by auto (metis Nil_elem_T STOP_iff_T empty_iff subset_singletonD trace_refine_def)
+
+lemma STOP_F_iff: \<open>STOP \<sqsubseteq>\<^sub>F P \<longleftrightarrow> P = STOP\<close>
+  by auto (metis Nil_elem_T STOP_iff_T empty_iff leF_imp_leT subset_singletonD trace_refine_def)
+
+lemma STOP_FD_iff: \<open>STOP \<sqsubseteq>\<^sub>F\<^sub>D P \<longleftrightarrow> P = STOP\<close>
+  using STOP_F_iff idem_FD leFD_imp_leF by blast
+
+lemma SKIP_FD_iff: \<open>SKIP \<sqsubseteq>\<^sub>F\<^sub>D P \<longleftrightarrow> P = SKIP\<close>
+  apply (subst Process_eq_spec, auto simp add: failure_divergence_refine_def le_ref_def F_SKIP D_SKIP subset_iff)
+  by (metis F_T insertI1 is_processT5_S6 is_processT6_S2)
+     (metis F_T append.left_neutral insertI1 is_processT5_S6 tick_T_F)
+
+lemma SKIP_F_iff: \<open>SKIP \<sqsubseteq>\<^sub>F P \<longleftrightarrow> P = SKIP\<close>
+  apply (subst Process_eq_spec, auto simp add: failure_refine_def le_ref_def F_SKIP D_SKIP subset_iff)
+    apply (metis F_T insertI1 is_processT5_S6 is_processT6_S2)
+   apply (metis F_T append.left_neutral insertI1 is_processT5_S6 tick_T_F)
+  by (metis append_Nil insertI1 neq_Nil_conv process_charn)
+
+
+
+lemma Seq_is_SKIP_iff: \<open>P \<^bold>; Q = SKIP \<longleftrightarrow> P = SKIP \<and> Q = SKIP\<close>
+  apply (intro iffI, simp_all add: Seq_SKIP)
+  apply (simp add: SKIP_F_iff[symmetric])
+  unfolding failure_refine_def
+proof (auto simp add: F_Seq F_SKIP D_Seq D_SKIP subset_iff intro: T_F, goal_cases)
+  case (1 s X)
+  thus ?case
+    apply (cases \<open>tickFree s\<close>) 
+     apply (erule_tac x = s in allE, 
+            metis F_T append.right_neutral is_processT4_empty is_processT5_S4 process_charn)
+    by (erule_tac x = \<open>butlast s\<close> in allE,
+        metis F_T append.right_neutral append_butlast_last_id append_single_T_imp_tickFree
+        last_snoc nonTickFree_n_frontTickFree non_tickFree_tick process_charn self_append_conv2)
+next
+  case (2 s X)
+  thus ?case
+    by (metis F_T append_Nil2 append_self_conv2 butlast_snoc front_tickFree_butlast
+        insert_Diff insert_Diff_single nonTickFree_n_frontTickFree non_tickFree_tick process_charn)
+qed (metis F_T append.left_neutral insertI1 insert_absorb2 is_processT5_S6 tickFree_Nil)+
+ 
+
+
+
+\<comment> \<open>The following result is very useful (especially for ProcOmata).\<close>
 
 lemma cont_process_rec: \<open>P = (\<mu> X. f X) \<Longrightarrow> cont f \<Longrightarrow> P = f P\<close> by (simp add: def_cont_fix_eq)
 

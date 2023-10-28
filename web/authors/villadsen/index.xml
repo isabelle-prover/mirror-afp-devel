@@ -1,38 +1,38 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>villadsen on Archive of Formal Proofs</title>
+    <title>villadsen on Archive of Formal Proofs
+    </title>
     <link>/authors/villadsen/</link>
-    <description>Recent content in villadsen on Archive of Formal Proofs</description>
+    <description>
+        Recent content in villadsen 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Tue, 13 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="/authors/villadsen/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Soundness and Completeness of Implicational Logic</title>
-      <link>/entries/Implicational_Logic.html</link>
-      <pubDate>Tue, 13 Sep 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Implicational_Logic.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>First-Order Logic According to Harrison</title>
-      <link>/entries/FOL_Harrison.html</link>
-      <pubDate>Sun, 01 Jan 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/FOL_Harrison.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Paraconsistency</title>
-      <link>/entries/Paraconsistency.html</link>
-      <pubDate>Wed, 07 Dec 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Paraconsistency.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Tue, 13 Sep 2022 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/villadsen/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Soundness and Completeness of Implicational Logic</title>
+          <link>/entries/Implicational_Logic.html</link>
+          <pubDate>Tue, 13 Sep 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Implicational_Logic.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>First-Order Logic According to Harrison</title>
+          <link>/entries/FOL_Harrison.html</link>
+          <pubDate>Sun, 01 Jan 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/FOL_Harrison.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Paraconsistency</title>
+          <link>/entries/Paraconsistency.html</link>
+          <pubDate>Wed, 07 Dec 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Paraconsistency.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

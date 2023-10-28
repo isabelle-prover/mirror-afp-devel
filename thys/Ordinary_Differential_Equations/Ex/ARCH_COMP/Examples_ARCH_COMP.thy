@@ -245,7 +245,7 @@ abbreviation "safe_passive \<equiv> Conj
     (Disj (Less (Var 2) (Num (-1))) (Less (Num 1) (Var 2))))
     \<comment> \<open>avoiding satellite in box of ``radius'' 1\<close>"
 
-interpretation passive: ode_interpretation safe_passive
+interpretation "passive": ode_interpretation safe_passive
   "{(t, x, y, vx, vy). (r+x)^2-y^2 > 0 \<and> (x, y) \<notin> {(-1, -1) .. (1, 1)}}" passive_fas
   "\<lambda>(t, x, y, vx, vy).
       (1,

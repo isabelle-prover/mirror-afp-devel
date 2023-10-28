@@ -768,7 +768,7 @@ lemma acyclic_2_implies_1:
   using acyclic_2_def acyclic_1_def by auto
 
 text \<open>Theorem 8\<close>
-thm eq_iff order.eq_iff
+
 lemma acyclic_4a_4b:
   "acyclic_4a x \<longleftrightarrow> acyclic_4b x"
   using acyclic_4a_def acyclic_4b_def order.eq_iff star.circ_increasing by auto

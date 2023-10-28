@@ -1,165 +1,223 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Logic/Computability - Archive of Formal Proofs</title><meta name="description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."><link rel="alternate" type="application/rss+xml" href="../../../topics/logic/computability/index.xml" title="Archive of Formal Proofs" /><meta property="og:title" content="Logic/Computability" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Logic/Computability - Archive of Formal Proofs</title>
+    <meta name="description" content="A collection of proof libraries, examples, and larger
+     scientific developments, mechanically checked in the theorem prover Isabelle.">
+  <link rel="alternate" type="application/rss+xml" href="../../../topics/logic/computability/index.xml" title="Archive of Formal Proofs" />
+
+  <meta property="og:title" content="Logic/Computability" />
 <meta property="og:description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="/topics/logic/computability/" /><meta property="og:image" content="/images/afp.png"/><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="Logic/Computability"/>
 <meta name="twitter:description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."/>
 
-  
   <link rel="stylesheet" type="text/css" href="../../../css/front.min.css">
 
-  <link rel="icon" href="../../../images/favicon.ico" type="image/icon"><script src="../../../js/obfuscate.js"></script>
+  <link rel="icon" href="../../../images/favicon.ico" type="image/icon">
+
+  <script src="../../../js/obfuscate.js"></script>
   <script src="../../../js/flexsearch.bundle.js"></script>
   <script src="../../../js/scroll-spy.js"></script>
   <script src="../../../js/theory.js"></script>
-  <script src="../../../js/util.js"></script><script src="../../../js/header-search.js"></script><script src="../../../js/search-autocomplete.js"></script>
+  <script src="../../../js/util.js"></script>
+    <script src="../../../js/header-search.js"></script>
+  <script src="../../../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../../../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../../../" class='logo-link'>
-    <img src="../../../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../../../" class="logo-link">
+    <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../../../search"><img src="../../../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../../../" class='logo-link'>
-        <img src="../../../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../../../"><li >Home</li></a>
-        <a href="../../../topics/"><li >Topics</li></a>
-        <a href="../../../download/"><li >Download</li></a>
-        <a href="../../../help/"><li >Help</li></a>
-        <a href="../../../submission/"><li >Submission</li></a>
-        <a href="../../../statistics/"><li >Statistics</li></a>
-        <a href="../../../about/"><li >About</li></a>
+          <a href="../../../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../../../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../../../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../../../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../../../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../../../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../../../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content '><header>
-  <form autocomplete="off" action="../../../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../../../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>L</span>ogic/<span class='first'>C</span>omputability</h1>
+    </aside>
+    <div class='content'>
+      <header>
+    <form autocomplete="off" action="../../../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../../../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>L</span>ogic/<span class='first'>C</span>omputability
+    
+  </h1>
   <div>
-    
-    
   </div>
-</header><div><h2>Subject Classification</h2><p>ACM: <a href="https://dl.acm.org/topic/ccs2012/10003752.10003753.10003754">Theory of computation~Computability</a></p><p>AMS: <a href="https://mathscinet.ams.org/mathscinet/msc/msc2020.html?t=03Dxx">Mathematical logic and foundations / Computability and recursion theory</a></p><h2 class="head">2023</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/MHComputation.html">The Halting Problem is Soluble in Malament-Hogarth Spacetimes</a></h5> <br>by <a href="../../../authors/stannett">Mike Stannett</a></div>
-  <span class="date">
-    Apr 29
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Cook_Levin.html">The Cook-Levin theorem</a></h5> <br>by <a href="../../../authors/balbach">Frank J. Balbach</a></div>
-  <span class="date">
-    Jan 08
-  </span>
-</article>
+</header>
+      <div>
+        
+    <h2>Subject Classification</h2>
+      <p>ACM: <a href="https://dl.acm.org/topic/ccs2012/10003752.10003753.10003754">Theory of computation~Computability</a></p>
+      <p>AMS: <a href="https://mathscinet.ams.org/mathscinet/msc/msc2020.html?t=03Dxx">Mathematical logic and foundations / Computability and recursion theory</a></p>
+    <h2 class="head">2023</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/MHComputation.html">The Halting Problem is Soluble in Malament-Hogarth Spacetimes</a></h5>
+          <br>
+            by <a href="../../../authors/stannett">Mike Stannett</a>
 
+        </div>
+        <span class="date">Apr 29</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Cook_Levin.html">The Cook-Levin theorem</a></h5>
+          <br>
+            by <a href="../../../authors/balbach">Frank J. Balbach</a>
 
-<h2 class="head">2022</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Boolos_Curious_Inference_Automated.html">Automation of Boolos&#39; Curious Inference in Isabelle/HOL</a></h5> <br>by <a href="../../../authors/benzmueller">Christoph Benzmüller</a>, <a href="../../../authors/fuenmayor">David Fuenmayor</a>, <a href="../../../authors/steen">Alexander Steen</a> and <a href="../../../authors/sutcliffe">Geoff Sutcliffe</a></div>
-  <span class="date">
-    Dec 05
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Multitape_To_Singletape_TM.html">A Verified Translation of Multitape Turing Machines into Singletape Turing Machines</a></h5> <br>by <a href="../../../authors/dalvit">Christian Dalvit</a> and <a href="../../../authors/thiemann">René Thiemann</a></div>
-  <span class="date">
-    Nov 30
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/DPRM_Theorem.html">Diophantine Equations and the DPRM Theorem</a></h5> <br>by <a href="../../../authors/bayer">Jonas Bayer</a>, <a href="../../../authors/david">Marco David</a>, <a href="../../../authors/stock">Benedikt Stock</a>, <a href="../../../authors/pal">Abhik Pal</a>, <a href="../../../authors/matiyasevich">Yuri Matiyasevich</a> and <a href="../../../authors/schleicher">Dierk Schleicher</a></div>
-  <span class="date">
-    Jun 06
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Ackermanns_not_PR.html">Ackermann&#39;s Function Is Not Primitive Recursive</a></h5> <br>by <a href="../../../authors/paulson">Lawrence C. Paulson</a></div>
-  <span class="date">
-    Mar 23
-  </span>
-</article>
+        </div>
+        <span class="date">Jan 08</span>
+      </article>
+    <h2 class="head">2022</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Boolos_Curious_Inference_Automated.html">Automation of Boolos&#39; Curious Inference in Isabelle/HOL</a></h5>
+          <br>
+            by <a href="../../../authors/benzmueller">Christoph Benzmüller</a>, <a href="../../../authors/fuenmayor">David Fuenmayor</a>, <a href="../../../authors/steen">Alexander Steen</a> and <a href="../../../authors/sutcliffe">Geoff Sutcliffe</a>
 
+        </div>
+        <span class="date">Dec 05</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Multitape_To_Singletape_TM.html">A Verified Translation of Multitape Turing Machines into Singletape Turing Machines</a></h5>
+          <br>
+            by <a href="../../../authors/dalvit">Christian Dalvit</a> and <a href="../../../authors/thiemann">René Thiemann</a>
 
-<h2 class="head">2020</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Inductive_Inference.html">Some classical results in inductive inference of recursive functions</a></h5> <br>by <a href="../../../authors/balbach">Frank J. Balbach</a></div>
-  <span class="date">
-    Aug 31
-  </span>
-</article>
+        </div>
+        <span class="date">Nov 30</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/DPRM_Theorem.html">Diophantine Equations and the DPRM Theorem</a></h5>
+          <br>
+            by <a href="../../../authors/bayer">Jonas Bayer</a>, <a href="../../../authors/david">Marco David</a>, <a href="../../../authors/stock">Benedikt Stock</a>, <a href="../../../authors/pal">Abhik Pal</a>, <a href="../../../authors/matiyasevich">Yuri Matiyasevich</a> and <a href="../../../authors/schleicher">Dierk Schleicher</a>
 
+        </div>
+        <span class="date">Jun 06</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Ackermanns_not_PR.html">Ackermann&#39;s Function Is Not Primitive Recursive</a></h5>
+          <br>
+            by <a href="../../../authors/paulson">Lawrence C. Paulson</a>
 
-<h2 class="head">2019</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Universal_Turing_Machine.html">Universal Turing Machine</a></h5> <br>by <a href="../../../authors/xu">Jian Xu</a>, <a href="../../../authors/zhangx">Xingyuan Zhang</a>, <a href="../../../authors/urban">Christian Urban</a>, <a href="../../../authors/joosten">Sebastiaan J. C. Joosten</a> and <a href="../../../authors/regensburger">Franz Regensburger</a></div>
-  <span class="date">
-    Feb 08
-  </span>
-</article>
+        </div>
+        <span class="date">Mar 23</span>
+      </article>
+    <h2 class="head">2020</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Inductive_Inference.html">Some classical results in inductive inference of recursive functions</a></h5>
+          <br>
+            by <a href="../../../authors/balbach">Frank J. Balbach</a>
 
+        </div>
+        <span class="date">Aug 31</span>
+      </article>
+    <h2 class="head">2019</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Universal_Turing_Machine.html">Universal Turing Machine</a></h5>
+          <br>
+            by <a href="../../../authors/xu">Jian Xu</a>, <a href="../../../authors/zhangx">Xingyuan Zhang</a>, <a href="../../../authors/urban">Christian Urban</a>, <a href="../../../authors/joosten">Sebastiaan J. C. Joosten</a> and <a href="../../../authors/regensburger">Franz Regensburger</a>
 
-<h2 class="head">2018</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Minsky_Machines.html">Minsky Machines</a></h5> <br>by <a href="../../../authors/felgenhauer">Bertram Felgenhauer</a></div>
-  <span class="date">
-    Aug 14
-  </span>
-</article>
+        </div>
+        <span class="date">Feb 08</span>
+      </article>
+    <h2 class="head">2018</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Minsky_Machines.html">Minsky Machines</a></h5>
+          <br>
+            by <a href="../../../authors/felgenhauer">Bertram Felgenhauer</a>
 
+        </div>
+        <span class="date">Aug 14</span>
+      </article>
+    <h2 class="head">2008</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Recursion-Theory-I.html">Recursion Theory I</a></h5>
+          <br>
+            by <a href="../../../authors/nedzelsky">Michael Nedzelsky</a>
 
-<h2 class="head">2008</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Recursion-Theory-I.html">Recursion Theory I</a></h5> <br>by <a href="../../../authors/nedzelsky">Michael Nedzelsky</a></div>
-  <span class="date">
-    Apr 05
-  </span>
-</article>
-
-
-
-
+        </div>
+        <span class="date">Apr 05</span>
+      </article>
+        
+      </div>
     </div>
-  </div>
-</body>
-
+  </body>
 </html>

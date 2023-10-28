@@ -1,253 +1,205 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Mathematics/Graph theory on Archive of Formal Proofs</title>
+    <title>Mathematics/Graph theory on Archive of Formal Proofs
+    </title>
     <link>/topics/mathematics/graph-theory/</link>
-    <description>Recent content in Mathematics/Graph theory on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Mathematics/Graph theory 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language><atom:link href="/topics/mathematics/graph-theory/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Tree Enumeration</title>
-      <link>/entries/Tree_Enumeration.html</link>
-      <pubDate>Tue, 09 May 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Tree_Enumeration.html</guid>
-      <description></description>
-    </item>
+    <language>en-gb</language>
     
-    <item>
-      <title>Expander Graphs</title>
-      <link>/entries/Expander_Graphs.html</link>
-      <pubDate>Fri, 03 Mar 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Expander_Graphs.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Turán&#39;s Graph Theorem</title>
-      <link>/entries/Turans_Graph_Theorem.html</link>
-      <pubDate>Mon, 14 Nov 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Turans_Graph_Theorem.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Balog–Szemerédi–Gowers Theorem</title>
-      <link>/entries/Balog_Szemeredi_Gowers.html</link>
-      <pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Balog_Szemeredi_Gowers.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Undirected Graph Theory</title>
-      <link>/entries/Undirected_Graph_Theory.html</link>
-      <pubDate>Thu, 29 Sep 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Undirected_Graph_Theory.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Knight&#39;s Tour Revisited Revisited</title>
-      <link>/entries/Knights_Tour.html</link>
-      <pubDate>Tue, 04 Jan 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Knights_Tour.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Roth&#39;s Theorem on Arithmetic Progressions</title>
-      <link>/entries/Roth_Arithmetic_Progressions.html</link>
-      <pubDate>Tue, 28 Dec 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Roth_Arithmetic_Progressions.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Szemerédi&#39;s Regularity Lemma</title>
-      <link>/entries/Szemeredi_Regularity.html</link>
-      <pubDate>Fri, 05 Nov 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Szemeredi_Regularity.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Relational Forests</title>
-      <link>/entries/Relational_Forests.html</link>
-      <pubDate>Tue, 03 Aug 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Relational_Forests.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Relational Characterisations of Paths</title>
-      <link>/entries/Relational_Paths.html</link>
-      <pubDate>Mon, 13 Jul 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Relational_Paths.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Graph Saturation</title>
-      <link>/entries/Graph_Saturation.html</link>
-      <pubDate>Fri, 23 Nov 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Graph_Saturation.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Upper Bounding Diameters of State Spaces of Factored Transition Systems</title>
-      <link>/entries/Factored_Transition_System_Bounding.html</link>
-      <pubDate>Fri, 12 Oct 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Factored_Transition_System_Bounding.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Flow Networks and the Min-Cut-Max-Flow Theorem</title>
-      <link>/entries/Flow_Networks.html</link>
-      <pubDate>Thu, 01 Jun 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Flow_Networks.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Formalizing Push-Relabel Algorithms</title>
-      <link>/entries/Prpu_Maxflow.html</link>
-      <pubDate>Thu, 01 Jun 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Prpu_Maxflow.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Menger&#39;s Theorem</title>
-      <link>/entries/Menger.html</link>
-      <pubDate>Sun, 26 Feb 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Menger.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Tree Decomposition</title>
-      <link>/entries/Tree_Decomposition.html</link>
-      <pubDate>Tue, 31 May 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Tree_Decomposition.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Formal Proof of the Max-Flow Min-Cut Theorem for Countable Networks</title>
-      <link>/entries/MFMC_Countable.html</link>
-      <pubDate>Mon, 09 May 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/MFMC_Countable.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Planarity Certificates</title>
-      <link>/entries/Planarity_Certificates.html</link>
-      <pubDate>Wed, 11 Nov 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Planarity_Certificates.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Positional Determinacy of Parity Games</title>
-      <link>/entries/Parity_Game.html</link>
-      <pubDate>Mon, 02 Nov 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Parity_Game.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Verified Efficient Implementation of Gabow&#39;s Strongly Connected Components Algorithm</title>
-      <link>/entries/Gabow_SCC.html</link>
-      <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Gabow_SCC.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Properties of Random Graphs -- Subgraph Containment</title>
-      <link>/entries/Random_Graph_Subgraph_Threshold.html</link>
-      <pubDate>Thu, 13 Feb 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Random_Graph_Subgraph_Threshold.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Königsberg Bridge Problem and the Friendship Theorem</title>
-      <link>/entries/Koenigsberg_Friendship.html</link>
-      <pubDate>Fri, 19 Jul 2013 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Koenigsberg_Friendship.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>An Axiomatic Characterization of the Single-Source Shortest Path Problem</title>
-      <link>/entries/ShortestPath.html</link>
-      <pubDate>Wed, 22 May 2013 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/ShortestPath.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Graph Theory</title>
-      <link>/entries/Graph_Theory.html</link>
-      <pubDate>Sun, 28 Apr 2013 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Graph_Theory.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Probabilistic Proof of the Girth-Chromatic Number Theorem</title>
-      <link>/entries/Girth_Chromatic.html</link>
-      <pubDate>Mon, 06 Feb 2012 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Girth_Chromatic.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Maximum Cardinality Matching</title>
-      <link>/entries/Max-Card-Matching.html</link>
-      <pubDate>Thu, 21 Jul 2011 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Max-Card-Matching.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Flyspeck I: Tame Graphs</title>
-      <link>/entries/Flyspeck-Tame.html</link>
-      <pubDate>Mon, 22 May 2006 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Flyspeck-Tame.html</guid>
-      <description></description>
-    </item>
-    
+      <atom:link href="/topics/mathematics/graph-theory/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Tree Enumeration</title>
+          <link>/entries/Tree_Enumeration.html</link>
+          <pubDate>Tue, 09 May 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Tree_Enumeration.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Expander Graphs</title>
+          <link>/entries/Expander_Graphs.html</link>
+          <pubDate>Fri, 03 Mar 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Expander_Graphs.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Turán&#39;s Graph Theorem</title>
+          <link>/entries/Turans_Graph_Theorem.html</link>
+          <pubDate>Mon, 14 Nov 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Turans_Graph_Theorem.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Balog–Szemerédi–Gowers Theorem</title>
+          <link>/entries/Balog_Szemeredi_Gowers.html</link>
+          <pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Balog_Szemeredi_Gowers.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Undirected Graph Theory</title>
+          <link>/entries/Undirected_Graph_Theory.html</link>
+          <pubDate>Thu, 29 Sep 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Undirected_Graph_Theory.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Knight&#39;s Tour Revisited Revisited</title>
+          <link>/entries/Knights_Tour.html</link>
+          <pubDate>Tue, 04 Jan 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Knights_Tour.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Roth&#39;s Theorem on Arithmetic Progressions</title>
+          <link>/entries/Roth_Arithmetic_Progressions.html</link>
+          <pubDate>Tue, 28 Dec 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Roth_Arithmetic_Progressions.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Szemerédi&#39;s Regularity Lemma</title>
+          <link>/entries/Szemeredi_Regularity.html</link>
+          <pubDate>Fri, 05 Nov 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Szemeredi_Regularity.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Relational Forests</title>
+          <link>/entries/Relational_Forests.html</link>
+          <pubDate>Tue, 03 Aug 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Relational_Forests.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Relational Characterisations of Paths</title>
+          <link>/entries/Relational_Paths.html</link>
+          <pubDate>Mon, 13 Jul 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Relational_Paths.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Graph Saturation</title>
+          <link>/entries/Graph_Saturation.html</link>
+          <pubDate>Fri, 23 Nov 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Graph_Saturation.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Upper Bounding Diameters of State Spaces of Factored Transition Systems</title>
+          <link>/entries/Factored_Transition_System_Bounding.html</link>
+          <pubDate>Fri, 12 Oct 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Factored_Transition_System_Bounding.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Flow Networks and the Min-Cut-Max-Flow Theorem</title>
+          <link>/entries/Flow_Networks.html</link>
+          <pubDate>Thu, 01 Jun 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Flow_Networks.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formalizing Push-Relabel Algorithms</title>
+          <link>/entries/Prpu_Maxflow.html</link>
+          <pubDate>Thu, 01 Jun 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Prpu_Maxflow.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Menger&#39;s Theorem</title>
+          <link>/entries/Menger.html</link>
+          <pubDate>Sun, 26 Feb 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Menger.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Tree Decomposition</title>
+          <link>/entries/Tree_Decomposition.html</link>
+          <pubDate>Tue, 31 May 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Tree_Decomposition.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Formal Proof of the Max-Flow Min-Cut Theorem for Countable Networks</title>
+          <link>/entries/MFMC_Countable.html</link>
+          <pubDate>Mon, 09 May 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/MFMC_Countable.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Planarity Certificates</title>
+          <link>/entries/Planarity_Certificates.html</link>
+          <pubDate>Wed, 11 Nov 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Planarity_Certificates.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Positional Determinacy of Parity Games</title>
+          <link>/entries/Parity_Game.html</link>
+          <pubDate>Mon, 02 Nov 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Parity_Game.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Verified Efficient Implementation of Gabow&#39;s Strongly Connected Components Algorithm</title>
+          <link>/entries/Gabow_SCC.html</link>
+          <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Gabow_SCC.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Properties of Random Graphs -- Subgraph Containment</title>
+          <link>/entries/Random_Graph_Subgraph_Threshold.html</link>
+          <pubDate>Thu, 13 Feb 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Random_Graph_Subgraph_Threshold.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Königsberg Bridge Problem and the Friendship Theorem</title>
+          <link>/entries/Koenigsberg_Friendship.html</link>
+          <pubDate>Fri, 19 Jul 2013 00:00:00 +0000</pubDate>
+          <guid>/entries/Koenigsberg_Friendship.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>An Axiomatic Characterization of the Single-Source Shortest Path Problem</title>
+          <link>/entries/ShortestPath.html</link>
+          <pubDate>Wed, 22 May 2013 00:00:00 +0000</pubDate>
+          <guid>/entries/ShortestPath.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Graph Theory</title>
+          <link>/entries/Graph_Theory.html</link>
+          <pubDate>Sun, 28 Apr 2013 00:00:00 +0000</pubDate>
+          <guid>/entries/Graph_Theory.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Probabilistic Proof of the Girth-Chromatic Number Theorem</title>
+          <link>/entries/Girth_Chromatic.html</link>
+          <pubDate>Mon, 06 Feb 2012 00:00:00 +0000</pubDate>
+          <guid>/entries/Girth_Chromatic.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Maximum Cardinality Matching</title>
+          <link>/entries/Max-Card-Matching.html</link>
+          <pubDate>Thu, 21 Jul 2011 00:00:00 +0000</pubDate>
+          <guid>/entries/Max-Card-Matching.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Flyspeck I: Tame Graphs</title>
+          <link>/entries/Flyspeck-Tame.html</link>
+          <pubDate>Mon, 22 May 2006 00:00:00 +0000</pubDate>
+          <guid>/entries/Flyspeck-Tame.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

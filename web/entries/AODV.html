@@ -1,25 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Loop freedom of the (untimed) AODV routing protocol - Archive of Formal Proofs</title><meta name="description" content=" The Ad hoc On-demand Distance Vector (AODV) routing protocol allows the nodes in a Mobile Ad hoc Network (MANET) or a Wireless Mesh Network (WMN) to know..."><meta property="og:title" content="Loop freedom of the (untimed) AODV routing protocol" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Loop freedom of the (untimed) AODV routing protocol - Archive of Formal Proofs</title>
+    <meta name="description" content=" The Ad hoc On-demand Distance Vector (AODV) routing protocol allows the nodes in a Mobile Ad hoc Network (MANET) or a Wireless Mesh Network (WMN) to know...">
+
+  <meta property="og:title" content="Loop freedom of the (untimed) AODV routing protocol" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="/entries/AODV.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
 <meta property="article:published_time" content="2014-10-23T00:00:00+00:00" />
 <meta property="article:modified_time" content="2014-10-23T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="Loop freedom of the (untimed) AODV routing protocol"/>
 <meta name="twitter:description" content=""/>
 
-  
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
     <script>
       MathJax = {
         tex: {
@@ -31,72 +36,111 @@
         }
       };
     </script>
-    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
   <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
-  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../" class='logo-link'>
-    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../" class='logo-link'>
-        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../"><li >Home</li></a>
-        <a href="../topics/"><li >Topics</li></a>
-        <a href="../download/"><li >Download</li></a>
-        <a href="../help/"><li >Help</li></a>
-        <a href="../submission/"><li >Submission</li></a>
-        <a href="../statistics/"><li >Statistics</li></a>
-        <a href="../about/"><li >About</li></a>
+          <a href="../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content  entries'><header>
-  <form autocomplete="off" action="../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>L</span>oop <span class='first'>F</span>reedom of the (<span class='first'>U</span>ntimed) <span class='first'>A</span><span class='first'>O</span><span class='first'>D</span><span class='first'>V</span> <span class='first'>R</span>outing <span class='first'>P</span>rotocol</h1>
+    </aside>
+    <div class='content entries'>
+      <header>
+    <form autocomplete="off" action="../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>L</span>oop freedom of the (untimed) <span class='first'>A</span><span class='first'>O</span><span class='first'>D</span><span class='first'>V</span> routing protocol
+    
+  </h1>
   <div>
-    
-    <p><a href="../authors/bourke">Timothy Bourke</a> <a href="http://www.tbrk.org">🌐</a> and <a href="../authors/hoefner">Peter Höfner</a> <a href="http://www.hoefner-online.de/">🌐</a>
-    </p>
-    
-    
-    <p class="date">October 23, 2014</p>
-    
-  </div>
-</header><div><main><h3>Abstract</h3>
+      <p>
+        <a href="../authors/bourke">Timothy Bourke</a> <a href="http://www.tbrk.org">🌐</a> and <a href="../authors/hoefner">Peter Höfner</a> <a href="http://www.hoefner-online.de/">🌐</a>
 
-  <div class="abstract mathjax_process"><p>
+      </p>
+      <p class="date">October 23, 2014</p>
+  </div>
+</header>
+      <div>
+        
+  <main>
+    <h3>Abstract</h3>
+
+    <div class="abstract mathjax_process"><p>
 The Ad hoc On-demand Distance Vector (AODV) routing protocol allows
 the nodes in a Mobile Ad hoc Network (MANET) or a Wireless Mesh
 Network (WMN) to know where to forward data packets. Such a protocol
@@ -114,161 +158,225 @@ show that Isabelle/HOL can re-establish most proof obligations
 automatically and identify exactly the steps that are no longer valid.
 </p></div>
 
-  <h3>License</h3>
-  <div><a href="https://isa-afp.org/LICENSE">BSD License</a></div><h3>Topics</h3>
-  <ul><li><a href="../topics/computer-science/concurrency/process-calculi">Computer science/Concurrency/Process calculi</a></li></ul>
-  <h3>Session AODV</h3>
-  <ul>
-    <li><a href="../theories/aodv/#Aodv_Basic">Aodv_Basic</a></li>
-    <li><a href="../theories/aodv/#Aodv_Data">Aodv_Data</a></li>
-    <li><a href="../theories/aodv/#Aodv_Message">Aodv_Message</a></li>
-    <li><a href="../theories/aodv/#Aodv">Aodv</a></li>
-    <li><a href="../theories/aodv/#Aodv_Predicates">Aodv_Predicates</a></li>
-    <li><a href="../theories/aodv/#Fresher">Fresher</a></li>
-    <li><a href="../theories/aodv/#Seq_Invariants">Seq_Invariants</a></li>
-    <li><a href="../theories/aodv/#Quality_Increases">Quality_Increases</a></li>
-    <li><a href="../theories/aodv/#OAodv">OAodv</a></li>
-    <li><a href="../theories/aodv/#Global_Invariants">Global_Invariants</a></li>
-    <li><a href="../theories/aodv/#Loop_Freedom">Loop_Freedom</a></li>
-    <li><a href="../theories/aodv/#Aodv_Loop_Freedom">Aodv_Loop_Freedom</a></li>
-    <li><a href="../theories/aodv/#A_Norreqid">A_Norreqid</a></li>
-    <li><a href="../theories/aodv/#A_Aodv_Data">A_Aodv_Data</a></li>
-    <li><a href="../theories/aodv/#A_Aodv_Message">A_Aodv_Message</a></li>
-    <li><a href="../theories/aodv/#A_Aodv">A_Aodv</a></li>
-    <li><a href="../theories/aodv/#A_Aodv_Predicates">A_Aodv_Predicates</a></li>
-    <li><a href="../theories/aodv/#A_Fresher">A_Fresher</a></li>
-    <li><a href="../theories/aodv/#A_Seq_Invariants">A_Seq_Invariants</a></li>
-    <li><a href="../theories/aodv/#A_Quality_Increases">A_Quality_Increases</a></li>
-    <li><a href="../theories/aodv/#A_OAodv">A_OAodv</a></li>
-    <li><a href="../theories/aodv/#A_Global_Invariants">A_Global_Invariants</a></li>
-    <li><a href="../theories/aodv/#A_Loop_Freedom">A_Loop_Freedom</a></li>
-    <li><a href="../theories/aodv/#A_Aodv_Loop_Freedom">A_Aodv_Loop_Freedom</a></li>
-    <li><a href="../theories/aodv/#B_Fwdrreps">B_Fwdrreps</a></li>
-    <li><a href="../theories/aodv/#B_Aodv_Data">B_Aodv_Data</a></li>
-    <li><a href="../theories/aodv/#B_Aodv_Message">B_Aodv_Message</a></li>
-    <li><a href="../theories/aodv/#B_Aodv">B_Aodv</a></li>
-    <li><a href="../theories/aodv/#B_Aodv_Predicates">B_Aodv_Predicates</a></li>
-    <li><a href="../theories/aodv/#B_Fresher">B_Fresher</a></li>
-    <li><a href="../theories/aodv/#B_Seq_Invariants">B_Seq_Invariants</a></li>
-    <li><a href="../theories/aodv/#B_Quality_Increases">B_Quality_Increases</a></li>
-    <li><a href="../theories/aodv/#B_OAodv">B_OAodv</a></li>
-    <li><a href="../theories/aodv/#B_Global_Invariants">B_Global_Invariants</a></li>
-    <li><a href="../theories/aodv/#B_Loop_Freedom">B_Loop_Freedom</a></li>
-    <li><a href="../theories/aodv/#B_Aodv_Loop_Freedom">B_Aodv_Loop_Freedom</a></li>
-    <li><a href="../theories/aodv/#C_Gtobcast">C_Gtobcast</a></li>
-    <li><a href="../theories/aodv/#C_Aodv_Data">C_Aodv_Data</a></li>
-    <li><a href="../theories/aodv/#C_Aodv_Message">C_Aodv_Message</a></li>
-    <li><a href="../theories/aodv/#C_Aodv">C_Aodv</a></li>
-    <li><a href="../theories/aodv/#C_Aodv_Predicates">C_Aodv_Predicates</a></li>
-    <li><a href="../theories/aodv/#C_Fresher">C_Fresher</a></li>
-    <li><a href="../theories/aodv/#C_Seq_Invariants">C_Seq_Invariants</a></li>
-    <li><a href="../theories/aodv/#C_Quality_Increases">C_Quality_Increases</a></li>
-    <li><a href="../theories/aodv/#C_OAodv">C_OAodv</a></li>
-    <li><a href="../theories/aodv/#C_Global_Invariants">C_Global_Invariants</a></li>
-    <li><a href="../theories/aodv/#C_Loop_Freedom">C_Loop_Freedom</a></li>
-    <li><a href="../theories/aodv/#C_Aodv_Loop_Freedom">C_Aodv_Loop_Freedom</a></li>
-    <li><a href="../theories/aodv/#D_Fwdrreqs">D_Fwdrreqs</a></li>
-    <li><a href="../theories/aodv/#D_Aodv_Data">D_Aodv_Data</a></li>
-    <li><a href="../theories/aodv/#D_Aodv_Message">D_Aodv_Message</a></li>
-    <li><a href="../theories/aodv/#D_Aodv">D_Aodv</a></li>
-    <li><a href="../theories/aodv/#D_Aodv_Predicates">D_Aodv_Predicates</a></li>
-    <li><a href="../theories/aodv/#D_Fresher">D_Fresher</a></li>
-    <li><a href="../theories/aodv/#D_Seq_Invariants">D_Seq_Invariants</a></li>
-    <li><a href="../theories/aodv/#D_Quality_Increases">D_Quality_Increases</a></li>
-    <li><a href="../theories/aodv/#D_OAodv">D_OAodv</a></li>
-    <li><a href="../theories/aodv/#D_Global_Invariants">D_Global_Invariants</a></li>
-    <li><a href="../theories/aodv/#D_Loop_Freedom">D_Loop_Freedom</a></li>
-    <li><a href="../theories/aodv/#D_Aodv_Loop_Freedom">D_Aodv_Loop_Freedom</a></li>
-    <li><a href="../theories/aodv/#E_All_ABCD">E_All_ABCD</a></li>
-    <li><a href="../theories/aodv/#E_Aodv_Data">E_Aodv_Data</a></li>
-    <li><a href="../theories/aodv/#E_Aodv_Message">E_Aodv_Message</a></li>
-    <li><a href="../theories/aodv/#E_Aodv">E_Aodv</a></li>
-    <li><a href="../theories/aodv/#E_Aodv_Predicates">E_Aodv_Predicates</a></li>
-    <li><a href="../theories/aodv/#E_Fresher">E_Fresher</a></li>
-    <li><a href="../theories/aodv/#E_Seq_Invariants">E_Seq_Invariants</a></li>
-    <li><a href="../theories/aodv/#E_Quality_Increases">E_Quality_Increases</a></li>
-    <li><a href="../theories/aodv/#E_OAodv">E_OAodv</a></li>
-    <li><a href="../theories/aodv/#E_Global_Invariants">E_Global_Invariants</a></li>
-    <li><a href="../theories/aodv/#E_Loop_Freedom">E_Loop_Freedom</a></li>
-    <li><a href="../theories/aodv/#E_Aodv_Loop_Freedom">E_Aodv_Loop_Freedom</a></li>
-    <li><a href="../theories/aodv/#All">All</a></li></ul><div class="flex-wrap">
-  <div>
-    <h3>Depends on</h3>
-    <ul class="horizontal-list"><li><a href="../entries/AWN.html">Mechanization of the Algebra for Wireless Networks (AWN)</a></li></ul>
-  </div>
-  
-  </div>
-</main>
-
-<nav class='links'>
-  <a class='popup-button' href="#cite-popup">Cite</a>
-  <a class='popup-button' href="#download-popup">Download</a>
-  <h4>PDFs</h4>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/AODV/outline.pdf">Proof
-    outline</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/AODV/document.pdf">Proof
-    document</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/AODV/session_graph.pdf">Dependencies</a></nav>
-
-<div id="cite-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Cite</h2>
-    <a class="close" href="#">&times;</a>
+    <h3>License</h3>
     <div>
-      <p style="display:none;" id="bibtex-filename">AODV-AFP</p><pre id="copy-text">@article{AODV-AFP,
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/computer-science/concurrency/process-calculi">Computer science/Concurrency/Process calculi</a></li>
+      </ul>
+      <h3>Session AODV</h3>
+      <ul>
+          <li><a href="../sessions/aodv/#Aodv_Basic">Aodv_Basic</a></li>
+          <li><a href="../sessions/aodv/#Aodv_Data">Aodv_Data</a></li>
+          <li><a href="../sessions/aodv/#Aodv_Message">Aodv_Message</a></li>
+          <li><a href="../sessions/aodv/#Aodv">Aodv</a></li>
+          <li><a href="../sessions/aodv/#Aodv_Predicates">Aodv_Predicates</a></li>
+          <li><a href="../sessions/aodv/#Fresher">Fresher</a></li>
+          <li><a href="../sessions/aodv/#Seq_Invariants">Seq_Invariants</a></li>
+          <li><a href="../sessions/aodv/#Quality_Increases">Quality_Increases</a></li>
+          <li><a href="../sessions/aodv/#OAodv">OAodv</a></li>
+          <li><a href="../sessions/aodv/#Global_Invariants">Global_Invariants</a></li>
+          <li><a href="../sessions/aodv/#Loop_Freedom">Loop_Freedom</a></li>
+          <li><a href="../sessions/aodv/#Aodv_Loop_Freedom">Aodv_Loop_Freedom</a></li>
+          <li><a href="../sessions/aodv/#A_Norreqid">A_Norreqid</a></li>
+          <li><a href="../sessions/aodv/#A_Aodv_Data">A_Aodv_Data</a></li>
+          <li><a href="../sessions/aodv/#A_Aodv_Message">A_Aodv_Message</a></li>
+          <li><a href="../sessions/aodv/#A_Aodv">A_Aodv</a></li>
+          <li><a href="../sessions/aodv/#A_Aodv_Predicates">A_Aodv_Predicates</a></li>
+          <li><a href="../sessions/aodv/#A_Fresher">A_Fresher</a></li>
+          <li><a href="../sessions/aodv/#A_Seq_Invariants">A_Seq_Invariants</a></li>
+          <li><a href="../sessions/aodv/#A_Quality_Increases">A_Quality_Increases</a></li>
+          <li><a href="../sessions/aodv/#A_OAodv">A_OAodv</a></li>
+          <li><a href="../sessions/aodv/#A_Global_Invariants">A_Global_Invariants</a></li>
+          <li><a href="../sessions/aodv/#A_Loop_Freedom">A_Loop_Freedom</a></li>
+          <li><a href="../sessions/aodv/#A_Aodv_Loop_Freedom">A_Aodv_Loop_Freedom</a></li>
+          <li><a href="../sessions/aodv/#B_Fwdrreps">B_Fwdrreps</a></li>
+          <li><a href="../sessions/aodv/#B_Aodv_Data">B_Aodv_Data</a></li>
+          <li><a href="../sessions/aodv/#B_Aodv_Message">B_Aodv_Message</a></li>
+          <li><a href="../sessions/aodv/#B_Aodv">B_Aodv</a></li>
+          <li><a href="../sessions/aodv/#B_Aodv_Predicates">B_Aodv_Predicates</a></li>
+          <li><a href="../sessions/aodv/#B_Fresher">B_Fresher</a></li>
+          <li><a href="../sessions/aodv/#B_Seq_Invariants">B_Seq_Invariants</a></li>
+          <li><a href="../sessions/aodv/#B_Quality_Increases">B_Quality_Increases</a></li>
+          <li><a href="../sessions/aodv/#B_OAodv">B_OAodv</a></li>
+          <li><a href="../sessions/aodv/#B_Global_Invariants">B_Global_Invariants</a></li>
+          <li><a href="../sessions/aodv/#B_Loop_Freedom">B_Loop_Freedom</a></li>
+          <li><a href="../sessions/aodv/#B_Aodv_Loop_Freedom">B_Aodv_Loop_Freedom</a></li>
+          <li><a href="../sessions/aodv/#C_Gtobcast">C_Gtobcast</a></li>
+          <li><a href="../sessions/aodv/#C_Aodv_Data">C_Aodv_Data</a></li>
+          <li><a href="../sessions/aodv/#C_Aodv_Message">C_Aodv_Message</a></li>
+          <li><a href="../sessions/aodv/#C_Aodv">C_Aodv</a></li>
+          <li><a href="../sessions/aodv/#C_Aodv_Predicates">C_Aodv_Predicates</a></li>
+          <li><a href="../sessions/aodv/#C_Fresher">C_Fresher</a></li>
+          <li><a href="../sessions/aodv/#C_Seq_Invariants">C_Seq_Invariants</a></li>
+          <li><a href="../sessions/aodv/#C_Quality_Increases">C_Quality_Increases</a></li>
+          <li><a href="../sessions/aodv/#C_OAodv">C_OAodv</a></li>
+          <li><a href="../sessions/aodv/#C_Global_Invariants">C_Global_Invariants</a></li>
+          <li><a href="../sessions/aodv/#C_Loop_Freedom">C_Loop_Freedom</a></li>
+          <li><a href="../sessions/aodv/#C_Aodv_Loop_Freedom">C_Aodv_Loop_Freedom</a></li>
+          <li><a href="../sessions/aodv/#D_Fwdrreqs">D_Fwdrreqs</a></li>
+          <li><a href="../sessions/aodv/#D_Aodv_Data">D_Aodv_Data</a></li>
+          <li><a href="../sessions/aodv/#D_Aodv_Message">D_Aodv_Message</a></li>
+          <li><a href="../sessions/aodv/#D_Aodv">D_Aodv</a></li>
+          <li><a href="../sessions/aodv/#D_Aodv_Predicates">D_Aodv_Predicates</a></li>
+          <li><a href="../sessions/aodv/#D_Fresher">D_Fresher</a></li>
+          <li><a href="../sessions/aodv/#D_Seq_Invariants">D_Seq_Invariants</a></li>
+          <li><a href="../sessions/aodv/#D_Quality_Increases">D_Quality_Increases</a></li>
+          <li><a href="../sessions/aodv/#D_OAodv">D_OAodv</a></li>
+          <li><a href="../sessions/aodv/#D_Global_Invariants">D_Global_Invariants</a></li>
+          <li><a href="../sessions/aodv/#D_Loop_Freedom">D_Loop_Freedom</a></li>
+          <li><a href="../sessions/aodv/#D_Aodv_Loop_Freedom">D_Aodv_Loop_Freedom</a></li>
+          <li><a href="../sessions/aodv/#E_All_ABCD">E_All_ABCD</a></li>
+          <li><a href="../sessions/aodv/#E_Aodv_Data">E_Aodv_Data</a></li>
+          <li><a href="../sessions/aodv/#E_Aodv_Message">E_Aodv_Message</a></li>
+          <li><a href="../sessions/aodv/#E_Aodv">E_Aodv</a></li>
+          <li><a href="../sessions/aodv/#E_Aodv_Predicates">E_Aodv_Predicates</a></li>
+          <li><a href="../sessions/aodv/#E_Fresher">E_Fresher</a></li>
+          <li><a href="../sessions/aodv/#E_Seq_Invariants">E_Seq_Invariants</a></li>
+          <li><a href="../sessions/aodv/#E_Quality_Increases">E_Quality_Increases</a></li>
+          <li><a href="../sessions/aodv/#E_OAodv">E_OAodv</a></li>
+          <li><a href="../sessions/aodv/#E_Global_Invariants">E_Global_Invariants</a></li>
+          <li><a href="../sessions/aodv/#E_Loop_Freedom">E_Loop_Freedom</a></li>
+          <li><a href="../sessions/aodv/#E_Aodv_Loop_Freedom">E_Aodv_Loop_Freedom</a></li>
+          <li><a href="../sessions/aodv/#All">All</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+      <div>
+        <h3>Depends on</h3>
+        <ul class="horizontal-list">
+              <li><a href="../entries/AWN.html">Mechanization of the Algebra for Wireless Networks (AWN)</a></li>
+        </ul>
+      </div>
+      </div>
+    
+  </main>
+
+  <nav class='links'>
+    <a class='popup-button' href="#cite-popup">Cite</a>
+    <a class='popup-button' href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/AODV/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/AODV/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/AODV/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">AODV-AFP</p>
+        <pre id="copy-text">@article{AODV-AFP,
   author  = {Timothy Bourke and Peter Höfner},
   title   = {Loop freedom of the (untimed) AODV routing protocol},
   journal = {Archive of Formal Proofs},
   month   = {October},
   year    = {2014},
   note    = {\url{https://isa-afp.org/entries/AODV.html},
-            Formal proof development},
+             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
     </div>
   </div>
-</div>
 
-<div id="download-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Download</h2>
-    <a class="close" href="#">&times;</a>
-    <a href="https://www.isa-afp.org/release//afp-AODV-current.tar.gz" download>Download latest</a>
-    <p>Older releases:</p>
-    <ul><li>
-        <a href="https://www.isa-afp.org/release/afp-AODV-2023-09-13.tar.gz">Sep 13, 2023</a>: Isabelle2023
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-AODV-2022-10-27.tar.gz">Oct 27, 2022</a>: Isabelle2022
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-AODV-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021-1
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-AODV-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-AODV-2020-04-18.tar.gz">Apr 18, 2020</a>: Isabelle2020
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-AODV-2019-06-11.tar.gz">Jun 11, 2019</a>: Isabelle2019
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-AODV-2018-08-16.tar.gz">Aug 16, 2018</a>: Isabelle2018
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-AODV-2017-10-10.tar.gz">Oct 10, 2017</a>: Isabelle2017
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-AODV-2016-12-17.tar.gz">Dec 17, 2016</a>: Isabelle2016-1
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-AODV-2016-02-22.tar.gz">Feb 22, 2016</a>: Isabelle2016
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-AODV-2015-05-27.tar.gz">May 27, 2015</a>: Isabelle2015
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-AODV-2014-11-03.tar.gz">Nov 3, 2014</a>: Isabelle2014
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-AODV-2014-11-01.tar.gz">Nov 1, 2014</a>: Isabelle2014
-      </li></ul>
-  </div>
-</div>
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-AODV-current.tar.gz"
+         download>Download latest</a>
+        <p>Older releases:</p>
+        <ul>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-AODV-2023-09-13.tar.gz">
+                Sep 13, 2023
+              </a>
+              : Isabelle2023
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-AODV-2022-10-27.tar.gz">
+                Oct 27, 2022
+              </a>
+              : Isabelle2022
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-AODV-2021-12-14.tar.gz">
+                Dec 14, 2021
+              </a>
+              : Isabelle2021-1
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-AODV-2021-02-23.tar.gz">
+                Feb 23, 2021
+              </a>
+              : Isabelle2021
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-AODV-2020-04-18.tar.gz">
+                Apr 18, 2020
+              </a>
+              : Isabelle2020
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-AODV-2019-06-11.tar.gz">
+                Jun 11, 2019
+              </a>
+              : Isabelle2019
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-AODV-2018-08-16.tar.gz">
+                Aug 16, 2018
+              </a>
+              : Isabelle2018
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-AODV-2017-10-10.tar.gz">
+                Oct 10, 2017
+              </a>
+              : Isabelle2017
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-AODV-2016-12-17.tar.gz">
+                Dec 17, 2016
+              </a>
+              : Isabelle2016-1
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-AODV-2016-02-22.tar.gz">
+                Feb 22, 2016
+              </a>
+              : Isabelle2016
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-AODV-2015-05-27.tar.gz">
+                May 27, 2015
+              </a>
+              : Isabelle2015
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-AODV-2014-11-03.tar.gz">
+                Nov 3, 2014
+              </a>
+              : Isabelle2014
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-AODV-2014-11-01.tar.gz">
+                Nov 1, 2014
+              </a>
+              : Isabelle2014
+            </li>
+        </ul>
     </div>
   </div>
-</body>
-
+        
+      </div>
+    </div>
+  </body>
 </html>

@@ -1,83 +1,73 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Berlekamp_Zassenhaus on Archive of Formal Proofs</title>
+    <title>Berlekamp_Zassenhaus on Archive of Formal Proofs
+    </title>
     <link>/dependencies/berlekamp_zassenhaus/</link>
-    <description>Recent content in Berlekamp_Zassenhaus on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Berlekamp_Zassenhaus 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Thu, 02 Feb 2023 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/berlekamp_zassenhaus/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Hardness of Lattice Problems</title>
-      <link>/entries/CVP_Hardness.html</link>
-      <pubDate>Thu, 02 Feb 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/CVP_Hardness.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>CRYSTALS-Kyber</title>
-      <link>/entries/CRYSTALS-Kyber.html</link>
-      <pubDate>Thu, 08 Sep 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/CRYSTALS-Kyber.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Number Theoretic Transform</title>
-      <link>/entries/Number_Theoretic_Transform.html</link>
-      <pubDate>Thu, 18 Aug 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Number_Theoretic_Transform.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Fisher&#39;s Inequality: Linear Algebraic Proof Techniques for Combinatorics</title>
-      <link>/entries/Fishers_Inequality.html</link>
-      <pubDate>Thu, 21 Apr 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Fishers_Inequality.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A verified algorithm for computing the Smith normal form of a matrix</title>
-      <link>/entries/Smith_Normal_Form.html</link>
-      <pubDate>Sat, 23 May 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Smith_Normal_Form.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A verified LLL algorithm</title>
-      <link>/entries/LLL_Basis_Reduction.html</link>
-      <pubDate>Fri, 02 Feb 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/LLL_Basis_Reduction.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Linear Recurrences</title>
-      <link>/entries/Linear_Recurrences.html</link>
-      <pubDate>Thu, 12 Oct 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Linear_Recurrences.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Algebraic Numbers in Isabelle/HOL</title>
-      <link>/entries/Algebraic_Numbers.html</link>
-      <pubDate>Tue, 22 Dec 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Algebraic_Numbers.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Thu, 02 Feb 2023 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/berlekamp_zassenhaus/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Hardness of Lattice Problems</title>
+          <link>/entries/CVP_Hardness.html</link>
+          <pubDate>Thu, 02 Feb 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/CVP_Hardness.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>CRYSTALS-Kyber</title>
+          <link>/entries/CRYSTALS-Kyber.html</link>
+          <pubDate>Thu, 08 Sep 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/CRYSTALS-Kyber.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Number Theoretic Transform</title>
+          <link>/entries/Number_Theoretic_Transform.html</link>
+          <pubDate>Thu, 18 Aug 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Number_Theoretic_Transform.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Fisher&#39;s Inequality: Linear Algebraic Proof Techniques for Combinatorics</title>
+          <link>/entries/Fishers_Inequality.html</link>
+          <pubDate>Thu, 21 Apr 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Fishers_Inequality.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A verified algorithm for computing the Smith normal form of a matrix</title>
+          <link>/entries/Smith_Normal_Form.html</link>
+          <pubDate>Sat, 23 May 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Smith_Normal_Form.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A verified LLL algorithm</title>
+          <link>/entries/LLL_Basis_Reduction.html</link>
+          <pubDate>Fri, 02 Feb 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/LLL_Basis_Reduction.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Linear Recurrences</title>
+          <link>/entries/Linear_Recurrences.html</link>
+          <pubDate>Thu, 12 Oct 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Linear_Recurrences.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Algebraic Numbers in Isabelle/HOL</title>
+          <link>/entries/Algebraic_Numbers.html</link>
+          <pubDate>Tue, 22 Dec 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Algebraic_Numbers.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

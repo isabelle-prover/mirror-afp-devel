@@ -46,45 +46,14 @@ chapter\<open>Examples\<close>
 section\<open>CopyBuffer Refinement over an infinite alphabet\<close>
 
 theory     CopyBuffer_props
- imports   "HOL-CSP.CopyBuffer" "Properties"
+ imports   "HOL-CSP.CopyBuffer" "HOL-CSP.Assertions"
 begin 
 
 subsection\<open> The Copy-Buffer vs. reference processes \<close>
 
 lemma DF_COPY: "(DF (range left \<union> range right)) \<sqsubseteq>\<^sub>F\<^sub>D COPY"
-    apply(simp add: DF_def,rule fix_ind2, simp_all)
-proof -
-  show "adm (\<lambda>a. a \<sqsubseteq>\<^sub>F\<^sub>D COPY)" by (rule le_FD_adm, simp_all add: monofunI)
-next
-  have 1: "(\<sqinter>xa\<in> range left \<union> range right \<rightarrow> \<bottom>) \<sqsubseteq>\<^sub>F\<^sub>D (\<sqinter>xa\<in> range left \<rightarrow>  \<bottom>)" by simp
-  have 2: "(\<sqinter>xa\<in> range left \<rightarrow>  \<bottom>) \<sqsubseteq>\<^sub>F\<^sub>D (left\<^bold>?x \<rightarrow>  \<bottom>)" 
-    unfolding read_def
-    by (meson BOT_leFD mono_Mndetprefix_FD Mprefix_refines_Mndetprefix_FD trans_FD)
-  show "(\<sqinter>x\<in>range left \<union> range right \<rightarrow>  \<bottom>) \<sqsubseteq>\<^sub>F\<^sub>D COPY"
-    by (metis (mono_tags, lifting) "1" "2" BOT_leFD COPY_rec mono_read_FD trans_FD)
-next
-  fix P::"'a channel process"
-  assume  *: "P \<sqsubseteq>\<^sub>F\<^sub>D COPY" and ** : "(\<sqinter>x\<in>range left \<union> range right \<rightarrow>  P) \<sqsubseteq>\<^sub>F\<^sub>D COPY"
-  have 1: "(\<sqinter>xa\<in> range left \<union> range right \<rightarrow>  P) \<sqsubseteq>\<^sub>F\<^sub>D (\<sqinter>xa\<in> range right \<rightarrow>  P)" by force
-  have 2: "(\<sqinter>xa\<in> range right \<rightarrow>  P) \<sqsubseteq>\<^sub>F\<^sub>D (right\<^bold>!x \<rightarrow>  P)" for x
-    by (metis mono_Mndetprefix_FD_set[of "{right x}" "range right"] Mprefix_refines_Mndetprefix_FD 
-              empty_not_insert insert_subset rangeI sup_bot_left sup_ge1 trans_FD write_def)
+  by (simp add: DF_COPY)
 
- 
-  from 1 2 have ab: "(\<sqinter>xa\<in> range left \<union> range right \<rightarrow>  P) \<sqsubseteq>\<^sub>F\<^sub>D (right\<^bold>!x \<rightarrow>  P)" for x
-    using trans_FD by blast
-  hence 3: "(left\<^bold>?x \<rightarrow> (\<sqinter>xa\<in> range left \<union> range right \<rightarrow>  P)) \<sqsubseteq>\<^sub>F\<^sub>D (left\<^bold>?x \<rightarrow>(right\<^bold>!x \<rightarrow>  P))" by simp
-  have 4: "\<And>X. (\<sqinter>xa\<in> range left \<union> range right \<rightarrow> X) \<sqsubseteq>\<^sub>F\<^sub>D (\<sqinter>xa\<in> range left \<rightarrow> X)" by simp
-  have 5: "\<And>X. (\<sqinter>xa\<in> range left \<rightarrow> X) \<sqsubseteq>\<^sub>F\<^sub>D (left\<^bold>?x \<rightarrow> X)" by (simp add: read_def K_record_comp)
-  from 3 4[of "(\<sqinter>xa\<in> range left \<union> range right \<rightarrow>  P)"] 
-       5  [of "(\<sqinter>xa\<in> range left \<union> range right \<rightarrow>  P)"] 
-  have 6:"(\<sqinter>xa\<in> range left \<union> range right \<rightarrow> 
-                  (\<sqinter>xa\<in> range left \<union> range right \<rightarrow>  P)) \<sqsubseteq>\<^sub>F\<^sub>D (left\<^bold>?x \<rightarrow> (right\<^bold>!x \<rightarrow>  P))"
-    using trans_FD by blast
-  from * ** have 7: "(left\<^bold>?x \<rightarrow> (right\<^bold>!x \<rightarrow>  P)) \<sqsubseteq>\<^sub>F\<^sub>D (left\<^bold>?x \<rightarrow> (right\<^bold>!x \<rightarrow>  COPY))" by fastforce
-  show "(\<sqinter>x\<in>range left \<union> range right \<rightarrow>  \<sqinter>x\<in>range left \<union> range right \<rightarrow>  P) \<sqsubseteq>\<^sub>F\<^sub>D COPY"
-    by (metis (mono_tags, lifting) "6" "7" COPY_rec trans_FD)
-qed
 
 subsection\<open> ... and abstract consequences \<close>
 

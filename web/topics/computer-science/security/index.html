@@ -1,512 +1,573 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Computer science/Security - Archive of Formal Proofs</title><meta name="description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."><link rel="alternate" type="application/rss+xml" href="../../../topics/computer-science/security/index.xml" title="Archive of Formal Proofs" /><meta property="og:title" content="Computer science/Security" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Computer science/Security - Archive of Formal Proofs</title>
+    <meta name="description" content="A collection of proof libraries, examples, and larger
+     scientific developments, mechanically checked in the theorem prover Isabelle.">
+  <link rel="alternate" type="application/rss+xml" href="../../../topics/computer-science/security/index.xml" title="Archive of Formal Proofs" />
+
+  <meta property="og:title" content="Computer science/Security" />
 <meta property="og:description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="/topics/computer-science/security/" /><meta property="og:image" content="/images/afp.png"/><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="Computer science/Security"/>
 <meta name="twitter:description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."/>
 
-  
   <link rel="stylesheet" type="text/css" href="../../../css/front.min.css">
 
-  <link rel="icon" href="../../../images/favicon.ico" type="image/icon"><script src="../../../js/obfuscate.js"></script>
+  <link rel="icon" href="../../../images/favicon.ico" type="image/icon">
+
+  <script src="../../../js/obfuscate.js"></script>
   <script src="../../../js/flexsearch.bundle.js"></script>
   <script src="../../../js/scroll-spy.js"></script>
   <script src="../../../js/theory.js"></script>
-  <script src="../../../js/util.js"></script><script src="../../../js/header-search.js"></script><script src="../../../js/search-autocomplete.js"></script>
+  <script src="../../../js/util.js"></script>
+    <script src="../../../js/header-search.js"></script>
+  <script src="../../../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../../../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../../../" class='logo-link'>
-    <img src="../../../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../../../" class="logo-link">
+    <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../../../search"><img src="../../../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../../../" class='logo-link'>
-        <img src="../../../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../../../"><li >Home</li></a>
-        <a href="../../../topics/"><li >Topics</li></a>
-        <a href="../../../download/"><li >Download</li></a>
-        <a href="../../../help/"><li >Help</li></a>
-        <a href="../../../submission/"><li >Submission</li></a>
-        <a href="../../../statistics/"><li >Statistics</li></a>
-        <a href="../../../about/"><li >About</li></a>
+          <a href="../../../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../../../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../../../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../../../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../../../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../../../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../../../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content '><header>
-  <form autocomplete="off" action="../../../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../../../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>C</span>omputer <span class='first'>S</span>cience/<span class='first'>S</span>ecurity</h1>
+    </aside>
+    <div class='content'>
+      <header>
+    <form autocomplete="off" action="../../../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../../../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>C</span>omputer science/<span class='first'>S</span>ecurity
+    
+  </h1>
   <div>
-    
-    
   </div>
-</header><div><h2>Subject Classification</h2><p>ACM: <a href="https://dl.acm.org/topic/ccs2012/10002978">Security and privacy</a></p><p>AMS: <a href="https://mathscinet.ams.org/mathscinet/msc/msc2020.html?t=68M25">Computer science / Computer system organization / Computer security</a></p><h2 class="head">2023</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Crypto_Standards.html">Cryptographic Standards</a></h5> <br>by <a href="../../../authors/whitley">A Whitley</a></div>
-  <span class="date">
-    Jun 06
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/CommCSL.html">Formalization of CommCSL: A Relational Concurrent Separation Logic for Proving Information Flow Security in Concurrent Programs</a></h5> <br>by <a href="../../../authors/dardinier">Thibault Dardinier</a></div>
-  <span class="date">
-    Mar 15
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/CVP_Hardness.html">Hardness of Lattice Problems</a></h5> <br>by <a href="../../../authors/kreuzer">Katharina Kreuzer</a></div>
-  <span class="date">
-    Feb 02
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/ABY3_Protocols.html">ABY3 Multiplication and Array Shuffling</a></h5> <br>by <a href="../../../authors/hu">Shuwei Hu</a></div>
-  <span class="date">
-    Jan 27
-  </span>
-</article>
+</header>
+      <div>
+        
+    <h2>Subject Classification</h2>
+      <p>ACM: <a href="https://dl.acm.org/topic/ccs2012/10002978">Security and privacy</a></p>
+      <p>AMS: <a href="https://mathscinet.ams.org/mathscinet/msc/msc2020.html?t=68M25">Computer science / Computer system organization / Computer security</a></p>
+    <h2 class="head">2023</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/CommCSL.html">Formalization of CommCSL: A Relational Concurrent Separation Logic for Proving Information Flow Security in Concurrent Programs</a></h5>
+          <br>
+            by <a href="../../../authors/dardinier">Thibault Dardinier</a>
 
+        </div>
+        <span class="date">Mar 15</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/ABY3_Protocols.html">ABY3 Multiplication and Array Shuffling</a></h5>
+          <br>
+            by <a href="../../../authors/hu">Shuwei Hu</a>
 
-<h2 class="head">2022</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/CRYSTALS-Kyber.html">CRYSTALS-Kyber</a></h5> <br>by <a href="../../../authors/kreuzer">Katharina Kreuzer</a></div>
-  <span class="date">
-    Sep 08
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/IsaNet.html">IsaNet: Formalization of a Verification Framework for Secure Data Plane Protocols</a></h5> <br>by <a href="../../../authors/klenze">Tobias Klenze</a> and <a href="../../../authors/sprenger">Christoph Sprenger</a></div>
-  <span class="date">
-    Jun 08
-  </span>
-</article>
+        </div>
+        <span class="date">Jan 27</span>
+      </article>
+    <h2 class="head">2022</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/CRYSTALS-Kyber.html">CRYSTALS-Kyber</a></h5>
+          <br>
+            by <a href="../../../authors/kreuzer">Katharina Kreuzer</a>
 
+        </div>
+        <span class="date">Sep 08</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/IsaNet.html">IsaNet: Formalization of a Verification Framework for Secure Data Plane Protocols</a></h5>
+          <br>
+            by <a href="../../../authors/klenze">Tobias Klenze</a> and <a href="../../../authors/sprenger">Christoph Sprenger</a>
 
-<h2 class="head">2021</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Logging_Independent_Anonymity.html">Logging-independent Message Anonymity in the Relational Method</a></h5> <br>by <a href="../../../authors/noce">Pasquale Noce</a></div>
-  <span class="date">
-    Aug 26
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/CoSMeDis.html">CoSMeDis: A confidentiality-verified distributed social media platform</a></h5> <br>by <a href="../../../authors/bauereiss">Thomas Bauereiss</a> and <a href="../../../authors/popescu">Andrei Popescu</a></div>
-  <span class="date">
-    Aug 16
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/CoSMed.html">CoSMed: A confidentiality-verified social media platform</a></h5> <br>by <a href="../../../authors/bauereiss">Thomas Bauereiss</a> and <a href="../../../authors/popescu">Andrei Popescu</a></div>
-  <span class="date">
-    Aug 16
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/BD_Security_Compositional.html">Compositional BD Security</a></h5> <br>by <a href="../../../authors/bauereiss">Thomas Bauereiss</a> and <a href="../../../authors/popescu">Andrei Popescu</a></div>
-  <span class="date">
-    Aug 16
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/CoCon.html">CoCon: A Confidentiality-Verified Conference Management System</a></h5> <br>by <a href="../../../authors/popescu">Andrei Popescu</a>, <a href="../../../authors/lammich">Peter Lammich</a> and <a href="../../../authors/bauereiss">Thomas Bauereiss</a></div>
-  <span class="date">
-    Aug 16
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/IFC_Tracking.html">Information Flow Control via Dependency Tracking</a></h5> <br>by <a href="../../../authors/nordhoff">Benedikt Nordhoff</a></div>
-  <span class="date">
-    Apr 01
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Constructive_Cryptography_CM.html">Constructive Cryptography in HOL: the Communication Modeling Aspect</a></h5> <br>by <a href="../../../authors/lochbihler">Andreas Lochbihler</a> and <a href="../../../authors/sefidgar">S. Reza Sefidgar</a></div>
-  <span class="date">
-    Mar 17
-  </span>
-</article>
+        </div>
+        <span class="date">Jun 08</span>
+      </article>
+    <h2 class="head">2021</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Logging_Independent_Anonymity.html">Logging-independent Message Anonymity in the Relational Method</a></h5>
+          <br>
+            by <a href="../../../authors/noce">Pasquale Noce</a>
 
+        </div>
+        <span class="date">Aug 26</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/CoSMeDis.html">CoSMeDis: A confidentiality-verified distributed social media platform</a></h5>
+          <br>
+            by <a href="../../../authors/bauereiss">Thomas Bauereiss</a> and <a href="../../../authors/popescu">Andrei Popescu</a>
 
-<h2 class="head">2020</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Relational_Method.html">The Relational Method with Message Anonymity for the Verification of Cryptographic Protocols</a></h5> <br>by <a href="../../../authors/noce">Pasquale Noce</a></div>
-  <span class="date">
-    Dec 05
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Attack_Trees.html">Attack Trees in Isabelle for GDPR compliance of IoT healthcare systems</a></h5> <br>by <a href="../../../authors/kammueller">Florian Kammüller</a></div>
-  <span class="date">
-    Apr 27
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Stateful_Protocol_Composition_and_Typing.html">Stateful Protocol Composition and Typing</a></h5> <br>by <a href="../../../authors/hess">Andreas V. Hess</a>, <a href="../../../authors/moedersheim">Sebastian Mödersheim</a> and <a href="../../../authors/brucker">Achim D. Brucker</a></div>
-  <span class="date">
-    Apr 08
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Automated_Stateful_Protocol_Verification.html">Automated Stateful Protocol Verification</a></h5> <br>by <a href="../../../authors/hess">Andreas V. Hess</a>, <a href="../../../authors/moedersheim">Sebastian Mödersheim</a>, <a href="../../../authors/brucker">Achim D. Brucker</a> and <a href="../../../authors/schlichtkrull">Anders Schlichtkrull</a></div>
-  <span class="date">
-    Apr 08
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Relational-Incorrectness-Logic.html">An Under-Approximate Relational Logic</a></h5> <br>by <a href="../../../authors/murray">Toby Murray</a></div>
-  <span class="date">
-    Mar 12
-  </span>
-</article>
+        </div>
+        <span class="date">Aug 16</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/CoSMed.html">CoSMed: A confidentiality-verified social media platform</a></h5>
+          <br>
+            by <a href="../../../authors/bauereiss">Thomas Bauereiss</a> and <a href="../../../authors/popescu">Andrei Popescu</a>
 
+        </div>
+        <span class="date">Aug 16</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/BD_Security_Compositional.html">Compositional BD Security</a></h5>
+          <br>
+            by <a href="../../../authors/bauereiss">Thomas Bauereiss</a> and <a href="../../../authors/popescu">Andrei Popescu</a>
 
-<h2 class="head">2019</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Sigma_Commit_Crypto.html">Sigma Protocols and Commitment Schemes</a></h5> <br>by <a href="../../../authors/butler">David Butler</a> and <a href="../../../authors/lochbihler">Andreas Lochbihler</a></div>
-  <span class="date">
-    Oct 07
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/LambdaAuth.html">Formalization of Generic Authenticated Data Structures</a></h5> <br>by <a href="../../../authors/brun">Matthias Brun</a> and <a href="../../../authors/traytel">Dmitriy Traytel</a></div>
-  <span class="date">
-    May 14
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Multi_Party_Computation.html">Multi-Party Computation</a></h5> <br>by <a href="../../../authors/aspinall">David Aspinall</a> and <a href="../../../authors/butler">David Butler</a></div>
-  <span class="date">
-    May 09
-  </span>
-</article>
+        </div>
+        <span class="date">Aug 16</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/CoCon.html">CoCon: A Confidentiality-Verified Conference Management System</a></h5>
+          <br>
+            by <a href="../../../authors/popescu">Andrei Popescu</a>, <a href="../../../authors/lammich">Peter Lammich</a> and <a href="../../../authors/bauereiss">Thomas Bauereiss</a>
 
+        </div>
+        <span class="date">Aug 16</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/IFC_Tracking.html">Information Flow Control via Dependency Tracking</a></h5>
+          <br>
+            by <a href="../../../authors/nordhoff">Benedikt Nordhoff</a>
 
-<h2 class="head">2018</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Constructive_Cryptography.html">Constructive Cryptography in HOL</a></h5> <br>by <a href="../../../authors/lochbihler">Andreas Lochbihler</a> and <a href="../../../authors/sefidgar">S. Reza Sefidgar</a></div>
-  <span class="date">
-    Dec 17
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Modular_Assembly_Kit_Security.html">An Isabelle/HOL Formalization of the Modular Assembly Kit for Security Properties</a></h5> <br>by <a href="../../../authors/bracevac">Oliver Bračevac</a>, <a href="../../../authors/gay">Richard Gay</a>, <a href="../../../authors/grewe">Sylvia Grewe</a>, <a href="../../../authors/mantel">Heiko Mantel</a>, <a href="../../../authors/sudbrock">Henning Sudbrock</a> and <a href="../../../authors/tasch">Markus Tasch</a></div>
-  <span class="date">
-    May 07
-  </span>
-</article>
+        </div>
+        <span class="date">Apr 01</span>
+      </article>
+    <h2 class="head">2020</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Relational_Method.html">The Relational Method with Message Anonymity for the Verification of Cryptographic Protocols</a></h5>
+          <br>
+            by <a href="../../../authors/noce">Pasquale Noce</a>
 
+        </div>
+        <span class="date">Dec 05</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Attack_Trees.html">Attack Trees in Isabelle for GDPR compliance of IoT healthcare systems</a></h5>
+          <br>
+            by <a href="../../../authors/kammueller">Florian Kammüller</a>
 
-<h2 class="head">2017</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Security_Protocol_Refinement.html">Developing Security Protocols by Refinement</a></h5> <br>by <a href="../../../authors/sprenger">Christoph Sprenger</a> and <a href="../../../authors/somaini">Ivano Somaini</a></div>
-  <span class="date">
-    May 24
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Game_Based_Crypto.html">Game-based cryptography in HOL</a></h5> <br>by <a href="../../../authors/lochbihler">Andreas Lochbihler</a>, <a href="../../../authors/sefidgar">S. Reza Sefidgar</a> and <a href="../../../authors/bhatt">Bhargav Bhatt</a></div>
-  <span class="date">
-    May 05
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/CryptHOL.html">CryptHOL</a></h5> <br>by <a href="../../../authors/lochbihler">Andreas Lochbihler</a></div>
-  <span class="date">
-    May 05
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Elliptic_Curves_Group_Law.html">The Group Law for Elliptic Curves</a></h5> <br>by <a href="../../../authors/berghofer">Stefan Berghofer</a></div>
-  <span class="date">
-    Feb 28
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Key_Agreement_Strong_Adversaries.html">Refining Authenticated Key Agreement with Strong Adversaries</a></h5> <br>by <a href="../../../authors/lallemand">Joseph Lallemand</a> and <a href="../../../authors/sprenger">Christoph Sprenger</a></div>
-  <span class="date">
-    Jan 31
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/UPF_Firewall.html">Formal Network Models and Their Application to Firewall Policies</a></h5> <br>by <a href="../../../authors/brucker">Achim D. Brucker</a>, <a href="../../../authors/bruegger">Lukas Brügger</a> and <a href="../../../authors/wolff">Burkhart Wolff</a></div>
-  <span class="date">
-    Jan 08
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Password_Authentication_Protocol.html">Verification of a Diffie-Hellman Password-based Authentication Protocol by Extending the Inductive Method</a></h5> <br>by <a href="../../../authors/noce">Pasquale Noce</a></div>
-  <span class="date">
-    Jan 03
-  </span>
-</article>
+        </div>
+        <span class="date">Apr 27</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Stateful_Protocol_Composition_and_Typing.html">Stateful Protocol Composition and Typing</a></h5>
+          <br>
+            by <a href="../../../authors/hess">Andreas V. Hess</a>, <a href="../../../authors/moedersheim">Sebastian Mödersheim</a> and <a href="../../../authors/brucker">Achim D. Brucker</a>
 
+        </div>
+        <span class="date">Apr 08</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Automated_Stateful_Protocol_Verification.html">Automated Stateful Protocol Verification</a></h5>
+          <br>
+            by <a href="../../../authors/hess">Andreas V. Hess</a>, <a href="../../../authors/moedersheim">Sebastian Mödersheim</a>, <a href="../../../authors/brucker">Achim D. Brucker</a> and <a href="../../../authors/schlichtkrull">Anders Schlichtkrull</a>
 
-<h2 class="head">2016</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/SPARCv8.html">A formal model for the SPARCv8 ISA and a proof of non-interference for the LEON3 processor</a></h5> <br>by <a href="../../../authors/hou">Zhe Hou</a>, <a href="../../../authors/sanan">David Sanan</a>, <a href="../../../authors/tiu">Alwen Tiu</a> and <a href="../../../authors/liuy">Yang Liu</a></div>
-  <span class="date">
-    Oct 19
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Dependent_SIFUM_Refinement.html">Compositional Security-Preserving Refinement for Concurrent Imperative Programs</a></h5> <br>by <a href="../../../authors/murray">Toby Murray</a>, <a href="../../../authors/sison">Robert Sison</a>, <a href="../../../authors/pierzchalski">Edward Pierzchalski</a> and <a href="../../../authors/rizkallah">Christine Rizkallah</a></div>
-  <span class="date">
-    Jun 28
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Dependent_SIFUM_Type_Systems.html">A Dependent Security Type System for Concurrent Imperative Programs</a></h5> <br>by <a href="../../../authors/murray">Toby Murray</a>, <a href="../../../authors/sison">Robert Sison</a>, <a href="../../../authors/pierzchalski">Edward Pierzchalski</a> and <a href="../../../authors/rizkallah">Christine Rizkallah</a></div>
-  <span class="date">
-    Jun 25
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Noninterference_Concurrent_Composition.html">Conservation of CSP Noninterference Security under Concurrent Composition</a></h5> <br>by <a href="../../../authors/noce">Pasquale Noce</a></div>
-  <span class="date">
-    Jun 13
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Noninterference_Sequential_Composition.html">Conservation of CSP Noninterference Security under Sequential Composition</a></h5> <br>by <a href="../../../authors/noce">Pasquale Noce</a></div>
-  <span class="date">
-    Apr 26
-  </span>
-</article>
+        </div>
+        <span class="date">Apr 08</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Relational-Incorrectness-Logic.html">An Under-Approximate Relational Logic</a></h5>
+          <br>
+            by <a href="../../../authors/murray">Toby Murray</a>
 
+        </div>
+        <span class="date">Mar 12</span>
+      </article>
+    <h2 class="head">2019</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/LambdaAuth.html">Formalization of Generic Authenticated Data Structures</a></h5>
+          <br>
+            by <a href="../../../authors/brun">Matthias Brun</a> and <a href="../../../authors/traytel">Dmitriy Traytel</a>
 
-<h2 class="head">2015</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Noninterference_Inductive_Unwinding.html">The Inductive Unwinding Theorem for CSP Noninterference Security</a></h5> <br>by <a href="../../../authors/noce">Pasquale Noce</a></div>
-  <span class="date">
-    Aug 18
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Noninterference_Ipurge_Unwinding.html">The Ipurge Unwinding Theorem for CSP Noninterference Security</a></h5> <br>by <a href="../../../authors/noce">Pasquale Noce</a></div>
-  <span class="date">
-    Jun 11
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Noninterference_Generic_Unwinding.html">The Generic Unwinding Theorem for CSP Noninterference Security</a></h5> <br>by <a href="../../../authors/noce">Pasquale Noce</a></div>
-  <span class="date">
-    Jun 11
-  </span>
-</article>
+        </div>
+        <span class="date">May 14</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Multi_Party_Computation.html">Multi-Party Computation</a></h5>
+          <br>
+            by <a href="../../../authors/aspinall">David Aspinall</a> and <a href="../../../authors/butler">David Butler</a>
 
+        </div>
+        <span class="date">May 09</span>
+      </article>
+    <h2 class="head">2018</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Modular_Assembly_Kit_Security.html">An Isabelle/HOL Formalization of the Modular Assembly Kit for Security Properties</a></h5>
+          <br>
+            by <a href="../../../authors/bracevac">Oliver Bračevac</a>, <a href="../../../authors/gay">Richard Gay</a>, <a href="../../../authors/grewe">Sylvia Grewe</a>, <a href="../../../authors/mantel">Heiko Mantel</a>, <a href="../../../authors/sudbrock">Henning Sudbrock</a> and <a href="../../../authors/tasch">Markus Tasch</a>
 
-<h2 class="head">2014</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/UPF.html">The Unified Policy Framework (UPF)</a></h5> <br>by <a href="../../../authors/brucker">Achim D. Brucker</a>, <a href="../../../authors/bruegger">Lukas Brügger</a> and <a href="../../../authors/wolff">Burkhart Wolff</a></div>
-  <span class="date">
-    Nov 28
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/CISC-Kernel.html">Formal Specification of a Generic Separation Kernel</a></h5> <br>by <a href="../../../authors/verbeek">Freek Verbeek</a>, <a href="../../../authors/tverdyshev">Sergey Tverdyshev</a>, <a href="../../../authors/havle">Oto Havle</a>, <a href="../../../authors/blasum">Holger Blasum</a>, <a href="../../../authors/langenstein">Bruno Langenstein</a>, <a href="../../../authors/stephan">Werner Stephan</a>, <a href="../../../authors/nemouchi">Yakoub Nemouchi</a>, <a href="../../../authors/feliachi">Abderrahmane Feliachi</a>, <a href="../../../authors/wolff">Burkhart Wolff</a> and <a href="../../../authors/schmaltz">Julien Schmaltz</a></div>
-  <span class="date">
-    Jul 18
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Network_Security_Policy_Verification.html">Network Security Policy Verification</a></h5> <br>by <a href="../../../authors/diekmann">Cornelius Diekmann</a></div>
-  <span class="date">
-    Jul 04
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Noninterference_CSP.html">Noninterference Security in Communicating Sequential Processes</a></h5> <br>by <a href="../../../authors/noce">Pasquale Noce</a></div>
-  <span class="date">
-    May 23
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Strong_Security.html">A Formalization of Strong Security</a></h5> <br>by <a href="../../../authors/grewe">Sylvia Grewe</a>, <a href="../../../authors/lux">Alexander Lux</a>, <a href="../../../authors/mantel">Heiko Mantel</a> and <a href="../../../authors/sauer">Jens Sauer</a></div>
-  <span class="date">
-    Apr 23
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/WHATandWHERE_Security.html">A Formalization of Declassification with WHAT-and-WHERE-Security</a></h5> <br>by <a href="../../../authors/grewe">Sylvia Grewe</a>, <a href="../../../authors/lux">Alexander Lux</a>, <a href="../../../authors/mantel">Heiko Mantel</a> and <a href="../../../authors/sauer">Jens Sauer</a></div>
-  <span class="date">
-    Apr 23
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/SIFUM_Type_Systems.html">A Formalization of Assumptions and Guarantees for Compositional Noninterference</a></h5> <br>by <a href="../../../authors/grewe">Sylvia Grewe</a>, <a href="../../../authors/mantel">Heiko Mantel</a> and <a href="../../../authors/schoepe">Daniel Schoepe</a></div>
-  <span class="date">
-    Apr 23
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Bounded_Deducibility_Security.html">Bounded-Deducibility Security</a></h5> <br>by <a href="../../../authors/popescu">Andrei Popescu</a>, <a href="../../../authors/lammich">Peter Lammich</a> and <a href="../../../authors/bauereiss">Thomas Bauereiss</a></div>
-  <span class="date">
-    Apr 22
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/HyperCTL.html">A shallow embedding of HyperCTL*</a></h5> <br>by <a href="../../../authors/rabe">Markus N. Rabe</a>, <a href="../../../authors/lammich">Peter Lammich</a> and <a href="../../../authors/popescu">Andrei Popescu</a></div>
-  <span class="date">
-    Apr 16
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Probabilistic_Noninterference.html">Probabilistic Noninterference</a></h5> <br>by <a href="../../../authors/popescu">Andrei Popescu</a> and <a href="../../../authors/hoelzl">Johannes Hölzl</a></div>
-  <span class="date">
-    Mar 11
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/CryptoBasedCompositionalProperties.html">Compositional Properties of Crypto-Based Components</a></h5> <br>by <a href="../../../authors/spichkova">Maria Spichkova</a></div>
-  <span class="date">
-    Jan 11
-  </span>
-</article>
+        </div>
+        <span class="date">May 07</span>
+      </article>
+    <h2 class="head">2017</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Security_Protocol_Refinement.html">Developing Security Protocols by Refinement</a></h5>
+          <br>
+            by <a href="../../../authors/sprenger">Christoph Sprenger</a> and <a href="../../../authors/somaini">Ivano Somaini</a>
 
+        </div>
+        <span class="date">May 24</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Key_Agreement_Strong_Adversaries.html">Refining Authenticated Key Agreement with Strong Adversaries</a></h5>
+          <br>
+            by <a href="../../../authors/lallemand">Joseph Lallemand</a> and <a href="../../../authors/sprenger">Christoph Sprenger</a>
 
-<h2 class="head">2012</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Possibilistic_Noninterference.html">Possibilistic Noninterference</a></h5> <br>by <a href="../../../authors/popescu">Andrei Popescu</a> and <a href="../../../authors/hoelzl">Johannes Hölzl</a></div>
-  <span class="date">
-    Sep 10
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Inductive_Confidentiality.html">Inductive Study of Confidentiality</a></h5> <br>by <a href="../../../authors/bella">Giampaolo Bella</a></div>
-  <span class="date">
-    May 02
-  </span>
-</article>
+        </div>
+        <span class="date">Jan 31</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/UPF_Firewall.html">Formal Network Models and Their Application to Firewall Policies</a></h5>
+          <br>
+            by <a href="../../../authors/brucker">Achim D. Brucker</a>, <a href="../../../authors/bruegger">Lukas Brügger</a> and <a href="../../../authors/wolff">Burkhart Wolff</a>
 
+        </div>
+        <span class="date">Jan 08</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Password_Authentication_Protocol.html">Verification of a Diffie-Hellman Password-based Authentication Protocol by Extending the Inductive Method</a></h5>
+          <br>
+            by <a href="../../../authors/noce">Pasquale Noce</a>
 
-<h2 class="head">2010</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/InformationFlowSlicing_Inter.html">Inter-Procedural Information Flow Noninterference via Slicing</a></h5> <br>by <a href="../../../authors/wasserrab">Daniel Wasserrab</a></div>
-  <span class="date">
-    Mar 23
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/InformationFlowSlicing.html">Information Flow Noninterference via Slicing</a></h5> <br>by <a href="../../../authors/wasserrab">Daniel Wasserrab</a></div>
-  <span class="date">
-    Mar 23
-  </span>
-</article>
+        </div>
+        <span class="date">Jan 03</span>
+      </article>
+    <h2 class="head">2016</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/SPARCv8.html">A formal model for the SPARCv8 ISA and a proof of non-interference for the LEON3 processor</a></h5>
+          <br>
+            by <a href="../../../authors/hou">Zhe Hou</a>, <a href="../../../authors/sanan">David Sanan</a>, <a href="../../../authors/tiu">Alwen Tiu</a> and <a href="../../../authors/liuy">Yang Liu</a>
 
+        </div>
+        <span class="date">Oct 19</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Dependent_SIFUM_Refinement.html">Compositional Security-Preserving Refinement for Concurrent Imperative Programs</a></h5>
+          <br>
+            by <a href="../../../authors/murray">Toby Murray</a>, <a href="../../../authors/sison">Robert Sison</a>, <a href="../../../authors/pierzchalski">Edward Pierzchalski</a> and <a href="../../../authors/rizkallah">Christine Rizkallah</a>
 
-<h2 class="head">2008</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/SIFPL.html">Secure information flow and program logics</a></h5> <br>by <a href="../../../authors/beringer">Lennart Beringer</a> and <a href="../../../authors/hofmann">Martin Hofmann</a></div>
-  <span class="date">
-    Nov 10
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/VolpanoSmith.html">A Correctness Proof for the Volpano/Smith Security Typing System</a></h5> <br>by <a href="../../../authors/snelting">Gregor Snelting</a> and <a href="../../../authors/wasserrab">Daniel Wasserrab</a></div>
-  <span class="date">
-    Sep 02
-  </span>
-</article>
+        </div>
+        <span class="date">Jun 28</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Dependent_SIFUM_Type_Systems.html">A Dependent Security Type System for Concurrent Imperative Programs</a></h5>
+          <br>
+            by <a href="../../../authors/murray">Toby Murray</a>, <a href="../../../authors/sison">Robert Sison</a>, <a href="../../../authors/pierzchalski">Edward Pierzchalski</a> and <a href="../../../authors/rizkallah">Christine Rizkallah</a>
 
+        </div>
+        <span class="date">Jun 25</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Noninterference_Concurrent_Composition.html">Conservation of CSP Noninterference Security under Concurrent Composition</a></h5>
+          <br>
+            by <a href="../../../authors/noce">Pasquale Noce</a>
 
-<h2 class="head">2006</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/HotelKeyCards.html">Hotel Key Card System</a></h5> <br>by <a href="../../../authors/nipkow">Tobias Nipkow</a></div>
-  <span class="date">
-    Sep 09
-  </span>
-</article>
+        </div>
+        <span class="date">Jun 13</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Noninterference_Sequential_Composition.html">Conservation of CSP Noninterference Security under Sequential Composition</a></h5>
+          <br>
+            by <a href="../../../authors/noce">Pasquale Noce</a>
 
+        </div>
+        <span class="date">Apr 26</span>
+      </article>
+    <h2 class="head">2015</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Noninterference_Inductive_Unwinding.html">The Inductive Unwinding Theorem for CSP Noninterference Security</a></h5>
+          <br>
+            by <a href="../../../authors/noce">Pasquale Noce</a>
 
-<h2 class="head">2005</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/RSAPSS.html">SHA1, RSA, PSS and more</a></h5> <br>by <a href="../../../authors/lindenberg">Christina Lindenberg</a> and <a href="../../../authors/wirt">Kai Wirt</a></div>
-  <span class="date">
-    May 02
-  </span>
-</article>
+        </div>
+        <span class="date">Aug 18</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Noninterference_Ipurge_Unwinding.html">The Ipurge Unwinding Theorem for CSP Noninterference Security</a></h5>
+          <br>
+            by <a href="../../../authors/noce">Pasquale Noce</a>
 
+        </div>
+        <span class="date">Jun 11</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Noninterference_Generic_Unwinding.html">The Generic Unwinding Theorem for CSP Noninterference Security</a></h5>
+          <br>
+            by <a href="../../../authors/noce">Pasquale Noce</a>
 
+        </div>
+        <span class="date">Jun 11</span>
+      </article>
+    <h2 class="head">2014</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/UPF.html">The Unified Policy Framework (UPF)</a></h5>
+          <br>
+            by <a href="../../../authors/brucker">Achim D. Brucker</a>, <a href="../../../authors/bruegger">Lukas Brügger</a> and <a href="../../../authors/wolff">Burkhart Wolff</a>
 
+        </div>
+        <span class="date">Nov 28</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/CISC-Kernel.html">Formal Specification of a Generic Separation Kernel</a></h5>
+          <br>
+            by <a href="../../../authors/verbeek">Freek Verbeek</a>, <a href="../../../authors/tverdyshev">Sergey Tverdyshev</a>, <a href="../../../authors/havle">Oto Havle</a>, <a href="../../../authors/blasum">Holger Blasum</a>, <a href="../../../authors/langenstein">Bruno Langenstein</a>, <a href="../../../authors/stephan">Werner Stephan</a>, <a href="../../../authors/nemouchi">Yakoub Nemouchi</a>, <a href="../../../authors/feliachi">Abderrahmane Feliachi</a>, <a href="../../../authors/wolff">Burkhart Wolff</a> and <a href="../../../authors/schmaltz">Julien Schmaltz</a>
 
+        </div>
+        <span class="date">Jul 18</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Network_Security_Policy_Verification.html">Network Security Policy Verification</a></h5>
+          <br>
+            by <a href="../../../authors/diekmann">Cornelius Diekmann</a>
+
+        </div>
+        <span class="date">Jul 04</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Noninterference_CSP.html">Noninterference Security in Communicating Sequential Processes</a></h5>
+          <br>
+            by <a href="../../../authors/noce">Pasquale Noce</a>
+
+        </div>
+        <span class="date">May 23</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Strong_Security.html">A Formalization of Strong Security</a></h5>
+          <br>
+            by <a href="../../../authors/grewe">Sylvia Grewe</a>, <a href="../../../authors/lux">Alexander Lux</a>, <a href="../../../authors/mantel">Heiko Mantel</a> and <a href="../../../authors/sauer">Jens Sauer</a>
+
+        </div>
+        <span class="date">Apr 23</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/WHATandWHERE_Security.html">A Formalization of Declassification with WHAT-and-WHERE-Security</a></h5>
+          <br>
+            by <a href="../../../authors/grewe">Sylvia Grewe</a>, <a href="../../../authors/lux">Alexander Lux</a>, <a href="../../../authors/mantel">Heiko Mantel</a> and <a href="../../../authors/sauer">Jens Sauer</a>
+
+        </div>
+        <span class="date">Apr 23</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/SIFUM_Type_Systems.html">A Formalization of Assumptions and Guarantees for Compositional Noninterference</a></h5>
+          <br>
+            by <a href="../../../authors/grewe">Sylvia Grewe</a>, <a href="../../../authors/mantel">Heiko Mantel</a> and <a href="../../../authors/schoepe">Daniel Schoepe</a>
+
+        </div>
+        <span class="date">Apr 23</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Bounded_Deducibility_Security.html">Bounded-Deducibility Security</a></h5>
+          <br>
+            by <a href="../../../authors/popescu">Andrei Popescu</a>, <a href="../../../authors/lammich">Peter Lammich</a> and <a href="../../../authors/bauereiss">Thomas Bauereiss</a>
+
+        </div>
+        <span class="date">Apr 22</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/HyperCTL.html">A shallow embedding of HyperCTL*</a></h5>
+          <br>
+            by <a href="../../../authors/rabe">Markus N. Rabe</a>, <a href="../../../authors/lammich">Peter Lammich</a> and <a href="../../../authors/popescu">Andrei Popescu</a>
+
+        </div>
+        <span class="date">Apr 16</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Probabilistic_Noninterference.html">Probabilistic Noninterference</a></h5>
+          <br>
+            by <a href="../../../authors/popescu">Andrei Popescu</a> and <a href="../../../authors/hoelzl">Johannes Hölzl</a>
+
+        </div>
+        <span class="date">Mar 11</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/CryptoBasedCompositionalProperties.html">Compositional Properties of Crypto-Based Components</a></h5>
+          <br>
+            by <a href="../../../authors/spichkova">Maria Spichkova</a>
+
+        </div>
+        <span class="date">Jan 11</span>
+      </article>
+    <h2 class="head">2012</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Possibilistic_Noninterference.html">Possibilistic Noninterference</a></h5>
+          <br>
+            by <a href="../../../authors/popescu">Andrei Popescu</a> and <a href="../../../authors/hoelzl">Johannes Hölzl</a>
+
+        </div>
+        <span class="date">Sep 10</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Inductive_Confidentiality.html">Inductive Study of Confidentiality</a></h5>
+          <br>
+            by <a href="../../../authors/bella">Giampaolo Bella</a>
+
+        </div>
+        <span class="date">May 02</span>
+      </article>
+    <h2 class="head">2010</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/InformationFlowSlicing_Inter.html">Inter-Procedural Information Flow Noninterference via Slicing</a></h5>
+          <br>
+            by <a href="../../../authors/wasserrab">Daniel Wasserrab</a>
+
+        </div>
+        <span class="date">Mar 23</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/InformationFlowSlicing.html">Information Flow Noninterference via Slicing</a></h5>
+          <br>
+            by <a href="../../../authors/wasserrab">Daniel Wasserrab</a>
+
+        </div>
+        <span class="date">Mar 23</span>
+      </article>
+    <h2 class="head">2008</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/SIFPL.html">Secure information flow and program logics</a></h5>
+          <br>
+            by <a href="../../../authors/beringer">Lennart Beringer</a> and <a href="../../../authors/hofmann">Martin Hofmann</a>
+
+        </div>
+        <span class="date">Nov 10</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/VolpanoSmith.html">A Correctness Proof for the Volpano/Smith Security Typing System</a></h5>
+          <br>
+            by <a href="../../../authors/snelting">Gregor Snelting</a> and <a href="../../../authors/wasserrab">Daniel Wasserrab</a>
+
+        </div>
+        <span class="date">Sep 02</span>
+      </article>
+    <h2 class="head">2006</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/HotelKeyCards.html">Hotel Key Card System</a></h5>
+          <br>
+            by <a href="../../../authors/nipkow">Tobias Nipkow</a>
+
+        </div>
+        <span class="date">Sep 09</span>
+      </article>
+        
+      </div>
     </div>
-  </div>
-</body>
-
+  </body>
 </html>

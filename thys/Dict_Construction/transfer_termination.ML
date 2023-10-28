@@ -62,7 +62,7 @@ fun termination_tac ({R = new_R, ...}: Function.info) (old_info: Function.info) 
 
             (* smart strategy: new_R can be simulated by old_R *)
             (* FIXME this is trigger-happy *)
-            val smart_tac = Exn.interruptible_capture (fn st =>
+            val smart_tac = Exn.result (fn st =>
               let
                 val old_R_stripped =
                   Thm.prop_of old_R_eq

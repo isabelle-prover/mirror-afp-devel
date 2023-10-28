@@ -1,25 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Formalization of Hyper Hoare Logic: A Logic to (Dis-)Prove Program Hyperproperties - Archive of Formal Proofs</title><meta name="description" content="Hoare logics are proof systems that allow one to formally establish properties of computer programs. Traditional Hoare logics prove properties of..."><meta property="og:title" content="Formalization of Hyper Hoare Logic: A Logic to (Dis-)Prove Program Hyperproperties" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Formalization of Hyper Hoare Logic: A Logic to (Dis-)Prove Program Hyperproperties - Archive of Formal Proofs</title>
+    <meta name="description" content="Hoare logics are proof systems that allow one to formally establish properties of computer programs. Traditional Hoare logics prove properties of...">
+
+  <meta property="og:title" content="Formalization of Hyper Hoare Logic: A Logic to (Dis-)Prove Program Hyperproperties" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="/entries/HyperHoareLogic.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
 <meta property="article:published_time" content="2023-04-03T00:00:00+00:00" />
 <meta property="article:modified_time" content="2023-04-03T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="Formalization of Hyper Hoare Logic: A Logic to (Dis-)Prove Program Hyperproperties"/>
 <meta name="twitter:description" content=""/>
 
-  
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
     <script>
       MathJax = {
         tex: {
@@ -31,140 +36,198 @@
         }
       };
     </script>
-    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
   <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
-  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../" class='logo-link'>
-    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../" class='logo-link'>
-        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../"><li >Home</li></a>
-        <a href="../topics/"><li >Topics</li></a>
-        <a href="../download/"><li >Download</li></a>
-        <a href="../help/"><li >Help</li></a>
-        <a href="../submission/"><li >Submission</li></a>
-        <a href="../statistics/"><li >Statistics</li></a>
-        <a href="../about/"><li >About</li></a>
+          <a href="../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content  entries'><header>
-  <form autocomplete="off" action="../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>F</span>ormalization of <span class='first'>H</span>yper <span class='first'>H</span>oare <span class='first'>L</span>ogic: <span class='first'>A</span> <span class='first'>L</span>ogic to (<span class='first'>D</span>is-)<span class='first'>P</span>rove <span class='first'>P</span>rogram <span class='first'>H</span>yperproperties</h1>
+    </aside>
+    <div class='content entries'>
+      <header>
+    <form autocomplete="off" action="../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>F</span>ormalization of <span class='first'>H</span>yper <span class='first'>H</span>oare <span class='first'>L</span>ogic: <span class='first'>A</span> <span class='first'>L</span>ogic to (<span class='first'>D</span>is-)<span class='first'>P</span>rove <span class='first'>P</span>rogram <span class='first'>H</span>yperproperties
+    
+  </h1>
   <div>
-    
-    <p><a href="../authors/dardinier">Thibault Dardinier</a> <a class="obfuscated" data="eyJob3N0IjpbImluZiIsImV0aHoiLCJjaCJdLCJ1c2VyIjpbInRoaWJhdWx0IiwiZGFyZGluaWVyIl19">📧</a>
-    </p>
-    
-    
-    <p class="date">April 3, 2023</p>
-    
-  </div>
-</header><div><main><h3>Abstract</h3>
+      <p>
+        <a href="../authors/dardinier">Thibault Dardinier</a> <a class="obfuscated" data="eyJob3N0IjpbImluZiIsImV0aHoiLCJjaCJdLCJ1c2VyIjpbInRoaWJhdWx0IiwiZGFyZGluaWVyIl19">📧</a>
 
-  <div class="abstract mathjax_process">Hoare logics are proof systems that allow one to formally establish properties of computer programs. Traditional Hoare logics prove properties of individual program executions (so-called trace properties, such as functional correctness). On the one hand, Hoare logic has been generalized to prove properties of multiple executions of a program (so-called hyperproperties, such as determinism or non-interference). These program logics prove the absence of (bad combinations of) executions. On the other hand, program logics similar to Hoare logic have been proposed to disprove program properties (e.g., Incorrectness Logic [8]), by proving the existence of (bad combinations of) executions. All of these logics have in common that they specify program properties using assertions over a fixed number of states, for instance, a single pre- and post-state for functional properties or pairs of pre- and post-states for non-interference.
+      </p>
+      <p class="date">April 3, 2023</p>
+  </div>
+</header>
+      <div>
+        
+  <main>
+    <h3>Abstract</h3>
+
+    <div class="abstract mathjax_process">Hoare logics are proof systems that allow one to formally establish properties of computer programs. Traditional Hoare logics prove properties of individual program executions (so-called trace properties, such as functional correctness). On the one hand, Hoare logic has been generalized to prove properties of multiple executions of a program (so-called hyperproperties, such as determinism or non-interference). These program logics prove the absence of (bad combinations of) executions. On the other hand, program logics similar to Hoare logic have been proposed to disprove program properties (e.g., Incorrectness Logic [8]), by proving the existence of (bad combinations of) executions. All of these logics have in common that they specify program properties using assertions over a fixed number of states, for instance, a single pre- and post-state for functional properties or pairs of pre- and post-states for non-interference.
 
 In this entry, we formalize Hyper Hoare Logic, a generalization of Hoare logic that lifts assertions to properties of arbitrary sets of states. The resulting logic is simple yet expressive: its judgments can express arbitrary trace- and hyperproperties over the terminating executions of a program. By allowing assertions to reason about sets of states, Hyper Hoare Logic can reason about both the absence and the existence of (combinations of) executions, and, thereby, supports both proving and disproving program (hyper-)properties within the same logic. In fact, we prove that Hyper Hoare Logic subsumes the properties handled by numerous existing correctness and incorrectness logics, and can express hyperproperties that no existing Hoare logic can. We also prove that Hyper Hoare Logic is sound and complete.</div>
 
-  <h3>License</h3>
-  <div><a href="https://isa-afp.org/LICENSE">BSD License</a></div><h3>Topics</h3>
-  <ul><li><a href="../topics/computer-science/programming-languages/logics">Computer science/Programming languages/Logics</a></li></ul><h3>Related publications</h3>
-  <ul><li>
-      Dardinier, T., &amp; Müller, P. (2023). <i>Hyper Hoare Logic: (Dis-)Proving Program Hyperproperties (extended version)</i> (Version 2). arXiv. https://doi.org/10.48550/ARXIV.2301.10037
-    </li></ul>
-  <h3>Session HyperHoareLogic</h3>
-  <ul>
-    <li><a href="../theories/hyperhoarelogic/#Language">Language</a></li>
-    <li><a href="../theories/hyperhoarelogic/#Logic">Logic</a></li>
-    <li><a href="../theories/hyperhoarelogic/#Examples">Examples</a></li>
-    <li><a href="../theories/hyperhoarelogic/#ProgramHyperproperties">ProgramHyperproperties</a></li>
-    <li><a href="../theories/hyperhoarelogic/#Expressivity">Expressivity</a></li></ul><div class="flex-wrap">
-  
-  
-  </div>
-</main>
-
-<nav class='links'>
-  <a class='popup-button' href="#cite-popup">Cite</a>
-  <a class='popup-button' href="#download-popup">Download</a>
-  <h4>PDFs</h4>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/HyperHoareLogic/outline.pdf">Proof
-    outline</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/HyperHoareLogic/document.pdf">Proof
-    document</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/HyperHoareLogic/session_graph.pdf">Dependencies</a></nav>
-
-<div id="cite-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Cite</h2>
-    <a class="close" href="#">&times;</a>
+    <h3>License</h3>
     <div>
-      <p style="display:none;" id="bibtex-filename">HyperHoareLogic-AFP</p><pre id="copy-text">@article{HyperHoareLogic-AFP,
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/computer-science/programming-languages/logics">Computer science/Programming languages/Logics</a></li>
+      </ul>
+      <h3>Related publications</h3>
+      <ul>
+        <li>Dardinier, T., &amp; Müller, P. (2023). <i>Hyper Hoare Logic: (Dis-)Proving Program Hyperproperties (extended version)</i> (Version 2). arXiv. https://doi.org/10.48550/ARXIV.2301.10037
+        </li>
+      </ul>
+      <h3>Session HyperHoareLogic</h3>
+      <ul>
+          <li><a href="../sessions/hyperhoarelogic/#Language">Language</a></li>
+          <li><a href="../sessions/hyperhoarelogic/#Logic">Logic</a></li>
+          <li><a href="../sessions/hyperhoarelogic/#Examples">Examples</a></li>
+          <li><a href="../sessions/hyperhoarelogic/#ProgramHyperproperties">ProgramHyperproperties</a></li>
+          <li><a href="../sessions/hyperhoarelogic/#Expressivity">Expressivity</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+      </div>
+    
+  </main>
+
+  <nav class='links'>
+    <a class='popup-button' href="#cite-popup">Cite</a>
+    <a class='popup-button' href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/HyperHoareLogic/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/HyperHoareLogic/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/HyperHoareLogic/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">HyperHoareLogic-AFP</p>
+        <pre id="copy-text">@article{HyperHoareLogic-AFP,
   author  = {Thibault Dardinier},
   title   = {Formalization of Hyper Hoare Logic: A Logic to (Dis-)Prove Program Hyperproperties},
   journal = {Archive of Formal Proofs},
   month   = {April},
   year    = {2023},
   note    = {\url{https://isa-afp.org/entries/HyperHoareLogic.html},
-            Formal proof development},
+             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
     </div>
   </div>
-</div>
 
-<div id="download-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Download</h2>
-    <a class="close" href="#">&times;</a>
-    <a href="https://www.isa-afp.org/release//afp-HyperHoareLogic-current.tar.gz" download>Download latest</a>
-    <p>Older releases:</p>
-    <ul><li>
-        <a href="https://www.isa-afp.org/release/afp-HyperHoareLogic-2023-09-13.tar.gz">Sep 13, 2023</a>: Isabelle2023
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-HyperHoareLogic-2023-04-18.tar.gz">Apr 18, 2023</a>: Isabelle2022
-      </li></ul>
-  </div>
-</div>
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-HyperHoareLogic-current.tar.gz"
+         download>Download latest</a>
+        <p>Older releases:</p>
+        <ul>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-HyperHoareLogic-2023-09-13.tar.gz">
+                Sep 13, 2023
+              </a>
+              : Isabelle2023
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-HyperHoareLogic-2023-04-18.tar.gz">
+                Apr 18, 2023
+              </a>
+              : Isabelle2022
+            </li>
+        </ul>
     </div>
   </div>
-</body>
-
+        
+      </div>
+    </div>
+  </body>
 </html>

@@ -1,47 +1,45 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>platzer on Archive of Formal Proofs</title>
+    <title>platzer on Archive of Formal Proofs
+    </title>
     <link>/authors/platzer/</link>
-    <description>Recent content in platzer on Archive of Formal Proofs</description>
+    <description>
+        Recent content in platzer 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Thu, 15 Dec 2022 00:00:00 +0000</lastBuildDate><atom:link href="/authors/platzer/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>A First Complete Algorithm for Real Quantifier Elimination in Isabelle/HOL</title>
-      <link>/entries/Quantifier_Elimination_Hybrid.html</link>
-      <pubDate>Thu, 15 Dec 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Quantifier_Elimination_Hybrid.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>Verified Quadratic Virtual Substitution for Real Arithmetic</title>
-      <link>/entries/Virtual_Substitution.html</link>
-      <pubDate>Sat, 02 Oct 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Virtual_Substitution.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The BKR Decision Procedure for Univariate Real Arithmetic</title>
-      <link>/entries/BenOr_Kozen_Reif.html</link>
-      <pubDate>Sat, 24 Apr 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/BenOr_Kozen_Reif.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Differential Game Logic</title>
-      <link>/entries/Differential_Game_Logic.html</link>
-      <pubDate>Mon, 03 Jun 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Differential_Game_Logic.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Thu, 15 Dec 2022 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/platzer/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>A First Complete Algorithm for Real Quantifier Elimination in Isabelle/HOL</title>
+          <link>/entries/Quantifier_Elimination_Hybrid.html</link>
+          <pubDate>Thu, 15 Dec 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Quantifier_Elimination_Hybrid.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Verified Quadratic Virtual Substitution for Real Arithmetic</title>
+          <link>/entries/Virtual_Substitution.html</link>
+          <pubDate>Sat, 02 Oct 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Virtual_Substitution.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The BKR Decision Procedure for Univariate Real Arithmetic</title>
+          <link>/entries/BenOr_Kozen_Reif.html</link>
+          <pubDate>Sat, 24 Apr 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/BenOr_Kozen_Reif.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Differential Game Logic</title>
+          <link>/entries/Differential_Game_Logic.html</link>
+          <pubDate>Mon, 03 Jun 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Differential_Game_Logic.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

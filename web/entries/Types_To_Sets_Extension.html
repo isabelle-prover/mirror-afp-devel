@@ -1,25 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Extension of Types-To-Sets - Archive of Formal Proofs</title><meta name="description" content="In their article titled From Types to Sets by Local Type Definitions in Higher-Order Logic and published in the proceedings of the conference Interactive..."><meta property="og:title" content="Extension of Types-To-Sets" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Extension of Types-To-Sets - Archive of Formal Proofs</title>
+    <meta name="description" content="In their article titled From Types to Sets by Local Type Definitions in Higher-Order Logic and published in the proceedings of the conference Interactive...">
+
+  <meta property="og:title" content="Extension of Types-To-Sets" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="/entries/Types_To_Sets_Extension.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
 <meta property="article:published_time" content="2021-09-06T00:00:00+00:00" />
 <meta property="article:modified_time" content="2021-09-06T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="Extension of Types-To-Sets"/>
 <meta name="twitter:description" content=""/>
 
-  
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
     <script>
       MathJax = {
         tex: {
@@ -31,72 +36,111 @@
         }
       };
     </script>
-    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
   <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
-  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../" class='logo-link'>
-    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../" class='logo-link'>
-        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../"><li >Home</li></a>
-        <a href="../topics/"><li >Topics</li></a>
-        <a href="../download/"><li >Download</li></a>
-        <a href="../help/"><li >Help</li></a>
-        <a href="../submission/"><li >Submission</li></a>
-        <a href="../statistics/"><li >Statistics</li></a>
-        <a href="../about/"><li >About</li></a>
+          <a href="../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content  entries'><header>
-  <form autocomplete="off" action="../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>E</span>xtension of <span class='first'>T</span>ypes-to-<span class='first'>S</span>ets</h1>
+    </aside>
+    <div class='content entries'>
+      <header>
+    <form autocomplete="off" action="../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>E</span>xtension of <span class='first'>T</span>ypes-<span class='first'>T</span>o-<span class='first'>S</span>ets
+    
+  </h1>
   <div>
-    
-    <p><a href="../authors/milehins">Mihails Milehins</a> <a class="obfuscated" data="eyJob3N0IjpbImdtYWlsIiwiY29tIl0sInVzZXIiOlsibWloYWlsc21pbGVoaW5zIl19">📧</a>
-    </p>
-    
-    
-    <p class="date">September 6, 2021</p>
-    
-  </div>
-</header><div><main><h3>Abstract</h3>
+      <p>
+        <a href="../authors/milehins">Mihails Milehins</a> <a class="obfuscated" data="eyJob3N0IjpbImdtYWlsIiwiY29tIl0sInVzZXIiOlsibWloYWlsc21pbGVoaW5zIl19">📧</a>
 
-  <div class="abstract mathjax_process">In their article titled <i>From Types to Sets by Local Type
+      </p>
+      <p class="date">September 6, 2021</p>
+  </div>
+</header>
+      <div>
+        
+  <main>
+    <h3>Abstract</h3>
+
+    <div class="abstract mathjax_process">In their article titled <i>From Types to Sets by Local Type
 Definitions in Higher-Order Logic</i> and published in the
 proceedings of the conference <i>Interactive Theorem
 Proving</i> in 2016, Ondřej Kunčar and Andrei Popescu propose an
@@ -119,132 +163,164 @@ by Fabian Immler and Bohua Zhan and published in the proceedings of
 the <i>International Conference on Certified Programs and
 Proofs</i> in 2019.</div>
 
-  <h3>License</h3>
-  <div><a href="https://isa-afp.org/LICENSE">BSD License</a></div><h3>History</h3>
-  <dl><dt>November 15, 2021</dt>
-    <dd>integration with SpecCheck (revision 61e152c118d4)<br></dd></dl><h3>Topics</h3>
-  <ul><li><a href="../topics/tools">Tools</a></li></ul>
-  <h3>Session Types_To_Sets_Extension</h3>
-  <ul>
-    <li><a href="../theories/types_to_sets_extension/#ETTS_Tools">ETTS_Tools</a></li>
-    <li><a href="../theories/types_to_sets_extension/#ETTS">ETTS</a></li>
-    <li><a href="../theories/types_to_sets_extension/#ETTS_Auxiliary">ETTS_Auxiliary</a></li>
-    <li><a href="../theories/types_to_sets_extension/#Manual_Prerequisites">Manual_Prerequisites</a></li>
-    <li><a href="../theories/types_to_sets_extension/#ETTS_Tests">ETTS_Tests</a></li>
-    <li><a href="../theories/types_to_sets_extension/#ETTS_Introduction">ETTS_Introduction</a></li>
-    <li><a href="../theories/types_to_sets_extension/#ETTS_Theory">ETTS_Theory</a></li>
-    <li><a href="../theories/types_to_sets_extension/#ETTS_Syntax">ETTS_Syntax</a></li>
-    <li><a href="../theories/types_to_sets_extension/#ETTS_Examples">ETTS_Examples</a></li>
-    <li><a href="../theories/types_to_sets_extension/#ETTS_CR">ETTS_CR</a></li>
-    <li><a href="../theories/types_to_sets_extension/#Introduction">Introduction</a></li>
-    <li><a href="../theories/types_to_sets_extension/#SML_Introduction">SML_Introduction</a></li>
-    <li><a href="../theories/types_to_sets_extension/#Set_Ext">Set_Ext</a></li>
-    <li><a href="../theories/types_to_sets_extension/#Lifting_Set_Ext">Lifting_Set_Ext</a></li>
-    <li><a href="../theories/types_to_sets_extension/#Product_Type_Ext">Product_Type_Ext</a></li>
-    <li><a href="../theories/types_to_sets_extension/#Transfer_Ext">Transfer_Ext</a></li>
-    <li><a href="../theories/types_to_sets_extension/#SML_Relations">SML_Relations</a></li>
-    <li><a href="../theories/types_to_sets_extension/#SML_Simple_Orders">SML_Simple_Orders</a></li>
-    <li><a href="../theories/types_to_sets_extension/#SML_Semigroups">SML_Semigroups</a></li>
-    <li><a href="../theories/types_to_sets_extension/#SML_Monoids">SML_Monoids</a></li>
-    <li><a href="../theories/types_to_sets_extension/#SML_Groups">SML_Groups</a></li>
-    <li><a href="../theories/types_to_sets_extension/#SML_Semirings">SML_Semirings</a></li>
-    <li><a href="../theories/types_to_sets_extension/#SML_Rings">SML_Rings</a></li>
-    <li><a href="../theories/types_to_sets_extension/#SML_Semilattices">SML_Semilattices</a></li>
-    <li><a href="../theories/types_to_sets_extension/#SML_Lattices">SML_Lattices</a></li>
-    <li><a href="../theories/types_to_sets_extension/#SML_Complete_Lattices">SML_Complete_Lattices</a></li>
-    <li><a href="../theories/types_to_sets_extension/#SML_Linorders">SML_Linorders</a></li>
-    <li><a href="../theories/types_to_sets_extension/#SML_Topological_Space">SML_Topological_Space</a></li>
-    <li><a href="../theories/types_to_sets_extension/#SML_Topological_Space_Countability">SML_Topological_Space_Countability</a></li>
-    <li><a href="../theories/types_to_sets_extension/#SML_Ordered_Topological_Spaces">SML_Ordered_Topological_Spaces</a></li>
-    <li><a href="../theories/types_to_sets_extension/#SML_Product_Topology">SML_Product_Topology</a></li>
-    <li><a href="../theories/types_to_sets_extension/#SML_Conclusions">SML_Conclusions</a></li>
-    <li><a href="../theories/types_to_sets_extension/#VS_Prerequisites">VS_Prerequisites</a></li>
-    <li><a href="../theories/types_to_sets_extension/#VS_Groups">VS_Groups</a></li>
-    <li><a href="../theories/types_to_sets_extension/#VS_Modules">VS_Modules</a></li>
-    <li><a href="../theories/types_to_sets_extension/#VS_Vector_Spaces">VS_Vector_Spaces</a></li>
-    <li><a href="../theories/types_to_sets_extension/#VS_Conclusions">VS_Conclusions</a></li>
-    <li><a href="../theories/types_to_sets_extension/#FNDS_Introduction">FNDS_Introduction</a></li>
-    <li><a href="../theories/types_to_sets_extension/#FNDS_Set_Ext">FNDS_Set_Ext</a></li>
-    <li><a href="../theories/types_to_sets_extension/#FNDS_Definite_Description">FNDS_Definite_Description</a></li>
-    <li><a href="../theories/types_to_sets_extension/#FNDS_Auxiliary">FNDS_Auxiliary</a></li>
-    <li><a href="../theories/types_to_sets_extension/#Type_Simple_Orders">Type_Simple_Orders</a></li>
-    <li><a href="../theories/types_to_sets_extension/#Set_Simple_Orders">Set_Simple_Orders</a></li>
-    <li><a href="../theories/types_to_sets_extension/#Type_Semigroups">Type_Semigroups</a></li>
-    <li><a href="../theories/types_to_sets_extension/#FNDS_Lifting_Set_Ext">FNDS_Lifting_Set_Ext</a></li>
-    <li><a href="../theories/types_to_sets_extension/#Set_Semigroups">Set_Semigroups</a></li>
-    <li><a href="../theories/types_to_sets_extension/#FNDS_Conclusions">FNDS_Conclusions</a></li></ul><div class="flex-wrap">
-  <div>
-    <h3>Depends on</h3>
-    <ul class="horizontal-list"><li><a href="../entries/Conditional_Transfer_Rule.html">Conditional Transfer Rule</a></li><li><a href="../entries/SpecCheck.html">SpecCheck - Specification-Based Testing for Isabelle/ML</a></li></ul>
-  </div>
-  
-  <div>
-    <h3>Auto-related entries</h3>
-    <ul class="horizontal-list">
-      
-      <li><a href="../entries/Smith_Normal_Form.html">A verified algorithm for computing the Smith normal form of a matrix</a></li>
-      
-      <li><a href="../entries/Berlekamp_Zassenhaus.html">The Factorization Algorithm of Berlekamp and Zassenhaus</a></li>
-      
-    </ul>
-  </div>
-  
-  </div>
-</main>
-
-<nav class='links'>
-  <a class='popup-button' href="#cite-popup">Cite</a>
-  <a class='popup-button' href="#download-popup">Download</a>
-  <h4>PDFs</h4>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Types_To_Sets_Extension/outline.pdf">Proof
-    outline</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Types_To_Sets_Extension/document.pdf">Proof
-    document</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Types_To_Sets_Extension/session_graph.pdf">Dependencies</a></nav>
-
-<div id="cite-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Cite</h2>
-    <a class="close" href="#">&times;</a>
+    <h3>License</h3>
     <div>
-      <p style="display:none;" id="bibtex-filename">Types_To_Sets_Extension-AFP</p><pre id="copy-text">@article{Types_To_Sets_Extension-AFP,
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>History</h3>
+      <dl>
+        <dt>November 15, 2021</dt>
+        <dd>integration with SpecCheck (revision 61e152c118d4)<br></dd>
+      </dl>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/tools">Tools</a></li>
+      </ul>
+      <h3>Session Types_To_Sets_Extension</h3>
+      <ul>
+          <li><a href="../sessions/types_to_sets_extension/#ETTS_Tools">ETTS_Tools</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#ETTS">ETTS</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#ETTS_Auxiliary">ETTS_Auxiliary</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#Manual_Prerequisites">Manual_Prerequisites</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#ETTS_Tests">ETTS_Tests</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#ETTS_Introduction">ETTS_Introduction</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#ETTS_Theory">ETTS_Theory</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#ETTS_Syntax">ETTS_Syntax</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#ETTS_Examples">ETTS_Examples</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#ETTS_CR">ETTS_CR</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#Introduction">Introduction</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#SML_Introduction">SML_Introduction</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#Set_Ext">Set_Ext</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#Lifting_Set_Ext">Lifting_Set_Ext</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#Product_Type_Ext">Product_Type_Ext</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#Transfer_Ext">Transfer_Ext</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#SML_Relations">SML_Relations</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#SML_Simple_Orders">SML_Simple_Orders</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#SML_Semigroups">SML_Semigroups</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#SML_Monoids">SML_Monoids</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#SML_Groups">SML_Groups</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#SML_Semirings">SML_Semirings</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#SML_Rings">SML_Rings</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#SML_Semilattices">SML_Semilattices</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#SML_Lattices">SML_Lattices</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#SML_Complete_Lattices">SML_Complete_Lattices</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#SML_Linorders">SML_Linorders</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#SML_Topological_Space">SML_Topological_Space</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#SML_Topological_Space_Countability">SML_Topological_Space_Countability</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#SML_Ordered_Topological_Spaces">SML_Ordered_Topological_Spaces</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#SML_Product_Topology">SML_Product_Topology</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#SML_Conclusions">SML_Conclusions</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#VS_Prerequisites">VS_Prerequisites</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#VS_Groups">VS_Groups</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#VS_Modules">VS_Modules</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#VS_Vector_Spaces">VS_Vector_Spaces</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#VS_Conclusions">VS_Conclusions</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#FNDS_Introduction">FNDS_Introduction</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#FNDS_Set_Ext">FNDS_Set_Ext</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#FNDS_Definite_Description">FNDS_Definite_Description</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#FNDS_Auxiliary">FNDS_Auxiliary</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#Type_Simple_Orders">Type_Simple_Orders</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#Set_Simple_Orders">Set_Simple_Orders</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#Type_Semigroups">Type_Semigroups</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#FNDS_Lifting_Set_Ext">FNDS_Lifting_Set_Ext</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#Set_Semigroups">Set_Semigroups</a></li>
+          <li><a href="../sessions/types_to_sets_extension/#FNDS_Conclusions">FNDS_Conclusions</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+      <div>
+        <h3>Depends on</h3>
+        <ul class="horizontal-list">
+              <li><a href="../entries/Conditional_Transfer_Rule.html">Conditional Transfer Rule</a></li>
+              <li><a href="../entries/SpecCheck.html">SpecCheck - Specification-Based Testing for Isabelle/ML</a></li>
+        </ul>
+      </div>
+        <div>
+          <h3>Auto-related entries</h3>
+          <ul class="horizontal-list">
+              <li><a href="../entries/Smith_Normal_Form.html">A verified algorithm for computing the Smith normal form of a matrix</a></li>
+              <li><a href="../entries/Berlekamp_Zassenhaus.html">The Factorization Algorithm of Berlekamp and Zassenhaus</a></li>
+          </ul>
+        </div>
+      </div>
+    
+  </main>
+
+  <nav class='links'>
+    <a class='popup-button' href="#cite-popup">Cite</a>
+    <a class='popup-button' href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Types_To_Sets_Extension/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Types_To_Sets_Extension/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Types_To_Sets_Extension/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Types_To_Sets_Extension-AFP</p>
+        <pre id="copy-text">@article{Types_To_Sets_Extension-AFP,
   author  = {Mihails Milehins},
   title   = {Extension of Types-To-Sets},
   journal = {Archive of Formal Proofs},
   month   = {September},
   year    = {2021},
   note    = {\url{https://isa-afp.org/entries/Types_To_Sets_Extension.html},
-            Formal proof development},
+             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
     </div>
   </div>
-</div>
 
-<div id="download-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Download</h2>
-    <a class="close" href="#">&times;</a>
-    <a href="https://www.isa-afp.org/release//afp-Types_To_Sets_Extension-current.tar.gz" download>Download latest</a>
-    <p>Older releases:</p>
-    <ul><li>
-        <a href="https://www.isa-afp.org/release/afp-Types_To_Sets_Extension-2023-09-13.tar.gz">Sep 13, 2023</a>: Isabelle2023
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Types_To_Sets_Extension-2022-10-27.tar.gz">Oct 27, 2022</a>: Isabelle2022
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Types_To_Sets_Extension-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021-1
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Types_To_Sets_Extension-2021-10-05.tar.gz">Oct 5, 2021</a>: Isabelle2021
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Types_To_Sets_Extension-2021-09-14.tar.gz">Sep 14, 2021</a>: Isabelle2021
-      </li></ul>
-  </div>
-</div>
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-Types_To_Sets_Extension-current.tar.gz"
+         download>Download latest</a>
+        <p>Older releases:</p>
+        <ul>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Types_To_Sets_Extension-2023-09-13.tar.gz">
+                Sep 13, 2023
+              </a>
+              : Isabelle2023
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Types_To_Sets_Extension-2022-10-27.tar.gz">
+                Oct 27, 2022
+              </a>
+              : Isabelle2022
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Types_To_Sets_Extension-2021-12-14.tar.gz">
+                Dec 14, 2021
+              </a>
+              : Isabelle2021-1
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Types_To_Sets_Extension-2021-10-05.tar.gz">
+                Oct 5, 2021
+              </a>
+              : Isabelle2021
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Types_To_Sets_Extension-2021-09-14.tar.gz">
+                Sep 14, 2021
+              </a>
+              : Isabelle2021
+            </li>
+        </ul>
     </div>
   </div>
-</body>
-
+        
+      </div>
+    </div>
+  </body>
 </html>

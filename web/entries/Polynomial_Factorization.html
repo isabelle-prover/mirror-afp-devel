@@ -1,25 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Polynomial Factorization - Archive of Formal Proofs</title><meta name="description" content="Based on existing libraries for polynomial interpolation and matrices, we formalized several factorization algorithms for polynomials, including..."><meta property="og:title" content="Polynomial Factorization" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Polynomial Factorization - Archive of Formal Proofs</title>
+    <meta name="description" content="Based on existing libraries for polynomial interpolation and matrices, we formalized several factorization algorithms for polynomials, including...">
+
+  <meta property="og:title" content="Polynomial Factorization" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="/entries/Polynomial_Factorization.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
 <meta property="article:published_time" content="2016-01-29T00:00:00+00:00" />
 <meta property="article:modified_time" content="2016-01-29T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="Polynomial Factorization"/>
 <meta name="twitter:description" content=""/>
 
-  
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
     <script>
       MathJax = {
         tex: {
@@ -31,72 +36,111 @@
         }
       };
     </script>
-    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
   <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
-  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../" class='logo-link'>
-    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../" class='logo-link'>
-        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../"><li >Home</li></a>
-        <a href="../topics/"><li >Topics</li></a>
-        <a href="../download/"><li >Download</li></a>
-        <a href="../help/"><li >Help</li></a>
-        <a href="../submission/"><li >Submission</li></a>
-        <a href="../statistics/"><li >Statistics</li></a>
-        <a href="../about/"><li >About</li></a>
+          <a href="../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content  entries'><header>
-  <form autocomplete="off" action="../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>P</span>olynomial <span class='first'>F</span>actorization</h1>
+    </aside>
+    <div class='content entries'>
+      <header>
+    <form autocomplete="off" action="../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>P</span>olynomial <span class='first'>F</span>actorization
+    
+  </h1>
   <div>
-    
-    <p><a href="../authors/thiemann">René Thiemann</a> <a class="obfuscated" data="eyJob3N0IjpbInVpYmsiLCJhYyIsImF0Il0sInVzZXIiOlsicmVuZSIsInRoaWVtYW5uIl19">📧</a> and <a href="../authors/yamada">Akihisa Yamada</a> <a class="obfuscated" data="eyJob3N0IjpbInVpYmsiLCJhYyIsImF0Il0sInVzZXIiOlsiYWtpaGlzYSIsInlhbWFkYSJdfQ==">📧</a>
-    </p>
-    
-    
-    <p class="date">January 29, 2016</p>
-    
-  </div>
-</header><div><main><h3>Abstract</h3>
+      <p>
+        <a href="../authors/thiemann">René Thiemann</a> <a class="obfuscated" data="eyJob3N0IjpbInVpYmsiLCJhYyIsImF0Il0sInVzZXIiOlsicmVuZSIsInRoaWVtYW5uIl19">📧</a> and <a href="../authors/yamada">Akihisa Yamada</a> <a class="obfuscated" data="eyJob3N0IjpbInVpYmsiLCJhYyIsImF0Il0sInVzZXIiOlsiYWtpaGlzYSIsInlhbWFkYSJdfQ==">📧</a>
 
-  <div class="abstract mathjax_process">Based on existing libraries for polynomial interpolation and matrices,
+      </p>
+      <p class="date">January 29, 2016</p>
+  </div>
+</header>
+      <div>
+        
+  <main>
+    <h3>Abstract</h3>
+
+    <div class="abstract mathjax_process">Based on existing libraries for polynomial interpolation and matrices,
 we formalized several factorization algorithms for polynomials, including
 Kronecker's algorithm for integer polynomials,
 Yun's square-free factorization algorithm for field polynomials, and
@@ -111,110 +155,205 @@ of quadratic polynomials and a rational root test.
 As side products, we developed division algorithms for polynomials over integral domains,
 as well as primality-testing and prime-factorization algorithms for integers.</div>
 
-  <h3>License</h3>
-  <div><a href="https://isa-afp.org/LICENSE">BSD License</a></div><h3>Topics</h3>
-  <ul><li><a href="../topics/mathematics/algebra">Mathematics/Algebra</a></li></ul>
-  <h3>Session Polynomial_Factorization</h3>
-  <ul>
-    <li><a href="../theories/polynomial_factorization/#Missing_List">Missing_List</a></li>
-    <li><a href="../theories/polynomial_factorization/#Missing_Multiset">Missing_Multiset</a></li>
-    <li><a href="../theories/polynomial_factorization/#Precomputation">Precomputation</a></li>
-    <li><a href="../theories/polynomial_factorization/#Order_Polynomial">Order_Polynomial</a></li>
-    <li><a href="../theories/polynomial_factorization/#Explicit_Roots">Explicit_Roots</a></li>
-    <li><a href="../theories/polynomial_factorization/#Dvd_Int_Poly">Dvd_Int_Poly</a></li>
-    <li><a href="../theories/polynomial_factorization/#Missing_Polynomial_Factorial">Missing_Polynomial_Factorial</a></li>
-    <li><a href="../theories/polynomial_factorization/#Gauss_Lemma">Gauss_Lemma</a></li>
-    <li><a href="../theories/polynomial_factorization/#Prime_Factorization">Prime_Factorization</a></li>
-    <li><a href="../theories/polynomial_factorization/#Rational_Root_Test">Rational_Root_Test</a></li>
-    <li><a href="../theories/polynomial_factorization/#Kronecker_Factorization">Kronecker_Factorization</a></li>
-    <li><a href="../theories/polynomial_factorization/#Polynomial_Divisibility">Polynomial_Divisibility</a></li>
-    <li><a href="../theories/polynomial_factorization/#Fundamental_Theorem_Algebra_Factorized">Fundamental_Theorem_Algebra_Factorized</a></li>
-    <li><a href="../theories/polynomial_factorization/#Square_Free_Factorization">Square_Free_Factorization</a></li>
-    <li><a href="../theories/polynomial_factorization/#Gcd_Rat_Poly">Gcd_Rat_Poly</a></li>
-    <li><a href="../theories/polynomial_factorization/#Rational_Factorization">Rational_Factorization</a></li></ul><div class="flex-wrap">
-  <div>
-    <h3>Depends on</h3>
-    <ul class="horizontal-list"><li><a href="../entries/Abstract-Rewriting.html">Abstract Rewriting</a></li><li><a href="../entries/Containers.html">Light-weight Containers</a></li><li><a href="../entries/Gauss_Jordan.html">Gauss-Jordan Algorithm and Its Applications</a></li><li><a href="../entries/Matrix.html">Executable Matrix Operations on Matrices of Arbitrary Dimensions</a></li><li><a href="../entries/Partial_Function_MR.html">Mutually Recursive Partial Functions</a></li><li><a href="../entries/Polynomial_Interpolation.html">Polynomial Interpolation</a></li><li><a href="../entries/Show.html">Haskell&rsquo;s Show Class in Isabelle/HOL</a></li><li><a href="../entries/Sqrt_Babylonian.html">Computing N-th Roots using the Babylonian Method</a></li><li><a href="../entries/VectorSpace.html">Vector Spaces</a></li></ul>
-  </div><div>
-    <h3>Used by</h3>
-    <ul class="horizontal-list"><li><a href="../entries/Fishers_Inequality.html">Fisher&rsquo;s Inequality: Linear Algebraic Proof Techniques for Combinatorics</a></li><li><a href="../entries/Amicable_Numbers.html">Amicable Numbers</a></li><li><a href="../entries/Knuth_Bendix_Order.html">A Formalization of Knuth–Bendix Orders</a></li><li><a href="../entries/Gaussian_Integers.html">Gaussian Integers</a></li><li><a href="../entries/Power_Sum_Polynomials.html">Power Sum Polynomials</a></li><li><a href="../entries/Functional_Ordered_Resolution_Prover.html">A Verified Functional Implementation of Bachmair and Ganzinger&rsquo;s Ordered Resolution Prover</a></li><li><a href="../entries/Dirichlet_Series.html">Dirichlet Series</a></li><li><a href="../entries/Linear_Recurrences.html">Linear Recurrences</a></li><li><a href="../entries/Subresultants.html">Subresultants</a></li><li><a href="../entries/Berlekamp_Zassenhaus.html">The Factorization Algorithm of Berlekamp and Zassenhaus</a></li><li><a href="../entries/Perron_Frobenius.html">Perron-Frobenius Theorem for Spectral Radius Analysis</a></li><li><a href="../entries/Jordan_Normal_Form.html">Matrices, Jordan Normal Forms, and Spectral Radius Theory</a></li></ul>
-  </div>
-  
-  <div>
-    <h3>Auto-related entries</h3>
-    <ul class="horizontal-list">
-      
-      <li><a href="../entries/Berlekamp_Zassenhaus.html">The Factorization Algorithm of Berlekamp and Zassenhaus</a></li>
-      
-    </ul>
-  </div>
-  
-  </div>
-</main>
-
-<nav class='links'>
-  <a class='popup-button' href="#cite-popup">Cite</a>
-  <a class='popup-button' href="#download-popup">Download</a>
-  <h4>PDFs</h4>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Polynomial_Factorization/outline.pdf">Proof
-    outline</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Polynomial_Factorization/document.pdf">Proof
-    document</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Polynomial_Factorization/session_graph.pdf">Dependencies</a></nav>
-
-<div id="cite-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Cite</h2>
-    <a class="close" href="#">&times;</a>
+    <h3>License</h3>
     <div>
-      <p style="display:none;" id="bibtex-filename">Polynomial_Factorization-AFP</p><pre id="copy-text">@article{Polynomial_Factorization-AFP,
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/mathematics/algebra">Mathematics/Algebra</a></li>
+      </ul>
+      <h3>Session Polynomial_Factorization</h3>
+      <ul>
+          <li><a href="../sessions/polynomial_factorization/#Missing_List">Missing_List</a></li>
+          <li><a href="../sessions/polynomial_factorization/#Missing_Multiset">Missing_Multiset</a></li>
+          <li><a href="../sessions/polynomial_factorization/#Precomputation">Precomputation</a></li>
+          <li><a href="../sessions/polynomial_factorization/#Order_Polynomial">Order_Polynomial</a></li>
+          <li><a href="../sessions/polynomial_factorization/#Explicit_Roots">Explicit_Roots</a></li>
+          <li><a href="../sessions/polynomial_factorization/#Dvd_Int_Poly">Dvd_Int_Poly</a></li>
+          <li><a href="../sessions/polynomial_factorization/#Missing_Polynomial_Factorial">Missing_Polynomial_Factorial</a></li>
+          <li><a href="../sessions/polynomial_factorization/#Gauss_Lemma">Gauss_Lemma</a></li>
+          <li><a href="../sessions/polynomial_factorization/#Prime_Factorization">Prime_Factorization</a></li>
+          <li><a href="../sessions/polynomial_factorization/#Rational_Root_Test">Rational_Root_Test</a></li>
+          <li><a href="../sessions/polynomial_factorization/#Kronecker_Factorization">Kronecker_Factorization</a></li>
+          <li><a href="../sessions/polynomial_factorization/#Polynomial_Divisibility">Polynomial_Divisibility</a></li>
+          <li><a href="../sessions/polynomial_factorization/#Fundamental_Theorem_Algebra_Factorized">Fundamental_Theorem_Algebra_Factorized</a></li>
+          <li><a href="../sessions/polynomial_factorization/#Square_Free_Factorization">Square_Free_Factorization</a></li>
+          <li><a href="../sessions/polynomial_factorization/#Gcd_Rat_Poly">Gcd_Rat_Poly</a></li>
+          <li><a href="../sessions/polynomial_factorization/#Rational_Factorization">Rational_Factorization</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+      <div>
+        <h3>Depends on</h3>
+        <ul class="horizontal-list">
+              <li><a href="../entries/Abstract-Rewriting.html">Abstract Rewriting</a></li>
+              <li><a href="../entries/Containers.html">Light-weight Containers</a></li>
+              <li><a href="../entries/Gauss_Jordan.html">Gauss-Jordan Algorithm and Its Applications</a></li>
+              <li><a href="../entries/Matrix.html">Executable Matrix Operations on Matrices of Arbitrary Dimensions</a></li>
+              <li><a href="../entries/Partial_Function_MR.html">Mutually Recursive Partial Functions</a></li>
+              <li><a href="../entries/Polynomial_Interpolation.html">Polynomial Interpolation</a></li>
+              <li><a href="../entries/Show.html">Haskell&rsquo;s Show Class in Isabelle/HOL</a></li>
+              <li><a href="../entries/Sqrt_Babylonian.html">Computing N-th Roots using the Babylonian Method</a></li>
+              <li><a href="../entries/VectorSpace.html">Vector Spaces</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Used by</h3>
+        <ul class="horizontal-list">
+            <li>
+              <a href="../entries/Fishers_Inequality.html">Fisher&rsquo;s Inequality: Linear Algebraic Proof Techniques for Combinatorics</a>
+            </li>
+            <li>
+              <a href="../entries/Amicable_Numbers.html">Amicable Numbers</a>
+            </li>
+            <li>
+              <a href="../entries/Knuth_Bendix_Order.html">A Formalization of Knuth–Bendix Orders</a>
+            </li>
+            <li>
+              <a href="../entries/Gaussian_Integers.html">Gaussian Integers</a>
+            </li>
+            <li>
+              <a href="../entries/Power_Sum_Polynomials.html">Power Sum Polynomials</a>
+            </li>
+            <li>
+              <a href="../entries/Functional_Ordered_Resolution_Prover.html">A Verified Functional Implementation of Bachmair and Ganzinger&rsquo;s Ordered Resolution Prover</a>
+            </li>
+            <li>
+              <a href="../entries/Dirichlet_Series.html">Dirichlet Series</a>
+            </li>
+            <li>
+              <a href="../entries/Linear_Recurrences.html">Linear Recurrences</a>
+            </li>
+            <li>
+              <a href="../entries/Subresultants.html">Subresultants</a>
+            </li>
+            <li>
+              <a href="../entries/Berlekamp_Zassenhaus.html">The Factorization Algorithm of Berlekamp and Zassenhaus</a>
+            </li>
+            <li>
+              <a href="../entries/Perron_Frobenius.html">Perron-Frobenius Theorem for Spectral Radius Analysis</a>
+            </li>
+            <li>
+              <a href="../entries/Jordan_Normal_Form.html">Matrices, Jordan Normal Forms, and Spectral Radius Theory</a>
+            </li>
+        </ul>
+      </div>
+        <div>
+          <h3>Auto-related entries</h3>
+          <ul class="horizontal-list">
+              <li><a href="../entries/Berlekamp_Zassenhaus.html">The Factorization Algorithm of Berlekamp and Zassenhaus</a></li>
+          </ul>
+        </div>
+      </div>
+    
+  </main>
+
+  <nav class='links'>
+    <a class='popup-button' href="#cite-popup">Cite</a>
+    <a class='popup-button' href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Polynomial_Factorization/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Polynomial_Factorization/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Polynomial_Factorization/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Polynomial_Factorization-AFP</p>
+        <pre id="copy-text">@article{Polynomial_Factorization-AFP,
   author  = {René Thiemann and Akihisa Yamada},
   title   = {Polynomial Factorization},
   journal = {Archive of Formal Proofs},
   month   = {January},
   year    = {2016},
   note    = {\url{https://isa-afp.org/entries/Polynomial_Factorization.html},
-            Formal proof development},
+             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
     </div>
   </div>
-</div>
 
-<div id="download-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Download</h2>
-    <a class="close" href="#">&times;</a>
-    <a href="https://www.isa-afp.org/release//afp-Polynomial_Factorization-current.tar.gz" download>Download latest</a>
-    <p>Older releases:</p>
-    <ul><li>
-        <a href="https://www.isa-afp.org/release/afp-Polynomial_Factorization-2023-09-13.tar.gz">Sep 13, 2023</a>: Isabelle2023
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Polynomial_Factorization-2022-10-27.tar.gz">Oct 27, 2022</a>: Isabelle2022
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Polynomial_Factorization-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021-1
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Polynomial_Factorization-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Polynomial_Factorization-2020-04-20.tar.gz">Apr 20, 2020</a>: Isabelle2020
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Polynomial_Factorization-2019-06-11.tar.gz">Jun 11, 2019</a>: Isabelle2019
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Polynomial_Factorization-2018-08-16.tar.gz">Aug 16, 2018</a>: Isabelle2018
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Polynomial_Factorization-2017-10-10.tar.gz">Oct 10, 2017</a>: Isabelle2017
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Polynomial_Factorization-2016-12-17.tar.gz">Dec 17, 2016</a>: Isabelle2016-1
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Polynomial_Factorization-2016-02-22.tar.gz">Feb 22, 2016</a>: Isabelle2016
-      </li></ul>
-  </div>
-</div>
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-Polynomial_Factorization-current.tar.gz"
+         download>Download latest</a>
+        <p>Older releases:</p>
+        <ul>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Polynomial_Factorization-2023-09-13.tar.gz">
+                Sep 13, 2023
+              </a>
+              : Isabelle2023
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Polynomial_Factorization-2022-10-27.tar.gz">
+                Oct 27, 2022
+              </a>
+              : Isabelle2022
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Polynomial_Factorization-2021-12-14.tar.gz">
+                Dec 14, 2021
+              </a>
+              : Isabelle2021-1
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Polynomial_Factorization-2021-02-23.tar.gz">
+                Feb 23, 2021
+              </a>
+              : Isabelle2021
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Polynomial_Factorization-2020-04-20.tar.gz">
+                Apr 20, 2020
+              </a>
+              : Isabelle2020
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Polynomial_Factorization-2019-06-11.tar.gz">
+                Jun 11, 2019
+              </a>
+              : Isabelle2019
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Polynomial_Factorization-2018-08-16.tar.gz">
+                Aug 16, 2018
+              </a>
+              : Isabelle2018
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Polynomial_Factorization-2017-10-10.tar.gz">
+                Oct 10, 2017
+              </a>
+              : Isabelle2017
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Polynomial_Factorization-2016-12-17.tar.gz">
+                Dec 17, 2016
+              </a>
+              : Isabelle2016-1
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Polynomial_Factorization-2016-02-22.tar.gz">
+                Feb 22, 2016
+              </a>
+              : Isabelle2016
+            </li>
+        </ul>
     </div>
   </div>
-</body>
-
+        
+      </div>
+    </div>
+  </body>
 </html>

@@ -1,29 +1,31 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Interpolation_Polynomials_HOL_Algebra on Archive of Formal Proofs</title>
+    <title>Interpolation_Polynomials_HOL_Algebra on Archive of Formal Proofs
+    </title>
     <link>/dependencies/interpolation_polynomials_hol_algebra/</link>
-    <description>Recent content in Interpolation_Polynomials_HOL_Algebra on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Interpolation_Polynomials_HOL_Algebra 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Fri, 08 Apr 2022 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/interpolation_polynomials_hol_algebra/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Formalization of Randomized Approximation Algorithms for Frequency Moments</title>
-      <link>/entries/Frequency_Moments.html</link>
-      <pubDate>Fri, 08 Apr 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Frequency_Moments.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>Universal Hash Families</title>
-      <link>/entries/Universal_Hash_Families.html</link>
-      <pubDate>Sun, 20 Feb 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Universal_Hash_Families.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Fri, 08 Apr 2022 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/interpolation_polynomials_hol_algebra/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Formalization of Randomized Approximation Algorithms for Frequency Moments</title>
+          <link>/entries/Frequency_Moments.html</link>
+          <pubDate>Fri, 08 Apr 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Frequency_Moments.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Universal Hash Families</title>
+          <link>/entries/Universal_Hash_Families.html</link>
+          <pubDate>Sun, 20 Feb 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Universal_Hash_Families.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

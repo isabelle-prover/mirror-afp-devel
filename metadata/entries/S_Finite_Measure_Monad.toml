@@ -1,0 +1,35 @@
+title = "S-Finite Measure Monad on Quasi-Borel Spaces"
+date = 2023-08-08
+topics = [
+  "Computer science/Semantics and reasoning",
+  "Mathematics/Measure and integration",
+  "Mathematics/Probability theory",
+]
+abstract = """
+The s-finite measure monad on quasi-Borel spaces provides a suitable denotational model for higher-order probabilistic programs with conditioning. This entry is a formalization of the s-finite measure monad and related notions, including s-finite measures, s-finite kernels, and a proof automation for quasi-Borel spaces which is an extension of our previous entry <a href=\"https://www.isa-afp.org/entries/Quasi_Borel_Spaces.html\"><i>Quasi-Borel Spaces</i></a>. We also implement several examples of probabilistic programs in previous works and prove their property.
+This work is a part of the work by Hirata, Minamide, and Sato, <i>Semantic Foundations of Higher-Order Probabilistic Programs in Isabelle/HOL</i> presented at the 14th Conference on Interactive Theorem Proving (ITP2023)."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.hirata]
+email = "hirata_email"
+
+[authors.minamide]
+email = "minamide_email"
+
+[contributors]
+
+[notify]
+hirata = "hirata_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.4230/LIPIcs.ITP.2023.18",
+]
+pubs = []

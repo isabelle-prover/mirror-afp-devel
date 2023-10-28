@@ -538,7 +538,8 @@ next
   also have "... = (\<Sum>B \<in> P\<^sub>1 \<union> P\<^sub>2 \<union> wrap B\<^sub>2. W B)" using sum.union_disjoint[OF FINITE(1,2) DISJNT, of W] by (simp add: Un_assoc)
   also have "... \<le> (\<Sum>u \<in> U. w u)" using * .
   also have "... \<le> c * card P" using sum_lower_bound_card[OF assms(1)] .
-  finally show ?thesis by (meson discrete nat_mult_less_cancel_disj of_nat_less_imp_less)
+  finally show ?thesis
+    by (simp flip: of_nat_mult)
 qed
 
 text \<open>As @{thm wrap_card} holds, it follows that the amount of bins in \<open>P\<^sub>1 \<union> wrap B\<^sub>1\<close>
@@ -1326,7 +1327,8 @@ next
   also have "... = (\<Sum>B \<in> P\<^sub>1 \<union> P\<^sub>2 \<union> wrap B\<^sub>2. W B)" using sum.union_disjoint[OF FINITE(1,2) DISJNT, of W] by (simp add: Un_assoc)
   also have "... \<le> (\<Sum>u \<in> U. w u)" using * .
   also have "... \<le> c * card P" using sum_lower_bound_card[OF assms(1)] .
-  finally show ?thesis by (meson discrete nat_mult_less_cancel_disj of_nat_less_imp_less)
+  finally show ?thesis
+    by (simp flip: of_nat_mult)
 qed
 
 lemma P\<^sub>1_B\<^sub>1_lower_bound_card:

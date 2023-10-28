@@ -3,7 +3,7 @@
  * Project         : HOL-CSP - A Shallow Embedding of CSP in  Isabelle/HOL
  * Version         : 2.0
  *
- * Author          : Burkhart Wolff, Safouan Taha, Lina Ye.
+ * Author          : Burkhart Wolff, Safouan Taha.
  *                   (Based on HOL-CSP 1.0 by Haykal Tej and Burkhart Wolff)
  *
  * This file       : A Combined CSP Theory
@@ -48,74 +48,57 @@ theory  Det
 imports Process
 begin
 
-subsection\<open>Definition\<close>
-definition
+subsection\<open>The Det Operator Definition\<close>
+lift_definition
         Det      :: "['\<alpha> process,'\<alpha> process] \<Rightarrow> '\<alpha> process"   (infixl "[+]" 79)
-where   "P [+] Q \<equiv> Abs_process(  {(s,X). s = [] \<and> (s,X) \<in> \<F> P \<inter> \<F> Q}
-                               \<union> {(s,X). s \<noteq> [] \<and> (s,X) \<in> \<F> P \<union> \<F> Q}
-                               \<union> {(s,X). s = [] \<and> s \<in> \<D> P \<union> \<D> Q}
-                               \<union> {(s,X). s = [] \<and> tick \<notin> X \<and> [tick] \<in> \<T> P \<union> \<T> Q},
-                               \<D> P \<union> \<D> Q)"
+        is   "\<lambda>P Q. (  {(s,X). s = [] \<and> (s,X) \<in> \<F> P \<inter> \<F> Q}
+                     \<union> {(s,X). s \<noteq> [] \<and> (s,X) \<in> \<F> P \<union> \<F> Q}
+                     \<union> {(s,X). s = [] \<and> s \<in> \<D> P \<union> \<D> Q}
+                     \<union> {(s,X). s = [] \<and> tick \<notin> X \<and> [tick] \<in> \<T> P \<union> \<T> Q},
+                     \<D> P \<union> \<D> Q)"
+proof -
+  show \<open>is_process (   {(s,X). s = [] \<and> (s,X) \<in> \<F> (P ::'\<alpha> process) \<inter> \<F> Q}
+                     \<union> {(s,X). s \<noteq> [] \<and> (s,X) \<in> \<F> P \<union> \<F> Q}
+                     \<union> {(s,X). s = [] \<and> s \<in> \<D> P \<union> \<D> Q}
+                     \<union> {(s,X). s = [] \<and> tick \<notin> X \<and> [tick] \<in> \<T> P \<union> \<T> Q},
+                     \<D> P \<union> \<D> Q)\<close> (is \<open>is_process (?f, ?d)\<close>) for P Q
+  proof (simp only: fst_conv snd_conv Rep_process is_process_def 
+                    DIVERGENCES_def FAILURES_def, intro conjI)
+    show "([], {}) \<in> ?f"
+      by(simp add: is_processT1)
+  next
+    show "\<forall>s X. (s, X) \<in> ?f \<longrightarrow> front_tickFree s"
+      by(auto simp: is_processT2)
+  next
+    show "\<forall>s t.   (s @ t, {}) \<in> ?f \<longrightarrow> (s, {}) \<in> ?f"
+      by(auto simp: is_processT1 dest!: is_processT3[rule_format])
+  next
+    show "\<forall>s X Y. (s, Y) \<in> ?f \<and> X \<subseteq> Y  \<longrightarrow>  (s, X) \<in> ?f"
+      by(auto dest: is_processT4[rule_format,OF conj_commute[THEN iffD1],OF conjI])
+  next
+    show "\<forall>sa X Y. (sa, X) \<in> ?f \<and> (\<forall>c. c \<in> Y \<longrightarrow> (sa @ [c], {}) \<notin> ?f) \<longrightarrow> (sa, X \<union> Y) \<in> ?f"
+      by(auto simp: is_processT5 T_F)
+  next
+    show " \<forall>s X. (s @ [tick], {}) \<in> ?f \<longrightarrow> (s, X - {tick}) \<in> ?f"
+      apply((rule allI)+, rule impI, rename_tac s X)
+      apply(case_tac "s=[]", simp_all add: is_processT6[rule_format] T_F_spec)
+      by(auto simp: is_processT6[rule_format] T_F_spec)
+  next
+    show "\<forall>s t. s \<in> ?d \<and> tickFree s \<and> front_tickFree t \<longrightarrow> s @ t \<in> ?d"
+      by(auto simp: is_processT7)
+  next
+    show "\<forall>s X. s \<in> ?d \<longrightarrow> (s, X) \<in> ?f"
+      by(auto simp: is_processT8[rule_format]) 
+  next
+    show "\<forall>s. s @ [tick] \<in> ?d \<longrightarrow> s \<in> ?d"
+      by(auto intro!:is_processT9[rule_format])  
+  qed
+qed
 
 notation
   Det (infixl "\<box>" 79)
 
 term \<open>(A \<box> B) \<box> D' = C\<close>
-
-lemma is_process_REP_Det:
-"is_process ({(s, X). s = [] \<and> (s, X) \<in> \<F> P \<inter> \<F> Q} \<union>
-             {(s, X). s \<noteq> [] \<and> (s, X) \<in> \<F> P \<union> \<F> Q} \<union>
-             {(s, X). s = [] \<and> s \<in> \<D> P \<union> \<D> Q} \<union>
-             {(s, X). s = [] \<and> tick \<notin> X \<and> [tick] \<in> \<T> P \<union> \<T> Q},
-             \<D> P \<union> \<D> Q)"
-(is "is_process(?T,?D)")
-proof (simp only: fst_conv snd_conv Rep_process is_process_def 
-                  DIVERGENCES_def FAILURES_def, intro conjI)
-     show "([], {}) \<in> ?T"
-          by(simp add: is_processT1)
-next
-     show "\<forall>s X. (s, X) \<in> ?T \<longrightarrow> front_tickFree s"
-          by(auto simp: is_processT2)
-next
-     show "\<forall>s t.   (s @ t, {}) \<in> ?T \<longrightarrow> (s, {}) \<in> ?T"
-          by(auto simp: is_processT1 dest!: is_processT3[rule_format])
-next
-     show "\<forall>s X Y. (s, Y) \<in> ?T \<and> X \<subseteq> Y  \<longrightarrow>  (s, X) \<in> ?T"
-          by(auto dest: is_processT4[rule_format,OF conj_commute[THEN iffD1],OF conjI])
-next
-     show "\<forall>sa X Y. (sa, X) \<in> ?T \<and> (\<forall>c. c \<in> Y \<longrightarrow> (sa @ [c], {}) \<notin> ?T) \<longrightarrow> (sa, X \<union> Y) \<in> ?T"
-          by(auto simp: is_processT5 T_F)
-next
-     show " \<forall>s X. (s @ [tick], {}) \<in> ?T \<longrightarrow> (s, X - {tick}) \<in> ?T"
-          apply((rule allI)+, rule impI, rename_tac s X)
-          apply(case_tac "s=[]", simp_all add: is_processT6[rule_format] T_F_spec)
-          by(auto simp: is_processT6[rule_format] T_F_spec)
-next
-     show "\<forall>s t. s \<in> ?D \<and> tickFree s \<and> front_tickFree t \<longrightarrow> s @ t \<in> ?D"
-          by(auto simp: is_processT7)
-next
-     show "\<forall>s X. s \<in> ?D \<longrightarrow> (s, X) \<in> ?T"
-          by(auto simp: is_processT8[rule_format]) 
-next
-     show "\<forall>s. s @ [tick] \<in> ?D \<longrightarrow> s \<in> ?D"
-          by(auto intro!:is_processT9[rule_format])  
-qed
-
-
-lemma Rep_Abs_Det:
-"Rep_process
-     (Abs_process
-       ({(s, X). s = [] \<and> (s, X) \<in> \<F> P \<inter> \<F> Q} \<union>
-        {(s, X). s \<noteq> [] \<and> (s, X) \<in> \<F> P \<union> \<F> Q} \<union>
-        {(s, X). s = [] \<and> s \<in> \<D> P \<union> \<D> Q} \<union>
-        {(s, X). s = [] \<and> tick \<notin> X \<and> [tick] \<in> \<T> P \<union> \<T> Q},
-        \<D> P \<union> \<D> Q)) =
-    ({(s, X). s = [] \<and> (s, X) \<in> \<F> P \<inter> \<F> Q} \<union>
-     {(s, X). s \<noteq> [] \<and> (s, X) \<in> \<F> P \<union> \<F> Q} \<union>
-     {(s, X). s = [] \<and> s \<in> \<D> P \<union> \<D> Q} \<union>
-     {(s, X). s = [] \<and> tick \<notin> X \<and> [tick] \<in> \<T> P \<union> \<T> Q},
-     \<D> P \<union> \<D> Q)"
-  by(simp only: CollectI Rep_process Abs_process_inverse is_process_REP_Det)
 
 
 subsection\<open>The Projections\<close>
@@ -125,22 +108,20 @@ lemma F_Det    :
                  \<union> {(s,X). s \<noteq> [] \<and> (s,X) \<in> \<F> P \<union> \<F> Q}
                  \<union> {(s,X). s = [] \<and> s \<in> \<D> P \<union> \<D> Q}
                  \<union> {(s,X). s = [] \<and> tick \<notin> X \<and> [tick] \<in> \<T> P \<union> \<T> Q}"
-  by(subst Failures_def, simp only: Det_def Rep_Abs_Det FAILURES_def fst_conv)
+  by (subst Failures.rep_eq, simp add: Det.rep_eq FAILURES_def)
 
+lemma D_Det: "\<D> (P \<box> Q) = \<D> P \<union> \<D> Q"
+   by (subst Divergences.rep_eq, simp add: Det.rep_eq DIVERGENCES_def)
+
+lemma T_Det: "\<T> (P \<box> Q) = \<T> P \<union> \<T> Q"
+  apply (subst Traces.rep_eq, simp add: TRACES_def Failures.rep_eq[symmetric] F_Det)
+  apply(auto simp: T_F F_T is_processT1 Nil_elem_T)
+  by(rule_tac x="{}" in exI, simp add: T_F F_T is_processT1 Nil_elem_T)+
+  
 
 subsection\<open>Basic Laws\<close>
 text\<open>The following theorem of Commutativity helps to simplify the subsequent
 continuity proof by symmetry breaking. It is therefore already developed here:\<close>
-lemma D_Det: "\<D> (P \<box> Q) = \<D> P \<union> \<D> Q"
-  by(subst D_def, simp only: Det_def Rep_Abs_Det DIVERGENCES_def snd_conv)
-
-
-lemma T_Det: "\<T> (P \<box> Q) = \<T> P \<union> \<T> Q"
-  apply(subst Traces_def, simp only: Det_def Rep_Abs_Det TRACES_def FAILURES_def
-                                fst_def snd_conv)
-  apply(auto simp: T_F F_T is_processT1 Nil_elem_T)
-  apply(rule_tac x="{}" in exI, simp add: T_F F_T is_processT1 Nil_elem_T)+
-  done
 
 lemma Det_commute:"(P \<box> Q) = (Q \<box> P)"
   by(auto simp: Process_eq_spec F_Det D_Det)

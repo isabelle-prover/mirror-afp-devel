@@ -147,6 +147,7 @@ Core_SC_DOM
 Correctness_Algebras
 Cotangent_PFD_Formula
 Count_Complex_Roots
+Coupledsim_Contrasim
 CryptHOL
 CryptoBasedCompositionalProperties
 Crypto_Standards
@@ -204,6 +205,7 @@ Ergodic_Theory
 Error_Function
 Euler_MacLaurin
 Euler_Partition
+Euler_Polyhedron_Formula
 Eval_FO
 Example-Submission
 Executable_Randomized_Algorithms
@@ -314,6 +316,7 @@ Hybrid_Systems_VCs
 HyperCTL
 HyperHoareLogic
 Hyperdual
+Hypergraph_Basics
 IEEE_Floating_Point
 IFC_Tracking
 IMAP-CRDT
@@ -322,6 +325,7 @@ IMP2
 IMP2_Binary_Heap
 IMP_Compiler
 IMP_Compiler_Reuse
+IO_Language_Conformance
 IP_Addresses
 Imperative_Insertion_Sort
 Implicational_Logic
@@ -413,6 +417,7 @@ LocalLexing
 Localization_Ring
 Locally-Nameless-Sigma
 Logging_Independent_Anonymity
+Lovasz_Local
 Lowe_Ontological_Argument
 Lower_Semicontinuous
 Lp
@@ -445,6 +450,7 @@ Minimal_SSA
 Minkowskis_Theorem
 Minsky_Machines
 MLSS_Decision_Proc
+ML_Unification
 Modal_Logics_for_NTS
 Modular_Assembly_Kit_Security
 Modular_arithmetic_LLL_and_HNF_algorithms
@@ -589,6 +595,7 @@ Regular_Algebras
 Regular_Tree_Relations
 Relation_Algebra
 Relational-Incorrectness-Logic
+Relational_Cardinality
 Relational_Disjoint_Set_Forests
 Relational_Forests
 Relational_Method
@@ -616,6 +623,7 @@ SDS_Impossibility
 SIFPL
 SIFUM_Type_Systems
 SPARCv8
+S_Finite_Measure_Monad
 Safe_Distance
 Safe_OCL
 Safe_Range_RC
@@ -662,6 +670,7 @@ Splay_Tree
 Sqrt_Babylonian
 Stable_Matching
 Stalnaker_Logic
+Standard_Borel_Spaces
 Statecharts
 Stateful_Protocol_Composition_and_Typing
 Stellar_Quorums
@@ -710,6 +719,7 @@ Transition_Systems_and_Automata
 Transitive-Closure
 Transitive-Closure-II
 Transitive_Models
+Transport
 Treaps
 Tree-Automata
 Tree_Decomposition

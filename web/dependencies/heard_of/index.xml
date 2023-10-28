@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Heard_Of on Archive of Formal Proofs</title>
+    <title>Heard_Of on Archive of Formal Proofs
+    </title>
     <link>/dependencies/heard_of/</link>
-    <description>Recent content in Heard_Of on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Heard_Of 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Wed, 18 Mar 2015 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/heard_of/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Consensus Refined</title>
-      <link>/entries/Consensus_Refined.html</link>
-      <pubDate>Wed, 18 Mar 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Consensus_Refined.html</guid>
-      <description></description>
-    </item>
     
+      <lastBuildDate>Wed, 18 Mar 2015 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/heard_of/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Consensus Refined</title>
+          <link>/entries/Consensus_Refined.html</link>
+          <pubDate>Wed, 18 Mar 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Consensus_Refined.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

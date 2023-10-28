@@ -1,25 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Combinatorial Enumeration Algorithms - Archive of Formal Proofs</title><meta name="description" content="Combinatorial objects have configurations which can be enumerated by algorithms, but especially for imperative programs, it is difficult to find out if..."><meta property="og:title" content="Combinatorial Enumeration Algorithms" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Combinatorial Enumeration Algorithms - Archive of Formal Proofs</title>
+    <meta name="description" content="Combinatorial objects have configurations which can be enumerated by algorithms, but especially for imperative programs, it is difficult to find out if...">
+
+  <meta property="og:title" content="Combinatorial Enumeration Algorithms" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="/entries/Combinatorial_Enumeration_Algorithms.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
 <meta property="article:published_time" content="2022-11-11T00:00:00+00:00" />
 <meta property="article:modified_time" content="2022-11-11T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="Combinatorial Enumeration Algorithms"/>
 <meta name="twitter:description" content=""/>
 
-  
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
     <script>
       MathJax = {
         tex: {
@@ -31,163 +36,220 @@
         }
       };
     </script>
-    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
   <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
-  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../" class='logo-link'>
-    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../" class='logo-link'>
-        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../"><li >Home</li></a>
-        <a href="../topics/"><li >Topics</li></a>
-        <a href="../download/"><li >Download</li></a>
-        <a href="../help/"><li >Help</li></a>
-        <a href="../submission/"><li >Submission</li></a>
-        <a href="../statistics/"><li >Statistics</li></a>
-        <a href="../about/"><li >About</li></a>
+          <a href="../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content  entries'><header>
-  <form autocomplete="off" action="../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>C</span>ombinatorial <span class='first'>E</span>numeration <span class='first'>A</span>lgorithms</h1>
+    </aside>
+    <div class='content entries'>
+      <header>
+    <form autocomplete="off" action="../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>C</span>ombinatorial <span class='first'>E</span>numeration <span class='first'>A</span>lgorithms
+    
+  </h1>
   <div>
-    
-    <p><a href="../authors/hofmeier">Paul Hofmeier</a> <a class="obfuscated" data="eyJob3N0IjpbInR1bSIsImRlIl0sInVzZXIiOlsicGF1bCIsImhvZm1laWVyIl19">📧</a> and <a href="../authors/karayel">Emin Karayel</a> <a class="obfuscated" data="eyJob3N0IjpbImVtaW5rYXJheWVsIiwiZGUiXSwidXNlciI6WyJtZSJdfQ==">📧</a>
-    </p>
-    
-    
-    <p class="date">November 11, 2022</p>
-    
-  </div>
-</header><div><main><h3>Abstract</h3>
+      <p>
+        <a href="../authors/hofmeier">Paul Hofmeier</a> <a class="obfuscated" data="eyJob3N0IjpbInR1bSIsImRlIl0sInVzZXIiOlsicGF1bCIsImhvZm1laWVyIl19">📧</a> and <a href="../authors/karayel">Emin Karayel</a> <a class="obfuscated" data="eyJob3N0IjpbImVtaW5rYXJheWVsIiwiZGUiXSwidXNlciI6WyJtZSJdfQ==">📧</a>
 
-  <div class="abstract mathjax_process">Combinatorial objects have configurations which can be enumerated by algorithms, but especially for imperative programs, it is difficult to find out if they produce the correct output and don’t generate duplicates. Therefore, for some of the most common combinatorial objects, namely n_Sequences, n_Permutations, n_Subsets, Powerset, Integer_Compositions, Integer_Partitions, Weak_Integer_Compositions, Derangements and Trees, this entry formalizes efficient functional programs and verifies their correctness. In addition, it provides cardinality proofs for those combinatorial objects. Some cardinalities are verified using the enumeration functions and others are shown using existing libraries including other AFP entries.</div>
-
-  <h3>License</h3>
-  <div><a href="https://isa-afp.org/LICENSE">BSD License</a></div><h3>Topics</h3>
-  <ul><li><a href="../topics/mathematics/combinatorics">Mathematics/Combinatorics</a></li><li><a href="../topics/computer-science/algorithms">Computer science/Algorithms</a></li></ul><h3>Related publications</h3>
-  <ul><li>
-      Hofmeier, Paul. (2022). <i>Verification of Combinatorial Algorithms</i> [Bachelor's Thesis, Technische Universität München]. mediaTUM. <a href="https://mediatum.ub.tum.de/1693026"/>https://mediatum.ub.tum.de/1693026</a>
-    </li></ul>
-  <h3>Session Combinatorial_Enumeration_Algorithms</h3>
-  <ul>
-    <li><a href="../theories/combinatorial_enumeration_algorithms/#Common_Lemmas">Common_Lemmas</a></li>
-    <li><a href="../theories/combinatorial_enumeration_algorithms/#n_Sequences">n_Sequences</a></li>
-    <li><a href="../theories/combinatorial_enumeration_algorithms/#n_Permutations">n_Permutations</a></li>
-    <li><a href="../theories/combinatorial_enumeration_algorithms/#Filter_Bool_List">Filter_Bool_List</a></li>
-    <li><a href="../theories/combinatorial_enumeration_algorithms/#n_Subsets">n_Subsets</a></li>
-    <li><a href="../theories/combinatorial_enumeration_algorithms/#Powerset">Powerset</a></li>
-    <li><a href="../theories/combinatorial_enumeration_algorithms/#Integer_Partitions">Integer_Partitions</a></li>
-    <li><a href="../theories/combinatorial_enumeration_algorithms/#Integer_Compositions">Integer_Compositions</a></li>
-    <li><a href="../theories/combinatorial_enumeration_algorithms/#Weak_Integer_Compositions">Weak_Integer_Compositions</a></li>
-    <li><a href="../theories/combinatorial_enumeration_algorithms/#Derangements_Enum">Derangements_Enum</a></li>
-    <li><a href="../theories/combinatorial_enumeration_algorithms/#Trees">Trees</a></li>
-    <li><a href="../theories/combinatorial_enumeration_algorithms/#Combinatorial_Enumeration_Algorithms">Combinatorial_Enumeration_Algorithms</a></li></ul><div class="flex-wrap">
-  <div>
-    <h3>Depends on</h3>
-    <ul class="horizontal-list"><li><a href="../entries/Card_Number_Partitions.html">Cardinality of Number Partitions</a></li><li><a href="../entries/Falling_Factorial_Sum.html">The Falling Factorial of a Sum</a></li></ul>
+      </p>
+      <p class="date">November 11, 2022</p>
   </div>
-  
-  <div>
-    <h3>Auto-related entries</h3>
-    <ul class="horizontal-list">
-      
-      <li><a href="../entries/Auto2_Imperative_HOL.html">Verifying Imperative Programs using Auto2</a></li>
-      
-      <li><a href="../entries/Hoare_Time.html">Hoare Logics for Time Bounds</a></li>
-      
-      <li><a href="../entries/Complx.html">COMPLX: A Verification Framework for Concurrent Imperative Programs</a></li>
-      
-      <li><a href="../entries/Simpl.html">A Sequential Imperative Programming Language Syntax, Semantics, Hoare Logics and Verification Environment</a></li>
-      
-    </ul>
-  </div>
-  
-  </div>
-</main>
+</header>
+      <div>
+        
+  <main>
+    <h3>Abstract</h3>
 
-<nav class='links'>
-  <a class='popup-button' href="#cite-popup">Cite</a>
-  <a class='popup-button' href="#download-popup">Download</a>
-  <h4>PDFs</h4>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Combinatorial_Enumeration_Algorithms/outline.pdf">Proof
-    outline</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Combinatorial_Enumeration_Algorithms/document.pdf">Proof
-    document</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Combinatorial_Enumeration_Algorithms/session_graph.pdf">Dependencies</a></nav>
+    <div class="abstract mathjax_process">Combinatorial objects have configurations which can be enumerated by algorithms, but especially for imperative programs, it is difficult to find out if they produce the correct output and don’t generate duplicates. Therefore, for some of the most common combinatorial objects, namely n_Sequences, n_Permutations, n_Subsets, Powerset, Integer_Compositions, Integer_Partitions, Weak_Integer_Compositions, Derangements and Trees, this entry formalizes efficient functional programs and verifies their correctness. In addition, it provides cardinality proofs for those combinatorial objects. Some cardinalities are verified using the enumeration functions and others are shown using existing libraries including other AFP entries.</div>
 
-<div id="cite-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Cite</h2>
-    <a class="close" href="#">&times;</a>
+    <h3>License</h3>
     <div>
-      <p style="display:none;" id="bibtex-filename">Combinatorial_Enumeration_Algorithms-AFP</p><pre id="copy-text">@article{Combinatorial_Enumeration_Algorithms-AFP,
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/mathematics/combinatorics">Mathematics/Combinatorics</a></li>
+          <li><a href="../topics/computer-science/algorithms">Computer science/Algorithms</a></li>
+      </ul>
+      <h3>Related publications</h3>
+      <ul>
+        <li>Hofmeier, Paul. (2022). <i>Verification of Combinatorial Algorithms</i> [Bachelor's Thesis, Technische Universität München]. mediaTUM. <a href="https://mediatum.ub.tum.de/1693026"/>https://mediatum.ub.tum.de/1693026</a>
+        </li>
+      </ul>
+      <h3>Session Combinatorial_Enumeration_Algorithms</h3>
+      <ul>
+          <li><a href="../sessions/combinatorial_enumeration_algorithms/#Common_Lemmas">Common_Lemmas</a></li>
+          <li><a href="../sessions/combinatorial_enumeration_algorithms/#n_Sequences">n_Sequences</a></li>
+          <li><a href="../sessions/combinatorial_enumeration_algorithms/#n_Permutations">n_Permutations</a></li>
+          <li><a href="../sessions/combinatorial_enumeration_algorithms/#Filter_Bool_List">Filter_Bool_List</a></li>
+          <li><a href="../sessions/combinatorial_enumeration_algorithms/#n_Subsets">n_Subsets</a></li>
+          <li><a href="../sessions/combinatorial_enumeration_algorithms/#Powerset">Powerset</a></li>
+          <li><a href="../sessions/combinatorial_enumeration_algorithms/#Integer_Partitions">Integer_Partitions</a></li>
+          <li><a href="../sessions/combinatorial_enumeration_algorithms/#Integer_Compositions">Integer_Compositions</a></li>
+          <li><a href="../sessions/combinatorial_enumeration_algorithms/#Weak_Integer_Compositions">Weak_Integer_Compositions</a></li>
+          <li><a href="../sessions/combinatorial_enumeration_algorithms/#Derangements_Enum">Derangements_Enum</a></li>
+          <li><a href="../sessions/combinatorial_enumeration_algorithms/#Trees">Trees</a></li>
+          <li><a href="../sessions/combinatorial_enumeration_algorithms/#Combinatorial_Enumeration_Algorithms">Combinatorial_Enumeration_Algorithms</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+      <div>
+        <h3>Depends on</h3>
+        <ul class="horizontal-list">
+              <li><a href="../entries/Card_Number_Partitions.html">Cardinality of Number Partitions</a></li>
+              <li><a href="../entries/Falling_Factorial_Sum.html">The Falling Factorial of a Sum</a></li>
+        </ul>
+      </div>
+        <div>
+          <h3>Auto-related entries</h3>
+          <ul class="horizontal-list">
+              <li><a href="../entries/Auto2_Imperative_HOL.html">Verifying Imperative Programs using Auto2</a></li>
+              <li><a href="../entries/Hoare_Time.html">Hoare Logics for Time Bounds</a></li>
+              <li><a href="../entries/Complx.html">COMPLX: A Verification Framework for Concurrent Imperative Programs</a></li>
+              <li><a href="../entries/Simpl.html">A Sequential Imperative Programming Language Syntax, Semantics, Hoare Logics and Verification Environment</a></li>
+          </ul>
+        </div>
+      </div>
+    
+  </main>
+
+  <nav class='links'>
+    <a class='popup-button' href="#cite-popup">Cite</a>
+    <a class='popup-button' href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Combinatorial_Enumeration_Algorithms/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Combinatorial_Enumeration_Algorithms/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Combinatorial_Enumeration_Algorithms/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Combinatorial_Enumeration_Algorithms-AFP</p>
+        <pre id="copy-text">@article{Combinatorial_Enumeration_Algorithms-AFP,
   author  = {Paul Hofmeier and Emin Karayel},
   title   = {Combinatorial Enumeration Algorithms},
   journal = {Archive of Formal Proofs},
   month   = {November},
   year    = {2022},
   note    = {\url{https://isa-afp.org/entries/Combinatorial_Enumeration_Algorithms.html},
-            Formal proof development},
+             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
     </div>
   </div>
-</div>
 
-<div id="download-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Download</h2>
-    <a class="close" href="#">&times;</a>
-    <a href="https://www.isa-afp.org/release//afp-Combinatorial_Enumeration_Algorithms-current.tar.gz" download>Download latest</a>
-    <p>Older releases:</p>
-    <ul><li>
-        <a href="https://www.isa-afp.org/release/afp-Combinatorial_Enumeration_Algorithms-2023-09-13.tar.gz">Sep 13, 2023</a>: Isabelle2023
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Combinatorial_Enumeration_Algorithms-2022-11-14.tar.gz">Nov 14, 2022</a>: Isabelle2022
-      </li></ul>
-  </div>
-</div>
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-Combinatorial_Enumeration_Algorithms-current.tar.gz"
+         download>Download latest</a>
+        <p>Older releases:</p>
+        <ul>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Combinatorial_Enumeration_Algorithms-2023-09-13.tar.gz">
+                Sep 13, 2023
+              </a>
+              : Isabelle2023
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Combinatorial_Enumeration_Algorithms-2022-11-14.tar.gz">
+                Nov 14, 2022
+              </a>
+              : Isabelle2022
+            </li>
+        </ul>
     </div>
   </div>
-</body>
-
+        
+      </div>
+    </div>
+  </body>
 </html>

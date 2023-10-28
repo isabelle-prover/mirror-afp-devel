@@ -24,7 +24,7 @@ type_synonym ('t, 'p, 'f) ZLf_state = "'t \<times> 'f inference set \<times> 'p 
 locale fair_zipperposition_loop =
   discount_loop Bot_F Inf_F Bot_G Q entails_q Inf_G_q Red_I_q Red_F_q \<G>_F_q \<G>_I_q Equiv_F Prec_F +
   todo: fair_prover_lazy_list_queue t_empty t_add_llist t_remove_llist t_pick_elem t_llists +
-  passive: fair_prover_queue p_empty p_select p_add p_remove p_felems
+  "passive": fair_prover_queue p_empty p_select p_add p_remove p_felems
   for
     Bot_F :: "'f set" and
     Inf_F :: "'f inference set" and

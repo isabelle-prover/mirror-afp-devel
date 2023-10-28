@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Coupled Similarity and Contrasimilarity, and How to Compute Them - Archive of Formal Proofs</title>
+    <meta name="description" content="We survey and extend characterizations of coupled similarity and contrasimilarity and prove properties relevant for algorithms computing their simulation...">
+
+  <meta property="og:title" content="Coupled Similarity and Contrasimilarity, and How to Compute Them" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/Coupledsim_Contrasim.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2023-08-18T00:00:00+00:00" />
+<meta property="article:modified_time" content="2023-08-18T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+
+  <meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="Coupled Similarity and Contrasimilarity, and How to Compute Them"/>
+<meta name="twitter:description" content=""/>
+
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
+</head>
+
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
+
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
+  </a>
+
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
+      </a>
+      <ul>
+          <a href="../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../about/">
+            <li >
+              About
+            </li>
+          </a>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+    <div class='content entries'>
+      <header>
+    <form autocomplete="off" action="../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>C</span>oupled <span class='first'>S</span>imilarity and <span class='first'>C</span>ontrasimilarity, and <span class='first'>H</span>ow to <span class='first'>C</span>ompute <span class='first'>T</span>hem
+    
+  </h1>
+  <div>
+      <p>
+        <a href="../authors/bisping">Benjamin Bisping</a> <a href="https://bbisping.de">🌐</a> and <a href="../authors/montanari">Luisa Montanari</a>
+
+      </p>
+      <p class="date">August 18, 2023</p>
+  </div>
+</header>
+      <div>
+        
+  <main>
+    <h3>Abstract</h3>
+
+    <div class="abstract mathjax_process"><p>We survey and extend characterizations of <em>coupled similarity</em> and <em>contrasimilarity</em> and prove properties relevant for algorithms computing their simulation preorders and equivalences.</p>
+
+<p>Coupled similarity and contrasimilarity are two weak forms of bisimilarity for systems with internal behavior. They have outstanding applications in contexts where internal choices must transparently be distributed in time or space, for example, in process calculi encodings or in action refinements.</p>
+
+<p>Our key contribution is to characterize the coupled simulation and contrasimulation preorders by <em>reachability games</em>. We also show how preexisting definitions coincide and that they can be reformulated using <em>coupled delay simulations</em>. We moreover verify a polynomial-time coinductive fixed-point algorithm computing the coupled simulation preorder. Through reduction proofs, we establish that deciding coupled similarity is at least as complex as computing weak similarity; and that contrasimilarity checking is at least as hard as trace inclusion checking.</p></div>
+
+    <h3>License</h3>
+    <div>
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/computer-science/concurrency">Computer science/Concurrency</a></li>
+          <li><a href="../topics/mathematics/games-and-economics">Mathematics/Games and economics</a></li>
+          <li><a href="../topics/logic/general-logic/modal-logic">Logic/General logic/Modal logic</a></li>
+      </ul>
+      <h3>Related publications</h3>
+      <ul>
+        <li>Bisping, B., & Nestmann, U. (2019). Computing Coupled Similarity. Lecture Notes in Computer Science, 244–261. <a href="https://doi.org/10.1007/978-3-030-17462-0_14">https://doi.org/10.1007/978-3-030-17462-0_14</a>
+
+        </li>
+        <li>Bisping, B., & Montanari, L. (2021). A Game Characterization for Contrasimilarity. Electronic Proceedings in Theoretical Computer Science, 339, 27–42. https://doi.org/10.4204/eptcs.339.5
+
+        </li>
+      </ul>
+      <h3>Session Coupledsim_Contrasim</h3>
+      <ul>
+          <li><a href="../sessions/coupledsim_contrasim/#Transition_Systems">Transition_Systems</a></li>
+          <li><a href="../sessions/coupledsim_contrasim/#Weak_Transition_Systems">Weak_Transition_Systems</a></li>
+          <li><a href="../sessions/coupledsim_contrasim/#Simple_Game">Simple_Game</a></li>
+          <li><a href="../sessions/coupledsim_contrasim/#Strong_Relations">Strong_Relations</a></li>
+          <li><a href="../sessions/coupledsim_contrasim/#Weak_Relations">Weak_Relations</a></li>
+          <li><a href="../sessions/coupledsim_contrasim/#Contrasimulation">Contrasimulation</a></li>
+          <li><a href="../sessions/coupledsim_contrasim/#Coupled_Simulation">Coupled_Simulation</a></li>
+          <li><a href="../sessions/coupledsim_contrasim/#Coupledsim_Game_Delay">Coupledsim_Game_Delay</a></li>
+          <li><a href="../sessions/coupledsim_contrasim/#Coupledsim_Fixpoint_Algo_Delay">Coupledsim_Fixpoint_Algo_Delay</a></li>
+          <li><a href="../sessions/coupledsim_contrasim/#Contrasim_Word_Game">Contrasim_Word_Game</a></li>
+          <li><a href="../sessions/coupledsim_contrasim/#Contrasim_Set_Game">Contrasim_Set_Game</a></li>
+          <li><a href="../sessions/coupledsim_contrasim/#HM_Logic_Infinitary">HM_Logic_Infinitary</a></li>
+          <li><a href="../sessions/coupledsim_contrasim/#Weak_HML_Contrasimulation">Weak_HML_Contrasimulation</a></li>
+          <li><a href="../sessions/coupledsim_contrasim/#Tau_Sinks">Tau_Sinks</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+      </div>
+    
+  </main>
+
+  <nav class='links'>
+    <a class='popup-button' href="#cite-popup">Cite</a>
+    <a class='popup-button' href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Coupledsim_Contrasim/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Coupledsim_Contrasim/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Coupledsim_Contrasim/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Coupledsim_Contrasim-AFP</p>
+        <pre id="copy-text">@article{Coupledsim_Contrasim-AFP,
+  author  = {Benjamin Bisping and Luisa Montanari},
+  title   = {Coupled Similarity and Contrasimilarity, and How to Compute Them},
+  journal = {Archive of Formal Proofs},
+  month   = {August},
+  year    = {2023},
+  note    = {\url{https://isa-afp.org/entries/Coupledsim_Contrasim.html},
+             Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-Coupledsim_Contrasim-current.tar.gz"
+         download>Download latest</a>
+    </div>
+  </div>
+        
+      </div>
+    </div>
+  </body>
+</html>

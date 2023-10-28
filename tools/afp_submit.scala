@@ -805,7 +805,9 @@ object AFP_Submit {
           case Model.Status.Review => "Review in progress."
           case Model.Status.Added => "Added to the AFP."
           case Model.Status.Rejected => "Submission rejected."
-        } getOrElse "Draft saved. Submit to editors once successfully built."
+        } getOrElse
+          "Draft saved. Check the logs for errors and warnings, " +
+          "and submit to editors once successfully built."
 
       val archive_url =
         if (handler.get_archive(submission.id).exists(_.get_ext == "zip"))

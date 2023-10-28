@@ -3,7 +3,7 @@
  * Project         : HOL-CSP - A Shallow Embedding of CSP in  Isabelle/HOL
  * Version         : 2.0
  *
- * Author          : Burkhart Wolff, Safouan Taha, Lina Ye.
+ * Author          : Burkhart Wolff.
  *                   (Based on HOL-CSP 1.0 by Haykal Tej and Burkhart Wolff)
  *
  * This file       : A Combined CSP Theory
@@ -48,23 +48,30 @@ theory     Stop
 imports    Process 
 begin 
 
-definition STOP :: "'\<alpha> process"  
-where     "STOP \<equiv> Abs_process ({(s, X). s = []}, {})"
+lift_definition STOP :: \<open>'\<alpha> process\<close>
+  is \<open>({(s, X). s = []}, {})\<close>
+  unfolding is_process_def FAILURES_def DIVERGENCES_def by simp
 
-lemma is_process_REP_STOP: "is_process ({(s, X). s = []},{})"
-by(simp add: is_process_def FAILURES_def DIVERGENCES_def)
-
-lemma Rep_Abs_STOP : "Rep_process (Abs_process ({(s, X). s = []},{})) = ({(s, X). s = []},{})"
-by(subst Abs_process_inverse, simp add: Rep_process is_process_REP_STOP, auto)
 
 lemma F_STOP : "\<F> STOP = {(s,X). s = []}"
-by(simp add: STOP_def FAILURES_def Failures_def Rep_Abs_STOP)
+  by (simp add: FAILURES_def Failures.rep_eq STOP.rep_eq)
 
 lemma D_STOP: "\<D> STOP = {}"
-by(simp add: STOP_def DIVERGENCES_def D_def Rep_Abs_STOP)
+  by (simp add: DIVERGENCES_def Divergences.rep_eq STOP.rep_eq)
 
 lemma T_STOP: "\<T> STOP = {[]}"
-by(simp add: STOP_def TRACES_def FAILURES_def Traces_def Rep_Abs_STOP)
+  by (simp add: Traces.rep_eq TRACES_def Failures.rep_eq[symmetric] F_STOP)
+
+
+lemma STOP_iff_T: \<open>P = STOP \<longleftrightarrow> \<T> P = {[]}\<close>
+  apply (intro iffI, simp add: T_STOP)
+  apply (subst Process_eq_spec, safe, simp_all add: F_STOP D_STOP)
+  by (use F_T in force, use is_processT5_S7 in fastforce)
+     (metis D_T append_Nil front_tickFree_single is_processT7_S
+            list.distinct(1) singletonD tickFree_Nil)
+
+
+
 
 
 end

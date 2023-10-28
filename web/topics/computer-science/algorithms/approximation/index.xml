@@ -1,37 +1,37 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Computer science/Algorithms/Approximation on Archive of Formal Proofs</title>
+    <title>Computer science/Algorithms/Approximation on Archive of Formal Proofs
+    </title>
     <link>/topics/computer-science/algorithms/approximation/</link>
-    <description>Recent content in Computer science/Algorithms/Approximation on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Computer science/Algorithms/Approximation 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language><atom:link href="/topics/computer-science/algorithms/approximation/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Distributed Distinct Elements</title>
-      <link>/entries/Distributed_Distinct_Elements.html</link>
-      <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Distributed_Distinct_Elements.html</guid>
-      <description></description>
-    </item>
+    <language>en-gb</language>
     
-    <item>
-      <title>Formalization of Randomized Approximation Algorithms for Frequency Moments</title>
-      <link>/entries/Frequency_Moments.html</link>
-      <pubDate>Fri, 08 Apr 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Frequency_Moments.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Verified Approximation Algorithms</title>
-      <link>/entries/Approximation_Algorithms.html</link>
-      <pubDate>Thu, 16 Jan 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Approximation_Algorithms.html</guid>
-      <description></description>
-    </item>
-    
+      <atom:link href="/topics/computer-science/algorithms/approximation/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Distributed Distinct Elements</title>
+          <link>/entries/Distributed_Distinct_Elements.html</link>
+          <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Distributed_Distinct_Elements.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formalization of Randomized Approximation Algorithms for Frequency Moments</title>
+          <link>/entries/Frequency_Moments.html</link>
+          <pubDate>Fri, 08 Apr 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Frequency_Moments.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Verified Approximation Algorithms</title>
+          <link>/entries/Approximation_Algorithms.html</link>
+          <pubDate>Thu, 16 Jan 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Approximation_Algorithms.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

@@ -3,7 +3,7 @@
  * Project         : HOL-CSP - A Shallow Embedding of CSP in  Isabelle/HOL
  * Version         : 2.0
  *
- * Author          : Burkhart Wolff, Safouan Taha, Lina Ye.
+ * Author          : Burkhart Wolff, Safouan Taha.
  *                   (Based on HOL-CSP 1.0 by Haykal Tej and Burkhart Wolff)
  *
  * This file       : A Combined CSP Theory
@@ -49,80 +49,70 @@ imports Process
 begin
 
 
-subsection\<open> Definition and Consequences \<close>
-definition
+subsection\<open>The Ndet Operator Definition\<close>
+lift_definition
         Ndet     :: "['\<alpha> process,'\<alpha> process] \<Rightarrow> '\<alpha> process"   (infixl "|-|" 80)
-where   "P |-| Q \<equiv> Abs_process(\<F> P \<union> \<F> Q , \<D> P \<union> \<D> Q)"
-
-notation
-  Ndet (infixl "\<sqinter>" 80)
-
-
-lemma is_process_REP_Ndet:
-"is_process (\<F> P \<union> \<F> Q , \<D> P \<union> \<D> Q)"
+is   "\<lambda>P Q. (\<F> P \<union> \<F> Q , \<D> P \<union> \<D> Q)"
 proof(simp only: fst_conv snd_conv Rep_process is_process_def DIVERGENCES_def FAILURES_def,
       intro conjI)
-    show "([], {}) \<in> (\<F> P \<union> \<F> Q)"
+    show "\<And>P Q. ([], {}) \<in> (\<F> P \<union> \<F> Q)"
          by(simp add: is_processT1)
 next
-    show "\<forall>s X. (s, X) \<in> (\<F> P \<union> \<F> Q) \<longrightarrow> front_tickFree s"
+    show "\<And>P Q. \<forall>s X. (s, X) \<in> (\<F> P \<union> \<F> Q) \<longrightarrow> front_tickFree s"
          by(auto simp: is_processT2)
 next
-    show "\<forall>s t.   (s @ t, {}) \<in>(\<F> P \<union> \<F> Q) \<longrightarrow> (s, {}) \<in> (\<F> P \<union> \<F> Q)"
+    show "\<And>P Q. \<forall>s t.   (s @ t, {}) \<in>(\<F> P \<union> \<F> Q) \<longrightarrow> (s, {}) \<in> (\<F> P \<union> \<F> Q)"
          by (auto simp: is_processT1 dest!: is_processT3[rule_format])
 next
-    show "\<forall>s X Y. (s, Y) \<in> (\<F> P \<union> \<F> Q) \<and> X \<subseteq> Y \<longrightarrow> (s, X) \<in> (\<F> P \<union> \<F> Q)"
+    show "\<And>P Q. \<forall>s X Y. (s, Y) \<in> (\<F> P \<union> \<F> Q) \<and> X \<subseteq> Y \<longrightarrow> (s, X) \<in> (\<F> P \<union> \<F> Q)"
          by(auto dest: is_processT4[rule_format,OF conj_commute[THEN iffD1], OF conjI])
 next
-    show "\<forall>sa X Y. (sa, X) \<in> (\<F> P \<union> \<F> Q) \<and> (\<forall>c. c \<in> Y \<longrightarrow> (sa @ [c], {}) \<notin> (\<F> P \<union> \<F> Q))
+    show "\<And>P Q. \<forall>sa X Y. (sa, X) \<in> (\<F> P \<union> \<F> Q) \<and> (\<forall>c. c \<in> Y \<longrightarrow> (sa @ [c], {}) \<notin> (\<F> P \<union> \<F> Q))
           \<longrightarrow> (sa, X \<union> Y) \<in> (\<F> P \<union> \<F> Q)"
          by(auto simp: is_processT5 T_F)
 next
-    show "\<forall>s X. (s @ [tick], {}) \<in> (\<F> P \<union> \<F> Q) \<longrightarrow> (s, X - {tick}) \<in> (\<F> P \<union> \<F> Q)"
+    show "\<And>P Q. \<forall>s X. (s @ [tick], {}) \<in> (\<F> P \<union> \<F> Q) \<longrightarrow> (s, X - {tick}) \<in> (\<F> P \<union> \<F> Q)"
          apply((rule allI)+, rule impI)
          apply(rename_tac s X, case_tac "s=[]", simp_all add: is_processT6[rule_format] T_F_spec)
          apply(erule disjE,simp_all add: is_processT6[rule_format] T_F_spec)
          apply(erule disjE,simp_all add: is_processT6[rule_format] T_F_spec)
          done
 next
-    show "\<forall>s t. s \<in> \<D> P \<union> \<D> Q \<and> tickFree s \<and> front_tickFree t \<longrightarrow> s @ t \<in> \<D> P \<union> \<D> Q"
+    show "\<And>P Q. \<forall>s t. s \<in> \<D> P \<union> \<D> Q \<and> tickFree s \<and> front_tickFree t \<longrightarrow> s @ t \<in> \<D> P \<union> \<D> Q"
          by(auto simp: is_processT7)
 next
-    show "\<forall>s X. s \<in> \<D> P \<union> \<D> Q \<longrightarrow> (s, X) \<in> (\<F> P \<union> \<F> Q)"
+    show "\<And>P Q. \<forall>s X. s \<in> \<D> P \<union> \<D> Q \<longrightarrow> (s, X) \<in> (\<F> P \<union> \<F> Q)"
          by(auto simp: is_processT8[rule_format])
 next
-    show "\<forall>s. s @ [tick] \<in> \<D> P \<union> \<D> Q \<longrightarrow> s \<in> \<D> P \<union> \<D> Q"
+    show "\<And>P Q. \<forall>s. s @ [tick] \<in> \<D> P \<union> \<D> Q \<longrightarrow> s \<in> \<D> P \<union> \<D> Q"
          by(auto intro!:is_processT9[rule_format])
-qed
+     qed
+
+notation
+  Ndet (infixl "\<sqinter>" 80)
 
 
-lemma Rep_Abs_Ndet:
-"Rep_process(Abs_process(\<F> P \<union> \<F> Q , \<D> P \<union> \<D> Q)) = (\<F> P \<union> \<F> Q , \<D> P \<union> \<D> Q)"
-  by(simp only:CollectI Rep_process Abs_process_inverse is_process_REP_Ndet)
+subsection \<open>The Projections\<close>
 
-
-subsection\<open>Some Laws\<close>
-text \<open>The commutativity of the operator helps to simplify the subsequent
-      continuity proof and is therefore developed here: \<close>
 lemma F_Ndet : "\<F> (P \<sqinter> Q) = \<F> P \<union> \<F> Q"
-  apply (subst Failures_def)
-  apply (simp only: Ndet_def)
-  by (simp add: FAILURES_def Rep_Abs_Ndet)
-
-
-lemma D_Ndet : "\<D>(P \<sqinter> Q) = \<D> P \<union> \<D> Q"
-  by(subst D_def, simp only: Ndet_def Rep_Abs_Ndet DIVERGENCES_def snd_conv)
-
+  by (simp add: FAILURES_def Failures.rep_eq Ndet.rep_eq)
+ 
+lemma D_Ndet : "\<D> (P \<sqinter> Q) = \<D> P \<union> \<D> Q"
+  by (simp add: DIVERGENCES_def Divergences.rep_eq Ndet.rep_eq)
 
 lemma T_Ndet : "\<T> (P \<sqinter> Q) = \<T> P \<union> \<T> Q"
-apply(subst Traces_def, simp only: Ndet_def Rep_Abs_Ndet TRACES_def FAILURES_def
-                             fst_def snd_conv)
-apply(auto simp: T_F F_T is_processT1 Nil_elem_T)
-apply(rule_tac x="{}" in exI, simp add: T_F F_T is_processT1 Nil_elem_T)+
-done
+  apply (subst Traces.rep_eq, simp add: TRACES_def Failures.rep_eq[symmetric] F_Ndet)
+  apply(auto simp: T_F F_T is_processT1 Nil_elem_T)
+  by(rule_tac x="{}" in exI, simp add: T_F F_T is_processT1 Nil_elem_T)+
+
+
+subsection\<open>Basic Laws\<close>
+text \<open>The commutativity of the operator helps to simplify the subsequent
+      continuity proof and is therefore developed here: \<close>
 
 lemma Ndet_commute: "(P \<sqinter> Q) = (Q \<sqinter> P)"
-by(auto simp: Process_eq_spec F_Ndet D_Ndet)
+  by(auto simp: Process_eq_spec F_Ndet D_Ndet)
+
 
 subsection\<open>The Continuity Rule\<close>
 lemma  mono_Ndet1: "P \<sqsubseteq> Q \<Longrightarrow> \<D> (Q \<sqinter> S) \<subseteq> \<D> (P \<sqinter> S)"

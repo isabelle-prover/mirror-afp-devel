@@ -1,162 +1,215 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Computer science/Programming languages/Static analysis - Archive of Formal Proofs</title><meta name="description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."><link rel="alternate" type="application/rss+xml" href="../../../../topics/computer-science/programming-languages/static-analysis/index.xml" title="Archive of Formal Proofs" /><meta property="og:title" content="Computer science/Programming languages/Static analysis" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Computer science/Programming languages/Static analysis - Archive of Formal Proofs</title>
+    <meta name="description" content="A collection of proof libraries, examples, and larger
+     scientific developments, mechanically checked in the theorem prover Isabelle.">
+  <link rel="alternate" type="application/rss+xml" href="../../../../topics/computer-science/programming-languages/static-analysis/index.xml" title="Archive of Formal Proofs" />
+
+  <meta property="og:title" content="Computer science/Programming languages/Static analysis" />
 <meta property="og:description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="/topics/computer-science/programming-languages/static-analysis/" /><meta property="og:image" content="/images/afp.png"/><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="Computer science/Programming languages/Static analysis"/>
 <meta name="twitter:description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."/>
 
-  
   <link rel="stylesheet" type="text/css" href="../../../../css/front.min.css">
 
-  <link rel="icon" href="../../../../images/favicon.ico" type="image/icon"><script src="../../../../js/obfuscate.js"></script>
+  <link rel="icon" href="../../../../images/favicon.ico" type="image/icon">
+
+  <script src="../../../../js/obfuscate.js"></script>
   <script src="../../../../js/flexsearch.bundle.js"></script>
   <script src="../../../../js/scroll-spy.js"></script>
   <script src="../../../../js/theory.js"></script>
-  <script src="../../../../js/util.js"></script><script src="../../../../js/header-search.js"></script><script src="../../../../js/search-autocomplete.js"></script>
+  <script src="../../../../js/util.js"></script>
+    <script src="../../../../js/header-search.js"></script>
+  <script src="../../../../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../../../../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../../../../" class='logo-link'>
-    <img src="../../../../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../../../../" class="logo-link">
+    <img src="../../../../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../../../../search"><img src="../../../../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../../../../" class='logo-link'>
-        <img src="../../../../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../../../../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../../../../"><li >Home</li></a>
-        <a href="../../../../topics/"><li >Topics</li></a>
-        <a href="../../../../download/"><li >Download</li></a>
-        <a href="../../../../help/"><li >Help</li></a>
-        <a href="../../../../submission/"><li >Submission</li></a>
-        <a href="../../../../statistics/"><li >Statistics</li></a>
-        <a href="../../../../about/"><li >About</li></a>
+          <a href="../../../../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../../../../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../../../../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../../../../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../../../../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../../../../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../../../../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content '><header>
-  <form autocomplete="off" action="../../../../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../../../../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>C</span>omputer <span class='first'>S</span>cience/<span class='first'>P</span>rogramming <span class='first'>L</span>anguages/<span class='first'>S</span>tatic <span class='first'>A</span>nalysis</h1>
+    </aside>
+    <div class='content'>
+      <header>
+    <form autocomplete="off" action="../../../../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../../../../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>C</span>omputer science/<span class='first'>P</span>rogramming languages/<span class='first'>S</span>tatic analysis
+    
+  </h1>
   <div>
-    
-    
   </div>
-</header><div><h2>Subject Classification</h2><p>ACM: <a href="https://dl.acm.org/topic/ccs2012/10011007.10010940.10010992.10010998.10011000">Software and its engineering~Automated static analysis</a></p><h2 class="head">2021</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Dominance_CHK.html">A data flow analysis algorithm for computing dominators</a></h5> <br>by <a href="../../../../authors/jiang">Nan Jiang</a></div>
-  <span class="date">
-    Sep 05
-  </span>
-</article>
+</header>
+      <div>
+        
+    <h2>Subject Classification</h2>
+      <p>ACM: <a href="https://dl.acm.org/topic/ccs2012/10011007.10010940.10010992.10010998.10011000">Software and its engineering~Automated static analysis</a></p>
+    <h2 class="head">2021</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Dominance_CHK.html">A data flow analysis algorithm for computing dominators</a></h5>
+          <br>
+            by <a href="../../../../authors/jiang">Nan Jiang</a>
 
+        </div>
+        <span class="date">Sep 05</span>
+      </article>
+    <h2 class="head">2016</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Abs_Int_ITP2012.html">Abstract Interpretation of Annotated Commands</a></h5>
+          <br>
+            by <a href="../../../../authors/nipkow">Tobias Nipkow</a>
 
-<h2 class="head">2016</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Abs_Int_ITP2012.html">Abstract Interpretation of Annotated Commands</a></h5> <br>by <a href="../../../../authors/nipkow">Tobias Nipkow</a></div>
-  <span class="date">
-    Nov 23
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/InfPathElimination.html">Infeasible Paths Elimination by Symbolic Execution Techniques: Proof of Correctness and Preservation of Paths</a></h5> <br>by <a href="../../../../authors/aissat">Romain Aissat</a>, <a href="../../../../authors/voisin">Frederic Voisin</a> and <a href="../../../../authors/wolff">Burkhart Wolff</a></div>
-  <span class="date">
-    Aug 18
-  </span>
-</article>
+        </div>
+        <span class="date">Nov 23</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/InfPathElimination.html">Infeasible Paths Elimination by Symbolic Execution Techniques: Proof of Correctness and Preservation of Paths</a></h5>
+          <br>
+            by <a href="../../../../authors/aissat">Romain Aissat</a>, <a href="../../../../authors/voisin">Frederic Voisin</a> and <a href="../../../../authors/wolff">Burkhart Wolff</a>
 
+        </div>
+        <span class="date">Aug 18</span>
+      </article>
+    <h2 class="head">2015</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Call_Arity.html">The Safety of Call Arity</a></h5>
+          <br>
+            by <a href="../../../../authors/breitner">Joachim Breitner</a>
 
-<h2 class="head">2015</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Call_Arity.html">The Safety of Call Arity</a></h5> <br>by <a href="../../../../authors/breitner">Joachim Breitner</a></div>
-  <span class="date">
-    Feb 20
-  </span>
-</article>
+        </div>
+        <span class="date">Feb 20</span>
+      </article>
+    <h2 class="head">2011</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/RIPEMD-160-SPARK.html">RIPEMD-160</a></h5>
+          <br>
+            by <a href="../../../../authors/immler">Fabian Immler</a>
 
+        </div>
+        <span class="date">Jan 10</span>
+      </article>
+    <h2 class="head">2010</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Shivers-CFA.html">Shivers&#39; Control Flow Analysis</a></h5>
+          <br>
+            by <a href="../../../../authors/breitner">Joachim Breitner</a>
 
-<h2 class="head">2011</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/RIPEMD-160-SPARK.html">RIPEMD-160</a></h5> <br>by <a href="../../../../authors/immler">Fabian Immler</a></div>
-  <span class="date">
-    Jan 10
-  </span>
-</article>
+        </div>
+        <span class="date">Nov 16</span>
+      </article>
+    <h2 class="head">2009</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/HRB-Slicing.html">Backing up Slicing: Verifying the Interprocedural Two-Phase Horwitz-Reps-Binkley Slicer</a></h5>
+          <br>
+            by <a href="../../../../authors/wasserrab">Daniel Wasserrab</a>
 
+        </div>
+        <span class="date">Nov 13</span>
+      </article>
+    <h2 class="head">2008</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Slicing.html">Towards Certified Slicing</a></h5>
+          <br>
+            by <a href="../../../../authors/wasserrab">Daniel Wasserrab</a>
 
-<h2 class="head">2010</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Shivers-CFA.html">Shivers&#39; Control Flow Analysis</a></h5> <br>by <a href="../../../../authors/breitner">Joachim Breitner</a></div>
-  <span class="date">
-    Nov 16
-  </span>
-</article>
+        </div>
+        <span class="date">Sep 16</span>
+      </article>
+    <h2 class="head">2007</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Program-Conflict-Analysis.html">Formalization of Conflict Analysis of Programs with Procedures, Thread Creation, and Monitors</a></h5>
+          <br>
+            by <a href="../../../../authors/lammich">Peter Lammich</a> and <a href="../../../../authors/olm">Markus Müller-Olm</a>
 
-
-<h2 class="head">2009</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/HRB-Slicing.html">Backing up Slicing: Verifying the Interprocedural Two-Phase Horwitz-Reps-Binkley Slicer</a></h5> <br>by <a href="../../../../authors/wasserrab">Daniel Wasserrab</a></div>
-  <span class="date">
-    Nov 13
-  </span>
-</article>
-
-
-<h2 class="head">2008</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Slicing.html">Towards Certified Slicing</a></h5> <br>by <a href="../../../../authors/wasserrab">Daniel Wasserrab</a></div>
-  <span class="date">
-    Sep 16
-  </span>
-</article>
-
-
-<h2 class="head">2007</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Program-Conflict-Analysis.html">Formalization of Conflict Analysis of Programs with Procedures, Thread Creation, and Monitors</a></h5> <br>by <a href="../../../../authors/lammich">Peter Lammich</a> and <a href="../../../../authors/olm">Markus Müller-Olm</a></div>
-  <span class="date">
-    Dec 14
-  </span>
-</article>
-
-
-
-
+        </div>
+        <span class="date">Dec 14</span>
+      </article>
+        
+      </div>
     </div>
-  </div>
-</body>
-
+  </body>
 </html>

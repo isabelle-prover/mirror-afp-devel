@@ -97,7 +97,7 @@ instance proof (intro_classes, auto simp: is_rat_complex_def to_rat_complex_def 
 qed
 end
 
-lemma [code_unfold]: "(x \<in> \<rat>) = (is_rat x)" by simp
+lemma in_rats_code_unfold[code_unfold]: "(x \<in> \<rat>) = (is_rat x)" by simp
 
 definition is_int_rat :: "rat \<Rightarrow> bool" where
   "is_int_rat x \<equiv> snd (quotient_of x) = 1"
@@ -109,6 +109,9 @@ lemma is_int_rat[simp]: "is_int_rat x = (x \<in> \<int>)"
   unfolding is_int_rat_def Ints_def 
   by (metis Ints_def Ints_induct 
     quotient_of_int is_int_rat_def old.prod.exhaust quotient_of_inject rangeI snd_conv)
+
+lemma in_ints_code_unfold[code_unfold]: "(x \<in> \<int>) = is_int_rat x"
+  by simp
 
 lemma int_of_rat[simp]: "int_of_rat (rat_of_int x) = x" "z \<in> \<int> \<Longrightarrow> rat_of_int (int_of_rat z) = z"
 proof (force simp: int_of_rat_def)

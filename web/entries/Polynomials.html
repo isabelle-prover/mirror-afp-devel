@@ -1,25 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Executable Multivariate Polynomials - Archive of Formal Proofs</title><meta name="description" content="We define multivariate polynomials over arbitrary (ordered) semirings in combination with (executable) operations like addition, multiplication, and..."><meta property="og:title" content="Executable Multivariate Polynomials" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Executable Multivariate Polynomials - Archive of Formal Proofs</title>
+    <meta name="description" content="We define multivariate polynomials over arbitrary (ordered) semirings in combination with (executable) operations like addition, multiplication, and...">
+
+  <meta property="og:title" content="Executable Multivariate Polynomials" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="/entries/Polynomials.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
 <meta property="article:published_time" content="2010-08-10T00:00:00+00:00" />
 <meta property="article:modified_time" content="2010-08-10T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="Executable Multivariate Polynomials"/>
 <meta name="twitter:description" content=""/>
 
-  
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
     <script>
       MathJax = {
         tex: {
@@ -31,72 +36,111 @@
         }
       };
     </script>
-    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
   <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
-  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../" class='logo-link'>
-    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../" class='logo-link'>
-        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../"><li >Home</li></a>
-        <a href="../topics/"><li >Topics</li></a>
-        <a href="../download/"><li >Download</li></a>
-        <a href="../help/"><li >Help</li></a>
-        <a href="../submission/"><li >Submission</li></a>
-        <a href="../statistics/"><li >Statistics</li></a>
-        <a href="../about/"><li >About</li></a>
+          <a href="../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content  entries'><header>
-  <form autocomplete="off" action="../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>E</span>xecutable <span class='first'>M</span>ultivariate <span class='first'>P</span>olynomials</h1>
+    </aside>
+    <div class='content entries'>
+      <header>
+    <form autocomplete="off" action="../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>E</span>xecutable <span class='first'>M</span>ultivariate <span class='first'>P</span>olynomials
+    
+  </h1>
   <div>
-    
-    <p><a href="../authors/sternagel">Christian Sternagel</a> <a class="obfuscated" data="eyJob3N0IjpbImdtYWlsIiwiY29tIl0sInVzZXIiOlsiYyIsInN0ZXJuYWdlbCJdfQ==">📧</a>, <a href="../authors/thiemann">René Thiemann</a> <a href="http://cl-informatik.uibk.ac.at/users/thiemann/">🌐</a>, <a href="../authors/maletzky">Alexander Maletzky</a> <a href="https://risc.jku.at/m/alexander-maletzky/">🌐</a>, <a href="../authors/immler">Fabian Immler</a> <a href="https://home.in.tum.de/~immler/">🌐</a>, <a href="../authors/haftmann">Florian Haftmann</a> <a href="http://isabelle.in.tum.de/~haftmann">🌐</a>, <a href="../authors/lochbihler">Andreas Lochbihler</a> <a href="http://www.andreas-lochbihler.de/">🌐</a> and <a href="../authors/bentkamp">Alexander Bentkamp</a> <a class="obfuscated" data="eyJob3N0IjpbImdtYWlsIiwiY29tIl0sInVzZXIiOlsiYmVudGthbXAiXX0=">📧</a>
-    </p>
-    
-    
-    <p class="date">August 10, 2010</p>
-    
-  </div>
-</header><div><main><h3>Abstract</h3>
+      <p>
+        <a href="../authors/sternagel">Christian Sternagel</a> <a class="obfuscated" data="eyJob3N0IjpbImdtYWlsIiwiY29tIl0sInVzZXIiOlsiYyIsInN0ZXJuYWdlbCJdfQ==">📧</a>, <a href="../authors/thiemann">René Thiemann</a> <a href="http://cl-informatik.uibk.ac.at/users/thiemann/">🌐</a>, <a href="../authors/maletzky">Alexander Maletzky</a> <a href="https://risc.jku.at/m/alexander-maletzky/">🌐</a>, <a href="../authors/immler">Fabian Immler</a> <a href="https://home.in.tum.de/~immler/">🌐</a>, <a href="../authors/haftmann">Florian Haftmann</a> <a href="http://isabelle.in.tum.de/~haftmann">🌐</a>, <a href="../authors/lochbihler">Andreas Lochbihler</a> <a href="http://www.andreas-lochbihler.de/">🌐</a> and <a href="../authors/bentkamp">Alexander Bentkamp</a> <a class="obfuscated" data="eyJob3N0IjpbImdtYWlsIiwiY29tIl0sInVzZXIiOlsiYmVudGthbXAiXX0=">📧</a>
 
-  <div class="abstract mathjax_process">We define multivariate polynomials over arbitrary (ordered) semirings in
+      </p>
+      <p class="date">August 10, 2010</p>
+  </div>
+</header>
+      <div>
+        
+  <main>
+    <h3>Abstract</h3>
+
+    <div class="abstract mathjax_process">We define multivariate polynomials over arbitrary (ordered) semirings in
 combination with (executable) operations like addition, multiplication,
 and substitution. We also define (weak) monotonicity of polynomials and
 comparison of polynomials where we provide standard estimations like
@@ -116,134 +160,260 @@ formalized, including the substitution and evaluation homomorphisms, embeddings 
 into larger rings (i.e. with one additional indeterminate), homogenization and dehomogenization of
 polynomials, and the canonical isomorphism between R[X,Y] and R[X][Y].</div>
 
-  <h3>License</h3>
-  <div><a href="https://isa-afp.org/LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a></div><h3>History</h3>
-  <dl><dt>April 18, 2019</dt>
-    <dd>Added material about polynomials whose power-products are represented themselves
-by polynomial mappings.</dd><dt>January 23, 2018</dt>
-    <dd>Added authors Haftmann, Lochbihler after incorporating
+    <h3>License</h3>
+    <div>
+        <a href="https://isa-afp.org/LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a>
+    </div>
+      <h3>History</h3>
+      <dl>
+        <dt>April 18, 2019</dt>
+        <dd>Added material about polynomials whose power-products are represented themselves
+by polynomial mappings.</dd>
+        <dt>January 23, 2018</dt>
+        <dd>Added authors Haftmann, Lochbihler after incorporating
 their formalization of multivariate polynomials based on Polynomial mappings.
 Moved material from Bentkamp's entry "Deep Learning".<br>
-</dd><dt>October 28, 2016</dt>
-    <dd>Added abstract representation of polynomials and authors Maletzky/Immler.<br></dd><dt>September 17, 2010</dt>
-    <dd>Moved theories on arbitrary (ordered) semirings to Abstract Rewriting.<br></dd></dl><h3>Topics</h3>
-  <ul><li><a href="../topics/mathematics/analysis">Mathematics/Analysis</a></li><li><a href="../topics/mathematics/algebra">Mathematics/Algebra</a></li><li><a href="../topics/computer-science/algorithms/mathematical">Computer science/Algorithms/Mathematical</a></li></ul>
-  <h3>Session Polynomials</h3>
-  <ul>
-    <li><a href="../theories/polynomials/#Utils">Utils</a></li>
-    <li><a href="../theories/polynomials/#MPoly_Type">MPoly_Type</a></li>
-    <li><a href="../theories/polynomials/#More_MPoly_Type">More_MPoly_Type</a></li>
-    <li><a href="../theories/polynomials/#Power_Products">Power_Products</a></li>
-    <li><a href="../theories/polynomials/#More_Modules">More_Modules</a></li>
-    <li><a href="../theories/polynomials/#MPoly_Type_Class">MPoly_Type_Class</a></li>
-    <li><a href="../theories/polynomials/#MPoly_Type_Class_Ordered">MPoly_Type_Class_Ordered</a></li>
-    <li><a href="../theories/polynomials/#Poly_Mapping_Finite_Map">Poly_Mapping_Finite_Map</a></li>
-    <li><a href="../theories/polynomials/#MPoly_Type_Class_FMap">MPoly_Type_Class_FMap</a></li>
-    <li><a href="../theories/polynomials/#PP_Type">PP_Type</a></li>
-    <li><a href="../theories/polynomials/#OAlist">OAlist</a></li>
-    <li><a href="../theories/polynomials/#OAlist_Poly_Mapping">OAlist_Poly_Mapping</a></li>
-    <li><a href="../theories/polynomials/#Term_Order">Term_Order</a></li>
-    <li><a href="../theories/polynomials/#MPoly_Type_Class_OAlist">MPoly_Type_Class_OAlist</a></li>
-    <li><a href="../theories/polynomials/#Quasi_PM_Power_Products">Quasi_PM_Power_Products</a></li>
-    <li><a href="../theories/polynomials/#MPoly_PM">MPoly_PM</a></li>
-    <li><a href="../theories/polynomials/#MPoly_Type_Univariate">MPoly_Type_Univariate</a></li>
-    <li><a href="../theories/polynomials/#Polynomials">Polynomials</a></li>
-    <li><a href="../theories/polynomials/#Show_Polynomials">Show_Polynomials</a></li>
-    <li><a href="../theories/polynomials/#NZM">NZM</a></li></ul><div class="flex-wrap">
-  <div>
-    <h3>Depends on</h3>
-    <ul class="horizontal-list"><li><a href="../entries/Abstract-Rewriting.html">Abstract Rewriting</a></li><li><a href="../entries/Matrix.html">Executable Matrix Operations on Matrices of Arbitrary Dimensions</a></li><li><a href="../entries/Show.html">Haskell&rsquo;s Show Class in Isabelle/HOL</a></li><li><a href="../entries/Well_Quasi_Orders.html">Well-Quasi-Orders</a></li></ul>
-  </div><div>
-    <h3>Used by</h3>
-    <ul class="horizontal-list"><li><a href="../entries/Factor_Algebraic_Polynomial.html">Factorization of Polynomials with Algebraic Coefficients</a></li><li><a href="../entries/Virtual_Substitution.html">Verified Quadratic Virtual Substitution for Real Arithmetic</a></li><li><a href="../entries/PAC_Checker.html">Practical Algebraic Calculus Checker</a></li><li><a href="../entries/Symmetric_Polynomials.html">Symmetric Polynomials</a></li><li><a href="../entries/Lambda_Free_KBOs.html">Formalization of Knuth–Bendix Orders for Lambda-Free Higher-Order Terms</a></li><li><a href="../entries/Deep_Learning.html">Expressiveness of Deep Learning</a></li><li><a href="../entries/Groebner_Bases.html">Gröbner Bases Theory</a></li></ul>
-  </div>
-  
-  </div>
-</main>
+</dd>
+        <dt>October 28, 2016</dt>
+        <dd>Added abstract representation of polynomials and authors Maletzky/Immler.<br></dd>
+        <dt>September 17, 2010</dt>
+        <dd>Moved theories on arbitrary (ordered) semirings to Abstract Rewriting.<br></dd>
+      </dl>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/mathematics/analysis">Mathematics/Analysis</a></li>
+          <li><a href="../topics/mathematics/algebra">Mathematics/Algebra</a></li>
+          <li><a href="../topics/computer-science/algorithms/mathematical">Computer science/Algorithms/Mathematical</a></li>
+      </ul>
+      <h3>Session Polynomials</h3>
+      <ul>
+          <li><a href="../sessions/polynomials/#Utils">Utils</a></li>
+          <li><a href="../sessions/polynomials/#MPoly_Type">MPoly_Type</a></li>
+          <li><a href="../sessions/polynomials/#More_MPoly_Type">More_MPoly_Type</a></li>
+          <li><a href="../sessions/polynomials/#Power_Products">Power_Products</a></li>
+          <li><a href="../sessions/polynomials/#More_Modules">More_Modules</a></li>
+          <li><a href="../sessions/polynomials/#MPoly_Type_Class">MPoly_Type_Class</a></li>
+          <li><a href="../sessions/polynomials/#MPoly_Type_Class_Ordered">MPoly_Type_Class_Ordered</a></li>
+          <li><a href="../sessions/polynomials/#Poly_Mapping_Finite_Map">Poly_Mapping_Finite_Map</a></li>
+          <li><a href="../sessions/polynomials/#MPoly_Type_Class_FMap">MPoly_Type_Class_FMap</a></li>
+          <li><a href="../sessions/polynomials/#PP_Type">PP_Type</a></li>
+          <li><a href="../sessions/polynomials/#OAlist">OAlist</a></li>
+          <li><a href="../sessions/polynomials/#OAlist_Poly_Mapping">OAlist_Poly_Mapping</a></li>
+          <li><a href="../sessions/polynomials/#Term_Order">Term_Order</a></li>
+          <li><a href="../sessions/polynomials/#MPoly_Type_Class_OAlist">MPoly_Type_Class_OAlist</a></li>
+          <li><a href="../sessions/polynomials/#Quasi_PM_Power_Products">Quasi_PM_Power_Products</a></li>
+          <li><a href="../sessions/polynomials/#MPoly_PM">MPoly_PM</a></li>
+          <li><a href="../sessions/polynomials/#MPoly_Type_Univariate">MPoly_Type_Univariate</a></li>
+          <li><a href="../sessions/polynomials/#Polynomials">Polynomials</a></li>
+          <li><a href="../sessions/polynomials/#Show_Polynomials">Show_Polynomials</a></li>
+          <li><a href="../sessions/polynomials/#NZM">NZM</a></li>
+      </ul>
 
-<nav class='links'>
-  <a class='popup-button' href="#cite-popup">Cite</a>
-  <a class='popup-button' href="#download-popup">Download</a>
-  <h4>PDFs</h4>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Polynomials/outline.pdf">Proof
-    outline</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Polynomials/document.pdf">Proof
-    document</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Polynomials/session_graph.pdf">Dependencies</a></nav>
+    <div class="flex-wrap">
+      <div>
+        <h3>Depends on</h3>
+        <ul class="horizontal-list">
+              <li><a href="../entries/Abstract-Rewriting.html">Abstract Rewriting</a></li>
+              <li><a href="../entries/Matrix.html">Executable Matrix Operations on Matrices of Arbitrary Dimensions</a></li>
+              <li><a href="../entries/Show.html">Haskell&rsquo;s Show Class in Isabelle/HOL</a></li>
+              <li><a href="../entries/Well_Quasi_Orders.html">Well-Quasi-Orders</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Used by</h3>
+        <ul class="horizontal-list">
+            <li>
+              <a href="../entries/Factor_Algebraic_Polynomial.html">Factorization of Polynomials with Algebraic Coefficients</a>
+            </li>
+            <li>
+              <a href="../entries/Virtual_Substitution.html">Verified Quadratic Virtual Substitution for Real Arithmetic</a>
+            </li>
+            <li>
+              <a href="../entries/PAC_Checker.html">Practical Algebraic Calculus Checker</a>
+            </li>
+            <li>
+              <a href="../entries/Symmetric_Polynomials.html">Symmetric Polynomials</a>
+            </li>
+            <li>
+              <a href="../entries/Lambda_Free_KBOs.html">Formalization of Knuth–Bendix Orders for Lambda-Free Higher-Order Terms</a>
+            </li>
+            <li>
+              <a href="../entries/Deep_Learning.html">Expressiveness of Deep Learning</a>
+            </li>
+            <li>
+              <a href="../entries/Groebner_Bases.html">Gröbner Bases Theory</a>
+            </li>
+        </ul>
+      </div>
+      </div>
+    
+  </main>
 
-<div id="cite-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Cite</h2>
-    <a class="close" href="#">&times;</a>
-    <div>
-      <p style="display:none;" id="bibtex-filename">Polynomials-AFP</p><pre id="copy-text">@article{Polynomials-AFP,
+  <nav class='links'>
+    <a class='popup-button' href="#cite-popup">Cite</a>
+    <a class='popup-button' href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Polynomials/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Polynomials/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Polynomials/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Polynomials-AFP</p>
+        <pre id="copy-text">@article{Polynomials-AFP,
   author  = {Christian Sternagel and René Thiemann and Alexander Maletzky and Fabian Immler and Florian Haftmann and Andreas Lochbihler and Alexander Bentkamp},
   title   = {Executable Multivariate Polynomials},
   journal = {Archive of Formal Proofs},
   month   = {August},
   year    = {2010},
   note    = {\url{https://isa-afp.org/entries/Polynomials.html},
-            Formal proof development},
+             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
     </div>
   </div>
-</div>
 
-<div id="download-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Download</h2>
-    <a class="close" href="#">&times;</a>
-    <a href="https://www.isa-afp.org/release//afp-Polynomials-current.tar.gz" download>Download latest</a>
-    <p>Older releases:</p>
-    <ul><li>
-        <a href="https://www.isa-afp.org/release/afp-Polynomials-2023-09-13.tar.gz">Sep 13, 2023</a>: Isabelle2023
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Polynomials-2022-10-27.tar.gz">Oct 27, 2022</a>: Isabelle2022
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Polynomials-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021-1
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Polynomials-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Polynomials-2020-04-20.tar.gz">Apr 20, 2020</a>: Isabelle2020
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Polynomials-2020-01-14.tar.gz">Jan 14, 2020</a>: Isabelle2019
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Polynomials-2019-06-11.tar.gz">Jun 11, 2019</a>: Isabelle2019
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Polynomials-2018-08-16.tar.gz">Aug 16, 2018</a>: Isabelle2018
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Polynomials-2017-10-10.tar.gz">Oct 10, 2017</a>: Isabelle2017
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Polynomials-2016-12-17.tar.gz">Dec 17, 2016</a>: Isabelle2016-1
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Polynomials-2016-02-22.tar.gz">Feb 22, 2016</a>: Isabelle2016
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Polynomials-2015-05-27.tar.gz">May 27, 2015</a>: Isabelle2015
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Polynomials-2014-08-28.tar.gz">Aug 28, 2014</a>: Isabelle2014
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Polynomials-2013-12-11.tar.gz">Dec 11, 2013</a>: Isabelle2013-2
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Polynomials-2013-11-17.tar.gz">Nov 17, 2013</a>: Isabelle2013-1
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Polynomials-2013-02-16.tar.gz">Feb 16, 2013</a>: Isabelle2013
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Polynomials-2012-05-24.tar.gz">May 24, 2012</a>: Isabelle2012
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Polynomials-2011-10-11.tar.gz">Oct 11, 2011</a>: Isabelle2011-1
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Polynomials-2011-02-11.tar.gz">Feb 11, 2011</a>: Isabelle2011
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Polynomials-2010-08-11.tar.gz">Aug 11, 2010</a>: Isabelle2009-2
-      </li></ul>
-  </div>
-</div>
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-Polynomials-current.tar.gz"
+         download>Download latest</a>
+        <p>Older releases:</p>
+        <ul>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Polynomials-2023-09-13.tar.gz">
+                Sep 13, 2023
+              </a>
+              : Isabelle2023
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Polynomials-2022-10-27.tar.gz">
+                Oct 27, 2022
+              </a>
+              : Isabelle2022
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Polynomials-2021-12-14.tar.gz">
+                Dec 14, 2021
+              </a>
+              : Isabelle2021-1
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Polynomials-2021-02-23.tar.gz">
+                Feb 23, 2021
+              </a>
+              : Isabelle2021
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Polynomials-2020-04-20.tar.gz">
+                Apr 20, 2020
+              </a>
+              : Isabelle2020
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Polynomials-2020-01-14.tar.gz">
+                Jan 14, 2020
+              </a>
+              : Isabelle2019
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Polynomials-2019-06-11.tar.gz">
+                Jun 11, 2019
+              </a>
+              : Isabelle2019
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Polynomials-2018-08-16.tar.gz">
+                Aug 16, 2018
+              </a>
+              : Isabelle2018
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Polynomials-2017-10-10.tar.gz">
+                Oct 10, 2017
+              </a>
+              : Isabelle2017
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Polynomials-2016-12-17.tar.gz">
+                Dec 17, 2016
+              </a>
+              : Isabelle2016-1
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Polynomials-2016-02-22.tar.gz">
+                Feb 22, 2016
+              </a>
+              : Isabelle2016
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Polynomials-2015-05-27.tar.gz">
+                May 27, 2015
+              </a>
+              : Isabelle2015
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Polynomials-2014-08-28.tar.gz">
+                Aug 28, 2014
+              </a>
+              : Isabelle2014
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Polynomials-2013-12-11.tar.gz">
+                Dec 11, 2013
+              </a>
+              : Isabelle2013-2
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Polynomials-2013-11-17.tar.gz">
+                Nov 17, 2013
+              </a>
+              : Isabelle2013-1
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Polynomials-2013-02-16.tar.gz">
+                Feb 16, 2013
+              </a>
+              : Isabelle2013
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Polynomials-2012-05-24.tar.gz">
+                May 24, 2012
+              </a>
+              : Isabelle2012
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Polynomials-2011-10-11.tar.gz">
+                Oct 11, 2011
+              </a>
+              : Isabelle2011-1
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Polynomials-2011-02-11.tar.gz">
+                Feb 11, 2011
+              </a>
+              : Isabelle2011
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Polynomials-2010-08-11.tar.gz">
+                Aug 11, 2010
+              </a>
+              : Isabelle2009-2
+            </li>
+        </ul>
     </div>
   </div>
-</body>
-
+        
+      </div>
+    </div>
+  </body>
 </html>

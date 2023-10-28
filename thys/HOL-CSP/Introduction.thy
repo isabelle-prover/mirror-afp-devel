@@ -286,10 +286,12 @@ text\<open>
    Each CSP operator is described in an own theory which comprises:
    \<^item> The denotational core definition in terms of a pair of Failures and Divergences
    \<^item> The establishment of  \<^verbatim>\<open>is_process\<close> for the  Failures and Divergences in the
-     range of the given operator (thus, the invariance of  \<^verbatim>\<open>is_process\<close> for this operator)
+     range of the given operator (thus, the invariance of  \<^verbatim>\<open>is_process\<close> for this operator).
+     In this new version, the proof is required immediatly after the definition of the
+     operator since we use lift\_definition instead of definition
    \<^item> The proof of the projections \<^verbatim>\<open>T\<close> and  \<^verbatim>\<open>F\<close> and \<^verbatim>\<open>D\<close> for this operator
    \<^item> The proof of continuity of the operator (which is always possible except for
-     hide if applied to infinite hide-sets).\<close>
+     Hiding if applied to infinite hide-sets).\<close>
 
 text\<open>
    Finally, the theory CSP contains the "Laws" of CSP, i.e. the derived rules 

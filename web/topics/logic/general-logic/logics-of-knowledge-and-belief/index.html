@@ -1,131 +1,184 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Logic/General logic/Logics of knowledge and belief - Archive of Formal Proofs</title><meta name="description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."><link rel="alternate" type="application/rss+xml" href="../../../../topics/logic/general-logic/logics-of-knowledge-and-belief/index.xml" title="Archive of Formal Proofs" /><meta property="og:title" content="Logic/General logic/Logics of knowledge and belief" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Logic/General logic/Logics of knowledge and belief - Archive of Formal Proofs</title>
+    <meta name="description" content="A collection of proof libraries, examples, and larger
+     scientific developments, mechanically checked in the theorem prover Isabelle.">
+  <link rel="alternate" type="application/rss+xml" href="../../../../topics/logic/general-logic/logics-of-knowledge-and-belief/index.xml" title="Archive of Formal Proofs" />
+
+  <meta property="og:title" content="Logic/General logic/Logics of knowledge and belief" />
 <meta property="og:description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="/topics/logic/general-logic/logics-of-knowledge-and-belief/" /><meta property="og:image" content="/images/afp.png"/><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="Logic/General logic/Logics of knowledge and belief"/>
 <meta name="twitter:description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."/>
 
-  
   <link rel="stylesheet" type="text/css" href="../../../../css/front.min.css">
 
-  <link rel="icon" href="../../../../images/favicon.ico" type="image/icon"><script src="../../../../js/obfuscate.js"></script>
+  <link rel="icon" href="../../../../images/favicon.ico" type="image/icon">
+
+  <script src="../../../../js/obfuscate.js"></script>
   <script src="../../../../js/flexsearch.bundle.js"></script>
   <script src="../../../../js/scroll-spy.js"></script>
   <script src="../../../../js/theory.js"></script>
-  <script src="../../../../js/util.js"></script><script src="../../../../js/header-search.js"></script><script src="../../../../js/search-autocomplete.js"></script>
+  <script src="../../../../js/util.js"></script>
+    <script src="../../../../js/header-search.js"></script>
+  <script src="../../../../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../../../../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../../../../" class='logo-link'>
-    <img src="../../../../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../../../../" class="logo-link">
+    <img src="../../../../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../../../../search"><img src="../../../../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../../../../" class='logo-link'>
-        <img src="../../../../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../../../../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../../../../"><li >Home</li></a>
-        <a href="../../../../topics/"><li >Topics</li></a>
-        <a href="../../../../download/"><li >Download</li></a>
-        <a href="../../../../help/"><li >Help</li></a>
-        <a href="../../../../submission/"><li >Submission</li></a>
-        <a href="../../../../statistics/"><li >Statistics</li></a>
-        <a href="../../../../about/"><li >About</li></a>
+          <a href="../../../../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../../../../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../../../../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../../../../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../../../../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../../../../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../../../../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content '><header>
-  <form autocomplete="off" action="../../../../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../../../../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>L</span>ogic/<span class='first'>G</span>eneral <span class='first'>L</span>ogic/<span class='first'>L</span>ogics of <span class='first'>K</span>nowledge and <span class='first'>B</span>elief</h1>
+    </aside>
+    <div class='content'>
+      <header>
+    <form autocomplete="off" action="../../../../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../../../../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>L</span>ogic/<span class='first'>G</span>eneral logic/<span class='first'>L</span>ogics of knowledge and belief
+    
+  </h1>
   <div>
-    
-    
   </div>
-</header><div><h2>Subject Classification</h2><p>ACM: <a href="https://dl.acm.org/topic/ccs2012/10010147.10010178.10010187.10010198">Computing methodologies~Reasoning about belief and knowledge</a></p><p>AMS: <a href="https://mathscinet.ams.org/mathscinet/msc/msc2020.html?t=03B42">Mathematical logic and foundations / General logic / Logics of knowledge and belief (including belief change)</a></p><h2 class="head">2022</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Stalnaker_Logic.html">Stalnaker&#39;s Epistemic Logic</a></h5> <br>by <a href="../../../../authors/guzman">Laura P. Gamboa Guzman</a></div>
-  <span class="date">
-    Sep 23
-  </span>
-</article>
+</header>
+      <div>
+        
+    <h2>Subject Classification</h2>
+      <p>ACM: <a href="https://dl.acm.org/topic/ccs2012/10010147.10010178.10010187.10010198">Computing methodologies~Reasoning about belief and knowledge</a></p>
+      <p>AMS: <a href="https://mathscinet.ams.org/mathscinet/msc/msc2020.html?t=03B42">Mathematical logic and foundations / General logic / Logics of knowledge and belief (including belief change)</a></p>
+    <h2 class="head">2022</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Stalnaker_Logic.html">Stalnaker&#39;s Epistemic Logic</a></h5>
+          <br>
+            by <a href="../../../../authors/guzman">Laura P. Gamboa Guzman</a>
 
+        </div>
+        <span class="date">Sep 23</span>
+      </article>
+    <h2 class="head">2021</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/PAL.html">Automating Public Announcement Logic and the Wise Men Puzzle in Isabelle/HOL</a></h5>
+          <br>
+            by <a href="../../../../authors/benzmueller">Christoph Benzmüller</a> and <a href="../../../../authors/reiche">Sebastian Reiche</a>
 
-<h2 class="head">2021</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/PAL.html">Automating Public Announcement Logic and the Wise Men Puzzle in Isabelle/HOL</a></h5> <br>by <a href="../../../../authors/benzmueller">Christoph Benzmüller</a> and <a href="../../../../authors/reiche">Sebastian Reiche</a></div>
-  <span class="date">
-    Nov 08
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Belief_Revision.html">Belief Revision Theory</a></h5> <br>by <a href="../../../../authors/fouillard">Valentin Fouillard</a>, <a href="../../../../authors/taha">Safouan Taha</a>, <a href="../../../../authors/boulanger">Frédéric Boulanger</a> and <a href="../../../../authors/sabouret">Nicolas Sabouret</a></div>
-  <span class="date">
-    Oct 19
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Public_Announcement_Logic.html">Public Announcement Logic</a></h5> <br>by <a href="../../../../authors/from">Asta Halkjær From</a></div>
-  <span class="date">
-    Jun 17
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Blue_Eyes.html">Solution to the xkcd Blue Eyes puzzle</a></h5> <br>by <a href="../../../../authors/kadzioka">Maya Kądziołka</a></div>
-  <span class="date">
-    Jan 30
-  </span>
-</article>
+        </div>
+        <span class="date">Nov 08</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Belief_Revision.html">Belief Revision Theory</a></h5>
+          <br>
+            by <a href="../../../../authors/fouillard">Valentin Fouillard</a>, <a href="../../../../authors/taha">Safouan Taha</a>, <a href="../../../../authors/boulanger">Frédéric Boulanger</a> and <a href="../../../../authors/sabouret">Nicolas Sabouret</a>
 
+        </div>
+        <span class="date">Oct 19</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Public_Announcement_Logic.html">Public Announcement Logic</a></h5>
+          <br>
+            by <a href="../../../../authors/from">Asta Halkjær From</a>
 
-<h2 class="head">2018</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../../entries/Epistemic_Logic.html">Epistemic Logic: Completeness of Modal Logics</a></h5> <br>by <a href="../../../../authors/from">Asta Halkjær From</a></div>
-  <span class="date">
-    Oct 29
-  </span>
-</article>
+        </div>
+        <span class="date">Jun 17</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Blue_Eyes.html">Solution to the xkcd Blue Eyes puzzle</a></h5>
+          <br>
+            by <a href="../../../../authors/kadzioka">Maya Kądziołka</a>
 
+        </div>
+        <span class="date">Jan 30</span>
+      </article>
+    <h2 class="head">2018</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../../entries/Epistemic_Logic.html">Epistemic Logic: Completeness of Modal Logics</a></h5>
+          <br>
+            by <a href="../../../../authors/from">Asta Halkjær From</a>
 
-
-
+        </div>
+        <span class="date">Oct 29</span>
+      </article>
+        
+      </div>
     </div>
-  </div>
-</body>
-
+  </body>
 </html>

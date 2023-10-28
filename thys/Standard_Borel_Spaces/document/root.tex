@@ -1,0 +1,78 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+\usepackage{amsmath}
+\usepackage{mathrsfs}
+\usepackage{mathpartir}
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+\usepackage[only,bigsqcap]{stmaryrd}
+%for \<Sqinter>
+
+%% For Japanese languages in reference.
+\usepackage{luatexja}
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Standard Borel Spaces}
+\author{Michikazu Hirata}
+\maketitle
+\begin{abstract}
+  This entry includes a formalization of standard Borel spaces
+  and (a variant of) the Borel isomorphism theorem.
+  A separable complete metrizable topological space is called a polish space
+  and a measurable space generated from a polish space is called a standard Borel space.
+  We formalize the notion of standard Borel spaces by establishing
+  set-based metric spaces,
+  and then prove (a variant of) the Borel isomorphism theorem.
+  The theorem states that a standard Borel spaces is either a countable discrete space
+  or isomorphic to $\mathbb{R}$.
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

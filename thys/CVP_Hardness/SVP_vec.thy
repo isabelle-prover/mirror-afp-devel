@@ -152,8 +152,9 @@ case (1 z)
     ultimately show ?thesis by auto
   qed
   ultimately have "z$i =  0" if "i < dim_vec z" for i using that suc_dim_a_dim_z
-    by (metis discrete le_eq_less_or_eq verit_comp_simplify1(3))
-  then show ?case by auto
+    by (cases \<open>dim_vec a = i\<close>) simp_all
+  then show ?case
+    by auto
 qed
 
 
@@ -503,12 +504,12 @@ next
     moreover have "dim_vec x = dim_vec a" unfolding x_def by auto
     moreover have "x \<noteq> 0\<^sub>v (dim_vec x)" 
     proof -
-      have "\<exists>i< dim_vec a + 1. v$i \<noteq> 0" using 1 unfolding gen_lattice_def gen_svp_basis_def by auto
-      then have "\<exists>i< dim_vec a. v$i \<noteq> 0" using v_last_zero
-        by (metis add_le_cancel_right discrete nat_less_le)
-      then obtain i where "i<dim_vec a" "v$i\<noteq>0" by blast
-      then have "z$i \<noteq> 0" using v_real_z z_def 
-        by (auto)
+      have "\<exists>i\<le>dim_vec a. v$i \<noteq> 0" using 1 unfolding gen_lattice_def gen_svp_basis_def by auto
+      then obtain i where \<open>i \<le> dim_vec a\<close> \<open>v $ i \<noteq> 0\<close> by blast
+      then have \<open>dim_vec a \<noteq> i\<close> using v_last_zero by auto
+      with \<open>i \<le> dim_vec a\<close> have \<open>i < dim_vec a\<close> by simp
+      with \<open>v $ i \<noteq> 0\<close> have "z $ i \<noteq> 0" using v_real_z z_def 
+        by auto
       then have "\<exists>i< dim_vec a. x$i \<noteq> 0" using x_def \<open>i<dim_vec a\<close> by auto
       then show ?thesis using x_def by auto
     qed

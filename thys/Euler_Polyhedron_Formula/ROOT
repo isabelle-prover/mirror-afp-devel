@@ -1,0 +1,10 @@
+chapter AFP
+
+session Euler_Polyhedron_Formula (AFP) = "HOL-Analysis" +
+  options [timeout = 300]
+  theories
+    Euler_Formula
+  document_files
+    "root.tex"
+    "root.bib"
+

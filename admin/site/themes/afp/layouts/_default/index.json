@@ -1,26 +1,26 @@
-{{ with $.Scratch.Get "index" }}
-	{{-  jsonify (dict "indent" " ") . -}}
-{{ else }}
-	{{- $.Scratch.Add "index" slice -}}
-	{{- range $index, $element := where .Site.RegularPages "Type" "eq" "entries" -}}
-        {{- $authors := slice -}}
-        {{- $data := .Site.Data -}}
-        {{- range $element.Params.authors -}}
-          {{- $authors = $authors | append (index (index $data.authors .) "name") -}}
-        {{- end -}}
-		{{- $.Scratch.Add "index" (dict
-          "id" $index
-          "title" $element.Title
-          "abstract" (replaceRE "\n" " " $element.Params.abstract)
-          "topics" $element.Params.topics
-          "topic_links" (apply $element.Params.topics "urlize" ".")
-          "permalink" $element.Permalink
-          "date" (.Date.Format "2006-01-02")
-          "authors" $authors
-          "used_by" (len (index .Site.Taxonomies.dependencies (urlize $element.File.BaseFileName)))
-          "shortname" $element.File.BaseFileName
-          "link" $element.RelPermalink)
-        -}}
-	{{- end -}}
-	{{- $.Scratch.Get "index" | jsonify (dict "indent" " ") -}}
-{{ end }}
+{{- with $.Scratch.Get "index" }}
+  {{-  jsonify (dict "indent" " ") . }}
+{{- else }}
+  {{- $.Scratch.Add "index" slice }}
+  {{- range $index, $element := where .Site.RegularPages "Type" "eq" "entries" }}
+    {{- $authors := slice }}
+    {{- $data := .Site.Data }}
+    {{- range $element.Params.authors }}
+      {{- $authors = $authors | append (index (index $data.authors .) "name") }}
+    {{- end }}
+    {{- $.Scratch.Add "index" (dict
+      "id" $index
+      "title" $element.Title
+      "abstract" (replaceRE "\n" " " $element.Params.abstract)
+      "topics" $element.Params.topics
+      "topic_links" (apply $element.Params.topics "urlize" ".")
+      "permalink" $element.Permalink
+      "date" (.Date.Format "2006-01-02")
+      "authors" $authors
+      "used_by" (len (index .Site.Taxonomies.dependencies (urlize $element.File.BaseFileName)))
+      "shortname" $element.File.BaseFileName
+      "link" $element.RelPermalink)
+    }}
+  {{- end }}
+  {{- $.Scratch.Get "index" | jsonify (dict "indent" " ") }}
+{{- end }}

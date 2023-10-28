@@ -1,0 +1,39 @@
+\documentclass[11pt,a4paper]{report}
+\usepackage[T1]{fontenc}
+\usepackage{amssymb}
+\usepackage{isabelle,isabellesym}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{Transport via Partial Galois Connections and Equivalences}
+\author{Kevin Kappelmann}
+\maketitle
+
+\begin{abstract}
+This entry contains the accompanying formalisation of the paper
+``Transport via Partial Galois Connections and Equivalences'' (APLAS 2023)~\cite{transport}.
+It contains a theoretical framework to transport programs via equivalences,
+subsuming the theory of Isabelle's Lifting package~\cite{lifting}.
+It also contains a prototype to automate transports using this framework in Isabelle/HOL,\@
+but this prototype is not yet ready for production.
+Finally, it contains a library on top of Isabelle/HOL's axioms,
+including various relativised concepts on orders, functions, binary relations,
+and Galois connections and equivalences.
+\end{abstract}
+
+\tableofcontents
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

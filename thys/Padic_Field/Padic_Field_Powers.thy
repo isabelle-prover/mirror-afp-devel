@@ -8736,11 +8736,9 @@ proof-
             using True False twisting_permutation_def by force
         qed
       next
-        case F: False
-        then show ?thesis using False
-          unfolding twisting_permutation_def
-          by (metis  add_leD1 add_leD2 add_le_same_cancel2 discrete le_numeral_extra(3)
-              less_imp_not_less )
+        case False
+        then show ?thesis
+          by (auto simp add: twisting_permutation_def)
       qed
     qed
   qed
@@ -9960,19 +9958,17 @@ proof-
     by blast
   have 11: "l \<ge> 0"
     using 10 by (simp add: l_def)
-  have 1: "(l + d) mod n = 0"
-    by (metis add_eq_0_iff equation_minus_iff l_def mod_0 mod_add_cong mod_minus_eq zmod_int)
-  then obtain m::int where m_def: "(l + int d) = m * int n"
-    using d_def l_def
-    by (metis mult_of_nat_commute zmod_eq_0D)
+  have 1: "int n dvd l + int d"
+    by (simp add: l_def ac_simps mod_0_imp_dvd mod_add_right_eq)
+  then obtain m::int where m_def: "l + int d = int n * m" ..
   with 10 have \<open>m = (l + d) div n\<close>
     by simp
   with 10 11 have 2: "m \<ge> 0"
     by (simp add: div_int_pos_iff)
-  obtain N where N_def: "N = m*n"
+  obtain N where N_def: "N = m * n"
     by blast
   from 11 have 3: "N \<ge> d"
-    by (simp add: N_def flip: m_def)
+    using m_def by (simp add: N_def ac_simps)
   have 4: "deg (coord_ring Q\<^sub>p k) (to_univ_poly (Suc k) 0 P) \<le> nat N"
     using d_def N_def 3
     by linarith
@@ -10088,12 +10084,7 @@ proof-
               using "0" by blast
           qed
           have 53: "x [^] N = x [^] (nat N)"
-          proof-
-            from 11 m_def N_def [symmetric] have "N \<ge> 0"
-              by simp
-            then show ?thesis
-               by (metis pow_nat)
-          qed
+            using 11 m_def N_def by (simp add: ac_simps)
           then show ?thesis
             using 50 52
             by presburger

@@ -14,50 +14,12 @@ import java.time.{Instant, ZoneId}
 import java.time.format.DateTimeFormatter
 import java.util.{Map => JMap, Properties => JProperties}
 
-import javax.mail.internet.{InternetAddress, MimeMessage}
-import javax.mail.{Authenticator, Message, MessagingException, PasswordAuthentication, Transport, Session => JSession}
-
 
 object AFP_Build {
   /* mailing */
 
-  case class Mail(subject: String, recipients: List[String], text: String) {
-    def send(): Unit = {
-      val user = System.getProperty("mail.smtp.user")
-      val sender = System.getProperty("mail.smtp.from")
-      val password = System.getProperty("mail.smtp.password")
 
-      System.setProperty("mail.smtp.ssl.protocols", "TLSv1.2")
-
-      val authenticator = new Authenticator() {
-        override def getPasswordAuthentication =
-          new PasswordAuthentication(user, password)
-      }
-
-      val session = JSession.getDefaultInstance(System.getProperties, authenticator)
-      val message = new MimeMessage(session)
-      message.setFrom(new InternetAddress("ci@isabelle.systems", "Isabelle/Jenkins"))
-      message.setSender(new InternetAddress(sender))
-      message.setSubject(subject)
-      message.setText(text, "UTF-8")
-      message.setSentDate(new java.util.Date())
-
-      recipients.foreach { recipient =>
-        message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient))
-      }
-
-      try {
-        Transport.send(message)
-      } catch {
-        case ex: MessagingException => println(s"Sending mail failed: ${ex.getMessage}")
-      }
-    }
-  }
-
-  object Mail {
-    def apply(subject: String, recipients: List[String], text: String) =
-      new Mail(subject, recipients, text)
-
+  object Mailer {
     def failed_subject(name: Entry.Name): String = s"Build of AFP entry $name failed"
 
     def failed_text(session_name: String, entry: Entry.Name, isabelle_id: String,
@@ -92,8 +54,11 @@ ${result.err_lines.takeRight(50).mkString("\n")}
 
   /* metadata tooling */
 
-  case class Metadata_Tools private(structure: AFP_Structure, entries: Map[Entry.Name, Entry]) {
-
+  class Metadata_Tools private(
+    val structure: AFP_Structure,
+    val server: Mail.Server,
+    val entries: Map[Entry.Name, Entry]
+  ) {
     def maintainers(name: Entry.Name): List[Email] = {
       entries.get(name) match {
         case None => Nil
@@ -115,15 +80,21 @@ ${result.err_lines.takeRight(50).mkString("\n")}
 
     def notify(name: Entry.Name, subject: String, text: String): Boolean = {
       val recipients = entries.get(name).map(_.notifies).getOrElse(Nil)
-      if (recipients.nonEmpty) Mail(subject, recipients.map(_.address), text).send()
+      if (recipients.nonEmpty) {
+        val from = Some(Mail.address("ci@isabelle.systems"))
+        val to = recipients.map(mail => Mail.address(mail.address))
+        val mail = Mail(subject, to, text, from, "Jenkins Admin")
+        server.send(mail)
+      }
       recipients.nonEmpty
     }
   }
 
   object Metadata_Tools {
-    def apply(structure: AFP_Structure, entries: List[Entry]): Metadata_Tools =
-      new Metadata_Tools(structure, entries.map(entry => entry.name -> entry).toMap)
-    def load(afp: AFP_Structure): Metadata_Tools = Metadata_Tools(afp, afp.load())
+    def load(afp: AFP_Structure, options: Options): Metadata_Tools = {
+      val entries = afp.load().map(entry => entry.name -> entry).toMap
+      new Metadata_Tools(afp, CI_Build.mail_server(options), entries)
+    }
   }
 
 
@@ -177,14 +148,14 @@ ${result.err_lines.takeRight(50).mkString("\n")}
         val status_file = Path.explode("$ISABELLE_HOME/status.json").file
         val deps_file = Path.explode("$ISABELLE_HOME/dependencies.json").file
 
-        def pre_hook(): Result = {
+        def pre_hook(options: Options): Result = {
           println(s"AFP id ${ afp.hg_id }")
           if (status_file.exists())
             status_file.delete()
           Result.ok
         }
 
-        def post_hook(results: Build.Results, start_time: Time): Result = {
+        def post_hook(results: Build.Results, options: Options, start_time: Time): Result = {
           print_section("DEPENDENCIES")
           println("Generating dependencies file ...")
           val result = Isabelle_System.bash("isabelle afp_dependencies")
@@ -201,7 +172,7 @@ ${result.err_lines.takeRight(50).mkString("\n")}
             session_groups = List("AFP"),
             exclude_session_groups = List("slow")))
       })
-  
+
   val all =
     Job("all", "builds Isabelle + AFP (without slow)", Profile.from_host,
       {
@@ -213,9 +184,8 @@ ${result.err_lines.takeRight(50).mkString("\n")}
         val report_file = Path.explode("$ISABELLE_HOME/report.html").file
         val deps_file = Path.explode("$ISABELLE_HOME/dependencies.json").file
 
-        def can_send_mails = System.getProperties.containsKey("mail.smtp.host")
 
-        def pre_hook(): Result = {
+        def pre_hook(options: Options): Result = {
           println(s"AFP id ${ afp.hg_id }")
           if (status_file.exists())
             status_file.delete()
@@ -224,15 +194,18 @@ ${result.err_lines.takeRight(50).mkString("\n")}
 
           File.write(report_file, "")
 
-          if (!can_send_mails) {
+          val server = CI_Build.mail_server(options)
+          if (!server.defined) {
             println(s"Mail configuration not found.")
             Result.error
-          } else {
+          }
+          else {
+            server.check()
             Result.ok
           }
         }
 
-        def post_hook(results: Build.Results, start_time: Time): Result = {
+        def post_hook(results: Build.Results, options: Options, start_time: Time): Result = {
           print_section("DEPENDENCIES")
           println("Generating dependencies file ...")
           val result = Isabelle_System.bash("isabelle afp_dependencies")
@@ -240,7 +213,7 @@ ${result.err_lines.takeRight(50).mkString("\n")}
           println("Writing dependencies file ...")
           File.write(deps_file, result.out)
 
-          val metadata = Metadata_Tools.load(afp)
+          val metadata = Metadata_Tools.load(afp, options)
 
           val status = metadata.by_entry(results.sessions.toList).view.mapValues { sessions =>
             Status.merge(sessions.map(Status.from_results(results, _)))
@@ -272,10 +245,10 @@ ${result.err_lines.takeRight(50).mkString("\n")}
             print_section("NOTIFICATIONS")
             for (session_name <- results.sessions) {
               val result = results(session_name)
-              if (!result.ok && !results.cancelled(session_name) && can_send_mails) {
+              if (!result.ok && !results.cancelled(session_name) && metadata.server.defined) {
                 metadata.session_entry(session_name).foreach { entry =>
-                  val subject = Mail.failed_subject(entry)
-                  val text = Mail.failed_text(session_name, entry, isabelle_id, afp.hg_id, result)
+                  val subject = Mailer.failed_subject(entry)
+                  val text = Mailer.failed_text(session_name, entry, isabelle_id, afp.hg_id, result)
                   val notified = metadata.notify(entry, subject, text)
                   if (!notified) println(s"Entry $entry: WARNING no maintainers specified")
                 }
@@ -300,7 +273,7 @@ ${result.err_lines.takeRight(50).mkString("\n")}
       {
         val afp = AFP_Structure()
 
-        def pre_hook(): Result = {
+        def pre_hook(options: Options): Result = {
           println(s"Build for AFP id ${ afp.hg_id }")
           Result.ok
         }
@@ -318,7 +291,7 @@ ${result.err_lines.takeRight(50).mkString("\n")}
       {
         val afp = AFP_Structure()
 
-        def pre_hook(): Result = {
+        def pre_hook(options: Options): Result = {
           println(s"Build for AFP id ${ afp.hg_id }")
           Result.ok
         }
@@ -334,7 +307,7 @@ ${result.err_lines.takeRight(50).mkString("\n")}
         val afp = AFP_Structure()
         val report_file = Path.explode("$ISABELLE_HOME/report.html").file
 
-        def pre_hook(): Result = {
+        def pre_hook(options: Options): Result = {
           println(s"AFP id ${ afp.hg_id }")
           if (report_file.exists())
             report_file.delete()
@@ -343,8 +316,8 @@ ${result.err_lines.takeRight(50).mkString("\n")}
           Result.ok
         }
 
-        def post_hook(results: Build.Results, start_time: Time): Result = {
-          val metadata = Metadata_Tools.load(afp)
+        def post_hook(results: Build.Results, options: Options, start_time: Time): Result = {
+          val metadata = Metadata_Tools.load(afp, options)
 
           val status = metadata.by_entry(results.sessions.toList).view.mapValues { sessions =>
             Status.merge(sessions.map(Status.from_results(results, _)))

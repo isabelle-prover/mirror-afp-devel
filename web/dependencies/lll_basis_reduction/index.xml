@@ -1,47 +1,45 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>LLL_Basis_Reduction on Archive of Formal Proofs</title>
+    <title>LLL_Basis_Reduction on Archive of Formal Proofs
+    </title>
     <link>/dependencies/lll_basis_reduction/</link>
-    <description>Recent content in LLL_Basis_Reduction on Archive of Formal Proofs</description>
+    <description>
+        Recent content in LLL_Basis_Reduction 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Thu, 02 Feb 2023 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/lll_basis_reduction/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Hardness of Lattice Problems</title>
-      <link>/entries/CVP_Hardness.html</link>
-      <pubDate>Thu, 02 Feb 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/CVP_Hardness.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>Two algorithms based on modular arithmetic: lattice basis reduction and Hermite normal form computation</title>
-      <link>/entries/Modular_arithmetic_LLL_and_HNF_algorithms.html</link>
-      <pubDate>Fri, 12 Mar 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Modular_arithmetic_LLL_and_HNF_algorithms.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Linear Inequalities</title>
-      <link>/entries/Linear_Inequalities.html</link>
-      <pubDate>Fri, 21 Jun 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Linear_Inequalities.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A verified factorization algorithm for integer polynomials with polynomial complexity</title>
-      <link>/entries/LLL_Factorization.html</link>
-      <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/LLL_Factorization.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Thu, 02 Feb 2023 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/lll_basis_reduction/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Hardness of Lattice Problems</title>
+          <link>/entries/CVP_Hardness.html</link>
+          <pubDate>Thu, 02 Feb 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/CVP_Hardness.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Two algorithms based on modular arithmetic: lattice basis reduction and Hermite normal form computation</title>
+          <link>/entries/Modular_arithmetic_LLL_and_HNF_algorithms.html</link>
+          <pubDate>Fri, 12 Mar 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Modular_arithmetic_LLL_and_HNF_algorithms.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Linear Inequalities</title>
+          <link>/entries/Linear_Inequalities.html</link>
+          <pubDate>Fri, 21 Jun 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Linear_Inequalities.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A verified factorization algorithm for integer polynomials with polynomial complexity</title>
+          <link>/entries/LLL_Factorization.html</link>
+          <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/LLL_Factorization.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

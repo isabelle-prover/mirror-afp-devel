@@ -1,945 +1,500 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Computer science/Algorithms - Archive of Formal Proofs</title><meta name="description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."><link rel="alternate" type="application/rss+xml" href="../../../topics/computer-science/algorithms/index.xml" title="Archive of Formal Proofs" /><meta property="og:title" content="Computer science/Algorithms" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Computer science/Algorithms - Archive of Formal Proofs</title>
+    <meta name="description" content="A collection of proof libraries, examples, and larger
+     scientific developments, mechanically checked in the theorem prover Isabelle.">
+  <link rel="alternate" type="application/rss+xml" href="../../../topics/computer-science/algorithms/index.xml" title="Archive of Formal Proofs" />
+
+  <meta property="og:title" content="Computer science/Algorithms" />
 <meta property="og:description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="/topics/computer-science/algorithms/" /><meta property="og:image" content="/images/afp.png"/><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="Computer science/Algorithms"/>
 <meta name="twitter:description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."/>
 
-  
   <link rel="stylesheet" type="text/css" href="../../../css/front.min.css">
 
-  <link rel="icon" href="../../../images/favicon.ico" type="image/icon"><script src="../../../js/obfuscate.js"></script>
+  <link rel="icon" href="../../../images/favicon.ico" type="image/icon">
+
+  <script src="../../../js/obfuscate.js"></script>
   <script src="../../../js/flexsearch.bundle.js"></script>
   <script src="../../../js/scroll-spy.js"></script>
   <script src="../../../js/theory.js"></script>
-  <script src="../../../js/util.js"></script><script src="../../../js/header-search.js"></script><script src="../../../js/search-autocomplete.js"></script>
+  <script src="../../../js/util.js"></script>
+    <script src="../../../js/header-search.js"></script>
+  <script src="../../../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../../../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../../../" class='logo-link'>
-    <img src="../../../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../../../" class="logo-link">
+    <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../../../search"><img src="../../../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../../../" class='logo-link'>
-        <img src="../../../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../../../"><li >Home</li></a>
-        <a href="../../../topics/"><li >Topics</li></a>
-        <a href="../../../download/"><li >Download</li></a>
-        <a href="../../../help/"><li >Help</li></a>
-        <a href="../../../submission/"><li >Submission</li></a>
-        <a href="../../../statistics/"><li >Statistics</li></a>
-        <a href="../../../about/"><li >About</li></a>
+          <a href="../../../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../../../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../../../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../../../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../../../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../../../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../../../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content '><header>
-  <form autocomplete="off" action="../../../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../../../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>C</span>omputer <span class='first'>S</span>cience/<span class='first'>A</span>lgorithms</h1>
+    </aside>
+    <div class='content'>
+      <header>
+    <form autocomplete="off" action="../../../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../../../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>C</span>omputer science/<span class='first'>A</span>lgorithms
+    
+  </h1>
   <div>
-    
-    
   </div>
-</header><div><h2>Subject Classification</h2><p>ACM: <a href="https://dl.acm.org/topic/ccs2012/10003752.10003809">Theory of computation~Design and analysis of algorithms</a></p><p>AMS: <a href="https://mathscinet.ams.org/mathscinet/msc/msc2020.html?t=68Wxx">Computer science / Algorithms in computer science</a></p><h2 class="head">2023</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Earley_Parser.html">Earley Parser</a></h5> <br>by <a href="../../../authors/rau">Martin Rau</a></div>
-  <span class="date">
-    Jul 16
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Gray_Codes.html">Gray Codes for Arbitrary Numeral Systems</a></h5> <br>by <a href="../../../authors/spitz">Maximilian Spitz</a></div>
-  <span class="date">
-    Jul 11
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Executable_Randomized_Algorithms.html">Executable Randomized Algorithms</a></h5> <br>by <a href="../../../authors/karayel">Emin Karayel</a> and <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Jun 19
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Efficient_Weighted_Path_Order.html">A Verified Efficient Implementation of the Weighted Path Order</a></h5> <br>by <a href="../../../authors/thiemann">René Thiemann</a> and <a href="../../../authors/wenninger">Elias Wenninger</a></div>
-  <span class="date">
-    Jun 01
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Tree_Enumeration.html">Tree Enumeration</a></h5> <br>by <a href="../../../authors/cremer">Nils Cremer</a></div>
-  <span class="date">
-    May 09
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Schwartz_Zippel.html">The Schwartz-Zippel Lemma</a></h5> <br>by <a href="../../../authors/kim">Sunpill Kim</a> and <a href="../../../authors/tan">Yong Kiam Tan</a></div>
-  <span class="date">
-    Apr 27
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Distributed_Distinct_Elements.html">Distributed Distinct Elements</a></h5> <br>by <a href="../../../authors/karayel">Emin Karayel</a></div>
-  <span class="date">
-    Apr 03
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Distributed_Distinct_Elements.html">Distributed Distinct Elements</a></h5> <br>by <a href="../../../authors/karayel">Emin Karayel</a></div>
-  <span class="date">
-    Apr 03
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Distributed_Distinct_Elements.html">Distributed Distinct Elements</a></h5> <br>by <a href="../../../authors/karayel">Emin Karayel</a></div>
-  <span class="date">
-    Apr 03
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Expander_Graphs.html">Expander Graphs</a></h5> <br>by <a href="../../../authors/karayel">Emin Karayel</a></div>
-  <span class="date">
-    Mar 03
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Expander_Graphs.html">Expander Graphs</a></h5> <br>by <a href="../../../authors/karayel">Emin Karayel</a></div>
-  <span class="date">
-    Mar 03
-  </span>
-</article>
+</header>
+      <div>
+        
+    <h2>Subject Classification</h2>
+      <p>ACM: <a href="https://dl.acm.org/topic/ccs2012/10003752.10003809">Theory of computation~Design and analysis of algorithms</a></p>
+      <p>AMS: <a href="https://mathscinet.ams.org/mathscinet/msc/msc2020.html?t=68Wxx">Computer science / Algorithms in computer science</a></p>
+    <h2 class="head">2023</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Earley_Parser.html">Earley Parser</a></h5>
+          <br>
+            by <a href="../../../authors/rau">Martin Rau</a>
 
+        </div>
+        <span class="date">Jul 16</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Efficient_Weighted_Path_Order.html">A Verified Efficient Implementation of the Weighted Path Order</a></h5>
+          <br>
+            by <a href="../../../authors/thiemann">René Thiemann</a> and <a href="../../../authors/wenninger">Elias Wenninger</a>
 
-<h2 class="head">2022</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Quantifier_Elimination_Hybrid.html">A First Complete Algorithm for Real Quantifier Elimination in Isabelle/HOL</a></h5> <br>by <a href="../../../authors/cordwell">Katherine Kosaian</a>, <a href="../../../authors/tan">Yong Kiam Tan</a> and <a href="../../../authors/platzer">André Platzer</a></div>
-  <span class="date">
-    Dec 15
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Combinatorial_Enumeration_Algorithms.html">Combinatorial Enumeration Algorithms</a></h5> <br>by <a href="../../../authors/hofmeier">Paul Hofmeier</a> and <a href="../../../authors/karayel">Emin Karayel</a></div>
-  <span class="date">
-    Nov 11
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Maximum_Segment_Sum.html">Maximum Segment Sum</a></h5> <br>by <a href="../../../authors/cremer">Nils Cremer</a></div>
-  <span class="date">
-    Sep 29
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Number_Theoretic_Transform.html">Number Theoretic Transform</a></h5> <br>by <a href="../../../authors/ammer">Thomas Ammer</a> and <a href="../../../authors/kreuzer">Katharina Kreuzer</a></div>
-  <span class="date">
-    Aug 18
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/SCC_Bloemen_Sequential.html">Correctness of a Set-based Algorithm for Computing Strongly Connected Components of a Graph</a></h5> <br>by <a href="../../../authors/merz">Stephan Merz</a> and <a href="../../../authors/trelat">Vincent Trélat</a></div>
-  <span class="date">
-    Aug 17
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/FSM_Tests.html">Verified Complete Test Strategies for Finite State Machines</a></h5> <br>by <a href="../../../authors/sachtleben">Robert Sachtleben</a></div>
-  <span class="date">
-    Aug 09
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Frequency_Moments.html">Formalization of Randomized Approximation Algorithms for Frequency Moments</a></h5> <br>by <a href="../../../authors/karayel">Emin Karayel</a></div>
-  <span class="date">
-    Apr 08
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Frequency_Moments.html">Formalization of Randomized Approximation Algorithms for Frequency Moments</a></h5> <br>by <a href="../../../authors/karayel">Emin Karayel</a></div>
-  <span class="date">
-    Apr 08
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Prefix_Free_Code_Combinators.html">A Combinator Library for Prefix-Free Codes</a></h5> <br>by <a href="../../../authors/karayel">Emin Karayel</a></div>
-  <span class="date">
-    Apr 08
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Universal_Hash_Families.html">Universal Hash Families</a></h5> <br>by <a href="../../../authors/karayel">Emin Karayel</a></div>
-  <span class="date">
-    Feb 20
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/VYDRA_MDL.html">Multi-Head Monitoring of Metric Dynamic Logic</a></h5> <br>by <a href="../../../authors/raszyk">Martin Raszyk</a></div>
-  <span class="date">
-    Feb 13
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Equivalence_Relation_Enumeration.html">Enumeration of Equivalence Relations</a></h5> <br>by <a href="../../../authors/karayel">Emin Karayel</a></div>
-  <span class="date">
-    Feb 04
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Median_Method.html">Median Method</a></h5> <br>by <a href="../../../authors/karayel">Emin Karayel</a></div>
-  <span class="date">
-    Jan 25
-  </span>
-</article>
+        </div>
+        <span class="date">Jun 01</span>
+      </article>
+    <h2 class="head">2022</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Combinatorial_Enumeration_Algorithms.html">Combinatorial Enumeration Algorithms</a></h5>
+          <br>
+            by <a href="../../../authors/hofmeier">Paul Hofmeier</a> and <a href="../../../authors/karayel">Emin Karayel</a>
 
+        </div>
+        <span class="date">Nov 11</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Maximum_Segment_Sum.html">Maximum Segment Sum</a></h5>
+          <br>
+            by <a href="../../../authors/cremer">Nils Cremer</a>
 
-<h2 class="head">2021</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Gale_Shapley.html">Gale-Shapley Algorithm</a></h5> <br>by <a href="../../../authors/nipkow">Tobias Nipkow</a></div>
-  <span class="date">
-    Dec 29
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/MDP-Algorithms.html">Verified Algorithms for Solving Markov Decision Processes</a></h5> <br>by <a href="../../../authors/schaeffeler">Maximilian Schäffeler</a> and <a href="../../../authors/abdulaziz">Mohammad Abdulaziz</a></div>
-  <span class="date">
-    Dec 16
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Registers.html">Quantum and Classical Registers</a></h5> <br>by <a href="../../../authors/unruh">Dominique Unruh</a></div>
-  <span class="date">
-    Oct 28
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Virtual_Substitution.html">Verified Quadratic Virtual Substitution for Real Arithmetic</a></h5> <br>by <a href="../../../authors/scharager">Matias Scharager</a>, <a href="../../../authors/cordwell">Katherine Kosaian</a>, <a href="../../../authors/mitsch">Stefan Mitsch</a> and <a href="../../../authors/platzer">André Platzer</a></div>
-  <span class="date">
-    Oct 02
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Regression_Test_Selection.html">Regression Test Selection</a></h5> <br>by <a href="../../../authors/mansky">Susannah Mansky</a></div>
-  <span class="date">
-    Apr 30
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/BenOr_Kozen_Reif.html">The BKR Decision Procedure for Univariate Real Arithmetic</a></h5> <br>by <a href="../../../authors/cordwell">Katherine Kosaian</a>, <a href="../../../authors/tan">Yong Kiam Tan</a> and <a href="../../../authors/platzer">André Platzer</a></div>
-  <span class="date">
-    Apr 24
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Progress_Tracking.html">Formalization of Timely Dataflow&#39;s Progress Tracking Protocol</a></h5> <br>by <a href="../../../authors/brun">Matthias Brun</a>, <a href="../../../authors/decova">Sára Decova</a>, <a href="../../../authors/lattuada">Andrea Lattuada</a> and <a href="../../../authors/traytel">Dmitriy Traytel</a></div>
-  <span class="date">
-    Apr 13
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Modular_arithmetic_LLL_and_HNF_algorithms.html">Two algorithms based on modular arithmetic: lattice basis reduction and Hermite normal form computation</a></h5> <br>by <a href="../../../authors/bottesch">Ralph Bottesch</a>, <a href="../../../authors/divason">Jose Divasón</a> and <a href="../../../authors/thiemann">René Thiemann</a></div>
-  <span class="date">
-    Mar 12
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Projective_Measurements.html">Quantum projective measurements and the CHSH inequality</a></h5> <br>by <a href="../../../authors/echenim">Mnacho Echenim</a></div>
-  <span class="date">
-    Mar 03
-  </span>
-</article>
+        </div>
+        <span class="date">Sep 29</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/FSM_Tests.html">Verified Complete Test Strategies for Finite State Machines</a></h5>
+          <br>
+            by <a href="../../../authors/sachtleben">Robert Sachtleben</a>
 
+        </div>
+        <span class="date">Aug 09</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Prefix_Free_Code_Combinators.html">A Combinator Library for Prefix-Free Codes</a></h5>
+          <br>
+            by <a href="../../../authors/karayel">Emin Karayel</a>
 
-<h2 class="head">2020</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Relational_Minimum_Spanning_Trees.html">Relational Minimum Spanning Tree Algorithms</a></h5> <br>by <a href="../../../authors/guttmann">Walter Guttmann</a> and <a href="../../../authors/brien">Nicolas Robinson-O&rsquo;Brien</a></div>
-  <span class="date">
-    Dec 08
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Isabelle_Marries_Dirac.html">Isabelle Marries Dirac: a Library for Quantum Computation and Quantum Information</a></h5> <br>by <a href="../../../authors/bordg">Anthony Bordg</a>, <a href="../../../authors/lachnitt">Hanna Lachnitt</a> and <a href="../../../authors/he">Yijun He</a></div>
-  <span class="date">
-    Nov 22
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/PAC_Checker.html">Practical Algebraic Calculus Checker</a></h5> <br>by <a href="../../../authors/fleury">Mathias Fleury</a> and <a href="../../../authors/kaufmann">Daniela Kaufmann</a></div>
-  <span class="date">
-    Aug 31
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Chandy_Lamport.html">A Formal Proof of The Chandy--Lamport Distributed Snapshot Algorithm</a></h5> <br>by <a href="../../../authors/fiedler">Ben Fiedler</a> and <a href="../../../authors/traytel">Dmitriy Traytel</a></div>
-  <span class="date">
-    Jul 21
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Safe_Distance.html">A Formally Verified Checker of the Safe Distance Traffic Rules for Autonomous Vehicles</a></h5> <br>by <a href="../../../authors/rizaldi">Albert Rizaldi</a> and <a href="../../../authors/immler">Fabian Immler</a></div>
-  <span class="date">
-    Jun 01
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Smith_Normal_Form.html">A verified algorithm for computing the Smith normal form of a matrix</a></h5> <br>by <a href="../../../authors/divason">Jose Divasón</a></div>
-  <span class="date">
-    May 23
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Sliding_Window_Algorithm.html">Formalization of an Algorithm for Greedily Computing Associative Aggregations on Sliding Windows</a></h5> <br>by <a href="../../../authors/heimes">Lukas Heimes</a>, <a href="../../../authors/traytel">Dmitriy Traytel</a> and <a href="../../../authors/schneider">Joshua Schneider</a></div>
-  <span class="date">
-    Apr 10
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/MFODL_Monitor_Optimized.html">Formalization of an Optimized Monitoring Algorithm for Metric First-Order Dynamic Logic with Aggregations</a></h5> <br>by <a href="../../../authors/dardinier">Thibault Dardinier</a>, <a href="../../../authors/heimes">Lukas Heimes</a>, <a href="../../../authors/raszyk">Martin Raszyk</a>, <a href="../../../authors/schneider">Joshua Schneider</a> and <a href="../../../authors/traytel">Dmitriy Traytel</a></div>
-  <span class="date">
-    Apr 09
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/WOOT_Strong_Eventual_Consistency.html">Strong Eventual Consistency of the Collaborative Editing Framework WOOT</a></h5> <br>by <a href="../../../authors/karayel">Emin Karayel</a> and <a href="../../../authors/gonzalez">Edgar Gonzàlez</a></div>
-  <span class="date">
-    Mar 25
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Approximation_Algorithms.html">Verified Approximation Algorithms</a></h5> <br>by <a href="../../../authors/essmann">Robin Eßmann</a>, <a href="../../../authors/nipkow">Tobias Nipkow</a>, <a href="../../../authors/robillard">Simon Robillard</a> and <a href="../../../authors/sulejmani">Ujkan Sulejmani</a></div>
-  <span class="date">
-    Jan 16
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Closest_Pair_Points.html">Closest Pair of Points Algorithms</a></h5> <br>by <a href="../../../authors/rau">Martin Rau</a> and <a href="../../../authors/nipkow">Tobias Nipkow</a></div>
-  <span class="date">
-    Jan 13
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Skip_Lists.html">Skip Lists</a></h5> <br>by <a href="../../../authors/haslbeck">Max W. Haslbeck</a> and <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Jan 09
-  </span>
-</article>
+        </div>
+        <span class="date">Apr 08</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/VYDRA_MDL.html">Multi-Head Monitoring of Metric Dynamic Logic</a></h5>
+          <br>
+            by <a href="../../../authors/raszyk">Martin Raszyk</a>
 
+        </div>
+        <span class="date">Feb 13</span>
+      </article>
+    <h2 class="head">2021</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Gale_Shapley.html">Gale-Shapley Algorithm</a></h5>
+          <br>
+            by <a href="../../../authors/nipkow">Tobias Nipkow</a>
 
-<h2 class="head">2019</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Generalized_Counting_Sort.html">An Efficient Generalization of Counting Sort for Large, possibly Infinite Key Ranges</a></h5> <br>by <a href="../../../authors/noce">Pasquale Noce</a></div>
-  <span class="date">
-    Dec 04
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/VerifyThis2019.html">VerifyThis 2019 -- Polished Isabelle Solutions</a></h5> <br>by <a href="../../../authors/lammich">Peter Lammich</a> and <a href="../../../authors/wimmer">Simon Wimmer</a></div>
-  <span class="date">
-    Oct 16
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Generic_Join.html">Formalization of Multiway-Join Algorithms</a></h5> <br>by <a href="../../../authors/dardinier">Thibault Dardinier</a></div>
-  <span class="date">
-    Sep 16
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Adaptive_State_Counting.html">Formalisation of an Adaptive State Counting Algorithm</a></h5> <br>by <a href="../../../authors/sachtleben">Robert Sachtleben</a></div>
-  <span class="date">
-    Aug 16
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Stellar_Quorums.html">Stellar Quorum Systems</a></h5> <br>by <a href="../../../authors/losa">Giuliano Losa</a></div>
-  <span class="date">
-    Aug 01
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/MFOTL_Monitor.html">Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic</a></h5> <br>by <a href="../../../authors/schneider">Joshua Schneider</a> and <a href="../../../authors/traytel">Dmitriy Traytel</a></div>
-  <span class="date">
-    Jul 04
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Prim_Dijkstra_Simple.html">Purely Functional, Simple, and Efficient Implementation of Prim and Dijkstra</a></h5> <br>by <a href="../../../authors/lammich">Peter Lammich</a> and <a href="../../../authors/nipkow">Tobias Nipkow</a></div>
-  <span class="date">
-    Jun 25
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/IMP2_Binary_Heap.html">Binary Heaps for IMP2</a></h5> <br>by <a href="../../../authors/griebel">Simon Griebel</a></div>
-  <span class="date">
-    Jun 13
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Kruskal.html">Kruskal&#39;s Algorithm for Minimum Spanning Forest</a></h5> <br>by <a href="../../../authors/haslbeckm">Maximilian P. L. Haslbeck</a>, <a href="../../../authors/lammich">Peter Lammich</a> and <a href="../../../authors/biendarra">Julian Biendarra</a></div>
-  <span class="date">
-    Feb 14
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Probabilistic_Prime_Tests.html">Probabilistic Primality Testing</a></h5> <br>by <a href="../../../authors/stuewe">Daniel Stüwe</a> and <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Feb 11
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/List_Inversions.html">The Inversions of a List</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Feb 01
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/IMP2.html">IMP2 – Simple Program Verification in Isabelle/HOL</a></h5> <br>by <a href="../../../authors/lammich">Peter Lammich</a> and <a href="../../../authors/wimmer">Simon Wimmer</a></div>
-  <span class="date">
-    Jan 15
-  </span>
-</article>
+        </div>
+        <span class="date">Dec 29</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/MDP-Algorithms.html">Verified Algorithms for Solving Markov Decision Processes</a></h5>
+          <br>
+            by <a href="../../../authors/schaeffeler">Maximilian Schäffeler</a> and <a href="../../../authors/abdulaziz">Mohammad Abdulaziz</a>
 
+        </div>
+        <span class="date">Dec 16</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Regression_Test_Selection.html">Regression Test Selection</a></h5>
+          <br>
+            by <a href="../../../authors/mansky">Susannah Mansky</a>
 
-<h2 class="head">2018</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Auto2_Imperative_HOL.html">Verifying Imperative Programs using Auto2</a></h5> <br>by <a href="../../../authors/zhan">Bohua Zhan</a></div>
-  <span class="date">
-    Dec 21
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Randomised_BSTs.html">Randomised Binary Search Trees</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Oct 19
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Signature_Groebner.html">Signature-Based Gröbner Basis Algorithms</a></h5> <br>by <a href="../../../authors/maletzky">Alexander Maletzky</a></div>
-  <span class="date">
-    Sep 20
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Simplex.html">An Incremental Simplex Algorithm with Unsatisfiable Core Generation</a></h5> <br>by <a href="../../../authors/maricf">Filip Marić</a>, <a href="../../../authors/spasic">Mirko Spasić</a> and <a href="../../../authors/thiemann">René Thiemann</a></div>
-  <span class="date">
-    Aug 24
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Optimal_BST.html">Optimal Binary Search Trees</a></h5> <br>by <a href="../../../authors/nipkow">Tobias Nipkow</a> and <a href="../../../authors/somogyi">Dániel Somogyi</a></div>
-  <span class="date">
-    May 27
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Hidden_Markov_Models.html">Hidden Markov Models</a></h5> <br>by <a href="../../../authors/wimmer">Simon Wimmer</a></div>
-  <span class="date">
-    May 25
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Monad_Memo_DP.html">Monadification, Memoization and Dynamic Programming</a></h5> <br>by <a href="../../../authors/wimmer">Simon Wimmer</a>, <a href="../../../authors/hu">Shuwei Hu</a> and <a href="../../../authors/nipkow">Tobias Nipkow</a></div>
-  <span class="date">
-    May 22
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/OpSets.html">OpSets: Sequential Specifications for Replicated Datatypes</a></h5> <br>by <a href="../../../authors/kleppmann">Martin Kleppmann</a>, <a href="../../../authors/gomes">Victor B. F. Gomes</a>, <a href="../../../authors/mulligan">Dominic P. Mulligan</a> and <a href="../../../authors/beresford">Alastair R. Beresford</a></div>
-  <span class="date">
-    May 10
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/VerifyThis2018.html">VerifyThis 2018 - Polished Isabelle Solutions</a></h5> <br>by <a href="../../../authors/lammich">Peter Lammich</a> and <a href="../../../authors/wimmer">Simon Wimmer</a></div>
-  <span class="date">
-    Apr 27
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/First_Order_Terms.html">First-Order Terms</a></h5> <br>by <a href="../../../authors/sternagel">Christian Sternagel</a> and <a href="../../../authors/thiemann">René Thiemann</a></div>
-  <span class="date">
-    Feb 06
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/LLL_Basis_Reduction.html">A verified LLL algorithm</a></h5> <br>by <a href="../../../authors/bottesch">Ralph Bottesch</a>, <a href="../../../authors/divason">Jose Divasón</a>, <a href="../../../authors/haslbeck">Max W. Haslbeck</a>, <a href="../../../authors/joosten">Sebastiaan J. C. Joosten</a>, <a href="../../../authors/thiemann">René Thiemann</a> and <a href="../../../authors/yamada">Akihisa Yamada</a></div>
-  <span class="date">
-    Feb 02
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Taylor_Models.html">Taylor Models</a></h5> <br>by <a href="../../../authors/traut">Christoph Traut</a> and <a href="../../../authors/immler">Fabian Immler</a></div>
-  <span class="date">
-    Jan 08
-  </span>
-</article>
+        </div>
+        <span class="date">Apr 30</span>
+      </article>
+    <h2 class="head">2020</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/PAC_Checker.html">Practical Algebraic Calculus Checker</a></h5>
+          <br>
+            by <a href="../../../authors/fleury">Mathias Fleury</a> and <a href="../../../authors/kaufmann">Daniela Kaufmann</a>
 
+        </div>
+        <span class="date">Aug 31</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Sliding_Window_Algorithm.html">Formalization of an Algorithm for Greedily Computing Associative Aggregations on Sliding Windows</a></h5>
+          <br>
+            by <a href="../../../authors/heimes">Lukas Heimes</a>, <a href="../../../authors/traytel">Dmitriy Traytel</a> and <a href="../../../authors/schneider">Joshua Schneider</a>
 
-<h2 class="head">2017</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Median_Of_Medians_Selection.html">The Median-of-Medians Selection Algorithm</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Dec 21
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Knuth_Morris_Pratt.html">The string search algorithm by Knuth, Morris and Pratt</a></h5> <br>by <a href="../../../authors/hellauer">Fabian Hellauer</a> and <a href="../../../authors/lammich">Peter Lammich</a></div>
-  <span class="date">
-    Dec 18
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/IMAP-CRDT.html">The IMAP CmRDT</a></h5> <br>by <a href="../../../authors/jungnickel">Tim Jungnickel</a>, <a href="../../../authors/oldenburg">Lennart Oldenburg</a> and <a href="../../../authors/loibl">Matthias Loibl</a></div>
-  <span class="date">
-    Nov 09
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Diophantine_Eqns_Lin_Hom.html">Homogeneous Linear Diophantine Equations</a></h5> <br>by <a href="../../../authors/messner">Florian Messner</a>, <a href="../../../authors/parsert">Julian Parsert</a>, <a href="../../../authors/schoepf">Jonas Schöpf</a> and <a href="../../../authors/sternagel">Christian Sternagel</a></div>
-  <span class="date">
-    Oct 14
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/CRDT.html">A framework for establishing Strong Eventual Consistency for Conflict-free Replicated Datatypes</a></h5> <br>by <a href="../../../authors/gomes">Victor B. F. Gomes</a>, <a href="../../../authors/kleppmann">Martin Kleppmann</a>, <a href="../../../authors/mulligan">Dominic P. Mulligan</a> and <a href="../../../authors/beresford">Alastair R. Beresford</a></div>
-  <span class="date">
-    Jul 07
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Prpu_Maxflow.html">Formalizing Push-Relabel Algorithms</a></h5> <br>by <a href="../../../authors/lammich">Peter Lammich</a> and <a href="../../../authors/sefidgar">S. Reza Sefidgar</a></div>
-  <span class="date">
-    Jun 01
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Floyd_Warshall.html">The Floyd-Warshall Algorithm for Shortest Paths</a></h5> <br>by <a href="../../../authors/wimmer">Simon Wimmer</a> and <a href="../../../authors/lammich">Peter Lammich</a></div>
-  <span class="date">
-    May 08
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Probabilistic_While.html">Probabilistic while loop</a></h5> <br>by <a href="../../../authors/lochbihler">Andreas Lochbihler</a></div>
-  <span class="date">
-    May 05
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Random_BSTs.html">Expected Shape of Random Binary Search Trees</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Apr 04
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Quick_Sort_Cost.html">The number of comparisons in QuickSort</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Mar 15
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Quick_Sort_Cost.html">The number of comparisons in QuickSort</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Mar 15
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Comparison_Sort_Lower_Bound.html">Lower bound on comparison-based sorting algorithms</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Mar 15
-  </span>
-</article>
+        </div>
+        <span class="date">Apr 10</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/MFODL_Monitor_Optimized.html">Formalization of an Optimized Monitoring Algorithm for Metric First-Order Dynamic Logic with Aggregations</a></h5>
+          <br>
+            by <a href="../../../authors/dardinier">Thibault Dardinier</a>, <a href="../../../authors/heimes">Lukas Heimes</a>, <a href="../../../authors/raszyk">Martin Raszyk</a>, <a href="../../../authors/schneider">Joshua Schneider</a> and <a href="../../../authors/traytel">Dmitriy Traytel</a>
 
+        </div>
+        <span class="date">Apr 09</span>
+      </article>
+    <h2 class="head">2019</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Generalized_Counting_Sort.html">An Efficient Generalization of Counting Sort for Large, possibly Infinite Key Ranges</a></h5>
+          <br>
+            by <a href="../../../authors/noce">Pasquale Noce</a>
 
-<h2 class="head">2016</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Fisher_Yates.html">Fisher–Yates shuffle</a></h5> <br>by <a href="../../../authors/eberl">Manuel Eberl</a></div>
-  <span class="date">
-    Sep 30
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/EdmondsKarp_Maxflow.html">Formalizing the Edmonds-Karp Algorithm</a></h5> <br>by <a href="../../../authors/lammich">Peter Lammich</a> and <a href="../../../authors/sefidgar">S. Reza Sefidgar</a></div>
-  <span class="date">
-    Aug 12
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/DFS_Framework.html">A Framework for Verifying Depth-First Search Algorithms</a></h5> <br>by <a href="../../../authors/lammich">Peter Lammich</a> and <a href="../../../authors/neumann">René Neumann</a></div>
-  <span class="date">
-    Jul 05
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Groebner_Bases.html">Gröbner Bases Theory</a></h5> <br>by <a href="../../../authors/immler">Fabian Immler</a> and <a href="../../../authors/maletzky">Alexander Maletzky</a></div>
-  <span class="date">
-    May 02
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/ROBDD.html">Algorithms for Reduced Ordered Binary Decision Diagrams</a></h5> <br>by <a href="../../../authors/michaelis">Julius Michaelis</a>, <a href="../../../authors/haslbeck">Max W. Haslbeck</a>, <a href="../../../authors/lammich">Peter Lammich</a> and <a href="../../../authors/hupel">Lars Hupel</a></div>
-  <span class="date">
-    Apr 27
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/CYK.html">A formalisation of the Cocke-Younger-Kasami algorithm</a></h5> <br>by <a href="../../../authors/bortin">Maksym Bortin</a></div>
-  <span class="date">
-    Apr 27
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/List_Update.html">Analysis of List Update Algorithms</a></h5> <br>by <a href="../../../authors/haslbeckm">Maximilian P. L. Haslbeck</a> and <a href="../../../authors/nipkow">Tobias Nipkow</a></div>
-  <span class="date">
-    Feb 17
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/List_Update.html">Analysis of List Update Algorithms</a></h5> <br>by <a href="../../../authors/haslbeckm">Maximilian P. L. Haslbeck</a> and <a href="../../../authors/nipkow">Tobias Nipkow</a></div>
-  <span class="date">
-    Feb 17
-  </span>
-</article>
+        </div>
+        <span class="date">Dec 04</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/VerifyThis2019.html">VerifyThis 2019 -- Polished Isabelle Solutions</a></h5>
+          <br>
+            by <a href="../../../authors/lammich">Peter Lammich</a> and <a href="../../../authors/wimmer">Simon Wimmer</a>
 
+        </div>
+        <span class="date">Oct 16</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Generic_Join.html">Formalization of Multiway-Join Algorithms</a></h5>
+          <br>
+            by <a href="../../../authors/dardinier">Thibault Dardinier</a>
 
-<h2 class="head">2015</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/TortoiseHare.html">The Tortoise and Hare Algorithm</a></h5> <br>by <a href="../../../authors/gammie">Peter Gammie</a></div>
-  <span class="date">
-    Nov 18
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Hermite.html">Hermite Normal Form</a></h5> <br>by <a href="../../../authors/divason">Jose Divasón</a> and <a href="../../../authors/aransay">Jesús Aransay</a></div>
-  <span class="date">
-    Jul 07
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/ConcurrentGC.html">Relaxing Safely: Verified On-the-Fly Garbage Collection for x86-TSO</a></h5> <br>by <a href="../../../authors/gammie">Peter Gammie</a>, <a href="../../../authors/hosking">Tony Hosking</a> and <a href="../../../authors/engelhardt">Kai Engelhardt</a></div>
-  <span class="date">
-    Apr 13
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Consensus_Refined.html">Consensus Refined</a></h5> <br>by <a href="../../../authors/maric">Ognjen Marić</a> and <a href="../../../authors/sprenger">Christoph Sprenger</a></div>
-  <span class="date">
-    Mar 18
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/QR_Decomposition.html">QR Decomposition</a></h5> <br>by <a href="../../../authors/divason">Jose Divasón</a> and <a href="../../../authors/aransay">Jesús Aransay</a></div>
-  <span class="date">
-    Feb 12
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Echelon_Form.html">Echelon Form</a></h5> <br>by <a href="../../../authors/divason">Jose Divasón</a> and <a href="../../../authors/aransay">Jesús Aransay</a></div>
-  <span class="date">
-    Feb 12
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/UpDown_Scheme.html">Verification of the UpDown Scheme</a></h5> <br>by <a href="../../../authors/hoelzl">Johannes Hölzl</a></div>
-  <span class="date">
-    Jan 28
-  </span>
-</article>
+        </div>
+        <span class="date">Sep 16</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Adaptive_State_Counting.html">Formalisation of an Adaptive State Counting Algorithm</a></h5>
+          <br>
+            by <a href="../../../authors/sachtleben">Robert Sachtleben</a>
 
+        </div>
+        <span class="date">Aug 16</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/MFOTL_Monitor.html">Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic</a></h5>
+          <br>
+            by <a href="../../../authors/schneider">Joshua Schneider</a> and <a href="../../../authors/traytel">Dmitriy Traytel</a>
 
-<h2 class="head">2014</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Imperative_Insertion_Sort.html">Imperative Insertion Sort</a></h5> <br>by <a href="../../../authors/sternagel">Christian Sternagel</a></div>
-  <span class="date">
-    Sep 25
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Gauss_Jordan.html">Gauss-Jordan Algorithm and Its Applications</a></h5> <br>by <a href="../../../authors/divason">Jose Divasón</a> and <a href="../../../authors/aransay">Jesús Aransay</a></div>
-  <span class="date">
-    Sep 03
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Boolean_Expression_Checkers.html">Boolean Expression Checkers</a></h5> <br>by <a href="../../../authors/nipkow">Tobias Nipkow</a></div>
-  <span class="date">
-    Jun 08
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Gabow_SCC.html">Verified Efficient Implementation of Gabow&#39;s Strongly Connected Components Algorithm</a></h5> <br>by <a href="../../../authors/lammich">Peter Lammich</a></div>
-  <span class="date">
-    May 28
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Roy_Floyd_Warshall.html">Transitive closure according to Roy-Floyd-Warshall</a></h5> <br>by <a href="../../../authors/wenzel">Makarius Wenzel</a></div>
-  <span class="date">
-    May 23
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Selection_Heap_Sort.html">Verification of Selection and Heap Sort Using Locales</a></h5> <br>by <a href="../../../authors/petrovic">Danijela Petrovic</a></div>
-  <span class="date">
-    Feb 11
-  </span>
-</article>
+        </div>
+        <span class="date">Jul 04</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/IMP2_Binary_Heap.html">Binary Heaps for IMP2</a></h5>
+          <br>
+            by <a href="../../../authors/griebel">Simon Griebel</a>
 
+        </div>
+        <span class="date">Jun 13</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/List_Inversions.html">The Inversions of a List</a></h5>
+          <br>
+            by <a href="../../../authors/eberl">Manuel Eberl</a>
 
-<h2 class="head">2012</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Heard_Of.html">Verifying Fault-Tolerant Distributed Algorithms in the Heard-Of Model</a></h5> <br>by <a href="../../../authors/debrat">Henri Debrat</a> and <a href="../../../authors/merz">Stephan Merz</a></div>
-  <span class="date">
-    Jul 27
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Abortable_Linearizable_Modules.html">Abortable Linearizable Modules</a></h5> <br>by <a href="../../../authors/guerraoui">Rachid Guerraoui</a>, <a href="../../../authors/kuncak">Viktor Kuncak</a> and <a href="../../../authors/losa">Giuliano Losa</a></div>
-  <span class="date">
-    Mar 01
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Transitive-Closure-II.html">Executable Transitive Closures</a></h5> <br>by <a href="../../../authors/thiemann">René Thiemann</a></div>
-  <span class="date">
-    Feb 29
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Dijkstra_Shortest_Path.html">Dijkstra&#39;s Shortest Path Algorithm</a></h5> <br>by <a href="../../../authors/nordhoff">Benedikt Nordhoff</a> and <a href="../../../authors/lammich">Peter Lammich</a></div>
-  <span class="date">
-    Jan 30
-  </span>
-</article>
+        </div>
+        <span class="date">Feb 01</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/IMP2.html">IMP2 – Simple Program Verification in Isabelle/HOL</a></h5>
+          <br>
+            by <a href="../../../authors/lammich">Peter Lammich</a> and <a href="../../../authors/wimmer">Simon Wimmer</a>
 
+        </div>
+        <span class="date">Jan 15</span>
+      </article>
+    <h2 class="head">2018</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Auto2_Imperative_HOL.html">Verifying Imperative Programs using Auto2</a></h5>
+          <br>
+            by <a href="../../../authors/zhan">Bohua Zhan</a>
 
-<h2 class="head">2011</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Efficient-Mergesort.html">Efficient Mergesort</a></h5> <br>by <a href="../../../authors/sternagel">Christian Sternagel</a></div>
-  <span class="date">
-    Nov 09
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Gauss-Jordan-Elim-Fun.html">Gauss-Jordan Elimination for Matrices Represented as Functions</a></h5> <br>by <a href="../../../authors/nipkow">Tobias Nipkow</a></div>
-  <span class="date">
-    Aug 19
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Transitive-Closure.html">Executable Transitive Closures of Finite Relations</a></h5> <br>by <a href="../../../authors/sternagel">Christian Sternagel</a> and <a href="../../../authors/thiemann">René Thiemann</a></div>
-  <span class="date">
-    Mar 14
-  </span>
-</article>
+        </div>
+        <span class="date">Dec 21</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Optimal_BST.html">Optimal Binary Search Trees</a></h5>
+          <br>
+            by <a href="../../../authors/nipkow">Tobias Nipkow</a> and <a href="../../../authors/somogyi">Dániel Somogyi</a>
 
+        </div>
+        <span class="date">May 27</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Hidden_Markov_Models.html">Hidden Markov Models</a></h5>
+          <br>
+            by <a href="../../../authors/wimmer">Simon Wimmer</a>
 
-<h2 class="head">2010</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Polynomials.html">Executable Multivariate Polynomials</a></h5> <br>by <a href="../../../authors/sternagel">Christian Sternagel</a>, <a href="../../../authors/thiemann">René Thiemann</a>, <a href="../../../authors/maletzky">Alexander Maletzky</a>, <a href="../../../authors/immler">Fabian Immler</a>, <a href="../../../authors/haftmann">Florian Haftmann</a>, <a href="../../../authors/lochbihler">Andreas Lochbihler</a> and <a href="../../../authors/bentkamp">Alexander Bentkamp</a></div>
-  <span class="date">
-    Aug 10
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/GraphMarkingIBP.html">Verification of the Deutsch-Schorr-Waite Graph Marking Algorithm using Data Refinement</a></h5> <br>by <a href="../../../authors/preoteasa">Viorel Preoteasa</a> and <a href="../../../authors/back">Ralph-Johan Back</a></div>
-  <span class="date">
-    May 28
-  </span>
-</article>
+        </div>
+        <span class="date">May 25</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Monad_Memo_DP.html">Monadification, Memoization and Dynamic Programming</a></h5>
+          <br>
+            by <a href="../../../authors/wimmer">Simon Wimmer</a>, <a href="../../../authors/hu">Shuwei Hu</a> and <a href="../../../authors/nipkow">Tobias Nipkow</a>
 
+        </div>
+        <span class="date">May 22</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/VerifyThis2018.html">VerifyThis 2018 - Polished Isabelle Solutions</a></h5>
+          <br>
+            by <a href="../../../authors/lammich">Peter Lammich</a> and <a href="../../../authors/wimmer">Simon Wimmer</a>
 
-<h2 class="head">2008</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/SATSolverVerification.html">Formal Verification of Modern SAT Solvers</a></h5> <br>by <a href="../../../authors/maricf">Filip Marić</a></div>
-  <span class="date">
-    Jul 23
-  </span>
-</article>
+        </div>
+        <span class="date">Apr 27</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/First_Order_Terms.html">First-Order Terms</a></h5>
+          <br>
+            by <a href="../../../authors/sternagel">Christian Sternagel</a> and <a href="../../../authors/thiemann">René Thiemann</a>
 
+        </div>
+        <span class="date">Feb 06</span>
+      </article>
+    <h2 class="head">2017</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Median_Of_Medians_Selection.html">The Median-of-Medians Selection Algorithm</a></h5>
+          <br>
+            by <a href="../../../authors/eberl">Manuel Eberl</a>
 
-<h2 class="head">2007</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/MuchAdoAboutTwo.html">Much Ado About Two</a></h5> <br>by <a href="../../../authors/boehme">Sascha Böhme</a></div>
-  <span class="date">
-    Nov 06
-  </span>
-</article>
+        </div>
+        <span class="date">Dec 21</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Knuth_Morris_Pratt.html">The string search algorithm by Knuth, Morris and Pratt</a></h5>
+          <br>
+            by <a href="../../../authors/hellauer">Fabian Hellauer</a> and <a href="../../../authors/lammich">Peter Lammich</a>
 
+        </div>
+        <span class="date">Dec 18</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Quick_Sort_Cost.html">The number of comparisons in QuickSort</a></h5>
+          <br>
+            by <a href="../../../authors/eberl">Manuel Eberl</a>
 
-<h2 class="head">2006</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/ClockSynchInst.html">Instances of Schneider&#39;s generalized protocol of clock synchronization</a></h5> <br>by <a href="../../../authors/barsotti">Damián Barsotti</a></div>
-  <span class="date">
-    Mar 15
-  </span>
-</article>
+        </div>
+        <span class="date">Mar 15</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Comparison_Sort_Lower_Bound.html">Lower bound on comparison-based sorting algorithms</a></h5>
+          <br>
+            by <a href="../../../authors/eberl">Manuel Eberl</a>
 
+        </div>
+        <span class="date">Mar 15</span>
+      </article>
+    <h2 class="head">2016</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/ROBDD.html">Algorithms for Reduced Ordered Binary Decision Diagrams</a></h5>
+          <br>
+            by <a href="../../../authors/michaelis">Julius Michaelis</a>, <a href="../../../authors/haslbeck">Max W. Haslbeck</a>, <a href="../../../authors/lammich">Peter Lammich</a> and <a href="../../../authors/hupel">Lars Hupel</a>
 
-<h2 class="head">2005</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/FFT.html">Fast Fourier Transform</a></h5> <br>by <a href="../../../authors/ballarin">Clemens Ballarin</a></div>
-  <span class="date">
-    Oct 12
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/GenClock.html">Formalization of a Generalized Protocol for Clock Synchronization</a></h5> <br>by <a href="../../../authors/tiu">Alwen Tiu</a></div>
-  <span class="date">
-    Jun 24
-  </span>
-</article>
-<article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/DiskPaxos.html">Proving the Correctness of Disk Paxos</a></h5> <br>by <a href="../../../authors/jaskelioff">Mauro Jaskelioff</a> and <a href="../../../authors/merz">Stephan Merz</a></div>
-  <span class="date">
-    Jun 22
-  </span>
-</article>
+        </div>
+        <span class="date">Apr 27</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/CYK.html">A formalisation of the Cocke-Younger-Kasami algorithm</a></h5>
+          <br>
+            by <a href="../../../authors/bortin">Maksym Bortin</a>
 
+        </div>
+        <span class="date">Apr 27</span>
+      </article>
+    <h2 class="head">2015</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/TortoiseHare.html">The Tortoise and Hare Algorithm</a></h5>
+          <br>
+            by <a href="../../../authors/gammie">Peter Gammie</a>
 
-<h2 class="head">2004</h2><article class="entry">
-  <div class="item-text">
-    <h5><a class="title" href="../../../entries/Depth-First-Search.html">Depth First Search</a></h5> <br>by <a href="../../../authors/nishihara">Toshiaki Nishihara</a> and <a href="../../../authors/minamide">Yasuhiko Minamide</a></div>
-  <span class="date">
-    Jun 24
-  </span>
-</article>
+        </div>
+        <span class="date">Nov 18</span>
+      </article>
+    <h2 class="head">2014</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Imperative_Insertion_Sort.html">Imperative Insertion Sort</a></h5>
+          <br>
+            by <a href="../../../authors/sternagel">Christian Sternagel</a>
 
+        </div>
+        <span class="date">Sep 25</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Boolean_Expression_Checkers.html">Boolean Expression Checkers</a></h5>
+          <br>
+            by <a href="../../../authors/nipkow">Tobias Nipkow</a>
 
+        </div>
+        <span class="date">Jun 08</span>
+      </article>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Selection_Heap_Sort.html">Verification of Selection and Heap Sort Using Locales</a></h5>
+          <br>
+            by <a href="../../../authors/petrovic">Danijela Petrovic</a>
 
+        </div>
+        <span class="date">Feb 11</span>
+      </article>
+    <h2 class="head">2011</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/Efficient-Mergesort.html">Efficient Mergesort</a></h5>
+          <br>
+            by <a href="../../../authors/sternagel">Christian Sternagel</a>
 
+        </div>
+        <span class="date">Nov 09</span>
+      </article>
+    <h2 class="head">2008</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/SATSolverVerification.html">Formal Verification of Modern SAT Solvers</a></h5>
+          <br>
+            by <a href="../../../authors/maricf">Filip Marić</a>
+
+        </div>
+        <span class="date">Jul 23</span>
+      </article>
+    <h2 class="head">2007</h2>
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="../../../entries/MuchAdoAboutTwo.html">Much Ado About Two</a></h5>
+          <br>
+            by <a href="../../../authors/boehme">Sascha Böhme</a>
+
+        </div>
+        <span class="date">Nov 06</span>
+      </article>
+        
+      </div>
     </div>
-  </div>
-</body>
-
+  </body>
 </html>

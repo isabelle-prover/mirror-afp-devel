@@ -1,25 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Formal Specification of a Generic Separation Kernel - Archive of Formal Proofs</title><meta name="description" content="Intransitive noninterference has been a widely studied topic in the last few decades. Several well-established methodologies apply interactive theorem..."><meta property="og:title" content="Formal Specification of a Generic Separation Kernel" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Formal Specification of a Generic Separation Kernel - Archive of Formal Proofs</title>
+    <meta name="description" content="Intransitive noninterference has been a widely studied topic in the last few decades. Several well-established methodologies apply interactive theorem...">
+
+  <meta property="og:title" content="Formal Specification of a Generic Separation Kernel" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="/entries/CISC-Kernel.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
 <meta property="article:published_time" content="2014-07-18T00:00:00+00:00" />
 <meta property="article:modified_time" content="2014-07-18T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="Formal Specification of a Generic Separation Kernel"/>
 <meta name="twitter:description" content=""/>
 
-  
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
     <script>
       MathJax = {
         tex: {
@@ -31,72 +36,111 @@
         }
       };
     </script>
-    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
   <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
-  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../" class='logo-link'>
-    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../" class='logo-link'>
-        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../"><li >Home</li></a>
-        <a href="../topics/"><li >Topics</li></a>
-        <a href="../download/"><li >Download</li></a>
-        <a href="../help/"><li >Help</li></a>
-        <a href="../submission/"><li >Submission</li></a>
-        <a href="../statistics/"><li >Statistics</li></a>
-        <a href="../about/"><li >About</li></a>
+          <a href="../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content  entries'><header>
-  <form autocomplete="off" action="../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>F</span>ormal <span class='first'>S</span>pecification of a <span class='first'>G</span>eneric <span class='first'>S</span>eparation <span class='first'>K</span>ernel</h1>
+    </aside>
+    <div class='content entries'>
+      <header>
+    <form autocomplete="off" action="../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>F</span>ormal <span class='first'>S</span>pecification of a <span class='first'>G</span>eneric <span class='first'>S</span>eparation <span class='first'>K</span>ernel
+    
+  </h1>
   <div>
-    
-    <p><a href="../authors/verbeek">Freek Verbeek</a> <a class="obfuscated" data="eyJob3N0IjpbIm91IiwibmwiXSwidXNlciI6WyJGcmVlayIsIlZlcmJlZWsiXX0=">📧</a>, <a href="../authors/tverdyshev">Sergey Tverdyshev</a> <a class="obfuscated" data="eyJob3N0IjpbInN5c2dvIiwiY29tIl0sInVzZXIiOlsic3R2Il19">📧</a>, <a href="../authors/havle">Oto Havle</a> <a class="obfuscated" data="eyJob3N0IjpbInN5c2dvIiwiY29tIl0sInVzZXIiOlsib2hhIl19">📧</a>, <a href="../authors/blasum">Holger Blasum</a> <a class="obfuscated" data="eyJob3N0IjpbInN5c2dvIiwiY29tIl0sInVzZXIiOlsiaG9sZ2VyIiwiYmxhc3VtIl19">📧</a>, <a href="../authors/langenstein">Bruno Langenstein</a> <a class="obfuscated" data="eyJob3N0IjpbImRma2kiLCJkZSJdLCJ1c2VyIjpbImxhbmdlbnN0ZWluIl19">📧</a>, <a href="../authors/stephan">Werner Stephan</a> <a class="obfuscated" data="eyJob3N0IjpbImRma2kiLCJkZSJdLCJ1c2VyIjpbInN0ZXBoYW4iXX0=">📧</a>, <a href="../authors/nemouchi">Yakoub Nemouchi</a> <a class="obfuscated" data="eyJob3N0IjpbImxyaSIsImZyIl0sInVzZXIiOlsibmVtb3VjaGkiXX0=">📧</a>, <a href="../authors/feliachi">Abderrahmane Feliachi</a> <a class="obfuscated" data="eyJob3N0IjpbImxyaSIsImZyIl0sInVzZXIiOlsiYWJkZXJyYWhtYW5lIiwiZmVsaWFjaGkiXX0=">📧</a>, <a href="../authors/wolff">Burkhart Wolff</a> <a class="obfuscated" data="eyJob3N0IjpbImxyaSIsImZyIl0sInVzZXIiOlsiYnVya2hhcnQiLCJ3b2xmZiJdfQ==">📧</a> and <a href="../authors/schmaltz">Julien Schmaltz</a> <a class="obfuscated" data="eyJob3N0IjpbIm91IiwibmwiXSwidXNlciI6WyJKdWxpZW4iLCJTY2htYWx0eiJdfQ==">📧</a>
-    </p>
-    
-    
-    <p class="date">July 18, 2014</p>
-    
-  </div>
-</header><div><main><h3>Abstract</h3>
+      <p>
+        <a href="../authors/verbeek">Freek Verbeek</a> <a class="obfuscated" data="eyJob3N0IjpbIm91IiwibmwiXSwidXNlciI6WyJGcmVlayIsIlZlcmJlZWsiXX0=">📧</a>, <a href="../authors/tverdyshev">Sergey Tverdyshev</a> <a class="obfuscated" data="eyJob3N0IjpbInN5c2dvIiwiY29tIl0sInVzZXIiOlsic3R2Il19">📧</a>, <a href="../authors/havle">Oto Havle</a> <a class="obfuscated" data="eyJob3N0IjpbInN5c2dvIiwiY29tIl0sInVzZXIiOlsib2hhIl19">📧</a>, <a href="../authors/blasum">Holger Blasum</a> <a class="obfuscated" data="eyJob3N0IjpbInN5c2dvIiwiY29tIl0sInVzZXIiOlsiaG9sZ2VyIiwiYmxhc3VtIl19">📧</a>, <a href="../authors/langenstein">Bruno Langenstein</a> <a class="obfuscated" data="eyJob3N0IjpbImRma2kiLCJkZSJdLCJ1c2VyIjpbImxhbmdlbnN0ZWluIl19">📧</a>, <a href="../authors/stephan">Werner Stephan</a> <a class="obfuscated" data="eyJob3N0IjpbImRma2kiLCJkZSJdLCJ1c2VyIjpbInN0ZXBoYW4iXX0=">📧</a>, <a href="../authors/nemouchi">Yakoub Nemouchi</a> <a class="obfuscated" data="eyJob3N0IjpbImxyaSIsImZyIl0sInVzZXIiOlsibmVtb3VjaGkiXX0=">📧</a>, <a href="../authors/feliachi">Abderrahmane Feliachi</a> <a class="obfuscated" data="eyJob3N0IjpbImxyaSIsImZyIl0sInVzZXIiOlsiYWJkZXJyYWhtYW5lIiwiZmVsaWFjaGkiXX0=">📧</a>, <a href="../authors/wolff">Burkhart Wolff</a> <a class="obfuscated" data="eyJob3N0IjpbImxyaSIsImZyIl0sInVzZXIiOlsiYnVya2hhcnQiLCJ3b2xmZiJdfQ==">📧</a> and <a href="../authors/schmaltz">Julien Schmaltz</a> <a class="obfuscated" data="eyJob3N0IjpbIm91IiwibmwiXSwidXNlciI6WyJKdWxpZW4iLCJTY2htYWx0eiJdfQ==">📧</a>
 
-  <div class="abstract mathjax_process"><p>Intransitive noninterference has been a widely studied topic in the last
+      </p>
+      <p class="date">July 18, 2014</p>
+  </div>
+</header>
+      <div>
+        
+  <main>
+    <h3>Abstract</h3>
+
+    <div class="abstract mathjax_process"><p>Intransitive noninterference has been a widely studied topic in the last
 few decades. Several well-established methodologies apply interactive
 theorem proving to formulate a noninterference theorem over abstract
 academic models. In joint work with several industrial and academic partners
@@ -111,100 +155,161 @@ theorem proving approach, we ensure that proofs remain manageable.</p>
 This document corresponds to the deliverable D31.1 of the EURO-MILS
 Project <a href="http://www.euromils.eu">http://www.euromils.eu</a>.</p></div>
 
-  <h3>License</h3>
-  <div><a href="https://isa-afp.org/LICENSE">BSD License</a></div><h3>Topics</h3>
-  <ul><li><a href="../topics/computer-science/security">Computer science/Security</a></li></ul>
-  <h3>Session CISC-Kernel</h3>
-  <ul>
-    <li><a href="../theories/cisc-kernel/#Option_Binders">Option_Binders</a></li>
-    <li><a href="../theories/cisc-kernel/#List_Theorems">List_Theorems</a></li>
-    <li><a href="../theories/cisc-kernel/#K">K</a></li>
-    <li><a href="../theories/cisc-kernel/#SK">SK</a></li>
-    <li><a href="../theories/cisc-kernel/#ISK">ISK</a></li>
-    <li><a href="../theories/cisc-kernel/#CISK">CISK</a></li>
-    <li><a href="../theories/cisc-kernel/#Step_configuration">Step_configuration</a></li>
-    <li><a href="../theories/cisc-kernel/#Step_policies">Step_policies</a></li>
-    <li><a href="../theories/cisc-kernel/#Step">Step</a></li>
-    <li><a href="../theories/cisc-kernel/#Step_invariants">Step_invariants</a></li>
-    <li><a href="../theories/cisc-kernel/#Step_vpeq">Step_vpeq</a></li>
-    <li><a href="../theories/cisc-kernel/#Step_vpeq_locally_respects">Step_vpeq_locally_respects</a></li>
-    <li><a href="../theories/cisc-kernel/#Step_vpeq_weakly_step_consistent">Step_vpeq_weakly_step_consistent</a></li>
-    <li><a href="../theories/cisc-kernel/#Separation_kernel_model">Separation_kernel_model</a></li>
-    <li><a href="../theories/cisc-kernel/#Link_separation_kernel_model_to_CISK">Link_separation_kernel_model_to_CISK</a></li></ul><div class="flex-wrap">
-  
-  
-  </div>
-</main>
-
-<nav class='links'>
-  <a class='popup-button' href="#cite-popup">Cite</a>
-  <a class='popup-button' href="#download-popup">Download</a>
-  <h4>PDFs</h4>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/CISC-Kernel/outline.pdf">Proof
-    outline</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/CISC-Kernel/document.pdf">Proof
-    document</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/CISC-Kernel/session_graph.pdf">Dependencies</a></nav>
-
-<div id="cite-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Cite</h2>
-    <a class="close" href="#">&times;</a>
+    <h3>License</h3>
     <div>
-      <p style="display:none;" id="bibtex-filename">CISC-Kernel-AFP</p><pre id="copy-text">@article{CISC-Kernel-AFP,
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/computer-science/security">Computer science/Security</a></li>
+      </ul>
+      <h3>Session CISC-Kernel</h3>
+      <ul>
+          <li><a href="../sessions/cisc-kernel/#Option_Binders">Option_Binders</a></li>
+          <li><a href="../sessions/cisc-kernel/#List_Theorems">List_Theorems</a></li>
+          <li><a href="../sessions/cisc-kernel/#K">K</a></li>
+          <li><a href="../sessions/cisc-kernel/#SK">SK</a></li>
+          <li><a href="../sessions/cisc-kernel/#ISK">ISK</a></li>
+          <li><a href="../sessions/cisc-kernel/#CISK">CISK</a></li>
+          <li><a href="../sessions/cisc-kernel/#Step_configuration">Step_configuration</a></li>
+          <li><a href="../sessions/cisc-kernel/#Step_policies">Step_policies</a></li>
+          <li><a href="../sessions/cisc-kernel/#Step">Step</a></li>
+          <li><a href="../sessions/cisc-kernel/#Step_invariants">Step_invariants</a></li>
+          <li><a href="../sessions/cisc-kernel/#Step_vpeq">Step_vpeq</a></li>
+          <li><a href="../sessions/cisc-kernel/#Step_vpeq_locally_respects">Step_vpeq_locally_respects</a></li>
+          <li><a href="../sessions/cisc-kernel/#Step_vpeq_weakly_step_consistent">Step_vpeq_weakly_step_consistent</a></li>
+          <li><a href="../sessions/cisc-kernel/#Separation_kernel_model">Separation_kernel_model</a></li>
+          <li><a href="../sessions/cisc-kernel/#Link_separation_kernel_model_to_CISK">Link_separation_kernel_model_to_CISK</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+      </div>
+    
+  </main>
+
+  <nav class='links'>
+    <a class='popup-button' href="#cite-popup">Cite</a>
+    <a class='popup-button' href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/CISC-Kernel/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/CISC-Kernel/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/CISC-Kernel/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">CISC-Kernel-AFP</p>
+        <pre id="copy-text">@article{CISC-Kernel-AFP,
   author  = {Freek Verbeek and Sergey Tverdyshev and Oto Havle and Holger Blasum and Bruno Langenstein and Werner Stephan and Yakoub Nemouchi and Abderrahmane Feliachi and Burkhart Wolff and Julien Schmaltz},
   title   = {Formal Specification of a Generic Separation Kernel},
   journal = {Archive of Formal Proofs},
   month   = {July},
   year    = {2014},
   note    = {\url{https://isa-afp.org/entries/CISC-Kernel.html},
-            Formal proof development},
+             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
     </div>
   </div>
-</div>
 
-<div id="download-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Download</h2>
-    <a class="close" href="#">&times;</a>
-    <a href="https://www.isa-afp.org/release//afp-CISC-Kernel-current.tar.gz" download>Download latest</a>
-    <p>Older releases:</p>
-    <ul><li>
-        <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2023-09-13.tar.gz">Sep 13, 2023</a>: Isabelle2023
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2022-10-27.tar.gz">Oct 27, 2022</a>: Isabelle2022
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021-1
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2020-04-18.tar.gz">Apr 18, 2020</a>: Isabelle2020
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2019-06-11.tar.gz">Jun 11, 2019</a>: Isabelle2019
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2018-08-16.tar.gz">Aug 16, 2018</a>: Isabelle2018
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2017-10-10.tar.gz">Oct 10, 2017</a>: Isabelle2017
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2016-12-17.tar.gz">Dec 17, 2016</a>: Isabelle2016-1
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2016-02-22.tar.gz">Feb 22, 2016</a>: Isabelle2016
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2015-05-27.tar.gz">May 27, 2015</a>: Isabelle2015
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2014-08-28.tar.gz">Aug 28, 2014</a>: Isabelle2014
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2014-07-18.tar.gz">Jul 18, 2014</a>: Isabelle2013-2
-      </li></ul>
-  </div>
-</div>
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-current.tar.gz"
+         download>Download latest</a>
+        <p>Older releases:</p>
+        <ul>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2023-09-13.tar.gz">
+                Sep 13, 2023
+              </a>
+              : Isabelle2023
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2022-10-27.tar.gz">
+                Oct 27, 2022
+              </a>
+              : Isabelle2022
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2021-12-14.tar.gz">
+                Dec 14, 2021
+              </a>
+              : Isabelle2021-1
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2021-02-23.tar.gz">
+                Feb 23, 2021
+              </a>
+              : Isabelle2021
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2020-04-18.tar.gz">
+                Apr 18, 2020
+              </a>
+              : Isabelle2020
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2019-06-11.tar.gz">
+                Jun 11, 2019
+              </a>
+              : Isabelle2019
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2018-08-16.tar.gz">
+                Aug 16, 2018
+              </a>
+              : Isabelle2018
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2017-10-10.tar.gz">
+                Oct 10, 2017
+              </a>
+              : Isabelle2017
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2016-12-17.tar.gz">
+                Dec 17, 2016
+              </a>
+              : Isabelle2016-1
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2016-02-22.tar.gz">
+                Feb 22, 2016
+              </a>
+              : Isabelle2016
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2015-05-27.tar.gz">
+                May 27, 2015
+              </a>
+              : Isabelle2015
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2014-08-28.tar.gz">
+                Aug 28, 2014
+              </a>
+              : Isabelle2014
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2014-07-18.tar.gz">
+                Jul 18, 2014
+              </a>
+              : Isabelle2013-2
+            </li>
+        </ul>
     </div>
   </div>
-</body>
-
+        
+      </div>
+    </div>
+  </body>
 </html>

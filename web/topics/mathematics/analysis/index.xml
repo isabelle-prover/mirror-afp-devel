@@ -1,478 +1,387 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Mathematics/Analysis on Archive of Formal Proofs</title>
+    <title>Mathematics/Analysis on Archive of Formal Proofs
+    </title>
     <link>/topics/mathematics/analysis/</link>
-    <description>Recent content in Mathematics/Analysis on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Mathematics/Analysis 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language><atom:link href="/topics/mathematics/analysis/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Pólya’s Proof of the Weighted Arithmetic–Geometric Mean Inequality</title>
-      <link>/entries/Weighted_Arithmetic_Geometric_Mean.html</link>
-      <pubDate>Mon, 11 Jul 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Weighted_Arithmetic_Geometric_Mean.html</guid>
-      <description></description>
-    </item>
+    <language>en-gb</language>
     
-    <item>
-      <title>The Sophomore&#39;s Dream</title>
-      <link>/entries/Sophomores_Dream.html</link>
-      <pubDate>Sun, 10 Apr 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Sophomores_Dream.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Constructing the Reals as Dedekind Cuts of Rationals</title>
-      <link>/entries/Dedekind_Real.html</link>
-      <pubDate>Thu, 24 Mar 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Dedekind_Real.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Proof from THE BOOK: The Partial Fraction Expansion of the Cotangent</title>
-      <link>/entries/Cotangent_PFD_Formula.html</link>
-      <pubDate>Tue, 15 Mar 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Cotangent_PFD_Formula.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Wetzel&#39;s Problem and the Continuum Hypothesis</title>
-      <link>/entries/Wetzels_Problem.html</link>
-      <pubDate>Fri, 18 Feb 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Wetzels_Problem.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Young&#39;s Inequality for Increasing Functions</title>
-      <link>/entries/Youngs_Inequality.html</link>
-      <pubDate>Mon, 31 Jan 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Youngs_Inequality.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Hyperdual Numbers and Forward Differentiation</title>
-      <link>/entries/Hyperdual.html</link>
-      <pubDate>Fri, 31 Dec 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Hyperdual.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Real Exponents as the Limits of Sequences of Rational Exponents</title>
-      <link>/entries/Real_Power.html</link>
-      <pubDate>Mon, 08 Nov 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Real_Power.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Complex Bounded Operators</title>
-      <link>/entries/Complex_Bounded_Operators.html</link>
-      <pubDate>Sat, 18 Sep 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Complex_Bounded_Operators.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Solving Cubic and Quartic Equations</title>
-      <link>/entries/Cubic_Quartic_Equations.html</link>
-      <pubDate>Fri, 03 Sep 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Cubic_Quartic_Equations.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Theorem of Three Circles</title>
-      <link>/entries/Three_Circles.html</link>
-      <pubDate>Sat, 21 Aug 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Three_Circles.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Irrationality Criteria for Series by Erdős and Straus</title>
-      <link>/entries/Irrational_Series_Erdos_Straus.html</link>
-      <pubDate>Tue, 12 May 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Irrational_Series_Erdos_Straus.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Banach-Steinhaus Theorem</title>
-      <link>/entries/Banach_Steinhaus.html</link>
-      <pubDate>Sat, 02 May 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Banach_Steinhaus.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Lambert W Function on the Reals</title>
-      <link>/entries/Lambert_W.html</link>
-      <pubDate>Fri, 24 Apr 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Lambert_W.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Matrices for ODEs</title>
-      <link>/entries/Matrices_for_ODEs.html</link>
-      <pubDate>Sun, 19 Apr 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Matrices_for_ODEs.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Poincaré-Bendixson Theorem</title>
-      <link>/entries/Poincare_Bendixson.html</link>
-      <pubDate>Wed, 18 Dec 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Poincare_Bendixson.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Verification Components for Hybrid Systems</title>
-      <link>/entries/Hybrid_Systems_VCs.html</link>
-      <pubDate>Tue, 10 Sep 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Hybrid_Systems_VCs.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Fourier Series</title>
-      <link>/entries/Fourier.html</link>
-      <pubDate>Fri, 06 Sep 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Fourier.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Laplace Transform</title>
-      <link>/entries/Laplace_Transform.html</link>
-      <pubDate>Wed, 14 Aug 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Laplace_Transform.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Transcendence of Certain Infinite Series</title>
-      <link>/entries/Transcendence_Series_Hancl_Rucki.html</link>
-      <pubDate>Wed, 27 Mar 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Transcendence_Series_Hancl_Rucki.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Smooth Manifolds</title>
-      <link>/entries/Smooth_Manifolds.html</link>
-      <pubDate>Mon, 22 Oct 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Smooth_Manifolds.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Budan–Fourier Theorem and Counting Real Roots with Multiplicity</title>
-      <link>/entries/Budan_Fourier.html</link>
-      <pubDate>Sun, 02 Sep 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Budan_Fourier.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Irrational Rapidly Convergent Series</title>
-      <link>/entries/Irrationality_J_Hancl.html</link>
-      <pubDate>Wed, 23 May 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Irrationality_J_Hancl.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Error Function</title>
-      <link>/entries/Error_Function.html</link>
-      <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Error_Function.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>An Isabelle/HOL formalisation of Green&#39;s Theorem</title>
-      <link>/entries/Green.html</link>
-      <pubDate>Thu, 11 Jan 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Green.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Taylor Models</title>
-      <link>/entries/Taylor_Models.html</link>
-      <pubDate>Mon, 08 Jan 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Taylor_Models.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Count the Number of Complex Roots</title>
-      <link>/entries/Count_Complex_Roots.html</link>
-      <pubDate>Tue, 17 Oct 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Count_Complex_Roots.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Evaluate Winding Numbers through Cauchy Indices</title>
-      <link>/entries/Winding_Number_Eval.html</link>
-      <pubDate>Tue, 17 Oct 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Winding_Number_Eval.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Linear Recurrences</title>
-      <link>/entries/Linear_Recurrences.html</link>
-      <pubDate>Thu, 12 Oct 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Linear_Recurrences.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Hurwitz and Riemann ζ Functions</title>
-      <link>/entries/Zeta_Function.html</link>
-      <pubDate>Thu, 12 Oct 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Zeta_Function.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Euler–MacLaurin Formula</title>
-      <link>/entries/Euler_MacLaurin.html</link>
-      <pubDate>Fri, 10 Mar 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Euler_MacLaurin.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Bernoulli Numbers</title>
-      <link>/entries/Bernoulli.html</link>
-      <pubDate>Tue, 24 Jan 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Bernoulli.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Transcendence of e</title>
-      <link>/entries/E_Transcendental.html</link>
-      <pubDate>Thu, 12 Jan 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/E_Transcendental.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Expressiveness of Deep Learning</title>
-      <link>/entries/Deep_Learning.html</link>
-      <pubDate>Thu, 10 Nov 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Deep_Learning.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Lp spaces</title>
-      <link>/entries/Lp.html</link>
-      <pubDate>Wed, 05 Oct 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Lp.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Stirling&#39;s formula</title>
-      <link>/entries/Stirling_Formula.html</link>
-      <pubDate>Thu, 01 Sep 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Stirling_Formula.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Cartan Fixed Point Theorems</title>
-      <link>/entries/Cartan_FP.html</link>
-      <pubDate>Tue, 08 Mar 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Cartan_FP.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Descartes&#39; Rule of Signs</title>
-      <link>/entries/Descartes_Sign_Rule.html</link>
-      <pubDate>Mon, 28 Dec 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Descartes_Sign_Rule.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Liouville numbers</title>
-      <link>/entries/Liouville_Numbers.html</link>
-      <pubDate>Mon, 28 Dec 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Liouville_Numbers.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Landau Symbols</title>
-      <link>/entries/Landau_Symbols.html</link>
-      <pubDate>Tue, 14 Jul 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Landau_Symbols.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Akra-Bazzi theorem and the Master theorem</title>
-      <link>/entries/Akra_Bazzi.html</link>
-      <pubDate>Tue, 14 Jul 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Akra_Bazzi.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Sturm–Tarski Theorem</title>
-      <link>/entries/Sturm_Tarski.html</link>
-      <pubDate>Fri, 19 Sep 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Sturm_Tarski.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Real-Valued Special Functions: Upper and Lower Bounds</title>
-      <link>/entries/Special_Function_Bounds.html</link>
-      <pubDate>Fri, 29 Aug 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Special_Function_Bounds.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Affine Arithmetic</title>
-      <link>/entries/Affine_Arithmetic.html</link>
-      <pubDate>Fri, 07 Feb 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Affine_Arithmetic.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Implementing field extensions of the form Q[sqrt(b)]</title>
-      <link>/entries/Real_Impl.html</link>
-      <pubDate>Thu, 06 Feb 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Real_Impl.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Sturm&#39;s Theorem</title>
-      <link>/entries/Sturm_Sequences.html</link>
-      <pubDate>Sat, 11 Jan 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Sturm_Sequences.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Computing N-th Roots using the Babylonian Method</title>
-      <link>/entries/Sqrt_Babylonian.html</link>
-      <pubDate>Thu, 03 Jan 2013 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Sqrt_Babylonian.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Ordinary Differential Equations</title>
-      <link>/entries/Ordinary_Differential_Equations.html</link>
-      <pubDate>Thu, 26 Apr 2012 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Ordinary_Differential_Equations.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Lower Semicontinuous Functions</title>
-      <link>/entries/Lower_Semicontinuous.html</link>
-      <pubDate>Sat, 08 Jan 2011 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Lower_Semicontinuous.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Executable Multivariate Polynomials</title>
-      <link>/entries/Polynomials.html</link>
-      <pubDate>Tue, 10 Aug 2010 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Polynomials.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Cauchy&#39;s Mean Theorem and the Cauchy-Schwarz Inequality</title>
-      <link>/entries/Cauchy.html</link>
-      <pubDate>Tue, 14 Mar 2006 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Cauchy.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Integration theory and random variables</title>
-      <link>/entries/Integration.html</link>
-      <pubDate>Fri, 19 Nov 2004 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Integration.html</guid>
-      <description></description>
-    </item>
-    
+      <atom:link href="/topics/mathematics/analysis/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Standard Borel Spaces</title>
+          <link>/entries/Standard_Borel_Spaces.html</link>
+          <pubDate>Tue, 08 Aug 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Standard_Borel_Spaces.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Pólya’s Proof of the Weighted Arithmetic–Geometric Mean Inequality</title>
+          <link>/entries/Weighted_Arithmetic_Geometric_Mean.html</link>
+          <pubDate>Mon, 11 Jul 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Weighted_Arithmetic_Geometric_Mean.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Sophomore&#39;s Dream</title>
+          <link>/entries/Sophomores_Dream.html</link>
+          <pubDate>Sun, 10 Apr 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Sophomores_Dream.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Constructing the Reals as Dedekind Cuts of Rationals</title>
+          <link>/entries/Dedekind_Real.html</link>
+          <pubDate>Thu, 24 Mar 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Dedekind_Real.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Proof from THE BOOK: The Partial Fraction Expansion of the Cotangent</title>
+          <link>/entries/Cotangent_PFD_Formula.html</link>
+          <pubDate>Tue, 15 Mar 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Cotangent_PFD_Formula.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Wetzel&#39;s Problem and the Continuum Hypothesis</title>
+          <link>/entries/Wetzels_Problem.html</link>
+          <pubDate>Fri, 18 Feb 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Wetzels_Problem.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Young&#39;s Inequality for Increasing Functions</title>
+          <link>/entries/Youngs_Inequality.html</link>
+          <pubDate>Mon, 31 Jan 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Youngs_Inequality.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Hyperdual Numbers and Forward Differentiation</title>
+          <link>/entries/Hyperdual.html</link>
+          <pubDate>Fri, 31 Dec 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Hyperdual.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Real Exponents as the Limits of Sequences of Rational Exponents</title>
+          <link>/entries/Real_Power.html</link>
+          <pubDate>Mon, 08 Nov 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Real_Power.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Complex Bounded Operators</title>
+          <link>/entries/Complex_Bounded_Operators.html</link>
+          <pubDate>Sat, 18 Sep 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Complex_Bounded_Operators.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Solving Cubic and Quartic Equations</title>
+          <link>/entries/Cubic_Quartic_Equations.html</link>
+          <pubDate>Fri, 03 Sep 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Cubic_Quartic_Equations.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Theorem of Three Circles</title>
+          <link>/entries/Three_Circles.html</link>
+          <pubDate>Sat, 21 Aug 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Three_Circles.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Irrationality Criteria for Series by Erdős and Straus</title>
+          <link>/entries/Irrational_Series_Erdos_Straus.html</link>
+          <pubDate>Tue, 12 May 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Irrational_Series_Erdos_Straus.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Banach-Steinhaus Theorem</title>
+          <link>/entries/Banach_Steinhaus.html</link>
+          <pubDate>Sat, 02 May 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Banach_Steinhaus.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Lambert W Function on the Reals</title>
+          <link>/entries/Lambert_W.html</link>
+          <pubDate>Fri, 24 Apr 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Lambert_W.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Matrices for ODEs</title>
+          <link>/entries/Matrices_for_ODEs.html</link>
+          <pubDate>Sun, 19 Apr 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Matrices_for_ODEs.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Poincaré-Bendixson Theorem</title>
+          <link>/entries/Poincare_Bendixson.html</link>
+          <pubDate>Wed, 18 Dec 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Poincare_Bendixson.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Verification Components for Hybrid Systems</title>
+          <link>/entries/Hybrid_Systems_VCs.html</link>
+          <pubDate>Tue, 10 Sep 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Hybrid_Systems_VCs.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Fourier Series</title>
+          <link>/entries/Fourier.html</link>
+          <pubDate>Fri, 06 Sep 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Fourier.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Laplace Transform</title>
+          <link>/entries/Laplace_Transform.html</link>
+          <pubDate>Wed, 14 Aug 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Laplace_Transform.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Transcendence of Certain Infinite Series</title>
+          <link>/entries/Transcendence_Series_Hancl_Rucki.html</link>
+          <pubDate>Wed, 27 Mar 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Transcendence_Series_Hancl_Rucki.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Smooth Manifolds</title>
+          <link>/entries/Smooth_Manifolds.html</link>
+          <pubDate>Mon, 22 Oct 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Smooth_Manifolds.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Budan–Fourier Theorem and Counting Real Roots with Multiplicity</title>
+          <link>/entries/Budan_Fourier.html</link>
+          <pubDate>Sun, 02 Sep 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Budan_Fourier.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Irrational Rapidly Convergent Series</title>
+          <link>/entries/Irrationality_J_Hancl.html</link>
+          <pubDate>Wed, 23 May 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Irrationality_J_Hancl.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Error Function</title>
+          <link>/entries/Error_Function.html</link>
+          <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Error_Function.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>An Isabelle/HOL formalisation of Green&#39;s Theorem</title>
+          <link>/entries/Green.html</link>
+          <pubDate>Thu, 11 Jan 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Green.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Taylor Models</title>
+          <link>/entries/Taylor_Models.html</link>
+          <pubDate>Mon, 08 Jan 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Taylor_Models.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Count the Number of Complex Roots</title>
+          <link>/entries/Count_Complex_Roots.html</link>
+          <pubDate>Tue, 17 Oct 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Count_Complex_Roots.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Evaluate Winding Numbers through Cauchy Indices</title>
+          <link>/entries/Winding_Number_Eval.html</link>
+          <pubDate>Tue, 17 Oct 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Winding_Number_Eval.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Linear Recurrences</title>
+          <link>/entries/Linear_Recurrences.html</link>
+          <pubDate>Thu, 12 Oct 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Linear_Recurrences.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Hurwitz and Riemann ζ Functions</title>
+          <link>/entries/Zeta_Function.html</link>
+          <pubDate>Thu, 12 Oct 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Zeta_Function.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Euler–MacLaurin Formula</title>
+          <link>/entries/Euler_MacLaurin.html</link>
+          <pubDate>Fri, 10 Mar 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Euler_MacLaurin.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Bernoulli Numbers</title>
+          <link>/entries/Bernoulli.html</link>
+          <pubDate>Tue, 24 Jan 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Bernoulli.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Transcendence of e</title>
+          <link>/entries/E_Transcendental.html</link>
+          <pubDate>Thu, 12 Jan 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/E_Transcendental.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Expressiveness of Deep Learning</title>
+          <link>/entries/Deep_Learning.html</link>
+          <pubDate>Thu, 10 Nov 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Deep_Learning.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Lp spaces</title>
+          <link>/entries/Lp.html</link>
+          <pubDate>Wed, 05 Oct 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Lp.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Stirling&#39;s formula</title>
+          <link>/entries/Stirling_Formula.html</link>
+          <pubDate>Thu, 01 Sep 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Stirling_Formula.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Cartan Fixed Point Theorems</title>
+          <link>/entries/Cartan_FP.html</link>
+          <pubDate>Tue, 08 Mar 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Cartan_FP.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Descartes&#39; Rule of Signs</title>
+          <link>/entries/Descartes_Sign_Rule.html</link>
+          <pubDate>Mon, 28 Dec 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Descartes_Sign_Rule.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Liouville numbers</title>
+          <link>/entries/Liouville_Numbers.html</link>
+          <pubDate>Mon, 28 Dec 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Liouville_Numbers.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Landau Symbols</title>
+          <link>/entries/Landau_Symbols.html</link>
+          <pubDate>Tue, 14 Jul 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Landau_Symbols.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Akra-Bazzi theorem and the Master theorem</title>
+          <link>/entries/Akra_Bazzi.html</link>
+          <pubDate>Tue, 14 Jul 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Akra_Bazzi.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Sturm–Tarski Theorem</title>
+          <link>/entries/Sturm_Tarski.html</link>
+          <pubDate>Fri, 19 Sep 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Sturm_Tarski.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Real-Valued Special Functions: Upper and Lower Bounds</title>
+          <link>/entries/Special_Function_Bounds.html</link>
+          <pubDate>Fri, 29 Aug 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Special_Function_Bounds.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Affine Arithmetic</title>
+          <link>/entries/Affine_Arithmetic.html</link>
+          <pubDate>Fri, 07 Feb 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Affine_Arithmetic.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Implementing field extensions of the form Q[sqrt(b)]</title>
+          <link>/entries/Real_Impl.html</link>
+          <pubDate>Thu, 06 Feb 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Real_Impl.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Sturm&#39;s Theorem</title>
+          <link>/entries/Sturm_Sequences.html</link>
+          <pubDate>Sat, 11 Jan 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Sturm_Sequences.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Computing N-th Roots using the Babylonian Method</title>
+          <link>/entries/Sqrt_Babylonian.html</link>
+          <pubDate>Thu, 03 Jan 2013 00:00:00 +0000</pubDate>
+          <guid>/entries/Sqrt_Babylonian.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Ordinary Differential Equations</title>
+          <link>/entries/Ordinary_Differential_Equations.html</link>
+          <pubDate>Thu, 26 Apr 2012 00:00:00 +0000</pubDate>
+          <guid>/entries/Ordinary_Differential_Equations.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Lower Semicontinuous Functions</title>
+          <link>/entries/Lower_Semicontinuous.html</link>
+          <pubDate>Sat, 08 Jan 2011 00:00:00 +0000</pubDate>
+          <guid>/entries/Lower_Semicontinuous.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Executable Multivariate Polynomials</title>
+          <link>/entries/Polynomials.html</link>
+          <pubDate>Tue, 10 Aug 2010 00:00:00 +0000</pubDate>
+          <guid>/entries/Polynomials.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Cauchy&#39;s Mean Theorem and the Cauchy-Schwarz Inequality</title>
+          <link>/entries/Cauchy.html</link>
+          <pubDate>Tue, 14 Mar 2006 00:00:00 +0000</pubDate>
+          <guid>/entries/Cauchy.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Integration theory and random variables</title>
+          <link>/entries/Integration.html</link>
+          <pubDate>Fri, 19 Nov 2004 00:00:00 +0000</pubDate>
+          <guid>/entries/Integration.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

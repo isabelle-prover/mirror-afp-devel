@@ -115,50 +115,23 @@ abbreviation "setinterleaves_syntax"  ("_ setinterleaves '(()'(_, _')(), _')" [6
   where      "u setinterleaves ((s, t), X) == (u \<in> setinterleaving(s, X, t))"
 
  
-subsection\<open>Definition\<close>
-
-definition Sync :: "['a process,'a set,'a process] => 'a process"    ("(3(_ \<lbrakk>_\<rbrakk>/ _))" [64,0,65] 64)  
-  where "P \<lbrakk> A \<rbrakk> Q \<equiv>  Abs_process({(s,R).\<exists> t u X Y. (t,X) \<in> \<F> P \<and> (u,Y) \<in> \<F> Q \<and> 
-                                                    (s setinterleaves ((t,u),(ev`A) \<union> {tick})) \<and> 
-                                                    R = (X \<union> Y) \<inter> ((ev`A) \<union> {tick}) \<union> X \<inter> Y}    \<union> 
-                                  {(s,R).\<exists> t u r v. front_tickFree v \<and> (tickFree r \<or> v=[]) \<and> 
-                                                    s = r@v \<and> 
-                                                    (r setinterleaves ((t,u),(ev`A) \<union> {tick})) \<and> 
-                                                    (t \<in> \<D> P \<and> u \<in> \<T> Q \<or> t \<in> \<D> Q \<and> u \<in> \<T> P)},
-                   
-                                  {s.   \<exists> t u r v. front_tickFree v \<and> (tickFree r \<or> v=[]) \<and> 
-                                                   s = r@v \<and> 
-                                                   (r setinterleaves ((t,u),(ev`A) \<union> {tick})) \<and> 
-                                                   (t \<in> \<D> P \<and> u \<in> \<T> Q \<or> t \<in> \<D> Q \<and> u \<in> \<T> P)})"
-
 subsection\<open>Consequences\<close>
 
 lemma emptyLeftProperty:"\<forall>s. s setinterleaves (([], t), A)\<longrightarrow>s=t" 
-  apply(induct_tac t)  
-   apply simp 
-  by auto 
+  by (induct t) auto
+ 
 
 lemma emptyLeftSelf: " (\<forall>t1. t1\<in> set t\<longrightarrow>t1\<notin>A)\<longrightarrow>t setinterleaves (([], t), A) "
-  apply(induct_tac t)
-   apply simp 
-  by auto
+  by (induct t) auto
 
-lemma emptyLeftNonSync: "\<forall>s. s setinterleaves (([], t), A)\<longrightarrow>(\<forall>t1. t1\<in> set t\<longrightarrow>t1\<notin>A)"
-  apply(induct_tac t)
-   apply simp
-proof-
-  fix a list
-  assume a: "\<forall>s. s setinterleaves (([], list), A) \<longrightarrow> (\<forall>t1. t1 \<in> set list \<longrightarrow> t1 \<notin> A)"
-  thus "\<forall>s. s setinterleaves (([], a # list), A) \<longrightarrow> (\<forall>t1. t1 \<in> set (a # list) \<longrightarrow> t1 \<notin> A)"
-  proof-
-    have th: "s setinterleaves (([], a # list), A)\<longrightarrow>a\<notin>A" by auto
-    obtain s1 where th1: "s setinterleaves (([], a # list), A)\<longrightarrow>s1 setinterleaves (([], list), A)"  
-      using mem_Collect_eq th by fastforce
-    from a th1 have th2: "\<forall>s. s setinterleaves (([], a # list), A)\<longrightarrow>(\<forall>t. t\<in> set list\<longrightarrow>t \<notin> A)" 
-      by auto
-    with a show ?thesis   
-      by (metis (no_types, lifting) empty_iff set_ConsD setinterleaving.simps(2))   
-  qed
+
+lemma emptyLeftNonSync: "s setinterleaves (([], t), A) \<Longrightarrow> \<forall>a. a \<in> set t \<longrightarrow> a \<notin> A"
+proof (induct t arbitrary: s)
+  case Nil
+  show ?case by simp
+next
+  case (Cons a t)
+  thus ?case by (cases s; simp split: if_split_asm)
 qed
  
 
@@ -290,6 +263,7 @@ lemma addSyncEmpty: "sa setinterleaves (([], u), A) \<and> y1 \<in> A \<longrigh
   qed 
  
 lemma addSync: "sa setinterleaves ((t,u),A)\<and> y1 \<in> A\<longrightarrow>(sa@[y1]) setinterleaves ((t@[y1],u@[y1]),A)"
+  find_theorems \<open>(@)\<close> name: cases
 proof (induction "length t + length u" arbitrary:sa t u rule:nat_less_induct)
   case 1
   then show ?case 
@@ -841,194 +815,209 @@ proof-
                  tick \<notin> X \<and> tick \<notin> Y \<and> (X \<union> Y) \<inter> ev ` A = {} \<and> X \<inter> Y = {})"  
     using NF_NT a1 a2 a3 by blast
 qed
-  
 
-lemma Sync_maintains_is_process:
- "is_process ({(s,R).\<exists> t u X Y. (t,X) \<in> \<F> P \<and> (u,Y) \<in> \<F> Q \<and> 
-                                (s setinterleaves ((t,u),(ev`A) \<union> {tick})) \<and> 
-                                R = (X \<union> Y) \<inter> ((ev`A) \<union> {tick}) \<union> X \<inter> Y} \<union> 
-              {(s,R).\<exists> t u r v. front_tickFree v \<and> (tickFree r \<or> v=[]) \<and> 
-                                s = r@v \<and> 
-                                (r setinterleaves ((t,u),(ev`A) \<union> {tick})) \<and>      
-                                (t \<in> \<D> P \<and> u \<in> \<T> Q \<or> t \<in> \<D> Q \<and> u \<in> \<T> P)},
 
-              {s.    \<exists> t u r v. front_tickFree v \<and> (tickFree r \<or> v=[]) \<and> 
+
+subsection\<open>The Sync Operator Definition\<close>
+
+lift_definition Sync :: "['a process,'a set,'a process] => 'a process"    ("(3(_ \<lbrakk>_\<rbrakk>/ _))" [64,0,65] 64)  
+  is "\<lambda>P A Q. ({(s,R).\<exists> t u X Y. (t,X) \<in> \<F> P \<and> (u,Y) \<in> \<F> Q \<and> 
+                                 (s setinterleaves ((t,u),(ev`A) \<union> {tick})) \<and> 
+                                 R = (X \<union> Y) \<inter> ((ev`A) \<union> {tick}) \<union> X \<inter> Y}    \<union> 
+               {(s,R).\<exists> t u r v. front_tickFree v \<and> (tickFree r \<or> v=[]) \<and> 
+                                 s = r@v \<and> 
+                                 (r setinterleaves ((t,u),(ev`A) \<union> {tick})) \<and> 
+                                 (t \<in> \<D> P \<and> u \<in> \<T> Q \<or> t \<in> \<D> Q \<and> u \<in> \<T> P)},
+               
+               {s.   \<exists> t u r v. front_tickFree v \<and> (tickFree r \<or> v=[]) \<and> 
                                 s = r@v \<and> 
                                 (r setinterleaves ((t,u),(ev`A) \<union> {tick})) \<and> 
                                 (t \<in> \<D> P \<and> u \<in> \<T> Q \<or> t \<in> \<D> Q \<and> u \<in> \<T> P)})"
-              (is "is_process(?f, ?d)") 
-proof(simp only: fst_conv snd_conv Failures_def is_process_def FAILURES_def DIVERGENCES_def,
-      fold FAILURES_def DIVERGENCES_def,fold Failures_def,intro conjI) 
-  show "([], {}) \<in> ?f" 
-    apply auto 
-    by (metis Int_commute Int_empty_right Sync.si_empty1 Un_empty empty_iff insert_iff is_processT1) 
-next 
-  show " \<forall>s X. (s, X) \<in> ?f \<longrightarrow> front_tickFree s" 
-    apply (auto simp:is_processT2 append_T_imp_tickFree front_tickFree_append D_imp_front_tickFree) 
-      using ftf_Sync is_processT2 apply blast
-     using D_imp_front_tickFree ftf_Sync is_processT2_TR apply blast
-    using D_imp_front_tickFree ftf_Sync is_processT2_TR by blast  
-next
-  show "\<forall>s t. (s @ t, {}) \<in> ?f \<longrightarrow> (s, {}) \<in> ?f" 
-    apply auto   
-        apply(drule F_T) 
-        apply(drule F_T) 
-  proof(goal_cases)
-    case (1 s t ta u X Y)
-    then show ?case 
-      using pt3 by fastforce
-next
-  case (2 s t ta u r v)
-  have aa: "front_tickFree v 
-             \<Longrightarrow> s@t = r @ v \<Longrightarrow> r setinterleaves ((ta, u), insert tick (ev ` A)) 
-             \<Longrightarrow> \<forall>t u r. r setinterleaves ((t,u),insert tick(ev `A)) \<longrightarrow>
-                          (\<forall>v. s=r@v\<longrightarrow>front_tickFree v \<longrightarrow>
-                          \<not>tickFree r \<and> v\<noteq>[]\<or>(t \<in> \<D> P \<longrightarrow>
-                          u \<notin> \<T> Q) \<and> (t \<in> \<D> Q \<longrightarrow> u \<notin> \<T> P))
-             \<Longrightarrow> tickFree r \<Longrightarrow> ta \<in> \<D> P \<Longrightarrow> u \<in> \<T> Q \<Longrightarrow> s<r" 
-    apply(simp add: append_eq_append_conv2) 
-    by (metis append_Nil2 front_tickFree_Nil front_tickFree_dw_closed le_list_def less_list_def)
-  from 2(1,2,3,4,5,6,7) Sync.sym aa have a1: "s<r" by blast
-  have aaa: "r setinterleaves ((ta, u), insert tick (ev ` A)) 
-             \<Longrightarrow> tickFree r \<Longrightarrow> ta \<in> \<D> P
-             \<Longrightarrow> u \<in> \<T> Q \<Longrightarrow> s<r 
-             \<Longrightarrow> \<exists>t u X. (t, X) \<in> \<F> P \<and> (\<exists>Y. (u, Y) \<in> \<F> Q \<and>
-                        s setinterleaves ((t, u), insert tick (ev ` A)) \<and>
-                        tick \<notin> X \<and> tick \<notin> Y \<and> (X \<union> Y) \<inter> ev ` A = {} \<and> X \<inter> Y = {})"
-    apply(drule D_T) 
-    apply(simp add: le_list_def less_list_def)  
-    using Sync.sym pt3 by blast
-  have aab: "\<exists>t u X. (t, X) \<in> \<F> P \<and>(\<exists>Y. (u, Y) \<in> \<F> Q \<and> 
-                     s setinterleaves ((t, u), insert tick (ev ` A)) \<and> 
-                     tick \<notin> X \<and> tick \<notin> Y \<and> (X \<union> Y) \<inter> ev ` A = {} \<and> X \<inter> Y = {})" 
-    using 2(1,2,3,4,5,6,7) aa aaa Sync.sym by auto
-  then show ?case by auto  
-next
-  case (3 s t ta u r v)
-  have aa: "front_tickFree v \<Longrightarrow>s @ t = r @ v 
-           \<Longrightarrow> r setinterleaves ((ta, u), insert tick (ev ` A)) 
-           \<Longrightarrow> \<forall>t u r. r setinterleaves ((t, u), insert tick (ev ` A)) \<longrightarrow>
-                  (\<forall>v. s = r @ v \<longrightarrow>front_tickFree v \<longrightarrow>\<not> tickFree r \<and> v \<noteq> [] \<or> 
-                         (t \<in> \<D> P \<longrightarrow> u \<notin> \<T> Q) \<and> (t \<in> \<D> Q \<longrightarrow> u \<notin> \<T> P)) 
-           \<Longrightarrow> tickFree r 
-           \<Longrightarrow> ta \<in> \<D> Q \<Longrightarrow> u \<in> \<T> P \<Longrightarrow> s<r"  
-    apply(simp add: append_eq_append_conv2) 
-    by (metis append_Nil2 front_tickFree_Nil front_tickFree_dw_closed le_list_def less_list_def)
-  
-  have aaa: "r setinterleaves ((ta, u), insert tick (ev ` A)) 
-             \<Longrightarrow> tickFree r \<Longrightarrow> ta \<in> \<D> Q \<Longrightarrow> u \<in> \<T> P \<Longrightarrow>s<r
-             \<Longrightarrow> \<exists>t u X. (t, X) \<in> \<F> P \<and> 
-                         (\<exists>Y. (u, Y) \<in> \<F> Q \<and>s setinterleaves ((t, u), insert tick (ev ` A)) \<and>
-                          tick \<notin> X \<and> tick \<notin> Y \<and> (X \<union> Y) \<inter> ev ` A = {} \<and> X \<inter> Y = {})" 
-    apply(drule D_T) 
-    apply(simp add: le_list_def less_list_def)  
-    using Sync.sym pt3 by blast
-  from 3(1,2,3,4,5,6,7) Sync.sym aa have a1: "s<r"  
-    by blast
-  have aab: "\<exists>t u X. (t, X) \<in> \<F> P \<and> (\<exists>Y. (u, Y) \<in> \<F> Q \<and> 
-                     s setinterleaves ((t, u), insert tick (ev ` A)) \<and> 
-                     tick \<notin> X \<and> tick \<notin> Y \<and> (X \<union> Y) \<inter> ev ` A = {} \<and> X \<inter> Y = {})" 
-    using 3(1,2,3,4,5,6,7) aa aaa Sync.sym by auto 
-  then show ?case 
-    by auto 
-next
-  case (4 s t ta u)
-  from 4(3) have a1: "ta \<in> \<T> P"  
-    by (simp add: D_T)
-  then show ?case  
-    using "4"(1) "4"(4) pt3 by blast  
-next
-  case (5 s t ta u)
-  from 5(3) have a1: "ta \<in> \<T> Q"  
-    by (simp add: D_T)
-  then show ?case  
-    using "5"(1) "5"(4) Sync.sym pt3 by blast
-qed      
-next 
-  show "\<forall>s X Y. (s, Y) \<in> ?f \<and> X \<subseteq> Y \<longrightarrow> (s, X) \<in> ?f"   
-    apply auto 
-  proof(goal_cases)
-    case (1 s X t u Xa Ya)
-    have aa: "X \<subseteq> ((Xa \<union> Ya) \<inter> insert tick (ev ` A) \<union> Xa \<inter> Ya )\<Longrightarrow>\<exists>x1 y1. x1\<subseteq>Xa \<and> y1\<subseteq>Ya \<and> 
-    X=((x1 \<union> y1) \<inter> insert tick (ev ` A) \<union> x1 \<inter> y1)" 
-      apply(simp add: Set.subset_iff_psubset_eq) 
-      apply(erule disjE) 
-       defer 
-       apply blast 
-    proof-
-      assume A: "X \<subset> (Xa \<union> Ya) \<inter> insert tick (ev ` A) \<union> Xa \<inter> Ya" 
-      from A obtain X1 where B: "X1=((Xa \<union> Ya) \<inter> insert tick (ev ` A) \<union> Xa \<inter> Ya)-X" 
-        by blast
-      from A obtain x where C: "x=Xa-X1" 
-        by blast
-      from A obtain y where D: "y=Ya-X1" 
-        by blast
-      from A B C D have E: "X = (x \<union> y) \<inter> insert tick (ev ` A) \<union> x \<inter> y" 
-        by blast
-      thus " \<exists>x1. (x1 \<subset> Xa \<or> x1 = Xa) \<and> (\<exists>y1. (y1 \<subset> Ya \<or> y1 = Ya) \<and> X = (x1 \<union> y1) \<inter> 
-      insert tick (ev ` A) \<union> x1 \<inter> y1)"
-        using A B C D E by (metis Un_Diff_Int inf.strict_order_iff inf_sup_absorb) 
-    qed 
-    then show ?case using 1(1,2,3,4,5)  
-      by (meson process_charn)
-  qed
- 
-next  
-  let ?f1 = "{(s,R). \<exists> t u X Y. (t,X) \<in> \<F> P \<and> (u,Y) \<in> \<F> Q \<and> 
-                     (s setinterleaves ((t,u),(ev`A) \<union> {tick})) \<and> 
-                     R = (X \<union> Y) \<inter> ((ev`A) \<union> {tick}) \<union> X \<inter> Y}" 
-  have is_processT5_SYNC3: 
-            "\<And>sa X Y.(sa, X) \<in>?f1 \<Longrightarrow>(\<forall>c. c\<in>Y\<longrightarrow>(sa@[c],{})\<notin>?f)\<Longrightarrow>(sa, X\<union>Y) \<in> ?f1" 
-    apply(clarsimp) 
-    apply(rule is_processT5_SYNC2[simplified]) 
-     apply(auto simp:is_processT5) apply blast  
-    by (metis Sync.sym Un_empty_right inf_sup_absorb inf_sup_aci(5) insert_absorb insert_not_empty)  
-  show "\<forall>s X Y. (s, X) \<in> ?f \<and> (\<forall>c. c \<in> Y \<longrightarrow> (s @ [c], {}) \<notin> ?f) \<longrightarrow> (s, X \<union> Y) \<in> ?f"
-    apply(intro allI impI, elim conjE UnE)
-     apply(rule rev_subsetD)
-      apply(rule is_processT5_SYNC3)
-    by(auto)  
-next
-  show "\<forall>s X. (s @ [tick], {}) \<in> ?f \<longrightarrow> (s, X - {tick}) \<in> ?f" 
-    apply auto 
-        apply(drule F_T) 
-        apply(drule F_T)  
-        using SyncWithTick_imp_NTF1 apply fastforce 
-       apply(metis append_assoc append_same_eq front_tickFree_dw_closed nonTickFree_n_frontTickFree 
-       non_tickFree_tick tickFree_append) 
-      apply(metis butlast_append butlast_snoc front_tickFree_charn non_tickFree_tick tickFree_append 
-      tickFree_implies_front_tickFree) 
-     apply (metis NT_ND append_Nil2 front_tickFree_Nil is_processT3_ST is_processT9_S_swap 
-     SyncWithTick_imp_NTF) 
-    by (metis NT_ND append_Nil2 front_tickFree_Nil is_processT3_ST is_processT9_S_swap 
-    SyncWithTick_imp_NTF)
+proof -
+  show "is_process ({(s,R).\<exists> t u X Y. (t,X) \<in> \<F> P \<and> (u,Y) \<in> \<F> Q \<and> 
+                                      (s setinterleaves ((t,u),(ev`(A :: 'a set)) \<union> {tick})) \<and> 
+                                      R = (X \<union> Y) \<inter> ((ev`A) \<union> {tick}) \<union> X \<inter> Y} \<union> 
+                    {(s,R).\<exists> t u r v. front_tickFree v \<and> (tickFree r \<or> v=[]) \<and> 
+                                      s = r@v \<and> 
+                                      (r setinterleaves ((t,u),(ev`A) \<union> {tick})) \<and>      
+                                      (t \<in> \<D> P \<and> u \<in> \<T> Q \<or> t \<in> \<D> Q \<and> u \<in> \<T> P)},
+                
+                    {s.    \<exists> t u r v. front_tickFree v \<and> (tickFree r \<or> v=[]) \<and> 
+                                      s = r@v \<and> 
+                                      (r setinterleaves ((t,u),(ev`A) \<union> {tick})) \<and> 
+                                      (t \<in> \<D> P \<and> u \<in> \<T> Q \<or> t \<in> \<D> Q \<and> u \<in> \<T> P)})"
+                    (is "is_process(?f, ?d)") for P Q A
+  unfolding is_process_def FAILURES_def DIVERGENCES_def
+  proof (simp only: fst_conv snd_conv, intro conjI)
+    show "([], {}) \<in> ?f" 
+      apply auto 
+      by (metis Int_commute Int_empty_right Sync.si_empty1 Un_empty empty_iff insert_iff is_processT1) 
+  next 
+    show " \<forall>s X. (s, X) \<in> ?f \<longrightarrow> front_tickFree s" 
+      apply (auto simp:is_processT2 append_T_imp_tickFree front_tickFree_append D_imp_front_tickFree) 
+        using ftf_Sync is_processT2 apply blast
+       using D_imp_front_tickFree ftf_Sync is_processT2_TR apply blast
+      using D_imp_front_tickFree ftf_Sync is_processT2_TR by blast  
+  next
+    show "\<forall>s t. (s @ t, {}) \<in> ?f \<longrightarrow> (s, {}) \<in> ?f" 
+      apply auto   
+          apply(drule F_T) 
+          apply(drule F_T) 
+    proof(goal_cases)
+      case (1 s t ta u X Y)
+      then show ?case 
+        using pt3 by fastforce
+  next
+    case (2 s t ta u r v)
+    have aa: "front_tickFree v 
+               \<Longrightarrow> s@t = r @ v \<Longrightarrow> r setinterleaves ((ta, u), insert tick (ev ` A)) 
+               \<Longrightarrow> \<forall>t u r. r setinterleaves ((t,u),insert tick(ev `A)) \<longrightarrow>
+                            (\<forall>v. s=r@v\<longrightarrow>front_tickFree v \<longrightarrow>
+                            \<not>tickFree r \<and> v\<noteq>[]\<or>(t \<in> \<D> P \<longrightarrow>
+                            u \<notin> \<T> Q) \<and> (t \<in> \<D> Q \<longrightarrow> u \<notin> \<T> P))
+               \<Longrightarrow> tickFree r \<Longrightarrow> ta \<in> \<D> P \<Longrightarrow> u \<in> \<T> Q \<Longrightarrow> s<r" 
+      apply(simp add: append_eq_append_conv2) 
+      by (metis append_Nil2 front_tickFree_Nil front_tickFree_dw_closed le_list_def less_list_def)
+    from 2(1,2,3,4,5,6,7) Sync.sym aa have a1: "s<r" by blast
+    have aaa: "r setinterleaves ((ta, u), insert tick (ev ` A)) 
+               \<Longrightarrow> tickFree r \<Longrightarrow> ta \<in> \<D> P
+               \<Longrightarrow> u \<in> \<T> Q \<Longrightarrow> s<r 
+               \<Longrightarrow> \<exists>t u X. (t, X) \<in> \<F> P \<and> (\<exists>Y. (u, Y) \<in> \<F> Q \<and>
+                          s setinterleaves ((t, u), insert tick (ev ` A)) \<and>
+                          tick \<notin> X \<and> tick \<notin> Y \<and> (X \<union> Y) \<inter> ev ` A = {} \<and> X \<inter> Y = {})"
+      apply(drule D_T) 
+      apply(simp add: le_list_def less_list_def)  
+      using Sync.sym pt3 by blast
+    have aab: "\<exists>t u X. (t, X) \<in> \<F> P \<and>(\<exists>Y. (u, Y) \<in> \<F> Q \<and> 
+                       s setinterleaves ((t, u), insert tick (ev ` A)) \<and> 
+                       tick \<notin> X \<and> tick \<notin> Y \<and> (X \<union> Y) \<inter> ev ` A = {} \<and> X \<inter> Y = {})" 
+      using 2(1,2,3,4,5,6,7) aa aaa Sync.sym by auto
+    then show ?case by auto  
+  next
+    case (3 s t ta u r v)
+    have aa: "front_tickFree v \<Longrightarrow>s @ t = r @ v 
+             \<Longrightarrow> r setinterleaves ((ta, u), insert tick (ev ` A)) 
+             \<Longrightarrow> \<forall>t u r. r setinterleaves ((t, u), insert tick (ev ` A)) \<longrightarrow>
+                    (\<forall>v. s = r @ v \<longrightarrow>front_tickFree v \<longrightarrow>\<not> tickFree r \<and> v \<noteq> [] \<or> 
+                           (t \<in> \<D> P \<longrightarrow> u \<notin> \<T> Q) \<and> (t \<in> \<D> Q \<longrightarrow> u \<notin> \<T> P)) 
+             \<Longrightarrow> tickFree r 
+             \<Longrightarrow> ta \<in> \<D> Q \<Longrightarrow> u \<in> \<T> P \<Longrightarrow> s<r"  
+      apply(simp add: append_eq_append_conv2) 
+      by (metis append_Nil2 front_tickFree_Nil front_tickFree_dw_closed le_list_def less_list_def)
     
-next
-  show "\<forall>s t. s \<in> ?d \<and> tickFree s \<and> front_tickFree t \<longrightarrow> s @ t \<in> ?d" 
-    apply auto
-       using front_tickFree_append apply blast 
-      using front_tickFree_append apply blast 
-     apply blast
-    by blast
-next  
-  show "\<forall>s X. s \<in> ?d \<longrightarrow>  (s, X) \<in> ?f"
-    by blast
-next  
-  show "\<forall>s. s @ [tick] \<in> ?d \<longrightarrow> s \<in> ?d"  
-    apply auto
-       apply (metis butlast_append butlast_snoc front_tickFree_charn non_tickFree_tick 
-       tickFree_append tickFree_implies_front_tickFree)
-      apply (metis butlast_append butlast_snoc front_tickFree_charn non_tickFree_tick 
-      tickFree_append tickFree_implies_front_tickFree) 
-     apply (metis D_T append.right_neutral front_tickFree_Nil is_processT3_ST is_processT9 
-     SyncWithTick_imp_NTF) 
-    by (metis D_T append.right_neutral front_tickFree_Nil is_processT3_ST is_processT9 
-    SyncWithTick_imp_NTF) 
+    have aaa: "r setinterleaves ((ta, u), insert tick (ev ` A)) 
+               \<Longrightarrow> tickFree r \<Longrightarrow> ta \<in> \<D> Q \<Longrightarrow> u \<in> \<T> P \<Longrightarrow>s<r
+               \<Longrightarrow> \<exists>t u X. (t, X) \<in> \<F> P \<and> 
+                           (\<exists>Y. (u, Y) \<in> \<F> Q \<and>s setinterleaves ((t, u), insert tick (ev ` A)) \<and>
+                            tick \<notin> X \<and> tick \<notin> Y \<and> (X \<union> Y) \<inter> ev ` A = {} \<and> X \<inter> Y = {})" 
+      apply(drule D_T) 
+      apply(simp add: le_list_def less_list_def)  
+      using Sync.sym pt3 by blast
+    from 3(1,2,3,4,5,6,7) Sync.sym aa have a1: "s<r"  
+      by blast
+    have aab: "\<exists>t u X. (t, X) \<in> \<F> P \<and> (\<exists>Y. (u, Y) \<in> \<F> Q \<and> 
+                       s setinterleaves ((t, u), insert tick (ev ` A)) \<and> 
+                       tick \<notin> X \<and> tick \<notin> Y \<and> (X \<union> Y) \<inter> ev ` A = {} \<and> X \<inter> Y = {})" 
+      using 3(1,2,3,4,5,6,7) aa aaa Sync.sym by auto 
+    then show ?case 
+      by auto 
+  next
+    case (4 s t ta u)
+    from 4(3) have a1: "ta \<in> \<T> P"  
+      by (simp add: D_T)
+    then show ?case  
+      using "4"(1) "4"(4) pt3 by blast  
+  next
+    case (5 s t ta u)
+    from 5(3) have a1: "ta \<in> \<T> Q"  
+      by (simp add: D_T)
+    then show ?case  
+      using "5"(1) "5"(4) Sync.sym pt3 by blast
+  qed      
+  next 
+    show "\<forall>s X Y. (s, Y) \<in> ?f \<and> X \<subseteq> Y \<longrightarrow> (s, X) \<in> ?f"   
+      apply auto 
+    proof(goal_cases)
+      case (1 s X t u Xa Ya)
+      have aa: "X \<subseteq> ((Xa \<union> Ya) \<inter> insert tick (ev ` A) \<union> Xa \<inter> Ya )\<Longrightarrow>\<exists>x1 y1. x1\<subseteq>Xa \<and> y1\<subseteq>Ya \<and> 
+      X=((x1 \<union> y1) \<inter> insert tick (ev ` A) \<union> x1 \<inter> y1)" 
+        apply(simp add: Set.subset_iff_psubset_eq) 
+        apply(erule disjE) 
+         defer 
+         apply blast 
+      proof-
+        assume A: "X \<subset> (Xa \<union> Ya) \<inter> insert tick (ev ` A) \<union> Xa \<inter> Ya" 
+        from A obtain X1 where B: "X1=((Xa \<union> Ya) \<inter> insert tick (ev ` A) \<union> Xa \<inter> Ya)-X" 
+          by blast
+        from A obtain x where C: "x=Xa-X1" 
+          by blast
+        from A obtain y where D: "y=Ya-X1" 
+          by blast
+        from A B C D have E: "X = (x \<union> y) \<inter> insert tick (ev ` A) \<union> x \<inter> y" 
+          by blast
+        thus " \<exists>x1. (x1 \<subset> Xa \<or> x1 = Xa) \<and> (\<exists>y1. (y1 \<subset> Ya \<or> y1 = Ya) \<and> X = (x1 \<union> y1) \<inter> 
+        insert tick (ev ` A) \<union> x1 \<inter> y1)"
+          using A B C D E by (metis Un_Diff_Int inf.strict_order_iff inf_sup_absorb) 
+      qed 
+      then show ?case using 1(1,2,3,4,5)  
+        by (meson process_charn)
+    qed
+   
+  next  
+    let ?f1 = "{(s,R). \<exists> t u X Y. (t,X) \<in> \<F> P \<and> (u,Y) \<in> \<F> Q \<and> 
+                       (s setinterleaves ((t,u),(ev`A) \<union> {tick})) \<and> 
+                       R = (X \<union> Y) \<inter> ((ev`A) \<union> {tick}) \<union> X \<inter> Y}" 
+    have is_processT5_SYNC3: 
+              "\<And>sa X Y.(sa, X) \<in>?f1 \<Longrightarrow>(\<forall>c. c\<in>Y\<longrightarrow>(sa@[c],{})\<notin>?f)\<Longrightarrow>(sa, X\<union>Y) \<in> ?f1" 
+      apply(clarsimp) 
+      apply(rule is_processT5_SYNC2[simplified]) 
+       apply(auto simp:is_processT5) apply blast  
+      by (metis Sync.sym Un_empty_right inf_sup_absorb inf_sup_aci(5) insert_absorb insert_not_empty)  
+    show "\<forall>s X Y. (s, X) \<in> ?f \<and> (\<forall>c. c \<in> Y \<longrightarrow> (s @ [c], {}) \<notin> ?f) \<longrightarrow> (s, X \<union> Y) \<in> ?f"
+      apply(intro allI impI, elim conjE UnE)
+       apply(rule rev_subsetD)
+        apply(rule is_processT5_SYNC3)
+      by(auto)  
+  next
+    show "\<forall>s X. (s @ [tick], {}) \<in> ?f \<longrightarrow> (s, X - {tick}) \<in> ?f" 
+      apply auto 
+          apply(drule F_T) 
+          apply(drule F_T)  
+          using SyncWithTick_imp_NTF1 apply fastforce 
+         apply(metis append_assoc append_same_eq front_tickFree_dw_closed nonTickFree_n_frontTickFree 
+         non_tickFree_tick tickFree_append) 
+        apply(metis butlast_append butlast_snoc front_tickFree_charn non_tickFree_tick tickFree_append 
+        tickFree_implies_front_tickFree) 
+       apply (metis NT_ND append_Nil2 front_tickFree_Nil is_processT3_ST is_processT9_S_swap 
+       SyncWithTick_imp_NTF) 
+      by (metis NT_ND append_Nil2 front_tickFree_Nil is_processT3_ST is_processT9_S_swap 
+      SyncWithTick_imp_NTF)
+      
+  next
+    show "\<forall>s t. s \<in> ?d \<and> tickFree s \<and> front_tickFree t \<longrightarrow> s @ t \<in> ?d" 
+      apply auto
+         using front_tickFree_append apply blast 
+        using front_tickFree_append apply blast 
+       apply blast
+      by blast
+  next  
+    show "\<forall>s X. s \<in> ?d \<longrightarrow>  (s, X) \<in> ?f"
+      by blast
+  next  
+    show "\<forall>s. s @ [tick] \<in> ?d \<longrightarrow> s \<in> ?d"  
+      apply auto
+         apply (metis butlast_append butlast_snoc front_tickFree_charn non_tickFree_tick 
+         tickFree_append tickFree_implies_front_tickFree)
+        apply (metis butlast_append butlast_snoc front_tickFree_charn non_tickFree_tick 
+        tickFree_append tickFree_implies_front_tickFree) 
+       apply (metis D_T append.right_neutral front_tickFree_Nil is_processT3_ST is_processT9 
+       SyncWithTick_imp_NTF) 
+      by (metis D_T append.right_neutral front_tickFree_Nil is_processT3_ST is_processT9 
+      SyncWithTick_imp_NTF) 
+  qed
 qed
 
-lemmas  Rep_Abs_Sync[simp] = Abs_process_inverse[simplified, OF Sync_maintains_is_process]
-
-subsection\<open>Projections\<close>
+subsection\<open>The Projections\<close>
 
 lemma
   F_Sync    : "\<F> (P \<lbrakk> A \<rbrakk> Q) = 
@@ -1041,24 +1030,14 @@ lemma
                                        s = r@v \<and> 
                                        r setinterleaves ((t,u),(ev`A)\<union>{tick}) \<and> 
                                        (t \<in> \<D> P \<and> u \<in> \<T> Q \<or> t \<in> \<D> Q \<and> u \<in> \<T> P)}"
-       
-       
-  unfolding Sync_def 
-  apply(subst Failures_def) 
-  apply(simp only: Rep_Abs_Sync) 
-  by(auto simp: FAILURES_def)
-   
+  by (simp add: Failures.rep_eq Sync.rep_eq FAILURES_def)   
 
 lemma
   D_Sync    : "\<D> (P \<lbrakk> A \<rbrakk> Q) = 
                    {s.    \<exists> t u r v. front_tickFree v \<and> (tickFree r \<or> v=[]) \<and> 
                             s = r@v \<and> r setinterleaves ((t,u),(ev`A) \<union> {tick}) \<and> 
                             (t \<in> \<D> P \<and> u \<in> \<T> Q \<or> t \<in> \<D> Q \<and> u \<in> \<T> P)}"
-
-  unfolding Sync_def
-  apply(subst D_def)
-  apply(simp only: Rep_Abs_Sync)
-  by(simp add: DIVERGENCES_def)
+  by (simp add: Divergences.rep_eq Sync.rep_eq DIVERGENCES_def)   
  
 
 lemma
@@ -1068,12 +1047,8 @@ lemma
                    {s.    \<exists> t u r v. front_tickFree v \<and> (tickFree r \<or> v=[]) \<and> 
                                  s = r@v \<and> r setinterleaves ((t,u),(ev`A) \<union> {tick}) \<and> 
                                  (t \<in> \<D> P \<and> u \<in> \<T> Q \<or> t \<in> \<D> Q \<and> u \<in> \<T> P)}"
-
-  unfolding Sync_def
-  apply(subst Traces_def, simp only: Rep_Abs_Sync, simp add:TRACES_def FAILURES_def)
-  apply auto 
-   apply (meson F_T)
-  using T_F by blast
+  by (simp add: Traces.rep_eq TRACES_def Failures.rep_eq[symmetric] F_Sync) blast
+  
   
 subsection\<open>Syntax for Interleave and Parallel Operator \<close>
 

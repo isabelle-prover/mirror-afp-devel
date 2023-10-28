@@ -1,65 +1,59 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>wasserrab on Archive of Formal Proofs</title>
+    <title>wasserrab on Archive of Formal Proofs
+    </title>
     <link>/authors/wasserrab/</link>
-    <description>Recent content in wasserrab on Archive of Formal Proofs</description>
+    <description>
+        Recent content in wasserrab 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Tue, 23 Mar 2010 00:00:00 +0000</lastBuildDate><atom:link href="/authors/wasserrab/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Information Flow Noninterference via Slicing</title>
-      <link>/entries/InformationFlowSlicing.html</link>
-      <pubDate>Tue, 23 Mar 2010 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/InformationFlowSlicing.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>Inter-Procedural Information Flow Noninterference via Slicing</title>
-      <link>/entries/InformationFlowSlicing_Inter.html</link>
-      <pubDate>Tue, 23 Mar 2010 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/InformationFlowSlicing_Inter.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Backing up Slicing: Verifying the Interprocedural Two-Phase Horwitz-Reps-Binkley Slicer</title>
-      <link>/entries/HRB-Slicing.html</link>
-      <pubDate>Fri, 13 Nov 2009 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/HRB-Slicing.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Towards Certified Slicing</title>
-      <link>/entries/Slicing.html</link>
-      <pubDate>Tue, 16 Sep 2008 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Slicing.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>A Correctness Proof for the Volpano/Smith Security Typing System</title>
-      <link>/entries/VolpanoSmith.html</link>
-      <pubDate>Tue, 02 Sep 2008 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/VolpanoSmith.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>CoreC&#43;&#43;</title>
-      <link>/entries/CoreC&#43;&#43;.html</link>
-      <pubDate>Mon, 15 May 2006 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/CoreC&#43;&#43;.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Tue, 23 Mar 2010 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/wasserrab/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Information Flow Noninterference via Slicing</title>
+          <link>/entries/InformationFlowSlicing.html</link>
+          <pubDate>Tue, 23 Mar 2010 00:00:00 +0000</pubDate>
+          <guid>/entries/InformationFlowSlicing.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Inter-Procedural Information Flow Noninterference via Slicing</title>
+          <link>/entries/InformationFlowSlicing_Inter.html</link>
+          <pubDate>Tue, 23 Mar 2010 00:00:00 +0000</pubDate>
+          <guid>/entries/InformationFlowSlicing_Inter.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Backing up Slicing: Verifying the Interprocedural Two-Phase Horwitz-Reps-Binkley Slicer</title>
+          <link>/entries/HRB-Slicing.html</link>
+          <pubDate>Fri, 13 Nov 2009 00:00:00 +0000</pubDate>
+          <guid>/entries/HRB-Slicing.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Towards Certified Slicing</title>
+          <link>/entries/Slicing.html</link>
+          <pubDate>Tue, 16 Sep 2008 00:00:00 +0000</pubDate>
+          <guid>/entries/Slicing.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Correctness Proof for the Volpano/Smith Security Typing System</title>
+          <link>/entries/VolpanoSmith.html</link>
+          <pubDate>Tue, 02 Sep 2008 00:00:00 +0000</pubDate>
+          <guid>/entries/VolpanoSmith.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>CoreC&#43;&#43;</title>
+          <link>/entries/CoreC&#43;&#43;.html</link>
+          <pubDate>Mon, 15 May 2006 00:00:00 +0000</pubDate>
+          <guid>/entries/CoreC&#43;&#43;.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

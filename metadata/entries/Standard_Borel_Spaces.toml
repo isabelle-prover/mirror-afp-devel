@@ -1,0 +1,31 @@
+title = "Standard Borel Spaces"
+date = 2023-08-08
+topics = [
+  "Mathematics/Analysis",
+  "Mathematics/Topology",
+]
+abstract = "This entry includes a formalization of standard Borel spaces and (a variant of) the Borel isomorphism theorem. A separable complete metrizable topological space is called a polish space and a measurable space generated from a polish space is called a standard Borel space. We formalize the notion of standard Borel spaces by establishing set-based metric spaces, and then prove (a variant of) the Borel isomorphism theorem. The theorem states that a standard Borel spaces is either a countable discrete space or isomorphic to $\\mathbb{R}$."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.hirata]
+email = "hirata_email"
+
+[contributors]
+
+[notify]
+hirata = "hirata_email"
+
+[history]
+2023-10-26 = """adjust theories to the set-based metric space library in Isabelle2023<br>
+"""
+
+[extra]
+
+[related]
+dois = [
+  "10.4230/LIPIcs.ITP.2023.18",
+]
+pubs = []

@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>hellauer on Archive of Formal Proofs</title>
+    <title>hellauer on Archive of Formal Proofs
+    </title>
     <link>/authors/hellauer/</link>
-    <description>Recent content in hellauer on Archive of Formal Proofs</description>
+    <description>
+        Recent content in hellauer 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Mon, 18 Dec 2017 00:00:00 +0000</lastBuildDate><atom:link href="/authors/hellauer/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>The string search algorithm by Knuth, Morris and Pratt</title>
-      <link>/entries/Knuth_Morris_Pratt.html</link>
-      <pubDate>Mon, 18 Dec 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Knuth_Morris_Pratt.html</guid>
-      <description></description>
-    </item>
     
+      <lastBuildDate>Mon, 18 Dec 2017 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/hellauer/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>The string search algorithm by Knuth, Morris and Pratt</title>
+          <link>/entries/Knuth_Morris_Pratt.html</link>
+          <pubDate>Mon, 18 Dec 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Knuth_Morris_Pratt.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

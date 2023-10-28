@@ -111,7 +111,7 @@ proof -
       have f2: "i < length t"
         using assms(1) assms(2) by linarith
       have f3: "j - (i + 1) + (i + 1) = j"
-        by (meson assms(1) discrete le_add_diff_inverse2)
+        using \<open>i < j\<close> by simp
       then have "drop (j - (i + 1)) (drop (i + 1) t) = drop j t"
         by (metis drop_drop)
       then show ?thesis
@@ -310,16 +310,19 @@ next
   proof (rule allI, rule impI)
     fix k
     assume assm: "k < length l \<and> k \<noteq> j"
+    then have \<open>k < length l\<close> ..
     show "l ! k \<noteq> a"
     proof (rule ccontr)
       assume lka: "\<not> l ! k \<noteq> a"
+      then have \<open>l ! k = a\<close>
+        by simp
       show False
       proof (cases "k < j")
         let ?xs = "take (k+1) l"
         let ?ys = "drop (k+1) l"
         case True
-        then have "length (filter ((=) a) ?xs) > 0" 
-          by (metis (full_types, opaque_lifting) add.commute assm discrete filter_empty_conv length_greater_0_conv length_take less_add_one lka min.absorb2 nth_mem nth_take)
+        then have "length (filter ((=) a) ?xs) > 0"
+          using \<open>k < length l\<close> \<open>l ! k = a\<close> by (auto simp add: filter_empty_conv in_set_conv_nth)
         moreover have "length (filter ((=) a) ?ys) > 0"
         proof -
           have "?ys ! (j - (k+1)) = l ! j" 
@@ -339,7 +342,7 @@ next
         let ?ys = "drop (j+1) l"
         case False
         then have "length (filter ((=) a) ?xs) > 0" 
-          by (metis (full_types, opaque_lifting) add.commute j discrete filter_empty_conv length_greater_0_conv length_take less_add_one min.absorb2 nth_mem nth_take)
+          using \<open>k < length l\<close> \<open>l ! j = a\<close> by (auto simp add: filter_empty_conv in_set_conv_nth)
         moreover have "length (filter ((=) a) ?ys) > 0"
         proof -
           have "?ys ! (k - (j+1)) = l ! k" 

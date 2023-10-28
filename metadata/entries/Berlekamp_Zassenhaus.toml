@@ -47,3 +47,10 @@ thiemann = "thiemann_email"
 [extra]
 
 [related]
+dois = [
+  "10.1007/s10817-019-09526-y",
+  "10.1017/CBO9781139856065"
+]
+pubs = [
+  "<a href=\"https://en.wikipedia.org/wiki/Berlekamp%E2%80%93Zassenhaus_algorithm\">Wikipedia</a>"
+]

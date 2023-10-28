@@ -1,109 +1,93 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Logic/Philosophical aspects on Archive of Formal Proofs</title>
+    <title>Logic/Philosophical aspects on Archive of Formal Proofs
+    </title>
     <link>/topics/logic/philosophical-aspects/</link>
-    <description>Recent content in Logic/Philosophical aspects on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Logic/Philosophical aspects 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language><atom:link href="/topics/logic/philosophical-aspects/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Automation of Boolos&#39; Curious Inference in Isabelle/HOL</title>
-      <link>/entries/Boolos_Curious_Inference_Automated.html</link>
-      <pubDate>Mon, 05 Dec 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Boolos_Curious_Inference_Automated.html</guid>
-      <description></description>
-    </item>
+    <language>en-gb</language>
     
-    <item>
-      <title>Boolos&#39;s Curious Inference in Isabelle/HOL</title>
-      <link>/entries/Boolos_Curious_Inference.html</link>
-      <pubDate>Mon, 20 Jun 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Boolos_Curious_Inference.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Exploring Simplified Variants of Gödel’s Ontological Argument in Isabelle/HOL</title>
-      <link>/entries/SimplifiedOntologicalArgument.html</link>
-      <pubDate>Mon, 08 Nov 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/SimplifiedOntologicalArgument.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Mereology</title>
-      <link>/entries/Mereology.html</link>
-      <pubDate>Mon, 01 Mar 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Mereology.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Aristotle&#39;s Assertoric Syllogistic</title>
-      <link>/entries/Aristotles_Assertoric_Syllogistic.html</link>
-      <pubDate>Tue, 08 Oct 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Aristotles_Assertoric_Syllogistic.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Formalisation and Evaluation of Alan Gewirth&#39;s Proof for the Principle of Generic Consistency in Isabelle/HOL</title>
-      <link>/entries/GewirthPGCProof.html</link>
-      <pubDate>Tue, 30 Oct 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/GewirthPGCProof.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Computer-assisted Reconstruction and Assessment of E. J. Lowe&#39;s Modal Ontological Argument</title>
-      <link>/entries/Lowe_Ontological_Argument.html</link>
-      <pubDate>Thu, 21 Sep 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Lowe_Ontological_Argument.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Representation and Partial Automation of the Principia Logico-Metaphysica in Isabelle/HOL</title>
-      <link>/entries/PLM.html</link>
-      <pubDate>Sun, 17 Sep 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/PLM.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Anselm&#39;s God in Isabelle/HOL</title>
-      <link>/entries/AnselmGod.html</link>
-      <pubDate>Wed, 06 Sep 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/AnselmGod.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Types, Tableaus and Gödel’s God in Isabelle/HOL</title>
-      <link>/entries/Types_Tableaus_and_Goedels_God.html</link>
-      <pubDate>Mon, 01 May 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Types_Tableaus_and_Goedels_God.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Gödel&#39;s God in Isabelle/HOL</title>
-      <link>/entries/GoedelGod.html</link>
-      <pubDate>Tue, 12 Nov 2013 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/GoedelGod.html</guid>
-      <description></description>
-    </item>
-    
+      <atom:link href="/topics/logic/philosophical-aspects/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Automation of Boolos&#39; Curious Inference in Isabelle/HOL</title>
+          <link>/entries/Boolos_Curious_Inference_Automated.html</link>
+          <pubDate>Mon, 05 Dec 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Boolos_Curious_Inference_Automated.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Boolos&#39;s Curious Inference in Isabelle/HOL</title>
+          <link>/entries/Boolos_Curious_Inference.html</link>
+          <pubDate>Mon, 20 Jun 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Boolos_Curious_Inference.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Exploring Simplified Variants of Gödel’s Ontological Argument in Isabelle/HOL</title>
+          <link>/entries/SimplifiedOntologicalArgument.html</link>
+          <pubDate>Mon, 08 Nov 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/SimplifiedOntologicalArgument.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Mereology</title>
+          <link>/entries/Mereology.html</link>
+          <pubDate>Mon, 01 Mar 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Mereology.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Aristotle&#39;s Assertoric Syllogistic</title>
+          <link>/entries/Aristotles_Assertoric_Syllogistic.html</link>
+          <pubDate>Tue, 08 Oct 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Aristotles_Assertoric_Syllogistic.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formalisation and Evaluation of Alan Gewirth&#39;s Proof for the Principle of Generic Consistency in Isabelle/HOL</title>
+          <link>/entries/GewirthPGCProof.html</link>
+          <pubDate>Tue, 30 Oct 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/GewirthPGCProof.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Computer-assisted Reconstruction and Assessment of E. J. Lowe&#39;s Modal Ontological Argument</title>
+          <link>/entries/Lowe_Ontological_Argument.html</link>
+          <pubDate>Thu, 21 Sep 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Lowe_Ontological_Argument.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Representation and Partial Automation of the Principia Logico-Metaphysica in Isabelle/HOL</title>
+          <link>/entries/PLM.html</link>
+          <pubDate>Sun, 17 Sep 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/PLM.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Anselm&#39;s God in Isabelle/HOL</title>
+          <link>/entries/AnselmGod.html</link>
+          <pubDate>Wed, 06 Sep 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/AnselmGod.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Types, Tableaus and Gödel’s God in Isabelle/HOL</title>
+          <link>/entries/Types_Tableaus_and_Goedels_God.html</link>
+          <pubDate>Mon, 01 May 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Types_Tableaus_and_Goedels_God.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Gödel&#39;s God in Isabelle/HOL</title>
+          <link>/entries/GoedelGod.html</link>
+          <pubDate>Tue, 12 Nov 2013 00:00:00 +0000</pubDate>
+          <guid>/entries/GoedelGod.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

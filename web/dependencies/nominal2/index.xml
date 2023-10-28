@@ -1,83 +1,73 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Nominal2 on Archive of Formal Proofs</title>
+    <title>Nominal2 on Archive of Formal Proofs
+    </title>
     <link>/dependencies/nominal2/</link>
-    <description>Recent content in Nominal2 on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Nominal2 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Fri, 18 Jun 2021 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/nominal2/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>MiniSail - A kernel language for the ISA specification language SAIL</title>
-      <link>/entries/MiniSail.html</link>
-      <pubDate>Fri, 18 Jun 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/MiniSail.html</guid>
-      <description></description>
-    </item>
     
-    <item>
-      <title>From Abstract to Concrete G&amp;ouml;del&#39;s Incompleteness Theorems&amp;mdash;Part II</title>
-      <link>/entries/Goedel_HFSet_Semanticless.html</link>
-      <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Goedel_HFSet_Semanticless.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Robinson Arithmetic</title>
-      <link>/entries/Robinson_Arithmetic.html</link>
-      <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Robinson_Arithmetic.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Formalization of Generic Authenticated Data Structures</title>
-      <link>/entries/LambdaAuth.html</link>
-      <pubDate>Tue, 14 May 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/LambdaAuth.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Modal Logics for Nominal Transition Systems</title>
-      <link>/entries/Modal_Logics_for_NTS.html</link>
-      <pubDate>Tue, 25 Oct 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Modal_Logics_for_NTS.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Z Property</title>
-      <link>/entries/Rewriting_Z.html</link>
-      <pubDate>Thu, 30 Jun 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Rewriting_Z.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Gödel&#39;s Incompleteness Theorems</title>
-      <link>/entries/Incompleteness.html</link>
-      <pubDate>Sun, 17 Nov 2013 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Incompleteness.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Correctness of Launchbury&#39;s Natural Semantics for Lazy Evaluation</title>
-      <link>/entries/Launchbury.html</link>
-      <pubDate>Thu, 31 Jan 2013 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Launchbury.html</guid>
-      <description></description>
-    </item>
-    
+      <lastBuildDate>Fri, 18 Jun 2021 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/nominal2/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>MiniSail - A kernel language for the ISA specification language SAIL</title>
+          <link>/entries/MiniSail.html</link>
+          <pubDate>Fri, 18 Jun 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/MiniSail.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>From Abstract to Concrete G&amp;ouml;del&#39;s Incompleteness Theorems&amp;mdash;Part II</title>
+          <link>/entries/Goedel_HFSet_Semanticless.html</link>
+          <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Goedel_HFSet_Semanticless.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Robinson Arithmetic</title>
+          <link>/entries/Robinson_Arithmetic.html</link>
+          <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Robinson_Arithmetic.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formalization of Generic Authenticated Data Structures</title>
+          <link>/entries/LambdaAuth.html</link>
+          <pubDate>Tue, 14 May 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/LambdaAuth.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Modal Logics for Nominal Transition Systems</title>
+          <link>/entries/Modal_Logics_for_NTS.html</link>
+          <pubDate>Tue, 25 Oct 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Modal_Logics_for_NTS.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Z Property</title>
+          <link>/entries/Rewriting_Z.html</link>
+          <pubDate>Thu, 30 Jun 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Rewriting_Z.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Gödel&#39;s Incompleteness Theorems</title>
+          <link>/entries/Incompleteness.html</link>
+          <pubDate>Sun, 17 Nov 2013 00:00:00 +0000</pubDate>
+          <guid>/entries/Incompleteness.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Correctness of Launchbury&#39;s Natural Semantics for Lazy Evaluation</title>
+          <link>/entries/Launchbury.html</link>
+          <pubDate>Thu, 31 Jan 2013 00:00:00 +0000</pubDate>
+          <guid>/entries/Launchbury.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

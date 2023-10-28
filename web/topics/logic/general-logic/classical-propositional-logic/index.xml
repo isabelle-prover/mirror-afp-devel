@@ -1,64 +1,58 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Logic/General logic/Classical propositional logic on Archive of Formal Proofs</title>
+    <title>Logic/General logic/Classical propositional logic on Archive of Formal Proofs
+    </title>
     <link>/topics/logic/general-logic/classical-propositional-logic/</link>
-    <description>Recent content in Logic/General logic/Classical propositional logic on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Logic/General logic/Classical propositional logic 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language><atom:link href="/topics/logic/general-logic/classical-propositional-logic/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>MLSS Decision Procedure</title>
-      <link>/entries/MLSS_Decision_Proc.html</link>
-      <pubDate>Fri, 05 May 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/MLSS_Decision_Proc.html</guid>
-      <description></description>
-    </item>
+    <language>en-gb</language>
     
-    <item>
-      <title>A Sound and Complete Calculus for Probability Inequalities</title>
-      <link>/entries/Probability_Inequality_Completeness.html</link>
-      <pubDate>Mon, 20 Feb 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Probability_Inequality_Completeness.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Suppes&#39; Theorem For Probability Logic</title>
-      <link>/entries/Suppes_Theorem.html</link>
-      <pubDate>Sun, 22 Jan 2023 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Suppes_Theorem.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Class-based Classical Propositional Logic</title>
-      <link>/entries/Propositional_Logic_Class.html</link>
-      <pubDate>Thu, 15 Dec 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Propositional_Logic_Class.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Soundness and Completeness of Implicational Logic</title>
-      <link>/entries/Implicational_Logic.html</link>
-      <pubDate>Tue, 13 Sep 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Implicational_Logic.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Free Boolean Algebra</title>
-      <link>/entries/Free-Boolean-Algebra.html</link>
-      <pubDate>Mon, 29 Mar 2010 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Free-Boolean-Algebra.html</guid>
-      <description></description>
-    </item>
-    
+      <atom:link href="/topics/logic/general-logic/classical-propositional-logic/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>MLSS Decision Procedure</title>
+          <link>/entries/MLSS_Decision_Proc.html</link>
+          <pubDate>Fri, 05 May 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/MLSS_Decision_Proc.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Sound and Complete Calculus for Probability Inequalities</title>
+          <link>/entries/Probability_Inequality_Completeness.html</link>
+          <pubDate>Mon, 20 Feb 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Probability_Inequality_Completeness.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Suppes&#39; Theorem For Probability Logic</title>
+          <link>/entries/Suppes_Theorem.html</link>
+          <pubDate>Sun, 22 Jan 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Suppes_Theorem.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Class-based Classical Propositional Logic</title>
+          <link>/entries/Propositional_Logic_Class.html</link>
+          <pubDate>Thu, 15 Dec 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Propositional_Logic_Class.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Soundness and Completeness of Implicational Logic</title>
+          <link>/entries/Implicational_Logic.html</link>
+          <pubDate>Tue, 13 Sep 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Implicational_Logic.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Free Boolean Algebra</title>
+          <link>/entries/Free-Boolean-Algebra.html</link>
+          <pubDate>Mon, 29 Mar 2010 00:00:00 +0000</pubDate>
+          <guid>/entries/Free-Boolean-Algebra.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

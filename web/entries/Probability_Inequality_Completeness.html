@@ -1,25 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>A Sound and Complete Calculus for Probability Inequalities - Archive of Formal Proofs</title><meta name="description" content="We give a sound an complete multiple-conclusion calculus \(\$\vdash\) for finitely additive probability inequalities. In particular, we show..."><meta property="og:title" content="A Sound and Complete Calculus for Probability Inequalities" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>A Sound and Complete Calculus for Probability Inequalities - Archive of Formal Proofs</title>
+    <meta name="description" content="We give a sound an complete multiple-conclusion calculus \(\$\vdash\) for finitely additive probability inequalities. In particular, we show...">
+
+  <meta property="og:title" content="A Sound and Complete Calculus for Probability Inequalities" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="/entries/Probability_Inequality_Completeness.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
 <meta property="article:published_time" content="2023-02-20T00:00:00+00:00" />
 <meta property="article:modified_time" content="2023-02-20T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
 
-<meta name="twitter:card" content="summary_large_image"/>
+
+  <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
 <meta name="twitter:title" content="A Sound and Complete Calculus for Probability Inequalities"/>
 <meta name="twitter:description" content=""/>
 
-  
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
     <script>
       MathJax = {
         tex: {
@@ -31,72 +36,111 @@
         }
       };
     </script>
-    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
   <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
-  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
 </head>
 
-
-<body class='mathjax_ignore '>
-  <aside>
-    <div id="menu-toggle">
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
     <img src="../images/menu.svg" alt="Menu" />
   </label>
 
-  <a href="../" class='logo-link'>
-    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
   </a>
 
-  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
   <nav id="menu">
     <div>
       <a href="../" class='logo-link'>
-        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
       </a>
       <ul>
-        <a href="../"><li >Home</li></a>
-        <a href="../topics/"><li >Topics</li></a>
-        <a href="../download/"><li >Download</li></a>
-        <a href="../help/"><li >Help</li></a>
-        <a href="../submission/"><li >Submission</li></a>
-        <a href="../statistics/"><li >Statistics</li></a>
-        <a href="../about/"><li >About</li></a>
+          <a href="../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../about/">
+            <li >
+              About
+            </li>
+          </a>
       </ul>
     </div>
   </nav>
 </div>
-  </aside>
-
-  <div
-    class='content  entries'><header>
-  <form autocomplete="off" action="../search">
-    <div class='form-container'>
-      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
-      <datalist id="autocomplete">
-      </datalist>
-    </div>
-  </form>
-  <h1 >
-    <span class='first'>A</span> <span class='first'>S</span>ound and <span class='first'>C</span>omplete <span class='first'>C</span>alculus for <span class='first'>P</span>robability <span class='first'>I</span>nequalities</h1>
+    </aside>
+    <div class='content entries'>
+      <header>
+    <form autocomplete="off" action="../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>A</span> <span class='first'>S</span>ound and <span class='first'>C</span>omplete <span class='first'>C</span>alculus for <span class='first'>P</span>robability <span class='first'>I</span>nequalities
+    
+  </h1>
   <div>
-    
-    <p><a href="../authors/doty">Matthew Doty</a> <a class="obfuscated" data="eyJob3N0IjpbInctZCIsIm9yZyJdLCJ1c2VyIjpbIm1hdHQiXX0=">📧</a>
-    </p>
-    
-    
-    <p class="date">February 20, 2023</p>
-    
-  </div>
-</header><div><main><h3>Abstract</h3>
+      <p>
+        <a href="../authors/doty">Matthew Doty</a> <a class="obfuscated" data="eyJob3N0IjpbInctZCIsIm9yZyJdLCJ1c2VyIjpbIm1hdHQiXX0=">📧</a>
 
-  <div class="abstract mathjax_process">We give a sound an complete multiple-conclusion calculus \(\$\vdash\) for finitely additive probability inequalities. In particular, we show
+      </p>
+      <p class="date">February 20, 2023</p>
+  </div>
+</header>
+      <div>
+        
+  <main>
+    <h3>Abstract</h3>
+
+    <div class="abstract mathjax_process">We give a sound an complete multiple-conclusion calculus \(\$\vdash\) for finitely additive probability inequalities. In particular, we show
 
 $$\mathbf{\sim} \Gamma \$\vdash \mathbf{\sim} \Phi \equiv \forall \mathcal{P} \in probabilities. \sum \phi \leftarrow \Phi.\ \mathcal{P} \phi \leq \sum \gamma \leftarrow \Gamma.\ \mathcal{P} \gamma $$
 
@@ -106,67 +150,89 @@ $$MaxSAT (\mathbf{\sim} \Gamma\ @\ \Phi) + c\leq length\ \Gamma \equiv \forall \
 
 Finally, we establish a <em>collapse theorem</em>, which asserts that $\left(\sum \phi \leftarrow \Phi.\ \mathcal{P} \phi\right) + c \leq \sum \gamma \leftarrow \Gamma.\ \mathcal{P} \gamma$ holds for all probabilities $\mathcal{P}$ if and only if $\left(\sum \phi \leftarrow \Phi.\ \delta \phi\right) + c \leq \sum \gamma \leftarrow \Gamma.\ \delta \gamma$ holds for all binary-valued probabilities $\delta$.</div>
 
-  <h3>License</h3>
-  <div><a href="https://isa-afp.org/LICENSE">BSD License</a></div><h3>Topics</h3>
-  <ul><li><a href="../topics/mathematics/probability-theory">Mathematics/Probability theory</a></li><li><a href="../topics/logic/general-logic/classical-propositional-logic">Logic/General logic/Classical propositional logic</a></li><li><a href="../topics/logic/general-logic">Logic/General logic</a></li></ul>
-  <h3>Session Probability_Inequality_Completeness</h3>
-  <ul>
-    <li><a href="../theories/probability_inequality_completeness/#Probability_Inequality_Completeness">Probability_Inequality_Completeness</a></li></ul><div class="flex-wrap">
-  <div>
-    <h3>Depends on</h3>
-    <ul class="horizontal-list"><li><a href="../entries/Suppes_Theorem.html">Suppes' Theorem For Probability Logic</a></li></ul>
-  </div>
-  
-  </div>
-</main>
-
-<nav class='links'>
-  <a class='popup-button' href="#cite-popup">Cite</a>
-  <a class='popup-button' href="#download-popup">Download</a>
-  <h4>PDFs</h4>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Probability_Inequality_Completeness/outline.pdf">Proof
-    outline</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Probability_Inequality_Completeness/document.pdf">Proof
-    document</a>
-  <a href="https://www.isa-afp.org/browser_info/current/AFP/Probability_Inequality_Completeness/session_graph.pdf">Dependencies</a></nav>
-
-<div id="cite-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Cite</h2>
-    <a class="close" href="#">&times;</a>
+    <h3>License</h3>
     <div>
-      <p style="display:none;" id="bibtex-filename">Probability_Inequality_Completeness-AFP</p><pre id="copy-text">@article{Probability_Inequality_Completeness-AFP,
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/mathematics/probability-theory">Mathematics/Probability theory</a></li>
+          <li><a href="../topics/logic/general-logic/classical-propositional-logic">Logic/General logic/Classical propositional logic</a></li>
+          <li><a href="../topics/logic/general-logic">Logic/General logic</a></li>
+      </ul>
+      <h3>Session Probability_Inequality_Completeness</h3>
+      <ul>
+          <li><a href="../sessions/probability_inequality_completeness/#Probability_Inequality_Completeness">Probability_Inequality_Completeness</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+      <div>
+        <h3>Depends on</h3>
+        <ul class="horizontal-list">
+              <li><a href="../entries/Suppes_Theorem.html">Suppes' Theorem For Probability Logic</a></li>
+        </ul>
+      </div>
+      </div>
+    
+  </main>
+
+  <nav class='links'>
+    <a class='popup-button' href="#cite-popup">Cite</a>
+    <a class='popup-button' href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Probability_Inequality_Completeness/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Probability_Inequality_Completeness/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Probability_Inequality_Completeness/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Probability_Inequality_Completeness-AFP</p>
+        <pre id="copy-text">@article{Probability_Inequality_Completeness-AFP,
   author  = {Matthew Doty},
   title   = {A Sound and Complete Calculus for Probability Inequalities},
   journal = {Archive of Formal Proofs},
   month   = {February},
   year    = {2023},
   note    = {\url{https://isa-afp.org/entries/Probability_Inequality_Completeness.html},
-            Formal proof development},
+             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
     </div>
   </div>
-</div>
 
-<div id="download-popup" class="overlay">
-  <a class="cancel" href="#"></a>
-  <div class="popup">
-    <h2>Download</h2>
-    <a class="close" href="#">&times;</a>
-    <a href="https://www.isa-afp.org/release//afp-Probability_Inequality_Completeness-current.tar.gz" download>Download latest</a>
-    <p>Older releases:</p>
-    <ul><li>
-        <a href="https://www.isa-afp.org/release/afp-Probability_Inequality_Completeness-2023-09-13.tar.gz">Sep 13, 2023</a>: Isabelle2023
-      </li><li>
-        <a href="https://www.isa-afp.org/release/afp-Probability_Inequality_Completeness-2023-03-07.tar.gz">Mar 7, 2023</a>: Isabelle2022
-      </li></ul>
-  </div>
-</div>
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-Probability_Inequality_Completeness-current.tar.gz"
+         download>Download latest</a>
+        <p>Older releases:</p>
+        <ul>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Probability_Inequality_Completeness-2023-09-13.tar.gz">
+                Sep 13, 2023
+              </a>
+              : Isabelle2023
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Probability_Inequality_Completeness-2023-03-07.tar.gz">
+                Mar 7, 2023
+              </a>
+              : Isabelle2022
+            </li>
+        </ul>
     </div>
   </div>
-</body>
-
+        
+      </div>
+    </div>
+  </body>
 </html>

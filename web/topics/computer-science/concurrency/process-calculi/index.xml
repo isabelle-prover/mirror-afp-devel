@@ -1,127 +1,107 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Computer science/Concurrency/Process calculi on Archive of Formal Proofs</title>
+    <title>Computer science/Concurrency/Process calculi on Archive of Formal Proofs
+    </title>
     <link>/topics/computer-science/concurrency/process-calculi/</link>
-    <description>Recent content in Computer science/Concurrency/Process calculi on Archive of Formal Proofs</description>
+    <description>
+        Recent content in Computer science/Concurrency/Process calculi 
+        on Archive of Formal Proofs
+    </description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language><atom:link href="/topics/computer-science/concurrency/process-calculi/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>The HOL-CSP Refinement Toolkit</title>
-      <link>/entries/CSP_RefTK.html</link>
-      <pubDate>Thu, 19 Nov 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/CSP_RefTK.html</guid>
-      <description></description>
-    </item>
+    <language>en-gb</language>
     
-    <item>
-      <title>HOL-CSP Version 2.0</title>
-      <link>/entries/HOL-CSP.html</link>
-      <pubDate>Fri, 26 Apr 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/HOL-CSP.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Modal Logics for Nominal Transition Systems</title>
-      <link>/entries/Modal_Logics_for_NTS.html</link>
-      <pubDate>Tue, 25 Oct 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Modal_Logics_for_NTS.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Conservation of CSP Noninterference Security under Concurrent Composition</title>
-      <link>/entries/Noninterference_Concurrent_Composition.html</link>
-      <pubDate>Mon, 13 Jun 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Noninterference_Concurrent_Composition.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Conservation of CSP Noninterference Security under Sequential Composition</title>
-      <link>/entries/Noninterference_Sequential_Composition.html</link>
-      <pubDate>Tue, 26 Apr 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Noninterference_Sequential_Composition.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Analysing and Comparing Encodability Criteria for Process Calculi</title>
-      <link>/entries/Encodability_Process_Calculi.html</link>
-      <pubDate>Mon, 10 Aug 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Encodability_Process_Calculi.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Generic Unwinding Theorem for CSP Noninterference Security</title>
-      <link>/entries/Noninterference_Generic_Unwinding.html</link>
-      <pubDate>Thu, 11 Jun 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Noninterference_Generic_Unwinding.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Loop freedom of the (untimed) AODV routing protocol</title>
-      <link>/entries/AODV.html</link>
-      <pubDate>Thu, 23 Oct 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/AODV.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Mechanization of the Algebra for Wireless Networks (AWN)</title>
-      <link>/entries/AWN.html</link>
-      <pubDate>Sat, 08 Mar 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/AWN.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>CCS in nominal logic</title>
-      <link>/entries/CCS.html</link>
-      <pubDate>Tue, 29 May 2012 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/CCS.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Psi-calculi in Isabelle</title>
-      <link>/entries/Psi_Calculi.html</link>
-      <pubDate>Tue, 29 May 2012 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Psi_Calculi.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The pi-calculus in nominal logic</title>
-      <link>/entries/Pi_Calculus.html</link>
-      <pubDate>Tue, 29 May 2012 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Pi_Calculus.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Isabelle/Circus</title>
-      <link>/entries/Circus.html</link>
-      <pubDate>Sun, 27 May 2012 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Circus.html</guid>
-      <description></description>
-    </item>
-    
+      <atom:link href="/topics/computer-science/concurrency/process-calculi/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>The HOL-CSP Refinement Toolkit</title>
+          <link>/entries/CSP_RefTK.html</link>
+          <pubDate>Thu, 19 Nov 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/CSP_RefTK.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>HOL-CSP Version 2.0</title>
+          <link>/entries/HOL-CSP.html</link>
+          <pubDate>Fri, 26 Apr 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/HOL-CSP.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Modal Logics for Nominal Transition Systems</title>
+          <link>/entries/Modal_Logics_for_NTS.html</link>
+          <pubDate>Tue, 25 Oct 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Modal_Logics_for_NTS.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Conservation of CSP Noninterference Security under Concurrent Composition</title>
+          <link>/entries/Noninterference_Concurrent_Composition.html</link>
+          <pubDate>Mon, 13 Jun 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Noninterference_Concurrent_Composition.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Conservation of CSP Noninterference Security under Sequential Composition</title>
+          <link>/entries/Noninterference_Sequential_Composition.html</link>
+          <pubDate>Tue, 26 Apr 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Noninterference_Sequential_Composition.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Analysing and Comparing Encodability Criteria for Process Calculi</title>
+          <link>/entries/Encodability_Process_Calculi.html</link>
+          <pubDate>Mon, 10 Aug 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Encodability_Process_Calculi.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Generic Unwinding Theorem for CSP Noninterference Security</title>
+          <link>/entries/Noninterference_Generic_Unwinding.html</link>
+          <pubDate>Thu, 11 Jun 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Noninterference_Generic_Unwinding.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Loop freedom of the (untimed) AODV routing protocol</title>
+          <link>/entries/AODV.html</link>
+          <pubDate>Thu, 23 Oct 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/AODV.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Mechanization of the Algebra for Wireless Networks (AWN)</title>
+          <link>/entries/AWN.html</link>
+          <pubDate>Sat, 08 Mar 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/AWN.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>CCS in nominal logic</title>
+          <link>/entries/CCS.html</link>
+          <pubDate>Tue, 29 May 2012 00:00:00 +0000</pubDate>
+          <guid>/entries/CCS.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Psi-calculi in Isabelle</title>
+          <link>/entries/Psi_Calculi.html</link>
+          <pubDate>Tue, 29 May 2012 00:00:00 +0000</pubDate>
+          <guid>/entries/Psi_Calculi.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The pi-calculus in nominal logic</title>
+          <link>/entries/Pi_Calculus.html</link>
+          <pubDate>Tue, 29 May 2012 00:00:00 +0000</pubDate>
+          <guid>/entries/Pi_Calculus.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Isabelle/Circus</title>
+          <link>/entries/Circus.html</link>
+          <pubDate>Sun, 27 May 2012 00:00:00 +0000</pubDate>
+          <guid>/entries/Circus.html</guid>
+          <description></description>
+        </item>
   </channel>
 </rss>

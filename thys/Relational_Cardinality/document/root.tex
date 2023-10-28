@@ -1,0 +1,42 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amssymb,ragged2e,stmaryrd}
+\usepackage{pdfsetup}
+
+\isabellestyle{it}
+\renewenvironment{isamarkuptext}{\par\isastyletext\begin{isapar}\justifying\color{blue}}{\end{isapar}}
+\renewcommand\labelitemi{$*$}
+\urlstyle{rm}
+
+\begin{document}
+
+\title{Cardinality and Representation of Stone Relation Algebras}
+\author{Walter Guttmann}
+\maketitle
+
+\begin{abstract}
+  In relation algebras, which model unweighted graphs, the cardinality operation counts the number of edges of a graph.
+  We generalise the cardinality axioms to Stone relation algebras, which model weighted graphs, and study the relationships between various axioms for cardinality.
+  We also give a representation theorem for Stone relation algebras.
+\end{abstract}
+
+\tableofcontents
+
+\bigskip
+
+\noindent
+The theories formally verify results in \cite{FurusawaGuttmann2023}.
+See this papers for further details and related work.
+Stone relation algebras have been introduced in \cite{Guttmann2017b} and formalised in \cite{Guttmann2017a}.
+
+\begin{flushleft}
+\input{session}
+\end{flushleft}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
