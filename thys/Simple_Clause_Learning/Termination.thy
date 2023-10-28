@@ -184,8 +184,7 @@ lemma termination_scl_without_back_invars:
     "scl_without_backtrack \<equiv> propagate N \<beta> \<squnion> decide N \<beta> \<squnion> conflict N \<beta> \<squnion> skip N \<beta> \<squnion>
       factorize N \<beta> \<squnion> resolve N \<beta>" and
     "invars \<equiv> trail_atoms_lt \<beta> \<sqinter> trail_resolved_lits_pol \<sqinter> trail_lits_ground \<sqinter>
-      trail_lits_from_clauses N \<sqinter> initial_lits_generalize_learned_trail_conflict N \<sqinter>
-      ground_closures"
+      initial_lits_generalize_learned_trail_conflict N \<sqinter> ground_closures"
   shows "wfp_on {S. invars S} scl_without_backtrack\<inverse>\<inverse>"
 proof -
   let ?less =
@@ -202,20 +201,10 @@ proof -
       "trail_atoms_lt \<beta> S" and
       "trail_resolved_lits_pol S" and
       "trail_lits_ground S" and
-      "trail_lits_from_clauses N S" and
       "initial_lits_generalize_learned_trail_conflict N S" and
       "ground_closures S"
-      "trail_lits_from_clauses N S'" and
       "initial_lits_generalize_learned_trail_conflict N S'"
       by (simp_all add: invars_def)
-
-    have "trail_lits_from_init_clauses N S"
-      using \<open>trail_lits_from_clauses N S\<close> \<open>initial_lits_generalize_learned_trail_conflict N S\<close>
-      by (simp add: trail_lits_from_init_clausesI)
-
-    have "trail_lits_from_init_clauses N S'"
-      using \<open>trail_lits_from_clauses N S'\<close> \<open>initial_lits_generalize_learned_trail_conflict N S'\<close>
-      by (simp add: trail_lits_from_init_clausesI)
 
     from step show "?less (\<M> N \<beta> S') (\<M> N \<beta> S)"
       unfolding conversep_iff scl_without_backtrack_def sup_apply sup_bool_def
@@ -433,8 +422,7 @@ corollary termination_scl_without_back:
     "scl_without_backtrack \<equiv> propagate N \<beta> \<squnion> decide N \<beta> \<squnion> conflict N \<beta> \<squnion> skip N \<beta> \<squnion>
       factorize N \<beta> \<squnion> resolve N \<beta>" and
     "invars \<equiv> trail_atoms_lt \<beta> \<sqinter> trail_resolved_lits_pol \<sqinter> trail_lits_ground \<sqinter>
-      trail_lits_from_clauses N \<sqinter> initial_lits_generalize_learned_trail_conflict N \<sqinter>
-      ground_closures"
+      initial_lits_generalize_learned_trail_conflict N \<sqinter> ground_closures"
   shows "wfp_on {S. scl_without_backtrack\<^sup>*\<^sup>* initial_state S} scl_without_backtrack\<inverse>\<inverse>"
 proof (rule wfp_on_subset)
   show "wfp_on {S. invars S} scl_without_backtrack\<inverse>\<inverse>"
@@ -456,7 +444,6 @@ next
         scl_preserves_trail_atoms_lt
         scl_preserves_trail_resolved_lits_pol
         scl_preserves_trail_lits_ground
-        scl_preserves_trail_lits_from_clauses
         scl_preserves_initial_lits_generalize_learned_trail_conflict
         scl_preserves_ground_closures
       by simp_all
@@ -746,10 +733,8 @@ theorem termination_regular_scl_invars:
     \<beta> :: "('f, 'v) Term.term"
   defines
     "invars \<equiv> trail_atoms_lt \<beta> \<sqinter> trail_resolved_lits_pol \<sqinter> trail_lits_ground \<sqinter>
-      trail_lits_from_clauses N \<sqinter> initial_lits_generalize_learned_trail_conflict N \<sqinter>
-      ground_closures \<sqinter> ground_false_closures \<sqinter> sound_state N \<beta> \<sqinter>
-      almost_no_conflict_with_trail N \<beta> \<sqinter>
-      regular_conflict_resolution N \<beta>"
+      initial_lits_generalize_learned_trail_conflict N \<sqinter> ground_closures \<sqinter> ground_false_closures \<sqinter>
+      sound_state N \<beta> \<sqinter> almost_no_conflict_with_trail N \<beta> \<sqinter> regular_conflict_resolution N \<beta>"
   shows
     "wfp_on {S. invars S} (regular_scl N \<beta>)\<inverse>\<inverse>"
 proof (rule wfp_on_mono_strong)
@@ -836,10 +821,8 @@ corollary termination_regular_scl:
     \<beta> :: "('f, 'v) Term.term"
   defines
     "invars \<equiv> trail_atoms_lt \<beta> \<sqinter> trail_resolved_lits_pol \<sqinter> trail_lits_ground \<sqinter>
-      trail_lits_from_clauses N \<sqinter> initial_lits_generalize_learned_trail_conflict N \<sqinter>
-      ground_closures \<sqinter> ground_false_closures \<sqinter> sound_state N \<beta> \<sqinter>
-      almost_no_conflict_with_trail N \<beta> \<sqinter>
-      regular_conflict_resolution N \<beta>"
+      initial_lits_generalize_learned_trail_conflict N \<sqinter> ground_closures \<sqinter> ground_false_closures \<sqinter>
+      sound_state N \<beta> \<sqinter> almost_no_conflict_with_trail N \<beta> \<sqinter> regular_conflict_resolution N \<beta>"
   shows "wfp_on {S. (regular_scl N \<beta>)\<^sup>*\<^sup>* initial_state S} (regular_scl N \<beta>)\<inverse>\<inverse>"
 proof (rule wfp_on_subset)
   show "wfp_on {S. invars S} (regular_scl N \<beta>)\<inverse>\<inverse>"
@@ -858,7 +841,6 @@ next
       reg_to_scl[THEN scl_preserves_trail_atoms_lt]
       reg_to_scl[THEN scl_preserves_trail_resolved_lits_pol]
       reg_to_scl[THEN scl_preserves_trail_lits_ground]
-      reg_to_scl[THEN scl_preserves_trail_lits_from_clauses]
       reg_to_scl[THEN scl_preserves_initial_lits_generalize_learned_trail_conflict]
       reg_to_scl[THEN scl_preserves_ground_closures]
       reg_to_scl[THEN scl_preserves_ground_false_closures]

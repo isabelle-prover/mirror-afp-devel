@@ -34,9 +34,6 @@ lemma (in scl_fol_calculus) scl_state_invariants:
     inv_initial_lits_generalize_learned_trail_conflict:
       "initial_lits_generalize_learned_trail_conflict N initial_state"
       "scl N \<beta> S S' \<Longrightarrow> initial_lits_generalize_learned_trail_conflict N S \<Longrightarrow> initial_lits_generalize_learned_trail_conflict N S'" and
-    inv_trail_lits_from_clauses:
-      "trail_lits_from_clauses N initial_state"
-      "scl N \<beta> S S' \<Longrightarrow> trail_lits_from_clauses N S \<Longrightarrow> trail_lits_from_clauses N S'" and
     inv_sound_state:
       "sound_state N \<beta> initial_state"
       "scl N \<beta> S S' \<Longrightarrow> sound_state N \<beta> S \<Longrightarrow> sound_state N \<beta> S'"
@@ -50,7 +47,6 @@ lemma (in scl_fol_calculus) scl_state_invariants:
   using trail_resolved_lits_pol_initial_state scl_preserves_trail_resolved_lits_pol
   using initial_lits_generalize_learned_trail_conflict_initial_state
     scl_preserves_initial_lits_generalize_learned_trail_conflict
-  using trail_lits_from_clauses_initial_state scl_preserves_trail_lits_from_clauses
   using sound_initial_state scl_preserves_sound_state
   by metis+
 

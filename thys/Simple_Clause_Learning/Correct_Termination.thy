@@ -22,7 +22,6 @@ proof -
   from deci obtain L \<gamma> \<Gamma> U where
     S\<^sub>0_def: "S\<^sub>0 = (\<Gamma>, U, None)" and
     S\<^sub>2_def: "S\<^sub>2 = (trail_decide \<Gamma> (L \<cdot>l \<gamma>), U, None)" and
-    "L \<in> \<Union> (set_mset ` fset N)" and
     "is_ground_lit (L \<cdot>l \<gamma>)" and
     "\<not> trail_defined_lit \<Gamma> (L \<cdot>l \<gamma>)" and
     "atm_of L \<cdot>a \<gamma> \<preceq>\<^sub>B \<beta>"
@@ -218,10 +217,6 @@ proof -
 
         have deci: "decide N \<beta> (\<Gamma>, U, None) (trail_decide \<Gamma> (L' \<cdot>l \<gamma>), U, None)"
         proof (rule decideI)
-          show "L' \<in> \<Union> (set_mset ` fset N)"
-            using C'_in L'_in
-            by (meson UN_I)
-        next
           show "is_ground_lit (L' \<cdot>l \<gamma>)"
             using L_in \<open>L = L' \<cdot>l \<gamma>\<close> \<open>is_ground_cls C\<close> is_ground_cls_def by blast
         next
