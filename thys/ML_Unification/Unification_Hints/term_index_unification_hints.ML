@@ -338,7 +338,7 @@ fun parse_arg_entries mode =
     val parse_entry = Parse_Key_Value.parse_entry' (Scan.lift PA.parse_key)
       (Scan.lift PU.eq) parse_value
   in
-    PA.parse_entries_required' PU.and_list1' [] parse_entry default_entries
+    PA.parse_entries_required' Parse.and_list1' [] parse_entry default_entries
     |> mode = PM.key PM.del ?
       PU.filter_cut' (is_none o PA.get_prio_safe) (K o K "Priority may not be specified for deletion.")
   end
@@ -370,12 +370,12 @@ fun attribute ((mode, entries), pos) =
 
 val parse_attribute =
   (Scan.lift (Scan.optional TUHA.parse_mode (PM.key PM.add))
-  :-- (fn mode => PU.optional' ((Scan.lift Parse.where_ |-- parse_arg_entries mode) |> PU.!!!+)
+  :-- (fn mode => PU.optional' ((Scan.lift Parse.where_ |-- parse_arg_entries mode) |> Parse.!!!!)
     default_entries)
   |> PU.position')
   >> attribute
 
-val setup_attribute = Attrib.local_setup binding (PU.!!!+ parse_attribute) o
+val setup_attribute = Attrib.local_setup binding (Parse.!!!! parse_attribute) o
   the_default ("set unification hints arguments (" ^ FIU.FIA.full_name ^ ")")
 
 end

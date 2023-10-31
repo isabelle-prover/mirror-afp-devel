@@ -5,14 +5,6 @@ Parsing utilities.
 *)
 signature PARSE_UTIL =
 sig
-  (*cut for context parsers*)
-  val !!!+ : 'a context_parser -> 'a context_parser
-
-  val enum1' : string -> 'a context_parser -> 'a list context_parser
-  val enum' : string -> 'a context_parser -> 'a list context_parser
-  val and_list1' : 'a context_parser -> 'a list context_parser
-  val and_list' : 'a context_parser -> 'a list context_parser
-
   (*indexed state monad (generalising parsers and context parsers)*)
   type ('i, 'j, 'a) istate = 'i -> 'a * 'j
 
@@ -73,28 +65,6 @@ end
 structure Parse_Util : PARSE_UTIL =
 struct
 
-(*FIXME: move to Isabelle kernel?*)
-fun get_tokens_pos [] = " (end-of-input)"
-  | get_tokens_pos (tok :: _) = Position.here (Token.pos_of tok);
-
-fun cut get_pos kind scan =
-  let
-    fun err (x, NONE) = (fn () => kind ^ get_pos x)
-      | err (x, SOME msg) =
-          (fn () =>
-            let val s = msg () in
-              if String.isPrefix kind s then s
-              else kind ^ get_pos x ^ ": " ^ s
-            end);
-  in Scan.!! err scan end;
-
-fun !!!+ scan = cut (get_tokens_pos o snd) "Outer syntax error" scan
-
-fun enum1' sep scan = scan ::: Scan.repeat (Scan.lift (Parse.$$$ sep) |-- !!!+ scan);
-fun enum' sep scan = enum1' sep scan || Scan.succeed [];
-fun and_list1' scan = enum1' "and" scan;
-fun and_list' scan = enum' "and" scan;
-
 type ('i, 'j, 'a) istate = 'i -> 'a * 'j
 
 fun if_ahead ahead f scan =
@@ -121,7 +91,7 @@ fun fail msg_of = Scan.fail_with (fn x => fn _ => msg_of x)
 fun gen_abort cut msg_of = fail msg_of |> cut
 
 fun abort msg_of = gen_abort Parse.!!! msg_of
-fun abort' msg_of = gen_abort !!!+ msg_of
+fun abort' msg_of = gen_abort Parse.!!!! msg_of
 
 fun filter p err scan = scan :|-- (fn x => if p x then pair x else err x)
 fun gen_filter_cut abort p msg_of = filter p (abort o msg_of)

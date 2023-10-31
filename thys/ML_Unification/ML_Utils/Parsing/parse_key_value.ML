@@ -37,7 +37,7 @@ fun gen_parse_entry cut parse_key parse_delim parse_value =
   :-- (fn n => parse_delim
   |-- cut (parse_value n))
 fun parse_entry parse_key = gen_parse_entry Parse.!!! parse_key
-fun parse_entry' parse_key = gen_parse_entry Util.!!!+ parse_key
+fun parse_entry' parse_key = gen_parse_entry Parse.!!!! parse_key
 
 fun pretty_keys key_to_string = map (Pretty.str o key_to_string) #> Pretty.commas #> Pretty.block
 

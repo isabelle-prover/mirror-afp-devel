@@ -8,6 +8,7 @@ sig
   val flip : ('a -> 'b -> 'c) -> 'b -> 'a -> 'c
 
   val find_first_index : ('a -> bool) -> 'a list -> (int * 'a) option
+  val find_indices : ('a -> bool) -> 'a list -> int list
 
   (*returns false if function throws an exception*)
   val try_bool : ('a -> bool) -> 'a -> bool
@@ -29,6 +30,12 @@ struct
 fun flip f x y = f y x
 
 fun find_first_index p = get_index (Option.filter p)
+
+fun find_indices p =
+  let
+    fun find_indices _ [] = []
+      | find_indices i (x :: xs) = (p x ? cons i) (find_indices (i + 1) xs)
+  in find_indices 0 end
 
 fun try_bool f = try f #> (Option.getOpt o rpair false)
 

@@ -214,7 +214,7 @@ fun protected_tac n tac ctxt =
 fun focus_prems_tac is tac ctxt =
   CONVERSION (Conversion_Util.move_prems_to_front_conv is)
   THEN' protect_tac (length is) ctxt
-  THEN' FOCUS' (fn {context=ctxt, params=params, prems=prems,
+  THEN' FOCUS_PREMS' (fn {context=ctxt, params=params, prems=prems,
     asms=asms, concl=concl, schematics=schematics} =>
     let val concl = Term_Util.unprotect concl
     in
