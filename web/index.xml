@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Wed, 11 Oct 2023 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Sun, 29 Oct 2023 00:00:00 +0000</lastBuildDate>
       <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Eudoxus Reals</title>
+          <link>/entries/Eudoxus_Reals.html</link>
+          <pubDate>Sun, 29 Oct 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Eudoxus_Reals.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Transport via Partial Galois Connections and Equivalences</title>
           <link>/entries/Transport.html</link>
@@ -6892,6 +6899,13 @@
           <link>/sessions/error_function/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/error_function/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Eudoxus_Reals</title>
+          <link>/sessions/eudoxus_reals/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/eudoxus_reals/</guid>
           <description></description>
         </item>
         <item>
