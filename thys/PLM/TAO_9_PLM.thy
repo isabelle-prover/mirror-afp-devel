@@ -964,8 +964,7 @@ text\<open>\label{TAO_PLM_Quantification}\<close>
         {
           fix \<beta>
           have "[\<^bold>\<box>\<phi> \<beta> \<^bold>\<rightarrow> \<beta> \<^bold>= \<alpha> in v]"
-            using 1 "\<^bold>&E"(2) qml_2[axiom_instance]
-              ded_thm_cor_3 "\<^bold>\<forall>E" by fastforce
+            by (metis "1" Semantics.T5 Semantics.T6 cqt_orig_1 oth_class_taut_9_b)
         }
         hence "[\<^bold>\<forall>\<beta>. \<^bold>\<box>\<phi> \<beta> \<^bold>\<rightarrow> \<beta> \<^bold>= \<alpha> in v]" by (rule "\<^bold>\<forall>I")
         moreover have "[\<^bold>\<box>(\<phi> \<alpha>) in v]"
@@ -1185,7 +1184,7 @@ text\<open>\label{TAO_PLM_ActualityAndDescriptions}\<close>
       moreover have "[\<^bold>\<A>\<^bold>\<not>(\<^bold>\<forall> \<alpha> . \<^bold>\<not>\<phi> \<alpha>) \<^bold>\<equiv> \<^bold>\<not>\<^bold>\<A>(\<^bold>\<forall> \<alpha> . \<^bold>\<not>\<phi> \<alpha>) in v]"
         using logic_actual_nec_1[axiom_instance] by blast
       ultimately have "[\<^bold>\<A>\<^bold>\<not>(\<^bold>\<forall> \<alpha> . \<^bold>\<not>\<phi> \<alpha>) \<^bold>\<equiv> \<^bold>\<not>(\<^bold>\<forall> \<alpha> . \<^bold>\<A>\<^bold>\<not>\<phi> \<alpha>) in v]"
-        using "\<^bold>\<equiv>E"(5) by auto
+        using "\<^bold>\<equiv>E"(5) by blast
       moreover {
         have "[\<^bold>\<forall> \<alpha> . \<^bold>\<A>\<^bold>\<not>\<phi> \<alpha> \<^bold>\<equiv> \<^bold>\<not>\<^bold>\<A>\<phi> \<alpha> in v]"
           using logic_actual_nec_1[axiom_universal, axiom_instance] by blast 
@@ -1194,7 +1193,8 @@ text\<open>\label{TAO_PLM_ActualityAndDescriptions}\<close>
         hence "[(\<^bold>\<not>(\<^bold>\<forall> \<alpha> . \<^bold>\<A>\<^bold>\<not>\<phi> \<alpha>)) \<^bold>\<equiv> \<^bold>\<not>(\<^bold>\<forall> \<alpha> . \<^bold>\<not>\<^bold>\<A>\<phi> \<alpha>) in v]"
           using oth_class_taut_5_d[equiv_lr] by blast
       }
-      ultimately show ?thesis unfolding exists_def using "\<^bold>\<equiv>E"(5) by auto
+      ultimately show ?thesis
+        by (metis "\<^bold>\<exists>E" MetaSolver.EquivI Semantics.T7 existential)
     qed
 
   lemma act_quant_uniq[PLM]:
@@ -2334,7 +2334,7 @@ begin
       moreover from 1 have "[\<phi> \<^bold>\<rightarrow> \<^bold>\<box>\<phi> in v]"
         using qml_2[axiom_instance, deduction] by auto
       ultimately have "[\<^bold>\<diamond>\<phi> \<^bold>\<rightarrow> \<^bold>\<box>\<phi> in v]"
-        using ded_thm_cor_3 by auto
+        using ded_thm_cor_3 by blast
       moreover have "[\<^bold>\<box>\<phi> \<^bold>\<rightarrow> \<^bold>\<diamond>\<phi> in v]"
         using qml_2[axiom_instance] "T\<^bold>\<diamond>"
         by (rule ded_thm_cor_3)
@@ -2425,7 +2425,7 @@ begin
         moreover have "[\<^bold>\<diamond>\<^bold>\<box>(\<phi> \<alpha>) \<^bold>\<rightarrow> (\<phi> \<alpha>) in v]"
           using "B\<^bold>\<diamond>" by auto
         ultimately have "[\<^bold>\<diamond>(\<^bold>\<forall>\<alpha>. \<^bold>\<box>(\<phi> \<alpha>)) \<^bold>\<rightarrow> (\<phi> \<alpha>) in v]"
-          using ded_thm_cor_3 by auto
+          using ded_thm_cor_3 by blast
       }
       hence "[\<^bold>\<forall> \<alpha> . \<^bold>\<diamond>(\<^bold>\<forall>\<alpha>. \<^bold>\<box>(\<phi> \<alpha>)) \<^bold>\<rightarrow> (\<phi> \<alpha>) in v]"
         using "\<^bold>\<forall>I" by metis

@@ -239,10 +239,6 @@ declare not_def[meta_defs] impl_def[meta_defs] forall\<^sub>\<nu>_def[meta_defs]
         exe3_def[meta_defs] enc_def[meta_defs] inv_def[meta_defs]
         that_def[meta_defs] valid_in_def[meta_defs] Concrete_def[meta_defs]
 
-declare [[smt_solver = cvc4]]
-declare [[simp_depth_limit = 10]] (* prevent the simplifier from running forever *)
-declare [[unify_search_bound = 40]] (* prevent unification bound errors *)
-
 subsection\<open>Auxiliary Lemmata\<close>
 text\<open>\label{TAO_Embedding_Aux}\<close>
   
