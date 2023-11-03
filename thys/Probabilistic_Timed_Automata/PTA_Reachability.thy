@@ -2015,7 +2015,7 @@ proof -
       by (force elim!: K.cases)
     moreover have "finite ?S"
     proof -
-      have "?S \<subseteq> (\<lambda> (l, g, \<mu>). map_pmf (\<lambda> (X, l). (l, ([X := 0](snd x)))) \<mu>) ` trans_of A"
+      have "?S \<subseteq> (\<lambda> (l, g, \<mu>). map_pmf (\<lambda> (X, l). (l, (clock_set_set X 0(snd x)))) \<mu>) ` trans_of A"
         by force
       also from finite(3) have "finite \<dots>" ..
       finally show ?thesis .

@@ -1134,7 +1134,8 @@ proof -
     by (rule Lp_domination[OF _ assms], auto)
   moreover have "Norm (\<LL> p M) f \<le> Norm (\<LL> p M) (\<lambda>x. \<bar>f x\<bar>)"
     by (rule Lp_domination[OF _ \<open>(\<lambda>x. \<bar>f x\<bar>) \<in> space\<^sub>N (\<LL> p M)\<close>], auto)
-  finally show "Norm (\<LL> p M) (\<lambda>x. \<bar>f x\<bar>) = Norm (\<LL> p M) f" by auto
+  ultimately show "Norm (\<LL> p M) (\<lambda>x. \<bar>f x\<bar>) = Norm (\<LL> p M) f"
+    by auto
 qed
 
 lemma Lp_bounded_bounded_support:
@@ -2227,7 +2228,7 @@ proof -
   finally have *: "eNorm (\<LL> p (restr_to_subalg M F)) (real_cond_exp M F f) \<le> eNorm (\<LL> p M) f"
     by simp
   then show a: "real_cond_exp M F f \<in> space\<^sub>N (\<LL> p (restr_to_subalg M F))"
-    apply (subst spaceN_iff) using \<open>f \<in> space\<^sub>N (\<LL> p M)\<close> by (simp add: space\<^sub>N_def)
+    by (meson \<open>f \<in> space\<^sub>N (\<LL> p M)\<close> order_le_less_trans spaceN_iff)
   show "Norm (\<LL> p (restr_to_subalg M F)) (real_cond_exp M F f) \<le> Norm (\<LL> p M) f"
     using * unfolding eNorm_Norm[OF \<open>f \<in> space\<^sub>N (\<LL> p M)\<close>] eNorm_Norm[OF a] by simp
 qed

@@ -231,7 +231,7 @@ proof -
           have "(k * int xa - int n * int xa) mod int n = (k * int xa - 0) mod int n"
             by (intro mod_diff_cong) auto
           thus "unity_root n (-int xa * (int n - k)) = unity_root n (int xa * k)"
-            unfolding ring_distribs by (intro unity_root_cong) (auto simp: cong_def algebra_simps)
+            by (metis left_diff_distrib diff_zero minus_diff_eq mult.commute unity_root_mod)
         qed
         also have "\<dots> = cnj(f(k))"
         proof -

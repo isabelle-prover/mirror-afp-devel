@@ -177,10 +177,14 @@ proof -
     by simp
   from \<open>1 < e\<close> show \<open>e > 1\<close>.
   from d \<open>coprime e M\<close> bezw_inverse [of e M]
-  have \<open>[e * d = 1] (mod M)\<close>
+  have eq1: \<open>[e * d = 1] (mod M)\<close>
     by simp
-  with \<open>e > 1\<close> \<open>2 < M\<close> show \<open>d > 1\<close>
-    by (cases \<open>d = 0 \<or> d = 1\<close>) (auto simp add: \<open>e < M\<close> cong_def)
+  with \<open>2 < M\<close> have "d \<noteq> 0"
+    by (metis cong_0_1_nat mult_0_right not_numeral_less_one)
+  moreover have "d \<noteq> 1"
+    using \<open>1 < e\<close> eq1 \<open>e < M\<close> cong_less_modulus_unique_nat by fastforce
+  ultimately show \<open>d > 1\<close>
+    by linarith
 qed
 
 definition domain :: "index \<Rightarrow> nat set"
@@ -227,7 +231,7 @@ proof-
     hence ye_gt_xe: "y^e \<ge> x^e"
       by (simp add: power_mono)
     have x_y_exp_e: "[x^e = y^e] (mod P)"
-      using cong_modulus_mult_nat  cong_altdef_nat True ye_gt_xe cong_sym cong_def assms by blast
+      by (metis assms(7) cong_refl mod_mult_cong_right)
     obtain d where d:  "[e*d = 1] (mod (P-1)) \<and> d \<noteq> 0" 
       using ex_inverse assms by blast
     then obtain k where k: "e*d = 1 + k*(P-1)" 
@@ -277,7 +281,7 @@ proof-
       qed
     qed 
     have "[x^e = y^e] (mod Q)"
-      by (metis rsa_map_eq cong_modulus_mult_nat cong_def mult.commute) 
+      by (metis assms(7) cong_refl mod_mult_cong_left)
     obtain d' where d':  "[e*d' = 1] (mod (Q-1)) \<and> d' \<noteq> 0" 
       by (metis mult.commute ex_inverse prime_P prime_Q P_neq_Q coprime)
     then obtain k' where k': "e*d' = 1 + k'*(Q-1)" 
@@ -329,16 +333,14 @@ proof-
     have P_dvd_xy: "P dvd (y - x)"
     proof-
       have "[x = y] (mod P)"
-      using xk_x yk_y xk_yk 
-      by (simp add: cong_def)
+        by (meson cong_sym_eq cong_trans xk_x xk_yk yk_y)
     thus ?thesis
       using cong_altdef_nat cong_sym True by blast
     qed
     have Q_dvd_xy: "Q dvd (y - x)"
     proof-
       have "[x = y] (mod Q)"
-      using xk_x' yk_y' xk_yk'  
-      by (simp add: cong_def)
+        by (meson cong_sym cong_trans xk_x' xk_yk' yk_y')
     thus ?thesis
       using cong_altdef_nat cong_sym True by blast
     qed
@@ -348,8 +350,8 @@ proof-
       by (simp add: assms divides_mult primes_coprime)
     then have "[x = y] (mod P*Q)" 
       by (simp add: cong_altdef_nat cong_sym True)
-    hence "x mod P*Q = y mod P*Q" 
-      using  cong_def xk_x xk_yk yk_y by metis 
+    hence "x mod P*Q = y mod P*Q"
+      using cong_less_modulus_unique_nat x_lt_pq y_lt_pd by blast 
     then show ?thesis 
       using \<open>[x = y] (mod P * Q)\<close> cong_less_modulus_unique_nat x_lt_pq y_lt_pd by blast 
     qed
@@ -357,8 +359,8 @@ proof-
     case False
     hence ye_gt_xe: "x^e \<ge> y^e" 
       by (simp add: power_mono)
-    have pow_eq: "[x^e = y^e] (mod P*Q)" 
-      by (simp add: cong_def assms)
+    have pow_eq: "[x^e = y^e] (mod P*Q)"
+      using rsa_map_eq unique_euclidean_semiring_class.cong_def by blast 
     then have PQ_dvd_ye_xe: "(P*Q) dvd (x^e - y^e)" 
       using cong_altdef_nat False ye_gt_xe cong_sym by blast
     then have "[x^e = y^e] (mod P)"
@@ -418,8 +420,8 @@ proof-
     qed 
     have P_dvd_xy: "P dvd (x - y)"
     proof-
-      have "[x = y] (mod P)" using xk_x yk_y xk_yk 
-        by (simp add: cong_def)
+      have "[x = y] (mod P)"
+        by (meson cong_sym_eq cong_trans xk_x xk_yk yk_y)
       thus ?thesis 
         using cong_altdef_nat cong_sym False by simp
     qed
@@ -482,8 +484,8 @@ proof-
     qed 
     have Q_dvd_xy: "Q dvd (x - y)"
     proof-
-      have "[x = y] (mod Q)" 
-        using xk_x' yk_y' xk_yk' by (simp add: cong_def)
+      have "[x = y] (mod Q)"
+        by (meson cong_sym_eq cong_trans xk_x' xk_yk' yk_y') 
       thus ?thesis
         using cong_altdef_nat cong_sym False by simp
     qed
@@ -535,11 +537,6 @@ proof-
   thus ?thesis by blast 
 qed
 
-lemma 
-  assumes "P dvd x"
-shows "[x = 0] (mod P)"
-  using assms cong_def by force
-
 lemma rsa_inv: 
   assumes d: "d = nat (fst (bezw e ((P-1)*(Q-1))) mod int ((P-1)*(Q-1)))"
     and coprime: "coprime e ((P-1)*(Q-1))"
@@ -569,12 +566,7 @@ next
   proof(cases "[x = 0] (mod P)")
     case True
     then show ?thesis 
-    proof -
-      have "0 \<noteq> d * e"
-        by (metis (no_types) assms assms mult_is_0 not_one_less_zero)
-      then show ?thesis
-        by (metis (no_types) Groups.add_ac(2) True add_diff_inverse_nat cong_def cong_dvd_iff cong_mult_self_right dvd_0_right dvd_def dvd_trans mod_add_self2 more_arith_simps(5) nat_diff_split power_eq_if power_mult semiring_normalization_rules(7) z_def)
-    qed
+      by (metis Suc_lessD e_gt_1 d_gt_1 cong_0_iff dvd_minus_self dvd_power dvd_trans One_nat_def z_def) 
   next
     case False
     have "[e * d = 1] (mod ((P - 1) * (Q - 1)))" 
@@ -599,13 +591,8 @@ next
   moreover have "[z = 0] (mod Q)" 
   proof(cases "[x = 0] (mod Q)")
     case True
-    then show ?thesis 
-    proof -
-      have "0 \<noteq> d * e"
-        by (metis (no_types) assms mult_is_0 not_one_less_zero)
-      then show ?thesis
-        by (metis (no_types) Groups.add_ac(2) True add_diff_inverse_nat cong_def cong_dvd_iff cong_mult_self_right dvd_0_right dvd_def dvd_trans mod_add_self2 more_arith_simps(5) nat_diff_split power_eq_if power_mult semiring_normalization_rules(7) z_def)
-    qed
+    then show ?thesis
+      by (metis cong_0_iff cong_modulus_mult_nat dvd_def dvd_minus_self power_eq_if power_mult x_gt_1 z_def)
   next
     case False
     have "[e * d = 1] (mod ((P - 1) * (Q - 1)))" 
@@ -635,7 +622,7 @@ next
   hence "[(x ^ e) ^ d = x] (mod (P * Q))"
     using z_gt_0 cong_altdef_nat z_def by auto
   thus ?thesis 
-    by (simp add: cong_def power_mod)
+    by (simp add: unique_euclidean_semiring_class.cong_def power_mod)
 qed
 
 

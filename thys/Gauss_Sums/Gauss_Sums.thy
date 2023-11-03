@@ -431,21 +431,8 @@ proof
 qed
 
 lemma induced_modulus_modulus: "induced_modulus n"
-  unfolding induced_modulus_def 
-proof (rule conjI,simp,safe) 
-  fix a 
-  assume "[a = 1] (mod n)" 
-  then have "a mod n = 1 mod n" 
-    using cong_def[of a 1 n] by blast
-  also have "\<dots> = 1" 
-    using eq_zero_iff zero_eq_0 by fastforce
-  finally have 1: "a mod n = 1" by simp
-  
-  have "\<chi> a = \<chi> (a mod n)" by simp
-  also have "\<dots> = \<chi> 1" using cong_def 1 by auto
-  also have "\<dots> = 1" by simp
-  finally show "\<chi> a = 1" by blast
-qed
+  unfolding induced_modulus_def
+  by (metis dvd_refl local.cong mult.one) 
 
 text \<open>Theorem 8.13\<close>
 theorem one_induced_iff_principal:
@@ -709,7 +696,7 @@ proof
       from True cop have cop_ad: "coprime (a+d) d" by blast      
       have p1: "[f (a+d) = f a] (mod d)" 
         using m_prop(1)[of "a+d", OF cop_ad] 
-              m_prop(1)[of "a",OF True] by (simp add: cong_def)
+              m_prop(1)[of "a",OF True] by (simp add: unique_euclidean_semiring_class.cong_def)
       have p2: "coprime (f (a+d)) n" "coprime (f a) n" 
         using m_prop(2)[of "a+d", OF cop_ad]
               m_prop(2)[of "a", OF True] by blast+ 
@@ -806,15 +793,11 @@ next
   proof (rule conjI,fact,safe)
     fix k
     assume 2: "coprime k n" "[k = 1] (mod d)"
-    then have "\<chi>\<^sub>1 k = 1" "\<Phi> k = 1" 
-    proof (simp add: assms(3) principal_dchar_def)
-      have "\<Phi> k = \<Phi> (k mod d)" by (simp add: dcharacter.mod[OF 1(1), of k])
-      also have "\<dots> = \<Phi> (1 mod d)" using cong_def[of k 1 d] 2(2) by simp
-      also have "\<dots> = \<Phi> 1" using assms(2) "1"(1) dcharacter.mod by blast
-      also have "\<dots> = 1" using dcharacter.Suc_0[OF 1(1)] by simp
-      finally show "\<Phi> k = 1" by simp
-    qed
-    then show "\<chi> k = 1" using 1(2) by simp    
+    then have "\<chi>\<^sub>1 k = 1"
+      by (simp add: \<chi>\<^sub>1_def)
+    moreover have "\<Phi> k = 1"
+      by (metis "1"(1) "2"(2) One_nat_def dcharacter.Suc_0 dcharacter.cong) 
+    ultimately show "\<chi> k = 1" using 1(2) by simp    
   qed
 qed
 
@@ -1002,7 +985,7 @@ proof -
   obtain a' where "[a * a' = 1] (mod n)"
     using cong_solve_coprime_nat[OF cop] by auto
   then have a_inv: "(a*a') mod n = 1" 
-    using cong_def[of "a*a'" 1 n] assms(7) by simp
+    using unique_euclidean_semiring_class.cong_def[of "a*a'" 1 n] assms(7) by simp
 
   have "m1 \<in> (\<Union>h\<in>kernel G H f. {h \<otimes>\<^bsub>G\<^esub> a})"
        "m2 \<in> (\<Union>h\<in>kernel G H f. {h \<otimes>\<^bsub>G\<^esub> a})"
@@ -1098,7 +1081,7 @@ proof -
     then obtain x where x: "[x = k] (mod m)" "[x = 1] (mod a)"
       by auto
     from x(1) mn k have [simp]: "x \<noteq> 0"
-      using coprime_common_divisor[of k m] by (auto intro!: Nat.gr0I simp: cong_def)
+      by (meson \<open>k < m\<close> cong_0_iff cong_sym_eq nat_dvd_not_less)
       
     from x(2) have "coprime x a"
       using cong_imp_coprime cong_sym by force
@@ -1111,7 +1094,7 @@ proof -
       using mn by (auto simp: totatives_def intro!: Nat.gr0I)
 
     moreover have "f (x mod n) = k"
-      using x(1) k mn \<open>k < m\<close> by (auto simp: assms(3) cong_def mod_mod_cancel)
+      using x(1) k mn \<open>k < m\<close> by (auto simp: assms(3) unique_euclidean_semiring_class.cong_def mod_mod_cancel)
     ultimately show "k \<in> f ` carrier G"
       by (auto simp: assms(1) residue_mult_group_def)
   qed
@@ -1283,7 +1266,7 @@ proof -
         have 1: "\<Phi> m1 = \<Phi> m2" 
          using mod_periodic_arithmetic[OF \<open>periodic_arithmetic \<Phi> d\<close> m_mod[OF m_in]] by simp 
        have 2: "unity_root d m1 = unity_root d m2"
-         using m_mod[OF m_in] by (intro unity_root_cong) (auto simp: cong_def simp flip: zmod_int)
+         using m_mod[OF m_in] by (intro unity_root_cong) (auto simp: unique_euclidean_semiring_class.cong_def simp flip: zmod_int)
        from 1 2 show ?thesis by simp
       qed
     } note all_eq_in_coset = this   
@@ -1523,8 +1506,7 @@ proof -
     have "unity_root n (m * x) = unity_root n (m * x mod n)"
       using unity_root_mod_nat[of n "m*x"] by (simp add: nat_mod_as_int)
     also have "\<dots> = unity_root n (m * (x mod n))"
-      by (rule unity_root_cong)
-         (auto simp: cong_def mod_mult_right_eq simp flip: zmod_int of_nat_mult)
+      by (metis mod_mult_right_eq nat_mod_as_int unity_root_mod_nat)
     finally have "unity_root n (m * x) = unity_root n (m * (x mod n))" by blast
     then show "1 / of_nat n * cnj (\<chi> (nat (- int x mod int n))) *
                  gauss_sum 1 * unity_root n (int (m * x)) =
@@ -1546,10 +1528,10 @@ proof -
         then have "(- x) mod n = - y mod n"
           using n eq_nat_nat_iff by auto
         then have "[-int x = - int y] (mod n)" 
-          using cong_def by blast
+          using unique_euclidean_semiring_class.cong_def by blast
         then have "[x = y] (mod n)" 
           by (simp add: cong_int_iff cong_minus_minus_iff)
-        then have cong: "x mod n = y mod n" using cong_def by blast
+        then have cong: "x mod n = y mod n" using unique_euclidean_semiring_class.cong_def by blast
         then show "x = y"
         proof (cases "x = n")
           case True then show ?thesis using cong a1(2) by auto
