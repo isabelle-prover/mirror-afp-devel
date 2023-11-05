@@ -44,14 +44,10 @@ chapter AFP
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
-(* $Id:$ *)
-
-
-
 
 session "HOL-CSP" (AFP) = HOLCF +
   description \<open>HOL-CSP based on the original Roscoe-Book.\<close>
-  options [document = pdf, document_output = "output", timeout = 1200] 
+  options [timeout = 1200] 
   sessions
     "HOL-Eisbach"
   theories
