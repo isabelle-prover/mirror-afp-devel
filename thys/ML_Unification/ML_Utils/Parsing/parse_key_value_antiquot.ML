@@ -174,16 +174,20 @@ fun mk_merge_entries_struct ks =
 val mk_map_name = prefix "map_"
 val mk_map_name_safe = suffix "_safe" o mk_map_name
 
-fun mk_map_type mk_arg_type ks i = U.mk_fun_type [
-    U.mk_fun_type_atomic [mk_arg_type (mk_poly_type_a i), U.mk_poly_type_index "b" i],
-    mk_entries_type mk_poly_type_a ks,
-    mk_entries_type (fn j => if i = j then U.mk_poly_type_index "b" j else mk_poly_type_a j) ks
-  ]
+fun mk_map_type mk_arg_type mk_fun_res_type ks i =
+  let val res_typei = U.mk_poly_type_index "b" i
+  in
+    U.mk_fun_type [
+      U.mk_fun_type_atomic [mk_arg_type (mk_poly_type_a i), mk_fun_res_type res_typei],
+      mk_entries_type mk_poly_type_a ks,
+      mk_entries_type (fn j => if i = j then res_typei else mk_poly_type_a j) ks
+    ]
+  end
 
-fun mk_map_safe_sig ks (i, k) = U.mk_val_sig (mk_map_name_safe k) (mk_map_type mk_option_type ks i)
+fun mk_map_safe_sig ks (i, k) = U.mk_val_sig (mk_map_name_safe k) (mk_map_type mk_option_type mk_option_type ks i)
 fun mk_map_safes_sig ks = map_index (mk_map_safe_sig ks) ks |> U.lines
 
-fun mk_map_sig ks (i, k) = U.mk_val_sig (mk_map_name k) (mk_map_type I ks i)
+fun mk_map_sig ks (i, k) = U.mk_val_sig (mk_map_name k) (mk_map_type I I ks i)
 fun mk_maps_sig ks = map_index (mk_map_sig ks) ks |> U.lines
 
 fun mk_map_safe_struct ks (i, k) =
@@ -193,7 +197,7 @@ fun mk_map_safe_struct ks (i, k) =
     val record_in = map record_in_data ks |> U.mk_record "="
     val fparam = internal_param "f"
     fun record_out_data (j, k) = (k, if i = j
-      then U.mk_app ["SOME", U.mk_app_atomic [fparam, prefix k]]
+      then U.mk_app_atomic [fparam, prefix k]
       else prefix k)
     val record_out = map_index record_out_data ks |> U.mk_record "="
   in U.mk_fun (mk_map_name_safe k) (U.spaces [fparam, record_in]) record_out end
@@ -214,7 +218,7 @@ fun mk_map_struct k =
   in
     U.mk_fun (mk_map_name k) fparam (U.mk_app [
       mk_map_name_safe k,
-      U.mk_app_atomic [fparam, "o",
+      U.mk_app_atomic ["SOME", "o", fparam, "o",
         U.mk_app [the_value_name, U.mk_app_atomic [key_name, k]]]])
   end
 
