@@ -14,7 +14,7 @@ square-free factorization, and that square-free factorizations can be lifted hom
 theory Square_Free_Factorization
 imports 
   Matrix.Utility
-  Polynomial_Divisibility
+  Polynomial_Irreducibility
   Order_Polynomial
   Fundamental_Theorem_Algebra_Factorized
   Polynomial_Interpolation.Ring_Hom_Poly

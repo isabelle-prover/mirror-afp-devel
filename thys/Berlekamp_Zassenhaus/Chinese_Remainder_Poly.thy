@@ -11,7 +11,7 @@ text \<open>We prove the Chinese Remainder Theorem, and strengthen it by showing
 theory Chinese_Remainder_Poly
 imports
   "HOL-Number_Theory.Residues"  
-  Polynomial_Factorization.Polynomial_Divisibility
+  Polynomial_Factorization.Polynomial_Irreducibility
   Polynomial_Interpolation.Missing_Polynomial
 begin
 

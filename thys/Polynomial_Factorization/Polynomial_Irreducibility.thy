@@ -8,7 +8,7 @@ section \<open>Polynomial Divisibility\<close>
 text \<open>We make a connection between irreducibility of Missing-Polynomial and Factorial-Ring.\<close>
 
 
-theory Polynomial_Divisibility
+theory Polynomial_Irreducibility
 imports
   Polynomial_Interpolation.Missing_Polynomial
 begin
