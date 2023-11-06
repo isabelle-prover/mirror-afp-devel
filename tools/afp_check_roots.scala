@@ -144,7 +144,20 @@ object AFP_Check_Roots {
         "The following entries do not contain a document root.tex",
         (structure, _, check_dirs) =>
           check_dirs.flatMap(dir_entries).filterNot(
-            structure(_).document_files.map(_._2).contains(Path.basic("root.tex"))))
+            structure(_).document_files.map(_._2).contains(Path.basic("root.tex")))),
+      Check[(String, List[String])]("thy_name_clashes",
+        "The following would cause name conflicts:",
+        (structure, sessions, check_dirs) => {
+          val all_sessions = structure.imports_topological_order
+          val deps = structure.selection_deps(Sessions.Selection(all_sessions = true))
+          def session_thys(session_name: String): List[(String, String)] =
+            deps(session_name).proper_session_theories.map(node =>
+              Long_Name.base_name(node.theory) -> session_name)
+
+          sessions.flatMap(session_thys).groupMap(_._1)(_._2).filter(_._2.length > 1).toList
+        },
+        t => "Conflicting theory name " + quote(t._1) + " in sessions " + commas_quote(t._2),
+        is_error = false)
     ).sortBy(_.name)
 
   def the_check(name: String): Check[_] =
