@@ -12,7 +12,7 @@ import afp.Metadata.{Affiliation, Author, ACM, AMS, Classification, DOI, Email, 
 
 object AFP_Site_Gen {
   /* cache */
-  class Cache(layout: Hugo.Layout) {
+  class Cache(layout: Hugo.Layout, progress: Progress = new Progress()) {
     private val doi_cache = Path.basic("dois.json")
 
     private var dois: Map[String, String] = {
@@ -24,7 +24,11 @@ object AFP_Site_Gen {
           try { isabelle.JSON.parse(content) }
           catch { case ERROR(msg) => error("Could not parse " + file.toString + ": " + msg) }
         JSON.to_dois(json)
-      } else Map.empty
+      }
+      else {
+        progress.echo_warning("No DOI cache found - resolving might take some time")
+        Map.empty
+      }
     }
 
     def resolve_doi(doi: DOI): String = {
@@ -330,7 +334,7 @@ object AFP_Site_Gen {
       layout.write_content(Path.make(List("sessions", session_name + ".md")), session_json)
     }
 
-    val cache = new Cache(layout)
+    val cache = new Cache(layout, progress)
 
     val entry_sessions =
       entries.map(entry => entry -> afp_structure.entry_sessions(entry.name)).toMap
