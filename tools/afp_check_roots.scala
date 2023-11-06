@@ -148,13 +148,16 @@ object AFP_Check_Roots {
       Check[(String, List[String])]("thy_name_clashes",
         "The following would cause name conflicts:",
         (structure, sessions, check_dirs) => {
-          val all_sessions = structure.imports_topological_order
+          val all_sessions = structure.build_selection(Sessions.Selection(all_sessions = true))
           val deps = structure.selection_deps(Sessions.Selection(all_sessions = true))
           def session_thys(session_name: String): List[(String, String)] =
             deps(session_name).proper_session_theories.map(node =>
               Long_Name.base_name(node.theory) -> session_name)
 
-          sessions.flatMap(session_thys).groupMap(_._1)(_._2).filter(_._2.length > 1).toList
+          val session_set = sessions.toSet
+          val duplicates =
+            all_sessions.flatMap(session_thys).groupMap(_._1)(_._2).filter(_._2.length > 1)
+          duplicates.filter(_._2.toSet.intersect(session_set).nonEmpty).toList
         },
         t => "Conflicting theory name " + quote(t._1) + " in sessions " + commas_quote(t._2),
         is_error = false)
