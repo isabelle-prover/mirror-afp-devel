@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Sun, 29 Oct 2023 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Thu, 02 Nov 2023 00:00:00 +0000</lastBuildDate>
       <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Disintegration Theorem</title>
+          <link>/entries/Disintegration.html</link>
+          <pubDate>Thu, 02 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Disintegration.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Eudoxus Reals</title>
           <link>/entries/Eudoxus_Reals.html</link>
@@ -6752,6 +6759,13 @@
           <link>/sessions/discretepricing/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/discretepricing/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Disintegration</title>
+          <link>/sessions/disintegration/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/disintegration/</guid>
           <description></description>
         </item>
         <item>

@@ -13,6 +13,13 @@
     
       <atom:link href="/topics/mathematics/probability-theory/index.xml" rel="self" type="application/rss+xml" />
         <item>
+          <title>Disintegration Theorem</title>
+          <link>/entries/Disintegration.html</link>
+          <pubDate>Thu, 02 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Disintegration.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Hypergraph Colouring Bounds</title>
           <link>/entries/Hypergraph_Colourings.html</link>
           <pubDate>Sat, 23 Sep 2023 00:00:00 +0000</pubDate>
