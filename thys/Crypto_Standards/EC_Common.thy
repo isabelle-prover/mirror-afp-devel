@@ -1078,14 +1078,14 @@ proof -
   have 11: "x \<noteq> 0"        using assms(1) by fastforce
   have 12: "euclid_ext_aux 1 0 0 1 1 x = euclid_ext_aux 0 (1 - 0 * 0) 1 (0 - 0 * 1) x (1 mod x)"
     by (smt (verit, ccfv_threshold) 10 11 euclid_ext_aux.simps mult_cancel_left1 of_nat_1 
-        of_nat_eq_0_iff of_nat_mod unique_euclidean_semiring_with_nat_class.of_nat_div) 
+        of_nat_eq_0_iff of_nat_mod linordered_euclidean_semiring_class.of_nat_div) 
   have 1: "euclid_ext_aux 1 0 0 1 1 x = euclid_ext_aux 0 1 1 0 x 1"
     using 12 assms(1) by force
   have 20: "x div 1 = x"  by simp
   have 21: "(1::int) \<noteq> 0" by simp
   have 22: "euclid_ext_aux 0 1 1 0 x 1 = euclid_ext_aux 1 (0 - x * 1) 0 (1 - x * 0) 1 (x mod 1)"
     by (smt (verit, ccfv_threshold)20 21 euclid_ext_aux.simps mult_cancel_left1 of_nat_1 
-        of_nat_eq_0_iff of_nat_mod unique_euclidean_semiring_with_nat_class.of_nat_div mod_by_1)
+        of_nat_eq_0_iff of_nat_mod linordered_euclidean_semiring_class.of_nat_div mod_by_1)
   have 2:  "euclid_ext_aux 0 1 1 0 x 1 = euclid_ext_aux 1 (0 - x) 0 1 1 0" 
     using 22 assms(1) by simp
   have 3: "euclid_ext_aux 1 (0 - x) 0 1 1 0 = ((1,0), 1)"

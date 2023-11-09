@@ -173,7 +173,7 @@ proof -
   then have v_eq: "v = (r * (k - 1) + l) div l" 
     using necessary_condition_one index_not_zero intdefs
     by (metis diff_add_cancel nonzero_mult_div_cancel_left not_one_le_zero of_nat_mult 
-        unique_euclidean_semiring_with_nat_class.of_nat_div) 
+        linordered_euclidean_semiring_class.of_nat_div) 
   have ldvd: " \<And> x. l dvd (x * (r * (k - 1) + l))" 
     by (metis necess1_alt diff_add_cancel dvd_mult dvd_triv_left) 
   have "(b \<ge> v + r - 1) \<longleftrightarrow> ((\<v> * r) div k \<ge> v + r - 1)"
