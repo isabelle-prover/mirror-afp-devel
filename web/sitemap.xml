@@ -3,33 +3,57 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2023-11-02T00:00:00+00:00</lastmod>
+    <lastmod>2023-11-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2023-11-02T00:00:00+00:00</lastmod>
+    <lastmod>2023-11-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/berlekamp_zassenhaus/</loc>
+    <lastmod>2023-11-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/</loc>
-    <lastmod>2023-11-02T00:00:00+00:00</lastmod>
+    <lastmod>2023-11-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/eberl/</loc>
+    <lastmod>2023-11-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Elimination_Of_Repeated_Factors.html</loc>
+    <lastmod>2023-11-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2023-11-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/formal_puiseux_series/</loc>
+    <lastmod>2023-11-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/kreuzer/</loc>
+    <lastmod>2023-11-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/mason_stothers/</loc>
+    <lastmod>2023-11-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2023-11-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Perfect_Fields.html</loc>
+    <lastmod>2023-11-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/perfect_fields/</loc>
+    <lastmod>2023-11-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2023-11-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Disintegration.html</loc>
     <lastmod>2023-11-02T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/entries/</loc>
-    <lastmod>2023-11-02T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/hirata/</loc>
-    <lastmod>2023-11-02T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/mathematics/</loc>
     <lastmod>2023-11-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/s_finite_measure_monad/</loc>
     <lastmod>2023-11-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/standard_borel_spaces/</loc>
-    <lastmod>2023-11-02T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2023-11-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Eudoxus_Reals.html</loc>
@@ -208,9 +232,6 @@
   </url><url>
     <loc>/authors/spitz/</loc>
     <lastmod>2023-07-11T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/eberl/</loc>
-    <lastmod>2023-06-19T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Executable_Randomized_Algorithms.html</loc>
     <lastmod>2023-06-19T00:00:00+00:00</lastmod>
@@ -452,13 +473,7 @@
     <loc>/dependencies/benor_kozen_reif/</loc>
     <lastmod>2023-02-02T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/berlekamp_zassenhaus/</loc>
-    <lastmod>2023-02-02T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/CVP_Hardness.html</loc>
-    <lastmod>2023-02-02T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/kreuzer/</loc>
     <lastmod>2023-02-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/lll_basis_reduction/</loc>
@@ -5151,6 +5166,8 @@
   </url><url>
     <loc>/sessions/eisbach/</loc>
   </url><url>
+    <loc>/sessions/elimination_of_repeated_factors/</loc>
+  </url><url>
     <loc>/sessions/elliptic_curves_group_law/</loc>
   </url><url>
     <loc>/sessions/encodability_process_calculi/</loc>
@@ -6074,6 +6091,8 @@
     <loc>/sessions/pell/</loc>
   </url><url>
     <loc>/sessions/perfect-number-thm/</loc>
+  </url><url>
+    <loc>/sessions/perfect_fields/</loc>
   </url><url>
     <loc>/sessions/perron_frobenius/</loc>
   </url><url>

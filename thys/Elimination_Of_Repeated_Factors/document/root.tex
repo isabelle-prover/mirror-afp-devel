@@ -1,0 +1,46 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+\usepackage[shortcuts]{extdash}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{rm}
+
+
+\begin{document}
+
+\title{Elimination of Repeated Factors Algorithm}
+\author{Katharina Kreuzer, Manuel Eberl}
+\maketitle
+
+\begin{abstract}
+This article formalises the Elimination of Repeated Factors (ERF) Algorithm. This is an algorithm to find the square-free part of polynomials over perfect fields. Notably, this encompasses all fields of characteristic $0$ and all finite fields.
+
+For fields with characteristic $0$, the ERF algorithm proceeds similarly to the classical Yun algorithm (formalized in \cite[File \texttt{Square\_\allowbreak Free\_\allowbreak Factorization.\allowbreak thy}]{Yun}). 
+However, for fields with non-zero characteristic $p$, Yun's algorithm can fail because the derivative of a non-zero polynomial can be $0$. The ERF algorithm detects this case and therefore also works in this more general setting.
+
+To state the ERF Algorithm in this general form, we build on the entry on perfect fields~\cite{Perfect_Fields}.
+We show that the ERF algorithm is correct and returns a list of pairwise coprime square-free polynomials whose product is the input polynomial. Indeed, through this, the ERF algorithm also yields executable code for calculating the square-free part of a polynomial (denoted by the function \emph{radical}).
+
+The definition and proof of the ERF have been taken from Algorithm~1 in \cite {Scott}.
+\end{abstract}
+
+
+\newpage
+\tableofcontents
+
+\newpage
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\raggedright
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+

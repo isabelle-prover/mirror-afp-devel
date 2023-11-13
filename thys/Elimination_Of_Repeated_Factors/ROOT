@@ -1,0 +1,13 @@
+chapter AFP
+
+session "Elimination_Of_Repeated_Factors" (AFP) = Perfect_Fields +
+  options [timeout = 1200]
+  sessions
+    "Mason_Stothers"
+    "Perfect_Fields"
+  theories
+    ERF_Algorithm
+    ERF_Code_Test
+  document_files
+    "root.bib"
+    "root.tex"
