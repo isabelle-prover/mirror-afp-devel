@@ -1,0 +1,13 @@
+chapter AFP
+
+session "Perfect_Fields" (AFP) = "Berlekamp_Zassenhaus" +
+  options [timeout = 300]
+  sessions
+    Formal_Puiseux_Series
+  theories
+    Perfect_Fields
+    Perfect_Field_Algebraically_Closed
+    Perfect_Field_Altdef
+  document_files
+    "root.bib"
+    "root.tex"
