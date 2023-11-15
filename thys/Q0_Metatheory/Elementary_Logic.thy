@@ -3182,9 +3182,9 @@ end
 subsection \<open>Proposition 5234 (Rule P)\<close>
 
 text \<open>
-  According to the proof in @{cite "andrews:2002"}, if $[A^1 \wedge \dots \wedge A^n] \supset B$ is
+  According to the proof in \<^cite>\<open>"andrews:2002"\<close>, if $[A^1 \wedge \dots \wedge A^n] \supset B$ is
   tautologous, then clearly $A^1 \supset (\dots (A^n \supset B) \dots)$ is also tautologous.
-  Since this is not clear to us, we prove instead the version of Rule P found in @{cite "andrews:1965"}:
+  Since this is not clear to us, we prove instead the version of Rule P found in \<^cite>\<open>"andrews:1965"\<close>:
 \<close>
 
 proposition tautologous_horn_clause_is_hyp_derivable:
@@ -3355,8 +3355,8 @@ qed
 subsection \<open>Proposition 5237 ($\supset \forall$ Rule)\<close>
 
 text \<open>
-  The proof in @{cite "andrews:2002"} uses the pseudo-rule Q and the axiom 5 of \<open>\<F>\<close>. Therefore, we
-  prove such axiom, following the proof of Theorem 143 in @{cite "andrews:1965"}:
+  The proof in \<^cite>\<open>"andrews:2002"\<close> uses the pseudo-rule Q and the axiom 5 of \<open>\<F>\<close>. Therefore, we
+  prove such axiom, following the proof of Theorem 143 in \<^cite>\<open>"andrews:1965"\<close>:
 \<close>
 
 context begin
@@ -4588,8 +4588,8 @@ end
 subsection \<open>Proposition 5244 (Existential Rule)\<close>
 
 text \<open>
-  The proof in @{cite "andrews:2002"} uses the pseudo-rule Q and 2123 of \<open>\<F>\<close>. Therefore, we instead
-  base our proof on the proof of Theorem 170 in @{cite "andrews:1965"}:
+  The proof in \<^cite>\<open>"andrews:2002"\<close> uses the pseudo-rule Q and 2123 of \<open>\<F>\<close>. Therefore, we instead
+  base our proof on the proof of Theorem 170 in \<^cite>\<open>"andrews:1965"\<close>:
 \<close>
 
 lemma prop_5244_aux:

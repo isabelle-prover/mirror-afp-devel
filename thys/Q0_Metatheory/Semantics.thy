@@ -233,7 +233,7 @@ type_synonym model_structure = "(type \<Rightarrow> V) \<times> (con \<Rightarro
 text \<open>
   The assumption in the following locale implies that there must exist a function that is a wff
   denotation function for the pre-model, which is a requirement in the definition of general model
-  in @{cite "andrews:2002"}:
+  in \<^cite>\<open>"andrews:2002"\<close>:
 \<close>
 
 locale general_model = premodel +

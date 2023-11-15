@@ -188,7 +188,7 @@ proof (rule ccontr)
     \<comment> \<open>
       Since by definition domains are not empty then, by using the Axiom of Choice, we can specify
       an assignment \<open>\<psi>\<close> that simply chooses some element in the respective domain for each variable.
-      Nonetheless, as pointed out in Footnote 11, page 19 in @{cite "andrews:1965"}, it is not
+      Nonetheless, as pointed out in Footnote 11, page 19 in \<^cite>\<open>"andrews:1965"\<close>, it is not
       necessary to use the Axiom of Choice to show that assignments exist since some assignments
       can be described explicitly.
     \<close>

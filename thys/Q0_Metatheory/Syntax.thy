@@ -1822,7 +1822,7 @@ definition equality_of_type :: "form \<Rightarrow> type \<Rightarrow> form \<Rig
   [simp]: "A =\<^bsub>\<alpha>\<^esub> B = Q\<^bsub>\<alpha>\<^esub> \<sqdot> A \<sqdot> B"
 
 definition equivalence :: "form \<Rightarrow> form \<Rightarrow> form" (infixl "\<equiv>\<^sup>\<Q>" 102) where
-  [simp]: "A \<equiv>\<^sup>\<Q> B = A =\<^bsub>o\<^esub> B" \<comment> \<open>more modular than the definition in @{cite "andrews:2002"}\<close>
+  [simp]: "A \<equiv>\<^sup>\<Q> B = A =\<^bsub>o\<^esub> B" \<comment> \<open>more modular than the definition in \<^cite>\<open>"andrews:2002"\<close>\<close>
 
 definition true :: form ("T\<^bsub>o\<^esub>") where
   [simp]: "T\<^bsub>o\<^esub> = Q\<^bsub>o\<^esub> =\<^bsub>o\<rightarrow>o\<rightarrow>o\<^esub> Q\<^bsub>o\<^esub>"
@@ -1902,7 +1902,7 @@ text \<open>Generalized conjunction. We define \<open>\<and>\<^sup>\<Q>\<^sub>\<
 definition generalized_conj_op :: "form list \<Rightarrow> form" ("\<and>\<^sup>\<Q>\<^sub>\<star> _" [0] 131) where
   [simp]: "\<and>\<^sup>\<Q>\<^sub>\<star> As = foldr1 (\<and>\<^sup>\<Q>) As"
 
-definition imp_fun :: form ("\<supset>\<^bsub>o\<rightarrow>o\<rightarrow>o\<^esub>") where \<comment> \<open>\<open>\<equiv>\<close> used instead of \<open>=\<close>, see @{cite "andrews:2002"}\<close>
+definition imp_fun :: form ("\<supset>\<^bsub>o\<rightarrow>o\<rightarrow>o\<^esub>") where \<comment> \<open>\<open>\<equiv>\<close> used instead of \<open>=\<close>, see \<^cite>\<open>"andrews:2002"\<close>\<close>
   [simp]: "\<supset>\<^bsub>o\<rightarrow>o\<rightarrow>o\<^esub> = \<lambda>\<xx>\<^bsub>o\<^esub>. \<lambda>\<yy>\<^bsub>o\<^esub>. (\<xx>\<^bsub>o\<^esub> \<equiv>\<^sup>\<Q> \<xx>\<^bsub>o\<^esub> \<and>\<^sup>\<Q> \<yy>\<^bsub>o\<^esub>)"
 
 definition imp_op :: "form \<Rightarrow> form \<Rightarrow> form" (infixl "\<supset>\<^sup>\<Q>" 111) where
@@ -2604,7 +2604,7 @@ next
     by (cases "v = (x, \<alpha>)") (use singleton_substitution_simps(4) in presburger, auto)
 qed simp_all
 
-text \<open>The following lemma corresponds to X5100 in @{cite "andrews:2002"}:\<close>
+text \<open>The following lemma corresponds to X5100 in \<^cite>\<open>"andrews:2002"\<close>:\<close>
 
 lemma substitution_composability:
   assumes "v' \<notin> vars B"
@@ -2651,7 +2651,7 @@ using assms proof (induction B arbitrary: v')
   qed
 qed auto
 
-text \<open>The following lemma corresponds to X5101 in @{cite "andrews:2002"}:\<close>
+text \<open>The following lemma corresponds to X5101 in \<^cite>\<open>"andrews:2002"\<close>:\<close>
 
 lemma renaming_substitution_composability:
   assumes "z \<notin> free_vars A" and "is_free_for (FVar z) x A"
