@@ -4,21 +4,21 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>The Irrationality of ζ(3) - Archive of Formal Proofs</title>
-    <meta name="description" content="This article provides a formalisation of Beukers&#39;s straightforward analytic proof that ζ(3) is irrational. This was first proven by Apéry (which is why...">
+    <title>Metatheory of Q0 - Archive of Formal Proofs</title>
+    <meta name="description" content="This entry is a formalization of the metatheory of \(\mathcal{Q}_0\) in Isabelle/HOL. \(\mathcal{Q}_0\) is a classical higher-order logic equivalent to...">
 
-  <meta property="og:title" content="The Irrationality of ζ(3)" />
+  <meta property="og:title" content="Metatheory of Q0" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="/entries/Zeta_3_Irrational.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
-<meta property="article:published_time" content="2019-12-27T00:00:00+00:00" />
-<meta property="article:modified_time" content="2019-12-27T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+<meta property="og:url" content="/entries/Q0_Metatheory.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2023-11-04T00:00:00+00:00" />
+<meta property="article:modified_time" content="2023-11-04T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
 
 
   <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
-<meta name="twitter:title" content="The Irrationality of ζ(3)"/>
+<meta name="twitter:title" content="Metatheory of Q0"/>
 <meta name="twitter:description" content=""/>
 
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
@@ -124,15 +124,15 @@
       </div>
     </form>
   <h1>
-    <span class='first'>T</span>he <span class='first'>I</span>rrationality of ζ(3)
+    <span class='first'>M</span>etatheory of <span class='first'>Q</span>0
     
   </h1>
   <div>
       <p>
-        <a href="../authors/eberl">Manuel Eberl</a> <a href="https://pruvisto.org/">🌐</a>
+        <a href="../authors/diaz">Javier Díaz</a> <a class="obfuscated" data="eyJob3N0IjpbImdtYWlsIiwiY29tIl0sInVzZXIiOlsiamF2aWVyIiwiZGlheiIsIm1hbnppIl19">📧</a>
 
       </p>
-      <p class="date">December 27, 2019</p>
+      <p class="date">November 4, 2023</p>
   </div>
 </header>
       <div>
@@ -140,13 +140,7 @@
   <main>
     <h3>Abstract</h3>
 
-    <div class="abstract mathjax_process"><p>This article provides a formalisation of Beukers's
-straightforward analytic proof that ζ(3) is irrational. This was first
-proven by Apéry (which is why this result is also often called
-‘Apéry's Theorem’) using a more algebraic approach. This
-formalisation follows <a
-href="http://people.math.sc.edu/filaseta/gradcourses/Math785/Math785Notes4.pdf">Filaseta's
-presentation</a> of Beukers's proof.</p></div>
+    <div class="abstract mathjax_process">This entry is a formalization of the metatheory of \(\mathcal{Q}_0\) in Isabelle/HOL. \(\mathcal{Q}_0\) is a classical higher-order logic equivalent to Church's Simple Theory of Types. In this entry we formalize Chapter 5 of "An Introduction to Mathematical Logic and Type Theory: To Truth Through Proof" (Andrews, 2002), up to and including the proofs of soundness and consistency of \(\mathcal{Q}_0\). These proof are, to the best of our knowledge, the first to be formalized in a proof assistant.</div>
 
     <h3>License</h3>
     <div>
@@ -154,28 +148,37 @@ presentation</a> of Beukers's proof.</p></div>
     </div>
       <h3>Topics</h3>
       <ul>
-          <li><a href="../topics/mathematics/number-theory">Mathematics/Number theory</a></li>
+          <li><a href="../topics/logic/general-logic">Logic/General logic</a></li>
       </ul>
-      <h3>Session Zeta_3_Irrational</h3>
+      <h3>Session Q0_Metatheory</h3>
       <ul>
-          <li><a href="../sessions/zeta_3_irrational/#Zeta_3_Irrational">Zeta_3_Irrational</a></li>
+          <li><a href="../sessions/q0_metatheory/#Utilities">Utilities</a></li>
+          <li><a href="../sessions/q0_metatheory/#Syntax">Syntax</a></li>
+          <li><a href="../sessions/q0_metatheory/#Boolean_Algebra">Boolean_Algebra</a></li>
+          <li><a href="../sessions/q0_metatheory/#Propositional_Wff">Propositional_Wff</a></li>
+          <li><a href="../sessions/q0_metatheory/#Proof_System">Proof_System</a></li>
+          <li><a href="../sessions/q0_metatheory/#Elementary_Logic">Elementary_Logic</a></li>
+          <li><a href="../sessions/q0_metatheory/#Semantics">Semantics</a></li>
+          <li><a href="../sessions/q0_metatheory/#Soundness">Soundness</a></li>
+          <li><a href="../sessions/q0_metatheory/#Consistency">Consistency</a></li>
       </ul>
 
     <div class="flex-wrap">
       <div>
         <h3>Depends on</h3>
         <ul class="horizontal-list">
-              <li><a href="../entries/E_Transcendental.html">The Transcendence of e</a></li>
-              <li><a href="../entries/Prime_Distribution_Elementary.html">Elementary Facts About the Distribution of Primes</a></li>
-              <li><a href="../entries/Prime_Number_Theorem.html">The Prime Number Theorem</a></li>
+              <li><a href="../entries/Finite-Map-Extras.html">Finite Map Extras</a></li>
+              <li><a href="../entries/ZFC_in_HOL.html">Zermelo Fraenkel Set Theory in Higher-Order Logic</a></li>
         </ul>
       </div>
         <div>
           <h3>Auto-related entries</h3>
           <ul class="horizontal-list">
-              <li><a href="../entries/Q0_Metatheory.html">Metatheory of Q0</a></li>
               <li><a href="../entries/Hello_World.html">Hello World</a></li>
-              <li><a href="../entries/KAT_and_DRA.html">Kleene Algebra with Tests and Demonic Refinement Algebras</a></li>
+              <li><a href="../entries/Zeta_3_Irrational.html">The Irrationality of ζ(3)</a></li>
+              <li><a href="../entries/Real_Power.html">Real Exponents as the Limits of Sequences of Rational Exponents</a></li>
+              <li><a href="../entries/FOL_Seq_Calc1.html">A Sequent Calculus for First-Order Logic</a></li>
+              <li><a href="../entries/FOL_Harrison.html">First-Order Logic According to Harrison</a></li>
           </ul>
         </div>
       </div>
@@ -186,9 +189,9 @@ presentation</a> of Beukers's proof.</p></div>
     <a class='popup-button' href="#cite-popup">Cite</a>
     <a class='popup-button' href="#download-popup">Download</a>
     <h4>PDFs</h4>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Zeta_3_Irrational/outline.pdf">Proof outline</a>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Zeta_3_Irrational/document.pdf">Proof document</a>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Zeta_3_Irrational/session_graph.pdf">Dependencies</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Q0_Metatheory/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Q0_Metatheory/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Q0_Metatheory/session_graph.pdf">Dependencies</a>
   </nav>
 
   <div id="cite-popup" class="overlay">
@@ -197,14 +200,14 @@ presentation</a> of Beukers's proof.</p></div>
       <h2>Cite</h2>
       <a class="close" href="#">&times;</a>
       <div>
-        <p style="display:none;" id="bibtex-filename">Zeta_3_Irrational-AFP</p>
-        <pre id="copy-text">@article{Zeta_3_Irrational-AFP,
-  author  = {Manuel Eberl},
-  title   = {The Irrationality of ζ(3)},
+        <p style="display:none;" id="bibtex-filename">Q0_Metatheory-AFP</p>
+        <pre id="copy-text">@article{Q0_Metatheory-AFP,
+  author  = {Javier Díaz},
+  title   = {Metatheory of Q0},
   journal = {Archive of Formal Proofs},
-  month   = {December},
-  year    = {2019},
-  note    = {\url{https://isa-afp.org/entries/Zeta_3_Irrational.html},
+  month   = {November},
+  year    = {2023},
+  note    = {\url{https://isa-afp.org/entries/Q0_Metatheory.html},
              Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -218,47 +221,8 @@ presentation</a> of Beukers's proof.</p></div>
     <div class="popup">
       <h2>Download</h2>
       <a class="close" href="#">&times;</a>
-      <a href="https://www.isa-afp.org/release/afp-Zeta_3_Irrational-current.tar.gz"
+      <a href="https://www.isa-afp.org/release/afp-Q0_Metatheory-current.tar.gz"
          download>Download latest</a>
-        <p>Older releases:</p>
-        <ul>
-            <li>
-              <a href="https://www.isa-afp.org/release/afp-Zeta_3_Irrational-2023-09-13.tar.gz">
-                Sep 13, 2023
-              </a>
-              : Isabelle2023
-            </li>
-            <li>
-              <a href="https://www.isa-afp.org/release/afp-Zeta_3_Irrational-2022-10-27.tar.gz">
-                Oct 27, 2022
-              </a>
-              : Isabelle2022
-            </li>
-            <li>
-              <a href="https://www.isa-afp.org/release/afp-Zeta_3_Irrational-2021-12-14.tar.gz">
-                Dec 14, 2021
-              </a>
-              : Isabelle2021-1
-            </li>
-            <li>
-              <a href="https://www.isa-afp.org/release/afp-Zeta_3_Irrational-2021-02-23.tar.gz">
-                Feb 23, 2021
-              </a>
-              : Isabelle2021
-            </li>
-            <li>
-              <a href="https://www.isa-afp.org/release/afp-Zeta_3_Irrational-2020-04-20.tar.gz">
-                Apr 20, 2020
-              </a>
-              : Isabelle2020
-            </li>
-            <li>
-              <a href="https://www.isa-afp.org/release/afp-Zeta_3_Irrational-2019-12-28.tar.gz">
-                Dec 28, 2019
-              </a>
-              : Isabelle2019
-            </li>
-        </ul>
     </div>
   </div>
         

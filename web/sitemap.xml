@@ -44,6 +44,21 @@
     <loc>/topics/</loc>
     <lastmod>2023-11-06T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/authors/diaz/</loc>
+    <lastmod>2023-11-04T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/finite-map-extras/</loc>
+    <lastmod>2023-11-04T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/logic/</loc>
+    <lastmod>2023-11-04T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Q0_Metatheory.html</loc>
+    <lastmod>2023-11-04T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/zfc_in_hol/</loc>
+    <lastmod>2023-11-04T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/entries/Disintegration.html</loc>
     <lastmod>2023-11-02T00:00:00+00:00</lastmod>
   </url><url>
@@ -147,9 +162,6 @@
     <lastmod>2023-08-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Coupledsim_Contrasim.html</loc>
-    <lastmod>2023-08-18T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/logic/</loc>
     <lastmod>2023-08-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/montanari/</loc>
@@ -800,9 +812,6 @@
     <loc>/entries/Nano_JSON.html</loc>
     <lastmod>2022-07-29T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/finite-map-extras/</loc>
-    <lastmod>2022-07-18T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Solidity.html</loc>
     <lastmod>2022-07-18T00:00:00+00:00</lastmod>
   </url><url>
@@ -1014,9 +1023,6 @@
     <lastmod>2022-02-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Wetzels_Problem.html</loc>
-    <lastmod>2022-02-18T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/zfc_in_hol/</loc>
     <lastmod>2022-02-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Eval_FO.html</loc>
@@ -1666,9 +1672,6 @@
   </url><url>
     <loc>/authors/fosters/</loc>
     <lastmod>2020-10-20T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/diaz/</loc>
-    <lastmod>2020-10-12T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Finite-Map-Extras.html</loc>
     <lastmod>2020-10-12T00:00:00+00:00</lastmod>
@@ -6199,6 +6202,8 @@
     <loc>/sessions/pure-ex/</loc>
   </url><url>
     <loc>/sessions/pure-examples/</loc>
+  </url><url>
+    <loc>/sessions/q0_metatheory/</loc>
   </url><url>
     <loc>/sessions/qhlprover/</loc>
   </url><url>

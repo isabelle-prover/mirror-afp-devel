@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Fri, 18 Feb 2022 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Sat, 04 Nov 2023 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/zfc_in_hol/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Metatheory of Q0</title>
+          <link>/entries/Q0_Metatheory.html</link>
+          <pubDate>Sat, 04 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Q0_Metatheory.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Wetzel&#39;s Problem and the Continuum Hypothesis</title>
           <link>/entries/Wetzels_Problem.html</link>

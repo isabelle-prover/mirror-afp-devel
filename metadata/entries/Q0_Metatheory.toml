@@ -1,0 +1,26 @@
+title = "Metatheory of Q0"
+date = 2023-11-04
+topics = [
+  "Logic/General logic",
+]
+abstract = "This entry is a formalization of the metatheory of \\(\\mathcal{Q}_0\\) in Isabelle/HOL. \\(\\mathcal{Q}_0\\) is a classical higher-order logic equivalent to Church's Simple Theory of Types. In this entry we formalize Chapter 5 of \"An Introduction to Mathematical Logic and Type Theory: To Truth Through Proof\" (Andrews, 2002), up to and including the proofs of soundness and consistency of \\(\\mathcal{Q}_0\\). These proof are, to the best of our knowledge, the first to be formalized in a proof assistant."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.diaz]
+email = "diaz_email"
+
+[contributors]
+
+[notify]
+diaz = "diaz_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []
