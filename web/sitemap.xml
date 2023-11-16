@@ -3,10 +3,25 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2023-11-06T00:00:00+00:00</lastmod>
+    <lastmod>2023-11-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2023-11-06T00:00:00+00:00</lastmod>
+    <lastmod>2023-11-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/computer-science/</loc>
+    <lastmod>2023-11-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2023-11-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/lameris/</loc>
+    <lastmod>2023-11-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Nominal_Myhill_Nerode.html</loc>
+    <lastmod>2023-11-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2023-11-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/berlekamp_zassenhaus/</loc>
     <lastmod>2023-11-06T00:00:00+00:00</lastmod>
@@ -18,9 +33,6 @@
     <lastmod>2023-11-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Elimination_Of_Repeated_Factors.html</loc>
-    <lastmod>2023-11-06T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/</loc>
     <lastmod>2023-11-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/formal_puiseux_series/</loc>
@@ -39,9 +51,6 @@
     <lastmod>2023-11-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/perfect_fields/</loc>
-    <lastmod>2023-11-06T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2023-11-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/diaz/</loc>
@@ -76,9 +85,6 @@
   </url><url>
     <loc>/authors/keskin/</loc>
     <lastmod>2023-10-29T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/computer-science/</loc>
-    <lastmod>2023-10-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/kappelmann/</loc>
     <lastmod>2023-10-11T00:00:00+00:00</lastmod>
@@ -6020,6 +6026,8 @@
     <loc>/sessions/no_ftl_observers_gen_rel/</loc>
   </url><url>
     <loc>/sessions/nominal2/</loc>
+  </url><url>
+    <loc>/sessions/nominal_myhill_nerode/</loc>
   </url><url>
     <loc>/sessions/noninterference_concurrent_composition/</loc>
   </url><url>

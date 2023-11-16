@@ -3525,6 +3525,23 @@ host = [
 
 [lallemand.homepages]
 
+[lameris]
+name = "Cárolos Laméris"
+
+[lameris.emails]
+
+[lameris.emails.lameris_email]
+user = [
+  "carolos",
+  "lameris",
+]
+host = [
+  "ru",
+  "nl",
+]
+
+[lameris.homepages]
+
 [lammich]
 name = "Peter Lammich"
 

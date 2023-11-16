@@ -13,6 +13,13 @@
     
       <atom:link href="/topics/computer-science/automata-and-formal-languages/index.xml" rel="self" type="application/rss+xml" />
         <item>
+          <title>Myhill-Nerode Theorem for Nominal G-Automata</title>
+          <link>/entries/Nominal_Myhill_Nerode.html</link>
+          <pubDate>Fri, 10 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Nominal_Myhill_Nerode.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Conformance Relations between Input/Output Languages</title>
           <link>/entries/IO_Language_Conformance.html</link>
           <pubDate>Fri, 01 Sep 2023 00:00:00 +0000</pubDate>
