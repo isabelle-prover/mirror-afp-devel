@@ -1,0 +1,9 @@
+chapter AFP
+
+session Labeled_Transition_Systems = "Deriving" +
+  options [timeout = 300]
+  theories
+    LTS
+  document_files
+    "root.bib"
+    "root.tex"
