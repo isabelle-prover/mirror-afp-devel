@@ -20,6 +20,20 @@
           <description></description>
         </item>
         <item>
+          <title>Labeled Transition Systems</title>
+          <link>/entries/Labeled_Transition_Systems.html</link>
+          <pubDate>Tue, 31 Oct 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Labeled_Transition_Systems.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Pushdown Systems</title>
+          <link>/entries/Pushdown_Systems.html</link>
+          <pubDate>Tue, 31 Oct 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Pushdown_Systems.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Conformance Relations between Input/Output Languages</title>
           <link>/entries/IO_Language_Conformance.html</link>
           <pubDate>Fri, 01 Sep 2023 00:00:00 +0000</pubDate>

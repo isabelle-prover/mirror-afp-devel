@@ -5862,6 +5862,24 @@ host = [
 
 [schoepf.homepages]
 
+[schou]
+name = "Morten Konggaard Schou"
+orcid = "0000-0002-5970-4294"
+
+[schou.emails]
+
+[schou.emails.schou_email]
+user = [
+  "mksc",
+]
+host = [
+  "cs",
+  "aau",
+  "dk",
+]
+
+[schou.homepages]
+
 [scott]
 name = "Dana Scott"
 
@@ -6126,6 +6144,15 @@ host = [
 ]
 
 [springsklee.homepages]
+
+[srba]
+name = "Jiří Srba"
+orcid = "0000-0001-5551-6547"
+
+[srba.emails]
+
+[srba.homepages]
+srba_homepage = "https://homes.cs.aau.dk/~srba/"
 
 [staats]
 name = "Charles Staats"

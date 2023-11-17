@@ -80,6 +80,30 @@
     <loc>/dependencies/standard_borel_spaces/</loc>
     <lastmod>2023-11-02T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/dependencies/deriving/</loc>
+    <lastmod>2023-10-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Labeled_Transition_Systems.html</loc>
+    <lastmod>2023-10-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/labeled_transition_systems/</loc>
+    <lastmod>2023-10-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Pushdown_Systems.html</loc>
+    <lastmod>2023-10-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/schlichtkrull/</loc>
+    <lastmod>2023-10-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/schou/</loc>
+    <lastmod>2023-10-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/srba/</loc>
+    <lastmod>2023-10-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/traytel/</loc>
+    <lastmod>2023-10-31T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/entries/Eudoxus_Reals.html</loc>
     <lastmod>2023-10-29T00:00:00+00:00</lastmod>
   </url><url>
@@ -722,16 +746,10 @@
     <loc>/dependencies/collections/</loc>
     <lastmod>2022-09-28T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/deriving/</loc>
-    <lastmod>2022-09-28T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Safe_Range_RC.html</loc>
     <lastmod>2022-09-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/raszyk/</loc>
-    <lastmod>2022-09-28T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/traytel/</loc>
     <lastmod>2022-09-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/epistemic_logic/</loc>
@@ -1935,9 +1953,6 @@
     <lastmod>2020-04-08T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/moedersheim/</loc>
-    <lastmod>2020-04-08T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/schlichtkrull/</loc>
     <lastmod>2020-04-08T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Stateful_Protocol_Composition_and_Typing.html</loc>
@@ -5739,6 +5754,8 @@
   </url><url>
     <loc>/sessions/kuratowski_closure_complement/</loc>
   </url><url>
+    <loc>/sessions/labeled_transition_systems/</loc>
+  </url><url>
     <loc>/sessions/lam-ml-normalization/</loc>
   </url><url>
     <loc>/sessions/lambda_free_epo/</loc>
@@ -6210,6 +6227,8 @@
     <loc>/sessions/pure-ex/</loc>
   </url><url>
     <loc>/sessions/pure-examples/</loc>
+  </url><url>
+    <loc>/sessions/pushdown_systems/</loc>
   </url><url>
     <loc>/sessions/q0_metatheory/</loc>
   </url><url>
