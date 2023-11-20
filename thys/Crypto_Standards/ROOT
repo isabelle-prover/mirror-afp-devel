@@ -3,7 +3,7 @@ chapter AFP
 session "Crypto_Standards" = "HOL-Number_Theory" +
   description
     "Translations of and supporting theories for a collection of crytographic standards."
-  options [timeout = 3000]
+  options [timeout = 7200]
   sessions 
     "Elliptic_Curves_Group_Law"
     "HOL-Library"

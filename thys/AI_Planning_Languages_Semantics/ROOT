@@ -2,7 +2,7 @@ chapter AFP
 
 session AI_Planning_Languages_Semantics = HOL +
   description \<open>AI Planning Languages Semantics and Validation\<close>
-  options [timeout = 600]
+  options [timeout = 900]
   sessions
     "HOL-Library"
     "Certification_Monads"
