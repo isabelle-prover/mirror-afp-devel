@@ -1544,8 +1544,8 @@ context
 begin
 
 private lemma sbintrunc_uint_ucast:
-  "Suc n = LENGTH('b::len) \<Longrightarrow> signed_take_bit n (uint (ucast w :: 'b word)) = signed_take_bit n (uint w)"
-  by word_eqI
+  \<open>signed_take_bit n (uint (ucast w :: 'b word)) = signed_take_bit n (uint w)\<close> if \<open>Suc n = LENGTH('b::len)\<close>
+  by (rule bit_eqI) (use that in \<open>auto simp add: bit_simps\<close>)
 
 private lemma test_bit_sbintrunc:
   assumes "i < LENGTH('a)"
