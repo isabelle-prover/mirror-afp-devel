@@ -1,0 +1,14 @@
+chapter AFP
+
+session Chebyshev_Polynomials (AFP) = "HOL-Analysis" +
+  options [timeout = 1200]
+  sessions
+    "HOL-Computational_Algebra"
+    "HOL-Real_Asymp"
+    Polynomial_Interpolation
+    Descartes_Sign_Rule
+  theories
+    Chebyshev_Polynomials
+  document_files
+    "root.tex"
+    "root.bib"

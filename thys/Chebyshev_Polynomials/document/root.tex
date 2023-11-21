@@ -1,0 +1,56 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+
+\usepackage{tikz}
+\usepackage{pgfplots}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+\usepackage[shortcuts]{extdash}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{rm}
+
+
+\begin{document}
+
+\title{Chebyshev Polynomials}
+\author{Manuel Eberl}
+\maketitle
+
+\begin{abstract}
+The multiple-angle formulas for $\cos$ and $\sin$ state that for any natural number $n$, 
+the values of $\cos nx$ and $\sin nx$ can be expressed in terms of $\cos x$ and $\sin x$.
+To be more precise, there are polynomials $T_n$ and $U_n$ such that $\cos nx = T_n(\cos x)$
+and $\sin nx = U_n(\cos x)\sin x$. These are called the \emph{Chebyshev polynomials of the
+first and second kind}, respectively.
+
+This entry contains a definition of these two familes of polynomials in Isabelle/HOL
+along with some of their most important properties. In particular, it is shown that $T_n$ and $U_n$
+are \emph{orthogonal} families of polynomials.
+
+Moreover, we show the well-known result that for any monic polynomial $p$ of degree $n > 0$,
+it holds that $\sup_{x\in[-1,1]} |p(x)| \geq 2^{n-1}$, and that this inequality is sharp since
+equality holds with $p = 2^{1-n} T_n$. This has important consequences in the theory of
+function interpolation, since it implies that the roots of $T_n$ (also colled the
+\emph{Chebyshev nodes}) are exceptionally well-suited as interpolation nodes.
+\end{abstract}
+
+
+\newpage
+\tableofcontents
+
+\newpage
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\nocite{mason2002chebyshev}
+\raggedright
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+

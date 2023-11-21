@@ -3,15 +3,36 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2023-11-10T00:00:00+00:00</lastmod>
+    <lastmod>2023-11-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2023-11-10T00:00:00+00:00</lastmod>
+    <lastmod>2023-11-13T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/topics/computer-science/</loc>
-    <lastmod>2023-11-10T00:00:00+00:00</lastmod>
+    <loc>/entries/Chebyshev_Polynomials.html</loc>
+    <lastmod>2023-11-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2023-11-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/descartes_sign_rule/</loc>
+    <lastmod>2023-11-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/eberl/</loc>
+    <lastmod>2023-11-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/</loc>
+    <lastmod>2023-11-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2023-11-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/polynomial_interpolation/</loc>
+    <lastmod>2023-11-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2023-11-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/computer-science/</loc>
     <lastmod>2023-11-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/lameris/</loc>
@@ -20,16 +41,7 @@
     <loc>/entries/Nominal_Myhill_Nerode.html</loc>
     <lastmod>2023-11-10T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/topics/</loc>
-    <lastmod>2023-11-10T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/berlekamp_zassenhaus/</loc>
-    <lastmod>2023-11-06T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/</loc>
-    <lastmod>2023-11-06T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/eberl/</loc>
     <lastmod>2023-11-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Elimination_Of_Repeated_Factors.html</loc>
@@ -42,9 +54,6 @@
     <lastmod>2023-11-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/mason_stothers/</loc>
-    <lastmod>2023-11-06T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/mathematics/</loc>
     <lastmod>2023-11-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Perfect_Fields.html</loc>
@@ -620,13 +629,7 @@
     <loc>/dependencies/datatype_order_generator/</loc>
     <lastmod>2022-12-15T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/descartes_sign_rule/</loc>
-    <lastmod>2022-12-15T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/platzer/</loc>
-    <lastmod>2022-12-15T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/polynomial_interpolation/</loc>
     <lastmod>2022-12-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/virtual_substitution/</loc>
@@ -4877,6 +4880,8 @@
     <loc>/sessions/ceva/</loc>
   </url><url>
     <loc>/sessions/chandy_lamport/</loc>
+  </url><url>
+    <loc>/sessions/chebyshev_polynomials/</loc>
   </url><url>
     <loc>/sessions/cheri-c_memory_model/</loc>
   </url><url>
