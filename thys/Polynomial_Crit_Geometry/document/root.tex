@@ -1,0 +1,120 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+
+\usepackage{tikz}
+\usepackage{pgfplots}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+\usepackage[shortcuts]{extdash}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{rm}
+
+
+\newcommand{\blackdot}{\protect\tikz{\protect\node [circle,draw,fill, inner sep=1.5pt] {};}}
+\newcommand{\whitedot}{\protect\tikz{\protect\node [circle, draw, fill=white, inner sep=1.5pt] {};}}
+\definecolor{myblue}{HTML}{ccccff}
+\newcommand{\bluesquare}{\protect\tikz[baseline=-3pt]{\protect\node [rectangle, inner sep=4pt, thick, fill=myblue, draw=blue!50!myblue] {};}}
+\newcommand{\bluecircle}{\protect\tikz[baseline=-3pt]{\protect\node [circle, inner sep=3pt, thick, fill=myblue, draw=blue!50!myblue] {};}}
+\newcommand{\drawpoint}[2]{\node at (#1, #2) [circle, draw, fill, inner sep=1.5pt] {};}
+\newcommand{\drawderivpoint}[2]{\node at (#1, #2) [circle, draw, fill=white, inner sep=1.5pt] {};}
+\newcommand{\drawrealroot}[1]{\node at (#1, 0) [circle, draw, fill, inner sep=1.5pt] {};}
+\newcommand{\drawderivrealroot}[1]{\node at (#1, 0) [circle, draw, fill=white, inner sep=1.5pt] {};}
+\newcommand{\drawderivroot}[2]{
+  \node at (#1, #2) [circle, draw, fill=white, inner sep=1.5pt] {};
+  \node at (#1, -#2) [circle, draw, fill=white, inner sep=1.5pt] {};
+}
+\newcommand{\drawdisc}[2]{
+  \filldraw[fill=myblue, draw=blue!50!myblue, thick] (#1, 0) circle (#2);
+}
+\newcommand{\drawroot}[2]{
+  \node at (#1, #2) [circle, draw, fill, inner sep=1.5pt] {};
+  \node at (#1, -#2) [circle, draw, fill, inner sep=1.5pt] {};
+}
+
+\newcommand{\gausslucasexample}{
+\begin{tikzpicture}[scale=2]
+\fill[fill=myblue, draw=blue!50!myblue, thick] (0.299612,1.58226) -- (-1.40616,0.464667) -- (-0.641843,-1.27256) -- (1.44002,-1.49463) -- (2.05487,0.478568) -- cycle;
+
+\draw [->] (-1.7,0) -- (2.3,0) node [below=1mm] {Re};
+\draw [->] (0, -1.8) -- (0, 1.8) node [left] {Im};
+
+\drawpoint{-1.40616}{0.464667}
+\drawpoint{-0.641843}{-1.27256}
+\drawpoint{-0.379628}{-0.373652}
+\drawpoint{0.299612}{1.58226}
+\drawpoint{0.633128}{0.615351}
+\drawpoint{1.44002}{-1.49463}
+\drawpoint{2.05487}{0.478568}
+
+\drawderivpoint{-1.05733}{0.316553}
+\drawderivpoint{-0.516613}{-0.978949}
+\drawderivpoint{0.130569}{0.130648}
+\drawderivpoint{0.343013}{1.2448}
+\drawderivpoint{1.15818}{-1.13603}
+\drawderivpoint{1.65647}{0.422974}
+\end{tikzpicture}
+}
+
+\newcommand{\jensenexample}{
+\begin{tikzpicture}[scale=2]
+\drawdisc{-0.662101}{1.02064}
+\drawdisc{2.29373}{1.74206}
+
+\draw [->] (-2,0) -- (4.5,0) node [below=1mm] {Re};
+\draw [->] (0, -2.2) -- (0, 2.2) node [left] {Im};
+
+\drawrealroot{-1.09794}
+\drawrealroot{0.101119}
+\drawrealroot{0.733563}
+\drawroot{-0.662101}{1.02064}
+\drawroot{2.29373}{1.74206}
+
+\drawderivrealroot{-0.7007}
+\drawderivrealroot{0.468001}
+\drawderivroot{-0.527427}{0.695497}
+\drawderivroot{1.92949}{1.41239}
+\end{tikzpicture}
+}
+
+
+\begin{document}
+
+\title{Two theorems about the geometry of the critical points of a complex polynomial}
+\author{Manuel Eberl}
+\maketitle
+
+\begin{abstract}
+This entry formalises two well-known results about the geometric relation between the \emph{roots}
+of a complex polynomial and its \emph{critical points}, i.e.\ the roots of its derivative.
+
+The first of these is the \emph{Gauß--Lucas Theorem}: The critical points of a 
+complex polynomial lie inside the convex hull of its roots.
+
+The second one is \emph{Jensen's Theorem}: Every non-real critical point of a
+real polynomial lies inside a disc between two conjugate roots.
+These discs are called the \emph{Jensen discs}: the Jensen disc of a pair of conjugate roots
+$a \pm b i$ is the smallest disc that contains both of them, i.e.\ the disc with centre $a$ and 
+radius $b$.
+\end{abstract}
+
+
+\newpage
+\tableofcontents
+
+\newpage
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\nocite{enescu2010}
+\nocite{marden1966}
+\raggedright
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
