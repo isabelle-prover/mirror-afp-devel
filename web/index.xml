@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Tue, 14 Nov 2023 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Wed, 15 Nov 2023 00:00:00 +0000</lastBuildDate>
       <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>The Polylogarithm Function</title>
+          <link>/entries/Polylog.html</link>
+          <pubDate>Wed, 15 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Polylog.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Two theorems about the geometry of the critical points of a complex polynomial</title>
           <link>/entries/Polynomial_Crit_Geometry.html</link>
@@ -9356,6 +9363,13 @@
           <link>/sessions/polygonal_number_theorem/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/polygonal_number_theorem/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Polylog</title>
+          <link>/sessions/polylog/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/polylog/</guid>
           <description></description>
         </item>
         <item>
