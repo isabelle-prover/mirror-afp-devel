@@ -1,0 +1,36 @@
+title = "The Polylogarithm Function"
+date = 2023-11-15
+topics = [
+  "Mathematics/Analysis",
+]
+abstract = """
+<p>This entry provides a definition of the <em>Polylogarithm function</em>, commonly denoted as
+$\\text{Li}_s(z)$. Here, $z$ is a complex number and $s$ an integer parameter. This function
+can be defined by the power series expression $\\text{Li}_s(z) = \\sum_{k=1}^\\infty \\frac{z^k}{k^s}$
+for $|z| < 1$ and analytically extended to the entire complex plane, except for a branch cut on
+$\\mathbb{R}_{\\geq 1}$.</p>
+<p>Several basic properties are also proven, such as the relationship to the Eulerian polynomials via
+$\\text{Li}_{-k}(z) = z (1 - z)^{k-1} A_k(z)$ for $k\\geq 0$,
+the derivative formula $\\frac{d}{dz} \\text{Li}_s(z) = \\frac{1}{z} \\text{Li}_{s-1}(z)$,
+the relation to the “normal” logarithm via $\\text{Li}_1(z) = -\\ln (1 - z)$,
+and the duplication formula $\\text{Li}_s(z) + \\text{Li}_s(-z) = 2^{1-s} \\text{Li}_s(z^2)$."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+email = "eberl_email"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []
