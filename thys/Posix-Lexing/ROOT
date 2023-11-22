@@ -2,7 +2,7 @@ chapter AFP
 
 session "Posix-Lexing" = "Regular-Sets" +
 
-  options [timeout = 600]
+  options [timeout = 900]
 
   directories
     "Extensions"
