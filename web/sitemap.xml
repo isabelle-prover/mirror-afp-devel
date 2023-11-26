@@ -20,7 +20,13 @@
     <loc>/dependencies/linear_recurrences/</loc>
     <lastmod>2023-11-15T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/topics/logic/</loc>
+    <lastmod>2023-11-15T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/topics/mathematics/</loc>
+    <lastmod>2023-11-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Cardinality_Continuum.html</loc>
     <lastmod>2023-11-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Polylog.html</loc>
@@ -75,9 +81,6 @@
     <lastmod>2023-11-04T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/finite-map-extras/</loc>
-    <lastmod>2023-11-04T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/logic/</loc>
     <lastmod>2023-11-04T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Q0_Metatheory.html</loc>
@@ -4853,6 +4856,8 @@
     <loc>/sessions/card_number_partitions/</loc>
   </url><url>
     <loc>/sessions/card_partitions/</loc>
+  </url><url>
+    <loc>/sessions/cardinality_continuum/</loc>
   </url><url>
     <loc>/sessions/cartan_fp/</loc>
   </url><url>

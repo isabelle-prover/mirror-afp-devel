@@ -1,0 +1,31 @@
+title = "The Cardinality of the Continuum"
+date = 2023-11-15
+topics = [
+  "Logic/Set theory",
+]
+abstract = """
+<p>This entry presents a short derivation of the cardinality of $\\mathbb{R}$,
+namely that $|\\mathbb{R}| = |2^{\\mathbb{N}}| = 2^{\\aleph_0}$. This is done by showing the
+injection $\\mathbb{R}\\to 2^{\\mathbb{Q}},\\ x \\mapsto (-\\infty, x)\\cap\\mathbb{Q}$ (i.e. Dedekind cuts)
+for one direction and the injection $2^\\mathbb{N}\\to\\mathbb{Q},\\ X \\mapsto \\sum_{n\\in X} 3^{-n}$,
+i.e. ternary fractions, for the other direction.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+email = "eberl_email"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []
