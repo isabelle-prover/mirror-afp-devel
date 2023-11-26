@@ -1,0 +1,12 @@
+chapter AFP
+
+session Cardinality_Continuum (AFP) = "HOL-Analysis" +
+  options [timeout = 300]
+  sessions
+    "HOL-Library"
+    "HOL-Cardinals"
+  theories
+    Cardinality_Continuum
+    Cardinality_Euclidean_Space
+  document_files
+    "root.tex"
