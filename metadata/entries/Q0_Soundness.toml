@@ -1,0 +1,27 @@
+title = "Soundness of the Q0 proof system for higher-order logic"
+date = 2023-11-20
+topics = [
+  "Logic/General logic",
+]
+abstract = """
+This entry formalizes the Q0 proof system for higher-order logic (also known as simple type theory) from the book \"An Introduction to Mathematical Logic and Type Theory: To Truth Through Proof\" by Peter B. Andrews together with the system's soundness. Most of the used theorems and lemmas are also from his book. The soundness proof is with respect to general models and as a consequence also holds for standard models. Higher-order logic is given a semantics by porting to Isabelle/HOL the specification of set theory by Kumar et al. from the CakeML project. The independently developed AFP entry \"Metatheory of Q0\" by Javier D&iacute;az also formalizes Q0 in Isabelle/HOL. I highly recommend the reader to also take a look at his formalization!"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.schlichtkrull]
+homepage = "schlichtkrull_homepage"
+
+[contributors]
+
+[notify]
+schlichtkrull = "schlichtkrull_email"
+
+[history]
+
+[extra]
+
+[related]
+pubs = ["Andrews, P. B. (1986). <a href=\"https://gtps.math.cmu.edu/tttp.html\">An introduction to mathematical logic and type theory: to truth through proof</a>, ISBN 978-0-12-058535-9.", "D&iacute;az, J. (2023). <a href=\"https://isa-afp.org/entries/Q0_Metatheory.html\">Metatheory of Q0</a>, AFP entry."]
+dois = ["10.1007/S10817-015-9357-X", "10.1007/978-3-319-08970-6_20"]
