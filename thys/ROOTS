@@ -572,6 +572,7 @@ Psi_Calculi
 Ptolemys_Theorem
 Public_Announcement_Logic
 Q0_Metatheory
+Q0_Soundness
 QHLProver
 QR_Decomposition
 Quantales
