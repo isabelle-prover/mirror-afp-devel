@@ -25,6 +25,7 @@ homepage = "desharnais_homepage"
 desharnais = "desharnais_email"
 
 [history]
+2023-11-27 = "Added a generic, framework-independent lemma to lift a simulation to a bisimulation."
 
 [extra]
 
