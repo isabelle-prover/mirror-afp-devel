@@ -24,4 +24,4 @@ schlichtkrull = "schlichtkrull_email"
 
 [related]
 pubs = ["Andrews, P. B. (1986). <a href=\"https://gtps.math.cmu.edu/tttp.html\">An introduction to mathematical logic and type theory: to truth through proof</a>, ISBN 978-0-12-058535-9.", "D&iacute;az, J. (2023). <a href=\"https://isa-afp.org/entries/Q0_Metatheory.html\">Metatheory of Q0</a>, AFP entry."]
-dois = ["10.1007/S10817-015-9357-X", "10.1007/978-3-319-08970-6_20"]
+dois = ["10.1007/s10817-015-9357-x", "10.1007/978-3-319-08970-6_20"]
