@@ -282,8 +282,7 @@ lemma obtains_bisimulation_from_forward_simulation:
     lt :: "'index \<Rightarrow> 'index \<Rightarrow> bool"
   assumes "right_unique step1" and "right_unique step2" and
     final1_stuck: "\<forall>s1. final1 s1 \<longrightarrow> (\<nexists>s1'. step1 s1 s1')" and
-    final2_stuck: "\<forall>s2. final2 s2 \<longrightarrow> (\<nexists>s2'. step2 s2 s2')"
-    "\<forall>s1 s2. \<exists>\<^sub>\<le>\<^sub>1 i. match i s1 s2" and
+    final2_stuck: "\<forall>s2. final2 s2 \<longrightarrow> (\<nexists>s2'. step2 s2 s2')" and
     matching_states_agree_on_final: "\<forall>i s1 s2. match i s1 s2 \<longrightarrow> final1 s1 \<longleftrightarrow> final2 s2" and
     matching_states_are_safe:
       "\<forall>i s1 s2. match i s1 s2 \<longrightarrow> safe_state step1 final1 s1 \<and> safe_state step2 final2 s2" and
@@ -291,8 +290,8 @@ lemma obtains_bisimulation_from_forward_simulation:
     fsim: "\<forall>i s1 s2 s1'. match i s1 s2 \<longrightarrow> step1 s1 s1' \<longrightarrow>
       (\<exists>i' s2'. step2\<^sup>+\<^sup>+ s2 s2' \<and> match i' s1' s2') \<or> (\<exists>i'. match i' s1' s2 \<and> lt i' i)"
   obtains
-    MATCH :: "'index \<times> nat \<Rightarrow> 'state1 \<Rightarrow> 'state2 \<Rightarrow> bool" and
-    ORDER :: "'index \<times> nat \<Rightarrow> 'index \<times> nat \<Rightarrow> bool"
+    MATCH :: "nat \<times> nat \<Rightarrow> 'state1 \<Rightarrow> 'state2 \<Rightarrow> bool" and
+    ORDER :: "nat \<times> nat \<Rightarrow> nat \<times> nat \<Rightarrow> bool"
   where
     "bisimulation step1 step2 final1 final2 ORDER MATCH"
 proof -
@@ -300,8 +299,8 @@ proof -
     using fsim unfolding simulation_def by metis
 
   obtain
-    MATCH :: "'index \<times> nat \<Rightarrow> 'state1 \<Rightarrow> 'state2 \<Rightarrow> bool" and
-    ORDER :: "'index \<times> nat \<Rightarrow> 'index \<times> nat \<Rightarrow> bool"
+    MATCH :: "nat \<times> nat \<Rightarrow> 'state1 \<Rightarrow> 'state2 \<Rightarrow> bool" and
+    ORDER :: "nat \<times> nat \<Rightarrow> nat \<times> nat \<Rightarrow> bool"
   where
     "(\<And>i s1 s2. match i s1 s2 \<Longrightarrow> \<exists>j. MATCH j s1 s2)" and
     "(\<And>j s1 s2. MATCH j s1 s2 \<Longrightarrow> final1 s1 = final2 s2)" and
@@ -353,20 +352,19 @@ corollary ex_bisimulation_from_forward_simulation:
     lt :: "'index \<Rightarrow> 'index \<Rightarrow> bool"
   assumes "right_unique step1" and "right_unique step2" and
     final1_stuck: "\<forall>s1. final1 s1 \<longrightarrow> (\<nexists>s1'. step1 s1 s1')" and
-    final2_stuck: "\<forall>s2. final2 s2 \<longrightarrow> (\<nexists>s2'. step2 s2 s2')"
-    "\<forall>s1 s2. \<exists>\<^sub>\<le>\<^sub>1 i. match i s1 s2" and
+    final2_stuck: "\<forall>s2. final2 s2 \<longrightarrow> (\<nexists>s2'. step2 s2 s2')" and
     matching_states_agree_on_final: "\<forall>i s1 s2. match i s1 s2 \<longrightarrow> final1 s1 \<longleftrightarrow> final2 s2" and
     matching_states_are_safe:
       "\<forall>i s1 s2. match i s1 s2 \<longrightarrow> safe_state step1 final1 s1 \<and> safe_state step2 final2 s2" and
     "wfP lt" and
     fsim: "\<forall>i s1 s2 s1'. match i s1 s2 \<longrightarrow> step1 s1 s1' \<longrightarrow>
       (\<exists>i' s2'. step2\<^sup>+\<^sup>+ s2 s2' \<and> match i' s1' s2') \<or> (\<exists>i'. match i' s1' s2 \<and> lt i' i)"
-  shows "\<exists>(MATCH :: 'index \<times> nat \<Rightarrow> 'state1 \<Rightarrow> 'state2 \<Rightarrow> bool)
-    (ORDER :: 'index \<times> nat \<Rightarrow> 'index \<times> nat \<Rightarrow> bool).
+  shows "\<exists>(MATCH :: nat \<times> nat \<Rightarrow> 'state1 \<Rightarrow> 'state2 \<Rightarrow> bool)
+    (ORDER :: nat \<times> nat \<Rightarrow> nat \<times> nat \<Rightarrow> bool).
     bisimulation step1 step2 final1 final2 ORDER MATCH"
   using obtains_bisimulation_from_forward_simulation[OF assms] by metis
 
-lemma lift_backward_simulation_to_bisimulation:
+lemma obtains_bisimulation_from_backward_simulation:
   fixes
     step1 :: "'state1 \<Rightarrow> 'state1 \<Rightarrow> bool" and final1 :: "'state1 \<Rightarrow> bool" and
     step2 :: "'state2 \<Rightarrow> 'state2 \<Rightarrow> bool" and final2 :: "'state2 \<Rightarrow> bool" and
@@ -375,7 +373,6 @@ lemma lift_backward_simulation_to_bisimulation:
   assumes "right_unique step1" and "right_unique step2" and
     final1_stuck: "\<forall>s1. final1 s1 \<longrightarrow> (\<nexists>s1'. step1 s1 s1')" and
     final2_stuck: "\<forall>s2. final2 s2 \<longrightarrow> (\<nexists>s2'. step2 s2 s2')" and
-    "\<forall>s1 s2. \<exists>\<^sub>\<le>\<^sub>1 i. match i s1 s2" and
     matching_states_agree_on_final: "\<forall>i s1 s2. match i s1 s2 \<longrightarrow> final1 s1 \<longleftrightarrow> final2 s2" and
     matching_states_are_safe:
       "\<forall>i s1 s2. match i s1 s2 \<longrightarrow> safe_state step1 final1 s1 \<and> safe_state step2 final2 s2" and
@@ -383,14 +380,11 @@ lemma lift_backward_simulation_to_bisimulation:
     bsim: "\<forall>i s1 s2 s2'. match i s1 s2 \<longrightarrow> step2 s2 s2' \<longrightarrow>
       (\<exists>i' s1'. step1\<^sup>+\<^sup>+ s1 s1' \<and> match i' s1' s2') \<or> (\<exists>i'. match i' s1 s2' \<and> lt i' i)"
   obtains
-    MATCH :: "'index \<times> nat \<Rightarrow> 'state1 \<Rightarrow> 'state2 \<Rightarrow> bool" and
-    ORDER :: "'index \<times> nat \<Rightarrow> 'index \<times> nat \<Rightarrow> bool"
+    MATCH :: "nat \<times> nat \<Rightarrow> 'state1 \<Rightarrow> 'state2 \<Rightarrow> bool" and
+    ORDER :: "nat \<times> nat \<Rightarrow> nat \<times> nat \<Rightarrow> bool"
   where
     "bisimulation step1 step2 final1 final2 ORDER MATCH"
 proof -
-  have "\<forall>s2 s1. \<exists>\<^sub>\<le>\<^sub>1 i. (\<lambda>i s2 s1. match i s1 s2) i s2 s1"
-    using \<open>\<forall>s1 s2. \<exists>\<^sub>\<le>\<^sub>1 i. match i s1 s2\<close> by simp
-
   have matching_states_agree_on_final': "\<forall>i s2 s1. (\<lambda>i s2 s1. match i s1 s2) i s2 s1 \<longrightarrow> final2 s2 \<longleftrightarrow> final1 s1"
     using matching_states_agree_on_final by simp
 
@@ -402,8 +396,8 @@ proof -
     using bsim unfolding simulation_def by metis
 
   obtain
-    MATCH :: "'index \<times> nat \<Rightarrow> 'state2 \<Rightarrow> 'state1 \<Rightarrow> bool" and
-    ORDER :: "'index \<times> nat \<Rightarrow> 'index \<times> nat \<Rightarrow> bool"
+    MATCH :: "nat \<times> nat \<Rightarrow> 'state2 \<Rightarrow> 'state1 \<Rightarrow> bool" and
+    ORDER :: "nat \<times> nat \<Rightarrow> nat \<times> nat \<Rightarrow> bool"
   where
     "(\<And>i s1 s2. match i s1 s2 \<Longrightarrow> \<exists>j. MATCH j s2 s1)" and
     "(\<And>j s1 s2. MATCH j s2 s1 \<Longrightarrow> final1 s1 = final2 s2)" and
@@ -413,8 +407,8 @@ proof -
     fsim': "simulation step1 step2 (\<lambda>i s1 s2. MATCH i s2 s1) ORDER" and
     bsim': "simulation step2 step1 (\<lambda>i s2 s1. MATCH i s2 s1) ORDER"
     using lift_strong_simulation_to_bisimulation'[OF assms(2,1) final2_stuck final1_stuck
-        \<open>\<forall>s2 s1. \<exists>\<^sub>\<le>\<^sub>1 i. (\<lambda>i s2 s1. match i s1 s2) i s2 s1\<close> matching_states_agree_on_final'
-        matching_states_are_safe' \<open>wfP lt\<close> \<open>simulation step2 step1 (\<lambda>i s2 s1. match i s1 s2) lt\<close>]
+        matching_states_agree_on_final' matching_states_are_safe' \<open>wfP lt\<close>
+        \<open>simulation step2 step1 (\<lambda>i s2 s1. match i s1 s2) lt\<close>]
     by (smt (verit))
 
   have "bisimulation step1 step2 final1 final2 ORDER (\<lambda>i s1 s2. MATCH i s2 s1)"
@@ -446,6 +440,26 @@ proof -
   thus thesis
     using that by metis
 qed
+
+corollary ex_bisimulation_from_backward_simulation:
+  fixes
+    step1 :: "'state1 \<Rightarrow> 'state1 \<Rightarrow> bool" and final1 :: "'state1 \<Rightarrow> bool" and
+    step2 :: "'state2 \<Rightarrow> 'state2 \<Rightarrow> bool" and final2 :: "'state2 \<Rightarrow> bool" and
+    match :: "'index \<Rightarrow> 'state1 \<Rightarrow> 'state2 \<Rightarrow> bool" and
+    lt :: "'index \<Rightarrow> 'index \<Rightarrow> bool"
+  assumes "right_unique step1" and "right_unique step2" and
+    final1_stuck: "\<forall>s1. final1 s1 \<longrightarrow> (\<nexists>s1'. step1 s1 s1')" and
+    final2_stuck: "\<forall>s2. final2 s2 \<longrightarrow> (\<nexists>s2'. step2 s2 s2')" and
+    matching_states_agree_on_final: "\<forall>i s1 s2. match i s1 s2 \<longrightarrow> final1 s1 \<longleftrightarrow> final2 s2" and
+    matching_states_are_safe:
+      "\<forall>i s1 s2. match i s1 s2 \<longrightarrow> safe_state step1 final1 s1 \<and> safe_state step2 final2 s2" and
+    "wfP lt" and
+    bsim: "\<forall>i s1 s2 s2'. match i s1 s2 \<longrightarrow> step2 s2 s2' \<longrightarrow>
+      (\<exists>i' s1'. step1\<^sup>+\<^sup>+ s1 s1' \<and> match i' s1' s2') \<or> (\<exists>i'. match i' s1 s2' \<and> lt i' i)"
+  shows "\<exists>(MATCH :: nat \<times> nat \<Rightarrow> 'state1 \<Rightarrow> 'state2 \<Rightarrow> bool)
+    (ORDER :: nat \<times> nat \<Rightarrow> nat \<times> nat \<Rightarrow> bool).
+    bisimulation step1 step2 final1 final2 ORDER MATCH"
+  using obtains_bisimulation_from_backward_simulation[OF assms] by metis
 
 subsection \<open>Composition of backward simulations\<close>
 
