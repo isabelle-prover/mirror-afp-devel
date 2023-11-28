@@ -1,0 +1,15 @@
+chapter AFP
+
+session Lambert_Series (AFP) = "Dirichlet_Series" +
+  options [timeout = 1800]
+  sessions
+    "HOL-Library"
+    "HOL-Real_Asymp"
+    "HOL-Complex_Analysis"
+    Dirichlet_Series
+    Polylog
+  theories
+    Lambert_Series
+  document_files
+    "root.tex"
+    "root.bib"

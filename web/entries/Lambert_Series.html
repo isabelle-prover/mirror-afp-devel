@@ -4,21 +4,21 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>The Polylogarithm Function - Archive of Formal Proofs</title>
-    <meta name="description" content="This entry provides a definition of the Polylogarithm function, commonly denoted as $\text{Li}_s(z)$. Here, $z$ is a complex number and $s$ an integer...">
+    <title>Lambert Series - Archive of Formal Proofs</title>
+    <meta name="description" content="This entry provides a formalisation of Lambert series, i.e. series of the form $L(a_n, q) = \sum_{n=1}^\infty a_n q^n / (1-q^n)$ where $a_n$ is a sequence...">
 
-  <meta property="og:title" content="The Polylogarithm Function" />
+  <meta property="og:title" content="Lambert Series" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="/entries/Polylog.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
-<meta property="article:published_time" content="2023-11-15T00:00:00+00:00" />
-<meta property="article:modified_time" content="2023-11-15T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+<meta property="og:url" content="/entries/Lambert_Series.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2023-11-24T00:00:00+00:00" />
+<meta property="article:modified_time" content="2023-11-24T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
 
 
   <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
-<meta name="twitter:title" content="The Polylogarithm Function"/>
+<meta name="twitter:title" content="Lambert Series"/>
 <meta name="twitter:description" content=""/>
 
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
@@ -124,7 +124,7 @@
       </div>
     </form>
   <h1>
-    <span class='first'>T</span>he <span class='first'>P</span>olylogarithm <span class='first'>F</span>unction
+    <span class='first'>L</span>ambert <span class='first'>S</span>eries
     
   </h1>
   <div>
@@ -132,7 +132,7 @@
         <a href="../authors/eberl">Manuel Eberl</a> <a class="obfuscated" data="eyJob3N0IjpbInBydXZpc3RvIiwib3JnIl0sInVzZXIiOlsibWFudWVsIl19">📧</a>
 
       </p>
-      <p class="date">November 15, 2023</p>
+      <p class="date">November 24, 2023</p>
   </div>
 </header>
       <div>
@@ -140,16 +140,22 @@
   <main>
     <h3>Abstract</h3>
 
-    <div class="abstract mathjax_process"><p>This entry provides a definition of the <em>Polylogarithm function</em>, commonly denoted as
-$\text{Li}_s(z)$. Here, $z$ is a complex number and $s$ an integer parameter. This function
-can be defined by the power series expression $\text{Li}_s(z) = \sum_{k=1}^\infty \frac{z^k}{k^s}$
-for $|z| < 1$ and analytically extended to the entire complex plane, except for a branch cut on
-$\mathbb{R}_{\geq 1}$.</p>
-<p>Several basic properties are also proven, such as the relationship to the Eulerian polynomials via
-$\text{Li}_{-k}(z) = z (1 - z)^{k-1} A_k(z)$ for $k\geq 0$,
-the derivative formula $\frac{d}{dz} \text{Li}_s(z) = \frac{1}{z} \text{Li}_{s-1}(z)$,
-the relation to the “normal” logarithm via $\text{Li}_1(z) = -\ln (1 - z)$,
-and the duplication formula $\text{Li}_s(z) + \text{Li}_s(-z) = 2^{1-s} \text{Li}_s(z^2)$.</div>
+    <div class="abstract mathjax_process"><p>This entry provides a formalisation of <em>Lambert series</em>, i.e. series of the form
+$L(a_n, q) = \sum_{n=1}^\infty a_n q^n / (1-q^n)$ where $a_n$ is a sequence of real or complex
+ numbers.</p>
+<p>Proofs for all the basic properties are provided, such as:</p>
+<ul>
+<li> the precise region in which $L(a_n, q)$ converges</li>
+<li> the functional equation $L(a_n, \frac{1}{q}) = -(\sum_{n=1}^\infty a_n) - L(a_n, q)$</li>
+<li> the power series expansion of $L(a_n, q)$ at $q = 0$</li>
+<li> the connection $L(a_n, q) = \sum_{k=1}^\infty f(q^k)$ for $f(z) = \sum_{n=1}^\infty a_n z^n$</li>
+that links a Lambert series to its ``corresponding'' power series</li>
+<li> connections to various number-theoretic functions, e.g. the divisor $\sigma$ function via
+$\sum_{n=1}^\infty \sigma_{\alpha}(n) q^n = L(n^\alpha, q)$</li>
+</ul>
+<p>The formalisation mainly follows the chapter on Lambert series in Konrad Knopp's classic textbook
+<a href="https://doi.org/10.1007/978-3-642-61406-4"><em>Theory and Application of Infinite Series</em></a>
+and includes all results presented therein.</p></div>
 
     <h3>License</h3>
     <div>
@@ -159,33 +165,26 @@ and the duplication formula $\text{Li}_s(z) + \text{Li}_s(-z) = 2^{1-s} \text{Li
       <ul>
           <li><a href="../topics/mathematics/analysis">Mathematics/Analysis</a></li>
       </ul>
-      <h3>Session Polylog</h3>
+      <h3>Session Lambert_Series</h3>
       <ul>
-          <li><a href="../sessions/polylog/#Polylog_Library">Polylog_Library</a></li>
-          <li><a href="../sessions/polylog/#Polylog">Polylog</a></li>
+          <li><a href="../sessions/lambert_series/#Lambert_Series_Library">Lambert_Series_Library</a></li>
+          <li><a href="../sessions/lambert_series/#Number_Theoretic_Functions_Extras">Number_Theoretic_Functions_Extras</a></li>
+          <li><a href="../sessions/lambert_series/#Summation_Tests_More">Summation_Tests_More</a></li>
+          <li><a href="../sessions/lambert_series/#Lambert_Series">Lambert_Series</a></li>
       </ul>
 
     <div class="flex-wrap">
       <div>
         <h3>Depends on</h3>
         <ul class="horizontal-list">
-              <li><a href="../entries/Linear_Recurrences.html">Linear Recurrences</a></li>
-        </ul>
-      </div>
-      <div>
-        <h3>Used by</h3>
-        <ul class="horizontal-list">
-            <li>
-              <a href="../entries/Lambert_Series.html">Lambert Series</a>
-            </li>
+              <li><a href="../entries/Dirichlet_Series.html">Dirichlet Series</a></li>
+              <li><a href="../entries/Polylog.html">The Polylogarithm Function</a></li>
         </ul>
       </div>
         <div>
           <h3>Auto-related entries</h3>
           <ul class="horizontal-list">
-              <li><a href="../entries/Sort_Encodings.html">Sound and Complete Sort Encodings for First-Order Logic</a></li>
-              <li><a href="../entries/Graph_Theory.html">Graph Theory</a></li>
-              <li><a href="../entries/Lower_Semicontinuous.html">Lower Semicontinuous Functions</a></li>
+              <li><a href="../entries/Irrational_Series_Erdos_Straus.html">Irrationality Criteria for Series by Erdős and Straus</a></li>
           </ul>
         </div>
       </div>
@@ -196,9 +195,9 @@ and the duplication formula $\text{Li}_s(z) + \text{Li}_s(-z) = 2^{1-s} \text{Li
     <a class='popup-button' href="#cite-popup">Cite</a>
     <a class='popup-button' href="#download-popup">Download</a>
     <h4>PDFs</h4>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Polylog/outline.pdf">Proof outline</a>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Polylog/document.pdf">Proof document</a>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Polylog/session_graph.pdf">Dependencies</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Lambert_Series/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Lambert_Series/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Lambert_Series/session_graph.pdf">Dependencies</a>
   </nav>
 
   <div id="cite-popup" class="overlay">
@@ -207,14 +206,14 @@ and the duplication formula $\text{Li}_s(z) + \text{Li}_s(-z) = 2^{1-s} \text{Li
       <h2>Cite</h2>
       <a class="close" href="#">&times;</a>
       <div>
-        <p style="display:none;" id="bibtex-filename">Polylog-AFP</p>
-        <pre id="copy-text">@article{Polylog-AFP,
+        <p style="display:none;" id="bibtex-filename">Lambert_Series-AFP</p>
+        <pre id="copy-text">@article{Lambert_Series-AFP,
   author  = {Manuel Eberl},
-  title   = {The Polylogarithm Function},
+  title   = {Lambert Series},
   journal = {Archive of Formal Proofs},
   month   = {November},
   year    = {2023},
-  note    = {\url{https://isa-afp.org/entries/Polylog.html},
+  note    = {\url{https://isa-afp.org/entries/Lambert_Series.html},
              Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -228,7 +227,7 @@ and the duplication formula $\text{Li}_s(z) + \text{Li}_s(-z) = 2^{1-s} \text{Li
     <div class="popup">
       <h2>Download</h2>
       <a class="close" href="#">&times;</a>
-      <a href="https://www.isa-afp.org/release/afp-Polylog-current.tar.gz"
+      <a href="https://www.isa-afp.org/release/afp-Lambert_Series-current.tar.gz"
          download>Download latest</a>
     </div>
   </div>

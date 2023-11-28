@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Mon, 20 Nov 2023 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Fri, 24 Nov 2023 00:00:00 +0000</lastBuildDate>
       <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Lambert Series</title>
+          <link>/entries/Lambert_Series.html</link>
+          <pubDate>Fri, 24 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Lambert_Series.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Soundness of the Q0 proof system for higher-order logic</title>
           <link>/entries/Q0_Soundness.html</link>
@@ -8327,6 +8334,13 @@
           <link>/sessions/lambdamu/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/lambdamu/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Lambert_Series</title>
+          <link>/sessions/lambert_series/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/lambert_series/</guid>
           <description></description>
         </item>
         <item>

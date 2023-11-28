@@ -1,0 +1,52 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+\usepackage[shortcuts]{extdash}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{rm}
+
+
+\begin{document}
+
+\title{Lambert Series}
+\author{Manuel Eberl}
+\maketitle
+
+\begin{abstract}
+This entry provides a formalisation of \emph{Lambert series}, i.e.\ series of the form
+$L(a_n, q) = \sum_{n=1}^\infty a_n q^n / (1-q^n)$ where $a_n$ is a sequence of real or complex
+ numbers.
+Proofs for all the basic properties are provided, such as
+\begin{itemize}
+\item the precise region in which $L(a_n, q)$ converges
+\item the functional equation $L(a_n, \frac{1}{q}) = -(\sum_{n=1}^\infty a_n) - L(a_n, q)$
+\item the power series expansion of $L(a_n, q)$ at $q = 0$
+\item the connection $L(a_n, q) = \sum_{k=1}^\infty f(q^k)$ for $f(z) = \sum_{n=1}^\infty a_n z^n$
+that links a Lambert series to its ``corresponding'' power series
+\item connections to various number-theoretic functions, e.g.\ the divisor $\sigma$ function via
+$\sum_{n=1}^\infty \sigma_{\alpha}(n) q^n = L(n^\alpha, q)$
+\end{itemize}
+The formalisation mainly follows the chapter on Lambert series in Konrad Knopp's classic textbook
+\emph{Theory and Application of Infinite Series}~\cite{knopp2013} and includes all results
+presented therein.
+\end{abstract}
+
+\newpage
+\tableofcontents
+
+\newpage
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+\nocite{knopp2013}
+\raggedright
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+

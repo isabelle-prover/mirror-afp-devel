@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Wed, 08 Jun 2022 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Fri, 24 Nov 2023 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/dirichlet_series/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Lambert Series</title>
+          <link>/entries/Lambert_Series.html</link>
+          <pubDate>Fri, 24 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Lambert_Series.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Finite Fields</title>
           <link>/entries/Finite_Fields.html</link>

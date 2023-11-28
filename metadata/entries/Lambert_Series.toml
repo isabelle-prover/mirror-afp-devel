@@ -1,0 +1,42 @@
+title = "Lambert Series"
+date = 2023-11-24
+topics = [
+  "Mathematics/Analysis",
+]
+abstract = """
+<p>This entry provides a formalisation of <em>Lambert series</em>, i.e. series of the form
+$L(a_n, q) = \\sum_{n=1}^\\infty a_n q^n / (1-q^n)$ where $a_n$ is a sequence of real or complex
+ numbers.</p>
+<p>Proofs for all the basic properties are provided, such as:</p>
+<ul>
+<li> the precise region in which $L(a_n, q)$ converges</li>
+<li> the functional equation $L(a_n, \\frac{1}{q}) = -(\\sum_{n=1}^\\infty a_n) - L(a_n, q)$</li>
+<li> the power series expansion of $L(a_n, q)$ at $q = 0$</li>
+<li> the connection $L(a_n, q) = \\sum_{k=1}^\\infty f(q^k)$ for $f(z) = \\sum_{n=1}^\\infty a_n z^n$</li>
+that links a Lambert series to its ``corresponding'' power series</li>
+<li> connections to various number-theoretic functions, e.g. the divisor $\\sigma$ function via
+$\\sum_{n=1}^\\infty \\sigma_{\\alpha}(n) q^n = L(n^\\alpha, q)$</li>
+</ul>
+<p>The formalisation mainly follows the chapter on Lambert series in Konrad Knopp's classic textbook
+<a href=\"https://doi.org/10.1007/978-3-642-61406-4\"><em>Theory and Application of Infinite Series</em></a>
+and includes all results presented therein.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+email = "eberl_email"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []
