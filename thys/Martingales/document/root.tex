@@ -1,0 +1,79 @@
+﻿\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+%\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+\begin{document}
+
+\title{On the Formalization of Martingales}
+\author{Ata Keskin}
+\maketitle
+\begin{abstract}
+In the scope of this project, we present a formalization of martingales in arbitrary Banach spaces using Isabelle/HOL.
+
+The current formalization of conditional expectation in the Isabelle library is limited to real-valued functions. To overcome this limitation, we extend the construction of conditional expectation to general Banach spaces, employing an approach similar to the one described in \cite{Hytoenen_2016}. We use measure theoretic arguments to construct the conditional expectation using suitable limits of simple functions.
+
+Subsequently, we define stochastic processes and introduce the concepts of adapted, progressively measurable and predictable processes using suitable locale definitions\footnote{\texttt{Martingale.Stochastic\_Process}}. We show the relation
+\[
+	\text{adapted} \supseteq \text{progressive} \supseteq \text{predictable}
+\]
+Furthermore, we show that progressive measurability and adaptedness are equivalent when the indexing set is discrete.
+We pay special attention to predictable processes in discrete-time, showing that $(X_n)_{n \in \mathbb{N}}$ is predictable if and only if $(X_{n + 1})_{n \in \mathbb{N}}$ is adapted.
+
+Moving forward, we rigorously define martingales, submartingales, and supermartingales, presenting their first consequences and corollaries\footnote{\texttt{Martingale.Martingale}}. Discrete-time martingales are given special attention in the formalization. In every step of our formalization, we make extensive use of the powerful locale system of Isabelle.
+
+The formalization further contributes by generalizing concepts in Bochner integration by extending their application from the real numbers to arbitrary Banach spaces equipped with a second-countable topology. Induction schemes for integrable simple functions on Banach spaces are introduced, accommodating various scenarios with or without a real vector ordering\footnote{\texttt{Martingale.Bochner\_Integration\_Addendum}}. Specifically, we formalize a powerful result called the ``Averaging Theorem''\cite{Lang_1993} which allows us to show that densities are unique in Banach spaces.
+
+In-depth information on the formalization and the proofs of the individual theorems can be found in \cite{keskin2023formalization}.
+\end{abstract}
+\tableofcontents
+\pagebreak
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
