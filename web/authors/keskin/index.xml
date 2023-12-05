@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Sun, 29 Oct 2023 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Tue, 21 Nov 2023 00:00:00 +0000</lastBuildDate>
       <atom:link href="/authors/keskin/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Martingales</title>
+          <link>/entries/Martingales.html</link>
+          <pubDate>Tue, 21 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Martingales.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Eudoxus Reals</title>
           <link>/entries/Eudoxus_Reals.html</link>

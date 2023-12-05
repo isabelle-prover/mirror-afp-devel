@@ -32,6 +32,12 @@
     <loc>/topics/</loc>
     <lastmod>2023-11-24T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/authors/keskin/</loc>
+    <lastmod>2023-11-21T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Martingales.html</loc>
+    <lastmod>2023-11-21T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/topics/logic/</loc>
     <lastmod>2023-11-20T00:00:00+00:00</lastmod>
   </url><url>
@@ -150,9 +156,6 @@
     <lastmod>2023-10-31T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Eudoxus_Reals.html</loc>
-    <lastmod>2023-10-29T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/keskin/</loc>
     <lastmod>2023-10-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/kappelmann/</loc>
@@ -5936,6 +5939,8 @@
     <loc>/sessions/markov_models/</loc>
   </url><url>
     <loc>/sessions/marriage/</loc>
+  </url><url>
+    <loc>/sessions/martingales/</loc>
   </url><url>
     <loc>/sessions/mason_stothers/</loc>
   </url><url>
