@@ -2431,7 +2431,7 @@ qed
 
 lemma varnum_plus:
   "varnum X (s + t) = max (varnum X s) (varnum X (t::'x::countable \<Rightarrow>\<^sub>0 'b::ninv_comm_monoid_add))"
-proof (simp add: varnum_def keys_plus_ninv_comm_monoid_add image_Un Un_Diff del: Diff_eq_empty_iff, intro impI)
+proof (simp add: varnum_def keys_plus_ninv_comm_monoid_add image_Un Un_Diff del: diff_shunt_var, intro impI)
   assume 1: "keys s - X \<noteq> {}" and 2: "keys t - X \<noteq> {}"
   have "finite (elem_index ` (keys s - X))" by simp
   moreover from 1 have "elem_index ` (keys s - X) \<noteq> {}" by simp

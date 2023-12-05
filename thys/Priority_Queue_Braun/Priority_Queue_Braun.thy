@@ -248,7 +248,7 @@ function (sequential) T_sift_down :: "'a::linorder tree \<Rightarrow> 'a \<Right
 "T_sift_down Leaf a _ = 1" |
 "T_sift_down (Node Leaf x _) a Leaf = 1" |
 "T_sift_down (Node l1 x1 r1) a (Node l2 x2 r2) =
-  1 + (if a \<le> x1 \<and> a \<le> x2 then 1
+  1 + (if a \<le> x1 \<and> a \<le> x2 then 0
    else if x1 \<le> x2 then T_sift_down l1 a r1
         else T_sift_down l2 a r2)"
 by pat_completeness auto
