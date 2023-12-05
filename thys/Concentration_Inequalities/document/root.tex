@@ -1,0 +1,35 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{pdfsetup}
+\urlstyle{rm}
+\isabellestyle{it}
+\begin{document}
+
+\title{Concentration Inequalities}
+\author{Emin Karayel and Yong Kiam Tan$^*$}
+\maketitle
+\def\thefootnote{*}\footnotetext{The authors contributed equally to this work.}\def\thefootnote{\arabic{footnote}}
+
+\abstract{Concentration inequalities provide bounds on how a random variable
+(or a sum/composition of random variables) deviate from their expectation,
+usually based on moments/independence of the variables.
+
+The most important concentration inequalities (the Markov, Chebyshev, and
+Hoelder inequalities and the Chernoff bounds) are already part of
+HOL-Probability. This entry collects more advanced results, such as
+Bennett's/Bernstein's Inequality, Bienaym\'e's Identity, Cantelli's Inequality,
+the Efron-Stein Inequality, McDiarmid's Inequality, and the Paley-Zygmund
+Inequality.}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
