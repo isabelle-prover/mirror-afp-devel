@@ -62,10 +62,22 @@
     <loc>/entries/Chebyshev_Polynomials.html</loc>
     <lastmod>2023-11-13T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/entries/Concentration_Inequalities.html</loc>
+    <lastmod>2023-11-13T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/dependencies/descartes_sign_rule/</loc>
     <lastmod>2023-11-13T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/authors/karayel/</loc>
+    <lastmod>2023-11-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/lp/</loc>
+    <lastmod>2023-11-13T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/dependencies/polynomial_interpolation/</loc>
+    <lastmod>2023-11-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/tan/</loc>
     <lastmod>2023-11-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/computer-science/</loc>
@@ -311,9 +323,6 @@
     <loc>/entries/Executable_Randomized_Algorithms.html</loc>
     <lastmod>2023-06-19T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/karayel/</loc>
-    <lastmod>2023-06-19T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/probabilistic_while/</loc>
     <lastmod>2023-06-19T00:00:00+00:00</lastmod>
   </url><url>
@@ -423,9 +432,6 @@
     <lastmod>2023-04-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/skip_lists/</loc>
-    <lastmod>2023-04-27T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/tan/</loc>
     <lastmod>2023-04-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Schwartz_Zippel.html</loc>
@@ -999,9 +1005,6 @@
     <lastmod>2022-04-08T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/interpolation_polynomials_hol_algebra/</loc>
-    <lastmod>2022-04-08T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/lp/</loc>
     <lastmod>2022-04-08T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/median_method/</loc>
@@ -5035,6 +5038,8 @@
     <loc>/topics/computer-science/semantics-and-reasoning/</loc>
   </url><url>
     <loc>/topics/computer-science/system-description-languages/</loc>
+  </url><url>
+    <loc>/sessions/concentration_inequalities/</loc>
   </url><url>
     <loc>/sessions/concurrent_ref_alg/</loc>
   </url><url>
