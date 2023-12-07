@@ -14,6 +14,61 @@ where
     (\<forall>i s1 s2 s1'. match i s1 s2 \<longrightarrow> \<R>\<^sub>1 s1 s1' \<longrightarrow>
       (\<exists>s2' i'. \<R>\<^sub>2\<^sup>+\<^sup>+ s2 s2' \<and> match i' s1' s2') \<or> (\<exists>i'. match i' s1' s2 \<and> order i' i))"
 
+lemma finite_progress:
+  fixes
+    step1 :: "'s1 \<Rightarrow> 's1 \<Rightarrow> bool" and
+    step2 :: "'s2 \<Rightarrow> 's2 \<Rightarrow> bool" and
+    match :: "'i \<Rightarrow> 's1 \<Rightarrow> 's2 \<Rightarrow> bool" and
+    order :: "'i \<Rightarrow> 'i \<Rightarrow> bool"
+  assumes
+    matching_states_agree_on_stuck:
+      "\<forall>i s1 s2. match i s1 s2 \<longrightarrow> stuck_state step1 s1 \<longleftrightarrow> stuck_state step2 s2" and
+    well_founded_order: "wfP order" and
+    sim: "simulation step1 step2 match order"
+  shows "match i s1 s2 \<Longrightarrow> step1 s1 s1' \<Longrightarrow>
+    \<exists>m s1'' n s2'' i'. (step1 ^^ m) s1' s1'' \<and> (step2 ^^ Suc n) s2 s2'' \<and> match i' s1'' s2''"
+  using well_founded_order
+proof (induction i arbitrary: s1 s1' rule: wfP_induct_rule)
+  case (less i)
+  show ?case
+    using sim[unfolded simulation_def, rule_format, OF \<open>match i s1 s2\<close> \<open>step1 s1 s1'\<close>]
+  proof (elim disjE exE conjE)
+    show "\<And>s2' i'. step2\<^sup>+\<^sup>+ s2 s2' \<Longrightarrow> match i' s1' s2' \<Longrightarrow> ?thesis"
+      by (metis Suc_pred relpowp_0_I tranclp_power)
+  next
+    fix i'
+    assume "match i' s1' s2" and "order i' i"
+
+    have "\<not> stuck_state step1 s1"
+      using \<open>step1 s1 s1'\<close> stuck_state_def by metis
+    hence "\<not> stuck_state step2 s2"
+      using \<open>match i s1 s2\<close> matching_states_agree_on_stuck by metis
+    hence "\<not> stuck_state step1 s1'"
+      using \<open>match i' s1' s2\<close> matching_states_agree_on_stuck by metis
+
+    then obtain s1'' where "step1 s1' s1''"
+      by (metis stuck_state_def)
+
+    obtain m s1''' n s2' i'' where
+      "(step1 ^^ m) s1'' s1'''" and
+      "(step2 ^^ Suc n) s2 s2'" and
+      "match i'' s1''' s2'"
+      using less.IH[OF \<open>order i' i\<close> \<open>match i' s1' s2\<close> \<open>step1 s1' s1''\<close>] by metis
+
+    show ?thesis
+    proof (intro exI conjI)
+      show "(step1 ^^ Suc m) s1' s1'''"
+        using \<open>(step1 ^^ m) s1'' s1'''\<close> \<open>step1 s1' s1''\<close> by (metis relpowp_Suc_I2)
+    next
+      show "(step2 ^^ Suc n) s2 s2'"
+        using \<open>(step2 ^^ Suc n) s2 s2'\<close> .
+    next
+      show "match i'' s1''' s2'"
+        using \<open>match i'' s1''' s2'\<close> .
+    qed
+  qed
+qed
+
 context begin
 
 private inductive match_bisim
@@ -73,52 +128,11 @@ proof -
       fix s1' s2'
       assume "step1 s1 s1'" and "step2 s2 s2'"
 
-      have "\<exists>m s1'' n s2'' i'. (step1 ^^ m) s1' s1'' \<and> (step2 ^^ Suc n) s2 s2'' \<and> match i' s1'' s2''"
-        using well_founded_order \<open>match i s1 s2\<close> \<open>step1 s1 s1'\<close>
-      proof (induction i arbitrary: s1 s1' rule: wfP_induct_rule)
-        case (less i)
-        show ?case
-          using sim[unfolded simulation_def, rule_format, OF \<open>match i s1 s2\<close> \<open>step1 s1 s1'\<close>]
-        proof (elim disjE exE conjE)
-          show "\<And>s2' i'. step2\<^sup>+\<^sup>+ s2 s2' \<Longrightarrow> match i' s1' s2' \<Longrightarrow> ?thesis"
-            by (metis Suc_pred relpowp_0_I tranclp_power)
-        next
-          fix i'
-          assume "match i' s1' s2" and "order i' i"
-
-          have "\<not> stuck_state step2 s2"
-            using \<open>step2 s2 s2'\<close> stuck_state_def by metis
-
-          hence "\<not> stuck_state step1 s1'"
-            using \<open>match i' s1' s2\<close> matching_states_agree_on_stuck by metis
-
-          then obtain s1'' where "step1 s1' s1''"
-            by (metis stuck_state_def)
-
-          obtain m s1''' n s2' i'' where
-            "(step1 ^^ m) s1'' s1'''" and
-            "(step2 ^^ Suc n) s2 s2'" and
-            "match i'' s1''' s2'"
-            using less.IH[OF \<open>order i' i\<close> \<open>match i' s1' s2\<close> \<open>step1 s1' s1''\<close>] by metis
-
-          show ?thesis
-          proof (intro exI conjI)
-            show "(step1 ^^ Suc m) s1' s1'''"
-              using \<open>(step1 ^^ m) s1'' s1'''\<close> \<open>step1 s1' s1''\<close> by (metis relpowp_Suc_I2)
-          next
-            show "(step2 ^^ Suc n) s2 s2'"
-              using \<open>(step2 ^^ Suc n) s2 s2'\<close> .
-          next
-            show "match i'' s1''' s2'"
-              using \<open>match i'' s1''' s2'\<close> .
-          qed
-        qed
-      qed
-      then obtain m n s1'' s2'' i' where
+      obtain m n s1'' s2'' i' where
         "(step1 ^^ m) s1' s1''" and
         "(step2 ^^ Suc n) s2 s2''" and
         "match i' s1'' s2''"
-        by metis
+        using finite_progress[OF assms \<open>match i s1 s2\<close> \<open>step1 s1 s1'\<close>] by metis
 
       show "\<exists>j. MATCH j s1 s2"
       proof (intro exI)
