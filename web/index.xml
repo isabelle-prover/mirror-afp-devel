@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Fri, 24 Nov 2023 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Tue, 05 Dec 2023 00:00:00 +0000</lastBuildDate>
       <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>HOL-CSPM - Architectural operators for HOL-CSP</title>
+          <link>/entries/HOL-CSPM.html</link>
+          <pubDate>Tue, 05 Dec 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/HOL-CSPM.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Lambert Series</title>
           <link>/entries/Lambert_Series.html</link>
@@ -7774,6 +7781,13 @@
           <link>/sessions/hol-csp/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/hol-csp/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>HOL-CSPM</title>
+          <link>/sessions/hol-cspm/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/hol-cspm/</guid>
           <description></description>
         </item>
         <item>

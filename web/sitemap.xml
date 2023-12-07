@@ -3,21 +3,42 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2023-11-24T00:00:00+00:00</lastmod>
+    <lastmod>2023-12-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2023-11-24T00:00:00+00:00</lastmod>
+    <lastmod>2023-12-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/ballenghien/</loc>
+    <lastmod>2023-12-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/computer-science/</loc>
+    <lastmod>2023-12-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/</loc>
-    <lastmod>2023-11-24T00:00:00+00:00</lastmod>
+    <lastmod>2023-12-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2023-12-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/hol-csp/</loc>
+    <lastmod>2023-12-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/HOL-CSPM.html</loc>
+    <lastmod>2023-12-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/taha/</loc>
+    <lastmod>2023-12-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2023-12-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/wolff/</loc>
+    <lastmod>2023-12-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/dirichlet_series/</loc>
     <lastmod>2023-11-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/eberl/</loc>
-    <lastmod>2023-11-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/</loc>
     <lastmod>2023-11-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Lambert_Series.html</loc>
@@ -27,9 +48,6 @@
     <lastmod>2023-11-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/polylog/</loc>
-    <lastmod>2023-11-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2023-11-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/keskin/</loc>
@@ -85,9 +103,6 @@
   </url><url>
     <loc>/authors/tan/</loc>
     <lastmod>2023-11-13T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/computer-science/</loc>
-    <lastmod>2023-11-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/lameris/</loc>
     <lastmod>2023-11-10T00:00:00+00:00</lastmod>
@@ -1280,9 +1295,6 @@
     <loc>/authors/sabouret/</loc>
     <lastmod>2021-10-19T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/taha/</loc>
-    <lastmod>2021-10-19T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/bharadwaj/</loc>
     <lastmod>2021-10-13T00:00:00+00:00</lastmod>
   </url><url>
@@ -1691,13 +1703,7 @@
     <loc>/dependencies/vectorspace/</loc>
     <lastmod>2020-11-22T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/hol-csp/</loc>
-    <lastmod>2020-11-19T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/CSP_RefTK.html</loc>
-    <lastmod>2020-11-19T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/wolff/</loc>
     <lastmod>2020-11-19T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/ye/</loc>
@@ -5489,6 +5495,8 @@
     <loc>/sessions/hol-corec_examples/</loc>
   </url><url>
     <loc>/sessions/hol-csp/</loc>
+  </url><url>
+    <loc>/sessions/hol-cspm/</loc>
   </url><url>
     <loc>/sessions/hol-data_structures/</loc>
   </url><url>

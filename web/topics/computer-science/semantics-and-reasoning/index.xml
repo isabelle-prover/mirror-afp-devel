@@ -13,6 +13,13 @@
     
       <atom:link href="/topics/computer-science/semantics-and-reasoning/index.xml" rel="self" type="application/rss+xml" />
         <item>
+          <title>HOL-CSPM - Architectural operators for HOL-CSP</title>
+          <link>/entries/HOL-CSPM.html</link>
+          <pubDate>Tue, 05 Dec 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/HOL-CSPM.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Transport via Partial Galois Connections and Equivalences</title>
           <link>/entries/Transport.html</link>
           <pubDate>Wed, 11 Oct 2023 00:00:00 +0000</pubDate>

@@ -247,6 +247,23 @@ host = [
 [ballarin.homepages]
 ballarin_homepage = "http://www21.in.tum.de/~ballarin/"
 
+[ballenghien]
+name = "Benoît Ballenghien"
+
+[ballenghien.emails]
+
+[ballenghien.emails.ballenghien_email]
+user = [
+  "benoit",
+  "ballenghien",
+]
+host = [
+  "universite-paris-saclay",
+  "fr",
+]
+
+[ballenghien.homepages]
+
 [barsotti]
 name = "Damián Barsotti"
 
