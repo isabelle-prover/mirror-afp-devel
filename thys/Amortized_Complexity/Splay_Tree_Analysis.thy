@@ -217,7 +217,7 @@ qed
 subsubsection "Analysis of insert"
 
 lemma amor_insert: assumes "bst t"
-shows "T_insert x t + \<Phi>(Splay_Tree.insert x t) - \<Phi> t \<le> 4 * log 2 (size1 t) + 3" (is "?l \<le> ?r")
+shows "T_insert x t + \<Phi>(Splay_Tree.insert x t) - \<Phi> t \<le> 4 * log 2 (size1 t) + 2" (is "?l \<le> ?r")
 proof cases
   assume "t = Leaf" thus ?thesis by(simp add: T_insert_def)
 next
@@ -239,7 +239,7 @@ next
   next
     let ?L = "log 2 (real(size1 l) + 1)"
     assume "e < x" hence "e \<noteq> x" by simp
-    hence "?l = (?t + ?Plr - ?Ps) + ?L + ?LR + 1"
+    hence "?l = (?t + ?Plr - ?Ps) + ?L + ?LR"
       using  \<open>t \<noteq> Leaf\<close> \<open>e<x\<close> by(simp add: T_insert_def)
     also have "?t + ?Plr - ?Ps \<le> 2 * log 2 ?slr + 1"
       using opt size_splay[of x t,symmetric] by(simp)
@@ -255,7 +255,7 @@ next
   next
     let ?R = "log 2 (2 + real(size r))"
     assume "x < e" hence "e \<noteq> x" by simp
-    hence "?l = (?t + ?Plr - ?Ps) + ?R + ?LR + 1"
+    hence "?l = (?t + ?Plr - ?Ps) + ?R + ?LR"
       using \<open>t \<noteq> Leaf\<close> \<open>x < e\<close> by(simp add: T_insert_def)
     also have "?t + ?Plr - ?Ps \<le> 2 * log 2 ?slr + 1"
       using opt size_splay[of x t,symmetric] by(simp)
@@ -325,7 +325,7 @@ next
 qed
 
 lemma amor_delete: assumes "bst t"
-shows "T_delete a t + \<Phi>(Splay_Tree.delete a t) - \<Phi> t \<le> 6 * log 2 (size1 t) + 3"
+shows "T_delete a t + \<Phi>(Splay_Tree.delete a t) - \<Phi> t \<le> 6 * log 2 (size1 t) + 2"
 proof (cases t)
   case Leaf thus ?thesis by(simp add: Splay_Tree.delete_def T_delete_def)
 next
