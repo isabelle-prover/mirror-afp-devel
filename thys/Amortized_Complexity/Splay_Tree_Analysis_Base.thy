@@ -53,7 +53,7 @@ by auto
 declare T_splay.simps(2)[simp del]
 
 definition T_insert :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> nat" where
-"T_insert x t = 1 + (if t = Leaf then 0 else T_splay x t)"
+"T_insert x t = (if t = Leaf then 0 else T_splay x t)"
 
 fun T_splay_max :: "'a::linorder tree \<Rightarrow> nat" where
 "T_splay_max Leaf = 1" |
@@ -62,7 +62,7 @@ fun T_splay_max :: "'a::linorder tree \<Rightarrow> nat" where
 
 definition T_delete :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> nat" where
 "T_delete x t =
-  1 + (if t = Leaf then 0
+  (if t = Leaf then 0
    else T_splay x t +
      (case splay x t of
         Node l a r \<Rightarrow> if x \<noteq> a then 0 else if l = Leaf then 0 else T_splay_max l))"
