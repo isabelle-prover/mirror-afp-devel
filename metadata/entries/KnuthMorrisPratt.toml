@@ -28,4 +28,4 @@ paulson = "paulson_email"
 dois = [
   "10.1137/0206024",
 ]
-pubs = []
+pubs = ["<a href=\"https://en.wikipedia.org/wiki/Knuth–Morris–Pratt_algorithm\">Wikipedia</a>"]
