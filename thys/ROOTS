@@ -74,6 +74,7 @@ CAVA_LTL_Modelchecker
 CCS
 CHERI-C_Memory_Model
 CISC-Kernel
+Concentration_Inequalities
 CRDT
 CRYSTALS-Kyber
 CSP_RefTK
@@ -89,6 +90,7 @@ Card_Equiv_Relations
 Card_Multisets
 Card_Number_Partitions
 Card_Partitions
+Cardinality_Continuum
 Cartan_FP
 Case_Labeling
 Catalan_Numbers
@@ -101,6 +103,7 @@ Cayley_Hamilton
 Certification_Monads
 Ceva
 Chandy_Lamport
+Chebyshev_Polynomials
 Chord_Segments
 Circus
 Clean
@@ -185,6 +188,7 @@ Dirichlet_L
 Dirichlet_Series
 DiscretePricing
 Discrete_Summation
+Disintegration
 DiskPaxos
 Distributed_Distinct_Elements
 Dominance_CHK
@@ -197,6 +201,7 @@ EdmondsKarp_Maxflow
 Edwards_Elliptic_Curves_Group
 Efficient-Mergesort
 Efficient_Weighted_Path_Order
+Elimination_Of_Repeated_Factors
 Elliptic_Curves_Group_Law
 Encodability_Process_Calculi
 Epistemic_Logic
@@ -206,6 +211,7 @@ Error_Function
 Euler_MacLaurin
 Euler_Partition
 Euler_Polyhedron_Formula
+Eudoxus_Reals
 Eval_FO
 Example-Submission
 Executable_Randomized_Algorithms
@@ -294,6 +300,7 @@ Gromov_Hyperbolicity
 Grothendieck_Schemes
 Group-Ring-Module
 HOL-CSP
+HOL-CSPM
 HOLCF-Prelude
 HRB-Slicing
 Hahn_Jordan_Decomposition
@@ -317,6 +324,7 @@ HyperCTL
 HyperHoareLogic
 Hyperdual
 Hypergraph_Basics
+Hypergraph_Colourings
 IEEE_Floating_Point
 IFC_Tracking
 IMAP-CRDT
@@ -372,6 +380,7 @@ Knights_Tour
 Knot_Theory
 Knuth_Bendix_Order
 Knuth_Morris_Pratt
+KnuthMorrisPratt
 Koenigsberg_Friendship
 Kruskal
 Kuratowski_Closure_Complement
@@ -390,6 +399,7 @@ LambdaMu
 Lambda_Free_EPO
 Lambda_Free_KBOs
 Lambda_Free_RPOs
+Lambert_Series
 Lambert_W
 Landau_Symbols
 Laplace_Transform
@@ -430,6 +440,7 @@ MFOTL_Monitor
 MSO_Regex_Equivalence
 Markov_Models
 Marriage
+Martingales
 Mason_Stothers
 Matrices_for_ODEs
 Matrix
@@ -477,6 +488,7 @@ Neumann_Morgenstern_Utility
 No_FTL_observers
 No_FTL_observers_Gen_Rel
 Nominal2
+Nominal_Myhill_Nerode
 Noninterference_CSP
 Noninterference_Concurrent_Composition
 Noninterference_Generic_Unwinding
@@ -515,6 +527,7 @@ Partial_Function_MR
 Partial_Order_Reduction
 Password_Authentication_Protocol
 Pell
+Perfect_Fields
 Perfect-Number-Thm
 Perron_Frobenius
 Physical_Quantities
@@ -525,6 +538,8 @@ Pluennecke_Ruzsa_Inequality
 Poincare_Bendixson
 Poincare_Disc
 Polygonal_Number_Theorem
+Polylog
+Polynomial_Crit_Geometry
 Polynomial_Factorization
 Polynomial_Interpolation
 Polynomials
@@ -561,6 +576,8 @@ PseudoHoops
 Psi_Calculi
 Ptolemys_Theorem
 Public_Announcement_Logic
+Q0_Metatheory
+Q0_Soundness
 QHLProver
 QR_Decomposition
 Quantales
@@ -771,3 +788,5 @@ Zeckendorf
 Zeta_3_Irrational
 Zeta_Function
 pGCL
+Labeled_Transition_Systems
+Pushdown_Systems

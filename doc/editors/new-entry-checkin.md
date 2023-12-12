@@ -16,6 +16,10 @@ current release branch and development version.
 
         hg clone ssh://hg@foss.heptapod.net/isa-afp/afp-devel devel
 
+You need to add each of those to a corresponding Isabelle installation,
+as described on the help page. You might need to resolve additional components
+by running `isabelle components -a` afterwards.
+
 You might need to set up ssh keys on Heptapod for this to work. This can
 be done under "[Settings/SSH Keys][keys]".
 

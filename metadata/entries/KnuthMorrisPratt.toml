@@ -1,0 +1,31 @@
+title = "Knuth–Morris–Pratt String Search"
+date = 2023-11-27
+topics = [
+  "Computer science/Algorithms",
+]
+abstract = """
+The naive algorithm to search for a pattern $p$ within a string $a$ compares corresponding characters from left to right, and in case of a mismatch, shifts one position along $a$ and starts again. The worst-case time is $O(|p|\\cdot|a|)$.
+
+Knuth–Morris–Pratt exploits the knowledge gained from the partial match, never re-comparing characters that matched and thereby achieving linear time. At the first mismatched character, it shifts $p$ as far to the right as safely possible. To do so, it consults a precomputed table, based on the pattern $p$. The KMP algorithm is proved correct."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.paulson]
+email = "paulson_email"
+
+[contributors]
+
+[notify]
+paulson = "paulson_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1137/0206024",
+]
+pubs = ["<a href=\"https://en.wikipedia.org/wiki/Knuth–Morris–Pratt_algorithm\">Wikipedia</a>"]

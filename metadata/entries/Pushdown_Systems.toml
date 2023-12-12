@@ -1,0 +1,47 @@
+title = "Pushdown Systems"
+date = 2023-10-31
+topics = [
+  "Computer science/Automata and formal languages",
+  "Computer science",
+]
+abstract = """
+We formalize pushdown systems and the correctness of the pushdown reachability algorithms post* (forward search), pre* (backward search) and dual* (bi-directional search). For pre* we refine the algorithm to an executable version for which one can generate code using Isabelle's code generator. For pre* and post* we follow Stefan Schwoon's PhD thesis [Sch02a]. The dual* algorithm is from a paper by Jensen et. al presented at ATVA2021 [JSS+21]. The formalization is described in our FMCAD2022 paper [SSST22] in which we also document how we have used it to do differential testing against a C++ implementation of pushdown reachability called PDAAAL. Lammich et al. [Lam09, LMW09] formalized the pre* algorithm for dynamic pushdown networks (DPN) which is a generalization of pushdown systems. Our work is independent from that because the post* of DPNs is not regular and additionally the DPN formalization does not support epsilon transitions which we use for post* and dual*.
+<p>
+
+[JSS+21] Peter Gj&oslash;l Jensen, Stefan Schmid, Morten Konggaard Schou, Jir&iacute; Srba, Juan Vanerio, and Ingo van Duijn. Faster pushdown reachability analysis with applications in network verification. In Zhe Hou and Vijay Ganesh, editors, Automated Technology for Verification and Analysis - 19th International Symposium, ATVA 2021, Gold Coast, QLD, Australia, October 18-22, 2021, Proceedings, volume 12971 of Lecture Notes in Computer Science, pages 170-186. Springer, 2021.<br>
+[Lam09] Peter Lammich. Formalization of dynamic pushdown networks in Isabelle/HOL, 2009. <a href=\"https://www21.in.tum.de/~lammich/isabelle/dpn-document.pdf\">https://www21.in.tum.de/~lammich/isabelle/dpn-document.pdf</a>.<br>
+[LMW09] Peter Lammich, Markus M&uuml;ller-Olm, and Alexander Wenner. Predecessor sets of dynamic pushdown networks with tree-regular constraints. In Ahmed Bouajjani and Oded Maler, editors, CAV2009, volume 5643 of LNCS, pages 525-539. Springer, 2009.<br>
+[Sch02a] Stefan Schwoon. Model checking pushdown systems. PhD thesis, Technical University Munich, Germany, 2002. <a href=\"https://d-nb.info/96638976X/34\">https://d-nb.info/96638976X/34</a>.<br>
+[SSST22] Anders Schlichtkrull, Morten Konggaard Schou, Jir&iacute; Srba, and Dmitriy Traytel. Differential testing of pushdown reachability with a formally verified oracle. In Alberto Griggio and Neha Rungta, editors, 22nd Formal Methods in Computer-Aided Design, FMCAD 2022, Trento, Italy, October 17-21, 2022, pages 369-379. IEEE, 2022."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.schlichtkrull]
+homepage = "schlichtkrull_homepage"
+
+[authors.schou]
+
+[authors.srba]
+homepage = "srba_homepage"
+
+[authors.traytel]
+homepage = "traytel_homepage"
+
+[contributors]
+
+[notify]
+schlichtkrull = "schlichtkrull_email"
+traytel = "traytel_email"
+schou = "schou_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.34727/2022/ISBN.978-3-85448-053-2_44",
+]
+pubs = []

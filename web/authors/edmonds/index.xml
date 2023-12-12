@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Wed, 20 Sep 2023 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Sat, 23 Sep 2023 00:00:00 +0000</lastBuildDate>
       <atom:link href="/authors/edmonds/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Hypergraph Colouring Bounds</title>
+          <link>/entries/Hypergraph_Colourings.html</link>
+          <pubDate>Sat, 23 Sep 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Hypergraph_Colourings.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>General Probabilistic Techniques for Combinatorics and the Lovasz Local Lemma</title>
           <link>/entries/Lovasz_Local.html</link>

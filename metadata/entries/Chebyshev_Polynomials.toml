@@ -1,0 +1,39 @@
+title = "Chebyshev Polynomials"
+date = 2023-11-13
+topics = [
+  "Mathematics/Algebra",
+]
+abstract = """
+<p>The multiple-angle formulas for $\\cos$ and $\\sin$ state that for any natural number $n$, 
+the values of $\\cos nx$ and $\\sin nx$ can be expressed in terms of $\\cos x$ and $\\sin x$.
+To be more precise, there are polynomials $T_n$ and $U_n$ such that $\\cos nx = T_n(\\cos x)$
+and $\\sin nx = U_n(\\cos x)\\sin x$. These are called the <em>Chebyshev polynomials of the
+first and second kind</em>, respectively.</p>
+<p>This entry contains a definition of these two familes of polynomials in Isabelle/HOL
+along with some of their most important properties. In particular, it is shown that $T_n$ and $U_n$
+are <em>orthogonal</em> families of polynomials.</p>
+<p>Moreover, we show the well-known result that for any monic polynomial $p$ of degree $n > 0$,
+it holds that $\\sup_{x\\in[-1,1]} |p(x)| \\geq 2^{n-1}$, and that this inequality is sharp since
+equality holds with $p = 2^{1-n}\\, T_n$. This has important consequences in the theory of
+function interpolation, since it implies that the roots of $T_n$ (also colled the
+<em>Chebyshev nodes</em>) are exceptionally well-suited as interpolation nodes.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+email = "eberl_email"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

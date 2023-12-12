@@ -1,0 +1,12 @@
+chapter AFP
+
+session Polynomial_Crit_Geometry (AFP) = "HOL-Analysis" +
+  options [timeout = 1200]
+  sessions
+    "HOL-Computational_Algebra"
+    "Formal_Puiseux_Series" (* TODO: remove once alg_closed_field is in library *)
+  theories
+    Polynomial_Crit_Geometry
+  document_files
+    "root.tex"
+    "root.bib"

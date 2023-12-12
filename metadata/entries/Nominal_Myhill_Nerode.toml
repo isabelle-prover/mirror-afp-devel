@@ -1,0 +1,35 @@
+title = "Myhill-Nerode Theorem for Nominal G-Automata"
+date = 2023-11-10
+topics = [
+  "Computer science/Automata and formal languages",
+]
+abstract = """
+This work formalizes the Myhill-Nerode theorems for \\(G\\)-automata and nominal \\(G\\)-automata.
+The Myhill-Nerode theorem for (nominal) \\(G\\)-automata states that, given \\(A\\) an orbit finite (nominal) \\(G\\)-set and a \\(G\\)-language \\(L \\subseteq A^{\\ast}\\), the following are equivalent:<br>
+<ul>
+  <li>The set of equivalence classes of \\(L{/}\\equiv_{\\text{MN}}\\), with respect to the Myhill-Nerode equivalence relation, \\(\\equiv_{\\text{MN}}\\), is orbit finite.</li>
+  <li>\\(L\\) is recognized by a deterministic (nominal) \\(G\\)-automaton with an orbit finite set of states.</li>
+</ul>
+The proofs formalized are based on on those from <a href=\"https://lmcs.episciences.org/1157\">an article by M. Bojanczyk, B. Klin and S. Lasota.</a>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.lameris]
+email = "lameris_email"
+
+[contributors]
+
+[notify]
+lameris = "lameris_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.2168/LMCS-10(3:4)2014",
+]
+pubs = []

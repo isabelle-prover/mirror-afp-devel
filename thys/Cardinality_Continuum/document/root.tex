@@ -1,0 +1,37 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+\usepackage[shortcuts]{extdash}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{rm}
+
+
+\begin{document}
+
+\title{The Cardinality of the Continuum}
+\author{Manuel Eberl}
+\maketitle
+
+\begin{abstract}
+This entry presents a short derivation of the cardinality of $\mathbb{R}$,
+namely that $|\mathbb{R}| = |2^{\mathbb{N}}| = 2^{\aleph_0}$. This is done by showing the
+injection $\mathbb{R}\to 2^{\mathbb{Q}},\ x \mapsto (-\infty, x)\cap\mathbb{Q}$ (i.e.\ Dedekind cuts)
+for one direction and the injection $2^\mathbb{N}\to\mathbb{Q},\ X \mapsto \sum_{n\in X} 3^{-n}$,
+i.e.\ ternary fractions, for the other direction.
+\end{abstract}
+
+
+\tableofcontents
+
+\newpage
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\end{document}
+

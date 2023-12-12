@@ -1,0 +1,35 @@
+title = "Hypergraph Colouring Bounds"
+date = 2023-09-23
+topics = [
+  "Mathematics/Combinatorics",
+  "Mathematics/Probability theory",
+]
+abstract = "This library includes several example applications of the probabilistic method for combinatorics to establish bounds for hypergraph colourings. This focuses on Property B - the existence of a two-colouring of the vertex set of a hypergraph. A stricter bound was formalised using the Lov&aacutesz local lemma, which in turn required a surprisingly complex proof of the mutual independence principle for hypergraph edges that is often omitted on paper. The formalisation uncovered several interesting examples of circular intuition on proofs involving independence on paper. The formalisation is based on the textbook proofs from Alon and Spencer's famous textbook, <em>The Probabilistic Method</em>, further supported by notes by Zhao. The mutual independence principle proof is inspired by the less precise proof provided in Molloy and Reed's textbook on graph colourings, as it was omitted in all other sources. Additionally, this library demonstrates how locales can be used to establish a reusable probability space framework, thus minimizing the setup required for future formalisations requiring a probability space on numerous possible properties around an incidence system's vertex set."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.edmonds]
+email = "edmonds_email"
+
+[authors.paulson]
+email = "paulson_email"
+
+[contributors]
+
+[notify]
+edmonds = "edmonds_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1007/978-3-642-04016-0",
+]
+pubs = [
+  "https://dl.acm.org/doi/book/10.5555/3002498",
+  "https://yufeizhao.com/pm/probmethod_notes.pdf",
+]

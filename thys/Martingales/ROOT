@@ -1,0 +1,16 @@
+chapter AFP
+
+session "Martingales" (AFP) = "HOL-Probability" +
+  options [timeout = 1200]
+  theories
+    Measure_Space_Supplement
+    Elementary_Metric_Spaces_Supplement
+    Bochner_Integration_Supplement
+    Conditional_Expectation_Banach
+    Filtered_Measure
+    Stochastic_Process
+    Martingale
+    Example_Coin_Toss
+  document_files
+    "root.tex"
+    "root.bib"

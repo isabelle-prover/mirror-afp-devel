@@ -1,0 +1,114 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+\pgfplotsset{compat=1.12}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+\usepackage[shortcuts]{extdash}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{rm}
+
+
+\begin{document}
+
+\title{The Polylogarithm Function}
+\author{Manuel Eberl}
+\maketitle
+
+\begin{abstract}
+This entry provides a definition of the \emph{Polylogarithm function}, commonly denoted as
+$\text{Li}_s(z)$. Here, $z$ is a complex number and $s$ an integer parameter. This function
+can be defined by the power series expression $\text{Li}_s(z) = \sum_{k=1}^\infty \frac{z^k}{k^s}$
+for $|z| < 1$ and analytically extended to the entire complex plane, except for a branch cut on
+$\mathbb{R}_{\geq 1}$.
+
+Several basic properties are also proven, such as the relationship to the Eulerian polynomials via
+$\text{Li}_{-k}(z) = z (1 - z)^{k-1} A_k(z)$ for $k\geq 0$,
+the derivative formula $\frac{d}{dz} \text{Li}_s(z) = \frac{1}{z} \text{Li}_{s-1}(z)$,
+the relation to the ``normal'' logarithm via $\text{Li}_1(z) = -\ln (1 - z)$,
+and the duplication formula $\text{Li}_s(z) + \text{Li}_s(-z) = 2^{1-s} \text{Li}_s(z^2)$.
+\end{abstract}
+
+
+\tableofcontents
+
+\newpage
+\parindent 0pt\parskip 0.5ex
+
+\definecolor{mycol1}{HTML}{fd7f6f}
+\definecolor{mycol2}{HTML}{7eb0d5}
+\definecolor{mycol3}{HTML}{b2e061}
+\definecolor{mycol4}{HTML}{bd7ebe}
+\definecolor{mycol5}{HTML}{ffb55a}
+\definecolor{mycol6}{HTML}{ffee65}
+\definecolor{mycol7}{HTML}{beb9db}
+\definecolor{mycol8}{HTML}{fdcce5}
+\definecolor{mycol9}{HTML}{8bd3c7}
+\begin{figure}
+\begin{center}
+\pgfplotstableread[col sep=comma, row sep=\\, format=inline]{
+-1.43675, -1.40914, -1.38127, -1.35311, -1.32465, -1.2959, -1.26684, -1.23747, -1.20778, -1.17775, -1.14738, -1.11666, 
+-1.08558, -1.05412, -1.02228, -0.990049, -0.957405, -0.92434, -0.890838, -0.856886, -0.822467, -0.787565, -0.752163, -0.716242,
+-0.679782, -0.642761, -0.605158, -0.566949, -0.528107, -0.488605, -0.448414, -0.407501, -0.365833, -0.32337,-0.280074, -0.2359,
+-0.1908, -0.144721, -0.0976052, -0.0493885, 0, 0.0506393, 0.102618, 0.156035, 0.211004, 0.267653, 0.32613, 0.386606, 0.449283,
+0.514399, 0.582241, 0.653158, 0.727586,  0.806083, 0.889378, 0.978469, 1.07479, 1.18058, 1.29971, 1.44063\\
+}\mytablea
+\pgfplotstabletranspose[string type]\mytablenewa{\mytablea}
+
+\pgfplotstableread[col sep=comma, row sep=\\, format=inline]{
+-1.66828, -1.63226, -1.59602, -1.55956, -1.52288, -1.48597, -1.44882, -1.41144, -1.37382, -1.33596, -1.29784, -1.25946, -1.22082, -1.18192, 
+-1.14274, -1.10328, -1.06353, -1.02349, -0.983153, -0.942506, -0.901543, -0.860256, -0.818638, -0.77668, -0.734371, -0.691704, -0.648666, 
+-0.605249, -0.56144, -0.517227, -0.472598, -0.427539, -0.382037, -0.336076, -0.28964, -0.242712, -0.195274, -0.147305, -0.0987856, 
+-0.049692, 0., 0.0503172, 0.101289, 0.152946, 0.205324, 0.258461, 0.3124, 0.367188, 0.422878, 0.47953, 0.537213, 0.596007, 0.656003, 0.717311, 
+0.780064, 0.844426, 0.910606, 0.978884, 1.04966, 1.12357\\
+}\mytableb
+\pgfplotstabletranspose[string type]\mytablenewb{\mytableb}
+
+\begin{tikzpicture}
+  \begin{axis}[clip mode=individual,
+          xmin=-2, xmax=0.9, ymin=-1, ymax=1, axis lines=middle, 
+          width=\textwidth, height=0.8\textwidth,
+          xlabel={$x$}, tick style={thin,black},
+          restrict y to domain=-1:1.2
+  ]
+  \addplot [color=mycol7!80!black, line width=1pt, mark=none,domain=-2:1,samples=200] ({x}, {x * (x^2 + 4*x + 1) / (1 - x)^4})
+     node [color=mycol7!80!black, above, pos=0.37] {$\mathrm{Li}_{-3}(x)$};
+  \addplot [color=mycol4!90!black, line width=1pt, mark=none,domain=-2:1,samples=200] ({x}, {x * (x + 1) / (1 - x)^3})
+     node [color=mycol4!90!black, above, pos=0.35] {$\mathrm{Li}_{-2}(x)$};
+  \addplot [color=mycol3!80!black, line width=1pt, mark=none,domain=-2:1,samples=200] ({x}, {x / (1 - x)^2})
+     node [color=mycol3!80!black, below, pos=0.1] {$\mathrm{Li}_{-1}(x)$};
+  \addplot [color=mycol2!80!black, line width=1pt, mark=none,domain=-2:1,samples=200] ({x}, {x / (1 - x)})
+     node [color=mycol2!80!black, above=1mm, pos=0.1] {$\mathrm{Li}_{0}(x)$};
+  \addplot [color=mycol1!90!black, line width=1pt, mark=none,domain=-2:1,samples=200] ({x}, {-ln(1-x)})
+     node [color=mycol1!90!black, left=2mm, above=0.5mm, pos=0.08] {$\mathrm{Li}_{1}(x)$};
+  \addplot [color=mycol5!90!black, line width=1pt, mark=none,domain=-2:1,samples=200] table [x expr={(1-\coordindex/60)*(-2)+(\coordindex/60)*1}, y=0] {\mytablenewa}
+       coordinate[pos=0] (a);
+       \node at (a) [color=mycol5!90!black, below=3.3mm, left=-2mm] {$\mathrm{Li}_{2}(x)$};
+  \addplot [color=mycol9!85!black, line width=1pt, mark=none,domain=-2:1,samples=200] table [x expr={(1-\coordindex/60)*(-2)+(\coordindex/60)*1}, y=0] {\mytablenewb}
+       node[pos=0] (b) {};
+       \node at (b) [color=mycol9!85!black, below=3.7mm, right=-4mm] {$\mathrm{Li}_{3}(x)$};
+       \end{axis}
+\end{tikzpicture}
+\end{center}
+\caption{Plots of $\mathrm{Li}_s(x)$ for $s = -3, -2, \ldots, 3$ and real inputs $x\in[-2, 1]$}
+\label{fig:lambertw}
+\end{figure}
+
+\clearpage
+
+\input{session}
+
+\nocite{mason2002chebyshev}
+\raggedright
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+

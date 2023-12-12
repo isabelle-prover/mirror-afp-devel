@@ -1,0 +1,30 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Hypergraph Colouring Bounds using Probabilistic Methods}
+\author{Chelsea Edmonds and Lawrence C. Paulson}
+\maketitle
+
+\begin{abstract}
+  This library includes several example applications of the probabilistic method for combinatorics to establish bounds for hypergraph colourings. This focuses on \textit{Property B} --- the existence of a two-colouring of the vertex set of a hypergraph. A stricter bound was formalised using the Lov\'asz local lemma, which in turn required a surprisingly complex proof of the mutual independence principle for hypergraph edges that is often omitted on paper. The formalisation uncovered several interesting examples of circular intuition on proofs involving independence on paper. The formalisation is based on the textbook proofs from Alon and Spencer's famous textbook, \textit{The Probabilistic Method}\cite{alonProbabilisticMethod2008}, further supported by \cite{Zhaonotes}. The mutual independence principle proof is inspired by the less precise proof provided in Molloy and Reed's textbook on graph colourings \cite{molloy2002graph}, as it was omitted in all other sources. Additionally, this library demonstrates how locales can be used to establish a reusable probability space framework, thus minimizing the setup required for future formalisations requiring a probability space on numerous possible properties around an incidence system's vertex set.
+\end{abstract}
+
+\tableofcontents
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

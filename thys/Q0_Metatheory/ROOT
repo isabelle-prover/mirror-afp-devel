@@ -1,0 +1,21 @@
+chapter AFP
+
+session Q0_Metatheory (AFP) = "HOL-Library" +
+  options [timeout = 600]
+  sessions
+    ZFC_in_HOL
+    "Finite-Map-Extras"
+  theories
+    Utilities
+    Syntax
+    Boolean_Algebra
+    Propositional_Wff
+    Proof_System
+    Elementary_Logic
+    Semantics
+    Soundness
+    Consistency
+  document_files
+    "root.tex"
+    "root.bib"
+

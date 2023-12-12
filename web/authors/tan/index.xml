@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Thu, 27 Apr 2023 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Mon, 13 Nov 2023 00:00:00 +0000</lastBuildDate>
       <atom:link href="/authors/tan/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Concentration Inequalities</title>
+          <link>/entries/Concentration_Inequalities.html</link>
+          <pubDate>Mon, 13 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Concentration_Inequalities.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>The Schwartz-Zippel Lemma</title>
           <link>/entries/Schwartz_Zippel.html</link>

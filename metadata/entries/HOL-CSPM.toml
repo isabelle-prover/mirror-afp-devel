@@ -1,0 +1,40 @@
+title = "HOL-CSPM - Architectural operators for HOL-CSP"
+date = 2023-12-05
+topics = [
+  "Computer science/Concurrency/Process calculi",
+  "Computer science/Semantics and reasoning",
+]
+abstract = """
+Recently, a modern version of Roscoes and Brookes Failure-Divergence Semantics for CSP has been formalized in Isabelle: HOL-CSP.
+The session HOL-CSP introduces among other things some binary operators on processes that we will here generalize in a fully-abstract way.
+On these \"architectural operators\", we will prove the properties of refinement, the rules of continuity and the laws of interaction so that they can be
+easily used.
+Finally, we will give examples of their usefulness when trying to model complex systems."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.ballenghien]
+email = "ballenghien_email"
+
+[authors.taha]
+email = "taha_email"
+
+[authors.wolff]
+email = "wolff_email"
+
+[contributors]
+
+[notify]
+ballenghien = "ballenghien_email"
+taha = "taha_email"
+wolff = "wolff_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

@@ -11,13 +11,146 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Wed, 11 Oct 2023 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Tue, 05 Dec 2023 00:00:00 +0000</lastBuildDate>
       <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>HOL-CSPM - Architectural operators for HOL-CSP</title>
+          <link>/entries/HOL-CSPM.html</link>
+          <pubDate>Tue, 05 Dec 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/HOL-CSPM.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Knuth–Morris–Pratt String Search</title>
+          <link>/entries/KnuthMorrisPratt.html</link>
+          <pubDate>Mon, 27 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/KnuthMorrisPratt.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Lambert Series</title>
+          <link>/entries/Lambert_Series.html</link>
+          <pubDate>Fri, 24 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Lambert_Series.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Martingales</title>
+          <link>/entries/Martingales.html</link>
+          <pubDate>Tue, 21 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Martingales.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Soundness of the Q0 proof system for higher-order logic</title>
+          <link>/entries/Q0_Soundness.html</link>
+          <pubDate>Mon, 20 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Q0_Soundness.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Cardinality of the Continuum</title>
+          <link>/entries/Cardinality_Continuum.html</link>
+          <pubDate>Wed, 15 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Cardinality_Continuum.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Polylogarithm Function</title>
+          <link>/entries/Polylog.html</link>
+          <pubDate>Wed, 15 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Polylog.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Two theorems about the geometry of the critical points of a complex polynomial</title>
+          <link>/entries/Polynomial_Crit_Geometry.html</link>
+          <pubDate>Tue, 14 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Polynomial_Crit_Geometry.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Chebyshev Polynomials</title>
+          <link>/entries/Chebyshev_Polynomials.html</link>
+          <pubDate>Mon, 13 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Chebyshev_Polynomials.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Concentration Inequalities</title>
+          <link>/entries/Concentration_Inequalities.html</link>
+          <pubDate>Mon, 13 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Concentration_Inequalities.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Myhill-Nerode Theorem for Nominal G-Automata</title>
+          <link>/entries/Nominal_Myhill_Nerode.html</link>
+          <pubDate>Fri, 10 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Nominal_Myhill_Nerode.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Elimination of Repeated Factors Algorithm</title>
+          <link>/entries/Elimination_Of_Repeated_Factors.html</link>
+          <pubDate>Mon, 06 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Elimination_Of_Repeated_Factors.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Perfect Fields</title>
+          <link>/entries/Perfect_Fields.html</link>
+          <pubDate>Mon, 06 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Perfect_Fields.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Metatheory of Q0</title>
+          <link>/entries/Q0_Metatheory.html</link>
+          <pubDate>Sat, 04 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Q0_Metatheory.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Disintegration Theorem</title>
+          <link>/entries/Disintegration.html</link>
+          <pubDate>Thu, 02 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Disintegration.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Labeled Transition Systems</title>
+          <link>/entries/Labeled_Transition_Systems.html</link>
+          <pubDate>Tue, 31 Oct 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Labeled_Transition_Systems.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Pushdown Systems</title>
+          <link>/entries/Pushdown_Systems.html</link>
+          <pubDate>Tue, 31 Oct 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Pushdown_Systems.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Eudoxus Reals</title>
+          <link>/entries/Eudoxus_Reals.html</link>
+          <pubDate>Sun, 29 Oct 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Eudoxus_Reals.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Transport via Partial Galois Connections and Equivalences</title>
           <link>/entries/Transport.html</link>
           <pubDate>Wed, 11 Oct 2023 00:00:00 +0000</pubDate>
           <guid>/entries/Transport.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Hypergraph Colouring Bounds</title>
+          <link>/entries/Hypergraph_Colourings.html</link>
+          <pubDate>Sat, 23 Sep 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Hypergraph_Colourings.html</guid>
           <description></description>
         </item>
         <item>
@@ -5964,6 +6097,13 @@
           <description></description>
         </item>
         <item>
+          <title>Cardinality_Continuum</title>
+          <link>/sessions/cardinality_continuum/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/cardinality_continuum/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Cartan_FP</title>
           <link>/sessions/cartan_fp/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -6080,6 +6220,13 @@
           <link>/sessions/chandy_lamport/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/chandy_lamport/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Chebyshev_Polynomials</title>
+          <link>/sessions/chebyshev_polynomials/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/chebyshev_polynomials/</guid>
           <description></description>
         </item>
         <item>
@@ -6290,6 +6437,13 @@
           <link>/sessions/componentdependencies/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/componentdependencies/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Concentration_Inequalities</title>
+          <link>/sessions/concentration_inequalities/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/concentration_inequalities/</guid>
           <description></description>
         </item>
         <item>
@@ -6741,6 +6895,13 @@
           <description></description>
         </item>
         <item>
+          <title>Disintegration</title>
+          <link>/sessions/disintegration/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/disintegration/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>DiskPaxos</title>
           <link>/sessions/diskpaxos/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -6846,6 +7007,13 @@
           <description></description>
         </item>
         <item>
+          <title>Elimination_Of_Repeated_Factors</title>
+          <link>/sessions/elimination_of_repeated_factors/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/elimination_of_repeated_factors/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Elliptic_Curves_Group_Law</title>
           <link>/sessions/elliptic_curves_group_law/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -6885,6 +7053,13 @@
           <link>/sessions/error_function/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/error_function/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Eudoxus_Reals</title>
+          <link>/sessions/eudoxus_reals/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/eudoxus_reals/</guid>
           <description></description>
         </item>
         <item>
@@ -7616,6 +7791,13 @@
           <description></description>
         </item>
         <item>
+          <title>HOL-CSPM</title>
+          <link>/sessions/hol-cspm/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/hol-cspm/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>HOL-ODE-ARCH-COMP</title>
           <link>/sessions/hol-ode-arch-comp/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -7711,6 +7893,13 @@
           <link>/sessions/hypergraph_basics/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/hypergraph_basics/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Hypergraph_Colourings</title>
+          <link>/sessions/hypergraph_colourings/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/hypergraph_colourings/</guid>
           <description></description>
         </item>
         <item>
@@ -8120,6 +8309,13 @@
           <description></description>
         </item>
         <item>
+          <title>KnuthMorrisPratt</title>
+          <link>/sessions/knuthmorrispratt/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/knuthmorrispratt/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Koenigsberg_Friendship</title>
           <link>/sessions/koenigsberg_friendship/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -8138,6 +8334,13 @@
           <link>/sessions/kuratowski_closure_complement/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/kuratowski_closure_complement/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Labeled_Transition_Systems</title>
+          <link>/sessions/labeled_transition_systems/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/labeled_transition_systems/</guid>
           <description></description>
         </item>
         <item>
@@ -8180,6 +8383,13 @@
           <link>/sessions/lambdamu/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/lambdamu/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Lambert_Series</title>
+          <link>/sessions/lambert_series/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/lambert_series/</guid>
           <description></description>
         </item>
         <item>
@@ -8516,6 +8726,13 @@
           <link>/sessions/marriage/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/marriage/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Martingales</title>
+          <link>/sessions/martingales/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/martingales/</guid>
           <description></description>
         </item>
         <item>
@@ -8890,6 +9107,13 @@
           <description></description>
         </item>
         <item>
+          <title>Nominal_Myhill_Nerode</title>
+          <link>/sessions/nominal_myhill_nerode/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/nominal_myhill_nerode/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Noninterference_Concurrent_Composition</title>
           <link>/sessions/noninterference_concurrent_composition/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -9149,6 +9373,13 @@
           <description></description>
         </item>
         <item>
+          <title>Perfect_Fields</title>
+          <link>/sessions/perfect_fields/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/perfect_fields/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Perron_Frobenius</title>
           <link>/sessions/perron_frobenius/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -9223,6 +9454,20 @@
           <link>/sessions/polygonal_number_theorem/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/polygonal_number_theorem/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Polylog</title>
+          <link>/sessions/polylog/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/polylog/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Polynomial_Crit_Geometry</title>
+          <link>/sessions/polynomial_crit_geometry/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/polynomial_crit_geometry/</guid>
           <description></description>
         </item>
         <item>
@@ -9489,6 +9734,27 @@
           <link>/sessions/public_announcement_logic/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/public_announcement_logic/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Pushdown_Systems</title>
+          <link>/sessions/pushdown_systems/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/pushdown_systems/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Q0_Metatheory</title>
+          <link>/sessions/q0_metatheory/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/q0_metatheory/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Q0_Soundness</title>
+          <link>/sessions/q0_soundness/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/q0_soundness/</guid>
           <description></description>
         </item>
         <item>
