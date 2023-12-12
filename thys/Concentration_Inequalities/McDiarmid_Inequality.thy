@@ -476,7 +476,7 @@ proof -
         by (intro bounded_subset[OF V_bounded[of "j" "{..<j+1}"]] that image_mono) auto
   qed
 
-  have h_step: "h j \<omega> = \<integral>\<tau>. h (j+1) (\<omega>(j := \<tau>)) \<partial> M j" (is "?L1 = ?R1")
+  have h_step: "h j \<omega> = \<integral>\<tau>. h (j+1) (\<omega> (j := \<tau>)) \<partial> M j" (is "?L1 = ?R1")
     if "\<omega> \<in> space (PiM {..<j} M)" "j < n" for j \<omega>
   proof -
     have 0: "(\<lambda>x. f (merge {..<j} {j..<n} (\<omega>, x))) \<in> borel_measurable (Pi\<^sub>M {j..<n} M)"
