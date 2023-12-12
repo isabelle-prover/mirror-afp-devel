@@ -1,0 +1,10 @@
+chapter AFP
+
+session KnuthMorrisPratt (AFP) = Collections +
+  options [timeout = 300]
+  theories
+    KnuthMorrisPratt
+  document_files
+    "root.tex"
+    "root.bib"
+

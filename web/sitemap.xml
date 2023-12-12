@@ -35,6 +35,15 @@
     <loc>/authors/wolff/</loc>
     <lastmod>2023-12-05T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/dependencies/collections/</loc>
+    <lastmod>2023-11-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/KnuthMorrisPratt.html</loc>
+    <lastmod>2023-11-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/paulson/</loc>
+    <lastmod>2023-11-27T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/dependencies/dirichlet_series/</loc>
     <lastmod>2023-11-24T00:00:00+00:00</lastmod>
   </url><url>
@@ -198,9 +207,6 @@
     <lastmod>2023-09-23T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/lovasz_local/</loc>
-    <lastmod>2023-09-23T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/paulson/</loc>
     <lastmod>2023-09-23T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/twelvefold_way/</loc>
@@ -793,9 +799,6 @@
   </url><url>
     <loc>/entries/Undirected_Graph_Theory.html</loc>
     <lastmod>2022-09-29T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/collections/</loc>
-    <lastmod>2022-09-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Safe_Range_RC.html</loc>
     <lastmod>2022-09-28T00:00:00+00:00</lastmod>
@@ -5791,6 +5794,8 @@
     <loc>/sessions/knuth_bendix_order/</loc>
   </url><url>
     <loc>/sessions/knuth_morris_pratt/</loc>
+  </url><url>
+    <loc>/sessions/knuthmorrispratt/</loc>
   </url><url>
     <loc>/sessions/koenigsberg_friendship/</loc>
   </url><url>
