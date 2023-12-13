@@ -1461,6 +1461,77 @@ lemma kernel_lim_decseq:
 
 end
 
+lemma qlim_eq_lim_mono_at_bot:
+  fixes g :: "rat \<Rightarrow> 'a :: linorder_topology"
+  assumes "mono f" "(g \<longlongrightarrow> a) at_bot" "\<And>r::rat. f (real_of_rat r) = g r"
+  shows "(f \<longlongrightarrow> a) at_bot"
+proof -
+  have "mono g"
+    by(metis assms(1,3) mono_def of_rat_less_eq)
+  have ga:"\<And>r. g r \<ge> a"
+  proof(rule ccontr)
+    fix r
+    assume "\<not> a \<le> g r"
+    then have "g r < a" by simp
+    from order_topology_class.order_tendstoD(1)[OF assms(2) this]
+    obtain Q :: rat where q: "\<And>q. q \<le> Q \<Longrightarrow> g r < g q"
+      by(auto simp: eventually_at_bot_linorder)
+    define q where "q \<equiv> min r Q"
+    show False
+      using q[of q] \<open>mono g\<close>
+      by(auto simp: q_def mono_def) (meson linorder_not_less min.cobounded1)
+  qed
+  show ?thesis
+  proof(rule decreasing_tendsto)
+    show "\<forall>\<^sub>F n in at_bot. a \<le> f n"
+      unfolding eventually_at_bot_linorder
+      by(rule exI[where x=undefined],auto) (metis Ratreal_def assms(1,3) dual_order.trans ga less_eq_real_def lt_ex monoD of_rat_dense) (*metis assms(1) assms(3) ga less_eq_real_def lfp.leq_trans lt_ex monoD of_rat_dense*)
+  next
+    fix x
+    assume "a < x"
+    with topological_space_class.topological_tendstoD[OF assms(2),of "{..<x}"]
+    obtain Q :: rat where q: "\<And>q. q \<le> Q \<Longrightarrow> g q < x"
+      by(auto simp: eventually_at_bot_linorder)
+    show "\<forall>\<^sub>F n in at_bot. f n < x"
+      using q assms(1,3) by(auto intro!: exI[where x="real_of_rat Q"] simp: eventually_at_bot_linorder) (metis dual_order.refl monoD order_le_less_trans)
+  qed
+qed
+
+lemma qlim_eq_lim_mono_at_top:
+  fixes g :: "rat \<Rightarrow> 'a :: linorder_topology"
+  assumes "mono f" "(g \<longlongrightarrow> a) at_top" "\<And>r::rat. f (real_of_rat r) = g r"
+  shows "(f \<longlongrightarrow> a) at_top"
+proof -
+  have "mono g"
+    by(metis assms(1,3) mono_def of_rat_less_eq)
+  have ga:"\<And>r. g r \<le> a"
+  proof(rule ccontr)
+    fix r
+    assume "\<not> g r \<le> a"
+    then have "a < g r" by simp
+    from order_topology_class.order_tendstoD(2)[OF assms(2) this]
+    obtain Q :: rat where q: "\<And>q. Q \<le> q \<Longrightarrow> g q < g r"
+      by(auto simp: eventually_at_top_linorder)
+    define q where "q \<equiv> max r Q"
+    show False
+      using q[of q] \<open>mono g\<close> by(auto simp: q_def mono_def leD)
+  qed
+  show ?thesis
+  proof(rule increasing_tendsto)
+    show "\<forall>\<^sub>F n in at_top. f n \<le> a"
+      unfolding eventually_at_top_linorder
+      by(rule exI[where x=undefined],auto) (metis (no_types, opaque_lifting) assms(1) assms(3) dual_order.trans ga gt_ex monoD of_rat_dense order_le_less)
+  next
+    fix x
+    assume "x < a"
+    with topological_space_class.topological_tendstoD[OF assms(2),of "{x<..}"]
+    obtain Q :: rat where q: "\<And>q. Q \<le> q \<Longrightarrow> x < g q"
+      by(auto simp: eventually_at_top_linorder)
+    show "\<forall>\<^sub>F n in at_top. x < f n"
+      using q assms(1,3) by(auto simp: eventually_at_top_linorder intro!: exI[where x="real_of_rat Q"]) (metis dual_order.refl monoD order_less_le_trans)
+  qed
+qed
+
 subsection \<open> Theorem 14.D.10. (Measure Disintegration Theorem) \<close>
 locale projection_sigma_finite_standard = projection_sigma_finite + standard_borel_ne Y
 begin
@@ -1516,9 +1587,9 @@ proof -
       qed
       have "AE x in r.\<nu>x. (\<lambda>n. r.\<kappa>' x {..real_of_rat (r + 1 / rat_of_nat (Suc n))}) \<longlonglongrightarrow> r.\<kappa>' x {..real_of_rat r}"
         unfolding 1[symmetric] by(rule r.kernel_lim_decseq) (auto simp: decseq_Suc_iff of_rat_less_eq frac_le)
-      from AE_conjI[OF r.kernel_le_infty[of "{..real_of_rat r}",simplified] this] tendsto_enn2real
+      from AE_conjI[OF r.kernel_le_infty[of "{..real_of_rat r}",simplified] this] 
       show "AE x in r.\<nu>x. (\<lambda>n. \<phi> x (r + 1 / (rat_of_nat (Suc n)))) \<longlonglongrightarrow> \<phi> x r"
-        by(auto simp: \<phi>_def)
+        unfolding \<phi>_def by eventually_elim (rule tendsto_enn2real, auto)
     qed
 
     have as3: "AE x in r.\<nu>x. (\<phi> x \<longlongrightarrow> 0) at_bot"
