@@ -92,10 +92,12 @@ lemma card_UNIV_code:
 setup \<open>
   Code_Preproc.map_pre (fn ctxt =>
     ctxt addsimprocs
-      [Simplifier.make_simproc \<^context> "card_UNIV"
-        {lhss = [\<^term>\<open>card UNIV\<close>],
+      [Simplifier.make_simproc \<^context>
+        {name = "card_UNIV",
+         lhss = [\<^term>\<open>card UNIV\<close>],
          proc = fn _ => fn _ => fn ct =>
-          SOME @{thm card_UNIV_code [THEN eq_reflection]}}])
+          SOME @{thm card_UNIV_code [THEN eq_reflection]},
+         identifier = []}])
 \<close>
 
 
