@@ -21,11 +21,6 @@ definition right_continuous where "right_continuous = (AE \<xi> in M. \<forall>t
 
 end
 
-text \<open>We specify the following locales to formalize discrete time and continuous time processes.\<close>
-
-locale nat_stochastic_process = stochastic_process M "0 :: nat" X for M X
-locale real_stochastic_process = stochastic_process M "0 :: real" X for M X
-
 lemma stochastic_process_const_fun:
   assumes "f \<in> borel_measurable M"
   shows "stochastic_process M t\<^sub>0 (\<lambda>_. f)" using assms by (unfold_locales)
@@ -194,12 +189,6 @@ lemma adaptedD:
 
 end
 
-locale nat_adapted_process = adapted_process M F "0 :: nat" X for M F X
-locale real_adapted_process = adapted_process M F "0 :: real" X for M F X
-
-sublocale nat_adapted_process \<subseteq> nat_filtered_measure ..
-sublocale real_adapted_process \<subseteq> real_filtered_measure ..
-
 lemma (in filtered_measure) adapted_process_const_fun:
   assumes "f \<in> borel_measurable (F t\<^sub>0)"
   shows "adapted_process M F t\<^sub>0 (\<lambda>_. f)"
@@ -263,11 +252,24 @@ end
 
 text \<open>In the dicrete time case, we have the following lemma which will be useful later on.\<close>
 
-lemma (in nat_adapted_process) partial_sum_Suc_adapted: "nat_adapted_process M F (\<lambda>n \<xi>. \<Sum>i<n. X (Suc i) \<xi>)" 
+lemma (in nat_filtered_measure) partial_sum_Suc_adapted:
+  assumes "adapted_process M F 0 X"
+  shows "adapted_process M F 0 (\<lambda>n \<xi>. \<Sum>i<n. X (Suc i) \<xi>)"
 proof (unfold_locales)
+  interpret adapted_process M F 0 X using assms by blast
   fix i
   have "X j \<in> borel_measurable (F i)" if "j \<le> i" for j using that adaptedD by blast
   thus "(\<lambda>\<xi>. \<Sum>i<i. X (Suc i) \<xi>) \<in> borel_measurable (F i)" by auto
+qed
+
+lemma (in enat_filtered_measure) partial_sum_eSuc_adapted:
+  assumes "adapted_process M F 0 X"
+  shows "adapted_process M F 0 (\<lambda>n \<xi>. \<Sum>i<n. X (eSuc i) \<xi>)"
+proof (unfold_locales)
+  interpret adapted_process M F 0 X using assms by blast
+  fix i
+  have "X (eSuc j) \<in> borel_measurable (F i)" if "j < i" for j using that adaptedD by (simp add: ileI1)
+  thus "(\<lambda>\<xi>. \<Sum>i<i. X (eSuc i) \<xi>) \<in> borel_measurable (F i)" by auto
 qed
 
 lemma (in filtered_measure) adapted_process_sum:
@@ -285,9 +287,6 @@ qed
 text \<open>An adapted process is necessarily a stochastic process.\<close>
 
 sublocale adapted_process \<subseteq> stochastic_process using measurable_from_subalg subalgebras adapted by (unfold_locales) blast
-
-sublocale nat_adapted_process \<subseteq> nat_stochastic_process ..
-sublocale real_adapted_process \<subseteq> real_stochastic_process ..
 
 text \<open>A stochastic process is always adapted to the natural filtration it generates.\<close>
 
@@ -308,9 +307,6 @@ lemma progressiveD:
   by (cases "t\<^sub>0 \<le> i") (auto simp add: space_restrict_space sets_pair_measure space_pair_measure)
 
 end
-
-locale nat_progressive_process = progressive_process M F "0 :: nat" X for M F X
-locale real_progressive_process = progressive_process M F "0 :: real" X for M F X
 
 lemma (in filtered_measure) progressive_process_const_fun:
   assumes "f \<in> borel_measurable (F t\<^sub>0)"
@@ -378,20 +374,17 @@ sublocale progressive_process \<subseteq> adapted_process using measurable_compo
   unfolding prod.case space_restrict_space
   by unfold_locales simp
 
-sublocale nat_progressive_process \<subseteq> nat_adapted_process ..
-sublocale real_progressive_process \<subseteq> real_adapted_process ..
-
 text \<open>In the discrete setting, adaptedness is equivalent to progressive measurability.\<close>
 
-theorem nat_progressive_iff_adapted: "nat_progressive_process M F X \<longleftrightarrow> nat_adapted_process M F X"
+theorem (in nat_filtered_measure) progressive_iff_adapted: "progressive_process M F 0 X \<longleftrightarrow> adapted_process M F 0 X"
 proof (intro iffI)
-  assume asm: "nat_progressive_process M F X"
-  interpret nat_progressive_process M F X by (rule asm)
-  show "nat_adapted_process M F X" ..
+  assume asm: "progressive_process M F 0 X"
+  interpret progressive_process M F 0 X by (rule asm)
+  show "adapted_process M F 0 X" ..
 next
-  assume asm: "nat_adapted_process M F X"
-  interpret nat_adapted_process M F X by (rule asm) 
-  show "nat_progressive_process M F X"
+  assume asm: "adapted_process M F 0 X"
+  interpret adapted_process M F 0 X by (rule asm) 
+  show "progressive_process M F 0 X"
   proof (unfold_locales, intro borel_measurableI)
     fix S :: "'b set" and i :: nat assume open_S: "open S"
     {
@@ -399,6 +392,30 @@ next
       hence "X j -` S \<inter> space M \<in> F i" using adaptedD[of j, THEN measurable_sets] space_F open_S by fastforce
       moreover have "case_prod X -` S \<inter> {j} \<times> space M = {j} \<times> (X j -` S \<inter> space M)" for j by fast
       moreover have "{j :: nat} \<in> restrict_space borel {0..i}" using asm by (simp add: sets_restrict_space_iff)
+      ultimately have "case_prod X -` S \<inter> {j} \<times> space M \<in> restrict_space borel {0..i} \<Otimes>\<^sub>M F i" by simp
+    }
+    hence "(\<lambda>j. (\<lambda>(x, y). X x y) -` S \<inter> {j} \<times> space M) ` {..i} \<subseteq> restrict_space borel {0..i} \<Otimes>\<^sub>M F i" by blast
+    moreover have "case_prod X -` S \<inter> space (restrict_space borel {0..i} \<Otimes>\<^sub>M F i) = (\<Union>j\<le>i. case_prod X -` S \<inter> {j} \<times> space M)" unfolding space_pair_measure space_restrict_space space_F by force  
+    ultimately show "case_prod X -` S \<inter> space (restrict_space borel {0..i} \<Otimes>\<^sub>M F i) \<in> restrict_space borel {0..i} \<Otimes>\<^sub>M F i" by (metis sets.countable_UN)
+  qed
+qed
+
+theorem (in enat_filtered_measure) progressive_iff_adapted: "progressive_process M F 0 X \<longleftrightarrow> adapted_process M F 0 X"
+proof (intro iffI)
+  assume asm: "progressive_process M F 0 X"
+  interpret progressive_process M F 0 X by (rule asm)
+  show "adapted_process M F 0 X" ..
+next
+  assume asm: "adapted_process M F 0 X"
+  interpret adapted_process M F 0 X by (rule asm) 
+  show "progressive_process M F 0 X"
+  proof (unfold_locales, intro borel_measurableI)
+    fix S :: "'b set" and i :: enat assume open_S: "open S"
+    {
+      fix j assume asm: "j \<le> i"
+      hence "X j -` S \<inter> space M \<in> F i" using adaptedD[of j, THEN measurable_sets] space_F open_S by fastforce
+      moreover have "case_prod X -` S \<inter> {j} \<times> space M = {j} \<times> (X j -` S \<inter> space M)" for j by fast
+      moreover have "{j :: enat} \<in> restrict_space borel {0..i}" using asm by (simp add: sets_restrict_space_iff)
       ultimately have "case_prod X -` S \<inter> {j} \<times> space M \<in> restrict_space borel {0..i} \<Otimes>\<^sub>M F i" by simp
     }
     hence "(\<lambda>j. (\<lambda>(x, y). X x y) -` S \<inter> {j} \<times> space M) ` {..i} \<subseteq> restrict_space borel {0..i} \<Otimes>\<^sub>M F i" by blast
@@ -518,11 +535,6 @@ lemmas predictableD = measurable_sets[OF predictable, unfolded space_predictable
 
 end
 
-(* * *)
-
-locale nat_predictable_process = predictable_process M F "0 :: nat" X for M F X
-locale real_predictable_process = predictable_process M F "0 :: real" X for M F X
-
 lemma (in nat_filtered_measure) measurable_predictable_sigma_snd':
   shows "snd \<in> \<Sigma>\<^sub>P \<rightarrow>\<^sub>M F 0"
   by (intro measurable_predictable_sigma_snd[of "range (\<lambda>x. {Suc x})"]) (force | simp add: greaterThan_0)+
@@ -531,6 +543,14 @@ lemma (in nat_filtered_measure) measurable_predictable_sigma_fst':
   shows "fst \<in> \<Sigma>\<^sub>P \<rightarrow>\<^sub>M borel"
   by (intro measurable_predictable_sigma_fst[of "range (\<lambda>x. {Suc x})"]) (force | simp add: greaterThan_0)+
 
+lemma (in enat_filtered_measure) measurable_predictable_sigma_snd':
+  shows "snd \<in> \<Sigma>\<^sub>P \<rightarrow>\<^sub>M F 0"
+  by (intro measurable_predictable_sigma_snd[of "{{0<..\<infinity>}}"]) force+
+
+lemma (in enat_filtered_measure) measurable_predictable_sigma_fst':
+  shows "fst \<in> \<Sigma>\<^sub>P \<rightarrow>\<^sub>M borel"
+  by (intro measurable_predictable_sigma_fst[of "{{0<..\<infinity>}}"]) force+
+
 lemma (in real_filtered_measure) measurable_predictable_sigma_snd':
   shows "snd \<in> \<Sigma>\<^sub>P \<rightarrow>\<^sub>M F 0"
   using real_arch_simple by (intro measurable_predictable_sigma_snd[of "range (\<lambda>x::nat. {0<..real (Suc x)})"]) (fastforce intro: add_increasing)+
@@ -538,6 +558,14 @@ lemma (in real_filtered_measure) measurable_predictable_sigma_snd':
 lemma (in real_filtered_measure) measurable_predictable_sigma_fst':
   shows "fst \<in> \<Sigma>\<^sub>P \<rightarrow>\<^sub>M borel"
   using real_arch_simple by (intro measurable_predictable_sigma_fst[of "range (\<lambda>x::nat. {0<..real (Suc x)})"]) (fastforce intro: add_increasing)+
+
+lemma (in ennreal_filtered_measure) measurable_predictable_sigma_snd':
+  shows "snd \<in> \<Sigma>\<^sub>P \<rightarrow>\<^sub>M F 0"
+  by (intro measurable_predictable_sigma_snd[of "{{0<..\<infinity>}}"]) force+
+
+lemma (in ennreal_filtered_measure) measurable_predictable_sigma_fst':
+  shows "fst \<in> \<Sigma>\<^sub>P \<rightarrow>\<^sub>M borel"
+  by (intro measurable_predictable_sigma_fst[of "{{0<..\<infinity>}}"]) force+
 
 text \<open>We show sufficient conditions for functions constant in one argument to constitute a predictable process. In contrast to the cases before, this is not a triviality.\<close>
 
@@ -548,13 +576,23 @@ lemma (in linearly_filtered_measure) predictable_process_const_fun:
 
 lemma (in nat_filtered_measure) predictable_process_const_fun'[intro]:
   assumes "f \<in> borel_measurable (F 0)"
-  shows "nat_predictable_process M F (\<lambda>_. f)"
-  using assms by (intro predictable_process_const_fun[OF measurable_predictable_sigma_snd', THEN nat_predictable_process.intro])
+  shows "predictable_process M F 0 (\<lambda>_. f)"
+  using assms by (intro predictable_process_const_fun[OF measurable_predictable_sigma_snd'])
+
+lemma (in enat_filtered_measure) predictable_process_const_fun'[intro]:
+  assumes "f \<in> borel_measurable (F 0)"
+  shows "predictable_process M F 0 (\<lambda>_. f)"
+  using assms by (intro predictable_process_const_fun[OF measurable_predictable_sigma_snd'])
 
 lemma (in real_filtered_measure) predictable_process_const_fun'[intro]:
   assumes "f \<in> borel_measurable (F 0)"
-  shows "real_predictable_process M F (\<lambda>_. f)"
-  using assms by (intro predictable_process_const_fun[OF measurable_predictable_sigma_snd', THEN real_predictable_process.intro])
+  shows "predictable_process M F 0 (\<lambda>_. f)"
+  using assms by (intro predictable_process_const_fun[OF measurable_predictable_sigma_snd'])
+
+lemma (in ennreal_filtered_measure) predictable_process_const_fun'[intro]:
+  assumes "f \<in> borel_measurable (F 0)"
+  shows "predictable_process M F 0 (\<lambda>_. f)"
+  using assms by (intro predictable_process_const_fun[OF measurable_predictable_sigma_snd'])
 
 lemma (in linearly_filtered_measure) predictable_process_const:
   assumes "fst \<in> borel_measurable \<Sigma>\<^sub>P" "c \<in> borel_measurable borel"
@@ -567,13 +605,23 @@ lemma (in linearly_filtered_measure) predictable_process_const_const[intro]:
 
 lemma (in nat_filtered_measure) predictable_process_const'[intro]:
   assumes "c \<in> borel_measurable borel"
-  shows "nat_predictable_process M F (\<lambda>i _. c i)"
-  using assms by (intro predictable_process_const[OF measurable_predictable_sigma_fst', THEN nat_predictable_process.intro])
+  shows "predictable_process M F 0 (\<lambda>i _. c i)"
+  using assms by (intro predictable_process_const[OF measurable_predictable_sigma_fst'])
+
+lemma (in enat_filtered_measure) predictable_process_const'[intro]:
+  assumes "c \<in> borel_measurable borel"
+  shows "predictable_process M F 0 (\<lambda>i _. c i)"
+  using assms by (intro predictable_process_const[OF measurable_predictable_sigma_fst'])
 
 lemma (in real_filtered_measure) predictable_process_const'[intro]:
   assumes "c \<in> borel_measurable borel"
-  shows "real_predictable_process M F (\<lambda>i _. c i)"
-  using assms by (intro predictable_process_const[OF measurable_predictable_sigma_fst', THEN real_predictable_process.intro])
+  shows "predictable_process M F 0 (\<lambda>i _. c i)"
+  using assms by (intro predictable_process_const[OF measurable_predictable_sigma_fst'])
+
+lemma (in ennreal_filtered_measure) predictable_process_const'[intro]:
+  assumes "c \<in> borel_measurable borel"
+  shows "predictable_process M F 0 (\<lambda>i _. c i)"
+  using assms by (intro predictable_process_const[OF measurable_predictable_sigma_fst'])
 
 context predictable_process
 begin
@@ -648,9 +696,6 @@ proof (unfold_locales)
   thus "case_prod X \<in> borel_measurable (restrict_space borel {t\<^sub>0..i} \<Otimes>\<^sub>M F i)" using predictable by simp
 qed
 
-sublocale nat_predictable_process \<subseteq> nat_progressive_process ..
-sublocale real_predictable_process \<subseteq> real_progressive_process ..
-
 text \<open>The following lemma characterizes predictability in a discrete-time setting.\<close>
 
 lemma (in nat_filtered_measure) sets_in_filtration:
@@ -661,11 +706,11 @@ proof (induction "(\<Union>i. {i} \<times> A i)" arbitrary: A)
   case Basic
   {
     assume "\<exists>S. (\<Union>i. {i} \<times> A i) = {0} \<times> S"
-    then obtain S where S: "(\<Union>i. {i} \<times> A i) = {bot} \<times> S" unfolding bot_nat_def by blast
-    hence "S \<in> F bot" using Basic by (fastforce simp add: times_eq_iff bot_nat_def)
-    moreover have "A i = {}" if "i \<noteq> bot" for i using that S by blast
-    moreover have "A bot = S" using S by blast
-    ultimately have "A (Suc i) \<in> F i" "A 0 \<in> F 0" for i unfolding bot_nat_def by (auto simp add: bot_nat_def)
+    then obtain S where S: "(\<Union>i. {i} \<times> A i) = {0} \<times> S" by blast
+    hence "S \<in> F 0" using Basic by (fastforce simp add: times_eq_iff)
+    moreover have "A i = {}" if "i \<noteq> 0" for i using that S unfolding bot_nat_def[symmetric] by blast
+    moreover have "A 0 = S" using S by blast
+    ultimately have "A 0 \<in> F 0" "A (Suc i) \<in> F i" for i by auto
   }
   note * = this
   {
@@ -673,10 +718,12 @@ proof (induction "(\<Union>i. {i} \<times> A i)" arbitrary: A)
     then obtain s t B where B: "(\<Union>i. {i} \<times> A i) = {s<..t} \<times> B" "B \<in> sets (F s)" "s < t" using Basic by auto
     hence "A i = B" if "i \<in> {s<..t}" for i using that by fast
     moreover have "A i = {}" if "i \<notin> {s<..t}" for i using B that by fastforce
-    ultimately have "A (Suc i) \<in> F i" "A 0 \<in> F 0" for i unfolding bot_nat_def using B sets_F_mono by (auto simp add: bot_nat_def) (metis less_Suc_eq_le sets.empty_sets subset_eq)
+    ultimately have "A 0 \<in> F 0" "A (Suc i) \<in> F i" for i using B sets_F_mono 
+      by (simp, metis less_Suc_eq_le sets.empty_sets subset_eq bot_nat_0.extremum greaterThanAtMost_iff)
+      
   }
   note ** = this
-  show "A (Suc i) \<in> sets (F i)" "A 0 \<in> sets (F 0)" using *(1)[of i] *(2) **(1)[of i] **(2) by blast+
+  show "A (Suc i) \<in> sets (F i)" "A 0 \<in> F 0" using *(2)[of i] *(1) **(2)[of i] **(1) by blast+
 next
   case Empty
   {
@@ -724,8 +771,11 @@ qed
 
 text \<open>This leads to the following useful fact.\<close>
 
-lemma (in nat_predictable_process) adapted_Suc: "nat_adapted_process M F (\<lambda>i. X (Suc i))"
+lemma (in nat_filtered_measure) predictable_implies_adapted_Suc: 
+  assumes "predictable_process M F 0 X"
+  shows "adapted_process M F 0 (\<lambda>i. X (Suc i))"
 proof (unfold_locales, intro borel_measurableI)
+  interpret predictable_process M F 0 X by (rule assms)
   fix S :: "'b set" and i assume open_S: "open S"
   have "{Suc i} = {i<..Suc i}" by fastforce
   hence "{Suc i} \<times> space M \<in> \<Sigma>\<^sub>P" using space_F[symmetric, of i] unfolding sets_predictable_sigma by (intro sigma_sets.Basic) blast
@@ -741,10 +791,10 @@ qed
 
 text \<open>The following lemma characterizes predictability in the discrete setting.\<close>
 
-theorem nat_predictable_process_iff: "nat_predictable_process M F X \<longleftrightarrow> nat_adapted_process M F (\<lambda>i. X (Suc i)) \<and> X 0 \<in> borel_measurable (F 0)"
+theorem (in nat_filtered_measure) predictable_process_iff: "predictable_process M F 0 X \<longleftrightarrow> adapted_process M F 0 (\<lambda>i. X (Suc i)) \<and> X 0 \<in> borel_measurable (F 0)"
 proof (intro iffI)
-  assume asm: "nat_adapted_process M F (\<lambda>i. X (Suc i)) \<and> X 0 \<in> borel_measurable (F 0)"
-  interpret nat_adapted_process M F "\<lambda>i. X (Suc i)" using asm by blast
+  assume asm: "adapted_process M F 0 (\<lambda>i. X (Suc i)) \<and> X 0 \<in> borel_measurable (F 0)"
+  interpret adapted_process M F 0 "\<lambda>i. X (Suc i)" using asm by blast
   have "(\<lambda>(x, y). X x y) \<in> borel_measurable \<Sigma>\<^sub>P"
   proof (intro borel_measurableI)
     fix S :: "'b set" assume open_S: "open S"
@@ -763,11 +813,11 @@ proof (intro iffI)
     moreover have "(\<lambda>(x, y). X x y) -` S \<inter> space \<Sigma>\<^sub>P = (\<Union>i. {i} \<times> (X i -` S \<inter> space M))" by fastforce
     ultimately show "(\<lambda>(x, y). X x y) -` S \<inter> space \<Sigma>\<^sub>P \<in> sets \<Sigma>\<^sub>P" by simp
   qed
-  thus "nat_predictable_process M F X" by (unfold_locales)
+  thus "predictable_process M F 0 X" by (unfold_locales)
 next
-  assume asm: "nat_predictable_process M F X"
-  interpret nat_predictable_process M F X by (rule asm)
-  show "nat_adapted_process M F (\<lambda>i. X (Suc i)) \<and> X 0 \<in> borel_measurable (F 0)" using adapted_Suc by simp
+  assume asm: "predictable_process M F 0 X"
+  interpret predictable_process M F 0 X using asm by blast
+  show "adapted_process M F 0 (\<lambda>i. X (Suc i)) \<and> X 0 \<in> borel_measurable (F 0)" using predictable_implies_adapted_Suc asm by auto
 qed
                                                                             
 end

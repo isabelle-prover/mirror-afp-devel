@@ -20,6 +20,11 @@ lemma space_F[simp]:
   shows "space (F i) = space M"
   using subalgebras assms by (simp add: subalgebra_def)
 
+lemma sets_F_subset[simp]: 
+  assumes "t\<^sub>0 \<le> i"
+  shows "sets (F i) \<subseteq> sets M"
+  using subalgebras assms by (simp add: subalgebra_def)
+
 lemma subalgebra_F[intro]: 
   assumes "t\<^sub>0 \<le> i" "i \<le> j"
   shows "subalgebra (F j) (F i)"
@@ -32,10 +37,12 @@ lemma borel_measurable_mono:
 
 end
 
-locale linearly_filtered_measure = filtered_measure M F t\<^sub>0 for M and F :: "_ :: {linorder_topology} \<Rightarrow> _" and t\<^sub>0
+locale linearly_filtered_measure = filtered_measure M F t\<^sub>0 for M and F :: "_ :: {linorder_topology, conditionally_complete_lattice} \<Rightarrow> _" and t\<^sub>0
 
 locale nat_filtered_measure = linearly_filtered_measure M F 0 for M and F :: "nat \<Rightarrow> _"
+locale enat_filtered_measure = linearly_filtered_measure M F 0 for M and F :: "enat \<Rightarrow> _"
 locale real_filtered_measure = linearly_filtered_measure M F 0 for M and F :: "real \<Rightarrow> _"
+locale ennreal_filtered_measure = linearly_filtered_measure M F 0 for M and F :: "ennreal \<Rightarrow> _"
 
 subsection \<open>\<open>\<sigma>\<close>-Finite Filtered Measure\<close>
 
@@ -50,10 +57,19 @@ lemma (in sigma_finite_filtered_measure) sigma_finite_subalgebra_F[intro]:
   using assms by (metis dual_order.refl sets_F_mono sigma_finite_initial sigma_finite_subalgebra.nested_subalg_is_sigma_finite subalgebras subalgebra_def)
 
 locale nat_sigma_finite_filtered_measure = sigma_finite_filtered_measure M F "0 :: nat" for M F
+locale enat_sigma_finite_filtered_measure = sigma_finite_filtered_measure M F "0 :: enat" for M F
 locale real_sigma_finite_filtered_measure = sigma_finite_filtered_measure M F "0 :: real" for M F
+locale ennreal_sigma_finite_filtered_measure = sigma_finite_filtered_measure M F "0 :: ennreal" for M F
+
+sublocale nat_sigma_finite_filtered_measure \<subseteq> nat_filtered_measure ..
+sublocale enat_sigma_finite_filtered_measure \<subseteq> enat_filtered_measure ..
+sublocale real_sigma_finite_filtered_measure \<subseteq> real_filtered_measure ..
+sublocale ennreal_sigma_finite_filtered_measure \<subseteq> ennreal_filtered_measure ..
 
 sublocale nat_sigma_finite_filtered_measure \<subseteq> sigma_finite_subalgebra M "F i" by blast
+sublocale enat_sigma_finite_filtered_measure \<subseteq> sigma_finite_subalgebra M "F i" by fastforce
 sublocale real_sigma_finite_filtered_measure \<subseteq> sigma_finite_subalgebra M "F \<bar>i\<bar>" by fastforce 
+sublocale ennreal_sigma_finite_filtered_measure \<subseteq> sigma_finite_subalgebra M "F i" by fastforce
 
 subsection \<open>Finite Filtered Measure\<close>
 
@@ -63,10 +79,14 @@ sublocale finite_filtered_measure \<subseteq> sigma_finite_filtered_measure
   using subalgebras by (unfold_locales, blast, meson dual_order.refl finite_measure_axioms finite_measure_def finite_measure_restr_to_subalg sigma_finite_measure.sigma_finite_countable)
 
 locale nat_finite_filtered_measure = finite_filtered_measure M F "0 :: nat" for M F
+locale enat_finite_filtered_measure = finite_filtered_measure M F "0 :: enat" for M F
 locale real_finite_filtered_measure = finite_filtered_measure M F "0 :: real" for M F
+locale ennreal_finite_filtered_measure = finite_filtered_measure M F "0 :: ennreal" for M F
 
 sublocale nat_finite_filtered_measure \<subseteq> nat_sigma_finite_filtered_measure ..
+sublocale enat_finite_filtered_measure \<subseteq> enat_sigma_finite_filtered_measure ..
 sublocale real_finite_filtered_measure \<subseteq> real_sigma_finite_filtered_measure ..
+sublocale ennreal_finite_filtered_measure \<subseteq> ennreal_sigma_finite_filtered_measure ..
 
 subsection \<open>Constant Filtration\<close>
 
