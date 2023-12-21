@@ -79,7 +79,7 @@ proof -
    (is \<open>is_process (  if A = {} then ({(s, X). s = []}, {}) else (?f, ?d))\<close>) for A P
   proof (split if_split, intro conjI impI)
     show \<open>is_process ({(s, X). s = []}, {})\<close>
-      by (simp add: is_process_REP_STOP)
+      by (metis STOP.rsp eq_onp_def)
   next
     show \<open>is_process (\<Union>a\<in>A. \<F> (P a), \<Union>a\<in>A. \<D> (P a))\<close> if nonempty: \<open>A \<noteq> {}\<close>
       unfolding is_process_def FAILURES_def DIVERGENCES_def fst_conv snd_conv
@@ -146,10 +146,9 @@ lemma D_GlobalNdet:
 
 lemma T_GlobalNdet:
   \<open>\<T> (\<sqinter> x \<in> A. P x) = (if A = {} then {[]} else (\<Union> x\<in>A. \<T> (P x)))\<close>
-  by (auto simp add: Traces_def TRACES_def Failures_def[symmetric] 
-                     F_GlobalNdet intro: F_T T_F)
+  by (auto simp: Traces.rep_eq TRACES_def Failures.rep_eq[symmetric]
+    F_GlobalNdet intro: F_T T_F)
  
-
 lemma mono_GlobalNdet_eq:
   \<open>\<forall>x \<in> A. P x = Q x \<Longrightarrow> GlobalNdet A P = GlobalNdet A Q\<close>
   by (subst Process_eq_spec, simp add: F_GlobalNdet D_GlobalNdet)
@@ -407,4 +406,3 @@ qed
 
 
 end
-
