@@ -201,7 +201,7 @@ fun nontrivial_ud thy defs (b, mixfix) cid T =
         val b' = Binding.qualify_name true b "with_def"
         val def_t = Logic.mk_equals (lhst', cid_rhs_t')
       in 
-        Global_Theory.add_defs false [((b', def_t), [])] thy' |>> the_single
+        Global_Theory.add_def (b', def_t) thy'
           handle ERROR c =>
             let val msg_match = "Extra type variables on rhs"
             in 

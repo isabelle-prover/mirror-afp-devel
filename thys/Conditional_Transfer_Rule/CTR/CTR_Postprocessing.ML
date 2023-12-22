@@ -75,11 +75,7 @@ fun postprocess_relativization b mf thm ctxt =
           ((b |> Binding.path_of |> map fst) @ [Binding.name_of b ^ "_def"])
           |> Long_Name.implode
           |> Binding.qualified_name_mandatory
-      in
-        Global_Theory.add_defs 
-          false (single ((b, Logic.mk_equals (lhst, rhst)), [])) thy
-        |>> the_single
-      end
+      in Global_Theory.add_def (b, Logic.mk_equals (lhst, rhst)) thy end
     val (ow_def_thm, lthy') = Local_Theory.raw_theory_result make_with_def lthy
     val _ =
       Proof_Display.print_theorem (Position.thread_data ()) lthy'
