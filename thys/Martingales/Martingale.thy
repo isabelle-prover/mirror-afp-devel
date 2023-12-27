@@ -642,7 +642,7 @@ proof (intro submartingale_nat integrable adapted)
   show "AE \<xi> in M. X i \<xi> \<le> cond_exp M (F i) (X (Suc i)) \<xi>" using cond_exp_diff[OF integrable(1,1), of i "Suc i" i] cond_exp_F_meas[OF integrable adapted, of i] assms(3)[of i] by fastforce
 qed
 
-lemma partial_sum_scaleR:
+lemma submartingale_partial_sum_scaleR:
   assumes "submartingale_linorder M F 0 X"
     and "adapted_process M F 0 C" "\<And>i. AE \<xi> in M. 0 \<le> C i \<xi>" "\<And>i. AE \<xi> in M. C i \<xi> \<le> R"
   shows "submartingale M F 0 (\<lambda>n \<xi>. \<Sum>i<n. C i \<xi> *\<^sub>R (X (Suc i) \<xi> - X i \<xi>))"
@@ -658,13 +658,13 @@ proof -
   ultimately show ?thesis by (intro submartingale_of_cond_exp_diff_Suc_nonneg S.adapted_process_axioms Bochner_Integration.integrable_sum, blast+)
 qed
 
-lemma partial_sum_scaleR':
+lemma submartingale_partial_sum_scaleR':
   assumes "submartingale_linorder M F 0 X"
     and "predictable_process M F 0 C" "\<And>i. AE \<xi> in M. 0 \<le> C i \<xi>" "\<And>i. AE \<xi> in M. C i \<xi> \<le> R"
   shows "submartingale M F 0 (\<lambda>n \<xi>. \<Sum>i<n. C (Suc i) \<xi> *\<^sub>R (X (Suc i) \<xi> - X i \<xi>))"
 proof -
   interpret Suc_C: adapted_process M F 0 "\<lambda>i. C (Suc i)" using predictable_implies_adapted_Suc assms by blast
-  show ?thesis by (intro partial_sum_scaleR[OF assms(1), of _ R] assms) (intro_locales)
+  show ?thesis by (intro submartingale_partial_sum_scaleR[OF assms(1), of _ R] assms) (intro_locales)
 qed
 
 end

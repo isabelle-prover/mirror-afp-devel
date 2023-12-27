@@ -250,7 +250,7 @@ qed
 
 end
 
-text \<open>In the dicrete time case, we have the following lemma which will be useful later on.\<close>
+text \<open>In the dicrete time case, we have the following lemmas which will be useful later on.\<close>
 
 lemma (in nat_filtered_measure) partial_sum_Suc_adapted:
   assumes "adapted_process M F 0 X"
@@ -819,5 +819,12 @@ next
   interpret predictable_process M F 0 X using asm by blast
   show "adapted_process M F 0 (\<lambda>i. X (Suc i)) \<and> X 0 \<in> borel_measurable (F 0)" using predictable_implies_adapted_Suc asm by auto
 qed
+
+corollary (in nat_filtered_measure) predictable_processI[intro!]:
+  assumes "X 0 \<in> borel_measurable (F 0)" "\<And>i. X (Suc i) \<in> borel_measurable (F i)"
+  shows "predictable_process M F 0 X"
+  unfolding predictable_process_iff
+  using assms
+  by (meson adapted_process.intro adapted_process_axioms_def filtered_measure_axioms)
                                                                             
 end
