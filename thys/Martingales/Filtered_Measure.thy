@@ -39,6 +39,36 @@ end
 
 locale linearly_filtered_measure = filtered_measure M F t\<^sub>0 for M and F :: "_ :: {linorder_topology, conditionally_complete_lattice} \<Rightarrow> _" and t\<^sub>0
 
+context linearly_filtered_measure
+begin
+
+text \<open>\<open>\<sigma>-algebra\<close> at infinity\<close>
+
+definition F_infinity :: "'a measure" where 
+  "F_infinity = sigma (space M) (\<Union>t\<in>{t\<^sub>0..}. sets (F t))"
+
+notation F_infinity (\<open>F\<^sub>\<infinity>\<close>)
+
+lemma space_F_infinity[simp]: "space F\<^sub>\<infinity> = space M" unfolding F_infinity_def space_measure_of_conv by simp
+
+lemma sets_F_infinity: "sets F\<^sub>\<infinity> = sigma_sets (space M) (\<Union>t\<in>{t\<^sub>0..}. sets (F t))"
+  unfolding F_infinity_def using sets.space_closed[of "F _"] space_F by (blast intro!: sets_measure_of)
+
+lemma subset_F_infinity: 
+  assumes "t \<ge> t\<^sub>0"
+  shows "F t \<subseteq> F\<^sub>\<infinity>" unfolding sets_F_infinity using assms by blast
+
+lemma F_infinity_subset: "F\<^sub>\<infinity> \<subseteq> M" 
+  unfolding sets_F_infinity using sets_F_subset
+  by (simp add: SUP_le_iff sets.sigma_sets_subset)
+
+lemma F_infinity_measurableI:
+  assumes "t \<ge> t\<^sub>0" "f \<in> borel_measurable (F t)"
+  shows "f \<in> borel_measurable (F\<^sub>\<infinity>)"
+  by (metis assms borel_measurable_subalgebra space_F space_F_infinity subset_F_infinity)
+
+end
+
 locale nat_filtered_measure = linearly_filtered_measure M F 0 for M and F :: "nat \<Rightarrow> _"
 locale enat_filtered_measure = linearly_filtered_measure M F 0 for M and F :: "enat \<Rightarrow> _"
 locale real_filtered_measure = linearly_filtered_measure M F 0 for M and F :: "real \<Rightarrow> _"
