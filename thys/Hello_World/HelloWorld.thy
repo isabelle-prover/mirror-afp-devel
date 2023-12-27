@@ -23,34 +23,31 @@ definition main :: "unit io" where
 section\<open>Generating Code\<close>
 
 text\<open>Checking that the generated code compiles.\<close>
+
 export_code main checking Haskell? SML
 
+(*<*)
+setup \<open>
+let
+  val parser =
+    Scan.repeat (Args.const {proper = true, strict = true}) --
+      Scan.lift (\<^keyword>\<open>in\<close> |-- Parse.name -- (\<^keyword>\<open>module_name\<close> |-- Parse.name))
 
-ML_val\<open>Isabelle_System.bash "echo ${ISABELLE_TMP} > ${ISABELLE_TMP}/self"\<close>
-text\<open>
-During the build of this session, the code generated in the following subsections will be
-written to
-\<close>
-text_raw\<open>\verbatiminput{${ISABELLE_TMP}/self}\<close>
-
+  fun action ctxt (consts, (target, module)) =
+    Code_Target.produce_code ctxt false consts target module NONE []
+    |> fst
+    |> map (Bytes.content o snd) |> String.concatWith "\n"
+in
+  Document_Output.antiquotation_verbatim @{binding code} parser action
+end\<close>
+(*>*)
 
 subsection\<open>Haskell\<close>
 
-export_code main in Haskell file "$ISABELLE_TMP/exported_hs"
-
-text\<open>The generated helper module \<^file>\<open>$ISABELLE_TMP/exported_hs/StdIO.hs\<close> is shown below.\<close>
-text_raw\<open>\verbatiminput{$ISABELLE_TMP/exported_hs/StdIO.hs}\<close>
- 
-text\<open>The generated main file \<^file>\<open>$ISABELLE_TMP/exported_hs/HelloWorld.hs\<close> is shown below.\<close>
-text_raw\<open>\verbatiminput{$ISABELLE_TMP/exported_hs/HelloWorld.hs}\<close>
-
+text_raw\<open>@{code main in Haskell module_name HelloWorld}\<close>
 
 subsection\<open>SML\<close>
 
-export_code main in SML file "$ISABELLE_TMP/exported.sml"
-
-text\<open>The generated SML code in \<^file>\<open>$ISABELLE_TMP/exported.sml\<close> is shown below.\<close>
-text_raw\<open>\verbatiminput{$ISABELLE_TMP/exported.sml}\<close>
-
+text_raw\<open>@{code main in SML module_name HelloWorld}\<close>
 
 end
