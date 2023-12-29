@@ -11,9 +11,6 @@ sig
 
   include LIBRARY
 
-  (*functions*)
-  val flip : ('a -> 'b -> 'c) -> 'b -> 'a -> 'c
-  
   (*lists*)
   val list_of_pair : 'a * 'a -> 'a list
   val pair_of_list : 'a list -> 'a * 'a
@@ -32,10 +29,6 @@ structure Library: LIBRARY =
 struct
 
 open Library;
-
-(** functions **)
-
-fun flip f x y = f y x
 
 
 (** lists **)
