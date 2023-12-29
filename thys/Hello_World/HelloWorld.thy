@@ -44,9 +44,13 @@ end\<close>
 
 subsection\<open>Haskell\<close>
 
+text\<open>The generated code in Haskell (including the prelude) is shown below.\<close>
+
 text_raw\<open>@{code main in Haskell module_name HelloWorld}\<close>
 
 subsection\<open>SML\<close>
+
+text\<open>The generated code in SML (including the prelude) is shown below.\<close>
 
 text_raw\<open>@{code main in SML module_name HelloWorld}\<close>
 
