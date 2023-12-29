@@ -67,7 +67,7 @@ fun ntv_eq ((TVar (xi, _)), (TVar (xi', _))) = Term.eq_ix (xi, xi')
   | ntv_eq (_, _) = false;
 
 fun ex_eq_sorts_neq_ntvs thy =
-  let val sort_eqT = Sorts.sort_eq (Sign.classes_of thy) o apply2 Term.dest_atyp_sort in
+  let val sort_eqT = Sorts.sort_eq (Sign.classes_of thy) o apply2 Type.sort_of_atyp in
     partition_eq ntv_eq
     #> map (distinct sort_eqT)
     #> exists (fn xs => 1 < length xs)
