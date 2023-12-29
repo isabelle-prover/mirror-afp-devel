@@ -9,7 +9,6 @@ Isabelle/Pure.
 signature TERM =
 sig
   include TERM
-  val is_cv : term -> bool
   val sort_eqT : theory -> typ * typ -> bool
 end;
 
@@ -17,8 +16,6 @@ structure Term: TERM  =
 struct
 
 open Term;
-
-fun is_cv t = is_Const t orelse is_Var t
 
 fun sort_eqT thy (T, U) =
   let val algebra = Sign.classes_of thy

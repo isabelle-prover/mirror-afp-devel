@@ -344,7 +344,7 @@ fun sbtspec_input ctxt rispec sbtspec =
       orelse error msg_not_type_instance
       handle TYPE ("tv_of_ix", _, _) => error msg_not_type_instance
 
-    val _ = tbts |> map Term.is_cv |> List.all I 
+    val _ = tbts |> forall (fn t => is_Const t orelse is_Var t) 
       orelse error msg_tbts_not_cv
     val _ = tbts |> has_duplicates (op aconv) |> not
       orelse error msg_tbts_not_distinct
