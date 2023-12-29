@@ -152,7 +152,7 @@ fun mk_msg_def ctxt t = Syntax.string_of_term ctxt t ^ " is not a definition";
 fun check_def ctxt thm = 
   let
     val t = Thm.full_prop_of thm
-    val _ = (ctxt, t) |> #2 |> Logic.is_equals
+    val _ = can Logic.dest_equals t
       orelse error (mk_msg_def ctxt t |> mk_msg_ctr)
   in () end;
 

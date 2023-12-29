@@ -14,7 +14,6 @@ sig
   val varifyT_mixed_global : typ -> typ
   val varify_mixed_global : term -> term
   val unoverload_types_term : theory -> term -> term
-  val is_equals : term -> bool
 end
 
 structure Logic : LOGIC  =
@@ -144,10 +143,5 @@ fun unoverload_types_term thy t =
         val prems = drop (length prems - Logic.count_prems t') prems
       in Logic.list_implies (prems, Logic.strip_imp_concl t'') end
   in t'' end;
-
-
-(*equality*)
-fun is_equals (Const (\<^const_name>\<open>Pure.eq\<close>, _) $ _ $ _) = true
-  | is_equals _ = false;
 
 end;
