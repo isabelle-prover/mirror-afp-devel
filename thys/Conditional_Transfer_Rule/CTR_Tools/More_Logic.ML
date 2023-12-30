@@ -131,14 +131,14 @@ fun unoverload_types_term thy t =
     val t' = Term.map_const const_map_opt t
     val t'' =
       let                     
-        val ucontext = Logic.unconstrainT [] t' |> #1
+        val {unconstrain_typ, constraints, ...} = Logic.unconstrainT [] t' |> #1
+        val atyp_map = Same.commit (unconstrain_typ {strip_sorts = false})
         (*Ported from Pure/Logic.ML with amendments*)
-        val map_atyps = 
-          Term.map_atyps (Type.default_sorts thy o #atyp_map ucontext)
+        val map_atyps = Term.map_atyps (Type.default_sorts thy o atyp_map)
         (*Ported from Pure/Logic.ML with amendments*)
         val t'' = t'
           |> Term.map_types map_atyps
-          |> curry Logic.list_implies (map #2 (#constraints ucontext));
+          |> curry Logic.list_implies (map #2 constraints);
         val prems = Logic.strip_imp_prems t'
         val prems = drop (length prems - Logic.count_prems t') prems
       in Logic.list_implies (prems, Logic.strip_imp_concl t'') end
