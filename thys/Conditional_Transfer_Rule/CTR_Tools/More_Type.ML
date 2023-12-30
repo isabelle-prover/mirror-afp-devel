@@ -10,7 +10,7 @@ signature TYPE =
 sig
   include TYPE
   val typ_matches : tsig -> typ list * typ list -> tyenv -> tyenv
-  val default_sorts_of_empty_sorts : theory -> typ -> typ
+  val default_sorts_of_topsort : theory -> typ -> typ
   val default_sorts : theory -> typ -> typ
 end 
 
@@ -24,7 +24,7 @@ fun typ_matches tsig (T :: Ts, U :: Us) subs =
   | typ_matches _ ([], []) subs = subs
   | typ_matches _ _ _ = raise Type.TYPE_MATCH;
 
-fun default_sorts_of_empty_sorts thy = 
+fun default_sorts_of_topsort thy = 
   let val dS = Sign.defaultS thy
   in
     map_atyps

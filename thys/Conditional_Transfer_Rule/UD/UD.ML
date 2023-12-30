@@ -260,7 +260,7 @@ fun unoverload_definition (b, mixfix) (c, T) thy =
       |> map (Local_Defs.meta_rewrite_rule ctxt)
 
     val T' = T
-      |> Type.default_sorts_of_empty_sorts thy
+      |> Type.default_sorts_of_topsort thy
       |> Logic.varifyT_mixed_global
 
     val _ =
@@ -292,7 +292,7 @@ fun unoverload_definition (b, mixfix) (c, T) thy =
       in 
         cid
         |> Drule.instantiate_normalize insts
-        |> map_sorts ctxt Type.default_sorts_of_empty_sorts
+        |> map_sorts ctxt Type.default_sorts_of_topsort
         |> Local_Defs.unfold ctxt ud_thms
       end
 
