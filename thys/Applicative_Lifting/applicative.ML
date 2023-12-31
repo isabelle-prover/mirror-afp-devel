@@ -92,8 +92,7 @@ fun dest_comb_pattern ctxt tn u =
   let val (vars, (_, env)) = match_comb_pattern ctxt tn u;
   in map (the o Envir.lookup1 env) vars end;
 
-fun norm_term_types tyenv t = Term_Subst.map_types_same (Envir.norm_type_same tyenv) t
-  handle Same.SAME => t;
+val norm_term_types = Term.map_types o Envir.norm_type_same;
 
 val mk_TFrees_of = mk_TFrees' oo replicate;
 
