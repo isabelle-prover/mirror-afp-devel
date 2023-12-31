@@ -131,8 +131,8 @@ fun unoverload_types_term thy t =
     val t' = Term.map_const const_map_opt t
     val t'' =
       let                     
-        val {unconstrain_typ, constraints, ...} = Logic.unconstrainT [] t' |> #1
-        val atyp_map = Same.commit (unconstrain_typ {strip_sorts = false})
+        val {typ_operation, constraints, ...} = Logic.unconstrainT [] t' |> #1
+        val atyp_map = Same.commit (typ_operation {strip_sorts = false})
         val map_atyps = Term.map_atyps (Type.default_sorts thy o atyp_map)
         val t'' = t'
           |> Term.map_types map_atyps
