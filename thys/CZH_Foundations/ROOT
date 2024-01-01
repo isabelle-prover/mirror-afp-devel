@@ -6,7 +6,8 @@ session CZH_Foundations = ZFC_in_HOL +
     "HOL-Library"
     Intro_Dest_Elim
     Conditional_Simplification
-    "HOL-Eisbach"
+    Cardinality_Continuum
+    "HOL-Eisbach"    
   directories
     czh_introduction
     czh_sets
