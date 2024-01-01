@@ -25,8 +25,7 @@ open Logic;
 fun unvarify_types_local_factt ctxt ts = 
   let
     val stv_specs = ts
-      |> map (fn thmt => Term.add_tvars thmt [] |> rev)
-      |> flat
+      |> maps (fn thmt => Term.add_tvars thmt [] |> rev)
       |> distinct op=
     val ctxt' = fold Proof_Context.augment ts ctxt
     val (ftv_specs, _) = Variable.invent_types (map #2 stv_specs) ctxt'
@@ -48,8 +47,7 @@ fun unvarify_types_local_term ctxt t = t
 fun unvarify_local_factt ctxt ts =
   let
     val (ts, ctxt') = unvarify_types_local_factt ctxt ts
-    val sv_specs = map (fn thmt => Term.add_vars thmt [] |> rev) ts
-      |> flat 
+    val sv_specs = maps (fn thmt => Term.add_vars thmt [] |> rev) ts
       |> distinct op=
     val stvcs = sv_specs |> (#1 #> #1 |> map)
       |> Variable.variant_name_const ctxt'
@@ -113,9 +111,7 @@ end;
 fun unoverload_types_term thy t =
   let
     val sort_consts = Term.add_tvars t []
-      |> map #2
-      |> map (Sorts.params_of_sort thy)
-      |> flat
+      |> maps (Sorts.params_of_sort thy o #2)
       |> distinct op=
     val const_map = Term.add_consts t []
       |> distinct op=
