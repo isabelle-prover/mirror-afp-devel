@@ -24,6 +24,28 @@ ML_file\<open>unification_hints.ML\<close>
 ML_file\<open>term_index_unification_hints.ML\<close>
 
 ML\<open>
+  @{functor_instance struct_name = Standard_Unification_Hints_Rec
+    and functor_name = Term_Index_Unification_Hints
+    and id = \<open>"rec"\<close>
+    and more_args = \<open>
+      structure TI = Discrimination_Tree
+      val init_args = {
+        concl_unifier = SOME Standard_Mixed_Unification.first_higherp_first_comb_higher_unify,
+        prems_unifier = SOME (Standard_Mixed_Unification.first_higherp_first_comb_higher_unify
+          |> Unification_Combinator.norm_unifier Envir_Normalisation.beta_norm_term_unif),
+        normalisers = SOME Standard_Mixed_Unification.norms_first_higherp_first_comb_higher_unify,
+        retrieval = SOME (Term_Index_Unification_Hints_Args.mk_sym_retrieval
+          TI.norm_term TI.unifiables),
+        hint_preprocessor = SOME (K I)
+      }\<close>}
+\<close>
+local_setup \<open>Standard_Unification_Hints_Rec.setup_attribute NONE\<close>
+
+text\<open>Standard unification hints using
+@{ML Standard_Mixed_Unification.first_higherp_first_comb_higher_unify}
+when looking for hints are accessible via @{attribute rec_uhint}.\<close>
+
+ML\<open>
   @{functor_instance struct_name = Standard_Unification_Hints
     and functor_name = Term_Index_Unification_Hints
     and id = \<open>""\<close>
@@ -31,9 +53,9 @@ ML\<open>
       structure TI = Discrimination_Tree
       val init_args = {
         concl_unifier = SOME Higher_Ordern_Pattern_First_Decomp_Unification.unify,
-        normalisers = SOME Standard_Mixed_Unification.norms_first_higherp_first_comb_higher_unify,
         prems_unifier = SOME (Standard_Mixed_Unification.first_higherp_first_comb_higher_unify
           |> Unification_Combinator.norm_unifier Envir_Normalisation.beta_norm_term_unif),
+        normalisers = SOME Standard_Mixed_Unification.norms_first_higherp_first_comb_higher_unify,
         retrieval = SOME (Term_Index_Unification_Hints_Args.mk_sym_retrieval
           TI.norm_term TI.unifiables),
         hint_preprocessor = SOME (K I)
@@ -41,14 +63,24 @@ ML\<open>
 \<close>
 local_setup \<open>Standard_Unification_Hints.setup_attribute NONE\<close>
 
-text\<open>Standard unification hints are accessible via @{attribute uhint}.\<close>
+text\<open>Standard unification hints using @{ML Higher_Ordern_Pattern_First_Decomp_Unification.unify}
+when looking for hints are accessible via @{attribute uhint}. Note: there will be no recursive
+usage of unification hints when searching for potential unification hints in this case. See also
+@{file "../Examples/E_Unification_Examples.thy"}\<close>
 
 declare [[ucombine add = \<open>Standard_Unification_Combine.eunif_data
+  (Standard_Unification_Hints_Rec.try_hints
+  |> Unification_Combinator.norm_unifier
+    (#norm_term Standard_Mixed_Unification.norms_first_higherp_first_comb_higher_unify)
+  |> K)
+  (Standard_Unification_Combine.default_metadata Standard_Unification_Hints_Rec.binding)\<close>]]
+and [[ucombine add = \<open>Standard_Unification_Combine.eunif_data
   (Standard_Unification_Hints.try_hints
   |> Unification_Combinator.norm_unifier
     (#norm_term Standard_Mixed_Unification.norms_first_higherp_first_comb_higher_unify)
   |> K)
   (Standard_Unification_Combine.default_metadata Standard_Unification_Hints.binding)\<close>]]
+
 
 text\<open>Examples see @{dir "../Examples"}.\<close>
 

@@ -16,8 +16,8 @@ in @{theory ML_Unification.ML_Unification_Hints}.\<close>
 subsection \<open>Setup\<close>
 
 text \<open>One-time setup to obtain a unifier with unification hints for the purpose of reification.
-We could also simply use the standard unification hints @{attribute uhint},
-but having separate instances is a cleaner approach.\<close>
+We could also simply use the standard unification hints @{attribute uhint} and
+@{attribute rec_uhint}, but having separate instances is a cleaner approach.\<close>
 
 ML\<open>
   @{functor_instance struct_name = Reification_Unification_Hints
@@ -26,11 +26,11 @@ ML\<open>
     and more_args = \<open>
       structure TI = Discrimination_Tree
       val init_args = {
+        concl_unifier = NONE,
+        prems_unifier = NONE,
         normalisers = SOME Higher_Order_Pattern_Unification.norms_unify,
         retrieval = SOME (Term_Index_Unification_Hints_Args.mk_sym_retrieval
           TI.norm_term TI.unifiables),
-        prems_unifier = NONE,
-        concl_unifier = NONE,
         hint_preprocessor = SOME (Standard_Unification_Hints.get_hint_preprocessor
           (Context.the_generic_context ()))
       }\<close>}
@@ -137,6 +137,7 @@ lemma [reify_uhint]:
 schematic_goal
   "interp ?f (?vs :: ('a :: ord) list) = (\<exists>(x :: 'a). x < y \<and> \<not>(\<exists>(z :: 'a). v < z \<or> \<not>False))"
   by (urule refl where unifier = reify_unify)
+
 end
 
 text \<open>The next examples are modification from \<^cite>\<open>"unif-hints"\<close>.\<close>
@@ -195,8 +196,8 @@ lemma [reify_uhint]: "e \<equiv> Var 0 \<Longrightarrow> \<Gamma> \<equiv> n # \
 
 lemma [reify_uhint]:
   "e1 \<equiv> Inv e2 \<Longrightarrow> n \<equiv> eval_mul_expr (e2, \<Gamma>) \<Longrightarrow> eval_mul_expr (e1, \<Gamma>) \<equiv> inverse n"
-  "e \<equiv> Mul e1 e2 \<Longrightarrow> m \<equiv> eval_mul_expr (e1, \<Gamma>) \<Longrightarrow>
-  n \<equiv> eval_mul_expr (e2, \<Gamma>) \<Longrightarrow> eval_mul_expr (e, \<Gamma>) \<equiv> m * n"
+  "e \<equiv> Mul e1 e2 \<Longrightarrow> m \<equiv> eval_mul_expr (e1, \<Gamma>) \<Longrightarrow> n \<equiv> eval_mul_expr (e2, \<Gamma>) \<Longrightarrow>
+    eval_mul_expr (e, \<Gamma>) \<equiv> m * n"
   "e \<equiv> Unit \<Longrightarrow> eval_mul_expr (e, \<Gamma>) \<equiv> 1"
   by simp_all
 

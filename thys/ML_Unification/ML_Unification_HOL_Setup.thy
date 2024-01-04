@@ -9,6 +9,8 @@ begin
 lemma eq_eq_True: "P \<equiv> (P \<equiv> Trueprop True)" by standard+ simp_all
 declare [[uhint where hint_preprocessor = \<open>Unification_Hints_Base.obj_logic_hint_preprocessor
   @{thm atomize_eq[symmetric]} (Conv.rewr_conv @{thm eq_eq_True})\<close>]]
+and [[rec_uhint where hint_preprocessor = \<open>Unification_Hints_Base.obj_logic_hint_preprocessor
+  @{thm atomize_eq[symmetric]} (Conv.rewr_conv @{thm eq_eq_True})\<close>]]
 
 lemma eq_TrueI: "PROP P \<Longrightarrow> PROP P \<equiv> Trueprop True" by (standard) simp
 declare [[ucombine add = \<open>Standard_Unification_Combine.eunif_data

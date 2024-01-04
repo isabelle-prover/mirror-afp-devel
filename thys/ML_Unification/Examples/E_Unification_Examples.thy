@@ -13,7 +13,6 @@ text \<open>Sample applications of e-unifiers, methods, etc. introduced in this 
 experiment
 begin
 
-
 subsection \<open>Using The Simplifier For Unification.\<close>
 
 inductive_set even :: "nat set" where
@@ -66,12 +65,12 @@ lemma
 
 subsection \<open>Providing Canonical Solutions With Unification Hints\<close>
 
-lemma [uhint]: "xs \<equiv> [] \<Longrightarrow> length xs \<equiv> 0" by simp
+lemma [uhint]: "length [] \<equiv> 0" by simp
 
 schematic_goal "length ?xs = 0"
   by (ufact refl)
 
-lemma [uhint]: "(n :: nat) \<equiv> m \<Longrightarrow> n - m \<equiv> 0" by simp
+lemma sub_self_eq_zero [uhint]: "(n :: nat) - n \<equiv> 0" by simp
 
 schematic_goal "n - ?m = (0 :: nat)"
   by (ufact refl)
@@ -85,12 +84,13 @@ schematic_goal "n - ?m = length []"
   oops
 
 text \<open>There are two ways to fix this:
-\<^enum> We allow the recursive uses of unification hints when searching for suitable unification hints.
-\<^enum> We use a different unification hint that the recursive use of hints explicit.\<close>
+\<^enum> We allow the recursive use of unification hints when unifying @{thm sub_self_eq_zero} and our goal.
+\<^enum> We use a different unification hint that makes the recursive use of unification hints explicit.\<close>
 
-text \<open>Solution 1: recursive usages of hints. Warning: such recursive applications easily loop.\<close>
+text \<open>Solution 1: we can use @{attribute rec_uhint} for recursive usages of hints.
+Warning: recursive applications easily loop.\<close>
 schematic_goal "n - ?m = length []"
-  using [[uhint where concl_unifier = Standard_Mixed_Unification.first_higherp_first_comb_higher_unify]]
+  supply sub_self_eq_zero[rec_uhint]
   by (ufact refl)
 
 text \<open>Solution 2: make the recursion explicit in the hint.\<close>
