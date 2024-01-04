@@ -145,7 +145,7 @@ lemma restrict_left_Dep_Fun_Rel_rel_restrict_left_eq:
   and P :: "'a1 \<Rightarrow> 'a2 \<Rightarrow> 'b1 \<Rightarrow> bool"
   assumes "\<And>f x y. Q f \<Longrightarrow> R x y \<Longrightarrow> P x y (f x)"
   shows "([x y \<Colon> R] \<Rrightarrow> (S x y)\<restriction>\<^bsub>P x y\<^esub>)\<restriction>\<^bsub>Q\<^esub> = ([x y \<Colon> R] \<Rrightarrow> S x y)\<restriction>\<^bsub>Q\<^esub>"
-  using assms by (intro ext iffI restrict_leftI Dep_Fun_Rel_relI)
+  using assms by (intro ext iffI bin_rel_restrict_leftI Dep_Fun_Rel_relI)
   (auto dest!: Dep_Fun_Rel_relD)
 
 lemma restrict_right_Dep_Fun_Rel_rel_restrict_right_eq:
@@ -154,7 +154,7 @@ lemma restrict_right_Dep_Fun_Rel_rel_restrict_right_eq:
   and P :: "'a1 \<Rightarrow> 'a2 \<Rightarrow> 'b2 \<Rightarrow> bool"
   assumes "\<And>f x y. Q f \<Longrightarrow> R x y \<Longrightarrow> P x y (f y)"
   shows "(([x y \<Colon> R] \<Rrightarrow> (S x y)\<upharpoonleft>\<^bsub>P x y\<^esub>)\<upharpoonleft>\<^bsub>Q\<^esub>) = (([x y \<Colon> R] \<Rrightarrow> S x y)\<upharpoonleft>\<^bsub>Q\<^esub>)"
-  unfolding restrict_right_eq
+  unfolding bin_rel_restrict_right_eq
   using assms restrict_left_Dep_Fun_Rel_rel_restrict_left_eq[where ?R="R\<inverse>"
     and ?S="\<lambda>y x. (S x y)\<inverse>"]
   by simp

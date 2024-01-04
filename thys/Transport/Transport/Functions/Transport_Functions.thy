@@ -83,7 +83,8 @@ theorem partial_equivalence_rel_equivalenceI:
   and "([x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>)] \<Rrightarrow>\<^sub>m [x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x2 \<^bsub>L1\<^esub>\<lessapprox> x1'] \<Rrightarrow>
     [in_field (\<le>\<^bsub>R2 (l1 x1) x2'\<^esub>)] \<Rrightarrow> (\<le>\<^bsub>L2 x1 (r1 x2')\<^esub>)) r2"
   shows "((\<le>\<^bsub>L\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R\<^esub>)) l r"
-  using assms by (intro partial_equivalence_rel_equivalence_if_galois_equivalenceI
+  using assms
+  by (intro partial_equivalence_rel_equivalence_if_galois_equivalenceI
     galois_equivalence_if_mono_if_preorder_equivalenceI'
     tdfr.transitive_left2_if_preorder_equivalenceI
     tdfr.transitive_right2_if_preorder_equivalenceI
@@ -91,7 +92,6 @@ theorem partial_equivalence_rel_equivalenceI:
     tdfr.partial_equivalence_rel_left2_if_partial_equivalence_rel_equivalenceI
     tdfr.partial_equivalence_rel_right2_if_partial_equivalence_rel_equivalenceI)
   auto
-
 
 subparagraph \<open>Simplification of Left and Right Relations\<close>
 

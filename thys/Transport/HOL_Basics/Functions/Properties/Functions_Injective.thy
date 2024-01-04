@@ -26,10 +26,9 @@ lemma injective_onD:
   shows "x = x'"
   using assms unfolding injective_on_pred_def by blast
 
-definition "injective (f :: 'a \<Rightarrow> _) \<equiv> injective_on (\<top> :: 'a \<Rightarrow> bool) f"
+definition "(injective :: ('a \<Rightarrow> _) \<Rightarrow> _) \<equiv> injective_on (\<top> :: 'a \<Rightarrow> bool)"
 
-lemma injective_eq_injective_on:
-  "injective (f :: 'a \<Rightarrow> _) = injective_on (\<top> :: 'a \<Rightarrow> bool) f"
+lemma injective_eq_injective_on: "(injective :: ('a \<Rightarrow> _) \<Rightarrow> _) = injective_on (\<top> :: 'a \<Rightarrow> bool)"
   unfolding injective_def ..
 
 lemma injectiveI [intro]:

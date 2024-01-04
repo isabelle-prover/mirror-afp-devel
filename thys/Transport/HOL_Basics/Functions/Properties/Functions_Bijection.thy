@@ -9,8 +9,7 @@ begin
 consts bijection_on :: "'a \<Rightarrow> 'b \<Rightarrow> ('c \<Rightarrow> 'd) \<Rightarrow> ('d \<Rightarrow> 'c) \<Rightarrow> bool"
 
 overloading
-  bijection_on_pred \<equiv> "bijection_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> bool) \<Rightarrow>
-    ('a \<Rightarrow> 'b) \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> bool"
+  bijection_on_pred \<equiv> "bijection_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> bool"
 begin
   definition "bijection_on_pred P P' f g \<equiv>
     ([P] \<Rrightarrow>\<^sub>m P') f \<and>
@@ -104,10 +103,10 @@ lemma injective_on_if_bijection_on_right:
 end
 
 
-definition "bijection (f :: 'a \<Rightarrow> 'b) \<equiv> bijection_on (\<top> :: 'a \<Rightarrow> bool) (\<top> :: 'b \<Rightarrow> bool) f"
+definition "(bijection :: ('a \<Rightarrow> 'b) \<Rightarrow> _) \<equiv> bijection_on (\<top> :: 'a \<Rightarrow> bool) (\<top> :: 'b \<Rightarrow> bool)"
 
 lemma bijection_eq_bijection_on:
-  "bijection (f :: 'a \<Rightarrow> 'b) = bijection_on (\<top> :: 'a \<Rightarrow> bool) (\<top> :: 'b \<Rightarrow> bool) f"
+  "(bijection :: ('a \<Rightarrow> 'b) \<Rightarrow> _) = bijection_on (\<top> :: 'a \<Rightarrow> bool) (\<top> :: 'b \<Rightarrow> bool)"
   unfolding bijection_def ..
 
 lemma bijectionI [intro]:

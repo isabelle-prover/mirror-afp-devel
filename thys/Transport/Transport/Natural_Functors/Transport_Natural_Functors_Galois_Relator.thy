@@ -28,14 +28,14 @@ lemma Frel_left_Galois_le_left_Galois:
     t2.left_Galois_iff_in_codom_and_left_rel_right
     t3.left_Galois_iff_in_codom_and_left_rel_right)
   apply (fold
-    restrict_right_eq[of "\<lambda>x y. x \<le>\<^bsub>L1\<^esub> r1 y" "in_codom (\<le>\<^bsub>R1\<^esub>)",
-      unfolded restrict_left_pred_def rel_inv_iff_rel]
-    restrict_right_eq[of "\<lambda>x y. x \<le>\<^bsub>L2\<^esub> r2 y" "in_codom (\<le>\<^bsub>R2\<^esub>)",
-      unfolded restrict_left_pred_def rel_inv_iff_rel]
-    restrict_right_eq[of "\<lambda>x y. x \<le>\<^bsub>L3\<^esub> r3 y" "in_codom (\<le>\<^bsub>R3\<^esub>)",
-      unfolded restrict_left_pred_def rel_inv_iff_rel])
+    bin_rel_restrict_right_eq[of "\<lambda>x y. x \<le>\<^bsub>L1\<^esub> r1 y" "in_codom (\<le>\<^bsub>R1\<^esub>)",
+      unfolded bin_rel_restrict_left_pred_def rel_inv_iff_rel]
+    bin_rel_restrict_right_eq[of "\<lambda>x y. x \<le>\<^bsub>L2\<^esub> r2 y" "in_codom (\<le>\<^bsub>R2\<^esub>)",
+      unfolded bin_rel_restrict_left_pred_def rel_inv_iff_rel]
+    bin_rel_restrict_right_eq[of "\<lambda>x y. x \<le>\<^bsub>L3\<^esub> r3 y" "in_codom (\<le>\<^bsub>R3\<^esub>)",
+      unfolded bin_rel_restrict_left_pred_def rel_inv_iff_rel])
   apply (subst (asm) Frel_restrict_right_Fpred_eq_Frel_restrict_right[symmetric])
-  apply (erule restrict_rightE)
+  apply (erule bin_rel_restrict_rightE)
   apply (subst (asm) in_codom_Frel_eq_Fpred_in_codom[symmetric])
   apply (erule in_codomE)
   apply (rule left_GaloisI)

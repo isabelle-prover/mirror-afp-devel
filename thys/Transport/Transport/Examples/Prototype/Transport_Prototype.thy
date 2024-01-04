@@ -122,9 +122,9 @@ ML\<open>
       structure TI = Discrimination_Tree
       val init_args = {
         concl_unifier = SOME Higher_Order_Pattern_Unification.unify,
-        normalisers = SOME Transport_Mixed_Unification.norms_first_higherp_first_comb_higher_unify,
         prems_unifier = SOME (Transport_Mixed_Unification.first_higherp_first_comb_higher_unify
           |> Unification_Combinator.norm_unifier Envir_Normalisation.beta_norm_term_unif),
+        normalisers = SOME Transport_Mixed_Unification.norms_first_higherp_first_comb_higher_unify,
         retrieval = SOME (Term_Index_Unification_Hints_Args.mk_sym_retrieval
           TI.norm_term TI.unifiables),
         hint_preprocessor = SOME (K I)

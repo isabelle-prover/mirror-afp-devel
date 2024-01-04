@@ -348,8 +348,8 @@ lemma Fpred_mono_strong:
   apply (unfold Fpred_def)
   apply (rule Frel_mono_strong,
     assumption;
-    erule restrict_leftE,
-    rule restrict_leftI,
+    erule bin_rel_restrict_leftE,
+    rule bin_rel_restrict_leftI,
     assumption,
     rule assms,
     assumption+)
@@ -358,7 +358,7 @@ lemma Fpred_mono_strong:
 lemma Fpred_top: "Fpred \<top> \<top> \<top> x"
   apply (subst Fpred_def)
   apply (rule Frel_refl_strong;
-    subst restrict_left_top_eq,
+    subst bin_rel_restrict_left_top_eq,
     rule refl)
   done
 
@@ -384,7 +384,7 @@ lemma FpredE:
     drule rev_subsetD,
     rule Domain_mono,
     assumption,
-    unfold Domain_Collect_case_prod_eq_Collect_in_dom in_dom_restrict_left_eq,
+    unfold Domain_Collect_case_prod_eq_Collect_in_dom in_dom_bin_rel_restrict_left_eq,
     elim CollectE inf1E,
     assumption))
 
@@ -400,11 +400,11 @@ lemma Fpred_Fmap_eq:
     hypsubst,
     unfold Frel_Fmap_eqs,
     rule Frel_refl_strong;
-    rule restrict_leftI,
+    rule bin_rel_restrict_leftI,
     rule refl,
     drule rev_subsetD,
     assumption,
-    elim CollectE case_prodE restrict_leftE,
+    elim CollectE case_prodE bin_rel_restrict_leftE,
     hypsubst,
     unfold comp_eq fst_conv,
     assumption)
@@ -480,22 +480,22 @@ lemma Frel_restrict_left_Fpred_eq_Frel_restrict_left:
     Frel (R1\<restriction>\<^bsub>P1\<^esub>) (R2\<restriction>\<^bsub>P2\<^esub>) (R3\<restriction>\<^bsub>P3\<^esub>)"
   apply (intro ext)
   apply (rule iffI)
-    apply (erule restrict_leftE)
+    apply (erule bin_rel_restrict_leftE)
     apply (elim FpredE)
     apply (rule Frel_mono_strong,
       assumption;
-      rule restrict_leftI,
+      rule bin_rel_restrict_leftI,
       assumption+)
-    apply (rule restrict_leftI)
+    apply (rule bin_rel_restrict_leftI)
       apply (rule Frel_mono_strong,
         assumption;
-        erule restrict_leftE,
+        erule bin_rel_restrict_leftE,
         assumption)
       apply (drule in_domI[of "Frel (R1\<restriction>\<^bsub>P1\<^esub>) (R2\<restriction>\<^bsub>P2\<^esub>) (R3\<restriction>\<^bsub>P3\<^esub>)"])
       apply (drule Fpred_in_dom_if_in_dom_Frel)
       apply (rule Fpred_mono_strong,
         assumption;
-        unfold in_dom_restrict_left_eq inf_apply inf_bool_def;
+        unfold in_dom_bin_rel_restrict_left_eq inf_apply inf_bool_def;
         rule conjunct2,
         assumption)
   done
@@ -509,11 +509,11 @@ lemma Frel_restrict_right_Fpred_eq_Frel_restrict_right:
   and P3 :: "'c2 \<Rightarrow> bool"
   shows "(Frel R1 R2 R3 :: _ \<Rightarrow> ('d, 'a2, 'b2, 'c2) F \<Rightarrow> _)\<upharpoonleft>\<^bsub>Fpred P1 P2 P3 :: ('d, 'a2, 'b2, 'c2) F \<Rightarrow> _\<^esub> =
     Frel (R1\<upharpoonleft>\<^bsub>P1\<^esub>) (R2\<upharpoonleft>\<^bsub>P2\<^esub>) (R3\<upharpoonleft>\<^bsub>P3\<^esub>)"
-  apply (subst restrict_right_eq)
+  apply (subst bin_rel_restrict_right_eq)
   apply (subst Frel_rel_inv_eq_rel_inv_Frel[symmetric])
   apply (subst Frel_restrict_left_Fpred_eq_Frel_restrict_left)
   apply (subst Frel_rel_inv_eq_rel_inv_Frel[symmetric])
-  apply (fold restrict_right_eq)
+  apply (fold bin_rel_restrict_right_eq)
   apply (rule refl)
   done
 

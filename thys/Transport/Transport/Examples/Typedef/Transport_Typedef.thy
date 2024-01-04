@@ -31,10 +31,10 @@ lemma [trp_relator_rewrite, trp_uhint]:
   using typedef_fset.left_Galois_eq_AR by (intro eq_reflection) simp
 
 lemma eq_restrict_set_eq_eq_uhint [trp_uhint]:
-  "P \<equiv> \<lambda>x. x \<in> A \<Longrightarrow> ((=\<^bsub>A :: 'a set\<^esub>) :: 'a \<Rightarrow> _) \<equiv> (=\<^bsub>P\<^esub>)"
-  by simp
+  "(\<And>x. P x \<equiv> x \<in> A) \<Longrightarrow> ((=\<^bsub>A :: 'a set\<^esub>) :: 'a \<Rightarrow> _) \<equiv> (=\<^bsub>P\<^esub>)"
+  by (intro eq_reflection) (auto simp: fun_eq_iff)
 
-(*could also automatically tagged for every instance in type_definition*)
+(*could also automatically be tagged for every instance of type_definition*)
 declare
   typedef_pint.partial_equivalence_rel_equivalence[per_intro]
   typedef_fset.partial_equivalence_rel_equivalence[per_intro]
@@ -47,7 +47,7 @@ trp_term pint_one :: "pint" where x = "1 :: int"
 
 lemma add_parametric [trp_in_dom]:
   "(typedef_pint.L \<Rrightarrow> typedef_pint.L \<Rrightarrow> typedef_pint.L) (+) (+)"
-  by (intro Dep_Fun_Rel_relI) (auto intro!: eq_restrictI elim!: eq_restrictE)
+  by (intro Dep_Fun_Rel_relI) fastforce
 
 trp_term pint_add :: "pint \<Rightarrow> pint \<Rightarrow> pint"
   where x = "(+) :: int \<Rightarrow> _"

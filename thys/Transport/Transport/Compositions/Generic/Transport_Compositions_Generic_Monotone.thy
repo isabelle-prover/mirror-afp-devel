@@ -25,7 +25,7 @@ proof (rule dep_mono_wrt_relI)
     assume "in_codom (\<le>\<^bsub>L2\<^esub>) (l1 x')"
     with inflationary_unit2 show "l1 x' \<le>\<^bsub>L2\<^esub> r2 (l x')" by auto
     from \<open>in_codom (\<le>\<^bsub>L2\<^esub>) (l1 x')\<close> \<open>((\<le>\<^bsub>L2\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R2\<^esub>)) l2\<close>
-      show "in_codom (\<le>\<^bsub>R2\<^esub>) (l x')" by auto
+      show "in_codom (\<le>\<^bsub>R2\<^esub>) (l x')" by fastforce
   qed (insert assms, auto)
 qed
 

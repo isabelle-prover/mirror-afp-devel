@@ -202,12 +202,12 @@ proof -
   have "([x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>)] \<Rrightarrow>\<^sub>m [x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x2 \<^bsub>L1\<^esub>\<lessapprox> x1'] \<Rrightarrow>
     [in_field (\<le>\<^bsub>L2 x1 (r1 x2')\<^esub>)] \<Rrightarrow> (\<le>\<^bsub>R2 (l1 x1) x2'\<^esub>)) (\<lambda>_ _. l2)"
     by (intro dep_mono_wrt_relI Dep_Fun_Rel_relI Dep_Fun_Rel_predI rel_if_if_impI)
-    (auto 8 0 dest!: per2I)
+    (auto 10 0 dest!: per2I)
   moreover have
     "([x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>)] \<Rrightarrow>\<^sub>m [x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x2 \<^bsub>L1\<^esub>\<lessapprox> x1'] \<Rrightarrow>
     [in_field (\<le>\<^bsub>R2 (l1 x1) x2'\<^esub>)] \<Rrightarrow> (\<le>\<^bsub>L2 x1 (r1 x2')\<^esub>)) (\<lambda>_ _. r2)"
     by (intro dep_mono_wrt_relI Dep_Fun_Rel_relI Dep_Fun_Rel_predI rel_if_if_impI)
-    (auto 8 0 dest!: per2I)
+    (auto 10 0 dest!: per2I)
   ultimately show ?thesis
     using assms by (intro tdfr.partial_equivalence_rel_equivalenceI) auto
 qed

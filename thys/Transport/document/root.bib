@@ -1,11 +1,14 @@
-@misc{transport,
-  title={{Transport via Partial Galois Connections and Equivalences}},
-  author={{Kevin Kappelmann}},
-  year={2023},
-  eprint={2303.05244},
-  archivePrefix={arXiv},
-  primaryClass={cs.PL},
-  doi={10.48550/arXiv.2303.05244}
+@InProceedings{transport,
+  author="Kappelmann, Kevin",
+  editor="Hur, Chung-Kil",
+  title="Transport via Partial Galois Connections and Equivalences",
+  booktitle="Programming Languages and Systems",
+  year="2023",
+  publisher="Springer Nature Singapore",
+  address="Singapore",
+  pages="225--245",
+  abstract="Multiple types can represent the same concept. For example, lists and trees can both represent sets. Unfortunately, this easily leads to incomplete libraries: some set-operations may only be available on lists, others only on trees. Similarly, subtypes and quotients are commonly used to construct new type abstractions in formal verification. In such cases, one often wishes to reuse operations on the representation type for the new type abstraction, but to no avail: the types are not the same. To address these problems, we present a new framework that transports programs via equivalences. Existing transport frameworks are either designed for dependently typed, constructive proof assistants, use univalence, or are restricted to partial quotient types. Our framework (1) is designed for simple type theory, (2) generalises previous approaches working on partial quotient types, and (3) is based on standard mathematical concepts, particularly Galois connections and equivalences. We introduce the notions of partial Galois connection and equivalence and prove their closure properties under (dependent) function relators, (co)datatypes, and compositions. We formalised the framework in Isabelle/HOL and provide a prototype.",
+  isbn="978-981-99-8311-7"
 }
 
 @inproceedings{lifting,

@@ -25,7 +25,7 @@ lemma rel_surjective_atE [elim]:
   obtains x where "R x y"
   using assms unfolding rel_surjective_at_pred_def by blast
 
-lemma in_codom_if_rel_surjective_at_on:
+lemma in_codom_if_rel_surjective_at:
   assumes "rel_surjective_at P R"
   and "P y"
   shows "in_codom R y"
@@ -39,10 +39,10 @@ lemma left_total_on_rel_inv_iff_rel_surjective_at [iff]:
   "left_total_on (P :: 'a \<Rightarrow> bool) (R\<inverse> :: 'a \<Rightarrow> 'b \<Rightarrow> bool) \<longleftrightarrow> rel_surjective_at P R"
   by fast
 
-definition "rel_surjective (R :: _ \<Rightarrow> 'a \<Rightarrow> _) \<equiv> rel_surjective_at (\<top> :: 'a \<Rightarrow> bool) R"
+definition "(rel_surjective :: (_ \<Rightarrow> 'a \<Rightarrow> _) \<Rightarrow> _) \<equiv> rel_surjective_at (\<top> :: 'a \<Rightarrow> bool)"
 
 lemma rel_surjective_eq_rel_surjective_at:
-  "rel_surjective (R :: _ \<Rightarrow> 'a \<Rightarrow> _) = rel_surjective_at (\<top> :: 'a \<Rightarrow> bool) R"
+  "(rel_surjective :: (_ \<Rightarrow> 'a \<Rightarrow> _) \<Rightarrow> _) = rel_surjective_at (\<top> :: 'a \<Rightarrow> bool)"
   unfolding rel_surjective_def ..
 
 lemma rel_surjectiveI:
@@ -56,7 +56,7 @@ lemma rel_surjectiveE:
   using assms unfolding rel_surjective_eq_rel_surjective_at
   by (blast intro: top1I)
 
-lemma in_codom_if_rel_surjective_at:
+lemma in_codom_if_rel_surjective:
   assumes "rel_surjective R"
   shows "in_codom R y"
   using assms by (blast elim: rel_surjectiveE)
@@ -73,7 +73,7 @@ lemma rel_surjective_at_if_surjective:
   fixes P :: "'a \<Rightarrow> bool" and R :: "_ \<Rightarrow> 'a \<Rightarrow> _"
   assumes "rel_surjective R"
   shows "rel_surjective_at P R"
-  using assms by (intro rel_surjective_atI) (blast dest: in_codom_if_rel_surjective_at)
+  using assms by (intro rel_surjective_atI) (blast dest: in_codom_if_rel_surjective)
 
 
 end

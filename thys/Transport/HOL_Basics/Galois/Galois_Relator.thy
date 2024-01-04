@@ -64,7 +64,7 @@ lemma left_Galois_left_if_left_relI:
   and "x \<le>\<^bsub>L\<^esub> x'"
   shows "x \<^bsub>L\<^esub>\<lessapprox> l x'"
   using assms
-  by (intro left_Galois_if_Galois_right_if_half_galois_prop_right) auto
+  by (intro left_Galois_if_Galois_right_if_half_galois_prop_right) (auto 5 0)
 
 corollary left_Galois_left_if_reflexive_on_if_half_galois_prop_rightI:
   assumes "((\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R\<^esub>)) l"
@@ -115,7 +115,7 @@ lemma left_Galois_if_right_rel_if_left_GaloisI:
   and "x \<^bsub>L\<^esub>\<lessapprox> y"
   and "y \<le>\<^bsub>R\<^esub> z"
   shows "x \<^bsub>L\<^esub>\<lessapprox> z"
-  using assms by (intro left_GaloisI) auto
+  using assms by (intro left_GaloisI) (auto 5 0)
 
 lemma left_Galois_if_left_Galois_if_left_relI:
   assumes "transitive (\<le>\<^bsub>L\<^esub>)"
@@ -135,7 +135,7 @@ lemma left_rel_if_right_Galois_if_left_GaloisI:
 lemma Dep_Fun_Rel_left_Galois_right_Galois_if_mono_wrt_rel [intro]:
   assumes "((\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R\<^esub>)) l"
   shows "((\<^bsub>L\<^esub>\<lessapprox>) \<Rrightarrow> (\<^bsub>R\<^esub>\<lessapprox>)) l r"
-  using assms by auto
+  using assms by blast
 
 lemma left_ge_Galois_eq_left_Galois_if_in_codom_eq_in_dom_if_symmetric:
   assumes "symmetric (\<le>\<^bsub>L\<^esub>)"

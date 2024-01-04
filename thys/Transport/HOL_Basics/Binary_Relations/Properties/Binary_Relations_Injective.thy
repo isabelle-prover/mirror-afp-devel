@@ -48,10 +48,10 @@ lemma rel_injective_atD:
   using assms unfolding rel_injective_at_pred_def by blast
 
 
-definition "rel_injective (R :: 'a \<Rightarrow> _) \<equiv> rel_injective_on (\<top> :: 'a \<Rightarrow> bool) R"
+definition "(rel_injective :: ('a \<Rightarrow> _) \<Rightarrow> _) \<equiv> rel_injective_on (\<top> :: 'a \<Rightarrow> bool)"
 
 lemma rel_injective_eq_rel_injective_on:
-  "rel_injective (R :: 'a \<Rightarrow> _) = rel_injective_on (\<top> :: 'a \<Rightarrow> bool) R"
+  "(rel_injective :: ('a \<Rightarrow> _) \<Rightarrow> _) = rel_injective_on (\<top> :: 'a \<Rightarrow> bool)"
   unfolding rel_injective_def ..
 
 lemma rel_injectiveI [intro]:

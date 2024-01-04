@@ -40,10 +40,10 @@ lemma symmetric_on_if_le_pred_if_symmetric_on:
   shows "symmetric_on P' R"
   using assms by (blast dest: symmetric_onD)
 
-definition "symmetric (R :: 'a \<Rightarrow> _) \<equiv> symmetric_on (\<top> :: 'a \<Rightarrow> bool) R"
+definition "(symmetric :: ('a \<Rightarrow> _) \<Rightarrow> _) \<equiv> symmetric_on (\<top> :: 'a \<Rightarrow> bool)"
 
 lemma symmetric_eq_symmetric_on:
-  "symmetric (R :: 'a \<Rightarrow> _) = symmetric_on (\<top> :: 'a \<Rightarrow> bool) R"
+  "(symmetric :: ('a \<Rightarrow> _) \<Rightarrow> _) = symmetric_on (\<top> :: 'a \<Rightarrow> bool)"
   unfolding symmetric_def ..
 
 lemma symmetricI [intro]:

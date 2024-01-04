@@ -25,10 +25,10 @@ lemma irreflexive_onD [dest]:
   shows "\<not>(R x x)"
   using assms unfolding irreflexive_on_pred_def by blast
 
-definition "irreflexive (R :: 'a \<Rightarrow> _) \<equiv> irreflexive_on (\<top> :: 'a \<Rightarrow> bool) R"
+definition "(irreflexive :: ('a \<Rightarrow> _) \<Rightarrow> _) \<equiv> irreflexive_on (\<top> :: 'a \<Rightarrow> bool)"
 
 lemma irreflexive_eq_irreflexive_on:
-  "irreflexive (R :: 'a \<Rightarrow> _) = irreflexive_on (\<top> :: 'a \<Rightarrow> bool) R"
+  "(irreflexive :: ('a \<Rightarrow> _) \<Rightarrow> _) = irreflexive_on (\<top> :: 'a \<Rightarrow> bool)"
   unfolding irreflexive_def ..
 
 lemma irreflexiveI [intro]:

@@ -28,10 +28,9 @@ lemma bi_related_if_idempotent_onD:
   shows "f x \<equiv>\<^bsub>R\<^esub> f (f x)"
   using assms by blast
 
-definition "idempotent (R :: 'a \<Rightarrow> _) f \<equiv> idempotent_on (\<top> :: 'a \<Rightarrow> bool) R f"
+definition "(idempotent :: ('a \<Rightarrow> _) \<Rightarrow> _) \<equiv> idempotent_on (\<top> :: 'a \<Rightarrow> bool)"
 
-lemma idempotent_eq_idempotent_on:
-  "idempotent (R :: 'a \<Rightarrow> _) f = idempotent_on (\<top> :: 'a \<Rightarrow> bool) R f"
+lemma idempotent_eq_idempotent_on: "(idempotent :: ('a \<Rightarrow> _) \<Rightarrow> _) = idempotent_on (\<top> :: 'a \<Rightarrow> bool)"
   unfolding idempotent_def ..
 
 lemma idempotentI [intro]:
@@ -51,8 +50,8 @@ lemma idempotent_on_if_idempotent:
   shows "idempotent_on P R f"
   using assms by (intro idempotent_onI) auto
 
-definition "closure_operator R f \<equiv>
-  (R \<Rrightarrow>\<^sub>m R) f \<and> inflationary_on (in_field R) R f \<and> idempotent_on (in_field R) R f"
+definition "closure_operator R \<equiv>
+  (R \<Rrightarrow>\<^sub>m R) \<sqinter> inflationary_on (in_field R) R \<sqinter> idempotent_on (in_field R) R"
 
 lemma closure_operatorI [intro]:
   assumes "(R \<Rrightarrow>\<^sub>m R) f"

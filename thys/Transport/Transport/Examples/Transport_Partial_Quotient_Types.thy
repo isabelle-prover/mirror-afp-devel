@@ -42,7 +42,7 @@ proof (rule QuotientI)
     (is "?lhs \<longleftrightarrow> ?rhs") for x x'
   proof (rule iffI)
     assume ?rhs
-    with assms have "\<eta> x \<le>\<^bsub>L\<^esub> \<eta> x'" by fastforce
+    with assms have "\<eta> x \<le>\<^bsub>L\<^esub> \<eta> x'" by force
     moreover from \<open>?rhs\<close> assms have "x \<le>\<^bsub>L\<^esub> \<eta> x" "\<eta> x' \<le>\<^bsub>L\<^esub> x'"
       by (blast elim: t.preorder_equivalence_order_equivalenceE)+
     moreover from assms have "transitive (\<le>\<^bsub>L\<^esub>)" by blast

@@ -122,14 +122,14 @@ corollary Refl_Rel_app_rightI:
   shows "R\<^sup>\<oplus> x (f y)"
 proof -
   from assms have "(R\<inverse>)\<^sup>\<oplus> (f y) x" by (intro Refl_Rel_app_leftI[where ?S="S\<inverse>"])
-    (auto simp flip: rel_inv_Refl_Rel_eq)
+    (auto 5 0 simp flip: rel_inv_Refl_Rel_eq)
   then show ?thesis by blast
 qed
 
 lemma mono_wrt_rel_Refl_Rel_Refl_Rel_if_mono_wrt_rel [intro]:
   assumes "(R \<Rrightarrow>\<^sub>m S) f"
   shows "(R\<^sup>\<oplus> \<Rrightarrow>\<^sub>m S\<^sup>\<oplus>) f"
-  using assms by (intro dep_mono_wrt_relI) auto
+  using assms by (intro dep_mono_wrt_relI) blast
 
 context galois
 begin
@@ -198,7 +198,7 @@ lemma inflationary_on_in_field_Refl_Rel_left:
   and "inflationary_on (in_dom (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>) \<eta>"
   shows "inflationary_on (in_field (\<le>\<^bsub>L\<^esub>)\<^sup>\<oplus>) (\<le>\<^bsub>L\<^esub>)\<^sup>\<oplus> \<eta>"
   using assms
-  by (intro inflationary_onI Refl_RelI) (auto elim!: in_fieldE Refl_RelE)
+  by (intro inflationary_onI Refl_RelI) (auto 0 3 elim!: in_fieldE Refl_RelE)
 
 lemma inflationary_on_in_field_Refl_Rel_left':
   assumes "((\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R\<^esub>)) l"
@@ -206,7 +206,7 @@ lemma inflationary_on_in_field_Refl_Rel_left':
   and "inflationary_on (in_codom (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>) \<eta>"
   shows "inflationary_on (in_field (\<le>\<^bsub>L\<^esub>)\<^sup>\<oplus>) (\<le>\<^bsub>L\<^esub>)\<^sup>\<oplus> \<eta>"
   using assms
-  by (intro inflationary_onI Refl_RelI) (auto elim!: in_fieldE Refl_RelE)
+  by (intro inflationary_onI Refl_RelI) (auto 0 3 elim!: in_fieldE Refl_RelE)
 
 interpretation inv : galois "(\<ge>\<^bsub>L\<^esub>)" "(\<ge>\<^bsub>R\<^esub>)" l r
   rewrites "((\<ge>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m (\<ge>\<^bsub>R\<^esub>)) \<equiv> ((\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R\<^esub>))"

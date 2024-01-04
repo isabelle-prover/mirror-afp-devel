@@ -262,7 +262,7 @@ lemma r2_counit_bi_rel_selfI:
 proof (rule bi_relatedI)
   note t1.preorder_equivalence_order_equivalenceE[elim!]
   from \<open>x' \<le>\<^bsub>R1\<^esub> x'\<close> pre_equiv1 have "r1 x' \<le>\<^bsub>L1\<^esub> r1 x'" "x' \<le>\<^bsub>R1\<^esub> \<epsilon>\<^sub>1 x'" "\<epsilon>\<^sub>1 x' \<le>\<^bsub>R1\<^esub> x'" by blast+
-  with pre_equiv1 have "r1 x' \<^bsub>L1\<^esub>\<lessapprox> x'" "r1 x' \<^bsub>L1\<^esub>\<lessapprox> \<epsilon>\<^sub>1 x'" by auto
+  with pre_equiv1 have "r1 x' \<^bsub>L1\<^esub>\<lessapprox> x'" "r1 x' \<^bsub>L1\<^esub>\<lessapprox> \<epsilon>\<^sub>1 x'" by force+
   from pre_equiv1 \<open>x' \<le>\<^bsub>R1\<^esub> \<epsilon>\<^sub>1 x'\<close> have "x' \<le>\<^bsub>R1\<^esub> \<epsilon>\<^sub>1 (\<epsilon>\<^sub>1 x')" by fastforce
   moreover note \<open>in_field (\<le>\<^bsub>R2 x' x'\<^esub>) y'\<close>
     Dep_Fun_Rel_relD[OF dep_mono_wrt_relD[OF mono_R2 \<open>\<epsilon>\<^sub>1 x' \<le>\<^bsub>R1\<^esub> x'\<close>] \<open>\<epsilon>\<^sub>1 x' \<le>\<^bsub>R1\<^esub> x'\<close>]
@@ -352,7 +352,8 @@ lemma inflationary_on_unitI:
   shows "inflationary_on (in_field (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>) \<eta>"
   unfolding left_rel_eq_tdfr_left_Refl_Rel using assms
   by (intro inflationary_onI Refl_RelI)
-  (auto intro: tdfr.rel_unit_self_if_rel_selfI[simplified unit_eq] elim!: Refl_RelE)
+  (auto 6 2 intro: tdfr.rel_unit_self_if_rel_selfI[simplified unit_eq]
+    elim!: Refl_RelE in_fieldE)
 
 
 subparagraph \<open>Deflationary\<close>
@@ -374,8 +375,8 @@ lemma deflationary_on_counitI:
   shows "deflationary_on (in_field (\<le>\<^bsub>R\<^esub>)) (\<le>\<^bsub>R\<^esub>) \<epsilon>"
   unfolding right_rel_eq_tdfr_right_Refl_Rel using assms
   by (intro deflationary_onI Refl_RelI)
-  (auto intro: tdfr.counit_rel_self_if_rel_selfI[simplified counit_eq]
-    elim!: Refl_RelE)
+  (auto 6 2 intro: tdfr.counit_rel_self_if_rel_selfI[simplified counit_eq]
+    elim!: Refl_RelE in_fieldE)
 
 
 subparagraph \<open>Relational Equivalence\<close>

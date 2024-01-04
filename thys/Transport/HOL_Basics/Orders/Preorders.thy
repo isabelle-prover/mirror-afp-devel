@@ -6,18 +6,18 @@ theory Preorders
     Binary_Relations_Transitive
 begin
 
-definition "preorder_on P R \<equiv> reflexive_on P R \<and> transitive_on P R"
+definition "preorder_on \<equiv> reflexive_on \<sqinter> transitive_on"
 
 lemma preorder_onI [intro]:
   assumes "reflexive_on P R"
   and "transitive_on P R"
   shows "preorder_on P R"
-  unfolding preorder_on_def using assms by blast
+  unfolding preorder_on_def using assms by auto
 
 lemma preorder_onE [elim]:
   assumes "preorder_on P R"
   obtains "reflexive_on P R" "transitive_on P R"
-  using assms unfolding preorder_on_def by blast
+  using assms unfolding preorder_on_def by auto
 
 lemma reflexive_on_if_preorder_on:
   assumes "preorder_on P R"
@@ -58,10 +58,10 @@ lemma rel_if_all_rel_if_rel_if_reflexive_on':
   shows "R x y"
   using assms by blast
 
-definition "preorder (R :: 'a \<Rightarrow> _) \<equiv> preorder_on (\<top> :: 'a \<Rightarrow> bool) R"
+definition "(preorder :: ('a \<Rightarrow> _) \<Rightarrow> bool) \<equiv> preorder_on (\<top> :: 'a \<Rightarrow> bool)"
 
 lemma preorder_eq_preorder_on:
-  "preorder (R :: 'a \<Rightarrow> _) = preorder_on (\<top> :: 'a \<Rightarrow> bool) R"
+  "(preorder :: ('a \<Rightarrow> _) \<Rightarrow> bool) = preorder_on (\<top> :: 'a \<Rightarrow> bool)"
   unfolding preorder_def ..
 
 lemma preorderI [intro]:

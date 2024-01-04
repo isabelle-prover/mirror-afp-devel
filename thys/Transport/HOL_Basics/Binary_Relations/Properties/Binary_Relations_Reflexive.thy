@@ -60,14 +60,13 @@ lemma reflexive_on_sup_eq [simp]:
   by (intro ext iffI reflexive_onI)
     (auto intro: reflexive_on_if_le_pred_if_reflexive_on)
 
-lemma reflexive_on_iff_eq_restrict_left_le:
+lemma reflexive_on_iff_eq_restrict_le:
   "reflexive_on (P :: 'a \<Rightarrow> bool) (R :: 'a \<Rightarrow> _) \<longleftrightarrow> ((=)\<restriction>\<^bsub>P\<^esub> \<le> R)"
   by blast
 
-definition "reflexive (R :: 'a \<Rightarrow> _) \<equiv> reflexive_on (\<top> :: 'a \<Rightarrow> bool) R"
+definition "(reflexive :: ('a \<Rightarrow> _) \<Rightarrow> _) \<equiv> reflexive_on (\<top> :: 'a \<Rightarrow> bool)"
 
-lemma reflexive_eq_reflexive_on:
-  "reflexive (R :: 'a \<Rightarrow> _) = reflexive_on (\<top> :: 'a \<Rightarrow> bool) R"
+lemma reflexive_eq_reflexive_on: "(reflexive :: ('a \<Rightarrow> _) \<Rightarrow> _) = reflexive_on (\<top> :: 'a \<Rightarrow> bool)"
   unfolding reflexive_def ..
 
 lemma reflexiveI [intro]:
@@ -91,7 +90,7 @@ lemma reflexive_rel_inv_iff_reflexive [iff]:
   by (blast dest: reflexiveD)
 
 lemma reflexive_iff_eq_le: "reflexive R \<longleftrightarrow> ((=) \<le> R)"
-  unfolding reflexive_eq_reflexive_on reflexive_on_iff_eq_restrict_left_le
+  unfolding reflexive_eq_reflexive_on reflexive_on_iff_eq_restrict_le
   by simp
 
 paragraph \<open>Instantiations\<close>

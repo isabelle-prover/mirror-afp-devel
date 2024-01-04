@@ -51,10 +51,10 @@ lemma transitive_on_if_le_pred_if_transitive_on:
   shows "transitive_on P' R"
   using assms by (auto dest: transitive_onD)
 
-definition "transitive (R :: 'a \<Rightarrow> _) \<equiv> transitive_on (\<top> :: 'a \<Rightarrow> bool) R"
+definition "(transitive :: ('a \<Rightarrow> _) \<Rightarrow> _) \<equiv> transitive_on (\<top> :: 'a \<Rightarrow> bool)"
 
 lemma transitive_eq_transitive_on:
-  "transitive (R :: 'a \<Rightarrow> _) = transitive_on (\<top> :: 'a \<Rightarrow> bool) R"
+  "(transitive :: ('a \<Rightarrow> _) \<Rightarrow> _) = transitive_on (\<top> :: 'a \<Rightarrow> bool)"
   unfolding transitive_def ..
 
 lemma transitiveI [intro]:
@@ -99,9 +99,8 @@ corollary transitive_on_in_field_iff_transitive [simp]:
   using transitive_if_transitive_on_in_field transitive_on_if_transitive
   by blast
 
-lemma transitive_rel_inv_iff_transitive [iff]:
-  "transitive R\<inverse> \<longleftrightarrow> transitive R"
-  by (auto intro!: transitiveI)
+lemma transitive_rel_inv_iff_transitive [iff]: "transitive R\<inverse> \<longleftrightarrow> transitive R"
+  by fast
 
 paragraph \<open>Instantiations\<close>
 

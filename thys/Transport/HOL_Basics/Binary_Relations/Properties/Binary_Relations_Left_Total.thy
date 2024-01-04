@@ -31,10 +31,9 @@ lemma in_dom_if_left_total_on:
   shows "in_dom R x"
   using assms by blast
 
-definition "left_total (R :: 'a \<Rightarrow> _) \<equiv> left_total_on (\<top> :: 'a \<Rightarrow> bool) R"
+definition "(left_total :: ('a \<Rightarrow> _) \<Rightarrow> _) \<equiv> left_total_on (\<top> :: 'a \<Rightarrow> bool)"
 
-lemma left_total_eq_left_total_on:
-  "left_total (R :: 'a \<Rightarrow> _) = left_total_on (\<top> :: 'a \<Rightarrow> bool) R"
+lemma left_total_eq_left_total_on: "(left_total :: ('a \<Rightarrow> _) \<Rightarrow> _) = left_total_on (\<top> :: 'a \<Rightarrow> bool)"
   unfolding left_total_def ..
 
 lemma left_totalI [intro]:

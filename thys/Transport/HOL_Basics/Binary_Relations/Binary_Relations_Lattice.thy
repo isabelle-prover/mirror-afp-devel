@@ -50,37 +50,39 @@ lemma in_codom_rel_infE [elim]:
 lemma in_field_eq_in_dom_sup_in_codom: "in_field L = (in_dom L \<squnion> in_codom L)"
   by (intro ext) (simp add: in_field_iff_in_dom_or_in_codom)
 
-lemma in_dom_restrict_left_eq [simp]: "in_dom R\<restriction>\<^bsub>P\<^esub> = (in_dom R \<sqinter> P)"
+lemma in_dom_bin_rel_restrict_left_eq [simp]: "in_dom R\<restriction>\<^bsub>P\<^esub> = (in_dom R \<sqinter> P)"
   by (intro ext) auto
 
-lemma in_codom_restrict_left_eq [simp]: "in_codom R\<upharpoonleft>\<^bsub>P\<^esub> = (in_codom R \<sqinter> P)"
+lemma in_codom_bin_rel_restrict_left_eq [simp]: "in_codom R\<upharpoonleft>\<^bsub>P\<^esub> = (in_codom R \<sqinter> P)"
   by (intro ext) auto
 
-lemma restrict_left_restrict_left_eq [simp]:
-  fixes R :: "'a \<Rightarrow> _" and P Q :: "'a \<Rightarrow> bool"
+lemma bin_rel_restrict_left_restrict_left_eq [simp]:
+  fixes R :: "'a \<Rightarrow> 'b \<Rightarrow> bool" and P Q :: "'a \<Rightarrow> bool"
   shows "R\<restriction>\<^bsub>P\<^esub>\<restriction>\<^bsub>Q\<^esub> = R\<restriction>\<^bsub>P\<^esub> \<sqinter> R\<restriction>\<^bsub>Q\<^esub>"
-  by (intro ext iffI restrict_leftI) auto
+  by (intro ext iffI bin_rel_restrict_leftI) auto
 
-lemma restrict_left_restrict_right_eq [simp]:
+lemma bin_rel_restrict_left_restrict_right_eq [simp]:
   fixes R :: "'a \<Rightarrow> 'b \<Rightarrow> bool" and P :: "'a \<Rightarrow> bool" and Q :: "'b \<Rightarrow> bool"
   shows "R\<restriction>\<^bsub>P\<^esub>\<upharpoonleft>\<^bsub>Q\<^esub> = R\<restriction>\<^bsub>P\<^esub> \<sqinter> R\<upharpoonleft>\<^bsub>Q\<^esub>"
-  by (intro ext iffI restrict_leftI restrict_rightI) auto
+  by (intro ext iffI bin_rel_restrict_leftI bin_rel_restrict_rightI) auto
 
-lemma restrict_right_restrict_left_eq [simp]:
+lemma bin_rel_restrict_right_restrict_left_eq [simp]:
   fixes R :: "'a \<Rightarrow> 'b \<Rightarrow> bool" and P :: "'b \<Rightarrow> bool" and Q :: "'a \<Rightarrow> bool"
   shows "R\<upharpoonleft>\<^bsub>P\<^esub>\<restriction>\<^bsub>Q\<^esub> = R\<upharpoonleft>\<^bsub>P\<^esub> \<sqinter> R\<restriction>\<^bsub>Q\<^esub>"
-  by (intro ext iffI restrict_leftI restrict_rightI) auto
+  by (intro ext iffI bin_rel_restrict_leftI bin_rel_restrict_rightI) auto
 
-lemma restrict_right_restrict_right_eq [simp]:
+lemma bin_rel_restrict_right_restrict_right_eq [simp]:
   fixes R :: "'a \<Rightarrow> 'b \<Rightarrow> bool" and P Q :: "'b \<Rightarrow> bool"
   shows "R\<upharpoonleft>\<^bsub>P\<^esub>\<upharpoonleft>\<^bsub>Q\<^esub> = R\<upharpoonleft>\<^bsub>P\<^esub> \<sqinter> R\<upharpoonleft>\<^bsub>Q\<^esub>"
   by (intro ext iffI) auto
 
-lemma restrict_left_sup_eq [simp]: "(R :: 'a \<Rightarrow> _)\<restriction>\<^bsub>((P :: 'a \<Rightarrow> bool) \<squnion> Q)\<^esub> = R\<restriction>\<^bsub>P\<^esub> \<squnion> R\<restriction>\<^bsub>Q\<^esub> "
-  by (intro antisym le_relI) (auto elim!: restrict_leftE)
+lemma bin_rel_restrict_left_sup_eq [simp]:
+  "(R :: 'a \<Rightarrow> 'b \<Rightarrow> bool)\<restriction>\<^bsub>((P :: 'a \<Rightarrow> bool) \<squnion> Q)\<^esub> = R\<restriction>\<^bsub>P\<^esub> \<squnion> R\<restriction>\<^bsub>Q\<^esub> "
+  by (intro antisym le_relI) (auto elim!: bin_rel_restrict_leftE)
 
-lemma restrict_left_inf_eq [simp]: "(R :: 'a \<Rightarrow> _)\<restriction>\<^bsub>((P :: 'a \<Rightarrow> bool) \<sqinter> Q)\<^esub> = R\<restriction>\<^bsub>P\<^esub> \<sqinter> R\<restriction>\<^bsub>Q\<^esub> "
-  by (intro antisym le_relI) (auto elim!: restrict_leftE)
+lemma bin_rel_restrict_left_inf_eq [simp]:
+  "(R :: 'a \<Rightarrow> 'b \<Rightarrow> bool)\<restriction>\<^bsub>((P :: 'a \<Rightarrow> bool) \<sqinter> Q)\<^esub> = R\<restriction>\<^bsub>P\<^esub> \<sqinter> R\<restriction>\<^bsub>Q\<^esub> "
+  by (intro antisym le_relI) (auto elim!: bin_rel_restrict_leftE)
 
 lemma inf_rel_bimap_and_eq_restrict_left_restrict_right:
   "R \<sqinter> (rel_bimap P Q (\<and>)) = R\<restriction>\<^bsub>P\<^esub>\<upharpoonleft>\<^bsub>Q\<^esub>"

@@ -34,9 +34,8 @@ syntax
     bool" ("[_] \<Rrightarrow>\<^sub>m (_)" [41, 40] 40)
   "_dep_mono_wrt_pred" :: "idt \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow>
     ('a \<Rightarrow> 'b) \<Rightarrow> bool" ("[_/ \<Colon>/ _] \<Rrightarrow>\<^sub>m (_)" [41, 41, 40] 40)
-  (*TODO: this only works if we introduce a pred_if constant first*)
-  (* "_dep_mono_wrt_pred_if" :: "idt \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> bool \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> *)
-    (* ('a \<Rightarrow> 'b) \<Rightarrow> bool" ("[_/ \<Colon>/ _/ |/ _] \<Rrightarrow>\<^sub>m (_)" [41, 41, 41, 40] 40) *)
+  "_dep_mono_wrt_pred_if" :: "idt \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> bool \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow>
+    ('a \<Rightarrow> 'b) \<Rightarrow> bool" ("[_/ \<Colon>/ _/ |/ _] \<Rrightarrow>\<^sub>m (_)" [41, 41, 41, 40] 40)
 end
 bundle no_dep_mono_wrt_syntax begin
 no_syntax
@@ -50,8 +49,8 @@ no_syntax
     bool" ("[_] \<Rrightarrow>\<^sub>m (_)" [41, 40] 40)
   "_dep_mono_wrt_pred" :: "idt \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow>
     ('a \<Rightarrow> 'b) \<Rightarrow> bool" ("[_/ \<Colon>/ _] \<Rrightarrow>\<^sub>m (_)" [41, 41, 40] 40)
-  (* "_dep_mono_wrt_pred_if" :: "idt \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> bool \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> *)
-    (* ('a \<Rightarrow> 'b) \<Rightarrow> bool" ("[_/ \<Colon>/ _/ |/ _] \<Rrightarrow>\<^sub>m (_)" [41, 41, 41, 40] 40) *)
+  "_dep_mono_wrt_pred_if" :: "idt \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> bool \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow>
+    ('a \<Rightarrow> 'b) \<Rightarrow> bool" ("[_/ \<Colon>/ _/ |/ _] \<Rrightarrow>\<^sub>m (_)" [41, 41, 41, 40] 40)
 end
 unbundle dep_mono_wrt_syntax
 translations
@@ -60,7 +59,7 @@ translations
   "[x y \<Colon> R | B] \<Rrightarrow>\<^sub>m S" \<rightleftharpoons> "CONST dep_mono_wrt_rel R (\<lambda>x y. CONST rel_if B S)"
   "[P] \<Rrightarrow>\<^sub>m Q" \<rightleftharpoons> "CONST mono_wrt_pred P Q"
   "[x \<Colon> P] \<Rrightarrow>\<^sub>m Q" \<rightleftharpoons> "CONST dep_mono_wrt_pred P (\<lambda>x. Q)"
-  (* "[x \<Colon> P | B] \<Rrightarrow>\<^sub>m Q" \<rightleftharpoons> "CONST dep_mono_wrt_pred P (\<lambda>x. CONST rel_if B Q)" *)
+  "[x \<Colon> P | B] \<Rrightarrow>\<^sub>m Q" \<rightleftharpoons> "CONST dep_mono_wrt_pred P (\<lambda>x. CONST pred_if B Q)"
 
 lemma dep_mono_wrt_relI [intro]:
   assumes "\<And>x y. R x y \<Longrightarrow> S x y (f x) (f y)"
@@ -69,8 +68,7 @@ lemma dep_mono_wrt_relI [intro]:
 
 lemma dep_mono_wrt_relE [elim]:
   assumes "([x y \<Colon> R] \<Rrightarrow>\<^sub>m S x y) f"
-  and "R x y"
-  obtains "S x y (f x) (f y)"
+  obtains "\<And>x y. R x y \<Longrightarrow> S x y (f x) (f y)"
   using assms unfolding dep_mono_wrt_rel_def by blast
 
 lemma dep_mono_wrt_relD:
@@ -86,8 +84,7 @@ lemma dep_mono_wrt_predI [intro]:
 
 lemma dep_mono_wrt_predE [elim]:
   assumes "([x \<Colon> P] \<Rrightarrow>\<^sub>m Q x) f"
-  and "P x"
-  obtains "Q x (f x)"
+  obtains "\<And>x. P x \<Longrightarrow> Q x (f x)"
   using assms unfolding dep_mono_wrt_pred_def by blast
 
 lemma dep_mono_wrt_predD:
@@ -128,7 +125,7 @@ corollary Dep_Fun_Rel_pred_self_iff_dep_mono_wrt_pred:
 
 lemma dep_mono_wrt_rel_inv_eq [simp]:
   "([y x \<Colon> R\<inverse>] \<Rrightarrow>\<^sub>m (S x y)\<inverse>) = ([x y \<Colon> R] \<Rrightarrow>\<^sub>m S x y)"
-  by (intro ext) auto
+  by (intro ext) force
 
 lemma in_dom_if_rel_if_dep_mono_wrt_rel:
   assumes "([x y \<Colon> R] \<Rrightarrow>\<^sub>m S x y) f"
@@ -194,8 +191,7 @@ lemma monoI [intro]:
 
 lemma monoE [elim]:
   assumes "mono f"
-  and "x \<le> y"
-  obtains "f x \<le> f y"
+  obtains "\<And>x y. x \<le> y \<Longrightarrow> f x \<le> f y"
   using assms unfolding mono_def by blast
 
 lemma monoD:
@@ -211,8 +207,7 @@ lemma antimonoI [intro]:
 
 lemma antimonoE [elim]:
   assumes "antimono f"
-  and "x \<le> y"
-  obtains "f y \<le> f x"
+  obtains "\<And>x y. x \<le> y \<Longrightarrow> f y \<le> f x"
   using assms unfolding antimono_def by blast
 
 lemma antimonoD:
@@ -228,10 +223,10 @@ lemma antimono_Dep_Fun_Rel_pred_left: "antimono (\<lambda>P. [x \<Colon> P] \<Rr
   by (intro antimonoI) auto
 
 lemma antimono_dep_mono_wrt_rel_left: "antimono (\<lambda>R. [x y \<Colon> R] \<Rrightarrow>\<^sub>m S x y)"
-  by (intro antimonoI) auto
+  by (intro antimonoI) blast
 
 lemma antimono_dep_mono_wrt_pred_left: "antimono (\<lambda>P. [x \<Colon> P] \<Rrightarrow>\<^sub>m Q x)"
-  by (intro antimonoI) auto
+  by (intro antimonoI) blast
 
 lemma Dep_Fun_Rel_rel_if_le_left_if_Dep_Fun_Rel_rel:
   assumes "([x y \<Colon> R] \<Rrightarrow> S x y) f g"
@@ -301,7 +296,7 @@ lemma dep_mono_wrt_rel_compI:
   and "\<And>x y. R x y \<Longrightarrow> ([x' y' \<Colon> T x y] \<Rrightarrow>\<^sub>m U x y x' y') f'"
   and "\<And>x y. R x y \<Longrightarrow> S x y (f x) (f y) \<Longrightarrow> T x y (f x) (f y)"
   shows "([x y \<Colon> R] \<Rrightarrow>\<^sub>m U x y (f x) (f y)) (f' \<circ> f)"
-  using assms by (intro dep_mono_wrt_relI) (auto 6 0)
+  using assms by (intro dep_mono_wrt_relI) force
 
 corollary dep_mono_wrt_rel_compI':
   assumes "([x y \<Colon> R] \<Rrightarrow>\<^sub>m S x y) f"
@@ -314,14 +309,14 @@ lemma dep_mono_wrt_pred_comp_dep_mono_wrt_rel_compI:
   and "\<And>x. P x \<Longrightarrow> ([x' y' \<Colon> R x] \<Rrightarrow>\<^sub>m S x x' y') f'"
   and "\<And>x. P x \<Longrightarrow> Q x (f x) \<Longrightarrow> R x (f x) (f x)"
   shows "([x \<Colon> P] \<Rrightarrow>\<^sub>m (\<lambda>y. S x (f x) (f x) y y)) (f' \<circ> f)"
-  using assms by (intro dep_mono_wrt_predI) (auto 6 0)
+  using assms by (intro dep_mono_wrt_predI) force
 
 lemma dep_mono_wrt_pred_comp_dep_mono_wrt_pred_compI:
   assumes "([x \<Colon> P] \<Rrightarrow>\<^sub>m Q x) f"
   and "\<And>x. P x \<Longrightarrow> ([x' \<Colon> R x] \<Rrightarrow>\<^sub>m S x x') f'"
   and "\<And>x. P x \<Longrightarrow> Q x (f x) \<Longrightarrow> R x (f x)"
   shows "([x \<Colon> P] \<Rrightarrow>\<^sub>m S x (f x)) (f' \<circ> f)"
-  using assms by (intro dep_mono_wrt_predI) (auto 6 0)
+  using assms by (intro dep_mono_wrt_predI) force
 
 corollary dep_mono_wrt_pred_comp_dep_mono_wrt_pred_compI':
   assumes "([x \<Colon> P] \<Rrightarrow>\<^sub>m Q x) f"

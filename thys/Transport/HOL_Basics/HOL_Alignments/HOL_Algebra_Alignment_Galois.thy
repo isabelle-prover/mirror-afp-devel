@@ -16,8 +16,8 @@ context
   fixes L R l r
   defines "L \<equiv> (\<sqsubseteq>\<^bsub>\<X>\<^esub>)\<restriction>\<^bsub>carrier \<X>\<^esub>\<upharpoonleft>\<^bsub>carrier \<X>\<^esub>" and "R \<equiv> (\<sqsubseteq>\<^bsub>\<Y>\<^esub>)\<restriction>\<^bsub>carrier \<Y>\<^esub>\<upharpoonleft>\<^bsub>carrier \<Y>\<^esub>"
     and "l \<equiv> \<pi>\<^sup>*" and "r \<equiv> \<pi>\<^sub>*"
-  notes defs[simp] = L_def R_def l_def r_def and restrict_right_eq[simp]
-    and restrict_leftI[intro!] restrict_leftE[elim!]
+  notes defs[simp] = L_def R_def l_def r_def and bin_rel_restrict_right_eq[simp]
+    and bin_rel_restrict_leftI[intro!] bin_rel_restrict_leftE[elim!]
 begin
 
 interpretation galois L R l r .
@@ -29,10 +29,10 @@ lemma mono_wrt_rel_upper [HOL_Algebra_galois_alignment]: "(R \<Rrightarrow>\<^su
   using lower_closed upper_closed by (fastforce intro: use_iso2[OF upper_iso])
 
 lemma half_galois_prop_left [HOL_Algebra_galois_alignment]: "(L \<^sub>h\<unlhd> R) l r"
-  using galois_property lower_closed by fastforce
+  using galois_property lower_closed by (intro half_galois_prop_leftI) fastforce
 
 lemma half_galois_prop_right [HOL_Algebra_galois_alignment]: "(L \<unlhd>\<^sub>h R) l r"
-  using galois_property upper_closed by fastforce
+  using galois_property upper_closed by (intro half_galois_prop_rightI) fastforce
 
 lemma galois_prop [HOL_Algebra_galois_alignment]: "(L \<unlhd> R) l r"
   using half_galois_prop_left half_galois_prop_right by blast
@@ -50,8 +50,9 @@ context
   fixes L R l r
   defines "L \<equiv> (\<sqsubseteq>\<^bsub>\<X>\<^esub>)\<restriction>\<^bsub>carrier \<X>\<^esub>\<upharpoonleft>\<^bsub>carrier \<X>\<^esub>" and "R \<equiv> (\<sqsubseteq>\<^bsub>\<Y>\<^esub>)\<restriction>\<^bsub>carrier \<Y>\<^esub>\<upharpoonleft>\<^bsub>carrier \<Y>\<^esub>"
     and "l \<equiv> \<pi>\<^sup>*" and "r \<equiv> \<pi>\<^sub>*"
-  notes defs[simp] = L_def R_def l_def r_def and restrict_right_eq[simp]
-    and restrict_leftI[intro!] restrict_leftE[elim!] in_codom_restrict_leftE[elim!]
+  notes defs[simp] = L_def R_def l_def r_def and bin_rel_restrict_right_eq[simp]
+    and bin_rel_restrict_leftI[intro!] bin_rel_restrict_leftE[elim!]
+      in_codom_bin_rel_restrict_leftE[elim!]
 begin
 
 interpretation galois R L r l .

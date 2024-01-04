@@ -26,7 +26,16 @@ lemma le_relE:
 lemma rel_inv_le_rel_inv_iff [iff]: "R\<inverse> \<le> S\<inverse> \<longleftrightarrow> R \<le> S"
   by blast
 
-lemma restrict_left_top_eq [simp]: "(R :: 'a \<Rightarrow> _)\<restriction>\<^bsub>(\<top> :: 'a \<Rightarrow> bool)\<^esub> = R"
+lemma bin_rel_restrict_left_le_self: "(R :: 'a \<Rightarrow> 'b \<Rightarrow> bool)\<restriction>\<^bsub>(P :: 'a \<Rightarrow> bool)\<^esub> \<le> R"
+  by blast
+
+lemma bin_rel_restrict_right_le_self: "(R :: 'a \<Rightarrow> 'b \<Rightarrow> bool)\<upharpoonleft>\<^bsub>(P :: 'b \<Rightarrow> bool)\<^esub> \<le> R"
+  by blast
+
+lemma bin_rel_restrict_left_top_eq [simp]: "(R :: 'a \<Rightarrow> 'b \<Rightarrow> bool)\<restriction>\<^bsub>(\<top> :: 'a \<Rightarrow> bool)\<^esub> = R"
+  by (intro ext) auto
+
+lemma bin_rel_restrict_right_top_eq [simp]: "(R :: 'a \<Rightarrow> 'b \<Rightarrow> bool)\<upharpoonleft>\<^bsub>(\<top> :: 'b \<Rightarrow> bool)\<^esub> = R"
   by (intro ext) auto
 
 

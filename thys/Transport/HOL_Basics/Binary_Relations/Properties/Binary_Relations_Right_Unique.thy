@@ -64,10 +64,10 @@ lemma rel_injective_at_rel_inv_iff_right_unique_on [iff]:
   by (blast dest: right_unique_onD rel_injective_atD)
 
 
-definition "right_unique (R :: 'a \<Rightarrow> _) \<equiv> right_unique_on (\<top> :: 'a \<Rightarrow> bool) R"
+definition "(right_unique :: ('a \<Rightarrow> _) \<Rightarrow> _) \<equiv> right_unique_on (\<top> :: 'a \<Rightarrow> bool)"
 
 lemma right_unique_eq_right_unique_on:
-  "right_unique (R :: 'a \<Rightarrow> _) = right_unique_on (\<top> :: 'a \<Rightarrow> bool) R"
+  "(right_unique :: ('a \<Rightarrow> _) \<Rightarrow> _) = right_unique_on (\<top> :: 'a \<Rightarrow> bool)"
   unfolding right_unique_def ..
 
 lemma right_uniqueI [intro]:
@@ -127,7 +127,7 @@ lemma rel_injective_rel_inv_iff_right_unique [iff]:
   by (blast dest: right_uniqueD rel_injectiveD)
 
 
-paragraph \<open>Instantiatiats\<close>
+paragraph \<open>Instantiations\<close>
 
 lemma right_unique_eq: "right_unique (=)"
   by (rule right_uniqueI) blast

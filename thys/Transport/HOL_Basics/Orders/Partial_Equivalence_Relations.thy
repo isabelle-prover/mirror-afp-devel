@@ -6,18 +6,18 @@ theory Partial_Equivalence_Relations
     Preorders
 begin
 
-definition "partial_equivalence_rel_on P R \<equiv> transitive_on P R \<and> symmetric_on P R"
+definition "partial_equivalence_rel_on \<equiv> transitive_on \<sqinter> symmetric_on"
 
 lemma partial_equivalence_rel_onI [intro]:
   assumes "transitive_on P R"
   and "symmetric_on P R"
   shows "partial_equivalence_rel_on P R"
-  unfolding partial_equivalence_rel_on_def using assms by blast
+  unfolding partial_equivalence_rel_on_def using assms by auto
 
 lemma partial_equivalence_rel_onE [elim]:
   assumes "partial_equivalence_rel_on P R"
   obtains "transitive_on P R" "symmetric_on P R"
-  using assms unfolding partial_equivalence_rel_on_def by blast
+  using assms unfolding partial_equivalence_rel_on_def by auto
 
 lemma partial_equivalence_rel_on_rel_self_if_rel_dom:
   assumes "partial_equivalence_rel_on (P :: 'a \<Rightarrow> bool) (R :: 'a \<Rightarrow> 'a \<Rightarrow> bool)"
@@ -37,10 +37,11 @@ lemma partial_equivalence_rel_on_rel_inv_iff_partial_equivalence_rel_on [iff]:
   "partial_equivalence_rel_on P R\<inverse> \<longleftrightarrow> partial_equivalence_rel_on (P :: 'a \<Rightarrow> bool) (R :: 'a \<Rightarrow> _)"
   by blast
 
-definition "partial_equivalence_rel (R :: 'a \<Rightarrow> _) \<equiv> partial_equivalence_rel_on (\<top> :: 'a \<Rightarrow> bool) R"
+definition "(partial_equivalence_rel :: ('a \<Rightarrow> _) \<Rightarrow> bool) \<equiv>
+  partial_equivalence_rel_on (\<top> :: 'a \<Rightarrow> bool)"
 
 lemma partial_equivalence_rel_eq_partial_equivalence_rel_on:
-  "partial_equivalence_rel (R :: 'a \<Rightarrow> _) = partial_equivalence_rel_on (\<top> :: 'a \<Rightarrow> bool) R"
+  "(partial_equivalence_rel :: ('a \<Rightarrow> _) \<Rightarrow> bool) = partial_equivalence_rel_on (\<top> :: 'a \<Rightarrow> bool)"
   unfolding partial_equivalence_rel_def ..
 
 lemma partial_equivalence_relI [intro]:

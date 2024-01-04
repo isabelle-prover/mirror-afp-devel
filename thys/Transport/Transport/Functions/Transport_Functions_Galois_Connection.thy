@@ -57,8 +57,8 @@ proof -
     if "x1' \<le>\<^bsub>R1\<^esub> x2'" for x1' x2'
   proof -
     from galois_conn1 \<open>x1' \<le>\<^bsub>R1\<^esub> x2'\<close> have "r1 x1' \<le>\<^bsub>L1\<^esub> r1 x1'" "r1 x1' \<^bsub>L1\<^esub>\<lessapprox> x1'"
-      using refl_R1 by blast+
-    with mono_l2 show ?thesis using \<open>x1' \<le>\<^bsub>R1\<^esub> x2'\<close> R2_le1 by (auto 9 0)
+      using refl_R1 by force+
+    with mono_l2 show ?thesis using \<open>x1' \<le>\<^bsub>R1\<^esub> x2'\<close> R2_le1 by (auto 11 0)
   qed
   from mono_l2 show "([x' \<Colon> in_codom (\<le>\<^bsub>R1\<^esub>)] \<Rrightarrow>\<^sub>m [x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x2 \<^bsub>L1\<^esub>\<lessapprox> x'] \<Rrightarrow>\<^sub>m
     [in_field (\<le>\<^bsub>L2 x1 (r1 x')\<^esub>)] \<Rrightarrow> (\<le>\<^bsub>R2 (l1 x1) x'\<^esub>)) l2" using refl_R1 by blast
@@ -84,7 +84,7 @@ proof -
   proof -
     from galois_conn1 \<open>x1 \<le>\<^bsub>L1\<^esub> x2\<close> have "x1 \<^bsub>L1\<^esub>\<lessapprox> l1 x1" "l1 x1 \<le>\<^bsub>R1\<^esub> l1 x2"
       using refl_L1 by (auto intro!: t1.left_Galois_left_if_reflexive_on_if_half_galois_prop_rightI)
-    with mono_r2_2 show ?thesis using L2_le2 \<open>x1 \<le>\<^bsub>L1\<^esub> x2\<close> by (auto 9 0)
+    with mono_r2_2 show ?thesis using L2_le2 \<open>x1 \<le>\<^bsub>L1\<^esub> x2\<close> by (auto 12 0)
   qed
   show "([in_codom (\<le>\<^bsub>R2 (\<epsilon>\<^sub>1 x') x'\<^esub>)] \<Rrightarrow> (\<le>\<^bsub>L2 (r1 x') (r1 x')\<^esub>)) (r2\<^bsub>(r1 x') (\<epsilon>\<^sub>1 x')\<^esub>) (r2\<^bsub>(r1 x') x'\<^esub>)"
     if "x' \<le>\<^bsub>R1\<^esub> x'" for x'

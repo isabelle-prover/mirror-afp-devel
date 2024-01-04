@@ -3,6 +3,7 @@ section \<open>Generic Compositions\<close>
 subsection \<open>Basic Setup\<close>
 theory Transport_Compositions_Generic_Base
   imports
+    Equivalence_Relations
     Transport_Base
 begin
 

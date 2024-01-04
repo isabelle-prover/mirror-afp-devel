@@ -15,7 +15,7 @@ lemma left_Galois_le_comp_left_GaloisI:
 proof (rule le_relI)
   fix x z assume "x \<^bsub>L\<^esub>\<lessapprox> z"
   then have "x \<le>\<^bsub>L1\<^esub> r z" "in_codom (\<le>\<^bsub>R\<^esub>) z" by auto
-  with \<open>x \<le>\<^bsub>L1\<^esub> r z\<close> in_codom_mono_r2 have "x \<^bsub>L1\<^esub>\<lessapprox> r2 z" by auto
+  with \<open>x \<le>\<^bsub>L1\<^esub> r z\<close> in_codom_mono_r2 have "x \<^bsub>L1\<^esub>\<lessapprox> r2 z" by fastforce
   moreover from \<open>in_codom (\<le>\<^bsub>R2\<^esub>) z\<close> r2_L2_self_if_in_codom have "r2 z \<^bsub>L2\<^esub>\<lessapprox> z"
     by (intro g2.left_GaloisI) auto
   ultimately show "((\<^bsub>L1\<^esub>\<lessapprox>) \<circ>\<circ> (\<^bsub>L2\<^esub>\<lessapprox>)) x z" by blast
@@ -53,7 +53,7 @@ corollary left_Galois_eq_comp_left_GaloisI':
   and "reflexive_on (in_codom (\<le>\<^bsub>R2\<^esub>)) (\<le>\<^bsub>R2\<^esub>)"
   and "\<And>y z. in_codom (\<le>\<^bsub>R2\<^esub>) z \<Longrightarrow> y \<le>\<^bsub>L2\<^esub> r2 z \<Longrightarrow> y \<le>\<^bsub>R1\<^esub> r2 z"
   shows "(\<^bsub>L\<^esub>\<lessapprox>) = ((\<^bsub>L1\<^esub>\<lessapprox>) \<circ>\<circ> (\<^bsub>L2\<^esub>\<lessapprox>))"
-  using assms by (intro left_Galois_eq_comp_left_GaloisI) auto
+  using assms by (intro left_Galois_eq_comp_left_GaloisI) (auto 5 0)
 
 corollary left_Galois_eq_comp_left_GaloisI'':
   assumes "((\<le>\<^bsub>R1\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L1\<^esub>)) r1"
@@ -62,7 +62,7 @@ corollary left_Galois_eq_comp_left_GaloisI'':
   and "reflexive_on (in_codom (\<le>\<^bsub>L2\<^esub>)) (\<le>\<^bsub>L2\<^esub>)"
   and "\<And>y z. in_codom (\<le>\<^bsub>R2\<^esub>) z \<Longrightarrow> y \<le>\<^bsub>L2\<^esub> r2 z \<Longrightarrow> y \<le>\<^bsub>R1\<^esub> r2 z"
   shows "(\<^bsub>L\<^esub>\<lessapprox>) = ((\<^bsub>L1\<^esub>\<lessapprox>) \<circ>\<circ> (\<^bsub>L2\<^esub>\<lessapprox>))"
-  using assms by (intro left_Galois_eq_comp_left_GaloisI) (auto 0 4)
+  using assms by (intro left_Galois_eq_comp_left_GaloisI) (auto 0 6)
 
 end
 

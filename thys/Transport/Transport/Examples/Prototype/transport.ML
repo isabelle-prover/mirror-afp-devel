@@ -4,7 +4,7 @@
 Prototype for Transport. See README.md for future work.
 *)
 
-(*TODO: signature*)
+(*TODO: signature for final implementation*)
 
 structure Transport =
 struct

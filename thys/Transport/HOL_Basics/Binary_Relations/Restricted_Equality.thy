@@ -9,57 +9,27 @@ theory Restricted_Equality
 begin
 
 paragraph \<open>Summary\<close>
-text \<open>Introduces the concept of restricted equalities.
+text \<open>Introduces notations and theorems for restricted equalities.
 An equality @{term "(=)"} can be restricted to only apply to a subset of its
-elements. The restriction can be formulated, for example, by a predicate or a
-set.\<close>
-
-consts eq_restrict :: "'a \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> bool"
+elements. The restriction can be formulated, for example, by a predicate or a set.\<close>
 
 bundle eq_restrict_syntax
 begin
 syntax
-  "_eq_restrict" :: "'a \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool" ("(_) =(\<^bsub>_\<^esub>) (_)" [51,51,51] 50)
-notation eq_restrict ("'(=(\<^bsub>_\<^esub>)')")
+  "_eq_restrict_infix" :: "'a \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool" ("(_) =(\<^bsub>_\<^esub>) (_)" [51,51,51] 50)
+  "_eq_restrict" :: "('a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool" ("'(=(\<^bsub>_\<^esub>)')")
 end
 bundle no_eq_restrict_syntax
 begin
 no_syntax
-  "_eq_restrict" :: "'a \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool" ("(_) =(\<^bsub>_\<^esub>) (_)" [51,51,51] 50)
-no_notation eq_restrict ("'(=(\<^bsub>_\<^esub>)')")
+  "_eq_restrict_infix" :: "'a \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool" ("(_) =(\<^bsub>_\<^esub>) (_)" [51,51,51] 50)
+  "_eq_restrict" :: "('a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool" ("'(=(\<^bsub>_\<^esub>)')")
 end
 unbundle eq_restrict_syntax
 
 translations
-  "x =\<^bsub>P\<^esub> y" \<rightleftharpoons> "CONST eq_restrict P x y"
-
-overloading
-  eq_restrict_pred \<equiv> "eq_restrict :: ('a \<Rightarrow>  bool) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool"
-begin
-  definition "eq_restrict_pred (P :: 'a \<Rightarrow> bool) \<equiv> ((=) :: 'a \<Rightarrow> _)\<restriction>\<^bsub>P\<^esub>"
-end
-
-lemma eq_restrict_eq_eq_restrict_left: "((=\<^bsub>P :: 'a \<Rightarrow> bool\<^esub>) :: 'a \<Rightarrow> _) = (=)\<restriction>\<^bsub>P\<^esub>"
-  unfolding eq_restrict_pred_def by simp
-
-lemma eq_restrictI [intro]:
-  assumes "x = y"
-  and "P x"
-  shows "x =\<^bsub>P\<^esub> y"
-  unfolding eq_restrict_eq_eq_restrict_left using assms by auto
-
-lemma eq_restrictE [elim]:
-  assumes "x =\<^bsub>P\<^esub> y"
-  obtains "P x" "y = x"
-  using assms unfolding eq_restrict_eq_eq_restrict_left by auto
-
-lemma eq_restrict_iff: "x =\<^bsub>P\<^esub> y \<longleftrightarrow> y = x \<and> P x" by auto
-
-lemma eq_restrict_le_eq: "((=\<^bsub>P :: 'a \<Rightarrow> bool\<^esub>) :: 'a \<Rightarrow> _) \<le> (=)"
-  by (intro le_relI) auto
-
-lemma eq_restrict_top_eq_eq [simp]: "(=\<^bsub>\<top> :: 'a \<Rightarrow> bool\<^esub>) = ((=) :: 'a \<Rightarrow> _)"
-  unfolding eq_restrict_eq_eq_restrict_left by simp
+  "(=\<^bsub>P\<^esub>)" \<rightleftharpoons> "CONST restrict_left (=) P"
+  "x =\<^bsub>P\<^esub> y" \<rightleftharpoons> "CONST restrict_left (=) P x y"
 
 lemma in_dom_eq_restrict_eq [simp]: "in_dom (=\<^bsub>P\<^esub>) = P" by auto
 lemma in_codom_eq_restrict_eq [simp]: "in_codom (=\<^bsub>P\<^esub>) = P" by auto

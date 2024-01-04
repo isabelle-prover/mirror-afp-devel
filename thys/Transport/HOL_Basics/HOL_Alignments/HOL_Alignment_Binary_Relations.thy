@@ -267,40 +267,30 @@ lemma Domainp_eq_in_dom [HOL_bin_rel_alignment]: "Domainp = in_dom"
 lemma Rangep_eq_in_codom [HOL_bin_rel_alignment]: "Rangep = in_codom"
    by (intro ext) auto
 
-overloading
-  restrict_left_set \<equiv> "restrict_left :: ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a set) \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> bool"
-begin
-  definition "restrict_left_set (R :: 'a \<Rightarrow> _) (S :: 'a set) \<equiv> R\<restriction>\<^bsub>mem_of S\<^esub>"
-end
-
-lemma restrict_left_set_eq_restrict_left_pred [simp]:
-  "(R\<restriction>\<^bsub>S :: 'a set\<^esub> :: 'a \<Rightarrow> _) = R\<restriction>\<^bsub>mem_of S\<^esub>"
-  unfolding restrict_left_set_def by simp
-
-lemma restrict_left_set_iff_restrict_left_pred [iff]:
-  "(R\<restriction>\<^bsub>S :: 'a set\<^esub> :: 'a \<Rightarrow> _) x y \<longleftrightarrow> R\<restriction>\<^bsub>mem_of S\<^esub> x y"
-  by simp
-
-
-
-paragraph \<open>Restricted Equality\<close>
-
-lemma eq_onp_eq_eq_restrict [HOL_bin_rel_alignment]: "eq_onp = eq_restrict"
+lemma eq_onp_eq_eq_restrict [HOL_bin_rel_alignment]: "eq_onp = restrict_left (=)"
   unfolding eq_onp_def by (intro ext) auto
 
 overloading
-  eq_restrict_set \<equiv> "eq_restrict :: 'a set \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool"
+  bin_rel_restrict_left_set \<equiv> "restrict_left :: ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> bool"
+  bin_rel_restrict_right_set \<equiv> "restrict_right :: ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'b set \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> bool"
 begin
-  definition "eq_restrict_set (S :: 'a set) \<equiv> ((=\<^bsub>mem_of S\<^esub>) :: 'a \<Rightarrow> _)"
+  definition "bin_rel_restrict_left_set (R :: 'a \<Rightarrow> 'b \<Rightarrow> bool) (S :: 'a set) \<equiv> R\<restriction>\<^bsub>mem_of S\<^esub>"
+  definition "bin_rel_restrict_right_set (R :: 'a \<Rightarrow> 'b \<Rightarrow> bool) (S :: 'b set) \<equiv> R\<upharpoonleft>\<^bsub>mem_of S\<^esub>"
 end
 
-lemma eq_restrict_set_eq_eq_restrict_pred [simp]:
-  "((=\<^bsub>S :: 'a set\<^esub>) :: 'a \<Rightarrow> _) = (=\<^bsub>mem_of S\<^esub>)"
-  unfolding eq_restrict_set_def by simp
+lemma bin_rel_restrict_left_set_eq_restrict_left_pred [simp]:
+  "(R\<restriction>\<^bsub>S :: 'a set\<^esub> :: 'a \<Rightarrow> 'b \<Rightarrow> bool) = R\<restriction>\<^bsub>mem_of S\<^esub>"
+  unfolding bin_rel_restrict_left_set_def by simp
 
-lemma eq_restrict_set_iff_eq_restrict_pred [iff]:
-  "(x :: 'a) =\<^bsub>(S :: 'a set)\<^esub> y \<longleftrightarrow> x =\<^bsub>mem_of S\<^esub> y"
+lemma bin_rel_restrict_right_set_eq_restrict_right_pred [simp]:
+  "(R\<upharpoonleft>\<^bsub>S :: 'b set\<^esub> :: 'a \<Rightarrow> 'b \<Rightarrow> bool) = R\<upharpoonleft>\<^bsub>mem_of S\<^esub>"
+  unfolding bin_rel_restrict_right_set_def by simp
+
+lemma restrict_left_set_iff_restrict_left_pred [iff]: "(R\<restriction>\<^bsub>S :: 'a set\<^esub> :: 'a \<Rightarrow> _) x y \<longleftrightarrow> R\<restriction>\<^bsub>mem_of S\<^esub> x y"
   by simp
 
+lemma restrict_right_set_iff_restrict_right_pred [iff]:
+  "(R\<upharpoonleft>\<^bsub>S :: 'b set\<^esub> :: _ \<Rightarrow> 'b \<Rightarrow> _) x y \<longleftrightarrow> R\<upharpoonleft>\<^bsub>mem_of S\<^esub> x y"
+  by simp
 
 end

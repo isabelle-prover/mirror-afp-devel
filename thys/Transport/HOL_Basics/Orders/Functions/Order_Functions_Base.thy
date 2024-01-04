@@ -4,7 +4,9 @@ subsubsection \<open>Basics\<close>
 theory Order_Functions_Base
   imports
     Functions_Monotone
-    Restricted_Equality
+    Binary_Relations_Antisymmetric
+    Binary_Relations_Symmetric
+    Preorders
 begin
 
 subparagraph \<open>Bi-Relation\<close>
@@ -170,10 +172,10 @@ lemma inflationary_on_sup_eq [simp]:
     (auto intro: inflationary_on_if_le_pred_if_inflationary_on)
 
 
-definition "inflationary (R :: 'a \<Rightarrow> _) f \<equiv> inflationary_on (\<top> :: 'a \<Rightarrow> bool) R f"
+definition "(inflationary :: ('a \<Rightarrow> _) \<Rightarrow> _) \<equiv> inflationary_on (\<top> :: 'a \<Rightarrow> bool)"
 
 lemma inflationary_eq_inflationary_on:
-  "inflationary (R :: 'a \<Rightarrow> _) f = inflationary_on (\<top> :: 'a \<Rightarrow> bool) R f"
+  "(inflationary :: ('a \<Rightarrow> _) \<Rightarrow> _) = inflationary_on (\<top> :: 'a \<Rightarrow> bool)"
   unfolding inflationary_def ..
 
 lemma inflationaryI [intro]:
@@ -258,10 +260,10 @@ lemma deflationary_on_sup_eq [simp]:
   = deflationary_on P \<sqinter> deflationary_on Q"
   unfolding deflationary_on_eq_inflationary_on_rel_inv by auto
 
-definition "deflationary R (f :: 'a \<Rightarrow> _) \<equiv> deflationary_on (\<top> :: 'a \<Rightarrow> bool) R f"
+definition "(deflationary :: ('a \<Rightarrow> _) \<Rightarrow> _) \<equiv> deflationary_on (\<top> :: 'a \<Rightarrow> bool)"
 
 lemma deflationary_eq_deflationary_on:
-  "deflationary R (f :: 'a \<Rightarrow> _) = deflationary_on (\<top> :: 'a \<Rightarrow> bool) R f"
+  "(deflationary :: ('a \<Rightarrow> _) \<Rightarrow> _) = deflationary_on (\<top> :: 'a \<Rightarrow> bool)"
   unfolding deflationary_def ..
 
 lemma deflationaryI [intro]:
@@ -375,10 +377,10 @@ lemma deflationary_on_eq_rel_equivalence_on_if_symmetric:
   by (simp add: deflationary_on_eq_inflationary_on_rel_inv rel_equivalence_on_eq)
 
 
-definition "rel_equivalence (R :: 'a \<Rightarrow> _) f \<equiv> rel_equivalence_on (\<top> :: 'a \<Rightarrow> bool) R f"
+definition "(rel_equivalence :: ('a \<Rightarrow> _) \<Rightarrow> _ ) \<equiv> rel_equivalence_on (\<top> :: 'a \<Rightarrow> bool)"
 
 lemma rel_equivalence_eq_rel_equivalence_on:
-  "rel_equivalence (R :: 'a \<Rightarrow> _) f = rel_equivalence_on (\<top> :: 'a \<Rightarrow> bool) R f"
+  "(rel_equivalence :: ('a \<Rightarrow> _) \<Rightarrow> _ ) = rel_equivalence_on (\<top> :: 'a \<Rightarrow> bool)"
   unfolding rel_equivalence_def ..
 
 lemma rel_equivalenceI [intro]:
@@ -439,7 +441,7 @@ corollary preorder_on_in_field_if_transitive_if_rel_equivalence_on:
   and "transitive R"
   shows "preorder_on (in_field R) R"
   using assms reflexive_on_in_field_if_transitive_if_rel_equivalence_on
-  using assms by blast
+  by blast
 
 
 end

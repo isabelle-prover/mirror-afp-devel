@@ -5,19 +5,18 @@ theory Equivalence_Relations
     Partial_Equivalence_Relations
 begin
 
-definition "equivalence_rel_on P R \<equiv>
-  partial_equivalence_rel_on P R \<and> reflexive_on P R"
+definition "equivalence_rel_on \<equiv> partial_equivalence_rel_on \<sqinter> reflexive_on"
 
 lemma equivalence_rel_onI [intro]:
   assumes "partial_equivalence_rel_on P R"
   and "reflexive_on P R"
   shows "equivalence_rel_on P R"
-  unfolding equivalence_rel_on_def using assms by blast
+  unfolding equivalence_rel_on_def using assms by auto
 
 lemma equivalence_rel_onE [elim]:
   assumes "equivalence_rel_on P R"
   obtains "partial_equivalence_rel_on P R" "reflexive_on P R"
-  using assms unfolding equivalence_rel_on_def by blast
+  using assms unfolding equivalence_rel_on_def by auto
 
 lemma equivalence_rel_on_in_field_if_partial_equivalence_rel:
   assumes "partial_equivalence_rel R"
@@ -30,10 +29,10 @@ corollary partial_equivalence_rel_iff_equivalence_rel_on_in_field:
   using equivalence_rel_on_in_field_if_partial_equivalence_rel by auto
 
 
-definition "equivalence_rel (R :: 'a \<Rightarrow> _) \<equiv> equivalence_rel_on (\<top> :: 'a \<Rightarrow> bool) R"
+definition "(equivalence_rel :: ('a \<Rightarrow> _) \<Rightarrow> bool) \<equiv> equivalence_rel_on (\<top> :: 'a \<Rightarrow> bool)"
 
 lemma equivalence_rel_eq_equivalence_rel_on:
-  "equivalence_rel (R :: 'a \<Rightarrow> _) = equivalence_rel_on (\<top> :: 'a \<Rightarrow> bool) R"
+  "(equivalence_rel :: ('a \<Rightarrow> _) \<Rightarrow> bool) = equivalence_rel_on (\<top> :: 'a \<Rightarrow> bool)"
   unfolding equivalence_rel_def ..
 
 lemma equivalence_relI [intro]:

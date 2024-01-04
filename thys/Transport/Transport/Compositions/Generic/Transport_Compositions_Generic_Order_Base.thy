@@ -80,10 +80,10 @@ corollary reflexive_on_in_field_leftI:
 proof -
   from assms have "reflexive_on (in_dom (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>)"
     by (intro reflexive_on_in_dom_leftI)
-    (auto 0 4 intro: reflexive_on_if_le_pred_if_reflexive_on in_field_if_in_dom)
+    (auto 0 5 intro: reflexive_on_if_le_pred_if_reflexive_on in_field_if_in_dom)
   moreover from assms have "reflexive_on (in_codom (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>)"
     by (intro reflexive_on_in_codom_leftI)
-    (auto 0 4 intro: reflexive_on_if_le_pred_if_reflexive_on in_field_if_in_codom)
+    (auto 0 5 intro: reflexive_on_if_le_pred_if_reflexive_on in_field_if_in_codom)
   ultimately show ?thesis by (auto iff: in_field_iff_in_dom_or_in_codom)
 qed
 

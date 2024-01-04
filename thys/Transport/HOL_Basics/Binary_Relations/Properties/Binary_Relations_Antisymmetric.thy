@@ -26,10 +26,10 @@ lemma antisymmetric_onD:
   shows "x = y"
   using assms unfolding antisymmetric_on_pred_def by blast
 
-definition "antisymmetric (R :: 'a \<Rightarrow> _) \<equiv> antisymmetric_on (\<top> :: 'a \<Rightarrow> bool) R"
+definition "(antisymmetric :: ('a \<Rightarrow> _) \<Rightarrow> _) \<equiv> antisymmetric_on (\<top> :: 'a \<Rightarrow> bool)"
 
 lemma antisymmetric_eq_antisymmetric_on:
-  "antisymmetric (R :: 'a \<Rightarrow> _) = antisymmetric_on (\<top> :: 'a \<Rightarrow> bool) R"
+  "(antisymmetric :: ('a \<Rightarrow> _) \<Rightarrow> _) = antisymmetric_on (\<top> :: 'a \<Rightarrow> bool)"
   unfolding antisymmetric_def ..
 
 lemma antisymmetricI [intro]:

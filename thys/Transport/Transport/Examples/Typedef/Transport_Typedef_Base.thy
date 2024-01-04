@@ -21,9 +21,7 @@ sublocale transport? :
     (galois_rel.Galois (=) (=) Rep)"
   using Abs_inverse Rep_inverse
   by (intro transport_eq_restrict_bijection.intro bijection_onI)
-  (auto simp: restrict_right_eq
-    intro!: eq_reflection galois_rel.left_GaloisI Rep
-    elim: galois_rel.left_GaloisE)
+  (auto intro!: eq_reflection galois_rel.left_GaloisI Rep elim: galois_rel.left_GaloisE)
 
 interpretation galois L R Abs Rep .
 

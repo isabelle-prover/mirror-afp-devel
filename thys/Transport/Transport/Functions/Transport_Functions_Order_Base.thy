@@ -132,7 +132,7 @@ proof -
   qed
   with assms show ?thesis
     by (intro partial_equivalence_relI transitiveI symmetricI)
-    (auto elim: partial_equivalence_relE[OF assms(4)])
+    (blast elim: partial_equivalence_relE[OF assms(4)])+
 qed
 
 end

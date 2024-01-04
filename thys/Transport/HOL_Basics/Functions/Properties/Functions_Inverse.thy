@@ -36,10 +36,9 @@ proof (rule injective_onI)
   finally show "x = x'" .
 qed
 
-definition "inverse (f :: 'a \<Rightarrow> _) \<equiv> inverse_on (\<top> :: 'a \<Rightarrow> bool) f"
+definition "(inverse :: ('a \<Rightarrow> _) \<Rightarrow> _) \<equiv> inverse_on (\<top> :: 'a \<Rightarrow> bool)"
 
-lemma inverse_eq_inverse_on:
-  "inverse (f :: 'a \<Rightarrow> _) = inverse_on (\<top> :: 'a \<Rightarrow> bool) f"
+lemma inverse_eq_inverse_on: "(inverse :: ('a \<Rightarrow> _) \<Rightarrow> _) = inverse_on (\<top> :: 'a \<Rightarrow> bool)"
   unfolding inverse_def ..
 
 lemma inverseI [intro]:

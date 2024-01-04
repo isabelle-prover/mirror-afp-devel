@@ -24,10 +24,9 @@ lemma surjective_atE [elim]:
   obtains x where "y = f x"
   using assms unfolding surjective_at_pred_def by blast
 
-definition "surjective (f :: _ \<Rightarrow> 'a) \<equiv> surjective_at (\<top> :: 'a \<Rightarrow> bool) f"
+definition "(surjective :: (_ \<Rightarrow> 'a) \<Rightarrow> _) \<equiv> surjective_at (\<top> :: 'a \<Rightarrow> bool)"
 
-lemma surjective_eq_surjective_at:
-  "surjective (f :: _ \<Rightarrow> 'a) = surjective_at (\<top> :: 'a \<Rightarrow> bool) f"
+lemma surjective_eq_surjective_at: "(surjective :: (_ \<Rightarrow> 'a) \<Rightarrow> _) = surjective_at (\<top> :: 'a \<Rightarrow> bool)"
   unfolding surjective_def ..
 
 lemma surjectiveI [intro]:

@@ -63,7 +63,8 @@ proof -
     moreover assume "\<eta>\<^sub>1 x2 \<le>\<^bsub>L1\<^esub> x1"
     ultimately have "x2 \<equiv>\<^bsub>L1\<^esub> x1" using preorder_L1 by blast
     moreover assume "x3 \<le>\<^bsub>L1\<^esub> x4" "x2 \<le>\<^bsub>L1\<^esub> x3"
-    ultimately show "(\<le>\<^bsub>L2 x1 x3\<^esub>) \<le> (\<le>\<^bsub>L2 x2 x4\<^esub>)" using preorder_L1 mono_L2 by blast
+    ultimately show "(\<le>\<^bsub>L2 x1 x3\<^esub>) \<le> (\<le>\<^bsub>L2 x2 x4\<^esub>)" using preorder_L1 mono_L2
+      by (intro le_relI) (blast dest!: rel_ifD elim!: dep_mono_wrt_relE)
   qed
   show ?goal2
   proof (intro dep_mono_wrt_relI rel_if_if_impI Dep_Fun_Rel_relI)

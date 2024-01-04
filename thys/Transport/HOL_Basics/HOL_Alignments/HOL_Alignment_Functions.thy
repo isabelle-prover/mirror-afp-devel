@@ -101,9 +101,8 @@ lemma inverse_on_set_iff_inverse_on_pred [iff]:
 subparagraph \<open>Monotone\<close>
 
 lemma monotone_on_eq_mono_wrt_rel_restrict_left_right [HOL_fun_alignment]:
-  "monotone_on S R = mono_wrt_rel (R\<restriction>\<^bsub>S\<^esub>\<upharpoonleft>\<^bsub>S\<^esub>)"
-  unfolding restrict_right_eq
-  by (intro ext) (blast intro: monotone_onI dest: monotone_onD)
+  "monotone_on S R = mono_wrt_rel R\<restriction>\<^bsub>S\<^esub>\<upharpoonleft>\<^bsub>S\<^esub>"
+  by (intro ext) (auto intro!: monotone_onI dest: monotone_onD)
 
 lemma monotone_eq_mono_wrt_rel [HOL_fun_alignment]: "monotone = mono_wrt_rel"
   by (intro ext) (auto intro: monotoneI dest: monotoneD)

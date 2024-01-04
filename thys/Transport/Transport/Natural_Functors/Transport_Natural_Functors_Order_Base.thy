@@ -11,15 +11,15 @@ lemma reflexive_on_in_field_FrelI:
   and "reflexive_on (in_field R3) R3"
   defines "R \<equiv> Frel R1 R2 R3"
   shows "reflexive_on (in_field R) R"
-  apply (subst reflexive_on_iff_eq_restrict_left_le)
+  apply (subst reflexive_on_iff_eq_restrict_le)
   apply (subst Frel_eq[symmetric])
   apply (unfold R_def)
   apply (subst in_field_Frel_eq_Fpred_in_in_field)
-  apply (subst restrict_left_sup_eq)
+  apply (subst bin_rel_restrict_left_sup_eq)
   apply (subst Frel_restrict_left_Fpred_eq_Frel_restrict_left)+
   apply (rule le_supI;
     rule Frel_mono;
-    subst reflexive_on_iff_eq_restrict_left_le[symmetric],
+    subst reflexive_on_iff_eq_restrict_le[symmetric],
     rule reflexive_on_if_le_pred_if_reflexive_on,
     rule assms,
     rule le_predI[OF in_field_if_in_dom]

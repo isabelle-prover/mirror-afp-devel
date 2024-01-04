@@ -174,14 +174,17 @@ lemma rel_ifD:
   shows "R x y"
   using assms by blast
 
-consts restrict_left :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'c \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> bool"
-
-definition "restrict_right R P \<equiv> (restrict_left R\<inverse> P)\<inverse>"
+consts restrict_left :: "'a \<Rightarrow> 'b \<Rightarrow> 'a"
+consts restrict_right :: "'a \<Rightarrow> 'b \<Rightarrow> 'a"
 
 overloading
-  restrict_left_pred \<equiv> "restrict_left :: ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> bool"
+  bin_rel_restrict_left_pred \<equiv>
+    "restrict_left :: ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> bool"
+  bin_rel_restrict_right_pred \<equiv>
+    "restrict_right :: ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> bool"
 begin
-  definition "restrict_left_pred R P x y \<equiv> P x \<and> R x y"
+  definition "bin_rel_restrict_left_pred R P x y \<equiv> P x \<and> R x y"
+  definition "bin_rel_restrict_right_pred R P x y \<equiv> P y \<and> R x y"
 end
 
 bundle restrict_syntax
@@ -196,72 +199,78 @@ no_notation restrict_right ("(_)\<upharpoonleft>(\<^bsub>_\<^esub>)" [1000])
 end
 unbundle restrict_syntax
 
-lemma restrict_leftI [intro]:
+lemma bin_rel_restrict_leftI [intro]:
   assumes "R x y"
   and "P x"
   shows "R\<restriction>\<^bsub>P\<^esub> x y"
-  using assms unfolding restrict_left_pred_def by blast
+  using assms unfolding bin_rel_restrict_left_pred_def by blast
 
-lemma restrict_leftE [elim]:
+lemma bin_rel_restrict_leftE [elim]:
   assumes "R\<restriction>\<^bsub>P\<^esub> x y"
   obtains "P x" "R x y"
-  using assms unfolding restrict_left_pred_def by blast
+  using assms unfolding bin_rel_restrict_left_pred_def by blast
 
-lemma restrict_right_eq: "R\<upharpoonleft>\<^bsub>P\<^esub> = ((R\<inverse>)\<restriction>\<^bsub>P\<^esub>)\<inverse>"
-  unfolding restrict_right_def ..
-
-lemma rel_inv_restrict_right_rel_inv_eq_restrict_left [simp]: "((R\<inverse>)\<upharpoonleft>\<^bsub>P\<^esub>)\<inverse> = R\<restriction>\<^bsub>P\<^esub>"
-  by (simp add: restrict_right_eq)
-
-lemma restrict_right_iff_restrict_left: "R\<upharpoonleft>\<^bsub>P\<^esub> x y = (R\<inverse>)\<restriction>\<^bsub>P\<^esub> y x"
-  unfolding restrict_right_eq by simp
-
-lemma restrict_rightI [intro]:
+lemma bin_rel_restrict_rightI [intro]:
   assumes "R x y"
   and "P y"
   shows "R\<upharpoonleft>\<^bsub>P\<^esub> x y"
-  using assms by (auto iff: restrict_right_iff_restrict_left)
+  using assms unfolding bin_rel_restrict_right_pred_def by blast
 
-lemma restrict_rightE [elim]:
+lemma bin_rel_restrict_rightE [elim]:
   assumes "R\<upharpoonleft>\<^bsub>P\<^esub> x y"
   obtains "P y" "R x y"
-  using assms by (auto iff: restrict_right_iff_restrict_left)
+  using assms unfolding bin_rel_restrict_right_pred_def by blast
 
-lemma rel_inv_restrict_left_inv_restrict_left_eq:
+context
+  fixes R :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
+begin
+
+lemma bin_rel_restrict_right_eq: "R\<upharpoonleft>\<^bsub>P :: 'b \<Rightarrow> bool\<^esub> = ((R\<inverse>)\<restriction>\<^bsub>P\<^esub>)\<inverse>"
+  by blast
+
+lemma rel_inv_restrict_right_rel_inv_eq_restrict_left [simp]: "((R\<inverse>)\<upharpoonleft>\<^bsub>P :: 'a \<Rightarrow> bool\<^esub>)\<inverse> = R\<restriction>\<^bsub>P\<^esub>"
+  by blast
+
+lemma bin_rel_restrict_right_iff_restrict_left: "R\<upharpoonleft>\<^bsub>P :: 'b \<Rightarrow> bool\<^esub> x y \<longleftrightarrow> (R\<inverse>)\<restriction>\<^bsub>P\<^esub> y x"
+  unfolding bin_rel_restrict_right_eq by simp
+
+end
+
+lemma rel_inv_bin_rel_restrict_left_inv_bin_rel_restrict_left_eq:
   fixes R :: "'a \<Rightarrow> 'b \<Rightarrow> bool" and P :: "'a \<Rightarrow> bool" and Q :: "'b \<Rightarrow> bool"
   shows "(((R\<restriction>\<^bsub>P\<^esub>)\<inverse>)\<restriction>\<^bsub>Q\<^esub>)\<inverse> = (((R\<inverse>)\<restriction>\<^bsub>Q\<^esub>)\<inverse>)\<restriction>\<^bsub>P\<^esub>"
-  by (intro ext iffI restrict_leftI rel_invI) auto
+  by (intro ext iffI bin_rel_restrict_leftI rel_invI) auto
 
-lemma restrict_left_right_eq_restrict_right_left:
+lemma bin_rel_restrict_left_right_eq_restrict_right_left:
   fixes R :: "'a \<Rightarrow> 'b \<Rightarrow> bool" and P :: "'a \<Rightarrow> bool" and Q :: "'b \<Rightarrow> bool"
   shows "R\<restriction>\<^bsub>P\<^esub>\<upharpoonleft>\<^bsub>Q\<^esub> = R\<upharpoonleft>\<^bsub>Q\<^esub>\<restriction>\<^bsub>P\<^esub>"
-  unfolding restrict_right_eq
-  by (fact rel_inv_restrict_left_inv_restrict_left_eq)
+  unfolding bin_rel_restrict_right_eq
+  by (fact rel_inv_bin_rel_restrict_left_inv_bin_rel_restrict_left_eq)
 
-lemma in_dom_restrict_leftI [intro]:
+lemma in_dom_bin_rel_restrict_leftI [intro]:
   assumes "R x y"
   and "P x"
   shows "in_dom R\<restriction>\<^bsub>P\<^esub> x"
   using assms by blast
 
-lemma in_dom_restrict_left_if_in_dom:
+lemma in_dom_bin_rel_restrict_left_if_in_dom:
   assumes "in_dom R x"
   and "P x"
   shows "in_dom R\<restriction>\<^bsub>P\<^esub> x"
   using assms by blast
 
-lemma in_dom_restrict_leftE [elim]:
+lemma in_dom_bin_rel_restrict_leftE [elim]:
   assumes "in_dom R\<restriction>\<^bsub>P\<^esub> x"
   obtains y where "P x" "R x y"
   using assms by blast
 
-lemma in_codom_restrict_leftI [intro]:
+lemma in_codom_bin_rel_restrict_leftI [intro]:
   assumes "R x y"
   and "P x"
   shows "in_codom R\<restriction>\<^bsub>P\<^esub> y"
   using assms by blast
 
-lemma in_codom_restrict_leftE [elim]:
+lemma in_codom_bin_rel_restrict_leftE [elim]:
   assumes "in_codom R\<restriction>\<^bsub>P\<^esub> y"
   obtains x where "P x" "R x y"
   using assms by blast

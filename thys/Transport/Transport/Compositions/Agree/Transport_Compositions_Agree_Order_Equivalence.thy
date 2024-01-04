@@ -37,7 +37,7 @@ corollary inflationary_on_in_field_unitI:
   and "inflationary_on (in_field (\<le>\<^bsub>L2\<^esub>)) (\<le>\<^bsub>L2\<^esub>) \<eta>\<^sub>2"
   and "\<And>x. in_field (\<le>\<^bsub>L1\<^esub>) x \<Longrightarrow> l1 x \<le>\<^bsub>L2\<^esub> r2 (l x) \<Longrightarrow> l1 x \<le>\<^bsub>R1\<^esub> r2 (l x)"
   shows "inflationary_on (in_field (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>) \<eta>"
-  using assms by (intro inflationary_on_unitI dep_mono_wrt_predI) auto
+  using assms by (intro inflationary_on_unitI dep_mono_wrt_predI) (auto 5 0)
 
 
 paragraph \<open>Deflationary\<close>

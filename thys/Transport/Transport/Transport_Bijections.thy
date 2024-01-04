@@ -2,6 +2,7 @@
 section \<open>Transport using Bijections\<close>
 theory Transport_Bijections
   imports
+    Restricted_Equality
     Functions_Bijection
     Transport_Base
 begin
@@ -30,8 +31,7 @@ lemma bijection_on_in_field: "bijection_on (in_field (\<le>\<^bsub>L\<^esub>)) (
 
 lemma half_galois_prop_left: "((\<le>\<^bsub>L\<^esub>) \<^sub>h\<unlhd> (\<le>\<^bsub>R\<^esub>)) l r"
   using mono_wrt_rel_left inverse_right_left
-  by (intro half_galois_prop_leftI)
-  (auto dest!: in_field_if_in_codom inverse_onD)
+  by (intro half_galois_prop_leftI) (fastforce dest: inverse_onD)
 
 lemma half_galois_prop_right: "((\<le>\<^bsub>L\<^esub>) \<unlhd>\<^sub>h (\<le>\<^bsub>R\<^esub>)) l r"
   using mono_wrt_rel_right inverse_left_right
@@ -168,19 +168,16 @@ interpretation transport "(=\<^bsub>P\<^esub>)" "(=\<^bsub>Q\<^esub>)" l r .
 
 sublocale tper_bij? : transport_partial_equivalence_rel_bijection "(=\<^bsub>P\<^esub>)" "(=\<^bsub>Q\<^esub>)" l r
   using bijection_on_in_field partial_equivalence_rel_eq_restrict
-    eq_restrict_le_eq
   by unfold_locales
   (auto elim: bijection_onE intro!:
-    mono_wrt_rel_left_if_reflexive_on_if_le_eq_if_mono_wrt_in_field
-      [of "in_field (=\<^bsub>Q\<^esub>)"]
-    flip_of.mono_wrt_rel_left_if_reflexive_on_if_le_eq_if_mono_wrt_in_field
-      [of "in_field (=\<^bsub>P\<^esub>)"])
+    mono_wrt_rel_left_if_reflexive_on_if_le_eq_if_mono_wrt_in_field[of "in_field (=\<^bsub>Q\<^esub>)"]
+    flip_of.mono_wrt_rel_left_if_reflexive_on_if_le_eq_if_mono_wrt_in_field[of "in_field (=\<^bsub>P\<^esub>)"])
 
 lemma left_Galois_eq_Galois_eq_eq_restrict: "(\<^bsub>L\<^esub>\<lessapprox>) = (galois_rel.Galois (=) (=) r)\<restriction>\<^bsub>P\<^esub>\<upharpoonleft>\<^bsub>Q\<^esub>"
   by (subst galois_rel.left_Galois_restrict_left_eq_left_Galois_left_restrict_left
     galois_rel.left_Galois_restrict_right_eq_left_Galois_right_restrict_right
-    restrict_right_eq rel_inv_eq_self_if_symmetric)+
-  (auto simp: eq_restrict_eq_eq_restrict_left)
+    bin_rel_restrict_right_eq rel_inv_eq_self_if_symmetric)+
+  auto
 
 end
 

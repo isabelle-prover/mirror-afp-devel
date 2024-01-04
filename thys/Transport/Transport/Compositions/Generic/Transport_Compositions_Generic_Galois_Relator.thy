@@ -72,7 +72,7 @@ proof (intro le_relI left_GaloisI)
       with refl_R1 have "r2 z \<le>\<^bsub>R1\<^esub> r2 z" by blast
       with mono_r1 show "in_codom (\<le>\<^bsub>L1\<^esub>) (r z)" by auto
       with \<open>r2 z \<le>\<^bsub>R1\<^esub> r2 z\<close>  half_galois_prop_right1 mono_r1
-        show "r2 z \<le>\<^bsub>R1\<^esub> l1 (r z)" by (auto intro:
+        show "r2 z \<le>\<^bsub>R1\<^esub> l1 (r z)" by (fastforce intro:
         flip.t2.rel_unit_if_left_rel_if_half_galois_prop_right_if_mono_wrt_rel)
     qed
   qed

@@ -134,14 +134,14 @@ lemma inflationary_on_unit_if_left_rel_right_if_left_right_relI:
   and "reflexive_on P (\<le>\<^bsub>L\<^esub>)"
   and "\<And>x y. P x \<Longrightarrow> l x \<le>\<^bsub>R\<^esub> y \<Longrightarrow> x \<le>\<^bsub>L\<^esub> r y"
   shows "inflationary_on P (\<le>\<^bsub>L\<^esub>) \<eta>"
-  using assms by (intro inflationary_onI) auto
+  using assms by (intro inflationary_onI) fastforce
 
 lemma deflationary_on_unit_if_right_left_rel_if_right_rel_leftI:
   assumes "((\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R\<^esub>)) l"
   and "reflexive_on P (\<le>\<^bsub>L\<^esub>)"
   and "\<And>x y. P x \<Longrightarrow> y \<le>\<^bsub>R\<^esub> l x \<Longrightarrow> r y \<le>\<^bsub>L\<^esub> x"
   shows "deflationary_on P (\<le>\<^bsub>L\<^esub>) \<eta>"
-  using assms by (intro deflationary_onI) auto
+  using assms by (intro deflationary_onI) fastforce
 
 context
   fixes P :: "'a \<Rightarrow> bool"

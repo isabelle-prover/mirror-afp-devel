@@ -1,11 +1,12 @@
 chapter AFP
 
-session Transport = "HOL-Algebra" +
+session Transport = "HOL" +
   description
     "Transport via partial Galois connections and equivalences and basic libraries on top of HOL axioms."
   options
     [timeout = 600]
   sessions
+    "HOL-Algebra"
     "HOL-Library"
     "ML_Unification"
   directories

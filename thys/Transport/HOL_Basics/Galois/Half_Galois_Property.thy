@@ -135,14 +135,14 @@ lemma rel_unit_if_left_rel_if_mono_wrt_relI:
   and "x \<lessapprox>\<^bsub>R\<^esub> l x' \<Longrightarrow> x \<le>\<^bsub>L\<^esub> \<eta> x'"
   and "x \<le>\<^bsub>L\<^esub> x'"
   shows "x \<le>\<^bsub>L\<^esub> \<eta> x'"
-  using assms by auto
+  using assms by blast
 
 corollary rel_unit_if_left_rel_if_half_galois_prop_right_if_mono_wrt_rel:
   assumes "((\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R\<^esub>)) l"
   and "((\<le>\<^bsub>L\<^esub>) \<unlhd>\<^sub>h (\<le>\<^bsub>R\<^esub>)) l r"
   and "x \<le>\<^bsub>L\<^esub> x'"
   shows "x \<le>\<^bsub>L\<^esub> \<eta> x'"
-  using assms by (auto intro: rel_unit_if_left_rel_if_mono_wrt_relI)
+  using assms by (fastforce intro: rel_unit_if_left_rel_if_mono_wrt_relI)
 
 corollary rel_unit_if_reflexive_on_if_half_galois_prop_right_if_mono_wrt_rel:
   assumes "((\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R\<^esub>)) l"

@@ -84,7 +84,7 @@ lemma Mono_Dep_Fun_Refl_Rel_right_eq_Mono_Dep_Fun_if_mono_if_reflexive_onI:
   shows "([x y \<Colon> (\<le>\<^bsub>L\<^esub>)] \<Rrightarrow>\<oplus> (\<le>\<^bsub>R x y\<^esub>)\<^sup>\<oplus>) = ([x y \<Colon> (\<le>\<^bsub>L\<^esub>)] \<Rrightarrow>\<oplus> (\<le>\<^bsub>R x y\<^esub>))"
   using assms
   by (intro Mono_Dep_Fun_Refl_Rel_right_eq_Mono_Dep_Fun_if_le_if_reflexive_onI)
-  auto
+  (auto 6 0)
 
 end
 
