@@ -367,7 +367,7 @@ proof -
   then show ?thesis
   proof (induct "set_zmset \<Delta> - {(loc, t)}" arbitrary: \<Delta> rule: finite_induct)
     case empty
-    then show ?case using fold_empty by auto
+    then show ?case using fold_empty by (auto simp del: diff_shunt)
   next
     let ?f = "(\<lambda>(loc', t') c. apply_cm c loc' t' (zcount \<Delta>' (loc',t')))"
     case (insert x F)

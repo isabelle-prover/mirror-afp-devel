@@ -11,8 +11,64 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Wed, 11 Oct 2023 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Tue, 05 Dec 2023 00:00:00 +0000</lastBuildDate>
       <atom:link href="/topics/computer-science/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>HOL-CSPM - Architectural operators for HOL-CSP</title>
+          <link>/entries/HOL-CSPM.html</link>
+          <pubDate>Tue, 05 Dec 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/HOL-CSPM.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>HOL-CSPM - Architectural operators for HOL-CSP</title>
+          <link>/entries/HOL-CSPM.html</link>
+          <pubDate>Tue, 05 Dec 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/HOL-CSPM.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Knuth–Morris–Pratt String Search</title>
+          <link>/entries/KnuthMorrisPratt.html</link>
+          <pubDate>Mon, 27 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/KnuthMorrisPratt.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Myhill-Nerode Theorem for Nominal G-Automata</title>
+          <link>/entries/Nominal_Myhill_Nerode.html</link>
+          <pubDate>Fri, 10 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Nominal_Myhill_Nerode.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Labeled Transition Systems</title>
+          <link>/entries/Labeled_Transition_Systems.html</link>
+          <pubDate>Tue, 31 Oct 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Labeled_Transition_Systems.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Labeled Transition Systems</title>
+          <link>/entries/Labeled_Transition_Systems.html</link>
+          <pubDate>Tue, 31 Oct 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Labeled_Transition_Systems.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Pushdown Systems</title>
+          <link>/entries/Pushdown_Systems.html</link>
+          <pubDate>Tue, 31 Oct 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Pushdown_Systems.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Pushdown Systems</title>
+          <link>/entries/Pushdown_Systems.html</link>
+          <pubDate>Tue, 31 Oct 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Pushdown_Systems.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Transport via Partial Galois Connections and Equivalences</title>
           <link>/entries/Transport.html</link>

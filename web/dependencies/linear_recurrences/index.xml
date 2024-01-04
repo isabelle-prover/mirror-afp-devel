@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Linear_Recurrences on Archive of Formal Proofs
+    </title>
+    <link>/dependencies/linear_recurrences/</link>
+    <description>
+        Recent content in Linear_Recurrences 
+        on Archive of Formal Proofs
+    </description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    
+      <lastBuildDate>Wed, 15 Nov 2023 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/linear_recurrences/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>The Polylogarithm Function</title>
+          <link>/entries/Polylog.html</link>
+          <pubDate>Wed, 15 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Polylog.html</guid>
+          <description></description>
+        </item>
+  </channel>
+</rss>

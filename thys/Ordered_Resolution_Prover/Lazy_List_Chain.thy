@@ -342,7 +342,11 @@ inductive prepend_cong1 for X where
   prepend_cong1_base: "X xs \<Longrightarrow> prepend_cong1 X xs"
 | prepend_cong1_prepend: "prepend_cong1 X ys \<Longrightarrow> prepend_cong1 X (prepend xs ys)"
 
-lemma emb_prepend_coinduct[rotated, case_names emb]:
+lemma prepend_cong1_alt: "prepend_cong1 X xs \<longleftrightarrow> (\<exists>ys zs. xs = prepend ys zs \<and> X zs)"
+  by (rule iffI, induct xs rule: prepend_cong1.induct)
+    (force simp: prepend_prepend intro: prepend_cong1.intros exI[of _ "[]"])+
+
+lemma emb_prepend_coinduct_cong[rotated, case_names emb]:
   assumes "(\<And>x1 x2. X x1 x2 \<Longrightarrow>
     (\<exists>xs. x1 = LNil \<and> x2 = xs \<and> lfinite xs)
      \<or> (\<exists>xs ys x zs. x1 = LCons x xs \<and> x2 = prepend zs (LCons x ys)
@@ -354,6 +358,36 @@ proof (erule emb.coinduct[OF prepend_cong1_base])
   then show "?bisim xs zs"
     by (induct zs rule: prepend_cong1.induct) (erule assms, force simp: prepend_prepend)
 qed
+
+lemma emb_prepend: "emb xs ys \<Longrightarrow> emb xs (prepend zs ys)"
+  by (coinduction arbitrary: xs zs ys rule: emb_prepend_coinduct_cong)
+    (force elim: emb.cases simp: prepend_prepend)
+
+lemma prepend_cong1_emb: "prepend_cong1 (emb xs) ys = emb xs ys"
+  by (rule iffI, induct ys rule: prepend_cong1.induct)
+    (simp_all add: emb_prepend prepend_cong1_base)
+
+lemma prepend_cong_distrib:
+  "prepend_cong1 (P \<squnion> Q) xs \<longleftrightarrow> prepend_cong1 P xs \<or> prepend_cong1 Q xs"
+  unfolding prepend_cong1_alt by auto
+
+lemma emb_prepend_coinduct_aux[case_names emb]:
+  assumes "X x1 x2 " "(\<And>x1 x2. X x1 x2 \<Longrightarrow>
+    (\<exists>xs. x1 = LNil \<and> x2 = xs \<and> lfinite xs)
+     \<or> (\<exists>xs ys x zs. x1 = LCons x xs \<and> x2 = prepend zs (LCons x ys)
+       \<and> (prepend_cong1 (X xs \<squnion> emb xs) ys)))"
+  shows "emb x1 x2"
+  using assms unfolding prepend_cong_distrib prepend_cong1_emb
+  by (rule emb_prepend_coinduct_cong)
+
+lemma emb_prepend_coinduct[rotated, case_names emb]:
+  assumes "(\<And>x1 x2. X x1 x2 \<Longrightarrow>
+    (\<exists>xs. x1 = LNil \<and> x2 = xs \<and> lfinite xs)
+     \<or> (\<exists>xs ys x zs zs'. x1 = LCons x xs \<and> x2 = prepend zs (LCons x (prepend zs' ys))
+       \<and> (X xs ys \<or> emb xs ys)))"
+  shows "X x1 x2 \<Longrightarrow> emb x1 x2"
+  by (erule emb_prepend_coinduct_aux[of X]) (force simp: prepend_cong1_alt dest: assms)
+
 
 context
 begin
@@ -445,8 +479,8 @@ proof (coinduction arbitrary: xs rule: emb_prepend_coinduct)
     case (chain_cons zs z)
     then show ?thesis
       by (subst (2) wit.code)
-        (auto split: llist.splits intro!: exI[of _ "[]"] exI[of _ "_ :: _ llist"]
-          prepend_cong1_prepend[OF prepend_cong1_base])
+        (auto 0 3 split: llist.splits intro: exI[of _ "[]"] exI[of _ "pick z _"]
+           intro!: exI[of _ "_ :: _ llist"])
   qed (auto intro!: exI[of _ LNil] exI[of _ "[]"] emb.intros)
 qed
 

@@ -1,0 +1,14 @@
+chapter AFP
+
+session Pushdown_Systems = "Labeled_Transition_Systems" +
+  options [timeout = 300]
+  theories
+    P_Automata
+    PDS
+    PDS_Code
+  theories [document = false]
+    Ex
+  document_files
+    "root.bib"
+    "root.tex"
+

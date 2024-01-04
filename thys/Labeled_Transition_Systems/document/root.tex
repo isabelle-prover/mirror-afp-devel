@@ -1,0 +1,54 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{amssymb}
+\usepackage[left=2.25cm,right=2.25cm,top=2.25cm,bottom=2.75cm]{geometry}
+\usepackage{graphicx}
+\usepackage{isabelle}
+\usepackage{isabellesym}
+\usepackage[only,bigsqcap]{stmaryrd}
+\usepackage{pdfsetup}
+
+\urlstyle{tt}
+\isabellestyle{it}
+
+\renewcommand{\isacharunderscore}{\_}
+\renewcommand{\isachardoublequoteopen}{``}
+\renewcommand{\isachardoublequoteclose}{''}
+
+\begin{document}
+
+\title{Labeled Transition Systems}
+\author{Anders Schlichtkrull, Morten Konggaard Schou, Ji\v{r}\'i Srba and Dmitriy Traytel}
+\date{}
+
+\maketitle
+
+\begin{abstract}
+\noindent
+Labeled transition systems are ubiquitous in computer science. They are used e.g.\ for automata and for program graphs in program analysis.
+We formalize labeled transition systems with and without epsilon transitions.
+The main difference between formalizations of labeled transition systems is in their choice of how to represent the transition system.
+In the present formalization the set of nodes is a type, and a labeled transition system is represented as a locale fixing a set 
+of transitions where each transition is a triple of respectively a start node, a label and an end node.
+Wimmer~\cite{graphs} provides an overview of formalizations of graphs and transition systems.
+
+\end{abstract}
+
+\tableofcontents
+
+\newpage
+
+% sane default for proof documents
+\parindent 0pt
+\parskip 0.5ex
+
+\newpage
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{alpha}
+\bibliography{root}
+
+\end{document}

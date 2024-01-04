@@ -1,0 +1,34 @@
+title = "Two theorems about the geometry of the critical points of a complex polynomial"
+date = 2023-11-14
+topics = [
+  "Mathematics/Algebra",
+]
+abstract = """
+<p>
+This entry formalises two well-known results about the geometric relation between the <em>roots</em>
+of a complex polynomial and its <em>critical points</em>, i.e. the roots of its derivative.</p>
+<p>The first of these is the <em>Gauß–Lucas Theorem</em>: The critical points of a 
+complex polynomial lie inside the convex hull of its roots.</p>
+<p>The second one is <em>Jensen's Theorem</em>: Every non-real critical point of a
+real polynomial lies inside a disc between two conjugate roots. These discs are called the <em>Jensen discs</em>: the Jensen disc of a pair of conjugate roots $a \\pm b i$ is the smallest disc that contains both of them, i.e. the disc with centre $a$ and 
+radius $b$.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+email = "eberl_email"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

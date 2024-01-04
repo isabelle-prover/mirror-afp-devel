@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Thu, 15 Dec 2022 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Mon, 13 Nov 2023 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/polynomial_interpolation/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Chebyshev Polynomials</title>
+          <link>/entries/Chebyshev_Polynomials.html</link>
+          <pubDate>Mon, 13 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Chebyshev_Polynomials.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>A First Complete Algorithm for Real Quantifier Elimination in Isabelle/HOL</title>
           <link>/entries/Quantifier_Elimination_Hybrid.html</link>

@@ -1,0 +1,51 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amssymb}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\newcommand{\lenarray}[1]{|#1|}
+
+\begin{document}
+
+\title{Knuth--Morris--Pratt String Search}
+\author{Lawrence C. Paulson}
+\maketitle
+
+\begin{abstract}
+The naive algorithm to search for a pattern $p$ within a string $a$ compares
+corresponding characters from left to right, and in case of a mismatch,
+shifts one position along $a$ and starts again. 
+The worst-case time is $O(\lenarray{p}\lenarray{a})$. 
+
+Knuth--Morris--Pratt~\cite{knuth-fast-pattern} 
+exploits the knowledge gained from the partial match, 
+never re-comparing characters that matched and thereby achieving linear time. 
+At the first mismatched character,
+it shifts $p$ as far to the right as safely possible. To do so, it consults a
+precomputed table, based on the pattern~$p$. The KMP algorithm is proved correct. 
+\end{abstract}
+
+\newpage
+\tableofcontents
+
+\paragraph*{Acknowledgements}
+This development closely follows a formal verification of 
+the Knuth--Morris--Pratt algorithm by Jean-Christophe Filliâtre using Why3.
+Tobias Nipkow made helpful suggestions.
+
+\newpage
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

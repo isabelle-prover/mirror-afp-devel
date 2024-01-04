@@ -2,20 +2,17 @@ chapter AFP
 
 session "Three_Squares" = "HOL-Complex_Analysis" +
   description \<open>Three Squares Theorem\<close>
-  options [timeout = 1200]
-
+  options [timeout = 3600]
   sessions
     "HOL-Library"
     "HOL-Algebra"
     "HOL-Number_Theory"
     "Dirichlet_L"
-
   theories
     "Residues_Properties"
     "Low_Dimensional_Linear_Algebra"
     "Quadratic_Forms"
     "Three_Squares"
-
   document_files
     "root.bib"
     "root.tex"

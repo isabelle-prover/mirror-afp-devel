@@ -92,8 +92,7 @@ fun dest_comb_pattern ctxt tn u =
   let val (vars, (_, env)) = match_comb_pattern ctxt tn u;
   in map (the o Envir.lookup1 env) vars end;
 
-fun norm_term_types tyenv t = Term_Subst.map_types_same (Envir.norm_type_same tyenv) t
-  handle Same.SAME => t;
+val norm_term_types = Term.map_types o Envir.norm_type_same;
 
 val mk_TFrees_of = mk_TFrees' oo replicate;
 
@@ -146,7 +145,7 @@ val unpack_poly_terms = map unpack_poly_term o strip_tuple';
 fun match_poly_terms_type ctxt (pt, i) (U, maxidx) =
   let
     val thy = Proof_Context.theory_of ctxt;
-    val pt' = Logic.incr_indexes ([], [], maxidx + 1) pt;
+    val pt' = Logic.incr_indexes ([], maxidx + 1) pt;
     val (tvars, T) = poly_type_of_term (nth (unpack_poly_terms pt') i);
     val tyenv = Sign.typ_match thy (T, U) Vartab.empty
       handle Type.TYPE_MATCH => raise TYPE ("match_poly_terms", [U, T], []);
@@ -978,7 +977,7 @@ fun mk_terms ctxt (raw_pure, raw_ap, raw_rel, raw_set) =
     val (tvar, T1) = fastype_of pure |> dest_funT |>> dest_TVar
       handle TYPE _ => error ("Bad type for pure: " ^ show_typ (fastype_of pure));
     val maxidx_pure = maxidx_of_term pure;
-    val ap = Logic.incr_indexes ([], [], maxidx_pure + 1) (closed_poly_term raw_ap);
+    val ap = Logic.incr_indexes ([], maxidx_pure + 1) (closed_poly_term raw_ap);
     fun bad_ap _ = error ("Bad type for ap: " ^ show_typ (fastype_of ap));
     val (T23, (T2, T3)) = fastype_of ap |> dest_funT ||> dest_funT
       handle TYPE _ => bad_ap ();

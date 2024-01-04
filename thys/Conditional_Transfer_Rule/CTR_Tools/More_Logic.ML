@@ -14,7 +14,6 @@ sig
   val varifyT_mixed_global : typ -> typ
   val varify_mixed_global : term -> term
   val unoverload_types_term : theory -> term -> term
-  val is_equals : term -> bool
 end
 
 structure Logic : LOGIC  =
@@ -26,8 +25,7 @@ open Logic;
 fun unvarify_types_local_factt ctxt ts = 
   let
     val stv_specs = ts
-      |> map (fn thmt => Term.add_tvars thmt [] |> rev)
-      |> flat
+      |> maps (fn thmt => Term.add_tvars thmt [] |> rev)
       |> distinct op=
     val ctxt' = fold Proof_Context.augment ts ctxt
     val (ftv_specs, _) = Variable.invent_types (map #2 stv_specs) ctxt'
@@ -49,8 +47,7 @@ fun unvarify_types_local_term ctxt t = t
 fun unvarify_local_factt ctxt ts =
   let
     val (ts, ctxt') = unvarify_types_local_factt ctxt ts
-    val sv_specs = map (fn thmt => Term.add_vars thmt [] |> rev) ts
-      |> flat 
+    val sv_specs = maps (fn thmt => Term.add_vars thmt [] |> rev) ts
       |> distinct op=
     val stvcs = sv_specs |> (#1 #> #1 |> map)
       |> Variable.variant_name_const ctxt'
@@ -114,9 +111,7 @@ end;
 fun unoverload_types_term thy t =
   let
     val sort_consts = Term.add_tvars t []
-      |> map #2
-      |> map (Sorts.params_of_sort thy)
-      |> flat
+      |> maps (Sorts.params_of_sort thy o #2)
       |> distinct op=
     val const_map = Term.add_consts t []
       |> distinct op=
@@ -132,22 +127,16 @@ fun unoverload_types_term thy t =
     val t' = Term.map_const const_map_opt t
     val t'' =
       let                     
-        val uctxt = Logic.unconstrainT [] t' |> #1
-        (*Ported from Pure/Logic.ML with amendments*)
-        val map_atyps = 
-          Term.map_atyps (Type.default_sorts thy o (#atyp_map uctxt))
-        (*Ported from Pure/Logic.ML with amendments*)
+        val {typ_operation, constraints, ...} =
+          Logic.unconstrain_context [] (Types.build (t' |> Types.add_atyps))
+        val atyp_map = Same.commit (typ_operation {strip_sorts = false})
+        val map_atyps = Term.map_atyps (Type.default_sorts thy o atyp_map)
         val t'' = t'
           |> Term.map_types map_atyps
-          |> curry Logic.list_implies (map #2 (#constraints uctxt));
+          |> curry Logic.list_implies (map #2 constraints);
         val prems = Logic.strip_imp_prems t'
         val prems = drop (length prems - Logic.count_prems t') prems
       in Logic.list_implies (prems, Logic.strip_imp_concl t'') end
   in t'' end;
-
-
-(*equality*)
-fun is_equals (Const (\<^const_name>\<open>Pure.eq\<close>, _) $ _ $ _) = true
-  | is_equals _ = false;
 
 end;

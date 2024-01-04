@@ -1,0 +1,45 @@
+title = "Perfect Fields"
+date = 2023-11-06
+topics = [
+  "Mathematics/Algebra",
+]
+abstract = """
+This entry provides a type class for <em>perfect fields</em>. 
+A perfect field <i>K</i> can be characterized by one of the following equivalent conditions:
+<ul>
+<li> Any irreducible polynomial <i>p</i> is separable, i.e. <i>gcd(p,p') = 1</i>, or, equivalently, <i>p'</i> non-zero.</li>
+<li> Either the characteristic of <i>K</i> is 0 or <i>p > 0</i> and the Frobenius endomorphism is surjective (i.e. every element of <i>K</i> has a <i>p</i>-th root).</li>
+</ul>
+We define perfect fields using the second characterization and show the equivalence to the first characterization.
+The implication ``2 => 1'' is relatively straightforward using the injectivity of the Frobenius homomorphism.
+
+Examples for perfect fields are:
+<ul>
+<li> any field of characteristic 0 (e.g. the reals or complex numbers)</li>
+<li> any finite field (i.e. <i>F<sub>q</sub></i> for <i>q=p<sup>n</sup></i>, <i>n > 0</i> and <i>p</i> prime)</li>
+<li> any algebraically closed field (for example the formal Puiseux series over finite fields)</li>
+</ul>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+email = "eberl_email"
+
+[authors.kreuzer]
+email = "kreuzer_email"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+kreuzer = "kreuzer_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Tue, 08 Aug 2023 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Thu, 02 Nov 2023 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/standard_borel_spaces/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Disintegration Theorem</title>
+          <link>/entries/Disintegration.html</link>
+          <pubDate>Thu, 02 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Disintegration.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>S-Finite Measure Monad on Quasi-Borel Spaces</title>
           <link>/entries/S_Finite_Measure_Monad.html</link>

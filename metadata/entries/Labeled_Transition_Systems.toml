@@ -1,0 +1,43 @@
+title = "Labeled Transition Systems"
+date = 2023-10-31
+topics = [
+  "Computer science/Automata and formal languages",
+  "Computer science",
+]
+abstract = """
+Labeled transition systems are ubiquitous in computer science. They are used e.g. for automata and for program graphs in program analysis. We formalize labeled transition systems with and without epsilon transitions. The main difference between formalizations of labeled transition systems is in their choice of how to represent the transition system. In the present formalization the set of nodes is a type, and a labeled transition system is represented as a locale fixing a set  of transitions where each transition is a triple of respectively a start node, a label and an end node. Wimmer [Wim20] provides an overview of formalizations of graphs and transition systems.
+<p>
+
+[Wim20] Simon Wimmer. Archive of graph formalizations. 2020. <a href=\"https://github.com/wimmers/archive-of-graph-formalizations\">https://github.com/wimmers/archive-of-graph-formalizations</a>."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.schlichtkrull]
+homepage = "schlichtkrull_homepage"
+
+[authors.schou]
+
+[authors.srba]
+homepage = "srba_homepage"
+
+[authors.traytel]
+homepage = "traytel_homepage"
+
+[contributors]
+
+[notify]
+schlichtkrull = "schlichtkrull_email"
+traytel = "traytel_email"
+schou = "schou_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.34727/2022/ISBN.978-3-85448-053-2_44",
+]
+pubs = []

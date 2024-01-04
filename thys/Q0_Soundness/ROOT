@@ -1,0 +1,14 @@
+chapter AFP
+
+session Q0_Soundness = "HOL-ZF" +
+  options [timeout = 300]
+  sessions
+    ZFC_in_HOL
+  theories
+    Set_Theory
+    HOLZF_Set_Theory
+    ZFC_in_HOL_Set_Theory
+    Q0
+  document_files
+    "root.bib"
+    "root.tex"

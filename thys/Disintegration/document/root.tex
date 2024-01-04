@@ -1,0 +1,73 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+\usepackage{amsmath}
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+\usepackage[only,bigsqcap]{stmaryrd}
+%for \<Sqinter>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Disintegration Theorem}
+\author{Michikazu Hirata}
+\maketitle
+\begin{abstract}
+  We formalize mixture and disintegraion of measures.
+  This entry is a formalization of Chapter 14.D of the book by Baccelli et.al.~\cite{baccelli:hal-02460214}.
+  The main result is the disintegration theorem:
+  let $(X,\Sigma_X)$ be a measurable space, $(Y,\Sigma_Y)$ be a standard Borel space, $\nu$ be a $\sigma$-finite measure on $X \times Y$,
+  and $\nu_X$ be the marginal measure on $X$ defined by $\nu_X(A) = \nu(A\times Y)$.
+  Assume that $\nu_X$ is $\sigma$-finite, then there exists a probability kernel $\kappa$
+  from $X$ to $Y$ such that
+  \[ \nu(A\times B) = \int_A \kappa_x (B) \nu_X(\mathrm{d}x), \: A\in\Sigma_X, B\in\Sigma_Y.\]
+  Such a probability kernel is unique $\nu_X$-almost everywhere.
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

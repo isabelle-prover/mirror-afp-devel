@@ -501,7 +501,7 @@ proof -
     let ?V3 = "Is - V"
     from jV card_Diff_singleton Vcard
     have V2card: "card ?V2 > 0" "card ?V2 < card V" by auto
-    hence V2notempty: "{} \<noteq> ?V2" by auto
+    hence V2notempty: "{} \<noteq> ?V2" by (auto simp del: diff_shunt)
     from jV VIs
     have jV2V3: "Is = ?V1 \<union> ?V2 \<union> ?V3 \<and> ?V1 \<inter> ?V2 = {} \<and> ?V1 \<inter> ?V3 = {} \<and> ?V2 \<inter> ?V3 = {}"
       by auto

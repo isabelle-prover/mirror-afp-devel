@@ -8,7 +8,7 @@ theory CZH_Sets_ZQR
     "HOL-Library.Rewrite"
     CZH_Sets_NOP
     CZH_Sets_VNHS
-    HOL_CContinuum
+    "Cardinality_Continuum.Cardinality_Continuum"
 begin
 
 
@@ -57,9 +57,9 @@ lemma vlepoll_VPow_omega_if_vreal_lepoll_real:
   assumes "x \<lesssim> (UNIV::real set)" 
   shows "set x \<lesssim>\<^sub>\<circ> VPow \<omega>"
 proof-
-  note x = assms
-  also from real_lepoll_natnat have "\<dots> \<lesssim> (UNIV::nat set set)"
-    unfolding Pow_UNIV by simp
+  note assms
+  also from eqpoll_UNIV_real have "\<dots> \<lesssim> (UNIV::nat set set)"
+    unfolding Pow_UNIV by (simp add: eqpoll_imp_lepoll)
   also from inj_image_ord_of_nat have "\<dots> \<lesssim> Pow (elts \<omega>)"
     unfolding lepoll_def by auto
   also from down have "\<dots> \<lesssim> elts (VPow \<omega>)"

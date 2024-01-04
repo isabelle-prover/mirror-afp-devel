@@ -1,0 +1,12 @@
+chapter AFP
+
+session Polylog (AFP) = "HOL-Complex_Analysis" +
+  options [timeout = 1200]
+  sessions
+    "HOL-Real_Asymp"
+    "Linear_Recurrences"
+  theories
+    Polylog
+  document_files
+    "root.tex"
+    "root.bib"

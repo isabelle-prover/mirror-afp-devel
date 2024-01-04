@@ -1,0 +1,15 @@
+chapter AFP
+
+session "Nominal_Myhill_Nerode" (AFP) = HOL +  
+  options [timeout = 600]
+  
+  sessions
+    "HOL-Algebra"  
+    
+  theories
+    Nominal_Myhill_Nerode
+    
+  document_files
+    "root.bib"
+    "root.tex"
+

@@ -1,0 +1,38 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+\usepackage{latexsym}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{pdfsetup}
+
+\addtolength{\hoffset}{-1,5cm}
+\addtolength{\textwidth}{3cm}
+
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{Metatheory of $\mathcal{Q}_0$}
+\author{Javier D\'iaz\\\url{<javier.diaz.manzi@gmail.com>}}
+\maketitle
+
+\begin{abstract}
+This entry is a formalization of the metatheory of $\mathcal{Q}_0$ in Isabelle/HOL. $\mathcal{Q}_0$ \cite{andrews:2002} is a classical higher-order logic equivalent to Church's Simple Theory of Types. In this entry we formalize Chapter 5 of \cite{andrews:2002}, up to and including the proofs of soundness and consistency of $\mathcal{Q}_0$. These proof are, to the best of our knowledge, the first to be formalized in a proof assistant.
+\end{abstract}
+
+\newpage
+\tableofcontents
+
+\parindent 0pt\parskip 0.5ex
+
+\newpage
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root.bib}
+
+\end{document}
+

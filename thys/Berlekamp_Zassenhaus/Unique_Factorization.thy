@@ -1,7 +1,7 @@
 theory Unique_Factorization
   imports
     Polynomial_Interpolation.Ring_Hom_Poly
-    Polynomial_Factorization.Polynomial_Divisibility
+    Polynomial_Factorization.Polynomial_Irreducibility
     "HOL-Combinatorics.Permutations" 
     "HOL-Computational_Algebra.Euclidean_Algorithm"
     Containers.Containers_Auxiliary (* only for a lemma *)

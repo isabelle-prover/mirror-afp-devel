@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Thu, 19 Nov 2020 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Tue, 05 Dec 2023 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/hol-csp/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>HOL-CSPM - Architectural operators for HOL-CSP</title>
+          <link>/entries/HOL-CSPM.html</link>
+          <pubDate>Tue, 05 Dec 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/HOL-CSPM.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>The HOL-CSP Refinement Toolkit</title>
           <link>/entries/CSP_RefTK.html</link>

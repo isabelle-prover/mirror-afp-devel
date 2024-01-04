@@ -572,7 +572,7 @@ proof -
   have t_simp2:"(2* b+2* x) - (b+x+y+w) = b+x-y-w" using size by auto
   hence t_expre:"t = (b+x-y-w) div 4" using t_simp1 by (smt (verit, ccfv_SIG) add_num_simps(1) 
 div_plus_div_distrib_dvd_right numeral_Bit0 of_nat_numeral one_plus_numeral s_int 
-unique_euclidean_semiring_with_nat_class.of_nat_div)
+linordered_euclidean_semiring_class.of_nat_div)
   from b_x_int have "4 dvd (2*b+2*x)"
     by (metis distrib_left_numeral mult_2_right nat_mult_dvd_cancel_disj numeral_Bit0)
   hence four_div_tn:"4 dvd (b+x-y-w)" using s_int t_simp2 by presburger
@@ -586,7 +586,7 @@ left_add_twice nat_arith.add2)
   hence "(2*b+x+y) div 2 + (b+w) div 2 = (2*b+b+x+y+w) div 2"
     by (smt (verit, ccfv_threshold) Num.of_nat_simps(4) b_w_int div_plus_div_distrib_dvd_right
  landau_product_preprocess(4) numerals(1) of_nat_1 one_plus_numeral
- unique_euclidean_semiring_with_nat_class.of_nat_div)
+ linordered_euclidean_semiring_class.of_nat_div)
 
   hence "t+u+s+v = (2*b+b+x+y+w) div 2 -s -s" using v_def threesum by auto
   hence foursum0:"t+u+s+v = (2*b+b+x+y+w) div 2 - (b+x+y+w) div 4 - (b+x+y+w) div 4" 

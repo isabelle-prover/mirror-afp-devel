@@ -1,0 +1,78 @@
+\documentclass[11pt,a4paper]{book}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{graphicx}
+\graphicspath {{figures/}}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% fixes generation until the AFP updates their LaTeX
+\pagestyle{plain}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{HOL-CSPM - Architectural operators for HOL-CSP}
+\author{Benoît Ballenghien \and Safouan Taha \and Burkhart Wolff}
+\maketitle
+\chapter*{Abstract}
+
+   Recently, a modern version of Roscoes and Brookes \cite{brookes-roscoe85} 
+   Failure-Divergence Semantics for CSP has been formalized in Isabelle \cite{HOL-CSP-AFP}. 
+
+   The session HOL-CSP introduces among other things some binary operators on processes
+   that we will here generalize in a fully-abstract way.
+
+   On these "architectural operators", we will prove the properties of refinement,
+   the rules of continuity and the laws of interaction so that they can be easily used.
+
+   Finally, we will give examples of their usefulness when trying to model complex systems.
+
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

@@ -77,7 +77,7 @@ fun num_rep_prem eq ts =
   in (num_rep_prems, premss) end;
 
 (*elimination of premises*)
-fun elim_assms assm_thms thm = fold (flip Thm.implies_elim) assm_thms thm;
+fun elim_assms assm_thms thm = fold Thm.elim_implies assm_thms thm;
 
 (*create a single theorem from a fact via Pure conjunction*)
 fun thm_of_fact ctxt thms =

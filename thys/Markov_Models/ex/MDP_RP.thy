@@ -656,7 +656,7 @@ proof (intro exI conjI)
     proof (safe intro!: ec_Sup_directed)
       fix a b assume *: "\<phi> \<le> a" "\<phi> \<le> b" and "a \<le> M" "b \<le> M" "ec a" "ec b"
       moreover have "a \<sqinter> b \<noteq> bot"
-        using * \<phi> bot_unique[of "\<phi>"] le_inf_iff[of \<phi> a b] by (auto simp del: inf.bounded_iff)
+        using * \<phi> bot_unique[of "\<phi>"] le_inf_iff[of \<phi> a b] by metis
       ultimately show "\<exists>c\<in>{\<psi>. \<phi> \<le> \<psi> \<and> \<psi> \<le> M \<and> ec \<psi>}. a \<le> c \<and> b \<le> c"
         by (intro bexI[of _ "sup a b"]) (auto intro: le_supI1 intro!: ec_sup)
     qed

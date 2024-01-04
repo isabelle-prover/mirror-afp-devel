@@ -22,7 +22,6 @@ lemma tr_to_tr_rel: "A b c \<Longrightarrow> (Transfer.Rel A) b c"
 subsection\<open>Standard library extension\<close>
 
 ML_file "More_Library.ML"
-ML_file "More_Term.ML"
 ML_file "More_Logic.ML"
 ML_file "More_Tactical.ML"
 ML_file "More_Simplifier.ML"

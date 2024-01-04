@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Labeled_Transition_Systems on Archive of Formal Proofs
+    </title>
+    <link>/dependencies/labeled_transition_systems/</link>
+    <description>
+        Recent content in Labeled_Transition_Systems 
+        on Archive of Formal Proofs
+    </description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    
+      <lastBuildDate>Tue, 31 Oct 2023 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/labeled_transition_systems/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Pushdown Systems</title>
+          <link>/entries/Pushdown_Systems.html</link>
+          <pubDate>Tue, 31 Oct 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Pushdown_Systems.html</guid>
+          <description></description>
+        </item>
+  </channel>
+</rss>

@@ -11,13 +11,146 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Wed, 11 Oct 2023 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Tue, 05 Dec 2023 00:00:00 +0000</lastBuildDate>
       <atom:link href="/entries/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>HOL-CSPM - Architectural operators for HOL-CSP</title>
+          <link>/entries/HOL-CSPM.html</link>
+          <pubDate>Tue, 05 Dec 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/HOL-CSPM.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Knuth–Morris–Pratt String Search</title>
+          <link>/entries/KnuthMorrisPratt.html</link>
+          <pubDate>Mon, 27 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/KnuthMorrisPratt.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Lambert Series</title>
+          <link>/entries/Lambert_Series.html</link>
+          <pubDate>Fri, 24 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Lambert_Series.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Martingales</title>
+          <link>/entries/Martingales.html</link>
+          <pubDate>Tue, 21 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Martingales.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Soundness of the Q0 proof system for higher-order logic</title>
+          <link>/entries/Q0_Soundness.html</link>
+          <pubDate>Mon, 20 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Q0_Soundness.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Cardinality of the Continuum</title>
+          <link>/entries/Cardinality_Continuum.html</link>
+          <pubDate>Wed, 15 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Cardinality_Continuum.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Polylogarithm Function</title>
+          <link>/entries/Polylog.html</link>
+          <pubDate>Wed, 15 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Polylog.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Two theorems about the geometry of the critical points of a complex polynomial</title>
+          <link>/entries/Polynomial_Crit_Geometry.html</link>
+          <pubDate>Tue, 14 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Polynomial_Crit_Geometry.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Chebyshev Polynomials</title>
+          <link>/entries/Chebyshev_Polynomials.html</link>
+          <pubDate>Mon, 13 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Chebyshev_Polynomials.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Concentration Inequalities</title>
+          <link>/entries/Concentration_Inequalities.html</link>
+          <pubDate>Mon, 13 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Concentration_Inequalities.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Myhill-Nerode Theorem for Nominal G-Automata</title>
+          <link>/entries/Nominal_Myhill_Nerode.html</link>
+          <pubDate>Fri, 10 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Nominal_Myhill_Nerode.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Elimination of Repeated Factors Algorithm</title>
+          <link>/entries/Elimination_Of_Repeated_Factors.html</link>
+          <pubDate>Mon, 06 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Elimination_Of_Repeated_Factors.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Perfect Fields</title>
+          <link>/entries/Perfect_Fields.html</link>
+          <pubDate>Mon, 06 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Perfect_Fields.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Metatheory of Q0</title>
+          <link>/entries/Q0_Metatheory.html</link>
+          <pubDate>Sat, 04 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Q0_Metatheory.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Disintegration Theorem</title>
+          <link>/entries/Disintegration.html</link>
+          <pubDate>Thu, 02 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Disintegration.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Labeled Transition Systems</title>
+          <link>/entries/Labeled_Transition_Systems.html</link>
+          <pubDate>Tue, 31 Oct 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Labeled_Transition_Systems.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Pushdown Systems</title>
+          <link>/entries/Pushdown_Systems.html</link>
+          <pubDate>Tue, 31 Oct 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Pushdown_Systems.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Eudoxus Reals</title>
+          <link>/entries/Eudoxus_Reals.html</link>
+          <pubDate>Sun, 29 Oct 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Eudoxus_Reals.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Transport via Partial Galois Connections and Equivalences</title>
           <link>/entries/Transport.html</link>
           <pubDate>Wed, 11 Oct 2023 00:00:00 +0000</pubDate>
           <guid>/entries/Transport.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Hypergraph Colouring Bounds</title>
+          <link>/entries/Hypergraph_Colourings.html</link>
+          <pubDate>Sat, 23 Sep 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Hypergraph_Colourings.html</guid>
           <description></description>
         </item>
         <item>

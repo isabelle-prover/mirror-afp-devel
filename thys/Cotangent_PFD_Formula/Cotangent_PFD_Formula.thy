@@ -12,21 +12,6 @@ begin
 subsection \<open>Auxiliary lemmas\<close>
 
 (* TODO Move *)
-text \<open>
-  The following variant of the comparison test for showing summability allows us to use
-  a `Big-O' estimate, which works well together with Isabelle's automation for real asymptotics.
-\<close>
-lemma summable_comparison_test_bigo:
-  fixes f :: "nat \<Rightarrow> real"
-  assumes "summable (\<lambda>n. norm (g n))" "f \<in> O(g)"
-  shows   "summable f"
-proof -
-  from \<open>f \<in> O(g)\<close> obtain C where C: "eventually (\<lambda>x. norm (f x) \<le> C * norm (g x)) at_top"
-    by (auto elim: landau_o.bigE)
-  thus ?thesis
-    by (rule summable_comparison_test_ev) (insert assms, auto intro: summable_mult)
-qed
-
 lemma uniformly_on_image:
   "uniformly_on (f ` A) g = filtercomap (\<lambda>h. h \<circ> f) (uniformly_on A (g \<circ> f))"
   unfolding uniformly_on_def by (simp add: filtercomap_INF)
@@ -164,28 +149,27 @@ lemma sums_cot_pfd_complex:
   using tendsto_uniform_limitI[OF uniform_limit_cot_pfd_complex[of "norm x"], of x]
   by (simp add: sums_def)
 
+lemma sums_cot_pfd_complex'_aux:
+  fixes x :: "'a :: {banach, real_normed_field, field_char_0}"
+  assumes "x \<notin> \<int> - {0}"
+  shows   "2 * x / (x ^ 2 - of_nat (Suc n) ^ 2) =
+           1 / (x + of_nat (Suc n)) + 1 / (x - of_nat (Suc n))"
+proof -
+  have neq1: "x + of_nat (Suc n) \<noteq> 0"
+    using assms by (subst add_eq_0_iff2) (auto simp del: of_nat_Suc)
+  have neq2: "x - of_nat (Suc n) \<noteq> 0"
+    using assms by (auto simp del: of_nat_Suc)
+  have neq3: "x ^ 2 - of_nat (Suc n) ^ 2 \<noteq> 0"
+    using assms  by (auto simp del: of_nat_Suc simp: power2_eq_iff)
+  show ?thesis using neq1 neq2 neq3
+    by (simp add: divide_simps del: of_nat_Suc) (auto simp: power2_eq_square algebra_simps)
+qed
+
 lemma sums_cot_pfd_complex':
   fixes x :: complex
-  assumes "x \<notin> \<int>"
+  assumes "x \<notin> \<int> - {0}"
   shows   "(\<lambda>n. 1 / (x + of_nat (Suc n)) + 1 / (x - of_nat (Suc n))) sums cot_pfd x"
-proof -
-  have "(\<lambda>n. 2 * x / (x ^ 2 - of_nat (Suc n) ^ 2)) sums cot_pfd x"
-    by (rule sums_cot_pfd_complex)
-  also have "(\<lambda>n. 2 * x / (x ^ 2 - of_nat (Suc n) ^ 2)) = 
-             (\<lambda>n. 1 / (x + of_nat (Suc n)) + 1 / (x - of_nat (Suc n)))" (is "?lhs = ?rhs")
-  proof
-    fix n :: nat
-    have neq1: "x + of_nat (Suc n) \<noteq> 0"
-      using assms by (metis Ints_0 Ints_add_iff2 Ints_of_nat)
-    have neq2: "x - of_nat (Suc n) \<noteq> 0"
-      using assms by force
-    have neq3: "x ^ 2 - of_nat (Suc n) ^ 2 \<noteq> 0"
-     using assms by (metis Ints_of_nat eq_iff_diff_eq_0 minus_in_Ints_iff power2_eq_iff)
-    show "?lhs n = ?rhs n" using neq1 neq2 neq3
-      by (simp add: divide_simps del: of_nat_Suc) (auto simp: power2_eq_square algebra_simps)
-  qed
-  finally show ?thesis .
-qed
+  using sums_cot_pfd_complex[of x] sums_cot_pfd_complex'_aux[OF assms] by simp
 
 lemma summable_cot_pfd_complex:
   fixes x :: complex
@@ -230,18 +214,24 @@ qed
 
 subsection \<open>Holomorphicity and continuity\<close>
 
-lemma holomorphic_on_cot_pfd [holomorphic_intros]:
-  assumes "A \<subseteq> -(\<int>-{0})"
-  shows   "cot_pfd holomorphic_on A"
+lemma has_field_derivative_cot_pfd_complex:
+  fixes z :: complex
+  assumes z: "z \<in> -(\<int>-{0})"
+  shows   "(cot_pfd has_field_derivative (-Polygamma 1 (1 + z) - Polygamma 1 (1 - z))) (at z)"
 proof -
-  have *: "open (-(\<int>-{0}) :: complex set)"
-    by (intro open_Compl closed_subset_Ints) auto
   define f :: "nat \<Rightarrow> complex \<Rightarrow> complex"
     where "f = (\<lambda>N x. \<Sum>n<N. 2 * x / (x ^ 2 - of_nat (Suc n) ^ 2))"
-  have "cot_pfd holomorphic_on -(\<int>-{0})"
-  proof (rule holomorphic_uniform_sequence[OF *])
-    fix n :: nat
-    have **: "x\<^sup>2 - (of_nat (Suc n))\<^sup>2 \<noteq> 0" if "x \<in> -(\<int>-{0})" for x :: complex and n :: nat
+  define f' :: "nat \<Rightarrow> complex \<Rightarrow> complex"
+    where "f' = (\<lambda>N x. \<Sum>n<N. -1/(x + of_nat (Suc n)) ^ 2 - 1/(x - of_nat (Suc n)) ^ 2)"
+
+  have "\<exists>g'. \<forall>x\<in>- (\<int> - {0}). (cot_pfd has_field_derivative g' x) (at x) \<and> (\<lambda>n. f' n x) \<longlonglongrightarrow> g' x"
+  proof (rule has_complex_derivative_uniform_sequence)
+    show "open (-(\<int> - {0}) :: complex set)"
+      by (intro open_Compl closed_subset_Ints) auto
+  next
+    fix n :: nat and x :: complex
+    assume x: "x \<in> -(\<int> - {0})"
+    have nz: "x\<^sup>2 - (of_nat (Suc n))\<^sup>2 \<noteq> 0" for n
     proof
       assume "x\<^sup>2 - (of_nat (Suc n))\<^sup>2 = 0"
       hence "(of_nat (Suc n))\<^sup>2 = x\<^sup>2"
@@ -250,42 +240,136 @@ proof -
         by (subst (asm) eq_commute, subst (asm) power2_eq_iff) auto
       moreover have "(of_nat (Suc n) :: complex) \<in> \<int>" "(-of_nat (Suc n) :: complex) \<in> \<int>"
         by (intro Ints_minus Ints_of_nat)+
-      ultimately show False using that
+      ultimately show False using x
         by (auto simp del: of_nat_Suc)
     qed
-    show "f n holomorphic_on -(\<int> - {0})"
-      unfolding f_def by (intro holomorphic_intros **)
+
+    have nz1: "x + of_nat (Suc k) \<noteq> 0" for k
+      using x by (subst add_eq_0_iff2) (auto simp del: of_nat_Suc)
+    have nz2: "x - of_nat (Suc k) \<noteq> 0" for k
+      using x by (auto simp del: of_nat_Suc)
+
+    have "((\<lambda>x. 2 * x / (x\<^sup>2 - (of_nat (Suc k))\<^sup>2)) has_field_derivative
+           - 1 / (x + of_nat (Suc k))\<^sup>2 - 1 / (x - of_nat (Suc k))\<^sup>2) (at x)" for k :: nat
+    proof -
+      have "((\<lambda>x. inverse (x + of_nat (Suc k)) + inverse (x - of_nat (Suc k))) has_field_derivative
+             - inverse ((x + of_nat (Suc k)) ^ 2)- inverse ((x - of_nat (Suc k))) ^ 2) (at x)"
+        by (rule derivative_eq_intros refl nz1 nz2)+ (simp add: power2_eq_square)
+      also have "?this \<longleftrightarrow> ?thesis"
+      proof (intro DERIV_cong_ev)
+        have "eventually (\<lambda>t. t \<in> -(\<int>-{0})) (nhds x)" using x
+          by (intro eventually_nhds_in_open open_Compl closed_subset_Ints) auto
+        thus "eventually (\<lambda>t. inverse (t + of_nat (Suc k)) + inverse (t - of_nat (Suc k)) =
+                              2 * t / (t\<^sup>2 - (of_nat (Suc k))\<^sup>2)) (nhds x)"
+        proof eventually_elim
+          case (elim t)
+          thus ?case
+            using sums_cot_pfd_complex'_aux[of t k] by (auto simp add: field_simps)
+        qed
+      qed (auto simp: field_simps)
+      finally show ?thesis .
+    qed
+    thus "(f n has_field_derivative f' n x) (at x)"
+      unfolding f_def f'_def by (intro DERIV_sum)
   next
-    fix z :: complex assume z: "z \<in> -(\<int> - {0})"
-    from * z obtain r where r: "r > 0" "cball z r \<subseteq> -(\<int>-{0})"
-      using open_contains_cball by blast
-    have "uniform_limit (cball z r) f cot_pfd sequentially"
-      using uniform_limit_cot_pfd_complex[of "norm z + r"] unfolding f_def
+    fix x :: complex assume x: "x \<in> -(\<int>-{0})"
+    have "open (-(\<int>-{0}) :: complex set)"
+      by (intro open_Compl closed_subset_Ints) auto
+    then obtain r where r: "r > 0" "cball x r \<subseteq> -(\<int>-{0})"
+      using x open_contains_cball by blast
+
+    have "uniform_limit (cball x r) f cot_pfd sequentially"
+      using uniform_limit_cot_pfd_complex[of "norm x + r"] unfolding f_def
     proof (rule uniform_limit_on_subset)
-      show "cball z r \<subseteq> cball 0 (norm z + r)"
-        unfolding cball_subset_cball_iff by (auto simp: dist_norm)
+      show "cball x r \<subseteq> cball 0 (cmod x + r)"
+        by (subst cball_subset_cball_iff) auto
     qed (use \<open>r > 0\<close> in auto)
-    with r show "\<exists>d>0. cball z d \<subseteq> - (\<int> - {0}) \<and> uniform_limit (cball z d) f cot_pfd sequentially"
-      by blast
+    thus "\<exists>d>0. cball x d \<subseteq> - (\<int> - {0}) \<and> uniform_limit (cball x d) f cot_pfd sequentially"
+      using r by (intro exI[of _ r]) auto
   qed
-  thus ?thesis
-    by (rule holomorphic_on_subset) fact
+  then obtain g' where g': "\<And>x. x\<in>-(\<int> - {0}) \<Longrightarrow> (cot_pfd has_field_derivative g' x) (at x)"
+                           "\<And>x. x\<in>-(\<int> - {0}) \<Longrightarrow> (\<lambda>n. f' n x) \<longlonglongrightarrow> g' x" by blast
+
+  have "(\<lambda>n. f' n z) \<longlonglongrightarrow> -Polygamma 1 (1 + z) - Polygamma 1 (1 - z)"
+  proof -
+    have "(\<lambda>n. -inverse (((1 + z) + of_nat n) ^ Suc 1) - 
+               inverse (((1 - z) + of_nat n) ^ Suc 1)) sums
+            (-((-1) ^ Suc 1 * Polygamma 1 (1 + z) / fact 1) - 
+            (-1) ^ Suc 1 * Polygamma 1 (1 - z) / fact 1)"
+      using z by (intro sums_diff sums_minus Polygamma_LIMSEQ) (auto simp: add_eq_0_iff)
+    also have "\<dots> = -Polygamma 1 (1 + z) - Polygamma 1 (1 - z)"
+      by simp
+    also have "(\<lambda>n. -inverse (((1 + z) + of_nat n) ^ Suc 1) -  inverse (((1 - z) + of_nat n) ^ Suc 1)) =
+               (\<lambda>n. -1/(z + of_nat (Suc n)) ^ 2 - 1/(z - of_nat (Suc n)) ^ 2)"
+      by (simp add: f'_def field_simps power2_eq_square)
+    finally show ?thesis
+      unfolding sums_def f'_def .
+  qed
+  with g'(2)[OF z] have "g' z = -Polygamma 1 (1 + z) - Polygamma 1 (1 - z)"
+    using LIMSEQ_unique by blast
+  with g'(1)[OF z] show ?thesis
+    by simp
 qed
 
-lemma continuous_on_cot_pfd_complex [continuous_intros]:
+lemma has_field_derivative_cot_pfd_complex' [derivative_intros]:
+  assumes "(g has_field_derivative g') (at x within A)" and "g x \<notin> \<int> - {0}"
+  shows   "((\<lambda>x. cot_pfd (g x :: complex)) has_field_derivative
+             (-Polygamma 1 (1 + g x) - Polygamma 1 (1 - g x)) * g') (at x within A)"
+  using DERIV_chain2[OF has_field_derivative_cot_pfd_complex assms(1)] assms(2) by auto
+
+lemma Polygamma_real_conv_complex: "x \<noteq> 0 \<Longrightarrow> Polygamma n x = Re (Polygamma n (of_real x))"
+   by (simp add: Polygamma_of_real)
+
+lemma has_field_derivative_cot_pfd_real [derivative_intros]:
+  assumes "(g has_field_derivative g') (at x within A)" and "g x \<notin> \<int> - {0}"
+  shows   "((\<lambda>x. cot_pfd (g x :: real)) has_field_derivative
+             (-Polygamma 1 (1 + g x) - Polygamma 1 (1 - g x)) * g') (at x within A)"
+proof -
+  have *: "complex_of_real (g x) \<notin> \<int> - {0}"
+    using assms(2) by auto
+  have **: "(1 + g x) \<noteq> 0" "(1 - g x) \<noteq> 0"
+    using assms(2) by (auto simp: add_eq_0_iff)
+  have "((\<lambda>x. Re ((cot_pfd \<circ> (\<lambda>x. of_real (g x))) x)) has_field_derivative
+             (-Polygamma 1 (1 + g x) - Polygamma 1 (1 - g x)) * g') (at x within A)"
+    by (rule derivative_eq_intros has_vector_derivative_real_field 
+             field_vector_diff_chain_within assms refl *)+
+       (use ** in \<open>auto simp: Polygamma_real_conv_complex\<close>)
+  thus ?thesis
+    by simp
+qed
+
+lemma holomorphic_on_cot_pfd [holomorphic_intros]:
   assumes "A \<subseteq> -(\<int>-{0})"
-  shows   "continuous_on A (cot_pfd :: complex \<Rightarrow> complex)"
-  by (rule holomorphic_on_imp_continuous_on holomorphic_intros assms)+
+  shows   "cot_pfd holomorphic_on A"
+proof -
+  have "cot_pfd holomorphic_on (-(\<int>-{0}))"
+    unfolding holomorphic_on_def
+    using has_field_derivative_cot_pfd_complex field_differentiable_at_within
+         field_differentiable_def by fast
+  thus ?thesis
+    by (rule holomorphic_on_subset) (use assms in auto)
+qed
+
+lemma holomorphic_on_cot_pfd' [holomorphic_intros]:
+  assumes "f holomorphic_on A" "\<And>x. x \<in> A \<Longrightarrow> f x \<notin> \<int> - {0}"
+  shows   "(\<lambda>x. cot_pfd (f x)) holomorphic_on A"
+  using holomorphic_on_compose[OF assms(1) holomorphic_on_cot_pfd] assms(2)
+  by (auto simp: o_def)
+
+lemma continuous_on_cot_pfd_complex [continuous_intros]:
+  assumes "continuous_on A f" "\<And>z. z \<in> A \<Longrightarrow> f z \<notin> \<int> - {0}"
+  shows   "continuous_on A (\<lambda>x. cot_pfd (f x :: complex))"
+  by (rule continuous_on_compose2[OF holomorphic_on_imp_continuous_on[OF 
+        holomorphic_on_cot_pfd[OF order.refl]] assms(1)]) (use assms(2) in auto)
 
 lemma continuous_on_cot_pfd_real [continuous_intros]:
-  assumes "A \<subseteq> -(\<int>-{0})"
-  shows   "continuous_on A (cot_pfd :: real \<Rightarrow> real)"
+  assumes "continuous_on A f" "\<And>z. z \<in> A \<Longrightarrow> f z \<notin> \<int> - {0}"
+  shows   "continuous_on A (\<lambda>x. cot_pfd (f x :: real))"
 proof -
-  have "continuous_on A (Re \<circ> cot_pfd \<circ> of_real)"
-    by (intro continuous_intros) (use assms in auto)
-  also have "Re \<circ> cot_pfd \<circ> of_real = cot_pfd"
-    by auto
-  finally show ?thesis .
+  have "continuous_on A (\<lambda>x. Re (cot_pfd (of_real (f x))))"
+    by (rule continuous_intros assms)+ (use assms in auto)
+  thus ?thesis
+    by simp
 qed
 
 
@@ -313,7 +397,7 @@ lemma cot_pfd_real_minus [simp]: "cot_pfd (-x :: real) = -cot_pfd x"
   using cot_pfd_complex_minus[of "of_real x"]
   unfolding of_real_minus [symmetric] cot_pfd_complex_of_real of_real_eq_iff .
 
-text \<open>\<^const>\<open>cot_pfd\<close> is periodic with period 1:\<close>
+text \<open>\<^term>\<open>1 / x + cot_pfd x\<close> is periodic with period 1:\<close>
 lemma cot_pfd_plus_1_complex:
   assumes "x \<notin> \<int>"
   shows   "cot_pfd (x + 1 :: complex) = cot_pfd x - 1 / (x + 1) + 1 / x"
@@ -391,7 +475,7 @@ proof -
   define h :: "complex \<Rightarrow> nat \<Rightarrow> complex" where "h = (\<lambda>x n. 2 * (f x (n + 1) + g x n))"
 
   have sums: "(\<lambda>n. f x n + g x n) sums cot_pfd x" if "x \<notin> \<int>" for x
-    unfolding f_def g_def by (intro sums_cot_pfd_complex' that)
+    unfolding f_def g_def using that by (intro sums_cot_pfd_complex') auto
 
   have "x / 2 \<notin> \<int>"
   proof

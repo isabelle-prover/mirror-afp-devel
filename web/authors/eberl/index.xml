@@ -11,8 +11,57 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Mon, 19 Jun 2023 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Fri, 24 Nov 2023 00:00:00 +0000</lastBuildDate>
       <atom:link href="/authors/eberl/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Lambert Series</title>
+          <link>/entries/Lambert_Series.html</link>
+          <pubDate>Fri, 24 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Lambert_Series.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Cardinality of the Continuum</title>
+          <link>/entries/Cardinality_Continuum.html</link>
+          <pubDate>Wed, 15 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Cardinality_Continuum.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Polylogarithm Function</title>
+          <link>/entries/Polylog.html</link>
+          <pubDate>Wed, 15 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Polylog.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Two theorems about the geometry of the critical points of a complex polynomial</title>
+          <link>/entries/Polynomial_Crit_Geometry.html</link>
+          <pubDate>Tue, 14 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Polynomial_Crit_Geometry.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Chebyshev Polynomials</title>
+          <link>/entries/Chebyshev_Polynomials.html</link>
+          <pubDate>Mon, 13 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Chebyshev_Polynomials.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Elimination of Repeated Factors Algorithm</title>
+          <link>/entries/Elimination_Of_Repeated_Factors.html</link>
+          <pubDate>Mon, 06 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Elimination_Of_Repeated_Factors.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Perfect Fields</title>
+          <link>/entries/Perfect_Fields.html</link>
+          <pubDate>Mon, 06 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Perfect_Fields.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Executable Randomized Algorithms</title>
           <link>/entries/Executable_Randomized_Algorithms.html</link>

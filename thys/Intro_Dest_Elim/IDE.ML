@@ -19,9 +19,6 @@ struct
 fun is_conj (Const (\<^const_name>\<open>conj\<close>, _) $ _ $ _) = true
   | is_conj _ = false;
 
-fun is_equals (Const (\<^const_name>\<open>Pure.eq\<close>, _) $ _ $ _) = true
-  | is_equals _ = false;
-
 
 
 (*** Introduction rule ***)
@@ -143,7 +140,7 @@ fun process_mk_ide ((rf, thm), ins) ctxt =
       |> singleton (Attrib.eval_thms ctxt) 
       |> Local_Defs.meta_rewrite_rule ctxt;
     val t = Thm.concl_of thm' 
-    val _ = t |> is_equals orelse error error_msg
+    val _ = t |> can Logic.dest_equals orelse error error_msg
     val _ = (t |> Logic.dest_equals |> #1 |> type_of |> body_type) = \<^typ>\<open>bool\<close> 
       orelse error error_msg
   in fold folder_mk_rule (map (fn x => (x, (rf, thm'))) ins) ctxt end;

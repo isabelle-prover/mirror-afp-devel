@@ -1,0 +1,52 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+\usepackage[shortcuts]{extdash}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{rm}
+
+
+\begin{document}
+
+\title{Perfect Fields}
+\author{Manuel Eberl, Katharina Kreuzer}
+\maketitle
+
+\begin{abstract}
+This entry provides a type class for \emph{perfect fields}. 
+A perfect field $K$ can be characterized by one of the following equivalent conditions \cite{wiki:perfect_field}:
+\begin{enumerate}
+\item Any irreducible polynomial $p$ is separable, i.e.\ $\gcd(p,p') = 1$, or, equivalently, $p' \neq 0$.
+\item Either $\text{char}(K) = 0$ or $\text{char}(K) = p > 0$ and the Frobenius endomorphism $x \mapsto x^p$ is surjective (i.e.\ every element of $K$ has a $p$-th root).
+\end{enumerate}
+We define perfect fields using the second characterization and show the equivalence to the first characterization.
+The implication ``$2 \Rightarrow 1$'' is relatively straightforward using the injectivity of the Frobenius homomorphism.\\
+
+\noindent Examples for perfect fields are \cite{wiki:perfect_field}:
+\begin{itemize}
+\item any field of characteristic $0$ (e.g.\ $\mathbb{R}$ and $\mathbb{C}$)
+\item any finite field (i.e.\ $\mathbb{F}_q$ for $q=p^n$, $n > 0$ and $p$ prime)
+\item any algebraically closed field (for example the formal Puiseux series over finite fields)
+\end{itemize}
+\end{abstract}
+
+
+\newpage
+\tableofcontents
+
+\newpage
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\raggedright
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+

@@ -1,0 +1,38 @@
+title = "Disintegration Theorem"
+date = 2023-11-02
+topics = [
+  "Mathematics/Measure and integration",
+  "Mathematics/Probability theory",
+]
+abstract = """
+We formalize mixture and disintegraion of measures.
+This entry is a formalization of Chapter 14.D of the book by <a
+href=\"https://inria.hal.science/hal-02460214\">
+Baccelli et.al.</a>
+The main result is the disintegration theorem:
+let $(X,\\Sigma_X)$ be a measurable space, $(Y,\\Sigma_Y)$ be a standard Borel space, $\\nu$ be a $\\sigma$-finite measure on $X \\times Y$,
+and $\\nu_X$ be the marginal measure on $X$ defined by $\\nu_X(A) = \\nu(A\\times Y)$.
+Assume that $\\nu_X$ is $\\sigma$-finite, then there exists a probability kernel $\\kappa$
+from $X$ to $Y$ such that
+\\[ \\nu(A\\times B) = \\int_A \\kappa_x (B) \\nu_X(\\mathrm{d}x), \\: A\\in\\Sigma_X, B\\in\\Sigma_Y.\\]
+Such a probability kernel is unique $\\nu_X$-almost everywhere."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.hirata]
+email = "hirata_email"
+
+[contributors]
+
+[notify]
+hirata = "hirata_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

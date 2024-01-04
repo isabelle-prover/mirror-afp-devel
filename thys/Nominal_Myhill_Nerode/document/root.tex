@@ -1,0 +1,41 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Myhill-Nerode Theorem for (Nominal) $G$-Automata}
+\author{C\'{a}rolos Lam\'{e}ris}
+\maketitle
+
+\begin{abstract}
+This work formalizes the Myhill-Nerode theorems for $G$-automata and nominal $G$-automata.
+The Myhill-Nerode theorem for (nominal) $G$-automata states that given an orbit finite (nominal) alphabet $A$ and a $G$-language $L \subseteq A^{\ast}$ the following are equivalent:
+\begin{itemize}
+\item
+    The set of equivalence classes of $L{/}\equiv_{\texttt{MN}}$,with respect to the Myhill-Nerode equivalence relation, $\equiv_{\texttt{MN}}$, is orbit finite.
+\item
+    $L$ is recognized by a deterministic (nominal) $G$-automaton with an orbit finite set of states.
+\end{itemize}
+
+The proofs formalized are based on those from \cite{bojanczyk2014automata}.
+\end{abstract}
+
+\tableofcontents
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+% \nocite{*}
+
+\end{document}
