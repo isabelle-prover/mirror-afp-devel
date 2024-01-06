@@ -65,7 +65,7 @@ lemma
 
 subsection \<open>Providing Canonical Solutions With Unification Hints\<close>
 
-lemma [uhint]: "length [] \<equiv> 0" by simp
+lemma length_nil_eq_zero [uhint]: "length [] \<equiv> 0" by simp
 
 schematic_goal "length ?xs = 0"
   by (ufact refl)
@@ -78,7 +78,8 @@ schematic_goal "n - ?m = (0 :: nat)"
 text \<open>The following fails because, by default, @{ML Standard_Unification_Hints.try_hints}
 uses the higher-order pattern unifier to unify hints against a given disagreement pair, and
 @{term 0} cannot be higher-order pattern unified with @{term "length []"}. The unification of the
-hint requires the use of yet another hint, namely @{term "length xs = 0"} (cf. above).\<close>
+hint requires the use of yet another hint, namely @{term "length [] = 0"} (cf. above).\<close>
+
 schematic_goal "n - ?m = length []"
   \<comment> \<open>by (ufact refl)\<close>
   oops
@@ -88,7 +89,7 @@ text \<open>There are two ways to fix this:
 \<^enum> We use a different unification hint that makes the recursive use of unification hints explicit.\<close>
 
 text \<open>Solution 1: we can use @{attribute rec_uhint} for recursive usages of hints.
-Warning: recursive applications easily loop.\<close>
+Warning: recursive hint applications easily loop.\<close>
 schematic_goal "n - ?m = length []"
   supply sub_self_eq_zero[rec_uhint]
   by (ufact refl)

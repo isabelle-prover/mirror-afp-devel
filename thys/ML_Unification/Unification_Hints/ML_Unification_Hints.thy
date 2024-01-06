@@ -23,6 +23,16 @@ ML_file\<open>unification_hints_base.ML\<close>
 ML_file\<open>unification_hints.ML\<close>
 ML_file\<open>term_index_unification_hints.ML\<close>
 
+text \<open>We now set up two unifiers using unification hints. The first one allows for recursive
+applications of unification hints when unifying a hint's conclusion lhs \<equiv> rhs" with a goal
+"lhs' \<equiv> rhs'".
+The second only uses a combination of higher-order pattern and first-order unification.
+This particularly implies that recursive applications of unification hints have to be made explicit
+in the hint itself (cf. @{dir "../Examples"}).
+
+While the former can be convenient for local hint registrations and quick developments,
+it is advisable to use the second for global hints to avoid unexpected looping behaviour.\<close>
+
 ML\<open>
   @{functor_instance struct_name = Standard_Unification_Hints_Rec
     and functor_name = Term_Index_Unification_Hints
@@ -43,7 +53,12 @@ local_setup \<open>Standard_Unification_Hints_Rec.setup_attribute NONE\<close>
 
 text\<open>Standard unification hints using
 @{ML Standard_Mixed_Unification.first_higherp_first_comb_higher_unify}
-when looking for hints are accessible via @{attribute rec_uhint}.\<close>
+when looking for hints are accessible via @{attribute rec_uhint}.
+
+\<^emph>\<open>Note:\<close> when we retrieve a potential unification hint with conclusion "lhs \<equiv> rhs" for a goal
+"lhs' \<equiv> rhs'", we only consider those hints whose lhs potentially higher-order unifies with
+lhs' or rhs' \<^emph>\<open>without using hints\<close>. For otherwise, any hint "lhs \<equiv> rhs" applied to a goal
+"rhs \<equiv> lhs" leads to an immediate loop.\<close>
 
 ML\<open>
   @{functor_instance struct_name = Standard_Unification_Hints
@@ -64,9 +79,10 @@ ML\<open>
 local_setup \<open>Standard_Unification_Hints.setup_attribute NONE\<close>
 
 text\<open>Standard unification hints using @{ML Higher_Ordern_Pattern_First_Decomp_Unification.unify}
-when looking for hints are accessible via @{attribute uhint}. Note: there will be no recursive
-usage of unification hints when searching for potential unification hints in this case. See also
-@{file "../Examples/E_Unification_Examples.thy"}\<close>
+when looking for hints are accessible via @{attribute uhint}.
+
+\<^emph>\<open>Note:\<close> there will be no recursive usage of unification hints when searching for potential
+unification hints in this case. See also @{dir "../Examples"}.\<close>
 
 declare [[ucombine add = \<open>Standard_Unification_Combine.eunif_data
   (Standard_Unification_Hints_Rec.try_hints

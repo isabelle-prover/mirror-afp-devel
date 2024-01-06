@@ -262,7 +262,10 @@ fun pretty_index ctxt = get_index (Context.Proof ctxt)
   |> Pretty.fbreaks
   |> Pretty.block
 
-val term_index_key_from_hint = UHB.cdest_hint_concl #> fst #> Thm.term_of #> TI.norm_term
+val term_index_key_from_hint =
+  (*TODO: as of now, hints are only indexed on their lhs term; we could index
+  on both terms to avoid more false positives*)
+  UHB.cdest_hint_concl #> fst #> Thm.term_of #> TI.norm_term
 
 fun msg_illegal_hint_format ctxt hint = Pretty.block [
     Pretty.str "Illegal hint format for ",
