@@ -24,8 +24,8 @@ ML_file\<open>unification_hints.ML\<close>
 ML_file\<open>term_index_unification_hints.ML\<close>
 
 text \<open>We now set up two unifiers using unification hints. The first one allows for recursive
-applications of unification hints when unifying a hint's conclusion lhs \<equiv> rhs" with a goal
-"lhs' \<equiv> rhs'".
+applications of unification hints when unifying a hint's conclusion \<open>lhs \<equiv> rhs\<close> with a goal
+\<open>lhs' \<equiv> rhs'\<close>.
 The second only uses a combination of higher-order pattern and first-order unification.
 This particularly implies that recursive applications of unification hints have to be made explicit
 in the hint itself (cf. @{dir "../Examples"}).
@@ -55,10 +55,10 @@ text\<open>Standard unification hints using
 @{ML Standard_Mixed_Unification.first_higherp_first_comb_higher_unify}
 when looking for hints are accessible via @{attribute rec_uhint}.
 
-\<^emph>\<open>Note:\<close> when we retrieve a potential unification hint with conclusion "lhs \<equiv> rhs" for a goal
-"lhs' \<equiv> rhs'", we only consider those hints whose lhs potentially higher-order unifies with
-lhs' or rhs' \<^emph>\<open>without using hints\<close>. For otherwise, any hint "lhs \<equiv> rhs" applied to a goal
-"rhs \<equiv> lhs" leads to an immediate loop.\<close>
+\<^emph>\<open>Note:\<close> when we retrieve a potential unification hint with conclusion \<open>lhs \<equiv> rhs\<close> for a goal
+\<open>lhs' \<equiv> rhs'\<close>, we only consider those hints whose lhs potentially higher-order unifies with
+lhs' or rhs' \<^emph>\<open>without using hints\<close>. For otherwise, any hint \<open>lhs \<equiv> rhs\<close> applied to a goal
+\<open>rhs \<equiv> lhs\<close> leads to an immediate loop.\<close>
 
 ML\<open>
   @{functor_instance struct_name = Standard_Unification_Hints
