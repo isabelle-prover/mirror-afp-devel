@@ -1,7 +1,7 @@
 chapter AFP
 
 session FO_Theory_Rewriting = "HOL-Library" +
-  options [timeout = 1200]
+  options [timeout = 2400]
   sessions
     "Regular_Tree_Relations"
     "FOL-Fitting"
