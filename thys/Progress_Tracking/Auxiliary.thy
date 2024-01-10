@@ -18,12 +18,6 @@ lemma sum_list_hd_tl:
   shows "xs \<noteq> [] \<Longrightarrow> sum_list (tl xs) = (- hd xs) + sum_list xs"
   by (cases xs) simp_all
 
-lemma finite_distinct_bounded: "finite A \<Longrightarrow> finite {xs. distinct xs \<and> set xs \<subseteq> A}"
-  apply (rule finite_subset[of _ "\<Union>n \<in> {0 .. card A}. {xs.  length xs = n \<and> distinct xs \<and> set xs \<subseteq> A}"])
-  subgoal by clarsimp (metis card_mono distinct_card)
-  subgoal by auto
-  done
-
 
 subsection\<open>Sums\<close>
 

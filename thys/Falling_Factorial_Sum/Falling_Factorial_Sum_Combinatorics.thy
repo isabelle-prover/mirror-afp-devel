@@ -263,6 +263,9 @@ proof -
   from this assms(3) show "k = k'" by auto
 qed
 
+lemma finite_length_distinct: "finite X \<Longrightarrow>  finite {xs. length xs = k \<and> distinct xs \<and> set xs \<subseteq> X}"
+by(fast elim: rev_finite_subset[OF finite_subset_distinct])
+
 lemma card_lists_distinct_length_eq_union:
   assumes "finite X" "finite Y" "X \<inter> Y = {}"
   shows "card {zs. length zs = n \<and> distinct zs \<and> set zs \<subseteq> X \<union> Y} =
@@ -283,13 +286,13 @@ proof -
     assume "k \<in> ?S"
     let "?expr" = "?comp k"
     let "?S \<bind> ?comp" = "?expr"
-    from \<open>finite X\<close> have "finite ?S" by auto
+    from \<open>finite X\<close> have "finite ?S" by(rule finite_length_distinct)
     moreover {
       fix xs
       assume xs: "xs \<in> ?S"
       let ?expr = "?comp xs"
       let "?S \<bind> ?comp" = ?expr
-      from \<open>finite Y\<close> have "finite ?S" by auto
+      from \<open>finite Y\<close> have "finite ?S" by(rule finite_length_distinct)
       moreover {
         fix ys
         assume ys: "ys \<in> ?S"
@@ -321,7 +324,7 @@ proof -
     ultimately have "card ?expr = (n choose k) * ffact k (card X) * ffact (n - k) (card Y)"
       by (subst card_bind_constant) auto
     moreover have "finite ?expr"
-      using \<open>finite ?S\<close> \<open>finite Y\<close> by (auto intro!: finite_bind finite_interleavings)
+      using \<open>finite ?S\<close> \<open>finite Y\<close> by (auto intro!: finite_bind finite_interleavings finite_length_distinct)
     ultimately have "finite ?expr \<and> card ?expr = (n choose k) * ffact k (card X) * ffact (n - k) (card Y)"
       by blast
   }
