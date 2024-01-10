@@ -39,7 +39,14 @@ object Metadata {
   }
 
   case class Homepage(override val author: Author.ID, id: Homepage.ID, url: URL)
-    extends Affiliation
+    extends Affiliation {
+    override def equals(that: Any): Boolean =
+      that match {
+        case other: Homepage =>
+          other.author == author && other.id == id && other.url.toString == url.toString
+        case _ => false
+      }
+  }
 
   object Homepage {
     type ID = String
