@@ -684,7 +684,7 @@ definition "path_halving_invariant p x y p0 \<equiv>
   p0[(p0 * p0)\<^sup>T\<^sup>\<star> * x - p0\<^sup>T\<^sup>\<star> * y\<longmapsto>(p0 * p0)\<^sup>T] = p \<and>
   disjoint_set_forest p0"
 definition "path_halving_postcondition p x y p0 \<equiv> 
-  path_compression_precondition p x y \<and> p \<sqinter> 1 = p0 \<sqinter> 1 \<and> fc p = fc p0 \<and>
+  disjoint_set_forest p \<and> y = root p x \<and> p \<sqinter> 1 = p0 \<sqinter> 1 \<and> fc p = fc p0 \<and>
   p0[(p0 * p0)\<^sup>T\<^sup>\<star> * x\<longmapsto>(p0 * p0)\<^sup>T] = p"
 
 lemma path_halving_invariant_aux_1:
@@ -1133,13 +1133,9 @@ lemma path_halving_3:
 proof -
   assume 1: "path_halving_invariant p x y p0 \<and> y = p[[y]]"
   show "path_halving_postcondition p x y p0"
-  proof (unfold path_halving_postcondition_def path_compression_precondition_def, intro conjI)
+  proof (unfold path_halving_postcondition_def, intro conjI)
     show "univalent p" "total p" "acyclic (p - 1)"
       using 1 find_set_precondition_def path_halving_invariant_def by blast+
-    show "vector x" "injective x" "surjective x"
-      using 1 find_set_precondition_def path_halving_invariant_def by blast+
-    show 2: "vector y" "injective y" "surjective y"
-      using 1 path_halving_invariant_def by blast+
     have "find_set_invariant p x y"
       using 1 find_set_invariant_def path_halving_invariant_def by blast
     thus "y = root p x"
@@ -1148,25 +1144,25 @@ proof -
       using 1 path_halving_invariant_aux(4) by blast
     show "fc p = fc p0"
       using 1 path_halving_invariant_aux(5) by blast
-    have 3: "y = p0[[y]]"
+    have 2: "y = p0[[y]]"
       using 1 path_halving_invariant_aux(1) by auto
     hence "p0\<^sup>T\<^sup>\<star> * y = y"
       using order.antisym path_compression_1b star_left_induct_mult_equal by auto
-    hence 4: "p0[(p0 * p0)\<^sup>T\<^sup>\<star> * x - y\<longmapsto>(p0 * p0)\<^sup>T] = p"
+    hence 3: "p0[(p0 * p0)\<^sup>T\<^sup>\<star> * x - y\<longmapsto>(p0 * p0)\<^sup>T] = p"
       using 1 path_halving_invariant_def by auto
     have "(p0 * p0)\<^sup>T * y = y"
-      using 3 mult_assoc conv_dist_comp by auto
+      using 2 mult_assoc conv_dist_comp by auto
     hence "y \<sqinter> p0 * p0 = y \<sqinter> p0"
-      using 2 3 by (metis update_postcondition)
-    hence 5: "y \<sqinter> p = y \<sqinter> p0 * p0"
-      using 1 2 3 by (smt update_postcondition)
+      using 1 2 by (smt path_halving_invariant_def update_postcondition)
+    hence 4: "y \<sqinter> p = y \<sqinter> p0 * p0"
+      using 1 2 by (smt path_halving_invariant_def update_postcondition)
     have "p0[(p0 * p0)\<^sup>T\<^sup>\<star> * x\<longmapsto>(p0 * p0)\<^sup>T] = (p0[(p0 * p0)\<^sup>T\<^sup>\<star> * x - y\<longmapsto>(p0 * p0)\<^sup>T])[(p0 * p0)\<^sup>T\<^sup>\<star> * x \<sqinter> y\<longmapsto>(p0 * p0)\<^sup>T]"
       using 1 bijective_regular path_halving_invariant_def update_split by blast
     also have "... = p[(p0 * p0)\<^sup>T\<^sup>\<star> * x \<sqinter> y\<longmapsto>(p0 * p0)\<^sup>T]"
-      using 4 by simp
+      using 3 by simp
     also have "... = p"
       apply (rule update_same_sub)
-      using 5 apply simp
+      using 4 apply simp
       apply simp
       using 1 bijective_regular inf.absorb2 path_halving_invariant_def by auto
     finally show "p0[(p0 * p0)\<^sup>T\<^sup>\<star> * x\<longmapsto>(p0 * p0)\<^sup>T] = p"
@@ -1204,7 +1200,7 @@ definition "path_splitting_invariant p x y p0 \<equiv>
   p0[p0\<^sup>T\<^sup>\<star> * x - p0\<^sup>T\<^sup>\<star> * y\<longmapsto>(p0 * p0)\<^sup>T] = p \<and>
   disjoint_set_forest p0"
 definition "path_splitting_postcondition p x y p0 \<equiv> 
-  path_compression_precondition p x y \<and> p \<sqinter> 1 = p0 \<sqinter> 1 \<and> fc p = fc p0 \<and>
+  disjoint_set_forest p \<and> y = root p x \<and> p \<sqinter> 1 = p0 \<sqinter> 1 \<and> fc p = fc p0 \<and>
   p0[p0\<^sup>T\<^sup>\<star> * x\<longmapsto>(p0 * p0)\<^sup>T] = p"
 
 lemma path_splitting_invariant_aux_1:
@@ -1764,48 +1760,44 @@ lemma path_splitting_3:
 proof -
   assume 1: "path_splitting_invariant p x y p0 \<and> y = p[[y]]"
   show "path_splitting_postcondition p x y p0"
-  proof (unfold path_splitting_postcondition_def path_compression_precondition_def, intro conjI)
+  proof (unfold path_splitting_postcondition_def, intro conjI)
     show "univalent p" "total p" "acyclic (p - 1)"
       using 1 find_set_precondition_def path_splitting_invariant_def by blast+
-    show "vector x" "injective x" "surjective x"
-      using 1 find_set_precondition_def path_splitting_invariant_def by blast+
-    show 2: "vector y" "injective y" "surjective y"
-      using 1 path_splitting_invariant_def by blast+
-    show 3: "p \<sqinter> 1 = p0 \<sqinter> 1"
+    show 2: "p \<sqinter> 1 = p0 \<sqinter> 1"
       using 1 path_splitting_invariant_aux(4) by blast
-    show 4: "fc p = fc p0"
+    show 3: "fc p = fc p0"
       using 1 path_splitting_invariant_aux(5) by blast
     have "y \<le> p0\<^sup>T\<^sup>\<star> * x"
       using 1 path_splitting_invariant_def by simp
-    hence 5: "y * x\<^sup>T \<le> fc p0"
+    hence 4: "y * x\<^sup>T \<le> fc p0"
       using 1 by (metis dual_order.trans fc_wcc find_set_precondition_def shunt_bijective star.circ_decompose_11 star_decompose_1 star_outer_increasing path_splitting_invariant_def)
-    have 6: "y = p0[[y]]"
+    have 5: "y = p0[[y]]"
       using 1 path_splitting_invariant_aux(1) by auto
     hence "y = root p0 y"
-      using 2 loop_root by auto
+      using 1 path_splitting_invariant_def loop_root by auto
     also have "... = root p0 x"
-      using 1 2 5 find_set_precondition_def path_splitting_invariant_def same_component_same_root by auto
+      using 1 4 find_set_precondition_def path_splitting_invariant_def same_component_same_root by auto
     also have "... = root p x"
-      using 1 3 4 by (metis find_set_precondition_def path_splitting_invariant_def same_root)
+      using 1 2 3 by (metis find_set_precondition_def path_splitting_invariant_def same_root)
     finally show "y = root p x"
       .
     have "p0\<^sup>T\<^sup>\<star> * y = y"
-      using 6 order.antisym path_compression_1b star_left_induct_mult_equal by auto
-    hence 7: "p0[p0\<^sup>T\<^sup>\<star> * x - y\<longmapsto>(p0 * p0)\<^sup>T] = p"
+      using 5 order.antisym path_compression_1b star_left_induct_mult_equal by auto
+    hence 6: "p0[p0\<^sup>T\<^sup>\<star> * x - y\<longmapsto>(p0 * p0)\<^sup>T] = p"
       using 1 path_splitting_invariant_def by auto
     have "(p0 * p0)\<^sup>T * y = y"
-      using 6 mult_assoc conv_dist_comp by auto
+      using 5 mult_assoc conv_dist_comp by auto
     hence "y \<sqinter> p0 * p0 = y \<sqinter> p0"
-      using 2 6 by (metis update_postcondition)
-    hence 8: "y \<sqinter> p = y \<sqinter> p0 * p0"
-      using 1 2 6 by (smt update_postcondition)
+      using 1 5 by (smt path_splitting_invariant_def update_postcondition)
+    hence 7: "y \<sqinter> p = y \<sqinter> p0 * p0"
+      using 1 5 by (smt path_splitting_invariant_def update_postcondition)
     have "p0[p0\<^sup>T\<^sup>\<star> * x\<longmapsto>(p0 * p0)\<^sup>T] = (p0[p0\<^sup>T\<^sup>\<star> * x - y\<longmapsto>(p0 * p0)\<^sup>T])[p0\<^sup>T\<^sup>\<star> * x \<sqinter> y\<longmapsto>(p0 * p0)\<^sup>T]"
       using 1 bijective_regular path_splitting_invariant_def update_split by blast
     also have "... = p[p0\<^sup>T\<^sup>\<star> * x \<sqinter> y\<longmapsto>(p0 * p0)\<^sup>T]"
-      using 7 by simp
+      using 6 by simp
     also have "... = p"
       apply (rule update_same_sub)
-      using 8 apply simp
+      using 7 apply simp
       apply simp
       using 1 bijective_regular inf.absorb2 path_splitting_invariant_def by auto
     finally show "p0[p0\<^sup>T\<^sup>\<star> * x\<longmapsto>(p0 * p0)\<^sup>T] = p"
@@ -2269,9 +2261,9 @@ lemma union_sets_1_swap:
 proof (unfold union_sets_postcondition_def union_sets_precondition_def, intro conjI)
   let ?p = "p2[s\<longmapsto>r]"
   have 1: "disjoint_set_forest p1 \<and> point r \<and> r = root p1 x \<and> p1 \<sqinter> 1 = p0 \<sqinter> 1 \<and> fc p1 = fc p0"
-    using assms(2) path_compression_precondition_def path_compression_postcondition_def by auto
+    by (smt assms(1,2) union_sets_precondition_def path_compression_postcondition_def root_point)
   have 2: "disjoint_set_forest p2 \<and> point s \<and> s = root p2 y \<and> p2 \<sqinter> 1 = p1 \<sqinter> 1 \<and> fc p2 = fc p1"
-    using assms(3) path_compression_precondition_def path_compression_postcondition_def by auto
+    by (smt assms(1,3) union_sets_precondition_def path_compression_postcondition_def root_point)
   hence 3: "fc p2 = fc p0"
     using 1 by simp
   show 4: "univalent ?p"
@@ -2296,18 +2288,6 @@ proof (unfold union_sets_postcondition_def union_sets_precondition_def, intro co
     thus ?thesis
       using 1 2 update_acyclic_4 by blast
   qed
-  show "vector x"
-    using assms(1) by (simp add: union_sets_precondition_def)
-  show "injective x"
-    using assms(1) by (simp add: union_sets_precondition_def)
-  show "surjective x"
-    using assms(1) by (simp add: union_sets_precondition_def)
-  show "vector y"
-    using assms(1) by (simp add: union_sets_precondition_def)
-  show "injective y"
-    using assms(1) by (simp add: union_sets_precondition_def)
-  show "surjective y"
-    using assms(1) by (simp add: union_sets_precondition_def)
   show "fc ?p = wcc (p0 \<squnion> x * y\<^sup>T)"
   proof (rule order.antisym)
     have "s = p2[[s]]"
@@ -2457,11 +2437,9 @@ lemma union_sets_1_skip:
   shows "union_sets_postcondition p2 x y p0"
 proof (unfold union_sets_postcondition_def union_sets_precondition_def, intro conjI)
   have 1: "point r \<and> r = root p1 x \<and> fc p1 = fc p0 \<and> disjoint_set_forest p2 \<and> r = root p2 y \<and> fc p2 = fc p1"
-    using assms(2,3) path_compression_precondition_def path_compression_postcondition_def by auto
+    by (smt assms(1-3) union_sets_precondition_def path_compression_postcondition_def root_point)
   thus "univalent p2" "total p2" "acyclic (p2 - 1)"
     by auto
-  show "vector x" "injective x" "surjective x" "vector y" "injective y" "surjective y"
-    using assms(1) union_sets_precondition_def by auto
   have "r \<le> p1\<^sup>T\<^sup>\<star> * x"
     using 1 by (metis inf_le1)
   hence "r * x\<^sup>T \<le> p1\<^sup>T\<^sup>\<star>"
@@ -2493,21 +2471,22 @@ begin
 
 lemma path_compression_preserves_rank_property:
   assumes "path_compression_postcondition p x y p0"
+      and "point x"
       and "disjoint_set_forest p0"
       and "rank_property p0 rank"
     shows "rank_property p rank"
 proof (unfold rank_property_def, intro conjI)
   let ?px = "p0\<^sup>T\<^sup>\<star> * x"
   have 1: "point y"
-    using assms(1,2) path_compression_postcondition_def path_compression_precondition_def root_point by auto
+    by (smt assms(1,2) path_compression_postcondition_def root_point)
   have 2: "vector ?px"
-    using assms(1) comp_associative path_compression_postcondition_def path_compression_precondition_def by auto
+    using assms(1,2) comp_associative path_compression_postcondition_def by auto
   have "root p0 x = root p x"
-    by (smt (verit) assms(1,2) path_compression_postcondition_def path_compression_precondition_def same_root)
+    by (smt (verit) assms(1,3) path_compression_postcondition_def same_root)
   hence "root p0 x = y"
-    using assms(1) path_compression_postcondition_def path_compression_precondition_def by auto
+    using assms(1) path_compression_postcondition_def by auto
   hence "?px \<le> p0\<^sup>\<star> * y"
-    by (meson assms(1,2) path_splitting_invariant_aux_1(3) path_compression_precondition_def path_compression_postcondition_def)
+    by (meson assms(2,3) path_splitting_invariant_aux_1(3))
   hence "?px * y\<^sup>T \<le> p0\<^sup>\<star>"
     using 1 shunt_bijective by blast
   hence "?px \<sqinter> y\<^sup>T \<le> p0\<^sup>\<star>"
@@ -2517,32 +2496,32 @@ proof (unfold rank_property_def, intro conjI)
   finally have 3: "?px \<sqinter> y\<^sup>T \<sqinter> -1 \<le> (p0 - 1)\<^sup>+"
     using half_shunting by blast
   have "p0[?px\<longmapsto>y] = p"
-    using assms(1) path_compression_postcondition_def by simp
+    using assms(1) path_compression_postcondition_def by auto
   hence "(p - 1) * rank = (?px \<sqinter> y\<^sup>T \<sqinter> -1) * rank \<squnion> (-?px \<sqinter> p0 \<sqinter> -1) * rank"
     using inf_sup_distrib2 mult_right_dist_sup by force
   also have "... \<le> (?px \<sqinter> y\<^sup>T \<sqinter> -1) * rank \<squnion> (p0 - 1) * rank"
     by (meson comp_inf.mult_semi_associative le_infE mult_left_isotone sup_right_isotone)
   also have "... \<le> (?px \<sqinter> y\<^sup>T \<sqinter> -1) * rank \<squnion> rank * S'\<^sup>+"
-    using assms(3) rank_property_def sup_right_isotone by auto
+    using assms(4) rank_property_def sup_right_isotone by auto
   also have "... \<le> (p0 - 1)\<^sup>+ * rank \<squnion> rank * S'\<^sup>+"
     using 3 mult_left_isotone sup_left_isotone by blast
   also have "... \<le> rank * S'\<^sup>+"
   proof -
     have "(p0 - 1)\<^sup>\<star> * rank \<le> rank * S'\<^sup>\<star>"
-      using assms(3) rank_property_def star_simulation_left star.left_plus_circ by fastforce
+      using assms(4) rank_property_def star_simulation_left star.left_plus_circ by fastforce
     hence "(p0 - 1)\<^sup>+ * rank \<le> (p0 - 1) * rank * S'\<^sup>\<star>"
       by (simp add: comp_associative mult_right_isotone)
     also have "... \<le> rank * S'\<^sup>+"
-      by (smt (z3) assms(3) rank_property_def comp_associative comp_left_subdist_inf inf.boundedE inf.sup_right_divisibility star.circ_transitive_equal)
+      by (smt (z3) assms(4) rank_property_def comp_associative comp_left_subdist_inf inf.boundedE inf.sup_right_divisibility star.circ_transitive_equal)
     finally show ?thesis
       by simp
   qed
   finally show "(p - 1) * rank \<le> rank * S'\<^sup>+"
     .
   show "univalent rank" "total rank"
-    using rank_property_def assms(3) by auto
+    using rank_property_def assms(4) by auto
   show "card_less_eq (roots p) (-(S'\<^sup>+ * rank\<^sup>T * top))"
-    using assms(1,3) path_compression_postcondition_def rank_property_def by auto
+    using assms(1,4) path_compression_postcondition_def rank_property_def by auto
 qed
 
 theorem union_sets_by_rank:
@@ -2583,9 +2562,9 @@ proof vcg_tc_simp
   have "rank_property ?p1 rank"
     using 1 2 path_compression_preserves_rank_property union_sets_precondition_def by blast
   hence 4: "rank_property ?p2 rank"
-    using 1 2 3 by (meson path_compression_preserves_rank_property path_compression_postcondition_def path_compression_precondition_def)
+    using 1 2 3 by (meson path_compression_preserves_rank_property path_compression_postcondition_def union_sets_precondition_def)
   have 5: "point ?r" "point ?s"
-    using 2 3 path_compression_postcondition_def path_compression_precondition_def by auto
+    using 1 2 3 by (smt path_compression_postcondition_def union_sets_precondition_def root_point)+
   hence 6: "point ?rr" "point ?rs"
     using 1 comp_associative read_injective read_surjective rank_property_def by auto
   have "top \<le> S'\<^sup>\<star> \<squnion> S'\<^sup>+\<^sup>T"
@@ -2712,11 +2691,11 @@ proof vcg_tc_simp
                   have 17: "regular (i * ?rr)"
                     using 6 12 bijective_regular regular_mult_closed by blast
                   have 18: "find_set_precondition ?p1 y"
-                    using 2 3 find_set_precondition_def path_compression_postcondition_def path_compression_precondition_def by blast
+                    using 1 2 find_set_precondition_def path_compression_postcondition_def union_sets_precondition_def by blast
                   hence "?s = root ?p1 y"
                     by (meson find_set_function find_set_postcondition_def)
                   also have "... = root ?p2 y"
-                    using 3 18 by (smt (z3) find_set_precondition_def path_compression_postcondition_def path_compression_precondition_def same_root)
+                    using 3 18 by (smt (z3) find_set_precondition_def path_compression_postcondition_def same_root)
                   also have "... \<le> roots ?p2"
                     by simp
                   also have "... \<le> i * -(S'\<^sup>+ * rank\<^sup>T * top)"
@@ -2902,9 +2881,9 @@ proof vcg_tc_simp
                   finally have 22: "?rr \<le> S'\<^sup>\<star> * i\<^sup>T * ?s"
                     .
                   have "?r = root ?p1 x"
-                    using 2 path_compression_postcondition_def path_compression_precondition_def by blast
+                    using 2 path_compression_postcondition_def by blast
                   also have "... = root ?p2 x"
-                    using 3 18 by (smt (z3) find_set_precondition_def path_compression_postcondition_def path_compression_precondition_def same_root)
+                    using 3 18 by (smt (z3) find_set_precondition_def path_compression_postcondition_def same_root)
                   also have "... \<le> roots ?p2"
                     by simp
                   also have "... \<le> i * -(S'\<^sup>+ * rank\<^sup>T * top)"
@@ -2946,7 +2925,7 @@ proof vcg_tc_simp
                   show "(?p4 - 1) * ?rank \<le> ?rank * S'\<^sup>+"
                   proof -
                     have 23: "univalent ?p2"
-                      using 3 path_compression_postcondition_def path_compression_precondition_def by blast
+                      using 3 path_compression_postcondition_def by blast
                     have 24: "?r \<sqinter> (?p4 - 1) * ?rank \<le> ?s\<^sup>T * rank * S' * S'\<^sup>+"
                     proof -
                       have "?r \<sqinter> (?p4 - 1) * ?rank = (?r \<sqinter> ?p4 \<sqinter> -1) * ?rank"
@@ -2960,9 +2939,9 @@ proof vcg_tc_simp
                       also have "... = bot"
                       proof -
                         have "?r = root ?p1 x"
-                          using 2 path_compression_postcondition_def path_compression_precondition_def by blast
+                          using 2 path_compression_postcondition_def by blast
                         also have "... = root ?p2 x"
-                          using 3 18 by (smt (z3) find_set_precondition_def path_compression_postcondition_def path_compression_precondition_def same_root)
+                          using 3 18 by (smt (z3) find_set_precondition_def path_compression_postcondition_def same_root)
                         also have "... \<le> roots ?p2"
                           by simp
                         finally have "?r \<sqinter> ?p2 \<le> roots ?p2 \<sqinter> ?p2"

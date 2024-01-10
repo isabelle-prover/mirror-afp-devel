@@ -1180,7 +1180,7 @@ definition "path_compression_invariant p x y p0 w \<equiv>
   root p w = y \<and> p0[p0\<^sup>T\<^sup>\<star> * x - p0\<^sup>T\<^sup>\<star> * w\<longmapsto>y] = p \<and>
   disjoint_set_forest p0 \<and> w \<le> p0\<^sup>T\<^sup>\<star> * x"
 definition "path_compression_postcondition p x y p0 \<equiv>
-  path_compression_precondition p x y \<and> p \<sqinter> 1 = p0 \<sqinter> 1 \<and> fc p = fc p0 \<and>
+  disjoint_set_forest p \<and> y = root p x \<and> p \<sqinter> 1 = p0 \<sqinter> 1 \<and> fc p = fc p0 \<and>
   p0[p0\<^sup>T\<^sup>\<star> * x\<longmapsto>y] = p"
 
 text \<open>
@@ -1314,12 +1314,6 @@ theorem path_compression_assign:
   subgoal using update_univalent mult_assoc by auto
   subgoal using bijective_regular mapping_regular regular_closed_star regular_conv_closed regular_mult_closed update_mapping mult_assoc by auto
   subgoal using update_acyclic_6 by blast
-  subgoal by blast
-  subgoal by blast
-  subgoal by blast
-  subgoal by blast
-  subgoal by blast
-  subgoal by blast
   subgoal by (smt same_root path_compression_exact path_compression_precondition_def update_univalent vector_mult_closed)
   subgoal using path_compression_exact(1) path_compression_precondition_def by blast
   subgoal using path_compression_exact(2) path_compression_precondition_def by blast
@@ -1945,7 +1939,7 @@ proof -
   have "path_compression_postcondition ?p x ?y p"
     using assms find_set_path_compression_function prod.collapse by blast
   thus "?r = ?y"
-    using 1 by (smt assms same_root find_set_precondition_def find_set_postcondition_def path_compression_precondition_def path_compression_postcondition_def)
+    using 1 by (smt assms same_root find_set_precondition_def find_set_postcondition_def path_compression_postcondition_def)
 qed
 
 text \<open>
@@ -1990,7 +1984,7 @@ proof -
   have "?r = ?y"
     by (simp add: assms find_set_path_compression_find_set)
   thus "?q = ?p"
-    using 1 2 by (simp add: path_compression_postcondition_def)
+    using 1 2 path_compression_postcondition_def by auto
 qed
 
 subsection \<open>Union-Sets\<close>
@@ -2004,19 +1998,19 @@ The disjoint-set forest, which keeps being updated, is threaded through the sequ
 \<close>
 
 definition "union_sets_precondition p x y \<equiv> disjoint_set_forest p \<and> point x \<and> point y"
-definition "union_sets_postcondition p x y p0 \<equiv> union_sets_precondition p x y \<and> fc p = wcc (p0 \<squnion> x * y\<^sup>T)"
+definition "union_sets_postcondition p x y p0 \<equiv> disjoint_set_forest p \<and> fc p = wcc (p0 \<squnion> x * y\<^sup>T)"
 
 lemma union_sets_1:
   assumes "union_sets_precondition p0 x y"
     and "path_compression_postcondition p1 x r p0"
     and "path_compression_postcondition p2 y s p1"
   shows "union_sets_postcondition (p2[r\<longmapsto>s]) x y p0"
-proof (unfold union_sets_postcondition_def union_sets_precondition_def, intro conjI)
+proof (unfold union_sets_postcondition_def, intro conjI)
   let ?p = "p2[r\<longmapsto>s]"
   have 1: "disjoint_set_forest p1 \<and> point r \<and> r = root p1 x \<and> p1 \<sqinter> 1 = p0 \<sqinter> 1 \<and> fc p1 = fc p0"
-    using assms(2) path_compression_precondition_def path_compression_postcondition_def by auto
+    by (smt (verit) assms(1,2) path_compression_postcondition_def root_point union_sets_precondition_def)
   have 2: "disjoint_set_forest p2 \<and> point s \<and> s = root p2 y \<and> p2 \<sqinter> 1 = p1 \<sqinter> 1 \<and> fc p2 = fc p1"
-    using assms(3) path_compression_precondition_def path_compression_postcondition_def by auto
+    by (smt (verit) assms(1,3) path_compression_postcondition_def root_point union_sets_precondition_def)
   hence 3: "fc p2 = fc p0"
     using 1 by simp
   show 4: "univalent ?p"
@@ -2039,18 +2033,6 @@ proof (unfold union_sets_postcondition_def union_sets_precondition_def, intro co
     thus ?thesis
       using 1 2 update_acyclic_4 by blast
   qed
-  show "vector x"
-    using assms(1) by (simp add: union_sets_precondition_def)
-  show "injective x"
-    using assms(1) by (simp add: union_sets_precondition_def)
-  show "surjective x"
-    using assms(1) by (simp add: union_sets_precondition_def)
-  show "vector y"
-    using assms(1) by (simp add: union_sets_precondition_def)
-  show "injective y"
-    using assms(1) by (simp add: union_sets_precondition_def)
-  show "surjective y"
-    using assms(1) by (simp add: union_sets_precondition_def)
   show "fc ?p = wcc (p0 \<squnion> x * y\<^sup>T)"
   proof (rule order.antisym)
     have "r = p1[[r]]"
@@ -2218,7 +2200,7 @@ proof vcg_tc_simp
   hence 2: "path_compression_postcondition ?p1 x ?r p0"
     by (simp add: find_set_precondition_def union_sets_precondition_def find_set_path_compression_function)
   hence "path_compression_postcondition ?p2 y ?s ?p1"
-    using 1 by (meson find_set_precondition_def union_sets_precondition_def find_set_path_compression_function path_compression_postcondition_def path_compression_precondition_def prod.collapse)
+    using 1 by (meson find_set_precondition_def union_sets_precondition_def find_set_path_compression_function path_compression_postcondition_def prod.collapse)
   thus "union_sets_postcondition (?p2[?r\<longmapsto>?s]) x y p0"
     using 1 2 by (simp add: union_sets_1)
 qed
