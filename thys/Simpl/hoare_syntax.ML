@@ -179,7 +179,7 @@ local
   fun is_record_sel ctxt nm =
     let
       val consts = Proof_Context.consts_of ctxt;
-      val exists_const = can (Consts.the_const consts) o intern_const_syntax consts;
+      val exists_const = can (Consts.the_const_type consts) o intern_const_syntax consts;
       val exists_abbrev = can (Consts.the_abbreviation consts) o intern_const_syntax consts;
     in (exists_const nm) orelse (exists_abbrev nm) end;
 in
