@@ -518,16 +518,7 @@ lemma scene_union_inter_distrib:
 lemma finite_distinct_lists_subset:
   assumes "finite A"
   shows "finite {xs. distinct xs \<and> set xs \<subseteq> A}"
-proof -
-  from assms have 1: "{xs. distinct xs \<and> set xs \<subseteq> A} = {xs. distinct xs \<and> length xs \<le> card A \<and> set xs \<subseteq> A}"
-    by (auto, metis card_mono distinct_card)
-  have 2: "... \<subseteq> {xs. set xs \<subseteq> A \<and> length xs \<le> card A}"
-    by auto
-  have 3: "finite ..."
-    using assms finite_lists_length_le by blast
-  show ?thesis
-    by (metis (mono_tags, lifting) "1" "2" "3" infinite_super)
-qed
+  by (metis (no_types, lifting) Collect_cong finite_subset_distinct[OF assms])
 
 lemma foldr_scene_union_remdups: "set xs \<subseteq> set Vars \<Longrightarrow> \<Squnion>\<^sub>S (remdups xs) = \<Squnion>\<^sub>S xs"
   by (auto intro: foldr_scene_union_eq_sets simp add: pairwise_compat_Vars_subset)

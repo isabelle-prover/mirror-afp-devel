@@ -477,9 +477,6 @@ qed
   lemma fs_contract: "fst ` { p | p. f (fst p) (snd p) \<in> S } = { a . \<exists>b. f a b \<in> S }"
     by (simp add: image_Collect)
 
-lemma finite_Collect: "finite S \<Longrightarrow> inj f \<Longrightarrow> finite {a. f a : S}"
-by(simp add: finite_vimageI vimage_def[symmetric])
-
   \<comment> \<open>Finite sets have an injective mapping to an initial segments of the
       natural numbers\<close>
   (* This lemma is also in the standard library (from Isabelle2009-1 on)
@@ -524,7 +521,7 @@ by(simp add: finite_vimageI vimage_def[symmetric])
 
   (* Try (simp only: cset_fin_simps, fastforce intro: cset_fin_intros) when reasoning about finiteness of collected sets *)
   lemmas cset_fin_simps = Ex_prod_contract fs_contract[symmetric] image_Collect[symmetric]
-  lemmas cset_fin_intros = finite_imageI finite_Collect inj_onI
+  lemmas cset_fin_intros = finite_imageI finite_inverse_image inj_onI
 
 
 lemma Un_interval:
@@ -566,15 +563,6 @@ proof (rule finite_subset[where B="(\<lambda>s. s \<union> (s' - S)) ` Pow S"], 
   also assume "s - S = s' - S"
   finally show "s \<in> (\<lambda>s. s \<union> (s' - S)) ` Pow S" by blast
 qed blast
-
-lemma distinct_finite_subset:
-  assumes "finite x"
-  shows "finite {ys. set ys \<subseteq> x \<and> distinct ys}" (is "finite ?S")
-proof (rule finite_subset)
-  from assms show "?S \<subseteq> {ys. set ys \<subseteq> x \<and> length ys \<le> card x}"
-    by clarsimp (metis distinct_card card_mono)
-  from assms show "finite ..." by (rule finite_lists_length_le)
-qed
 
 lemma distinct_finite_set:
   shows "finite {ys. set ys = x \<and> distinct ys}" (is "finite ?S")

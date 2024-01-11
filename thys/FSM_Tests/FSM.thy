@@ -2405,7 +2405,7 @@ proof -
   qed
   
   then show ?thesis
-    using distinct_lists_finite[OF fsm_transitions_finite, of M]  path_transitions[of M q]
+    using finite_subset_distinct[OF fsm_transitions_finite, of M]  path_transitions[of M q]
     by (metis (no_types, lifting) infinite_super mem_Collect_eq path_transitions subsetI)
 qed
 

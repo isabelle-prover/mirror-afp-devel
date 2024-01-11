@@ -221,14 +221,9 @@ proof -
 qed
 
 lemma finite_set2:
-  assumes "card A = n" and "finite A"
+  assumes "finite A"
   shows "finite {xs. set xs = A \<and> distinct xs}"
-proof -
-  have "{xs. set xs = A \<and> distinct xs} \<subseteq> {xs. set xs = A \<and> length xs = n}"
-    using assms(1) distinct_card by fastforce
-  thus ?thesis
-    by (metis (no_types, lifting) finite_lists_length_eqE[OF \<open>finite A\<close>, of n] finite_subset)
-qed
+by(blast intro: rev_finite_subset[OF finite_subset_distinct[OF assms]])
 
 lemma set_list: 
   assumes "finite (set ` XS)"
@@ -241,7 +236,7 @@ proof -
   have 1: "{xs |xs. set xs \<in> set ` XS \<and> distinct xs} = \<Union>{{xs | xs. set xs = A \<and> distinct xs} | A. A \<in> set ` XS}"
     by auto
   have "finite {xs |xs. set xs \<in> set ` XS \<and> distinct xs}"
-    using finite_set2[OF _ finite_set] distinct_card  assms(1) unfolding 1 by fastforce
+    using finite_set2[OF finite_set] distinct_card  assms(1) unfolding 1 by fastforce
   ultimately
   show ?thesis
     using finite_subset by blast
