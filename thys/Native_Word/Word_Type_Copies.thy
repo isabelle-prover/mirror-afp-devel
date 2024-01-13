@@ -176,7 +176,7 @@ proof -
     then have \<open>p = of_word w\<close>
       by (simp add: of_word_of)
     also have \<open>P (of_word w)\<close>
-    proof (induction w rule: bits_induct)
+    proof (induction w rule: bit_induct)
       case (stable w)
       show ?case
         by (rule stable') (simp add: word_of_word stable)
