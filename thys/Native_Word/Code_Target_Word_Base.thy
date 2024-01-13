@@ -215,16 +215,14 @@ lemma divmod_via_sdivmod:
    else let q = (push_bit 1 (drop_bit 1 x sdiv y));
             r = x - q * y
         in if r \<ge> y then (q + 1, r - y) else (q, r))"
-proof(cases "push_bit (LENGTH('a) - 1) 1 \<le> y")
+proof (cases "push_bit (LENGTH('a) - 1) 1 \<le> y")
   case True
   note y = this
   show ?thesis
-  proof(cases "x < y")
+  proof (cases "x < y")
     case True
-    then have "x mod y = x"
-      by transfer simp
-    then show ?thesis using True y
-      using bits_mod_div_trivial [of x y] by simp
+    with y show ?thesis
+      by (simp add: word_div_less mod_word_less)
   next
     case False
     obtain n where n: "y = of_nat n" "n < 2 ^ LENGTH('a)"
