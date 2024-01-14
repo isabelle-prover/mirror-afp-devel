@@ -3,6 +3,11 @@ theory Mod_Plus_Minus
 imports Kyber_spec
 
 begin
+
+lemma odd_half_floor:
+  \<open>\<lfloor>real_of_int x / 2\<rfloor> = (x - 1) div 2\<close> if \<open>odd x\<close>
+  using that by (rule oddE) simp
+
 section \<open>Re-centered Modulo Operation\<close>
 text \<open>To define the compress and decompress functions, 
   we need some special form of modulo. It returns the 
@@ -27,17 +32,17 @@ using assms by auto
 
 
 lemma half_mod_odd:
-assumes "b>0" "odd b" "\<lfloor>real_of_int b / 2\<rfloor> < y mod b" 
-shows "- \<lfloor>real_of_int b / 2\<rfloor> \<le> y mod b - b" "y mod b - b \<le> \<lfloor>real_of_int b / 2\<rfloor>"
+  assumes "b > 0" "odd b" "\<lfloor>real_of_int b / 2\<rfloor> < y mod b" 
+  shows "- \<lfloor>real_of_int b / 2\<rfloor> \<le> y mod b - b"
+    "y mod b - b \<le> \<lfloor>real_of_int b / 2\<rfloor>"
 proof -
-  have "\<lfloor>real_of_int b / 2\<rfloor> = (b-1) div 2" using \<open>odd b\<close>
-    by (metis add.commute diff_add_cancel even_add even_succ_div_2 floor_divide_of_int_eq 
-    odd_one of_int_numeral)
-  then show "- \<lfloor>real_of_int b / 2\<rfloor> \<le> y mod b - b" using assms by linarith
-  have "y mod b \<le> b + \<lfloor>real_of_int b / 2\<rfloor>" using mod_range[OF assms(1)] 
-  by (smt (verit, ccfv_SIG) \<open>\<lfloor>real_of_int b / 2\<rfloor> = (b - 1) div 2\<close> atLeastAtMost_iff 
-    pos_imp_zdiv_neg_iff)
-  then show "y mod b - b \<le> \<lfloor>real_of_int b / 2\<rfloor>" by auto
+  from odd_half_floor [of b]
+  show "- \<lfloor>real_of_int b / 2\<rfloor> \<le> y mod b - b"
+    using assms by linarith
+  then have "y mod b \<le> b + \<lfloor>real_of_int b / 2\<rfloor>"
+    by (smt (verit) \<open>b > 0\<close> pos_mod_bound)
+  then show "y mod b - b \<le> \<lfloor>real_of_int b / 2\<rfloor>"
+    by auto
 qed
 
 lemma half_mod:

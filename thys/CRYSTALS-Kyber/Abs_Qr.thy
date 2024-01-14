@@ -77,20 +77,15 @@ using of_qr_scale[of s a] by simp
 
 text \<open>Lemmas on \<open>round\<close> and \<open>floor\<close>.\<close>
 lemma odd_round_up:
-assumes "odd x"
-shows "round (real_of_int x / 2) = (x+1) div 2"
+  assumes "odd x"
+  shows "round (real_of_int x / 2) = (x + 1) div 2"
 proof -
-  have "round (real_of_int x / 2) = round (real_of_int (x+1) /2)"
-    using assms unfolding round_def 
-    by (metis (no_types, opaque_lifting) add.commute 
-      add_divide_distrib even_add even_succ_div_2 
-      floor_divide_of_int_eq odd_one of_int_add 
-      of_int_hom.hom_one of_int_numeral)
-  also have "\<dots> = (x+1) div 2"
-    by (metis add_divide_distrib calculation 
-    floor_divide_of_int_eq of_int_add of_int_hom.hom_one 
-    of_int_numeral round_def)
-  finally show ?thesis by blast
+  from assms have \<open>odd (x + 2)\<close>
+    by simp
+  then have \<open>\<lfloor>real_of_int (x + 2) / 2\<rfloor> = (x + 2 - 1) div 2\<close>
+    by (rule odd_half_floor)
+  from this [symmetric] show ?thesis
+    by (simp add: round_def ac_simps) linarith
 qed
 
 lemma floor_unique:
@@ -125,12 +120,6 @@ proof -
   show "round (real_of_int x / 4) = (x-1) div 4"
     using floor_unique[OF leq gr] unfolding round_def by auto
 qed
-
-lemma odd_half_floor:
-assumes "odd x"
-shows "\<lfloor>real_of_int x / 2\<rfloor> = (x-1) div 2"
-using assms by (metis add.commute diff_add_cancel even_add 
- even_succ_div_2 floor_divide_of_int_eq odd_one of_int_numeral)
 
 
 section \<open>Re-centered "Norm" Function\<close>
