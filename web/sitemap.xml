@@ -3,21 +3,39 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2023-12-05T00:00:00+00:00</lastmod>
+    <lastmod>2023-12-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2023-12-05T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/ballenghien/</loc>
-    <lastmod>2023-12-05T00:00:00+00:00</lastmod>
+    <lastmod>2023-12-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/computer-science/</loc>
-    <lastmod>2023-12-05T00:00:00+00:00</lastmod>
+    <lastmod>2023-12-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/crypthol/</loc>
+    <lastmod>2023-12-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/crystals-kyber/</loc>
+    <lastmod>2023-12-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/CRYSTALS-Kyber_Security.html</loc>
+    <lastmod>2023-12-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/</loc>
-    <lastmod>2023-12-05T00:00:00+00:00</lastmod>
+    <lastmod>2023-12-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/</loc>
+    <lastmod>2023-12-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/game_based_crypto/</loc>
+    <lastmod>2023-12-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/kreuzer/</loc>
+    <lastmod>2023-12-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2023-12-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/ballenghien/</loc>
     <lastmod>2023-12-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/hol-csp/</loc>
@@ -27,9 +45,6 @@
     <lastmod>2023-12-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/taha/</loc>
-    <lastmod>2023-12-05T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2023-12-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/wolff/</loc>
@@ -123,9 +138,6 @@
     <lastmod>2023-11-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Elimination_Of_Repeated_Factors.html</loc>
-    <lastmod>2023-11-06T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/kreuzer/</loc>
     <lastmod>2023-11-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/mason_stothers/</loc>
@@ -585,9 +597,6 @@
     <lastmod>2023-02-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/ABY3_Protocols.html</loc>
-    <lastmod>2023-01-27T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/crypthol/</loc>
     <lastmod>2023-01-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/hu/</loc>
@@ -1581,9 +1590,6 @@
     <lastmod>2021-03-17T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/constructive_cryptography/</loc>
-    <lastmod>2021-03-17T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/game_based_crypto/</loc>
     <lastmod>2021-03-17T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/lochbihler/</loc>
@@ -5108,6 +5114,8 @@
     <loc>/sessions/cryptobasedcompositionalproperties/</loc>
   </url><url>
     <loc>/sessions/crystals-kyber/</loc>
+  </url><url>
+    <loc>/sessions/crystals-kyber_security/</loc>
   </url><url>
     <loc>/sessions/csp_reftk/</loc>
   </url><url>

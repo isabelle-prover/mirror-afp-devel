@@ -1,0 +1,78 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+\usepackage[T1]{fontenc}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+\usepackage[shortcuts]{extdash}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{rm}
+
+
+\begin{document}
+
+\title{Verification of Correctness and Security Properties for CRYSTALS-KYBER}
+\author{Katharina Kreuzer}
+\maketitle
+
+\begin{abstract}
+This article builds upon the formalization of the deterministic part of the original Kyber algorithms \cite{Formalization}.
+The correctness proof is expanded to cover both the deterministic part 
+(from \cite{Formalization}) 
+and the probabilistic part of randomly chosen inputs.
+Indeed, the probabilistic version of the $\delta$-correctness \cite{kyber} was flawed and could only be formalized for a modified $\delta'$.
+
+The authors \cite{kyber} also remarked, that the security proof against indistinguishability under chosen plaintext attack (IND-CPA) does not hold for the original version of Kyber.
+Thus, the newer version \cite{KyberRound2,KyberRound3} was formalized as well, including the adapted deterministic and probabilistic correctness theorems.
+Moreover, the IND-CPA security proof against the new version of Kyber has been verified using the CryptHOL library \cite{CryptHOLTutorial, CryptHOL-AFP}.
+Since the new version also included a change of parameters, the Kyber algorithms have been instantiated with the new parameter set as well.
+
+Together with the entry "CRYSTALS-Kyber"\cite{Formalization}, this entry formalises the paper \cite{PaperTBD}.
+\end{abstract}
+
+
+\newpage
+\tableofcontents
+
+\newpage
+\parindent 0pt\parskip 0.5ex
+
+\section{Introduction}
+CRYSTALS-KYBER is a cryptographic key encapsulation mechanism (KEM) and the winner of the NIST standardization project for post-quantum cryptography \cite{report3rdroundNIST}. That is, even with feasible quantum computers, Kyber is thought to be hard to crack. 
+
+The original version of the Kyber algorithms was introduced in \cite{kyber,KyberAS} and formalized in \cite{Formalization}. 
+During the rounds of the NIST specification process, several changes to the KEM and the underlying public key encryption scheme (PKE) were made \cite{KyberRound2, KyberRound3}.
+The most noteworthy change is the omission of the compression of the public key. The reason is that the compression of the public key induced an error in the security proof against the indistinguishability against chosen plaintext attack (IND-CPA).
+When omitting the compression, the advantage against IND-CPA can be reduced to the advantage against the module Learning-with-Errors (module LWE).
+The module-LWE has been shown to be a NP-hard problem using probabilistic reductions \cite{moduleLWE}. 
+
+In this article, we extend the prior formalization of Kyber \cite{Formalization} 
+by formalizing and verifying the following points:
+\begin{itemize}
+\item Kyber algorithms without compression of the public key
+\item Exemplary parameter set for Round 2 and 3 (using modulus $q=3329$)
+\item Deterministic correctness for Kyber without compression of the public key
+\item Probabilistic correctness for both versions of Kyber but only for modified error bound (original bound could not be formalized due to the compression error in the reduction to module-LWE)
+\item IND-CPA security proof for Kyber without compression of the public key
+\end{itemize}
+
+The last point, the security proof against IND-CPA, is a major contribution of this work.
+Using the game-based proof techniques for security analysis under the standard random oracle model as defined in CryptHOL \cite{CryptHOL-AFP,CryptHOLTutorial}, the advantage against Kyber's IND-CPA game was bounded by the advantage against the module-LWE.
+
+All in all, this entry formalizes claims for correctness and IND-CPA security of Kyber and uncovers flaws in the relevant proofs. More details can be found in the corresponding paper \cite{PaperTBD}.
+Since Kyber was chosen by NIST for standardisation, a formal proof of correctness and security properties is essential.
+
+
+\vspace{1cm}
+\input{session}
+
+%\nocite{kyber}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
