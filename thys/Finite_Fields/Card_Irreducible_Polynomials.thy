@@ -141,41 +141,45 @@ proof -
   thus ?thesis by simp
 qed
 
+lemma (in finite_field) card_irred_gt_0:
+  assumes "d > 0"
+  shows "real(order R)^d / (2*real d) \<le> real (card {f. monic_irreducible_poly R f \<and> degree f = d})"
+    (is "?L \<le> ?R")
+proof -
+  consider (a) "d = 1" | (b) "d = 2" | (c) "d > 2" using assms by linarith
+  thus ?thesis
+  proof (cases)
+    case a
+    hence "?L = real (order R)/2" by simp
+    also have "... \<le> real (order R)" using finite_field_min_order by simp
+    also have "... = ?R" unfolding a card_irred_1 by simp
+    finally show ?thesis by simp
+  next
+    case b
+    hence "?L = real (order R^2)/4 + 0" by simp
+    also have "... \<le> real (order R^2)/4 + real (order R)/2 * (real (order R)/2 - 1)"
+      using finite_field_min_order by (intro add_mono mult_nonneg_nonneg) auto
+    also have "... = (real (order R^2) - real (order R))/2" 
+      by (simp add:algebra_simps power2_eq_square)
+    also have "... = ?R" unfolding b card_irred_2 by simp
+    finally show ?thesis by simp
+  next
+    case c thus ?thesis by (rule card_irred_gt_2)
+  qed
+qed
+
 lemma (in finite_field) exist_irred:
   assumes "n > 0"
   obtains f where "monic_irreducible_poly R f" "degree f = n"
 proof -
-  consider (i) "n = 1" | (ii) "n = 2" | (iii) "n>2"
-    using assms by linarith
-  then have
-    "card {f. monic_irreducible_poly R f \<and> degree f = n} > 0"
-    (is "card ?A > 0")
-  proof (cases)
-    case i
-    hence "card ?A = order R"
-      using card_irred_1 by simp
-    also have "... > 0"
-       using finite_field_min_order by simp
-    finally show ?thesis by simp
-  next
-    case ii
-    have "0 < (real (order R) * (real (order R) - 1)) / 2"
-      using finite_field_min_order by simp
-    also have "... = (real (order R)^2 - order R) / 2"
-      by (simp add:power2_eq_square algebra_simps)
-    also have "... = real (card ?A)"
-      using ii by (subst card_irred_2[symmetric], simp)
-    finally have " 0 < real (card ?A)" by simp
-    then show ?thesis by simp
-  next
-    case iii
-    have "0 < real (order R)^n / (2*real n)"
-      using finite_field_min_order assms by simp
-    also have "... \<le> real (card ?A)"
-      using iii card_irred_gt_2 by simp
-    finally have "0 < real (card ?A)" by simp
-    then show ?thesis by simp
-  qed
+  have "0 < real(order R)^n / (2*real n)"
+    using finite_field_min_order assms
+    by (intro divide_pos_pos mult_pos_pos zero_less_power) auto
+  also have "... \<le> real (card {f. monic_irreducible_poly R f \<and> degree f = n})" 
+    (is "_ \<le> real(card ?A)")
+    by (intro card_irred_gt_0 assms)
+  finally have "0 < card {f. monic_irreducible_poly R f \<and> degree f = n}"
+    by auto
   hence "?A \<noteq> {}"
     by (metis card.empty nless_le)
   then obtain f where "monic_irreducible_poly R f" "degree f = n"
