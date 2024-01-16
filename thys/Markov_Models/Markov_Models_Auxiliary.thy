@@ -301,7 +301,7 @@ lemma prod_sum_distrib:
 proof induction
   case (insert i I) then show ?case
     by (auto simp: PiE_insert_eq finite_PiE sum.reindex inj_combinator sum.swap[of _ "Pi\<^sub>E I J"]
-                   sum_cartesian_product' sum_distrib_left sum_distrib_right
+                   sum.cartesian_product' sum_distrib_left sum_distrib_right
              intro!: sum.cong prod.cong arg_cong[where f="(*) x" for x])
 qed simp
 
