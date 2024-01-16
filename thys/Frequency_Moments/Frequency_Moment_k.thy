@@ -719,7 +719,7 @@ next
       by (simp add:mean_rv_def sum_divide_distrib)
     also have "... = (\<Sum>j = 0..<s\<^sub>1. \<Omega>\<^sub>2.variance (\<lambda>\<omega>. result (\<omega> (j, i)) / real s\<^sub>1))"
       using a integrable_2[OF False]
-      by (subst \<Omega>\<^sub>2.var_sum_all_indep, auto simp add:\<Omega>\<^sub>2_def)
+      by (subst \<Omega>\<^sub>2.bienaymes_identity_full_indep, auto simp add:\<Omega>\<^sub>2_def)
     also have "... = (\<Sum>j = 0..<s\<^sub>1. \<Omega>\<^sub>2.variance (\<lambda>\<omega>. result (\<omega> (j, i))) / real s\<^sub>1^2)"
       using integrable_2[OF False]
       by (subst \<Omega>\<^sub>2.variance_divide, auto)

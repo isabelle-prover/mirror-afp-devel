@@ -421,7 +421,7 @@ proof -
   have "\<Omega>.variance (\<lambda>\<omega>. mean_rv \<omega> i) = \<Omega>.variance (\<lambda>\<omega>. \<Sum>i\<^sub>1 = 0..<s\<^sub>1. sketch_rv (\<omega> (i\<^sub>1, i))) / (((real p)\<^sup>2 - 1) * real s\<^sub>1)\<^sup>2"
     unfolding mean_rv_def by (subst \<Omega>.variance_divide[OF integrable_\<Omega>], simp)
   also have "... = (\<Sum>i\<^sub>1 = 0..<s\<^sub>1. \<Omega>.variance (\<lambda>\<omega>. sketch_rv (\<omega> (i\<^sub>1, i)))) / (((real p)\<^sup>2 - 1) * real s\<^sub>1)\<^sup>2"
-    by (subst \<Omega>.var_sum_all_indep[OF _ _ integrable_\<Omega> a]) (auto simp: \<Omega>_def \<Omega>\<^sub>p_def)
+    by (subst \<Omega>.bienaymes_identity_full_indep[OF _ _ integrable_\<Omega> a]) (auto simp: \<Omega>_def \<Omega>\<^sub>p_def)
   also have "... \<le>  (\<Sum>i\<^sub>1 = 0..<s\<^sub>1. 2*(real_of_rat (F 2 as)^2) * ((real p)\<^sup>2-1)\<^sup>2)  / (((real p)\<^sup>2 - 1) * real s\<^sub>1)\<^sup>2"
     by (rule divide_right_mono, rule sum_mono[OF sketch_rv_var[OF assms]], auto)
   also have "... = 2 * (real_of_rat (F 2 as)^2) / real s\<^sub>1"

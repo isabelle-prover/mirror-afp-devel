@@ -473,7 +473,7 @@ proof -
   have "variance (\<lambda>\<omega>. real (Q a \<omega>)) = variance (\<lambda>\<omega>. (\<Sum>x \<in> set as. of_bool (int (hash x \<omega>) < a)))"
     by (simp add:Q_def Int_def)
   also have "... = (\<Sum>x \<in> set as. variance (\<lambda>\<omega>. of_bool (int (hash x \<omega>) < a)))"
-    by (intro var_sum_pairwise_indep_2 indep rv) auto
+    by (intro bienaymes_identity_pairwise_indep_2 indep rv) auto
   also have "... \<le> (\<Sum> x \<in> set as. a / real p)"
     by (rule sum_mono, simp add: variance_eq of_bool_square, simp add: exp_single)
   also have "... = real m * real_of_int a /real p"
