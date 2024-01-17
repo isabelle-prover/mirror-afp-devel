@@ -8,14 +8,15 @@ This entry formalizes the classification of the finite fields (also
 called Galois fields): For each prime power $p^n$ there exists exactly
 one (up to isomorphisms) finite field of that size and there are no
 other finite fields. The derivation includes a formalization of the
-characteristic of rings, the Frobenius endomorphism, formal
-differentiation for polynomials in HOL-Algebra and Gauss' formula
-for the number of monic irreducible polynomials over finite fields: \\[
+characteristic of rings, the Frobenius endomorphism, formal differentiation
+for polynomials in HOL-Algebra, Rabin's test for the irreducibility of
+polynomials and Gauss' formula for the number of monic irreducible
+polynomials over finite fields: \\[
 \\frac{1}{n} \\sum_{d | n} \\mu(d) p^{n/d} \\textrm{.} \\] The proofs are
-based on the books from <a
+based on the books and publications from <a
 href=\"https://doi.org/10.1007/978-1-4757-2103-4\">Ireland
-and Rosen</a>, as well as, <a
-href=\"https://doi.org/10.1017/CBO9781139172769\">Lidl and
+and Rosen</a>, <a href=\"https://doi.org/10.1137/0209024\">Rabin</a>, as
+well as, <a href=\"https://doi.org/10.1017/CBO9781139172769\">Lidl and
 Niederreiter</a>."""
 license = "bsd"
 note = ""
@@ -31,6 +32,7 @@ homepage = "karayel_homepage"
 karayel = "karayel_email"
 
 [history]
+2023-01-17 = "Added Rabin's test for the irreducibility of polynomials in finite fields."
 
 [extra]
 

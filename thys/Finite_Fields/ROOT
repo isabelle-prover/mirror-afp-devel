@@ -13,6 +13,7 @@ session Finite_Fields = "HOL-Algebra" +
     Formal_Polynomial_Derivatives
     Monic_Polynomial_Factorization
     Ring_Characteristic
+    Rabin_Irreducibility_Test
   document_files
     "root.tex"
     "root.bib"
