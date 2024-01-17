@@ -32,7 +32,7 @@ homepage = "karayel_homepage"
 karayel = "karayel_email"
 
 [history]
-2023-01-17 = "Added Rabin's test for the irreducibility of polynomials in finite fields."
+2024-01-17 = "Added Rabin's test for the irreducibility of polynomials in finite fields."
 
 [extra]
 

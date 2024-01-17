@@ -326,6 +326,18 @@ proof -
     unfolding univ_poly_add poly_add_coeff[OF a b] by simp
 qed
 
+
+lemma (in domain) coeff_a_inv:
+  assumes "subring K R"
+  assumes "f \<in> carrier (K[X])"
+  shows "coeff (\<ominus>\<^bsub>K[X]\<^esub> f) i = \<ominus> (coeff f i)" (is "?L = ?R")
+proof -
+  have "?L = coeff (map (a_inv R) f) i"
+    unfolding univ_poly_a_inv_def'[OF assms(1,2)] by simp
+  also have "... = ?R" by (induction f) auto
+  finally show ?thesis by simp
+qed
+
 text \<open>This is a version of geometric sums for commutative rings:\<close>
 
 lemma (in cring) geom:
@@ -752,7 +764,6 @@ proof -
   finally show ?thesis by simp
 qed
 
-
 lemma ring_hom_cong:
   assumes "\<And>x. x \<in> carrier R \<Longrightarrow> f' x = f x" 
   assumes "ring R"
@@ -1005,6 +1016,22 @@ next
   assume "a divides c"
   thus "a divides (b \<oplus> c)"
     using assms by (intro div_sum) auto
+qed
+
+lemma (in comm_monoid) irreducible_prod_unit:
+  assumes "f \<in> carrier G"  "x \<in> Units G"
+  shows "irreducible G f = irreducible G (x \<otimes> f)" (is "?L = ?R")
+proof
+  assume "?L"
+  thus ?R using irreducible_prod_lI assms by auto
+next
+  have "inv x \<otimes> (x \<otimes> f)  = (inv x  \<otimes> x) \<otimes> f"
+    using assms by (intro m_assoc[symmetric]) auto
+  also have "... = f" using assms by simp
+  finally have 0: "inv x \<otimes> (x \<otimes> f) = f" by simp
+  assume ?R
+  hence "irreducible G (inv x \<otimes> (x \<otimes> f) )" using irreducible_prod_lI assms by blast
+  thus ?L using 0 by simp
 qed
 
 end

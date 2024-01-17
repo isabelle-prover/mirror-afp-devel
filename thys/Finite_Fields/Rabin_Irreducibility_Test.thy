@@ -7,33 +7,6 @@ begin
 text \<open>This section introduces an effective test for irreducibility of polynomials
 (in finite fields) based on Rabin~\cite[rabin1980].\<close>
 
-lemma (in domain) coeff_a_inv:
-  assumes "subring K R"
-  assumes "f \<in> carrier (K[X])"
-  shows "coeff (\<ominus>\<^bsub>K[X]\<^esub> f) i = \<ominus> (coeff f i)" (is "?L = ?R")
-proof -
-  have "?L = coeff (map (a_inv R) f) i"
-    unfolding univ_poly_a_inv_def'[OF assms(1,2)] by simp
-  also have "... = ?R" by (induction f) auto
-  finally show ?thesis by simp
-qed
-
-lemma (in comm_monoid) irreducible_prod_unit:
-  assumes "f \<in> carrier G"  "x \<in> Units G"
-  shows "irreducible G f = irreducible G (x \<otimes> f)" (is "?L = ?R")
-proof
-  assume "?L"
-  thus ?R using irreducible_prod_lI assms by auto
-next
-  have "inv x \<otimes> (x \<otimes> f)  = (inv x  \<otimes> x) \<otimes> f"
-    using assms by (intro m_assoc[symmetric]) auto
-  also have "... = f" using assms by simp
-  finally have 0: "inv x \<otimes> (x \<otimes> f) = f" by simp
-  assume ?R
-  hence "irreducible G (inv x \<otimes> (x \<otimes> f) )" using irreducible_prod_lI assms by blast
-  thus ?L using 0 by simp
-qed
-
 definition pcoprime :: "_ \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> bool" ("pcoprime\<index>")
   where "pcoprime\<^bsub>R\<^esub> p q =
     (\<forall>r \<in> carrier (poly_ring R). r pdivides\<^bsub>R\<^esub> p \<and> r pdivides\<^bsub>R\<^esub> q \<longrightarrow> degree r = 0)"
