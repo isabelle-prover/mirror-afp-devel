@@ -7,12 +7,12 @@ begin
 
 lemma (in finite_field) eval_on_root_is_iso:
   defines "p \<equiv> char R"
-  assumes "f \<in> carrier (poly_ring (ZFact p))" 
-  assumes "pirreducible\<^bsub>(ZFact p)\<^esub> (carrier (ZFact p)) f" 
+  assumes "f \<in> carrier (poly_ring (ZFact p))"
+  assumes "pirreducible\<^bsub>(ZFact p)\<^esub> (carrier (ZFact p)) f"
   assumes "order R = p^degree f"
-  assumes "x \<in> carrier R" 
+  assumes "x \<in> carrier R"
   assumes "eval (map (char_iso R) f) x = \<zero>"
-  shows "ring_hom_ring (Rupt\<^bsub>(ZFact p)\<^esub> (carrier (ZFact p)) f) R 
+  shows "ring_hom_ring (Rupt\<^bsub>(ZFact p)\<^esub> (carrier (ZFact p)) f) R
     (\<lambda>g. the_elem ((\<lambda>g'. eval (map (char_iso R) g') x) ` g))"
 proof -
   let ?P = "poly_ring (ZFact p)"
@@ -20,8 +20,8 @@ proof -
   have char_pos: "char R > 0"
     using finite_carr_imp_char_ge_0[OF finite_carrier] by simp
 
-  have p_prime: "Factorial_Ring.prime p" 
-    unfolding p_def 
+  have p_prime: "Factorial_Ring.prime p"
+    unfolding p_def
     using characteristic_is_prime[OF char_pos] by simp
 
   interpret zf: finite_field "ZFact p"
@@ -29,7 +29,7 @@ proof -
   interpret pzf: principal_domain "poly_ring (ZFact p)"
     using zf.univ_poly_is_principal[OF zf.carrier_is_subfield] by simp
 
-  interpret i: ideal "(PIdl\<^bsub>?P\<^esub> f)" "?P" 
+  interpret i: ideal "(PIdl\<^bsub>?P\<^esub> f)" "?P"
     by (intro pzf.cgenideal_ideal assms(2))
   have rupt_carr: "y \<subseteq> carrier (poly_ring (ZFact p))"
     if "y \<in> carrier (Rupt\<^bsub>ZFact p\<^esub> (carrier (ZFact p)) f)" for y
@@ -38,20 +38,20 @@ proof -
   have rupt_is_ring: "ring (Rupt\<^bsub>ZFact p\<^esub> (carrier (ZFact p)) f)"
     unfolding rupture_def by (intro i.quotient_is_ring)
 
-  have "map (char_iso R) \<in> 
+  have "map (char_iso R) \<in>
     ring_iso ?P (poly_ring (R\<lparr>carrier := char_subring R\<rparr>))"
-    using lift_iso_to_poly_ring[OF char_iso] zf.domain_axioms 
+    using lift_iso_to_poly_ring[OF char_iso] zf.domain_axioms
     using char_ring_is_subdomain subdomain_is_domain
     by (simp add:p_def)
-  moreover have "(char_subring R)[X] = 
+  moreover have "(char_subring R)[X] =
     poly_ring (R \<lparr>carrier := char_subring R\<rparr>)"
     using univ_poly_consistent[OF char_ring_is_subring] by simp
-  ultimately have 
+  ultimately have
     "map (char_iso R) \<in> ring_hom ?P ((char_subring R)[X])"
     by (simp add:ring_iso_def)
   moreover have "(\<lambda>p. eval p x) \<in> ring_hom ((char_subring R)[X]) R"
     using eval_is_hom char_ring_is_subring assms(5) by simp
-  ultimately have 
+  ultimately have
     "(\<lambda>p. eval p x) \<circ> map (char_iso R) \<in> ring_hom ?P R"
     using ring_hom_trans by blast
   hence a:"(\<lambda>p. eval (map (char_iso R) p) x) \<in> ring_hom ?P R"
@@ -64,9 +64,9 @@ proof -
 
   have "?h ` a_kernel (poly_ring (ZFact (int p))) R ?h \<subseteq> {\<zero>}"
     by auto
-  moreover have 
-    "\<zero>\<^bsub>?P\<^esub> \<in> a_kernel (poly_ring (ZFact (int p))) R ?h" 
-    "?h \<zero>\<^bsub>?P\<^esub> = \<zero>" 
+  moreover have
+    "\<zero>\<^bsub>?P\<^esub> \<in> a_kernel (poly_ring (ZFact (int p))) R ?h"
+    "?h \<zero>\<^bsub>?P\<^esub> = \<zero>"
     unfolding a_kernel_def' by simp_all
   hence "{\<zero>} \<subseteq> ?h ` a_kernel (poly_ring (ZFact (int p))) R ?h"
     by simp
@@ -75,9 +75,9 @@ proof -
     by auto
 
   have d: "PIdl\<^bsub>?P\<^esub> f \<subseteq> a_kernel ?P R ?h"
-  proof (rule subsetI) 
+  proof (rule subsetI)
     fix y assume "y \<in> PIdl\<^bsub>?P\<^esub> f"
-    then obtain y' where y'_def: "y' \<in> carrier ?P" "y = y' \<otimes>\<^bsub>?P\<^esub> f" 
+    then obtain y' where y'_def: "y' \<in> carrier ?P" "y = y' \<otimes>\<^bsub>?P\<^esub> f"
       unfolding cgenideal_def by auto
     have "?h y = ?h (y' \<otimes>\<^bsub>?P\<^esub> f)" by (simp add:y'_def)
     also have "... = ?h y' \<otimes> ?h f"
@@ -92,17 +92,17 @@ proof -
       unfolding a_kernel_def kernel_def by simp
   qed
 
-  have "(\<lambda>y. the_elem ((\<lambda>p. eval (map (char_iso R) p) x) ` y)) 
+  have "(\<lambda>y. the_elem ((\<lambda>p. eval (map (char_iso R) p) x) ` y))
     \<in> ring_hom (?P Quot ?J) R"
     using h.the_elem_hom by simp
-  moreover have "(\<lambda>y. ?J <+>\<^bsub>?P\<^esub> y) 
+  moreover have "(\<lambda>y. ?J <+>\<^bsub>?P\<^esub> y)
     \<in> ring_hom (Rupt\<^bsub>(ZFact p)\<^esub> (carrier (ZFact p)) f) (?P Quot ?J)"
     unfolding rupture_def using h.kernel_is_ideal d assms(2)
     by (intro pzf.quot_quot_hom pzf.cgenideal_ideal) auto
   ultimately have "(\<lambda>y. the_elem (?h ` y)) \<circ> (\<lambda>y. ?J <+>\<^bsub>?P\<^esub> y)
     \<in> ring_hom (Rupt\<^bsub>(ZFact p)\<^esub> (carrier (ZFact p)) f) R"
     using ring_hom_trans by blast
-  hence b: "(\<lambda>y. the_elem (?h ` (?J <+>\<^bsub>?P\<^esub> y))) \<in> 
+  hence b: "(\<lambda>y. the_elem (?h ` (?J <+>\<^bsub>?P\<^esub> y))) \<in>
     ring_hom (Rupt\<^bsub>(ZFact p)\<^esub> (carrier (ZFact p)) f) R"
     by (simp add:comp_def)
   have "?h ` y = ?h ` (?J <+>\<^bsub>?P\<^esub> y)"
@@ -119,7 +119,7 @@ proof -
       by (subst set_add_hom[OF a _ y_range], subst a_kernel_def') auto
     finally show ?thesis by simp
   qed
-  hence "(\<lambda>y. the_elem (?h ` y)) \<in> 
+  hence "(\<lambda>y. the_elem (?h ` y)) \<in>
     ring_hom (Rupt\<^bsub>(ZFact p)\<^esub> (carrier (ZFact p)) f) R"
     by (intro ring_hom_cong[OF _ rupt_is_ring b]) simp
   thus ?thesis
@@ -130,14 +130,14 @@ lemma (in domain) pdivides_consistent:
   assumes "subfield K R" "f \<in> carrier (K[X])" "g \<in> carrier (K[X])"
   shows "f pdivides g \<longleftrightarrow> f pdivides\<^bsub>R \<lparr> carrier := K \<rparr>\<^esub> g"
 proof -
-  have a:"subring K R" 
+  have a:"subring K R"
     using assms(1) subfieldE(1) by auto
   let ?S = "R \<lparr> carrier := K \<rparr>"
   have "f pdivides g \<longleftrightarrow> f divides\<^bsub>K[X]\<^esub> g"
     using pdivides_iff_shell[OF assms] by simp
   also have "... \<longleftrightarrow> (\<exists>x \<in> carrier (K[X]). f \<otimes>\<^bsub>K[X]\<^esub> x = g)"
     unfolding pdivides_def factor_def by auto
-  also have "... \<longleftrightarrow> 
+  also have "... \<longleftrightarrow>
     (\<exists>x \<in> carrier (poly_ring ?S). f \<otimes>\<^bsub>poly_ring ?S\<^esub> x = g)"
     using univ_poly_consistent[OF a] by simp
   also have "... \<longleftrightarrow> f divides\<^bsub>poly_ring ?S\<^esub> g"
@@ -155,13 +155,13 @@ lemma (in finite_field) find_root:
 proof -
   define \<tau> :: "'a list \<Rightarrow> 'a list" where "\<tau> = id"
   let ?K = "R \<lparr> carrier := K \<rparr>"
-  have "finite K" 
+  have "finite K"
     using assms(1) by (intro finite_subset[OF _ finite_carrier], simp)
-  hence fin_K: "finite (carrier (?K))" 
-    by simp 
+  hence fin_K: "finite (carrier (?K))"
+    by simp
   interpret f: finite_field "?K"
     using assms(1) subfield_iff fin_K finite_fieldI by blast
-  have b:"subring K R" 
+  have b:"subring K R"
     using assms(1) subfieldE(1) by blast
   interpret e: ring_hom_ring "(K[X])" "(poly_ring R)" "\<tau>"
     using embed_hom[OF b] by (simp add:\<tau>_def)
@@ -179,10 +179,10 @@ proof -
   have gp_carr: "gauss_poly ?K (order ?K^degree f) \<in> carrier (K[X])"
     using f.gauss_poly_carr univ_poly_consistent[OF b] by simp
 
-  have "gauss_poly ?K (order ?K^degree f) = 
+  have "gauss_poly ?K (order ?K^degree f) =
     gauss_poly ?K (card K^degree f)"
     by (simp add:Coset.order_def)
-  also have "... = 
+  also have "... =
     X\<^bsub>?K\<^esub> [^]\<^bsub>poly_ring ?K\<^esub> card K ^ degree f \<ominus>\<^bsub>poly_ring ?K\<^esub> X\<^bsub>?K\<^esub>"
     unfolding gauss_poly_def by simp
   also have "... = X\<^bsub>R\<^esub> [^]\<^bsub>K[X]\<^esub> card K ^ degree f  \<ominus>\<^bsub>K[X]\<^esub> X\<^bsub>R\<^esub>"
@@ -192,26 +192,26 @@ proof -
   also have "... = gauss_poly R (card K^degree f)"
     unfolding gauss_poly_def a_minus_def using var_closed[OF b]
     by (simp add:e.hom_nat_pow, simp add:\<tau>_def)
-  finally have gp_consistent: "gauss_poly ?K (order ?K^degree f) = 
+  finally have gp_consistent: "gauss_poly ?K (order ?K^degree f) =
     gauss_poly R (card K^degree f)"
     by simp
 
-  have deg_f: "degree f > 0" 
+  have deg_f: "degree f > 0"
     using f.monic_poly_min_degree[OF assms(2)] by simp
 
   have "splitted f"
   proof (cases "degree f > 1")
     case True
-  
+
     have "f pdivides\<^bsub>?K\<^esub> gauss_poly ?K (order ?K^degree f)"
       using f.div_gauss_poly_iff[OF deg_f assms(2)] by simp
     hence "f pdivides gauss_poly ?K (order ?K^degree f)"
       using pdivides_consistent[OF assms(1)] f_carr_2 gp_carr by simp
     hence "f pdivides gauss_poly R (card K^degree f)"
       using gp_consistent by simp
-    moreover have "splitted (gauss_poly R (card K^degree f))" 
+    moreover have "splitted (gauss_poly R (card K^degree f))"
       unfolding assms(3)[symmetric] using gauss_poly_splitted by simp
-    moreover have "gauss_poly R (card K^degree f) \<noteq> []" 
+    moreover have "gauss_poly R (card K^degree f) \<noteq> []"
       using gauss_poly_not_zero a by (simp add: univ_poly_zero)
     ultimately show "splitted f"
       using pdivides_imp_splitted f_carr gauss_poly_carr by auto
@@ -240,20 +240,20 @@ proof -
     using finite_carr_imp_char_ge_0[OF finite_carrier] by simp
 
   interpret zf: finite_field "ZFact p"
-    unfolding p_def using zfact_prime_is_finite_field 
+    unfolding p_def using zfact_prime_is_finite_field
     using characteristic_is_prime[OF char_pos] by simp
 
   interpret zfp: polynomial_ring "ZFact p" "carrier (ZFact p)"
     unfolding polynomial_ring_def polynomial_ring_axioms_def
     using zf.field_axioms zf.carrier_is_subfield by simp
 
-  let ?f' = "map (char_iso R) f" 
+  let ?f' = "map (char_iso R) f"
   let ?F = "Rupt\<^bsub>(ZFact p)\<^esub> (carrier (ZFact p)) f"
 
   have "domain (R\<lparr>carrier := char_subring R\<rparr>)"
-    using char_ring_is_subdomain subdomain_is_domain by simp 
+    using char_ring_is_subdomain subdomain_is_domain by simp
 
-  hence "monic_irreducible_poly (R \<lparr> carrier := char_subring R \<rparr>) ?f'" 
+  hence "monic_irreducible_poly (R \<lparr> carrier := char_subring R \<rparr>) ?f'"
     using char_iso p_def zf.domain_axioms
     by (intro monic_irreducible_poly_hom[OF assms(2)]) auto
   moreover have "order R = card (char_subring R)^degree ?f'"
@@ -264,14 +264,14 @@ proof -
   interpret r: ring_hom_ring "?F" "R" "?\<phi>"
     using assms(2,3)
     unfolding monic_irreducible_poly_def monic_poly_def p_def
-    by (intro eval_on_root_is_iso x_def, auto) 
-  have a:"?\<phi> \<in> ring_hom ?F R" 
+    by (intro eval_on_root_is_iso x_def, auto)
+  have a:"?\<phi> \<in> ring_hom ?F R"
     using r.homh by auto
 
   have "field (Rupt\<^bsub>ZFact p\<^esub> (carrier (ZFact p)) f)"
     using assms(2)
     unfolding monic_irreducible_poly_def monic_poly_def
-    by (subst zfp.rupture_is_field_iff_pirreducible, simp_all) 
+    by (subst zfp.rupture_is_field_iff_pirreducible, simp_all)
   hence b:"inj_on ?\<phi> (carrier ?F)"
     using non_trivial_field_hom_is_inj[OF a _ field_axioms] by simp
 
@@ -284,12 +284,12 @@ proof -
   also have "... = char R ^degree f"
     unfolding p_def by (subst card_zfact_carr[OF char_pos], simp)
   also have "... = card (carrier R)"
-    using assms(3) unfolding Coset.order_def by simp  
+    using assms(3) unfolding Coset.order_def by simp
   finally have "card (?\<phi> ` carrier ?F) = card (carrier R)" by simp
   moreover have "?\<phi> ` carrier ?F \<subseteq> carrier R"
     by (intro image_subsetI, simp)
   ultimately have "?\<phi> ` carrier ?F = carrier R"
-    by (intro card_seteq finite_carrier, auto) 
+    by (intro card_seteq finite_carrier, auto)
   hence "bij_betw ?\<phi> (carrier ?F) (carrier R)"
     using b bij_betw_imageI by auto
 
@@ -308,43 +308,43 @@ proof -
   obtain m where o2: "order F\<^sub>2 = char F\<^sub>2^m" "m > 0"
     using finite_field.finite_field_order[OF assms(2)] by auto
 
-  interpret f1: "finite_field" F\<^sub>1 using assms(1) by simp 
-  interpret f2: "finite_field" F\<^sub>2 using assms(2) by simp 
+  interpret f1: "finite_field" F\<^sub>1 using assms(1) by simp
+  interpret f2: "finite_field" F\<^sub>2 using assms(2) by simp
 
   have char_pos: "char F\<^sub>1 > 0" "char F\<^sub>2 > 0"
-    using f1.finite_carrier f1.finite_carr_imp_char_ge_0 
+    using f1.finite_carrier f1.finite_carr_imp_char_ge_0
     using f2.finite_carrier f2.finite_carr_imp_char_ge_0 by auto
-  hence char_prime: 
-    "Factorial_Ring.prime (char F\<^sub>1)" 
+  hence char_prime:
+    "Factorial_Ring.prime (char F\<^sub>1)"
     "Factorial_Ring.prime (char F\<^sub>2)"
     using f1.characteristic_is_prime f2.characteristic_is_prime
     by auto
 
-  have "char F\<^sub>1^n = char F\<^sub>2^m" 
+  have "char F\<^sub>1^n = char F\<^sub>2^m"
     using o1 o2 assms(3) by simp
   hence eq: "n = m" "char F\<^sub>1 = char F\<^sub>2"
     using char_prime char_pos o1(2) o2(2) prime_power_inj' by auto
 
-  obtain p where p_def: "p = char F\<^sub>1" "p = char F\<^sub>2" 
+  obtain p where p_def: "p = char F\<^sub>1" "p = char F\<^sub>2"
     using eq by simp
 
-  have p_prime: "Factorial_Ring.prime p" 
+  have p_prime: "Factorial_Ring.prime p"
     unfolding p_def(1)
     using f1.characteristic_is_prime char_pos by simp
 
   interpret zf: finite_field "ZFact (int p)"
-    using zfact_prime_is_finite_field p_prime o1(2) 
+    using zfact_prime_is_finite_field p_prime o1(2)
     using prime_nat_int_transfer by blast
 
   interpret zfp: polynomial_ring "ZFact p" "carrier (ZFact p)"
     unfolding polynomial_ring_def polynomial_ring_axioms_def
     using zf.field_axioms zf.carrier_is_subfield by simp
 
-  obtain f where f_def: 
+  obtain f where f_def:
     "monic_irreducible_poly (ZFact (int p)) f" "degree f = n"
     using zf.exist_irred o1(2) by auto
 
-  let ?F\<^sub>0  = "Rupt\<^bsub>(ZFact p)\<^esub> (carrier (ZFact p)) f" 
+  let ?F\<^sub>0  = "Rupt\<^bsub>(ZFact p)\<^esub> (carrier (ZFact p)) f"
 
   obtain \<phi>\<^sub>1 where \<phi>\<^sub>1_def: "\<phi>\<^sub>1 \<in> ring_iso ?F\<^sub>0 F\<^sub>1"
     using f1.find_iso_from_zfact f_def o1
@@ -356,11 +356,11 @@ proof -
 
   have "?F\<^sub>0 \<simeq> F\<^sub>1" using \<phi>\<^sub>1_def is_ring_iso_def by auto
   moreover have "?F\<^sub>0 \<simeq> F\<^sub>2" using \<phi>\<^sub>2_def is_ring_iso_def by auto
-  moreover have "field ?F\<^sub>0" 
+  moreover have "field ?F\<^sub>0"
     using f_def(1) zf.monic_poly_carr monic_irreducible_poly_def
     by (subst zfp.rupture_is_field_iff_pirreducible) auto
   hence "ring ?F\<^sub>0" using field.is_ring by auto
-  ultimately show ?thesis 
+  ultimately show ?thesis
     using ring_iso_trans ring_iso_sym by blast
 qed
 

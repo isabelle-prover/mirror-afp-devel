@@ -159,7 +159,7 @@ proof -
     hence "?L = real (order R^2)/4 + 0" by simp
     also have "... \<le> real (order R^2)/4 + real (order R)/2 * (real (order R)/2 - 1)"
       using finite_field_min_order by (intro add_mono mult_nonneg_nonneg) auto
-    also have "... = (real (order R^2) - real (order R))/2" 
+    also have "... = (real (order R^2) - real (order R))/2"
       by (simp add:algebra_simps power2_eq_square)
     also have "... = ?R" unfolding b card_irred_2 by simp
     finally show ?thesis by simp
@@ -175,7 +175,7 @@ proof -
   have "0 < real(order R)^n / (2*real n)"
     using finite_field_min_order assms
     by (intro divide_pos_pos mult_pos_pos zero_less_power) auto
-  also have "... \<le> real (card {f. monic_irreducible_poly R f \<and> degree f = n})" 
+  also have "... \<le> real (card {f. monic_irreducible_poly R f \<and> degree f = n})"
     (is "_ \<le> real(card ?A)")
     by (intro card_irred_gt_0 assms)
   finally have "0 < card {f. monic_irreducible_poly R f \<and> degree f = n}"

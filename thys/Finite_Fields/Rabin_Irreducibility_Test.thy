@@ -5,7 +5,7 @@ theory Rabin_Irreducibility_Test
 begin
 
 text \<open>This section introduces an effective test for irreducibility of polynomials
-(in finite fields) based on Rabin~\cite[rabin1980].\<close>
+(in finite fields) based on Rabin~\cite{rabin1980}.\<close>
 
 definition pcoprime :: "_ \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> bool" ("pcoprime\<index>")
   where "pcoprime\<^bsub>R\<^esub> p q =
@@ -280,8 +280,8 @@ proof -
     by auto
 qed
 
-text \<open>A more general variance of the previous theorem for non-monic polynomials. The result is
-from Lemma~1 \cite[rabin1980].\<close>
+text \<open>A more general variant of the previous theorem for non-monic polynomials. The result is
+from Lemma~1 \cite{rabin1980}.\<close>
 
 theorem rabin_irreducibility_condition_2:
   assumes "f \<in> carrier (poly_ring R)" "degree f > 0"
