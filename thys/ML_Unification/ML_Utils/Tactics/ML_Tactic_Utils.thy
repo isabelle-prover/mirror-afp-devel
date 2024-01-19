@@ -5,6 +5,7 @@ theory ML_Tactic_Utils
     ML_Logger
     ML_Term_Utils
     ML_Conversion_Utils
+    ML_Unification_Base
 begin
 
 paragraph \<open>Summary\<close>

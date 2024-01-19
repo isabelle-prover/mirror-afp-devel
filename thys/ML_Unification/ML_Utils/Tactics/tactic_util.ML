@@ -37,13 +37,15 @@ sig
   val thin_tac : int -> int -> tactic
   val thin_tacs : int list -> int -> tactic
 
+  val set_kernel_ho_unif_bounds : int -> int -> Proof.context -> Proof.context
+  val silence_kernel_ho_bounds_exceeded : Proof.context -> Proof.context
   val safe_simp_tac : Proof.context -> int -> tactic
 
   (*nth_eq_assume_tac n i solves ith subgoal by assumption, without unification,
     preferring premise n*)
   val nth_eq_assume_tac : int -> int -> tactic
 
-  (*resolution with matching and without lifting of premises and parameters*)
+  (*resolution without lifting of premises and parameters*)
   val no_lift_biresolve_tac : bool -> thm -> int -> Proof.context -> int -> tactic
   val no_lift_resolve_tac : thm -> int -> Proof.context -> int -> tactic
   val no_lift_eresolve_tac : thm -> int -> Proof.context -> int -> tactic
@@ -51,13 +53,15 @@ sig
   (*rewrite subgoal according to the given equality theorem "lhs \<equiv> subgoal"*)
   val rewrite_subgoal_tac : thm -> Proof.context -> int -> tactic
 
-  (*creates equality theorem for a subgoal from an equality theorem for the subgoal's conclusion*)
-  val eq_subgoal_from_eq_concl : cterm Binders.binders -> cterm list -> thm -> Proof.context -> thm
+  (*creates equality theorem for a subgoal from an equality theorem for the subgoal's conclusion;
+    fails if the equality theorem contains a tpair or implicit Assumption mentioning one of the bound variables*)
+  val eq_subgoal_from_eq_concl : cterm Binders.binders -> cterm list -> thm -> Proof.context ->
+    thm option
 
   (*rewrite a subgoal given an equality theorem and environment for the subgoal's conclusion*)
-  val rewrite_subgoal_unif_concl : Envir_Normalisation.thm_normaliser ->
-    Envir_Normalisation.thm_normaliser -> term Binders.binders -> (Envir.env * thm) ->
-    Proof.context -> int -> tactic
+  val rewrite_subgoal_unif_concl : Envir_Normalisation.term_normaliser ->
+    Envir_Normalisation.thm_normaliser -> Envir_Normalisation.thm_normaliser ->
+    term Binders.binders -> (Envir.env * thm) -> Proof.context -> int -> tactic
 
   (*protect premises starting from (and excluding) the given index in the specified subgoal*)
   val protect_tac : int -> Proof.context -> int -> tactic
@@ -118,11 +122,20 @@ val thin_tacs = sort int_ord
   #> map_index ((op -) o swap)
   #> EVERY_ARG' thin_tac
 
+fun set_kernel_ho_unif_bounds trace_bound search_bound =
+  Config.put Unify.trace_bound trace_bound
+  #> Config.put Unify.search_bound search_bound
+
+val silence_kernel_ho_bounds_exceeded = Context_Position.set_visible false
+
 (*some "safe" solvers create instantiations via flex-flex pairs, which we disallow here*)
 fun safe_simp_tac ctxt i state =
-  let val eq_flexps = Thm.tpairs_of
-    #> pair (Thm.tpairs_of state)
-    #> eq_list (eq_pair (op aconv) (op aconv))
+  let
+    val eq_flexps = Thm.tpairs_of
+      #> pair (Thm.tpairs_of state)
+      #> eq_list (eq_pair (op aconv) (op aconv))
+    (*stop higher-order unifier from entering difficult unification problems*)
+    val ctxt = set_kernel_ho_unif_bounds 1 1 ctxt |> silence_kernel_ho_bounds_exceeded
   in Simplifier.safe_simp_tac ctxt i state |> Seq.filter eq_flexps end
 
 fun nth_eq_assume_tac n = if n < 1 then K no_tac
@@ -130,7 +143,7 @@ fun nth_eq_assume_tac n = if n < 1 then K no_tac
 
 (*resolution*)
 fun no_lift_biresolve_tac eres brule nsubgoals ctxt =
-  Thm.bicompose (SOME ctxt) {flatten = true, match = true, incremented = true}
+  Thm.bicompose (SOME ctxt) {flatten = true, match = false, incremented = true}
   (eres, brule, nsubgoals)
   #> PRIMSEQ
 
@@ -149,31 +162,41 @@ fun eq_subgoal_from_eq_concl cbinders cprems eq_thm ctxt =
     fun all_abstract ((x, T), cfree) =
       let val all_const = Logic.all_const T |> Thm.cterm_of ctxt
       in
-        Thm.abstract_rule x cfree
-        #> Drule.arg_cong_rule all_const
+        Thm_Util.abstract_rule ctxt x cfree
+        #> Option.map (Drule.arg_cong_rule all_const)
       end
   in
     (*introduce the premises*)
-    fold_rev (Drule.imp_cong_rule o Thm.reflexive) cprems eq_thm
+    SOME (fold_rev (Drule.imp_cong_rule o Thm.reflexive) cprems eq_thm)
     (*introduce abstractions for the fresh Frees*)
-    |> fold all_abstract cbinders
+    |> fold (Option.mapPartial o all_abstract) cbinders
   end
 
-fun rewrite_subgoal_unif_concl norm_state norm_eq_thm binders (env, eq_thm) ctxt i state =
+fun rewrite_subgoal_unif_concl norm_binders norm_state norm_eq_thm binders (env_eq_thm as (env, _))
+  ctxt i =
   let
-    fun rewrite_tac (rparams, (prems, _)) =
+    val binders = Binders.norm_binders (norm_binders env) binders
+    fun smash_tpairs_if_occurs (_, bvar) =
+      Seq.maps (Unification_Util.smash_tpairs_if_occurs ctxt bvar)
+    fun rewrite_tac env eq_thm (rparams, (prems, _)) =
       let
         (*update binders with their normalised type*)
         val binders = map2 (fn (_, T) => fn ((n, _), Free (n', _)) => ((n, T), Free (n', T)))
           rparams binders
         val cterm_of = Thm.cterm_of ctxt
         val cprems = map (cterm_of o Binders.replace_binders binders) prems
-        val eq_thm = eq_subgoal_from_eq_concl (map (apsnd cterm_of) binders) cprems
-          (norm_eq_thm ctxt env eq_thm) ctxt
-      in rewrite_subgoal_tac eq_thm ctxt end
+      in
+        eq_subgoal_from_eq_concl (map (apsnd cterm_of) binders) cprems (norm_eq_thm ctxt env eq_thm)
+          ctxt
+        |> Option.map (fn eq_thm => rewrite_subgoal_tac eq_thm ctxt)
+        |> the_default (K no_tac)
+      end
   in
-    ((PRIMITIVE (norm_state ctxt env) |> K)
-    THEN' SUBGOAL_STRIPPED I rewrite_tac) i state
+    (*smash tpairs in case some binder occurs*)
+    fold smash_tpairs_if_occurs binders (Seq.single env_eq_thm)
+    |> Seq.lifts (fn (env, eq_thm) =>
+      PRIMITIVE (norm_state ctxt env)
+      THEN SUBGOAL_STRIPPED I (rewrite_tac env eq_thm) i)
   end
 
 fun protect_tac n ctxt =
@@ -197,10 +220,13 @@ fun protect_tac n ctxt =
         let
           val (cprems_unprotected, cconcl_protected) = chop n cprems
             ||> Drule.list_implies o rpair cconcl
-          val protected_eq_thm = @{thm Pure.prop_def}
-            |> Thm.instantiate' [] [SOME cconcl_protected]
-            |> (fn eq_thm => eq_subgoal_from_eq_concl cbinders cprems_unprotected eq_thm ctxt)
-        in rewrite_subgoal_tac protected_eq_thm ctxt i end
+        in
+          @{thm Pure.prop_def}
+          |> Thm.instantiate' [] [SOME cconcl_protected]
+          |> (fn eq_thm => eq_subgoal_from_eq_concl cbinders cprems_unprotected eq_thm ctxt)
+          |> Option.map (fn protected_eq_thm => rewrite_subgoal_tac protected_eq_thm ctxt i)
+          |> the_default no_tac
+        end
     end
   in if n < 0 then K no_tac else CSUBGOAL_STRIPPED I (uncurry protect) end
 

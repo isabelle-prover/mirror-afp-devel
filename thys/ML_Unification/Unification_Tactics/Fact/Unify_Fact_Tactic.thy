@@ -23,7 +23,6 @@ ML\<open>
 local_setup \<open>Standard_Unify_Fact.setup_attribute NONE\<close>
 local_setup \<open>Standard_Unify_Fact.setup_method NONE\<close>
 
-
 paragraph \<open>Examples\<close>
 
 experiment

@@ -49,7 +49,8 @@ fun unify binders ctxt tp env =
         Util.pretty_unif_problem ctxt (apply2 (Envir.norm_term env) tp)
       ]
       |> Pretty.string_of);
-    unif (Util.unify_types ctxt (apply2 Term.fastype_of tp) env))
+    Util.unify_types ctxt (apply2 (Envir.fastype env (Binders.binder_types binders)) tp) env
+    |> unif)
     handle Unification_Base.UNIF => Seq.empty) (*types do not match*)
   end
 

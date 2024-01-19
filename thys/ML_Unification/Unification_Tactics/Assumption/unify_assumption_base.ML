@@ -81,8 +81,8 @@ fun unify_assumption_tac_index norms unify ctxt i state =
       ] |> Pretty.string_of)
     fun rewrite_subgoal ((n, binders), (res, state)) =
       (*rewrite conclusion to match the premise*)
-      Tactic_Util.rewrite_subgoal_unif_concl (#norm_thm norms) (#norm_unif_thm norms)
-        binders res ctxt i state
+      Tactic_Util.rewrite_subgoal_unif_concl (#norm_term norms) (#norm_thm norms)
+        (#norm_unif_thm norms) binders res ctxt i state
       (*unified premise is moved to the front; now close by equality assumption*)
       |> Seq.maps (DETERM (Tactic_Util.nth_eq_assume_tac 1 i))
       |> Seq.map (pair n)

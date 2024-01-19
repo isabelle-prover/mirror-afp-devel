@@ -84,7 +84,7 @@ fun unify_resolve_tac norms unify rule ctxt =
       val env_thmq = unify binders ctxt conclp (Envir.empty (Thm.maxidx_of lifted_rule))
       val norm_thm = #norm_thm norms
       fun rewrite_tac (env, unif_thm) =
-        Tactic_Util.rewrite_subgoal_unif_concl norm_thm (#norm_unif_thm norms)
+        Tactic_Util.rewrite_subgoal_unif_concl (#norm_term norms) norm_thm (#norm_unif_thm norms)
           binders (env, unif_thm) ctxt
         THEN' Tactic_Util.no_lift_resolve_tac (norm_thm ctxt env lifted_rule) nprems_rule ctxt
     in Seq.maps (fn res => rewrite_tac res i state) env_thmq end

@@ -1,5 +1,5 @@
 (*  Title:      Transport/transport.ML
-    Author:     Kevin Kappelmann, Paul Bachmann
+    Author:     Kevin Kappelmann
 
 Prototype for Transport. See README.md for future work.
 *)

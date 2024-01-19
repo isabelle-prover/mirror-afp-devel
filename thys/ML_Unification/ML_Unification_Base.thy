@@ -5,6 +5,7 @@ theory ML_Unification_Base
     ML_Logger
     ML_Binders
     ML_Normalisations
+    ML_Theorem_Utils
 begin
 
 paragraph \<open>Summary\<close>

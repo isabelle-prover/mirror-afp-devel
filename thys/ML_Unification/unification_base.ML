@@ -10,7 +10,7 @@ sig
   val reflexive : cterm -> thm
   val combination : thm -> thm -> thm
   val symmetric : thm -> thm
-  val abstract_rule : string -> cterm -> thm -> thm
+  val abstract_rule : Proof.context -> string -> cterm -> thm -> thm option
   val reflexive_term : Proof.context -> term -> thm
 
   (*raised on unsupported input*)
@@ -48,7 +48,7 @@ val logger = Logger.setup_new_logger Logger.root_logger "Unification_Base"
 val reflexive = Thm.reflexive
 val combination = Thm.combination
 val symmetric = Thm.symmetric
-val abstract_rule = Thm.abstract_rule
+val abstract_rule = Thm_Util.abstract_rule
 
 val reflexive_term = reflexive oo Thm.cterm_of
 

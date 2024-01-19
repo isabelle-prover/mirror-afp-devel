@@ -67,7 +67,7 @@ sig
   (*creates and inserts child logger with default configuration into context*)
   val new_logger : logger_binding -> logger_name -> Context.generic ->
     (logger_binding * Context.generic)
-  (*registers new logger to background theory*)
+  (*registers new logger to background context*)
   val setup_new_logger : logger_binding -> logger_name -> logger_binding
 
   (*prints message created by passed function to the logger's output if the

@@ -16,6 +16,7 @@ sig
   val pretty_env : Proof.context -> Envir.env -> Pretty.T
 
   val pretty_unif_problem : Proof.context -> (term * term) -> Pretty.T
+  val pretty_unif_result : Proof.context -> (Envir.env * thm) -> Pretty.T
 
   (* terms and environments *)
   val maxidx_of_terms : term list -> int
@@ -36,6 +37,7 @@ sig
   val beta_eta_short_norms_unif : Unification_Base.normalisers
 
   (* shared standard cases for unifiers *)
+  val smash_tpairs_if_occurs : Proof.context -> term -> Envir.env * thm -> (Envir.env * thm) Seq.seq
   val abstract_abstract : Envir_Normalisation.term_type_normaliser -> Unification_Base.unifier ->
     term Binders.binders -> Proof.context -> string -> typ ->
     (term * term) -> Envir.env -> (Envir.env * thm) Seq.seq
@@ -65,6 +67,7 @@ struct
 val logger = Logger.setup_new_logger Unification_Base.logger "Util"
 
 structure Norm = Envir_Normalisation
+structure UBase = Unification_Base
 
 (* pretty-printing *)
 local
@@ -110,6 +113,14 @@ end
 fun pretty_unif_problem ctxt (t1, t2) =
   Pretty.block [pretty_terms ctxt [t1], Pretty.str " \<equiv>\<^sup>? " , pretty_terms ctxt [t2]]
 
+fun pretty_unif_result ctxt (env, thm) = Pretty.block [
+    Pretty.str "Environment: ",
+    pretty_env ctxt env,
+    Pretty.fbrk,
+    Pretty.str "Theorem: ",
+    Thm.pretty_thm ctxt thm
+  ]
+
 (* terms and environments *)
 fun maxidx_of_terms ts = fold (Integer.max o maxidx_of_term) ts ~1
 
@@ -128,7 +139,7 @@ fun match_types ctxt (T, U) (env as Envir.Envir {maxidx, tenv, tyenv}) =
           Pretty.str "Failed to match types ",
           pretty_types ctxt [Envir_Normalisation.norm_type_match tyenv T, U]
         ] |> Pretty.string_of);
-    raise Unification_Base.UNIF)
+    raise UBase.UNIF)
 
 fun unify_types ctxt (T, U) (env as Envir.Envir {maxidx, tenv, tyenv}) =
   (if pointer_eq (T, U) then env
@@ -142,7 +153,7 @@ fun unify_types ctxt (T, U) (env as Envir.Envir {maxidx, tenv, tyenv}) =
           Pretty.str "Failed to unify types ",
           pretty_types ctxt (map (Envir_Normalisation.norm_type_unif tyenv) [T, U])
         ] |> Pretty.string_of);
-    raise Unification_Base.UNIF)
+    raise UBase.UNIF)
 
 (* normalisers *)
 val eta_short_norms_match = {
@@ -169,17 +180,51 @@ val beta_eta_short_norms_unif = {
 }
 
 (* shared standard cases for unifiers *)
+fun smash_tpairs_if_occurs ctxt t (env, thm) =
+  let
+    val tpairs = Thm.tpairs_of thm
+    fun occs_t s = Logic.occs (t, s)
+  in
+    if exists (fn (t1, t2) => occs_t t1 orelse occs_t t2) tpairs
+    then
+      let
+        (*in a perfect world, we would make the relevant tpairs of the theorem
+          equality premises that can be solved by an arbitrary solver;
+          however, Isabelle's kernel only allows one to solve tpairs
+          with the built-in higher-order (pattern) unifier.*)
+        (*only the kernel HO-unifier may add flex-flex pairs -> safe to normalise wrt. unification*)
+        val normed_thm = Norm.norm_thm_unif ctxt env thm
+        val normed_tpairs = Thm.tpairs_of normed_thm
+      in
+        (*note: we need to use the same unifier and environment as Thm.flexflex_rule here so that
+          the final environment and theorem agree*)
+        Unify.smash_unifiers (Context.Proof ctxt) normed_tpairs
+          (Envir.empty (Thm.maxidx_of normed_thm))
+        |> Seq.maps (fn smash_env =>
+          (let val new_env = Envir.merge (smash_env, env)
+          in Thm.flexflex_rule (SOME ctxt) normed_thm |> Seq.map (pair new_env) end)
+          handle Vartab.DUP _ => (@{log Logger.INFO} ctxt
+            (fn _ => Pretty.block [
+                Pretty.str "Failed to merge environment for smashed tpairs and environment created by flexflex_rule: ",
+                pretty_unif_result ctxt (env, thm)
+              ]|> Pretty.string_of);
+            Seq.empty))
+      end
+    else Seq.single (env, thm)
+  end
 
 fun abstract_abstract norm_term_type unify binders ctxt name T tbp =
   let
     val (binder as (_, bvar), ctxt') = Binders.fix_binder (name, T) ctxt
-    fun norm_abstract (Envir.Envir {tyenv,...}) thm =
-      let val bvar' = norm_term_type tyenv bvar
-      in Unification_Base.abstract_rule name (Thm.cterm_of ctxt' bvar') thm end
-  in
-    unify (binder :: binders) ctxt' tbp
-    #> Seq.map (fn (env, thm) => (env, norm_abstract env thm))
-  end
+    fun norm_abstract (env, thm) =
+      let fun norm_bvar env = norm_term_type (Envir.type_env env) bvar
+      in
+        smash_tpairs_if_occurs ctxt' (norm_bvar env) (env, thm)
+        |> Seq.map_filter (fn (env, thm) =>
+          UBase.abstract_rule ctxt' name (Thm.cterm_of ctxt' (norm_bvar env)) thm
+          |> Option.map (pair env))
+      end
+  in unify (binder :: binders) ctxt' tbp #> Seq.maps norm_abstract end
 
 fun rigid_rigid norm_term_type unify_types ctxt s (nt, Tt) env =
   let val (ns, Ts) = (if is_Const s then dest_Const else dest_Free) s
@@ -187,7 +232,7 @@ fun rigid_rigid norm_term_type unify_types ctxt s (nt, Tt) env =
     if ns = nt then
       let val (env' as Envir.Envir {tyenv,...}) = unify_types ctxt (Ts, Tt) env
       in
-        (env', Unification_Base.reflexive_term ctxt (norm_term_type tyenv s))
+        (env', UBase.reflexive_term ctxt (norm_term_type tyenv s))
         |> Seq.single
       end
     else Seq.empty
@@ -195,7 +240,7 @@ fun rigid_rigid norm_term_type unify_types ctxt s (nt, Tt) env =
 
 fun bound_bound binders ctxt (i, j) =
   if i = j
-  then Binders.nth_binder_data binders i |> Unification_Base.reflexive_term ctxt |> Seq.single
+  then Binders.nth_binder_data binders i |> UBase.reflexive_term ctxt |> Seq.single
   else Seq.empty
 
 fun comb_comb norm_thm_types unify ctxt (f, x) (g, y) env =
@@ -206,7 +251,7 @@ fun comb_comb norm_thm_types unify ctxt (f, x) (g, y) env =
     fun combine (env, thmp) =
       (*normalise types for the combination theorem to succeed*)
       apply2 (norm_thm_types ctxt env) thmp
-      |> uncurry Unification_Base.combination
+      |> uncurry UBase.combination
       |> pair env
   in Seq.map combine env_thmq end
 
@@ -221,7 +266,7 @@ fun args_args norm_thm_types unify ctxt (ss, ts) env_thmhq =
       let
         (*normalise types for the combination theorem to succeed*)
         val norm_thm_types' = norm_thm_types ctxt env_res
-        fun norm_combine thm_arg thm = norm_thm_types' thm_arg |> Unification_Base.combination thm
+        fun norm_combine thm_arg thm = norm_thm_types' thm_arg |> UBase.combination thm
       in (env_res, fold_rev norm_combine arg_thms (norm_thm_types' thmh)) end
   in Seq.maps (fn (env, thmh) => unif_args env |> Seq.map (combine thmh)) env_thmhq end)
   handle ListPair.UnequalLengths => Seq.empty
@@ -230,16 +275,11 @@ fun strip_comb_strip_comb norm_thm_types unify binders ctxt (sh, th) (ss, ts) =
   unify binders ctxt (sh, th)
   #> args_args norm_thm_types (unify binders) ctxt (ss, ts)
 
+
 (* logging *)
 
-fun log_unif_result ctxt _ (env, thm) =
-  @{log Logger.INFO} ctxt (fn _ => Pretty.block [
-    Pretty.str "Environment: ",
-    pretty_env ctxt env,
-    Pretty.fbrk,
-    Pretty.str "Theorem: ",
-    Thm.pretty_thm ctxt thm
-  ] |> Pretty.string_of)
+fun log_unif_result ctxt _ res =
+  @{log Logger.INFO} ctxt (fn _ => pretty_unif_result ctxt res |> Pretty.string_of)
 
 fun log_unif_results ctxt tp unify =
   let val res = unify ctxt tp (empty_envir tp) |> Seq.list_of
