@@ -782,7 +782,7 @@ fun consts consts proof group lthy =
     fun prove_eq_fun (info as {simps = SOME simps, fs, inducts = SOME inducts, ...}) lthy =
       let
         fun mk_target (name, _, classes) new =
-          (classes, (new, Const (Consts.the_const consts name)))
+          (classes, (new, Const (name, Consts.the_const_type consts name)))
         val targets = map2 mk_target metas fs
         val args =
           {fun_info = SOME info, inducts = SOME inducts, simps = simps, base_thms = base_thms,
@@ -794,7 +794,7 @@ fun consts consts proof group lthy =
     fun prove_eq_def defs lthy =
       let
         fun mk_target (name, _, classes) new =
-          (classes, (new, Const (Consts.the_const consts name)))
+          (classes, (new, Const (name, Consts.the_const_type consts name)))
         val targets = map2 mk_target metas (map (fst o HOLogic.dest_eq o HOLogic.dest_Trueprop o Thm.prop_of) defs)
         val args =
           {fun_info = NONE, inducts = NONE, simps = defs,

@@ -176,7 +176,7 @@ proof -
     then have \<open>p = of_word w\<close>
       by (simp add: of_word_of)
     also have \<open>P (of_word w)\<close>
-    proof (induction w rule: bits_induct)
+    proof (induction w rule: bit_induct)
       case (stable w)
       show ?case
         by (rule stable') (simp add: word_of_word stable)
@@ -210,7 +210,7 @@ proof -
     apply (simp_all add: eq_iff_word_of word_of_add word_of_push_bit word_of_power
       bit_eq_word_of word_of_and word_of_or word_of_xor word_of_mask word_of_diff
       word_of_0 word_of_1 bit_simps
-      word_of_set_bit set_bit_eq_or word_of_unset_bit unset_bit_Suc word_of_flip_bit flip_bit_eq_xor
+      word_of_set_bit set_bit_eq_or word_of_unset_bit unset_bit_eq_or_xor word_of_flip_bit flip_bit_eq_xor
       word_of_mult
       word_of_drop_bit word_of_div word_of_take_bit word_of_mod
       and_rec [of \<open>word_of a\<close> \<open>word_of b\<close> for a b]

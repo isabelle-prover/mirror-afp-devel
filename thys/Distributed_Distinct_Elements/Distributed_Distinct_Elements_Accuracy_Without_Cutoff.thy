@@ -107,7 +107,7 @@ proof -
         prob_space.k_wise_indep_vars_subset[OF _ \<Psi>\<^sub>1.indep]) (auto simp:prob_space_measure_pmf)
   hence "measure_pmf.variance \<Psi>\<^sub>1 (\<lambda>\<omega>. real (r x \<omega>)) = (\<Sum> a \<in> A. measure_pmf.variance \<Psi>\<^sub>1 (V a))"
     unfolding r_eq V_def using \<Psi>\<^sub>1.sample_space
-    by (intro measure_pmf.var_sum_pairwise_indep_2 fin_A) (simp_all)
+    by (intro measure_pmf.bienaymes_identity_pairwise_indep_2 fin_A) (simp_all)
   also have "... \<le> (\<Sum> a \<in> A. (\<integral>\<omega>. V a \<omega> \<partial> \<Psi>\<^sub>1))"
     by (intro sum_mono a)
   also have "... = (\<integral>\<omega>. real (r x \<omega>) \<partial> \<Psi>\<^sub>1)"

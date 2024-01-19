@@ -1488,67 +1488,6 @@ proof (induct xs)
   qed
 qed simp
 
-lemma finite_distinct: "finite { xs . distinct xs \<and> set xs = X}" (is "finite (?S X)")
-proof (cases "finite X")
-  case False
-  with finite_set have id: "?S X = {}" by auto
-  show ?thesis unfolding id by auto
-next
-  case True
-  show ?thesis
-  proof (induct rule: finite_induct[OF True])
-    case (2 x X)
-    let ?L = "{0..< card (insert x X)} \<times> ?S X"
-    from 2(3)
-    have fin: "finite ?L" by auto
-    let ?f = "\<lambda> (i,xs). take i xs @ x # drop i xs"
-    show ?case
-    proof (rule finite_surj[OF fin, of _ ?f], rule)
-      fix xs
-      assume "xs \<in> ?S (insert x X)"
-      hence dis: "distinct xs" and set: "set xs = insert x X" by auto
-      from distinct_card[OF dis] have len: "length xs = card (set xs)" by auto
-      from set[unfolded set_conv_nth] obtain i where x: "x = xs ! i" and i: "i < length xs" by auto
-      from i have min: "min (length xs) i = i" by simp
-      let ?ys = "take i xs @ drop (Suc i) xs"
-      from id_take_nth_drop[OF i] have xsi: "xs = take i xs @ xs ! i # drop (Suc i) xs" .
-      also have "... = ?f (i,?ys)" unfolding split
-        by (simp add: min x)
-      finally have xs: "xs = ?f (i,?ys)" .
-      show "xs \<in> ?f ` ?L"
-      proof (rule image_eqI, rule xs, rule SigmaI)
-        show "i \<in> {0..<card (insert x X)}" using i[unfolded len] set[symmetric] by simp
-      next
-        from dis xsi have disxsi: "distinct (take i xs @ xs ! i # drop (Suc i) xs)" by simp
-        note disxsi = disxsi[unfolded distinct_append x[symmetric]]
-        have xys: "x \<notin> set ?ys" using disxsi by auto
-        from distinct_take_drop[OF dis i]
-        have disys: "distinct ?ys" .
-        have "insert x (set ?ys) = set xs" unfolding arg_cong[OF xsi, of set] x by simp
-        hence "insert x (set ?ys) = insert x X" unfolding set by simp
-        from this[unfolded insert_eq_iff[OF xys 2(2)]]
-        show "?ys \<in> ?S X" using disys by auto
-      qed
-    qed
-  qed simp
-qed
-
-lemma finite_distinct_subset:
-  assumes "finite X"
-  shows "finite { xs . distinct xs \<and> set xs \<subseteq> X}" (is "finite (?S X)")
-proof -
-  let ?X = "{ { xs. distinct xs \<and> set xs = Y} | Y. Y \<subseteq> X}"
-  have id: "?S X = \<Union> ?X" by blast
-  show ?thesis unfolding id
-  proof (rule finite_Union)
-    show "finite ?X" using assms  by auto
-  next
-    fix M
-    assume "M \<in> ?X"
-    with finite_distinct show "finite M" by auto
-  qed
-qed
-
 lemma map_of_filter:
   assumes "P x"
   shows "map_of [(x',y) \<leftarrow> ys. P x'] x = map_of ys x"

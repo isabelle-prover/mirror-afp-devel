@@ -1048,24 +1048,12 @@ lemma Cons_set_sub:
   using distinct_seteq_eq_set_union[OF assms] by auto
 
 lemma distinct_seteq_finite: "finite xs \<Longrightarrow> finite {ys. set ys = xs \<and> distinct ys}"
-proof(induction "Finite_Set.card xs" arbitrary: xs)
-  case (Suc n)
-  have "finite (\<Union>y \<in> xs. {as. set as = xs - {y} \<and> distinct as})" using Suc by simp
-  then have "finite {x # y |x y. x \<in> xs \<and> y \<in> (\<Union>y \<in> xs. {as. set as = xs - {y} \<and> distinct as})}"
-    using finite_set_Cons_finite'[OF Suc.prems] by blast
-  then show ?case using finite_subset[OF Cons_set_sub] Suc.hyps(2)[symmetric] by blast
-qed(simp)
+by(blast intro: rev_finite_subset[OF finite_subset_distinct])
 
 lemma distinct_setsub_split:
   "{ys. set ys \<subseteq> xs \<and> distinct ys}
   = {ys. set ys = xs \<and> distinct ys} \<union> (\<Union>y \<in> xs. {ys. set ys \<subseteq> (xs-{y}) \<and> distinct ys})"
   by blast
-
-lemma distinct_setsub_finite: "finite xs \<Longrightarrow> finite {ys. set ys \<subseteq> xs \<and> distinct ys}"
-proof(induction "Finite_Set.card xs" arbitrary: xs)
-  case (Suc x)
-  then show ?case using distinct_seteq_finite distinct_setsub_split[of xs] by auto
-qed(simp)
 
 lemma valid_UV_lists_finite:
   "finite xs \<Longrightarrow> finite {x. \<exists>as bs cs. as@U@bs@V@cs = x \<and> set x = xs \<and> distinct x}"

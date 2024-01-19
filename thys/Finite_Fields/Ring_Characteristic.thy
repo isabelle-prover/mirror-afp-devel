@@ -1,9 +1,9 @@
 section \<open>Characteristic of Rings\label{sec:ring_char}\<close>
 
 theory Ring_Characteristic
-  imports 
+  imports
     "Finite_Fields_Factorization_Ext"
-    "HOL-Algebra.IntRing" 
+    "HOL-Algebra.IntRing"
     "HOL-Algebra.Embedded_Algebras"
 begin
 
@@ -30,9 +30,9 @@ proof (cases "x = \<zero>")
   case True
   have "order R > 0"
     using assms(1) order_gt_0_iff_finite finite_carrier by simp
-  then obtain n where n_def:"order R = Suc n" 
+  then obtain n where n_def:"order R = Suc n"
     using lessE by blast
-  have "x [^] (order R) = \<zero>" 
+  have "x [^] (order R) = \<zero>"
     unfolding n_def using True by (subst nat_pow_Suc, simp)
   thus ?thesis using True by simp
 next
@@ -40,7 +40,7 @@ next
   have x_carr:"x \<in> carrier (mult_of R)"
     using False assms by simp
 
-  have carr_non_empty: "card (carrier R) > 0" 
+  have carr_non_empty: "card (carrier R) > 0"
     using order_gt_0_iff_finite finite_carrier
     unfolding order_def by simp
   have "x [^] (order R) = x [^]\<^bsub>mult_of R\<^esub> (order R)"
@@ -87,8 +87,8 @@ lemma finite_fieldI:
 lemma (in domain) finite_domain_units:
   assumes "finite (carrier R)"
   shows "Units R = carrier R - {\<zero>}" (is "?lhs = ?rhs")
-proof 
-  have "Units R \<subseteq> carrier R" by (simp add:Units_def) 
+proof
+  have "Units R \<subseteq> carrier R" by (simp add:Units_def)
   moreover have "\<zero> \<notin> Units R"
     by (meson zero_is_prime(1) primeE)
   ultimately show "Units R \<subseteq> carrier R - {\<zero>}" by blast
@@ -106,11 +106,11 @@ next
     ultimately have "f ` carrier R = carrier R"
       using card_subset_eq assms by metis
     moreover have "\<one>\<^bsub>R\<^esub> \<in> carrier R" by simp
-    ultimately have "\<exists>y \<in> carrier R. f y = \<one>\<^bsub>R\<^esub>" 
+    ultimately have "\<exists>y \<in> carrier R. f y = \<one>\<^bsub>R\<^esub>"
       by (metis image_iff)
-    then obtain y 
-      where y_carrier: "y \<in> carrier R" 
-        and y_left_inv: "y \<otimes>\<^bsub>R\<^esub> x = \<one>\<^bsub>R\<^esub>" 
+    then obtain y
+      where y_carrier: "y \<in> carrier R"
+        and y_left_inv: "y \<otimes>\<^bsub>R\<^esub> x = \<one>\<^bsub>R\<^esub>"
       using f_def by blast
     hence  y_right_inv: "x \<otimes>\<^bsub>R\<^esub> y = \<one>\<^bsub>R\<^esub>"
       by (metis DiffD1 a cring_simprules(14))
@@ -134,7 +134,7 @@ proof -
   then have "field R"
     by (simp add: assms(1) field.intro field_axioms.intro)
   thus ?thesis
-    using assms(2) finite_fieldI by auto 
+    using assms(2) finite_fieldI by auto
 qed
 
 definition zfact_iso :: "nat \<Rightarrow> nat \<Rightarrow> int set" where
@@ -180,9 +180,9 @@ lemma zfact_iso_ran:
   "zfact_iso n ` {..<n} = carrier (ZFact (int n))"
 proof -
   have "zfact_iso n ` {..<n} \<subseteq> carrier (ZFact (int n))"
-    unfolding zfact_iso_def ZFact_def FactRing_simps 
+    unfolding zfact_iso_def ZFact_def FactRing_simps
     using int.a_rcosetsI by auto
-  moreover have "x \<in> zfact_iso n ` {..<n}" 
+  moreover have "x \<in> zfact_iso n ` {..<n}"
     if a:"x \<in> carrier (ZFact (int n))" for x
   proof -
     obtain y where y_def: "x = I +>\<^bsub>\<Z>\<^esub> y"
@@ -221,9 +221,9 @@ lemma zfact_prime_is_finite_field:
   shows "finite_field (ZFact (int p))"
 proof -
   have p_gt_0: "p > 0" using assms(1) prime_gt_0_nat by simp
-  have "Factorial_Ring.prime (int p)" 
+  have "Factorial_Ring.prime (int p)"
     using assms by simp
-  moreover have "finite (carrier (ZFact (int p)))" 
+  moreover have "finite (carrier (ZFact (int p)))"
     using fin_zfact[OF p_gt_0] by simp
   ultimately show ?thesis
     by (intro finite_domains_are_fields ZFact_prime_is_domain, auto)
@@ -239,9 +239,9 @@ lemma (in ring) add_pow_consistent:
   shows "add_pow R i k = add_pow (R \<lparr> carrier := K \<rparr>) i k"
     (is "?lhs = ?rhs")
 proof -
-  have a:"subgroup K (add_monoid R)" 
+  have a:"subgroup K (add_monoid R)"
     using assms(1) subring.axioms by auto
-  have "add_pow R i k = k [^]\<^bsub>add_monoid R\<lparr>carrier := K\<rparr>\<^esub> i" 
+  have "add_pow R i k = k [^]\<^bsub>add_monoid R\<lparr>carrier := K\<rparr>\<^esub> i"
     using add.int_pow_consistent[OF a assms(2)] by simp
   also have "... = ?rhs"
     unfolding add_pow_def by simp
@@ -253,7 +253,7 @@ lemma (in ring) int_embed_consistent:
   shows "int_embed R i = int_embed (R \<lparr> carrier := K \<rparr>) i"
 proof -
   have a:"\<one> = \<one>\<^bsub>R \<lparr> carrier := K \<rparr>\<^esub>" by simp
-  have b:"\<one>\<^bsub>R\<lparr>carrier := K\<rparr>\<^esub> \<in> K" 
+  have b:"\<one>\<^bsub>R\<lparr>carrier := K\<rparr>\<^esub> \<in> K"
     using assms subringE(3) by auto
   show ?thesis
     unfolding int_embed_def a using b add_pow_consistent[OF assms(1)] by simp
@@ -279,22 +279,22 @@ qed
 
 lemma (in ring) int_embed_zero:
   "int_embed R 0 = \<zero>\<^bsub>R\<^esub>"
-  by (simp add:int_embed_def add_pow_def)  
+  by (simp add:int_embed_def add_pow_def)
 
 lemma (in ring) int_embed_one:
   "int_embed R 1 = \<one>\<^bsub>R\<^esub>"
-  by (simp add:int_embed_def)  
+  by (simp add:int_embed_def)
 
 lemma (in ring) int_embed_add:
   "int_embed R (x+y) = int_embed R x \<oplus>\<^bsub>R\<^esub> int_embed R y"
-  by (simp add:int_embed_def add.int_pow_mult)  
+  by (simp add:int_embed_def add.int_pow_mult)
 
 lemma (in ring) int_embed_inv:
   "int_embed R (-x) = \<ominus>\<^bsub>R\<^esub> int_embed R x" (is "?lhs = ?rhs")
 proof -
   have "?lhs = int_embed R (-x) \<oplus> (int_embed R x \<ominus> int_embed R x)"
     using int_embed_closed by simp
-  also have 
+  also have
     "... = int_embed R (-x) \<oplus> int_embed R x \<oplus> (\<ominus> int_embed R x)"
     using int_embed_closed by (subst a_minus_def, subst a_assoc, auto)
   also have "... = int_embed R (-x +x) \<oplus> (\<ominus> int_embed R x)"
@@ -323,10 +323,10 @@ proof (induction y)
 next
   case (Suc y)
   have "int_embed R (x * int (Suc y)) = int_embed R (x + x * int y)"
-    by (simp add:algebra_simps) 
+    by (simp add:algebra_simps)
   also have "... = int_embed R x \<oplus> int_embed R (x * int y)"
     by (subst int_embed_add, simp)
-  also have 
+  also have
     "... = int_embed R x \<otimes> \<one> \<oplus> int_embed R x \<otimes> int_embed R y"
     using int_embed_closed
     by (subst Suc, simp)
@@ -354,7 +354,7 @@ proof (cases "y \<ge> 0")
   finally show ?thesis by simp
 next
   case False
-  then obtain y' where y_def: "y = - int y'" 
+  then obtain y' where y_def: "y = - int y'"
     by (meson nle_le nonpos_int_cases)
   have "int_embed R (x * y) = int_embed R (-(x * int y'))"
     unfolding y_def by simp
@@ -371,18 +371,18 @@ next
   finally show ?thesis by simp
 qed
 
-lemma (in ring) int_embed_ring_hom: 
+lemma (in ring) int_embed_ring_hom:
   "ring_hom_ring int_ring R (int_embed R)"
-proof (rule ring_hom_ringI) 
+proof (rule ring_hom_ringI)
   show "ring int_ring" using int.ring_axioms by simp
   show "ring R" using ring_axioms by simp
   show "int_embed R x \<in> carrier R" if "x \<in> carrier \<Z>" for x
     using int_embed_closed by simp
-  show "int_embed R (x\<otimes>\<^bsub>\<Z>\<^esub>y) = int_embed R x \<otimes> int_embed R y" 
-    if "x \<in> carrier \<Z>" "y \<in> carrier \<Z>" for x y 
+  show "int_embed R (x\<otimes>\<^bsub>\<Z>\<^esub>y) = int_embed R x \<otimes> int_embed R y"
+    if "x \<in> carrier \<Z>" "y \<in> carrier \<Z>" for x y
     using int_embed_mult by simp
-  show "int_embed R (x\<oplus>\<^bsub>\<Z>\<^esub>y) = int_embed R x \<oplus> int_embed R y" 
-    if "x \<in> carrier \<Z>" "y \<in> carrier \<Z>" for x y 
+  show "int_embed R (x\<oplus>\<^bsub>\<Z>\<^esub>y) = int_embed R x \<oplus> int_embed R y"
+    if "x \<in> carrier \<Z>" "y \<in> carrier \<Z>" for x y
     using int_embed_add by simp
   show "int_embed R \<one>\<^bsub>\<Z>\<^esub> = \<one>"
     by (simp add:int_embed_one)
@@ -391,13 +391,13 @@ qed
 abbreviation char_subring where
   "char_subring R \<equiv> int_embed R ` UNIV"
 
-definition char where 
+definition char where
   "char R = card (char_subring R)"
 
-text \<open>This is a non-standard definition for the characteristic of a ring. 
+text \<open>This is a non-standard definition for the characteristic of a ring.
 
 Commonly~\<^cite>\<open>\<open>Definition 1.43\<close> in "lidl1986"\<close> it is defined to be the smallest natural number $n$ such
-that n-times repeated addition of any number is zero. If no such number exists then it is defined 
+that n-times repeated addition of any number is zero. If no such number exists then it is defined
 to be $0$. In the case of rings with unit elements --- not that the locale @{locale "ring"} requires
 unit elements --- the above definition can be simplified to the number of times the unit elements
 needs to be repeatedly added to reach $0$.
@@ -437,7 +437,7 @@ proof -
   finally show "char R \<le> x" by simp
   have "1 = card {int_embed R 0}" by simp
   also have "... \<le> card (int_embed R ` {0..<int x})"
-    using assms(1) by (intro card_mono finite_imageI, simp_all) 
+    using assms(1) by (intro card_mono finite_imageI, simp_all)
   also have "... = char R"
     unfolding char_def a by simp
   finally show "char R > 0" by simp
@@ -460,7 +460,7 @@ proof (cases "finite (char_subring R)")
   finally have "card (int_embed R ` A) < card A" by simp
   hence "\<not>inj_on (int_embed R) A"
     using pigeonhole by simp
-  then obtain x y where xy: 
+  then obtain x y where xy:
     "x \<in> A" "y \<in> A" "x \<noteq> y" "int_embed R x = int_embed R y"
     unfolding inj_on_def by auto
   define v where "v = nat (max x y - min x y)"
@@ -476,7 +476,7 @@ proof (cases "finite (char_subring R)")
   then show ?thesis using a by simp
 next
   case False
-  hence "char R = 0" 
+  hence "char R = 0"
     unfolding char_def by simp
   then show ?thesis by (simp add:int_embed_zero)
 qed
@@ -488,7 +488,7 @@ proof (cases "char R > 0")
   case True
   define r where "r = n mod char R"
   define s where "s = n div char R"
-  have rs: "r < char R" "r \<ge> 0" "n = r + s * char R" 
+  have rs: "r < char R" "r \<ge> 0" "n = r + s * char R"
     using True by (simp_all add:r_def s_def)
 
   have "int_embed R n = int_embed R r"
@@ -515,7 +515,7 @@ next
   have c:"int_embed R (abs x) \<noteq> \<zero> \<longleftrightarrow> int_embed R x \<noteq> \<zero>" for x
     using int_embed_closed
     by (cases "x > 0", simp, simp add:int_embed_inv)
-  
+
   have "int_embed R x \<noteq> \<zero>" if b:"x \<noteq> 0" for x
   proof -
     have "nat (abs x) > 0" using b by simp
@@ -524,7 +524,7 @@ next
     hence "int_embed R (abs x) \<noteq> \<zero>" by simp
     thus ?thesis using c by simp
   qed
-  hence "int_embed R n = \<zero> \<longleftrightarrow> n = 0" 
+  hence "int_embed R n = \<zero> \<longleftrightarrow> n = 0"
     using int_embed_zero by auto
   also have "n = 0 \<longleftrightarrow> char R dvd n" using False by simp
   finally show ?thesis by simp
@@ -542,11 +542,11 @@ proof (rule ccontr)
   moreover assume "\<not>(prime (char R))"
   hence "\<not>(irreducible (char R))"
     using irreducible_imp_prime_elem_gcd prime_elem_nat_iff by blast
-  ultimately obtain p q where pq_def: "p * q = char R" "p > 1" "q > 1" 
+  ultimately obtain p q where pq_def: "p * q = char R" "p > 1" "q > 1"
     using assms
     unfolding Factorial_Ring.irreducible_def by auto
   have "int_embed R p \<otimes> int_embed R q = \<zero>"
-    using embed_char_eq_0 pq_def 
+    using embed_char_eq_0 pq_def
     by (subst int_embed_mult[symmetric]) (metis of_nat_mult)
   hence "int_embed R p = \<zero> \<or> int_embed R q = \<zero>"
     using integral int_embed_closed by simp
@@ -561,7 +561,7 @@ lemma (in ring) char_ring_is_subring:
 proof -
   have "subring (int_embed R ` carrier int_ring) R"
     by (intro ring.carrier_is_subring int.ring_axioms
-        ring_hom_ring.img_is_subring[OF int_embed_ring_hom]) 
+        ring_hom_ring.img_is_subring[OF int_embed_ring_hom])
   thus ?thesis by simp
 qed
 
@@ -575,7 +575,7 @@ lemma (in domain) char_ring_is_subdomain:
 
 lemma image_set_eqI:
   assumes "\<And>x. x \<in> A \<Longrightarrow> f x \<in> B"
-  assumes "\<And>x. x \<in> B \<Longrightarrow> g x \<in> A \<and> f (g x) = x" 
+  assumes "\<And>x. x \<in> B \<Longrightarrow> g x \<in> A \<and> f (g x) = x"
   shows  "f ` A = B"
   using assms by force
 
@@ -584,103 +584,103 @@ text \<open>This is the binomial expansion theorem for commutative rings.\<close
 lemma (in cring) binomial_expansion:
   fixes n :: nat
   assumes [simp]: "x \<in> carrier R" "y \<in> carrier R"
-  shows "(x \<oplus> y) [^] n = 
-    (\<Oplus>k \<in> {..n}. int_embed R (n choose k) \<otimes> x [^] k \<otimes> y [^] (n-k))" 
+  shows "(x \<oplus> y) [^] n =
+    (\<Oplus>k \<in> {..n}. int_embed R (n choose k) \<otimes> x [^] k \<otimes> y [^] (n-k))"
 proof -
   define A where "A = (\<lambda>k. {A. A \<subseteq> {..<n} \<and> card A = k})"
 
-  have fin_A: "finite (A i)" for i 
+  have fin_A: "finite (A i)" for i
     unfolding A_def by simp
-  have disj_A: "pairwise (\<lambda>i j. disjnt (A i) (A j)) {..n}" 
+  have disj_A: "pairwise (\<lambda>i j. disjnt (A i) (A j)) {..n}"
     unfolding pairwise_def disjnt_def A_def by auto
-  have card_A: "B \<in> A i \<Longrightarrow> card B = i" if " i \<in> {..n}" for i B 
+  have card_A: "B \<in> A i \<Longrightarrow> card B = i" if " i \<in> {..n}" for i B
     unfolding A_def by simp
-  have card_A2: "card (A i) = (n choose i)" if "i \<in> {..n}" for i 
+  have card_A2: "card (A i) = (n choose i)" if "i \<in> {..n}" for i
     unfolding A_def using n_subsets[where A="{..<n}"] by simp
 
   have card_bound: "card A \<le> n"
-    if "A \<subseteq> {..<n}" for n A 
+    if "A \<subseteq> {..<n}" for n A
     by (metis card_lessThan finite_lessThan card_mono that)
   have card_insert: "card (insert n A) = card A + 1"
-    if "A \<subseteq> {..<(n::nat)}" for n A 
+    if "A \<subseteq> {..<(n::nat)}" for n A
     using finite_subset that by (subst card_insert_disjoint, auto)
 
-  have embed_distr: "[m] \<cdot> y = int_embed R (int m) \<otimes> y" 
+  have embed_distr: "[m] \<cdot> y = int_embed R (int m) \<otimes> y"
     if "y \<in> carrier R" for m y
     unfolding int_embed_def add_pow_def using that
     by (simp add:add_pow_def[symmetric] int_pow_int add_pow_ldistr)
 
-  have "(x \<oplus> y) [^] n = 
+  have "(x \<oplus> y) [^] n =
     (\<Oplus>A \<in> Pow {..<n}. x [^] (card A) \<otimes> y [^] (n-card A))"
   proof (induction n)
     case 0
     then show ?case by simp
   next
     case (Suc n)
-    have s1: 
-      "insert n ` Pow {..<n} = {A. A \<subseteq> {..<n+1} \<and> n \<in> A}" 
-      by (intro image_set_eqI[where g="\<lambda>x. x \<inter> {..<n}"], auto) 
+    have s1:
+      "insert n ` Pow {..<n} = {A. A \<subseteq> {..<n+1} \<and> n \<in> A}"
+      by (intro image_set_eqI[where g="\<lambda>x. x \<inter> {..<n}"], auto)
     have s2:
-      "Pow {..<n} = {A. A \<subseteq> {..<n+1} \<and> n \<notin> A}" 
+      "Pow {..<n} = {A. A \<subseteq> {..<n+1} \<and> n \<notin> A}"
       using lessThan_Suc by auto
 
     have "(x \<oplus> y) [^] Suc n = (x \<oplus> y) [^] n \<otimes> (x \<oplus> y)" by simp
-    also have "... = 
-      (\<Oplus>A \<in> Pow {..<n}. x [^] (card A) \<otimes> y [^] (n-card A)) \<otimes> 
+    also have "... =
+      (\<Oplus>A \<in> Pow {..<n}. x [^] (card A) \<otimes> y [^] (n-card A)) \<otimes>
       (x \<oplus> y)"
       by (subst Suc, simp)
-    also have "... = 
+    also have "... =
       (\<Oplus>A \<in> Pow {..<n}. x [^] (card A) \<otimes> y [^] (n-card A)) \<otimes> x \<oplus>
       (\<Oplus>A \<in> Pow {..<n}. x [^] (card A) \<otimes> y [^] (n-card A)) \<otimes> y"
       by (subst r_distr, auto)
-    also have "... = 
+    also have "... =
       (\<Oplus>A \<in> Pow {..<n}. x [^] (card A) \<otimes> y [^] (n-card A) \<otimes> x) \<oplus>
       (\<Oplus>A \<in> Pow {..<n}. x [^] (card A) \<otimes> y [^] (n-card A) \<otimes> y)"
       by (simp add:finsum_ldistr)
-    also have "... = 
+    also have "... =
       (\<Oplus>A \<in> Pow {..<n}. x [^] (card A+1) \<otimes> y [^] (n-card A)) \<oplus>
       (\<Oplus>A \<in> Pow {..<n}. x [^] (card A) \<otimes> y [^] (n-card A+1))"
-      using m_assoc m_comm 
+      using m_assoc m_comm
       by (intro arg_cong2[where f="(\<oplus>)"] finsum_cong', auto)
-    also have "... = 
-      (\<Oplus>A \<in> Pow {..<n}. x [^] (card (insert n A)) 
+    also have "... =
+      (\<Oplus>A \<in> Pow {..<n}. x [^] (card (insert n A))
         \<otimes> y [^] (n+1-card (insert n A))) \<oplus>
       (\<Oplus>A \<in> Pow {..<n}. x [^] (card A) \<otimes> y [^] (n+1-card A))"
       using finite_subset card_bound card_insert Suc_diff_le
       by (intro arg_cong2[where f="(\<oplus>)"] finsum_cong', simp_all)
-    also have "... = 
-      (\<Oplus>A \<in> insert n ` Pow {..<n}. x [^] (card A) 
+    also have "... =
+      (\<Oplus>A \<in> insert n ` Pow {..<n}. x [^] (card A)
         \<otimes> y [^] (n+1-card A)) \<oplus>
       (\<Oplus>A \<in> Pow {..<n}. x [^] (card A) \<otimes> y [^] (n+1-card A))"
-      by (subst finsum_reindex, auto simp add:inj_on_def) 
-    also have "... = 
-      (\<Oplus>A \<in> {A. A \<subseteq> {..<n+1} \<and> n \<in> A}. 
+      by (subst finsum_reindex, auto simp add:inj_on_def)
+    also have "... =
+      (\<Oplus>A \<in> {A. A \<subseteq> {..<n+1} \<and> n \<in> A}.
         x [^] (card A) \<otimes> y [^] (n+1-card A)) \<oplus>
-      (\<Oplus>A \<in> {A. A \<subseteq> {..<n+1} \<and> n \<notin> A}. 
+      (\<Oplus>A \<in> {A. A \<subseteq> {..<n+1} \<and> n \<notin> A}.
         x [^] (card A) \<otimes> y [^] (n+1-card A))"
       by (intro arg_cong2[where f="(\<oplus>)"] finsum_cong' s1 s2, simp_all)
-    also have "... = (\<Oplus>A \<in> 
-      {A. A \<subseteq> {..<n+1} \<and> n \<in> A} \<union> {A. A \<subseteq> {..<n+1} \<and> n \<notin> A}. 
+    also have "... = (\<Oplus>A \<in>
+      {A. A \<subseteq> {..<n+1} \<and> n \<in> A} \<union> {A. A \<subseteq> {..<n+1} \<and> n \<notin> A}.
         x [^] (card A) \<otimes> y [^] (n+1-card A))"
       by (subst finsum_Un_disjoint, auto)
-    also have "... = 
+    also have "... =
       (\<Oplus>A \<in> Pow {..<n+1}. x [^] (card A) \<otimes> y [^] (n+1-card A))"
       by (intro finsum_cong', auto)
     finally show ?case by simp
   qed
-  also have "... = 
+  also have "... =
     (\<Oplus>A \<in> (\<Union> (A ` {..n})). x [^] (card A) \<otimes> y [^] (n-card A))"
     using card_bound by (intro finsum_cong', auto simp add:A_def)
-  also have "... = 
+  also have "... =
     (\<Oplus> k \<in> {..n}. (\<Oplus> A \<in> A k. x [^] (card A) \<otimes> y [^] (n-card A)))"
     using fin_A disj_A by (subst add.finprod_UN_disjoint, auto)
   also have "... = (\<Oplus> k \<in> {..n}. (\<Oplus> A \<in> A k. x [^] k \<otimes> y [^] (n-k)))"
     using card_A by (intro finsum_cong', auto)
-  also have "... = 
+  also have "... =
     (\<Oplus> k \<in> {..n}. int_embed R (card (A k)) \<otimes> x [^] k \<otimes> y [^] (n-k))"
     using int_embed_closed
     by (subst add.finprod_const, simp_all add:embed_distr m_assoc)
-  also have "... = 
+  also have "... =
     (\<Oplus> k \<in> {..n}. int_embed R (n choose k) \<otimes> x [^] k \<otimes> y [^] (n-k))"
     using int_embed_closed card_A2 by (intro finsum_cong', simp_all)
   finally show ?thesis by simp
@@ -691,7 +691,7 @@ lemma bin_prime_factor:
   assumes "k > 0" "k < p"
   shows "p dvd (p choose k)"
 proof -
-  have "p dvd fact p" 
+  have "p dvd fact p"
     using assms(1) prime_dvd_fact_iff by auto
   hence "p dvd fact k * fact (p - k) * (p choose k)"
     using binomial_fact_lemma assms by simp
@@ -704,12 +704,12 @@ qed
 theorem (in domain) freshmans_dream:
   assumes "char R > 0"
   assumes [simp]: "x \<in> carrier R" "y \<in> carrier R"
-  shows "(x \<oplus> y) [^] (char R) = x [^] char R \<oplus> y [^] char R" 
+  shows "(x \<oplus> y) [^] (char R) = x [^] char R \<oplus> y [^] char R"
     (is "?lhs = ?rhs")
 proof -
   have c:"prime (char R)"
     using assms(1) characteristic_is_prime by auto
-  have a:"int_embed R (char R choose i) = \<zero>" 
+  have a:"int_embed R (char R choose i) = \<zero>"
     if "i \<in> {..char R} - {0, char R}" for i
   proof -
     have "i > 0" "i < char R" using that by auto
@@ -718,10 +718,10 @@ proof -
     thus ?thesis using embed_char_eq_0_iff by simp
   qed
 
-  have "?lhs = (\<Oplus>k \<in> {..char R}. int_embed R (char R choose k) 
+  have "?lhs = (\<Oplus>k \<in> {..char R}. int_embed R (char R choose k)
     \<otimes> x [^] k \<otimes> y [^] (char R-k))"
     using binomial_expansion[OF assms(2,3)] by simp
-  also have "... = (\<Oplus>k \<in> {0,char R}.int_embed R (char R choose k) 
+  also have "... = (\<Oplus>k \<in> {0,char R}.int_embed R (char R choose k)
     \<otimes> x [^] k \<otimes> y [^] (char R-k))"
     using a int_embed_closed
     by (intro add.finprod_mono_neutral_cong_right, simp, simp_all)
@@ -737,7 +737,7 @@ lemma (in domain) freshmans_dream_ext:
   fixes m
   assumes "char R > 0"
   assumes [simp]: "x \<in> carrier R" "y \<in> carrier R"
-  defines "n \<equiv> char R^m" 
+  defines "n \<equiv> char R^m"
   shows "(x \<oplus> y) [^] n = x [^] n \<oplus> y [^] n"
     (is "?lhs = ?rhs")
   unfolding n_def
@@ -746,17 +746,17 @@ proof (induction m)
   then show ?case by simp
 next
   case (Suc m)
-  have "(x \<oplus> y) [^] (char R^(m+1)) = 
+  have "(x \<oplus> y) [^] (char R^(m+1)) =
     (x \<oplus> y) [^] (char R^m * char R)"
     by (simp add:mult.commute)
   also have "... = ((x \<oplus> y) [^] (char R^m)) [^] char R"
     using nat_pow_pow by simp
   also have "... = (x [^] (char R^m) \<oplus> y [^] (char R^m)) [^] char R"
     by (subst Suc, simp)
-  also have "... = 
+  also have "... =
     (x [^] (char R^m)) [^] char R \<oplus> (y [^] (char R^m)) [^] char R"
     by (subst freshmans_dream[OF assms(1), symmetric], simp_all)
-  also have "... = 
+  also have "... =
     x [^] (char R^m * char R) \<oplus> y [^] (char R^m * char R)"
     by (simp add:nat_pow_pow)
   also have "... = x [^] (char R^Suc m) \<oplus> y [^] (char R^Suc m)"
@@ -772,16 +772,16 @@ theorem (in domain) frobenius_hom:
   assumes "m = char R ^ k"
   shows "ring_hom_cring R R (\<lambda>x. x [^] m)"
 proof -
-  have a:"(x \<otimes> y) [^] m = x [^] m \<otimes> y [^] m" 
-    if b:"x \<in> carrier R" "y \<in> carrier R" for x y 
+  have a:"(x \<otimes> y) [^] m = x [^] m \<otimes> y [^] m"
+    if b:"x \<in> carrier R" "y \<in> carrier R" for x y
     using b nat_pow_distrib by simp
   have b:"(x \<oplus> y) [^] m = x [^] m \<oplus> y [^] m"
-    if b:"x \<in> carrier R" "y \<in> carrier R" for x y 
-    unfolding assms(2) freshmans_dream_ext[OF assms(1) b] 
+    if b:"x \<in> carrier R" "y \<in> carrier R" for x y
+    unfolding assms(2) freshmans_dream_ext[OF assms(1) b]
     by simp
 
   have "ring_hom_ring R R (\<lambda>x. x [^] m)"
-    by  (intro ring_hom_ringI a b ring_axioms, simp_all) 
+    by  (intro ring_hom_ringI a b ring_axioms, simp_all)
 
   thus "?thesis"
     using RingHom.ring_hom_cringI is_cring by blast
@@ -794,9 +794,9 @@ proof -
   interpret d:domain "R \<lparr> carrier := char_subring R \<rparr>"
     using char_ring_is_subdomain subdomain_is_domain by simp
 
-  have "finite (char_subring R)" 
+  have "finite (char_subring R)"
     using char_def assms by (metis card_ge_0_finite)
-  hence "Units (R \<lparr> carrier := char_subring R \<rparr>) 
+  hence "Units (R \<lparr> carrier := char_subring R \<rparr>)
     = char_subring R - {\<zero>}"
     using d.finite_domain_units by simp
 
@@ -804,9 +804,9 @@ proof -
     using subfieldI[OF char_ring_is_subcring] by simp
 qed
 
-lemma card_lists_length_eq': 
+lemma card_lists_length_eq':
   fixes A :: "'a set"
-  shows "card {xs. set xs \<subseteq> A \<and> length xs = n} = card A ^ n" 
+  shows "card {xs. set xs \<subseteq> A \<and> length xs = n} = card A ^ n"
 proof (cases "finite A")
   case True
   then show ?thesis using card_lists_length_eq by auto
@@ -820,16 +820,16 @@ next
       by (intro arg_cong[where f="card"], auto simp add:set_eq_iff)
     also have "... = 1" by simp
     also have "... = card A^n" using True inf_A by simp
-    finally show ?thesis by simp 
+    finally show ?thesis by simp
   next
     case False
-    hence "inj (replicate n)" 
+    hence "inj (replicate n)"
       by (meson inj_onI replicate_eq_replicate)
-    hence "inj_on (replicate n) A" using inj_on_subset 
-      by (metis subset_UNIV) 
+    hence "inj_on (replicate n) A" using inj_on_subset
+      by (metis subset_UNIV)
     hence "infinite (replicate n ` A)"
       using inf_A finite_image_iff by auto
-    moreover have 
+    moreover have
       "replicate n ` A \<subseteq> {xs. set xs \<subseteq> A \<and> length xs  = n}"
       by (intro image_subsetI, auto)
     ultimately have "infinite {xs. set xs \<subseteq> A \<and> length xs  = n}"
@@ -863,15 +863,15 @@ proof -
   have "False" if a: "x \<in> A" "y \<in> A" "f x = f y" "x \<noteq> y" for x y
   proof -
     have "f x \<in> Span K w" using b a by simp
-    thus "False" 
+    thus "False"
       using a unique_decomposition[OF assms(1,2)]
       unfolding f_def A_def by blast
   qed
-  hence f_inj: "inj_on f A" 
+  hence f_inj: "inj_on f A"
     unfolding inj_on_def by auto
 
   have "card (Span K w) = card (f ` A)" using b by simp
-  also have "... = card A" by (intro card_image f_inj) 
+  also have "... = card A" by (intro card_image f_inj)
   also have "... = card K^length w"
     unfolding A_def by (intro card_lists_length_eq')
   finally show ?thesis by simp
@@ -887,7 +887,7 @@ proof -
     using finite_subset assms by auto
   hence "card (char_subring R) > 0"
     using card_range_greater_zero by simp
-  thus "char R > 0" 
+  thus "char R > 0"
     unfolding char_def by simp
 qed
 
@@ -922,12 +922,12 @@ proof -
     case True
     then obtain m where "n = int m"
       using nonneg_int_cases by auto
-    then show ?thesis 
+    then show ?thesis
       by (simp add:a)
   next
     case False
     hence "n \<le> 0" by simp
-    then obtain m where "n = -int m" 
+    then obtain m where "n = -int m"
       using nonpos_int_cases by auto
     then show ?thesis by (simp add:b)
   qed
@@ -936,19 +936,19 @@ proof -
     unfolding char_def image_image c by simp
   also have "... = card (char_subring R)"
     using R.int_embed_range[OF R.carrier_is_subring]
-    by (intro card_image inj_on_subset[OF assms(1)]) auto 
+    by (intro card_image inj_on_subset[OF assms(1)]) auto
   also have "... = char R" unfolding char_def by simp
   finally show ?thesis
     by simp
 qed
 
-definition char_iso :: "_ \<Rightarrow> int set \<Rightarrow> 'a" 
+definition char_iso :: "_ \<Rightarrow> int set \<Rightarrow> 'a"
   where "char_iso R x = the_elem (int_embed R ` x)"
 
 text \<open>The function @{term "char_iso R"} denotes the isomorphism between @{term "ZFact (char R)"} and
 the characteristic subring.\<close>
 
-lemma (in ring) char_iso: "char_iso R \<in> 
+lemma (in ring) char_iso: "char_iso R \<in>
   ring_iso (ZFact (char R)) (R\<lparr>carrier := char_subring R\<rparr>)"
 proof -
   interpret h: ring_hom_ring "int_ring" "R" "int_embed R"
@@ -958,7 +958,7 @@ proof -
     unfolding a_kernel_def kernel_def by simp
   also have "... = {x. char R dvd x}"
     using embed_char_eq_0_iff by simp
-  also have "... = PIdl\<^bsub>\<Z>\<^esub> (int (char R))" 
+  also have "... = PIdl\<^bsub>\<Z>\<^esub> (int (char R))"
     unfolding cgenideal_def by auto
   also have "... = Idl\<^bsub>\<Z>\<^esub> {int (char R)}"
     using int.cgenideal_eq_genideal by simp
@@ -992,9 +992,9 @@ proof -
     using int_embed_closed v_def by (intro Span_in_carrier, auto)
   ultimately have Span_v: "Span ?CR v = carrier R" by simp
 
-  obtain w where w_def: 
-    "set w \<subseteq> carrier R" 
-    "independent ?CR w" 
+  obtain w where w_def:
+    "set w \<subseteq> carrier R"
+    "independent ?CR w"
     "Span ?CR v = Span ?CR w"
     using b filter_base[OF char_ring_is_subfield[OF a]]
     by metis

@@ -1,9 +1,12 @@
 chapter AFP
 
 session Finite_Fields = "HOL-Algebra" +
-  options [timeout = 600]
+  options [timeout = 1200]
   sessions
+    Digit_Expansions
     Dirichlet_Series
+    Executable_Randomized_Algorithms
+    Probabilistic_While
   theories 
     Card_Irreducible_Polynomials
     Card_Irreducible_Polynomials_Aux
@@ -13,6 +16,14 @@ session Finite_Fields = "HOL-Algebra" +
     Formal_Polynomial_Derivatives
     Monic_Polynomial_Factorization
     Ring_Characteristic
+    Rabin_Irreducibility_Test
+    Rabin_Irreducibility_Test_Code
+    Finite_Fields_More_Bijections
+    Finite_Fields_Indexed_Algebra_Code
+    Finite_Fields_Mod_Ring_Code
+    Finite_Fields_Poly_Factor_Ring_Code
+    Finite_Fields_Poly_Ring_Code
+    Find_Irreducible_Poly
   document_files
     "root.tex"
     "root.bib"

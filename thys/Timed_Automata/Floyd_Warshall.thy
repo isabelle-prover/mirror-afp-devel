@@ -1119,19 +1119,9 @@ definition D :: "'a mat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat \<
 lemma (in -) distinct_length_le:"finite s \<Longrightarrow> set xs \<subseteq> s \<Longrightarrow> distinct xs \<Longrightarrow> length xs \<le> card s"
 by (metis card_mono distinct_card) 
 
-lemma (in -) finite_distinct: "finite s \<Longrightarrow> finite {xs . set xs \<subseteq> s \<and> distinct xs}"
-proof -
-  assume "finite s"
-  hence "{xs . set xs \<subseteq> s \<and> distinct xs} \<subseteq> {xs. set xs \<subseteq> s \<and> length xs \<le> card s}"
-  using distinct_length_le by auto
-  moreover have "finite {xs. set xs \<subseteq> s \<and> length xs \<le> card s}"
-  using finite_lists_length_le[OF \<open>finite s\<close>] by auto
-  ultimately show ?thesis by (rule finite_subset)
-qed
-
 lemma D_base_finite:
   "finite {len m i j xs | xs. set xs \<subseteq> {0..k} \<and> distinct xs}"
-using finite_distinct finite_image_set by blast
+using finite_subset_distinct finite_image_set by blast
 
 lemma D_base_finite':
   "finite {len m i j xs | xs. set xs \<subseteq> {0..k} \<and> distinct (i # j # xs)}"

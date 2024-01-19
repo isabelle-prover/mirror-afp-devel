@@ -22,22 +22,12 @@ definition (in pre_digraph) euler_trail :: "'a \<Rightarrow> 'b awalk \<Rightarr
 context wf_digraph begin
 
 (* XXX move; notused*)
-lemma finite_distinct:
-  assumes "finite A" shows "finite {p. distinct p \<and> set p \<subseteq> A}"
-proof -
-  have "{p. distinct p \<and> set p \<subseteq> A} \<subseteq> {p. set p \<subseteq> A \<and> length p \<le> card A}"
-    using assms by (auto simp: distinct_card[symmetric] intro: card_mono)
-  also have "finite ..."
-    using assms by (simp add: finite_lists_length_le)
-  finally (finite_subset) show ?thesis .
-qed
-
-(* XXX move; notused*)
 lemma (in fin_digraph) trails_finite: "finite {p. \<exists>u v. trail u p v}"
 proof -
-  have "{p. \<exists>u v. trail u p v} \<subseteq> {p. distinct p \<and> set p \<subseteq> arcs G}"
+  have "{p. \<exists>u v. trail u p v} \<subseteq> {p. set p \<subseteq> arcs G \<and> distinct p}"
     by (auto simp: trail_def)
-  with finite_arcs finite_distinct show ?thesis by (blast intro: finite_subset)
+  with finite_subset_distinct[OF finite_arcs] show ?thesis
+    using finite_subset by blast 
 qed
 (* XXX: simplify apath_finite proof? *)
 

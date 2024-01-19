@@ -242,7 +242,7 @@ lemma finite_set_summaries:
   by force
 
 lemma finite_summaries: "finite {xs. distinct xs \<and> (\<forall>(l1, s, l2) \<in> set xs. s \<in>\<^sub>A weights l1 l2)}"
-  apply (rule finite_subset[OF _ finite_distinct_bounded[of "((\<lambda>((l1,l2),s). (l1,s,l2)) ` (Sigma UNIV (\<lambda>(l1,l2). set_antichain (weights l1 l2))))"]])
+  apply (rule finite_subset[OF _ finite_subset_distinct[of "((\<lambda>((l1,l2),s). (l1,s,l2)) ` (Sigma UNIV (\<lambda>(l1,l2). set_antichain (weights l1 l2))))"]])
    apply (force simp: finite_set_summaries)+
   done
 

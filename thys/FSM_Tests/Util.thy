@@ -2971,25 +2971,6 @@ proof -
   qed
 qed
 
-lemma distinct_lists_finite :
-  assumes "finite X"
-  shows "finite {xs . set xs \<subseteq> X \<and> distinct xs }" 
-proof -
-  define k where "k = card X"
-
-  have "\<And> xs . set xs \<subseteq> X \<Longrightarrow> distinct xs \<Longrightarrow> length xs \<le> k"
-    using assms unfolding \<open>k = card X\<close>
-    by (metis card_mono distinct_card)
-
-  then have "{xs . set xs \<subseteq> X \<and> distinct xs } \<subseteq> {xs . set xs \<subseteq> X \<and> length xs \<le> k}"
-    by blast
-  moreover have "finite {xs . set xs \<subseteq> X \<and> length xs \<le> k}"
-    using assms by (simp add: finite_lists_length_le) 
-  ultimately show ?thesis
-    using rev_finite_subset by auto 
-qed
-
-
 lemma finite_set_elem_maximal_extension_ex :
   assumes "xs \<in> S"
   and     "finite S"

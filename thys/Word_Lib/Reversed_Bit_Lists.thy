@@ -844,7 +844,6 @@ next
   obtain b k where \<open>bin = of_bool b + 2 * k\<close>
     using bin_exhaust by blast
   moreover have \<open>(2 * k - 1) div 2 = k - 1\<close>
-    using even_succ_div_2 [of \<open>2 * (k - 1)\<close>]
     by simp
   ultimately show ?case
     using Suc [of \<open>bin div 2\<close>]

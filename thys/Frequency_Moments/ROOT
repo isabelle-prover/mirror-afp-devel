@@ -4,6 +4,7 @@ session Frequency_Moments = "HOL-Probability" +
   options [timeout = 1200]
   sessions
     Bertrands_Postulate
+    Concentration_Inequalities
     Equivalence_Relation_Enumeration
     "HOL-Algebra"
     Interpolation_Polynomials_HOL_Algebra
