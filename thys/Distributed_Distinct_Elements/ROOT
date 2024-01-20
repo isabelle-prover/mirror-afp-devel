@@ -5,6 +5,7 @@ session Distributed_Distinct_Elements = "Expander_Graphs" +
   sessions
     Discrete_Summation
     Stirling_Formula
+    Frequency_Moments
   theories
     Distributed_Distinct_Elements_Preliminary
     Pseudorandom_Combinators

@@ -1,7 +1,7 @@
 section \<open>Landau Symbols\<close>
 
 theory Landau_Ext
-  imports 
+  imports
     "HOL-Library.Landau_Symbols"
     "HOL.Topological_Spaces"
 begin
@@ -9,8 +9,8 @@ begin
 text \<open>This section contains results about Landau Symbols in addition to "HOL-Library.Landau".\<close>
 
 lemma landau_sum:
-  assumes "eventually (\<lambda>x. g1 x \<ge> (0::real)) F" 
-  assumes "eventually (\<lambda>x. g2 x \<ge> 0) F" 
+  assumes "eventually (\<lambda>x. g1 x \<ge> (0::real)) F"
+  assumes "eventually (\<lambda>x. g2 x \<ge> 0) F"
   assumes "f1 \<in> O[F](g1)"
   assumes "f2 \<in> O[F](g2)"
   shows "(\<lambda>x. f1 x + f2 x) \<in> O[F](\<lambda>x. g1 x + g2 x)"
@@ -25,7 +25,7 @@ proof -
     assume a: "\<bar>f1 x\<bar> \<le> c1 * \<bar>g1 x\<bar> \<and> \<bar>f2 x\<bar> \<le> c2 * \<bar>g2 x\<bar> \<and> 0 \<le> g1 x \<and> 0 \<le> g2 x"
     have "\<bar>f1 x + f2 x\<bar> \<le> \<bar>f1 x \<bar> + \<bar>f2 x\<bar>" using abs_triangle_ineq by blast
     also have "... \<le> c1 *  \<bar>g1 x\<bar> + c2 * \<bar>g2 x\<bar>" using a add_mono by blast
-    also have "... \<le> max c1 c2 * \<bar>g1 x\<bar> + max c1 c2 * \<bar>g2 x\<bar>" 
+    also have "... \<le> max c1 c2 * \<bar>g1 x\<bar> + max c1 c2 * \<bar>g2 x\<bar>"
       by (intro add_mono mult_right_mono) auto
     also have "... = max c1 c2 * (\<bar>g1 x\<bar> + \<bar>g2 x\<bar>)"
       by (simp add:algebra_simps)
@@ -37,12 +37,12 @@ proof -
   hence " 0 < max c1 c2 \<and> (\<forall>\<^sub>F x in F. \<bar>f1 x + f2 x\<bar> \<le> max c1 c2 * \<bar>g1 x + g2 x\<bar>)"
     using a1 a2 by linarith
   thus ?thesis
-    by (simp add: bigo_def, blast) 
+    by (simp add: bigo_def, blast)
 qed
 
 lemma landau_sum_1:
-  assumes "eventually (\<lambda>x. g1 x \<ge> (0::real)) F" 
-  assumes "eventually (\<lambda>x. g2 x \<ge> 0) F" 
+  assumes "eventually (\<lambda>x. g1 x \<ge> (0::real)) F"
+  assumes "eventually (\<lambda>x. g2 x \<ge> 0) F"
   assumes "f \<in> O[F](g1)"
   shows "f \<in> O[F](\<lambda>x. g1 x + g2 x)"
 proof -
@@ -53,8 +53,8 @@ proof -
 qed
 
 lemma landau_sum_2:
-  assumes "eventually (\<lambda>x. g1 x \<ge> (0::real)) F" 
-  assumes "eventually (\<lambda>x. g2 x \<ge> 0) F" 
+  assumes "eventually (\<lambda>x. g1 x \<ge> (0::real)) F"
+  assumes "eventually (\<lambda>x. g2 x \<ge> 0) F"
   assumes "f \<in> O[F](g2)"
   shows "f \<in> O[F](\<lambda>x. g1 x + g2 x)"
 proof -
@@ -65,9 +65,9 @@ proof -
 qed
 
 lemma landau_ln_3:
-  assumes "eventually (\<lambda>x. (1::real) \<le> f x) F" 
-  assumes "f \<in> O[F](g)" 
-  shows "(\<lambda>x. ln (f x)) \<in> O[F](g)" 
+  assumes "eventually (\<lambda>x. (1::real) \<le> f x) F"
+  assumes "f \<in> O[F](g)"
+  shows "(\<lambda>x. ln (f x)) \<in> O[F](g)"
 proof -
   have "1 \<le> x \<Longrightarrow> \<bar>ln x\<bar> \<le> \<bar>x\<bar>" for x :: real
     using ln_bound by auto
@@ -79,10 +79,10 @@ qed
 
 lemma landau_ln_2:
   assumes "a > (1::real)"
-  assumes "eventually (\<lambda>x. 1 \<le> f x) F" 
-  assumes "eventually (\<lambda>x. a \<le> g x) F" 
-  assumes "f \<in> O[F](g)" 
-  shows "(\<lambda>x. ln (f x)) \<in> O[F](\<lambda>x. ln (g x))" 
+  assumes "eventually (\<lambda>x. 1 \<le> f x) F"
+  assumes "eventually (\<lambda>x. a \<le> g x) F"
+  assumes "f \<in> O[F](g)"
+  shows "(\<lambda>x. ln (f x)) \<in> O[F](\<lambda>x. ln (g x))"
 proof -
   obtain c where a: "c > 0" and b: "eventually (\<lambda>x. abs (f x) \<le> c * abs (g x)) F"
     using assms(4) by (simp add:bigo_def, blast)
@@ -90,11 +90,11 @@ proof -
   have d:"eventually (\<lambda>x. abs (ln (f x)) \<le> d * abs (ln (g x))) F"
   proof (rule eventually_mono[OF eventually_conj[OF b eventually_conj[OF assms(3,2)]]])
     fix x
-    assume c:"\<bar>f x\<bar> \<le> c * \<bar>g x\<bar> \<and> a \<le> g x \<and> 1 \<le> f x" 
+    assume c:"\<bar>f x\<bar> \<le> c * \<bar>g x\<bar> \<and> a \<le> g x \<and> 1 \<le> f x"
     have "abs (ln (f x)) = ln (f x)"
       by (subst abs_of_nonneg, rule ln_ge_zero, metis c, simp)
     also have "... \<le> ln (c * abs (g x))"
-      using c assms(1)  mult_pos_pos[OF a] by auto      
+      using c assms(1)  mult_pos_pos[OF a] by auto
     also have "... \<le> ln c + ln (abs (g x))"
       using c assms(1)
       by (simp add: ln_mult[OF a])
@@ -151,21 +151,21 @@ proof -
   have a:"\<bar>real_of_int \<lceil>x\<rceil>\<bar> \<le> 1 + real_of_rat \<bar>x\<bar>" for x :: rat
   proof (cases "x \<ge> 0")
     case True
-    then show ?thesis 
+    then show ?thesis
       by  (simp, metis  add.commute  of_int_ceiling_le_add_one of_rat_ceiling)
   next
     case False
     have "real_of_rat x - 1 \<le> real_of_rat x"
       by simp
-    also have "... \<le> real_of_int \<lceil>x\<rceil>" 
+    also have "... \<le> real_of_int \<lceil>x\<rceil>"
       by (metis ceiling_correct of_rat_ceiling)
     finally have " real_of_rat (x)-1 \<le> real_of_int \<lceil>x\<rceil>" by simp
 
     hence "- real_of_int \<lceil>x\<rceil> \<le> 1 + real_of_rat (- x)"
       by (simp add: of_rat_minus)
-    then show ?thesis using False by simp 
+    then show ?thesis using False by simp
   qed
-  have "(\<lambda>x. real_of_int \<lceil>f x\<rceil>) \<in> O[F'](\<lambda>x. 1 + abs (real_of_rat (f x)))" 
+  have "(\<lambda>x. real_of_int \<lceil>f x\<rceil>) \<in> O[F'](\<lambda>x. 1 + abs (real_of_rat (f x)))"
     using a
     by (intro landau_o.big_mono always_eventually allI, simp)
   also have "(\<lambda>x. 1 + abs (real_of_rat (f x))) \<in> O[F'](g)"

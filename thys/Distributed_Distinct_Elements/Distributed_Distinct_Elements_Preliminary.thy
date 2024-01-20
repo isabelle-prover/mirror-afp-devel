@@ -5,7 +5,7 @@ text \<open>This section contains various short preliminary results used in the 
 theory Distributed_Distinct_Elements_Preliminary
   imports
     Frequency_Moments.Frequency_Moments_Preliminary_Results
-    Frequency_Moments.Product_PMF_Ext
+    Universal_Hash_Families.Universal_Hash_Families_More_Product_PMF
     Median_Method.Median
     Expander_Graphs.Extra_Congruence_Method
     Expander_Graphs.Constructive_Chernoff_Bound
@@ -15,24 +15,11 @@ begin
 
 unbundle intro_cong_syntax
 
-text \<open>Simplified versions of measure theoretic results for pmfs:\<close>
+text \<open>The following aliases are here to prevent possible merge-conflicts. The lemmas have been moved
+to @{theory "Universal_Hash_Families.Universal_Hash_Families_More_Product_PMF"}.\<close>
 
-lemma measure_pmf_cong:
-  assumes "\<And>x. x \<in> set_pmf p \<Longrightarrow> x \<in> P \<longleftrightarrow> x \<in> Q"
-  shows "measure (measure_pmf p) P = measure (measure_pmf p)  Q"
-  using assms
-  by (intro finite_measure.finite_measure_eq_AE AE_pmfI) auto
-
-lemma pmf_mono:
-  assumes "\<And>x. x \<in> set_pmf p \<Longrightarrow> x \<in> P \<Longrightarrow> x \<in> Q"
-  shows "measure (measure_pmf p) P \<le> measure (measure_pmf p) Q"
-proof -
-  have "measure (measure_pmf p) P = measure (measure_pmf p) (P \<inter> (set_pmf p))"
-    by (intro measure_pmf_cong) auto
-  also have "... \<le> measure (measure_pmf p) Q"
-    using assms by (intro finite_measure.finite_measure_mono) auto
-  finally show ?thesis by simp
-qed
+lemmas measure_pmf_cong = measure_pmf_cong
+lemmas pmf_mono = pmf_mono
 
 lemma pmf_rev_mono:
   assumes "\<And>x. x \<in> set_pmf p \<Longrightarrow> x \<notin> Q \<Longrightarrow> x \<notin> P"

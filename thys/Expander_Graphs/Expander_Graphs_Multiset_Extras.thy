@@ -3,14 +3,44 @@ subsection \<open>Multisets\<close>
 text \<open>Some preliminary results about multisets.\<close>
 
 theory Expander_Graphs_Multiset_Extras
-  imports 
-    Frequency_Moments.Frequency_Moments_Preliminary_Results 
+  imports
+    "HOL-Library.Multiset"
     Extra_Congruence_Method
 begin
 
 unbundle intro_cong_syntax
 
-lemma sum_mset_conv: 
+text \<open>This is an induction scheme over the distinct elements of a multisets:
+We can represent each multiset as a sum like:
+@{text "replicate_mset n\<^sub>1 x\<^sub>1 + replicate_mset n\<^sub>2 x\<^sub>2 + ... + replicate_mset n\<^sub>k x\<^sub>k"} where the
+@{term "x\<^sub>i"} are distinct.\<close>
+
+lemma disj_induct_mset:
+  assumes "P {#}"
+  assumes "\<And>n M x. P M \<Longrightarrow> \<not>(x \<in># M) \<Longrightarrow> n > 0 \<Longrightarrow> P (M + replicate_mset n x)"
+  shows "P M"
+proof (induction "size M" arbitrary: M rule:nat_less_induct)
+  case 1
+  show ?case
+  proof (cases "M = {#}")
+    case True
+    then show ?thesis using assms by simp
+  next
+    case False
+    then obtain x where x_def: "x \<in># M" using multiset_nonemptyE by auto
+    define M1 where "M1 = M - replicate_mset (count M x) x"
+    then have M_def: "M = M1 + replicate_mset (count M x) x"
+      by (metis count_le_replicate_mset_subset_eq dual_order.refl subset_mset.diff_add)
+    have "size M1 < size M"
+      by (metis M_def x_def count_greater_zero_iff less_add_same_cancel1 size_replicate_mset size_union)
+    hence "P M1" using 1 by blast
+    then show "P M"
+      apply (subst M_def, rule assms(2), simp)
+      by (simp add:M1_def x_def count_eq_zero_iff[symmetric])+
+  qed
+qed
+
+lemma sum_mset_conv:
   fixes f :: "'a \<Rightarrow> 'b::{semiring_1}"
   shows "sum_mset (image_mset f A) = sum (\<lambda>x. of_nat (count A x) * f x) (set_mset A)"
 proof (induction A rule: disj_induct_mset)
@@ -20,10 +50,10 @@ next
   case (2 n M x)
   moreover have "count M x = 0" using 2 by (simp add: count_eq_zero_iff)
   moreover have "\<And>y. y \<in> set_mset M \<Longrightarrow> y \<noteq> x" using 2 by blast
-  ultimately show ?case by (simp add:algebra_simps) 
+  ultimately show ?case by (simp add:algebra_simps)
 qed
 
-lemma sum_mset_conv_2: 
+lemma sum_mset_conv_2:
   fixes f :: "'a \<Rightarrow> 'b::{semiring_1}"
   assumes "set_mset A \<subseteq> B" "finite B"
   shows "sum_mset (image_mset f A) = sum (\<lambda>x. of_nat (count A x) * f x) B" (is "?L = ?R")
@@ -46,23 +76,23 @@ lemma count_image_mset_inj:
   shows "count (image_mset f A) (f x) = count A x"
 proof (cases "x \<in> set_mset A")
   case True
-  hence "f -` {f x} \<inter> set_mset A = {x}" 
-    using assms by (auto simp add:vimage_def inj_def) 
+  hence "f -` {f x} \<inter> set_mset A = {x}"
+    using assms by (auto simp add:vimage_def inj_def)
   then show ?thesis by (simp add:count_image_mset)
 next
   case False
-  hence "f -` {f x} \<inter> set_mset A = {}" 
-    using assms by (auto simp add:vimage_def inj_def) 
+  hence "f -` {f x} \<inter> set_mset A = {}"
+    using assms by (auto simp add:vimage_def inj_def)
   thus ?thesis  using False by (simp add:count_image_mset count_eq_zero_iff)
 qed
 
 lemma count_image_mset_0_triv:
   assumes "x \<notin> range f"
-  shows "count (image_mset f A) x = 0" 
+  shows "count (image_mset f A) x = 0"
 proof -
-  have "x \<notin> set_mset (image_mset f A)" 
+  have "x \<notin> set_mset (image_mset f A)"
     using assms by auto
-  thus ?thesis 
+  thus ?thesis
     by (meson count_inI)
 qed
 
@@ -71,7 +101,7 @@ lemma filter_mset_ex_predicates:
   shows "filter_mset P M + filter_mset Q M = filter_mset (\<lambda>x. P x \<or> Q x) M"
   using assms by (induction M, auto)
 
-lemma sum_count_2: 
+lemma sum_count_2:
   assumes "finite F"
   shows "sum (count M) F = size (filter_mset (\<lambda>x. x \<in> F) M)"
   using assms
@@ -158,13 +188,13 @@ lemma size_filter_mset_conv:
 lemma filter_mset_const: "filter_mset (\<lambda>_. c) xs = (if c then xs else {#})"
   by simp
 
-lemma repeat_image_concat_mset: 
+lemma repeat_image_concat_mset:
   "repeat_mset n (image_mset f A) = concat_mset (image_mset (\<lambda>x. replicate_mset n (f x)) A)"
   unfolding concat_mset_def by (induction A, auto)
 
 lemma mset_prod_eq:
   assumes "finite A" "finite B"
-  shows 
+  shows
     "mset_set (A \<times> B) = concat_mset {# {# (x,y). y \<in># mset_set B #} .x \<in># mset_set A #}"
   using assms(1)
 proof (induction rule:finite_induct)
@@ -185,7 +215,7 @@ next
   finally show ?case by simp
 qed
 
-lemma sum_mset_repeat: 
+lemma sum_mset_repeat:
   fixes f :: "'a \<Rightarrow> 'b :: {comm_monoid_add,semiring_1}"
   shows "sum_mset (image_mset f (repeat_mset n A)) = of_nat n * sum_mset (image_mset f A)"
   by (induction n, auto simp add:sum_mset.distrib algebra_simps)

@@ -1,13 +1,13 @@
 section "Frequency Moments"
 
 theory Frequency_Moments
-  imports 
+  imports
     Frequency_Moments_Preliminary_Results
     Universal_Hash_Families.Universal_Hash_Families_More_Finite_Fields
     Interpolation_Polynomials_HOL_Algebra.Interpolation_Polynomial_Cardinalities
 begin
 
-text \<open>This section contains a definition of the frequency moments of a stream and a few general results about 
+text \<open>This section contains a definition of the frequency moments of a stream and a few general results about
 frequency moments..\<close>
 
 definition F where
@@ -21,7 +21,7 @@ lemma F_gr_0:
   shows "F k as > 0"
 proof -
   have "rat_of_nat 1 \<le> rat_of_nat (card (set as))"
-    using assms card_0_eq[where A="set as"] 
+    using assms card_0_eq[where A="set as"]
     by (intro of_nat_mono)
      (metis List.finite_set One_nat_def Suc_leI neq0_conv set_empty)
   also have "... = (\<Sum>x\<in>set as. 1)" by simp
@@ -63,13 +63,13 @@ proof (cases "p > 1")
       finally show ?thesis by simp
     qed
     then show "x = y"
-      using b c univ_poly_carrier 
-      by (subst coeff_iff_polynomial_cond) (auto simp:bounded_degree_polynomials_length) 
+      using b c univ_poly_carrier
+      by (subst coeff_iff_polynomial_cond) (auto simp:bounded_degree_polynomials_length)
   qed
 
   have "is_encoding (\<lambda>f. P\<^sub>e p n f)"
     unfolding P\<^sub>e_def using a True
-    by (intro encoding_compose[where f="([0..<n] \<rightarrow>\<^sub>e Nb\<^sub>e p)"] fun_encoding bounded_nat_encoding) 
+    by (intro encoding_compose[where f="([0..<n] \<rightarrow>\<^sub>e Nb\<^sub>e p)"] fun_encoding bounded_nat_encoding)
      auto
   thus ?thesis by simp
 next
@@ -91,23 +91,23 @@ proof -
     using assms(2) by (simp add:bounded_degree_polynomials_def)
 
   have "real_of_int \<lfloor>log 2 (p-1)\<rfloor>+1 \<le> log 2 (p-1) + 1"
-    using floor_eq_iff by (intro add_mono, auto) 
+    using floor_eq_iff by (intro add_mono, auto)
   also have "... \<le> log 2 p + 1"
     using assms by (intro add_mono, auto)
   finally have b: "\<lfloor>log 2 (p-1)\<rfloor>+1 \<le> log 2 p + 1"
     by simp
 
   have "bit_count (P\<^sub>e p n x) = (\<Sum> k \<leftarrow> [0..<n]. bit_count (Nb\<^sub>e p (coeff x k)))"
-    using assms restrict_extensional 
+    using assms restrict_extensional
     by (auto intro!:arg_cong[where f="sum_list"] simp add:P\<^sub>e_def fun_bit_count lessThan_atLeast0)
   also have "... = (\<Sum> k \<leftarrow> [0..<n]. ereal (floorlog 2 (p-1)))"
-    using coeff_in_carrier[OF a] mod_ring_carr 
+    using coeff_in_carrier[OF a] mod_ring_carr
     by (subst bounded_nat_bit_count_2, auto)
   also have "... = n * ereal (floorlog 2 (p-1))"
     by (simp add: sum_list_triv)
-  also have "... = n * real_of_int (\<lfloor>log 2 (p-1)\<rfloor>+1)" 
+  also have "... = n * real_of_int (\<lfloor>log 2 (p-1)\<rfloor>+1)"
     using assms(1) by (simp add:floorlog_def)
-  also have "... \<le> ereal (real n * (log 2 p + 1))" 
+  also have "... \<le> ereal (real n * (log 2 p + 1))"
     by (subst ereal_less_eq, intro mult_left_mono b, auto)
   finally show ?thesis by simp
 qed

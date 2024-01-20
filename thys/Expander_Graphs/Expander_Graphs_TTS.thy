@@ -1,14 +1,14 @@
 section \<open>Setup for Types to Sets\label{sec:tts}\<close>
 
 theory Expander_Graphs_TTS
-  imports 
-    Expander_Graphs_Definition     
+  imports
+    Expander_Graphs_Definition
     "HOL-Analysis.Cartesian_Space"
     "HOL-Types_To_Sets.Types_To_Sets"
 begin
 
 text \<open>This section sets up a sublocale with the assumption that there is a finite type with the same
-cardinality as the vertex set of a regular graph. This allows defining the adjacency matrix for 
+cardinality as the vertex set of a regular graph. This allows defining the adjacency matrix for
 the graph using type-based linear algebra.
 
 Theorems shown in the sublocale that do not refer to the local type are then lifted to the
@@ -19,7 +19,7 @@ locale regular_graph_tts = regular_graph +
   assumes td: "\<exists>(f :: ('n \<Rightarrow> 'a)) g. type_definition f g (verts G)"
 begin
 
-definition td_components :: "('n \<Rightarrow> 'a) \<times> ('a \<Rightarrow> 'n)" 
+definition td_components :: "('n \<Rightarrow> 'a) \<times> ('a \<Rightarrow> 'n)"
   where "td_components = (SOME q. type_definition (fst q) (snd q) (verts G))"
 
 definition enum_verts where "enum_verts = fst td_components"
@@ -54,7 +54,7 @@ proof -
     by (intro iffD2[OF vec_eq_iff] allI) auto
 qed
 
-lemma g_step_conv: 
+lemma g_step_conv:
   "(\<chi> i. g_step f (enum_verts i)) = A *v (\<chi> i. f (enum_verts i))"
 proof -
   have "g_step f (enum_verts i) = (\<Sum>j\<in>UNIV. A $ i $ j * f (enum_verts j))" (is "?L = ?R") for i
@@ -66,7 +66,7 @@ proof -
     also have "... = (\<Sum>j\<in>verts G. (count (vertices_to G (enum_verts i)) j) * (f j / real d))"
       by (intro sum_mset_conv_2 set_mset_vertices_to) auto
     also have "... = (\<Sum>j\<in>verts G. (count (edges G) (j,enum_verts i)) * (f j / real d))"
-      unfolding vertices_to_def count_mset_exp 
+      unfolding vertices_to_def count_mset_exp
       by (intro sum.cong arg_cong[where f="real"] arg_cong2[where f="(*)"])
        (auto simp add:filter_filter_mset image_mset_filter_mset_swap[symmetric] prod_eq_iff ac_simps)
     also have "...=(\<Sum>j\<in>UNIV.(count(edges G)(enum_verts j,enum_verts i))*(f(enum_verts j)/real d))"
@@ -79,12 +79,12 @@ proof -
     unfolding matrix_vector_mult_def by (intro iffD2[OF vec_eq_iff] allI) simp
 qed
 
-lemma g_inner_conv: 
+lemma g_inner_conv:
   "g_inner f g = (\<chi> i. f (enum_verts i)) \<bullet> (\<chi> i. g (enum_verts i))"
   unfolding inner_vec_def g_inner_def vec_lambda_beta inner_real_def conjugate_real_def
   by (intro sum.reindex_bij_betw[symmetric] enum_verts)
 
-lemma g_norm_conv: 
+lemma g_norm_conv:
   "g_norm f = norm (\<chi> i. f (enum_verts i))"
 proof -
   have "g_norm f^2 = norm (\<chi> i. f (enum_verts i))^2"
@@ -99,10 +99,10 @@ lemma eg_tts_1:
   assumes "regular_graph G"
   assumes "\<exists>(f::('n::finite) \<Rightarrow> 'a) g. type_definition f g (verts G)"
   shows "regular_graph_tts TYPE('n) G"
-  using assms  
+  using assms
   unfolding regular_graph_tts_def  regular_graph_tts_axioms_def by auto
 
-context regular_graph 
+context regular_graph
 begin
 
 lemma remove_finite_premise_aux:
@@ -113,19 +113,19 @@ proof -
     using assms by auto
   interpret type_definition Rep Abs "verts G"
     using d by simp
-                              
-  have "finite (verts G)" by simp 
+
+  have "finite (verts G)" by simp
   thus ?thesis
     unfolding class.finite_def univ by auto
 qed
 
-lemma remove_finite_premise: 
-  "(class.finite TYPE('n) \<Longrightarrow> \<exists>(Rep :: 'n  \<Rightarrow> 'a) Abs. type_definition Rep Abs (verts G) \<Longrightarrow> PROP Q) 
-  \<equiv> (\<exists>(Rep :: 'n  \<Rightarrow> 'a) Abs. type_definition Rep Abs (verts G) \<Longrightarrow> PROP Q)" 
+lemma remove_finite_premise:
+  "(class.finite TYPE('n) \<Longrightarrow> \<exists>(Rep :: 'n  \<Rightarrow> 'a) Abs. type_definition Rep Abs (verts G) \<Longrightarrow> PROP Q)
+  \<equiv> (\<exists>(Rep :: 'n  \<Rightarrow> 'a) Abs. type_definition Rep Abs (verts G) \<Longrightarrow> PROP Q)"
   (is "?L \<equiv> ?R")
 proof (intro Pure.equal_intr_rule)
   assume e:"\<exists>(Rep :: 'n  \<Rightarrow> 'a) Abs. type_definition Rep Abs (verts G)" and l:"PROP ?L"
-  hence f: "class.finite TYPE('n)" 
+  hence f: "class.finite TYPE('n)"
     using remove_finite_premise_aux[OF e] by simp
 
   show "PROP ?R"

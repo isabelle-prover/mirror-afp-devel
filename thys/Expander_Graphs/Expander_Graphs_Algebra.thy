@@ -4,15 +4,15 @@ text \<open>This section verifies the linear algebraic counter-parts of the grap
 about Random walks. The graph-theoretic results are then derived in Section~\ref{sec:random_walks}.\<close>
 
 theory Expander_Graphs_Algebra
-  imports 
+  imports
     "HOL-Library.Monad_Syntax"
     Expander_Graphs_TTS
 begin
 
-lemma pythagoras: 
+lemma pythagoras:
   fixes v w :: "'a::real_inner"
   assumes "v \<bullet> w  = 0"
-  shows "norm (v+w)^2 = norm v^2 + norm w^2"  
+  shows "norm (v+w)^2 = norm v^2 + norm w^2"
   using assms by (simp add:power2_norm_eq_inner algebra_simps inner_commute)
 
 definition diag :: "('a :: zero)^'n \<Rightarrow> 'a^'n^'n"
@@ -22,12 +22,12 @@ definition ind_vec :: "'n set \<Rightarrow> real^'n"
   where "ind_vec S = (\<chi> i. of_bool( i \<in> S))"
 
 lemma diag_mult_eq: "diag x ** diag y = diag (x * y)"
-  unfolding diag_def 
-  by (vector matrix_matrix_mult_def) 
+  unfolding diag_def
+  by (vector matrix_matrix_mult_def)
    (auto simp add:if_distrib if_distribR sum.If_cases)
 
 lemma diag_vec_mult_eq: "diag x *v y = x * y"
-  unfolding diag_def matrix_vector_mult_def 
+  unfolding diag_def matrix_vector_mult_def
   by (simp add:if_distrib if_distribR sum.If_cases times_vec_def)
 
 definition matrix_norm_bound :: "real^'n^'m \<Rightarrow> real \<Rightarrow> bool"
@@ -46,21 +46,21 @@ lemma matrix_norm_boundD:
 lemma matrix_norm_bound_nonneg:
   fixes A :: "real^'n^'m"
   assumes "matrix_norm_bound A l"
-  shows "l \<ge> 0" 
+  shows "l \<ge> 0"
 proof -
   have "0 \<le> norm (A *v 1)" by simp
-  also have "... \<le> l * norm (1::real^'n)" 
+  also have "... \<le> l * norm (1::real^'n)"
     using assms(1) unfolding matrix_norm_bound_def by simp
   finally have "0 \<le> l  * norm (1::real^'n)"
     by simp
   moreover have "norm (1::real^'n) > 0"
     by simp
-  ultimately show ?thesis 
+  ultimately show ?thesis
     by (simp add: zero_le_mult_iff)
 qed
 
-lemma  matrix_norm_bound_0: 
-  assumes "matrix_norm_bound A 0" 
+lemma  matrix_norm_bound_0:
+  assumes "matrix_norm_bound A 0"
   shows "A = (0::real^'n^'m)"
 proof (intro iffD2[OF matrix_eq] allI)
   fix x :: "real^'n"
@@ -88,23 +88,23 @@ proof (rule matrix_norm_boundI)
   also have "... \<le> sqrt (\<Sum>i \<in> UNIV. (l * y $ i)^2)"
     by (intro real_sqrt_le_mono sum_mono iffD1[OF abs_le_square_iff] a)
   also have "... = l * norm y"
-    using l_ge_0 by (simp add:norm_vec_def L2_set_def algebra_simps 
+    using l_ge_0 by (simp add:norm_vec_def L2_set_def algebra_simps
         sum_distrib_left[symmetric] real_sqrt_mult)
   finally show "norm (diag x *v y) \<le> l * norm y" by simp
 qed
 
-lemma vector_scaleR_matrix_ac_2: "b *\<^sub>R (A::real^'n^'m) *v x = b *\<^sub>R (A *v x)" 
+lemma vector_scaleR_matrix_ac_2: "b *\<^sub>R (A::real^'n^'m) *v x = b *\<^sub>R (A *v x)"
   unfolding vector_transpose_matrix[symmetric]  transpose_scalar
   by (intro vector_scaleR_matrix_ac)
 
-lemma  matrix_norm_bound_scale: 
+lemma  matrix_norm_bound_scale:
   assumes "matrix_norm_bound A l"
   shows "matrix_norm_bound (b *\<^sub>R A) (\<bar>b\<bar> * l)"
 proof (intro matrix_norm_boundI)
   fix x
-  have "norm (b *\<^sub>R A *v x) = norm (b *\<^sub>R (A *v x))" 
+  have "norm (b *\<^sub>R A *v x) = norm (b *\<^sub>R (A *v x))"
     by (metis transpose_scalar vector_scaleR_matrix_ac vector_transpose_matrix)
-  also have "... = \<bar>b\<bar> * norm (A *v x)" 
+  also have "... = \<bar>b\<bar> * norm (A *v x)"
     by simp
   also have "... \<le> \<bar>b\<bar> * (l * norm x)"
     using assms matrix_norm_bound_def by (intro mult_left_mono) auto
@@ -122,12 +122,12 @@ lemma nonneg_mat_1:
 lemma nonneg_mat_prod:
   assumes "nonneg_mat A" "nonneg_mat B"
   shows "nonneg_mat (A ** B)"
-  using assms unfolding nonneg_mat_def matrix_matrix_mult_def 
+  using assms unfolding nonneg_mat_def matrix_matrix_mult_def
   by (auto intro:sum_nonneg)
 
 lemma nonneg_mat_transpose:
   "nonneg_mat (transpose A) = nonneg_mat A"
-  unfolding nonneg_mat_def transpose_def 
+  unfolding nonneg_mat_def transpose_def
   by auto
 
 definition spec_bound :: "real^'n^'n \<Rightarrow> real \<Rightarrow> bool"
@@ -135,13 +135,13 @@ definition spec_bound :: "real^'n^'n \<Rightarrow> real \<Rightarrow> bool"
 
 lemma spec_boundD1:
   assumes "spec_bound M l"
-  shows "0 \<le> l" 
+  shows "0 \<le> l"
   using assms unfolding spec_bound_def by simp
 
 lemma spec_boundD2:
   assumes "spec_bound M l"
   assumes "v \<bullet> 1 = 0 "
-  shows "norm (M *v v) \<le> l * norm v" 
+  shows "norm (M *v v) \<le> l * norm v"
   using assms unfolding spec_bound_def by simp
 
 lemma spec_bound_mono:
@@ -150,7 +150,7 @@ lemma spec_bound_mono:
 proof -
   have "norm (M *v v) \<le> \<beta> * norm v" if "inner v 1 = 0"  for v
   proof -
-    have "norm (M *v v) \<le> \<alpha> * norm v" 
+    have "norm (M *v v) \<le> \<alpha> * norm v"
       by (intro spec_boundD2[OF assms(1)] that)
     also have "... \<le> \<beta> * norm v"
       by (intro mult_right_mono assms(2)) auto
@@ -158,7 +158,7 @@ proof -
   qed
   moreover have "\<beta> \<ge> 0"
     using assms(2) spec_boundD1[OF assms(1)] by simp
-  ultimately show ?thesis 
+  ultimately show ?thesis
     unfolding spec_bound_def by simp
 qed
 
@@ -185,11 +185,11 @@ lemma markov_apply:
 lemma markov_transpose:
   "markov A = markov (transpose A)"
   unfolding markov_def nonneg_mat_transpose by auto
-fun matrix_pow where 
+fun matrix_pow where
   "matrix_pow M 0 = mat 1" |
   "matrix_pow M (Suc n) = M ** (matrix_pow M n)"
 
-lemma markov_orth_inv: 
+lemma markov_orth_inv:
   assumes "markov A"
   shows "inner (A *v x) 1 = inner x 1"
 proof -
@@ -210,10 +210,10 @@ lemma markov_mult:
 proof -
   have "nonneg_mat (A ** B)"
     using assms unfolding markov_def by (intro nonneg_mat_prod) auto
-  moreover have "(A ** B) *v 1 = 1" 
+  moreover have "(A ** B) *v 1 = 1"
     using assms unfolding markov_def
     unfolding matrix_vector_mul_assoc[symmetric] by simp
-  moreover have "1 v* (A ** B) = 1" 
+  moreover have "1 v* (A ** B) = 1"
     using assms unfolding markov_def
     unfolding vector_matrix_mul_assoc[symmetric] by simp
   ultimately show ?thesis
@@ -226,7 +226,7 @@ lemma markov_matrix_pow:
   using markov_id assms markov_mult
   by (induction k, auto)
 
-lemma spec_bound_prod: 
+lemma spec_bound_prod:
   assumes "markov A" "markov B"
   assumes "spec_bound A la" "spec_bound B lb"
   shows "spec_bound (A ** B) (la*lb)"
@@ -239,7 +239,7 @@ proof -
       by (simp add:matrix_vector_mul_assoc)
     also have "... \<le> la * norm (B *v x)"
       by (intro spec_boundD2[OF assms(3)]) (simp add:markov_orth_inv that assms(2))
-    also have "... \<le> la * (lb * norm x)" 
+    also have "... \<le> la * (lb * norm x)"
       by (intro spec_boundD2[OF assms(4)] mult_left_mono that la_ge_0)
     finally show ?thesis by simp
   qed
@@ -249,7 +249,7 @@ proof -
     using spec_bound_def by auto
 qed
 
-lemma spec_bound_pow: 
+lemma spec_bound_pow:
   assumes "markov A"
   assumes "spec_bound A l"
   shows "spec_bound (matrix_pow A k) (l^k)"
@@ -264,7 +264,7 @@ next
 qed
 
 fun intersperse :: "'a \<Rightarrow> 'a list \<Rightarrow> 'a list"
-  where 
+  where
     "intersperse x [] = []" |
     "intersperse x (y#[]) = y#[]" |
     "intersperse x (y#z#zs) = y#x#intersperse x (z#zs)"
@@ -301,7 +301,7 @@ proof (induction xs rule:rev_induct)
   then show ?case by simp
 next
   case (snoc xst xs)
-  have "foldl f a (intersperse y ((x # xs) @ [xst])) = foldl (\<lambda>x. f (f x y)) (f a x) (xs @ [xst])" 
+  have "foldl f a (intersperse y ((x # xs) @ [xst])) = foldl (\<lambda>x. f (f x y)) (f a x) (xs @ [xst])"
     by (subst intersperse_snoc, auto simp add:snoc)
   then show ?case  by simp
 qed
@@ -322,27 +322,27 @@ lemma inner_1_1: "1 \<bullet> (1::real^'n) = CARD('n)"
 definition proj_unit :: "real^'n \<Rightarrow> real^'n"
   where "proj_unit v = (1 \<bullet> v) *\<^sub>R stat"
 
-definition proj_rem :: "real^'n \<Rightarrow> real^'n" 
+definition proj_rem :: "real^'n \<Rightarrow> real^'n"
   where "proj_rem v = v - proj_unit v"
 
 lemma proj_rem_orth: "1 \<bullet> (proj_rem v) = 0"
   unfolding proj_rem_def proj_unit_def inner_diff_right stat_def
   by (simp add:inner_1_1)
 
-lemma split_vec: "v = proj_unit v + proj_rem v" 
+lemma split_vec: "v = proj_unit v + proj_rem v"
   unfolding proj_rem_def by simp
 
 lemma apply_J: "J *v x = proj_unit x"
 proof (intro iffD2[OF vec_eq_iff] allI)
   fix i
-  have "(J *v x) $ i = inner (\<chi> j. 1 / real CARD('n)) x" 
+  have "(J *v x) $ i = inner (\<chi> j. 1 / real CARD('n)) x"
     unfolding matrix_vector_mul_component J_def by simp
   also have "... = inner stat x"
     unfolding stat_def scaleR_vec_def by auto
   also have "... = (proj_unit x) $ i"
     unfolding proj_unit_def stat_def by simp
   finally show "(J *v x) $ i = (proj_unit x) $ i" by simp
-qed 
+qed
 
 lemma spec_bound_J: "spec_bound (J :: real^'n^'n) 0"
 proof -
@@ -351,7 +351,7 @@ proof -
     have "inner (proj_unit v + proj_rem v) 1 = 0"
       using that by (subst (asm) split_vec[of "v"], simp)
     hence "inner (proj_unit v) 1 = 0"
-      using proj_rem_orth inner_commute unfolding inner_add_left 
+      using proj_rem_orth inner_commute unfolding inner_add_left
       by (metis add_cancel_left_right)
     hence "proj_unit v = 0"
       unfolding proj_unit_def stat_def by simp
@@ -367,10 +367,10 @@ lemma matrix_decomposition_lemma_aux:
   fixes A :: "real^'n^'n"
   assumes "markov A"
   shows "spec_bound A l \<longleftrightarrow> matrix_norm_bound (A - (1-l) *\<^sub>R J) l" (is "?L \<longleftrightarrow> ?R")
-proof 
+proof
   assume a:"?L"
-  hence l_ge_0: "l \<ge> 0" using spec_boundD1 by auto 
-  show "?R" 
+  hence l_ge_0: "l \<ge> 0" using spec_boundD1 by auto
+  show "?R"
   proof (rule matrix_norm_boundI)
     fix x :: "real^'n"
     have "(A - (1-l) *\<^sub>R J) *v x = A *v x - (1-l) *\<^sub>R (proj_unit x)"
@@ -384,22 +384,22 @@ proof
       by (simp add:algebra_simps)
     finally have d:"(A - (1-l) *\<^sub>R J) *v x = ?R1" by simp
 
-    have "inner (l *\<^sub>R proj_unit x) (A *v proj_rem x) = 
+    have "inner (l *\<^sub>R proj_unit x) (A *v proj_rem x) =
       inner ((l * inner 1 x / real CARD('n)) *\<^sub>R 1 v* A) (proj_rem x)"
-      by (subst dot_lmul_matrix[symmetric]) (simp add:proj_unit_def stat_def) 
-    also have "... = (l * inner 1 x / real CARD('n)) * inner 1 (proj_rem x)" 
+      by (subst dot_lmul_matrix[symmetric]) (simp add:proj_unit_def stat_def)
+    also have "... = (l * inner 1 x / real CARD('n)) * inner 1 (proj_rem x)"
       unfolding scaleR_vector_matrix_assoc markov_apply[OF assms] by simp
     also have "... = 0"
       unfolding proj_rem_orth by simp
     finally have b:"inner (l *\<^sub>R proj_unit x) (A *v proj_rem x) = 0" by simp
 
-    have c: "inner (proj_rem x) (proj_unit x) = 0" 
+    have c: "inner (proj_rem x) (proj_unit x) = 0"
       using proj_rem_orth[of "x"]
       unfolding proj_unit_def stat_def by (simp add:inner_commute)
 
-    have "norm (?R1)^2 = norm (A *v proj_rem x)^2 + norm (l *\<^sub>R proj_unit x)^2" 
+    have "norm (?R1)^2 = norm (A *v proj_rem x)^2 + norm (l *\<^sub>R proj_unit x)^2"
       using b by (intro pythagoras) (simp add:inner_commute)
-    also have "... \<le> (l * norm (proj_rem x))^2 + norm (l *\<^sub>R proj_unit x)^2" 
+    also have "... \<le> (l * norm (proj_rem x))^2 + norm (l *\<^sub>R proj_unit x)^2"
       using proj_rem_orth[of "x"]
       by (intro add_mono power_mono spec_boundD2 a) (auto simp add:inner_commute)
     also have "... = l^2 * (norm (proj_rem x)^2 + norm (proj_unit x)^2)"
@@ -417,11 +417,11 @@ proof
     thus "norm ((A - (1-l) *\<^sub>R J) *v x) \<le> l * norm x"
       unfolding d by simp
   qed
-next  
-  assume a:"?R" 
-  have "norm (A *v x) \<le> l * norm x" if "inner x 1 = 0" for x 
+next
+  assume a:"?R"
+  have "norm (A *v x) \<le> l * norm x" if "inner x 1 = 0" for x
   proof -
-    have "(1 - l) *\<^sub>R J *v x = (1 - l) *\<^sub>R (proj_unit x)" 
+    have "(1 - l) *\<^sub>R J *v x = (1 - l) *\<^sub>R (proj_unit x)"
       by (simp add:vector_scaleR_matrix_ac_2 apply_J)
     also have "... = 0"
       unfolding proj_unit_def using that by (simp add:inner_commute)
@@ -438,27 +438,27 @@ next
     finally show ?thesis by simp
   qed
 
-  moreover have "l \<ge> 0" 
+  moreover have "l \<ge> 0"
     using a matrix_norm_bound_nonneg by blast
 
-  ultimately show "?L" 
+  ultimately show "?L"
     unfolding spec_bound_def by simp
 qed
 
 lemma matrix_decomposition_lemma:
   fixes A :: "real^'n^'n"
   assumes "markov A"
-  shows "spec_bound A l \<longleftrightarrow> (\<exists>E. A = (1-l) *\<^sub>R J + l *\<^sub>R E \<and> matrix_norm_bound E 1 \<and> l \<ge> 0)" 
+  shows "spec_bound A l \<longleftrightarrow> (\<exists>E. A = (1-l) *\<^sub>R J + l *\<^sub>R E \<and> matrix_norm_bound E 1 \<and> l \<ge> 0)"
     (is "?L \<longleftrightarrow> ?R")
 proof -
-  have "?L \<longleftrightarrow> matrix_norm_bound (A - (1-l) *\<^sub>R J) l" 
+  have "?L \<longleftrightarrow> matrix_norm_bound (A - (1-l) *\<^sub>R J) l"
     using matrix_decomposition_lemma_aux[OF assms] by simp
   also have "... \<longleftrightarrow> ?R"
   proof
     assume a:"matrix_norm_bound (A - (1 - l) *\<^sub>R J) l"
     hence l_ge_0: "l \<ge> 0" using matrix_norm_bound_nonneg by auto
     define E where "E = (1/l) *\<^sub>R (A - (1-l) *\<^sub>R J)"
-    have "A = J" if "l = 0" 
+    have "A = J" if "l = 0"
     proof -
       have "matrix_norm_bound (A - J) 0"
         using a that by simp
@@ -467,7 +467,7 @@ proof -
     qed
     hence "A = (1-l) *\<^sub>R J + l *\<^sub>R E"
       unfolding E_def by simp
-    moreover have "matrix_norm_bound E 1" 
+    moreover have "matrix_norm_bound E 1"
     proof (cases "l = 0")
       case True
       hence "E = 0" if "l = 0"
@@ -487,13 +487,13 @@ proof -
     assume a:?R
     then obtain E where E_def: "A = (1 - l) *\<^sub>R J + l *\<^sub>R E"  "matrix_norm_bound E 1" "l \<ge> 0"
       by auto
-    have "matrix_norm_bound (l *\<^sub>R E) (abs l*1)" 
+    have "matrix_norm_bound (l *\<^sub>R E) (abs l*1)"
       by (intro matrix_norm_bound_scale E_def(2))
-    moreover have "l \<ge> 0" using E_def by simp 
-    moreover have " l *\<^sub>R E = (A - (1 - l) *\<^sub>R J)" 
+    moreover have "l \<ge> 0" using E_def by simp
+    moreover have " l *\<^sub>R E = (A - (1 - l) *\<^sub>R J)"
       using E_def(1) by simp
     ultimately show "matrix_norm_bound (A - (1 - l) *\<^sub>R J) l"
-      by simp  
+      by simp
   qed
   finally show ?thesis by simp
 qed
@@ -520,15 +520,15 @@ proof -
   have P_norm :"matrix_norm_bound P 1"
     unfolding P_def ind_vec_def by (intro matrix_norm_bound_diag) simp
 
-  have norm_t: "norm t = sqrt (real (card S))" 
+  have norm_t: "norm t = sqrt (real (card S))"
     unfolding t_def norm_vec_def L2_set_def of_bool_def
     by (simp add:sum.If_cases if_distrib if_distribR)
 
-  have \<mu>_range: "\<mu> \<ge> 0" "\<mu> \<le> 1" 
-    unfolding \<mu>_def by (auto simp add:card_mono) 
+  have \<mu>_range: "\<mu> \<ge> 0" "\<mu> \<le> 1"
+    unfolding \<mu>_def by (auto simp add:card_mono)
 
-  define condition :: "real^'n \<Rightarrow> nat \<Rightarrow> bool" 
-    where "condition = (\<lambda>x n. norm x \<le> (\<mu> + l * (1-\<mu>))^n * sqrt (card S)/CARD('n) \<and> P *v x = x)" 
+  define condition :: "real^'n \<Rightarrow> nat \<Rightarrow> bool"
+    where "condition = (\<lambda>x n. norm x \<le> (\<mu> + l * (1-\<mu>))^n * sqrt (card S)/CARD('n) \<and> P *v x = x)"
 
   have a:"condition r (length Ms)"
     unfolding r_def using assms(4)
@@ -547,7 +547,7 @@ proof -
     case (snoc M xs)
     hence "spec_bound M l \<and> markov M"
         using snoc(2) by simp
-    then obtain E where E_def: "M = (1-l) *\<^sub>R J + l *\<^sub>R E" "matrix_norm_bound E 1" 
+    then obtain E where E_def: "M = (1-l) *\<^sub>R J + l *\<^sub>R E" "matrix_norm_bound E 1"
       using iffD1[OF matrix_decomposition_lemma] by auto
 
     define y where "y = foldl (\<lambda>x M. P *v (M *v x)) (P *v stat) xs"
@@ -563,7 +563,7 @@ proof -
       using l_range
       by (simp add:vector_scaleR_matrix_ac_2 matrix_vector_mult_scaleR)
     also have "... = (1-l) * \<bar>1 \<bullet> (P *v y)/real CARD('n)\<bar> * norm t + l * norm (P *v (E *v y))"
-      by (subst a[symmetric]) 
+      by (subst a[symmetric])
         (simp add:apply_J proj_unit_def stat_def P_1_right matrix_vector_mult_scaleR)
     also have "... = (1-l) * \<bar>t \<bullet> y\<bar>/real CARD('n) * norm t + l * norm (P *v (E *v y))"
       by (subst dot_lmul_matrix[symmetric]) (simp add:P_1_left)
@@ -586,13 +586,13 @@ proof -
       by simp
 
     moreover have "P *v (P *v (M *v y)) = P *v (M *v y)"
-      unfolding matrix_vector_mul_assoc matrix_mul_assoc P_proj 
+      unfolding matrix_vector_mul_assoc matrix_mul_assoc P_proj
       by simp
 
     ultimately have "condition (P *v (M *v y)) (length (xs@[M]))"
       unfolding condition_def by simp
-  
-    then show ?case 
+
+    then show ?case
       unfolding y_def by simp
   qed
 
@@ -613,7 +613,7 @@ proof -
     using \<mu>_range l_range
     by (intro mult_right_mono zero_le_power add_mono) auto
   also have "... = (\<mu> + l * (1-\<mu>))^(length Ms+1)" by simp
-  finally show ?thesis 
+  finally show ?thesis
     unfolding r_def by simp
 qed
 
@@ -623,7 +623,7 @@ lemma upto_append:
   using assms by (metis less_eqE upt_add_eq_append)
 
 definition bool_list_split :: "bool list \<Rightarrow> (nat list \<times> nat)"
-  where "bool_list_split xs = foldl (\<lambda>(ys,z) x. (if x then (ys@[z],0) else (ys,z+1))) ([],0) xs" 
+  where "bool_list_split xs = foldl (\<lambda>(ys,z) x. (if x then (ys@[z],0) else (ys,z+1))) ([],0) xs"
 
 lemma bool_list_split:
   assumes "bool_list_split xs = (ys,z)"
@@ -634,10 +634,10 @@ proof (induction xs arbitrary: ys z rule:rev_induct)
   then show ?case unfolding bool_list_split_def by simp
 next
   case (snoc x xs)
-  obtain u v where uv_def: "bool_list_split xs = (u,v)" 
+  obtain u v where uv_def: "bool_list_split xs = (u,v)"
     by (metis surj_pair)
 
-  show ?case 
+  show ?case
   proof (cases x)
     case True
     have a:"ys = u@[v]" "z = 0"
@@ -671,14 +671,14 @@ lemma foldl_concat:
   by (induction xss rule:rev_induct, auto)
 
 lemma hitting_property_alg_2:
-  fixes S :: "('n :: finite) set" and l :: nat 
+  fixes S :: "('n :: finite) set" and l :: nat
   fixes M :: "real^'n^'n"
   assumes \<alpha>_range: "\<alpha> \<in> {0..1}"
   assumes "I \<subseteq> {..<l}"
   defines "P i \<equiv> (if i \<in> I then diag (ind_vec S) else mat 1)"
   defines "\<mu> \<equiv> real (card S) / real (CARD('n))"
   assumes "spec_bound M \<alpha>" "markov M"
-  shows 
+  shows
     "foldl (\<lambda>x M. M *v x) stat (intersperse M (map P [0..<l])) \<bullet> 1 \<le> (\<mu>+\<alpha>*(1-\<mu>))^card I"
     (is "?L \<le> ?R")
 proof (cases "I \<noteq> {}")
@@ -692,16 +692,16 @@ proof (cases "I \<noteq> {}")
   have P_eq: "P i = P' (i \<in> I)" for i
     unfolding P_def P'_def Q_def by simp
 
-  have "l > 0" 
+  have "l > 0"
     using True assms(2) by auto
-  hence xs_ne: "xs \<noteq> []" 
+  hence xs_ne: "xs \<noteq> []"
     unfolding xs_def by simp
 
   obtain ys z where ys_z: "bool_list_split xs = (ys,z)"
     by (metis surj_pair)
 
 
-  have "length ys = length (filter id xs)" 
+  have "length ys = length (filter id xs)"
     using bool_list_split_count[OF ys_z] by simp
   also have "... = card (I \<inter> {0..<l})"
     unfolding xs_def filter_map by (simp add:comp_def distinct_length_filter)
@@ -711,7 +711,7 @@ proof (cases "I \<noteq> {}")
 
   hence "length ys > 0"
     using True assms(2) by (metis card_gt_0_iff finite_nat_iff_bounded)
-  then obtain yh yt where ys_split: "ys = yh#yt" 
+  then obtain yh yt where ys_split: "ys = yh#yt"
     by (metis length_greater_0_conv neq_Nil_conv)
 
   have a:"foldl (\<lambda>x N. M *v (N *v x)) x (?rep z) \<bullet> 1 = x \<bullet> 1" for x
@@ -721,12 +721,12 @@ proof (cases "I \<noteq> {}")
   next
     case (Suc z)
     have "foldl (\<lambda>x N. M *v (N *v x)) x (?rep (z+1)) \<bullet> 1 = x \<bullet> 1"
-      unfolding replicate_add using Suc 
+      unfolding replicate_add using Suc
       by (simp add:markov_orth_inv[OF assms(6)])
     then show ?case by simp
   qed
 
-  have "M *v stat = stat" 
+  have "M *v stat = stat"
     using assms(6) unfolding stat_def matrix_vector_mult_scaleR markov_def by simp
   hence b: "foldl (\<lambda>x N. M *v (N *v x)) stat (?rep yh) = stat"
     by (induction yh, auto)
@@ -750,8 +750,8 @@ proof (cases "I \<noteq> {}")
       using t1 by auto
     hence d1: "spec_bound N (\<alpha>^(y+1))"
       unfolding N_def using spec_bound_pow assms(5,6) by blast
-    have "spec_bound N (\<alpha>^1)" 
-      using \<alpha>_range by (intro spec_bound_mono[OF d1] power_decreasing) auto 
+    have "spec_bound N (\<alpha>^1)"
+      using \<alpha>_range by (intro spec_bound_mono[OF d1] power_decreasing) auto
     moreover have "markov N"
       unfolding N_def by (intro markov_matrix_pow assms(6))
     ultimately show ?thesis by simp
@@ -760,7 +760,7 @@ proof (cases "I \<noteq> {}")
   have "?L = foldl (\<lambda>x M. M *v x) stat (intersperse M (map P' xs)) \<bullet> 1"
     unfolding P_eq xs_def map_map by (simp add:comp_def)
   also have "... = foldl (\<lambda>x M. M *v x) stat (intersperse M (map P' xs)@[M]) \<bullet> 1"
-    by (simp add:markov_orth_inv[OF assms(6)]) 
+    by (simp add:markov_orth_inv[OF assms(6)])
   also have "... = foldl (\<lambda>x N. M *v (N *v x)) stat (map P' xs) \<bullet> 1"
     using xs_ne by (subst foldl_intersperse) auto
   also have "... = foldl (\<lambda>x N. M *v (N *v x)) stat ((ys \<bind> (\<lambda>x. ?rep x @ [Q])) @ ?rep z) \<bullet> 1"
@@ -774,8 +774,8 @@ proof (cases "I \<noteq> {}")
   also have "... = foldl (\<lambda>x N. N *v x) stat (intersperse M (Q#(yt \<bind>(\<lambda>x.?rep x@[Q])))@[M])\<bullet>1"
     by (subst foldl_intersperse, auto)
   also have "... = foldl (\<lambda>x N. N *v x) stat (intersperse M (Q#(yt \<bind>(\<lambda>x.?rep x@[Q])))) \<bullet> 1"
-    by (simp add:markov_orth_inv[OF assms(6)]) 
-  also have "... = foldl (\<lambda>x N. N *v (M *v x)) (Q *v stat) (yt \<bind>(\<lambda>x.?rep x@[Q])) \<bullet> 1" 
+    by (simp add:markov_orth_inv[OF assms(6)])
+  also have "... = foldl (\<lambda>x N. N *v (M *v x)) (Q *v stat) (yt \<bind>(\<lambda>x.?rep x@[Q])) \<bullet> 1"
     by (subst foldl_intersperse_2, simp)
   also have "... = foldl (\<lambda>a x. foldl (\<lambda>x N. N *v (M *v x)) a (?rep x @ [Q])) (Q *v stat) yt \<bullet> 1"
     unfolding List.bind_def foldl_concat foldl_map by simp
@@ -785,7 +785,7 @@ proof (cases "I \<noteq> {}")
     by (simp add:foldl_map)
   also have "... \<le> (\<mu> + \<alpha>*(1-\<mu>))^(length (map (\<lambda>x. matrix_pow M (x+1)) yt)+1)"
     unfolding \<mu>_def Q_def by (intro hitting_property_alg \<alpha>_range d) simp
-  also have "... = (\<mu> + \<alpha>*(1-\<mu>))^(length ys)" 
+  also have "... = (\<mu> + \<alpha>*(1-\<mu>))^(length ys)"
     unfolding ys_split by simp
   also have "... = ?R" unfolding len_ys by simp
   finally show ?thesis by simp
@@ -797,7 +797,7 @@ next
   proof (cases "l > 0")
     case True
     have "?L = foldl (\<lambda>x M. M *v x) stat ((intersperse M (map P [0..<l]))@[M]) \<bullet> 1"
-      by (simp add:markov_orth_inv[OF assms(6)]) 
+      by (simp add:markov_orth_inv[OF assms(6)])
     also have "... = foldl (\<lambda>x N. M *v (N *v x)) stat (map P [0..<l])  \<bullet> 1"
       using True by (subst foldl_intersperse, auto)
     also have "... = foldl (\<lambda>x N. M *v (N *v x)) stat (map (\<lambda>_. mat 1) [0..<l])  \<bullet> 1"
@@ -823,7 +823,7 @@ lemma uniform_property_alg:
   defines "P j \<equiv> (if j = i then diag (ind_vec {x}) else mat 1)"
   assumes "markov M"
   shows "foldl (\<lambda>x M. M *v x) stat (intersperse M (map P [0..<l])) \<bullet> 1 = 1 / CARD('n)"
-    (is "?L = ?R") 
+    (is "?L = ?R")
 proof -
   have a:"l > 0" using assms(1) by simp
 
@@ -834,7 +834,7 @@ proof -
     then show ?case by simp
   next
     case (snoc x xs)
-    have "x = mat 1" 
+    have "x = mat 1"
       using snoc(2) by simp
     hence "foldl (\<lambda>x N. M *v (N *v x)) y (xs @ [x]) \<bullet> 1 = foldl (\<lambda>x N. M *v (N *v x)) y xs \<bullet> 1"
       by (simp add:markov_orth_inv[OF assms(3)])
@@ -843,14 +843,14 @@ proof -
     finally show ?case by simp
   qed
 
-  have M_stat: "M *v stat = stat" 
+  have M_stat: "M *v stat = stat"
     using assms(3) unfolding stat_def matrix_vector_mult_scaleR markov_def by simp
 
   hence 1: "(foldl (\<lambda>x N. M *v (N *v x)) stat xs) = stat" if "set xs \<subseteq> {mat 1}" for xs
     using that by (induction xs, auto)
 
   have "?L = foldl (\<lambda>x M. M *v x) stat ((intersperse M (map P [0..<l]))@[M]) \<bullet> 1"
-    by (simp add:markov_orth_inv[OF assms(3)]) 
+    by (simp add:markov_orth_inv[OF assms(3)])
   also have "... = foldl (\<lambda>x N. M *v (N *v x)) stat (map P [0..<l]) \<bullet> 1"
     using a by (subst foldl_intersperse) auto
   also have "... = foldl (\<lambda>x N. M *v (N *v x)) stat (map P ([0..<i+1]@[i+1..<l])) \<bullet> 1"
@@ -861,16 +861,16 @@ proof -
     by simp
   also have "... = (M *v (diag (ind_vec {x}) *v stat)) \<bullet> 1"
     unfolding map_append foldl_append P_def by (subst 1) auto
-  also have "... = (diag (ind_vec {x}) *v stat) \<bullet> 1" 
-    by (simp add:markov_orth_inv[OF assms(3)]) 
-  also have "... = ((1/CARD('n)) *\<^sub>R ind_vec {x}) \<bullet> 1" 
-    unfolding diag_def ind_vec_def  stat_def matrix_vector_mult_def 
-    by (intro arg_cong2[where f="(\<bullet>)"] refl) 
+  also have "... = (diag (ind_vec {x}) *v stat) \<bullet> 1"
+    by (simp add:markov_orth_inv[OF assms(3)])
+  also have "... = ((1/CARD('n)) *\<^sub>R ind_vec {x}) \<bullet> 1"
+    unfolding diag_def ind_vec_def  stat_def matrix_vector_mult_def
+    by (intro arg_cong2[where f="(\<bullet>)"] refl)
       (vector of_bool_def sum.If_cases if_distrib if_distribR)
   also have "... = (1/CARD('n)) * (ind_vec {x} \<bullet> 1)"
     by simp
   also have "... = (1/CARD('n)) * 1"
-    unfolding inner_vec_def ind_vec_def of_bool_def 
+    unfolding inner_vec_def ind_vec_def of_bool_def
     by (intro arg_cong2[where f="(*)"] refl) (simp)
   finally show ?thesis by simp
 qed
@@ -879,14 +879,14 @@ end
 
 lemma foldl_matrix_mult_expand:
   fixes Ms :: "(('r::{semiring_1,comm_monoid_mult})^'a^'a) list"
-  shows "(foldl (\<lambda>x M. M *v x) a Ms) $ k = (\<Sum>x | length x = length Ms+1 \<and> x! length Ms = k. 
+  shows "(foldl (\<lambda>x M. M *v x) a Ms) $ k = (\<Sum>x | length x = length Ms+1 \<and> x! length Ms = k.
   (\<Prod> i< length Ms. (Ms ! i) $ (x ! (i+1)) $ (x ! i)) * a $ (x ! 0))"
 proof (induction Ms arbitrary: k rule:rev_induct)
   case Nil
   have "length x = Suc 0 \<Longrightarrow> x = [x!0]" for x :: "'a list"
     by (cases x, auto)
-  hence "{x. length x = Suc 0 \<and> x ! 0 = k} = {[k]}" 
-    by auto 
+  hence "{x. length x = Suc 0 \<and> x ! 0 = k} = {[k]}"
+    by auto
   thus ?case by auto
 next
   case (snoc M Ms)
@@ -899,7 +899,7 @@ next
   proof -
     have "take (?l+1) x @ [x ! (?l+1)] = take (Suc (?l+1)) x"
       using that by (intro take_Suc_conv_app_nth[symmetric], simp)
-    also have "... = x" 
+    also have "... = x"
       using that by simp
     finally show ?thesis by simp
   qed
@@ -908,28 +908,28 @@ next
 
   have "foldl (\<lambda>x M. M *v x) a (Ms @ [M]) $ k = (\<Sum>j\<in>UNIV. M$k$j *(foldl (\<lambda>x M. M *v x) a Ms $ j))"
     by (simp add:matrix_vector_mult_def)
-  also have "... = 
+  also have "... =
     (\<Sum>j\<in>UNIV. M$k$j * (\<Sum>w|length w=?l+1\<and>w!?l=j. (\<Prod>i<?l. Ms!i $ w!(i+1) $ w!i) * a $ w!0))"
     unfolding snoc by simp
-  also have "... = 
+  also have "... =
     (\<Sum>j\<in>UNIV. (\<Sum>w|length w=?l+1\<and>w!?l=j. M$k$w!?l * (\<Prod>i<?l. Ms!i $ w!(i+1) $ w!i) * a $ w!0))"
     by (intro sum.cong refl) (simp add: sum_distrib_left algebra_simps)
-  also have "... = (\<Sum>w\<in> (\<Union>j \<in> UNIV. {w. length w=?l+1 \<and> w!?l =j}). 
+  also have "... = (\<Sum>w\<in> (\<Union>j \<in> UNIV. {w. length w=?l+1 \<and> w!?l =j}).
     M$k$w!?l*(\<Prod>i<?l. Ms!i $ w!(i+1) $ w!i) * a $ w!0)"
-    using 0 by (subst sum.UNION_disjoint, simp, simp) auto 
+    using 0 by (subst sum.UNION_disjoint, simp, simp) auto
   also have "... = (\<Sum>w | length w=?l+1. M$k$(w!?l)*(\<Prod>i<?l. Ms!i $ w!(i+1) $ w!i) * a $ w!0)"
     by (intro sum.cong arg_cong2[where f="(*)"] refl) auto
-  also have "... = (\<Sum>w \<in> take (?l+1) ` {w. length w=?l+2 \<and> w!(?l+1) =k}. 
+  also have "... = (\<Sum>w \<in> take (?l+1) ` {w. length w=?l+2 \<and> w!(?l+1) =k}.
     M$k$w!?l*(\<Prod>i<?l. Ms!i $ w!(i+1) $ w!i) * a $ w!0)"
-    using 1 unfolding bij_betw_def by (intro sum.cong refl, auto) 
+    using 1 unfolding bij_betw_def by (intro sum.cong refl, auto)
   also have "... = (\<Sum>w|length w=?l+2\<and>w!(?l+1)=k. M$k$w!?l*(\<Prod>i<?l. Ms!i $ w!(i+1) $ w!i)* a$w!0)"
     using 1 unfolding bij_betw_def by (subst sum.reindex, auto)
-  also have "... = (\<Sum>w|length w=?l+2\<and>w!(?l+1)=k. 
+  also have "... = (\<Sum>w|length w=?l+2\<and>w!(?l+1)=k.
     (Ms@[M])!?l$k$w!?l*(\<Prod>i<?l. (Ms@[M])!i $ w!(i+1) $ w!i)* a$w!0)"
     by (intro sum.cong arg_cong2[where f="(*)"] prod.cong refl) (auto simp add:nth_append)
   also have "... = (\<Sum>w|length w=?l+2\<and>w!(?l+1)=k. (\<Prod>i<(?l+1). (Ms@[M])!i $ w!(i+1) $ w!i)* a$w!0)"
     by (intro sum.cong, auto simp add:algebra_simps)
-  finally have "foldl (\<lambda>x M. M *v x) a (Ms @ [M]) $ k = 
+  finally have "foldl (\<lambda>x M. M *v x) a (Ms @ [M]) $ k =
     (\<Sum> w | length w = ?l+2 \<and> w ! (?l+1) = k. (\<Prod>i<(?l+1). (Ms@[M])!i $ w!(i+1) $ w!i)* a$w!0)"
     by simp
   then show ?case by simp
@@ -937,7 +937,7 @@ qed
 
 lemma foldl_matrix_mult_expand_2:
   fixes Ms :: "(real^'a^'a) list"
-  shows "(foldl (\<lambda>x M. M *v x) a Ms) \<bullet> 1 = (\<Sum>x | length x = length Ms+1. 
+  shows "(foldl (\<lambda>x M. M *v x) a Ms) \<bullet> 1 = (\<Sum>x | length x = length Ms+1.
           (\<Prod> i< length Ms. (Ms ! i) $ (x ! (i+1)) $ (x ! i)) * a $ (x ! 0))"
   (is "?L = ?R")
 proof -

@@ -7,6 +7,7 @@ threshold.\<close>
 
 theory Distributed_Distinct_Elements_Accuracy_Without_Cutoff
   imports
+    Concentration_Inequalities.Bienaymes_Identity
     Distributed_Distinct_Elements_Inner_Algorithm
     Distributed_Distinct_Elements_Balls_and_Bins
 begin

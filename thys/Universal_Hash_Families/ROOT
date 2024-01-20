@@ -4,13 +4,15 @@ session Universal_Hash_Families = "HOL-Probability" +
   options [timeout = 600]
   sessions
     "HOL-Algebra"
-    "Finite_Fields"
-    "Interpolation_Polynomials_HOL_Algebra"
+    Concentration_Inequalities
+    Finite_Fields
+    Interpolation_Polynomials_HOL_Algebra
   theories
     Universal_Hash_Families
     Universal_Hash_Families_More_Independent_Families
     Carter_Wegman_Hash_Family
     Universal_Hash_Families_More_Finite_Fields
+    Universal_Hash_Families_More_Product_PMF
   document_files
     "root.tex"
     "root.bib"

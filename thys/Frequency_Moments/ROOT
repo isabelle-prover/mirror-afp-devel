@@ -6,12 +6,12 @@ session Frequency_Moments = "HOL-Probability" +
     Bertrands_Postulate
     Concentration_Inequalities
     Equivalence_Relation_Enumeration
-    "HOL-Algebra"
     Interpolation_Polynomials_HOL_Algebra
     Lp
     Prefix_Free_Code_Combinators
     Median_Method
     Universal_Hash_Families
+    Expander_Graphs
   theories
     Frequency_Moments_Preliminary_Results
     Frequency_Moments

@@ -4,8 +4,7 @@ text \<open>The Cheeger inequality relates edge expansion (a combinatorial prope
 largest eigenvalue.\<close>
 
 theory Expander_Graphs_Cheeger_Inequality
-  imports 
-    Expander_Graphs_Eigenvalues
+  imports Expander_Graphs_Eigenvalues
 begin
 
 unbundle intro_cong_syntax
@@ -38,7 +37,7 @@ proof -
     unfolding sum_unfold_sum_mset edges_def arc_to_ends_def
     by (simp add:image_mset.compositionality comp_def)
   also have "... =  (\<Sum>e \<in># edges G. of_bool (snd e \<in> S \<and> fst e \<in> T))"
-    by (subst edges_sym[OF sym, symmetric]) 
+    by (subst edges_sym[OF sym, symmetric])
         (simp add:image_mset.compositionality comp_def case_prod_beta)
   also have "... = (\<Sum>a \<in> arcs G. of_bool (tail G a \<in> T \<and> head G a \<in> S))"
     unfolding sum_unfold_sum_mset edges_def arc_to_ends_def
@@ -72,11 +71,11 @@ lemma cheeger_aux_2:
   assumes "n > 1"
   shows "\<Lambda>\<^sub>e \<ge> d*(1-\<Lambda>\<^sub>2)/2"
 proof -
-  have "real (card (edges_betw S (-S))) \<ge> (d * (1 - \<Lambda>\<^sub>2) / 2) * real (card S)" 
+  have "real (card (edges_betw S (-S))) \<ge> (d * (1 - \<Lambda>\<^sub>2) / 2) * real (card S)"
     if "S \<subseteq> verts G" "2 * card S \<le> n" for S
   proof -
-    let ?ct = "real (card (verts G - S))" 
-    let ?cs = "real (card S)" 
+    let ?ct = "real (card (verts G - S))"
+    let ?cs = "real (card S)"
 
     have "card (edges_betw S S)+card (edges_betw S (-S))=card(edges_betw S S\<union>edges_betw S (-S))"
       unfolding edges_betw_def by (intro card_Un_disjoint[symmetric]) auto
@@ -84,7 +83,7 @@ proof -
       unfolding edges_betw_def by (intro arg_cong[where f="card"]) auto
     also have "... = d * ?cs"
       using edges_betw_reg[OF that(1)] by simp
-    finally have "card (edges_betw S S) + card (edges_betw S (-S)) = d * ?cs" by simp 
+    finally have "card (edges_betw S S) + card (edges_betw S (-S)) = d * ?cs" by simp
     hence 4: "card (edges_betw S S) = d * ?cs - card (edges_betw S (-S))"
       by simp
 
@@ -99,17 +98,17 @@ proof -
     finally have "card (edges_betw S (-S)) + card (edges_betw (-S) (-S)) = d * ?ct" by simp
     hence 5: "card (edges_betw (-S) (-S)) = d * ?ct - card (edges_betw S (-S))"
       by simp
-    have 6: "card (edges_betw (-S) S) = card (edges_betw S (-S))" 
+    have 6: "card (edges_betw (-S) S) = card (edges_betw S (-S))"
       by (intro edges_betw_sym)
 
     have "?cs + ?ct =real (card (S \<union> (verts G- S)))"
       unfolding of_nat_add[symmetric] using finite_subset[OF that(1)]
       by (intro_cong "[\<sigma>\<^sub>1 of_nat, \<sigma>\<^sub>1 card]" more:card_Un_disjoint[symmetric]) auto
     also have "... = real n"
-      unfolding n_def  using that(1) by (intro_cong "[\<sigma>\<^sub>1 of_nat, \<sigma>\<^sub>1 card]") auto 
+      unfolding n_def  using that(1) by (intro_cong "[\<sigma>\<^sub>1 of_nat, \<sigma>\<^sub>1 card]") auto
     finally have 7: "?cs + ?ct = n"  by simp
 
-    define f  where 
+    define f  where
       "f x = real (card (verts G - S)) * of_bool (x \<in> S) - card S * of_bool (x \<notin> S)" for x
 
     have "g_inner f (\<lambda>_. 1) = ?cs * ?ct - real (card (verts G \<inter> {x. x \<notin> S})) * ?cs"
@@ -133,10 +132,10 @@ proof -
       unfolding 7 by simp
     finally have 9:" g_norm f^2 = real(card S)*real (card (verts G -S))*real n" by simp
 
-    have "(\<Sum>a \<in> arcs G. f (head G a) * f (tail G a)) = 
-      (card (edges_betw S S) * ?ct*?ct) + (card (edges_betw (-S) (-S)) * ?cs*?cs) - 
+    have "(\<Sum>a \<in> arcs G. f (head G a) * f (tail G a)) =
+      (card (edges_betw S S) * ?ct*?ct) + (card (edges_betw (-S) (-S)) * ?cs*?cs) -
       (card (edges_betw S (-S)) * ?ct*?cs) - (card (edges_betw (-S) S) * ?cs*?ct)"
-      unfolding f_def by (simp add:of_bool_def algebra_simps Int_def if_distrib if_distribR 
+      unfolding f_def by (simp add:of_bool_def algebra_simps Int_def if_distrib if_distribR
           edges_betw_def sum.If_cases)
     also have "... = d*?cs*?ct*(?cs+?ct) - card (edges_betw S (-S))*(?ct*?ct+2*?ct*?cs+?cs*?cs)"
       unfolding 4 5 6 by (simp add:algebra_simps)
@@ -144,7 +143,7 @@ proof -
       unfolding power2_diff 7 power2_sum by (simp add:ac_simps power2_eq_square)
     also have "... = d *?cs*?ct*n - n^2 * card (edges_betw S (-S))"
       using 7 by (simp add:algebra_simps)
-    finally have 8:"(\<Sum>a \<in> arcs G. f(head G a)*f(tail G a))=d*?cs*?ct*n-n^2*card(edges_betw S (-S))" 
+    finally have 8:"(\<Sum>a \<in> arcs G. f(head G a)*f(tail G a))=d*?cs*?ct*n-n^2*card(edges_betw S (-S))"
       by simp
 
     have "d*?cs*?ct*n-n^2*card(edges_betw S (-S)) = (\<Sum>a \<in> arcs G. f (head G a) * f (tail G a))"
@@ -156,17 +155,17 @@ proof -
       by (intro mult_left_mono os_expanderD 11) auto
     also have "... = d * \<Lambda>\<^sub>2 * ?cs*?ct*n"
       unfolding 9 by simp
-    finally have "d*?cs*?ct*n-n^2*card(edges_betw S (-S)) \<le> d * \<Lambda>\<^sub>2 * ?cs*?ct*n" 
+    finally have "d*?cs*?ct*n-n^2*card(edges_betw S (-S)) \<le> d * \<Lambda>\<^sub>2 * ?cs*?ct*n"
       by simp
     hence "n * n * card (edges_betw S (-S)) \<ge> n * (d * ?cs * ?ct * (1-\<Lambda>\<^sub>2))"
       by (simp add:power2_eq_square algebra_simps)
     hence 10:"n * card (edges_betw S (-S)) \<ge> d * ?cs * ?ct * ( 1-\<Lambda>\<^sub>2)"
-      using n_gt_0 by simp 
+      using n_gt_0 by simp
 
     have "(d * (1 - \<Lambda>\<^sub>2) / 2) * ?cs = (d * (1-\<Lambda>\<^sub>2) * (1 - 1 / 2)) * ?cs"
       by simp
     also have "... \<le> d * (1-\<Lambda>\<^sub>2) * ((n - ?cs) / n) * ?cs"
-      using that n_gt_0 \<Lambda>\<^sub>2_le_1 
+      using that n_gt_0 \<Lambda>\<^sub>2_le_1
       by (intro mult_left_mono mult_right_mono mult_nonneg_nonneg) auto
     also have "... = (d * (1-\<Lambda>\<^sub>2) * ?ct / n) * ?cs"
       using 7 by simp
@@ -202,11 +201,11 @@ proof -
   define xs where "xs = sort_key (g \<circ> h) [0..<card S]"
   define f where "f i = h (xs ! i)" for i
 
-  have l_xs: "length xs = card S" 
-    unfolding xs_def by auto 
-  have set_xs: "set xs = {..<card S}" 
-    unfolding xs_def by auto 
-  have dist_xs: "distinct xs" 
+  have l_xs: "length xs = card S"
+    unfolding xs_def by auto
+  have set_xs: "set xs = {..<card S}"
+    unfolding xs_def by auto
+  have dist_xs: "distinct xs"
     using l_xs set_xs by (intro card_distinct) simp
   have sorted_xs: "sorted (map (g \<circ> h) xs)"
     unfolding xs_def using sorted_sort_key by simp
@@ -215,7 +214,7 @@ proof -
     using l_xs by (auto simp:in_set_conv_nth)
   also have "... = {..<card S}"
     unfolding set_xs by simp
-  finally have set_xs': 
+  finally have set_xs':
     "(\<lambda>i. xs ! i) ` {..<card S} = {..<card S}" by simp
 
   have "f ` {..<card S} = h ` ((\<lambda>i. xs ! i) ` {..<card S})"
@@ -226,18 +225,18 @@ proof -
     using bij_betw_imp_surj_on[OF h_bij] by simp
   finally have 0: "f ` {..<card S} = S" by simp
 
-  have "inj_on ((!) xs) {..<card S}" 
-    using dist_xs l_xs unfolding distinct_conv_nth 
-    by (intro inj_onI) auto  
+  have "inj_on ((!) xs) {..<card S}"
+    using dist_xs l_xs unfolding distinct_conv_nth
+    by (intro inj_onI) auto
   hence "inj_on (h \<circ> (\<lambda>i. xs ! i)) {..<card S}"
     using set_xs' bij_betw_imp_inj_on[OF h_bij]
     by (intro comp_inj_on) auto
   hence 1: "inj_on f {..<card S}"
     unfolding f_def comp_def by simp
-  have 2: "mono_on {..<card S} (g \<circ> f)" 
-    using sorted_nth_mono[OF sorted_xs] l_xs unfolding f_def 
+  have 2: "mono_on {..<card S} (g \<circ> f)"
+    using sorted_nth_mono[OF sorted_xs] l_xs unfolding f_def
     by (intro mono_onI)  simp
-  thus ?thesis 
+  thus ?thesis
     using 0 1 2 unfolding bij_betw_def by auto
 qed
 
@@ -260,7 +259,7 @@ proof -
     hence "g (f (h x)) \<le> g (f (h y))"
       using f_def(2) unfolding mono_on_def by simp
     moreover have "f ` {..<card S} = S"
-      using bij_betw_imp_surj_on[OF f_def(1)] by simp 
+      using bij_betw_imp_surj_on[OF f_def(1)] by simp
     ultimately show "g x \<le> g y"
       unfolding h_def using that f_the_inv_into_f[OF bij_betw_imp_inj_on[OF f_def(1)]]
       by auto
@@ -308,7 +307,7 @@ proof -
       by (intro arg_cong2[where f="(*)"] card_Un_disjoint[symmetric]) auto
     also have "... \<le> 2 * (card (UNIV :: 'n set))"
       by (intro mult_left_mono card_mono) auto
-    finally have "2 * n < 2 * n" 
+    finally have "2 * n < 2 * n"
       unfolding n_def card_n by auto
     thus ?thesis by simp
   qed
@@ -317,9 +316,9 @@ proof -
 
   define g where "g = \<beta> *s v"
 
-  have g_orth: "g \<bullet> 1 = 0" unfolding g_def using v_def(1) 
+  have g_orth: "g \<bullet> 1 = 0" unfolding g_def using v_def(1)
     by (simp add: scalar_mult_eq_scaleR)
-  have g_nz: "g \<noteq> 0" 
+  have g_nz: "g \<noteq> 0"
     unfolding g_def using \<beta>_def(1) v_def(2) by auto
   have g_ev: "A *v g = \<Lambda>\<^sub>2 *s g"
     unfolding g_def scalar_mult_eq_scaleR matrix_vector_mult_scaleR v_def(3) by auto
@@ -336,13 +335,13 @@ proof -
       unfolding matrix_vector_mult_def f_def using that by auto
     also have "... \<le> g $h i - (\<Sum>j \<in> UNIV. A $h i $h j * g $h j)"
       unfolding f_def A_def by (intro diff_mono sum_mono mult_left_mono) auto
-    also have "... = g $h i - (A *v g) $h i" 
+    also have "... = g $h i - (A *v g) $h i"
       unfolding matrix_vector_mult_def by simp
     also have "... = (1-\<Lambda>\<^sub>2) * g $h i"
       unfolding g_ev by (simp add:algebra_simps)
     finally show ?thesis by simp
   qed
-  moreover have "f $h i \<noteq> 0 \<Longrightarrow> g $h i > 0 "for i 
+  moreover have "f $h i \<noteq> 0 \<Longrightarrow> g $h i > 0 "for i
     unfolding f_def by simp
   ultimately have  0:"(L *v f) $h i \<le> (1-\<Lambda>\<^sub>2) * g $h i \<or> f $h i = 0" for i
     by auto
@@ -386,7 +385,7 @@ proof -
   finally have 1: "(\<Sum>i\<in>arcs G. (f' (tail G i) + f' (head G i))\<^sup>2) \<le> 4*d* norm f^2"
     by simp
 
-  have "(\<Sum>a\<in>arcs G. (f' (tail G a) - f' (head G a))\<^sup>2) = (\<Sum>a\<in>arcs G. (f' (tail G a))\<^sup>2) + 
+  have "(\<Sum>a\<in>arcs G. (f' (tail G a) - f' (head G a))\<^sup>2) = (\<Sum>a\<in>arcs G. (f' (tail G a))\<^sup>2) +
     (\<Sum>a\<in>arcs G. (f' (head G a))\<^sup>2) - 2* (\<Sum>a\<in>arcs G. f' (tail G a) * f' (head G a))"
     unfolding power2_diff by (simp add:sum_subtractf sum_distrib_left ac_simps)
   also have "... =  2 * (d * (\<Sum>v\<in>verts G. (f' v)\<^sup>2) - (\<Sum>a\<in>arcs G. f' (tail G a) * f' (head G a)))"
@@ -395,7 +394,7 @@ proof -
     unfolding g_inner_step_eq using d_gt_0
     by (intro_cong "[\<sigma>\<^sub>2 (*), \<sigma>\<^sub>2 (-)]") (auto simp:power2_eq_square g_inner_def ac_simps)
   also have "... = 2 * d * (g_inner f' f' -g_inner f' (g_step f'))"
-    by (simp add:algebra_simps) 
+    by (simp add:algebra_simps)
   also have "... = 2 * d * (f \<bullet> f - f \<bullet> (A *v f))"
     unfolding g_inner_conv g_step_conv f'_alt by simp
   also have "... = 2 * d * (f \<bullet> (L *v f))"
@@ -404,21 +403,21 @@ proof -
 
   have "B\<^sub>f = (\<Sum>a\<in>arcs G. \<bar>f' (tail G a)+f' (head G a)\<bar>*\<bar>f' (tail G a)-f' (head G a)\<bar>)"
     unfolding B\<^sub>f_def abs_mult[symmetric] by (simp add:algebra_simps power2_eq_square)
-  also have "...\<le> L2_set (\<lambda>a. f'(tail G a) + f'(head G a)) (arcs G) * 
+  also have "...\<le> L2_set (\<lambda>a. f'(tail G a) + f'(head G a)) (arcs G) *
     L2_set (\<lambda>a. f' (tail G a) - f'(head G a)) (arcs G)"
     by (intro L2_set_mult_ineq)
   also have "... \<le> sqrt (4*d* norm f^2) * sqrt (2 * d * (f \<bullet> (L *v f)))"
     unfolding L2_set_def 2
-    by (intro mult_right_mono iffD2[OF real_sqrt_le_iff] 1 real_sqrt_ge_zero 
+    by (intro mult_right_mono iffD2[OF real_sqrt_le_iff] 1 real_sqrt_ge_zero
         mult_nonneg_nonneg L_pos_semidefinite) auto
   also have "... = 2 * sqrt 2 * d * norm f * sqrt (f \<bullet> (L *v f))"
     by (simp add:real_sqrt_mult)
-  finally have hoory_4_12: "B\<^sub>f \<le> 2 * sqrt 2 * d * norm f * sqrt (f \<bullet> (L *v f))" 
+  finally have hoory_4_12: "B\<^sub>f \<le> 2 * sqrt 2 * d * norm f * sqrt (f \<bullet> (L *v f))"
     by simp
   text \<open>The last statement corresponds to Lemma 4.12 in Hoory et al.\<close>
 
 
-  obtain \<rho> :: "'a \<Rightarrow> nat" where \<rho>_bij: "bij_betw \<rho> (verts G) {..<n}" and 
+  obtain \<rho> :: "'a \<Rightarrow> nat" where \<rho>_bij: "bij_betw \<rho> (verts G) {..<n}" and
     \<rho>_dec: "\<And>x y. x \<in> verts G \<Longrightarrow> y \<in> verts G \<Longrightarrow> \<rho> x < \<rho> y \<Longrightarrow> f' x \<ge> f' y"
     unfolding n_def
     using find_sorted_bij_2[where S="verts G" and g="(\<lambda>x. - f' x)"] by auto
@@ -435,12 +434,12 @@ proof -
     using bij_betw_imp_inj_on[OF \<rho>_bij] edge_set
     by (intro arg_cong2[where f="(+)"] filter_mset_cong refl inj_on_eq_iff[where A="verts G"])
      auto
-  also have "... = {#e \<in># edges G. \<rho>(fst e) < \<rho> (snd e) #} + 
-    {#e \<in># edges G. \<rho>(fst e) > \<rho> (snd e) #} + 
+  also have "... = {#e \<in># edges G. \<rho>(fst e) < \<rho> (snd e) #} +
+    {#e \<in># edges G. \<rho>(fst e) > \<rho> (snd e) #} +
     {#e \<in># edges G. fst e = snd e #}"
     by (intro arg_cong2[where f="(+)"] filter_mset_ex_predicates[symmetric]) auto
-  finally have edges_split: "edges G = {#e \<in># edges G. \<rho>(fst e) < \<rho> (snd e) #} + 
-    {#e \<in># edges G. \<rho>(fst e) > \<rho> (snd e) #} + {#e \<in># edges G. fst e = snd e #}" 
+  finally have edges_split: "edges G = {#e \<in># edges G. \<rho>(fst e) < \<rho> (snd e) #} +
+    {#e \<in># edges G. \<rho>(fst e) > \<rho> (snd e) #} + {#e \<in># edges G. fst e = snd e #}"
     by simp
 
   have \<rho>_lt_n: "\<rho> x < n" if "x \<in> verts G" for x
@@ -456,21 +455,21 @@ proof -
 
   define \<tau> where "\<tau> x = (if x < n then f' (\<phi> x) else 0)" for x
 
-  have \<tau>_nonneg: "\<tau> k \<ge> 0" for k 
+  have \<tau>_nonneg: "\<tau> k \<ge> 0" for k
     unfolding \<tau>_def f'_def f_def by auto
 
   have \<tau>_antimono: "\<tau> k \<ge> \<tau> l" if " k < l" for k l
   proof (cases "l \<ge> n")
     case True
     hence "\<tau> l = 0" unfolding \<tau>_def by simp
-    then show ?thesis using \<tau>_nonneg by simp 
+    then show ?thesis using \<tau>_nonneg by simp
   next
     case False
-    hence "\<tau> l = f' (\<phi> l)" 
+    hence "\<tau> l = f' (\<phi> l)"
       unfolding \<tau>_def by simp
     also have "... \<le> f' (\<phi> k)"
-      using \<rho>_\<phi>_inv False that 
-      by (intro \<rho>_dec bij_betw_apply[OF \<phi>_bij]) auto  
+      using \<rho>_\<phi>_inv False that
+      by (intro \<rho>_dec bij_betw_apply[OF \<phi>_bij]) auto
     also have "... = \<tau> k"
       unfolding \<tau>_def using False that by simp
     finally show ?thesis by simp
@@ -478,7 +477,7 @@ proof -
 
   define m :: nat where "m = Min {i. \<tau> i = 0 \<and> i \<le> n}"
 
-  have "\<tau> n = 0" 
+  have "\<tau> n = 0"
     unfolding \<tau>_def by simp
   hence "m \<in> {i. \<tau> i = 0 \<and> i \<le> n}"
     unfolding m_def by (intro Min_in) auto
@@ -487,12 +486,12 @@ proof -
 
   have "\<tau> k > 0" if "k < m" for k
   proof (rule ccontr)
-    assume "\<not>(\<tau> k > 0)" 
+    assume "\<not>(\<tau> k > 0)"
     hence "\<tau> k = 0"
       by (intro order_antisym \<tau>_nonneg) simp
     hence "k \<in> {i. \<tau> i = 0 \<and> i \<le> n}"
       using that m_le_n by simp
-    hence "m \<le> k" 
+    hence "m \<le> k"
       unfolding m_def by (intro Min_le) auto
     thus "False" using that by simp
   qed
@@ -500,21 +499,21 @@ proof -
     unfolding \<tau>_def using m_le_n that by auto
 
   have "2 * m = 2 * card {..<m}" by simp
-  also have "... = 2 * card (\<phi> ` {..<m})" 
+  also have "... = 2 * card (\<phi> ` {..<m})"
     using m_le_n inj_on_subset[OF bij_betw_imp_inj_on[OF \<phi>_bij]]
     by (intro_cong "[\<sigma>\<^sub>2 (*)]" more:card_image[symmetric]) auto
   also have "... \<le> 2 * card {x \<in> verts G. f' x > 0}"
     using m_rel_2 bij_betw_apply[OF \<phi>_bij] m_le_n
-    by (intro mult_left_mono card_mono subsetI) auto 
+    by (intro mult_left_mono card_mono subsetI) auto
   also have "... = 2 * card (enum_verts_inv ` {x \<in> verts G. f $h (enum_verts_inv x) > 0})"
     unfolding f'_def using Abs_inject
-    by (intro arg_cong2[where f="(*)"] card_image[symmetric] inj_onI) auto 
+    by (intro arg_cong2[where f="(*)"] card_image[symmetric] inj_onI) auto
   also have "... = 2 * card {x. f $h x > 0}"
-    using Rep_inverse Rep_range unfolding f'_def by (intro_cong "[\<sigma>\<^sub>2 (*), \<sigma>\<^sub>1 card]" 
-        more:subset_antisym image_subsetI surj_onI[where g="enum_verts"]) auto 
+    using Rep_inverse Rep_range unfolding f'_def by (intro_cong "[\<sigma>\<^sub>2 (*), \<sigma>\<^sub>1 card]"
+        more:subset_antisym image_subsetI surj_onI[where g="enum_verts"]) auto
   also have "... = 2 * card {x. g $h x > 0}"
     unfolding f_def by (intro_cong "[\<sigma>\<^sub>2 (*), \<sigma>\<^sub>1 card]") auto
-  also have "... \<le> n" 
+  also have "... \<le> n"
     by (intro g_supp)
   finally have m2_le_n: "2*m \<le> n" by simp
 
@@ -527,7 +526,7 @@ proof -
 
   have 4: "\<rho> v \<le> x \<longleftrightarrow> v \<in> \<phi> ` {..x}" if "v \<in> verts G" "x < n" for v x
   proof -
-    have "\<rho> v \<le> x \<longleftrightarrow> \<rho> v \<in> {..x}" 
+    have "\<rho> v \<le> x \<longleftrightarrow> \<rho> v \<in> {..x}"
       by simp
     also have "... \<longleftrightarrow> \<phi> (\<rho> v) \<in> \<phi> ` {..x}"
       using bij_betw_imp_inj_on[OF \<phi>_bij] bij_betw_apply[OF \<rho>_bij] that
@@ -540,9 +539,9 @@ proof -
   have "B\<^sub>f = (\<Sum>a\<in>arcs G. \<bar>f' (tail G a)^2 - f' (head G a)^2\<bar>)"
     unfolding B\<^sub>f_def by simp
   also have "... = (\<Sum>e \<in># edges G. \<bar>f' (fst e)^2 - f' (snd e)^2\<bar>)"
-    unfolding edges_def arc_to_ends_def sum_unfold_sum_mset 
+    unfolding edges_def arc_to_ends_def sum_unfold_sum_mset
     by (simp add:image_mset.compositionality comp_def)
-  also have "... = 
+  also have "... =
     (\<Sum>e\<in>#{#e \<in># edges G. \<rho> (fst e) < \<rho> (snd e)#}. \<bar>(f' (fst e))\<^sup>2 - (f' (snd e))\<^sup>2\<bar>) +
     (\<Sum>e\<in>#{#e \<in># edges G. \<rho> (snd e) < \<rho> (fst e)#}. \<bar>(f' (fst e))\<^sup>2 - (f' (snd e))\<^sup>2\<bar>) +
     (\<Sum>e\<in>#{#e \<in># edges G. fst e = snd e#}. \<bar>(f' (fst e))\<^sup>2 - (f' (snd e))\<^sup>2\<bar>)"
@@ -551,9 +550,9 @@ proof -
     (\<Sum>e\<in>#{#e \<in># edges G. \<rho> (snd e) < \<rho> (fst e)#}. \<bar>(f' (fst e))\<^sup>2 - (f' (snd e))\<^sup>2\<bar>) +
     (\<Sum>e\<in>#{#e \<in># edges G. \<rho> (snd e) < \<rho> (fst e)#}. \<bar>(f' (snd e))\<^sup>2 - (f' (fst e))\<^sup>2\<bar>) +
     (\<Sum>e\<in>#{#e \<in># edges G. fst e = snd e#}. \<bar>(f' (fst e))\<^sup>2 - (f' (snd e))\<^sup>2\<bar>)"
-    by (subst edges_sym[OF sym, symmetric]) (simp add:image_mset.compositionality 
+    by (subst edges_sym[OF sym, symmetric]) (simp add:image_mset.compositionality
         comp_def image_mset_filter_mset_swap[symmetric] case_prod_beta)
-  also have "... = 
+  also have "... =
     (\<Sum>e\<in>#{#e \<in># edges G. \<rho> (snd e) < \<rho> (fst e)#}. \<bar>(f' (snd e))\<^sup>2 - (f' (fst e))\<^sup>2\<bar>) +
     (\<Sum>e\<in>#{#e \<in># edges G. \<rho> (snd e) < \<rho> (fst e)#}. \<bar>(f' (snd e))\<^sup>2 - (f' (fst e))\<^sup>2\<bar>) +
     (\<Sum>e\<in>#{#e \<in># edges G. fst e = snd e#}. 0)"
@@ -561,7 +560,7 @@ proof -
   also have "... = 2 * (\<Sum>e\<in>#{#e\<in>#edges G. \<rho>(snd e)<\<rho>(fst e)#}. \<bar>(f' (snd e))\<^sup>2 - (f' (fst e))\<^sup>2\<bar>)"
     by simp
   also have "... = 2 *(\<Sum>a|a\<in>arcs G\<and>\<rho>(tail G a)>\<rho>(head G a). \<bar>f'(head G a)^2 - f'(tail G a)^2\<bar>)"
-    unfolding edges_def arc_to_ends_def sum_unfold_sum_mset 
+    unfolding edges_def arc_to_ends_def sum_unfold_sum_mset
     by (simp add:image_mset.compositionality comp_def image_mset_filter_mset_swap[symmetric])
   also have "... = 2 *
     (\<Sum>a|a\<in>arcs G\<and>\<rho>(tail G a)>\<rho>(head G a). \<bar>\<tau>(\<rho>(head G a))^2 - \<tau>(\<rho>(tail G a))^2\<bar>)"
@@ -573,27 +572,27 @@ proof -
   also have "... = 2 *
     (\<Sum>a|a\<in>arcs G\<and>\<rho>(tail G a)>\<rho>(head G a). (-(\<tau>(\<rho>(tail G a))^2)) - (-(\<tau>(\<rho>(head G a))^2)))"
     by (simp add:algebra_simps)
-  also have "... = 2 *(\<Sum>a|a\<in>arcs G\<and>\<rho>(tail G a)>\<rho>(head G a). 
+  also have "... = 2 *(\<Sum>a|a\<in>arcs G\<and>\<rho>(tail G a)>\<rho>(head G a).
     (\<Sum>i=\<rho>(head G a)..<\<rho>(tail G a). (-(\<tau> (Suc i)^2)) - (-(\<tau> i^2))))"
     by (intro arg_cong2[where f="(*)"] sum.cong refl sum_Suc_diff'[symmetric]) auto
-  also have "...=2*(\<Sum>(a, i)\<in>(SIGMA x:{a \<in> arcs G. \<rho> (head G a) < \<rho> (tail G a)}. 
-    {\<rho> (head G x)..<\<rho> (tail G x)}).  \<tau> i^2 - \<tau> (Suc i)^2)" 
+  also have "...=2*(\<Sum>(a, i)\<in>(SIGMA x:{a \<in> arcs G. \<rho> (head G a) < \<rho> (tail G a)}.
+    {\<rho> (head G x)..<\<rho> (tail G x)}).  \<tau> i^2 - \<tau> (Suc i)^2)"
     by (subst sum.Sigma) auto
-  also have "...=2*(\<Sum>p\<in>{(a,i).a \<in> arcs G\<and>\<rho>(head G a)\<le>i\<and>i<\<rho>(tail G a)}. \<tau>(snd p)^2-\<tau> (snd p+1)^2)" 
+  also have "...=2*(\<Sum>p\<in>{(a,i).a \<in> arcs G\<and>\<rho>(head G a)\<le>i\<and>i<\<rho>(tail G a)}. \<tau>(snd p)^2-\<tau> (snd p+1)^2)"
     by (intro arg_cong2[where f="(*)"] sum.cong refl) (auto simp add:Sigma_def)
-  also have "...=2*(\<Sum>p\<in>{(i,a).a \<in> arcs G\<and>\<rho>(head G a) \<le> i\<and>i < \<rho>(tail G a)}. \<tau>(fst p)^2-\<tau>(fst p+1)^2)" 
+  also have "...=2*(\<Sum>p\<in>{(i,a).a \<in> arcs G\<and>\<rho>(head G a) \<le> i\<and>i < \<rho>(tail G a)}. \<tau>(fst p)^2-\<tau>(fst p+1)^2)"
     by (intro sum.reindex_cong[where l="prod.swap"] arg_cong2[where f="(*)"]) auto
   also have "...=2*
-    (\<Sum>(i, a)\<in>(SIGMA x:{..<n}. {a \<in> arcs G. \<rho> (head G a)\<le>x \<and> x<\<rho>(tail G a)}). \<tau> i^2-\<tau> (i+1)^2)" 
-    using less_trans[OF _ \<rho>_lt_n] by (intro sum.cong arg_cong2[where f="(*)"]) auto 
-  also have "...=2*(\<Sum>i<n. (\<Sum>a|a\<in>arcs G \<and>\<rho>(head G a) \<le> i\<and>i < \<rho>(tail G a). \<tau> i^2 - \<tau> (i+1)^2))" 
+    (\<Sum>(i, a)\<in>(SIGMA x:{..<n}. {a \<in> arcs G. \<rho> (head G a)\<le>x \<and> x<\<rho>(tail G a)}). \<tau> i^2-\<tau> (i+1)^2)"
+    using less_trans[OF _ \<rho>_lt_n] by (intro sum.cong arg_cong2[where f="(*)"]) auto
+  also have "...=2*(\<Sum>i<n. (\<Sum>a|a\<in>arcs G \<and>\<rho>(head G a) \<le> i\<and>i < \<rho>(tail G a). \<tau> i^2 - \<tau> (i+1)^2))"
     by (subst sum.Sigma) auto
   also have "...=2*(\<Sum>i<n. card {a\<in>arcs G. \<rho>(head G a)\<le>i\<and>i<\<rho>(tail G a)} * (\<tau> i^2 - \<tau> (i+1)^2))"
     by simp
   also have "...=2*(\<Sum>i<n. card {a\<in>arcs G. \<rho>(head G a)\<le>i\<and>\<not>(\<rho>(tail G a)\<le>i)} * (\<tau> i^2 - \<tau> (i+1)^2))"
     by (intro_cong "[\<sigma>\<^sub>2 (*), \<sigma>\<^sub>1 card, \<sigma>\<^sub>1 of_nat]" more:sum.cong Collect_cong) auto
   also have "...=2*(\<Sum>i<n. card {a\<in>arcs G. head G a\<in>\<phi>`{..i}\<and>tail G a\<notin>\<phi>`{..i}} * (\<tau> i^2-\<tau> (i+1)^2))"
-    using 4 
+    using 4
     by (intro_cong "[\<sigma>\<^sub>2 (*), \<sigma>\<^sub>1 card, \<sigma>\<^sub>1 of_nat, \<sigma>\<^sub>2 (\<and>)]" more:sum.cong restr_Collect_cong) auto
   also have "... = 2 * (\<Sum>i<n. real (card (edges_betw (-\<phi>`{..i}) (\<phi>`{..i}))) * (\<tau> i^2-\<tau> (i+1)^2))"
     unfolding edges_betw_def by (auto simp:conj.commute)
@@ -601,17 +600,17 @@ proof -
     using edges_betw_sym by simp
   also have "... = 2 * (\<Sum>i<m. real (card (edges_betw (\<phi>`{..i}) (-\<phi>`{..i}))) * (\<tau> i^2-\<tau> (i+1)^2))"
     using \<tau>_supp m_le_n by (intro sum.mono_neutral_right arg_cong2[where f="(*)"]) auto
-  finally have Bf_eq: 
+  finally have Bf_eq:
     "B\<^sub>f = 2 * (\<Sum>i<m. real (card (edges_betw (\<phi>`{..i}) (-\<phi>`{..i}))) * (\<tau> i^2-\<tau> (i+1)^2))"
     by simp
 
-  have 3:"card (\<phi> ` {..i} \<inter> verts G) = i + 1" if "i < m" for i 
+  have 3:"card (\<phi> ` {..i} \<inter> verts G) = i + 1" if "i < m" for i
   proof -
     have "card (\<phi> ` {..i} \<inter> verts G) = card (\<phi> ` {..i})"
-      using m_le_n that by (intro arg_cong[where f="card"] Int_absorb2 
+      using m_le_n that by (intro arg_cong[where f="card"] Int_absorb2
           image_subsetI bij_betw_apply[OF \<phi>_bij]) auto
     also have "... = card {..i}"
-      using m_le_n that by (intro card_image 
+      using m_le_n that by (intro card_image
           inj_on_subset[OF bij_betw_imp_inj_on[OF \<phi>_bij]]) auto
     also have "... = i+1" by simp
     finally show ?thesis
@@ -643,12 +642,12 @@ proof -
     by simp
   text \<open>Corresponds to Lemma 4.13 in Hoory et al.\<close>
 
-  have f_nz: "f \<noteq> 0" 
+  have f_nz: "f \<noteq> 0"
   proof (rule ccontr)
-    assume f_nz_assms: "\<not> (f \<noteq> 0)" 
+    assume f_nz_assms: "\<not> (f \<noteq> 0)"
     have "g $h i \<le> 0" for i
     proof -
-      have "g $h i \<le> max (g $h i) 0" 
+      have "g $h i \<le> max (g $h i) 0"
         by simp
       also have "... = 0"
         using f_nz_assms unfolding f_def vec_eq_iff by auto
@@ -681,11 +680,11 @@ qed
 end
 
 context regular_graph
-begin 
+begin
 
-lemmas (in regular_graph) cheeger_aux_1 =  
+lemmas (in regular_graph) cheeger_aux_1 =
   regular_graph_tts.cheeger_aux_1[OF eg_tts_1,
-    internalize_sort "'n :: finite", OF _ regular_graph_axioms, 
+    internalize_sort "'n :: finite", OF _ regular_graph_axioms,
     unfolded remove_finite_premise, cancel_type_definition, OF verts_non_empty]
 
 theorem cheeger_inequality:

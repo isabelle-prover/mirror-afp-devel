@@ -24,15 +24,16 @@ theory Pseudorandom_Combinators
   imports
     Finite_Fields.Card_Irreducible_Polynomials
     Universal_Hash_Families.Carter_Wegman_Hash_Family
-    Frequency_Moments.Product_PMF_Ext
     Distributed_Distinct_Elements_Preliminary
+    Universal_Hash_Families.Universal_Hash_Families_More_Product_PMF
     Expander_Graphs.Expander_Graphs_Strongly_Explicit
 begin
 
 unbundle intro_cong_syntax
-hide_const "Quantum.T"
-hide_const "Discrete_Topology.discrete"
-hide_const "Polynomial.order"
+hide_const (open) Quantum.T
+hide_const (open) Discrete_Topology.discrete
+hide_const (open) Isolated.discrete
+hide_const (open) Polynomial.order
 no_notation Digraph.dominates ("_ \<rightarrow>\<index> _" [100,100] 40)
 
 record 'a sample_space =

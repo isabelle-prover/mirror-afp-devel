@@ -1398,7 +1398,7 @@ proof -
       by (simp add:algebra_simps sum_subtractf)
     also have "... \<le> (\<Sum>y\<in>{k+1..m}. \<bar>g (real y)- g (real y-1)\<bar> *
       measure p {\<omega>. ffact (k+1) (f \<omega>) \<ge> ffact (k+1) (real y)})"
-      using ffact_mono by (intro sum_mono mult_mono measure_pmf.pmf_mono[OF refl]) auto
+      using ffact_mono by (intro sum_mono mult_mono pmf_mono) auto
     also have "... = (\<Sum>y\<in>{k+1..m}. (ffact (k-1) (real y-2) / fact (k-1)) *
       measure p {\<omega>. ffact (k+1) (f \<omega>) \<ge> ffact (k+1) (real y)})"
       by (intro sum.cong, simp_all add: g_diff)
@@ -1890,7 +1890,7 @@ proof (cases "card R > 0")
      (auto intro!: card_image_le[OF fin_R])
 
   have "?L \<le> \<P>(\<omega> in measure_pmf p. \<bar>Y \<omega>- (\<integral>\<omega>. Y \<omega> \<partial>p)\<bar> \<ge> 8*?r / sqrt ?b)"
-  proof (rule measure_pmf.pmf_mono[OF refl])
+  proof (rule pmf_mono)
     fix \<omega> assume "\<omega> \<in> set_pmf p"
     assume a:"\<omega> \<in> {\<omega>. 9 * real (card R) / sqrt (real (card B)) < \<bar>Y \<omega> - \<mu>\<bar>}"
     have "8 * ?r / sqrt ?b = 9 * ?r / sqrt ?b - ?r / sqrt ?b"
