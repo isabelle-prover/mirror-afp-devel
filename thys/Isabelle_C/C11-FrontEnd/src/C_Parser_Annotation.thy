@@ -233,7 +233,7 @@ Resources for theories and auxiliary files.
 \<open>
 structure C_Resources:
 sig
-  val parse_file: C_Parse.T list -> (theory -> Token.file) * C_Parse.T list
+  val parse_file: (theory -> Token.file) C_Parse.parser
 end =
 struct
 
