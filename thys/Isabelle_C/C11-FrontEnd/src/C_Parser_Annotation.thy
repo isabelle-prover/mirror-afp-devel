@@ -222,7 +222,7 @@ fun check_command ctxt (name, pos) =
 end
 \<close>
 
-ML \<comment> \<open>\<^file>\<open>~~/src/Pure/PIDE/resources.ML\<close>\<close>
+ML \<comment> \<open>\<^file>\<open>~~/src/Pure/Build/resources.ML\<close>\<close>
 (*  Author:     Frédéric Tuong, Université Paris-Saclay
     Analogous to:
 (*  Title:      Pure/PIDE/resources.ML
