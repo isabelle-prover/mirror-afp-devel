@@ -334,6 +334,7 @@ IMP2
 IMP2_Binary_Heap
 IMP_Compiler
 IMP_Compiler_Reuse
+Interval_Analysis
 IO_Language_Conformance
 IP_Addresses
 Imperative_Insertion_Sort
