@@ -6278,6 +6278,25 @@ host = [
 
 [steinberg.homepages]
 
+[stell]
+name = "Amy Stell"
+orcid = "0000-0003-0714-3269"
+
+[stell.emails]
+
+[stell.emails.stell_email]
+user = [
+  "as1343",
+]
+host = [
+  "exeter",
+  "ac",
+  "uk",
+]
+
+[stell.homepages]
+stell_homepage = "https://computerscience.exeter.ac.uk/staff/as1343?sm=as1343"
+
 [stephan]
 name = "Werner Stephan"
 

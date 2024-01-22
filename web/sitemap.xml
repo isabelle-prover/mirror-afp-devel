@@ -3,10 +3,28 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2023-12-18T00:00:00+00:00</lastmod>
+    <lastmod>2024-01-21T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Interval_Analysis.html</loc>
+    <lastmod>2024-01-21T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2023-12-18T00:00:00+00:00</lastmod>
+    <lastmod>2024-01-21T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/brucker/</loc>
+    <lastmod>2024-01-21T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2024-01-21T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2024-01-21T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/stell/</loc>
+    <lastmod>2024-01-21T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2024-01-21T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/computer-science/</loc>
     <lastmod>2023-12-18T00:00:00+00:00</lastmod>
@@ -23,16 +41,10 @@
     <loc>/dependencies/</loc>
     <lastmod>2023-12-18T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/entries/</loc>
-    <lastmod>2023-12-18T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/game_based_crypto/</loc>
     <lastmod>2023-12-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/kreuzer/</loc>
-    <lastmod>2023-12-18T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2023-12-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/ballenghien/</loc>
@@ -66,9 +78,6 @@
     <lastmod>2023-11-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Lambert_Series.html</loc>
-    <lastmod>2023-11-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/mathematics/</loc>
     <lastmod>2023-11-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/polylog/</loc>
@@ -892,9 +901,6 @@
   </url><url>
     <loc>/entries/FSM_Tests.html</loc>
     <lastmod>2022-08-09T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/brucker/</loc>
-    <lastmod>2022-07-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Nano_JSON.html</loc>
     <lastmod>2022-07-29T00:00:00+00:00</lastmod>
@@ -5716,6 +5722,8 @@
     <loc>/sessions/interpolation_polynomials_hol_algebra/</loc>
   </url><url>
     <loc>/sessions/interpreter_optimizations/</loc>
+  </url><url>
+    <loc>/sessions/interval_analysis/</loc>
   </url><url>
     <loc>/sessions/interval_arithmetic_word32/</loc>
   </url><url>
