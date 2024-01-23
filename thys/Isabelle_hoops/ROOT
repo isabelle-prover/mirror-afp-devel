@@ -1,0 +1,13 @@
+chapter AFP
+
+session "Isabelle_hoops" (AFP) = "HOL-Library" +
+  options [timeout = 300]	
+  theories
+    Posets
+    Hoops
+    Ordinal_Sums
+    Totally_Ordered_Hoops
+    BL_Chains
+  document_files
+    "root.bib"
+    "root.tex"
