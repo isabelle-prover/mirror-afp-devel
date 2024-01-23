@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Sun, 21 Jan 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Mon, 22 Jan 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Decomposition of totally ordered hoops</title>
+          <link>/entries/Isabelle_hoops.html</link>
+          <pubDate>Mon, 22 Jan 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Isabelle_hoops.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>(Extended) Interval Analysis</title>
           <link>/entries/Interval_Analysis.html</link>
@@ -8173,6 +8180,13 @@
           <link>/sessions/isabelle_c/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/isabelle_c/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Isabelle_hoops</title>
+          <link>/sessions/isabelle_hoops/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/isabelle_hoops/</guid>
           <description></description>
         </item>
         <item>

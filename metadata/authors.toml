@@ -971,6 +971,22 @@ host = [
 
 [bulwahn.homepages]
 
+[buss]
+name = "Sebastián Buss"
+
+[buss.emails]
+
+[buss.emails.buss_email]
+user = [
+  "sbuss94",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[buss.homepages]
+
 [butler]
 name = "David Butler"
 

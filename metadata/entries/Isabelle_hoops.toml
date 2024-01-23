@@ -1,0 +1,26 @@
+title = "Decomposition of totally ordered hoops"
+date = 2024-01-22
+topics = [
+  "Mathematics/Algebra",
+]
+abstract = "<p>We formalize a well known result in theory of hoops: every totally ordered hoop can be written as an ordinal sum of irreducible (equivalently Wajsberg) hoops. This formalization is based on the proof for BL-chains (i.e., bounded totally ordered hoops) found in <cite>Decomposition of BL-chains</cite> by M. Busaniche (Algebra Universalis, 2005). </p>"
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.buss]
+email = "buss_email"
+
+[contributors]
+
+[notify]
+buss = "buss_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []
