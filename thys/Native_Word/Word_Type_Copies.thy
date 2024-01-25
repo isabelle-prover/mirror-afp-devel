@@ -195,13 +195,14 @@ proof -
   with of_class_semiring_modulo have \<open>OFCLASS('a, semiring_parity_class)\<close>
     by (rule semiring_parity_class.intro) 
   moreover have \<open>class.semiring_bits_axioms (+) (-) (0::'a) (*) 1 (div) (mod) bit\<close>
-    apply (standard, fact induct)
-    apply (simp_all only: eq_iff_word_of word_of_0 word_of_1 word_of_bool word_of_numeral
-      word_of_add word_of_diff word_of_mult word_of_div word_of_mod word_of_power even_iff_word_of
-      bit_eq_word_of push_bit_take_bit drop_bit_take_bit
-      even_drop_bit_iff_not_bit
-      flip: push_bit_eq_mult drop_bit_eq_div take_bit_eq_mod mask_eq_exp_minus_1)
-               apply (auto simp add: ac_simps bit_simps drop_bit_exp_eq)
+    apply standard
+             apply (fact induct)
+            apply (simp_all only: eq_iff_word_of word_of_0 word_of_1 word_of_bool word_of_numeral
+              word_of_add word_of_diff word_of_mult word_of_div word_of_mod word_of_power
+              bit_eq_word_of push_bit_take_bit drop_bit_take_bit even_iff_word_of
+              fold_possible_bit
+              flip: push_bit_eq_mult drop_bit_eq_div take_bit_eq_mod mask_eq_exp_minus_1 drop_bit_Suc)
+           apply (simp_all add: bit_simps even_drop_bit_iff_not_bit not_less)
     done
   ultimately have \<open>OFCLASS('a, semiring_bits_class)\<close>
     by (rule semiring_bits_class.intro)
