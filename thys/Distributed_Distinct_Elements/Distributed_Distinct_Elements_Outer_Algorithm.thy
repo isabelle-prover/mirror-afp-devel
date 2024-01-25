@@ -125,13 +125,12 @@ sublocale I: inner_algorithm "n" "\<delta>\<^sub>i" "\<epsilon>"
 
 abbreviation \<Theta> where "\<Theta> \<equiv> \<E> m \<alpha> I.\<Omega>"
 
-sublocale \<Theta>: expander_sample_space m \<alpha> I.\<Omega>
-  unfolding expander_sample_space_def using I.\<Omega>.sample_space \<alpha>_gt_0 m_gt_0 by auto
+lemma \<Theta>: "m > 0" "\<alpha> > 0" using \<alpha>_gt_0 m_gt_0 by auto
 
 type_synonym state = "inner_algorithm.state list"
 
 fun single :: "nat \<Rightarrow> nat \<Rightarrow> state" where
-  "single \<theta> x = map (\<lambda>j. I.single (select \<Theta> \<theta> j) x) [0..<m]"
+  "single \<theta> x = map (\<lambda>j. I.single (pro_select \<Theta> \<theta> j) x) [0..<m]"
 
 fun merge :: "state \<Rightarrow> state \<Rightarrow> state" where
   "merge x y = map (\<lambda>(x,y). I.merge x y) (zip x y)"
@@ -140,7 +139,7 @@ fun estimate :: "state \<Rightarrow> real" where
   "estimate x = median m (\<lambda>i. I.estimate (x ! i))"
 
 definition \<nu> :: "nat \<Rightarrow> nat set \<Rightarrow> state"
-  where "\<nu> \<theta> A = map (\<lambda>i. I.\<tau> (select \<Theta> \<theta> i) A) [0..<m]"
+  where "\<nu> \<theta> A = map (\<lambda>i. I.\<tau> (pro_select \<Theta> \<theta> i) A) [0..<m]"
 
 text \<open>The following three theorems verify the correctness of the algorithm. The term @{term "\<tau>"}
 is a mathematical description of the sketch for a given subset, while @{term "single"},
@@ -151,11 +150,11 @@ proof -
   have 0: "zip [0..<m] [0..<m] = map (\<lambda>x. (x,x)) [0..<m]" for m
     by (induction m, auto)
 
-  have "?L = map (\<lambda>x. I.merge (I.\<tau> (select \<Theta> \<omega> x) A) (I.\<tau> (select \<Theta> \<omega> x) B)) [0..<m]"
+  have "?L = map (\<lambda>x. I.merge (I.\<tau> (pro_select \<Theta> \<omega> x) A) (I.\<tau> (pro_select \<Theta> \<omega> x) B)) [0..<m]"
     unfolding \<nu>_def
     by (simp add:zip_map_map 0 comp_def case_prod_beta)
-  also have "... = map (\<lambda>x.  I.\<tau> (select \<Theta> \<omega> x) (A \<union> B)) [0..<m]"
-    by (intro map_cong I.merge_result \<Theta>.range) auto
+  also have "... = map (\<lambda>x.  I.\<tau> (pro_select \<Theta> \<omega> x) (A \<union> B)) [0..<m]"
+    by (intro map_cong refl I.merge_result expander_pro_range[OF \<Theta>])
   also have "... = ?R"
     unfolding \<nu>_def by simp
   finally show ?thesis by simp
@@ -163,16 +162,16 @@ qed
 
 theorem single_result: "single \<omega> x = \<nu> \<omega> {x}" (is "?L = ?R")
 proof -
-  have "?L = map (\<lambda>j. I.single (select \<Theta> \<omega> j) x) [0..<m]"
+  have "?L = map (\<lambda>j. I.single (pro_select \<Theta> \<omega> j) x) [0..<m]"
     by (simp del:I.single.simps)
   also have "... = ?R"
-    unfolding \<nu>_def by (intro map_cong I.single_result \<Theta>.range) auto
+    unfolding \<nu>_def by (intro map_cong I.single_result expander_pro_range[OF \<Theta>]) auto
   finally show ?thesis by simp
 qed
 
 theorem estimate_result:
   assumes "A \<subseteq> {..<n}" "A \<noteq> {}"
-  defines "p \<equiv> (pmf_of_set {..<size \<Theta>})"
+  defines "p \<equiv> (pmf_of_set {..<pro_size \<Theta>})"
   shows "measure p {\<omega>. \<bar>estimate (\<nu> \<omega> A)- real (card A)\<bar> > \<epsilon> * real (card A)} \<le> \<delta>" (is "?L \<le> ?R")
 proof (cases "stage_two")
   case True
@@ -215,7 +214,7 @@ proof (cases "stage_two")
   have "?L = measure p {\<omega>. median m (\<lambda>i. I.estimate (\<nu> \<omega> A  ! i)) \<notin> I}"
     unfolding I_def by (simp add:not_le)
   also have "... \<le>
-    measure p {\<theta>. real (card {i \<in> {..<m}. I.estimate (I.\<tau> (select \<Theta> \<theta> i) A) \<notin> I})\<ge> real m/2}"
+    measure p {\<theta>. real (card {i \<in> {..<m}. I.estimate (I.\<tau> (pro_select \<Theta> \<theta> i) A) \<notin> I})\<ge> real m/2}"
   proof (rule pmf_mono)
     fix \<theta> assume "\<theta> \<in> set_pmf p"
     assume a:"\<theta> \<in> {\<omega>. median m (\<lambda>i. I.estimate (\<nu> \<omega> A ! i)) \<notin> I}"
@@ -235,18 +234,18 @@ proof (cases "stage_two")
         (auto simp del:I.estimate.simps)
     also have "... = 2 * real (card {i\<in>{..<m}. I.estimate (\<nu> \<theta> A ! i) \<notin> I})"
       by (intro_cong "[\<sigma>\<^sub>2 (*), \<sigma>\<^sub>1 of_nat, \<sigma>\<^sub>1 card]") (auto simp del:I.estimate.simps)
-    also have "... = 2 * real (card {i \<in> {..<m}. I.estimate (I.\<tau> (select \<Theta> \<theta> i) A) \<notin> I})"
+    also have "... = 2 * real (card {i \<in> {..<m}. I.estimate (I.\<tau> (pro_select \<Theta> \<theta> i) A) \<notin> I})"
       unfolding \<nu>_def by (intro_cong "[\<sigma>\<^sub>2 (*), \<sigma>\<^sub>1 of_nat, \<sigma>\<^sub>1 card]" more:restr_Collect_cong)
        (simp del:I.estimate.simps)
-    finally have "real m \<le> 2 * real (card {i \<in> {..<m}. I.estimate (I.\<tau> (select \<Theta> \<theta> i) A) \<notin> I})"
+    finally have "real m \<le> 2 * real (card {i \<in> {..<m}. I.estimate (I.\<tau> (pro_select \<Theta> \<theta> i) A) \<notin> I})"
       by simp
-    thus "\<theta> \<in> {\<theta>. real m / 2 \<le> real (card {i \<in> {..<m}. I.estimate (I.\<tau> (select \<Theta> \<theta> i) A) \<notin> I})}"
+    thus "\<theta> \<in> {\<theta>. real m / 2 \<le> real (card {i \<in> {..<m}. I.estimate (I.\<tau> (pro_select \<Theta> \<theta> i) A) \<notin> I})}"
       by simp
   qed
   also have "...=measure \<Theta>{\<theta>. real(card {i \<in> {..<m}. I.estimate (I.\<tau> (\<theta> i) A) \<notin> I})\<ge>(1/2)*real m}"
-    unfolding sample_pmf_alt[OF \<Theta>.sample_space] p_def by (simp del:I.estimate.simps)
+    unfolding sample_pro_alt p_def by (simp del:I.estimate.simps)
   also have "... \<le> exp (-real m * ((1/2) * ln (1/ (\<mu> + \<alpha>)) - 2*exp (-1)))"
-    using 3 m_gt_0 \<alpha>_gt_0 unfolding \<mu>_def by (intro \<Theta>.tail_bound) force+
+    using 3 m_gt_0 \<alpha>_gt_0 unfolding \<mu>_def by (intro walk_tail_bound) force+
   also have "... \<le> exp (-real m * ((1/2) * ln (ln n\<^sub>0 / 2) - 2*exp (-1)))"
     using 0 2 3 n_lbound
     by (intro iffD2[OF exp_le_cancel_iff] mult_right_mono mult_left_mono_neg[where c="-real m"]
@@ -275,15 +274,15 @@ next
     unfolding m_def using False by simp
   hence "?L = measure p {\<omega>. \<epsilon> * real (card A) < \<bar>I.estimate (\<nu> \<omega> A ! 0) - real (card A)\<bar>}"
     unfolding estimate.simps m_eq median_def by simp
-  also have "... =  measure p {\<omega>. \<epsilon>*real(card A)<\<bar>I.estimate (I.\<tau> (select \<Theta> \<omega> 0) A)-real(card A)\<bar>}"
+  also have "... =  measure p {\<omega>. \<epsilon>*card A<\<bar>I.estimate (I.\<tau> (pro_select \<Theta> \<omega> 0) A)-real(card A)\<bar>}"
     unfolding \<nu>_def m_eq by (simp del: I.estimate.simps)
   also have "... = measure \<Theta> {\<omega>. \<epsilon>*real(card A) < \<bar>I.estimate (I.\<tau> (\<omega> 0) A)-real(card A)\<bar>}"
-    unfolding sample_pmf_alt[OF \<Theta>.sample_space] p_def by (simp del:I.estimate.simps)
+    unfolding sample_pro_alt p_def by (simp del:I.estimate.simps)
   also have "...=
     measure (map_pmf (\<lambda>\<theta>. \<theta> 0) \<Theta>) {\<omega>. \<epsilon>*real(card A) < \<bar>I.estimate (I.\<tau> \<omega> A)-real(card A)\<bar>}"
     by simp
   also have "... = measure I.\<Omega> {\<omega>. \<epsilon>*real(card A) < \<bar>I.estimate (I.\<tau> \<omega> A)-real(card A)\<bar>}"
-    using m_eq by (subst \<Theta>.uniform_property) auto
+    using m_eq by (subst expander_uniform_property[OF \<Theta>]) auto
   also have "... \<le> \<delta>\<^sub>i"
     by (intro I.estimate_result[OF assms(1,2)])
   also have "... = ?R"
@@ -310,10 +309,10 @@ proof -
     unfolding \<nu>_def by simp
   have "?L = (\<Sum>x\<leftarrow>\<nu> \<omega> A. bit_count (I.encode_state x))"
     using 0 unfolding encode_state_def fixed_list_bit_count by simp
-  also have "... = (\<Sum>x\<leftarrow>[0..<m]. bit_count (I.encode_state (I.\<tau> (select \<Theta> \<omega> x) A)))"
+  also have "... = (\<Sum>x\<leftarrow>[0..<m]. bit_count (I.encode_state (I.\<tau> (pro_select \<Theta> \<omega> x) A)))"
     unfolding \<nu>_def by (simp add:comp_def)
   also have "... \<le> (\<Sum>x\<leftarrow>[0..<m]. ereal (2^36 *(ln (1/\<delta>\<^sub>i)+ 1)/\<epsilon>\<^sup>2 + log 2 (log 2 (real n) + 3)))"
-    using I.state_bit_count by (intro sum_list_mono I.state_bit_count \<Theta>.range)
+    using I.state_bit_count by (intro sum_list_mono I.state_bit_count expander_pro_range[OF \<Theta>])
   also have "... = ereal ( real m * (2^36 *(ln (1/\<delta>\<^sub>i)+ 1)/\<epsilon>\<^sup>2 + log 2 (log 2 (real n) + 3)))"
     unfolding sum_list_triv_ereal by simp
   also have "... \<le> 2^40 * (ln(1/\<delta>)+1)/ \<epsilon>^2 + log 2 (log 2 n + 3)" (is "?L1 \<le> ?R1")
@@ -399,24 +398,22 @@ proof -
 qed
 
 text \<open>Encoding function for the seeds which are just natural numbers smaller than
-@{term "size \<Theta>"}.\<close>
+@{term "pro_size \<Theta>"}.\<close>
 
 definition encode_seed
-  where "encode_seed = Nb\<^sub>e (size \<Theta>)"
+  where "encode_seed = Nb\<^sub>e (pro_size \<Theta>)"
 
 lemma encode_seed:
   "is_encoding encode_seed"
   unfolding encode_seed_def by (intro bounded_nat_encoding)
 
 lemma random_bit_count:
-  assumes "\<omega> < size \<Theta>"
+  assumes "\<omega> < pro_size \<Theta>"
   shows "bit_count (encode_seed \<omega>) \<le> seed_space_usage (real n, \<epsilon>, \<delta>)"
     (is "?L \<le> ?R")
 proof -
-  have 0: "size \<Theta> > 0"
-    using \<Theta>.sample_space unfolding sample_space_def by simp
-  have 1: "size I.\<Omega> > 0"
-    using I.\<Omega>.sample_space unfolding sample_space_def by simp
+  have 0: "pro_size \<Theta> > 0" by (intro pro_size_gt_0)
+  have 1: "pro_size I.\<Omega> > 0" by (intro pro_size_gt_0)
 
   have "(55+60*ln (ln n\<^sub>0))^3 \<le> (180+60*ln (ln n\<^sub>0))^3"
     using n_lbound by (intro power_mono add_mono) auto
@@ -436,19 +433,19 @@ proof -
   have 3:"(1::real)+180^3*exp 5 \<le> 2^30" "(4::real)/ln 2 + 180^3 \<le> 2^23"
     by (approximation 10)+
 
-  have "?L = ereal (real (floorlog 2 (size \<Theta> - 1)))"
+  have "?L = ereal (real (floorlog 2 (pro_size \<Theta> - 1)))"
     using assms unfolding encode_seed_def bounded_nat_bit_count by simp
-  also have "... \<le> ereal (real (floorlog 2 (size \<Theta>)))"
+  also have "... \<le> ereal (real (floorlog 2 (pro_size \<Theta>)))"
     by (intro ereal_mono Nat.of_nat_mono floorlog_mono) auto
-  also have "... = ereal (1 + of_int \<lfloor>log 2 (real (sample_space.size \<Theta>))\<rfloor>)"
+  also have "... = ereal (1 + of_int \<lfloor>log 2 (real (pro_size \<Theta>))\<rfloor>)"
     using 0 unfolding floorlog_def by simp
-  also have "... \<le> ereal (1 + log 2 (real (size \<Theta>)))"
+  also have "... \<le> ereal (1 + log 2 (real (pro_size \<Theta>)))"
     by (intro add_mono ereal_mono) auto
-  also have "... = 1 + log 2 (real (size I.\<Omega>) * (2^4) ^ ((m - 1) * nat \<lceil>ln \<alpha> / ln 0.95\<rceil>))"
-    unfolding \<Theta>.size by simp
-  also have "... = 1 + log 2 (real (size I.\<Omega>) * 2^ (4 * (m - 1) * nat \<lceil>ln \<alpha> / ln 0.95\<rceil>))"
+  also have "... = 1 + log 2 (real (pro_size I.\<Omega>) * (2^4) ^ ((m - 1) * nat \<lceil>ln \<alpha> / ln 0.95\<rceil>))"
+    unfolding expander_pro_size[OF \<Theta>] by simp
+  also have "... = 1 + log 2 (real (pro_size I.\<Omega>) * 2^ (4 * (m - 1) * nat \<lceil>ln \<alpha> / ln 0.95\<rceil>))"
     unfolding power_mult by simp
-  also have "... = 1 + log 2 (real (size I.\<Omega>)) + (4*(m-1)* nat\<lceil>ln \<alpha> / ln 0.95\<rceil>)"
+  also have "... = 1 + log 2 (real (pro_size I.\<Omega>)) + (4*(m-1)* nat\<lceil>ln \<alpha> / ln 0.95\<rceil>)"
     using 1 by (subst log_mult) simp_all
   also have "... \<le> 1+log 2(2 powr (4*log 2 n + 48 * (log 2 (1/\<epsilon>)+16)\<^sup>2+ (55+60*ln (1/\<delta>\<^sub>i))^3))+
     (4*(m-1)* nat\<lceil>ln \<alpha> / ln 0.95\<rceil>)"
@@ -557,7 +554,7 @@ fun sketch_tree_set :: "sketch_tree \<Rightarrow> nat set"
 theorem correctness:
   fixes X
   assumes "sketch_tree_set t \<subseteq> {..<n}"
-  defines "p \<equiv> pmf_of_set {..<size \<Theta>}"
+  defines "p \<equiv> pmf_of_set {..<pro_size \<Theta>}"
   defines "X \<equiv> real (card (sketch_tree_set t))"
   shows "measure p {\<omega>. \<bar>estimate (eval \<omega> t) - X\<bar> > \<epsilon> * X} \<le> \<delta>" (is "?L \<le> ?R")
 proof -
@@ -580,7 +577,7 @@ proof -
 qed
 
 theorem space_usage:
-  assumes "\<omega> < size \<Theta>"
+  assumes "\<omega> < pro_size \<Theta>"
   shows
     "bit_count (encode_state (eval \<omega> t)) \<le> state_space_usage (real n, \<epsilon>, \<delta>)" (is "?A")
     "bit_count (encode_seed \<omega>) \<le> seed_space_usage (real n, \<epsilon>, \<delta>)" (is "?B")

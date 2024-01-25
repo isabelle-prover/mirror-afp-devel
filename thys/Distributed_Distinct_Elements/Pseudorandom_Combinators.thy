@@ -1,4 +1,19 @@
-section \<open>Combinators for Pseudo-random Objects\<close>
+section \<open>Combinators for Pseudorandom Objects\<close>
+
+theory Pseudorandom_Combinators
+  imports
+    Finite_Fields.Card_Irreducible_Polynomials
+    Universal_Hash_Families.Carter_Wegman_Hash_Family
+    Distributed_Distinct_Elements_Preliminary
+    Universal_Hash_Families.Universal_Hash_Families_More_Product_PMF
+    Expander_Graphs.Expander_Graphs_Strongly_Explicit
+begin
+
+text \<open>Important Note: A more current version of the framework presented here is available at
+@{verbatim Universal_Hash_Families.Pseudorandom_Objects},
+@{verbatim Universal_Hash_Families.Pseudorandom_Objects_Hash_Families} and
+@{verbatim Expander_Graphs.Pseudorandom_Objects_Expander_Walks}. This section is left here
+to prevent possible merge-conflicts.\<close>
 
 text \<open>This section introduces a combinator library for pseudo-random objects. Each object can be
 described as a sample space, a function from an initial segment of the natural numbers that selects
@@ -19,15 +34,6 @@ Section~\ref{sec:outer_algorithm} are good examples.
 A nice introduction into such constructions has been published by Goldreich~\cite{goldreich2011}.\<close>
 
 subsection \<open>Definitions and General Lemmas\<close>
-
-theory Pseudorandom_Combinators
-  imports
-    Finite_Fields.Card_Irreducible_Polynomials
-    Universal_Hash_Families.Carter_Wegman_Hash_Family
-    Distributed_Distinct_Elements_Preliminary
-    Universal_Hash_Families.Universal_Hash_Families_More_Product_PMF
-    Expander_Graphs.Expander_Graphs_Strongly_Explicit
-begin
 
 unbundle intro_cong_syntax
 hide_const (open) Quantum.T
@@ -120,53 +126,12 @@ definition prod_sample_space ::
       \<lparr> size = size s * size t,
         select = (\<lambda>i. (select s (i mod (size s)), select t (i div (size s)))) \<rparr>"
 
-lemma split_pmf_mod_div':
-  assumes "a > (0::nat)"
-  assumes "b > 0"
-  shows "map_pmf (\<lambda>x. (x mod a, x div a)) (pmf_of_set {..<a * b}) = pmf_of_set ({..<a} \<times> {..<b})"
-proof -
-  have "x + a * y < a * b" if "x < a" "y < b" for x y
-  proof -
-    have a:"y+1 \<le> b" using that by simp
-    have "x + a * y < a + a * y"
-      using that by simp
-    also have "... = a * (y+1)"
-      by simp
-    also have "... \<le> a * b"
-      by (intro mult_left_mono a) auto
-    finally show ?thesis by simp
-  qed
+text \<open>The following aliases are here to prevent possible merge-conflicts. The lemmas have been
+moved to @{theory "Universal_Hash_Families.Universal_Hash_Families_More_Product_PMF"}.\<close>
 
-  hence "bij_betw (\<lambda>x. (x mod a, x div a)) {..<a * b} ({..<a} \<times> {..<b})"
-    using assms less_mult_imp_div_less
-    by (intro bij_betwI[where g="(\<lambda>x. fst x + a * snd x)"])
-     (auto simp add:mult.commute)
-
-  moreover have "a * b > 0" using assms by simp
-  hence "{..<a * b} \<noteq> {}" by blast
-  ultimately show "?thesis"
-    by (intro map_pmf_of_set_bij_betw) auto
-qed
-
-lemma pmf_of_set_prod_eq:
-  assumes "A \<noteq> {}" "finite A"
-  assumes "B \<noteq> {}" "finite B"
-  shows  "pmf_of_set (A \<times> B) = pair_pmf (pmf_of_set A) (pmf_of_set B)"
-proof -
-  have "indicat_real (A \<times> B) (i, j) = indicat_real A i * indicat_real B j" for i j
-    by (cases "i \<in> A"; cases "j \<in> B") auto
-  hence "pmf (pmf_of_set (A \<times> B)) (i,j) = pmf (pair_pmf (pmf_of_set A) (pmf_of_set B)) (i,j)"
-    for i j using assms by (simp add:pmf_pair)
-  thus ?thesis
-    by (intro pmf_eqI) auto
-qed
-
-lemma split_pmf_mod_div:
-  assumes "a > (0::nat)"
-  assumes "b > 0"
-  shows "map_pmf (\<lambda>x. (x mod a, x div a)) (pmf_of_set {..<a * b}) =
-    pair_pmf (pmf_of_set {..<a}) (pmf_of_set {..<b})"
-  using assms by (auto intro!: pmf_of_set_prod_eq simp add:split_pmf_mod_div')
+lemmas split_pmf_mod_div' = split_pmf_mod_div'
+lemmas pmf_of_set_prod_eq = pmf_of_set_prod_eq
+lemmas split_pmf_mod_div = split_pmf_mod_div
 
 lemma split_pmf_mod:
   assumes "a > (0::nat)"
@@ -245,12 +210,6 @@ lemma k_wise_indep_vars_map_pmf:
   using assms indep_vars_map_pmf
   unfolding prob_space.k_wise_indep_vars_def[OF prob_space_measure_pmf]
   by blast
-
-lemma (in prob_space) k_wise_indep_subset:
-  assumes "J \<subseteq> I"
-  assumes "k_wise_indep_vars k M' X' I"
-  shows "k_wise_indep_vars k M' X' J"
-  using assms unfolding k_wise_indep_vars_def by simp
 
 lemma (in prob_space) k_wise_indep_vars_reindex:
   assumes "inj_on f I"

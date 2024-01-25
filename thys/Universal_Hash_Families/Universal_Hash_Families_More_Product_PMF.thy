@@ -4,6 +4,7 @@ theory Universal_Hash_Families_More_Product_PMF
   imports
     "HOL-Probability.Product_PMF"
     Concentration_Inequalities.Concentration_Inequalities_Preliminary
+    Finite_Fields.Finite_Fields_More_Bijections
     Universal_Hash_Families_More_Independent_Families
 begin
 
@@ -225,5 +226,32 @@ lemma Pi_pmf_bind_return:
   assumes "finite I"
   shows "Pi_pmf I d (\<lambda>i. M i \<bind> (\<lambda>x. return_pmf (f i x))) = Pi_pmf I d' M \<bind> (\<lambda>x. return_pmf (\<lambda>i. if i \<in> I then f i (x i) else d))"
   using assms by (simp add: Pi_pmf_bind[where d'="d'"])
+
+lemma pmf_of_set_prod_eq:
+  assumes "A \<noteq> {}" "finite A"
+  assumes "B \<noteq> {}" "finite B"
+  shows  "pmf_of_set (A \<times> B) = pair_pmf (pmf_of_set A) (pmf_of_set B)"
+proof -
+  have "indicat_real (A \<times> B) (i, j) = indicat_real A i * indicat_real B j" for i j
+    by (cases "i \<in> A"; cases "j \<in> B") auto
+  hence "pmf (pmf_of_set (A \<times> B)) (i,j) = pmf (pair_pmf (pmf_of_set A) (pmf_of_set B)) (i,j)"
+    for i j using assms by (simp add:pmf_pair)
+  thus ?thesis
+    by (intro pmf_eqI) auto
+qed
+
+lemma split_pmf_mod_div':
+  assumes "a > (0::nat)"
+  assumes "b > 0"
+  shows "map_pmf (\<lambda>x. (x mod a, x div a)) (pmf_of_set {..<a * b}) = pmf_of_set ({..<a} \<times> {..<b})"
+  using assms by (intro map_pmf_of_set_bij_betw bij_betw_prod finite_lessThan)
+    (simp add: lessThan_empty_iff)
+
+lemma split_pmf_mod_div:
+  assumes "a > (0::nat)"
+  assumes "b > 0"
+  shows "map_pmf (\<lambda>x. (x mod a, x div a)) (pmf_of_set {..<a * b}) =
+    pair_pmf (pmf_of_set {..<a}) (pmf_of_set {..<b})"
+  using assms by (auto intro!: pmf_of_set_prod_eq simp add:split_pmf_mod_div')
 
 end

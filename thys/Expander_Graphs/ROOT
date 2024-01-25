@@ -21,6 +21,7 @@ session Expander_Graphs = "HOL-Probability" +
     Expander_Graphs_TTS
     Expander_Graphs_Walks
     Extra_Congruence_Method
+    Pseudorandom_Objects_Expander_Walks
   document_files
     "root.tex"
     "root.bib"

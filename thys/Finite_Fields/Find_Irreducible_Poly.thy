@@ -652,6 +652,11 @@ qed
 
 definition "is_prime_power n = (\<exists>p k. Factorial_Ring.prime p \<and> k > 0 \<and> n = p^k)"
 
+lemma is_prime_powerI:
+  assumes "prime p" "k > 0"
+  shows "is_prime_power (p ^ k)"
+  unfolding is_prime_power_def using assms by auto
+
 definition GF where
   "GF n = (
     let (p,k) = split_power n;

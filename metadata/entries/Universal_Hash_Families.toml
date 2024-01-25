@@ -32,6 +32,7 @@ homepage = "karayel_homepage"
 karayel = "karayel_email"
 
 [history]
+2024-01-25 = "Added combinator library for pseudorandom objects."
 
 [extra]
 

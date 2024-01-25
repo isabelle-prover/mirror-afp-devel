@@ -428,4 +428,112 @@ proof -
   finally show ?thesis by simp
 qed
 
+text \<open>Bounds and properties of @{term "KL_div"}\<close>
+
+lemma KL_div_mono_right_aux_1:
+  assumes "0 \<le> p" "p \<le> q" "q \<le> q'" "q' < 1"
+  shows "KL_div p q-2*(p-q)^2 \<le> KL_div p q'-2*(p-q')^2"
+proof (cases "p = 0")
+  case True
+  define f' :: "real \<Rightarrow> real" where "f' = (\<lambda>x. 1/(1-x) - 4 * x)"
+
+  have deriv: "((\<lambda>q. ln (1/(1-q)) - 2*q^2) has_real_derivative (f' x)) (at x)"
+    if "x \<in> {q..q'}" for x
+  proof -
+    have "x \<in> {0..<1}" using assms that by auto
+    thus ?thesis unfolding f'_def by (auto intro!: derivative_eq_intros)
+  qed
+
+  have deriv_nonneg: "f' x \<ge> 0" if "x \<in> {q..q'}" for x
+  proof -
+    have 0:"x \<in> {0..<1}" using assms that by auto
+    have "4 * x*(1-x) = 1 - 4*(x-1/2)^2" by (simp add:power2_eq_square field_simps)
+    also have "... \<le> 1" by simp
+    finally have "4*x*(1-x) \<le> 1" by simp
+    hence "1/(1-x) \<ge> 4*x" using 0 by (simp add: pos_le_divide_eq)
+    thus ?thesis unfolding f'_def by auto
+  qed
+
+  have "ln (1 / (1 - q)) - 2 * q^2 \<le> ln (1 / (1 - q')) - 2 * q'^2"
+    using deriv deriv_nonneg by (intro DERIV_nonneg_imp_nondecreasing[OF assms(3)]) auto
+  thus ?thesis using True unfolding KL_div_def by simp
+next
+  case False
+  hence p_gt_0: "p > 0" using assms by auto
+
+  define f' :: "real \<Rightarrow> real" where "f' = (\<lambda>x. (1-p)/(1-x) - p/x + 4 * (p-x))"
+
+  have deriv: "((\<lambda>q. KL_div p q - 2*(p-q)^2) has_real_derivative (f' x)) (at x)" if "x \<in> {q..q'}"
+    for x
+  proof -
+    have "0 < p /x" " 0 < (1 - p) / (1 - x)" using that assms p_gt_0 by auto
+    thus ?thesis unfolding KL_div_def f'_def by (auto intro!: derivative_eq_intros)
+  qed
+
+  have f'_part_nonneg: "(1/(x*(1-x)) - 4) \<ge> 0" if "x \<in> {0<..<1}" for x :: real
+  proof -
+    have "4 * x * (1-x) = 1 - 4 * (x-1/2)^2" by (simp add:power2_eq_square algebra_simps)
+    also have "... \<le> 1" by simp
+    finally have "4 * x * (1-x) \<le> 1" by simp
+    hence "1/(x*(1-x)) \<ge> 4" using that by (subst pos_le_divide_eq) auto
+    thus ?thesis by simp
+  qed
+
+  have f'_alt: "f' x = (x-p)*(1/(x*(1-x)) - 4)" if "x \<in> {0<..<1}" for x
+  proof -
+    have "f' x = (x-p)/(x*(1-x)) + 4 * (p-x)" using that unfolding f'_def by (simp add:field_simps)
+    also have "... = (x-p)*(1/(x*(1-x)) - 4)" by (simp add:algebra_simps)
+    finally show ?thesis by simp
+  qed
+
+  have deriv_nonneg: "f' x \<ge> 0" if "x \<in> {q..q'}" for x
+  proof -
+    have "x \<in> {0<..<1}" using assms that p_gt_0 by auto
+    have "f' x =(x-p)*(1/(x*(1-x)) - 4)" using that assms p_gt_0 by (subst f'_alt) auto
+    also have "... \<ge> 0" using that f'_part_nonneg assms p_gt_0 by (intro mult_nonneg_nonneg) auto
+    finally show ?thesis by simp
+  qed
+
+  show ?thesis using deriv deriv_nonneg
+    by (intro DERIV_nonneg_imp_nondecreasing[OF assms(3)]) auto
+qed
+
+lemma KL_div_swap: "KL_div (1-p) (1-q) = KL_div p q"
+  unfolding KL_div_def by auto
+
+lemma KL_div_mono_right_aux_2:
+  assumes "0 < q'" "q' \<le> q" "q \<le> p" "p \<le> 1"
+  shows "KL_div p q-2*(p-q)^2 \<le> KL_div p q'-2*(p-q')^2"
+proof -
+  have "KL_div (1-p) (1-q)-2*((1-p)-(1-q))^2 \<le> KL_div (1-p) (1-q')-2*((1-p)-(1-q'))^2"
+    using assms by (intro KL_div_mono_right_aux_1) auto
+  thus ?thesis unfolding KL_div_swap by (auto simp:algebra_simps power2_commute)
+qed
+
+lemma KL_div_mono_right_aux:
+  assumes "(0 \<le> p \<and> p \<le> q \<and> q \<le> q' \<and> q' < 1) \<or> (0 < q' \<and> q' \<le> q \<and> q \<le> p \<and> p \<le> 1)"
+  shows "KL_div p q-2*(p-q)^2 \<le> KL_div p q'-2*(p-q')^2"
+  using KL_div_mono_right_aux_1 KL_div_mono_right_aux_2 assms by auto
+
+lemma KL_div_mono_right:
+  assumes "(0 \<le> p \<and> p \<le> q \<and> q \<le> q' \<and> q' < 1) \<or> (0 < q' \<and> q' \<le> q \<and> q \<le> p \<and> p \<le> 1)"
+  shows "KL_div p q \<le> KL_div p q'" (is "?L \<le> ?R")
+proof -
+  consider (a) "0 \<le> p" "p \<le> q" "q \<le> q'" "q' < 1" | (b) "0 < q'" "q' \<le> q" "q \<le> p" "p \<le> 1"
+    using assms by auto
+  hence 0: "(p - q)\<^sup>2 \<le> (p - q')\<^sup>2"
+  proof (cases)
+    case a
+    hence "(q-p)^2 \<le> (q' - p)^2" by auto
+    thus ?thesis by (simp add: power2_commute)
+  next
+    case b thus ?thesis by simp
+  qed
+  have "?L = (KL_div p q - 2*(p-q)^2) + 2 * (p-q)^2" by simp
+  also have "... \<le> (KL_div p q' - 2*(p-q')^2) + 2 * (p-q')^2"
+    by (intro add_mono KL_div_mono_right_aux assms mult_left_mono 0) auto
+  also have "... = ?R" by simp
+  finally show ?thesis by simp
+qed
+
 end

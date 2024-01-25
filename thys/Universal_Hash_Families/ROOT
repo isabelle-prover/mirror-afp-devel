@@ -13,6 +13,8 @@ session Universal_Hash_Families = "HOL-Probability" +
     Carter_Wegman_Hash_Family
     Universal_Hash_Families_More_Finite_Fields
     Universal_Hash_Families_More_Product_PMF
+    Pseudorandom_Objects
+    Pseudorandom_Objects_Hash_Families
   document_files
     "root.tex"
     "root.bib"

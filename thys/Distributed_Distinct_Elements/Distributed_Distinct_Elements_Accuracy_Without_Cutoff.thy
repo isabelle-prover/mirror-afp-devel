@@ -77,18 +77,17 @@ proof -
 
     have "?L = (\<integral>\<omega>. indicator {f. x \<le> f a} \<omega> \<partial> \<Psi>\<^sub>1)"
       unfolding V_def by (intro integral_cong_AE) auto
-    also have "... = measure (map_pmf (\<lambda>\<omega>. \<omega> a) (sample_pmf \<Psi>\<^sub>1)) {f. x \<le> f}"
+    also have "... = measure (map_pmf (\<lambda>\<omega>. \<omega> a) (sample_pro \<Psi>\<^sub>1)) {f. x \<le> f}"
       by simp
     also have "... = measure (\<G> n_exp) {f. x \<le> f}"
-      unfolding \<Psi>\<^sub>1.single[OF a_le_n] by simp
+      by (subst hash_pro_component[OF \<Psi>\<^sub>1 a_le_n]) auto
     also have "... = of_bool (x \<le> max (nat \<lceil>log 2 n\<rceil>) 1)/2^x"
-      unfolding \<G>_prob n_exp_def by simp
+      unfolding geom_pro_prob n_exp_def by simp
     finally show ?thesis by simp
   qed
 
   have b:"(\<integral>\<omega>. real (r x \<omega>) \<partial> \<Psi>\<^sub>1) = (\<Sum> a \<in> A. (\<integral>\<omega>. V a \<omega> \<partial>\<Psi>\<^sub>1))"
-    unfolding r_eq V_def  using \<Psi>\<^sub>1.sample_space
-    by (intro Bochner_Integration.integral_sum) auto
+    unfolding r_eq V_def by (intro Bochner_Integration.integral_sum) auto
   also have "... = (\<Sum> a \<in> A.  of_bool (x \<le> max (nat \<lceil>log 2 n\<rceil>) 1)/2^x)"
     using V_exp by (intro sum.cong) auto
   also have "... = X * (of_bool (x \<le> max (nat \<lceil>log 2 n\<rceil>) 1) / 2^x)"
@@ -100,15 +99,14 @@ proof -
     unfolding V_def of_bool_square by simp
 
   hence a:"measure_pmf.variance \<Psi>\<^sub>1 (V a) \<le> measure_pmf.expectation \<Psi>\<^sub>1 (V a)"  for a
-    using \<Psi>\<^sub>1.sample_space by (subst measure_pmf.variance_eq) auto
+    by (subst measure_pmf.variance_eq) auto
 
   have "J \<subseteq> A \<Longrightarrow> card J = 2 \<Longrightarrow> prob_space.indep_vars \<Psi>\<^sub>1 (\<lambda>_. borel) V J" for J
     unfolding V_def using A_range finite_subset[OF _ fin_A]
-    by (intro prob_space.indep_vars_compose2[where Y="\<lambda>i y. of_bool(x \<le> y)" and M'="\<lambda>_. discrete"]
-        prob_space.k_wise_indep_vars_subset[OF _ \<Psi>\<^sub>1.indep]) (auto simp:prob_space_measure_pmf)
+    by (intro  prob_space.indep_vars_compose2[where Y="\<lambda>i y. of_bool(x \<le> y)" and M'="\<lambda>_. discrete"]
+         hash_pro_indep[OF \<Psi>\<^sub>1]) (auto simp:prob_space_measure_pmf)
   hence "measure_pmf.variance \<Psi>\<^sub>1 (\<lambda>\<omega>. real (r x \<omega>)) = (\<Sum> a \<in> A. measure_pmf.variance \<Psi>\<^sub>1 (V a))"
-    unfolding r_eq V_def using \<Psi>\<^sub>1.sample_space
-    by (intro measure_pmf.bienaymes_identity_pairwise_indep_2 fin_A) (simp_all)
+    unfolding r_eq V_def by (intro measure_pmf.bienaymes_identity_pairwise_indep_2 fin_A) simp_all
   also have "... \<le> (\<Sum> a \<in> A. (\<integral>\<omega>. V a \<omega> \<partial> \<Psi>\<^sub>1))"
     by (intro sum_mono a)
   also have "... = (\<integral>\<omega>. real (r x \<omega>) \<partial> \<Psi>\<^sub>1)"
@@ -154,7 +152,7 @@ proof (cases "log 2 (real X) \<ge> 8")
     unfolding t_def by (intro pmf_mono) (auto simp add:int_of_nat_def)
   also have "... \<le> measure \<Psi>\<^sub>1 {f \<in> space \<Psi>\<^sub>1.  (\<integral>\<omega>. Z \<omega> \<partial>\<Psi>\<^sub>1) \<le> \<bar>Z f - (\<integral>\<omega>. Z \<omega> \<partial>\<Psi>\<^sub>1) \<bar>}"
   proof (rule pmf_mono)
-    fix f assume "f \<in> set_pmf (sample_pmf \<Psi>\<^sub>1)"
+    fix f assume "f \<in> set_pmf (sample_pro \<Psi>\<^sub>1)"
     have fin_f_A: "finite (f ` A)" using fin_A finite_imageI by blast
     assume " f \<in> {f. real (Max (f ` A)) < log 2 (real X) - 8}"
     hence "real (Max (f ` A)) < log 2 (real X) - 8" by auto
@@ -172,7 +170,7 @@ proof (cases "log 2 (real X) \<ge> 8")
       by auto
   qed
   also have "... \<le> measure_pmf.variance \<Psi>\<^sub>1 Z / (\<integral>\<omega>. Z \<omega> \<partial>\<Psi>\<^sub>1)^2"
-    using exp_Z_gt_2_7 \<Psi>\<^sub>1.sample_space by (intro measure_pmf.second_moment_method) simp_all
+    using exp_Z_gt_2_7 by (intro measure_pmf.second_moment_method) simp_all
   also have "... \<le> (\<integral>\<omega>. Z \<omega> \<partial>\<Psi>\<^sub>1) / (\<integral>\<omega>. Z \<omega> \<partial>\<Psi>\<^sub>1)^2"
     by (intro divide_right_mono var_Z_le_exp_Z) simp
   also have "... = 1 / (\<integral>\<omega>. Z \<omega> \<partial>\<Psi>\<^sub>1)"
@@ -219,7 +217,7 @@ proof -
     unfolding t_def  by (intro pmf_mono) (auto simp add:int_of_nat_def)
   also have "... \<le> measure \<Psi>\<^sub>1 {f. Z f \<ge> 1}"
   proof (rule pmf_mono)
-    fix f assume "f \<in> set_pmf (sample_pmf \<Psi>\<^sub>1)"
+    fix f assume "f \<in> set_pmf (sample_pro \<Psi>\<^sub>1)"
     assume " f \<in> {f. real (Max (f ` A)) > log 2 (real X) + 7}"
     hence "real (Max (f ` A)) > log 2 (real X) + 7" by simp
     hence "int (Max (f ` A)) \<ge> \<lfloor>log 2 (real X) + 8\<rfloor>"
@@ -239,7 +237,7 @@ proof -
     thus "f \<in> {f. 1 \<le> Z f}" by simp
   qed
   also have "... \<le> (\<integral>\<omega>. Z \<omega> \<partial>\<Psi>\<^sub>1) / 1"
-    using Z_nonneg using \<Psi>\<^sub>1.sample_space by (intro pmf_markov) auto
+    using Z_nonneg by (intro pmf_markov) auto
   also have "... \<le> ?R"
     using Z_exp by simp
   finally show ?thesis by simp
@@ -298,7 +296,7 @@ proof -
     by simp
 
   thus ?thesis
-    unfolding sample_pmf_\<Psi> E\<^sub>1_def case_prod_beta
+    unfolding sample_pro_\<Psi> E\<^sub>1_def case_prod_beta
     by (subst pair_pmf_prob_left)
 qed
 
@@ -411,7 +409,7 @@ proof -
     also have "... = \<P>(f in \<Psi>\<^sub>1. \<bar>real (r t f)-(\<integral>\<omega>. real (r t \<omega>) \<partial> \<Psi>\<^sub>1)\<bar> \<ge> \<epsilon>/3 * real X/2^t)"
       by (simp add: r_exp[OF that])
     also have "... \<le> measure_pmf.variance \<Psi>\<^sub>1 (\<lambda>\<omega>. real (r t \<omega>)) / (\<epsilon>/3 * real X / 2^t)^2"
-      using X_ge_1 \<epsilon>_gt_0 \<Psi>\<^sub>1.sample_space
+      using X_ge_1 \<epsilon>_gt_0
       by (intro measure_pmf.Chebyshev_inequality divide_pos_pos mult_pos_pos) auto
     also have "... \<le> (X / 2^t) / (\<epsilon>/3 * X / 2^t)^2"
       by (intro divide_right_mono r_var[OF that]) simp
@@ -434,7 +432,7 @@ proof -
   have "?L \<le> measure \<Psi> {\<psi>. (\<exists>t \<in> T. \<bar>real (r t (fst \<psi>))-real X/2^t\<bar> > \<epsilon>/3 * real X / 2^t)}"
   proof (rule pmf_mono)
     fix \<psi>
-    assume "\<psi> \<in> set_pmf (sample_pmf \<Psi>)"
+    assume "\<psi> \<in> set_pmf (sample_pro \<Psi>)"
     obtain f g h where \<psi>_def: "\<psi> = (f,g,h)" by (metis prod_cases3)
     assume "\<psi> \<in> {\<psi>. E\<^sub>1 \<psi> \<and> \<not> E\<^sub>2 \<psi>}"
     hence a:"2 powr ( -real_of_int (t f)) * real X \<in> {real b/2^16..real b/2}" and
@@ -462,7 +460,7 @@ proof -
     thus "\<psi> \<in> {\<psi>. (\<exists>t \<in> T. \<bar>r t (fst \<psi>) - X / 2^t\<bar> >  \<epsilon>/3 * X / 2^t)}" by simp
   qed
   also have "... = measure \<Psi>\<^sub>1 {f. (\<exists>t \<in> T. \<bar>real (r t f)-real X / 2^t\<bar> > \<epsilon>/3 * real X/2^t)}"
-    unfolding sample_pmf_\<Psi> by (intro pair_pmf_prob_left)
+    unfolding sample_pro_\<Psi> by (intro pair_pmf_prob_left)
   also have "... = measure \<Psi>\<^sub>1 (\<Union>t \<in> T. {f. \<bar>real (r t f)-real X / 2^t\<bar> > \<epsilon>/3 * real X/2^t})"
     by (intro measure_pmf_cong) auto
   also have "... \<le> (\<Sum>t \<in> T. measure \<Psi>\<^sub>1 {f.\<bar>real (r t f)-real X / 2^t\<bar> > \<epsilon>/3 * real X/2^t})"
@@ -528,9 +526,10 @@ proof -
     if "?\<alpha> \<omega> f" for \<omega> f
   proof -
     obtain x y z where \<omega>_def: "\<omega> = (z,x,y)" by (metis prod_cases3)
-    have a:"prob_space.k_wise_indep_vars \<Psi>\<^sub>2 2 (\<lambda>i. discrete) (\<lambda>x \<omega>. \<omega> x = z) {..<n}"
-      by (intro prob_space.k_wise_indep_vars_compose[OF _ \<Psi>\<^sub>2.indep])
-       (simp_all add:prob_space_measure_pmf)
+    have a:"prob_space.indep_vars \<Psi>\<^sub>2 (\<lambda>i. discrete) (\<lambda>x \<omega>. \<omega> x = z) I"
+      if "I \<subseteq> {..<n}" "card I \<le> 2" for I
+      by (intro  prob_space.indep_vars_compose2[OF _ hash_pro_indep[OF \<Psi>\<^sub>2]] that)
+        (simp_all add:prob_space_measure_pmf)
 
     have "u \<in> R f \<Longrightarrow> u < n" for u
       unfolding R_def using A_range by auto
@@ -541,14 +540,14 @@ proof -
     have "measure \<Psi>\<^sub>2 {g. ?\<beta> \<omega> g} = measure \<Psi>\<^sub>2 {g. (\<forall>\<xi> \<in> {x,y}. g \<xi> = z)}"
       by (simp add:\<omega>_def)
     also have "... = (\<Prod>\<xi> \<in> {x,y}. measure \<Psi>\<^sub>2 {g. g \<xi> = z})"
-      using b by (intro measure_pmf.split_indep_events[OF refl, where I="{x,y}"]
-          prob_space.k_wise_indep_vars_subset[OF _ a]) (simp_all add:prob_space_measure_pmf)
-    also have "... = (\<Prod>\<xi> \<in> {x,y}. measure (map_pmf (\<lambda>\<omega>. \<omega> \<xi>) (sample_pmf \<Psi>\<^sub>2)) {g. g = z}) "
+      using b by (intro measure_pmf.split_indep_events[OF refl, where I="{x,y}"] a)
+        (simp_all add:prob_space_measure_pmf)
+    also have "... = (\<Prod>\<xi> \<in> {x,y}. measure (map_pmf (\<lambda>\<omega>. \<omega> \<xi>) (sample_pro \<Psi>\<^sub>2)) {g. g = z}) "
       by (simp add:vimage_def)
-    also have "... = (\<Prod>\<xi> \<in> {x,y}. measure [C\<^sub>7 * b\<^sup>2]\<^sub>S {g. g=z})"
-      using b \<Psi>\<^sub>2.single by (intro prod.cong) fastforce+
+    also have "... = (\<Prod>\<xi> \<in> {x,y}. measure (\<N> (C\<^sub>7 * b\<^sup>2)) {g. g=z})"
+      using b hash_pro_component[OF \<Psi>\<^sub>2] by (intro prod.cong) fastforce+
     also have "... = (\<Prod>\<xi> \<in> {x,y}. measure (pmf_of_set {..<C\<^sub>7 * b\<^sup>2}) {z})"
-      by (subst nat_sample_pmf) simp
+      by (subst nat_pro) (simp_all add:C\<^sub>7_def b_def)
     also have "... = (measure (pmf_of_set {..<C\<^sub>7 * b\<^sup>2}) {z})^2"
       using b by simp
     also have "... \<le> (1 /(C\<^sub>7*b\<^sup>2))^2"
@@ -580,10 +579,9 @@ proof -
 
   have "?L \<le> measure \<Psi> {(f,g,h). card (R f) \<le> b \<and> (\<exists> x y z. ?\<alpha> (x,y,z) f \<and> ?\<beta> (x,y,z) g)}"
   proof (rule pmf_mono)
-    fix \<psi> assume b:"\<psi> \<in> set_pmf (sample_pmf \<Psi>)"
+    fix \<psi> assume b:"\<psi> \<in> set_pmf (sample_pro \<Psi>)"
     obtain f g h where \<psi>_def:"\<psi> = (f,g,h)" by (metis prod_cases3)
-    have "(f,g,h) \<in> sample_set \<Psi>"
-      using sample_space_alt[OF sample_space_\<Psi>] b \<psi>_def by simp
+    have "(f,g,h) \<in> pro_set \<Psi>" using b \<psi>_def by simp
     hence c:"g x < C\<^sub>7*b^2" for x
       using g_range by simp
 
@@ -601,14 +599,13 @@ proof -
   qed
   also have "... = (\<integral>f. measure (pair_pmf \<Psi>\<^sub>2 \<Psi>\<^sub>3)
      {g. card (R f) \<le> b \<and> (\<exists>x y z. ?\<alpha> (x,y,z) f \<and> ?\<beta> (x,y,z) (fst g))} \<partial>\<Psi>\<^sub>1)"
-    unfolding sample_pmf_\<Psi> split_pair_pmf by (simp add: case_prod_beta)
+    unfolding sample_pro_\<Psi> split_pair_pmf by (simp add: case_prod_beta)
   also have
     "... = (\<integral>f. measure \<Psi>\<^sub>2 {g. card (R f) \<le> b \<and> (\<exists>x y z. ?\<alpha> (x,y,z) f \<and> ?\<beta> (x,y,z) g)} \<partial>\<Psi>\<^sub>1)"
     by (subst pair_pmf_prob_left) simp
   also have "... \<le> (\<integral>f. 1/real (2*C\<^sub>7) \<partial>\<Psi>\<^sub>1)"
-  proof (rule pmf_exp_mono[OF integrable_sample_pmf[OF \<Psi>\<^sub>1.sample_space]
-          integrable_sample_pmf[OF \<Psi>\<^sub>1.sample_space]])
-    fix f assume "f \<in> set_pmf (sample_pmf \<Psi>\<^sub>1)"
+  proof (rule pmf_exp_mono[OF integrable_sample_pro integrable_sample_pro])
+    fix f assume "f \<in> set_pmf (sample_pro \<Psi>\<^sub>1)"
     show "measure \<Psi>\<^sub>2 {g. card (R f) \<le> b \<and> (\<exists>x y z. ?\<alpha> (x,y,z) f \<and> ?\<beta> (x,y,z) g)} \<le> 1 / real (2 * C\<^sub>7)"
       (is "?L1 \<le> ?R1")
     proof (cases "card (R f) \<le> b")
@@ -658,7 +655,7 @@ qed
 lemma e_4: "measure \<Psi> {\<psi>. E\<^sub>1 \<psi> \<and> E\<^sub>2 \<psi> \<and> E\<^sub>3 \<psi> \<and> \<not>E\<^sub>4 \<psi>} \<le> 1/2^6" (is "?L \<le> ?R")
 proof -
   have a: "measure \<Psi>\<^sub>3 {h. E\<^sub>1 (f,g,h) \<and> E\<^sub>2 (f,g,h) \<and> E\<^sub>3 (f,g,h) \<and> \<not>E\<^sub>4 (f,g,h)} \<le> 1/2^6"
-    (is "?L1 \<le> ?R1") if "f \<in> set_pmf (sample_pmf \<Psi>\<^sub>1)" "g \<in> set_pmf(sample_pmf \<Psi>\<^sub>2)"
+    (is "?L1 \<le> ?R1") if "f \<in> set_pmf (sample_pro \<Psi>\<^sub>1)" "g \<in> set_pmf(sample_pro \<Psi>\<^sub>2)"
     for f g
   proof (cases "card (R f) \<le> b \<and> inj_on g (R f)")
     case True
@@ -674,18 +671,19 @@ proof -
       using fin_R b_ne by unfold_locales auto
 
     have "range g \<subseteq> {..<C\<^sub>7 * b\<^sup>2}"
-      using g_range_1 that(2) unfolding sample_space_alt[OF \<Psi>\<^sub>2.sample_space] by auto
+      using g_range_1 that(2) by auto
     hence g_ran: "g ` R f \<subseteq> {..<C\<^sub>7 * b\<^sup>2}"
       by auto
 
-    have "sample_pmf [b]\<^sub>S = pmf_of_set {..<b}"
-      unfolding sample_pmf_def nat_sample_space_def by simp
-    hence " map_pmf (\<lambda>\<omega>. \<omega> x) (sample_pmf (\<H> k (C\<^sub>7 * b\<^sup>2) [b]\<^sub>S)) = pmf_of_set {..<b}"
+    have "sample_pro (\<N> b) = pmf_of_set {..<b}"
+      by (intro nat_pro) (simp add:b_def)
+    hence " map_pmf (\<lambda>\<omega>. \<omega> x) (sample_pro (\<H> k (C\<^sub>7 * b\<^sup>2) (\<N> b))) = pmf_of_set {..<b}"
       if "x \<in> g ` R f" for x
-      using g_ran \<Psi>\<^sub>3.single that by auto
+      using g_ran hash_pro_component[OF \<Psi>\<^sub>3 _ k_gt_0] that by auto
     moreover have "prob_space.k_wise_indep_vars \<Psi>\<^sub>3 k (\<lambda>_. discrete) (\<lambda>x \<omega>. \<omega> x) (g ` R f)"
-      by (intro prob_space.k_wise_indep_subset[OF _ _ \<Psi>\<^sub>3.indep] g_ran prob_space_measure_pmf)
-    ultimately have lim_balls_and_bins: "B.lim_balls_and_bins k (sample_pmf (\<H> k (C\<^sub>7 * b\<^sup>2) [b]\<^sub>S))"
+      by (intro prob_space.k_wise_indep_subset[OF _ _ hash_pro_k_indep[OF \<Psi>\<^sub>3]] g_ran
+          prob_space_measure_pmf)
+    ultimately have lim_balls_and_bins: "B.lim_balls_and_bins k (sample_pro (\<H> k (C\<^sub>7 * b\<^sup>2) (\<N> b)))"
       unfolding B.lim_balls_and_bins_def by auto
 
     have card_g_R: "card (g ` R f) = card (R f)"
@@ -701,9 +699,8 @@ proof -
       fix h assume "h \<in> {h. E\<^sub>1 (f,g,h) \<and> E\<^sub>2 (f,g,h) \<and> E\<^sub>3 (f,g,h) \<and> \<not>E\<^sub>4 (f,g,h)}"
       hence b: "\<bar>p (f,g,h) -\<rho> (card (R f))\<bar> >  \<epsilon>/12 * card (R f)"
         unfolding E\<^sub>4_def by simp
-      assume "h \<in> set_pmf (sample_pmf \<Psi>\<^sub>3)"
-      hence h_range: "h x < b" for x
-        unfolding sample_space_alt[OF \<Psi>\<^sub>3.sample_space,symmetric] using h_range_1 by simp
+      assume "h \<in> set_pmf (sample_pro \<Psi>\<^sub>3)"
+      hence h_range: "h x < b" for x using h_range_1 by simp
 
       have "{j \<in> {..<b}. int (s f) \<le> \<tau>\<^sub>1 (f, g, h) A 0 j} =
         {j \<in> {..<b}. int (s f) \<le> max (Max ({int (f a) |a. a \<in> A \<and> h (g a) = j} \<union> {-1})) (- 1)}"
@@ -753,10 +750,9 @@ proof -
 
   have "?L = (\<integral>f. (\<integral>g.
     measure \<Psi>\<^sub>3 {h. E\<^sub>1 (f,g,h) \<and> E\<^sub>2 (f,g,h) \<and> E\<^sub>3 (f,g,h) \<and> \<not>E\<^sub>4 (f,g,h)} \<partial>\<Psi>\<^sub>2) \<partial>\<Psi>\<^sub>1)"
-    unfolding sample_pmf_\<Psi> split_pair_pmf by simp
+    unfolding sample_pro_\<Psi> split_pair_pmf by simp
   also have "... \<le> (\<integral>f. (\<integral>g.  1/2^6  \<partial>\<Psi>\<^sub>2) \<partial>\<Psi>\<^sub>1)"
-    using a \<Psi>\<^sub>1.sample_space \<Psi>\<^sub>2.sample_space
-    by (intro integral_mono_AE AE_pmfI) simp_all
+    using a by (intro integral_mono_AE AE_pmfI) simp_all
   also have "... = 1/2^6"
     by simp
   finally show ?thesis by simp
@@ -881,7 +877,7 @@ lemma accuracy_without_cutoff:
 proof -
   have "?L \<le> measure \<Psi> {\<psi>. \<not>E\<^sub>1 \<psi> \<or>  \<not>E\<^sub>2 \<psi> \<or>  \<not>E\<^sub>3 \<psi> \<or>  \<not>E\<^sub>4 \<psi>}"
   proof (rule pmf_rev_mono)
-    fix \<psi> assume "\<psi> \<in> set_pmf (sample_pmf \<Psi>)"
+    fix \<psi> assume "\<psi> \<in> set_pmf (sample_pro \<Psi>)"
     obtain f g h where \<psi>_def: "\<psi> = (f,g,h)" by (metis prod_cases3)
 
     assume "\<psi> \<notin> {\<psi>. \<not> E\<^sub>1 \<psi> \<or> \<not> E\<^sub>2 \<psi> \<or> \<not> E\<^sub>3 \<psi> \<or> \<not> E\<^sub>4 \<psi>}"

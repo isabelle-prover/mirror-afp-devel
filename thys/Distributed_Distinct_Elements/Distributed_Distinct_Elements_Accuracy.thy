@@ -62,7 +62,7 @@ definition Y\<^sub>c (* tilde A* *)
   where "Y\<^sub>c \<psi> \<sigma> = 2 ^ s\<^sub>c \<psi> \<sigma> * \<rho>_inv (p\<^sub>c \<psi> \<sigma>)"
 
 lemma s\<^sub>c_eq_s:
-  assumes "(f,g,h) \<in> sample_set \<Psi>"
+  assumes "(f,g,h) \<in> sample_pro \<Psi>"
   assumes "\<sigma> \<le> s f"
   shows "s\<^sub>c (f,g,h) \<sigma> = s f"
 proof -
@@ -83,7 +83,7 @@ proof -
   hence 0: "int \<sigma> - 1 \<le> int (Max (f ` A))"
     by simp
 
-  have c:"h \<in> sample_set (\<H> k (C\<^sub>7 * b\<^sup>2) [b]\<^sub>S)"
+  have c:"h \<in> sample_pro (\<H> k (C\<^sub>7 * b\<^sup>2) (\<N> b))"
     using assms(1) sample_set_\<Psi> by auto
   hence h_range: "h x < b" for x
     using h_range_1 by simp
@@ -109,7 +109,7 @@ proof -
 qed
 
 lemma p\<^sub>c_eq_p:
-  assumes "(f,g,h) \<in> sample_set \<Psi>"
+  assumes "(f,g,h) \<in> sample_pro \<Psi>"
   assumes "\<sigma> \<le> s f"
   shows "p\<^sub>c (f,g,h) \<sigma> = p (f,g,h)"
 proof -
@@ -122,7 +122,7 @@ proof -
 qed
 
 lemma Y\<^sub>c_eq_Y:
-  assumes "(f,g,h) \<in> sample_set \<Psi>"
+  assumes "(f,g,h) \<in> sample_pro \<Psi>"
   assumes "\<sigma> \<le> s f"
   shows "Y\<^sub>c (f,g,h) \<sigma> = Y (f,g,h)"
   unfolding Y\<^sub>c_def Y_def s\<^sub>c_eq_s[OF assms] p\<^sub>c_eq_p[OF assms] by simp
@@ -135,12 +135,11 @@ proof -
   proof (rule pmf_mono)
     fix \<psi>
     assume a:"\<psi> \<in> {\<psi>. \<exists>\<sigma>\<le>q_max. \<epsilon> * real X < \<bar>Y\<^sub>c \<psi> \<sigma> - real X\<bar>}"
-    assume d:"\<psi> \<in> set_pmf (sample_pmf \<Psi>)"
+    assume d:"\<psi> \<in> set_pmf (sample_pro \<Psi>)"
     obtain \<sigma> where b:"\<sigma> \<le> q_max" and c:" \<epsilon> * real X < \<bar>Y\<^sub>c \<psi> \<sigma> - real X\<bar>"
       using a by auto
     obtain f g h where \<psi>_def: "\<psi> = (f,g,h)" by (metis prod_cases3)
-    hence e:"(f,g,h) \<in> sample_set \<Psi>"
-      using d unfolding sample_space_alt[OF sample_space_\<Psi>] by simp
+    hence e:"(f,g,h) \<in> sample_pro \<Psi>" using d by simp
 
     show "\<psi> \<in> {(f, g, h). \<epsilon> * real X < \<bar>Y (f, g, h) - real X\<bar> \<or> s f < q_max}"
     proof (cases "s f \<ge> q_max")
@@ -268,9 +267,9 @@ proof -
       by simp
   qed
   also have "... = measure \<Omega> {\<omega>. real (card{i\<in>{..<l}. (\<exists>\<sigma>\<le>q_max. Y\<^sub>c (\<omega> i) \<sigma>\<notin>I)}) \<ge> (1/2)*real l}"
-    unfolding sample_pmf_alt[OF \<Omega>.sample_space] p_def by simp
+    unfolding p_def by simp
   also have "... \<le> exp (- real l * ((1/2) * ln (1 / (\<mu> + \<Lambda>)) - 2 * exp (- 1)))"
-    using 0 unfolding \<mu>_def by (intro \<Omega>.tail_bound l_gt_0 \<Lambda>_gt_0) auto
+    using 0 unfolding \<mu>_def by (intro walk_tail_bound l_gt_0 \<Lambda>_gt_0) auto
   also have "... = exp (- (real l * ((1/2) * ln (1 / (\<mu> + \<Lambda>)) - 2 * exp (- 1))))"
     by simp
   also have "... \<le> exp (- (real l * ((1/2) * ln 8 - 2 * exp (- 1))))"

@@ -120,12 +120,11 @@ proof (cases "k \<le> n_exp - 1")
   have "?L = (\<integral>x. real_of_int (max 0 (int x - k)) \<partial>map_pmf (\<lambda>x. x a) \<Psi>\<^sub>1)"
     by simp
   also have "... = (\<integral>x. real_of_int (max 0 (int x - k)) \<partial>(\<G> n_exp))"
-    unfolding \<Psi>\<^sub>1.single[OF a_le_n] by simp
+    by (subst hash_pro_component[OF \<Psi>\<^sub>1 a_le_n]) auto
   also have "... = (\<integral>x. max 0 (real x - real k) \<partial>(\<G> n_exp))"
     unfolding max_of_mono[OF mono_real_of_int,symmetric] by simp
   also have "... = (\<Sum>x\<le>n_exp.  max 0 (real x - real k) * pmf (\<G> n_exp) x)"
-    using \<G>_range unfolding sample_space_alt[OF \<G>_sample_space]
-    by (intro integral_measure_pmf_real) auto
+    using geom_pro_range by (intro integral_measure_pmf_real) auto
   also have "... = (\<Sum>x=k+1..n_exp. (real x - real k) * pmf (\<G> n_exp) x)"
     by (intro sum.mono_neutral_cong_right) auto
   also have "... = (\<Sum>x=k+1..n_exp. (real x - real k) * measure (\<G> n_exp) {x})"
@@ -136,7 +135,7 @@ proof (cases "k \<le> n_exp - 1")
     (measure (\<G> n_exp) {\<omega>. \<omega>\<ge>x} - measure (\<G> n_exp) {\<omega>. \<omega>\<ge>(x+1)}))"
     by (intro sum.cong arg_cong2[where f="(*)"] measure_Diff) auto
   also have "... = (\<Sum>x=k+1..n_exp. (real x - real k) * (1/2^x - of_bool(x+1\<le>n_exp)/2^(x+1)))"
-    unfolding \<G>_prob by (intro_cong "[\<sigma>\<^sub>2 (*), \<sigma>\<^sub>2 (-), \<sigma>\<^sub>2 (/)]" more:sum.cong) auto
+    unfolding geom_pro_prob by (intro_cong "[\<sigma>\<^sub>2 (*), \<sigma>\<^sub>2 (-), \<sigma>\<^sub>2 (/)]" more:sum.cong) auto
   also have "... =
     (\<Sum>x=k+1..n_exp. (real x-k)/2^x) - (\<Sum>x=k+1..n_exp. (real x-k)* of_bool(x+1\<le>n_exp)/2^(x+1))"
     by (simp add:algebra_simps sum_subtractf)
@@ -180,9 +179,9 @@ next
   have "?L = (\<integral>x. real_of_int (max 0 (int x - k)) \<partial>map_pmf (\<lambda>x. x a) \<Psi>\<^sub>1)"
     by simp
   also have "... = (\<integral>x. real_of_int (max 0 (int x - k)) \<partial>(\<G> n_exp))"
-    unfolding \<Psi>\<^sub>1.single[OF a_lt_n] by simp
+    by (subst hash_pro_component[OF \<Psi>\<^sub>1 a_lt_n]) auto
   also have "... = (\<integral>x. real_of_int 0 \<partial>(\<G> n_exp))"
-    using \<G>_range k_ge_n_exp unfolding sample_space_alt[OF \<G>_sample_space]
+    using geom_pro_range k_ge_n_exp
     by (intro integral_cong_AE AE_pmfI iffD2[OF of_int_eq_iff] max_absorb1) force+
   also have "... = 0" by simp
   finally show ?thesis by simp
@@ -269,12 +268,12 @@ proof -
   define V where "V \<omega> = Z \<omega> / real b - 3" for \<omega>
 
   have 2:"Z \<psi> \<le> real b*(real c+2) + of_int (\<Sum>a\<in>A. max 0 (int (fst \<psi> a) - q_max -2^c))"
-    (is "?L1 \<le> ?R1") if "\<psi> \<in> sample_set \<Psi>" for c \<psi>
+    (is "?L1 \<le> ?R1") if "\<psi> \<in> sample_pro \<Psi>" for c \<psi>
   proof -
     obtain f g h where \<psi>_def: "\<psi> = (f,g,h)"
       using prod_cases3 by blast
 
-    have \<psi>_range: "(f,g,h) \<in> sample_set \<Psi>"
+    have \<psi>_range: "(f,g,h) \<in> sample_pro \<Psi>"
       using that unfolding \<psi>_def by simp
 
     have "- 1 - 2^c \<le> -1-(1::real)"
@@ -335,18 +334,17 @@ proof -
       unfolding V_def using b_min by (intro measure_pmf_cong) (simp add:field_simps)
     also have "... \<le> measure \<Psi>
       {\<psi>. real b*(real c+3)\<le> real b*(real c+2)+ of_int (\<Sum>a\<in>A. max 0 (int (fst \<psi> a)-q_max -2^c))}"
-      using 2 order_trans unfolding sample_space_alt[OF sample_space_\<Psi>]
-      by (intro pmf_mono) blast
+      using 2 order_trans by (intro pmf_mono) blast
     also have "... = measure \<Psi> {\<psi>. real b \<le> (\<Sum>a\<in>A. of_int (max 0 (int (fst \<psi> a) -q_max -2^c)))}"
       by (intro measure_pmf_cong) (simp add:algebra_simps)
     also have "... \<le> (\<integral>\<psi>. (\<Sum>a\<in>A. of_int (max 0 (int (fst \<psi> a) -q_max -2^c))) \<partial>\<Psi>)/real b"
-      using b_min sample_space_\<Psi> by (intro pmf_markov sum_nonneg) simp_all
+      using b_min by (intro pmf_markov sum_nonneg) simp_all
     also have "... = (\<Sum>a\<in>A. (\<integral>\<psi>.  of_int (max 0 (int (fst \<psi> a) -q_max -2^c)) \<partial>\<Psi>))/real b"
-      using sample_space_\<Psi> by (intro_cong "[\<sigma>\<^sub>2(/)]" more:Bochner_Integration.integral_sum) simp
+      by (intro_cong "[\<sigma>\<^sub>2(/)]" more:Bochner_Integration.integral_sum) simp
     also have "... = (\<Sum>a\<in>A. (\<integral>f.  of_int (max 0 (int (f a)-q_max -2^c)) \<partial>(map_pmf fst \<Psi>)))/real b"
       by simp
     also have "... = (\<Sum>a\<in>A. (\<integral>f. of_int (max 0 (int (f a) - (q_max +2^c))) \<partial>\<Psi>\<^sub>1))/real b"
-      unfolding sample_pmf_\<Psi> map_fst_pair_pmf by (simp add:algebra_simps)
+      unfolding sample_pro_\<Psi> map_fst_pair_pmf by (simp add:algebra_simps)
     also have "... \<le> (\<Sum>a\<in>A. 2 powr -real (q_max + 2^c))/real b"
       using b_min by (intro sum_mono divide_right_mono cutoff_eq_6) auto
     also have "... = real X * 2 powr (- real q_max + (- (2 ^ c))) / real b"
@@ -442,7 +440,7 @@ proof -
   also have "... \<le> measure \<Omega> {\<omega>. (\<Sum>i<l. V (\<omega> i)) \<ge> C\<^sub>1 * real l}"
     unfolding C\<^sub>5_def using C\<^sub>1_est by (intro pmf_mono) auto
   also have "... \<le> exp (- real l)"
-    by (intro \<Omega>.deviation_bound l_gt_0 0) (simp_all add: \<Lambda>_def)
+    by (intro deviation_bound l_gt_0 0) (simp_all add: \<Lambda>_def)
   also have "... \<le> exp (- (C\<^sub>6 * ln (2 / \<delta>)))"
     using l_lbound by (intro iffD2[OF exp_le_cancel_iff]) auto
   also have "... \<le> exp (- (1 * ln (2 / \<delta>)))"

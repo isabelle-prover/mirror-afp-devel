@@ -37,6 +37,12 @@ lemma (in prob_space) k_wise_indep_vars_subset:
   using assms
   by (simp add:k_wise_indep_vars_def)
 
+lemma (in prob_space) k_wise_indep_subset:
+  assumes "J \<subseteq> I"
+  assumes "k_wise_indep_vars k M' X' I"
+  shows "k_wise_indep_vars k M' X' J"
+  using assms unfolding k_wise_indep_vars_def by simp
+
 text \<open>Similarly for a finite non-empty set $A$ the predicate @{term "uniform_on X A"} indicates that
 the random variable is uniformly distributed on $A$:\<close>
 

@@ -10,8 +10,7 @@ Section~\ref{sec:margulis}. This section presents the latter as a SEE but also s
 operations that preserve the SEE property, in particular the graph power construction from
 Section~\ref{sec:graph_power} and a compression scheme introduced by
 Murtagh et al.~\cite[Theorem~20]{murtagh2019}. Combining all of the above it is possible to construct
-strongly explicit expander graphs of \emph{every size} and spectral gap, which is formalized in
-Subsection~\ref{sec:see_standard}.\<close>
+strongly explicit expander graphs of \emph{every size} and spectral gap.\<close>
 
 theory Expander_Graphs_Strongly_Explicit
   imports Expander_Graphs_Power_Construction Expander_Graphs_MGG

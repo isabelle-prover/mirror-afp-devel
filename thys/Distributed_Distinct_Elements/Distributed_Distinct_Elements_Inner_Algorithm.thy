@@ -24,7 +24,7 @@ subsampling threshold simultaneously with high probability.\<close>
 
 theory Distributed_Distinct_Elements_Inner_Algorithm
   imports
-    Pseudorandom_Combinators
+    Universal_Hash_Families.Pseudorandom_Objects_Hash_Families
     Distributed_Distinct_Elements_Preliminary
     Distributed_Distinct_Elements_Balls_and_Bins
     Distributed_Distinct_Elements_Tail_Bounds
@@ -147,10 +147,10 @@ lemma n_exp_gt_0: "n_exp > 0"
   unfolding n_exp_def by simp
 
 abbreviation \<Psi>\<^sub>1 where "\<Psi>\<^sub>1 \<equiv> \<H> 2 n (\<G> n_exp)"
-abbreviation \<Psi>\<^sub>2 where "\<Psi>\<^sub>2 \<equiv> \<H> 2 n [C\<^sub>7*b\<^sup>2]\<^sub>S"
-abbreviation \<Psi>\<^sub>3 where "\<Psi>\<^sub>3 \<equiv> \<H> k (C\<^sub>7*b\<^sup>2) [b]\<^sub>S"
+abbreviation \<Psi>\<^sub>2 where "\<Psi>\<^sub>2 \<equiv> \<H> 2 n (\<N> (C\<^sub>7*b\<^sup>2))"
+abbreviation \<Psi>\<^sub>3 where "\<Psi>\<^sub>3 \<equiv> \<H> k (C\<^sub>7*b\<^sup>2) (\<N> b)"
 
-definition \<Psi> where "\<Psi> = \<Psi>\<^sub>1 \<times>\<^sub>S \<Psi>\<^sub>2 \<times>\<^sub>S \<Psi>\<^sub>3"
+definition \<Psi> where "\<Psi> = \<Psi>\<^sub>1 \<times>\<^sub>P \<Psi>\<^sub>2 \<times>\<^sub>P \<Psi>\<^sub>3"
 
 abbreviation \<Omega> where "\<Omega> \<equiv> \<E> l \<Lambda> \<Psi>"
 
@@ -255,96 +255,71 @@ lemma \<tau>\<^sub>2_step: "\<tau>\<^sub>2 \<omega> A (x+y) = (\<lambda>i j. max
 lemma \<tau>\<^sub>3_step: "compress_step (\<tau>\<^sub>3 \<omega> A x) = \<tau>\<^sub>3 \<omega> A (x+1)"
   unfolding \<tau>\<^sub>3_def using \<tau>\<^sub>2_step[where y="1"] by simp
 
-sublocale \<Psi>\<^sub>1: hash_sample_space 2 n 2 n_exp "\<G> n_exp"
-  using n_exp_gt_0 unfolding hash_sample_space_def \<G>_def by auto
+lemma \<Psi>\<^sub>1: "is_prime_power (pro_size (\<G> n_exp))"
+  unfolding geom_pro_size by (intro is_prime_powerI n_exp_gt_0) auto
 
-sublocale \<Psi>\<^sub>2: hash_sample_space 2 n 2 "5 + b_exp*2" "[(C\<^sub>7*b\<^sup>2)]\<^sub>S"
-  unfolding hash_sample_space_def nat_sample_space_def b_def C\<^sub>7_def
-  by (auto simp add:power_mult power_add)
+lemma \<Psi>\<^sub>2: "is_prime_power (pro_size (\<N> (C\<^sub>7 * b^2)))"
+proof -
+  have 0:"pro_size (\<N> (C\<^sub>7 * b^2)) = 2 ^ (5 + 2 * b_exp)"
+    unfolding C\<^sub>7_def b_def by (subst nat_pro_size) (auto simp add: power_add power_even_eq)
+  thus ?thesis unfolding 0 by (intro is_prime_powerI) auto
+qed
 
-sublocale \<Psi>\<^sub>3: hash_sample_space k "C\<^sub>7*b\<^sup>2" 2 "b_exp" "[b]\<^sub>S"
-  unfolding hash_sample_space_def b_def nat_sample_space_def using k_gt_0 b_exp_ge_26
-  by auto
+lemma \<Psi>\<^sub>3: "is_prime_power (pro_size (\<N> b))"
+proof -
+  have 0:"pro_size (\<N> b) = 2 ^ b_exp" unfolding b_def by (subst nat_pro_size) auto
+  thus ?thesis using b_exp_ge_26 unfolding 0 by (intro is_prime_powerI) auto
+qed
 
-lemma sample_pmf_\<Psi>: "sample_pmf \<Psi> = pair_pmf \<Psi>\<^sub>1 (pair_pmf \<Psi>\<^sub>2 \<Psi>\<^sub>3)"
-  unfolding \<Psi>_def
-  using \<Psi>\<^sub>1.sample_space \<Psi>\<^sub>2.sample_space \<Psi>\<^sub>3.sample_space
-  by (simp add:prod_sample_pmf)
+lemma sample_pro_\<Psi>:
+  "sample_pro \<Psi> = pair_pmf (sample_pro \<Psi>\<^sub>1) (pair_pmf (sample_pro \<Psi>\<^sub>2) (sample_pro \<Psi>\<^sub>3))"
+  unfolding \<Psi>_def by (simp add:prod_pro)
 
-lemma sample_set_\<Psi>:
-  "sample_set \<Psi> = sample_set \<Psi>\<^sub>1 \<times> sample_set \<Psi>\<^sub>2 \<times> sample_set \<Psi>\<^sub>3"
-  using \<Psi>\<^sub>1.sample_space \<Psi>\<^sub>2.sample_space \<Psi>\<^sub>3.sample_space unfolding \<Psi>_def
-  by (simp add: prod_sample_set)
-
-lemma sample_space_\<Psi>: "sample_space \<Psi>"
-  unfolding \<Psi>_def
-  using \<Psi>\<^sub>1.sample_space \<Psi>\<^sub>2.sample_space \<Psi>\<^sub>3.sample_space
-  by simp
+lemma sample_set_\<Psi>: "pro_set \<Psi> = pro_set \<Psi>\<^sub>1 \<times> pro_set \<Psi>\<^sub>2 \<times> pro_set \<Psi>\<^sub>3"
+  unfolding \<Psi>_def by (simp add:prod_pro_set)
 
 lemma f_range:
-  assumes "(f,g,h) \<in> sample_set \<Psi>"
+  assumes "(f,g,h) \<in> pro_set \<Psi>"
   shows "f x \<le> n_exp"
 proof -
-  have "f \<in> sample_set \<Psi>\<^sub>1"
-    using sample_set_\<Psi> assms by auto
-  then obtain i where f_def:"f = select \<Psi>\<^sub>1 i" unfolding sample_set_def by auto
-  hence "f x \<in> sample_set (\<G> n_exp)"
-    using \<Psi>\<^sub>1.range by auto
-  also have "... \<subseteq> {..n_exp}"
-    by (intro \<G>_range)
-  finally have "f x \<in> {..n_exp}"
-    by simp
-  thus ?thesis by simp
+  have "f \<in> pro_set \<Psi>\<^sub>1" using sample_set_\<Psi> assms by auto
+  hence "f \<in> pro_select \<Psi>\<^sub>1 ` {..<pro_size \<Psi>\<^sub>1}" unfolding set_sample_pro by auto
+  hence "f x \<in> pro_set (\<G> n_exp)" using hash_pro_range[OF \<Psi>\<^sub>1] by auto
+  thus ?thesis using geom_pro_range by auto
 qed
 
 lemma g_range_1:
-  assumes "g \<in> sample_set \<Psi>\<^sub>2"
+  assumes "g \<in> pro_set \<Psi>\<^sub>2"
   shows "g x < C\<^sub>7*b^2"
 proof -
-  obtain i where f_def:"g = select (\<H> 2 n [(C\<^sub>7*b\<^sup>2)]\<^sub>S) i"
-    using assms unfolding sample_set_def by auto
-  hence "range g \<subseteq> sample_set ([(C\<^sub>7*b\<^sup>2)]\<^sub>S)"
-    unfolding f_def by (intro \<Psi>\<^sub>2.range)
-  thus ?thesis
-    unfolding sample_set_alt[OF \<Psi>\<^sub>2.sample_space_R]
-    unfolding nat_sample_space_def by auto
+  have "g \<in> pro_select \<Psi>\<^sub>2 ` {..<pro_size \<Psi>\<^sub>2}" using assms unfolding set_sample_pro by auto
+  hence "g x \<in> pro_set (\<N> ( C\<^sub>7*b^2))" using hash_pro_range[OF \<Psi>\<^sub>2] by auto
+  moreover have "C\<^sub>7*b^2  > 0" unfolding C\<^sub>7_def b_def by simp
+  ultimately show ?thesis using nat_pro_set by auto
 qed
 
 lemma h_range_1:
-  assumes "h \<in> sample_set \<Psi>\<^sub>3"
+  assumes "h \<in> pro_set \<Psi>\<^sub>3"
   shows "h x < b"
 proof -
-  obtain i where f_def:"h = select \<Psi>\<^sub>3 i"
-    using assms unfolding sample_set_def by auto
-  hence "range h \<subseteq> sample_set ([b]\<^sub>S)"
-    unfolding f_def by (intro \<Psi>\<^sub>3.range)
-  thus ?thesis
-    unfolding sample_set_alt[OF \<Psi>\<^sub>3.sample_space_R]
-    unfolding nat_sample_space_def by auto
+  have "h \<in> pro_select \<Psi>\<^sub>3 ` {..<pro_size \<Psi>\<^sub>3}" using assms unfolding set_sample_pro by auto
+  hence "h x \<in> pro_set (\<N> b)" using hash_pro_range[OF \<Psi>\<^sub>3] by auto
+  moreover have "b  > 0" unfolding b_def by simp
+  ultimately show ?thesis using nat_pro_set by auto
 qed
 
 lemma g_range:
-  assumes "(f,g,h) \<in> sample_set \<Psi>"
+  assumes "(f,g,h) \<in> pro_set \<Psi>"
   shows "g x < C\<^sub>7*b^2"
-proof -
-  have "g \<in> sample_set \<Psi>\<^sub>2"
-    using sample_set_\<Psi> assms by auto
-  thus ?thesis
-    using g_range_1 by simp
-qed
+  using g_range_1 sample_set_\<Psi> assms by simp
 
 lemma h_range:
-  assumes "(f,g,h) \<in> sample_set \<Psi>"
+  assumes "(f,g,h) \<in> pro_set \<Psi>"
   shows "h x < b"
-proof -
-  have "h \<in> sample_set \<Psi>\<^sub>3"
-    using sample_set_\<Psi> assms by auto
-  thus ?thesis
-    using h_range_1 by simp
-qed
+  using h_range_1 sample_set_\<Psi> assms by simp
 
 lemma fin_f:
-  assumes "(f,g,h) \<in> sample_set \<Psi>"
+  assumes "(f,g,h) \<in> pro_set \<Psi>"
   shows "finite { int (f a) | a. P a }" (is "finite ?M")
 proof -
   have "finite (range f)"
@@ -360,23 +335,26 @@ qed
 lemma Max_int_range: "x \<le> (y::int) \<Longrightarrow> Max {x..y} = y"
   by auto
 
-sublocale \<Omega>: expander_sample_space l \<Lambda> \<Psi>
-  unfolding expander_sample_space_def using sample_space_\<Psi> l_gt_0 \<Lambda>_gt_0 by auto
+lemma \<Omega>: "l > 0" "\<Lambda> > 0" using l_gt_0 \<Lambda>_gt_0 by auto
+
+lemma \<omega>_range:
+  assumes "\<omega> \<in> pro_set \<Omega>"
+  shows "\<omega> i \<in> pro_set \<Psi>"
+proof -
+  have "\<omega> \<in> pro_select \<Omega> ` {..<pro_size \<Omega>}" using assms unfolding set_sample_pro by auto
+  thus "\<omega> i \<in> pro_set \<Psi>" using expander_pro_range[OF \<Omega>] assms by auto
+qed
 
 lemma max_q_1:
-  assumes "\<omega> \<in> sample_set \<Omega>"
+  assumes "\<omega> \<in> pro_set \<Omega>"
   shows "\<tau>\<^sub>2 \<omega> A (nat \<lceil>log 2 n\<rceil>+2) i j = (-1)"
 proof (cases "i < l")
   case True
-  obtain f g h where w_i: "\<omega> i = (f,g,h)"
-    by (metis prod_cases3)
+  obtain f g h where w_i: "\<omega> i = (f,g,h)" by (metis prod_cases3)
 
   let ?max_q = "max \<lceil>log 2 (real n)\<rceil> 1"
 
-  have "\<omega> i \<in> sample_set \<Psi>"
-    using \<Omega>.sample_set assms unfolding Pi_def by auto
-  hence c: "(f,g,h) \<in> sample_set \<Psi>"
-    using  w_i  by auto
+  have c: "(f,g,h) \<in> pro_set \<Psi>" using \<omega>_range[OF assms] w_i[symmetric] by auto
   have a:"int (f x) \<le> ?max_q" for x
   proof -
     have "int (f x) \<le> int n_exp"
@@ -395,17 +373,16 @@ proof (cases "i < l")
     unfolding \<tau>\<^sub>2_def \<tau>\<^sub>1_def using True by auto
 next
   case False
-  thus ?thesis
-    unfolding \<tau>\<^sub>2_def \<tau>\<^sub>1_def by simp
+  thus ?thesis unfolding \<tau>\<^sub>2_def \<tau>\<^sub>1_def by simp
 qed
 
 lemma max_q_2:
-  assumes "\<omega> \<in> sample_set \<Omega>"
+  assumes "\<omega> \<in> pro_set \<Omega>"
   shows "\<not> (is_too_large (\<tau>\<^sub>2 \<omega> A (nat \<lceil>log 2 n\<rceil>+2)))"
   using max_q_1[OF assms] by (simp add:C\<^sub>5_def case_prod_beta mult_less_0_iff)
 
 lemma max_s_3:
-  assumes "\<omega> \<in> sample_set \<Omega>"
+  assumes "\<omega> \<in> pro_set \<Omega>"
   shows "q \<omega> A \<le> (nat \<lceil>log 2 n\<rceil>+2)"
   unfolding q_def by (intro wellorder_Least_lemma(2) max_q_2 assms)
 
@@ -416,7 +393,7 @@ lemma max_mono_2: "y \<le> (z::'a::linorder) \<Longrightarrow> max x y \<le> max
   using max.coboundedI2 by auto
 
 lemma \<tau>\<^sub>0_mono:
-  assumes "\<psi> \<in> sample_set \<Psi>"
+  assumes "\<psi> \<in> pro_set \<Psi>"
   assumes "A \<subseteq> B"
   shows "\<tau>\<^sub>0 \<psi> A j \<le> \<tau>\<^sub>0 \<psi> B j"
 proof -
@@ -428,19 +405,17 @@ proof -
 qed
 
 lemma \<tau>\<^sub>2_mono:
-  assumes "\<omega> \<in> sample_set \<Omega>"
+  assumes "\<omega> \<in> pro_set \<Omega>"
   assumes "A \<subseteq> B"
   shows "\<tau>\<^sub>2 \<omega> A x i j \<le> \<tau>\<^sub>2 \<omega> B x i j"
 proof -
   have "max (\<tau>\<^sub>0 (\<omega> i) A j - int x) (- 1) \<le> max (\<tau>\<^sub>0 (\<omega> i) B j - int x) (- 1)" if "i < l"
-    using assms(1) \<Omega>.sample_set that
-    by (intro max_mono diff_mono \<tau>\<^sub>0_mono assms(2) order.refl) auto
-  thus ?thesis
-    by (cases "i < l") (auto simp add:\<tau>\<^sub>2_def \<tau>\<^sub>1_def)
+    using that \<omega>_range[OF assms(1)] by (intro max_mono diff_mono \<tau>\<^sub>0_mono assms(2) order.refl)
+  thus ?thesis by (cases "i < l") (auto simp add:\<tau>\<^sub>2_def \<tau>\<^sub>1_def)
 qed
 
 lemma is_too_large_antimono:
-  assumes "\<omega> \<in> sample_set \<Omega>"
+  assumes "\<omega> \<in> pro_set \<Omega>"
   assumes  "A \<subseteq> B"
   assumes "is_too_large (\<tau>\<^sub>2 \<omega> A x)"
   shows "is_too_large (\<tau>\<^sub>2 \<omega> B x)"
@@ -460,13 +435,13 @@ proof -
 qed
 
 lemma q_compact:
-  assumes "\<omega> \<in> sample_set \<Omega>"
+  assumes "\<omega> \<in> pro_set \<Omega>"
   shows "\<not> (is_too_large (\<tau>\<^sub>2 \<omega> A (q \<omega> A)))"
   unfolding q_def using max_q_2[OF assms]
   by (intro wellorder_Least_lemma(1)) blast
 
 lemma q_mono:
-  assumes "\<omega> \<in> sample_set \<Omega>"
+  assumes "\<omega> \<in> pro_set \<Omega>"
   assumes "A \<subseteq> B"
   shows "q \<omega> A \<le> q \<omega> B"
 proof -
@@ -482,12 +457,11 @@ lemma lt_s_too_large: "x < q \<omega> A \<Longrightarrow> is_too_large (\<tau>\<
   using not_less_Least unfolding q_def by auto
 
 lemma compress_result_1:
-  assumes "\<omega> \<in> sample_set \<Omega>"
+  assumes "\<omega> \<in> pro_set \<Omega>"
   shows "compress (\<tau>\<^sub>3 \<omega> A (q \<omega> A - i)) = \<tau> \<omega> A"
 proof (induction i)
   case 0
-  then show ?case
-    using q_compact[OF assms] by (simp add:\<tau>\<^sub>3_def \<tau>_def)
+  then show ?case using q_compact[OF assms] by (simp add:\<tau>\<^sub>3_def \<tau>_def)
 next
   case (Suc i)
   show ?case
@@ -511,7 +485,7 @@ next
 qed
 
 lemma compress_result:
-  assumes "\<omega> \<in> sample_set \<Omega>"
+  assumes "\<omega> \<in> pro_set \<Omega>"
   assumes "x \<le> q \<omega> A"
   shows "compress (\<tau>\<^sub>3 \<omega> A x) = \<tau> \<omega> A"
 proof -
@@ -524,7 +498,7 @@ proof -
 qed
 
 lemma \<tau>\<^sub>0_merge:
-  assumes "(f,g,h) \<in> sample_set \<Psi>"
+  assumes "(f,g,h) \<in> pro_set \<Psi>"
   shows "\<tau>\<^sub>0 (f,g,h) (A \<union> B) j = max (\<tau>\<^sub>0 (f,g,h) A j) (\<tau>\<^sub>0 (f,g,h) B j)" (is "?L = ?R")
 proof-
   let ?f = "\<lambda>a. int (f a)"
@@ -541,18 +515,14 @@ proof-
 qed
 
 lemma \<tau>\<^sub>2_merge:
-  assumes "\<omega> \<in> sample_set \<Omega>"
+  assumes "\<omega> \<in> pro_set \<Omega>"
   shows "\<tau>\<^sub>2 \<omega> (A \<union> B) x i j = max (\<tau>\<^sub>2 \<omega> A x i j) (\<tau>\<^sub>2 \<omega> B x i j)"
 proof (cases "i < l")
   case True
 
-  obtain f g h where w_i: "\<omega> i = (f,g,h)"
-    by (metis prod_cases3)
+  obtain f g h where w_i: "\<omega> i = (f,g,h)" by (metis prod_cases3)
 
-  have "\<omega> i \<in> sample_set \<Psi>"
-    using \<Omega>.sample_set assms unfolding Pi_def by auto
-  hence a: "(f,g,h) \<in> sample_set \<Psi>"
-    using w_i  by auto
+  have a: "(f,g,h) \<in> pro_set \<Psi>" using w_i[symmetric] \<omega>_range[OF assms(1)] by auto
   show ?thesis
     unfolding \<tau>\<^sub>2_def \<tau>\<^sub>1_def
     using True by (simp add:w_i \<tau>\<^sub>0_merge[OF a] del:\<tau>\<^sub>0.simps)
@@ -562,7 +532,7 @@ next
 qed
 
 lemma merge1_result:
-  assumes "\<omega> \<in> sample_set \<Omega>"
+  assumes "\<omega> \<in> pro_set \<Omega>"
   shows "merge1 (\<tau> \<omega> A) (\<tau> \<omega> B) = \<tau>\<^sub>3 \<omega> (A \<union> B) (max (q \<omega> A) (q \<omega> B))"
 proof -
   let ?qmax = "max (q \<omega> A) (q \<omega> B)"
@@ -600,7 +570,7 @@ proof -
 qed
 
 lemma merge_result:
-  assumes "\<omega> \<in> sample_set \<Omega>"
+  assumes "\<omega> \<in> pro_set \<Omega>"
   shows "merge (\<tau> \<omega> A) (\<tau> \<omega> B) = \<tau> \<omega> (A \<union> B)" (is "?L = ?R")
 proof -
   have a:"max (q \<omega> A) (q \<omega> B) \<le> q \<omega> (A \<union> B)"
@@ -629,7 +599,7 @@ proof -
 qed
 
 lemma single_result:
-  assumes "\<omega> \<in> sample_set \<Omega>"
+  assumes "\<omega> \<in> pro_set \<Omega>"
   shows "single \<omega> x = \<tau> \<omega> {x}" (is "?L = ?R")
 proof -
   have "?L = compress (single1 \<omega> x)"
@@ -704,7 +674,7 @@ proof -
 qed
 
 lemma state_bit_count:
-  assumes "\<omega> \<in> sample_set \<Omega>"
+  assumes "\<omega> \<in> pro_set \<Omega>"
   shows "bit_count (encode_state (\<tau> \<omega> A)) \<le>  2^36 * (ln(1/\<delta>)+1)/ \<epsilon>^2 + log 2 (log 2 n + 3)"
     (is "?L \<le> ?R")
 proof -
@@ -719,8 +689,8 @@ proof -
   proof -
     obtain f g h where \<omega>_def: "\<omega> x = (f,g,h)"
       by (metis prod_cases3)
-    have "(f, g, h) \<in> sample_set \<Psi>"
-      using \<Omega>.sample_set assms unfolding Pi_def \<omega>_def[symmetric] by auto
+    have "(f, g, h) \<in> pro_set \<Psi>"
+      using \<omega>_range[OF assms] unfolding Pi_def \<omega>_def[symmetric] by auto
     hence "h (g a) < b" for a
       using h_range by auto
     hence "y \<noteq> h (g a)" for a
@@ -855,7 +825,7 @@ proof -
 qed
 
 lemma random_bit_count:
-  "size \<Omega> \<le> 2 powr (4 * log 2 n + 48 * (log 2 (1 / \<epsilon>) + 16)^2 + (55 + 60 * ln (1 / \<delta>))^3)"
+  "pro_size \<Omega> \<le> 2 powr (4 * log 2 n + 48 * (log 2 (1 / \<epsilon>) + 16)^2 + (55 + 60 * ln (1 / \<delta>))^3)"
   (is "?L \<le> ?R")
 proof -
   have 1:"log 2 (real n) \<ge> 0"
@@ -876,18 +846,17 @@ proof -
   hence 2: "- 1 < log 2 (C\<^sub>4 / \<epsilon>\<^sup>2)"
     by simp
 
-  have 3: "0 < C\<^sub>7 * b\<^sup>2"
-    unfolding C\<^sub>7_def using b_min
-    by (intro Rings.mult_pos_pos) auto
+  have 3: "0 < C\<^sub>7 * b\<^sup>2" unfolding C\<^sub>7_def using b_min by (intro Rings.mult_pos_pos) auto
 
   have "0 \<le> log 2 (real C\<^sub>7) + real (b_exp * 2)"
-    unfolding C\<^sub>7_def
-    by (intro add_nonneg_nonneg) auto
-  hence 4: "-1 < log 2 (real C\<^sub>7) + real (b_exp * 2)"
-    by simp
-
-  have "real (size \<Psi>\<^sub>1) = 2 ^ (max (nat \<lceil>log 2 (real n)\<rceil>) 1 * 2)"
-    using \<Psi>\<^sub>1.size[OF n_gt_0] unfolding n_exp_def by simp
+    unfolding C\<^sub>7_def by (intro add_nonneg_nonneg) auto
+  hence 4: "-1 < log 2 (real C\<^sub>7) + real (b_exp * 2)" by simp
+  have "(2, n_exp) = split_power (pro_size (\<G> n_exp))"
+    unfolding geom_pro_size by (intro split_power_prime[symmetric] n_exp_gt_0) auto
+  hence "real (pro_size \<Psi>\<^sub>1) = real (2 ^ (2 * max n_exp (nat \<lceil>log (real 2) (real n)\<rceil>)))"
+    by (intro arg_cong[where f="real"] hash_pro_size'[OF \<Psi>\<^sub>1 n_gt_0])
+  also have "... = 2 ^ (2 * max n_exp (nat \<lceil>log 2 (real n)\<rceil>))" by simp
+  also have "... = 2 ^ (2 * max 1 (nat \<lceil>log 2 (real n)\<rceil>))" unfolding n_exp_def by simp
   also have "... \<le> 2 powr (2 * max (nat \<lceil>log 2 (real n)\<rceil>) 1)"
     by (subst powr_realpow) auto
   also have "... = 2 powr (2 * max (real (nat \<lceil>log 2 (real n)\<rceil>)) 1)"
@@ -898,11 +867,19 @@ proof -
     by (intro powr_mono mult_left_mono max_mono) auto
   also have "... = 2 powr (2 * (log 2 (real n) + 1))"
     using 1 by (subst max_absorb1) auto
-  finally have 5:"real (size \<Psi>\<^sub>1) \<le> 2 powr (2 * log 2 n + 2)"
+  finally have 5:"real (pro_size \<Psi>\<^sub>1) \<le> 2 powr (2 * log 2 n + 2)"
     by simp
 
-  have "real (size \<Psi>\<^sub>2) = 2 ^ (max (5 + b_exp * 2) (nat \<lceil>log 2 (real n)\<rceil>) * 2)"
-    unfolding \<Psi>\<^sub>2.size[OF n_gt_0] by simp
+  have "(2, 5 + b_exp * 2) = split_power (2^(5+b_exp*2))"
+    by (intro split_power_prime[symmetric]) auto
+  also have "... = split_power (C\<^sub>7 * b\<^sup>2)"
+    unfolding C\<^sub>7_def b_def power_mult[symmetric] power_add by simp
+  also have "... = split_power (pro_size (\<N> (C\<^sub>7 * b\<^sup>2)))"
+    unfolding C\<^sub>7_def b_def by (subst nat_pro_size) auto
+  finally have "(2, 5 + b_exp * 2) = split_power (pro_size (\<N> (C\<^sub>7 * b\<^sup>2)))" by simp
+  hence "real (pro_size \<Psi>\<^sub>2) = real (2 ^ (2 * max  (5 + b_exp * 2) (nat \<lceil>log (real 2) (real n)\<rceil>)))"
+    by (intro arg_cong[where f="real"] hash_pro_size'[OF \<Psi>\<^sub>2 n_gt_0])
+  also have "... = 2 ^ (max (5 + b_exp * 2) (nat \<lceil>log 2 (real n)\<rceil>) * 2)" by simp
   also have "... \<le> 2 ^ (((5 + b_exp * 2) + (nat \<lceil>log 2 (real n)\<rceil>)) * 2)"
     by (intro power_increasing mult_right_mono) auto
   also have "... = 2 powr ((5 + b_exp * 2 + real (nat \<lceil>log 2 (real n)\<rceil>))*2)"
@@ -919,11 +896,17 @@ proof -
     by (intro powr_mono add_mono order.refl mult_left_mono) simp_all
   also have "... = 2 powr (2 * log 2 n + 4 * log 2 (C\<^sub>4 / \<epsilon>\<^sup>2) + 16)"
     by (simp add:ac_simps)
-  finally have 6:"real (size \<Psi>\<^sub>2) \<le> 2 powr (2 * log 2 n + 4 * log 2 (C\<^sub>4 / \<epsilon>\<^sup>2) + 16)"
+  finally have 6:"real (pro_size \<Psi>\<^sub>2) \<le> 2 powr (2 * log 2 n + 4 * log 2 (C\<^sub>4 / \<epsilon>\<^sup>2) + 16)"
     by simp
-
-  have "real (size \<Psi>\<^sub>3) = 2 ^ (max b_exp (nat \<lceil>log 2 (real C\<^sub>7 * (2 ^ (b_exp*2)))\<rceil>) * k)"
-    unfolding \<Psi>\<^sub>3.size[OF 3] power_mult by (simp add:b_def)
+  have "(2, b_exp) = split_power (2 ^ b_exp)"
+    using b_exp_ge_26 by (intro split_power_prime[symmetric]) auto
+  also have "... = split_power (pro_size (\<N> b))"
+    unfolding b_def by (subst nat_pro_size) auto
+  finally have "(2, b_exp) = split_power (pro_size (\<N> b))" by simp
+  hence "real (pro_size \<Psi>\<^sub>3) = real (2 ^ (k * max b_exp (nat \<lceil>log (real 2) (real (C\<^sub>7*b^2))\<rceil>)))"
+    by (intro arg_cong[where f="real"] hash_pro_size'[OF \<Psi>\<^sub>3]) (simp_all add:C\<^sub>7_def b_def)
+  also have "... = 2 ^ (k * max b_exp (nat \<lceil>log 2 (real C\<^sub>7 * (2 ^ (b_exp*2)))\<rceil>))"
+    unfolding b_def power_mult by simp
   also have "... = 2 ^ (max b_exp (nat \<lceil>log 2 C\<^sub>7 + log 2 (2 ^ (b_exp*2))\<rceil>) * k)"
     unfolding C\<^sub>7_def by (subst log_mult) simp_all
   also have "... = 2 ^ (max b_exp (nat \<lceil>log 2 C\<^sub>7 + (b_exp*2)\<rceil>) * k)"
@@ -944,7 +927,7 @@ proof -
     by (intro powr_mono mult_right_mono add_mono) simp_all
   also have "... = 2 powr ((log 2 (C\<^sub>4 / \<epsilon>\<^sup>2) * 2 + 8 ) * real k)"
     by (simp add:ac_simps)
-  finally have 7:"real (size \<Psi>\<^sub>3) \<le> 2 powr ((log 2 (C\<^sub>4 / \<epsilon>\<^sup>2) * 2 + 8 ) * real k)"
+  finally have 7:"real (pro_size \<Psi>\<^sub>3) \<le> 2 powr ((log 2 (C\<^sub>4 / \<epsilon>\<^sup>2) * 2 + 8 ) * real k)"
     by simp
 
   have "ln (real b) \<ge> 0"
@@ -968,8 +951,8 @@ proof -
   finally have 8:"real k \<le> 6 * log 2 (C\<^sub>4 / \<epsilon>^2) + 23"
     by simp
 
-  have "real (size \<Psi>) = real (size \<Psi>\<^sub>1) * real (size \<Psi>\<^sub>2) * real (size \<Psi>\<^sub>3)"
-    unfolding \<Psi>_def prod_sample_space_def by simp
+  have "real (pro_size \<Psi>) = real (pro_size \<Psi>\<^sub>1) * real (pro_size \<Psi>\<^sub>2) * real (pro_size \<Psi>\<^sub>3)"
+    unfolding \<Psi>_def prod_pro_size by simp
   also have "... \<le>
     2 powr(2*log 2 n+2)*2 powr (2*log 2 n+4*log 2 (C\<^sub>4/\<epsilon>\<^sup>2)+16)*2 powr((log 2 (C\<^sub>4/\<epsilon>\<^sup>2)*2+8)*real k)"
     by (intro mult_mono 5 6 7 mult_nonneg_nonneg) simp_all
@@ -996,43 +979,32 @@ proof -
     using \<epsilon>_gt_0 by (subst log_nat_power)  (simp_all add:ac_simps)
   also have "... = 2 powr (4 * log 2 n + 48 * (log 2 (1 / \<epsilon>) + 16)^2)"
     unfolding power_mult_distrib by simp
-  finally have 19:"real (size \<Psi>) \<le> 2 powr (4 * log 2 n + 48 * (log 2 (1 / \<epsilon>) + 16)^2)"
+  finally have 19:"real (pro_size \<Psi>) \<le> 2 powr (4 * log 2 n + 48 * (log 2 (1 / \<epsilon>) + 16)^2)"
     by simp
 
   have "0 \<le> ln \<Lambda> / ln (19 / 20)"
-    using \<Lambda>_gt_0 \<Lambda>_le_1
-    by (intro divide_nonpos_neg) simp_all
-  hence 11: "-1 < ln \<Lambda> / ln (19 / 20)"
-    by simp
+    using \<Lambda>_gt_0 \<Lambda>_le_1 by (intro divide_nonpos_neg) simp_all
+  hence 11: "-1 < ln \<Lambda> / ln (19 / 20)" by simp
 
-  have 12: "ln (19 / 20) \<le> -(0.05::real)" "- ln (1 / 16) \<le> (2.8::real)"
-    by (approximation 10)+
+  have 12: "ln (19 / 20) \<le> -(0.05::real)" "- ln (1 / 16) \<le> (2.8::real)" by (approximation 10)+
 
-  have 13: "ln l \<ge> 0"
-    using l_gt_0 by auto
+  have 13: "ln l \<ge> 0" using l_gt_0 by auto
 
-  have "ln l^3 = 27 * (0 + ln l/3)^3"
-    by (simp add:power3_eq_cube)
+  have "ln l^3 = 27 * (0 + ln l/3)^3" by (simp add:power3_eq_cube)
   also have "... \<le> 27 * (1 + ln l/real 3)^3"
     using l_gt_0 by (intro mult_left_mono add_mono power_mono) auto
   also have "... \<le> 27 * (exp (ln l))"
-    using l_gt_0 13
-    by (intro mult_left_mono exp_ge_one_plus_x_over_n_power_n) linarith+
-  also have "... = 27 * real l"
-    using l_gt_0 by (subst exp_ln) auto
-  finally have 14:"ln l^3 \<le> 27 * real l"
-    by simp
+    using l_gt_0 13 by (intro mult_left_mono exp_ge_one_plus_x_over_n_power_n) linarith+
+  also have "... = 27 * real l" using l_gt_0 by (subst exp_ln) auto
+  finally have 14:"ln l^3 \<le> 27 * real l" by simp
 
   have 15:"C\<^sub>6 * ln (2 / \<delta>) > 0"
     using \<delta>_lt_1 \<delta>_gt_0 unfolding C\<^sub>6_def
     by (intro Rings.mult_pos_pos ln_gt_zero) auto
-  hence "1 \<le> real_of_int \<lceil>C\<^sub>6 * ln (2 / \<delta>)\<rceil>"
-    by simp
-  hence 16: "1 \<le> 3 * real_of_int \<lceil>C\<^sub>6 * ln (2 / \<delta>)\<rceil>"
-    by argo
+  hence "1 \<le> real_of_int \<lceil>C\<^sub>6 * ln (2 / \<delta>)\<rceil>" by simp
+  hence 16: "1 \<le> 3 * real_of_int \<lceil>C\<^sub>6 * ln (2 / \<delta>)\<rceil>" by argo
 
-  have 17: "12 * ln 2 \<le> (9::real)"
-    by (approximation 5)
+  have 17: "12 * ln 2 \<le> (9::real)" by (approximation 5)
 
   have "16 ^ ((l - 1) * nat\<lceil>ln \<Lambda> / ln 0.95\<rceil>) = 16 powr (real (l-1)*real(nat \<lceil>ln \<Lambda> / ln (19 / 20)\<rceil>))"
     by (subst powr_realpow[symmetric]) auto
@@ -1078,18 +1050,16 @@ proof -
   also have "... \<le> 2 powr (80 * (2 + 9 + 12 * ln (1 / \<delta>)) ^ 3)"
     using \<delta>_gt_0 \<delta>_lt_1
     by (intro powr_mono mult_left_mono power_mono add_mono 17 add_nonneg_nonneg) auto
-  also have "... = 2 powr (80 * (11 + 12 * ln (1 / \<delta>)) ^ 3)"
-    by simp
+  also have "... = 2 powr (80 * (11 + 12 * ln (1 / \<delta>)) ^ 3)" by simp
   also have "... \<le> 2 powr (5^3 * (11 + 12 * ln (1 / \<delta>)) ^ 3)"
-    using \<delta>_gt_0 \<delta>_lt_1
-    by (intro powr_mono mult_right_mono) (auto intro!:add_nonneg_nonneg)
+    using \<delta>_gt_0 \<delta>_lt_1 by (intro powr_mono mult_right_mono) (auto intro!:add_nonneg_nonneg)
   also have "... = 2 powr ((55 + 60 * ln (1 / \<delta>))^3)"
     unfolding power_mult_distrib[symmetric] by simp
   finally have 18:"16^((l - 1) * nat\<lceil>ln \<Lambda> / ln (19/20)\<rceil>) \<le> 2 powr ((55 + 60 * ln (1 / \<delta>))^3)"
     by simp
 
-  have "?L = real (size \<Psi>) * 16 ^ ((l - 1) * nat \<lceil>ln \<Lambda> / ln (19 / 20)\<rceil>)"
-    unfolding \<Omega>.size by simp
+  have "?L = real (pro_size \<Psi>) * 16 ^ ((l - 1) * nat \<lceil>ln \<Lambda> / ln (19 / 20)\<rceil>)"
+    unfolding expander_pro_size[OF \<Omega>] by simp
   also have "... \<le> 2 powr (4*log 2 n+48*(log 2 (1/\<epsilon>)+16)^2)*2 powr ((55 + 60 * ln (1 / \<delta>))^3)"
     by (intro mult_mono 18 19) simp_all
   also have "... = 2 powr (4 * log 2 n + 48 * (log 2 (1 / \<epsilon>) + 16)^2 + (55 + 60 * ln (1 / \<delta>))^3)"
