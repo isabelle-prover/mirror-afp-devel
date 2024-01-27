@@ -20,6 +20,7 @@ to @{theory "Universal_Hash_Families.Universal_Hash_Families_More_Product_PMF"}.
 
 lemmas measure_pmf_cong = measure_pmf_cong
 lemmas pmf_mono = pmf_mono
+lemmas pmf_add = pmf_add
 
 lemma pmf_rev_mono:
   assumes "\<And>x. x \<in> set_pmf p \<Longrightarrow> x \<notin> Q \<Longrightarrow> x \<notin> P"
@@ -47,17 +48,6 @@ proof -
     using assms(1) by simp
   also have "... \<le>  ?R"
     by (intro  integral_Markov_inequality_measure[OF _ b] assms a)
-  finally show ?thesis by simp
-qed
-
-lemma pmf_add:
-  assumes  "\<And>x. x \<in> P \<Longrightarrow> x \<in> set_pmf p \<Longrightarrow> x \<in> Q \<or> x \<in> R"
-  shows "measure p P \<le> measure p Q + measure p R"
-proof -
-  have "measure p P \<le> measure p (Q \<union> R)"
-    using assms by (intro pmf_mono) blast
-  also have "... \<le> measure p Q + measure p R"
-    by (rule measure_subadditive, auto)
   finally show ?thesis by simp
 qed
 

@@ -536,4 +536,13 @@ proof -
   finally show ?thesis by simp
 qed
 
+lemma KL_div_lower_bound:
+  assumes "p \<in> {0..1}" "q \<in> {0<..<1}"
+  shows "2*(p-q)^2 \<le> KL_div p q"
+proof -
+  have "0 \<le> KL_div p p - 2 * (p-p)^2" unfolding KL_div_def by simp
+  also have "... \<le> KL_div p q - 2 * (p-q)^2" using assms by (intro KL_div_mono_right_aux) auto
+  finally show ?thesis by simp
+qed
+
 end

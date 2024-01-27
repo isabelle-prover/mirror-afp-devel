@@ -6,7 +6,10 @@ theory Pseudorandom_Objects_Expander_Walks
     Expander_Graphs.Expander_Graphs_Strongly_Explicit
 begin
 
+unbundle intro_cong_syntax
 hide_const (open) Quantum.T
+hide_fact (open) SN_Orders.of_nat_mono
+hide_fact Missing_Ring.mult_pos_pos
 
 definition expander_pro ::
   "nat \<Rightarrow> real \<Rightarrow> ('a,'b) pseudorandom_object_scheme \<Rightarrow> (nat \<Rightarrow> 'a) pseudorandom_object"
@@ -70,6 +73,9 @@ proof -
   also have "... = R" unfolding 0 R_def by simp
   finally show ?thesis by simp
 qed
+
+lemma expander_pro_range: "pro_select (expander_pro l \<Lambda> S) i j \<in> pro_set S"
+  unfolding expander_pro_alt by (simp add:pro_select_in_set)
 
 lemma expander_uniform_property:
   assumes "i < l"
@@ -176,6 +182,104 @@ next
   finally show ?thesis by simp
 qed
 
+lemma expander_chernoff_bound_one_sided:
+  assumes "AE x in sample_pro S. f x \<in> {0,1::real}"
+  assumes "(\<integral>x. f x \<partial>sample_pro S) \<le> \<mu>" "l > 0" "\<gamma> \<ge> 0"
+  shows "measure (expander_pro l \<Lambda> S) {w. (\<Sum>i<l. f (w i))/l-\<mu>\<ge>\<gamma>+\<Lambda>} \<le> exp (- 2 * real l * \<gamma>^2)"
+    (is "?L \<le> ?R")
+proof -
+  let ?w = "sample_pro (expander_pro l \<Lambda> S)"
+  define T where "T x = (f x=1)" for x
+
+  have 1: "indicator {w. T w} x = f x" if "x \<in> pro_set S" for x
+  proof -
+    have "f x \<in> {0,1}" using assms(1) that unfolding AE_measure_pmf_iff by simp
+    thus ?thesis unfolding T_def by auto
+  qed
+
+  have "measure S {w. T w} = (\<integral>x. indicator {w. T w} x \<partial>S)" by simp
+  also have "... = (\<integral>x. f x \<partial>S)" using 1 by (intro integral_cong_AE AE_pmfI) auto
+  also have "... \<le> \<mu>" using assms(2) by simp
+  finally have 0: "measure S {w. T w} \<le> \<mu>" by simp
+
+  hence \<mu>_ge_0: "\<mu> \<ge> 0" using measure_nonneg order.trans by blast
+
+  have cases: "(\<gamma>=0 \<Longrightarrow> p) \<Longrightarrow> (\<gamma>+\<Lambda>+\<mu> > 1  \<Longrightarrow> p) \<Longrightarrow> (\<gamma>+\<Lambda>+\<mu> \<le> 1 \<and> \<gamma> > 0 \<Longrightarrow> p) \<Longrightarrow> p" for p
+    using assms(4) by argo
+
+  have "?L = measure ?w {w. (\<gamma>+\<Lambda>+\<mu>)*l \<le> (\<Sum>i<l. f (w i))}"
+    using assms(3) by (intro measure_pmf_cong) (auto simp:field_simps)
+  also have "... = measure ?w {w. (\<gamma>+\<Lambda>+\<mu>)*l \<le> card {i \<in> {..<l}. T (w i)}}"
+  proof (rule measure_pmf_cong)
+    fix \<omega>
+    assume "\<omega> \<in> pro_set (expander_pro l \<Lambda> S)"
+    hence "\<omega> x \<in> pro_set S" for x using expander_pro_range set_sample_pro by (metis image_iff)
+    hence "(\<Sum>i<l. f (\<omega> i)) = (\<Sum>i<l. indicator {w. T w} (\<omega> i))" using 1 by (intro sum.cong) auto
+    also have "... = card {i \<in> {..<l}. T (\<omega> i)}" unfolding indicator_def by (auto simp:Int_def)
+    finally have "(\<Sum>i<l. f (\<omega> i)) = (card {i \<in> {..<l}. T (\<omega> i)})" by simp
+    thus "(\<omega> \<in> {w. (\<gamma>+\<Lambda>+\<mu>)*l \<le> (\<Sum>i<l. f (w i))})=(\<omega> \<in> {w. (\<gamma>+\<Lambda>+\<mu>)*l\<le>card {i \<in> {..<l}. T (w i)}})"
+      by simp
+  qed
+  also have "... \<le> ?R" (is "?L1 \<le> _")
+  proof (rule cases)
+    assume "\<gamma> = 0" thus "?thesis" by simp
+  next
+    assume a:"\<gamma> + \<Lambda> + \<mu> \<le> 1 \<and> 0 < \<gamma>"
+    hence \<mu>_lt_1: "\<mu> < 1" using assms(4) \<Lambda>_gt_0 by simp
+    hence \<mu>_le_1: "\<mu> \<le> 1" by simp
+    have "\<mu> + \<Lambda> * (1 - \<mu>) \<le> \<mu> + \<Lambda> * 1" using \<mu>_ge_0 \<Lambda>_gt_0 by (intro add_mono mult_left_mono) auto
+    also have "... < \<gamma>+\<Lambda>+\<mu>" using assms(4) a by simp
+    finally have b:"\<mu> + \<Lambda> * (1 - \<mu>) < \<gamma> +\<Lambda> +\<mu>" by simp
+    hence "\<mu> + \<Lambda> * (1 - \<mu>) < 1" using a by simp
+    moreover have "\<mu> + \<Lambda> * (1 - \<mu>) > 0" using \<mu>_lt_1
+      by (intro add_nonneg_pos \<mu>_ge_0 mult_pos_pos \<Lambda>_gt_0) simp
+    ultimately have c: "\<mu> + \<Lambda> * (1 - \<mu>) \<in> {0<..<1}" by simp
+    have d: " \<gamma> + \<Lambda> + \<mu> \<in> {0..1}" using a b c by simp
+    have "?L1 \<le> exp (- real l * KL_div (\<gamma>+\<Lambda>+\<mu>) (\<mu> + \<Lambda>*(1-\<mu>)))"
+      using a b by (intro expander_kl_chernoff_bound \<mu>_le_1 0) auto
+    also have "... \<le> exp (- real l * (2 * ((\<gamma>+\<Lambda>+\<mu>)- (\<mu> + \<Lambda>*(1-\<mu>)))^2))"
+      by (intro iffD2[OF exp_le_cancel_iff] mult_left_mono_neg KL_div_lower_bound c d) simp
+    also have "... \<le> exp (- real l * (2 * (\<gamma>^2)))"
+      using assms(4) \<mu>_lt_1 \<Lambda>_gt_0 \<mu>_ge_0
+      by (intro iffD2[OF exp_le_cancel_iff] mult_left_mono_neg[where c="-real l"] mult_left_mono
+          power_mono) simp_all
+    also have "... = ?R" by simp
+    finally show "?L1 \<le> ?R" by simp
+  next
+    assume a:"1 < \<gamma> + \<Lambda> + \<mu>"
+    have "(\<gamma>+\<Lambda>+\<mu>)* real l > real (card {i \<in> {..<l}. (x i)})" for x
+    proof -
+      have "real (card {i \<in> {..<l}. (x i)}) \<le> card {..<l}" by (intro of_nat_mono card_mono) auto
+      also have "... = real l" by simp
+      also have "... < (\<gamma>+\<Lambda>+\<mu>)* real l" using assms(3) a by simp
+      finally show ?thesis by simp
+    qed
+    hence "?L1 = 0" unfolding not_le[symmetric] by auto
+    also have "... \<le> ?R" by simp
+    finally show "?L1 \<le> ?R" by simp
+  qed
+  finally show ?thesis by simp
+qed
+
+lemma expander_chernoff_bound:
+  assumes "AE x in sample_pro S. f x \<in> {0,1::real}" "l > 0" "\<gamma> \<ge> 0"
+  defines "\<mu> \<equiv> (\<integral>x. f x \<partial>sample_pro S)"
+  shows "measure (expander_pro l \<Lambda> S) {w. \<bar>(\<Sum>i<l. f (w i))/l-\<mu>\<bar>\<ge>\<gamma>+\<Lambda>} \<le> 2*exp (- 2 * real l * \<gamma>^2)"
+    (is "?L \<le> ?R")
+proof -
+  let ?w = "sample_pro (expander_pro l \<Lambda> S)"
+  have "?L \<le> measure ?w {w. (\<Sum>i<l. f (w i))/l-\<mu>\<ge>\<gamma>+\<Lambda>} + measure ?w {w. (\<Sum>i<l. f (w i))/l-\<mu>\<le>-(\<gamma>+\<Lambda>)}"
+    by (intro pmf_add) auto
+  also have "... \<le> exp (-2*real l*\<gamma>^2) + measure ?w {w. -((\<Sum>i<l. f (w i))/l-\<mu>)\<ge>(\<gamma>+\<Lambda>)}"
+    using assms by (intro add_mono expander_chernoff_bound_one_sided) (auto simp:algebra_simps)
+  also have "... \<le> exp (-2*real l*\<gamma>^2) + measure ?w {w. ((\<Sum>i<l. 1-f (w i))/l-(1-\<mu>))\<ge>(\<gamma>+\<Lambda>)}"
+    using assms(2) by (auto simp: sum_subtractf field_simps)
+  also have "... \<le> exp (-2*real l*\<gamma>^2) + exp (-2*real l*\<gamma>^2)"
+    using assms by (intro add_mono expander_chernoff_bound_one_sided) auto
+  also have "... = ?R" by simp
+  finally show ?thesis by simp
+qed
+
 lemma expander_pro_size:
   "pro_size (expander_pro l \<Lambda> S) = pro_size S * (16 ^ ((l-1) * nat \<lceil>ln \<Lambda> / ln (19 / 20)\<rceil>))"
   (is "?L = ?R")
@@ -190,9 +294,6 @@ proof -
     by simp
 qed
 
-lemma expander_pro_range: "pro_select (expander_pro l \<Lambda> S) i j \<in> pro_set S"
-  unfolding expander_pro_alt by (simp add:pro_select_in_set)
-
 end
 
 bundle expander_pseudorandom_object_notation
@@ -206,5 +307,6 @@ no_notation expander_pro ("\<E>")
 end
 
 unbundle expander_pseudorandom_object_notation
+unbundle no_intro_cong_syntax
 
 end

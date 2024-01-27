@@ -32,6 +32,17 @@ proof -
   finally show ?thesis by simp
 qed
 
+lemma pmf_add:
+  assumes  "\<And>x. x \<in> P \<Longrightarrow> x \<in> set_pmf p \<Longrightarrow> x \<in> Q \<or> x \<in> R"
+  shows "measure p P \<le> measure p Q + measure p R"
+proof -
+  have "measure p P \<le> measure p (Q \<union> R)"
+    using assms by (intro pmf_mono) blast
+  also have "... \<le> measure p Q + measure p R"
+    by (rule measure_subadditive, auto)
+  finally show ?thesis by simp
+qed
+
 lemma pmf_prod_pmf:
   assumes "finite I"
   shows "pmf (prod_pmf I M) x = (if x \<in> extensional I then \<Prod>i \<in> I. (pmf (M i)) (x i) else 0)"
