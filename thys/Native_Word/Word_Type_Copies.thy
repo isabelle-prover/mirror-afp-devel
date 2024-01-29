@@ -190,8 +190,9 @@ proof -
     qed
     finally show \<open>P p\<close> .
   qed
-  have \<open>class.semiring_parity_axioms (+) (0::'a) (*) 1 (mod)\<close>
-    by standard (simp_all add: eq_iff_word_of word_of_0 word_of_1 even_iff_word_of word_of_mod even_iff_mod_2_eq_zero)
+  have \<open>class.semiring_parity_axioms (+) (0::'a) (*) 1 (div) (mod)\<close>
+    by standard
+      (simp_all add: eq_iff_word_of word_of_0 word_of_1 even_iff_word_of word_of_add word_of_div word_of_mod even_iff_mod_2_eq_zero)
   with of_class_semiring_modulo have \<open>OFCLASS('a, semiring_parity_class)\<close>
     by (rule semiring_parity_class.intro) 
   moreover have \<open>OFCLASS('a, semiring_modulo_trivial_class)\<close>
