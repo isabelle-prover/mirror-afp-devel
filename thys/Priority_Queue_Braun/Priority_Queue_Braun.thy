@@ -6,6 +6,7 @@ imports
   "HOL-Library.Pattern_Aliases"
   "HOL-Data_Structures.Priority_Queue_Specs"
   "HOL-Data_Structures.Braun_Tree"
+  "HOL-Data_Structures.Define_Time_Function"
 begin
 
 subsection "Introduction"
@@ -228,30 +229,18 @@ qed
 
 subsection "Running Time Analysis"
 
-fun T_insert :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> nat" where
-"T_insert a Leaf = 1" |
-"T_insert a (Node l x r) =
- (1 + (if a < x then T_insert x r else T_insert a r))"
+define_time_fun insert
 
 lemma T_insert: "T_insert a t \<le> height t + 1"
 apply(induction t arbitrary: a)
 by (auto simp: max_def not_less_eq_eq intro: order.trans le_SucI)
 
-fun T_del_left :: "'a tree \<Rightarrow> nat" where
-"T_del_left (Node Leaf x r) = 1" |
-"T_del_left (Node l x r) = 1 + T_del_left l"
+define_time_fun del_left
 
 lemma T_del_left_height: "t \<noteq> Leaf \<Longrightarrow> T_del_left t \<le> height t"
 by(induction t rule: T_del_left.induct)auto
 
-function (sequential) T_sift_down :: "'a::linorder tree \<Rightarrow> 'a \<Rightarrow> 'a tree \<Rightarrow> nat" where
-"T_sift_down Leaf a _ = 1" |
-"T_sift_down (Node Leaf x _) a Leaf = 1" |
-"T_sift_down (Node l1 x1 r1) a (Node l2 x2 r2) =
-  1 + (if a \<le> x1 \<and> a \<le> x2 then 0
-   else if x1 \<le> x2 then T_sift_down l1 a r1
-        else T_sift_down l2 a r2)"
-by pat_completeness auto
+define_time_function sift_down
 termination
 apply (relation "measure (%(l,a,r). max(height l) (height r))")
 apply (auto simp: max_def)
@@ -262,10 +251,7 @@ apply(induction l x r rule: T_sift_down.induct)
 apply(auto)
 done
 
-fun T_del_min :: "'a::linorder tree \<Rightarrow> nat" where
-"T_del_min Leaf = 0" |
-"T_del_min (Node Leaf x r) = 0" |
-"T_del_min (Node l x r) = T_del_left l + (let (y,l') = del_left l in T_sift_down r y l')"
+define_time_fun del_min
 
 lemma del_left_height: "\<lbrakk> del_left t = (x, t'); t \<noteq> \<langle>\<rangle> \<rbrakk> \<Longrightarrow> height t' \<le> height t"
 by(induction t arbitrary: x t' rule: del_left.induct) (auto split: prod.splits)
