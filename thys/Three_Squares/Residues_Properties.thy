@@ -350,18 +350,16 @@ lemma Legendre_opposite:
   assumes "[p = 3] (mod 4) \<and> [q = 3] (mod 4)"
   shows "Legendre p q = - Legendre q p"
 proof -
-  have 0: "even (p - 1)" "even (q - 1)" using assms prime_odd_int by auto
-  have 1: "((p - 1) div 2) * ((q - 1) div 2) = (p - 1) * (q - 1) div 4"
-    using 0 by fastforce
-  have "[p - 1 = 2] (mod 4) \<and> [q - 1 = 2] (mod 4)"
-    using assms
-    unfolding cong_iff_dvd_diff
-    by auto
-  hence "odd ((p - 1) * (q - 1) div 4)"
-    using assms 0 1
-    by (metis bits_div_by_1 cong_dvd_iff dvd_div_iff_mult evenE even_mult_iff
-              even_numeral nonzero_mult_div_cancel_left numeral_One odd_one
-              zdiv_numeral_Bit0 zero_neq_numeral)
+  have \<open>[p - 1 = 2] (mod 4)\<close> \<open>[q - 1 = 2] (mod 4)\<close>
+    using \<open>[p = 3] (mod 4) \<and> [q = 3] (mod 4)\<close>
+    by (simp_all add: cong_iff_dvd_diff)
+  from assms have \<open>even (p - 1)\<close> \<open>even (q - 1)\<close>
+    using assms by (auto dest: prime_odd_int)
+  then have *: "(p - 1) * (q - 1) div 4 = ((p - 1) div 2) * ((q - 1) div 2)"
+    by fastforce
+  have "odd ((p - 1) * (q - 1) div 4)"
+    using \<open>even (p - 1)\<close> \<open>even (q - 1)\<close> \<open>[p - 1 = 2] (mod 4)\<close> \<open>[q - 1 = 2] (mod 4)\<close>
+    by (auto elim!: oddE evenE dest: cong_dvd_iff simp add: *)
   hence 2: "odd (nat ((p - 1) * (q - 1) div 4))"
     using assms even_nat_iff pos_imp_zdiv_nonneg_iff by fastforce
   have 3: "{Legendre p q, Legendre q p} \<subseteq> {-1, 0, 1}"
@@ -370,7 +368,7 @@ proof -
         (- 1) ^ nat (((p - 1) div 2) * ((q - 1) div 2))"
     using assms Quadratic_Reciprocity_int[of p q]
     by fastforce
-  also have "... = (- 1) ^ nat ((p - 1) * (q - 1) div 4)" unfolding 1 by rule
+  also have "... = (- 1) ^ nat ((p - 1) * (q - 1) div 4)" unfolding * by rule
   also have "... = - 1"
     using 2 3
     unfolding minus_one_power_iff

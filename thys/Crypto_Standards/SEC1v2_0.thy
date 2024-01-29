@@ -658,8 +658,8 @@ proof -
   have a1: "?\<alpha> = 0 \<longrightarrow> ?y = 0" 
     by (metis 2 octets_to_point_comp_validInput_def diff_self_eq_0) 
   have a2: "?\<alpha> \<noteq> 0 \<longrightarrow> 0 < ?\<beta>"
-    by (metis (mono_tags, opaque_lifting) 3 QuadRes'HasNatRoot bits_mod_0 mod_mod_trivial 
-              bot_nat_0.not_eq_extremum cong_def int_ops(1) power_zero_numeral) 
+    using QuadRes'HasNatRoot [OF 3]
+    by (auto simp flip: res_eq_to_cong) (smt (verit) gr0I int_ops(1) mod_less res_eq_to_cong zero_power2 zmod_int)
   have x1: "0 \<le> ?x"            using of_nat_0_le_iff by blast
   have x2: "?x < p"            using 2 octets_to_point_comp_validInput_def by meson
   have x3: "?x \<in> carrier R"    using x1 x2 inCarrier by blast 

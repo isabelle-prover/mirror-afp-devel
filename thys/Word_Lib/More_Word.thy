@@ -1198,7 +1198,7 @@ lemma unat_Suc2:
 
 lemma word_div_1:
   "(n :: 'a :: len word) div 1 = n"
-  by (fact bits_div_by_1)
+  by (fact div_by_1)
 
 lemma word_minus_one_le:
   "-1 \<le> (x :: 'a :: len word) = (x = -1)"
@@ -2094,7 +2094,7 @@ lemma degenerate_word:"LENGTH('a) = 1 \<Longrightarrow> (x::('a::len) word) = 0 
   by (metis One_nat_def less_irrefl_nat sint_1_cases)
 
 lemma div_by_0_word: "(x::'a::len word) div 0 = 0"
-  by (fact bits_div_by_0)
+  by (fact div_by_0)
 
 lemma div_less_dividend_word:"\<lbrakk>x \<noteq> 0; n \<noteq> 1\<rbrakk> \<Longrightarrow> (x::('a::len) word) div n < x"
   apply (cases \<open>n = 0\<close>)
@@ -2232,8 +2232,7 @@ lemma word_ops_nth:
 lemma word_power_nonzero:
   "\<lbrakk> (x :: 'a::len word) < 2 ^ (LENGTH('a) - n); n < LENGTH('a); x \<noteq> 0 \<rbrakk>
   \<Longrightarrow> x * 2 ^ n \<noteq> 0"
-  by (metis Word.word_div_mult bits_div_0 len_gt_0 len_of_finite_2_def nat_mult_power_less_eq
-    p2_gt_0 unat_mono unat_power_lower word_gt_a_gt_0)
+  by (metis gr0I mult.commute not_less_eq p2_gt_0 power_0 word_less_1 word_power_less_diff zero_less_diff)
 
 lemma less_1_helper:
   "n \<le> m \<Longrightarrow> (n - 1 :: int) < m"

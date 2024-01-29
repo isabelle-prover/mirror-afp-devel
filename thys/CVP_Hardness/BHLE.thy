@@ -1358,9 +1358,8 @@ text \<open>These are the main equations.\<close>
       using that d_eq_0[of "4*i"] unfolding d_def d1_def d5_def by (auto simp add: mult.commute)
 
     have eq_2: "x$0 + (if 0<n-1 then x $ 4 else 0) + x$((n-1)*5+1) + x$((n-1)*5+2) = 0" 
-      using d_eq_0[of "0"] unfolding d_def d1_def d5_def
-      by (smt (z3) \<open>0 < length a\<close> add_cancel_right_left bits_mod_0 bot_nat_0.not_eq_extremum 
-      mult.commute mult_is_0 n_def zero_neq_numeral)
+      using d_eq_0 [of 0] \<open>0 < n\<close> unfolding d_def d1_def d5_def
+      by (cases \<open>n = 1\<close>) (simp_all add: ac_simps)
 
     have eq_3: "x$(i*5) + x$(i*5+1) = 0" if "i\<in>{0..<n}" for i 
       using that d_eq_0[of "4*i+1"] unfolding d_def d2_def

@@ -791,9 +791,8 @@ proof -
     using 1 nth_word2 assms(2) by auto
   have 3: "n < (2^w)^?l"       using word_length_def word_length_eq2 assms(2) by blast 
   have 4: "(2^w)^(?l-1) \<le> n"   using assms word_length_def word_length_eq by blast 
-  have 5: "1 \<le> n div (2^w)^(?l-1)" 
-    by (metis 4 bits_div_by_1 div_greater_zero_iff nat_neq_iff not_less_zero power_eq_0_iff 
-         zero_neq_numeral) 
+  have 5: "1 \<le> n div (2^w)^(?l-1)"
+    using 4 by (simp add: Suc_le_eq div_greater_zero_iff)
   have 6: "n div (2^w)^(?l-1) < (2^w)"
     by (metis 1 3 One_nat_def Suc_leI le_add_diff_inverse less_mult_imp_div_less power_add 
               power_one_right) 
@@ -1143,9 +1142,8 @@ case T: True
   next
     case False
     then show ?thesis
-      by (metis T assms(1,2,3) bits_mod_0 length_0_conv nat_to_words_len_def 
-                nat_to_words_nil_iff_zero2 word_length_def words_to_nat_concat words_to_nat_empty 
-                words_to_nat_prepend_zeros zero_eq_add_iff_both_eq_0) 
+      using T assms(1,2,3) by (auto intro!: words_to_zero_intro)
+        (metis append_assoc in_set_conv_decomp in_set_replicate list_update_id set_update_memI)
   qed
 next
   case F: False

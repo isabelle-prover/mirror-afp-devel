@@ -182,7 +182,8 @@ proof -
   have b: "dP < p" 
     by (metis assms(2) p1 add_diff_inverse_nat bot_nat_0.not_eq_extremum le_simps(1) 
               mod_less_divisor nat_diff_split not_one_le_zero trans_less_add2) 
-  have c: "0 < dP"          by (metis a bits_mod_0 mult_eq_0_iff neq0_conv zero_neq_one) 
+  from a have c: "0 < dP"
+    by (cases \<open>dP = 0\<close>) simp_all
   show ?thesis              using a b c by blast
 qed
 
@@ -300,7 +301,8 @@ qed
 lemma d_from_dP_dQ_h4:
   assumes "d = d_from_dP_dQ dP dQ p q"  "PKCS1_validRSAprivateKey_CRT p q dP dQ qInv e"
   shows   "0 < d"
-  by (metis assms d_from_dP_dQ_h3 bits_mod_0 mult_0_right neq0_conv zero_neq_one) 
+  using d_from_dP_dQ_h3 [OF assms(2) assms(1)]
+  by (cases \<open>d = 0\<close>) simp_all
 
 text\<open>As said above, we can convert a valid RSA private key for CRT decryption into a valid RSA
 private key for "plain" decryption.\<close>
@@ -536,7 +538,7 @@ lemma decryptCRTmessageValid_h:
 proof - 
   have p0: "0 < p"     using assms(1,2) by simp
   have q0: "0 < q"     using assms(1,2) by simp
-  have 1: "m2 \<le> q-1"   by (simp add: assms(4) q0 pos_mod_bound Suc_leI of_nat_diff) 
+  have 1: "m2 \<le> q-1"   by (simp add: assms(4) q0 Suc_leI of_nat_diff) 
   have 2: "h < p"      by (metis assms(5) p0 pos_mod_bound of_nat_0_less_iff) 
   have 20: "h \<le> p-1"   using 2 by auto
   have 3: "m \<le> (q-1) + q*h"         using 1 assms(6) by linarith

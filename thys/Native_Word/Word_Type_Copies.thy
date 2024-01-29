@@ -194,6 +194,11 @@ proof -
     by standard (simp_all add: eq_iff_word_of word_of_0 word_of_1 even_iff_word_of word_of_mod even_iff_mod_2_eq_zero)
   with of_class_semiring_modulo have \<open>OFCLASS('a, semiring_parity_class)\<close>
     by (rule semiring_parity_class.intro) 
+  moreover have \<open>OFCLASS('a, semiring_modulo_trivial_class)\<close>
+    apply standard
+      apply (simp_all only: eq_iff_word_of word_of_0 word_of_1 word_of_div)
+      apply simp_all
+    done
   moreover have \<open>class.semiring_bits_axioms (+) (-) (0::'a) (*) 1 (div) (mod) bit\<close>
     apply standard
              apply (fact induct)
