@@ -170,7 +170,7 @@ proof -
   also have "\<dots> = (card A * (card A - 1)) div 2"
     using card_left_less_pair using assms by simp
   also have "\<dots> = (card A choose 2)"
-    by (simp add: n_choose_2_nat)
+    by (simp add: choose_two)
   finally show ?thesis .
 qed
 
