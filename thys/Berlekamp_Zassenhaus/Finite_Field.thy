@@ -239,6 +239,9 @@ lemma prime_card_int: "prime (int (CARD('a)))" using prime_card by auto
 subclass nontriv using prime_card prime_gt_1_nat by (intro_classes,auto)
 end
 
+instance bool :: prime_card
+  by standard auto
+
 instantiation mod_ring :: (prime_card) field
 begin
  

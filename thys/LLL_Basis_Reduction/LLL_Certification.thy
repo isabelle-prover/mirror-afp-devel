@@ -510,9 +510,6 @@ definition reduce_basis_external :: "rat \<Rightarrow> int vec list \<Rightarrow
 definition short_vector_external :: "rat \<Rightarrow> int vec list \<Rightarrow> int vec" where
   "short_vector_external \<alpha> fs = (hd (reduce_basis_external \<alpha> fs))" 
 
-instance bool :: prime_card
-  by (standard, auto)
-
 context LLL_with_assms
 begin
 
