@@ -367,7 +367,7 @@ proof -
       using A  by (simp add: powr_realpow of_nat_power [symmetric] binomial_le_pow  del: of_nat_power)
     also have "\<dots> = n powr ?nr n * (1 - p n) powr (?nr n * (?nr n - 1) / 2)"
       by (cases "even (?nr n - 1)")
-        (auto simp add: n_choose_2_nat real_of_nat_div)
+        (auto simp add: choose_two real_of_nat_div)
     also have "\<dots> = n powr ?nr n * ((1 - p n) powr ((?nr n - 1) / 2)) powr ?nr n"
       by (auto simp add: powr_powr r ac_simps)
     also have "\<dots> \<le> (n * exp (- p n * (?nr n - 1) / 2)) powr ?nr n"

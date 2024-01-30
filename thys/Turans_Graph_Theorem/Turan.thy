@@ -286,7 +286,7 @@ proof -
     using C uclique_def [of C G p] complete_def [of "uverts C"]
     using subgraph_clique [OF G1, of C] subgraph_verts_finite [OF assms(2), of C]
     using Real.real_of_nat_div [OF \<open>2 dvd (card (uverts C) * (p - 1))\<close>] Binomial.choose_two [of " card (uverts G)"]
-    by (smt (verit, del_insts) One_nat_def approximation_preproc_nat(5) card_all_edges diff_self_eq_0 eq_imp_le left_diff_distrib' left_diff_distrib' linorder_not_less mult_le_mono2 n_choose_2_nat not_gr0 not_less_eq_eq of_nat_1 of_nat_diff snd_eqD)
+    by (smt (verit, del_insts) One_nat_def approximation_preproc_nat(5) card_all_edges diff_self_eq_0 eq_imp_le left_diff_distrib' left_diff_distrib' linorder_not_less mult_le_mono2 choose_two not_gr0 not_less_eq_eq of_nat_1 of_nat_diff snd_eqD)
 qed
 
 text \<open>Next, we turn to the number of edges that connect a node inside of the biggest clique with
