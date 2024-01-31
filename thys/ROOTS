@@ -608,6 +608,7 @@ Refine_Imperative_HOL
 Refine_Monadic
 RefinementReactive
 Regex_Equivalence
+Region_Quadtrees
 Registers
 Regression_Test_Selection
 Regular-Sets

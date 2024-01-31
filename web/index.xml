@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Mon, 22 Jan 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Fri, 26 Jan 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Region Quadtrees</title>
+          <link>/entries/Region_Quadtrees.html</link>
+          <pubDate>Fri, 26 Jan 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Region_Quadtrees.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Decomposition of totally ordered hoops</title>
           <link>/entries/Isabelle_hoops.html</link>
@@ -9965,6 +9972,13 @@
           <link>/sessions/regex_equivalence/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/regex_equivalence/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Region_Quadtrees</title>
+          <link>/sessions/region_quadtrees/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/region_quadtrees/</guid>
           <description></description>
         </item>
         <item>
