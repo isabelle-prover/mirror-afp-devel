@@ -23,13 +23,28 @@
     <loc>/topics/</loc>
     <lastmod>2024-01-26T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/authors/calk/</loc>
+    <lastmod>2024-01-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/catoids/</loc>
+    <lastmod>2024-01-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2024-01-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/OmegaCatoidsQuantales.html</loc>
+    <lastmod>2024-01-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2024-01-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/struth/</loc>
+    <lastmod>2024-01-24T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/authors/buss/</loc>
     <lastmod>2024-01-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Isabelle_hoops.html</loc>
-    <lastmod>2024-01-22T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/mathematics/</loc>
     <lastmod>2024-01-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Interval_Analysis.html</loc>
@@ -48,9 +63,6 @@
     <lastmod>2023-12-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/CRYSTALS-Kyber_Security.html</loc>
-    <lastmod>2023-12-18T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/</loc>
     <lastmod>2023-12-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/game_based_crypto/</loc>
@@ -329,9 +341,6 @@
     <loc>/dependencies/relation_algebra/</loc>
     <lastmod>2023-08-14T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/struth/</loc>
-    <lastmod>2023-08-14T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/argyraki/</loc>
     <lastmod>2023-08-10T00:00:00+00:00</lastmod>
   </url><url>
@@ -355,9 +364,6 @@
   </url><url>
     <loc>/entries/Standard_Borel_Spaces.html</loc>
     <lastmod>2023-08-08T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/calk/</loc>
-    <lastmod>2023-07-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/kleene_algebra/</loc>
     <lastmod>2023-07-25T00:00:00+00:00</lastmod>
@@ -6147,6 +6153,8 @@
     <loc>/sessions/octonions/</loc>
   </url><url>
     <loc>/sessions/old_datatype_show/</loc>
+  </url><url>
+    <loc>/sessions/omegacatoidsquantales/</loc>
   </url><url>
     <loc>/sessions/open_induction/</loc>
   </url><url>
