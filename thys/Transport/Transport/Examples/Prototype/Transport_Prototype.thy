@@ -122,9 +122,9 @@ ML\<open>
       structure TI = Discrimination_Tree
       val init_args = {
         concl_unifier = SOME Higher_Order_Pattern_Unification.unify,
-        prems_unifier = SOME (Transport_Mixed_Unification.first_higherp_first_comb_higher_unify
+        prems_unifier = SOME (Transport_Mixed_Unification.first_higherp_decomp_comb_higher_unify
           |> Unification_Combinator.norm_unifier Envir_Normalisation.beta_norm_term_unif),
-        normalisers = SOME Transport_Mixed_Unification.norms_first_higherp_first_comb_higher_unify,
+        normalisers = SOME Transport_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify,
         retrieval = SOME (Term_Index_Unification_Hints_Args.mk_sym_retrieval
           TI.norm_term TI.unifiables),
         hint_preprocessor = SOME (K I)
@@ -136,7 +136,7 @@ declare [[trp_uhint where hint_preprocessor = \<open>Unification_Hints_Base.obj_
 declare [[trp_ucombine add = \<open>Transport_Unification_Combine.eunif_data
   (Transport_Unification_Hints.try_hints
   |> Unification_Combinator.norm_unifier
-    (#norm_term Transport_Mixed_Unification.norms_first_higherp_first_comb_higher_unify)
+    (#norm_term Transport_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify)
   |> K)
   (Transport_Unification_Combine.default_metadata Transport_Unification_Hints.binding)\<close>]]
 

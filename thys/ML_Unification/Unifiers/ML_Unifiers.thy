@@ -30,6 +30,11 @@ ML_file\<open>higher_order_unification.ML\<close>
 ML_file\<open>higher_order_pattern_unification.ML\<close>
 ML_file\<open>first_order_unification.ML\<close>
 
+subparagraph \<open>Derived Unifiers\<close>
+
+ML_file\<open>higher_order_pattern_decomp_unification.ML\<close>
+ML_file\<open>var_higher_order_pattern_unification.ML\<close>
+
 
 paragraph \<open>Unification via Tactics\<close>
 
@@ -39,10 +44,7 @@ subparagraph \<open>Unification via Simplification\<close>
 
 ML_file\<open>simplifier_unification.ML\<close>
 
-
 paragraph \<open>Mixture of Unifiers\<close>
-
-ML_file\<open>higher_ordern_pattern_first_decomp_unification.ML\<close>
 
 ML_file\<open>mixed_unification.ML\<close>
 ML\<open>
@@ -53,11 +55,19 @@ ML\<open>
 \<close>
 
 declare [[ucombine add = \<open>Standard_Unification_Combine.eunif_data
+  (Var_Higher_Order_Pattern_Unification.e_unify Unification_Combinator.fail_unify
+  |> Unification_Combinator.norm_unifier
+    (#norm_term Standard_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify)
+  |> K)
+  (Standard_Unification_Combine.metadata \<^binding>\<open>var_hop_unif\<close> Prio.HIGH)\<close>]]
+
+declare [[ucombine add = \<open>Standard_Unification_Combine.eunif_data
   (Simplifier_Unification.simp_unify
   |> Unification_Combinator.norm_closed_unifier
-    (#norm_term Standard_Mixed_Unification.norms_first_higherp_first_comb_higher_unify)
+    (#norm_term Standard_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify)
   |> Unification_Combinator.unifier_from_closed_unifier
   |> K)
   (Standard_Unification_Combine.default_metadata \<^binding>\<open>simp_unif\<close>)\<close>]]
+
 
 end

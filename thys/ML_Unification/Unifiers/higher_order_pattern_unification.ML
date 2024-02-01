@@ -111,10 +111,7 @@ fun e_match match_types match_theory_pattern match_theory_fail binders ctxt (pt 
         fun handle_failure match_theory failure_msg =
           (@{log Logger.DEBUG} ctxt (fn _ => Pretty.breaks [
               failure_msg (),
-              Pretty.block [
-                Pretty.str "Calling theory matcher for ",
-                Util.pretty_unif_problem ctxt (norm_pt env pt)
-              ]
+              Util.pretty_call_theory_match ctxt (norm_pt env pt)
             ] |> Pretty.block |> Pretty.string_of);
           match_theory binders ctxt pt env)
       in
@@ -405,10 +402,7 @@ fun e_unify unify_types unify_theory_pattern unify_theory_fail binders ctxt st e
         fun handle_failure unify_theory failure_msg =
           (@{log Logger.DEBUG} ctxt (fn _ => Pretty.breaks [
             failure_msg (),
-            Pretty.block [
-              Pretty.str "Calling theory unifier for ",
-              Util.pretty_unif_problem ctxt st'
-            ]
+            Util.pretty_call_theory_unif ctxt st'
           ] |> Pretty.block |> Pretty.string_of);
           (*Note: st' is already normalised*)
           unify_theory binders ctxt st' env)

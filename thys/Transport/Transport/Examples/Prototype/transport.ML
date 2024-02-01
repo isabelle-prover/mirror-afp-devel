@@ -33,8 +33,8 @@ fun simp_transported_def ctxt simps y_def =
 (* resolution setup *)
 
 val any_unify_trp_hints_resolve_tac = Unify_Resolve_Base.unify_resolve_any_tac
-  Transport_Mixed_Unification.norms_first_higherp_first_comb_higher_unify
-  Transport_Mixed_Unification.first_higherp_first_comb_higher_unify
+  Transport_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify
+  Transport_Mixed_Unification.first_higherp_decomp_comb_higher_unify
 
 fun get_theorems_tac f get_theorems ctxt = f (get_theorems ctxt) ctxt
 val get_theorems_resolve_tac = get_theorems_tac any_unify_trp_hints_resolve_tac
@@ -314,12 +314,11 @@ val _ =
 (* experimental white-box prover *)
 
 val any_match_resolve_related_tac =
-  let fun unif binders = Higher_Ordern_Pattern_First_Decomp_Unification.e_match
-    Unification_Util.match_types unif Unification_Combinator.fail_unify binders
-  in
-    Unify_Resolve_Base.unify_resolve_any_tac
-      Higher_Ordern_Pattern_First_Decomp_Unification.norms_match unif
-  end
+  let fun unif binders =
+    Higher_Order_Pattern_Unification.e_match Unification_Util.match_types
+    (Higher_Order_Pattern_Decomp_Unification.e_match unif Unification_Combinator.fail_match)
+    Unification_Combinator.fail_match binders
+  in Unify_Resolve_Base.unify_resolve_any_tac Higher_Order_Pattern_Unification.norms_match unif end
 
 val related_comb_tac = any_match_resolve_related_tac @{thms related_Fun_Rel_combI}
 val related_lambda_tac = any_match_resolve_related_tac @{thms related_Fun_Rel_lambdaI}

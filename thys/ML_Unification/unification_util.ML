@@ -18,6 +18,9 @@ sig
   val pretty_unif_problem : Proof.context -> (term * term) -> Pretty.T
   val pretty_unif_result : Proof.context -> (Envir.env * thm) -> Pretty.T
 
+  val pretty_call_theory_match : Proof.context -> (term * term) -> Pretty.T
+  val pretty_call_theory_unif : Proof.context -> (term * term) -> Pretty.T
+
   (* terms and environments *)
   val maxidx_of_terms : term list -> int
   (*returns empty environment with maxidx set to maximum of given terms*)
@@ -119,6 +122,16 @@ fun pretty_unif_result ctxt (env, thm) = Pretty.block [
     Pretty.fbrk,
     Pretty.str "Theorem: ",
     Thm.pretty_thm ctxt thm
+  ]
+
+fun pretty_call_theory_match ctxt pt = Pretty.block [
+    Pretty.str "Calling theory matcher for ",
+    pretty_unif_problem ctxt pt
+  ]
+
+fun pretty_call_theory_unif ctxt tp = Pretty.block [
+    Pretty.str "Calling theory unifier for ",
+    pretty_unif_problem ctxt tp
   ]
 
 (* terms and environments *)

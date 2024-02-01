@@ -27,7 +27,7 @@ lemma [uhint where prio = Prio.LOW]: "n \<noteq> 0 \<Longrightarrow> PROP SIMPS_
   unfolding SIMPS_TO_UNIF_eq by linarith
 
 text \<open>By default, below unification methods use
-@{ML Standard_Mixed_Unification.first_higherp_first_comb_higher_unify}, which is a combination of
+@{ML Standard_Mixed_Unification.first_higherp_decomp_comb_higher_unify}, which is a combination of
 various practical unification algorithms.\<close>
 
 schematic_goal "(\<And>x. x + 4 = n) \<Longrightarrow> Suc ?x = n"

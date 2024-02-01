@@ -13,7 +13,8 @@ sig
   val SIMPS_TO_unify : thm -> Unification_Base.closed_unifier
   (*solves "SIMPS_TO_UNIF s t \<equiv> rhs" via simplification of s to s', followed by unification of
     "s' \<equiv>\<^sup>? t", when given a matching theorem "SIMPS_TO_UNIF s t \<Longrightarrow> SIMPS_TO_UNIF s t \<equiv> rhs"*)
-  val SIMPS_TO_UNIF_unify : thm -> Unification_Base.normalisers -> Unification_Base.e_unifier
+  val SIMPS_TO_UNIF_unify : thm -> Unification_Base.normalisers -> Unification_Base.unifier ->
+    Unification_Base.closed_unifier
 end
 
 structure Simplifier_Unification : SIMPLIFIER_UNIFICATION =
@@ -50,12 +51,12 @@ fun SIMPS_TO_unify preprocess_rule ctxt =
     else K no_tac
   in Tactic_Unification.unify (Tactic_Unification.env_tac_from_no_inst_tac o tac) ctxt end
 
-fun SIMPS_TO_UNIF_unify preprocess_rule norms unif binders ctxt =
+fun SIMPS_TO_UNIF_unify preprocess_rule norms unif ctxt =
   let fun tac ctxt (tp as (lhs, _)) i (env, state) =
     (let
       val simps_to_tp = Simps_To_Unif.dest_SIMPS_TO_UNIF lhs
       fun solve_tac state =
-        Simps_To_Unif.SIMPS_TO_UNIF_env_thmsq (safe_simp_tac ctxt) norms unif binders ctxt
+        Simps_To_Unif.SIMPS_TO_UNIF_env_thmsq (safe_simp_tac ctxt) norms unif [] ctxt
           simps_to_tp env
         |> Seq.map (fn (env, thm) => (env, #norm_thm norms ctxt env state |> Thm.elim_implies thm))
     in

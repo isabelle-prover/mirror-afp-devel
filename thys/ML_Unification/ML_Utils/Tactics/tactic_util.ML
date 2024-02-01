@@ -175,14 +175,14 @@ fun eq_subgoal_from_eq_concl cbinders cprems eq_thm ctxt =
 fun rewrite_subgoal_unif_concl norm_binders norm_state norm_eq_thm binders (env_eq_thm as (env, _))
   ctxt i =
   let
-    val binders = Binders.norm_binders (norm_binders env) binders
+    (*updates binders with their normalised type*)
+    fun updated_binders env = Binders.norm_binders (norm_binders env) binders
+    val binders = updated_binders env
     fun smash_tpairs_if_occurs (_, bvar) =
       Seq.maps (Unification_Util.smash_tpairs_if_occurs ctxt bvar)
     fun rewrite_tac env eq_thm (rparams, (prems, _)) =
       let
-        (*update binders with their normalised type*)
-        val binders = map2 (fn (_, T) => fn ((n, _), Free (n', _)) => ((n, T), Free (n', T)))
-          rparams binders
+        val binders = updated_binders env
         val cterm_of = Thm.cterm_of ctxt
         val cprems = map (cterm_of o Binders.replace_binders binders) prems
       in

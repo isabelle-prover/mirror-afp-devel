@@ -16,15 +16,14 @@ ML\<open>
     and functor_name = Unify_Resolve
     and id = \<open>""\<close>
     and more_args = \<open>val init_args = {
-      normalisers = SOME Standard_Mixed_Unification.norms_first_higherp_first_comb_higher_unify,
-      unifier = SOME Standard_Mixed_Unification.first_higherp_first_comb_higher_unify,
+      normalisers = SOME Standard_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify,
+      unifier = SOME Standard_Mixed_Unification.first_higherp_decomp_comb_higher_unify,
       mode = SOME (Unify_Resolve_Args.PM.key Unify_Resolve_Args.PM.any),
       chained = SOME (Unify_Resolve_Args.PCM.key Unify_Resolve_Args.PCM.resolve)
     }\<close>}
 \<close>
 local_setup \<open>Standard_Unify_Resolve.setup_attribute NONE\<close>
 local_setup \<open>Standard_Unify_Resolve.setup_method NONE\<close>
-
 
 paragraph \<open>Examples\<close>
 

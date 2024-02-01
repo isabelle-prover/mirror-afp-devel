@@ -115,10 +115,10 @@ fun e_match match_types match_theory binders ctxt pt env =
           Util.comb_comb (K o K I) (match binders) ctxt (f, x) (g, y) env |> seq_try
       | _ => raise FALLBACK)
       handle FALLBACK =>
-        (@{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
-            Pretty.str "First-order matching failed. Calling theory matcher for ",
-            Util.pretty_unif_problem ctxt (norm_pt env pt)
-          ] |> Pretty.string_of);
+        (@{log Logger.DEBUG} ctxt (fn _ => Pretty.breaks [
+            Pretty.str "First-order matching failed.",
+            Util.pretty_call_theory_match ctxt (norm_pt env pt)
+          ] |> Pretty.block |> Pretty.string_of);
         match_theory binders ctxt pt env)
   in
     (@{log Logger.DEBUG} ctxt (fn _ =>
@@ -216,10 +216,10 @@ fun e_unify unify_types unify_theory binders ctxt st env =
           Util.comb_comb Norm.norm_thm_types_unif (unif binders) ctxt (f, x) (g, y) env |> seq_try
       | _ => raise FALLBACK)
       handle FALLBACK =>
-        (@{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
-            Pretty.str "First-order unification failed. Calling theory unifier for ",
-            Util.pretty_unif_problem ctxt (norm_st env st)
-          ] |> Pretty.string_of);
+        (@{log Logger.DEBUG} ctxt (fn _ => Pretty.breaks [
+            Pretty.str "First-order unification failed.",
+            Util.pretty_call_theory_unif ctxt (norm_st env st)
+          ] |> Pretty.block |> Pretty.string_of);
         unify_theory binders ctxt st env)
   in
     (@{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
