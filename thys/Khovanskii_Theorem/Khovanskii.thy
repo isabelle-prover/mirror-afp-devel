@@ -462,8 +462,8 @@ next
     by (fastforce simp: bernpoly_def p_eq q_def)
   have q_eq: "(\<Sum>x\<le>k - 1. p (real (k - x))) = q (real k)" if "k>0" for k
     using that
-    by (simp add: p_eq q_def sum.swap add.commute sum_of_powers sum_diff_split[where f="\<lambda>i. real i ^ _"]
-             flip: sum_distrib_left)
+    by (simp add: p_eq q_def sum.swap add.commute sum_of_powers 
+        flip: sum_distrib_left sum_diff_split[where f="\<lambda>i. real i ^ _"])
   define p' where "p' \<equiv> \<lambda>x. q x + real (card (length_sum_set r 0))"
   have "real_polynomial_function p'"
     using rp_q by (force simp: p'_def)
