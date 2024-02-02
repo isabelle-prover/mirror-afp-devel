@@ -379,7 +379,7 @@ proof -
 qed
 
 lemma circle_right_bot_edges_neq [simp]: "circle_right_edge \<noteq> circle_bot_edge"
-  by (smt Pair_inject circle_bot_edge_def d_gt_0 circle.circle_right_edge_def circle_axioms mult_le_cancel_iff1 x_coord_def)
+  by (smt Pair_inject circle_bot_edge_def d_gt_0 circle.circle_right_edge_def circle_axioms mult_le_cancel_right_pos x_coord_def)
 
 definition circle_polar where
   "circle_polar t = ((d/2)  * cos (2 * pi * t), (d/2) * sin (2 * pi * t))"

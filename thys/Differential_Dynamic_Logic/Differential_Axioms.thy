@@ -922,7 +922,7 @@ proof -
      subgoal for x using geq' by auto 
     using t int_s t apply auto
     subgoal for x
-      by (metis int_s mult.commute mult.right_neutral order.trans mult_le_cancel_iff2)
+      by (metis int_s mult.commute mult.right_neutral order.trans mult_le_cancel_left_pos)
     done
   then show "?thesis" by auto 
 qed

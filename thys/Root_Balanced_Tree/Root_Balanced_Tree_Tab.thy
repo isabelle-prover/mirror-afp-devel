@@ -86,7 +86,7 @@ next
   proof
     show "int h \<le> \<lceil>c * log 2 (real (2 ^ h - 1) + 1)\<rceil>"
       apply(simp add: of_nat_diff log_nat_power) using c1
-      by (metis ceiling_mono ceiling_of_nat order.order_iff_strict mult.left_neutral mult_eq_0_iff of_nat_0_le_iff mult_le_cancel_iff1)
+      by (metis ceiling_mono ceiling_of_nat order.order_iff_strict mult.left_neutral mult_eq_0_iff of_nat_0_le_iff mult_le_cancel_right_pos)
   qed
 next
   case 3

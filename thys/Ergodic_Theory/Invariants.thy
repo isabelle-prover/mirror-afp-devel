@@ -1407,7 +1407,7 @@ proof (rule conservative_mptI)
         then have "x \<in> Dx" "(T^^n) x \<in> Cx" by auto
         then have "abs(birkhoff_sum f n x) \<le> r * n" using \<open>n \<in> {n0..n1}\<close> Dx_def by auto
         then have *: "abs(birkhoff_sum f n x) \<le> r * n1" using \<open>n \<le> n1\<close> \<open>r>0\<close>
-          by (meson of_nat_le_iff order_trans mult_le_cancel_iff2)
+          by (meson of_nat_le_iff order_trans mult_le_cancel_left_pos)
 
         have F_expr: "F = {-r*n1-N..r*n1+N} \<inter> (+)(birkhoff_sum f n x) -` (Pair ((T^^n)x) -`C)"
           unfolding F_def by (auto simp add: add.commute)

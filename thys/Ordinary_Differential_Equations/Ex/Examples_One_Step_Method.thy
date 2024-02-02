@@ -360,7 +360,7 @@ proof -
     have "0 < a"
       using a by linarith
     then have "a * s \<le> t1 * a"
-      using a1 by (metis (no_types) less_eq_real_def mult.commute mult_le_cancel_iff2)
+      using a1 by (metis (no_types) less_eq_real_def mult.commute mult_le_cancel_left_pos)
     then have "a * s < 1"
       using a2 by linarith
     then show ?thesis

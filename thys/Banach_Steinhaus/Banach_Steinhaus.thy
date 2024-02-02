@@ -452,7 +452,7 @@ proof-
       apply transfer apply auto by (metis mult.commute onorm) 
     thus  ?thesis using \<open>\<exists> M. \<forall> n. norm (f n) \<le> M\<close>
       by (metis (no_types, opaque_lifting) dual_order.trans norm_eq_zero order_refl 
-          mult_le_cancel_iff2 vector_space_over_itself.scale_zero_left zero_less_norm_iff)
+          mult_le_cancel_left_pos vector_space_over_itself.scale_zero_left zero_less_norm_iff)
   qed 
   have norm_F_x: \<open>\<exists>K. \<forall>x. norm (F x) \<le> norm x * K\<close>
   proof-

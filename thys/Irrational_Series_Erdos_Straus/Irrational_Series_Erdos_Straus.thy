@@ -768,7 +768,7 @@ proof
               divide_pos_pos elim(4) mult_le_0_iff of_int_less_1_iff that(2))
         moreover have "(a (n+1) / a n) \<ge> 1" 
           using a_pos elim(5) by auto
-        ultimately show ?thesis by (metis mult_cancel_left1 mult_le_cancel_iff2)
+        ultimately show ?thesis by (metis mult_cancel_left1 mult_le_cancel_left_pos)
       qed
       also have "... = (B * b (n+1)) / (B * b n)"
       proof -
@@ -815,8 +815,8 @@ proof
       then have "(1 - \<epsilon>) * a n < a n - c (n+1) / c n"
         by (auto simp:algebra_simps)
       then have "(1 - \<epsilon>)^2 * a n / B < (1 - \<epsilon>) * (a n - c (n+1) / c n) / B"
-        apply (subst (asm) mult_less_iff1[symmetric, of "(1-\<epsilon>)/B"])
-        using \<open>\<epsilon><1\<close> \<open>B>0\<close> by (auto simp: divide_simps power2_eq_square mult_less_iff1)
+        apply (subst (asm) mult_less_cancel_right_pos[symmetric, of "(1-\<epsilon>)/B"])
+        using \<open>\<epsilon><1\<close> \<open>B>0\<close> by (auto simp: divide_simps power2_eq_square mult_less_cancel_right_pos)
       then have "b n + (1 - \<epsilon>)^2 * a n / B < b n + (1 - \<epsilon>) * (a n - c (n+1) / c n) / B"
         using \<open>B>0\<close> by auto
       also have "... = b n + (1 - \<epsilon>) * ((c n *a n - c (n+1)) / c n) / B"
@@ -1278,7 +1278,7 @@ proof
               divide_pos_pos elim(4) mult_le_0_iff of_int_less_1_iff that(2))
         moreover have "(a (n+1) / a n) \<ge> 1" 
           using a_pos \<open>mono a\<close> by (simp add: mono_def)
-        ultimately show ?thesis by (metis mult_cancel_left1 mult_le_cancel_iff2)
+        ultimately show ?thesis by (metis mult_cancel_left1 mult_le_cancel_left_pos)
       qed
       also have "... = (B * nth_prime (n+1)) / (B * nth_prime n)"
       proof -
@@ -1360,8 +1360,8 @@ proof
       then have "(1 - \<epsilon>) * a n < a n - c (n+1) / c n"
         by (auto simp:algebra_simps)
       then have "(1 - \<epsilon>)^2 * a n / B < (1 - \<epsilon>) * (a n - c (n+1) / c n) / B"
-        apply (subst (asm) mult_less_iff1[symmetric, of "(1-\<epsilon>)/B"])
-        using \<open>\<epsilon><1\<close> \<open>B>0\<close> by (auto simp: divide_simps power2_eq_square mult_less_iff1)
+        apply (subst (asm) mult_less_cancel_right_pos[symmetric, of "(1-\<epsilon>)/B"])
+        using \<open>\<epsilon><1\<close> \<open>B>0\<close> by (auto simp: divide_simps power2_eq_square mult_less_cancel_right_pos)
       then have "nth_prime n + (1 - \<epsilon>)^2 * a n / B < nth_prime n + (1 - \<epsilon>) * (a n - c (n+1) / c n) / B"
         using \<open>B>0\<close> by auto
       also have "... = nth_prime n + (1 - \<epsilon>) * ((c n *a n - c (n+1)) / c n) / B"

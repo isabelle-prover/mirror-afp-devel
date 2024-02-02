@@ -606,7 +606,7 @@ proof -
         using Ip l by auto
       also have "... \<le> - d * ((n * s+t) - (p* s+t)) + 2*d* s + u (p* s+t) x + (\<Sum>i \<in> {p* s+t..<(p+1)* s+t}. abs(u 1 ((T^^i) x))) + (\<Sum>i \<in> {(n-1) * s+t..<n * s+t}. abs(u 1 ((T^^i) x)))"
         using \<open>l + 2* s\<ge> (n * s+t) - (p* s+t)\<close> apply (auto simp add: algebra_simps)
-        by (metis assms(1) distrib_left mult.commute mult_2 of_nat_add of_nat_le_iff mult_le_cancel_iff2)
+        by (metis assms(1) distrib_left mult.commute mult_2 of_nat_add of_nat_le_iff mult_le_cancel_left_pos)
       also have "... \<le> -d * ((n * s+t) - (p* s+t)) + 2*d* s + Z t p x + 2* K * s + (\<Sum>i \<in> {p* s+t..<n * s+t}. F ((T^^i) x))"
         using A0 H \<open>p<n\<close> by auto
       also have "... \<le> Z t p x - d/2 * card(V x \<inter> {p * s + t<.. n * s+t}) + (\<Sum>i \<in> {p* s+t..<n * s+t}. F ((T^^i) x))"

@@ -1086,7 +1086,7 @@ proof -
   hence "(v\<^sub>e * \<delta> - v\<^sub>e\<^sup>2 / 2 / a\<^sub>e + v\<^sub>o\<^sup>2 / 2 / a\<^sub>o) * 2 * (a\<^sub>o - a\<^sub>e) \<le> ((v\<^sub>o + a\<^sub>o * \<delta> - v\<^sub>e)\<^sup>2 / 2 / (a\<^sub>o - a\<^sub>e) - v\<^sub>o * \<delta> - 1/2 * a\<^sub>o * \<delta>\<^sup>2 + v\<^sub>e * \<delta>) * 2 *(a\<^sub>o - a\<^sub>e)"
     by (simp add: algebra_simps)
   hence "v\<^sub>e * \<delta> - v\<^sub>e\<^sup>2 / 2 / a\<^sub>e + v\<^sub>o\<^sup>2 / 2 / a\<^sub>o \<le> (v\<^sub>o + a\<^sub>o * \<delta> - v\<^sub>e)\<^sup>2 / 2 / (a\<^sub>o - a\<^sub>e) - v\<^sub>o * \<delta> - 1/2 * a\<^sub>o * \<delta>\<^sup>2 + v\<^sub>e * \<delta>"
-    using \<open>a\<^sub>o > a\<^sub>e\<close> mult_le_cancel_iff1[OF \<open>0 < 2 * (a\<^sub>o - a\<^sub>e)\<close>, of "(v\<^sub>e * \<delta> - v\<^sub>e\<^sup>2 / 2 / a\<^sub>e + v\<^sub>o\<^sup>2 / 2 / a\<^sub>o)"
+    using \<open>a\<^sub>o > a\<^sub>e\<close> mult_le_cancel_right_pos[OF \<open>0 < 2 * (a\<^sub>o - a\<^sub>e)\<close>, of "(v\<^sub>e * \<delta> - v\<^sub>e\<^sup>2 / 2 / a\<^sub>e + v\<^sub>o\<^sup>2 / 2 / a\<^sub>o)"
     "(v\<^sub>o + a\<^sub>o * \<delta> - v\<^sub>e)\<^sup>2 / 2 / (a\<^sub>o - a\<^sub>e) - v\<^sub>o * \<delta> - 1/2 * a\<^sub>o * \<delta>\<^sup>2 + v\<^sub>e * \<delta>"] semiring_normalization_rules(18)
     by (metis (no_types, lifting))
   thus ?thesis using safe_distance_2r_def safe_distance_4r_def by auto

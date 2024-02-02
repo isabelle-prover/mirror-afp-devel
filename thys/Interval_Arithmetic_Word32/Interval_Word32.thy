@@ -2452,7 +2452,7 @@ next
     from a3 have h5:"-z \<ge> 1" by (simp add: leD leI)
     have h4:"-x * -z \<ge> -y"
       using  a1 a2 a3 a4 h1 h2 h5 dual_order.trans mult.right_neutral
-      by (metis mult.commute neg_0_less_iff_less mult_le_cancel_iff1)
+      by (metis mult.commute neg_0_less_iff_less mult_le_cancel_right_pos)
     have h3:"-x * -z = x * z" by auto
     show "- y \<le> x * z "
       using a1 a2 a3 a4 h1 h2 h3 h4 h5 

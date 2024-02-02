@@ -763,7 +763,7 @@ proof (cases "n = 0")
   have **: "real n = sqrt (real n) * sqrt (real n)"
     by simp
   have ***: "n < x * sqrt n \<longleftrightarrow> sqrt n < x" "x * sqrt n < n \<longleftrightarrow> x < sqrt n" for x
-    by (metis ** n of_nat_0_less_iff mult_less_iff1 real_sqrt_gt_0_iff)+
+    by (metis ** n of_nat_0_less_iff mult_less_cancel_right_pos real_sqrt_gt_0_iff)+
 
   have "divisor_count n = card {d. d dvd n}"
     by (simp add: divisor_count_def)
