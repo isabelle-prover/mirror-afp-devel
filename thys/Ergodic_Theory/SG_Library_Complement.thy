@@ -298,11 +298,14 @@ lemma convex_on_mean_ineq:
 using convex_onD[OF assms(1), of "1/2" x y] using assms by (auto simp add: divide_simps)
 
 lemma convex_on_closure:
-  assumes "convex (C::'a::real_normed_vector set)"
+  fixes C :: "'a::real_normed_vector set"
+  assumes "convex C"
           "convex_on C f"
           "continuous_on (closure C) f"
   shows "convex_on (closure C) f"
 proof (rule convex_onI)
+  show "convex (closure C)"
+    by (simp add: \<open>convex C\<close>)
   fix x y::'a and t::real
   assume "x \<in> closure C" "y \<in> closure C" "0 < t" "t < 1"
   obtain u v::"nat \<Rightarrow> 'a" where *: "\<And>n. u n \<in> C" "u \<longlonglongrightarrow> x"
