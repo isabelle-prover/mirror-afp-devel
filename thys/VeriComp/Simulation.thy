@@ -166,6 +166,44 @@ locale forward_simulation =
         (\<exists>i' s2'. step2\<^sup>+\<^sup>+ s2 s2' \<and> match i' s1' s2') \<or> (\<exists>i'. match i' s1' s2 \<and> i' \<sqsubset> i)"
 begin
 
+lemma lift_simulation_plus:
+  "step1\<^sup>+\<^sup>+ s1 s1' \<Longrightarrow> match i s1 s2 \<Longrightarrow>
+    (\<exists>i' s2'. step2\<^sup>+\<^sup>+ s2 s2' \<and> match i' s1' s2') \<or>
+    (\<exists>i'. match i' s1' s2 \<and> order\<^sup>+\<^sup>+ i' i)"
+proof (induction s1' arbitrary: i s2 rule: tranclp_induct)
+  case (base s1')
+  with simulation[OF base.prems(1) base.hyps(1)] show ?case
+    by auto
+next
+  case (step s1' s1'')
+  show ?case
+    using step.IH[OF \<open>match i s1 s2\<close>]
+  proof (elim disjE exE conjE)
+    fix i' s2'
+    assume "step2\<^sup>+\<^sup>+ s2 s2'" and "match i' s1' s2'"
+
+    have "(\<exists>i' s2'a. step2\<^sup>+\<^sup>+ s2' s2'a \<and> match i' s1'' s2'a) \<or> (\<exists>i'a. match i'a s1'' s2' \<and> i'a \<sqsubset> i')"
+      using simulation[OF \<open>match i' s1' s2'\<close> \<open>step1 s1' s1''\<close>] .
+    thus ?thesis
+    proof (elim disjE exE conjE)
+      fix i'' s2''
+      assume "step2\<^sup>+\<^sup>+ s2' s2''" and "match i'' s1'' s2''"
+      thus ?thesis
+        using tranclp_trans[OF \<open>step2\<^sup>+\<^sup>+ s2 s2'\<close>] by auto
+    next
+      fix i''
+      assume "match i'' s1'' s2'" and "i'' \<sqsubset> i'"
+      thus ?thesis
+        using \<open>step2\<^sup>+\<^sup>+ s2 s2'\<close> by auto
+    qed
+  next
+    fix i'
+    assume "match i' s1' s2" and "(\<sqsubset>)\<^sup>+\<^sup>+ i' i"
+    then show ?thesis
+      using simulation[OF \<open>match i' s1' s2\<close> \<open>step1 s1' s1''\<close>] by auto
+  qed
+qed
+
 lemma lift_simulation_eval:
   "L1.eval s1 s1' \<Longrightarrow> match i s1 s2 \<Longrightarrow> \<exists>i' s2'. L2.eval s2 s2' \<and> match i' s1' s2'"
 proof(induction s1 arbitrary: i s2 rule: converse_rtranclp_induct)
