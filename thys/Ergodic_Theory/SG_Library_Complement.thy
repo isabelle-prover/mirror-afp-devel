@@ -467,9 +467,9 @@ proof -
     case False
     then have "a > 0" "b > 0" using \<open>b \<ge> a\<close> \<open>a \<ge> 0\<close> by auto
     have "(f 0 - f a) / (0 - a) \<le> (f 0 - f (a+b))/ (0 - (a+b))"
-      apply (rule convex_on_diff[OF \<open>convex_on {0..} f\<close>]) using \<open>a > 0\<close> \<open>b > 0\<close> by auto
+      apply (rule convex_on_slope_le[OF \<open>convex_on {0..} f\<close>]) using \<open>a > 0\<close> \<open>b > 0\<close> by auto
     also have "... \<le> (f b - f (a+b)) / (b - (a+b))"
-      apply (rule convex_on_diff[OF \<open>convex_on {0..} f\<close>]) using \<open>a > 0\<close> \<open>b > 0\<close> by auto
+      apply (rule convex_on_slope_le[OF \<open>convex_on {0..} f\<close>]) using \<open>a > 0\<close> \<open>b > 0\<close> by auto
     finally show ?thesis
       using \<open>a > 0\<close> \<open>b > 0\<close> \<open>f 0 = 0\<close> by (auto simp add: divide_simps algebra_simps)
   qed (simp add: \<open>f 0 = 0\<close>)
