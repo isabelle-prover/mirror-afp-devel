@@ -3,16 +3,37 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2024-01-26T00:00:00+00:00</lastmod>
+    <lastmod>2024-02-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2024-01-26T00:00:00+00:00</lastmod>
+    <lastmod>2024-02-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/bootle/</loc>
+    <lastmod>2024-02-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/computer-science/</loc>
-    <lastmod>2024-01-26T00:00:00+00:00</lastmod>
+    <lastmod>2024-02-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2024-02-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/</loc>
-    <lastmod>2024-01-26T00:00:00+00:00</lastmod>
+    <lastmod>2024-02-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/garvia/</loc>
+    <lastmod>2024-02-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/polynomials/</loc>
+    <lastmod>2024-02-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/sprenger/</loc>
+    <lastmod>2024-02-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Sumcheck_Protocol.html</loc>
+    <lastmod>2024-02-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2024-02-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/nipkow/</loc>
     <lastmod>2024-01-26T00:00:00+00:00</lastmod>
@@ -20,16 +41,10 @@
     <loc>/entries/Region_Quadtrees.html</loc>
     <lastmod>2024-01-26T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/topics/</loc>
-    <lastmod>2024-01-26T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/calk/</loc>
     <lastmod>2024-01-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/catoids/</loc>
-    <lastmod>2024-01-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/</loc>
     <lastmod>2024-01-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/OmegaCatoidsQuantales.html</loc>
@@ -965,9 +980,6 @@
     <loc>/authors/klenze/</loc>
     <lastmod>2022-06-08T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/sprenger/</loc>
-    <lastmod>2022-06-08T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/bayer/</loc>
     <lastmod>2022-06-06T00:00:00+00:00</lastmod>
   </url><url>
@@ -1293,9 +1305,6 @@
     <lastmod>2021-11-08T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/hermite_lindemann/</loc>
-    <lastmod>2021-11-08T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/polynomials/</loc>
     <lastmod>2021-11-08T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Real_Power.html</loc>
@@ -6614,6 +6623,8 @@
     <loc>/sessions/subset_boolean_algebras/</loc>
   </url><url>
     <loc>/sessions/sugar/</loc>
+  </url><url>
+    <loc>/sessions/sumcheck_protocol/</loc>
   </url><url>
     <loc>/sessions/sumsquares/</loc>
   </url><url>

@@ -628,6 +628,23 @@ host = [
 
 [bohrer.homepages]
 
+[bootle]
+name = "Jonathan Bootle"
+
+[bootle.emails]
+
+[bootle.emails.bootle_email]
+user = [
+  "JBT",
+]
+host = [
+  "zurich",
+  "ibm",
+  "com",
+]
+
+[bootle.homepages]
+
 [bordg]
 name = "Anthony Bordg"
 
@@ -2032,6 +2049,22 @@ name = "Xin Gao"
 [gao.emails]
 
 [gao.homepages]
+
+[garvia]
+name = "Azucena Garvia"
+
+[garvia.emails]
+
+[garvia.emails.garvia_email]
+user = [
+  "zucegb",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[garvia.homepages]
 
 [gaudel]
 name = "Marie-Claude Gaudel"

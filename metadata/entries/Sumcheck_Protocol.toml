@@ -1,0 +1,42 @@
+title = "The Sumcheck Protocol"
+date = 2024-02-02
+topics = [
+  "Computer science/Security",
+  "Computer science/Algorithms/Distributed",
+  "Computer science/Algorithms/Randomized",
+]
+abstract = """
+The sumcheck protocol, first introduced in 1992, is an interactive proof which is a key component of many probabilistic proof systems in computational complexity theory and cryptography, some of which have been deployed. We provide a formally verified security analysis of the sumcheck protocol, following a general and modular approach.
+
+First, we give a general formalization of public-coin interactive proofs. We then define a generalized sumcheck protocol for which we axiomatize the underlying mathematical structure and we establish its soundness and completeness. Finally, we prove that these axioms hold for multivariate polynomials, the original setting of the sumcheck protocol. Our modular analysis will facilitate formal verification of sumcheck instances based on different mathematical structures with little effort, by simply proving that these structures satisfy the axioms. Moreover, the analysis will encourage the development and formal verification of future probabilistic proof systems using the sumcheck protocol as a building block.
+
+The paper presenting this formalization is to appear at CSF 2024 under the title ``Formal Verification of the Sumcheck Protocol''."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.garvia]
+email = "garvia_email"
+
+[authors.sprenger]
+email = "sprenger_email"
+
+[authors.bootle]
+email = "bootle_email"
+
+[contributors]
+
+[notify]
+sprenger = "sprenger_email"
+garvia = "garvia_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = [
+  "Formal Verification of the Sumcheck Protocol, CSF 2024",
+]

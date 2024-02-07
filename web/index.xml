@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Fri, 26 Jan 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Fri, 02 Feb 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>The Sumcheck Protocol</title>
+          <link>/entries/Sumcheck_Protocol.html</link>
+          <pubDate>Fri, 02 Feb 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Sumcheck_Protocol.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Region Quadtrees</title>
           <link>/entries/Region_Quadtrees.html</link>
@@ -10770,6 +10777,13 @@
           <link>/sessions/subset_boolean_algebras/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/subset_boolean_algebras/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Sumcheck_Protocol</title>
+          <link>/sessions/sumcheck_protocol/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/sumcheck_protocol/</guid>
           <description></description>
         </item>
         <item>

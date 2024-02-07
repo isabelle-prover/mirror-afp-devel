@@ -13,6 +13,20 @@
     
       <atom:link href="/topics/computer-science/algorithms/index.xml" rel="self" type="application/rss+xml" />
         <item>
+          <title>The Sumcheck Protocol</title>
+          <link>/entries/Sumcheck_Protocol.html</link>
+          <pubDate>Fri, 02 Feb 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Sumcheck_Protocol.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Sumcheck Protocol</title>
+          <link>/entries/Sumcheck_Protocol.html</link>
+          <pubDate>Fri, 02 Feb 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Sumcheck_Protocol.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Knuth–Morris–Pratt String Search</title>
           <link>/entries/KnuthMorrisPratt.html</link>
           <pubDate>Mon, 27 Nov 2023 00:00:00 +0000</pubDate>

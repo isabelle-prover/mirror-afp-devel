@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Mon, 08 Nov 2021 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Fri, 02 Feb 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/polynomials/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>The Sumcheck Protocol</title>
+          <link>/entries/Sumcheck_Protocol.html</link>
+          <pubDate>Fri, 02 Feb 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Sumcheck_Protocol.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Factorization of Polynomials with Algebraic Coefficients</title>
           <link>/entries/Factor_Algebraic_Polynomial.html</link>
