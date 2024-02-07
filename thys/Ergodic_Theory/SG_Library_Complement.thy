@@ -298,11 +298,14 @@ lemma convex_on_mean_ineq:
 using convex_onD[OF assms(1), of "1/2" x y] using assms by (auto simp add: divide_simps)
 
 lemma convex_on_closure:
-  assumes "convex (C::'a::real_normed_vector set)"
+  fixes C :: "'a::real_normed_vector set"
+  assumes "convex C"
           "convex_on C f"
           "continuous_on (closure C) f"
   shows "convex_on (closure C) f"
 proof (rule convex_onI)
+  show "convex (closure C)"
+    by (simp add: \<open>convex C\<close>)
   fix x y::'a and t::real
   assume "x \<in> closure C" "y \<in> closure C" "0 < t" "t < 1"
   obtain u v::"nat \<Rightarrow> 'a" where *: "\<And>n. u n \<in> C" "u \<longlonglongrightarrow> x"
@@ -464,9 +467,9 @@ proof -
     case False
     then have "a > 0" "b > 0" using \<open>b \<ge> a\<close> \<open>a \<ge> 0\<close> by auto
     have "(f 0 - f a) / (0 - a) \<le> (f 0 - f (a+b))/ (0 - (a+b))"
-      apply (rule convex_on_diff[OF \<open>convex_on {0..} f\<close>]) using \<open>a > 0\<close> \<open>b > 0\<close> by auto
+      apply (rule convex_on_slope_le[OF \<open>convex_on {0..} f\<close>]) using \<open>a > 0\<close> \<open>b > 0\<close> by auto
     also have "... \<le> (f b - f (a+b)) / (b - (a+b))"
-      apply (rule convex_on_diff[OF \<open>convex_on {0..} f\<close>]) using \<open>a > 0\<close> \<open>b > 0\<close> by auto
+      apply (rule convex_on_slope_le[OF \<open>convex_on {0..} f\<close>]) using \<open>a > 0\<close> \<open>b > 0\<close> by auto
     finally show ?thesis
       using \<open>a > 0\<close> \<open>b > 0\<close> \<open>f 0 = 0\<close> by (auto simp add: divide_simps algebra_simps)
   qed (simp add: \<open>f 0 = 0\<close>)
