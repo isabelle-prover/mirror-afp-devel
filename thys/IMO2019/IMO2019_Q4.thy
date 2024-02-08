@@ -211,7 +211,7 @@ proof -
   have "rhs = 2 ^ T * (\<Prod>i=1..n. 2 ^ i - 1)"
     by (simp add: rhs_altdef)
   also have "(\<Prod>i=1..n. 2 ^ i - 1 :: nat) < (\<Prod>i=1..n. 2 ^ i)"
-    using pos by (intro prod_mono_strict) auto
+    using pos by (intro prod_mono_strict[of 1]) auto
   also have "\<dots> = (\<Prod>i=0..<n. 2 * 2 ^ i)"
     by (intro prod.reindex_bij_witness[of _ Suc "\<lambda>i. i - 1"]) (auto simp flip: power_Suc)
   also have "\<dots> = 2 ^ n * 2 ^ (\<Sum>i=0..<n. i)"
