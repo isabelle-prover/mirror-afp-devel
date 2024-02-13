@@ -9,50 +9,6 @@ theory Chebyshev_Polynomials_Library
   imports "HOL-Computational_Algebra.Polynomial" "HOL-Library.FuncSet"
 begin
 
-subsection \<open>Miscellaneous\<close>
-
-(* TODO: Move to \<^theory>\<open>HOL.Fun\<close> *)
-lemma bij_betw_Collect:
-  assumes "bij_betw f A B" "\<And>x. x \<in> A \<Longrightarrow> Q (f x) \<longleftrightarrow> P x"
-  shows   "bij_betw f {x\<in>A. P x} {y\<in>B. Q y}"
-  using assms by (auto simp add: bij_betw_def inj_on_def)
-
-(* TODO: Move somewhere, perhaps? Maybe \<^theory>\<open>HOL.Nat\<close>?*)
-lemma induct_nat_012[case_names 0 1 ge2]:
-  "P 0 \<Longrightarrow> P (Suc 0) \<Longrightarrow> (\<And>n. P n \<Longrightarrow> P (Suc n) \<Longrightarrow> P (Suc (Suc n))) \<Longrightarrow> P n"
-proof (induction_schema, pat_completeness)
-  show "wf (Wellfounded.measure id)"
-    by simp
-qed auto
-
-
-subsection \<open>Lists\<close>
-
-(* TODO: Move to \<^theory>\<open>HOL.List\<close> *)
-
-lemma distinct_adj_conv_length_remdups_adj:
-  "distinct_adj xs \<longleftrightarrow> length (remdups_adj xs) = length xs"
-proof (induction xs rule: remdups_adj.induct)
-  case (3 x y xs)
-  thus ?case
-    using remdups_adj_length[of "y # xs"] by auto
-qed auto
-
-lemma successively_conv_nth:
-  "successively P xs \<longleftrightarrow> (\<forall>i. Suc i < length xs \<longrightarrow> P (xs ! i) (xs ! Suc i))"
-  by (induction P xs rule: successively.induct)
-     (force simp: nth_Cons split: nat.splits)+
-
-lemma successively_nth: "successively P xs \<Longrightarrow> Suc i < length xs \<Longrightarrow> P (xs ! i) (xs ! Suc i)"
-  unfolding successively_conv_nth by blast
-
-lemma distinct_adj_conv_nth:
-  "distinct_adj xs \<longleftrightarrow> (\<forall>i. Suc i < length xs \<longrightarrow> xs ! i \<noteq> xs ! Suc i)"
-  by (simp add: distinct_adj_def successively_conv_nth)
-
-lemma distinct_adj_nth: "distinct_adj xs \<Longrightarrow> Suc i < length xs \<Longrightarrow> xs ! i \<noteq> xs ! Suc i"
-  unfolding distinct_adj_conv_nth by blast
-
 text \<open>
   The following two lemmas give a full characterisation of the \<^const>\<open>filter\<close> function:
   The list \<^term>\<open>filter P xs\<close> is the only list \<open>ys\<close> for which there exists a strictly increasing

@@ -5,16 +5,6 @@ imports
   "HOL-Library.Infinite_Set"
 begin
 
-class infinite =
-  assumes infinite_UNIV: "infinite (UNIV::'a set)"
-
-instance nat :: infinite
-  by (intro_classes) simp
-instance prod :: (infinite, type) infinite
-  by intro_classes (simp add: finite_prod infinite_UNIV)
-instance list :: (type) infinite
-  by intro_classes (simp add: infinite_UNIV_listI)
-
 lemma countable_infinite_ex_bij: "\<exists>f::('a::{countable,infinite}\<Rightarrow>'b::{countable,infinite}). bij f"
 proof -
   have "infinite (range (to_nat::'a \<Rightarrow> nat))"
