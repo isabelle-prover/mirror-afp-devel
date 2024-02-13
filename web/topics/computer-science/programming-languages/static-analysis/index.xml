@@ -13,6 +13,13 @@
     
       <atom:link href="/topics/computer-science/programming-languages/static-analysis/index.xml" rel="self" type="application/rss+xml" />
         <item>
+          <title>Information Flow Control via Stateful Intransitive Noninterference in Language IMP</title>
+          <link>/entries/IMP_Noninterference.html</link>
+          <pubDate>Mon, 12 Feb 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/IMP_Noninterference.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>A data flow analysis algorithm for computing dominators</title>
           <link>/entries/Dominance_CHK.html</link>
           <pubDate>Sun, 05 Sep 2021 00:00:00 +0000</pubDate>
