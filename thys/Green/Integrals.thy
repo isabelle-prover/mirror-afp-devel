@@ -17,10 +17,10 @@ proof -
     using fun_lesbegue_integrable
     by (simp add: lborel_prod)
   then have region_integral_is_one_twoD_integral:
-    "LBINT x. LBINT y. f (x, y) = integral\<^sup>L (lborel \<Otimes>\<^sub>M lborel) f"
+    "(LBINT x. (LBINT y. f (x, y))) = integral\<^sup>L (lborel \<Otimes>\<^sub>M lborel) f"
     using lborel_pair.integral_fst'
     by auto
-  then have AE_one_D_integrals_eq: "AE x in lborel. LBINT y. f (x, y) = integral UNIV (\<lambda>y. f(x,y))"
+  then have AE_one_D_integrals_eq: "AE x in lborel. (LBINT y. f (x, y)) = integral UNIV (\<lambda>y. f(x,y))"
   proof -
     have "AE x in lborel. integrable lborel (\<lambda>y. f(x,y))"
       using lborel_pair.AE_integrable_fst' and fun_lborel_prod_integrable
@@ -35,7 +35,7 @@ proof -
     using f_is_measurable and lborel.borel_measurable_lebesgue_integral
     by auto
   then have second_lesbegue_integral_eq:
-    "LBINT x. LBINT y. f (x, y) = LBINT x. (integral UNIV (\<lambda>y. f(x,y)))"
+    "(LBINT x. (LBINT y. f (x, y))) = (LBINT x. (integral UNIV (\<lambda>y. f(x,y))))"
     using x_axis_integral_measurable and integral_cong_AE and AE_one_D_integrals_eq
     by blast
   have "integrable lborel (\<lambda>x. LBINT y. f (x, y))"
@@ -49,11 +49,11 @@ proof -
     "(\<lambda>x. integral UNIV (\<lambda>y. f(x,y))) integrable_on UNIV"
     using integrable_on_lborel
     by auto
-  have "LBINT x. (integral UNIV (\<lambda>y. f(x,y))) = integral UNIV (\<lambda>x. integral UNIV (\<lambda>y. f(x, y)))"
+  have "(LBINT x. (integral UNIV (\<lambda>y. f(x,y)))) = integral UNIV (\<lambda>x. integral UNIV (\<lambda>y. f(x, y)))"
     using integral_lborel oneD_gauge_integral_lesbegue_integrable
     by fastforce
   then have twoD_lesbeuge_eq_twoD_gauge:
-    "LBINT x. LBINT y. f (x, y) = integral UNIV (\<lambda>x. integral UNIV (\<lambda>y. f(x, y)))"
+    "(LBINT x. (LBINT y. f (x, y))) = integral UNIV (\<lambda>x. integral UNIV (\<lambda>y. f(x, y)))"
     using second_lesbegue_integral_eq
     by auto
   then show "integral UNIV f = integral UNIV (\<lambda>x. integral UNIV (\<lambda>y. f(x,y)))"
@@ -76,11 +76,11 @@ proof -
     using fun_lesbegue_integrable
     by (simp add: lborel_prod)
   then have region_integral_is_one_twoD_integral:
-    "LBINT x. LBINT y. f (y, x) = integral\<^sup>L (lborel \<Otimes>\<^sub>M lborel) f"
+    "(LBINT x. (LBINT y. f (y, x))) = integral\<^sup>L (lborel \<Otimes>\<^sub>M lborel) f"
     using lborel_pair.integral_fst'
       f_is_measurable lborel_pair.integrable_product_swap lborel_pair.integral_fst lborel_pair.integral_product_swap lborel_prod
     by force
-  then have AE_one_D_integrals_eq: "AE x in lborel. LBINT y. f (y, x) = integral UNIV (\<lambda>y. f(y,x))"
+  then have AE_one_D_integrals_eq: "AE x in lborel. (LBINT y. f (y, x)) = integral UNIV (\<lambda>y. f(y,x))"
   proof -
     have "AE x in lborel. integrable lborel (\<lambda>y. f(y,x))"
       using lborel_pair.AE_integrable_fst' and fun_lborel_prod_integrable
@@ -96,7 +96,7 @@ proof -
     using f_is_measurable and lborel.borel_measurable_lebesgue_integral
     by auto
   then have second_lesbegue_integral_eq:
-    "LBINT x. LBINT y. f (y, x) = LBINT x. (integral UNIV (\<lambda>y. f(y, x)))"
+    "(LBINT x. (LBINT y. f (y, x))) = (LBINT x. (integral UNIV (\<lambda>y. f(y, x))))"
     using y_axis_integral_measurable and integral_cong_AE and AE_one_D_integrals_eq
     by blast
   have "integrable lborel (\<lambda>x. LBINT y. f (y, x))"
@@ -110,11 +110,11 @@ proof -
     "(\<lambda>x. integral UNIV (\<lambda>y. f(y, x))) integrable_on UNIV"
     using integrable_on_lborel
     by auto
-  have "LBINT x. (integral UNIV (\<lambda>y. f(y, x))) = integral UNIV (\<lambda>x. integral UNIV (\<lambda>y. f(y, x)))"
+  have "(LBINT x. (integral UNIV (\<lambda>y. f(y, x)))) = integral UNIV (\<lambda>x. integral UNIV (\<lambda>y. f(y, x)))"
     using integral_lborel oneD_gauge_integral_lesbegue_integrable
     by fastforce
   then have twoD_lesbeuge_eq_twoD_gauge:
-    "LBINT x. LBINT y. f (y, x) = integral UNIV (\<lambda>x. integral UNIV (\<lambda>y. f(y, x)))"
+    "(LBINT x. (LBINT y. f (y, x))) = integral UNIV (\<lambda>x. integral UNIV (\<lambda>y. f(y, x)))"
     using second_lesbegue_integral_eq
     by auto
   then show "integral UNIV f = integral UNIV (\<lambda>x. integral UNIV (\<lambda>y. f(y, x)))"

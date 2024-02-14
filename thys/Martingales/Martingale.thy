@@ -133,8 +133,8 @@ lemma set_integral_eq:
   shows "set_lebesgue_integral M A (X i) = set_lebesgue_integral M A (X j)"
 proof -
   interpret sigma_finite_subalgebra M "F i" using assms(2) by blast
-  have "\<integral>x \<in> A. X i x \<partial>M = \<integral>x \<in> A. cond_exp M (F i) (X j) x \<partial>M" using martingale_property[OF assms(2,3)] borel_measurable_cond_exp' assms subalgebras subalgebra_def by (intro set_lebesgue_integral_cong_AE[OF _ random_variable]) fastforce+
-  also have "... = \<integral>x \<in> A. X j x \<partial>M" using assms by (auto simp: integrable intro: cond_exp_set_integral[symmetric])
+  have "(\<integral>x \<in> A. X i x \<partial>M) = (\<integral>x \<in> A. cond_exp M (F i) (X j) x \<partial>M)" using martingale_property[OF assms(2,3)] borel_measurable_cond_exp' assms subalgebras subalgebra_def by (intro set_lebesgue_integral_cong_AE[OF _ random_variable]) fastforce+
+  also have "... = (\<integral>x \<in> A. X j x \<partial>M)" using assms by (auto simp: integrable intro: cond_exp_set_integral[symmetric])
   finally show ?thesis .
 qed
 

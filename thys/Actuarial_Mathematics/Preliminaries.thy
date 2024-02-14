@@ -200,8 +200,7 @@ proof (unfold atomize_ball)
     moreover have "f ?n \<ge> f b" using f_mono b_a by (simp add: le_max_iff_disj mono_on_def)
     ultimately have False by simp }
   thus "\<forall>x\<in>{a..}. f x \<le> l"
-    apply -
-    by (rule notnotD, rewrite Set.ball_simps) auto
+    by blast
 qed
 
 corollary mono_at_top_le:
@@ -817,15 +816,15 @@ qed
 lemma set_lebesgue_integral_cong_AE2:
   assumes [measurable]: "A \<in> sets M" "set_borel_measurable M A f" "set_borel_measurable M A g"
   assumes "AE x \<in> A in M. f x = g x"
-  shows "LINT x:A|M. f x = LINT x:A|M. g x"
+  shows "(LINT x:A|M. f x) = (LINT x:A|M. g x)"
 proof -
   let ?fA = "\<lambda>x. indicator A x *\<^sub>R f x" and ?gA = "\<lambda>x. indicator A x *\<^sub>R g x"
   have "?fA \<in> borel_measurable M" "?gA \<in> borel_measurable M"
     using assms unfolding set_borel_measurable_def by simp_all
   moreover have "AE x \<in> A in M. ?fA x = ?gA x" using assms by simp
-  ultimately have "LINT x:A|M. ?fA x = LINT x:A|M. ?gA x"
+  ultimately have "(LINT x:A|M. ?fA x) = (LINT x:A|M. ?gA x)"
     by (intro set_lebesgue_integral_cong_AE; simp)
-  moreover have "LINT x:A|M. f x = LINT x:A|M. ?fA x" "LINT x:A|M. g x = LINT x:A|M. ?gA x"
+  moreover have "(LINT x:A|M. f x) = (LINT x:A|M. ?fA x)" "(LINT x:A|M. g x) = (LINT x:A|M. ?gA x)"
     unfolding set_lebesgue_integral_def
     by (metis indicator_scaleR_eq_if)+
   ultimately show ?thesis by simp
@@ -1027,14 +1026,14 @@ qed
 lemma set_borel_integral_eq_integral_nonneg:
   fixes f :: "'a::euclidean_space \<Rightarrow> real"
   assumes "\<And>x. x \<in> S \<Longrightarrow> f x \<ge> 0" "f \<in> borel_measurable borel" "S \<in> sets borel"
-  shows "LINT x : S | lborel. f x = integral S f"
+  shows "(LINT x : S | lborel. f x) = integral S f"
   \<comment> \<open>Note that 0 = 0 holds when the integral diverges.\<close>
 proof (cases \<open>set_integrable lborel S f\<close>)
   case True
   thus ?thesis using set_borel_integral_eq_integral by force
 next
   case False
-  hence "LINT x : S | lborel. f x = 0"
+  hence "(LINT x : S | lborel. f x) = 0"
     unfolding set_lebesgue_integral_def set_integrable_def
     by (rewrite not_integrable_integral_eq; simp)
   moreover have "integral S f = 0"
@@ -1046,14 +1045,14 @@ qed
 lemma set_borel_integral_eq_integral_nonneg_AE:
   fixes f :: "'a::euclidean_space \<Rightarrow> real"
   assumes "AE x\<in>S in lborel. f x \<ge> 0" "f \<in> borel_measurable borel" "S \<in> sets borel"
-  shows "LINT x : S | lborel. f x = integral S f"
+  shows "(LINT x : S | lborel. f x) = integral S f"
   \<comment> \<open>Note that 0 = 0 holds when the integral diverges.\<close>
 proof (cases \<open>set_integrable lborel S f\<close>)
   case True
   thus ?thesis using set_borel_integral_eq_integral by force
 next
   case False
-  hence "LINT x : S | lborel. f x = 0"
+  hence "(LINT x : S | lborel. f x) = 0"
     unfolding set_lebesgue_integral_def set_integrable_def
     by (rewrite not_integrable_integral_eq; simp)
   moreover have "integral S f = 0"
@@ -1323,10 +1322,8 @@ proof -
           qed
           thus "AE x in M. Df r x = borel_measurize M (\<lambda>y. deriv (\<lambda>s. f s y) r) x" and
             "borel_measurize M (\<lambda>y. deriv (\<lambda>s. f s y) r) \<in> borel_measurable M"
-            using Df_msr N_null
-             apply -
-             apply (rule borel_measurizeI2[where S=N]; simp)
-            by (rule borel_measurize_measurable[where g="Df r"]; simp)
+            using Df_msr N_null borel_measurize_measurable[where g="Df r"]
+            by (simp_all add: borel_measurizeI2)
         qed
         thus ?thesis using Df_msr by (intro integral_cong_AE; simp)
       qed
@@ -1371,8 +1368,8 @@ proposition interchange_deriv_LINT_set_general:
     f_integ: "\<And>r. r\<in>{a<..<b} \<Longrightarrow> set_integrable M A (f r)" and
     f_diff: "AE x\<in>A in M. (\<lambda>r. f r x) differentiable_on {a<..<b}" and
     Df_bound: "AE x\<in>A in M. \<forall>r\<in>{a<..<b}. \<bar>deriv (\<lambda>r. f r x) r\<bar> \<le> g x" "set_integrable M A g"
-  shows "\<And>r. r\<in>{a<..<b} \<Longrightarrow> ((\<lambda>r. \<integral>x\<in>A. f r x \<partial>M) has_real_derivative
-    \<integral>x\<in>A. set_borel_measurize M A (\<lambda>x. deriv (\<lambda>r. f r x) r) x \<partial>M) (at r)"
+  shows "\<And>r. r\<in>{a<..<b}  \<Longrightarrow> ((\<lambda>r. \<integral>x\<in>A. f r x \<partial>M) has_real_derivative
+                             (\<integral>x\<in>A. set_borel_measurize M A (\<lambda>x. deriv (\<lambda>r. f r x) r) x \<partial>M)) (at r)"
 proof -
   let ?M_A = "restrict_space M A"
   have "\<And>r. r\<in>{a<..<b} \<Longrightarrow> integrable ?M_A (f r)"
@@ -1388,7 +1385,7 @@ proof -
     integral\<^sup>L ?M_A (borel_measurize ?M_A (\<lambda>x. deriv (\<lambda>r. f r x) r))) (at r)"
     by (rule interchange_deriv_LINT_general[where M="restrict_space M A"]) auto
   thus "\<And>r. r\<in>{a<..<b} \<Longrightarrow> ((\<lambda>r. \<integral>x\<in>A. f r x \<partial>M) has_real_derivative
-    \<integral>x\<in>A. set_borel_measurize M A (\<lambda>x. deriv (\<lambda>r. f r x) r) x \<partial>M) (at r)"
+                            (\<integral>x\<in>A. set_borel_measurize M A (\<lambda>x. deriv (\<lambda>r. f r x) r) x \<partial>M)) (at r)"
     unfolding set_borel_measurize_def using assms 
     by (rewrite set_lebesgue_integral_restrict_space, simp)+
 qed
@@ -1400,21 +1397,20 @@ proposition interchange_deriv_LINT_set:
     "AE x\<in>A in M. (\<lambda>r. f r x) differentiable_on {a<..<b}" and
     "\<And>r. r\<in>{a<..<b} \<Longrightarrow> set_borel_measurable M A (\<lambda>x. (deriv (\<lambda>r. f r x) r))" and
     "AE x\<in>A in M. \<forall>r\<in>{a<..<b}. \<bar>deriv (\<lambda>r. f r x) r\<bar> \<le> g x" "set_integrable M A g"
-  shows "\<And>r. r\<in>{a<..<b} \<Longrightarrow> ((\<lambda>r. \<integral>x\<in>A. f r x \<partial>M) has_real_derivative
-    \<integral>x\<in>A. deriv (\<lambda>r. f r x) r \<partial>M) (at r)"
+  shows "\<And>r. r\<in>{a<..<b} \<Longrightarrow> ((\<lambda>r. \<integral>x\<in>A. f r x \<partial>M) has_real_derivative (\<integral>x\<in>A. deriv (\<lambda>r. f r x) r \<partial>M)) (at r)"
 proof -
   fix r assume r_ab: "r\<in>{a<..<b}"
   hence Df_msr: "set_borel_measurable M A (\<lambda>x. deriv (\<lambda>s. f s x) r)" using assms by simp
   have "((\<lambda>s. \<integral>x\<in>A. f s x \<partial>M) has_real_derivative
-    \<integral>x\<in>A. set_borel_measurize M A (\<lambda>y. deriv (\<lambda>s. f s y) r) x \<partial>M) (at r)"
+    (\<integral>x\<in>A. set_borel_measurize M A (\<lambda>y. deriv (\<lambda>s. f s y) r) x \<partial>M)) (at r)"
     using assms r_ab by (intro interchange_deriv_LINT_set_general; simp)
   moreover have "(\<integral>x\<in>A. set_borel_measurize M A (\<lambda>y. deriv (\<lambda>s. f s y) r) x \<partial>M) =
-    \<integral>x\<in>A. deriv (\<lambda>s. f s x) r \<partial>M"
+    (\<integral>x\<in>A. deriv (\<lambda>s. f s x) r \<partial>M)"
     apply (rule set_lebesgue_integral_cong_AE2, simp add: assms)
       apply (rule set_borel_measurize_measurable[where g="\<lambda>y. deriv (\<lambda>s. f s y) r" and S="{}"],
         simp_all add: Df_msr assms)
     using set_borel_measurable_measurize_AE Df_msr assms by (smt (verit) AE_cong)
-  ultimately show "((\<lambda>r. \<integral>x\<in>A. f r x \<partial>M) has_real_derivative \<integral>x\<in>A. deriv (\<lambda>r. f r x) r \<partial>M) (at r)"
+  ultimately show "((\<lambda>r. \<integral>x\<in>A. f r x \<partial>M) has_real_derivative (\<integral>x\<in>A. deriv (\<lambda>r. f r x) r \<partial>M)) (at r)"
     by simp
 qed
 
@@ -1609,24 +1605,24 @@ lemma expectation_nonneg_tail:
   assumes [measurable]: "random_variable borel X"
     and X_nonneg: "\<And>x. x \<in> space M \<Longrightarrow> X x \<ge> 0"
   defines "F u \<equiv> cdf (distr M borel X) u"
-  shows "(\<integral>\<^sup>+x. ennreal (X x) \<partial>M) = \<integral>\<^sup>+u\<in>{0..}. ennreal (1 - F u) \<partial>lborel"
+  shows "(\<integral>\<^sup>+x. ennreal (X x) \<partial>M) = (\<integral>\<^sup>+u\<in>{0..}. ennreal (1 - F u) \<partial>lborel)"
 proof -
   let ?distrX = "distr M borel X"
   have "(\<integral>\<^sup>+x. ennreal (X x) \<partial>M) = (\<integral>\<^sup>+u. ennreal u \<partial>?distrX)"
     by (rewrite nn_integral_distr; simp)
   also have "\<dots> = (\<integral>\<^sup>+u\<in>{0..}. ennreal u \<partial>?distrX)"
     by (rule nn_integral_distr_set; simp add: X_nonneg)
-  also have "\<dots> = \<integral>\<^sup>+u\<in>{0..}. (\<integral>\<^sup>+v\<in>{0..}. indicator {..<u} v \<partial>lborel) \<partial>?distrX"
+  also have "\<dots> = (\<integral>\<^sup>+u\<in>{0..}. (\<integral>\<^sup>+v\<in>{0..}. indicator {..<u} v \<partial>lborel) \<partial>?distrX)"
   proof -
-    have "\<And>u::real. u\<in>{0..} \<Longrightarrow> ennreal u = \<integral>\<^sup>+v\<in>{0..}. indicator {..<u} v \<partial>lborel"
+    have "\<And>u::real. u\<in>{0..} \<Longrightarrow> ennreal u = (\<integral>\<^sup>+v\<in>{0..}. indicator {..<u} v \<partial>lborel)"
       apply (rewrite indicator_inter_arith[THEN sym])
       apply (rewrite nn_integral_indicator, measurable, simp)
       by (metis atLeastLessThan_def diff_zero emeasure_lborel_Ico inf.commute)
     thus ?thesis by (metis (no_types, lifting) indicator_eq_0_iff mult_eq_0_iff)
   qed
-  also have "\<dots> = \<integral>\<^sup>+v\<in>{0..}. (\<integral>\<^sup>+u\<in>{0..}. indicator {..<u} v \<partial>?distrX) \<partial>lborel"
+  also have "\<dots> = (\<integral>\<^sup>+v\<in>{0..}. (\<integral>\<^sup>+u\<in>{0..}. indicator {..<u} v \<partial>?distrX) \<partial>lborel)"
   proof -
-    have "\<integral>\<^sup>+u\<in>{0..}. (\<integral>\<^sup>+v\<in>{0..}. indicator {..<u} v \<partial>lborel) \<partial>?distrX =
+    have "(\<integral>\<^sup>+u\<in>{0..}. (\<integral>\<^sup>+v\<in>{0..}. indicator {..<u} v \<partial>lborel) \<partial>?distrX) =
       \<integral>\<^sup>+u. (\<integral>\<^sup>+v. indicator {..<u} v * indicator {0..} v * indicator {0..} u \<partial>lborel) \<partial>?distrX"
       by (rewrite nn_integral_multc; simp)
     also have "\<dots> =
@@ -1636,13 +1632,13 @@ proof -
         prob_space_distr prob_space_imp_sigma_finite sigma_finite_lborel
        apply blast
       by measurable auto
-    also have "\<dots> = \<integral>\<^sup>+v\<in>{0..}. (\<integral>\<^sup>+u\<in>{0..}. indicator {..<u} v \<partial>?distrX) \<partial>lborel"
+    also have "\<dots> = (\<integral>\<^sup>+v\<in>{0..}. (\<integral>\<^sup>+u\<in>{0..}. indicator {..<u} v \<partial>?distrX) \<partial>lborel)"
       apply (rewrite nn_integral_multc[THEN sym]; measurable; simp?)
       apply (rule nn_integral_cong)+ 
       using mult.assoc mult.commute by metis
     finally show ?thesis by simp
   qed
-  also have "\<dots> = \<integral>\<^sup>+v\<in>{0..}. (\<integral>\<^sup>+u. indicator {v<..} u \<partial>?distrX) \<partial>lborel"
+  also have "\<dots> = (\<integral>\<^sup>+v\<in>{0..}. (\<integral>\<^sup>+u. indicator {v<..} u \<partial>?distrX) \<partial>lborel)"
     apply (rule nn_integral_cong)
     apply (rewrite nn_integral_multc[THEN sym], measurable; (simp del: nn_integral_indicator)?)+
     apply (rule nn_integral_cong)
@@ -1663,12 +1659,12 @@ lemma expectation_nonpos_tail:
   assumes [measurable]: "random_variable borel X"
     and X_nonpos: "\<And>x. x \<in> space M \<Longrightarrow> X x \<le> 0"
   defines "F u \<equiv> cdf (distr M borel X) u"
-  shows "(\<integral>\<^sup>+x. ennreal (- X x) \<partial>M) = \<integral>\<^sup>+u\<in>{..0}. ennreal (F u) \<partial>lborel"
+  shows "(\<integral>\<^sup>+x. ennreal (- X x) \<partial>M) = (\<integral>\<^sup>+u\<in>{..0}. ennreal (F u) \<partial>lborel)"
 proof -
   let ?distrX = "distr M borel X"
   have "(\<integral>\<^sup>+x. ennreal (- X x) \<partial>M) = (\<integral>\<^sup>+u. ennreal (-u) \<partial>?distrX)"
     by (rewrite nn_integral_distr; simp)
-  also have "\<dots> = \<integral>\<^sup>+u\<in>{..0}. ennreal (-u) \<partial>?distrX"
+  also have "\<dots> = (\<integral>\<^sup>+u\<in>{..0}. ennreal (-u) \<partial>?distrX)"
   proof -
     have [simp]: "{..0::real} \<union> {0<..} = UNIV" by force
     have "(\<integral>\<^sup>+u. ennreal (-u) \<partial>?distrX) =
@@ -1679,17 +1675,17 @@ proof -
       unfolding indicator_def using always_eventually ennreal_lt_0 by force
     finally show ?thesis .
   qed
-  also have "\<dots> = \<integral>\<^sup>+u\<in>{..0}. (\<integral>\<^sup>+v\<in>{..0}. indicator {u..} v \<partial>lborel) \<partial>?distrX"
+  also have "\<dots> = (\<integral>\<^sup>+u\<in>{..0}. (\<integral>\<^sup>+v\<in>{..0}. indicator {u..} v \<partial>lborel) \<partial>?distrX)"
   proof -
-    have "\<And>u::real. u\<in>{..0} \<Longrightarrow> ennreal (-u) = \<integral>\<^sup>+v\<in>{..0}. indicator {u..} v \<partial>lborel"
+    have "\<And>u::real. u\<in>{..0} \<Longrightarrow> ennreal (-u) = (\<integral>\<^sup>+v\<in>{..0}. indicator {u..} v \<partial>lborel)"
       apply (rewrite indicator_inter_arith[THEN sym])
       apply (rewrite nn_integral_indicator, measurable, simp)
       by (metis emeasure_lborel_Icc atLeastAtMost_def diff_0)
     thus ?thesis by (metis (no_types, lifting) indicator_eq_0_iff mult_eq_0_iff)
   qed
-  also have "\<dots> = \<integral>\<^sup>+v\<in>{..0}. (\<integral>\<^sup>+u\<in>{..0}. indicator {u..} v \<partial>?distrX) \<partial>lborel"
+  also have "\<dots> = (\<integral>\<^sup>+v\<in>{..0}. (\<integral>\<^sup>+u\<in>{..0}. indicator {u..} v \<partial>?distrX) \<partial>lborel)"
   proof -
-    have "\<integral>\<^sup>+u\<in>{..0}. (\<integral>\<^sup>+v\<in>{..0}. indicator {u..} v \<partial>lborel) \<partial>?distrX =
+    have "(\<integral>\<^sup>+u\<in>{..0}. (\<integral>\<^sup>+v\<in>{..0}. indicator {u..} v \<partial>lborel) \<partial>?distrX) =
       \<integral>\<^sup>+u. (\<integral>\<^sup>+v. indicator {u..} v * indicator {..0} v * indicator {..0} u \<partial>lborel) \<partial>?distrX"
       by (rewrite nn_integral_multc; simp)
     also have "\<dots> =
@@ -1699,18 +1695,18 @@ proof -
         prob_space_distr prob_space_imp_sigma_finite sigma_finite_lborel
        apply blast
       by measurable auto
-    also have "\<dots> = \<integral>\<^sup>+v\<in>{..0}. (\<integral>\<^sup>+u\<in>{..0}. indicator {u..} v \<partial>?distrX) \<partial>lborel"
+    also have "\<dots> = (\<integral>\<^sup>+v\<in>{..0}. (\<integral>\<^sup>+u\<in>{..0}. indicator {u..} v \<partial>?distrX) \<partial>lborel)"
       apply (rewrite nn_integral_multc[THEN sym]; measurable; simp?)
       apply (rule nn_integral_cong)+ 
       using mult.assoc mult.commute by metis
     finally show ?thesis by simp
   qed
-  also have "\<dots> = \<integral>\<^sup>+v\<in>{..0}. (\<integral>\<^sup>+u. indicator {..v} u \<partial>?distrX) \<partial>lborel"
+  also have "\<dots> = (\<integral>\<^sup>+v\<in>{..0}. (\<integral>\<^sup>+u. indicator {..v} u \<partial>?distrX) \<partial>lborel)"
     apply (rule nn_integral_cong)
     apply (rewrite nn_integral_multc[THEN sym], measurable; (simp del: nn_integral_indicator)?)+
     apply (rule nn_integral_cong)
     using atMost_iff atLeast_iff indicator_simps by (smt (verit, del_insts) mult_1 mult_eq_0_iff)
-  also have "\<dots> = \<integral>\<^sup>+v\<in>{..0}. ennreal (F v) \<partial>lborel"
+  also have "\<dots> = (\<integral>\<^sup>+v\<in>{..0}. ennreal (F v) \<partial>lborel)"
     apply (rule nn_integral_cong, simp)
     apply (rewrite emeasure_distr; simp?)
     unfolding F_def cdf_def
@@ -1730,7 +1726,7 @@ proof -
   also have "\<dots> = expectation (\<lambda>x. max (X x) 0) - expectation (\<lambda>x. - min (X x) 0)" by force
   also have "\<dots> = (LBINT u:{0..}. 1 - F u) - (LBINT u:{..0}. F u)"
   proof -
-    have "expectation (\<lambda>x. max (X x) 0) = LBINT u:{0..}. 1 - F u"
+    have "expectation (\<lambda>x. max (X x) 0) = (LBINT u:{0..}. 1 - F u)"
     proof -
       have "expectation (\<lambda>x. max (X x) 0) = enn2real (\<integral>\<^sup>+x. ennreal (max (X x) 0) \<partial>M)"
         by (rule integral_eq_nn_integral; simp)
@@ -1741,13 +1737,13 @@ proof -
         by (metis (opaque_lifting) indicator_simps mult.commute mult_1 mult_eq_0_iff)
       also have "\<dots> = enn2real (\<integral>\<^sup>+u. ennreal ((1 - F u) * indicator {0..} u) \<partial>lborel)"
         by (simp add: indicator_mult_ennreal mult.commute)
-      also have "\<dots> = LBINT u:{0..}. 1 - F u"
+      also have "\<dots> = (LBINT u:{0..}. 1 - F u)"
         apply (rewrite integral_eq_nn_integral[THEN sym], simp add: F_def)
         unfolding F_def using real_distribution.cdf_bounded_prob apply force
         unfolding set_lebesgue_integral_def by (rule Bochner_Integration.integral_cong; simp)
       finally show ?thesis .
     qed
-    moreover have "expectation (\<lambda>x. - min (X x) 0) = LBINT u:{..0}. F u"
+    moreover have "expectation (\<lambda>x. - min (X x) 0) = (LBINT u:{..0}. F u)"
     proof -
       have "expectation (\<lambda>x. - min (X x) 0) = enn2real (\<integral>\<^sup>+x. ennreal (- min (X x) 0) \<partial>M)"
         by (rule integral_eq_nn_integral; simp)
@@ -1770,7 +1766,7 @@ proof -
       qed
       also have "\<dots> = enn2real (\<integral>\<^sup>+u. ennreal (F u * indicator {..0} u) \<partial>lborel)"
         using mult.commute indicator_mult_ennreal by metis
-      also have "\<dots> = LBINT u:{..0}. F u"
+      also have "\<dots> = (LBINT u:{..0}. F u)"
         apply (rewrite integral_eq_nn_integral[THEN sym], simp add: F_def)
         unfolding F_def
         using finite_borel_measure.cdf_nonneg real_distribution.finite_borel_measure_M apply simp
@@ -1804,10 +1800,10 @@ proof -
     proof -
       fix a b :: real assume "a \<le> b"
       hence [simp]: "sym_diff {a<..b} {a..b} = {a}" by force
-      have "emeasure (density lborel f) {a<..b} = \<integral>\<^sup>+x\<in>{a<..b}. ennreal (f x) \<partial>lborel"
+      have "emeasure (density lborel f) {a<..b} = (\<integral>\<^sup>+x\<in>{a<..b}. ennreal (f x) \<partial>lborel)"
         by (rewrite emeasure_density; simp)
-      also have "\<dots> = \<integral>\<^sup>+x\<in>{a..b}. ennreal (f x) \<partial>lborel" by (rewrite nn_integral_null_delta, auto)
-      also have "\<dots> = \<integral>\<^sup>+x. ennreal (indicat_real {a..b} x * f x) \<partial>lborel"
+      also have "\<dots> = (\<integral>\<^sup>+x\<in>{a..b}. ennreal (f x) \<partial>lborel)" by (rewrite nn_integral_null_delta, auto)
+      also have "\<dots> = (\<integral>\<^sup>+x. ennreal (indicat_real {a..b} x * f x) \<partial>lborel)"
         by (metis indicator_mult_ennreal mult.commute)
       also have "\<dots> = ennreal (F b - F a)"
       proof -
@@ -2505,7 +2501,7 @@ next
     using assms distributed_real_measurable by metis
   have [simp]: "integrable lborel f"
   proof -
-    have "prob (X -` UNIV \<inter> space M) = LINT x|lborel. indicat_real UNIV x * f x"
+    have "prob (X -` UNIV \<inter> space M) = (LINT x|lborel. indicat_real UNIV x * f x)"
       by (rule distributed_measure; simp add: assms)
     thus ?thesis
       using prob_space not_integrable_integral_eq by fastforce
@@ -2524,7 +2520,7 @@ next
         using emeasure_eq_measure ennreal_less_top infinity_ennreal_def by presburger
       ultimately show "(\<integral>\<^sup>+ x. ennreal (indicat_real {t..t+dt} x * f x) \<partial>lborel) < \<infinity>" by simp
     qed
-    hence "\<And>dt. LBINT s:{t..t+dt}. f s = integral {t..t+dt} f"
+    hence "\<And>dt. (LBINT s:{t..t+dt}. f s) = integral {t..t+dt} f"
       apply (intro set_borel_integral_eq_integral)
       unfolding set_integrable_def
       apply (rule integrableI_nonneg; simp)
@@ -2543,17 +2539,17 @@ next
     qed
     ultimately show ?thesis by simp
   qed
-  moreover have "\<And>dt. dt > 0 \<Longrightarrow> \<P>(x in M. X x \<in> {t <.. t+dt}) = LBINT s:{t..t+dt}. f s"
+  moreover have "\<And>dt. dt > 0 \<Longrightarrow> \<P>(x in M. X x \<in> {t <.. t+dt}) = (LBINT s:{t..t+dt}. f s)"
   proof -
     fix dt :: real assume "dt > 0"
     hence [simp]: "sym_diff {t<..t + dt} {t..t + dt} = {t}" by force
     have "prob (X -` {t<..t+dt} \<inter> space M) = \<integral>s. indicator {t<..t+dt} s * f s \<partial>lborel"
       by (rule distributed_measure; simp add: assms)
-    hence "\<P>(x in M. X x \<in> {t <.. t+dt}) = LBINT s:{t<..t+dt}. f s"
+    hence "\<P>(x in M. X x \<in> {t <.. t+dt}) = (LBINT s:{t<..t+dt}. f s)"
       unfolding set_lebesgue_integral_def vimage_def Int_def by simp (smt (verit) Collect_cong)
-    moreover have "LBINT s:{t<..t+dt}. f s = LBINT s:{t..t+dt}. f s"
+    moreover have "(LBINT s:{t<..t+dt}. f s) = (LBINT s:{t..t+dt}. f s)"
       by (rule set_integral_null_delta; force)
-    ultimately show "\<P>(x in M. X x \<in> {t <.. t+dt}) = LBINT s:{t..t+dt}. f s" by simp
+    ultimately show "\<P>(x in M. X x \<in> {t <.. t+dt}) = (LBINT s:{t..t+dt}. f s)" by simp
   qed
   ultimately have "((\<lambda>dt. \<P>(x in M. t < X x \<and> X x \<le> t + dt) / dt) \<longlongrightarrow> f t) (at_right 0)"
     by simp (smt (verit) Lim_cong_within greaterThan_iff)

@@ -821,7 +821,7 @@ lemma e_P: "$e`\<circ>_x =
   by (rewrite MM_PS.integral_cond_prob_space_nn, auto simp add: alive_T)
 
 proposition nn_integral_T_p:
-  "(\<integral>\<^sup>+\<xi>. ennreal (T x \<xi>) \<partial>(\<MM> \<downharpoonright> alive x)) = \<integral>\<^sup>+t\<in>{0..}. ennreal ($p_{t&x}) \<partial>lborel"
+  "(\<integral>\<^sup>+\<xi>. ennreal (T x \<xi>) \<partial>(\<MM> \<downharpoonright> alive x)) = (\<integral>\<^sup>+t\<in>{0..}. ennreal ($p_{t&x}) \<partial>lborel)"
   apply (rewrite alivex_PS.expectation_nonneg_tail, simp_all add: less_imp_le)
   apply (rule nn_integral_cong)
   unfolding survive_def using distrTx_RD.prob_space distrTx_RD.ccdf_cdf by presburger
@@ -839,19 +839,19 @@ proof -
     using p_0_1 unfolding survive_def by auto
   hence "\<And>t. t\<in>{0..d} \<Longrightarrow> $p_{t&x} \<ge> 1/2"
     unfolding survive_def using distrTx_RD.ccdf_nonincreasing by force
-  hence "\<integral>\<^sup>+t\<in>{0..d}. ennreal ($p_{t&x}) \<partial>lborel \<ge> \<integral>\<^sup>+t\<in>{0..d}. ennreal (1/2) \<partial>lborel"
+  hence "(\<integral>\<^sup>+t\<in>{0..d}. ennreal ($p_{t&x}) \<partial>lborel) \<ge> (\<integral>\<^sup>+t\<in>{0..d}. ennreal (1/2) \<partial>lborel)"
     apply (intro nn_set_integral_mono, simp_all)
     unfolding survive_def using Tx_alivex_measurable apply force
     by (rule AE_I2) (smt (verit) ennreal_half ennreal_leI half_bounded_equal)
-  moreover have "\<integral>\<^sup>+t\<in>{0..}. ennreal ($p_{t&x}) \<partial>lborel \<ge> \<integral>\<^sup>+t\<in>{0..d}. ennreal ($p_{t&x}) \<partial>lborel"
+  moreover have "(\<integral>\<^sup>+t\<in>{0..}. ennreal ($p_{t&x}) \<partial>lborel) \<ge> (\<integral>\<^sup>+t\<in>{0..d}. ennreal ($p_{t&x}) \<partial>lborel)"
     by (rule nn_set_integral_set_mono) simp
-  moreover have "\<integral>\<^sup>+t\<in>{0..d}. ennreal (1/2) \<partial>lborel > 0"
+  moreover have "(\<integral>\<^sup>+t\<in>{0..d}. ennreal (1/2) \<partial>lborel) > 0"
     apply (rewrite nn_integral_cmult_indicator, simp_all)
     using d_pos emeasure_lborel_Icc ennreal_zero_less_mult_iff by fastforce
   ultimately show ?thesis using nn_integral_T_p by simp
 qed
 
-proposition e_LBINT_p: "$e`\<circ>_x = LBINT t:{0..}. $p_{t&x}"
+proposition e_LBINT_p: "$e`\<circ>_x = (LBINT t:{0..}. $p_{t&x})"
   \<comment> \<open>Note that 0 = 0 holds when the integral diverges.\<close>
   unfolding life_expect_def apply (rewrite integral_eq_nn_integral, simp_all add: less_imp_le)
   unfolding set_lebesgue_integral_def apply (rewrite integral_eq_nn_integral, simp_all)
@@ -861,14 +861,14 @@ proposition e_LBINT_p: "$e`\<circ>_x = LBINT t:{0..}. $p_{t&x}"
 corollary e_integral_p: "$e`\<circ>_x = integral {0..} (\<lambda>t. $p_{t&x})"
   \<comment> \<open>Note that 0 = 0 holds when the integral diverges.\<close>
 proof -
-  have "$e`\<circ>_x = LBINT t:{0..}. $p_{t&x}" using e_LBINT_p by simp
+  have "$e`\<circ>_x = (LBINT t:{0..}. $p_{t&x})" using e_LBINT_p by simp
   also have "\<dots> = integral {0..} (\<lambda>t. $p_{t&x})"
     apply (rule set_borel_integral_eq_integral_nonneg, simp_all)
     unfolding survive_def by simp
   finally show ?thesis .
 qed
 
-lemma e_LBINT_p_Icc: "$e`\<circ>_x = LBINT t:{0..n}. $p_{t&x}" if "x+n \<ge> $\<psi>" for n::real
+lemma e_LBINT_p_Icc: "$e`\<circ>_x = (LBINT t:{0..n}. $p_{t&x})" if "x+n \<ge> $\<psi>" for n::real
 proof -
   have [simp]: "{0..n} \<inter> {n<..} = {}" using ivl_disj_int_one(7) by blast
   have [simp]: "{0..n} \<union> {n<..} = {0..}"
@@ -904,23 +904,23 @@ lemma temp_e_P: "$e`\<circ>_{x:n} =
   unfolding temp_life_expect_def
   by (rewrite MM_PS.integral_cond_prob_space_nn; simp add: alive_T that)
 
-lemma temp_e_LBINT_p: "$e`\<circ>_{x:n} = LBINT t:{0..n}. $p_{t&x}" if "n \<ge> 0" for n::real
+lemma temp_e_LBINT_p: "$e`\<circ>_{x:n} = (LBINT t:{0..n}. $p_{t&x})" if "n \<ge> 0" for n::real
 proof -
   let ?minTxn = "\<lambda>\<xi>. min (T x \<xi>) n"
   let ?F = "cdf (distr (\<MM> \<downharpoonright> alive x) borel (T x))"
   let ?Fn = "cdf (distr (\<MM> \<downharpoonright> alive x) borel ?minTxn)"
   interpret distrTxn_RD: real_distribution "distr (\<MM> \<downharpoonright> alive x) borel ?minTxn" by (simp add: that)
   have [simp]: "\<And>\<xi>. \<xi> \<in> space (\<MM> \<downharpoonright> alive x) \<Longrightarrow> 0 \<le> T x \<xi>" by (smt (verit) alivex_Tx_pos)
-  have "(\<integral>\<^sup>+\<xi>. ennreal (min (T x \<xi>) n) \<partial>(\<MM> \<downharpoonright> alive x)) = \<integral>\<^sup>+t\<in>{0..}. ennreal (1 - ?Fn t) \<partial>lborel"
+  have "(\<integral>\<^sup>+\<xi>. ennreal (min (T x \<xi>) n) \<partial>(\<MM> \<downharpoonright> alive x)) = (\<integral>\<^sup>+t\<in>{0..}. ennreal (1 - ?Fn t) \<partial>lborel)"
     by (rewrite alivex_PS.expectation_nonneg_tail; simp add: that)
-  also have "\<dots> = \<integral>\<^sup>+t\<in>{0..}. (ennreal (1 - ?F t) * indicator {..<n} t) \<partial>lborel"
+  also have "\<dots> = (\<integral>\<^sup>+t\<in>{0..}. (ennreal (1 - ?F t) * indicator {..<n} t) \<partial>lborel)"
     apply (rule nn_integral_cong)
     by (rewrite alivex_PS.cdf_distr_min; simp add: indicator_mult_ennreal mult.commute)
-  also have "\<dots> = \<integral>\<^sup>+t\<in>{0..<n}. ennreal (1 - ?F t) \<partial>lborel"
+  also have "\<dots> = (\<integral>\<^sup>+t\<in>{0..<n}. ennreal (1 - ?F t) \<partial>lborel)"
     apply (rule nn_integral_cong) using nn_integral_set_ennreal
     by (smt (verit, best) Int_def atLeastLessThan_def ennreal_mult_right_cong
         indicator_simps mem_Collect_eq mult.commute mult_1)
-  also have "\<dots> = \<integral>\<^sup>+t\<in>{0..n}. ennreal (1 - ?F t) \<partial>lborel"
+  also have "\<dots> = (\<integral>\<^sup>+t\<in>{0..n}. ennreal (1 - ?F t) \<partial>lborel)"
   proof -
     have "sym_diff {0..<n} {0..n} = {n}" using that by force
     thus ?thesis by (intro nn_integral_null_delta; force)
@@ -964,9 +964,9 @@ lemma curt_e_sum_P: "$e_x = (\<Sum>k. \<P>(\<xi> in \<MM>. T x \<xi> \<ge> k + 1
 proof -
   let ?F_flrTx = "cdf (distr (\<MM> \<downharpoonright> alive x) borel (\<lambda>\<xi>. \<lfloor>T x \<xi>\<rfloor>))"
   have [simp]: "\<And>\<xi>. \<xi> \<in> space (\<MM> \<downharpoonright> alive x) \<Longrightarrow> 0 \<le> T x \<xi>" by (smt (verit) alivex_Tx_pos)
-  have "integral\<^sup>N (\<MM> \<downharpoonright> alive x) (\<lambda>\<xi>. ennreal \<lfloor>T x \<xi>\<rfloor>) = \<integral>\<^sup>+t\<in>{0..}. ennreal (1 - ?F_flrTx t) \<partial>lborel"
+  have "integral\<^sup>N (\<MM> \<downharpoonright> alive x) (\<lambda>\<xi>. ennreal \<lfloor>T x \<xi>\<rfloor>) = (\<integral>\<^sup>+t\<in>{0..}. ennreal (1 - ?F_flrTx t) \<partial>lborel)"
     by (rewrite alivex_PS.expectation_nonneg_tail; simp)
-  also have "\<dots> = \<integral>\<^sup>+t\<in>{0::real..}. ennreal \<P>(\<xi> in \<MM>. T x \<xi> \<ge> \<lfloor>t\<rfloor> + 1 \<bar> T x \<xi> > 0) \<partial>lborel"
+  also have "\<dots> = (\<integral>\<^sup>+t\<in>{0::real..}. ennreal \<P>(\<xi> in \<MM>. T x \<xi> \<ge> \<lfloor>t\<rfloor> + 1 \<bar> T x \<xi> > 0) \<partial>lborel)"
   proof -
     { fix t::real assume "t \<ge> 0"
       hence "1 - ?F_flrTx t = \<P>(\<xi> in \<MM>. T x \<xi> \<ge> real_of_int \<lfloor>t\<rfloor> + 1 \<bar> T x \<xi> > 0)"
@@ -980,8 +980,7 @@ proof -
         finally show ?thesis .
       qed }
     thus ?thesis
-      apply -
-      by (rule nn_set_integral_cong2, rule AE_I2) simp
+      by (intro nn_set_integral_cong2 AE_I2) simp
   qed
   also have "\<dots> = (\<Sum>k. \<integral>\<^sup>+t\<in>{k..<k+1}. ennreal \<P>(\<xi> in \<MM>. T x \<xi> \<ge> \<lfloor>t\<rfloor> + 1 \<bar> T x \<xi> > 0) \<partial>lborel)"
     apply (rewrite nn_integral_disjoint_family[THEN sym]; simp)
@@ -1135,8 +1134,8 @@ proof -
   have "integral\<^sup>N (\<MM> \<downharpoonright> alive x) (\<lambda>\<xi>. ennreal \<lfloor>min (T x \<xi>) n\<rfloor>) =
     (\<integral>\<^sup>+t\<in>{0..}. ennreal (1 - ?F_flrminTx t) \<partial>lborel)"
     by (rewrite alivex_PS.expectation_nonneg_tail; simp)
-  also have "\<dots> = \<integral>\<^sup>+t\<in>{0::real..}. ennreal
-    ((1 - \<P>(\<xi> in (\<MM> \<downharpoonright> alive x). T x \<xi> < \<lfloor>t\<rfloor> + 1)) * of_bool (\<lfloor>t\<rfloor> + 1 \<le> n)) \<partial>lborel"
+  also have "\<dots> = (\<integral>\<^sup>+t\<in>{0::real..}. ennreal
+    ((1 - \<P>(\<xi> in (\<MM> \<downharpoonright> alive x). T x \<xi> < \<lfloor>t\<rfloor> + 1)) * of_bool (\<lfloor>t\<rfloor> + 1 \<le> n)) \<partial>lborel)"
   proof -
     have "\<And>t. t \<ge> 0 \<Longrightarrow> ennreal (1 - ?F_flrminTx t) =
       ennreal ((1 - \<P>(\<xi> in (\<MM> \<downharpoonright> alive x). T x \<xi> < \<lfloor>t\<rfloor> + 1)) * of_bool (\<lfloor>t\<rfloor> + 1 \<le> n))"
@@ -1163,7 +1162,7 @@ proof -
     thus ?thesis
       by (intro nn_set_integral_cong2, intro AE_I2) auto
   qed
-  also have "\<dots> = \<integral>\<^sup>+t\<in>{0..<n}. ennreal (1 - \<P>(\<xi> in (\<MM> \<downharpoonright> alive x). T x \<xi> < \<lfloor>t\<rfloor> + 1)) \<partial>lborel"
+  also have "\<dots> = (\<integral>\<^sup>+t\<in>{0..<n}. ennreal (1 - \<P>(\<xi> in (\<MM> \<downharpoonright> alive x). T x \<xi> < \<lfloor>t\<rfloor> + 1)) \<partial>lborel)"
   proof -
     { fix t::real
       have "(\<lfloor>t\<rfloor> + 1 \<le> n) = (t < n)" by linarith
@@ -1172,7 +1171,7 @@ proof -
         unfolding atLeastLessThan_def by (simp add: indicator_inter_arith) }
     thus ?thesis by simp
   qed
-  also have "\<dots> = \<integral>\<^sup>+t\<in>{0..<n}. ennreal \<P>(\<xi> in (\<MM> \<downharpoonright> alive x). T x \<xi> \<ge> \<lfloor>t\<rfloor> + 1) \<partial>lborel"
+  also have "\<dots> = (\<integral>\<^sup>+t\<in>{0..<n}. ennreal \<P>(\<xi> in (\<MM> \<downharpoonright> alive x). T x \<xi> \<ge> \<lfloor>t\<rfloor> + 1) \<partial>lborel)"
     by (rewrite alivex_PS.prob_neg[THEN sym]; simp add: not_less)
   also have "\<dots> = (\<Sum>k<n. \<integral>\<^sup>+t\<in>{k..<k+1}. ennreal \<P>(\<xi> in (\<MM> \<downharpoonright> alive x). T x \<xi> \<ge> \<lfloor>t\<rfloor> + 1) \<partial>lborel)"
     apply (rewrite  Ico_nat_union_finite[of n, THEN sym])
@@ -1183,11 +1182,11 @@ proof -
   proof -
     { fix k::nat
       assume "k < n"
-      hence "\<integral>\<^sup>+t\<in>{k..<(1 + real k)}.
-        ennreal \<P>(\<xi> in (\<MM> \<downharpoonright> alive x). T x \<xi> \<ge> real_of_int \<lfloor>t\<rfloor> + 1) \<partial>lborel =
+      hence "(\<integral>\<^sup>+t\<in>{k..<(1 + real k)}.
+        ennreal \<P>(\<xi> in (\<MM> \<downharpoonright> alive x). T x \<xi> \<ge> real_of_int \<lfloor>t\<rfloor> + 1) \<partial>lborel) =
         \<P>(\<xi> in \<MM>. T x \<xi> \<ge> 1 + real k \<bar> T x \<xi> > 0)" (is "?LHS = ?RHS")
       proof -
-        have "?LHS = \<integral>\<^sup>+t\<in>{k..<(1 + real k)}. ennreal \<P>(\<xi> in (\<MM> \<downharpoonright> alive x). T x \<xi> \<ge> k + 1) \<partial>lborel"
+        have "?LHS = (\<integral>\<^sup>+t\<in>{k..<(1 + real k)}. ennreal \<P>(\<xi> in (\<MM> \<downharpoonright> alive x). T x \<xi> \<ge> k + 1) \<partial>lborel)"
         proof -
           { fix t::real
             assume "k \<le> t" "t < 1 + real k"
@@ -1718,13 +1717,13 @@ qed
 corollary has_bochner_integral_pdfTx_1: "has_bochner_integral lborel (pdfT x) 1"
   by (rule has_bochner_integral_nn_integral; simp add: pdfTx_nonneg nn_integral_pdfTx_1)
 
-corollary LBINT_pdfTx_1: "LBINT s. pdfT x s = 1"
+corollary LBINT_pdfTx_1: "(LBINT s. pdfT x s) = 1"
   using has_bochner_integral_pdfTx_1 by (simp add: has_bochner_integral_integral_eq)
 
 corollary pdfTx_has_integral_1: "(pdfT x has_integral 1) UNIV"
   by (rule nn_integral_has_integral; simp add: pdfTx_nonneg nn_integral_pdfTx_1)
 
-lemma set_nn_integral_pdfTx_1: "\<integral>\<^sup>+s\<in>{0..}. pdfT x s \<partial>lborel = 1"
+lemma set_nn_integral_pdfTx_1: "(\<integral>\<^sup>+s\<in>{0..}. pdfT x s \<partial>lborel) = 1"
   apply (rewrite nn_integral_pdfTx_1[THEN sym])
   apply (rule nn_integral_cong)
   using pdfTx_nonpos_0
@@ -1749,17 +1748,17 @@ proof -
     unfolding set_integrable_def
     apply (rewrite integrable_completion, simp_all)
     using has_bochner_integral_pdfTx_1_nonpos by (rewrite mult.commute, rule integrable.intros)
-  moreover have "LINT s:{0..}|lebesgue. pdfT x s = 1"
+  moreover have "(LINT s:{0..}|lebesgue. pdfT x s) = 1"
     using set_LBINT_pdfTx_1 unfolding set_lebesgue_integral_def
     by (rewrite integral_completion; simp)
   ultimately show ?thesis using has_integral_set_lebesgue by force
 qed
 
-lemma set_nn_integral_pdfTx_PTx: "\<integral>\<^sup>+s\<in>A. pdfT x s \<partial>lborel = \<P>(\<xi> in \<MM>. T x \<xi> \<in> A \<bar> T x \<xi> > 0)"
+lemma set_nn_integral_pdfTx_PTx: "(\<integral>\<^sup>+s\<in>A. pdfT x s \<partial>lborel) = \<P>(\<xi> in \<MM>. T x \<xi> \<in> A \<bar> T x \<xi> > 0)"
   if "A \<in> sets lborel" for A :: "real set"
 proof -
   have [simp]: "A \<in> sets borel" using that by simp
-  have "\<integral>\<^sup>+s\<in>A. pdfT x s \<partial>lborel = emeasure (density lborel (pdfT x)) A"
+  have "(\<integral>\<^sup>+s\<in>A. pdfT x s \<partial>lborel) = emeasure (density lborel (pdfT x)) A"
     using that by (rewrite emeasure_density; force)
   also have "\<dots> = emeasure (distr (\<MM> \<downharpoonright> alive x) lborel (T x)) A"
     using distributed_pdfTx unfolding distributed_def by simp
@@ -1781,7 +1780,7 @@ lemma pdfTx_set_integrable: "set_integrable lborel A (pdfT x)" if "A \<in> sets 
   using set_nn_integral_pdfTx_PTx that
   by (metis (no_types, lifting) ennreal_indicator ennreal_less_top ennreal_mult' nn_integral_cong)
 
-lemma set_integral_pdfTx_PTx: "LBINT s:A. pdfT x s = \<P>(\<xi> in \<MM>. T x \<xi> \<in> A \<bar> T x \<xi> > 0)"
+lemma set_integral_pdfTx_PTx: "(LBINT s:A. pdfT x s) = \<P>(\<xi> in \<MM>. T x \<xi> \<in> A \<bar> T x \<xi> > 0)"
   if "A \<in> sets lborel" for A :: "real set"
   unfolding set_lebesgue_integral_def
   apply (rewrite integral_eq_nn_integral)
@@ -1826,7 +1825,7 @@ lemma nn_integral_pdfX_1: "integral\<^sup>N lborel pdfX = 1"
 corollary has_bochner_integral_pdfX_1: "has_bochner_integral lborel pdfX 1"
   by (rule has_bochner_integral_nn_integral; simp add: pdfX_nonneg nn_integral_pdfX_1)
 
-corollary LBINT_pdfX_1: "LBINT s. pdfX s = 1"
+corollary LBINT_pdfX_1: "(LBINT s. pdfX s) = 1"
   using has_bochner_integral_pdfX_1 by (simp add: has_bochner_integral_integral_eq)
 
 corollary pdfX_has_integral_1: "(pdfX has_integral 1) UNIV"
@@ -1840,7 +1839,7 @@ lemma set_nn_integral_pdfX_PX: "set_nn_integral lborel A pdfX = \<P>(\<xi> in \<
 lemma pdfX_set_integrable: "set_integrable lborel A pdfX" if "A \<in> sets lborel" for A :: "real set"
   using pdfTx_set_integrable pdfT0_X psi_pos' that by smt
 
-lemma set_integral_pdfX_PX: "LBINT s:A. pdfX s = \<P>(\<xi> in \<MM>. X \<xi> \<in> A)"
+lemma set_integral_pdfX_PX: "(LBINT s:A. pdfX s) = \<P>(\<xi> in \<MM>. X \<xi> \<in> A)"
   if "A \<in> sets lborel" for A :: "real set"
   using PT0_eq_PX_lborel that by (rewrite pdfT0_X[THEN sym], rewrite set_integral_pdfTx_PTx; simp)
 
@@ -1869,18 +1868,18 @@ interpretation alivex_PS: prob_space "\<MM> \<downharpoonright> alive x"
 interpretation distrTx_RD: real_distribution "distr (\<MM> \<downharpoonright> alive x) borel (T x)" by simp
 
 proposition nn_integral_T_pdfT:
-  "(\<integral>\<^sup>+\<xi>. ennreal (g (T x \<xi>)) \<partial>(\<MM> \<downharpoonright> alive x)) = \<integral>\<^sup>+s\<in>{0..}. ennreal (pdfT x s * g s) \<partial>lborel"
+  "(\<integral>\<^sup>+\<xi>. ennreal (g (T x \<xi>)) \<partial>(\<MM> \<downharpoonright> alive x)) = (\<integral>\<^sup>+s\<in>{0..}. ennreal (pdfT x s * g s) \<partial>lborel)"
   if "g \<in> borel_measurable lborel" for g :: "real \<Rightarrow> real"
 proof -
-  have "(\<integral>\<^sup>+\<xi>. ennreal (g (T x \<xi>)) \<partial>(\<MM> \<downharpoonright> alive x)) = \<integral>\<^sup>+s. ennreal (pdfT x s) * ennreal (g s) \<partial>lborel"
+  have "(\<integral>\<^sup>+\<xi>. ennreal (g (T x \<xi>)) \<partial>(\<MM> \<downharpoonright> alive x)) = (\<integral>\<^sup>+s. ennreal (pdfT x s) * ennreal (g s) \<partial>lborel)"
   proof -
     have "distributed (\<MM> \<downharpoonright> alive x) lborel (T x) (\<lambda>s. ennreal (pdfT x s))"
       by (intro distributed_pdfTx) simp
     moreover have "(\<lambda>s. ennreal (g s)) \<in> borel_measurable borel" using that by measurable
     ultimately show ?thesis by (rewrite distributed_nn_integral; simp)
   qed
-  also have "\<dots> = \<integral>\<^sup>+s. ennreal (pdfT x s * g s) \<partial>lborel" using ennreal_mult' pdfTx_nonneg by force
-  also have "\<dots> = \<integral>\<^sup>+s\<in>{0..}. ennreal (pdfT x s * g s) \<partial>lborel"
+  also have "\<dots> = (\<integral>\<^sup>+s. ennreal (pdfT x s * g s) \<partial>lborel)" using ennreal_mult' pdfTx_nonneg by force
+  also have "\<dots> = (\<integral>\<^sup>+s\<in>{0..}. ennreal (pdfT x s * g s) \<partial>lborel)"
     apply (rule nn_integral_cong, simp)
     by (metis atLeast_iff ennreal_0 indicator_simps linorder_not_le mult_1 mult_commute_abs
         mult_zero_left pdfTx_neg_0 x_lt_psi)
@@ -1888,7 +1887,7 @@ proof -
 qed
 
 lemma expectation_LBINT_pdfT_nonneg:
-  "alivex_PS.expectation (\<lambda>\<xi>. g (T x \<xi>)) = LBINT s:{0..}. pdfT x s * g s"
+  "alivex_PS.expectation (\<lambda>\<xi>. g (T x \<xi>)) = (LBINT s:{0..}. pdfT x s * g s)"
   if "\<And>s. s \<ge> 0 \<Longrightarrow> g s \<ge> 0" "g \<in> borel_measurable lborel" for g :: "real \<Rightarrow> real"
   \<comment> \<open>Note that 0 = 0 holds when the integral diverges.\<close>
   using that apply (rewrite integral_eq_nn_integral, simp)
@@ -1903,7 +1902,7 @@ corollary expectation_integral_pdfT_nonneg:
   if "\<And>s. s \<ge> 0 \<Longrightarrow> g s \<ge> 0" "g \<in> borel_measurable lborel" for g :: "real \<Rightarrow> real"
   \<comment> \<open>Note that 0 = 0 holds when the integral diverges.\<close>
 proof -
-  have "alivex_PS.expectation (\<lambda>\<xi>. g (T x \<xi>)) = LBINT s:{0..}. pdfT x s * g s"
+  have "alivex_PS.expectation (\<lambda>\<xi>. g (T x \<xi>)) = (LBINT s:{0..}. pdfT x s * g s)"
     using expectation_LBINT_pdfT_nonneg that by simp
   also have "\<dots> = integral {0..} (\<lambda>s. pdfT x s * g s)"
     using that pdfTx_nonneg by (intro set_borel_integral_eq_integral_nonneg; simp)
@@ -1911,7 +1910,7 @@ proof -
 qed
 
 proposition expectation_LBINT_pdfT:
-  "alivex_PS.expectation (\<lambda>\<xi>. g (T x \<xi>)) = LBINT s:{0..}. pdfT x s * g s"
+  "alivex_PS.expectation (\<lambda>\<xi>. g (T x \<xi>)) = (LBINT s:{0..}. pdfT x s * g s)"
   if "set_integrable lborel {0..} (\<lambda>s. pdfT x s * g s)" "g \<in> borel_measurable lborel"
   for g :: "real \<Rightarrow> real"
 proof -
@@ -1957,11 +1956,11 @@ proof -
     using that by (rewrite expectation_LBINT_pdfT_nonneg[where g="\<lambda>s. max 0 (- g s)"]) simp_all
   ultimately have "alivex_PS.expectation (\<lambda>\<xi>. g (T x \<xi>)) =
     (LBINT s:{0..}. pdfT x s * max 0 (g s)) - (LBINT s:{0..}. pdfT x s *  max 0 (- g s))" by simp
-  also have "\<dots> = LBINT s:{0..}. (pdfT x s * max 0 (g s) - pdfT x s * max 0 (- g s))"
+  also have "\<dots> = (LBINT s:{0..}. (pdfT x s * max 0 (g s) - pdfT x s * max 0 (- g s)))"
     by (rewrite set_integral_diff; simp)
-  also have "\<dots> = LBINT s:{0..}. pdfT x s * (max 0 (g s) - max 0 (- g s))"
+  also have "\<dots> = (LBINT s:{0..}. pdfT x s * (max 0 (g s) - max 0 (- g s)))"
     by (simp add: right_diff_distrib)
-  also have "\<dots> = LBINT s:{0..}. pdfT x s * g s"
+  also have "\<dots> = (LBINT s:{0..}. pdfT x s * g s)"
     using minus_max_eq_min
     by (metis (no_types, opaque_lifting) diff_zero max_def min_def minus_diff_eq)
   finally show ?thesis .
@@ -1979,7 +1978,7 @@ proof -
     using that by (rewrite expectation_LBINT_pdfT; simp)
 qed
 
-corollary e_LBINT_pdfT: "$e`\<circ>_x = LBINT s:{0..}. pdfT x s * s"
+corollary e_LBINT_pdfT: "$e`\<circ>_x = (LBINT s:{0..}. pdfT x s * s)"
   \<comment> \<open>Note that 0 = 0 holds when the life expectation diverges.\<close>
   unfolding life_expect_def using expectation_LBINT_pdfT_nonneg by force
 
@@ -2182,19 +2181,19 @@ proof -
   ultimately show ?thesis using AE_I'[of ?N'] by simp
 qed
 
-lemma LBINT_p_mu_q: "LBINT s:{f<..f+t}. $p_{s&x} * $\<mu>_(x+s) = $q_{f\<bar>t&x}"
+lemma LBINT_p_mu_q: "(LBINT s:{f<..f+t}. $p_{s&x} * $\<mu>_(x+s)) = $q_{f\<bar>t&x}"
   if "t \<ge> 0" "f \<ge> 0" for t f :: real
 proof -
-  have "LBINT s:{f<..f+t}. $p_{s&x} * $\<mu>_(x+s) = LBINT s:{f<..f+t}. pdfT x s"
+  have "(LBINT s:{f<..f+t}. $p_{s&x} * $\<mu>_(x+s)) = (LBINT s:{f<..f+t}. pdfT x s)"
     apply (rule set_lebesgue_integral_cong_AE; simp)
      apply (simp add: survive_def)
     using pdfTx_p_mu_AE apply (rule AE_mp)
     using that by (intro always_eventually; simp add: ereal_less_le)
   also have "\<dots> = enn2real (\<integral>\<^sup>+s\<in>{f<..f+t}. ennreal (pdfT x s) \<partial>lborel)"
   proof -
-    have "\<integral>\<^sup>+s\<in>{f<..f+t}. ennreal (pdfT x s) \<partial>lborel < \<top>"
+    have "(\<integral>\<^sup>+s\<in>{f<..f+t}. ennreal (pdfT x s) \<partial>lborel) < \<top>"
     proof -
-      have "\<integral>\<^sup>+s\<in>{f<..f+t}. ennreal (pdfT x s) \<partial>lborel \<le> \<integral>\<^sup>+s. ennreal (pdfT x s) \<partial>lborel"
+      have "(\<integral>\<^sup>+s\<in>{f<..f+t}. ennreal (pdfT x s) \<partial>lborel) \<le> (\<integral>\<^sup>+s. ennreal (pdfT x s) \<partial>lborel)"
         by (smt (verit) indicator_simps le_zero_eq linorder_le_cases
             mult.right_neutral mult_zero_right nn_integral_mono)
       also have "\<dots> < \<top>" using nn_integral_pdfTx_1 by simp
@@ -2261,22 +2260,22 @@ corollary p_mu_integrable_on_Icc:
   using p_mu_has_integral_q_Icc that by auto
 
 lemma e_ennreal_p_mu: "(\<integral>\<^sup>+\<xi>. ennreal (T x \<xi>) \<partial>(\<MM> \<downharpoonright> alive x)) =
-  \<integral>\<^sup>+s\<in>{0..}. ennreal ($p_{s&x} * $\<mu>_(x+s) * s) \<partial>lborel"
+  (\<integral>\<^sup>+s\<in>{0..}. ennreal ($p_{s&x} * $\<mu>_(x+s) * s) \<partial>lborel)"
 proof -
   have [simp]: "sym_diff {0..} {0<..} = {0::real}" by force
-  have "(\<integral>\<^sup>+\<xi>. ennreal (T x \<xi>) \<partial>(\<MM> \<downharpoonright> alive x)) = \<integral>\<^sup>+s\<in>{0..}. ennreal (pdfT x s * s) \<partial>lborel"
+  have "(\<integral>\<^sup>+\<xi>. ennreal (T x \<xi>) \<partial>(\<MM> \<downharpoonright> alive x)) = (\<integral>\<^sup>+s\<in>{0..}. ennreal (pdfT x s * s) \<partial>lborel)"
     by (rewrite nn_integral_T_pdfT[where g="\<lambda>s. s"]; simp)
-  also have "\<dots> = \<integral>\<^sup>+s\<in>{0<..}. ennreal (pdfT x s * s) \<partial>lborel"
+  also have "\<dots> = (\<integral>\<^sup>+s\<in>{0<..}. ennreal (pdfT x s * s) \<partial>lborel)"
     by (rewrite nn_integral_null_delta; force)
-  also have "\<dots> = \<integral>\<^sup>+s\<in>{0<..}. ennreal ($p_{s&x} * $\<mu>_(x+s) * s) \<partial>lborel"
+  also have "\<dots> = (\<integral>\<^sup>+s\<in>{0<..}. ennreal ($p_{s&x} * $\<mu>_(x+s) * s) \<partial>lborel)"
     apply (rule nn_integral_cong_AE)
     using pdfTx_p_mu_AE apply (rule AE_mp, intro AE_I2) by force
-  also have "\<dots> = \<integral>\<^sup>+s\<in>{0..}. ennreal ($p_{s&x} * $\<mu>_(x+s) * s) \<partial>lborel"
+  also have "\<dots> = (\<integral>\<^sup>+s\<in>{0..}. ennreal ($p_{s&x} * $\<mu>_(x+s) * s) \<partial>lborel)"
     by (rewrite nn_integral_null_delta[THEN sym]; force)
   finally show ?thesis .
 qed
 
-lemma e_LBINT_p_mu: "$e`\<circ>_x = LBINT s:{0..}. $p_{s&x} * $\<mu>_(x+s) * s"
+lemma e_LBINT_p_mu: "$e`\<circ>_x = (LBINT s:{0..}. $p_{s&x} * $\<mu>_(x+s) * s)"
   \<comment> \<open>Note that 0 = 0 holds when the life expectation diverges.\<close>
 proof -
   let ?f = "\<lambda>s. $p_{s&x} * $\<mu>_(x+s) * s"
@@ -2317,20 +2316,20 @@ proof -
         by (rewrite nn_integral_eq_integral, simp_all) (meson mult.commute)
     qed
     finally have "ennreal ($e`\<circ>_x) = ennreal (LBINT s:{0..}. ?f s)" .
-    moreover have "LBINT s:{0..}. ?f s \<ge> 0"
+    moreover have "(LBINT s:{0..}. ?f s) \<ge> 0"
       unfolding set_lebesgue_integral_def by (rule integral_nonneg_AE) simp
     ultimately show ?thesis using e_nonneg by simp
   next
     case False
     hence "$e`\<circ>_x = 0" unfolding life_expect_def using not_integrable_integral_eq by force
-    also have "\<dots> = LBINT s:{0..}. ?f s"
+    also have "\<dots> = (LBINT s:{0..}. ?f s)"
     proof -
       have "\<infinity> = \<integral>\<^sup>+\<xi>. ennreal (T x \<xi>) \<partial>(\<MM> \<downharpoonright> alive x)"
         using nn_integral_nonneg_infinite False
         by (smt (verit) AE_cong Tx_alivex_measurable alivex_PS.AE_prob_1 alivex_PS.prob_space
             alivex_Tx_pos nn_integral_cong)
       hence "0 = enn2real (\<integral>\<^sup>+s\<in>{0..}. ennreal (?f s) \<partial>lborel)" using e_ennreal_p_mu by simp
-      also have "\<dots> = LBINT s:{0..}. ?f s"
+      also have "\<dots> = (LBINT s:{0..}. ?f s)"
         unfolding set_lebesgue_integral_def apply (rewrite integral_eq_nn_integral, simp_all)
         by (simp add: indicator_mult_ennreal mult.commute)
       finally show ?thesis by simp
@@ -2342,7 +2341,7 @@ qed
 lemma e_integral_p_mu: "$e`\<circ>_x = integral {0..} (\<lambda>s. $p_{s&x} * $\<mu>_(x+s) * s)"
   \<comment> \<open>Note that 0 = 0 holds when the life expectation diverges.\<close>
 proof -
-  have "LBINT s:{0..}. $p_{s&x} * $\<mu>_(x+s) * s = integral {0..} (\<lambda>s. $p_{s&x} * $\<mu>_(x+s) * s)"
+  have "(LBINT s:{0..}. $p_{s&x} * $\<mu>_(x+s) * s) = integral {0..} (\<lambda>s. $p_{s&x} * $\<mu>_(x+s) * s)"
   proof -
     have "AE s in lborel. s \<ge> 0 \<longrightarrow> $p_{s&x} * $\<mu>_(x+s) * s \<ge> 0"
     proof -
@@ -2519,7 +2518,7 @@ proof -
         unfolding interval_lebesgue_integral_def einterval_def apply simp
         by (rule set_integral_discrete_difference[where X="{y}"]; force)
       ultimately have "(LBINT t:{0..}. ?svl (y+t)) = (LBINT u:{y..}. ?svl u)" by simp }
-    hence "\<forall>\<^sub>F y in nhds x. LBINT t:{0..}. ?svl (y+t) = LBINT u:{y..}. ?svl u"
+    hence "\<forall>\<^sub>F y in nhds x. (LBINT t:{0..}. ?svl (y+t)) = (LBINT u:{y..}. ?svl u)"
       using d_pos by (rewrite eventually_nhds_metric) auto
     moreover have "((\<lambda>y. LBINT u:{y..}. ?svl u) has_real_derivative (- ?svl x)) (at x)"
     proof -
@@ -2529,7 +2528,7 @@ proof -
       hence "((\<lambda>y. integral {y..b} ?svl) has_real_derivative (- ?svl x)) (at x)"
         using that apply (rewrite at_within_open[where S="{a<..<b}", THEN sym], simp_all)
         by (rule DERIV_subset[where s="{a..b}"]) auto
-      moreover have "\<forall>\<^sub>F y in nhds x. LBINT u:{y..b}. ?svl u = integral {y..b} ?svl"
+      moreover have "\<forall>\<^sub>F y in nhds x. (LBINT u:{y..b}. ?svl u) = integral {y..b} ?svl"
         apply (rewrite eventually_nhds_metric)
         using d_pos by (metis ccdfX_integrable_Icc set_borel_integral_eq_integral(2))
       ultimately have "((\<lambda>y. LBINT u:{y..b}. ?svl u) has_real_derivative (- ?svl x)) (at x)"
@@ -2537,8 +2536,7 @@ proof -
       hence "((\<lambda>y. (LBINT u:{y..b}. ?svl u) + (LBINT u:{b<..}. ?svl u)) has_real_derivative
         (- ?svl x)) (at x)"
         by (rewrite to "- ?svl x + 0" add_0_right[THEN sym], rule DERIV_add; simp)
-      moreover have "\<forall>\<^sub>F y in nhds x.
-        LBINT u:{y..}. ?svl u = (LBINT u:{y..b}. ?svl u) + (LBINT u:{b<..}. ?svl u)"
+      moreover have "\<forall>\<^sub>F y in nhds x. (LBINT u:{y..}. ?svl u) = (LBINT u:{y..b}. ?svl u) + (LBINT u:{b<..}. ?svl u)"
       proof -
         { fix y assume "dist y x < d"
           hence y_ab: "y \<in> {a<..<b}" unfolding d_def dist_real_def by force
@@ -2547,7 +2545,7 @@ proof -
             apply (rule set_integrable_subset, simp_all)+
             using y_ab by force
           moreover have "{y..b} \<inter> {b<..} = {}" "{y..} = {y..b} \<union> {b<..}" using y_ab by force+
-          ultimately have "LBINT u:{y..}. ?svl u = (LBINT u:{y..b}. ?svl u) + (LBINT u:{b<..}. ?svl u)"
+          ultimately have "(LBINT u:{y..}. ?svl u) = (LBINT u:{y..b}. ?svl u) + (LBINT u:{b<..}. ?svl u)"
             using set_integral_Un by simp }
         thus ?thesis using d_pos by (rewrite eventually_nhds_metric) blast
       qed

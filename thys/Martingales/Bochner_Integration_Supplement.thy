@@ -476,7 +476,7 @@ subsection \<open>Auxiliary Lemmas for Set Integrals\<close>
 
 lemma set_integral_scaleR_left: 
   assumes "A \<in> sets M" "c \<noteq> 0 \<Longrightarrow> integrable M f"
-  shows "LINT t:A|M. f t *\<^sub>R c = (LINT t:A|M. f t) *\<^sub>R c"
+  shows "(LINT t:A|M. f t *\<^sub>R c) = (LINT t:A|M. f t) *\<^sub>R c"
   unfolding set_lebesgue_integral_def 
   using integrable_mult_indicator[OF assms]
   by (subst integral_scaleR_left[symmetric], auto)

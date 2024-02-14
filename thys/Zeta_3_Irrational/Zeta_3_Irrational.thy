@@ -1047,8 +1047,8 @@ proof (intro set_integrableI_nonneg AE_I2; clarify?)
     by (intro mult_nonpos_nonneg divide_nonpos_nonneg) (use xy in auto)
   thus "0 \<le> - ln (x * y) / (1 - x * y) * x ^ r * y ^ s" by simp
 next
-  show "\<integral>\<^sup>+x\<in>{0<..<1}\<times>{0<..<1}. ennreal (case x of (x, y) \<Rightarrow>
-           - ln (x * y) / (1 - x * y) * x ^ r * y ^ s) \<partial>lborel < \<infinity>"
+  show "(\<integral>\<^sup>+x\<in>{0<..<1}\<times>{0<..<1}. ennreal (case x of (x, y) \<Rightarrow>
+           - ln (x * y) / (1 - x * y) * x ^ r * y ^ s) \<partial>lborel) < \<infinity>"
     using beukers_nn_integral1_finite by (simp add: beukers_nn_integral1_def case_prod_unfold)
 qed (simp_all flip: lborel_prod add: set_borel_measurable_def)
 
@@ -1061,8 +1061,8 @@ proof (intro set_integrableI_nonneg AE_I2; clarify?)
     using mult_strict_mono[of x 1 y 1] xyz beukers_denom_ineq[of x y z]
     by (intro mult_nonneg_nonneg divide_nonneg_nonneg) auto
 next
-  show "\<integral>\<^sup>+x\<in>{0<..<1}\<times>{0<..<1}\<times>{0<..<1}. ennreal (case x of (z,x,y) \<Rightarrow>
-           x ^ r * y ^ s / (1-(1-x*y)*z)) \<partial>lborel < \<infinity>"
+  show "(\<integral>\<^sup>+x\<in>{0<..<1}\<times>{0<..<1}\<times>{0<..<1}. ennreal (case x of (z,x,y) \<Rightarrow>
+           x ^ r * y ^ s / (1-(1-x*y)*z)) \<partial>lborel) < \<infinity>"
     using beukers_nn_integral1_finite
     by (simp add: beukers_nn_integral1_altdef case_prod_unfold)
 qed (simp_all flip: lborel_prod add: set_borel_measurable_def)

@@ -392,12 +392,12 @@ corollary q_d_l: "$q_{t&x} = $d_{t&x} / $l_x" if "t \<ge> 0" for t::real
 corollary q_1_d_l: "$q_x = $d_x / $l_x"
   using q_d_l by simp
 
-lemma LBINT_p_l: "LBINT t:A. $p_{t&x} = (LBINT t:A. $l_(x+t)) / $l_x"
+lemma LBINT_p_l: "(LBINT t:A. $p_{t&x}) = (LBINT t:A. $l_(x+t)) / $l_x"
   if "A \<subseteq> {0..}" "A \<in> sets lborel" for A :: "real set"
   \<comment> \<open>Note that 0 = 0 holds when the integral diverges.\<close>
 proof -
   have [simp]: "\<And>t. t \<in> A \<Longrightarrow> $p_{t&x} = $l_(x+t) / $l_x" using p_l that by blast
-  hence "LBINT t:A. $p_{t&x} = LBINT t:A. $l_(x+t) / $l_x"
+  hence "(LBINT t:A. $p_{t&x}) = (LBINT t:A. $l_(x+t) / $l_x)"
     using that by (rewrite set_lebesgue_integral_cong[where g="\<lambda>t. $l_(x+t) / $l_x"]; simp)
   also have "\<dots> = (LBINT t:A. $l_(x+t)) / $l_x" by (rewrite set_integral_divide_zero) simp
   finally show ?thesis .
@@ -551,8 +551,8 @@ proof -
   hence "deriv (\<lambda>x. ln ($l_x / $l_0)) x = deriv (\<lambda>x. ln ($l_x)) x"
     apply (rewrite deriv_cong_ev[of _ "\<lambda>x. ln ($l_x) - ln ($l_0)"], simp_all)
     apply (rewrite deriv_diff, simp_all)
-    unfolding field_differentiable_def using has_derivative_ln that
-    by (metis DERIV_deriv_iff_real_differentiable differentiable_def lx_pos)
+    unfolding field_differentiable_def  
+    by (metis that DERIV_ln_divide_chain lx_pos real_differentiableE)
   thus ?thesis using ccdfX_l_normal mu_deriv_ln that differentiable_ccdfX_l by force
 qed
 
@@ -584,7 +584,7 @@ lemma LBINT_l_mu_q: "(LBINT s:{f<..f+t}. $l_(x+s) * $\<mu>_(x+s)) / $l_x = $q_{f
   if "t \<ge> 0" "f \<ge> 0"
 proof -
   have "\<And>s. s\<in>{f<..f+t} \<Longrightarrow> $p_{s&x} = $l_(x+s) / $l_x" using p_l that by simp
-  hence "$q_{f\<bar>t&x} = LBINT s:{f<..f+t}. $l_(x+s) / $l_x * $\<mu>_(x+s)"
+  hence "$q_{f\<bar>t&x} = (LBINT s:{f<..f+t}. $l_(x+s) / $l_x * $\<mu>_(x+s))"
     using LBINT_p_mu_q 
     by (smt (verit) greaterThanAtMost_borel set_lebesgue_integral_cong sets_lborel that x_lt_psi)
   also have "\<dots> = (LBINT s:{f<..f+t}. $l_(x+s) * $\<mu>_(x+s)) / $l_x"
@@ -630,7 +630,7 @@ lemma e_LBINT_l: "$e`\<circ>_x = (LBINT s:{0..}. $l_(x+s) * $\<mu>_(x+s) * s) / 
   \<comment> \<open>Note that 0 = 0 holds when the life expectation diverges.\<close>
 proof -
   have "\<And>s. s\<in>{0..} \<Longrightarrow> $p_{s&x} = $l_(x+s) / $l_x" using p_l by simp
-  hence "$e`\<circ>_x = LBINT s:{0..}. $l_(x+s) / $l_x * $\<mu>_(x+s) * s"
+  hence "$e`\<circ>_x = (LBINT s:{0..}. $l_(x+s) / $l_x * $\<mu>_(x+s) * s)"
     using e_LBINT_p_mu
     by (smt (verit) atLeast_borel set_lebesgue_integral_cong sets_lborel x_lt_psi)
   also have "\<dots> = (LBINT s:{0..}. $l_(x+s) * $\<mu>_(x+s) * s) / $l_x"
@@ -642,7 +642,7 @@ lemma e_integral_l: "$e`\<circ>_x = integral {0..} (\<lambda>s. $l_(x+s) * $\<mu
   \<comment> \<open>Note that 0 = 0 holds when the life expectation diverges.\<close>
 proof -
   have "AE s in lborel. $\<mu>_(x+s) \<ge> 0" by (rule AE_translation, rule mu_nonneg_AE)
-  hence "LBINT s:{0..}. $l_(x+s) * $\<mu>_(x+s) * s = integral {0..} (\<lambda>s. $l_(x+s) * $\<mu>_(x+s) * s)"
+  hence "(LBINT s:{0..}. $l_(x+s) * $\<mu>_(x+s) * s) = integral {0..} (\<lambda>s. $l_(x+s) * $\<mu>_(x+s) * s)"
     by (intro set_borel_integral_eq_integral_nonneg_AE; force)
   thus ?thesis using e_LBINT_l by simp
 qed
