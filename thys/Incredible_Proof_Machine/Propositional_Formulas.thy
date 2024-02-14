@@ -3,6 +3,7 @@ imports
   Abstract_Formula
   "HOL-Library.Countable"
   "HOL-Library.Infinite_Set"
+  "HOL-Library.Infinite_Typeclass"
 begin
 
 lemma countable_infinite_ex_bij: "\<exists>f::('a::{countable,infinite}\<Rightarrow>'b::{countable,infinite}). bij f"
