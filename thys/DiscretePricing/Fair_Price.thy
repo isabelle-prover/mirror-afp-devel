@@ -103,11 +103,11 @@ proof (intro sigma_finite_subalgebra.real_cond_exp_charact)
   show "integrable M f" using assms by simp
   show "integrable M (\<lambda>x. expectation f)" by auto
   show "(\<lambda>x. expectation f) \<in> borel_measurable N" by simp
-  show "\<And>A. A \<in> sets N \<Longrightarrow> set_lebesgue_integral M A f = \<integral>x\<in>A. expectation f\<partial>M"
+  show "\<And>A. A \<in> sets N \<Longrightarrow> set_lebesgue_integral M A f = (\<integral>x\<in>A. expectation f\<partial>M)"
   proof -
     fix A
     assume "A \<in> sets N"
-    show "set_lebesgue_integral M A f = \<integral>x\<in>A. expectation f\<partial>M"
+    show "set_lebesgue_integral M A f = (\<integral>x\<in>A. expectation f\<partial>M)"
     proof (cases "A = {}")
       case True
       thus ?thesis by (simp add: set_lebesgue_integral_def)
@@ -117,7 +117,7 @@ proof (intro sigma_finite_subalgebra.real_cond_exp_charact)
       have "set_lebesgue_integral M A f = expectation f" using \<open>A = space M\<close>
         by (metis (mono_tags, lifting) Bochner_Integration.integral_cong indicator_simps(1)
                   scaleR_one set_lebesgue_integral_def)
-      also have "... =\<integral>x\<in>A. expectation f\<partial>M" using \<open>A = space M\<close>
+      also have "... = (\<integral>x\<in>A. expectation f\<partial>M)" using \<open>A = space M\<close>
         by (auto simp add:prob_space set_lebesgue_integral_def)
       finally show ?thesis .
     qed
