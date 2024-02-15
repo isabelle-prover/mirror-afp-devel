@@ -51,11 +51,6 @@ proof -
     by linarith
 qed
 
-lemma sum_image_eq:
-  assumes "inj_on f A"
-  shows "\<Sum> (f ` A) = (\<Sum> i \<in> A. f i)"
-  using assms sum.reindex_cong by fastforce
-
 lemma coprime_dvd_aux:
   assumes "gcd m n = Suc 0" "na dvd n" "ma dvd m" "mb dvd m" "nb dvd n" and eq: "ma * na = mb * nb"
   shows "ma = mb"
@@ -232,16 +227,15 @@ proof-
     have \<section>: "\<Sum> ((\<lambda>j. m ^ j) ` {..k}) = sum (\<lambda>j. m ^ j) {0..k}"  for k
     proof (induction k)
       case (Suc k)
+      have [simp]: "m * m ^ k \<notin> (^) m ` {..k}"
+        by (metis Suc_n_not_le_n \<open>1 < m\<close> atMost_iff image_iff power_Suc power_inject_exp)
       then show ?case
-        apply (clarsimp simp: atMost_Suc)
-        by (smt add.commute add_le_same_cancel1 assms(1) atMost_iff finite_atMost finite_imageI
-image_iff le_zero_eq power_add power_one_right prime_power_inj sum.insert zero_neq_one)
+        by (clarsimp simp: atMost_Suc Suc)
     qed auto
     show ?thesis
       by (metis "\<section>" AA Esigma_def atMost_atLeast0)
   qed
   have B: "(\<Sum> i\<le>k.( m^i)) = ( m^Suc k -(1::nat)) /(m-(1::nat))"
-
     using assms \<open>m > 1\<close> Set_Interval.geometric_sum  [of m "Suc k"]
     apply simp
     by (metis One_nat_def lessThan_Suc_atMost nat_one_le_power of_nat_1 of_nat_diff of_nat_mult
@@ -281,12 +275,11 @@ proof-
     have "inj_on (\<lambda>(i,j). i*j) (divisor_set m \<times> divisor_set n)"
       using assms
       apply (simp add: inj_on_def divisor_set divisor_def)
-   by (metis assms coprime_dvd_aux mult_left_cancel not_one_le_zero)
-  moreover have
-"{i*j| i j. i \<in> divisor_set m \<and> j \<in> divisor_set n}= (\<lambda>(i,j). i*j)`(divisor_set m \<times> divisor_set n)"
+      by (metis assms coprime_dvd_aux mult_left_cancel not_one_le_zero)
+    moreover have "{i*j| i j. i \<in> divisor_set m \<and> j \<in> divisor_set n} = (\<lambda>(i,j). i*j) ` (divisor_set m \<times> divisor_set n)"
       by auto
     ultimately show ?thesis
-      by (simp add: sum.cartesian_product sum_image_eq)
+      by (simp add: sum.cartesian_product sum.image_eq)
   qed
   also have "... = \<Sum>( divisor_set m)* \<Sum>( divisor_set n)"
     by (simp add: sum_product)
@@ -356,7 +349,6 @@ proof( rule ccontr )
   have d:"Esigma n = Esigma (2*m)"  using  \<open>\<not> (2*m \<noteq> n)\<close> by simp
 
   then show False
-
   proof-
     have w: "2*m \<in> divisor_set (2*m)" using divisor_set assms divisor_set_not_empty
       by auto
@@ -691,11 +683,10 @@ proof-
   qed
 
   have B: "Esigma n = n+m*x" using assms by simp
-  show ?thesis using A B Amicable_pair_equiv_def
-     by (smt Amicable_pair_equiv_def_conv Esigma_properdiv_set
-One_nat_def Suc_leI add_cancel_left_left add_le_same_cancel1 add_mult_distrib2 assms
- dvd_triv_right le_add2 nat_0_less_mult_iff not_gr_zero not_le semiring_normalization_rules(1))
- qed
+  show ?thesis using A B Amicable_pair_equiv_def assms
+    by (smt (verit, del_insts) Amicable_pair_equiv_def_conv Esigma_properdiv_set Suc_eq_plus1 Suc_le_eq add_0 add_le_same_cancel2
+        add_less_cancel_right dvd_triv_right less_nat_zero_code linorder_not_le mult_Suc_right mult_is_0 mult_le_mono not_gr_zero prime_ge_Suc_0_nat)
+qed
 
 
 subsubsection\<open>More examples\<close>
@@ -720,9 +711,8 @@ proof-
 
     have "gcd (3^2*7*13)((5::nat)*17) =1"
       using A111  coprime_imp_gcd_eq_1 by blast
-    show ?thesis using \<open>gcd (3^2*7*13)((5::nat)*17) =1 \<close>
-        gcd_Esigma_mult
-      by (smt semiring_normalization_rules(18) semiring_normalization_rules(7))
+    then show ?thesis 
+      by (metis (no_types, lifting) gcd_Esigma_mult mult.assoc)
   qed
   have "prime (7::nat)" by simp
   have "\<not> 7 dvd ((3::nat)^2)"  by simp
@@ -731,15 +721,13 @@ proof-
   have  "gcd ((3::nat)^2*7) 13 =1"
     using \<open>prime (13::nat)\<close> \<open>\<not> 13 dvd ((3::nat)^2*7)\<close> gcd_nat.absorb_iff2 prime_nat_iff
     by blast
-  have A3: " Esigma(3^2 * 7*13) = Esigma(3^2*7)*Esigma(13)"
-    using  \<open>gcd  (3^2 *7) 13 =1\<close>  gcd_Esigma_mult
-    by (smt semiring_normalization_rules(18) semiring_normalization_rules(7))
+  then have A3: " Esigma(3^2 * 7*13) = Esigma(3^2*7)*Esigma(13)"
+    using gcd_Esigma_mult by presburger
   have  "gcd ((3::nat)^2) 7 = 1"
     using \<open>prime (7::nat)\<close> \<open> \<not> 7 dvd ((3::nat)^2 )\<close> gcd_nat.absorb_iff2 prime_nat_iff
     by blast
-  have A4: " Esigma(3^2*7) = Esigma(3^2)* Esigma (7)"
-    using  \<open>gcd ((3::nat)^2) 7 =1\<close>  gcd_Esigma_mult
-    by (smt semiring_normalization_rules(18) semiring_normalization_rules(7))
+  then have A4: " Esigma(3^2*7) = Esigma(3^2)* Esigma (7)"
+    using gcd_Esigma_mult by presburger
   have A5: "Esigma(3^2) = 13"
   proof-
     have  "(3::nat)^2 =9" by auto
@@ -772,17 +760,15 @@ proof-
   have AAA: "Esigma(69615) =157248" using AA by simp
 
   have AA1: "Esigma(87633) = Esigma (3^2*7*13*107)" by simp
-  have "prime (107::nat)" by simp
+  have "prime (107::nat)" by eval
   have AA2: "Esigma (3^2*7*13*107) = Esigma (3^2*7*13)*Esigma(107)"
 
   proof-
     have "\<not> (107::nat) dvd  (3^2*7*13)" by auto
-    have "gcd  ((3::nat)^2*7*13) 107 =1" using \<open>prime (107::nat)\<close>
-        \<open> \<not> (107::nat) dvd  (3^2*7*13)\<close>
-
+    then have "gcd  ((3::nat)^2*7*13) 107 =1" using \<open>prime (107::nat)\<close>
       using gcd_nat.absorb_iff2 prime_nat_iff by blast
-
-    show ?thesis using \<open>gcd  (3^2 *7*13) 107 =1\<close> gcd_Esigma_mult by (smt mult.commute)
+    then show ?thesis
+      by (meson gcd_Esigma_mult)
   qed
   have AA3:  "Esigma (107) =108"
     using prime_sum_div \<open>prime(107::nat)\<close> by auto
@@ -888,12 +874,9 @@ proof-
     qed
     have A7:"Esigma(p*q) = (Esigma p)*(Esigma q)"
     proof-
-      have "p \<noteq> q" using assms One_nat_def Suc_pred add_gr_0 add_is_0 diff_commute diff_diff_cancel
-          diff_is_0_eq nat_0_less_mult_iff nat_mult_eq_cancel_disj
-          numeral_One prime_gt_1_nat power_inject_exp
-          semiring_normalization_rules(7) two_is_prime_nat zero_less_numeral zero_less_power
-zero_neq_numeral  by (smt less_imp_le_nat)
-
+      have "p \<noteq> q"
+        by (metis A2 Suc_eq_plus1 Zero_not_Suc aa add_Suc add_cancel_left_left add_diff_cancel_left' assms(4) assms(6) 
+            cc diff_is_0_eq linorder_not_less mult.commute mult_Suc_right prime_nat_iff prime_product)
       show ?thesis using \<open>p \<noteq> q\<close>
           \<open>prime p\<close>  \<open>prime q\<close> C  prime_Esigma_mult assms
         by (metis mult.commute)
@@ -922,7 +905,7 @@ zero_neq_numeral  by (smt less_imp_le_nat)
    also have "\<dots> = (2^(k+1)-1)*(2^(k-l))*(2^k)*f^2"
       by (simp add: power2_eq_square)
     also have "\<dots> = (2^(k+1))*(2^(k-l))*(2^k)*f^2-(2^(k-l))*(2^k)*f^2"
-      by (smt left_diff_distrib' mult.commute mult_numeral_1_right numeral_One)
+      using diff_mult_distrib nat_mult_1 by presburger
    also have "\<dots> = (2^(k+1+k-l+k))*f^2-(2^(k-l))*(2^k)*f^2"
       by (metis Nat.add_diff_assoc assms(1) less_imp_le_nat power_add)
    also have "\<dots> = (2^(3*k+1-l))*f^2-(2^(k-l))*(2^k)*f^2"
@@ -965,10 +948,9 @@ zero_neq_numeral  by (smt less_imp_le_nat)
 
     have W5: " 2^k*((2^(k-l)*f)*((2^k)*f)-((2^k)*f)-(2^(k-l)*f-1)+(2^(2*k-l))*f^2-1) =
 2^k *(( 2^(k-l)*f)*((2^k)*f)-((2^k)*f)-(2^(k-l)*f)+1 +(2^(2*k-l))*f^2-1)"
-      using assms  less_imp_le_nat less_imp_le_nat  prime_ge_1_nat
-      by (smt Nat.add_diff_assoc2 Nat.diff_diff_right One_nat_def Suc_leI Suc_pred W3 W4
-          add_diff_cancel_right' add_gr_0 le_Suc_ex less_numeral_extra(1) mult_cancel1
-          nat_0_less_mult_iff zero_less_diff zero_less_numeral zero_less_power)
+      using assms  less_imp_le_nat   prime_ge_1_nat
+      by (smt (verit) Nat.add_diff_assoc2 Nat.diff_diff_right One_nat_def W3 W4 add.commute add_diff_cancel_right' 
+          add_diff_inverse_nat diff_is_0_eq le_add2 nat_mult_eq_cancel_disj one_le_mult_iff plus_1_eq_Suc)
 
     have W6: "2^k*((2^(k-l)* f)*((2^k)*f)-((2^k)*f)-(2^(k-l)*f)+1+(2^(2*k-l))*f^2-1 ) =
  2^k*((2^(k-l)*f)*((2^k)*f)-((2^k )*f)-(2^(k-l)*f)+(2^(2*k-l))*f^2)"
@@ -1037,18 +1019,16 @@ zero_neq_numeral  by (smt less_imp_le_nat)
                         semiring_normalization_rules(33) zero_less_diff)
 
                   have c: "x*f \<ge> x*(2::nat)" using aa by simp
-
-                  have c1: "x+(1::nat) < x*(2::nat)"
+                  have "x+(1::nat) < x*(2::nat)"
                     using auxiliary_ineq  xxx by linarith
-                  have c2: "((2::nat)^(k-l))+(1::nat) < ((2::nat)^(k-l))*(2::nat)"
-                    using c1 xx by blast
+                  then have c2: "((2::nat)^(k-l)) + 1 < (2^(k-l))*2"
+                    using xx by blast
                   show ?thesis using c2 c xx
                     by (metis diff_is_0_eq' le_trans nat_less_le zero_less_diff)
                 qed
 
                 show ?thesis using df aa assms
-                  by (smt JJ add.commute mult_less_cancel2 semiring_normalization_rules
-                      zero_less_numeral zero_less_power)
+                  by (smt (verit, del_insts) JJ add.commute mult.commute mult.left_commute mult_Suc_right mult_less_mono2 plus_1_eq_Suc zero_less_numeral zero_less_power)
               qed
               show ?thesis using A_2 df1 df2 by linarith
             qed
@@ -1058,14 +1038,12 @@ zero_neq_numeral  by (smt less_imp_le_nat)
           qed
 
            show ?thesis using A aa assms
-            by (metis (no_types, opaque_lifting)  a nat_0_less_mult_iff right_diff_distrib'
-                semiring_normalization_rules(18) semiring_normalization_rules(29)
-               semiring_normalization_rules(7))
+             by (smt (verit, ccfv_threshold) JJ a c d diff_mult_distrib mult.assoc mult.commute mult_less_cancel2)
         qed
 
         have b3: "((2^(2*k-l)*(f^2))-((2^k)*f)-(2^(k-l)*f)+(2^(2*k-l))*f^2) =
                   (2*(2^(2*k-l)*(f^2))-((2^k)*f)-(2^(k-l)*f))"
-          using a aa assms  minus_eq_nat_subst_order  by (smt aaa diff_commute)
+          using aaa minus_eq_nat_subst_order by auto
 
         show ?thesis using f1 by (metis b3 e mult_2)
 
@@ -1086,14 +1064,10 @@ zero_neq_numeral  by (smt less_imp_le_nat)
       have c: "2^k*(2^(2*k-l+1)*f^2)-2^k*(2^k*f)-2^k*(2^(k-l)*f) =
 2^(2*k+1-l+k)*f^2-2^k*(2^k*f)-2^k*(2^(k-l)*f)"
         apply (simp add: algebra_simps power_add)
-        by (smt Groups.mult_ac(1) Groups.mult_ac(2) Nat.diff_add_assoc assms(1) le_simps(1)
-mult_2_right plus_nat.simps(2) power.simps(2))
+        using Suc_diff_le assms(1) by fastforce
 
       have d: "2^k*(2^(2*k-l+1)*(f^2))= (2^(3*k+1-l))*f^2"
-
-        using power_add   Nat.add_diff_assoc assms(1) less_imp_le_nat mult_2
-          semiring_normalization_rules(18) semiring_normalization_rules(23)
-        by (smt J)
+        by (smt (verit, ccfv_threshold) J JJ Nat.add_diff_assoc assms(1) less_imp_le_nat mult.assoc mult.commute power_add)
 
       have e: "2^k*((2^(2*k-l+1)*(f^2))-((2^k)*f)-(2^(k-l)*f)) =
 (2^(3*k+1-l))*f^2-(2^k)*((2^k)*f)-(2^k)*(2^(k-l)*f)"
@@ -1103,14 +1077,11 @@ mult_2_right plus_nat.simps(2) power.simps(2))
 
       have ee: "2^k*((2^(2*k-l+1)*(f^2))-((2^k)*f)-((2::nat)^(k-l)*f))
 = (2^(3*k+1-l))*f^2-( 2^k)*((2^k)*f)-(2^(2*k-l)*f)"
-
-        using e  power_add  Nat.add_diff_assoc assms(1) less_imp_le_nat mult_2
-          semiring_normalization_rules
-     by (smt J)
+        by (smt (verit) JJ a d mult.assoc mult.commute)
 
       have eee :
         "-(( 2::nat)^(2*k-l))*(f^(2::nat)) =(-(( 2::nat)^(2*k))*f-(( 2::nat)^(2*k-l))*f)"
-      using auxicalc mult_minus_eq_nat mult_minus_left of_nat_mult by smt
+        by (smt (verit, ccfv_SIG) auxicalc mult_minus_left of_nat_add of_nat_mult)
 
       have e4: "2^k*((2^(2*k-l+1)*(f^2))-((2^k)*f)-(2^(k-l)*f))=(2^(3*k+1-l))*f^2-(2^(2*k-l))*(f^2)"
 
@@ -1376,17 +1347,16 @@ proof-
     show ?thesis using assms y Z1 yy  by simp
   qed
 
-  have "Esigma(a) = (a*(u+p)/(p+1))"
+  have *: "Esigma(a) = (a*(u+p)/(p+1))"
   proof-
     have d: "Esigma (a*p) = (Esigma a)*(Esigma p)"
       using assms gcd_Esigma_mult \<open>prime p\<close> \<open>\<not> (p dvd a)\<close>
       by (metis gcd_unique_nat prime_nat_iff)
     have dd : "Esigma (a*p) =(Esigma a)*(p+1)"
       using d assms  prime_sum_div by simp
-    have ddd: "Esigma (a*p) = a*(u+p)" using assms Amicable_pair_def
-        Amicable_pair_equiv_def
-      by (smt One_nat_def add_mult_distrib2 one_le_mult_iff prime_ge_1_nat)
-
+    have ddd: "Esigma (a*p) = a*(u+p)"
+      using assms unfolding Amicable_pair_def
+      by (metis Esigma_properdiv_set One_nat_def add_mult_distrib2 one_le_mult_iff prime_ge_1_nat)
     show ?thesis using d dd ddd Esigmanotzero assms(3) dvd_triv_right
         nonzero_mult_div_cancel_right prime_nat_iff prime_sum_div real_of_nat_div
       by (metis \<open>0 < p + 1\<close> neq0_conv)
@@ -1409,8 +1379,8 @@ proof-
   proof-
     have wk: "Esigma (a*u*q) = Esigma (a*u)*(q+1)"
       using assms gcd_Esigma_mult  by (simp add: prime_sum_div)
-    have wk1: "Esigma (a*u) = a*(u+p)" using assms Amicable_pair_equiv_def
-      by (smt One_nat_def add_mult_distrib2 one_le_mult_iff prime_ge_1_nat)
+    have wk1: "Esigma (a*u) = a*(u+p)" using assms unfolding Amicable_pair_equiv_def
+      by (metis Amicable_pair_def Esigma_properdiv_set Suc_eq_plus1 add.commute add_0 add_mult_distrib2 one_le_mult_iff)
 
     have w3: "Esigma (a*u*q) = a*(u+p)*(q+1)" using wk wk1 by simp
     have w4: "Esigma (a*r*c) =(Esigma a)*(r+1) * (c+1)" using assms
@@ -1419,13 +1389,13 @@ proof-
 
     have we: "a*(u+p)*(q+1) = (Esigma a)*(r+1)*(c+1)"
     proof-
-      have we1: "(Esigma a)*(r+1)*(c+1) = (a*(u+p)/(p+1))*(r+1)*(c+1)"
+      have "(Esigma a)*(r+1)*(c+1) = (a*(u+p)/(p+1))*(r+1)*(c+1)"
         by (metis \<open>real (Esigma a) = real (a*(u+p))/real(p+1)\<close> of_nat_mult)
-      have we12: " (Esigma a)*(r+1)*(c+1) = (a*(u+p)/(p+1))*(q+1)*(p+1)" using we1 Z2
+      then have "(Esigma a)*(r+1)*(c+1) = (a*(u+p)/(p+1))*(q+1)*(p+1)" using Z2
         by (metis of_nat_mult semiring_normalization_rules(18))
-      show ?thesis using we12 assms
-        by (smt  nonzero_mult_div_cancel_right of_nat_1  of_nat_add of_nat_eq_iff of_nat_le_iff
-            of_nat_mult prime_ge_1_nat times_divide_eq_left)
+      then show ?thesis using  assms
+        apply (simp add: divide_simps)
+        by (metis (no_types, opaque_lifting) mult.commute mult_Suc of_nat_Suc of_nat_add of_nat_eq_iff of_nat_mult)
     qed
 
     show ?thesis using we w3 w4 by simp
@@ -1457,8 +1427,8 @@ proof-
       by (simp add: add_mult_distrib2 mult.assoc)
   qed
 
-  show ?thesis using A B  Amicable_pair_equiv_def_conv assms One_nat_def  one_le_mult_iff
-    by (smt prime_ge_1_nat)
+  show ?thesis
+    using assms by (metis A B One_nat_def one_le_mult_iff Amicable_pair_equiv_def_conv prime_ge_1_nat)
  qed
 
  text \<open>By replacing the assumption that \<open>(a*u) Amic (a*p)\<close> in the above rule by te Riele with the 
@@ -1506,21 +1476,19 @@ proof-
 
   have B: "Esigma (a*u*q) = a*u*q + a*r*c"
   proof-
-    have i: "Esigma (a*u*q) = Esigma(a*u)*(q+1)"
+    have "Esigma (a*u*q) = Esigma(a*u)*(q+1)"
       using a assms
       by (simp add: prime_sum_div)
-
-    have ii:"Esigma (a*u*q) = (a*u+ a*x)*(q+1)"
-      using assms i by auto
-
-     have iii:"Esigma (a*u*q) = a*u*q +a*u+ a*x*q+ a*x"
-      using assms ii add_mult_distrib by simp
-    show ?thesis using iii assms
-      by (smt distrib_left semiring_normalization_rules)
+    with assms have "Esigma (a*u*q) = (a*u+ a*x)*(q+1)"
+      by auto
+     with assms have "Esigma (a*u*q) = a*u*q +a*u+ a*x*q+ a*x"
+       using add_mult_distrib by simp
+    with assms show ?thesis
+      by (simp add: distrib_left mult.commute mult.left_commute)
   qed
 
-  show ?thesis using A B assms Amicable_pair_equiv_def_conv assms  One_nat_def one_le_mult_iff
-    by (smt prime_ge_1_nat)
+  show ?thesis using A B assms
+    using Amicable_pair_equiv_def_conv prime_ge_1_nat by force 
 qed
 
 no_notation divisor (infixr "divisor" 80)
