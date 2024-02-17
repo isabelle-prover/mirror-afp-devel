@@ -5,7 +5,7 @@ topics = [
   "Computer science/Programming languages/Logics",
 ]
 abstract = "We present the theory of Simpl, a sequential imperative programming language. We introduce its syntax, its semantics (big and small-step operational semantics) and Hoare logics for both partial as well as total correctness. We prove soundness and completeness of the Hoare logic. We integrate and automate the Hoare logic in Isabelle/HOL to obtain a practically usable verification environment for imperative programs. Simpl is independent of a concrete programming language but expressive enough to cover all common language features: mutually recursive procedures, abrupt termination and exceptions, runtime faults, local and global variables, pointers and heap, expressions with side effects, pointers to procedures, partial application and closures, dynamic method invocation and also unbounded nondeterminism."
-license = "lgpl"
+license = "bsd"
 note = ""
 
 [authors]
@@ -19,6 +19,7 @@ klein = "klein_email"
 schirmer = "schirmer_email"
 
 [history]
+2024-02-18 = "License change to BSD; more canonical and versatile ML interfaces; some more derived language constructs."
 
 [extra]
 
