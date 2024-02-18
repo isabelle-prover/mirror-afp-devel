@@ -13,10 +13,59 @@
     
       <atom:link href="/topics/computer-science/security/cryptography/index.xml" rel="self" type="application/rss+xml" />
         <item>
+          <title>CRYSTALS-Kyber_Security</title>
+          <link>/entries/CRYSTALS-Kyber_Security.html</link>
+          <pubDate>Mon, 18 Dec 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/CRYSTALS-Kyber_Security.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>CRYSTALS-Kyber_Security</title>
+          <link>/entries/CRYSTALS-Kyber_Security.html</link>
+          <pubDate>Mon, 18 Dec 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/CRYSTALS-Kyber_Security.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>CRYSTALS-Kyber_Security</title>
+          <link>/entries/CRYSTALS-Kyber_Security.html</link>
+          <pubDate>Mon, 18 Dec 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/CRYSTALS-Kyber_Security.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Cryptographic Standards</title>
           <link>/entries/Crypto_Standards.html</link>
           <pubDate>Tue, 06 Jun 2023 00:00:00 +0000</pubDate>
           <guid>/entries/Crypto_Standards.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Cryptographic Standards</title>
+          <link>/entries/Crypto_Standards.html</link>
+          <pubDate>Tue, 06 Jun 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Crypto_Standards.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Cryptographic Standards</title>
+          <link>/entries/Crypto_Standards.html</link>
+          <pubDate>Tue, 06 Jun 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Crypto_Standards.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Hardness of Lattice Problems</title>
+          <link>/entries/CVP_Hardness.html</link>
+          <pubDate>Thu, 02 Feb 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/CVP_Hardness.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Hardness of Lattice Problems</title>
+          <link>/entries/CVP_Hardness.html</link>
+          <pubDate>Thu, 02 Feb 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/CVP_Hardness.html</guid>
           <description></description>
         </item>
         <item>
@@ -34,10 +83,52 @@
           <description></description>
         </item>
         <item>
+          <title>Constructive Cryptography in HOL: the Communication Modeling Aspect</title>
+          <link>/entries/Constructive_Cryptography_CM.html</link>
+          <pubDate>Wed, 17 Mar 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Constructive_Cryptography_CM.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Constructive Cryptography in HOL: the Communication Modeling Aspect</title>
+          <link>/entries/Constructive_Cryptography_CM.html</link>
+          <pubDate>Wed, 17 Mar 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Constructive_Cryptography_CM.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Sigma Protocols and Commitment Schemes</title>
           <link>/entries/Sigma_Commit_Crypto.html</link>
           <pubDate>Mon, 07 Oct 2019 00:00:00 +0000</pubDate>
           <guid>/entries/Sigma_Commit_Crypto.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Sigma Protocols and Commitment Schemes</title>
+          <link>/entries/Sigma_Commit_Crypto.html</link>
+          <pubDate>Mon, 07 Oct 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Sigma_Commit_Crypto.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Sigma Protocols and Commitment Schemes</title>
+          <link>/entries/Sigma_Commit_Crypto.html</link>
+          <pubDate>Mon, 07 Oct 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Sigma_Commit_Crypto.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Constructive Cryptography in HOL</title>
+          <link>/entries/Constructive_Cryptography.html</link>
+          <pubDate>Mon, 17 Dec 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Constructive_Cryptography.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Constructive Cryptography in HOL</title>
+          <link>/entries/Constructive_Cryptography.html</link>
+          <pubDate>Mon, 17 Dec 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Constructive_Cryptography.html</guid>
           <description></description>
         </item>
         <item>
@@ -55,6 +146,34 @@
           <description></description>
         </item>
         <item>
+          <title>CryptHOL</title>
+          <link>/entries/CryptHOL.html</link>
+          <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/CryptHOL.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>CryptHOL</title>
+          <link>/entries/CryptHOL.html</link>
+          <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/CryptHOL.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Game-based cryptography in HOL</title>
+          <link>/entries/Game_Based_Crypto.html</link>
+          <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Game_Based_Crypto.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Game-based cryptography in HOL</title>
+          <link>/entries/Game_Based_Crypto.html</link>
+          <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Game_Based_Crypto.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Game-based cryptography in HOL</title>
           <link>/entries/Game_Based_Crypto.html</link>
           <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
@@ -66,6 +185,34 @@
           <link>/entries/Elliptic_Curves_Group_Law.html</link>
           <pubDate>Tue, 28 Feb 2017 00:00:00 +0000</pubDate>
           <guid>/entries/Elliptic_Curves_Group_Law.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Group Law for Elliptic Curves</title>
+          <link>/entries/Elliptic_Curves_Group_Law.html</link>
+          <pubDate>Tue, 28 Feb 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Elliptic_Curves_Group_Law.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Group Law for Elliptic Curves</title>
+          <link>/entries/Elliptic_Curves_Group_Law.html</link>
+          <pubDate>Tue, 28 Feb 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Elliptic_Curves_Group_Law.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>SHA1, RSA, PSS and more</title>
+          <link>/entries/RSAPSS.html</link>
+          <pubDate>Mon, 02 May 2005 00:00:00 +0000</pubDate>
+          <guid>/entries/RSAPSS.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>SHA1, RSA, PSS and more</title>
+          <link>/entries/RSAPSS.html</link>
+          <pubDate>Mon, 02 May 2005 00:00:00 +0000</pubDate>
+          <guid>/entries/RSAPSS.html</guid>
           <description></description>
         </item>
         <item>

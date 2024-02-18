@@ -1,0 +1,42 @@
+title = "Higher Globular Catoids and Quantales"
+date = 2024-01-24
+topics = [
+  "Mathematics/Category theory",
+  "Mathematics/Algebra",
+]
+abstract = """
+We formalise strict 2-catoids, 2-categories, 2-Kleene algebras
+  and 2-quantales, as well as their omega-variants. Due to
+  strictness, the cells of these higher categories have globular
+  shape. We use a single-set approach, generalised to catoids and
+  based on type classes. The higher Kleene algebras and quantales
+  introduced extend features of modal and concurrent Kleene algebras
+  and quantales. They arise for instance as powerset extensions of
+  higher catoids, and have been used in algebraic confluence proofs in
+  higher-dimensional rewriting. Details are described in two companion
+  articles."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.calk]
+
+[authors.struth]
+email = "struth_email"
+
+[contributors]
+
+[notify]
+struth = "struth_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.46298/LMCS-18(4:9)2022",
+  "10.48550/arXiv.2307.09253",
+]
+pubs = []

@@ -77,6 +77,7 @@ CISC-Kernel
 Concentration_Inequalities
 CRDT
 CRYSTALS-Kyber
+CRYSTALS-Kyber_Security
 CSP_RefTK
 CVP_Hardness
 CYK
@@ -333,11 +334,13 @@ IMP2
 IMP2_Binary_Heap
 IMP_Compiler
 IMP_Compiler_Reuse
+Interval_Analysis
 IO_Language_Conformance
 IP_Addresses
 Imperative_Insertion_Sort
 Implicational_Logic
 Impossible_Geometry
+IMP_Noninterference
 Incompleteness
 Incredible_Proof_Machine
 Independence_CH
@@ -359,6 +362,7 @@ Irrationals_From_THEBOOK
 IsaGeoCoq
 IsaNet
 Isabelle_C
+Isabelle_hoops
 Isabelle_Marries_Dirac
 Isabelle_Meta_Model
 Jacobson_Basic_Algebra
@@ -499,6 +503,7 @@ NormByEval
 Nullstellensatz
 Number_Theoretic_Transform
 Octonions
+OmegaCatoidsQuantales
 OpSets
 Open_Induction
 Optics
@@ -605,6 +610,7 @@ Refine_Imperative_HOL
 Refine_Monadic
 RefinementReactive
 Regex_Equivalence
+Region_Quadtrees
 Registers
 Regression_Test_Selection
 Regular-Sets
@@ -708,6 +714,7 @@ Sturm_Tarski
 Stuttering_Equivalence
 Subresultants
 Subset_Boolean_Algebras
+Sumcheck_Protocol
 SumSquares
 Sunflowers
 SuperCalc

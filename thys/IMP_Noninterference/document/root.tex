@@ -1,0 +1,87 @@
+\documentclass[11pt,a4paper,fleqn]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{listings}
+\usepackage{inconsolata}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap]{stmaryrd}
+  %for \<Sqinter>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\lstset{
+  basicstyle = \small\ttfamily,
+  frame = tb,
+  keywordstyle = \bfseries,
+  language = C,
+  numbers = left,
+  numberstyle = \tiny
+}
+
+\title{Information Flow Control via Stateful Intransitive\\Noninterference in Language IMP}
+\author{Pasquale Noce\\Senior Staff Firmware Engineer at HID Global, Italy\\pasquale dot noce dot lavoro at gmail dot com\\pasquale dot noce at hidglobal dot com}
+\maketitle
+
+\begin{abstract}
+The scope of information flow control via static type systems is in principle much broader than
+information flow security, since this concept promises to cope with information flow correctness in
+full generality. Such a correctness policy can be expressed by extending the notion of a single
+stateless level-based interference relation applying throughout a program -- addressed by the static
+security type systems described by Volpano, Smith, and Irvine, and formalized in Nipkow and Klein's
+book on formal programming language semantics (in the version of February 2023) -- to that of a
+stateful interference function mapping program states to (generally) intransitive interference
+relations.
+
+This paper studies information flow control via stateful intransitive noninterference. First, the
+notion of termination-sensitive information flow security with respect to a level-based interference
+relation is generalized to that of termination-sensitive information flow correctness with respect
+to such a correctness policy. Then, a static type system is specified and is proven to be capable of
+enforcing such policies. Finally, the information flow correctness notion and the static type system
+introduced here are proven to degenerate to the counterparts formalized in Nipkow and Klein's book
+in case of a stateless level-based information flow correctness policy. Although the operational
+semantics of the didactic programming language IMP employed in the book is used for this purpose,
+the introduced concepts apply to larger, real-world imperative programming languages as well.
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

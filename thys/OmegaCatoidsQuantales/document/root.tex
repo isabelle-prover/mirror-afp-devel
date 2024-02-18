@@ -1,0 +1,100 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+%\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Higher Globular Catoids and Quantales}
+\author{Cameron Calk and Georg Struth}
+\maketitle
+
+\begin{abstract}
+  We formalise strict $2$-catoids, $2$-categories, $2$-Kleene algebras
+  and $2$-quantales, as well as their $\omega$-variants. Due to
+  strictness, the cells of these higher categories have globular
+  shape. We use a single-set approach, generalised to catoids and
+  based on type classes. The higher Kleene algebras and quantales
+  introduced extend features of modal and concurrent Kleene algebras
+  and quantales. They arise for instance as powerset extensions of
+  higher catoids, and have been used in algebraic confluence proofs in
+  higher-dimensional rewriting. Details are described in two companion
+  articles.
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+\section{Introductory remarks}
+
+We extend formalisations of catoids, categories and quantales from the
+AFP~\cite{Struth23,Struth18,CalkS23} to higher variants, as described
+in a companion article~\cite{CalkMPS23}. The categories, in
+particular, are formalised in a single-set approach. They are strict
+so that their cells have globular shape.  We formalise the cases of
+$2$ and $\omega$ separately. First, strict $2$-categories are
+important in category theory: the category of all small categories,
+for example, forms such a category. Second, strict $\omega$-categories
+are simply given by pairs of strict $2$-categories in all dimensions,
+so that many properties for $\omega$ generalise easily from
+$2$-properties. Fourth, Isabelle's Nitpick tool can find interesting
+counterexamples at dimension $2$, but not for $\omega$.  Finally, in
+the type classes formalising our $\omega$-structures, the numerical
+indices of higher operations cannot simply be instantiated to a fixed
+value such as $2$.  Applications of higher Kleene algebras and
+quantales in higher-dimensional rewriting are explained
+in~\cite{CalkGMS22}, where these structures were introduced.
+
+With higher catoids, the partial compositions of cells in higher
+categories are relaxed to multioperations, which assign each pair of
+elements to a set of elements, so that mapping to the empty set
+captures partiality. In addition, a composition of two elements may be
+undefined even though the target of the first equals the source of the
+second in a given dimension.
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

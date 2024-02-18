@@ -20,10 +20,52 @@
           <description></description>
         </item>
         <item>
+          <title>JinjaDCI: a Java semantics with dynamic class initialization</title>
+          <link>/entries/JinjaDCI.html</link>
+          <pubDate>Mon, 11 Jan 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/JinjaDCI.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>JinjaDCI: a Java semantics with dynamic class initialization</title>
+          <link>/entries/JinjaDCI.html</link>
+          <pubDate>Mon, 11 Jan 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/JinjaDCI.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Isabelle/C</title>
           <link>/entries/Isabelle_C.html</link>
           <pubDate>Tue, 22 Oct 2019 00:00:00 +0000</pubDate>
           <guid>/entries/Isabelle_C.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Isabelle/C</title>
+          <link>/entries/Isabelle_C.html</link>
+          <pubDate>Tue, 22 Oct 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Isabelle_C.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Isabelle/C</title>
+          <link>/entries/Isabelle_C.html</link>
+          <pubDate>Tue, 22 Oct 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Isabelle_C.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Safe OCL</title>
+          <link>/entries/Safe_OCL.html</link>
+          <pubDate>Sat, 09 Mar 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Safe_OCL.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Safe OCL</title>
+          <link>/entries/Safe_OCL.html</link>
+          <pubDate>Sat, 09 Mar 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Safe_OCL.html</guid>
           <description></description>
         </item>
         <item>
@@ -41,10 +83,52 @@
           <description></description>
         </item>
         <item>
+          <title>WebAssembly</title>
+          <link>/entries/WebAssembly.html</link>
+          <pubDate>Sun, 29 Apr 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/WebAssembly.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>WebAssembly</title>
+          <link>/entries/WebAssembly.html</link>
+          <pubDate>Sun, 29 Apr 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/WebAssembly.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>CakeML</title>
           <link>/entries/CakeML.html</link>
           <pubDate>Mon, 12 Mar 2018 00:00:00 +0000</pubDate>
           <guid>/entries/CakeML.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>CakeML</title>
+          <link>/entries/CakeML.html</link>
+          <pubDate>Mon, 12 Mar 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/CakeML.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>CakeML</title>
+          <link>/entries/CakeML.html</link>
+          <pubDate>Mon, 12 Mar 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/CakeML.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>COMPLX: A Verification Framework for Concurrent Imperative Programs</title>
+          <link>/entries/Complx.html</link>
+          <pubDate>Tue, 29 Nov 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Complx.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>COMPLX: A Verification Framework for Concurrent Imperative Programs</title>
+          <link>/entries/Complx.html</link>
+          <pubDate>Tue, 29 Nov 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Complx.html</guid>
           <description></description>
         </item>
         <item>
@@ -62,10 +146,52 @@
           <description></description>
         </item>
         <item>
+          <title>A Meta-Model for the Isabelle API</title>
+          <link>/entries/Isabelle_Meta_Model.html</link>
+          <pubDate>Wed, 16 Sep 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Isabelle_Meta_Model.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Meta-Model for the Isabelle API</title>
+          <link>/entries/Isabelle_Meta_Model.html</link>
+          <pubDate>Wed, 16 Sep 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Isabelle_Meta_Model.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>pGCL for Isabelle</title>
           <link>/entries/pGCL.html</link>
           <pubDate>Sun, 13 Jul 2014 00:00:00 +0000</pubDate>
           <guid>/entries/pGCL.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>pGCL for Isabelle</title>
+          <link>/entries/pGCL.html</link>
+          <pubDate>Sun, 13 Jul 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/pGCL.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>pGCL for Isabelle</title>
+          <link>/entries/pGCL.html</link>
+          <pubDate>Sun, 13 Jul 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/pGCL.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Syntax and semantics of a GPU kernel programming language</title>
+          <link>/entries/GPU_Kernel_PL.html</link>
+          <pubDate>Thu, 03 Apr 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/GPU_Kernel_PL.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Syntax and semantics of a GPU kernel programming language</title>
+          <link>/entries/GPU_Kernel_PL.html</link>
+          <pubDate>Thu, 03 Apr 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/GPU_Kernel_PL.html</guid>
           <description></description>
         </item>
         <item>
@@ -83,10 +209,52 @@
           <description></description>
         </item>
         <item>
+          <title>Stream Processing Components: Isabelle/HOL Formalisation and Case Studies</title>
+          <link>/entries/FocusStreamsCaseStudies.html</link>
+          <pubDate>Thu, 14 Nov 2013 00:00:00 +0000</pubDate>
+          <guid>/entries/FocusStreamsCaseStudies.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Stream Processing Components: Isabelle/HOL Formalisation and Case Studies</title>
+          <link>/entries/FocusStreamsCaseStudies.html</link>
+          <pubDate>Thu, 14 Nov 2013 00:00:00 +0000</pubDate>
+          <guid>/entries/FocusStreamsCaseStudies.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>AutoFocus Stream Processing for Single-Clocking and Multi-Clocking Semantics</title>
           <link>/entries/AutoFocus-Stream.html</link>
           <pubDate>Wed, 23 Feb 2011 00:00:00 +0000</pubDate>
           <guid>/entries/AutoFocus-Stream.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>AutoFocus Stream Processing for Single-Clocking and Multi-Clocking Semantics</title>
+          <link>/entries/AutoFocus-Stream.html</link>
+          <pubDate>Wed, 23 Feb 2011 00:00:00 +0000</pubDate>
+          <guid>/entries/AutoFocus-Stream.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>AutoFocus Stream Processing for Single-Clocking and Multi-Clocking Semantics</title>
+          <link>/entries/AutoFocus-Stream.html</link>
+          <pubDate>Wed, 23 Feb 2011 00:00:00 +0000</pubDate>
+          <guid>/entries/AutoFocus-Stream.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Lightweight Java</title>
+          <link>/entries/LightweightJava.html</link>
+          <pubDate>Mon, 07 Feb 2011 00:00:00 +0000</pubDate>
+          <guid>/entries/LightweightJava.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Lightweight Java</title>
+          <link>/entries/LightweightJava.html</link>
+          <pubDate>Mon, 07 Feb 2011 00:00:00 +0000</pubDate>
+          <guid>/entries/LightweightJava.html</guid>
           <description></description>
         </item>
         <item>
@@ -104,10 +272,52 @@
           <description></description>
         </item>
         <item>
+          <title>Locally Nameless Sigma Calculus</title>
+          <link>/entries/Locally-Nameless-Sigma.html</link>
+          <pubDate>Fri, 30 Apr 2010 00:00:00 +0000</pubDate>
+          <guid>/entries/Locally-Nameless-Sigma.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Locally Nameless Sigma Calculus</title>
+          <link>/entries/Locally-Nameless-Sigma.html</link>
+          <pubDate>Fri, 30 Apr 2010 00:00:00 +0000</pubDate>
+          <guid>/entries/Locally-Nameless-Sigma.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>A Sequential Imperative Programming Language Syntax, Semantics, Hoare Logics and Verification Environment</title>
           <link>/entries/Simpl.html</link>
           <pubDate>Fri, 29 Feb 2008 00:00:00 +0000</pubDate>
           <guid>/entries/Simpl.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Sequential Imperative Programming Language Syntax, Semantics, Hoare Logics and Verification Environment</title>
+          <link>/entries/Simpl.html</link>
+          <pubDate>Fri, 29 Feb 2008 00:00:00 +0000</pubDate>
+          <guid>/entries/Simpl.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Sequential Imperative Programming Language Syntax, Semantics, Hoare Logics and Verification Environment</title>
+          <link>/entries/Simpl.html</link>
+          <pubDate>Fri, 29 Feb 2008 00:00:00 +0000</pubDate>
+          <guid>/entries/Simpl.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Jinja with Threads</title>
+          <link>/entries/JinjaThreads.html</link>
+          <pubDate>Mon, 03 Dec 2007 00:00:00 +0000</pubDate>
+          <guid>/entries/JinjaThreads.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Jinja with Threads</title>
+          <link>/entries/JinjaThreads.html</link>
+          <pubDate>Mon, 03 Dec 2007 00:00:00 +0000</pubDate>
+          <guid>/entries/JinjaThreads.html</guid>
           <description></description>
         </item>
         <item>
@@ -125,10 +335,52 @@
           <description></description>
         </item>
         <item>
+          <title>CoreC&#43;&#43;</title>
+          <link>/entries/CoreC&#43;&#43;.html</link>
+          <pubDate>Mon, 15 May 2006 00:00:00 +0000</pubDate>
+          <guid>/entries/CoreC&#43;&#43;.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>CoreC&#43;&#43;</title>
+          <link>/entries/CoreC&#43;&#43;.html</link>
+          <pubDate>Mon, 15 May 2006 00:00:00 +0000</pubDate>
+          <guid>/entries/CoreC&#43;&#43;.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>A Theory of Featherweight Java in Isabelle/HOL</title>
           <link>/entries/FeatherweightJava.html</link>
           <pubDate>Fri, 31 Mar 2006 00:00:00 +0000</pubDate>
           <guid>/entries/FeatherweightJava.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Theory of Featherweight Java in Isabelle/HOL</title>
+          <link>/entries/FeatherweightJava.html</link>
+          <pubDate>Fri, 31 Mar 2006 00:00:00 +0000</pubDate>
+          <guid>/entries/FeatherweightJava.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Theory of Featherweight Java in Isabelle/HOL</title>
+          <link>/entries/FeatherweightJava.html</link>
+          <pubDate>Fri, 31 Mar 2006 00:00:00 +0000</pubDate>
+          <guid>/entries/FeatherweightJava.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Jinja is not Java</title>
+          <link>/entries/Jinja.html</link>
+          <pubDate>Wed, 01 Jun 2005 00:00:00 +0000</pubDate>
+          <guid>/entries/Jinja.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Jinja is not Java</title>
+          <link>/entries/Jinja.html</link>
+          <pubDate>Wed, 01 Jun 2005 00:00:00 +0000</pubDate>
+          <guid>/entries/Jinja.html</guid>
           <description></description>
         </item>
         <item>

@@ -1,0 +1,35 @@
+title = "CRYSTALS-Kyber_Security"
+date = 2023-12-18
+topics = [
+  "Computer science/Security/Cryptography",
+]
+abstract = """
+This article builds upon the formalization of the deterministic part of the original Kyber algorithms (see the CRYSTALS-Kyber entry).
+The correctness proof is expanded to cover both the deterministic part from the previous formalization
+and the probabilistic part of randomly chosen inputs.
+Indeed, the probabilistic version of the delta-correctness in the original paper was flawed and could only be formalized for a modified delta'.
+
+The authors of Kyber also remarked, that the security proof against indistinguishability under chosen plaintext attack (IND-CPA) does not hold for the original version of Kyber.
+Thus, the newer version (round 2 and 3 of NIST standarisation process) was formalized as well, including the adapted deterministic and probabilistic correctness theorems.
+Moreover, the IND-CPA security proof against the new version of Kyber has been verified using the CryptHOL library.
+Since the new version also included a change of parameters, the Kyber algorithms have been instantiated with the new parameter set as well."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.kreuzer]
+email = "kreuzer_email"
+
+[contributors]
+
+[notify]
+kreuzer = "kreuzer_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

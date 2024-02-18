@@ -1,0 +1,2166 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Dependencies on Archive of Formal Proofs
+    </title>
+    <link>/dependencies/</link>
+    <description>
+        Recent content in Dependencies 
+        on Archive of Formal Proofs
+    </description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    
+      <lastBuildDate>Fri, 02 Feb 2024 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Polynomials</title>
+          <link>/dependencies/polynomials/</link>
+          <pubDate>Fri, 02 Feb 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/polynomials/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Catoids</title>
+          <link>/dependencies/catoids/</link>
+          <pubDate>Wed, 24 Jan 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/catoids/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>CryptHOL</title>
+          <link>/dependencies/crypthol/</link>
+          <pubDate>Mon, 18 Dec 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/crypthol/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>CRYSTALS-Kyber</title>
+          <link>/dependencies/crystals-kyber/</link>
+          <pubDate>Mon, 18 Dec 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/crystals-kyber/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Game_Based_Crypto</title>
+          <link>/dependencies/game_based_crypto/</link>
+          <pubDate>Mon, 18 Dec 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/game_based_crypto/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>HOL-CSP</title>
+          <link>/dependencies/hol-csp/</link>
+          <pubDate>Tue, 05 Dec 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/hol-csp/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Collections</title>
+          <link>/dependencies/collections/</link>
+          <pubDate>Mon, 27 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/collections/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Dirichlet_Series</title>
+          <link>/dependencies/dirichlet_series/</link>
+          <pubDate>Fri, 24 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/dirichlet_series/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Polylog</title>
+          <link>/dependencies/polylog/</link>
+          <pubDate>Fri, 24 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/polylog/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>ZFC_in_HOL</title>
+          <link>/dependencies/zfc_in_hol/</link>
+          <pubDate>Mon, 20 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/zfc_in_hol/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Linear_Recurrences</title>
+          <link>/dependencies/linear_recurrences/</link>
+          <pubDate>Wed, 15 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/linear_recurrences/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formal_Puiseux_Series</title>
+          <link>/dependencies/formal_puiseux_series/</link>
+          <pubDate>Tue, 14 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/formal_puiseux_series/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Descartes_Sign_Rule</title>
+          <link>/dependencies/descartes_sign_rule/</link>
+          <pubDate>Mon, 13 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/descartes_sign_rule/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Lp</title>
+          <link>/dependencies/lp/</link>
+          <pubDate>Mon, 13 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/lp/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Polynomial_Interpolation</title>
+          <link>/dependencies/polynomial_interpolation/</link>
+          <pubDate>Mon, 13 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/polynomial_interpolation/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Berlekamp_Zassenhaus</title>
+          <link>/dependencies/berlekamp_zassenhaus/</link>
+          <pubDate>Mon, 06 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/berlekamp_zassenhaus/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Mason_Stothers</title>
+          <link>/dependencies/mason_stothers/</link>
+          <pubDate>Mon, 06 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/mason_stothers/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Perfect_Fields</title>
+          <link>/dependencies/perfect_fields/</link>
+          <pubDate>Mon, 06 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/perfect_fields/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Finite-Map-Extras</title>
+          <link>/dependencies/finite-map-extras/</link>
+          <pubDate>Sat, 04 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/finite-map-extras/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>S_Finite_Measure_Monad</title>
+          <link>/dependencies/s_finite_measure_monad/</link>
+          <pubDate>Thu, 02 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/s_finite_measure_monad/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Standard_Borel_Spaces</title>
+          <link>/dependencies/standard_borel_spaces/</link>
+          <pubDate>Thu, 02 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/standard_borel_spaces/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Deriving</title>
+          <link>/dependencies/deriving/</link>
+          <pubDate>Tue, 31 Oct 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/deriving/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Labeled_Transition_Systems</title>
+          <link>/dependencies/labeled_transition_systems/</link>
+          <pubDate>Tue, 31 Oct 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/labeled_transition_systems/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>ML_Unification</title>
+          <link>/dependencies/ml_unification/</link>
+          <pubDate>Wed, 11 Oct 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/ml_unification/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Card_Partitions</title>
+          <link>/dependencies/card_partitions/</link>
+          <pubDate>Sat, 23 Sep 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/card_partitions/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Girth_Chromatic</title>
+          <link>/dependencies/girth_chromatic/</link>
+          <pubDate>Sat, 23 Sep 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/girth_chromatic/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Hypergraph_Basics</title>
+          <link>/dependencies/hypergraph_basics/</link>
+          <pubDate>Sat, 23 Sep 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/hypergraph_basics/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Lovasz_Local</title>
+          <link>/dependencies/lovasz_local/</link>
+          <pubDate>Sat, 23 Sep 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/lovasz_local/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Twelvefold_Way</title>
+          <link>/dependencies/twelvefold_way/</link>
+          <pubDate>Sat, 23 Sep 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/twelvefold_way/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>List-Infinite</title>
+          <link>/dependencies/list-infinite/</link>
+          <pubDate>Fri, 22 Sep 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/list-infinite/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Stone_Relation_Algebras</title>
+          <link>/dependencies/stone_relation_algebras/</link>
+          <pubDate>Fri, 22 Sep 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/stone_relation_algebras/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Design_Theory</title>
+          <link>/dependencies/design_theory/</link>
+          <pubDate>Wed, 20 Sep 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/design_theory/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Fishers_Inequality</title>
+          <link>/dependencies/fishers_inequality/</link>
+          <pubDate>Wed, 20 Sep 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/fishers_inequality/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Undirected_Graph_Theory</title>
+          <link>/dependencies/undirected_graph_theory/</link>
+          <pubDate>Wed, 20 Sep 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/undirected_graph_theory/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>SpecCheck</title>
+          <link>/dependencies/speccheck/</link>
+          <pubDate>Tue, 19 Sep 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/speccheck/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Triangle</title>
+          <link>/dependencies/triangle/</link>
+          <pubDate>Wed, 16 Aug 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/triangle/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>KAD</title>
+          <link>/dependencies/kad/</link>
+          <pubDate>Mon, 14 Aug 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/kad/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Quantales</title>
+          <link>/dependencies/quantales/</link>
+          <pubDate>Mon, 14 Aug 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/quantales/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Quantales_Converse</title>
+          <link>/dependencies/quantales_converse/</link>
+          <pubDate>Mon, 14 Aug 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/quantales_converse/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Relation_Algebra</title>
+          <link>/dependencies/relation_algebra/</link>
+          <pubDate>Mon, 14 Aug 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/relation_algebra/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Three_Squares</title>
+          <link>/dependencies/three_squares/</link>
+          <pubDate>Thu, 10 Aug 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/three_squares/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Kleene_Algebra</title>
+          <link>/dependencies/kleene_algebra/</link>
+          <pubDate>Tue, 25 Jul 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/kleene_algebra/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Probabilistic_While</title>
+          <link>/dependencies/probabilistic_while/</link>
+          <pubDate>Mon, 19 Jun 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/probabilistic_while/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Zeta_Function</title>
+          <link>/dependencies/zeta_function/</link>
+          <pubDate>Mon, 19 Jun 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/zeta_function/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Elliptic_Curves_Group_Law</title>
+          <link>/dependencies/elliptic_curves_group_law/</link>
+          <pubDate>Tue, 06 Jun 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/elliptic_curves_group_law/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Weighted_Path_Order</title>
+          <link>/dependencies/weighted_path_order/</link>
+          <pubDate>Thu, 01 Jun 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/weighted_path_order/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Complete_Non_Orders</title>
+          <link>/dependencies/complete_non_orders/</link>
+          <pubDate>Wed, 24 May 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/complete_non_orders/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Fresh_Identifiers</title>
+          <link>/dependencies/fresh_identifiers/</link>
+          <pubDate>Fri, 05 May 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/fresh_identifiers/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Graph_Theory</title>
+          <link>/dependencies/graph_theory/</link>
+          <pubDate>Fri, 05 May 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/graph_theory/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>HereditarilyFinite</title>
+          <link>/dependencies/hereditarilyfinite/</link>
+          <pubDate>Fri, 05 May 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/hereditarilyfinite/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>List-Index</title>
+          <link>/dependencies/list-index/</link>
+          <pubDate>Fri, 05 May 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/list-index/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Dirichlet_L</title>
+          <link>/dependencies/dirichlet_l/</link>
+          <pubDate>Wed, 03 May 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/dirichlet_l/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Factor_Algebraic_Polynomial</title>
+          <link>/dependencies/factor_algebraic_polynomial/</link>
+          <pubDate>Thu, 27 Apr 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/factor_algebraic_polynomial/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Jordan_Normal_Form</title>
+          <link>/dependencies/jordan_normal_form/</link>
+          <pubDate>Thu, 27 Apr 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/jordan_normal_form/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Skip_Lists</title>
+          <link>/dependencies/skip_lists/</link>
+          <pubDate>Thu, 27 Apr 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/skip_lists/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>First_Order_Terms</title>
+          <link>/dependencies/first_order_terms/</link>
+          <pubDate>Thu, 20 Apr 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/first_order_terms/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Functional_Ordered_Resolution_Prover</title>
+          <link>/dependencies/functional_ordered_resolution_prover/</link>
+          <pubDate>Thu, 20 Apr 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/functional_ordered_resolution_prover/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Ordered_Resolution_Prover</title>
+          <link>/dependencies/ordered_resolution_prover/</link>
+          <pubDate>Thu, 20 Apr 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/ordered_resolution_prover/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Saturation_Framework</title>
+          <link>/dependencies/saturation_framework/</link>
+          <pubDate>Thu, 20 Apr 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/saturation_framework/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Saturation_Framework_Extensions</title>
+          <link>/dependencies/saturation_framework_extensions/</link>
+          <pubDate>Thu, 20 Apr 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/saturation_framework_extensions/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Commuting_Hermitian</title>
+          <link>/dependencies/commuting_hermitian/</link>
+          <pubDate>Tue, 18 Apr 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/commuting_hermitian/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Discrete_Summation</title>
+          <link>/dependencies/discrete_summation/</link>
+          <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/discrete_summation/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Expander_Graphs</title>
+          <link>/dependencies/expander_graphs/</link>
+          <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/expander_graphs/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Frequency_Moments</title>
+          <link>/dependencies/frequency_moments/</link>
+          <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/frequency_moments/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Stirling_Formula</title>
+          <link>/dependencies/stirling_formula/</link>
+          <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/stirling_formula/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Perron_Frobenius</title>
+          <link>/dependencies/perron_frobenius/</link>
+          <pubDate>Fri, 03 Mar 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/perron_frobenius/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Universal_Hash_Families</title>
+          <link>/dependencies/universal_hash_families/</link>
+          <pubDate>Fri, 03 Mar 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/universal_hash_families/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Weighted_Arithmetic_Geometric_Mean</title>
+          <link>/dependencies/weighted_arithmetic_geometric_mean/</link>
+          <pubDate>Fri, 03 Mar 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/weighted_arithmetic_geometric_mean/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Suppes_Theorem</title>
+          <link>/dependencies/suppes_theorem/</link>
+          <pubDate>Mon, 20 Feb 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/suppes_theorem/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>BenOr_Kozen_Reif</title>
+          <link>/dependencies/benor_kozen_reif/</link>
+          <pubDate>Thu, 02 Feb 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/benor_kozen_reif/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>LLL_Basis_Reduction</title>
+          <link>/dependencies/lll_basis_reduction/</link>
+          <pubDate>Thu, 02 Feb 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/lll_basis_reduction/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Propositional_Logic_Class</title>
+          <link>/dependencies/propositional_logic_class/</link>
+          <pubDate>Sun, 22 Jan 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/propositional_logic_class/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Coinductive</title>
+          <link>/dependencies/coinductive/</link>
+          <pubDate>Fri, 20 Jan 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/coinductive/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Combinatorics_Words</title>
+          <link>/dependencies/combinatorics_words/</link>
+          <pubDate>Tue, 03 Jan 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/combinatorics_words/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Combinatorics_Words_Graph_Lemma</title>
+          <link>/dependencies/combinatorics_words_graph_lemma/</link>
+          <pubDate>Tue, 03 Jan 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/combinatorics_words_graph_lemma/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Algebraic_Numbers</title>
+          <link>/dependencies/algebraic_numbers/</link>
+          <pubDate>Thu, 15 Dec 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/algebraic_numbers/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Datatype_Order_Generator</title>
+          <link>/dependencies/datatype_order_generator/</link>
+          <pubDate>Thu, 15 Dec 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/datatype_order_generator/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Virtual_Substitution</title>
+          <link>/dependencies/virtual_substitution/</link>
+          <pubDate>Thu, 15 Dec 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/virtual_substitution/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Containers</title>
+          <link>/dependencies/containers/</link>
+          <pubDate>Fri, 25 Nov 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/containers/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Separation_Algebra</title>
+          <link>/dependencies/separation_algebra/</link>
+          <pubDate>Fri, 25 Nov 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/separation_algebra/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Word_Lib</title>
+          <link>/dependencies/word_lib/</link>
+          <pubDate>Fri, 25 Nov 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/word_lib/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Jacobson_Basic_Algebra</title>
+          <link>/dependencies/jacobson_basic_algebra/</link>
+          <pubDate>Mon, 21 Nov 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/jacobson_basic_algebra/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Pluennecke_Ruzsa_Inequality</title>
+          <link>/dependencies/pluennecke_ruzsa_inequality/</link>
+          <pubDate>Mon, 21 Nov 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/pluennecke_ruzsa_inequality/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Random_Graph_Subgraph_Threshold</title>
+          <link>/dependencies/random_graph_subgraph_threshold/</link>
+          <pubDate>Mon, 14 Nov 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/random_graph_subgraph_threshold/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Card_Number_Partitions</title>
+          <link>/dependencies/card_number_partitions/</link>
+          <pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/card_number_partitions/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Falling_Factorial_Sum</title>
+          <link>/dependencies/falling_factorial_sum/</link>
+          <pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/falling_factorial_sum/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Randomised_Social_Choice</title>
+          <link>/dependencies/randomised_social_choice/</link>
+          <pubDate>Thu, 10 Nov 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/randomised_social_choice/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Epistemic_Logic</title>
+          <link>/dependencies/epistemic_logic/</link>
+          <pubDate>Fri, 23 Sep 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/epistemic_logic/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Localization_Ring</title>
+          <link>/dependencies/localization_ring/</link>
+          <pubDate>Thu, 22 Sep 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/localization_ring/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Padic_Ints</title>
+          <link>/dependencies/padic_ints/</link>
+          <pubDate>Thu, 22 Sep 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/padic_ints/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Number_Theoretic_Transform</title>
+          <link>/dependencies/number_theoretic_transform/</link>
+          <pubDate>Thu, 08 Sep 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/number_theoretic_transform/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Bernoulli</title>
+          <link>/dependencies/bernoulli/</link>
+          <pubDate>Fri, 02 Sep 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/bernoulli/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Native_Word</title>
+          <link>/dependencies/native_word/</link>
+          <pubDate>Tue, 09 Aug 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/native_word/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Projective_Measurements</title>
+          <link>/dependencies/projective_measurements/</link>
+          <pubDate>Mon, 18 Jul 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/projective_measurements/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Digit_Expansions</title>
+          <link>/dependencies/digit_expansions/</link>
+          <pubDate>Wed, 08 Jun 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/digit_expansions/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Executable_Randomized_Algorithms</title>
+          <link>/dependencies/executable_randomized_algorithms/</link>
+          <pubDate>Wed, 08 Jun 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/executable_randomized_algorithms/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Lucas_Theorem</title>
+          <link>/dependencies/lucas_theorem/</link>
+          <pubDate>Mon, 06 Jun 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/lucas_theorem/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Regular_Tree_Relations</title>
+          <link>/dependencies/regular_tree_relations/</link>
+          <pubDate>Thu, 02 Jun 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/regular_tree_relations/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Package_logic</title>
+          <link>/dependencies/package_logic/</link>
+          <pubDate>Mon, 30 May 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/package_logic/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Sunflowers</title>
+          <link>/dependencies/sunflowers/</link>
+          <pubDate>Sun, 08 May 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/sunflowers/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Groebner_Bases</title>
+          <link>/dependencies/groebner_bases/</link>
+          <pubDate>Thu, 21 Apr 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/groebner_bases/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Polynomial_Factorization</title>
+          <link>/dependencies/polynomial_factorization/</link>
+          <pubDate>Thu, 21 Apr 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/polynomial_factorization/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Bertrands_Postulate</title>
+          <link>/dependencies/bertrands_postulate/</link>
+          <pubDate>Fri, 08 Apr 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/bertrands_postulate/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Concentration_Inequalities</title>
+          <link>/dependencies/concentration_inequalities/</link>
+          <pubDate>Fri, 08 Apr 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/concentration_inequalities/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Equivalence_Relation_Enumeration</title>
+          <link>/dependencies/equivalence_relation_enumeration/</link>
+          <pubDate>Fri, 08 Apr 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/equivalence_relation_enumeration/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Interpolation_Polynomials_HOL_Algebra</title>
+          <link>/dependencies/interpolation_polynomials_hol_algebra/</link>
+          <pubDate>Fri, 08 Apr 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/interpolation_polynomials_hol_algebra/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Median_Method</title>
+          <link>/dependencies/median_method/</link>
+          <pubDate>Fri, 08 Apr 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/median_method/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Prefix_Free_Code_Combinators</title>
+          <link>/dependencies/prefix_free_code_combinators/</link>
+          <pubDate>Fri, 08 Apr 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/prefix_free_code_combinators/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Abstract_Completeness</title>
+          <link>/dependencies/abstract_completeness/</link>
+          <pubDate>Tue, 22 Mar 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/abstract_completeness/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Abstract_Soundness</title>
+          <link>/dependencies/abstract_soundness/</link>
+          <pubDate>Tue, 22 Mar 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/abstract_soundness/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Transitive_Models</title>
+          <link>/dependencies/transitive_models/</link>
+          <pubDate>Sun, 06 Mar 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/transitive_models/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Delta_System_Lemma</title>
+          <link>/dependencies/delta_system_lemma/</link>
+          <pubDate>Thu, 03 Mar 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/delta_system_lemma/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Finite_Fields</title>
+          <link>/dependencies/finite_fields/</link>
+          <pubDate>Sun, 20 Feb 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/finite_fields/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Card_Equiv_Relations</title>
+          <link>/dependencies/card_equiv_relations/</link>
+          <pubDate>Fri, 04 Feb 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/card_equiv_relations/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Linear_Inequalities</title>
+          <link>/dependencies/linear_inequalities/</link>
+          <pubDate>Thu, 03 Feb 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/linear_inequalities/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>FOL-Fitting</title>
+          <link>/dependencies/fol-fitting/</link>
+          <pubDate>Wed, 02 Feb 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/fol-fitting/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>FOL_Seq_Calc1</title>
+          <link>/dependencies/fol_seq_calc1/</link>
+          <pubDate>Mon, 31 Jan 2022 00:00:00 +0000</pubDate>
+          <guid>/dependencies/fol_seq_calc1/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Ergodic_Theory</title>
+          <link>/dependencies/ergodic_theory/</link>
+          <pubDate>Tue, 28 Dec 2021 00:00:00 +0000</pubDate>
+          <guid>/dependencies/ergodic_theory/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Szemeredi_Regularity</title>
+          <link>/dependencies/szemeredi_regularity/</link>
+          <pubDate>Tue, 28 Dec 2021 00:00:00 +0000</pubDate>
+          <guid>/dependencies/szemeredi_regularity/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Gauss_Jordan</title>
+          <link>/dependencies/gauss_jordan/</link>
+          <pubDate>Thu, 16 Dec 2021 00:00:00 +0000</pubDate>
+          <guid>/dependencies/gauss_jordan/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>MDP-Rewards</title>
+          <link>/dependencies/mdp-rewards/</link>
+          <pubDate>Thu, 16 Dec 2021 00:00:00 +0000</pubDate>
+          <guid>/dependencies/mdp-rewards/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Knuth_Bendix_Order</title>
+          <link>/dependencies/knuth_bendix_order/</link>
+          <pubDate>Wed, 15 Dec 2021 00:00:00 +0000</pubDate>
+          <guid>/dependencies/knuth_bendix_order/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Refine_Imperative_HOL</title>
+          <link>/dependencies/refine_imperative_hol/</link>
+          <pubDate>Mon, 29 Nov 2021 00:00:00 +0000</pubDate>
+          <guid>/dependencies/refine_imperative_hol/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>ROBDD</title>
+          <link>/dependencies/robdd/</link>
+          <pubDate>Mon, 29 Nov 2021 00:00:00 +0000</pubDate>
+          <guid>/dependencies/robdd/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Automatic_Refinement</title>
+          <link>/dependencies/automatic_refinement/</link>
+          <pubDate>Tue, 23 Nov 2021 00:00:00 +0000</pubDate>
+          <guid>/dependencies/automatic_refinement/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Hermite_Lindemann</title>
+          <link>/dependencies/hermite_lindemann/</link>
+          <pubDate>Mon, 08 Nov 2021 00:00:00 +0000</pubDate>
+          <guid>/dependencies/hermite_lindemann/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Complex_Bounded_Operators</title>
+          <link>/dependencies/complex_bounded_operators/</link>
+          <pubDate>Thu, 28 Oct 2021 00:00:00 +0000</pubDate>
+          <guid>/dependencies/complex_bounded_operators/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>MonoBoolTranAlgebra</title>
+          <link>/dependencies/monobooltranalgebra/</link>
+          <pubDate>Tue, 12 Oct 2021 00:00:00 +0000</pubDate>
+          <guid>/dependencies/monobooltranalgebra/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Stone_Kleene_Relation_Algebras</title>
+          <link>/dependencies/stone_kleene_relation_algebras/</link>
+          <pubDate>Tue, 12 Oct 2021 00:00:00 +0000</pubDate>
+          <guid>/dependencies/stone_kleene_relation_algebras/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Subset_Boolean_Algebras</title>
+          <link>/dependencies/subset_boolean_algebras/</link>
+          <pubDate>Tue, 12 Oct 2021 00:00:00 +0000</pubDate>
+          <guid>/dependencies/subset_boolean_algebras/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Banach_Steinhaus</title>
+          <link>/dependencies/banach_steinhaus/</link>
+          <pubDate>Sat, 18 Sep 2021 00:00:00 +0000</pubDate>
+          <guid>/dependencies/banach_steinhaus/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Real_Impl</title>
+          <link>/dependencies/real_impl/</link>
+          <pubDate>Sat, 18 Sep 2021 00:00:00 +0000</pubDate>
+          <guid>/dependencies/real_impl/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Cardinality_Continuum</title>
+          <link>/dependencies/cardinality_continuum/</link>
+          <pubDate>Mon, 06 Sep 2021 00:00:00 +0000</pubDate>
+          <guid>/dependencies/cardinality_continuum/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Conditional_Simplification</title>
+          <link>/dependencies/conditional_simplification/</link>
+          <pubDate>Mon, 06 Sep 2021 00:00:00 +0000</pubDate>
+          <guid>/dependencies/conditional_simplification/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Conditional_Transfer_Rule</title>
+          <link>/dependencies/conditional_transfer_rule/</link>
+          <pubDate>Mon, 06 Sep 2021 00:00:00 +0000</pubDate>
+          <guid>/dependencies/conditional_transfer_rule/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>CZH_Elementary_Categories</title>
+          <link>/dependencies/czh_elementary_categories/</link>
+          <pubDate>Mon, 06 Sep 2021 00:00:00 +0000</pubDate>
+          <guid>/dependencies/czh_elementary_categories/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>CZH_Foundations</title>
+          <link>/dependencies/czh_foundations/</link>
+          <pubDate>Mon, 06 Sep 2021 00:00:00 +0000</pubDate>
+          <guid>/dependencies/czh_foundations/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Intro_Dest_Elim</title>
+          <link>/dependencies/intro_dest_elim/</link>
+          <pubDate>Mon, 06 Sep 2021 00:00:00 +0000</pubDate>
+          <guid>/dependencies/intro_dest_elim/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Jinja</title>
+          <link>/dependencies/jinja/</link>
+          <pubDate>Sun, 05 Sep 2021 00:00:00 +0000</pubDate>
+          <guid>/dependencies/jinja/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Complex_Geometry</title>
+          <link>/dependencies/complex_geometry/</link>
+          <pubDate>Fri, 03 Sep 2021 00:00:00 +0000</pubDate>
+          <guid>/dependencies/complex_geometry/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Budan_Fourier</title>
+          <link>/dependencies/budan_fourier/</link>
+          <pubDate>Sat, 21 Aug 2021 00:00:00 +0000</pubDate>
+          <guid>/dependencies/budan_fourier/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>BD_Security_Compositional</title>
+          <link>/dependencies/bd_security_compositional/</link>
+          <pubDate>Mon, 16 Aug 2021 00:00:00 +0000</pubDate>
+          <guid>/dependencies/bd_security_compositional/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Bounded_Deducibility_Security</title>
+          <link>/dependencies/bounded_deducibility_security/</link>
+          <pubDate>Mon, 16 Aug 2021 00:00:00 +0000</pubDate>
+          <guid>/dependencies/bounded_deducibility_security/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Nested_Multisets_Ordinals</title>
+          <link>/dependencies/nested_multisets_ordinals/</link>
+          <pubDate>Fri, 13 Aug 2021 00:00:00 +0000</pubDate>
+          <guid>/dependencies/nested_multisets_ordinals/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Nominal2</title>
+          <link>/dependencies/nominal2/</link>
+          <pubDate>Fri, 18 Jun 2021 00:00:00 +0000</pubDate>
+          <guid>/dependencies/nominal2/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Show</title>
+          <link>/dependencies/show/</link>
+          <pubDate>Fri, 18 Jun 2021 00:00:00 +0000</pubDate>
+          <guid>/dependencies/show/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Szpilrajn</title>
+          <link>/dependencies/szpilrajn/</link>
+          <pubDate>Mon, 24 May 2021 00:00:00 +0000</pubDate>
+          <guid>/dependencies/szpilrajn/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>JinjaDCI</title>
+          <link>/dependencies/jinjadci/</link>
+          <pubDate>Fri, 30 Apr 2021 00:00:00 +0000</pubDate>
+          <guid>/dependencies/jinjadci/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Sturm_Tarski</title>
+          <link>/dependencies/sturm_tarski/</link>
+          <pubDate>Sat, 24 Apr 2021 00:00:00 +0000</pubDate>
+          <guid>/dependencies/sturm_tarski/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Parity_Game</title>
+          <link>/dependencies/parity_game/</link>
+          <pubDate>Fri, 23 Apr 2021 00:00:00 +0000</pubDate>
+          <guid>/dependencies/parity_game/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Constructive_Cryptography</title>
+          <link>/dependencies/constructive_cryptography/</link>
+          <pubDate>Wed, 17 Mar 2021 00:00:00 +0000</pubDate>
+          <guid>/dependencies/constructive_cryptography/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Sigma_Commit_Crypto</title>
+          <link>/dependencies/sigma_commit_crypto/</link>
+          <pubDate>Wed, 17 Mar 2021 00:00:00 +0000</pubDate>
+          <guid>/dependencies/sigma_commit_crypto/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Hermite</title>
+          <link>/dependencies/hermite/</link>
+          <pubDate>Fri, 12 Mar 2021 00:00:00 +0000</pubDate>
+          <guid>/dependencies/hermite/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Smith_Normal_Form</title>
+          <link>/dependencies/smith_normal_form/</link>
+          <pubDate>Fri, 12 Mar 2021 00:00:00 +0000</pubDate>
+          <guid>/dependencies/smith_normal_form/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Isabelle_Marries_Dirac</title>
+          <link>/dependencies/isabelle_marries_dirac/</link>
+          <pubDate>Wed, 03 Mar 2021 00:00:00 +0000</pubDate>
+          <guid>/dependencies/isabelle_marries_dirac/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Pi_Transcendental</title>
+          <link>/dependencies/pi_transcendental/</link>
+          <pubDate>Wed, 03 Mar 2021 00:00:00 +0000</pubDate>
+          <guid>/dependencies/pi_transcendental/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Power_Sum_Polynomials</title>
+          <link>/dependencies/power_sum_polynomials/</link>
+          <pubDate>Wed, 03 Mar 2021 00:00:00 +0000</pubDate>
+          <guid>/dependencies/power_sum_polynomials/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>QHLProver</title>
+          <link>/dependencies/qhlprover/</link>
+          <pubDate>Wed, 03 Mar 2021 00:00:00 +0000</pubDate>
+          <guid>/dependencies/qhlprover/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Relational_Disjoint_Set_Forests</title>
+          <link>/dependencies/relational_disjoint_set_forests/</link>
+          <pubDate>Tue, 08 Dec 2020 00:00:00 +0000</pubDate>
+          <guid>/dependencies/relational_disjoint_set_forests/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>VeriComp</title>
+          <link>/dependencies/vericomp/</link>
+          <pubDate>Mon, 07 Dec 2020 00:00:00 +0000</pubDate>
+          <guid>/dependencies/vericomp/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Matrix_Tensor</title>
+          <link>/dependencies/matrix_tensor/</link>
+          <pubDate>Sun, 22 Nov 2020 00:00:00 +0000</pubDate>
+          <guid>/dependencies/matrix_tensor/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>VectorSpace</title>
+          <link>/dependencies/vectorspace/</link>
+          <pubDate>Sun, 22 Nov 2020 00:00:00 +0000</pubDate>
+          <guid>/dependencies/vectorspace/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>AI_Planning_Languages_Semantics</title>
+          <link>/dependencies/ai_planning_languages_semantics/</link>
+          <pubDate>Thu, 29 Oct 2020 00:00:00 +0000</pubDate>
+          <guid>/dependencies/ai_planning_languages_semantics/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Certification_Monads</title>
+          <link>/dependencies/certification_monads/</link>
+          <pubDate>Thu, 29 Oct 2020 00:00:00 +0000</pubDate>
+          <guid>/dependencies/certification_monads/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Propositional_Proof_Systems</title>
+          <link>/dependencies/propositional_proof_systems/</link>
+          <pubDate>Thu, 29 Oct 2020 00:00:00 +0000</pubDate>
+          <guid>/dependencies/propositional_proof_systems/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Core_DOM</title>
+          <link>/dependencies/core_dom/</link>
+          <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
+          <guid>/dependencies/core_dom/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Core_SC_DOM</title>
+          <link>/dependencies/core_sc_dom/</link>
+          <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
+          <guid>/dependencies/core_sc_dom/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Shadow_DOM</title>
+          <link>/dependencies/shadow_dom/</link>
+          <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
+          <guid>/dependencies/shadow_dom/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Shadow_SC_DOM</title>
+          <link>/dependencies/shadow_sc_dom/</link>
+          <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
+          <guid>/dependencies/shadow_sc_dom/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Goedel_Incompleteness</title>
+          <link>/dependencies/goedel_incompleteness/</link>
+          <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
+          <guid>/dependencies/goedel_incompleteness/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Incompleteness</title>
+          <link>/dependencies/incompleteness/</link>
+          <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
+          <guid>/dependencies/incompleteness/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Syntax_Independent_Logic</title>
+          <link>/dependencies/syntax_independent_logic/</link>
+          <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
+          <guid>/dependencies/syntax_independent_logic/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Extended_Finite_State_Machines</title>
+          <link>/dependencies/extended_finite_state_machines/</link>
+          <pubDate>Mon, 07 Sep 2020 00:00:00 +0000</pubDate>
+          <guid>/dependencies/extended_finite_state_machines/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>FinFun</title>
+          <link>/dependencies/finfun/</link>
+          <pubDate>Mon, 07 Sep 2020 00:00:00 +0000</pubDate>
+          <guid>/dependencies/finfun/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Aggregation_Algebras</title>
+          <link>/dependencies/aggregation_algebras/</link>
+          <pubDate>Wed, 26 Aug 2020 00:00:00 +0000</pubDate>
+          <guid>/dependencies/aggregation_algebras/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>HOLCF-Prelude</title>
+          <link>/dependencies/holcf-prelude/</link>
+          <pubDate>Tue, 25 Aug 2020 00:00:00 +0000</pubDate>
+          <guid>/dependencies/holcf-prelude/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Well_Quasi_Orders</title>
+          <link>/dependencies/well_quasi_orders/</link>
+          <pubDate>Tue, 25 Aug 2020 00:00:00 +0000</pubDate>
+          <guid>/dependencies/well_quasi_orders/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Pratt_Certificate</title>
+          <link>/dependencies/pratt_certificate/</link>
+          <pubDate>Tue, 04 Aug 2020 00:00:00 +0000</pubDate>
+          <guid>/dependencies/pratt_certificate/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Nash_Williams</title>
+          <link>/dependencies/nash_williams/</link>
+          <pubDate>Mon, 03 Aug 2020 00:00:00 +0000</pubDate>
+          <guid>/dependencies/nash_williams/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Sturm_Sequences</title>
+          <link>/dependencies/sturm_sequences/</link>
+          <pubDate>Mon, 01 Jun 2020 00:00:00 +0000</pubDate>
+          <guid>/dependencies/sturm_sequences/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Matrix</title>
+          <link>/dependencies/matrix/</link>
+          <pubDate>Wed, 13 May 2020 00:00:00 +0000</pubDate>
+          <guid>/dependencies/matrix/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Prime_Distribution_Elementary</title>
+          <link>/dependencies/prime_distribution_elementary/</link>
+          <pubDate>Tue, 12 May 2020 00:00:00 +0000</pubDate>
+          <guid>/dependencies/prime_distribution_elementary/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>LTL</title>
+          <link>/dependencies/ltl/</link>
+          <pubDate>Fri, 08 May 2020 00:00:00 +0000</pubDate>
+          <guid>/dependencies/ltl/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>LTL_Master_Theorem</title>
+          <link>/dependencies/ltl_master_theorem/</link>
+          <pubDate>Fri, 08 May 2020 00:00:00 +0000</pubDate>
+          <guid>/dependencies/ltl_master_theorem/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Symmetric_Polynomials</title>
+          <link>/dependencies/symmetric_polynomials/</link>
+          <pubDate>Fri, 24 Apr 2020 00:00:00 +0000</pubDate>
+          <guid>/dependencies/symmetric_polynomials/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Hybrid_Systems_VCs</title>
+          <link>/dependencies/hybrid_systems_vcs/</link>
+          <pubDate>Sun, 19 Apr 2020 00:00:00 +0000</pubDate>
+          <guid>/dependencies/hybrid_systems_vcs/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Generic_Join</title>
+          <link>/dependencies/generic_join/</link>
+          <pubDate>Thu, 09 Apr 2020 00:00:00 +0000</pubDate>
+          <guid>/dependencies/generic_join/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>IEEE_Floating_Point</title>
+          <link>/dependencies/ieee_floating_point/</link>
+          <pubDate>Thu, 09 Apr 2020 00:00:00 +0000</pubDate>
+          <guid>/dependencies/ieee_floating_point/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Lambda_Free_RPOs</title>
+          <link>/dependencies/lambda_free_rpos/</link>
+          <pubDate>Thu, 09 Apr 2020 00:00:00 +0000</pubDate>
+          <guid>/dependencies/lambda_free_rpos/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>MFOTL_Monitor</title>
+          <link>/dependencies/mfotl_monitor/</link>
+          <pubDate>Thu, 09 Apr 2020 00:00:00 +0000</pubDate>
+          <guid>/dependencies/mfotl_monitor/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Stateful_Protocol_Composition_and_Typing</title>
+          <link>/dependencies/stateful_protocol_composition_and_typing/</link>
+          <pubDate>Wed, 08 Apr 2020 00:00:00 +0000</pubDate>
+          <guid>/dependencies/stateful_protocol_composition_and_typing/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Stone_Algebras</title>
+          <link>/dependencies/stone_algebras/</link>
+          <pubDate>Fri, 31 Jan 2020 00:00:00 +0000</pubDate>
+          <guid>/dependencies/stone_algebras/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Pell</title>
+          <link>/dependencies/pell/</link>
+          <pubDate>Fri, 17 Jan 2020 00:00:00 +0000</pubDate>
+          <guid>/dependencies/pell/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Probabilistic_Prime_Tests</title>
+          <link>/dependencies/probabilistic_prime_tests/</link>
+          <pubDate>Fri, 17 Jan 2020 00:00:00 +0000</pubDate>
+          <guid>/dependencies/probabilistic_prime_tests/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Akra_Bazzi</title>
+          <link>/dependencies/akra_bazzi/</link>
+          <pubDate>Mon, 13 Jan 2020 00:00:00 +0000</pubDate>
+          <guid>/dependencies/akra_bazzi/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Root_Balanced_Tree</title>
+          <link>/dependencies/root_balanced_tree/</link>
+          <pubDate>Mon, 13 Jan 2020 00:00:00 +0000</pubDate>
+          <guid>/dependencies/root_balanced_tree/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Monad_Normalisation</title>
+          <link>/dependencies/monad_normalisation/</link>
+          <pubDate>Thu, 09 Jan 2020 00:00:00 +0000</pubDate>
+          <guid>/dependencies/monad_normalisation/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>MonoidalCategory</title>
+          <link>/dependencies/monoidalcategory/</link>
+          <pubDate>Mon, 06 Jan 2020 00:00:00 +0000</pubDate>
+          <guid>/dependencies/monoidalcategory/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>E_Transcendental</title>
+          <link>/dependencies/e_transcendental/</link>
+          <pubDate>Fri, 27 Dec 2019 00:00:00 +0000</pubDate>
+          <guid>/dependencies/e_transcendental/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Prime_Number_Theorem</title>
+          <link>/dependencies/prime_number_theorem/</link>
+          <pubDate>Fri, 27 Dec 2019 00:00:00 +0000</pubDate>
+          <guid>/dependencies/prime_number_theorem/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Ordinary_Differential_Equations</title>
+          <link>/dependencies/ordinary_differential_equations/</link>
+          <pubDate>Wed, 18 Dec 2019 00:00:00 +0000</pubDate>
+          <guid>/dependencies/ordinary_differential_equations/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>KAT_and_DRA</title>
+          <link>/dependencies/kat_and_dra/</link>
+          <pubDate>Tue, 10 Sep 2019 00:00:00 +0000</pubDate>
+          <guid>/dependencies/kat_and_dra/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Transformer_Semantics</title>
+          <link>/dependencies/transformer_semantics/</link>
+          <pubDate>Tue, 10 Sep 2019 00:00:00 +0000</pubDate>
+          <guid>/dependencies/transformer_semantics/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Transition_Systems_and_Automata</title>
+          <link>/dependencies/transition_systems_and_automata/</link>
+          <pubDate>Fri, 16 Aug 2019 00:00:00 +0000</pubDate>
+          <guid>/dependencies/transition_systems_and_automata/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Farkas</title>
+          <link>/dependencies/farkas/</link>
+          <pubDate>Tue, 06 Aug 2019 00:00:00 +0000</pubDate>
+          <guid>/dependencies/farkas/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>CakeML</title>
+          <link>/dependencies/cakeml/</link>
+          <pubDate>Mon, 08 Jul 2019 00:00:00 +0000</pubDate>
+          <guid>/dependencies/cakeml/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Constructor_Funs</title>
+          <link>/dependencies/constructor_funs/</link>
+          <pubDate>Mon, 08 Jul 2019 00:00:00 +0000</pubDate>
+          <guid>/dependencies/constructor_funs/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Dict_Construction</title>
+          <link>/dependencies/dict_construction/</link>
+          <pubDate>Mon, 08 Jul 2019 00:00:00 +0000</pubDate>
+          <guid>/dependencies/dict_construction/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Higher_Order_Terms</title>
+          <link>/dependencies/higher_order_terms/</link>
+          <pubDate>Mon, 08 Jul 2019 00:00:00 +0000</pubDate>
+          <guid>/dependencies/higher_order_terms/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Huffman</title>
+          <link>/dependencies/huffman/</link>
+          <pubDate>Mon, 08 Jul 2019 00:00:00 +0000</pubDate>
+          <guid>/dependencies/huffman/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Pairing_Heap</title>
+          <link>/dependencies/pairing_heap/</link>
+          <pubDate>Mon, 08 Jul 2019 00:00:00 +0000</pubDate>
+          <guid>/dependencies/pairing_heap/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Priority_Search_Trees</title>
+          <link>/dependencies/priority_search_trees/</link>
+          <pubDate>Tue, 25 Jun 2019 00:00:00 +0000</pubDate>
+          <guid>/dependencies/priority_search_trees/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>IMP2</title>
+          <link>/dependencies/imp2/</link>
+          <pubDate>Thu, 13 Jun 2019 00:00:00 +0000</pubDate>
+          <guid>/dependencies/imp2/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Median_Of_Medians_Selection</title>
+          <link>/dependencies/median_of_medians_selection/</link>
+          <pubDate>Thu, 30 May 2019 00:00:00 +0000</pubDate>
+          <guid>/dependencies/median_of_medians_selection/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Deep_Learning</title>
+          <link>/dependencies/deep_learning/</link>
+          <pubDate>Sun, 24 Mar 2019 00:00:00 +0000</pubDate>
+          <guid>/dependencies/deep_learning/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Matroids</title>
+          <link>/dependencies/matroids/</link>
+          <pubDate>Thu, 14 Feb 2019 00:00:00 +0000</pubDate>
+          <guid>/dependencies/matroids/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Refine_Monadic</title>
+          <link>/dependencies/refine_monadic/</link>
+          <pubDate>Thu, 14 Feb 2019 00:00:00 +0000</pubDate>
+          <guid>/dependencies/refine_monadic/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Optics</title>
+          <link>/dependencies/optics/</link>
+          <pubDate>Fri, 01 Feb 2019 00:00:00 +0000</pubDate>
+          <guid>/dependencies/optics/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Simplex</title>
+          <link>/dependencies/simplex/</link>
+          <pubDate>Thu, 17 Jan 2019 00:00:00 +0000</pubDate>
+          <guid>/dependencies/simplex/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Auto2_HOL</title>
+          <link>/dependencies/auto2_hol/</link>
+          <pubDate>Fri, 21 Dec 2018 00:00:00 +0000</pubDate>
+          <guid>/dependencies/auto2_hol/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Order_Lattice_Props</title>
+          <link>/dependencies/order_lattice_props/</link>
+          <pubDate>Tue, 11 Dec 2018 00:00:00 +0000</pubDate>
+          <guid>/dependencies/order_lattice_props/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Open_Induction</title>
+          <link>/dependencies/open_induction/</link>
+          <pubDate>Fri, 23 Nov 2018 00:00:00 +0000</pubDate>
+          <guid>/dependencies/open_induction/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Random_BSTs</title>
+          <link>/dependencies/random_bsts/</link>
+          <pubDate>Fri, 19 Oct 2018 00:00:00 +0000</pubDate>
+          <guid>/dependencies/random_bsts/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Abstract-Rewriting</title>
+          <link>/dependencies/abstract-rewriting/</link>
+          <pubDate>Tue, 14 Aug 2018 00:00:00 +0000</pubDate>
+          <guid>/dependencies/abstract-rewriting/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Recursion-Theory-I</title>
+          <link>/dependencies/recursion-theory-i/</link>
+          <pubDate>Tue, 14 Aug 2018 00:00:00 +0000</pubDate>
+          <guid>/dependencies/recursion-theory-i/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>First_Welfare_Theorem</title>
+          <link>/dependencies/first_welfare_theorem/</link>
+          <pubDate>Wed, 04 Jul 2018 00:00:00 +0000</pubDate>
+          <guid>/dependencies/first_welfare_theorem/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Stuttering_Equivalence</title>
+          <link>/dependencies/stuttering_equivalence/</link>
+          <pubDate>Tue, 05 Jun 2018 00:00:00 +0000</pubDate>
+          <guid>/dependencies/stuttering_equivalence/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Monad_Memo_DP</title>
+          <link>/dependencies/monad_memo_dp/</link>
+          <pubDate>Sun, 27 May 2018 00:00:00 +0000</pubDate>
+          <guid>/dependencies/monad_memo_dp/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Markov_Models</title>
+          <link>/dependencies/markov_models/</link>
+          <pubDate>Fri, 25 May 2018 00:00:00 +0000</pubDate>
+          <guid>/dependencies/markov_models/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Timed_Automata</title>
+          <link>/dependencies/timed_automata/</link>
+          <pubDate>Thu, 24 May 2018 00:00:00 +0000</pubDate>
+          <guid>/dependencies/timed_automata/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>DynamicArchitectures</title>
+          <link>/dependencies/dynamicarchitectures/</link>
+          <pubDate>Thu, 01 Mar 2018 00:00:00 +0000</pubDate>
+          <guid>/dependencies/dynamicarchitectures/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Comparison_Sort_Lower_Bound</title>
+          <link>/dependencies/comparison_sort_lower_bound/</link>
+          <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
+          <guid>/dependencies/comparison_sort_lower_bound/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Landau_Symbols</title>
+          <link>/dependencies/landau_symbols/</link>
+          <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
+          <guid>/dependencies/landau_symbols/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Affine_Arithmetic</title>
+          <link>/dependencies/affine_arithmetic/</link>
+          <pubDate>Mon, 08 Jan 2018 00:00:00 +0000</pubDate>
+          <guid>/dependencies/affine_arithmetic/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Finitely_Generated_Abelian_Groups</title>
+          <link>/dependencies/finitely_generated_abelian_groups/</link>
+          <pubDate>Thu, 21 Dec 2017 00:00:00 +0000</pubDate>
+          <guid>/dependencies/finitely_generated_abelian_groups/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>CRDT</title>
+          <link>/dependencies/crdt/</link>
+          <pubDate>Thu, 09 Nov 2017 00:00:00 +0000</pubDate>
+          <guid>/dependencies/crdt/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>DFS_Framework</title>
+          <link>/dependencies/dfs_framework/</link>
+          <pubDate>Thu, 19 Oct 2017 00:00:00 +0000</pubDate>
+          <guid>/dependencies/dfs_framework/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Gabow_SCC</title>
+          <link>/dependencies/gabow_scc/</link>
+          <pubDate>Thu, 19 Oct 2017 00:00:00 +0000</pubDate>
+          <guid>/dependencies/gabow_scc/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Winding_Number_Eval</title>
+          <link>/dependencies/winding_number_eval/</link>
+          <pubDate>Tue, 17 Oct 2017 00:00:00 +0000</pubDate>
+          <guid>/dependencies/winding_number_eval/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Count_Complex_Roots</title>
+          <link>/dependencies/count_complex_roots/</link>
+          <pubDate>Thu, 12 Oct 2017 00:00:00 +0000</pubDate>
+          <guid>/dependencies/count_complex_roots/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Euler_MacLaurin</title>
+          <link>/dependencies/euler_maclaurin/</link>
+          <pubDate>Thu, 12 Oct 2017 00:00:00 +0000</pubDate>
+          <guid>/dependencies/euler_maclaurin/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Amortized_Complexity</title>
+          <link>/dependencies/amortized_complexity/</link>
+          <pubDate>Sun, 20 Aug 2017 00:00:00 +0000</pubDate>
+          <guid>/dependencies/amortized_complexity/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>CAVA_Automata</title>
+          <link>/dependencies/cava_automata/</link>
+          <pubDate>Thu, 01 Jun 2017 00:00:00 +0000</pubDate>
+          <guid>/dependencies/cava_automata/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Flow_Networks</title>
+          <link>/dependencies/flow_networks/</link>
+          <pubDate>Thu, 01 Jun 2017 00:00:00 +0000</pubDate>
+          <guid>/dependencies/flow_networks/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Program-Conflict-Analysis</title>
+          <link>/dependencies/program-conflict-analysis/</link>
+          <pubDate>Thu, 01 Jun 2017 00:00:00 +0000</pubDate>
+          <guid>/dependencies/program-conflict-analysis/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Lazy_Case</title>
+          <link>/dependencies/lazy_case/</link>
+          <pubDate>Wed, 24 May 2017 00:00:00 +0000</pubDate>
+          <guid>/dependencies/lazy_case/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Applicative_Lifting</title>
+          <link>/dependencies/applicative_lifting/</link>
+          <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
+          <guid>/dependencies/applicative_lifting/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>MFMC_Countable</title>
+          <link>/dependencies/mfmc_countable/</link>
+          <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
+          <guid>/dependencies/mfmc_countable/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Monomorphic_Monad</title>
+          <link>/dependencies/monomorphic_monad/</link>
+          <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
+          <guid>/dependencies/monomorphic_monad/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Category3</title>
+          <link>/dependencies/category3/</link>
+          <pubDate>Thu, 04 May 2017 00:00:00 +0000</pubDate>
+          <guid>/dependencies/category3/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Quick_Sort_Cost</title>
+          <link>/dependencies/quick_sort_cost/</link>
+          <pubDate>Tue, 04 Apr 2017 00:00:00 +0000</pubDate>
+          <guid>/dependencies/quick_sort_cost/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Regular-Sets</title>
+          <link>/dependencies/regular-sets/</link>
+          <pubDate>Wed, 15 Mar 2017 00:00:00 +0000</pubDate>
+          <guid>/dependencies/regular-sets/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formal_SSA</title>
+          <link>/dependencies/formal_ssa/</link>
+          <pubDate>Tue, 17 Jan 2017 00:00:00 +0000</pubDate>
+          <guid>/dependencies/formal_ssa/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>UPF</title>
+          <link>/dependencies/upf/</link>
+          <pubDate>Sun, 08 Jan 2017 00:00:00 +0000</pubDate>
+          <guid>/dependencies/upf/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Bell_Numbers_Spivey</title>
+          <link>/dependencies/bell_numbers_spivey/</link>
+          <pubDate>Thu, 29 Dec 2016 00:00:00 +0000</pubDate>
+          <guid>/dependencies/bell_numbers_spivey/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Card_Multisets</title>
+          <link>/dependencies/card_multisets/</link>
+          <pubDate>Thu, 29 Dec 2016 00:00:00 +0000</pubDate>
+          <guid>/dependencies/card_multisets/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Ordinal</title>
+          <link>/dependencies/ordinal/</link>
+          <pubDate>Sat, 12 Nov 2016 00:00:00 +0000</pubDate>
+          <guid>/dependencies/ordinal/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Iptables_Semantics</title>
+          <link>/dependencies/iptables_semantics/</link>
+          <pubDate>Fri, 21 Oct 2016 00:00:00 +0000</pubDate>
+          <guid>/dependencies/iptables_semantics/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Efficient-Mergesort</title>
+          <link>/dependencies/efficient-mergesort/</link>
+          <pubDate>Fri, 14 Oct 2016 00:00:00 +0000</pubDate>
+          <guid>/dependencies/efficient-mergesort/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Subresultants</title>
+          <link>/dependencies/subresultants/</link>
+          <pubDate>Fri, 14 Oct 2016 00:00:00 +0000</pubDate>
+          <guid>/dependencies/subresultants/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Routing</title>
+          <link>/dependencies/routing/</link>
+          <pubDate>Fri, 09 Sep 2016 00:00:00 +0000</pubDate>
+          <guid>/dependencies/routing/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Simple_Firewall</title>
+          <link>/dependencies/simple_firewall/</link>
+          <pubDate>Wed, 31 Aug 2016 00:00:00 +0000</pubDate>
+          <guid>/dependencies/simple_firewall/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>IP_Addresses</title>
+          <link>/dependencies/ip_addresses/</link>
+          <pubDate>Wed, 24 Aug 2016 00:00:00 +0000</pubDate>
+          <guid>/dependencies/ip_addresses/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Dijkstra_Shortest_Path</title>
+          <link>/dependencies/dijkstra_shortest_path/</link>
+          <pubDate>Mon, 08 Aug 2016 00:00:00 +0000</pubDate>
+          <guid>/dependencies/dijkstra_shortest_path/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Separation_Logic_Imperative_HOL</title>
+          <link>/dependencies/separation_logic_imperative_hol/</link>
+          <pubDate>Mon, 08 Aug 2016 00:00:00 +0000</pubDate>
+          <guid>/dependencies/separation_logic_imperative_hol/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Dependent_SIFUM_Type_Systems</title>
+          <link>/dependencies/dependent_sifum_type_systems/</link>
+          <pubDate>Tue, 28 Jun 2016 00:00:00 +0000</pubDate>
+          <guid>/dependencies/dependent_sifum_type_systems/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Noninterference_Sequential_Composition</title>
+          <link>/dependencies/noninterference_sequential_composition/</link>
+          <pubDate>Mon, 13 Jun 2016 00:00:00 +0000</pubDate>
+          <guid>/dependencies/noninterference_sequential_composition/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Rank_Nullity_Theorem</title>
+          <link>/dependencies/rank_nullity_theorem/</link>
+          <pubDate>Fri, 20 May 2016 00:00:00 +0000</pubDate>
+          <guid>/dependencies/rank_nullity_theorem/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>EdmondsKarp_Maxflow</title>
+          <link>/dependencies/edmondskarp_maxflow/</link>
+          <pubDate>Mon, 09 May 2016 00:00:00 +0000</pubDate>
+          <guid>/dependencies/edmondskarp_maxflow/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Noninterference_Ipurge_Unwinding</title>
+          <link>/dependencies/noninterference_ipurge_unwinding/</link>
+          <pubDate>Tue, 26 Apr 2016 00:00:00 +0000</pubDate>
+          <guid>/dependencies/noninterference_ipurge_unwinding/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Boolean_Expression_Checkers</title>
+          <link>/dependencies/boolean_expression_checkers/</link>
+          <pubDate>Tue, 01 Mar 2016 00:00:00 +0000</pubDate>
+          <guid>/dependencies/boolean_expression_checkers/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Slicing</title>
+          <link>/dependencies/slicing/</link>
+          <pubDate>Fri, 05 Feb 2016 00:00:00 +0000</pubDate>
+          <guid>/dependencies/slicing/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Partial_Function_MR</title>
+          <link>/dependencies/partial_function_mr/</link>
+          <pubDate>Fri, 29 Jan 2016 00:00:00 +0000</pubDate>
+          <guid>/dependencies/partial_function_mr/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Sqrt_Babylonian</title>
+          <link>/dependencies/sqrt_babylonian/</link>
+          <pubDate>Fri, 29 Jan 2016 00:00:00 +0000</pubDate>
+          <guid>/dependencies/sqrt_babylonian/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Marriage</title>
+          <link>/dependencies/marriage/</link>
+          <pubDate>Wed, 02 Dec 2015 00:00:00 +0000</pubDate>
+          <guid>/dependencies/marriage/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Case_Labeling</title>
+          <link>/dependencies/case_labeling/</link>
+          <pubDate>Wed, 11 Nov 2015 00:00:00 +0000</pubDate>
+          <guid>/dependencies/case_labeling/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Simpl</title>
+          <link>/dependencies/simpl/</link>
+          <pubDate>Wed, 11 Nov 2015 00:00:00 +0000</pubDate>
+          <guid>/dependencies/simpl/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Transitive-Closure</title>
+          <link>/dependencies/transitive-closure/</link>
+          <pubDate>Wed, 11 Nov 2015 00:00:00 +0000</pubDate>
+          <guid>/dependencies/transitive-closure/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>KBPs</title>
+          <link>/dependencies/kbps/</link>
+          <pubDate>Fri, 04 Sep 2015 00:00:00 +0000</pubDate>
+          <guid>/dependencies/kbps/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Echelon_Form</title>
+          <link>/dependencies/echelon_form/</link>
+          <pubDate>Tue, 07 Jul 2015 00:00:00 +0000</pubDate>
+          <guid>/dependencies/echelon_form/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>List_Interleaving</title>
+          <link>/dependencies/list_interleaving/</link>
+          <pubDate>Thu, 11 Jun 2015 00:00:00 +0000</pubDate>
+          <guid>/dependencies/list_interleaving/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Noninterference_CSP</title>
+          <link>/dependencies/noninterference_csp/</link>
+          <pubDate>Thu, 11 Jun 2015 00:00:00 +0000</pubDate>
+          <guid>/dependencies/noninterference_csp/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Coinductive_Languages</title>
+          <link>/dependencies/coinductive_languages/</link>
+          <pubDate>Thu, 28 May 2015 00:00:00 +0000</pubDate>
+          <guid>/dependencies/coinductive_languages/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>ConcurrentIMP</title>
+          <link>/dependencies/concurrentimp/</link>
+          <pubDate>Mon, 13 Apr 2015 00:00:00 +0000</pubDate>
+          <guid>/dependencies/concurrentimp/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Heard_Of</title>
+          <link>/dependencies/heard_of/</link>
+          <pubDate>Wed, 18 Mar 2015 00:00:00 +0000</pubDate>
+          <guid>/dependencies/heard_of/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Launchbury</title>
+          <link>/dependencies/launchbury/</link>
+          <pubDate>Fri, 20 Feb 2015 00:00:00 +0000</pubDate>
+          <guid>/dependencies/launchbury/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Cayley_Hamilton</title>
+          <link>/dependencies/cayley_hamilton/</link>
+          <pubDate>Thu, 12 Feb 2015 00:00:00 +0000</pubDate>
+          <guid>/dependencies/cayley_hamilton/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>AWN</title>
+          <link>/dependencies/awn/</link>
+          <pubDate>Thu, 23 Oct 2014 00:00:00 +0000</pubDate>
+          <guid>/dependencies/awn/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Secondary_Sylow</title>
+          <link>/dependencies/secondary_sylow/</link>
+          <pubDate>Tue, 09 Sep 2014 00:00:00 +0000</pubDate>
+          <guid>/dependencies/secondary_sylow/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Skew_Heap</title>
+          <link>/dependencies/skew_heap/</link>
+          <pubDate>Mon, 07 Jul 2014 00:00:00 +0000</pubDate>
+          <guid>/dependencies/skew_heap/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Splay_Tree</title>
+          <link>/dependencies/splay_tree/</link>
+          <pubDate>Mon, 07 Jul 2014 00:00:00 +0000</pubDate>
+          <guid>/dependencies/splay_tree/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>LTL_to_GBA</title>
+          <link>/dependencies/ltl_to_gba/</link>
+          <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
+          <guid>/dependencies/ltl_to_gba/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Partial_Order_Reduction</title>
+          <link>/dependencies/partial_order_reduction/</link>
+          <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
+          <guid>/dependencies/partial_order_reduction/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Promela</title>
+          <link>/dependencies/promela/</link>
+          <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
+          <guid>/dependencies/promela/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Strong_Security</title>
+          <link>/dependencies/strong_security/</link>
+          <pubDate>Wed, 23 Apr 2014 00:00:00 +0000</pubDate>
+          <guid>/dependencies/strong_security/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Lehmer</title>
+          <link>/dependencies/lehmer/</link>
+          <pubDate>Mon, 22 Jul 2013 00:00:00 +0000</pubDate>
+          <guid>/dependencies/lehmer/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Finger-Trees</title>
+          <link>/dependencies/finger-trees/</link>
+          <pubDate>Mon, 15 Apr 2013 00:00:00 +0000</pubDate>
+          <guid>/dependencies/finger-trees/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Trie</title>
+          <link>/dependencies/trie/</link>
+          <pubDate>Mon, 15 Apr 2013 00:00:00 +0000</pubDate>
+          <guid>/dependencies/trie/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Cauchy</title>
+          <link>/dependencies/cauchy/</link>
+          <pubDate>Thu, 03 Jan 2013 00:00:00 +0000</pubDate>
+          <guid>/dependencies/cauchy/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Gauss-Jordan-Elim-Fun</title>
+          <link>/dependencies/gauss-jordan-elim-fun/</link>
+          <pubDate>Tue, 03 Jan 2012 00:00:00 +0000</pubDate>
+          <guid>/dependencies/gauss-jordan-elim-fun/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>LatticeProperties</title>
+          <link>/dependencies/latticeproperties/</link>
+          <pubDate>Thu, 22 Sep 2011 00:00:00 +0000</pubDate>
+          <guid>/dependencies/latticeproperties/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Nat-Interval-Logic</title>
+          <link>/dependencies/nat-interval-logic/</link>
+          <pubDate>Wed, 23 Feb 2011 00:00:00 +0000</pubDate>
+          <guid>/dependencies/nat-interval-logic/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>DataRefinementIBP</title>
+          <link>/dependencies/datarefinementibp/</link>
+          <pubDate>Fri, 28 May 2010 00:00:00 +0000</pubDate>
+          <guid>/dependencies/datarefinementibp/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>HRB-Slicing</title>
+          <link>/dependencies/hrb-slicing/</link>
+          <pubDate>Tue, 23 Mar 2010 00:00:00 +0000</pubDate>
+          <guid>/dependencies/hrb-slicing/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Binomial-Heaps</title>
+          <link>/dependencies/binomial-heaps/</link>
+          <pubDate>Wed, 25 Nov 2009 00:00:00 +0000</pubDate>
+          <guid>/dependencies/binomial-heaps/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Group-Ring-Module</title>
+          <link>/dependencies/group-ring-module/</link>
+          <pubDate>Wed, 08 Aug 2007 00:00:00 +0000</pubDate>
+          <guid>/dependencies/group-ring-module/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Lazy-Lists-II</title>
+          <link>/dependencies/lazy-lists-ii/</link>
+          <pubDate>Mon, 26 Apr 2004 00:00:00 +0000</pubDate>
+          <guid>/dependencies/lazy-lists-ii/</guid>
+          <description></description>
+        </item>
+  </channel>
+</rss>

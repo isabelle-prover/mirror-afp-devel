@@ -20,10 +20,31 @@
           <description></description>
         </item>
         <item>
+          <title>Synthetic Completeness</title>
+          <link>/entries/Synthetic_Completeness.html</link>
+          <pubDate>Mon, 09 Jan 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Synthetic_Completeness.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Class-based Classical Propositional Logic</title>
           <link>/entries/Propositional_Logic_Class.html</link>
           <pubDate>Thu, 15 Dec 2022 00:00:00 +0000</pubDate>
           <guid>/entries/Propositional_Logic_Class.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Class-based Classical Propositional Logic</title>
+          <link>/entries/Propositional_Logic_Class.html</link>
+          <pubDate>Thu, 15 Dec 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Propositional_Logic_Class.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Automation of Boolos&#39; Curious Inference in Isabelle/HOL</title>
+          <link>/entries/Boolos_Curious_Inference_Automated.html</link>
+          <pubDate>Mon, 05 Dec 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Boolos_Curious_Inference_Automated.html</guid>
           <description></description>
         </item>
         <item>
@@ -41,10 +62,31 @@
           <description></description>
         </item>
         <item>
+          <title>Soundness and Completeness of Implicational Logic</title>
+          <link>/entries/Implicational_Logic.html</link>
+          <pubDate>Tue, 13 Sep 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Implicational_Logic.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>A Naive Prover for First-Order Logic</title>
           <link>/entries/FOL_Seq_Calc3.html</link>
           <pubDate>Tue, 22 Mar 2022 00:00:00 +0000</pubDate>
           <guid>/entries/FOL_Seq_Calc3.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Naive Prover for First-Order Logic</title>
+          <link>/entries/FOL_Seq_Calc3.html</link>
+          <pubDate>Tue, 22 Mar 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/FOL_Seq_Calc3.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>First-Order Theory of Rewriting</title>
+          <link>/entries/FO_Theory_Rewriting.html</link>
+          <pubDate>Wed, 02 Feb 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/FO_Theory_Rewriting.html</guid>
           <description></description>
         </item>
         <item>
@@ -62,10 +104,31 @@
           <description></description>
         </item>
         <item>
+          <title>A Sequent Calculus Prover for First-Order Logic with Functions</title>
+          <link>/entries/FOL_Seq_Calc2.html</link>
+          <pubDate>Mon, 31 Jan 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/FOL_Seq_Calc2.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Soundness and Completeness of an Axiomatic System for First-Order Logic</title>
           <link>/entries/FOL_Axiomatic.html</link>
           <pubDate>Fri, 24 Sep 2021 00:00:00 +0000</pubDate>
           <guid>/entries/FOL_Axiomatic.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Soundness and Completeness of an Axiomatic System for First-Order Logic</title>
+          <link>/entries/FOL_Axiomatic.html</link>
+          <pubDate>Fri, 24 Sep 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/FOL_Axiomatic.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>An Abstract Formalization of G&amp;ouml;del&#39;s Incompleteness Theorems</title>
+          <link>/entries/Goedel_Incompleteness.html</link>
+          <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Goedel_Incompleteness.html</guid>
           <description></description>
         </item>
         <item>
@@ -83,10 +146,31 @@
           <description></description>
         </item>
         <item>
+          <title>From Abstract to Concrete G&amp;ouml;del&#39;s Incompleteness Theorems&amp;mdash;Part I</title>
+          <link>/entries/Goedel_HFSet_Semantic.html</link>
+          <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Goedel_HFSet_Semantic.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>From Abstract to Concrete G&amp;ouml;del&#39;s Incompleteness Theorems&amp;mdash;Part II</title>
           <link>/entries/Goedel_HFSet_Semanticless.html</link>
           <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
           <guid>/entries/Goedel_HFSet_Semanticless.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>From Abstract to Concrete G&amp;ouml;del&#39;s Incompleteness Theorems&amp;mdash;Part II</title>
+          <link>/entries/Goedel_HFSet_Semanticless.html</link>
+          <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Goedel_HFSet_Semanticless.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Robinson Arithmetic</title>
+          <link>/entries/Robinson_Arithmetic.html</link>
+          <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Robinson_Arithmetic.html</guid>
           <description></description>
         </item>
         <item>
@@ -104,10 +188,31 @@
           <description></description>
         </item>
         <item>
+          <title>Syntax-Independent Logic Infrastructure</title>
+          <link>/entries/Syntax_Independent_Logic.html</link>
+          <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Syntax_Independent_Logic.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>A Sequent Calculus for First-Order Logic</title>
           <link>/entries/FOL_Seq_Calc1.html</link>
           <pubDate>Thu, 18 Jul 2019 00:00:00 +0000</pubDate>
           <guid>/entries/FOL_Seq_Calc1.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Sequent Calculus for First-Order Logic</title>
+          <link>/entries/FOL_Seq_Calc1.html</link>
+          <pubDate>Thu, 18 Jul 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/FOL_Seq_Calc1.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Propositional Proof Systems</title>
+          <link>/entries/Propositional_Proof_Systems.html</link>
+          <pubDate>Wed, 21 Jun 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Propositional_Proof_Systems.html</guid>
           <description></description>
         </item>
         <item>
@@ -125,10 +230,31 @@
           <description></description>
         </item>
         <item>
+          <title>Abstract Soundness</title>
+          <link>/entries/Abstract_Soundness.html</link>
+          <pubDate>Fri, 10 Feb 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Abstract_Soundness.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>A Variant of the Superposition Calculus</title>
           <link>/entries/SuperCalc.html</link>
           <pubDate>Tue, 06 Sep 2016 00:00:00 +0000</pubDate>
           <guid>/entries/SuperCalc.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Variant of the Superposition Calculus</title>
+          <link>/entries/SuperCalc.html</link>
+          <pubDate>Tue, 06 Sep 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/SuperCalc.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Surprise Paradox</title>
+          <link>/entries/Surprise_Paradox.html</link>
+          <pubDate>Sun, 17 Jul 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Surprise_Paradox.html</guid>
           <description></description>
         </item>
         <item>
@@ -146,6 +272,20 @@
           <description></description>
         </item>
         <item>
+          <title>The meta theory of the Incredible Proof Machine</title>
+          <link>/entries/Incredible_Proof_Machine.html</link>
+          <pubDate>Fri, 20 May 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Incredible_Proof_Machine.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Abstract Completeness</title>
+          <link>/entries/Abstract_Completeness.html</link>
+          <pubDate>Wed, 16 Apr 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Abstract_Completeness.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Abstract Completeness</title>
           <link>/entries/Abstract_Completeness.html</link>
           <pubDate>Wed, 16 Apr 2014 00:00:00 +0000</pubDate>
@@ -160,10 +300,31 @@
           <description></description>
         </item>
         <item>
+          <title>Gödel&#39;s Incompleteness Theorems</title>
+          <link>/entries/Incompleteness.html</link>
+          <pubDate>Sun, 17 Nov 2013 00:00:00 +0000</pubDate>
+          <guid>/entries/Incompleteness.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Invertibility in Sequent Calculi</title>
           <link>/entries/SequentInvertibility.html</link>
           <pubDate>Fri, 28 Aug 2009 00:00:00 +0000</pubDate>
           <guid>/entries/SequentInvertibility.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Invertibility in Sequent Calculi</title>
+          <link>/entries/SequentInvertibility.html</link>
+          <pubDate>Fri, 28 Aug 2009 00:00:00 +0000</pubDate>
+          <guid>/entries/SequentInvertibility.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Completeness theorem</title>
+          <link>/entries/Completeness.html</link>
+          <pubDate>Mon, 20 Sep 2004 00:00:00 +0000</pubDate>
+          <guid>/entries/Completeness.html</guid>
           <description></description>
         </item>
         <item>

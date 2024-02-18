@@ -628,6 +628,23 @@ host = [
 
 [bohrer.homepages]
 
+[bootle]
+name = "Jonathan Bootle"
+
+[bootle.emails]
+
+[bootle.emails.bootle_email]
+user = [
+  "JBT",
+]
+host = [
+  "zurich",
+  "ibm",
+  "com",
+]
+
+[bootle.homepages]
+
 [bordg]
 name = "Anthony Bordg"
 
@@ -970,6 +987,22 @@ host = [
 ]
 
 [bulwahn.homepages]
+
+[buss]
+name = "Sebastián Buss"
+
+[buss.emails]
+
+[buss.emails.buss_email]
+user = [
+  "sbuss94",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[buss.homepages]
 
 [butler]
 name = "David Butler"
@@ -2016,6 +2049,22 @@ name = "Xin Gao"
 [gao.emails]
 
 [gao.homepages]
+
+[garvia]
+name = "Azucena Garvia"
+
+[garvia.emails]
+
+[garvia.emails.garvia_email]
+user = [
+  "zucegb",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[garvia.homepages]
 
 [gaudel]
 name = "Marie-Claude Gaudel"
@@ -6277,6 +6326,25 @@ host = [
 ]
 
 [steinberg.homepages]
+
+[stell]
+name = "Amy Stell"
+orcid = "0000-0003-0714-3269"
+
+[stell.emails]
+
+[stell.emails.stell_email]
+user = [
+  "as1343",
+]
+host = [
+  "exeter",
+  "ac",
+  "uk",
+]
+
+[stell.homepages]
+stell_homepage = "https://computerscience.exeter.ac.uk/staff/as1343?sm=as1343"
 
 [stephan]
 name = "Werner Stephan"

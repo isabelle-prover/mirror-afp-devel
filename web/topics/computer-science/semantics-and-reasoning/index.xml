@@ -20,10 +20,31 @@
           <description></description>
         </item>
         <item>
+          <title>HOL-CSPM - Architectural operators for HOL-CSP</title>
+          <link>/entries/HOL-CSPM.html</link>
+          <pubDate>Tue, 05 Dec 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/HOL-CSPM.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Transport via Partial Galois Connections and Equivalences</title>
           <link>/entries/Transport.html</link>
           <pubDate>Wed, 11 Oct 2023 00:00:00 +0000</pubDate>
           <guid>/entries/Transport.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Transport via Partial Galois Connections and Equivalences</title>
+          <link>/entries/Transport.html</link>
+          <pubDate>Wed, 11 Oct 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Transport.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>S-Finite Measure Monad on Quasi-Borel Spaces</title>
+          <link>/entries/S_Finite_Measure_Monad.html</link>
+          <pubDate>Tue, 08 Aug 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/S_Finite_Measure_Monad.html</guid>
           <description></description>
         </item>
         <item>
@@ -41,10 +62,31 @@
           <description></description>
         </item>
         <item>
+          <title>Modal quantales, involutive quantales, Dedekind Quantales</title>
+          <link>/entries/Quantales_Converse.html</link>
+          <pubDate>Tue, 25 Jul 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Quantales_Converse.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>A Formal CHERI-C Memory Model</title>
           <link>/entries/CHERI-C_Memory_Model.html</link>
           <pubDate>Fri, 25 Nov 2022 00:00:00 +0000</pubDate>
           <guid>/entries/CHERI-C_Memory_Model.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Formal CHERI-C Memory Model</title>
+          <link>/entries/CHERI-C_Memory_Model.html</link>
+          <pubDate>Fri, 25 Nov 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/CHERI-C_Memory_Model.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Isabelle/Solidity: A deep Embedding of Solidity in Isabelle/HOL</title>
+          <link>/entries/Solidity.html</link>
+          <pubDate>Mon, 18 Jul 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Solidity.html</guid>
           <description></description>
         </item>
         <item>
@@ -62,10 +104,31 @@
           <description></description>
         </item>
         <item>
+          <title>Quasi-Borel Spaces</title>
+          <link>/entries/Quasi_Borel_Spaces.html</link>
+          <pubDate>Thu, 03 Feb 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Quasi_Borel_Spaces.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Quantum and Classical Registers</title>
           <link>/entries/Registers.html</link>
           <pubDate>Thu, 28 Oct 2021 00:00:00 +0000</pubDate>
           <guid>/entries/Registers.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Quantum and Classical Registers</title>
+          <link>/entries/Registers.html</link>
+          <pubDate>Thu, 28 Oct 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Registers.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>X86 instruction semantics and basic block symbolic execution</title>
+          <link>/entries/X86_Semantics.html</link>
+          <pubDate>Wed, 13 Oct 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/X86_Semantics.html</guid>
           <description></description>
         </item>
         <item>
@@ -83,10 +146,31 @@
           <description></description>
         </item>
         <item>
+          <title>The HOL-CSP Refinement Toolkit</title>
+          <link>/entries/CSP_RefTK.html</link>
+          <pubDate>Thu, 19 Nov 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/CSP_RefTK.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Isabelle/C</title>
           <link>/entries/Isabelle_C.html</link>
           <pubDate>Tue, 22 Oct 2019 00:00:00 +0000</pubDate>
           <guid>/entries/Isabelle_C.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Isabelle/C</title>
+          <link>/entries/Isabelle_C.html</link>
+          <pubDate>Tue, 22 Oct 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Isabelle_C.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Clean - An Abstract Imperative Programming Language and its Theory</title>
+          <link>/entries/Clean.html</link>
+          <pubDate>Fri, 04 Oct 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Clean.html</guid>
           <description></description>
         </item>
         <item>
@@ -104,10 +188,31 @@
           <description></description>
         </item>
         <item>
+          <title>A Formal Development of a Polychronous Polytimed Coordination Language</title>
+          <link>/entries/TESL_Language.html</link>
+          <pubDate>Tue, 30 Jul 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/TESL_Language.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>HOL-CSP Version 2.0</title>
           <link>/entries/HOL-CSP.html</link>
           <pubDate>Fri, 26 Apr 2019 00:00:00 +0000</pubDate>
           <guid>/entries/HOL-CSP.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>HOL-CSP Version 2.0</title>
+          <link>/entries/HOL-CSP.html</link>
+          <pubDate>Fri, 26 Apr 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/HOL-CSP.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Quantum Hoare Logic</title>
+          <link>/entries/QHLProver.html</link>
+          <pubDate>Sun, 24 Mar 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/QHLProver.html</guid>
           <description></description>
         </item>
         <item>
@@ -125,6 +230,20 @@
           <description></description>
         </item>
         <item>
+          <title>Transformer Semantics</title>
+          <link>/entries/Transformer_Semantics.html</link>
+          <pubDate>Tue, 11 Dec 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Transformer_Semantics.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Imperative Refinement Framework</title>
+          <link>/entries/Refine_Imperative_HOL.html</link>
+          <pubDate>Mon, 08 Aug 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Refine_Imperative_HOL.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>The Imperative Refinement Framework</title>
           <link>/entries/Refine_Imperative_HOL.html</link>
           <pubDate>Mon, 08 Aug 2016 00:00:00 +0000</pubDate>
@@ -136,6 +255,20 @@
           <link>/entries/Launchbury.html</link>
           <pubDate>Thu, 31 Jan 2013 00:00:00 +0000</pubDate>
           <guid>/entries/Launchbury.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Correctness of Launchbury&#39;s Natural Semantics for Lazy Evaluation</title>
+          <link>/entries/Launchbury.html</link>
+          <pubDate>Thu, 31 Jan 2013 00:00:00 +0000</pubDate>
+          <guid>/entries/Launchbury.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Refinement for Monadic Programs</title>
+          <link>/entries/Refine_Monadic.html</link>
+          <pubDate>Mon, 30 Jan 2012 00:00:00 +0000</pubDate>
+          <guid>/entries/Refine_Monadic.html</guid>
           <description></description>
         </item>
         <item>

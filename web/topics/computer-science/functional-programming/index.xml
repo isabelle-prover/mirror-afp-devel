@@ -20,10 +20,31 @@
           <description></description>
         </item>
         <item>
+          <title>Putting the `K&#39; into Bird&#39;s derivation of Knuth-Morris-Pratt string matching</title>
+          <link>/entries/BirdKMP.html</link>
+          <pubDate>Tue, 25 Aug 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/BirdKMP.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Hello World</title>
           <link>/entries/Hello_World.html</link>
           <pubDate>Sat, 07 Mar 2020 00:00:00 +0000</pubDate>
           <guid>/entries/Hello_World.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Hello World</title>
+          <link>/entries/Hello_World.html</link>
+          <pubDate>Sat, 07 Mar 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Hello_World.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>An Efficient Generalization of Counting Sort for Large, possibly Infinite Key Ranges</title>
+          <link>/entries/Generalized_Counting_Sort.html</link>
+          <pubDate>Wed, 04 Dec 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Generalized_Counting_Sort.html</guid>
           <description></description>
         </item>
         <item>
@@ -41,10 +62,31 @@
           <description></description>
         </item>
         <item>
+          <title>A General Theory of Syntax with Bindings</title>
+          <link>/entries/Binding_Syntax_Theory.html</link>
+          <pubDate>Sat, 06 Apr 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Binding_Syntax_Theory.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Monadification, Memoization and Dynamic Programming</title>
           <link>/entries/Monad_Memo_DP.html</link>
           <pubDate>Tue, 22 May 2018 00:00:00 +0000</pubDate>
           <guid>/entries/Monad_Memo_DP.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Monadification, Memoization and Dynamic Programming</title>
+          <link>/entries/Monad_Memo_DP.html</link>
+          <pubDate>Tue, 22 May 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Monad_Memo_DP.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Bounded Natural Functors with Covariance and Contravariance</title>
+          <link>/entries/BNF_CC.html</link>
+          <pubDate>Tue, 24 Apr 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/BNF_CC.html</guid>
           <description></description>
         </item>
         <item>
@@ -62,10 +104,31 @@
           <description></description>
         </item>
         <item>
+          <title>HOLCF-Prelude</title>
+          <link>/entries/HOLCF-Prelude.html</link>
+          <pubDate>Sat, 15 Jul 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/HOLCF-Prelude.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Optics</title>
           <link>/entries/Optics.html</link>
           <pubDate>Thu, 25 May 2017 00:00:00 +0000</pubDate>
           <guid>/entries/Optics.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Optics</title>
+          <link>/entries/Optics.html</link>
+          <pubDate>Thu, 25 May 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Optics.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>CryptHOL</title>
+          <link>/entries/CryptHOL.html</link>
+          <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/CryptHOL.html</guid>
           <description></description>
         </item>
         <item>
@@ -83,10 +146,31 @@
           <description></description>
         </item>
         <item>
+          <title>Effect polymorphism in higher-order logic</title>
+          <link>/entries/Monomorphic_Monad.html</link>
+          <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Monomorphic_Monad.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Monad normalisation</title>
           <link>/entries/Monad_Normalisation.html</link>
           <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
           <guid>/entries/Monad_Normalisation.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Monad normalisation</title>
+          <link>/entries/Monad_Normalisation.html</link>
+          <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Monad_Normalisation.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Probabilistic while loop</title>
+          <link>/entries/Probabilistic_While.html</link>
+          <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Probabilistic_While.html</guid>
           <description></description>
         </item>
         <item>
@@ -104,10 +188,31 @@
           <description></description>
         </item>
         <item>
+          <title>Applicative Lifting</title>
+          <link>/entries/Applicative_Lifting.html</link>
+          <pubDate>Tue, 22 Dec 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Applicative_Lifting.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Lifting Definition Option</title>
           <link>/entries/Lifting_Definition_Option.html</link>
           <pubDate>Mon, 13 Oct 2014 00:00:00 +0000</pubDate>
           <guid>/entries/Lifting_Definition_Option.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Lifting Definition Option</title>
+          <link>/entries/Lifting_Definition_Option.html</link>
+          <pubDate>Mon, 13 Oct 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Lifting_Definition_Option.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Stream Fusion in HOL with Code Generation</title>
+          <link>/entries/Stream_Fusion_Code.html</link>
+          <pubDate>Fri, 10 Oct 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Stream_Fusion_Code.html</guid>
           <description></description>
         </item>
         <item>
@@ -125,10 +230,31 @@
           <description></description>
         </item>
         <item>
+          <title>Certification Monads</title>
+          <link>/entries/Certification_Monads.html</link>
+          <pubDate>Fri, 03 Oct 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Certification_Monads.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>XML</title>
           <link>/entries/XML.html</link>
           <pubDate>Fri, 03 Oct 2014 00:00:00 +0000</pubDate>
           <guid>/entries/XML.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>XML</title>
+          <link>/entries/XML.html</link>
+          <pubDate>Fri, 03 Oct 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/XML.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Haskell&#39;s Show Class in Isabelle/HOL</title>
+          <link>/entries/Show.html</link>
+          <pubDate>Tue, 29 Jul 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Show.html</guid>
           <description></description>
         </item>
         <item>
@@ -146,10 +272,31 @@
           <description></description>
         </item>
         <item>
+          <title>Mutually Recursive Partial Functions</title>
+          <link>/entries/Partial_Function_MR.html</link>
+          <pubDate>Tue, 18 Feb 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Partial_Function_MR.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>A General Method for the Proof of Theorems on Tail-recursive Functions</title>
           <link>/entries/Tail_Recursive_Functions.html</link>
           <pubDate>Sun, 01 Dec 2013 00:00:00 +0000</pubDate>
           <guid>/entries/Tail_Recursive_Functions.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A General Method for the Proof of Theorems on Tail-recursive Functions</title>
+          <link>/entries/Tail_Recursive_Functions.html</link>
+          <pubDate>Sun, 01 Dec 2013 00:00:00 +0000</pubDate>
+          <guid>/entries/Tail_Recursive_Functions.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Type Constructor Classes and Monad Transformers</title>
+          <link>/entries/Tycon.html</link>
+          <pubDate>Tue, 26 Jun 2012 00:00:00 +0000</pubDate>
+          <guid>/entries/Tycon.html</guid>
           <description></description>
         </item>
         <item>
@@ -167,10 +314,31 @@
           <description></description>
         </item>
         <item>
+          <title>Coinductive</title>
+          <link>/entries/Coinductive.html</link>
+          <pubDate>Fri, 12 Feb 2010 00:00:00 +0000</pubDate>
+          <guid>/entries/Coinductive.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>The Worker/Wrapper Transformation</title>
           <link>/entries/WorkerWrapper.html</link>
           <pubDate>Fri, 30 Oct 2009 00:00:00 +0000</pubDate>
           <guid>/entries/WorkerWrapper.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Worker/Wrapper Transformation</title>
+          <link>/entries/WorkerWrapper.html</link>
+          <pubDate>Fri, 30 Oct 2009 00:00:00 +0000</pubDate>
+          <guid>/entries/WorkerWrapper.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Stream Fusion</title>
+          <link>/entries/Stream-Fusion.html</link>
+          <pubDate>Wed, 29 Apr 2009 00:00:00 +0000</pubDate>
+          <guid>/entries/Stream-Fusion.html</guid>
           <description></description>
         </item>
         <item>

@@ -1,0 +1,52 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amssymb}
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Region Quadtrees}
+\author{Tobias Nipkow\\Technical University of Munich}
+\maketitle
+
+\begin{abstract}
+These theories formalize \emph{region quadtrees}, which are traditionally used
+to represent two-dimensional images of (black and white) pixels.
+Building on these quadtrees, addition and multiplication of recursive
+block matrices are verified.
+The generalization of region quadtrees to $k$ dimensions is also formalized.
+\end{abstract}
+
+\section{Introduction}
+
+These theories formalize so-called \emph{region quadtrees}, as opposed to \emph{point quadtrees}
+\cite{Samet84,Samet90,Aluru04}.
+The following variants are covered:
+\begin{itemize}
+\item Ordinary region quadtrees.
+\item Block matrices based on region quadtrees. Operations: matrix addition and multiplication.
+  Based on the work of Wise \cite{Wise84,Wise85,Wise86,Wise87,Wise92}.
+\item A $k$-dimenstional generalization of region quadtrees.
+This is inspired by the $k$-dimensional point trees by Bentley \cite{Bentley75,FriedmanBF77}
+which have already been formalized by Rau \cite{KD_Tree-AFP}.
+\end{itemize}
+For the details of the operations covered see the individual theories.
+
+\tableofcontents
+
+\newpage
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

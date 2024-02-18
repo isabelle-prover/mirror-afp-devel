@@ -1,0 +1,30 @@
+title = "Region Quadtrees"
+date = 2024-01-26
+topics = [
+  "Computer science/Data structures",
+]
+abstract = """
+These theories formalize <em>region quadtrees</em>, which are traditionally used
+to represent two-dimensional images of (black and white) pixels.
+Building on these quadtrees, addition and multiplication of recursive block matrices are verified.
+The generalization of region quadtrees to \\(k\\) dimensions is also formalized."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.nipkow]
+email = "nipkow_email"
+
+[contributors]
+
+[notify]
+nipkow = "nipkow_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

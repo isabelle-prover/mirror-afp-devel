@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Executable_Randomized_Algorithms on Archive of Formal Proofs
+    </title>
+    <link>/dependencies/executable_randomized_algorithms/</link>
+    <description>
+        Recent content in Executable_Randomized_Algorithms 
+        on Archive of Formal Proofs
+    </description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    
+      <lastBuildDate>Wed, 08 Jun 2022 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/executable_randomized_algorithms/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Finite Fields</title>
+          <link>/entries/Finite_Fields.html</link>
+          <pubDate>Wed, 08 Jun 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Finite_Fields.html</guid>
+          <description></description>
+        </item>
+  </channel>
+</rss>
