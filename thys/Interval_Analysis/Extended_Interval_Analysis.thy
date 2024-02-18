@@ -36,7 +36,7 @@ begin
 
 text\<open>
   This theory provides extended interval analysis over the type extended reals. All operations
-  work over (closed) intervals. 
+  work over (closed) intervals.
 \<close>
 
 end
