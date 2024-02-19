@@ -158,7 +158,8 @@ proof (simp only: atomize_imp,
     u_gt_t: "u >\<^sub>t t" and t_gt_s: "t >\<^sub>t s"
 
   have chkvar: "chkvar u s"
-    by clarsimp (meson u_gt_t t_gt_s gt_imp_vars hd.set_sel(2) vars_head_subseteq subsetCE)
+    by (metis (no_types, lifting) chkvar_def gt_imp_vars order_le_less order_le_less_trans t_gt_s
+        u_gt_t vars_head_subseteq)
 
   have chk_u_s_if: "chksubs (>\<^sub>t) u s" if chk_t_s: "chksubs (>\<^sub>t) t s"
   proof (cases s)

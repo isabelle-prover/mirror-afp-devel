@@ -200,19 +200,13 @@ qed
 
 lemma nths_out_of_bounds:
   "nths xs I = []" if "\<forall>i \<in> I. i \<ge> length xs"
-  using that
-  (* Found by sledgehammer *)
+  (* Found by sledgehammer, then modified *)
 proof -
   have
     "\<forall>N as.
       (\<exists>n. n \<in> N \<and> \<not> length (as::'a list) \<le> n)
       \<or> (\<forall>asa. nths (as @ asa) N = nths asa {n - length as |n. n \<in> N})"
     using nths_shift by blast
-  then obtain nn :: "nat set \<Rightarrow> 'a list \<Rightarrow> nat" where
-    "\<forall>N as.
-      nn N as \<in> N \<and> \<not> length as \<le> nn N as
-    \<or> (\<forall>asa. nths (as @ asa) N = nths asa {n - length as |n. n \<in> N})"
-    by moura
   then have
     "\<And>as. nths as {n - length xs |n. n \<in> I} = nths (xs @ as) I
       \<or> nths (xs @ []) I = []"
