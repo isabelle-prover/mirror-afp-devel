@@ -1263,7 +1263,7 @@ proof -
               using allj_hyp bad_asm by presburger
             obtain nn :: "nat \<Rightarrow> nat \<Rightarrow> (nat \<Rightarrow> bool) \<Rightarrow> nat" where
               f4: "\<And>n na p nb nc. (\<not> n \<le> na \<or> Suc n \<le> Suc na) \<and> (\<not> p nb \<or> \<not> nc \<le> nb \<or> \<not> p (nn nc nb p) \<or> p nc) \<and> (\<not> p nb \<or> \<not> nc \<le> nb \<or> p nc \<or> p (Suc (nn nc nb p)))"
-              using inc_induct order_refl by moura
+              using inc_induct by (metis Suc_le_mono)
             then have f5: "\<And>p. \<not> p k \<or> p j \<or> p (Suc (nn j k p))"
               using a1 by presburger
             have f6: "\<And>p. \<not> p k \<or> \<not> p (nn j k p) \<or> p j"

@@ -153,7 +153,7 @@ proof -
         "length U = length S" "\<And>i. i < length U \<Longrightarrow> term_variants_pred (F Q fs) (U ! i) (S ! i)"
       using hyps(1) Skolem_list_nth[of _ "\<lambda>i s. term_variants_pred (F P gs) (T ! i) s \<and>
                                                 term_variants_pred (F Q fs) s (S ! i)"]
-      by moura
+      by (metis (no_types))
 
     show ?case
       using term_variants_pred.term_variants_P[OF U(1,2), of g h]
@@ -173,7 +173,7 @@ proof -
         "length U = length S" "\<And>i. i < length U \<Longrightarrow> term_variants_pred (F Q fs) (U ! i) (S ! i)"
       using hyps(1) Skolem_list_nth[of _ "\<lambda>i s. term_variants_pred (F P gs) (T ! i) s \<and>
                                                 term_variants_pred (F Q fs) s (S ! i)"]
-      by moura
+      by (metis (no_types))
     
     thus ?case
       using term_variants_pred.term_variants_Fun[OF U(1,2)]
@@ -268,7 +268,7 @@ next
       using term_variants_P.hyps(1) 1(3) subst_term_list_obtain[OF IH] by metis
     then obtain V where V: "length U = length V" "S = map (\<lambda>v. v \<cdot> \<delta>) V"
                            "\<And>i. i < length U \<Longrightarrow> term_variants_pred P (U ! i) (V ! i)"
-      by moura
+      by blast
 
     have "term_variants_pred P (Fun f U) (Fun g V)"
       by (metis term_variants_pred.term_variants_P[OF V(1,3) term_variants_P.hyps(4)])
@@ -300,7 +300,7 @@ next
       using term_variants_Fun.hyps(1) 1(3) subst_term_list_obtain[OF IH] by metis
     then obtain V where V: "length U = length V" "S = map (\<lambda>v. v \<cdot> \<delta>) V"
                            "\<And>i. i < length U \<Longrightarrow> term_variants_pred P (U ! i) (V ! i)"
-      by moura
+      by blast
 
     have "term_variants_pred P (Fun f U) (Fun f V)"
       by (metis term_variants_pred.term_variants_Fun[OF V(1,3)])
@@ -367,7 +367,7 @@ proof
     obtain S where S:
         "s = Fun f S \<or> (\<exists>g \<in> set (P f). s = Fun g S)"
         "S \<in> set (U P T)" "length T = length S"
-      using c b[OF "2.prems"] by moura
+      using c b[OF "2.prems"] by blast
 
     have "\<forall>i < length T. term_variants_pred P (T ! i) (S ! i)"
       using "2.IH" S product_lists_in_set_nth by (fastforce simp add: U_def)

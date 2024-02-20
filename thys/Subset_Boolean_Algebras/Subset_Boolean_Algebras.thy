@@ -1855,7 +1855,7 @@ lemma test_import_2:
     shows "x \<squnion> (y \<sqinter> !x) = x \<squnion> y"
 proof -
   obtain z where 1: "are_complementary y z"
-    using assms(2) by moura
+    using assms(2) by blast
   obtain w where 2: "are_complementary x w"
     using assms(1) by auto
   hence "x \<sqinter> !x = bot"

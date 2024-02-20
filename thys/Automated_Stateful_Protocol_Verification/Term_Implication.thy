@@ -471,8 +471,8 @@ proof
       thus "t \<in> ?N"
       proof
         assume ?B
-        then obtain s a b where s: "s \<in> ?N" "(a,b) \<in> TI" "t \<in> set \<langle>a --\<guillemotright> b\<rangle>\<langle>s\<rangle>" by moura
-        thus ?thesis 
+        then obtain s a b where s: "s \<in> ?N" "(a,b) \<in> TI" "t \<in> set \<langle>a --\<guillemotright> b\<rangle>\<langle>s\<rangle>" by blast
+        thus ?thesis
           using term_variants_pred_iff_in_term_variants[of "(\<lambda>_. [])(Abs a := [Abs b])" s]
           unfolding timpl_closure_set_def timpl_apply_term_def
           by (auto intro: timpl_closure.intros)
@@ -523,7 +523,7 @@ proof (induction rule: rtrancl_induct)
   proof (cases "f = g")
     case False
     then obtain a b where ab: "(a,b) \<in> c" "f = Abs a" "g = Abs b"
-      using fg by moura
+      using fg by blast
     show ?thesis
       using term_variants_pred_param[OF term_variants_pred_refl[of "(\<lambda>_. [])(Abs a := [Abs b])" t]]
             timpl_closure'_step.intros[OF ab(1)] ab(2,3)
@@ -561,7 +561,7 @@ proof -
     proof (cases "f = g")
       case False
       then obtain a b where ab: "(a, b) \<in> c\<^sup>+" "f = Abs a" "g = Abs b"
-        using fg by moura
+        using fg by blast
       show ?thesis
         using timpl_closure'_step.intros[OF ab(1), of "Fun f T" "Fun g T"] ab(2,3)
               term_variants_P[OF _ term_variants_pred_refl[of "(\<lambda>_. [])(Abs a := [Abs b])"],
@@ -625,7 +625,7 @@ proof -
   proof (cases "f = g")
     case False
     then obtain a b d where abd: "(a, d) \<in> c\<^sup>+" "(b, d) \<in> c\<^sup>+" "f = Abs a" "g = Abs b"
-      using fg by moura
+      using fg by blast
 
     define h::"('a, 'b, 'c, 'd) prot_fun" where "h = Abs d"
 
@@ -663,7 +663,7 @@ proof
     case FP thus ?case using timpl_closure.FP[of t T] by simp
   next
     case (TI u a b s)
-    then obtain u' where u': "u' \<in> timpl_closure t T" "u = u' \<cdot> \<delta>" by moura
+    then obtain u' where u': "u' \<in> timpl_closure t T" "u = u' \<cdot> \<delta>" by blast
     
     have u'_fv: "\<forall>x \<in> fv u'. \<exists>a. \<Gamma>\<^sub>v x = TAtom (Atom a)"
       using timpl_closure_fv_eq[OF u'(1)] t(2) by simp
@@ -703,7 +703,7 @@ proof
   have "s \<in> timpl_closure (t \<cdot> \<delta>) T"
     when s: "s \<in> timpl_closure t T \<cdot>\<^sub>s\<^sub>e\<^sub>t \<delta>" for s
   proof -
-    obtain s' where s': "s' \<in> timpl_closure t T" "s = s' \<cdot> \<delta>" using s by moura
+    obtain s' where s': "s' \<in> timpl_closure t T" "s = s' \<cdot> \<delta>" using s by blast
     have "s' \<cdot> \<delta> \<in> timpl_closure (t \<cdot> \<delta>) T" using s'(1)
     proof (induction s' rule: timpl_closure.induct)
       case FP thus ?case using timpl_closure.FP[of "t \<cdot> \<delta>" T] by simp
@@ -775,7 +775,7 @@ next
     thus ?case using step.hyps(2) term_variants_pred_inv_Var ab by fastforce
   next
     assume "\<exists>f g S T. s = Fun f S \<and> t = Fun g T \<and> length S = length T"
-    then obtain f g S T where st: "s = Fun f S" "t = Fun g T" "length S = length T" by moura
+    then obtain f g S T where st: "s = Fun f S" "t = Fun g T" "length S = length T" by blast
     thus ?case
       using ab step.hyps(2) term_variants_pred_inv'[of "(\<lambda>_. [])(Abs a := [Abs b])" g T u]
       by auto
@@ -806,7 +806,7 @@ next
         "s = Fun f S" "t = Fun g T" "length S = length T"
         "\<And>i. i < length T \<Longrightarrow> (S ! i, T ! i) \<in> (timpl_closure'_step TI)\<^sup>*"
         "f \<noteq> g \<Longrightarrow> is_Abs f \<and> is_Abs g \<and> (the_Abs f, the_Abs g) \<in> TI\<^sup>+"
-      by moura
+      by blast
     obtain h U where u:
         "u = Fun h U" "length T = length U"
         "\<And>i. i < length T \<Longrightarrow> term_variants_pred ((\<lambda>_. [])(Abs a := [Abs b])) (T ! i) (U ! i)"
@@ -884,7 +884,7 @@ using assms
 proof (induction t rule: timpl_closure.induct)
   case (TI u a b s)
   then obtain U where U: "length U = length T" "u = Fun (Fu f) U"
-    by moura
+    by blast
   hence *: "term_variants_pred ((\<lambda>_. [])(Abs a := [Abs b])) (Fun (Fu f) U) s"
     using TI.hyps(3) by meson
 
@@ -932,7 +932,7 @@ lemma timpl_closure_funs_term_subset:
   (is "?A \<subseteq> ?B \<union> ?C")
 proof
   fix f assume "f \<in> ?A"
-  then obtain s where "s \<in> timpl_closure t TI" "f \<in> funs_term s" by moura
+  then obtain s where "s \<in> timpl_closure t TI" "f \<in> funs_term s" by blast
   thus "f \<in> ?B \<union> ?C"
   proof (induction s rule: timpl_closure.induct)
     case (TI u a b s)
@@ -973,7 +973,7 @@ proof -
     assume t: "t \<in> absc ` OCC"
       and ab: "(a, b) \<in> TI"
       and s: "s \<in> set \<langle>a --\<guillemotright> b\<rangle>\<langle>t\<rangle>"
-    obtain c where c: "t = absc c" "c \<in> OCC" using t by moura
+    obtain c where c: "t = absc c" "c \<in> OCC" using t by blast
     hence "s = absc b \<or> s = absc c"
       using ab s timpl_apply_const'[of c a b] unfolding absc_def by auto
     moreover have "b \<in> OCC" using ab OCC2 by auto
@@ -996,7 +996,7 @@ proof (induction t arbitrary: s rule: intruder_synth_induct)
 next
   case (ComposeC T f)
   obtain g S where s: "s = Fun g S"
-    using timpl_closure_Fun_inv[OF ComposeC.prems] by moura
+    using timpl_closure_Fun_inv[OF ComposeC.prems] by blast
   hence s':
       "f = g" "length S = length T"
       "\<And>i. i < length S \<Longrightarrow> S ! i \<in> timpl_closure (T ! i) TI"
@@ -1643,13 +1643,13 @@ next
       "t = Fun g S" "length T = length S"
       "\<And>i. i < length T \<Longrightarrow> timpls_transformable_to TI (T ! i) (S ! i)"
       "f \<noteq> g \<Longrightarrow> is_Abs f \<and> is_Abs g \<and> (the_Abs f, the_Abs g) \<in> set TI"
-    using timpls_transformable_to_inv'[OF Fun.prems(1)] TI_trancl by moura
+    using timpls_transformable_to_inv'[OF Fun.prems(1)] TI_trancl by auto
 
   obtain h U where u:
       "u = Fun h U" "length S = length U"
       "\<And>i. i < length S \<Longrightarrow> timpls_transformable_to TI (S ! i) (U ! i)"
       "g \<noteq> h \<Longrightarrow> is_Abs g \<and> is_Abs h \<and> (the_Abs g, the_Abs h) \<in> set TI"
-    using timpls_transformable_to_inv'[OF Fun.prems(2)[unfolded t(1)]] TI_trancl by moura
+    using timpls_transformable_to_inv'[OF Fun.prems(2)[unfolded t(1)]] TI_trancl by auto
 
   have "list_all2 (timpls_transformable_to TI) T U"
     using t(1,2,3) u(1,2,3) Fun.IH
@@ -1684,13 +1684,13 @@ next
       "t = Fun g S" "length T = length S"
       "\<And>i. i < length T \<Longrightarrow> timpls_transformable_to' TI (T ! i) (S ! i)"
       "f \<noteq> g \<Longrightarrow> is_Abs f \<and> is_Abs g \<and> (the_Abs f, the_Abs g) \<in> (set TI)\<^sup>+"
-    using timpls_transformable_to'_inv'[OF Fun.prems(1)] 0 by moura
+    using timpls_transformable_to'_inv'[OF Fun.prems(1)] 0 by auto
 
   obtain h U where u:
       "u = Fun h U" "length S = length U"
       "\<And>i. i < length S \<Longrightarrow> timpls_transformable_to' TI (S ! i) (U ! i)"
       "g \<noteq> h \<Longrightarrow> is_Abs g \<and> is_Abs h \<and> (the_Abs g, the_Abs h) \<in> (set TI)\<^sup>+"
-    using timpls_transformable_to'_inv'[OF Fun.prems(2)[unfolded t(1)]] 0 by moura
+    using timpls_transformable_to'_inv'[OF Fun.prems(2)[unfolded t(1)]] 0 by auto
 
   have "list_all2 (timpls_transformable_to' TI) T U"
     using t(1,2,3) u(1,2,3) Fun.IH
@@ -1907,7 +1907,7 @@ proof
   show "?A s t" when B: "?B s t"
   proof -
     obtain u where u: "u \<in> timpl_closure s TI" "u \<in> timpl_closure t TI"
-      using B by moura
+      using B by blast
     thus ?thesis using assms
     proof (induction u arbitrary: s t rule: term.induct)
       case (Var x s t) thus ?case
@@ -2080,7 +2080,7 @@ proof (induction rule: timpls_transformable_to.induct)
     show ?thesis
     proof (cases "is_Abs f")
       case True
-      then obtain a where a: "f = Abs a" unfolding is_Abs_def by moura
+      then obtain a where a: "f = Abs a" unfolding is_Abs_def by blast
       thus ?thesis using fg 1[OF a] timpls_transformable_to_pred.Abs[of a ?A a] 3 by simp
     qed (use fg timpls_transformable_to_pred.Fun[OF _ 0(1) 2, of f] in blast)
   next
@@ -2126,7 +2126,7 @@ proof (induction rule: timpls_transformable_to.induct)
     show ?thesis
     proof (cases "is_Abs f")
       case True
-      then obtain a where a: "f = Abs a" unfolding is_Abs_def by moura
+      then obtain a where a: "f = Abs a" unfolding is_Abs_def by blast
       thus ?thesis using fg 1[OF a] timpls_transformable_to_pred.Abs[of a ?A a] 3 by simp
     qed (use fg timpls_transformable_to_pred.Fun[OF _ 0(1) 2, of f] in blast)
   next
@@ -2172,7 +2172,7 @@ proof (induction rule: equal_mod_timpls.induct)
     show ?thesis
     proof (cases "is_Abs f")
       case True
-      then obtain a where a: "f = Abs a" unfolding is_Abs_def by moura
+      then obtain a where a: "f = Abs a" unfolding is_Abs_def by blast
       thus ?thesis using fg 1[OF a] timpls_transformable_to_pred.Abs[of a ?A a] 3 by simp
     qed (use fg timpls_transformable_to_pred.Fun[OF _ 0(1) 2, of f] in blast)
   next
@@ -2408,7 +2408,7 @@ proof -
     show "?A t" when B: "?B t"
     proof -
       obtain s where "timpl_closure_set M TI \<turnstile>\<^sub>c s" "s \<in> timpl_closure t TI"
-        using B by moura
+        using B by blast
       thus ?thesis
       proof (induction s arbitrary: t rule: intruder_synth_induct)
         case (AxiomC s t)
@@ -2492,7 +2492,7 @@ proof -
     show "?C t" when D: "?D t"
     proof -
       obtain s where "timpl_closure_set M (set TI) \<turnstile>\<^sub>c s" "s \<in> timpl_closure t (set TI)"
-        using D by moura
+        using D by blast
       thus ?thesis
       proof (induction s arbitrary: t rule: intruder_synth_induct)
         case (AxiomC s t)
@@ -2585,7 +2585,7 @@ proof -
     using Ana_nonempty_inv[of t] s by fastforce
   then obtain T where T: "m = Fun (Fu f) T" "length T = length S"
     using t timpl_closure_Fu_inv'[of f S m TI]
-    by moura
+    by blast
   hence Ana_m: "Ana m = (K \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t (!) T, map ((!) T) N)"
     using fS(2,3) Ana_f by auto
 
@@ -2666,7 +2666,7 @@ proof
       and K: "\<forall>k \<in> set K. timpl_closure_set (set M) (set TI) \<turnstile>\<^sub>c k"
 
     obtain m where m: "m \<in> set M" "t \<in> timpl_closure m (set TI)"
-      using timpl_closure_set_is_timpl_closure_union t by moura
+      using timpl_closure_set_is_timpl_closure_union t by blast
 
     show "timpl_closure_set (set M) (set TI) \<turnstile>\<^sub>c s"
     proof (cases "\<forall>k \<in> set (fst (Ana m)). timpl_closure_set (set M) (set TI) \<turnstile>\<^sub>c k")
@@ -2792,7 +2792,7 @@ proof
       and K: "\<forall>k \<in> set K. timpl_closure_set (set M) (set TI) \<turnstile>\<^sub>c k"
 
     obtain m where m: "m \<in> set M" "t \<in> timpl_closure m (set TI)"
-      using timpl_closure_set_is_timpl_closure_union t by moura
+      using timpl_closure_set_is_timpl_closure_union t by blast
 
     show "timpl_closure_set (set M) (set TI) \<turnstile>\<^sub>c s"
     proof (cases "\<forall>k \<in> set (fst (Ana m)). timpl_closure_set (set M) (set TI) \<turnstile>\<^sub>c k")

@@ -89,7 +89,7 @@ proof -
     when fs: "f \<in> funs_term s" "s \<in> subterms\<^sub>s\<^sub>e\<^sub>t (\<theta> ` fv t)" "is_PubConstValue f"
     for f s
   proof -
-    obtain T where T: "Fun f T \<in> subterms s" using funs_term_Fun_subterm[OF fs(1)] by moura
+    obtain T where T: "Fun f T \<in> subterms s" using funs_term_Fun_subterm[OF fs(1)] by force
     hence "Fun f T \<in> subterms\<^sub>s\<^sub>e\<^sub>t (\<theta> ` fv t)" using fs(2) in_subterms_subset_Union by blast
     thus ?thesis
       using assms(2) funs_term_Fun_subterm'[of f T] fs(3)
@@ -105,7 +105,7 @@ lemma abs_terms_subst':
 proof -
   have "\<not>is_Abs f" when fs: "f \<in> funs_term s" "s \<in> subterms\<^sub>s\<^sub>e\<^sub>t (\<theta> ` fv t)" for f s
   proof -
-    obtain T where T: "Fun f T \<in> subterms s" using funs_term_Fun_subterm[OF fs(1)] by moura  
+    obtain T where T: "Fun f T \<in> subterms s" using funs_term_Fun_subterm[OF fs(1)] by force  
     hence "Fun f T \<in> subterms\<^sub>s\<^sub>e\<^sub>t (\<theta> ` fv t)" using fs(2) in_subterms_subset_Union by blast
     thus ?thesis using assms(2) funs_term_Fun_subterm'[of f T] by (cases f) auto
   qed
@@ -278,7 +278,7 @@ lemma Ana_abs:
   using assms
 proof (induction t rule: Ana.induct)
   case (1 f S)
-  obtain K' T' where *: "Ana\<^sub>f f = (K',T')" by moura
+  obtain K' T' where *: "Ana\<^sub>f f = (K',T')" by force
   show ?case using 1
   proof (cases "arity\<^sub>f f = length S \<and> arity\<^sub>f f > 0")
     case True
@@ -433,14 +433,14 @@ proof (induction A arbitrary: d)
     case (Insert t u) thus ?thesis
     proof (cases "t \<noteq> Var x \<or> (\<nexists>s T. u = Fun (Set s) T)")
       case False
-      then obtain s T where "t = Var x" "u = Fun (Set s) T" by moura
+      then obtain s T where "t = Var x" "u = Fun (Set s) T" by force
       thus ?thesis by (simp add: Insert Cons.IH absdbupd_cons_cases(1))
     qed (simp_all add: Cons.IH absdbupd_cons_cases(3))
   next
     case (Delete t u) thus ?thesis
     proof (cases "t \<noteq> Var x \<or> (\<nexists>s T. u = Fun (Set s) T)")
       case False
-      then obtain s T where "t = Var x" "u = Fun (Set s) T" by moura
+      then obtain s T where "t = Var x" "u = Fun (Set s) T" by force
       thus ?thesis by (simp add: Delete Cons.IH absdbupd_cons_cases(2))
     qed (simp_all add: Cons.IH absdbupd_cons_cases(4))
   qed simp_all
@@ -1093,7 +1093,7 @@ lemma abs_substs_cons':
   shows "\<delta>(x := b) \<in> abs_substs_fun ` set (abs_substs_set (x#xs) as poss negs msgcs)"
 proof -
   obtain \<theta> where \<theta>: "\<delta> = abs_substs_fun \<theta>" "\<theta> \<in> set (abs_substs_set xs as poss negs msgcs)"
-    using \<delta> by moura
+    using \<delta> by force
   have "abs_substs_fun ((x, b)#\<theta>) \<in> abs_substs_fun ` set (abs_substs_set (x#xs) as poss negs msgcs)"
     using abs_substs_cons[OF \<theta>(2) b] by blast
   thus ?thesis
@@ -1194,7 +1194,7 @@ proof (induction C)
   case (Cons c C) thus ?case
   proof (cases "\<exists>a y s. c = \<langle>a: Var y \<in> Fun (Set s) []\<rangle>")
     case True
-    then obtain a y s where c: "c = \<langle>a: Var y \<in> Fun (Set s) []\<rangle>" by moura
+    then obtain a y s where c: "c = \<langle>a: Var y \<in> Fun (Set s) []\<rangle>" by force
 
     define f where "f \<equiv> transaction_poschecks_comp C"
 
@@ -1222,7 +1222,7 @@ proof (induction C)
   case (Cons c C) thus ?case
   proof (cases "\<exists>y s. c = \<langle>Var y not in Fun (Set s) []\<rangle>")
     case True
-    then obtain y s where c: "c = \<langle>Var y not in Fun (Set s) []\<rangle>" by moura
+    then obtain y s where c: "c = \<langle>Var y not in Fun (Set s) []\<rangle>" by force
 
     define f where "f \<equiv> transaction_negchecks_comp C"
 
@@ -5900,7 +5900,7 @@ proof -
     qed (auto intro: timpl_closure_setI)
   next
     assume "\<exists>a. \<Gamma>\<^sub>v x = TAtom (Atom a)"
-    then obtain a where x_atom: "\<Gamma>\<^sub>v x = TAtom (Atom a)" by moura
+    then obtain a where x_atom: "\<Gamma>\<^sub>v x = TAtom (Atom a)" by force
 
     obtain f T where fT: "\<I> x = Fun f T"
       using interpretation_grounds[OF \<I>_interp, of "Var x"]
@@ -6457,7 +6457,7 @@ proof -
   show ?F
   proof (intro ballI impI)
     fix y assume y: "y \<in> fv_transaction T - set (transaction_fresh T)" "\<Gamma>\<^sub>v y = TAtom Value"
-    then obtain yn where yn: "?\<theta> y \<cdot> \<I> = Fun (Val yn) []" using 4 by moura
+    then obtain yn where yn: "?\<theta> y \<cdot> \<I> = Fun (Val yn) []" using 4 by blast
     hence y_abs: "?\<theta> y \<cdot> \<I> \<cdot>\<^sub>\<alpha> \<alpha>\<^sub>0 (db\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<I>) = Fun (Abs (\<alpha>\<^sub>0 (db\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<I>) yn)) []" by simp
 
     have "y \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_receive T) \<or> (y \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_checks T) \<and>
@@ -6957,7 +6957,7 @@ proof -
   obtain \<delta> where \<delta>:
       "\<delta> \<in> comp0"
       "\<forall>x \<in> fv_transaction T. fst x = TAtom Value \<longrightarrow> (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) x \<cdot> \<I> \<cdot>\<^sub>\<alpha> a0 = absc (\<delta> x)"
-    using 1 by moura
+    using 1 by force
 
   have 2: "\<theta> x \<cdot> \<I> \<cdot>\<^sub>\<alpha> \<alpha>\<^sub>0 (db'\<^sub>l\<^sub>s\<^sub>s\<^sub>t (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (A \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)) \<I> D) = absc (absdbupd (unlabel A) x d)"
     when "\<theta> x \<cdot> \<I> \<cdot>\<^sub>\<alpha> \<alpha>\<^sub>0 D = absc d"
@@ -7211,7 +7211,7 @@ proof -
       "\<forall>x \<in> fv_transaction T. \<Gamma>\<^sub>v x = TAtom Value \<longrightarrow>
         (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) x \<cdot> \<I> \<cdot>\<^sub>\<alpha> a0 = absc (\<delta> x) \<and>
         (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) x \<cdot> \<I> \<cdot>\<^sub>\<alpha> a0' = absc (upd \<delta> x)"
-    using 0 by moura
+    using 0 by force
 
   have "\<exists>x. ab = (\<delta> x, upd \<delta> x) \<and> x \<in> fv_transaction T - set (transaction_fresh T) \<and> \<delta> x \<noteq> upd \<delta> x"
     when ab: "ab \<in> \<alpha>\<^sub>t\<^sub>i \<A> T (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) \<I>" for ab
@@ -7431,7 +7431,7 @@ proof -
     thus ?thesis
     proof
       assume ?P
-      then obtain n where n: "t = Fun (Val n) []" "t \<in> subterms\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>)" by moura
+      then obtain n where n: "t = Fun (Val n) []" "t \<in> subterms\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>)" by force
       thus ?thesis 
         using \<alpha>\<^sub>t\<^sub>i_covers_\<alpha>\<^sub>0_Val[OF \<A>_reach T \<I> \<xi> \<sigma> \<alpha> P P_occ, of n]
         unfolding a0_def a0'_def T'_def by fastforce
@@ -7635,7 +7635,7 @@ theorem prot_secure_if_fixpoint_covered:
     (is "\<nexists>\<I>. constraint_model \<I> ?A")
 proof
   assume "\<exists>\<I>. constraint_model \<I> ?A"
-  then obtain \<I> where "constraint_model \<I> ?A" by moura
+  then obtain \<I> where "constraint_model \<I> ?A" by force
   then obtain \<I>\<^sub>\<tau> where I: "welltyped_constraint_model \<I>\<^sub>\<tau> ?A"
     using reachable_constraints_typing_result[OF M P(1,2) A] by blast
 
@@ -10355,7 +10355,7 @@ proof -
       from s_cases show False
       proof
         assume "s \<in> trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_send T) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>"
-        then obtain t where t: "t \<in> trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_send T)" "s = t \<cdot> \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>" by moura
+        then obtain t where t: "t \<in> trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_send T)" "s = t \<cdot> \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>" by force
         have "s \<noteq> t" using P(4) T_in_P t(1) by blast
         then obtain x where x: "t = Var x" using t(2) unfolding s_def by (cases t) auto
         
@@ -10476,7 +10476,7 @@ proof -
             reachable_constraints_occurs_fact_deduct_in_ik[OF A(1) A' P P_occ, of k]
       by (argo, argo)
     then obtain l ts where ts: "(l,receive\<langle>ts\<rangle>) \<in> set A" "occurs k \<in> set ts"
-      using in_ik\<^sub>s\<^sub>s\<^sub>t_iff[of "occurs k" "unlabel A"] unfolding unlabel_def by moura
+      using in_ik\<^sub>s\<^sub>s\<^sub>t_iff[of "occurs k" "unlabel A"] unfolding unlabel_def by force
 
     obtain T a B \<alpha> \<sigma> \<xi>
       where B: "prefix (B@f' (T,\<xi>,\<sigma>,\<alpha>)) A"

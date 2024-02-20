@@ -621,7 +621,7 @@ proof -
   moreover have "\<forall> t \<in> { t . path M (io || t) q \<and> length io = length t } . t = tr" 
     using assms tr_def by auto  
   ultimately show ?thesis 
-    using that by moura
+    using that by auto
 qed
 
 lemma well_formed_product[simp] :

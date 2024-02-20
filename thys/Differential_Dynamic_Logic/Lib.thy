@@ -196,7 +196,7 @@ proof (auto simp add:  LIM_def continuous_on_def)
           { fix rr :: "real \<Rightarrow> real"
             obtain bb :: "real \<Rightarrow> ('b \<Rightarrow> real) \<Rightarrow> 'b set \<Rightarrow> 'b" where
               ff1: "\<And>r f B. r \<notin> f ` B \<or> f (bb r f B) = r"
-              by moura
+              unfolding image_iff by moura
             { assume "\<exists>r. \<not> rr r \<le> norm (f i y1 - f i y2)"
               then have "\<exists>r. norm (blinfun_apply (f i y1) (bb (rr r) (\<lambda>b. norm (blinfun_apply (f i y1) b - blinfun_apply (f i y2) b) / norm b) R) - blinfun_apply (f i y2) (bb (rr r) (\<lambda>b. norm (blinfun_apply (f i y1) b - blinfun_apply (f i y2) b) / norm b) R)) / norm (bb (rr r) (\<lambda>b. norm (blinfun_apply (f i y1) b - blinfun_apply (f i y2) b) / norm b) R) \<noteq> rr r"
                 by (metis (no_types) le_norm_blinfun minus_blinfun.rep_eq)

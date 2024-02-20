@@ -824,29 +824,7 @@ next
   then have "insertion (nth_default 0 (L2 @ L1)) (liftPoly 0 z c) = Cv"
     using lift_minus by blast
   then have a3 : "\<forall>x. insertion (nth_default 0 (L[var + z := x])) (liftPoly 0 z c) = Cv"
-    unfolding L_def
-  proof -
-    obtain nn :: "(nat \<Rightarrow> real) \<Rightarrow> (nat \<Rightarrow> real) \<Rightarrow> real mpoly \<Rightarrow> nat" where
-      "\<forall>x0 x1 x2. (\<exists>v3. v3 \<in> vars x2 \<and> x1 v3 \<noteq> x0 v3) = (nn x0 x1 x2 \<in> vars x2 \<and> x1 (nn x0 x1 x2) \<noteq> x0 (nn x0 x1 x2))"
-      by moura
-    then have f1: "\<forall>m f fa. nn fa f m \<in> vars m \<and> f (nn fa f m) \<noteq> fa (nn fa f m) \<or> insertion f m = insertion fa m"
-      by (meson insertion_irrelevant_vars)
-    obtain rr :: real where
-      "(\<exists>v0. insertion (nth_default 0 ((L2 @ L1)[var + z := v0])) (liftPoly 0 z c) \<noteq> Cv) = (insertion (nth_default 0 ((L2 @ L1)[var + z := rr])) (liftPoly 0 z c) \<noteq> Cv)"
-      by blast
-    moreover
-    { assume "var + z \<noteq> nn (nth_default 0 ((L2 @ L1)[var + z := rr])) (nth_default 0 (L2 @ L1)) (liftPoly 0 z c)"
-      moreover
-      { assume "(nth_default 0 (L2 @ L1) (nn (nth_default 0 ((L2 @ L1)[var + z := rr])) (nth_default 0 (L2 @ L1)) (liftPoly 0 z c)) = nth_default 0 ((L2 @ L1)[var + z := rr]) (nn (nth_default 0 ((L2 @ L1)[var + z := rr])) (nth_default 0 (L2 @ L1)) (liftPoly 0 z c))) \<noteq> ((L2 @ L1) ! nn (nth_default 0 ((L2 @ L1)[var + z := rr])) (nth_default 0 (L2 @ L1)) (liftPoly 0 z c) = (L2 @ L1)[var + z := rr] ! nn (nth_default 0 ((L2 @ L1)[var + z := rr])) (nth_default 0 (L2 @ L1)) (liftPoly 0 z c))"
-        then have "nth_default 0 ((L2 @ L1)[var + z := rr]) (nn (nth_default 0 ((L2 @ L1)[var + z := rr])) (nth_default 0 (L2 @ L1)) (liftPoly 0 z c)) \<noteq> (L2 @ L1)[var + z := rr] ! nn (nth_default 0 ((L2 @ L1)[var + z := rr])) (nth_default 0 (L2 @ L1)) (liftPoly 0 z c) \<or> nth_default 0 (L2 @ L1) (nn (nth_default 0 ((L2 @ L1)[var + z := rr])) (nth_default 0 (L2 @ L1)) (liftPoly 0 z c)) \<noteq> (L2 @ L1) ! nn (nth_default 0 ((L2 @ L1)[var + z := rr])) (nth_default 0 (L2 @ L1)) (liftPoly 0 z c)"
-          by linarith
-        then have "nn (nth_default 0 ((L2 @ L1)[var + z := rr])) (nth_default 0 (L2 @ L1)) (liftPoly 0 z c) \<notin> vars (liftPoly 0 z c) \<or> nth_default 0 (L2 @ L1) (nn (nth_default 0 ((L2 @ L1)[var + z := rr])) (nth_default 0 (L2 @ L1)) (liftPoly 0 z c)) = nth_default 0 ((L2 @ L1)[var + z := rr]) (nn (nth_default 0 ((L2 @ L1)[var + z := rr])) (nth_default 0 (L2 @ L1)) (liftPoly 0 z c))"
-          by (metis (no_types) append_Nil2 length_list_update nth_default_append) }
-      ultimately have "nn (nth_default 0 ((L2 @ L1)[var + z := rr])) (nth_default 0 (L2 @ L1)) (liftPoly 0 z c) \<notin> vars (liftPoly 0 z c) \<or> nth_default 0 (L2 @ L1) (nn (nth_default 0 ((L2 @ L1)[var + z := rr])) (nth_default 0 (L2 @ L1)) (liftPoly 0 z c)) = nth_default 0 ((L2 @ L1)[var + z := rr]) (nn (nth_default 0 ((L2 @ L1)[var + z := rr])) (nth_default 0 (L2 @ L1)) (liftPoly 0 z c))"
-        by force }
-    ultimately show "\<forall>r. insertion (nth_default 0 ((L2 @ L1)[var + z := r])) (liftPoly 0 z c) = Cv"
-      using f1 by (metis (full_types) Atom.prems(3) \<open>insertion (nth_default 0 (L2 @ L1)) (liftPoly 0 z c) = Cv\<close> not_in_lift)
-  qed
+    unfolding L_def by (metis freeC list_update_id not_contains_insertion not_in_lift)
   have "eval (Atom(Eq (d-Const Dv))) ([] @ L1) = eval (liftFm 0 z (Atom(Eq (d- Const Dv)))) ([] @ L2 @ L1)"
     by (metis eval_liftFm_helper lengthl2 list.size(3))
   then have "(insertion (nth_default 0 (L2 @ L1)) (liftPoly 0 z (d - Const Dv)) = 0)"

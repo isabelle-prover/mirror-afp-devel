@@ -511,7 +511,7 @@ lemma dual_wellformed_transaction_ident_cases[dest]:
   "list_all is_Update (unlabel S) \<Longrightarrow> dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t S = S"
 proof (induction S)
   case (Cons s S)
-  obtain l x where s: "s = (l,x)" by moura
+  obtain l x where s: "s = (l,x)" by force
   { case 1 thus ?case using Cons s unfolding unlabel_def dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def by (cases x) auto }
   { case 2 thus ?case using Cons s unfolding unlabel_def dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def by (cases x) auto }
   { case 3 thus ?case using Cons s unfolding unlabel_def dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def by (cases x) auto }
@@ -671,7 +671,7 @@ lemma is_Fun_SetE[elim]:
   obtains s where "t = Fun (Set s) []"
 proof (cases t)
   case (Fun f T)
-  then obtain s where "f = Set s" using t unfolding is_Fun_Set_def by (cases f) moura+
+  then obtain s where "f = Set s" using t unfolding is_Fun_Set_def by (cases f) force+
   moreover have "T = []" using Fun t unfolding is_Fun_Set_def by (cases T) auto
   ultimately show ?thesis using Fun that by fast
 qed (use t is_Fun_Set_def in fast)

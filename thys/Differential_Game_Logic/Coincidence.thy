@@ -66,7 +66,7 @@ next
   proof - (* sledgehammer *)
   obtain rr :: "(variable \<Rightarrow> real) set \<Rightarrow> (variable \<Rightarrow> real) set \<Rightarrow> variable \<Rightarrow> real" where
   "\<forall>x0 x1. (\<exists>v2. v2 \<in> x1 \<and> v2 \<notin> x0) = (rr x0 x1 \<in> x1 \<and> rr x0 x1 \<notin> x0)"
-  by moura
+    by moura
   then have f1: "\<forall>F Fa. rr Fa F \<in> F \<and> rr Fa F \<notin> Fa \<or> F \<subseteq> Fa"
   by (meson subsetI)
   obtain rra :: "(variable \<Rightarrow> real) \<Rightarrow> variable set \<Rightarrow> (variable \<Rightarrow> real) set \<Rightarrow> variable \<Rightarrow> real" where
@@ -394,7 +394,6 @@ proof-
     using a3 and a4 and Cignorabimus_init by simp
   have h: "-V = \<Union>{xx. \<exists>x. xx={x} \<and> x\<notin>V}" by auto (* finite *)
   have "(-V)\<in>Cignorabimus \<alpha> V" using a2 base h using Cignorabimus_step
-  (*by (smt Cignorabimus_step mem_Collect_eq)*)
   proof - (*sledgehammer*)
     have f1: "\<forall>v V. v \<in> V \<or> \<not> FVG \<alpha> \<subseteq> V \<or> {v} \<in> Cignorabimus \<alpha> V"
       using base by satx
@@ -403,7 +402,7 @@ proof-
       by moura
     obtain vv :: "variable set \<Rightarrow> variable" where
       f3: "((\<nexists>v. VV V \<alpha> {{v} |v. v \<notin> V} = {v} \<and> v \<notin> V) \<or> VV V \<alpha> {{v} |v. v \<notin> V} = {vv (VV V \<alpha> {{v} |v. v \<notin> V})} \<and> vv (VV V \<alpha> {{v} |v. v \<notin> V}) \<notin> V) \<and> ((\<exists>v. VV V \<alpha> {{v} |v. v \<notin> V} = {v} \<and> v \<notin> V) \<or> (\<forall>v. VV V \<alpha> {{v} |v. v \<notin> V} \<noteq> {v} \<or> v \<in> V))"
-      by moura
+      by fastforce
     moreover
     { assume "{vv (VV V \<alpha> {{v} |v. v \<notin> V})} \<in> Cignorabimus \<alpha> V"
       then have "(VV V \<alpha> {{v} |v. v \<notin> V} \<noteq> {vv (VV V \<alpha> {{v} |v. v \<notin> V})} \<or> vv (VV V \<alpha> {{v} |v. v \<notin> V}) \<in> V) \<or> VV V \<alpha> {{v} |v. v \<notin> V} \<notin> {{v} |v. v \<notin> V} \<or> VV V \<alpha> {{v} |v. v \<notin> V} \<in> Cignorabimus \<alpha> V"

@@ -199,7 +199,7 @@ proof (induction t rule: term.induct)
     for K::"(('fun,'atom,'sets,'lbl) prot_fun, nat) term list"
   proof
     fix x assume "x \<in> fv\<^sub>s\<^sub>e\<^sub>t (set K \<cdot>\<^sub>s\<^sub>e\<^sub>t (!) T)"
-    then obtain k where k: "k \<in> set K" "x \<in> fv (k \<cdot> (!) T)" by moura
+    then obtain k where k: "k \<in> set K" "x \<in> fv (k \<cdot> (!) T)" by auto
     have "\<forall>i \<in> fv k. i < length T" using K k(1) by simp
     thus "x \<in> fv\<^sub>s\<^sub>e\<^sub>t (set T)"
       by (metis (no_types, lifting) k(2) contra_subsetD fv_set_mono image_subsetI nth_mem
@@ -207,7 +207,7 @@ proof (induction t rule: term.induct)
   qed
 
   { fix g assume f: "f = Fu g" and K: "K \<noteq> []"
-    obtain K' M' where *: "Ana\<^sub>f g = (K',M')" by moura
+    obtain K' M' where *: "Ana\<^sub>f g = (K',M')" by force
     have "(K, M) \<noteq> ([], [])" using K by simp
     hence "(K, M) = (K' \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t (!) T, map ((!) T) M')" "arity\<^sub>f g = length T"
       using Ana_Fu_cases(1)[OF Fun.prems f *]
@@ -227,14 +227,14 @@ proof (induction t rule: term.induct)
   case (Fun g T)
   obtain h where 2: "g = Fu h"
     using Fun.prems(1,3) by (cases g) auto
-  obtain K' M' where 1: "Ana\<^sub>f h = (K',M')" by moura
+  obtain K' M' where 1: "Ana\<^sub>f h = (K',M')" by force
   have "(K,M) \<noteq> ([],[])" using Fun.prems(3) by auto
   hence "(K,M) = (K' \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t (!) T, map ((!) T) M')"
         "\<And>i. i \<in> fv\<^sub>s\<^sub>e\<^sub>t (set K') \<union> set M' \<Longrightarrow> i < length T"
     using Ana_Fu_cases(1)[OF Fun.prems(1) 2 1] Ana\<^sub>f_assm2_alt[OF 1]
     by presburger+
   hence "K = K' \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t (!) T" and 3: "\<forall>i\<in>fv\<^sub>s\<^sub>e\<^sub>t (set K'). i < length T" by simp_all
-  then obtain k' where k': "k' \<in> set K'" "k = k' \<cdot> (!) T" using Fun.prems(3) by moura
+  then obtain k' where k': "k' \<in> set K'" "k = k' \<cdot> (!) T" using Fun.prems(3) by force
   hence 4: "Fun f T' \<in> subterms (k' \<cdot> (!) T)" "fv k' \<subseteq> fv\<^sub>s\<^sub>e\<^sub>t (set K')"
     using Fun.prems(4) by auto
   show ?case
@@ -256,7 +256,7 @@ lemma assm4:
 using assms
 proof (cases f)
   case (Fu g)
-  obtain K' M' where *: "Ana\<^sub>f g = (K',M')" by moura
+  obtain K' M' where *: "Ana\<^sub>f g = (K',M')" by force
   have "M = [] \<or> (arity\<^sub>f g = length T \<and> M = map ((!) T) M')"
     using Ana_Fu_cases(1)[OF assms Fu *]
     by (meson prod.inject)
@@ -268,7 +268,7 @@ proof (induction t rule: term.induct)
   case (Fun f T) thus ?case
   proof (cases f)
     case (Fu g)
-    obtain K' M' where *: "Ana\<^sub>f g = (K',M')" by moura
+    obtain K' M' where *: "Ana\<^sub>f g = (K',M')" by force
     have **: "K = K' \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t (!) T" "M = map ((!) T) M'"
              "arity\<^sub>f g = length T" "\<forall>i \<in> fv\<^sub>s\<^sub>e\<^sub>t (set K') \<union> set M'. i < arity\<^sub>f g" "0 < arity\<^sub>f g"
       using Fun.prems(2) Ana_Fu_cases(1)[OF Fun.prems(1) Fu *] Ana\<^sub>f_assm2_alt[OF *]
@@ -364,13 +364,13 @@ proof -
   proof (cases "(K, M) = ([],[])")
     case True
     { fix g assume f: "f = Fu g"
-      obtain K' M' where "Ana\<^sub>f g = (K',M')" by moura
+      obtain K' M' where "Ana\<^sub>f g = (K',M')" by force
       hence ?thesis using assms f True by auto
     } thus ?thesis using True assms by (cases f) auto
   next
     case False
     then obtain g where **: "f = Fu g" using assms by (cases f) auto
-    obtain K' M' where *: "Ana\<^sub>f g = (K',M')" by moura
+    obtain K' M' where *: "Ana\<^sub>f g = (K',M')" by force
     have ***: "K = K' \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t (!) T" "M = map ((!) T) M'" "arity\<^sub>f g = length T"
               "\<forall>i \<in> fv\<^sub>s\<^sub>e\<^sub>t (set K') \<union> set M'. i < arity\<^sub>f g"
       using Ana_Fu_cases(1)[OF assms ** *] False Ana\<^sub>f_assm2_alt[OF *]
@@ -1531,7 +1531,7 @@ proof -
     case (Ana t K T k)
     then obtain \<delta> a where a: "a \<cdot> \<delta> = t" "a \<in> N" "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>)"
       by (auto simp add: S_def)
-    obtain Ka Ta where a': "Ana a = (Ka,Ta)" by moura
+    obtain Ka Ta where a': "Ana a = (Ka,Ta)" by force
     have *: "K = Ka \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<delta>"
     proof (cases a)
       case (Var x)
@@ -2994,7 +2994,7 @@ lemma transaction_decl_subst_grounds_domain:
   shows "fv (\<xi> x) = {}"
 proof -
   obtain c where "\<xi> x = Fun c []"
-    using assms unfolding transaction_decl_subst_def by moura
+    using assms unfolding transaction_decl_subst_def by force
   thus ?thesis by simp
 qed
 
@@ -3076,7 +3076,7 @@ proof -
   have 1: "finite X" by (simp add: X_def)
 
   obtain n where n: "n \<ge> max_var_set X" "\<alpha> = var_rename n"
-    using assms unfolding transaction_renaming_subst_def X_def by moura
+    using assms unfolding transaction_renaming_subst_def X_def by force
   hence 2: "\<forall>x \<in> X. snd x < Suc n"
     using less_Suc_max_var_set[OF _ 1] unfolding var_rename_def by fastforce
   
@@ -3099,9 +3099,9 @@ lemma transaction_renaming_subst_wt:
   shows "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<alpha>"
 proof -
   { fix x::"('fun,'atom,'sets,'lbl) prot_var"
-    obtain \<tau> n where x: "x = (\<tau>,n)" by moura
+    obtain \<tau> n where x: "x = (\<tau>,n)" by force
     then obtain m where m: "\<alpha> x = Var (\<tau>,m)"
-      using assms transaction_renaming_subst_is_renaming(1) by moura
+      using assms transaction_renaming_subst_is_renaming(1) by force
     hence "\<Gamma> (\<alpha> x) = \<Gamma>\<^sub>v x" using x by (simp add: \<Gamma>\<^sub>v_def)
   } thus ?thesis by (simp add: wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t_def)
 qed
@@ -3111,10 +3111,10 @@ lemma transaction_renaming_subst_is_wf_trm:
   assumes "transaction_renaming_subst \<alpha> P X"
   shows "wf\<^sub>t\<^sub>r\<^sub>m (\<alpha> v)"
 proof -
-  obtain \<tau> n where "v = (\<tau>, n)" by moura
+  obtain \<tau> n where "v = (\<tau>, n)" by force
   then obtain m where "\<alpha> v = Var (\<tau>, n + Suc m)"
     using transaction_renaming_subst_is_renaming(1)[OF assms]
-    by moura
+    by force
   thus ?thesis by (metis wf_trm_Var)
 qed
 
@@ -3146,11 +3146,11 @@ lemma transaction_renaming_subst_var_obtain:
     and "x \<in> fv (t \<cdot> \<alpha>) \<Longrightarrow> \<exists>y \<in> fv t. \<alpha> y = Var x" (is "?A2 \<Longrightarrow> ?B2")
 proof -
   assume x: ?A1
-  obtain y where y: "y \<in> fv\<^sub>s\<^sub>s\<^sub>t S" "x \<in> fv (\<alpha> y)" using fv\<^sub>s\<^sub>s\<^sub>t_subst_obtain_var[OF x] by moura
+  obtain y where y: "y \<in> fv\<^sub>s\<^sub>s\<^sub>t S" "x \<in> fv (\<alpha> y)" using fv\<^sub>s\<^sub>s\<^sub>t_subst_obtain_var[OF x] by force
   thus ?B1 using transaction_renaming_subst_is_renaming(2)[OF \<alpha>, of y] by fastforce
 next
   assume x: ?A2
-  obtain y where y: "y \<in> fv t" "x \<in> fv (\<alpha> y)" using fv_subst_obtain_var[OF x] by moura
+  obtain y where y: "y \<in> fv t" "x \<in> fv (\<alpha> y)" using fv_subst_obtain_var[OF x] by force
   thus ?B2 using transaction_renaming_subst_is_renaming(2)[OF \<alpha>, of y] by fastforce
 qed
 
@@ -3221,7 +3221,7 @@ proof (cases "v \<in> subst_domain \<sigma>")
   case True
   then obtain c where "\<sigma> v = Fun c []" "arity c = 0"
     using assms unfolding transaction_fresh_subst_def
-    by moura
+    by force
   thus ?thesis by auto
 qed auto
 
@@ -3278,7 +3278,7 @@ lemma transaction_fresh_subst_sends_to_val':
   obtains n where "(\<sigma> \<circ>\<^sub>s \<alpha>) y \<cdot> \<I> = Fun (Val n) []" "Fun (Val n) [] \<in> subst_range \<sigma>" 
 proof -
   obtain n where "\<sigma> y = Fun (Val n) []" "Fun (Val n) [] \<in> subst_range \<sigma>"
-    using transaction_fresh_subst_sends_to_val[OF assms] by moura
+    using transaction_fresh_subst_sends_to_val[OF assms] by force
   thus ?thesis using that by (fastforce simp add: subst_compose_def)
 qed
 
@@ -3289,7 +3289,7 @@ lemma transaction_fresh_subst_grounds_domain:
   shows "fv (\<sigma> y) = {}"
 proof -
   obtain c where "\<sigma> y = Fun c []"
-    using assms unfolding transaction_fresh_subst_def by moura
+    using assms unfolding transaction_fresh_subst_def by force
   thus ?thesis by simp
 qed
 
@@ -3687,7 +3687,7 @@ proof -
     qed (use 1(3) in simp)
     thus ?thesis using Fun 1 0(1) by (auto simp del: subst_subst_compose)
   qed
-  then obtain u where u: "s = occurs u" by moura
+  then obtain u where u: "s = occurs u" by force
   hence "t = u \<cdot> \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>" using s(3) by fastforce
   thus ?A' using s u wellformed_transaction_strand_unlabel_memberD(8)[OF T_wf] by metis
 next
@@ -3729,7 +3729,7 @@ next
     qed (use 1(3) in simp)
     thus ?thesis using Fun 1 0(1) by (auto simp del: subst_subst_compose)
   qed
-  then obtain u where u: "s = occurs u" by moura
+  then obtain u where u: "s = occurs u" by force
   hence "t = u \<cdot> \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>" using s(3) by fastforce
   thus ?B' using s u wellformed_transaction_strand_unlabel_memberD(1)[OF T_wf] by metis
 qed
@@ -4358,7 +4358,7 @@ proof -
           unfolding is_PubConstValue_def by blast
       next
         assume "\<exists>x \<in> fv_transaction T. f \<in> funs_term ((\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) x)"
-        then obtain x where "x \<in> fv_transaction T" "f \<in> funs_term ((\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) x)" by moura
+        then obtain x where "x \<in> fv_transaction T" "f \<in> funs_term ((\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) x)" by force
         thus ?thesis
           using transaction_decl_fresh_renaming_substs_range'(3)[
                   OF step.hyps(3-5) _ \<xi>_empty T_fresh[OF step.hyps(2), unfolded \<Gamma>\<^sub>v_TAtom''(2)]]
@@ -4709,7 +4709,7 @@ proof -
             admissible_transaction_occurs_checksE3[OF T_occ[OF T] _ s(2)]
       by blast
 
-    obtain K T' where K: "Ana t = (K,T')" by moura
+    obtain K T' where K: "Ana t = (K,T')" by force
 
     show "OccursFact \<notin> \<Union>(funs_term ` set (snd (Ana t))) \<and>
           OccursSec \<notin> \<Union>(funs_term ` set (snd (Ana t)))"
@@ -4756,7 +4756,7 @@ proof -
       and A::"('fun,'atom,'sets,'lbl) prot_constr"
   proof -
     obtain t where t: "t \<in> trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_send T)" "t \<cdot> (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) = Var x"
-      using x by moura
+      using x by force
     then obtain y where y: "t = Var y" by (cases t) auto
 
     have "\<exists>a. \<Gamma> t = TAtom a \<and> a \<noteq> OccursSecType"
@@ -4803,7 +4803,7 @@ proof -
       and A::"('fun,'atom,'sets,'lbl) prot_constr"
   proof -
     obtain t where t: "t \<in> subterms\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_send T))" "t \<cdot> (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) = Var x"
-      using x by moura
+      using x by force
     then obtain y where y: "t = Var y" by (cases t) auto
 
     have "\<exists>a. \<Gamma> t = TAtom a \<and> a \<noteq> OccursSecType"
@@ -4858,7 +4858,7 @@ proof -
           "u \<in> subterms\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_send T))" "u \<cdot> \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha> = s"
         by force
 
-      obtain Ku Tu where KTu: "Ana u = (Ku,Tu)" by moura
+      obtain Ku Tu where KTu: "Ana u = (Ku,Tu)" by force
       
       have *: "OccursFact \<notin> \<Union>(funs_term ` set Tu)"
               "OccursFact \<notin> \<Union>(funs_term ` subst_range (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>))"
@@ -4871,7 +4871,7 @@ proof -
       have "OccursFact \<notin> \<Union>(funs_term ` set (Tu \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>))"
       proof -
         { fix f assume f: "f \<in> \<Union>(funs_term ` set (Tu \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>))"
-          then obtain tf where tf: "tf \<in> set Tu" "f \<in> funs_term (tf \<cdot> \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>)" by moura
+          then obtain tf where tf: "tf \<in> set Tu" "f \<in> funs_term (tf \<cdot> \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>)" by force
           hence "f \<in> funs_term tf \<or> f \<in> \<Union>(funs_term ` subst_range (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>))"
             using funs_term_subst[of tf "\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>"] by force
           hence "f \<noteq> OccursFact" using *(1,2) tf(1) by blast
@@ -4903,7 +4903,7 @@ proof -
           hence "g \<noteq> OccursFact"
           proof
             assume "\<exists>x \<in> fv\<^sub>s\<^sub>e\<^sub>t (set (snd (Ana s))). g \<in> funs_term (I x)"
-            then obtain x where x: "x \<in> fv\<^sub>s\<^sub>e\<^sub>t (set (snd (Ana s)))" "g \<in> funs_term (I x)" by moura
+            then obtain x where x: "x \<in> fv\<^sub>s\<^sub>e\<^sub>t (set (snd (Ana s)))" "g \<in> funs_term (I x)" by force
             have "x \<in> fv s" using x(1) Ana_vars(2)[of s] by (cases "Ana s") auto
             hence "x \<in> fv\<^sub>s\<^sub>e\<^sub>t ((\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) ` vars_transaction T)"
               using s_fv[OF su(1) step.hyps(2)] by blast
@@ -4936,7 +4936,7 @@ proof -
           "u \<in> subterms\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_send T))" "u \<cdot> \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha> = s"
         by force
 
-      obtain Ku Tu where KTu: "Ana u = (Ku,Tu)" by moura
+      obtain Ku Tu where KTu: "Ana u = (Ku,Tu)" by force
       
       have *: "OccursSec \<notin> \<Union>(funs_term ` set Tu)"
               "OccursSec \<notin> \<Union>(funs_term ` subst_range (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>))"
@@ -4949,7 +4949,7 @@ proof -
       have "OccursSec \<notin> \<Union>(funs_term ` set (Tu \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>))"
       proof -
         { fix f assume f: "f \<in> \<Union>(funs_term ` set (Tu \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>))"
-          then obtain tf where tf: "tf \<in> set Tu" "f \<in> funs_term (tf \<cdot> \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>)" by moura
+          then obtain tf where tf: "tf \<in> set Tu" "f \<in> funs_term (tf \<cdot> \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>)" by force
           hence "f \<in> funs_term tf \<or> f \<in> \<Union>(funs_term ` subst_range (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>))"
             using funs_term_subst[of tf "\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>"] by force
           hence "f \<noteq> OccursSec" using *(1,2) tf(1) by blast
@@ -4981,7 +4981,7 @@ proof -
           hence "g \<noteq> OccursSec"
           proof
             assume "\<exists>x \<in> fv\<^sub>s\<^sub>e\<^sub>t (set (snd (Ana s))). g \<in> funs_term (I x)"
-            then obtain x where x: "x \<in> fv\<^sub>s\<^sub>e\<^sub>t (set (snd (Ana s)))" "g \<in> funs_term (I x)" by moura
+            then obtain x where x: "x \<in> fv\<^sub>s\<^sub>e\<^sub>t (set (snd (Ana s)))" "g \<in> funs_term (I x)" by force
             have "x \<in> fv s" using x(1) Ana_vars(2)[of s] by (cases "Ana s") auto
             hence "x \<in> fv\<^sub>s\<^sub>e\<^sub>t ((\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) ` vars_transaction T)"
               using s_fv[OF su(1) step.hyps(2)] by blast
@@ -5017,12 +5017,12 @@ proof -
     proof
       assume "Fun OccursSec [] \<in> trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_send T) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha> \<cdot>\<^sub>s\<^sub>e\<^sub>t I"
       then obtain s where "s \<in> trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_send T) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>" "s \<cdot> I = Fun OccursSec []"
-        by moura
+        by force
       moreover have "Fun OccursSec [] \<notin> trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_send T) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>"
       proof
         assume "Fun OccursSec [] \<in> trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_send T) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>"
         then obtain u where "u \<in> trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_send T)" "u \<cdot> \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha> = Fun OccursSec []"
-          by moura
+          by force
         thus False using * ** by (cases u) (force simp del: subst_subst_compose)+
       qed
       ultimately show False using 6[OF step.hyps(2-5)] by (cases s) auto
@@ -5363,7 +5363,7 @@ proof -
               wellformed_transaction_unlabel_cases(4)[OF T_wf[OF step.hyps(2)]]
         by fastforce
       then obtain s where s: "s \<in> subterms\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_send T))" "t = s \<cdot> \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>"
-        by moura
+        by force
       hence s': "attack\<langle>n\<rangle> \<notin> set (snd (Ana s))"
         using admissible_transaction_no_Ana_Attack[OF T_adm_term[OF step.hyps(2)]]
               trms_transaction_unfold[of T]
@@ -5432,7 +5432,7 @@ proof -
   have 2: "attack\<langle>l\<rangle> \<notin> set (snd (Ana t)) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>" when t: "t \<in> subterms\<^sub>s\<^sub>e\<^sub>t (ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>)" for t
   proof
     assume "attack\<langle>l\<rangle> \<in> set (snd (Ana t)) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>"
-    then obtain s where s: "s \<in> set (snd (Ana t))" "s \<cdot> \<I> = attack\<langle>l\<rangle>" by moura
+    then obtain s where s: "s \<in> set (snd (Ana t))" "s \<cdot> \<I> = attack\<langle>l\<rangle>" by force
 
     obtain x where x: "s = Var x"
       by (cases s) (use s reachable_constraints_no_Ana_attack[OF \<A> P(1-3) t] in auto)
@@ -5449,7 +5449,7 @@ proof -
     then obtain s where s:
         "s \<in> subterms\<^sub>s\<^sub>e\<^sub>t (\<I> ` fv\<^sub>s\<^sub>e\<^sub>t (ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>))" "attack\<langle>l\<rangle> \<in> set (snd (Ana s))"
       using Ana_subst_subterms_cases[OF t] 2 by fast
-    then obtain x where x: "x \<in> fv\<^sub>s\<^sub>e\<^sub>t (ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>)" "s \<sqsubseteq> \<I> x" by moura
+    then obtain x where x: "x \<in> fv\<^sub>s\<^sub>e\<^sub>t (ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>)" "s \<sqsubseteq> \<I> x" by force
     hence "\<I> x \<in> subterms\<^sub>s\<^sub>e\<^sub>t (ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>)"
       using var_is_subterm[of x] subterms_subst_subset'[of \<I> "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>"]
       by force
@@ -5641,7 +5641,7 @@ proof (induction \<A> rule: reachable_constraints.induct)
       using constraint_model_Value_term_is_Val[
               OF reachable_constraints.step[OF step.hyps] step.prems P P_occ x(2)]
             x(1) fv\<^sub>s\<^sub>s\<^sub>t_append[of "unlabel \<A>" "unlabel T'"] unlabel_append[of \<A> T']
-      unfolding T'_def by moura
+      unfolding T'_def by force
 
     have "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>)"
       using x(1) fv\<^sub>s\<^sub>s\<^sub>t_unlabel_dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_eq unfolding T'_def by fastforce
@@ -5780,7 +5780,7 @@ proof (induction \<A> rule: reachable_constraints.induct)
       case False
       hence "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t T'" using x(1) unlabel_append[of \<A>] fv\<^sub>s\<^sub>s\<^sub>t_append[of "unlabel \<A>"] by simp
       then obtain B where B: "prefix B \<A>" "x \<notin> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t B" "\<I> x \<in> subterms\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t B)"
-        using x(2) 1 by moura
+        using x(2) 1 by blast
       thus ?thesis using prefix_prefix by fast
     qed (use x(2) IH prefix_prefix in fast)
   qed
@@ -5981,8 +5981,8 @@ lemma admissible_transaction_occurs_checks_prop:
   shows "\<not>is_PubConstValue f"
     and "\<not>is_Abs f"
 proof -
-  obtain x where x: "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>" "f \<in> funs_term (\<I> x)" using f by moura
-  obtain T where T: "Fun f T \<sqsubseteq> \<I> x" using funs_term_Fun_subterm[OF x(2)] by moura
+  obtain x where x: "x \<in> fv\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>" "f \<in> funs_term (\<I> x)" using f by force
+  obtain T where T: "Fun f T \<sqsubseteq> \<I> x" using funs_term_Fun_subterm[OF x(2)] by force
 
   have \<I>_interp: "interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>"
     and \<I>_wt: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>"
@@ -6344,7 +6344,7 @@ lemma reachable_constraints_setops_type:
   shows "\<Gamma> t = TComp Pair [TAtom Value, TAtom SetType]"
 proof -
   obtain s c where s: "t = pair (c, Fun (Set s) [])" "\<Gamma> c = TAtom Value"
-    using reachable_constraints_setops_form[OF A P t] by moura
+    using reachable_constraints_setops_form[OF A P t] by force
   hence "(Fun (Set s) []::('fun,'atom,'sets,'lbl) prot_term) \<in> trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t A"
     using t setops\<^sub>s\<^sub>s\<^sub>t_member_iff[of c "Fun (Set s) []" "unlabel A"]
     by force
@@ -6377,14 +6377,14 @@ proof (intro ballI impI)
   then obtain \<sigma> \<theta> \<rho> where \<sigma>:
       "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<sigma>" "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<theta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<sigma>)" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<theta>)"
       "Unifier \<rho> (s \<cdot> \<sigma>) (t \<cdot> \<theta>)"
-    by moura
+    by force
 
   obtain fs ft cs ct where c:
       "s = pair (cs, Fun (Set fs) [])" "t = pair (ct, Fun (Set ft) [])"
       "\<Gamma> cs = TAtom Value" "\<Gamma> ct = TAtom Value" 
     using reachable_constraints_setops_form[OF A P st(1)]
           reachable_constraints_setops_form[OF A P st(2)]
-    by moura
+    by force
 
   have "cs \<in> subterms\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t A)" "ct \<in> subterms\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t A)"
     using c(1,2) setops_subterm_trms[OF st(1), of cs] setops_subterm_trms[OF st(2), of ct]

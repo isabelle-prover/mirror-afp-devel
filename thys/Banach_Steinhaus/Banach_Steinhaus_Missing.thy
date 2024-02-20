@@ -299,7 +299,7 @@ next
     proof-
       obtain r :: "('a \<Rightarrow>\<^sub>L 'b) \<Rightarrow> real" where
         "\<And>f x. 0 \<le> r f \<and> (bounded_linear f \<longrightarrow> \<parallel>f *\<^sub>v x\<parallel> \<le> \<parallel>x\<parallel> * r f)"
-        using bounded_linear.nonneg_bounded by moura
+        by (metis mult.commute norm_blinfun norm_ge_zero)
       have \<open>\<not> \<parallel>f\<parallel> < 0\<close>
         by simp          
       hence "(\<exists>r. \<parallel>f\<parallel> * \<parallel>a r\<parallel> \<le> r) \<or> (\<exists>r. \<parallel>a r\<parallel> < 1 \<longrightarrow> \<parallel>f *\<^sub>v a r\<parallel> \<le> r)"

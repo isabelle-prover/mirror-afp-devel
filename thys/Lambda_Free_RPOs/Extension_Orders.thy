@@ -1177,17 +1177,17 @@ next
       obtain aa :: "'a \<Rightarrow> 'a" where
         f1: "\<forall>a. \<not> count Ys a < count (mset xs) a \<or> gt (aa a) a \<and>
           count (mset xs) (aa a) < count Ys (aa a)"
-        using "**" by moura
+        using ** by moura
       have f2: "K + M0 = Ys"
-        using "*"(2) union_ac(2) by blast
+        using *(2) union_ac(2) by blast
       have f3: "\<And>aa. count Zs aa = count M0 aa + count {#a#} aa"
-        by (simp add: "*"(1))
+        by (simp add: *(1))
       have f4: "\<And>a. count Ys a = count K a + count M0 a"
         using f2 by auto
       have f5: "count K a = 0"
-        by (meson "*"(3) count_inI)
+        by (meson *(3) count_inI)
       have "Zs - M0 = {#a#}"
-        using "*"(1) add_diff_cancel_left' by blast
+        using *(1) add_diff_cancel_left' by blast
       then have f6: "count M0 a < count Zs a"
         by (metis in_diff_count union_single_eq_member)
       have "\<And>m. count m a = 0 + count m a"
@@ -1196,7 +1196,7 @@ next
       { assume "aa a \<noteq> a"
         then have "mset xs = Zs \<and> count Zs (aa a) < count K (aa a) + count M0 (aa a) \<longrightarrow>
           count K (aa a) + count M0 (aa a) < count Zs (aa a)"
-          using f5 f3 f2 f1 "*"(4) asym by (auto dest!: antisympD) }
+          using f5 f3 f2 f1 *(4) asym by (auto dest!: antisympD) }
       ultimately show ?thesis
         using f6 f5 f4 f1 by (metis less_imp_not_less)
     qed
@@ -1206,12 +1206,11 @@ next
     assume "count Zs a \<le> count (mset xs) a"
     with \<open>a \<notin># K\<close> have "count Ys a < count (mset xs) a" unfolding *(1,2)
       by (auto simp add: not_in_iff)
-      with ** obtain z where z: "gt z a" "count (mset xs) z < count Ys z"
-        by blast
-      with * have "count Ys z \<le> count Zs z"
-        using asym
-        by (auto simp: intro: count_inI dest: antisympD)
-      with z have "\<exists>z. gt z a \<and> count (mset xs) z < count Zs z" by auto
+    with ** obtain z where z: "gt z a" "count (mset xs) z < count Ys z"
+      by blast
+    with * have "count Ys z \<le> count Zs z"
+      using asym by (auto simp: intro: count_inI dest: antisympD)
+    with z have "\<exists>z. gt z a \<and> count (mset xs) z < count Zs z" by auto
   }
   note count_a = this
   {
