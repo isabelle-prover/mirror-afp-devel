@@ -426,7 +426,7 @@ proof -
       using non_null
       by (simp add: order.strict_implies_order)
     have "- log b (\<Sum>i\<in>S. a i * e i / a i) \<le> (\<Sum>i\<in>S. a i * - log b (e i / a i))"
-      using convex_on_sum[OF fin nemp  minus_log_convex[OF b_gt_1] convex_real_interval(3)
+      using convex_on_sum[OF fin nemp  minus_log_convex[OF b_gt_1] 
                              sum_a_one a_pos, of "\<lambda>i. e i / a i"] f_pos by simp
     also have "-log b (\<Sum>i\<in>S. a i * e i / a i) = -log b (\<Sum>i\<in>S. e i)"
   proof -
