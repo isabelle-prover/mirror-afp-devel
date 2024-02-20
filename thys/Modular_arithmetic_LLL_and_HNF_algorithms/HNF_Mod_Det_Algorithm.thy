@@ -243,7 +243,7 @@ proof -
   have M_carrier: "make_first_column_positive (if A $$ (0, 0) \<noteq> 0 then A 
     else swaprows 0 (filter (\<lambda>i. A $$ (i, 0) \<noteq> 0) [1..<dim_row A] ! 0) A) 
     \<in> carrier_mat (dim_row A) (dim_col A)"
-    by (smt (z3) index_mat_swaprows(2) index_mat_swaprows(3) make_first_column_positive.simps mat_carrier)
+    by (smt (verit) index_mat_swaprows(2) index_mat_swaprows(3) make_first_column_positive.simps mat_carrier)
   have *: "0 \<notin> set (filter (\<lambda>i. A $$ (i, 0) \<noteq> 0) [1..<dim_row A])" by simp
   have "?lhs = ?f (if abs_flag then reduce_below_abs else reduce_below)"
     unfolding FindPreHNF.simps[of abs_flag D A] Let_def by presburger
