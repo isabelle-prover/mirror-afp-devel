@@ -224,7 +224,7 @@ proof (rule ccontr)
             by (metis (full_types) filter_False)
           obtain nn :: "'a list \<Rightarrow> 'a \<Rightarrow> nat" where
             f2: "\<forall>x0 x1. (\<exists>v2<length x0. x0 ! v2 = x1) = (nn x0 x1 < length x0 \<and> x0 ! nn x0 x1 = x1)"
-          by moura
+            by moura
           { assume "drop (Min {n. n < length l \<and> l ! n = a}) l ! nn (drop (Min {n. n < length l \<and> l ! n = a}) l) (aa ((\<noteq>) a) (drop (Min {n. n < length l \<and> l ! n = a}) l)) = a"
             then have "filter ((\<noteq>) a) (drop (Min {n. n < length l \<and> l ! n = a}) l) = [] \<or> \<not> nn (drop (Min {n. n < length l \<and> l ! n = a}) l) (aa ((\<noteq>) a) (drop (Min {n. n < length l \<and> l ! n = a}) l)) < length (drop (Min {n. n < length l \<and> l ! n = a}) l) \<or> drop (Min {n. n < length l \<and> l ! n = a}) l ! nn (drop (Min {n. n < length l \<and> l ! n = a}) l) (aa ((\<noteq>) a) (drop (Min {n. n < length l \<and> l ! n = a}) l)) \<noteq> aa ((\<noteq>) a) (drop (Min {n. n < length l \<and> l ! n = a}) l)"
               using f1 by (metis (full_types)) }

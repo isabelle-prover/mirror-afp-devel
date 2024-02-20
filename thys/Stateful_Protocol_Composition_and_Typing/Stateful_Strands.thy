@@ -414,7 +414,7 @@ proof (induction A rule: List.rev_induct)
     then obtain B C u v where B:
         "A = B@insert\<langle>u,v\<rangle>#C" "t = u \<cdot> I" "s = v \<cdot> I"
         "\<forall>t' s'. delete\<langle>t',s'\<rangle> \<in> set C \<longrightarrow> t \<noteq> t' \<cdot> I \<or> s \<noteq> s' \<cdot> I"
-      using snoc.IH by moura
+      using snoc.IH by atomize_elim auto
 
     have "A@[a] = B@insert\<langle>u,v\<rangle>#(C@[a])"
          "\<forall>t' s'. delete\<langle>t',s'\<rangle> \<in> set (C@[a]) \<longrightarrow> t \<noteq> t' \<cdot> I \<or> s \<noteq> s' \<cdot> I"
@@ -645,7 +645,7 @@ proof (induction A rule: List.rev_induct)
       then obtain B C u v where B:
           "A = B@insert\<langle>u,v\<rangle>#C" "t = u \<cdot> I" "s = v \<cdot> I"
           "\<forall>t' s'. delete\<langle>t',s'\<rangle> \<in> set C \<longrightarrow> t \<noteq> t' \<cdot> I \<or> s \<noteq> s' \<cdot> I"
-        using snoc.IH by moura
+        using snoc.IH by atomize_elim auto
   
       have "A@[a] = B@insert\<langle>u,v\<rangle>#(C@[a])"
            "\<forall>t' s'. delete\<langle>t',s'\<rangle> \<in> set (C@[a]) \<longrightarrow> t \<noteq> t' \<cdot> I \<or> s \<noteq> s' \<cdot> I"
@@ -1151,7 +1151,7 @@ lemma var_subterm_ik\<^sub>s\<^sub>s\<^sub>t_is_fv\<^sub>s\<^sub>s\<^sub>t:
   shows "x \<in> fv\<^sub>s\<^sub>s\<^sub>t A"
 proof -
   obtain ts where ts: "Receive ts \<in> set A" "Var x \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t set ts"
-    using assms unfolding ik\<^sub>s\<^sub>s\<^sub>t_def by moura
+    using assms unfolding ik\<^sub>s\<^sub>s\<^sub>t_def by atomize_elim auto
   hence "fv\<^sub>s\<^sub>e\<^sub>t (set ts) \<subseteq> fv\<^sub>s\<^sub>s\<^sub>t A" unfolding fv\<^sub>s\<^sub>s\<^sub>t_def by force
   thus ?thesis using ts(2) subterm_is_var by fastforce
 qed
@@ -1258,7 +1258,7 @@ lemma subset_subst_pairs_diff_exists':
 using assms
 proof (induction D rule: finite_induct)
   case (insert d' D)
-  then obtain Di where IH: "Di \<subseteq> D" "Di \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I> \<subseteq> {d \<cdot>\<^sub>p \<I>}" "d \<cdot>\<^sub>p \<I> \<notin> (D - Di) \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>" by moura
+  then obtain Di where IH: "Di \<subseteq> D" "Di \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I> \<subseteq> {d \<cdot>\<^sub>p \<I>}" "d \<cdot>\<^sub>p \<I> \<notin> (D - Di) \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>" by atomize_elim auto
   show ?case
   proof (cases "d' \<cdot>\<^sub>p \<I> = d \<cdot>\<^sub>p \<I>")
     case True
@@ -1449,7 +1449,7 @@ lemma trms\<^sub>s\<^sub>s\<^sub>t\<^sub>p_subst'':
   shows "\<exists>s \<in> trms\<^sub>s\<^sub>s\<^sub>t\<^sub>p b. t = s \<cdot> rm_vars (set (bvars\<^sub>s\<^sub>s\<^sub>t\<^sub>p b)) \<delta>"
 proof (cases "is_NegChecks b")
   case True
-  then obtain X F G where *: "b = NegChecks X F G" by (cases b) moura+
+  then obtain X F G where *: "b = NegChecks X F G" by (cases b) auto
   thus ?thesis using assms trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_subst[of _ "rm_vars (set X) \<delta>"] by auto
 next
   case False
@@ -1464,7 +1464,7 @@ lemma trms\<^sub>s\<^sub>s\<^sub>t\<^sub>p_subst''':
   assumes "t \<in> trms\<^sub>s\<^sub>s\<^sub>t\<^sub>p (b \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<delta>) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<theta>"
   shows "\<exists>s \<in> trms\<^sub>s\<^sub>s\<^sub>t\<^sub>p b. t = s \<cdot> rm_vars (set (bvars\<^sub>s\<^sub>s\<^sub>t\<^sub>p b)) \<delta> \<circ>\<^sub>s \<theta>"
 proof -
-  obtain s where s: "s \<in> trms\<^sub>s\<^sub>s\<^sub>t\<^sub>p (b \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<delta>)" "t = s \<cdot> \<theta>" using assms by moura
+  obtain s where s: "s \<in> trms\<^sub>s\<^sub>s\<^sub>t\<^sub>p (b \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<delta>)" "t = s \<cdot> \<theta>" using assms by atomize_elim auto
   show ?thesis using trms\<^sub>s\<^sub>s\<^sub>t\<^sub>p_subst''[OF s(1)] s(2) by auto
 qed
 
@@ -1885,7 +1885,7 @@ lemma setops\<^sub>s\<^sub>s\<^sub>t\<^sub>p_subst'':
   shows "\<exists>s \<in> setops\<^sub>s\<^sub>s\<^sub>t\<^sub>p b. t = s \<cdot>\<^sub>p rm_vars (set (bvars\<^sub>s\<^sub>s\<^sub>t\<^sub>p b)) \<delta>"
 proof (cases "is_NegChecks b")
   case True
-  then obtain X F G where b: "b = NegChecks X F G" by (cases b) moura+
+  then obtain X F G where b: "b = NegChecks X F G" by (cases b) auto
   hence "setops\<^sub>s\<^sub>s\<^sub>t\<^sub>p b = set G" "setops\<^sub>s\<^sub>s\<^sub>t\<^sub>p (b \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<delta>) = set (G \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s rm_vars (set (bvars\<^sub>s\<^sub>s\<^sub>t\<^sub>p b)) \<delta>)"
     by simp_all
   thus ?thesis using t subst_apply_pairs_pset_subst[of G] by blast
@@ -2668,7 +2668,7 @@ proof (induction S rule: wf\<^sub>s\<^sub>s\<^sub>t_induct)
   proof (cases "\<exists>w \<in> wfrestrictedvars\<^sub>s\<^sub>s\<^sub>t S. t \<cdot> \<I> \<sqsubseteq> \<I> w")
     case True
     then obtain S\<^sub>p\<^sub>r\<^sub>e S\<^sub>s\<^sub>u\<^sub>f where "?P S\<^sub>p\<^sub>r\<^sub>e" "?Q S S\<^sub>p\<^sub>r\<^sub>e S\<^sub>s\<^sub>u\<^sub>f"
-      using ConsSnd.IH by moura
+      using ConsSnd.IH by atomize_elim auto
     thus ?thesis by fastforce
   next
     case False
@@ -2688,7 +2688,7 @@ next
   hence "\<exists>v \<in> wfrestrictedvars\<^sub>s\<^sub>s\<^sub>t S. t \<cdot> \<I> \<sqsubseteq> \<I> v"
     using ConsRcv.prems unfolding wfrestrictedvars\<^sub>s\<^sub>s\<^sub>t_def by fastforce
   then obtain S\<^sub>p\<^sub>r\<^sub>e S\<^sub>s\<^sub>u\<^sub>f where "?P S\<^sub>p\<^sub>r\<^sub>e" "?Q S S\<^sub>p\<^sub>r\<^sub>e S\<^sub>s\<^sub>u\<^sub>f"
-    using ConsRcv.IH by moura
+    using ConsRcv.IH by atomize_elim auto
   thus ?case by fastforce
 next
   case (ConsEq s s' S)
@@ -2698,7 +2698,7 @@ next
   proof (cases "\<exists>v \<in> wfrestrictedvars\<^sub>s\<^sub>s\<^sub>t S. t \<cdot> \<I> \<sqsubseteq> \<I> v")
     case True
     then obtain S\<^sub>p\<^sub>r\<^sub>e S\<^sub>s\<^sub>u\<^sub>f where "?P S\<^sub>p\<^sub>r\<^sub>e" "?Q S S\<^sub>p\<^sub>r\<^sub>e S\<^sub>s\<^sub>u\<^sub>f"
-      using ConsEq.IH by moura
+      using ConsEq.IH by atomize_elim auto
     thus ?thesis by fastforce
   next
     case False
@@ -2713,12 +2713,12 @@ next
   have "wfrestrictedvars\<^sub>s\<^sub>s\<^sub>t (S@[Equality Check s s']) = wfrestrictedvars\<^sub>s\<^sub>s\<^sub>t S"
     unfolding wfrestrictedvars\<^sub>s\<^sub>s\<^sub>t_def by auto
   hence "\<exists>v \<in> wfrestrictedvars\<^sub>s\<^sub>s\<^sub>t S. t \<cdot> \<I> \<sqsubseteq> \<I> v" using ConsEq2.prems by metis
-  then obtain S\<^sub>p\<^sub>r\<^sub>e S\<^sub>s\<^sub>u\<^sub>f where "?P S\<^sub>p\<^sub>r\<^sub>e" "?Q S S\<^sub>p\<^sub>r\<^sub>e S\<^sub>s\<^sub>u\<^sub>f" using ConsEq2.IH by moura
+  then obtain S\<^sub>p\<^sub>r\<^sub>e S\<^sub>s\<^sub>u\<^sub>f where "?P S\<^sub>p\<^sub>r\<^sub>e" "?Q S S\<^sub>p\<^sub>r\<^sub>e S\<^sub>s\<^sub>u\<^sub>f" using ConsEq2.IH by atomize_elim auto
   thus ?case by fastforce
 next
   case (ConsNegChecks X F G S)
   hence "\<exists>v \<in> wfrestrictedvars\<^sub>s\<^sub>s\<^sub>t S. t \<cdot> \<I> \<sqsubseteq> \<I> v" unfolding wfrestrictedvars\<^sub>s\<^sub>s\<^sub>t_def by simp
-  then obtain S\<^sub>p\<^sub>r\<^sub>e S\<^sub>s\<^sub>u\<^sub>f where "?P S\<^sub>p\<^sub>r\<^sub>e" "?Q S S\<^sub>p\<^sub>r\<^sub>e S\<^sub>s\<^sub>u\<^sub>f" using ConsNegChecks.IH by moura
+  then obtain S\<^sub>p\<^sub>r\<^sub>e S\<^sub>s\<^sub>u\<^sub>f where "?P S\<^sub>p\<^sub>r\<^sub>e" "?Q S S\<^sub>p\<^sub>r\<^sub>e S\<^sub>s\<^sub>u\<^sub>f" using ConsNegChecks.IH by atomize_elim auto
   thus ?case by fastforce
 next
   case (ConsIn ac s s' S)
@@ -2726,7 +2726,7 @@ next
   proof (cases "\<exists>v \<in> wfrestrictedvars\<^sub>s\<^sub>s\<^sub>t S. t \<cdot> \<I> \<sqsubseteq> \<I> v")
     case True
     then obtain S\<^sub>p\<^sub>r\<^sub>e S\<^sub>s\<^sub>u\<^sub>f where "?P S\<^sub>p\<^sub>r\<^sub>e" "?Q S S\<^sub>p\<^sub>r\<^sub>e S\<^sub>s\<^sub>u\<^sub>f"
-      using ConsIn.IH by moura
+      using ConsIn.IH by atomize_elim auto
     thus ?thesis by fastforce
   next
     case False
@@ -2745,12 +2745,12 @@ next
     using ConsIns.hyps wfvarsocc\<^sub>s\<^sub>s\<^sub>t_subset_wfrestrictedvars\<^sub>s\<^sub>s\<^sub>t[of S] by blast
   hence "\<exists>v \<in> wfrestrictedvars\<^sub>s\<^sub>s\<^sub>t S. t \<cdot> \<I> \<sqsubseteq> \<I> v"
       using ConsIns.prems unfolding wfrestrictedvars\<^sub>s\<^sub>s\<^sub>t_def by fastforce
-  then obtain S\<^sub>p\<^sub>r\<^sub>e S\<^sub>s\<^sub>u\<^sub>f where "?P S\<^sub>p\<^sub>r\<^sub>e" "?Q S S\<^sub>p\<^sub>r\<^sub>e S\<^sub>s\<^sub>u\<^sub>f" using ConsIns.IH by moura
+  then obtain S\<^sub>p\<^sub>r\<^sub>e S\<^sub>s\<^sub>u\<^sub>f where "?P S\<^sub>p\<^sub>r\<^sub>e" "?Q S S\<^sub>p\<^sub>r\<^sub>e S\<^sub>s\<^sub>u\<^sub>f" using ConsIns.IH by atomize_elim auto
   thus ?case by fastforce
 next
   case (ConsDel s s' S)
   hence "\<exists>v \<in> wfrestrictedvars\<^sub>s\<^sub>s\<^sub>t S. t \<cdot> \<I> \<sqsubseteq> \<I> v" unfolding wfrestrictedvars\<^sub>s\<^sub>s\<^sub>t_def by simp
-  then obtain S\<^sub>p\<^sub>r\<^sub>e S\<^sub>s\<^sub>u\<^sub>f where "?P S\<^sub>p\<^sub>r\<^sub>e" "?Q S S\<^sub>p\<^sub>r\<^sub>e S\<^sub>s\<^sub>u\<^sub>f" using ConsDel.IH by moura
+  then obtain S\<^sub>p\<^sub>r\<^sub>e S\<^sub>s\<^sub>u\<^sub>f where "?P S\<^sub>p\<^sub>r\<^sub>e" "?Q S S\<^sub>p\<^sub>r\<^sub>e S\<^sub>s\<^sub>u\<^sub>f" using ConsDel.IH by atomize_elim auto
   thus ?case by fastforce
 qed (simp add: wfrestrictedvars\<^sub>s\<^sub>s\<^sub>t_def)
 

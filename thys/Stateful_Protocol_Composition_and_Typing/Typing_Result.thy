@@ -100,7 +100,7 @@ proof -
         moreover have "\<exists>t'. fv t' = {} \<and> x = \<Gamma> t'" using Cons by auto
         ultimately obtain y Y where
             "fv y = {}" "\<Gamma> y = x" "map \<Gamma> Y = X" "\<forall>x\<in>set Y. fv x = {}" 
-          using Cons by moura
+          using Cons by atomize_elim auto
         hence "map \<Gamma> (y#Y) = x#X \<and> (\<forall>x\<in>set (y#Y). fv x = {})" by auto
         thus ?case by meson 
       qed simp
@@ -155,7 +155,7 @@ proof -
         by (metis Fun_param_is_subterm term.order_trans wf_trm_subtermeq) 
       hence "\<exists>X. map \<Gamma> X = Y \<and> (\<forall>x \<in> set X. public_ground_wf_term x)"
         by (induct Y, simp_all, metis list.simps(9) set_ConsD)
-      then obtain X where X: "map \<Gamma> X = Y" "\<And>x. x \<in> set X \<Longrightarrow> public_ground_wf_term x" by moura
+      then obtain X where X: "map \<Gamma> X = Y" "\<And>x. x \<in> set X \<Longrightarrow> public_ground_wf_term x" by atomize_elim auto
       hence "arity f = length X" using *(3) by auto
       have "\<Gamma> t = \<Gamma> (Fun f X)" "public_ground_wf_term (Fun f X)"
         using fun_type[OF *(1), of X] Fun.prems(1) X(1) apply simp
@@ -998,7 +998,7 @@ proof -
     and \<sigma>_wf_trm: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<sigma>)"
     using wt_bij_finite_subst_exists[OF finite_vars]
           subst_inj_on_is_bij_betw subterm_inj_on_alt_def'
-    by moura
+    by atomize_elim auto
 
   have \<sigma>_bij_dom_img: "bij_betw \<sigma> (subst_domain \<sigma>) (subst_range \<sigma>)"
     by (metis \<sigma>_subterm_inj subst_inj_on_is_bij_betw subterm_inj_on_alt_def)
@@ -1039,7 +1039,7 @@ proof -
   proof -
     obtain a::"'fun" where a: "a \<notin> \<Union>(funs_term ` subterms\<^sub>s\<^sub>e\<^sub>t (subst_range \<sigma>))"
       using exists_fun_notin_funs_terms[OF subterms_union_finite[OF \<sigma>_finite_img]]
-      by moura
+      by atomize_elim auto
     hence a': "\<And>T. Fun a T \<notin> subterms\<^sub>s\<^sub>e\<^sub>t (subst_range \<sigma>)"
               "\<And>S. Fun a [] \<in> set (Fun a []#S)" "Fun a [] \<notin> Var ` set X"
       by (meson a UN_I term.set_intros(1), auto)
@@ -1062,7 +1062,7 @@ proof -
       have "Q1 F X \<Longrightarrow> \<forall>x \<in> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F - set X. \<exists>c. \<sigma> x = Fun c []"
       proof
         fix x assume "Q1 F X" and x: "x \<in> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F - set X"
-        then obtain a where "\<Gamma> (Var x) = TAtom a" unfolding Q1_def by moura
+        then obtain a where "\<Gamma> (Var x) = TAtom a" unfolding Q1_def by atomize_elim auto
         hence a: "\<Gamma> (\<sigma> x) = TAtom a" using \<sigma>_wt unfolding wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t_def by simp
         
         have "x \<in> subst_domain \<sigma>" using \<sigma>_ineqs_fv_dom x F_in by auto
@@ -1736,7 +1736,7 @@ proof (induction M rule: finite_induct)
   ultimately show ?case by blast
 next
   case (insert m M)
-  then obtain D where "D \<in> decomps\<^sub>e\<^sub>s\<^sub>t A N \<I>" "ik\<^sub>e\<^sub>s\<^sub>t D = (\<Union>m\<in>M. ik\<^sub>s\<^sub>t (to_st m))" by moura
+  then obtain D where "D \<in> decomps\<^sub>e\<^sub>s\<^sub>t A N \<I>" "ik\<^sub>e\<^sub>s\<^sub>t D = (\<Union>m\<in>M. ik\<^sub>s\<^sub>t (to_st m))" by atomize_elim auto
   moreover have "m \<in> decomps\<^sub>e\<^sub>s\<^sub>t A N \<I>" using insert.prems(1) by blast
   ultimately show ?case using decomps\<^sub>e\<^sub>s\<^sub>t_append[of D A N \<I> m] ik\<^sub>e\<^sub>s\<^sub>t_append[of D m] by blast
 qed
@@ -1839,7 +1839,7 @@ proof
       qed
     next
       case (Decomp t)
-      obtain K M where Ana: "Ana t = (K,M)" by moura
+      obtain K M where Ana: "Ana t = (K,M)" by atomize_elim auto
       have "to_st [a] = decomp t" using Decomp by auto
       hence "to_st [a] = [send\<langle>[t]\<rangle>\<^sub>s\<^sub>t,Send K,Receive M]"
         using Ana unfolding decomp_def by auto
@@ -1926,7 +1926,7 @@ proof
       qed
     next
       case (Decomp t)
-      obtain K M where Ana: "Ana t = (K,M)" by moura
+      obtain K M where Ana: "Ana t = (K,M)" by atomize_elim auto
       have "to_st [a] = decomp t" using Decomp by auto
       hence "to_st [a] = [send\<langle>[t]\<rangle>\<^sub>s\<^sub>t,send\<langle>K\<rangle>\<^sub>s\<^sub>t,receive\<langle>M\<rangle>\<^sub>s\<^sub>t]"
         using Ana unfolding decomp_def by auto
@@ -2145,7 +2145,7 @@ proof -
       then obtain D' D'' where
           D': "D' \<in> decomps\<^sub>e\<^sub>s\<^sub>t M N \<I>" "M \<union> ik\<^sub>e\<^sub>s\<^sub>t D' \<turnstile>\<^sub>c t" and
           D'': "D'' \<in> decomps\<^sub>e\<^sub>s\<^sub>t M N \<I>" "\<forall>x \<in> set X. M \<union> ik\<^sub>e\<^sub>s\<^sub>t D'' \<turnstile>\<^sub>c x"
-        by moura
+        by atomize_elim force
       hence "M \<union> ik\<^sub>e\<^sub>s\<^sub>t (D'@D'') \<turnstile>\<^sub>c t" "\<forall>x \<in> set X. M \<union> ik\<^sub>e\<^sub>s\<^sub>t (D'@D'') \<turnstile>\<^sub>c x"
         by (auto intro: ideduct_synth_mono simp add: ik\<^sub>e\<^sub>s\<^sub>t_append)
       thus ?case using decomps\<^sub>e\<^sub>s\<^sub>t_append[OF D'(1) D''(1)] by (metis set_ConsD)
@@ -2159,7 +2159,7 @@ proof -
       then obtain D' D'' where
           D': "D' \<in> decomps\<^sub>e\<^sub>s\<^sub>t M N \<I>" "M \<union> ik\<^sub>e\<^sub>s\<^sub>t D' \<turnstile>\<^sub>c t" and
           D'': "D'' \<in> decomps\<^sub>e\<^sub>s\<^sub>t M N \<I>" "\<forall>x \<in> set X. M \<union> ik\<^sub>e\<^sub>s\<^sub>t D'' \<turnstile>\<^sub>c x"
-        using assms(1) by moura
+        using assms(1) by atomize_elim force
       hence "M \<union> ik\<^sub>e\<^sub>s\<^sub>t (D'@D'') \<turnstile>\<^sub>c t" "\<forall>x \<in> set X. M \<union> ik\<^sub>e\<^sub>s\<^sub>t (D'@D'') \<turnstile>\<^sub>c x"
         by (auto intro: ideduct_synth_mono simp add: ik\<^sub>e\<^sub>s\<^sub>t_append)
       thus ?case using decomps\<^sub>e\<^sub>s\<^sub>t_append[OF D'(1) D''(1)] by auto
@@ -2196,7 +2196,7 @@ proof -
   qed (fastforce intro: intruder_synth.AxiomC assms(1))
   hence "\<exists>D' \<in> decomps\<^sub>e\<^sub>s\<^sub>t M N \<I>. M \<union> ik\<^sub>e\<^sub>s\<^sub>t (D@D') \<turnstile>\<^sub>c t"
     by (auto intro: ideduct_synth_mono simp add: ik\<^sub>e\<^sub>s\<^sub>t_append)
-  thus thesis using that[OF decomps\<^sub>e\<^sub>s\<^sub>t_append[OF assms(1)]] assms ik\<^sub>e\<^sub>s\<^sub>t_append by moura
+  thus thesis using that[OF decomps\<^sub>e\<^sub>s\<^sub>t_append[OF assms(1)]] assms ik\<^sub>e\<^sub>s\<^sub>t_append by atomize_elim auto
 qed
 
 private lemma decomps\<^sub>e\<^sub>s\<^sub>t_ik_max_exist:
@@ -2209,7 +2209,7 @@ proof -
     using subterms_union_finite[OF assms(1)] subterms_union_finite[OF assms(2)] infinite_super
     by auto
   then obtain M where M: "finite M" "M \<subseteq> decomps\<^sub>e\<^sub>s\<^sub>t A N \<I>" "?IK M = ?IK (decomps\<^sub>e\<^sub>s\<^sub>t A N \<I>)"
-    using finite_subset_Union by moura
+    using finite_subset_Union by atomize_elim auto
   show ?thesis using decomps\<^sub>e\<^sub>s\<^sub>t_finite_ik_append[OF M(1,2)] M(3) by auto
 qed
 
@@ -2220,7 +2220,7 @@ proof (rule ccontr)
   assume neg: "\<not>(\<exists>D \<in> decomps\<^sub>e\<^sub>s\<^sub>t A N \<I>. \<forall>t. A \<turnstile> t \<longrightarrow> A \<union> ik\<^sub>e\<^sub>s\<^sub>t D \<turnstile>\<^sub>c t)"
 
   obtain D where D: "D \<in> decomps\<^sub>e\<^sub>s\<^sub>t A N \<I>" "\<forall>D' \<in> decomps\<^sub>e\<^sub>s\<^sub>t A N \<I>. ik\<^sub>e\<^sub>s\<^sub>t D' \<subseteq> ik\<^sub>e\<^sub>s\<^sub>t D"
-    using decomps\<^sub>e\<^sub>s\<^sub>t_ik_max_exist[OF assms] by moura
+    using decomps\<^sub>e\<^sub>s\<^sub>t_ik_max_exist[OF assms] by atomize_elim force
   then obtain t where t: "A \<union> ik\<^sub>e\<^sub>s\<^sub>t D \<turnstile> t" "\<not>(A \<union> ik\<^sub>e\<^sub>s\<^sub>t D \<turnstile>\<^sub>c t)"
     using neg by (fastforce intro: ideduct_mono)
 
@@ -2334,7 +2334,7 @@ proof -
         using AxiomC D'_ik subset_subterms_Union[of "ik\<^sub>e\<^sub>s\<^sub>t A \<union> assignment_rhs\<^sub>e\<^sub>s\<^sub>t A"]
               subst_all_mono[OF subset_subterms_Union, of \<I>]
         by (metis (no_types) Un_iff image_eqI subset_Un_eq, metis (no_types) Un_iff subset_Un_eq)
-      obtain Ks Ms where Ana_s: "Ana s = (Ks,Ms)" by moura
+      obtain Ks Ms where Ana_s: "Ana s = (Ks,Ms)" by atomize_elim auto
 
       have AD'_props: "wf\<^sub>e\<^sub>s\<^sub>t {} (A@D')" "\<lbrakk>{}; to_st (A@D')\<rbrakk>\<^sub>c \<I>"
         using decomps\<^sub>e\<^sub>s\<^sub>t_preserves_model_c[OF D'(1) assms(2)]
@@ -2387,14 +2387,14 @@ proof -
             using strand_sem_wf_ik_or_assignment_rhs_fun_subterm[
                     OF AD'_props \<open>Var x \<in> ik\<^sub>e\<^sub>s\<^sub>t (A@D')\<close> _ t\<^sub>i \<open>interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>\<close>]
                   \<open>\<I> x = Fun f T\<close>
-            by moura
+            by atomize_elim metis
           hence fS_in: "Fun f S \<cdot> \<I> \<in> ik\<^sub>e\<^sub>s\<^sub>t A \<union> ik\<^sub>e\<^sub>s\<^sub>t D' \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>"
                        "Fun f S \<in> subterms\<^sub>s\<^sub>e\<^sub>t (ik\<^sub>e\<^sub>s\<^sub>t A \<union> assignment_rhs\<^sub>e\<^sub>s\<^sub>t A)"
             using imageI[OF s(1), of "\<lambda>x. x \<cdot> \<I>"] Var
                   ik\<^sub>e\<^sub>s\<^sub>t_append[of A D'] assignment_rhs\<^sub>e\<^sub>s\<^sub>t_append[of A D']
                   decomps\<^sub>e\<^sub>s\<^sub>t_subterms[OF D'(1)] decomps\<^sub>e\<^sub>s\<^sub>t_assignment_rhs_empty[OF D'(1)]
             by auto
-          obtain KS MS where Ana_fS: "Ana (Fun f S) = (KS, MS)" by moura
+          obtain KS MS where Ana_fS: "Ana (Fun f S) = (KS, MS)" by atomize_elim auto
           hence "K = KS \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<I>" "M = MS \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<I>"
             using Ana_invar_substD[OF assms(5) fS_in(2)]
                   s(2) fS(2) \<open>s = Var x\<close> \<open>Ana (Fun f T) = (K,M)\<close>
@@ -3245,7 +3245,7 @@ proof (induction rule: rtranclp_induct2)
     case (Decompose f T)
     let ?X = "\<Union>(assignment_rhs\<^sub>s\<^sub>t`\<S>2) \<union> assignment_rhs\<^sub>e\<^sub>s\<^sub>t \<A>2"
     let ?Y = "\<Union>(assignment_rhs\<^sub>s\<^sub>t`\<S>1) \<union> assignment_rhs\<^sub>e\<^sub>s\<^sub>t \<A>1"
-    obtain K M where Ana: "Ana (Fun f T) = (K,M)" by moura
+    obtain K M where Ana: "Ana (Fun f T) = (K,M)" by atomize_elim auto
     hence *: "ik\<^sub>e\<^sub>s\<^sub>t \<A>2 = ik\<^sub>e\<^sub>s\<^sub>t \<A>1 \<union> set M" "assignment_rhs\<^sub>e\<^sub>s\<^sub>t \<A>2 = assignment_rhs\<^sub>e\<^sub>s\<^sub>t \<A>1"
       using ik\<^sub>e\<^sub>s\<^sub>t_append assignment_rhs\<^sub>e\<^sub>s\<^sub>t_append decomp_ik
             decomp_assignment_rhs_empty Decompose.hyps(3)
@@ -3372,7 +3372,7 @@ next
     by (induct rule: pts_symbolic_induct, metis, (metis sem\<^sub>e\<^sub>s\<^sub>t_d_split_left to_est_append)+)
   then obtain \<A>1d where
       \<A>1d: "\<A>1 = to_st (decomp_rm\<^sub>e\<^sub>s\<^sub>t \<A>1d)" "(\<S>, \<A>\<^sub>d) \<Rightarrow>\<^sup>\<bullet>\<^sub>c\<^sup>* (\<S>1, \<A>1d)" "sem\<^sub>e\<^sub>s\<^sub>t_c {} \<I> \<A>1d"
-    using step.IH by moura
+    using step.IH by atomize_elim auto
 
   show ?case using step.hyps(2)
   proof (induction rule: pts_symbolic_induct)
@@ -3511,7 +3511,7 @@ proof (induction A)
   proof (cases x)
     case (Decomp t)
     hence "wf\<^sub>t\<^sub>r\<^sub>m t" using Cons.prems by auto
-    obtain K T where Ana_t: "Ana t = (K,T)" by moura
+    obtain K T where Ana_t: "Ana t = (K,T)" by atomize_elim auto
     hence "trms\<^sub>s\<^sub>t (decomp t) \<subseteq> {t} \<union> set K \<union> set T" using decomp_set_unfold[OF Ana_t] by force
     moreover have "\<forall>t \<in> set T. wf\<^sub>t\<^sub>r\<^sub>m t" using Ana_subterm[OF Ana_t] \<open>wf\<^sub>t\<^sub>r\<^sub>m t\<close> wf_trm_subterm by auto
     ultimately have "\<forall>t \<in> trms\<^sub>s\<^sub>t (decomp t). wf\<^sub>t\<^sub>r\<^sub>m t" using Ana_keys_wf'[OF Ana_t] \<open>wf\<^sub>t\<^sub>r\<^sub>m t\<close> by auto
@@ -3537,7 +3537,7 @@ proof
       proof (cases x)
         case (Decomp t')
         hence ****: "t \<in> trms\<^sub>s\<^sub>t (decomp t')" "t' \<in> trms\<^sub>e\<^sub>s\<^sub>t (x#A)" using *** by auto
-        obtain K T where Ana_t': "Ana t' = (K,T)" by moura
+        obtain K T where Ana_t': "Ana t' = (K,T)" by atomize_elim auto
         hence "t \<in> {t'} \<union> set K \<union> set T" using decomp_set_unfold[OF Ana_t'] ****(1) by force
         moreover
         { assume "t = t'" hence ?thesis using SMP.MP[OF ****(2)] by simp }

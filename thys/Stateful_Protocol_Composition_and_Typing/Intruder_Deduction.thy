@@ -839,7 +839,7 @@ by (induct t rule: intruder_deduct_num.induct)
 lemma deduct_num_if_deduct: "M \<turnstile> t \<Longrightarrow> \<exists>k. \<langle>M; k\<rangle> \<turnstile>\<^sub>n t"
 proof (induction t rule: intruder_deduct_induct)
   case (Compose T f)
-  then obtain steps where *: "\<forall>t \<in> set T. \<langle>M; steps t\<rangle> \<turnstile>\<^sub>n t" by moura
+  then obtain steps where *: "\<forall>t \<in> set T. \<langle>M; steps t\<rangle> \<turnstile>\<^sub>n t" by atomize_elim metis
   then obtain n where "\<forall>t \<in> set T. steps t \<le> n"
     using finite_nat_set_iff_bounded_le[of "steps ` set T"]
     by auto
@@ -847,7 +847,7 @@ proof (induction t rule: intruder_deduct_induct)
 next
   case (Decompose t K T t\<^sub>i)
   hence "\<And>u. u \<in> insert t (set K) \<Longrightarrow> \<exists>k. \<langle>M; k\<rangle> \<turnstile>\<^sub>n u" by auto
-  then obtain steps where *: "\<langle>M; steps t\<rangle> \<turnstile>\<^sub>n t" "\<forall>t \<in> set K. \<langle>M; steps t\<rangle> \<turnstile>\<^sub>n t" by moura
+  then obtain steps where *: "\<langle>M; steps t\<rangle> \<turnstile>\<^sub>n t" "\<forall>t \<in> set K. \<langle>M; steps t\<rangle> \<turnstile>\<^sub>n t" by (metis insert_iff)
   then obtain n where "steps t \<le> n" "\<forall>t \<in> set K. steps t \<le> n"
     using finite_nat_set_iff_bounded_le[of "steps ` insert t (set K)"]
     by auto
@@ -965,7 +965,7 @@ proof (induction n arbitrary: t rule: nat_less_induct)
       proof -
         obtain g S where g:
             "t = Fun g S" "public g" "length S = arity g" "\<forall>t \<in> set S. \<exists>l < n. \<langle>M; l\<rangle> \<turnstile>\<^sub>n t"
-          using * by moura
+          using * by atomize_elim auto
         then obtain l where l: "l < n" "\<langle>M; l\<rangle> \<turnstile>\<^sub>n t\<^sub>i"
           using 0(1) DecomposeN.hyps(2,4) Ana_fun_subterm[of g S K T] by blast
     
@@ -1063,7 +1063,7 @@ proof -
               by metis
           next
             case False
-            obtain g S where gS: "t = Fun g S" using DecomposeN.hyps(2,4) by (cases t) moura+
+            obtain g S where gS: "t = Fun g S" using DecomposeN.hyps(2,4) by (cases t) auto
             hence *: "Fun g S \<sqsubseteq> t" "\<not>P (Fun g S)" using False by force+
             have "\<exists>j<l. \<langle>M; j\<rangle> \<turnstile>\<^sub>n t\<^sub>i"
               using gS DecomposeN.hyps(2,4) Ana_fun_subterm[of g S K T]
@@ -1098,7 +1098,7 @@ lemma private_const_deduct:
                              Fun c [] \<in> set (snd (Ana m)))"
 proof -
   obtain n where "\<langle>M; n\<rangle> \<turnstile>\<^sub>n Fun c []"
-    using c(2) deduct_num_if_deduct by moura
+    using c(2) deduct_num_if_deduct by atomize_elim auto
   hence "Fun c [] \<in> M \<or>
          (\<exists>m \<in> subterms\<^sub>s\<^sub>e\<^sub>t M.
             (\<exists>l < n. \<langle>M; l\<rangle> \<turnstile>\<^sub>n m) \<and>

@@ -747,7 +747,7 @@ proof -
   { \<comment> \<open>In this case \<open>S\<^sub>1\<close> isn't simple because it contains an equality constraint,
         so we can simply proceed with the reduction by computing the MGU for the equation\<close>
     assume "\<exists>S' S'' a t t'. S\<^sub>1 = S'@Equality a t t'#S'' \<and> simple S'"
-    then obtain S a t t' S' where S\<^sub>1: "S\<^sub>1 = S@Equality a t t'#S'" "simple S" by moura
+    then obtain S a t t' S' where S\<^sub>1: "S\<^sub>1 = S@Equality a t t'#S'" "simple S" by atomize_elim force
     hence *: "wf\<^sub>s\<^sub>t {} S" "\<I> \<Turnstile>\<^sub>c \<langle>S, \<theta>\<^sub>1\<rangle>" "\<theta>\<^sub>1 supports \<I>" "t \<cdot> \<I> = t' \<cdot> \<I>"
       using \<open>\<I> \<Turnstile>\<^sub>c \<langle>S\<^sub>1, \<theta>\<^sub>1\<rangle>\<close> \<open>wf\<^sub>c\<^sub>o\<^sub>n\<^sub>s\<^sub>t\<^sub>r S\<^sub>1 \<theta>\<^sub>1\<close> wf_eq_fv[of "{}" S t t' S']
             fv_snd_rcv_strand_subset(5)[of S]
@@ -786,7 +786,7 @@ proof -
     hence "\<exists>S' S'' f T. S\<^sub>1 = S'@Send [Fun f T]#S'' \<and> simple S'"
       using LI_preproc_prop_SendE[OF \<open>LI_preproc_prop S\<^sub>1\<close>]
       by fastforce
-    with assms obtain S f T S' where S\<^sub>1: "S\<^sub>1 = S@Send [Fun f T]#S'" "simple S" by moura
+    with assms obtain S f T S' where S\<^sub>1: "S\<^sub>1 = S@Send [Fun f T]#S'" "simple S" by atomize_elim auto
     hence "wf\<^sub>s\<^sub>t {} S" "\<I> \<Turnstile>\<^sub>c \<langle>S, \<theta>\<^sub>1\<rangle>" "\<theta>\<^sub>1 supports \<I>"
       using \<open>\<I> \<Turnstile>\<^sub>c \<langle>S\<^sub>1, \<theta>\<^sub>1\<rangle>\<close> \<open>wf\<^sub>c\<^sub>o\<^sub>n\<^sub>s\<^sub>t\<^sub>r S\<^sub>1 \<theta>\<^sub>1\<close>
       by (auto simp add: constr_sem_c_def wf\<^sub>c\<^sub>o\<^sub>n\<^sub>s\<^sub>t\<^sub>r_def)
@@ -825,7 +825,7 @@ proof -
         case True
         have "\<exists>v. Var v \<in> ik\<^sub>s\<^sub>t S \<and> Fun f T \<cdot> \<I> = \<I> v"
         proof -
-          obtain t where "t \<in> ik\<^sub>s\<^sub>t S" "Fun f T \<cdot> \<I> = t \<cdot> \<I>" using ex_t by moura
+          obtain t where "t \<in> ik\<^sub>s\<^sub>t S" "Fun f T \<cdot> \<I> = t \<cdot> \<I>" using ex_t by atomize_elim auto
           thus ?thesis
             using \<open>\<forall>T'. Fun f T' \<in> ik\<^sub>s\<^sub>t S \<longrightarrow> Fun f T \<cdot> \<I> \<noteq> Fun f T' \<cdot> \<I>\<close>
             by (cases t) auto

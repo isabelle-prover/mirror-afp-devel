@@ -805,7 +805,7 @@ proof -
                              "uf \<longlonglongrightarrow> Inf {eNorm N1 f1 + eNorm N2 f2| f1 f2. f = f1 + f2}"
       by blast
     have "\<exists>f1 f2. \<forall>n. uf n = eNorm N1 (f1 n) + eNorm N2 (f2 n) \<and> f = f1 n + f2 n"
-      apply (rule SMT.choices(1)) using uf(1) by blast
+      using uf(1) by (subst choice_iff[symmetric])+ blast
     then obtain f1 f2 where F: "\<And>n. uf n = eNorm N1 (f1 n) + eNorm N2 (f2 n)" "\<And>n. f = f1 n + f2 n"
       by blast
 
@@ -815,7 +815,7 @@ proof -
                              "ug \<longlonglongrightarrow> Inf {eNorm N1 g1 + eNorm N2 g2| g1 g2. g = g1 + g2}"
       by blast
     have "\<exists>g1 g2. \<forall>n. ug n = eNorm N1 (g1 n) + eNorm N2 (g2 n) \<and> g = g1 n + g2 n"
-      apply (rule SMT.choices(1)) using ug(1) by blast
+      using ug(1) by (subst choice_iff[symmetric])+ blast
     then obtain g1 g2 where G: "\<And>n. ug n = eNorm N1 (g1 n) + eNorm N2 (g2 n)" "\<And>n. g = g1 n + g2 n"
       by blast
 
@@ -853,7 +853,7 @@ proof -
                              "uf \<longlonglongrightarrow> Inf {eNorm N1 f1 + eNorm N2 f2| f1 f2. f = f1 + f2}"
       by blast
     have "\<exists>f1 f2. \<forall>n. uf n = eNorm N1 (f1 n) + eNorm N2 (f2 n) \<and> f = f1 n + f2 n"
-      apply (rule SMT.choices(1)) using uf(1) by blast
+      using uf(1) by (subst choice_iff[symmetric])+ blast
     then obtain f1 f2 where F: "\<And>n. uf n = eNorm N1 (f1 n) + eNorm N2 (f2 n)" "\<And>n. f = f1 n + f2 n"
       by blast
 
@@ -893,7 +893,7 @@ proof -
                            "uf \<longlonglongrightarrow> Inf {eNorm N1 f1 + eNorm N2 f2| f1 f2. f = f1 + f2}"
     by blast
   have "\<exists>f1 f2. \<forall>n. uf n = eNorm N1 (f1 n) + eNorm N2 (f2 n) \<and> f = f1 n + f2 n"
-    apply (rule SMT.choices(1)) using uf(1) by blast
+    using uf(1) by (subst choice_iff[symmetric])+ blast
   then obtain f1 f2 where F: "\<And>n. uf n = eNorm N1 (f1 n) + eNorm N2 (f2 n)" "\<And>n. f = f1 n + f2 n"
     by blast
   have "(\<lambda>n. eNorm N1 (f1 n) + eNorm N2 (f2 n)) \<longlonglongrightarrow> eNorm (N1 +\<^sub>N N2) f"

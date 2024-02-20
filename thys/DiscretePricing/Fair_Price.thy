@@ -958,20 +958,8 @@ proof (rule sum_trading_strat)
   next
     case False
     thus ?thesis
-    proof -
-      obtain nn :: "'c \<Rightarrow> ('c \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> real) \<Rightarrow> nat" and aa :: "'c \<Rightarrow> ('c \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> real) \<Rightarrow> 'a" where
-        "\<forall>x0 x1. (\<exists>v2 v3. x1 x0 v2 v3 \<noteq> 0) = (x1 x0 (nn x0 x1) (aa x0 x1) \<noteq> 0)"
-        by moura
-      then have "\<forall>f c. (c \<notin> {c. \<exists>n a. f c n a \<noteq> 0} \<or> f c (nn c f) (aa c f) \<noteq> 0) \<and> (c \<in> {c. \<exists>n a. f c n a \<noteq> 0} \<or> (\<forall>n a. f c n a = 0))"
-        by auto
-      then show ?thesis
-      proof -
-        have "\<And>f c n a. qty_mult_comp f (pf1 x) (c::'c) n a = 0"
-          by (metis False \<open>\<forall>f c. (c \<notin> {c. \<exists>n a. f c n a \<noteq> 0} \<or> f c (nn c f) (aa c f) \<noteq> 0) \<and> (c \<in> {c. \<exists>n a. f c n a \<noteq> 0} \<or> (\<forall>n a. f c n a = 0))\<close> mult.commute mult_zero_left qty_mult_comp_def support_set_def)
-        then show ?thesis
-          by (metis (no_types) \<open>\<forall>f c. (c \<notin> {c. \<exists>n a. f c n a \<noteq> 0} \<or> f c (nn c f) (aa c f) \<noteq> 0) \<and> (c \<in> {c. \<exists>n a. f c n a \<noteq> 0} \<or> (\<forall>n a. f c n a = 0))\<close> assms(2) mult_comp_portfolio support_set_def trading_strategy_def)
-      qed
-    qed
+      by (meson UnCI assms(1) assms(2) disc_equity_market.inc_predict_support_trading_strat
+          disc_equity_market_axioms insertI1 mult_comp_trading_strat)
   qed
 qed
 

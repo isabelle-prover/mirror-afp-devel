@@ -146,7 +146,7 @@ lemma surj_on_mult_units:
   shows "(\<lambda> b. x*b mod q) ` ({..<q} - {0}) = ({..<q} - {0})"
 proof(rule endo_inj_surj)
   show "finite ({..<q} - {0})" using coprime inj by(simp)
-  show "(\<lambda>b. x * b mod q) ` ({..<q} - {0}) \<subseteq> {..<q} - {0}" 
+  show "(\<lambda>b. x * b mod q) ` ({..<q} - {0}) \<subseteq> {..<q} - {0}"
   proof -
     obtain n :: "nat set \<Rightarrow> (nat \<Rightarrow> nat) \<Rightarrow> nat set \<Rightarrow> nat" where
       "\<forall>x0 x1 x2. (\<exists>v3. v3 \<in> x2 \<and> x1 v3 \<notin> x0) = (n x0 x1 x2 \<in> x2 \<and> x1 (n x0 x1 x2) \<notin> x0)"

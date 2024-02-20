@@ -219,7 +219,7 @@ proof (induction t)
   case (Var x) thus ?case
   proof (cases "x \<in> X")
     case False
-    with Var obtain a where "\<Gamma> (Var x) = TAtom a" by moura
+    with Var obtain a where "\<Gamma> (Var x) = TAtom a" by atomize_elim auto
     hence *: "\<Gamma> (\<theta> x) = TAtom a" "wf\<^sub>t\<^sub>r\<^sub>m (\<theta> x)" using \<theta> unfolding wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t_def by auto
     show ?thesis
     proof (cases "\<theta> x")
@@ -238,7 +238,7 @@ lemma wt_subst_TAtom_subterms_subst:
 using assms(2,3)
 proof (induction t)
   case (Var x)
-  obtain a where a: "\<Gamma> (Var x) = TAtom a" using Var.prems(1) by moura
+  obtain a where a: "\<Gamma> (Var x) = TAtom a" using Var.prems(1) by atomize_elim auto
   hence "\<Gamma> (\<theta> x) = TAtom a" using wt_subst_trm''[OF assms(1), of "Var x"] by simp
   hence "(\<exists>y. \<theta> x = Var y) \<or> (\<exists>c. \<theta> x = Fun c [])"
     using const_type_inv_wf Var.prems(2) by (cases "\<theta> x") auto
@@ -288,7 +288,7 @@ lemma wt_subst_const_fv_type_eq:
 using assms(1)
 proof (induction t)
   case (Var x)
-  then obtain a where a: "\<Gamma> (Var x) = TAtom a" by moura
+  then obtain a where a: "\<Gamma> (Var x) = TAtom a" by atomize_elim auto
   show ?case
   proof (cases "\<delta> x")
     case (Fun f T)
@@ -420,7 +420,7 @@ lemma funs_term_type_iff':
         (f \<in> \<Union>(funs_term ` M) \<or> (\<exists>x \<in> fv\<^sub>s\<^sub>e\<^sub>t M. f \<in> funs_term (\<Gamma> (Var x))))" (is "?A \<longleftrightarrow> ?B")
 proof
   assume ?A
-  then obtain t where "t \<in> M" "wf\<^sub>t\<^sub>r\<^sub>m t" "f \<in> funs_term (\<Gamma> t)" using M by moura
+  then obtain t where "t \<in> M" "wf\<^sub>t\<^sub>r\<^sub>m t" "f \<in> funs_term (\<Gamma> t)" using M by atomize_elim auto
   thus ?B using funs_term_type_iff[OF _ f, of t] by auto
 next
   assume ?B
@@ -493,7 +493,7 @@ proof
   proof (induction t rule: SMP.induct)
     case (MP t)
     then obtain s \<delta> where s: "s \<in> N" "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>)" "t = s \<cdot> \<delta>"
-      using M by moura
+      using M by atomize_elim auto
     show ?case using SMP_I[OF s(1,2), of "s \<cdot> \<delta>"] s(3,4) wf_trm_subst_range_iff by fast
   qed (auto intro!: SMP.Substitution[of _ N])
 qed
@@ -517,7 +517,7 @@ using SMP_union by simp
 lemma SMP_mono: "A \<subseteq> B \<Longrightarrow> SMP A \<subseteq> SMP B"
 proof -
   assume "A \<subseteq> B"
-  then obtain C where "B = A \<union> C" by moura
+  then obtain C where "B = A \<union> C" by atomize_elim auto
   thus "SMP A \<subseteq> SMP B" by (simp add: SMP_union)
 qed
 
@@ -531,7 +531,7 @@ proof
   show "(\<Union>m\<in>M. SMP (f m)) \<subseteq> SMP (\<Union>m\<in>M. f m)"
   proof
     fix t assume "t \<in> (\<Union>m\<in>M. SMP (f m))"
-    then obtain m where "m \<in> M" "t \<in> SMP (f m)" by moura
+    then obtain m where "m \<in> M" "t \<in> SMP (f m)" by atomize_elim auto
     thus "t \<in> SMP (\<Union>m\<in>M. f m)" using SMP_mono[of "f m" "\<Union>m\<in>M. f m"] by auto
   qed
 qed
@@ -585,7 +585,7 @@ proof
     then obtain X F t' where **:
         "Inequality X F \<in> set S" "t'\<in>trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F" "t = t' \<cdot> rm_vars (set X) \<delta>"
       by force
-    then obtain s where s: "s \<in> trms\<^sub>s\<^sub>t\<^sub>p (Inequality X F)" "t = s \<cdot> rm_vars (set X) \<delta>" by moura
+    then obtain s where s: "s \<in> trms\<^sub>s\<^sub>t\<^sub>p (Inequality X F)" "t = s \<cdot> rm_vars (set X) \<delta>" by atomize_elim auto
     hence "s \<in> SMP (trms\<^sub>s\<^sub>t S)" using **(1) by force
     hence "t \<in> SMP (trms\<^sub>s\<^sub>t S)"
       using SMP.Substitution[OF _ wt_subst_rm_vars[OF assms(2)] wf_trms_subst_rm_vars'[OF assms(3)]]
@@ -808,14 +808,14 @@ proof -
   show "A \<subseteq> B \<Longrightarrow> tfr\<^sub>s\<^sub>e\<^sub>t A"
   proof -
     assume "A \<subseteq> B"
-    then obtain C where "B = A \<union> C" by moura
+    then obtain C where "B = A \<union> C" by atomize_elim auto
     thus ?thesis using B 1 by blast
   qed
 
   show "SMP A \<subseteq> SMP B \<Longrightarrow> tfr\<^sub>s\<^sub>e\<^sub>t A"
   proof -
     assume "SMP A \<subseteq> SMP B"
-    then obtain C where "SMP B = SMP A \<union> C" by moura
+    then obtain C where "SMP B = SMP A \<union> C" by atomize_elim auto
     thus ?thesis using B unfolding tfr\<^sub>s\<^sub>e\<^sub>t_def by blast
   qed
 qed
@@ -837,19 +837,19 @@ proof -
       using that assms(3) *(3) **(1,2) unfolding tfr\<^sub>s\<^sub>e\<^sub>t_def by blast
     moreover have "\<Gamma> s = \<Gamma> t" when st: "s \<in> M" "t \<in> M"
     proof -
-      obtain c d where "s = Fun c []" "t = Fun d []" using st assms(1) by moura
+      obtain c d where "s = Fun c []" "t = Fun d []" using st assms(1) by atomize_elim auto
       hence "s = t" using *(3) by fast
       thus ?thesis by metis
     qed
     moreover have "\<Gamma> s = \<Gamma> t" when st: "s \<in> SMP N" "t \<in> M"
     proof -
-      obtain c where "t = Fun c []" using st assms(1) by moura
+      obtain c where "t = Fun c []" using st assms(1) by atomize_elim auto
       hence "s = t" using *(3) **(1,2) by auto
       thus ?thesis by metis
     qed
     moreover have "\<Gamma> s = \<Gamma> t" when st: "s \<in> M" "t \<in> SMP N"
     proof -
-      obtain c where "s = Fun c []" using st assms(1) by moura
+      obtain c where "s = Fun c []" using st assms(1) by atomize_elim auto
       hence "s = t" using *(3) **(1,2) by auto
       thus ?thesis by metis
     qed
@@ -1343,7 +1343,7 @@ proof (induction "\<Gamma> (Var x)" arbitrary: x)
   proof (cases "TComp f T = \<Gamma> (Var x)")
     case False
     then obtain u where u: "u \<in> set U" "TComp f T \<sqsubseteq> u"
-      using Fun.prems(2) Fun.hyps(2) by moura
+      using Fun.prems(2) Fun.hyps(2) by atomize_elim auto
     then obtain y where y: "Var y \<in> set V" "\<Gamma> (Var y) = u" using U V(3) \<Gamma>_Var_fst by auto
     show ?thesis using IH[OF _ 2[OF y(1)]] u y(2) by metis
   qed (use V in fastforce)
@@ -1634,7 +1634,7 @@ proof (cases "\<exists>f. t = Fun f [] \<or> t' = Fun f []")
 
   have wf_t': "wf\<^sub>t\<^sub>r\<^sub>m t'" using hyps wf_t wf_trm_subterm by blast
 
-  obtain c where "t = Fun c [] \<or> t' = Fun c []" using True by moura
+  obtain c where "t = Fun c [] \<or> t' = Fun c []" using True by atomize_elim auto
   thus ?thesis
   proof
     assume c: "t' = Fun c []"
@@ -1653,7 +1653,7 @@ proof (cases "\<exists>f. t = Fun f [] \<or> t' = Fun f []")
       show ?thesis using subterm_subst_unfold[OF hyps[unfolded m(2)]]
       proof
         assume "\<exists>m'. m' \<sqsubseteq> m \<and> t' = m' \<cdot> \<delta>"
-        then obtain m' where m': "m' \<sqsubseteq> m" "t' = m' \<cdot> \<delta>" by moura
+        then obtain m' where m': "m' \<sqsubseteq> m" "t' = m' \<cdot> \<delta>" by atomize_elim auto
         obtain n \<theta> where n: "n \<in> M" "m' = n \<cdot> \<theta>" and \<theta>: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<theta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<theta>)"
           using 0[of m'] m(1) m'(1) by blast
         have "t' = n \<cdot> (\<theta> \<circ>\<^sub>s \<delta>)" using m'(2) n(2) by auto
@@ -1661,7 +1661,7 @@ proof (cases "\<exists>f. t = Fun f [] \<or> t' = Fun f []")
           using c n(1) wt_subst_compose[OF \<theta>(1) \<delta>(1)] wf_trms_subst_compose[OF \<theta>(2) \<delta>(2)] by blast
       next
         assume "\<exists>x \<in> fv m. t' \<sqsubset> \<delta> x"
-        then obtain x where x: "x \<in> fv m" "t' \<sqsubset> \<delta> x" "t' \<sqsubseteq> \<delta> x" by moura
+        then obtain x where x: "x \<in> fv m" "t' \<sqsubset> \<delta> x" "t' \<sqsubseteq> \<delta> x" by atomize_elim auto
         have \<delta>x_wf: "wf\<^sub>t\<^sub>r\<^sub>m (\<delta> x)" using \<delta>(2) by fastforce
         
         have x_fv_ex: "\<exists>y \<in> fv\<^sub>s\<^sub>e\<^sub>t M. \<Gamma> (Var x) = \<Gamma> (Var y)" using x m by auto
@@ -1686,7 +1686,7 @@ next
   note F = False
   then obtain m \<delta> where m:
       "m \<in> M" "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta>" "t = m \<cdot> \<delta>" "is_Fun m" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>)"
-    using IH by moura
+    using IH by atomize_elim auto
   obtain f T where fT: "t' = Fun f T" "arity f > 0" "\<Gamma> t' = TComp f (map \<Gamma> T)"
     using F prems fun_type wf_trm_subtermeq[OF wf_t hyps]
     by (metis is_FunE length_greater_0_conv subtermeqI' wf\<^sub>t\<^sub>r\<^sub>m_def)
@@ -1701,7 +1701,7 @@ next
   show ?thesis
   proof (cases "\<exists>x \<in> fv m. t' \<sqsubseteq> \<delta> x")
     case True
-    then obtain x where x: "x \<in> fv m" "t' \<sqsubseteq> \<delta> x" by moura
+    then obtain x where x: "x \<in> fv m" "t' \<sqsubseteq> \<delta> x" by atomize_elim auto
     have 1: "x \<in> fv\<^sub>s\<^sub>e\<^sub>t M" using m(1) x(1) by auto
     have 2: "is_Fun (\<delta> x)" using prems x(2) by auto
     have 3: "wf\<^sub>t\<^sub>r\<^sub>m (\<delta> x)" using m(5) by (simp add: wf_trm_subst_rangeD)
@@ -1730,7 +1730,7 @@ next
       case True thus ?thesis using \<theta>(3,4) m'(2,3) m(4) fT t'_m'' \<theta>\<delta> by blast
     next
       case False
-      then obtain x where x: "m'' = Var x" by moura
+      then obtain x where x: "m'' = Var x" by atomize_elim auto
       hence "\<exists>y \<in> fv\<^sub>s\<^sub>e\<^sub>t M. \<Gamma> (Var x) = \<Gamma> (Var y)" "t' \<sqsubseteq> (\<theta> \<circ>\<^sub>s \<delta>) x"
             "\<Gamma> (Var x) = Fun f (map \<Gamma> T)" "wf\<^sub>t\<^sub>r\<^sub>m ((\<theta> \<circ>\<^sub>s \<delta>) x)"
         using \<theta>\<delta> t'_m'' \<theta>(3) fv_subset[OF \<theta>(3)] fT(3) eval_term.simps(1)[of _ "\<theta> \<circ>\<^sub>s \<delta>"]
@@ -1785,7 +1785,7 @@ proof -
           using c 1 wt_subst_trm''[OF Substitution.hyps(2), of t] by force
         
         obtain m \<theta> where m: "m \<in> M" "t = m \<cdot> \<theta>" and \<theta>: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<theta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<theta>)"
-          using SMP_D_aux2[OF Substitution.hyps(1) t_Var M_SMP_repr] by moura
+          using SMP_D_aux2[OF Substitution.hyps(1) t_Var M_SMP_repr] by atomize_elim auto
 
         have "m \<cdot> (\<theta> \<circ>\<^sub>s \<delta>) = Fun c []" using c m(2) by auto
         thus ?thesis
@@ -1807,7 +1807,7 @@ proof -
         case (Fun g U)
         then obtain m \<theta> where m:
             "m \<in> M" "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<theta>" "t = m \<cdot> \<theta>" "is_Fun m" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<theta>)"
-          using Substitution.IH Fun 2 by moura
+          using Substitution.IH Fun 2 by atomize_elim auto
         have "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t (\<theta> \<circ>\<^sub>s \<delta>)" "t \<cdot> \<delta> = m \<cdot> (\<theta> \<circ>\<^sub>s \<delta>)" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range (\<theta> \<circ>\<^sub>s \<delta>))"
           using wt_subst_compose[OF m(2) Substitution.hyps(2)] m(3)
                 wf_trms_subst_compose[OF m(5) Substitution.hyps(3)]
@@ -1817,7 +1817,7 @@ proof -
         case (Var x)
         then obtain y where y: "y \<in> fv\<^sub>s\<^sub>e\<^sub>t M" "\<Gamma> (Var y) = \<Gamma> (Var x)"
           using SMP_D_aux1[OF Substitution.hyps(1) closed(1,3) wf_M] Fun
-          by moura
+          by atomize_elim auto
         hence 3: "\<Gamma> (Var y) = TComp f T" using Var Fun \<Gamma>_Var_fst by simp
         
         obtain h V where V:
@@ -1839,7 +1839,7 @@ proof -
   next
     case (Ana t K T k)
     have 1: "is_Fun t" using Ana.hyps(2,3) by auto
-    then obtain f U where U: "t = Fun f U" by moura
+    then obtain f U where U: "t = Fun f U" by atomize_elim auto
   
     have 2: "fv k \<subseteq> fv t" using Ana_keys_fv[OF Ana.hyps(2)] Ana.hyps(3) by auto
   
@@ -1873,7 +1873,7 @@ proof -
       then obtain m \<delta> where m: "m \<in> M" "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>)" "t = m \<cdot> \<delta>" "is_Fun m"
         using Ana.IH[OF 1] U by auto
       hence "Ana (t \<cdot> \<delta>) = (K \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<delta>,T \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<delta>)" using Ana_subst' U Ana.hyps(2) by auto
-      obtain Km Tm where Ana_m: "Ana m = (Km,Tm)" by moura
+      obtain Km Tm where Ana_m: "Ana m = (Km,Tm)" by atomize_elim auto
       hence "Ana (m \<cdot> \<delta>) = (Km \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<delta>,Tm \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<delta>)"
         using Ana_subst' U m(4) is_FunE[OF m(5)] Ana.hyps(2)
         by metis

@@ -10748,7 +10748,7 @@ proof -
     {
       assume W1: "\<not> Col D E F"
       obtain Q where W2: "D E F CongA A B Q \<and> A B OS Q C"
-        using W1 ZZ angle_construction_1 by moura
+        using W1 ZZ angle_construction_1 by blast
       obtain DD where W3: "E Out D DD \<and> Cong E DD B A"
         using P3 Z1 segment_construction_3 by force
       obtain FF where W4: "E Out F FF \<and> Cong E FF B Q"
@@ -27001,7 +27001,7 @@ proof -
     proof -
       obtain pp :: 'p and ppa :: 'p and ppb :: 'p where
         f1: "QCongA a \<and> a pp ppa ppb \<and> \<not> Bet pp ppa ppb"
-        using \<open>QCongA a \<and> (\<exists>A B C. a A B C \<and> \<not> Bet A B C)\<close> by moura
+        using \<open>QCongA a \<and> (\<exists>A B C. a A B C \<and> \<not> Bet A B C)\<close> by blast
       then have f2: "\<forall>p pa pb. pp ppa ppb CongA pb pa p \<or> \<not> a pb pa p"
         by (metis (no_types) Ang_def Tarski_neutral_dimensionless.not_cong_is_ang1 Tarski_neutral_dimensionless_axioms)
       then have f3: "\<forall>p pa pb. (Col pp ppa ppb \<or> \<not> a pb pa p) \<or> \<not> Bet pb pa p"

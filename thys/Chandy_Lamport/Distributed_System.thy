@@ -1710,7 +1710,7 @@ proof -
   proof -
     obtain nn :: "('p, 's, 'm) event \<Rightarrow> nat" and aa :: "('p, 's, 'm) event \<Rightarrow> 'p" and aaa :: "('p, 's, 'm) event \<Rightarrow> 'p" and bb :: "('p, 's, 'm) event \<Rightarrow> 's" and bba :: "('p, 's, 'm) event \<Rightarrow> 's" and cc :: "('p, 's, 'm) event \<Rightarrow> 'm" where
       f1: "\<forall>e. (\<not> isRecv e \<or> e = Recv (nn e) (aa e) (aaa e) (bb e) (bba e) (cc e)) \<and> (isRecv e \<or> (\<forall>n a aa b ba c. e \<noteq> Recv n a aa b ba c))"
-      using isRecv_def by moura
+      by (metis isRecv_def)
     then have f2: "c \<turnstile> Recv (nn ev) (aa ev) (aaa ev) (bb ev) (bba ev) (cc ev) \<mapsto> c'"
       by (metis (no_types) assms(2) local.step same_cs_if_not_recv)
     have f3: "\<forall>x0 x1 x7 x8. (x0 \<noteq> x7 \<longrightarrow> cs (x8::('p, 's, 'm) configuration) x0 = cs (x1::('p, 's, _) configuration) x0) = (x0 = x7 \<or> cs x8 x0 = cs x1 x0)"

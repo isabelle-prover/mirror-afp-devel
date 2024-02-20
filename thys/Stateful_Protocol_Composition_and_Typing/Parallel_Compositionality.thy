@@ -401,7 +401,7 @@ proof -
       "l1 \<noteq> l2"
       "s1 \<sqsubseteq> t" "proj_specific l1 s1 \<A> Sec"
       "s2 \<sqsubseteq> t" "proj_specific l2 s2 \<A> Sec"
-    using assms(1) unfolding heterogeneous\<^sub>l\<^sub>s\<^sub>t_def by moura
+    using assms(1) unfolding heterogeneous\<^sub>l\<^sub>s\<^sub>t_def by fast
   thus ?thesis
     using term.order_trans[OF *(2) assms(2)] term.order_trans[OF *(4) assms(2)]
     by (auto simp add: heterogeneous\<^sub>l\<^sub>s\<^sub>t_def)
@@ -428,7 +428,7 @@ private lemma proj_specific_is_homogeneous:
 proof
   assume "heterogeneous\<^sub>l\<^sub>s\<^sub>t m \<A> Sec"
   then obtain s l' where s: "s \<in> subterms m" "proj_specific l' s \<A> Sec" "l \<noteq> l'"
-    unfolding heterogeneous\<^sub>l\<^sub>s\<^sub>t_def by moura
+    unfolding heterogeneous\<^sub>l\<^sub>s\<^sub>t_def by atomize_elim auto
   hence "s \<in> GSMP (trms_proj\<^sub>l\<^sub>s\<^sub>t l \<A>)" "s \<in> GSMP (trms_proj\<^sub>l\<^sub>s\<^sub>t l' \<A>)"
     using t by (auto simp add: GSMP_def proj_specific_def)
   hence "s \<in> Sec \<or> {} \<turnstile>\<^sub>c s"
@@ -451,7 +451,7 @@ private lemma GSMP_proj_is_homogeneous:
 proof
   assume "heterogeneous\<^sub>l\<^sub>s\<^sub>t t A Sec"
   then obtain s l' where s: "s \<in> subterms t" "proj_specific l' s A Sec" "l \<noteq> l'"
-    unfolding heterogeneous\<^sub>l\<^sub>s\<^sub>t_def by moura
+    unfolding heterogeneous\<^sub>l\<^sub>s\<^sub>t_def by atomize_elim auto
   hence "s \<in> GSMP (trms_proj\<^sub>l\<^sub>s\<^sub>t l A)" "s \<in> GSMP (trms_proj\<^sub>l\<^sub>s\<^sub>t l' A)"
     using assms by (auto simp add: GSMP_def proj_specific_def)
   hence "s \<in> Sec \<or> {} \<turnstile>\<^sub>c s" using assms(1) s(3) by (auto simp add: GSMP_disjoint_def)
@@ -480,7 +480,7 @@ private lemma GSMP_is_homogeneous:
   and t: "t \<in> GSMP (trms\<^sub>l\<^sub>s\<^sub>t \<A>)" "t \<notin> Sec"
   shows "homogeneous\<^sub>l\<^sub>s\<^sub>t t \<A> Sec"
 proof -
-  obtain n where n: "t \<in> GSMP (trms_proj\<^sub>l\<^sub>s\<^sub>t n \<A>)" using in_GSMP_in_proj[OF t(1)] by moura
+  obtain n where n: "t \<in> GSMP (trms_proj\<^sub>l\<^sub>s\<^sub>t n \<A>)" using in_GSMP_in_proj[OF t(1)] by atomize_elim auto
   show ?thesis using GSMP_proj_is_homogeneous[OF \<A> n t(2)] by metis
 qed
 
@@ -626,7 +626,7 @@ proof -
   show ?A ?B using t
   proof (induction t rule: intruder_deduct_hom_induct)
     case (AxiomH t)
-    then obtain lt where t_in_proj_ik: "t \<in> M lt" by moura
+    then obtain lt where t_in_proj_ik: "t \<in> M lt" by atomize_elim auto
     show t_not_Sec: "t \<notin> Sec - Discl"
     proof
       assume "t \<in> Sec - Discl"
@@ -707,7 +707,7 @@ lemma par_comp_deduct_proj:
 using t
 proof (induction t rule: intruder_deduct_induct)
   case (Axiom t)
-  then obtain l' where t_in_ik_proj: "t \<in> M l'" by moura
+  then obtain l' where t_in_ik_proj: "t \<in> M l'" by atomize_elim auto
   show ?case
   proof (cases "t \<in> Sec - Discl \<or> {} \<turnstile>\<^sub>c t")
     case True thus ?thesis
@@ -787,7 +787,7 @@ proof -
       using that by (auto simp add: par_comp_def)
 
     obtain a A n where a: "\<A> = A@[a]" "a = (ln n, b) \<or> a = (\<star>, b)"
-      using unlabel_snoc_inv[OF snoc.hyps(2)[symmetric]] by moura
+      using unlabel_snoc_inv[OF snoc.hyps(2)[symmetric]] by atomize_elim auto
     hence A: "\<A> = A@[(ln n, b)] \<or> \<A> = A@[(\<star>, b)]" by metis
 
     have 1: "B = unlabel A" using a snoc.hyps(2) unlabel_append[of A "[a]"] by auto

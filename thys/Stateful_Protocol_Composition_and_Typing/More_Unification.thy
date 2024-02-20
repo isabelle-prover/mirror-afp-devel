@@ -179,7 +179,7 @@ proof (induction T arbitrary: S)
     using Cons.prems S' by force+
   then obtain U where U:
       "length T = length U" "\<forall>i < length T. P (T ! i) (U ! i)" "S = map (\<lambda>u. u \<cdot> \<delta>) U"
-    using Cons.IH by moura
+    using Cons.IH by atomize_elim auto
 
   obtain u where u: "P t u" "s = u \<cdot> \<delta>"
     using Cons.prems(1) S' by auto
@@ -545,7 +545,7 @@ lemma ground_img_obtain_fun:
   assumes "ground (subst_range s)" "x \<in> subst_domain s"
   obtains f T where "s x = Fun f T" "Fun f T \<in> subst_range s" "fv (Fun f T) = {}"
 proof -
-  from assms(2) obtain t where t: "s x = t" "t \<in> subst_range s" by moura
+  from assms(2) obtain t where t: "s x = t" "t \<in> subst_range s" by atomize_elim auto
   hence "fv t = {}" using assms(1) by auto
   thus ?thesis using t that by (cases t) simp_all
 qed
@@ -1094,7 +1094,7 @@ proof
       by (auto simp: subst_compose subterms_subst)
     moreover have ?thesis when *: "Fun f T \<in> subterms (\<theta>1 x) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<theta>2"
     proof -
-      obtain s where s: "s \<in> subterms (\<theta>1 x)" "Fun f T = s \<cdot> \<theta>2" using * by moura
+      obtain s where s: "s \<in> subterms (\<theta>1 x)" "Fun f T = s \<cdot> \<theta>2" using * by atomize_elim auto
       show ?thesis
       proof (cases s)
         case (Var y)
@@ -1591,7 +1591,7 @@ lemma const_subterm_subst_cases:
 proof (cases "Fun c [] \<sqsubseteq> t")
   case False
   then obtain x where "x \<in> fv t" "Fun c [] \<sqsubseteq> \<sigma> x"
-    using const_subterm_subst_var_obtain[OF assms] by moura
+    using const_subterm_subst_var_obtain[OF assms] by atomize_elim auto
   thus ?thesis by (cases "x \<in> subst_domain \<sigma>") auto
 qed simp
 
@@ -1629,7 +1629,7 @@ qed simp
 lemma fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_step_subst: "fv\<^sub>s\<^sub>e\<^sub>t (\<delta> ` fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F) = fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (F \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s \<delta>)"
 proof (induction F)
   case (Cons f F)
-  obtain t t' where "f = (t,t')" by moura
+  obtain t t' where "f = (t,t')" by atomize_elim auto
   thus ?case
     using Cons
     by (simp add: subst_apply_pairs_def subst_apply_fv_unfold)
@@ -1703,7 +1703,7 @@ by (induct F) (force simp add: subst_apply_pairs_def)+
 
 lemma subst_pair_compose[simp]: "d \<cdot>\<^sub>p (\<delta> \<circ>\<^sub>s \<I>) = d \<cdot>\<^sub>p \<delta> \<cdot>\<^sub>p \<I>"
 proof -
-  obtain t s where "d = (t,s)" by moura
+  obtain t s where "d = (t,s)" by atomize_elim auto
   thus ?thesis by auto
 qed
 
@@ -2407,7 +2407,7 @@ lemma interpretation_subst_exists':
   "\<exists>\<theta>::('f,'v) subst. subst_domain \<theta> = X \<and> ground (subst_range \<theta>)"
 proof -
   obtain \<I>::"('f,'v) subst" where \<I>: "subst_domain \<I> = UNIV" "ground (subst_range \<I>)"
-    using interpretation_subst_exists by moura
+    using interpretation_subst_exists by atomize_elim auto
   let ?\<theta> = "rm_vars (UNIV - X) \<I>"
   have 1: "subst_domain ?\<theta> = X" using \<I> by (auto simp add: subst_domain_def)
   hence 2: "ground (subst_range ?\<theta>)" using \<I> by force
@@ -2712,7 +2712,7 @@ proof -
       then obtain u1 u2 where u12:
           "(u1,u2) \<in> set E"
           "u \<in> (subterms (u1 \<cdot> (d v t')) - V) \<union> (subterms (u2 \<cdot> (d v t')) - V)"
-        unfolding subtt_def subst_list_def E'_def d_def by moura
+        unfolding subtt_def subst_list_def E'_def d_def by atomize_elim force
       hence "u \<in> (subterms t' - V) \<union> (((subterms_tuples E) \<cdot>\<^sub>s\<^sub>e\<^sub>t d v t') - V)"
         using subterms_subst[of u1 "d v t'"] subterms_subst[of u2 "d v t'"]
               *[OF u12(1)] **[of u1] **[of u2]
@@ -2962,7 +2962,7 @@ proof -
 
   have "\<exists>\<delta>::('f,'v) subst. s \<cdot> \<delta> = t \<cdot> \<delta>" by (metis subst_subst_compose unif)
   then obtain \<delta>::"('f,'v) subst" where \<delta>: "mgu s t = Some \<delta>"
-    using mgu_always_unifies by moura
+    using mgu_always_unifies by atomize_elim auto
   have 1: "\<exists>\<sigma>::('f,'v) subst. s \<cdot> \<theta> \<cdot> \<sigma> = t \<cdot> \<theta> \<cdot> \<sigma>" by (metis unif)
   have 2: "\<And>\<gamma>::('f,'v) subst. s \<cdot> \<theta> \<cdot> \<gamma> = t \<cdot> \<theta> \<cdot> \<gamma> \<Longrightarrow> \<delta> \<preceq>\<^sub>\<circ> \<theta> \<circ>\<^sub>s \<gamma>" using mgu_gives_MGU[OF \<delta>] by simp
   have 3: "\<And>(z::'v) (c::'f). \<delta> z = Fun c [] \<Longrightarrow> Fun c [] \<sqsubseteq> s \<or> Fun c [] \<sqsubseteq> t"
@@ -2977,13 +2977,13 @@ proof -
       using \<theta>(4) ident_comp_subst_trm_if_disj[of \<gamma> \<theta>]
       unfolding range_vars_alt_def by fast
   }
-  then obtain \<tau>::"('f,'v) subst" where \<tau>: "\<forall>x \<in> subst_domain \<theta>. \<theta> x = (\<delta> \<circ>\<^sub>s \<tau>) x" using 1 2 by moura
+  then obtain \<tau>::"('f,'v) subst" where \<tau>: "\<forall>x \<in> subst_domain \<theta>. \<theta> x = (\<delta> \<circ>\<^sub>s \<tau>) x" using 1 2 by metis
 
   have *: "\<And>x. x \<in> subst_domain \<delta> \<inter> subst_domain \<theta> \<Longrightarrow> \<exists>y \<in> ?ys. \<delta> x = Var y"
   proof -
     fix x assume "x \<in> subst_domain \<delta> \<inter> ?xs"
     hence x: "x \<in> subst_domain \<delta>" "x \<in> subst_domain \<theta>" by auto
-    then obtain c where c: "\<theta> x = Fun c []" using \<theta>(2,5) 5 by moura
+    then obtain c where c: "\<theta> x = Fun c []" using \<theta>(2,5) 5 by atomize_elim auto
     hence *: "(\<delta> \<circ>\<^sub>s \<tau>) x = Fun c []" using \<tau> x by fastforce
     hence **: "x \<in> subst_domain (\<delta> \<circ>\<^sub>s \<tau>)" "Fun c [] \<in> subst_range (\<delta> \<circ>\<^sub>s \<tau>)"
       by (auto simp add: subst_domain_def)
@@ -3002,7 +3002,7 @@ proof -
     moreover have "\<forall>x' \<in> subst_domain \<theta>. \<delta> x \<noteq> Var x'"
     proof (rule ccontr)
       assume "\<not>(\<forall>x' \<in> subst_domain \<theta>. \<delta> x \<noteq> Var x')"
-      then obtain x' where x': "x' \<in> subst_domain \<theta>" "\<delta> x = Var x'" by moura
+      then obtain x' where x': "x' \<in> subst_domain \<theta>" "\<delta> x = Var x'" by atomize_elim auto
       hence "\<tau> x' = Fun c []" "(\<delta> \<circ>\<^sub>s \<tau>) x = Fun c []" using * unfolding subst_compose_def by auto
       moreover have "x \<noteq> x'"
         using x(1) x'(2) 4
@@ -3042,7 +3042,7 @@ proof -
       case True
       moreover assume "z \<in> ?xs"
       ultimately have z_in: "z \<in> subst_domain \<delta> \<inter> ?xs" by simp
-      then obtain y where y: "\<delta> z = Var y" "y \<in> ?ys" using * by moura
+      then obtain y where y: "\<delta> z = Var y" "y \<in> ?ys" using * by atomize_elim auto
       hence "\<alpha> y = Var ((inv_into (subst_domain \<delta> \<inter> ?xs) \<delta>) (Var y))"
         using \<alpha>_def z_in by simp
       hence "\<alpha> y = Var z" by (metis y(1) z_in ** inv_into_f_eq)
@@ -3106,7 +3106,7 @@ proof -
 
   have "\<exists>\<delta>::('f,'v) subst. s \<cdot> \<delta> = t \<cdot> \<delta>" by (metis subst_subst_compose unif)
   then obtain \<delta>::"('f,'v) subst" where \<delta>: "mgu s t = Some \<delta>"
-    using mgu_always_unifies by moura
+    using mgu_always_unifies by atomize_elim auto
   have 1: "\<exists>\<sigma>::('f,'v) subst. s \<cdot> \<theta> \<cdot> \<sigma> = t \<cdot> \<theta> \<cdot> \<sigma>" by (metis unif)
   have 2: "\<And>\<gamma>::('f,'v) subst. s \<cdot> \<theta> \<cdot> \<gamma> = t \<cdot> \<theta> \<cdot> \<gamma> \<Longrightarrow> \<delta> \<preceq>\<^sub>\<circ> \<theta> \<circ>\<^sub>s \<gamma>" using mgu_gives_MGU[OF \<delta>] by simp
   have 3: "\<And>(z::'v) (c::'f).  Fun c [] \<sqsubseteq> \<delta> z \<Longrightarrow> Fun c [] \<sqsubseteq> s \<or> Fun c [] \<sqsubseteq> t"
@@ -3123,7 +3123,7 @@ proof -
       using \<open>ground (subst_range \<theta>)\<close> ident_comp_subst_trm_if_disj[of \<gamma> \<theta> x]
       unfolding range_vars_alt_def by blast
   }
-  then obtain \<tau>::"('f,'v) subst" where \<tau>: "\<forall>x \<in> subst_domain \<theta>. \<theta> x = (\<delta> \<circ>\<^sub>s \<tau>) x" using 1 2 by moura
+  then obtain \<tau>::"('f,'v) subst" where \<tau>: "\<forall>x \<in> subst_domain \<theta>. \<theta> x = (\<delta> \<circ>\<^sub>s \<tau>) x" using 1 2 by metis
 
   have ***: "\<And>x. x \<in> subst_domain \<delta> \<inter> subst_domain \<theta> \<Longrightarrow> fv (\<delta> x) \<subseteq> ?ys"
   proof -
@@ -3164,7 +3164,7 @@ proof -
     fix xi assume xi_assms: "xi \<in> subst_domain \<delta> \<inter> subst_domain \<theta>" "\<not>(\<exists>y \<in> ?ys. \<delta> xi = Var y)"
     hence xi_\<theta>: "xi \<in> subst_domain \<theta>" and \<delta>_xi_comp: "\<not>(\<exists>y. \<delta> xi = Var y)"
       using ***[of xi] 5 by auto
-    then obtain f T where f: "\<delta> xi = Fun f T" by (cases "\<delta> xi") moura
+    then obtain f T where f: "\<delta> xi = Fun f T" by (cases "\<delta> xi") auto
 
     have "\<exists>g Y'. Y' \<noteq> [] \<and> Fun g (map Var Y') \<sqsubseteq> \<delta> xi \<and> set Y' \<subseteq> ?ys"
     proof -
@@ -3178,7 +3178,7 @@ proof -
       hence "\<exists>g S. Fun g S \<sqsubseteq> \<delta> xi \<and> (\<forall>s \<in> set S. (\<exists>c. s = Fun c []) \<or> (\<exists>x. s = Var x))"
         using nonvar_term_has_composed_shallow_term[of "\<delta> xi"] by auto
       then obtain g S where gS: "Fun g S \<sqsubseteq> \<delta> xi" "\<forall>s \<in> set S. (\<exists>c. s = Fun c []) \<or> (\<exists>x. s = Var x)"
-        by moura
+        by atomize_elim auto
 
       have "\<forall>s \<in> set S. \<exists>x. s = Var x"
         using 1 term.order_trans gS
@@ -3193,7 +3193,7 @@ proof -
       
       show ?thesis using ***[OF xi_assms(1)] 2 3 4 by auto
     qed
-    then obtain g Y' where g: "Y' \<noteq> []" "Fun g (map Var Y') \<sqsubseteq> \<delta> xi" "set Y' \<subseteq> ?ys" by moura
+    then obtain g Y' where g: "Y' \<noteq> []" "Fun g (map Var Y') \<sqsubseteq> \<delta> xi" "set Y' \<subseteq> ?ys" by atomize_elim auto
     then obtain X where X: "map \<delta> X = map Var Y'" "Fun g (map Var X) \<in> subterms s \<union> subterms t"
       using mgu_img_composed_var_term[OF \<delta>, of g Y'] by force
     hence "\<exists>(u::('f,'v) term) \<in> set (map Var X). u \<notin> Var ` ?ys"
@@ -3238,7 +3238,7 @@ proof -
       case True
       moreover assume "z \<in> ?xs"
       ultimately have z_in: "z \<in> subst_domain \<delta> \<inter> ?xs" by simp
-      then obtain y where y: "\<delta> z = Var y" "y \<in> ?ys" using * by moura
+      then obtain y where y: "\<delta> z = Var y" "y \<in> ?ys" using * by atomize_elim auto
       hence "\<alpha> y = Var ((inv_into (subst_domain \<delta> \<inter> ?xs) \<delta>) (Var y))"
         using \<alpha>_def z_in by simp
       hence "\<alpha> y = Var z" by (metis y(1) z_in ** inv_into_f_eq)
@@ -3299,7 +3299,7 @@ proof -
     hence "Unifier (\<sigma> \<circ>\<^sub>s \<I>') (s \<cdot> \<I>) (t \<cdot> \<I>)" using assms(1) by simp
     thus ?thesis using * interpretation_comp by blast
   qed
-  then obtain \<sigma>' where \<sigma>': "Unifier \<sigma>' (s \<cdot> \<I>) (t \<cdot> \<I>)" "interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<sigma>'" by moura
+  then obtain \<sigma>' where \<sigma>': "Unifier \<sigma>' (s \<cdot> \<I>) (t \<cdot> \<I>)" "interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<sigma>'" by atomize_elim auto
   
   define \<sigma>'' where "\<sigma>'' = rm_vars (UNIV - X) \<sigma>'"
   
@@ -3395,7 +3395,7 @@ proof (intro allI impI)
         assume "S = []" thus ?thesis using u(2) Fun by simp
       next
         assume "\<exists>u \<in> set S. u \<notin> Var`X"
-        then obtain u' where u': "u' \<in> set S" "u' \<notin> Var`X" by moura
+        then obtain u' where u': "u' \<in> set S" "u' \<notin> Var`X" by atomize_elim auto
         hence "u' \<cdot> \<theta> \<in> set T" using u(2) Fun by auto
         thus ?thesis using u'(2) 3 by (cases u') force+
       qed
