@@ -1,0 +1,36 @@
+title = "Karatsuba Multiplication on Integers"
+date = 2024-02-19
+topics = [
+  "Computer science/Algorithms",
+  "Computer science/Algorithms/Mathematical",
+]
+abstract = """
+We give a verified implementation of the Karatsuba Multiplication on Integers as well as verified runtime bounds.
+Integers are represented as LSBF (least significant bit first) boolean lists, on which the algorithm
+by Karatsuba  is implemented. The running time of $\\mathcal{O}\\left(\\log_2 3\\right)$ is verified
+using the Time Monad defined in Root-Balanced Trees by Nipkow."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.schulz]
+email = "schulz_email"
+
+[authors.karayel]
+email = "karayel_email"
+
+[contributors]
+
+[notify]
+schulz = "schulz_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = [
+  "https://mediatum.ub.tum.de/doc/1717658/1717658.pdf",
+]

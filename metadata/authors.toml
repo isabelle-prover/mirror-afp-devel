@@ -5946,6 +5946,23 @@ host = [
 
 [schou.homepages]
 
+[schulz]
+name = "Jakob Schulz"
+
+[schulz.emails]
+
+[schulz.emails.schulz_email]
+user = [
+  "jakob",
+  "schulz",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[schulz.homepages]
+
 [scott]
 name = "Dana Scott"
 
