@@ -112,37 +112,7 @@ lemma zero_powr [simp]: "(0::real) powr x = 0"
 lemma powr_negD: "(a::real) powr b \<le> 0 \<Longrightarrow> a = 0"
   unfolding powr_def by (simp split: if_split_asm)
 
-lemma inverse_powr [simp]:
-  assumes "(x::real) \<ge> 0"
-  shows   "inverse x powr y = inverse (x powr y)"
-proof (cases "x > 0")
-  assume x: "x > 0"
-  from x have "inverse x powr y = exp (y * ln (inverse x))" by (simp add: powr_def)
-  also have "ln (inverse x) = -ln x" by (simp add: x ln_inverse)
-  also have "exp (y * -ln x) = inverse (exp (y * ln x))" by (simp add: exp_minus)
-  also from x have "exp (y * ln x) = x powr y" by (simp add: powr_def)
-  finally show ?thesis .
-qed (insert assms, simp)
-
-lemma powr_mono':
-  assumes "(x::real) > 0" "x \<le> 1" "a \<le> b"
-  shows   "x powr b \<le> x powr a"
-proof-
-  have "inverse x powr a \<le> inverse x powr b" using assms
-    by (intro powr_mono) (simp_all add: field_simps)
-  hence "inverse (x powr a) \<le> inverse (x powr b)" using assms by simp
-  with assms show ?thesis by (simp add: field_simps)
-qed
-
-lemma powr_less_mono':
-  assumes "(x::real) > 0" "x < 1" "a < b"
-  shows   "x powr b < x powr a"
-proof-
-  have "inverse x powr a < inverse x powr b" using assms
-    by (intro powr_less_mono) (simp_all add: field_simps)
-  hence "inverse (x powr a) < inverse (x powr b)" using assms by simp
-  with assms show ?thesis by (simp add: field_simps)
-qed
+declare inverse_powr [simp]:
 
 lemma powr_lower_bound: "\<lbrakk>(l::real) > 0; l \<le> x; x \<le> u\<rbrakk> \<Longrightarrow> min (l powr z) (u powr z) \<le> x powr z"
 apply (cases "z \<ge> 0")
