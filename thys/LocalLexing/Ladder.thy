@@ -1524,23 +1524,12 @@ next
         using \<alpha>' \<omega> LeftDerivation_implies_append by blast
       have i_e: "(i, snd e) = e" by (simp add: is_eq_fst_e)
       have take_n_D_e: "((take n' D)@(e # E)) = take n D"
-      proof - (* automatically found *)
-        obtain nn :: "(nat \<times> symbol \<times> symbol list) list \<Rightarrow> (nat \<times> nat \<times> nat) list \<Rightarrow> nat" and 
-          nna :: "(nat \<times> symbol \<times> symbol list) list \<Rightarrow> (nat \<times> nat \<times> nat) list \<Rightarrow> nat" and 
-          nnb :: "(nat \<times> symbol \<times> symbol list) list \<Rightarrow> (nat \<times> nat \<times> nat) list \<Rightarrow> nat" where
-          f1: "(\<forall>ps psa. \<not> is_ladder ps psa \<or> psa \<noteq> [] \<and> (\<forall>n. \<not> n < length psa \<or> 
-            ladder_n psa n \<le> length ps) \<and> (\<forall>n na. (\<not> n < na \<or> \<not> na < length psa) \<or> 
-            ladder_n psa n < ladder_n psa na) \<and> ladder_last_n psa = length ps) \<and> 
-            (\<forall>ps psa. (psa = [] \<or> nn ps psa < length psa \<and> \<not> ladder_n psa (nn ps psa) \<le> 
-              length ps \<or> (nna ps psa < nnb ps psa \<and> nnb ps psa < length psa) \<and> 
-              \<not> ladder_n psa (nna ps psa) < ladder_n psa (nnb ps psa) \<or> 
-              ladder_last_n psa \<noteq> length ps) \<or> is_ladder ps psa)"
-          using is_ladder_def by moura
-        then have f2: "ladder_last_n L = length D"
-          using is_ladder by blast
+      proof - (* automatically found, then modified *)
+        have f2: "ladder_last_n L = length D"
+          using is_ladder is_ladder_def by blast
         have f3: "min (ladder_last_n L) n = n"
-          using f1 by (metis (no_types) Suc_eq_plus1 index_plus_1_bound is_ladder 
-            min.absorb2 n_def)
+          using is_ladder_def
+          by (metis (no_types) Suc_eq_plus1 index_plus_1_bound is_ladder min.absorb2 n_def)
         then have "take n' (take n D) @ take n D ! n' # E = take n D"
           using f2 by (metis E id_take_nth_drop length_take n'_less_n)
         then show ?thesis

@@ -10150,15 +10150,7 @@ lemma l11_22:
 lemma l11_24:
   assumes "P InAngle A B C"
   shows "P InAngle C B A"
-proof -
-  obtain pp :: "'p \<Rightarrow> 'p \<Rightarrow> 'p \<Rightarrow> 'p \<Rightarrow> 'p" where
-    "\<forall>x0 x1 x2 x3. (\<exists>v4. Bet x2 v4 x0 \<and> (v4 = x1 \<or> x1 Out v4 x3)) = (Bet x2 (pp x0 x1 x2 x3) x0 \<and> ((pp x0 x1 x2 x3) = x1 \<or> x1 Out (pp x0 x1 x2 x3) x3))"
-    by moura
-  then have "A \<noteq> B \<and> C \<noteq> B \<and> P \<noteq> B \<and>Bet A (pp C B A P) C \<and> ((pp C B A P) = B \<or> B Out (pp C B A P) P)"
-    using InAngle_def assms by presburger
-  thus ?thesis
-    by (metis (no_types) InAngle_def between_symmetry)
-qed
+  using Bet_cases InAngle_def assms by auto
 
 lemma col_in_angle:
   assumes "A \<noteq> B" and
