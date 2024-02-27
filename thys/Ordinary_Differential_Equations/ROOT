@@ -51,7 +51,7 @@ session "Lorenz_C0" (large) in "Ex/Lorenz/C0" = "Lorenz_Approximation" +
   theories
     Lorenz_C0
 
-session "Lorenz_C1" (large) in "Ex/Lorenz/C1" = "Lorenz_Approximation" +
-  options [timeout = 300 (*360000*)]
+session "Lorenz_C1" (slow very_slow) in "Ex/Lorenz/C1" = "Lorenz_Approximation" +
+  options [timeout = 360000]
   theories
     Lorenz_C1
