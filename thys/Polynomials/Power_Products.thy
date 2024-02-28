@@ -1056,6 +1056,10 @@ locale ordered_powerprod =
   assumes plus_monotone: "s \<preceq> t \<Longrightarrow> s + u \<preceq> t + u"
 begin
 
+text \<open>Conceal these relations defined in Equipollence\<close>
+no_notation lesspoll (infixl \<open>\<prec>\<close> 50)
+no_notation lepoll   (infixl "\<lesssim>" 50)
+
 abbreviation ord_conv (infixl "\<succeq>" 50) where "ord_conv \<equiv> (\<preceq>)\<inverse>\<inverse>"
 abbreviation ord_strict_conv (infixl "\<succ>" 50) where "ord_strict_conv \<equiv> (\<prec>)\<inverse>\<inverse>"
 
