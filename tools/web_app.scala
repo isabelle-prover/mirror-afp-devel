@@ -408,7 +408,7 @@ document.getElementById('iframe').src = base + '""" + api.api_url(path).replace(
         Exn.capture(reply(request)) match {
           case Exn.Res(res) => Some(res)
           case Exn.Exn(exn) =>
-            val id = UUID.random()
+            val id = UUID.random_string()
             progress.echo_error_message("Internal error <" + id + ">: " + exn)
             isabelle.error("Internal server error. ID: " + id)
         }
