@@ -689,12 +689,12 @@ proof -
     by (simp add: fmdom'_notI)
   also from assms have "\<dots> =
     fmdom' m\<^sub>2 \<lhd>/ m\<^sub>1 ++\<^sub>f {k $$:= v} ++\<^sub>f fmdom' m\<^sub>1 \<lhd>/ m\<^sub>2 ++\<^sub>f (m\<^sub>1(k $$:= v) \<inter>\<^sub>+ m\<^sub>2)"
-    by (smt fmdom'_fmupd fmfilter_cong insert_iff option.distinct(1))
+    by (smt (verit, best) Int_iff Int_insert_left_if0 fmdom'_fmupd fmdom'_notI fmfilter_cong')
   also from assms have "\<dots> = fmdom' m\<^sub>2 \<lhd>/ m\<^sub>1 ++\<^sub>f {k $$:= v} ++\<^sub>f fmdom' m\<^sub>1 \<lhd>/ m\<^sub>2 ++\<^sub>f (m\<^sub>1 \<inter>\<^sub>+ m\<^sub>2)"
     using inter_plus_addition_notin by metis
   also from assms have "\<dots> = fmdom' m\<^sub>2 \<lhd>/ m\<^sub>1 ++\<^sub>f fmdom' m\<^sub>1 \<lhd>/ m\<^sub>2 ++\<^sub>f (m\<^sub>1 \<inter>\<^sub>+ m\<^sub>2) ++\<^sub>f {k $$:= v}"
     using fmap_singleton_comm
-    by (smt fmadd_assoc fmfilter_fmmap_keys fmlookup_filter fmlookup_fmmap_keys)
+    by (metis (mono_tags, lifting) fmadd_assoc fmdom'_notI fmfilter_fmmap_keys fmlookup_filter)
   finally show ?thesis .
 qed
 
