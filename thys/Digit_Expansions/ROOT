@@ -2,13 +2,11 @@ chapter AFP
 
 session Digit_Expansions = HOL +
   description \<open>Properties of digit expansions\<close>
-  options [timeout=300]
-
+  options [timeout = 300]
   theories
     "Bits_Digits"
     "Carries"
     "Binary_Operations"
-
   document_files
     "root.tex"
     "root.bib"
