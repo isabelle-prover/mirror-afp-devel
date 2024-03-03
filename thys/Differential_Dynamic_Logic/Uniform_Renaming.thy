@@ -260,7 +260,7 @@ lemma Radj_repd3:
 lemma Radj_eq_iff:"(a = b) = ((Radj x y a) = (Radj x y b))"
   unfolding Radj_def RSadj_def apply auto
   apply (rule state_eq)
-   apply smt+
+   apply (smt (verit))+
   done
 
 lemma RSadj_cancel:"RSadj x y (RSadj x y \<nu>) = \<nu>"
