@@ -484,9 +484,9 @@ apply(induct rule: wls_wlsAbs_wlsInp_wlsBinp.induct)
 subgoal by auto
 subgoal by auto 
 subgoal unfolding goodInp_def liftAll_def 
-by simp (smt Collect_cong arityOf_lt_var_INNER option.distinct(1) option.sel)
+by simp (smt (verit) Collect_cong arityOf_lt_var_INNER option.distinct(1) option.sel)
 subgoal unfolding goodBinp_def liftAll_def 
-by simp (smt Collect_cong barityOf_lt_var_INNER option.distinct(1) option.sel) 
+by simp (smt (verit) Collect_cong barityOf_lt_var_INNER option.distinct(1) option.sel) 
 subgoal by auto .
 
 corollary wls_imp_good[simp]: "wls s X \<Longrightarrow> good X"
@@ -818,10 +818,10 @@ proof-
   using PAR 1 2 apply simp_all using wls_imp_good wlsAbs_imp_goodAbs by blast+
   subgoal using assms by simp (meson wls_imp_good)
   subgoal using assms by simp
-  subgoal using assms by simp  
-    (smt liftAll2_def liftAll_def option.distinct(1) 
-    option.sel wlsBinp.cases wlsInp_iff)
-  subgoal using assms by simp metis . 
+  subgoal using assms
+    by (smt (verit, ccfv_threshold) case_prodI2' liftAll2_def liftAll_def wlsBinp_iff wlsInp_iff wls_Op_simp)
+  subgoal using assms by simp metis
+  done
   thus ?thesis by auto
 qed
 

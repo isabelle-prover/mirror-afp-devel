@@ -273,7 +273,7 @@ assumes "qGoodInp qinp \<or> qGoodInp qinp'" and "qinp %= qinp'"
 shows "(qinp %[[x1 \<and> x2]]_xs) %= (qinp' %[[x1 \<and> x2]]_xs)"
 using assms unfolding alphaInp_def qSwapInp_def sameDom_def liftAll2_def
 by (simp add: lift_None)  
-   (smt liftAll_def lift_def option.case_eq_if option.exhaust_sel 
+   (smt (verit) liftAll_def lift_def option.case_eq_if option.exhaust_sel 
       option.sel qGoodInp_def qSwap_preserves_alpha)
 
 lemma qSwapBinp_preserves_alphaBinp:
@@ -281,21 +281,21 @@ assumes "qGoodBinp qbinp \<or> qGoodBinp qbinp'" and "qbinp %%= qbinp'"
 shows "(qbinp %%[[x1 \<and> x2]]_xs) %%= (qbinp' %%[[x1 \<and> x2]]_xs)"
 using assms unfolding alphaBinp_def qSwapBinp_def sameDom_def liftAll2_def
 by (simp add: lift_None)
-   (smt liftAll_def lift_def option.case_eq_if option.exhaust_sel option.sel 
+   (smt (verit) liftAll_def lift_def option.case_eq_if option.exhaust_sel option.sel 
      qGoodBinp_def qSwapAbs_preserves_alphaAbs) 
 
 lemma qPsubstInp_preserves_qGoodInp:
 assumes "qGoodInp qinp" and "qGoodEnv qrho"
 shows "qGoodInp (qinp %[[qrho]])"
 using assms unfolding qGoodInp_def qPsubstInp_def liftAll_def
-by simp (smt Collect_cong lift_def option.case_eq_if 
+by simp (smt (verit) Collect_cong lift_def option.case_eq_if 
    option.exhaust_sel option.sel qPsubst_preserves_qGood) 
 
 lemma qPsubstBinp_preserves_qGoodBinp:
 assumes "qGoodBinp qbinp" and "qGoodEnv qrho"
 shows "qGoodBinp (qbinp %%[[qrho]])"
 using assms unfolding qGoodBinp_def qPsubstBinp_def liftAll_def
-by simp (smt Collect_cong lift_def option.case_eq_if 
+by simp (smt (verit) Collect_cong lift_def option.case_eq_if 
    option.exhaust_sel option.sel qPsubstAbs_preserves_qGoodAbs)  
 
 lemma qPsubstInp_preserves_alphaInp:
@@ -303,7 +303,7 @@ assumes "qGoodInp qinp \<or> qGoodInp qinp'" and "qGoodEnv qrho" and "qinp %= qi
 shows "(qinp %[[qrho]]) %= (qinp' %[[qrho]])"
 using assms unfolding alphaInp_def qPsubstInp_def sameDom_def liftAll2_def
 by (simp add: lift_None)
-   (smt liftAll_def lift_def option.case_eq_if option.exhaust_sel 
+   (smt (verit) liftAll_def lift_def option.case_eq_if option.exhaust_sel 
        option.sel qGoodInp_def qPsubst_preserves_alpha1)
 
 lemma qPsubstBinp_preserves_alphaBinp:
@@ -311,7 +311,7 @@ assumes "qGoodBinp qbinp \<or> qGoodBinp qbinp'" and "qGoodEnv qrho" and "qbinp 
 shows "(qbinp %%[[qrho]]) %%= (qbinp' %%[[qrho]])"
 using assms unfolding alphaBinp_def qPsubstBinp_def sameDom_def liftAll2_def
 by (simp add: lift_None)
-   (smt liftAll_def lift_def option.case_eq_if option.exhaust_sel 
+   (smt (verit) liftAll_def lift_def option.case_eq_if option.exhaust_sel 
        option.sel qGoodBinp_def qPsubstAbs_preserves_alphaAbs1) 
 
 lemma qFreshInp_preserves_alphaInp_aux:
@@ -1020,7 +1020,7 @@ lemma pickInp_asInp:
 assumes "qGoodInp qinp"
 shows "pickInp (asInp qinp) %= qinp"
 using assms unfolding pickInp_def asInp_def lift_comp  
-by (smt CollectI alphaInp_def asTerm_equal_iff_alpha asTerm_pick case_prodI comp_apply liftAll2_def liftAll_def lift_def option.case(2) option.sel qGoodInp_def qGood_iff_good_asTerm 
+by (smt (verit) CollectI alphaInp_def asTerm_equal_iff_alpha asTerm_pick case_prodI comp_apply liftAll2_def liftAll_def lift_def option.case(2) option.sel qGoodInp_def qGood_iff_good_asTerm 
 sameDom_lift2)
 
 lemma asInp_pickInp:
@@ -1067,7 +1067,7 @@ lemma asInp_equal_imp_alphaInp:
 assumes "qGoodInp qinp" and "asInp qinp = asInp qinp'"
 shows "qinp %= qinp'"
 using assms unfolding alphaInp_def liftAll2_def sameDom_def
-by simp (smt asInp_def asTerm_equal_iff_alpha liftAll_def lift_def option.case(2) 
+by simp (smt (verit) asInp_def asTerm_equal_iff_alpha liftAll_def lift_def option.case(2) 
   option.sel qGoodInp_def sameDom_def sameDom_lift2)  
 
 lemma asInp_equal_iff_alphaInp:
@@ -1086,7 +1086,7 @@ shows "pickInp (inp %[x1 \<and> x2]_xs) %= ((pickInp inp) %[[x1 \<and> x2]]_xs)"
 using assms unfolding alphaInp_def sameDom_def liftAll2_def 
 pickInp_def swapInp_def qSwapInp_def lift_comp
 by (simp add: lift_None)  
-(smt assms comp_apply goodInp_imp_qGoodInp_pickInp liftAll_def lift_def local.swap_def option.case_eq_if option.sel option.simps(3) pickInp_def 
+(smt (verit) assms comp_apply goodInp_imp_qGoodInp_pickInp liftAll_def lift_def local.swap_def option.case_eq_if option.sel option.simps(3) pickInp_def 
 pick_asTerm qGoodInp_def qSwap_preserves_qGood1) 
 
 lemma asInp_qSwapInp_swapInp:
@@ -1100,7 +1100,7 @@ proof-
   }
   thus ?thesis
   using assms 
-  by (smt asInp_def comp_apply lift_comp lift_cong qSwapInp_def swapInp_def)
+  by (smt (verit) asInp_def comp_apply lift_comp lift_cong qSwapInp_def swapInp_def)
 qed
 
 lemma swapInp_def2:
@@ -1197,7 +1197,7 @@ lemma pickBinp_asBinp:
 assumes "qGoodBinp qbinp"
 shows "pickBinp (asBinp qbinp) %%= qbinp"
 unfolding pickBinp_def asBinp_def lift_comp alphaBinp_def using sameDom_lift2  
-by auto (smt assms comp_apply liftAll2_def liftAll_def 
+by auto (smt (verit) assms comp_apply liftAll2_def liftAll_def 
 lift_def option.sel option.simps(5) pick_asAbs qGoodBinp_def)
 
 lemma asBinp_pickBinp:
@@ -1239,7 +1239,7 @@ lemma asBinp_equal_imp_alphaBinp:
 assumes "qGoodBinp qbinp" and "asBinp qbinp = asBinp qbinp'"
 shows "qbinp %%= qbinp'"
 using assms unfolding alphaBinp_def liftAll2_def sameDom_def
-by simp (smt asAbs_equal_imp_alphaAbs asBinp_def liftAll_def 
+by simp (smt (verit) asAbs_equal_imp_alphaAbs asBinp_def liftAll_def 
 lift_None lift_def option.inject option.simps(5) qGoodBinp_def)  
 
 lemma asBinp_equal_iff_alphaBinp:
@@ -1328,7 +1328,7 @@ assumes "qGoodEnv qrho" and "asEnv qrho = asEnv qrho'"
 shows "qrho &= qrho'"
 using assms unfolding alphaEnv_def sameDom_def liftAll2_def
 apply (simp add: asEnv_def lift_None lift_def qGoodEnv_def liftAll_def) 
-by (smt asTerm_equal_imp_alpha option.sel option.simps(5) option.case_eq_if option.distinct(1)) 
+by (smt (verit) asTerm_equal_imp_alpha option.sel option.simps(5) option.case_eq_if option.distinct(1)) 
 
 lemma asEnv_equal_iff_alphaEnv:
 "qGoodEnv qrho \<Longrightarrow> (asEnv qrho = asEnv qrho') = (qrho &= qrho')"
@@ -1375,7 +1375,7 @@ shows "pickInp (inp %[rho]) %= ((pickInp inp) %[[pickE rho]])"
 using assms unfolding pickInp_def psubstInp_def qPsubstInp_def lift_comp
 unfolding alphaInp_def sameDom_def liftAll2_def
 by (simp add: lift_None)  
-   (smt comp_apply goodEnv_imp_qGoodEnv_pickE goodInp_imp_qGoodInp_pickInp liftAll_def lift_def map_option_case map_option_eq_Some option.sel pickInp_def 
+   (smt (verit) comp_apply goodEnv_imp_qGoodEnv_pickE goodInp_imp_qGoodInp_pickInp liftAll_def lift_def map_option_case map_option_eq_Some option.sel pickInp_def 
    pick_asTerm psubst_def qGoodInp_def qPsubst_preserves_qGood)
 
 lemma pickBinp_psubstBinp_qPsubstBinp:
@@ -1384,7 +1384,7 @@ shows "pickBinp (binp %%[rho]) %%= ((pickBinp binp) %%[[pickE rho]])"
 using assms unfolding pickBinp_def psubstBinp_def qPsubstBinp_def lift_comp
 unfolding alphaBinp_def sameDom_def liftAll2_def
 by (simp add: lift_None)  
-   (smt comp_apply goodBinp_def liftAll_def lift_def map_option_case map_option_eq_Some 
+   (smt (verit) comp_apply goodBinp_def liftAll_def lift_def map_option_case map_option_eq_Some 
         option.sel pick_psubstAbs_qPsubstAbs)
 
 subsubsection\<open>The structural alpha-equivPalence maps commute with the syntactic constructs\<close>
@@ -2557,7 +2557,7 @@ proof-
     case (Rel qX qY)
     thus ?case using qGood_iff_good_asTerm pick_asTerm unfolding skel_def 
     using rel skel_asTerm_qSkel   
-    by simp (smt qGood_iff_good_asTerm skel_asTerm_qSkel)  
+    by simp (smt (verit) qGood_iff_good_asTerm skel_asTerm_qSkel)  
   next
     case (Var xs x)
     then show ?case using var unfolding Var_def by simp

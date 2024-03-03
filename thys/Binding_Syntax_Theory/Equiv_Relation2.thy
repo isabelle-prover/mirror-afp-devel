@@ -144,7 +144,7 @@ by (metis assms equivP_pick_in in_quotientP_imp_subset mem_Collect_eq set_rev_mp
 lemma proj_pick:
 assumes \<phi>: "equivP P \<phi>" and X: "(P///\<phi>) X"
 shows "proj \<phi> (pick X) = X"
-by (smt proj_def Equiv_Relation2.proj_iff Equiv_Relation2.proj_image X 
+by (smt (verit) proj_def Equiv_Relation2.proj_iff Equiv_Relation2.proj_image X 
    \<phi> equivP_pick_in equivP_pick_preserves image_iff mem_Collect_eq)
  
 lemma pick_proj:

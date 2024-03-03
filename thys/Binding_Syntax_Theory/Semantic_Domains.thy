@@ -180,7 +180,7 @@ qed
 lemma sWlsDisj_imp_sWlsAbsDisj:
 "sWlsDisj SEM \<Longrightarrow> sWlsNE SEM \<Longrightarrow> sWlsAbsDisj SEM"
 by (simp add: sWlsAbsDisj_def sWlsNE_def sWlsDisj_def) 
-   (smt prod.inject sAbs.inject sWlsAbs.elims(2))
+   (smt (verit) prod.inject sAbs.inject sWlsAbs.elims(2))
 
 lemma sWlsNE_imp_sWlsValNE:
 "sWlsNE SEM \<Longrightarrow> sWlsValNE SEM x"  

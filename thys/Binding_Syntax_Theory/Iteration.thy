@@ -877,7 +877,7 @@ by (simp add:
 igSwapIPresIGWlsSTR_def igWlsInp_def liftAll2_def  
 igSwapIPresIGWls_def igSwapInpIPresIGWlsInpSTR_def igSwapInp_def lift_def 
 sameDom_def split: option.splits)  
-(smt option.distinct(1) option.exhaust) 
+(smt (verit) option.distinct(1) option.exhaust) 
 
 lemma imp_igSubstInpIPresIGWlsInp:
 "igSubstIPresIGWls MOD \<Longrightarrow> igSubstInpIPresIGWlsInp MOD"
@@ -890,7 +890,7 @@ lemma imp_igSubstInpIPresIGWlsInpSTR:
 by(simp add: 
 igSubstInpIPresIGWlsInpSTR_def igSubstIPresIGWlsSTR_def igSubstInp_def
 igWlsInp_def liftAll2_def lift_def sameDom_def 
-split: option.splits) (smt option.distinct(1) option.exhaust) 
+split: option.splits) (smt (verit) option.distinct(1) option.exhaust) 
 
 text \<open>Then for bound inputs:\<close>
 
@@ -931,7 +931,7 @@ lemma imp_igSwapBinpIPresIGWlsBinpSTR:
 by (simp add: 
 igSwapBinpIPresIGWlsBinpSTR_def igSwapAbsIPresIGWlsAbsSTR_def igSwapBinp_def
 igWlsBinp_def liftAll2_def lift_def sameDom_def 
-split: option.splits) (smt option.distinct(1) option.exhaust surj_pair)
+split: option.splits) (smt (verit) option.distinct(1) option.exhaust surj_pair)
 
 lemma imp_igSubstBinpIPresIGWlsBinp:
 "igSubstAbsIPresIGWlsAbs MOD \<Longrightarrow> igSubstBinpIPresIGWlsBinp MOD"
@@ -945,7 +945,7 @@ lemma imp_igSubstBinpIPresIGWlsBinpSTR:
 by (simp add: 
 igSubstAbsIPresIGWlsAbsSTR_def igSubstBinpIPresIGWlsBinpSTR_def igSubstBinp_def
 igWlsBinp_def liftAll2_def lift_def sameDom_def 
-split: option.splits) (smt option.distinct(1) option.exhaust surj_pair) 
+split: option.splits) (smt (verit) option.distinct(1) option.exhaust surj_pair) 
 
 subsection \<open>Morphisms of models\<close>
 
@@ -2908,7 +2908,7 @@ fixes MOD :: "('index,'bindex,'varSort,'sort,'opSym,'var,'gTerm,'gAbs)model"
 assumes "igOpIPresIGWls MOD"
 shows "igOpIPresIGWlsSTR (errMOD MOD)"
 by (simp add: igOpIPresIGWlsSTR_def igOpIPresIGWls_def) 
-  (smt assms eOp_nchotomy eOp_simp1 eWlsBinp_invert 
+  (smt (verit) assms eOp_nchotomy eOp_simp1 eWlsBinp_invert 
 eWlsBinp_simp1 eWlsInp_invert eWlsInp_simp1 eWls_simp1 eWls_simp2 igOpIPresIGWls_def) 
 
 lemma errMOD_igConsIPresIGWlsSTR:
@@ -3056,7 +3056,7 @@ apply (cases eX)
   subgoal using assms 
   using assms OK_check 
   by (simp_all add: igAbsIPresIGWls_def igSwapIPresIGWls_def igSwapIGAbs_def igWlsDisj_def)  
-     (smt eAbs_simp1 eSwapAbs_simp1 eSwap_simp1 withERR.inject)
+     (smt (verit) eAbs_simp1 eSwapAbs_simp1 eSwap_simp1 withERR.inject)
   subgoal using assms 
   by(simp_all add: igAbsIPresIGWls_def igSwapIPresIGWls_def igSwapIGAbs_def igWlsDisj_def)  
     (metis check_OK eAbs_nchotomy eSwap_invert) . . .
@@ -3809,9 +3809,9 @@ next
              liftAll2 (\<lambda>qA qA'. qA $= qA') qbinp qbinp'"
     using qOp_alpha_iff[of delta qinp qbinp qX'] by auto
     hence "lift (qInit MOD) qinp = lift (qInit MOD) qinp'"
-    by (smt Op.IH(1) liftAll2_def liftAll2_lift_ext liftAll_def)
+    by (smt (verit) Op.IH(1) liftAll2_def liftAll2_lift_ext liftAll_def)
     moreover have "lift (qInitAbs MOD) qbinp = lift (qInitAbs MOD) qbinp'"
-    by (smt * ** Op.IH(2) liftAll2_def liftAll2_lift_ext liftAll_def)
+    by (smt (verit) * ** Op.IH(2) liftAll2_def liftAll2_lift_ext liftAll_def)
     ultimately
     show "qInit MOD (qOp delta qinp qbinp) = qInit MOD qX'" unfolding qX' by simp
   qed
