@@ -56,7 +56,7 @@ definition bin_narry2 :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 
 
 lemma bin_narry_equiv: "bin_narry a b c = bin_narry2 a b c"
   apply (auto simp add: bin_narry_def bin_narry2_def)
-  subgoal by (smt add.commute div_less dvd_0_right even_Suc le_add_diff_inverse2 less_add_eq_less 
+  subgoal by (smt (verit) add.commute div_less dvd_0_right even_Suc le_add_diff_inverse2 less_add_eq_less 
         mod_greater_zero_iff_not_dvd neq0_conv not_mod2_eq_Suc_0_eq_0 order_le_less zero_less_diff 
         zero_less_numeral zero_less_power)
   subgoal by (simp add: le_div_geq less_imp_diff_less)
@@ -124,11 +124,11 @@ proof -
   {
     presume asm: "a\<ge>b" "a mod 2 ^ k < b mod 2 ^ k"
     then have "Suc((a - b) div 2 ^ k) = a div 2 ^ k - b div 2 ^ k"
-      by (smt Nat.add_diff_assoc One_nat_def Suc_pred add.commute diff_is_0_eq div_add_self1 
+      by (smt (verit) Nat.add_diff_assoc One_nat_def Suc_pred add.commute diff_is_0_eq div_add_self1 
           div_le_mono div_sub mod_add_self1 nat_le_linear neq0_conv plus_1_eq_Suc power_not_zero 
           zero_neq_numeral) 
     then have "(a - b) div 2 ^ k mod 2 = Suc (a div 2 ^ k mod 2 + b div 2 ^ k mod 2) mod 2"
-      by (smt diff_is_0_eq even_Suc even_diff_nat even_iff_mod_2_eq_zero le_less mod_add_eq 
+      by (smt (verit) diff_is_0_eq even_Suc even_diff_nat even_iff_mod_2_eq_zero le_less mod_add_eq 
           nat.simps(3) not_mod_2_eq_1_eq_0)
   }
   moreover
@@ -137,10 +137,8 @@ proof -
     then have "(a - b) div 2 ^ k mod 2 = (a div 2 ^ k mod 2 + b div 2 ^ k mod 2) mod 2"
       using div_sub[of b "2^k" a] div_le_mono even_add even_iff_mod_2_eq_zero 
         le_add_diff_inverse2[of "b div 2 ^ k" "a div 2 ^ k"] mod_mod_trivial[of _ 2] 
-        not_less[of "a mod 2 ^ k" "b mod 2 ^ k"] not_mod_2_eq_1_eq_0 div_sub by smt
-
+        not_less[of "a mod 2 ^ k" "b mod 2 ^ k"] not_mod_2_eq_1_eq_0 div_sub by (smt (verit))
   }
-
   ultimately show ?thesis
     by (auto simp add: bin_narry_def nth_bit_def) 
 qed
@@ -195,10 +193,10 @@ proof -
 
   ultimately show ?thesis
     apply (auto simp add: nth_bit_def not_less bin_narry_def)
-    subgoal by (smt add_0_left add_less_cancel_left Divides.divmod_digit_0(2) le_less_trans mod_less_divisor
+    subgoal by (smt (verit) add_0_left add_less_cancel_left Divides.divmod_digit_0(2) le_less_trans mod_less_divisor
         mod_mult2_eq mult_zero_right nat_neq_iff not_less not_mod2_eq_Suc_0_eq_0 
         semiring_normalization_rules(7) zero_less_numeral zero_less_power)
-    subgoal by (smt One_nat_def add.left_neutral Divides.divmod_digit_0(1) le_less_trans less_imp_le
+    subgoal by (smt (verit) One_nat_def add.left_neutral Divides.divmod_digit_0(1) le_less_trans less_imp_le
           mod_less_divisor mod_mult2_eq mod_mult_self1_is_0 mult_zero_right not_less
           not_mod2_eq_Suc_0_eq_0 not_one_le_zero semiring_normalization_rules(7) zero_less_numeral 
           zero_less_power)
@@ -210,7 +208,7 @@ lemma sum_digit_formula:"(a + b)\<exclamdown>k =(a\<exclamdown>k + b\<exclamdown
 
 lemma sum_carry_formula:"bin_carry a b (k + 1) =(a\<exclamdown>k + b\<exclamdown>k + bin_carry a b k) div 2"
   by (simp add: bin_carry_def nth_bit_def)
-     (smt div_mult2_eq div_mult_self4 mod_mult2_eq power_not_zero semiring_normalization_rules(20)
+     (smt (verit) div_mult2_eq div_mult_self4 mod_mult2_eq power_not_zero semiring_normalization_rules(20)
           semiring_normalization_rules(34) semiring_normalization_rules(7) zero_neq_numeral)
 
 lemma bin_carry_bounded:
@@ -236,20 +234,19 @@ proof (rule ccontr)
   assume nq: "\<not>?Q n"
   then obtain k where k1:"\<not>?Q k" and k2:"\<forall>r<k. ?Q r" by (auto dest: obtain_smallest)
 
-  have c1: "1 = bin_carry a b k"
+  have c1: "bin_carry a b k = 1"
     using k1 sum_digit_formula bin_carry_bounded
     by auto (metis add.commute not_mod2_eq_Suc_0_eq_0 plus_nat.add_0)
 
-  have "bin_carry a b (k-1) = 0" using sum_digit_formula
+  have c0: "bin_carry a b (k-1) = 0" using sum_digit_formula
     by (metis bin_carry_bounded bin_carry_def diff_is_0_eq' diff_less div_by_1 even_add
               even_iff_mod_2_eq_zero k2 less_numeral_extra(1) mod_by_1 neq0_conv nth_bit_bounded
               power_0)
 
-  moreover have "a \<exclamdown> (k-1) + b \<exclamdown> (k-1) < 1"
-    by (smt add.right_neutral c1 calculation diff_le_self k2 leI le_add_diff_inverse2 le_less_trans
-            mod_by_1 mod_if nat_less_le nq one_div_two_eq_zero one_neq_zero p sum_carry_formula)
+  with c1 have "a \<exclamdown> (k-1) + b \<exclamdown> (k-1) < 1"
+    by (smt (verit, ccfv_threshold) Suc_leI add.commute add.left_commute add_0 add_cancel_right_left add_diff_cancel_left' add_diff_cancel_right' add_diff_inverse_nat add_lessD1 add_mono_thms_linordered_field(4) bin_carry_bounded bot_nat_0.not_eq_extremum choose_two diff_add_zero diff_diff_left diff_le_self div_add1_eq dual_order.refl gr0_conv_Suc k2 le_add1 le_antisym le_neq_implies_less lessI less_diff_conv less_diff_conv2 less_eq_iff_succ_less less_imp_add_positive less_imp_diff_less less_nat_zero_code less_one linorder_not_less mult.commute mult_1 nat.simps(3) nat_add_left_cancel_less nat_arith.rule0 nat_diff_split nonzero_mult_div_cancel_left not_add_less1 not_add_less2 nq one_add_one order_le_less_trans order_less_irrefl order_less_le_trans p sum_carry_formula trans_less_add1 zero_diff zero_less_Suc zero_less_diff zero_neq_one)
 
-  ultimately have "0 = bin_carry a b k" using k2 sum_carry_formula
+  with c0 have "0 = bin_carry a b k" using k2 sum_carry_formula
     by auto (metis Suc_eq_plus1_left add_diff_inverse_nat less_imp_diff_less mod_0 mod_Suc
               mod_add_self1 mod_div_trivial mod_less n_not_Suc_n plus_nat.add_0)
 

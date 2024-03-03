@@ -220,7 +220,7 @@ proof-
       have "(\<Sum>k=0..<Suc(r).((n \<exclamdown> k)*2^k)) < 2 ^ Suc(r)" 
         using Suc.hyps using Suc.prems(2) Suc_lessD assms(1) by blast
       then show ?case using "r2" 
-        by (smt Suc_leI Suc_le_lessD add_Suc add_le_mono mult_2 power_Suc sum.atLeast0_lessThan_Suc)
+        by (smt (verit) Suc_leI Suc_le_lessD add_Suc add_le_mono mult_2 power_Suc sum.atLeast0_lessThan_Suc)
     qed
     then have "a < 2 ^Suc(r)" using a_def by blast
   ultimately have ar:"(a+d) \<exclamdown> r = a \<exclamdown> r" using d2r
