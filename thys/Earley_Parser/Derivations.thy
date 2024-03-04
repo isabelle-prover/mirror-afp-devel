@@ -32,11 +32,11 @@ proof -
     by (metis derives_def derivations_def derives1_eq_derivations1)
 qed
 
-definition Derives1 :: "'a cfg \<Rightarrow> 'a sentence \<Rightarrow> nat \<Rightarrow> 'a rule \<Rightarrow> 'a sentence \<Rightarrow> bool" where
-  "Derives1 \<G> u i r v \<equiv> \<exists> x y N \<alpha>. 
-    u = x @ [N] @ y \<and>
+definition Derives1 :: "'a cfg \<Rightarrow> 'a list \<Rightarrow> nat \<Rightarrow> 'a rule \<Rightarrow> 'a list \<Rightarrow> bool" where
+  "Derives1 \<G> u i r v \<equiv> \<exists> x y A \<alpha>. 
+    u = x @ [A] @ y \<and>
     v = x @ \<alpha> @ y \<and>
-    (N, \<alpha>) \<in> set (\<RR> \<G>) \<and> r = (N, \<alpha>) \<and> i = length x"  
+    (A, \<alpha>) \<in> set (\<RR> \<G>) \<and> r = (A, \<alpha>) \<and> i = length x"  
 
 lemma Derives1_split:
   "Derives1 \<G> u i r v \<Longrightarrow> \<exists> x y. u = x @ [fst r] @ y \<and> v = x @ (snd r) @ y \<and> length x = i"
@@ -48,7 +48,7 @@ lemma Derives1_implies_derives1: "Derives1 \<G> u i r v \<Longrightarrow> derive
 lemma derives1_implies_Derives1: "derives1 \<G> u v \<Longrightarrow> \<exists> i r. Derives1 \<G> u i r v"
   by (auto simp add: Derives1_def derives1_def)
 
-fun Derivation :: "'a cfg \<Rightarrow> 'a sentence \<Rightarrow> 'a derivation \<Rightarrow> 'a sentence \<Rightarrow> bool" where
+fun Derivation :: "'a cfg \<Rightarrow> 'a list \<Rightarrow> 'a derivation \<Rightarrow> 'a list \<Rightarrow> bool" where
   "Derivation _ a [] b = (a = b)"
 | "Derivation \<G> a (d#D) b = (\<exists> x. Derives1 \<G> a (fst d) (snd d) x \<and> Derivation \<G> x D b)"
 
@@ -86,17 +86,8 @@ next
   from Derivation_Derives1[OF ay yz] show ?case by auto
 qed
 
-lemma rule_nonterminal_type[simp]: "wf_\<G> \<G> \<Longrightarrow> (N, \<alpha>) \<in> set (\<RR> \<G>) \<Longrightarrow> is_nonterminal \<G> N"
-  by (auto simp add: is_nonterminal_def wf_\<G>_defs)
-
 lemma Derives1_rule [elim]: "Derives1 \<G> a i r b \<Longrightarrow> r \<in> set (\<RR> \<G>)"
   using Derives1_def by metis
-
-lemma is_terminal_nonterminal: "wf_\<G> \<G> \<Longrightarrow> is_terminal \<G> x \<Longrightarrow> is_nonterminal \<G> x \<Longrightarrow> False"
-  by (auto simp: wf_\<G>_defs disjoint_iff is_nonterminal_def is_terminal_def)
-
-lemma is_word_is_terminal: "i < length u \<Longrightarrow> is_word \<G> u \<Longrightarrow> is_terminal \<G> (u ! i)"
-  using is_word_def by force
 
 lemma Derivation_append: "Derivation \<G> a (D@E) c = (\<exists> b. Derivation \<G> a D b \<and> Derivation \<G> b E c)"
   by (induct D arbitrary: a c E) auto
@@ -112,11 +103,11 @@ lemma Derives1_prepend:
   assumes "Derives1 \<G> u i r v"
   shows "Derives1 \<G> (w@u) (i + length w) r (w@v)"
 proof -
-  obtain x y N \<alpha> where *:
-    "u = x @ [N] @ y" "v = x @ \<alpha> @ y"
-    "(N, \<alpha>) \<in> set (\<RR> \<G>)" "r = (N, \<alpha>)" "i = length x"
+  obtain x y A \<alpha> where *:
+    "u = x @ [A] @ y" "v = x @ \<alpha> @ y"
+    "(A, \<alpha>) \<in> set (\<RR> \<G>)" "r = (A, \<alpha>)" "i = length x"
     using assms Derives1_def by (smt (verit))
-  hence "w@u = w @ x @ [N] @ y" "w@v = w @ x @ \<alpha> @ y"
+  hence "w@u = w @ x @ [A] @ y" "w@v = w @ x @ \<alpha> @ y"
     by auto
   thus ?thesis
     unfolding Derives1_def using *
@@ -133,11 +124,11 @@ lemma Derives1_append:
   assumes "Derives1 \<G> u i r v"
   shows "Derives1 \<G> (u@w) i r (v@w)"
 proof -
-  obtain x y N \<alpha> where *: 
-    "u = x @ [N] @ y" "v = x @ \<alpha> @ y"
-    "(N, \<alpha>) \<in> set (\<RR> \<G>)" "r = (N, \<alpha>)" "i = length x"
+  obtain x y A \<alpha> where *: 
+    "u = x @ [A] @ y" "v = x @ \<alpha> @ y"
+    "(A, \<alpha>) \<in> set (\<RR> \<G>)" "r = (A, \<alpha>)" "i = length x"
     using assms Derives1_def by (smt (verit))
-  hence "u@w = x @ [N] @ y @ w" "v@w = x @ \<alpha> @ y @ w"
+  hence "u@w = x @ [A] @ y @ w" "v@w = x @ \<alpha> @ y @ w"
     by auto
   thus ?thesis
     unfolding Derives1_def using *
@@ -156,14 +147,14 @@ lemma Derivation_append_rewrite:
   using assms Derivation_append' Derivation_prepend Derivation_implies_append by fast
 
 lemma derives1_if_valid_rule:
-  "(N, \<alpha>) \<in> set (\<RR> \<G>) \<Longrightarrow> derives1 \<G> [N] \<alpha>"
+  "(A, \<alpha>) \<in> set (\<RR> \<G>) \<Longrightarrow> derives1 \<G> [A] \<alpha>"
   unfolding derives1_def
   apply (rule_tac exI[where x="[]"])
   apply (rule_tac exI[where x="[]"])
   by simp
 
 lemma derives_if_valid_rule:
-  "(N, \<alpha>) \<in> set (\<RR> \<G>) \<Longrightarrow> derives \<G> [N] \<alpha>"
+  "(A, \<alpha>) \<in> set (\<RR> \<G>) \<Longrightarrow> derives \<G> [A] \<alpha>"
   using derives1_if_valid_rule by fastforce
 
 lemma Derivation_from_empty:
@@ -181,15 +172,15 @@ next
   case (Cons d D)
   then obtain ab where *: "Derives1 \<G> (a@b) (fst d) (snd d) ab" "Derivation \<G> ab D c"
     by auto
-  then obtain x y N \<alpha> where #:
-    "a@b = x @ [N] @ y" "ab = x @ \<alpha> @ y" "(N,\<alpha>) \<in> set (\<RR> \<G>)" "snd d = (N,\<alpha>)" "fst d = length x"
+  then obtain x y A \<alpha> where #:
+    "a@b = x @ [A] @ y" "ab = x @ \<alpha> @ y" "(A,\<alpha>) \<in> set (\<RR> \<G>)" "snd d = (A,\<alpha>)" "fst d = length x"
     using * unfolding Derives1_def by blast
   show ?case
   proof (cases "length a \<le> length x")
     case True
     hence ab_def: 
       "a = take (length a) x" 
-      "b = drop (length a) x @ [N] @ y"
+      "b = drop (length a) x @ [A] @ y"
       "ab = take (length a) x @ drop (length a) x @ \<alpha> @ y"
       using #(1,2) True by (metis append_eq_append_conv_if)+
     then obtain E F a' b' where IH:
@@ -209,8 +200,8 @@ next
       using IH(3-5) by fastforce
   next
     case False
-    hence a_def: "a = x @ [N] @ take (length a - length x - 1) y"
-      using #(1) append_eq_conv_conj[of a b "x @ [N] @ y"] take_all_iff take_append
+    hence a_def: "a = x @ [A] @ take (length a - length x - 1) y"
+      using #(1) append_eq_conv_conj[of a b "x @ [A] @ y"] take_all_iff take_append
       by (metis append_Cons append_Nil diff_is_0_eq le_cases take_Cons')
     hence b_def: "b = drop (length a - length x - 1) y"
       using #(1) by (metis List.append.assoc append_take_drop_id same_append_eq)
@@ -235,19 +226,19 @@ next
 qed
 
 lemma Derivation_\<SS>1:
-  assumes "Derivation \<G> [\<SS> \<G>] D \<omega>" "is_word \<G> \<omega>" "wf_\<G> \<G>"
+  assumes "Derivation \<G> [\<SS> \<G>] D \<omega>" "is_word \<G> \<omega>"
   shows "\<exists>\<alpha> E. Derivation \<G> \<alpha> E \<omega> \<and> (\<SS> \<G>,\<alpha>) \<in> set (\<RR> \<G>)"
 proof (cases D)
   case Nil
   thus ?thesis
-    using assms is_nonterminal_startsymbol is_terminal_nonterminal by (metis Derivation.simps(1) is_word_def list.set_intros(1))
+    using assms by (auto simp: is_word_def nonterminals_def)
 next
   case (Cons d D)
   then obtain \<alpha> where "Derives1 \<G> [\<SS> \<G>] (fst d) (snd d) \<alpha>" "Derivation \<G> \<alpha> D \<omega>"
     using assms by auto
   hence "(\<SS> \<G>, \<alpha>) \<in> set (\<RR> \<G>)"
     unfolding Derives1_def
-    by (metis List.append.right_neutral List.list.discI append_eq_Cons_conv append_is_Nil_conv nth_Cons_0 self_append_conv2)
+    by (simp add: Cons_eq_append_conv)
   thus ?thesis
     using \<open>Derivation \<G> \<alpha> D \<omega>\<close> by auto
 qed
