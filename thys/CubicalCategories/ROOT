@@ -1,0 +1,17 @@
+chapter AFP
+
+session CubicalCategories = HOL +
+  options [timeout = 600]
+
+  sessions
+    Catoids
+ 
+  theories
+    ICatoids
+    CubicalCategories
+    CubicalCategoriesConnections
+    CubicalOmegaZeroCategoriesConnections
+
+  document_files
+    "root.tex"
+    "root.bib"

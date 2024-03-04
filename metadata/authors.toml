@@ -4193,6 +4193,13 @@ host = [
 [marmsoler.homepages]
 marmsoler_homepage = "http://marmsoler.com"
 
+[massacrier]
+name = "Tanguy Massacrier"
+
+[massacrier.emails]
+
+[massacrier.homepages]
+
 [matache]
 name = "Cristina Matache"
 

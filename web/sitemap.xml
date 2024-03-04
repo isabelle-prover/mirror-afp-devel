@@ -71,7 +71,13 @@
     <loc>/dependencies/catoids/</loc>
     <lastmod>2024-01-24T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/entries/CubicalCategories.html</loc>
+    <lastmod>2024-01-24T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/entries/OmegaCatoidsQuantales.html</loc>
+    <lastmod>2024-01-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/massacrier/</loc>
     <lastmod>2024-01-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/mathematics/</loc>
@@ -5163,6 +5169,8 @@
     <loc>/sessions/cube/</loc>
   </url><url>
     <loc>/sessions/cubic_quartic_equations/</loc>
+  </url><url>
+    <loc>/sessions/cubicalcategories/</loc>
   </url><url>
     <loc>/sessions/cvp_hardness/</loc>
   </url><url>
