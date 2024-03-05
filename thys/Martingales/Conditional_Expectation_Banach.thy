@@ -2,7 +2,7 @@
 *)
 
 theory Conditional_Expectation_Banach
-  imports "HOL-Probability.Conditional_Expectation" "HOL-Probability.Independent_Family" Bochner_Integration_Supplement
+  imports "HOL-Probability.Conditional_Expectation" "HOL-Probability.Independent_Family" 
 begin
 
 section \<open>Conditional Expectation in Banach Spaces\<close>
@@ -664,7 +664,8 @@ proof -
         have s_meas_M[measurable]: "s i \<in> borel_measurable M" by (meson borel_measurable_simple_function measurable_from_subalg s_is(1) subalg')
         have s_meas_F[measurable]: "s i \<in> borel_measurable F" by (meson borel_measurable_simple_function measurable_in_subalg' s_is(1) subalg)
 
-        have s_scaleR_eq: "s i x *\<^sub>R h x = (\<Sum>y\<in>s i ` space M. (indicator (s i -` {y} \<inter> space M) x *\<^sub>R y) *\<^sub>R h x)" if "x \<in> space M" for x and h :: "'a \<Rightarrow> 'b" using simple_function_indicator_representation[OF s_is(1), of x i] that unfolding space_restr_to_subalg scaleR_left.sum[of _ _ "h x", symmetric] by presburger
+        have s_scaleR_eq: "s i x *\<^sub>R h x = (\<Sum>y\<in>s i ` space M. (indicator (s i -` {y} \<inter> space M) x *\<^sub>R y) *\<^sub>R h x)" if "x \<in> space M" for x and h :: "'a \<Rightarrow> 'b" 
+          using simple_function_indicator_representation_banach[OF s_is(1), of x i] that unfolding space_restr_to_subalg scaleR_left.sum[of _ _ "h x", symmetric] by presburger
         
         have "LINT x|M. s i x *\<^sub>R g x = LINT x|M. (\<Sum>y\<in>s i ` space M. indicator (s i -` {y} \<inter> space M) x *\<^sub>R y *\<^sub>R g x)" using s_scaleR_eq by (intro Bochner_Integration.integral_cong) auto
         also have "... = (\<Sum>y\<in>s i ` space M. LINT x|M. indicator (s i -` {y} \<inter> space M) x *\<^sub>R y *\<^sub>R g x)" by (intro Bochner_Integration.integral_sum integrable_mult_indicator[OF _ integrable_scaleR_right] assms(2)) simp
