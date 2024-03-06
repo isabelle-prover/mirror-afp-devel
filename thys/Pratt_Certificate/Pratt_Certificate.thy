@@ -358,7 +358,7 @@ proof (induction xs)
   next
   case (Cons y ys)
     have "real (prod_list ys) > 0" using prod_list_ge Cons.prems by fastforce
-    thus ?case using log_mult[OF Cons.prems(1-2)] Cons by force
+    thus ?case using log_mult Cons.prems(1-2) Cons by simp
 qed
 
 lemma concat_length_le:

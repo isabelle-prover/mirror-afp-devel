@@ -1053,7 +1053,7 @@ qed (auto intro: y_gt_x)
 
 lemma msetext_dersh_singleton: "msetext_dersh gt [y] [x] \<longleftrightarrow> gt y x"
   unfolding msetext_dersh_def Let_def
-  by (auto dest: nonempty_subseteq_mset_eq_singleton simp: nonempty_subseteq_mset_iff_singleton)
+  by (auto dest: nonempty_subseteq_mset_eq_single simp: nonempty_subseteq_mset_iff_single)
 
 lemma msetext_dersh_wf:
   assumes wf_gt: "wfP (\<lambda>x y. gt y x)"
