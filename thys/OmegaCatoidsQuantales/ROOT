@@ -1,11 +1,9 @@
 chapter AFP
 
 session OmegaCatoidsQuantales = HOL +
-  options [timeout = 600]
-
+  options [timeout = 900]
   sessions
-    Catoids 
- 
+    Catoids
   theories
     Two_Catoid
     Two_Kleene_Algebra
@@ -16,7 +14,6 @@ session OmegaCatoidsQuantales = HOL +
     Omega_Kleene_Algebra
     Omega_Quantale
     Omega_Catoid_Lifting
-
   document_files
     "root.tex"
     "root.bib"
