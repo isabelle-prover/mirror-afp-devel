@@ -1,30 +1,23 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Three_Squares on Archive of Formal Proofs
+    <title>chenj on Archive of Formal Proofs
     </title>
-    <link>/dependencies/three_squares/</link>
+    <link>/authors/chenj/</link>
     <description>
-        Recent content in Three_Squares 
+        Recent content in chenj 
         on Archive of Formal Proofs
     </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
       <lastBuildDate>Wed, 06 Mar 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/three_squares/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="/authors/chenj/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Wieferich–Kempner Theorem</title>
           <link>/entries/Wieferich_Kempner.html</link>
           <pubDate>Wed, 06 Mar 2024 00:00:00 +0000</pubDate>
           <guid>/entries/Wieferich_Kempner.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Polygonal Number Theorem</title>
-          <link>/entries/Polygonal_Number_Theorem.html</link>
-          <pubDate>Thu, 10 Aug 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Polygonal_Number_Theorem.html</guid>
           <description></description>
         </item>
   </channel>
