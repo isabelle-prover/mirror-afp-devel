@@ -1,0 +1,11 @@
+chapter AFP
+
+session Wieferich_Kempner = Three_Squares +
+  options [timeout = 3600]
+  sessions
+    "HOL-Number_Theory"
+  theories
+    Wieferich_Kempner
+  document_files
+    "root.tex"
+    "root.bib"
