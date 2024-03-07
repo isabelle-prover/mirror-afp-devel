@@ -1,0 +1,31 @@
+title = "Verified QBF Solving"
+date = 2024-03-06
+topics = [
+  "Computer science/Algorithms",
+  "Logic/General logic/Classical propositional logic",
+]
+abstract = "A Quantified Boolean Formula (QBF) extends propositional logic with quantification over Boolean variables. We formalise two simple QBF solvers and prove their correctness. One solver is based on naive quantifier expansion, while the other utilises a search-based algorithm.  Additionally, we formalise a parser for the QDIMACS input format and use Isabelle's code generation feature to obtain executable versions of both solvers."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.bergstroem]
+email = "bergstroem_email"
+
+[authors.weber]
+email = "weber_email"
+
+[contributors]
+
+[notify]
+bergstroem = "bergstroem_email"
+weber = "weber_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

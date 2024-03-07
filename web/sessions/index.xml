@@ -4269,6 +4269,13 @@
           <description></description>
         </item>
         <item>
+          <title>QBF_Solver_Verification</title>
+          <link>/sessions/qbf_solver_verification/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/qbf_solver_verification/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>QHLProver</title>
           <link>/sessions/qhlprover/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>

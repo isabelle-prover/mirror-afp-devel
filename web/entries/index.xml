@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Mon, 19 Feb 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Wed, 06 Mar 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/entries/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Verified QBF Solving</title>
+          <link>/entries/QBF_Solver_Verification.html</link>
+          <pubDate>Wed, 06 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/QBF_Solver_Verification.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Karatsuba Multiplication on Integers</title>
           <link>/entries/Karatsuba.html</link>

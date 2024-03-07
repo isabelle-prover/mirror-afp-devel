@@ -4,21 +4,21 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Standard Borel Spaces - Archive of Formal Proofs</title>
-    <meta name="description" content="This entry includes a formalization of standard Borel spaces and (a variant of) the Borel isomorphism theorem. A separable complete metrizable topological...">
+    <title>Verified QBF Solving - Archive of Formal Proofs</title>
+    <meta name="description" content="A Quantified Boolean Formula (QBF) extends propositional logic with quantification over Boolean variables. We formalise two simple QBF solvers and prove...">
 
-  <meta property="og:title" content="Standard Borel Spaces" />
+  <meta property="og:title" content="Verified QBF Solving" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="/entries/Standard_Borel_Spaces.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
-<meta property="article:published_time" content="2023-08-08T00:00:00+00:00" />
-<meta property="article:modified_time" content="2023-08-08T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+<meta property="og:url" content="/entries/QBF_Solver_Verification.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2024-03-06T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-03-06T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
 
 
   <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
-<meta name="twitter:title" content="Standard Borel Spaces"/>
+<meta name="twitter:title" content="Verified QBF Solving"/>
 <meta name="twitter:description" content=""/>
 
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
@@ -124,15 +124,15 @@
       </div>
     </form>
   <h1>
-    <span class='first'>S</span>tandard <span class='first'>B</span>orel <span class='first'>S</span>paces
+    <span class='first'>V</span>erified <span class='first'>Q</span><span class='first'>B</span><span class='first'>F</span> <span class='first'>S</span>olving
     
   </h1>
   <div>
       <p>
-        <a href="../authors/hirata">Michikazu Hirata</a> <a class="obfuscated" data="eyJob3N0IjpbIm0iLCJ0aXRlY2giLCJhYyIsImpwIl0sInVzZXIiOlsiaGlyYXRhIiwibSIsImFjIl19">📧</a>
+        <a href="../authors/bergstroem">Axel Bergström</a> <a class="obfuscated" data="eyJob3N0IjpbImdtYWlsIiwiY29tIl0sInVzZXIiOlsiYXhlbCIsImJlcmdzdHJvbTAwIl19">📧</a> and <a href="../authors/weber">Tjark Weber</a> <a class="obfuscated" data="eyJob3N0IjpbIml0IiwidXUiLCJzZSJdLCJ1c2VyIjpbInRqYXJrIiwid2ViZXIiXX0=">📧</a>
 
       </p>
-      <p class="date">August 8, 2023</p>
+      <p class="date">March 6, 2024</p>
   </div>
 </header>
       <div>
@@ -140,7 +140,7 @@
   <main>
     <h3>Abstract</h3>
 
-    <div class="abstract mathjax_process">This entry includes a formalization of standard Borel spaces and (a variant of) the Borel isomorphism theorem. A separable complete metrizable topological space is called a polish space and a measurable space generated from a polish space is called a standard Borel space. We formalize the notion of standard Borel spaces by establishing set-based metric spaces, and then prove (a variant of) the Borel isomorphism theorem. The theorem states that a standard Borel spaces is either a countable discrete space or isomorphic to $\mathbb{R}$.</div>
+    <div class="abstract mathjax_process">A Quantified Boolean Formula (QBF) extends propositional logic with quantification over Boolean variables. We formalise two simple QBF solvers and prove their correctness. One solver is based on naive quantifier expansion, while the other utilises a search-based algorithm.  Additionally, we formalise a parser for the QDIMACS input format and use Isabelle's code generation feature to obtain executable versions of both solvers.</div>
 
     <h3>License</h3>
     <div>
@@ -148,36 +148,19 @@
     </div>
       <h3>Topics</h3>
       <ul>
-          <li><a href="../topics/mathematics/analysis">Mathematics/Analysis</a></li>
-          <li><a href="../topics/mathematics/topology">Mathematics/Topology</a></li>
+          <li><a href="../topics/computer-science/algorithms">Computer science/Algorithms</a></li>
+          <li><a href="../topics/logic/general-logic/classical-propositional-logic">Logic/General logic/Classical propositional logic</a></li>
       </ul>
-      <h3>Related publications</h3>
+      <h3>Session QBF_Solver_Verification</h3>
       <ul>
-        <li>Hirata, M., Minamide, Y., &amp; Sato, T. (2023). <i>Semantic Foundations of Higher-Order Probabilistic Programs in Isabelle/HOL</i>. Schloss Dagstuhl – Leibniz-Zentrum für Informatik. https://doi.org/10.4230/LIPICS.ITP.2023.18
-        </li>
-      </ul>
-      <h3>Session Standard_Borel_Spaces</h3>
-      <ul>
-          <li><a href="../sessions/standard_borel_spaces/#Lemmas_StandardBorel">Lemmas_StandardBorel</a></li>
-          <li><a href="../sessions/standard_borel_spaces/#Set_Based_Metric_Space">Set_Based_Metric_Space</a></li>
-          <li><a href="../sessions/standard_borel_spaces/#Set_Based_Metric_Product">Set_Based_Metric_Product</a></li>
-          <li><a href="../sessions/standard_borel_spaces/#Abstract_Metrizable_Topology">Abstract_Metrizable_Topology</a></li>
-          <li><a href="../sessions/standard_borel_spaces/#StandardBorel">StandardBorel</a></li>
-          <li><a href="../sessions/standard_borel_spaces/#Space_of_Continuous_Maps">Space_of_Continuous_Maps</a></li>
+          <li><a href="../sessions/qbf_solver_verification/#NaiveSolver">NaiveSolver</a></li>
+          <li><a href="../sessions/qbf_solver_verification/#PCNF">PCNF</a></li>
+          <li><a href="../sessions/qbf_solver_verification/#Parser">Parser</a></li>
+          <li><a href="../sessions/qbf_solver_verification/#SearchSolver">SearchSolver</a></li>
+          <li><a href="../sessions/qbf_solver_verification/#SolverExport">SolverExport</a></li>
       </ul>
 
     <div class="flex-wrap">
-      <div>
-        <h3>Used by</h3>
-        <ul class="horizontal-list">
-            <li>
-              <a href="../entries/Disintegration.html">Disintegration Theorem</a>
-            </li>
-            <li>
-              <a href="../entries/S_Finite_Measure_Monad.html">S-Finite Measure Monad on Quasi-Borel Spaces</a>
-            </li>
-        </ul>
-      </div>
       </div>
     
   </main>
@@ -186,9 +169,9 @@
     <a class='popup-button' href="#cite-popup">Cite</a>
     <a class='popup-button' href="#download-popup">Download</a>
     <h4>PDFs</h4>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Standard_Borel_Spaces/outline.pdf">Proof outline</a>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Standard_Borel_Spaces/document.pdf">Proof document</a>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Standard_Borel_Spaces/session_graph.pdf">Dependencies</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/QBF_Solver_Verification/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/QBF_Solver_Verification/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/QBF_Solver_Verification/session_graph.pdf">Dependencies</a>
   </nav>
 
   <div id="cite-popup" class="overlay">
@@ -197,14 +180,14 @@
       <h2>Cite</h2>
       <a class="close" href="#">&times;</a>
       <div>
-        <p style="display:none;" id="bibtex-filename">Standard_Borel_Spaces-AFP</p>
-        <pre id="copy-text">@article{Standard_Borel_Spaces-AFP,
-  author  = {Michikazu Hirata},
-  title   = {Standard Borel Spaces},
+        <p style="display:none;" id="bibtex-filename">QBF_Solver_Verification-AFP</p>
+        <pre id="copy-text">@article{QBF_Solver_Verification-AFP,
+  author  = {Axel Bergström and Tjark Weber},
+  title   = {Verified QBF Solving},
   journal = {Archive of Formal Proofs},
-  month   = {August},
-  year    = {2023},
-  note    = {\url{https://isa-afp.org/entries/Standard_Borel_Spaces.html},
+  month   = {March},
+  year    = {2024},
+  note    = {\url{https://isa-afp.org/entries/QBF_Solver_Verification.html},
              Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -218,7 +201,7 @@
     <div class="popup">
       <h2>Download</h2>
       <a class="close" href="#">&times;</a>
-      <a href="https://www.isa-afp.org/release/afp-Standard_Borel_Spaces-current.tar.gz"
+      <a href="https://www.isa-afp.org/release/afp-QBF_Solver_Verification-current.tar.gz"
          download>Download latest</a>
     </div>
   </div>

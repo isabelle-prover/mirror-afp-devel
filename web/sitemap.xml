@@ -3,21 +3,36 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2024-02-19T00:00:00+00:00</lastmod>
+    <lastmod>2024-03-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/</loc>
+    <lastmod>2024-03-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/bergstroem/</loc>
+    <lastmod>2024-03-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/computer-science/</loc>
+    <lastmod>2024-03-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2024-03-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/logic/</loc>
+    <lastmod>2024-03-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2024-03-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/QBF_Solver_Verification.html</loc>
+    <lastmod>2024-03-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/weber/</loc>
+    <lastmod>2024-03-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/akra_bazzi/</loc>
     <lastmod>2024-02-19T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/</loc>
-    <lastmod>2024-02-19T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/computer-science/</loc>
-    <lastmod>2024-02-19T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/</loc>
-    <lastmod>2024-02-19T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/</loc>
     <lastmod>2024-02-19T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/expander_graphs/</loc>
@@ -33,9 +48,6 @@
     <lastmod>2024-02-19T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/schulz/</loc>
-    <lastmod>2024-02-19T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2024-02-19T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/IMP_Noninterference.html</loc>
@@ -157,9 +169,6 @@
   </url><url>
     <loc>/entries/Martingales.html</loc>
     <lastmod>2023-11-21T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/logic/</loc>
-    <lastmod>2023-11-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/schlichtkrull/</loc>
     <lastmod>2023-11-20T00:00:00+00:00</lastmod>
@@ -3246,9 +3255,6 @@
     <lastmod>2016-10-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/parrow/</loc>
-    <lastmod>2016-10-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/weber/</loc>
     <lastmod>2016-10-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Stable_Matching.html</loc>
@@ -6355,6 +6361,8 @@
     <loc>/sessions/q0_metatheory/</loc>
   </url><url>
     <loc>/sessions/q0_soundness/</loc>
+  </url><url>
+    <loc>/sessions/qbf_solver_verification/</loc>
   </url><url>
     <loc>/sessions/qhlprover/</loc>
   </url><url>
