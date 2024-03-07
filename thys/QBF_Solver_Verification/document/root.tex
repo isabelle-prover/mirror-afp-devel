@@ -1,0 +1,54 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Verified QBF Solving}
+\author{Axel Bergström and Tjark Weber}
+
+\maketitle
+
+\begin{abstract}
+  Quantified Boolean logic extends propositional logic with universal
+  and existential quantification over Boolean variables.  A Quantified
+  Boolean Formula (QBF) is satisfiable iff there is an assignment of
+  Boolean values to the formula's free variables that makes the
+  formula true, and a QBF solver is a software tool that determines
+  whether a given QBF is satisfiable.
+
+  We formalise two simple QBF solvers and prove their correctness.
+  One solver is based on naive quantifier expansion, while the other
+  utilises a search-based algorithm.  Additionally, we formalise a
+  parser for the QDIMACS input format and use Isabelle's code
+  generation feature to obtain executable versions of both solvers.
+
+  The formalisation is discussed in detail in~\cite{bergstrom24}.
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
