@@ -4,20 +4,20 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Three Squares Theorem - Archive of Formal Proofs</title>
-    <meta name="description" content="We formalize the Legendre&#39;s three squares theorem and its consequences, in particular the following results: A natural number can be represented as the sum...">
+    <title>Wieferich–Kempner Theorem - Archive of Formal Proofs</title>
+    <meta name="description" content="This document presents a formalised proof of the Wieferich–Kempner Theorem, stating that all nonnegative integers can be expressed as the sum of nine...">
 
-  <meta property="og:title" content="Three Squares Theorem" />
+  <meta property="og:title" content="Wieferich–Kempner Theorem" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="/entries/Three_Squares.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
-<meta property="article:published_time" content="2023-05-03T00:00:00+00:00" />
-<meta property="article:modified_time" content="2023-05-03T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+<meta property="og:url" content="/entries/Wieferich_Kempner.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2024-03-06T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-03-06T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
 
   <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
-<meta name="twitter:title" content="Three Squares Theorem"/>
+<meta name="twitter:title" content="Wieferich–Kempner Theorem"/>
 <meta name="twitter:description" content=""/>
 
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
@@ -123,15 +123,15 @@
       </div>
     </form>
   <h1>
-    <span class='first'>T</span>hree <span class='first'>S</span>quares <span class='first'>T</span>heorem
+    <span class='first'>W</span>ieferich–<span class='first'>K</span>empner <span class='first'>T</span>heorem
     
   </h1>
   <div>
       <p>
-        <a href="../authors/danilkin">Anton Danilkin</a> and <a href="../authors/chevalier">Loïc Chevalier</a>
+        <a href="../authors/chenj">Jamie Chen</a> <a href="https://gitlab.com/Jamie-Chen">🌐</a>
 
       </p>
-      <p class="date">May 3, 2023</p>
+      <p class="date">March 6, 2024</p>
   </div>
 </header>
       <div>
@@ -139,65 +139,32 @@
   <main>
     <h3>Abstract</h3>
 
-    <div class="abstract mathjax_process">We formalize the Legendre's three squares theorem and its consequences,
-in particular the following results:
-<ol>
-    <li>
-        A natural number can be represented as the sum of
-        three squares of natural numbers if and only if it is not
-        of the form $4^a (8 k + 7)$, where $a$ and $k$ are natural numbers.
-    </li>
-    <li>
-        If $n$ is a natural number such that $n \equiv 3 \pmod{8}$,
-        then $n$ can be be represented as the sum of three squares
-        of odd natural numbers.
-    </li>
-</ol>
-
-Consequences include the following:
-<ol>
-    <li>
-        An integer $n$ can be written as $n = x^2 + y^2 + z^2 + z$,
-        where $x$, $y$, $z$ are integers, if and only if $n \geq 0$.
-    </li>
-    <li>
-        The Legendre's four squares theorem: any natural number
-        can be represented as the sum of four squares of natural numbers.
-    </li>
-</ol></div>
+    <div class="abstract mathjax_process">This document presents a formalised proof of the Wieferich–Kempner Theorem, stating that all nonnegative integers can be expressed as the sum of nine nonnegative cubes.  The source of the proof is the book "Additive Number Theory: The Classical Bases" by Melvyn B. Nathanson.</div>
 
     <h3>License</h3>
     <div>
-        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+        <a href="https://isa-afp.org/LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a>
     </div>
       <h3>Topics</h3>
       <ul>
           <li><a href="../topics/mathematics/number-theory">Mathematics/Number theory</a></li>
       </ul>
-      <h3>Session Three_Squares</h3>
+      <h3>Related publications</h3>
       <ul>
-          <li><a href="../sessions/three_squares/#Residues_Properties">Residues_Properties</a></li>
-          <li><a href="../sessions/three_squares/#Low_Dimensional_Linear_Algebra">Low_Dimensional_Linear_Algebra</a></li>
-          <li><a href="../sessions/three_squares/#Quadratic_Forms">Quadratic_Forms</a></li>
-          <li><a href="../sessions/three_squares/#Three_Squares">Three_Squares</a></li>
+        <li>Nathanson, M. B. (1996). Additive Number Theory. In Graduate Texts in Mathematics. Springer New York. <a href="https://doi.org/10.1007/978-1-4757-3845-2">https://doi.org/10.1007/978-1-4757-3845-2</a>
+
+        </li>
+      </ul>
+      <h3>Session Wieferich_Kempner</h3>
+      <ul>
+          <li><a href="../sessions/wieferich_kempner/#Wieferich_Kempner">Wieferich_Kempner</a></li>
       </ul>
 
     <div class="flex-wrap">
       <div>
         <h3>Depends on</h3>
         <ul class="horizontal-list">
-              <li><a href="../entries/Dirichlet_L.html">Dirichlet L-Functions and Dirichlet&rsquo;s Theorem</a></li>
-        </ul>
-      </div>
-      <div>
-        <h3>Used by</h3>
-        <ul class="horizontal-list">
-            <li>
-              <a href="../entries/Wieferich_Kempner.html">Wieferich–Kempner Theorem</a>
-            </li>
-            <li>
-              <a href="../entries/Polygonal_Number_Theorem.html">Polygonal Number Theorem</a>
-            </li>
+              <li><a href="../entries/Three_Squares.html">Three Squares Theorem</a></li>
         </ul>
       </div>
       </div>
@@ -208,9 +175,9 @@ Consequences include the following:
     <a class='popup-button' href="#cite-popup">Cite</a>
     <a class='popup-button' href="#download-popup">Download</a>
     <h4>PDFs</h4>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Three_Squares/outline.pdf">Proof outline</a>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Three_Squares/document.pdf">Proof document</a>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Three_Squares/session_graph.pdf">Dependencies</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Wieferich_Kempner/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Wieferich_Kempner/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Wieferich_Kempner/session_graph.pdf">Dependencies</a>
   </nav>
 
   <div id="cite-popup" class="overlay">
@@ -219,14 +186,14 @@ Consequences include the following:
       <h2>Cite</h2>
       <a class="close" href="#">&times;</a>
       <div>
-        <p style="display:none;" id="bibtex-filename">Three_Squares-AFP</p>
-        <pre id="copy-text">@article{Three_Squares-AFP,
-  author  = {Anton Danilkin and Loïc Chevalier},
-  title   = {Three Squares Theorem},
+        <p style="display:none;" id="bibtex-filename">Wieferich_Kempner-AFP</p>
+        <pre id="copy-text">@article{Wieferich_Kempner-AFP,
+  author  = {Jamie Chen},
+  title   = {Wieferich–Kempner Theorem},
   journal = {Archive of Formal Proofs},
-  month   = {May},
-  year    = {2023},
-  note    = {\url{https://isa-afp.org/entries/Three_Squares.html},
+  month   = {March},
+  year    = {2024},
+  note    = {\url{https://isa-afp.org/entries/Wieferich_Kempner.html},
              Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -240,23 +207,8 @@ Consequences include the following:
     <div class="popup">
       <h2>Download</h2>
       <a class="close" href="#">&times;</a>
-      <a href="https://www.isa-afp.org/release/afp-Three_Squares-current.tar.gz"
+      <a href="https://www.isa-afp.org/release/afp-Wieferich_Kempner-current.tar.gz"
          download>Download latest</a>
-        <p>Older releases:</p>
-        <ul>
-            <li>
-              <a href="https://www.isa-afp.org/release/afp-Three_Squares-2023-09-13.tar.gz">
-                Sep 13, 2023
-              </a>
-              : Isabelle2023
-            </li>
-            <li>
-              <a href="https://www.isa-afp.org/release/afp-Three_Squares-2023-05-16.tar.gz">
-                May 16, 2023
-              </a>
-              : Isabelle2022
-            </li>
-        </ul>
     </div>
   </div>
         

@@ -1,0 +1,28 @@
+title = "Wieferich–Kempner Theorem"
+date = 2024-03-06
+topics = [
+  "Mathematics/Number theory",
+]
+abstract = "This document presents a formalised proof of the Wieferich–Kempner Theorem, stating that all nonnegative integers can be expressed as the sum of nine nonnegative cubes.  The source of the proof is the book \"Additive Number Theory: The Classical Bases\" by Melvyn B. Nathanson."
+license = "lgpl"
+note = ""
+
+[authors]
+
+[authors.chenj]
+homepage = "chenj_homepage"
+
+[contributors]
+
+[notify]
+chenj = "chenj_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1007/978-1-4757-3845-2",
+]
+pubs = []

@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Mon, 19 Feb 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Wed, 06 Mar 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Three_Squares</title>
+          <link>/dependencies/three_squares/</link>
+          <pubDate>Wed, 06 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/three_squares/</guid>
+          <description></description>
+        </item>
         <item>
           <title>Akra_Bazzi</title>
           <link>/dependencies/akra_bazzi/</link>
@@ -312,13 +319,6 @@
           <link>/dependencies/relation_algebra/</link>
           <pubDate>Mon, 14 Aug 2023 00:00:00 +0000</pubDate>
           <guid>/dependencies/relation_algebra/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Three_Squares</title>
-          <link>/dependencies/three_squares/</link>
-          <pubDate>Thu, 10 Aug 2023 00:00:00 +0000</pubDate>
-          <guid>/dependencies/three_squares/</guid>
           <description></description>
         </item>
         <item>

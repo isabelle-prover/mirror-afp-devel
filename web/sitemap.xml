@@ -11,13 +11,25 @@
     <loc>/authors/bergstroem/</loc>
     <lastmod>2024-03-06T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/authors/chenj/</loc>
+    <lastmod>2024-03-06T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/topics/computer-science/</loc>
+    <lastmod>2024-03-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
     <lastmod>2024-03-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/</loc>
     <lastmod>2024-03-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/logic/</loc>
+    <lastmod>2024-03-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2024-03-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/three_squares/</loc>
     <lastmod>2024-03-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/</loc>
@@ -29,10 +41,10 @@
     <loc>/authors/weber/</loc>
     <lastmod>2024-03-06T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/akra_bazzi/</loc>
-    <lastmod>2024-02-19T00:00:00+00:00</lastmod>
+    <loc>/entries/Wieferich_Kempner.html</loc>
+    <lastmod>2024-03-06T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/</loc>
+    <loc>/dependencies/akra_bazzi/</loc>
     <lastmod>2024-02-19T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/expander_graphs/</loc>
@@ -90,9 +102,6 @@
     <lastmod>2024-01-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/massacrier/</loc>
-    <lastmod>2024-01-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/mathematics/</loc>
     <lastmod>2024-01-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/struth/</loc>
@@ -399,9 +408,6 @@
     <lastmod>2023-08-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Polygonal_Number_Theorem.html</loc>
-    <lastmod>2023-08-10T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/three_squares/</loc>
     <lastmod>2023-08-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/yez/</loc>
@@ -6805,6 +6811,8 @@
     <loc>/sessions/wetzels_problem/</loc>
   </url><url>
     <loc>/sessions/whatandwhere_security/</loc>
+  </url><url>
+    <loc>/sessions/wieferich_kempner/</loc>
   </url><url>
     <loc>/sessions/winding_number_eval/</loc>
   </url><url>

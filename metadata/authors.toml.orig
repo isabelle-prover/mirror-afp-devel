@@ -452,6 +452,23 @@ host = [
 [berghofer.homepages]
 berghofer_homepage = "http://www.in.tum.de/~berghofe"
 
+[bergstroem]
+name = "Axel Bergström"
+
+[bergstroem.emails]
+
+[bergstroem.emails.bergstroem_email]
+user = [
+  "axel",
+  "bergstrom00",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[bergstroem.homepages]
+
 [beringer]
 name = "Lennart Beringer"
 
@@ -4192,6 +4209,13 @@ host = [
 
 [marmsoler.homepages]
 marmsoler_homepage = "http://marmsoler.com"
+
+[massacrier]
+name = "Tanguy Massacrier"
+
+[massacrier.emails]
+
+[massacrier.homepages]
 
 [matache]
 name = "Cristina Matache"

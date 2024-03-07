@@ -1,0 +1,35 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+% this should be the last package used
+\usepackage{pdfsetup}
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+\begin{document}
+\title{Wieferich--Kempner Theorem}
+\author{Jamie Chen}
+\maketitle
+
+\begin{abstract}
+
+This document presents a formalised proof of the Wieferich--Kempner Theorem,
+stating that all nonnegative integers can be expressed as the sum of nine
+nonnegative cubes.  The source of the proof is the book ``Additive Number
+Theory: The Classical Bases'' by Melvyn B. Nathanson \cite{nathanson1996}.
+
+\end{abstract}
+
+\newpage
+\tableofcontents
+\newpage
+
+% include generated text of all theories
+\input{session}
+
+\newpage
+\raggedright
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
