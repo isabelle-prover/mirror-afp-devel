@@ -43,11 +43,11 @@ Everything happens in the release branch `afp/release`.
 2.  make sure there is a `thys/entryname/ROOT` file and add `entryname`
     to `thys/ROOTS`. For the former see the template in
     `thys/Example-Submission/ROOT`. In particular the entry should be in
-    chapter AFP, and group `(AFP)`, i.e.
+    chapter AFP, i.e.
 
             chapter AFP
 
-            session foo (AFP) = bar +
+            session foo = bar +
 
 
 3. to check, run in `afp/release/thys`

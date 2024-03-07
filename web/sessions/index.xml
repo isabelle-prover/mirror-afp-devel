@@ -1119,6 +1119,13 @@
           <description></description>
         </item>
         <item>
+          <title>CubicalCategories</title>
+          <link>/sessions/cubicalcategories/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/cubicalcategories/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>CVP_Hardness</title>
           <link>/sessions/cvp_hardness/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -2722,6 +2729,13 @@
           <description></description>
         </item>
         <item>
+          <title>Karatsuba</title>
+          <link>/sessions/karatsuba/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/karatsuba/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>KAT_and_DRA</title>
           <link>/sessions/kat_and_dra/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -4252,6 +4266,13 @@
           <link>/sessions/q0_soundness/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/q0_soundness/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>QBF_Solver_Verification</title>
+          <link>/sessions/qbf_solver_verification/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/qbf_solver_verification/</guid>
           <description></description>
         </item>
         <item>

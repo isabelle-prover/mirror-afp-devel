@@ -155,6 +155,7 @@ Coupledsim_Contrasim
 CryptHOL
 CryptoBasedCompositionalProperties
 Crypto_Standards
+CubicalCategories
 Cubic_Quartic_Equations
 DCR-ExecutionEquivalence
 DFS_Framework
@@ -373,6 +374,7 @@ JiveDataStoreModel
 Jordan_Hoelder
 Jordan_Normal_Form
 KAD
+Karatsuba
 KAT_and_DRA
 KBPs
 KD_Tree
@@ -583,6 +585,7 @@ Ptolemys_Theorem
 Public_Announcement_Logic
 Q0_Metatheory
 Q0_Soundness
+QBF_Solver_Verification
 QHLProver
 QR_Decomposition
 Quantales

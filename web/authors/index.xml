@@ -11,8 +11,36 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Mon, 12 Feb 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Wed, 06 Mar 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/authors/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>bergstroem</title>
+          <link>/authors/bergstroem/</link>
+          <pubDate>Wed, 06 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/bergstroem/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>weber</title>
+          <link>/authors/weber/</link>
+          <pubDate>Wed, 06 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/weber/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>karayel</title>
+          <link>/authors/karayel/</link>
+          <pubDate>Mon, 19 Feb 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/karayel/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>schulz</title>
+          <link>/authors/schulz/</link>
+          <pubDate>Mon, 19 Feb 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/schulz/</guid>
+          <description></description>
+        </item>
         <item>
           <title>noce</title>
           <link>/authors/noce/</link>
@@ -53,6 +81,13 @@
           <link>/authors/calk/</link>
           <pubDate>Wed, 24 Jan 2024 00:00:00 +0000</pubDate>
           <guid>/authors/calk/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>massacrier</title>
+          <link>/authors/massacrier/</link>
+          <pubDate>Wed, 24 Jan 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/massacrier/</guid>
           <description></description>
         </item>
         <item>
@@ -137,13 +172,6 @@
           <link>/authors/schlichtkrull/</link>
           <pubDate>Mon, 20 Nov 2023 00:00:00 +0000</pubDate>
           <guid>/authors/schlichtkrull/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>karayel</title>
-          <link>/authors/karayel/</link>
-          <pubDate>Mon, 13 Nov 2023 00:00:00 +0000</pubDate>
-          <guid>/authors/karayel/</guid>
           <description></description>
         </item>
         <item>
@@ -2335,13 +2363,6 @@
           <link>/authors/parrow/</link>
           <pubDate>Tue, 25 Oct 2016 00:00:00 +0000</pubDate>
           <guid>/authors/parrow/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>weber</title>
-          <link>/authors/weber/</link>
-          <pubDate>Tue, 25 Oct 2016 00:00:00 +0000</pubDate>
-          <guid>/authors/weber/</guid>
           <description></description>
         </item>
         <item>

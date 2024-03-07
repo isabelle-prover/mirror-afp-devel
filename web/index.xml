@@ -11,8 +11,22 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Mon, 12 Feb 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Wed, 06 Mar 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Verified QBF Solving</title>
+          <link>/entries/QBF_Solver_Verification.html</link>
+          <pubDate>Wed, 06 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/QBF_Solver_Verification.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Karatsuba Multiplication on Integers</title>
+          <link>/entries/Karatsuba.html</link>
+          <pubDate>Mon, 19 Feb 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Karatsuba.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Information Flow Control via Stateful Intransitive Noninterference in Language IMP</title>
           <link>/entries/IMP_Noninterference.html</link>
@@ -32,6 +46,13 @@
           <link>/entries/Region_Quadtrees.html</link>
           <pubDate>Fri, 26 Jan 2024 00:00:00 +0000</pubDate>
           <guid>/entries/Region_Quadtrees.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Cubical Categories</title>
+          <link>/entries/CubicalCategories.html</link>
+          <pubDate>Wed, 24 Jan 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/CubicalCategories.html</guid>
           <description></description>
         </item>
         <item>
@@ -6706,6 +6727,13 @@
           <description></description>
         </item>
         <item>
+          <title>CubicalCategories</title>
+          <link>/sessions/cubicalcategories/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/cubicalcategories/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>CVP_Hardness</title>
           <link>/sessions/cvp_hardness/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -8309,6 +8337,13 @@
           <description></description>
         </item>
         <item>
+          <title>Karatsuba</title>
+          <link>/sessions/karatsuba/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/karatsuba/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>KAT_and_DRA</title>
           <link>/sessions/kat_and_dra/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -9839,6 +9874,13 @@
           <link>/sessions/q0_soundness/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/q0_soundness/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>QBF_Solver_Verification</title>
+          <link>/sessions/qbf_solver_verification/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/qbf_solver_verification/</guid>
           <description></description>
         </item>
         <item>

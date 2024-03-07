@@ -11,8 +11,29 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Fri, 02 Feb 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Mon, 19 Feb 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Akra_Bazzi</title>
+          <link>/dependencies/akra_bazzi/</link>
+          <pubDate>Mon, 19 Feb 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/akra_bazzi/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Expander_Graphs</title>
+          <link>/dependencies/expander_graphs/</link>
+          <pubDate>Mon, 19 Feb 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/expander_graphs/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Root_Balanced_Tree</title>
+          <link>/dependencies/root_balanced_tree/</link>
+          <pubDate>Mon, 19 Feb 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/root_balanced_tree/</guid>
+          <description></description>
+        </item>
         <item>
           <title>Polynomials</title>
           <link>/dependencies/polynomials/</link>
@@ -445,13 +466,6 @@
           <link>/dependencies/discrete_summation/</link>
           <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
           <guid>/dependencies/discrete_summation/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Expander_Graphs</title>
-          <link>/dependencies/expander_graphs/</link>
-          <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
-          <guid>/dependencies/expander_graphs/</guid>
           <description></description>
         </item>
         <item>
@@ -1369,20 +1383,6 @@
           <link>/dependencies/probabilistic_prime_tests/</link>
           <pubDate>Fri, 17 Jan 2020 00:00:00 +0000</pubDate>
           <guid>/dependencies/probabilistic_prime_tests/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Akra_Bazzi</title>
-          <link>/dependencies/akra_bazzi/</link>
-          <pubDate>Mon, 13 Jan 2020 00:00:00 +0000</pubDate>
-          <guid>/dependencies/akra_bazzi/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Root_Balanced_Tree</title>
-          <link>/dependencies/root_balanced_tree/</link>
-          <pubDate>Mon, 13 Jan 2020 00:00:00 +0000</pubDate>
-          <guid>/dependencies/root_balanced_tree/</guid>
           <description></description>
         </item>
         <item>

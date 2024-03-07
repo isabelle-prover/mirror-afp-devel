@@ -1,0 +1,30 @@
+chapter AFP
+
+session Karatsuba (AFP) = Akra_Bazzi +
+  options [timeout=1200]
+  sessions
+    "Expander_Graphs"
+    "Root_Balanced_Tree"
+  directories
+    "Preliminaries"
+    "Binary_Representations"
+    "Karatsuba"
+  theories
+    "Preliminaries/Karatsuba_Preliminaries"
+    "Preliminaries/Karatsuba_Sum_Lemmas"
+    "Preliminaries/Monoid_Sums"
+    "Estimation_Method"
+    "Time_Monad_Extended"
+    "Main_TM"
+    "Binary_Representations/Abstract_Representations"
+    "Binary_Representations/Abstract_Representations_2"
+    "Binary_Representations/Nat_LSBF"
+    "Binary_Representations/Nat_LSBF_TM"
+    "Binary_Representations/Int_LSBF"
+    "Karatsuba_Runtime_Lemmas"
+    "Karatsuba/Karatsuba"
+    "Karatsuba/Karatsuba_TM"
+    "Karatsuba/Karatsuba_Code_Nat"
+  document_files
+    "root.tex"
+    "root.bib"

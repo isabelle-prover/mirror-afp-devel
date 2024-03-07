@@ -3,16 +3,52 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2024-02-12T00:00:00+00:00</lastmod>
+    <lastmod>2024-03-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2024-02-12T00:00:00+00:00</lastmod>
+    <lastmod>2024-03-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/bergstroem/</loc>
+    <lastmod>2024-03-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/computer-science/</loc>
-    <lastmod>2024-02-12T00:00:00+00:00</lastmod>
+    <lastmod>2024-03-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/</loc>
-    <lastmod>2024-02-12T00:00:00+00:00</lastmod>
+    <lastmod>2024-03-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/logic/</loc>
+    <lastmod>2024-03-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2024-03-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/QBF_Solver_Verification.html</loc>
+    <lastmod>2024-03-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/weber/</loc>
+    <lastmod>2024-03-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/akra_bazzi/</loc>
+    <lastmod>2024-02-19T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2024-02-19T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/expander_graphs/</loc>
+    <lastmod>2024-02-19T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Karatsuba.html</loc>
+    <lastmod>2024-02-19T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/karayel/</loc>
+    <lastmod>2024-02-19T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/root_balanced_tree/</loc>
+    <lastmod>2024-02-19T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/schulz/</loc>
+    <lastmod>2024-02-19T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/IMP_Noninterference.html</loc>
     <lastmod>2024-02-12T00:00:00+00:00</lastmod>
@@ -20,13 +56,7 @@
     <loc>/authors/noce/</loc>
     <lastmod>2024-02-12T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/topics/</loc>
-    <lastmod>2024-02-12T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/bootle/</loc>
-    <lastmod>2024-02-02T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/</loc>
     <lastmod>2024-02-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/garvia/</loc>
@@ -53,7 +83,13 @@
     <loc>/dependencies/catoids/</loc>
     <lastmod>2024-01-24T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/entries/CubicalCategories.html</loc>
+    <lastmod>2024-01-24T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/entries/OmegaCatoidsQuantales.html</loc>
+    <lastmod>2024-01-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/massacrier/</loc>
     <lastmod>2024-01-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/mathematics/</loc>
@@ -134,9 +170,6 @@
     <loc>/entries/Martingales.html</loc>
     <lastmod>2023-11-21T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/topics/logic/</loc>
-    <lastmod>2023-11-20T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/schlichtkrull/</loc>
     <lastmod>2023-11-20T00:00:00+00:00</lastmod>
   </url><url>
@@ -168,9 +201,6 @@
     <lastmod>2023-11-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/descartes_sign_rule/</loc>
-    <lastmod>2023-11-13T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/karayel/</loc>
     <lastmod>2023-11-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/lp/</loc>
@@ -564,9 +594,6 @@
     <lastmod>2023-04-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Distributed_Distinct_Elements.html</loc>
-    <lastmod>2023-04-03T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/expander_graphs/</loc>
     <lastmod>2023-04-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/HyperHoareLogic.html</loc>
@@ -2108,13 +2135,7 @@
     <loc>/entries/Approximation_Algorithms.html</loc>
     <lastmod>2020-01-16T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/akra_bazzi/</loc>
-    <lastmod>2020-01-13T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Closest_Pair_Points.html</loc>
-    <lastmod>2020-01-13T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/root_balanced_tree/</loc>
     <lastmod>2020-01-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/haslbeck/</loc>
@@ -3243,9 +3264,6 @@
     <lastmod>2016-10-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/parrow/</loc>
-    <lastmod>2016-10-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/weber/</loc>
     <lastmod>2016-10-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Stable_Matching.html</loc>
@@ -5167,6 +5185,8 @@
   </url><url>
     <loc>/sessions/cubic_quartic_equations/</loc>
   </url><url>
+    <loc>/sessions/cubicalcategories/</loc>
+  </url><url>
     <loc>/sessions/cvp_hardness/</loc>
   </url><url>
     <loc>/sessions/cyk/</loc>
@@ -5829,6 +5849,8 @@
   </url><url>
     <loc>/sessions/kad/</loc>
   </url><url>
+    <loc>/sessions/karatsuba/</loc>
+  </url><url>
     <loc>/sessions/kat_and_dra/</loc>
   </url><url>
     <loc>/sessions/kbps/</loc>
@@ -6344,6 +6366,8 @@
     <loc>/sessions/q0_metatheory/</loc>
   </url><url>
     <loc>/sessions/q0_soundness/</loc>
+  </url><url>
+    <loc>/sessions/qbf_solver_verification/</loc>
   </url><url>
     <loc>/sessions/qhlprover/</loc>
   </url><url>

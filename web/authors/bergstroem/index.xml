@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>bergstroem on Archive of Formal Proofs
+    </title>
+    <link>/authors/bergstroem/</link>
+    <description>
+        Recent content in bergstroem 
+        on Archive of Formal Proofs
+    </description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    
+      <lastBuildDate>Wed, 06 Mar 2024 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/bergstroem/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Verified QBF Solving</title>
+          <link>/entries/QBF_Solver_Verification.html</link>
+          <pubDate>Wed, 06 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/QBF_Solver_Verification.html</guid>
+          <description></description>
+        </item>
+  </channel>
+</rss>
