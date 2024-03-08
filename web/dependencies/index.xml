@@ -56,6 +56,13 @@
           <description></description>
         </item>
         <item>
+          <title>HOL-CSPM</title>
+          <link>/dependencies/hol-cspm/</link>
+          <pubDate>Sun, 24 Dec 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/hol-cspm/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>CryptHOL</title>
           <link>/dependencies/crypthol/</link>
           <pubDate>Mon, 18 Dec 2023 00:00:00 +0000</pubDate>

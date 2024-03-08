@@ -122,6 +122,18 @@
     <loc>/authors/stell/</loc>
     <lastmod>2024-01-21T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/authors/ballenghien/</loc>
+    <lastmod>2023-12-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/hol-cspm/</loc>
+    <lastmod>2023-12-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/HOL-CSP_OpSem.html</loc>
+    <lastmod>2023-12-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/wolff/</loc>
+    <lastmod>2023-12-24T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/dependencies/crypthol/</loc>
     <lastmod>2023-12-18T00:00:00+00:00</lastmod>
   </url><url>
@@ -137,9 +149,6 @@
     <loc>/authors/kreuzer/</loc>
     <lastmod>2023-12-18T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/ballenghien/</loc>
-    <lastmod>2023-12-05T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/hol-csp/</loc>
     <lastmod>2023-12-05T00:00:00+00:00</lastmod>
   </url><url>
@@ -147,9 +156,6 @@
     <lastmod>2023-12-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/taha/</loc>
-    <lastmod>2023-12-05T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/wolff/</loc>
     <lastmod>2023-12-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/collections/</loc>
@@ -5574,6 +5580,8 @@
     <loc>/sessions/hol-corec_examples/</loc>
   </url><url>
     <loc>/sessions/hol-csp/</loc>
+  </url><url>
+    <loc>/sessions/hol-csp_opsem/</loc>
   </url><url>
     <loc>/sessions/hol-cspm/</loc>
   </url><url>

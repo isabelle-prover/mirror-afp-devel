@@ -303,6 +303,7 @@ Grothendieck_Schemes
 Group-Ring-Module
 HOL-CSP
 HOL-CSPM
+HOL-CSP_OpSem
 HOLCF-Prelude
 HRB-Slicing
 Hahn_Jordan_Decomposition
