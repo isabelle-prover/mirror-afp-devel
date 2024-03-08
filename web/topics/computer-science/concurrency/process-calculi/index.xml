@@ -13,6 +13,13 @@
     
       <atom:link href="/topics/computer-science/concurrency/process-calculi/index.xml" rel="self" type="application/rss+xml" />
         <item>
+          <title>Operational Semantics formally proven in HOL-CSP</title>
+          <link>/entries/HOL-CSP_OpSem.html</link>
+          <pubDate>Sun, 24 Dec 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/HOL-CSP_OpSem.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>HOL-CSPM - Architectural operators for HOL-CSP</title>
           <link>/entries/HOL-CSPM.html</link>
           <pubDate>Tue, 05 Dec 2023 00:00:00 +0000</pubDate>

@@ -84,6 +84,13 @@
           <description></description>
         </item>
         <item>
+          <title>Operational Semantics formally proven in HOL-CSP</title>
+          <link>/entries/HOL-CSP_OpSem.html</link>
+          <pubDate>Sun, 24 Dec 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/HOL-CSP_OpSem.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>CRYSTALS-Kyber_Security</title>
           <link>/entries/CRYSTALS-Kyber_Security.html</link>
           <pubDate>Mon, 18 Dec 2023 00:00:00 +0000</pubDate>
@@ -7879,6 +7886,13 @@
           <link>/sessions/hol-csp/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/hol-csp/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>HOL-CSP_OpSem</title>
+          <link>/sessions/hol-csp_opsem/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/hol-csp_opsem/</guid>
           <description></description>
         </item>
         <item>
