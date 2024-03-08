@@ -1,0 +1,109 @@
+\documentclass[11pt,a4paper]{book}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{graphicx}
+\graphicspath {figures/}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{pifont}
+
+\usepackage{mathpartir}
+
+\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+% fixes generation until the AFP updates their LaTeX
+\pagestyle{plain}
+
+
+\begin{document}
+
+\title{HOL-CSP\_OpSem -- Operational Semantics formally proven in HOL-CSP}
+\author{Benoît Ballenghien and Burkhart Wolff}
+\maketitle
+\chapter*{Abstract}
+
+   Recently, a modern version of Roscoe and Brookes \cite{brookes-roscoe85} 
+   Failure-Divergence Semantics for CSP has been formalized in Isabelle \cite{HOL-CSP-AFP}
+   and extended \cite{HOL-CSPM-AFP}. The resulting framework is purely denotational
+   and, given the possibility to define arbitrary events in a HOL-type, more expressive 
+   than the original.
+
+   However, there is a need for an operational semantics for CSP. From the latter, model-checkers,
+   symbolic execution engines for test-case generators, and animators and simultors can be 
+   constructed. In the literature, a few versions of operational semantics
+   for CSP have been proposed, where it is assumed, of course, that denotational and operational 
+   constructs coincide, but this is not obvious at first glance.Recently, a modern version of Roscoe and Brookes \cite{brookes-roscoe85} 
+   Failure-Divergence Semantics for CSP has been formalized in Isabelle \cite{HOL-CSP-AFP}
+   and extended \cite{HOL-CSPM-AFP}. The resulting framework is purely denotational
+   and, given the possibility to define arbitrary events in a HOL-type, more expressive 
+   than the original.
+
+   However, there is a need for an operational semantics for CSP. From the latter, model-checkers,
+   symbolic execution engines for test-case generators, and animators and simulators can be 
+   constructed. In the literature, a few versions of operational semantics
+   for CSP have been proposed, where it is assumed, of course, that denotational and operational 
+   constructs coincide, but this is not obvious at first glance.
+   
+   The present work addresses this issue by providing the first (to our knowledge) formal theory 
+   of operational behavior derived from HOL-CSP via a bridge definition between the 
+   denotational and the operational semantics. In fact, several possibilities are discussed.
+   
+   As a bonus, we have defined three new operators: Sliding, Throw and Interrupt which are
+   of particular pragmatic interest in operational semantics. Moreover, we have
+   proven new ```laws'' for HOL-CSP improving the latter.
+   
+   The present work addresses this issue by providing the (to our knowledge) first formal theory 
+   of operational behaviour derived from HOL-CSP via a bridge definition between the 
+   denotational and the operational semantics. In fact, several possibilities are discussed.
+   
+   As a bonus, we have defined three new operators: Sliding, Throw and Interrupt which are
+   of particular pragmatic interest in operational semantics. Moreover, we have
+   proven new ```laws'' for HOL-CSP improving the latter.
+
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
