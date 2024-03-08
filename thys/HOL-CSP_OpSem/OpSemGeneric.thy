@@ -46,14 +46,6 @@ theory  OpSemGeneric
   imports AfterTrace
 begin
 
-(*<*)
-hide_const R
-text \<open>We need to hide this because we want to be allowed to use the letter R in our lemmas.
-      We can still access this notion via the notation \<^term>\<open>\<R> P\<close>.
-      In further versions of \<^theory>\<open>HOL-CSP.Process\<close>, R will be renamed in Refusals 
-      and we will remove this paragraph.\<close>
-(*>*)
-
 section \<open>Definition\<close>
 
 text \<open>We define a correspondence pattern using a locale in order to factorize the redundant proofs.\<close>

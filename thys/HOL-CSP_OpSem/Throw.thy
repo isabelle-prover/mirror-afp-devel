@@ -48,15 +48,10 @@ begin
 
 
 (*<*)
-hide_const R
-text \<open>We need to hide this because we want to be allowed to use the letter R in our lemmas.
-      We can still access this notion via the notation \<^term>\<open>\<R> P\<close>.
-      In further versions of \<^theory>\<open>HOL-CSP.Process\<close>, R will be renamed in Refusals 
-      and we will remove this paragraph.\<close>
 
 \<comment>\<open>This result should be in \<^session>\<open>HOL-CSP\<close>.\<close>
 lemma Refusals_iff : \<open>X \<in> \<R> P \<longleftrightarrow> ([], X) \<in> \<F> P\<close>
-  by (simp add: Failures_def R_def REFUSALS_def)
+  by (simp add: Failures.rep_eq REFUSALS_def Refusals.rep_eq)
 (*>*)
 
 
@@ -252,8 +247,7 @@ lemma T_Throw:
     t1 \<in> \<D> P \<and> tickFree t1 \<and> set t1 \<inter> ev ` A = {} \<and> front_tickFree t2} \<union>
    {t1 @ ev a # t2| t1 a t2. 
     t1 @ [ev a] \<in> \<T> P \<and> set t1 \<inter> ev ` A = {} \<and> a \<in> A \<and> t2 \<in> \<T> (Q a)}\<close>
-  by (auto simp add: Traces_def TRACES_def Failures_def[symmetric] F_Throw) blast+
-  (* by (auto simp add: Traces.rep_eq TRACES_def Failures.rep_eq[symmetric] F_Throw) blast+ *)
+  by (auto simp add: Traces.rep_eq TRACES_def Failures.rep_eq[symmetric] F_Throw) blast+
 
 
 

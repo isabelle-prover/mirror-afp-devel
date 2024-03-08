@@ -74,8 +74,7 @@ proof -
   show \<open>?thesis P e\<close> (is \<open>is_process (if ev e \<in> ready_set P then (?f, ?d) 
                                       else ({(s, X). s = []}, {}))\<close>) for P e
   proof (split if_split, intro conjI impI)
-    show \<open>is_process ({(s, X). s = []}, {})\<close> (* by (metis STOP.rsp eq_onp_def) *)
-      by (simp add: is_process_REP_STOP)
+    show \<open>is_process ({(s, X). s = []}, {})\<close> by (metis STOP.rsp eq_onp_def)
   next
     assume ready: \<open>ev e \<in> ready_set P\<close>
     show \<open>is_process (?f, ?d)\<close>

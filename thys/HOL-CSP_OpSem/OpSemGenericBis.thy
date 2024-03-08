@@ -46,14 +46,6 @@ theory  OpSemGenericBis
   imports AfterTraceBis "HOL-CSPM.DeadlockResults"
 begin
 
-(*<*)
-hide_const R
-text \<open>We need to hide this because we want to be allowed to use the letter R in our lemmas.
-      We can still access this notion via the notation \<^term>\<open>\<R> P\<close>.
-      In further versions of \<^theory>\<open>HOL-CSP.Process\<close>, R will be renamed in Refusals 
-      and we will remove this paragraph.\<close>
-(*>*)
-
 section \<open>Definition\<close>
 
 locale OpSemGeneric = 

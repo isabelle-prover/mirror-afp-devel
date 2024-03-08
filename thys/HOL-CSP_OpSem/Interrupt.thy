@@ -48,14 +48,6 @@ theory  Interrupt
 begin
 
 
-(*<*)
-hide_const R
-text \<open>We need to hide this because we want to be allowed to use the letter R in our lemmas.
-      We can still access this notion via the notation \<^term>\<open>\<R> P\<close>.
-      In further versions of \<^theory>\<open>HOL-CSP.Process\<close>, R will be renamed in Refusals 
-      and we will remove this paragraph.\<close>
-(*>*)
-
 subsection \<open>Definition\<close>
 
 text \<open>We want to add the binary operator of interruption of \<^term>\<open>P\<close> by \<^term>\<open>Q\<close>: 
@@ -316,8 +308,7 @@ lemma D_Interrupt :
 
 lemma T_Interrupt : 
   \<open>\<T> (P \<triangle> Q) = \<T> P \<union> {t1 @ t2| t1 t2. t1 \<in> \<T> P \<and> tickFree t1 \<and> t2 \<in> \<T> Q}\<close>
-  apply (simp add: Traces_def TRACES_def Failures_def[symmetric] F_Interrupt)
-  (* apply (simp add: Traces.rep_eq TRACES_def Failures.rep_eq[symmetric] F_Interrupt) *)
+  apply (simp add: Traces.rep_eq TRACES_def Failures.rep_eq[symmetric] F_Interrupt)
   apply (safe, simp_all add: is_processT8)
   subgoal by (metis is_processT3_SR)
   subgoal by auto
@@ -1166,9 +1157,8 @@ next
           then obtain j where ** : \<open>s = t1\<close> \<open>t1 \<in> \<T> P\<close> \<open>tickFree t1\<close>
                                    \<open>[tick] \<in> \<T> (Y j)\<close> \<open>tick \<notin> X\<close> by blast
           from "*" "**"(1) False2 have \<open>\<forall>i. [tick] \<in> \<T> (Y i)\<close>
-            by (simp add: S_def)
-               (metis BOT_iff_D CollectI D_Bot NT_ND 
-                      front_tickFree_Nil front_tickFree_single)
+            by (simp add: S_def) 
+              (metis BOT_iff_D D_UU NT_ND front_tickFree_single mem_Collect_eq)
           with "**"(1, 2, 3, 5) show \<open>(s, X) \<in> \<F> ?lhs\<close>
             by (simp add: F_Interrupt limproc_is_thelub chain T_LUB) blast
         next

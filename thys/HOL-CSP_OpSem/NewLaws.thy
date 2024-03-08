@@ -46,15 +46,6 @@ theory  NewLaws
   imports Interrupt Sliding Throw
 begin
 
-
-(*<*)
-hide_const R
-text \<open>We need to hide this because we want to be allowed to use the letter R in our lemmas.
-      We can still access this notion via the notation \<^term>\<open>\<R> P\<close>.
-      In further versions of \<^theory>\<open>HOL-CSP.Process\<close>, R will be renamed in Refusals 
-      and we will remove this paragraph.\<close>
-(*>*)
-
 section \<open>Powerful Results about \<^const>\<open>Renaming\<close>\<close>
 
 text \<open>In this section we will provide laws about the \<^const>\<open>Renaming\<close> operator.
