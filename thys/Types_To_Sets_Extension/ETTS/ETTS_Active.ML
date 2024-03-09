@@ -59,14 +59,10 @@ fun string_of_etts_thm_type tts_lemma = "tts_lemma"
 (**** Auxiliary functions ported from Sketch_and_Explore ****)
 
 (*ported from Sketch_and_Explore*)
-fun maybe_quote ctxt =
-  ATP_Util.maybe_quote (Thy_Header.get_keywords' ctxt);
-
-(*ported from Sketch_and_Explore*)
 fun print_term ctxt t = t
   |> Print_Mode.setmp [] (Syntax.unparse_term ctxt #> Pretty.string_of)
   |> Sledgehammer_Util.simplify_spaces
-  |> maybe_quote ctxt;
+  |> ATP_Util.maybe_quote ctxt;
 
 (*ported from Sketch_and_Explore*)
 fun mk_print_ctxt ctxt = fold
