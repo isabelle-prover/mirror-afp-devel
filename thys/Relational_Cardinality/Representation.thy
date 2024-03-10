@@ -426,6 +426,58 @@ lemma point_mult_top:
   "point x \<Longrightarrow> x\<^sup>T * x = top"
   using surjective_vector_top by blast
 
+lemma point_below_equal:
+  "point p \<Longrightarrow> point q \<Longrightarrow> p \<le> q \<Longrightarrow> p = q"
+  by (metis below_point_eq_domain comp_associative)
+
+lemma ideal_point_without_ideal:
+  "ideal_point p \<longleftrightarrow> (point p \<and> (\<forall>q . point q \<longrightarrow> q \<le> p \<or> q \<le> -p))"
+proof
+  assume 1: "ideal_point p"
+  have "\<forall>q . point q \<longrightarrow> q \<le> p \<or> q \<le> -p"
+  proof (rule allI, rule impI)
+    fix q
+    assume 2: "point q"
+    hence 3: "ideal (q\<^sup>T * p)"
+      using 1 by (metis comp_associative vector_conv_covector)
+    have "q * (q\<^sup>T * p) \<le> p"
+      using 2 shunt_mapping surjective_conv_total by force
+    hence "q\<^sup>T * p = bot \<or> q \<le> p"
+      using 1 2 3 by blast
+    thus "q \<le> p \<or> q \<le> -p"
+      using 2 by (metis bot_least schroeder_3_p)
+  qed
+  thus "point p \<and> (\<forall>q . point q \<longrightarrow> q \<le> p \<or> q \<le> -p)"
+    using 1 by blast
+next
+  assume 4: "point p \<and> (\<forall>q . point q \<longrightarrow> q \<le> p \<or> q \<le> -p)"
+  have "\<forall>y z . point y \<and> ideal z \<and> z \<noteq> bot \<and> y * z \<le> p \<longrightarrow> y \<le> p"
+  proof (intro allI, rule impI)
+    fix y z
+    assume 5: "point y \<and> ideal z \<and> z \<noteq> bot \<and> y * z \<le> p"
+    show "y \<le> p"
+    proof (rule ccontr)
+      assume "\<not> y \<le> p"
+      hence "y \<le> -p"
+        using 4 5 by blast
+      hence "y\<^sup>T * p = bot"
+        using 5 points_disjoint_iff pseudo_complement by blast
+      thus False
+        using 5 bot_unique shunt_mapping surjective_conv_total by force
+    qed
+  qed
+  thus "ideal_point p"
+    using 4 by blast
+qed
+
+lemma ideal_point_without_ideal_2:
+  "ideal_point p \<longleftrightarrow> (point p \<and> (\<forall>q . point q \<longrightarrow> q = p \<or> q \<le> -p))"
+  by (smt (verit) ideal_point_without_ideal point_below_equal comp_associative mult_semi_associative)
+
+lemma ideal_point_without_ideal_3:
+  "ideal_point p \<longleftrightarrow> (point p \<and> (\<forall>q . point q \<and> q \<noteq> p \<longrightarrow> q \<le> -p))"
+  using ideal_point_without_ideal_2 by force
+
 end
 
 subsection \<open>Point Axiom\<close>
@@ -517,6 +569,54 @@ proof -
   thus ?thesis
     by auto
 qed
+
+lemma point_ideal_point_1:
+  assumes "point a"
+    shows "ideal_point a"
+proof (cases "a = bot")
+  case True
+  thus ?thesis
+    using assms by fastforce
+next
+  case False
+  have "a = a \<sqinter> Sup_fin { p | p . p \<in> ideal_points }"
+    using top_sup_ideal_points by auto
+  also have "... = Sup_fin { a \<sqinter> p | p . p \<in> ideal_points }"
+    apply (rule inf_left_dist_sup_fin)
+    using finite_ideal_points apply blast
+    using ne_ideal_points by blast
+  finally have 1: "Sup_fin { a \<sqinter> p | p . p \<in> ideal_points } \<noteq> bot"
+    using False by auto
+  have "\<exists>p\<in>ideal_points . a \<sqinter> p \<noteq> bot"
+  proof (rule ccontr)
+    assume "\<not> (\<exists>p\<in>ideal_points . a \<sqinter> p \<noteq> bot)"
+    hence "\<forall>p\<in>ideal_points . a \<sqinter> p = bot"
+      by auto
+    hence "{ a \<sqinter> p | p . p \<in> ideal_points } = { bot | p . p \<in> ideal_points }"
+      by auto
+    hence "Sup_fin { a \<sqinter> p | p . p \<in> ideal_points } = Sup_fin { bot | p . p \<in> ideal_points }"
+      by simp
+    also have "... \<le> bot"
+      apply (rule Sup_fin.boundedI)
+      apply (simp add: finite_ideal_points)
+      using ne_ideal_points apply simp
+      by blast
+    finally show "False"
+      using 1 le_bot by blast
+  qed
+  from this obtain p where 2: "p \<in> ideal_points \<and> a \<sqinter> p \<noteq> bot"
+    by auto
+  hence "a \<le> p \<or> a \<le> -p"
+    using assms ideal_point_without_ideal by auto
+  hence "a \<le> p"
+    using 2 pseudo_complement by blast
+  thus ?thesis
+    using 2 assms point_below_equal by blast
+qed
+
+lemma point_ideal_point:
+  "point x \<longleftrightarrow> ideal_point x"
+  using point_ideal_point_1 by blast
 
 end
 
