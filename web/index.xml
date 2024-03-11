@@ -77,6 +77,13 @@
           <description></description>
         </item>
         <item>
+          <title>Go Code Generation for Isabelle</title>
+          <link>/entries/Go.html</link>
+          <pubDate>Mon, 22 Jan 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Go.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>(Extended) Interval Analysis</title>
           <link>/entries/Interval_Analysis.html</link>
           <pubDate>Sun, 21 Jan 2024 00:00:00 +0000</pubDate>
@@ -7690,6 +7697,27 @@
           <link>/sessions/given_clause_loops/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/given_clause_loops/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Go</title>
+          <link>/sessions/go/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/go/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Go_Test_Quick</title>
+          <link>/sessions/go_test_quick/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/go_test_quick/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Go_Test_Slow</title>
+          <link>/sessions/go_test_slow/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/go_test_slow/</guid>
           <description></description>
         </item>
         <item>

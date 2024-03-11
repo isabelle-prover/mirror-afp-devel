@@ -2071,6 +2071,27 @@
           <description></description>
         </item>
         <item>
+          <title>Go</title>
+          <link>/sessions/go/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/go/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Go_Test_Quick</title>
+          <link>/sessions/go_test_quick/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/go_test_quick/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Go_Test_Slow</title>
+          <link>/sessions/go_test_slow/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/go_test_slow/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Goedel_HFSet_Semantic</title>
           <link>/sessions/goedel_hfset_semantic/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>

@@ -113,6 +113,18 @@
     <loc>/entries/Isabelle_hoops.html</loc>
     <lastmod>2024-01-22T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/entries/Go.html</loc>
+    <lastmod>2024-01-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/hupel/</loc>
+    <lastmod>2024-01-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/stuebinger/</loc>
+    <lastmod>2024-01-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/tools/</loc>
+    <lastmod>2024-01-22T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/entries/Interval_Analysis.html</loc>
     <lastmod>2024-01-21T00:00:00+00:00</lastmod>
   </url><url>
@@ -353,9 +365,6 @@
     <loc>/dependencies/speccheck/</loc>
     <lastmod>2023-09-19T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/topics/tools/</loc>
-    <lastmod>2023-09-19T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/ML_Unification.html</loc>
     <lastmod>2023-09-19T00:00:00+00:00</lastmod>
   </url><url>
@@ -390,9 +399,6 @@
     <lastmod>2023-08-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Fixed_Length_Vector.html</loc>
-    <lastmod>2023-08-14T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/hupel/</loc>
     <lastmod>2023-08-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/kad/</loc>
@@ -5487,6 +5493,12 @@
     <loc>/sessions/girth_chromatic/</loc>
   </url><url>
     <loc>/sessions/given_clause_loops/</loc>
+  </url><url>
+    <loc>/sessions/go/</loc>
+  </url><url>
+    <loc>/sessions/go_test_quick/</loc>
+  </url><url>
+    <loc>/sessions/go_test_slow/</loc>
   </url><url>
     <loc>/sessions/goedel_hfset_semantic/</loc>
   </url><url>

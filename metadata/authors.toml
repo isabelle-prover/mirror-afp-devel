@@ -6571,6 +6571,15 @@ host = [
 
 [stueber.homepages]
 
+[stuebinger]
+name = "Terru Stübinger"
+orcid = "0009-0006-7411-2533"
+
+[stuebinger.emails]
+
+[stuebinger.homepages]
+stuebinger_homepage = "https://stuebinm.eu/"
+
 [stuewe]
 name = "Daniel Stüwe"
 
