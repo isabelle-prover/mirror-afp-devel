@@ -717,6 +717,17 @@ proof -
   finally show ?thesis .
 qed
 
+corollary stirling_tendsto_sqrt_pi:
+  "(\<lambda>n. fact n / (sqrt (2 * n) * (n / exp 1) ^ n)) \<longlonglongrightarrow> sqrt pi"
+proof -
+  have *: "(\<lambda>n. fact n / (sqrt (2 * pi * n) * (n / exp 1) ^ n)) \<longlonglongrightarrow> 1"
+    using fact_asymp_equiv by (simp add: asymp_equiv_def)
+  have "(\<lambda>n. sqrt pi * fact n / (sqrt (2 * pi * real n) * (real n / exp 1) ^ n))
+               = (\<lambda>n. fact n / (sqrt (real (2 * n)) * (real n / exp 1) ^ n))"
+    by (force simp add: divide_simps powr_realpow real_sqrt_mult)
+  with tendsto_mult_left[OF *, of "sqrt pi"] show ?thesis by simp
+qed
+
 end
 
 end
