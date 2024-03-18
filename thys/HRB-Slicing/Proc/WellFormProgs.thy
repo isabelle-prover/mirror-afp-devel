@@ -320,46 +320,60 @@ typedef wf_prog = wf_prog
   apply (simp add:wf_def well_formed_def)
   done
 
-lemma wf_wf_prog:"Rep_wf_prog wfp = (prog,procs) \<Longrightarrow> wf prog procs"
+lemma wf_wf_prog:
+  fixes wfp
+  shows "Rep_wf_prog wfp = (prog,procs) \<Longrightarrow> wf prog procs"
 using Rep_wf_prog[of wfp] by(simp add:wf_prog_def)
 
 
-lemma wfp_Seq1: assumes "Rep_wf_prog wfp = (c\<^sub>1;; c\<^sub>2, procs)"
+lemma wfp_Seq1:
+  fixes wfp
+  assumes "Rep_wf_prog wfp = (c\<^sub>1;; c\<^sub>2, procs)"
   obtains wfp' where "Rep_wf_prog wfp' = (c\<^sub>1, procs)"
 using \<open>Rep_wf_prog wfp = (c\<^sub>1;; c\<^sub>2, procs)\<close>
 apply(cases wfp) apply(auto simp:Abs_wf_prog_inverse wf_prog_def wf_def)
 apply(erule_tac x="Abs_wf_prog (c\<^sub>1, procs)" in meta_allE)
 by(auto elim:meta_mp simp:Abs_wf_prog_inverse wf_prog_def wf_def)
 
-lemma wfp_Seq2: assumes "Rep_wf_prog wfp = (c\<^sub>1;; c\<^sub>2, procs)"
+lemma wfp_Seq2:
+  fixes wfp
+  assumes "Rep_wf_prog wfp = (c\<^sub>1;; c\<^sub>2, procs)"
   obtains wfp' where "Rep_wf_prog wfp' = (c\<^sub>2, procs)"
 using \<open>Rep_wf_prog wfp = (c\<^sub>1;; c\<^sub>2, procs)\<close>
 apply(cases wfp) apply(auto simp:Abs_wf_prog_inverse wf_prog_def wf_def)
 apply(erule_tac x="Abs_wf_prog (c\<^sub>2, procs)" in meta_allE)
 by(auto elim:meta_mp simp:Abs_wf_prog_inverse wf_prog_def wf_def)
 
-lemma wfp_CondTrue: assumes "Rep_wf_prog wfp = (if (b) c\<^sub>1 else c\<^sub>2, procs)"
+lemma wfp_CondTrue:
+  fixes wfp
+  assumes "Rep_wf_prog wfp = (if (b) c\<^sub>1 else c\<^sub>2, procs)"
   obtains wfp' where "Rep_wf_prog wfp' = (c\<^sub>1, procs)"
 using \<open>Rep_wf_prog wfp = (if (b) c\<^sub>1 else c\<^sub>2, procs)\<close>
 apply(cases wfp) apply(auto simp:Abs_wf_prog_inverse wf_prog_def wf_def)
 apply(erule_tac x="Abs_wf_prog (c\<^sub>1, procs)" in meta_allE)
 by(auto elim:meta_mp simp:Abs_wf_prog_inverse wf_prog_def wf_def)
 
-lemma wfp_CondFalse: assumes "Rep_wf_prog wfp = (if (b) c\<^sub>1 else c\<^sub>2, procs)"
+lemma wfp_CondFalse:
+  fixes wfp
+  assumes "Rep_wf_prog wfp = (if (b) c\<^sub>1 else c\<^sub>2, procs)"
   obtains wfp' where "Rep_wf_prog wfp' = (c\<^sub>2, procs)"
 using \<open>Rep_wf_prog wfp = (if (b) c\<^sub>1 else c\<^sub>2, procs)\<close>
 apply(cases wfp) apply(auto simp:Abs_wf_prog_inverse wf_prog_def wf_def)
 apply(erule_tac x="Abs_wf_prog (c\<^sub>2, procs)" in meta_allE)
 by(auto elim:meta_mp simp:Abs_wf_prog_inverse wf_prog_def wf_def)
 
-lemma wfp_WhileBody: assumes "Rep_wf_prog wfp = (while (b) c', procs)"
+lemma wfp_WhileBody:
+  fixes wfp
+  assumes "Rep_wf_prog wfp = (while (b) c', procs)"
   obtains wfp' where "Rep_wf_prog wfp' = (c', procs)"
 using \<open>Rep_wf_prog wfp = (while (b) c', procs)\<close>
 apply(cases wfp) apply(auto simp:Abs_wf_prog_inverse wf_prog_def wf_def)
 apply(erule_tac x="Abs_wf_prog (c', procs)" in meta_allE)
 by(auto elim:meta_mp simp:Abs_wf_prog_inverse wf_prog_def wf_def)
 
-lemma wfp_Call: assumes "Rep_wf_prog wfp = (prog,procs)"
+lemma wfp_Call:
+  fixes wfp
+  assumes "Rep_wf_prog wfp = (prog,procs)"
   and "(p,ins,outs,c) \<in> set procs" and "containsCall procs prog ps p"
   obtains wfp' where "Rep_wf_prog wfp' = (c,procs)"
 using assms
