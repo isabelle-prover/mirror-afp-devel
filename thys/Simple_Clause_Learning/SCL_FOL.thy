@@ -636,7 +636,7 @@ lemma vars_lit_subst_subset_vars_cls_substI[intro]:
 
 lemma vars_subst_cls_subset_vars_cls_subst:
   "vars_cls C \<subseteq> vars_cls D \<Longrightarrow> vars_cls (C \<cdot> \<sigma>) \<subseteq> vars_cls (D \<cdot> \<sigma>)"
-  by (metis subset_Un_eq subst_cls_union vars_cls_plus_iff vars_subst_cls_eq)
+  by (simp only: vars_subst_cls_eq UN_mono)
 
 lemma vars_cls_subst_subset:
   assumes range_vars_\<eta>: "range_vars \<eta> \<subseteq> vars_lit L \<union> vars_lit L'"

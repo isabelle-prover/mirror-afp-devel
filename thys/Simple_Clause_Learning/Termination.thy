@@ -395,20 +395,20 @@ proof -
       show "wfp ?less"
       proof (intro wfp_lex_prodp)
         show "wfp ((<) :: bool \<Rightarrow> bool \<Rightarrow> bool)"
-          unfolding wfp_iff_wfP
+          unfolding wfp_on_UNIV
           by (simp add: Wellfounded.wfPUNIVI)
       next
         show "wfp (|\<subset>|)"
-          unfolding wfp_iff_wfP
+          unfolding wfp_on_UNIV
           by (rule wfP_pfsubset)
       next
         show "wfp (\<lambda>x y. (x, y) \<in> lenlex {(x :: _ :: wellorder, y). x < y})"
-          unfolding wfp_iff_wfP Wellfounded.wfP_wf_eq
+          unfolding wfp_on_UNIV Wellfounded.wfP_wf_eq
           using wf_lenlex
           using wf by blast
       next
         show "wfp ((<) :: nat \<Rightarrow> nat \<Rightarrow> bool)"
-          unfolding wfp_iff_wfP by simp
+          unfolding wfp_on_UNIV by simp
       qed
     qed
   qed
@@ -463,7 +463,7 @@ corollary termination_stragegy_without_back:
       factorize N \<beta> \<squnion> resolve N \<beta>"
   assumes strategy_stronger: "\<And>S S'. strategy S S' \<Longrightarrow> scl_without_backtrack S S'"
   shows "wfp_on {S. strategy\<^sup>*\<^sup>* initial_state S} strategy\<inverse>\<inverse>"
-proof (rule wfp_on_mono_strong)
+proof (rule wfp_on_antimono_strong)
   show "wfp_on {S. strategy\<^sup>*\<^sup>* initial_state S} scl_without_backtrack\<inverse>\<inverse>"
   proof (rule wfp_on_subset)
     show "wfp_on {S. scl_without_backtrack\<^sup>*\<^sup>* initial_state S} scl_without_backtrack\<inverse>\<inverse>"
@@ -477,7 +477,7 @@ proof (rule wfp_on_mono_strong)
 next
   show "\<And>S' S. strategy\<inverse>\<inverse> S' S \<Longrightarrow> scl_without_backtrack\<inverse>\<inverse> S' S"
     using strategy_stronger by simp
-qed
+qed simp
   
 
 subsection \<open>Backtracking can only be done finitely often\<close>
@@ -737,7 +737,7 @@ theorem termination_regular_scl_invars:
       sound_state N \<beta> \<sqinter> almost_no_conflict_with_trail N \<beta> \<sqinter> regular_conflict_resolution N \<beta>"
   shows
     "wfp_on {S. invars S} (regular_scl N \<beta>)\<inverse>\<inverse>"
-proof (rule wfp_on_mono_strong)
+proof (rule wfp_on_antimono_strong)
   fix S S' assume "(regular_scl N \<beta>)\<inverse>\<inverse> S S'"
   thus "(backtrack N \<beta> \<squnion> (propagate N \<beta> \<squnion> decide N \<beta> \<squnion> conflict N \<beta> \<squnion> skip N \<beta> \<squnion> factorize N \<beta> \<squnion>
       resolve N \<beta>))\<inverse>\<inverse> S S'"
@@ -755,7 +755,7 @@ next
     show "wfp_on (\<M>_back \<beta> ` {S. invars S}) (|\<subset>|)"
     proof (rule wfp_on_subset)
       show "wfp (|\<subset>|)"
-        unfolding wfp_iff_wfP
+        unfolding wfp_on_UNIV
         by (rule wfP_pfsubset)
     qed simp
   next
@@ -813,7 +813,7 @@ next
       by (simp add: \<M>_back_def)
     thus "\<M>_back \<beta> S' |\<subset>| \<M>_back \<beta> S \<or> \<M>_back \<beta> S' = \<M>_back \<beta> S" ..
   qed
-qed
+qed simp
 
 corollary termination_regular_scl:
   fixes
@@ -860,7 +860,7 @@ corollary termination_strategy:
     \<beta> :: "('f, 'v) Term.term"
   assumes strategy_restricts_regular_scl: "\<And>S S'. strategy S S' \<Longrightarrow> regular_scl N \<beta> S S'"
   shows "wfp_on {S. strategy\<^sup>*\<^sup>* initial_state S} strategy\<inverse>\<inverse>"
-proof (rule wfp_on_mono_strong)
+proof (rule wfp_on_antimono_strong)
   show "wfp_on {S. strategy\<^sup>*\<^sup>* initial_state S} (regular_scl N \<beta>)\<inverse>\<inverse>"
   proof (rule wfp_on_subset)
     show "wfp_on {S. (regular_scl N \<beta>)\<^sup>*\<^sup>* initial_state S} (regular_scl N \<beta>)\<inverse>\<inverse>"
@@ -873,7 +873,7 @@ proof (rule wfp_on_mono_strong)
 next
   show "\<And>S' S. strategy\<inverse>\<inverse> S' S \<Longrightarrow> (regular_scl N \<beta>)\<inverse>\<inverse> S' S"
     using strategy_restricts_regular_scl by simp
-qed
+qed simp
 
 end
 
