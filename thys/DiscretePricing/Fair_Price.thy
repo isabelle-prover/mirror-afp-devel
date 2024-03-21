@@ -14,21 +14,6 @@ begin
 
 subsection \<open>Preliminary results\<close>
 
-lemma (in prob_space) finite_borel_measurable_integrable:
-  assumes "f\<in> borel_measurable M"
-  and "finite (f`(space M))"
-  shows "integrable M f"
-proof -
-  have "simple_function M f" using assms by (simp add: simple_function_borel_measurable)
-  moreover have "emeasure M {y \<in> space M. f y \<noteq> 0} \<noteq> \<infinity>" by simp
-  ultimately have "Bochner_Integration.simple_bochner_integrable M f"
-    using Bochner_Integration.simple_bochner_integrable.simps by blast
-  hence "has_bochner_integral M f (Bochner_Integration.simple_bochner_integral M f)"
-    using has_bochner_integral_simple_bochner_integrable by auto
-  thus ?thesis using integrable.simps by auto
-qed
-
-
 subsubsection \<open>On the almost everywhere filter\<close>
 
 lemma AE_eq_trans[trans]:
