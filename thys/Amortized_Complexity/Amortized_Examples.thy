@@ -213,14 +213,8 @@ proof (standard, goal_cases)
           finally show ?thesis by (simp add: divide_right_mono)
         qed
         have 2: "real l + 1 \<le> ceiling(c * real l)"
-        proof-
-          have "real l + 1 = of_int(int(l)) + 1" by simp
-          also have "... \<le> ceiling(c * real l)" using \<open>l \<noteq> 0\<close>
-            by(simp only: int_less_real_le[symmetric] less_ceiling_iff)
-              (simp add: mult_less_cancel_right1)
-          finally show ?thesis .
-        qed
-        from \<open>l\<noteq>0\<close> 1 2 show ?thesis by simp (simp add: not_le zero_less_mult_iff)
+          by (metis \<open>l \<noteq> 0\<close> c1 int_less_real_le less_ceiling_iff mult_less_cancel_right1 of_int_of_nat_eq of_nat_le_0_iff)
+        from \<open>l\<noteq>0\<close> 1 2 show ?thesis by simp 
       qed
     qed
   qed

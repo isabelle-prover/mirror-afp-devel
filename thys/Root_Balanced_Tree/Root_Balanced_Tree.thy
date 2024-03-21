@@ -502,8 +502,7 @@ interpretation works (so far):\<close>
 interpretation Test: RBTi1 "\<lambda>n h. h \<le> log 2 (real(n + 1)) + 1"
 proof (standard, goal_cases)
   case (1 t)
-  have *: "log 2 (1 + real(size t)) \<ge> 0" by (simp)
-  show ?case apply(simp add: height_balance_tree) using * by linarith
+  show ?case by(simp add: height_balance_tree) 
 next
   case (2 n h n' h')
   have "real h' \<le> real h" by(simp add: 2)
