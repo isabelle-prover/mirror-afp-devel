@@ -14,7 +14,7 @@ functor Term_Index_Generic_Data_Args(P : TERM_INDEX_DATA_ARGS) : GENERIC_DATA_AR
 struct
 type T = P.data P.TI.term_index
 val empty = P.TI.empty
-fun merge (ti1, ti2)= P.TI.merge P.data_eq ti1 ti2
+fun merge (ti1, ti2) = P.TI.merge P.data_eq ti1 ti2
 end
 
 signature TERM_INDEX_DATA =

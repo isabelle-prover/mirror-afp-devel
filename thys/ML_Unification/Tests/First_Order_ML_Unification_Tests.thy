@@ -22,7 +22,8 @@ ML\<open>
       (Unif.e_match Unification_Util.match_types)
       ((fn binders =>
         (Hints.map_retrieval (Hints.mk_retrieval Hints.TI.generalisations |> K)
-        #> Hints.UH.map_concl_unifier (Higher_Order_Pattern_Unification.match |> K)
+        #> Hints.UH.map_concl_unifier (Higher_Order_Pattern_Unification.match
+          |> Type_Unification.e_match Unification_Util.match_types |> K)
         #> Hints.UH.map_normalisers (Unification_Util.beta_eta_short_norms_match |> K)
         #> Hints.UH.map_prems_unifier (match |> UC.norm_matcher Norm.beta_norm_term_match |> K))
         |> Context.proof_map
@@ -37,7 +38,8 @@ ML\<open>
       UC.add_fallback_unifier
       (Unif.e_unify Unification_Util.unify_types)
       ((fn binders =>
-        (Hints.UH.map_concl_unifier (Higher_Order_Pattern_Unification.match |> K)
+        (Hints.UH.map_concl_unifier (Higher_Order_Pattern_Unification.match
+          |> Type_Unification.e_match Unification_Util.match_types |> K)
         #> Hints.UH.map_normalisers (Unification_Util.beta_eta_short_norms_unif |> K)
         #> Hints.UH.map_prems_unifier (unif |> UC.norm_unifier Norm.beta_norm_term_unif |> K))
         |> Context.proof_map

@@ -25,7 +25,6 @@ val logger = Logger.setup_new_logger Unification_Base.logger
   "Higher_Order_Pattern_Decomp_Unification"
 
 structure UUtil = Unification_Util
-structure HOP = Higher_Order_Pattern_Unification
 structure UC = Unification_Combinator
 
 exception FALLBACK of Pretty.T

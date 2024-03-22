@@ -4,7 +4,9 @@ theory E_Unification_Examples
   imports
     Main
     ML_Unification_HOL_Setup
+    Unify_Assumption_Tactic
     Unify_Fact_Tactic
+    Unify_Resolve_Tactics
 begin
 
 paragraph \<open>Summary\<close>
@@ -54,43 +56,48 @@ lemma
 lemma "x \<in> ({z, y, x} \<union> S) \<inter> {x}"
   by (ufact TrueI)
 
-lemma "(x + (y :: nat))^2 \<le> x^2 + 2*x*y + y^2 + 4 * y + x - y"
+schematic_goal "(x + (y :: nat))^2 \<le> x^2 + 2*x*y + y^2 + 4 * y + x - y"
   supply power2_sum[simp]
   by (ufact TrueI)
 
 lemma
   assumes "\<And>s. P (Suc (Suc 0)) (s(x := (1 :: nat), x := 1 + 1 * 4 - 3))"
   shows "P 2 (s(x := 2))"
-  by (ufact assms[of s])
+  by (ufact assms)
 
 subsection \<open>Providing Canonical Solutions With Unification Hints\<close>
-
-lemma length_nil_eq_zero [uhint]: "length [] \<equiv> 0" by simp
-
-schematic_goal "length ?xs = 0"
-  by (ufact refl)
 
 lemma sub_self_eq_zero [uhint]: "(n :: nat) - n \<equiv> 0" by simp
 
 schematic_goal "n - ?m = (0 :: nat)"
   by (ufact refl)
 
-text \<open>The following fails because, by default, @{ML Standard_Unification_Hints.try_hints}
-uses the higher-order pattern unifier to unify hints against a given disagreement pair, and
-@{term 0} cannot be higher-order pattern unified with @{term "length []"}. The unification of the
-hint requires the use of yet another hint, namely @{term "length [] = 0"} (cf. above).\<close>
+text \<open>The following example shows a non-trivial interplay of the simplifier and unification hints:
+Using just unification, the hint @{thm sub_self_eq_zero} is not applicable in the following example
+since @{term 0} cannot be unified with @{term "length []"}.
+However, the simplifier can rewrite @{term "length []"} to @{term 0} and the hint can then be applied.\<close>
+
+(*uncomment to see the trace*)
+declare [[ML_map_context \<open>Logger.set_log_levels Logger.root Logger.TRACE\<close>]]
 
 schematic_goal "n - ?m = length []"
-  \<comment> \<open>by (ufact refl)\<close>
-  oops
+  by (ufact refl)
 
-text \<open>There are two ways to fix this:
-\<^enum> We allow the recursive use of unification hints when unifying @{thm sub_self_eq_zero} and our goal.
-\<^enum> We use a different unification hint that makes the recursive use of unification hints explicit.\<close>
+text \<open>There are also two ways to solve this using only unification hints:
+\<^enum> We allow the recursive use of unification hints when unifying @{thm sub_self_eq_zero} and our goal
+and register @{term "length [] = 0"} as an additional hint.
+\<^enum> We use an alternative for @{thm sub_self_eq_zero} that makes the recursive use of unification
+hints explicit and register @{term "length [] = 0"} as an additional hint.\<close>
+
+lemma length_nil_eq [uhint]: "length [] = 0" by simp
 
 text \<open>Solution 1: we can use @{attribute rec_uhint} for recursive usages of hints.
 Warning: recursive hint applications easily loop.\<close>
+
 schematic_goal "n - ?m = length []"
+  supply [[ucombine del = \<open>(Standard_Unification_Combine.default_metadata \<^binding>\<open>simp_unif\<close>)\<close>]]
+  (*doesn't work*)
+  \<comment> \<open>by (ufact refl)\<close>
   supply sub_self_eq_zero[rec_uhint]
   by (ufact refl)
 
@@ -99,8 +106,8 @@ text \<open>Solution 2: make the recursion explicit in the hint.\<close>
 lemma [uhint]: "k \<equiv> 0 \<Longrightarrow> (n :: nat) \<equiv> m \<Longrightarrow> n - m \<equiv> k" by simp
 
 schematic_goal "n - ?m = length []"
+  supply [[ucombine del = \<open>(Standard_Unification_Combine.default_metadata \<^binding>\<open>simp_unif\<close>)\<close>]]
   by (ufact refl)
-
 
 subsection \<open>Strenghten Unification With Unification Hints\<close>
 

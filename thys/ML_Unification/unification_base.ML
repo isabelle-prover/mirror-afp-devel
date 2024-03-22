@@ -33,8 +33,11 @@ sig
 
   (* normalisers for matchers/unifiers *)
   type normalisers = {
+    (*normaliser for result of unifier*)
     norm_unif_thm : Envir_Normalisation.thm_normaliser,
+    (*normaliser for other theorems*)
     norm_thm : Envir_Normalisation.thm_normaliser,
+    (*normaliser for terms*)
     norm_term : Envir_Normalisation.term_normaliser
   }
 
@@ -43,7 +46,7 @@ end
 structure Unification_Base : UNIFICATION_BASE =
 struct
 
-val logger = Logger.setup_new_logger Logger.root_logger "Unification_Base"
+val logger = Logger.setup_new_logger Logger.root "Unification_Base"
 
 val reflexive = Thm.reflexive
 val combination = Thm.combination

@@ -49,7 +49,17 @@ sig
   val norm_matcher : Envir_Normalisation.term_normaliser -> Unification_Base.matcher ->
     Unification_Base.matcher
 
-  (* miscellaneous *)
+  (* binder replacements *)
+  val replace_binders_closed_unifier : Unification_Base.closed_unifier -> Unification_Base.unifier
+  val replace_binders_closed_matcher : Unification_Base.closed_matcher -> Unification_Base.matcher
+  val replace_binders_unifier : Unification_Base.unifier -> Unification_Base.unifier
+  val replace_binders_matcher : Unification_Base.matcher -> Unification_Base.matcher
+
+  val replace_frees_closed_unifier : Unification_Base.closed_unifier -> Unification_Base.unifier
+  val replace_frees_closed_matcher : Unification_Base.closed_matcher -> Unification_Base.matcher
+  val replace_frees_unifier : Unification_Base.unifier -> Unification_Base.unifier
+  val replace_frees_matcher : Unification_Base.matcher -> Unification_Base.matcher
+
   (*approximates a unifier (working with bound variables) from a closed unifier
     by replacing all bound variables with their associated free variables*)
   val unifier_from_closed_unifier : Unification_Base.closed_unifier -> Unification_Base.unifier
@@ -100,9 +110,23 @@ fun norm_unifier norm_t unif binders ctxt tp env =
 fun norm_matcher norm_p match binders ctxt pt env =
   norm_closed_matcher norm_p (match (Binders.norm_binders (norm_p env) binders)) ctxt pt env
 
+(* binder replacements *)
+fun replace_binders_closed_unifier unif binders ctxt =
+  unif ctxt o apply2 (Binders.replace_binders binders)
+val replace_binders_closed_matcher = replace_binders_closed_unifier
+
+fun replace_binders_unifier unif binders = replace_binders_closed_unifier (unif binders) binders
+fun replace_binders_matcher match binders = replace_binders_closed_matcher (match binders) binders
+
+fun replace_frees_closed_unifier unif binders ctxt =
+  unif ctxt o apply2 (Binders.replace_frees binders)
+val replace_frees_closed_matcher = replace_frees_closed_unifier
+
+fun replace_frees_unifier unif binders = replace_frees_closed_unifier (unif binders) binders
+fun replace_frees_matcher match binders = replace_frees_closed_matcher (match binders) binders
+
 (* miscellaneous *)
-fun unifier_from_closed_unifier unify binders ctxt =
-  unify ctxt o apply2 (Binders.replace_binders binders)
-val matcher_from_closed_matcher = unifier_from_closed_unifier
+val unifier_from_closed_unifier = replace_binders_closed_unifier
+val matcher_from_closed_matcher = replace_binders_closed_matcher
 
 end

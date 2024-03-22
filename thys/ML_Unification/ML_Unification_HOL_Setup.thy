@@ -19,18 +19,16 @@ declare [[ucombine add = \<open>Standard_Unification_Combine.eunif_data
     (#norm_term Standard_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify)
   |> Unification_Combinator.unifier_from_closed_unifier
   |> K)
-  (Standard_Unification_Combine.default_metadata \<^binding>\<open>SIMPS_TO_unif\<close>)\<close>]]
+  (Standard_Unification_Combine.metadata \<^binding>\<open>SIMPS_TO_unif\<close> Prio.HIGH)\<close>]]
 
 declare [[ucombine add = \<open>Standard_Unification_Combine.eunif_data
-  (Simplifier_Unification.SIMPS_TO_UNIF_unify @{thm eq_TrueI}
-    Standard_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify
-    (Standard_Mixed_Unification.first_higherp_decomp_comb_higher_unify
-    |> Unification_Combinator.norm_unifier Envir_Normalisation.beta_norm_term_unif)
-  |> Unification_Combinator.norm_closed_unifier
+  (Simplifier_Unification.simp_unify_progress Envir.aeconv
+    (Simplifier_Unification.SIMPS_TO_UNIF_unify @{thm eq_TrueI})
     (#norm_term Standard_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify)
-  |> Unification_Combinator.unifier_from_closed_unifier
+    Standard_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify
+    Standard_Mixed_Unification.first_higherp_decomp_comb_higher_unify
   |> K)
-  (Standard_Unification_Combine.default_metadata \<^binding>\<open>SIMPS_TO_UNIF_unif\<close>)\<close>]]
+  (Standard_Unification_Combine.metadata \<^binding>\<open>SIMPS_TO_UNIF_unif\<close> Prio.HIGH)\<close>]]
 
 
 end

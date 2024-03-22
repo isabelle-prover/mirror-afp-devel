@@ -1,17 +1,12 @@
 \<^marker>\<open>creator "Kevin Kappelmann"\<close>
-subsection \<open>Assumption Tactic\<close>
 theory Unify_Assumption_Tactic
   imports
-    ML_Functor_Instances
+    Unify_Assumption_Tactic_Base
     ML_Unifiers
-    ML_Unification_Parsers
 begin
 
 paragraph \<open>Summary\<close>
-text \<open>Assumption tactic and method with adjustable unifier.\<close>
-
-ML_file\<open>unify_assumption_base.ML\<close>
-ML_file\<open>unify_assumption.ML\<close>
+text \<open>Setup of assumption tactic and examples.\<close>
 
 ML\<open>
   @{functor_instance struct_name = Standard_Unify_Assumption

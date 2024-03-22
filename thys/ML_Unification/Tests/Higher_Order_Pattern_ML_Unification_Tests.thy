@@ -14,14 +14,17 @@ ML\<open>
   structure UC = Unification_Combinator
   open Unification_Tests_Base
   structure Unif = Higher_Order_Pattern_Unification
-  val match = Unif.match []
+  val norm_match_types = Type_Unification.e_match Unification_Util.match_types
+  val match = Unif.match |> norm_match_types
+  val closed_match = match []
   val match_hints =
     let fun match binders =
       UC.add_fallback_matcher
-      (fn match_theory => Unif.e_match Unification_Util.match_types match_theory match_theory)
+      (fn match_theory => Unif.e_match Unification_Util.match_types match_theory match_theory
+        |> norm_match_types)
       ((fn binders =>
         (Hints.map_retrieval (Hints.mk_retrieval Hints.TI.generalisations |> K)
-        #> Hints.UH.map_concl_unifier (Unif.match |> K)
+        #> Hints.UH.map_concl_unifier (match |> K)
         #> Hints.UH.map_normalisers (Unif.norms_match |> K)
         #> Hints.UH.map_prems_unifier (match |> K))
         |> Context.proof_map
@@ -30,13 +33,16 @@ ML\<open>
       binders
     in match [] end
 
-  val unify = Unif.unify []
+  val norm_unif_types = Type_Unification.e_unify Unification_Util.unify_types
+  val unify = Unif.unify |> norm_unif_types
+  val closed_unify = unify []
   val unify_hints =
     let fun unif binders =
       UC.add_fallback_unifier
-      (fn unif_theory => Unif.e_unify Unification_Util.unify_types unif_theory unif_theory)
+      (fn unif_theory => Unif.e_unify Unification_Util.unify_types unif_theory unif_theory
+        |> norm_unif_types)
       ((fn binders =>
-        (Hints.UH.map_concl_unifier (Unif.match |> K)
+        (Hints.UH.map_concl_unifier (match |> K)
         #> Hints.UH.map_normalisers (Unif.norms_unify |> K)
         #> Hints.UH.map_prems_unifier (unif |> K))
         |> Context.proof_map
@@ -70,7 +76,7 @@ ML_command\<open>
     val check = check_unit_tests_hints_match tests true []
   in
     Lecker.test_group ctxt () [
-      check "match" match,
+      check "match" closed_match,
       check "match_hints" match_hints
     ]
   end
@@ -88,7 +94,7 @@ ML_command\<open>
     val check = check_unit_tests_hints_match tests false []
   in
     Lecker.test_group ctxt () [
-      check "match" match,
+      check "match" closed_match,
       check "match_hints" match_hints
     ]
   end
@@ -109,7 +115,7 @@ ML_command\<open>
     val check_hints = check_unit_tests_hints_match tests
   in
     Lecker.test_group ctxt () [
-      check_hints false [] "match" match,
+      check_hints false [] "match" closed_match,
       check_hints false [] "match_hints without hints" match_hints,
       check_hints true hints "match_hints with hints" match_hints
     ]
@@ -125,7 +131,7 @@ subparagraph \<open>First-Order\<close>
 ML_command\<open>
   structure Test_Params =
   struct
-    val unify = unify
+    val unify = closed_unify
     val unify_hints = unify_hints
     val params = {
       nv = 10,
@@ -147,7 +153,7 @@ ML_command\<open>
   val tests = Higher_Order_Pattern_Unification_Tests.unit_tests_unifiable ctxt
   val check_hints = check_unit_tests_hints_unif tests
   val _ = Lecker.test_group ctxt () [
-      check_hints true [] "unify" unify,
+      check_hints true [] "unify" closed_unify,
       check_hints true [] "unify_hints" unify_hints
     ]
 \<close>
@@ -176,7 +182,7 @@ ML_command\<open>
     val check_hints = check_unit_tests_hints_unif tests
   in
     Lecker.test_group ctxt () [
-      check_hints false [] "unify" unify,
+      check_hints false [] "unify" closed_unify,
       check_hints false [] "unify_hints without hints" unify_hints,
       check_hints true hints "unify_hints with hints" unify_hints
     ]

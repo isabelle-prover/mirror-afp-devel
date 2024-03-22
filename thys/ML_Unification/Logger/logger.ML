@@ -21,7 +21,7 @@ sig
   type logger_name = bstring
   type logger_binding
 
-  val root_logger : logger_binding
+  val root : logger_binding
   (*takes parent logger and creates a child logger with the given name*)
   val create_child_logger : logger_binding -> logger_name -> logger_binding
   val pretty_binding : logger_binding -> Pretty.T
@@ -106,8 +106,8 @@ datatype logger_binding = Logger_Binding of binding
 
 fun binding_of (Logger_Binding binding) = binding
 
-val root_logger_name = "Root"
-val root_logger = Binding.name root_logger_name |> Logger_Binding
+val root_name = "Root"
+val root = Binding.name root_name |> Logger_Binding
 fun create_child_logger (Logger_Binding parent) child_name =
   let val child = Binding.qualify_name true parent child_name
   in
@@ -148,14 +148,15 @@ fun log_config binding {log_level, output, msg_filter, show_logger} level messag
   if level > log_level then ()
   else
     let val msg = message_f ()
-      |> show_logger ? (fn msg => cat_lines [
-        "Logger: " ^ Pretty.string_of (pretty_binding binding),
-        msg])
+      |> show_logger ? (fn msg => Pretty.fbreaks [
+          Pretty.block [Pretty.str "Logger: ", pretty_binding binding],
+          Pretty.str msg
+        ] |> Pretty.block |> Pretty.string_of)
     in if msg_filter msg then output level msg else () end
 
 structure BT = Binding_Tree
 
-val init_tree = BT.insert (binding_of root_logger, default_config) BT.empty
+val init_tree = BT.insert (binding_of root, default_config) BT.empty
 
 structure Logger_Data = Generic_Data(
   type T = logger_config BT.binding_tree
@@ -201,12 +202,14 @@ fun log binding log_level ctxt message_f =
   case lookup_logger binding (Context.Proof ctxt) of
     SOME config => log_config binding config log_level message_f
   | NONE =>
-      let fun warn_msg _ =
-        "Logger " ^ Pretty.string_of (pretty_binding binding) ^ " not found."
+      let fun warn_msg _ = Pretty.fbreaks [
+          Pretty.block [Pretty.str "Logger ", pretty_binding binding, Pretty.str " not found."],
+          Pretty.block (map Pretty.str ["Passed message: ", message_f ()])
+        ] |> Pretty.block |> Pretty.string_of
       in
-        if binding = root_logger
+        if binding = root
         then default_output WARN (warn_msg ())
-        else log root_logger WARN ctxt warn_msg
+        else log root WARN ctxt warn_msg
       end
 
 fun fatal binding = log binding FATAL

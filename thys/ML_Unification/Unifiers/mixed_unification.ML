@@ -35,11 +35,11 @@ fun first_higherp_decomp_comb_higher_unify binders ctxt tp env =
       (Higher_Order_Pattern_Decomp_Unification.e_unify first_higherp_decomp_comb_higher_unify)
       comb_higher
     val higherp_decomp_comb_higher = UCO.add_fallback_unifier
-      (Higher_Order_Pattern_Unification.e_unify unify_types decomp_comb_higher)
-      comb_higher
+        (Higher_Order_Pattern_Unification.e_unify unify_types decomp_comb_higher)
+        comb_higher
+      |> Type_Unification.e_unify unify_types
     val fo_higherp_decomp_comb_higher = UCO.add_fallback_unifier
-      (First_Order_Unification.e_unify unify_types)
-      higherp_decomp_comb_higher
+      (First_Order_Unification.e_unify unify_types) higherp_decomp_comb_higher
   in
     (@{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
       Pretty.str "First-order with higher-order pattern with decomposition with ",

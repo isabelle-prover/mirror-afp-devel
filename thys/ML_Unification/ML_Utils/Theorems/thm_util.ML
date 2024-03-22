@@ -20,7 +20,7 @@ end
 structure Thm_Util : THM_UTIL =
 struct
 
-val logger = Logger.setup_new_logger Logger.root_logger "Thm_Util"
+val logger = Logger.setup_new_logger Logger.root "Thm_Util"
 
 fun pretty_THM ctxt (msg, subgoal, thms) = Pretty.block [
     Pretty.str msg,
