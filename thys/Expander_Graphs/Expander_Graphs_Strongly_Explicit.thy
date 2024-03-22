@@ -862,13 +862,8 @@ proof -
     finally show ?thesis by simp
   qed
 
-  have "real (nat \<lceil>sqrt (real n)\<rceil>^2) = of_int \<lceil>sqrt (real n)\<rceil>^2"
-    unfolding of_nat_power using 2 by (simp add:not_less)
-  also have "... \<in> {real n..2 * real n}"
-    using 0 1 by auto
-  also have "... = {real n..real (2*n)}" by simp
-  finally have "real (nat \<lceil>sqrt (real n)\<rceil>^2) \<in> {real n..real (2*n)}" by simp
-  hence "nat \<lceil>sqrt (real n)\<rceil>^2 \<in> {n..2*n}" by (simp del:of_nat_mult)
+  have "nat \<lceil>sqrt (real n)\<rceil>^2 \<in> {n..2*n}"
+    by (simp add: approximation_preproc_nat(13) sqrt_le_D 1)
   hence "see_size (see_mgg (nat \<lceil>sqrt (real n)\<rceil>)) \<in> {n..2*n}"
     by (simp add:see_mgg_def)
   moreover have "sqrt (real n) > 0" using assms by simp

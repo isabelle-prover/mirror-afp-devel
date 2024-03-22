@@ -34,8 +34,6 @@ lemma auxiliary_ineq: fixes x::nat assumes "x \<ge> (2::nat)"
   shows " x+1 < (2::nat)*x"
   using assms by linarith
 
-(* TODO The following three auxiliary lemmas are by Lawrence Paulson. To be added to the library. *)
-
 lemma sum_strict_mono:
   fixes A :: "nat set"
   assumes "finite B" "A \<subset> B" "0 \<notin> B"

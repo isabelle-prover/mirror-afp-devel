@@ -532,7 +532,7 @@ proof (cases "xs = []")
   define m where "m = length (chop (Suc (2*d)) xs)"
 
   have "real (m div 2) \<le> real (nat \<lceil>real n / (1 + 2 * real d)\<rceil>) / 2"
-    by (simp add: m_def length_chop n_def)
+    by (simp add: m_def length_chop n_def flip: of_nat_int_ceiling)
   also have "real (nat \<lceil>real n / (1 + 2 * real d)\<rceil>) =
                of_int \<lceil>real n / (1 + 2 * real d)\<rceil>"
     by (intro of_nat_nat) (auto simp: divide_simps)
