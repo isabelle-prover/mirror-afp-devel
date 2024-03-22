@@ -91,25 +91,17 @@ fun simp_unify norms unif ctxt =
       SIMPS_TO_UNIF_env_thm_tac' env) i state)
   in Tactic_Unification.unify eq_tac ctxt end
 
-fun simp_unify_progress teq simp_unify norm_term norms unif binders ctxt (tp as (lhs, rhs)) =
-  let fun unify ctxt tp' =
-    let val tp' as (lhs', rhs') = apply2 (Binders.replace_frees binders) tp'
-    in
-      (if teq (lhs, lhs') andalso teq (rhs, rhs')
+fun simp_unify_progress teq simp_unify norm_term norms unif binders ctxt tp env =
+  let
+    val tp as (lhs, rhs) = apply2 (Binders.replace_binders binders #> norm_term env) tp
+    fun unify ctxt (tp' as (lhs', rhs')) = if teq (lhs, lhs') andalso teq (rhs, rhs')
       then (@{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
           Pretty.str "Simplification of ",
           Unification_Util.pretty_unif_problem ctxt tp,
           Pretty.str " failed (no progress)"
         ] |> Pretty.string_of);
-      Unification_Combinator.fail_unify)
-      else unif)
-      binders ctxt tp'
-    end
-  in
-    simp_unify norms unify
-    |> Unification_Combinator.norm_closed_unifier norm_term
-    |> Unification_Combinator.replace_binders_closed_unifier
-    |> (fn unif => unif binders ctxt tp)
-  end
+        K Seq.empty)
+      else unif binders ctxt (apply2 (Binders.replace_frees binders) tp')
+  in simp_unify norms unify ctxt tp env end
 
 end
