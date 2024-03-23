@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Wed, 06 Mar 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Fri, 15 Mar 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Approximate Model Counting</title>
+          <link>/entries/Approximate_Model_Counting.html</link>
+          <pubDate>Fri, 15 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Approximate_Model_Counting.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Verified QBF Solving</title>
           <link>/entries/QBF_Solver_Verification.html</link>
@@ -5807,6 +5814,13 @@
           <link>/sessions/applicative_lifting/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/applicative_lifting/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Approximate_Model_Counting</title>
+          <link>/sessions/approximate_model_counting/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/approximate_model_counting/</guid>
           <description></description>
         </item>
         <item>

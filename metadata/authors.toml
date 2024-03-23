@@ -7481,6 +7481,22 @@ host = [
 [yamada.homepages]
 yamada_homepage = "http://group-mmm.org/~ayamada/"
 
+[yang]
+name = "Jiong Yang"
+
+[yang.emails]
+
+[yang.emails.yang_email]
+user = [
+  "jiongyangcobe",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[yang.homepages]
+
 [ye]
 name = "Lina Ye"
 

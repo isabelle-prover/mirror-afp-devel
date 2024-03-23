@@ -4,21 +4,21 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Concentration Inequalities - Archive of Formal Proofs</title>
-    <meta name="description" content="Concentration inequalities provide bounds on how a random variable (or a sum/composition of random variables) deviate from their expectation, usually based...">
+    <title>Approximate Model Counting - Archive of Formal Proofs</title>
+    <meta name="description" content="Approximate model counting is the task of approximating the number of solutions to an input formula. This entry formalizes $\mathsf{ApproxMC}$, an...">
 
-  <meta property="og:title" content="Concentration Inequalities" />
+  <meta property="og:title" content="Approximate Model Counting" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="/entries/Concentration_Inequalities.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
-<meta property="article:published_time" content="2023-11-13T00:00:00+00:00" />
-<meta property="article:modified_time" content="2023-11-13T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+<meta property="og:url" content="/entries/Approximate_Model_Counting.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2024-03-15T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-03-15T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
 
 
   <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
-<meta name="twitter:title" content="Concentration Inequalities"/>
+<meta name="twitter:title" content="Approximate Model Counting"/>
 <meta name="twitter:description" content=""/>
 
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
@@ -124,15 +124,15 @@
       </div>
     </form>
   <h1>
-    <span class='first'>C</span>oncentration <span class='first'>I</span>nequalities
+    <span class='first'>A</span>pproximate <span class='first'>M</span>odel <span class='first'>C</span>ounting
     
   </h1>
   <div>
       <p>
-        <a href="../authors/karayel">Emin Karayel</a> <a class="obfuscated" data="eyJob3N0IjpbImVtaW5rYXJheWVsIiwiZGUiXSwidXNlciI6WyJtZSJdfQ==">📧</a> and <a href="../authors/tan">Yong Kiam Tan</a> <a class="obfuscated" data="eyJob3N0IjpbImNzIiwiY211IiwiZWR1Il0sInVzZXIiOlsieW9uZ2tpYXQiXX0=">📧</a>
+        <a href="../authors/tan">Yong Kiam Tan</a> <a class="obfuscated" data="eyJob3N0IjpbImNzIiwiY211IiwiZWR1Il0sInVzZXIiOlsieW9uZ2tpYXQiXX0=">📧</a> and <a href="../authors/yang">Jiong Yang</a> <a class="obfuscated" data="eyJob3N0IjpbImdtYWlsIiwiY29tIl0sInVzZXIiOlsiamlvbmd5YW5nY29iZSJdfQ==">📧</a>
 
       </p>
-      <p class="date">November 13, 2023</p>
+      <p class="date">March 15, 2024</p>
   </div>
 </header>
       <div>
@@ -140,9 +140,15 @@
   <main>
     <h3>Abstract</h3>
 
-    <div class="abstract mathjax_process">Concentration inequalities provide bounds on how a random variable (or a sum/composition of random variables) deviate from their expectation, usually based on moments/independence of the variables.
-
-The most important concentration inequalities (the Markov, Chebyshev, and Hoelder inequalities and the Chernoff bounds) are already part of HOL-Probability. This entry collects more advanced results, such as Bennett's/Bernstein's Inequality, Bienayme's Identity, Cantelli's Inequality, the Efron-Stein Inequality, McDiarmid's Inequality, and the Paley-Zygmund Inequality.</div>
+    <div class="abstract mathjax_process">Approximate model counting is the task of approximating the number of solutions
+to an input formula.  This entry formalizes $\mathsf{ApproxMC}$, an algorithm
+due to Chakraborty et al. with a
+probably approximately correct (PAC) guarantee, i.e., $\mathsf{ApproxMC}$
+returns a multiplicative $(1+\varepsilon)$-factor approximation of the model
+count with probability at least $1 - \delta$, where $\varepsilon > 0$ and $0 <
+\delta \leq 1$.  The algorithmic specification is further refined to a verified
+certificate checker that can be used to validate the results of untrusted
+$\mathsf{ApproxMC}$ implementations (assuming access to trusted randomness).</div>
 
     <h3>License</h3>
     <div>
@@ -150,32 +156,28 @@ The most important concentration inequalities (the Markov, Chebyshev, and Hoelde
     </div>
       <h3>Topics</h3>
       <ul>
-          <li><a href="../topics/mathematics/probability-theory">Mathematics/Probability theory</a></li>
+          <li><a href="../topics/computer-science/algorithms/approximation">Computer science/Algorithms/Approximation</a></li>
+          <li><a href="../topics/computer-science/algorithms/randomized">Computer science/Algorithms/Randomized</a></li>
       </ul>
-      <h3>Session Concentration_Inequalities</h3>
+      <h3>Session Approximate_Model_Counting</h3>
       <ul>
-          <li><a href="../sessions/concentration_inequalities/#Concentration_Inequalities_Preliminary">Concentration_Inequalities_Preliminary</a></li>
-          <li><a href="../sessions/concentration_inequalities/#Bennett_Inequality">Bennett_Inequality</a></li>
-          <li><a href="../sessions/concentration_inequalities/#Bienaymes_Identity">Bienaymes_Identity</a></li>
-          <li><a href="../sessions/concentration_inequalities/#Cantelli_Inequality">Cantelli_Inequality</a></li>
-          <li><a href="../sessions/concentration_inequalities/#Efron_Stein_Inequality">Efron_Stein_Inequality</a></li>
-          <li><a href="../sessions/concentration_inequalities/#McDiarmid_Inequality">McDiarmid_Inequality</a></li>
-          <li><a href="../sessions/concentration_inequalities/#Paley_Zygmund_Inequality">Paley_Zygmund_Inequality</a></li>
+          <li><a href="../sessions/approximate_model_counting/#ApproxMCPreliminaries">ApproxMCPreliminaries</a></li>
+          <li><a href="../sessions/approximate_model_counting/#RandomXOR">RandomXOR</a></li>
+          <li><a href="../sessions/approximate_model_counting/#RandomXORHashFamily">RandomXORHashFamily</a></li>
+          <li><a href="../sessions/approximate_model_counting/#ApproxMCCore">ApproxMCCore</a></li>
+          <li><a href="../sessions/approximate_model_counting/#ApproxMCCoreAnalysis">ApproxMCCoreAnalysis</a></li>
+          <li><a href="../sessions/approximate_model_counting/#ApproxMCAnalysis">ApproxMCAnalysis</a></li>
+          <li><a href="../sessions/approximate_model_counting/#CertCheck">CertCheck</a></li>
+          <li><a href="../sessions/approximate_model_counting/#CertCheck_CNF_XOR">CertCheck_CNF_XOR</a></li>
       </ul>
 
     <div class="flex-wrap">
       <div>
         <h3>Depends on</h3>
         <ul class="horizontal-list">
-              <li><a href="../entries/Lp.html">Lp spaces</a></li>
-        </ul>
-      </div>
-      <div>
-        <h3>Used by</h3>
-        <ul class="horizontal-list">
-            <li>
-              <a href="../entries/Approximate_Model_Counting.html">Approximate Model Counting</a>
-            </li>
+              <li><a href="../entries/Concentration_Inequalities.html">Concentration Inequalities</a></li>
+              <li><a href="../entries/Frequency_Moments.html">Formalization of Randomized Approximation Algorithms for Frequency Moments</a></li>
+              <li><a href="../entries/Monad_Normalisation.html">Monad normalisation</a></li>
         </ul>
       </div>
       </div>
@@ -186,9 +188,9 @@ The most important concentration inequalities (the Markov, Chebyshev, and Hoelde
     <a class='popup-button' href="#cite-popup">Cite</a>
     <a class='popup-button' href="#download-popup">Download</a>
     <h4>PDFs</h4>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Concentration_Inequalities/outline.pdf">Proof outline</a>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Concentration_Inequalities/document.pdf">Proof document</a>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Concentration_Inequalities/session_graph.pdf">Dependencies</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Approximate_Model_Counting/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Approximate_Model_Counting/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Approximate_Model_Counting/session_graph.pdf">Dependencies</a>
   </nav>
 
   <div id="cite-popup" class="overlay">
@@ -197,14 +199,14 @@ The most important concentration inequalities (the Markov, Chebyshev, and Hoelde
       <h2>Cite</h2>
       <a class="close" href="#">&times;</a>
       <div>
-        <p style="display:none;" id="bibtex-filename">Concentration_Inequalities-AFP</p>
-        <pre id="copy-text">@article{Concentration_Inequalities-AFP,
-  author  = {Emin Karayel and Yong Kiam Tan},
-  title   = {Concentration Inequalities},
+        <p style="display:none;" id="bibtex-filename">Approximate_Model_Counting-AFP</p>
+        <pre id="copy-text">@article{Approximate_Model_Counting-AFP,
+  author  = {Yong Kiam Tan and Jiong Yang},
+  title   = {Approximate Model Counting},
   journal = {Archive of Formal Proofs},
-  month   = {November},
-  year    = {2023},
-  note    = {\url{https://isa-afp.org/entries/Concentration_Inequalities.html},
+  month   = {March},
+  year    = {2024},
+  note    = {\url{https://isa-afp.org/entries/Approximate_Model_Counting.html},
              Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -218,7 +220,7 @@ The most important concentration inequalities (the Markov, Chebyshev, and Hoelde
     <div class="popup">
       <h2>Download</h2>
       <a class="close" href="#">&times;</a>
-      <a href="https://www.isa-afp.org/release/afp-Concentration_Inequalities-current.tar.gz"
+      <a href="https://www.isa-afp.org/release/afp-Approximate_Model_Counting-current.tar.gz"
          download>Download latest</a>
     </div>
   </div>
