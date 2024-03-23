@@ -395,20 +395,18 @@ proof -
       show "wfp ?less"
       proof (intro wfp_lex_prodp)
         show "wfp ((<) :: bool \<Rightarrow> bool \<Rightarrow> bool)"
-          unfolding wfp_on_UNIV
           by (simp add: Wellfounded.wfPUNIVI)
       next
         show "wfp (|\<subset>|)"
-          unfolding wfp_on_UNIV
           by (rule wfP_pfsubset)
       next
         show "wfp (\<lambda>x y. (x, y) \<in> lenlex {(x :: _ :: wellorder, y). x < y})"
-          unfolding wfp_on_UNIV Wellfounded.wfP_wf_eq
+          unfolding Wellfounded.wfP_wf_eq
           using wf_lenlex
           using wf by blast
       next
         show "wfp ((<) :: nat \<Rightarrow> nat \<Rightarrow> bool)"
-          unfolding wfp_on_UNIV by simp
+          by simp
       qed
     qed
   qed
@@ -755,7 +753,6 @@ next
     show "wfp_on (\<M>_back \<beta> ` {S. invars S}) (|\<subset>|)"
     proof (rule wfp_on_subset)
       show "wfp (|\<subset>|)"
-        unfolding wfp_on_UNIV
         by (rule wfP_pfsubset)
     qed simp
   next

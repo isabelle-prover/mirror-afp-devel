@@ -436,8 +436,6 @@ proof (rule iffI)
     using wfp_on_iff_wfp by blast
   hence "wfp (\<lambda>z y. R y z \<and> R\<^sup>*\<^sup>* x\<^sub>0 y)"
     by (auto elim: wfp_on_antimono_strong)
-  hence "Wellfounded.wfP (\<lambda>z y. R y z \<and> R\<^sup>*\<^sup>* x\<^sub>0 y)"
-    by (simp add: wfp_on_UNIV)
   hence "\<nexists>xs. \<not> lfinite xs \<and> Lazy_List_Chain.chain (\<lambda>y z. R y z \<and> R\<^sup>*\<^sup>* x\<^sub>0 y) xs"
     unfolding wfP_iff_no_infinite_down_chain_llist
     by (metis (no_types, lifting) Lazy_List_Chain.chain_mono conversepI)
@@ -473,8 +471,6 @@ next
   hence "Wellfounded.wfP (\<lambda>z y. R y z \<and> y \<in> {x. R\<^sup>*\<^sup>* x\<^sub>0 x})"
     unfolding wfP_iff_no_infinite_down_chain_llist
     using Lazy_List_Chain.chain_mono by fastforce
-  hence "wfp (\<lambda>z y. R y z \<and> y \<in> {x. R\<^sup>*\<^sup>* x\<^sub>0 x})"
-    unfolding wfp_on_UNIV by argo
   hence "wfp (\<lambda>z y. R\<inverse>\<inverse> z y \<and> z \<in> {x. R\<^sup>*\<^sup>* x\<^sub>0 x} \<and> y \<in> {x. R\<^sup>*\<^sup>* x\<^sub>0 x})"
     by (auto elim: wfp_on_antimono_strong)
   thus "wfp_on {x. R\<^sup>*\<^sup>* x\<^sub>0 x} R\<inverse>\<inverse>"
