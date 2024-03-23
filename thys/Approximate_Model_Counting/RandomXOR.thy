@@ -449,7 +449,7 @@ proof -
 
   have rw: "{x. (x, b) \<in> E \<and> (x, b) \<in> set_pmf (random_xor V)} =
     {x. (x,b) \<in> E} \<inter> set_pmf (pmf_of_set (Pow V))" for b
-    by (auto simp add: V set_pmf_random_xor Pow_not_empty V)
+    by (auto simp add: V set_pmf_random_xor Pow_not_empty)
 
   have "prob_space.prob (random_xor V) E =
     prob_space.prob (random_xor V) (E \<inter> set_pmf (random_xor V))"
@@ -1464,7 +1464,7 @@ proof -
                satisfies_xor xor {x. \<omega> x = Some True} =
                the (\<alpha> x)}))"
     by (subst measure_Pi_pmf_PiE_dflt)
-     (auto simp add: measure_map_pmf inj_vimage_image_eq)
+     (auto simp add: inj_vimage_image_eq)
   also have "... = (\<Prod>x<n. 1/2)"
     by (simp add: assms(1) satisfies_random_xor_parity)
   also have "... = 1/ 2 ^ n"
@@ -1532,9 +1532,9 @@ proof -
          satisfies_xor xor {x. \<omega> x = Some True} = the (\<alpha> x) \<and>
          satisfies_xor xor {x. \<omega>' x = Some True} = the (\<alpha>' x)}))"
     by (subst measure_Pi_pmf_PiE_dflt)
-     (auto simp add: measure_map_pmf inj_vimage_image_eq)
+     (auto simp add: inj_vimage_image_eq)
   also have "... = (\<Prod>x<n. 1/4)"
-    apply (subst  pair_satisfies_random_xor_parity)
+    apply (subst pair_satisfies_random_xor_parity)
     using assms neq by auto
   also have "... = 1/ 4 ^ n"
     by (simp add: power_one_over)
@@ -1615,7 +1615,7 @@ proof -
          satisfies_xor xor {x. \<omega>' x = Some True} = the (\<alpha>' x)\<and>
          satisfies_xor xor {x. \<omega>'' x = Some True} = the (\<alpha>'' x)}))"
      apply (subst measure_Pi_pmf_PiE_dflt)
-     by (auto simp add: measure_map_pmf inj_vimage_image_eq)
+     by (auto simp add: inj_vimage_image_eq)
   moreover have "... = (\<Prod>x<n. 1/8)"
     apply (subst three_satisfies_random_xor_parity)
     subgoal using assms neq by clarsimp

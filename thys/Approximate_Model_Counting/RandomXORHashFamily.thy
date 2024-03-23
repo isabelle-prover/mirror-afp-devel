@@ -125,7 +125,7 @@ proof -
       {xors.
         xor_hash \<omega>' xors = \<alpha>'} = 0"
       unfolding prob_random_xors_xor_hash_indicat_real[OF V]
-      by (metis * atLeast0LessThan div_0 indicator_simps(2) mem_Collect_eq)
+      by (metis (full_types) * atLeast0LessThan div_0 indicator_simps(2) mem_Collect_eq)
     moreover have "
     measure_pmf.prob (random_xors V n)
     {xors.
@@ -208,7 +208,7 @@ proof -
       {xors.
         xor_hash \<omega>'' xors = \<alpha>''} = 0"
       unfolding prob_random_xors_xor_hash_indicat_real[OF V]
-      by (metis * atLeast0LessThan div_0 indicator_simps(2) mem_Collect_eq)
+      by (metis (full_types) * atLeast0LessThan div_0 indicator_simps(2) mem_Collect_eq)
     moreover have "
     measure_pmf.prob (random_xors V n)
     {xors.

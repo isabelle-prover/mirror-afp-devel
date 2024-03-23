@@ -513,7 +513,7 @@ proof -
     then have "?thesis"
       unfolding indicator_def of_bool_def
       using assms \<epsilon>
-      by (auto simp add: mult_le_cancel_left1 mult_le_cancel_right1 divide_le_eq mult_le_cancel_left1)
+      by (auto simp add: mult_le_cancel_left1 mult_le_cancel_right1 divide_le_eq)
   }
   moreover {
     assume a: "card (proj S (sols F)) \<ge> thresh"

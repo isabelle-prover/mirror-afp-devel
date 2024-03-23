@@ -203,7 +203,7 @@ lemma size_xorL_anti_mono:
   shows "size_xorL F S xorsl x \<ge> size_xorL F S xorsl y"
 proof -
   obtain ys where ys: "[0..<y] = [0..<x] @ ys" "distinct ys"
-  by (metis assms bot_nat_0.extremum distinct_upt ordered_cancel_comm_monoid_diff_class.add_diff_inverse upt_add_eq_append)
+  by (metis assms(1) bot_nat_0.extremum distinct_upt ordered_cancel_comm_monoid_diff_class.add_diff_inverse upt_add_eq_append)
 
   define rys where"rys = (rev (map (xor_from_bits S \<circ> xorsl) ys))"
   have *: "\<And>y. y \<in> set rys \<Longrightarrow> distinct (fst y)"
@@ -1135,6 +1135,8 @@ proof -
   finally show ?thesis by auto
 qed
 
+end
+
 lemma certcheck_code[code]:
    "certcheck F S \<epsilon> \<delta> (m0,ms) xorsLs = (
     if \<delta> > 0 \<and> \<delta> < 1 \<and> \<epsilon> > 0 \<and> distinct S then
@@ -1149,8 +1151,6 @@ lemma certcheck_code[code]:
      else Code.abort (STR ''invalid inputs'')
         (\<lambda>_. certcheck F S \<epsilon> \<delta> (m0,ms) xorsLs))"
   by auto
-
-end
 
 end
 

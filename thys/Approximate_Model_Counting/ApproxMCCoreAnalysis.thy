@@ -143,7 +143,7 @@ proof -
   have " dom a = {0..<n - i} \<Longrightarrow>
        dom b = {0..<i} \<Longrightarrow>
        \<forall>x. aslice i b x = \<beta> x \<Longrightarrow>
-       \<not> x < i \<Longrightarrow> None = b x" for a b x
+       \<not> x < i \<Longrightarrow> None = b x" for a b :: "nat assg" and x
     by (metis atLeastLessThan_iff domIff)
   then have 2: "\<And>x. x \<in> ?lhs \<Longrightarrow> finv (f x) = x"
     unfolding finv_def f_def
