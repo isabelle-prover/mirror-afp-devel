@@ -18,22 +18,22 @@ begin
 text \<open>
   First, we define the $S_n^*$ from Jameson's article:
 \<close>
-private definition S' :: "nat \<Rightarrow> real \<Rightarrow> real" where
+qualified definition S' :: "nat \<Rightarrow> real \<Rightarrow> real" where
   "S' n x = 1/(2*x) + (\<Sum>r=1..<n. 1/(of_nat r+x)) + 1 /(2*(n + x))"
 
 text \<open>
   Next, the trapezium (also called $T$ in Jameson's article):
 \<close>
-private definition T :: "real \<Rightarrow> real" where
+qualified definition T :: "real \<Rightarrow> real" where
   "T x = 1/(2*x) + 1/(2*(x+1))"
 
 text \<open>
   Now we define The difference $\Delta(x)$:
 \<close>
-private definition D :: "real \<Rightarrow> real" where
+qualified definition D :: "real \<Rightarrow> real" where
   "D x = T x - ln (x + 1) + ln x"
 
-private lemma S'_telescope_trapezium:
+qualified lemma S'_telescope_trapezium:
   assumes "n > 0"
   shows   "S' n x = (\<Sum>r<n. T (of_nat r + x))"
 proof (cases n)
@@ -57,7 +57,7 @@ proof (cases n)
   finally show ?thesis ..
 qed (insert assms, simp_all)
 
-private lemma stirling_trapezium:
+qualified lemma stirling_trapezium:
   assumes x: "(x::real) > 0"
   shows   "D x \<in> {0 .. 1/(12*x^2) - 1/(12 * (x+1)^2)}"
 proof -
@@ -161,13 +161,13 @@ text \<open>
   The special case $n = 0$ would not, strictly speaking, be necessary, but 
   it allows some theorems to work even without the precondition $n \neq 0$:
 \<close>
-private definition p :: "nat \<Rightarrow> real \<Rightarrow> real" where
+qualified definition p :: "nat \<Rightarrow> real \<Rightarrow> real" where
   "p n x = (if n = 0 then 1/x else (\<Sum>r<n. D (real r + x)))"
 
 text \<open>
   We can write the Digamma function in terms of @{term S'}:
 \<close>
-private lemma S'_LIMSEQ_Digamma:
+qualified lemma S'_LIMSEQ_Digamma:
   assumes x: "x \<noteq> 0"
   shows   "(\<lambda>n. ln (real n) - S' n x - 1/(2*x)) \<longlonglongrightarrow> Digamma x"
 proof -
@@ -199,7 +199,7 @@ qed
 text \<open>
   Moreover, we can give an expansion of @{term S'} with the @{term p} as variation terms.
 \<close>
-private lemma S'_approx: 
+qualified lemma S'_approx: 
   "S' n x = ln (real n + x) - ln x + p n x"
 proof (cases "n = 0")
   case True
@@ -220,10 +220,10 @@ qed
 text \<open>
   We define the limit of the @{term p} (simply called $p(x)$ in Jameson's article):
 \<close>
-private definition P :: "real \<Rightarrow> real" where
+qualified definition P :: "real \<Rightarrow> real" where
   "P x = (\<Sum>n. D (real n + x))"
 
-private lemma D_summable:
+qualified lemma D_summable:
   assumes x: "x > 0"
   shows   "summable (\<lambda>n. D (real n + x))"
 proof -
@@ -239,7 +239,7 @@ proof -
   qed
 qed
 
-private lemma p_LIMSEQ:
+qualified lemma p_LIMSEQ:
   assumes x: "x > 0"
   shows   "(\<lambda>n. p n x) \<longlonglongrightarrow> P x"
 proof (rule Lim_transform_eventually)
@@ -282,19 +282,19 @@ proof -
   ultimately show "Digamma x = ln x - 1 / (2 * x) - P x"
     by (rule LIMSEQ_unique [rotated])
 qed
-
+           
 text \<open>
   Next, we derive some bounds on @{term "P"}:
 \<close>
-private lemma p_ge_0: "x > 0 \<Longrightarrow> p n x \<ge> 0"
+qualified lemma p_ge_0: "x > 0 \<Longrightarrow> p n x \<ge> 0"
   using stirling_trapezium[of "real n + x" for n]
   by (auto simp add: p_def intro!: sum_nonneg)
 
-private lemma P_ge_0: "x > 0 \<Longrightarrow> P x \<ge> 0"
+qualified lemma P_ge_0: "x > 0 \<Longrightarrow> P x \<ge> 0"
   by (rule tendsto_lowerbound[OF p_LIMSEQ]) 
      (insert p_ge_0[of x], simp_all)
 
-private lemma p_upper_bound:
+qualified lemma p_upper_bound:
   assumes "x > 0" "n > 0"
   shows "p n x \<le> 1/(12*x^2)"
 proof -
@@ -309,7 +309,7 @@ proof -
   finally show ?thesis .
 qed
 
-private lemma P_upper_bound:
+qualified lemma P_upper_bound:
   assumes "x > 0"
   shows   "P x \<le> 1/(12*x^2)"
 proof (rule tendsto_upperbound)
@@ -328,14 +328,14 @@ text \<open>
   the difference between @{term ln_Gamma} and its approximation:
 \<close>
 
-private definition g :: "real \<Rightarrow> real" where
+qualified definition g :: "real \<Rightarrow> real" where
   "g x = ln_Gamma x - (x - 1/2) * ln x + x"
 
-private lemma DERIV_g: "x > 0 \<Longrightarrow> (g has_field_derivative -P x) (at x)"
+qualified lemma DERIV_g: "x > 0 \<Longrightarrow> (g has_field_derivative -P x) (at x)"
   unfolding g_def [abs_def] using Digamma_approx[of x]
   by (auto intro!: derivative_eq_intros simp: field_simps)
 
-private lemma isCont_P: 
+qualified lemma isCont_P: 
   assumes "x > 0"
   shows   "isCont P x"
 proof -
@@ -378,10 +378,10 @@ proof -
   thus ?thesis by (rule DERIV_isCont)
 qed
 
-private lemma P_continuous_on [THEN continuous_on_subset]: "continuous_on {0<..} P"
+qualified lemma P_continuous_on [THEN continuous_on_subset]: "continuous_on {0<..} P"
   by (intro continuous_at_imp_continuous_on ballI isCont_P) auto
 
-private lemma P_integrable:
+qualified lemma P_integrable:
   assumes a: "a > 0"
   shows   "P integrable_on {a..}"
 proof -
@@ -415,12 +415,12 @@ proof -
   qed
 qed
 
-private definition c :: real where "c = integral {1..} (\<lambda>x. -P x) + g 1"
+qualified definition c :: real where "c = integral {1..} (\<lambda>x. -P x) + g 1"
 
 text \<open>
   We can now give bounds on @{term g}:
 \<close>
-private lemma g_bounds:
+qualified lemma g_bounds:
   assumes x: "x \<ge> 1"
   shows   "g x \<in> {c..c + 1/(12*x)}"
 proof -
@@ -459,12 +459,12 @@ qed
 text \<open>
   Finally, we have bounds on @{term ln_Gamma}, @{term Gamma}, and @{term fact}.
 \<close>
-private lemma ln_Gamma_bounds_aux:
+qualified lemma ln_Gamma_bounds_aux:
   "x \<ge> 1 \<Longrightarrow> ln_Gamma x \<ge> c + (x - 1/2) * ln x - x"
   "x \<ge> 1 \<Longrightarrow> ln_Gamma x \<le> c + (x - 1/2) * ln x - x + 1/(12*x)"
   using g_bounds[of x] by (simp_all add: g_def)
 
-private lemma Gamma_bounds_aux:
+qualified lemma Gamma_bounds_aux:
   assumes x: "x \<ge> 1"
   shows   "Gamma x \<ge> exp c * x powr (x - 1/2) / exp x"
           "Gamma x \<le> exp c * x powr (x - 1/2) / exp x * exp (1/(12*x))"
@@ -480,7 +480,7 @@ next
     by (simp add: Gamma_real_pos_exp exp_add exp_diff powr_def del: exp_le_cancel_iff)
 qed
 
-private lemma Gamma_asymp_equiv_aux: 
+qualified lemma Gamma_asymp_equiv_aux: 
   "Gamma \<sim>[at_top] (\<lambda>x. exp c * x powr (x - 1/2) / exp x)"
 proof (rule asymp_equiv_sandwich)
   include asymp_equiv_notation
@@ -500,10 +500,10 @@ proof (rule asymp_equiv_sandwich)
           (\<lambda>x. exp c * x powr (x - 1 / 2) / exp x * exp (1 / (12 * x)))" by simp
 qed simp_all
 
-private lemma exp_1_powr_real [simp]: "exp (1::real) powr x = exp x"
+qualified lemma exp_1_powr_real [simp]: "exp (1::real) powr x = exp x"
   by (simp add: powr_def)
 
-private lemma fact_asymp_equiv_aux:
+qualified lemma fact_asymp_equiv_aux:
   "fact \<sim>[at_top] (\<lambda>x. exp c * sqrt (real x) * (real x / exp 1) powr real x)"
 proof -
   include asymp_equiv_notation
@@ -527,16 +527,57 @@ proof -
 qed
 
 text \<open>
+  We cal also bound @{term Digamma} above and below.
+\<close>
+  
+lemma Digamma_plus_1_gt_ln:
+  assumes x: "x > (0 :: real)"
+  shows   "Digamma (x + 1) > ln x"
+proof -
+  have "0 < (17 :: real)"
+    by simp
+  also have "17 \<le> 12 * x ^ 2 + 28 * x + 17"
+    using x by auto
+  finally have "0 < (12 * x ^ 2 + 28 * x + 17) / (12 * (x + 1) ^ 2 * (1 + 2 * x))"
+    using x by (intro divide_pos_pos mult_pos_pos zero_less_power) auto
+  also have "\<dots> = 2 / (2 * x + 1) - 1 / (2 * (x + 1)) - 1 / (12 * (x + 1) ^ 2)"
+    using x by (simp add: divide_simps) (auto simp: field_simps power2_eq_square add_eq_0_iff)
+  also have "2 / (2 * x + 1) \<le> ln (x + 1) - ln x"
+    using ln_inverse_approx_ge[of x "x + 1"] x by simp
+  also have "\<dots> - 1 / (2 * (x + 1)) - 1 / (12 * (x + 1) ^ 2) \<le>
+             ln (x + 1) - ln x - 1 / (2 * (x + 1)) - P (x + 1)"
+    using P_upper_bound[of "x + 1"] x by (intro diff_mono) auto
+  also have "\<dots> = Digamma (x + 1) - ln x"
+    by (subst Digamma_approx) (use x in auto)
+  finally show "Digamma (x + 1) > ln x"
+    by simp
+qed
+
+lemma Digamma_less_ln:
+  assumes x: "x > (0 :: real)"
+  shows   "Digamma x < ln x"
+proof -
+  have "Digamma x - ln x = - (1 / (2 * x)) - P x"
+    by (subst Digamma_approx) (use x in auto)
+  also have "\<dots> < 0 - P x"
+    using x by (intro diff_strict_right_mono) auto
+  also have "\<dots> \<le> 0"
+    using P_ge_0[of x] x by simp
+  finally show "Digamma x < ln x"
+    by simp
+qed
+
+text \<open>
   We still need to determine the constant term @{term c}, which we do using Wallis' 
   product formula: $$\prod_{n=1}^\infty \frac{4n^2}{4n^2-1} = \frac{\pi}{2}$$
 \<close>
-private lemma powr_mult_2: "(x::real) > 0 \<Longrightarrow> x powr (y * 2) = (x^2) powr y"
+qualified lemma powr_mult_2: "(x::real) > 0 \<Longrightarrow> x powr (y * 2) = (x^2) powr y"
   by (subst mult.commute, subst powr_powr [symmetric]) (simp add: powr_numeral)
 
-private lemma exp_mult_2: "exp (y * 2 :: real) = exp y * exp y"
+qualified lemma exp_mult_2: "exp (y * 2 :: real) = exp y * exp y"
   by (subst exp_add [symmetric]) simp
 
-private lemma exp_c: "exp c = sqrt (2*pi)"
+qualified lemma exp_c: "exp c = sqrt (2*pi)"
 proof -
   include asymp_equiv_notation
   define p where "p = (\<lambda>n. \<Prod>k=1..n. (4*real k^2) / (4*real k^2 - 1))"
@@ -600,7 +641,7 @@ proof -
   finally show "exp c = sqrt (2 * pi)" ..
 qed
 
-private lemma c: "c = ln (2*pi) / 2"
+qualified lemma c: "c = ln (2*pi) / 2"
 proof -
   note exp_c [symmetric]
   also have "ln (exp c) = c" by simp
