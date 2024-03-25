@@ -5,6 +5,10 @@ theory Transport_Natural_Functors_Order_Base
     Transport_Natural_Functors_Base
 begin
 
+context
+  fixes R1 :: "'a \<Rightarrow> 'a \<Rightarrow> bool" and R2 :: "'b \<Rightarrow> 'b \<Rightarrow> bool" and R3 :: "'c \<Rightarrow> 'c \<Rightarrow> bool"
+begin
+
 lemma reflexive_on_in_field_FrelI:
   assumes "reflexive_on (in_field R1) R1"
   and "reflexive_on (in_field R2) R2"
@@ -15,7 +19,7 @@ lemma reflexive_on_in_field_FrelI:
   apply (subst Frel_eq[symmetric])
   apply (unfold R_def)
   apply (subst in_field_Frel_eq_Fpred_in_in_field)
-  apply (subst bin_rel_restrict_left_sup_eq)
+  apply (subst rel_restrict_left_sup_eq)
   apply (subst Frel_restrict_left_Fpred_eq_Frel_restrict_left)+
   apply (rule le_supI;
     rule Frel_mono;
@@ -76,6 +80,8 @@ lemma partial_equivalence_rel_FrelI:
     rule transitive_FrelI symmetric_FrelI;
     assumption)
   done
+
+end
 
 context transport_natural_functor
 begin

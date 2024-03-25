@@ -174,7 +174,7 @@ proof (rule galois_propI)
   have "y \<le>\<^bsub>R1\<^esub> l1 (r1 (r2 z))" if "y \<le>\<^bsub>R1\<^esub> r2 z" for y z
   proof -
     note \<open>y \<le>\<^bsub>R1\<^esub> r2 z\<close>
-    moreover with rel_equiv_counit1 have "r2 z \<le>\<^bsub>R1\<^esub> \<epsilon>\<^sub>1 (r2 z)" by auto
+    moreover with rel_equiv_counit1 have "r2 z \<le>\<^bsub>R1\<^esub> \<epsilon>\<^sub>1 (r2 z)" by blast
     ultimately show ?thesis using trans_R1 by auto
   qed
   moreover have "in_dom (\<le>\<^bsub>R1\<^esub>) \<le> in_codom (\<le>\<^bsub>R1\<^esub>)"

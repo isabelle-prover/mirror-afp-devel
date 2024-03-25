@@ -74,11 +74,13 @@ interpretation flip_inv :
   and "\<And>R x1 x2. in_codom (flip2 R x1 x2) \<equiv> in_dom (R x2 x1)"
   and "\<And>x1 x2 x1' x2'. (flip2 R2 x1' x2' \<Rrightarrow>\<^sub>m flip2 L2 x1 x2) \<equiv> ((\<le>\<^bsub>R2 x2' x1'\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L2 x2 x1\<^esub>))"
   and "\<And>x1 x2 x1' x2'. (flip2 L2 x1 x2 \<Rrightarrow>\<^sub>m flip2 R2 x1' x2') \<equiv> ((\<le>\<^bsub>L2 x2 x1\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R2 x2' x1'\<^esub>))"
-  and "\<And>P. inflationary_on P (\<ge>\<^bsub>R1\<^esub>) \<equiv> deflationary_on P (\<le>\<^bsub>R1\<^esub>)"
-  and "\<And>P x. inflationary_on P (flip2 R2 x x) \<equiv> deflationary_on P (\<le>\<^bsub>R2 x x\<^esub>)"
+  and "\<And>(R :: 'z \<Rightarrow> 'z \<Rightarrow> bool) (P :: 'z \<Rightarrow> bool).
+    (inflationary_on P R\<inverse> :: ('z \<Rightarrow> 'z) \<Rightarrow> bool) \<equiv> deflationary_on P R"
+  and "\<And>(P :: 'b2 \<Rightarrow> bool) x.
+    (inflationary_on P (flip2 R2 x x) :: ('b2 \<Rightarrow> 'b2) \<Rightarrow> bool) \<equiv> deflationary_on P (\<le>\<^bsub>R2 x x\<^esub>)"
   and "\<And>x1 x2 x3 x4. flip2 R2 x1 x2 \<le> flip2 R2 x3 x4 \<equiv> (\<le>\<^bsub>R2 x2 x1\<^esub>) \<le> (\<le>\<^bsub>R2 x4 x3\<^esub>)"
-  and "\<And>(R :: 'z \<Rightarrow> _) (P :: 'z \<Rightarrow> bool). reflexive_on P R\<inverse> \<equiv> reflexive_on P R"
-  and "\<And>R. transitive R\<inverse> \<equiv> transitive R"
+  and "\<And>(R :: 'z \<Rightarrow> 'z \<Rightarrow> bool) (P :: 'z \<Rightarrow> bool). reflexive_on P R\<inverse> \<equiv> reflexive_on P R"
+  and "\<And>(R :: 'z \<Rightarrow> 'z \<Rightarrow> bool). transitive R\<inverse> \<equiv> transitive R"
   and "\<And>x1' x2'. transitive (flip2 R2 x1' x2') \<equiv> transitive (\<le>\<^bsub>R2 x2' x1'\<^esub>)"
   by (simp_all add: flip_inv_left_eq_ge_right flip_inv_right_eq_ge_left
     flip_unit_eq_counit t1.flip_unit_eq_counit t2.flip_unit_eq_counit
@@ -515,9 +517,8 @@ proof -
     and "((\<le>\<^bsub>L2 x x\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R2 (l1 x) (l1 x)\<^esub>)) (l2\<^bsub>(l1 x) x\<^esub>)" (is ?goal2)
     if [iff]: "x \<le>\<^bsub>L1\<^esub> x" for x
   proof -
-    from pre_equiv1 have "x \<^bsub>L1\<^esub>\<lessapprox> l1 x"
-      by (auto intro!: t1.left_GaloisI
-        elim!: t1.preorder_equivalence_order_equivalenceE t1.order_equivalenceE)
+    from pre_equiv1 have "x \<^bsub>L1\<^esub>\<lessapprox> l1 x" by (intro t1.left_GaloisI)
+      (auto elim!: t1.preorder_equivalence_order_equivalenceE t1.order_equivalenceE bi_relatedE)
     with order_equiv2 have "((\<le>\<^bsub>L2 x x\<^esub>) \<equiv>\<^sub>o (\<le>\<^bsub>R2 (l1 x) (l1 x)\<^esub>)) (l2\<^bsub>(l1 x) x\<^esub>) (r2\<^bsub>x (l1 x)\<^esub>)"
       by (auto simp flip: L2_unit_eq2)
     then show ?goal1 ?goal2 by (auto elim: order_functors.order_equivalenceE)
@@ -534,7 +535,7 @@ proof -
   qed
   moreover from mono_l2 tdfr.mono_wrt_rel_left2_if_mono_wrt_rel_left2_if_left_GaloisI
     have "\<And>x1' x2'. x1' \<le>\<^bsub>R1\<^esub> x2' \<Longrightarrow> ((\<le>\<^bsub>L2 (r1 x1') (r1 x2')\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R2 x1' x2'\<^esub>)) (l2\<^bsub>x2' (r1 x1')\<^esub>)"
-    using pre_equiv1 R2_les(2) by blast
+    using pre_equiv1 R2_les(2) by (blast elim!: le_relE)
   moreover from pre_equiv1 have "((\<le>\<^bsub>L1\<^esub>) \<unlhd>\<^sub>h (\<le>\<^bsub>R1\<^esub>)) l1 r1"
     by (intro t1.half_galois_prop_right_left_right_if_transitive_if_order_equivalence)
     (auto elim!: t1.preorder_equivalence_order_equivalenceE)

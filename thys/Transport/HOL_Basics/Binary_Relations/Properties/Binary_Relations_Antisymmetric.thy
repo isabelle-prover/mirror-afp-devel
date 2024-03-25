@@ -4,9 +4,11 @@ theory Binary_Relations_Antisymmetric
   imports
     Binary_Relation_Functions
     HOL_Syntax_Bundles_Lattices
+    ML_Unification.ML_Unification_HOL_Setup
+    ML_Unification.Unify_Resolve_Tactics
 begin
 
-consts antisymmetric_on :: "'a \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool"
+consts antisymmetric_on :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
 
 overloading
   antisymmetric_on_pred \<equiv> "antisymmetric_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool"
@@ -26,27 +28,35 @@ lemma antisymmetric_onD:
   shows "x = y"
   using assms unfolding antisymmetric_on_pred_def by blast
 
-definition "(antisymmetric :: ('a \<Rightarrow> _) \<Rightarrow> _) \<equiv> antisymmetric_on (\<top> :: 'a \<Rightarrow> bool)"
+consts antisymmetric :: "'a \<Rightarrow> bool"
+
+overloading
+  antisymmetric \<equiv> "antisymmetric :: ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool"
+begin
+  definition "antisymmetric :: ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> _ \<equiv> antisymmetric_on (\<top> :: 'a \<Rightarrow> bool)"
+end
 
 lemma antisymmetric_eq_antisymmetric_on:
-  "(antisymmetric :: ('a \<Rightarrow> _) \<Rightarrow> _) = antisymmetric_on (\<top> :: 'a \<Rightarrow> bool)"
+  "(antisymmetric :: ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> _) = antisymmetric_on (\<top> :: 'a \<Rightarrow> bool)"
   unfolding antisymmetric_def ..
+
+lemma antisymmetric_eq_antisymmetric_on_uhint [uhint]:
+  "P \<equiv> (\<top> :: 'a \<Rightarrow> bool) \<Longrightarrow> (antisymmetric :: ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> _) \<equiv> antisymmetric_on P"
+  by (simp add: antisymmetric_eq_antisymmetric_on)
 
 lemma antisymmetricI [intro]:
   assumes "\<And>x y. R x y \<Longrightarrow> R y x \<Longrightarrow> x = y"
   shows "antisymmetric R"
-  unfolding antisymmetric_eq_antisymmetric_on using assms
-  by (intro antisymmetric_onI)
+  using assms by (urule antisymmetric_onI)
 
 lemma antisymmetricD:
   assumes "antisymmetric R"
   and "R x y" "R y x"
   shows "x = y"
-  using assms unfolding antisymmetric_eq_antisymmetric_on
-  by (auto dest: antisymmetric_onD)
+  using assms by (urule (d) antisymmetric_onD where chained = insert) simp_all
 
 lemma antisymmetric_on_if_antisymmetric:
-  fixes P :: "'a \<Rightarrow> bool" and R :: "'a \<Rightarrow> _"
+  fixes P :: "'a \<Rightarrow> bool" and R :: "'a \<Rightarrow> 'a \<Rightarrow> bool"
   assumes "antisymmetric R"
   shows "antisymmetric_on P R"
   using assms by (intro antisymmetric_onI) (blast dest: antisymmetricD)
@@ -56,7 +66,7 @@ lemma antisymmetric_if_antisymmetric_on_in_field:
   shows "antisymmetric R"
   using assms by (intro antisymmetricI) (blast dest: antisymmetric_onD)
 
-corollary antisymmetric_on_in_field_iff_antisymmetric [simp]:
+corollary antisymmetric_on_in_field_iff_antisymmetric [iff]:
   "antisymmetric_on (in_field R) R \<longleftrightarrow> antisymmetric R"
   using antisymmetric_if_antisymmetric_on_in_field antisymmetric_on_if_antisymmetric
   by blast

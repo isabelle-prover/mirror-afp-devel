@@ -151,7 +151,7 @@ lemma rel_equivalence_on_unit_iff_inflationary_on_if_inverse_on:
   assumes "inverse_on P l r"
   shows "rel_equivalence_on P (\<le>\<^bsub>L\<^esub>) \<eta> \<longleftrightarrow> inflationary_on P (\<le>\<^bsub>L\<^esub>) \<eta>"
   using assms by (intro iffI rel_equivalence_onI inflationary_onI deflationary_onI)
-  (auto dest!: inverse_onD)
+  (fastforce dest: inverse_onD)+
 
 lemma reflexive_on_left_if_inflationary_on_unit_if_inverse_on:
   assumes "inverse_on P l r"

@@ -45,8 +45,6 @@ lemma rel_if_dep_mono_wrt_rel_if_iff_if_dep_mono_wrt_relI:
   shows "([x y \<Colon> (rel_if B R)] \<Rrightarrow>\<^sub>m (rel_if B' (S x y))) f"
   using assms by (intro dep_mono_wrt_relI) auto
 
-end
-
 corollary reflexive_rel_if_if_reflexiveI [intro]:
   assumes "B \<Longrightarrow> reflexive R"
   shows "reflexive (rel_if B R)"
@@ -55,7 +53,14 @@ corollary reflexive_rel_if_if_reflexiveI [intro]:
 corollary transitive_rel_if_if_transitiveI [intro]:
   assumes "B \<Longrightarrow> transitive R"
   shows "transitive (rel_if B R)"
-  using assms unfolding transitive_eq_transitive_on by blast
+  using assms unfolding transitive_eq_transitive_on
+  by (intro transitive_onI) (force dest: transitive_onD)
+
+end
+
+context
+  fixes P :: "'a \<Rightarrow> bool" and R :: "'a \<Rightarrow> 'a \<Rightarrow> bool"
+begin
 
 corollary preorder_rel_if_if_preorderI [intro]:
   assumes "B \<Longrightarrow> preorder R"
@@ -72,6 +77,8 @@ corollary partial_equivalence_rel_rel_if_if_partial_equivalence_relI [intro]:
   shows "partial_equivalence_rel (rel_if B R)"
   using assms unfolding partial_equivalence_rel_eq_partial_equivalence_rel_on
   by blast
+
+end
 
 context galois_prop
 begin

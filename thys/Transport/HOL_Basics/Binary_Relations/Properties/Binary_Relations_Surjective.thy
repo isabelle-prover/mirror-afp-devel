@@ -6,7 +6,7 @@ theory Binary_Relations_Surjective
     HOL_Syntax_Bundles_Lattices
 begin
 
-consts rel_surjective_at :: "'a \<Rightarrow> ('b \<Rightarrow> 'c \<Rightarrow> bool) \<Rightarrow> bool"
+consts rel_surjective_at :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
 
 overloading
   rel_surjective_at_pred \<equiv> "rel_surjective_at :: ('a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool"
@@ -39,22 +39,53 @@ lemma left_total_on_rel_inv_iff_rel_surjective_at [iff]:
   "left_total_on (P :: 'a \<Rightarrow> bool) (R\<inverse> :: 'a \<Rightarrow> 'b \<Rightarrow> bool) \<longleftrightarrow> rel_surjective_at P R"
   by fast
 
-definition "(rel_surjective :: (_ \<Rightarrow> 'a \<Rightarrow> _) \<Rightarrow> _) \<equiv> rel_surjective_at (\<top> :: 'a \<Rightarrow> bool)"
+lemma mono_rel_surjective_at:
+  "((\<ge>) \<Rrightarrow>\<^sub>m (\<le>) \<Rrightarrow> (\<le>)) (rel_surjective_at :: ('b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool)"
+  by (intro dep_mono_wrt_relI Dep_Fun_Rel_relI) fastforce
+
+lemma rel_surjective_at_iff_le_codom:
+  "rel_surjective_at (P :: 'b \<Rightarrow> bool) (R :: 'a \<Rightarrow> 'b \<Rightarrow> bool) \<longleftrightarrow> P \<le> in_codom R"
+  by force
+
+lemma rel_surjective_at_compI:
+  fixes P :: "'c \<Rightarrow> bool" and R :: "'a \<Rightarrow> 'b \<Rightarrow> bool" and S :: "'b \<Rightarrow> 'c \<Rightarrow> bool"
+  assumes surj_R: "rel_surjective_at (in_dom S) R"
+  and surj_S: "rel_surjective_at P S"
+  shows "rel_surjective_at P (R \<circ>\<circ> S)"
+proof (rule rel_surjective_atI)
+  fix y assume "P y"
+  then obtain x where "S x y" using surj_S by auto
+  moreover then have "in_dom S x" by auto
+  moreover then obtain z where "R z x" using surj_R by auto
+  ultimately show "in_codom (R \<circ>\<circ> S) y" by blast
+qed
+
+consts rel_surjective :: "'a \<Rightarrow> bool"
+
+overloading
+  rel_surjective \<equiv> "rel_surjective :: ('b \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool"
+begin
+  definition "(rel_surjective :: ('b \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> _) \<equiv> rel_surjective_at (\<top> :: 'a \<Rightarrow> bool)"
+end
 
 lemma rel_surjective_eq_rel_surjective_at:
-  "(rel_surjective :: (_ \<Rightarrow> 'a \<Rightarrow> _) \<Rightarrow> _) = rel_surjective_at (\<top> :: 'a \<Rightarrow> bool)"
+  "(rel_surjective :: ('b \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> _) = rel_surjective_at (\<top> :: 'a \<Rightarrow> bool)"
   unfolding rel_surjective_def ..
+
+lemma rel_surjective_eq_rel_surjective_at_uhint [uhint]:
+  assumes "P \<equiv> (\<top> :: 'a \<Rightarrow> bool)"
+  shows "(rel_surjective :: ('b \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> _) \<equiv> rel_surjective_at P"
+  using assms by (simp add: rel_surjective_eq_rel_surjective_at)
 
 lemma rel_surjectiveI:
   assumes "\<And>y. in_codom R y"
   shows "rel_surjective R"
-  unfolding rel_surjective_eq_rel_surjective_at using assms by (intro rel_surjective_atI)
+  using assms by (urule rel_surjective_atI)
 
 lemma rel_surjectiveE:
   assumes "rel_surjective R"
   obtains x where "R x y"
-  using assms unfolding rel_surjective_eq_rel_surjective_at
-  by (blast intro: top1I)
+  using assms by (urule (e) rel_surjective_atE where chained = insert) simp
 
 lemma in_codom_if_rel_surjective:
   assumes "rel_surjective R"
@@ -62,15 +93,13 @@ lemma in_codom_if_rel_surjective:
   using assms by (blast elim: rel_surjectiveE)
 
 lemma rel_surjective_rel_inv_iff_left_total [iff]: "rel_surjective R\<inverse> \<longleftrightarrow> left_total R"
-  unfolding rel_surjective_eq_rel_surjective_at left_total_eq_left_total_on
-  by simp
+  by (urule rel_surjective_at_rel_inv_iff_left_total_on)
 
 lemma left_total_rel_inv_iff_rel_surjective [iff]: "left_total R\<inverse> \<longleftrightarrow> rel_surjective R"
-  unfolding rel_surjective_eq_rel_surjective_at left_total_eq_left_total_on
-  by simp
+  by (urule left_total_on_rel_inv_iff_rel_surjective_at)
 
 lemma rel_surjective_at_if_surjective:
-  fixes P :: "'a \<Rightarrow> bool" and R :: "_ \<Rightarrow> 'a \<Rightarrow> _"
+  fixes P :: "'a \<Rightarrow> bool" and R :: "'b \<Rightarrow> 'a \<Rightarrow> bool"
   assumes "rel_surjective R"
   shows "rel_surjective_at P R"
   using assms by (intro rel_surjective_atI) (blast dest: in_codom_if_rel_surjective)

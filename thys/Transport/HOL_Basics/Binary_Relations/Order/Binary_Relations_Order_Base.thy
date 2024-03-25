@@ -23,20 +23,4 @@ lemma le_relE:
   obtains "S x y"
   using assms by blast
 
-lemma rel_inv_le_rel_inv_iff [iff]: "R\<inverse> \<le> S\<inverse> \<longleftrightarrow> R \<le> S"
-  by blast
-
-lemma bin_rel_restrict_left_le_self: "(R :: 'a \<Rightarrow> 'b \<Rightarrow> bool)\<restriction>\<^bsub>(P :: 'a \<Rightarrow> bool)\<^esub> \<le> R"
-  by blast
-
-lemma bin_rel_restrict_right_le_self: "(R :: 'a \<Rightarrow> 'b \<Rightarrow> bool)\<upharpoonleft>\<^bsub>(P :: 'b \<Rightarrow> bool)\<^esub> \<le> R"
-  by blast
-
-lemma bin_rel_restrict_left_top_eq [simp]: "(R :: 'a \<Rightarrow> 'b \<Rightarrow> bool)\<restriction>\<^bsub>(\<top> :: 'a \<Rightarrow> bool)\<^esub> = R"
-  by (intro ext) auto
-
-lemma bin_rel_restrict_right_top_eq [simp]: "(R :: 'a \<Rightarrow> 'b \<Rightarrow> bool)\<upharpoonleft>\<^bsub>(\<top> :: 'b \<Rightarrow> bool)\<^esub> = R"
-  by (intro ext) auto
-
-
 end

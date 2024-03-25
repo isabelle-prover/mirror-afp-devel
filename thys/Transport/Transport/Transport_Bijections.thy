@@ -176,7 +176,7 @@ sublocale tper_bij? : transport_partial_equivalence_rel_bijection "(=\<^bsub>P\<
 lemma left_Galois_eq_Galois_eq_eq_restrict: "(\<^bsub>L\<^esub>\<lessapprox>) = (galois_rel.Galois (=) (=) r)\<restriction>\<^bsub>P\<^esub>\<upharpoonleft>\<^bsub>Q\<^esub>"
   by (subst galois_rel.left_Galois_restrict_left_eq_left_Galois_left_restrict_left
     galois_rel.left_Galois_restrict_right_eq_left_Galois_right_restrict_right
-    bin_rel_restrict_right_eq rel_inv_eq_self_if_symmetric)+
+    rel_restrict_right_eq rel_inv_eq_self_if_symmetric)+
   auto
 
 end

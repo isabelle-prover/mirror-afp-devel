@@ -5,13 +5,20 @@ theory Transport_Natural_Functors_Order_Equivalence
     Transport_Natural_Functors_Base
 begin
 
+context
+  fixes R1 :: "'a \<Rightarrow> 'a \<Rightarrow> bool" and R2 :: "'b \<Rightarrow> 'b \<Rightarrow> bool" and R3 :: "'c \<Rightarrow> 'c \<Rightarrow> bool"
+  and f1 :: "'a \<Rightarrow> 'a" and f2 :: "'b \<Rightarrow> 'b" and f3 :: "'c \<Rightarrow> 'c"
+  and R :: "('d, 'a, 'b, 'c) F \<Rightarrow> ('d, 'a, 'b, 'c) F \<Rightarrow> bool"
+  and f :: "('d, 'a, 'b, 'c) F \<Rightarrow> ('d, 'a, 'b, 'c) F"
+  defines "R \<equiv> Frel R1 R2 R3" and "f \<equiv> Fmap f1 f2 f3"
+begin
+
 lemma inflationary_on_in_dom_FrelI:
   assumes "inflationary_on (in_dom R1) R1 f1"
   and "inflationary_on (in_dom R2) R2 f2"
   and "inflationary_on (in_dom R3) R3 f3"
-  defines "R \<equiv> Frel R1 R2 R3"
-  shows "inflationary_on (in_dom R) R (Fmap f1 f2 f3)"
-  apply (unfold R_def)
+  shows "inflationary_on (in_dom R) R f"
+  apply (unfold R_def f_def)
   apply (rule inflationary_onI)
   apply (subst (asm) in_dom_Frel_eq_Fpred_in_dom)
   apply (erule FpredE)
@@ -27,9 +34,8 @@ lemma inflationary_on_in_codom_FrelI:
   assumes "inflationary_on (in_codom R1) R1 f1"
   and "inflationary_on (in_codom R2) R2 f2"
   and "inflationary_on (in_codom R3) R3 f3"
-  defines "R \<equiv> Frel R1 R2 R3"
-  shows "inflationary_on (in_codom R) R (Fmap f1 f2 f3)"
-  apply (unfold R_def)
+  shows "inflationary_on (in_codom R) R f"
+  apply (unfold R_def f_def)
   apply (rule inflationary_onI)
   apply (subst (asm) in_codom_Frel_eq_Fpred_in_codom)
   apply (erule FpredE)
@@ -41,13 +47,22 @@ lemma inflationary_on_in_codom_FrelI:
       assumption+)+
   done
 
+end
+
+context
+  fixes R1 :: "'a \<Rightarrow> 'a \<Rightarrow> bool" and R2 :: "'b \<Rightarrow> 'b \<Rightarrow> bool" and R3 :: "'c \<Rightarrow> 'c \<Rightarrow> bool"
+  and f1 :: "'a \<Rightarrow> 'a" and f2 :: "'b \<Rightarrow> 'b" and f3 :: "'c \<Rightarrow> 'c"
+  and R :: "('d, 'a, 'b, 'c) F \<Rightarrow> ('d, 'a, 'b, 'c) F \<Rightarrow> bool"
+  and f :: "('d, 'a, 'b, 'c) F \<Rightarrow> ('d, 'a, 'b, 'c) F"
+  defines "R \<equiv> Frel R1 R2 R3" and "f \<equiv> Fmap f1 f2 f3"
+begin
+
 lemma inflationary_on_in_field_FrelI:
   assumes "inflationary_on (in_field R1) R1 f1"
   and "inflationary_on (in_field R2) R2 f2"
   and "inflationary_on (in_field R3) R3 f3"
-  defines "R \<equiv> Frel R1 R2 R3"
-  shows "inflationary_on (in_field R) R (Fmap f1 f2 f3)"
-  apply (unfold R_def)
+  shows "inflationary_on (in_field R) R f"
+  apply (unfold R_def f_def)
   apply (subst in_field_eq_in_dom_sup_in_codom)
   apply (subst inflationary_on_sup_eq)
   apply (unfold inf_apply)
@@ -65,9 +80,8 @@ lemma deflationary_on_in_dom_FrelI:
   assumes "deflationary_on (in_dom R1) R1 f1"
   and "deflationary_on (in_dom R2) R2 f2"
   and "deflationary_on (in_dom R3) R3 f3"
-  defines "R \<equiv> Frel R1 R2 R3"
-  shows "deflationary_on (in_dom R) R (Fmap f1 f2 f3)"
-  apply (unfold R_def)
+  shows "deflationary_on (in_dom R) R f"
+  apply (unfold R_def f_def)
   apply (subst deflationary_on_eq_inflationary_on_rel_inv)
   apply (subst in_codom_rel_inv_eq_in_dom[symmetric])
   apply (unfold Frel_rel_inv_eq_rel_inv_Frel[symmetric])
@@ -81,9 +95,8 @@ lemma deflationary_on_in_codom_FrelI:
   assumes "deflationary_on (in_codom R1) R1 f1"
   and "deflationary_on (in_codom R2) R2 f2"
   and "deflationary_on (in_codom R3) R3 f3"
-  defines "R \<equiv> Frel R1 R2 R3"
-  shows "deflationary_on (in_codom R) R (Fmap f1 f2 f3)"
-  apply (unfold R_def)
+  shows "deflationary_on (in_codom R) R f"
+  apply (unfold R_def f_def)
   apply (subst deflationary_on_eq_inflationary_on_rel_inv)
   apply (subst in_dom_rel_inv_eq_in_codom[symmetric])
   apply (unfold Frel_rel_inv_eq_rel_inv_Frel[symmetric])
@@ -93,13 +106,22 @@ lemma deflationary_on_in_codom_FrelI:
     rule assms)
   done
 
+end
+
+context
+  fixes R1 :: "'a \<Rightarrow> 'a \<Rightarrow> bool" and R2 :: "'b \<Rightarrow> 'b \<Rightarrow> bool" and R3 :: "'c \<Rightarrow> 'c \<Rightarrow> bool"
+  and f1 :: "'a \<Rightarrow> 'a" and f2 :: "'b \<Rightarrow> 'b" and f3 :: "'c \<Rightarrow> 'c"
+  and R :: "('d, 'a, 'b, 'c) F \<Rightarrow> ('d, 'a, 'b, 'c) F \<Rightarrow> bool"
+  and f :: "('d, 'a, 'b, 'c) F \<Rightarrow> ('d, 'a, 'b, 'c) F"
+  defines "R \<equiv> Frel R1 R2 R3" and "f \<equiv> Fmap f1 f2 f3"
+begin
+
 lemma deflationary_on_in_field_FrelI:
   assumes "deflationary_on (in_field R1) R1 f1"
   and "deflationary_on (in_field R2) R2 f2"
   and "deflationary_on (in_field R3) R3 f3"
-  defines "R \<equiv> Frel R1 R2 R3"
-  shows "deflationary_on (in_field R) R (Fmap f1 f2 f3)"
-  apply (unfold R_def)
+  shows "deflationary_on (in_field R) R f"
+  apply (unfold R_def f_def)
   apply (subst deflationary_on_eq_inflationary_on_rel_inv)
   apply (subst in_field_rel_inv_eq[symmetric])
   apply (unfold Frel_rel_inv_eq_rel_inv_Frel[symmetric])
@@ -113,18 +135,20 @@ lemma rel_equivalence_on_in_field_FrelI:
   assumes "rel_equivalence_on (in_field R1) R1 f1"
   and "rel_equivalence_on (in_field R2) R2 f2"
   and "rel_equivalence_on (in_field R3) R3 f3"
-  defines "R \<equiv> Frel R1 R2 R3"
-  shows "rel_equivalence_on (in_field R) R (Fmap f1 f2 f3)"
-  apply (unfold R_def)
+  shows "rel_equivalence_on (in_field R) R f"
+  apply (unfold R_def f_def)
   apply (subst rel_equivalence_on_eq)
   apply (unfold inf_apply)
   apply (subst inf_bool_def)
   apply (insert assms)
   apply (elim rel_equivalence_onE)
-  apply (rule conjI;
-    rule inflationary_on_in_field_FrelI deflationary_on_in_field_FrelI;
-    assumption)
+  apply (rule conjI)
+  apply (rule inflationary_on_in_field_FrelI; assumption)
+  apply (fold R_def f_def)
+  apply (rule deflationary_on_in_field_FrelI; assumption)
   done
+
+end
 
 context transport_natural_functor
 begin

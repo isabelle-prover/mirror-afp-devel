@@ -2,11 +2,12 @@
 subsubsection \<open>Irreflexive\<close>
 theory Binary_Relations_Irreflexive
   imports
-    Binary_Relation_Functions
     HOL_Syntax_Bundles_Lattices
+    ML_Unification.ML_Unification_HOL_Setup
+    ML_Unification.Unify_Resolve_Tactics
 begin
 
-consts irreflexive_on :: "'a \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool"
+consts irreflexive_on :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
 
 overloading
   irreflexive_on_pred \<equiv> "irreflexive_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool"
@@ -25,24 +26,35 @@ lemma irreflexive_onD [dest]:
   shows "\<not>(R x x)"
   using assms unfolding irreflexive_on_pred_def by blast
 
-definition "(irreflexive :: ('a \<Rightarrow> _) \<Rightarrow> _) \<equiv> irreflexive_on (\<top> :: 'a \<Rightarrow> bool)"
+consts irreflexive :: "'a \<Rightarrow> bool"
+
+overloading
+  irreflexive \<equiv> "irreflexive :: ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool"
+begin
+  definition "(irreflexive :: ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool) \<equiv> irreflexive_on (\<top> :: 'a \<Rightarrow> bool)"
+end
 
 lemma irreflexive_eq_irreflexive_on:
-  "(irreflexive :: ('a \<Rightarrow> _) \<Rightarrow> _) = irreflexive_on (\<top> :: 'a \<Rightarrow> bool)"
+  "(irreflexive :: ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> _) = irreflexive_on (\<top> :: 'a \<Rightarrow> bool)"
   unfolding irreflexive_def ..
+
+lemma irreflexive_eq_irreflexive_on_uhint [uhint]:
+  assumes "P \<equiv> (\<top> :: 'a \<Rightarrow> bool)"
+  shows "irreflexive :: ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> _ \<equiv> irreflexive_on P"
+  using assms by (simp add: irreflexive_eq_irreflexive_on)
 
 lemma irreflexiveI [intro]:
   assumes "\<And>x. \<not>(R x x)"
   shows "irreflexive R"
-  unfolding irreflexive_eq_irreflexive_on using assms by (intro irreflexive_onI)
+  using assms by (urule irreflexive_onI)
 
 lemma irreflexiveD:
   assumes "irreflexive R"
   shows "\<not>(R x x)"
-  using assms unfolding irreflexive_eq_irreflexive_on by auto
+  using assms by (urule (d) irreflexive_onD where chained = insert) simp
 
 lemma irreflexive_on_if_irreflexive:
-  fixes P :: "'a \<Rightarrow> bool" and R :: "'a \<Rightarrow> _"
+  fixes P :: "'a \<Rightarrow> bool" and R :: "'a \<Rightarrow> 'a \<Rightarrow> bool"
   assumes "irreflexive R"
   shows "irreflexive_on P R"
   using assms by (intro irreflexive_onI) (blast dest: irreflexiveD)

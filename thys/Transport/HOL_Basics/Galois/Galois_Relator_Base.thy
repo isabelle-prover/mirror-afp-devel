@@ -48,13 +48,13 @@ corollary left_Galois_iff_in_codom_and_left_rel_right:
 
 lemma left_Galois_restrict_left_eq_left_Galois_left_restrict_left:
   "(\<^bsub>L\<^esub>\<lessapprox>)\<restriction>\<^bsub>P :: 'a \<Rightarrow> bool\<^esub> = galois_rel.Galois (\<le>\<^bsub>L\<^esub>)\<restriction>\<^bsub>P\<^esub> (\<le>\<^bsub>R\<^esub>) r"
-  by (intro ext iffI galois_rel.left_GaloisI bin_rel_restrict_leftI)
+  by (intro ext iffI galois_rel.left_GaloisI rel_restrict_leftI)
   (auto elim: galois_rel.left_GaloisE)
 
 lemma left_Galois_restrict_right_eq_left_Galois_right_restrict_right:
   "(\<^bsub>L\<^esub>\<lessapprox>)\<upharpoonleft>\<^bsub>P :: 'd \<Rightarrow> bool\<^esub> = galois_rel.Galois (\<le>\<^bsub>L\<^esub>) (\<le>\<^bsub>R\<^esub>)\<upharpoonleft>\<^bsub>P\<^esub> r"
-  by (intro ext iffI galois_rel.left_GaloisI bin_rel_restrict_rightI)
-  (auto elim!: galois_rel.left_GaloisE bin_rel_restrict_rightE)
+  by (intro ext iffI galois_rel.left_GaloisI rel_restrict_rightI)
+  (auto elim!: galois_rel.left_GaloisE rel_restrict_rightE)
 
 end
 

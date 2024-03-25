@@ -77,10 +77,10 @@ interpretation flip_inv :
   and "\<And>R S x1 x2 x1' x2'. (flip2 R x1 x2 \<^sub>h\<unlhd> flip2 S x1' x2') \<equiv> (S x2' x1' \<unlhd>\<^sub>h R x2 x1)\<inverse>"
   and "\<And>R S. (R\<inverse> \<^sub>h\<unlhd> S\<inverse>) \<equiv> (S \<unlhd>\<^sub>h R)\<inverse>"
   and "\<And>x1 x2 x3 x4. flip2 L2 x1 x2 \<le> flip2 L2 x3 x4 \<equiv> (\<le>\<^bsub>L2 x2 x1\<^esub>) \<le> (\<le>\<^bsub>L2 x4 x3\<^esub>)"
-  and "\<And>(R :: 'z \<Rightarrow> _) (P :: 'z \<Rightarrow> bool). reflexive_on P R\<inverse> \<equiv> reflexive_on P R"
-  and "\<And>R x1 x2. transitive (flip2 R x1 x2) \<equiv> transitive (R x2 x1)"
-  and "\<And>x x. ([in_dom (\<le>\<^bsub>L2 x' \<eta>\<^sub>1 x'\<^esub>)] \<Rrightarrow> flip2 R2 (l1 x') (l1 x'))
-    \<equiv> ([in_dom (\<le>\<^bsub>L2 x' \<eta>\<^sub>1 x'\<^esub>)] \<Rrightarrow> (\<le>\<^bsub>R2 (l1 x') (l1 x')\<^esub>))\<inverse>"
+  and "\<And>(R :: 'z \<Rightarrow> 'z \<Rightarrow> bool) (P :: 'z \<Rightarrow> bool). reflexive_on P R\<inverse> \<equiv> reflexive_on P R"
+  and "\<And>R x1 x2. transitive (flip2 R x1 x2 :: 'z \<Rightarrow> 'z \<Rightarrow> bool) \<equiv> transitive (R x2 x1)"
+  and "\<And>x x. ([in_dom (\<le>\<^bsub>L2 x' (\<eta>\<^sub>1 x')\<^esub>)] \<Rrightarrow> flip2 R2 (l1 x') (l1 x'))
+    \<equiv> ([in_dom (\<le>\<^bsub>L2 x' (\<eta>\<^sub>1 x')\<^esub>)] \<Rrightarrow> (\<le>\<^bsub>R2 (l1 x') (l1 x')\<^esub>))\<inverse>"
   by (simp_all add: flip_inv_left_eq_ge_right flip_inv_right_eq_ge_left
     t1.flip_counit_eq_unit
     galois_prop.rel_inv_half_galois_prop_right_eq_half_galois_prop_left_rel_inv)

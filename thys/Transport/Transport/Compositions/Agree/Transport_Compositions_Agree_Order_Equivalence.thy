@@ -48,8 +48,9 @@ begin
 interpretation inv :
   transport_comp_agree "(\<ge>\<^bsub>L1\<^esub>)" "(\<ge>\<^bsub>R1\<^esub>)" l1 r1 "(\<ge>\<^bsub>L2\<^esub>)" "(\<ge>\<^bsub>R2\<^esub>)" l2 r2
   rewrites "\<And>R S. (R\<inverse> \<Rrightarrow>\<^sub>m S\<inverse>) \<equiv> (R \<Rrightarrow>\<^sub>m S)"
-  and "\<And>R. inflationary_on P R\<inverse> \<equiv> deflationary_on P R"
-  and "\<And>R. transitive R\<inverse> \<equiv> transitive R"
+  and "\<And>(P :: 'i \<Rightarrow> bool) (R :: 'j \<Rightarrow> 'i \<Rightarrow> bool).
+    (inflationary_on P R\<inverse> :: ('i \<Rightarrow> 'j) \<Rightarrow> bool) \<equiv> deflationary_on P R"
+  and "\<And>(R :: 'i \<Rightarrow> 'i \<Rightarrow> bool). transitive R\<inverse> \<equiv> transitive R"
   and "\<And>R. in_field R\<inverse> \<equiv> in_field R"
   by simp_all
 

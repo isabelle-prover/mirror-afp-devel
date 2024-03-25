@@ -23,18 +23,24 @@ begin
 end
 
 lemma bijection_on_set_eq_bijection_on_pred [simp]:
-  "(bijection_on (S :: 'a set) (S' :: 'b set) :: ('a \<Rightarrow> 'b) \<Rightarrow> _) =
+  "(bijection_on (S :: 'a set) (S' :: 'b set) :: ('a \<Rightarrow> 'b) \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> _) =
     bijection_on (mem_of S) (mem_of S')"
   unfolding bijection_on_set_def by simp
 
+lemma bijection_on_set_eq_bijection_on_pred_uhint [uhint]:
+  assumes "P \<equiv> mem_of S"
+  and "Q \<equiv> mem_of S'"
+  shows "bijection_on (S :: 'a set) (S' :: 'b set) :: ('a \<Rightarrow> 'b) \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> _ \<equiv> bijection_on P Q"
+  using assms by simp
+
 lemma bijection_on_set_iff_bijection_on_pred [iff]:
-  "bijection_on (S :: 'a set) (S' :: 'b set) (f :: 'a \<Rightarrow> 'b) g \<longleftrightarrow>
+  "bijection_on (S :: 'a set) (S' :: 'b set) (f :: 'a \<Rightarrow> 'b) (g :: 'b \<Rightarrow> 'a) \<longleftrightarrow>
     bijection_on (mem_of S) (mem_of S') f g"
   by simp
 
 lemma bij_betw_bijection_onE:
-  assumes "bij_betw f S S'"
-  obtains g where "bijection_on S S' f g"
+  assumes "bij_betw (f :: 'a \<Rightarrow> 'b) S S'"
+  obtains g :: "'b \<Rightarrow> 'a" where "bijection_on S S' f g"
 proof
   let ?g = "the_inv_into S f"
   from assms bij_betw_the_inv_into have "bij_betw ?g S' S" by blast
@@ -45,15 +51,14 @@ proof
 qed
 
 lemma bij_betw_if_bijection_on:
-  assumes "bijection_on S S' f g"
+  assumes "bijection_on S S' (f :: 'a \<Rightarrow> 'b) (g :: 'b \<Rightarrow> 'a)"
   shows "bij_betw f S S'"
   using assms by (intro bij_betw_byWitness[where ?f'=g])
   (auto elim: bijection_onE dest: inverse_onD)
 
 corollary bij_betw_iff_ex_bijection_on [HOL_fun_alignment]:
-  "bij_betw f S S' \<longleftrightarrow> (\<exists>g. bijection_on S S' f g)"
-  by (intro iffI)
-  (auto elim!: bij_betw_bijection_onE intro: bij_betw_if_bijection_on)
+  "bij_betw (f :: 'a \<Rightarrow> 'b) S S' \<longleftrightarrow> (\<exists>(g :: 'b \<Rightarrow> 'a). bijection_on S S' f g)"
+  by (intro iffI) (auto elim!: bij_betw_bijection_onE intro: bij_betw_if_bijection_on)
 
 
 subparagraph \<open>Injective\<close>
@@ -68,6 +73,11 @@ end
 lemma injective_on_set_eq_injective_on_pred [simp]:
   "(injective_on (S :: 'a set) :: ('a \<Rightarrow> 'b) \<Rightarrow> _) = injective_on (mem_of S)"
   unfolding injective_on_set_def by simp
+
+lemma injective_on_set_eq_injective_on_pred_uhint [uhint]:
+  assumes "P \<equiv> mem_of S"
+  shows "injective_on (S :: 'a set) :: ('a \<Rightarrow> 'b) \<Rightarrow> _ \<equiv> injective_on P"
+  using assms by simp
 
 lemma injective_on_set_iff_injective_on_pred [iff]:
   "injective_on (S :: 'a set) (f :: 'a \<Rightarrow> 'b) \<longleftrightarrow> injective_on (mem_of S) f"
@@ -85,16 +95,21 @@ subparagraph \<open>Inverse\<close>
 overloading
   inverse_on_set \<equiv> "inverse_on :: 'a set \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> bool"
 begin
-  definition "inverse_on_set (S :: 'a set) :: ('a \<Rightarrow> 'b) \<Rightarrow> _ \<equiv>
+  definition "inverse_on_set (S :: 'a set) :: ('a \<Rightarrow> 'b) \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> bool \<equiv>
     inverse_on (mem_of S)"
 end
 
 lemma inverse_on_set_eq_inverse_on_pred [simp]:
-  "(inverse_on (S :: 'a set) :: ('a \<Rightarrow> 'b) \<Rightarrow> _) = inverse_on (mem_of S)"
+  "(inverse_on (S :: 'a set) :: ('a \<Rightarrow> 'b) \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> _) = inverse_on (mem_of S)"
   unfolding inverse_on_set_def by simp
 
+lemma inverse_on_set_eq_inverse_on_pred_uhint [uhint]:
+  assumes "P \<equiv> mem_of S"
+  shows "inverse_on (S :: 'a set) :: ('a \<Rightarrow> 'b) \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> _ \<equiv> inverse_on P"
+  using assms by simp
+
 lemma inverse_on_set_iff_inverse_on_pred [iff]:
-  "inverse_on (S :: 'a set) (f :: 'a \<Rightarrow> 'b) g \<longleftrightarrow> inverse_on (mem_of S) f g"
+  "inverse_on (S :: 'a set) (f :: 'a \<Rightarrow> 'b) (g :: 'b \<Rightarrow> 'a) \<longleftrightarrow> inverse_on (mem_of S) f g"
   by simp
 
 
@@ -129,6 +144,11 @@ end
 lemma surjective_at_set_eq_surjective_at_pred [simp]:
   "(surjective_at (S :: 'a set) :: ('b \<Rightarrow> 'a) \<Rightarrow> _) = surjective_at (mem_of S)"
   unfolding surjective_at_set_def by simp
+
+lemma surjective_at_set_eq_surjective_at_pred_uhint [uhint]:
+  assumes "P \<equiv> mem_of S"
+  shows "surjective_at (S :: 'a set) :: ('b \<Rightarrow> 'a) \<Rightarrow> _ \<equiv> surjective_at P"
+  using assms by simp
 
 lemma surjective_at_set_iff_surjective_at_pred [iff]:
   "surjective_at (S :: 'a set) (f :: 'b \<Rightarrow> 'a) \<longleftrightarrow> surjective_at (mem_of S) f"
