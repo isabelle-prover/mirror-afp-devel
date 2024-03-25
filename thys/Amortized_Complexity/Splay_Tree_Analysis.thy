@@ -219,7 +219,7 @@ subsubsection "Analysis of insert"
 lemma amor_insert: assumes "bst t"
 shows "T_insert x t + \<Phi>(Splay_Tree.insert x t) - \<Phi> t \<le> 4 * log 2 (size1 t) + 2" (is "?l \<le> ?r")
 proof cases
-  assume "t = Leaf" thus ?thesis by(simp add: T_insert_def)
+  assume "t = Leaf" thus ?thesis by(simp)
 next
   assume "t \<noteq> Leaf"
   then obtain l e r where [simp]: "splay x t = Node l e r"
@@ -235,12 +235,12 @@ next
     assume "e=x"
     have nneg: "log 2 (1 + real (size t)) \<ge> 0" by simp
     thus ?thesis using \<open>t \<noteq> Leaf\<close> opt \<open>e=x\<close>
-      apply(simp add: T_insert_def algebra_simps) using nneg by arith
+      apply(simp add: algebra_simps) using nneg by arith
   next
     let ?L = "log 2 (real(size1 l) + 1)"
     assume "e < x" hence "e \<noteq> x" by simp
     hence "?l = (?t + ?Plr - ?Ps) + ?L + ?LR"
-      using  \<open>t \<noteq> Leaf\<close> \<open>e<x\<close> by(simp add: T_insert_def)
+      using  \<open>t \<noteq> Leaf\<close> \<open>e<x\<close> by(simp)
     also have "?t + ?Plr - ?Ps \<le> 2 * log 2 ?slr + 1"
       using opt size_splay[of x t,symmetric] by(simp)
     also have "?L \<le> log 2 ?slr" by(simp)
@@ -256,7 +256,7 @@ next
     let ?R = "log 2 (2 + real(size r))"
     assume "x < e" hence "e \<noteq> x" by simp
     hence "?l = (?t + ?Plr - ?Ps) + ?R + ?LR"
-      using \<open>t \<noteq> Leaf\<close> \<open>x < e\<close> by(simp add: T_insert_def)
+      using \<open>t \<noteq> Leaf\<close> \<open>x < e\<close> by(simp)
     also have "?t + ?Plr - ?Ps \<le> 2 * log 2 ?slr + 1"
       using opt size_splay[of x t,symmetric] by(simp)
     also have "?R \<le> log 2 ?slr" by(simp)
@@ -327,7 +327,7 @@ qed
 lemma amor_delete: assumes "bst t"
 shows "T_delete a t + \<Phi>(Splay_Tree.delete a t) - \<Phi> t \<le> 6 * log 2 (size1 t) + 2"
 proof (cases t)
-  case Leaf thus ?thesis by(simp add: Splay_Tree.delete_def T_delete_def)
+  case Leaf thus ?thesis by(simp add: Splay_Tree.delete_def)
 next
   case [simp]: (Node ls x rs)
   then obtain l e r where sp[simp]: "splay a (Node ls x rs) = Node l e r"
@@ -343,7 +343,7 @@ next
   show ?thesis
   proof (cases "e=a")
     case False thus ?thesis
-      using opt apply(simp add: Splay_Tree.delete_def T_delete_def field_simps)
+      using opt apply(simp add: Splay_Tree.delete_def field_simps)
       using \<open>?lslr \<ge> 0\<close> by arith
   next
     case [simp]: True
@@ -352,7 +352,7 @@ next
       case Leaf
       have 1: "log 2 (real (size r) + 2) \<ge> 0" by(simp)
       show ?thesis
-        using Leaf opt apply(simp add: Splay_Tree.delete_def T_delete_def field_simps)
+        using Leaf opt apply(simp add: Splay_Tree.delete_def field_simps)
         using 1 \<open>?lslr \<ge> 0\<close> by arith
     next
       case (Node ll y lr)
@@ -370,7 +370,7 @@ next
       have 4: "log 2 (real(size ll) + (real(size lr) + 2)) \<le> ?lslr"
         using size_if_splay[OF sp] Node by simp
       show ?thesis using add_mono[OF opt optm] Node 3
-        apply(simp add: Splay_Tree.delete_def T_delete_def field_simps)
+        apply(simp add: Splay_Tree.delete_def field_simps)
         using 4 \<open>\<Phi> r' \<ge> 0\<close> by arith
     qed
   qed

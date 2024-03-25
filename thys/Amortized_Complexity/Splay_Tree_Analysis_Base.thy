@@ -6,6 +6,7 @@ theory Splay_Tree_Analysis_Base
 imports
   Lemmas_log
   Splay_Tree.Splay_Tree
+  "HOL-Data_Structures.Define_Time_Function"
 begin
 
 declare size1_size[simp]
@@ -16,23 +17,8 @@ fun \<Phi> :: "'a tree \<Rightarrow> real" where
 "\<Phi> Leaf = 0" |
 "\<Phi> (Node l a r) = \<phi> (Node l a r) + \<Phi> l + \<Phi> r"
 
-fun T_splay :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> nat" where
-"T_splay x Leaf = 1" |
-"T_splay x (Node AB b CD) =
-  (case cmp x b of
-   EQ \<Rightarrow> 1 |
-   LT \<Rightarrow> (case AB of
-          Leaf \<Rightarrow> 1 |
-          Node A a B \<Rightarrow>
-            (case cmp x a of EQ \<Rightarrow> 1 |
-             LT \<Rightarrow> if A = Leaf then 1 else T_splay x A + 1 |
-             GT \<Rightarrow> if B = Leaf then 1 else T_splay x B + 1)) |
-   GT \<Rightarrow> (case CD of
-          Leaf \<Rightarrow> 1 |
-          Node C c D \<Rightarrow>
-            (case cmp x c of EQ \<Rightarrow> 1 |
-             LT \<Rightarrow> if C = Leaf then 1 else T_splay x C + 1 |
-             GT \<Rightarrow> if D = Leaf then 1 else T_splay x D + 1)))"
+time_fun cmp
+time_fun splay equations splay.simps(1) splay_code
 
 lemma T_splay_simps[simp]:
   "T_splay a (Node l a r) = 1"
@@ -52,20 +38,14 @@ by auto
 
 declare T_splay.simps(2)[simp del]
 
-definition T_insert :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> nat" where
-"T_insert x t = (if t = Leaf then 0 else T_splay x t)"
+time_fun insert
 
-fun T_splay_max :: "'a::linorder tree \<Rightarrow> nat" where
-"T_splay_max Leaf = 1" |
-"T_splay_max (Node A a Leaf) = 1" |
-"T_splay_max (Node A a (Node B b C)) = (if C=Leaf then 1 else T_splay_max C + 1)"
+lemma T_insert_simp: "T_insert x t = (if t = Leaf then 0 else T_splay x t)"
+by(auto split: tree.split)
 
-definition T_delete :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> nat" where
-"T_delete x t =
-  (if t = Leaf then 0
-   else T_splay x t +
-     (case splay x t of
-        Node l a r \<Rightarrow> if x \<noteq> a then 0 else if l = Leaf then 0 else T_splay_max l))"
+time_fun splay_max
+
+time_fun delete
 
 lemma ex_in_set_tree: "t \<noteq> Leaf \<Longrightarrow> bst t \<Longrightarrow>
   \<exists>x' \<in> set_tree t. splay x' t = splay x t \<and> T_splay x' t = T_splay x t"
