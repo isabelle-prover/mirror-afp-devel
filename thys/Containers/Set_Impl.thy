@@ -312,7 +312,7 @@ declare [[code drop:
   Image
   trancl
   relcomp
-  wf
+  wf_code
   Min
   Inf_fin
   Max
@@ -1636,14 +1636,15 @@ lemma irrefl_on_code [code]:
 lemma wf_code [code]:
   fixes rbt :: "('a :: ccompare \<times> 'a) set_rbt" 
   and dxs :: "('b :: ceq \<times> 'b) set_dlist" shows
-  "wf (Set_Monad xs) = acyclic (Set_Monad xs)"
-  "wf (RBT_set rbt) = 
-  (case ID CCOMPARE('a) of None \<Rightarrow> Code.abort (STR ''wf RBT_set: ccompare = None'') (\<lambda>_. wf (RBT_set rbt))
+  "wf_code (Set_Monad xs) = acyclic (Set_Monad xs)"
+  "wf_code (RBT_set rbt) =
+  (case ID CCOMPARE('a) of None \<Rightarrow> Code.abort (STR ''wf_code RBT_set: ccompare = None'') (\<lambda>_. wf_code (RBT_set rbt))
                      | Some _ \<Rightarrow> acyclic (RBT_set rbt))"
-  "wf (DList_set dxs) =
-  (case ID CEQ('b) of None \<Rightarrow> Code.abort (STR ''wf DList_set: ceq = None'') (\<lambda>_. wf (DList_set dxs))
+  "wf_code (DList_set dxs) =
+  (case ID CEQ('b) of None \<Rightarrow> Code.abort (STR ''wf_code DList_set: ceq = None'') (\<lambda>_. wf_code (DList_set dxs))
                      | Some _ \<Rightarrow> acyclic (DList_set dxs))"
-by(auto simp add: wf_iff_acyclic_if_finite split: option.split del: iffI)(simp_all add: wf_iff_acyclic_if_finite finite_code ccompare_prod_def ceq_prod_def ID_Some)
+  by (auto simp add: wf_iff_acyclic_if_finite wf_code_def split: option.split del: iffI)
+    (simp_all add: wf_iff_acyclic_if_finite finite_code ccompare_prod_def ceq_prod_def ID_Some)
 
 lemma bacc_code [code]:
   "bacc R 0 = - snd ` R"
