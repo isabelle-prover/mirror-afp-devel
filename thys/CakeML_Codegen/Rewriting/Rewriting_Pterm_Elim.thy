@@ -721,7 +721,7 @@ using assms proof induction
     apply (subst frees_list_comb)
     apply simp
     apply (subst closed_except_def[symmetric])
-    using inner step by blast
+    using inner step by fastforce
 next
   case (beta c cs t t')
   then obtain pat rhs where "c = (pat, rhs)"

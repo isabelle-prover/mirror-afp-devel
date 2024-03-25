@@ -110,23 +110,24 @@ next
       hence "is_fmap irs" "irs \<noteq> {||}" "arity irs = 0"
         using assms inner unfolding finished_def by blast+
       moreover have "arity_compatibles irs"
-        using \<open>(name, irs) |\<in>| rs\<close> inner by (blast dest: fpairwiseD)
+        using \<open>(name, irs) |\<in>| rs\<close> inner
+        by (metis (no_types, lifting) case_prodD)
       ultimately obtain u where "irs = {| ([], u) |}"
         by (metis arity_zero_shape)
       hence "rhs = u" and u: "([], u) |\<in>| irs"
         unfolding \<open>rhs = _\<close> translate_rhs_def by simp+
       hence "abs_ish [] u"
-        using inner \<open>(name, irs) |\<in>| rs\<close> by blast
+        using inner \<open>(name, irs) |\<in>| rs\<close> by fastforce
       thus "is_abs rhs"
         unfolding abs_ish_def \<open>rhs = u\<close> by simp
 
       show "wellformed rhs"
         using u \<open>(name, irs) |\<in>| rs\<close> inner unfolding \<open>rhs = u\<close>
-        by blast
+        by fastforce
 
       have "closed_except u {||}"
         using u inner \<open>(name, irs) |\<in>| rs\<close>
-        by (metis (mono_tags, lifting) case_prod_conv fbspec freess_empty)
+        by fastforce
       thus "closed rhs"
         unfolding \<open>rhs = u\<close> .
 
@@ -135,7 +136,7 @@ next
         hence "shadows_consts u"
           unfolding compile_def \<open>rhs = u\<close> by simp
         moreover have "\<not> shadows_consts u"
-          using inner \<open>([], u) |\<in>| irs\<close> \<open>(name, irs) |\<in>| rs\<close> by blast
+          using inner \<open>([], u) |\<in>| irs\<close> \<open>(name, irs) |\<in>| rs\<close> by fastforce
         ultimately show False by blast
       }
 
@@ -164,7 +165,8 @@ using assms(1) proof induction
   then obtain irs where "rhs = translate_rhs irs" "(name, irs) |\<in>| rs"
     unfolding compile_def by force
   hence "arity_compatibles irs"
-    using inner by (blast dest: fpairwiseD)
+    using inner
+    by (metis (no_types, lifting) case_prodD)
 
   have "is_fmap irs" "irs \<noteq> {||}" "arity irs = 0"
     using assms inner \<open>(name, irs) |\<in>| rs\<close> unfolding finished_def by blast+
@@ -186,7 +188,8 @@ theorem (in irules) compile_complete:
 using assms(1) proof induction
   case (step name irs params rhs t t')
   hence "arity_compatibles irs"
-    using inner by (blast dest: fpairwiseD)
+    using inner
+    by (metis (no_types, lifting) case_prodD)
 
   have "is_fmap irs" "irs \<noteq> {||}" "arity irs = 0"
     using assms inner step unfolding finished_def by blast+
