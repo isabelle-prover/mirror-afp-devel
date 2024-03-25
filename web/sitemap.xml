@@ -3,24 +3,45 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2024-03-15T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/Approximate_Model_Counting.html</loc>
-    <lastmod>2024-03-15T00:00:00+00:00</lastmod>
+    <lastmod>2024-03-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
+    <lastmod>2024-03-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/coinductive/</loc>
+    <lastmod>2024-03-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Continued_Fractions.html</loc>
+    <lastmod>2024-03-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2024-03-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/eberl/</loc>
+    <lastmod>2024-03-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2024-03-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2024-03-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/pell/</loc>
+    <lastmod>2024-03-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/polynomial_factorization/</loc>
+    <lastmod>2024-03-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2024-03-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Approximate_Model_Counting.html</loc>
     <lastmod>2024-03-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/computer-science/</loc>
     <lastmod>2024-03-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/concentration_inequalities/</loc>
-    <lastmod>2024-03-15T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/</loc>
-    <lastmod>2024-03-15T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/</loc>
     <lastmod>2024-03-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/frequency_moments/</loc>
@@ -30,9 +51,6 @@
     <lastmod>2024-03-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/tan/</loc>
-    <lastmod>2024-03-15T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2024-03-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/yang/</loc>
@@ -45,9 +63,6 @@
     <lastmod>2024-03-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/logic/</loc>
-    <lastmod>2024-03-06T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/mathematics/</loc>
     <lastmod>2024-03-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/three_squares/</loc>
@@ -198,9 +213,6 @@
     <lastmod>2023-11-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/dirichlet_series/</loc>
-    <lastmod>2023-11-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/eberl/</loc>
     <lastmod>2023-11-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Lambert_Series.html</loc>
@@ -728,9 +740,6 @@
     <loc>/entries/HoareForDivergence.html</loc>
     <lastmod>2023-01-20T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/coinductive/</loc>
-    <lastmod>2023-01-20T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/myreen/</loc>
     <lastmod>2023-01-20T00:00:00+00:00</lastmod>
   </url><url>
@@ -1098,9 +1107,6 @@
     <lastmod>2022-04-21T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/groebner_bases/</loc>
-    <lastmod>2022-04-21T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/polynomial_factorization/</loc>
     <lastmod>2022-04-21T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Digit_Expansions.html</loc>
@@ -2139,9 +2145,6 @@
     <lastmod>2020-01-31T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Mersenne_Primes.html</loc>
-    <lastmod>2020-01-17T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/pell/</loc>
     <lastmod>2020-01-17T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/probabilistic_prime_tests/</loc>
@@ -5162,6 +5165,8 @@
     <loc>/sessions/containers/</loc>
   </url><url>
     <loc>/sessions/containers-benchmarks/</loc>
+  </url><url>
+    <loc>/sessions/continued_fractions/</loc>
   </url><url>
     <loc>/sessions/cook_levin/</loc>
   </url><url>

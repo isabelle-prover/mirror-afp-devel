@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Fri, 15 Mar 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Wed, 20 Mar 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Continued Fractions</title>
+          <link>/entries/Continued_Fractions.html</link>
+          <pubDate>Wed, 20 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Continued_Fractions.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Approximate Model Counting</title>
           <link>/entries/Approximate_Model_Counting.html</link>
@@ -6633,6 +6640,13 @@
           <link>/sessions/containers-benchmarks/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/containers-benchmarks/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Continued_Fractions</title>
+          <link>/sessions/continued_fractions/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/continued_fractions/</guid>
           <description></description>
         </item>
         <item>
