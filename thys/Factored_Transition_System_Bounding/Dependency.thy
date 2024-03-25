@@ -410,7 +410,7 @@ proof -
   obtain aa :: "'a set \<Rightarrow> 'a set \<Rightarrow> 'a" where
     f3: "\<And>A Aa a Ab Ac. (A \<subseteq> Aa \<or> aa A Aa \<in> A) \<and> (aa A Aa \<notin> Aa \<or> A \<subseteq> Aa) 
       \<and> ((a::'a) \<notin> Ab \<or> \<not> Ab \<subseteq> Ac \<or> a \<in> Ac)"
-    by moura
+    by (atomize_elim, (subst choice_iff[symmetric])+, blast)
   then have "\<And>A. fmdom' (snd a) \<subseteq> A \<or> aa (fmdom' (snd a)) A \<in> vs \<or> aa (fmdom' (snd a)) A \<in> vs'"
     using a1 by (meson Un_iff)
   then show "fmdom' (snd a) \<subseteq> vs \<or> fmdom' (snd a) \<subseteq> vs'"

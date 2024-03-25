@@ -2,7 +2,7 @@
 *)
 
 theory Conditional_Expectation_Banach
-  imports "HOL-Probability.Conditional_Expectation" "HOL-Probability.Independent_Family" Bochner_Integration_Supplement
+  imports "HOL-Probability.Conditional_Expectation" "HOL-Probability.Independent_Family" 
 begin
 
 section \<open>Conditional Expectation in Banach Spaces\<close>
@@ -222,9 +222,9 @@ lemma has_cond_exp_indicator:
   shows "has_cond_exp M F (\<lambda>x. indicat_real A x *\<^sub>R y) (\<lambda>x. real_cond_exp M F (indicator A) x *\<^sub>R y)"
 proof (intro has_cond_expI', goal_cases)
   case (1 B)
-  have "\<integral>x\<in>B. (indicat_real A x *\<^sub>R y) \<partial>M  = (\<integral>x\<in>B. indicat_real A x \<partial>M) *\<^sub>R y" using assms by (intro set_integral_scaleR_left, meson 1 in_mono subalg subalgebra_def, blast)
+  have "(\<integral>x\<in>B. (indicat_real A x *\<^sub>R y) \<partial>M) = (\<integral>x\<in>B. indicat_real A x \<partial>M) *\<^sub>R y" using assms by (intro set_integral_scaleR_left, meson 1 in_mono subalg subalgebra_def, blast)
   also have "... = (\<integral>x\<in>B. real_cond_exp M F (indicator A) x \<partial>M) *\<^sub>R y" using 1 assms by (subst real_cond_exp_intA, auto)
-  also have "... = \<integral>x\<in>B. (real_cond_exp M F (indicator A) x *\<^sub>R y) \<partial>M" using assms by (intro set_integral_scaleR_left[symmetric], meson 1 in_mono subalg subalgebra_def, blast)
+  also have "... = (\<integral>x\<in>B. (real_cond_exp M F (indicator A) x *\<^sub>R y) \<partial>M)" using assms by (intro set_integral_scaleR_left[symmetric], meson 1 in_mono subalg subalgebra_def, blast)
   finally show ?case .
 next
   case 2
@@ -254,9 +254,9 @@ lemma has_cond_exp_add:
   shows "has_cond_exp M F (\<lambda>x. f x + g x) (\<lambda>x. f' x + g' x)"
 proof (intro has_cond_expI', goal_cases)
   case (1 A)
-  have "\<integral>x\<in>A. (f x + g x)\<partial>M = (\<integral>x\<in>A. f x \<partial>M) + (\<integral>x\<in>A. g x \<partial>M)" using assms[THEN has_cond_expD(2)] subalg 1 by (intro set_integral_add(2), auto simp add: subalgebra_def set_integrable_def intro: integrable_mult_indicator)
+  have "(\<integral>x\<in>A. (f x + g x)\<partial>M) = (\<integral>x\<in>A. f x \<partial>M) + (\<integral>x\<in>A. g x \<partial>M)" using assms[THEN has_cond_expD(2)] subalg 1 by (intro set_integral_add(2), auto simp add: subalgebra_def set_integrable_def intro: integrable_mult_indicator)
   also have "... = (\<integral>x\<in>A. f' x \<partial>M) + (\<integral>x\<in>A. g' x \<partial>M)" using assms[THEN has_cond_expD(1)[OF _ 1]] by argo
-  also have "... = \<integral>x\<in>A. (f' x + g' x)\<partial>M" using assms[THEN has_cond_expD(3)] subalg 1 by (intro set_integral_add(2)[symmetric], auto simp add: subalgebra_def set_integrable_def intro: integrable_mult_indicator)
+  also have "... = (\<integral>x\<in>A. (f' x + g' x)\<partial>M)" using assms[THEN has_cond_expD(3)] subalg 1 by (intro set_integral_add(2)[symmetric], auto simp add: subalgebra_def set_integrable_def intro: integrable_mult_indicator)
   finally show ?case .
 next
   case 2
@@ -341,14 +341,14 @@ lemma cond_exp_contraction_real:
 proof-
   have int: "integrable M (\<lambda>x. norm (f x))" using assms by blast
   have *: "AE x in M. 0 \<le> cond_exp M F (\<lambda>x. norm (f x)) x" using cond_exp_real[THEN AE_symmetric, OF integrable_norm[OF integrable]] real_cond_exp_ge_c[OF integrable_norm[OF integrable], of 0] norm_ge_zero by fastforce
-  have **: "A \<in> sets F \<Longrightarrow> \<integral>x\<in>A. \<bar>f x\<bar> \<partial>M = \<integral>x\<in>A. real_cond_exp M F (\<lambda>x. norm (f x)) x \<partial>M" for A unfolding real_norm_def using assms integrable_abs real_cond_exp_intA by blast
+  have **: "A \<in> sets F \<Longrightarrow> (\<integral>x\<in>A. \<bar>f x\<bar> \<partial>M) = (\<integral>x\<in>A. real_cond_exp M F (\<lambda>x. norm (f x)) x \<partial>M)" for A unfolding real_norm_def using assms integrable_abs real_cond_exp_intA by blast
   
   have norm_int: "A \<in> sets F \<Longrightarrow> (\<integral>x\<in>A. \<bar>f x\<bar> \<partial>M) = (\<integral>\<^sup>+x\<in>A. \<bar>f x\<bar> \<partial>M)" for A using assms by (intro nn_set_integral_eq_set_integral[symmetric], blast, fastforce) (meson subalg subalgebra_def subsetD)
   
   have "AE x in M. real_cond_exp M F (\<lambda>x. norm (f x)) x \<ge> 0" using int real_cond_exp_ge_c by force
   hence cond_exp_norm_int: "A \<in> sets F \<Longrightarrow> (\<integral>x\<in>A. real_cond_exp M F (\<lambda>x. norm (f x)) x \<partial>M) = (\<integral>\<^sup>+x\<in>A. real_cond_exp M F (\<lambda>x. norm (f x)) x \<partial>M)" for A using assms by (intro nn_set_integral_eq_set_integral[symmetric], blast, fastforce) (meson subalg subalgebra_def subsetD)
   
-  have "A \<in> sets F \<Longrightarrow> \<integral>\<^sup>+x\<in>A. \<bar>f x\<bar>\<partial>M = \<integral>\<^sup>+x\<in>A. real_cond_exp M F (\<lambda>x. norm (f x)) x \<partial>M" for A using ** norm_int cond_exp_norm_int by (auto simp add: nn_integral_set_ennreal)
+  have "A \<in> sets F \<Longrightarrow> (\<integral>\<^sup>+x\<in>A. \<bar>f x\<bar>\<partial>M) = (\<integral>\<^sup>+x\<in>A. real_cond_exp M F (\<lambda>x. norm (f x)) x \<partial>M)" for A using ** norm_int cond_exp_norm_int by (auto simp add: nn_integral_set_ennreal)
   moreover have "(\<lambda>x. ennreal \<bar>f x\<bar>) \<in> borel_measurable M" by measurable
   moreover have "(\<lambda>x. ennreal (real_cond_exp M F (\<lambda>x. norm (f x)) x)) \<in> borel_measurable F" by measurable
   ultimately have "AE x in M. nn_cond_exp M F (\<lambda>x. ennreal \<bar>f x\<bar>) x = real_cond_exp M F (\<lambda>x. norm (f x)) x" by (intro nn_cond_exp_charact[THEN AE_symmetric], auto)
@@ -486,7 +486,7 @@ proof -
       have "AE x in M. norm (indicator A x *\<^sub>R cond_exp M F (s (r n)) x) \<le> norm (cond_exp M F (s (r n)) x)" unfolding indicator_def by simp
       thus ?thesis using cond_exp_bounded[of n] by force
     qed
-    hence lim_cond_exp_int: "(\<lambda>n. LINT x:A|M. cond_exp M F (s (r n)) x) \<longlonglongrightarrow> LINT x:A|M. lim (\<lambda>n. cond_exp M F (s (r n)) x)" 
+    hence lim_cond_exp_int: "(\<lambda>n. LINT x:A|M. cond_exp M F (s (r n)) x) \<longlonglongrightarrow> (LINT x:A|M. lim (\<lambda>n. cond_exp M F (s (r n)) x))" 
       using ae_lim_cond_exp measurable_from_subalg[OF subalg borel_measurable_indicator, OF A_in_sets_F] cond_exp_bounded
       unfolding set_lebesgue_integral_def
       by (intro integral_dominated_convergence[OF borel_measurable_scaleR borel_measurable_scaleR integrable_cond_exp]) (fastforce simp add: tendsto_scaleR)+
@@ -496,15 +496,15 @@ proof -
       have "AE x in M. norm (indicator A x *\<^sub>R s (r n) x) \<le> norm (s (r n) x)" unfolding indicator_def by simp
       thus ?thesis using assms(5)[of _ "r n"] by fastforce
     qed
-    hence lim_s_int: "(\<lambda>n. LINT x:A|M. s (r n) x) \<longlonglongrightarrow> LINT x:A|M. f x"
+    hence lim_s_int: "(\<lambda>n. LINT x:A|M. s (r n) x) \<longlonglongrightarrow> (LINT x:A|M. f x)"
       using measurable_from_subalg[OF subalg borel_measurable_indicator, OF A_in_sets_F] LIMSEQ_subseq_LIMSEQ[OF assms(4) strict_mono_r] assms(5)
       unfolding set_lebesgue_integral_def comp_def
       by (intro integral_dominated_convergence[OF borel_measurable_scaleR borel_measurable_scaleR integrable_2f]) (fastforce simp add: tendsto_scaleR)+
 
-    have "LINT x:A|M. lim (\<lambda>n. cond_exp M F (s (r n)) x) = lim (\<lambda>n. LINT x:A|M. cond_exp M F (s (r n)) x)" using limI[OF lim_cond_exp_int] by argo
+    have "(LINT x:A|M. lim (\<lambda>n. cond_exp M F (s (r n)) x)) = lim (\<lambda>n. LINT x:A|M. cond_exp M F (s (r n)) x)" using limI[OF lim_cond_exp_int] by argo
     also have "... = lim (\<lambda>n. LINT x:A|M. s (r n) x)" using has_cond_expD(1)[OF has_cond_exp_simple[OF assms(2,3)] A_in_sets_F, symmetric] by presburger
-    also have "... = LINT x:A|M. f x" using limI[OF lim_s_int] by argo
-    finally have "LINT x:A|M. lim (\<lambda>n. cond_exp M F (s (r n)) x) = LINT x:A|M. f x" .
+    also have "... = (LINT x:A|M. f x)" using limI[OF lim_s_int] by argo
+    finally have "(LINT x:A|M. lim (\<lambda>n. cond_exp M F (s (r n)) x)) = (LINT x:A|M. f x)" .
   }
   text \<open>Putting it all together, we have the statement we are looking for.\<close>
   hence "has_cond_exp M F f (\<lambda>x. lim (\<lambda>i. cond_exp M F (s (r i)) x))" using assms(1) lim_integrable by (intro has_cond_expI', auto) 
@@ -618,7 +618,7 @@ proof-
     have "set_lebesgue_integral M A (cond_exp M F (\<lambda>x. f x * g x)) = set_lebesgue_integral M A (\<lambda>x. f x * g x)" by (simp add: cond_exp_set_integral[OF assms(1) asm])
     also have "... = set_lebesgue_integral M A (\<lambda>x. f x * real_cond_exp M F g x)" using borel_measurable_times[OF borel_measurable_indicator[OF asm] assms(3)] borel_measurable_integrable[OF assms(2)] integrable_mult_indicator[OF asm' assms(1)] by (fastforce simp add: set_lebesgue_integral_def mult.assoc[symmetric] intro: real_cond_exp_intg(2)[symmetric])
     also have "... = set_lebesgue_integral M A (\<lambda>x. f x * cond_exp M F g x)" using cond_exp_real[OF assms(2)] asm' borel_measurable_cond_exp' borel_measurable_cond_exp2 measurable_from_subalg[OF subalg assms(3)] by (auto simp add: set_lebesgue_integral_def intro: integral_cong_AE)
-    finally have "set_lebesgue_integral M A (cond_exp M F (\<lambda>x. f x * g x)) = \<integral>x\<in>A. (f x * cond_exp M F g x)\<partial>M" .
+    finally have "set_lebesgue_integral M A (cond_exp M F (\<lambda>x. f x * g x)) = (\<integral>x\<in>A. (f x * cond_exp M F g x)\<partial>M)" .
   }
   hence "AE x in restr_to_subalg M F. cond_exp M F (\<lambda>x. f x * g x) x = f x * cond_exp M F g x" by (intro density_unique_banach integrable_cond_exp integrable integrable_in_subalg subalg, measurable, simp add: set_lebesgue_integral_def integral_subalgebra2[OF subalg] sets_restr_to_subalg[OF subalg])
   thus "AE x in M. cond_exp M F (\<lambda>x. f x * g x) x = f x * cond_exp M F g x" by (rule AE_restr_to_subalg[OF subalg])
@@ -664,7 +664,8 @@ proof -
         have s_meas_M[measurable]: "s i \<in> borel_measurable M" by (meson borel_measurable_simple_function measurable_from_subalg s_is(1) subalg')
         have s_meas_F[measurable]: "s i \<in> borel_measurable F" by (meson borel_measurable_simple_function measurable_in_subalg' s_is(1) subalg)
 
-        have s_scaleR_eq: "s i x *\<^sub>R h x = (\<Sum>y\<in>s i ` space M. (indicator (s i -` {y} \<inter> space M) x *\<^sub>R y) *\<^sub>R h x)" if "x \<in> space M" for x and h :: "'a \<Rightarrow> 'b" using simple_function_indicator_representation[OF s_is(1), of x i] that unfolding space_restr_to_subalg scaleR_left.sum[of _ _ "h x", symmetric] by presburger
+        have s_scaleR_eq: "s i x *\<^sub>R h x = (\<Sum>y\<in>s i ` space M. (indicator (s i -` {y} \<inter> space M) x *\<^sub>R y) *\<^sub>R h x)" if "x \<in> space M" for x and h :: "'a \<Rightarrow> 'b" 
+          using simple_function_indicator_representation_banach[OF s_is(1), of x i] that unfolding space_restr_to_subalg scaleR_left.sum[of _ _ "h x", symmetric] by presburger
         
         have "LINT x|M. s i x *\<^sub>R g x = LINT x|M. (\<Sum>y\<in>s i ` space M. indicator (s i -` {y} \<inter> space M) x *\<^sub>R y *\<^sub>R g x)" using s_scaleR_eq by (intro Bochner_Integration.integral_cong) auto
         also have "... = (\<Sum>y\<in>s i ` space M. LINT x|M. indicator (s i -` {y} \<inter> space M) x *\<^sub>R y *\<^sub>R g x)" by (intro Bochner_Integration.integral_sum integrable_mult_indicator[OF _ integrable_scaleR_right] assms(2)) simp

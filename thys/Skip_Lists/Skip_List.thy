@@ -192,7 +192,7 @@ proof -
     using that of_nat_floor by (intro exI[of _ "nat (floor x)"]) auto
   then have "{0..} = (\<Union>n. {real n..<real (Suc n)})"
     by auto
-  then have "\<integral>\<^sup>+x\<in>{0::real..}. ennreal (f (nat \<lfloor>x\<rfloor>))\<partial>lborel =
+  then have "(\<integral>\<^sup>+x\<in>{0::real..}. ennreal (f (nat \<lfloor>x\<rfloor>))\<partial>lborel) =
              (\<Sum>n. \<integral>\<^sup>+x\<in>{real n..<1 + real n}. ennreal (f (nat \<lfloor>x\<rfloor>))\<partial>lborel)"
     by (auto simp add: disjoint_family_on_def nn_integral_disjoint_family)
   also have "\<dots> = (\<Sum>n. \<integral>\<^sup>+x\<in>{real n..<1 + real n}. ennreal (f n)\<partial>lborel)"
@@ -208,7 +208,7 @@ proof -
 qed
 
 lemma nn_integral_nats_reals:
-  shows "(\<integral>\<^sup>+ i. ennreal (f i) \<partial>count_space UNIV) = \<integral>\<^sup>+x\<in>{0::real..}. ennreal (f (nat \<lfloor>x\<rfloor>))\<partial>lborel"
+  shows "(\<integral>\<^sup>+ i. ennreal (f i) \<partial>count_space UNIV) = (\<integral>\<^sup>+x\<in>{0::real..}. ennreal (f (nat \<lfloor>x\<rfloor>))\<partial>lborel)"
 proof -
   have "x < 1 + (floor x)"for x::real
     by linarith
@@ -216,7 +216,7 @@ proof -
     using that of_nat_floor by (intro exI[of _ "nat (floor x)"]) auto
   then have "{0..} = (\<Union>n. {real n..<real (Suc n)})"
     by auto
-  then have "\<integral>\<^sup>+x\<in>{0::real..}. f (nat \<lfloor>x\<rfloor>)\<partial>lborel =
+  then have "(\<integral>\<^sup>+x\<in>{0::real..}. f (nat \<lfloor>x\<rfloor>)\<partial>lborel) =
              (\<Sum>n. \<integral>\<^sup>+x\<in>{real n..<1 + real n}. ennreal (f (nat \<lfloor>x\<rfloor>))\<partial>lborel)"
     by (auto simp add: disjoint_family_on_def nn_integral_disjoint_family)
   also have "\<dots> = (\<Sum>n. \<integral>\<^sup>+x\<in>{real n..<1 + real n}. ennreal (f n)\<partial>lborel)"
@@ -232,7 +232,7 @@ qed
 
 lemma nn_integral_floor_less_eq:
   assumes "\<And>x y. x \<le> y \<Longrightarrow> f y \<le> f x"
-  shows "\<integral>\<^sup>+x\<in>{0::real..}. ennreal (f x)\<partial>lborel \<le> \<integral>\<^sup>+x\<in>{0::real..}. ennreal (f (nat \<lfloor>x\<rfloor>))\<partial>lborel"
+  shows "(\<integral>\<^sup>+x\<in>{0::real..}. ennreal (f x)\<partial>lborel) \<le> (\<integral>\<^sup>+x\<in>{0::real..}. ennreal (f (nat \<lfloor>x\<rfloor>))\<partial>lborel)"
   using assms by (auto simp add: indicator_def intro!: nn_integral_mono ennreal_leI)
 
 lemma nn_integral_finite_imp_abs_sumable_on:
@@ -279,7 +279,7 @@ proof -
     qed
     also have "(LBINT x=0..1. x ^ n) = 1 / (1 + real n)"
     proof -
-      have "(LBINT x=0..1. x ^ n) = LBINT x. x ^ n * indicator {0..1} x "
+      have "(LBINT x=0..1. x ^ n) = (LBINT x. x ^ n * indicator {0..1} x)"
       proof -
         have "AE x in lborel. x ^ n * indicator {0..1} x = indicator (einterval 0 1) x * x ^ n"
           by(rule eventually_mono[OF eventually_conj[OF  AE_lborel_singleton[of 1]
@@ -422,7 +422,7 @@ proof -
   proof -
     have "(\<integral>\<^sup>+ i. f (i + 1) \<partial>count_space UNIV) = (\<integral>\<^sup>+x\<in>{0::real..}. (f (nat \<lfloor>x\<rfloor> + 1))\<partial>lborel)"
       using nn_integral_nats_reals by auto
-    also have "\<dots> = \<integral>\<^sup>+x\<in>{0::real..}. ennreal (f' (nat \<lfloor>x\<rfloor> + 1))\<partial>lborel"
+    also have "\<dots> = (\<integral>\<^sup>+x\<in>{0::real..}. ennreal (f' (nat \<lfloor>x\<rfloor> + 1))\<partial>lborel)"
     proof -
       have "0 \<le> x \<Longrightarrow> (1 - q * q ^ nat \<lfloor>x\<rfloor>) ^ n = (1 - q powr (1 + real_of_int \<lfloor>x\<rfloor>)) ^ n" for x::real
         using q by (subst powr_realpow [symmetric]) (auto simp: powr_add)
@@ -444,10 +444,10 @@ proof -
     finally show "(\<integral>\<^sup>+ i. f (i + 1) \<partial>count_space UNIV) \<le> - harm n / ln q"
       by simp
     note harm_integral_f'[symmetric]
-    also have "set_nn_integral lborel {0..} f' \<le> \<integral>\<^sup>+x\<in>{0::real..}. f' (nat \<lfloor>x\<rfloor>)\<partial>lborel"
+    also have "set_nn_integral lborel {0..} f' \<le> (\<integral>\<^sup>+x\<in>{0::real..}. f' (nat \<lfloor>x\<rfloor>)\<partial>lborel)"
       using assms f'_descending
       by (auto simp add: indicator_def intro!: nn_integral_mono ennreal_leI)
-    also have "\<dots> = \<integral>\<^sup>+x\<in>{0::real..}. f (nat \<lfloor>x\<rfloor>)\<partial>lborel"
+    also have "\<dots> = (\<integral>\<^sup>+x\<in>{0::real..}. f (nat \<lfloor>x\<rfloor>)\<partial>lborel)"
       unfolding f_def f'_def
       using q by (auto intro!: nn_integral_cong ennreal_cong simp add: powr_real_of_int indicator_def)
     also have "\<dots> = (\<integral>\<^sup>+ x. f x \<partial>count_space UNIV)"

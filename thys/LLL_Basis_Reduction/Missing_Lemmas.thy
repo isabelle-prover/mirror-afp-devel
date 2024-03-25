@@ -104,7 +104,7 @@ proof (induct X rule: infinite_finite_induct)
   case (insert x F)
   have "log a (prod f (insert x F)) = log a (f x * prod f F)" using insert by simp
   also have "\<dots> = log a (f x) + log a (prod f F)" 
-    by (rule log_mult[OF assms(1-2) insert(4) prod_pos], insert insert, auto)
+    by (rule log_mult[OF _ prod_pos], insert assms insert, auto)
   finally show ?case using insert by auto
 qed auto
 

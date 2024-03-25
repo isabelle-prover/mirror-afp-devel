@@ -199,9 +199,8 @@ proof -
       subgoal
         by (subst arg_cong2[where f = emeasure and d = "{}", OF HOL.refl]) auto
       done
-    also have "\<dots> = \<integral>\<^sup>+o\<^sub>2\<in>{o\<^sub>1}.
-       (ennreal (pmf (\<O> s') o\<^sub>1) * T (s', o\<^sub>1) {\<omega> \<in> space S. L os \<omega>})
-      \<partial>count_space UNIV"
+    also have "\<dots> = (\<integral>\<^sup>+o\<^sub>2\<in>{o\<^sub>1}. (ennreal (pmf (\<O> s') o\<^sub>1) * T (s', o\<^sub>1) {\<omega> \<in> space S. L os \<omega>})
+      \<partial>count_space UNIV)"
       by (rule nn_integral_cong_AE) auto
     also have "\<dots> = ?R"
       by simp

@@ -17,10 +17,10 @@ proof -
     using fun_lesbegue_integrable
     by (simp add: lborel_prod)
   then have region_integral_is_one_twoD_integral:
-    "LBINT x. LBINT y. f (x, y) = integral\<^sup>L (lborel \<Otimes>\<^sub>M lborel) f"
+    "(LBINT x. LBINT y. f (x, y)) = integral\<^sup>L (lborel \<Otimes>\<^sub>M lborel) f"
     using lborel_pair.integral_fst'
     by auto
-  then have AE_one_D_integrals_eq: "AE x in lborel. LBINT y. f (x, y) = integral UNIV (\<lambda>y. f(x,y))"
+  then have AE_one_D_integrals_eq: "AE x in lborel. (LBINT y. f (x, y)) = integral UNIV (\<lambda>y. f(x,y))"
   proof -
     have "AE x in lborel. integrable lborel (\<lambda>y. f(x,y))"
       using lborel_pair.AE_integrable_fst' and fun_lborel_prod_integrable
@@ -35,7 +35,7 @@ proof -
     using f_is_measurable and lborel.borel_measurable_lebesgue_integral
     by auto
   then have second_lesbegue_integral_eq:
-    "LBINT x. LBINT y. f (x, y) = LBINT x. (integral UNIV (\<lambda>y. f(x,y)))"
+    "(LBINT x. LBINT y. f (x, y)) = (LBINT x. integral UNIV (\<lambda>y. f(x,y)))"
     using x_axis_integral_measurable and integral_cong_AE and AE_one_D_integrals_eq
     by blast
   have "integrable lborel (\<lambda>x. LBINT y. f (x, y))"
@@ -49,11 +49,11 @@ proof -
     "(\<lambda>x. integral UNIV (\<lambda>y. f(x,y))) integrable_on UNIV"
     using integrable_on_lborel
     by auto
-  have "LBINT x. (integral UNIV (\<lambda>y. f(x,y))) = integral UNIV (\<lambda>x. integral UNIV (\<lambda>y. f(x, y)))"
+  have "(LBINT x. integral UNIV (\<lambda>y. f(x,y))) = integral UNIV (\<lambda>x. integral UNIV (\<lambda>y. f(x, y)))"
     using integral_lborel oneD_gauge_integral_lesbegue_integrable
     by fastforce
   then have twoD_lesbeuge_eq_twoD_gauge:
-    "LBINT x. LBINT y. f (x, y) = integral UNIV (\<lambda>x. integral UNIV (\<lambda>y. f(x, y)))"
+    "(LBINT x. LBINT y. f (x, y)) = integral UNIV (\<lambda>x. integral UNIV (\<lambda>y. f(x, y)))"
     using second_lesbegue_integral_eq
     by auto
   then show "integral UNIV f = integral UNIV (\<lambda>x. integral UNIV (\<lambda>y. f(x,y)))"
@@ -76,27 +76,23 @@ proof -
     using fun_lesbegue_integrable
     by (simp add: lborel_prod)
   then have region_integral_is_one_twoD_integral:
-    "LBINT x. LBINT y. f (y, x) = integral\<^sup>L (lborel \<Otimes>\<^sub>M lborel) f"
-    using lborel_pair.integral_fst'
-      f_is_measurable lborel_pair.integrable_product_swap lborel_pair.integral_fst lborel_pair.integral_product_swap lborel_prod
-    by force
-  then have AE_one_D_integrals_eq: "AE x in lborel. LBINT y. f (y, x) = integral UNIV (\<lambda>y. f(y,x))"
+    "(LBINT x. LBINT y. f (y, x)) = integral\<^sup>L (lborel \<Otimes>\<^sub>M lborel) f"
+    by (simp add: lborel_pair.integrable_product_swap_iff lborel_pair.integral_fst lborel_pair.integral_product_swap)
+  then have AE_one_D_integrals_eq: "AE x in lborel. (LBINT y. f (y, x)) = integral UNIV (\<lambda>y. f(y,x))"
   proof -
     have "AE x in lborel. integrable lborel (\<lambda>y. f(y,x))"
       using lborel_pair.AE_integrable_fst' and fun_lborel_prod_integrable
         lborel_pair.AE_integrable_fst lborel_pair.integrable_product_swap
       by blast
     then show ?thesis
-      using integral_lborel  and always_eventually
-        and AE_mp
-      by fastforce
+      using integral_lborel always_eventually AE_mp by fastforce
   qed
   have one_D_integral_measurable:
     "(\<lambda>x. LBINT y. f (y, x)) \<in> borel_measurable lborel"
     using f_is_measurable and lborel.borel_measurable_lebesgue_integral
     by auto
   then have second_lesbegue_integral_eq:
-    "LBINT x. LBINT y. f (y, x) = LBINT x. (integral UNIV (\<lambda>y. f(y, x)))"
+    "(LBINT x. LBINT y. f (y, x)) = (LBINT x. integral UNIV (\<lambda>y. f(y, x)))"
     using y_axis_integral_measurable and integral_cong_AE and AE_one_D_integrals_eq
     by blast
   have "integrable lborel (\<lambda>x. LBINT y. f (y, x))"
@@ -108,15 +104,13 @@ proof -
     by blast
   then show one_D_gauge_integral_integrable:
     "(\<lambda>x. integral UNIV (\<lambda>y. f(y, x))) integrable_on UNIV"
-    using integrable_on_lborel
-    by auto
-  have "LBINT x. (integral UNIV (\<lambda>y. f(y, x))) = integral UNIV (\<lambda>x. integral UNIV (\<lambda>y. f(y, x)))"
+    using integrable_on_lborel by auto
+  have "(LBINT x. integral UNIV (\<lambda>y. f(y, x))) = integral UNIV (\<lambda>x. integral UNIV (\<lambda>y. f(y, x)))"
     using integral_lborel oneD_gauge_integral_lesbegue_integrable
     by fastforce
   then have twoD_lesbeuge_eq_twoD_gauge:
-    "LBINT x. LBINT y. f (y, x) = integral UNIV (\<lambda>x. integral UNIV (\<lambda>y. f(y, x)))"
-    using second_lesbegue_integral_eq
-    by auto
+    "(LBINT x. LBINT y. f (y, x)) = integral UNIV (\<lambda>x. integral UNIV (\<lambda>y. f(y, x)))"
+    using second_lesbegue_integral_eq by auto
   then show "integral UNIV f = integral UNIV (\<lambda>x. integral UNIV (\<lambda>y. f(y, x)))"
     using fun_lesbegue_integrable and integral_lborel and region_integral_is_one_twoD_integral
     by (metis lborel_prod)
@@ -151,10 +145,8 @@ proof -
     proof
       fix y::'b
       show "f (x, y) = (if y \<in> (cbox (g1 x) (g2 x)) then g (x, y) else 0)"
-        apply (simp add: f_is_g_indicator s_is_bounded_by_g1_and_g2)
         using within_range
-        apply (simp add: cbox_def)
-        by smt
+        by (force simp add: cbox_def f_is_g_indicator s_is_bounded_by_g1_and_g2)
     qed
     have zero_out_of_bound: "\<forall> y.  y \<notin> cbox (g1 x) (g2 x) \<longrightarrow> f (x,y) = 0"
       using f_is_g_indicator and s_is_bounded_by_g1_and_g2
@@ -165,8 +157,7 @@ proof -
         using f_one_D_region and x_axis_gauge_integrable
         by metis
       then have "?f_one_D_spec integrable_on cbox(g1 x) (g2 x)"
-        using integrable_on_subcbox
-        by blast
+        using integrable_on_subcbox by blast
       then show ?thesis using f_one_D_region  by auto
     qed
     then have f_integrale_x: "((\<lambda>y. f(x,y)) has_integral (integral (cbox (g1 x) (g2 x)) (\<lambda>y. f(x,y)))) (cbox (g1 x) (g2 x))"
@@ -179,9 +170,7 @@ proof -
       using f_integrale_x
       by simp
     then have "((\<lambda>y. g(x, y)) has_integral integral UNIV (\<lambda>y. f (x, y))) (cbox (g1 x)(g2 x))"
-      using  Henstock_Kurzweil_Integration.has_integral_restrict [OF subset_refl ] and
-        f_one_D_region
-      by (smt has_integral_eq)
+      by (simp add: f_one_D_region)
     then show "integral (cbox (g1 x) (g2 x)) (\<lambda>y. g (x, y)) = integral UNIV (\<lambda>y. f (x, y))"
       by auto
   qed
@@ -190,8 +179,7 @@ proof -
   proof
     fix x::'a
     have "x \<notin> (cbox a b) \<longrightarrow> (\<forall>y. f(x,y) = 0)"
-      apply  (simp add: s_is_bounded_by_g1_and_g2 f_is_g_indicator cbox_def)
-      by auto
+      by (auto simp add: s_is_bounded_by_g1_and_g2 f_is_g_indicator cbox_def)
     then show "x \<notin> cbox a b \<longrightarrow> integral UNIV (\<lambda>y. f (x, y)) = 0"
       by (simp)
   qed
@@ -203,26 +191,20 @@ proof -
       using case_x_in_range and case_x_not_in_range
       by auto
     have "((\<lambda>x. integral UNIV (\<lambda>y. f(x,y))) has_integral (integral UNIV f)) UNIV"
-      using two_D_integral_to_one_D
-        one_d_integral_integrable
-      by auto
+      using two_D_integral_to_one_D one_d_integral_integrable by auto
     then have "(?x_integral_cases has_integral (integral UNIV f)) UNIV"
       using x_integral_cases_integral by auto
     then have "(?first_integral has_integral (integral UNIV f)) (cbox a b)"
       using  has_integral_restrict_UNIV[of "cbox a b" "?first_integral" "integral UNIV f"]
       by auto
     then show ?thesis
-      using two_D_integral_to_one_D
-      by (simp add: integral_unique)
+      using two_D_integral_to_one_D by (simp add: integral_unique)
   qed
   have f_integrable:"f integrable_on UNIV"
     using fun_lesbegue_integrable and integrable_on_lborel
     by auto
   then have LHS: "integral UNIV f = integral s g"
-    apply (simp add: f_is_g_indicator)
-    using integrable_restrict_UNIV
-      integral_restrict_UNIV
-    by auto
+    using assms(4) integrable_integral by fastforce
   then show ?thesis
     using RHS and two_D_integral_to_one_D
     by auto
@@ -257,10 +239,8 @@ proof -
     proof
       fix y::'a
       show "f (y, x) = (if y \<in> (cbox (g1 x) (g2 x)) then g (y, x) else 0)"
-        apply (simp add: f_is_g_indicator s_is_bounded_by_g1_and_g2)
         using within_range
-        apply (simp add: cbox_def)
-        by smt
+        by (force simp add: cbox_def f_is_g_indicator s_is_bounded_by_g1_and_g2)
     qed
     have zero_out_of_bound: "\<forall> y.  y \<notin> cbox (g1 x) (g2 x) \<longrightarrow> f (y, x) = 0"
       using f_is_g_indicator and s_is_bounded_by_g1_and_g2
@@ -285,9 +265,7 @@ proof -
       using f_integrale_y
       by simp
     then have "((\<lambda>y. g(y, x)) has_integral integral UNIV (\<lambda>y. f (y, x))) (cbox (g1 x)(g2 x))"
-      using  Henstock_Kurzweil_Integration.has_integral_restrict [OF subset_refl ] and
-        f_one_D_region
-      by (smt has_integral_eq)
+      using f_one_D_region by fastforce
     then show "integral (cbox (g1 x) (g2 x)) (\<lambda>y. g (y, x)) = integral UNIV (\<lambda>y. f (y, x))"
       by auto
   qed
@@ -535,7 +513,6 @@ lemma remove_singleton_from_tagged_division_of:
   assumes "x \<in> {a..b}"
   shows   "\<exists>k c d. c < d \<and> (k, {c..d}) \<in> A \<and> x \<in> {c..d}"
   using remove_singleton_from_division_of[OF division_of_tagged_division[OF assms(1)] assms(2)]
-    (*sledgehammer*)
   using assms(3) by fastforce
 
 lemma tagged_div_wo_singlestons:
@@ -578,7 +555,7 @@ proof-
       assume ass: "(x::real,K) \<in> p"
       have "(\<forall>(x, K)\<in>p. infinite (interior K))"
         using assms(4) infinite_Ioo interior_atLeastAtMost_real
-        by (smt split_beta)
+        by (smt (verit) split_beta)
       then have i: "infinite (interior K)" using ass by auto
       have "\<exists>x'. x' \<notin> s \<and> x'\<in> interior K"
         using infinite_imp_nonempty[OF Diff_infinite_finite[OF assms(1) i]] by auto}
@@ -610,29 +587,23 @@ proof-
     by fastforce
       (*f is injective becuase interiors of different K's are disjoint and f is in interior*)
   have f_inj: "inj_on f p"
-    apply(simp add: inj_on_def)
-  proof-
-    {fix x y
-      assume "x \<in> p" "y \<in> p"
-        "f x = f y"
-      then have "x = y"
-        using f
-          tagged_division_ofD(5)[OF assms(2)]
-          (*sledgehammer*)
-        by (smt case_prodE disjoint_insert(2) mk_disjoint_insert)}note * = this
-    show "\<forall>x\<in>p. \<forall>y\<in>p. f x = f y \<longrightarrow> x = y"  using * by auto
+    unfolding inj_on_def
+  proof (intro strip)
+    fix x y
+    assume "x \<in> p" "y \<in> p" "f x = f y"
+    then show "x = y"
+      using f tagged_division_ofD(5)[OF assms(2)]
+      by (smt (verit, del_insts) IntI case_prodE empty_iff)
   qed
   let ?\<gamma>' = "\<lambda>x. if (\<exists>xK \<in> p. f xK  = x) then (\<gamma> o fst o  the_inv_into p f) x else \<gamma> x"
   have 2: "?\<gamma>' fine ?p'" using assms(3)
-    apply(auto simp add: fine_def case_prod_beta the_inv_into_f_f[OF f_inj])
-    by force
+    by (force simp add: fine_def case_prod_beta the_inv_into_f_f[OF f_inj])
   have 3: "gauge ?\<gamma>'"
     using assms(5) assms(3) f'
-    apply(auto simp add: fine_def gauge_def case_prod_beta the_inv_into_f_f[OF f_inj])
-    by force
+    by (force simp add: fine_def gauge_def case_prod_beta the_inv_into_f_f[OF f_inj])
   have "?p' tagged_division_of {a..b} \<and> ?\<gamma>' fine ?p' \<and> (\<forall>(x, K)\<in>?p'. x \<notin> s) \<and> gauge ?\<gamma>'"
     using 0 1 2 3 by auto
-  then show ?thesis by smt
+  then show ?thesis by meson
 qed
 
 lemma has_integral_bound_spike_finite:
@@ -669,7 +640,6 @@ corollary has_integral_bound_real':
     and "finite s"
     and "\<forall>x\<in>(cbox a b)-s. norm (f x) \<le> B"
   shows "norm i \<le> B * content {a..b}"
-    (*sledgehammer*)
   by (metis assms(1) assms(3) assms(4) box_real(2) f has_integral_bound_spike_finite)
 
 lemma integral_has_vector_derivative_continuous_at':
@@ -719,8 +689,7 @@ proof -
         apply (rule has_integral_diff)
         using x y apply (auto intro: integrable_integral [OF integrable_subinterval_real [OF f]])
         using has_integral_const_real [of "f x" y x] True
-        apply simp
-        done
+        by simp
       have "norm (integral {a..x} f - integral {a..y} f - (x - y) *\<^sub>R f x) \<le> e * \<bar>y - x\<bar>"
         using True
         apply (simp add: abs_eq_content del: content_real_if measure_lborel_Icc)
@@ -741,49 +710,6 @@ proof -
     by (simp add: has_vector_derivative_def has_derivative_within_alt bounded_linear_scaleR_left)
 qed
 
-lemma integral_has_vector_derivative':
-  fixes f :: "real \<Rightarrow> 'a::banach"
-  assumes "finite s"
-    "f integrable_on {a..b}"
-    "x \<in> {a..b} - s"
-    "continuous (at x within {a..b} - s) f"
-  shows "((\<lambda>u. integral {a .. u} f) has_vector_derivative f(x)) (at x within {a .. b} - s)"
-  apply (rule integral_has_vector_derivative_continuous_at')
-  using assms
-     apply (auto simp: continuous_on_eq_continuous_within)
-  done
-
-lemma fundamental_theorem_of_calculus_interior_stronger:
-  fixes f :: "real \<Rightarrow> 'a::banach"
-  assumes "finite S"
-    and "a \<le> b" "\<And>x. x \<in> {a <..< b} - S \<Longrightarrow> (f has_vector_derivative f'(x)) (at x)"
-    and "continuous_on {a .. b} f"
-  shows "(f' has_integral (f b - f a)) {a .. b}"
-  using assms
-proof (induction arbitrary: a b)
-  case empty
-  then show ?case
-    using fundamental_theorem_of_calculus_interior by force
-next
-  case (insert x S)
-  show ?case
-  proof (cases "x \<in> {a<..<b}")
-    case False then show ?thesis
-      using insert by blast
-  next
-    case True then have "a < x" "x < b"
-      by auto
-    have "(f' has_integral f x - f a) {a..x}"
-      apply (rule insert)
-      using \<open>a < x\<close> \<open>x < b\<close> insert.prems continuous_on_subset by force+
-    moreover have "(f' has_integral f b - f x) {x..b}"
-      apply (rule insert)
-      using \<open>x < b\<close> \<open>a < x\<close> insert.prems continuous_on_subset by force+
-    ultimately show ?thesis
-      by (meson finite_insert fundamental_theorem_of_calculus_interior_strong insert.hyps(1) insert.prems(1) insert.prems(2) insert.prems(3))
-  qed
-qed
-
 lemma at_within_closed_interval_finite:
   fixes x::real
   assumes "a < x" "x < b" "x \<notin> S" "finite S"
@@ -796,16 +722,6 @@ proof -
     using at_within_interior assms by fastforce
 qed
 
-lemma at_within_cbox_finite:
-  assumes "x \<in> box a b" "x \<notin> S" "finite S"
-  shows "(at x within cbox a b - S) = at x"
-proof -
-  have "interior (cbox a b - S) = box a b - S"
-    using \<open>finite S\<close> by (simp add: interior_diff finite_imp_closed)
-  then show ?thesis
-    using at_within_interior assms by fastforce
-qed
-
 lemma fundamental_theorem_of_calculus_interior_stronger':
   fixes f :: "real \<Rightarrow> 'a::banach"
   assumes "finite S"
@@ -813,7 +729,6 @@ lemma fundamental_theorem_of_calculus_interior_stronger':
     and "continuous_on {a .. b} f"
   shows "(f' has_integral (f b - f a)) {a .. b}"
   using assms fundamental_theorem_of_calculus_interior_strong at_within_cbox_finite
-    (*sledgehammer*)
   by (metis DiffD1 DiffD2 interior_atLeastAtMost_real interior_cbox interval_cbox)
 
 lemma has_integral_substitution_general_:
@@ -821,7 +736,6 @@ lemma has_integral_substitution_general_:
   assumes s: "finite s" and le: "a \<le> b"
     and subset: "g ` {a..b} \<subseteq> {c..d}"
     and f: "f integrable_on {c..d}" "continuous_on ({c..d} - (g ` s)) f"
-    (*and f [continuous_intros]: "continuous_on {c..d} f"*)
     and g : "continuous_on {a..b} g" "inj_on g ({a..b} \<union> s)"
     and deriv [derivative_intros]:
     "\<And>x. x \<in> {a..b} - s \<Longrightarrow> (g has_field_derivative g' x) (at x within {a..b})"
@@ -854,23 +768,18 @@ proof -
       assume ass: "x \<in> {a..b} - s"
       have "finite (g ` s)" using s by auto
       then have i: "((\<lambda>x. integral {c..x} f) has_vector_derivative f(g x)) (at (g x) within ({c..d} - g ` s))"
-        apply (rule integral_has_vector_derivative')
-      proof-
+      proof (rule integral_has_vector_derivative_continuous_at')
         show " f integrable_on {c..d}" using f by auto
         show "g x \<in> {c..d} - g ` s" using ass subset
-            (*sledgehammer*)
-          by (smt Diff_iff Un_upper1 Un_upper2 g(2) imageE image_subset_iff inj_onD subsetCE)
+          by (smt (verit) Diff_iff g(2) inf_sup_ord(4) inj_on_image_mem_iff subsetD sup_ge1)
         show "continuous (at (g x) within {c..d} - g ` s) f"
-          (*sledgehammer*)
           using \<open>g x \<in> {c..d} - g ` s\<close> continuous_on_eq_continuous_within f(2) by blast
       qed
       have ii: "g ` ({a..b} - s) \<subseteq> ({c..d} - g ` s)"
         using subset g(2)
-          (*sledgehammer*)
-        by (smt Diff_subset Un_Diff Un_commute Un_upper2 inj_on_image_set_diff subset_trans sup.order_iff)
+        by (simp add: image_subset_iff inj_on_image_mem_iff)
       then show "((\<lambda>x. integral {c..x} f) has_vector_derivative ?g'3 x) (at (g x) within g ` ({a..b} - s))"
-        (*sledgehammer*)
-        by (smt Diff_subset has_vector_derivative_weaken Un_upper1 Un_upper2 \<open>finite (g ` s)\<close> ass comp_def continuous_on_eq_continuous_within f(1) f(2) g(2) image_diff_subset image_subset_iff inj_on_image_set_diff integral_has_vector_derivative_continuous_at' subset_trans)
+        using has_vector_derivative_within_subset i by fastforce
     qed
     show "\<And>x. x \<in> {a..b} - s \<Longrightarrow> g' x *\<^sub>R ?g'3 x = g' x *\<^sub>R f (g x)" by auto
   qed
@@ -894,10 +803,9 @@ proof -
       by (cases "g a = g b") (simp_all add: algebra_simps)
   next
     assume less: "\<not>g a \<le> g b"
-    then have "g a \<ge> g b" by simp
-    note le = le this
+    then have le: "g a \<ge> g b" by simp
     from cd have "integral {c..g b} f + integral {g b..g a} f = integral {c..g a} f"
-      by (meson Henstock_Kurzweil_Integration.integral_combine atLeastatMost_subset_iff f(1) integrable_on_subinterval le(2) order_refl)
+      by (meson Henstock_Kurzweil_Integration.integral_combine atLeastatMost_subset_iff f(1) integrable_on_subinterval le order_refl)
     with less show ?thesis
       by (simp_all add: algebra_simps)
   qed
@@ -909,7 +817,6 @@ lemma has_integral_substitution_general__:
   assumes s: "finite s" and le: "a \<le> b" and s_subset: "s \<subseteq> {a..b}"
     and subset: "g ` {a..b} \<subseteq> {c..d}"
     and f: "f integrable_on {c..d}" "continuous_on ({c..d} - (g ` s)) f"
-    (*and f [continuous_intros]: "continuous_on {c..d} f"*)
     and g : "continuous_on {a..b} g" "inj_on g {a..b}"
     and deriv [derivative_intros]:
     "\<And>x. x \<in> {a..b} - s \<Longrightarrow> (g has_field_derivative g' x) (at x within {a..b})"
@@ -932,8 +839,7 @@ proof-
   have "finite (\<Union>{t. \<exists>x. t = g -` {x} \<and> x \<in> s'})" using s'
     by (metis (no_types, lifting) \<open>g -` s' = \<Union>{g -` {x} |x. x \<in> s'}\<close> finite_UN_I g(2) vimage_eq_UN)
   then have 0: "finite (s \<union> (g -` s'))"
-    using a s
-    by simp
+    using a s by simp
   have 1: "continuous_on ({c..d} - g ` (s \<union> g -` s')) f"
     using f(2) surj_on_image_vimage_eq
     by (metis Diff_mono Un_upper2 continuous_on_subset equalityE g(3) image_Un)

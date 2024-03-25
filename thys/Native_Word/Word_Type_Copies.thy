@@ -200,7 +200,7 @@ proof -
       apply (simp_all only: eq_iff_word_of word_of_0 word_of_1 word_of_div)
       apply simp_all
     done
-  moreover have \<open>class.semiring_bits_axioms (+) (-) (0::'a) (*) 1 (div) (mod) bit\<close>
+  moreover have \<open>class.semiring_bits_axioms (+) (0::'a) (*) 1 (div) (mod) bit\<close>
     apply standard
              apply (fact induct)
             apply (simp_all only: eq_iff_word_of word_of_0 word_of_1 word_of_bool word_of_numeral

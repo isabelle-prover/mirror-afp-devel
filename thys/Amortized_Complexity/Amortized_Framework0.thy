@@ -200,7 +200,7 @@ next
               (simp add: mult_less_cancel_right1)
           finally show ?thesis .
         qed
-        from \<open>l\<noteq>0\<close> 1 2 show ?thesis by simp (simp add: not_le zero_less_mult_iff)
+        from \<open>l\<noteq>0\<close> 1 2 show ?thesis by simp
       qed
     qed
   qed

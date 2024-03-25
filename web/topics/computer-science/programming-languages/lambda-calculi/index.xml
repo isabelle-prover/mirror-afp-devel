@@ -20,10 +20,52 @@
           <description></description>
         </item>
         <item>
+          <title>Transport via Partial Galois Connections and Equivalences</title>
+          <link>/entries/Transport.html</link>
+          <pubDate>Wed, 11 Oct 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Transport.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Transport via Partial Galois Connections and Equivalences</title>
+          <link>/entries/Transport.html</link>
+          <pubDate>Wed, 11 Oct 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Transport.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Residuated Transition Systems</title>
           <link>/entries/ResiduatedTransitionSystem.html</link>
           <pubDate>Mon, 28 Feb 2022 00:00:00 +0000</pubDate>
           <guid>/entries/ResiduatedTransitionSystem.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Residuated Transition Systems</title>
+          <link>/entries/ResiduatedTransitionSystem.html</link>
+          <pubDate>Mon, 28 Feb 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/ResiduatedTransitionSystem.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Residuated Transition Systems</title>
+          <link>/entries/ResiduatedTransitionSystem.html</link>
+          <pubDate>Mon, 28 Feb 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/ResiduatedTransitionSystem.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formalization of Generic Authenticated Data Structures</title>
+          <link>/entries/LambdaAuth.html</link>
+          <pubDate>Tue, 14 May 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/LambdaAuth.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formalization of Generic Authenticated Data Structures</title>
+          <link>/entries/LambdaAuth.html</link>
+          <pubDate>Tue, 14 May 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/LambdaAuth.html</guid>
           <description></description>
         </item>
         <item>
@@ -41,10 +83,52 @@
           <description></description>
         </item>
         <item>
+          <title>A General Theory of Syntax with Bindings</title>
+          <link>/entries/Binding_Syntax_Theory.html</link>
+          <pubDate>Sat, 06 Apr 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Binding_Syntax_Theory.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A General Theory of Syntax with Bindings</title>
+          <link>/entries/Binding_Syntax_Theory.html</link>
+          <pubDate>Sat, 06 Apr 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Binding_Syntax_Theory.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>An Algebra for Higher-Order Terms</title>
           <link>/entries/Higher_Order_Terms.html</link>
           <pubDate>Tue, 15 Jan 2019 00:00:00 +0000</pubDate>
           <guid>/entries/Higher_Order_Terms.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>An Algebra for Higher-Order Terms</title>
+          <link>/entries/Higher_Order_Terms.html</link>
+          <pubDate>Tue, 15 Jan 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Higher_Order_Terms.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>An Algebra for Higher-Order Terms</title>
+          <link>/entries/Higher_Order_Terms.html</link>
+          <pubDate>Tue, 15 Jan 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Higher_Order_Terms.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The LambdaMu-calculus</title>
+          <link>/entries/LambdaMu.html</link>
+          <pubDate>Wed, 16 Aug 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/LambdaMu.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The LambdaMu-calculus</title>
+          <link>/entries/LambdaMu.html</link>
+          <pubDate>Wed, 16 Aug 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/LambdaMu.html</guid>
           <description></description>
         </item>
         <item>
@@ -62,6 +146,34 @@
           <description></description>
         </item>
         <item>
+          <title>The Correctness of Launchbury&#39;s Natural Semantics for Lazy Evaluation</title>
+          <link>/entries/Launchbury.html</link>
+          <pubDate>Thu, 31 Jan 2013 00:00:00 +0000</pubDate>
+          <guid>/entries/Launchbury.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Correctness of Launchbury&#39;s Natural Semantics for Lazy Evaluation</title>
+          <link>/entries/Launchbury.html</link>
+          <pubDate>Thu, 31 Jan 2013 00:00:00 +0000</pubDate>
+          <guid>/entries/Launchbury.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Logical Relations for PCF</title>
+          <link>/entries/PCF.html</link>
+          <pubDate>Sun, 01 Jul 2012 00:00:00 +0000</pubDate>
+          <guid>/entries/PCF.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Logical Relations for PCF</title>
+          <link>/entries/PCF.html</link>
+          <pubDate>Sun, 01 Jul 2012 00:00:00 +0000</pubDate>
+          <guid>/entries/PCF.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Logical Relations for PCF</title>
           <link>/entries/PCF.html</link>
           <pubDate>Sun, 01 Jul 2012 00:00:00 +0000</pubDate>
@@ -73,6 +185,34 @@
           <link>/entries/Lam-ml-Normalization.html</link>
           <pubDate>Sun, 29 Aug 2010 00:00:00 +0000</pubDate>
           <guid>/entries/Lam-ml-Normalization.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Strong Normalization of Moggis&#39;s Computational Metalanguage</title>
+          <link>/entries/Lam-ml-Normalization.html</link>
+          <pubDate>Sun, 29 Aug 2010 00:00:00 +0000</pubDate>
+          <guid>/entries/Lam-ml-Normalization.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Strong Normalization of Moggis&#39;s Computational Metalanguage</title>
+          <link>/entries/Lam-ml-Normalization.html</link>
+          <pubDate>Sun, 29 Aug 2010 00:00:00 +0000</pubDate>
+          <guid>/entries/Lam-ml-Normalization.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>POPLmark Challenge Via de Bruijn Indices</title>
+          <link>/entries/POPLmark-deBruijn.html</link>
+          <pubDate>Thu, 02 Aug 2007 00:00:00 +0000</pubDate>
+          <guid>/entries/POPLmark-deBruijn.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>POPLmark Challenge Via de Bruijn Indices</title>
+          <link>/entries/POPLmark-deBruijn.html</link>
+          <pubDate>Thu, 02 Aug 2007 00:00:00 +0000</pubDate>
+          <guid>/entries/POPLmark-deBruijn.html</guid>
           <description></description>
         </item>
         <item>

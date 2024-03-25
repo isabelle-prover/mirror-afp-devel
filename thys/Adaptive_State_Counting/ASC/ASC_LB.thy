@@ -233,7 +233,7 @@ proof -
       proof (cases "F = {}")
         case True
         moreover obtain f where "f vs = vs'"
-          by moura
+          by force
         ultimately have "image f (insert vs F) \<in> Perm (insert vs F) M1"
           using Perm.simps \<open>vs' \<in> language_state_for_input M1 (initial M1) vs\<close> by blast
         then show ?thesis by blast

@@ -1,0 +1,39 @@
+title = "Cubical Categories"
+date = 2024-01-24
+topics = [
+  "Mathematics/Category theory",
+]
+abstract = """
+This AFP entry formalises cubical omega-categories and cubical
+  omega-categories with connections in the style of single-set
+  categories. Cubical categories, and the cubical sets on which they
+  are based, have their origins and main applications in algebraic
+  topology. Applications in computer science include homotopy type
+  theory, higher-dimensional automata in concurrency theory and
+  higher-dimensional rewriting. The single-set axiomatisation,
+  introduced in these components and a companion paper, allows a
+  formalisation based on Isabelle's type classes."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.struth]
+email = "struth_email"
+
+[authors.massacrier]
+
+[contributors]
+
+[notify]
+struth = "struth_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.48550/arXiv.2401.10553",
+]
+pubs = []

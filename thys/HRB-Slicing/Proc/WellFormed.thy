@@ -159,7 +159,7 @@ lemma in_procs_THE_in_procs_cmd:
 
 
 definition ParamDefs :: "wf_prog \<Rightarrow> node \<Rightarrow> vname list"
-  where "ParamDefs wfp n \<equiv> let (prog,procs) = Rep_wf_prog wfp; (p,l) = n in
+  where "\<And>wfp. ParamDefs wfp n \<equiv> let (prog,procs) = Rep_wf_prog wfp; (p,l) = n in
   (if (p = Main) then ParamDefs_proc prog l
    else (if (\<exists>ins outs c. (p,ins,outs,c) \<in> set procs)
          then ParamDefs_proc (THE c'. \<exists>ins' outs'. (p,ins',outs',c') \<in> set procs) l
@@ -167,11 +167,13 @@ definition ParamDefs :: "wf_prog \<Rightarrow> node \<Rightarrow> vname list"
 
 
 lemma ParamDefs_Main_Return_target:
-  "\<lbrakk>Rep_wf_prog wfp = (prog,procs); prog \<turnstile> n -CEdge(p',es,rets)\<rightarrow>\<^sub>p n'\<rbrakk>
+  fixes wfp
+  shows "\<lbrakk>Rep_wf_prog wfp = (prog,procs); prog \<turnstile> n -CEdge(p',es,rets)\<rightarrow>\<^sub>p n'\<rbrakk>
   \<Longrightarrow> ParamDefs wfp (Main,n') = rets"
   by(fastforce dest:PCFG_CallEdge_THE_rets simp:ParamDefs_def ParamDefs_proc_def)
 
 lemma ParamDefs_Proc_Return_target:
+  fixes wfp
   assumes "Rep_wf_prog wfp = (prog,procs)"
   and "(p,ins,outs,c) \<in> set procs" and "c \<turnstile> n -CEdge(p',es,rets)\<rightarrow>\<^sub>p n'"
   shows "ParamDefs wfp (p,n') = rets"
@@ -188,12 +190,14 @@ proof -
 qed
 
 lemma ParamDefs_Main_IEdge_Nil:
-  "\<lbrakk>Rep_wf_prog wfp = (prog,procs); prog \<turnstile> n -IEdge et\<rightarrow>\<^sub>p n'\<rbrakk>
+  fixes wfp
+  shows "\<lbrakk>Rep_wf_prog wfp = (prog,procs); prog \<turnstile> n -IEdge et\<rightarrow>\<^sub>p n'\<rbrakk>
   \<Longrightarrow> ParamDefs wfp (Main,n') = []"
 by(fastforce dest:Proc_CFG_Call_Intra_edge_not_same_target 
             simp:ParamDefs_def ParamDefs_proc_def)
 
 lemma ParamDefs_Proc_IEdge_Nil:
+  fixes wfp
   assumes "Rep_wf_prog wfp = (prog,procs)"
   and "(p,ins,outs,c) \<in> set procs" and "c \<turnstile> n -IEdge et\<rightarrow>\<^sub>p n'"
   shows "ParamDefs wfp (p,n') = []"
@@ -211,12 +215,14 @@ proof -
 qed
 
 lemma ParamDefs_Main_CEdge_Nil:
-  "\<lbrakk>Rep_wf_prog wfp = (prog,procs); prog \<turnstile> n' -CEdge(p',es,rets)\<rightarrow>\<^sub>p n''\<rbrakk>
+  fixes wfp
+  shows "\<lbrakk>Rep_wf_prog wfp = (prog,procs); prog \<turnstile> n' -CEdge(p',es,rets)\<rightarrow>\<^sub>p n''\<rbrakk>
   \<Longrightarrow> ParamDefs wfp (Main,n') = []"
 by(fastforce dest:Proc_CFG_Call_targetnode_no_Call_sourcenode
             simp:ParamDefs_def ParamDefs_proc_def)
 
 lemma ParamDefs_Proc_CEdge_Nil:
+  fixes wfp
   assumes "Rep_wf_prog wfp = (prog,procs)"
   and "(p,ins,outs,c) \<in> set procs" and "c \<turnstile> n' -CEdge(p',es,rets)\<rightarrow>\<^sub>p n''"
   shows "ParamDefs wfp (p,n') = []"
@@ -234,7 +240,9 @@ proof -
 qed
 
 
-lemma assumes "valid_edge wfp a" and "kind a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'"
+lemma
+  fixes wfp
+  assumes "valid_edge wfp a" and "kind a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'"
   and "(p, ins, outs) \<in> set (lift_procs wfp)"
   shows ParamDefs_length:"length (ParamDefs wfp (targetnode a)) = length outs"
   (is ?length)
@@ -376,7 +384,7 @@ definition ParamUses_proc :: "cmd \<Rightarrow> label \<Rightarrow> vname set li
 
 
 definition ParamUses :: "wf_prog \<Rightarrow> node \<Rightarrow> vname set list"
-  where "ParamUses wfp n \<equiv> let (prog,procs) = Rep_wf_prog wfp; (p,l) = n in
+  where "\<And>wfp. ParamUses wfp n \<equiv> let (prog,procs) = Rep_wf_prog wfp; (p,l) = n in
   (if (p = Main) then ParamUses_proc prog l
    else (if (\<exists>ins outs c. (p,ins,outs,c) \<in> set procs)
          then ParamUses_proc (THE c'. \<exists>ins' outs'. (p,ins',outs',c') \<in> set procs) l
@@ -384,11 +392,13 @@ definition ParamUses :: "wf_prog \<Rightarrow> node \<Rightarrow> vname set list
 
 
 lemma ParamUses_Main_Return_target:
-  "\<lbrakk>Rep_wf_prog wfp = (prog,procs); prog \<turnstile> n -CEdge(p',es,rets)\<rightarrow>\<^sub>p n' \<rbrakk>
+  fixes wfp
+  shows "\<lbrakk>Rep_wf_prog wfp = (prog,procs); prog \<turnstile> n -CEdge(p',es,rets)\<rightarrow>\<^sub>p n' \<rbrakk>
   \<Longrightarrow> ParamUses wfp (Main,n) = map fv es"
   by(fastforce dest:PCFG_CallEdge_THE_es simp:ParamUses_def ParamUses_proc_def)
 
 lemma ParamUses_Proc_Return_target:
+  fixes wfp
   assumes "Rep_wf_prog wfp = (prog,procs)"
   and "(p,ins,outs,c) \<in> set procs" and "c \<turnstile> n -CEdge(p',es,rets)\<rightarrow>\<^sub>p n'"
   shows "ParamUses wfp (p,n) = map fv es"
@@ -405,12 +415,14 @@ proof -
 qed
 
 lemma ParamUses_Main_IEdge_Nil:
-  "\<lbrakk>Rep_wf_prog wfp = (prog,procs); prog \<turnstile> n -IEdge et\<rightarrow>\<^sub>p n'\<rbrakk>
+  fixes wfp
+  shows "\<lbrakk>Rep_wf_prog wfp = (prog,procs); prog \<turnstile> n -IEdge et\<rightarrow>\<^sub>p n'\<rbrakk>
   \<Longrightarrow> ParamUses wfp (Main,n) = []"
 by(fastforce dest:Proc_CFG_Call_Intra_edge_not_same_source
             simp:ParamUses_def ParamUses_proc_def)
 
 lemma ParamUses_Proc_IEdge_Nil:
+  fixes wfp
   assumes "Rep_wf_prog wfp = (prog,procs)"
   and "(p,ins,outs,c) \<in> set procs" and "c \<turnstile> n -IEdge et\<rightarrow>\<^sub>p n'"
   shows "ParamUses wfp (p,n) = []"
@@ -428,12 +440,14 @@ proof -
 qed
 
 lemma ParamUses_Main_CEdge_Nil:
-  "\<lbrakk>Rep_wf_prog wfp = (prog,procs); prog \<turnstile> n' -CEdge(p',es,rets)\<rightarrow>\<^sub>p n\<rbrakk>
+  fixes wfp
+  shows "\<lbrakk>Rep_wf_prog wfp = (prog,procs); prog \<turnstile> n' -CEdge(p',es,rets)\<rightarrow>\<^sub>p n\<rbrakk>
   \<Longrightarrow> ParamUses wfp (Main,n) = []"
 by(fastforce dest:Proc_CFG_Call_targetnode_no_Call_sourcenode
             simp:ParamUses_def ParamUses_proc_def)
 
 lemma ParamUses_Proc_CEdge_Nil:
+  fixes wfp
   assumes "Rep_wf_prog wfp = (prog,procs)"
   and "(p,ins,outs,c) \<in> set procs" and "c \<turnstile> n' -CEdge(p',es,rets)\<rightarrow>\<^sub>p n"
   shows "ParamUses wfp (p,n) = []"
@@ -489,7 +503,7 @@ lemma in_procs_THE_in_procs_ins:
 
 
 definition Def :: "wf_prog \<Rightarrow> node \<Rightarrow> vname set"
-  where "Def wfp n \<equiv> (let (prog,procs) = Rep_wf_prog wfp; (p,l) = n in
+  where "\<And>wfp. Def wfp n \<equiv> (let (prog,procs) = Rep_wf_prog wfp; (p,l) = n in
   (case l of Label lx \<Rightarrow> 
     (if p = Main then lhs (label prog lx)
      else (if (\<exists>ins outs c. (p,ins,outs,c) \<in> set procs)
@@ -502,7 +516,9 @@ definition Def :: "wf_prog \<Rightarrow> node \<Rightarrow> vname set"
   | Exit \<Rightarrow> {}))
     \<union> set (ParamDefs wfp n)"
 
-lemma Entry_Def_empty:"Def wfp (Main, Entry) = {}"
+lemma Entry_Def_empty:
+  fixes wfp
+  shows "Def wfp (Main, Entry) = {}"
 proof -
   obtain prog procs where [simp]:"Rep_wf_prog wfp = (prog,procs)"
     by(cases "Rep_wf_prog wfp") auto
@@ -511,7 +527,9 @@ proof -
 qed
 
 
-lemma Exit_Def_empty:"Def wfp (Main, Exit) = {}"
+lemma Exit_Def_empty:
+  fixes wfp
+  shows "Def wfp (Main, Exit) = {}"
   proof -
   obtain prog procs where [simp]:"Rep_wf_prog wfp = (prog,procs)"
     by(cases "Rep_wf_prog wfp") auto
@@ -559,7 +577,7 @@ lemma in_procs_THE_in_procs_outs:
 
 
 definition Use :: "wf_prog \<Rightarrow> node \<Rightarrow> vname set"
-  where "Use wfp n \<equiv> (let (prog,procs) = Rep_wf_prog wfp; (p,l) = n in
+  where "\<And>wfp. Use wfp n \<equiv> (let (prog,procs) = Rep_wf_prog wfp; (p,l) = n in
   (case l of Label lx \<Rightarrow> 
     (if p = Main then rhs (label prog lx) 
      else (if (\<exists>ins outs c. (p,ins,outs,c) \<in> set procs)
@@ -575,7 +593,9 @@ definition Use :: "wf_prog \<Rightarrow> node \<Rightarrow> vname set"
   \<union> Union (set (ParamUses wfp n)) \<union> set (ParamDefs wfp n)"
 
 
-lemma Entry_Use_empty:"Use wfp (Main, Entry) = {}"
+lemma Entry_Use_empty:
+  fixes wfp
+  shows "Use wfp (Main, Entry) = {}"
 proof -
   obtain prog procs where [simp]:"Rep_wf_prog wfp = (prog,procs)"
     by(cases "Rep_wf_prog wfp") auto
@@ -584,7 +604,9 @@ proof -
     simp:Use_def ParamUses_def ParamUses_proc_def ParamDefs_def ParamDefs_proc_def)
 qed
 
-lemma Exit_Use_empty:"Use wfp (Main, Exit) = {}"
+lemma Exit_Use_empty:
+  fixes wfp
+  shows "Use wfp (Main, Exit) = {}"
 proof -
   obtain prog procs where [simp]:"Rep_wf_prog wfp = (prog,procs)"
     by(cases "Rep_wf_prog wfp") auto
@@ -603,6 +625,7 @@ abbreviation state_val :: "(('var \<rightharpoonup> 'val) \<times> 'ret) list \<
   where "state_val s V \<equiv> (fst (hd s)) V"
 
 lemma Proc_CFG_edge_no_lhs_equal:
+  fixes wfp
   assumes "prog \<turnstile> Label l -IEdge et\<rightarrow>\<^sub>p n'" and "V \<notin> lhs (label prog l)"
   shows "state_val (CFG.transfer (lift_procs wfp) et (cf#cfs)) V = fst cf V"
 proof -
@@ -723,6 +746,7 @@ qed
 
 
 lemma Proc_CFG_edge_uses_only_rhs:
+  fixes wfp
   assumes "prog \<turnstile> Label l -IEdge et\<rightarrow>\<^sub>p n'" and "CFG.pred et s"
   and "CFG.pred et s'" and "\<forall>V\<in>rhs (label prog l). state_val s V = state_val s' V"
   shows "\<forall>V\<in>lhs (label prog l). 

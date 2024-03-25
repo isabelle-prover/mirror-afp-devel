@@ -598,7 +598,7 @@ proof -
           using nonzero rsquarefree_def by blast
         obtain rr :: "(real \<Rightarrow> bool) \<Rightarrow> real" where
           ff2: "\<And>p. p (rr p) \<or> Collect p = {}"
-          by moura
+          by (metis Collect_empty_eq)
         { assume "\<exists>is. is = iis \<and> {r. poly p r = 0 \<and> consistent_sign_vec qs r = is} \<noteq> {}"
           then have "\<exists>is. consistent_sign_vec qs (rr (\<lambda>r. poly p r = 0 \<and> consistent_sign_vec qs r = is)) = iis \<and> {r. poly p r = 0 \<and> consistent_sign_vec qs r = is} \<noteq> {}"
             using ff2

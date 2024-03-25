@@ -1258,7 +1258,7 @@ proof (induction S)
     moreover have "fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (F \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s \<delta>') \<subseteq> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F \<union> range_vars \<delta>"
     proof (induction F)
       case (Cons f G)
-      obtain t t' where f: "f = (t,t')" by moura
+      obtain t t' where f: "f = (t,t')" by atomize_elim auto
       hence "fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (f#G \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s \<delta>') = fv (t \<cdot> \<delta>') \<union> fv (t' \<cdot> \<delta>') \<union> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (G \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s \<delta>')"
             "fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (f#G) = fv t \<union> fv t' \<union> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s G"
         by (auto simp add: subst_apply_pairs_def)
@@ -2118,7 +2118,7 @@ proof (induction S rule: wf\<^sub>s\<^sub>t_induct')
   proof (cases "\<exists>w \<in> wfrestrictedvars\<^sub>s\<^sub>t S. t \<cdot> \<I> \<sqsubseteq> \<I> w")
     case True
     then obtain S\<^sub>p\<^sub>r\<^sub>e S\<^sub>s\<^sub>u\<^sub>f where "?P S\<^sub>p\<^sub>r\<^sub>e" "?Q S S\<^sub>p\<^sub>r\<^sub>e S\<^sub>s\<^sub>u\<^sub>f"
-      using ConsSnd.IH by moura
+      using ConsSnd.IH by atomize_elim auto
     thus ?thesis by fastforce
   next
     case False
@@ -2138,7 +2138,7 @@ next
   hence "\<exists>v \<in> wfrestrictedvars\<^sub>s\<^sub>t S. t \<cdot> \<I> \<sqsubseteq> \<I> v"
     using ConsRcv.prems by fastforce
   then obtain S\<^sub>p\<^sub>r\<^sub>e S\<^sub>s\<^sub>u\<^sub>f where "?P S\<^sub>p\<^sub>r\<^sub>e" "?Q S S\<^sub>p\<^sub>r\<^sub>e S\<^sub>s\<^sub>u\<^sub>f"
-    using ConsRcv.IH by moura
+    using ConsRcv.IH by atomize_elim auto
   thus ?case by fastforce
 next
   case (ConsEq s s' S)
@@ -2149,7 +2149,7 @@ next
   proof (cases "\<exists>v \<in> wfrestrictedvars\<^sub>s\<^sub>t S. t \<cdot> \<I> \<sqsubseteq> \<I> v")
     case True
     then obtain S\<^sub>p\<^sub>r\<^sub>e S\<^sub>s\<^sub>u\<^sub>f where "?P S\<^sub>p\<^sub>r\<^sub>e" "?Q S S\<^sub>p\<^sub>r\<^sub>e S\<^sub>s\<^sub>u\<^sub>f"
-      using ConsEq.IH by moura
+      using ConsEq.IH by atomize_elim auto
     thus ?thesis by fastforce
   next
     case False
@@ -2164,13 +2164,13 @@ next
   have "wfrestrictedvars\<^sub>s\<^sub>t (S@[Equality Check s s']) = wfrestrictedvars\<^sub>s\<^sub>t S" by auto
   hence "\<exists>v \<in> wfrestrictedvars\<^sub>s\<^sub>t S. t \<cdot> \<I> \<sqsubseteq> \<I> v" using ConsEq2.prems by metis
   then obtain S\<^sub>p\<^sub>r\<^sub>e S\<^sub>s\<^sub>u\<^sub>f where "?P S\<^sub>p\<^sub>r\<^sub>e" "?Q S S\<^sub>p\<^sub>r\<^sub>e S\<^sub>s\<^sub>u\<^sub>f"
-    using ConsEq2.IH by moura
+    using ConsEq2.IH by atomize_elim auto
   thus ?case by fastforce
 next
   case (ConsIneq X F S)
   hence "\<exists>v \<in> wfrestrictedvars\<^sub>s\<^sub>t S. t \<cdot> \<I> \<sqsubseteq> \<I> v" by fastforce
   then obtain S\<^sub>p\<^sub>r\<^sub>e S\<^sub>s\<^sub>u\<^sub>f where "?P S\<^sub>p\<^sub>r\<^sub>e" "?Q S S\<^sub>p\<^sub>r\<^sub>e S\<^sub>s\<^sub>u\<^sub>f"
-    using ConsIneq.IH by moura
+    using ConsIneq.IH by atomize_elim auto
   thus ?case by fastforce
 qed simp
 
@@ -2659,7 +2659,7 @@ proof (induction rule: strand_sem_induct)
     hence *: "\<forall>\<theta>. subst_domain \<theta> = set X \<and> ground (subst_range \<theta>) \<longrightarrow> t \<cdot> \<theta> \<cdot> \<I> \<noteq> t' \<cdot> \<theta> \<cdot> \<I>"
       using ConsIneq by (auto simp add: ineq_model_def)
     then obtain \<theta> where \<theta>: "subst_domain \<theta> = set X" "ground (subst_range \<theta>)" "t \<cdot> \<theta> \<cdot> \<I> \<noteq> t' \<cdot> \<theta> \<cdot> \<I>"
-      using interpretation_subst_exists'[of "set X"] by moura
+      using interpretation_subst_exists'[of "set X"] by atomize_elim auto
     hence "t \<noteq> t'" by auto
     moreover have "\<And>\<I> \<theta>. t \<cdot> \<theta> \<cdot> \<I> \<noteq> t' \<cdot> \<theta> \<cdot> \<I> \<Longrightarrow> t \<cdot> \<theta> \<noteq> t' \<cdot> \<theta>" by auto
     ultimately show ?thesis using * by auto

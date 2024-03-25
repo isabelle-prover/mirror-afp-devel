@@ -138,7 +138,7 @@ definition
 declare nat_explode_def [solidity_symbex]
 
 lemma nat_explode'_not_empty: \<open>nat_explode' n \<noteq> []\<close> 
-  by (smt (z3) list.simps(3) nat_explode'.simps) 
+  by (smt (verit, ccfv_threshold) nat_explode'.elims ord.lexordp_eq_simps(1) ord.lexordp_eq_simps(3))
 
 lemma nat_explode_not_empty: \<open>nat_explode n \<noteq> []\<close>
   using nat_explode'_not_empty nat_explode_def by auto 
@@ -182,7 +182,7 @@ next
   then show ?case 
     using div_ten_less apply(simp (no_asm))  
     using unroll_nat_explode'[of n] * 
-    by (smt (z3) list.simps(8) list.simps(9) mod_div_trivial mod_eq_self_iff_div_eq_0 
+    by (smt (verit) list.simps(8) list.simps(9) mod_div_trivial mod_eq_self_iff_div_eq_0 
                  nat_explode'.simps zero_less_numeral)
   qed
 qed

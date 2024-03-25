@@ -20,10 +20,31 @@
           <description></description>
         </item>
         <item>
+          <title>The Halting Problem is Soluble in Malament-Hogarth Spacetimes</title>
+          <link>/entries/MHComputation.html</link>
+          <pubDate>Sat, 29 Apr 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/MHComputation.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>The Cook-Levin theorem</title>
           <link>/entries/Cook_Levin.html</link>
           <pubDate>Sun, 08 Jan 2023 00:00:00 +0000</pubDate>
           <guid>/entries/Cook_Levin.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Cook-Levin theorem</title>
+          <link>/entries/Cook_Levin.html</link>
+          <pubDate>Sun, 08 Jan 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Cook_Levin.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Automation of Boolos&#39; Curious Inference in Isabelle/HOL</title>
+          <link>/entries/Boolos_Curious_Inference_Automated.html</link>
+          <pubDate>Mon, 05 Dec 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Boolos_Curious_Inference_Automated.html</guid>
           <description></description>
         </item>
         <item>
@@ -41,10 +62,31 @@
           <description></description>
         </item>
         <item>
+          <title>A Verified Translation of Multitape Turing Machines into Singletape Turing Machines</title>
+          <link>/entries/Multitape_To_Singletape_TM.html</link>
+          <pubDate>Wed, 30 Nov 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Multitape_To_Singletape_TM.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Diophantine Equations and the DPRM Theorem</title>
           <link>/entries/DPRM_Theorem.html</link>
           <pubDate>Mon, 06 Jun 2022 00:00:00 +0000</pubDate>
           <guid>/entries/DPRM_Theorem.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Diophantine Equations and the DPRM Theorem</title>
+          <link>/entries/DPRM_Theorem.html</link>
+          <pubDate>Mon, 06 Jun 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/DPRM_Theorem.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Ackermann&#39;s Function Is Not Primitive Recursive</title>
+          <link>/entries/Ackermanns_not_PR.html</link>
+          <pubDate>Wed, 23 Mar 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Ackermanns_not_PR.html</guid>
           <description></description>
         </item>
         <item>
@@ -62,6 +104,20 @@
           <description></description>
         </item>
         <item>
+          <title>Some classical results in inductive inference of recursive functions</title>
+          <link>/entries/Inductive_Inference.html</link>
+          <pubDate>Mon, 31 Aug 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Inductive_Inference.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Universal Turing Machine</title>
+          <link>/entries/Universal_Turing_Machine.html</link>
+          <pubDate>Fri, 08 Feb 2019 00:00:00 +0000</pubDate>
+          <guid>/entries/Universal_Turing_Machine.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Universal Turing Machine</title>
           <link>/entries/Universal_Turing_Machine.html</link>
           <pubDate>Fri, 08 Feb 2019 00:00:00 +0000</pubDate>
@@ -73,6 +129,20 @@
           <link>/entries/Minsky_Machines.html</link>
           <pubDate>Tue, 14 Aug 2018 00:00:00 +0000</pubDate>
           <guid>/entries/Minsky_Machines.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Minsky Machines</title>
+          <link>/entries/Minsky_Machines.html</link>
+          <pubDate>Tue, 14 Aug 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Minsky_Machines.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Recursion Theory I</title>
+          <link>/entries/Recursion-Theory-I.html</link>
+          <pubDate>Sat, 05 Apr 2008 00:00:00 +0000</pubDate>
+          <guid>/entries/Recursion-Theory-I.html</guid>
           <description></description>
         </item>
         <item>

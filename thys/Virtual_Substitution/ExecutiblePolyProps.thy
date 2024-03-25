@@ -572,17 +572,7 @@ lemma degree_add_less :
   assumes h1 : "MPoly_Type.degree a var < x"
   assumes h2 : "MPoly_Type.degree b var < x"
   shows "MPoly_Type.degree (a+b) var < x"
-proof -
-  obtain pp :: "nat \<Rightarrow> nat \<Rightarrow> 'a mpoly \<Rightarrow> nat \<Rightarrow>\<^sub>0 nat" where
-    "\<forall>x0 x1 x2. (\<exists>v3. v3 \<in> monomials x2 \<and> \<not> lookup v3 x1 < x0) = (pp x0 x1 x2 \<in> monomials x2 \<and> \<not> lookup (pp x0 x1 x2) x1 < x0)"
-    by moura
-  then have f1: "\<forall>m n na. (\<not> MPoly_Type.degree m n < na \<or> 0 < na \<and> (\<forall>p. p \<notin> monomials m \<or> lookup p n < na)) \<and> (MPoly_Type.degree m n < na \<or> \<not> 0 < na \<or> pp na n m \<in> monomials m \<and> \<not> lookup (pp na n m) n < na)"
-    by (metis (no_types) degree_less_iff)
-  then have "0 < x \<and> (\<forall>p. p \<notin> monomials a \<or> lookup p var < x)"
-    using assms(1) by presburger
-  then show ?thesis
-    using f1 by (metis MPolyExtension.coeff_add add.left_neutral assms(2) coeff_eq_zero_iff)
-qed
+  by (metis degree_add_leq h1 h2 linorder_not_le nat_less_le)
 
 lemma degree_sum : "(\<forall>i\<in>{0..n::nat}. MPoly_Type.degree (f i :: real mpoly) var \<le> x) \<Longrightarrow> (MPoly_Type.degree (\<Sum>x\<in>{0..n}. f x) var) \<le> x"
 proof(induction n)

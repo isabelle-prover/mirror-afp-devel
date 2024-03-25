@@ -373,8 +373,7 @@ proof -
 
     obtain ioT' where "p_io pT = (ioT @ [(x, y)]) @ ioT'"
       using \<open>ioT @ [(x, y)] \<in> set (prefixes (p_io pT))\<close>
-      unfolding prefixes_set 
-      by moura
+      unfolding prefixes_set mem_Collect_eq by metis
     then have "length pT > length ioT"
       using length_map[of "(\<lambda> t . (t_input t, t_output t))" pT] 
       by auto
@@ -2419,7 +2418,7 @@ proof (rule ccontr)
         using \<open>p_io pF @ [(fst (last io), snd (last io))] \<in> set (prefixes (p_io pT'))\<close>
         unfolding \<open>p_io pF = ?ioF\<close> \<open>io = ?ioF@[?xyF]\<close>[symmetric] by assumption
       then obtain io' where "p_io pT' = io @ io'"
-        unfolding prefixes_set by moura
+        unfolding prefixes_set mem_Collect_eq by metis
       
       have " p_io pP @ io \<in> L M"
         using \<open>(p_io pP)@(p_io pT') \<in> L M\<close> 
@@ -2520,7 +2519,8 @@ proof (rule ccontr)
           by auto
         
         obtain io' where "p_io pMinF = io @ io'"
-          using \<open>io \<in> set (prefixes (p_io pMinF))\<close> unfolding prefixes_set by moura
+          using \<open>io \<in> set (prefixes (p_io pMinF))\<close>
+          unfolding prefixes_set mem_Collect_eq by metis
         
         have " p_io pP @ io \<in> L M"
           using \<open>(p_io pP)@(p_io pMinF) \<in> L M\<close> 

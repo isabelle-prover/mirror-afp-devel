@@ -1,0 +1,479 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Topics on Archive of Formal Proofs
+    </title>
+    <link>/topics/</link>
+    <description>
+        Recent content in Topics 
+        on Archive of Formal Proofs
+    </description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    
+      <lastBuildDate>Wed, 06 Mar 2024 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/topics/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Computer science</title>
+          <link>/topics/computer-science/</link>
+          <pubDate>Wed, 06 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/topics/computer-science/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Logic</title>
+          <link>/topics/logic/</link>
+          <pubDate>Wed, 06 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/topics/logic/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Mathematics</title>
+          <link>/topics/mathematics/</link>
+          <pubDate>Wed, 06 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/topics/mathematics/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Tools</title>
+          <link>/topics/tools/</link>
+          <pubDate>Tue, 19 Sep 2023 00:00:00 +0000</pubDate>
+          <guid>/topics/tools/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Computer science/Algorithms</title>
+          <link>/topics/computer-science/algorithms/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/computer-science/algorithms/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Computer science/Algorithms/Approximation</title>
+          <link>/topics/computer-science/algorithms/approximation/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/computer-science/algorithms/approximation/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Computer science/Algorithms/Concurrent</title>
+          <link>/topics/computer-science/algorithms/concurrent/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/computer-science/algorithms/concurrent/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Computer science/Algorithms/Distributed</title>
+          <link>/topics/computer-science/algorithms/distributed/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/computer-science/algorithms/distributed/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Computer science/Algorithms/Geometry</title>
+          <link>/topics/computer-science/algorithms/geometry/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/computer-science/algorithms/geometry/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Computer science/Algorithms/Graph</title>
+          <link>/topics/computer-science/algorithms/graph/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/computer-science/algorithms/graph/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Computer science/Algorithms/Mathematical</title>
+          <link>/topics/computer-science/algorithms/mathematical/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/computer-science/algorithms/mathematical/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Computer science/Algorithms/Online</title>
+          <link>/topics/computer-science/algorithms/online/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/computer-science/algorithms/online/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Computer science/Algorithms/Optimization</title>
+          <link>/topics/computer-science/algorithms/optimization/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/computer-science/algorithms/optimization/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Computer science/Algorithms/Quantum computing</title>
+          <link>/topics/computer-science/algorithms/quantum-computing/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/computer-science/algorithms/quantum-computing/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Computer science/Algorithms/Randomized</title>
+          <link>/topics/computer-science/algorithms/randomized/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/computer-science/algorithms/randomized/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Computer science/Artificial intelligence</title>
+          <link>/topics/computer-science/artificial-intelligence/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/computer-science/artificial-intelligence/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Computer science/Automata and formal languages</title>
+          <link>/topics/computer-science/automata-and-formal-languages/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/computer-science/automata-and-formal-languages/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Computer science/Concurrency</title>
+          <link>/topics/computer-science/concurrency/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/computer-science/concurrency/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Computer science/Concurrency/Process calculi</title>
+          <link>/topics/computer-science/concurrency/process-calculi/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/computer-science/concurrency/process-calculi/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Computer science/Data management systems</title>
+          <link>/topics/computer-science/data-management-systems/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/computer-science/data-management-systems/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Computer science/Data structures</title>
+          <link>/topics/computer-science/data-structures/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/computer-science/data-structures/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Computer science/Functional programming</title>
+          <link>/topics/computer-science/functional-programming/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/computer-science/functional-programming/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Computer science/Hardware</title>
+          <link>/topics/computer-science/hardware/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/computer-science/hardware/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Computer science/Machine learning</title>
+          <link>/topics/computer-science/machine-learning/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/computer-science/machine-learning/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Computer science/Networks</title>
+          <link>/topics/computer-science/networks/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/computer-science/networks/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Computer science/Programming languages</title>
+          <link>/topics/computer-science/programming-languages/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/computer-science/programming-languages/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Computer science/Programming languages/Compiling</title>
+          <link>/topics/computer-science/programming-languages/compiling/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/computer-science/programming-languages/compiling/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Computer science/Programming languages/Lambda calculi</title>
+          <link>/topics/computer-science/programming-languages/lambda-calculi/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/computer-science/programming-languages/lambda-calculi/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Computer science/Programming languages/Language definitions</title>
+          <link>/topics/computer-science/programming-languages/language-definitions/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/computer-science/programming-languages/language-definitions/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Computer science/Programming languages/Logics</title>
+          <link>/topics/computer-science/programming-languages/logics/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/computer-science/programming-languages/logics/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Computer science/Programming languages/Misc</title>
+          <link>/topics/computer-science/programming-languages/misc/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/computer-science/programming-languages/misc/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Computer science/Programming languages/Static analysis</title>
+          <link>/topics/computer-science/programming-languages/static-analysis/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/computer-science/programming-languages/static-analysis/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Computer science/Programming languages/Type systems</title>
+          <link>/topics/computer-science/programming-languages/type-systems/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/computer-science/programming-languages/type-systems/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Computer science/Security</title>
+          <link>/topics/computer-science/security/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/computer-science/security/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Computer science/Security/Cryptography</title>
+          <link>/topics/computer-science/security/cryptography/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/computer-science/security/cryptography/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Computer science/Semantics and reasoning</title>
+          <link>/topics/computer-science/semantics-and-reasoning/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/computer-science/semantics-and-reasoning/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Computer science/System description languages</title>
+          <link>/topics/computer-science/system-description-languages/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/computer-science/system-description-languages/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Logic/Computability</title>
+          <link>/topics/logic/computability/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/logic/computability/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Logic/General logic</title>
+          <link>/topics/logic/general-logic/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/logic/general-logic/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Logic/General logic/Classical first-order logic</title>
+          <link>/topics/logic/general-logic/classical-first-order-logic/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/logic/general-logic/classical-first-order-logic/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Logic/General logic/Classical propositional logic</title>
+          <link>/topics/logic/general-logic/classical-propositional-logic/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/logic/general-logic/classical-propositional-logic/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Logic/General logic/Decidability of theories</title>
+          <link>/topics/logic/general-logic/decidability-of-theories/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/logic/general-logic/decidability-of-theories/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Logic/General logic/Logics of knowledge and belief</title>
+          <link>/topics/logic/general-logic/logics-of-knowledge-and-belief/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/logic/general-logic/logics-of-knowledge-and-belief/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Logic/General logic/Mechanization of proofs</title>
+          <link>/topics/logic/general-logic/mechanization-of-proofs/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/logic/general-logic/mechanization-of-proofs/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Logic/General logic/Modal logic</title>
+          <link>/topics/logic/general-logic/modal-logic/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/logic/general-logic/modal-logic/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Logic/General logic/Paraconsistent logics</title>
+          <link>/topics/logic/general-logic/paraconsistent-logics/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/logic/general-logic/paraconsistent-logics/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Logic/General logic/Temporal logic</title>
+          <link>/topics/logic/general-logic/temporal-logic/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/logic/general-logic/temporal-logic/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Logic/Philosophical aspects</title>
+          <link>/topics/logic/philosophical-aspects/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/logic/philosophical-aspects/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Logic/Proof theory</title>
+          <link>/topics/logic/proof-theory/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/logic/proof-theory/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Logic/Rewriting</title>
+          <link>/topics/logic/rewriting/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/logic/rewriting/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Logic/Set theory</title>
+          <link>/topics/logic/set-theory/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/logic/set-theory/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Mathematics/Algebra</title>
+          <link>/topics/mathematics/algebra/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/mathematics/algebra/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Mathematics/Analysis</title>
+          <link>/topics/mathematics/analysis/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/mathematics/analysis/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Mathematics/Category theory</title>
+          <link>/topics/mathematics/category-theory/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/mathematics/category-theory/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Mathematics/Combinatorics</title>
+          <link>/topics/mathematics/combinatorics/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/mathematics/combinatorics/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Mathematics/Games and economics</title>
+          <link>/topics/mathematics/games-and-economics/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/mathematics/games-and-economics/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Mathematics/Geometry</title>
+          <link>/topics/mathematics/geometry/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/mathematics/geometry/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Mathematics/Graph theory</title>
+          <link>/topics/mathematics/graph-theory/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/mathematics/graph-theory/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Mathematics/Measure and integration</title>
+          <link>/topics/mathematics/measure-and-integration/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/mathematics/measure-and-integration/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Mathematics/Misc</title>
+          <link>/topics/mathematics/misc/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/mathematics/misc/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Mathematics/Number theory</title>
+          <link>/topics/mathematics/number-theory/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/mathematics/number-theory/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Mathematics/Order</title>
+          <link>/topics/mathematics/order/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/mathematics/order/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Mathematics/Physics</title>
+          <link>/topics/mathematics/physics/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/mathematics/physics/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Mathematics/Physics/Quantum information</title>
+          <link>/topics/mathematics/physics/quantum-information/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/mathematics/physics/quantum-information/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Mathematics/Probability theory</title>
+          <link>/topics/mathematics/probability-theory/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/mathematics/probability-theory/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Mathematics/Topology</title>
+          <link>/topics/mathematics/topology/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/topics/mathematics/topology/</guid>
+          <description></description>
+        </item>
+  </channel>
+</rss>

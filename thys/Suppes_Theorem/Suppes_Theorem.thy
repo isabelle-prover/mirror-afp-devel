@@ -422,7 +422,7 @@ proof -
       case (Cons \<phi>' \<Phi>)
       obtain f :: "real list \<Rightarrow> real" where f:
         "\<forall>rs. f rs \<in> set rs \<and> \<not> 0 \<le> f rs \<or> 0 \<le> sum_list rs"
-        using sum_list_nonneg by moura
+        using sum_list_nonneg by metis
       moreover have "f (map ?\<delta> \<Phi>) \<notin> set (map ?\<delta> \<Phi>) \<or> 0 \<le> f (map ?\<delta> \<Phi>)"
         by fastforce
       ultimately show ?case

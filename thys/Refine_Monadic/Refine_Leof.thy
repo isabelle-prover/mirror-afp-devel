@@ -191,7 +191,7 @@ lemma RECT_rule_leof:
     unfolding leof_fun_conv_le
     apply -
     apply (rule RECT_rule[where pre=pre and V=V])
-    apply clarsimp_all
+       apply clarsimp_all
 proof -
   fix xa :: 'x
   assume a1: "\<And>x'. \<lbrakk>pre x'; (x', xa) \<in> V\<rbrakk> \<Longrightarrow> REC\<^sub>T body x' \<le> (if nofail (REC\<^sub>T body x') then M x' else FAIL)"

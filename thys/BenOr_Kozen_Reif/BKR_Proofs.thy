@@ -17,8 +17,7 @@ section "Base Case"
 
 lemma mat_base_case:
   shows "matrix_A [[1],[-1]] [[],[0]] = (mat_of_rows_list 2 [[1, 1], [1, -1]])"
-  unfolding matrix_A_def mtx_row_def z_def apply (auto)
-  by (simp add: numeral_2_eq_2)
+  unfolding matrix_A_def mtx_row_def z_def by (auto simp add: numeral_2_eq_2)
 
 lemma base_case_sgas:
   fixes q p:: "real poly"
@@ -145,10 +144,9 @@ proof -
   let ?new_subsets = "(map (map ((+) n)) subsets2)"
     (* a slightly unorthodox use of signs_smash, but it closes the proof *)
   have "subsets_smash n subsets1 subsets2 = signs_smash subsets1 ?new_subsets" 
-    unfolding subsets_smash_def signs_smash_def apply (auto)
-    by (simp add: comp_def) 
+    unfolding subsets_smash_def signs_smash_def by (auto simp add: comp_def)
   then show ?thesis
-    by (smt imageE in_set_member set_map signs_smash_property_set)
+    by (smt (verit) imageE in_set_member set_map signs_smash_property_set)
 qed
 
   (* If subsets for smaller systems are well-defined, then subsets for combined systems
@@ -495,7 +493,7 @@ proof -
     using matrix_construction_is_kronecker_product
       kronecker_invertible invertibleMtx1 invertibleMtx2
       welldefined_subsets1 welldefined_subsets2 unfolding all_list_constr_def list_constr_def
-    by (smt in_set_conv_nth in_set_member list_all_length well_def_signs_def welldefined_signs1)
+    by (smt (verit) Ball_set member_def well_def_signs_def welldefined_signs1)
   have h2a: "distinct (signs_smash signs1 signs2)" 
     using distinct_signs1 distinct_signs2 welldefined_signs1 welldefined_signs2 nontriv1 nontriv2 
       distinct_step by auto
@@ -675,8 +673,7 @@ qed
 
 lemma mat_inverse_same: "mat_inverse_var A = mat_inverse A"
   unfolding mat_inverse_var_def mat_inverse_def mat_equal_def
-  using mat_equal_list_lem apply (simp)
-  by (smt case_prod_beta index_one_mat(2) index_one_mat(3) mat_equal_list_lem) 
+  by (smt (verit) mat_equal_list_lem split_cong)
 
 lemma construct_lhs_matches_solve_for_lhs:
   fixes p:: "real poly"
@@ -686,51 +683,7 @@ lemma construct_lhs_matches_solve_for_lhs:
   assumes match: "satisfy_equation p qs subsets signs"
   assumes invertible_mat: "invertible_mat (matrix_A signs subsets)"
   shows "(construct_lhs_vector p qs signs) = solve_for_lhs p qs subsets (matrix_A signs subsets)"
-proof -
-  have matrix_equation_hyp: "(mult_mat_vec (matrix_A signs subsets) (construct_lhs_vector p qs signs) = (construct_rhs_vector p qs subsets))"
-    using match unfolding satisfy_equation_def by blast
-  then have eqn_hyp: " ((matr_option (dim_row (matrix_A signs subsets))
-     (mat_inverse (matrix_A signs subsets))) *\<^sub>v (mult_mat_vec (matrix_A signs subsets) (construct_lhs_vector p qs signs)) = 
-      mult_mat_vec (matr_option (dim_row (matrix_A signs subsets))
-     (mat_inverse (matrix_A signs subsets))) (construct_rhs_vector p qs subsets))"
-    using invertible_mat 
-    by (simp add: matrix_equation_hyp) 
-  have match_hyp: "length subsets = length signs" using same_size invertible_mat by auto 
-  then have dim_hyp1: "matrix_A signs subsets \<in> carrier_mat (length signs) (length signs)"
-    using size_of_mat
-    by auto 
-  then have dim_hyp2: "matr_option (dim_row (matrix_A signs subsets))
-     (mat_inverse (matrix_A signs subsets)) \<in> carrier_mat (length signs) (length signs)"
-    using invertible_mat dim_invertible
-    by blast 
-  have mult_assoc_hyp: "((matr_option (dim_row (matrix_A signs subsets))
-     (mat_inverse (matrix_A signs subsets))) *\<^sub>v (mult_mat_vec (matrix_A signs subsets) (construct_lhs_vector p qs signs)))
-    = (((matr_option (dim_row (matrix_A signs subsets))
-     (mat_inverse (matrix_A signs subsets))) * (matrix_A signs subsets)) *\<^sub>v  (construct_lhs_vector p qs signs))"
-    using mult_assoc dim_hyp1 dim_hyp2 size_of_lhs by auto
-  have cancel_helper: "(((matr_option (dim_row (matrix_A signs subsets))
-     (mat_inverse (matrix_A signs subsets))) * (matrix_A signs subsets)) *\<^sub>v  (construct_lhs_vector p qs signs))
-  = (1\<^sub>m (length signs)) *\<^sub>v   (construct_lhs_vector p qs signs)"
-    using invertible_means_mult_id[where A= "matrix_A signs subsets"] dim_hyp1
-    by (simp add: invertible_mat match_hyp) 
-  then have cancel_hyp: "(((matr_option (dim_row (matrix_A signs subsets))
-     (mat_inverse (matrix_A signs subsets))) * (matrix_A signs subsets)) *\<^sub>v  (construct_lhs_vector p qs signs))
-  = (construct_lhs_vector p qs signs)"
-    apply (auto)
-    by (metis carrier_vec_dim_vec one_mult_mat_vec size_of_lhs)
-  then have mult_hyp: "((matr_option (dim_row (matrix_A signs subsets))
-     (mat_inverse (matrix_A signs subsets))) *\<^sub>v (mult_mat_vec (matrix_A signs subsets) (construct_lhs_vector p qs signs)))
-    = (construct_lhs_vector p qs signs)"
-    using mult_assoc_hyp cancel_hyp  
-    by simp
-  then have "(construct_lhs_vector p qs signs) =  (mult_mat_vec (matr_option (dim_row (matrix_A signs subsets))
-     (mat_inverse (matrix_A signs subsets))) (construct_rhs_vector p qs subsets)) "
-    using eqn_hyp
-    by simp 
-  then show ?thesis
-    unfolding solve_for_lhs_def
-    by (simp add: mat_inverse_same)
-qed
+  by (smt (verit) carrier_vec_dim_vec dim_invertible dim_row_matrix_A invertible_mat invertible_means_mult_id mat_inverse_same match mult_assoc one_mult_mat_vec same_size satisfy_equation_def size_of_lhs size_of_mat solve_for_lhs_def)
 
 (* If set(A) is a subset of B then for all n, nth c n = 0 means nth a n not in B  *)
 lemma reduction_signs_set_helper_lemma:
@@ -797,10 +750,9 @@ proof -
           using in_set
           by (meson in_set_member) 
         then have h3: "\<exists>k< length B. (List.member (find_nonzeros_from_input_vec C) k \<and> ((B ! k) = (B ! n)))"
-          by (smt atLeastLessThan_iff eq_len find_nonzeros_from_input_vec_def imageE in_set_member mem_Collect_eq set_filter set_map set_upt)
+          by (smt (verit) atLeastLessThan_iff eq_len find_nonzeros_from_input_vec_def imageE in_set_member mem_Collect_eq set_filter set_map set_upt)
         have h4: "\<forall>v< length B. ((B ! v) = (B ! n) \<longrightarrow> v = n)"
-          using dist apply (auto)
-          using leq_hyp nth_eq_iff_index_eq by blast
+          using dist by (metis find_first_unique leq_hyp)
         then show "List.member (find_nonzeros_from_input_vec C) n"
           using h2 h3 h4 by auto
       qed
@@ -1498,27 +1450,13 @@ proof -
   then have "vec_space.rank (length (find_nonzeros_from_input_vec ?lhs)) (take_cols ?step1_T (map snd (pivot_positions (gauss_jordan_single (?step1_T))))) = dim_col ?step1_mat"
     using rank_drop_cols rank_transpose by auto
   then have with_take_cols_from_matrix: "vec_space.rank (length (find_nonzeros_from_input_vec ?lhs)) (take_cols_from_matrix ?step1_T (map snd (pivot_positions (gauss_jordan_single (?step1_T))))) = dim_col ?step1_mat"
-    using rank_transpose rechar_take_cols conjugatable_vec_space.gjs_and_take_cols_var
-    apply (auto)
-    by (smt conjugatable_vec_space.gjs_and_take_cols_var gt_eq_assm obv rechar_take_cols reduce_mat_cols.simps)
+    by (metis rechar_take_cols conjugatable_vec_space.gjs_and_take_cols_var gt_eq_assm obv)
   have "(take_rows_from_matrix ?step1_mat (rows_to_keep ?step1_mat)) = (take_cols_from_matrix ?step1_T  (rows_to_keep ?step1_mat))\<^sup>T"
     using take_rows_and_take_cols
     by blast 
   then have rank_new_mat: "vec_space.rank (dim_row ?new_mat) ?new_mat = dim_col ?step1_mat"
-    using with_take_cols_from_matrix transpose_rank apply (auto)
-  proof -
-    assume a1: "vec_space.rank (length (find_nonzeros_from_input_vec (solve_for_lhs p qs subsets (matrix_A signs subsets)))) (take_cols_from_matrix (take_cols_from_matrix (matrix_A signs subsets) (find_nonzeros_from_input_vec (solve_for_lhs p qs subsets (matrix_A signs subsets))))\<^sup>T (map snd (pivot_positions (gauss_jordan_single (take_cols_from_matrix (matrix_A signs subsets) (find_nonzeros_from_input_vec (solve_for_lhs p qs subsets (matrix_A signs subsets))))\<^sup>T)))) = dim_col (take_cols_from_matrix (matrix_A signs subsets) (find_nonzeros_from_input_vec (solve_for_lhs p qs subsets (matrix_A signs subsets))))"
-    have f2: "\<forall>m. vec_space.rank (dim_row (m::rat mat)) m = vec_space.rank (dim_row m\<^sup>T) m\<^sup>T"
-      by (simp add: transpose_rank)
-    have f3: "dim_row (mat_of_cols (dim_row (mat_of_cols (dim_row (matrix_A signs subsets)) (take_indices (cols (matrix_A signs subsets)) (find_nonzeros_from_input_vec (solve_for_lhs p qs subsets (matrix_A signs subsets)))))\<^sup>T) (take_indices (cols (mat_of_cols (dim_row (matrix_A signs subsets)) (take_indices (cols (matrix_A signs subsets)) (find_nonzeros_from_input_vec (solve_for_lhs p qs subsets (matrix_A signs subsets)))))\<^sup>T) (map snd (pivot_positions (gauss_jordan_single (mat_of_cols (dim_row (matrix_A signs subsets)) (take_indices (cols (matrix_A signs subsets)) (find_nonzeros_from_input_vec (solve_for_lhs p qs subsets (matrix_A signs subsets)))))\<^sup>T))))) = length (find_nonzeros_from_input_vec (solve_for_lhs p qs subsets (matrix_A signs subsets)))"
-      using \<open>dim_col (mat_of_cols (dim_row (matrix_A signs subsets)) (take_indices (cols (matrix_A signs subsets)) (find_nonzeros_from_input_vec (solve_for_lhs p qs subsets (matrix_A signs subsets))))) = length (find_nonzeros_from_input_vec (solve_for_lhs p qs subsets (matrix_A signs subsets)))\<close> by force
-    have "vec_space.rank (length (find_nonzeros_from_input_vec (solve_for_lhs p qs subsets (matrix_A signs subsets)))) (mat_of_cols (dim_row (mat_of_cols (dim_row (matrix_A signs subsets)) (take_indices (cols (matrix_A signs subsets)) (find_nonzeros_from_input_vec (solve_for_lhs p qs subsets (matrix_A signs subsets)))))\<^sup>T) (take_indices (cols (mat_of_cols (dim_row (matrix_A signs subsets)) (take_indices (cols (matrix_A signs subsets)) (find_nonzeros_from_input_vec (solve_for_lhs p qs subsets (matrix_A signs subsets)))))\<^sup>T) (map snd (pivot_positions (gauss_jordan_single (mat_of_cols (dim_row (matrix_A signs subsets)) (take_indices (cols (matrix_A signs subsets)) (find_nonzeros_from_input_vec (solve_for_lhs p qs subsets (matrix_A signs subsets)))))\<^sup>T))))) = dim_row (mat_of_cols (dim_row (matrix_A signs subsets)) (take_indices (cols (matrix_A signs subsets)) (find_nonzeros_from_input_vec (solve_for_lhs p qs subsets (matrix_A signs subsets)))))\<^sup>T"
-      using a1 by (simp add: take_cols_from_matrix_def)
-    then have "vec_space.rank (dim_row (mat_of_cols (dim_row (mat_of_cols (dim_row (matrix_A signs subsets)) (take_indices (cols (matrix_A signs subsets)) (find_nonzeros_from_input_vec (solve_for_lhs p qs subsets (matrix_A signs subsets)))))\<^sup>T) (take_indices (cols (mat_of_cols (dim_row (matrix_A signs subsets)) (take_indices (cols (matrix_A signs subsets)) (find_nonzeros_from_input_vec (solve_for_lhs p qs subsets (matrix_A signs subsets)))))\<^sup>T) (map snd (pivot_positions (gauss_jordan_single (mat_of_cols (dim_row (matrix_A signs subsets)) (take_indices (cols (matrix_A signs subsets)) (find_nonzeros_from_input_vec (solve_for_lhs p qs subsets (matrix_A signs subsets)))))\<^sup>T)))))\<^sup>T) (mat_of_cols (dim_row (mat_of_cols (dim_row (matrix_A signs subsets)) (take_indices (cols (matrix_A signs subsets)) (find_nonzeros_from_input_vec (solve_for_lhs p qs subsets (matrix_A signs subsets)))))\<^sup>T) (take_indices (cols (mat_of_cols (dim_row (matrix_A signs subsets)) (take_indices (cols (matrix_A signs subsets)) (find_nonzeros_from_input_vec (solve_for_lhs p qs subsets (matrix_A signs subsets)))))\<^sup>T) (map snd (pivot_positions (gauss_jordan_single (mat_of_cols (dim_row (matrix_A signs subsets)) (take_indices (cols (matrix_A signs subsets)) (find_nonzeros_from_input_vec (solve_for_lhs p qs subsets (matrix_A signs subsets)))))\<^sup>T)))))\<^sup>T = dim_row (mat_of_cols (dim_row (matrix_A signs subsets)) (take_indices (cols (matrix_A signs subsets)) (find_nonzeros_from_input_vec (solve_for_lhs p qs subsets (matrix_A signs subsets)))))\<^sup>T"
-      using f3 f2 by presburger
-    then show "vec_space.rank (dim_col (take_cols_from_matrix (take_cols_from_matrix (matrix_A signs subsets) (find_nonzeros_from_input_vec (solve_for_lhs p qs subsets (matrix_A signs subsets))))\<^sup>T (rows_to_keep (take_cols_from_matrix (matrix_A signs subsets) (find_nonzeros_from_input_vec (solve_for_lhs p qs subsets (matrix_A signs subsets))))))) (take_cols_from_matrix (take_cols_from_matrix (matrix_A signs subsets) (find_nonzeros_from_input_vec (solve_for_lhs p qs subsets (matrix_A signs subsets))))\<^sup>T (rows_to_keep (take_cols_from_matrix (matrix_A signs subsets) (find_nonzeros_from_input_vec (solve_for_lhs p qs subsets (matrix_A signs subsets))))))\<^sup>T = dim_col (take_cols_from_matrix (matrix_A signs subsets) (find_nonzeros_from_input_vec (solve_for_lhs p qs subsets (matrix_A signs subsets))))"
-      by (simp add: rows_to_keep_def take_cols_from_matrix_def)
-  qed 
+    using with_take_cols_from_matrix transpose_rank
+    by (metis carrier_matD(2) index_transpose_mat(2) mat_of_cols_carrier(2) rows_to_keep_def step1_mat_size take_cols_from_matrix_def)
   have "length (pivot_positions (gauss_jordan_single (?step1_mat\<^sup>T))) \<le> (length (find_nonzeros_from_input_vec ?lhs))"
     using obv length_pivot_positions_dim_row[where A = "(gauss_jordan_single (?step1_mat\<^sup>T))"]
     by (metis carrier_matD(1) carrier_matD(2) gauss_jordan_single(2) gauss_jordan_single(3) index_transpose_mat(2) step1_mat_size) 
@@ -1674,10 +1612,9 @@ proof clarsimp
         using h3a nonzero reduce_system_matrix_signs_helper by auto
       then have "matrix_A (take_indices signs (find_nonzeros_from_input_vec (solve_for_lhs p qs subsets (matrix_A signs subsets)))) subsets = take_cols_from_matrix (matrix_A signs subsets) (find_nonzeros_from_input_vec (solve_for_lhs p qs subsets (matrix_A signs subsets))) \<and> x \<in> set (map snd (pivot_positions (gauss_jordan_single (take_cols_from_matrix (matrix_A signs subsets) (find_nonzeros_from_input_vec (solve_for_lhs p qs subsets (matrix_A signs subsets))))\<^sup>T)))"
         by (metis h3a in_set_member rows_to_keep_def x_mem)
-      thus "x < length (subsets)" using x_mem unfolding rows_to_keep_def using pivot_positions
-        using  dim_row_matrix_A h3a in_set_member nonzero reduce_system_matrix_signs_helper rows_to_keep_def rows_to_keep_lem
-        apply (auto)
-        by (smt (z3) \<open>M_mat (take_indices signs (find_nonzeros_from_input_vec (solve_for_lhs p qs subsets (M_mat signs subsets)))) subsets = take_cols_from_matrix (M_mat signs subsets) (find_nonzeros_from_input_vec (solve_for_lhs p qs subsets (M_mat signs subsets))) \<and> x \<in> set (map snd (pivot_positions (gauss_jordan_single (take_cols_from_matrix (M_mat signs subsets) (find_nonzeros_from_input_vec (solve_for_lhs p qs subsets (M_mat signs subsets))))\<^sup>T)))\<close> dim_row_matrix_A rows_to_keep_def rows_to_keep_lem)
+      thus "x < length (subsets)" using x_mem unfolding rows_to_keep_def  
+        using dim_row_matrix_A h3a nonzero reduce_system_matrix_signs_helper rows_to_keep_def rows_to_keep_lem
+        by metis
     qed
     then show "y < length subsets" using in_set_member apply (auto)
       using in_set_2 solve_construct by fastforce  
@@ -1947,11 +1884,11 @@ proof (induction "length qs" arbitrary: qs rule: less_induct)
     by blast
   have red_char: "?red = (reduce_system p (qs,(get_matrix (snd ?comb)),(get_subsets (snd ?comb)),(get_signs (snd ?comb))))"
     using getter_functions
-      by (smt Pair_inject combining_to_smash get_matrix_def get_signs_def get_subsets_def prod.collapse put_tog smash_systems_def)
+      by (smt (verit, best) Pair_inject combining_to_smash get_matrix_def get_signs_def get_subsets_def prod.collapse put_tog smash_systems_def)
   then have "length qs > 1 \<longrightarrow> (p \<noteq> 0 \<and> (length qs > 0) \<and> (\<forall>q. ((List.member qs q) \<longrightarrow> (coprime p q))) )  \<longrightarrow> (satisfies_properties p qs (get_subsets ?red) (get_signs ?red) (get_matrix ?red))"
     using reducing_sys_satisfies_properties comb_sat  by presburger 
-  have len_gt1: "length qs > 1 \<longrightarrow> (p \<noteq> 0 \<and> (length qs > 0) \<and> (\<forall>q. ((List.member qs q) \<longrightarrow> (coprime p q))) ) \<longrightarrow> satisfies_properties p qs (get_subsets (calculate_data p qs)) (get_signs (calculate_data p qs)) (get_matrix (calculate_data p qs))"
-    by (smt \<open>1 < length qs \<longrightarrow>  p \<noteq> 0 \<and> 0 < length qs \<and> (\<forall>q. List.member qs q \<longrightarrow> coprime p q) \<longrightarrow> satisfies_properties p qs (get_subsets (reduce_system p (combine_systems p (take (length qs div 2) qs, calculate_data p (take (length qs div 2) qs)) (drop (length qs div 2) qs, calculate_data p (drop (length qs div 2) qs))))) (get_signs (reduce_system p (combine_systems p (take (length qs div 2) qs, calculate_data p (take (length qs div 2) qs)) (drop (length qs div 2) qs, calculate_data p (drop (length qs div 2) qs))))) (get_matrix (reduce_system p (combine_systems p (take (length qs div 2) qs, calculate_data p (take (length qs div 2) qs)) (drop (length qs div 2) qs, calculate_data p (drop (length qs div 2) qs)))))\<close> calculate_data.simps neq0_conv not_less)
+  then have len_gt1: "length qs > 1 \<longrightarrow> (p \<noteq> 0 \<and> (length qs > 0) \<and> (\<forall>q. ((List.member qs q) \<longrightarrow> (coprime p q))) ) \<longrightarrow> satisfies_properties p qs (get_subsets (calculate_data p qs)) (get_signs (calculate_data p qs)) (get_matrix (calculate_data p qs))"
+    by (smt (verit, best) calculate_data.simps leD nat_less_le)
   then show ?case using len1_h len_gt1
     by (metis One_nat_def Suc_lessI) 
 qed
@@ -2058,9 +1995,9 @@ proof -
       = (take_indices ?signs (find_nonzeros_from_input_vec (solve_for_lhs p (qs1@qs2) ?subsets  (matrix_A ?signs ?subsets))))"
     unfolding reduction_signs_def by auto
   have clear_signs: "(signs_smash (get_signs (calculate_data p qs1)) (get_signs (calculate_data p qs2))) = (get_signs (snd ((combine_systems p (qs1,calculate_data p qs1) (qs2,calculate_data p qs2)))))"
-    by (smt combining_to_smash get_signs_def getter_functions smash_systems_def snd_conv)
+    by (smt (verit) combining_to_smash get_signs_def getter_functions smash_systems_def snd_conv)
   have clear_subsets: "(subsets_smash (length qs1) (get_subsets(calculate_data p qs1)) (get_subsets (calculate_data p qs2))) = (get_subsets (snd ((combine_systems p (qs1,calculate_data p qs1) (qs2,calculate_data p qs2)))))"
-    by (smt Pair_inject combining_to_smash get_subsets_def prod.collapse smash_systems_def)
+    by (smt (verit, best) Pair_inject combining_to_smash get_subsets_def prod.collapse smash_systems_def)
   have "well_def_signs (length qs1) (get_signs (calculate_data p qs1))" 
     using calculate_data_satisfies_properties
     using nontriv1 nonzero pairwise_rel_prime1 nonzero satisfies_properties_def
@@ -2230,15 +2167,14 @@ lemma find_consistent_signs_at_roots:
   assumes "p \<noteq> 0"
   assumes "\<And>q. q \<in> set qs \<Longrightarrow> coprime p q"
   shows "set(find_consistent_signs_at_roots p qs) = set(characterize_consistent_signs_at_roots p qs)"
-  using assms find_consistent_signs_at_roots_copr csa_list_copr_rel
-  by (simp add: in_set_member)
+  by (metis assms csa_list_copr_rel find_consistent_signs_at_roots_copr in_set_member)
 
 (* Prettifying theorem *)
 theorem find_consistent_signs_at_roots_alt:
-assumes "p \<noteq> 0"
-assumes "\<And>q. q \<in> set qs \<Longrightarrow> coprime p q"
-shows "set (find_consistent_signs_at_roots p qs) = consistent_signs_at_roots p qs"
-using consistent_signs_at_roots_eq assms(1) assms(2) find_consistent_signs_at_roots by auto
+  assumes "p \<noteq> 0"
+  assumes "\<And>q. q \<in> set qs \<Longrightarrow> coprime p q"
+  shows "set (find_consistent_signs_at_roots p qs) = consistent_signs_at_roots p qs"
+  using consistent_signs_at_roots_eq assms(1) assms(2) find_consistent_signs_at_roots by auto
 
 
 end

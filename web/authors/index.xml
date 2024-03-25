@@ -1,0 +1,3370 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Authors on Archive of Formal Proofs
+    </title>
+    <link>/authors/</link>
+    <description>
+        Recent content in Authors 
+        on Archive of Formal Proofs
+    </description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    
+      <lastBuildDate>Wed, 06 Mar 2024 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>bergstroem</title>
+          <link>/authors/bergstroem/</link>
+          <pubDate>Wed, 06 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/bergstroem/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>chenj</title>
+          <link>/authors/chenj/</link>
+          <pubDate>Wed, 06 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/chenj/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>weber</title>
+          <link>/authors/weber/</link>
+          <pubDate>Wed, 06 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/weber/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>karayel</title>
+          <link>/authors/karayel/</link>
+          <pubDate>Mon, 19 Feb 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/karayel/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>schulz</title>
+          <link>/authors/schulz/</link>
+          <pubDate>Mon, 19 Feb 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/schulz/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>noce</title>
+          <link>/authors/noce/</link>
+          <pubDate>Mon, 12 Feb 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/noce/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>bootle</title>
+          <link>/authors/bootle/</link>
+          <pubDate>Fri, 02 Feb 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/bootle/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>garvia</title>
+          <link>/authors/garvia/</link>
+          <pubDate>Fri, 02 Feb 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/garvia/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>sprenger</title>
+          <link>/authors/sprenger/</link>
+          <pubDate>Fri, 02 Feb 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/sprenger/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>nipkow</title>
+          <link>/authors/nipkow/</link>
+          <pubDate>Fri, 26 Jan 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/nipkow/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>calk</title>
+          <link>/authors/calk/</link>
+          <pubDate>Wed, 24 Jan 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/calk/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>massacrier</title>
+          <link>/authors/massacrier/</link>
+          <pubDate>Wed, 24 Jan 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/massacrier/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>struth</title>
+          <link>/authors/struth/</link>
+          <pubDate>Wed, 24 Jan 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/struth/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>buss</title>
+          <link>/authors/buss/</link>
+          <pubDate>Mon, 22 Jan 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/buss/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>brucker</title>
+          <link>/authors/brucker/</link>
+          <pubDate>Sun, 21 Jan 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/brucker/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>stell</title>
+          <link>/authors/stell/</link>
+          <pubDate>Sun, 21 Jan 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/stell/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>ballenghien</title>
+          <link>/authors/ballenghien/</link>
+          <pubDate>Sun, 24 Dec 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/ballenghien/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>wolff</title>
+          <link>/authors/wolff/</link>
+          <pubDate>Sun, 24 Dec 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/wolff/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>kreuzer</title>
+          <link>/authors/kreuzer/</link>
+          <pubDate>Mon, 18 Dec 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/kreuzer/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>taha</title>
+          <link>/authors/taha/</link>
+          <pubDate>Tue, 05 Dec 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/taha/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>paulson</title>
+          <link>/authors/paulson/</link>
+          <pubDate>Mon, 27 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/paulson/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>eberl</title>
+          <link>/authors/eberl/</link>
+          <pubDate>Fri, 24 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/eberl/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>keskin</title>
+          <link>/authors/keskin/</link>
+          <pubDate>Tue, 21 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/keskin/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>schlichtkrull</title>
+          <link>/authors/schlichtkrull/</link>
+          <pubDate>Mon, 20 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/schlichtkrull/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>tan</title>
+          <link>/authors/tan/</link>
+          <pubDate>Mon, 13 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/tan/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>lameris</title>
+          <link>/authors/lameris/</link>
+          <pubDate>Fri, 10 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/lameris/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>diaz</title>
+          <link>/authors/diaz/</link>
+          <pubDate>Sat, 04 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/diaz/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>hirata</title>
+          <link>/authors/hirata/</link>
+          <pubDate>Thu, 02 Nov 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/hirata/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>schou</title>
+          <link>/authors/schou/</link>
+          <pubDate>Tue, 31 Oct 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/schou/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>srba</title>
+          <link>/authors/srba/</link>
+          <pubDate>Tue, 31 Oct 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/srba/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>traytel</title>
+          <link>/authors/traytel/</link>
+          <pubDate>Tue, 31 Oct 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/traytel/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>kappelmann</title>
+          <link>/authors/kappelmann/</link>
+          <pubDate>Wed, 11 Oct 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/kappelmann/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>edmonds</title>
+          <link>/authors/edmonds/</link>
+          <pubDate>Sat, 23 Sep 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/edmonds/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>guttmann</title>
+          <link>/authors/guttmann/</link>
+          <pubDate>Fri, 22 Sep 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/guttmann/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>sachtleben</title>
+          <link>/authors/sachtleben/</link>
+          <pubDate>Fri, 01 Sep 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/sachtleben/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>bisping</title>
+          <link>/authors/bisping/</link>
+          <pubDate>Fri, 18 Aug 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/bisping/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>montanari</title>
+          <link>/authors/montanari/</link>
+          <pubDate>Fri, 18 Aug 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/montanari/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>rabing</title>
+          <link>/authors/rabing/</link>
+          <pubDate>Wed, 16 Aug 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/rabing/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>hupel</title>
+          <link>/authors/hupel/</link>
+          <pubDate>Mon, 14 Aug 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/hupel/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>argyraki</title>
+          <link>/authors/argyraki/</link>
+          <pubDate>Thu, 10 Aug 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/argyraki/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>leek</title>
+          <link>/authors/leek/</link>
+          <pubDate>Thu, 10 Aug 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/leek/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>yez</title>
+          <link>/authors/yez/</link>
+          <pubDate>Thu, 10 Aug 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/yez/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>minamide</title>
+          <link>/authors/minamide/</link>
+          <pubDate>Tue, 08 Aug 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/minamide/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>rau</title>
+          <link>/authors/rau/</link>
+          <pubDate>Sun, 16 Jul 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/rau/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>spitz</title>
+          <link>/authors/spitz/</link>
+          <pubDate>Tue, 11 Jul 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/spitz/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>christfort</title>
+          <link>/authors/christfort/</link>
+          <pubDate>Fri, 16 Jun 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/christfort/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>debois</title>
+          <link>/authors/debois/</link>
+          <pubDate>Fri, 16 Jun 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/debois/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>dalvit</title>
+          <link>/authors/dalvit/</link>
+          <pubDate>Mon, 12 Jun 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/dalvit/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>whitley</title>
+          <link>/authors/whitley/</link>
+          <pubDate>Tue, 06 Jun 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/whitley/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>thiemann</title>
+          <link>/authors/thiemann/</link>
+          <pubDate>Thu, 01 Jun 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/thiemann/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>wenninger</title>
+          <link>/authors/wenninger/</link>
+          <pubDate>Thu, 01 Jun 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/wenninger/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>dubut</title>
+          <link>/authors/dubut/</link>
+          <pubDate>Wed, 24 May 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/dubut/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>yamada</title>
+          <link>/authors/yamada/</link>
+          <pubDate>Wed, 24 May 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/yamada/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>cremer</title>
+          <link>/authors/cremer/</link>
+          <pubDate>Tue, 09 May 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/cremer/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>stevens</title>
+          <link>/authors/stevens/</link>
+          <pubDate>Fri, 05 May 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/stevens/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>chevalier</title>
+          <link>/authors/chevalier/</link>
+          <pubDate>Wed, 03 May 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/chevalier/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>danilkin</title>
+          <link>/authors/danilkin/</link>
+          <pubDate>Wed, 03 May 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/danilkin/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>stannett</title>
+          <link>/authors/stannett/</link>
+          <pubDate>Sat, 29 Apr 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/stannett/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>kim</title>
+          <link>/authors/kim/</link>
+          <pubDate>Thu, 27 Apr 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/kim/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>desharnais</title>
+          <link>/authors/desharnais/</link>
+          <pubDate>Thu, 20 Apr 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/desharnais/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>echenim</title>
+          <link>/authors/echenim/</link>
+          <pubDate>Tue, 18 Apr 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/echenim/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>mhalla</title>
+          <link>/authors/mhalla/</link>
+          <pubDate>Tue, 18 Apr 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/mhalla/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>mori</title>
+          <link>/authors/mori/</link>
+          <pubDate>Tue, 18 Apr 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/mori/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>dardinier</title>
+          <link>/authors/dardinier/</link>
+          <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/dardinier/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>staats</title>
+          <link>/authors/staats/</link>
+          <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/staats/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>andreka</title>
+          <link>/authors/andreka/</link>
+          <pubDate>Sun, 05 Mar 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/andreka/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>higgins</title>
+          <link>/authors/higgins/</link>
+          <pubDate>Sun, 05 Mar 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/higgins/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>madarasz</title>
+          <link>/authors/madarasz/</link>
+          <pubDate>Sun, 05 Mar 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/madarasz/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>nemeti</title>
+          <link>/authors/nemeti/</link>
+          <pubDate>Sun, 05 Mar 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/nemeti/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>szekely</title>
+          <link>/authors/szekely/</link>
+          <pubDate>Sun, 05 Mar 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/szekely/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>popescu</title>
+          <link>/authors/popescu/</link>
+          <pubDate>Tue, 28 Feb 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/popescu/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>doty</title>
+          <link>/authors/doty/</link>
+          <pubDate>Mon, 20 Feb 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/doty/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>raya</title>
+          <link>/authors/raya/</link>
+          <pubDate>Thu, 16 Feb 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/raya/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>hu</title>
+          <link>/authors/hu/</link>
+          <pubDate>Fri, 27 Jan 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/hu/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>blanchette</title>
+          <link>/authors/blanchette/</link>
+          <pubDate>Wed, 25 Jan 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/blanchette/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>qiu</title>
+          <link>/authors/qiu/</link>
+          <pubDate>Wed, 25 Jan 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/qiu/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>tourret</title>
+          <link>/authors/tourret/</link>
+          <pubDate>Wed, 25 Jan 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/tourret/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>myreen</title>
+          <link>/authors/myreen/</link>
+          <pubDate>Fri, 20 Jan 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/myreen/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>pohjola</title>
+          <link>/authors/pohjola/</link>
+          <pubDate>Fri, 20 Jan 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/pohjola/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>tanaka</title>
+          <link>/authors/tanaka/</link>
+          <pubDate>Fri, 20 Jan 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/tanaka/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>bordg</title>
+          <link>/authors/bordg/</link>
+          <pubDate>Sat, 14 Jan 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/bordg/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>mateo</title>
+          <link>/authors/mateo/</link>
+          <pubDate>Sat, 14 Jan 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/mateo/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>from</title>
+          <link>/authors/from/</link>
+          <pubDate>Mon, 09 Jan 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/from/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>balbach</title>
+          <link>/authors/balbach/</link>
+          <pubDate>Sun, 08 Jan 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/balbach/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>holub</title>
+          <link>/authors/holub/</link>
+          <pubDate>Tue, 03 Jan 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/holub/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>raska</title>
+          <link>/authors/raska/</link>
+          <pubDate>Tue, 03 Jan 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/raska/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>starosta</title>
+          <link>/authors/starosta/</link>
+          <pubDate>Tue, 03 Jan 2023 00:00:00 +0000</pubDate>
+          <guid>/authors/starosta/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>cordwell</title>
+          <link>/authors/cordwell/</link>
+          <pubDate>Thu, 15 Dec 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/cordwell/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>platzer</title>
+          <link>/authors/platzer/</link>
+          <pubDate>Thu, 15 Dec 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/platzer/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>benzmueller</title>
+          <link>/authors/benzmueller/</link>
+          <pubDate>Mon, 05 Dec 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/benzmueller/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>fuenmayor</title>
+          <link>/authors/fuenmayor/</link>
+          <pubDate>Mon, 05 Dec 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/fuenmayor/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>steen</title>
+          <link>/authors/steen/</link>
+          <pubDate>Mon, 05 Dec 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/steen/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>sutcliffe</title>
+          <link>/authors/sutcliffe/</link>
+          <pubDate>Mon, 05 Dec 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/sutcliffe/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>kirchner</title>
+          <link>/authors/kirchner/</link>
+          <pubDate>Mon, 28 Nov 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/kirchner/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>park</title>
+          <link>/authors/park/</link>
+          <pubDate>Fri, 25 Nov 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/park/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>baksys</title>
+          <link>/authors/baksys/</link>
+          <pubDate>Mon, 21 Nov 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/baksys/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>lauermann</title>
+          <link>/authors/lauermann/</link>
+          <pubDate>Mon, 14 Nov 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/lauermann/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>hofmeier</title>
+          <link>/authors/hofmeier/</link>
+          <pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/hofmeier/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>delemazure</title>
+          <link>/authors/delemazure/</link>
+          <pubDate>Thu, 10 Nov 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/delemazure/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>demeulemeester</title>
+          <link>/authors/demeulemeester/</link>
+          <pubDate>Thu, 10 Nov 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/demeulemeester/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>israel</title>
+          <link>/authors/israel/</link>
+          <pubDate>Thu, 10 Nov 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/israel/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>lederer</title>
+          <link>/authors/lederer/</link>
+          <pubDate>Thu, 10 Nov 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/lederer/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>stoeckl</title>
+          <link>/authors/stoeckl/</link>
+          <pubDate>Tue, 04 Oct 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/stoeckl/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>raszyk</title>
+          <link>/authors/raszyk/</link>
+          <pubDate>Wed, 28 Sep 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/raszyk/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>guzman</title>
+          <link>/authors/guzman/</link>
+          <pubDate>Fri, 23 Sep 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/guzman/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>crighton</title>
+          <link>/authors/crighton/</link>
+          <pubDate>Thu, 22 Sep 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/crighton/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>villadsen</title>
+          <link>/authors/villadsen/</link>
+          <pubDate>Tue, 13 Sep 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/villadsen/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>sulejmani</title>
+          <link>/authors/sulejmani/</link>
+          <pubDate>Fri, 02 Sep 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/sulejmani/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>ammer</title>
+          <link>/authors/ammer/</link>
+          <pubDate>Thu, 18 Aug 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/ammer/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>merz</title>
+          <link>/authors/merz/</link>
+          <pubDate>Wed, 17 Aug 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/merz/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>trelat</title>
+          <link>/authors/trelat/</link>
+          <pubDate>Wed, 17 Aug 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/trelat/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>bortin</title>
+          <link>/authors/bortin/</link>
+          <pubDate>Mon, 15 Aug 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/bortin/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>marmsoler</title>
+          <link>/authors/marmsoler/</link>
+          <pubDate>Mon, 18 Jul 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/marmsoler/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>toth</title>
+          <link>/authors/toth/</link>
+          <pubDate>Thu, 23 Jun 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/toth/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>ketland</title>
+          <link>/authors/ketland/</link>
+          <pubDate>Mon, 20 Jun 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/ketland/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>klenze</title>
+          <link>/authors/klenze/</link>
+          <pubDate>Wed, 08 Jun 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/klenze/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>bayer</title>
+          <link>/authors/bayer/</link>
+          <pubDate>Mon, 06 Jun 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/bayer/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>david</title>
+          <link>/authors/david/</link>
+          <pubDate>Mon, 06 Jun 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/david/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>matiyasevich</title>
+          <link>/authors/matiyasevich/</link>
+          <pubDate>Mon, 06 Jun 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/matiyasevich/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>pal</title>
+          <link>/authors/pal/</link>
+          <pubDate>Mon, 06 Jun 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/pal/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>schleicher</title>
+          <link>/authors/schleicher/</link>
+          <pubDate>Mon, 06 Jun 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/schleicher/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>stock</title>
+          <link>/authors/stock/</link>
+          <pubDate>Mon, 06 Jun 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/stock/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>lochmann</title>
+          <link>/authors/lochmann/</link>
+          <pubDate>Thu, 02 Jun 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/lochmann/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>schmidinger</title>
+          <link>/authors/schmidinger/</link>
+          <pubDate>Wed, 20 Apr 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/schmidinger/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>fleuriot</title>
+          <link>/authors/fleuriot/</link>
+          <pubDate>Thu, 24 Mar 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/fleuriot/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>gunther</title>
+          <link>/authors/gunther/</link>
+          <pubDate>Sun, 06 Mar 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/gunther/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>pagano</title>
+          <link>/authors/pagano/</link>
+          <pubDate>Sun, 06 Mar 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/pagano/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>steinberg</title>
+          <link>/authors/steinberg/</link>
+          <pubDate>Sun, 06 Mar 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/steinberg/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>terraf</title>
+          <link>/authors/terraf/</link>
+          <pubDate>Sun, 06 Mar 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/terraf/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>stark</title>
+          <link>/authors/stark/</link>
+          <pubDate>Mon, 28 Feb 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/stark/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>sato</title>
+          <link>/authors/sato/</link>
+          <pubDate>Thu, 03 Feb 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/sato/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>felgenhauer</title>
+          <link>/authors/felgenhauer/</link>
+          <pubDate>Wed, 02 Feb 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/felgenhauer/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>jacobsen</title>
+          <link>/authors/jacobsen/</link>
+          <pubDate>Mon, 31 Jan 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/jacobsen/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>ito</title>
+          <link>/authors/ito/</link>
+          <pubDate>Sun, 23 Jan 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/ito/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>koller</title>
+          <link>/authors/koller/</link>
+          <pubDate>Tue, 04 Jan 2022 00:00:00 +0000</pubDate>
+          <guid>/authors/koller/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>smola</title>
+          <link>/authors/smola/</link>
+          <pubDate>Fri, 31 Dec 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/smola/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>abdulaziz</title>
+          <link>/authors/abdulaziz/</link>
+          <pubDate>Thu, 16 Dec 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/abdulaziz/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>schaeffeler</title>
+          <link>/authors/schaeffeler/</link>
+          <pubDate>Thu, 16 Dec 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/schaeffeler/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>sternagel</title>
+          <link>/authors/sternagel/</link>
+          <pubDate>Wed, 15 Dec 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/sternagel/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>sternagelt</title>
+          <link>/authors/sternagelt/</link>
+          <pubDate>Wed, 15 Dec 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/sternagelt/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>aransay</title>
+          <link>/authors/aransay/</link>
+          <pubDate>Mon, 29 Nov 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/aransay/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>campo</title>
+          <link>/authors/campo/</link>
+          <pubDate>Mon, 29 Nov 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/campo/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>michaelis</title>
+          <link>/authors/michaelis/</link>
+          <pubDate>Mon, 29 Nov 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/michaelis/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>lammich</title>
+          <link>/authors/lammich/</link>
+          <pubDate>Tue, 23 Nov 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/lammich/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>iwama</title>
+          <link>/authors/iwama/</link>
+          <pubDate>Mon, 22 Nov 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/iwama/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>cousin</title>
+          <link>/authors/cousin/</link>
+          <pubDate>Fri, 19 Nov 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/cousin/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>guiol</title>
+          <link>/authors/guiol/</link>
+          <pubDate>Fri, 19 Nov 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/guiol/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>reiche</title>
+          <link>/authors/reiche/</link>
+          <pubDate>Mon, 08 Nov 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/reiche/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>unruh</title>
+          <link>/authors/unruh/</link>
+          <pubDate>Thu, 28 Oct 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/unruh/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>boulanger</title>
+          <link>/authors/boulanger/</link>
+          <pubDate>Tue, 19 Oct 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/boulanger/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>fouillard</title>
+          <link>/authors/fouillard/</link>
+          <pubDate>Tue, 19 Oct 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/fouillard/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>sabouret</title>
+          <link>/authors/sabouret/</link>
+          <pubDate>Tue, 19 Oct 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/sabouret/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>bharadwaj</title>
+          <link>/authors/bharadwaj/</link>
+          <pubDate>Wed, 13 Oct 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/bharadwaj/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>bockenek</title>
+          <link>/authors/bockenek/</link>
+          <pubDate>Wed, 13 Oct 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/bockenek/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>ravindran</title>
+          <link>/authors/ravindran/</link>
+          <pubDate>Wed, 13 Oct 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/ravindran/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>roessle</title>
+          <link>/authors/roessle/</link>
+          <pubDate>Wed, 13 Oct 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/roessle/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>verbeek</title>
+          <link>/authors/verbeek/</link>
+          <pubDate>Wed, 13 Oct 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/verbeek/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>weerwag</title>
+          <link>/authors/weerwag/</link>
+          <pubDate>Wed, 13 Oct 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/weerwag/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>mitsch</title>
+          <link>/authors/mitsch/</link>
+          <pubDate>Sat, 02 Oct 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/mitsch/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>scharager</title>
+          <link>/authors/scharager/</link>
+          <pubDate>Sat, 02 Oct 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/scharager/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>caballero</title>
+          <link>/authors/caballero/</link>
+          <pubDate>Sat, 18 Sep 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/caballero/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>milehins</title>
+          <link>/authors/milehins/</link>
+          <pubDate>Mon, 06 Sep 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/milehins/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>jiang</title>
+          <link>/authors/jiang/</link>
+          <pubDate>Sun, 05 Sep 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/jiang/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>li</title>
+          <link>/authors/li/</link>
+          <pubDate>Sat, 21 Aug 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/li/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>thomson</title>
+          <link>/authors/thomson/</link>
+          <pubDate>Sat, 21 Aug 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/thomson/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>bauereiss</title>
+          <link>/authors/bauereiss/</link>
+          <pubDate>Mon, 16 Aug 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/bauereiss/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>palmer</title>
+          <link>/authors/palmer/</link>
+          <pubDate>Tue, 27 Jul 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/palmer/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>schmoetten</title>
+          <link>/authors/schmoetten/</link>
+          <pubDate>Tue, 27 Jul 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/schmoetten/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>thommes</title>
+          <link>/authors/thommes/</link>
+          <pubDate>Wed, 07 Jul 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/thommes/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>bulwahn</title>
+          <link>/authors/bulwahn/</link>
+          <pubDate>Thu, 01 Jul 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/bulwahn/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>willenbrink</title>
+          <link>/authors/willenbrink/</link>
+          <pubDate>Thu, 01 Jul 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/willenbrink/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>wassell</title>
+          <link>/authors/wassell/</link>
+          <pubDate>Fri, 18 Jun 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/wassell/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>mansky</title>
+          <link>/authors/mansky/</link>
+          <pubDate>Fri, 30 Apr 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/mansky/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>kadzioka</title>
+          <link>/authors/kadzioka/</link>
+          <pubDate>Tue, 27 Apr 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/kadzioka/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>rosskopf</title>
+          <link>/authors/rosskopf/</link>
+          <pubDate>Tue, 27 Apr 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/rosskopf/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>joosten</title>
+          <link>/authors/joosten/</link>
+          <pubDate>Fri, 23 Apr 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/joosten/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>brun</title>
+          <link>/authors/brun/</link>
+          <pubDate>Tue, 13 Apr 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/brun/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>decova</title>
+          <link>/authors/decova/</link>
+          <pubDate>Tue, 13 Apr 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/decova/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>lattuada</title>
+          <link>/authors/lattuada/</link>
+          <pubDate>Tue, 13 Apr 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/lattuada/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>nordhoff</title>
+          <link>/authors/nordhoff/</link>
+          <pubDate>Thu, 01 Apr 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/nordhoff/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>lochbihler</title>
+          <link>/authors/lochbihler/</link>
+          <pubDate>Wed, 17 Mar 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/lochbihler/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>sefidgar</title>
+          <link>/authors/sefidgar/</link>
+          <pubDate>Wed, 17 Mar 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/sefidgar/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>bottesch</title>
+          <link>/authors/bottesch/</link>
+          <pubDate>Fri, 12 Mar 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/bottesch/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>divason</title>
+          <link>/authors/divason/</link>
+          <pubDate>Fri, 12 Mar 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/divason/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>blumson</title>
+          <link>/authors/blumson/</link>
+          <pubDate>Mon, 01 Mar 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/blumson/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>muendler</title>
+          <link>/authors/muendler/</link>
+          <pubDate>Wed, 24 Feb 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/muendler/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>coghetto</title>
+          <link>/authors/coghetto/</link>
+          <pubDate>Sun, 31 Jan 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/coghetto/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>londono</title>
+          <link>/authors/londono/</link>
+          <pubDate>Mon, 18 Jan 2021 00:00:00 +0000</pubDate>
+          <guid>/authors/londono/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>brien</title>
+          <link>/authors/brien/</link>
+          <pubDate>Tue, 08 Dec 2020 00:00:00 +0000</pubDate>
+          <guid>/authors/brien/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>he</title>
+          <link>/authors/he/</link>
+          <pubDate>Sun, 22 Nov 2020 00:00:00 +0000</pubDate>
+          <guid>/authors/he/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>lachnitt</title>
+          <link>/authors/lachnitt/</link>
+          <pubDate>Sun, 22 Nov 2020 00:00:00 +0000</pubDate>
+          <guid>/authors/lachnitt/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>ye</title>
+          <link>/authors/ye/</link>
+          <pubDate>Thu, 19 Nov 2020 00:00:00 +0000</pubDate>
+          <guid>/authors/ye/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>kurz</title>
+          <link>/authors/kurz/</link>
+          <pubDate>Thu, 29 Oct 2020 00:00:00 +0000</pubDate>
+          <guid>/authors/kurz/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>fosters</title>
+          <link>/authors/fosters/</link>
+          <pubDate>Tue, 20 Oct 2020 00:00:00 +0000</pubDate>
+          <guid>/authors/fosters/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>herzberg</title>
+          <link>/authors/herzberg/</link>
+          <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
+          <guid>/authors/herzberg/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>derrick</title>
+          <link>/authors/derrick/</link>
+          <pubDate>Mon, 07 Sep 2020 00:00:00 +0000</pubDate>
+          <guid>/authors/derrick/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>foster</title>
+          <link>/authors/foster/</link>
+          <pubDate>Mon, 07 Sep 2020 00:00:00 +0000</pubDate>
+          <guid>/authors/foster/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>taylor</title>
+          <link>/authors/taylor/</link>
+          <pubDate>Mon, 07 Sep 2020 00:00:00 +0000</pubDate>
+          <guid>/authors/taylor/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>fleury</title>
+          <link>/authors/fleury/</link>
+          <pubDate>Mon, 31 Aug 2020 00:00:00 +0000</pubDate>
+          <guid>/authors/fleury/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>kaufmann</title>
+          <link>/authors/kaufmann/</link>
+          <pubDate>Mon, 31 Aug 2020 00:00:00 +0000</pubDate>
+          <guid>/authors/kaufmann/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>gammie</title>
+          <link>/authors/gammie/</link>
+          <pubDate>Tue, 25 Aug 2020 00:00:00 +0000</pubDate>
+          <guid>/authors/gammie/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>fiedler</title>
+          <link>/authors/fiedler/</link>
+          <pubDate>Tue, 21 Jul 2020 00:00:00 +0000</pubDate>
+          <guid>/authors/fiedler/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>hoefner</title>
+          <link>/authors/hoefner/</link>
+          <pubDate>Mon, 13 Jul 2020 00:00:00 +0000</pubDate>
+          <guid>/authors/hoefner/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>immler</title>
+          <link>/authors/immler/</link>
+          <pubDate>Mon, 01 Jun 2020 00:00:00 +0000</pubDate>
+          <guid>/authors/immler/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>rizaldi</title>
+          <link>/authors/rizaldi/</link>
+          <pubDate>Mon, 01 Jun 2020 00:00:00 +0000</pubDate>
+          <guid>/authors/rizaldi/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>dunaev</title>
+          <link>/authors/dunaev/</link>
+          <pubDate>Mon, 11 May 2020 00:00:00 +0000</pubDate>
+          <guid>/authors/dunaev/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>sickert</title>
+          <link>/authors/sickert/</link>
+          <pubDate>Fri, 08 May 2020 00:00:00 +0000</pubDate>
+          <guid>/authors/sickert/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>kammueller</title>
+          <link>/authors/kammueller/</link>
+          <pubDate>Mon, 27 Apr 2020 00:00:00 +0000</pubDate>
+          <guid>/authors/kammueller/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>munive</title>
+          <link>/authors/munive/</link>
+          <pubDate>Sun, 19 Apr 2020 00:00:00 +0000</pubDate>
+          <guid>/authors/munive/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>maric</title>
+          <link>/authors/maric/</link>
+          <pubDate>Thu, 16 Apr 2020 00:00:00 +0000</pubDate>
+          <guid>/authors/maric/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>heimes</title>
+          <link>/authors/heimes/</link>
+          <pubDate>Fri, 10 Apr 2020 00:00:00 +0000</pubDate>
+          <guid>/authors/heimes/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>schneider</title>
+          <link>/authors/schneider/</link>
+          <pubDate>Fri, 10 Apr 2020 00:00:00 +0000</pubDate>
+          <guid>/authors/schneider/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>hess</title>
+          <link>/authors/hess/</link>
+          <pubDate>Wed, 08 Apr 2020 00:00:00 +0000</pubDate>
+          <guid>/authors/hess/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>moedersheim</title>
+          <link>/authors/moedersheim/</link>
+          <pubDate>Wed, 08 Apr 2020 00:00:00 +0000</pubDate>
+          <guid>/authors/moedersheim/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>gonzalez</title>
+          <link>/authors/gonzalez/</link>
+          <pubDate>Wed, 25 Mar 2020 00:00:00 +0000</pubDate>
+          <guid>/authors/gonzalez/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>murray</title>
+          <link>/authors/murray/</link>
+          <pubDate>Thu, 12 Mar 2020 00:00:00 +0000</pubDate>
+          <guid>/authors/murray/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>diekmann</title>
+          <link>/authors/diekmann/</link>
+          <pubDate>Sat, 07 Mar 2020 00:00:00 +0000</pubDate>
+          <guid>/authors/diekmann/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>moeller</title>
+          <link>/authors/moeller/</link>
+          <pubDate>Fri, 31 Jan 2020 00:00:00 +0000</pubDate>
+          <guid>/authors/moeller/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>essmann</title>
+          <link>/authors/essmann/</link>
+          <pubDate>Thu, 16 Jan 2020 00:00:00 +0000</pubDate>
+          <guid>/authors/essmann/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>robillard</title>
+          <link>/authors/robillard/</link>
+          <pubDate>Thu, 16 Jan 2020 00:00:00 +0000</pubDate>
+          <guid>/authors/robillard/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>haslbeck</title>
+          <link>/authors/haslbeck/</link>
+          <pubDate>Thu, 09 Jan 2020 00:00:00 +0000</pubDate>
+          <guid>/authors/haslbeck/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>boutry</title>
+          <link>/authors/boutry/</link>
+          <pubDate>Mon, 16 Dec 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/boutry/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>maricf</title>
+          <link>/authors/maricf/</link>
+          <pubDate>Mon, 16 Dec 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/maricf/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>simic</title>
+          <link>/authors/simic/</link>
+          <pubDate>Mon, 16 Dec 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/simic/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>bohrer</title>
+          <link>/authors/bohrer/</link>
+          <pubDate>Wed, 27 Nov 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/bohrer/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>tuong</title>
+          <link>/authors/tuong/</link>
+          <pubDate>Tue, 22 Oct 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/tuong/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>wimmer</title>
+          <link>/authors/wimmer/</link>
+          <pubDate>Wed, 16 Oct 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/wimmer/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>butler</title>
+          <link>/authors/butler/</link>
+          <pubDate>Mon, 07 Oct 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/butler/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>ballarin</title>
+          <link>/authors/ballarin/</link>
+          <pubDate>Fri, 30 Aug 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/ballarin/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>buyse</title>
+          <link>/authors/buyse/</link>
+          <pubDate>Tue, 06 Aug 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/buyse/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>jaskolka</title>
+          <link>/authors/jaskolka/</link>
+          <pubDate>Tue, 06 Aug 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/jaskolka/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>kaliszyk</title>
+          <link>/authors/kaliszyk/</link>
+          <pubDate>Tue, 06 Aug 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/kaliszyk/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>parsert</title>
+          <link>/authors/parsert/</link>
+          <pubDate>Tue, 06 Aug 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/parsert/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>losa</title>
+          <link>/authors/losa/</link>
+          <pubDate>Thu, 01 Aug 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/losa/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>van</title>
+          <link>/authors/van/</link>
+          <pubDate>Tue, 30 Jul 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/van/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>zeller</title>
+          <link>/authors/zeller/</link>
+          <pubDate>Sat, 27 Jul 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/zeller/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>reynaud</title>
+          <link>/authors/reynaud/</link>
+          <pubDate>Fri, 21 Jun 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/reynaud/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>maletzky</title>
+          <link>/authors/maletzky/</link>
+          <pubDate>Sun, 16 Jun 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/maletzky/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>griebel</title>
+          <link>/authors/griebel/</link>
+          <pubDate>Thu, 13 Jun 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/griebel/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>aspinall</title>
+          <link>/authors/aspinall/</link>
+          <pubDate>Thu, 09 May 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/aspinall/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>seidl</title>
+          <link>/authors/seidl/</link>
+          <pubDate>Tue, 16 Apr 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/seidl/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>gheri</title>
+          <link>/authors/gheri/</link>
+          <pubDate>Sat, 06 Apr 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/gheri/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>liu</title>
+          <link>/authors/liu/</link>
+          <pubDate>Sun, 24 Mar 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/liu/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>liut</title>
+          <link>/authors/liut/</link>
+          <pubDate>Sun, 24 Mar 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/liut/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>liy</title>
+          <link>/authors/liy/</link>
+          <pubDate>Sun, 24 Mar 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/liy/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>wang</title>
+          <link>/authors/wang/</link>
+          <pubDate>Sun, 24 Mar 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/wang/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>ying</title>
+          <link>/authors/ying/</link>
+          <pubDate>Sun, 24 Mar 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/ying/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>yingm</title>
+          <link>/authors/yingm/</link>
+          <pubDate>Sun, 24 Mar 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/yingm/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>zhan</title>
+          <link>/authors/zhan/</link>
+          <pubDate>Sun, 24 Mar 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/zhan/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>zhann</title>
+          <link>/authors/zhann/</link>
+          <pubDate>Sun, 24 Mar 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/zhann/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>nikiforov</title>
+          <link>/authors/nikiforov/</link>
+          <pubDate>Sat, 09 Mar 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/nikiforov/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>biendarra</title>
+          <link>/authors/biendarra/</link>
+          <pubDate>Thu, 14 Feb 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/biendarra/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>haslbeckm</title>
+          <link>/authors/haslbeckm/</link>
+          <pubDate>Thu, 14 Feb 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/haslbeckm/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>stuewe</title>
+          <link>/authors/stuewe/</link>
+          <pubDate>Mon, 11 Feb 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/stuewe/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>regensburger</title>
+          <link>/authors/regensburger/</link>
+          <pubDate>Fri, 08 Feb 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/regensburger/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>urban</title>
+          <link>/authors/urban/</link>
+          <pubDate>Fri, 08 Feb 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/urban/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>xu</title>
+          <link>/authors/xu/</link>
+          <pubDate>Fri, 08 Feb 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/xu/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>zhangx</title>
+          <link>/authors/zhangx/</link>
+          <pubDate>Fri, 08 Feb 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/zhangx/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>nemouchi</title>
+          <link>/authors/nemouchi/</link>
+          <pubDate>Fri, 01 Feb 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/nemouchi/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>ribeiro</title>
+          <link>/authors/ribeiro/</link>
+          <pubDate>Fri, 01 Feb 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/ribeiro/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>zeyda</title>
+          <link>/authors/zeyda/</link>
+          <pubDate>Fri, 01 Feb 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/zeyda/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>cohen</title>
+          <link>/authors/cohen/</link>
+          <pubDate>Mon, 07 Jan 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/cohen/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>schirmer</title>
+          <link>/authors/schirmer/</link>
+          <pubDate>Mon, 07 Jan 2019 00:00:00 +0000</pubDate>
+          <guid>/authors/schirmer/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>overbeek</title>
+          <link>/authors/overbeek/</link>
+          <pubDate>Tue, 25 Dec 2018 00:00:00 +0000</pubDate>
+          <guid>/authors/overbeek/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>keinholz</title>
+          <link>/authors/keinholz/</link>
+          <pubDate>Fri, 16 Nov 2018 00:00:00 +0000</pubDate>
+          <guid>/authors/keinholz/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>raedle</title>
+          <link>/authors/raedle/</link>
+          <pubDate>Tue, 06 Nov 2018 00:00:00 +0000</pubDate>
+          <guid>/authors/raedle/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>bentkamp</title>
+          <link>/authors/bentkamp/</link>
+          <pubDate>Fri, 19 Oct 2018 00:00:00 +0000</pubDate>
+          <guid>/authors/bentkamp/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>spasic</title>
+          <link>/authors/spasic/</link>
+          <pubDate>Fri, 24 Aug 2018 00:00:00 +0000</pubDate>
+          <guid>/authors/spasic/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>brunner</title>
+          <link>/authors/brunner/</link>
+          <pubDate>Tue, 05 Jun 2018 00:00:00 +0000</pubDate>
+          <guid>/authors/brunner/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>somogyi</title>
+          <link>/authors/somogyi/</link>
+          <pubDate>Sun, 27 May 2018 00:00:00 +0000</pubDate>
+          <guid>/authors/somogyi/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>hoelzl</title>
+          <link>/authors/hoelzl/</link>
+          <pubDate>Thu, 24 May 2018 00:00:00 +0000</pubDate>
+          <guid>/authors/hoelzl/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>scott</title>
+          <link>/authors/scott/</link>
+          <pubDate>Wed, 23 May 2018 00:00:00 +0000</pubDate>
+          <guid>/authors/scott/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>beresford</title>
+          <link>/authors/beresford/</link>
+          <pubDate>Thu, 10 May 2018 00:00:00 +0000</pubDate>
+          <guid>/authors/beresford/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>gomes</title>
+          <link>/authors/gomes/</link>
+          <pubDate>Thu, 10 May 2018 00:00:00 +0000</pubDate>
+          <guid>/authors/gomes/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>kleppmann</title>
+          <link>/authors/kleppmann/</link>
+          <pubDate>Thu, 10 May 2018 00:00:00 +0000</pubDate>
+          <guid>/authors/kleppmann/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>mulligan</title>
+          <link>/authors/mulligan/</link>
+          <pubDate>Thu, 10 May 2018 00:00:00 +0000</pubDate>
+          <guid>/authors/mulligan/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>bracevac</title>
+          <link>/authors/bracevac/</link>
+          <pubDate>Mon, 07 May 2018 00:00:00 +0000</pubDate>
+          <guid>/authors/bracevac/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>gay</title>
+          <link>/authors/gay/</link>
+          <pubDate>Mon, 07 May 2018 00:00:00 +0000</pubDate>
+          <guid>/authors/gay/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>grewe</title>
+          <link>/authors/grewe/</link>
+          <pubDate>Mon, 07 May 2018 00:00:00 +0000</pubDate>
+          <guid>/authors/grewe/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>mantel</title>
+          <link>/authors/mantel/</link>
+          <pubDate>Mon, 07 May 2018 00:00:00 +0000</pubDate>
+          <guid>/authors/mantel/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>sudbrock</title>
+          <link>/authors/sudbrock/</link>
+          <pubDate>Mon, 07 May 2018 00:00:00 +0000</pubDate>
+          <guid>/authors/sudbrock/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>tasch</title>
+          <link>/authors/tasch/</link>
+          <pubDate>Mon, 07 May 2018 00:00:00 +0000</pubDate>
+          <guid>/authors/tasch/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>watt</title>
+          <link>/authors/watt/</link>
+          <pubDate>Sun, 29 Apr 2018 00:00:00 +0000</pubDate>
+          <guid>/authors/watt/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>brandt</title>
+          <link>/authors/brandt/</link>
+          <pubDate>Thu, 22 Mar 2018 00:00:00 +0000</pubDate>
+          <guid>/authors/brandt/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>saile</title>
+          <link>/authors/saile/</link>
+          <pubDate>Thu, 22 Mar 2018 00:00:00 +0000</pubDate>
+          <guid>/authors/saile/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>stricker</title>
+          <link>/authors/stricker/</link>
+          <pubDate>Thu, 22 Mar 2018 00:00:00 +0000</pubDate>
+          <guid>/authors/stricker/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>dirix</title>
+          <link>/authors/dirix/</link>
+          <pubDate>Tue, 13 Mar 2018 00:00:00 +0000</pubDate>
+          <guid>/authors/dirix/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>zhang</title>
+          <link>/authors/zhang/</link>
+          <pubDate>Mon, 12 Mar 2018 00:00:00 +0000</pubDate>
+          <guid>/authors/zhang/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>waldmann</title>
+          <link>/authors/waldmann/</link>
+          <pubDate>Thu, 18 Jan 2018 00:00:00 +0000</pubDate>
+          <guid>/authors/waldmann/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>gouezel</title>
+          <link>/authors/gouezel/</link>
+          <pubDate>Tue, 16 Jan 2018 00:00:00 +0000</pubDate>
+          <guid>/authors/gouezel/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>traut</title>
+          <link>/authors/traut/</link>
+          <pubDate>Mon, 08 Jan 2018 00:00:00 +0000</pubDate>
+          <guid>/authors/traut/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>hellauer</title>
+          <link>/authors/hellauer/</link>
+          <pubDate>Mon, 18 Dec 2017 00:00:00 +0000</pubDate>
+          <guid>/authors/hellauer/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>jungnickel</title>
+          <link>/authors/jungnickel/</link>
+          <pubDate>Thu, 09 Nov 2017 00:00:00 +0000</pubDate>
+          <guid>/authors/jungnickel/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>loibl</title>
+          <link>/authors/loibl/</link>
+          <pubDate>Thu, 09 Nov 2017 00:00:00 +0000</pubDate>
+          <guid>/authors/loibl/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>oldenburg</title>
+          <link>/authors/oldenburg/</link>
+          <pubDate>Thu, 09 Nov 2017 00:00:00 +0000</pubDate>
+          <guid>/authors/oldenburg/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>linker</title>
+          <link>/authors/linker/</link>
+          <pubDate>Mon, 06 Nov 2017 00:00:00 +0000</pubDate>
+          <guid>/authors/linker/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>gioiosa</title>
+          <link>/authors/gioiosa/</link>
+          <pubDate>Thu, 26 Oct 2017 00:00:00 +0000</pubDate>
+          <guid>/authors/gioiosa/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>messner</title>
+          <link>/authors/messner/</link>
+          <pubDate>Sat, 14 Oct 2017 00:00:00 +0000</pubDate>
+          <guid>/authors/messner/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>schoepf</title>
+          <link>/authors/schoepf/</link>
+          <pubDate>Sat, 14 Oct 2017 00:00:00 +0000</pubDate>
+          <guid>/authors/schoepf/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>matache</title>
+          <link>/authors/matache/</link>
+          <pubDate>Wed, 16 Aug 2017 00:00:00 +0000</pubDate>
+          <guid>/authors/matache/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>siek</title>
+          <link>/authors/siek/</link>
+          <pubDate>Fri, 21 Jul 2017 00:00:00 +0000</pubDate>
+          <guid>/authors/siek/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>breitner</title>
+          <link>/authors/breitner/</link>
+          <pubDate>Sat, 15 Jul 2017 00:00:00 +0000</pubDate>
+          <guid>/authors/breitner/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>huffman</title>
+          <link>/authors/huffman/</link>
+          <pubDate>Sat, 15 Jul 2017 00:00:00 +0000</pubDate>
+          <guid>/authors/huffman/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>mitchell</title>
+          <link>/authors/mitchell/</link>
+          <pubDate>Sat, 15 Jul 2017 00:00:00 +0000</pubDate>
+          <guid>/authors/mitchell/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>rawson</title>
+          <link>/authors/rawson/</link>
+          <pubDate>Sun, 09 Jul 2017 00:00:00 +0000</pubDate>
+          <guid>/authors/rawson/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>dongol</title>
+          <link>/authors/dongol/</link>
+          <pubDate>Tue, 13 Jun 2017 00:00:00 +0000</pubDate>
+          <guid>/authors/dongol/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>hayes</title>
+          <link>/authors/hayes/</link>
+          <pubDate>Tue, 13 Jun 2017 00:00:00 +0000</pubDate>
+          <guid>/authors/hayes/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>laursen</title>
+          <link>/authors/laursen/</link>
+          <pubDate>Thu, 25 May 2017 00:00:00 +0000</pubDate>
+          <guid>/authors/laursen/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>somaini</title>
+          <link>/authors/somaini/</link>
+          <pubDate>Wed, 24 May 2017 00:00:00 +0000</pubDate>
+          <guid>/authors/somaini/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>bhatt</title>
+          <link>/authors/bhatt/</link>
+          <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
+          <guid>/authors/bhatt/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>obua</title>
+          <link>/authors/obua/</link>
+          <pubDate>Fri, 28 Apr 2017 00:00:00 +0000</pubDate>
+          <guid>/authors/obua/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>berghofer</title>
+          <link>/authors/berghofer/</link>
+          <pubDate>Tue, 28 Feb 2017 00:00:00 +0000</pubDate>
+          <guid>/authors/berghofer/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>dittmann</title>
+          <link>/authors/dittmann/</link>
+          <pubDate>Sun, 26 Feb 2017 00:00:00 +0000</pubDate>
+          <guid>/authors/dittmann/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>lallemand</title>
+          <link>/authors/lallemand/</link>
+          <pubDate>Tue, 31 Jan 2017 00:00:00 +0000</pubDate>
+          <guid>/authors/lallemand/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>lohner</title>
+          <link>/authors/lohner/</link>
+          <pubDate>Tue, 17 Jan 2017 00:00:00 +0000</pubDate>
+          <guid>/authors/lohner/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>wagner</title>
+          <link>/authors/wagner/</link>
+          <pubDate>Tue, 17 Jan 2017 00:00:00 +0000</pubDate>
+          <guid>/authors/wagner/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>bruegger</title>
+          <link>/authors/bruegger/</link>
+          <pubDate>Sun, 08 Jan 2017 00:00:00 +0000</pubDate>
+          <guid>/authors/bruegger/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>jensen</title>
+          <link>/authors/jensen/</link>
+          <pubDate>Sun, 01 Jan 2017 00:00:00 +0000</pubDate>
+          <guid>/authors/jensen/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>fell</title>
+          <link>/authors/fell/</link>
+          <pubDate>Fri, 30 Dec 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/fell/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>velykis</title>
+          <link>/authors/velykis/</link>
+          <pubDate>Fri, 30 Dec 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/velykis/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>nagashima</title>
+          <link>/authors/nagashima/</link>
+          <pubDate>Tue, 20 Dec 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/nagashima/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>amani</title>
+          <link>/authors/amani/</link>
+          <pubDate>Tue, 29 Nov 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/amani/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>andronick</title>
+          <link>/authors/andronick/</link>
+          <pubDate>Tue, 29 Nov 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/andronick/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>lewis</title>
+          <link>/authors/lewis/</link>
+          <pubDate>Tue, 29 Nov 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/lewis/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>rizkallah</title>
+          <link>/authors/rizkallah/</link>
+          <pubDate>Tue, 29 Nov 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/rizkallah/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>tuongj</title>
+          <link>/authors/tuongj/</link>
+          <pubDate>Tue, 29 Nov 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/tuongj/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>clouston</title>
+          <link>/authors/clouston/</link>
+          <pubDate>Wed, 16 Nov 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/clouston/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>gore</title>
+          <link>/authors/gore/</link>
+          <pubDate>Wed, 16 Nov 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/gore/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>hou</title>
+          <link>/authors/hou/</link>
+          <pubDate>Wed, 16 Nov 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/hou/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>sanan</title>
+          <link>/authors/sanan/</link>
+          <pubDate>Wed, 16 Nov 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/sanan/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>tiu</title>
+          <link>/authors/tiu/</link>
+          <pubDate>Wed, 16 Nov 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/tiu/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>becker</title>
+          <link>/authors/becker/</link>
+          <pubDate>Sat, 12 Nov 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/becker/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>wand</title>
+          <link>/authors/wand/</link>
+          <pubDate>Sat, 12 Nov 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/wand/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>borgstroem</title>
+          <link>/authors/borgstroem/</link>
+          <pubDate>Tue, 25 Oct 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/borgstroem/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>eriksson</title>
+          <link>/authors/eriksson/</link>
+          <pubDate>Tue, 25 Oct 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/eriksson/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>gutkovas</title>
+          <link>/authors/gutkovas/</link>
+          <pubDate>Tue, 25 Oct 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/gutkovas/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>parrow</title>
+          <link>/authors/parrow/</link>
+          <pubDate>Tue, 25 Oct 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/parrow/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>hibon</title>
+          <link>/authors/hibon/</link>
+          <pubDate>Wed, 19 Oct 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/hibon/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>liuy</title>
+          <link>/authors/liuy/</link>
+          <pubDate>Wed, 19 Oct 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/liuy/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>ghourabi</title>
+          <link>/authors/ghourabi/</link>
+          <pubDate>Thu, 29 Sep 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/ghourabi/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>peltier</title>
+          <link>/authors/peltier/</link>
+          <pubDate>Tue, 06 Sep 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/peltier/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>aissat</title>
+          <link>/authors/aissat/</link>
+          <pubDate>Thu, 18 Aug 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/aissat/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>voisin</title>
+          <link>/authors/voisin/</link>
+          <pubDate>Thu, 18 Aug 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/voisin/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>brinkop</title>
+          <link>/authors/brinkop/</link>
+          <pubDate>Thu, 14 Jul 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/brinkop/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>neumann</title>
+          <link>/authors/neumann/</link>
+          <pubDate>Tue, 05 Jul 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/neumann/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>sylvestre</title>
+          <link>/authors/sylvestre/</link>
+          <pubDate>Fri, 01 Jul 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/sylvestre/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>nagele</title>
+          <link>/authors/nagele/</link>
+          <pubDate>Thu, 30 Jun 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/nagele/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>oostrom</title>
+          <link>/authors/oostrom/</link>
+          <pubDate>Thu, 30 Jun 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/oostrom/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>pierzchalski</title>
+          <link>/authors/pierzchalski/</link>
+          <pubDate>Tue, 28 Jun 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/pierzchalski/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>sison</title>
+          <link>/authors/sison/</link>
+          <pubDate>Tue, 28 Jun 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/sison/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>beeren</title>
+          <link>/authors/beeren/</link>
+          <pubDate>Thu, 09 Jun 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/beeren/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>fernandez</title>
+          <link>/authors/fernandez/</link>
+          <pubDate>Thu, 09 Jun 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/fernandez/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>gao</title>
+          <link>/authors/gao/</link>
+          <pubDate>Thu, 09 Jun 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/gao/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>klein</title>
+          <link>/authors/klein/</link>
+          <pubDate>Thu, 09 Jun 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/klein/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>kolanski</title>
+          <link>/authors/kolanski/</link>
+          <pubDate>Thu, 09 Jun 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/kolanski/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>lim</title>
+          <link>/authors/lim/</link>
+          <pubDate>Thu, 09 Jun 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/lim/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>matichuk</title>
+          <link>/authors/matichuk/</link>
+          <pubDate>Thu, 09 Jun 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/matichuk/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>sewell</title>
+          <link>/authors/sewell/</link>
+          <pubDate>Thu, 09 Jun 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/sewell/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>ausaf</title>
+          <link>/authors/ausaf/</link>
+          <pubDate>Tue, 24 May 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/ausaf/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>dyckhoff</title>
+          <link>/authors/dyckhoff/</link>
+          <pubDate>Tue, 24 May 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/dyckhoff/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>kuncar</title>
+          <link>/authors/kuncar/</link>
+          <pubDate>Fri, 20 May 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/kuncar/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>brodmann</title>
+          <link>/authors/brodmann/</link>
+          <pubDate>Wed, 18 May 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/brodmann/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>nestmann</title>
+          <link>/authors/nestmann/</link>
+          <pubDate>Wed, 18 May 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/nestmann/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>peters</title>
+          <link>/authors/peters/</link>
+          <pubDate>Wed, 18 May 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/peters/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>rickmann</title>
+          <link>/authors/rickmann/</link>
+          <pubDate>Wed, 18 May 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/rickmann/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>seidler</title>
+          <link>/authors/seidler/</link>
+          <pubDate>Wed, 18 May 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/seidler/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>stueber</title>
+          <link>/authors/stueber/</link>
+          <pubDate>Wed, 18 May 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/stueber/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>weidner</title>
+          <link>/authors/weidner/</link>
+          <pubDate>Wed, 18 May 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/weidner/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>ullrich</title>
+          <link>/authors/ullrich/</link>
+          <pubDate>Fri, 05 Feb 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/ullrich/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>prathamesh</title>
+          <link>/authors/prathamesh/</link>
+          <pubDate>Wed, 20 Jan 2016 00:00:00 +0000</pubDate>
+          <guid>/authors/prathamesh/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>noschinski</title>
+          <link>/authors/noschinski/</link>
+          <pubDate>Wed, 11 Nov 2015 00:00:00 +0000</pubDate>
+          <guid>/authors/noschinski/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>glabbeek</title>
+          <link>/authors/glabbeek/</link>
+          <pubDate>Mon, 10 Aug 2015 00:00:00 +0000</pubDate>
+          <guid>/authors/glabbeek/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>furusawa</title>
+          <link>/authors/furusawa/</link>
+          <pubDate>Thu, 11 Jun 2015 00:00:00 +0000</pubDate>
+          <guid>/authors/furusawa/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>caminati</title>
+          <link>/authors/caminati/</link>
+          <pubDate>Thu, 30 Apr 2015 00:00:00 +0000</pubDate>
+          <guid>/authors/caminati/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>kerber</title>
+          <link>/authors/kerber/</link>
+          <pubDate>Thu, 30 Apr 2015 00:00:00 +0000</pubDate>
+          <guid>/authors/kerber/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>lange</title>
+          <link>/authors/lange/</link>
+          <pubDate>Thu, 30 Apr 2015 00:00:00 +0000</pubDate>
+          <guid>/authors/lange/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>rowat</title>
+          <link>/authors/rowat/</link>
+          <pubDate>Thu, 30 Apr 2015 00:00:00 +0000</pubDate>
+          <guid>/authors/rowat/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>engelhardt</title>
+          <link>/authors/engelhardt/</link>
+          <pubDate>Mon, 13 Apr 2015 00:00:00 +0000</pubDate>
+          <guid>/authors/engelhardt/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>hosking</title>
+          <link>/authors/hosking/</link>
+          <pubDate>Mon, 13 Apr 2015 00:00:00 +0000</pubDate>
+          <guid>/authors/hosking/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>bourke</title>
+          <link>/authors/bourke/</link>
+          <pubDate>Thu, 23 Oct 2014 00:00:00 +0000</pubDate>
+          <guid>/authors/bourke/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>maximova</title>
+          <link>/authors/maximova/</link>
+          <pubDate>Fri, 10 Oct 2014 00:00:00 +0000</pubDate>
+          <guid>/authors/maximova/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>preoteasa</title>
+          <link>/authors/preoteasa/</link>
+          <pubDate>Wed, 08 Oct 2014 00:00:00 +0000</pubDate>
+          <guid>/authors/preoteasa/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>adelsberger</title>
+          <link>/authors/adelsberger/</link>
+          <pubDate>Mon, 15 Sep 2014 00:00:00 +0000</pubDate>
+          <guid>/authors/adelsberger/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>hetzl</title>
+          <link>/authors/hetzl/</link>
+          <pubDate>Mon, 15 Sep 2014 00:00:00 +0000</pubDate>
+          <guid>/authors/hetzl/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>pollak</title>
+          <link>/authors/pollak/</link>
+          <pubDate>Mon, 15 Sep 2014 00:00:00 +0000</pubDate>
+          <guid>/authors/pollak/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>raumer</title>
+          <link>/authors/raumer/</link>
+          <pubDate>Tue, 09 Sep 2014 00:00:00 +0000</pubDate>
+          <guid>/authors/raumer/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>lee</title>
+          <link>/authors/lee/</link>
+          <pubDate>Fri, 29 Aug 2014 00:00:00 +0000</pubDate>
+          <guid>/authors/lee/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>blasum</title>
+          <link>/authors/blasum/</link>
+          <pubDate>Fri, 18 Jul 2014 00:00:00 +0000</pubDate>
+          <guid>/authors/blasum/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>feliachi</title>
+          <link>/authors/feliachi/</link>
+          <pubDate>Fri, 18 Jul 2014 00:00:00 +0000</pubDate>
+          <guid>/authors/feliachi/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>havle</title>
+          <link>/authors/havle/</link>
+          <pubDate>Fri, 18 Jul 2014 00:00:00 +0000</pubDate>
+          <guid>/authors/havle/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>langenstein</title>
+          <link>/authors/langenstein/</link>
+          <pubDate>Fri, 18 Jul 2014 00:00:00 +0000</pubDate>
+          <guid>/authors/langenstein/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>schmaltz</title>
+          <link>/authors/schmaltz/</link>
+          <pubDate>Fri, 18 Jul 2014 00:00:00 +0000</pubDate>
+          <guid>/authors/schmaltz/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>stephan</title>
+          <link>/authors/stephan/</link>
+          <pubDate>Fri, 18 Jul 2014 00:00:00 +0000</pubDate>
+          <guid>/authors/stephan/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>tverdyshev</title>
+          <link>/authors/tverdyshev/</link>
+          <pubDate>Fri, 18 Jul 2014 00:00:00 +0000</pubDate>
+          <guid>/authors/tverdyshev/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>cock</title>
+          <link>/authors/cock/</link>
+          <pubDate>Sun, 13 Jul 2014 00:00:00 +0000</pubDate>
+          <guid>/authors/cock/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>coglio</title>
+          <link>/authors/coglio/</link>
+          <pubDate>Thu, 03 Jul 2014 00:00:00 +0000</pubDate>
+          <guid>/authors/coglio/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>esparza</title>
+          <link>/authors/esparza/</link>
+          <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
+          <guid>/authors/esparza/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>schimpf</title>
+          <link>/authors/schimpf/</link>
+          <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
+          <guid>/authors/schimpf/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>smaus</title>
+          <link>/authors/smaus/</link>
+          <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
+          <guid>/authors/smaus/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>wenzel</title>
+          <link>/authors/wenzel/</link>
+          <pubDate>Fri, 23 May 2014 00:00:00 +0000</pubDate>
+          <guid>/authors/wenzel/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>spichkova</title>
+          <link>/authors/spichkova/</link>
+          <pubDate>Mon, 28 Apr 2014 00:00:00 +0000</pubDate>
+          <guid>/authors/spichkova/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>lux</title>
+          <link>/authors/lux/</link>
+          <pubDate>Wed, 23 Apr 2014 00:00:00 +0000</pubDate>
+          <guid>/authors/lux/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>sauer</title>
+          <link>/authors/sauer/</link>
+          <pubDate>Wed, 23 Apr 2014 00:00:00 +0000</pubDate>
+          <guid>/authors/sauer/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>schoepe</title>
+          <link>/authors/schoepe/</link>
+          <pubDate>Wed, 23 Apr 2014 00:00:00 +0000</pubDate>
+          <guid>/authors/schoepe/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>rabe</title>
+          <link>/authors/rabe/</link>
+          <pubDate>Wed, 16 Apr 2014 00:00:00 +0000</pubDate>
+          <guid>/authors/rabe/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>haftmann</title>
+          <link>/authors/haftmann/</link>
+          <pubDate>Sun, 13 Apr 2014 00:00:00 +0000</pubDate>
+          <guid>/authors/haftmann/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>wickerson</title>
+          <link>/authors/wickerson/</link>
+          <pubDate>Thu, 03 Apr 2014 00:00:00 +0000</pubDate>
+          <guid>/authors/wickerson/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>petrovic</title>
+          <link>/authors/petrovic/</link>
+          <pubDate>Tue, 11 Feb 2014 00:00:00 +0000</pubDate>
+          <guid>/authors/petrovic/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>armstrong</title>
+          <link>/authors/armstrong/</link>
+          <pubDate>Sat, 25 Jan 2014 00:00:00 +0000</pubDate>
+          <guid>/authors/armstrong/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>paleo</title>
+          <link>/authors/paleo/</link>
+          <pubDate>Tue, 12 Nov 2013 00:00:00 +0000</pubDate>
+          <guid>/authors/paleo/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>zankl</title>
+          <link>/authors/zankl/</link>
+          <pubDate>Fri, 01 Nov 2013 00:00:00 +0000</pubDate>
+          <guid>/authors/zankl/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>yu</title>
+          <link>/authors/yu/</link>
+          <pubDate>Sat, 27 Jul 2013 00:00:00 +0000</pubDate>
+          <guid>/authors/yu/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>meis</title>
+          <link>/authors/meis/</link>
+          <pubDate>Wed, 14 Nov 2012 00:00:00 +0000</pubDate>
+          <guid>/authors/meis/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>ogawa</title>
+          <link>/authors/ogawa/</link>
+          <pubDate>Fri, 02 Nov 2012 00:00:00 +0000</pubDate>
+          <guid>/authors/ogawa/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>makarios</title>
+          <link>/authors/makarios/</link>
+          <pubDate>Tue, 30 Oct 2012 00:00:00 +0000</pubDate>
+          <guid>/authors/makarios/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>avigad</title>
+          <link>/authors/avigad/</link>
+          <pubDate>Sat, 27 Oct 2012 00:00:00 +0000</pubDate>
+          <guid>/authors/avigad/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>romanos</title>
+          <link>/authors/romanos/</link>
+          <pubDate>Sun, 05 Aug 2012 00:00:00 +0000</pubDate>
+          <guid>/authors/romanos/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>debrat</title>
+          <link>/authors/debrat/</link>
+          <pubDate>Fri, 27 Jul 2012 00:00:00 +0000</pubDate>
+          <guid>/authors/debrat/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>bengtson</title>
+          <link>/authors/bengtson/</link>
+          <pubDate>Tue, 29 May 2012 00:00:00 +0000</pubDate>
+          <guid>/authors/bengtson/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>gaudel</title>
+          <link>/authors/gaudel/</link>
+          <pubDate>Sun, 27 May 2012 00:00:00 +0000</pubDate>
+          <guid>/authors/gaudel/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>boyton</title>
+          <link>/authors/boyton/</link>
+          <pubDate>Fri, 11 May 2012 00:00:00 +0000</pubDate>
+          <guid>/authors/boyton/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>bella</title>
+          <link>/authors/bella/</link>
+          <pubDate>Wed, 02 May 2012 00:00:00 +0000</pubDate>
+          <guid>/authors/bella/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>guerraoui</title>
+          <link>/authors/guerraoui/</link>
+          <pubDate>Thu, 01 Mar 2012 00:00:00 +0000</pubDate>
+          <guid>/authors/guerraoui/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>kuncak</title>
+          <link>/authors/kuncak/</link>
+          <pubDate>Thu, 01 Mar 2012 00:00:00 +0000</pubDate>
+          <guid>/authors/kuncak/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>grov</title>
+          <link>/authors/grov/</link>
+          <pubDate>Sat, 19 Nov 2011 00:00:00 +0000</pubDate>
+          <guid>/authors/grov/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>georgescu</title>
+          <link>/authors/georgescu/</link>
+          <pubDate>Thu, 22 Sep 2011 00:00:00 +0000</pubDate>
+          <guid>/authors/georgescu/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>leustean</title>
+          <link>/authors/leustean/</link>
+          <pubDate>Thu, 22 Sep 2011 00:00:00 +0000</pubDate>
+          <guid>/authors/leustean/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>wu</title>
+          <link>/authors/wu/</link>
+          <pubDate>Fri, 26 Aug 2011 00:00:00 +0000</pubDate>
+          <guid>/authors/wu/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>trachtenherz</title>
+          <link>/authors/trachtenherz/</link>
+          <pubDate>Wed, 23 Feb 2011 00:00:00 +0000</pubDate>
+          <guid>/authors/trachtenherz/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>parkinson</title>
+          <link>/authors/parkinson/</link>
+          <pubDate>Mon, 07 Feb 2011 00:00:00 +0000</pubDate>
+          <guid>/authors/parkinson/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>strnisa</title>
+          <link>/authors/strnisa/</link>
+          <pubDate>Mon, 07 Feb 2011 00:00:00 +0000</pubDate>
+          <guid>/authors/strnisa/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>grechuk</title>
+          <link>/authors/grechuk/</link>
+          <pubDate>Sat, 08 Jan 2011 00:00:00 +0000</pubDate>
+          <guid>/authors/grechuk/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>jiangd</title>
+          <link>/authors/jiangd/</link>
+          <pubDate>Fri, 17 Dec 2010 00:00:00 +0000</pubDate>
+          <guid>/authors/jiangd/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>koerner</title>
+          <link>/authors/koerner/</link>
+          <pubDate>Thu, 28 Oct 2010 00:00:00 +0000</pubDate>
+          <guid>/authors/koerner/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>nielsen</title>
+          <link>/authors/nielsen/</link>
+          <pubDate>Thu, 28 Oct 2010 00:00:00 +0000</pubDate>
+          <guid>/authors/nielsen/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>doczkal</title>
+          <link>/authors/doczkal/</link>
+          <pubDate>Sun, 29 Aug 2010 00:00:00 +0000</pubDate>
+          <guid>/authors/doczkal/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>helke</title>
+          <link>/authors/helke/</link>
+          <pubDate>Sun, 08 Aug 2010 00:00:00 +0000</pubDate>
+          <guid>/authors/helke/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>katovsky</title>
+          <link>/authors/katovsky/</link>
+          <pubDate>Sun, 20 Jun 2010 00:00:00 +0000</pubDate>
+          <guid>/authors/katovsky/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>back</title>
+          <link>/authors/back/</link>
+          <pubDate>Fri, 28 May 2010 00:00:00 +0000</pubDate>
+          <guid>/authors/back/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>krauss</title>
+          <link>/authors/krauss/</link>
+          <pubDate>Wed, 12 May 2010 00:00:00 +0000</pubDate>
+          <guid>/authors/krauss/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>henrio</title>
+          <link>/authors/henrio/</link>
+          <pubDate>Fri, 30 Apr 2010 00:00:00 +0000</pubDate>
+          <guid>/authors/henrio/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>lutz</title>
+          <link>/authors/lutz/</link>
+          <pubDate>Fri, 30 Apr 2010 00:00:00 +0000</pubDate>
+          <guid>/authors/lutz/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>sudhof</title>
+          <link>/authors/sudhof/</link>
+          <pubDate>Fri, 30 Apr 2010 00:00:00 +0000</pubDate>
+          <guid>/authors/sudhof/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>wasserrab</title>
+          <link>/authors/wasserrab/</link>
+          <pubDate>Tue, 23 Mar 2010 00:00:00 +0000</pubDate>
+          <guid>/authors/wasserrab/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>heller</title>
+          <link>/authors/heller/</link>
+          <pubDate>Wed, 09 Dec 2009 00:00:00 +0000</pubDate>
+          <guid>/authors/heller/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>reiter</title>
+          <link>/authors/reiter/</link>
+          <pubDate>Thu, 03 Dec 2009 00:00:00 +0000</pubDate>
+          <guid>/authors/reiter/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>ijbema</title>
+          <link>/authors/ijbema/</link>
+          <pubDate>Sun, 22 Nov 2009 00:00:00 +0000</pubDate>
+          <guid>/authors/ijbema/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>chapman</title>
+          <link>/authors/chapman/</link>
+          <pubDate>Fri, 28 Aug 2009 00:00:00 +0000</pubDate>
+          <guid>/authors/chapman/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>kastermans</title>
+          <link>/authors/kastermans/</link>
+          <pubDate>Tue, 04 Aug 2009 00:00:00 +0000</pubDate>
+          <guid>/authors/kastermans/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>beringer</title>
+          <link>/authors/beringer/</link>
+          <pubDate>Fri, 12 Dec 2008 00:00:00 +0000</pubDate>
+          <guid>/authors/beringer/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>hofmann</title>
+          <link>/authors/hofmann/</link>
+          <pubDate>Fri, 12 Dec 2008 00:00:00 +0000</pubDate>
+          <guid>/authors/hofmann/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>snelting</title>
+          <link>/authors/snelting/</link>
+          <pubDate>Tue, 02 Sep 2008 00:00:00 +0000</pubDate>
+          <guid>/authors/snelting/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>nedzelsky</title>
+          <link>/authors/nedzelsky/</link>
+          <pubDate>Sat, 05 Apr 2008 00:00:00 +0000</pubDate>
+          <guid>/authors/nedzelsky/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>ortner</title>
+          <link>/authors/ortner/</link>
+          <pubDate>Fri, 29 Feb 2008 00:00:00 +0000</pubDate>
+          <guid>/authors/ortner/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>aehlig</title>
+          <link>/authors/aehlig/</link>
+          <pubDate>Mon, 18 Feb 2008 00:00:00 +0000</pubDate>
+          <guid>/authors/aehlig/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>olm</title>
+          <link>/authors/olm/</link>
+          <pubDate>Fri, 14 Dec 2007 00:00:00 +0000</pubDate>
+          <guid>/authors/olm/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>boehme</title>
+          <link>/authors/boehme/</link>
+          <pubDate>Tue, 06 Nov 2007 00:00:00 +0000</pubDate>
+          <guid>/authors/boehme/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>oosterhuis</title>
+          <link>/authors/oosterhuis/</link>
+          <pubDate>Sun, 12 Aug 2007 00:00:00 +0000</pubDate>
+          <guid>/authors/oosterhuis/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>kobayashi</title>
+          <link>/authors/kobayashi/</link>
+          <pubDate>Wed, 08 Aug 2007 00:00:00 +0000</pubDate>
+          <guid>/authors/kobayashi/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>bauer</title>
+          <link>/authors/bauer/</link>
+          <pubDate>Mon, 22 May 2006 00:00:00 +0000</pubDate>
+          <guid>/authors/bauer/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>fosterj</title>
+          <link>/authors/fosterj/</link>
+          <pubDate>Fri, 31 Mar 2006 00:00:00 +0000</pubDate>
+          <guid>/authors/fosterj/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>vytiniotis</title>
+          <link>/authors/vytiniotis/</link>
+          <pubDate>Fri, 31 Mar 2006 00:00:00 +0000</pubDate>
+          <guid>/authors/vytiniotis/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>barsotti</title>
+          <link>/authors/barsotti/</link>
+          <pubDate>Wed, 15 Mar 2006 00:00:00 +0000</pubDate>
+          <guid>/authors/barsotti/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>porter</title>
+          <link>/authors/porter/</link>
+          <pubDate>Tue, 14 Mar 2006 00:00:00 +0000</pubDate>
+          <guid>/authors/porter/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>jaskelioff</title>
+          <link>/authors/jaskelioff/</link>
+          <pubDate>Wed, 22 Jun 2005 00:00:00 +0000</pubDate>
+          <guid>/authors/jaskelioff/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>rauch</title>
+          <link>/authors/rauch/</link>
+          <pubDate>Mon, 20 Jun 2005 00:00:00 +0000</pubDate>
+          <guid>/authors/rauch/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>lindenberg</title>
+          <link>/authors/lindenberg/</link>
+          <pubDate>Mon, 02 May 2005 00:00:00 +0000</pubDate>
+          <guid>/authors/lindenberg/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>wirt</title>
+          <link>/authors/wirt/</link>
+          <pubDate>Mon, 02 May 2005 00:00:00 +0000</pubDate>
+          <guid>/authors/wirt/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>keefe</title>
+          <link>/authors/keefe/</link>
+          <pubDate>Thu, 21 Apr 2005 00:00:00 +0000</pubDate>
+          <guid>/authors/keefe/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>zee</title>
+          <link>/authors/zee/</link>
+          <pubDate>Thu, 09 Dec 2004 00:00:00 +0000</pubDate>
+          <guid>/authors/zee/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>richter</title>
+          <link>/authors/richter/</link>
+          <pubDate>Fri, 19 Nov 2004 00:00:00 +0000</pubDate>
+          <guid>/authors/richter/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>ridge</title>
+          <link>/authors/ridge/</link>
+          <pubDate>Tue, 28 Sep 2004 00:00:00 +0000</pubDate>
+          <guid>/authors/ridge/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>margetson</title>
+          <link>/authors/margetson/</link>
+          <pubDate>Mon, 20 Sep 2004 00:00:00 +0000</pubDate>
+          <guid>/authors/margetson/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>nishihara</title>
+          <link>/authors/nishihara/</link>
+          <pubDate>Thu, 24 Jun 2004 00:00:00 +0000</pubDate>
+          <guid>/authors/nishihara/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>chen</title>
+          <link>/authors/chen/</link>
+          <pubDate>Tue, 18 May 2004 00:00:00 +0000</pubDate>
+          <guid>/authors/chen/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>murao</title>
+          <link>/authors/murao/</link>
+          <pubDate>Tue, 18 May 2004 00:00:00 +0000</pubDate>
+          <guid>/authors/murao/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>friedrich</title>
+          <link>/authors/friedrich/</link>
+          <pubDate>Mon, 26 Apr 2004 00:00:00 +0000</pubDate>
+          <guid>/authors/friedrich/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>naraschewski</title>
+          <link>/authors/naraschewski/</link>
+          <pubDate>Fri, 19 Mar 2004 00:00:00 +0000</pubDate>
+          <guid>/authors/naraschewski/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>pusch</title>
+          <link>/authors/pusch/</link>
+          <pubDate>Fri, 19 Mar 2004 00:00:00 +0000</pubDate>
+          <guid>/authors/pusch/</guid>
+          <description></description>
+        </item>
+  </channel>
+</rss>

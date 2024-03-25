@@ -31,7 +31,7 @@ lemma zip_arg_index:
   obtains i where "xs ! i = x" "ys ! i = y" "i < length xs" "i < length ys"
 proof -
   obtain xs1 xs2 ys1 ys2 where "xs = xs1@x#xs2" "ys = ys1@y#ys2" "length xs1 = length ys1"
-    using zip_arg_subterm_split[OF assms] by moura
+    using zip_arg_subterm_split[OF assms] by blast
   thus ?thesis using nth_append_length[of xs1 x xs2] nth_append_length[of ys1 y ys2] that by simp
 qed
 
@@ -258,7 +258,7 @@ lemma length_prefix_ex:
   using assms
 proof (induction n)
   case (Suc n)
-  then obtain ys zs where IH: "xs = ys@zs" "length ys = n" by moura
+  then obtain ys zs where IH: "xs = ys@zs" "length ys = n" by atomize_elim auto
   hence "length zs > 0" using Suc.prems(1) by auto
   then obtain v vs where v: "zs = v#vs" by (metis Suc_length_conv gr0_conv_Suc)
   hence "length (ys@[v]) = Suc n" using IH(2) by simp
@@ -269,7 +269,7 @@ lemma length_prefix_ex':
   assumes "n < length xs"
   shows "\<exists>ys zs. xs = ys@xs ! n#zs \<and> length ys = n"
 proof -
-  obtain ys zs where xs: "xs = ys@zs" "length ys = n" using assms length_prefix_ex[of n xs] by moura
+  obtain ys zs where xs: "xs = ys@zs" "length ys = n" using assms length_prefix_ex[of n xs] by atomize_elim auto
   hence "length zs > 0" using assms by auto
   then obtain v vs where v: "zs = v#vs" by (metis Suc_length_conv gr0_conv_Suc)
   hence "(ys@zs) ! n = v" using xs by auto
@@ -520,7 +520,7 @@ lemma distinct_concat_idx_disjoint:
   shows "set (xs ! i) \<inter> set (xs ! j) = {}"
 proof -
   obtain ys zs vs where ys: "xs = ys@xs ! i#zs@xs ! j#vs" "length ys = i" "length zs = j - i - 1"
-    using length_prefix_ex2[OF ij] by moura
+    using length_prefix_ex2[OF ij] by atomize_elim auto
   thus ?thesis
     using xs concat_append[of "ys@xs ! i#zs" "xs ! j#vs"]
           distinct_append[of "concat (ys@xs ! i#zs)" "concat (xs ! j#vs)"]

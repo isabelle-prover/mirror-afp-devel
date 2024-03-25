@@ -647,6 +647,16 @@ qed
 
 end
 
+class stone_relation_algebra_simple = stone_relation_algebra +
+  assumes simple: "x \<noteq> bot \<longrightarrow> simple x"
+begin
+
+lemma point_ideal_point:
+  "point x \<longleftrightarrow> ideal_point x"
+  using simple by fastforce
+
+end
+
 subsection \<open>Atomic\<close>
 
 class stone_relation_algebra_atomic = stone_relation_algebra +
@@ -989,8 +999,8 @@ subsection \<open>Atomic and Atom-simple\<close>
 class stone_relation_algebra_atomic_atomsimple = stone_relation_algebra_atomic + stone_relation_algebra_atomsimple
 begin
 
-lemma simple:
-  "a \<noteq> bot \<Longrightarrow> top * a * top = top"
+subclass stone_relation_algebra_simple
+  apply unfold_locales
   using atomsimple atomsimple_simple by blast
 
 lemma AB_card_2_6:
@@ -1277,6 +1287,11 @@ lemma counterexample_nAB_top_iff_leq_2:
   nitpick[expect=genuine,card=6]
   oops
 
+lemma counterexample_nAB_atom_top_iff_leq_2:
+  "(atom x \<longleftrightarrow> nAB x = 1) \<or> (nAB y = nAB top \<longleftrightarrow> y = top) \<or> (nAB top \<le> nAB y \<longleftrightarrow> y = top)"
+  nitpick[expect=genuine,card=6]
+  oops
+
 end
 
 subsection \<open>Atom-rectangular, Atom-simple and Finitely Many Atoms\<close>
@@ -1313,50 +1328,34 @@ next
   have 2: "finite (AB x)"
     using finite_AB by blast
   have 3: "regular (Sup_fin (AB x))"
-  proof -
-    have "--Sup_fin (AB x) \<le> Sup_fin (AB x)"
-    proof (rule finite_ne_subset_induct')
-      show "finite (AB x)"
-        using 2 by simp
-      show "AB x \<noteq> {}"
-        using 1 by simp
-      show "AB x \<subseteq> AB top"
-        by auto
-      show "\<And>a . a \<in> AB top \<Longrightarrow> --Sup_fin {a} \<le> Sup_fin {a}"
-        using atom_regular by auto
-      show "\<And>a F . finite F \<Longrightarrow> F \<noteq> {} \<Longrightarrow> F \<subseteq> AB top \<Longrightarrow> a \<in> AB top \<Longrightarrow> a \<notin> F \<Longrightarrow> --Sup_fin F \<le> Sup_fin F \<Longrightarrow> --Sup_fin (insert a F) \<le> Sup_fin (insert a F)"
-      proof -
-        fix a F
-        assume 4: "finite F" "F \<noteq> {}" "F \<subseteq> AB top" "a \<in> AB top" "a \<notin> F" "--Sup_fin F \<le> Sup_fin F"
-        hence "--Sup_fin (insert a F) = a \<squnion> --Sup_fin F"
-          using 4 atom_regular by auto
-        also have "... \<le> a \<squnion> Sup_fin F"
-          using 4 sup_mono by fastforce
-        also have "... = Sup_fin (insert a F)"
-          using 4 by auto
-        finally show "--Sup_fin (insert a F) \<le> Sup_fin (insert a F)"
-          .
-      qed
-    qed
-    thus ?thesis
-      using inf.antisym_conv pp_increasing by blast
+  proof (rule finite_ne_subset_induct')
+    show "finite (AB x)"
+      using 2 by simp
+    show "AB x \<noteq> {}"
+      using 1 by simp
+    show "AB x \<subseteq> AB top"
+      by auto
+    show "\<And>a . a \<in> AB top \<Longrightarrow> Sup_fin {a} = --Sup_fin {a}"
+      using atom_regular by auto
+    show "\<And>a F . finite F \<Longrightarrow> F \<noteq> {} \<Longrightarrow> F \<subseteq> AB top \<Longrightarrow> a \<in> AB top \<Longrightarrow> a \<notin> F \<Longrightarrow> Sup_fin F = --Sup_fin F \<Longrightarrow> Sup_fin (insert a F) = --Sup_fin (insert a F)"
+      using atom_regular by auto
   qed
   have "x \<sqinter> -Sup_fin (AB x) = bot"
   proof (rule ccontr)
     assume "x \<sqinter> -Sup_fin (AB x) \<noteq> bot"
-    from this obtain b where 5: "atom b \<and> b \<le> x \<sqinter> -Sup_fin (AB x)"
+    from this obtain b where 4: "atom b \<and> b \<le> x \<sqinter> -Sup_fin (AB x)"
       using atomic by blast
     hence "b \<le> Sup_fin (AB x)"
       using Sup_fin.coboundedI 2 by force
     thus "False"
-      using 5 atom_in_p_xor by auto
+      using 4 atom_in_p_xor by auto
   qed
-  hence 6: "x \<le> Sup_fin (AB x)"
+  hence 5: "x \<le> Sup_fin (AB x)"
     using 3 by (simp add: pseudo_complement)
   have "Sup_fin (AB x) \<le> x"
     using 1 2 Sup_fin.boundedI by fastforce
   thus ?thesis
-    using 3 6 order.antisym by force
+    using 3 5 order.antisym by force
 qed
 
 sublocale ra: relation_algebra where minus = "\<lambda>x y . x \<sqinter> - y"
@@ -1813,6 +1812,56 @@ proof -
     by (smt card_univ_comp_mapping card_comp_univ card_conv card_univ_meet_comp coreflexive_comp_top_inf inf.absorb2 reflexive_one_closed top_right_mult_increasing total_one_closed univalent_one_closed)
 qed
 
+lemma counterexample_card_univ_comp_meet_card_comp_univ:
+  assumes card_add: "card_add _"
+      and card_conv: "card_conv _"
+      and card_bot_iff: "card_bot_iff _"
+      and card_atom_iff: "card_atom_iff _"
+      and card_univ_meet_comp: "card_univ_meet_comp _"
+    shows "card_univ_comp_meet _ \<longleftrightarrow> card_comp_univ _"
+  nitpick[expect=genuine]
+  oops
+
+lemma counterexample_card_univ_meet_comp_card_univ_meet_vector:
+  assumes card_add: "card_add _"
+      and card_conv: "card_conv _"
+      and card_bot_iff: "card_bot_iff _"
+      and card_atom_iff: "card_atom_iff _"
+      and card_univ_comp_meet: "card_univ_comp_meet _"
+    shows "card_univ_meet_comp _ \<longleftrightarrow> card_univ_meet_vector _"
+  nitpick[expect=genuine]
+  oops
+
+lemma counterexample_card_univ_meet_comp_card_univ_meet_conv:
+  assumes card_add: "card_add _"
+      and card_conv: "card_conv _"
+      and card_bot_iff: "card_bot_iff _"
+      and card_atom_iff: "card_atom_iff _"
+      and card_univ_comp_meet: "card_univ_comp_meet _"
+    shows "card_univ_meet_comp _ \<longleftrightarrow> card_univ_meet_conv _"
+  nitpick[expect=genuine]
+  oops
+
+lemma counterexample_card_univ_meet_vector_card_domain_sym:
+  assumes card_add: "card_add _"
+      and card_conv: "card_conv _"
+      and card_bot_iff: "card_bot_iff _"
+      and card_atom_iff: "card_atom_iff _"
+      and card_univ_comp_meet: "card_univ_comp_meet _"
+    shows "card_univ_meet_vector _ \<longleftrightarrow> card_domain_sym _"
+  nitpick[expect=genuine]
+  oops
+
+lemma counterexample_card_univ_meet_conv_card_domain_sym:
+  assumes card_add: "card_add _"
+      and card_conv: "card_conv _"
+      and card_bot_iff: "card_bot_iff _"
+      and card_atom_iff: "card_atom_iff _"
+      and card_univ_comp_meet: "card_univ_comp_meet _"
+    shows "card_univ_meet_conv _ \<longleftrightarrow> card_domain_sym _"
+  nitpick[expect=genuine]
+  oops
+
 end
 
 subsection \<open>Cardinality in Relation Algebras\<close>
@@ -1863,6 +1912,23 @@ next
   thus "#x = #top"
     by simp
 qed
+
+end
+
+class sra_card_atomic_finiteatoms = sra_card + stone_relation_algebra_atomic_finiteatoms
+begin
+
+lemma counterexample_card_nAB:
+  assumes card_bot_iff: "card_bot_iff _"
+      and card_atom_iff: "card_atom_iff _"
+      and card_conv: "card_conv _"
+      and card_add: "card_add _"
+      and card_iso: "card_iso _"
+      and card_top_iff_eq: "card_top_iff_eq _"
+      and card_top_finite: "card_top_finite _"
+    shows "#x = nAB x"
+  nitpick[expect=genuine]
+  oops
 
 end
 
@@ -1951,38 +2017,35 @@ proof
   have "\<And>a . atom a \<and> a \<le> 1 \<longrightarrow> a * top * a \<le> 1"
   proof
     fix a
-    let ?ca = "top * a \<sqinter> 1"
     assume 1: "atom a \<and> a \<le> 1"
-    have "a\<^sup>T * top * a \<le> 1"
+    show "a * top * a \<le> 1"
     proof (rule ccontr)
-      assume "\<not> a\<^sup>T * top * a \<le> 1"
-      hence "a\<^sup>T * top * a \<sqinter> -1 \<noteq> bot"
+      assume "\<not> a * top * a \<le> 1"
+      hence "a * top * a \<sqinter> -1 \<noteq> bot"
         by (simp add: pseudo_complement)
-      from this obtain b where 2: "atom b \<and> b \<le> a\<^sup>T * top * a \<sqinter> -1"
+      from this obtain b where 2: "atom b \<and> b \<le> a * top * a \<sqinter> -1"
         using atomic by blast
-      hence "b * top \<le> a\<^sup>T * top"
+      hence "b * top \<le> a * top"
         by (metis comp_associative dual_order.trans inf.boundedE mult_left_isotone mult_right_isotone top.extremum)
-      hence "b * top \<sqinter> 1 \<le> ?ca"
-        by (metis comp_inf.comp_isotone conv_dist_comp conv_dist_inf coreflexive_symmetric inf.cobounded2 reflexive_one_closed symmetric_top_closed)
-      hence 3: "b * top \<sqinter> 1 = ?ca"
-        using 1 2 domain_atom codomain_atom by simp
-      hence "top * b \<le> top * a"
+      hence "b * top \<sqinter> 1 \<le> a * top \<sqinter> 1"
+        using 1 comp_inf.comp_isotone by auto
+      hence 3: "b * top \<sqinter> 1 = a * top \<sqinter> 1"
+        using 1 2 domain_atom by simp
+      have "top * b \<le> top * a"
         using 2 by (metis comp_associative comp_inf.vector_top_closed comp_inf_covector inf.boundedE mult_right_isotone vector_export_comp_unit vector_top_closed)
-      hence "top * b \<sqinter> 1 \<le> ?ca"
+      hence "top * b \<sqinter> 1 \<le> top * a \<sqinter> 1"
         using inf_mono by blast
-      hence "top * b \<sqinter> 1 = ?ca"
+      hence "top * b \<sqinter> 1 = top * a \<sqinter> 1"
         using 1 2 codomain_atom by simp
-      hence 4: "dom_cod b = dom_cod ?ca"
-        using 3 by (metis comp_inf_covector comp_right_one inf.sup_monoid.add_commute inf_top.left_neutral vector_export_comp_unit)
-      have "b \<in> AB top \<and> ?ca \<in> AB top"
-        using 1 2 codomain_atom by simp
-      hence "b = ?ca"
-        using inj_onD dom_cod_inj_atoms 2 4 by smt
+      hence 4: "dom_cod b = dom_cod a"
+        using 3 by simp
+      have "b \<in> AB top \<and> a \<in> AB top"
+        using 1 2 by simp
+      hence "b = a"
+        using inj_onD dom_cod_inj_atoms 4 by smt
       thus "False"
-        using 2 by (metis comp_inf.mult_right_isotone inf.boundedE inf.idem inf.left_commute inf_p le_bot)
+        using 1 2 comp_inf.coreflexive_pseudo_complement le_bot by fastforce
     qed
-    thus "a * top * a \<le> 1"
-      using 1 by (simp add: coreflexive_symmetric)
   qed
   thus "\<And>a . atom a \<longrightarrow> a * top * a \<le> a"
     by (metis atom_rectangle_atom_one_rep)

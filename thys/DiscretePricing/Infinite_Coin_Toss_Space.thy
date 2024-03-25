@@ -1932,13 +1932,7 @@ lemma (in infinite_coin_toss_space) pseudo_proj_True_img:
 lemma (in infinite_coin_toss_space) sconst_if:
   assumes "\<And>n. snth w n = True"
   shows "w = sconst True"
-proof -
-  obtain nn :: "(bool \<Rightarrow> bool) \<Rightarrow> bool stream \<Rightarrow> bool stream \<Rightarrow> nat" where
-    "\<And>p s n sa sb na pa sc pb sd se. (\<not> p (s !! n::bool) \<or> smap p s \<noteq> sa \<or> sa !! n) \<and> (\<not> sb !! na \<or> smap pa sc \<noteq> sb \<or> pa (sc !! na::bool)) \<and> (\<not> pb (sd !! nn pb sd se) \<or> \<not> se !! nn pb sd se \<or> smap pb sd = se)"
-    using smap_alt by moura
-  then show ?thesis
-    by (metis (no_types) assms eq_id_iff id_funpow snth_siterate)
-qed
+  by (metis (full_types) assms diff_streams_only_if id_apply id_funpow snth_siterate)
 
 lemma (in infinite_coin_toss_space) pseudo_proj_True_suc_img_pref:
   shows "range (pseudo_proj_True (Suc n)) = {y. \<exists>w \<in> range (pseudo_proj_True n). y = True ## w} \<union>

@@ -1,0 +1,46 @@
+title = "Information Flow Control via Stateful Intransitive Noninterference in Language IMP"
+date = 2024-02-12
+topics = [
+  "Computer science/Programming languages/Type systems",
+  "Computer science/Programming languages/Static analysis",
+  "Computer science/Security",
+]
+abstract = """
+The scope of information flow control via static type systems is in principle much broader than
+information flow security, since this concept promises to cope with information flow correctness in
+full generality. Such a correctness policy can be expressed by extending the notion of a single
+stateless level-based interference relation applying throughout a program -- addressed by the static
+security type systems described by Volpano, Smith, and Irvine, and formalized in Nipkow and Klein's
+book on formal programming language semantics (in the version of February 2023) -- to that of a
+stateful interference function mapping program states to (generally) intransitive interference
+relations.
+
+This paper studies information flow control via stateful intransitive noninterference. First, the
+notion of termination-sensitive information flow security with respect to a level-based interference
+relation is generalized to that of termination-sensitive information flow correctness with respect
+to such a correctness policy. Then, a static type system is specified and is proven to be capable of
+enforcing such policies. Finally, the information flow correctness notion and the static type system
+introduced here are proven to degenerate to the counterparts formalized in Nipkow and Klein's book
+in case of a stateless level-based information flow correctness policy. Although the operational
+semantics of the didactic programming language IMP employed in the book is used for this purpose,
+the introduced concepts apply to larger, real-world imperative programming languages as well."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.noce]
+email = "noce_email"
+
+[contributors]
+
+[notify]
+noce = "noce_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

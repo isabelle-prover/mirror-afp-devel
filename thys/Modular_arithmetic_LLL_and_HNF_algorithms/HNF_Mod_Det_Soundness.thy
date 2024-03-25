@@ -48,16 +48,15 @@ proof -
   have P_A_P1_H1: "P * A = P1 * H1" using P1_H1 sound_HNF unfolding is_sound_HNF_def Let_def
     by (metis (mono_tags, lifting) case_prod_conv)
   hence "A = inv_P * (P1 * H1)"
-    by (smt A P inv_P_P inv_P assoc_mult_mat carrier_matD(1) inverts_mat_def left_mult_one_mat)
+    by (smt (verit) A P inv_P_P inv_P assoc_mult_mat carrier_matD(1) inverts_mat_def left_mult_one_mat)
   hence A_inv_P_P1_H1: "A = (inv_P * P1) * H1"
-    by (smt P P1_H1 assoc_mult_mat carrier_matD(1) fst_conv index_mult_mat(2) inv_P 
-        is_sound_HNF_def prod.sel(2) sound_HNF split_beta)
+    using H1 P1 inv_P by fastforce
   have A_P2_H2: "A = P2 * H2" using P2_H2 sound_HNF unfolding is_sound_HNF_def Let_def
     by (metis (mono_tags, lifting) case_prod_conv)
   have invertible_inv_P_P1: "invertible_mat (inv_P * P1)"
   proof (rule invertible_mult_JNF[OF inv_P P1 invertible_inv_P])   
     show "invertible_mat P1"
-      by (smt P1_H1 is_sound_HNF_def prod.sel(1) sound_HNF split_beta)
+      by (smt (verit) P1_H1 is_sound_HNF_def prod.sel(1) sound_HNF split_beta)
   qed
   show ?thesis
   proof (rule Hermite_unique_JNF[OF A _ H1 _ _ A_inv_P_P1_H1 A_P2_H2 inv_A invertible_inv_P_P1])
@@ -65,15 +64,15 @@ proof -
       by (metis carrier_matD(1) carrier_matI index_mult_mat(2) inv_P
           invertible_inv_P_P1 invertible_mat_def square_mat.simps)
     show "P2 \<in> carrier_mat n n" 
-      by (smt A P2_H2 carrier_matD(1) is_sound_HNF_def prod.sel(1) sound_HNF split_beta)
+      by (smt (verit) A P2_H2 carrier_matD(1) is_sound_HNF_def prod.sel(1) sound_HNF split_beta)
     show "H2 \<in> carrier_mat n n"
-      by (smt A P2_H2 carrier_matD(1) carrier_matD(2) is_sound_HNF_def prod.sel(2) sound_HNF split_beta)
+      by (smt (verit) A P2_H2 carrier_matD(1) carrier_matD(2) is_sound_HNF_def prod.sel(2) sound_HNF split_beta)
     show "invertible_mat P2"
-      by (smt P2_H2 is_sound_HNF_def prod.sel(1) sound_HNF split_beta)
+      by (smt (verit) P2_H2 is_sound_HNF_def prod.sel(1) sound_HNF split_beta)
     show "Hermite_JNF associates res H1" 
-      by (smt P1_H1 is_sound_HNF_def prod.sel(2) sound_HNF split_beta)
+      by (smt (verit) P1_H1 is_sound_HNF_def prod.sel(2) sound_HNF split_beta)
     show "Hermite_JNF associates res H2"
-      by (smt P2_H2 is_sound_HNF_def prod.sel(2) sound_HNF split_beta)
+      by (smt (verit) P2_H2 is_sound_HNF_def prod.sel(2) sound_HNF split_beta)
   qed
 qed
 
@@ -99,7 +98,7 @@ next
       = of_int_hom.mat_hom (inv_P) * ((map_mat of_int P) * mat_of_rows n gs)" 
     using prod by auto
   also have "... = of_int_hom.mat_hom (inv_P) * (map_mat of_int P) * mat_of_rows n gs"
-    by (smt P assoc_mult_mat inv_P length_gs map_carrier_mat mat_of_rows_carrier(1))
+    by (smt (verit) P assoc_mult_mat inv_P length_gs map_carrier_mat mat_of_rows_carrier(1))
   also have "... = of_int_hom.mat_hom (inv_P * P) * mat_of_rows n gs"
     by (metis P inv_P of_int_hom.mat_hom_mult)
   also have "... = mat_of_rows n gs"
@@ -184,9 +183,9 @@ proof -
       using sound_HNF P2_H2 unfolding is_sound_HNF_def
       by (metis (no_types, lifting) len_gs case_prodD mat_of_rows_carrier(2) mat_of_rows_carrier(3))
     have P2_H2: "P2 * H2 = mat_of_rows n gs"
-      by (smt P2_H2 sound_HNF case_prodD is_sound_HNF_def)
+      by (smt (verit) P2_H2 sound_HNF case_prodD is_sound_HNF_def)
     have P1_H1_fs: "P1 * H1 = mat_of_rows n fs_init"
-      by (smt P1_H1 sound_HNF case_prodD is_sound_HNF_def)
+      by (smt (verit) P1_H1 sound_HNF case_prodD is_sound_HNF_def)
     obtain inv_P1 where P1_inv_P1: "inverts_mat P1 inv_P1" and inv_P1_P1: "inverts_mat inv_P1 P1"
     and inv_P1: "inv_P1 \<in> carrier_mat m m"
       using P1 invertible_P1 obtain_inverse_matrix by blast
@@ -196,7 +195,7 @@ proof -
     have "mat_of_rows n fs_init = P1 * H1" using sound_HNF P2_H2 unfolding is_sound_HNF_def
       by (metis (mono_tags, lifting) P1_H1 case_prodD)
     also have "... = P1 * inv_P2 * P2 * H1"
-      by (smt P1 P2 assoc_mult_mat carrier_matD(1) inv_P2 inv_P2_P2 inverts_mat_def right_mult_one_mat)
+      by (smt (verit) P1 P2 assoc_mult_mat carrier_matD(1) inv_P2 inv_P2_P2 inverts_mat_def right_mult_one_mat)
     also have "... = P1 * inv_P2 * P2 * H2" using H1_H2 by blast
     also have "... = P1 * inv_P2 * (P2 * H2)" 
       using H2 P2 \<open>P1 * inv_P2 \<in> carrier_mat m m\<close> assoc_mult_mat by blast
@@ -212,7 +211,7 @@ proof -
       using P2 inv_P1 by auto
     have "mat_of_rows n gs = P2 * H2" using sound_HNF P2_H2 unfolding is_sound_HNF_def by metis
     also have "... = P2 * inv_P1 * P1 * H2"
-      by (smt P1 P2 assoc_mult_mat carrier_matD(1) inv_P1 inv_P1_P1 inverts_mat_def right_mult_one_mat)
+      by (smt (verit) P1 P2 assoc_mult_mat carrier_matD(1) inv_P1 inv_P1_P1 inverts_mat_def right_mult_one_mat)
     also have "... = P2 * inv_P1 * P1 * H1" using H1_H2 by blast
     also have "... = P2 * inv_P1 * (P1 * H1)" 
       using H1 P1 \<open>P2 * inv_P1 \<in> carrier_mat m m\<close> assoc_mult_mat by blast
@@ -583,7 +582,7 @@ next
         by (rule mult_minus_distrib_mat[symmetric, OF fs_carrier Q'Q], auto)      
       finally have "mat_of_cols n fs * (?Q' * ?Q - 1\<^sub>m n) = 0\<^sub>m n n" ..
       have "det (?Q' * ?Q) = 1"
-        by (smt Determinant.det_mult Q Q' Q'Q fs_fs_Q'Q assoc_mult_mat det_fs_not_zero 
+        by (smt (verit) Determinant.det_mult Q Q' Q'Q fs_fs_Q'Q assoc_mult_mat det_fs_not_zero 
             fs_carrier mult_cancel_left2 of_int_code(2))
       hence det_Q'_Q_1: "det ?Q * det ?Q' = 1"
         by (metis (no_types, lifting) Determinant.det_mult Groups.mult_ac(2) Q Q')
@@ -711,7 +710,7 @@ proof -
     case False
     have i_mp: "i < m + p" using AB_carrier A B i by fastforce
     have "Matrix.row (A @\<^sub>r B) i = Matrix.row B (i-m)" using A False B i row_append_rows2 i_mp
-      by (smt AB_carrier atLeastLessThan_iff carrier_matD(1) le_add1
+      by (smt (verit) AB_carrier atLeastLessThan_iff carrier_matD(1) le_add1
           linordered_semidom_class.add_diff_inverse row_append_rows2)
     also have "... = Matrix.rows B ! (i-m)" unfolding Matrix.rows_def using False i A 1 by auto
     also have "... = (Matrix.rows A @ Matrix.rows B) ! (i-m+m)"
@@ -757,7 +756,7 @@ text \<open>Results about submatrices\<close>
 lemma pick_first_id: assumes i: "i<n" shows "pick {0..<n} i = i"
 proof -
   have "i = (card {a \<in> {0..<n}. a < i})" using i
-    by (auto, smt Collect_cong card_Collect_less_nat nat_SN.gt_trans)
+    by (auto, smt (verit) Collect_cong card_Collect_less_nat nat_SN.gt_trans)
   thus ?thesis using pick_card_in_set i
     by (metis atLeastLessThan_iff zero_order(1))
 qed
@@ -771,10 +770,9 @@ proof -
   let ?J = "{0..<k2}"
   let ?H = "submatrix H ?I ?J"  
   have km: "k1\<le>m" and kn: "k2\<le>n" using k1 k2 by simp+
-  have card_mk: "card {i. i < m \<and> i < k1} = k1" using km 
-    by (smt Collect_cong card_Collect_less_nat le_eq_less_or_eq nat_less_induct nat_neq_iff)
-  have card_nk: "card {i. i < n \<and> i < k2} = k2" using kn 
-    by (smt Collect_cong card_Collect_less_nat le_eq_less_or_eq nat_less_induct nat_neq_iff)
+  then have "{i. i < m \<and> i < k1} = {..<k1}" "{i. i < n \<and> i < k2} = {..<k2}" by auto
+  then have card_mk: "card {i. i < m \<and> i < k1} = k1" and card_nk: "card {i. i < n \<and> i < k2} = k2"
+    by auto
   show ?thesis
   proof- 
     have pick_j: "pick ?J j = j" by (rule pick_first_id[OF j])
@@ -792,12 +790,11 @@ lemma submatrix_carrier_first:
   shows"submatrix H {0..<k1} {0..<k2} \<in> carrier_mat k1 k2"
 proof -  
   have km: "k1\<le>m" and kn: "k2\<le>n" using k1 k2 by simp+
-  have card_mk: "card {i. i < m \<and> i < k1} = k1" using km 
-    by (smt Collect_cong card_Collect_less_nat le_eq_less_or_eq nat_less_induct nat_neq_iff)
-  have card_nk: "card {i. i < n \<and> i < k2} = k2" using kn 
-    by (smt Collect_cong card_Collect_less_nat le_eq_less_or_eq nat_less_induct nat_neq_iff)
+  then have "{i. i < m \<and> i < k1} = {..<k1}" "{i. i < n \<and> i < k2} = {..<k2}" by auto
+  then have card_mk: "card {i. i < m \<and> i < k1} = k1" and card_nk: "card {i. i < n \<and> i < k2} = k2"
+    by auto
   show ?thesis
-    by (smt Collect_cong H atLeastLessThan_iff card_mk card_nk carrier_matD 
+    by (smt (verit) Collect_cong H atLeastLessThan_iff card_mk card_nk carrier_matD 
         carrier_matI dim_submatrix zero_order(1))
 qed
 
@@ -857,7 +854,7 @@ proof (rule eq_matI)
   next
     case False
     have "(?A' @\<^sub>r B) $$ (i, j) = B $$ (i-m,j)"      
-      by (smt (z3) A' carrier_matD(1) False append_rows_def i index_mat_four_block j jn length_map
+      by (smt (verit) A' carrier_matD(1) False append_rows_def i index_mat_four_block j jn length_map
           length_upt mat_of_rows_carrier(2,3))
     also have "... = A $$ (i,j)"
       by (metis False append_rows_def B eq atLeastLessThan_iff carrier_matD(1) diff_zero i 
@@ -910,10 +907,9 @@ proof -
   let ?I = "{0..<k}"
   let ?H = "submatrix H ?I ?I"  
   have km: "k\<le>m" and kn: "k\<le>n" using k by simp+
-  have card_mk: "card {i. i < m \<and> i < k} = k" using km 
-    by (smt Collect_cong card_Collect_less_nat le_eq_less_or_eq nat_less_induct nat_neq_iff)
-  have card_nk: "card {i. i < n \<and> i < k} = k" using kn 
-    by (smt Collect_cong card_Collect_less_nat le_eq_less_or_eq nat_less_induct nat_neq_iff)
+  then have "{i. i < m \<and> i < k} = {..<k}" "{i. i < n \<and> i < k} = {..<k}" by auto
+  then have card_mk: "card {i. i < m \<and> i < k} = k" and card_nk: "card {i. i < n \<and> i < k} = k"
+    by auto
   have H_ij: "H $$ (i,j) = (submatrix H ?I ?I) $$ (i,j)"  if i: "i<k" and j: "j<k" for i j
   proof- 
     have pick_j: "pick ?I j = j" by (rule pick_first_id[OF j])
@@ -937,7 +933,7 @@ proof -
       have H'_ja: "?H $$ (j,a) \<noteq> 0" 
         by (metis (mono_tags) LeastI j_not0_H' a_def is_zero_row_JNF_def)
       have a: "a < dim_col ?H"
-        by (smt j_not0_H' a_def is_zero_row_JNF_def linorder_neqE_nat not_less_Least order_trans_rules(19))
+        by (smt (verit) j_not0_H' a_def is_zero_row_JNF_def linorder_neqE_nat not_less_Least order_trans_rules(19))
       have j_not0_H: "\<not> is_zero_row_JNF j H"
         by (metis H' H'_ja H_ij a assms(2) basic_trans_rules(19) carrier_matD is_zero_row_JNF_def j kn le_eq_less_or_eq)
       hence i_not0_H: "\<not> is_zero_row_JNF i H" using ef_H j ij unfolding echelon_form_JNF_def
@@ -968,13 +964,13 @@ proof -
     have H'_jb: "?H $$ (j,b) \<noteq> 0"
       by (metis (mono_tags) LeastI_ex b_def is_zero_row_JNF_def not0_jH')
     have a: "a < dim_row ?H"
-      by (smt H' a_def carrier_matD is_zero_row_JNF_def less_trans linorder_neqE_nat not0_iH' not_less_Least)
+      by (smt (verit) H' a_def carrier_matD is_zero_row_JNF_def less_trans linorder_neqE_nat not0_iH' not_less_Least)
     have b: "b < dim_row ?H"
-      by (smt H' b_def carrier_matD is_zero_row_JNF_def less_trans linorder_neqE_nat not0_jH' not_less_Least)
+      by (smt (verit) H' b_def carrier_matD is_zero_row_JNF_def less_trans linorder_neqE_nat not0_jH' not_less_Least)
     have a_eq: "a = (LEAST n. H $$ (i, n) \<noteq> 0)"
-      by (smt H' H'_ia H_ij LeastI_ex a a_def carrier_matD(1) ij j linorder_neqE_nat not_less_Least order_trans_rules(19))
+      by (smt (verit) H' H'_ia H_ij LeastI_ex a a_def carrier_matD(1) ij j linorder_neqE_nat not_less_Least order_trans_rules(19))
     have b_eq: "b = (LEAST n. H $$ (j, n) \<noteq> 0)"
-      by (smt H' H'_jb H_ij LeastI_ex b b_def carrier_matD(1) ij j linorder_neqE_nat not_less_Least order_trans_rules(19)) 
+      by (smt (verit) H' H'_jb H_ij LeastI_ex b b_def carrier_matD(1) ij j linorder_neqE_nat not_less_Least order_trans_rules(19)) 
     have not0_iH: "\<not> is_zero_row_JNF i H" 
       by (metis H' H'_ia H_ij a H carrier_matD ij is_zero_row_JNF_def j kn le_eq_less_or_eq order.strict_trans)
     have not0_jH: "\<not> is_zero_row_JNF j H" 
@@ -994,10 +990,9 @@ proof -
   let ?I = "{0..<k}"
   let ?H = "submatrix H ?I ?I"  
   have km: "k\<le>m" and kn: "k\<le>n" using k by simp+
-  have card_mk: "card {i. i < m \<and> i < k} = k" using km 
-    by (smt Collect_cong card_Collect_less_nat le_eq_less_or_eq nat_less_induct nat_neq_iff)
-  have card_nk: "card {i. i < n \<and> i < k} = k" using kn 
-    by (smt Collect_cong card_Collect_less_nat le_eq_less_or_eq nat_less_induct nat_neq_iff)
+  then have "{i. i < m \<and> i < k} = {..<k}" "{i. i < n \<and> i < k} = {..<k}" by auto
+  then have card_mk: "card {i. i < m \<and> i < k} = k" and card_nk: "card {i. i < n \<and> i < k} = k"
+    by auto
   have H_ij: "H $$ (i,j) = (submatrix H ?I ?I) $$ (i,j)"  if i: "i<k" and j: "j<k" for i j
   proof- 
     have pick_j: "pick ?I j = j" by (rule pick_first_id[OF j])
@@ -1025,9 +1020,9 @@ proof -
     have H'_ia: "?H $$ (i,a) \<noteq> 0"
       by (metis (mono_tags) LeastI_ex a_def is_zero_row_JNF_def not0_iH')
     have a: "a < dim_row ?H"
-      by (smt H' a_def carrier_matD is_zero_row_JNF_def less_trans linorder_neqE_nat not0_iH' not_less_Least)
+      by (smt (verit) H' a_def carrier_matD is_zero_row_JNF_def less_trans linorder_neqE_nat not0_iH' not_less_Least)
     have a_eq: "a = (LEAST n. H $$ (i, n) \<noteq> 0)"
-      by (smt H' H'_ia H_ij LeastI_ex a a_def carrier_matD(1) i linorder_neqE_nat not_less_Least order_trans_rules(19))
+      by (smt (verit) H' H'_ia H_ij LeastI_ex a a_def carrier_matD(1) i linorder_neqE_nat not_less_Least order_trans_rules(19))
     have H'_ia_H_ia: "?H $$ (i, a) = H $$ (i, a)"  by (metis H' H_ij a carrier_matD(1) i)
     have not'_iH: "\<not> is_zero_row_JNF i H"
       by (metis H' H'_ia H'_ia_H_ia a assms(2) carrier_matD(1) carrier_matD(2) is_zero_row_JNF_def kn order.strict_trans2)
@@ -1300,9 +1295,9 @@ proof (rule echelon_form_JNF_intro)
   proof (rule Least_equality)
     have nz_ia_A: "\<not> is_zero_row_JNF ia A" using nz_ia_mrA ia by auto
     have Least_Aian_n: "(LEAST n. A $$ (ia, n) \<noteq> 0) < dim_col A"
-      by (smt dual_order.strict_trans is_zero_row_JNF_def not_less_Least not_less_iff_gr_or_eq nz_ia_A)
+      by (smt (verit) dual_order.strict_trans is_zero_row_JNF_def not_less_Least not_less_iff_gr_or_eq nz_ia_A)
     show "multrow i (- 1) A $$ (ia, LEAST n. A $$ (ia, n) \<noteq> 0) \<noteq> 0"
-      by (smt LeastI Least_Aian_n class_cring.cring_simprules(22) equation_minus_iff ia
+      by (smt (verit) LeastI Least_Aian_n class_cring.cring_simprules(22) equation_minus_iff ia
           index_mat_multrow(1) is_zero_row_JNF_def mult_minus1 nz_ia_A)
     show " \<And>y. multrow i (- 1) A $$ (ia, y) \<noteq> 0 \<Longrightarrow> (LEAST n. A $$ (ia, n) \<noteq> 0) \<le> y"
       by (metis (mono_tags, lifting) Least_Aian_n class_cring.cring_simprules(22) ia 
@@ -1443,7 +1438,7 @@ proof
     hence "H $$ (i, j) = 0" using uH unfolding upper_triangular'_def dr imn using i jn 
       by (simp add: dc j)
     also have "... = (?H' @\<^sub>r 0\<^sub>m m n) $$ (i, j)"
-      by (smt False H' append_rows_def assms(2) carrier_matD(1) carrier_matD(2) dc imn
+      by (smt (verit) False H' append_rows_def assms(2) carrier_matD(1) carrier_matD(2) dc imn
           index_mat_four_block(1,3) index_zero_mat j less_diff_conv2 linorder_not_less)
     finally show ?thesis .
   qed
@@ -1476,7 +1471,7 @@ proof -
   have j_in_xs: "j \<in> set ?xs" using res unfolding find_fst_non0_in_row_def Let_def
     by (metis (no_types, lifting) length_greater_0_conv list.case(2) list.exhaust nth_mem option.simps(1) xs)
   have j_xs0: "j = ?xs ! 0"
-    by (smt res[unfolded find_fst_non0_in_row_def Let_def] list.case(2) list.exhaust option.inject xs)
+    by (smt (verit) res[unfolded find_fst_non0_in_row_def Let_def] list.case(2) list.exhaust option.inject xs)
   show "\<forall>j'\<in>{l..<j}. A $$ (l,j') = 0"
   proof (rule+, rule ccontr)
     fix j' assume j': "j' : {l..<j}" and Alj': "A $$ (l, j') \<noteq> 0"
@@ -1719,7 +1714,7 @@ proof -
     using prod_cases5 by blast
   have "p * A $$ (a, 0) + q * A $$ (b, 0) = d" 
     using Aaj pquvd is_bezout_ext_euclid_ext2 unfolding is_bezout_ext_def 
-    by (smt Pair_inject bezout_coefficients_fst_snd euclid_ext2_def)
+    by (smt (verit) Pair_inject bezout_coefficients_fst_snd euclid_ext2_def)
   also have " ... = gcd (A$$(a,0)) (A$$(b,0))" by (metis euclid_ext2_def pquvd prod.sel(2))
   finally have pAaj_qAbj_gcd: "p * A $$ (a, 0) + q * A $$ (b, 0) = gcd (A$$(a,0)) (A$$(b,0))" .
   let ?f = "(\<lambda>(i, k). if i = a then let r = p * A $$ (a, k) + q * A $$ (b, k) in if k = 0 then if D dvd r then D else r else r gmod D
@@ -1793,7 +1788,7 @@ proof -
   also have "... = (let r = u * A$$(a,0) + v * A$$(b,0) in r)"
     using A a j ab b by auto
   also have "... = 0" using uv0 D 
-    by (smt (z3) gmod_0(1) gmod_0(2)) 
+    by (smt (verit) gmod_0(1) gmod_0(2)) 
   finally show ?thesis1 .
   let ?g = "(\<lambda>(i, k). if i = a then let r = p * A $$ (a, k) + q * A $$ (b, k) in 
           if D < \<bar>r\<bar> then if k = 0 \<and> D dvd r then D else r gmod D else r
@@ -1841,7 +1836,7 @@ proof -
     by (rule adj_mat[OF RAT_fs_init])
   hence "inv_Z * (?RAT ?Z *  adj_mat (?RAT ?Z)) = inv_Z * (Determinant.det (?RAT ?Z) \<cdot>\<^sub>m 1\<^sub>m n)" by simp
   hence k_inv_Z_eq_adj: "(rat_of_int k) \<cdot>\<^sub>m inv_Z = adj_mat (?RAT ?Z)"
-    by (smt Determinant.mat_mult_left_right_inverse RAT_fs_init adj_mat(1,3) mn 
+    by (smt (verit) Determinant.mat_mult_left_right_inverse RAT_fs_init adj_mat(1,3) mn 
         carrier_matD det_RAT_fs_init det_rat_Z_k gs.det_nonzero_congruence inv_Z inverts_Z 
         inverts_mat_def mult_smult_assoc_mat smult_carrier_mat)
   have adj_mat_Z: "adj_mat (?RAT ?Z) $$ (i,j) \<in> \<int>" if i: "i<m" and j: "j<n" for i j
@@ -1949,7 +1944,7 @@ proof -
       let ?P = "(- 1::int) \<cdot>\<^sub>m 1\<^sub>m m"
       show P: "?P \<in> carrier_mat m m" by simp
       have "det ?P = 1 \<or> det ?P = -1" unfolding det_smult by (auto simp add: minus_1_power_even)
-      hence "det ?P dvd 1" by (smt minus_dvd_iff one_dvd)
+      hence "det ?P dvd 1" by (smt (verit) minus_dvd_iff one_dvd)
       thus " invertible_mat ?P" unfolding invertible_iff_is_unit_JNF[OF P] .
       have "(- k \<cdot>\<^sub>m 1\<^sub>m m) = ?P * (k \<cdot>\<^sub>m 1\<^sub>m m)"
         unfolding mat_diag_smult[symmetric] unfolding mat_diag_diag by auto
@@ -2162,7 +2157,7 @@ proof (rule conjI; rule eq_matI)
     have ja_n: "ja < n"
       by (metis Nat.add_0_right append_rows_def index_mat_four_block(3) index_zero_mat(3) ja mat_of_rows_carrier(3))
     have "(?A' @\<^sub>r ?D) $$ (i, ja) =?D $$ (i-m,ja)"
-      by (smt False Nat.add_0_right map_A_carrier append_rows_def carrier_matD i 
+      by (smt (verit) False Nat.add_0_right map_A_carrier append_rows_def carrier_matD i 
           index_mat_four_block index_zero_mat(3) ja_n)
     also have "... = ?lhs $$ (i,ja)"
       by (metis (no_types, lifting) False Nat.add_0_right map_A_carrier append_rows_def A_def A' a 
@@ -2187,7 +2182,7 @@ proof (rule conjI; rule eq_matI)
   next
     case False
     have "(?A'_abs @\<^sub>r ?D) $$ (i, ja) = ?D $$ (i-m,ja)"
-      by (smt False Nat.add_0_right map_A_carrier_abs append_rows_def carrier_matD i 
+      by (smt (verit) False Nat.add_0_right map_A_carrier_abs append_rows_def carrier_matD i 
           index_mat_four_block index_zero_mat(3) ja_n)
     also have "... = ?lhs_abs $$ (i,ja)"
       by (metis (no_types, lifting) False Nat.add_0_right map_A_carrier_abs append_rows_def A_def A' a 
@@ -2290,7 +2285,7 @@ next
   have "invertible_mat (P2 * P)" using P P2 inv_P inv_P2 invertible_mult_JNF by blast
   moreover have "(P2 * P) \<in> carrier_mat (m+n) (m+n)" using P2 P by auto
   moreover have "reduce_row_mod_D A a (x # xs) D m = (P2 * P) * A" 
-    by (smt P P2 R_P R_P2 1 assoc_mult_mat carrier_matD carrier_mat_triv
+    by (smt (verit) P P2 R_P R_P2 1 assoc_mult_mat carrier_matD carrier_mat_triv
         index_mult_mat reduce_row_mod_D_preserves_dimensions)
   ultimately show ?case by blast
 qed
@@ -2327,7 +2322,7 @@ next
   have "invertible_mat (P2 * P)" using P P2 inv_P inv_P2 invertible_mult_JNF by blast
   moreover have "(P2 * P) \<in> carrier_mat (m+n) (m+n)" using P2 P by auto
   moreover have "reduce_row_mod_D_abs A a (x # xs) D m = (P2 * P) * A" 
-    by (smt P P2 R_P R_P2 1 assoc_mult_mat carrier_matD carrier_mat_triv
+    by (smt (verit) P P2 R_P R_P2 1 assoc_mult_mat carrier_matD carrier_mat_triv
         index_mult_mat reduce_row_mod_D_preserves_dimensions_abs)
   ultimately show ?case by blast
 qed
@@ -2545,7 +2540,7 @@ next
         have "?lhs $$ (i,j) = D"
           using True i j ia_jxs by auto
         also have "... = ?rhs $$ (i,j)" using i j j_not_x 
-          by (smt "2" calculation dim_col_mat(1) dim_row_mat(1) index_mat(1) insert_iff list.set(2) prod.simps(2) xn)
+          by (smt (verit) "2" calculation dim_col_mat(1) dim_row_mat(1) index_mat(1) insert_iff list.set(2) prod.simps(2) xn)
         finally show ?thesis .
       next
         case False note nc1 = False
@@ -2553,7 +2548,7 @@ next
         proof (cases "j=0")
           case True
           then show ?thesis
-            by (smt (z3) "2" False case_prod_conv dim_col_mat(1) dim_row_mat(1) i index_mat(1) j j_not_x xn)
+            by (smt (verit) "2" False case_prod_conv dim_col_mat(1) dim_row_mat(1) i index_mat(1) j j_not_x xn)
         next
           case False          
       have "?lhs $$ (i,j) = ?reduce_xs $$ (i, j) gmod D"
@@ -2568,7 +2563,7 @@ next
   next
       case False
       show ?thesis using 2 i j xn 
-        by (smt False dim_col_mat(1) dim_row_mat(1) index_mat(1) insert_iff list.set(2) prod.simps(2))
+        by (smt (verit) False dim_col_mat(1) dim_row_mat(1) index_mat(1) insert_iff list.set(2) prod.simps(2))
     qed   
   qed  
   finally show ?case using 1 by simp
@@ -2626,7 +2621,7 @@ next
         have "?lhs $$ (i,j) = D"
           using True i j ia_jxs by auto
         also have "... = ?rhs $$ (i,j)" using i j j_not_x 
-          by (smt "2" calculation dim_col_mat(1) dim_row_mat(1) index_mat(1) insert_iff list.set(2) prod.simps(2) xn)
+          by (smt (verit) "2" calculation dim_col_mat(1) dim_row_mat(1) index_mat(1) insert_iff list.set(2) prod.simps(2) xn)
         finally show ?thesis .
       next
         case False 
@@ -2641,7 +2636,7 @@ next
   next
       case False
       show ?thesis using 2 i j xn 
-        by (smt False dim_col_mat(1) dim_row_mat(1) index_mat(1) insert_iff list.set(2) prod.simps(2))
+        by (smt (verit) False dim_col_mat(1) dim_row_mat(1) index_mat(1) insert_iff list.set(2) prod.simps(2))
     qed   
   qed  
   finally show ?case using 1 by simp
@@ -2750,7 +2745,7 @@ private lemma invertible_bezout_matrix_JNF_nontriv_mod_ring:
   and a_less_b: "a < b" and b: "b<CARD('m)" and j: "j<CARD('n)"
   and aj: "A $$ (a, j) \<noteq> 0"
 shows "invertible_mat (bezout_matrix_JNF A a b j bezout)" 
-  using assms invertible_bezout_matrix_JNF_mod_type by (smt CARD_mod_ring) 
+  using assms invertible_bezout_matrix_JNF_mod_type by (smt (verit) CARD_mod_ring) 
 
 
 (*We internalize both sort constraints in one step*)
@@ -2910,7 +2905,7 @@ proof (rule eq_matI)
           Matrix.row (bezout_matrix_JNF A a b j euclid_ext2) i $v ia * col A ja $v ia)"
       by (simp add: scalar_prod_def)
     also have "... = (\<Sum>ia = 0..<m+n. ?f ia)"
-      by (rule sum.cong, insert A i dr dc, auto) (smt bezout_matrix_JNF_def carrier_matD(1) 
+      by (rule sum.cong, insert A i dr dc, auto) (smt (verit) bezout_matrix_JNF_def carrier_matD(1) 
           dim_col_mat(1) index_col index_mult_mat(3) index_row(1) ja)
     also have "... = (\<Sum>ia \<in> ({a,b} \<union> ({0..<m+n} - {a,b})). ?f ia)"
       by (rule sum.cong, insert a a_dr b A ja, auto)
@@ -3064,7 +3059,7 @@ proof -
       unfolding reduce_a_eq using i i_not_a i_not_b ja A by auto      
     also have "... = A $$ (i,ja)"  using i i_not_a i_not_b ja A by auto
     also have "... = (D \<cdot>\<^sub>m 1\<^sub>m n) $$ (i - m, ja)"
-      by (smt D append_rows_nth A' A_def atLeastLessThan_iff 
+      by (smt (verit) D append_rows_nth A' A_def atLeastLessThan_iff 
           carrier_matD(1) i ja less_irrefl_nat nat_SN.compat)    
     finally show "?reduce_a $$ (i,ja) = (D \<cdot>\<^sub>m 1\<^sub>m n) $$ (i - m, ja)" .
   qed
@@ -3088,9 +3083,9 @@ proof -
     proof (cases "(i\<noteq>a \<and> i\<noteq>b)")
       case True
       have "?reduce_b $$ (i,ja) = ?reduce_a $$ (i,ja)" unfolding reduce_b_eq 
-        by (smt True dr_eq dc_eq i index_mat(1) ja prod.simps(2) reduce_row_mod_D_preserves_dimensions)
+        by (smt (verit) True dr_eq dc_eq i index_mat(1) ja prod.simps(2) reduce_row_mod_D_preserves_dimensions)
       also have "... = ?A $$ (i,ja)"
-        by (smt A True carrier_matD(2) dim_col_mat(1) dim_row_mat(1) i index_mat(1) ja_n 
+        by (smt (verit) A True carrier_matD(2) dim_col_mat(1) dim_row_mat(1) i index_mat(1) ja_n 
             reduce_a_eq reduce_preserves_dimensions(1) split_conv)
       also have "... = A $$ (i,ja)" using A True im ja_n by auto
       also have "... = (reduce a b D A) $$ (i,ja)" unfolding reduce_alt_def_not0[OF Aaj pquvd]
@@ -3107,7 +3102,7 @@ proof -
           have ja_in_xs: "ja \<in> set xs"
             unfolding xs_def using True ja_n im a A unfolding set_filter by auto
           have 1: "?reduce_b $$ (i,ja) = ?reduce_a $$ (i,ja)" unfolding reduce_b_eq             
-            by (smt ab dc_eq dim_row_mat(1) dr_eq i ia index_mat(1) ja prod.simps(2)
+            by (smt (verit) ab dc_eq dim_row_mat(1) dr_eq i ia index_mat(1) ja prod.simps(2)
                 reduce_b_eq reduce_row_mod_D_preserves_dimensions(2))
           show ?thesis 
           proof (cases "ja = 0 \<and> D dvd p*A$$(a,ja) + q*A$$(b,ja)")
@@ -3125,7 +3120,7 @@ proof -
             proof (cases "ja=0")
               case True
               then show ?thesis
-                by (smt (z3) "1" A assms(3) assms(7) dim_col_mat(1) dim_row_mat(1) euclid_ext2_works i ia im index_mat(1)
+                by (smt (verit) "1" A assms(3) assms(7) dim_col_mat(1) dim_row_mat(1) euclid_ext2_works i ia im index_mat(1)
                     ja ja_in_xs old.prod.case pquvd reduce_gcd reduce_preserves_dimensions reduce_a_eq)
             next
               case False
@@ -3151,7 +3146,7 @@ proof -
           have "?reduce_b $$ (i,ja) = (if ja = 0 then if D dvd ?reduce_a$$(i,ja) then D
                 else ?reduce_a $$ (i, ja) else ?reduce_a $$ (i, ja) gmod D)"
             unfolding reduce_b_eq using i_not_a True  ja ja_in_ys 
-            by (smt i_dra ja_dra a_or_b index_mat(1) prod.simps(2))
+            by (smt (verit) i_dra ja_dra a_or_b index_mat(1) prod.simps(2))
           also have "... = (if ja = 0 then if D dvd ?reduce_a$$(i,ja) then D else ?A $$ (i, ja) else ?A $$ (i, ja) gmod D)"
             unfolding reduce_a_eq using True ab a_or_b ib False ja_n im a A ja_in_ys by auto
           also have "... = (reduce a b D A) $$ (i,ja)"
@@ -3163,9 +3158,9 @@ proof -
           hence ja0:"ja = 0" using ja_n unfolding ys_def by auto
           have rw0: "u * A $$ (a, ja) + v * A $$ (b, ja) = 0"
             unfolding euclid_ext2_works[OF pquvd[symmetric]] ja0
-            by (smt euclid_ext2_works[OF pquvd[symmetric]] more_arith_simps(11) mult.commute mult_minus_left)
+            by (smt (verit) euclid_ext2_works[OF pquvd[symmetric]] more_arith_simps(11) mult.commute mult_minus_left)
           have "?reduce_b $$ (i,ja) = ?reduce_a $$ (i,ja)" unfolding reduce_b_eq             
-            by (smt False a_or_b dc_eq dim_row_mat(1) dr_eq i index_mat(1) ja 
+            by (smt (verit) False a_or_b dc_eq dim_row_mat(1) dr_eq i index_mat(1) ja 
                 prod.simps(2) reduce_b_eq reduce_row_mod_D_preserves_dimensions(2))
           also have "... = ?A $$ (i, ja)"
             unfolding reduce_a_eq using False ab a_or_b i_not_a ja_n im a A  by auto
@@ -3189,7 +3184,7 @@ proof -
     hence "P * (?BM * A) = ?reduce_a" using reduce_a_PA by auto
     hence "Q * (P * (?BM * A)) = ?reduce_b" using reduce_b_Q_reduce by auto
     thus ?thesis using reduce_b_eq_reduce
-      by (smt A A'_BZ_A A_carrier BM P Q assoc_mult_mat mn mult_carrier_mat reduce_a_PA)  
+      by (smt (verit) A A'_BZ_A A_carrier BM P Q assoc_mult_mat mn mult_carrier_mat reduce_a_PA)  
   qed
   ultimately show ?thesis by blast
 qed
@@ -3255,7 +3250,7 @@ proof -
       unfolding reduce_a_eq using i i_not_a i_not_b ja A by auto      
     also have "... = A $$ (i,ja)"  using i i_not_a i_not_b ja A by auto
     also have "... = (D \<cdot>\<^sub>m 1\<^sub>m n) $$ (i - m, ja)"
-      by (smt D append_rows_nth A' A_def atLeastLessThan_iff 
+      by (smt (verit) D append_rows_nth A' A_def atLeastLessThan_iff 
           carrier_matD(1) i ja less_irrefl_nat nat_SN.compat)    
     finally show "?reduce_a $$ (i,ja) = (D \<cdot>\<^sub>m 1\<^sub>m n) $$ (i - m, ja)" .
   qed
@@ -3279,9 +3274,9 @@ proof -
     proof (cases "(i\<noteq>a \<and> i\<noteq>b)")
       case True
       have "?reduce_b $$ (i,ja) = ?reduce_a $$ (i,ja)" unfolding reduce_b_eq 
-        by (smt True dr_eq dc_eq i index_mat(1) ja prod.simps(2) reduce_row_mod_D_preserves_dimensions_abs)
+        by (smt (verit) True dr_eq dc_eq i index_mat(1) ja prod.simps(2) reduce_row_mod_D_preserves_dimensions_abs)
       also have "... = ?A $$ (i,ja)"
-        by (smt A True carrier_matD(2) dim_col_mat(1) dim_row_mat(1) i index_mat(1) ja_n 
+        by (smt (verit) A True carrier_matD(2) dim_col_mat(1) dim_row_mat(1) i index_mat(1) ja_n 
             reduce_a_eq reduce_preserves_dimensions(3) split_conv)
       also have "... = A $$ (i,ja)" using A True im ja_n by auto
       also have "... = (reduce_abs a b D A) $$ (i,ja)" unfolding reduce_alt_def_not0[OF Aaj pquvd]
@@ -3299,7 +3294,7 @@ proof -
           have ja_in_xs: "ja \<in> set xs"
             unfolding xs_def using True ja_n im a A unfolding set_filter by auto
           have 1: "?reduce_b $$ (i,ja) = ?reduce_a $$ (i,ja)" unfolding reduce_b_eq             
-            by (smt ab dc_eq dim_row_mat(1) dr_eq i ia index_mat(1) ja prod.simps(2)
+            by (smt (verit) ab dc_eq dim_row_mat(1) dr_eq i ia index_mat(1) ja prod.simps(2)
                 reduce_b_eq reduce_row_mod_D_preserves_dimensions_abs(2))
           show ?thesis 
           proof (cases "ja = 0 \<and> D dvd p*A$$(a,ja) + q*A$$(b,ja)")
@@ -3324,7 +3319,7 @@ proof -
           have ja_in_xs: "ja \<notin> set xs"
             unfolding xs_def using False ja_n im a A unfolding set_filter by auto
           have "?reduce_b $$ (i,ja) = ?reduce_a $$ (i,ja)" unfolding reduce_b_eq             
-            by (smt ab dc_eq dim_row_mat(1) dr_eq i ia index_mat(1) ja prod.simps(2)
+            by (smt (verit) ab dc_eq dim_row_mat(1) dr_eq i ia index_mat(1) ja prod.simps(2)
                 reduce_b_eq reduce_row_mod_D_preserves_dimensions_abs(2))
           also have "... = ?A $$ (i, ja)"
             unfolding reduce_a_eq using False ab a_or_b i_not_b ja_n im a A ja_in_xs by auto
@@ -3346,7 +3341,7 @@ proof -
             unfolding ys_def using True False ib ja_n im a b A unfolding set_filter by auto
           have "?reduce_b $$ (i,ja) = (if ja = 0 \<and> D dvd ?reduce_a$$(i,ja) then D else ?reduce_a $$ (i, ja) gmod D)"          
             unfolding reduce_b_eq using i_not_a True  ja ja_in_ys 
-            by (smt i_dra ja_dra a_or_b index_mat(1) prod.simps(2))
+            by (smt (verit) i_dra ja_dra a_or_b index_mat(1) prod.simps(2))
           also have "... = (if ja = 0 \<and> D dvd ?reduce_a$$(i,ja) then D else ?A $$ (i, ja) gmod D)"   
             unfolding reduce_a_eq using True ab a_or_b ib False ja_n im a A ja_in_ys by auto
           also have "... = (reduce_abs a b D A) $$ (i,ja)"
@@ -3355,7 +3350,7 @@ proof -
             have ja0: "ja=0" using True by auto
             have "u * A $$ (a, ja) + v * A $$ (b, ja) = 0"
               unfolding euclid_ext2_works[OF pquvd[symmetric]] ja0
-              by (smt euclid_ext2_works[OF pquvd[symmetric]] more_arith_simps(11) mult.commute mult_minus_left)
+              by (smt (verit) euclid_ext2_works[OF pquvd[symmetric]] more_arith_simps(11) mult.commute mult_minus_left)
             hence abs_0: "abs((u*A$$(a,ja) + v * A$$(b,ja))) = 0" by auto
             show ?thesis using abs_0 D_ge0 ge_D by linarith           
           next
@@ -3392,7 +3387,7 @@ proof -
     hence "P * (?BM * A) = ?reduce_a" using reduce_a_PA by auto
     hence "Q * (P * (?BM * A)) = ?reduce_b" using reduce_b_Q_reduce by auto
     thus ?thesis using reduce_b_eq_reduce
-      by (smt A A'_BZ_A A_carrier BM P Q assoc_mult_mat mn mult_carrier_mat reduce_a_PA)  
+      by (smt (verit) A A'_BZ_A A_carrier BM P Q assoc_mult_mat mn mult_carrier_mat reduce_a_PA)  
   qed
   ultimately show ?thesis by blast
 qed
@@ -3615,7 +3610,7 @@ next
     show "reduce_element_mod_D A a x D m = ?A' @\<^sub>r B"
     proof (rule matrix_append_rows_eq_if_preserves[OF reduce_xs_carrier B])
       show " \<forall>i\<in>{m..<m + n}. \<forall>j<n. reduce_element_mod_D A a x D m $$ (i, j) = B $$ (i - m, j) "       
-        by (smt A_A'B A' B a Metric_Arith.nnf_simps(7) add_diff_cancel_left' atLeastLessThan_iff
+        by (smt (verit) A_A'B A' B a Metric_Arith.nnf_simps(7) add_diff_cancel_left' atLeastLessThan_iff
             carrier_matD index_mat_addrow(1) index_row(1) le_add_diff_inverse2 less_diff_conv
             reduce_element_mod_D_def reduce_element_mod_D_preserves_dimensions reduce_xs_carrier
             row_append_rows2)        
@@ -3640,7 +3635,7 @@ next
         have "?lhs $$ (i,j) = D"
           using True i j ia_jxs by auto
         also have "... = ?rhs $$ (i,j)" using i j j_not_x 
-          by (smt "2" calculation dim_col_mat(1) dim_row_mat(1) index_mat(1) insert_iff list.set(2) prod.simps(2) xn)
+          by (smt (verit) "2" calculation dim_col_mat(1) dim_row_mat(1) index_mat(1) insert_iff list.set(2) prod.simps(2) xn)
         finally show ?thesis .
       next
         case False
@@ -3648,7 +3643,7 @@ next
         proof (cases "j=0")
           case True
           then show ?thesis
-            by (smt (z3) "2" dim_col_mat(1) dim_row_mat(1) i index_mat(1) insert_iff j list.set(2) old.prod.case)
+            by (smt (verit) "2" dim_col_mat(1) dim_row_mat(1) i index_mat(1) insert_iff j list.set(2) old.prod.case)
         next
           case False
           have "?lhs $$ (i,j) = ?reduce_xs $$ (i, j) gmod D"
@@ -3663,7 +3658,7 @@ next
   next
       case False
       show ?thesis using 2 i j xn 
-        by (smt False dim_col_mat(1) dim_row_mat(1) index_mat(1) insert_iff list.set(2) prod.simps(2))
+        by (smt (verit) False dim_col_mat(1) dim_row_mat(1) index_mat(1) insert_iff list.set(2) prod.simps(2))
     qed   
   qed  
   finally show ?case using 1 by simp
@@ -3714,7 +3709,7 @@ next
     show "reduce_element_mod_D_abs A a x D m = ?A' @\<^sub>r B"
     proof (rule matrix_append_rows_eq_if_preserves[OF reduce_xs_carrier B])
       show " \<forall>i\<in>{m..<m + n}. \<forall>j<n. reduce_element_mod_D_abs A a x D m $$ (i, j) = B $$ (i - m, j) "       
-        by (smt A_A'B A' B a Metric_Arith.nnf_simps(7) add_diff_cancel_left' atLeastLessThan_iff
+        by (smt (verit) A_A'B A' B a Metric_Arith.nnf_simps(7) add_diff_cancel_left' atLeastLessThan_iff
             carrier_matD index_mat_addrow(1) index_row(1) le_add_diff_inverse2 less_diff_conv
             reduce_element_mod_D_abs_def reduce_element_mod_D_preserves_dimensions reduce_xs_carrier
             row_append_rows2)        
@@ -3739,7 +3734,7 @@ next
         have "?lhs $$ (i,j) = D"
           using True i j ia_jxs by auto
         also have "... = ?rhs $$ (i,j)" using i j j_not_x 
-          by (smt "2" calculation dim_col_mat(1) dim_row_mat(1) index_mat(1) insert_iff list.set(2) prod.simps(2) xn)
+          by (smt (verit) "2" calculation dim_col_mat(1) dim_row_mat(1) index_mat(1) insert_iff list.set(2) prod.simps(2) xn)
         finally show ?thesis .
       next
         case False        
@@ -3747,7 +3742,7 @@ next
          using True False i j by auto
        also have "... = A $$ (i,j) gmod D" using 2[OF ] j_not_x i j by auto
        also have "... = ?rhs $$ (i,j)" using i j j_not_x
-         by (smt False True \<open>Matrix.mat (dim_row ?reduce_xs) 
+         by (smt (verit) False True \<open>Matrix.mat (dim_row ?reduce_xs) 
            (dim_col ?reduce_xs) (\<lambda>(i, k). if i = a \<and> k \<in> set xs 
            then if k = 0 \<and> D dvd  ?reduce_xs $$ (i, k) 
            then D else  ?reduce_xs $$ (i, k) gmod D 
@@ -3759,7 +3754,7 @@ next
   next
       case False
       show ?thesis using 2 i j xn 
-        by (smt False dim_col_mat(1) dim_row_mat(1) index_mat(1) insert_iff list.set(2) prod.simps(2))
+        by (smt (verit) False dim_col_mat(1) dim_row_mat(1) index_mat(1) insert_iff list.set(2) prod.simps(2))
     qed   
   qed  
   finally show ?case using 1 by simp
@@ -3866,17 +3861,18 @@ next
     let ?B' = "mat_of_rows n [Matrix.row ?reduce_xs i. i \<leftarrow> [m..<m+n]]"
 
     show reduce_xs_A'B': "?reduce_xs = ?A' @\<^sub>r ?B'"
-      by (smt "2"(2) "2"(4) P R_P add.comm_neutral append_rows_def append_rows_split carrier_matD
+      by (smt (verit) "2"(2) "2"(4) P R_P add.comm_neutral append_rows_def append_rows_split carrier_matD
           index_mat_four_block(3) index_mult_mat(2) index_zero_mat(3) le_add1 reduce_element_mod_D_preserves_dimensions(2))
     show "\<forall>j\<in>set xs. j < n \<and> ?B' $$ (j, j) = D \<and> (\<forall>j'\<in>{0..<n} - {j}. ?B' $$ (j, j') = 0)"
     proof
       fix j assume j_in_xs: "j \<in> set xs"
       have jn: "j<n" using j_in_xs j by auto
       have "?B' $$ (j, j) = ?reduce_xs $$ (m+j,j)"
-        by (smt "2"(7) Groups.add_ac(2) jn reduce_xs_A'B' add_diff_cancel_left' append_rows_nth2
-            diff_zero length_map length_upt mat_of_rows_carrier(1) nat_SN.compat)
+        using "2"(7)  add_diff_cancel_left'   jn length_map length_upt 
+        by (smt (verit, ccfv_SIG) "1" "2"(4) A_def B P inv_P R_P add_strict_left_mono carrier_append_rows carrier_matD(1) 
+            carrier_matD(2) index_mult_mat(2) index_row(1) mat_of_rows_index nth_map_upt reduce_row_mod_D_preserves_dimensions(2))
       also have "... = B $$ (j,j)" 
-        by (smt "2"(2) "2"(5) A' P R_P add_diff_cancel_left' append_rows_def carrier_matD
+        by (smt (verit) "2"(2) "2"(5) A' P R_P add_diff_cancel_left' append_rows_def carrier_matD
             group_cancel.rule0 index_mat_addrow(1) index_mat_four_block(1) index_mat_four_block(2,3)
             index_mult_mat(2) index_zero_mat(3) jn le_add1 linorder_not_less nat_SN.plus_gt_right_mono 
             reduce_element_mod_D_def reduce_element_mod_D_preserves_dimensions(1))
@@ -3885,12 +3881,12 @@ next
       moreover have "\<forall>j'\<in>{0..<n} - {j}. ?B' $$ (j, j') = 0" 
       proof 
         fix j' assume j': "j' \<in>{0..<n} - {j}"
-        have "?B' $$ (j, j') = ?reduce_xs $$ (m+j,j')"
-          by (smt mn Diff_iff j' add.commute add_diff_cancel_left' 
+        then have "?B' $$ (j, j') = ?reduce_xs $$ (m+j,j')"
+          by (smt (z3) mn Diff_iff add.commute add_diff_cancel_left' 
               append_rows_nth2 atLeastLessThan_iff diff_zero jn length_map length_upt 
               mat_of_rows_carrier(1) nat_SN.compat reduce_xs_A'B')
         also have "... = B $$ (j,j')"
-          by (smt "2"(2) "2"(5) A' Diff_iff P R_P j' add.commute add_diff_cancel_left'  
+          by (smt (verit) "2"(2) "2"(5) A' Diff_iff P R_P j' add.commute add_diff_cancel_left'  
             append_rows_def atLeastLessThan_iff carrier_matD group_cancel.rule0 index_mat_addrow(1)
             index_mat_four_block index_mult_mat(2) index_zero_mat(3) jn nat_SN.plus_gt_right_mono 
             not_add_less2 reduce_element_mod_D_def reduce_element_mod_D_preserves_dimensions(1))
@@ -3911,7 +3907,7 @@ next
   have "invertible_mat (P2 * P)" using P P2 inv_P inv_P2 invertible_mult_JNF by blast
   moreover have "(P2 * P) \<in> carrier_mat (m+n) (m+n)" using P2 P by auto
   moreover have "reduce_row_mod_D A a (x # xs) D m = (P2 * P) * A" 
-    by (smt P P2 R_P R_P2 1 assoc_mult_mat carrier_matD carrier_mat_triv
+    by (smt (verit) P P2 R_P R_P2 1 assoc_mult_mat carrier_matD carrier_mat_triv
         index_mult_mat reduce_row_mod_D_preserves_dimensions)
   ultimately show ?case by blast
 qed
@@ -3953,17 +3949,17 @@ next
     let ?B' = "mat_of_rows n [Matrix.row ?reduce_xs i. i \<leftarrow> [m..<m+n]]"
 
     show reduce_xs_A'B': "?reduce_xs = ?A' @\<^sub>r ?B'"
-      by (smt "2"(2) "2"(4) P R_P add.comm_neutral append_rows_def append_rows_split carrier_matD
+      by (smt (verit) "2"(2) "2"(4) P R_P add.comm_neutral append_rows_def append_rows_split carrier_matD
           index_mat_four_block(3) index_mult_mat(2) index_zero_mat(3) le_add1 reduce_element_mod_D_preserves_dimensions(4))
     show "\<forall>j\<in>set xs. j < n \<and> ?B' $$ (j, j) = D \<and> (\<forall>j'\<in>{0..<n} - {j}. ?B' $$ (j, j') = 0)"
     proof
       fix j assume j_in_xs: "j \<in> set xs"
       have jn: "j<n" using j_in_xs j by auto
       have "?B' $$ (j, j) = ?reduce_xs $$ (m+j,j)"
-        by (smt "2"(7) Groups.add_ac(2) jn reduce_xs_A'B' add_diff_cancel_left' append_rows_nth2
+        by (smt (z3) "2"(7) Groups.add_ac(2) jn reduce_xs_A'B' add_diff_cancel_left' append_rows_nth2
             diff_zero length_map length_upt mat_of_rows_carrier(1) nat_SN.compat)
       also have "... = B $$ (j,j)" 
-        by (smt "2"(2) "2"(5) A' P R_P add_diff_cancel_left' append_rows_def carrier_matD
+        by (smt (verit) "2"(2) "2"(5) A' P R_P add_diff_cancel_left' append_rows_def carrier_matD
             group_cancel.rule0 index_mat_addrow(1) index_mat_four_block(1) index_mat_four_block(2,3)
             index_mult_mat(2) index_zero_mat(3) jn le_add1 linorder_not_less nat_SN.plus_gt_right_mono 
             reduce_element_mod_D_abs_def reduce_element_mod_D_preserves_dimensions(3))
@@ -3972,12 +3968,12 @@ next
       moreover have "\<forall>j'\<in>{0..<n} - {j}. ?B' $$ (j, j') = 0" 
       proof 
         fix j' assume j': "j' \<in>{0..<n} - {j}"
+        then
         have "?B' $$ (j, j') = ?reduce_xs $$ (m+j,j')"
-          by (smt mn Diff_iff j' add.commute add_diff_cancel_left' 
-              append_rows_nth2 atLeastLessThan_iff diff_zero jn length_map length_upt 
-              mat_of_rows_carrier(1) nat_SN.compat reduce_xs_A'B')
+          apply simp
+          by (metis (mono_tags, lifting) "2"(4) A_def B P R_P add_less_cancel_left carrier_append_rows carrier_matD(1) carrier_matD(2) diff_add_inverse index_mult_mat(2) index_mult_mat(3) index_row(1) jn length_map length_upt mat_of_rows_index nth_map_upt)
         also have "... = B $$ (j,j')"
-          by (smt "2"(2) "2"(5) A' Diff_iff P R_P j' add.commute add_diff_cancel_left'  
+          by (smt (verit) "2"(2) "2"(5) A' Diff_iff P R_P j' add.commute add_diff_cancel_left'  
             append_rows_def atLeastLessThan_iff carrier_matD group_cancel.rule0 index_mat_addrow(1)
             index_mat_four_block index_mult_mat(2) index_zero_mat(3) jn nat_SN.plus_gt_right_mono 
             not_add_less2 reduce_element_mod_D_abs_def reduce_element_mod_D_preserves_dimensions(3))
@@ -3998,7 +3994,7 @@ next
   have "invertible_mat (P2 * P)" using P P2 inv_P inv_P2 invertible_mult_JNF by blast
   moreover have "(P2 * P) \<in> carrier_mat (m+n) (m+n)" using P2 P by auto
   moreover have "reduce_row_mod_D_abs A a (x # xs) D m = (P2 * P) * A" 
-    by (smt P P2 R_P R_P2 1 assoc_mult_mat carrier_matD carrier_mat_triv
+    by (smt (verit) P P2 R_P R_P2 1 assoc_mult_mat carrier_matD carrier_mat_triv
         index_mult_mat reduce_row_mod_D_preserves_dimensions_abs)
   ultimately show ?case by blast
 qed
@@ -4061,7 +4057,7 @@ next
       have "B $$ (j,j') = B' $$ (j,j')" if j': "j'<n" for j'
       proof -
         have "B $$ (j,j') = A $$ (m+j,j')"
-          by (smt A_A'B A A' Groups.add_ac(2) j_xs add_diff_cancel_left' append_rows_def carrier_matD j'
+          by (smt (verit) A_A'B A A' Groups.add_ac(2) j_xs add_diff_cancel_left' append_rows_def carrier_matD j'
               index_mat_four_block(1) index_mat_four_block(2,3) insert_iff j less_diff_conv list.set(2) not_add_less1)
         also have "... = ?reduce_xs $$ (m+j,j')"
           by (smt (verit, ccfv_threshold) A'' diff_add_zero index_mat_addrow(3) neq0_conv
@@ -4069,7 +4065,7 @@ next
               cancel_comm_monoid_add_class.diff_cancel carrier_matD index_mat_addrow(1) j'
               j_xs le_eq_less_or_eq less_diff_conv less_not_refl2 list.set_intros(2) nat_SN.compat)
         also have "... = B'$$ (j,j')"
-          by (smt B A A' A_A'B B' A'' reduce_split add.commute add_diff_cancel_left' j' not_add_less1
+          by (smt (verit) B A A' A_A'B B' A'' reduce_split add.commute add_diff_cancel_left' j' not_add_less1
               append_rows_def carrier_matD index_mat_four_block j j_xs less_diff_conv list.set_intros(2))
         finally show ?thesis .
       qed
@@ -4101,12 +4097,12 @@ next
       next
         case False   
         show ?thesis
-          by (smt (z3) "2" "2.prems"(8) dim_col_mat(1) dim_row_mat(1) i index_mat(1) insert_iff j j_not_x list.set(2) old.prod.case)     
+          by (smt (verit) "2" "2.prems"(8) dim_col_mat(1) dim_row_mat(1) i index_mat(1) insert_iff j j_not_x list.set(2) old.prod.case)     
     qed
   next
       case False
       show ?thesis using 2 i j xn
-        by (smt (z3) "2.prems"(8) False carrier_matD(2) dim_row_mat(1) index_mat(1) 
+        by (smt (verit) "2.prems"(8) False carrier_matD(2) dim_row_mat(1) index_mat(1) 
             insert_iff jn list.set(2) old.prod.case reduce_element_mod_D_preserves_dimensions(2) reduce_xs_carrier)
     qed   
   qed  
@@ -4171,7 +4167,7 @@ next
       have "B $$ (j,j') = B' $$ (j,j')" if j': "j'<n" for j'
       proof -
         have "B $$ (j,j') = A $$ (m+j,j')"
-          by (smt A_A'B A A' Groups.add_ac(2) j_xs add_diff_cancel_left' append_rows_def carrier_matD j'
+          by (smt (verit) A_A'B A A' Groups.add_ac(2) j_xs add_diff_cancel_left' append_rows_def carrier_matD j'
               index_mat_four_block(1) index_mat_four_block(2,3) insert_iff j less_diff_conv list.set(2) not_add_less1)
         also have "... = ?reduce_xs $$ (m+j,j')"
           by (smt (verit, ccfv_threshold) A'' diff_add_zero index_mat_addrow(3) neq0_conv
@@ -4179,7 +4175,7 @@ next
               cancel_comm_monoid_add_class.diff_cancel carrier_matD index_mat_addrow(1) j'
               j_xs le_eq_less_or_eq less_diff_conv less_not_refl2 list.set_intros(2) nat_SN.compat)
         also have "... = B'$$ (j,j')"
-          by (smt B A A' A_A'B B' A'' reduce_split add.commute add_diff_cancel_left' j' not_add_less1
+          by (smt (verit) B A A' A_A'B B' A'' reduce_split add.commute add_diff_cancel_left' j' not_add_less1
               append_rows_def carrier_matD index_mat_four_block j j_xs less_diff_conv list.set_intros(2))
         finally show ?thesis .
       qed
@@ -4211,12 +4207,12 @@ next
       next
         case False   
         show ?thesis
-          by (smt (z3) "2" "2.prems"(8) dim_col_mat(1) dim_row_mat(1) i index_mat(1) insert_iff j j_not_x list.set(2) old.prod.case)     
+          by (smt (verit) "2" "2.prems"(8) dim_col_mat(1) dim_row_mat(1) i index_mat(1) insert_iff j j_not_x list.set(2) old.prod.case)     
     qed
   next
       case False
       show ?thesis using 2 i j xn
-        by (smt (z3) "2.prems"(8) False carrier_matD(2) dim_row_mat(1) index_mat(1) 
+        by (smt (verit) "2.prems"(8) False carrier_matD(2) dim_row_mat(1) index_mat(1) 
             insert_iff jn list.set(2) old.prod.case reduce_element_mod_D_preserves_dimensions(4) reduce_xs_carrier)
     qed   
   qed  
@@ -4296,7 +4292,7 @@ next
     show B': "?B' \<in> carrier_mat n n" by auto
     show A'': "?A' : carrier_mat m n" by auto
     show reduce_split: "?reduce_xs = ?A' @\<^sub>r ?B'"
-      by (smt "2"(2) "2"(4) P R_P add.comm_neutral append_rows_def append_rows_split carrier_matD
+      by (smt (verit) "2"(2) "2"(4) P R_P add.comm_neutral append_rows_def append_rows_split carrier_matD
           index_mat_four_block(3) index_mult_mat(2) index_zero_mat(3) le_add1 reduce_element_mod_D_preserves_dimensions(2))
     show "\<forall>j\<in>set xs. j < n \<and> ?B' $$ (j, j) = D \<and> (\<forall>j'\<in>{0..<n} - {j}. ?B' $$ (j, j') = 0)"
     proof
@@ -4304,7 +4300,7 @@ next
       have "B $$ (j,j') = ?B' $$ (j,j')" if j': "j'<n" for j'
       proof -
         have "B $$ (j,j') = A $$ (m+j,j')"
-          by (smt A_A'B A A' Groups.add_ac(2) j_xs add_diff_cancel_left' append_rows_def carrier_matD j'
+          by (smt (verit) A_A'B A A' Groups.add_ac(2) j_xs add_diff_cancel_left' append_rows_def carrier_matD j'
               index_mat_four_block(1) index_mat_four_block(2,3) insert_iff j less_diff_conv list.set(2) not_add_less1)
         also have "... = ?reduce_xs $$ (m+j,j')"
           by (smt (verit, ccfv_SIG) not_add_less1
@@ -4312,7 +4308,7 @@ next
               cancel_comm_monoid_add_class.diff_cancel carrier_matD index_mat_addrow(1) j'
               j_xs le_eq_less_or_eq less_diff_conv less_not_refl2 list.set_intros(2) nat_SN.compat)
         also have "... = ?B'$$ (j,j')"
-          by (smt B A A' A_A'B B' A'' reduce_split add.commute add_diff_cancel_left' j' not_add_less1
+          by (smt (verit) B A A' A_A'B B' A'' reduce_split add.commute add_diff_cancel_left' j' not_add_less1
               append_rows_def carrier_matD index_mat_four_block j j_xs less_diff_conv list.set_intros(2))
         finally show ?thesis .
       qed
@@ -4326,7 +4322,7 @@ next
   have "invertible_mat (P2 * P)" using P P2 inv_P inv_P2 invertible_mult_JNF by blast
   moreover have "(P2 * P) \<in> carrier_mat (m+n) (m+n)" using P2 P by auto
   moreover have "reduce_row_mod_D A a (x # xs) D m = (P2 * P) * A" 
-    by (smt P P2 R_P R_P2 1 assoc_mult_mat carrier_matD carrier_mat_triv
+    by (smt (verit) P P2 R_P R_P2 1 assoc_mult_mat carrier_matD carrier_mat_triv
         index_mult_mat reduce_row_mod_D_preserves_dimensions)
   ultimately show ?case by blast
 qed
@@ -4377,7 +4373,7 @@ next
     show B': "?B' \<in> carrier_mat n n" by auto
     show A'': "?A' : carrier_mat m n" by auto
     show reduce_split: "?reduce_xs = ?A' @\<^sub>r ?B'"
-      by (smt "2"(2) "2"(4) P R_P add.comm_neutral append_rows_def append_rows_split carrier_matD
+      by (smt (verit) "2"(2) "2"(4) P R_P add.comm_neutral append_rows_def append_rows_split carrier_matD
           index_mat_four_block(3) index_mult_mat(2) index_zero_mat(3) le_add1 reduce_element_mod_D_preserves_dimensions(4))
     show "\<forall>j\<in>set xs. j < n \<and> ?B' $$ (j, j) = D \<and> (\<forall>j'\<in>{0..<n} - {j}. ?B' $$ (j, j') = 0)"
     proof
@@ -4385,7 +4381,7 @@ next
       have "B $$ (j,j') = ?B' $$ (j,j')" if j': "j'<n" for j'
       proof -
         have "B $$ (j,j') = A $$ (m+j,j')"
-          by (smt A_A'B A A' Groups.add_ac(2) j_xs add_diff_cancel_left' append_rows_def carrier_matD j'
+          by (smt (verit) A_A'B A A' Groups.add_ac(2) j_xs add_diff_cancel_left' append_rows_def carrier_matD j'
               index_mat_four_block(1) index_mat_four_block(2,3) insert_iff j less_diff_conv list.set(2) not_add_less1)
         also have "... = ?reduce_xs $$ (m+j,j')"
           by (smt (verit, ccfv_SIG) not_add_less1
@@ -4393,7 +4389,7 @@ next
               cancel_comm_monoid_add_class.diff_cancel carrier_matD index_mat_addrow(1) j'
               j_xs le_eq_less_or_eq less_diff_conv less_not_refl2 list.set_intros(2) nat_SN.compat)
         also have "... = ?B'$$ (j,j')"
-          by (smt B A A' A_A'B B' A'' reduce_split add.commute add_diff_cancel_left' j' not_add_less1
+          by (smt (verit) B A A' A_A'B B' A'' reduce_split add.commute add_diff_cancel_left' j' not_add_less1
               append_rows_def carrier_matD index_mat_four_block j j_xs less_diff_conv list.set_intros(2))
         finally show ?thesis .
       qed
@@ -4407,7 +4403,7 @@ next
   have "invertible_mat (P2 * P)" using P P2 inv_P inv_P2 invertible_mult_JNF by blast
   moreover have "(P2 * P) \<in> carrier_mat (m+n) (m+n)" using P2 P by auto
   moreover have "reduce_row_mod_D_abs A a (x # xs) D m = (P2 * P) * A" 
-    by (smt P P2 R_P R_P2 1 assoc_mult_mat carrier_matD carrier_mat_triv
+    by (smt (verit) P P2 R_P R_P2 1 assoc_mult_mat carrier_matD carrier_mat_triv
         index_mult_mat reduce_row_mod_D_preserves_dimensions_abs)
   ultimately show ?case by blast
 qed
@@ -4518,7 +4514,7 @@ proof -
     have m: "m<dim_row A" using A n0 by auto
     have "?A $$ (m,0) =  u * A $$ (a, 0) + v * A $$ (m, 0)" using m n0 a A by auto
     also have "... = 0" using pquvd
-      by (smt dvd_mult_div_cancel euclid_ext2_def euclid_ext2_works(3) more_arith_simps(11)
+      by (smt (verit) dvd_mult_div_cancel euclid_ext2_def euclid_ext2_works(3) more_arith_simps(11)
           mult.commute mult_minus_left prod.sel(1) prod.sel(2) semiring_gcd_class.gcd_dvd1)
     finally show ?thesis using D0 unfolding ys_def by auto
   qed
@@ -4541,7 +4537,8 @@ proof -
       also have "... = ?A $$ (j+m, j')" using reduce_a_eq jm jn a_jm j' A_carrier by auto          
       also have "... = A $$ (j+m, j')" using a_jm m_not_jm jm' jn' j' A_carrier by auto
       also have "... = B $$ (j,j')"
-        by (smt A append_rows_nth2 A' B A_def mn carrier_matD(2) jn' le_Suc_ex that trans_less_add1)
+        using assms(1) assms(2) assms(5) assms(8,14) unfolding A_def
+        by (meson append_rows_nth2 less_le_trans j' j_in_ys)
       finally show ?thesis .
     qed
     thus "j < n \<and> reduce_a2 $$ (j, j) = D \<and> (\<forall>j'\<in>{0..<n} - {j}. reduce_a2 $$ (j, j') = 0)"
@@ -4569,9 +4566,9 @@ proof -
     proof (cases "(i\<noteq>a \<and> i\<noteq>m)")
       case True
       have "?reduce_b $$ (i,ja) = ?reduce_a $$ (i,ja)" unfolding reduce_b_eq 
-        by (smt True dr_eq dc_eq i index_mat(1) ja prod.simps(2) reduce_row_mod_D_preserves_dimensions)
+        by (smt (verit) True dr_eq dc_eq i index_mat(1) ja prod.simps(2) reduce_row_mod_D_preserves_dimensions)
       also have "... = ?A $$ (i,ja)"
-        by (smt A True carrier_matD(2) dim_col_mat(1) dim_row_mat(1) i index_mat(1) ja_n 
+        by (smt (verit) A True carrier_matD(2) dim_col_mat(1) dim_row_mat(1) i index_mat(1) ja_n 
             reduce_a_eq reduce_preserves_dimensions(1) split_conv)
       also have "... = A $$ (i,ja)" using A True im ja_n by auto
       also have "... = (reduce a m D A) $$ (i,ja)" unfolding reduce_alt_def_not0[OF Aaj pquvd]
@@ -4588,7 +4585,7 @@ proof -
         case True note ia = True
         hence i_not_b: "i\<noteq>m" using ab by auto
         have 1: "?reduce_b $$ (i,ja) = ?reduce_a $$ (i,ja)" unfolding reduce_b_eq             
-            by (smt ab dc_eq dim_row_mat(1) dr_eq i ia index_mat(1) ja prod.simps(2)
+            by (smt (verit) ab dc_eq dim_row_mat(1) dr_eq i ia index_mat(1) ja prod.simps(2)
                 reduce_b_eq reduce_row_mod_D_preserves_dimensions(2))
         show ?thesis
         proof (cases "ja=0")
@@ -4624,9 +4621,9 @@ proof -
           case True note ja0 = True
           have uv: "u * A $$ (a, ja) + v * A $$ (m, ja) = 0"
             unfolding euclid_ext2_works[OF pquvd[symmetric]] True
-            by (smt euclid_ext2_works[OF pquvd[symmetric]] more_arith_simps(11) mult.commute mult_minus_left)
+            by (smt (verit) euclid_ext2_works[OF pquvd[symmetric]] more_arith_simps(11) mult.commute mult_minus_left)
           have "?reduce_b $$ (i,ja) = u * A $$ (a, ja) + v * A $$ (m, ja)"
-            by (smt (z3) A A_carrier True assms(4) carrier_matD i ib index_mat(1) reduce_a_eq
+            by (smt (verit) A A_carrier True assms(4) carrier_matD i ib index_mat(1) reduce_a_eq
                 ja_dra old.prod.case reduce_preserves_dimensions(1) zero_notin_ys reduce_b_eq
                 reduce_row_mod_D_preserves_dimensions)
           also have "... = 0" using uv by blast
@@ -4641,7 +4638,7 @@ proof -
           have "?reduce_b $$ (i,ja) = (if ja = 0 then if D dvd ?reduce_a$$(i,ja) then D
                                   else ?reduce_a $$ (i, ja) else ?reduce_a $$ (i, ja) gmod D)"
             unfolding reduce_b_eq using i_not_a  ja ja_in_ys 
-            by (smt i_dra ja_dra a_or_b index_mat(1) prod.simps(2))
+            by (smt (verit) i_dra ja_dra a_or_b index_mat(1) prod.simps(2))
           also have "... = (if ja = 0 then if D dvd ?reduce_a$$(i,ja) then D
                             else ?A $$ (i, ja) else ?A $$ (i, ja) gmod D)"
             unfolding reduce_a_eq using ab a_or_b ib False ja_n im a A ja_in_ys by auto
@@ -4658,7 +4655,7 @@ proof -
   moreover have "invertible_mat (Q * P*?BM)"
     using inv_P invertible_bezout BM P invertible_mult_JNF inv_Q Q by (metis mult_carrier_mat)
   moreover have "(reduce a m D A) = (Q * P * ?BM) * A" using reduce_a_eq r reduce_b_eq_reduce
-    by (smt BM P Q assoc_mult_mat carrier_matD carrier_mat_triv 
+    by (smt (verit) BM P Q assoc_mult_mat carrier_matD carrier_mat_triv 
         dim_row_mat(1) index_mult_mat(2,3) reduce_b_Q_reduce)
   ultimately show ?thesis by auto
 qed
@@ -4790,7 +4787,7 @@ proof -
     have m: "m<dim_row A" using A n0 by auto
     have "?A $$ (m,0) =  u * A $$ (a, 0) + v * A $$ (m, 0)" using m n0 a A by auto
     also have "... = 0" using pquvd
-      by (smt dvd_mult_div_cancel euclid_ext2_def euclid_ext2_works(3) more_arith_simps(11)
+      by (smt (verit) dvd_mult_div_cancel euclid_ext2_def euclid_ext2_works(3) more_arith_simps(11)
           mult.commute mult_minus_left prod.sel(1) prod.sel(2) semiring_gcd_class.gcd_dvd1)
     finally show ?thesis using D0 unfolding ys_def by auto
   qed
@@ -4813,7 +4810,8 @@ proof -
       also have "... = ?A $$ (j+m, j')" using reduce_a_eq jm jn a_jm j' A_carrier by auto          
       also have "... = A $$ (j+m, j')" using a_jm m_not_jm jm' jn' j' A_carrier by auto
       also have "... = B $$ (j,j')"
-        by (smt A append_rows_nth2 A' B A_def mn carrier_matD(2) jn' le_Suc_ex that trans_less_add1)
+        unfolding A_def
+        by (meson B append_rows_nth2 assms(1) j_in_ys j_ys mn nat_SN.compat that)
       finally show ?thesis .
     qed
     thus "j < n \<and> reduce_a2 $$ (j, j) = D \<and> (\<forall>j'\<in>{0..<n} - {j}. reduce_a2 $$ (j, j') = 0)"
@@ -4840,9 +4838,9 @@ proof -
     proof (cases "(i\<noteq>a \<and> i\<noteq>m)")
       case True
       have "?reduce_b $$ (i,ja) = ?reduce_a $$ (i,ja)" unfolding reduce_b_eq 
-        by (smt True dr_eq dc_eq i index_mat(1) ja prod.simps(2) reduce_row_mod_D_preserves_dimensions_abs)
+        by (smt (verit) True dr_eq dc_eq i index_mat(1) ja prod.simps(2) reduce_row_mod_D_preserves_dimensions_abs)
       also have "... = ?A $$ (i,ja)"
-        by (smt A True carrier_matD(2) dim_col_mat(1) dim_row_mat(1) i index_mat(1) ja_n 
+        by (smt (verit) A True carrier_matD(2) dim_col_mat(1) dim_row_mat(1) i index_mat(1) ja_n 
             reduce_a_eq reduce_preserves_dimensions(3) split_conv)
       also have "... = A $$ (i,ja)" using A True im ja_n by auto
       also have "... = (reduce_abs a m D A) $$ (i,ja)" unfolding reduce_alt_def_not0[OF Aaj pquvd]
@@ -4860,7 +4858,7 @@ proof -
           have ja_in_xs: "ja \<in> set xs"
             unfolding xs_def using True ja_n im a A unfolding set_filter by auto
           have 1: "?reduce_b $$ (i,ja) = ?reduce_a $$ (i,ja)" unfolding reduce_b_eq             
-            by (smt ab dc_eq dim_row_mat(1) dr_eq i ia index_mat(1) ja prod.simps(2)
+            by (smt (verit) ab dc_eq dim_row_mat(1) dr_eq i ia index_mat(1) ja prod.simps(2)
                 reduce_b_eq reduce_row_mod_D_preserves_dimensions_abs(2))
           show ?thesis 
           proof (cases "ja = 0 \<and> D dvd p*A$$(a,ja) + q*A$$(m,ja)")
@@ -4885,7 +4883,7 @@ proof -
           have ja_in_xs: "ja \<notin> set xs"
             unfolding xs_def using False ja_n im a A unfolding set_filter by auto
           have "?reduce_b $$ (i,ja) = ?reduce_a $$ (i,ja)" unfolding reduce_b_eq             
-            by (smt ab dc_eq dim_row_mat(1) dr_eq i ia index_mat(1) ja prod.simps(2)
+            by (smt (verit) ab dc_eq dim_row_mat(1) dr_eq i ia index_mat(1) ja prod.simps(2)
                 reduce_b_eq reduce_row_mod_D_preserves_dimensions_abs(2))
           also have "... = ?A $$ (i, ja)"
             unfolding reduce_a_eq using False ab a_or_b i_not_b ja_n im a A ja_in_xs by auto
@@ -4907,7 +4905,7 @@ proof -
             unfolding ys_def using True False ib ja_n im a  A unfolding set_filter by auto
           have "?reduce_b $$ (i,ja) = (if ja = 0 \<and> D dvd ?reduce_a$$(i,ja) then D else ?reduce_a $$ (i, ja) gmod D)"
             unfolding reduce_b_eq using i_not_a True  ja ja_in_ys 
-            by (smt i_dra ja_dra a_or_b index_mat(1) prod.simps(2))
+            by (smt (verit) i_dra ja_dra a_or_b index_mat(1) prod.simps(2))
           also have "... = (if ja = 0 \<and> D dvd ?reduce_a$$(i,ja) then D else ?A $$ (i, ja) gmod D)"
             unfolding reduce_a_eq using True ab a_or_b ib False ja_n im a A ja_in_ys by auto
           also have "... = (reduce_abs a m D A) $$ (i,ja)"
@@ -4916,7 +4914,7 @@ proof -
             have ja0: "ja=0" using True by auto
             have "u * A $$ (a, ja) + v * A $$ (m, ja) = 0"
               unfolding euclid_ext2_works[OF pquvd[symmetric]] ja0
-              by (smt euclid_ext2_works[OF pquvd[symmetric]] more_arith_simps(11) mult.commute mult_minus_left)
+              by (smt (verit) euclid_ext2_works[OF pquvd[symmetric]] more_arith_simps(11) mult.commute mult_minus_left)
             hence abs_0: "abs((u*A$$(a,ja) + v * A$$(m,ja))) = 0" by auto
             show ?thesis using abs_0 D0 ge_D by linarith           
           next
@@ -4931,7 +4929,7 @@ proof -
           have ja_in_ys: "ja \<notin> set ys"
             unfolding ys_def using i_not_a False ib ja_n im a  A unfolding set_filter by auto
           have "?reduce_b $$ (i,ja) = ?reduce_a $$ (i,ja)" unfolding reduce_b_eq             
-            by (smt False a_or_b dc_eq dim_row_mat(1) dr_eq i index_mat(1) ja ja_in_ys
+            by (smt (verit) False a_or_b dc_eq dim_row_mat(1) dr_eq i index_mat(1) ja ja_in_ys
                 prod.simps(2) reduce_b_eq reduce_row_mod_D_preserves_dimensions_abs(2))
           also have "... = ?A $$ (i, ja)"
             unfolding reduce_a_eq using False ab a_or_b i_not_a ja_n im a A ja_in_ys by auto
@@ -4947,7 +4945,7 @@ proof -
   moreover have "invertible_mat (Q * P*?BM)"
     using inv_P invertible_bezout BM P invertible_mult_JNF inv_Q Q by (metis mult_carrier_mat)
   moreover have "(reduce_abs a m D A) = (Q * P * ?BM) * A" using reduce_a_eq r reduce_b_eq_reduce
-    by (smt BM P Q assoc_mult_mat carrier_matD carrier_mat_triv 
+    by (smt (verit) BM P Q assoc_mult_mat carrier_matD carrier_mat_triv 
         dim_row_mat(1) index_mult_mat(2,3) reduce_b_Q_reduce)
   ultimately show ?thesis by auto
 qed
@@ -4964,13 +4962,13 @@ proof -
   have "?reduce $$ (a,0) = (let r = gcd (A $$ (a, 0)) (A $$ (b, 0)) in if D dvd r then D else r)" 
     by (rule reduce_gcd[OF A _ j Aaj], insert a, simp)
   also have "... \<noteq> 0" unfolding Let_def using D0 
-    by (smt Aaj gcd_eq_0_iff gmod_0_imp_dvd)
+    by (smt (verit) Aaj gcd_eq_0_iff gmod_0_imp_dvd)
   finally show "reduce a b D A $$ (a, 0) \<noteq> 0" .
   have "?reduce_abs $$ (a,0) = (let r = gcd (A $$ (a, 0)) (A $$ (b, 0)) in 
         if D < r then if D dvd r then D else r gmod D else r)"
     by (rule reduce_gcd[OF A _ j Aaj], insert a, simp)
   also have "... \<noteq> 0" unfolding Let_def using D0 
-    by (smt Aaj gcd_eq_0_iff gmod_0_imp_dvd)
+    by (smt (verit) Aaj gcd_eq_0_iff gmod_0_imp_dvd)
   finally show "reduce_abs a b D A $$ (a, 0) \<noteq> 0" .
 qed
 
@@ -5211,7 +5209,7 @@ next
   have "invertible_mat (P*Q)" using inv_P inv_Q P Q invertible_mult_JNF by blast
   moreover have "P * Q \<in> carrier_mat (m+n) (m+n)" using P Q by auto
   moreover have "reduce_below a (x # xs) D A = (P*Q) * A" 
-    by (smt P Q * assoc_mult_mat carrier_matD(1) carrier_mat_triv index_mult_mat(2) 
+    by (smt (verit) P Q * assoc_mult_mat carrier_matD(1) carrier_mat_triv index_mult_mat(2) 
         r_QA rb_Pr reduce_preserves_dimensions(1))
   ultimately show ?case by blast
 qed
@@ -5272,7 +5270,7 @@ next
   have "invertible_mat (P*Q)" using inv_P inv_Q P Q invertible_mult_JNF by blast
   moreover have "P * Q \<in> carrier_mat (m+n) (m+n)" using P Q by auto
   moreover have "reduce_below_abs a (x # xs) D A = (P*Q) * A" 
-    by (smt P Q * assoc_mult_mat carrier_matD(1) carrier_mat_triv index_mult_mat(2) 
+    by (smt (verit) P Q * assoc_mult_mat carrier_matD(1) carrier_mat_triv index_mult_mat(2) 
         r_QA rb_Pr reduce_preserves_dimensions(3))
   ultimately show ?case by blast
 qed
@@ -6139,7 +6137,8 @@ proof (induct a xs D A arbitrary: A' rule: reduce_below.induct)
   have Am0_D: "A $$ (m, 0) = D"
   proof -
     have "A $$ (m, 0) = (D \<cdot>\<^sub>m (1\<^sub>m n)) $$ (m-m,0)"
-      by (smt (z3) "1"(1) "1"(3) "1"(4) D append_rows_nth3 diff_is_0_eq diff_self_eq_0 less_add_same_cancel1)
+      unfolding "1"(4)
+      by (meson "1"(1) "1"(3) D append_rows_nth3 less_add_same_cancel1 order.refl)
     also have "... = D" by (simp add: n0)
     finally show ?thesis .
   qed
@@ -6170,8 +6169,8 @@ next
   have Am0_D: "A $$ (m, 0) = D"
   proof -
     have "A $$ (m, 0) = (D \<cdot>\<^sub>m (1\<^sub>m n)) $$ (m-m,0)"
-      by (smt (z3) "2"(2) "2"(4) "2"(5) D1 append_rows_nth3 
-          cancel_comm_monoid_add_class.diff_cancel diff_is_0_eq less_add_same_cancel1)
+      unfolding "2"(5)
+      by (meson "2"(2) "2"(4) D1 append_rows_nth3 less_add_same_cancel1 verit_comp_simplify(2))
     also have "... = D" by (simp add: n0)
     finally show ?thesis .
   qed
@@ -6201,7 +6200,7 @@ next
   have "invertible_mat (P*Q)" using inv_P inv_Q P Q invertible_mult_JNF by blast
   moreover have "P * Q \<in> carrier_mat (m+n) (m+n)" using P Q by auto
   moreover have "reduce_below a ((x # xs)@[m]) D A = (P*Q) * A" 
-    by (smt P Q * assoc_mult_mat carrier_matD(1) carrier_mat_triv index_mult_mat(2) 
+    by (smt (verit) P Q * assoc_mult_mat carrier_matD(1) carrier_mat_triv index_mult_mat(2) 
         r_QA rb_Pr reduce_preserves_dimensions(1))
   ultimately show ?case by blast
 qed
@@ -6233,7 +6232,8 @@ proof (induct a xs D A arbitrary: A' rule: reduce_below_abs.induct)
   have Am0_D: "A $$ (m, 0) = D"
   proof -
     have "A $$ (m, 0) = (D \<cdot>\<^sub>m (1\<^sub>m n)) $$ (m-m,0)"
-      by (smt (z3) "1"(1) "1"(3) "1"(4) D append_rows_nth3 diff_is_0_eq diff_self_eq_0 less_add_same_cancel1)
+      unfolding "1"(4)
+      by (meson "1"(1) "1"(3) D append_rows_nth3 le_refl less_add_same_cancel1)
     also have "... = D" by (simp add: n0)
     finally show ?thesis .
   qed
@@ -6264,8 +6264,8 @@ next
   have Am0_D: "A $$ (m, 0) = D"
   proof -
     have "A $$ (m, 0) = (D \<cdot>\<^sub>m (1\<^sub>m n)) $$ (m-m,0)"
-      by (smt (z3) "2"(2) "2"(4) "2"(5) D1 append_rows_nth3 
-          cancel_comm_monoid_add_class.diff_cancel diff_is_0_eq less_add_same_cancel1)
+      unfolding "2"(5)
+      by (meson "2"(2) "2"(4) D1 append_rows_nth3 less_add_same_cancel1 order_refl)
     also have "... = D" by (simp add: n0)
     finally show ?thesis .
   qed
@@ -6295,7 +6295,7 @@ next
   have "invertible_mat (P*Q)" using inv_P inv_Q P Q invertible_mult_JNF by blast
   moreover have "P * Q \<in> carrier_mat (m+n) (m+n)" using P Q by auto
   moreover have "reduce_below_abs a ((x # xs)@[m]) D A = (P*Q) * A" 
-    by (smt P Q * assoc_mult_mat carrier_matD(1) carrier_mat_triv index_mult_mat(2) 
+    by (smt (verit) P Q * assoc_mult_mat carrier_matD(1) carrier_mat_triv index_mult_mat(2) 
         r_QA rb_Pr reduce_preserves_dimensions(3))
   ultimately show ?case by blast
 qed
@@ -6351,12 +6351,12 @@ proof (rule echelon_form_JNF_intro)
     have "\<not> is_zero_row_JNF 0 H" unfolding is_zero_row_JNF_def using m n H A00 A00_H00 by auto
     hence i_not0: "i\<noteq>0" using zero_iH by meson
     have "is_zero_row_JNF (i-1) D" using zero_iH i_not0 Hij_Dij m n D H unfolding is_zero_row_JNF_def
-      by (auto, smt (z3) Suc_leI carrier_matD(1) le_add_diff_inverse2 Hij_Dij One_nat_def Suc_pred carrier_matD(1) j le_add_diff_inverse2
+      by (auto, smt (verit) Suc_leI carrier_matD(1) le_add_diff_inverse2 Hij_Dij One_nat_def Suc_pred carrier_matD(1) j le_add_diff_inverse2
           less_diff_conv less_imp_add_positive plus_1_eq_Suc that(2) trans_less_add1)
     hence "is_zero_row_JNF (j-1) D" using ij e_D D j m i_not0 unfolding echelon_form_JNF_def
-      by (auto, smt H Nat.lessE Suc_pred carrier_matD(1) diff_Suc_1 diff_Suc_less order.strict_trans)
+      by (auto, smt (verit) H Nat.lessE Suc_pred carrier_matD(1) diff_Suc_1 diff_Suc_less order.strict_trans)
     thus ?thesis
-      by (smt A H H_def Hi0 D atLeastLessThan_iff carrier_matD index_mat_four_block(1)
+      by (smt (verit) A H H_def Hi0 D atLeastLessThan_iff carrier_matD index_mat_four_block(1)
           is_zero_row_JNF_def le_add1 less_one linordered_semidom_class.add_diff_inverse not_less_eq
           plus_1_eq_Suc ij j zero_order(3))
   qed
@@ -6400,7 +6400,7 @@ proof (rule echelon_form_JNF_intro)
         by (metis (mono_tags, lifting) LeastI_ex)
     qed
     have least_n: "?least_H<n"
-      by (smt H carrier_matD(2) dual_order.strict_trans is_zero_row_JNF_def 
+      by (smt (verit) H carrier_matD(2) dual_order.strict_trans is_zero_row_JNF_def 
           not_less_Least not_less_iff_gr_or_eq not_zero_iH)
     have Hil: "H $$ (i,?least_H) \<noteq> 0" and ln':"(\<forall>n'. (H $$ (i, n') \<noteq> 0) \<longrightarrow> ?least_H \<le> n')" 
       by (metis (mono_tags, lifting) is_zero_row_JNF_def that(3) wellorder_Least_lemma)+
@@ -6420,7 +6420,7 @@ proof (rule echelon_form_JNF_intro)
           le_add_diff_inverse2 least_n least_not0 less_diff_conv less_one
           linordered_semidom_class.add_diff_inverse)
     have not_zero_jD: "\<not> is_zero_row_JNF (j-1) D"
-      by (smt H Hij_Dij' One_nat_def Suc_pred D m carrier_matD diff_Suc_1 ij is_zero_row_JNF_def j
+      by (smt (verit) H Hij_Dij' One_nat_def Suc_pred D m carrier_matD diff_Suc_1 ij is_zero_row_JNF_def j
           least_not0j less_Suc0 less_Suc_eq_0_disj less_one neq0_conv not_less_Least not_less_eq
           plus_1_eq_Suc not_zero_jH zero_order(3))
     have "?least_H - 1 = (LEAST n. D $$ (i-1, n) \<noteq> 0 \<and> n<dim_col D)"
@@ -6442,7 +6442,7 @@ proof (rule echelon_form_JNF_intro)
       have "D $$ (i - 1, LEAST n. D $$ (i - 1, n) \<noteq> 0) \<noteq> 0" 
         by (metis (mono_tags, lifting) Hil Hil_Dil LeastI_ex)
       moreover have leastD: "(LEAST n. D $$ (i - 1, n) \<noteq> 0) < dim_col D"
-        by (smt dual_order.strict_trans is_zero_row_JNF_def linorder_neqE_nat
+        by (smt (verit) dual_order.strict_trans is_zero_row_JNF_def linorder_neqE_nat
             not_less_Least not_zero_iD) 
       ultimately show "D $$ (i - 1, LEAST n. D $$ (i - 1, n) \<noteq> 0) \<noteq> 0 
         \<and> (LEAST n. D $$ (i - 1, n) \<noteq> 0) < dim_col D" by simp  
@@ -6451,7 +6451,7 @@ proof (rule echelon_form_JNF_intro)
     qed
     finally have leastHi_eq: "?least_H - 1 = (LEAST n. D $$ (i-1, n) \<noteq> 0)" .
     have least_nj: "?least_Hj<n"
-      by (smt H carrier_matD(2) dual_order.strict_trans is_zero_row_JNF_def 
+      by (smt (verit) H carrier_matD(2) dual_order.strict_trans is_zero_row_JNF_def 
           not_less_Least not_less_iff_gr_or_eq not_zero_jH)
     have Hjl: "H $$ (j,?least_Hj) \<noteq> 0" and ln':"(\<forall>n'. (H $$ (j, n') \<noteq> 0) \<longrightarrow> ?least_Hj \<le> n')" 
       by (metis (mono_tags, lifting) is_zero_row_JNF_def not_zero_jH wellorder_Least_lemma)+
@@ -6469,7 +6469,7 @@ proof (rule echelon_form_JNF_intro)
     have "(LEAST n. H $$ (j, n) \<noteq> 0) - 1 = (LEAST n. D $$ (j-1, n) \<noteq> 0 \<and> n<dim_col D)"
     proof (rule Least_equality[symmetric], rule)
       show "D $$ (j - 1, ?least_Hj - 1) \<noteq> 0" using Hil Hil_Dil
-        by (smt H Hij_Dij' LeastI_ex carrier_matD is_zero_row_JNF_def j least_not0j 
+        by (smt (verit) H Hij_Dij' LeastI_ex carrier_matD is_zero_row_JNF_def j least_not0j 
             linorder_neqE_nat not_gr0 not_less_Least order.strict_trans ij not_zero_jH)
       show "(LEAST n. H $$ (j, n) \<noteq> 0) - 1 < dim_col D" using least_nj least_not0j H D n by auto
       fix n' assume "D $$ (j - 1, n') \<noteq> 0 \<and> n' < dim_col D" 
@@ -6487,7 +6487,7 @@ proof (rule echelon_form_JNF_intro)
       have "D $$ (j - 1, LEAST n. D $$ (j - 1, n) \<noteq> 0) \<noteq> 0" 
         by (metis (mono_tags, lifting) Hjl Hjl_Djl LeastI_ex)
       moreover have leastD: "(LEAST n. D $$ (j - 1, n) \<noteq> 0) < dim_col D"
-        by (smt dual_order.strict_trans is_zero_row_JNF_def linorder_neqE_nat
+        by (smt (verit) dual_order.strict_trans is_zero_row_JNF_def linorder_neqE_nat
             not_less_Least not_zero_jD) 
       ultimately show "D $$ (j - 1, LEAST n. D $$ (j - 1, n) \<noteq> 0) \<noteq> 0 
         \<and> (LEAST n. D $$ (j - 1, n) \<noteq> 0) < dim_col D" by simp  
@@ -6614,9 +6614,9 @@ proof (induct abs_flag D A arbitrary: m n rule: FindPreHNF.induct)
     unfolding FindPreHNF.simps[of abs_flag D A] using A'_split m n A
     unfolding Let_def sub_PreHNF_def  A'_def non_zero_positions_def * 
     apply (cases abs_flag)
-    by (smt (z3) Reduce_def carrier_matD(1) carrier_matD(2) linorder_not_less prod.simps(2))+
+    by (smt (verit) Reduce_def carrier_matD(1) carrier_matD(2) linorder_not_less prod.simps(2))+
   also have "... \<in> carrier_mat m n"
-    by (smt m A'_UL One_nat_def add.commute carrier_matD carrier_mat_triv index_mat_four_block(2,3) 
+    by (smt (verit) m A'_UL One_nat_def add.commute carrier_matD carrier_mat_triv index_mat_four_block(2,3) 
         le_add_diff_inverse2 le_eq_less_or_eq lessI n nat_SN.compat numerals(2) sub_PreHNF)  
   finally show ?case .
 qed
@@ -6644,14 +6644,14 @@ proof (rule matrix_append_rows_eq_if_preserves)
   proof -
     have i_mn: "i<m+n" using i by auto
     have "A $$ (i,0) = (D \<cdot>\<^sub>m 1\<^sub>m n) $$ (i - m, 0)" unfolding A_def
-      by (smt A append_rows_def assms(1) assms(2) atLeastLessThan_iff carrier_matD 
+      by (smt (verit) A append_rows_def assms(1) assms(2) atLeastLessThan_iff carrier_matD 
           index_mat_four_block less_irrefl_nat nat_SN.compat j i n0)
     also have "... \<ge> 0" using D0 mult_not_zero that(2) by auto
     finally have Ai0: "A$$(i,0)\<ge>0" .
     have "make_first_column_positive A $$ (i, j) = A$$(i,j)"
       using make_first_column_positive_works[OF A i_mn n0] j Ai0 by auto
     also have "... = (D \<cdot>\<^sub>m 1\<^sub>m n) $$ (i - m, j)" unfolding A_def
-      by (smt A append_rows_def A' A_def atLeastLessThan_iff carrier_matD 
+      by (smt (verit) A append_rows_def A' A_def atLeastLessThan_iff carrier_matD 
           index_mat_four_block less_irrefl_nat nat_SN.compat i j)
     finally show ?thesis .
   qed
@@ -6705,7 +6705,7 @@ proof (rule matrix_append_rows_eq_if_preserves)
   proof -
     have "swaprows 0 i A $$ (ia, j) = A $$ (ia,j)" using i ia j A by auto
     also have "... = (D \<cdot>\<^sub>m 1\<^sub>m n) $$ (ia - m, j)" 
-      by (smt A append_rows_def A' A_def atLeastLessThan_iff carrier_matD 
+      by (smt (verit) A append_rows_def A' A_def atLeastLessThan_iff carrier_matD 
           index_mat_four_block less_irrefl_nat nat_SN.compat ia j)
     finally show "swaprows 0 i A $$ (ia, j) = (D \<cdot>\<^sub>m 1\<^sub>m n) $$ (ia - m, j)" .
   qed
@@ -6953,15 +6953,14 @@ proof -
   next
     case False
     have "A $$ (0, 0) = A'' $$ (0, 0)"
-      by (smt add_gr_0 append_rows_def A_def A'' carrier_matD index_mat_four_block(1) mn n0 nat_SN.compat)
+      by (smt (verit) add_gr_0 append_rows_def A_def A'' carrier_matD index_mat_four_block(1) mn n0 nat_SN.compat)
     hence A''00: "A''$$(0,0) = 0" using False by auto
     let ?i = "non_zero_positions ! 0"
     obtain xs where non_zero_positions_xs_m: "non_zero_positions = xs @ [m]" and d_xs: "distinct xs"
       and all_less_m: "\<forall>x\<in>set xs. x < m \<and> 0 < x" 
       using non_zero_positions_xs_m[OF A_def A'' nz_def m0 n0] using D0 by fast    
-    have Ai0:"A $$ (?i,0) \<noteq> 0"
-      by (smt append.simps(1) append_Cons append_same_eq nz_def in_set_conv_nth length_greater_0_conv
-          list.simps(3) local.non_zero_positions_xs_m mem_Collect_eq set_filter)  
+    have Ai0: "A $$ (?i,0) \<noteq> 0"
+      by (smt (verit, ccfv_threshold) add_gr_0 length_append less_numeral_extra(1) list.size(4) local.non_zero_positions_xs_m mem_Collect_eq nth_mem nz_def plus_1_eq_Suc set_filter)
     have "A' $$ (0, 0) = swaprows 0 ?i A $$ (0,0)"  using False A'_def by auto
     also have "... \<noteq> 0" using A Ai0 n0 by auto  
     finally show ?thesis .
@@ -7055,7 +7054,7 @@ proof -
         have "reduce 0 m D ?M $$ (i, 0) = ?M $$ (i,0)" 
           by (rule reduce_preserves[OF M n0 mk0 False ia i_mn])
         also have Mi0: "... = abs (A'' $$ (i,0))"
-          by (smt M carrier_matD(1) carrier_matD(2) i_mn index_mat(1) make_first_column_positive.simps
+          by (smt (verit) M carrier_matD(1) carrier_matD(2) i_mn index_mat(1) make_first_column_positive.simps
               make_first_column_positive_preserves_dimensions n0 prod.simps(2))
         also have Mi02: "... = abs (A $$ (i,0)) " unfolding A''_def nz_m
           using True A False i_mn ia n0 by auto
@@ -7074,7 +7073,7 @@ proof -
         have "reduce 0 m D ?M $$ (i, 0) = ?M $$ (i,0)" 
           by (rule reduce_preserves[OF M n0 mk0 i_not_m ia i_mn])
         also have Mi0: "... = abs (A'' $$ (i,0))"
-          by (smt M carrier_matD(1) carrier_matD(2) i_mn index_mat(1) make_first_column_positive.simps
+          by (smt (verit) M carrier_matD(1) carrier_matD(2) i_mn index_mat(1) make_first_column_positive.simps
               make_first_column_positive_preserves_dimensions n0 prod.simps(2))
         also have Mi02: "... = abs (swaprows 0 m A $$ (i,0)) " unfolding A''_def nz_m
           using A00 A i_not_m i_mn ia n0 by auto
@@ -7124,7 +7123,7 @@ proof -
         have "A''$$(i,0) = (swaprows 0 ?i A) $$ (i,0)" using False unfolding A''_def by auto
         also have "... = A $$ (i,0)" using i_notin_xs_m ia i_mn A i_noti n0 unfolding xs_def by fastforce  
         also have "... = 0" using i_notin_xs_m ia i_mn A i_noti n0 unfolding xs_def 
-          by (smt nz_def atLeastLessThan_iff carrier_matD(1) less_one linorder_not_less
+          by (smt (verit) nz_def atLeastLessThan_iff carrier_matD(1) less_one linorder_not_less
               mem_Collect_eq nz_xs_m set_filter set_upt xs_def) 
         finally show ?thesis .
       qed
@@ -7217,7 +7216,7 @@ proof -
         have "reduce_abs 0 m D ?M $$ (i, 0) = ?M $$ (i,0)" 
           by (rule reduce_preserves[OF M n0 mk0 False ia i_mn])
         also have Mi0: "... = abs (A'' $$ (i,0))"
-          by (smt M carrier_matD(1) carrier_matD(2) i_mn index_mat(1) make_first_column_positive.simps
+          by (smt (verit) M carrier_matD(1) carrier_matD(2) i_mn index_mat(1) make_first_column_positive.simps
               make_first_column_positive_preserves_dimensions n0 prod.simps(2))
         also have Mi02: "... = abs (A $$ (i,0)) " unfolding A''_def nz_m
           using True A False i_mn ia n0 by auto
@@ -7236,7 +7235,7 @@ proof -
         have "reduce_abs 0 m D ?M $$ (i, 0) = ?M $$ (i,0)" 
           by (rule reduce_preserves[OF M n0 mk0 i_not_m ia i_mn])
         also have Mi0: "... = abs (A'' $$ (i,0))"
-          by (smt M carrier_matD(1) carrier_matD(2) i_mn index_mat(1) make_first_column_positive.simps
+          by (smt (verit) M carrier_matD(1) carrier_matD(2) i_mn index_mat(1) make_first_column_positive.simps
               make_first_column_positive_preserves_dimensions n0 prod.simps(2))
         also have Mi02: "... = abs (swaprows 0 m A $$ (i,0)) " unfolding A''_def nz_m
           using A00 A i_not_m i_mn ia n0 by auto
@@ -7286,7 +7285,7 @@ proof -
         have "A''$$(i,0) = (swaprows 0 ?i A) $$ (i,0)" using False unfolding A''_def by auto
         also have "... = A $$ (i,0)" using i_notin_xs_m ia i_mn A i_noti n0 unfolding xs_def by fastforce  
         also have "... = 0" using i_notin_xs_m ia i_mn A i_noti n0 unfolding xs_def 
-          by (smt nz_def atLeastLessThan_iff carrier_matD(1) less_one linorder_not_less
+          by (smt (verit) nz_def atLeastLessThan_iff carrier_matD(1) less_one linorder_not_less
               mem_Collect_eq nz_xs_m set_filter set_upt xs_def) 
         finally show ?thesis .
       qed
@@ -7351,8 +7350,8 @@ proof -
         have Am0: "A $$ (m,0) = D"
         proof -
           have "A $$ (m,0) = (D \<cdot>\<^sub>m 1\<^sub>m n) $$ (m-m, 0)"
-            by (smt (z3) A append_rows_def A_def A'' n0 carrier_matD diff_self_eq_0 index_mat_four_block
-                less_add_same_cancel1 less_diff_conv diff_add nat_less_le)
+            unfolding A_def
+            by (meson append_rows_nth3 assms(2) assms(4) less_add_same_cancel1 one_carrier_mat order_refl smult_carrier_mat)
           also have "... = D" by (simp add: n0)
           finally show ?thesis .
         qed
@@ -7395,7 +7394,7 @@ proof -
                 by (metis S' S'' S_S'_S'' append_rows_nth2 mn nat_SN.compat i_n jn)
               also have "... = A $$ (j+m,i)" using A jn j0 i_n by auto
               also have "... = (D \<cdot>\<^sub>m 1\<^sub>m n) $$ (j,i)"
-                by (smt A Groups.add_ac(2) add_mono_thms_linordered_field(1) append_rows_def A_def A'' i_n
+                by (smt (verit) A Groups.add_ac(2) add_mono_thms_linordered_field(1) append_rows_def A_def A'' i_n
                     carrier_matD index_mat_four_block(1,2) add_diff_cancel_right' not_add_less2 jn trans_less_add1)
               finally show ?thesis .
             qed
@@ -7444,9 +7443,10 @@ proof -
         have "?S = ?S' @\<^sub>r D \<cdot>\<^sub>m 1\<^sub>m n" by (rule swaprows_append_id[OF A'' A_def nz0_less_m])
         thus "(if A $$ (0, 0) \<noteq> 0 then A else let i = (xs @ [m]) ! 0 in swaprows 0 i A)= ?S' @\<^sub>r D \<cdot>\<^sub>m 1\<^sub>m n" 
           using rw nz_xs_m by argo
-        have "?S $$ (0, 0) \<noteq> 0"
-          by (smt A l add_pos_pos carrier_matD index_mat_swaprows(1) le_eq_less_or_eq length_greater_0_conv
-              less_one linorder_not_less list.size(3) m0 mem_Collect_eq n0 nth_mem set_filter)
+        have "A $$ (filter (\<lambda>i. A $$ (i, 0) \<noteq> 0) [Suc 0..<dim_row A] ! 0, 0) \<noteq> 0"
+          by (metis (mono_tags, lifting) Cons_eq_filterD l length_nth_simps(1) length_nth_simps(3) list.exhaust not_one_less_zero)
+        then have "?S $$ (0, 0) \<noteq> 0"
+          by (metis A add_sign_intros(2) carrier_matD(1) carrier_matD(2) index_mat_swaprows(1) m0 n0)
         thus "(if A $$ (0, 0) \<noteq> 0 then A else let i = (xs @ [m]) ! 0 in swaprows 0 i A) $$ (0, 0) \<noteq> 0"
           using rw nz_xs_m by algebra
       qed
@@ -7473,8 +7473,8 @@ proof -
         have Am0: "A $$ (m,0) = D"
         proof -
           have "A $$ (m,0) = (D \<cdot>\<^sub>m 1\<^sub>m n) $$ (m-m, 0)"
-            by (smt (z3) A append_rows_def A_def A'' n0 carrier_matD diff_self_eq_0 index_mat_four_block
-                less_add_same_cancel1 less_diff_conv diff_add nat_less_le)
+            unfolding A_def
+            by (meson append_rows_nth3 assms(2) assms(4) less_add_same_cancel1 one_carrier_mat order.refl smult_carrier_mat)
           also have "... = D" by (simp add: n0)
           finally show ?thesis .
         qed
@@ -7517,7 +7517,7 @@ proof -
                 by (metis S' S'' S_S'_S'' append_rows_nth2 mn nat_SN.compat i_n jn)
               also have "... = A $$ (j+m,i)" using A jn j0 i_n by auto
               also have "... = (D \<cdot>\<^sub>m 1\<^sub>m n) $$ (j,i)"
-                by (smt A Groups.add_ac(2) add_mono_thms_linordered_field(1) append_rows_def A_def A'' i_n
+                by (smt (verit) A Groups.add_ac(2) add_mono_thms_linordered_field(1) append_rows_def A_def A'' i_n
                     carrier_matD index_mat_four_block(1,2) add_diff_cancel_right' not_add_less2 jn trans_less_add1)
               finally show ?thesis .
             qed
@@ -7564,7 +7564,7 @@ proof -
         thus "(if A $$ (0, 0) \<noteq> 0 then A else let i = (xs @ [m]) ! 0 in swaprows 0 i A)= ?S' @\<^sub>r D \<cdot>\<^sub>m 1\<^sub>m n" 
           using rw nz_xs_m by argo
         have "?S $$ (0, 0) \<noteq> 0"
-          by (smt A l add_pos_pos carrier_matD index_mat_swaprows(1) le_eq_less_or_eq length_greater_0_conv
+          by (smt (verit) A l add_pos_pos carrier_matD index_mat_swaprows(1) le_eq_less_or_eq length_greater_0_conv
               less_one linorder_not_less list.size(3) m0 mem_Collect_eq n0 nth_mem set_filter)
         thus "(if A $$ (0, 0) \<noteq> 0 then A else let i = (xs @ [m]) ! 0 in swaprows 0 i A) $$ (0, 0) \<noteq> 0"
           using rw nz_xs_m by algebra
@@ -7692,7 +7692,7 @@ next
         have Am0: "A $$ (m,0) = D"
         proof -
           have "A $$ (m,0) = (D \<cdot>\<^sub>m 1\<^sub>m n) $$ (m-m, 0)"
-            by (smt A append_rows_def A_def A'' n0 carrier_matD diff_self_eq_0 index_mat_four_block
+            by (smt (verit) A append_rows_def A_def A'' n0 carrier_matD diff_self_eq_0 index_mat_four_block
                 less_add_same_cancel1 less_diff_conv ordered_cancel_comm_monoid_diff_class.diff_add
                 nat_less_le)
           also have "... = D" by (simp add: n0)
@@ -7742,9 +7742,10 @@ next
       have l: "length ?non_zero_positions > 1"    using False nz_xs_m by auto   
       hence l_xs: "length xs > 0" using nz_xs_m by auto
       hence xs_m_less_m: "(xs@[m]) ! 0 < m" by (simp add: all_less_m nth_append)
-      have S00: "?S $$ (0,0) \<noteq> 0"
-        by (smt A add_pos_pos append_Cons_nth_left n0 carrier_matD index_mat_swaprows(1)
-            l_xs m0 mem_Collect_eq nth_mem set_filter xs_def)
+      have "A $$ ((xs @ [m]) ! 0, 0) \<noteq> 0"
+        by (metis (mono_tags, lifting) Cons_eq_filterD List.min_list.cases append_is_Nil_conv nth_Cons_0 nz_xs_m)
+      then have S00: "?S $$ (0,0) \<noteq> 0"
+        using A n0 by auto
       have S': "?S' \<in> carrier_mat m n" using A by auto
       have S_S'D: "?S = ?S' @\<^sub>r D \<cdot>\<^sub>m 1\<^sub>m n" by (rule swaprows_append_id[OF A'' A_def xs_m_less_m]) 
       have 2: "reduce_below 0 ?non_zero_positions D ?A' = reduce_below 0 ?non_zero_positions D ?S"
@@ -7821,7 +7822,7 @@ next
         have Am0: "A $$ (m,0) = D"
         proof -
           have "A $$ (m,0) = (D \<cdot>\<^sub>m 1\<^sub>m n) $$ (m-m, 0)"
-            by (smt A append_rows_def A_def A'' n0 carrier_matD diff_self_eq_0 index_mat_four_block
+            by (smt (verit) A append_rows_def A_def A'' n0 carrier_matD diff_self_eq_0 index_mat_four_block
                 less_add_same_cancel1 less_diff_conv ordered_cancel_comm_monoid_diff_class.diff_add
                 nat_less_le)
           also have "... = D" by (simp add: n0)
@@ -7871,9 +7872,10 @@ next
       have l: "length ?non_zero_positions > 1"    using False nz_xs_m by auto   
       hence l_xs: "length xs > 0" using nz_xs_m by auto
       hence xs_m_less_m: "(xs@[m]) ! 0 < m" by (simp add: all_less_m nth_append)
-      have S00: "?S $$ (0,0) \<noteq> 0"
-        by (smt A add_pos_pos append_Cons_nth_left n0 carrier_matD index_mat_swaprows(1)
-            l_xs m0 mem_Collect_eq nth_mem set_filter xs_def)
+      have "A $$ ((xs @ [m]) ! 0, 0) \<noteq> 0"
+        by (smt (verit) append_Cons_nth_left l_xs mem_Collect_eq nth_mem set_filter xs_def)
+      then have S00: "?S $$ (0,0) \<noteq> 0"
+        using A n0 by auto
       have S': "?S' \<in> carrier_mat m n" using A by auto
       have S_S'D: "?S = ?S' @\<^sub>r D \<cdot>\<^sub>m 1\<^sub>m n" by (rule swaprows_append_id[OF A'' A_def xs_m_less_m]) 
       have 2: "reduce_below_abs 0 ?non_zero_positions D ?A' = reduce_below_abs 0 ?non_zero_positions D ?S"
@@ -8044,7 +8046,7 @@ proof (induct abs_flag D A arbitrary: A'' m n rule: FindPreHNF.induct)
       case False note i_ge_m = False
       let ?reduce_below = "reduce_below_abs 0 non_zero_positions D (make_first_column_positive A')"
       have 1: "(?A'_DR_m @\<^sub>r D \<cdot>\<^sub>m 1\<^sub>m (n - 1)) $$ (i,j) = (D \<cdot>\<^sub>m 1\<^sub>m (n - 1)) $$ (i-m,j)"
-        by (smt A'_DR A'_DR_m False append_rows_nth carrier_matD carrier_mat_triv dc dr i
+        by (smt (verit) A'_DR A'_DR_m False append_rows_nth carrier_matD carrier_mat_triv dc dr i
             index_one_mat(2) index_one_mat(3) index_smult_mat(2,3) j)
       have "?reduce_below = four_block_mat A'_UL A'_UR A'_DL A'_DR" using fbm_R ..
       also have "... $$ (i+1,j+1) = (if i+1 < dim_row A'_UL then if j+1 < dim_col A'_UL 
@@ -8077,7 +8079,7 @@ proof (induct abs_flag D A arbitrary: A'' m n rule: FindPreHNF.induct)
           proof -
             have "?S $$ (i+1,0) = A $$ (i+1,0)" using i1_m n0 i1_mn S by auto
             also have "... = (D \<cdot>\<^sub>m 1\<^sub>m n) $$ (i+1 - m,0)"
-              by (smt A_def A'' A i_ge_m append_rows_def carrier_matD diff_add_inverse2 i1_mn 
+              by (smt (verit) A_def A'' A i_ge_m append_rows_def carrier_matD diff_add_inverse2 i1_mn 
                   index_mat_four_block less_imp_diff_less n0)
             also have "... = 0" using i_ge_m n0 i1_mn by auto
             finally show ?thesis .
@@ -8089,7 +8091,7 @@ proof (induct abs_flag D A arbitrary: A'' m n rule: FindPreHNF.induct)
           also have "... = ?S $$ (i+1,j+1)" using Si10 by auto
           also have "... = A $$ (i+1,j+1)" using i1_m n0 i1_mn S jn1 by auto
           also have "... = (D \<cdot>\<^sub>m 1\<^sub>m n) $$ (i+1 - m,j+1)"
-            by (smt A_def A'' A i_ge_m append_rows_def carrier_matD i1_mn index_mat_four_block(1,3)
+            by (smt (verit) A_def A'' A i_ge_m append_rows_def carrier_matD i1_mn index_mat_four_block(1,3)
                 index_one_mat(2) index_smult_mat(2) index_zero_mat(2) j1n less_imp_diff_less add_diff_cancel_right')
           finally show ?thesis .
         next
@@ -8097,7 +8099,7 @@ proof (induct abs_flag D A arbitrary: A'' m n rule: FindPreHNF.induct)
           have Ai10: "A $$ (i+1,0) = 0"
           proof -
             have "A $$ (i+1,0) = (D \<cdot>\<^sub>m 1\<^sub>m n) $$ (i+1 - m,0)"
-              by (smt A_def A'' A i_ge_m append_rows_def carrier_matD diff_add_inverse2 i1_mn 
+              by (smt (verit) A_def A'' A i_ge_m append_rows_def carrier_matD diff_add_inverse2 i1_mn 
                   index_mat_four_block less_imp_diff_less n0)
             also have "... = 0" using i_ge_m n0 i1_mn by auto
             finally show ?thesis .
@@ -8108,14 +8110,14 @@ proof (induct abs_flag D A arbitrary: A'' m n rule: FindPreHNF.induct)
             unfolding make_first_column_positive.simps using A i1_mn j1n by auto
           also have "... = A $$ (i+1,j+1)" using Ai10 by auto
           also have "... = (D \<cdot>\<^sub>m 1\<^sub>m n) $$ (i+1 - m,j+1)"
-            by (smt A_def A'' A i_ge_m append_rows_def carrier_matD i1_mn index_mat_four_block(1,3)
+            by (smt (verit) A_def A'' A i_ge_m append_rows_def carrier_matD i1_mn index_mat_four_block(1,3)
                 index_one_mat(2) index_smult_mat(2) index_zero_mat(2) j1n less_imp_diff_less add_diff_cancel_right')
           finally show ?thesis .
         qed
         also have "... = D * (1\<^sub>m n) $$ ((i+1)-m, j+1)"
           by (rule index_smult_mat, insert i jn1 A'_DR False dr, auto)            
         also have "... = D *(1\<^sub>m (n - 1)) $$ (i-m,j)" using dc dr i j A'_DR i_ge_m
-          by (smt Nat.add_diff_assoc2 carrier_matD(1) index_one_mat(1) jn1 less_diff_conv 
+          by (smt (verit) Nat.add_diff_assoc2 carrier_matD(1) index_one_mat(1) jn1 less_diff_conv 
               linorder_not_less add_diff_cancel_right' add_diff_cancel_right' add_diff_cancel_left')
         also have "... = (D \<cdot>\<^sub>m 1\<^sub>m (n - 1)) $$ (i-m,j)"
           by (rule index_smult_mat[symmetric], insert i jn1 A'_DR False dr, auto)
@@ -8150,7 +8152,7 @@ proof (induct abs_flag D A arbitrary: A'' m n rule: FindPreHNF.induct)
       also have "... = D * (1\<^sub>m n) $$ ((i+1)-m, j+1)"
         by (rule index_smult_mat, insert i jn1 A'_DR False dr, auto)            
       also have "... = D *(1\<^sub>m (n - 1)) $$ (i-m,j)" using dc dr i j A'_DR i_ge_m
-        by (smt Nat.add_diff_assoc2 carrier_matD(1) index_one_mat(1) jn1 less_diff_conv 
+        by (smt (verit) Nat.add_diff_assoc2 carrier_matD(1) index_one_mat(1) jn1 less_diff_conv 
             linorder_not_less add_diff_cancel_right' add_diff_cancel_left')
       also have "... = (D \<cdot>\<^sub>m 1\<^sub>m (n - 1)) $$ (i-m,j)"
         by (rule index_smult_mat[symmetric], insert i jn1 A'_DR False dr, auto)
@@ -8195,7 +8197,7 @@ qed
   have FindPreHNF_as_fbm: "FindPreHNF abs_flag D A = four_block_mat A'_UL A'_UR A'_DL sub_PreHNF" 
     unfolding FindPreHNF.simps[of abs_flag D A] using A'_split mn n A dr_A2 dc_A2 abs_flag
     unfolding Let_def sub_PreHNF_def M_def A'_def non_zero_positions_def *    
-    by (smt (z3) linorder_not_less split_conv)
+    by (smt (verit) linorder_not_less split_conv)
   also have "... = P' * (reduce_below_abs 0 non_zero_positions D M)"
   proof -
     have "P' * (reduce_below_abs 0 non_zero_positions D M) 
@@ -8254,7 +8256,7 @@ qed
             have Ajm0: "A $$ (j+m,0) = 0"
             proof -
               have "A $$ (j+m,0) = (D \<cdot>\<^sub>m 1\<^sub>m n) $$ (j+m-m,0)"
-                by (smt "1"(2) "1"(3) M M' M'' M_M'_M'' add.commute append_rows_def carrier_matD
+                by (smt (verit) "1"(2) "1"(3) M M' M'' M_M'_M'' add.commute append_rows_def carrier_matD
                     diff_add_inverse2 index_mat_four_block index_one_mat(2) index_smult_mat(2)
                     le_add2 less_diff_conv2 n0 not_add_less2 that(1))
               also have "... = 0" using jn j0 by auto
@@ -8263,23 +8265,24 @@ qed
             have "M'' $$ (j, i) = (D \<cdot>\<^sub>m 1\<^sub>m n) $$ (j,i)" if i_n: "i<n" for i
             proof (cases "A$$(0,0) = 0")
               case True 
-              have "M'' $$ (j, i) = make_first_column_positive (swaprows 0 m A) $$ (j+m,i)"                
-                by (smt A'_def Groups.add_ac(2) M' M'' M_M'_M'' M_def True append.simps(1) 
-                    append_rows_nth3 diff_add_inverse2 jn le_add2 local.non_zero_positions_xs_m
-                    nat_add_left_cancel_less nth_Cons_0 that xs_empty)
+              have "M'' $$ (j, i) = make_first_column_positive (swaprows 0 m A) $$ (j+m,i)"  
+                using M' M'' M_M'_M'' unfolding M_def A_def 
+                by (metis (no_types, lifting) "1"(2) "1"(5) A'_def True append.simps(1) append_rows_nth2 i_n jn 
+                    non_zero_positions_xs_m nat_SN.compat nth_Cons_0 xs_empty)
               also have "... = A $$ (j+m,i)" using A jn j0 i_n Ajm0 by auto
               also have "... = (D \<cdot>\<^sub>m 1\<^sub>m n) $$ (j,i)"
-                by (smt A Groups.add_ac(2) add_mono_thms_linordered_field(1) append_rows_def A_def A'' i_n
+                by (smt (verit) A Groups.add_ac(2) add_mono_thms_linordered_field(1) append_rows_def A_def A'' i_n
                     carrier_matD index_mat_four_block(1,2) add_diff_cancel_right' not_add_less2 jn trans_less_add1)
               finally show ?thesis .            
             next
               case False
               have "A' = A" unfolding A'_def non_zero_positions_xs_m using False True by auto
-              hence "M'' $$ (j, i) = make_first_column_positive A $$ (j+m,i)"                
-                by (smt m_le_n M' M'' M_M'_M'' M_def append_rows_nth2 jn nat_SN.compat that)                
+              hence "M'' $$ (j, i) = make_first_column_positive A $$ (j+m,i)"     
+                using M' M'' M_M'_M'' unfolding M_def
+                by (metis (no_types, opaque_lifting) "1"(5) append_rows_nth2 jn nat_SN.compat that)
               also have "... = A $$ (j+m,i)" using A jn j0 i_n Ajm0 by auto
               also have "... = (D \<cdot>\<^sub>m 1\<^sub>m n) $$ (j,i)"
-                by (smt A Groups.add_ac(2) add_mono_thms_linordered_field(1) append_rows_def A_def A'' i_n
+                by (smt (verit) A Groups.add_ac(2) add_mono_thms_linordered_field(1) append_rows_def A_def A'' i_n
                     carrier_matD index_mat_four_block(1,2) add_diff_cancel_right' not_add_less2 jn trans_less_add1)
               finally show ?thesis .
             qed                           
@@ -8288,7 +8291,7 @@ qed
           have Am0D: "A$$(m,0) = D"
           proof -
             have "A$$(m,0) = (D \<cdot>\<^sub>m 1\<^sub>m n) $$ (m-m,0)"
-              by (smt "1"(2) "1"(3) M M' M'' M_M'_M'' append_rows_def carrier_matD
+              by (smt (verit) "1"(2) "1"(3) M M' M'' M_M'_M'' append_rows_def carrier_matD
                   diff_less_mono2 diff_self_eq_0 index_mat_four_block index_one_mat(2) 
                   index_smult_mat(2) less_add_same_cancel1 n0 semiring_norm(137))
             also have "... = D" using m0 n0 by auto
@@ -8363,7 +8366,7 @@ qed
                 + M $$ (0, 0) div gcd (M $$ (0, 0)) (M $$ (m, 0)) * M $$ (m, 0) "
               by (simp add: euclid_ext2_works[OF pquvd[symmetric]])
             also have "... = 0" using M00D Mm00 M000 Mm0D
-              by (smt dvd_div_mult_self euclid_ext2_works(3) euclid_ext2_works(5)
+              by (smt (verit) dvd_div_mult_self euclid_ext2_works(3) euclid_ext2_works(5)
                   more_arith_simps(11) mult.commute mult_minus_left pquvd semiring_gcd_class.gcd_dvd1)
             finally have "A2 $$ (m,0) = 0" .
             thus ?thesis unfolding ys'_def using D0 by auto
@@ -8395,7 +8398,7 @@ qed
   have "(P'*Q*R*S) \<in> carrier_mat (m+n) (m+n)" using P' Q R S A' A by auto
   moreover have "FindPreHNF abs_flag D A = (P'*Q*R*S) * A" using Find_P'_reduceM reduce_QM 
     unfolding  M_RA' A'_SA M_def
-    by (smt A' A'_SA P' Q R S assoc_mult_mat carrier_matD carrier_mat_triv index_mult_mat(2,3) 
+    by (smt (verit) A' A'_SA P' Q R S assoc_mult_mat carrier_matD carrier_mat_triv index_mult_mat(2,3) 
         non_zero_positions_xs_m)
   moreover have "invertible_mat (P'*Q*R*S)" using inv_P' inv_Q inv_R inv_S using P' Q R S A' A 
     by (metis carrier_matD carrier_mat_triv index_mult_mat(2,3) invertible_mult_JNF)
@@ -8487,7 +8490,7 @@ qed
       case False note i_ge_m = False
       let ?reduce_below = "reduce_below 0 non_zero_positions D (make_first_column_positive A')"
       have 1: "(?A'_DR_m @\<^sub>r D \<cdot>\<^sub>m 1\<^sub>m (n - 1)) $$ (i,j) = (D \<cdot>\<^sub>m 1\<^sub>m (n - 1)) $$ (i-m,j)"
-        by (smt A'_DR A'_DR_m False append_rows_nth carrier_matD carrier_mat_triv dc dr i
+        by (smt (verit) A'_DR A'_DR_m False append_rows_nth carrier_matD carrier_mat_triv dc dr i
             index_one_mat(2) index_one_mat(3) index_smult_mat(2,3) j)
       have "?reduce_below = four_block_mat A'_UL A'_UR A'_DL A'_DR" using fbm_R ..
       also have "... $$ (i+1,j+1) = (if i+1 < dim_row A'_UL then if j+1 < dim_col A'_UL 
@@ -8520,7 +8523,7 @@ qed
           proof -
             have "?S $$ (i+1,0) = A $$ (i+1,0)" using i1_m n0 i1_mn S by auto
             also have "... = (D \<cdot>\<^sub>m 1\<^sub>m n) $$ (i+1 - m,0)"
-              by (smt A_def A'' A i_ge_m append_rows_def carrier_matD diff_add_inverse2 i1_mn 
+              by (smt (verit) A_def A'' A i_ge_m append_rows_def carrier_matD diff_add_inverse2 i1_mn 
                   index_mat_four_block less_imp_diff_less n0)
             also have "... = 0" using i_ge_m n0 i1_mn by auto
             finally show ?thesis .
@@ -8532,7 +8535,7 @@ qed
           also have "... = ?S $$ (i+1,j+1)" using Si10 by auto
           also have "... = A $$ (i+1,j+1)" using i1_m n0 i1_mn S jn1 by auto
           also have "... = (D \<cdot>\<^sub>m 1\<^sub>m n) $$ (i+1 - m,j+1)"
-            by (smt A_def A'' A i_ge_m append_rows_def carrier_matD i1_mn index_mat_four_block(1,3)
+            by (smt (verit) A_def A'' A i_ge_m append_rows_def carrier_matD i1_mn index_mat_four_block(1,3)
                 index_one_mat(2) index_smult_mat(2) index_zero_mat(2) j1n less_imp_diff_less add_diff_cancel_right')
           finally show ?thesis .
         next
@@ -8540,7 +8543,7 @@ qed
           have Ai10: "A $$ (i+1,0) = 0"
           proof -
             have "A $$ (i+1,0) = (D \<cdot>\<^sub>m 1\<^sub>m n) $$ (i+1 - m,0)"
-              by (smt A_def A'' A i_ge_m append_rows_def carrier_matD diff_add_inverse2 i1_mn 
+              by (smt (verit) A_def A'' A i_ge_m append_rows_def carrier_matD diff_add_inverse2 i1_mn 
                   index_mat_four_block less_imp_diff_less n0)
             also have "... = 0" using i_ge_m n0 i1_mn by auto
             finally show ?thesis .
@@ -8551,14 +8554,14 @@ qed
             unfolding make_first_column_positive.simps using A i1_mn j1n by auto
           also have "... = A $$ (i+1,j+1)" using Ai10 by auto
           also have "... = (D \<cdot>\<^sub>m 1\<^sub>m n) $$ (i+1 - m,j+1)"
-            by (smt A_def A'' A i_ge_m append_rows_def carrier_matD i1_mn index_mat_four_block(1,3)
+            by (smt (verit) A_def A'' A i_ge_m append_rows_def carrier_matD i1_mn index_mat_four_block(1,3)
                 index_one_mat(2) index_smult_mat(2) index_zero_mat(2) j1n less_imp_diff_less add_diff_cancel_right')
           finally show ?thesis .
         qed
         also have "... = D * (1\<^sub>m n) $$ ((i+1)-m, j+1)"
           by (rule index_smult_mat, insert i jn1 A'_DR False dr, auto)            
         also have "... = D *(1\<^sub>m (n - 1)) $$ (i-m,j)" using dc dr i j A'_DR i_ge_m
-          by (smt Nat.add_diff_assoc2 carrier_matD(1) index_one_mat(1) jn1 less_diff_conv 
+          by (smt (verit) Nat.add_diff_assoc2 carrier_matD(1) index_one_mat(1) jn1 less_diff_conv 
               linorder_not_less add_diff_cancel_right' add_diff_cancel_right' add_diff_cancel_left')
         also have "... = (D \<cdot>\<^sub>m 1\<^sub>m (n - 1)) $$ (i-m,j)"
           by (rule index_smult_mat[symmetric], insert i jn1 A'_DR False dr, auto)
@@ -8593,7 +8596,7 @@ qed
       also have "... = D * (1\<^sub>m n) $$ ((i+1)-m, j+1)"
         by (rule index_smult_mat, insert i jn1 A'_DR False dr, auto)            
       also have "... = D *(1\<^sub>m (n - 1)) $$ (i-m,j)" using dc dr i j A'_DR i_ge_m
-        by (smt Nat.add_diff_assoc2 carrier_matD(1) index_one_mat(1) jn1 less_diff_conv 
+        by (smt (verit) Nat.add_diff_assoc2 carrier_matD(1) index_one_mat(1) jn1 less_diff_conv 
             linorder_not_less add_diff_cancel_right' add_diff_cancel_left')
       also have "... = (D \<cdot>\<^sub>m 1\<^sub>m (n - 1)) $$ (i-m,j)"
         by (rule index_smult_mat[symmetric], insert i jn1 A'_DR False dr, auto)
@@ -8638,7 +8641,7 @@ qed
   have FindPreHNF_as_fbm: "FindPreHNF abs_flag D A = four_block_mat A'_UL A'_UR A'_DL sub_PreHNF" 
     unfolding FindPreHNF.simps[of abs_flag D A] using A'_split mn n A dr_A2 dc_A2 False
     unfolding Let_def sub_PreHNF_def M_def A'_def non_zero_positions_def *    
-    by (smt (z3) linorder_not_less split_conv)
+    by (smt (verit) linorder_not_less split_conv)
   also have "... = P' * (reduce_below 0 non_zero_positions D M)"
   proof -
     have "P' * (reduce_below 0 non_zero_positions D M) 
@@ -8697,7 +8700,7 @@ qed
             have Ajm0: "A $$ (j+m,0) = 0"
             proof -
               have "A $$ (j+m,0) = (D \<cdot>\<^sub>m 1\<^sub>m n) $$ (j+m-m,0)"
-                by (smt "1"(2) "1"(3) M M' M'' M_M'_M'' add.commute append_rows_def carrier_matD
+                by (smt (verit) "1"(2) "1"(3) M M' M'' M_M'_M'' add.commute append_rows_def carrier_matD
                     diff_add_inverse2 index_mat_four_block index_one_mat(2) index_smult_mat(2)
                     le_add2 less_diff_conv2 n0 not_add_less2 that(1))
               also have "... = 0" using jn j0 by auto
@@ -8706,23 +8709,23 @@ qed
             have "M'' $$ (j, i) = (D \<cdot>\<^sub>m 1\<^sub>m n) $$ (j,i)" if i_n: "i<n" for i
             proof (cases "A$$(0,0) = 0")
               case True 
-              have "M'' $$ (j, i) = make_first_column_positive (swaprows 0 m A) $$ (j+m,i)"                
-                by (smt A'_def Groups.add_ac(2) M' M'' M_M'_M'' M_def True append.simps(1) 
-                    append_rows_nth3 diff_add_inverse2 jn le_add2 local.non_zero_positions_xs_m
-                    nat_add_left_cancel_less nth_Cons_0 that xs_empty)
+              have "M'' $$ (j, i) = make_first_column_positive (swaprows 0 m A) $$ (j+m,i)"    
+                using M' M'' M_M'_M''  
+                by (simp add: M_def A'_def True append_rows_nth3 i_n jn local.non_zero_positions_xs_m xs_empty)
               also have "... = A $$ (j+m,i)" using A jn j0 i_n Ajm0 by auto
               also have "... = (D \<cdot>\<^sub>m 1\<^sub>m n) $$ (j,i)"
-                by (smt A Groups.add_ac(2) add_mono_thms_linordered_field(1) append_rows_def A_def A'' i_n
+                by (smt (verit) A Groups.add_ac(2) add_mono_thms_linordered_field(1) append_rows_def A_def A'' i_n
                     carrier_matD index_mat_four_block(1,2) add_diff_cancel_right' not_add_less2 jn trans_less_add1)
               finally show ?thesis .            
             next
               case False
               have "A' = A" unfolding A'_def non_zero_positions_xs_m using False True by auto
               hence "M'' $$ (j, i) = make_first_column_positive A $$ (j+m,i)"                
-                by (smt m_le_n M' M'' M_M'_M'' M_def append_rows_nth2 jn nat_SN.compat that)                
+                using M' M'' M_M'_M'' unfolding M_def
+                by (metis (no_types, opaque_lifting)  "1"(5) append_rows_nth2 jn nat_SN.compat that)
               also have "... = A $$ (j+m,i)" using A jn j0 i_n Ajm0 by auto
               also have "... = (D \<cdot>\<^sub>m 1\<^sub>m n) $$ (j,i)"
-                by (smt A Groups.add_ac(2) add_mono_thms_linordered_field(1) append_rows_def A_def A'' i_n
+                by (smt (verit) A Groups.add_ac(2) add_mono_thms_linordered_field(1) append_rows_def A_def A'' i_n
                     carrier_matD index_mat_four_block(1,2) add_diff_cancel_right' not_add_less2 jn trans_less_add1)
               finally show ?thesis .
             qed                           
@@ -8731,7 +8734,7 @@ qed
           have Am0D: "A$$(m,0) = D"
           proof -
             have "A$$(m,0) = (D \<cdot>\<^sub>m 1\<^sub>m n) $$ (m-m,0)"
-              by (smt "1"(2) "1"(3) M M' M'' M_M'_M'' append_rows_def carrier_matD
+              by (smt (verit) "1"(2) "1"(3) M M' M'' M_M'_M'' append_rows_def carrier_matD
                   diff_less_mono2 diff_self_eq_0 index_mat_four_block index_one_mat(2) 
                   index_smult_mat(2) less_add_same_cancel1 n0 semiring_norm(137))
             also have "... = D" using m0 n0 by auto
@@ -8806,7 +8809,7 @@ qed
                 + M $$ (0, 0) div gcd (M $$ (0, 0)) (M $$ (m, 0)) * M $$ (m, 0) "
               by (simp add: euclid_ext2_works[OF pquvd[symmetric]])
             also have "... = 0" using M00D Mm00 M000 Mm0D
-              by (smt dvd_div_mult_self euclid_ext2_works(3) euclid_ext2_works(5)
+              by (smt (verit) dvd_div_mult_self euclid_ext2_works(3) euclid_ext2_works(5)
                   more_arith_simps(11) mult.commute mult_minus_left pquvd semiring_gcd_class.gcd_dvd1)
             finally have "A2 $$ (m,0) = 0" .
             thus ?thesis unfolding ys'_def using D0 by auto
@@ -8840,7 +8843,7 @@ qed
   have "(P'*Q*R*S) \<in> carrier_mat (m+n) (m+n)" using P' Q R S A' A by auto
   moreover have "FindPreHNF abs_flag D A = (P'*Q*R*S) * A" using Find_P'_reduceM reduce_QM 
     unfolding  M_RA' A'_SA M_def
-    by (smt A' A'_SA P' Q R S assoc_mult_mat carrier_matD carrier_mat_triv index_mult_mat(2,3) 
+    by (smt (verit) A' A'_SA P' Q R S assoc_mult_mat carrier_matD carrier_mat_triv index_mult_mat(2,3) 
         non_zero_positions_xs_m)
   moreover have "invertible_mat (P'*Q*R*S)" using inv_P' inv_Q inv_R inv_S using P' Q R S A' A 
     by (metis carrier_matD carrier_mat_triv index_mult_mat(2,3) invertible_mult_JNF)
@@ -9171,7 +9174,7 @@ private lemma echelon_form_Hermite_of_row_nontriv_mod_ring:
   assumes eA: "echelon_form_JNF A"
   and "i<CARD('m)"
   shows "echelon_form_JNF (Hermite_of_row_i A i)"
-using assms echelon_form_Hermite_of_row_mod_type by (smt CARD_mod_ring) 
+using assms echelon_form_Hermite_of_row_mod_type by (smt (verit) CARD_mod_ring) 
 
 (*We internalize both sort constraints in one step*)
 lemmas echelon_form_Hermite_of_row_nontriv_mod_ring_internalized = 
@@ -9447,9 +9450,9 @@ lemma least_multrow:
 proof (rule Least_equality)
   have nz_ia_A: "\<not> is_zero_row_JNF ia A" using nz_ia_mrA ia by auto
   have Least_Aian_n: "(LEAST n. A $$ (ia, n) \<noteq> 0) < dim_col A"
-    by (smt dual_order.strict_trans is_zero_row_JNF_def not_less_Least not_less_iff_gr_or_eq nz_ia_A)
+    by (smt (verit) dual_order.strict_trans is_zero_row_JNF_def not_less_Least not_less_iff_gr_or_eq nz_ia_A)
   show "multrow i (- 1) A $$ (ia, LEAST n. A $$ (ia, n) \<noteq> 0) \<noteq> 0"
-    by (smt LeastI Least_Aian_n class_cring.cring_simprules(22) equation_minus_iff ia
+    by (smt (verit) LeastI Least_Aian_n class_cring.cring_simprules(22) equation_minus_iff ia
         index_mat_multrow(1) is_zero_row_JNF_def mult_minus1 nz_ia_A)
   show " \<And>y. multrow i (- 1) A $$ (ia, y) \<noteq> 0 \<Longrightarrow> (LEAST n. A $$ (ia, n) \<noteq> 0) \<le> y"
     by (metis (mono_tags, lifting) Least_Aian_n class_cring.cring_simprules(22) ia 
@@ -9480,7 +9483,7 @@ proof (rule Hermite_JNF_intro)
     proof (cases "find_fst_non0_in_row 0 A")
       case None
        then show ?thesis using nz_iH unfolding Hermite_of_row_i_def
-         by (smt HNF_Mod_Det_Algorithm.Hermite_of_row_i_def upper_triangular'_def assms 
+         by (smt (verit) HNF_Mod_Det_Algorithm.Hermite_of_row_i_def upper_triangular'_def assms 
              carrier_matD(1) find_fst_non0_in_row_None i less_one not_less_zero option.simps(4))
     next
       case (Some a)
@@ -9946,7 +9949,7 @@ private lemma Hermite_Hermite_of_list_of_rows_nontriv_mod_ring:
   assumes eA: "echelon_form_JNF A"
 shows "Hermite_JNF (range ass_function_euclidean) 
   (\<lambda>c. range (res_int c)) (Hermite_of_list_of_rows A [0..<CARD('m)])"
-using assms Hermite_Hermite_of_list_of_rows_mod_type by (smt CARD_mod_ring) 
+using assms Hermite_Hermite_of_list_of_rows_mod_type by (smt (verit) CARD_mod_ring) 
 
 private lemma invertible_Hermite_of_list_of_rows_nontriv_mod_ring:
   fixes A::"int mat"
@@ -9954,7 +9957,7 @@ private lemma invertible_Hermite_of_list_of_rows_nontriv_mod_ring:
   assumes eA: "echelon_form_JNF A"
   shows "\<exists>P. P \<in> carrier_mat CARD('m) CARD('m) \<and> 
     invertible_mat P \<and> Hermite_of_list_of_rows A [0..<CARD('m)] = P * A"
-using assms invertible_Hermite_of_list_of_rows_mod_type by (smt CARD_mod_ring) 
+using assms invertible_Hermite_of_list_of_rows_mod_type by (smt (verit) CARD_mod_ring) 
 
 
 (*We internalize both sort constraints in one step*)
@@ -10224,7 +10227,7 @@ proof -
     also have "... = (Q * P) * A'" using A' P Q by auto
     also have "(P' * Q') * ... = ((P' * Q') * (Q * P)) * A'" using A' P'Q' QP mn by auto
     also have "... =  (P' * (Q' * Q) * P) * A'"
-      by (smt P P' P'Q' Q Q' assms(1) assoc_mult_mat)
+      by (smt (verit) P P' P'Q' Q Q' assms(1) assoc_mult_mat)
     also have "... = (P'*P) * A'" 
       by (metis P' Q' Q'Q carrier_matD(1) inverts_mat_def right_mult_one_mat)
     also have "... = A'"
@@ -10332,9 +10335,9 @@ proof
             )" 
     by (rule eq_matI, auto simp add: Let_def)
   show "dim_row ?lhs = dim_row ?rhs" 
-    unfolding reduce.simps Let_def by (smt dim_row_mat(1) pquvd prod.simps(2))
+    unfolding reduce.simps Let_def by (smt (verit) dim_row_mat(1) pquvd prod.simps(2))
   show "dim_col ?lhs = dim_col ?rhs"
-    unfolding reduce.simps Let_def by (smt dim_col_mat(1) pquvd prod.simps(2))
+    unfolding reduce.simps Let_def by (smt (verit) dim_col_mat(1) pquvd prod.simps(2))
   fix i j assume i: "i<dim_row ?rhs" and j: "j<dim_col ?rhs"
   show "?lhs $$ (i,j) = ?rhs $$ (i,j)"
     by (cases " A $$ (a, 0) = 0", insert * pquvd i j, auto simp add: case_prod_beta Let_def)
@@ -10370,7 +10373,7 @@ proof (rule eq_matI)
           Matrix.row (bezout_matrix_JNF A a b j euclid_ext2) i $v ia * col A ja $v ia)"
       by (simp add: scalar_prod_def)
     also have "... = (\<Sum>ia = 0..<m+t. ?f ia)"
-      by (rule sum.cong, insert A i dr dc, auto) (smt bezout_matrix_JNF_def carrier_matD(1) 
+      by (rule sum.cong, insert A i dr dc, auto) (smt (verit) bezout_matrix_JNF_def carrier_matD(1) 
           dim_col_mat(1) index_col index_mult_mat(3) index_row(1) ja)
     also have "... = (\<Sum>ia \<in> ({a,b} \<union> ({0..<m+t} - {a,b})). ?f ia)"
       by (rule sum.cong, insert a a_dr b A ja, auto)
@@ -10508,7 +10511,7 @@ lemma reduce_invertible_mat_D0:
 proof (cases "A$$(a,0) = 0")
   case True
   then show ?thesis
-    by (smt A invertible_mat_one left_mult_one_mat one_carrier_mat reduce.simps)
+    by (smt (verit) A invertible_mat_one left_mult_one_mat one_carrier_mat reduce.simps)
 next
   case False
   obtain p q u v d where pquvd: "(p,q,u,v,d) = euclid_ext2 (A$$(a,0)) (A$$(b,0))"
@@ -10561,7 +10564,7 @@ next
   have "invertible_mat (P*Q)" using inv_P inv_Q P Q invertible_mult_JNF by blast
   moreover have "P * Q \<in> carrier_mat m m" using P Q by auto
   moreover have "reduce_below a (x # xs) D A = (P*Q) * A" 
-    by (smt P Q * assoc_mult_mat carrier_matD(1) carrier_mat_triv index_mult_mat(2) 
+    by (smt (verit) P Q * assoc_mult_mat carrier_matD(1) carrier_mat_triv index_mult_mat(2) 
         r_QA rb_Pr reduce_preserves_dimensions(1))
   ultimately show ?case by blast
 qed
@@ -10926,9 +10929,10 @@ proof (intro rel_funI, goal_cases)
           ultimately show "A $$ (?n', k) \<noteq> 0 \<and> i \<le> ?n'"
             using e by auto
           show " \<And>y. A $$ (y, k) \<noteq> 0 \<and> i \<le> y \<Longrightarrow> mod_type_class.to_nat n' \<le> y"
-            by (smt AA' Mod_Type_Connect.HMA_M_def Mod_Type_Connect.from_hma\<^sub>m_def assms from_nat_mono
-                from_nat_mono' index_mat(1) linorder_not_less mod_type_class.from_nat_to_nat_id
-                mod_type_class.to_nat_less_card n'_def order.strict_trans prod.simps(2) wellorder_Least_lemma(2))
+            unfolding n'_def 
+            by (smt (verit, del_insts) AA' Mod_Type_Connect.HMA_M_def Mod_Type_Connect.from_hma\<^sub>m_def assms from_nat_mono 
+                from_nat_mono' index_mat(1) less_trans mod_type_class.from_nat_to_nat_id mod_type_class.to_nat_less_card 
+                not_le prod.simps(2) wellorder_Least_lemma(2))
         qed
         thus ?thesis unfolding Mod_Type_Connect.HMA_I_def by auto
       qed
@@ -10993,7 +10997,7 @@ proof (intro rel_funI, goal_cases)
     have hyp[transfer_rule]: "rel_prod Mod_Type_Connect.HMA_M (\<lambda>a b. a=b \<and> a\<le>CARD('m)) (?foldl_JNF [0..<k]) (?foldl_HA [0..<k])"
       by (rule Suc.hyps[OF AA'], insert Suc.prems, auto)
     show ?case unfolding f_JNF unfolding f_HA bb' using HMA_echelon_form_of_column_k'
-      by (smt "1"(2) Suc_k_less_m Suc_le_lessD hyp rel_prod.cases)
+      by (smt (verit) "1"(2) Suc_k_less_m Suc_le_lessD hyp rel_prod.cases)
   qed
 qed
 
@@ -11012,7 +11016,7 @@ proof (intro rel_funI, goal_cases)
   have rel_foldl: "(rel_prod (Mod_Type_Connect.HMA_M) (\<lambda>a b. a=b \<and> a\<le>CARD('m))) 
   (foldl (echelon_form_of_column_k_JNF bezout) (A,0) [0..<Suc k])  
   (foldl (echelon_form_of_column_k bezout) (A',0) [0..<Suc k])"
-    using HMA_foldl_echelon_form_of_column_k[OF k'] by (smt "1"(1) rel_fun_def)
+    using HMA_foldl_echelon_form_of_column_k[OF k'] by (smt (verit) "1"(1) rel_fun_def)
   then show ?case using assms unfolding echelon_form_of_upt_k_JNF_def echelon_form_of_upt_k_def    
     by (metis (no_types, lifting) "1"(2) prod.collapse rel_prod_inject)
 qed
@@ -11069,7 +11073,7 @@ private lemma echelon_form_of_euclidean_invertible_nontriv_mod_ring:
   shows "\<exists>P. invertible_mat P \<and> P \<in> carrier_mat (CARD('m)) (CARD('m)) 
     \<and> P * A = echelon_form_of_JNF A euclid_ext2 
     \<and> echelon_form_JNF (echelon_form_of_JNF A euclid_ext2)"
-  using assms echelon_form_of_euclidean_invertible_mod_type by (smt CARD_mod_ring)
+  using assms echelon_form_of_euclidean_invertible_mod_type by (smt (verit) CARD_mod_ring)
 
 (*We internalize both sort constraints in one step*)
 lemmas echelon_form_of_euclidean_invertible_nontriv_mod_ring_internalized = 
@@ -11191,7 +11195,7 @@ lemma FindPreHNF_rectangular_soundness:
 proof (cases "m < 2 \<or> n = 0")
   case True
   then show ?thesis
-    by (smt A FindPreHNF_rectangular_def carrier_matD echelon_form_JNF_1xn echelon_form_mx0
+    by (smt (verit) A FindPreHNF_rectangular_def carrier_matD echelon_form_JNF_1xn echelon_form_mx0
         invertible_mat_one left_mult_one_mat one_carrier_mat)
 next
   case False 
@@ -11204,7 +11208,7 @@ next
     let ?A' = "(if A$$(0,0) \<noteq> 0 then A else let i = ?nz ! 0 in swaprows 0 i A)"
     have A': "?A' \<in> carrier_mat m n" using A by auto
     have A'00: "?A' $$ (0,0) \<noteq> 0" if "?nz \<noteq> []" 
-      by (smt True assms carrier_matD index_mat_swaprows(1) length_greater_0_conv m1
+      by (smt (verit) True assms carrier_matD index_mat_swaprows(1) length_greater_0_conv m1
           mem_Collect_eq nat_SN.gt_trans nth_mem set_filter that zero_less_one_class.zero_less_one)
     have e_r: "echelon_form_JNF (reduce_below 0 ?nz 0 ?A')" if nz_not_empty: "?nz \<noteq> []" 
     proof (rule echelon_form_JNF_mx1)
@@ -11230,7 +11234,7 @@ next
       using A A'_swaprows_invertible_mat m1 that by blast 
     ultimately have e_inv: "\<exists>P. invertible_mat P \<and> P \<in> carrier_mat m m \<and> reduce_below 0 ?nz 0 ?A' = P * A"
       if "?nz \<noteq> []"
-      by (smt that A assoc_mult_mat invertible_mult_JNF mult_carrier_mat)
+      by (smt (verit) that A assoc_mult_mat invertible_mult_JNF mult_carrier_mat)
     have e_r1: "echelon_form_JNF A" if nz_empty: "?nz = []" 
     proof (rule echelon_form_JNF_mx1[OF A])
       show "\<forall>i\<in>{1..<m}. A $$ (i, 0) = 0 " using nz_empty
@@ -11262,14 +11266,14 @@ proof -
     unfolding HNF_algorithm_from_HA_def m
   proof (rule invertible_Hermite_of_list_of_rows)
     show "FindPreHNF_rectangular A \<in> carrier_mat m n"
-      by (smt A FindPreHNF_rectangular_soundness mult_carrier_mat)
+      by (smt (verit) A FindPreHNF_rectangular_soundness mult_carrier_mat)
     show "echelon_form_JNF (FindPreHNF_rectangular A)" 
       using FindPreHNF_rectangular_soundness by blast
   qed
   moreover have "(\<exists>P. P \<in> carrier_mat m m \<and> invertible_mat P \<and> (FindPreHNF_rectangular A) = P * A)"    
     by (metis A FindPreHNF_rectangular_soundness)
   ultimately have "(\<exists>P. P \<in> carrier_mat m m \<and> invertible_mat P \<and> (HNF_algorithm_from_HA A) = P * A)"
-    by (smt assms assoc_mult_mat invertible_mult_JNF mult_carrier_mat)
+    by (smt (verit) assms assoc_mult_mat invertible_mult_JNF mult_carrier_mat)
   moreover have "Hermite_JNF (range ass_function_euclidean) (\<lambda>c. range (res_int c)) (HNF_algorithm_from_HA A)"
     by (metis A FindPreHNF_rectangular_soundness HNF_algorithm_from_HA_def m 
         Hermite_Hermite_of_list_of_rows mult_carrier_mat)
@@ -11290,14 +11294,14 @@ proof (cases "m\<noteq>n \<or> Determinant.det A = 0")
     unfolding H_rw
   proof (rule invertible_Hermite_of_list_of_rows)
     show "FindPreHNF_rectangular A \<in> carrier_mat m n"
-      by (smt A FindPreHNF_rectangular_soundness mult_carrier_mat)
+      by (smt (verit) A FindPreHNF_rectangular_soundness mult_carrier_mat)
     show "echelon_form_JNF (FindPreHNF_rectangular A)" 
       using FindPreHNF_rectangular_soundness by blast
   qed
   moreover have "(\<exists>P. P \<in> carrier_mat m m \<and> invertible_mat P \<and> (FindPreHNF_rectangular A) = P * A)"    
     by (metis A FindPreHNF_rectangular_soundness)
   ultimately have "(\<exists>P. P \<in> carrier_mat m m \<and> invertible_mat P \<and> (HNF_algorithm abs_flag A) = P * A)"
-    by (smt assms assoc_mult_mat invertible_mult_JNF mult_carrier_mat)
+    by (smt (verit) assms assoc_mult_mat invertible_mult_JNF mult_carrier_mat)
   moreover have "Hermite_JNF (range ass_function_euclidean) (\<lambda>c. range (res_int c)) (HNF_algorithm abs_flag A)"
     by (metis A FindPreHNF_rectangular_soundness H_rw Hermite_Hermite_of_list_of_rows mult_carrier_mat)
   ultimately show ?thesis by simp
@@ -11334,7 +11338,7 @@ proof (unfold is_sound_HNF_def Let_def prod.case, rule allI)
     using s unfolding is_sound_HNF'_def Let_def m_def by auto
   let ?some_P = "(SOME P. P \<in> carrier_mat m m \<and> invertible_mat P \<and> A = P * algorithm A)"
   have some_P: "?some_P \<in> carrier_mat m m \<and> invertible_mat ?some_P \<and> A = ?some_P * algorithm A"
-    by (smt P verit_sko_ex_indirect)
+    by (metis (mono_tags, lifting) P someI_ex)
   moreover have "algorithm A \<in> carrier_mat (dim_row A) (dim_col A)"
     and  "Hermite_JNF associates res (algorithm A)" using s unfolding is_sound_HNF'_def Let_def by auto    
   ultimately show "?some_P \<in> carrier_mat m m \<and> algorithm A \<in> carrier_mat m (dim_col A) 
@@ -11364,7 +11368,7 @@ proof -
     moreover have inv_P': "invertible_mat P'"
       by (metis P' P'P PP' carrier_matD(1) carrier_matD(2) invertible_mat_def square_mat.simps)
     moreover have "A = P' * HNF_algorithm abs_flag A"
-      by (smt H_PA P P'P assoc_mult_mat calculation(1) carrier_matD(1) carrier_matI inverts_mat_def left_mult_one_mat')
+      by (smt (verit) H_PA P P'P assoc_mult_mat calculation(1) carrier_matD(1) carrier_matI inverts_mat_def left_mult_one_mat')
     ultimately show ?thesis by auto
   qed
   ultimately show ?thesis
@@ -11392,7 +11396,7 @@ proof -
     moreover have inv_P': "invertible_mat P'"
       by (metis P' P'P PP' carrier_matD(1) carrier_matD(2) invertible_mat_def square_mat.simps)
     moreover have "A = P' * HNF_algorithm_from_HA A"
-      by (smt H_PA P P'P assoc_mult_mat calculation(1) carrier_matD(1) carrier_matI inverts_mat_def left_mult_one_mat')
+      by (smt (verit) H_PA P P'P assoc_mult_mat calculation(1) carrier_matD(1) carrier_matI inverts_mat_def left_mult_one_mat')
     ultimately show ?thesis by auto
   qed
   ultimately show ?thesis
@@ -11432,7 +11436,7 @@ proof -
   have j_in_xs: "j \<in> set ?xs" using res unfolding find_non0'_def Let_def
     by (metis (no_types, lifting) length_greater_0_conv list.case(2) list.exhaust nth_mem option.simps(1) xs)
   have j_xs0: "j = ?xs ! 0"
-    by (smt res[unfolded find_non0'_def Let_def] list.case(2) list.exhaust option.inject xs)
+    by (smt (verit) res[unfolded find_non0'_def Let_def] list.case(2) list.exhaust option.inject xs)
   show "\<forall>j'\<in>{i..<j}. A $$ (j',k) = 0"
   proof (rule+, rule ccontr)
     fix j' assume j': "j' : {i..<j}" and Alj': "A $$ (j',k) \<noteq> 0"

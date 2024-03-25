@@ -1,0 +1,15 @@
+chapter AFP
+
+session "CRYSTALS-Kyber_Security" (AFP) = "CryptHOL" +
+  options [timeout = 600]
+  sessions
+    "CRYSTALS-Kyber"
+    "Game_Based_Crypto"
+  theories
+    "Kyber_gpv_IND_CPA"
+    "Kyber_new_Values"
+    "Correct"
+    "Correct_new"
+  document_files
+    "root.bib"
+    "root.tex"

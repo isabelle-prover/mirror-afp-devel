@@ -171,7 +171,7 @@ qed
 lemma aux_digit_shift: "(a * 2^t) \<exclamdown> (l+t) = a \<exclamdown> l"
   using nth_bit_def
   by (induct l; auto)
-     (smt div_mult2_eq mult.commute nonzero_mult_div_cancel_right power_add power_not_zero zero_neq_numeral)
+     (smt (verit) div_mult2_eq mult.commute nonzero_mult_div_cancel_right power_add power_not_zero zero_neq_numeral)
 
 lemma aux_digit_lt_linear:
   assumes b: "b < (2::nat)^t"

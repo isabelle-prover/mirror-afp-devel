@@ -125,12 +125,11 @@ proof -
       "n > 1" and
       "xs = sieve\<cdot>(filter\<cdot>(\<Lambda> (MkI\<cdot>i). Def ((\<forall>d::int. d > 1 \<longrightarrow> d < n \<longrightarrow> \<not> (d dvd i))))\<cdot>[MkI\<cdot>n..])" (is "_ = sieve\<cdot>?xs") and
       "ys = filter\<cdot>(\<Lambda> (MkI\<cdot>i). Def (prime (nat \<bar>i\<bar>)))\<cdot>[MkI\<cdot>n..]"
-      (* sledgehammer *)
     proof -
       assume a1: "\<And>n. \<lbrakk>prime n; 1 < n; xs = sieve\<cdot> (Data_List.filter\<cdot> (\<Lambda> (MkI\<cdot>i). Def (\<forall>d>1. d < int n \<longrightarrow> \<not> d dvd i))\<cdot> [MkI\<cdot>(int n)..]); ys = Data_List.filter\<cdot> (\<Lambda> (MkI\<cdot>i). Def (prime (nat \<bar>i\<bar>)))\<cdot> [MkI\<cdot>(int n)..]\<rbrakk> \<Longrightarrow> thesis"
-      obtain ii  where
+      obtain ii where
         f2: "\<forall>is isa. (\<not> prim_bisim is isa \<or> prime (ii is isa) \<and> is = sieve\<cdot> (Data_List.filter\<cdot> (\<Lambda> (MkI\<cdot>i). Def (\<forall>ia>1. ia < ii is isa \<longrightarrow> \<not> ia dvd i))\<cdot> [MkI\<cdot>(ii is isa)..]) \<and> isa = Data_List.filter\<cdot> (\<Lambda> (MkI\<cdot>i). Def (prime (nat \<bar>i\<bar>)))\<cdot> [MkI\<cdot>(ii is isa)..]) \<and> ((\<forall>i. \<not> prime i \<or> is \<noteq> sieve\<cdot> (Data_List.filter\<cdot> (\<Lambda> (MkI\<cdot>ia). Def (\<forall>ib>1. ib < i \<longrightarrow> \<not> ib dvd ia))\<cdot> [MkI\<cdot>i..]) \<or> isa \<noteq> Data_List.filter\<cdot> (\<Lambda> (MkI\<cdot>i). Def (prime (nat \<bar>i\<bar>)))\<cdot> [MkI\<cdot>i..]) \<or> prim_bisim is isa)"
-        using prim_bisim by moura
+        unfolding prim_bisim by (atomize_elim, (subst choice_iff[symmetric])+, blast)
       then have f3: "prime (ii xs ys)"
         using \<open>prim_bisim xs ys\<close> by blast
       then obtain nn :: "int \<Rightarrow> nat" where

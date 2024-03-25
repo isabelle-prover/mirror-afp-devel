@@ -62,21 +62,19 @@ get the notation working in all three situations:
 
 consts star :: "'typ1 \<Rightarrow> 'typ2" ("_\<^sup>\<star>" [1000] 999)
 
-abbreviation
-  kleene_star_set :: "'alpha set \<Rightarrow> 'alpha list set"
-  where "kleene_star_set A \<equiv> lists A"
-
 adhoc_overloading
-  star kleene_star_set
+  star lists
 
 text \<open>
 We use $\odot$ to convert between the definition of group actions via group homomoprhisms
-and the infix group action notation from \cite{bojanczyk2014automata}:
+and the more standard infix group action notation.
+We deviate from \cite{bojanczyk2014automata} in that we consider left group actions,
+rather than right group actions:
 \<close>
 
 definition
-  make_op :: "('grp \<Rightarrow> 'X \<Rightarrow> 'X) \<Rightarrow> 'X \<Rightarrow> 'grp \<Rightarrow> 'X" (infixl "(\<odot>\<index>)" 70)
-  where " (\<odot> \<^bsub>\<phi>\<^esub>) \<equiv> (\<lambda>x. (\<lambda>g. \<phi> g x))"
+  make_op :: "('grp \<Rightarrow> 'X \<Rightarrow> 'X) \<Rightarrow> 'grp \<Rightarrow> 'X \<Rightarrow> 'X" (infixl "(\<odot>\<index>)" 70)
+  where " (\<odot> \<^bsub>\<phi>\<^esub>) \<equiv> (\<lambda>g. (\<lambda>x. \<phi> g x))"
 
 lemmas make_op_def [simp, GMN_simps]
 
@@ -106,9 +104,31 @@ locale alt_grp_act = group_action G X \<phi>
     \<phi>
 begin
 
+lemma alt_grp_act_is_left_grp_act:
+  shows "x \<in> X \<Longrightarrow> \<one>\<^bsub>G\<^esub> \<odot>\<^bsub>\<phi>\<^esub> x = x" and
+  "g \<in> carrier G \<Longrightarrow> h \<in> carrier G \<Longrightarrow> x \<in> X \<Longrightarrow> (g \<otimes>\<^bsub>G\<^esub> h) \<odot>\<^bsub>\<phi>\<^esub> x = g \<odot>\<^bsub>\<phi>\<^esub> (h \<odot>\<^bsub>\<phi>\<^esub> x)"
+proof-
+  assume
+    A_0: "x \<in> X"
+  show "\<one>\<^bsub>G\<^esub> \<odot>\<^bsub>\<phi>\<^esub> x = x"
+    using group_action_axioms
+    apply (simp add: group_action_def BijGroup_def)
+    by (metis A_0 id_eq_one restrict_apply')
+next
+  assume 
+    A_0: "g \<in> carrier G" and
+    A_1: "h \<in> carrier G" and
+    A_2: "x \<in> X"
+  show "g \<otimes>\<^bsub>G\<^esub> h \<odot>\<^bsub>\<phi>\<^esub> x = g \<odot>\<^bsub>\<phi>\<^esub> (h \<odot>\<^bsub>\<phi>\<^esub> x)"
+    using group_action_axioms
+    apply (simp add: group_action_def group_hom_def group_hom_axioms_def hom_def BijGroup_def)
+    using composition_rule A_0 A_1 A_2
+    by auto
+qed
+
 definition
   induced_star_map :: "('grp \<Rightarrow> 'X \<Rightarrow>'X) \<Rightarrow> 'grp \<Rightarrow> 'X list \<Rightarrow> 'X list"
-  where "induced_star_map func = (\<lambda>g\<in>carrier G. (\<lambda>lst \<in> (lists X). map (func g) lst))"
+  where "induced_star_map func = (\<lambda>g\<in>carrier G. (\<lambda>lst \<in> X\<^sup>\<star>. map (func g) lst))"
 
 text \<open>
 Because the adhoc overloading is used within a locale, isues will be encountered later due to there
@@ -151,12 +171,12 @@ proposition lists_a_Gset:
   "alt_grp_act G (X\<^sup>\<star>) (\<phi>\<^sup>\<star>)"
 proof-
   have H_0: "\<And>g. g \<in> carrier G \<Longrightarrow>
-    restrict (map (\<phi> g)) (kleene_star_set X) \<in> carrier (BijGroup (kleene_star_set X))"
+    restrict (map (\<phi> g)) (X\<^sup>\<star>) \<in> carrier (BijGroup (X\<^sup>\<star>))"
   proof-
     fix g
     assume
       A1_0: "g \<in> carrier G"
-    from A1_0 have H1_0: "inj_on (\<lambda>x. if x \<in> lists X then map (\<phi> g) x else undefined) (lists X)"
+    from A1_0 have H1_0: "inj_on (\<lambda>x. if x \<in> X\<^sup>\<star> then map (\<phi> g) x else undefined) (X\<^sup>\<star>)"
       apply (clarsimp simp add: inj_on_def)
       by (metis (mono_tags, lifting) inj_onD inj_prop list.inj_map_strong)
     from A1_0 have H1_1: "\<And>y z. \<forall>x\<in>set y. x \<in> X \<Longrightarrow> z \<in> set y \<Longrightarrow> \<phi> g z \<in> X"
@@ -164,7 +184,7 @@ proof-
       by blast
     have H1_2: "(inv \<^bsub>G\<^esub> g) \<in> carrier G"
       by (meson A1_0 group.inv_closed group_hom group_hom.axioms(1))
-    have H1_3: "\<And>x. x \<in> lists X \<Longrightarrow>
+    have H1_3: "\<And>x. x \<in> X\<^sup>\<star> \<Longrightarrow>
     map (comp (\<phi> g) (\<phi> (inv \<^bsub>G\<^esub> g))) x = map (\<phi> (g \<otimes>\<^bsub>G\<^esub> (inv \<^bsub>G\<^esub> g))) x"
       using alt_grp_act_axioms
       apply (simp add: alt_grp_act_def group_action_def group_hom_def group_hom_axioms_def hom_def
@@ -172,15 +192,15 @@ proof-
       apply (rule meta_mp[of "\<And>x. x \<in> carrier G \<Longrightarrow> \<phi> x \<in> Bij X"])
        apply (metis A1_0 H1_2 composition_rule in_lists_conv_set)
       by blast
-    from H1_2 have H1_4: "\<And>x. x \<in> lists X \<Longrightarrow> map (\<phi> (inv \<^bsub>G\<^esub> g)) x \<in> lists X"
+    from H1_2 have H1_4: "\<And>x. x \<in> X\<^sup>\<star> \<Longrightarrow> map (\<phi> (inv \<^bsub>G\<^esub> g)) x \<in> X\<^sup>\<star>"
       using surj_prop
       by fastforce
-    have H1_5: "\<And>y. \<forall>x\<in>set y. x \<in> X \<Longrightarrow> y \<in> map (\<phi> g) ` lists X"
+    have H1_5: "\<And>y. \<forall>x\<in>set y. x \<in> X \<Longrightarrow> y \<in> map (\<phi> g) ` X\<^sup>\<star>"
       apply (simp add: image_def)
       using H1_3 H1_4 
       by (metis A1_0 group.r_inv group_hom group_hom.axioms(1) in_lists_conv_set map_idI map_map
           triv_act)
-    show "restrict (map (\<phi> g)) (lists X) \<in> carrier (BijGroup (lists X))"
+    show "restrict (map (\<phi> g)) (X\<^sup>\<star>) \<in> carrier (BijGroup (X\<^sup>\<star>))"
       apply (clarsimp simp add: restrict_def BijGroup_def Bij_def
           extensional_def bij_betw_def) 
       apply (rule conjI)
@@ -190,9 +210,9 @@ proof-
       by (auto simp add: image_def) 
   qed
   have H_1: "\<And>x y. \<lbrakk>x \<in> carrier G; y \<in> carrier G; x \<otimes>\<^bsub>G\<^esub> y \<in> carrier G\<rbrakk> \<Longrightarrow>
-           restrict (map (\<phi> (x \<otimes>\<^bsub>G\<^esub> y))) (kleene_star_set X) =
-           restrict (map (\<phi> x)) (kleene_star_set X) \<otimes>\<^bsub>BijGroup (kleene_star_set X)\<^esub>
-           restrict (map (\<phi> y)) (kleene_star_set X)"
+           restrict (map (\<phi> (x \<otimes>\<^bsub>G\<^esub> y))) (X\<^sup>\<star>) =
+           restrict (map (\<phi> x)) (X\<^sup>\<star>) \<otimes>\<^bsub>BijGroup (X\<^sup>\<star>)\<^esub>
+           restrict (map (\<phi> y)) (X\<^sup>\<star>)"
   proof-
     fix x y
     assume
@@ -200,27 +220,27 @@ proof-
       A1_1: " y \<in> carrier G" and
       A1_2: "x \<otimes>\<^bsub>G\<^esub> y \<in> carrier G"
     have H1_0: "\<And>z. z \<in> carrier G \<Longrightarrow>
-       bij_betw (\<lambda>x. if x \<in> lists X then map (\<phi> z) x else undefined) (lists X) (lists X)"
-      using \<open>\<And>g. g \<in> carrier G \<Longrightarrow> restrict (map (\<phi> g)) (lists X) \<in> carrier (BijGroup (lists X))\<close>
+       bij_betw (\<lambda>x. if x \<in> X\<^sup>\<star> then map (\<phi> z) x else undefined) (X\<^sup>\<star>) (X\<^sup>\<star>)"
+      using \<open>\<And>g. g \<in> carrier G \<Longrightarrow> restrict (map (\<phi> g)) (X\<^sup>\<star>) \<in> carrier (BijGroup (X\<^sup>\<star>))\<close>
       by (auto simp add: BijGroup_def Bij_def bij_betw_def inj_on_def)
-    from A1_1 have H1_1: "\<And>lst. lst \<in> lists X \<Longrightarrow> (map (\<phi> y)) lst \<in> lists X"
+    from A1_1 have H1_1: "\<And>lst. lst \<in> X\<^sup>\<star> \<Longrightarrow> (map (\<phi> y)) lst \<in> X\<^sup>\<star>"
       by (metis group_action.surj_prop group_action_axioms lists_image rev_image_eqI)
-    have H1_2: "\<And>a. a \<in> lists X \<Longrightarrow> map (\<lambda>xb.
+    have H1_2: "\<And>a. a \<in> X\<^sup>\<star> \<Longrightarrow> map (\<lambda>xb.
     if xb \<in> X
     then \<phi> x ((\<phi> y) xb)
     else undefined) a = map (\<phi> x) (map (\<phi> y) a)"
       by auto
-    have H1_3: "(\<lambda>xa. if xa \<in> lists X then map (\<phi> (x \<otimes>\<^bsub>G\<^esub> y)) xa else undefined) =
-    compose (lists X) (\<lambda>xa. if xa \<in> lists X then map (\<phi> x) xa else undefined)
-    (\<lambda>x. if x \<in> lists X then map (\<phi> y) x else undefined)"
+    have H1_3: "(\<lambda>xa. if xa \<in> X\<^sup>\<star> then map (\<phi> (x \<otimes>\<^bsub>G\<^esub> y)) xa else undefined) =
+    compose (X\<^sup>\<star>) (\<lambda>xa. if xa \<in> X\<^sup>\<star> then map (\<phi> x) xa else undefined)
+    (\<lambda>x. if x \<in> X\<^sup>\<star> then map (\<phi> y) x else undefined)"
       using alt_grp_act_axioms
       apply (clarsimp simp add: compose_def alt_grp_act_def group_action_def
           group_hom_def group_hom_axioms_def hom_def BijGroup_def restrict_def)
       using A1_0 A1_1 H1_2 H1_1 bij_prop0
       by auto
-    show "restrict (map (\<phi> (x \<otimes>\<^bsub>G\<^esub> y))) (lists X) =
-  restrict (map (\<phi> x)) (lists X) \<otimes>\<^bsub>BijGroup (lists X)\<^esub>
-  restrict (map (\<phi> y)) (lists X)"
+    show "restrict (map (\<phi> (x \<otimes>\<^bsub>G\<^esub> y))) (X\<^sup>\<star>) =
+  restrict (map (\<phi> x)) (X\<^sup>\<star>) \<otimes>\<^bsub>BijGroup (X\<^sup>\<star>)\<^esub>
+  restrict (map (\<phi> y)) (X\<^sup>\<star>)"
       apply (clarsimp simp add: restrict_def BijGroup_def Bij_def extensional_def)
       apply (simp add: H1_3)
       using A1_0 A1_1 H1_0
@@ -318,10 +338,40 @@ locale eq_var_subset = alt_grp_act G X \<phi>
     X :: "'X set" (structure) and
     \<phi> +
   fixes
-    subset
+    Y
   assumes
-    is_subset: "subset \<subseteq> X" and
-    is_equivar: "\<forall>g\<in>carrier G. (\<phi> g) ` subset = subset" 
+    is_subset: "Y \<subseteq> X" and
+    is_equivar: "\<forall>g\<in>carrier G. (\<phi> g) ` Y = Y" 
+
+lemma (in alt_grp_act) eq_var_one_direction:
+  "\<And>Y. Y \<subseteq> X \<Longrightarrow> \<forall>g\<in>carrier G. (\<phi> g) ` Y \<subseteq> Y \<Longrightarrow> eq_var_subset G X \<phi> Y"
+proof-
+  fix Y 
+  assume
+    A_0: "Y \<subseteq> X" and
+    A_1: "\<forall>g\<in>carrier G. (\<phi> g) ` Y \<subseteq> Y"
+  have H_0: "\<And>g. g \<in> carrier G \<Longrightarrow> (inv\<^bsub>G\<^esub> g) \<in> carrier G"
+    by (meson group.inv_closed group_hom group_hom.axioms(1))
+  hence H_1: "\<And>g y. g \<in> carrier G \<Longrightarrow> y \<in> Y \<Longrightarrow> (\<phi> (inv\<^bsub>G\<^esub> g)) y \<in> Y"
+    using A_1  
+    by (simp add: image_subset_iff)
+  have H_2: "\<And>g y. g \<in> carrier G \<Longrightarrow> y \<in> Y \<Longrightarrow> \<phi> g ((\<phi> (inv\<^bsub>G\<^esub> g)) y) = y"
+    by (metis A_0 bij_prop1 orbit_sym_aux subsetD)
+  show "eq_var_subset G X \<phi> Y"
+    apply (simp add: eq_var_subset_def eq_var_subset_axioms_def)
+    apply (intro conjI)
+      apply (simp add: group_action_axioms)
+     apply (rule A_0)
+    apply (clarify)
+    apply (rule subset_antisym)
+    using A_1
+     apply simp
+    apply (simp add: image_def)
+    apply (rule subsetI)
+    apply clarify
+    using H_1 H_2
+    by metis
+qed
 
 text \<open>
 The following lemmas are used for proofs in the locale \texttt{eq\_var\_rel}:
@@ -345,7 +395,7 @@ locale eq_var_rel = alt_grp_act G X \<phi>
     is_subrel:
     "R \<subseteq> X \<times> X" and
     is_eq_var_rel:
-    "\<And>a b. (a, b) \<in> R \<Longrightarrow> \<forall>g \<in> carrier G. (a \<odot>\<^bsub>\<phi>\<^esub> g, b \<odot>\<^bsub>\<phi>\<^esub> g) \<in> R"
+    "\<And>a b. (a, b) \<in> R \<Longrightarrow> \<forall>g \<in> carrier G. (g \<odot>\<^bsub>\<phi>\<^esub> a, g \<odot>\<^bsub>\<phi>\<^esub> b) \<in> R"
 begin
 
 lemma is_eq_var_rel' [simp, GMN_simps]:
@@ -354,10 +404,10 @@ lemma is_eq_var_rel' [simp, GMN_simps]:
   by auto
 
 lemma is_eq_var_rel_rev:
-  "a \<in> X \<Longrightarrow> b \<in> X \<Longrightarrow> g \<in> carrier G \<Longrightarrow> (a \<odot>\<^bsub>\<phi>\<^esub> g, b \<odot>\<^bsub>\<phi>\<^esub> g) \<in> R \<Longrightarrow> (a, b) \<in> R"
+  "a \<in> X \<Longrightarrow> b \<in> X \<Longrightarrow> g \<in> carrier G \<Longrightarrow> (g \<odot>\<^bsub>\<phi>\<^esub> a, g \<odot>\<^bsub>\<phi>\<^esub> b) \<in> R \<Longrightarrow> (a, b) \<in> R"
 proof -
   assume
-    A_0: "(a \<odot>\<^bsub>\<phi>\<^esub> g, b \<odot>\<^bsub>\<phi>\<^esub> g) \<in> R" and
+    A_0: "(g \<odot>\<^bsub>\<phi>\<^esub> a, g \<odot>\<^bsub>\<phi>\<^esub> b) \<in> R" and
     A_1: "a \<in> X" and
     A_2: "b \<in> X" and
     A_3: "g \<in> carrier G" 
@@ -480,7 +530,7 @@ The following lemma corresponds to the first part of lemma 3.5 from \cite{bojanc
 \<close>
 
 lemma quot_act_wd:
-  "\<lbrakk>equiv X R; x \<in> X; g \<in> carrier G\<rbrakk> \<Longrightarrow> (R `` {x}) \<odot>\<^bsub>[\<phi>]\<^sub>R\<^esub> g = (R `` {x \<odot>\<^bsub>\<phi>\<^esub> g})"
+  "\<lbrakk>equiv X R; x \<in> X; g \<in> carrier G\<rbrakk> \<Longrightarrow> g \<odot>\<^bsub>[\<phi>]\<^sub>R\<^esub> (R `` {x}) = (R `` {g \<odot>\<^bsub>\<phi>\<^esub> x})"
   apply (clarsimp simp add: eq_var_rel_def eq_var_rel_axioms_def)
   apply (rule conjI; rule impI)
    apply (smt (verit, best) Eps_cong Image_singleton_iff eq_var_rel.is_eq_var_rel'
@@ -636,21 +686,19 @@ proof-
     qed
     show "(\<lambda>x\<in>X // R. R `` {\<phi> g (SOME z. z \<in> x)}) \<in> carrier (BijGroup (X // R))"
       apply (clarsimp simp add: BijGroup_def Bij_def bij_betw_def)
-      subgoal
-        apply (clarsimp simp add: inj_on_def)
-        apply (rule conjI)
-         apply (clarsimp)
-         apply (rule subset_antisym)
-          apply (simp add: H1_0)
-         apply (simp add: \<open>\<And>y x. \<lbrakk>x \<in> X // R;
+      apply (clarsimp simp add: inj_on_def)
+      apply (rule conjI)
+       apply (clarsimp)
+       apply (rule subset_antisym)
+        apply (simp add: H1_0)
+       apply (simp add: \<open>\<And>y x. \<lbrakk>x \<in> X // R;
           y \<in> X // R; R `` {\<phi> g (SOME z. z \<in> x)} = R `` {\<phi> g (SOME z. z \<in> y)}\<rbrakk> \<Longrightarrow> x \<subseteq> y\<close>)
-        apply (rule subset_antisym; clarify)
-        subgoal for x y
-          by (metis A_0 is_eq_var_rel' A1_4 Eps_cong equiv_Eps_preserves equiv_class_eq_iff
-              quotientI) 
-        apply (clarsimp simp add: Set.image_def)
-        by (simp add: H1_1)
-      done
+      apply (rule subset_antisym; clarify)
+      subgoal for x y
+        by (metis A_0 is_eq_var_rel' A1_4 Eps_cong equiv_Eps_preserves equiv_class_eq_iff
+            quotientI) 
+      apply (clarsimp simp add: Set.image_def)
+      by (simp add: H1_1)
   qed
   have H_1: "\<And>x y. \<lbrakk>Group.group G; Group.group (BijGroup X); R \<subseteq> X \<times> X;
             \<phi> \<in> carrier G \<rightarrow> carrier (BijGroup X);
@@ -816,7 +864,7 @@ locale eq_var_func = GA_0: alt_grp_act G X \<phi> + GA_1: alt_grp_act G Y \<psi>
     is_ext_func_bet:
     "f \<in> (X \<rightarrow>\<^sub>E Y)" and
     is_eq_var_func:
-    "\<And>a g. a \<in> X \<Longrightarrow> g \<in> carrier G \<Longrightarrow> f (a \<odot>\<^bsub>\<phi>\<^esub> g) = (f a) \<odot>\<^bsub>\<psi>\<^esub> g"
+    "\<And>a g. a \<in> X \<Longrightarrow> g \<in> carrier G \<Longrightarrow> f (g \<odot>\<^bsub>\<phi>\<^esub> a) = g \<odot>\<^bsub>\<psi>\<^esub> (f a)"
 begin
 
 lemma is_eq_var_func' [simp]:
@@ -1107,51 +1155,19 @@ proof-
       using A_2 H1_0 is_aut.init_state_is_a_state H1_2
       by (smt (verit, best) H1_3 labels_a_G_set.induced_star_map_def restrict_apply)
   qed
-  have H_2: "\<And>g x. g \<in> carrier G \<Longrightarrow> x \<in> A\<^sup>\<star> \<and> (\<delta>\<^sup>\<star>) i x \<in> F \<Longrightarrow>
-            x \<in> map (\<phi> g) ` {w \<in> A\<^sup>\<star>. (\<delta>\<^sup>\<star>) i w \<in> F}"
-  proof-
-    fix g w
-    assume
-      A_0: "g \<in> carrier G" and
-      A_1: "w \<in> A\<^sup>\<star> \<and> (\<delta>\<^sup>\<star>) i w \<in> F" 
-    have H_0: "\<And>g xa. g \<in> carrier G \<Longrightarrow> xa \<in> A\<^sup>\<star> \<Longrightarrow> (\<delta>\<^sup>\<star>) i xa \<in> F \<Longrightarrow> (\<delta>\<^sup>\<star>) i ((\<phi>\<^sup>\<star>) g xa) \<in> F" 
-      using H_1
-      by auto
-    have H_1: "((\<phi>\<^sup>\<star>) (inv \<^bsub>G\<^esub> g) w) \<in> A\<^sup>\<star>"
-      by (smt (verit) A_0 A_1 in_listsI alt_grp_act_def group_action.bij_prop1
-          group_action.orbit_sym_aux labels_a_G_set.lists_a_Gset)
-    have H_2: "(\<delta>\<^sup>\<star>) i ((\<phi>\<^sup>\<star>) (inv \<^bsub>G\<^esub> g) w) \<in> F"
-      apply (rule H_0)
-      using A_0 A_1
-      by (meson group.inv_closed group_hom.axioms(1) labels_a_G_set.group_hom)+
-    have H_3: "((\<phi>\<^sup>\<star>) g ((\<phi>\<^sup>\<star>) (inv \<^bsub>G\<^esub> g) w))
-     \<in> (\<phi>\<^sup>\<star>) g ` {w \<in> A\<^sup>\<star>. (\<delta>\<^sup>\<star>) i w \<in> F}"
-      using H_1 H_2
-      by auto 
-    have H_4: "((\<phi>\<^sup>\<star>) g ((\<phi>\<^sup>\<star>) (inv \<^bsub>G\<^esub> g) w)) = w"
-      using A_0 A_1  
-      by (smt (verit) in_listsI alt_grp_act_def group_action.bij_prop1 group_action.orbit_sym_aux
-          labels_a_G_set.lists_a_Gset)
-    show "w \<in> map (\<phi> g) ` {w \<in> A\<^sup>\<star>. (\<delta>\<^sup>\<star>) i w \<in> F}"
-      using H_3 H_4 A_0
-      by auto
-  qed
   show ?thesis
     apply (clarsimp simp del: GMN_simps simp add: G_lang_def accepted_words_def G_lang_axioms_def)
     apply (rule conjI)
     using labels_a_G_set.alt_grp_act_axioms
      apply (auto)[1]
-    apply (clarsimp simp del: GMN_simps simp add: eq_var_subset_def eq_var_subset_axioms_def)
     apply (intro conjI)
-      apply (simp add: language.intro)
+     apply (simp add: language.intro)
+    apply (rule alt_grp_act.eq_var_one_direction)
     using labels_a_G_set.alt_grp_act_axioms labels_a_G_set.lists_a_Gset
-     apply blast
-    apply (clarsimp simp del: GMN_simps)
-    apply (rule subset_antisym; simp add: Set.subset_eq; rule allI; rule impI)
-     apply (rule conjI)
-      apply (simp add: H_0)
-     apply (simp add: H_1)
-    by (simp add: H_2)
+      apply blast
+     apply (clarsimp )
+    apply (clarsimp)
+    by (simp add: H_0 H_1 in_listsI)
 qed
 end
 
@@ -1623,7 +1639,7 @@ proof-
       using H1_1[where a1 = r and b1 = a and g1 = g] H1_0 A1_1 A1_2 A1_3
       by simp
     have H1_3: "\<And>a w. a \<in> A \<Longrightarrow> w \<in> A\<^sup>\<star> \<Longrightarrow> \<exists>w'\<in> A\<^sup>\<star>. (\<delta>\<^sup>\<star>) i w' = \<delta> ((\<delta>\<^sup>\<star>) i w) a"
-    proof -(*(clarsimp simp add: reachable_states_def)*)
+    proof -
       fix a w
       assume
         A2_0: "a \<in> A" and
@@ -1818,7 +1834,7 @@ adhoc_overloading
   star induced_star_map
 
 lemma MN_quot_act_wd:
-  "w' \<in> [w]\<^sub>M\<^sub>N \<Longrightarrow> \<forall>g \<in> carrier G. (w' \<odot> \<^bsub>\<phi>\<^sup>\<star>\<^esub> g) \<in> [w \<odot> \<^bsub>\<phi>\<^sup>\<star>\<^esub> g]\<^sub>M\<^sub>N"
+  "w' \<in> [w]\<^sub>M\<^sub>N \<Longrightarrow> \<forall>g \<in> carrier G. (g \<odot> \<^bsub>\<phi>\<^sup>\<star>\<^esub> w') \<in> [g \<odot> \<^bsub>\<phi>\<^sup>\<star>\<^esub> w]\<^sub>M\<^sub>N"
 proof-
   assume A_0: "w' \<in> [w]\<^sub>M\<^sub>N"
   have H_0: "\<And>g. \<lbrakk>(w, w') \<in> \<equiv>\<^sub>M\<^sub>N; g \<in> carrier G; group_hom G (BijGroup A) \<phi>;
@@ -1831,17 +1847,17 @@ proof-
       A1_0: "(w, w') \<in> \<equiv>\<^sub>M\<^sub>N" and
       A1_1: "g \<in> carrier G" and
       A1_2: "group_hom G (BijGroup A) \<phi>" and
-      A1_3: "group_hom G (BijGroup (lists A)) (\<lambda>g\<in>carrier G. restrict (map (\<phi> g)) (lists A))" and
-      A1_4: "L \<subseteq> lists A" and
+      A1_3: "group_hom G (BijGroup (A\<^sup>\<star>)) (\<lambda>g\<in>carrier G. restrict (map (\<phi> g)) (A\<^sup>\<star>))" and
+      A1_4: "L \<subseteq> A\<^sup>\<star>" and
       A1_5: "\<forall>g\<in>carrier G.
-           map (\<phi> g) ` (L \<inter> lists A) \<union> (\<lambda>x. undefined) ` (L \<inter> {x. x \<notin> lists A}) = L" and
+           map (\<phi> g) ` (L \<inter> A\<^sup>\<star>) \<union> (\<lambda>x. undefined) ` (L \<inter> {x. x \<notin> A\<^sup>\<star>}) = L" and
       A1_6: "\<forall>x\<in>set w. x \<in> A" and
       A1_7: "w' \<in> A\<^sup>\<star>"
     have H1_0: "\<And>v w w'. \<lbrakk>g \<in> carrier G; group_hom G (BijGroup A) \<phi>;
-    group_hom G (BijGroup (lists A)) (\<lambda>g\<in>carrier G. restrict (map (\<phi> g)) (lists A));
-    L \<subseteq> lists A; \<forall>g\<in>carrier G.
-    {y. \<exists>x\<in>L \<inter> lists A. y = map (\<phi> g) x} \<union> {y. y = undefined \<and> (\<exists>x. x \<in> L \<and> x \<notin> lists A)} = L;
-    \<forall>x\<in>set w. x \<in> A; \<forall>v\<in>lists A. (w @ v \<in> L) = (w' @ v \<in> L); \<forall>x\<in>set w'. x \<in> A; \<forall>x\<in>set v. x \<in> A;
+    group_hom G (BijGroup (A\<^sup>\<star>)) (\<lambda>g\<in>carrier G. restrict (map (\<phi> g)) (A\<^sup>\<star>));
+    L \<subseteq> A\<^sup>\<star>; \<forall>g\<in>carrier G.
+    {y. \<exists>x\<in>L \<inter> A\<^sup>\<star>. y = map (\<phi> g) x} \<union> {y. y = undefined \<and> (\<exists>x. x \<in> L \<and> x \<notin> A\<^sup>\<star>)} = L;
+    \<forall>x\<in>set w. x \<in> A; \<forall>v\<in>A\<^sup>\<star>. (w @ v \<in> L) = (w' @ v \<in> L); \<forall>x\<in>set w'. x \<in> A; \<forall>x\<in>set v. x \<in> A;
     map (\<phi> g) w @ v \<in> L\<rbrakk> \<Longrightarrow> map (\<phi> g) w' @ v \<in> L"
     proof -
       fix v w w'
@@ -1868,9 +1884,9 @@ proof-
       from A2_2 have H2_3: "\<forall>h\<in>carrier G. \<forall>a\<in>A. (\<phi> h) a \<in> A"
         by (auto simp add: group_hom_def BijGroup_def group_hom_axioms_def hom_def Bij_def
             bij_betw_def)
-      from A2_8 have H2_4: "v \<in> lists A"
+      from A2_8 have H2_4: "v \<in> A\<^sup>\<star>"
         by (simp add: in_listsI)
-      hence H2_5: "\<forall>h\<in>carrier G. map (\<phi> h) v \<in> lists A"
+      hence H2_5: "\<forall>h\<in>carrier G. map (\<phi> h) v \<in> A\<^sup>\<star>"
         using H2_3
         by fastforce
       hence H2_6: "\<forall>h\<in>carrier G. (w @ (map (\<phi> h) v) \<in> L) = (w' @ (map (\<phi> h) v) \<in> L)"
@@ -1910,7 +1926,7 @@ proof-
         apply (clarsimp simp add: Set.image_def)
         using H2_1
         by blast
-      have H2_15: "map (\<phi> g) w' \<in> lists A"
+      have H2_15: "map (\<phi> g) w' \<in> A\<^sup>\<star>"
         using A2_0 A2_1 H2_13 H2_2 
         by (metis H2_11 append_in_lists_conv image_eqI lists_image subset_eq surj_prop)
       have H2_16: "inv\<^bsub>G\<^esub> g \<in> carrier G" 
@@ -1988,7 +2004,7 @@ lemma MN_rel_eq_var:
       eq_var_subset_def eq_var_subset_axioms_def Set.subset_eq element_image)
 
 lemma quot_act_wd_alt_notation:
-  "w \<in> A\<^sup>\<star> \<Longrightarrow> g \<in> carrier G \<Longrightarrow> ([w]\<^sub>M\<^sub>N) \<odot>\<^bsub>[\<phi>\<^sup>\<star>]\<^sub>\<equiv>\<^sub>M\<^sub>N \<^bsub>A\<^sup>\<star>\<^esub>\<^esub> g = ([w \<odot>\<^bsub>\<phi>\<^sup>\<star>\<^esub> g]\<^sub>M\<^sub>N)"
+  "w \<in> A\<^sup>\<star> \<Longrightarrow> g \<in> carrier G \<Longrightarrow> g \<odot>\<^bsub>[\<phi>\<^sup>\<star>]\<^sub>\<equiv>\<^sub>M\<^sub>N \<^bsub>A\<^sup>\<star>\<^esub>\<^esub> ([w]\<^sub>M\<^sub>N) = ([g \<odot>\<^bsub>\<phi>\<^sup>\<star>\<^esub> w]\<^sub>M\<^sub>N)"
   using eq_var_rel.quot_act_wd[where G = G and \<phi> = "\<phi>\<^sup>\<star>" and X = "A\<^sup>\<star>" and R = "\<equiv>\<^sub>M\<^sub>N" and x = w
       and g = g]
   by (simp del: GMN_simps add: alt_natural_map_MN_def MN_rel_eq_var MN_rel_equival)
@@ -2170,27 +2186,20 @@ qed
 
 lemma MN_init_state_equivar:
   "eq_var_subset G (A\<^sup>\<star>) (\<phi>\<^sup>\<star>) MN_init_state"
-  apply (clarsimp simp add: eq_var_subset_def eq_var_subset_axioms_def)
-  apply (intro conjI)
+  apply (rule alt_grp_act.eq_var_one_direction)
   using lists_a_Gset
     apply (auto)[1]
    apply (clarsimp)
   subgoal for w a
     by (auto simp add: rel_MN_def)
-  apply (clarify; rule subset_antisym; simp add: Set.subset_eq; clarify)
-   apply (clarsimp simp add: image_def Image_def Int_def) 
-   apply (erule disjE)
+  apply (simp add: Set.subset_eq; clarify)
+  apply (clarsimp simp add: image_def Image_def Int_def) 
+  apply (erule disjE)
   subgoal for g w
     using MN_rel_eq_var
     apply (clarsimp simp add: eq_var_rel_def eq_var_rel_axioms_def)
     by (metis (full_types, opaque_lifting) in_listsI list.simps(8) lists.Nil)
-   apply (erule conjE)
-   apply (auto simp add: \<open>\<And>a w. \<lbrakk>([], w) \<in> \<equiv>\<^sub>M\<^sub>N; a \<in> set w\<rbrakk> \<Longrightarrow> a \<in> A\<close>)[1]  
-  apply (rule meta_mp[of "\<equiv>\<^sub>M\<^sub>N `` {[]} \<inter> lists A = \<equiv>\<^sub>M\<^sub>N `` {[]}"])
-  using MN_quot_act_on_empty_str
-   apply (clarsimp) 
-  apply (rule subset_antisym; simp add: Set.subset_eq)
-  by (simp add: \<open>\<And>w a. \<lbrakk>([], w) \<in> \<equiv>\<^sub>M\<^sub>N; a \<in> set w\<rbrakk> \<Longrightarrow> a \<in> A\<close> in_listsI)
+  by (auto simp add: \<open>\<And>a w. \<lbrakk>([], w) \<in> \<equiv>\<^sub>M\<^sub>N; a \<in> set w\<rbrakk> \<Longrightarrow> a \<in> A\<close>) 
 
 lemma MN_init_state_equivar_v2:
   "eq_var_subset G (MN_equiv) ([\<phi>\<^sup>\<star>]\<^sub>\<equiv>\<^sub>M\<^sub>N \<^bsub>A\<^sup>\<star> \<^esub>) {MN_init_state}"
@@ -2251,59 +2260,17 @@ proof-
       using H1_1 H1_3
       by blast
   qed
-  have H_1: "\<And>g x w. g \<in> carrier G \<Longrightarrow> w \<in> L \<Longrightarrow> [w]\<^sub>M\<^sub>N \<in> ([\<phi>\<^sup>\<star>]\<^sub>\<equiv>\<^sub>M\<^sub>N\<^bsub>A\<^sup>\<star>\<^esub>) g ` MN_fin_states"
-  proof-
-    fix g x w
-    assume
-      A1_0: "g \<in> carrier G" and 
-      A1_1: "w \<in> L" 
-    have H1_0: "\<And>v h. v \<in> L \<Longrightarrow> h \<in> carrier G \<Longrightarrow> (\<phi>\<^sup>\<star>) h v \<in> L"
-      using G_lang_axioms
-      apply (clarsimp simp add: G_lang_def G_lang_axioms_def eq_var_subset_def
-          eq_var_subset_axioms_def)
-      by blast
-    have H1_1: "(\<phi>\<^sup>\<star>) (inv \<^bsub>G\<^esub> g) w \<in> L" 
-      apply (rule meta_mp[of "(inv \<^bsub>G\<^esub> g) \<in> carrier G"]) 
-      using A1_1 H1_0
-       apply blast using A1_0 
-      by (metis group.inv_closed group_hom group_hom.axioms(1))
-    have H1_2: "\<And>v. v \<in> [w]\<^sub>M\<^sub>N \<Longrightarrow> v \<in> L"
-      using A1_1 apply (clarsimp simp add: rel_MN_def) 
-      by (metis lists.simps self_append_conv)
-    have H1_3: "([\<phi>\<^sup>\<star>]\<^sub>\<equiv>\<^sub>M\<^sub>N\<^bsub>A\<^sup>\<star>\<^esub>) g [(\<phi>\<^sup>\<star>) (inv \<^bsub>G\<^esub> g) w]\<^sub>M\<^sub>N = [w]\<^sub>M\<^sub>N"
-      apply (rule meta_mp[of "(\<phi>\<^sup>\<star>) g ((\<phi>\<^sup>\<star>) (inv\<^bsub>G\<^esub> g) w) = w"])
-      using eq_var_rel.quot_act_wd[where R = "\<equiv>\<^sub>M\<^sub>N" and G = G and X = "A\<^sup>\<star>" and \<phi> = "\<phi>\<^sup>\<star>" and g = g
-          and x = "(\<phi>\<^sup>\<star>) (inv \<^bsub>G\<^esub> g) w"]
-        MN_rel_eq_var MN_rel_equival G_lang_axioms H1_1
-       apply (clarsimp simp del: GMN_simps simp add: make_op_def A1_0 A1_1 G_lang_axioms_def
-          G_lang_def eq_var_subset_def eq_var_subset_axioms_def subset_eq)
-      using A1_0 A1_1 H1_1 G_lang_axioms
-       apply (clarsimp simp del: GMN_simps simp add: alt_natural_map_MN_def make_op_def
-          G_lang_axioms_def G_lang_def eq_var_subset_def alt_grp_act_def)
-      using group_action.orbit_sym_aux[where G = G and E = "A\<^sup>\<star>" and g = "(inv\<^bsub>G\<^esub> g)" and x = w
-          and \<phi> = "\<phi>\<^sup>\<star>" and y = "((\<phi>\<^sup>\<star>) (inv\<^bsub>G\<^esub> g) w)"]
-      by (smt (verit) A1_0 A1_1 L_is_equivar alt_group_act_is_grp_act
-          eq_var_subset.is_subset group_action.bij_prop1 group_action.orbit_sym_aux insert_subset
-          lists_a_Gset mk_disjoint_insert)
-    show "[w]\<^sub>M\<^sub>N \<in> ([\<phi>\<^sup>\<star>]\<^sub>\<equiv>\<^sub>M\<^sub>N\<^bsub>A\<^sup>\<star>\<^esub>) g ` {v. \<exists>w\<in>L. v = [w]\<^sub>M\<^sub>N}"
-      apply (clarsimp simp del: GMN_simps simp add: image_def) 
-      using H1_1 H1_3
-      by blast
-  qed
   show ?thesis
-    apply (clarsimp simp del: GMN_simps simp add: eq_var_subset_def) 
-    apply (rule conjI)
+    apply (rule alt_grp_act.eq_var_one_direction) 
     using MN_init_state_equivar_v2 eq_var_subset.axioms(1)
-     apply blast
-    apply (clarsimp simp del: GMN_simps simp add: eq_var_subset_axioms_def)
-    apply (rule conjI; clarsimp simp del: GMN_simps)
+      apply blast
+     apply (clarsimp)
     subgoal for w
       using G_lang_axioms
       by (auto simp add: quotient_def G_lang_axioms_def G_lang_def eq_var_subset_def
           eq_var_subset_axioms_def)
-    apply (rule subset_antisym; simp add: Set.subset_eq del: GMN_simps; clarify)
-     apply (simp add: H_0 del: GMN_simps)
-    by (simp add: H_1 del: GMN_simps)
+    apply (simp add: Set.subset_eq del: GMN_simps; clarify)
+    by (simp add: H_0 del: GMN_simps)
 qed
 
 interpretation syntac_aut :
@@ -2546,13 +2513,13 @@ proof-
     fix s
     assume
       A1_0: "s \<in> F"
-    have H1_0: "\<exists>w. w \<in> lists A \<and> (\<delta>\<^sup>\<star>) i w = s"
+    have H1_0: "\<exists>w. w \<in> A\<^sup>\<star> \<and> (\<delta>\<^sup>\<star>) i w = s"
       using A1_0 is_reachable 
       by (metis is_aut.fin_states_are_states subsetD)
-    have H1_1: "\<And>w. w \<in> lists A \<and> (\<delta>\<^sup>\<star>) i w = s \<Longrightarrow> w \<in> L"
+    have H1_1: "\<And>w. w \<in> A\<^sup>\<star> \<and> (\<delta>\<^sup>\<star>) i w = s \<Longrightarrow> w \<in> L"
       using A1_0 is_recognised
       by auto
-    show "(SOME w. w \<in> lists A \<and> (\<delta>\<^sup>\<star>) i w = s) \<in> L "
+    show "(SOME w. w \<in> A\<^sup>\<star> \<and> (\<delta>\<^sup>\<star>) i w = s) \<in> L "
       by (metis (mono_tags, lifting) H1_0 H1_1 someI_ex)
   qed
   show ?thesis
@@ -2621,11 +2588,11 @@ proof-
          apply presburger 
         using A2_1
         by auto
-      have H2_6: "(\<phi>\<^sup>\<star>) (inv\<^bsub>G\<^esub> g) w' \<in> lists A "
+      have H2_6: "(\<phi>\<^sup>\<star>) (inv\<^bsub>G\<^esub> g) w' \<in> A\<^sup>\<star>"
         using H2_0 A2_1 
         by (metis alt_group_act_is_grp_act group_action.element_image in_listsI
             labels_a_G_set.lists_a_Gset)
-      thus "\<exists>w\<in>lists A. (\<phi>\<^sup>\<star>) g w = w' \<and> (\<delta>\<^sup>\<star>) i w = s"
+      thus "\<exists>w\<in>A\<^sup>\<star>. (\<phi>\<^sup>\<star>) g w = w' \<and> (\<delta>\<^sup>\<star>) i w = s"
         using H2_1 H2_5 H2_6
         by blast
     next
@@ -3291,7 +3258,7 @@ locale supports = data_symm G D \<pi> + alt_grp_act G X \<phi>
     is_subset:
     "C \<subseteq> \<bbbD>" and
     supports:
-    "g \<in> carrier G \<Longrightarrow> (\<forall>c. c \<in> C \<longrightarrow> \<pi> g c = c) \<Longrightarrow> x \<odot>\<^bsub>\<phi>\<^esub> g = x"
+    "g \<in> carrier G \<Longrightarrow> (\<forall>c. c \<in> C \<longrightarrow> \<pi> g c = c) \<Longrightarrow> g \<odot>\<^bsub>\<phi>\<^esub> x = x"
 begin
 
 text \<open>
@@ -3299,7 +3266,7 @@ The following lemma corresponds to lemma 4.9 from \cite{bojanczyk2014automata}:
 \<close>
 
 lemma image_supports:
-  "\<And>g. g \<in> carrier G \<Longrightarrow> supports G D \<pi> X \<phi> (\<pi> g ` C) (x \<odot>\<^bsub>\<phi>\<^esub> g)"
+  "\<And>g. g \<in> carrier G \<Longrightarrow> supports G D \<pi> X \<phi> (\<pi> g ` C) (g \<odot>\<^bsub>\<phi>\<^esub> x)"
 proof-
   fix g
   assume 
@@ -3397,7 +3364,7 @@ proof-
       using A1_3 A1_2 A_0 H1_14 composition_rule
       by (simp add: is_in_set)
   qed
-  show "supports G D \<pi> X \<phi> (\<pi> g ` C) (x \<odot>\<^bsub>\<phi>\<^esub> g)"
+  show "supports G D \<pi> X \<phi> (\<pi> g ` C) (g \<odot>\<^bsub>\<phi>\<^esub> x)"
     using supports_axioms
     apply (clarsimp simp add: supports_def supports_axioms_def)
     apply (intro conjI)

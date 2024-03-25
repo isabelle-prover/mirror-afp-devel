@@ -69,7 +69,7 @@ lemma kronecker_assoc:
   unfolding kronecker_product_def Let_def
   apply (case_tac "dim_row B * dim_row C > 0 & dim_col B * dim_col C > 0")
    apply (auto simp add: mat_eq_iff less_mult_imp_div_less)
-  by (smt div_mult2_eq div_mult_mod_eq kronecker_inverse_index less_mult_imp_div_less linordered_semiring_strict_class.mult_pos_pos mod_less_divisor mod_mult2_eq mult.assoc mult.commute)
+  by (smt (verit, best) div_less_iff_less_mult div_mult2_eq kronecker_inverse_index linordered_semiring_strict_class.mult_pos_pos mod_less_divisor mod_mult2_eq mult.assoc mult.commute mult_div_mod_eq)
 
 lemma sum_sum_mod_div:
   "(\<Sum>ia = 0::nat..<x. \<Sum>ja = 0..<y. f ia ja) =
@@ -308,7 +308,7 @@ proof -
       apply (metis cols_dim module_vec_def partial_object.select_convs(1) right_zero_vec vec_vs vectorspace.span_closed)
      apply (metis cols_dim comm_add_vec module_vec_def vec_space.cV vec_vs vectorspace.span_closed)
     unfolding Units_def apply auto
-    by (smt cols_dim module_vec_def partial_object.select_convs(1) uminus_l_inv_vec uminus_r_inv_vec vec_space.vec_neg vec_vs vectorspace.span_closed vectorspace.span_neg)
+    by (metis (no_types, opaque_lifting) cols_dim comm_add_vec module_vec_def partial_object.select_convs(1) uminus_l_inv_vec vec_space.vec_neg vec_vs vectorspace.span_closed vectorspace.span_neg)
   show ?thesis
     apply (unfold_locales)
     unfolding class_ring_simps apply auto
@@ -316,8 +316,7 @@ proof -
      apply (auto simp add:module_vec_def)
     using vec_module_col_helper2
      apply blast
-    using cols_dim module_vec_def partial_object.select_convs(1) smult_add_distrib_vec vec_vs vectorspace.span_closed
-    by (smt (z3))
+    by (smt (verit) cols_dim module_vec_def smult_add_distrib_vec vec_space.cV vec_vs vectorspace.span_closed)
 qed
 
 (* The columns of a matrix form a vectorspace *)
@@ -394,7 +393,7 @@ qed
 lemma row_mat_of_cols:
   assumes "i < nr"
   shows "row (mat_of_cols nr ls) i = vec (length ls) (\<lambda>j. (ls ! j) $i)"
-  by (smt assms dim_vec eq_vecI index_row(1) index_row(2) index_vec mat_of_cols_carrier(2) mat_of_cols_carrier(3) mat_of_cols_index)
+  by (simp add: assms mat_of_cols_index vec_eq_iff)
 
 lemma mat_of_cols_cons_mat_vec:
   fixes v ::"'a::comm_ring vec"
@@ -474,7 +473,7 @@ proof -
   then have "mset ls = mset (map ((!) ls)
            (filter (\<lambda>i. i \<notin> set ss)
              [0..<length ls]) @ map ((!) ls) ss)"
-    by (smt length_map map_append map_nth mset_eq_permutation mset_permute_list permute_list_map)
+    by (metis map_append map_nth mset_map)
   thus ?thesis
     by (metis mset_eq_permutation that)
 qed
@@ -493,13 +492,13 @@ proof -
   let ?ids = "map (\<lambda>i. @j. j < length ls \<and> ls!j = i ) ss"
   have 1: "distinct ?ids" unfolding distinct_map
     using assms apply (auto simp add: inj_on_def)
-    by (smt in_mono in_set_conv_nth tfl_some)
+    by (smt (verit) in_set_conv_nth someI subset_eq)
   have 2: "set ?ids \<subseteq> {..<length ls}"
     using assms apply (auto)
     by (metis (mono_tags, lifting) in_mono in_set_conv_nth tfl_some)
   have 3: "ss = map ((!) ls) ?ids"
     using assms apply (auto simp add: list_eq_iff_nth_eq)
-    by (smt imageI in_set_conv_nth subset_iff tfl_some)
+    by (smt (verit, best) in_set_conv_nth someI subsetD)
   show "(\<And>ids. distinct ids \<Longrightarrow>
             set ids \<subseteq> {..<length ls} \<Longrightarrow>
             ss = map ((!) ls) ids \<Longrightarrow> thesis) \<Longrightarrow>
@@ -695,7 +694,7 @@ lemma lincomb_list_alt:
   shows "lincomb_list c s =
     sumlist (map2 (\<lambda>i j. i \<cdot>\<^sub>v s ! j) (map (\<lambda>i. c i) [0..<length s]) [0..<length s])"
   unfolding lincomb_list_def
-  by (smt length_map map2_map_map map_nth nth_equalityI nth_map)
+  by (smt (verit, ccfv_SIG) length_map map2_map_map map_nth nth_equalityI nth_map)
 
 lemma lincomb_list_alt2:
   assumes "\<And>v. v \<in> set s \<Longrightarrow> dim_vec v = n"
@@ -752,7 +751,7 @@ proof -
     using assms by auto
   show ?thesis using two_set[OF 1]
     using assms(3) empty_set filter_cong list.simps(15)
-    by (smt "2" assms(3) empty_set filter_cong list.simps(15))
+    by (smt(verit, ccfv_SIG) "2" assms(3) empty_set filter_cong list.simps(15))
 qed
 
 lemma lincomb_list_indpt_distinct:
@@ -978,7 +977,7 @@ proof -
     also have "... = conjugate (\<Oplus>\<^bsub>V\<^esub>x\<in>T. (c x \<cdot>\<^sub>v x))"
       apply(subst conjugate_finsum[of "\<lambda>x.(c x \<cdot>\<^sub>v x)" T])
        apply (auto simp add:o_def)
-      by (smt Matrix.carrier_vec_conjugate Pi_I' T(1) assms carrier_matD(1) cols_dim dim_row_conjugate imageE s_hyp(1) smult_carrier_vec subset_eq) 
+      by (smt (verit, ccfv_SIG) Matrix.carrier_vec_conjugate Pi_I' T(1) assms carrier_matD(1) cols_dim dim_row_conjugate imageE s_hyp(1) smult_carrier_vec subset_eq) 
     also have "... = conjugate (lincomb c T)"
       using lincomb_def by presburger
     ultimately have "lincomb ?c ?T = conjugate (lincomb c T)" by auto
@@ -1264,7 +1263,7 @@ proof -
               using allj_hyp bad_asm by presburger
             obtain nn :: "nat \<Rightarrow> nat \<Rightarrow> (nat \<Rightarrow> bool) \<Rightarrow> nat" where
               f4: "\<And>n na p nb nc. (\<not> n \<le> na \<or> Suc n \<le> Suc na) \<and> (\<not> p nb \<or> \<not> nc \<le> nb \<or> \<not> p (nn nc nb p) \<or> p nc) \<and> (\<not> p nb \<or> \<not> nc \<le> nb \<or> p nc \<or> p (Suc (nn nc nb p)))"
-              using inc_induct order_refl by moura
+              using inc_induct by (metis Suc_le_mono)
             then have f5: "\<And>p. \<not> p k \<or> p j \<or> p (Suc (nn j k p))"
               using a1 by presburger
             have f6: "\<And>p. \<not> p k \<or> \<not> p (nn j k p) \<or> p j"
@@ -1401,7 +1400,7 @@ proof -
     next
       case (Suc k)
       then show ?case 
-        by (smt dr le_less_trans less_Suc_eq less_imp_le_nat pf pivot_funD(1) pivot_funD(3))
+        by (smt (verit, ccfv_SIG) dr le_less_trans less_Suc_eq less_imp_le_nat pf pivot_funD(1) pivot_funD(3))
     qed
   qed
 qed
@@ -1465,7 +1464,7 @@ proof -
   qed
   then show ?thesis
     using pivot_positions(1)
-    by (smt \<open>pivot_fun A f (dim_col A)\<close> carrier_matI i_nr less_not_refl mem_Collect_eq)
+    by (smt (verit, ccfv_SIG) \<open>pivot_fun A f (dim_col A)\<close> carrier_matI i_nr less_not_refl mem_Collect_eq)
 qed
 
 lemma pivot_positions_form_helper_1:
@@ -1473,8 +1472,7 @@ lemma pivot_positions_form_helper_1:
 proof  (induct i j rule: pivot_positions_main_gen.induct[of nr nc A z])
   case (1 i j)
   then show ?case using  pivot_positions_main_gen.simps[of z A nr nc i j]
-    apply (auto)
-    by (smt Suc_leD le_refl old.prod.inject set_ConsD)
+    by (metis Pair_inject Suc_leD emptyE list.set(1) nle_le set_ConsD)
 qed
 
 lemma pivot_positions_form_helper_2:
@@ -1516,8 +1514,7 @@ proof clarsimp
     assume p_welldef: "p < (length ?pp)"
     assume q_welldef: "q < (length ?pp)"
     show "fst (?pp ! p) < fst (?pp ! q)"
-      using sorted_pivot_positions p_lt p_welldef q_welldef apply (auto)
-      by (smt find_first_unique length_map nat_less_le nth_map p_welldef sorted_nth_mono sorted_pivot_positions strict_sorted_iff)     
+      using sorted_pivot_positions p_lt p_welldef q_welldef sorted_wrt_nth_less by fastforce
   qed
   have h: "i < (length ?pp) \<longrightarrow> fst (pivot_positions A ! i) = i"
   proof (induct i)
@@ -1527,8 +1524,7 @@ proof clarsimp
     then obtain j where jth:" fst (pivot_positions A ! j) = 0"
       by blast      
     have "j \<noteq> 0 \<longrightarrow> (fst (pivot_positions A ! 0) > 0 \<longrightarrow> j \<le> 0)"
-      using sorted_hyp apply (auto)
-      by (metis all_f_in fst_conv i_lt in_set_conv_nth length_greater_0_conv list.size(3) neq0_conv not_less0)  
+      by (smt (verit, ccfv_SIG) all_f_in fst_conv i_lt in_set_conv_nth less_nat_zero_code not_gr_zero sorted_hyp)
     then show ?case
       using jth neq0_conv by blast
   next
@@ -1701,8 +1697,8 @@ proof -
         using assms row_echelon_form_zero_rows[of A]
         by blast 
       then have h0c: "(row A i) = 0\<^sub>v (dim_col A)"  using i_gt
-        using add_diff_cancel_right' add_less_cancel_left diff_is_0_eq' dim_col_take_rows dim_row_append_rows i_lt index_zero_mat(2) index_zero_mat(3) le_add_diff_inverse len_lt less_not_refl3 row_append_rows row_zero zero_less_diff
-        by (smt add_diff_cancel_right' add_less_cancel_left diff_is_0_eq' dim_col_take_rows dim_row_append_rows i_lt index_zero_mat(2) index_zero_mat(3) le_add_diff_inverse len_lt less_not_refl3 row_append_rows row_zero zero_less_diff) 
+        by (smt (verit, best) add_diff_cancel_left' add_diff_cancel_right' add_less_cancel_left dim_col_take_rows 
+            dim_row_append_rows i_lt index_zero_mat(2) index_zero_mat(3) le_Suc_ex len_lt nat_less_le nle_le row_append_rows row_zero)
       then show ?thesis using h0a breaking_it_down apply (auto)
         by (metis \<open>\<forall>a. List.member (map snd (pivot_positions A)) a \<longrightarrow> a < dim_col A\<close> h1 in_set_member index_zero_vec(1) j_lt length_asm nth_mem) 
     qed
@@ -1711,8 +1707,7 @@ proof -
            (1\<^sub>m (length (pivot_positions A)) @\<^sub>r
             0\<^sub>m (dim_row A - length (pivot_positions A)) (length (pivot_positions A))) $$
            (i, j) " using h1a h1b
-      apply (auto)
-      by (smt add_diff_inverse_nat add_less_cancel_left append_rows_index h1 i_lt index_one_mat(2) index_one_mat(3) index_zero_mat(1) index_zero_mat(2) index_zero_mat(3) j_lt len_lt not_less)  
+      by (smt (verit) add_diff_inverse_nat append_rows_index diff_less_mono h1 i_lt index_one_mat(2) index_one_mat(3) index_zero_mat(1) index_zero_mat(2) index_zero_mat(3) j_lt leD len_lt not_le_imp_less)
     then show "take_cols A (map snd (pivot_positions A)) $$ (i, j) =
            (1\<^sub>m (length (pivot_positions A)) @\<^sub>r
             0\<^sub>m (dim_row A - length (pivot_positions A)) (length (pivot_positions A))) $$
@@ -1738,10 +1733,9 @@ proof -
   have 2: "take_cols A (map snd (pivot_positions A)) * take_rows A [0..<length (pivot_positions A)] =
     take_rows A [0..<length (pivot_positions A)]  @\<^sub>r 0\<^sub>m (dim_row A - length (pivot_positions A)) (dim_col A)"
     unfolding 1
-    apply (auto simp add: append_rows_mat_mul)
-    by (smt add_diff_cancel_right' assms diff_diff_cancel dim_col_take_rows dim_row_append_rows index_zero_mat(2) left_mult_one_mat' left_mult_zero_mat' length_pivot_positions_dim_row row_echelon_form_zero_rows)   
-  from row_echelon_form_zero_rows[OF assms] have
-    "... = A" .
+    apply (simp add: append_rows_mat_mul)
+    by (metis (no_types, lifting) "1" add_right_imp_eq assms dim_col_take_rows dim_row_append_rows dim_row_take_cols index_one_mat(2) index_zero_mat(2) left_mult_one_mat' left_mult_zero_mat' row_echelon_form_zero_rows)
+  from row_echelon_form_zero_rows[OF assms] have "... = A" .
   thus ?thesis
     by (simp add: "2")
 qed
@@ -1885,7 +1879,8 @@ proof -
     then have "dim_col R \<ge> length (pivot_positions R)" using dims by auto
     then have h2: "?B \<in> carrier_mat (length (pivot_positions R)) nc" unfolding take_rows_def
       using dims 
-      by (smt atLeastLessThan_iff carrier_matD(2) filter_True le_eq_less_or_eq length_map length_pivot_positions_dim_row less_trans map_nth mat_of_cols_carrier(1) row_ech set_upt transpose_carrier_mat transpose_mat_of_rows) 
+      by (smt (verit) atLeastLessThan_iff carrier_matD(2) filter_True le_eq_less_or_eq length_map 
+          length_pivot_positions_dim_row less_trans map_nth mat_of_cols_carrier(1) row_ech set_upt transpose_carrier_mat transpose_mat_of_rows) 
     show ?thesis using h1 h2
       by blast
   qed
@@ -1907,7 +1902,7 @@ proof -
   let ?gjs = "(gauss_jordan_single A)"
   have "\<forall>x. List.member (map snd (pivot_positions (gauss_jordan_single A))) x \<longrightarrow> x \<le> dim_col A"  
     using rref_pivot_positions gauss_jordan_single(3) carrier_matD(2) gauss_jordan_single(2) in_set_impl_in_set_zip2 in_set_member length_map less_irrefl less_trans not_le_imp_less zip_map_fst_snd
-    by (smt A carrier_matD(2) gauss_jordan_single(2) in_set_impl_in_set_zip2 in_set_member length_map less_irrefl less_trans not_le_imp_less zip_map_fst_snd)
+    by (metis (no_types, lifting) carrier_mat_triv)
   then have "(filter (\<lambda>y. y < dim_col A) (map snd (pivot_positions (gauss_jordan_single A)))) = 
     (map snd (pivot_positions (gauss_jordan_single A)))"
     by (metis (no_types, lifting) A carrier_matD(2) filter_True gauss_jordan_single(2) gauss_jordan_single(3) in_set_impl_in_set_zip2 length_map rref_pivot_positions zip_map_fst_snd)
@@ -1924,8 +1919,7 @@ proof -
   let ?R = "gauss_jordan_single A"
   obtain P where P:"P\<in>Units (ring_mat TYPE('a) n undefined)" and
     i: "?R = P * A" using gauss_jordan_transform[OF A]
-    using A assms det_mult det_non_zero_imp_unit det_one gauss_jordan_single(4) mult_not_zero one_neq_zero
-    by (smt A assms det_mult det_non_zero_imp_unit det_one gauss_jordan_single(4) mult_not_zero one_neq_zero)
+    by (metis A carrier_matD(1) fst_eqD gauss_jordan_single_def surj_pair zero_carrier_mat)
   have pcarrier: "P \<in> carrier_mat n n" using P unfolding Units_def
     by (auto simp add: ring_mat_def)
   have "invertible_mat P" using P unfolding invertible_mat_def Units_def inverts_mat_def
@@ -1952,7 +1946,7 @@ proof -
     apply (rule take_cols_carrier_mat_strict[OF R2])
     using rref_pivot_positions[OF R1 R2] by auto
   have "Pi * ?R = A" using i Pi
-    by (smt A \<open>invertible_mat P\<close> assoc_mult_mat carrier_mat_triv index_mult_mat(2) index_mult_mat(3) index_one_mat(3) invertible_mat_def left_mult_one_mat square_mat.simps)
+    by (smt (verit, best) A assoc_mult_mat left_mult_one_mat pcarrier pi_carrier)
   then have "rank (take_cols A (map snd (pivot_positions ?R))) = rank (take_cols (Pi * ?R) (map snd (pivot_positions ?R)))"
     by auto
   also have "... = rank ( Pi * take_cols ?R (map snd (pivot_positions ?R)))"

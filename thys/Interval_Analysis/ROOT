@@ -1,0 +1,13 @@
+chapter AFP
+
+session Interval_Analysis (AFP) = "HOL-Analysis" +
+  options [timeout = 600]
+  theories
+    Interval_Analysis
+    Extended_Interval_Analysis
+    Extended_Multi_Interval_Analysis
+  document_files
+    "root.tex"
+    "preamble.tex"
+    "root.bib"
+    "orcidlink.sty"

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>chenj on Archive of Formal Proofs
+    </title>
+    <link>/authors/chenj/</link>
+    <description>
+        Recent content in chenj 
+        on Archive of Formal Proofs
+    </description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    
+      <lastBuildDate>Wed, 06 Mar 2024 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/chenj/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Wieferich–Kempner Theorem</title>
+          <link>/entries/Wieferich_Kempner.html</link>
+          <pubDate>Wed, 06 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Wieferich_Kempner.html</guid>
+          <description></description>
+        </item>
+  </channel>
+</rss>

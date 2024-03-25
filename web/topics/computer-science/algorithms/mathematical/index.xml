@@ -13,10 +13,59 @@
     
       <atom:link href="/topics/computer-science/algorithms/mathematical/index.xml" rel="self" type="application/rss+xml" />
         <item>
+          <title>Karatsuba Multiplication on Integers</title>
+          <link>/entries/Karatsuba.html</link>
+          <pubDate>Mon, 19 Feb 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Karatsuba.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Karatsuba Multiplication on Integers</title>
+          <link>/entries/Karatsuba.html</link>
+          <pubDate>Mon, 19 Feb 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Karatsuba.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Karatsuba Multiplication on Integers</title>
+          <link>/entries/Karatsuba.html</link>
+          <pubDate>Mon, 19 Feb 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Karatsuba.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Gray Codes for Arbitrary Numeral Systems</title>
           <link>/entries/Gray_Codes.html</link>
           <pubDate>Tue, 11 Jul 2023 00:00:00 +0000</pubDate>
           <guid>/entries/Gray_Codes.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Gray Codes for Arbitrary Numeral Systems</title>
+          <link>/entries/Gray_Codes.html</link>
+          <pubDate>Tue, 11 Jul 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Gray_Codes.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Gray Codes for Arbitrary Numeral Systems</title>
+          <link>/entries/Gray_Codes.html</link>
+          <pubDate>Tue, 11 Jul 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Gray_Codes.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A First Complete Algorithm for Real Quantifier Elimination in Isabelle/HOL</title>
+          <link>/entries/Quantifier_Elimination_Hybrid.html</link>
+          <pubDate>Thu, 15 Dec 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Quantifier_Elimination_Hybrid.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A First Complete Algorithm for Real Quantifier Elimination in Isabelle/HOL</title>
+          <link>/entries/Quantifier_Elimination_Hybrid.html</link>
+          <pubDate>Thu, 15 Dec 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Quantifier_Elimination_Hybrid.html</guid>
           <description></description>
         </item>
         <item>
@@ -34,10 +83,52 @@
           <description></description>
         </item>
         <item>
+          <title>Number Theoretic Transform</title>
+          <link>/entries/Number_Theoretic_Transform.html</link>
+          <pubDate>Thu, 18 Aug 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Number_Theoretic_Transform.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Number Theoretic Transform</title>
+          <link>/entries/Number_Theoretic_Transform.html</link>
+          <pubDate>Thu, 18 Aug 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Number_Theoretic_Transform.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Enumeration of Equivalence Relations</title>
           <link>/entries/Equivalence_Relation_Enumeration.html</link>
           <pubDate>Fri, 04 Feb 2022 00:00:00 +0000</pubDate>
           <guid>/entries/Equivalence_Relation_Enumeration.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Enumeration of Equivalence Relations</title>
+          <link>/entries/Equivalence_Relation_Enumeration.html</link>
+          <pubDate>Fri, 04 Feb 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Equivalence_Relation_Enumeration.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Enumeration of Equivalence Relations</title>
+          <link>/entries/Equivalence_Relation_Enumeration.html</link>
+          <pubDate>Fri, 04 Feb 2022 00:00:00 +0000</pubDate>
+          <guid>/entries/Equivalence_Relation_Enumeration.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Verified Quadratic Virtual Substitution for Real Arithmetic</title>
+          <link>/entries/Virtual_Substitution.html</link>
+          <pubDate>Sat, 02 Oct 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Virtual_Substitution.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Verified Quadratic Virtual Substitution for Real Arithmetic</title>
+          <link>/entries/Virtual_Substitution.html</link>
+          <pubDate>Sat, 02 Oct 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Virtual_Substitution.html</guid>
           <description></description>
         </item>
         <item>
@@ -55,10 +146,52 @@
           <description></description>
         </item>
         <item>
+          <title>The BKR Decision Procedure for Univariate Real Arithmetic</title>
+          <link>/entries/BenOr_Kozen_Reif.html</link>
+          <pubDate>Sat, 24 Apr 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/BenOr_Kozen_Reif.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The BKR Decision Procedure for Univariate Real Arithmetic</title>
+          <link>/entries/BenOr_Kozen_Reif.html</link>
+          <pubDate>Sat, 24 Apr 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/BenOr_Kozen_Reif.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Two algorithms based on modular arithmetic: lattice basis reduction and Hermite normal form computation</title>
           <link>/entries/Modular_arithmetic_LLL_and_HNF_algorithms.html</link>
           <pubDate>Fri, 12 Mar 2021 00:00:00 +0000</pubDate>
           <guid>/entries/Modular_arithmetic_LLL_and_HNF_algorithms.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Two algorithms based on modular arithmetic: lattice basis reduction and Hermite normal form computation</title>
+          <link>/entries/Modular_arithmetic_LLL_and_HNF_algorithms.html</link>
+          <pubDate>Fri, 12 Mar 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Modular_arithmetic_LLL_and_HNF_algorithms.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Two algorithms based on modular arithmetic: lattice basis reduction and Hermite normal form computation</title>
+          <link>/entries/Modular_arithmetic_LLL_and_HNF_algorithms.html</link>
+          <pubDate>Fri, 12 Mar 2021 00:00:00 +0000</pubDate>
+          <guid>/entries/Modular_arithmetic_LLL_and_HNF_algorithms.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Formally Verified Checker of the Safe Distance Traffic Rules for Autonomous Vehicles</title>
+          <link>/entries/Safe_Distance.html</link>
+          <pubDate>Mon, 01 Jun 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Safe_Distance.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Formally Verified Checker of the Safe Distance Traffic Rules for Autonomous Vehicles</title>
+          <link>/entries/Safe_Distance.html</link>
+          <pubDate>Mon, 01 Jun 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Safe_Distance.html</guid>
           <description></description>
         </item>
         <item>
@@ -76,10 +209,52 @@
           <description></description>
         </item>
         <item>
+          <title>A verified algorithm for computing the Smith normal form of a matrix</title>
+          <link>/entries/Smith_Normal_Form.html</link>
+          <pubDate>Sat, 23 May 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Smith_Normal_Form.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A verified algorithm for computing the Smith normal form of a matrix</title>
+          <link>/entries/Smith_Normal_Form.html</link>
+          <pubDate>Sat, 23 May 2020 00:00:00 +0000</pubDate>
+          <guid>/entries/Smith_Normal_Form.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Signature-Based Gröbner Basis Algorithms</title>
           <link>/entries/Signature_Groebner.html</link>
           <pubDate>Thu, 20 Sep 2018 00:00:00 +0000</pubDate>
           <guid>/entries/Signature_Groebner.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Signature-Based Gröbner Basis Algorithms</title>
+          <link>/entries/Signature_Groebner.html</link>
+          <pubDate>Thu, 20 Sep 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Signature_Groebner.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Signature-Based Gröbner Basis Algorithms</title>
+          <link>/entries/Signature_Groebner.html</link>
+          <pubDate>Thu, 20 Sep 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Signature_Groebner.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A verified LLL algorithm</title>
+          <link>/entries/LLL_Basis_Reduction.html</link>
+          <pubDate>Fri, 02 Feb 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/LLL_Basis_Reduction.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A verified LLL algorithm</title>
+          <link>/entries/LLL_Basis_Reduction.html</link>
+          <pubDate>Fri, 02 Feb 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/LLL_Basis_Reduction.html</guid>
           <description></description>
         </item>
         <item>
@@ -97,10 +272,52 @@
           <description></description>
         </item>
         <item>
+          <title>Taylor Models</title>
+          <link>/entries/Taylor_Models.html</link>
+          <pubDate>Mon, 08 Jan 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Taylor_Models.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Taylor Models</title>
+          <link>/entries/Taylor_Models.html</link>
+          <pubDate>Mon, 08 Jan 2018 00:00:00 +0000</pubDate>
+          <guid>/entries/Taylor_Models.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Homogeneous Linear Diophantine Equations</title>
           <link>/entries/Diophantine_Eqns_Lin_Hom.html</link>
           <pubDate>Sat, 14 Oct 2017 00:00:00 +0000</pubDate>
           <guid>/entries/Diophantine_Eqns_Lin_Hom.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Homogeneous Linear Diophantine Equations</title>
+          <link>/entries/Diophantine_Eqns_Lin_Hom.html</link>
+          <pubDate>Sat, 14 Oct 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Diophantine_Eqns_Lin_Hom.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Homogeneous Linear Diophantine Equations</title>
+          <link>/entries/Diophantine_Eqns_Lin_Hom.html</link>
+          <pubDate>Sat, 14 Oct 2017 00:00:00 +0000</pubDate>
+          <guid>/entries/Diophantine_Eqns_Lin_Hom.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Gröbner Bases Theory</title>
+          <link>/entries/Groebner_Bases.html</link>
+          <pubDate>Mon, 02 May 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Groebner_Bases.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Gröbner Bases Theory</title>
+          <link>/entries/Groebner_Bases.html</link>
+          <pubDate>Mon, 02 May 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Groebner_Bases.html</guid>
           <description></description>
         </item>
         <item>
@@ -118,10 +335,52 @@
           <description></description>
         </item>
         <item>
+          <title>Hermite Normal Form</title>
+          <link>/entries/Hermite.html</link>
+          <pubDate>Tue, 07 Jul 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Hermite.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Hermite Normal Form</title>
+          <link>/entries/Hermite.html</link>
+          <pubDate>Tue, 07 Jul 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Hermite.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Echelon Form</title>
           <link>/entries/Echelon_Form.html</link>
           <pubDate>Thu, 12 Feb 2015 00:00:00 +0000</pubDate>
           <guid>/entries/Echelon_Form.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Echelon Form</title>
+          <link>/entries/Echelon_Form.html</link>
+          <pubDate>Thu, 12 Feb 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Echelon_Form.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Echelon Form</title>
+          <link>/entries/Echelon_Form.html</link>
+          <pubDate>Thu, 12 Feb 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/Echelon_Form.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>QR Decomposition</title>
+          <link>/entries/QR_Decomposition.html</link>
+          <pubDate>Thu, 12 Feb 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/QR_Decomposition.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>QR Decomposition</title>
+          <link>/entries/QR_Decomposition.html</link>
+          <pubDate>Thu, 12 Feb 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/QR_Decomposition.html</guid>
           <description></description>
         </item>
         <item>
@@ -139,6 +398,34 @@
           <description></description>
         </item>
         <item>
+          <title>Verification of the UpDown Scheme</title>
+          <link>/entries/UpDown_Scheme.html</link>
+          <pubDate>Wed, 28 Jan 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/UpDown_Scheme.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Verification of the UpDown Scheme</title>
+          <link>/entries/UpDown_Scheme.html</link>
+          <pubDate>Wed, 28 Jan 2015 00:00:00 +0000</pubDate>
+          <guid>/entries/UpDown_Scheme.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Gauss-Jordan Algorithm and Its Applications</title>
+          <link>/entries/Gauss_Jordan.html</link>
+          <pubDate>Wed, 03 Sep 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Gauss_Jordan.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Gauss-Jordan Algorithm and Its Applications</title>
+          <link>/entries/Gauss_Jordan.html</link>
+          <pubDate>Wed, 03 Sep 2014 00:00:00 +0000</pubDate>
+          <guid>/entries/Gauss_Jordan.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Gauss-Jordan Algorithm and Its Applications</title>
           <link>/entries/Gauss_Jordan.html</link>
           <pubDate>Wed, 03 Sep 2014 00:00:00 +0000</pubDate>
@@ -153,10 +440,52 @@
           <description></description>
         </item>
         <item>
+          <title>Gauss-Jordan Elimination for Matrices Represented as Functions</title>
+          <link>/entries/Gauss-Jordan-Elim-Fun.html</link>
+          <pubDate>Fri, 19 Aug 2011 00:00:00 +0000</pubDate>
+          <guid>/entries/Gauss-Jordan-Elim-Fun.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Gauss-Jordan Elimination for Matrices Represented as Functions</title>
+          <link>/entries/Gauss-Jordan-Elim-Fun.html</link>
+          <pubDate>Fri, 19 Aug 2011 00:00:00 +0000</pubDate>
+          <guid>/entries/Gauss-Jordan-Elim-Fun.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Executable Multivariate Polynomials</title>
           <link>/entries/Polynomials.html</link>
           <pubDate>Tue, 10 Aug 2010 00:00:00 +0000</pubDate>
           <guid>/entries/Polynomials.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Executable Multivariate Polynomials</title>
+          <link>/entries/Polynomials.html</link>
+          <pubDate>Tue, 10 Aug 2010 00:00:00 +0000</pubDate>
+          <guid>/entries/Polynomials.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Executable Multivariate Polynomials</title>
+          <link>/entries/Polynomials.html</link>
+          <pubDate>Tue, 10 Aug 2010 00:00:00 +0000</pubDate>
+          <guid>/entries/Polynomials.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Fast Fourier Transform</title>
+          <link>/entries/FFT.html</link>
+          <pubDate>Wed, 12 Oct 2005 00:00:00 +0000</pubDate>
+          <guid>/entries/FFT.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Fast Fourier Transform</title>
+          <link>/entries/FFT.html</link>
+          <pubDate>Wed, 12 Oct 2005 00:00:00 +0000</pubDate>
+          <guid>/entries/FFT.html</guid>
           <description></description>
         </item>
         <item>

@@ -674,6 +674,8 @@ proof -
     by (rule sum_in_bigo[OF _unit_9], subst mult.commute)
       (intro landau_o.mult sum_in_bigo, auto simp:unit_3)
 
+  note of_nat_int_ceiling [simp del]
+
   have "(\<lambda>x. ln (real (m_of x) * (18 + 4 * real (n_of x)) + 1)) \<in> O[?F](\<lambda>x. ln (real (n_of x) * real (m_of x)))"
      apply (rule landau_ln_2[where a="2"], simp, simp)
       apply (rule evt[where m="2" and n="1"])

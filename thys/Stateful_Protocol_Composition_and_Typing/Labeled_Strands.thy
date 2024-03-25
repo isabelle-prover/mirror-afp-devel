@@ -142,7 +142,7 @@ by auto
 lemma trms\<^sub>l\<^sub>s\<^sub>t_union[simp]: "trms\<^sub>l\<^sub>s\<^sub>t A = (\<Union>l. trms_proj\<^sub>l\<^sub>s\<^sub>t l A)"
 proof (induction A)
   case (Cons a A)
-  obtain l s where ls: "a = (l,s)" by moura
+  obtain l s where ls: "a = (l,s)" by atomize_elim auto
   have "trms\<^sub>l\<^sub>s\<^sub>t [a] = (\<Union>l. trms_proj\<^sub>l\<^sub>s\<^sub>t l [a])"
   proof -
     have *: "trms\<^sub>l\<^sub>s\<^sub>t [a] = trms\<^sub>s\<^sub>t\<^sub>p s" using ls by simp
@@ -180,7 +180,7 @@ lemma trms\<^sub>l\<^sub>s\<^sub>t_subset[simp]:
   "trms\<^sub>l\<^sub>s\<^sub>t B \<subseteq> trms\<^sub>l\<^sub>s\<^sub>t (A@B)"
 proof (induction A)
   case (Cons a A)
-  obtain l s where *: "a = (l,s)" by moura
+  obtain l s where *: "a = (l,s)" by atomize_elim auto
   { case 1 thus ?case using Cons * by auto }
   { case 2 thus ?case using Cons * by auto }
 qed simp_all
@@ -188,7 +188,7 @@ qed simp_all
 lemma vars\<^sub>l\<^sub>s\<^sub>t_union: "vars\<^sub>l\<^sub>s\<^sub>t A = (\<Union>l. vars_proj\<^sub>l\<^sub>s\<^sub>t l A)"
 proof (induction A)
   case (Cons a A)
-  obtain l s where ls: "a = (l,s)" by moura
+  obtain l s where ls: "a = (l,s)" by atomize_elim auto
   have "vars\<^sub>l\<^sub>s\<^sub>t [a] = (\<Union>l. vars_proj\<^sub>l\<^sub>s\<^sub>t l [a])"
   proof -
     have *: "vars\<^sub>l\<^sub>s\<^sub>t [a] = vars\<^sub>s\<^sub>t\<^sub>p s" using ls by auto
@@ -215,7 +215,7 @@ lemma unlabel_Cons_inv:
   "unlabel A = b#B \<Longrightarrow> \<exists>A'. (\<exists>n. A = (ln n, b)#A') \<or> A = (\<star>, b)#A'"
 proof -
   assume *: "unlabel A = b#B"
-  then obtain l A' where "A = (l,b)#A'" unfolding unlabel_def by moura
+  then obtain l A' where "A = (l,b)#A'" unfolding unlabel_def by atomize_elim auto
   thus "\<exists>A'. (\<exists>l. A = (ln l, b)#A') \<or> A = (\<star>, b)#A'" by (metis strand_label.exhaust)
 qed
 
@@ -251,7 +251,7 @@ proof
     fix t assume "t \<in> ik\<^sub>s\<^sub>t (unlabel A)"
     then obtain l ts where "(l, Receive ts) \<in> set A" "t \<in> set ts"
       using ik\<^sub>s\<^sub>t_is_rcv_set unlabel_mem_has_label[of _ A]
-      by moura
+      by atomize_elim blast
     thus "t \<in> (\<Union>l. ik\<^sub>s\<^sub>t (proj_unl l A))" using proj_ik\<^sub>s\<^sub>t_is_proj_rcv_set[of _ A] by (cases l) auto
   qed
 qed
@@ -291,7 +291,7 @@ lemma wfvarsoccs\<^sub>s\<^sub>t_proj_union:
   "wfvarsoccs\<^sub>s\<^sub>t (unlabel A) = (\<Union>l. wfvarsoccs\<^sub>s\<^sub>t (proj_unl l A))"
 proof (induction A)
   case (Cons a A)
-  obtain l s where ls: "a = (l,s)" by moura
+  obtain l s where ls: "a = (l,s)" by atomize_elim auto
   have "wfvarsoccs\<^sub>s\<^sub>t (unlabel [a]) = (\<Union>l. wfvarsoccs\<^sub>s\<^sub>t (proj_unl l [a]))"
   proof -
     have *: "wfvarsoccs\<^sub>s\<^sub>t (unlabel [a]) = wfvarsoccs\<^sub>s\<^sub>t\<^sub>p s" using ls by auto

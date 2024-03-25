@@ -777,7 +777,7 @@ proof-
       by moura
       then obtain vva :: "variable set \<Rightarrow> variable set \<Rightarrow> variable" where
       f9: "\<forall>V Va. (V \<inter> Va \<noteq> {} \<or> (\<forall>v. v \<notin> V \<or> (\<forall>va. va \<notin> Va \<or> v \<noteq> va))) \<and> (V \<inter> Va = {} \<or> vv Va V \<in> V \<and> vva Va V \<in> Va \<and> vv Va V = vva Va V)"
-      by moura
+      by auto
       then have f10: "(FVF (the (SPreds \<sigma> p)) \<inter> V \<noteq> {} \<or> (\<forall>v. v \<notin> FVF (the (SPreds \<sigma> p)) \<or> (\<forall>va. va \<notin> V \<or> v \<noteq> va))) \<and> (FVF (the (SPreds \<sigma> p)) \<inter> V = {} \<or> vv V (FVF (the (SPreds \<sigma> p))) \<in> FVF (the (SPreds \<sigma> p)) \<and> vva V (FVF (the (SPreds \<sigma> p))) \<in> V \<and> vv V (FVF (the (SPreds \<sigma> p))) = vva V (FVF (the (SPreds \<sigma> p))))"
       by presburger
       { assume "vv V (FVF (the (SPreds \<sigma> p))) \<notin> FVF (the (SPreds \<sigma> p)) \<or> vva V (FVF (the (SPreds \<sigma> p))) \<notin> V \<or> vv V (FVF (the (SPreds \<sigma> p))) \<noteq> vva V (FVF (the (SPreds \<sigma> p)))"

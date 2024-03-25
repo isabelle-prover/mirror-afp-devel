@@ -14,21 +14,6 @@ begin
 
 subsection \<open>Preliminary results\<close>
 
-lemma (in prob_space) finite_borel_measurable_integrable:
-  assumes "f\<in> borel_measurable M"
-  and "finite (f`(space M))"
-  shows "integrable M f"
-proof -
-  have "simple_function M f" using assms by (simp add: simple_function_borel_measurable)
-  moreover have "emeasure M {y \<in> space M. f y \<noteq> 0} \<noteq> \<infinity>" by simp
-  ultimately have "Bochner_Integration.simple_bochner_integrable M f"
-    using Bochner_Integration.simple_bochner_integrable.simps by blast
-  hence "has_bochner_integral M f (Bochner_Integration.simple_bochner_integral M f)"
-    using has_bochner_integral_simple_bochner_integrable by auto
-  thus ?thesis using integrable.simps by auto
-qed
-
-
 subsubsection \<open>On the almost everywhere filter\<close>
 
 lemma AE_eq_trans[trans]:
@@ -103,11 +88,11 @@ proof (intro sigma_finite_subalgebra.real_cond_exp_charact)
   show "integrable M f" using assms by simp
   show "integrable M (\<lambda>x. expectation f)" by auto
   show "(\<lambda>x. expectation f) \<in> borel_measurable N" by simp
-  show "\<And>A. A \<in> sets N \<Longrightarrow> set_lebesgue_integral M A f = \<integral>x\<in>A. expectation f\<partial>M"
+  show "\<And>A. A \<in> sets N \<Longrightarrow> set_lebesgue_integral M A f = (\<integral>x\<in>A. expectation f\<partial>M)"
   proof -
     fix A
     assume "A \<in> sets N"
-    show "set_lebesgue_integral M A f = \<integral>x\<in>A. expectation f\<partial>M"
+    show "set_lebesgue_integral M A f = (\<integral>x\<in>A. expectation f\<partial>M)"
     proof (cases "A = {}")
       case True
       thus ?thesis by (simp add: set_lebesgue_integral_def)
@@ -117,7 +102,7 @@ proof (intro sigma_finite_subalgebra.real_cond_exp_charact)
       have "set_lebesgue_integral M A f = expectation f" using \<open>A = space M\<close>
         by (metis (mono_tags, lifting) Bochner_Integration.integral_cong indicator_simps(1)
                   scaleR_one set_lebesgue_integral_def)
-      also have "... =\<integral>x\<in>A. expectation f\<partial>M" using \<open>A = space M\<close>
+      also have "... = (\<integral>x\<in>A. expectation f\<partial>M)" using \<open>A = space M\<close>
         by (auto simp add:prob_space set_lebesgue_integral_def)
       finally show ?thesis .
     qed
@@ -958,20 +943,8 @@ proof (rule sum_trading_strat)
   next
     case False
     thus ?thesis
-    proof -
-      obtain nn :: "'c \<Rightarrow> ('c \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> real) \<Rightarrow> nat" and aa :: "'c \<Rightarrow> ('c \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> real) \<Rightarrow> 'a" where
-        "\<forall>x0 x1. (\<exists>v2 v3. x1 x0 v2 v3 \<noteq> 0) = (x1 x0 (nn x0 x1) (aa x0 x1) \<noteq> 0)"
-        by moura
-      then have "\<forall>f c. (c \<notin> {c. \<exists>n a. f c n a \<noteq> 0} \<or> f c (nn c f) (aa c f) \<noteq> 0) \<and> (c \<in> {c. \<exists>n a. f c n a \<noteq> 0} \<or> (\<forall>n a. f c n a = 0))"
-        by auto
-      then show ?thesis
-      proof -
-        have "\<And>f c n a. qty_mult_comp f (pf1 x) (c::'c) n a = 0"
-          by (metis False \<open>\<forall>f c. (c \<notin> {c. \<exists>n a. f c n a \<noteq> 0} \<or> f c (nn c f) (aa c f) \<noteq> 0) \<and> (c \<in> {c. \<exists>n a. f c n a \<noteq> 0} \<or> (\<forall>n a. f c n a = 0))\<close> mult.commute mult_zero_left qty_mult_comp_def support_set_def)
-        then show ?thesis
-          by (metis (no_types) \<open>\<forall>f c. (c \<notin> {c. \<exists>n a. f c n a \<noteq> 0} \<or> f c (nn c f) (aa c f) \<noteq> 0) \<and> (c \<in> {c. \<exists>n a. f c n a \<noteq> 0} \<or> (\<forall>n a. f c n a = 0))\<close> assms(2) mult_comp_portfolio support_set_def trading_strategy_def)
-      qed
-    qed
+      by (meson UnCI assms(1) assms(2) disc_equity_market.inc_predict_support_trading_strat
+          disc_equity_market_axioms insertI1 mult_comp_trading_strat)
   qed
 qed
 

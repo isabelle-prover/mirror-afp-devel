@@ -41,7 +41,7 @@ proof safe
     by(simp add: indicator_times)
   also have "... =  (\<integral>\<^sup>+x\<in>A. (\<kappa> x B) \<partial>\<mu>)"
     by(auto intro!: nn_integral_cong simp: kernel_sets nn_integral_cmult_indicator mult.commute)
-  finally show "emeasure \<nu> (A \<times> B) = \<integral>\<^sup>+x\<in>A. emeasure (\<kappa> x) B\<partial>\<mu>" .
+  finally show "emeasure \<nu> (A \<times> B) = (\<integral>\<^sup>+x\<in>A. emeasure (\<kappa> x) B\<partial>\<mu>)" .
 qed(use assms[simplified mixture_of_def] in auto)
 
 lemma
@@ -1852,10 +1852,11 @@ proof -
             by(auto intro!: nn_integral_cong simp: \<kappa> space_marginal_measure)
           finally have "\<nu> (A \<times> UNIV) = (\<integral>\<^sup>+x\<in>A. emeasure (\<kappa> x) UNIV\<partial>r.\<nu>x)" .
         }
-        thus "UNIV \<in> {B \<in> sets borel. \<forall>A\<in>sets X. emeasure \<nu> (A \<times> B) = \<integral>\<^sup>+x\<in>A. emeasure (\<kappa> x) B\<partial>r.\<nu>x}"
+        thus "UNIV \<in> {B \<in> sets borel. \<forall>A\<in>sets X. emeasure \<nu> (A \<times> B) = (\<integral>\<^sup>+x\<in>A. emeasure (\<kappa> x) B\<partial>r.\<nu>x)}"
           by auto
         hence univ:"\<And>A. A \<in> sets X \<Longrightarrow> \<nu> (A \<times> UNIV) = (\<integral>\<^sup>+x\<in>A. emeasure (\<kappa> x) UNIV\<partial>r.\<nu>x)" by auto
-        show "\<And>B. B \<in> {B \<in> sets borel. \<forall>A\<in>sets X. emeasure \<nu> (A \<times> B) = \<integral>\<^sup>+x\<in>A. emeasure (\<kappa> x) B\<partial>r.\<nu>x} \<Longrightarrow> UNIV - B \<in> {B \<in> sets borel. \<forall>A\<in>sets X. emeasure \<nu> (A \<times> B) = \<integral>\<^sup>+x\<in>A. emeasure (\<kappa> x) B\<partial>r.\<nu>x}"
+        show "\<And>B. B \<in> {B \<in> sets borel. \<forall>A\<in>sets X. emeasure \<nu> (A \<times> B) = (\<integral>\<^sup>+x\<in>A. emeasure (\<kappa> x) B\<partial>r.\<nu>x)}
+            \<Longrightarrow> UNIV - B \<in> {B \<in> sets borel. \<forall>A\<in>sets X. emeasure \<nu> (A \<times> B) = (\<integral>\<^sup>+x\<in>A. emeasure (\<kappa> x) B\<partial>r.\<nu>x)}"
         proof(rule r.\<nu>x.sigma_finite_disjoint)
           fix B and J :: "nat \<Rightarrow> _"
           assume "B \<in> {B \<in> sets borel. \<forall>A\<in>sets X. emeasure \<nu> (A \<times> B) = (\<integral>\<^sup>+x\<in>A. emeasure (\<kappa> x) B \<partial>r.\<nu>x)}" "range J \<subseteq> sets r.\<nu>x" "\<Union> (range J) = space r.\<nu>x"
@@ -1918,7 +1919,7 @@ proof -
                       using sets_marginal_measure[of X borel \<nu> "space borel"] \<kappa>.emeasure_measurable[OF B(1)] \<kappa>.emeasure_measurable[of UNIV] A Jn
                       by(auto simp del: space_borel)
                   next
-                    show "\<integral>\<^sup>+x\<in>A \<inter> J n. (\<kappa> x) B\<partial>r.\<nu>x \<noteq> \<infinity>"
+                    show "(\<integral>\<^sup>+x\<in>A \<inter> J n. (\<kappa> x) B\<partial>r.\<nu>x) \<noteq> \<infinity>"
                       using B(2) A Jn univ fin[of B] by auto
                   next
                     show "AE x in r.\<nu>x. (\<kappa> x) B * indicator (A \<inter> J n) x \<le> (\<kappa> x) UNIV * indicator (A \<inter> J n) x"
@@ -1960,10 +1961,10 @@ proof -
         qed
       next
         fix J :: "nat \<Rightarrow> _"
-        assume J1: "disjoint_family J" "range J \<subseteq> {B \<in> sets borel. \<forall>A\<in>sets X. \<nu> (A \<times> B) = \<integral>\<^sup>+x\<in>A. (\<kappa> x) B\<partial>r.\<nu>x}"
+        assume J1: "disjoint_family J" "range J \<subseteq> {B \<in> sets borel. \<forall>A\<in>sets X. \<nu> (A \<times> B) = (\<integral>\<^sup>+x\<in>A. (\<kappa> x) B\<partial>r.\<nu>x)}"
         then have J2: "range J \<subseteq> sets borel" "\<Union> (range J) \<in> sets borel" "\<And>n A. A \<in> sets X \<Longrightarrow> \<nu> (A \<times> (J n)) = (\<integral>\<^sup>+x\<in>A. (\<kappa> x) (J n) \<partial>r.\<nu>x)"
           by auto
-        show "\<Union> (range J) \<in> {B \<in> sets borel. \<forall>A\<in>sets X. \<nu> (A \<times> B) = \<integral>\<^sup>+x\<in>A. (\<kappa> x) B\<partial>r.\<nu>x}"
+        show "\<Union> (range J) \<in> {B \<in> sets borel. \<forall>A\<in>sets X. \<nu> (A \<times> B) = (\<integral>\<^sup>+x\<in>A. (\<kappa> x) B\<partial>r.\<nu>x)}"
         proof -
           {
             fix A

@@ -4489,8 +4489,7 @@ proof -
                 then have "sorted_list_of_set {r. \<exists>p. p \<in> set b \<union> set c \<union> set d \<and> (case p of (ra, rb, rc) \<Rightarrow> (ra \<noteq> 0 \<or> rb \<noteq> 0) \<and> ra * r\<^sup>2 + rb * r + rc = 0)} ! nn (sorted_list_of_set {r. \<exists>p. p \<in> set b \<union> set c \<union> set d \<and> (case p of (ra, rb, rc) \<Rightarrow> (ra \<noteq> 0 \<or> rb \<noteq> 0) \<and> ra * r\<^sup>2 + rb * r + rc = 0)}) q = q"
                   using f5 by blast
                 then have "\<And>n. \<not> sorted (sorted_list_of_set {r. \<exists>p. p \<in> set b \<union> set c \<union> set d \<and> (case p of (ra, rb, rc) \<Rightarrow> (ra \<noteq> 0 \<or> rb \<noteq> 0) \<and> ra * r\<^sup>2 + rb * r + rc = 0)}) \<or> \<not> n \<le> nn (sorted_list_of_set {r. \<exists>p. p \<in> set b \<union> set c \<union> set d \<and> (case p of (ra, rb, rc) \<Rightarrow> (ra \<noteq> 0 \<or> rb \<noteq> 0) \<and> ra * r\<^sup>2 + rb * r + rc = 0)}) q \<or> \<not> nn (sorted_list_of_set {r. \<exists>p. p \<in> set b \<union> set c \<union> set d \<and> (case p of (ra, rb, rc) \<Rightarrow> (ra \<noteq> 0 \<or> rb \<noteq> 0) \<and> ra * r\<^sup>2 + rb * r + rc = 0)}) q < length (sorted_list_of_set {r. \<exists>p. p \<in> set b \<union> set c \<union> set d \<and> (case p of (ra, rb, rc) \<Rightarrow> (ra \<noteq> 0 \<or> rb \<noteq> 0) \<and> ra * r\<^sup>2 + rb * r + rc = 0)}) \<or> sorted_list_of_set {r. \<exists>p. p \<in> set b \<union> set c \<union> set d \<and> (case p of (ra, rb, rc) \<Rightarrow> (ra \<noteq> 0 \<or> rb \<noteq> 0) \<and> ra * r\<^sup>2 + rb * r + rc = 0)} ! n \<le> q"
-                  using not_less not_less0 sorted_iff_nth_mono
-                  by (metis (no_types, lifting)) 
+                  using not_less0 sorted_iff_nth_mono by (metis (lifting)) 
                 then show ?thesis
                   using f6 f5 f4 by (meson le0 not_less sorted_sorted_list_of_set)
               qed 

@@ -942,7 +942,8 @@ fun mk_nest_term_rule ctxt globals R R_cases clauses =
     val Rrel = Free ("R", HOLogic.mk_setT (HOLogic.mk_prodT (domT, domT)))
     val inrel_R = \<^Const>\<open>Fun_Def.in_rel domT domT for Rrel\<close>
 
-    val wfR' = \<^Const>\<open>Trueprop for \<^Const>\<open>Wellfounded.wfP domT for R'\<close>\<close>
+    val wfR' = HOLogic.mk_Trueprop (Const (\<^const_abbrev>\<open>Wellfounded.wfP\<close>,
+      (domT --> domT --> boolT) --> boolT) $ R')
       |> Thm.cterm_of ctxt (* "wf R'" *)
 
     (* Inductive Hypothesis: !!z. (z,x):R' ==> z : acc R *)

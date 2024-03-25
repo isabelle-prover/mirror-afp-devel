@@ -4,23 +4,29 @@ theory Earley_Fixpoint
     Limit
 begin
 
-section \<open>Earley recognizer\<close>
+section \<open>Earley fixpoint\<close>
 
-subsection \<open>Earley fixpoint\<close>
+subsection \<open>Definitions\<close>
 
 definition init_item :: "'a rule \<Rightarrow> nat \<Rightarrow> 'a item" where
   "init_item r k \<equiv> Item r 0 k k"
 
 definition inc_item :: "'a item \<Rightarrow> nat \<Rightarrow> 'a item" where
-  "inc_item x k \<equiv> Item (item_rule x) (item_dot x + 1) (item_origin x) k"
+  "inc_item x k \<equiv> Item (rule_item x) (dot_item x + 1) (start_item x) k"
 
 definition bin :: "'a item set \<Rightarrow> nat \<Rightarrow> 'a item set" where
-  "bin I k \<equiv> { x . x \<in> I \<and> item_end x = k }"
+  "bin I k \<equiv> { x . x \<in> I \<and> end_item x = k }"
+
+definition prev_symbol :: "'a item \<Rightarrow> 'a option" where
+  "prev_symbol x \<equiv> if dot_item x = 0 then None else Some (rhs_item x ! (dot_item x - 1))"
+
+definition base :: "'a list \<Rightarrow> 'a item set \<Rightarrow> nat \<Rightarrow> 'a item set" where
+  "base \<omega> I k \<equiv> { x . x \<in> I \<and> end_item x = k \<and> k > 0 \<and> prev_symbol x = Some (\<omega>!(k-1)) }"
 
 definition Init\<^sub>F :: "'a cfg \<Rightarrow> 'a item set" where
   "Init\<^sub>F \<G> \<equiv> { init_item r 0 | r. r \<in> set (\<RR> \<G>) \<and> fst r = (\<SS> \<G>) }"
 
-definition Scan\<^sub>F :: "nat \<Rightarrow> 'a sentence \<Rightarrow> 'a item set \<Rightarrow> 'a item set" where
+definition Scan\<^sub>F :: "nat \<Rightarrow> 'a list \<Rightarrow> 'a item set \<Rightarrow> 'a item set" where
   "Scan\<^sub>F k \<omega> I \<equiv> { inc_item x (k+1) | x a.
     x \<in> bin I k \<and>
     \<omega>!k = a \<and>
@@ -31,26 +37,26 @@ definition Predict\<^sub>F :: "nat \<Rightarrow> 'a cfg \<Rightarrow> 'a item se
   "Predict\<^sub>F k \<G> I \<equiv> { init_item r k | r x.
     r \<in> set (\<RR> \<G>) \<and>
     x \<in> bin I k \<and>
-    next_symbol x = Some (rule_head r) }"
+    next_symbol x = Some (lhs_rule r) }"
 
 definition Complete\<^sub>F :: "nat \<Rightarrow> 'a item set \<Rightarrow> 'a item set" where
   "Complete\<^sub>F k I \<equiv> { inc_item x k | x y.
-    x \<in> bin I (item_origin y) \<and>
+    x \<in> bin I (start_item y) \<and>
     y \<in> bin I k \<and>
     is_complete y \<and>
-    next_symbol x = Some (item_rule_head y) }"
+    next_symbol x = Some (lhs_item y) }"
 
-definition Earley\<^sub>F_bin_step :: "nat \<Rightarrow> 'a cfg \<Rightarrow> 'a sentence \<Rightarrow> 'a item set \<Rightarrow> 'a item set" where
-  "Earley\<^sub>F_bin_step k \<G> \<omega> I \<equiv> I \<union> Scan\<^sub>F k \<omega> I \<union> Complete\<^sub>F k I \<union> Predict\<^sub>F k \<G> I"
+definition Earley\<^sub>F_bin_step :: "nat \<Rightarrow> 'a cfg \<Rightarrow> 'a list \<Rightarrow> 'a item set \<Rightarrow> 'a item set" where
+  "Earley\<^sub>F_bin_step k \<G> \<omega> I = I \<union> Scan\<^sub>F k \<omega> I \<union> Complete\<^sub>F k I \<union> Predict\<^sub>F k \<G> I"
 
-definition Earley\<^sub>F_bin :: "nat \<Rightarrow> 'a cfg \<Rightarrow> 'a sentence \<Rightarrow> 'a item set \<Rightarrow> 'a item set" where
+definition Earley\<^sub>F_bin :: "nat \<Rightarrow> 'a cfg \<Rightarrow> 'a list \<Rightarrow> 'a item set \<Rightarrow> 'a item set" where
   "Earley\<^sub>F_bin k \<G> \<omega> I \<equiv> limit (Earley\<^sub>F_bin_step k \<G> \<omega>) I"
 
-fun Earley\<^sub>F_bins :: "nat \<Rightarrow> 'a cfg \<Rightarrow> 'a sentence \<Rightarrow> 'a item set" where
+fun Earley\<^sub>F_bins :: "nat \<Rightarrow> 'a cfg \<Rightarrow> 'a list \<Rightarrow> 'a item set" where
   "Earley\<^sub>F_bins 0 \<G> \<omega> = Earley\<^sub>F_bin 0 \<G> \<omega> (Init\<^sub>F \<G>)"
 | "Earley\<^sub>F_bins (Suc n) \<G> \<omega> = Earley\<^sub>F_bin (Suc n) \<G> \<omega> (Earley\<^sub>F_bins n \<G> \<omega>)"
 
-definition Earley\<^sub>F :: "'a cfg \<Rightarrow> 'a sentence \<Rightarrow> 'a item set" where
+definition Earley\<^sub>F :: "'a cfg \<Rightarrow> 'a list \<Rightarrow> 'a item set" where
   "Earley\<^sub>F \<G> \<omega> \<equiv> Earley\<^sub>F_bins (length \<omega>) \<G> \<omega>"
 
 
@@ -87,13 +93,14 @@ next
         case True
         then show ?thesis
           using * unfolding chain_def Earley\<^sub>F_bin_step_def Complete\<^sub>F_def bin_def
-        proof clarsimp
+          apply auto
+        proof -
           fix y :: "'a item" and z :: "'a item" and n :: nat and m :: nat
           assume a1: "is_complete z"
-          assume a2: "item_end y = item_origin z"
+          assume a2: "end_item y = start_item z"
           assume a3: "y \<in> C n"
           assume a4: "z \<in> C m"
-          assume a5: "next_symbol y = Some (item_rule_head z)"
+          assume a5: "next_symbol y = Some (lhs_item z)"
           assume "\<forall>i. C i \<subseteq> C (Suc i)"
           hence f6: "\<And>n m. \<not> n \<le> m \<or> C n \<subseteq> C m"
             by (meson lift_Suc_mono_le)
@@ -103,17 +110,17 @@ next
             using f6 a3 by (meson le_sup_iff subset_eq sup_ge1)
           thus "\<exists>I.
                   (\<exists>n. I = C n \<union>
-                           Scan\<^sub>F (item_end z) \<omega> (C n) \<union>
-                           {inc_item i (item_end z) |i.
+                           Scan\<^sub>F (end_item z) \<omega> (C n) \<union>
+                           {inc_item i (end_item z) |i.
                               i \<in> C n \<and>
                               (\<exists>j.
-                                item_end i = item_origin j \<and>
+                                end_item i = start_item j \<and>
                                 j \<in> C n \<and>
-                                item_end j = item_end z \<and>
+                                end_item j = end_item z \<and>
                                 is_complete j \<and>
-                                next_symbol i = Some (item_rule_head j))} \<union>
-                           Predict\<^sub>F (item_end z) \<G> (C n))
-                  \<and> inc_item y (item_end z) \<in> I"
+                                next_symbol i = Some (lhs_item j))} \<union>
+                           Predict\<^sub>F (end_item z) \<G> (C n))
+                  \<and> inc_item y (end_item z) \<in> I"
             using f7 a5 a2 a1 by blast
         qed
       next
@@ -225,12 +232,15 @@ lemma Earley\<^sub>F_bin_mono:
 
 lemma Init\<^sub>F_sub_Earley\<^sub>F_bins:
   "Init\<^sub>F \<G> \<subseteq> Earley\<^sub>F_bins n \<G> \<omega>"
-  by (induction n) (use Earley\<^sub>F_bin_mono in fastforce)+
+  apply (induction n)
+   apply auto
+  using Earley\<^sub>F_bin_mono by blast+
+
 
 subsection \<open>Soundness\<close>
 
 lemma Init\<^sub>F_sub_Earley:
-  "Init\<^sub>F \<G> \<subseteq> Earley \<G> \<omega>"                                     
+  "Init\<^sub>F \<G> \<subseteq> Earley \<G> \<omega>"
   unfolding Init\<^sub>F_def init_item_def using Init by blast
 
 lemma Scan\<^sub>F_sub_Earley:
@@ -271,17 +281,11 @@ lemma Earley\<^sub>F_sub_Earley:
 
 theorem soundness_Earley\<^sub>F:
   assumes "recognizing (Earley\<^sub>F \<G> \<omega>) \<G> \<omega>"
-  shows "derives \<G> [\<SS> \<G>] \<omega>"
+  shows "\<G> \<turnstile> [\<SS> \<G>] \<Rightarrow>\<^sup>* \<omega>"
   using soundness_Earley Earley\<^sub>F_sub_Earley assms recognizing_def by (metis subsetD)
 
 
 subsection \<open>Completeness\<close>
-
-definition prev_symbol :: "'a item \<Rightarrow> 'a option" where
-  "prev_symbol x \<equiv> if item_dot x = 0 then None else Some (item_rule_body x ! (item_dot x - 1))"
-
-definition base :: "'a sentence \<Rightarrow> 'a item set \<Rightarrow> nat \<Rightarrow> 'a item set" where
-  "base \<omega> I k \<equiv> { x . x \<in> I \<and> item_end x = k \<and> k > 0 \<and> prev_symbol x = Some (\<omega>!(k-1)) }"
 
 lemma Earley\<^sub>F_bin_sub_Earley\<^sub>F_bin:
   assumes "Init\<^sub>F \<G> \<subseteq> I"
@@ -304,7 +308,7 @@ proof standard
     have "j+1 = k"
       using Scan.prems(4) bin_def by (metis (mono_tags, lifting) CollectD item.sel(4))
     have "prev_symbol (Item r (b+1) i (j+1)) = Some (\<omega>!(k-1))"
-      using Scan.hyps(1,3,5) \<open>j+1 = k\<close> by (auto simp: next_symbol_def prev_symbol_def item_rule_body_def split: if_splits)
+      using Scan.hyps(1,3,5) \<open>j+1 = k\<close> by (auto simp: next_symbol_def prev_symbol_def rhs_item_def split: if_splits)
     hence "Item r (b+1) i (j+1) \<in> base \<omega> (Earley \<G> \<omega>) k"
       unfolding base_def using Scan.prems(4) bin_def by fastforce
     hence "Item r (b+1) i (j+1) \<in> I"
@@ -337,7 +341,7 @@ proof standard
       using Complete.hyps(3,4) bin_def by fastforce
     hence 0: "y \<in> bin (Earley\<^sub>F_bin k \<G> \<omega> I) k"
       using Complete.IH(2) Complete.prems(1-3) \<open>l = k\<close> by blast
-    have 1: "x \<in> bin (Earley\<^sub>F_bin k \<G> \<omega> I) (item_origin y)"
+    have 1: "x \<in> bin (Earley\<^sub>F_bin k \<G> \<omega> I) (start_item y)"
     proof (cases "j = k")
       case True
       hence "x \<in> bin (Earley \<G> \<omega>) k"
@@ -374,7 +378,7 @@ lemma Earley_base_sub_Earley\<^sub>F_bin:
   assumes "Init\<^sub>F \<G> \<subseteq> I"
   assumes "\<forall>k' < k. bin (Earley \<G> \<omega>) k' \<subseteq> I"
   assumes "base \<omega> (Earley \<G> \<omega>) k \<subseteq> I"
-  assumes "wf_\<G> \<G>" "is_word \<G> \<omega>"
+  assumes "is_word \<G> \<omega>"
   shows "base \<omega> (Earley \<G> \<omega>) (k+1) \<subseteq> bin (Earley\<^sub>F_bin k \<G> \<omega> I) (k+1)"
 proof standard
   fix x
@@ -386,15 +390,15 @@ proof standard
   proof (induction rule: Earley.induct)
     case (Init r)
     have "k = 0"
-      using Init.prems(6) unfolding base_def by simp
+      using Init.prems(5) unfolding base_def by simp
     hence False
-      using Init.prems(6) unfolding base_def by simp
+      using Init.prems(5) unfolding base_def by simp
     thus ?case
       by blast
   next
     case (Scan x r b i j a)
     have "j = k"
-      using Scan.prems(6) base_def by (metis (mono_tags, lifting) CollectD add_right_cancel item.sel(4))
+      using Scan.prems(5) base_def by (metis (mono_tags, lifting) CollectD add_right_cancel item.sel(4))
     hence "x \<in> bin (Earley\<^sub>F_bin k \<G> \<omega> I) k"
       using Earley\<^sub>F_bin_sub_Earley\<^sub>F_bin Scan.prems Scan.hyps(1,2) bin_def
       by (metis (mono_tags, lifting) CollectI item.sel(4) subsetD)
@@ -409,33 +413,33 @@ proof standard
   next
     case (Predict x r b i j r')
     have False
-      using Predict.prems(6) unfolding base_def by (auto simp: prev_symbol_def)
+      using Predict.prems(5) unfolding base_def by (auto simp: prev_symbol_def)
     thus ?case
       by blast
   next
     case (Complete x r\<^sub>x b\<^sub>x i j y r\<^sub>y b\<^sub>y l)
     have "l-1 < length \<omega>"
-      using Complete.prems(6) base_def wf_Earley wf_item_def
+      using Complete.prems(5) base_def wf_Earley wf_item_def
       by (metis (mono_tags, lifting) CollectD add.right_neutral add_Suc_right add_diff_cancel_right' item.sel(4) less_eq_Suc_le plus_1_eq_Suc)
-    hence "is_terminal \<G> (\<omega>!(l-1))"
-      using Complete.prems(5) is_word_is_terminal by blast
-    moreover have "is_nonterminal \<G> (item_rule_head y)"
-      using Complete.hyps(3,4) Complete.prems(4) wf_Earley wf_item_def
-      by (metis item_rule_head_def prod.collapse rule_head_def rule_nonterminal_type)
+    hence "\<omega>!(l-1) \<notin> nonterminals \<G>"
+      using Complete.prems(4) is_word_def by force
+    moreover have "lhs_item y \<in> nonterminals \<G>"
+      using Complete.hyps(3,4) wf_Earley wf_item_def lhs_item_def lhs_rule_def nonterminals_def
+      by (metis UnCI image_eqI list.set_map)
     moreover have "prev_symbol (Item r\<^sub>x (b\<^sub>x+1) i l) = next_symbol x"
       using Complete.hyps(1,6)
-      by (auto simp: next_symbol_def prev_symbol_def is_complete_def item_rule_body_def split: if_splits)
+      by (auto simp: next_symbol_def prev_symbol_def is_complete_def rhs_item_def split: if_splits)
     moreover have "prev_symbol (Item r\<^sub>x (b\<^sub>x+1) i l) = Some (\<omega>!(l-1))"
-      using Complete.prems(6) base_def by (metis (mono_tags, lifting) CollectD item.sel(4))
+      using Complete.prems(5) base_def by (metis (mono_tags, lifting) CollectD item.sel(4))
     ultimately have False
-      using Complete.hyps(6) Complete.prems(4) is_terminal_nonterminal by fastforce
+      using Complete.hyps(6) Complete.prems(4) by simp
     thus ?case
       by blast
   qed
 qed
 
 lemma Earley\<^sub>F_bin_k_sub_Earley\<^sub>F_bins:
-  assumes "wf_\<G> \<G>" "is_word \<G> \<omega>" "k \<le> n"
+  assumes "is_word \<G> \<omega>" "k \<le> n"
   shows "bin (Earley \<G> \<omega>) k \<subseteq> Earley\<^sub>F_bins n \<G> \<omega>"
   using assms
 proof (induction n arbitrary: k)
@@ -443,7 +447,7 @@ proof (induction n arbitrary: k)
   have "bin (Earley \<G> \<omega>) 0 \<subseteq> bin (Earley\<^sub>F_bin 0 \<G> \<omega> (Init\<^sub>F \<G>)) 0"
     using Earley\<^sub>F_bin_sub_Earley\<^sub>F_bin base_def by fastforce
   thus ?case
-    unfolding bin_def using "0.prems"(3) by auto
+    unfolding bin_def using "0.prems"(2) by auto
 next
   case (Suc n)
   show ?case
@@ -454,7 +458,7 @@ next
   next
     case False
     hence "k = n+1"
-      using Suc.prems(3) by force
+      using Suc.prems(2) by force
     have 0: "\<forall>k' < k. bin (Earley \<G> \<omega>) k' \<subseteq> Earley\<^sub>F_bins n \<G> \<omega>"
       using Suc by simp
     moreover have "base \<omega> (Earley \<G> \<omega>) k \<subseteq> Earley\<^sub>F_bins n \<G> \<omega>"
@@ -479,7 +483,7 @@ next
 qed
 
 lemma Earley_sub_Earley\<^sub>F:
-  assumes "wf_\<G> \<G>" "is_word \<G> \<omega>"
+  assumes "is_word \<G> \<omega>"
   shows "Earley \<G> \<omega> \<subseteq> Earley\<^sub>F \<G> \<omega>"
 proof -
   have "\<forall>k \<le> length \<omega>. bin (Earley \<G> \<omega>) k \<subseteq> Earley\<^sub>F \<G> \<omega>"
@@ -489,20 +493,21 @@ proof -
 qed
 
 theorem completeness_Earley\<^sub>F:
-  assumes "derives \<G> [\<SS> \<G>] \<omega>" "is_word \<G> \<omega>" "wf_\<G> \<G>"
+  assumes "\<G> \<turnstile> [\<SS> \<G>] \<Rightarrow>\<^sup>* \<omega>" "is_word \<G> \<omega>"
   shows "recognizing (Earley\<^sub>F \<G> \<omega>) \<G> \<omega>"
   using assms Earley_sub_Earley\<^sub>F Earley\<^sub>F_sub_Earley completeness_Earley by (metis subset_antisym)
+
 
 subsection \<open>Correctness\<close>
 
 theorem Earley_eq_Earley\<^sub>F:
-  assumes "wf_\<G> \<G>" "is_word \<G> \<omega>"
+  assumes "is_word \<G> \<omega>"
   shows "Earley \<G> \<omega> = Earley\<^sub>F \<G> \<omega>"
   using Earley_sub_Earley\<^sub>F Earley\<^sub>F_sub_Earley assms by blast
 
 theorem correctness_Earley\<^sub>F:
-  assumes "wf_\<G> \<G>" "is_word \<G> \<omega>"
-  shows "recognizing (Earley\<^sub>F \<G> \<omega>) \<G> \<omega> \<longleftrightarrow> derives \<G> [\<SS> \<G>] \<omega>"
+  assumes "is_word \<G> \<omega>"
+  shows "recognizing (Earley\<^sub>F \<G> \<omega>) \<G> \<omega> \<longleftrightarrow> \<G> \<turnstile> [\<SS> \<G>] \<Rightarrow>\<^sup>* \<omega>"
   using assms Earley_eq_Earley\<^sub>F correctness_Earley by fastforce
 
 end

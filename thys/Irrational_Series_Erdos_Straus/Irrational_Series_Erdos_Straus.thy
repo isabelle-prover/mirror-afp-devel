@@ -124,7 +124,7 @@ proof -
   ultimately have "\<forall>\<^sub>F n in sequentially. \<bar>b n\<bar> / (\<Prod>k\<le>n. a k) 
                         < (a (n-1) * a n) / (\<Prod>k\<le>n. a k)"
     apply (elim eventually_mono)
-    by (auto simp add:field_simps)
+    by (auto simp:field_simps)
   moreover have "\<bar>b n\<bar> / (\<Prod>k\<le>n. a k) = norm (b n / (\<Prod>k\<le>n. a k))" for n 
     using \<open>\<forall>n. (\<Prod>k\<le>n. real_of_int (a k)) > 0\<close>[rule_format,of n] by auto
   ultimately have "\<forall>\<^sub>F n in sequentially. norm (b n / (\<Prod>k\<le>n. a k)) 
@@ -145,8 +145,8 @@ proof -
         then show ?case using a_gt_1 by auto
       next
         case (Suc n)
-        moreover have "a (s + Suc n) \<ge> 2" 
-          using a_gt_1 by (smt le_add1)
+        moreover have "a (s + Suc n) \<ge> 2"
+          by (smt (verit, ccfv_threshold) a_gt_1 le_add1)
         ultimately show ?case 
           apply (subst prod.atLeastLessThan_Suc,simp)
           using mult_mono'[of 2 "a (Suc (s + n))" " 2 ^ n" "prod a {s..<Suc (s + n)}"] 
@@ -175,7 +175,7 @@ proof -
     ultimately have "summable (\<lambda>n. 1 / (\<Prod>k\<le>n+s. a k))"
       apply (elim summable_comparison_test'[where N=0])
       apply (unfold real_norm_def, subst abs_of_pos)
-      by (auto simp add: \<open>\<forall>n. 0 < (\<Prod>k\<le>n. real_of_int (a k))\<close>)
+      by (auto simp: \<open>\<forall>n. 0 < (\<Prod>k\<le>n. real_of_int (a k))\<close>)
     then have "summable (\<lambda>n. 1 / (\<Prod>k\<le>n. a k))"
       apply (subst summable_iff_shift[where k=s,symmetric])
       by simp
@@ -270,7 +270,7 @@ proof -
         qed
         then have "real_of_int (prod a {M..<n+M}) \<ge> 2^n" 
           using numeral_power_le_of_int_cancel_iff by blast
-        then show ?thesis using \<open>e>0\<close> by (auto simp add:divide_simps)
+        then show ?thesis using \<open>e>0\<close> by (auto simp:divide_simps)
       qed
       finally show ?thesis .
     qed
@@ -356,7 +356,7 @@ proof -
         qed
         ultimately show ?thesis 
           apply (subst suminf_mult[symmetric])
-          by (auto simp add: mult.commute mult.left_commute)
+          by (auto simp: mult.commute mult.left_commute)
       qed
       ultimately show ?thesis unfolding C_def by (auto simp:algebra_simps)
     qed
@@ -385,14 +385,14 @@ proof -
       using summable_rabs_cancel[OF g_abs_summable] by auto
     also have "... = g 0 + 1/a M * (\<Sum>n. a M * g (Suc n))"
       apply (subst suminf_mult)
-      by (auto simp add: g_abs_summable summable_Suc_iff summable_rabs_cancel)
+      by (auto simp: g_abs_summable summable_Suc_iff summable_rabs_cancel)
     also have "... = g 0 + 1/a M * R (Suc M)"
     proof -
       have "a M * g (Suc n) = B * b (n + M + 2) / prod a {Suc M..n + M + 2}" for n
       proof -
         have "{M..Suc (Suc (M + n))} = {M} \<union> {Suc M..Suc (Suc (M + n))}" by auto
         then show ?thesis 
-          unfolding g_def using \<open>B>0\<close> by (auto simp add:algebra_simps)
+          unfolding g_def using \<open>B>0\<close> by (auto simp:algebra_simps)
       qed
       then have "(\<Sum>n. a M * g (Suc n)) = R (Suc M)"
         unfolding R_def by auto
@@ -400,7 +400,7 @@ proof -
     qed
     finally have "R M = g 0 + 1 / a M * R (Suc M)" .
     then have "R (Suc M) = a M * R M - g 0 * a M" 
-      by (auto simp add:algebra_simps)
+      by (auto simp:algebra_simps)
     moreover have "{M..Suc M} = {M,Suc M}" by auto
     ultimately show "R (Suc M) = a M * R M - B * b (Suc M) / a (Suc M)" 
       unfolding g_def by auto
@@ -418,7 +418,7 @@ proof -
       have "c N = round (B * b N / a N)" unfolding c_def by simp
       moreover have "c (N+1) / a N = c N - B * b N / a N"
         using a_pos[rule_format,of N]
-        by (auto simp add:c_rec[of N,simplified] divide_simps)
+        by (auto simp:c_rec[of N,simplified] divide_simps)
       ultimately show ?thesis using of_int_round_abs_le by auto
     qed        
     moreover have "\<bar>R N\<bar> \<le> 1 / 4" using R_bound[of N] by simp
@@ -427,7 +427,7 @@ proof -
     proof -
       have "c (N+1) / a N = c N - B * b N / a N"
         using a_pos[rule_format,of N]
-        by (auto simp add:c_rec[of N,simplified] divide_simps)
+        by (auto simp:c_rec[of N,simplified] divide_simps)
       moreover have " B * b N / a N + R N \<in> \<int>" 
       proof -
         have "C = B * (\<Sum>n<N. prod a {..<N} * (b n / prod a {..n}))"
@@ -457,7 +457,7 @@ proof -
     case (Suc n)
     have "c (Suc (Suc n)) / a (Suc n) = c (Suc n) - B * b (Suc n) / a (Suc n)"
       apply (subst c_rec[of "Suc n",simplified])
-      using \<open>N \<le> n\<close> by (auto simp add: divide_simps)
+      using \<open>N \<le> n\<close> by (auto simp: divide_simps)
     also have "... = a n * R n - B * b (Suc n) / a (Suc n)"  
       using Suc by (auto simp: divide_simps)
     also have "... = R (Suc n)"
@@ -611,12 +611,12 @@ proof -
           also have "... < (a (N+n) / 2) / prod a {N..n + N}"
             unfolding h2_def
             apply (rule divide_strict_right_mono)
-            subgoal using large_n[rule_format,of "N+n"] by (auto simp add:algebra_simps)
+            subgoal using large_n[rule_format,of "N+n"] by (auto simp:algebra_simps)
             subgoal using a_pos by (simp add: prod_pos)
             done
           also have "... = 1 / (2*prod a {N..<n + N})"
             apply (subst ivl_disj_un(6)[of N "n+N",symmetric])
-            using a_pos[rule_format,of "N+n"] by (auto simp add:algebra_simps)
+            using a_pos[rule_format,of "N+n"] by (auto simp:algebra_simps)
           also have "... \<le> (1/2)^(n+1)"
           proof (induct n)
             case 0
@@ -625,7 +625,7 @@ proof -
             case (Suc n)
             define P where "P=1 / real_of_int (2 * prod a {N..<n + N})"
             have "1 / real_of_int (2 * prod a {N..<Suc n + N}) = P / a (n+N)"
-              unfolding P_def by (auto simp add: prod.atLeastLessThan_Suc)
+              unfolding P_def by (auto simp: prod.atLeastLessThan_Suc)
             also have "... \<le>  ( (1 / 2) ^ (n + 1) ) / a (n+N) "
               apply (rule divide_right_mono)
               subgoal unfolding P_def using Suc by auto
@@ -749,26 +749,23 @@ proof
     proof eventually_elim
       case (elim n)
       define \<epsilon>\<^sub>0 \<epsilon>\<^sub>1 where "\<epsilon>\<^sub>0 = c (n+1) / a n" and "\<epsilon>\<^sub>1 = c (n+2) / a (n+1)"
-      have "\<epsilon>\<^sub>0 > 0" "\<epsilon>\<^sub>1 > 0" "\<epsilon>\<^sub>0 < \<epsilon>/2" "\<epsilon>\<^sub>1 < \<epsilon>/2" using a_pos elim by (auto simp add: \<epsilon>\<^sub>0_def \<epsilon>\<^sub>1_def)
+      have "\<epsilon>\<^sub>0 > 0" "\<epsilon>\<^sub>1 > 0" "\<epsilon>\<^sub>0 < \<epsilon>/2" "\<epsilon>\<^sub>1 < \<epsilon>/2" using a_pos elim by (auto simp: \<epsilon>\<^sub>0_def \<epsilon>\<^sub>1_def)
       have "(\<epsilon> - \<epsilon>\<^sub>1) * c n > 0"
-        apply (rule mult_pos_pos)
-        using \<open>\<epsilon>\<^sub>1 > 0\<close> \<open>\<epsilon>\<^sub>1 < \<epsilon>/2\<close> \<open>\<epsilon>>0\<close> elim by auto
+        using \<open>\<epsilon>\<^sub>1 < \<epsilon> / 2\<close> elim(4) that(1) by auto
       moreover have "\<epsilon>\<^sub>0 * (c (n+1) - \<epsilon>) > 0"
-        apply (rule mult_pos_pos[OF \<open>\<epsilon>\<^sub>0 > 0\<close>])
-        using elim(4) that(2) by linarith
+        using \<open>0 < \<epsilon>\<^sub>0\<close> elim(4) that(2) by auto
       ultimately have "(\<epsilon> - \<epsilon>\<^sub>1) * c n + \<epsilon>\<^sub>0 * (c (n+1) - \<epsilon>) > 0" by auto
-      moreover have "c n - \<epsilon>\<^sub>0 > 0" using \<open>\<epsilon>\<^sub>0 < \<epsilon> / 2\<close> elim(4) that(2) by linarith
+      moreover have gt0: "c n - \<epsilon>\<^sub>0 > 0" using \<open>\<epsilon>\<^sub>0 < \<epsilon> / 2\<close> elim(4) that(2) by linarith
       moreover have "c n > 0" by (simp add: elim(4))
       ultimately have "(c (n+1) - \<epsilon>) / c n < (c (n+1) - \<epsilon>\<^sub>1) / (c n -  \<epsilon>\<^sub>0)"
-        by (auto simp add: field_simps)
+        by (auto simp: field_simps)
       also have "... \<le> (c (n+1) - \<epsilon>\<^sub>1) / (c n -  \<epsilon>\<^sub>0) * (a (n+1) / a n)"
       proof -
-        have "(c (n+1) - \<epsilon>\<^sub>1) / (c n -  \<epsilon>\<^sub>0) > 0" 
-          by (smt \<open>0 < (\<epsilon> - \<epsilon>\<^sub>1) * real_of_int (c n)\<close> \<open>0 < real_of_int (c n) - \<epsilon>\<^sub>0\<close> 
-              divide_pos_pos elim(4) mult_le_0_iff of_int_less_1_iff that(2))
+        have "(c (n+1) - \<epsilon>\<^sub>1) / (c n -  \<epsilon>\<^sub>0) > 0"
+          using gt0 \<open>\<epsilon>\<^sub>1 < \<epsilon> / 2\<close> elim(4) that(2) by force 
         moreover have "(a (n+1) / a n) \<ge> 1" 
           using a_pos elim(5) by auto
-        ultimately show ?thesis by (metis mult_cancel_left1 mult_le_cancel_iff2)
+        ultimately show ?thesis by (metis mult_cancel_left1 mult_le_cancel_left_pos)
       qed
       also have "... = (B * b (n+1)) / (B * b n)"
       proof -
@@ -815,8 +812,8 @@ proof
       then have "(1 - \<epsilon>) * a n < a n - c (n+1) / c n"
         by (auto simp:algebra_simps)
       then have "(1 - \<epsilon>)^2 * a n / B < (1 - \<epsilon>) * (a n - c (n+1) / c n) / B"
-        apply (subst (asm) mult_less_iff1[symmetric, of "(1-\<epsilon>)/B"])
-        using \<open>\<epsilon><1\<close> \<open>B>0\<close> by (auto simp: divide_simps power2_eq_square mult_less_iff1)
+        apply (subst (asm) mult_less_cancel_right_pos[symmetric, of "(1-\<epsilon>)/B"])
+        using \<open>\<epsilon><1\<close> \<open>B>0\<close> by (auto simp: divide_simps power2_eq_square mult_less_cancel_right_pos)
       then have "b n + (1 - \<epsilon>)^2 * a n / B < b n + (1 - \<epsilon>) * (a n - c (n+1) / c n) / B"
         using \<open>B>0\<close> by auto
       also have "... = b n + (1 - \<epsilon>) * ((c n *a n - c (n+1)) / c n) / B"
@@ -1108,21 +1105,20 @@ proof
       moreover have "\<bar>real (x + 3) * ln (real (x + 3))\<bar> > 3"
       proof -
         have "ln (real (x + 3)) > 1"
-          apply simp using ln3_gt_1 ln_gt_1 by force
+          using ln3_gt_1 ln_gt_1 by force
         moreover have "real(x+3) \<ge> 3" by simp
-        ultimately have "(x+3)*ln (real (x + 3)) > 3*1 "
-          apply (rule_tac mult_le_less_imp_less)
-          by auto
+        ultimately have "(x+3)*ln (real (x + 3)) > 3*1"
+          by (smt (verit, best) mult_less_cancel_left1)
         then show ?thesis by auto
       qed
-      ultimately have "real_of_int ((a (x + 3))\<^sup>2) > 3"
-        by auto
-      then show "1 < a (x + 3)" 
-        by (smt Suc3_eq_add_3 a_pos add.commute of_int_1 one_power2)
+      ultimately have "(a (x + 3))\<^sup>2 > 3"
+        by linarith
+      then show "1 < a (x + 3)"
+        by (smt (verit) assms(1) one_power2)
     qed
     then show ?thesis 
-      apply (subst eventually_sequentially_seg[symmetric, of _ 3])
-      by auto
+      using eventually_sequentially_seg[symmetric, of _ 3]
+      by blast
   qed
 
   obtain B::int and c where 
@@ -1261,24 +1257,23 @@ proof
       define \<epsilon>\<^sub>0 \<epsilon>\<^sub>1 where "\<epsilon>\<^sub>0 = c (n+1) / a n" and "\<epsilon>\<^sub>1 = c (n+2) / a (n+1)"
       have "\<epsilon>\<^sub>0 > 0" "\<epsilon>\<^sub>1 > 0" "\<epsilon>\<^sub>0 < \<epsilon>/2" "\<epsilon>\<^sub>1 < \<epsilon>/2" 
         using a_pos elim \<open>mono a\<close>
-        by (auto simp add: \<epsilon>\<^sub>0_def \<epsilon>\<^sub>1_def abs_of_pos)
+        by (auto simp: \<epsilon>\<^sub>0_def \<epsilon>\<^sub>1_def abs_of_pos)
       have "(\<epsilon> - \<epsilon>\<^sub>1) * c n > 0"
         using \<open>\<epsilon>\<^sub>1 > 0\<close> \<open>\<epsilon>\<^sub>1 < \<epsilon>/2\<close> \<open>\<epsilon>>0\<close> elim by auto
-      moreover have "\<epsilon>\<^sub>0 * (c (n+1) - \<epsilon>) > 0"
+      moreover have A: "\<epsilon>\<^sub>0 * (c (n+1) - \<epsilon>) > 0"
         using \<open>\<epsilon>\<^sub>0 > 0\<close> elim(4) that(2) by force
       ultimately have "(\<epsilon> - \<epsilon>\<^sub>1) * c n + \<epsilon>\<^sub>0 * (c (n+1) - \<epsilon>) > 0" by auto
-      moreover have "c n - \<epsilon>\<^sub>0 > 0" using \<open>\<epsilon>\<^sub>0 < \<epsilon> / 2\<close> elim(4) that(2) by linarith
+      moreover have B: "c n - \<epsilon>\<^sub>0 > 0" using \<open>\<epsilon>\<^sub>0 < \<epsilon> / 2\<close> elim(4) that(2) by linarith
       moreover have "c n > 0" by (simp add: elim(4))
       ultimately have "(c (n+1) - \<epsilon>) / c n < (c (n+1) - \<epsilon>\<^sub>1) / (c n -  \<epsilon>\<^sub>0)"
-        by (auto simp add:field_simps)
+        by (auto simp:field_simps)
       also have "... \<le> (c (n+1) - \<epsilon>\<^sub>1) / (c n -  \<epsilon>\<^sub>0) * (a (n+1) / a n)"
       proof -
-        have "(c (n+1) - \<epsilon>\<^sub>1) / (c n -  \<epsilon>\<^sub>0) > 0" 
-          by (smt \<open>0 < (\<epsilon> - \<epsilon>\<^sub>1) * real_of_int (c n)\<close> \<open>0 < real_of_int (c n) - \<epsilon>\<^sub>0\<close> 
-              divide_pos_pos elim(4) mult_le_0_iff of_int_less_1_iff that(2))
+        have "(c (n+1) - \<epsilon>\<^sub>1) / (c n -  \<epsilon>\<^sub>0) > 0"
+          using A \<open>0 < \<epsilon>\<^sub>0\<close> B \<open>\<epsilon>\<^sub>1 < \<epsilon> / 2\<close> divide_pos_pos that(1) by force 
         moreover have "(a (n+1) / a n) \<ge> 1" 
           using a_pos \<open>mono a\<close> by (simp add: mono_def)
-        ultimately show ?thesis by (metis mult_cancel_left1 mult_le_cancel_iff2)
+        ultimately show ?thesis by (metis mult_cancel_left1 mult_le_cancel_left_pos)
       qed
       also have "... = (B * nth_prime (n+1)) / (B * nth_prime n)"
       proof -
@@ -1360,8 +1355,8 @@ proof
       then have "(1 - \<epsilon>) * a n < a n - c (n+1) / c n"
         by (auto simp:algebra_simps)
       then have "(1 - \<epsilon>)^2 * a n / B < (1 - \<epsilon>) * (a n - c (n+1) / c n) / B"
-        apply (subst (asm) mult_less_iff1[symmetric, of "(1-\<epsilon>)/B"])
-        using \<open>\<epsilon><1\<close> \<open>B>0\<close> by (auto simp: divide_simps power2_eq_square mult_less_iff1)
+        apply (subst (asm) mult_less_cancel_right_pos[symmetric, of "(1-\<epsilon>)/B"])
+        using \<open>\<epsilon><1\<close> \<open>B>0\<close> by (auto simp: divide_simps power2_eq_square mult_less_cancel_right_pos)
       then have "nth_prime n + (1 - \<epsilon>)^2 * a n / B < nth_prime n + (1 - \<epsilon>) * (a n - c (n+1) / c n) / B"
         using \<open>B>0\<close> by auto
       also have "... = nth_prime n + (1 - \<epsilon>) * ((c n *a n - c (n+1)) / c n) / B"
@@ -1430,21 +1425,17 @@ proof
         have "finite A" unfolding A_def
           by (metis (no_types, lifting) A_def add_leE finite_nat_set_iff_bounded_le mem_Collect_eq)
         moreover have "N-1\<in>A" unfolding A_def 
-          using \<open>c n < c N\<close> \<open>n < N\<close> \<open>c (n + 1) = c n\<close>
-          by (smt Suc_diff_Suc Suc_eq_plus1 Suc_leI Suc_pred  add.commute 
-              add_diff_inverse_nat add_leD1 diff_is_0_eq' mem_Collect_eq nat_add_left_cancel_less
-              zero_less_one)
+          using \<open>c n < c N\<close> \<open>n < N\<close> \<open>c (n + 1) = c n\<close> nat_less_le by force
         ultimately have "m\<in>A"
           using Min_in unfolding m_def by auto
         then have "n<m"  "c n<c (m+1)" "m>0"
           unfolding m_def A_def by auto
         moreover have "c m \<le> c n"
         proof (rule ccontr)
-          assume " \<not> c m \<le> c n"
-          then have "m-1\<in>A" using \<open>m\<in>A\<close> \<open>c (n + 1) = c n\<close>
-            unfolding A_def 
-            by auto (smt One_nat_def Suc_eq_plus1 Suc_lessI less_diff_conv)
-          from  Min_le[OF \<open>finite A\<close> this,folded m_def] \<open>m>0\<close> show False by auto
+          assume "\<not> c m \<le> c n"
+          then have "m-1\<in>A" 
+            using \<open>m\<in>A\<close> \<open>c (n + 1) = c n\<close> le_eq_less_or_eq less_diff_conv by (fastforce simp: A_def)
+          from Min_le[OF \<open>finite A\<close> this,folded m_def] \<open>m>0\<close> show False by auto
         qed
         ultimately show ?thesis using that[of m] by auto
       qed
@@ -1460,8 +1451,8 @@ proof
           finally have "B * int (nth_prime m) < c n * (a m - 1)" .
           moreover have "c n\<le>B" 
           proof -
-            have " B * int (nth_prime n) = c n * (a n - 1)" "B < int (nth_prime n)"
-              and c_a:"\<bar>real_of_int (c (n + 1))\<bar> < real_of_int (a n) / 2"
+            have B: "B * int (nth_prime n) = c n * (a n - 1)" "B < int (nth_prime n)"
+              and c_a: "\<bar>real_of_int (c (n + 1))\<bar> < real_of_int (a n) / 2"
               using Bc_eq[rule_format,of n] \<open>c (n + 1) = c n\<close> by (auto simp:algebra_simps)
             from this(1) have " c n dvd (B * int (nth_prime n))"
               by simp
@@ -1480,9 +1471,8 @@ proof
                 from mult_le_less_imp_less[OF asm this] \<open>B>0\<close>
                 have "int (nth_prime n) * (2 * B) < c n * (a n - 1)"
                   by auto
-                then show False using \<open>B * int (nth_prime n) = c n * (a n - 1)\<close>
-                  by (smt \<open>0 < B\<close> \<open>B < int (nth_prime n)\<close> combine_common_factor 
-                      mult.commute mult_pos_pos)
+                then show False using B
+                  by (smt (verit, best) \<open>0 < B\<close> mult.commute mult_right_mono)
               qed
               then have "\<not> nth_prime n dvd c n" 
                 by (simp add: Bc_eq zdvd_not_zless)
@@ -1496,7 +1486,7 @@ proof
           qed
           moreover have "c n > 0 " using Bc_eq by blast
           ultimately show ?thesis
-            using \<open>B>0\<close> by (smt a_pos mult_mono)
+            using \<open>B>0\<close> by (smt (verit) a_pos mult_mono)
         qed
         then show ?thesis using \<open>B>0\<close> by (auto simp:field_simps)
       qed
@@ -1678,11 +1668,7 @@ proof
       then have "(1+1/c (n+1))* (a n - 1)/a (n+1) = (c (n+1)+1) * ((a n - 1) / (c (n+1) * a (n+1)))"
         by (auto simp:field_simps)
       also have "... \<le> c n * ((a n - 1) / (c (n+1) * a (n+1)))"
-        apply (rule mult_right_mono)
-        subgoal using \<open>c (n + 1) < c n\<close> by auto
-        subgoal by (smt \<open>0 < c (n + 1)\<close> a_pos divide_nonneg_pos mult_pos_pos of_int_0_le_iff 
-              of_int_0_less_iff)
-        done
+        by (smt (verit) "*"(4) \<open>c (n + 1) < c n\<close> a_pos divide_nonneg_nonneg mult_mono mult_nonneg_nonneg of_int_0_le_iff of_int_le_iff)
       also have "... = (c n * (a n - 1)) / (c (n+1) * a (n+1))" by auto
       also have "... < (c n * (a n - 1)) / (c (n+1) * a (n+1)  - c (n+2))"
         apply (rule divide_strict_left_mono)
@@ -1966,9 +1952,7 @@ proof
       using nth_2 by auto
     from this[unfolded less_Liminf_iff]
     show ?thesis
-      apply (auto elim!:frequently_elim1)
-      by (meson divide_less_eq_1 ereal_less_eq(7) leD leI 
-          nth_prime_nonzero of_nat_eq_0_iff of_nat_less_0_iff order.trans)
+      by (smt (verit) ereal_less(3) frequently_elim1 le_less_trans)
   qed
 
   from a_nth_prime_gt a_nth_prime_lt show False 

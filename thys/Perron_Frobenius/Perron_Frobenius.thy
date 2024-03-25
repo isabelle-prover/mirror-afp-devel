@@ -181,7 +181,7 @@ proof -
       have id3: "\<And> i. sr * f v $ i = c * ((B *v (sr *\<^sub>R v)) $ i)"
         unfolding f_def c_def[symmetric] matrix_vect_scaleR by auto
       have 2: "sr * f v $ i \<le> (B *v f v) $ i" unfolding id1 id3
-        unfolding mult_le_cancel_iff2[OF \<open>c > 0\<close>]
+        unfolding mult_le_cancel_left_pos[OF \<open>c > 0\<close>]
         by (rule mult_B_mono, insert ge(2), auto)
       note 1 2
     }

@@ -1,0 +1,15 @@
+chapter AFP
+
+session Region_Quadtrees = HOL +
+  options [timeout = 300]
+  sessions
+    "HOL-Library"
+  theories
+    Quad_Tree
+    Quad_Matrix
+    KD_Region_Tree
+    KD_Region_Tree2
+    KD_Region_Nested
+  document_files
+    "root.tex"
+    "root.bib"

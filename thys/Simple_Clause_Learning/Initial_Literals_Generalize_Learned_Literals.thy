@@ -109,10 +109,15 @@ proof (intro Set.equalityI Set.subsetI)
     using multi_member_split by metis
 
   moreover have "C \<cdot> \<gamma> \<cdot> \<gamma>\<^sub>C \<in> grounding_of_clss N"
-    using \<open>C \<in> N\<close> \<open>is_ground_cls (C \<cdot> \<gamma> \<cdot> \<gamma>\<^sub>C)\<close>
     unfolding grounding_of_clss_def
-    by (metis (no_types, opaque_lifting) UN_iff grounding_of_cls_ground
-        grounding_of_subst_cls_subset insert_subset subsetD)
+  proof (rule UN_I)
+    show "C \<in> N"
+      using \<open>C \<in> N\<close> .
+  next
+    show "C \<cdot> \<gamma> \<cdot> \<gamma>\<^sub>C \<in> grounding_of_cls C"
+      using \<open>is_ground_cls (C \<cdot> \<gamma> \<cdot> \<gamma>\<^sub>C)\<close>
+      by (metis grounding_of_cls_ground grounding_of_subst_cls_subset insert_absorb insert_subset)
+  qed
 
   ultimately show "L \<in> ?rhs"
     by auto

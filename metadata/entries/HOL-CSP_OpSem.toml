@@ -1,0 +1,38 @@
+title = "Operational Semantics formally proven in HOL-CSP"
+date = 2023-12-24
+topics = [
+  "Computer science/Concurrency/Process calculi",
+  "Computer science/Semantics and reasoning",
+]
+abstract = """
+Recently, a modern version of Roscoe and Brookes Failure-Divergence Semantics for CSP has been formalized in Isabelle (HOL-CSP) and extended (HOL-CSPM). The resulting framework is purely denotational and, given the possibility to define arbitrary events in a HOL-type, more expressive than the original.
+
+However, there is a need for an operational semantics for CSP. From the latter, model-checkers, symbolic execution engines for test-case generators, and animators and simulators can be constructed. In the literature, a few versions of operational semantics for CSP have been proposed, where it is assumed, of course, that denotational and operational constructs coincide, but this is not obvious at first glance.
+
+The present work addresses this issue by providing the first (to our knowledge) formal theory of operational behavior derived from HOL-CSP via a bridge definition between the denotational and the operational semantics. In fact, several possibilities are discussed.
+
+As a bonus, we have defined three new operators: Sliding, Throw and Interrupt which are of particular pragmatic interest in operational semantics. Moreover, we have proven new laws for HOL-CSP improving the latter."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.ballenghien]
+email = "ballenghien_email"
+
+[authors.wolff]
+email = "wolff_email"
+
+[contributors]
+
+[notify]
+ballenghien = "ballenghien_email"
+wolff = "wolff_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

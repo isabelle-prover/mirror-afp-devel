@@ -1056,6 +1056,10 @@ locale ordered_powerprod =
   assumes plus_monotone: "s \<preceq> t \<Longrightarrow> s + u \<preceq> t + u"
 begin
 
+text \<open>Conceal these relations defined in Equipollence\<close>
+no_notation lesspoll (infixl \<open>\<prec>\<close> 50)
+no_notation lepoll   (infixl "\<lesssim>" 50)
+
 abbreviation ord_conv (infixl "\<succeq>" 50) where "ord_conv \<equiv> (\<preceq>)\<inverse>\<inverse>"
 abbreviation ord_strict_conv (infixl "\<succ>" 50) where "ord_strict_conv \<equiv> (\<prec>)\<inverse>\<inverse>"
 
@@ -1499,8 +1503,10 @@ next
       hence b: "supp_fun (f i) \<subseteq> {v}" for i by simp
       let ?f = "\<lambda>i. f i v"
       have "wfP ((<)::'b \<Rightarrow> _)" by (simp add: wf wfP_def)
+      hence "\<nexists>f :: _ \<Rightarrow> 'b. \<forall>i. f (Suc i) < f i"
+        unfolding wf_iff_no_infinite_down_chain[to_pred] .
       hence "\<forall>f::nat \<Rightarrow> 'b. \<exists>i. f i \<le> f (Suc i)"
-        by (simp add: wf_iff_no_infinite_down_chain[to_pred] not_less)
+        by (simp add: not_less)
       hence "\<exists>i. ?f i \<le> ?f (Suc i)" ..
       then obtain i where "?f i \<le> ?f (Suc i)" ..
       have "i < Suc i" by simp

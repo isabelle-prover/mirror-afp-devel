@@ -1,5 +1,6 @@
 theory Limit
-  imports Main
+  imports
+    Main
 begin
 
 section \<open>Slightly adjusted content from AFP/LocalLexing\<close>
@@ -20,10 +21,10 @@ definition setmonotone :: "('a set \<Rightarrow> 'a set) \<Rightarrow> bool" whe
 lemma subset_setmonotone: "setmonotone f \<Longrightarrow> X \<subseteq> f X"
   by (simp add: setmonotone_def)
 
-lemma funpower_id [simp]: "funpower id n = id"
+lemma[simp]: "funpower id n = id"
   by (rule ext, induct n, simp_all)
 
-lemma limit_id [simp]: "limit id = id"
+lemma[simp]: "limit id = id"
   by (rule ext, auto simp add: limit_def natUnion_def)
 
 definition chain :: "(nat \<Rightarrow> 'a set) \<Rightarrow> bool"
@@ -117,7 +118,8 @@ proof -
   also have "natUnion (\<lambda> n. f(funpower f n I)) = natUnion (\<lambda> n. ?C (n + 1))"
     by simp
   also have "natUnion (\<lambda> n. ?C(n + 1)) = natUnion ?C"
-    by (metis (no_types, lifting) Limit.chain_def chain natUnion_eq)
+    apply (subst natUnion_shift)
+    using chain by (blast+)
   finally show ?thesis by (simp add: limit_def)
 qed  
     

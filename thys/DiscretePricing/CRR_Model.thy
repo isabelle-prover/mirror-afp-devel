@@ -2492,32 +2492,7 @@ qed
 lemma (in CRR_market)  geom_proc_eq_pseudo_proj_True:
   shows "(\<And>m. m \<le>  n \<Longrightarrow> geom_proc m x = geom_proc m y) \<Longrightarrow>
     (pseudo_proj_True (n) x = pseudo_proj_True (n) y)"
-proof -
-  assume a1: "\<And>m. m \<le> n \<Longrightarrow> geom_proc m x = geom_proc m y"
-  obtain nn :: "bool stream \<Rightarrow> bool stream \<Rightarrow> nat \<Rightarrow> nat" where
-    "\<forall>x1 x2 x3. (\<exists>v4<Suc (Suc x3). geom_proc v4 x2 \<noteq> geom_proc v4 x1) = (nn x1 x2 x3 < Suc (Suc x3) \<and> geom_proc (nn x1 x2 x3) x2 \<noteq> geom_proc (nn x1 x2 x3) x1)"
-    by moura
-  then have f2: "\<forall>n s sa na. (nn sa s n < Suc (Suc n) \<and> geom_proc (nn sa s n) s \<noteq> geom_proc (nn sa s n) sa \<or> \<not> na < Suc n) \<or> s !! na = sa !! na"
-    by (meson geom_proc_eq_snth less_Suc_eq_le)
-  obtain nna :: "bool stream \<Rightarrow> bool stream \<Rightarrow> nat \<Rightarrow> nat" where
-    f3: "\<forall>x0 x1 x2. (\<exists>v3. Suc v3 < Suc x2 \<and> x1 !! v3 \<noteq> x0 !! v3) = (Suc (nna x0 x1 x2) < Suc x2 \<and> x1 !! nna x0 x1 x2 \<noteq> x0 !! nna x0 x1 x2)"
-    by moura
-  obtain nnb :: "nat \<Rightarrow> nat" where
-    f4: "\<forall>x0. (\<exists>v2. x0 = Suc v2) = (x0 = Suc (nnb x0))"
-    by moura
-  moreover
-  { assume "\<not> nn y x (nnb n) < Suc (Suc (nnb n)) \<or> geom_proc (nn y x (nnb n)) x = geom_proc (nn y x (nnb n)) y"
-    moreover
-    { assume "\<not> nna y x n < Suc (nnb n)"
-      then have "\<not> Suc (nna y x n) < Suc n \<or> x !! nna y x n = y !! nna y x n"
-        using f4 by (metis (no_types) Suc_le_D Suc_le_lessD less_Suc_eq_le) }
-    ultimately have "pseudo_proj_True n x = pseudo_proj_True n y \<or> \<not> Suc (nna y x n) < Suc n \<or> x !! nna y x n = y !! nna y x n"
-using f2 by meson }
-  ultimately have "pseudo_proj_True n x = pseudo_proj_True n y \<or> \<not> Suc (nna y x n) < Suc n \<or> x !! nna y x n = y !! nna y x n"
-    using a1 Suc_le_D less_Suc_eq_le by presburger
-  then show ?thesis
-    using f3 by (meson less_Suc_eq_le pseudo_proj_True_snth')
-qed
+  by (meson geom_proc_eq_snth le_trans order.refl pseudo_proj_True_snth')
 
 
 
@@ -2570,26 +2545,7 @@ proof (rule infinite_cts_filtration.f_borel_Suc_expl_cond_expect)
     hence "pseudo_proj_True n y = pseudo_proj_True n z" using proj_stoch_eq_pseudo_proj_True[of n y z] by simp
     moreover have "snth y n = snth z n" using as by simp
     ultimately have "pseudo_proj_True (Suc n) y = pseudo_proj_True (Suc n) z"
-    proof -
-    have f1: "\<forall>n s sa. (\<exists>na. Suc na \<le> n \<and> s !! na \<noteq> sa !! na) \<or> pseudo_proj_True n s = pseudo_proj_True n sa"
-    by (meson pseudo_proj_True_snth')
-      obtain nn :: "bool stream \<Rightarrow> bool stream \<Rightarrow> nat \<Rightarrow> nat" where
-        "\<forall>x0 x1 x2. (\<exists>v3. Suc v3 \<le> x2 \<and> x1 !! v3 \<noteq> x0 !! v3) = (Suc (nn x0 x1 x2) \<le> x2 \<and> x1 !! nn x0 x1 x2 \<noteq> x0 !! nn x0 x1 x2)"
-        by moura
-        then have f2: "\<forall>n s sa. Suc (nn sa s n) \<le> n \<and> s !! nn sa s n \<noteq> sa !! nn sa s n \<or> pseudo_proj_True n s = pseudo_proj_True n sa"
-          using f1 by presburger
-        have f3: "stake n y = stake n (pseudo_proj_True n z)"
-          by (metis \<open>pseudo_proj_True n y = pseudo_proj_True n z\<close> pseudo_proj_True_stake)
-        { assume "stake (Suc n) z \<noteq> stake (Suc n) (pseudo_proj_True (Suc n) y)"
-          then have "stake n y @ [y !! n] \<noteq> stake n z @ [z !! n]"
-            by (metis (no_types) pseudo_proj_True_stake stake_Suc)
-          then have "stake (Suc n) z = stake (Suc n) (pseudo_proj_True (Suc n) y)"
-            using f3 by (simp add: \<open>y !! n = z !! n\<close> pseudo_proj_True_stake) }
-        then have "\<not> Suc (nn z y (Suc n)) \<le> Suc n \<or> y !! nn z y (Suc n) = z !! nn z y (Suc n)"
-        by (metis (no_types) pseudo_proj_True_stake stake_snth)
-      then show ?thesis
-        using f2 by blast
-    qed
+      by (metis (full_types) pseudo_proj_True_def pseudo_proj_True_same_img stake_Suc)
     have "rn_rev_price N der matur (matur - Suc n) y =
       rn_rev_price N der matur (matur - Suc n) (pseudo_proj_True (Suc n) y)" using nat_filtration_info[of "rn_rev_price N der matur (matur - Suc n)" "Suc n"]
       rn_rev_price_rev_borel_adapt[of der matur N q]

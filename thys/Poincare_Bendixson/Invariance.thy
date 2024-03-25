@@ -245,7 +245,7 @@ proof -
     then have p: "max (-V' (flow0 x t) (f (flow0 x t))) ((V (flow0 x t))\<^sup>2) > 0" using nz by auto
     have " V' (flow0 x t) (f (flow0 x t)) * max (- V' (flow0 x t) (f (flow0 x t))) ((V (flow0 x t))\<^sup>2)
       \<le>  V' (flow0 x t) (f (flow0 x t)) * (V (flow0 x t))\<^sup>2"
-      by (smt mult_minus_left mult_minus_right power2_eq_square mult_le_cancel_iff2)
+      by (smt mult_minus_left mult_minus_right power2_eq_square mult_le_cancel_left_pos)
     then have "V' (flow0 x t) (f (flow0 x t))
       \<le>  V' (flow0 x t) (f (flow0 x t)) * (V (flow0 x t))\<^sup>2
       / max (- V' (flow0 x t) (f (flow0 x t))) ((V (flow0 x t))\<^sup>2)"

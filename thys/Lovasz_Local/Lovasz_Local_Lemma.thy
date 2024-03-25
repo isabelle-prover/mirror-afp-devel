@@ -311,7 +311,7 @@ proof -
             then show ?thesis using lovasz_inductive_base[of G F A f "g 0"] 
                 prob_Ai assms(4) dep_graph_verts fbounds g0in by auto
           qed
-          moreover have "0 \<le> (\<Prod>i = 1..<card S1. 1 - f (g i))" using igt0 by (simp add: prod_nonneg) 
+          moreover have "0 \<le> (\<Prod>i = 1..<card S1. 1 - f (g i))" using igt0 by (force intro: prod_nonneg) 
           ultimately have  "prob (\<Inter>(?c ` S1)) \<ge> (1 - (f (g 0))) * (\<Prod>i \<in> {1..<(card S1)} . (1 - (f (g i))))" 
             using pcond igt0 mult_mono'[of "(1 - (f (g 0)))" ] by fastforce
           moreover have "{0..<card S1} = {0} \<union> {1..<card S1}" using csgt0 by auto

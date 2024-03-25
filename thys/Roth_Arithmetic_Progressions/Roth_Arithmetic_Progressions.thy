@@ -926,7 +926,7 @@ proof -
       show "finite (triangle_set G)"
         by (meson G_ne card_gt_0_iff local.wf finite_triangle_set)
       have "card ([i]\<^bsup>2\<^esup>) = 3" if "i \<in> triangle_set G" for i
-        using that wf nsets_def tri_nsets_2 tri_nsets_3 triangle_set_def by fastforce
+        using that wf tri_nsets_2 tri_nsets_3 by (force simp add: nsets_def triangle_set_def) 
       then show "(\<Sum>i\<in>triangle_set G. card ([i]\<^bsup>2\<^esup>)) = 3 * card (triangle_set G)"
         by simp
     qed

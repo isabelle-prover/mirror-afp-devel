@@ -635,11 +635,9 @@ lemma not_essential_polylog_1:
 
 lemma polylog_meromorphic_on [meromorphic_intros]:
   assumes "k \<le> 0"
-  shows   "polylog k meromorphic_on UNIV {1}"
+  shows   "polylog k meromorphic_on {1}"
   using assms
-  by (intro meromorphic_onI)
-     (auto intro!: holomorphic_intros isolated_singularity_polylog_1 not_essential_polylog_1
-           simp: islimpt_finite)
+  by (simp add: isolated_singularity_polylog_1 meromorphic_at_iff not_essential_polylog_1)
 
 
 subsection \<open>Duplication formula\<close>

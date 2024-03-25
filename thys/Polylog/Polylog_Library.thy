@@ -13,9 +13,6 @@ subsection \<open>Miscellaneous\<close>
 
 (* TODO: Move? *)
 
-lemma linear_of_real [intro]: "linear of_real"
-  by standard (auto simp: scaleR_conv_of_real)
-
 lemma fps_conv_radius_fps_of_poly [simp]:
   fixes p :: "'a :: {banach, real_normed_div_algebra} poly"
   shows "fps_conv_radius (fps_of_poly p) = \<infinity>"

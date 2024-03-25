@@ -315,61 +315,7 @@ proof -
   qed
   then obtain x where x_prop: "(\<forall>y. a*y^2 + b*y + c = 0 \<longrightarrow> x < y)" by auto
   then have same_as: "\<forall>y<x. (aEvalUni At y = aEvalUni At x)"
-    using no_change_eval change_eval assms
-  proof -
-    have f1: "\<forall>x0. (x0 < x) = (\<not> 0 \<le> x0 + - 1 * x)"
-      by auto
-    have f2: "(0 \<le> - 1 * x + v0_0) = (x + - 1 * v0_0 \<le> 0)"
-      by auto
-    have f3: "v0_0 + - 1 * x = - 1 * x + v0_0"
-      by auto
-    have f4: "\<forall>x0 x1 x2 x3. (x3::real) * x0\<^sup>2 + x2 * x0 + x1 = x1 + x3 * x0\<^sup>2 + x2 * x0"
-      by auto
-    have f5: "\<forall>x3 x4 x5. (aEvalUni x3 x5 \<noteq> aEvalUni x3 x4) = ((\<not> aEvalUni x3 x5) = aEvalUni x3 x4)"
-      by fastforce
-    have f6: "\<forall>x0 x1 x2 x3 x4 x5. (x5 < x4 \<and> (\<not> aEvalUni x3 x5) = aEvalUni x3 x4 \<and> getPoly x3 = (x2, x1, x0) \<longrightarrow> (\<exists>v6\<ge>x5. v6 \<le> x4 \<and> x0 + x2 * v6\<^sup>2 + x1 * v6 = 0)) = ((\<not> x5 < x4 \<or> (\<not> aEvalUni x3 x5) \<noteq> aEvalUni x3 x4 \<or> getPoly x3 \<noteq> (x2, x1, x0)) \<or> (\<exists>v6\<ge>x5. v6 \<le> x4 \<and> x0 + x2 * v6\<^sup>2 + x1 * v6 = 0))"
-      by fastforce
-    have f7: "\<forall>x0 x5. ((x0::real) \<le> x5) = (x0 + - 1 * x5 \<le> 0)"
-      by auto
-    have f8: "\<forall>x0 x6. ((x6::real) \<le> x0) = (0 \<le> x0 + - 1 * x6)"
-      by auto
-    have "\<forall>x4 x5. ((x5::real) < x4) = (\<not> x4 + - 1 * x5 \<le> 0)"
-      by auto
-    then have "(\<forall>r ra a rb rc rd. r < ra \<and> aEvalUni a r \<noteq> aEvalUni a ra \<and> getPoly a = (rb, rc, rd) \<longrightarrow> (\<exists>re\<ge>r. re \<le> ra \<and> rb * re\<^sup>2 + rc * re + rd = 0)) = (\<forall>r ra a rb rc rd. (ra + - 1 * r \<le> 0 \<or> (\<not> aEvalUni a r) \<noteq> aEvalUni a ra \<or> getPoly a \<noteq> (rb, rc, rd)) \<or> (\<exists>re. 0 \<le> re + - 1 * r \<and> re + - 1 * ra \<le> 0 \<and> rd + rb * re\<^sup>2 + rc * re = 0))"
-      using f8 f7 f6 f5 f4 by presburger
-    then have f9: "\<forall>r ra a rb rc rd. (ra + - 1 * r \<le> 0 \<or> (\<not> aEvalUni a r) \<noteq> aEvalUni a ra \<or> getPoly a \<noteq> (rb, rc, rd)) \<or> (\<exists>re. 0 \<le> re + - 1 * r \<and> re + - 1 * ra \<le> 0 \<and> rd + rb * re\<^sup>2 + rc * re = 0)"
-      by (meson change_eval)
-    obtain rr :: "real \<Rightarrow> real \<Rightarrow> real \<Rightarrow> real \<Rightarrow> real \<Rightarrow> real" where
-      "\<forall>x0 x1 x2 x4 x5. (\<exists>v6. 0 \<le> v6 + - 1 * x5 \<and> v6 + - 1 * x4 \<le> 0 \<and> x0 + x2 * v6\<^sup>2 + x1 * v6 = 0) = (0 \<le> rr x0 x1 x2 x4 x5 + - 1 * x5 \<and> rr x0 x1 x2 x4 x5 + - 1 * x4 \<le> 0 \<and> x0 + x2 * (rr x0 x1 x2 x4 x5)\<^sup>2 + x1 * rr x0 x1 x2 x4 x5 = 0)"
-      by moura
-    then have f10: "\<forall>r ra a rb rc rd. ra + - 1 * r \<le> 0 \<or> aEvalUni a r = aEvalUni a ra \<or> getPoly a \<noteq> (rb, rc, rd) \<or> r + - 1 * rr rd rc rb ra r \<le> 0 \<and> 0 \<le> ra + - 1 * rr rd rc rb ra r \<and> rd + rb * (rr rd rc rb ra r)\<^sup>2 + rc * rr rd rc rb ra r = 0"
-      using f9 by simp
-    have f11: "(rr c b a x v0_0 + - 1 * x \<le> 0) = (0 \<le> x + - 1 * rr c b a x v0_0)"
-      by force
-    have "\<forall>x0. (x < x0) = (\<not> x0 + - 1 * x \<le> 0)"
-      by auto
-    then have f12: "\<forall>r. c + a * r\<^sup>2 + b * r \<noteq> 0 \<or> \<not> r + - 1 * x \<le> 0"
-      using x_prop by auto
-    obtain rra :: real where
-      "(\<exists>v0. \<not> 0 \<le> v0 + - 1 * x \<and> aEvalUni At v0 \<noteq> aEvalUni At x) = (\<not> 0 \<le> rra + - 1 * x \<and> aEvalUni At rra \<noteq> aEvalUni At x)"
-      by moura
-    then show ?thesis
-      using f12 f11 f10 f3 f2 f1
-    proof -
-      have f1: "\<forall>x0. (x0 < x) = (\<not> 0 \<le> x0 + - 1 * x)"
-        by auto
-      have f2: "(0 \<le> v0_0a + - 1 * x) = (x + - 1 * v0_0a \<le> 0)"
-        by auto
-      have f3: "(rr c b a x v0_0a + - 1 * x \<le> 0) = (0 \<le> x + - 1 * rr c b a x v0_0a)"
-        by auto
-      obtain rrb :: real where
-        "(\<exists>v0. \<not> 0 \<le> v0 + - 1 * x \<and> aEvalUni At v0 \<noteq> aEvalUni At x) = (\<not> 0 \<le> rrb + - 1 * x \<and> aEvalUni At rrb \<noteq> aEvalUni At x)"
-        by blast
-      then show ?thesis
-        using f3 f2 f1 assms(1) f10 f12
-        by smt
-    qed
-  qed
+    using no_change_eval change_eval assms by (smt (verit, ccfv_SIG))
   then show ?thesis by auto
 qed
 

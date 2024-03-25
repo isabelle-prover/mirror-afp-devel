@@ -218,26 +218,6 @@ qed simp
 lemma x_times_x_minus_1_nonpos: "x \<ge> 0 \<Longrightarrow> x \<le> 1 \<Longrightarrow> (x::_::linordered_idom) * (x - 1) \<le> 0"
   by (intro mult_nonneg_nonpos) simp_all
 
-lemma powr_mono':
-  assumes "(x::real) > 0" "x \<le> 1" "a \<le> b"
-  shows   "x powr b \<le> x powr a"
-proof-
-  have "inverse x powr a \<le> inverse x powr b" using assms
-    by (intro powr_mono) (simp_all add: field_simps)
-  hence "inverse (x powr a) \<le> inverse (x powr b)" using assms by simp
-  with assms show ?thesis by (simp add: field_simps)
-qed
-
-lemma powr_less_mono':
-  assumes "(x::real) > 0" "x < 1" "a < b"
-  shows   "x powr b < x powr a"
-proof-
-  have "inverse x powr a < inverse x powr b" using assms
-    by (intro powr_less_mono) (simp_all add: field_simps)
-  hence "inverse (x powr a) < inverse (x powr b)" using assms by simp
-  with assms show ?thesis by (simp add: field_simps)
-qed
-
 lemma real_powr_at_bot:
   assumes "(a::real) > 1"
   shows   "((\<lambda>x. a powr x) \<longlongrightarrow> 0) at_bot"

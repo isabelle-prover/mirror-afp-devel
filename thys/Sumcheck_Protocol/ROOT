@@ -1,0 +1,51 @@
+(*******************************************************************************
+
+  Project: Sumcheck Protocol
+
+  Authors: Azucena Garvia Bosshard <zucegb@gmail.com>
+           Christoph Sprenger, ETH Zurich <sprenger@inf.ethz.ch>
+           Jonathan Bootle, IBM Research Europe <jbt@zurich.ibm.com>
+
+*******************************************************************************)
+
+chapter AFP
+
+(* 
+   Test the entry build using the command: 
+   <isabelle> build -v -o browser_info -o "document=pdf" -o "document_variants=document:outline=/proof,/ML" -D <entry dir>
+*)
+
+session Sumcheck_Protocol (AFP) = "HOL-Probability" + 
+
+description \<open>Formalization of the Sumcheck Protocol\<close> 
+
+options [timeout = 600]
+
+sessions
+  "HOL-Library"
+  "HOL-Computational_Algebra"
+  "Polynomials"
+
+directories
+  "Generalized_Sumcheck_Protocol"
+  "Instantiation_with_Polynomials"
+
+theories
+  "Generalized_Sumcheck_Protocol/Probability_Tools"
+  "Generalized_Sumcheck_Protocol/Public_Coin_Proofs"
+  "Generalized_Sumcheck_Protocol/Substitutions"
+  "Generalized_Sumcheck_Protocol/Abstract_Multivariate_Polynomials"
+  "Generalized_Sumcheck_Protocol/Sumcheck_Protocol"
+  "Generalized_Sumcheck_Protocol/Completeness_Proof"
+  "Generalized_Sumcheck_Protocol/Soundness_Proof"
+  "Generalized_Sumcheck_Protocol/Sumcheck_as_Public_Coin_Proof"
+  "Instantiation_with_Polynomials/Polynomial_Instantiation"
+  "Instantiation_with_Polynomials/Univariate_Roots_Bound"
+  "Instantiation_with_Polynomials/Roots_Bounds"
+  "Instantiation_with_Polynomials/Concrete_Multivariate_Polynomials"
+
+document_files
+  "root.tex" "session_graph.tex" 
+  (* "root.bib" *)
+
+

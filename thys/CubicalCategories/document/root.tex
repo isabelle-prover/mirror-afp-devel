@@ -1,0 +1,86 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+%\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Cubical Categories}
+\author{Tanguy Massacrier and Georg Struth}
+\maketitle
+
+\begin{abstract}
+  This AFP entry formalises cubical $\omega$-categories and cubical
+  $\omega$-cate\-gories with connections in the style of single-set
+  categories. Cubical categories, and the cubical sets on which they
+  are based, have their origins and main applications in algebraic
+  topology. Applications in computer science include homotopy type
+  theory, higher-dimensional automata in concurrency theory and
+  higher-dimensional rewriting. The single-set axiomatisation,
+  introduced in these components and a companion paper, allows a
+  formalisation based on Isabelle's type classes.
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+\section{Introductory Remarks}
+
+Based on a formalisation of catoids and single-set categories in the
+AFP~\cite{Struth23} we develop single-set axiomatisations for cubical
+$\omega$-categories with and without connections. A detailed
+explanation of the single-set approach, the classical approach to
+cubical $\omega$-categories and the proof of equivalence of the
+single-set and the classical approach can be found in a companion
+article~\cite{MalbosMS24}.  Isabelle, with its high degree of proof
+automation, has been instrumental for developing the single-set
+axioms introduced in this article.
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
+\endinput
+%:%file=~/Documents/papers/philippe/abstractpolygraphs/isabelle/document/root.tex%:%

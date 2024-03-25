@@ -20,14 +20,10 @@ lemma wf_wellorderI2:
   using lin unfolding class.wellorder_def apply (rule conjI)
   apply (rule class.wellorder_axioms.intro) by (blast intro: wf_induct_rule [OF wf])
 
-
-lemma (in preorder) tranclp_less': "(>)\<^sup>+\<^sup>+ = (>)"
-  by(auto simp add: fun_eq_iff intro: less_trans elim: tranclp.induct)
-
 interpretation dual_wellorder: wellorder "(\<ge>)::('a::{linorder, finite}=>'a=>bool)" "(>)" 
 proof (rule wf_wellorderI2)
   show "wf {(x :: 'a, y). y < x}"
-    by(auto simp add: trancl_def tranclp_less' intro!: finite_acyclic_wf acyclicI)
+    by(auto simp add: trancl_def intro!: finite_acyclic_wf acyclicI)
   show "class.linorder (\<lambda>(x::'a) y::'a. y \<le> x) (\<lambda>(x::'a) y::'a. y < x)"
     unfolding class.linorder_def unfolding class.linorder_axioms_def unfolding class.order_def 
     unfolding class.preorder_def unfolding class.order_axioms_def by auto  

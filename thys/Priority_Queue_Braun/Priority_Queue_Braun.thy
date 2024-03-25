@@ -229,18 +229,18 @@ qed
 
 subsection "Running Time Analysis"
 
-define_time_fun insert
+time_fun insert
 
 lemma T_insert: "T_insert a t \<le> height t + 1"
 apply(induction t arbitrary: a)
 by (auto simp: max_def not_less_eq_eq intro: order.trans le_SucI)
 
-define_time_fun del_left
+time_fun del_left
 
 lemma T_del_left_height: "t \<noteq> Leaf \<Longrightarrow> T_del_left t \<le> height t"
 by(induction t rule: T_del_left.induct)auto
 
-define_time_function sift_down
+time_function sift_down
 termination
 apply (relation "measure (%(l,a,r). max(height l) (height r))")
 apply (auto simp: max_def)
@@ -251,7 +251,7 @@ apply(induction l x r rule: T_sift_down.induct)
 apply(auto)
 done
 
-define_time_fun del_min
+time_fun del_min
 
 lemma del_left_height: "\<lbrakk> del_left t = (x, t'); t \<noteq> \<langle>\<rangle> \<rbrakk> \<Longrightarrow> height t' \<le> height t"
 by(induction t arbitrary: x t' rule: del_left.induct) (auto split: prod.splits)

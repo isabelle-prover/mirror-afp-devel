@@ -452,6 +452,23 @@ host = [
 [berghofer.homepages]
 berghofer_homepage = "http://www.in.tum.de/~berghofe"
 
+[bergstroem]
+name = "Axel Bergström"
+
+[bergstroem.emails]
+
+[bergstroem.emails.bergstroem_email]
+user = [
+  "axel",
+  "bergstrom00",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[bergstroem.homepages]
+
 [beringer]
 name = "Lennart Beringer"
 
@@ -627,6 +644,23 @@ host = [
 ]
 
 [bohrer.homepages]
+
+[bootle]
+name = "Jonathan Bootle"
+
+[bootle.emails]
+
+[bootle.emails.bootle_email]
+user = [
+  "JBT",
+]
+host = [
+  "zurich",
+  "ibm",
+  "com",
+]
+
+[bootle.homepages]
 
 [bordg]
 name = "Anthony Bordg"
@@ -971,6 +1005,22 @@ host = [
 
 [bulwahn.homepages]
 
+[buss]
+name = "Sebastián Buss"
+
+[buss.emails]
+
+[buss.emails.buss_email]
+user = [
+  "sbuss94",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[buss.homepages]
+
 [butler]
 name = "David Butler"
 
@@ -1089,6 +1139,24 @@ name = "L. Chen"
 [chen.emails]
 
 [chen.homepages]
+
+[chenj]
+name = "Jamie Chen"
+orcid = "0009-0008-5396-6059"
+
+[chenj.emails]
+
+[chenj.emails.chenj_email]
+user = [
+  "jamiechen",
+]
+host = [
+  "tutanota",
+  "com",
+]
+
+[chenj.homepages]
+chenj_homepage = "https://gitlab.com/Jamie-Chen"
 
 [chevalier]
 name = "Loïc Chevalier"
@@ -2016,6 +2084,22 @@ name = "Xin Gao"
 [gao.emails]
 
 [gao.homepages]
+
+[garvia]
+name = "Azucena Garvia"
+
+[garvia.emails]
+
+[garvia.emails.garvia_email]
+user = [
+  "zucegb",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[garvia.homepages]
 
 [gaudel]
 name = "Marie-Claude Gaudel"
@@ -4144,6 +4228,13 @@ host = [
 [marmsoler.homepages]
 marmsoler_homepage = "http://marmsoler.com"
 
+[massacrier]
+name = "Tanguy Massacrier"
+
+[massacrier.emails]
+
+[massacrier.homepages]
+
 [matache]
 name = "Cristina Matache"
 
@@ -5897,6 +5988,23 @@ host = [
 
 [schou.homepages]
 
+[schulz]
+name = "Jakob Schulz"
+
+[schulz.emails]
+
+[schulz.emails.schulz_email]
+user = [
+  "jakob",
+  "schulz",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[schulz.homepages]
+
 [scott]
 name = "Dana Scott"
 
@@ -6277,6 +6385,25 @@ host = [
 ]
 
 [steinberg.homepages]
+
+[stell]
+name = "Amy Stell"
+orcid = "0000-0003-0714-3269"
+
+[stell.emails]
+
+[stell.emails.stell_email]
+user = [
+  "as1343",
+]
+host = [
+  "exeter",
+  "ac",
+  "uk",
+]
+
+[stell.homepages]
+stell_homepage = "https://computerscience.exeter.ac.uk/staff/as1343?sm=as1343"
 
 [stephan]
 name = "Werner Stephan"

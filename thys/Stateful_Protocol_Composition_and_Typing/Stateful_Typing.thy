@@ -89,7 +89,7 @@ lemma Ana_subst_subterms_cases:
   shows "(\<exists>u \<in> subterms\<^sub>s\<^sub>e\<^sub>t M. t = u \<cdot> \<theta> \<and> s \<in> set (snd (Ana u)) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<theta>) \<or> (\<exists>x \<in> fv\<^sub>s\<^sub>e\<^sub>t M. t \<sqsubseteq> \<theta> x)"
 proof (cases "t \<in> subterms\<^sub>s\<^sub>e\<^sub>t M \<cdot>\<^sub>s\<^sub>e\<^sub>t \<theta>")
   case True
-  then obtain u where u: "u \<in> subterms\<^sub>s\<^sub>e\<^sub>t M" "t = u \<cdot> \<theta>" by moura
+  then obtain u where u: "u \<in> subterms\<^sub>s\<^sub>e\<^sub>t M" "t = u \<cdot> \<theta>" by blast
   show ?thesis
   proof (cases u)
     case (Var x)
@@ -125,7 +125,7 @@ qed
 
 lemma fun_pair_eq[dest]: "pair d = pair d' \<Longrightarrow> d = d'"
 proof -
-  obtain t s t' s' where "d = (t,s)" "d' = (t',s')" by moura
+  obtain t s t' s' where "d = (t,s)" "d' = (t',s')" by atomize_elim auto
   thus "pair d = pair d' \<Longrightarrow> d = d'" unfolding pair_def by simp
 qed
 
@@ -312,7 +312,7 @@ next
   show ?case using Subterm.IH
   proof
     assume "?P t"
-    then obtain s \<delta> where s: "s \<in> M" "t = s \<cdot> \<delta>" and \<delta>: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>)" by moura
+    then obtain s \<delta> where s: "s \<in> M" "t = s \<cdot> \<delta>" and \<delta>: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>)" by auto
     then obtain f T where fT: "s = Fun f T" using M by fast
 
     have "(\<exists>s'. s' \<sqsubseteq> s \<and> t' = s' \<cdot> \<delta>) \<or> (\<exists>x \<in> fv s. t' \<sqsubset> \<delta> x)"
@@ -320,7 +320,7 @@ next
     thus ?thesis
     proof
       assume "\<exists>s'. s' \<sqsubseteq> s \<and> t' = s' \<cdot> \<delta>"
-      then obtain s' where s': "s' \<sqsubseteq> s" "t' = s' \<cdot> \<delta>" by moura
+      then obtain s' where s': "s' \<sqsubseteq> s" "t' = s' \<cdot> \<delta>" by fast
       show ?thesis
       proof (cases "s' \<in> M")
         case True thus ?thesis using s' \<delta> by blast
@@ -331,7 +331,7 @@ next
       qed
     next
       assume "\<exists>x \<in> fv s. t' \<sqsubset> \<delta> x"
-      then obtain x where x: "x \<in> fv s" "t' \<sqsubset> \<delta> x" by moura
+      then obtain x where x: "x \<in> fv s" "t' \<sqsubset> \<delta> x" by fast
       have "Var x \<notin> M" using M by blast
       hence "Var x \<in> (subterms\<^sub>s\<^sub>e\<^sub>t M \<union> \<Union>((set \<circ> fst \<circ> Ana) ` M)) - M"
         using s(1) var_is_subterm[OF x(1)] by blast
@@ -345,7 +345,7 @@ next
   show ?case using Substitution.IH
   proof
     assume "?P t"
-    then obtain \<theta> where "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<theta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<theta>)" "t \<in> M \<cdot>\<^sub>s\<^sub>e\<^sub>t \<theta>" by moura
+    then obtain \<theta> where "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<theta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<theta>)" "t \<in> M \<cdot>\<^sub>s\<^sub>e\<^sub>t \<theta>" by fast
     hence "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t (\<theta> \<circ>\<^sub>s \<delta>)" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range (\<theta> \<circ>\<^sub>s \<delta>))" "t \<cdot> \<delta> \<in> M \<cdot>\<^sub>s\<^sub>e\<^sub>t (\<theta> \<circ>\<^sub>s \<delta>)"
       using wt_subst_compose[of \<theta>, OF _ Substitution.hyps(2)]
             wf_trm_subst_compose[of \<theta> _ \<delta>, OF _ wf_trm_subst_rangeD[OF Substitution.hyps(3)]]
@@ -360,7 +360,7 @@ next
   show ?case using Ana.IH
   proof
     assume "?P t"
-    then obtain \<theta> where \<theta>: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<theta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<theta>)" "t \<in> M \<cdot>\<^sub>s\<^sub>e\<^sub>t \<theta>" by moura
+    then obtain \<theta> where \<theta>: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<theta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<theta>)" "t \<in> M \<cdot>\<^sub>s\<^sub>e\<^sub>t \<theta>" by fast
     then obtain s where s: "s \<in> M" "t = s \<cdot> \<theta>" by auto
     then obtain f S where fT: "s = Fun f S" using M by (cases s) auto
     obtain K' T' where s_Ana: "Ana s = (K', T')" by (metis surj_pair)
@@ -539,7 +539,7 @@ proof (induction F D arbitrary: i G rule: tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^s
   obtain d G' where G:
       "d \<in> set D" "G' \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F D)"
       "G = (pair (s,t), pair d)#G'"
-    using "2.prems"(1) by moura
+    using "2.prems"(1) by atomize_elim auto 
   show ?case
     using "2.IH"[OF G(1,2)] "2.prems"(2) G(1,3)
     by (cases i) auto
@@ -559,7 +559,7 @@ proof (induction F D arbitrary: G rule: tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub
   obtain d G' where G:
       "d \<in> set D" "G' \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F D)"
       "G = (pair (s,t), pair d)#G'"
-    using "2.prems"(1) by moura
+    using "2.prems"(1) by atomize_elim auto
   show ?case
     using "2.IH"[OF G(1,2)] "2.prems"(2) G(1,3)
     by (cases "g \<in> set G'") auto
@@ -600,7 +600,7 @@ proof -
       fix G assume "G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ((s,t)#F) D)"
       then obtain d G' where G':
           "d \<in> set D" "G' \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F D)" "G = (pair (s,t), pair d)#G'"
-        by moura
+        by atomize_elim auto
       have "d \<in> set (D@E)" "G' \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F (D@E))" using "2.IH"[OF G'(1)] G'(1,2) by auto
       thus "G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ((s,t)#F) (D@E))" using G'(3) by auto
     qed
@@ -614,7 +614,7 @@ proof -
       fix G assume "G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ((s,t)#F) E)"
       then obtain d G' where G':
           "d \<in> set E" "G' \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F E)" "G = (pair (s,t), pair d)#G'"
-        by moura
+        by atomize_elim auto
       have "d \<in> set (D@E)" "G' \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F (D@E))" using "2.IH"[OF G'(1)] G'(1,2) by auto
       thus "G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ((s,t)#F) (D@E))" using G'(3) by auto
     qed
@@ -627,7 +627,7 @@ proof (induction F D arbitrary: G rule: tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub
   case (2 s t F D G)
   obtain d G' where G:
       "d \<in> set D" "G' \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F D)" "G = (pair (s,t), pair d)#G'"
-    using "2.prems"(1) by moura
+    using "2.prems"(1) by atomize_elim auto
  
   show ?case using "2.IH"[OF G(1,2)] G(1,3) by auto
 qed simp
@@ -642,7 +642,7 @@ proof (induction F D arbitrary: G rule: tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub
   case (2 s t F D G)
   obtain d G' where G:
       "d \<in> set D" "G' \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F D)" "G = (pair (s,t), pair d)#G'"
-    using "2.prems"(1) by moura
+    using "2.prems"(1) by atomize_elim auto
  
   show ?case using "2.IH"[OF G(1,2)] G(1,3) unfolding pair_def by auto
 qed simp
@@ -657,17 +657,17 @@ proof (induction A D arbitrary: A' rule: tr.induct)
   case 1 thus ?case by simp
 next
   case (2 t A D)
-  then obtain A'' where A'': "A' = send\<langle>t\<rangle>\<^sub>s\<^sub>t#A''" "A'' \<in> set (tr A D)" by moura
+  then obtain A'' where A'': "A' = send\<langle>t\<rangle>\<^sub>s\<^sub>t#A''" "A'' \<in> set (tr A D)" by atomize_elim auto
   hence "trms\<^sub>s\<^sub>t A'' \<subseteq> trms\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` set D" by (metis "2.IH")
   thus ?case using A'' by (auto simp add: setops\<^sub>s\<^sub>s\<^sub>t_def)
 next
   case (3 t A D)
-  then obtain A'' where A'': "A' = receive\<langle>t\<rangle>\<^sub>s\<^sub>t#A''" "A'' \<in> set (tr A D)" by moura
+  then obtain A'' where A'': "A' = receive\<langle>t\<rangle>\<^sub>s\<^sub>t#A''" "A'' \<in> set (tr A D)" by atomize_elim auto
   hence "trms\<^sub>s\<^sub>t A'' \<subseteq> trms\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` set D" by (metis "3.IH")
   thus ?case using A'' by (auto simp add: setops\<^sub>s\<^sub>s\<^sub>t_def)
 next
   case (4 ac t t' A D)
-  then obtain A'' where A'': "A' = \<langle>ac: t \<doteq> t'\<rangle>\<^sub>s\<^sub>t#A''" "A'' \<in> set (tr A D)" by moura
+  then obtain A'' where A'': "A' = \<langle>ac: t \<doteq> t'\<rangle>\<^sub>s\<^sub>t#A''" "A'' \<in> set (tr A D)" by atomize_elim auto
   hence "trms\<^sub>s\<^sub>t A'' \<subseteq> trms\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` set D" by (metis "4.IH")
   thus ?case using A'' by (auto simp add: setops\<^sub>s\<^sub>s\<^sub>t_def)
 next
@@ -682,7 +682,7 @@ next
       "Di \<in> set (subseqs D)" "A'' \<in> set (tr A [d\<leftarrow>D. d \<notin> set Di])" "A' = (B@C)@A''"
       "B = map (\<lambda>d. \<langle>check: (pair (t,s)) \<doteq> (pair d)\<rangle>\<^sub>s\<^sub>t) Di"
       "C = map (\<lambda>d. Inequality [] [(pair (t,s) , pair d)]) [d\<leftarrow>D. d \<notin> set Di]"
-    by moura
+    by atomize_elim auto
   hence "trms\<^sub>s\<^sub>t A'' \<subseteq> trms\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` set [d\<leftarrow>D. d \<notin> set Di]"
     by (metis "6.IH")
   hence "trms\<^sub>s\<^sub>t A'' \<subseteq> trms\<^sub>s\<^sub>s\<^sub>t (Delete t s#A) \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t (Delete t s#A) \<union> pair ` set D"
@@ -696,7 +696,7 @@ next
   from 7 obtain d A'' where A'':
       "d \<in> set D" "A'' \<in> set (tr A D)"
       "A' = \<langle>ac: (pair (t,s)) \<doteq> (pair d)\<rangle>\<^sub>s\<^sub>t#A''"
-    by moura
+    by atomize_elim auto
   hence "trms\<^sub>s\<^sub>t A'' \<subseteq> trms\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` set D" by (metis "7.IH")
   moreover have "trms\<^sub>s\<^sub>t A' = {pair (t,s), pair d} \<union> trms\<^sub>s\<^sub>t A''"
     using A''(1,3) by auto
@@ -705,7 +705,7 @@ next
   case (8 X F F' A D)
   from 8 obtain A'' where A'':
       "A'' \<in> set (tr A D)" "A' = (map (\<lambda>G. \<forall>X\<langle>\<or>\<noteq>: (F@G)\<rangle>\<^sub>s\<^sub>t) (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' D))@A''"
-    by moura
+    by atomize_elim auto
 
   define B where "B \<equiv> \<Union>(trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ` set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' D))"
 
@@ -730,7 +730,7 @@ proof -
     then obtain A'' d where *:
         "d \<in> set D" "A' = \<langle>ac: (pair (t,s)) \<doteq> (pair d)\<rangle>\<^sub>s\<^sub>t#A''"
         "A'' \<in> set (tr A D)"
-      by moura
+      by atomize_elim auto
     hence "fv\<^sub>s\<^sub>t A'' \<subseteq> fv\<^sub>s\<^sub>s\<^sub>t A \<union> (\<Union>(t,t')\<in>set D. fv t \<union> fv t')" by (metis ConsIn.IH)
     thus ?case using * unfolding pair_def by auto
   next
@@ -742,7 +742,7 @@ proof -
                       (map (\<lambda>d. \<forall>[]\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t) (fltD Di))"
     from ConsDel obtain A'' Di where *:
         "Di \<in> set (subseqs D)" "A' = (constr Di)@A''" "A'' \<in> set (tr A (fltD Di))"
-      unfolding constr_def fltD_def by moura
+      unfolding constr_def fltD_def by atomize_elim auto
     hence "fv\<^sub>s\<^sub>t A'' \<subseteq> fv\<^sub>s\<^sub>s\<^sub>t A \<union> Dfv (fltD Di)"
       unfolding Dfv_def constr_def fltD_def by (metis ConsDel.IH)
     moreover have "Dfv (fltD Di) \<subseteq> Dfv D" unfolding Dfv_def constr_def fltD_def by auto
@@ -758,7 +758,7 @@ proof -
     case (ConsNegChecks A' D X F F' A)
     then obtain A'' where A'':
         "A'' \<in> set (tr A D)" "A' = (map (\<lambda>G. \<forall>X\<langle>\<or>\<noteq>: (F@G)\<rangle>\<^sub>s\<^sub>t) (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' D))@A''"
-      by moura
+      by atomize_elim auto
 
     define B where "B \<equiv> \<Union>(fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ` set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' D))"
 
@@ -1023,7 +1023,7 @@ proof -
   next
     case (2 X ts A A')
     then obtain A'' where A'': "A' = receive\<langle>ts\<rangle>\<^sub>s\<^sub>t#A''" "A'' \<in> set (tr A D)" "fv\<^sub>s\<^sub>e\<^sub>t (set ts) \<subseteq> X"
-      by moura
+      by atomize_elim auto
     have *: "wf'\<^sub>s\<^sub>s\<^sub>t X A" "\<forall>(s,s') \<in> set D. fv s \<union> fv s' \<subseteq> X" "P D A"
       using 2(1,2,3,4) apply (force, force)
       using 2(5) unfolding P_def by force
@@ -1031,7 +1031,7 @@ proof -
   next
     case (3 X ts A A')
     then obtain A'' where A'': "A' = send\<langle>ts\<rangle>\<^sub>s\<^sub>t#A''" "A'' \<in> set (tr A D)"
-      by moura
+      by atomize_elim auto
     have *: "wf'\<^sub>s\<^sub>s\<^sub>t (X \<union> fv\<^sub>s\<^sub>e\<^sub>t (set ts)) A"
             "\<forall>(s,s') \<in> set D. fv s \<union> fv s' \<subseteq> X \<union> fv\<^sub>s\<^sub>e\<^sub>t (set ts)" "P D A"
       using 3(1,2,3,4) apply (force, force)
@@ -1040,7 +1040,7 @@ proof -
   next
     case (4 X t t' A A')
     then obtain A'' where A'': "A' = \<langle>assign: t \<doteq> t'\<rangle>\<^sub>s\<^sub>t#A''" "A'' \<in> set (tr A D)" "fv t' \<subseteq> X"
-      by moura
+      by atomize_elim auto
     have *: "wf'\<^sub>s\<^sub>s\<^sub>t (X \<union> fv t) A" "\<forall>(s,s') \<in> set D. fv s \<union> fv s' \<subseteq> X \<union> fv t" "P D A"
       using 4(1,2,3,4) apply (force, force)
       using 4(5) unfolding P_def by force
@@ -1048,7 +1048,7 @@ proof -
   next
     case (5 X t t' A A')
     then obtain A'' where A'': "A' = \<langle>check: t \<doteq> t'\<rangle>\<^sub>s\<^sub>t#A''" "A'' \<in> set (tr A D)"
-      by moura
+      by atomize_elim auto
     have *: "wf'\<^sub>s\<^sub>s\<^sub>t X A" "P D A"
       using 5(3) apply force
       using 5(5) unfolding P_def by force
@@ -1066,7 +1066,7 @@ proof -
     from 7 obtain Di A'' where A'':
         "A' = ?constr Di@A''" "A'' \<in> set (tr A [d\<leftarrow>D. d \<notin> set Di])"
         "Di \<in> set (subseqs D)"
-      by moura
+      by atomize_elim force
     have *: "wf'\<^sub>s\<^sub>s\<^sub>t X A" "\<forall>(t',s') \<in> set [d\<leftarrow>D. d \<notin> set Di]. fv t' \<union> fv s' \<subseteq> X"
       using 7 by auto
     have **: "P [d\<leftarrow>D. d \<notin> set Di] A" using 7 unfolding P_def by force
@@ -1079,7 +1079,7 @@ proof -
     then obtain d A'' where A'':
         "A' = \<langle>assign: (pair (t,s)) \<doteq> (pair d)\<rangle>\<^sub>s\<^sub>t#A''"
         "A'' \<in> set (tr A D)" "d \<in> set D"
-      by moura
+      by atomize_elim auto
     have *: "wf'\<^sub>s\<^sub>s\<^sub>t (X \<union> fv t \<union> fv s) A" "\<forall>(t',s')\<in>set D. fv t' \<union> fv s' \<subseteq> X \<union> fv t \<union> fv s" "P D A"
       using 8(1,2,3,4) apply (force, force)
       using 8(5) unfolding P_def by force
@@ -1091,7 +1091,7 @@ proof -
     then obtain d A'' where A'':
         "A' = \<langle>check: (pair (t,s)) \<doteq> (pair d)\<rangle>\<^sub>s\<^sub>t#A''"
         "A'' \<in> set (tr A D)" "d \<in> set D"
-      by moura
+      by atomize_elim auto
     have *: "wf'\<^sub>s\<^sub>s\<^sub>t X A""P D A"
       using 9(3) apply force
       using 9(5) unfolding P_def by force
@@ -1102,7 +1102,7 @@ proof -
     case (10 X Y F F' A A')
     from 10 obtain A'' where A'':
         "A' = (map (\<lambda>G. \<forall>Y\<langle>\<or>\<noteq>: (F@G)\<rangle>\<^sub>s\<^sub>t) (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' D))@A''" "A'' \<in> set (tr A D)"
-      by moura
+      by atomize_elim auto
 
     have *: "wf'\<^sub>s\<^sub>s\<^sub>t X A" "\<forall>(t',s') \<in> set D. fv t' \<union> fv s' \<subseteq> X" using 10 by auto
     
@@ -1235,7 +1235,7 @@ proof -
     with assms have "\<lbrakk>M; map (\<lambda>d. \<forall>X\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t) D\<rbrakk>\<^sub>d \<I>"
     proof (induction D)
       case (Cons d D)
-      obtain t' s' where d: "d = (t',s')" by moura
+      obtain t' s' where d: "d = (t',s')" by atomize_elim auto
       have "\<lbrakk>M; map (\<lambda>d. \<forall>X\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t) D\<rbrakk>\<^sub>d \<I>"
            "map (\<lambda>d. \<forall>X\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t) (d#D) =
             \<forall>X\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t#map (\<lambda>d. \<forall>X\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t) D"
@@ -1254,7 +1254,7 @@ proof -
     with assms have "(t,s) \<cdot>\<^sub>p \<delta> \<cdot>\<^sub>p \<I> \<notin> set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>"
     proof (induction D)
       case (Cons d D)
-      obtain t' s' where d: "d = (t',s')" by moura
+      obtain t' s' where d: "d = (t',s')" by atomize_elim auto
       have "(t,s) \<cdot>\<^sub>p \<delta> \<cdot>\<^sub>p \<I> \<notin> set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>"
            "pair (t,s) \<cdot> \<delta> \<cdot> \<I> \<noteq> pair d \<cdot> \<delta> \<cdot> \<I>"
         using Cons d by (auto simp add: ineq_model_def simp del: subst_range.simps)
@@ -1413,11 +1413,11 @@ proof
       using ConsDel.prems unfolding fv\<^sub>s\<^sub>s\<^sub>t_def bvars\<^sub>s\<^sub>s\<^sub>t_def by force+
     then obtain Di where Di:
         "Di \<subseteq> set D" "Di \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I> \<subseteq> {(t,s) \<cdot>\<^sub>p \<I>}" "(t,s) \<cdot>\<^sub>p \<I> \<notin> (set D - Di) \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>"
-      using subset_subst_pairs_diff_exists'[of "set D"] by moura
+      using subset_subst_pairs_diff_exists'[of "set D"] by atomize_elim auto
     hence **: "(set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>) - {(t,s) \<cdot>\<^sub>p \<I>} = (set D - Di) \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>" by blast
 
     obtain Di' where Di': "set Di' = Di" "Di' \<in> set (subseqs D)"
-      using subset_sublist_exists[OF Di(1)] by moura
+      using subset_sublist_exists[OF Di(1)] by atomize_elim auto
     hence ***: "(set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>) - {(t,s) \<cdot>\<^sub>p \<I>} = (set [d\<leftarrow>D. d \<notin> set Di'] \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>)"
       using Di ** by auto
     
@@ -1431,7 +1431,7 @@ proof
     hence *****: "\<lbrakk>M; set [d\<leftarrow>D. d \<notin> set Di'] \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>; A\<rbrakk>\<^sub>s \<I>"
       using *(1) ** by metis
     obtain A' where A': "A' \<in> set (tr A [d\<leftarrow>D. d \<notin> set Di'])" "\<lbrakk>M; A'\<rbrakk>\<^sub>d \<I>"
-      using ConsDel.IH[OF ***** **** *(3,4)] by moura
+      using ConsDel.IH[OF ***** **** *(3,4)] by atomize_elim auto
     hence constr_sat: "\<lbrakk>M; constr\<rbrakk>\<^sub>d \<I>"
       using Di Di' *(1) *** tr_Delete_constr_iff[OF *(4), of \<I> Di' t s D] 
       unfolding constr_def by auto
@@ -1579,7 +1579,7 @@ proof
 
     obtain B where B:
         "?ineqs@B \<in> set (tr (NegChecks X F F'#A) D)" "\<lbrakk>M; ?ineqs@B\<rbrakk>\<^sub>d \<I>" "B \<in> set (tr A D)"
-      using ConsNegChecks.prems(1) by moura
+      using ConsNegChecks.prems(1) by atomize_elim auto
     moreover have "M \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> = M"
       using ConsNegChecks.prems(4) \<I> by (simp add: subst_all_ground_ident)
     moreover have "ik\<^sub>s\<^sub>t ?ineqs = {}" by auto
@@ -1653,7 +1653,7 @@ proof -
     note prems = "2.prems"
     note IH = "2.IH"
     from prems(1) obtain A'' where A'': "A' = send\<langle>t\<rangle>\<^sub>s\<^sub>t#A''" "A'' \<in> set (tr A D)"
-      by moura
+      by atomize_elim auto
     have "list_all tfr\<^sub>s\<^sub>t\<^sub>p A''" using IH[OF A''(2)] prems(5) sublmm[OF prems(2,3,4,5)] by meson
     thus ?case using A''(1) by simp
   next
@@ -1661,7 +1661,7 @@ proof -
     note prems = "3.prems"
     note IH = "3.IH"
     from prems(1) obtain A'' where A'': "A' = receive\<langle>t\<rangle>\<^sub>s\<^sub>t#A''" "A'' \<in> set (tr A D)"
-      by moura
+      by atomize_elim auto
     have "list_all tfr\<^sub>s\<^sub>t\<^sub>p A''" using IH[OF A''(2)] prems(5) sublmm[OF prems(2,3,4,5)] by meson
     thus ?case using A''(1) by simp
   next
@@ -1670,7 +1670,7 @@ proof -
     note IH = "4.IH"
     from prems(1) obtain A'' where A'':
         "A' = \<langle>ac: t \<doteq> t'\<rangle>\<^sub>s\<^sub>t#A''" "A'' \<in> set (tr A D)"
-      by moura
+      by atomize_elim auto
     have "list_all tfr\<^sub>s\<^sub>t\<^sub>p A''" using IH[OF A''(2)] prems(5) sublmm[OF prems(2,3,4,5)] by meson
     moreover have "(\<exists>\<delta>. Unifier \<delta> t t') \<Longrightarrow> \<Gamma> t = \<Gamma> t'" using prems(2) by (simp add: tfr\<^sub>s\<^sub>s\<^sub>t_def)
     ultimately show ?case using A''(1) by auto
@@ -1758,7 +1758,7 @@ proof -
     from prems(1) obtain d A'' where A'':
         "A' = \<langle>ac: (pair (t,s)) \<doteq> (pair d)\<rangle>\<^sub>s\<^sub>t#A''"
         "A'' \<in> set (tr A D)" "d \<in> set D"
-      by moura
+      by atomize_elim auto
 
     have "list_all tfr\<^sub>s\<^sub>t\<^sub>p A''"
       using IH[OF A''(2) sublmm(1,2,3)[OF prems(2,3,4,5)] sublmm(4)[OF prems(2,3,4,5)]]
@@ -1786,7 +1786,7 @@ proof -
       using that unfolding Q2_def by auto
 
     from prems(1) obtain A'' where A'': "A' = constr@A''" "A'' \<in> set (tr A D)"
-      using constr_def by moura
+      using constr_def by atomize_elim auto
 
     have 0: "F' = [] \<Longrightarrow> constr = [\<forall>X\<langle>\<or>\<noteq>: F\<rangle>\<^sub>s\<^sub>t]" unfolding constr_def by simp
 
@@ -1890,7 +1890,7 @@ proof -
           * Ana_invar_subst' assms(4)
           \<A>'(2)
     unfolding constr_sem_d_def
-    by moura
+    by atomize_elim auto
 
   thus ?thesis
     using that tr_sem_equiv[of \<A>] assms(1,3) \<A>'(1)

@@ -6,7 +6,7 @@ subsection \<open>Intraprocedural paths from method entry and to method exit\<cl
 
 
 abbreviation path :: "wf_prog \<Rightarrow> node \<Rightarrow> edge list \<Rightarrow> node \<Rightarrow> bool" ("_ \<turnstile> _ -_\<rightarrow>* _")
-  where "wfp \<turnstile> n -as\<rightarrow>* n' \<equiv> CFG.path sourcenode targetnode (valid_edge wfp) n as n'"
+  where "\<And>wfp. wfp \<turnstile> n -as\<rightarrow>* n' \<equiv> CFG.path sourcenode targetnode (valid_edge wfp) n as n'"
 
 definition label_incrs :: "edge list \<Rightarrow> nat \<Rightarrow> edge list" ("_ \<oplus>s _" 60)
   where "as \<oplus>s i \<equiv> map (\<lambda>((p,n),et,(p',n')). ((p,n \<oplus> i),et,(p',n' \<oplus> i))) as"
@@ -215,6 +215,7 @@ qed
 
 
 lemma path_SeqFirst:
+  fixes wfp
   assumes "Rep_wf_prog wfp = (prog,procs)" and "Rep_wf_prog wfp' = (prog;;c\<^sub>2,procs)"
   shows "\<lbrakk>wfp \<turnstile> (p,n) -as\<rightarrow>* (p,Label l); \<forall>a \<in> set as. intra_kind (kind a)\<rbrakk>
   \<Longrightarrow> wfp' \<turnstile> (p,n) -as\<rightarrow>* (p,Label l)"
@@ -291,6 +292,7 @@ qed (auto simp:intra_kind_def)
 
 
 lemma valid_node_Main_SeqSecond:
+  fixes wfp
   assumes "CFG.valid_node sourcenode targetnode (valid_edge wfp) (Main,n)"
   and "n \<noteq> Entry" and "Rep_wf_prog wfp = (prog,procs)" 
   and "Rep_wf_prog wfp' = (c\<^sub>1;;prog,procs)"
@@ -438,6 +440,7 @@ qed
 
 
 lemma path_Main_SeqSecond:
+  fixes wfp
   assumes "Rep_wf_prog wfp = (prog,procs)" and "Rep_wf_prog wfp' = (c\<^sub>1;;prog,procs)"
   shows "\<lbrakk>wfp \<turnstile> (Main,n) -as\<rightarrow>* (p',n'); \<forall>a \<in> set as. intra_kind (kind a); n \<noteq> Entry\<rbrakk>
   \<Longrightarrow> wfp' \<turnstile> (Main,n \<oplus> #:c\<^sub>1) -as \<oplus>s #:c\<^sub>1\<rightarrow>* (p',n' \<oplus> #:c\<^sub>1)"
@@ -498,6 +501,7 @@ qed (auto simp:intra_kind_def)
 
 
 lemma valid_node_Main_CondTrue:
+  fixes wfp
   assumes "CFG.valid_node sourcenode targetnode (valid_edge wfp) (Main,n)"
   and "n \<noteq> Entry" and "Rep_wf_prog wfp = (prog,procs)" 
   and "Rep_wf_prog wfp' = (if (b) prog else c\<^sub>2,procs)"
@@ -647,6 +651,7 @@ qed
 
 
 lemma path_Main_CondTrue:
+  fixes wfp
   assumes "Rep_wf_prog wfp = (prog,procs)" 
   and "Rep_wf_prog wfp' = (if (b) prog else c\<^sub>2,procs)"
   shows "\<lbrakk>wfp \<turnstile> (Main,n) -as\<rightarrow>* (p',n'); \<forall>a \<in> set as. intra_kind (kind a); n \<noteq> Entry\<rbrakk>
@@ -712,6 +717,7 @@ qed (auto simp:intra_kind_def)
 
 
 lemma valid_node_Main_CondFalse:
+  fixes wfp
   assumes "CFG.valid_node sourcenode targetnode (valid_edge wfp) (Main,n)"
   and "n \<noteq> Entry" and "Rep_wf_prog wfp = (prog,procs)" 
   and "Rep_wf_prog wfp' = (if (b) c\<^sub>1 else prog,procs)"
@@ -863,6 +869,7 @@ qed
 
 
 lemma path_Main_CondFalse:
+  fixes wfp
   assumes "Rep_wf_prog wfp = (prog,procs)" 
   and "Rep_wf_prog wfp' = (if (b) c\<^sub>1 else prog,procs)"
   shows "\<lbrakk>wfp \<turnstile> (Main,n) -as\<rightarrow>* (p',n'); \<forall>a \<in> set as. intra_kind (kind a); n \<noteq> Entry\<rbrakk>
@@ -930,6 +937,7 @@ qed (auto simp:intra_kind_def)
 
 
 lemma valid_node_Main_WhileBody:
+  fixes wfp
   assumes "CFG.valid_node sourcenode targetnode (valid_edge wfp) (Main,n)"
   and "n \<noteq> Entry" and "Rep_wf_prog wfp = (prog,procs)" 
   and "Rep_wf_prog wfp' = (while (b) prog,procs)"
@@ -1103,6 +1111,7 @@ qed
 
 
 lemma path_Main_WhileBody:
+  fixes wfp
   assumes "Rep_wf_prog wfp = (prog,procs)" 
   and "Rep_wf_prog wfp' = (while (b) prog,procs)"
   shows "\<lbrakk>wfp \<turnstile> (Main,n) -as\<rightarrow>* (p',n'); \<forall>a \<in> set as. intra_kind (kind a); 
@@ -1148,6 +1157,7 @@ qed
 subsubsection \<open>Existence of intraprodecural paths\<close>
 
 lemma Label_Proc_CFG_Entry_Exit_path_Main:
+  fixes wfp
   assumes "Rep_wf_prog wfp = (prog,procs)" and "l < #:prog"
   obtains as as' where "wfp \<turnstile> (Main,Label l) -as\<rightarrow>* (Main,Exit)"
   and "\<forall>a \<in> set as. intra_kind (kind a)"
@@ -1641,6 +1651,7 @@ fun lift_path :: "edge list \<Rightarrow> pname \<Rightarrow> edge list"
 
 
 lemma lift_path_Proc: 
+  fixes wfp
   assumes "Rep_wf_prog wfp' = (c,procs)" and "Rep_wf_prog wfp = (prog,procs)"
   and "(p,ins,outs,c) \<in> set procs" and "containsCall procs prog ps p"
   shows "\<lbrakk>wfp' \<turnstile> (Main,n) -as\<rightarrow>* (Main,n'); \<forall>a \<in> set as. intra_kind (kind a)\<rbrakk>
@@ -1689,6 +1700,7 @@ qed
 subsection \<open>Existence of paths from Entry and to Exit\<close>
 
 lemma Label_Proc_CFG_Entry_Exit_path_Proc:
+  fixes wfp
   assumes "Rep_wf_prog wfp = (prog,procs)" and "l < #:c"
   and "(p,ins,outs,c) \<in> set procs" and "containsCall procs prog ps p"
   obtains as as' where "wfp \<turnstile> (p,Label l) -as\<rightarrow>* (p,Exit)"
@@ -1727,6 +1739,7 @@ qed
 
 
 lemma Entry_to_Entry_and_Exit_to_Exit: 
+  fixes wfp
   assumes "Rep_wf_prog wfp = (prog,procs)"
   and "containsCall procs prog ps p" and "(p,ins,outs,c) \<in> set procs"
   obtains as as' where "CFG.valid_path' sourcenode targetnode kind
@@ -1864,6 +1877,7 @@ qed
 
 
 lemma edge_valid_paths:
+  fixes wfp
   assumes "prog,procs \<turnstile> sourcenode a -kind a\<rightarrow> targetnode a"
   and disj:"(p,n) = sourcenode a \<or> (p,n) = targetnode a" 
   and [simp]:"Rep_wf_prog wfp = (prog,procs)"

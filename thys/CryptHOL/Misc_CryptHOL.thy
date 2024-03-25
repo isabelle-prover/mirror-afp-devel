@@ -48,11 +48,7 @@ lemma Least_le_Least:
   assumes "Q x"
   and Q: "\<And>x. Q x \<Longrightarrow> \<exists>y\<le>x. P y"
   shows "Least P \<le> Least Q"
-proof -
-  obtain f :: "'a \<Rightarrow> 'a" where "\<forall>a. \<not> Q a \<or> f a \<le> a \<and> P (f a)" using Q by moura
-  moreover have "Q (Least Q)" using \<open>Q x\<close> by(rule LeastI)
-  ultimately show ?thesis by (metis (full_types) le_cases le_less less_le_trans not_less_Least)
-qed
+  by (metis assms order_trans wellorder_Least_lemma)
 
 lemma is_empty_image [simp]: "Set.is_empty (f ` A) = Set.is_empty A"
   by(auto simp add: Set.is_empty_def)

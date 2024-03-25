@@ -1031,7 +1031,7 @@ proof (cases "\<exists>u \<in> S. \<forall>s \<in> S. s \<le> u")
 
       have "x \<ge> x_m" "x \<ge> x_n" "x \<ge> x_m_n" unfolding x_def by linarith+
       hence "u m \<le> \<lfloor>of_int m * x\<rfloor>" "u n \<le> \<lfloor>of_int n * x\<rfloor>" "u (m + n) \<le> \<lfloor>of_int (m + n) * x\<rfloor>" 
-        unfolding x_m x_n x_m_n by (meson asm floor_less_cancel linorder_not_less mult_le_cancel_iff2 of_int_0_less_iff add_pos_pos)+       
+        unfolding x_m x_n x_m_n by (meson asm floor_less_cancel linorder_not_less mult_le_cancel_left_pos of_int_0_less_iff add_pos_pos)+       
       hence "u m = \<lfloor>of_int m * x\<rfloor>" "u n = \<lfloor>of_int n * x\<rfloor>" "u (m + n) = \<lfloor>of_int m * x + of_int n * x\<rfloor>" 
         using u_Sup_nonneg[OF x(1), of m] u_Sup_nonneg[OF x(1), of n] u_Sup_nonneg[OF x(1), of "m + n"] asm add_pos_pos[OF asm] by (force simp add: distrib_right)+
       moreover 

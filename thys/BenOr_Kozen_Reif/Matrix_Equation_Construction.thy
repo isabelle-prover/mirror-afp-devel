@@ -574,26 +574,7 @@ proof -
                   {xa. poly p xa = 0 \<and> consistent_sign_vec_copr qs xa = sgn}) \<longrightarrow> {xa. poly p xa = 0 \<and> consistent_sign_vec_copr qs xa = sgn} \<noteq> {}" 
       by fastforce
     then show ?thesis
-    proof -
-      { fix iis :: "rat list"
-        have ff1: "0 \<noteq> p"
-          using nonzero rsquarefree_def by blast
-        obtain rr :: "(real \<Rightarrow> bool) \<Rightarrow> real" where
-          ff2: "\<And>p. p (rr p) \<or> Collect p = {}"
-          by moura
-        { assume "\<exists>is. is = iis \<and> {r. poly p r = 0 \<and> consistent_sign_vec_copr qs r = is} \<noteq> {}"
-          then have "\<exists>is. consistent_sign_vec_copr qs (rr (\<lambda>r. poly p r = 0 \<and> consistent_sign_vec_copr qs r = is)) = iis \<and> {r. poly p r = 0 \<and> consistent_sign_vec_copr qs r = is} \<noteq> {}"
-            using ff2
-            by (metis (mono_tags, lifting))
-          then have "\<exists>r. poly p r = 0 \<and> consistent_sign_vec_copr qs r = iis"
-            using ff2 by smt
-          then have "iis \<in> consistent_sign_vec_copr qs ` set (sorted_list_of_set {r. poly p r = 0})"
-            using ff1 poly_roots_finite by fastforce }
-        then have "iis \<notin> set signs \<or> iis \<in> consistent_sign_vec_copr qs ` set (characterize_root_list_p p) \<or> \<not> 0 < rat_of_int (int (card {r. poly p r = 0 \<and> consistent_sign_vec_copr qs r = iis}))"
-          by (metis (no_types) \<open>\<forall>sgn. sgn \<in> set signs \<and> sgn \<notin> consistent_sign_vec_copr qs ` set (characterize_root_list_p p) \<and> 0 < rat_of_int (int (card {xa. poly p xa = 0 \<and> consistent_sign_vec_copr qs xa = sgn})) \<longrightarrow> {xa. poly p xa = 0 \<and> consistent_sign_vec_copr qs xa = sgn} \<noteq> {}\<close> characterize_root_list_p_def) }
-      then show ?thesis
-        by fastforce
-    qed
+      using characterize_consistent_signs_at_roots_copr_def in_set nonzero welldefined by auto
   qed
   then have "\<forall> sgn. sgn \<in> set signs \<and> sgn \<notin> consistent_sign_vec_copr qs ` set (characterize_root_list_p p) \<longrightarrow> ((0 = rat_of_nat (card
                   {xa. poly p xa = 0 \<and> consistent_sign_vec_copr qs xa = sgn}) \<or> z I sgn = 0))"

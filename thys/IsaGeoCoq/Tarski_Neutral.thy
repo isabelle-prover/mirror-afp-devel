@@ -10150,15 +10150,7 @@ lemma l11_22:
 lemma l11_24:
   assumes "P InAngle A B C"
   shows "P InAngle C B A"
-proof -
-  obtain pp :: "'p \<Rightarrow> 'p \<Rightarrow> 'p \<Rightarrow> 'p \<Rightarrow> 'p" where
-    "\<forall>x0 x1 x2 x3. (\<exists>v4. Bet x2 v4 x0 \<and> (v4 = x1 \<or> x1 Out v4 x3)) = (Bet x2 (pp x0 x1 x2 x3) x0 \<and> ((pp x0 x1 x2 x3) = x1 \<or> x1 Out (pp x0 x1 x2 x3) x3))"
-    by moura
-  then have "A \<noteq> B \<and> C \<noteq> B \<and> P \<noteq> B \<and>Bet A (pp C B A P) C \<and> ((pp C B A P) = B \<or> B Out (pp C B A P) P)"
-    using InAngle_def assms by presburger
-  thus ?thesis
-    by (metis (no_types) InAngle_def between_symmetry)
-qed
+  using Bet_cases InAngle_def assms by auto
 
 lemma col_in_angle:
   assumes "A \<noteq> B" and
@@ -10748,7 +10740,7 @@ proof -
     {
       assume W1: "\<not> Col D E F"
       obtain Q where W2: "D E F CongA A B Q \<and> A B OS Q C"
-        using W1 ZZ angle_construction_1 by moura
+        using W1 ZZ angle_construction_1 by blast
       obtain DD where W3: "E Out D DD \<and> Cong E DD B A"
         using P3 Z1 segment_construction_3 by force
       obtain FF where W4: "E Out F FF \<and> Cong E FF B Q"
@@ -27001,7 +26993,7 @@ proof -
     proof -
       obtain pp :: 'p and ppa :: 'p and ppb :: 'p where
         f1: "QCongA a \<and> a pp ppa ppb \<and> \<not> Bet pp ppa ppb"
-        using \<open>QCongA a \<and> (\<exists>A B C. a A B C \<and> \<not> Bet A B C)\<close> by moura
+        using \<open>QCongA a \<and> (\<exists>A B C. a A B C \<and> \<not> Bet A B C)\<close> by blast
       then have f2: "\<forall>p pa pb. pp ppa ppb CongA pb pa p \<or> \<not> a pb pa p"
         by (metis (no_types) Ang_def Tarski_neutral_dimensionless.not_cong_is_ang1 Tarski_neutral_dimensionless_axioms)
       then have f3: "\<forall>p pa pb. (Col pp ppa ppb \<or> \<not> a pb pa p) \<or> \<not> Bet pb pa p"

@@ -254,7 +254,7 @@ lemma subst_lsst_unlabel_member[intro]:
   assumes "x \<in> set (unlabel A)"
   shows "x \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<delta> \<in> set (unlabel (A \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<delta>))"
 proof -
-  obtain l where x: "(l,x) \<in> set A" using assms unfolding unlabel_def by moura
+  obtain l where x: "(l,x) \<in> set A" using assms unfolding unlabel_def by atomize_elim auto
   thus ?thesis
     using subst_lsst_memI
     by (metis unlabel_def in_set_zipE subst_apply_labeled_stateful_strand_step.simps zip_map_fst_snd)
@@ -309,7 +309,7 @@ by (simp add: dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def)
 
 lemma dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p_subst: "dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p (s \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<delta>) = (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p s) \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<delta>"
 proof -
-  obtain l x  where s: "s = (l,x)" by moura
+  obtain l x  where s: "s = (l,x)" by atomize_elim auto
   thus ?thesis by (cases x) (auto simp add: subst_apply_labeled_stateful_strand_def)
 qed
 
@@ -556,10 +556,10 @@ lemma dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_in_set_prefix_obtain_subst:
   shows "\<exists>l B s'. (l,s) = dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p ((l,s') \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<theta>) \<and> prefix ((B \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)@[(l,s') \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<theta>]) (A \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)"
 proof -
   obtain B l s' where B: "(l,s) = dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p (l,s')" "prefix (B@[(l,s')]) (A \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>)"
-    using dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_in_set_prefix_obtain[OF assms] by moura
+    using dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_in_set_prefix_obtain[OF assms] by atomize_elim auto
 
   obtain C where C: "C \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta> = B@[(l,s')]"
-    using subst_lsst_prefix[OF B(2)] by moura
+    using subst_lsst_prefix[OF B(2)] by atomize_elim auto
 
   obtain D u where D: "C = D@[(l,u)]" "D \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta> = B" "[(l,u)] \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta> = [(l, s')]"
     using subst_lsst_prefix[OF B(2)] subst_lsst_append_inv[OF C(1)]
@@ -611,7 +611,7 @@ lemma trms\<^sub>s\<^sub>s\<^sub>t_unlabel_subst'':
   assumes "t \<in> trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (S \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<delta>) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<theta>"
   shows "\<exists>s \<in> trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t S. \<exists>X. set X \<subseteq> bvars\<^sub>l\<^sub>s\<^sub>s\<^sub>t S \<and> t = s \<cdot> rm_vars (set X) \<delta> \<circ>\<^sub>s \<theta>"
 proof -
-  obtain s where s: "s \<in> trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (S \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<delta>)" "t = s \<cdot> \<theta>" using assms by moura
+  obtain s where s: "s \<in> trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (S \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<delta>)" "t = s \<cdot> \<theta>" using assms by atomize_elim auto
   show ?thesis using trms\<^sub>s\<^sub>s\<^sub>t_unlabel_subst'[OF s(1)] s(2) by auto
 qed
 
@@ -642,7 +642,7 @@ lemma db\<^sub>s\<^sub>s\<^sub>t_dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t:
   "db'\<^sub>s\<^sub>s\<^sub>t (unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<delta>))) \<I> D = db'\<^sub>s\<^sub>s\<^sub>t (unlabel (T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<delta>)) \<I> D"
 proof (induction T arbitrary: D)
   case (Cons x T)
-  obtain l s where "x = (l,s)" by moura
+  obtain l s where "x = (l,s)" by atomize_elim auto
   thus ?case
     using Cons
     by (cases s) (simp_all add: unlabel_def dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def subst_apply_labeled_stateful_strand_def)  
@@ -792,7 +792,7 @@ proof (induction A)
   hence IH: "[d\<leftarrow>map snd A . d \<notin> snd ` B] = map snd [d\<leftarrow>A . d \<notin> B]" using Cons.IH by auto
 
   { assume "snd a \<in> snd ` B"
-    then obtain b where b: "b \<in> B" "snd a = snd b" by moura
+    then obtain b where b: "b \<in> B" "snd a = snd b" by atomize_elim auto
     hence "fst a = fst b" using *(2) by auto
     hence "a \<in> B" using b by (metis surjective_pairing)  
   } hence **: "a \<notin> B \<Longrightarrow> snd a \<notin> snd ` B" by metis
@@ -912,7 +912,7 @@ lemma setops\<^sub>s\<^sub>s\<^sub>t_proj_subset:
 unfolding unlabel_def proj_def
 proof (induction A)
   case (Cons a A)
-  obtain l b where lb: "a = (l,b)" by moura
+  obtain l b where lb: "a = (l,b)" by atomize_elim auto
   { case 1 thus ?case using Cons.IH(1) unfolding lb by (cases b) (auto simp add: setops\<^sub>s\<^sub>s\<^sub>t_def) }
   { case 2 thus ?case using Cons.IH(2) unfolding lb by (cases b) (auto simp add: setops\<^sub>s\<^sub>s\<^sub>t_def) }
   { case 3 thus ?case using Cons.IH(3) unfolding lb by (cases b) (auto simp add: setops\<^sub>s\<^sub>s\<^sub>t_def) }
@@ -924,7 +924,7 @@ lemma setops\<^sub>s\<^sub>s\<^sub>t_unlabel_prefix_subset:
 unfolding unlabel_def proj_def
 proof (induction A)
   case (Cons a A)
-  obtain l b where lb: "a = (l,b)" by moura
+  obtain l b where lb: "a = (l,b)" by atomize_elim auto
   { case 1 thus ?case using Cons.IH lb by (cases b) (auto simp add: setops\<^sub>s\<^sub>s\<^sub>t_def) }
   { case 2 thus ?case using Cons.IH lb by (cases b) (auto simp add: setops\<^sub>s\<^sub>s\<^sub>t_def) }
 qed (simp_all add: setops\<^sub>s\<^sub>s\<^sub>t_def)
@@ -935,7 +935,7 @@ lemma setops\<^sub>s\<^sub>s\<^sub>t_unlabel_suffix_subset:
 unfolding unlabel_def proj_def
 proof (induction A)
   case (Cons a A)
-  obtain l b where lb: "a = (l,b)" by moura
+  obtain l b where lb: "a = (l,b)" by atomize_elim auto
   { case 1 thus ?case using Cons.IH lb by (cases b) (auto simp add: setops\<^sub>s\<^sub>s\<^sub>t_def) }
   { case 2 thus ?case using Cons.IH lb by (cases b) (auto simp add: setops\<^sub>s\<^sub>s\<^sub>t_def) }
 qed simp_all

@@ -79,13 +79,7 @@ proof
       by blast
 
     then obtain io'' where "p_io pt = io' @ io''" and "io = p_io p @ io'"
-      unfolding prefixes_set
-    proof -
-      assume a1: "io' \<in> {xs'. \<exists>xs''. xs' @ xs'' = p_io pt}"
-      assume "\<And>io''. \<lbrakk>p_io pt = io' @ io''; io = p_io p @ io'\<rbrakk> \<Longrightarrow> thesis"
-      then show ?thesis
-        using a1 \<open>io = p_io p @ io'\<close> by moura
-    qed 
+      unfolding prefixes_set using \<open>io' \<in> set (prefixes (p_io pt))\<close> prefixes_set_ob by blast
 
     have "q \<in> fst ` prs"
       using \<open>(q,P) \<in> prs\<close> 

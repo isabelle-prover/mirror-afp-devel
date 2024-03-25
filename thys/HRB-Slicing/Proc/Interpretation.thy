@@ -15,23 +15,25 @@ abbreviation kind :: "edge \<Rightarrow> (vname,val,node,pname) edge_kind"
 
 
 definition valid_edge :: "wf_prog \<Rightarrow> edge \<Rightarrow> bool"
-  where "valid_edge wfp a \<equiv> let (prog,procs) = Rep_wf_prog wfp in
+  where "\<And>wfp. valid_edge wfp a \<equiv> let (prog,procs) = Rep_wf_prog wfp in
   prog,procs \<turnstile> sourcenode a -kind a\<rightarrow> targetnode a"
 
 
 definition get_return_edges :: "wf_prog \<Rightarrow> edge \<Rightarrow> edge set"
-  where "get_return_edges wfp a \<equiv> 
+  where "\<And>wfp. get_return_edges wfp a \<equiv> 
   case kind a of Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs \<Rightarrow> {a'. valid_edge wfp a' \<and> (\<exists>Q' f'. kind a' = Q'\<hookleftarrow>\<^bsub>p\<^esub>f') \<and>
                                  targetnode a' = r}
                      | _ \<Rightarrow> {}"
 
 
 lemma get_return_edges_non_call_empty:
-  "\<forall>Q r p fs. kind a \<noteq> Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs \<Longrightarrow> get_return_edges wfp a = {}"
+  fixes wfp
+  shows "\<forall>Q r p fs. kind a \<noteq> Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs \<Longrightarrow> get_return_edges wfp a = {}"
   by(cases "kind a",auto simp:get_return_edges_def)
 
 
 lemma call_has_return_edge:
+  fixes wfp
   assumes "valid_edge wfp a" and "kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs"
   obtains a' where "valid_edge wfp a'" and "\<exists>Q' f'. kind a' = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'"
   and "targetnode a' = r"
@@ -65,18 +67,20 @@ qed
 
 
 lemma get_return_edges_call_nonempty:
-  "\<lbrakk>valid_edge wfp a; kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs\<rbrakk> \<Longrightarrow> get_return_edges wfp a \<noteq> {}"
+  fixes wfp
+  shows "\<lbrakk>valid_edge wfp a; kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs\<rbrakk> \<Longrightarrow> get_return_edges wfp a \<noteq> {}"
 by -(erule call_has_return_edge,(fastforce simp:get_return_edges_def)+)
 
 
 lemma only_return_edges_in_get_return_edges:
-  "\<lbrakk>valid_edge wfp a; kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs; a' \<in> get_return_edges wfp a\<rbrakk>
+  fixes wfp
+  shows "\<lbrakk>valid_edge wfp a; kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs; a' \<in> get_return_edges wfp a\<rbrakk>
   \<Longrightarrow> \<exists>Q' f'. kind a' = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'"
 by(cases "kind a",auto simp:get_return_edges_def)
 
 
 abbreviation lift_procs :: "wf_prog \<Rightarrow> (pname \<times> vname list \<times> vname list) list"
-  where "lift_procs wfp \<equiv> let (prog,procs) = Rep_wf_prog wfp in
+  where "\<And>wfp. lift_procs wfp \<equiv> let (prog,procs) = Rep_wf_prog wfp in
   map (\<lambda>x. (fst x,fst(snd x),fst(snd(snd x)))) procs"
 
 

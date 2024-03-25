@@ -93,7 +93,8 @@ proof-
       by (metis (no_types) \<open>bdd_above (f ` X)\<close> \<open>bdd_above (g ` X)\<close> bdd_above_image_sup sup_max)
     moreover have \<open>e > 0 \<Longrightarrow> \<exists> k \<in> (\<lambda> \<xi>. max (f \<xi>) (g \<xi>)) ` X. y \<le> k + e\<close>
       for e::real
-      using \<open>Sup (f ` X) \<ge> Sup (g ` X)\<close> by (smt \<open>x \<in> X\<close> \<open>y = f x\<close> image_eqI)        
+      using \<open>Sup (f ` X) \<ge> Sup (g ` X)\<close>
+      by (smt (verit, best) \<open>x \<in> X\<close> \<open>y = f x\<close> imageI)
     ultimately show ?thesis
       using \<open>x \<in> X\<close> \<open>y = f x\<close> cSUP_upper by fastforce
   qed
@@ -193,7 +194,8 @@ lemma bound_Cauchy_to_lim:
 \<close>
 proof-
   have \<open>c \<ge> 0\<close>
-    using \<open>\<And> n. \<parallel>y (Suc n) - y n\<parallel> \<le> c^n\<close> by (smt norm_imp_pos_and_ge power_Suc0_right)
+    using \<open>\<And> n. \<parallel>y (Suc n) - y n\<parallel> \<le> c^n\<close>
+    by (metis dual_order.trans norm_ge_zero power_one_right)
   have norm_1: \<open>norm (\<Sum>k = Suc n..N. y (Suc k) - y k) \<le> (c ^ Suc n)/(1 - c)\<close> for N
   proof(cases \<open>N < Suc n\<close>)
     case True
@@ -216,7 +218,7 @@ proof-
       by (simp add: assms(2) sum_norm_le)
     hence \<open>(1 - c) * \<parallel>sum (\<lambda>k. y (Suc k) - y k) {Suc n .. N}\<parallel>
                    \<le> (1 - c) * (sum (power c) {Suc n .. N})\<close>
-      using \<open>0 < 1 - c\<close> mult_le_cancel_iff2 by blast      
+      using \<open>0 < 1 - c\<close> mult_le_cancel_left_pos by blast      
     also have \<open>\<dots> = c^(Suc n) - c^(Suc N)\<close>
       using Set_Interval.sum_gp_multiplied \<open>Suc n \<le> N\<close> by blast
     also have \<open>\<dots> \<le> c^(Suc n)\<close>
@@ -225,7 +227,7 @@ proof-
       by blast
     hence \<open>((1 - c) * \<parallel>\<Sum>k = Suc n..N. y (Suc k) - y k\<parallel>)/(1 - c)
                    \<le> (c ^ Suc n)/(1 - c)\<close>
-      using \<open>0 < 1 - c\<close> by (smt divide_right_mono)      
+      using \<open>0 < 1 - c\<close> divide_le_cancel by fastforce
     thus \<open>\<parallel>\<Sum>k = Suc n..N. y (Suc k) - y k\<parallel> \<le> (c ^ Suc n)/(1 - c)\<close>
       using \<open>0 < 1 - c\<close> by auto 
   qed
@@ -258,7 +260,7 @@ proof(cases \<open>(UNIV::'a set) = 0\<close>)
   hence \<open>\<parallel>f\<parallel> = 0\<close>
     by (simp add: blinfun_eqI zero_blinfun.rep_eq)      
   have \<open>{ \<parallel>f *\<^sub>v x\<parallel> | x. \<parallel>x\<parallel> < 1} = {0}\<close>
-    by (smt Collect_cong \<open>\<And>x. f *\<^sub>v x = 0\<close> norm_zero singleton_conv)      
+    by (smt (verit, ccfv_SIG) Collect_cong \<open>\<And>x. f *\<^sub>v x = 0\<close> norm_zero singleton_conv)      
   hence \<open>Sup { \<parallel>f *\<^sub>v x\<parallel> | x. \<parallel>x\<parallel> < 1} = 0\<close>
     by simp    
   thus ?thesis using \<open>\<parallel>f\<parallel> = 0\<close> by auto      
@@ -297,7 +299,7 @@ next
     proof-
       obtain r :: "('a \<Rightarrow>\<^sub>L 'b) \<Rightarrow> real" where
         "\<And>f x. 0 \<le> r f \<and> (bounded_linear f \<longrightarrow> \<parallel>f *\<^sub>v x\<parallel> \<le> \<parallel>x\<parallel> * r f)"
-        using bounded_linear.nonneg_bounded by moura
+        by (metis mult.commute norm_blinfun norm_ge_zero)
       have \<open>\<not> \<parallel>f\<parallel> < 0\<close>
         by simp          
       hence "(\<exists>r. \<parallel>f\<parallel> * \<parallel>a r\<parallel> \<le> r) \<or> (\<exists>r. \<parallel>a r\<parallel> < 1 \<longrightarrow> \<parallel>f *\<^sub>v a r\<parallel> \<le> r)"
@@ -309,7 +311,7 @@ next
     thus ?thesis by auto 
   qed
   have Sup_non_neg: \<open>Sup {\<parallel>f *\<^sub>v x\<parallel> |x. \<parallel>x\<parallel> = 1} \<ge> 0\<close>
-    by (smt Collect_empty_eq cSup_upper mem_Collect_eq nonnegative norm_1_bounded norm_1_non_empty)      
+    by (metis (mono_tags, lifting) \<open>\<parallel>y\<parallel> = 1\<close> cSup_upper2 mem_Collect_eq norm_1_bounded norm_ge_zero)
   have \<open>{0::real} \<noteq> {}\<close>
     by simp
   have \<open>bdd_above {0::real}\<close>
@@ -419,7 +421,7 @@ next
       ultimately show ?thesis by linarith 
     qed
     hence \<open>Sup { \<parallel>f *\<^sub>v x\<parallel> | x. \<parallel>x\<parallel> < 1} \<le> Sup { \<parallel>f *\<^sub>v x\<parallel> | x. \<parallel>x\<parallel> = 1}\<close>
-      by (smt cSup_least norm_less_1_non_empty) 
+      by (smt (verit, del_insts) less_cSupD norm_less_1_non_empty)
     hence \<open>Sup { \<parallel>f *\<^sub>v x\<parallel> | x. \<parallel>x\<parallel> = 1} = Sup { \<parallel>f *\<^sub>v x\<parallel> | x. \<parallel>x\<parallel> < 1}\<close>
       using \<open>Sup {\<parallel>f *\<^sub>v x\<parallel> |x. norm x = 1} \<le> Sup { \<parallel>f *\<^sub>v x\<parallel> |x. \<parallel>x\<parallel> < 1}\<close> by linarith
     have f1: \<open>(SUP x. \<parallel>f *\<^sub>v x\<parallel> / \<parallel>x\<parallel>) = Sup { \<parallel>f *\<^sub>v x\<parallel> / \<parallel>x\<parallel> | x. True}\<close>
@@ -507,7 +509,7 @@ lemma onorm_r:
 proof-
   have \<open>\<parallel>f\<parallel> = Sup {\<parallel>f *\<^sub>v x\<parallel> |x. \<parallel>x\<parallel> < 1}\<close>
     using onorm_open_ball by blast
-  moreover have \<open>{\<parallel>f *\<^sub>v x\<parallel> |x. \<parallel>x\<parallel> < 1} = (\<lambda>x. \<parallel>f *\<^sub>v x\<parallel>) ` (ball 0 1)\<close>
+  moreover have *: \<open>{\<parallel>f *\<^sub>v x\<parallel> |x. \<parallel>x\<parallel> < 1} = (\<lambda>x. \<parallel>f *\<^sub>v x\<parallel>) ` (ball 0 1)\<close>
     unfolding ball_def by auto
   ultimately have onorm_f: \<open>\<parallel>f\<parallel> = Sup ((\<lambda>x. \<parallel>f *\<^sub>v x\<parallel>) ` (ball 0 1))\<close>
     by simp
@@ -516,7 +518,7 @@ proof-
     assume \<open>x \<in> (\<lambda>t. r *\<^sub>R \<parallel>f *\<^sub>v t\<parallel>) ` ball 0 1\<close>
     hence \<open>\<exists> t. x = r *\<^sub>R \<parallel>f *\<^sub>v t\<parallel> \<and> \<parallel>t\<parallel> < 1\<close>
       by auto
-    then obtain t where \<open>x = r *\<^sub>R \<parallel>f *\<^sub>v t\<parallel>\<close> and \<open>\<parallel>t\<parallel> < 1\<close>
+    then obtain t where t: \<open>x = r *\<^sub>R \<parallel>f *\<^sub>v t\<parallel>\<close> \<open>\<parallel>t\<parallel> < 1\<close>
       by blast
     define y where \<open>y = x /\<^sub>R r\<close>
     have \<open>x = r * (inverse r * x)\<close>
@@ -526,8 +528,7 @@ proof-
     hence \<open>x \<le> r * (x /\<^sub>R r)\<close>
       by auto
     have \<open>y \<in> (\<lambda>k. \<parallel>f *\<^sub>v k\<parallel>) ` ball 0 1\<close>
-      unfolding y_def by (smt \<open>x \<in> (\<lambda>t. r *\<^sub>R \<parallel>f *\<^sub>v t\<parallel>) ` ball 0 1\<close> assms image_iff 
-          inverse_inverse_eq pos_le_divideR_eq positive_imp_inverse_positive) 
+      unfolding y_def using assms t * by fastforce 
     moreover have \<open>x \<le> r * y\<close>          
       using \<open>x \<le> r * (x /\<^sub>R r)\<close> y_def by blast
     ultimately have y_norm_f: \<open>y \<in> (\<lambda>t. \<parallel>f *\<^sub>v t\<parallel>) ` ball 0 1 \<and> x \<le> r * y\<close>
@@ -540,7 +541,7 @@ proof-
     moreover have \<open>\<exists> y. y \<in> (\<lambda>t. \<parallel>f *\<^sub>v t\<parallel>) ` ball 0 1 \<and> x \<le> r * y\<close>
       using y_norm_f by blast
     ultimately show ?thesis
-      by (smt \<open>0 < r\<close> cSup_upper ordered_comm_semiring_class.comm_mult_left_mono) 
+      by (meson assms cSup_upper dual_order.trans mult_le_cancel_left_pos)
   qed
   have s3: \<open>(\<And>x. x \<in> (\<lambda>t. r * \<parallel>f *\<^sub>v t\<parallel>) ` ball 0 1 \<Longrightarrow> x \<le> y) \<Longrightarrow>
          r * Sup ((\<lambda>t. \<parallel>f *\<^sub>v t\<parallel>) ` ball 0 1) \<le> y\<close> for y
@@ -569,7 +570,7 @@ proof-
     ultimately have \<open>Sup ((\<lambda>t. \<parallel>f *\<^sub>v t\<parallel>) ` ball 0 1) \<le> y/r\<close>
       using x_leq by (simp add: \<open>bdd_above ((\<lambda>t. \<parallel>f *\<^sub>v t\<parallel>) ` ball 0 1)\<close> cSup_least) 
     thus ?thesis using \<open>r > 0\<close>
-      by (smt divide_strict_right_mono nonzero_mult_div_cancel_left)  
+      by (simp add: mult.commute pos_le_divide_eq)
   qed
   have norm_scaleR: \<open>norm \<circ> ((*\<^sub>R) r) = ((*\<^sub>R) \<bar>r\<bar>) \<circ> (norm::'a \<Rightarrow> real)\<close>
     by auto
@@ -722,7 +723,7 @@ proof-
       by simp
     moreover have \<open>{Suc N..n} \<union> {Suc n..m} = {Suc N..m}\<close>
       using Set_Interval.ivl_disj_un
-      by (smt \<open>Suc N \<le> n\<close> \<open>n < m\<close> atLeastSucAtMost_greaterThanAtMost less_imp_le_nat)
+      by (metis \<open>Suc N \<le> n\<close> \<open>n < m\<close> atLeastSucAtMost_greaterThanAtMost order_less_imp_le)
     moreover have \<open>{} = {Suc N..n} \<inter> {Suc n..m}\<close>
       by simp
     ultimately have \<open>sum a {Suc N..m} = sum a {Suc N..n} + sum a {Suc n..m}\<close>
@@ -799,16 +800,14 @@ proof (unfold Cauchy_altdef2, rule, rule)
       using Lim_PInfty by simp
     hence  \<open>\<exists>n. (sum a {0..n}) \<ge> K+1\<close>
       using ereal_less_eq(3) by blast        
-    thus ?thesis using  \<open>\<forall>n. (sum a  {0..n}) \<le> K\<close> by smt       
+    thus ?thesis using  \<open>\<forall>n. (sum a  {0..n}) \<le> K\<close> by (smt (verit, best))
   qed
   have \<open>sum a {Suc n..m} = sum a {0..m} - sum a {0..n}\<close>
     if "m > n" for m n
-    apply (simp add: that atLeast0AtMost) using sum_up_index_split 
-    by (smt less_imp_add_positive that)
+    by (metis add_diff_cancel_left' atLeast0AtMost less_imp_add_positive sum_up_index_split that)
   hence \<open>\<exists>M. \<forall>m\<ge>M. \<forall>n\<ge>M. m > n \<longrightarrow> sum a {0..m} - sum a {0..n} < e\<close>
-    using \<open>\<exists>M. \<forall>m\<ge>M. \<forall>n\<ge>M. m > n \<longrightarrow> sum a {Suc n..m} < e\<close> by smt     
-  from \<open>\<exists>M. \<forall>m\<ge>M. \<forall>n\<ge>M. m > n \<longrightarrow> sum a {0..m} - sum a {0..n} < e\<close>
-  obtain M where \<open>\<forall>m\<ge>M. \<forall>n\<ge>M. m > n \<longrightarrow> sum a {0..m} - sum a {0..n} < e\<close>
+    using \<open>\<exists>M. \<forall>m\<ge>M. \<forall>n\<ge>M. m > n \<longrightarrow> sum a {Suc n..m} < e\<close> by presburger
+  then obtain M where \<open>\<forall>m\<ge>M. \<forall>n\<ge>M. m > n \<longrightarrow> sum a {0..m} - sum a {0..n} < e\<close>
     by blast
   moreover have \<open>m > n \<Longrightarrow> sum a {0..m} \<ge> sum a {0..n}\<close> for m n
     using \<open>\<And> n. a n \<ge> 0\<close> by (simp add: sum_mono2)
@@ -880,7 +879,7 @@ proof (unfold Cauchy_altdef2, rule, rule)
     case 0 thus ?case  by (simp add: assms(2))
   next
     case (Suc p) thus ?case
-      by (smt Suc_eq_plus1 add_Suc_right add_less_same_cancel1 assms(2) dist_self dist_triangle2 
+      by (smt(verit, ccfv_SIG) Suc_eq_plus1 add_Suc_right add_less_same_cancel1 assms(2) dist_self dist_triangle2 
           gr_implies_not0 sum.cl_ivl_Suc)  
   qed
   hence \<open>m > n \<Longrightarrow> dist (\<phi> m) (\<phi> n) \<le> sum a {n..m-1}\<close> for m n :: nat

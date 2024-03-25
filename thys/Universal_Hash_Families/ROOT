@@ -1,7 +1,7 @@
 chapter AFP
 
 session Universal_Hash_Families = "HOL-Probability" +
-  options [timeout = 600]
+  options [timeout = 3600]
   sessions
     "HOL-Algebra"
     Concentration_Inequalities

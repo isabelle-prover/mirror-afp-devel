@@ -23,22 +23,6 @@ definition hash_space' ::
         (idx_enum_inv R (poly_eval R (poly_enum R k x) (idx_enum R i)) mod pro_size S))
     \<rparr>)"
 
-lemma prod_pmf_of_set:
-  assumes "finite A" "finite B" "A \<noteq> {}" "B \<noteq> {}"
-  shows "pmf_of_set (A \<times> B) = pair_pmf (pmf_of_set A) (pmf_of_set B)" (is "?L = ?R")
-proof (rule pmf_eqI)
-  fix x
-  have "pmf ?L x = indicator (A \<times> B) x / real (card (A \<times> B))"
-    using assms by (intro pmf_of_set) auto
-  also have "... = (indicator A (fst x) / real (card A)) * (indicator B (snd x) / real (card B))"
-    unfolding card_cartesian_product of_nat_mult by (simp add: indicator_times)
-  also have "... = pmf (pmf_of_set A) (fst x) * pmf (pmf_of_set B) (snd x)"
-    by (intro arg_cong2[where f="(*)"] pmf_of_set[symmetric] assms)
-  also have "... = pmf ?R x"
-    unfolding pmf_pair[symmetric] by auto
-  finally show "pmf ?L x = pmf ?R x" by simp
-qed
-
 lemma hash_prob_single':
   assumes "field F" "finite (carrier F)"
   assumes "x \<in> carrier F"
@@ -185,7 +169,7 @@ proof (cases "I = {}")
       using pro_size_gt_0 t_gt_0 lessThan_empty_iff finite_lessThan
       by (intro arg_cong2[where f="map_pmf"] refl map_pmf_of_set_bij_betw bij_betw_prod) force+
     also have "... = map_pmf fst (pair_pmf (pmf_of_set {..<?s}) (pmf_of_set {..<?t}))"
-      using pro_size_gt_0 t_gt_0 by(intro arg_cong2[where f="map_pmf"] prod_pmf_of_set refl) auto
+      using pro_size_gt_0 t_gt_0 by(intro arg_cong2[where f="map_pmf"] pmf_of_set_prod_eq refl) auto
     also have "... = pmf_of_set {..<?s}" using map_fst_pair_pmf by blast
     finally show ?thesis by simp
   qed

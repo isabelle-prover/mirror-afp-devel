@@ -328,9 +328,8 @@ corollary psubstEnv_preserves_freshEnv:
 assumes good: "goodEnv rho"  "goodEnv rho'"
 and fresh: "freshEnv zs z rho"  "freshEnv zs z rho'"
 shows "freshEnv zs z (rho &[rho'])"
-using assms unfolding freshEnv_def liftAll_def  
-by simp (smt Var_preserves_good fresh(2) fresh_psubst_I1 option.case_eq_if 
-option.exhaust_sel option.sel psubstEnv_def psubst_Var_simp2 psubst_preserves_good)
+using assms unfolding freshEnv_def liftAll_def
+by (smt (verit, del_insts) fresh(2) fresh_psubst_I1 getEnv_preserves_good getEnv_psubstEnv_None getEnv_psubstEnv_Some not_None_eq option.inject)  
 
 corollary fresh_psubst_I:
 assumes "good X" and "goodEnv rho"
@@ -453,7 +452,7 @@ next
     assume "\<forall>ys y. fresh ys y (Op delta inp binp) \<or> rho ys y = rho' ys y"
     hence 1: "liftAll (\<lambda> X. \<forall>ys y. fresh ys y X \<or> rho ys y = rho' ys y) inp \<and>
             liftAll (\<lambda> A. \<forall>ys y. freshAbs ys y A \<or> rho ys y = rho' ys y) binp"
-    using Op by simp (smt freshBinp_def freshInp_def liftAll_def)
+    using Op by simp (smt (verit) freshBinp_def freshInp_def liftAll_def)
     have "liftAll (\<lambda> X. (X #[rho]) = (X #[rho'])) inp \<and>
           liftAll (\<lambda> A. (A $[rho]) = (A $[rho'])) binp" 
     using Op.IH 1 envs by (auto simp: liftAll_def)
@@ -568,7 +567,7 @@ shows
 proof(induction rule: term_induct_fresh[of P])
   case (Var xs x)
   then show ?case using assms 
-  by simp (smt Var_preserves_good envsOf_preserves_good getEnv_swapEnv1 getEnv_swapEnv2 option.case_eq_if option.exhaust_sel psubst_Var psubst_Var_simp2 swapEnv_preserves_good 
+  by simp (smt (verit) Var_preserves_good envsOf_preserves_good getEnv_swapEnv1 getEnv_swapEnv2 option.case_eq_if option.exhaust_sel psubst_Var psubst_Var_simp2 swapEnv_preserves_good 
  swap_Var_simp swap_involutive2 swap_sym)
 next
   case (Op delta inp binp)
@@ -645,9 +644,10 @@ shows
   (\<forall> rho rho'. {rho,rho'} \<subseteq> envsOf P \<longrightarrow> ((A $[rho]) $[rho']) = (A $[(rho &[rho'])])))"
 proof(induction rule: term_induct_fresh[of P])
   case (Var xs x)
-  then show ?case using assms 
-  by simp (smt envsOf_preserves_good option.case_eq_if option.sel psubstEnv_def 
-  psubstEnv_idEnv_id psubstEnv_preserves_good psubst_Var_simp1 psubst_Var_simp2)
+  then show ?case using assms
+  by simp (smt (verit, del_insts) Var_preserves_good case_optionE envsOf_preserves_good
+  option.case_distrib option.simps(4) option.simps(5)
+  psubstEnv_def psubstEnv_preserves_good psubst_Var psubst_preserves_good)
 next
   case (Op delta inp binp)
   then show ?case 
@@ -1203,7 +1203,7 @@ and "ys \<noteq> zs \<or> y \<notin> {z,z1}"
 shows "((A $[y1 // y]_ys) $[z1 // z]_zs) =
        ((A $[z1 // z]_zs) $[(y1 @ys[z1 / z]_zs) // y]_ys)"
 unfolding vsubstAbs_def
-by (smt Var_preserves_good assms fresh_Var_simp insertCI 
+by (smt (verit) Var_preserves_good assms fresh_Var_simp insertCI 
    substAbs_compose2 vsubst_Var_simp vsubst_def) 
 
 text\<open>Properties specific to variable-for-variable substitution:\<close>

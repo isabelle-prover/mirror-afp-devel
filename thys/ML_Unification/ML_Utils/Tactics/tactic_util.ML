@@ -129,7 +129,7 @@ val thin_tacs = sort int_ord
   #> EVERY_ARG' thin_tac
 
 fun set_kernel_ho_unif_bounds trace_bound search_bound =
-  Config.put Unify.trace_bound trace_bound
+  Config.put Unify.unify_trace_bound trace_bound
   #> Config.put Unify.search_bound search_bound
 
 val silence_kernel_ho_bounds_exceeded = Context_Position.set_visible false
