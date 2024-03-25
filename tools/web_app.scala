@@ -7,8 +7,6 @@ package afp
 
 import isabelle.*
 
-import java.net.URL
-import java.nio.file.Files
 
 import scala.annotation.tailrec
 
@@ -310,7 +308,7 @@ object Web_App {
 
   /* API with backend base path, and application url (e.g. for frontend links). */
 
-  class API(val app: URL, val base_path: Path, val devel: Boolean = false) {
+  class API(val app: Url, val base_path: Path, val devel: Boolean = false) {
     def url(path: Path, params: Properties.T = Nil): String = {
       def param(p: Properties.Entry): String = Url.encode(p._1) + "=" + Url.encode(p._2)
       if (params.isEmpty) path.implode else path.implode + "?" + params.map(param).mkString("&")
