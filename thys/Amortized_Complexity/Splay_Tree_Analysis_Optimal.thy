@@ -377,7 +377,7 @@ next
     obtain t where [simp]: "ss = [t]" and "bst t" using 3 by auto
     show ?thesis
     proof cases
-      assume "t = Leaf" thus ?thesis by(simp add: S34.\<phi>_def log4_log2 T_insert_def)
+      assume "t = Leaf" thus ?thesis by(simp add: S34.\<phi>_def log4_log2)
     next
       assume "t \<noteq> Leaf"
       then obtain l e r where [simp]: "splay a t = Node l e r"
@@ -394,12 +394,12 @@ next
         assume "e=a"
         have nneg: "log 2 (1 + real (size t)) \<ge> 0" by simp
         thus ?thesis using \<open>t \<noteq> Leaf\<close> opt \<open>e=a\<close>
-          apply(simp add: field_simps T_insert_def) using nneg by arith
+          apply(simp add: field_simps) using nneg by arith
       next
         let ?L = "log 2 (real(size1 l) + 1)"
         assume "e<a" hence "e \<noteq> a" by simp
         hence "?l = (?t + ?Plr - ?Ps) + ?L / 2 + ?LR / 2"
-          using \<open>t \<noteq> Leaf\<close> \<open>e<a\<close> by(simp add: S34.\<phi>_def log4_log2 T_insert_def)
+          using \<open>t \<noteq> Leaf\<close> \<open>e<a\<close> by(simp add: S34.\<phi>_def log4_log2)
         also have "?t + ?Plr - ?Ps \<le> log 2 ?slr + 1"
           using opt size_splay[of a t,symmetric]
           by(simp add: S34.\<phi>_def log4_log2)
@@ -416,7 +416,7 @@ next
         let ?R = "log 2 (2 + real(size r))"
         assume "a<e" hence "e \<noteq> a" by simp
         hence "?l = (?t + ?Plr - ?Ps) + ?R / 2 + ?LR / 2"
-          using  \<open>t \<noteq> Leaf\<close> \<open>a<e\<close> by(simp add: S34.\<phi>_def log4_log2 T_insert_def)
+          using  \<open>t \<noteq> Leaf\<close> \<open>a<e\<close> by(simp add: S34.\<phi>_def log4_log2)
         also have "?t + ?Plr - ?Ps \<le> log 2 ?slr + 1"
           using opt size_splay[of a t,symmetric]
           by(simp add: S34.\<phi>_def log4_log2)
@@ -437,7 +437,7 @@ next
     show ?thesis
     proof (cases t)
       case Leaf thus ?thesis
-        by(simp add: Splay_Tree.delete_def T_delete_def S34.\<phi>_def log4_log2)
+        by(simp add: Splay_Tree.delete_def S34.\<phi>_def log4_log2)
     next
       case [simp]: (Node ls x rs)
       then obtain l e r where sp[simp]: "splay a (Node ls x rs) = Node l e r"
@@ -453,7 +453,7 @@ next
       show ?thesis
       proof (cases "e=a")
         case False thus ?thesis using opt
-          apply(simp add: Splay_Tree.delete_def T_delete_def field_simps)
+          apply(simp add: Splay_Tree.delete_def field_simps)
           using \<open>?lslr \<ge> 0\<close> by arith
       next
         case [simp]: True
@@ -462,7 +462,7 @@ next
           case Leaf
           have "S34.\<phi> Leaf r \<ge> 0" by(simp add: S34.\<phi>_def)
           thus ?thesis using Leaf opt
-            apply(simp add: Splay_Tree.delete_def T_delete_def field_simps)
+            apply(simp add: Splay_Tree.delete_def field_simps)
             using \<open>?lslr \<ge> 0\<close> by arith
         next
           case (Node ll y lr)
@@ -484,7 +484,7 @@ next
           have 4: "log 2 (real(size ll) + (real(size lr) + 2)) \<le> ?lslr"
             using size_if_splay[OF sp] Node by simp
           show ?thesis using add_mono[OF opt optm] Node 3
-            apply(simp add: Splay_Tree.delete_def T_delete_def field_simps)
+            apply(simp add: Splay_Tree.delete_def field_simps)
             using 4 \<open>S34.\<Phi> r' \<ge> 0\<close> by arith
         qed
       qed
