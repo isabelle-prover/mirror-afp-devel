@@ -10,7 +10,7 @@ import isabelle.HTML.*
 
 import afp.Web_App.{ACTION, API, FILE, Params}
 import afp.Web_App.Params.{List_Key, Nest_Key, empty}
-import afp.Web_App.HTML.*
+import afp.Web_App.More_HTML.*
 import afp.Metadata.{Affiliation, Author, DOI, Email, Entry, Formatted, Homepage, License, Orcid, Reference, Release, Topic, Unaffiliated}
 
 import java.text.Normalizer
@@ -1520,7 +1520,7 @@ object AFP_Submit {
     def style_sheet: Option[Path] =
       Some(afp_structure.base_dir + Path.make(List("tools", "main.css")))
 
-    val error = Model.Invalid
+    val error_model = Model.Invalid
 
     val endpoints = List(
       Get(SUBMIT, "empty submission form", _ => empty_submission),

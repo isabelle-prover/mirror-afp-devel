@@ -17,8 +17,8 @@ object Web_App {
 
   /* form html elements */
 
-  object HTML {
-    import isabelle.HTML._
+  object More_HTML {
+    import HTML._
 
     def css(s: String): Attribute = new Attribute("style", s)
     def name(n: String): Attribute = new Attribute("name", n)
@@ -332,7 +332,7 @@ object Web_App {
     progress: Progress = new Progress()
   ) {
     def render(model: A): XML.Body
-    val error: A
+    val error_model: A
     val endpoints: List[Endpoint]
     val head: XML.Body
 
@@ -340,7 +340,7 @@ object Web_App {
       def out(body: XML.Body): String = isabelle.HTML.output(body, hidden = true, structural = true)
       def collect(t: XML.Tree): List[String] = t match {
         case XML.Elem(Markup(HTML.UNESCAPE, _), List(XML.Text(escaped))) =>
-          List(out(HTML.unescape(escaped)))
+          List(out(More_HTML.unescape(escaped)))
         case XML.Elem(_, body) => body.flatMap(collect)
         case XML.Text(_) => Nil
       }
@@ -357,10 +357,10 @@ object Web_App {
 
       cat_lines(
         List(
-          isabelle.HTML.header,
-          output(XML.elem("head", isabelle.HTML.head_meta :: head)),
+          HTML.header,
+          output(XML.elem("head", HTML.head_meta :: head)),
           output(XML.Elem(Markup("body", attrs), content)),
-          isabelle.HTML.footer))
+          HTML.footer))
     }
 
     class UI(path: Path) extends HTTP.Service(path.implode, "GET") {
@@ -391,8 +391,8 @@ document.getElementById('iframe').src = base + '""" + api.api_url(path).replace(
                   "name" -> "iframe",
                   "style" -> "border-style: none; width: 100%",
                   "onload" -> on_load)),
-              isabelle.HTML.text("content")),
-            isabelle.HTML.script(set_src)),
+              HTML.text("content")),
+            HTML.script(set_src)),
             post_height = false)))
       }
     }
@@ -408,7 +408,7 @@ document.getElementById('iframe').src = base + '""" + api.api_url(path).replace(
           case Exn.Exn(exn) =>
             val id = UUID.random_string()
             progress.echo_error_message("Internal error <" + id + ">: " + exn)
-            isabelle.error("Internal server error. ID: " + id)
+            error("Internal server error. ID: " + id)
         }
     }
 
@@ -439,7 +439,7 @@ document.getElementById('iframe').src = base + '""" + api.api_url(path).replace(
           case Some(model) => model
           case None =>
             progress.echo_if(verbose, "Parsing failed")
-            error
+            error_model
         }
         HTTP.Response.html(output_document(render(model)))
       }
@@ -458,7 +458,7 @@ document.getElementById('iframe').src = base + '""" + api.api_url(path).replace(
           case Some(path) => HTTP.Response.content(HTTP.Content.read(path))
           case None =>
             progress.echo_if(verbose, "Fetching file path failed")
-            HTTP.Response.html(output_document(render(error)))
+            HTTP.Response.html(output_document(render(error_model)))
         }
       }
     }
@@ -477,7 +477,7 @@ document.getElementById('iframe').src = base + '""" + api.api_url(path).replace(
           case Some(model) => model
           case None =>
             progress.echo_if(verbose, "Parsing failed")
-            error
+            error_model
         }
         HTTP.Response.html(output_document(render(model)))
       }
