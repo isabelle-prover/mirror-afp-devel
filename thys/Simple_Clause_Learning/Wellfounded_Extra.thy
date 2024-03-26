@@ -111,59 +111,59 @@ lemma lex_prod_lex_prodp_iff:
   unfolding lex_prodp_def lex_prod_def by auto
 
 lemma wf_on_lex_prod:
-  assumes wfA: "wf_on A r\<^sub>A" and wfB: "wf_on B r\<^sub>B"
-  shows "wf_on (A \<times> B) (r\<^sub>A <*lex*> r\<^sub>B)"
+  assumes wfA: "wf_on A r\<^sub>A" and wfB: "wf_on B r\<^sub>B" and AB_subset: "AB \<subseteq> A \<times> B"
+  shows "wf_on AB (r\<^sub>A <*lex*> r\<^sub>B)"
   unfolding wf_on_iff_ex_minimal
 proof (intro allI impI)
-  fix AB assume "AB \<subseteq> A \<times> B" and "AB \<noteq> {}"
-  hence "fst ` AB \<subseteq> A" and "snd ` AB \<subseteq> B"
+  fix AB' assume "AB' \<subseteq> AB" and "AB' \<noteq> {}"
+  hence "fst ` AB' \<subseteq> A" and "snd ` AB' \<subseteq> B"
+    using AB_subset by auto
+
+  from \<open>fst ` AB' \<subseteq> A\<close> \<open>AB' \<noteq> {}\<close> obtain a where
+    a_in: "a \<in> fst ` AB'" and
+    a_minimal: "(\<forall>y. (y, a) \<in> r\<^sub>A \<longrightarrow> y \<notin> fst ` AB')"
+    using wfA[unfolded wf_on_iff_ex_minimal, rule_format, of "fst ` AB'"]
     by auto
 
-  from \<open>fst ` AB \<subseteq> A\<close> \<open>AB \<noteq> {}\<close> obtain a where
-    a_in: "a \<in> fst ` AB" and
-    a_minimal: "(\<forall>y. (y, a) \<in> r\<^sub>A \<longrightarrow> y \<notin> fst ` AB)"
-    using wfA[unfolded wf_on_iff_ex_minimal, rule_format, of "fst ` AB"]
-    by auto
-
-  from \<open>snd ` AB \<subseteq> B\<close> \<open>AB \<noteq> {}\<close> a_in obtain b where
-    b_in: "b \<in> snd ` {p \<in> AB. fst p = a}" and
-    b_minimal: "(\<forall>y. (y, b) \<in> r\<^sub>B \<longrightarrow> y \<notin> snd ` {p \<in> AB. fst p = a})"
-    using wfB[unfolded wf_on_iff_ex_minimal, rule_format, of "snd ` {p \<in> AB. fst p = a}"]
+  from \<open>snd ` AB' \<subseteq> B\<close> \<open>AB' \<noteq> {}\<close> a_in obtain b where
+    b_in: "b \<in> snd ` {p \<in> AB'. fst p = a}" and
+    b_minimal: "(\<forall>y. (y, b) \<in> r\<^sub>B \<longrightarrow> y \<notin> snd ` {p \<in> AB'. fst p = a})"
+    using wfB[unfolded wf_on_iff_ex_minimal, rule_format, of "snd ` {p \<in> AB'. fst p = a}"]
     by blast
 
-  show "\<exists>z\<in>AB. \<forall>y. (y, z) \<in> r\<^sub>A <*lex*> r\<^sub>B \<longrightarrow> y \<notin> AB"
+  show "\<exists>z\<in>AB'. \<forall>y. (y, z) \<in> r\<^sub>A <*lex*> r\<^sub>B \<longrightarrow> y \<notin> AB'"
   proof (rule bexI)
-    show "(a, b) \<in> AB"
-      using b_in by fastforce
+    show "(a, b) \<in> AB'"
+      using b_in by (simp add: image_iff)
   next
-    show "\<forall>y. (y, (a, b)) \<in> r\<^sub>A <*lex*> r\<^sub>B \<longrightarrow> y \<notin> AB"
+    show "\<forall>y. (y, (a, b)) \<in> r\<^sub>A <*lex*> r\<^sub>B \<longrightarrow> y \<notin> AB'"
     proof (intro allI impI)
       fix p assume "(p, (a, b)) \<in> r\<^sub>A <*lex*> r\<^sub>B"
       hence "(fst p, a) \<in> r\<^sub>A \<or> fst p = a \<and> (snd p, b) \<in> r\<^sub>B"
         unfolding lex_prod_def by auto
-      then show "p \<notin> AB"
+      thus "p \<notin> AB'"
       proof (elim disjE conjE)
         assume "(fst p, a) \<in> r\<^sub>A"
-        hence "fst p \<notin> fst ` AB"
+        hence "fst p \<notin> fst ` AB'"
           using a_minimal by simp
         thus ?thesis
-          by auto
+          by (rule contrapos_nn) simp
       next
         assume "fst p = a" and "(snd p, b) \<in> r\<^sub>B"
-        hence "snd p \<notin> snd ` {p \<in> AB. fst p = a}"
+        hence "snd p \<notin> snd ` {p \<in> AB'. fst p = a}"
           using b_minimal by simp
-        thus "p \<notin> AB"
-          using \<open>fst p = a\<close> by auto
+        thus "p \<notin> AB'"
+          by (rule contrapos_nn) (simp add: \<open>fst p = a\<close>)
       qed
     qed
   qed
 qed
 
-lemma wfp_on_lex_prodp: "wfp_on A R\<^sub>A \<Longrightarrow> wfp_on B R\<^sub>B \<Longrightarrow> wfp_on (A \<times> B) (lex_prodp R\<^sub>A R\<^sub>B)"
-  by (rule wf_on_lex_prod[to_pred, unfolded lex_prod_lex_prodp_iff, to_pred])
+lemma wfp_on_lex_prodp: "wfp_on A R\<^sub>A \<Longrightarrow> wfp_on B R\<^sub>B \<Longrightarrow> AB \<subseteq> A \<times> B \<Longrightarrow> wfp_on AB (lex_prodp R\<^sub>A R\<^sub>B)"
+  using wf_on_lex_prod[of A _ B _ AB, to_pred, unfolded lex_prod_lex_prodp_iff, to_pred] .
 
 corollary wfp_lex_prodp: "wfp R\<^sub>A \<Longrightarrow> wfp R\<^sub>B \<Longrightarrow> wfp (lex_prodp R\<^sub>A R\<^sub>B)"
-  by (rule wfp_on_lex_prodp[of UNIV _ UNIV, unfolded UNIV_Times_UNIV])
+  using wfp_on_lex_prodp[of UNIV _ UNIV, simplified] .
 
 lemma wfp_on_sup_if_convertible_to_wfp:
   includes lattice_syntax
@@ -177,7 +177,7 @@ proof (rule wfp_on_if_convertible_to_wfp)
   show "wfp_on ((\<lambda>x. (f x, x)) ` A) (lex_prodp Q S)"
   proof (rule wfp_on_subset)
     show "wfp_on (f ` A \<times> A) (lex_prodp Q S)"
-      by (rule wfp_on_lex_prodp[OF wf_Q wf_S])
+      by (rule wfp_on_lex_prodp[OF wf_Q wf_S subset_refl])
   next
     show "(\<lambda>x. (f x, x)) ` A \<subseteq> f ` A \<times> A"
       by auto
