@@ -174,6 +174,8 @@ fun content dt = map #2 (dest dt)
 fun merge eq dt1 dt2 =
   if pointer_eq (dt1, dt2) then dt1
   else if is_empty dt1 then dt2
-  else fold (fn (ks, v) => fn dt => insert_keys (curry eq v) v (ks, dt)) (dest dt2) dt1
+  else fold
+    (fn (ks, v) => fn dt => insert_keys (curry eq v) v (ks, dt) handle TIB.INSERT => dt)
+    (dest dt2) dt1
 
 end

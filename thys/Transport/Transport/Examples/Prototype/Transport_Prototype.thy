@@ -113,7 +113,9 @@ ML\<open>
     and id = Transport_Util.transport_id
     and more_args = \<open>structure UC = Transport_Unification_Combine\<close>}
 \<close>
-
+ML\<open>
+  structure A = Standard_Mixed_Unification
+\<close>
 ML\<open>
   @{functor_instance struct_name = Transport_Unification_Hints
     and functor_name = Term_Index_Unification_Hints
@@ -121,7 +123,8 @@ ML\<open>
     and more_args = \<open>
       structure TI = Discrimination_Tree
       val init_args = {
-        concl_unifier = SOME Higher_Order_Pattern_Unification.unify,
+        concl_unifier = SOME (Higher_Order_Pattern_Unification.unify
+          |> Type_Unification.e_unify Unification_Util.unify_types),
         prems_unifier = SOME (Transport_Mixed_Unification.first_higherp_decomp_comb_higher_unify
           |> Unification_Combinator.norm_unifier Envir_Normalisation.beta_norm_term_unif),
         normalisers = SOME Transport_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify,

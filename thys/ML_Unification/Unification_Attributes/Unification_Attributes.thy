@@ -1,14 +1,12 @@
 \<^marker>\<open>creator "Kevin Kappelmann"\<close>
-section \<open>Unification Attributes\<close>
 theory Unification_Attributes
-  imports Unify_Resolve_Tactics
+  imports
+    Unification_Attributes_Base
+    ML_Unifiers
 begin
 
 paragraph \<open>Summary\<close>
-text \<open>OF attribute with adjustable unifier.\<close>
-
-ML_file\<open>unify_of_base.ML\<close>
-ML_file\<open>unify_of.ML\<close>
+text \<open>Setup of OF attribute with adjustable unifier.\<close>
 
 ML\<open>
   @{functor_instance struct_name = Standard_Unify_OF

@@ -9,6 +9,9 @@ sig
   (* tactic combinators*)
   val HEADGOAL : (int -> 'a) -> 'a
 
+  val THEN : ('a -> 'b Seq.seq) * ('b -> 'c Seq.seq) -> 'a -> 'c Seq.seq
+  val THEN' : ('a -> 'b -> 'c Seq.seq) * ('a -> 'c -> 'd Seq.seq) -> 'a -> 'b -> 'd Seq.seq
+
   val TRY' : ('a -> tactic) -> 'a -> tactic
 
   val EVERY_ARG : ('a -> tactic) -> 'a list -> tactic
@@ -86,10 +89,13 @@ end
 structure Tactic_Util : TACTIC_UTIL =
 struct
 
-val logger = Logger.setup_new_logger Logger.root_logger "Tactic_Util"
+val logger = Logger.setup_new_logger Logger.root "Tactic_Util"
 
 (* tactic combinators *)
 fun HEADGOAL f = f 1
+
+fun (tac1 THEN tac2) = Seq.THEN (tac1, tac2)
+fun (tac1 THEN' tac2) x = tac1 x THEN tac2 x
 
 fun TRY' tac =  tac ORELSE' K all_tac
 
@@ -180,7 +186,7 @@ fun rewrite_subgoal_unif_concl norm_binders norm_state norm_eq_thm binders (env_
     val binders = updated_binders env
     fun smash_tpairs_if_occurs (_, bvar) =
       Seq.maps (Unification_Util.smash_tpairs_if_occurs ctxt bvar)
-    fun rewrite_tac env eq_thm (rparams, (prems, _)) =
+    fun rewrite_tac env eq_thm prems =
       let
         val binders = updated_binders env
         val cterm_of = Thm.cterm_of ctxt
@@ -196,7 +202,7 @@ fun rewrite_subgoal_unif_concl norm_binders norm_state norm_eq_thm binders (env_
     fold smash_tpairs_if_occurs binders (Seq.single env_eq_thm)
     |> Seq.lifts (fn (env, eq_thm) =>
       PRIMITIVE (norm_state ctxt env)
-      THEN SUBGOAL_STRIPPED I (rewrite_tac env eq_thm) i)
+      THEN SUBGOAL_STRIPPED (fst o snd) (rewrite_tac env eq_thm) i)
   end
 
 fun protect_tac n ctxt =

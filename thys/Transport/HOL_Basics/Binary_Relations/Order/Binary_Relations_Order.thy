@@ -41,7 +41,7 @@ proof -
 qed
 
 corollary rel_comp_le_rel_comp_if_rel_comp_le_rel_comp_if_symmetric:
-  assumes "symmetric R1" "symmetric R2" "symmetric R3" "symmetric R4"
+  assumes "symmetric (R1 :: 'a \<Rightarrow> 'a \<Rightarrow> bool)" "symmetric R2" "symmetric R3" "symmetric R4"
   and "(R1 \<circ>\<circ> R2) \<le> (R3 \<circ>\<circ> R4)"
   shows "(R2 \<circ>\<circ> R1) \<le> (R4 \<circ>\<circ> R3)"
 proof -
@@ -51,7 +51,7 @@ proof -
 qed
 
 corollary rel_comp_le_rel_comp_iff_if_symmetric:
-  assumes "symmetric R1" "symmetric R2" "symmetric R3" "symmetric R4"
+  assumes "symmetric (R1 :: 'a \<Rightarrow> 'a \<Rightarrow> bool)" "symmetric R2" "symmetric R3" "symmetric R4"
   shows "(R1 \<circ>\<circ> R2) \<le> (R3 \<circ>\<circ> R4) \<longleftrightarrow> (R2 \<circ>\<circ> R1) \<le> (R4 \<circ>\<circ> R3)"
   using assms
   by (blast intro: rel_comp_le_rel_comp_if_rel_comp_le_rel_comp_if_symmetric)

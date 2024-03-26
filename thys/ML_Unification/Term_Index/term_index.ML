@@ -41,6 +41,7 @@ sig
   val instances : 'a retrieval
   val unifiables : 'a retrieval
 
-  (*first argument is the equality test for values*)
+  (*first argument is the equality test for values;
+  prefers values from the first index in case of duplicates*)
   val merge : (('a * 'a) -> bool) -> 'a term_index -> 'a term_index -> 'a term_index
 end

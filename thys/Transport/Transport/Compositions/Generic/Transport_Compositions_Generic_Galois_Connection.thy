@@ -60,8 +60,7 @@ corollary galois_connection_left_right_if_galois_equivalenceI:
   (auto elim!: galois.galois_connectionE
     intro!: flip.t2.rel_equivalence_on_unit_if_reflexive_on_if_galois_equivalence
       t2.inflationary_on_unit_if_reflexive_on_if_galois_equivalence
-    intro: rel_equivalence_on_if_le_pred_if_rel_equivalence_on
-      in_field_if_in_codom)
+    intro: in_field_if_in_codom)
 
 corollary galois_connection_left_right_if_order_equivalenceI:
   assumes "((\<le>\<^bsub>L1\<^esub>) \<equiv>\<^sub>o (\<le>\<^bsub>R1\<^esub>)) l1 r1"

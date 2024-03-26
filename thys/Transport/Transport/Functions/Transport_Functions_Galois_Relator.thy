@@ -355,7 +355,7 @@ lemma Dep_Fun_Rel_left_Galois_restrict_left_right_eq_Dep_Fun_Rel_left_GaloisI:
     (\<ge>\<^bsub>L2 x1 x2\<^esub>) (r2\<^bsub>x1 (l1 x2)\<^esub> y') \<le> (\<ge>\<^bsub>L2 x1 x2\<^esub>) (r2\<^bsub>x2 (l1 x2)\<^esub> y')"
   shows "([x x' \<Colon> (\<^bsub>L1\<^esub>\<lessapprox>)] \<Rrightarrow> (\<^bsub>L2 x x'\<^esub>\<lessapprox>))\<restriction>\<^bsub>in_dom (\<le>\<^bsub>L\<^esub>)\<^esub>\<upharpoonleft>\<^bsub>in_codom (\<le>\<^bsub>R\<^esub>)\<^esub>
     = ([x x' \<Colon> (\<^bsub>L1\<^esub>\<lessapprox>)] \<Rrightarrow> (\<^bsub>L2 x x'\<^esub>\<lessapprox>))"
-  using assms by (intro ext iffI bin_rel_restrict_leftI bin_rel_restrict_rightI
+  using assms by (intro ext iffI rel_restrict_leftI rel_restrict_rightI
     in_domI[where ?y="r _"] left_rel_right_if_Dep_Fun_Rel_left_GaloisI
     in_codomI[where ?x="l _"] left_right_rel_if_Dep_Fun_Rel_left_GaloisI)
   auto
@@ -399,14 +399,14 @@ proof -
   have "?lhs =
     ([x x' \<Colon> (\<^bsub>L1\<^esub>\<lessapprox>)] \<Rrightarrow> (S x x')\<upharpoonleft>\<^bsub>in_codom (\<le>\<^bsub>R2 (l1 x) x'\<^esub>)\<^esub>)
       \<restriction>\<^bsub>in_dom (\<le>\<^bsub>L\<^esub>)\<^esub>\<upharpoonleft>\<^bsub>in_codom (\<le>\<^bsub>R\<^esub>)\<^esub>"
-    by (subst bin_rel_restrict_left_right_eq_restrict_right_left,
+    by (subst rel_restrict_left_right_eq_restrict_right_left,
       subst restrict_left_Dep_Fun_Rel_rel_restrict_left_eq)
     auto
   also have "... = ?rhs"
-    using assms by (subst bin_rel_restrict_left_right_eq_restrict_right_left,
+    using assms by (subst rel_restrict_left_right_eq_restrict_right_left,
       subst restrict_right_Dep_Fun_Rel_rel_restrict_right_eq)
     (auto elim!: in_codomE t1.left_GaloisE
-      simp only: bin_rel_restrict_left_right_eq_restrict_right_left)
+      simp only: rel_restrict_left_right_eq_restrict_right_left)
   finally show ?thesis .
 qed
 
@@ -605,7 +605,7 @@ corollary left_Galois_eq_Dep_Fun_Rel_left_Galois_restrict_if_mono_if_galois_conn
     [in_field (\<le>\<^bsub>R2 (l1 x1) x2'\<^esub>)] \<Rrightarrow> (\<le>\<^bsub>L2 x1 (r1 x2')\<^esub>)) r2"
   and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> transitive (\<le>\<^bsub>L2 x1 x2\<^esub>)"
   shows "(\<^bsub>L\<^esub>\<lessapprox>) = ([x x' \<Colon> (\<^bsub>L1\<^esub>\<lessapprox>)] \<Rrightarrow> (\<^bsub>L2 x x'\<^esub>\<lessapprox>))\<restriction>\<^bsub>in_dom (\<le>\<^bsub>L\<^esub>)\<^esub>\<upharpoonleft>\<^bsub>in_codom (\<le>\<^bsub>R\<^esub>)\<^esub>"
-  using assms by (intro ext iffI bin_rel_restrict_leftI bin_rel_restrict_rightI
+  using assms by (intro ext iffI rel_restrict_leftI rel_restrict_rightI
     iffD1[OF left_Galois_iff_Dep_Fun_Rel_left_Galois_if_mono_if_galois_connectionI'])
   (auto intro!:
     iffD2[OF left_Galois_iff_Dep_Fun_Rel_left_Galois_if_mono_if_galois_connectionI'])
@@ -636,7 +636,7 @@ theorem left_Galois_eq_Dep_Fun_Rel_left_Galois_restrict_if_galois_equivalenceI:
     [in_field (\<le>\<^bsub>R2 (l1 x1) x2'\<^esub>)] \<Rrightarrow> (\<le>\<^bsub>L2 x1 (r1 x2')\<^esub>)) r2"
   and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> transitive (\<le>\<^bsub>L2 x1 x2\<^esub>)"
   shows "(\<^bsub>L\<^esub>\<lessapprox>) = ([x x' \<Colon> (\<^bsub>L1\<^esub>\<lessapprox>)] \<Rrightarrow> (\<^bsub>L2 x x'\<^esub>\<lessapprox>))\<restriction>\<^bsub>in_dom (\<le>\<^bsub>L\<^esub>)\<^esub>\<upharpoonleft>\<^bsub>in_codom (\<le>\<^bsub>R\<^esub>)\<^esub>"
-  using assms by (intro ext iffI bin_rel_restrict_leftI bin_rel_restrict_rightI
+  using assms by (intro ext iffI rel_restrict_leftI rel_restrict_rightI
     iffD1[OF left_Galois_iff_Dep_Fun_Rel_left_Galois_if_galois_equivalenceI])
   (auto intro!: iffD2[OF left_Galois_iff_Dep_Fun_Rel_left_Galois_if_galois_equivalenceI])
 
@@ -661,7 +661,7 @@ corollary left_Galois_eq_Dep_Fun_Rel_left_Galois_restrict_if_preorder_equivalenc
     [in_field (\<le>\<^bsub>R2 (l1 x1) x2'\<^esub>)] \<Rrightarrow> (\<le>\<^bsub>L2 x1 (r1 x2')\<^esub>)) r2"
   and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> transitive (\<le>\<^bsub>L2 x1 x2\<^esub>)"
   shows "(\<^bsub>L\<^esub>\<lessapprox>) = ([x x' \<Colon> (\<^bsub>L1\<^esub>\<lessapprox>)] \<Rrightarrow> (\<^bsub>L2 x x'\<^esub>\<lessapprox>))\<restriction>\<^bsub>in_dom (\<le>\<^bsub>L\<^esub>)\<^esub>\<upharpoonleft>\<^bsub>in_codom (\<le>\<^bsub>R\<^esub>)\<^esub>"
-  using assms by (intro ext iffI bin_rel_restrict_leftI bin_rel_restrict_rightI
+  using assms by (intro ext iffI rel_restrict_leftI rel_restrict_rightI
     iffD1[OF left_Galois_iff_Dep_Fun_Rel_left_Galois_if_preorder_equivalenceI])
   (auto intro!: iffD2[OF left_Galois_iff_Dep_Fun_Rel_left_Galois_if_preorder_equivalenceI])
 
@@ -685,7 +685,7 @@ corollary left_Galois_eq_Dep_Fun_Rel_left_Galois_restrict_if_preorder_equivalenc
   and "([x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>)] \<Rrightarrow>\<^sub>m [x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x2 \<^bsub>L1\<^esub>\<lessapprox> x1'] \<Rrightarrow>
     [in_field (\<le>\<^bsub>R2 (l1 x1) x2'\<^esub>)] \<Rrightarrow> (\<le>\<^bsub>L2 x1 (r1 x2')\<^esub>)) r2"
   shows "(\<^bsub>L\<^esub>\<lessapprox>) = ([x x' \<Colon> (\<^bsub>L1\<^esub>\<lessapprox>)] \<Rrightarrow> (\<^bsub>L2 x x'\<^esub>\<lessapprox>))\<restriction>\<^bsub>in_dom (\<le>\<^bsub>L\<^esub>)\<^esub>\<upharpoonleft>\<^bsub>in_codom (\<le>\<^bsub>R\<^esub>)\<^esub>"
-  using assms by (intro ext iffI bin_rel_restrict_leftI bin_rel_restrict_rightI
+  using assms by (intro ext iffI rel_restrict_leftI rel_restrict_rightI
     iffD1[OF left_Galois_iff_Dep_Fun_Rel_left_Galois_if_preorder_equivalenceI'])
   (auto intro!: iffD2[OF left_Galois_iff_Dep_Fun_Rel_left_Galois_if_preorder_equivalenceI'])
 
@@ -814,7 +814,7 @@ theorem left_Galois_eq_Fun_Rel_left_Galois_restrictI:
   and "((\<le>\<^bsub>R2\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L2\<^esub>)) r2"
   and "transitive (\<le>\<^bsub>L2\<^esub>)"
   shows "(\<^bsub>L\<^esub>\<lessapprox>) = ((\<^bsub>L1\<^esub>\<lessapprox>) \<Rrightarrow> (\<^bsub>L2\<^esub>\<lessapprox>))\<restriction>\<^bsub>in_dom (\<le>\<^bsub>L\<^esub>)\<^esub>\<upharpoonleft>\<^bsub>in_codom (\<le>\<^bsub>R\<^esub>)\<^esub>"
-  using assms by (intro ext iffI bin_rel_restrict_leftI bin_rel_restrict_rightI
+  using assms by (intro ext iffI rel_restrict_leftI rel_restrict_rightI
     iffD1[OF left_Galois_iff_Fun_Rel_left_GaloisI])
   (auto elim!: tpdfr.left_GaloisE intro!: iffD2[OF left_Galois_iff_Fun_Rel_left_GaloisI])
 

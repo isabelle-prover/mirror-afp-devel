@@ -2,15 +2,13 @@
 subsection \<open>Resolution Tactics\<close>
 theory Unify_Resolve_Tactics
   imports
-    Unify_Assumption_Tactic
-    ML_Method_Utils
+    Unify_Resolve_Tactics_Base
+    ML_Unifiers
 begin
 
 paragraph \<open>Summary\<close>
-text \<open>Resolution tactics and methods with adjustable unifier.\<close>
+text \<open>Setup of resolution tactics and examples.\<close>
 
-ML_file\<open>unify_resolve_base.ML\<close>
-ML_file\<open>unify_resolve.ML\<close>
 ML\<open>
   @{functor_instance struct_name = Standard_Unify_Resolve
     and functor_name = Unify_Resolve

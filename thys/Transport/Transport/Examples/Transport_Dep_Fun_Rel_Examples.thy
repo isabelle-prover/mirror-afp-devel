@@ -64,7 +64,7 @@ lemma [trp_in_dom]:
   by (fastforce simp: list_all2_lengthD list_all2_nthD2)
 
 context
-  fixes R :: "'a \<Rightarrow> _" assumes [per_intro]: "partial_equivalence_rel R"
+  fixes R :: "'a \<Rightarrow> 'a \<Rightarrow> bool" assumes [per_intro]: "partial_equivalence_rel R"
 begin
 
 interpretation Rper : transport_partial_equivalence_rel_id R

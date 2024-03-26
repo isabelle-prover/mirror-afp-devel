@@ -1,12 +1,12 @@
 \<^marker>\<open>creator "Kevin Kappelmann"\<close>
-subsubsection \<open>Bijection\<close>
+subsubsection \<open>Bijections\<close>
 theory Functions_Bijection
   imports
     Functions_Inverse
     Functions_Monotone
 begin
 
-consts bijection_on :: "'a \<Rightarrow> 'b \<Rightarrow> ('c \<Rightarrow> 'd) \<Rightarrow> ('d \<Rightarrow> 'c) \<Rightarrow> bool"
+consts bijection_on :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> bool"
 
 overloading
   bijection_on_pred \<equiv> "bijection_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> bool"
@@ -26,16 +26,14 @@ lemma bijection_onI [intro]:
   shows "bijection_on P P' f g"
   using assms unfolding bijection_on_pred_def by blast
 
-lemma bijection_onE:
+lemma bijection_onE [elim]:
   assumes "bijection_on P P' f g"
   obtains "([P] \<Rrightarrow>\<^sub>m P') f" "([P'] \<Rrightarrow>\<^sub>m P) g"
     "inverse_on P f g" "inverse_on P' g f"
   using assms unfolding bijection_on_pred_def by blast
 
 context
-  fixes P :: "'a \<Rightarrow> bool"
-  and P' :: "'b \<Rightarrow> bool"
-  and f :: "'a \<Rightarrow> 'b"
+  fixes P :: "'a \<Rightarrow> bool" and P' :: "'b \<Rightarrow> bool" and f :: "'a \<Rightarrow> 'b" and g :: "'b \<Rightarrow> 'a"
 begin
 
 lemma mono_wrt_pred_if_bijection_on_left:
@@ -52,13 +50,13 @@ lemma bijection_on_pred_right:
   assumes "bijection_on P P' f g"
   and "P x"
   shows "P' (f x)"
-  using assms by (blast elim: bijection_onE)
+  using assms by blast
 
 lemma bijection_on_pred_left:
   assumes "bijection_on P P' f g"
   and "P' y"
   shows "P (g y)"
-  using assms by (blast elim: bijection_onE)
+  using assms by blast
 
 lemma inverse_on_if_bijection_on_left_right:
   assumes "bijection_on P P' f g"
@@ -86,7 +84,13 @@ lemma bijection_on_right_left_eq_self':
 lemma bijection_on_right_left_if_bijection_on_left_right:
   assumes "bijection_on P P' f g"
   shows "bijection_on P' P g f"
-  using assms by (auto elim: bijection_onE)
+  using assms by auto
+
+end
+
+context
+  fixes P :: "'a \<Rightarrow> bool" and P' :: "'b \<Rightarrow> bool" and f :: "'a \<Rightarrow> 'b" and g :: "'b \<Rightarrow> 'a"
+begin
 
 lemma injective_on_if_bijection_on_left:
   assumes "bijection_on P P' f g"
@@ -102,25 +106,50 @@ lemma injective_on_if_bijection_on_right:
 
 end
 
+lemma bijection_on_compI:
+  fixes P :: "'a \<Rightarrow> bool" and P' :: "'b \<Rightarrow> bool" and P'' :: "'c \<Rightarrow> bool"
+  and f :: "'a \<Rightarrow> 'b" and g :: "'b \<Rightarrow> 'a" and f' :: "'b \<Rightarrow> 'c" and g' :: "'c \<Rightarrow> 'b"
+  assumes "bijection_on P P' f g"
+  and "bijection_on P' P'' f' g'"
+  shows "bijection_on P P'' (f' \<circ> f) (g \<circ> g')"
+  using assms by (intro bijection_onI)
+  (auto intro: dep_mono_wrt_pred_comp_dep_mono_wrt_pred_compI' inverse_on_compI
+    elim!: bijection_onE)
 
-definition "(bijection :: ('a \<Rightarrow> 'b) \<Rightarrow> _) \<equiv> bijection_on (\<top> :: 'a \<Rightarrow> bool) (\<top> :: 'b \<Rightarrow> bool)"
+
+consts bijection :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
+
+overloading
+  bijection \<equiv> "bijection :: ('a \<Rightarrow> 'b) \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> bool"
+begin
+  definition "(bijection :: ('a \<Rightarrow> 'b) \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> bool) \<equiv>
+    bijection_on (\<top> :: 'a \<Rightarrow> bool) (\<top> :: 'b \<Rightarrow> bool)"
+end
 
 lemma bijection_eq_bijection_on:
-  "(bijection :: ('a \<Rightarrow> 'b) \<Rightarrow> _) = bijection_on (\<top> :: 'a \<Rightarrow> bool) (\<top> :: 'b \<Rightarrow> bool)"
+  "(bijection :: ('a \<Rightarrow> 'b) \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> bool) = bijection_on (\<top> :: 'a \<Rightarrow> bool) (\<top> :: 'b \<Rightarrow> bool)"
   unfolding bijection_def ..
+
+lemma bijection_eq_bijection_on_uhint [uhint]:
+  assumes "P \<equiv> (\<top> :: 'a \<Rightarrow> bool)"
+  and "Q \<equiv> (\<top> :: 'b \<Rightarrow> bool)"
+  shows "(bijection :: ('a \<Rightarrow> 'b) \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> bool) = bijection_on P Q"
+  using assms by (simp add: bijection_eq_bijection_on)
+
+context
+  fixes P :: "'a \<Rightarrow> bool" and P' :: "'b \<Rightarrow> bool" and f :: "'a \<Rightarrow> 'b" and g :: "'b \<Rightarrow> 'a"
+begin
 
 lemma bijectionI [intro]:
   assumes "inverse f g"
   and "inverse g f"
   shows "bijection f g"
-  unfolding bijection_eq_bijection_on using assms
-  by (intro bijection_onI inverse_on_if_inverse dep_mono_wrt_predI) simp_all
+  by (urule bijection_onI) (simp | urule assms)+
 
 lemma bijectionE [elim]:
   assumes "bijection f g"
   obtains "inverse f g" "inverse g f"
-  using assms unfolding bijection_eq_bijection_on inverse_eq_inverse_on
-  by (blast elim: bijection_onE)
+  using assms by (urule (e) bijection_onE)
 
 lemma inverse_if_bijection_left_right:
   assumes "bijection f g"
@@ -132,18 +161,22 @@ lemma inverse_if_bijection_right_left:
   shows "inverse g f"
   using assms by (elim bijectionE)
 
+end
+
+context
+  fixes P :: "'a \<Rightarrow> bool" and P' :: "'b \<Rightarrow> bool" and f :: "'a \<Rightarrow> 'b" and g :: "'b \<Rightarrow> 'a"
+begin
+
 lemma bijection_right_left_if_bijection_left_right:
   assumes "bijection f g"
   shows "bijection g f"
   using assms by auto
 
-
 paragraph \<open>Instantiations\<close>
 
-lemma bijection_on_self_id:
-  fixes P :: "'a \<Rightarrow> bool"
-  shows "bijection_on P P (id :: 'a \<Rightarrow> _) id"
+lemma bijection_on_self_id: "bijection_on P P (id :: 'a \<Rightarrow> 'a) (id :: 'a \<Rightarrow> 'a)"
   by (intro bijection_onI inverse_onI dep_mono_wrt_predI) simp_all
 
+end
 
 end

@@ -2,14 +2,12 @@
 subsection \<open>Fact Tactic\<close>
 theory Unify_Fact_Tactic
   imports
-    Unify_Resolve_Tactics
+    Unify_Fact_Tactic_Base
+    ML_Unifiers
 begin
 
 paragraph \<open>Summary\<close>
-text \<open>Fact tactic with adjustable unifier.\<close>
-
-ML_file\<open>unify_fact_base.ML\<close>
-ML_file\<open>unify_fact.ML\<close>
+text \<open>Setup of fact tactic and examples.\<close>
 
 ML\<open>
   @{functor_instance struct_name = Standard_Unify_Fact

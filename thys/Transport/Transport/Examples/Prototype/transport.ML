@@ -315,9 +315,10 @@ val _ =
 
 val any_match_resolve_related_tac =
   let fun unif binders =
-    Higher_Order_Pattern_Unification.e_match Unification_Util.match_types
+    (Higher_Order_Pattern_Unification.e_match Unification_Util.match_types
     (Higher_Order_Pattern_Decomp_Unification.e_match unif Unification_Combinator.fail_match)
-    Unification_Combinator.fail_match binders
+    Unification_Combinator.fail_match
+    |> Type_Unification.e_match Unification_Util.match_types) binders
   in Unify_Resolve_Base.unify_resolve_any_tac Higher_Order_Pattern_Unification.norms_match unif end
 
 val related_comb_tac = any_match_resolve_related_tac @{thms related_Fun_Rel_combI}
@@ -340,11 +341,13 @@ fun mk_transport_related_tac cc_comb cc_lambda ctxt =
       assume_tac
     ]
   end
+
 val transport_related_step_tac =
   let fun cc_comb tac i = tac i
     THEN prefer_tac i
     THEN prefer_tac (i + 1)
   in mk_transport_related_tac cc_comb I end
+
 fun transport_related_tac ctxt =
   let
     fun transport_related_tac cc =

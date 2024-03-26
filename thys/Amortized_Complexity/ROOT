@@ -3,6 +3,7 @@ chapter AFP
 session Amortized_Complexity = "HOL-Library" +
   options [timeout = 600]
   sessions
+    "HOL-Data_Structures"
     Pairing_Heap
     Skew_Heap
     Splay_Tree

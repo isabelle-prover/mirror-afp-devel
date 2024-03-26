@@ -3,9 +3,10 @@ subsubsection \<open>Inverse\<close>
 theory Functions_Inverse
   imports
     Functions_Injective
+    Functions_Monotone
 begin
 
-consts inverse_on :: "'a \<Rightarrow> ('b \<Rightarrow> 'c) \<Rightarrow> ('c \<Rightarrow> 'b) \<Rightarrow> bool"
+consts inverse_on :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool"
 
 overloading
   inverse_on_pred \<equiv> "inverse_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> bool"
@@ -25,7 +26,7 @@ lemma inverse_onD:
   using assms unfolding inverse_on_pred_def by blast
 
 lemma injective_on_if_inverse_on:
-  assumes inv: "inverse_on (P :: 'a \<Rightarrow> bool) (f :: 'a \<Rightarrow> _) g"
+  assumes inv: "inverse_on (P :: 'a \<Rightarrow> bool) (f :: 'a \<Rightarrow> 'b) (g :: 'b \<Rightarrow> 'a)"
   shows "injective_on P f"
 proof (rule injective_onI)
   fix x x'
@@ -36,26 +37,57 @@ proof (rule injective_onI)
   finally show "x = x'" .
 qed
 
-definition "(inverse :: ('a \<Rightarrow> _) \<Rightarrow> _) \<equiv> inverse_on (\<top> :: 'a \<Rightarrow> bool)"
+lemma inverse_on_compI:
+  fixes P :: "'a \<Rightarrow> bool" and P' :: "'b \<Rightarrow> bool"
+  and f :: "'a \<Rightarrow> 'b" and g :: "'b \<Rightarrow> 'a" and f' :: "'b \<Rightarrow> 'c" and g' :: "'c \<Rightarrow> 'b"
+  assumes "inverse_on P f g"
+  and "inverse_on P' f' g'"
+  and "([P] \<Rrightarrow>\<^sub>m P') f"
+  shows "inverse_on P (f' \<circ> f) (g \<circ> g')"
+  using assms by (intro inverse_onI) (auto dest!: inverse_onD)
 
-lemma inverse_eq_inverse_on: "(inverse :: ('a \<Rightarrow> _) \<Rightarrow> _) = inverse_on (\<top> :: 'a \<Rightarrow> bool)"
+consts inverse :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
+
+overloading
+  inverse \<equiv> "inverse :: ('a \<Rightarrow> 'b) \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> bool"
+begin
+  definition "(inverse :: ('a \<Rightarrow> 'b) \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> bool) \<equiv> inverse_on (\<top> :: 'a \<Rightarrow> bool)"
+end
+
+lemma inverse_eq_inverse_on:
+  "(inverse :: ('a \<Rightarrow> 'b) \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> bool) = inverse_on (\<top> :: 'a \<Rightarrow> bool)"
   unfolding inverse_def ..
+
+lemma inverse_eq_inverse_on_uhint [uhint]:
+  assumes "P \<equiv>  \<top> :: 'a \<Rightarrow> bool"
+  shows "inverse :: ('a \<Rightarrow> 'b) \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> bool \<equiv> inverse_on P"
+  using assms by (simp add: inverse_eq_inverse_on)
 
 lemma inverseI [intro]:
   assumes "\<And>x. g (f x) = x"
   shows "inverse f g"
-  unfolding inverse_eq_inverse_on using assms by (intro inverse_onI)
+  using assms by (urule inverse_onI)
 
 lemma inverseD:
   assumes "inverse f g"
   shows "g (f x) = x"
-  using assms unfolding inverse_eq_inverse_on by (auto dest: inverse_onD)
+  using assms by (urule (d) inverse_onD where chained = insert) simp_all
 
 lemma inverse_on_if_inverse:
-  fixes P :: "'a \<Rightarrow> bool" and f :: "'a \<Rightarrow> 'b"
+  fixes P :: "'a \<Rightarrow> bool" and f :: "'a \<Rightarrow> 'b" and g :: "'b \<Rightarrow> 'a"
   assumes "inverse f g"
   shows "inverse_on P f g"
   using assms by (intro inverse_onI) (blast dest: inverseD)
+
+lemma inverse_THE_eq_if_injective:
+  assumes "injective f"
+  shows "inverse f (\<lambda>z. THE y. z = f y)"
+  using assms injectiveD by fastforce
+
+lemma injective_inverseE:
+  assumes "injective (f :: 'a \<Rightarrow> 'b)"
+  obtains g :: "'b \<Rightarrow> 'a" where "inverse f g"
+  using assms inverse_THE_eq_if_injective by blast
 
 
 end

@@ -7,6 +7,7 @@ imports
   Complex_Main
   Skew_Heap.Skew_Heap
   Amortized_Framework
+  "HOL-Data_Structures.Define_Time_Function"
   Priority_Queue_ops_merge
 begin
 
@@ -39,14 +40,7 @@ by (induction t) (auto simp: rh_def)
 corollary Dlog: "rlh t \<le> log 2 (size1 t)"
 by (metis Dexp le_log2_of_power size1_size)
 
-function T_merge :: "'a::linorder tree \<Rightarrow> 'a tree \<Rightarrow> nat" where
-"T_merge Leaf t = 1" |
-"T_merge t Leaf = 1" |
-"T_merge (Node l1 a1 r1) (Node l2 a2 r2) =
-   (if a1 \<le> a2 then T_merge (Node l2 a2 r2) r1 else T_merge (Node l1 a1 r1) r2) + 1"
-by pat_completeness auto
-termination
-by (relation "measure (\<lambda>(x, y). size x + size y)") auto
+time_fun merge
 
 fun \<Phi> :: "'a tree \<Rightarrow> int" where
 "\<Phi> Leaf = 0" |
@@ -116,17 +110,21 @@ proof -
   finally show ?thesis by(simp)
 qed
 
-definition T_insert :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> int" where
-"T_insert a t = T_merge (Node Leaf a Leaf) t + 1"
+text \<open>Command \<open>time_fun\<close> does not work for @{const skew_heap.insert} and  @{const skew_heap.del_min}
+because they are the result of a locale and not what they seem.
+However, their manual definition is trivial:\<close>
 
-lemma a_insert: "T_insert a t + \<Phi>(skew_heap.insert a t) - \<Phi> t \<le> 3 * log 2 (size1 t + 2) + 2"
+definition T_insert :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> int" where
+"T_insert a t = T_merge (Node Leaf a Leaf) t"
+
+lemma a_insert: "T_insert a t + \<Phi>(skew_heap.insert a t) - \<Phi> t \<le> 3 * log 2 (size1 t + 2) + 1"
 using a_merge[of "Node Leaf a Leaf" "t"]
 by (simp add: numeral_eq_Suc T_insert_def rh_def)
 
 definition T_del_min :: "('a::linorder) tree \<Rightarrow> int" where
-"T_del_min t = (case t of Leaf \<Rightarrow> 1 | Node t1 a t2 \<Rightarrow> T_merge t1 t2 + 1)"
+"T_del_min t = (case t of Leaf \<Rightarrow> 0 | Node t1 a t2 \<Rightarrow> T_merge t1 t2)"
 
-lemma a_del_min: "T_del_min t + \<Phi>(skew_heap.del_min t) - \<Phi> t \<le> 3 * log 2 (size1 t + 2) + 2"
+lemma a_del_min: "T_del_min t + \<Phi>(skew_heap.del_min t) - \<Phi> t \<le> 3 * log 2 (size1 t + 2) + 1"
 proof (cases t)
   case Leaf thus ?thesis by (simp add: T_del_min_def)
 next
@@ -134,7 +132,7 @@ next
   have [arith]: "log 2 (2 + (real (size t1) + real (size t2))) \<le>
                 log 2 (4 + (real (size t1) + real (size t2)))" by simp
   from Node show ?thesis using a_merge[of t1 t2]
-    by (simp add: size1_size T_del_min_def rh_def)
+    by (simp add: size1_size rh_def T_del_min_def)
 qed
 
 

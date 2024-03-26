@@ -13,7 +13,6 @@ import afp.Web_App.Params.{List_Key, Nest_Key, empty}
 import afp.Web_App.HTML.*
 import afp.Metadata.{Affiliation, Author, DOI, Email, Entry, Formatted, Homepage, License, Orcid, Reference, Release, Topic, Unaffiliated}
 
-import java.net.URL
 import java.text.Normalizer
 import java.time.LocalDate
 
@@ -991,10 +990,8 @@ object AFP_Submit {
         val Id = (author.id + """_homepage\d*""").r
         id match {
           case Id() if !author.homepages.map(_.id).contains(id) =>
-            Exn.capture(new URL(address)) match {
-              case Exn.Res(url) => Val_Opt.ok(Homepage(author.id, id, url))
-              case _ => Val_Opt.user_err("Invalid url")
-            }
+            if (Url.is_wellformed(address)) Val_Opt.ok(Homepage(author.id, id, Url(address)))
+            else Val_Opt.user_err("Invalid url")
           case _ => Val_Opt.error
         }
       }
@@ -1575,7 +1572,7 @@ object AFP_Submit {
     { args =>
 
       var backend_path = Path.current
-      var frontend_url = new URL("http://localhost:8080")
+      var frontend_url = Url("http://localhost:8080")
       var devel = false
       var verbose = false
       var port = 8080
@@ -1596,7 +1593,7 @@ Usage: isabelle afp_submit [OPTIONS]
   unless directory to store submissions in is specified.
 """,
         "a:" -> (arg => backend_path = Path.explode(arg)),
-        "b:" -> (arg => frontend_url = new URL(arg)),
+        "b:" -> (arg => frontend_url = Url(arg)),
         "d" -> (_ => devel = true),
         "p:" -> (arg => port = Value.Int.parse(arg)),
         "v" -> (_ => verbose = true),

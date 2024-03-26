@@ -18,9 +18,11 @@ ML\<open>
     and more_args = \<open>
       structure TI = Discrimination_Tree
       val init_args = {
-        concl_unifier = SOME Higher_Order_Pattern_Unification.match,
+        concl_unifier = SOME (Higher_Order_Pattern_Unification.match
+          |> Type_Unification.e_match Unification_Util.match_types),
         normalisers = SOME Unification_Util.beta_eta_short_norms_unif,
-        prems_unifier = SOME Higher_Order_Pattern_Unification.unify,
+        prems_unifier = SOME (Higher_Order_Pattern_Unification.unify
+          |> Type_Unification.e_unify Unification_Util.unify_types),
         retrieval = SOME (Term_Index_Unification_Hints_Args.mk_sym_retrieval
           TI.norm_term TI.generalisations),
         hint_preprocessor = SOME (K I)

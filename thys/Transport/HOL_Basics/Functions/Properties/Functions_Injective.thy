@@ -4,14 +4,16 @@ theory Functions_Injective
   imports
     Functions_Base
     HOL_Syntax_Bundles_Lattices
+    ML_Unification.ML_Unification_HOL_Setup
+    ML_Unification.Unify_Resolve_Tactics
 begin
 
-consts injective_on :: "'a \<Rightarrow> ('b \<Rightarrow> 'c) \<Rightarrow> bool"
+consts injective_on :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
 
 overloading
   injective_on_pred \<equiv> "injective_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> bool"
 begin
-  definition "injective_on_pred P f \<equiv> \<forall>x x'. P x \<longrightarrow> P x' \<longrightarrow> f x = f x' \<longrightarrow> x = x'"
+  definition "injective_on_pred P f \<equiv> \<forall>x x'. P x \<and> P x' \<and> f x = f x' \<longrightarrow> x = x'"
 end
 
 lemma injective_onI [intro]:
@@ -26,21 +28,33 @@ lemma injective_onD:
   shows "x = x'"
   using assms unfolding injective_on_pred_def by blast
 
-definition "(injective :: ('a \<Rightarrow> _) \<Rightarrow> _) \<equiv> injective_on (\<top> :: 'a \<Rightarrow> bool)"
+consts injective :: "'a \<Rightarrow> bool"
 
-lemma injective_eq_injective_on: "(injective :: ('a \<Rightarrow> _) \<Rightarrow> _) = injective_on (\<top> :: 'a \<Rightarrow> bool)"
+overloading
+  injective \<equiv> "injective :: ('a \<Rightarrow> 'b) \<Rightarrow> bool"
+begin
+  definition "(injective :: ('a \<Rightarrow> 'b) \<Rightarrow> bool) \<equiv> injective_on (\<top> :: 'a \<Rightarrow> bool)"
+end
+
+lemma injective_eq_injective_on:
+  "(injective :: ('a \<Rightarrow> 'b) \<Rightarrow> bool) = injective_on (\<top> :: 'a \<Rightarrow> bool)"
   unfolding injective_def ..
+
+lemma injective_eq_injective_on_uhint [uhint]:
+  assumes "P \<equiv> (\<top> :: 'a \<Rightarrow> bool)"
+  shows "injective :: ('a \<Rightarrow> 'b) \<Rightarrow> bool \<equiv> injective_on P"
+  using assms by (simp add: injective_eq_injective_on)
 
 lemma injectiveI [intro]:
   assumes "\<And>x x'. f x = f x' \<Longrightarrow> x = x'"
   shows "injective f"
-  unfolding injective_eq_injective_on using assms by (intro injective_onI)
+  using assms by (urule injective_onI)
 
 lemma injectiveD:
   assumes "injective f"
   and "f x = f x'"
   shows "x = x'"
-  using assms unfolding injective_eq_injective_on by (auto dest: injective_onD)
+  using assms by (urule (d) injective_onD where chained = insert) simp_all
 
 lemma injective_on_if_injective:
   fixes P :: "'a \<Rightarrow> bool" and f :: "'a \<Rightarrow> _"

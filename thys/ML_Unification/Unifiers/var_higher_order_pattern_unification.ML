@@ -41,8 +41,11 @@ fun can_var_pattern_unif (p, t) = let val (head, args) = strip_comb p
 fun e_unify unif_theory binders ctxt (tp as (t, p)) env =
   let
     exception FALLBACK of Pretty.T
-    val hop_match_type_unif = Higher_Order_Pattern_Unification.e_match Util.unify_types
-      Unification_Combinator.fail_match Unification_Combinator.fail_match binders ctxt
+    val unify_types = Util.unify_types
+    val hop_match_type_unif = Higher_Order_Pattern_Unification.e_match unify_types
+      Unification_Combinator.fail_match Unification_Combinator.fail_match
+      |> Type_Unification.e_unify unify_types
+      |> (fn unif => unif binders ctxt)
     val hop_match_type_unif_tp = hop_match_type_unif tp
     val hop_match_type_unif_pt = hop_match_type_unif (p, t) #> Seq.map (apsnd Unification_Base.symmetric)
     val seq_try = General_Util.seq_try (FALLBACK (Pretty.str "Higher-order pattern matching failed."))

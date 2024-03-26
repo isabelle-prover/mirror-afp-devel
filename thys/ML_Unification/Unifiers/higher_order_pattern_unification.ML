@@ -16,12 +16,14 @@ sig
   include HAS_LOGGER
 
   (* e-matching *)
+  (*precondition: types of terms are matched*)
   val e_match : Unification_Base.type_matcher -> Unification_Base.matcher ->
     Unification_Base.e_matcher
   val match : Unification_Base.matcher
   val norms_match : Unification_Base.normalisers
 
   (* e-unification *)
+  (*precondition: types of terms are unified*)
   val e_unify : Unification_Base.type_unifier -> Unification_Base.unifier ->
     Unification_Base.e_unifier
   val unify : Unification_Base.unifier
@@ -98,7 +100,7 @@ fun match_bind (tenv, binders, ixn, T, is, t) =
 (** higher-order pattern E-unification **)
 val norms_match = Util.beta_eta_short_norms_match
 
-fun e_match match_types match_theory_pattern match_theory_fail binders ctxt (pt as (p, t)) env =
+fun e_match match_types match_theory_pattern match_theory_fail binders ctxt pt env =
   let
     val norm_pt = apfst o (#norm_term norms_match)
     fun rigid_rigid ctxt p n env = (*normalise the types in rigid-rigid cases*)
@@ -177,17 +179,14 @@ fun e_match match_types match_theory_pattern match_theory_fail binders ctxt (pt 
         | Unification_Base.PATTERN => handle_failure match_theory_pattern
           (fn _ => Pretty.str "Terms not in Pattern fragment.")
       end
-    val binder_types = Binders.binder_types binders
   in
     (@{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
         Pretty.str "Higher-order pattern matching ",
         Util.pretty_unif_problem ctxt (norm_pt env pt)
       ] |> Pretty.string_of);
-    match_types ctxt (Envir.fastype env binder_types p, fastype_of1 (binder_types, t)) env
-    |> match binders ctxt pt)
+    match binders ctxt pt env)
     handle Unification_Base.UNIF => Seq.empty (*types do not match*)
   end
-
 
 (*standard higher-order pattern matching*)
 val match = e_match Util.match_types Unification_Combinator.fail_match
@@ -457,7 +456,6 @@ fun e_unify unify_types unify_theory_pattern unify_theory_fail binders ctxt st e
         | Unification_Base.PATTERN => handle_failure unify_theory_pattern
           (fn _ => Pretty.str "Terms not in Pattern fragment.")
       end
-    val binder_types = Binders.binder_types binders
   in
     (@{log Logger.DEBUG} ctxt (fn _ =>
       Pretty.block [
@@ -465,7 +463,7 @@ fun e_unify unify_types unify_theory_pattern unify_theory_fail binders ctxt st e
         Util.pretty_unif_problem ctxt (apply2 (Norm.norm_term_unif env) st)
       ]
       |> Pretty.string_of);
-    unif binders ctxt st (unify_types ctxt (apply2 (Envir.fastype env binder_types) st) env))
+    unif binders ctxt st env)
     handle Unification_Base.UNIF => Seq.empty (*types do not unify*)
   end
 

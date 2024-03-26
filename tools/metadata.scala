@@ -8,7 +8,7 @@ package afp
 import isabelle.*
 
 import java.time.LocalDate
-import java.net.{URI, URL}
+import java.net.URI
 
 
 object Metadata {
@@ -38,15 +38,7 @@ object Metadata {
       Email(author, id, user + "@" + host)
   }
 
-  case class Homepage(override val author: Author.ID, id: Homepage.ID, url: URL)
-    extends Affiliation {
-    override def equals(that: Any): Boolean =
-      that match {
-        case other: Homepage =>
-          other.author == author && other.id == id && other.url.toString == url.toString
-        case _ => false
-      }
-  }
+  case class Homepage(override val author: Author.ID, id: Homepage.ID, url: Url) extends Affiliation
 
   object Homepage {
     type ID = String
@@ -60,7 +52,7 @@ object Metadata {
       "^([0-9]{4})-([0-9]{4})-([0-9]{4})-([0-9]{3}[0-9X])$".r.matches(identifier),
       "Invalid format for orcid: " + quote(identifier))
 
-    def url: URL = new URL("https", "orcid.org", "/" + identifier)
+    def url: Url = Url("https://orcid.org/" + identifier)
   }
 
   case class Author(
@@ -80,11 +72,11 @@ object Metadata {
 
   sealed trait Classification {
     def desc: String
-    def url: URL
+    def url: Url
   }
 
   case class ACM(id: String, override val desc: String) extends Classification {
-    val url = new URL("https", "dl.acm.org", "/topic/ccs2012/" + id)
+    val url = Url("https://dl.acm.org/topic/ccs2012/" + id)
   }
 
   case class AMS(id: String, hierarchy: List[String]) extends Classification {
@@ -95,8 +87,7 @@ object Metadata {
       case _ => error("Invalid ams id:" + id)
     }
     override val desc: String = hierarchy.mkString(" / ")
-    override val url: URL =
-      new URL("https", "mathscinet.ams.org", "/mathscinet/msc/msc2020.html?t=" + code)
+    override val url: Url = Url("https://mathscinet.ams.org/mathscinet/msc/msc2020.html?t=" + code)
   }
 
   case class Topic(
@@ -141,7 +132,7 @@ object Metadata {
       "invalid format for DOI: " + quote(identifier))
 
     def uri: URI = new URI("doi:" + identifier)
-    def url: URL = new URL("https", "doi.org", "/" + identifier)
+    def url: Url = Url("https://doi.org/" + identifier)
     def formatted(style: String = "apa"): String =
       Utils.fetch_text(url, Map("Accept" -> ("text/x-bibliography; style=" + style)))
   }
@@ -215,7 +206,7 @@ object Metadata {
         case (id, email) => to_email(author_id, id, email)
       }
       val homepages = author.table("homepages").string.values.map {
-        case (id, url) => Homepage(author = author_id, id = id, url = new URL(url.rep))
+        case (id, url) => Homepage(author = author_id, id = id, url = Url(url.rep))
       }
       val orcid = author.string.get("orcid").map(_.rep).map(Orcid(_))
       Author(

@@ -3,15 +3,13 @@ section \<open>Simps To\<close>
 theory Simps_To
   imports
     ML_Tactic_Utils
-    ML_Theorem_Utils
-    ML_Unification_Base
     Setup_Result_Commands
 begin
 
 paragraph \<open>Summary\<close>
 text \<open>Simple frameworks to ask for the simp-normal form of a term on the user-level.\<close>
 
-setup_result simps_to_base_logger = \<open>Logger.new_logger Logger.root_logger "Simps_To_Base"\<close>
+setup_result simps_to_base_logger = \<open>Logger.new_logger Logger.root "Simps_To_Base"\<close>
 
 paragraph \<open>Using Simplification On Left Term\<close>
 
@@ -65,8 +63,8 @@ schematic_goal
   assumes [simp]: "P \<equiv> Q"
   and [simp]: "Q \<equiv> R"
   shows "PROP SIMPS_TO P ?Q"
-  apply simp
-  by (rule SIMPS_TOI)
+  by (tactic \<open>Simps_To.SIMPS_TO_tac (Simps_To.simp_inst_tac (simp_tac @{context})) @{context} 1\<close>)
+
 end
 
 end

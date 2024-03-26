@@ -87,8 +87,8 @@ lemma Refl_Rel_symmetric_onI [intro]:
 lemma Refl_Rel_symmetricI [intro]:
   assumes "symmetric R"
   shows "symmetric R\<^sup>\<oplus>"
-  using assms by (fold symmetric_on_in_field_iff_symmetric)
-  (blast intro: symmetric_on_if_le_pred_if_symmetric_on)
+  by (urule symmetric_on_if_le_pred_if_symmetric_on)
+  (use assms in \<open>urule Refl_Rel_symmetric_onI\<close>, simp)
 
 lemma Refl_Rel_partial_equivalence_rel_onI [intro]:
   assumes "partial_equivalence_rel_on (P :: 'a \<Rightarrow> bool) (R :: 'a \<Rightarrow> _)"
@@ -215,7 +215,8 @@ interpretation inv : galois "(\<ge>\<^bsub>L\<^esub>)" "(\<ge>\<^bsub>R\<^esub>)
   and "\<And>R. in_dom R\<inverse> \<equiv> in_codom R"
   and "\<And>R. in_codom R\<inverse> \<equiv> in_dom R"
   and "\<And>R. in_field R\<inverse> \<equiv> in_field R"
-  and "\<And>P R. inflationary_on P R\<inverse> \<equiv> deflationary_on P R"
+  and "\<And>(P :: 'c \<Rightarrow> bool) (R :: 'd \<Rightarrow> 'c \<Rightarrow> bool).
+    (inflationary_on P R\<inverse> :: ('c \<Rightarrow> 'd) \<Rightarrow> bool) \<equiv> deflationary_on P R"
   by simp_all
 
 lemma deflationary_on_in_field_Refl_Rel_leftI:

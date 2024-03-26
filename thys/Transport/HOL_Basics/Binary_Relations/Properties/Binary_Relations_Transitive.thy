@@ -2,11 +2,12 @@
 subsubsection \<open>Transitive\<close>
 theory Binary_Relations_Transitive
   imports
-    Binary_Relation_Functions
     Functions_Monotone
+    ML_Unification.ML_Unification_HOL_Setup
+    ML_Unification.Unify_Resolve_Tactics
 begin
 
-consts transitive_on :: "'a \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool"
+consts transitive_on :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
 
 overloading
   transitive_on_pred \<equiv> "transitive_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool"
@@ -37,40 +38,41 @@ proof (rule transitive_onI)
 qed
 
 lemma transitive_on_rel_inv_iff_transitive_on [iff]:
-  "transitive_on P R\<inverse> \<longleftrightarrow> transitive_on (P :: 'a \<Rightarrow> bool) (R :: 'a \<Rightarrow> _)"
+  "transitive_on P R\<inverse> \<longleftrightarrow> transitive_on (P :: 'a \<Rightarrow> bool) (R :: 'a \<Rightarrow> 'a \<Rightarrow> bool)"
   by (auto intro!: transitive_onI dest: transitive_onD)
 
-lemma antimono_transitive_on [iff]:
-  "antimono (\<lambda>(P :: 'a \<Rightarrow> bool). transitive_on P (R :: 'a \<Rightarrow> _))"
+lemma antimono_transitive_on: "antimono (transitive_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool)"
   by (intro antimonoI) (auto dest: transitive_onD)
 
-lemma transitive_on_if_le_pred_if_transitive_on:
-  fixes P P' :: "'a \<Rightarrow> bool" and R :: "'a \<Rightarrow> _"
-  assumes "transitive_on P R"
-  and "P' \<le> P"
-  shows "transitive_on P' R"
-  using assms by (auto dest: transitive_onD)
+consts transitive :: "'a \<Rightarrow> bool"
 
-definition "(transitive :: ('a \<Rightarrow> _) \<Rightarrow> _) \<equiv> transitive_on (\<top> :: 'a \<Rightarrow> bool)"
+overloading
+  transitive \<equiv> "transitive :: ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool"
+begin
+  definition "(transitive :: ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool) \<equiv> transitive_on (\<top> :: 'a \<Rightarrow> bool)"
+end
 
 lemma transitive_eq_transitive_on:
-  "(transitive :: ('a \<Rightarrow> _) \<Rightarrow> _) = transitive_on (\<top> :: 'a \<Rightarrow> bool)"
+  "(transitive :: ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> _) = transitive_on (\<top> :: 'a \<Rightarrow> bool)"
   unfolding transitive_def ..
+
+lemma transitive_eq_transitive_on_uhint [uhint]:
+  "P \<equiv> (\<top> :: 'a \<Rightarrow> bool) \<Longrightarrow> (transitive :: ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> _) \<equiv> transitive_on P"
+  by (simp add: transitive_eq_transitive_on)
 
 lemma transitiveI [intro]:
   assumes "\<And>x y z. R x y \<Longrightarrow> R y z \<Longrightarrow> R x z"
   shows "transitive R"
-  unfolding transitive_eq_transitive_on using assms by (intro transitive_onI)
+  using assms by (urule transitive_onI)
 
 lemma transitiveD [dest]:
   assumes "transitive R"
   and "R x y" "R y z"
   shows "R x z"
-  using assms unfolding transitive_eq_transitive_on
-  by (auto dest: transitive_onD)
+  using assms by (urule (d) transitive_onD where chained = insert) simp_all
 
 lemma transitive_on_if_transitive:
-  fixes P :: "'a \<Rightarrow> bool" and R :: "'a \<Rightarrow> _"
+  fixes P :: "'a \<Rightarrow> bool" and R :: "'a \<Rightarrow> 'a \<Rightarrow> bool"
   assumes "transitive R"
   shows "transitive_on P R"
   using assms by (intro transitive_onI) blast
@@ -78,8 +80,7 @@ lemma transitive_on_if_transitive:
 lemma transitive_if_rel_comp_le_self:
   assumes "R \<circ>\<circ> R \<le> R"
   shows "transitive R"
-  using assms unfolding transitive_eq_transitive_on
-    by (intro transitive_on_if_rel_comp_self_imp) blast
+  by (urule transitive_on_if_rel_comp_self_imp) (use assms in auto)
 
 lemma rel_comp_le_self_if_transitive:
   assumes "transitive R"
@@ -94,12 +95,12 @@ lemma transitive_if_transitive_on_in_field:
   shows "transitive R"
   using assms by (intro transitiveI) (blast dest: transitive_onD)
 
-corollary transitive_on_in_field_iff_transitive [simp]:
+corollary transitive_on_in_field_iff_transitive [iff]:
   "transitive_on (in_field R) R \<longleftrightarrow> transitive R"
   using transitive_if_transitive_on_in_field transitive_on_if_transitive
   by blast
 
-lemma transitive_rel_inv_iff_transitive [iff]: "transitive R\<inverse> \<longleftrightarrow> transitive R"
+lemma transitive_rel_inv_iff_transitive [iff]: "transitive R\<inverse> \<longleftrightarrow> transitive (R :: 'a \<Rightarrow> 'a \<Rightarrow> bool)"
   by fast
 
 paragraph \<open>Instantiations\<close>
@@ -107,7 +108,7 @@ paragraph \<open>Instantiations\<close>
 lemma transitive_eq: "transitive (=)"
   by (rule transitiveI) (rule trans)
 
-lemma transitive_top: "transitive \<top>"
+lemma transitive_top: "transitive (\<top> :: 'a \<Rightarrow> 'a \<Rightarrow> bool)"
   by (rule transitiveI) auto
 
 

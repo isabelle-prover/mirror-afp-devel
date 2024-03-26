@@ -188,10 +188,12 @@ interpretation flip_inv : galois "(\<ge>\<^bsub>R\<^esub>)" "(\<ge>\<^bsub>L\<^e
   and "\<And>R S f g. (R\<inverse> \<unlhd>\<^sub>h S\<inverse>) f g \<equiv> (S \<^sub>h\<unlhd> R) g f"
   and "((\<ge>\<^bsub>R\<^esub>) \<^sub>h\<unlhd> (\<ge>\<^bsub>L\<^esub>)) r l \<equiv> ((\<le>\<^bsub>L\<^esub>) \<unlhd>\<^sub>h (\<le>\<^bsub>R\<^esub>)) l r"
   and "\<And>R. R\<inverse>\<inverse> \<equiv> R"
-  and "\<And>P R. inflationary_on P R\<inverse> \<equiv> deflationary_on P R"
-  and "\<And>P R. deflationary_on P R\<inverse>  \<equiv> inflationary_on P R"
+  and "\<And>(P :: 'c \<Rightarrow> bool) (R :: 'c \<Rightarrow> 'c \<Rightarrow> bool).
+    (inflationary_on P R\<inverse> :: ('c \<Rightarrow> 'c) \<Rightarrow> bool) \<equiv> deflationary_on P R"
+  and "\<And>(P :: 'c \<Rightarrow> bool) (R :: 'c \<Rightarrow> 'c \<Rightarrow> bool).
+    (deflationary_on P R\<inverse>  :: ('c \<Rightarrow> 'c) \<Rightarrow> bool) \<equiv> inflationary_on P R"
   and "\<And>(P :: 'b \<Rightarrow> bool). reflexive_on P (\<ge>\<^bsub>R\<^esub>) \<equiv> reflexive_on P (\<le>\<^bsub>R\<^esub>)"
-  and "\<And>R. transitive R\<inverse> \<equiv> transitive R"
+  and "\<And>(R :: 'a \<Rightarrow> 'a \<Rightarrow> bool). transitive R\<inverse> \<equiv> transitive R"
   and "\<And>R. in_codom R\<inverse> \<equiv> in_dom R"
   by (simp_all add: flip_unit_eq_counit flip_counit_eq_unit
     galois_prop.half_galois_prop_left_rel_inv_iff_half_galois_prop_right

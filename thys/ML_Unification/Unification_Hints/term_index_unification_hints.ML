@@ -208,16 +208,11 @@ val logger = Logger.setup_new_logger Unification_Hints_Base.logger FIU.FIA.full_
   and id = FIU.FIA.id
   and more_args = \<open>val init_args = TUHA.UHA_PA_entries_from_PCA_entries A.init_args\<close>}
 
-fun are_hint_variants ctxt hp =
+fun are_hint_variants hp =
   let
-    val tp = apply2 Thm.prop_of hp
-    val env = Unification_Util.empty_envir tp
-    fun match tp = First_Order_Unification.match [] ctxt tp env
-  in
-    match tp
-    |> Seq.maps (fn _ => match (swap tp))
-    |> not o fst o General_Util.seq_is_empty
-  end
+    val ctp = apply2 Thm.cprop_of hp
+    val match = Thm.first_order_match
+  in can match ctp andalso can match (swap ctp) end
 
 (* fun are_hint_prio_variants ctxt ((h1, p1), (h2, p2)) =
   p1 = p2 andalso are_hint_variants ctxt (h1, h2) *)
@@ -243,7 +238,7 @@ struct
   struct
     type data = TUHA.hint_prio
     structure TI = TI
-    fun data_eq ((h1, _), (h2, _))= are_hint_variants (Context.the_local_context ()) (h1, h2)
+    fun data_eq ((h1, _), (h2, _)) = are_hint_variants (h1, h2)
   end)
 end))
 
@@ -276,7 +271,7 @@ fun add_hint_prio (hint, prio) context =
   let
     val ctxt = Context.proof_of context
     val hint = hint |> get_hint_preprocessor context ctxt
-    val is_hint_variant = curry (are_hint_variants ctxt) hint o fst
+    val is_hint_variant = curry are_hint_variants hint o fst
   in
     (@{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
         Pretty.str "Adding hint ",
@@ -300,7 +295,7 @@ fun del_hint hint context =
   let
     val ctxt = Context.proof_of context
     val hint = hint |> get_hint_preprocessor context ctxt
-    val is_hint_variant = curry (are_hint_variants ctxt) hint o fst
+    val is_hint_variant = curry are_hint_variants hint o fst
   in
     (@{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
         Pretty.str "Deleting hint ",
@@ -323,11 +318,19 @@ fun del_hint hint context =
 val mk_retrieval = TUHA.mk_retrieval TI.norm_term
 val mk_sym_retrieval = TUHA.mk_sym_retrieval TI.norm_term
 
-fun try_hints binders ctxt =
-  let val context = Context.Proof ctxt
-  in UH.try_hints (get_retrieval context (get_index context)) binders ctxt end
-
 val binding = FIU.mk_binding_id_prefix "uhint"
+
+fun try_hints binders ctxt tp =
+  let
+    val context = Context.Proof ctxt
+    val _ = @{log Logger.DEBUG} ctxt (fn _ =>
+      Pretty.block [
+        Pretty.str "Trying unification hints ",
+        Binding.pretty binding,
+        Pretty.str " for ",
+        Unification_Util.pretty_unif_problem ctxt tp
+      ] |> Pretty.string_of)
+  in UH.try_hints (get_retrieval context (get_index context)) binders ctxt tp end
 
 val default_entries = PA.empty_entries () |> fold PA.set_entry [PA.prio TUHP.MEDIUM]
 

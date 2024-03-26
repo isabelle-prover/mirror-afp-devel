@@ -192,9 +192,9 @@ interpretation flip_inv :
   and "\<And>R S. (R\<inverse> \<Rrightarrow>\<^sub>m S\<inverse>) \<equiv> (R \<Rrightarrow>\<^sub>m S)"
   and "\<And>x x'. x' \<^bsub>R1\<^esub>\<greaterapprox> x \<equiv> x \<^bsub>L1\<^esub>\<lessapprox> x'"
   and "((\<ge>\<^bsub>R1\<^esub>) \<unlhd>\<^sub>h (\<ge>\<^bsub>L1\<^esub>)) r1 l1 \<equiv> True"
-  and "\<And>R. transitive R\<inverse> \<equiv> transitive R"
-  and "\<And>R. symmetric R\<inverse> \<equiv> symmetric R"
-  and "\<And>R. partial_equivalence_rel R\<inverse> \<equiv> partial_equivalence_rel R"
+  and "\<And>(R :: 'z \<Rightarrow> 'z \<Rightarrow> bool). transitive R\<inverse> \<equiv> transitive R"
+  and "\<And>(R :: 'z \<Rightarrow> 'z \<Rightarrow> bool). symmetric R\<inverse> \<equiv> symmetric R"
+  and "\<And>(R :: 'z \<Rightarrow> 'z \<Rightarrow> bool). partial_equivalence_rel R\<inverse> \<equiv> partial_equivalence_rel R"
   and "\<And>P. (True \<Longrightarrow> P) \<equiv> Trueprop P"
   and "\<And>P Q. (True \<Longrightarrow> PROP P \<Longrightarrow> PROP Q) \<equiv> (PROP P \<Longrightarrow> True \<Longrightarrow> PROP Q)"
   using galois_prop

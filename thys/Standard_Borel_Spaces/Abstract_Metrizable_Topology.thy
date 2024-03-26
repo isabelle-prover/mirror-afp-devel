@@ -215,13 +215,9 @@ proof -
         by(auto simp: Submetric_def ppm.Product_metric.Metric_space_axioms Submetric_axioms_def f_def order.strict_implies_order[OF d(2)])
       have 1:"subtopology Hilbert_cube_topology (f ` topspace X) = f_S.sub.mtopology"
         using Hilbert_cube_eq f_S.mtopology_submetric by auto
-      have "continuous_map (mtopology_of f_S.sub.Self) (mtopology_of ms.Self) g"
-        unfolding continuous_map_metric_limitin f_S.sub.mspace_Self ms.mspace_Self 
-        unfolding mtopology_of_def f_S.sub.mspace_Self ms.mspace_Self f_S.sub.mdist_Self ms.mdist_Self
+      have "continuous_map f_S.sub.mtopology ms.mtopology g"
+        unfolding continuous_map_iff_limit_seq[OF f_S.sub.first_countable_mtopology]
       proof safe
-        show "x \<in> topspace X \<Longrightarrow> g (f x) \<in> topspace X" for x
-          by(simp add: g(2))
-      next
         fix yn y
         assume h:" limitin f_S.sub.mtopology yn y sequentially"
         have h':"limitin ppm.Product_metric.mtopology yn y sequentially"

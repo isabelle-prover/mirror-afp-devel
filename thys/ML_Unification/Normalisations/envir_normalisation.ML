@@ -37,9 +37,9 @@ sig
   type thm_normaliser = Proof.context -> Envir.env -> thm -> thm
   type thm_type_normaliser = thm_normaliser
 
-  val norm_thm_types : type_normaliser -> thm_normaliser
-  val norm_thm_types_match : thm_normaliser
-  val norm_thm_types_unif : thm_normaliser
+  val norm_thm_types : type_normaliser -> thm_type_normaliser
+  val norm_thm_types_match : thm_type_normaliser
+  val norm_thm_types_unif : thm_type_normaliser
   val norm_thm : type_normaliser -> term_normaliser -> thm_normaliser
   val norm_thm_match : thm_normaliser
   val norm_thm_unif : thm_normaliser

@@ -324,6 +324,8 @@ corollary dep_mono_wrt_pred_comp_dep_mono_wrt_pred_compI':
   shows "([x \<Colon> P] \<Rrightarrow>\<^sub>m S x (f x)) (f' \<circ> f)"
   using assms by (intro dep_mono_wrt_pred_comp_dep_mono_wrt_pred_compI)
 
+lemma mono_wrt_rel_top [iff]: "(R \<Rrightarrow>\<^sub>m \<top>) f" by auto
+lemma mono_wrt_pred_top [iff]: "([P] \<Rrightarrow>\<^sub>m \<top>) f" by auto
 
 paragraph \<open>Instantiations\<close>
 
@@ -335,6 +337,14 @@ lemma mono_in_codom: "mono in_codom" by (intro monoI) fast
 lemma mono_in_field: "mono in_field" by (intro monoI) fast
 lemma mono_rel_comp1: "mono (\<circ>\<circ>)" by (intro monoI) fast
 lemma mono_rel_comp2: "mono ((\<circ>\<circ>) x)" by (intro monoI) fast
+
+lemma mono_rel_restrict_left:
+  "((\<le>) \<Rrightarrow>\<^sub>m (\<le>) \<Rrightarrow> (\<le>)) (rel_restrict_left :: ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> bool)"
+  by (intro dep_mono_wrt_relI Dep_Fun_Rel_relI le_relI) fastforce
+
+lemma mono_rel_restrict_right:
+  "((\<le>) \<Rrightarrow>\<^sub>m (\<le>) \<Rrightarrow> (\<le>)) (rel_restrict_right :: ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> bool)"
+  by (intro dep_mono_wrt_relI Dep_Fun_Rel_relI le_relI) fastforce
 
 
 end

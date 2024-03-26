@@ -9,12 +9,12 @@ begin
 text \<open>First some simple, barebone logging: print some information.\<close>
 ML_command\<open>
   \<comment> \<open>the following two are equivalent\<close>
-  val _ = Logger.log Logger.root_logger Logger.INFO @{context} (K "hello root logger")
-  val _ = @{log Logger.INFO Logger.root_logger} @{context} (K "hello root logger")
+  val _ = Logger.log Logger.root Logger.INFO @{context} (K "hello root logger")
+  val _ = @{log Logger.INFO Logger.root} @{context} (K "hello root logger")
 \<close>
 
 ML_command\<open>
-  val logger = Logger.root_logger
+  val logger = Logger.root
   val _ = @{log} @{context} (K "hello root logger")
   \<comment> \<open>\<open>@{log}\<close> is equivalent to \<open>Logger.log logger Logger.INFO\<close>\<close>
 \<close>
@@ -26,7 +26,7 @@ ML\<open>
     include HAS_LOGGER
     val get_n :  Proof.context -> int
   end = struct
-    val logger = Logger.setup_new_logger Logger.root_logger "My_Struct"
+    val logger = Logger.setup_new_logger Logger.root "My_Struct"
     fun get_n ctxt = (@{log} ctxt (K "retrieving n..."); 42)
   end
 \<close>
@@ -35,16 +35,16 @@ ML_command\<open>val n = My_Struct.get_n @{context}\<close>
 
 text\<open>We can set up a hierarchy of loggers\<close>
 ML\<open>
-  val logger = Logger.root_logger
-  val parent1 = Logger.setup_new_logger Logger.root_logger "Parent1"
+  val logger = Logger.root
+  val parent1 = Logger.setup_new_logger Logger.root "Parent1"
   val child1 = Logger.setup_new_logger parent1 "Child1"
   val child2 = Logger.setup_new_logger parent1 "Child2"
 
-  val parent2 = Logger.setup_new_logger Logger.root_logger "Parent2"
+  val parent2 = Logger.setup_new_logger Logger.root "Parent2"
 \<close>
 
 ML_command\<open>
-  (@{log Logger.INFO Logger.root_logger} @{context} (K "Hello root logger");
+  (@{log Logger.INFO Logger.root} @{context} (K "Hello root logger");
   @{log Logger.INFO parent1} @{context} (K "Hello parent1");
   @{log Logger.INFO child1} @{context} (K "Hello child1");
   @{log Logger.INFO child2} @{context} (K "Hello child2");
@@ -73,14 +73,14 @@ declare [[ML_map_context \<open>Logger.set_log_levels parent1 Logger.INFO\<close
 
 text \<open>We can set message filters.\<close>
 
-declare [[ML_map_context \<open>Logger.set_msg_filters Logger.root_logger (match_string "Third")\<close>]]
+declare [[ML_map_context \<open>Logger.set_msg_filters Logger.root (match_string "Third")\<close>]]
 ML_command\<open>
   (@{log Logger.INFO parent1} @{context} (K "First message");
   @{log Logger.INFO child1} @{context} (K "Second message");
   @{log Logger.INFO child2} @{context} (K "Third message");
   @{log Logger.INFO parent2} @{context} (K "Fourth message"))
 \<close>
-declare [[ML_map_context \<open>Logger.set_msg_filters Logger.root_logger (K true)\<close>]]
+declare [[ML_map_context \<open>Logger.set_msg_filters Logger.root (K true)\<close>]]
 
 text \<open>One can also use different output channels (e.g. files) and hide/show some additional
 logging information. Ctrl+click on below values and explore.\<close>
@@ -91,7 +91,7 @@ text \<open>To set up (local) loggers outside ML environments,
 @{command setup_result} and @{command local_setup_result}.\<close>
 experiment
 begin
-local_setup_result local_logger = \<open>Logger.new_logger Logger.root_logger "Local"\<close>
+local_setup_result local_logger = \<open>Logger.new_logger Logger.root "Local"\<close>
 
 ML_command\<open>@{log Logger.INFO local_logger} @{context} (K "Hello local world")\<close>
 end
@@ -100,7 +100,7 @@ text \<open>\<open>local_logger\<close> is no longer available. The follow thus 
 \<comment> \<open>ML_command\<open>@{log Logger.INFO local_logger} @{context} (K "Hello local world")\<close>\<close>
 
 text \<open>Let us create another logger in the global context.\<close>
-setup_result some_logger = \<open>Logger.new_logger Logger.root_logger "Some_Logger"\<close>
+setup_result some_logger = \<open>Logger.new_logger Logger.root "Some_Logger"\<close>
 ML_command\<open>@{log Logger.INFO some_logger} @{context} (K "Hello world")\<close>
 
 text \<open>Let us delete it again.\<close>

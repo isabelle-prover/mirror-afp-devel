@@ -6,6 +6,7 @@ theory Unification_Hints_Reification_Examples
     HOL.Rat
     ML_Unification_HOL_Setup
     Unify_Fact_Tactic
+    Unify_Resolve_Tactics
 begin
 
 paragraph \<open>Summary\<close>
@@ -36,7 +37,8 @@ ML\<open>
       }\<close>}
   val reify_unify = Unification_Combinator.add_fallback_unifier
     (fn unif_theory =>
-      Higher_Order_Pattern_Unification.e_unify Unification_Util.unify_types unif_theory unif_theory)
+      Higher_Order_Pattern_Unification.e_unify Unification_Util.unify_types unif_theory unif_theory
+      |> Type_Unification.e_unify Unification_Util.unify_types)
     (Reification_Unification_Hints.try_hints
       |> Unification_Combinator.norm_unifier (#norm_term Higher_Order_Pattern_Unification.norms_unify))
 \<close>
@@ -106,7 +108,8 @@ paragraph \<open>Reification with matching without recursion for conclusion\<clo
 
 text \<open>We disallow the hint unifier to recursively look for hints while unifying the conclusion;
 instead, we only allow the hint unifier to match the hint's conclusion against the disagreement terms.\<close>
-declare [[reify_uhint where concl_unifier = Higher_Order_Pattern_Unification.match]]
+declare [[reify_uhint where concl_unifier =
+  \<open>Higher_Order_Pattern_Unification.match |> Type_Unification.e_match Unification_Util.match_types\<close>]]
 
 text \<open>However, this also means that we now have to write our hints such that the hint's
 conclusion can successfully be matched against the disagreement terms. In particular,

@@ -30,32 +30,45 @@ lemma antisymmetric_if_partial_order_on_in_field:
   using assms by (elim partial_order_onE)
   (rule antisymmetric_if_antisymmetric_on_in_field)
 
-definition "(partial_order :: ('a \<Rightarrow> _) \<Rightarrow> bool) \<equiv> partial_order_on (\<top> :: 'a \<Rightarrow> bool)"
+consts partial_order :: "'a \<Rightarrow> bool"
+
+overloading
+  partial_order \<equiv> "partial_order :: ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool"
+begin
+  definition "(partial_order :: ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool) \<equiv> partial_order_on (\<top> :: 'a \<Rightarrow> bool)"
+end
 
 lemma partial_order_eq_partial_order_on:
-  "(partial_order :: ('a \<Rightarrow> _) \<Rightarrow> bool) = partial_order_on (\<top> :: 'a \<Rightarrow> bool)"
+  "(partial_order :: ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool) = partial_order_on (\<top> :: 'a \<Rightarrow> bool)"
   unfolding partial_order_def ..
+
+lemma partial_order_eq_partial_order_on_uhint [uhint]:
+  assumes "P \<equiv> \<top> :: 'a \<Rightarrow> bool"
+  shows "(partial_order :: ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool) \<equiv> partial_order_on P"
+  using assms by (simp add: partial_order_eq_partial_order_on)
+
+context
+  fixes R :: "'a \<Rightarrow> 'a \<Rightarrow> bool"
+begin
 
 lemma partial_orderI [intro]:
   assumes "preorder R"
   and "antisymmetric R"
   shows "partial_order R"
-  unfolding partial_order_eq_partial_order_on using assms
-  by (intro partial_order_onI preorder_on_if_preorder antisymmetric_on_if_antisymmetric)
+  using assms by (urule partial_order_onI)
 
 lemma partial_orderE [elim]:
   assumes "partial_order R"
   obtains "preorder R" "antisymmetric R"
-  using assms unfolding partial_order_eq_partial_order_on
-  by (elim partial_order_onE)
-  (simp only: preorder_eq_preorder_on antisymmetric_eq_antisymmetric_on)
+  using assms by (urule (e) partial_order_onE)
 
 lemma partial_order_on_if_partial_order:
-  fixes P :: "'a \<Rightarrow> bool" and R :: "'a \<Rightarrow> _"
+  fixes P :: "'a \<Rightarrow> bool"
   assumes "partial_order R"
   shows "partial_order_on P R"
   using assms by (elim partial_orderE)
   (intro partial_order_onI preorder_on_if_preorder antisymmetric_on_if_antisymmetric)
 
+end
 
 end

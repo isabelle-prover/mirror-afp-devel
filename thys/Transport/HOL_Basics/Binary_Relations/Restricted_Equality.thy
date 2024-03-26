@@ -13,23 +13,23 @@ text \<open>Introduces notations and theorems for restricted equalities.
 An equality @{term "(=)"} can be restricted to only apply to a subset of its
 elements. The restriction can be formulated, for example, by a predicate or a set.\<close>
 
-bundle eq_restrict_syntax
+bundle eq_rel_restrict_syntax
 begin
 syntax
-  "_eq_restrict_infix" :: "'a \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool" ("(_) =(\<^bsub>_\<^esub>) (_)" [51,51,51] 50)
-  "_eq_restrict" :: "('a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool" ("'(=(\<^bsub>_\<^esub>)')")
+  "_eq_restrict_infix" :: "'a \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> bool" ("(_) =(\<^bsub>_\<^esub>) (_)" [51,51,51] 50)
+  "_eq_restrict" :: "'b \<Rightarrow> 'a \<Rightarrow> bool" ("'(=(\<^bsub>_\<^esub>)')")
 end
-bundle no_eq_restrict_syntax
+bundle no_eq_rel_restrict_syntax
 begin
 no_syntax
-  "_eq_restrict_infix" :: "'a \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool" ("(_) =(\<^bsub>_\<^esub>) (_)" [51,51,51] 50)
-  "_eq_restrict" :: "('a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool" ("'(=(\<^bsub>_\<^esub>)')")
+  "_eq_restrict_infix" :: "'a \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> bool" ("(_) =(\<^bsub>_\<^esub>) (_)" [51,51,51] 50)
+  "_eq_restrict" :: "'b \<Rightarrow> 'a \<Rightarrow> bool" ("'(=(\<^bsub>_\<^esub>)')")
 end
-unbundle eq_restrict_syntax
+unbundle eq_rel_restrict_syntax
 
 translations
-  "(=\<^bsub>P\<^esub>)" \<rightleftharpoons> "CONST restrict_left (=) P"
-  "x =\<^bsub>P\<^esub> y" \<rightleftharpoons> "CONST restrict_left (=) P x y"
+  "(=\<^bsub>P\<^esub>)" \<rightleftharpoons> "CONST rel_restrict_left (=) P"
+  "x =\<^bsub>P\<^esub> y" \<rightleftharpoons> "CONST rel_restrict_left (=) P x y"
 
 lemma in_dom_eq_restrict_eq [simp]: "in_dom (=\<^bsub>P\<^esub>) = P" by auto
 lemma in_codom_eq_restrict_eq [simp]: "in_codom (=\<^bsub>P\<^esub>) = P" by auto
