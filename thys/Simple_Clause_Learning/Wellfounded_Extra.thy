@@ -4,16 +4,6 @@ theory Wellfounded_Extra
     "Ordered_Resolution_Prover.Lazy_List_Chain"
 begin
 
-
-abbreviation wf :: "'a rel \<Rightarrow> bool" where
-  "wf \<equiv> wf_on UNIV"
-
-abbreviation wfp :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool" where
-  "wfp \<equiv> wfp_on UNIV"
-
-lemma wf_def[no_atp]: "wf r \<longleftrightarrow> (\<forall>P. (\<forall>x. (\<forall>y. (y, x) \<in> r \<longrightarrow> P y) \<longrightarrow> P x) \<longrightarrow> (\<forall>x. P x))"
-  by (simp add: wf_on_def)
-
 lemma wf_onI:
   "(\<And>P x. (\<And>y. y \<in> A \<Longrightarrow> (\<And>z. z \<in> A \<Longrightarrow> (z, y) \<in> r \<Longrightarrow> P z) \<Longrightarrow> P y) \<Longrightarrow> x \<in> A \<Longrightarrow> P x) \<Longrightarrow> wf_on A r"
   unfolding wf_on_def by metis
@@ -31,16 +21,6 @@ lemma wf_on_induct[consumes 1, case_names less in_dom]:
 
 
 subsection \<open>Basic Results\<close>
-
-text \<open>Point-free characterization of well-foundedness\<close>
-
-
-lemma wfE_pf: "wf R \<Longrightarrow> A \<subseteq> R `` A \<Longrightarrow> A = {}"
-  by (auto elim!: wf_onE_pf)
-
-lemma wfI_pf: "(\<And>A. A \<subseteq> R `` A \<Longrightarrow> A = {}) \<Longrightarrow> wf R"
-  by (auto intro!: wf_onI_pf)
-
 
 subsubsection \<open>Minimal-element characterization of well-foundedness\<close>
 
@@ -68,29 +48,6 @@ proof (rule wf_onI_pf)
   using assms by (metis ImageE subset_eq)
 qed
 
-lemma wfI_min:
-  assumes a: "\<And>x Q. x \<in> Q \<Longrightarrow> \<exists>z\<in>Q. \<forall>y. (y, z) \<in> R \<longrightarrow> y \<notin> Q"
-  shows "wf R"
-proof (rule wfI_pf)
-  fix A
-  assume b: "A \<subseteq> R `` A"
-  have False if "x \<in> A" for x
-    using a[OF that] b by blast
-  then show "A = {}" by blast
-qed
-
-lemma wf_iff_minimal: "wf r \<longleftrightarrow> (\<forall>B. B \<noteq> {} \<longrightarrow> (\<exists>z \<in> B. \<forall>y. (y, z) \<in> r \<longrightarrow> y \<notin> B))"
-  using wf_on_iff_ex_minimal[of UNIV, simplified] by metis
-
-lemma wf_eq_minimal[no_atp]: "wf r \<longleftrightarrow> (\<forall>Q x. x \<in> Q \<longrightarrow> (\<exists>z\<in>Q. \<forall>y. (y, z) \<in> r \<longrightarrow> y \<notin> Q))"
-  unfolding wf_iff_minimal by auto
-
-lemma wfp_iff_minimal: "wfp R \<longleftrightarrow> (\<forall>B. B \<noteq> {} \<longrightarrow> (\<exists>z \<in> B. \<forall>y. R y z \<longrightarrow> y \<notin> B))"
-  by (simp add: wfp_on_iff_ex_minimal) 
-
-lemmas wfP_eq_minimal[no_atp] = wf_eq_minimal[to_pred]
-
-
 lemma ex_trans_min_element_if_wf_on:
   assumes wf: "wf_on A r" and x_in: "x \<in> A"
   shows "\<exists>y \<in> A. (y, x) \<in> r\<^sup>* \<and> \<not>(\<exists>z \<in> A. (z, y) \<in> r)"
@@ -108,32 +65,7 @@ qed
 lemma ex_trans_min_element_if_wfp_on: "wfp_on A R \<Longrightarrow> x \<in> A \<Longrightarrow> \<exists>y\<in>A. R\<^sup>*\<^sup>* y x \<and> \<not> (\<exists>z\<in>A. R z y)"
   by (rule ex_trans_min_element_if_wf_on[to_pred])
 
-
-text \<open>Well-foundedness of subsets\<close>
-
-lemma wf_subset: "wf r \<Longrightarrow> p \<subseteq> r \<Longrightarrow> wf p"
-  by (simp add: wf_eq_minimal) fast
-
-lemmas wfP_subset = wf_subset [to_pred]
-
 text \<open>Well-foundedness of the empty relation\<close>
-
-lemma wf_empty [iff]: "wf {}"
-  by (simp add: wf_def)
-
-lemma wfP_empty [iff]: "wfp (\<lambda>x y. False)"
-proof -
-  have "wfp bot"
-    by (simp add: wfp_on_def)
-  then show ?thesis
-    by (simp add: bot_fun_def)
-qed
-
-lemma wf_Int1: "wf r \<Longrightarrow> wf (r \<inter> r')"
-  by (erule wf_subset) (rule Int_lower1)
-
-lemma wf_Int2: "wf r \<Longrightarrow> wf (r' \<inter> r)"
-  by (erule wf_subset) (rule Int_lower2)
 
 definition inv_imagep_on :: "'a set \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" where
   "inv_imagep_on A R f = (\<lambda>x y. x \<in> A \<and> y \<in> A \<and> R (f x) (f y))"
@@ -255,56 +187,6 @@ next
   show "x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> (R \<squnion> S) x y \<Longrightarrow> lex_prodp Q S (f x, x) (f y, y)"
     using convertible_R convertible_S
     by (auto simp add: lex_prodp_def)
-qed
-
-lemma wf_on_iff_wf: "wf_on A r \<longleftrightarrow> wf {(x, y) \<in> r. x \<in> A \<and> y \<in> A}"
-proof (rule iffI)
-  assume wf: "wf_on A r"
-  show "wf {(x, y) \<in> r. x \<in> A \<and> y \<in> A}"
-    unfolding wf_def
-  proof (intro allI impI ballI)
-    fix P x
-    assume IH: "\<forall>x. (\<forall>y. (y, x) \<in> {(x, y). (x, y) \<in> r \<and> x \<in> A \<and> y \<in> A} \<longrightarrow> P y) \<longrightarrow> P x"
-    show "P x"
-    proof (cases "x \<in> A")
-      case True
-      from wf show ?thesis
-      proof (induction x rule: wf_on_induct)
-        case (less x)
-        then show ?case
-          by (auto intro: IH[rule_format])
-      next
-        case in_dom
-        show ?case
-          using True .
-      qed
-    next
-      case False
-      then show ?thesis
-        by (auto intro: IH[rule_format])
-    qed
-  qed
-next
-  assume wf: "wf {(x, y). (x, y) \<in> r \<and> x \<in> A \<and> y \<in> A}"
-  show "wf_on A r"
-    unfolding wf_on_def
-  proof (intro allI impI ballI)
-    fix P x
-    assume IH: "\<forall>x\<in>A. (\<forall>y\<in>A. (y, x) \<in> r \<longrightarrow> P y) \<longrightarrow> P x" and "x \<in> A"
-    show "P x"
-      using wf \<open>x \<in> A\<close>
-    proof (induction x rule: wf_on_induct)
-      case (less y)
-      hence "\<And>z. (z, y) \<in> r \<Longrightarrow> z \<in> A \<Longrightarrow> P z"
-        by simp
-      thus ?case
-        using IH[rule_format, OF \<open>y \<in> A\<close>] by simp
-    next
-      case in_dom
-      show ?case
-        by simp
-    qed
-  qed
 qed
 
 lemma wfp_on_iff_wfp: "wfp_on A R \<longleftrightarrow> wfp (\<lambda>x y. R x y \<and>  x \<in> A \<and> y \<in> A)"
