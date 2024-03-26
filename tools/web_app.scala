@@ -25,7 +25,6 @@ object Web_App {
     def value(v: String): Attribute = new Attribute("value", v)
     def placeholder(p: String): Attribute = new Attribute("placeholder", p)
 
-    val italic = new Operator("i")
     val fieldset = new Operator("fieldset")
     val button = new Operator("button")
 
@@ -45,7 +44,7 @@ object Web_App {
     def fieldlabel(for_elem: String, txt: String): XML.Elem = label(for_elem, " " + txt + ": ")
 
     def explanation(for_elem: String, txt: String): XML.Elem =
-      par(List(italic(List(label(for_elem, txt)))))
+      par(List(emph(List(label(for_elem, txt)))))
 
     def option(k: String, v: String): XML.Elem =
       XML.Elem(Markup("option", List("value" -> k)), text(v))
