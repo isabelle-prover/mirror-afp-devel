@@ -1305,6 +1305,147 @@ lemma continuous_map_imp_closed_graph':
   shows "closedin (prod_topology Y X) ((\<lambda>x. (f x,x)) ` topspace X)"
   using assms closed_map_def closed_map_paired_continuous_map_left by blast
 
+subsubsection \<open> Continuous Maps on First Countable Topology\<close>
+text \<open> Generalized version of @{thm Metric_space.eventually_atin_sequentially}\<close>
+lemma eventually_atin_sequentially:
+  assumes "first_countable X"
+  shows "eventually P (atin X a) \<longleftrightarrow> (\<forall>\<sigma>. range \<sigma> \<subseteq> topspace X - {a} \<and> limitin X \<sigma> a sequentially \<longrightarrow> eventually (\<lambda>n. P (\<sigma> n)) sequentially)"
+proof safe
+  fix an
+  assume h:"eventually P (atin X a)" "range an \<subseteq> topspace X - {a}" "limitin X an a sequentially"
+  then obtain U where U: "openin X U" "a \<in> U" "\<forall>x\<in>U - {a}. P x"
+    by (auto simp: eventually_atin limitin_topspace)
+  with h(3) obtain N where "\<forall>n\<ge>N. an n \<in> U"
+    by (meson limitin_sequentially)
+  with U(3) h(2) show "\<forall>\<^sub>F n in sequentially. P (an n)"
+    unfolding eventually_sequentially by blast
+next
+  assume h:"\<forall>an. range an \<subseteq> topspace X - {a} \<and> limitin X an a sequentially \<longrightarrow> (\<forall>\<^sub>F n in sequentially. P (an n))"
+  consider "a \<notin> topspace X" | "a \<in> topspace X"
+    by blast
+  then show "eventually P (atin X a)"
+  proof cases
+    assume a:"a \<in> topspace X"
+    from a assms obtain B' where B': "countable B'" "\<And>V. V \<in> B' \<Longrightarrow> openin X V" "\<And>U. openin X U \<Longrightarrow> a \<in> U \<Longrightarrow> (\<exists>V \<in> B'. a \<in> V \<and> V \<subseteq> U)"
+      by(fastforce simp: first_countable_def)
+    define B where "B \<equiv> {V\<in>B'. a \<in> V}"
+    have B:"\<And>V. V \<in> B \<Longrightarrow> openin X V" "countable B" "B \<noteq> {}"  "\<And>U. openin X U \<Longrightarrow> a \<in> U \<Longrightarrow> (\<exists>V \<in> B. a \<in> V \<and> V \<subseteq> U)"
+      using B' B'(3)[OF _ a] by(fastforce simp: B_def)+
+    define An where "An \<equiv> (\<lambda>n. \<Inter>i\<le>n. from_nat_into B i)"
+    have a_in_An:"a \<in> An n" for n
+      by (metis (no_types, lifting) An_def B_def B(3) INT_I from_nat_into mem_Collect_eq)
+    have openAn:"\<And>n. openin X (An n)"
+      using B by(auto simp: An_def from_nat_into[OF B(3)] openin_Inter)
+    have deqseq_An:"decseq An"
+      by(fastforce simp: decseq_def An_def)
+    have "\<exists>U. openin X U \<and> a \<in> U \<and> Ball (U - {a}) P"
+    proof(rule ccontr)
+      assume "\<nexists>U. openin X U \<and> a \<in> U \<and> Ball (U - {a}) P"
+      then have "\<And>U. openin X U \<Longrightarrow> a \<in> U \<Longrightarrow> \<exists>x \<in> U - {a}. \<not> P x"
+        by blast
+      hence "\<exists>b\<in>An n - {a}. \<not> P b" for n
+        using openAn a_in_An by auto
+      then obtain an where an: "\<And>n. an n \<in> An n" "\<And>n. an n \<noteq> a" "\<And>n. \<not> P (an n)"
+        by (metis Diff_iff singletonI)
+      have "limitin X an a sequentially"
+        unfolding limitin_sequentially
+      proof safe
+        fix U
+        assume "openin X U" "a \<in> U"
+        then obtain V where V:"a \<in> V" "V \<subseteq> U" "V \<in> B"
+          using B by meson
+        then obtain N where "V = from_nat_into B N"
+          by (metis B(2) from_nat_into_surj)
+        hence "\<And>n. n \<ge> N \<Longrightarrow> an n \<in> V"
+          using an(1) An_def by blast
+        thus "\<exists>N. \<forall>n\<ge>N. an n \<in> U"
+          using V by blast
+      qed fact
+      hence 1:"\<forall>\<^sub>F n in sequentially. P (an n)"
+        using an(2) h an(1) openin_subset[OF openAn] by blast
+      thus False
+        using an(3) by simp
+    qed
+    thus ?thesis
+      by(simp add: eventually_atin)
+  qed(auto simp: eventually_atin)
+qed
+
+lemma continuous_map_iff_limit_seq:
+  assumes "first_countable X"
+  shows "continuous_map X Y f \<longleftrightarrow> (\<forall>xn x. limitin X xn x sequentially \<longrightarrow> limitin Y (\<lambda>n. f (xn n)) (f x) sequentially)"
+  unfolding continuous_map_atin
+proof safe
+  fix xn x
+  assume h:"\<forall>x\<in>topspace X. limitin Y f (f x) (atin X x)" "limitin X xn x sequentially"
+  then have limfx: "limitin Y f (f x) (atin X x)"
+    by(simp add: limitin_topspace)
+  show "limitin Y (\<lambda>n. f (xn n)) (f x) sequentially"
+    unfolding limitin_sequentially
+  proof safe
+    fix U
+    assume U:"openin Y U" "f x \<in> U"
+    then have h':"\<And>\<sigma>. range \<sigma> \<subseteq> topspace X - {x} \<Longrightarrow> x \<in> topspace X \<Longrightarrow> limitin X \<sigma> x sequentially \<Longrightarrow> (\<exists>N. \<forall>n\<ge>N. f (\<sigma> n) \<in> U)"
+      using limfx by(auto simp: limitin_def eventually_atin_sequentially[OF assms(1)] eventually_sequentially)
+    show "\<exists>N. \<forall>n\<ge>N. f (xn n) \<in> U"
+    proof(cases "finite {n. xn n \<noteq> x}")
+      assume "finite {n. xn n \<noteq> x}"
+      then obtain N where "\<And>n. n \<ge> N \<Longrightarrow> xn n = x"
+        using infinite_nat_iff_unbounded_le by blast
+      then show ?thesis
+        using U by auto
+    next
+      assume inf:"infinite {n. xn n \<noteq> x}"
+      obtain n0 where n0:"\<And>n. n \<ge> n0 \<Longrightarrow> xn n \<in> topspace X"
+        by (meson h(2) limitin_sequentially openin_topspace)
+      have inf':"infinite ({n. xn n \<noteq> x} \<inter> {n0..})"
+      proof
+        have 1:"({n. xn n \<noteq> x} \<inter> {n0..}) \<union> ({n. xn n \<noteq> x} \<inter> {..<n0}) = {n. xn n \<noteq> x}"
+          by auto
+        assume "finite ({n. xn n \<noteq> x} \<inter> {n0..})"
+        then have "finite (({n. xn n \<noteq> x} \<inter> {n0..}) \<union> ({n. xn n \<noteq> x} \<inter> {..<n0}))"
+          by auto
+        with inf show False
+          unfolding 1 by blast
+      qed
+      define a where "a \<equiv> enumerate ({n. xn n \<noteq> x} \<inter> {n0..})"
+      have a: "strict_mono a" "range a = ({n. xn n \<noteq> x} \<inter> {n0..})"
+        using range_enumerate[OF inf'] strict_mono_enumerate[OF inf']
+        by(auto simp: a_def)
+      have "\<exists>N. \<forall>n\<ge>N. f (xn (a n)) \<in> U"
+        using limitin_subsequence[OF a(1) h(2)] a(2) n0
+        by(auto intro!: h' limitin_topspace[OF h(2)] simp: comp_def)
+      then obtain N where N:"\<And>n. n \<ge> N \<Longrightarrow> f (xn (a n)) \<in> U"
+        by blast
+      show "\<exists>N. \<forall>n\<ge>N. f (xn n) \<in> U"
+      proof(auto intro!: exI[where x="a N"])
+        fix n
+        assume n:"n \<ge> a N"
+        show "f (xn n) \<in> U"
+        proof (cases "xn n = x")
+          assume "xn n \<noteq> x"
+          moreover have "n0 \<le> n"
+            using seq_suble[OF a(1),of N] n a(2)
+            by (metis Int_Collect atLeast_def dual_order.trans rangeI)
+          ultimately obtain n1 where n1:"n = a n1"
+            by (metis (mono_tags, lifting) Int_Collect atLeast_def imageE mem_Collect_eq a(2))
+          have "n1 \<ge> N"
+            using strict_mono_less_eq[OF a(1),of N n1] n by(simp add: n1)
+          thus ?thesis
+            by(auto intro!: N simp: n1)
+        qed(auto simp: U)
+      qed
+    qed
+  qed(auto intro!: limitin_topspace limfx)
+next
+  fix x
+  assume h:"\<forall>xn x. limitin X xn x sequentially \<longrightarrow> limitin Y (\<lambda>n. f (xn n)) (f x) sequentially" "x \<in> topspace X"
+  then have "f x \<in> topspace Y"
+    by (meson Abstract_Limits.limitin_const_iff limitin_topspace)
+  thus "limitin Y f (f x) (atin X x)"
+    using h by(auto simp: eventually_atin_sequentially[OF assms(1)] limitin_def )
+qed
+
 subsubsection \<open> Upper-Semicontinuous Functions \<close>
 definition upper_semicontinuous_map :: "['a topology, 'a \<Rightarrow> 'b :: linorder_topology] \<Rightarrow> bool" where
 "upper_semicontinuous_map X f \<longleftrightarrow> (\<forall>a. openin X {x\<in>topspace X. f x < a})"
