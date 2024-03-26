@@ -1444,7 +1444,7 @@ object AFP_Submit {
               val archive = Bytes.decode_base64(params.get(ARCHIVE).get(FILE).value)
               val file_name = params.get(ARCHIVE).value
 
-              if ((archive.is_empty || file_name.isEmpty)) {
+              if (archive.is_empty || file_name.isEmpty) {
                 Some(upload.copy(error = "Select a file"))
               } else if (!file_name.endsWith(".zip") && !file_name.endsWith(".tar.gz")) {
                 Some(upload.copy(error = "Only .zip and .tar.gz archives allowed"))

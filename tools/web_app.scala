@@ -151,7 +151,7 @@ object Web_App {
     }
 
 
-    /* strucutred data */
+    /* structured data */
 
     class Data private[Params](
       v: Option[String] = None,
@@ -206,11 +206,12 @@ object Web_App {
         }
 
         @tailrec
-        def expand(key: Key, to: E): E = key match {
-          case List_Key(key, (field, i)) => expand(key, Nest(field, Index(i, to)))
-          case Nest_Key(key, field) => expand(key, Nest(field, to))
-          case _ => to
-        }
+        def expand(key: Key, to: E): E =
+          key match {
+            case List_Key(key, (field, i)) => expand(key, Nest(field, Index(i, to)))
+            case Nest_Key(key, field) => expand(key, Nest(field, to))
+            case _ => to
+          }
 
         val params =
           parts.flatMap {
@@ -218,6 +219,7 @@ object Web_App {
             case Multi_Part.File(name, file_name, content) =>
               List(name -> file_name, Nest_Key(name, Web_App.FILE) -> content.encode_base64)
           }
+
         parse(params.map { case (k, v) => expand(k, Value(v)) })
       }
     }
@@ -267,12 +269,11 @@ object Web_App {
 
       val s = Seq(body.text, body)
 
-      def perhaps_unprefix(pfx: String, s: Seq): Seq = {
+      def perhaps_unprefix(pfx: String, s: Seq): Seq =
         Library.try_unprefix(pfx, s.text) match {
           case Some(text) => Seq(text, s.bytes.subSequence(pfx.length, s.bytes.length))
           case None => s
         }
-      }
 
       val Separator = """--(.*)""".r
 
@@ -364,7 +365,6 @@ object Web_App {
     }
 
     class UI(path: Path) extends HTTP.Service(path.implode, "GET") {
-
       def apply(request: HTTP.Request): Option[HTTP.Response] = {
         progress.echo_if(verbose, "GET ui")
 
@@ -435,12 +435,13 @@ document.getElementById('iframe').src = base + '""" + api.api_url(path).replace(
         val params = query_params(request)
         progress.echo_if(verbose, "params: " + params.toString())
 
-        val model = get(params) match {
-          case Some(model) => model
-          case None =>
-            progress.echo_if(verbose, "Parsing failed")
-            error_model
-        }
+        val model =
+          get(params) match {
+            case Some(model) => model
+            case None =>
+              progress.echo_if(verbose, "Parsing failed")
+              error_model
+          }
         HTTP.Response.html(output_document(render(model)))
       }
     }
@@ -473,12 +474,13 @@ document.getElementById('iframe').src = base + '""" + api.api_url(path).replace(
         val params = Params.Data.from_multipart(parts)
         progress.echo_if(verbose, "params: " + params.toString)
 
-        val model = post(params) match {
-          case Some(model) => model
-          case None =>
-            progress.echo_if(verbose, "Parsing failed")
-            error_model
-        }
+        val model =
+          post(params) match {
+            case Some(model) => model
+            case None =>
+              progress.echo_if(verbose, "Parsing failed")
+              error_model
+          }
         HTTP.Response.html(output_document(render(model)))
       }
     }
