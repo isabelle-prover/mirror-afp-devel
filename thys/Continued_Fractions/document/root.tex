@@ -1,0 +1,54 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Continued Fractions}
+\author{Manuel Eberl}
+\maketitle
+
+\begin{abstract}
+This article provides a formalisation of continued fractions of real numbers and their basic properties.
+It also contains a proof of the classic result that the irrational numbers with periodic continued
+ fraction expansions are precisely the quadratic irrationals, i.\,e.\ real numbers that fulfil a non-trivial quadratic equation $a x^2 + b x + c = 0$ with integer coefficients.
+
+Particular attention is given to the continued fraction expansion of $\sqrt{D}$ for a non-square
+ natural number $D$. Basic results about the length and structure of its period are provided,
+ along with an executable algorithm to compute the period (and from it, the entire expansion).
+
+This is then also used to provide a fairly efficient, executable, and fully formalised algorithm to
+compute solutions to Pell's equation $x^2 - D y^2 = 1$. The performance is sufficiently good to
+find the solution to Archimedes's cattle problem in less than a second on a typical computer.
+This involves the value $D = 410286423278424$, for which the solution has over 200000 decimals.
+
+Lastly, a derivation of the continued fraction expansions of Euler's number $e$ and an executable
+function to compute continued fraction expansions using interval arithmetic is also provided.
+\end{abstract}
+
+\newpage
+\tableofcontents
+\newpage
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\nocite{khinchin}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

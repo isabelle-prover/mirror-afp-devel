@@ -24,6 +24,7 @@ Amicable_Numbers
 Amortized_Complexity
 AnselmGod
 Applicative_Lifting
+Approximate_Model_Counting
 Approximation_Algorithms
 Architectural_Design_Patterns
 Aristotles_Assertoric_Syllogistic
@@ -144,6 +145,7 @@ Constructive_Cryptography
 Constructive_Cryptography_CM
 Constructor_Funs
 Containers
+Continued_Fractions
 Cook_Levin
 CoreC++
 Core_DOM
@@ -286,6 +288,7 @@ Generic_Join
 GewirthPGCProof
 Girth_Chromatic
 Given_Clause_Loops
+Go
 GoedelGod
 Goedel_HFSet_Semantic
 Goedel_HFSet_Semanticless

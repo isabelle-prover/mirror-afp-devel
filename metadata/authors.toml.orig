@@ -1140,6 +1140,24 @@ name = "L. Chen"
 
 [chen.homepages]
 
+[chenj]
+name = "Jamie Chen"
+orcid = "0009-0008-5396-6059"
+
+[chenj.emails]
+
+[chenj.emails.chenj_email]
+user = [
+  "jamiechen",
+]
+host = [
+  "tutanota",
+  "com",
+]
+
+[chenj.homepages]
+chenj_homepage = "https://gitlab.com/Jamie-Chen"
+
 [chevalier]
 name = "Loïc Chevalier"
 
@@ -6552,6 +6570,15 @@ host = [
 ]
 
 [stueber.homepages]
+
+[stuebinger]
+name = "Terru Stübinger"
+orcid = "0009-0006-7411-2533"
+
+[stuebinger.emails]
+
+[stuebinger.homepages]
+stuebinger_homepage = "https://stuebinm.eu/"
 
 [stuewe]
 name = "Daniel Stüwe"

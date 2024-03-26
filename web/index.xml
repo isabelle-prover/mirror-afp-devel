@@ -11,8 +11,22 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Wed, 06 Mar 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Wed, 20 Mar 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Continued Fractions</title>
+          <link>/entries/Continued_Fractions.html</link>
+          <pubDate>Wed, 20 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Continued_Fractions.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Approximate Model Counting</title>
+          <link>/entries/Approximate_Model_Counting.html</link>
+          <pubDate>Fri, 15 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Approximate_Model_Counting.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Verified QBF Solving</title>
           <link>/entries/QBF_Solver_Verification.html</link>
@@ -74,6 +88,13 @@
           <link>/entries/Isabelle_hoops.html</link>
           <pubDate>Mon, 22 Jan 2024 00:00:00 +0000</pubDate>
           <guid>/entries/Isabelle_hoops.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Go Code Generation for Isabelle</title>
+          <link>/entries/Go.html</link>
+          <pubDate>Mon, 22 Jan 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Go.html</guid>
           <description></description>
         </item>
         <item>
@@ -5803,6 +5824,13 @@
           <description></description>
         </item>
         <item>
+          <title>Approximate_Model_Counting</title>
+          <link>/sessions/approximate_model_counting/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/approximate_model_counting/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Approximation_Algorithms</title>
           <link>/sessions/approximation_algorithms/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -6612,6 +6640,13 @@
           <link>/sessions/containers-benchmarks/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/containers-benchmarks/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Continued_Fractions</title>
+          <link>/sessions/continued_fractions/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/continued_fractions/</guid>
           <description></description>
         </item>
         <item>
@@ -7690,6 +7725,27 @@
           <link>/sessions/given_clause_loops/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/given_clause_loops/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Go</title>
+          <link>/sessions/go/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/go/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Go_Test_Quick</title>
+          <link>/sessions/go_test_quick/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/go_test_quick/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Go_Test_Slow</title>
+          <link>/sessions/go_test_slow/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/go_test_slow/</guid>
           <description></description>
         </item>
         <item>

@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Tue, 19 Sep 2023 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Mon, 22 Jan 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/topics/tools/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Go Code Generation for Isabelle</title>
+          <link>/entries/Go.html</link>
+          <pubDate>Mon, 22 Jan 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Go.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Unification Utilities for Isabelle/ML</title>
           <link>/entries/ML_Unification.html</link>
