@@ -104,10 +104,6 @@ object Web_App {
         List("method" -> "post", "target" -> "iframe", "enctype" -> "multipart/form-data")
       XML.Elem(Markup("form", attrs), default_button :: body)
     }
-
-    val UNESCAPE = "unescape"
-
-    def unescape(html: String): XML.Body = List(XML.Elem(Markup(UNESCAPE, Nil), text(html)))
   }
 
 
@@ -336,20 +332,6 @@ object Web_App {
     val endpoints: List[Endpoint]
     val head: XML.Body
 
-    def output(tree: XML.Tree): String = {
-      def out(body: XML.Body): String = isabelle.HTML.output(body, hidden = true, structural = true)
-      def collect(t: XML.Tree): List[String] = t match {
-        case XML.Elem(Markup(HTML.UNESCAPE, _), List(XML.Text(escaped))) =>
-          List(out(More_HTML.unescape(escaped)))
-        case XML.Elem(_, body) => body.flatMap(collect)
-        case XML.Text(_) => Nil
-      }
-
-      collect(tree).foldLeft(out(List(tree))) {
-        case (escaped, html) => escaped.replace(html, isabelle.HTML.input(html))
-      }
-    }
-
     def output_document(content: XML.Body, post_height: Boolean = true): String = {
       val attrs =
         if (post_height) List("onLoad" -> "parent.postMessage(document.body.scrollHeight, '*')")
@@ -358,8 +340,8 @@ object Web_App {
       cat_lines(
         List(
           HTML.header,
-          output(XML.elem("head", HTML.head_meta :: head)),
-          output(XML.Elem(Markup("body", attrs), content)),
+          HTML.output(XML.elem("head", HTML.head_meta :: head), hidden = true, structural = true),
+          HTML.output(XML.Elem(Markup("body", attrs), content), hidden = true, structural = true),
           HTML.footer))
     }
 

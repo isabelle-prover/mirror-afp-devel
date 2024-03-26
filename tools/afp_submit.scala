@@ -742,7 +742,7 @@ object AFP_Submit {
         item(
           hidden(Nest_Key(key, KIND), Model.Related.get(related).toString) ::
           hidden(Nest_Key(key, INPUT), related_string(related)) ::
-          unescape(related_string(related)))
+          input_raw(related_string(related)) :: Nil)
 
       def render_entry(entry: Entry, key: Params.Key): XML.Elem =
         fieldset(List(
@@ -769,7 +769,7 @@ object AFP_Submit {
           par(List(
             fieldlabel(Nest_Key(key, ABSTRACT), "Abstract"),
             hidden(Nest_Key(key, ABSTRACT), entry.`abstract`),
-            class_("mathjax_process")(span(unescape(entry.`abstract`))))),
+            class_("mathjax_process")(span(List(input_raw(entry.`abstract`)))))),
           par(List(
             fieldlabel("", "Authors"),
             list(indexed(entry.authors, key, AUTHOR, render_affil)))),
