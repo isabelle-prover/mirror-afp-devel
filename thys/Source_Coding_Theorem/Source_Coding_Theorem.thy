@@ -400,9 +400,8 @@ proof -
     assume "i\<in>S"
     hence "a i / (e i / d) \<le> a i / e i" using assms
       by (metis (no_types) div_by_1 frac_le less_imp_triv not_less)
-    hence "log b (a i / (e i / d)) \<le> log b (a i / e i)" using assms(1)
-      by (metis (full_types) b_gt_1 divide_divide_eq_left inverse_divide le_less_linear log_le
-    log_neg_const order_refl times_divide_eq_right zero_less_mult_iff)
+    hence "log b (a i / (e i / d)) \<le> log b (a i / e i)" using assms
+      by (smt (verit, best) Transcendental.log_mono \<open>i \<in> S\<close> b_gt_1 diff_divide_distrib divide_pos_pos)
     }
     thus "(\<Sum>i\<in>S. a i * log b (a i / (e i / d))) \<le> (\<Sum>i\<in>S. a i * log b (a i / e i))"
       by (meson mult_left_mono assms sum_mono)

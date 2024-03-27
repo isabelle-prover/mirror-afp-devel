@@ -524,8 +524,13 @@ lemma gs_rel_dec:
   shows "\<lceil>log (1 / l) (dist (GS.\<L>\<^sub>b_split v) \<nu>\<^sub>b_opt) - c\<rceil> < \<lceil>log (1 / l) (dist v \<nu>\<^sub>b_opt) - c\<rceil>"
 proof -
   have "log (1 / l) (dist (GS.\<L>\<^sub>b_split v) \<nu>\<^sub>b_opt) - c \<le> log (1 / l) (l * dist v \<nu>\<^sub>b_opt) - c"
-    using GS.\<L>\<^sub>b_split_contraction[of _ "\<nu>\<^sub>b_opt"] GS.QR_contraction norm_GS_QR_le_disc disc_lt_one GS_QR_disc_le_disc
-    by (fastforce simp: assms less_le intro!: log_le order.trans[OF GS.\<L>\<^sub>b_split_contraction[of v "\<nu>\<^sub>b_opt", simplified]] mult_right_mono)
+  proof (intro Transcendental.log_mono diff_mono)
+    show "dist (GS.\<L>\<^sub>b_split v) \<nu>\<^sub>b_opt \<le> l * dist v \<nu>\<^sub>b_opt"
+      using GS.\<L>\<^sub>b_split_contraction[of _ "\<nu>\<^sub>b_opt"]
+      by (smt (verit, ccfv_SIG) GS.\<L>\<^sub>b_split_fix GS_QR_disc_le_disc mult_right_mono zero_le_dist)
+    show "1 < 1/l"
+      by (metis \<open>l \<noteq> 0\<close> disc_lt_one less_divide_eq_1_pos less_le zero_le_disc)
+  qed (use assms in auto)
   also have "\<dots> = log (1 / l) l + log (1/l) (dist v \<nu>\<^sub>b_opt) - c"
     using assms disc_lt_one by (auto simp: less_le intro!: log_mult)
   also have "\<dots> = -(log (1 / l) (1/l)) + (log (1/l) (dist v \<nu>\<^sub>b_opt)) - c"

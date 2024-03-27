@@ -834,7 +834,7 @@ proof -
 
   have log_le_0: "?f * log 2 (p_H * p_f) \<le> ?f * log 2 1"
     using p_H_p_f_less_1 p_H_p_f_pos p_j_pos p_f \<open>1 \<le> h\<close>
-    by (intro mult_left_mono log_le mult_nonneg_nonneg) auto
+    by (intro mult_left_mono log_mono mult_nonneg_nonneg) auto
 
   have "(h - 1) * p_j < 1"
     using \<open>1 \<le> h\<close> C_smaller
@@ -930,7 +930,7 @@ proof -
     using log_le_0 by simp
   also have "\<dots> \<le> (1 - ?f) * log 2 h"
     using h_pos \<open>1 \<le> h\<close> 1 p_j_pos p_f
-    by (intro mult_left_mono log_le mult_pos_pos mult_nonneg_nonneg) auto
+    by (intro mult_left_mono log_mono mult_pos_pos mult_nonneg_nonneg) auto
   finally have "(\<Sum>i\<in>H. ?inner i) \<le> (1 - ?f) * log 2 h" .
   also have "(\<Sum>i\<in>H. ?inner i) =
       (\<Sum>(i, l)\<in>(first_J`space S) \<times> (last_H`space S). ?il i l * log 2 (?il i l / (?i i * ?l l)))"

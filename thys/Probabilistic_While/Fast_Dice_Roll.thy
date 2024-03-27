@@ -190,7 +190,7 @@ proof(cases "v = 0")
   show ?thesis
   proof(cases "n \<le> v")
     case le: True
-    hence "x v = 1" using v by(simp add: x_def log_le)
+    hence "x v = 1" using v by(simp add: x_def log_mono)
     moreover have "{..<1} = {0 :: nat}" by auto
     ultimately show ?thesis using le v by(simp add: fdr_step_def spmf_of_set_singleton)
   next
