@@ -342,7 +342,7 @@ proof -
     assume "(l, r) = ([], <nl::nat list>)"
     show "\<exists>n. is_final (steps0 (1, l, r) tm_strong_copy n) \<and>
                  (\<lambda>tap. \<exists>k l. tap = (Bk \<up> k, <[]::nat list> @ Bk \<up> l)) holds_for steps0 (1, l, r) tm_strong_copy n"
-      by (smt F1 Hoare_haltE \<open>(l, r) = ([], <nl>)\<close> holds_for.elims(2) holds_for.simps)
+      by (smt (verit) F1 Hoare_haltE \<open>(l, r) = ([], <nl>)\<close> holds_for.elims(2) holds_for.simps)
   qed
 qed
 
@@ -369,7 +369,7 @@ proof -
   then show "\<lbrace>\<lambda>tap. tap = ([], <nl::nat list>) \<rbrace>
                      tm_strong_copy
                    \<lbrace> \<lambda>tap. \<exists>k l. tap = (Bk \<up> k, <[hd nl]> @ Bk \<up> l) \<rbrace>"
-    by (smt Hoare_haltE Hoare_haltI One_nat_def Pair_inject Pair_inject holds_for.elims(2)
+    by (smt (verit, ccfv_threshold) Hoare_haltE Hoare_haltI One_nat_def Pair_inject Pair_inject holds_for.elims(2)
         holds_for.simps is_final.elims(2) replicate.simps(1) replicate.simps(2))
 qed
 
@@ -410,7 +410,7 @@ proof -
         then have "TMC_yields_num_list_res tm_strong_copy nl [hd nl, hd nl]"
           by (rule tm_strong_copy_total_correctness_len_eq_1')
         moreover have "(nl \<in> K1) = ([hd nl, hd nl] \<in> H1)"
-          by (smt CollectD Cons_eq_append_conv H1_def K1_def One_nat_def \<open>length nl = 1\<close>
+          by (smt (verit) CollectD Cons_eq_append_conv H1_def K1_def One_nat_def \<open>length nl = 1\<close>
               append_Cons diff_Suc_1 hd_Cons_tl length_0_conv length_tl list.inject
               mem_Collect_eq not_Cons_self2  self_append_conv2 zero_neq_one)
         ultimately

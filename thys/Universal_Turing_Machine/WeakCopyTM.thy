@@ -170,7 +170,7 @@ proof -
   with assms have "\<lbrace>\<lambda>tap. tap = ([]::cell list, Oc \<up> n)\<rbrace> tm_copy_begin_orig \<lbrace>inv_begin0 n\<rbrace>"
     using Hoare_haltE Hoare_haltI inv_begin1.simps by presburger    
   with assms show ?thesis
-    by (smt Hoare_haltI Hoare_halt_def Pair_inject
+    by (smt (verit) Hoare_haltI Hoare_halt_def Pair_inject
         holds_for.elims(2) holds_for.simps inv_begin0.simps is_final.elims(2))
 qed
 
@@ -928,8 +928,7 @@ proof -
   then have "\<lbrace>\<lambda>tap. tap = ([], <[n::nat]>)\<rbrace> tm_weak_copy \<lbrace>\<lambda>tap. tap = ([Bk], <[n, n]>)\<rbrace>"
     by (metis tape_of_list_def tape_of_nat_list.simps(2))
   then show ?thesis
-    by (smt Hoare_haltE Hoare_haltI One_nat_def append.right_neutral
-            holds_for.elims(2) holds_for.simps replicate.simps(1) replicate.simps(2))
+    by (smt (verit, del_insts) Hoare_halt_iff append_Nil2 empty_replicate replicate_Suc)
 qed
 
 lemma tm_weak_copy_correct6:
@@ -940,7 +939,7 @@ proof -
   then have "\<lbrace>\<lambda>tap. \<exists>kl ll. tap = (Bk \<up> kl, <[n::nat]> @ Bk \<up> ll)\<rbrace> tm_weak_copy \<lbrace>\<lambda>tap. \<exists>kr lr. tap = (Bk \<up> kr, <[n::nat, n]> @ Bk \<up> lr)\<rbrace>"
     using TMC_has_num_res_list_without_initial_Bks_imp_TMC_has_num_res_list_after_adding_Bks_to_initial_left_and_right_tape by auto
   then have "\<lbrace>\<lambda>tap. \<exists>z4. tap = (Bk \<up> z4, <[n::nat]> @ Bk \<up> (Suc 0))\<rbrace> tm_weak_copy \<lbrace>\<lambda>tap. \<exists>kr lr. tap = (Bk \<up> kr, <[n::nat, n]> @ Bk \<up> lr)\<rbrace>"
-    by (smt Hoare_haltE Hoare_haltI)
+    by (smt (verit) Hoare_haltE Hoare_haltI)
   then show ?thesis
     by auto
 qed
@@ -1015,7 +1014,7 @@ proof -
   have "steps0 (1, [Bk,Bk], [Bk]) strong_copy_post 3 = (0::nat, [Bk, Bk, Bk, Bk], [])"
     by (simp add: step.simps steps.simps numeral_eqs_upto_12  strong_copy_post_def)
   then show ?thesis
-    by (smt Hoare_haltI holds_for.simps is_final_eq tm_weak_copy_eq_strong_copy_post)
+    by (smt (verit) Hoare_haltI holds_for.simps is_final_eq tm_weak_copy_eq_strong_copy_post)
 qed
 
 lemma tm_weak_copy_correct12: (* this lemma is not used anywhere *)
@@ -1039,7 +1038,7 @@ proof -
   have "steps0 (1, [], [Bk,Bk]@r) strong_copy_post 3 = (0::nat, [Bk,Bk], r)"
     by (simp add: step.simps steps.simps numeral_eqs_upto_12  strong_copy_post_def)
   then show ?thesis
-    by (smt Hoare_haltI holds_for.simps is_final_eq tm_weak_copy_eq_strong_copy_post)
+    by (smt (verit) Hoare_haltI holds_for.simps is_final_eq tm_weak_copy_eq_strong_copy_post)
 qed
 
 (* Solution 2: (pays off for more complicated cases)
@@ -1081,7 +1080,7 @@ proof -
       have "steps0 (1, [Bk, Bk, Bk], []) tm_copy_end_new 1 = (0, [Bk, Bk, Bk, Bk], [])"
         by (simp add: step.simps steps.simps numeral_eqs_upto_12  tm_copy_end_new_def)
       then show ?thesis
-        by (smt Hoare_haltI holds_for.simps is_final_eq tm_weak_copy_eq_strong_copy_post)
+        by (smt (verit) Hoare_haltI holds_for.simps is_final_eq tm_weak_copy_eq_strong_copy_post)
     qed
   next
     show " \<lbrace>\<lambda>tap. tap = ([Bk, Bk], [Bk])\<rbrace>
@@ -1097,7 +1096,7 @@ proof -
         have "steps0 (1, [Bk, Bk], [Bk]) tm_copy_begin_orig 1 = (0, [Bk, Bk], [Bk])"
           by (simp add: step.simps steps.simps numeral_eqs_upto_12  tm_copy_begin_orig_def)
         then show ?thesis
-          by (smt Hoare_haltI holds_for.simps is_final_eq tm_weak_copy_eq_strong_copy_post)
+          by (smt (verit) Hoare_haltI holds_for.simps is_final_eq tm_weak_copy_eq_strong_copy_post)
       qed
     next
       show "\<lbrace>\<lambda>tap. tap = ([Bk, Bk], [Bk])\<rbrace> tm_copy_loop_orig \<lbrace>\<lambda>tap. tap = ([Bk, Bk, Bk], [])\<rbrace>"
@@ -1105,7 +1104,7 @@ proof -
         have "steps0 (1, [Bk, Bk], [Bk]) tm_copy_loop_orig 1 = (0, [Bk, Bk, Bk], [])"
           by (simp add: step.simps steps.simps numeral_eqs_upto_12  tm_copy_loop_orig_def)
         then show ?thesis
-          by (smt Hoare_haltI holds_for.simps is_final_eq tm_weak_copy_eq_strong_copy_post)
+          by (smt (verit) Hoare_haltI holds_for.simps is_final_eq tm_weak_copy_eq_strong_copy_post)
       qed
     qed
   qed
@@ -1143,7 +1142,7 @@ proof -
       have "steps0 (1, [Bk], [Bk]  @ r) tm_copy_end_new 1 = (0, [Bk, Bk], r)"
         by (simp add: step.simps steps.simps numeral_eqs_upto_12  tm_copy_end_new_def)
       then show ?thesis
-        by (smt Hoare_haltI holds_for.simps is_final_eq tm_weak_copy_eq_strong_copy_post)
+        by (smt (verit) Hoare_haltI holds_for.simps is_final_eq tm_weak_copy_eq_strong_copy_post)
     qed
   next
     show " \<lbrace>\<lambda>tap. tap = ([], [Bk, Bk] @ r)\<rbrace>
@@ -1159,7 +1158,7 @@ proof -
         have "steps0 (1, [], [Bk, Bk] @ r) tm_copy_begin_orig 1 = (0, [], [Bk,Bk] @ r)"
           by (simp add: step.simps steps.simps numeral_eqs_upto_12  tm_copy_begin_orig_def)
         then show ?thesis
-          by (smt Hoare_haltI holds_for.simps is_final_eq tm_weak_copy_eq_strong_copy_post)
+          by (smt (verit) Hoare_haltI holds_for.simps is_final_eq tm_weak_copy_eq_strong_copy_post)
       qed
     next
       show "\<lbrace>\<lambda>tap. tap = ([], [Bk, Bk] @ r)\<rbrace> tm_copy_loop_orig \<lbrace>\<lambda>tap. tap = ([Bk], [Bk] @ r)\<rbrace>"
@@ -1167,7 +1166,7 @@ proof -
         have "steps0 (1, [], [Bk,Bk] @ r) tm_copy_loop_orig 1 = (0, [Bk], [Bk] @ r)"
           by (simp add: step.simps steps.simps numeral_eqs_upto_12  tm_copy_loop_orig_def)
         then show ?thesis
-          by (smt Hoare_haltI holds_for.simps is_final_eq tm_weak_copy_eq_strong_copy_post)
+          by (smt (verit) Hoare_haltI holds_for.simps is_final_eq tm_weak_copy_eq_strong_copy_post)
       qed
     qed
   qed

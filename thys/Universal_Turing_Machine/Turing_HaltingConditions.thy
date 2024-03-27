@@ -126,7 +126,7 @@ lemma Hoare_halt2_iff:
 proof
   assume "\<lbrace>\<lambda>tap. \<exists>kl ll. tap = (Bk \<up> kl, r @ Bk \<up> ll)\<rbrace> p \<lbrace>\<lambda>tap. \<exists>kr lr. tap = (Bk \<up> kr, r' @ Bk \<up> lr)\<rbrace>"
   then show "\<forall>kl ll. \<exists>n. is_final (steps0 (1, (Bk \<up> kl, r @ Bk \<up> ll)) p n) \<and> (\<exists>kr lr. steps0 (1, (Bk \<up> kl, r @ Bk \<up> ll)) p n = (0, Bk \<up> kr, r' @ Bk \<up> lr))"
-    by (smt Hoare_halt_def Pair_inject holds_for.elims(2) is_final.elims(2))
+    using Hoare_halt_E0 is_finalI by force
 next
   assume "\<forall>kl ll. \<exists>n. is_final (steps0 (1, (Bk \<up> kl, r @ Bk \<up> ll)) p n) \<and> (\<exists>kr lr. steps0 (1, (Bk \<up> kl, r @ Bk \<up> ll)) p n = (0, Bk \<up> kr, r' @ Bk \<up> lr))"
   then show "\<lbrace>\<lambda>tap. \<exists>kl ll. tap = (Bk \<up> kl, r @ Bk \<up> ll)\<rbrace> p \<lbrace>\<lambda>tap. \<exists>kr lr. tap = (Bk \<up> kr, r' @ Bk \<up> lr)\<rbrace>"
@@ -328,7 +328,7 @@ lemma TMC_has_num_res_iff: "TMC_has_num_res p ns
 proof
   assume "\<lbrace>\<lambda>tap. tap = ([], <ns::nat list>)\<rbrace> p \<lbrace>\<lambda>tap. \<exists>k n l. tap = (Bk \<up> k, <n::nat> @ Bk \<up> l)\<rbrace>"
   then show "\<exists>stp. is_final (steps0 (1, [], <ns::nat list>) p stp) \<and> (\<exists>k n l. steps0 (1, [], <ns::nat list>) p stp = (0, Bk \<up> k, <n::nat> @ Bk \<up> l))"
-    by (smt Hoare_halt_def holds_for.elims(2) is_final.elims(2) is_final_eq)
+    by (smt (verit, best) Hoare_halt_E0 Hoare_halt_impl_not_Hoare_unhalt Hoare_unhalt_def is_finalI tape_of_list_def tape_of_nat_def)
 next
   assume "\<exists>stp. is_final (steps0 (1, [], <ns::nat list>) p stp) \<and> (\<exists>k n l. steps0 (1, [], <ns::nat list>) p stp = (0, Bk \<up> k, <n::nat> @ Bk \<up> l))"
   then show "\<lbrace>\<lambda>tap. tap = ([], <ns::nat list>)\<rbrace> p \<lbrace>\<lambda>tap. \<exists>k n l. tap = (Bk \<up> k, <n::nat> @ Bk \<up> l)\<rbrace>"
@@ -356,7 +356,7 @@ lemma TMC_has_num_list_res_iff: "TMC_has_num_list_res p ns
 proof
   assume "\<lbrace>\<lambda>tap. tap = ([], <ns::nat list>)\<rbrace> p \<lbrace>\<lambda>tap. \<exists>k ms l. tap = (Bk \<up> k, <ms::nat list> @ Bk \<up> l)\<rbrace>"
   then show "\<exists>stp. is_final (steps0 (1, [], <ns::nat list>) p stp) \<and> (\<exists>k ms l. steps0 (1, [], <ns::nat list>) p stp = (0, Bk \<up> k, <ms::nat list> @ Bk \<up> l))"
-    by (smt Hoare_halt_def holds_for.elims(2) is_final.elims(2) is_final_eq)
+    using Hoare_halt_E0 is_finalI by force
 next
   assume "\<exists>stp. is_final (steps0 (1, [], <ns::nat list>) p stp) \<and> (\<exists>k ms l. steps0 (1, [], <ns::nat list>) p stp = (0, Bk \<up> k, <ms::nat list> @ Bk \<up> l))"
   then show "\<lbrace>\<lambda>tap. tap = ([], <ns::nat list>)\<rbrace> p \<lbrace>\<lambda>tap. \<exists>k ms l.   tap = (Bk \<up> k, <ms::nat list> @ Bk \<up> l)\<rbrace>"
@@ -388,7 +388,7 @@ proof -
 
   then have "\<exists>stp. is_final (steps0 (1, ([], <ns::nat list>)) p stp) \<and>
                  (\<exists>n kr lr. steps0 (1, ([], <ns::nat list>)) p stp = (0, Bk \<up> kr, <n::nat> @ Bk \<up> lr))"
-    by (smt Hoare_halt_def holds_for.elims(2) is_final.elims(2) is_final_eq)
+    using Hoare_halt_E0 is_finalI by force
   then obtain stp where
     w_stp: "is_final (steps0 (1, ([], <ns::nat list>)) p stp) \<and>
                  (\<exists>n kr lr. steps0 (1, ([], <ns::nat list>)) p stp = (0, Bk \<up> kr, <n::nat> @ Bk \<up> lr))"
@@ -427,7 +427,7 @@ proof -
   from assms have F0: "\<lbrace>(\<lambda>tap. tap = ([], <ns::nat list>))\<rbrace> p \<lbrace>\<lambda>tap. \<exists>k l. tap = (Bk \<up> k, <0::nat> @ Bk \<up> l)\<rbrace>"
     by (auto simp add: tape_of_nat_def)
   show "\<lbrace>\<lambda>tap. tap = ([], <ns::nat list>)\<rbrace> p \<lbrace>\<lambda>tap. \<exists>k n l. tap = (Bk \<up> k, <n::nat> @ Bk \<up> l)\<rbrace>"
-  by (smt F0 Hoare_halt_E0 Hoare_halt_I0)
+    using F0 Hoare_haltI Hoare_halt_E0 Hoare_halt_iff by fastforce
 qed
 
 lemma Hoare_halt_with_OcOc_imp_std_tap:
@@ -438,7 +438,7 @@ proof -
   from assms have "\<lbrace>(\<lambda>tap. tap = ([], <ns::nat list>))\<rbrace> p \<lbrace>\<lambda>tap. \<exists>k l. tap = (Bk \<up> k, <1::nat> @ Bk \<up> l)\<rbrace>"
     by (auto simp add: tape_of_nat_def)
   then show "\<lbrace>\<lambda>tap. tap = ([], <ns::nat list>)\<rbrace> p \<lbrace>\<lambda>tap. \<exists>k n l. tap = (Bk \<up> k, <n::nat> @ Bk \<up> l)\<rbrace>"
- by (smt Hoare_haltE Hoare_haltI holds_for.elims(2) holds_for.simps)
+    using Hoare_halt_E0 Hoare_halt_iff by fastforce
 qed
 
 subsubsection \<open>Hoare\_halt on numeral lists with single numeral result\<close>
@@ -535,12 +535,12 @@ definition TMC_yields_num_list_res :: "tprog0 \<Rightarrow> nat list \<Rightarro
 (* This is for documentation and explanation: TMC_yields_num_res_unfolded_into_Hoare_halt *)
 lemma TMC_yields_num_res_unfolded_into_Hoare_halt:
   "TMC_yields_num_res tm ns n \<equiv> \<lbrace>(\<lambda>tap. tap = ([], <ns>))\<rbrace> tm \<lbrace>(\<lambda>tap. \<exists>k l. tap = (Bk \<up> k, <n::nat> @ Bk\<up> l))\<rbrace>"
-  by (smt Hoare_halt_iff TMC_yields_num_res_def)
+  by (smt (verit, ccfv_threshold) Hoare_halt_iff TMC_yields_num_res_def)
 
 (* This is for documentation and explanation: TMC_yields_num_list_res_unfolded_into_Hoare_halt *)
 lemma TMC_yields_num_list_res_unfolded_into_Hoare_halt:
   "TMC_yields_num_list_res tm ns ms \<equiv> \<lbrace>(\<lambda>tap. tap = ([], <ns>))\<rbrace> tm \<lbrace>(\<lambda>tap. \<exists>k l. tap = (Bk \<up> k, <ms::nat list> @ Bk\<up> l))\<rbrace>"
-  by (smt Hoare_halt_iff TMC_yields_num_list_res_def)
+  by (smt (verit, ccfv_threshold) Hoare_halt_E0 Hoare_halt_def Hoare_halt_iff TMC_yields_num_list_res_def)
 
 
 (* A variant of rule Hoare_plus_halt using TMC_yields_num_list_res and TMC_yields_num_res *)

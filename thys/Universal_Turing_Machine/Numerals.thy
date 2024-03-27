@@ -226,7 +226,7 @@ lemma noDblBk_Bk_imp_Oc: "\<lbrakk>noDblBk cs; Suc i < length cs; cs!i = Bk \<rb
   by (auto simp add: noDblBk_def)
 
 lemma noDblBk_imp_noDblBk_Oc_cons: "noDblBk cs \<Longrightarrow> noDblBk (Oc#cs)"
-  by (smt Suc_less_eq Suc_pred add.right_neutral add_Suc_right cell.exhaust list.size(4)
+  by (smt (verit) Suc_less_eq Suc_pred add.right_neutral add_Suc_right cell.exhaust list.size(4)
       neq0_conv noDblBk_Bk_imp_Oc noDblBk_def nth_Cons_0 nth_Cons_Suc)
 
 lemma noDblBk_Numeral: "noDblBk (<n::nat>)"

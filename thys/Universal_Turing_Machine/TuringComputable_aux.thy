@@ -40,7 +40,7 @@ proof (rule ex_ex1I)
 next
   show "\<And>n y. \<lbrakk>\<exists>stp k l. steps0 (1, [], <ns::nat list>) p stp = (0, Bk \<up> k, <n::nat> @ Bk \<up> l);
                \<exists>stp k l. steps0 (1, [], <ns>) p stp = (0, Bk \<up> k, <y> @ Bk \<up> l)\<rbrakk> \<Longrightarrow> n = y"
-    by (smt before_final is_final_eq le_less least_steps less_Suc_eq not_less_iff_gr_or_eq snd_conv unique_decomp_std_tap)
+    by (smt (verit) before_final is_final_eq le_less least_steps less_Suc_eq not_less_iff_gr_or_eq snd_conv unique_decomp_std_tap)
 qed
 
 lemma TMC_has_num_res_impl_unique_result_rev:
