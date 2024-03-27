@@ -140,28 +140,6 @@ lemma fib_ge: "fib n \<ge> n - 1"
 lemma frac_diff_of_nat_right [simp]: "frac (x - of_nat y) = frac x"
   using floor_diff_of_int[of x "int y"] by (simp add: frac_def)
 
-lemma funpow_cycle:
-  assumes "m > 0"
-  assumes "(f ^^ m) x = x"
-  shows   "(f ^^ k) x = (f ^^ (k mod m)) x"
-proof (induction k rule: less_induct)
-  case (less k)
-  show ?case
-  proof (cases "k < m")
-    case True
-    thus ?thesis using \<open>m > 0\<close> by simp
-  next
-    case False
-    hence "k = (k - m) + m" by simp
-    also have "(f ^^ \<dots>) x = (f ^^ (k - m)) ((f ^^ m) x)"
-      by (simp add: funpow_add)
-    also have "(f ^^ m) x = x" by fact
-    also have "(f ^^ (k - m)) x = (f ^^ (k mod m)) x"
-      using assms False by (subst less.IH) (auto simp: mod_geq)
-    finally show ?thesis .
-  qed
-qed
-
 lemma of_nat_ge_1_iff: "of_nat n \<ge> (1 :: 'a :: linordered_semidom) \<longleftrightarrow> n > 0"
   using of_nat_le_iff[of 1 n] unfolding of_nat_1 by auto
 

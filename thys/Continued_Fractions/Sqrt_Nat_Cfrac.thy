@@ -711,7 +711,8 @@ proof -
   qed
 
   have period: "sqrt_remainder_surd n = sqrt_remainder_surd (n mod k2)" for n
-    unfolding sqrt_remainder_surd_def using k12 by (intro funpow_cycle) (auto simp: f_def)
+    unfolding sqrt_remainder_surd_def using k12
+    by (metis \<open>k1 = 0\<close> f_def funpow_mod_eq funpow_0 sqrt_remainder_surd_def)
   have period': "sqrt_cfrac_nth k = sqrt_cfrac_nth (k mod k2)" for k
     using period[of k] by (simp add: sqrt_cfrac_nth_def)
 
