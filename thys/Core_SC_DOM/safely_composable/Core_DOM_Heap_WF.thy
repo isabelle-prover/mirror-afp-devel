@@ -71,7 +71,7 @@ node_ptr \<in> set |h \<turnstile> get_disconnected_nodes document_ptr|\<^sub>r)
 (sorted_list_of_fset (document_ptr_kinds h))))"
   have "\<not>(\<exists>document_ptr. document_ptr |\<in>| document_ptr_kinds h \<and> x \<in> set |h \<turnstile> get_disconnected_nodes document_ptr|\<^sub>r)"
     using 1 2 3
-    by (smt UN_I fset_of_list_elem image_eqI set_concat set_map sorted_list_of_fset_simps(1))
+    by (smt (verit) UN_I fset_of_list_elem image_eqI set_concat set_map sorted_list_of_fset_simps(1))
   then
   have "(\<exists>parent_ptr. parent_ptr |\<in>| object_ptr_kinds h \<and> x \<in> set |h \<turnstile> get_child_nodes parent_ptr|\<^sub>r)"
     using 1 2
@@ -3025,7 +3025,7 @@ h \<turnstile> a_get_owner_document\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^su
      apply(auto intro!: bind_pure_returns_result_I split: option.splits)[1]
     using \<open>cast child |\<in>| object_ptr_kinds h\<close> \<open>ptr |\<in>| object_ptr_kinds h\<close>
     apply(auto intro!: bind_pure_returns_result_I split: option.splits)[1]
-    by (smt \<open>cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r child |\<in>| object_ptr_kinds h\<close> cast_document_ptr_not_node_ptr(1)
+    by (smt (verit) \<open>cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r child |\<in>| object_ptr_kinds h\<close> cast_document_ptr_not_node_ptr(1)
         comp_apply invoke_empty invoke_not invoke_returns_result is_OK_returns_result_I
         node_ptr_casts_commute2 option.sel)
 qed
@@ -3192,7 +3192,7 @@ proof -
               ElementClass.known_ptr_defs NodeClass.known_ptr_defs split: option.splits)
         have "root = cast owner_document"
           using True
-          by (smt \<open>h \<turnstile> get_owner_document ptr \<rightarrow>\<^sub>r owner_document\<close> assms(1) assms(2) assms(3) assms(4)
+          by (smt (verit) \<open>h \<turnstile> get_owner_document ptr \<rightarrow>\<^sub>r owner_document\<close> assms(1) assms(2) assms(3) assms(4)
               document_ptr_casts_commute3 get_root_node_document returns_result_eq)
         then show ?thesis
           apply(auto simp add: get_owner_document_def a_get_owner_document_tups_def)[1]
@@ -4697,7 +4697,7 @@ proof -
       apply(simp add: a_owner_document_valid_def node_ptr_kinds_eq_h2 node_ptr_kinds_eq3_h3
           object_ptr_kinds_eq_h2 object_ptr_kinds_eq_h3 document_ptr_kinds_eq2_h2
           document_ptr_kinds_eq2_h3 children_eq2_h2 children_eq2_h3 )
-      by (smt disc_nodes_document_ptr_h' disc_nodes_document_ptr_h2
+      by (smt (verit) disc_nodes_document_ptr_h' disc_nodes_document_ptr_h2
           disc_nodes_old_document_h2 disc_nodes_old_document_h3
           disconnected_nodes_eq2_h2 disconnected_nodes_eq2_h3 document_ptr_in_heap
           document_ptr_kinds_eq3_h2 document_ptr_kinds_eq3_h3 in_set_remove1
