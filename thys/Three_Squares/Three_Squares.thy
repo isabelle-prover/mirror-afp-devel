@@ -1065,7 +1065,7 @@ next
         unfolding unique_euclidean_semiring_class.cong_def d'_mod_8 by auto
       thus ?thesis
         unfolding unique_euclidean_semiring_class.cong_def
-        by (smt (z3) Collect_cong One_nat_def cong_exp_iff_simps(11)
+        by (smt (verit) Collect_cong One_nat_def cong_exp_iff_simps(11)
                      even_mod_2_iff even_numeral nat.case(2) numeral_eq_iff
                      numerals(1) old.nat.simps(4) parity_cases prod.simps(2)
                      semiring_norm(84))
