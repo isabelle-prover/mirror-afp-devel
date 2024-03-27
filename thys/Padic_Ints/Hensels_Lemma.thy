@@ -99,11 +99,8 @@ proof-
     by (simp add: assms(1) assms(2) assms(3) divide_formula nonzero_closed nonzero_memE(2))
   hence "val_Zp y + val_Zp (divide x y) = val_Zp x"
     using assms(1) assms(2) divide_closed nonzero_closed not_nonzero_memI val_Zp_mult by fastforce
-  thus ?thesis 
-    by (smt Zp_def add.commute add.left_neutral add.right_neutral add_diff_assoc_eint assms(1) 
-        assms(2) divide_nonzero eSuc_minus_eSuc iadd_Suc idiff_0_right mult_zero(1) mult_zero_l
-        nonzero_closed ord_pos order_refl padic_integers.Zp_int_inc_closed padic_integers.mult_comm 
-        padic_integers.ord_of_nonzero(2) padic_integers_axioms val_Zp_eq_frac_0 val_Zp_mult val_Zp_p)
+  thus ?thesis
+    by (metis Extended_Int.eSuc_minus_1 add_0 assms(2) eint_minus_comm p_nonzero val_Zp_eq_frac_0 val_Zp_p)
 qed
 
 lemma val_of_divide':
@@ -439,7 +436,7 @@ lemma t_times_pow_pos[simp]:
   apply(cases "n = 0")
   using one_eint_def apply auto[1]
     using eint_mult_mono'[of t 1 "2^n"] t_pos
-  by (smt eint_ord_simps(2) linorder_not_less mult_one_left neq0_conv one_eint_def order_less_le order_trans self_le_power t_neq_infty)
+  by (smt (verit) eint_ord_simps(2) linorder_not_less mult_one_left neq0_conv one_eint_def order_less_le order_trans self_le_power t_neq_infty)
 
 lemma newton_seq_props_induct:
 shows "\<And>k. k \<le> n \<Longrightarrow> (ns k) \<in> carrier Zp
@@ -601,7 +598,7 @@ next
             using False P0 f'_closed  poly_diff_val  Suc.IH 
             by blast
           then have "val_Zp ((f' \<bullet> ns k) \<ominus> (f' \<bullet> ns n)) \<ge> val_Zp (\<ominus> divide (f\<bullet>(ns n))(f'\<bullet>(ns n)))"
-            using  F4 by metis  
+            using F4 by argo
           then have "val_Zp ((f' \<bullet> ns k) \<ominus> (f' \<bullet> ns n)) \<ge> val_Zp (divide (f\<bullet>(ns n))(f'\<bullet>(ns n)))"
             using F5 val_Zp_of_minus 
             by presburger                        
@@ -611,7 +608,7 @@ next
             by (simp add: F2)           
           then have "val_Zp ((f' \<bullet> ns k) \<ominus> (f' \<bullet> ns n)) \<ge> (2 * val_Zp (f'\<bullet>a)) + 2 ^ n * t -  val_Zp (f'\<bullet>(ns n))"
             using F3 P10  
-            by (smt eint_add_cancel_fact eint_add_left_cancel_le order_trans)                
+            by (smt (verit) eint_add_cancel_fact eint_add_left_cancel_le order_trans)                
           then have P12: "val_Zp ((f' \<bullet> ns k) \<ominus> (f' \<bullet> ns n)) \<ge> (2 *(val_Zp (f'\<bullet>a))) + 2 ^ n * t - (val_Zp (f'\<bullet>a))"
             by (simp add: F2)            
           have P13:"val_Zp ((f' \<bullet> ns k) \<ominus> (f' \<bullet> ns n)) \<ge> (val_Zp (f'\<bullet>a)) + 2 ^ n * t "
@@ -714,7 +711,7 @@ lemma newton_seq_fact3:
 proof-
   have "2*(val_Zp (f'\<bullet>a)) + (2^l)*t \<ge> (val_Zp (f'\<bullet>a))"
     using f'a_closed ord_pos t_pos 
-    by (smt eint_pos_int_times_ge f'a_nonneg_val f'a_not_infinite ge_plus_pos_imp_gt linorder_not_less nat_mult_not_infty order_less_le t_times_pow_pos)    
+    by (smt (verit) eint_pos_int_times_ge f'a_nonneg_val f'a_not_infinite ge_plus_pos_imp_gt linorder_not_less nat_mult_not_infty order_less_le t_times_pow_pos)    
   then show "val_Zp (f \<bullet> ns l) \<ge> val_Zp (f' \<bullet> ns l) "
     using  f'a_closed f'a_nonzero newton_seq_fact1[of l] newton_seq_fact2[of l]  val_Zp_def 
     proof -
@@ -749,7 +746,7 @@ lemma newton_seq_fact7:
         newton_seq_closed[of "Suc n"]  newton_seq_closed[of n] 
         R.ring_simprules
   unfolding newton_step_def a_minus_def 
-  by smt 
+  by (smt (verit))
 
 lemma newton_seq_fact8:
   assumes "f\<bullet>(ns l) \<noteq>\<zero>"
@@ -942,28 +939,28 @@ proof(rule is_Zp_cauchyI')
                   by (simp add: mult.commute)
               qed
               hence "2*val_Zp (f'\<bullet>a) + eint (2 ^ m) * t \<ge> 2*(val_Zp (f'\<bullet>a)) + 1 + int n"
-                by (smt eSuc_eint eint_add_left_cancel_le iadd_Suc iadd_Suc_right order_less_le)
+                by (smt (verit) eSuc_eint eint_add_left_cancel_le iadd_Suc iadd_Suc_right order_less_le)
               then have 11: "val_Zp (f\<bullet> (ns m)) - val_Zp (f'\<bullet>(ns m)) 
                                 \<ge> 2*(val_Zp (f'\<bullet>a)) + 1 + int n -  val_Zp (f'\<bullet>(ns m))"
                 using "10" 
-                by (smt \<open>eint 2 * val_Zp (f'\<bullet>a) + eint (2 ^ m) * t \<le> val_Zp (to_fun f (ns m))\<close> 
+                by (smt (verit) \<open>eint 2 * val_Zp (f'\<bullet>a) + eint (2 ^ m) * t \<le> val_Zp (to_fun f (ns m))\<close> 
                     f'a_not_infinite eint_minus_ineq hensel_axioms newton_seq_fact1 order_trans)
               have 12: "val_Zp (f'\<bullet>(ns m))  = val_Zp (f'\<bullet>a) "
                 using nonzero_memE  newton_seq_fact1 newton_seq_fact6 val_Zp_def val_Zp_def 
                 by auto               
               then have 13: "val_Zp (f\<bullet> (ns m)) - val_Zp (f'\<bullet>(ns m)) 
                                 \<ge> 2*(val_Zp (f'\<bullet>a)) + (1 + int n) -  val_Zp ((f'\<bullet>a))"
-                using 11 
-                by (smt eSuc_eint iadd_Suc iadd_Suc_right)
+                using 11
+                by (metis eint_1_iff(1) group_cancel.add1 plus_eint_simps(1))
               then have 14:"val_Zp (f\<bullet> (ns m)) - val_Zp (f'\<bullet>(ns m)) 
                                 \<ge> 1 + int n +  val_Zp ((f'\<bullet>a))"
                 using eint_minus_comm[of "2*(val_Zp (f'\<bullet>a))" "1 + int n" "val_Zp ((f'\<bullet>a))"] 
                 by (simp add: Groups.add_ac(2))
               then show ?thesis 
-                by (smt Suc_ile_eq add.right_neutral eint.distinct(2) f'a_nonneg_val ge_plus_pos_imp_gt order_less_le)                
+                by (smt (verit) Suc_ile_eq add.right_neutral eint.distinct(2) f'a_nonneg_val ge_plus_pos_imp_gt order_less_le)                
               qed
               then show ?thesis 
-               by (smt "0" Suc_ile_eq of_nat_Suc)              
+               by (smt (verit) "0" Suc_ile_eq of_nat_Suc)              
             qed
           qed
         qed
@@ -1206,10 +1203,10 @@ proof-
                   unfolding hensel_factor_def
                   using eint_minus_distr[of "val_Zp (f\<bullet>a)" "2 * val_Zp (f'\<bullet>a)" 2] 
                         eint_minus_comm[of _ _ "eint 2 * (eint 2 * val_Zp (f'\<bullet>a))"]   
-                  by (smt eint_2_minus_1_mult eint_add_cancel_fact eint_minus_comm f'a_not_infinite hensel_hypothesis nat_mult_not_infty order_less_le)
+                  by (smt (verit) eint_2_minus_1_mult eint_add_cancel_fact eint_minus_comm f'a_not_infinite hensel_hypothesis nat_mult_not_infty order_less_le)
                 hence "2*val_Zp (f'\<bullet>a) + 2*t  > val_Zp (f\<bullet>a)"
                   using hensel_hypothesis 
-                  by (smt add_diff_cancel_eint eint_add_cancel_fact eint_add_left_cancel_le 
+                  by (smt (verit) add_diff_cancel_eint eint_add_cancel_fact eint_add_left_cancel_le 
                       eint_pos_int_times_gt f'a_not_infinite hensel_factor_def nat_mult_not_infty order_less_le t_neq_infty t_pos)
                 thus ?thesis using F512 
                   using F511 less_le_trans by blast
@@ -1274,12 +1271,12 @@ proof-
                             mult.commute order_less_le t_neq_infty t_pos t_times_pow_pos)
             qed
             hence " 2*(val_Zp (f'\<bullet>a)) + (2^k)*t \<ge> (2^k) "
-              by (smt Groups.add_ac(2) add.right_neutral eint_2_minus_1_mult eint_pos_times_is_pos
+              by (smt (verit) Groups.add_ac(2) add.right_neutral eint_2_minus_1_mult eint_pos_times_is_pos
                   eint_pow_int_is_pos f'a_nonneg_val ge_plus_pos_imp_gt idiff_0_right linorder_not_less 
                   nat_mult_not_infty order_less_le t_neq_infty) 
             then have  " 2*(val_Zp (f'\<bullet>a)) + (2^k)*t > k"
               using A  of_nat_1 of_nat_add of_nat_less_two_power 
-              by (smt eint_ord_simps(1) linorder_not_less order_trans)              
+              by (smt (verit) eint_ord_simps(1) linorder_not_less order_trans)              
             then show ?thesis 
               by metis
           qed
@@ -1311,7 +1308,7 @@ proof-
         then have "(f\<bullet>(ns k)) n = 0"
           using A A'
           using above_ord_nonzero[of "(f\<bullet>(ns k))"]
-          by (smt UP_cring.to_fun_closed Zp_x_is_UP_cring f_closed le_eq_less_or_eq 
+          by (smt (verit) UP_cring.to_fun_closed Zp_x_is_UP_cring f_closed le_eq_less_or_eq 
               newton_seq_closed of_nat_mono residue_of_zero(2) zero_below_ord)
         then show A1:  "to_fun f (ns k) n = \<zero> n"
           by (simp add: residue_of_zero(2))          
@@ -1415,10 +1412,9 @@ next
     then have F21: "(1+ (max (2 + val_Zp (f'\<bullet>a)) (val_Zp (\<alpha> \<ominus> a)))) < val_Zp_dist (ns K) \<alpha>"
       by (metis N_def lessI linorder_not_less max_def order_trans)         
     have F22: "a \<noteq> ns K"
-      by (smt False K_def N'_def Zp_def cring_def eint.distinct(2) hensel_factor_id lessI 
-          less_le_trans linorder_not_less max_def mult_comm mult_zero_l newton_seq_closed 
-          order_less_le padic_int_is_cring padic_integers.prime padic_integers_axioms ring.r_right_minus_eq 
-          val_Zp_def)
+      by (smt (verit, del_insts) F21 Nz alpha_def eint_1_iff(1) eint_pow_int_is_pos less_le
+          local.a_closed max_less_iff_conj newton_seq_is_Zp_cauchy_0 not_less pos_add_strict
+          res_lim_in_Zp val_Zp_dist_def val_Zp_dist_sym)
     show ?thesis
     proof(cases "ns K = \<alpha>")
       case True
@@ -1461,7 +1457,7 @@ next
               using f1 by (metis Groups.add_ac(2) iless_Suc_eq linorder_not_less)
           qed
           thus ?thesis 
-            by (smt Groups.add_ac(2) eint_pow_int_is_pos f'a_not_infinite ge_plus_pos_imp_gt order_less_le)
+            by (smt (verit) Groups.add_ac(2) eint_pow_int_is_pos f'a_not_infinite ge_plus_pos_imp_gt order_less_le)
         qed
         hence P6: "val_Zp ((ns K) \<ominus> \<alpha>) >  val_Zp (f'\<bullet>a)"
           using F21 unfolding val_Zp_dist_def 
@@ -1500,7 +1496,7 @@ next
           res_lim_pushforward' f'_closed 
       by auto
     obtain N where N_def: "val_Zp (f'\<bullet>\<alpha> \<ominus> f'\<bullet>(ns N)) > val_Zp ((f'\<bullet>a))"
-      by (smt F2 False R.minus_closed Suc_ile_eq Zp_def alpha_def f'_closed f'a_nonzero 
+      by (smt (verit) F2 False R.minus_closed Suc_ile_eq Zp_def alpha_def f'_closed f'a_nonzero 
           local.a_closed minus_a_inv newton_seq.simps(1) newton_seq_is_Zp_cauchy_0 order_trans
           padic_integers.poly_diff_val padic_integers_axioms res_lim_in_Zp val_Zp_def val_Zp_of_minus)      
     show ?thesis
@@ -1572,7 +1568,7 @@ proof-
     hence "val_Zp (\<beta> \<ominus> \<alpha>) = val_Zp ((a \<ominus> \<beta>) \<ominus> (a \<ominus> \<alpha>))"
       using R.minus_closed assms(10) assms(2) assms(7) val_Zp_of_minus by presburger
     thus ?thesis using val_Zp_ultrametric_diff[of "a \<ominus> \<beta>" "a \<ominus> \<alpha>"]
-      by (smt R.minus_closed assms(10) assms(11) assms(2) assms(7) assms(8) min.absorb2 min_less_iff_conj)      
+      by (smt (verit) R.minus_closed assms(10) assms(11) assms(2) assms(7) assms(8) min.absorb2 min_less_iff_conj)      
   qed
   obtain h where h_def: "h = \<beta> \<ominus> \<alpha>"
     by blast 
@@ -1879,7 +1875,7 @@ proof-
     by (simp add: R.minus_eq assms nat_pow_nonzero nonzero_mult_in_car p_pow_nonzero' to_fun_monom_plus to_fun_to_poly to_poly_closed)
   then have 1: "f\<bullet>\<one> = \<ominus> (\<p> [^] (3::nat))\<otimes> (a [^] (4::nat))"
     unfolding a_minus_def 
-    by (smt R.add.inv_closed R.l_minus R.minus_add R.minus_minus R.nat_pow_closed R.one_closed R.r_neg1 a_car monom_term_car p_pow_nonzero(1))
+    by (smt (verit) R.add.inv_closed R.l_minus R.minus_add R.minus_minus R.nat_pow_closed R.one_closed R.r_neg1 a_car monom_term_car p_pow_nonzero(1))
   then have "val_Zp (f\<bullet>\<one>) = 3 + val_Zp (a [^] (4::nat))"
     using  assms val_Zp_mult[of "\<p> [^] (3::nat)" "(a [^] (4::nat))" ] 
       val_Zp_p_pow p_pow_nonzero[of "3::nat"] val_Zp_of_minus  
@@ -1910,9 +1906,9 @@ proof-
       using prime prime_int_numeral_eq primes_coprime two_is_prime_nat by blast    
     have 61: "2 < p"
       using 60 prime 
-      by (smt \<open>p \<noteq> 2\<close> prime_gt_1_int)
+      by (smt (verit) \<open>p \<noteq> 2\<close> prime_gt_1_int)
     then show ?thesis 
-      by (smt "4" "5" \<open>2 = int 2\<close> mod_pos_pos_trivial nonzero_closed p_nonzero val_Zp_p val_Zp_p_int_unit val_pos)
+      by (smt (verit) "4" "5" \<open>2 = int 2\<close> mod_pos_pos_trivial nonzero_closed p_nonzero val_Zp_p val_Zp_p_int_unit val_pos)
   qed
   have 7: "val_Zp (f\<bullet>\<one>) \<ge> 3"
   proof-
@@ -1924,7 +1920,7 @@ proof-
   qed
   have "2*val_Zp ((pderiv f)\<bullet>\<one>) \<le> 2*1"
     using 6 one_eint_def eint_mult_mono' 
-    by (smt \<open>2 = int 2\<close> eint.distinct(2) eint_ile eint_ord_simps(1) eint_ord_simps(2) mult.commute 
+    by (smt (verit) \<open>2 = int 2\<close> eint.distinct(2) eint_ile eint_ord_simps(1) eint_ord_simps(2) mult.commute 
         ord_Zp_p ord_Zp_p_pow ord_Zp_pow p_nonzero p_pow_nonzero(1) times_eint_simps(1) val_Zp_p val_Zp_pow' val_pos)
   hence 8: "2 * val_Zp ((pderiv f)\<bullet> \<one>) < val_Zp (f\<bullet>\<one>)"
     using 7 le_less_trans[of "2 * val_Zp ((pderiv f)\<bullet> \<one>)" "2::eint" 3] 

@@ -106,7 +106,7 @@ proof(induct n)
 next
   case (Suc n)
   then show ?case 
-    by (smt LeastI assms(2) seq_filter.simps(2))
+    by (smt (verit) LeastI assms(2) seq_filter.simps(2))
 qed
 
 text\<open>In a filtered sequence, every element satisfies the filtering predicate \<close>
@@ -344,14 +344,14 @@ proof-
     by blast
   then show ?thesis
   using const_res_subseq_def[of k s] const_res_subseq_def someI_ex   
-      by (smt const_res_subseq_def someI_ex)
+      by (smt (verit) const_res_subseq_def someI_ex)
 qed
 
 lemma const_res_subseq_prop_1: 
   assumes "s \<in> closed_seqs Zp"
   shows "(\<forall>m.(const_res_subseq k s) m k = (const_res k s) )"
   using const_res_subseq_prop_0[of s] const_res_def[of k s]
-  by (smt assms const_res_subseq_def const_res_def the_equality)
+  by (smt (verit) assms const_res_subseq_def const_res_def the_equality)
 
 lemma const_res_subseq: 
   assumes "s \<in> closed_seqs Zp"
@@ -631,9 +631,8 @@ lemma increasing_conv_subseq_fun_0:
   apply(auto) 
 proof(induction n)
   case 0
-  have "convergent_subseq_fun s a 0 = 0" by simp
-  then show ?case 
-    by (smt assms(1) assms(3) less_Suc_eq less_Suc_eq_0_disj increasing_conv_induction_0_pre padic_integers_axioms someI_ex)
+  then show ?case
+    by (metis (mono_tags, lifting) assms(1) assms(3) increasing_conv_induction_0_pre someI_ex)
 next
   case (Suc k)
   then show ?case 
@@ -685,7 +684,7 @@ proof-
       then have "s k l = a l" using kdef 
         assms(1) assms(2) convergent_subseq_fun.simps(2) increasing_conv_induction_0_pre 
         padic_integers_axioms someI_ex One_nat_def  \<open>0 < l\<close> increasing_conv_induction_0_pre 
-        by (smt Suc_pred)
+        by (smt (verit) Suc_pred)
       then show ?thesis
         by simp
     qed

@@ -131,8 +131,8 @@ lemma res_to_fun_monom:
   assumes "c \<in> carrier Zp"
   assumes "a k = b k"
   shows "(monom Zp_x c n \<bullet> a) k = (monom Zp_x c n \<bullet> b) k"
-  using res_to_fun_monic_monom assms 
-  by (smt to_fun_monic_monom to_fun_monom residue_of_prod)
+  using res_to_fun_monic_monom assms
+  by (metis (mono_tags, opaque_lifting) to_fun_monic_monom to_fun_monom residue_of_prod)
 
 lemma to_fun_res_ltrm: 
   assumes "a \<in> carrier Zp"

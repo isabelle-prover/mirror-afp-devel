@@ -225,8 +225,8 @@ lemma(in UP_cring) UP_car_memE:
   shows "\<And>x. g x \<in> carrier R"
         "\<And>x. x > (deg R g) \<Longrightarrow> g x = \<zero>"
   using P_def assms UP_def[of R] apply (simp add: mem_upD)
-  using assms UP_def[of R] up_def[of R] 
-  by (smt R.ring_axioms UP_ring.deg_aboveD UP_ring.intro partial_object.select_convs(1) restrict_apply up_ring.simps(2))
+  using assms UP_def[of R] up_def[of R]
+  by (smt (verit, del_insts) UP_ring.deg_aboveD is_UP_ring partial_object.select_convs(1) restrict_apply up_ring.select_convs(2)) 
   
 end
 
@@ -665,7 +665,7 @@ lemma trunc_cfs:
   assumes "n < degree p"
   shows " (trunc p) n = p n"
   using P_def assms(1) assms(2) unfolding truncate_def 
-  by (smt ltrm_closed ltrm_cfs R.minus_zero R.ring_axioms UP_ring.cfs_minus
+  by (smt (verit) ltrm_closed ltrm_cfs R.minus_zero R.ring_axioms UP_ring.cfs_minus
       UP_ring_axioms a_minus_def cfs_closed leading_term_def nat_neq_iff ring.ring_simprules(15))
 
 text\<open>monomial predicate\<close>
@@ -815,7 +815,7 @@ lemma(in UP_cring) ltrm_smult_cring:
   assumes "lcf p \<otimes> a \<noteq> \<zero>"
   shows "ltrm (a \<odot>\<^bsub>P\<^esub>p) = a\<odot>\<^bsub>P\<^esub>(ltrm p)"
   using assms 
-  by (smt lcf_monom(1) P_def R.m_closed R.m_comm cfs_closed cfs_smult coeff_simp
+  by (smt (verit) lcf_monom(1) P_def R.m_closed R.m_comm cfs_closed cfs_smult coeff_simp
       cring_deg_mult deg_monom deg_ltrm monom_closed monom_mult_is_smult monom_mult_smult) 
 
 lemma(in UP_cring) deg_zero_ltrm_smult_cring:
@@ -840,7 +840,7 @@ lemma(in UP_cring) cring_ltrm_mult:
 proof(cases "degree p = 0 \<or> degree q = 0")
   case True
   then show ?thesis 
-    by (smt ltrm_closed ltrm_deg_0 ltrm_smult_cring R.m_comm UP_m_comm assms(1) assms(2) assms(3) cfs_closed monom_mult_is_smult)
+    by (smt (verit) ltrm_closed ltrm_deg_0 ltrm_smult_cring R.m_comm UP_m_comm assms(1) assms(2) assms(3) cfs_closed monom_mult_is_smult)
 next
   case False
     obtain q0 where q0_def: "q0 = trunc q" 
@@ -870,7 +870,7 @@ next
       qed
       have RHS: "degree ((p0 \<oplus>\<^bsub>P\<^esub> ltrm(p))\<otimes>\<^bsub>P \<^esub>ltrm(q)) = degree p + degree q"
         using assms(1) assms(2) deg_mult_ring ltrm_closed p0_def trunc_simps(1) 
-        by (smt P_def UP_cring.lcf_monom(1) UP_cring.cring_deg_mult UP_cring_axioms add.commute assms(3) cfs_closed deg_ltrm)                    
+        by (smt (verit) P_def UP_cring.lcf_monom(1) UP_cring.cring_deg_mult UP_cring_axioms add.commute assms(3) cfs_closed deg_ltrm)                    
         then show ?thesis 
           using RHS LHS  Pq 
           by linarith    
@@ -895,7 +895,7 @@ next
             have LHS: "degree ((p0 \<otimes>\<^bsub>P \<^esub>ltrm(q))) < degree p + degree q"
               using False F  Pp assms(1) assms(2) deg_nzero_nzero 
                  deg_ltrm ltrm_closed p0_def trunc_closed 
-              by (smt add_le_cancel_right deg_mult_ring le_trans not_less)   
+              by (smt (verit) add_le_cancel_right deg_mult_ring le_trans not_less)   
             have RHS: "degree ((ltrm(p))\<otimes>\<^bsub>P \<^esub>ltrm(q)) = degree p + degree q" 
               using cring_deg_mult[of "ltrm p" "ltrm q"] assms 
               by (simp add: ltrm_closed ltrm_cfs deg_ltrm)                      
@@ -918,7 +918,7 @@ lemma(in UP_domain) ltrm_mult:
   assumes "q \<in> carrier P"
   shows "ltrm (p \<otimes>\<^bsub>P\<^esub> q) = (ltrm p) \<otimes>\<^bsub>P\<^esub> (ltrm q)"
   using cring_ltrm_mult assms 
-  by (smt ltrm_closed ltrm_deg_0 cfs_closed deg_nzero_nzero deg_ltrm local.integral_iff monom_mult monom_zero)
+  by (smt (verit) ltrm_closed ltrm_deg_0 cfs_closed deg_nzero_nzero deg_ltrm local.integral_iff monom_mult monom_zero)
 
 lemma lcf_deg_0:
   assumes "degree p = 0"
@@ -990,7 +990,7 @@ proof-
       using assms A R.nat_pow_Suc IH  by metis   
     then show "ltrm (p [^]\<^bsub>P\<^esub> Suc n) = ltrm p [^]\<^bsub>P\<^esub> Suc n"
       using IH 0 assms(1) cring_ltrm_mult cfs_closed 
-      by (smt A lcf_monom(1) ltrm_closed P.nat_pow_Suc2 P.nat_pow_closed R.nat_pow_Suc2 a)    
+      by (smt (verit) A lcf_monom(1) ltrm_closed P.nat_pow_Suc2 P.nat_pow_closed R.nat_pow_Suc2 a)    
   qed
   then show ?thesis 
     using assms(2) by blast
@@ -1014,7 +1014,7 @@ lemma(in UP_cring)  cring_pow_deg_bound:
   apply(induction n)
    apply (metis Group.nat_pow_0 deg_one le_zero_eq mult_is_0)  
   using deg_mult_ring[of _ p]
-  by (smt P.nat_pow_Suc2 P.nat_pow_closed ab_semigroup_add_class.add_ac(1) assms deg_mult_ring le_iff_add mult_Suc)  
+  by (smt (verit) P.nat_pow_Suc2 P.nat_pow_closed ab_semigroup_add_class.add_ac(1) assms deg_mult_ring le_iff_add mult_Suc)  
 
 lemma(in UP_cring) deg_smult:
   assumes "a \<in> carrier R"
@@ -1263,7 +1263,7 @@ proof-
   have 0: "lcf (a \<odot>\<^bsub>P\<^esub> p) = lcf (ltrm (a \<odot>\<^bsub>P\<^esub> p))"
     using assms  lcf_eq smult_closed by blast
   have 1: "degree (a \<odot>\<^bsub>P\<^esub> p) = degree p"
-    by (smt lcf_monom(1) P_def R.one_closed R.r_null UP_ring.coeff_smult UP_ring_axioms  
+    by (smt (verit) lcf_monom(1) P_def R.one_closed R.r_null UP_ring.coeff_smult UP_ring_axioms  
         assms(1) assms(2) assms(3) coeff_simp cring_deg_mult deg_const monom_closed monom_mult_is_smult smult_one)
   then have "lcf (a \<odot>\<^bsub>P\<^esub> p) = lcf (a \<odot>\<^bsub>P\<^esub> (ltrm p))"
     using lcf_eq[of "a \<odot>\<^bsub>P\<^esub> p"] smult_closed  assms 0 
@@ -1292,19 +1292,19 @@ lemma(in UP_cring)  cring_lcf_mult:
   assumes "(lcf p) \<otimes> (lcf q) \<noteq>\<zero>"
   shows "lcf (p \<otimes>\<^bsub>P\<^esub> q) = (lcf p) \<otimes> (lcf q)"
   using assms cring_ltrm_mult 
-  by (smt lcf_monom(1) P.m_closed R.m_closed cfs_closed monom_mult)
+  by (smt (verit) lcf_monom(1) P.m_closed R.m_closed cfs_closed monom_mult)
 
 lemma(in UP_domain)  lcf_mult:
   assumes "p \<in> carrier P"
   assumes "q \<in> carrier P"
   shows "lcf (p \<otimes>\<^bsub>P\<^esub> q) = (lcf p) \<otimes> (lcf q)"
-  by (smt ltrm_deg_0 R.integral_iff assms(1) assms(2) cfs_closed cring_lcf_mult deg_zero deg_ltrm local.integral_iff monom_zero)
+  by (metis P_def R.integral_iff assms(1) assms(2) cfs_closed coeff_simp cring_lcf_mult lcoeff_nonzero local.integral_iff)
 
 lemma(in UP_cring)  cring_lcf_pow:
   assumes "p \<in> carrier P"
   assumes "(lcf p)[^]n \<noteq>\<zero>"
   shows "lcf (p[^]\<^bsub>P\<^esub>(n::nat)) = (lcf p)[^]n"
-  by (smt P.nat_pow_closed R.nat_pow_closed assms(1) assms(2) cring_pow_ltrm lcf_closed lcf_ltrm lcf_monom monom_pow)
+  by (smt (verit) P.nat_pow_closed R.nat_pow_closed assms(1) assms(2) cring_pow_ltrm lcf_closed lcf_ltrm lcf_monom monom_pow)
 
 lemma(in UP_domain)  lcf_pow:
   assumes "p \<in> carrier P"
@@ -2061,7 +2061,7 @@ proof-
     unfolding P_def  
     by blast
   then show ?thesis 
-    by (smt P.nat_pow_closed assms(1) assms(4) cring_pow_deg_bound deg_mult_ring
+    by (smt (verit) P.nat_pow_closed assms(1) assms(4) cring_pow_deg_bound deg_mult_ring
         degree_to_poly le_trans plus_nat.add_0 to_poly_closed)
 qed
 
@@ -2080,7 +2080,7 @@ proof-
     by blast
   have 1: "lcf (to_poly a) \<otimes> lcf (g [^]\<^bsub>P\<^esub> n) \<noteq> \<zero>" 
     using assms 
-    by (smt P.nat_pow_closed P_def R.nat_pow_closed R.r_null cring_pow_ltrm lcf_closed lcf_ltrm lcf_monom monom_pow to_polynomial_def)
+    by (smt (verit) P.nat_pow_closed P_def R.nat_pow_closed R.r_null cring_pow_ltrm lcf_closed lcf_ltrm lcf_monom monom_pow to_polynomial_def)
   then show ?thesis 
     using 0 1 assms cring_pow_deg[of g n] cring_deg_mult[of "to_poly a" "g[^]\<^bsub>P\<^esub>n"]
     by (metis P.nat_pow_closed R.r_null add.right_neutral degree_to_poly to_poly_closed)
@@ -2284,7 +2284,7 @@ proof-
     using 0 1 assms cring_sub_deg_bound[of g "trunc f"] trunc_degree[of f]   
     using sub_in_const apply fastforce
     unfolding 0 using 1 2 
-    by (smt "0" ltrm_closed \<open>\<lbrakk>f \<in> carrier P; 0 < deg R f\<rbrakk> \<Longrightarrow> deg R (Cring_Poly.truncate R f) < deg R f\<close>
+    by (smt (verit) "0" ltrm_closed \<open>\<lbrakk>f \<in> carrier P; 0 < deg R f\<rbrakk> \<Longrightarrow> deg R (Cring_Poly.truncate R f) < deg R f\<close>
         assms(1) assms(2) cring_sub_deg_bound degree_of_sum_diff_degree equal_deg_sum
         le_eq_less_or_eq mult_less_cancel2 nat_neq_iff neq0_conv sub_closed trunc_closed)    
 qed
@@ -2396,7 +2396,7 @@ proof-
           UP_ring.degree_of_sum_diff_degree UP_ring.ltrm_closed UP_ring_axioms assms(1) 
           assms(2) assms(4) cring_sub_deg_bound le_antisym less_imp_le_nat less_nat_zero_code
           mult_right_le_imp_le nat_neq_iff trunc_degree
-      by (smt assms(3))
+      by (smt (verit) assms(3))
     then show ?thesis using P0 P1 P2 
       by (metis (no_types, lifting) ltrm_closed ltrm_of_sum_diff_degree P.add.m_comm assms(1) assms(2) sub_closed trunc_closed)      
   qed
@@ -2488,7 +2488,7 @@ lemma(in UP_cring)  cring_ltrm_of_sub_in_ltrm:
   assumes "degree g > 0"
   assumes "(lcf f) \<otimes> ((lcf g)[^]n) \<noteq>\<zero>"
   shows "ltrm ((ltrm f) of g) = (lcf f) \<odot>\<^bsub>P\<^esub> ((ltrm g)[^]\<^bsub>P\<^esub>n)"
-  by (smt lcf_eq ltrm_closed R.nat_pow_closed R.r_null assms(1) assms(2) assms(3) 
+  by (smt (verit) lcf_eq ltrm_closed R.nat_pow_closed R.r_null assms(1) assms(2) assms(3) 
       assms(4) assms(5) cfs_closed cring_lcf_of_sub_in_ltrm cring_lcf_pow cring_pow_ltrm
       cring_pow_deg cring_sub_deg deg_zero deg_ltrm monom_mult_smult neq0_conv)
   
@@ -2498,10 +2498,7 @@ lemma(in UP_domain)  ltrm_of_sub_in_ltrm:
   assumes "degree f = n"
   assumes "degree g > 0"
   shows "ltrm ((ltrm f) of g) = (lcf f) \<odot>\<^bsub>P\<^esub> ((ltrm g)[^]\<^bsub>P\<^esub>n)"
-  by (smt Group.nat_pow_0 lcf_of_sub_in_ltrm lcf_pow lcf_scalar_mult ltrm_closed 
-      ltrm_pow0 ltrm_smult P.nat_pow_closed P_def UP_ring.monom_one UP_ring_axioms assms(1) 
-      assms(2) assms(3) assms(4) cfs_closed coeff_simp deg_const deg_nzero_nzero deg_pow 
-      deg_smult deg_ltrm lcoeff_nonzero2 nat_less_le sub_deg)
+  using assms(1) assms(2) assms(3) lcf_closed ltrm_pow0 ltrm_smult monom_sub by force
 
 text\<open>formula for the leading term of a composition \<close>
 
@@ -2771,7 +2768,7 @@ lemma to_fun_monom:
   assumes "c \<in> carrier R"
   assumes "x \<in> carrier R"
   shows "to_fun (monom P c n) x = c \<otimes> x [^] n"
-  by (smt P_def R.m_comm R.nat_pow_closed UP_cring.to_poly_nat_pow UP_cring_axioms assms(1) 
+  by (smt (verit) P_def R.m_comm R.nat_pow_closed UP_cring.to_poly_nat_pow UP_cring_axioms assms(1) 
       assms(2) monom_is_UP_monom(1) sub_monom(1) to_fun_smult to_fun_sub_monom to_fun_to_poly 
       to_poly_closed to_poly_mult_simp(2))
 
@@ -3463,7 +3460,7 @@ lemma f_minus_ctrm:
   assumes "f \<in> carrier P"
   shows "zcf(f \<ominus>\<^bsub>P\<^esub> ctrm f) = \<zero>"
   using assms 
-  by (smt ctrm_is_poly P.add.inv_closed P.minus_closed P_def R.r_neg R.zero_closed zcf_to_fun 
+  by (smt (verit) ctrm_is_poly P.add.inv_closed P.minus_closed P_def R.r_neg R.zero_closed zcf_to_fun 
         to_fun_minus to_fun_plus UP_cring_axioms zcf_ctrm zcf_def a_minus_def cfs_closed)
 
 definition poly_shift where
@@ -3492,7 +3489,7 @@ lemma poly_shift_eq_0:
   assumes "f \<in> carrier P"
   shows "f  n = (ctrm f \<oplus>\<^bsub>P\<^esub> X \<otimes>\<^bsub>P\<^esub> poly_shift f) n"
   apply(cases "n = 0")
-  apply (smt ctrm_degree ctrm_is_poly ltrm_of_X One_nat_def P.r_null P.r_zero P_def UP_cring.lcf_monom(1) UP_cring_axioms UP_mult_closed UP_r_one UP_zero_closed X_closed zcf_ltrm_mult zcf_def zcf_zero assms cfs_add cfs_closed deg_zero degree_X lessI monom_one poly_shift_closed to_poly_inverse)
+  apply (smt (verit) ctrm_degree ctrm_is_poly ltrm_of_X One_nat_def P.r_null P.r_zero P_def UP_cring.lcf_monom(1) UP_cring_axioms UP_mult_closed UP_r_one UP_zero_closed X_closed zcf_ltrm_mult zcf_def zcf_zero assms cfs_add cfs_closed deg_zero degree_X lessI monom_one poly_shift_closed to_poly_inverse)
 proof- assume A: "n \<noteq> 0"
   then obtain k where k_def: " n = Suc k"
     by (meson lessI less_Suc_eq_0_disj)
@@ -3645,7 +3642,7 @@ proof(induction k)
     then have "f \<ominus>\<^bsub>P\<^esub> ((shift (Suc 0) f)\<otimes>\<^bsub>P\<^esub>X) \<ominus>\<^bsub>P\<^esub> (ctrm f)= \<zero>\<^bsub>P\<^esub>"
       using P.add.m_assoc P.ring_simprules(14) P.ring_simprules(19) assms "0" 
           P.add.inv_closed P.r_neg P.r_zero ctrm_is_poly
-      by smt      
+      by (smt (verit, ccfv_threshold))
     then show ?thesis 
       by (metis "0" P.add.m_comm P.m_closed P.ring_simprules(14) P.ring_simprules(18) 
           P.ring_simprules(3) X_closed assms ctrm_is_poly poly_shift_id poly_shift_eq 
@@ -4004,14 +4001,14 @@ lemma trms_of_deg_leq_id:
   shows "f \<ominus>\<^bsub>P\<^esub> (trms_of_deg_leq k f) = shift (Suc k) f \<otimes>\<^bsub>P\<^esub> monom P \<one> (Suc k)"
   unfolding trms_of_deg_leq_def 
   using assms 
-  by (smt P.add.inv_closed P.l_zero P.m_closed P.minus_add P.minus_minus P.r_neg
+  by (smt (verit) P.add.inv_closed P.l_zero P.m_closed P.minus_add P.minus_minus P.r_neg
       P_def R.one_closed UP_a_assoc a_minus_def monom_closed shift_closed)
 
 lemma trms_of_deg_leq_id':
   assumes "f \<in> carrier P"
   shows "f = (trms_of_deg_leq k f)  \<oplus>\<^bsub>P\<^esub> shift (Suc k) f \<otimes>\<^bsub>P\<^esub> monom P \<one> (Suc k)"
   using trms_of_deg_leq_id assms  trms_of_deg_leq_closed[of f]
-  by (smt P.add.inv_closed P.l_zero P.m_closed P.minus_add P.minus_minus P.r_neg R.one_closed UP_a_assoc a_minus_def monom_closed shift_closed)
+  by (smt (verit, ccfv_threshold) P.add.inv_closed P.l_zero P.m_closed P.minus_add P.minus_minus P.r_neg R.one_closed UP_a_assoc a_minus_def monom_closed shift_closed)
 
 lemma deg_leqI:
   assumes "p \<in> carrier P"
@@ -4430,11 +4427,8 @@ proof(induction n)
   have 0: "b [^] ((0::nat) - 1) \<in> carrier R"
     using assms 
     by simp
-  then show ?case unfolding derivative_def using assms  
-    by (smt One_nat_def P_def R.add.nat_pow_0 R.nat_pow_Suc2 R.nat_pow_eone R.zero_closed 
-        taylor_def taylor_deg UP_cring.taylor_closed UP_cring.zcf_monom UP_cring.shift_one 
-        UP_cring_axioms zcf_degree_zero zcf_zero_degree_zero degree_monom monom_closed 
-        monom_rep_X_pow plus_1_eq_Suc poly_shift_degree_zero shift_cfs to_fun_monom to_fun_zero zero_diff)
+  then show ?case unfolding derivative_def using assms
+    by (metis R.add.nat_pow_0 R.l_null deg_const deriv_deg_0 derivative_def monom_closed)
 next
   case (Suc n)
   show ?case
@@ -4447,13 +4441,8 @@ next
     then show ?thesis 
       unfolding derivative_def taylor_expansion_def
       using T0 T1 True sub_monom(2)[of "X_plus b" a "Suc n"] cfs_add assms
-      unfolding P_def X_poly_plus_def to_polynomial_def X_poly_def  
-      by (smt Group.nat_pow_0 lcf_eq lcf_monom(2) ltrm_of_X_plus One_nat_def P_def R.one_closed 
-          R.r_one R.r_zero UP_cring.zcf_monom UP_cring.degree_of_X_plus 
-          UP_cring.poly_shift_degree_zero UP_cring_axioms X_closed X_plus_closed X_poly_def 
-          X_poly_plus_def zcf_zero_degree_zero cfs_monom_mult_l degree_to_poly to_fun_X_pow 
-          plus_1_eq_Suc poly_shift_cfs poly_shift_monom to_poly_closed to_poly_mult_simp(2)
-          to_poly_nat_pow to_polynomial_def)
+      unfolding P_def X_poly_plus_def to_polynomial_def X_poly_def
+      by (metis One_nat_def P_def R.add.nat_pow_eone R.nat_pow_0 UP_cring.cfs_X_plus X_plus_closed X_poly_def X_poly_plus_def cfs_smult diff_Suc_1' is_UP_cring n_not_Suc_n to_polynomial_def)
   next
     case False
   have "deriv (monom P a (Suc n)) b = ((monom P a (Suc n)) of (X_plus b)) 1"
@@ -4469,7 +4458,7 @@ next
     by (metis P.r_distr P_def X_closed X_plus_closed X_poly_def X_poly_plus_def assms(1) assms(2) monom_closed sub_closed to_poly_closed)
   then have "deriv (monom P a (Suc n)) b = ((monom P a n) of (X_plus b)) 0 \<oplus> b \<otimes> ((monom P a n) of (X_plus b)) 1"
     unfolding X_poly_plus_def 
-    by (smt One_nat_def P.m_closed P_def UP_m_comm X_closed X_plus_closed X_poly_def X_poly_plus_def
+    by (smt (verit) One_nat_def P.m_closed P_def UP_m_comm X_closed X_plus_closed X_poly_def X_poly_plus_def
         assms(1) assms(2) cfs_add cfs_monom_mult_l monom_closed plus_1_eq_Suc sub_closed cfs_times_X to_polynomial_def)
   then have "deriv (monom P a (Suc n)) b = ((monom P a n) of (X_plus b)) 0 \<oplus> b \<otimes> (deriv (monom P a n) b)"
     by (simp add: derivative_def taylor_expansion_def)
@@ -4480,7 +4469,7 @@ next
     by (metis (no_types, lifting) R.add.nat_pow_closed R.m_lcomm R.nat_pow_closed R.nat_pow_eone add.commute add_eq_if plus_1_eq_Suc)
   have 1: "((monom P a n) of (X_plus b)) 0 = a \<otimes> b[^]n"
      unfolding X_poly_plus_def using zcf_monom_sub' 
-     by (smt ctrm_of_sub One_nat_def P_def R.l_zero R.one_closed UP_cring.zcf_to_poly 
+     by (smt (verit) ctrm_of_sub One_nat_def P_def R.l_zero R.one_closed UP_cring.zcf_to_poly 
          UP_cring.f_minus_ctrm UP_cring_axioms X_plus_closed X_poly_def X_poly_plus_def zcf_add
          zcf_def assms(1) assms(2) to_fun_monom monom_closed monom_one_Suc2 poly_shift_id poly_shift_monom to_poly_closed)
    show ?thesis 
@@ -4596,7 +4585,7 @@ proof-
       have T1: "(g \<ominus>\<^bsub>UP R\<^esub> h) 0 = g 0 \<ominus> h 0"
         using ltrm_closed P_def assms(1) cfs_minus h_def by blast
       then show ?thesis using T0 assms  
-        by (smt "0" ltrm_closed ltrm_deg_0 P.minus_closed P_def UP_car_memE(1) UP_zero_closed zcf_def zcf_zero deg_zero degree_to_poly h_def to_poly_closed to_poly_inverse to_poly_minus trunc_simps(2) trunc_zero)        
+        by (smt (verit) "0" ltrm_closed ltrm_deg_0 P.minus_closed P_def UP_car_memE(1) UP_zero_closed zcf_def zcf_zero deg_zero degree_to_poly h_def to_poly_closed to_poly_inverse to_poly_minus trunc_simps(2) trunc_zero)        
     next
       case False
       then have "x > 0"
@@ -4626,7 +4615,7 @@ lemma nmult_smult:
   using assms(1) n_mult_add n_mult_closed smult_closed smult_r_distr apply presburger
   using assms  apply(intro ext, metis (no_types, lifting) ctrm_smult ltrm_deg_0 P_def R.add.nat_pow_0 UP_cring.ctrm_degree UP_cring.n_mult_closed UP_cring.n_mult_def UP_cring_axioms UP_smult_closed UP_zero_closed zcf_degree_zero zcf_zero deg_const deg_zero le_0_eq monom_closed n_mult_degree_bound smult_r_null)
   using monom_mult_smult n_mult_monom assms 
-  by (smt lcf_monom(1) P_def R.add.nat_pow_closed R.add_pow_rdistr R.zero_closed UP_cring.to_poly_mult_simp(1) UP_cring_axioms UP_smult_closed cfs_closed cring_lcf_mult monom_closed to_polynomial_def)
+  by (smt (verit) lcf_monom(1) P_def R.add.nat_pow_closed R.add_pow_rdistr R.zero_closed UP_cring.to_poly_mult_simp(1) UP_cring_axioms UP_smult_closed cfs_closed cring_lcf_mult monom_closed to_polynomial_def)
 
 lemma pderiv_smult:
   assumes "a \<in> carrier R"
@@ -4658,7 +4647,7 @@ lemma(in UP_cring) pderiv_minus_const:
   assumes "b \<in> carrier R"
   shows "pderiv (a \<ominus>\<^bsub>P\<^esub> up_ring.monom P b 0) = pderiv a"
   using pderiv_minus[of a "up_ring.monom P b 0" ] assms pderiv_const[of b] 
-  by (smt P.l_zero P.minus_closed P_def UP_cring.pderiv_const UP_cring.pderiv_minus UP_cring.poly_shift_eq UP_cring_axioms cfs_closed monom_closed pderiv_add pderiv_closed poly_shift_id)
+  by (smt (verit) P.l_zero P.minus_closed P_def UP_cring.pderiv_const UP_cring.pderiv_minus UP_cring.poly_shift_eq UP_cring_axioms cfs_closed monom_closed pderiv_add pderiv_closed poly_shift_id)
 
 lemma(in UP_cring) monom_product_rule: 
   assumes "f \<in> carrier P"
@@ -4741,12 +4730,12 @@ proof-
       have 7: "(f \<otimes>\<^bsub>P\<^esub>up_ring.monom P \<one> 1) \<otimes>\<^bsub>P\<^esub> pderiv (up_ring.monom P a n) \<oplus>\<^bsub>P\<^esub> pderiv (f \<otimes>\<^bsub>P\<^esub>up_ring.monom P \<one> 1) \<otimes>\<^bsub>P\<^esub> up_ring.monom P a n =
                [(Suc n)] \<cdot>\<^bsub>P\<^esub> (f \<otimes>\<^bsub>P\<^esub> up_ring.monom P a n) \<oplus>\<^bsub>P\<^esub> pderiv f \<otimes>\<^bsub>P\<^esub> up_ring.monom P \<one> 1 \<otimes>\<^bsub>P\<^esub> up_ring.monom P a n"
         unfolding 2 3  5 6 using assms A P.a_assoc 
-        by (smt "1" "2" "3" "6" P.add.nat_pow_Suc P.m_closed R.one_closed is_UP_monomE(1) monom_is_UP_monom(1) pderiv_closed)
+        by (smt (verit) "1" "2" "3" "6" P.add.nat_pow_Suc P.m_closed R.one_closed is_UP_monomE(1) monom_is_UP_monom(1) pderiv_closed)
       have 8: "pderiv (f \<otimes>\<^bsub>P\<^esub> up_ring.monom P a (Suc n)) = pderiv ((f \<otimes>\<^bsub>P\<^esub>up_ring.monom P \<one> 1) \<otimes>\<^bsub>P\<^esub> up_ring.monom P a n)"
         using A assms 0  by presburger
       show " pderiv (f \<otimes>\<^bsub>P\<^esub> up_ring.monom P a (Suc n)) = f \<otimes>\<^bsub>P\<^esub> pderiv (up_ring.monom P a (Suc n)) \<oplus>\<^bsub>P\<^esub> pderiv f \<otimes>\<^bsub>P\<^esub> up_ring.monom P a (Suc n)"
         unfolding 8 IH 0 1 2 3 4 5 6 
-        by (smt "2" "4" "6" "7" A P.add_pow_rdistr R.one_closed UP_m_assoc add_nat_pow_monom assms(2) diff_Suc_1 is_UP_monomE(1) is_UP_monomI monom_Suc(1) pderiv_closed pderiv_monom)        
+        by (smt (verit) "2" "4" "6" "7" A P.add_pow_rdistr R.one_closed UP_m_assoc add_nat_pow_monom assms(2) diff_Suc_1 is_UP_monomE(1) is_UP_monomI monom_Suc(1) pderiv_closed pderiv_monom)        
        qed
      qed
    qed
@@ -4778,8 +4767,7 @@ proof(rule poly_induct3[of f])
     have 2: "pderiv ((p \<oplus>\<^bsub>P\<^esub> q) \<otimes>\<^bsub>UP R\<^esub> g) = pderiv p \<otimes>\<^bsub>UP R\<^esub> g \<oplus>\<^bsub>UP R\<^esub> p \<otimes>\<^bsub>UP R\<^esub> pderiv g \<oplus>\<^bsub>UP R\<^esub> (pderiv q \<otimes>\<^bsub>UP R\<^esub> g \<oplus>\<^bsub>UP R\<^esub> q \<otimes>\<^bsub>UP R\<^esub> pderiv g)"
       unfolding 1 A by blast 
     have 3: "pderiv ((p \<oplus>\<^bsub>P\<^esub> q) \<otimes>\<^bsub>UP R\<^esub> g) = pderiv p \<otimes>\<^bsub>UP R\<^esub> g \<oplus>\<^bsub>UP R\<^esub> pderiv q \<otimes>\<^bsub>UP R\<^esub> g  \<oplus>\<^bsub>UP R\<^esub> p \<otimes>\<^bsub>UP R\<^esub> pderiv g  \<oplus>\<^bsub>UP R\<^esub> q \<otimes>\<^bsub>UP R\<^esub> pderiv g"
-      using A assms 
-      by (smt "2" P.add.m_lcomm P.m_closed P_def UP_a_assoc pderiv_closed)
+      using A assms by (metis "1" P.add.m_assoc P.add.m_lcomm P.m_closed P_def pderiv_closed) 
     have 4: "pderiv ((p \<oplus>\<^bsub>P\<^esub> q) \<otimes>\<^bsub>UP R\<^esub> g) = (pderiv p \<otimes>\<^bsub>UP R\<^esub> g \<oplus>\<^bsub>UP R\<^esub> pderiv q \<otimes>\<^bsub>UP R\<^esub> g)  \<oplus>\<^bsub>UP R\<^esub> (p \<otimes>\<^bsub>UP R\<^esub> pderiv g  \<oplus>\<^bsub>UP R\<^esub> q \<otimes>\<^bsub>UP R\<^esub> pderiv g)"
       unfolding 3 using A assms P_def UP_a_assoc UP_a_closed UP_mult_closed pderiv_closed by auto
     have 5: "pderiv ((p \<oplus>\<^bsub>P\<^esub> q) \<otimes>\<^bsub>UP R\<^esub> g) = ((pderiv p  \<oplus>\<^bsub>UP R\<^esub> pderiv q) \<otimes>\<^bsub>UP R\<^esub> g)  \<oplus>\<^bsub>UP R\<^esub> ((p \<oplus>\<^bsub>UP R\<^esub> q)  \<otimes>\<^bsub>UP R\<^esub> pderiv g)"
@@ -4814,7 +4802,7 @@ proof(rule poly_induct3[of f])
            pderiv (Cring_Poly.compose R q g) = Cring_Poly.compose R (pderiv q) g \<otimes>\<^bsub>UP R\<^esub> pderiv g \<Longrightarrow>
            pderiv (Cring_Poly.compose R (p \<oplus>\<^bsub>P\<^esub> q) g) = Cring_Poly.compose R (pderiv (p \<oplus>\<^bsub>P\<^esub> q)) g \<otimes>\<^bsub>UP R\<^esub> pderiv g"
   using pderiv_add sub_add 
-  by (smt P_def UP_a_closed UP_m_comm UP_r_distr assms(2) pderiv_closed sub_closed)
+  by (smt (verit) P_def UP_a_closed UP_m_comm UP_r_distr assms(2) pderiv_closed sub_closed)
   show "\<And>a n. a \<in> carrier R \<Longrightarrow>
            pderiv (compose R (up_ring.monom P a n) g) = compose R (pderiv (up_ring.monom P a n)) g \<otimes>\<^bsub>UP R\<^esub> pderiv g"
   proof-
@@ -4866,7 +4854,7 @@ proof(rule poly_induct3[of f])
       have 4: "pderiv (compose R (up_ring.monom P a (Suc n)) g ) = 
                     ((compose R (pderiv (up_ring.monom P a n)) g  \<otimes>\<^bsub>P\<^esub> g) \<otimes>\<^bsub>UP R\<^esub> pderiv g) \<oplus>\<^bsub>P\<^esub> ((compose R (up_ring.monom P a n) g) \<otimes>\<^bsub>P\<^esub> pderiv g)"
         unfolding 3 using A assms m_assoc m_comm 
-        by (smt P_def monom_closed monom_rep_X_pow pderiv_closed sub_closed)
+        by (smt (verit) P_def monom_closed monom_rep_X_pow pderiv_closed sub_closed)
       have 5: "pderiv (compose R (up_ring.monom P a (Suc n)) g ) = 
                     ((compose R (pderiv (up_ring.monom P a n)) g  \<otimes>\<^bsub>P\<^esub> g) \<oplus>\<^bsub>P\<^esub> (compose R (up_ring.monom P a n) g)) \<otimes>\<^bsub>P\<^esub> pderiv g"
         unfolding 4 using A assms 
@@ -4966,7 +4954,7 @@ proof(rule poly_induct3[of q])
                 = a \<otimes> deriv (monom P c m) b "
         using deriv_const to_fun_monom A True assms(1) assms(2) deriv_closed by auto
       show ?thesis using A assms  LHS RHS deriv_monom 
-        by (smt R.add.nat_pow_closed R.add_pow_rdistr R.m_assoc R.m_closed R.nat_pow_closed)
+        by (smt (verit) R.add.nat_pow_closed R.add_pow_rdistr R.m_assoc R.m_closed R.nat_pow_closed)
     next
       case False
       show ?thesis 
@@ -4980,7 +4968,7 @@ proof(rule poly_induct3[of q])
               R.r_zero True UP_cring.to_fun_ctrm UP_cring_axioms assms(1) assms(2) deg_const 
               deriv_closed deriv_const to_fun_closed monom_closed)
         show ?thesis using LHS RHS deriv_monom A assms 
-          by (smt R.add.nat_pow_closed R.add_pow_ldistr R.m_assoc R.m_closed R.m_comm R.nat_pow_closed)
+          by (smt (verit) R.add.nat_pow_closed R.add_pow_ldistr R.m_assoc R.m_closed R.m_comm R.nat_pow_closed)
       next
         case F: False
         have pos: "n > 0" "m >0"
@@ -5220,8 +5208,7 @@ proof(rule  poly_induct3[of f])
            "pderiv (Cring_Poly.compose R q (up_ring.monom (UP R) d 1)) = d \<odot>\<^bsub>UP R\<^esub> Cring_Poly.compose R (pderiv q) (up_ring.monom (UP R) d 1)"
     show " pderiv (Cring_Poly.compose R (p \<oplus>\<^bsub>P\<^esub> q) (up_ring.monom (UP R) d 1)) =
            d \<odot>\<^bsub>UP R\<^esub> Cring_Poly.compose R (pderiv (p \<oplus>\<^bsub>P\<^esub> q)) (up_ring.monom (UP R) d 1)"
-      using A assms 
-      by (smt P_def UP_a_closed UP_r_distr monom_closed monom_mult_is_smult pderiv_add pderiv_closed rev_sub_add sub_closed sub_rev_sub)
+      using A assms P_def monom_closed pderiv_add pderiv_closed smult_r_distr sub_add sub_closed by force
   qed
   show "\<And>a n. a \<in> carrier R \<Longrightarrow>
            pderiv (Cring_Poly.compose R (up_ring.monom P a n) (up_ring.monom (UP R) d 1)) =
@@ -5264,7 +5251,7 @@ proof(rule  poly_induct3[of f])
       have F6: "d \<odot>\<^bsub>UP R\<^esub> (Cring_Poly.compose R (pderiv (up_ring.monom P a n)) (up_ring.monom (UP R) d 1)) = 
                 (d \<otimes> d[^](n-1) \<otimes>[n] \<cdot> a) \<odot>\<^bsub>UP R\<^esub> ((up_ring.monom (UP R) \<one> (n-1)))"
         unfolding F5 using False A  assms P_def  R.m_assoc R.m_closed R.m_comm R.nat_pow_closed monic_monom_smult monom_mult_smult
-        by (smt R.add.nat_pow_closed)        
+        by (smt (verit) R.add.nat_pow_closed)        
       have F7: "pderiv (Cring_Poly.compose R (up_ring.monom P a n) (up_ring.monom (UP R) d 1)) = (a \<otimes> ([n]\<cdot>\<^bsub>R\<^esub>(d[^]n)) \<odot>\<^bsub>UP R\<^esub> (up_ring.monom P \<one> (n-1)))"
         unfolding F0 using A assms  P_def  R.m_closed R.nat_pow_closed monic_monom_smult monom_mult_smult
         by simp
@@ -5304,7 +5291,7 @@ proof fix x
   show "Cring_Poly.compose R (Cring_Poly.compose R f (up_ring.monom (UP R) d 1)) (up_ring.monom (UP R) (inv d) 1) x = f x "
     unfolding 0 using linear_sub_cfs[of f d "Cring_Poly.compose R f (up_ring.monom (UP R) d 1)" x]
       assms 
-  by (smt R.Units_closed R.Units_inv_closed R.Units_l_inv R.m_assoc R.m_comm R.nat_pow_closed R.nat_pow_distrib R.nat_pow_one R.r_one UP_car_memE(1))
+  by (smt (verit) R.Units_closed R.Units_inv_closed R.Units_l_inv R.m_assoc R.m_comm R.nat_pow_closed R.nat_pow_distrib R.nat_pow_one R.r_one UP_car_memE(1))
 qed
 
 lemma(in UP_cring) linear_sub_deg: 
@@ -5527,12 +5514,10 @@ proof(rule poly_induct5[of f])
       by (simp add: R.add.m_assoc R.minus_eq to_fun_plus)
     hence "to_fun (p \<oplus>\<^bsub>P\<^esub>q) a \<ominus> to_fun (p \<oplus>\<^bsub>P\<^esub> q) b = to_fun p a \<ominus> to_fun p b \<oplus> to_fun q a \<ominus> to_fun q b"
       using 0 A assms R.ring_simprules  to_fun_closed a_assoc a_comm 
-      unfolding a_minus_def 
-      by smt
+      unfolding a_minus_def by (smt (verit, del_insts))
     hence "to_fun (p \<oplus>\<^bsub>P\<^esub>q) a \<ominus> to_fun (p \<oplus>\<^bsub>P\<^esub> q) b = to_fun p a \<ominus> to_fun p b \<oplus> (to_fun q a \<ominus> to_fun q b)"
       using 0 A assms R.ring_simprules  to_fun_closed 
-      unfolding a_minus_def 
-      by metis 
+      unfolding a_minus_def by metis 
     hence "to_fun (p \<oplus>\<^bsub>P\<^esub>q) a \<ominus> to_fun (p \<oplus>\<^bsub>P\<^esub> q) b = (a \<ominus> b)\<otimes>(c \<oplus> c')"
       using 0 A c_def c'_def  
       by simp
@@ -5550,8 +5535,8 @@ proof(rule poly_induct5[of f])
       by blast 
     have "to_fun (c \<odot>\<^bsub>P\<^esub> p) a \<ominus> to_fun (c \<odot>\<^bsub>P\<^esub> p) b = c \<otimes> (to_fun p a \<ominus> to_fun p b)"
       using A d_def assms to_fun_smult[of p a c] to_fun_smult[of p b c] 
-            to_fun_closed[of p a] to_fun_closed[of p b]  R.ring_simprules 
-      by smt
+            to_fun_closed[of p a] to_fun_closed[of p b]  R.ring_simprules
+      by presburger
     hence "c\<otimes>d \<in> carrier R \<and> to_fun (c \<odot>\<^bsub>P\<^esub> p) a \<ominus> to_fun (c \<odot>\<^bsub>P\<^esub> p) b = (a \<ominus> b) \<otimes> (c \<otimes>d)"
       by (simp add: A(1) R.m_lcomm assms(1) assms(2) d_def)
     thus "\<exists>e. e \<in> carrier R \<and> to_fun (c \<odot>\<^bsub>P\<^esub> p) a \<ominus> to_fun (c \<odot>\<^bsub>P\<^esub> p) b = (a \<ominus> b) \<otimes> e" 
@@ -5919,7 +5904,7 @@ lemma(in UP_cring) poly_lift_hom_X_var''':
   assumes "\<phi> \<in> ring_hom R S"
   shows "poly_lift_hom R S \<phi> (X_poly R [^]\<^bsub>UP R\<^esub> (n::nat)) = (X_poly S) [^]\<^bsub>UP S\<^esub> (n::nat)"
   using assms 
-  by (smt ltrm_of_X P.nat_pow_closed P_def R.ring_axioms UP_cring.to_fun_closed UP_cring.intro
+  by (smt (verit) ltrm_of_X P.nat_pow_closed P_def R.ring_axioms UP_cring.to_fun_closed UP_cring.intro
       UP_cring.monom_pow UP_cring.poly_lift_hom_monom UP_cring_axioms X_closed cfs_closed 
       cring.axioms(1) to_fun_X_pow poly_lift_hom_X_var' ring_hom_closed ring_hom_nat_pow)  
 

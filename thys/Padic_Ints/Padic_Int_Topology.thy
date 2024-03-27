@@ -906,21 +906,16 @@ proof(rule is_Zp_cauchyI)
   fix n
   show "\<exists>N. \<forall>n0 n1. N < n0 \<and> N < n1 \<longrightarrow> alt_seq s n0 n = alt_seq s n1 n "
   proof-
-    obtain N where N_def: " \<forall>n0 n1. N < n0 \<and> N < n1 \<longrightarrow> s n0 n =  s n1 n "
-      using assms is_Zp_cauchy_imp_res_eventually_const_0
-            padic_integers_axioms 
+    obtain N where N: " \<forall>n0 n1. N < n0 \<and> N < n1 \<longrightarrow> s n0 n =  s n1 n "
+      using assms is_Zp_cauchy_imp_res_eventually_const_0 padic_integers_axioms 
       by blast
-    have "\<forall>n0 n1. N < n0 \<and> N < n1 \<longrightarrow> alt_seq s n0 n = alt_seq s n1 n "
-      apply auto 
-    proof-
-      fix n0 n1
-      assume A: "N < n0" "N < n1"
-      show "alt_seq s n0 n = alt_seq s n1 n"
-        using N_def 
-        unfolding alt_seq_def 
-        by (smt A(1) A(2) assms lessI max_less_iff_conj 
-            res_lim_Zp_cauchy padic_integers_axioms)
-    qed
+    have "alt_seq s n0 n = alt_seq s n1 n"
+      if "N < n0" "N < n1" for n0 n1
+      using N apply (auto simp: alt_seq_def)
+      using that apply blast
+       apply (metis that(1) assms gt_ex linorder_not_less order_less_le_trans order_less_trans res_lim_Zp_cauchy)
+      apply (metis that(2) assms gt_ex linorder_neqE_nat order_less_trans res_lim_Zp_cauchy)
+      done
     then show ?thesis 
       by blast
   qed

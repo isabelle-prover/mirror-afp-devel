@@ -239,7 +239,7 @@ next
       by (simp add: a_minus_def residue_add_assoc)
     then have 0: "(x \<ominus>\<^bsub>Zp_res_ring k\<^esub> y) \<oplus>\<^bsub>Zp_res_ring k\<^esub> y = x mod p^k"
       using assms False 
-      by (smt cring.cring_simprules(9) prime residue_add residues.cring residues.res_zero_eq residues_n)
+      by (smt (verit) cring.cring_simprules(9) prime residue_add residues.cring residues.res_zero_eq residues_n)
     have 1: "x mod p ^ k = ((x - y) mod p ^ k + y) mod p ^ k"
     proof -
       have f1: "x - y = x + - 1 * y"
@@ -901,7 +901,7 @@ proof-
     using assms 
     by (simp add: \<open>nat n + nat m = nat (n + m)\<close>)
   then show ?thesis   using assms p_natpow_prod[of "nat n" "nat m"]
-    by (smt pow_nat)
+    by (smt (verit) pow_nat)
 qed
  
 lemma(in padic_integers) p_natpow_prod_Suc:
@@ -1341,7 +1341,7 @@ lemma(in padic_integers) ord_Zp_not_equal_ord_plus_minus:
   using assms 
   apply (simp add: ord_Zp_ultrametric_eq ord_Zp_ultrametric_eq')
   using assms nonzero_memI
-  by (smt add_comm ord_Zp_ultrametric_eq ord_Zp_ultrametric_eq'')
+  by (smt (verit) add_comm ord_Zp_ultrametric_eq ord_Zp_ultrametric_eq'')
 
 text\<open>val is multiplicative on nonzero elements\<close>
 
@@ -1582,7 +1582,7 @@ proof-
   have 1:  "\<And>m. m > 0 \<Longrightarrow> inv\<^bsub>Zp_res_ring m\<^esub> (x m) \<in> carrier (Zp_res_ring m)"
   proof- fix m::nat  assume A: "m > 0" then show "inv\<^bsub>Zp_res_ring m\<^esub> (x m) \<in> carrier (Zp_res_ring m)"
     using assms val_Zp0_imp_unit0' monoid.Units_inv_closed[of "Zp_res_ring m" "x m"] 
-    by (smt One_nat_def Zp_def Zp_defs(2) cring.axioms(1) of_nat_0 ord_Zp_def 
+    by (smt (verit) One_nat_def Zp_def Zp_defs(2) cring.axioms(1) of_nat_0 ord_Zp_def 
         padic_integers.R_cring padic_integers.ord_suc_nonzero padic_integers.val_Zp_0_criterion padic_integers_axioms padic_val_def ring_def)    
   qed
   have 2: "y \<in> padic_set p"
@@ -2360,7 +2360,7 @@ proof-
     by blast 
   have 1: "n = l*(p^k) \<and> \<not> p dvd l "
     using 0 l_def 
-    by (smt assms int_dvd_int_iff int_nat_eq of_nat_mult of_nat_power prime prime_gt_0_int)
+    by (smt (verit) assms int_dvd_int_iff int_nat_eq of_nat_mult of_nat_power prime prime_gt_0_int)
   show ?thesis 
     apply(cases "l = 1") 
     using 1 p_pow_nonzero(2) p_pow_rep0 apply auto[1]
@@ -2414,7 +2414,7 @@ proof-
     by (simp add: residue_of_diff)
   have 1: "(a \<ominus> b) k = 0"
     using assms zero_below_val 
-    by (smt R.minus_closed Zp_def eint_ord_simps(2) padic_integers.p_res_ring_zero 
+    by (smt (verit) R.minus_closed Zp_def eint_ord_simps(2) padic_integers.p_res_ring_zero 
         padic_integers.residue_of_zero(1) padic_integers.val_ord_Zp padic_integers.zero_below_ord padic_integers_axioms)    
   show ?thesis
     apply(cases "k = 0")
