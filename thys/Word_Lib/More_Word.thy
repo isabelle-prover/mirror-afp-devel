@@ -826,7 +826,7 @@ lemma word_2p_mult_inc:
   assumes x: "2 * 2 ^ n < (2::'a::len word) * 2 ^ m"
   assumes suc_n: "Suc n < LENGTH('a::len)"
   shows "2^n < (2::'a::len word)^m"
-  by (smt suc_n le_less_trans lessI nat_less_le nat_mult_less_cancel_disj p2_gt_0
+  by (smt (verit) suc_n le_less_trans lessI nat_less_le nat_mult_less_cancel_disj p2_gt_0
           power_Suc power_Suc unat_power_lower word_less_nat_alt x)
 
 lemma power_overflow:
@@ -2410,7 +2410,7 @@ lemma eq_ucast_ucast_eq:
 lemma le_ucast_ucast_le:
   "x \<le> ucast y \<Longrightarrow> ucast x \<le> y"
   for x :: "'a::len word" and y :: "'b::len word"
-  by (smt le_unat_uoi linorder_not_less order_less_imp_le ucast_nat_def unat_arith_simps(1))
+  by (smt (verit) le_unat_uoi linorder_not_less order_less_imp_le ucast_nat_def unat_arith_simps(1))
 
 lemma less_ucast_ucast_less:
   "LENGTH('b) \<le> LENGTH('a) \<Longrightarrow> x < ucast y \<Longrightarrow> ucast x < y"

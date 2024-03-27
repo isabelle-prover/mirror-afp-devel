@@ -2211,7 +2211,7 @@ text\<open>Like @{thm shiftr_bl}\<close>
 lemma sshiftr_bl: "x >>> n \<equiv> of_bl (replicate n (msb x) @ take (LENGTH('a) - n) (to_bl x))"
   for x :: "'a::len word"
   unfolding word_msb_alt
-  by (smt (z3) length_to_bl_eq sshiftr_bl_of word_bl.Rep_inverse)
+  by (smt (verit) length_to_bl_eq sshiftr_bl_of word_bl.Rep_inverse)
 
 end
 
