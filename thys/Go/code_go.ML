@@ -732,9 +732,9 @@ val serializer : Code_Target.serializer =
 val _ = Theory.setup
   (Code_Target.add_language
     (target, { serializer = serializer, literals = literals,
-      check = { env_var = "ISABELLE_GO",
+      check = { env_var = "ISABELLE_GOEXE",
         make_destination = fn p => p + Path.explode "export.go",
-        make_command = fn p => "test -d export.go && cd export.go && $ISABELLE_GO build ./"^p^" || $ISABELLE_GO build ./export.go"},
+        make_command = fn p => "test -d export.go && cd export.go && isabelle go build ./"^p^" || isabelle go build ./export.go"},
       evaluation_args = []})
   #> Code_Target.set_printings (Type_Constructor ("fun",
     [(target, SOME (2, fn print_go_typ => fn fxy => fn [arg, rtyp] => let
