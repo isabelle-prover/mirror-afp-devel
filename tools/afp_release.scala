@@ -51,7 +51,7 @@ object AFP_Release {
 
     val afp_structure = AFP_Structure(base_dir)
 
-    val releases = afp_structure.load().values.toList.map(add_release).flatMap(_.releases)
+    val releases = afp_structure.load_entries().values.toList.map(add_release).flatMap(_.releases)
 
     afp_structure.save_releases(releases)
   }

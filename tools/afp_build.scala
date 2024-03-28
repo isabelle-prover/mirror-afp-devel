@@ -87,7 +87,7 @@ Last 50 lines from stderr (if available):
 
   object Metadata_Tools {
     def load(afp: AFP_Structure, options: Options): Metadata_Tools =
-      new Metadata_Tools(afp, CI_Build.mail_server(options), afp.load())
+      new Metadata_Tools(afp, CI_Build.mail_server(options), afp.load_entries())
   }
 
 

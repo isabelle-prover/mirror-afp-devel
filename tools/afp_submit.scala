@@ -194,7 +194,7 @@ object AFP_Submit {
       val topics = afp_structure.load_topics
       val licenses = afp_structure.load_licenses
       val releases = afp_structure.load_releases
-      val dates = afp_structure.load().view.mapValues(_.date).toMap
+      val dates = afp_structure.load_entries().view.mapValues(_.date).toMap
 
       def create(
         date: Date,

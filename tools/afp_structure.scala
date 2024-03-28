@@ -60,13 +60,13 @@ class AFP_Structure private(val base_dir: Path, options: Options) {
       Metadata.TOML.to_entry(name, toml, authors, topics, licenses, entry_releases))
   }
 
-  def load(): Metadata.Entries = {
-    val authors = load_authors
-    val topics = load_topics
-    val licenses = load_licenses
-    val releases = load_releases
+  def load_entries(
+    authors: Metadata.Authors = load_authors,
+    topics: Metadata.Topics = load_topics,
+    licenses: Metadata.Licenses = load_licenses,
+    releases: Metadata.Releases = load_releases
+  ): Metadata.Entries =
     Metadata.Entries(entries.map(name => load_entry(name, authors, topics, licenses, releases)))
-  }
 
 
   /* save */
