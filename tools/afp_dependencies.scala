@@ -7,11 +7,12 @@ package afp
 
 import isabelle._
 
-import Metadata.Entry
-
 
 object AFP_Dependencies {
-  case class Dependency(entry: Entry.Name,  distrib_deps: List[Entry.Name], afp_deps: List[Entry.Name])
+  case class Dependency(
+    entry: Metadata.Entry.Name,
+    distrib_deps: List[Metadata.Entry.Name],
+    afp_deps: List[Metadata.Entry.Name])
 
   object JSON {
     private def from_dep(dependency: Dependency): (String, isabelle.JSON.T) =

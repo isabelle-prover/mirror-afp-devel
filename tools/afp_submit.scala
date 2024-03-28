@@ -16,9 +16,6 @@ import afp.Metadata.{Affiliation, Author, Authors, DOI, Email, Entry, Formatted,
 import java.text.Normalizer
 import java.time.LocalDate
 
-import scala.collection.immutable.{ListMap, StringView}
-import scala.util.matching.Regex
-
 
 object AFP_Submit {
 

@@ -7,7 +7,6 @@ package afp
 
 import isabelle.*
 
-
 import scala.annotation.tailrec
 
 

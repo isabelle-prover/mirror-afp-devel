@@ -7,7 +7,7 @@ package afp
 
 import isabelle.*
 
-import afp.Metadata.{Author, DOI, Email, Homepage, TOML, Topic}
+import afp.Metadata.TOML
 import isabelle.TOML.{parse, Format, Key, Table}
 
 
@@ -100,13 +100,13 @@ object AFP_Check_Metadata {
     val all_affils = entries.flatMap(entry => entry.authors ++ entry.contributors ++ entry.notifies)
     warn_unused("authors", authors.keySet diff all_affils.map(_.author).toSet)
 
-    def author_affil_id(author: Author.ID, affil: String): String = author + " " + affil
+    def author_affil_id(author: Metadata.Author.ID, affil: String): String = author + " " + affil
 
     val affils = authors.values.flatMap(author =>
       (author.emails.map(_.id) ++ author.homepages.map(_.id)).map(author_affil_id(author.id, _)))
     val used_affils = all_affils.collect {
-      case Email(author, id, _) => author_affil_id(author, id)
-      case Homepage(author, id, _) => author_affil_id(author, id)
+      case Metadata.Email(author, id, _) => author_affil_id(author, id)
+      case Metadata.Homepage(author, id, _) => author_affil_id(author, id)
     }
     warn_unused("affiliations", affils.toSet diff used_affils.toSet)
     val leaf_topics = topics.values.filter(_.sub_topics.isEmpty).map(_.id)
@@ -151,7 +151,7 @@ object AFP_Check_Metadata {
 
     if (slow) {
       progress.echo_if(verbose, "Checking DOIs...")
-      entries.flatMap(entry => entry.related).collect { case d: DOI => d.formatted() }
+      entries.flatMap(entry => entry.related).collect { case d: Metadata.DOI => d.formatted() }
     }
 
     progress.echo_if(verbose, "Checked " + authors.size + " authors with " + affils.size +

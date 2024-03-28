@@ -7,7 +7,7 @@ package afp
 
 import isabelle.*
 
-import java.io.{BufferedReader, InputStreamReader, IOException}
+import java.io.IOException
 
 import scala.collection.immutable.ListMap
 
