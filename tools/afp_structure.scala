@@ -103,7 +103,7 @@ class AFP_Structure private(val base_dir: Path, options: Options) {
   }
 
   def entries: List[Metadata.Entry.Name] = {
-    val session_entries = Sessions.parse_roots(thys_dir + Path.basic("ROOTS"))
+    val session_entries = Sessions.parse_roots(thys_dir + Sessions.ROOTS)
 
     val session_set = session_entries.toSet
     val metadata_set = entries_unchecked.toSet
@@ -124,7 +124,7 @@ class AFP_Structure private(val base_dir: Path, options: Options) {
     Sessions.load_structure(options, select_dirs = List(thys_dir))
 
   def entry_sessions(name: Metadata.Entry.Name): List[Sessions.Session_Entry] =
-    Sessions.parse_root(thys_dir + Path.make(List(name, "ROOT"))).collect { case e: Sessions.Session_Entry => e }
+    Sessions.parse_root_entries(thys_dir + Path.basic(name) + Sessions.ROOT)
 
   def hg_id: String = Mercurial.repository(base_dir).id()
 }
