@@ -143,10 +143,10 @@ object AFP_Submit {
     case class Submission(
       id: Handler.ID,
       meta: Metadata,
-      message: String,
       build: Build.Value,
       status: Option[Status.Value],
-      log: String) extends T
+      message: String = "",
+      log: String = "") extends T
     case class Submission_List(submissions: List[Overview]) extends T
   }
 
@@ -154,15 +154,15 @@ object AFP_Submit {
   /* Physical submission handling */
 
   trait Handler {
-    def create(
-      date: Date,
-      meta: Model.Metadata,
-      message: String,
-      archive: Bytes,
-      ext: String
-    ): Handler.ID
-    def list(): Model.Submission_List
-    def get(id: Handler.ID, topics: Topics, licenses: Licenses): Option[Model.Submission]
+    def save(
+      state: State,
+      metadata: Model.Metadata,
+      message: String = "",
+      archive: Bytes = Bytes.empty,
+      file_extension: String = ""
+    ): (Handler.ID, State)
+    def list(state: State): Model.Submission_List
+    def get(id: Handler.ID, state: State): Option[Model.Submission]
     def submit(id: Handler.ID): Unit
     def set_status(id: Handler.ID, status: Model.Status.Value): Unit
     def abort_build(id: Handler.ID): Unit
@@ -189,53 +189,40 @@ object AFP_Submit {
     /* Handler for local edits */
 
     class Edit(afp: AFP_Structure) extends Handler {
-      val authors = afp.load_authors
-      val topics = afp.load_topics
-      val licenses = afp.load_licenses
-      val releases = afp.load_releases
-      val dates = afp.load_entries().view.mapValues(_.date).toMap
-
-      def create(
-        date: Date,
-        meta: Model.Metadata,
+      def save(
+        state: State,
+        metadata: Model.Metadata,
         message: String,
         archive: Bytes,
         ext: String
-      ): ID = {
+      ): (ID, State) = {
         val entry =
-          meta.entries match {
+          metadata.entries match {
             case e :: Nil => e
             case _ => isabelle.error("Must be a single entry")
           }
 
-        val old = afp.load_entry(entry.name, authors, topics, licenses, releases)
+        val old = state.entries(entry.name)
         val updated =
-          old.copy(
-            title = entry.title,
-            authors = entry.authors,
-            topics = entry.topics,
-            `abstract` = entry.`abstract`,
-            notifies = entry.notifies,
-            license = entry.license,
+          old.copy(title = entry.title, authors = entry.authors, topics = entry.topics,
+            `abstract` = entry.`abstract`, notifies = entry.notifies, license = entry.license,
             related = entry.related)
 
         afp.save_entry(updated)
-        // TODO what happens to the authors
+        afp.save_authors(metadata.authors.values.toList)
 
-        entry.name
+        (entry.name, State.load(afp))
       }
 
-      def list(): Model.Submission_List =
-        Model.Submission_List(afp.entries.sortBy(dates.get).reverse.map { entry =>
-          Model.Overview(entry, dates(entry), entry, Model.Status.Added)
+      def list(state: State): Model.Submission_List =
+        Model.Submission_List(state.entries.values.toList.sortBy(_.date).reverse.map { entry =>
+          Model.Overview(entry.name, entry.date, entry.name, Model.Status.Added)
         })
 
-      def get(id: ID, topics: Topics, licenses: Licenses): Option[Model.Submission] =
-        if (!afp.entries.contains(id)) None
-        else {
-          val entry = afp.load_entry(id, authors, topics, licenses, releases)
-          val meta = Model.Metadata(authors, List(entry))
-          Some(Model.Submission(id, meta, "", Model.Build.Success, Some(Model.Status.Added), ""))
+      def get(id: ID, state: State): Option[Model.Submission] =
+        state.entries.get(id).map { entry =>
+          val meta = Model.Metadata(state.authors, List(entry))
+          Model.Submission(id, meta, Model.Build.Success, Some(Model.Status.Added))
         }
 
       def submit(id: ID): Unit = ()
@@ -292,43 +279,41 @@ object AFP_Submit {
         split_lines(patch).filterNot(_.startsWith("Only in")).mkString("\n")
       }
 
-      def create(
-        date: Date,
-        meta: Model.Metadata,
+      def save(
+        state: State,
+        metadata: Model.Metadata,
         message: String,
         archive: Bytes,
-        ext: String
-      ): ID = {
-        val id = ID(date)
+        file_extension: String
+      ): (ID, State) = {
+        val id = ID(Date.now())
         val dir = up(id)
         dir.file.mkdirs()
 
         val structure = AFP_Structure(dir)
-        structure.save_authors(meta.authors.values.toList.sortBy(_.id))
-        meta.entries.foreach(structure.save_entry)
+        structure.save_authors(metadata.authors.values.toList.sortBy(_.id))
+        metadata.entries.foreach(structure.save_entry)
 
-        val archive_file = dir + Path.basic(archive_name + ext)
+        val archive_file = dir + Path.basic(archive_name + file_extension)
         Bytes.write(archive_file, archive)
 
         val metadata_rel =
-          File.relative_path(afp.base_dir, afp.metadata_dir).getOrElse(
-            afp.metadata_dir)
-        val metadata_patch =
-          make_partial_patch(afp.base_dir, metadata_rel, structure.metadata_dir)
+          File.relative_path(afp.base_dir, afp.metadata_dir).getOrElse(afp.metadata_dir)
+        val metadata_patch = make_partial_patch(afp.base_dir, metadata_rel, structure.metadata_dir)
         File.write(patch_file(id), metadata_patch)
 
         val info =
           JSON.Format(JSON.Object(
             "comment" -> message,
-            "entries" -> meta.entries.map(_.name),
-            "notify" -> meta.entries.flatMap(_.notifies).map(_.address).distinct))
+            "entries" -> metadata.entries.map(_.name),
+            "notify" -> metadata.entries.flatMap(_.notifies).map(_.address).distinct))
         File.write(info_file(id), info)
 
         signal(id, "done")
-        id
+        (id, state)
       }
 
-      def list(): Model.Submission_List =
+      def list(state: State): Model.Submission_List =
         Model.Submission_List(
           File.read_dir(up).flatMap(ID.unapply).reverse.flatMap { date =>
             val id = ID(date)
@@ -337,12 +322,12 @@ object AFP_Submit {
               Model.Overview(id, day, AFP_Structure(up(id)).entries_unchecked.head, _))
           })
 
-      def get(id: ID, topics: Topics, licenses: Licenses): Option[Model.Submission] =
+      def get(id: ID, state: State): Option[Model.Submission] =
         ID.check(id).filter(up(_).file.exists).map { id =>
           val structure = AFP_Structure(up(id))
           val authors = structure.load_authors
           val entries = structure.entries_unchecked.map(
-            structure.load_entry(_, authors, topics, licenses, Releases.empty))
+            structure.load_entry(_, authors, state.topics, state.licenses, state.releases))
 
           val log_file = down(id) + Path.basic("isabelle.log")
           val log = if (log_file.file.exists) File.read(log_file) else ""
@@ -351,7 +336,7 @@ object AFP_Submit {
             case JSON.Object(m) if m.contains("comment") =>
               val comment = m("comment").toString
               val meta = Model.Metadata(authors, entries)
-              Model.Submission(id, meta, comment, read_build(id), read_status(id), log)
+              Model.Submission(id, meta, read_build(id), read_status(id), comment, log)
             case _ => isabelle.error("Could not read info")
           }
         }
@@ -1435,9 +1420,11 @@ object AFP_Submit {
       upload(params) match {
         case Some(upload: Model.Upload) =>
           mode match {
-            case Mode.EDIT =>
-              handler.create(Date.now(), upload.meta, upload.message, Bytes.empty, "")
-              Some(Model.Created(upload.meta.entries.head.name))
+            case Mode.EDIT => synchronized {
+              val (id, state) = handler.save(_state, upload.meta)
+              _state = state
+              handler.get(id, _state)
+            }
             case Mode.SUBMISSION =>
               val archive = Bytes.decode_base64(params.get(ARCHIVE).get(FILE).value)
               val file_name = params.get(ARCHIVE).value
@@ -1448,8 +1435,12 @@ object AFP_Submit {
                 Some(upload.copy(error = "Only .zip and .tar.gz archives allowed"))
               } else {
                 val ext = if (file_name.endsWith(".zip")) ".zip" else ".tar.gz"
-                val id = handler.create(Date.now(), upload.meta, upload.message, archive, ext)
-                Some(Model.Created(id))
+
+                synchronized {
+                  val (id, state) = handler.save(_state, upload.meta, upload.message, archive, ext)
+                  _state = state
+                  Some(Model.Created(id))
+                }
               }
           }
         case _ => None
@@ -1461,14 +1452,14 @@ object AFP_Submit {
         Val.ok(List(Model.Create_Entry(license = _state.licenses.head._2)))))
 
     def get_submission(props: Properties.T): Option[Model.Submission] =
-      Properties.get(props, ID).flatMap(handler.get(_, _state.topics, _state.licenses))
+      Properties.get(props, ID).flatMap(handler.get(_, _state))
 
     def resubmit(params: Params.Data): Option[Model.T] =
-      handler.get(params.get(ACTION).value, _state.topics, _state.licenses).map(submission =>
+      handler.get(params.get(ACTION).value, _state).map(submission =>
         Model.Upload(submission.meta, submission.message))
 
     def submit(params: Params.Data): Option[Model.T] =
-      handler.get(params.get(ACTION).value, _state.topics, _state.licenses).flatMap { submission =>
+      handler.get(params.get(ACTION).value, _state).flatMap { submission =>
         if (submission.status.nonEmpty) None
         else {
           handler.submit(submission.id)
@@ -1477,7 +1468,7 @@ object AFP_Submit {
       }
 
     def abort_build(params: Params.Data): Option[Model.T] =
-      handler.get(params.get(ACTION).value, _state.topics, _state.licenses).flatMap { submission =>
+      handler.get(params.get(ACTION).value, _state).flatMap { submission =>
         if (submission.build != Model.Build.Running) None
         else {
           handler.abort_build(submission.id)
@@ -1509,7 +1500,7 @@ object AFP_Submit {
       }
     }
 
-    def submission_list: Option[Model.T] = Some(handler.list())
+    def submission_list: Option[Model.T] = Some(handler.list(_state))
 
     def download(props: Properties.T): Option[Path] =
       for {
