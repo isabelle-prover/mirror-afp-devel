@@ -10,7 +10,7 @@ theory Distributed_Distinct_Elements_Cutoff_Level
     Distributed_Distinct_Elements_Tail_Bounds
 begin
 
-hide_const Quantum.Z
+hide_const (open) Quantum.Z
 
 unbundle intro_cong_syntax
 
