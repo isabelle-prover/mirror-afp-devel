@@ -62,7 +62,7 @@ object AFP_Check_Roots {
         (structure, sessions, _) =>
           sessions.flatMap { session_name =>
             val info = structure(session_name)
-            if (!info.groups.toSet.subsetOf(AFP.groups.keySet + "AFP") ||
+            if (!info.groups.toSet.subsetOf(Sessions.afp_groups) ||
               !info.groups.contains("AFP"))
               Some((session_name, info.groups))
             else None
