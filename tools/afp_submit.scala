@@ -11,7 +11,7 @@ import isabelle.HTML.*
 import afp.Web_App.{ACTION, API, FILE, Params}
 import afp.Web_App.Params.{List_Key, Nest_Key, empty}
 import afp.Web_App.More_HTML.*
-import afp.Metadata.{Affiliation, Author, Authors, DOI, Email, Entry, Formatted, Homepage, License, Licenses, Orcid, Reference, Release, Releases, Topic, Topics, Unaffiliated}
+import afp.Metadata.{Affiliation, Author, Authors, DOI, Email, Entry, Entries, Formatted, Homepage, License, Licenses, Orcid, Reference, Release, Releases, Topic, Topics, Unaffiliated}
 
 import java.text.Normalizer
 import java.time.LocalDate
@@ -378,6 +378,25 @@ object AFP_Submit {
 
   /* server */
 
+  object State {
+    def load(afp: AFP_Structure): State = {
+      val authors = afp.load_authors
+      val topics = afp.load_topics
+      val licenses = afp.load_licenses
+      val releases = afp.load_releases
+      val entries = afp.load_entries(authors, topics, licenses, releases)
+      
+      State(authors, topics, licenses, releases, entries)
+    }
+  }
+
+  case class State(
+    authors: Authors,
+    topics: Topics,
+    licenses: Licenses,
+    releases: Releases,
+    entries: Entries)
+
   object Mode extends Enumeration {
     val EDIT, SUBMISSION = Value
   }
@@ -392,23 +411,9 @@ object AFP_Submit {
     progress: Progress,
     port: Int = 0
   ) extends Web_App.Server[Model.T](api, port, verbose, progress) {
+    private var _state: State = State.load(afp_structure)
+    
     val repo = Mercurial.the_repository(afp_structure.base_dir)
-
-    var authors: Authors = Authors.empty
-    var topics: Topics = Topics.empty
-    var licenses: Licenses = Licenses.empty
-    var releases: Releases = Releases.empty
-    var entries: Set[Entry.Name] = Set.empty
-
-    private def load(): Unit = synchronized {
-      authors = afp_structure.load_authors
-      topics = afp_structure.load_topics
-      licenses = afp_structure.load_licenses
-      releases = afp_structure.load_releases
-      entries = afp_structure.entries.toSet
-    }
-
-    load()
 
 
     /* endpoints */
@@ -530,7 +535,7 @@ object AFP_Submit {
     /* view */
 
     def render_create(model: Model.Create): XML.Body = {
-      val updated_authors = model.updated_authors(authors)
+      val updated_authors = model.updated_authors(_state.authors)
       val authors_list = updated_authors.values.toList.sortBy(_.id)
       val (entry_authors, other_authors) =
         updated_authors.values.toList.sortBy(_.id).partition(author =>
@@ -590,14 +595,14 @@ object AFP_Submit {
             indexed(entry.topics.v, key, TOPIC, render_topic) :::
             selection(Nest_Key(key, TOPIC),
               entry.topic_input.map(_.id),
-              topics.values.toList.map(topic => option(topic.id, topic.id))) ::
+              _state.topics.values.toList.map(topic => option(topic.id, topic.id))) ::
             action_button(api.api_url(API_SUBMISSION_ENTRY_TOPICS_ADD), "add", key) ::
             render_error("", entry.topics)) ::
           par(List(
             fieldlabel(Nest_Key(key, LICENSE), "License"),
             radio(Nest_Key(key, LICENSE),
               entry.license.id,
-              licenses.values.toList.map(license => license.id -> license.name)),
+              _state.licenses.values.toList.map(license => license.id -> license.name)),
             explanation(Nest_Key(key, LICENSE),
               "Note: For LGPL submissions, please include the header \"License: LGPL\" in each file"))) ::
           par(
@@ -778,8 +783,8 @@ object AFP_Submit {
           hidden(Nest_Key(key, AFFILIATION), affil_address(affil))))
 
       indexed(meta.entries, Params.empty, ENTRY, render_entry) :::
-        indexed(meta.new_authors(authors).toList, Params.empty, AUTHOR, render_new_author) :::
-        indexed(meta.new_affils(authors).toList, Params.empty, AFFILIATION, render_new_affil)
+        indexed(meta.new_authors(_state.authors).toList, Params.empty, AUTHOR, render_new_author) :::
+        indexed(meta.new_affils(_state.authors).toList, Params.empty, AFFILIATION, render_new_affil)
     }
 
     def render_submission(submission: Model.Submission): XML.Body = {
@@ -924,7 +929,7 @@ object AFP_Submit {
     def validate_topic(id: String, selected: List[Topic]): Val_Opt[Topic] =
       if (id.isEmpty) Val_Opt.user_err("Select topic first")
       else {
-        topics.values.find(_.id == id) match {
+        _state.topics.values.find(_.id == id) match {
           case Some(topic) =>
             if (selected.contains(topic)) Val_Opt.user_err("Topic already selected")
             else Val_Opt.ok(topic)
@@ -1054,7 +1059,7 @@ object AFP_Submit {
             fold(entry.list(RELATED), List.empty[Reference]) {
               case (related, references) => parse_related(related, references).map(references :+ _)
             }
-          license <- licenses.get(entry.get(LICENSE).value)
+          license <- _state.licenses.get(entry.get(LICENSE).value)
         } yield Model.Create_Entry(
           name = Val.ok(entry.get(NAME).value),
           title = Val.ok(entry.get(TITLE).value),
@@ -1072,7 +1077,7 @@ object AFP_Submit {
 
       for {
         (new_author_ids, all_authors) <-
-          fold(params.list(AUTHOR), (List.empty[Author.ID], authors)) {
+          fold(params.list(AUTHOR), (List.empty[Author.ID], _state.authors)) {
             case (author, (new_authors, authors)) =>
               parse_new_author(author, authors).map(author =>
                 (new_authors :+ author.id, authors.updated(author.id, author)))
@@ -1127,7 +1132,8 @@ object AFP_Submit {
     /* control */
 
     def add_entry(params: Params.Data): Option[Model.T] = parse_create(params).map { model =>
-      model.copy(entries = Val.ok(model.entries.v :+ Model.Create_Entry(license = licenses.head._2)))
+      model.copy(entries =
+        Val.ok(model.entries.v :+ Model.Create_Entry(license = _state.licenses.head._2)))
     }
 
     def remove_entry(params: Params.Data): Option[Model.T] =
@@ -1271,7 +1277,7 @@ object AFP_Submit {
             case Prefix(prefix) => prefix
             case _ => ""
           }
-          val updated_authors = model.updated_authors(authors)
+          val updated_authors = model.updated_authors(_state.authors)
 
           var ident = suffix.toLowerCase
           for {
@@ -1285,7 +1291,7 @@ object AFP_Submit {
         val id = make_author_id(name)
 
         val author = validate_new_author(id, model.new_author_input, model.new_author_orcid,
-          model.updated_authors(authors))
+          model.updated_authors(_state.authors))
         val new_author_input = if (author.is_empty) model.new_author_input else ""
         val new_author_orcid = if (author.is_empty) model.new_author_orcid else ""
 
@@ -1357,10 +1363,10 @@ object AFP_Submit {
           "Invalid character in name")
         else mode match {
           case Mode.EDIT =>
-            if (Server.this.entries.contains(name)) Val.ok(name)
+            if (_state.entries.contains(name)) Val.ok(name)
             else Val.err(name, "Entry does not exist")
           case Mode.SUBMISSION =>
-            if (Server.this.entries.contains(name)) Val.err(name, "Entry already exists")
+            if (_state.entries.contains(name)) Val.err(name, "Entry already exists")
             else Val.ok(name)
         }
 
@@ -1413,7 +1419,7 @@ object AFP_Submit {
         new_affils = validate(new_affils, create.new_affils.v))
 
       if (ok) {
-        val (updated_authors, entries) = create.create(authors)
+        val (updated_authors, entries) = create.create(_state.authors)
         Model.Upload(Model.Metadata(updated_authors, entries), params.get(MESSAGE).value, "")
       } else validated
     }
@@ -1445,17 +1451,17 @@ object AFP_Submit {
 
     def empty_submission: Option[Model.T] =
       Some(Model.Create(entries =
-        Val.ok(List(Model.Create_Entry(license = licenses.head._2)))))
+        Val.ok(List(Model.Create_Entry(license = _state.licenses.head._2)))))
 
     def get_submission(props: Properties.T): Option[Model.Submission] =
-      Properties.get(props, ID).flatMap(handler.get(_, topics, licenses))
+      Properties.get(props, ID).flatMap(handler.get(_, _state.topics, _state.licenses))
 
     def resubmit(params: Params.Data): Option[Model.T] =
-      handler.get(params.get(ACTION).value, topics, licenses).map(submission =>
-        Model.Upload(submission.meta, submission.message, ""))
+      handler.get(params.get(ACTION).value, _state.topics, _state.licenses).map(submission =>
+        Model.Upload(submission.meta, submission.message))
 
     def submit(params: Params.Data): Option[Model.T] =
-      handler.get(params.get(ACTION).value, topics, licenses).flatMap { submission =>
+      handler.get(params.get(ACTION).value, _state.topics, _state.licenses).flatMap { submission =>
         if (submission.status.nonEmpty) None
         else {
           handler.submit(submission.id)
@@ -1464,7 +1470,7 @@ object AFP_Submit {
       }
 
     def abort_build(params: Params.Data): Option[Model.T] =
-      handler.get(params.get(ACTION).value, topics, licenses).flatMap { submission =>
+      handler.get(params.get(ACTION).value, _state.topics, _state.licenses).flatMap { submission =>
         if (submission.build != Model.Build.Running) None
         else {
           handler.abort_build(submission.id)
@@ -1480,13 +1486,15 @@ object AFP_Submit {
       } yield {
         if (changed.status == Model.Status.Added && !devel) {
           progress.echo_if(verbose, "Updating server data...")
-          val id_before = repo.id()
-          repo.pull()
-          repo.update()
-          val id_after = repo.id()
-          if (id_before != id_after) {
-            load()
-            progress.echo("Updated repo from " + id_before + " to " + id_after)
+          synchronized {
+            val id_before = repo.id()
+            repo.pull()
+            repo.update()
+            val id_after = repo.id()
+            if (id_before != id_after) {
+              _state = State.load(afp_structure)
+              progress.echo("Updated repo from " + id_before + " to " + id_after)
+            }
           }
         }
         handler.set_status(changed.id, changed.status)
