@@ -80,6 +80,9 @@ class AFP_Structure private(val base_dir: Path) {
   def save_topics(topics: List[Metadata.Topic]): Unit =
     save(topics_file, Metadata.TOML.from_topics(topics))
 
+  def save_licenses(licenses: List[Metadata.License]): Unit =
+    save(licenses_file, Metadata.TOML.from_licenses(licenses))
+
   def save_entry(entry: Metadata.Entry): Unit =
     save(entry_file(entry.name), Metadata.TOML.from_entry(entry))
 

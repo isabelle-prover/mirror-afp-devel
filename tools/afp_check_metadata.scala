@@ -19,12 +19,13 @@ object AFP_Check_Metadata {
     }
 
   def afp_check_metadata(
-    strict: Boolean,
-    reformat: Boolean,
-    slow: Boolean,
     afp_structure: AFP_Structure,
-    verbose: Boolean,
-    progress: Progress
+    strict: Boolean = false,
+    reformat: Boolean = false,
+    format_all: Boolean = false,
+    slow: Boolean = false,
+    verbose: Boolean = false,
+    progress: Progress = new Progress
   ): Unit = {
     def warn(msg: String): Unit = if (strict) error(msg) else progress.echo_warning(msg)
 
@@ -119,7 +120,16 @@ object AFP_Check_Metadata {
 
     /* formatting of commonly patched files */
 
-    if (reformat) afp_structure.save_authors(orig_authors)
+    if (reformat) {
+      afp_structure.save_authors(orig_authors)
+
+      if (format_all) {
+        afp_structure.save_topics(orig_topics)
+        afp_structure.save_licenses(orig_licenses)
+        afp_structure.save_releases(orig_releases)
+        entries.foreach(afp_structure.save_entry)
+      }
+    }
     else {
       def check_toml_format(toml: Table, file: Path): Unit = {
         val present = File.read(file)
@@ -129,6 +139,15 @@ object AFP_Check_Metadata {
 
       progress.echo_if(verbose, "Checking formatting...")
       check_toml_format(TOML.from_authors(orig_authors), afp_structure.authors_file)
+
+      if (format_all) {
+        check_toml_format(TOML.from_topics(topics.values.toList), afp_structure.topics_file)
+        check_toml_format(TOML.from_licenses(licenses.values.toList), afp_structure.licenses_file)
+        check_toml_format(TOML.from_releases(releases.values.toList.flatten),
+          afp_structure.releases_file)
+        entries.foreach(entry =>
+          check_toml_format(TOML.from_entry(entry), afp_structure.entry_file(entry.name)))
+      }
     }
 
 
@@ -150,6 +169,7 @@ object AFP_Check_Metadata {
 
     var slow = false
     var reformat = false
+    var format_all = false
     var strict = false
     var verbose = false
 
@@ -157,6 +177,7 @@ object AFP_Check_Metadata {
 Usage: isabelle afp_check_metadata [OPTIONS]
 
   Options are:
+    -a    check formatting of all metadata
     -s    activate slow checks
     -v    verbose
     -R    reformat metadata files
@@ -164,6 +185,7 @@ Usage: isabelle afp_check_metadata [OPTIONS]
 
   Check AFP metadata files for consistency.
 """,
+      "a" -> (_ => format_all = true),
       "s" -> (_ => slow = true),
       "v" -> (_ => verbose = true),
       "R" -> (_ => reformat = true),
@@ -174,6 +196,7 @@ Usage: isabelle afp_check_metadata [OPTIONS]
     val progress = new Console_Progress()
     val afp_structure = AFP_Structure()
 
-    afp_check_metadata(strict, reformat, slow, afp_structure, verbose, progress)
+    afp_check_metadata(afp_structure, strict = strict, reformat = reformat, format_all = format_all,
+      slow = slow, verbose = verbose, progress = progress)
   })
 }
