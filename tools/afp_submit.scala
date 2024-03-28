@@ -169,9 +169,8 @@ object AFP_Submit {
     def get_patch(id: Handler.ID): Option[Path]
     def get_archive(id: Handler.ID): Option[Path]
   }
-  object Handler {
-    import Model._
 
+  object Handler {
     type ID = String
 
     object ID {
@@ -198,7 +197,7 @@ object AFP_Submit {
 
       def create(
         date: Date,
-        meta: Metadata,
+        meta: Model.Metadata,
         message: String,
         archive: Bytes,
         ext: String
@@ -226,17 +225,17 @@ object AFP_Submit {
         entry.name
       }
 
-      def list(): Submission_List =
-        Submission_List(afp.entries.sortBy(dates.get).reverse.map { entry =>
-          Overview(entry, dates(entry), entry, Status.Added)
+      def list(): Model.Submission_List =
+        Model.Submission_List(afp.entries.sortBy(dates.get).reverse.map { entry =>
+          Model.Overview(entry, dates(entry), entry, Model.Status.Added)
         })
 
-      def get(id: ID, topics: Topics, licenses: Licenses): Option[Submission] =
+      def get(id: ID, topics: Topics, licenses: Licenses): Option[Model.Submission] =
         if (!afp.entries.contains(id)) None
         else {
           val entry = afp.load_entry(id, authors, topics, licenses, releases)
-          val meta = Metadata(authors, List(entry))
-          Some(Submission(id, meta, "", Model.Build.Success, Some(Status.Added), ""))
+          val meta = Model.Metadata(authors, List(entry))
+          Some(Model.Submission(id, meta, "", Model.Build.Success, Some(Model.Status.Added), ""))
         }
 
       def submit(id: ID): Unit = ()
@@ -258,27 +257,27 @@ object AFP_Submit {
         File.write(up(id) + Path.basic(s), s.toUpperCase)
       private def is_signal(id: ID, s: String): Boolean = (up(id) + Path.basic(s)).file.exists()
 
-      private def read_build(id: ID): Build.Value = {
+      private def read_build(id: ID): Model.Build.Value = {
         val build = down(id) + Path.basic("result")
-        if (!build.file.exists) Build.Pending
+        if (!build.file.exists) Model.Build.Pending
         else File.read(build).trim match {
-          case "" => Build.Running
-          case "NOT_FINISHED" => Build.Running
-          case "FAILED" => if (is_signal(id, "kill")) Build.Aborted else Build.Failed
-          case "SUCCESS" => Build.Success
+          case "" => Model.Build.Running
+          case "NOT_FINISHED" => Model.Build.Running
+          case "FAILED" => if (is_signal(id, "kill")) Model.Build.Aborted else Model.Build.Failed
+          case "SUCCESS" => Model.Build.Success
           case s => isabelle.error("Unkown build status: " + quote(s))
         }
       }
 
       private def status_file(id: ID): Path = up(id) + Path.basic("AFP_STATUS")
-      private def read_status(id: ID): Option[Status.Value] = {
+      private def read_status(id: ID): Option[Model.Status.Value] = {
         val status = status_file(id)
         if (!status.file.exists()) None
         else File.read(status).trim match {
-          case "SUBMITTED" => Some(Status.Submitted)
-          case "PROCESSING" => Some(Status.Review)
-          case "REJECTED" => Some(Status.Rejected)
-          case "ADDED" => Some(Status.Added)
+          case "SUBMITTED" => Some(Model.Status.Submitted)
+          case "PROCESSING" => Some(Model.Status.Review)
+          case "REJECTED" => Some(Model.Status.Rejected)
+          case "ADDED" => Some(Model.Status.Added)
           case s => isabelle.error("Unknown status: " + quote(s))
         }
       }
@@ -293,7 +292,13 @@ object AFP_Submit {
         split_lines(patch).filterNot(_.startsWith("Only in")).mkString("\n")
       }
 
-      def create(date: Date, meta: Metadata, message: String, archive: Bytes, ext: String): ID = {
+      def create(
+        date: Date,
+        meta: Model.Metadata,
+        message: String,
+        archive: Bytes,
+        ext: String
+      ): ID = {
         val id = ID(date)
         val dir = up(id)
         dir.file.mkdirs()
@@ -323,15 +328,16 @@ object AFP_Submit {
         id
       }
 
-      def list(): Submission_List =
-        Submission_List(
+      def list(): Model.Submission_List =
+        Model.Submission_List(
           File.read_dir(up).flatMap(ID.unapply).reverse.flatMap { date =>
             val id = ID(date)
             val day = date.rep.toLocalDate
-            read_status(id).map(Overview(id, day, AFP_Structure(up(id)).entries_unchecked.head, _))
+            read_status(id).map(
+              Model.Overview(id, day, AFP_Structure(up(id)).entries_unchecked.head, _))
           })
 
-      def get(id: ID, topics: Topics, licenses: Licenses): Option[Submission] =
+      def get(id: ID, topics: Topics, licenses: Licenses): Option[Model.Submission] =
         ID.check(id).filter(up(_).file.exists).map { id =>
           val structure = AFP_Structure(up(id))
           val authors = structure.load_authors
@@ -343,8 +349,9 @@ object AFP_Submit {
 
           JSON.parse(File.read(info_file(id))) match {
             case JSON.Object(m) if m.contains("comment") =>
-              val meta = Metadata(authors, entries)
-              Submission(id, meta, m("comment").toString, read_build(id), read_status(id), log)
+              val comment = m("comment").toString
+              val meta = Model.Metadata(authors, entries)
+              Model.Submission(id, meta, comment, read_build(id), read_status(id), log)
             case _ => isabelle.error("Could not read info")
           }
         }
@@ -353,14 +360,14 @@ object AFP_Submit {
 
       def submit(id: ID): Unit = check(id).foreach(signal(_, "mail"))
 
-      def set_status(id: ID, status: Status.Value): Unit =
+      def set_status(id: ID, status: Model.Status.Value): Unit =
         check(id).foreach { id =>
           val content =
             status match {
-              case Status.Submitted => "SUBMITTED"
-              case Status.Review => "PROCESSING"
-              case Status.Added => "ADDED"
-              case Status.Rejected => "REJECTED"
+              case Model.Status.Submitted => "SUBMITTED"
+              case Model.Status.Review => "PROCESSING"
+              case Model.Status.Added => "ADDED"
+              case Model.Status.Rejected => "REJECTED"
             }
           File.write(status_file(id), content)
         }
