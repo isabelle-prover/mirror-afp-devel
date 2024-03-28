@@ -12,17 +12,13 @@ class AFP_Structure private(val base_dir: Path) {
   /* files */
 
   val metadata_dir = base_dir + Path.basic("metadata")
-
-  val thys_dir = base_dir + Path.basic("thys")
+  val thys_dir = AFP.main_dir(base_dir)
 
   def entry_thy_dir(name: Metadata.Entry.Name): Path = thys_dir + Path.basic(name)
 
   val authors_file = metadata_dir + Path.basic("authors.toml")
-
   val releases_file = metadata_dir + Path.basic("releases.toml")
-  
   val licenses_file = metadata_dir + Path.basic("licenses.toml")
-
   val topics_file = metadata_dir + Path.basic("topics.toml")
 
   val entries_dir = metadata_dir + Path.basic("entries")
@@ -45,7 +41,7 @@ class AFP_Structure private(val base_dir: Path) {
   def load_releases: List[Metadata.Release] = load(releases_file, Metadata.TOML.to_releases)
 
   def load_licenses: List[Metadata.License] = load(licenses_file, Metadata.TOML.to_licenses)
-  
+
   def load_topics: List[Metadata.Topic] = load(topics_file, Metadata.TOML.to_topics)
 
   def load_entry(name: Metadata.Entry.Name,
@@ -97,7 +93,7 @@ class AFP_Structure private(val base_dir: Path) {
       case f => error("Unrecognized file in metadata: " + f)
     }
   }
-  
+
   def entries: List[Metadata.Entry.Name] = {
     val session_entries = Sessions.parse_roots(thys_dir + Path.basic("ROOTS"))
 
@@ -126,5 +122,5 @@ class AFP_Structure private(val base_dir: Path) {
 }
 
 object AFP_Structure {
-  def apply(base_dir: Path = Path.explode("$AFP_BASE")): AFP_Structure = new AFP_Structure(base_dir.absolute)
+  def apply(base_dir: Path = AFP.BASE): AFP_Structure = new AFP_Structure(base_dir.absolute)
 }
