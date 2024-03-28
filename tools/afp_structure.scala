@@ -8,7 +8,7 @@ package afp
 import isabelle.*
 
 
-class AFP_Structure private(val base_dir: Path) {
+class AFP_Structure private(val base_dir: Path, options: Options) {
   /* files */
 
   val metadata_dir = base_dir + Path.basic("metadata")
@@ -121,7 +121,7 @@ class AFP_Structure private(val base_dir: Path) {
   }
 
   def sessions_structure: Sessions.Structure =
-    Sessions.load_structure(options = Options.init(), select_dirs = List(thys_dir))
+    Sessions.load_structure(options, select_dirs = List(thys_dir))
 
   def entry_sessions(name: Metadata.Entry.Name): List[Sessions.Session_Entry] =
     Sessions.parse_root(thys_dir + Path.make(List(name, "ROOT"))).collect { case e: Sessions.Session_Entry => e }
@@ -130,5 +130,6 @@ class AFP_Structure private(val base_dir: Path) {
 }
 
 object AFP_Structure {
-  def apply(base_dir: Path = AFP.BASE): AFP_Structure = new AFP_Structure(base_dir.absolute)
+  def apply(base_dir: Path = AFP.BASE, options: Options = Options.init0()): AFP_Structure =
+    new AFP_Structure(base_dir.absolute, options)
 }
