@@ -189,12 +189,12 @@ object AFP_Submit {
 
     /* Handler for local edits */
 
-    class Edit(afp_structure: AFP_Structure) extends Handler {
-      val authors = afp_structure.load_authors
-      val topics = afp_structure.load_topics
-      val licenses = afp_structure.load_licenses
-      val releases = afp_structure.load_releases
-      val dates = afp_structure.load_entries().view.mapValues(_.date).toMap
+    class Edit(afp: AFP_Structure) extends Handler {
+      val authors = afp.load_authors
+      val topics = afp.load_topics
+      val licenses = afp.load_licenses
+      val releases = afp.load_releases
+      val dates = afp.load_entries().view.mapValues(_.date).toMap
 
       def create(
         date: Date,
@@ -209,7 +209,7 @@ object AFP_Submit {
             case _ => isabelle.error("Must be a single entry")
           }
 
-        val old = afp_structure.load_entry(entry.name, authors, topics, licenses, releases)
+        val old = afp.load_entry(entry.name, authors, topics, licenses, releases)
         val updated =
           old.copy(
             title = entry.title,
@@ -220,21 +220,21 @@ object AFP_Submit {
             license = entry.license,
             related = entry.related)
 
-        afp_structure.save_entry(updated)
+        afp.save_entry(updated)
         // TODO what happens to the authors
 
         entry.name
       }
 
       def list(): Submission_List =
-        Submission_List(afp_structure.entries.sortBy(dates.get).reverse.map { entry =>
+        Submission_List(afp.entries.sortBy(dates.get).reverse.map { entry =>
           Overview(entry, dates(entry), entry, Status.Added)
         })
 
       def get(id: ID, topics: Topics, licenses: Licenses): Option[Submission] =
-        if (!afp_structure.entries.contains(id)) None
+        if (!afp.entries.contains(id)) None
         else {
-          val entry = afp_structure.load_entry(id, authors, topics, licenses, releases)
+          val entry = afp.load_entry(id, authors, topics, licenses, releases)
           val meta = Metadata(authors, List(entry))
           Some(Submission(id, meta, "", Model.Build.Success, Some(Status.Added), ""))
         }
@@ -249,7 +249,7 @@ object AFP_Submit {
 
     /* Adapter to existing submission system */
 
-    class Adapter(submission_dir: Path, afp_structure: AFP_Structure) extends Handler {
+    class Adapter(submission_dir: Path, afp: AFP_Structure) extends Handler {
       private val up: Path = submission_dir + Path.basic("up")
       private def up(id: ID): Path = up + Path.basic(id)
       private def down(id: ID): Path = submission_dir + Path.basic("down") + Path.basic(id)
@@ -306,10 +306,10 @@ object AFP_Submit {
         Bytes.write(archive_file, archive)
 
         val metadata_rel =
-          File.relative_path(afp_structure.base_dir, afp_structure.metadata_dir).getOrElse(
-            afp_structure.metadata_dir)
+          File.relative_path(afp.base_dir, afp.metadata_dir).getOrElse(
+            afp.metadata_dir)
         val metadata_patch =
-          make_partial_patch(afp_structure.base_dir, metadata_rel, structure.metadata_dir)
+          make_partial_patch(afp.base_dir, metadata_rel, structure.metadata_dir)
         File.write(patch_file(id), metadata_patch)
 
         val info =
@@ -403,7 +403,7 @@ object AFP_Submit {
 
   class Server(
     api: API,
-    afp_structure: AFP_Structure,
+    afp: AFP_Structure,
     mode: Mode.Value,
     handler: Handler,
     devel: Boolean,
@@ -411,9 +411,9 @@ object AFP_Submit {
     progress: Progress,
     port: Int = 0
   ) extends Web_App.Server[Model.T](api, port, verbose, progress) {
-    private var _state: State = State.load(afp_structure)
+    private var _state: State = State.load(afp)
     
-    val repo = Mercurial.the_repository(afp_structure.base_dir)
+    val repo = Mercurial.the_repository(afp.base_dir)
 
 
     /* endpoints */
@@ -1492,7 +1492,7 @@ object AFP_Submit {
             repo.update()
             val id_after = repo.id()
             if (id_before != id_after) {
-              _state = State.load(afp_structure)
+              _state = State.load(afp)
               progress.echo("Updated repo from " + id_before + " to " + id_after)
             }
           }
@@ -1517,7 +1517,7 @@ object AFP_Submit {
       } yield archive
 
     def style_sheet: Option[Path] =
-      Some(afp_structure.base_dir + Path.make(List("tools", "main.css")))
+      Some(afp.base_dir + Path.make(List("tools", "main.css")))
 
     val error_model = Model.Invalid
 
@@ -1600,17 +1600,17 @@ Usage: isabelle afp_submit [OPTIONS]
 
       getopts(args)
 
-      val afp_structure = AFP_Structure()
+      val afp = AFP_Structure()
 
       val progress = new Console_Progress(verbose = verbose)
 
       val (handler, mode) = dir match {
-        case Some(dir) => (Handler.Adapter(dir, afp_structure), Mode.SUBMISSION)
-        case None => (Handler.Edit(afp_structure), Mode.EDIT)
+        case Some(dir) => (Handler.Adapter(dir, afp), Mode.SUBMISSION)
+        case None => (Handler.Edit(afp), Mode.EDIT)
       }
 
       val api = new API(frontend_url, backend_path, devel = devel)
-      val server = new Server(api = api, afp_structure = afp_structure, mode = mode,
+      val server = new Server(api = api, afp = afp, mode = mode,
         handler = handler, devel = devel, verbose = verbose, progress = progress, port = port)
 
       server.run()

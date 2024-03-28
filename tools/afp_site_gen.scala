@@ -224,7 +224,7 @@ object AFP_Site_Gen {
   def afp_site_gen(
     layout: Hugo.Layout,
     status_file: Option[Path],
-    afp_structure: AFP_Structure,
+    afp: AFP_Structure,
     clean: Boolean = false,
     progress: Progress = new Progress()
   ): Unit = {
@@ -239,7 +239,7 @@ object AFP_Site_Gen {
 
     progress.echo("Preparing topics...")
 
-    val topics = afp_structure.load_topics
+    val topics = afp.load_topics
     val root_topics = Metadata.Topics.root_topics(topics)
 
     layout.write_data(Path.basic("topics.json"), JSON.from_topics(root_topics))
@@ -249,27 +249,27 @@ object AFP_Site_Gen {
 
     progress.echo("Preparing licenses...")
 
-    val licenses = afp_structure.load_licenses
+    val licenses = afp.load_licenses
 
 
     /* add releases */
 
     progress.echo("Preparing releases...")
 
-    val releases = afp_structure.load_releases
+    val releases = afp.load_releases
 
 
     /* prepare authors and entries */
 
     progress.echo("Preparing authors...")
 
-    val authors = afp_structure.load_authors
+    val authors = afp.load_authors
 
     var seen_affiliations: List[Affiliation] = Nil
 
     val entries =
-      afp_structure.entries.flatMap { name =>
-        val entry = afp_structure.load_entry(name, authors, topics, licenses, releases)
+      afp.entries.flatMap { name =>
+        val entry = afp.load_entry(name, authors, topics, licenses, releases)
         seen_affiliations = seen_affiliations :++ entry.authors ++ entry.contributors
         Some(entry)
       }
@@ -310,7 +310,7 @@ object AFP_Site_Gen {
 
     progress.echo("Preparing entries...")
 
-    val sessions_structure = afp_structure.sessions_structure
+    val sessions_structure = afp.sessions_structure
     val sessions_deps = Sessions.deps(sessions_structure)
     val browser_info = Browser_Info.context(sessions_structure)
 
@@ -332,7 +332,7 @@ object AFP_Site_Gen {
     val cache = new Cache(layout, progress)
 
     val entry_sessions =
-      entries.map(entry => entry -> afp_structure.entry_sessions(entry.name)).toMap
+      entries.map(entry => entry -> afp.entry_sessions(entry.name)).toMap
     val session_entry = entry_sessions.flatMap((entry, sessions) =>
       sessions.map(session => session.name -> entry)).toMap
 
@@ -347,7 +347,7 @@ object AFP_Site_Gen {
         } yield dep.name
 
       val sessions =
-        afp_structure.entry_sessions(entry.name).map { session =>
+        afp.entry_sessions(entry.name).map { session =>
           write_session_json(session.name, JSON.Object("entry" -> entry.name))
           JSON.Object(
             "session" -> session.name,
@@ -375,7 +375,7 @@ object AFP_Site_Gen {
     progress.echo("Preparing statistics...")
 
     val statistics_json =
-      afp_stats(sessions_deps, afp_structure, entries.filterNot(_.statistics_ignore))
+      afp_stats(sessions_deps, afp, entries.filterNot(_.statistics_ignore))
 
     layout.write_data(Path.basic("statistics.json"), statistics_json)
 
@@ -468,15 +468,15 @@ object AFP_Site_Gen {
 
       if (devel_mode) hugo_dir = base_dir + Path.make(List("admin", "site"))
 
-      val afp_structure = AFP_Structure(base_dir)
+      val afp = AFP_Structure(base_dir)
       val layout = Hugo.Layout(hugo_dir)
       val progress = new Console_Progress()
 
       if (!build_only) {
         progress.echo("Preparing site generation in " + hugo_dir.implode)
 
-        afp_site_gen(layout = layout, status_file = status_file, afp_structure = afp_structure,
-          clean = fresh, progress = progress)
+        afp_site_gen(layout = layout, status_file = status_file, afp = afp, clean = fresh,
+          progress = progress)
       }
 
       afp_build_site(out_dir = out_dir, layout = layout, do_watch = devel_mode,

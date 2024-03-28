@@ -19,7 +19,7 @@ object AFP_Check_Metadata {
     }
 
   def afp_check_metadata(
-    afp_structure: AFP_Structure,
+    afp: AFP_Structure,
     strict: Boolean = false,
     reformat: Boolean = false,
     format_all: Boolean = false,
@@ -30,12 +30,12 @@ object AFP_Check_Metadata {
     def warn(msg: String): Unit = if (strict) error(msg) else progress.echo_warning(msg)
 
     progress.echo_if(verbose, "Loading metadata...")
-    val authors = afp_structure.load_authors
-    val topics = afp_structure.load_topics
-    val licenses = afp_structure.load_licenses
-    val releases = afp_structure.load_releases
-    val entries = afp_structure.entries.map(name =>
-      afp_structure.load_entry(name, authors, topics, licenses, releases))
+    val authors = afp.load_authors
+    val topics = afp.load_topics
+    val licenses = afp.load_licenses
+    val releases = afp.load_releases
+    val entries = afp.entries.map(name =>
+      afp.load_entry(name, authors, topics, licenses, releases))
 
 
     /* TOML encoding/decoding */
@@ -81,11 +81,11 @@ object AFP_Check_Metadata {
       if (diff_keys.nonEmpty) warn("Unused fields: " + commas_quote(diff_keys))
     }
 
-    check_unused_toml(afp_structure.authors_file, TOML.to_authors, TOML.from_authors)
-    check_unused_toml(afp_structure.topics_file, TOML.to_topics, TOML.from_topics)
-    check_unused_toml(afp_structure.licenses_file, TOML.to_licenses, TOML.from_licenses)
-    check_unused_toml(afp_structure.releases_file, TOML.to_releases, TOML.from_releases)
-    entries.foreach(entry => check_unused_toml(afp_structure.entry_file(entry.name), t =>
+    check_unused_toml(afp.authors_file, TOML.to_authors, TOML.from_authors)
+    check_unused_toml(afp.topics_file, TOML.to_topics, TOML.from_topics)
+    check_unused_toml(afp.licenses_file, TOML.to_licenses, TOML.from_licenses)
+    check_unused_toml(afp.releases_file, TOML.to_releases, TOML.from_releases)
+    entries.foreach(entry => check_unused_toml(afp.entry_file(entry.name), t =>
       TOML.to_entry(entry.name, t, authors, topics, licenses, releases.getOrElse(entry.name, Nil)),
       TOML.from_entry))
 
@@ -117,13 +117,13 @@ object AFP_Check_Metadata {
     /* formatting of commonly patched files */
 
     if (reformat) {
-      afp_structure.save_authors(authors.values.toList)
+      afp.save_authors(authors.values.toList)
 
       if (format_all) {
-        afp_structure.save_topics(Metadata.Topics.root_topics(topics))
-        afp_structure.save_licenses(licenses.values.toList)
-        afp_structure.save_releases(releases.values.toList.flatten)
-        entries.foreach(afp_structure.save_entry)
+        afp.save_topics(Metadata.Topics.root_topics(topics))
+        afp.save_licenses(licenses.values.toList)
+        afp.save_releases(releases.values.toList.flatten)
+        entries.foreach(afp.save_entry)
       }
     }
     else {
@@ -134,15 +134,15 @@ object AFP_Check_Metadata {
       }
 
       progress.echo_if(verbose, "Checking formatting...")
-      check_toml_format(TOML.from_authors(authors.values.toList), afp_structure.authors_file)
+      check_toml_format(TOML.from_authors(authors.values.toList), afp.authors_file)
 
       if (format_all) {
-        check_toml_format(TOML.from_topics(topics.values.toList), afp_structure.topics_file)
-        check_toml_format(TOML.from_licenses(licenses.values.toList), afp_structure.licenses_file)
+        check_toml_format(TOML.from_topics(topics.values.toList), afp.topics_file)
+        check_toml_format(TOML.from_licenses(licenses.values.toList), afp.licenses_file)
         check_toml_format(TOML.from_releases(releases.values.toList.flatten),
-          afp_structure.releases_file)
+          afp.releases_file)
         entries.foreach(entry =>
-          check_toml_format(TOML.from_entry(entry), afp_structure.entry_file(entry.name)))
+          check_toml_format(TOML.from_entry(entry), afp.entry_file(entry.name)))
       }
     }
 
@@ -190,9 +190,9 @@ Usage: isabelle afp_check_metadata [OPTIONS]
     getopts(args)
 
     val progress = new Console_Progress()
-    val afp_structure = AFP_Structure()
+    val afp = AFP_Structure()
 
-    afp_check_metadata(afp_structure, strict = strict, reformat = reformat, format_all = format_all,
+    afp_check_metadata(afp, strict = strict, reformat = reformat, format_all = format_all,
       slow = slow, verbose = verbose, progress = progress)
   })
 }
