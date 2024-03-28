@@ -30,14 +30,10 @@ object AFP_Check_Metadata {
     def warn(msg: String): Unit = if (strict) error(msg) else progress.echo_warning(msg)
 
     progress.echo_if(verbose, "Loading metadata...")
-    val orig_authors = afp_structure.load_authors
-    val orig_topics = afp_structure.load_topics
-    val orig_licenses = afp_structure.load_licenses
-    val orig_releases = afp_structure.load_releases
-    val authors = orig_authors.map(author => author.id -> author).toMap
-    val topics = Utils.grouped_sorted(orig_topics.flatMap(_.all_topics), (t: Topic) => t.id)
-    val licenses = orig_licenses.map(license => license.id -> license).toMap
-    val releases = orig_releases.groupBy(_.entry)
+    val authors = afp_structure.load_authors
+    val topics = afp_structure.load_topics
+    val licenses = afp_structure.load_licenses
+    val releases = afp_structure.load_releases
     val entries = afp_structure.entries.map(name =>
       afp_structure.load_entry(name, authors, topics, licenses, releases))
 
@@ -49,7 +45,7 @@ object AFP_Check_Metadata {
 
     progress.echo_if(verbose, "Checking toml conversions...")
     check_toml("authors", authors.values.toList, TOML.from_authors, TOML.to_authors)
-    check_toml("topics", orig_topics, TOML.from_topics, TOML.to_topics)
+    check_toml("topics", Metadata.Topics.root_topics(topics), TOML.from_topics, TOML.to_topics)
     check_toml("licenses", licenses.values.toList, TOML.from_licenses, TOML.to_licenses)
     check_toml("releases", releases.values.flatten.toList, TOML.from_releases, TOML.to_releases)
     entries.foreach(entry => check_toml("entry " + entry.name, entry, TOML.from_entry, t =>
@@ -121,12 +117,12 @@ object AFP_Check_Metadata {
     /* formatting of commonly patched files */
 
     if (reformat) {
-      afp_structure.save_authors(orig_authors)
+      afp_structure.save_authors(authors.values.toList)
 
       if (format_all) {
-        afp_structure.save_topics(orig_topics)
-        afp_structure.save_licenses(orig_licenses)
-        afp_structure.save_releases(orig_releases)
+        afp_structure.save_topics(Metadata.Topics.root_topics(topics))
+        afp_structure.save_licenses(licenses.values.toList)
+        afp_structure.save_releases(releases.values.toList.flatten)
         entries.foreach(afp_structure.save_entry)
       }
     }
@@ -138,7 +134,7 @@ object AFP_Check_Metadata {
       }
 
       progress.echo_if(verbose, "Checking formatting...")
-      check_toml_format(TOML.from_authors(orig_authors), afp_structure.authors_file)
+      check_toml_format(TOML.from_authors(authors.values.toList), afp_structure.authors_file)
 
       if (format_all) {
         check_toml_format(TOML.from_topics(topics.values.toList), afp_structure.topics_file)

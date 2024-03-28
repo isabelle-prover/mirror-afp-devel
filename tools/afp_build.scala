@@ -8,7 +8,7 @@ package afp
 import isabelle.*
 import isabelle.CI_Build.{hg_id, print_section, Build_Config, Failed, Job, Profile, Result, Status}
 
-import afp.Metadata.{Email, Entry}
+import afp.Metadata.{Email, Entry, Entries}
 
 import java.time.{Instant, ZoneId}
 import java.time.format.DateTimeFormatter
@@ -57,7 +57,7 @@ ${result.err_lines.takeRight(50).mkString("\n")}
   class Metadata_Tools private(
     val structure: AFP_Structure,
     val server: Mail.Server,
-    val entries: Map[Entry.Name, Entry]
+    val entries: Entries
   ) {
     def maintainers(name: Entry.Name): List[Email] = {
       entries.get(name) match {
@@ -91,10 +91,8 @@ ${result.err_lines.takeRight(50).mkString("\n")}
   }
 
   object Metadata_Tools {
-    def load(afp: AFP_Structure, options: Options): Metadata_Tools = {
-      val entries = afp.load().map(entry => entry.name -> entry).toMap
-      new Metadata_Tools(afp, CI_Build.mail_server(options), entries)
-    }
+    def load(afp: AFP_Structure, options: Options): Metadata_Tools =
+      new Metadata_Tools(afp, CI_Build.mail_server(options), afp.load())
   }
 
 

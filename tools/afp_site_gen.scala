@@ -240,54 +240,49 @@ object AFP_Site_Gen {
     progress.echo("Preparing topics...")
 
     val topics = afp_structure.load_topics
-    val topics_by_id =
-      Utils.grouped_sorted(topics.flatMap(_.all_topics), (t: Metadata.Topic) => t.id)
+    val root_topics = Metadata.Topics.root_topics(topics)
 
-    layout.write_data(Path.basic("topics.json"), JSON.from_topics(topics))
+    layout.write_data(Path.basic("topics.json"), JSON.from_topics(root_topics))
 
 
     /* add licenses */
 
     progress.echo("Preparing licenses...")
 
-    val licenses_by_id = Utils.grouped_sorted(afp_structure.load_licenses,
-      (l: Metadata.License) => l.id)
+    val licenses = afp_structure.load_licenses
 
 
     /* add releases */
 
     progress.echo("Preparing releases...")
 
-    val releases_by_entry = afp_structure.load_releases.groupBy(_.entry)
+    val releases = afp_structure.load_releases
 
 
     /* prepare authors and entries */
 
     progress.echo("Preparing authors...")
 
-    val full_authors = afp_structure.load_authors
-    val authors_by_id = Utils.grouped_sorted(full_authors, (a: Metadata.Author) => a.id)
+    val authors = afp_structure.load_authors
 
     var seen_affiliations: List[Affiliation] = Nil
 
     val entries =
       afp_structure.entries.flatMap { name =>
-        val entry = afp_structure.load_entry(name, authors_by_id, topics_by_id, licenses_by_id,
-          releases_by_entry)
-
+        val entry = afp_structure.load_entry(name, authors, topics, licenses, releases)
         seen_affiliations = seen_affiliations :++ entry.authors ++ entry.contributors
         Some(entry)
       }
 
-    val authors =
+    val seen_authors =
       Utils.group_sorted(seen_affiliations.distinct, (a: Affiliation) => a.author).map {
         case (id, affiliations) =>
           val seen_emails = affiliations.collect { case e: Email => e }
           val seen_homepages = affiliations.collect { case h: Homepage => h }
-          authors_by_id(id).copy(emails = seen_emails, homepages = seen_homepages)
+          authors(id).copy(emails = seen_emails, homepages = seen_homepages)
       }
 
-    layout.write_data(Path.basic("authors.json"), JSON.from_authors(authors.toList))
+    layout.write_data(Path.basic("authors.json"), JSON.from_authors(seen_authors.toList))
 
     /* extract keywords */
 

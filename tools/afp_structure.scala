@@ -36,31 +36,36 @@ class AFP_Structure private(val base_dir: Path) {
     parser(toml)
   }
 
-  def load_authors: List[Metadata.Author] = load(authors_file, Metadata.TOML.to_authors)
+  def load_authors: Metadata.Authors =
+    Metadata.Authors(load(authors_file, Metadata.TOML.to_authors))
 
-  def load_releases: List[Metadata.Release] = load(releases_file, Metadata.TOML.to_releases)
+  def load_releases: Metadata.Releases =
+    Metadata.Releases(load(releases_file, Metadata.TOML.to_releases))
 
-  def load_licenses: List[Metadata.License] = load(licenses_file, Metadata.TOML.to_licenses)
+  def load_licenses: Metadata.Licenses =
+    Metadata.Licenses(load(licenses_file, Metadata.TOML.to_licenses))
 
-  def load_topics: List[Metadata.Topic] = load(topics_file, Metadata.TOML.to_topics)
+  def load_topics: Metadata.Topics = 
+    Metadata.Topics(load(topics_file, Metadata.TOML.to_topics))
 
-  def load_entry(name: Metadata.Entry.Name,
-    authors: Map[Metadata.Author.ID, Metadata.Author],
-    topics: Map[Metadata.Topic.ID, Metadata.Topic],
-    licenses: Map[Metadata.License.ID, Metadata.License],
-    releases: Map[Metadata.Entry.Name, List[Metadata.Release]]
+  def load_entry(
+    name: Metadata.Entry.Name,
+    authors: Metadata.Authors,
+    topics: Metadata.Topics,
+    licenses: Metadata.Licenses,
+    releases: Metadata.Releases
   ): Metadata.Entry = {
     val entry_releases = releases.getOrElse(name, Nil)
     load(entry_file(name), toml =>
       Metadata.TOML.to_entry(name, toml, authors, topics, licenses, entry_releases))
   }
 
-  def load(): List[Metadata.Entry] = {
-    val authors = load_authors.map(author => author.id -> author).toMap
-    val topics = Utils.grouped_sorted(load_topics.flatMap(_.all_topics), (t: Metadata.Topic) => t.id)
-    val licenses = load_licenses.map(license => license.id -> license).toMap
-    val releases = load_releases.groupBy(_.entry)
-    entries.map(name => load_entry(name, authors, topics, licenses, releases))
+  def load(): Metadata.Entries = {
+    val authors = load_authors
+    val topics = load_topics
+    val licenses = load_licenses
+    val releases = load_releases
+    Metadata.Entries(entries.map(name => load_entry(name, authors, topics, licenses, releases)))
   }
 
 
@@ -77,8 +82,8 @@ class AFP_Structure private(val base_dir: Path) {
   def save_releases(releases: List[Metadata.Release]): Unit =
     save(releases_file, Metadata.TOML.from_releases(releases))
 
-  def save_topics(topics: List[Metadata.Topic]): Unit =
-    save(topics_file, Metadata.TOML.from_topics(topics))
+  def save_topics(root_topics: List[Metadata.Topic]): Unit =
+    save(topics_file, Metadata.TOML.from_topics(root_topics))
 
   def save_licenses(licenses: List[Metadata.License]): Unit =
     save(licenses_file, Metadata.TOML.from_licenses(licenses))

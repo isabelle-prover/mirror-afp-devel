@@ -10,6 +10,8 @@ import isabelle.*
 import java.time.LocalDate
 import java.net.URI
 
+import scala.collection.immutable.ListMap
+
 
 object Metadata {
   /* affiliations */
@@ -67,6 +69,13 @@ object Metadata {
     type ID = String
   }
 
+  type Authors = ListMap[Author.ID, Author]
+  object Authors {
+    def empty: Authors = Authors(Nil)
+    def apply(authors: List[Author]): Authors =
+      ListMap.from(authors.map(author => author.id -> author))
+  }
+
 
   /* topics */
 
@@ -103,6 +112,19 @@ object Metadata {
     type ID = String
   }
 
+  type Topics = ListMap[Topic.ID, Topic]
+  object Topics {
+    def empty: Topics = Topics(Nil)
+    def apply(root_topics: List[Topic]): Topics =
+      ListMap.from(root_topics.flatMap(_.all_topics).map(topic => topic.id -> topic))
+    
+    def root_topics(topics: Topics): List[Topic] = {
+      val sub_topics = topics.values.flatMap(_.sub_topics).map(_.id).toSet
+      topics.values.filterNot(topic => sub_topics.contains(topic.id)).toList
+    }
+  }
+
+
   /* releases */
 
   type Date = LocalDate
@@ -113,6 +135,13 @@ object Metadata {
 
   case class Release(entry: Entry.Name, date: Date, isabelle: Isabelle.Version)
 
+  type Releases = ListMap[Entry.Name, List[Release]]
+  object Releases {
+    def empty: Releases = Releases(Nil)
+    def apply(releases: List[Release]): Releases =
+      Utils.group_sorted(releases, (release: Release) => release.entry)
+  }
+
 
   /* license */
 
@@ -120,6 +149,13 @@ object Metadata {
 
   object License {
     type ID = String
+  }
+
+  type Licenses = ListMap[License.ID, License]
+  object Licenses {
+    def empty: Licenses = Licenses(Nil)
+    def apply(licenses: List[License]): Licenses =
+      ListMap.from(licenses.map(license => license.id -> license))
   }
 
 
@@ -167,6 +203,12 @@ object Metadata {
 
   object Entry {
     type Name = String
+  }
+
+  type Entries = ListMap[Entry.Name, Entry]
+  object Entries {
+    def empty: Entries = Entries(Nil)
+    def apply(entries: List[Entry]) = ListMap.from(entries.map(entry => entry.name -> entry))
   }
 
 
@@ -297,7 +339,7 @@ object Metadata {
           case Homepage(_, id, _) => "homepage" -> String(id)
         })).toList)
 
-    def to_affiliations(affiliations: Table, authors: Map[Author.ID, Author]): List[Affiliation] = {
+    def to_affiliations(affiliations: Table, authors: Authors): List[Affiliation] = {
       def to_affiliation(affiliation: (Key, String), author: Author): Affiliation = {
         affiliation match {
           case ("email", id) => author.emails.find(_.id == id.rep) getOrElse
@@ -319,7 +361,7 @@ object Metadata {
     def from_emails(emails: List[Email]): Table =
       Table(emails.map(email => email.author -> String(email.id)))
 
-    def to_emails(emails: Table, authors: Map[Author.ID, Author]): List[Email] =
+    def to_emails(emails: Table, authors: Authors): List[Email] =
       emails.string.values.map {
         case (author, id) => by_id(authors, author).emails.find(_.id == id.rep) getOrElse
           error("Email not found: " + quote(id.rep))
@@ -337,7 +379,7 @@ object Metadata {
       }
     }
 
-    def to_license(license: String, licenses: Map[License.ID, License]): License =
+    def to_license(license: String, licenses: Licenses): License =
       licenses.getOrElse(license.rep, error("No such license: " + quote(license.rep)))
 
 
@@ -393,9 +435,9 @@ object Metadata {
     def to_entry(
       name: Entry.Name,
       entry: Table,
-      authors: Map[Author.ID, Author],
-      topics: Map[Topic.ID, Topic],
-      licenses: Map[License.ID, License],
+      authors: Authors,
+      topics: Topics,
+      licenses: Licenses,
       releases: List[Release]
     ): Entry =
       Entry(
