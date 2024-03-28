@@ -47,7 +47,7 @@ text \<open>A region is separate from another if they do not overlap.\<close>
 lemma region_addresses_iff: "a' \<in> region_addresses a si \<longleftrightarrow> unat (a' - a) < si"
   apply (auto simp add: region_addresses_def unsigned_of_nat)
    apply (metis diff_Suc_less le_less_trans less_imp_Suc_add take_bit_nat_less_eq_self zero_less_Suc)
-  by (smt (z3) add.commute add_Suc_right add_diff_cancel_left' diff_add_cancel less_add_Suc2 less_imp_Suc_add word_unat.Rep_inverse)
+  by (metis Suc_diff_Suc add.commute diff_add_cancel diff_diff_cancel diff_less less_imp_Suc_add order_less_imp_le word_unat.Rep_inverse zero_less_Suc)
 
 lemma notin_region_addresses:
   assumes "x \<notin> region_addresses a si"
@@ -196,7 +196,10 @@ lemma address_in_enclosed_region:
   assumes "enclosed a' si' a si"
       and "x \<in> region_addresses a' si'"
     shows "unat (x - a) \<ge> unat (a' - a) \<and> unat (a' - a) + si' > unat (x - a) \<and> unat (x - a) < si"
-  by (smt (z3) address_in_enclosed_region_as_linarith add_diff_cancel_left' address_of_enclosed_region_ge assms(1) assms(2) diff_diff_add enclosed_spec le_iff_add nat_add_left_cancel_less region_addresses_iff unat_sub_if' word_le_minus_mono_left word_unat.Rep_inverse word_unat_less_le)
+  by (smt (verit, ccfv_threshold) Memory.enclosed_def Memory.region_addresses_iff
+      address_in_enclosed_region_as_linarith assms(1) assms(2) diff_diff_add
+      le_add_diff_inverse mcs(4) nat_add_left_cancel_less no_ulen_sub of_nat_add
+      un_ui_le unat_mono unat_of_nat_eq unat_sub unsigned_less word_sub_le_iff)
 
 lemma enclosed_minus_minus:
   fixes a :: "'a word"
@@ -254,7 +257,7 @@ next
   then have "unat (x - a') \<ge> si'" if "unat (x - a) < si" for x
     using that apply (auto simp add: unat_sub_if' split: if_split_asm)
      apply (meson Nat.le_diff_conv2 add_increasing le_less_trans less_imp_le_nat unsigned_greater_eq unsigned_less)
-    by (smt (z3) Nat.le_diff_conv2 add_leD2 le_less_trans linorder_not_less nat_le_linear unat_lt2p)
+    by (smt (verit) Nat.le_diff_conv2 add_leD2 le_less_trans linorder_not_less nat_le_linear unat_lt2p)
   then have "region_addresses a si \<inter> region_addresses a' si' = {}"
     by (simp add: region_addresses_iff disjoint_iff leD)
   with assm show "separate a si a' si'"
@@ -278,7 +281,7 @@ next
     from that have "unat a + si < 2^LENGTH('a)" and "unat a' + si' < 2^LENGTH('a)"
       by (meson not_le region_overflow_def)+
     have "x < a + of_nat si" if "x \<in> region_addresses a si" for x
-      by (smt (z3) Abs_fnat_hom_add \<open>unat a + si < 2 ^ LENGTH('a)\<close> add.commute dual_order.trans le_add1 less_diff_conv2 not_less region_addresses_iff that unat_of_nat_len unat_sub_if' word_less_iff_unsigned word_unat.Rep_inverse)
+      by (smt (verit) Abs_fnat_hom_add \<open>unat a + si < 2 ^ LENGTH('a)\<close> add.commute dual_order.trans le_add1 less_diff_conv2 not_less region_addresses_iff that unat_of_nat_len unat_sub_if' word_less_iff_unsigned word_unat.Rep_inverse)
     moreover have "x \<ge> a'" if "x \<in> region_addresses a' si'" for x
       using address_in_enclosed_region_as_linarith enclosed_def \<open>unat a' + si' < 2 ^ LENGTH('a)\<close> that by blast
     ultimately show ?thesis
@@ -310,7 +313,7 @@ lemma separate_plus_none:
       and "unat offset + si \<le> 2^LENGTH('a)"
     shows "separate (offset + a) si a si'"
   using assms apply (auto simp add: separate_iff)
-  by (smt (z3) Nat.diff_diff_right add.commute add_leD1 diff_0 diff_is_0_eq diff_zero not_gr_zero unat_sub_if' unsigned_0)
+  by (smt (verit) Nat.diff_diff_right add.commute add_leD1 diff_0 diff_is_0_eq diff_zero not_gr_zero unat_sub_if' unsigned_0)
 
 lemmas unat_minus = unat_sub_if'[of 0,simplified]
 
@@ -323,7 +326,7 @@ lemma separate_minus_minus':
     shows "separate (a - offset) si (a - offset') si'"
   using assms apply (auto simp add: separate_iff)
    apply (metis Nat.le_diff_conv2 add.commute add_leD2 unat_sub_if')
-  by (smt (z3) add.commute add_diff_cancel_right' diff_add_cancel diff_le_self diff_less less_le_trans nat_le_linear not_le unat_sub_if')
+  by (smt (verit) add.commute add_diff_cancel_right' diff_add_cancel diff_le_self diff_less less_le_trans nat_le_linear not_le unat_sub_if')
 
 lemma separate_minus_minus:
   assumes "si \<noteq> 0"
@@ -346,7 +349,7 @@ proof -
   moreover have "\<not> offset \<le> 0"
     using assms(1) assms(3) by fastforce
   ultimately show ?thesis
-    by (smt (z3) add_diff_cancel_left' assms(3,4) diff_diff_eq2 diff_zero le_add_diff_inverse less_or_eq_imp_le separate_iff unat_sub_if' unsigned_0 unsigned_less word_less_eq_iff_unsigned)
+    by (simp add: assms(3) assms(4) local.unat_minus separate_iff unsigned_eq_0_iff)
 qed
 
 

@@ -120,7 +120,7 @@ lemma lemCCone:
 proof -
   have "(\<exists>p.(Ph p \<and> W m p x \<and> W m p y)) 
                       \<longleftrightarrow> ( space2 x y = (c m * c m)*time2 x y )"
-    by (smt assms(1) lemCProps)
+    by (simp add: assms(1) lemCProps)
   hence ph_exists: "(space2 x y = (c m * c m)*time2 x y) \<longrightarrow> (\<exists>p.(Ph p \<and> W m p x \<and> W m p y))"
     by metis
   define lcmx where "lcmx = lightcone m x"
