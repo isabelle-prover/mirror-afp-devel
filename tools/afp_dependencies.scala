@@ -19,36 +19,29 @@ object AFP_Dependencies {
       dependency.entry ->
         isabelle.JSON.Object(
           "distrib_deps" -> dependency.distrib_deps,
-          "afp_deps" -> dependency.afp_deps
-        )
+          "afp_deps" -> dependency.afp_deps)
 
-    def from_dependency(dep: Dependency): isabelle.JSON.T =
-      isabelle.JSON.Object(from_dep(dep))
+    def from_dependency(dep: Dependency): isabelle.JSON.T = isabelle.JSON.Object(from_dep(dep))
 
-    def from_dependencies(deps: List[Dependency]): isabelle.JSON.T =
-      deps.map(from_dep).toMap
+    def from_dependencies(deps: List[Dependency]): isabelle.JSON.T = deps.map(from_dep).toMap
   }
 
   def afp_dependencies(afp_dir: Path): List[Dependency] = {
     val tree = Sessions.load_structure(Options.init(), Nil, List(afp_dir))
-    val selected = tree.selection(Sessions.Selection(false, false, Nil, Nil, Nil, Nil))
-      .build_graph.keys
+    val selected =
+      tree.selection(Sessions.Selection(false, false, Nil, Nil, Nil, Nil)).build_graph.keys
 
-    def get_entry(name: String): Option[String] =
-    {
+    def get_entry(name: String): Option[String] = {
       val info = tree(name)
       val dir = info.dir
 
-      if (selected.contains(dir.dir.expand))
-        None
-      else
-        Some(dir.base.implode)
+      if (selected.contains(dir.dir.expand)) None else Some(dir.base.implode)
     }
 
     selected.groupBy(get_entry).toList.collect {
       case (Some(e), sessions) =>
-        val dependencies = sessions.flatMap(tree.imports_graph.imm_preds)
-          .map(d => (d, get_entry(d)))
+        val dependencies =
+          sessions.flatMap(tree.imports_graph.imm_preds).map(d => (d, get_entry(d)))
         val distrib_deps = dependencies.collect { case (d, None) => d }.distinct
         val afp_deps = dependencies.collect { case (_, Some(d)) if d != e => d }.distinct
         Dependency(e, distrib_deps, afp_deps)

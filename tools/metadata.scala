@@ -16,9 +16,7 @@ import scala.collection.immutable.ListMap
 object Metadata {
   /* affiliations */
 
-  sealed trait Affiliation {
-    def author: Author.ID
-  }
+  sealed trait Affiliation { def author: Author.ID }
 
   case class Unaffiliated(override val author: Author.ID)
     extends Affiliation
@@ -42,9 +40,7 @@ object Metadata {
 
   case class Homepage(override val author: Author.ID, id: Homepage.ID, url: Url) extends Affiliation
 
-  object Homepage {
-    type ID = String
-  }
+  object Homepage { type ID = String }
 
 
   /* authors */
@@ -65,9 +61,7 @@ object Metadata {
     orcid: Option[Orcid] = None
   )
 
-  object Author {
-    type ID = String
-  }
+  object Author { type ID = String }
 
   type Authors = ListMap[Author.ID, Author]
   object Authors {
@@ -108,9 +102,7 @@ object Metadata {
     def all_topics: List[Topic] = this :: sub_topics.flatMap(_.all_topics)
   }
 
-  object Topic {
-    type ID = String
-  }
+  object Topic { type ID = String }
 
   type Topics = ListMap[Topic.ID, Topic]
   object Topics {
@@ -129,9 +121,7 @@ object Metadata {
 
   type Date = LocalDate
 
-  object Isabelle {
-    type Version = String
-  }
+  object Isabelle { type Version = String }
 
   case class Release(entry: Entry.Name, date: Date, isabelle: Isabelle.Version)
 
@@ -147,9 +137,7 @@ object Metadata {
 
   case class License(id: License.ID, name: String)
 
-  object License {
-    type ID = String
-  }
+  object License { type ID = String }
 
   type Licenses = ListMap[License.ID, License]
   object Licenses {
@@ -201,9 +189,7 @@ object Metadata {
     statistics_ignore: Boolean = false,
     related: List[Reference] = Nil)
 
-  object Entry {
-    type Name = String
-  }
+  object Entry { type Name = String }
 
   type Entries = ListMap[Entry.Name, Entry]
   object Entries {
@@ -267,11 +253,9 @@ object Metadata {
 
     /* topics */
 
-    def from_acm(acm: ACM): Table =
-      Table("id" -> String(acm.id), "desc" -> String(acm.desc))
+    def from_acm(acm: ACM): Table = Table("id" -> String(acm.id), "desc" -> String(acm.desc))
 
-    def to_acm(acm: Table): ACM =
-      ACM(acm.string("id").rep, acm.string("desc").rep)
+    def to_acm(acm: Table): ACM = ACM(acm.string("id").rep, acm.string("desc").rep)
 
     def from_ams(ams: AMS): Table =
       Table("id" -> String(ams.id), "hierarchy" -> Array(ams.hierarchy.map(String(_))))

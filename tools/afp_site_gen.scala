@@ -153,8 +153,8 @@ object AFP_Site_Gen {
     def round(int: Int): Int = Math.round(int.toFloat / 100) * 100
 
     def nodes(entry: Entry): List[Document.Node.Name] =
-      structure.entry_sessions(entry.name)
-        .flatMap(session => deps(session.name).proper_session_theories)
+      structure.entry_sessions(entry.name).flatMap(session =>
+        deps(session.name).proper_session_theories)
 
     val theorem_commands = List("theorem", "lemma", "corollary", "proposition", "schematic_goal")
 

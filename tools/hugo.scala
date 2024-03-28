@@ -57,17 +57,17 @@ object Hugo {
     /* Static project files */
 
     private val project_files = List(
-    List("content", "webapp"),
-    List("content", "_index.md"),
-    List("content", "about.md"),
-    List("content", "submission.md"),
-    List("content", "download.md"),
-    List("content", "help.md"),
-    List("content", "search.md"),
-    List("content", "statistics.md"),
-    List("content", "submission.md"),
-    List("themes"),
-    List("config.json")).map(Path.make)
+      List("content", "webapp"),
+      List("content", "_index.md"),
+      List("content", "about.md"),
+      List("content", "submission.md"),
+      List("content", "download.md"),
+      List("content", "help.md"),
+      List("content", "search.md"),
+      List("content", "statistics.md"),
+      List("content", "submission.md"),
+      List("themes"),
+      List("config.json")).map(Path.make)
 
     private val is_static_src = hugo_static.canonical.absolute == src_dir.canonical.absolute
 
