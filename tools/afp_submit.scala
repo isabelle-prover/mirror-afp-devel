@@ -1294,7 +1294,7 @@ object AFP_Submit {
           name = Val.ok(entry.get(NAME).value),
           title = Val.ok(entry.get(TITLE).value),
           topics = Val.ok(topics),
-          topic_input = parse_topic(entry.get(TOPIC), Nil),
+          topic_input = state.topics.get(entry.get(TOPIC).value),
           license = license,
           `abstract` = Val.ok(entry.get(ABSTRACT).value),
           author_input = authors.get(entry.get(AUTHOR).value),
