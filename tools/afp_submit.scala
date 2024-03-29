@@ -56,6 +56,10 @@ object AFP_Submit {
       }
     }
 
+    object Create_Entry {
+      def apply(state: State): Create_Entry = Create_Entry(license = state.licenses.values.head)
+    }
+
     case class Create_Entry(
       name: Val[String] = Val.ok(""),
       title: Val[String] = Val.ok(""),
@@ -73,6 +77,65 @@ object AFP_Submit {
     ) {
       def used_affils: Set[Affiliation] = (affils.v ++ notifies.v).toSet
       def used_authors: Set[Author.ID] = used_affils.map(_.author)
+
+      def add_affil: Create_Entry =
+        author_input match {
+          case None => copy(affils = affils.with_err("Select author first"))
+          case Some(author) =>
+            val default_affil = author.emails.headOption.orElse(
+              author.homepages.headOption).getOrElse(Unaffiliated(author.id))
+
+            copy(author_input = None, affils = Val.ok(affils.v :+ default_affil))
+        }
+
+      def remove_affil(affil: Affiliation): Create_Entry =
+        copy(affils = Val.ok(affils.v.filterNot(_ == affil)))
+
+      def add_notify: Option[Create_Entry] =
+        notify_input match {
+          case None => Some(copy(notifies = notifies.with_err("Select author first")))
+          case Some(author) =>
+            for (email <- author.emails.headOption)
+            yield copy(notify_input = None, notifies = Val.ok(notifies.v :+ email))
+        }
+
+      def remove_notify(notify: Email): Create_Entry =
+        copy(notifies = Val.ok(notifies.v.filterNot(_ == notify)))
+
+      def add_topic(state: State): Create_Entry =
+        topic_input match {
+          case None => copy(topics = topics.with_err("Select topic first"))
+          case Some(topic) =>
+            val topic1 = Model.validate_topic(topic.id, topics.v, state)
+            val topic_input1 = if (topic1.is_empty) topic_input else None
+            copy(topic_input = topic_input1, topics =
+              Val.ok(topics.v ++ topic1.opt).perhaps_err(topic1))
+        }
+
+      def remove_topic(topic: Topic): Create_Entry =
+        copy(topics = Val.ok(topics.v.filterNot(_ == topic)))
+
+      def add_related: Create_Entry =
+        related_kind match {
+          case None =>
+            copy(related_input = related_input.with_err("Select reference kind first"))
+          case Some(kind) =>
+            val reference = validate_related(kind, related_input.v, entry.related)
+            copy(related = related ++ reference.opt, related_input =
+              Val.ok(if (reference.is_empty) related_input.v else "").perhaps_err(reference))
+        }
+
+      def remove_related(reference: Reference): Create_Entry =
+        copy(related = related.filterNot(_ == reference))
+
+      def entry: Entry =
+        Entry(name = name.v, title = title.v, authors = affils.v, date = LocalDate.now(),
+          topics = topics.v, `abstract` = `abstract`.v.trim, notifies = notifies.v,
+          license = license, note = "", related = related)
+    }
+
+    object Create {
+      def init(state: State): Create = Create(entries = Val.ok(List(Create_Entry(state))))
     }
 
     case class Create(
@@ -84,11 +147,17 @@ object AFP_Submit {
       new_affils_author: Option[Author] = None,
       new_affils_input: String = "",
     ) extends T {
+      def add_entry(state: State): Create =
+        copy(entries = Val.ok(entries.v :+ Create_Entry(state)))
+
       def update_entry(num: Int, entry: Create_Entry): Create =
         copy(entries = Val.ok(entries.v.updated(num, entry)))
 
-      def updated_authors(old_authors: Authors): Authors =
-        (old_authors ++ new_authors.v.map(author => author.id -> author)).map {
+      def remove_entry(num: Int): Create =
+        copy(entries = Val.ok(Utils.remove_at(num, entries.v)))
+
+      def updated_authors(state: State): Authors =
+        (state.authors ++ new_authors.v.map(author => author.id -> author)).map {
           case (id, author) =>
             val emails =
               author.emails ++ new_affils.v.collect { case e: Email if e.author == id => e }
@@ -97,23 +166,169 @@ object AFP_Submit {
             id -> author.copy(emails = emails.distinct, homepages = homepages.distinct)
         }
 
+      def add_new_author(state: State): Create = {
+        val name = new_author_input.trim
+        if (name.isEmpty) copy(new_authors = new_authors.with_err("Name must not be empty"))
+        else {
+          def as_ascii(str: String) = {
+            var res: String = str
+            List("ö" -> "oe", "ü" -> "ue", "ä" -> "ae", "ß" -> "ss").foreach {
+              case (c, rep) => res = res.replace(c, rep)
+            }
+            Normalizer.normalize(res, Normalizer.Form.NFD).replaceAll("[^\\x00-\\x7F]", "")
+          }
+
+          def make_author_id(name: String): String = {
+            val normalized = as_ascii(name)
+            val Suffix = """^.*?([a-zA-Z]*)$""".r
+            val suffix =
+              normalized match {
+                case Suffix(suffix) => suffix
+                case _ => ""
+              }
+            val Prefix = """^([a-zA-Z]*).*$""".r
+            val prefix =
+              normalized.stripSuffix(suffix) match {
+                case Prefix(prefix) => prefix
+                case _ => ""
+              }
+            val authors = updated_authors(state)
+
+            var ident = suffix.toLowerCase
+            for {
+              c <- prefix.toLowerCase
+              if authors.contains(ident)
+            } ident += c.toString
+
+            Utils.make_unique(ident, authors.keySet)
+          }
+
+          val id = make_author_id(name)
+
+          val author =
+            validate_new_author(id, new_author_input, new_author_orcid, updated_authors(state))
+
+          copy(
+            new_author_input = if (author.is_empty) new_author_input else "",
+            new_author_orcid = if (author.is_empty) new_author_orcid else "",
+            new_authors = Val.ok(new_authors.v ++ author.opt).perhaps_err(author))
+        }
+      }
+
+      def remove_new_author(author: Author): Option[Create] =
+        if (used_authors.contains(author.id)) None
+        else Some(copy(new_authors = Val.ok(new_authors.v.filterNot(_.id == author.id))))
+
+      def add_new_affil: Create =
+        new_affils_author match {
+          case Some(author) =>
+            val address = new_affils_input.trim
+            if (address.isEmpty) copy(new_affils = new_affils.with_err("Must not be empty"))
+            else {
+              val id =
+                if (address.contains("@"))
+                  Utils.make_unique(author.id + "_email", author.emails.map(_.id).toSet)
+                else
+                  Utils.make_unique(author.id + "_homepage", author.homepages.map(_.id).toSet)
+
+              val affil = validate_new_affil(id, address, author)
+              copy(
+                new_affils_input = if (affil.is_empty) new_affils_input else "",
+                new_affils = Val.ok(new_affils.v ++ affil.opt).perhaps_err(affil))
+            }
+          case None => copy(new_affils = new_affils.with_err("Select author first"))
+        }
+
+      def remove_new_affil(affil: Affiliation): Option[Create] =
+        if (used_affils.contains(affil)) None
+        else Some(copy(new_affils = Val.ok(new_affils.v.filterNot(_ == affil))))
+
+      def validate(
+        state: State,
+        message: String,
+        existing: Boolean
+      ): T = {
+        var ok = true
+
+        def validate[A](validator: A => Val[A], value: A): Val[A] = {
+          val res = validator(value)
+          if (res.err.nonEmpty) ok = false
+          res
+        }
+
+        def val_title(title: String): Val[String] =
+          if (title.isBlank) Val.err(title, "Title must not be blank")
+          else if (title.trim != title) Val.err(title, "Title must not contain extra spaces")
+          else Val.ok(title)
+
+        def val_name(name: String): Val[String] =
+          if (name.isBlank) Val.err(name, "Name must not be blank")
+          else if (!"[a-zA-Z0-9_-]+".r.matches(name))
+            Val.err(name, "Invalid character in name")
+          else if (existing && !state.entries.contains(name))
+            Val.err(name, "Entry does not exist")
+          else if (!existing && state.entries.contains(name))
+            Val.err(name, "Entry already exists")
+          else Val.ok(name)
+
+        def val_entries(entries: List[Model.Create_Entry]): Val[List[Model.Create_Entry]] =
+          if (entries.isEmpty) Val.err(entries, "Must contain at least one entry")
+          else if (Library.duplicates(entries.map(_.name)).nonEmpty)
+            Val.err(entries, "Entries must have different names")
+          else Val.ok(entries)
+
+        def val_new_authors(authors: List[Author]): Val[List[Author]] =
+          if (!authors.forall(author => used_authors.contains(author.id)))
+            Val.err(authors, "Unused authors")
+          else Val.ok(authors)
+
+        def val_new_affils(affils: List[Affiliation]): Val[List[Affiliation]] =
+          if (!affils.forall(affil => used_affils.contains(affil)))
+            Val.err(affils, "Unused affils")
+          else Val.ok(affils)
+
+        def val_entry_authors(authors: List[Affiliation]): Val[List[Affiliation]] =
+          if (authors.isEmpty) Val.err(authors, "Must contain at least one author")
+          else if (!Utils.is_distinct(authors)) Val.err(authors, "Duplicate affiliations")
+          else Val.ok(authors)
+
+        def val_notifies(notifies: List[Email]): Val[List[Email]] =
+          if (notifies.isEmpty) Val.err(notifies, "Must contain at least one maintainer")
+          else if (!Utils.is_distinct(notifies)) Val.err(notifies, "Duplicate emails")
+          else Val.ok(notifies)
+
+        def val_topics(topics: List[Topic]): Val[List[Topic]] =
+          if (topics.isEmpty) Val.err(topics, "Must contain at least one topic") else Val.ok(topics)
+
+        def val_abstract(txt: String): Val[String] =
+          if (txt.isBlank) Val.err(txt, "Entry must contain an abstract")
+          else if (List("\\cite", "\\emph", "\\texttt").exists(txt.contains(_)))
+            Val.err(txt, "LaTeX not allowed, use MathJax for math symbols")
+          else Val.ok(txt)
+
+        val entries1 =
+          for (entry <- entries.v)
+          yield entry.copy(
+            name = validate(val_name, entry.name.v),
+            title = validate(val_title, entry.title.v),
+            affils = validate(val_entry_authors, entry.affils.v),
+            notifies = validate(val_notifies, entry.notifies.v),
+            topics = validate(val_topics, entry.topics.v),
+            `abstract` = validate(val_abstract, entry.`abstract`.v))
+
+        val validated =
+          copy(
+            entries = validate(val_entries, entries1),
+            new_authors = validate(val_new_authors, new_authors.v),
+            new_affils = validate(val_new_affils, new_affils.v))
+
+        if (ok) Upload(Metadata(updated_authors(state), entries.v.map(_.entry)), message)
+        else validated
+      }
+
       def used_affils: Set[Affiliation] = entries.v.toSet.flatMap(_.used_affils)
       def used_authors: Set[Author.ID] =
         new_affils.v.map(_.author).toSet ++ entries.v.flatMap(_.used_authors)
-
-      def create(authors: Authors): (Authors, List[Entry]) =
-        (updated_authors(authors), entries.v.map(entry =>
-          Entry(
-            name = entry.name.v,
-            title = entry.title.v,
-            authors = entry.affils.v,
-            date = LocalDate.now(),
-            topics = entry.topics.v,
-            `abstract` = entry.`abstract`.v.trim,
-            notifies = entry.notifies.v,
-            license = entry.license,
-            note = "",
-            related = entry.related)))
     }
 
     object Build extends Enumeration {
@@ -126,22 +341,58 @@ object AFP_Submit {
       def from_string(s: String): Option[Value] = values.find(_.toString == s)
     }
 
-    case class Overview(id: String, date: LocalDate, name: String, status: Status.Value)
-    case class Metadata(authors: Authors, entries: List[Entry]) {
-      def new_authors(old_authors: Authors): Set[Author] =
-        entries.flatMap(_.authors).map(_.author).filterNot(old_authors.contains).toSet.map(authors)
+    case class Overview(id: String, date: LocalDate, name: String, status: Status.Value) {
+      def update_repo(repo: Mercurial.Repository): Boolean =
+        if (status != Model.Status.Added) false
+        else {
+          val id_before = repo.id()
+          repo.pull()
+          repo.update()
+          val id_after = repo.id()
+          id_before != id_after
+        }
+    }
 
-      def new_affils(old_authors: Authors): Set[Affiliation] =
+    case class Metadata(authors: Authors, entries: List[Entry]) {
+      def new_authors(state: State): Set[Author] =
+        entries.flatMap(_.authors).map(_.author).filterNot(state.authors.contains).toSet.map(authors)
+
+      def new_affils(state: State): Set[Affiliation] =
         entries.flatMap(entry => entry.authors ++ entry.notifies).toSet.filter {
           case _: Unaffiliated => false
-          case e: Email => !old_authors.get(e.author).exists(_.emails.contains(e))
-          case h: Homepage => !old_authors.get(h.author).exists(_.homepages.contains(h))
+          case e: Email => !state.authors.get(e.author).exists(_.emails.contains(e))
+          case h: Homepage => !state.authors.get(h.author).exists(_.homepages.contains(h))
         }
     }
 
     case object Invalid extends T
-    case class Upload(meta: Metadata, message: String, error: String = "") extends T
+
+    object Upload {
+      def apply(submission: Submission): Upload = Upload(submission.meta, submission.message)
+    }
+
+    case class Upload(metadata: Metadata, message: String, error: String = "") extends T {
+      def save(handler: Handler, state: State): (Submission, State) = {
+        val (id, state1) = handler.save(state, metadata, message)
+        (handler.get(id, state1).get, state1)
+      }
+
+      def submit(handler: Handler, bytes: String, file_name: String, state: State): (T, State) = {
+        val archive = Bytes.decode_base64(bytes)
+
+        if (archive.is_empty || file_name.isEmpty) (copy(error = "Select a file"), state)
+        else if (!file_name.endsWith(".zip") && !file_name.endsWith(".tar.gz"))
+          (copy(error = "Only .zip and .tar.gz archives allowed"), state)
+        else {
+          val file_extension = if (file_name.endsWith(".zip")) ".zip" else ".tar.gz"
+          val (id, state1) = handler.save(state, metadata, message, archive, file_extension)
+          (Created(id), state1)
+        }
+      }
+    }
+
     case class Created(id: String) extends T
+
     case class Submission(
       id: Handler.ID,
       meta: Metadata,
@@ -149,21 +400,34 @@ object AFP_Submit {
       status: Option[Status.Value],
       message: String = "",
       log: Option[String] = None,
-      archive: Option[String] = None) extends T
+      archive: Option[String] = None
+    ) extends T {
+      def submit(handler: Handler): Option[Submission] =
+        if (status.nonEmpty) None
+        else {
+          handler.submit(id)
+          Some(copy(status = Some(Status.Submitted)))
+        }
+
+      def abort_build(handler: Handler): Option[Submission] =
+        if (build != Model.Build.Running) None
+        else {
+          handler.abort_build(id)
+          Some(copy(build = Model.Build.Aborted))
+        }
+    }
+
     case class Submission_List(submissions: List[Overview]) extends T
 
 
     /* validation */
 
     def validate_topic(id: String, selected: List[Topic], state: State): Val_Opt[Topic] =
-      if (id.isEmpty) Val_Opt.user_err("Select topic first")
-      else {
-        state.topics.values.find(_.id == id) match {
-          case Some(topic) =>
-            if (selected.contains(topic)) Val_Opt.user_err("Topic already selected")
-            else Val_Opt.ok(topic)
-          case _ => Val_Opt.error
-        }
+      state.topics.values.find(_.id == id) match {
+        case Some(topic) =>
+          if (selected.contains(topic)) Val_Opt.user_err("Topic already selected")
+          else Val_Opt.ok(topic)
+        case _ => Val_Opt.error
       }
 
     def validate_new_author(
@@ -645,15 +909,15 @@ object AFP_Submit {
           hidden(Nest_Key(key, AFFILIATION), affil_address(affil))))
 
       indexed(meta.entries, Params.empty, ENTRY, render_entry) :::
-        indexed(meta.new_authors(state.authors).toList, Params.empty, AUTHOR, render_new_author) :::
-        indexed(meta.new_affils(state.authors).toList, Params.empty, AFFILIATION, render_new_affil)
+        indexed(meta.new_authors(state).toList, Params.empty, AUTHOR, render_new_author) :::
+        indexed(meta.new_affils(state).toList, Params.empty, AFFILIATION, render_new_affil)
     }
 
 
     /* rendering */
 
     def render_create(model: Model.Create, state: State): XML.Body = {
-      val updated_authors = model.updated_authors(state.authors)
+      val updated_authors = model.updated_authors(state)
       val authors_list = updated_authors.values.toList.sortBy(_.id)
       val (entry_authors, other_authors) =
         updated_authors.values.toList.sortBy(_.id).partition(author =>
@@ -904,7 +1168,7 @@ object AFP_Submit {
       }
 
       List(submit_form(api.api_url(API.SUBMISSION), List(
-        fieldset(legend("Overview") :: render_metadata(upload.meta, state)),
+        fieldset(legend("Overview") :: render_metadata(upload.metadata, state)),
         fieldset(legend("Submit") ::
           api_button(api.api_url(API.SUBMISSION), "< edit metadata") ::
           render_if(mode == Mode.SUBMISSION, List(
@@ -1191,34 +1455,21 @@ object AFP_Submit {
 
     /* control */
 
-    def add_entry(params: Params.Data): Option[Model.T] = view.parse_create(params, _state).map { model =>
-      model.copy(entries =
-        Val.ok(model.entries.v :+ Model.Create_Entry(license = _state.licenses.head._2)))
-    }
+    def add_entry(params: Params.Data): Option[Model.T] =
+      for (model <- view.parse_create(params, _state)) yield model.add_entry(_state)
 
     def remove_entry(params: Params.Data): Option[Model.T] =
       for {
         model <- view.parse_create(params, _state)
         (num_entry, _) <- view.parse_num_entry(view.action(params))
-      } yield model.copy(entries = Val.ok(Utils.remove_at(num_entry, model.entries.v)))
+      } yield model.remove_entry(num_entry)
 
     def add_author(params: Params.Data): Option[Model.T] =
       for {
         model <- view.parse_create(params, _state)
         (num_entry, _) <- view.parse_num_entry(view.action(params))
         entry <- model.entries.v.unapply(num_entry)
-      } yield
-        entry.author_input match {
-          case None =>
-            model.update_entry(num_entry, entry.copy(
-              affils = entry.affils.with_err("Select author first")))
-          case Some(author) =>
-            val default_affil = author.emails.headOption.orElse(
-              author.homepages.headOption).getOrElse(Unaffiliated(author.id))
-
-            model.update_entry(num_entry, entry.copy(
-              author_input = None, affils = Val.ok(entry.affils.v :+ default_affil)))
-        }
+      } yield model.update_entry(num_entry, entry.add_affil)
 
     def remove_author(params: Params.Data): Option[Model.T] =
       for {
@@ -1226,23 +1477,15 @@ object AFP_Submit {
         (num_affil, action) <- view.parse_num_affil(view.action(params))
         (num_entry, _) <- view.parse_num_entry(action)
         entry <- model.entries.v.unapply(num_entry)
-      } yield
-        model.update_entry(num_entry, entry.copy(affils =
-          Val.ok(Utils.remove_at(num_affil, entry.affils.v))))
+        affil <- entry.affils.v.unapply(num_affil)
+      } yield model.update_entry(num_entry, entry.remove_affil(affil))
 
     def add_notify(params: Params.Data): Option[Model.T] =
       for {
         model <- view.parse_create(params, _state)
         (num_entry, _) <- view.parse_num_entry(view.action(params))
         entry <- model.entries.v.unapply(num_entry)
-        entry1 <-
-          entry.notify_input match {
-            case Some(author) =>
-              author.emails.headOption.map(email => entry.copy(
-                notify_input = None, notifies = Val.ok(entry.notifies.v :+ email)))
-            case None =>
-              Some(entry.copy(notifies = entry.notifies.with_err("Select author first")))
-          }
+        entry1 <- entry.add_notify
       } yield model.update_entry(num_entry, entry1)
 
     def remove_notify(params: Params.Data): Option[Model.T] =
@@ -1251,23 +1494,15 @@ object AFP_Submit {
         (num_notify, action) <- view.parse_num_notify(view.action(params))
         (num_entry, _) <- view.parse_num_entry(action)
         entry <- model.entries.v.unapply(num_entry)
-      } yield
-        model.update_entry(num_entry, entry.copy(notifies =
-          Val.ok(Utils.remove_at(num_notify, entry.notifies.v))))
+        notify <- entry.notifies.v.unapply(num_notify)
+      } yield model.update_entry(num_entry, entry.remove_notify(notify))
 
     def add_topic(params: Params.Data): Option[Model.T] =
       for {
         model <- view.parse_create(params, _state)
         (num_entry, _) <- view.parse_num_entry(view.action(params))
         entry <- model.entries.v.unapply(num_entry)
-      } yield {
-        val topic_id = entry.topic_input.map(_.id).getOrElse("")
-        val topic = Model.validate_topic(topic_id, entry.topics.v, _state)
-        val topic_input = if (topic.is_empty) entry.topic_input else None
-        val entry1 = entry.copy(topic_input = topic_input,
-          topics = Val.ok(entry.topics.v ++ topic.opt).perhaps_err(topic))
-        model.update_entry(num_entry, entry1)
-      }
+      } yield model.update_entry(num_entry, entry.add_topic(_state))
 
     def remove_topic(params: Params.Data): Option[Model.T] =
       for {
@@ -1275,31 +1510,15 @@ object AFP_Submit {
         (num_topic, action) <- view.parse_num_topic(view.action(params))
         (num_entry, _) <- view.parse_num_entry(action)
         entry <- model.entries.v.unapply(num_entry)
-      } yield {
-        val entry1 = entry.copy(topics = Val.ok(Utils.remove_at(num_topic, entry.topics.v)))
-        model.copy(entries = Val.ok(model.entries.v.updated(num_entry, entry1)))
-      }
+        topic <- entry.topics.v.unapply(num_topic)
+      } yield model.update_entry(num_entry, entry.remove_topic(topic))
 
     def add_related(params: Params.Data): Option[Model.T] =
       for {
         model <- view.parse_create(params, _state)
         (num_entry, _) <- view.parse_num_entry(view.action(params))
         entry <- model.entries.v.unapply(num_entry)
-      } yield {
-        val entry1 =
-          entry.related_kind match {
-            case None =>
-              entry.copy(related_input =
-                entry.related_input.with_err("Select reference kind first"))
-            case Some(kind) =>
-              val reference = Model.validate_related(kind, entry.related_input.v, entry.related)
-              val related_input = if (reference.is_empty) entry.related_input.v else ""
-              entry.copy(
-                related = entry.related ++ reference.opt,
-                related_input = Val.ok(related_input).perhaps_err(reference))
-          }
-        model.update_entry(num_entry, entry1)
-      }
+      } yield model.update_entry(num_entry, entry.add_related)
 
     def remove_related(params: Params.Data): Option[Model.T] =
       for {
@@ -1307,268 +1526,97 @@ object AFP_Submit {
         (num_related, action) <- view.parse_num_related(view.action(params))
         (num_entry, _) <- view.parse_num_entry(action)
         entry <- model.entries.v.unapply(num_entry)
-      } yield {
-        val entry1 = entry.copy(related = Utils.remove_at(num_related, entry.related))
-        model.copy(entries = Val.ok(model.entries.v.updated(num_entry, entry1)))
-      }
+        related <- entry.related.unapply(num_related)
+      } yield model.update_entry(num_entry, entry.remove_related(related))
 
-    def add_new_author(params: Params.Data): Option[Model.T] = view.parse_create(params, _state).map { model =>
-      val name = model.new_author_input.trim
-      if (name.isEmpty)
-        model.copy(new_authors = model.new_authors.with_err("Name must not be empty"))
-      else {
-        def as_ascii(str: String) = {
-          var res: String = str
-          List("ö" -> "oe", "ü" -> "ue", "ä" -> "ae", "ß" -> "ss").foreach {
-            case (c, rep) => res = res.replace(c, rep)
-          }
-          Normalizer.normalize(res, Normalizer.Form.NFD).replaceAll("[^\\x00-\\x7F]", "")
-        }
-
-        def make_author_id(name: String): String = {
-          val normalized = as_ascii(name)
-          val Suffix = """^.*?([a-zA-Z]*)$""".r
-          val suffix = normalized match {
-            case Suffix(suffix) => suffix
-            case _ => ""
-          }
-          val Prefix = """^([a-zA-Z]*).*$""".r
-          val prefix = normalized.stripSuffix(suffix) match {
-            case Prefix(prefix) => prefix
-            case _ => ""
-          }
-          val updated_authors = model.updated_authors(_state.authors)
-
-          var ident = suffix.toLowerCase
-          for {
-            c <- prefix.toLowerCase
-            if updated_authors.contains(ident)
-          } ident += c.toString
-
-          Utils.make_unique(ident, updated_authors.keySet)
-        }
-
-        val id = make_author_id(name)
-
-        val author = Model.validate_new_author(id, model.new_author_input, model.new_author_orcid,
-          model.updated_authors(_state.authors))
-        val new_author_input = if (author.is_empty) model.new_author_input else ""
-        val new_author_orcid = if (author.is_empty) model.new_author_orcid else ""
-
-        model.copy(
-          new_author_input = new_author_input,
-          new_author_orcid = new_author_orcid,
-          new_authors = Val.ok(model.new_authors.v ++ author.opt).perhaps_err(author))
-      }
-    }
+    def add_new_author(params: Params.Data): Option[Model.T] =
+      for (model <- view.parse_create(params, _state)) yield model.add_new_author(_state)
 
     def remove_new_author(params: Params.Data): Option[Model.T] =
       for {
         model <- view.parse_create(params, _state)
         (num_author, _) <- view.parse_num_affil(view.action(params))
         author <- model.new_authors.v.unapply(num_author)
-        if !model.used_authors.contains(author.id)
-      } yield model.copy(new_authors =
-        Val.ok(Utils.remove_at(num_author, model.new_authors.v)))
+        model1 <- model.remove_new_author(author)
+      } yield model1
 
     def add_new_affil(params: Params.Data): Option[Model.T] =
-      view.parse_create(params, _state).map { model =>
-        model.new_affils_author match {
-          case Some(author) =>
-            val address = model.new_affils_input.trim
-            if (address.isEmpty)
-              model.copy(new_affils = model.new_affils.with_err("Must not be empty"))
-            else {
-              val id =
-                if (address.contains("@"))
-                  Utils.make_unique(author.id + "_email", author.emails.map(_.id).toSet)
-                else
-                  Utils.make_unique(author.id + "_homepage", author.homepages.map(_.id).toSet)
-
-              val affil = Model.validate_new_affil(id, address, author)
-              val new_affils_input = if (affil.is_empty) model.new_affils_input else ""
-              model.copy(
-                new_affils_input = new_affils_input,
-                new_affils = Val.ok(model.new_affils.v ++ affil.opt).perhaps_err(affil))
-            }
-          case None => model.copy(new_affils = model.new_affils.with_err("Select author first"))
-        }
-      }
+      for (model <- view.parse_create(params, _state)) yield model.add_new_affil
 
     def remove_new_affil(params: Params.Data): Option[Model.T] =
       for {
         model <- view.parse_create(params, _state)
         (num_affil, _) <- view.parse_num_new_affil(view.action(params))
         affil <- model.new_affils.v.unapply(num_affil)
-        if !model.used_affils.contains(affil)
-      } yield model.copy(new_affils = Val.ok(Utils.remove_at(num_affil, model.new_affils.v)))
+        model1 <- model.remove_new_affil(affil)
+      } yield model1
 
-    def upload(params: Params.Data): Option[Model.T] = view.parse_create(params, _state).map { create =>
-      var ok = true
+    def upload(params: Params.Data): Option[Model.T] =
+      for (model <- view.parse_create(params, _state))
+      yield model.validate(_state, view.parse_message(params), mode == Mode.EDIT)
 
-      def validate[A](validator: A => Val[A], value: A): Val[A] = {
-        val res = validator(value)
-        if (res.err.nonEmpty) ok = false
-        res
-      }
-
-      def title(title: String): Val[String] =
-        if (title.isBlank) Val.err(title, "Title must not be blank")
-        else if (title.trim != title) Val.err(title, "Title must not contain extra spaces")
-        else Val.ok(title)
-
-      def name(name: String): Val[String] =
-        if (name.isBlank) Val.err(name, "Name must not be blank")
-        else if (!"[a-zA-Z0-9_-]+".r.matches(name)) Val.err(name,
-          "Invalid character in name")
-        else mode match {
-          case Mode.EDIT =>
-            if (_state.entries.contains(name)) Val.ok(name)
-            else Val.err(name, "Entry does not exist")
-          case Mode.SUBMISSION =>
-            if (_state.entries.contains(name)) Val.err(name, "Entry already exists")
-            else Val.ok(name)
-        }
-
-      def entries(entries: List[Model.Create_Entry]): Val[List[Model.Create_Entry]] =
-        if (entries.isEmpty) Val.err(entries, "Must contain at least one entry")
-        else if (Library.duplicates(entries.map(_.name)).nonEmpty)
-          Val.err(entries, "Entries must have different names")
-        else Val.ok(entries)
-
-      def new_authors(authors: List[Author]): Val[List[Author]] =
-        if (!authors.forall(author => create.used_authors.contains(author.id)))
-          Val.err(authors, "Unused authors")
-        else Val.ok(authors)
-
-      def new_affils(affils: List[Affiliation]): Val[List[Affiliation]] =
-        if (!affils.forall(affil => create.used_affils.contains(affil)))
-          Val.err(affils, "Unused affils")
-        else Val.ok(affils)
-
-      def entry_authors(authors: List[Affiliation]): Val[List[Affiliation]] =
-        if (authors.isEmpty) Val.err(authors, "Must contain at least one author")
-        else if (!Utils.is_distinct(authors)) Val.err(authors, "Duplicate affiliations")
-        else Val.ok(authors)
-
-      def notifies(notifies: List[Email]): Val[List[Email]] =
-        if (notifies.isEmpty) Val.err(notifies, "Must contain at least one maintainer")
-        else if (!Utils.is_distinct(notifies)) Val.err(notifies, "Duplicate emails")
-        else Val.ok(notifies)
-
-      def topics(topics: List[Topic]): Val[List[Topic]] =
-        if (topics.isEmpty) Val.err(topics, "Must contain at least one topic") else Val.ok(topics)
-
-      def `abstract`(txt: String): Val[String] =
-        if (txt.isBlank) Val.err(txt, "Entry must contain an abstract")
-        else if (List("\\cite", "\\emph", "\\texttt").exists(txt.contains(_)))
-          Val.err(txt, "LaTeX not allowed, use MathJax for math symbols")
-        else Val.ok(txt)
-
-      val validated = create.copy(
-        entries = validate(
-          entries, create.entries.v.map(entry => entry.copy(
-            name = validate(name, entry.name.v),
-            title = validate(title, entry.title.v),
-            affils = validate(entry_authors, entry.affils.v),
-            notifies = validate(notifies, entry.notifies.v),
-            topics = validate(topics, entry.topics.v),
-            `abstract` = validate(`abstract`, entry.`abstract`.v)
-          ))),
-        new_authors = validate(new_authors, create.new_authors.v),
-        new_affils = validate(new_affils, create.new_affils.v))
-
-      if (ok) {
-        val (updated_authors, entries) = create.create(_state.authors)
-        Model.Upload(Model.Metadata(updated_authors, entries), view.parse_message(params))
-      } else validated
-    }
-
-    def create(params: Params.Data): Option[Model.T] = {
-      upload(params) match {
-        case Some(upload: Model.Upload) =>
-          mode match {
-            case Mode.EDIT => synchronized {
-              val (id, state) = handler.save(_state, upload.meta)
-              _state = state
-              handler.get(id, _state)
-            }
-            case Mode.SUBMISSION =>
-              val archive = Bytes.decode_base64(view.parse_archive_file(params))
-              val file_name = view.parse_archive_filename(params)
-
-              if (archive.is_empty || file_name.isEmpty) {
-                Some(upload.copy(error = "Select a file"))
-              } else if (!file_name.endsWith(".zip") && !file_name.endsWith(".tar.gz")) {
-                Some(upload.copy(error = "Only .zip and .tar.gz archives allowed"))
-              } else {
-                val ext = if (file_name.endsWith(".zip")) ".zip" else ".tar.gz"
-
-                synchronized {
-                  val (id, state) = handler.save(_state, upload.meta, upload.message, archive, ext)
-                  _state = state
-                  Some(Model.Created(id))
-                }
-              }
+    def create(params: Params.Data): Option[Model.T] =
+      for {
+        model <- view.parse_create(params, _state)
+        upload <-
+          model.validate(_state, view.parse_message(params), mode == Mode.EDIT) match {
+            case upload: Model.Upload => Some(upload)
+            case _ => None
           }
-        case _ => None
+      } yield synchronized {
+        val (model1, state) =
+          mode match {
+            case Mode.EDIT => upload.save(handler, _state)
+            case Mode.SUBMISSION =>
+              upload.submit(
+                handler, view.parse_archive_file(params),
+                view.parse_archive_filename(params), _state)
+          }
+        _state = state
+        model1
       }
-    }
 
-    def empty_submission: Option[Model.T] =
-      Some(Model.Create(entries =
-        Val.ok(List(Model.Create_Entry(license = _state.licenses.head._2)))))
+    def empty_submission: Option[Model.T] = Some(Model.Create.init(_state))
 
     def get_submission(props: Properties.T): Option[Model.Submission] =
-      view.parse_id(props).flatMap(handler.get(_, _state))
+      for {
+        id <- view.parse_id(props)
+        submission <- handler.get(id, _state)
+      } yield submission
 
     def resubmit(params: Params.Data): Option[Model.T] =
-      handler.get(view.action(params), _state).map(submission =>
-        Model.Upload(submission.meta, submission.message))
+      for (submission <- handler.get(view.action(params), _state)) yield Model.Upload(submission)
 
     def submit(params: Params.Data): Option[Model.T] =
-      handler.get(view.action(params), _state).flatMap { submission =>
-        if (submission.status.nonEmpty) None
-        else {
-          handler.submit(submission.id)
-          Some(submission.copy(status = Some(Model.Status.Submitted)))
-        }
-      }
+      for {
+        submission <- handler.get(view.action(params), _state)
+        submission1 <- submission.submit(handler)
+      } yield submission1
 
     def abort_build(params: Params.Data): Option[Model.T] =
-      handler.get(view.action(params), _state).flatMap { submission =>
-        if (submission.build != Model.Build.Running) None
-        else {
-          handler.abort_build(submission.id)
-          Some(submission.copy(build = Model.Build.Aborted))
-        }
-      }
+      for {
+        submission <- handler.get(view.action(params), _state)
+        submission1 <- submission.abort_build(handler)
+      } yield submission1
 
     def submission(params: Params.Data): Option[Model.T] = view.parse_create(params, _state)
 
-    def set_status(params: Params.Data): Option[Model.T] = {
+    def set_status(params: Params.Data): Option[Model.T] =
       for {
-        list <- view.parse_submission_list(params)
+        model <- view.parse_submission_list(params)
         (num_entry, _) <- view.parse_num_entry(view.action(params))
-        changed <- list.submissions.unapply(num_entry)
-      } yield {
-        if (changed.status == Model.Status.Added && !devel) {
-          progress.echo_if(verbose, "Updating server data...")
-          synchronized {
-            val id_before = repo.id()
-            repo.pull()
-            repo.update()
-            val id_after = repo.id()
-            if (id_before != id_after) {
-              _state = State.load(afp)
-              progress.echo("Updated repo from " + id_before + " to " + id_after)
-            }
+        entry <- model.submissions.unapply(num_entry)
+      } yield synchronized {
+        if (!devel) {
+          val updated = entry.update_repo(repo)
+          if (updated) {
+            progress.echo_if(verbose, "Updating server data...")
+            _state = State.load(afp)
+            progress.echo("Updated repo to " + repo.id())
           }
         }
-        handler.set_status(changed.id, changed.status)
-        list
+        model
       }
-    }
 
     def submission_list: Option[Model.T] = Some(handler.list(_state))
 
@@ -1584,8 +1632,7 @@ object AFP_Submit {
         archive <- handler.get_archive(id)
       } yield archive
 
-    def style_sheet: Option[Path] =
-      Some(afp.base_dir + Path.make(List("tools", "main.css")))
+    def style_sheet: Option[Path] = Some(afp.base_dir + Path.make(List("tools", "main.css")))
 
     val error_model = Model.Invalid
 
