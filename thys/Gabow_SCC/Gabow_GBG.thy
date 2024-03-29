@@ -1953,13 +1953,13 @@ proof -
     from NC INV obtain i where "i<num_acc" "i\<notin>cS" 
       unfolding rec_loop_invar_def by auto blast
 
-    with ALL obtain v' where "v'\<in>Vl" "\<not> acc v' \<subseteq> cS"
-      by simp (smt UN_iff atLeastLessThan_iff le0 subsetCE)
+    with ALL obtain v' where v': "v'\<in>Vl" "\<not> acc v' \<subseteq> cS"
+      by (metis NES atLeastLessThan_iff cSUP_least in_mono zero_le)
      
-    moreover with CONN INV have "(v,v')\<in>(E \<inter> Vl \<times> Vl)\<^sup>*"
+    with CONN INV have "(v,v')\<in>(E \<inter> Vl \<times> Vl)\<^sup>*"
       unfolding rec_loop_invar_def by auto
     hence "(v,v')\<in>?E\<^sup>*" using rtrancl_mono_mp[OF E_SS] by blast
-    ultimately have "\<exists>v'. (v,v')\<in>(?E)\<^sup>* \<and> \<not> acc v' \<subseteq> cS" by auto
+    with v' have "\<exists>v'. (v,v')\<in>(?E)\<^sup>* \<and> \<not> acc v' \<subseteq> cS" by auto
   } note ASSERT1 = this
 
   {

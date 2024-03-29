@@ -7,13 +7,13 @@ package afp
 
 import isabelle.*
 
-import java.io.{BufferedReader, InputStreamReader, IOException}
+import java.io.IOException
 
 import scala.collection.immutable.ListMap
 
 
 object Utils {
-  val TIMEOUT = 30*1000
+  val TIMEOUT = 30 * 1000
 
   def group_sorted[A, K](l: List[A], f: A => K): ListMap[K, List[A]] =
     l.foldLeft(ListMap.empty[K, List[A]]) {

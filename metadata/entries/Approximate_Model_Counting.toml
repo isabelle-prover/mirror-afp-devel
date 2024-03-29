@@ -1,0 +1,40 @@
+title = "Approximate Model Counting"
+date = 2024-03-15
+topics = [
+  "Computer science/Algorithms/Approximation",
+  "Computer science/Algorithms/Randomized",
+]
+abstract = """
+Approximate model counting is the task of approximating the number of solutions
+to an input formula.  This entry formalizes $\\mathsf{ApproxMC}$, an algorithm
+due to Chakraborty et al. with a
+probably approximately correct (PAC) guarantee, i.e., $\\mathsf{ApproxMC}$
+returns a multiplicative $(1+\\varepsilon)$-factor approximation of the model
+count with probability at least $1 - \\delta$, where $\\varepsilon > 0$ and $0 <
+\\delta \\leq 1$.  The algorithmic specification is further refined to a verified
+certificate checker that can be used to validate the results of untrusted
+$\\mathsf{ApproxMC}$ implementations (assuming access to trusted randomness)."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.tan]
+email = "tan_email"
+
+[authors.yang]
+email = "yang_email"
+
+[contributors]
+
+[notify]
+tan = "tan_email"
+yang = "yang_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

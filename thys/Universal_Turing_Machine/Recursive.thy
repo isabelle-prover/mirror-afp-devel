@@ -1084,7 +1084,7 @@ next
   then obtain stp where "abc_steps_l (0, 0 \<up> n @ x # lm) [Dec n 2, Goto 0] stp
                       = (Suc (Suc 0), 0 # 0 \<up> n @ lm)"
     apply(auto simp: abc_Hoare_halt_def)
-    by (smt abc_final.simps abc_holds_for.elims(2) length_Cons list.size(3))
+    by (smt (verit) abc_final.simps abc_holds_for.elims(2) length_Cons list.size(3))
   moreover have "abc_steps_l (0, 0\<up>n @ Suc x # lm) [Dec n 2, Goto 0] (Suc (Suc 0)) 
         = (0,  0 \<up> n @ x # lm)"
     by(auto simp: abc_steps_l.simps abc_step_l.simps abc_fetch.simps abc_lm_v.simps

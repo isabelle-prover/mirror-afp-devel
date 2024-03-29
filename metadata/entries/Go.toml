@@ -1,0 +1,35 @@
+title = "Go Code Generation for Isabelle"
+date = 2024-01-22
+topics = [
+  "Tools",
+]
+abstract = """
+This entry contains a standalone code generation target for the Go programming language.
+Unlike the previous targets, Go is not a functional language and encourages code in an imperative style, thus many of the features of Isabelle's language (particularly data types, pattern matching, and type classes) have to be emulated using imperative language constructs in Go.
+To generate Go code, users can simply import this entry, which makes the Go target available."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.stuebinger]
+homepage = "stuebinger_homepage"
+
+[authors.hupel]
+homepage = "hupel_homepage"
+
+[contributors]
+
+[notify]
+hupel = "hupel_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.48550/arXiv.2310.02704",
+  "10.5281/zenodo.8401392",
+]
+pubs = []

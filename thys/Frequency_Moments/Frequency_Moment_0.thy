@@ -1028,11 +1028,11 @@ proof -
       using aux_1 aux_2 True p_gt_0 a_1 by simp
     also have "... \<le> ereal (10 + 4 * real r + 2 * log 2 (log 2 4 + log 2 (2 * n + 40)))"
       using log_2_4 p_le_n p_gt_0
-      by (intro ereal_mono add_mono mult_left_mono log_mono of_nat_mono add_pos_nonneg, auto)
+      by (simp add: Transcendental.log_mono aux_2)
     also have "... = ereal (10 + 4 * real r + 2 * log 2 (log 2 (8 * n + 160)))"
       by (simp add:log_mult[symmetric])
     also have "... \<le> ereal (10 + 4 * real r + 2 * log 2 (log 2 ((n+13) powr 2)))"
-      by (intro ereal_mono add_mono mult_left_mono log_mono of_nat_mono add_pos_nonneg)
+      by (intro ereal_mono add_mono mult_left_mono Transcendental.log_mono of_nat_mono add_pos_nonneg)
        (auto simp add:power2_eq_square algebra_simps)
     also have "... = ereal (10 +  4 * real r + 2 * log 2 (log 2 4 * log 2 (n + 13)))"
       by (subst log_powr, simp_all add:log_2_4)

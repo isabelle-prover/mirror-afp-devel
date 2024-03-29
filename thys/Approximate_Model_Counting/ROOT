@@ -1,0 +1,18 @@
+chapter AFP
+
+session Approximate_Model_Counting = Frequency_Moments +
+  options [timeout = 600]
+  sessions
+    Concentration_Inequalities
+    Monad_Normalisation
+  theories
+    ApproxMCPreliminaries
+    RandomXOR
+    RandomXORHashFamily
+    ApproxMCCore
+    ApproxMCCoreAnalysis
+    CertCheck
+    CertCheck_CNF_XOR
+  document_files
+    "root.tex"
+    "root.bib"

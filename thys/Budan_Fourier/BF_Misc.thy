@@ -926,7 +926,7 @@ next
   proof -
     have "proots_within (fcompose p q1 q2) A = {}"
       using no_proots unfolding proots_within_def
-      by (smt div_0 empty_Collect_eq fcompose_poly nzero)
+      by (smt (verit) div_0 empty_Collect_eq fcompose_poly nzero)
     then show ?thesis unfolding proots_count_def by auto
   qed
   ultimately show ?case by auto
@@ -1038,7 +1038,7 @@ next
   have "proots_within p B = {}" using no_proots by auto
   moreover have "proots_within (fcompose p q1 q2) A = {}" 
     using no_proots fcompose_poly 
-    by (smt Collect_empty_eq divide_eq_0_iff nzero proots_within_def)
+    by (smt (verit) Collect_empty_eq divide_eq_0_iff nzero proots_within_def)
   ultimately show ?case by auto
 next
   case (root b p)

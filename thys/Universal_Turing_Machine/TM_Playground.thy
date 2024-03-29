@@ -73,7 +73,7 @@ proof -
   ultimately have "\<lbrace>\<lambda>tap. tap = ([], <[1::nat]>) \<rbrace> tm_weak_copy \<lbrace> \<lambda>tap. \<exists>k l. tap = (Bk \<up> k, <[hd [1::nat], hd [1::nat]]> @ Bk \<up> l) \<rbrace>"
     by simp
   then show ?thesis
-    by (smt Hoare_haltI Hoare_halt_E0 \<open><[1, 1]> = [Oc, Oc, Bk, Oc, Oc]\<close> \<open><[1]> = [Oc, Oc]\<close>
+    by (smt (verit) Hoare_haltI Hoare_halt_E0 \<open><[1, 1]> = [Oc, Oc, Bk, Oc, Oc]\<close> \<open><[1]> = [Oc, Oc]\<close>
         case_prodD case_prodI holds_for.simps is_final_eq list.discI list.inject list.sel(1)
         not_Cons_self2 tape_of_list_def tape_of_nat_def tape_of_nat_list.elims tape_of_nat_list.simps(3))
 qed

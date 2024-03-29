@@ -1,0 +1,36 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{pdfsetup}
+\urlstyle{rm}
+\isabellestyle{it}
+\begin{document}
+
+\title{Approximate Model Counting}
+\author{Yong Kiam Tan and Jiong Yang}
+
+\maketitle
+
+\abstract{
+Approximate model counting is the task of approximating the number of solutions
+to an input formula.  This entry formalizes {$\mathsf{ApproxMC}$}, an algorithm
+due to Chakraborty et al.~\cite{DBLP:conf/ijcai/ChakrabortyMV16} with a
+probably approximately correct (PAC) guarantee, i.e., {$\mathsf{ApproxMC}$}
+returns a multiplicative $(1+\varepsilon)$-factor approximation of the model
+count with probability at least $1 - \delta$, where $\varepsilon > 0$ and $0 <
+\delta \leq 1$.  The algorithmic specification is further refined to a verified
+certificate checker that can be used to validate the results of untrusted
+{$\mathsf{ApproxMC}$} implementations (assuming access to trusted randomness).
+}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

@@ -49,9 +49,6 @@ qed
 lemma ereal_mono: "x \<le> y \<Longrightarrow> ereal x \<le> ereal y"
   by simp
 
-lemma log_mono: "a > 1 \<Longrightarrow> x \<le> y \<Longrightarrow> 0 < x \<Longrightarrow> log a x \<le> log a y"
-  by (subst log_le_cancel_iff, auto)
-
 lemma abs_ge_iff: "((x::real) \<le> abs y) = (x \<le> y \<or> x \<le> -y)"
   by linarith
 

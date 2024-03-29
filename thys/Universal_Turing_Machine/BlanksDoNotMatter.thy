@@ -848,7 +848,7 @@ lemma step_left_tape_EnlargeBkCtx_eq_C_Bks:
   assumes "step0 (s,C@Bk\<up> z1,     r) tm = (s',l',r')"
   shows   "step0 (s,C@Bk\<up>(z1+ z2), r) tm = (s',l'@Bk\<up>z2,r') \<or>
            step0 (s,C@Bk\<up>(z1+ z2), r) tm = (s',l'@Bk\<up>(z2-1),r')"
-  by (smt step_left_tape_EnlargeBkCtx_eq_C_Bks_Suc One_nat_def Suc_pred add.right_neutral
+  by (smt (verit) step_left_tape_EnlargeBkCtx_eq_C_Bks_Suc One_nat_def Suc_pred add.right_neutral
           append.right_neutral assms neq0_conv replicate_empty)
 
 (* propagate the step lemmas step_left_tape_EnlargeBkCtx* to steps *)

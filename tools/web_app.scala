@@ -7,7 +7,6 @@ package afp
 
 import isabelle.*
 
-
 import scala.annotation.tailrec
 
 
@@ -17,15 +16,14 @@ object Web_App {
 
   /* form html elements */
 
-  object HTML {
-    import isabelle.HTML._
+  object More_HTML {
+    import HTML._
 
     def css(s: String): Attribute = new Attribute("style", s)
     def name(n: String): Attribute = new Attribute("name", n)
     def value(v: String): Attribute = new Attribute("value", v)
     def placeholder(p: String): Attribute = new Attribute("placeholder", p)
 
-    val italic = new Operator("i")
     val fieldset = new Operator("fieldset")
     val button = new Operator("button")
 
@@ -45,7 +43,7 @@ object Web_App {
     def fieldlabel(for_elem: String, txt: String): XML.Elem = label(for_elem, " " + txt + ": ")
 
     def explanation(for_elem: String, txt: String): XML.Elem =
-      par(List(italic(List(label(for_elem, txt)))))
+      par(List(emph(List(label(for_elem, txt)))))
 
     def option(k: String, v: String): XML.Elem =
       XML.Elem(Markup("option", List("value" -> k)), text(v))
@@ -105,10 +103,6 @@ object Web_App {
         List("method" -> "post", "target" -> "iframe", "enctype" -> "multipart/form-data")
       XML.Elem(Markup("form", attrs), default_button :: body)
     }
-
-    val UNESCAPE = "unescape"
-
-    def unescape(html: String): XML.Body = List(XML.Elem(Markup(UNESCAPE, Nil), text(html)))
   }
 
 
@@ -151,7 +145,7 @@ object Web_App {
     }
 
 
-    /* strucutred data */
+    /* structured data */
 
     class Data private[Params](
       v: Option[String] = None,
@@ -206,11 +200,12 @@ object Web_App {
         }
 
         @tailrec
-        def expand(key: Key, to: E): E = key match {
-          case List_Key(key, (field, i)) => expand(key, Nest(field, Index(i, to)))
-          case Nest_Key(key, field) => expand(key, Nest(field, to))
-          case _ => to
-        }
+        def expand(key: Key, to: E): E =
+          key match {
+            case List_Key(key, (field, i)) => expand(key, Nest(field, Index(i, to)))
+            case Nest_Key(key, field) => expand(key, Nest(field, to))
+            case _ => to
+          }
 
         val params =
           parts.flatMap {
@@ -218,6 +213,7 @@ object Web_App {
             case Multi_Part.File(name, file_name, content) =>
               List(name -> file_name, Nest_Key(name, Web_App.FILE) -> content.encode_base64)
           }
+
         parse(params.map { case (k, v) => expand(k, Value(v)) })
       }
     }
@@ -267,12 +263,11 @@ object Web_App {
 
       val s = Seq(body.text, body)
 
-      def perhaps_unprefix(pfx: String, s: Seq): Seq = {
+      def perhaps_unprefix(pfx: String, s: Seq): Seq =
         Library.try_unprefix(pfx, s.text) match {
           case Some(text) => Seq(text, s.bytes.subSequence(pfx.length, s.bytes.length))
           case None => s
         }
-      }
 
       val Separator = """--(.*)""".r
 
@@ -332,23 +327,9 @@ object Web_App {
     progress: Progress = new Progress()
   ) {
     def render(model: A): XML.Body
-    val error: A
+    val error_model: A
     val endpoints: List[Endpoint]
     val head: XML.Body
-
-    def output(tree: XML.Tree): String = {
-      def out(body: XML.Body): String = isabelle.HTML.output(body, hidden = true, structural = true)
-      def collect(t: XML.Tree): List[String] = t match {
-        case XML.Elem(Markup(HTML.UNESCAPE, _), List(XML.Text(escaped))) =>
-          List(out(HTML.unescape(escaped)))
-        case XML.Elem(_, body) => body.flatMap(collect)
-        case XML.Text(_) => Nil
-      }
-
-      collect(tree).foldLeft(out(List(tree))) {
-        case (escaped, html) => escaped.replace(html, isabelle.HTML.input(html))
-      }
-    }
 
     def output_document(content: XML.Body, post_height: Boolean = true): String = {
       val attrs =
@@ -357,14 +338,13 @@ object Web_App {
 
       cat_lines(
         List(
-          isabelle.HTML.header,
-          output(XML.elem("head", isabelle.HTML.head_meta :: head)),
-          output(XML.Elem(Markup("body", attrs), content)),
-          isabelle.HTML.footer))
+          HTML.header,
+          HTML.output(XML.elem("head", HTML.head_meta :: head), hidden = true, structural = true),
+          HTML.output(XML.Elem(Markup("body", attrs), content), hidden = true, structural = true),
+          HTML.footer))
     }
 
     class UI(path: Path) extends HTTP.Service(path.implode, "GET") {
-
       def apply(request: HTTP.Request): Option[HTTP.Response] = {
         progress.echo_if(verbose, "GET ui")
 
@@ -391,8 +371,8 @@ document.getElementById('iframe').src = base + '""" + api.api_url(path).replace(
                   "name" -> "iframe",
                   "style" -> "border-style: none; width: 100%",
                   "onload" -> on_load)),
-              isabelle.HTML.text("content")),
-            isabelle.HTML.script(set_src)),
+              HTML.text("content")),
+            HTML.script(set_src)),
             post_height = false)))
       }
     }
@@ -408,7 +388,7 @@ document.getElementById('iframe').src = base + '""" + api.api_url(path).replace(
           case Exn.Exn(exn) =>
             val id = UUID.random_string()
             progress.echo_error_message("Internal error <" + id + ">: " + exn)
-            isabelle.error("Internal server error. ID: " + id)
+            error("Internal server error. ID: " + id)
         }
     }
 
@@ -435,12 +415,13 @@ document.getElementById('iframe').src = base + '""" + api.api_url(path).replace(
         val params = query_params(request)
         progress.echo_if(verbose, "params: " + params.toString())
 
-        val model = get(params) match {
-          case Some(model) => model
-          case None =>
-            progress.echo_if(verbose, "Parsing failed")
-            error
-        }
+        val model =
+          get(params) match {
+            case Some(model) => model
+            case None =>
+              progress.echo_if(verbose, "Parsing failed")
+              error_model
+          }
         HTTP.Response.html(output_document(render(model)))
       }
     }
@@ -458,7 +439,7 @@ document.getElementById('iframe').src = base + '""" + api.api_url(path).replace(
           case Some(path) => HTTP.Response.content(HTTP.Content.read(path))
           case None =>
             progress.echo_if(verbose, "Fetching file path failed")
-            HTTP.Response.html(output_document(render(error)))
+            HTTP.Response.html(output_document(render(error_model)))
         }
       }
     }
@@ -473,12 +454,13 @@ document.getElementById('iframe').src = base + '""" + api.api_url(path).replace(
         val params = Params.Data.from_multipart(parts)
         progress.echo_if(verbose, "params: " + params.toString)
 
-        val model = post(params) match {
-          case Some(model) => model
-          case None =>
-            progress.echo_if(verbose, "Parsing failed")
-            error
-        }
+        val model =
+          post(params) match {
+            case Some(model) => model
+            case None =>
+              progress.echo_if(verbose, "Parsing failed")
+              error_model
+          }
         HTTP.Response.html(output_document(render(model)))
       }
     }

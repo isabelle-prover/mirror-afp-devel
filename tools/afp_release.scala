@@ -7,8 +7,6 @@ package afp
 
 import isabelle.*
 
-import afp.Metadata.{Entry, Isabelle, Release}
-
 import java.time.LocalDate
 
 
@@ -38,7 +36,7 @@ object AFP_Release {
         case Release_Tar(entry, date_str) =>
           val date = LocalDate.parse(date_str)
           release_dates.findLast { case (isa_date, _) => !isa_date.isAfter(date) } match {
-            case Some(_, isabelle) => Release(entry, date, isabelle)
+            case Some(_, isabelle) => Metadata.Release(entry, date, isabelle)
             case None => error("No Isabelle version found for " + date_str)
           }
       }
@@ -47,13 +45,13 @@ object AFP_Release {
     }
   }
 
-  def afp_release(date: LocalDate, isabelle: Isabelle.Version, base_dir: Path): Unit = {
-    def add_release(entry: Entry): Entry =
-      entry.copy(releases = entry.releases :+ Release(entry.name, date, isabelle))
+  def afp_release(date: LocalDate, isabelle: Metadata.Isabelle.Version, base_dir: Path): Unit = {
+    def add_release(entry: Metadata.Entry): Metadata.Entry =
+      entry.copy(releases = entry.releases :+ Metadata.Release(entry.name, date, isabelle))
 
     val afp_structure = AFP_Structure(base_dir)
 
-    val releases = afp_structure.load().map(add_release).flatMap(_.releases)
+    val releases = afp_structure.load().values.toList.map(add_release).flatMap(_.releases)
 
     afp_structure.save_releases(releases)
   }

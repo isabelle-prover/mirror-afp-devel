@@ -77,7 +77,7 @@ lemma node_ptr_kinds_M_reads:
   using object_ptr_kinds_M_reads
   apply (simp add: reads_def node_ptr_kinds_M_defs node_ptr_kinds_def
       object_ptr_kinds_M_reads preserved_def)
-  by (smt object_ptr_kinds_preserved_small preserved_def unit_all_impI)
+  by (smt (verit) object_ptr_kinds_preserved_small preserved_def unit_all_impI)
 
 global_interpretation l_put_M type_wf node_ptr_kinds get\<^sub>N\<^sub>o\<^sub>d\<^sub>e put\<^sub>N\<^sub>o\<^sub>d\<^sub>e 
   rewrites "a_get_M = get_M\<^sub>N\<^sub>o\<^sub>d\<^sub>e" 

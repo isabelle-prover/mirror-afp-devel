@@ -10,35 +10,33 @@ import isabelle.HTML.*
 
 import afp.Web_App.{ACTION, API, FILE, Params}
 import afp.Web_App.Params.{List_Key, Nest_Key, empty}
-import afp.Web_App.HTML.*
-import afp.Metadata.{Affiliation, Author, DOI, Email, Entry, Formatted, Homepage, License, Orcid, Reference, Release, Topic, Unaffiliated}
+import afp.Web_App.More_HTML.*
+import afp.Metadata.{Affiliation, Author, Authors, DOI, Email, Entry, Formatted, Homepage, License, Licenses, Orcid, Reference, Release, Releases, Topic, Topics, Unaffiliated}
 
 import java.text.Normalizer
 import java.time.LocalDate
 
-import scala.collection.immutable.StringView
-import scala.util.matching.Regex
-
 
 object AFP_Submit {
 
-  case class Val_Opt[A] private(opt: Option[A], err: Option[String]) {
-    def is_empty: Boolean = opt.isEmpty
-  }
   object Val_Opt {
     def ok[A](value: A): Val_Opt[A] = Val_Opt(Some(value), None)
     def user_err[A](msg: String): Val_Opt[A] = Val_Opt(None, Some(msg))
     def error[A]: Val_Opt[A] = Val_Opt(None, None)
   }
 
-  case class Val[A] private(v: A, err: Option[String]) {
-    def with_err(err: String): Val[A] = Val.err(v, err)
-    def perhaps_err(opt: Val_Opt[_]): Val[A] = opt.err.map(with_err).getOrElse(this)
+  case class Val_Opt[A] private(opt: Option[A], err: Option[String]) {
+    def is_empty: Boolean = opt.isEmpty
   }
 
   object Val {
     def ok[A](value: A): Val[A] = Val(value, None)
     def err[A](value: A, msg: String): Val[A] = Val(value, Some(msg))
+  }
+
+  case class Val[A] private(v: A, err: Option[String]) {
+    def with_err(err: String): Val[A] = Val.err(v, err)
+    def perhaps_err(opt: Val_Opt[_]): Val[A] = opt.err.map(with_err).getOrElse(this)
   }
 
 
@@ -70,8 +68,8 @@ object AFP_Submit {
       related_kind: Option[Related.Value] = None,
       related_input: Val[String] = Val.ok("")
     ) {
-      val used_affils: Set[Affiliation] = (affils.v ++ notifies.v).toSet
-      val used_authors: Set[Author.ID] = used_affils.map(_.author)
+      def used_affils: Set[Affiliation] = (affils.v ++ notifies.v).toSet
+      def used_authors: Set[Author.ID] = used_affils.map(_.author)
     }
 
     case class Create(
@@ -84,9 +82,9 @@ object AFP_Submit {
       new_affils_input: String = "",
     ) extends T {
       def update_entry(num: Int, entry: Create_Entry): Create =
-        this.copy(entries = Val.ok(entries.v.updated(num, entry)))
+        copy(entries = Val.ok(entries.v.updated(num, entry)))
 
-      def updated_authors(old_authors: Map[Author.ID, Author]): Map[Author.ID, Author] =
+      def updated_authors(old_authors: Authors): Authors =
         (old_authors ++ new_authors.v.map(author => author.id -> author)).map {
           case (id, author) =>
             val emails =
@@ -96,11 +94,11 @@ object AFP_Submit {
             id -> author.copy(emails = emails.distinct, homepages = homepages.distinct)
         }
 
-      val used_affils: Set[Affiliation] = entries.v.toSet.flatMap(_.used_affils)
-      val used_authors: Set[Author.ID] =
+      def used_affils: Set[Affiliation] = entries.v.toSet.flatMap(_.used_affils)
+      def used_authors: Set[Author.ID] =
         new_affils.v.map(_.author).toSet ++ entries.v.flatMap(_.used_authors)
 
-      def create(authors: Map[Author.ID, Author]): (Map[Author.ID, Author], List[Entry]) =
+      def create(authors: Authors): (Authors, List[Entry]) =
         (updated_authors(authors), entries.v.map(entry =>
           Entry(
             name = entry.name.v,
@@ -126,11 +124,11 @@ object AFP_Submit {
     }
 
     case class Overview(id: String, date: LocalDate, name: String, status: Status.Value)
-    case class Metadata(authors: Map[Author.ID, Author], entries: List[Entry]) {
-      def new_authors(old_authors: Map[Author.ID, Author]): Set[Author] =
+    case class Metadata(authors: Authors, entries: List[Entry]) {
+      def new_authors(old_authors: Authors): Set[Author] =
         entries.flatMap(_.authors).map(_.author).filterNot(old_authors.contains).toSet.map(authors)
 
-      def new_affils(old_authors: Map[Author.ID, Author]): Set[Affiliation] =
+      def new_affils(old_authors: Authors): Set[Affiliation] =
         entries.flatMap(entry => entry.authors ++ entry.notifies).toSet.filter {
           case _: Unaffiliated => false
           case e: Email => !old_authors.get(e.author).exists(_.emails.contains(e))
@@ -140,7 +138,7 @@ object AFP_Submit {
 
     sealed trait T
     case object Invalid extends T
-    case class Upload(meta: Metadata, message: String, error: String) extends T
+    case class Upload(meta: Metadata, message: String, error: String = "") extends T
     case class Created(id: String) extends T
     case class Submission(
       id: Handler.ID,
@@ -164,10 +162,7 @@ object AFP_Submit {
       ext: String
     ): Handler.ID
     def list(): Model.Submission_List
-    def get(id: Handler.ID,
-      topics: Map[Topic.ID, Topic],
-      licenses: Map[License.ID, License]
-    ): Option[Model.Submission]
+    def get(id: Handler.ID, topics: Topics, licenses: Licenses): Option[Model.Submission]
     def submit(id: Handler.ID): Unit
     def set_status(id: Handler.ID, status: Model.Status.Value): Unit
     def abort_build(id: Handler.ID): Unit
@@ -195,14 +190,13 @@ object AFP_Submit {
     /* Handler for local edits */
 
     class Edit(afp_structure: AFP_Structure) extends Handler {
-      val authors = afp_structure.load_authors.map(author => author.id -> author).toMap
-      val topics = afp_structure.load_topics.flatMap(_.all_topics)
-      val all_topics = topics.map(topic => topic.id -> topic).toMap
-      val licenses = afp_structure.load_licenses.map(license => license.id -> license).toMap
-      val releases = afp_structure.load_releases.groupBy(_.entry)
-      val dates = afp_structure.load().map(entry => entry.name -> entry.date).toMap
+      val authors = afp_structure.load_authors
+      val topics = afp_structure.load_topics
+      val licenses = afp_structure.load_licenses
+      val releases = afp_structure.load_releases
+      val dates = afp_structure.load().view.mapValues(_.date).toMap
 
-      override def create(
+      def create(
         date: Date,
         meta: Metadata,
         message: String,
@@ -215,7 +209,7 @@ object AFP_Submit {
             case _ => isabelle.error("Must be a single entry")
           }
 
-        val old = afp_structure.load_entry(entry.name, authors, all_topics, licenses, releases)
+        val old = afp_structure.load_entry(entry.name, authors, topics, licenses, releases)
         val updated =
           old.copy(
             title = entry.title,
@@ -232,33 +226,30 @@ object AFP_Submit {
         entry.name
       }
 
-      override def list(): Submission_List =
+      def list(): Submission_List =
         Submission_List(afp_structure.entries.sortBy(dates.get).reverse.map { entry =>
           Overview(entry, dates(entry), entry, Status.Added)
         })
 
-      override def get(
-        id: ID, topics: Map[ID, Topic], licenses: Map[ID, License]
-      ): Option[Submission] =
+      def get(id: ID, topics: Topics, licenses: Licenses): Option[Submission] =
         if (!afp_structure.entries.contains(id)) None
         else {
-          val entry = afp_structure.load_entry(id, authors, all_topics, licenses, releases)
+          val entry = afp_structure.load_entry(id, authors, topics, licenses, releases)
           val meta = Metadata(authors, List(entry))
           Some(Submission(id, meta, "", Model.Build.Success, Some(Status.Added), ""))
         }
 
-      override def submit(id: ID): Unit = ()
-      override def set_status(id: ID, status: Model.Status.Value): Unit = ()
-      override def abort_build(id: ID): Unit = ()
-      override def get_patch(id: ID): Option[Path] = None
-      override def get_archive(id: ID): Option[Path] = None
+      def submit(id: ID): Unit = ()
+      def set_status(id: ID, status: Model.Status.Value): Unit = ()
+      def abort_build(id: ID): Unit = ()
+      def get_patch(id: ID): Option[Path] = None
+      def get_archive(id: ID): Option[Path] = None
     }
 
 
     /* Adapter to existing submission system */
 
     class Adapter(submission_dir: Path, afp_structure: AFP_Structure) extends Handler {
-
       private val up: Path = submission_dir + Path.basic("up")
       private def up(id: ID): Path = up + Path.basic(id)
       private def down(id: ID): Path = submission_dir + Path.basic("down") + Path.basic(id)
@@ -340,16 +331,12 @@ object AFP_Submit {
             read_status(id).map(Overview(id, day, AFP_Structure(up(id)).entries_unchecked.head, _))
           })
 
-      def get(
-        id: ID,
-        topics: Map[Topic.ID, Topic],
-        licenses: Map[License.ID, License]
-      ): Option[Submission] =
+      def get(id: ID, topics: Topics, licenses: Licenses): Option[Submission] =
         ID.check(id).filter(up(_).file.exists).map { id =>
           val structure = AFP_Structure(up(id))
-          val authors = structure.load_authors.map(author => author.id -> author).toMap
+          val authors = structure.load_authors
           val entries = structure.entries_unchecked.map(
-            structure.load_entry(_, authors, topics, licenses, Map.empty))
+            structure.load_entry(_, authors, topics, licenses, Releases.empty))
 
           val log_file = down(id) + Path.basic("isabelle.log")
           val log = if (log_file.file.exists) File.read(log_file) else ""
@@ -407,19 +394,17 @@ object AFP_Submit {
   ) extends Web_App.Server[Model.T](api, port, verbose, progress) {
     val repo = Mercurial.the_repository(afp_structure.base_dir)
 
-    var authors: Map[Author.ID, Metadata.Author] = Map.empty
-    var topics: List[Topic] = Nil
-    var all_topics: Map[Topic.ID, Topic] = Map.empty
-    var licenses: Map[License.ID, License] = Map.empty
-    var releases: Map[Entry.Name, List[Release]] = Map.empty
+    var authors: Authors = Authors.empty
+    var topics: Topics = Topics.empty
+    var licenses: Licenses = Licenses.empty
+    var releases: Releases = Releases.empty
     var entries: Set[Entry.Name] = Set.empty
 
     private def load(): Unit = synchronized {
-      authors = afp_structure.load_authors.map(author => author.id -> author).toMap
-      topics = afp_structure.load_topics.flatMap(_.all_topics)
-      all_topics = topics.map(topic => topic.id -> topic).toMap
-      licenses = afp_structure.load_licenses.map(license => license.id -> license).toMap
-      releases = afp_structure.load_releases.groupBy(_.entry)
+      authors = afp_structure.load_authors
+      topics = afp_structure.load_topics
+      licenses = afp_structure.load_licenses
+      releases = afp_structure.load_releases
       entries = afp_structure.entries.toSet
     }
 
@@ -605,7 +590,7 @@ object AFP_Submit {
             indexed(entry.topics.v, key, TOPIC, render_topic) :::
             selection(Nest_Key(key, TOPIC),
               entry.topic_input.map(_.id),
-              topics.map(topic => option(topic.id, topic.id))) ::
+              topics.values.toList.map(topic => option(topic.id, topic.id))) ::
             action_button(api.api_url(API_SUBMISSION_ENTRY_TOPICS_ADD), "add", key) ::
             render_error("", entry.topics)) ::
           par(List(
@@ -742,7 +727,7 @@ object AFP_Submit {
         item(
           hidden(Nest_Key(key, KIND), Model.Related.get(related).toString) ::
           hidden(Nest_Key(key, INPUT), related_string(related)) ::
-          unescape(related_string(related)))
+          input_raw(related_string(related)) :: Nil)
 
       def render_entry(entry: Entry, key: Params.Key): XML.Elem =
         fieldset(List(
@@ -769,7 +754,7 @@ object AFP_Submit {
           par(List(
             fieldlabel(Nest_Key(key, ABSTRACT), "Abstract"),
             hidden(Nest_Key(key, ABSTRACT), entry.`abstract`),
-            class_("mathjax_process")(span(unescape(entry.`abstract`))))),
+            class_("mathjax_process")(span(List(input_raw(entry.`abstract`)))))),
           par(List(
             fieldlabel("", "Authors"),
             list(indexed(entry.authors, key, AUTHOR, render_affil)))),
@@ -921,8 +906,7 @@ object AFP_Submit {
         render_if(mode == Mode.SUBMISSION, span(text("(keep that url!).")))))
     }
 
-    def render_invalid: XML.Body =
-      text("Invalid request")
+    def render_invalid: XML.Body = text("Invalid request")
 
     def render(model: Model.T): XML.Body =
       model match {
@@ -940,7 +924,7 @@ object AFP_Submit {
     def validate_topic(id: String, selected: List[Topic]): Val_Opt[Topic] =
       if (id.isEmpty) Val_Opt.user_err("Select topic first")
       else {
-        topics.find(_.id == id) match {
+        topics.values.find(_.id == id) match {
           case Some(topic) =>
             if (selected.contains(topic)) Val_Opt.user_err("Topic already selected")
             else Val_Opt.ok(topic)
@@ -952,7 +936,7 @@ object AFP_Submit {
       id: String,
       name: String,
       orcid_str: String,
-      authors: Map[Author.ID, Author]
+      authors: Authors
     ): Val_Opt[Author] = {
       val Id = """[a-zA-Z][a-zA-Z0-9]*""".r
       id match {
@@ -1026,11 +1010,11 @@ object AFP_Submit {
       def parse_topic(topic: Params.Data, topics: List[Topic]): Option[Topic] =
         validate_topic(topic.get(ID).value, topics).opt
 
-      def parse_email(email: Params.Data, authors: Map[Author.ID, Author]): Option[Email] =
+      def parse_email(email: Params.Data, authors: Authors): Option[Email] =
         authors.get(email.get(ID).value).flatMap(
           _.emails.find(_.id == email.get(AFFILIATION).value))
 
-      def parse_affil(affil: Params.Data, authors: Map[Author.ID, Author]): Option[Affiliation] =
+      def parse_affil(affil: Params.Data, authors: Authors): Option[Affiliation] =
         authors.get(affil.get(ID).value).flatMap { author =>
           val id = affil.get(AFFILIATION).value
           if (id.isEmpty) Some(Unaffiliated(author.id))
@@ -1044,15 +1028,15 @@ object AFP_Submit {
         Model.Related.from_string(related.get(KIND).value).flatMap(
           validate_related(_, related.get(INPUT).value, references).opt)
 
-      def parse_new_author(author: Params.Data, authors: Map[Author.ID, Author]): Option[Author] =
+      def parse_new_author(author: Params.Data, authors: Authors): Option[Author] =
         validate_new_author(
           author.get(ID).value, author.get(NAME).value, author.get(ORCID).value, authors).opt
 
-      def parse_new_affil(affil: Params.Data, authors: Map[Author.ID, Author]): Option[Affiliation] =
+      def parse_new_affil(affil: Params.Data, authors: Authors): Option[Affiliation] =
         authors.get(affil.get(AUTHOR).value).flatMap(author =>
           validate_new_affil(affil.get(ID).value, affil.get(AFFILIATION).value, author).opt)
 
-      def parse_entry(entry: Params.Data, authors: Map[Author.ID, Author]): Option[Model.Create_Entry] =
+      def parse_entry(entry: Params.Data, authors: Authors): Option[Model.Create_Entry] =
         for {
           topics <-
             fold(entry.list(TOPIC), List.empty[Topic]) {
@@ -1138,6 +1122,7 @@ object AFP_Submit {
         }
       submissions.map(Model.Submission_List.apply)
     }
+
 
     /* control */
 
@@ -1444,7 +1429,7 @@ object AFP_Submit {
               val archive = Bytes.decode_base64(params.get(ARCHIVE).get(FILE).value)
               val file_name = params.get(ARCHIVE).value
 
-              if ((archive.is_empty || file_name.isEmpty)) {
+              if (archive.is_empty || file_name.isEmpty) {
                 Some(upload.copy(error = "Select a file"))
               } else if (!file_name.endsWith(".zip") && !file_name.endsWith(".tar.gz")) {
                 Some(upload.copy(error = "Only .zip and .tar.gz archives allowed"))
@@ -1463,14 +1448,14 @@ object AFP_Submit {
         Val.ok(List(Model.Create_Entry(license = licenses.head._2)))))
 
     def get_submission(props: Properties.T): Option[Model.Submission] =
-      Properties.get(props, ID).flatMap(handler.get(_, all_topics, licenses))
+      Properties.get(props, ID).flatMap(handler.get(_, topics, licenses))
 
     def resubmit(params: Params.Data): Option[Model.T] =
-      handler.get(params.get(ACTION).value, all_topics, licenses).map(submission =>
+      handler.get(params.get(ACTION).value, topics, licenses).map(submission =>
         Model.Upload(submission.meta, submission.message, ""))
 
     def submit(params: Params.Data): Option[Model.T] =
-      handler.get(params.get(ACTION).value, all_topics, licenses).flatMap { submission =>
+      handler.get(params.get(ACTION).value, topics, licenses).flatMap { submission =>
         if (submission.status.nonEmpty) None
         else {
           handler.submit(submission.id)
@@ -1479,7 +1464,7 @@ object AFP_Submit {
       }
 
     def abort_build(params: Params.Data): Option[Model.T] =
-      handler.get(params.get(ACTION).value, all_topics, licenses).flatMap { submission =>
+      handler.get(params.get(ACTION).value, topics, licenses).flatMap { submission =>
         if (submission.build != Model.Build.Running) None
         else {
           handler.abort_build(submission.id)
@@ -1512,15 +1497,21 @@ object AFP_Submit {
     def submission_list: Option[Model.T] = Some(handler.list())
 
     def download(props: Properties.T): Option[Path] =
-      Properties.get(props, ID).flatMap(handler.get_patch)
+      for {
+        id <- Properties.get(props, ID)
+        patch <- handler.get_patch(id)
+      } yield patch
 
     def download_archive(props: Properties.T): Option[Path] =
-      Properties.get(props, ID).flatMap(handler.get_archive)
+      for {
+        id <- Properties.get(props, ID)
+        archive <- handler.get_archive(id)
+      } yield archive
 
     def style_sheet: Option[Path] =
       Some(afp_structure.base_dir + Path.make(List("tools", "main.css")))
 
-    val error = Model.Invalid
+    val error_model = Model.Invalid
 
     val endpoints = List(
       Get(SUBMIT, "empty submission form", _ => empty_submission),

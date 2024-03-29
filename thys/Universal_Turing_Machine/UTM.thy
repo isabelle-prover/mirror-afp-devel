@@ -908,7 +908,7 @@ lemma wcode_on_left_moving_1E[elim]: "\<lbrakk>wcode_on_left_moving_1 ires rs (b
    apply(rename_tac ml mr rn)
    apply(case_tac ml, simp)
     apply(rule_tac x = "mr - Suc (Suc 0)" in exI, rule_tac x = rn in exI)
-    apply (smt One_nat_def Suc_diff_Suc append_Cons empty_replicate list.sel(3) neq0_conv replicate_Suc
+    apply (smt (verit) One_nat_def Suc_diff_Suc append_Cons empty_replicate list.sel(3) neq0_conv replicate_Suc
            replicate_app_Cons_same tl_append2 tl_replicate)
    apply(rule_tac disjI1)
    apply (metis add_Suc_shift less_SucI list.exhaust_sel list.inject list.simps(3) replicate_Suc_iff_anywhere)

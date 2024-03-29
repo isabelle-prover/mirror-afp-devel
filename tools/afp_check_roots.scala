@@ -51,40 +51,40 @@ object AFP_Check_Roots {
       Check[String]("timeout",
         "The following entries contain sessions without timeouts or with timeouts not divisible by 300:",
         (structure, sessions, _) =>
-          sessions.filter { session_name =>
-            val info = structure(session_name)
-            val timeout = info.options.real("timeout")
-            timeout == 0 || timeout % 300 != 0
-          }),
+          for {
+            session_name <- sessions
+            info = structure(session_name)
+            timeout = info.options.real("timeout")
+            if timeout == 0 || timeout % 300 != 0
+          } yield session_name),
       Check[String]("chapter", "The following entries are not in the AFP chapter:",
         (structure, sessions, _) => sessions.filterNot(structure(_).chapter == "AFP")),
       Check[(String, List[String])]("groups", "The following sessions have wrong groups:",
         (structure, sessions, _) =>
-          sessions.flatMap { session_name =>
-            val info = structure(session_name)
-            if (!info.groups.toSet.subsetOf(AFP.groups.keySet + "AFP") ||
-              !info.groups.contains("AFP"))
-              Some((session_name, info.groups))
-            else None
-          },
+          for {
+            session_name <- sessions
+            info = structure(session_name)
+            if !info.groups.toSet.subsetOf(Sessions.afp_groups) || !info.groups.contains("AFP")
+          } yield (session_name, info.groups),
         t => t._1 + "{" + t._2.mkString(", ") + "}"),
       Check[String]("presence",
         "The following entries do not contain a corresponding session on top level:",
         (structure, sessions, check_dirs) =>
-          check_dirs.flatMap(dir_entries).flatMap { entry_name =>
-            if (!sessions.contains(entry_name) ||
-              structure(entry_name).dir.base.implode != entry_name)
-              Some(entry_name)
-            else None
-          }),
+          for {
+            dir <- check_dirs
+            entry_name <- dir_entries(dir)
+            entry_info = structure(entry_name)
+            if !sessions.contains(entry_name) || entry_info.dir.base.implode != entry_name
+          } yield entry_name),
       Check[String]("roots",
         "The following entries do not match with the ROOTS file:",
         (_, _, check_dirs) =>
-          check_dirs.flatMap { dir =>
-            val root_entries = Sessions.parse_roots(dir + Path.basic("ROOTS")).toSet
-            val file_entries = dir_entries(dir).toSet
-            (root_entries.union(file_entries) -- root_entries.intersect(file_entries)).toList
-          }),
+          for {
+            dir <- check_dirs
+            root_entries = Sessions.parse_roots(dir + Path.basic("ROOTS")).toSet
+            file_entries = dir_entries(dir).toSet
+            extra <- root_entries.union(file_entries) -- root_entries.intersect(file_entries)
+          } yield extra),
       Check[(String, List[Path])]("unused_thys",
         "The following sessions contain unused theories:",
         (structure, sessions, check_dirs) => {
@@ -93,22 +93,25 @@ object AFP_Check_Roots {
 
           def is_thy_file(file: JFile): Boolean = file.isFile && file.getName.endsWith(".thy")
 
-          check_dirs.flatMap(dir => dir_entries(dir).map(dir + Path.basic(_))).flatMap { dir =>
-            val sessions = root_sessions(dir + Path.basic("ROOT"))
+          def rel_path(entry_dir: Path, path: Path): Path =
+            File.relative_path(entry_dir.absolute, path.absolute).get
 
-            def rel_path(path: Path): Path = File.relative_path(dir.absolute, path.absolute).get
+          for {
+            dir <- check_dirs
+            entry <- dir_entries(dir)
 
-            val theory_nodes = sessions.flatMap(deps.apply(_).proper_session_theories)
-            val thy_files = theory_nodes.map(node => rel_path(node.path))
+            entry_dir = dir + Path.basic(entry)
+            sessions = root_sessions(entry_dir + Sessions.ROOT)
+            theory_nodes = sessions.flatMap(deps.apply(_).proper_session_theories)
+            thy_files = theory_nodes.map(node => rel_path(entry_dir, node.path))
 
-            val physical_files =
-              for (file <- File.find_files(dir.file, is_thy_file, include_dirs = true))
-              yield rel_path(Path.explode(file.getAbsolutePath))
+            physical_files =
+              for (file <- File.find_files(entry_dir.file, is_thy_file, include_dirs = true))
+              yield rel_path(entry_dir, Path.explode(file.getAbsolutePath))
 
-            val unused = physical_files.toSet -- thy_files.toSet
-            if (unused.nonEmpty) Some(dir.base.implode -> unused.toList)
-            else None
-          }
+            unused = physical_files.toSet -- thy_files.toSet
+            if unused.nonEmpty
+          } yield entry_dir.base.implode -> unused.toList
         },
         t => t._1 + ": {" + t._2.mkString(", ") + "}"),
       Check[(String, List[Path])]("unused_document_files",

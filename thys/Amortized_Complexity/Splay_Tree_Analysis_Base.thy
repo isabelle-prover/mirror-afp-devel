@@ -34,7 +34,7 @@ lemma T_splay_simps[simp]:
   (if C=Leaf then 1 else T_splay x C + 1)"
   "b<x \<Longrightarrow> c<x \<Longrightarrow> T_splay x (Node AB b (Node C c D)) =
   (if D=Leaf then 1 else T_splay x D + 1)"
-by auto
+by (auto simp add: tree.case_eq_if)
 
 declare T_splay.simps(2)[simp del]
 

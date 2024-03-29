@@ -416,7 +416,7 @@ proof(rule function_ring_car_eqI)
       using A assms fun_add_eval_car[of a x y]  fun_add_eval_car[of a "x \<otimes>\<^bsub>F\<^esub>z" "y \<otimes>\<^bsub>F\<^esub> z"] 
             function_mult_eval_car[of a "x \<oplus>\<^bsub>F\<^esub> y" z] semiring_simprules(10) 
             F_def 
-      by (smt fun_add_closed function_mult_eval_car function_ring_car_closed 
+      by (smt (verit) fun_add_closed function_mult_eval_car function_ring_car_closed 
           ring_functions.fun_mult_closed ring_functions_axioms)            
   qed
 qed    
@@ -1077,7 +1077,7 @@ lemma function_sum_comp_is_seq_sum:
     using function_comp_is_closed_seq 
     apply (metis assms(1) assms(2) assms(3) fun_add_closed nat_seqs_def)
      apply (metis assms(1) assms(2) assms(3) function_comp_is_closed_seq nat_seqs_def seq_plus_closed)
-  by (smt UNIV_eq_I assms(1) assms(2) assms(3) closed_seqs_memE comp_apply function_comp_is_closed_seq nat_seqs_def ring_functions.fun_add_eval_car ring_functions_axioms)
+  by (smt (verit) UNIV_eq_I assms(1) assms(2) assms(3) closed_seqs_memE comp_apply function_comp_is_closed_seq nat_seqs_def ring_functions.fun_add_eval_car ring_functions_axioms)
 
 lemma function_mult_comp_is_seq_mult:
   assumes "s \<in> closed_seqs R"
@@ -1162,7 +1162,7 @@ definition to_struct_map where
 lemma to_struct_map_closed:
   assumes "f \<in> (carrier T) \<rightarrow> (carrier S)"
   shows "to_struct_map T f \<in> (struct_maps T S)"
-  by (smt PiE_restrict Pi_iff assms mem_Collect_eq restrict_PiE struct_maps_def to_struct_map_def)
+  by (smt (verit) PiE_restrict Pi_iff assms mem_Collect_eq restrict_PiE struct_maps_def to_struct_map_def)
   
 lemma struct_maps_memI:
   assumes "\<And> x. x \<in> carrier T \<Longrightarrow> f x \<in> carrier S"

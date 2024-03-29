@@ -50,7 +50,7 @@ proof -
   have "steps0 (1, [], []) tm_skip_first_arg 1 = (0::nat, [], [Bk])"
     by (simp add: step.simps steps.simps numeral_eqs_upto_12  tm_skip_first_arg_def)
   then show ?thesis
-    by (smt Hoare_haltI holds_for.simps is_final_eq)
+    by (smt (verit) Hoare_haltI holds_for.simps is_final_eq)
 qed
 
 corollary tm_skip_first_arg_correct_Nil':
@@ -524,7 +524,7 @@ next
           using inv_tm_skip_first_arg_len_eq_1_steps by auto
 
         then show ?thesis
-          by (smt holds_for.elims(3) inv_tm_skip_first_arg_len_eq_1.simps is_final_eq w_stp)
+          by (smt (verit) holds_for.elims(3) inv_tm_skip_first_arg_len_eq_1.simps is_final_eq w_stp)
       qed
       ultimately show ?thesis by auto
     qed
@@ -1146,7 +1146,7 @@ next
           using inv_tm_skip_first_arg_len_gt_1_steps by auto
 
         then show ?thesis
-          by (smt holds_for.elims(3) inv_tm_skip_first_arg_len_gt_1.simps is_final_eq w_stp)
+          by (smt (verit) holds_for.elims(3) inv_tm_skip_first_arg_len_gt_1.simps is_final_eq w_stp)
       qed
       ultimately show ?thesis by auto
     qed
@@ -1782,7 +1782,7 @@ next
           using inv_tm_erase_right_then_dblBk_left_dnp_steps by auto
 
         then show ?thesis
-          by (smt holds_for.elims(3) inv_tm_erase_right_then_dblBk_left_dnp.simps is_final_eq w_stp)
+          by (smt (verit) holds_for.elims(3) inv_tm_erase_right_then_dblBk_left_dnp.simps is_final_eq w_stp)
       qed
       ultimately show ?thesis by auto
     qed
@@ -3772,7 +3772,7 @@ next
         have "inv_tm_erase_right_then_dblBk_left_erp CL CR (steps0 (1, l, r) tm_erase_right_then_dblBk_left stp)"
           using inv_tm_erase_right_then_dblBk_left_erp_steps by auto
         then show ?thesis
-          by (smt holds_for.elims(3) inv_tm_erase_right_then_dblBk_left_erp.simps is_final_eq w_stp)
+          by (smt (verit) holds_for.elims(3) inv_tm_erase_right_then_dblBk_left_erp.simps is_final_eq w_stp)
       qed
       ultimately show ?thesis by auto
     qed
@@ -3821,7 +3821,7 @@ next
         have "inv_tm_erase_right_then_dblBk_left_erp CL CR (steps0 (1, l, r) tm_erase_right_then_dblBk_left stp)"
           using inv_tm_erase_right_then_dblBk_left_erp_steps by auto
         then show ?thesis
-          by (smt holds_for.elims(3) inv_tm_erase_right_then_dblBk_left_erp.simps is_final_eq w_stp)
+          by (smt (verit) holds_for.elims(3) inv_tm_erase_right_then_dblBk_left_erp.simps is_final_eq w_stp)
       qed
       ultimately show ?thesis by auto
     qed
@@ -3870,7 +3870,7 @@ next
         have "inv_tm_erase_right_then_dblBk_left_erp CL CR (steps0 (1, l, r) tm_erase_right_then_dblBk_left stp)"
           using inv_tm_erase_right_then_dblBk_left_erp_steps by auto
         then show ?thesis
-          by (smt holds_for.elims(3) inv_tm_erase_right_then_dblBk_left_erp.simps is_final_eq w_stp)
+          by (smt (verit) holds_for.elims(3) inv_tm_erase_right_then_dblBk_left_erp.simps is_final_eq w_stp)
       qed
       ultimately show ?thesis by auto
     qed
@@ -5229,7 +5229,7 @@ proof -
       \<open><rev [last (take n nl)]> = Oc \<up> Suc (last (take n nl))\<close>
       \<open>Oc \<up> Suc (last (take n nl)) = Oc # Oc \<up> last (take n nl)\<close>
       \<open>butlast (take n nl) \<noteq> []\<close> \<open>rev (<take n nl>) = <rev [last (take n nl)]> @ [Bk] @ <rev (butlast (take n nl))>\<close>
-    by (smt
+    by (smt (verit)
         append_Cons append_Nil append_Nil2 append_eq_Cons_conv butlast.simps(1) butlast.simps(2)
         butlast_append last_ConsL last_append last_appendR  list.sel(3) list.simps(3) minor noDblBk_tape_of_nat_list
         noDblBk_tape_of_nat_list_imp_noDblBk_tl numeral_list_last_is_Oc rev_is_Nil_conv self_append_conv)
@@ -5437,7 +5437,7 @@ proof -
     with major have "\<exists>stp. is_final (steps0 (1, [],<nl::nat list>@ [Bk]) tm_erase_right_then_dblBk_left stp) \<and>
                            (steps0 (1, [],<nl::nat list>@ [Bk]) tm_erase_right_then_dblBk_left stp = (0, [Bk, Bk], <nl> @ [Bk]))"
       unfolding Hoare_halt_def
-      by (smt Hoare_halt_def Pair_inject  holds_for.elims(2) is_final.elims(2))
+      by (smt (verit) Hoare_halt_def Pair_inject  holds_for.elims(2) is_final.elims(2))
     then obtain stp where
       w_stp: "is_final (steps0 (1, [],<nl::nat list>@ [Bk]) tm_erase_right_then_dblBk_left stp) \<and>
                (steps0 (1, [],<nl::nat list>@ [Bk]) tm_erase_right_then_dblBk_left stp = (0, [Bk, Bk], <nl> @ [Bk]))" by blast
@@ -5573,7 +5573,7 @@ proof -
     then have "\<lbrace> \<lambda>tap. tap = (Bk# <rev [hd nl]>, <tl nl>) \<rbrace> tm_erase_right_then_dblBk_left \<lbrace> \<lambda>tap. \<exists>rex. tap = ([], [Bk,Bk] @ <[hd nl]> @ Bk \<up> (Suc rex) ) \<rbrace>"
       by force
     then show "\<lbrace>\<lambda>tap. tap = (Bk # <rev [hd nl]>, <tl nl>)\<rbrace> tm_erase_right_then_dblBk_left \<lbrace>\<lambda>tap. \<exists>l. tap = ([], [Bk, Bk] @ <[hd nl]> @ Bk \<up> l)\<rbrace>"
-      by (smt Hoare_haltI Hoare_halt_def holds_for.elims(2) holds_for.simps)
+      by (smt (verit) Hoare_haltI Hoare_halt_def holds_for.elims(2) holds_for.simps)
   qed
   then show ?thesis
     unfolding tm_check_for_one_arg_def
@@ -5647,7 +5647,7 @@ proof -
       then have "\<And>r. \<exists>stp. is_final (steps0 (1, [],[Bk,Bk]@r) tm_weak_copy stp) \<and>
                            (steps0 (1, [],[Bk,Bk]@r) tm_weak_copy stp = (0, [Bk, Bk], r))"
         unfolding Hoare_halt_def
-        by (smt Hoare_halt_def Pair_inject  holds_for.elims(2) is_final.elims(2))
+        by (smt (verit) Hoare_halt_def Pair_inject  holds_for.elims(2) is_final.elims(2))
       then have "\<And>l. \<exists>stp. is_final (steps0 (1, [],[Bk,Bk]@<[hd nl]> @ Bk \<up> l) tm_weak_copy stp) \<and>
                            (steps0 (1, [],[Bk,Bk]@<[hd nl]> @ Bk \<up> l) tm_weak_copy stp = (0, [Bk, Bk], <[hd nl]> @ Bk \<up> l))"
         by blast

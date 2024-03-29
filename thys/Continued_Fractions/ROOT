@@ -1,0 +1,25 @@
+chapter AFP
+
+session Continued_Fractions (AFP) = "HOL-Analysis" +
+  options [timeout = 600]
+  sessions
+    "HOL-Library"
+    "HOL-Computational_Algebra"
+    "HOL-Decision_Procs"
+    "HOL-Number_Theory"
+    Polynomial_Factorization
+    Pell
+    Coinductive
+  theories
+    Continued_Fractions
+    Quadratic_Irrationals
+    E_CFrac
+    Sqrt_Nat_Cfrac
+    Pell_Continued_Fraction
+    Pell_Lifting
+    Pell_Continued_Fraction_Tests
+    Continued_Fraction_Approximation
+  document_files
+    "root.tex"
+    "root.bib"
+

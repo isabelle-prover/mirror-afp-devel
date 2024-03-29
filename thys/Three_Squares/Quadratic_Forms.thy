@@ -348,9 +348,9 @@ proof -
     by (simp add: algebra_simps dvd_div_eq_0_iff)
   hence "nat (b $$ ?r') > 0 \<and> (\<exists>x. int (nat (b $$ ?r')) = b $$ x)"
     using assms(2) unfolding qf2_positive_definite_def by auto
-  hence "a\<^sub>1\<^sub>1 \<le> nat (b $$ ?r')" unfolding a\<^sub>1\<^sub>1_def by (rule Least_le)
+  hence *: "a\<^sub>1\<^sub>1 \<le> nat (b $$ ?r')" unfolding a\<^sub>1\<^sub>1_def by (rule Least_le)
   hence "a\<^sub>1\<^sub>1 \<le> b $$ ?r'" using 1 by auto
-  also have "... = (b $$ r) div ?h\<^sup>2" proof -
+  also have **: "... = (b $$ r) div ?h\<^sup>2" proof -
     have "(b $$ ?r') * ?h\<^sup>2 = b $$ r" "?h\<^sup>2 dvd b $$ r"
       unfolding qf2_app_def vec2_dot_def mat2_app_def power2_eq_square
       using 1
@@ -360,7 +360,8 @@ proof -
   also have "... = a\<^sub>1\<^sub>1 div ?h\<^sup>2" using 1 by auto
   finally have "a\<^sub>1\<^sub>1 \<le> a\<^sub>1\<^sub>1 div ?h\<^sup>2" .
   also have "... \<le> a\<^sub>1\<^sub>1" using 1 2
-    by (smt (z3) div_by_1 int_div_less_self of_nat_0_less_iff zero_less_power)
+    by (metis * ** assms(2) div_le_dividend int_eq_iff nat_div_distrib order_refl
+        qf2_positive_definite_positive verit_la_disequality)
   finally have "?h = 1" using 1 2
     by (smt (verit) int_div_less_self of_nat_0_less_iff power2_eq_square
                     zero_less_power zmult_eq_1_iff)
@@ -754,7 +755,7 @@ proof -
   also have "... = a\<^sub>1\<^sub>1 div ?h\<^sup>2" using 1 by auto
   finally have "a\<^sub>1\<^sub>1 \<le> a\<^sub>1\<^sub>1 div ?h\<^sup>2" .
   also have "... \<le> a\<^sub>1\<^sub>1" using 1 2
-    by (smt (z3) div_by_1 int_div_less_self of_nat_0_less_iff zero_less_power)
+    by (metis div_le_dividend nat_div_distrib nat_int nat_le_iff of_nat_0_le_iff)
   finally have "?h = 1" using 1 2
     by (smt (verit) int_div_less_self of_nat_0_less_iff power2_eq_square
                     zero_less_power zmult_eq_1_iff)

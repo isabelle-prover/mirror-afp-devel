@@ -8,21 +8,17 @@ package afp
 import isabelle.*
 
 
-class AFP_Structure private(val base_dir: Path) {
+class AFP_Structure private(val base_dir: Path, options: Options) {
   /* files */
 
   val metadata_dir = base_dir + Path.basic("metadata")
-
-  val thys_dir = base_dir + Path.basic("thys")
+  val thys_dir = AFP.main_dir(base_dir)
 
   def entry_thy_dir(name: Metadata.Entry.Name): Path = thys_dir + Path.basic(name)
 
   val authors_file = metadata_dir + Path.basic("authors.toml")
-
   val releases_file = metadata_dir + Path.basic("releases.toml")
-  
   val licenses_file = metadata_dir + Path.basic("licenses.toml")
-
   val topics_file = metadata_dir + Path.basic("topics.toml")
 
   val entries_dir = metadata_dir + Path.basic("entries")
@@ -40,31 +36,36 @@ class AFP_Structure private(val base_dir: Path) {
     parser(toml)
   }
 
-  def load_authors: List[Metadata.Author] = load(authors_file, Metadata.TOML.to_authors)
+  def load_authors: Metadata.Authors =
+    Metadata.Authors(load(authors_file, Metadata.TOML.to_authors))
 
-  def load_releases: List[Metadata.Release] = load(releases_file, Metadata.TOML.to_releases)
+  def load_releases: Metadata.Releases =
+    Metadata.Releases(load(releases_file, Metadata.TOML.to_releases))
 
-  def load_licenses: List[Metadata.License] = load(licenses_file, Metadata.TOML.to_licenses)
-  
-  def load_topics: List[Metadata.Topic] = load(topics_file, Metadata.TOML.to_topics)
+  def load_licenses: Metadata.Licenses =
+    Metadata.Licenses(load(licenses_file, Metadata.TOML.to_licenses))
 
-  def load_entry(name: Metadata.Entry.Name,
-    authors: Map[Metadata.Author.ID, Metadata.Author],
-    topics: Map[Metadata.Topic.ID, Metadata.Topic],
-    licenses: Map[Metadata.License.ID, Metadata.License],
-    releases: Map[Metadata.Entry.Name, List[Metadata.Release]]
+  def load_topics: Metadata.Topics = 
+    Metadata.Topics(load(topics_file, Metadata.TOML.to_topics))
+
+  def load_entry(
+    name: Metadata.Entry.Name,
+    authors: Metadata.Authors,
+    topics: Metadata.Topics,
+    licenses: Metadata.Licenses,
+    releases: Metadata.Releases
   ): Metadata.Entry = {
     val entry_releases = releases.getOrElse(name, Nil)
     load(entry_file(name), toml =>
       Metadata.TOML.to_entry(name, toml, authors, topics, licenses, entry_releases))
   }
 
-  def load(): List[Metadata.Entry] = {
-    val authors = load_authors.map(author => author.id -> author).toMap
-    val topics = Utils.grouped_sorted(load_topics.flatMap(_.all_topics), (t: Metadata.Topic) => t.id)
-    val licenses = load_licenses.map(license => license.id -> license).toMap
-    val releases = load_releases.groupBy(_.entry)
-    entries.map(name => load_entry(name, authors, topics, licenses, releases))
+  def load(): Metadata.Entries = {
+    val authors = load_authors
+    val topics = load_topics
+    val licenses = load_licenses
+    val releases = load_releases
+    Metadata.Entries(entries.map(name => load_entry(name, authors, topics, licenses, releases)))
   }
 
 
@@ -81,8 +82,11 @@ class AFP_Structure private(val base_dir: Path) {
   def save_releases(releases: List[Metadata.Release]): Unit =
     save(releases_file, Metadata.TOML.from_releases(releases))
 
-  def save_topics(topics: List[Metadata.Topic]): Unit =
-    save(topics_file, Metadata.TOML.from_topics(topics))
+  def save_topics(root_topics: List[Metadata.Topic]): Unit =
+    save(topics_file, Metadata.TOML.from_topics(root_topics))
+
+  def save_licenses(licenses: List[Metadata.License]): Unit =
+    save(licenses_file, Metadata.TOML.from_licenses(licenses))
 
   def save_entry(entry: Metadata.Entry): Unit =
     save(entry_file(entry.name), Metadata.TOML.from_entry(entry))
@@ -97,9 +101,9 @@ class AFP_Structure private(val base_dir: Path) {
       case f => error("Unrecognized file in metadata: " + f)
     }
   }
-  
+
   def entries: List[Metadata.Entry.Name] = {
-    val session_entries = Sessions.parse_roots(thys_dir + Path.basic("ROOTS"))
+    val session_entries = Sessions.parse_roots(thys_dir + Sessions.ROOTS)
 
     val session_set = session_entries.toSet
     val metadata_set = entries_unchecked.toSet
@@ -117,14 +121,15 @@ class AFP_Structure private(val base_dir: Path) {
   }
 
   def sessions_structure: Sessions.Structure =
-    Sessions.load_structure(options = Options.init(), select_dirs = List(thys_dir))
+    Sessions.load_structure(options, select_dirs = List(thys_dir))
 
   def entry_sessions(name: Metadata.Entry.Name): List[Sessions.Session_Entry] =
-    Sessions.parse_root(thys_dir + Path.make(List(name, "ROOT"))).collect { case e: Sessions.Session_Entry => e }
+    Sessions.parse_root_entries(thys_dir + Path.basic(name) + Sessions.ROOT)
 
   def hg_id: String = Mercurial.repository(base_dir).id()
 }
 
 object AFP_Structure {
-  def apply(base_dir: Path = Path.explode("$AFP_BASE")): AFP_Structure = new AFP_Structure(base_dir.absolute)
+  def apply(base_dir: Path = AFP.BASE, options: Options = Options.init0()): AFP_Structure =
+    new AFP_Structure(base_dir.absolute, options)
 }

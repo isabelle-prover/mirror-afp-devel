@@ -63,10 +63,10 @@ proof
     fix n::int assume "n \<ge>0" then have "(int_option_enumeration (Some n)) = nat (2*(n + 1))"
       by simp
     then show "even (int_option_enumeration (Some n)) \<and> 0 < int_option_enumeration (Some n)"
-      by (smt \<open>0 \<le> n\<close> even_of_nat int_nat_eq oddE zero_less_nat_eq)  
+      using \<open>0 \<le> n\<close> even_nat_iff by force
   qed
   have neg_odd: "\<And>n::int. n < 0 \<Longrightarrow> odd (int_option_enumeration (Some n))"
-    by (smt evenE even_of_nat int_nat_eq int_option_enumeration.simps(1))
+    by (simp add: even_nat_iff)
   fix x y assume A: "x \<in> UNIV" "y \<in> UNIV" "int_option_enumeration x = int_option_enumeration y"
   show "x = y"
     apply(cases "x = None")
@@ -86,14 +86,14 @@ proof
       show ?thesis 
       proof(cases "n \<ge>0")
         case True
-        then show ?thesis 
-          using n_def A neg_odd pos_even m_def int_option_enumeration.simps(1)
-          by (smt int_nat_eq)
+        then show ?thesis
+          using n_def A neg_odd pos_even m_def int_option_enumeration.simps
+          by (smt (verit) eq_nat_nat_iff)
       next
         case False
         then show ?thesis 
           using n_def A neg_odd pos_even m_def int_option_enumeration.simps(1)
-          by (smt int_nat_eq)
+          by (smt (verit) eq_nat_nat_iff)
       qed
   qed
 qed
@@ -805,8 +805,10 @@ lemma eint_pos_int_times_ge:
   assumes "n > 0"
   shows "eint n * c \<ge> c"
   using assms apply(induction c)
-  apply (smt eSuc_eint eint.distinct(2) eint_mult_mono' eint_pow_int_is_pos eq_iff ileI1 less_le mult.commute mult_one_right one_eint_def zero_eint_def)
-  by simp
+   apply (metis Extended_Int.ileI1 Groups.mult_ac(2) add_0_left eint_mult_mono' eint_pow_int_is_pos
+      mult_one_right nless_le not_less times_eint_simps(4))
+  apply simp
+  done
 
 lemma eint_pos_int_times_gt:
   assumes "(c::eint) > 0"
@@ -923,7 +925,7 @@ lemma eint_plus_times:
   shows "b \<ge> c + l*d" 
 proof-
   have "k*d \<ge> l*d"
-    by (smt assms(1) assms(3) eint_mult_mono' eint_ord_simps(2) eq_iff times_eint_simps(4))
+    by (smt (verit) assms(1) assms(3) eint_mult_mono' eint_ord_simps(2) eq_iff times_eint_simps(4))
   thus ?thesis 
     by (meson add_mono_thms_linordered_semiring(2) assms(2) order_subst2)
 qed
