@@ -110,6 +110,15 @@
     <loc>/authors/schulz/</loc>
     <lastmod>2024-02-19T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/entries/Doob_Convergence.html</loc>
+    <lastmod>2024-02-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/keskin/</loc>
+    <lastmod>2024-02-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/martingales/</loc>
+    <lastmod>2024-02-15T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/entries/IMP_Noninterference.html</loc>
     <lastmod>2024-02-12T00:00:00+00:00</lastmod>
   </url><url>
@@ -235,9 +244,6 @@
   </url><url>
     <loc>/dependencies/polylog/</loc>
     <lastmod>2023-11-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/keskin/</loc>
-    <lastmod>2023-11-21T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Martingales.html</loc>
     <lastmod>2023-11-21T00:00:00+00:00</lastmod>
@@ -5314,6 +5320,8 @@
     <loc>/sessions/dom_components/</loc>
   </url><url>
     <loc>/sessions/dominance_chk/</loc>
+  </url><url>
+    <loc>/sessions/doob_convergence/</loc>
   </url><url>
     <loc>/download/</loc>
   </url><url>
