@@ -140,6 +140,7 @@ Concurrent_Ref_Alg
 Concurrent_Revisions
 Conditional_Simplification
 Conditional_Transfer_Rule
+CondNormReasHOL
 Consensus_Refined
 Constructive_Cryptography
 Constructive_Cryptography_CM
