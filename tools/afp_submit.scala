@@ -146,7 +146,8 @@ object AFP_Submit {
       build: Build.Value,
       status: Option[Status.Value],
       message: String = "",
-      log: String = "") extends T
+      log: Option[String] = None,
+      archive: Option[String] = None) extends T
     case class Submission_List(submissions: List[Overview]) extends T
   }
 
@@ -330,13 +331,14 @@ object AFP_Submit {
             structure.load_entry(_, authors, state.topics, state.licenses, state.releases))
 
           val log_file = down(id) + Path.basic("isabelle.log")
-          val log = if (log_file.file.exists) File.read(log_file) else ""
+          val log = if (log_file.file.exists) Some(File.read(log_file)) else None
+          val archive = get_archive(id).map(_.file_name)
 
           JSON.parse(File.read(info_file(id))) match {
             case JSON.Object(m) if m.contains("comment") =>
               val comment = m("comment").toString
               val meta = Model.Metadata(authors, entries)
-              Model.Submission(id, meta, read_build(id), read_status(id), comment, log)
+              Model.Submission(id, meta, read_build(id), read_status(id), comment, log, archive)
             case _ => isabelle.error("Could not read info")
           }
         }
@@ -791,18 +793,29 @@ object AFP_Submit {
           "and submit to editors once successfully built."
 
       val archive_url =
-        if (handler.get_archive(submission.id).exists(_.get_ext == "zip"))
-          API_SUBMISSION_DOWNLOAD_ZIP
-        else API_SUBMISSION_DOWNLOAD_TGZ
+        submission.archive match {
+          case Some(archive) if archive.endsWith(".zip") => Some(API_SUBMISSION_DOWNLOAD_ZIP)
+          case Some(archive) if archive.endsWith(".tar.gz") => Some(API_SUBMISSION_DOWNLOAD_TGZ)
+          case _ => None
+        }
+
+      def archive_download(url: Path): XML.Body =
+          List(download_link(api.api_url(url, List(ID -> submission.id)), text("archive")))
 
       val resubmit = mode match {
         case Mode.EDIT => "Update"
         case Mode.SUBMISSION => "Resubmit"
       }
 
+      val log =
+        submission.log match {
+          case None => text("Waiting for build...")
+          case Some(log) => text("Isabelle log:") ::: source(log) :: Nil
+        }
+
       List(submit_form(api.api_url(SUBMISSION, List(ID -> submission.id)),
         render_if(mode == Mode.SUBMISSION,
-          download_link(api.api_url(archive_url, List(ID -> submission.id)), text("archive")) ::
+          archive_url.map(archive_download).getOrElse(Nil) :::
           download_link(api.api_url(API_SUBMISSION_DOWNLOAD, List(ID -> submission.id)),
             text("metadata patch")) ::
           text(" (apply with: 'patch -p0 < FILE')")) :::
@@ -820,10 +833,7 @@ object AFP_Submit {
         render_if(submission.build == Model.Build.Success && submission.status.isEmpty,
           action_button(api.api_url(API_SUBMIT), "Send submission to AFP editors", submission.id)) :::
         render_if(mode == Mode.SUBMISSION,
-          fieldset(legend("Build") ::
-            bold(text(submission.build.toString)) ::
-            par(text("Isabelle log:") ::: source(submission.log) :: Nil) ::
-            Nil))))
+          fieldset(legend("Build") :: bold(text(submission.build.toString)) :: par(log) :: Nil))))
     }
 
     def render_upload(upload: Model.Upload): XML.Body = {
