@@ -720,7 +720,7 @@ object AFP_Submit {
     }
   }
 
-  
+
   /* paths */
 
   object Page {
@@ -728,7 +728,7 @@ object AFP_Submit {
     val SUBMISSION = Path.explode("submission")
     val SUBMISSIONS = Path.explode("submissions")
   }
-  
+
   object API {
     val SUBMISSION = Path.explode("api/submission")
     val SUBMISSION_UPLOAD = Path.explode("api/submission/upload")
@@ -757,7 +757,7 @@ object AFP_Submit {
     val CSS = Path.explode("api/main.css")
   }
 
-  
+
   /* view: html rendering and parameter parsing */
 
   class View(api: Web_App.API, mode: Mode.Value) {
@@ -844,7 +844,7 @@ object AFP_Submit {
       validated.err.map(error =>
         break ::: List(css("color: red")(label(for_elem, error)))).getOrElse(Nil)
 
-    def render_metadata(meta: Model.Metadata, state: State): XML.Body = {
+    def render_metadata(metadata: Model.Metadata, state: State): XML.Body = {
       def render_topic(topic: Topic, key: Params.Key): XML.Elem =
         item(hidden(Nest_Key(key, ID), topic.id) :: text(topic.id))
 
@@ -852,7 +852,7 @@ object AFP_Submit {
         item(
           hidden(Nest_Key(key, ID), affil.author) ::
           hidden(Nest_Key(key, AFFILIATION), affil_id(affil)) ::
-          text(author_string(meta.authors(affil.author)) + ", " + affil_string(affil)))
+          text(author_string(metadata.authors(affil.author)) + ", " + affil_string(affil)))
 
       def render_related(related: Reference, key: Params.Key): XML.Elem =
         item(
@@ -863,37 +863,28 @@ object AFP_Submit {
       def render_entry(entry: Entry, key: Params.Key): XML.Elem =
         fieldset(List(
           legend("Entry"),
-          par(
-            fieldlabel(Nest_Key(key, TITLE), "Title") ::
+          par(fieldlabel(Nest_Key(key, TITLE), "Title") ::
             hidden(Nest_Key(key, TITLE), entry.title) ::
             text(entry.title)),
-          par(
-            fieldlabel(Nest_Key(key, NAME), "Short Name") ::
+          par(fieldlabel(Nest_Key(key, NAME), "Short Name") ::
             hidden(Nest_Key(key, NAME), entry.name) ::
             text(entry.name)),
-          par(
-            fieldlabel(Nest_Key(key, DATE), "Date") ::
+          par(fieldlabel(Nest_Key(key, DATE), "Date") ::
             hidden(Nest_Key(key, DATE), entry.date.toString) ::
             text(entry.date.toString)),
-          par(List(
-            fieldlabel("", "Topics"),
+          par(List(fieldlabel("", "Topics"),
             list(indexed(entry.topics, key, TOPIC, render_topic)))),
-          par(
-            fieldlabel(Nest_Key(key, LICENSE), "License") ::
+          par(fieldlabel(Nest_Key(key, LICENSE), "License") ::
             hidden(Nest_Key(key, LICENSE), entry.license.id) ::
             text(entry.license.name)),
-          par(List(
-            fieldlabel(Nest_Key(key, ABSTRACT), "Abstract"),
+          par(List(fieldlabel(Nest_Key(key, ABSTRACT), "Abstract"),
             hidden(Nest_Key(key, ABSTRACT), entry.`abstract`),
             class_("mathjax_process")(span(List(input_raw(entry.`abstract`)))))),
-          par(List(
-            fieldlabel("", "Authors"),
+          par(List(fieldlabel("", "Authors"),
             list(indexed(entry.authors, key, AUTHOR, render_affil)))),
-          par(List(
-            fieldlabel("", "Contact"),
+          par(List(fieldlabel("", "Contact"),
             list(indexed(entry.notifies, key, NOTIFY, render_affil)))),
-          par(List(
-            fieldlabel("", "Related Publications"),
+          par(List(fieldlabel("", "Related Publications"),
             list(indexed(entry.related, key, RELATED, render_related))))))
 
       def render_new_author(author: Author, key: Params.Key): XML.Elem =
@@ -908,9 +899,9 @@ object AFP_Submit {
           hidden(Nest_Key(key, ID), affil_id(affil)),
           hidden(Nest_Key(key, AFFILIATION), affil_address(affil))))
 
-      indexed(meta.entries, Params.empty, ENTRY, render_entry) :::
-        indexed(meta.new_authors(state).toList, Params.empty, AUTHOR, render_new_author) :::
-        indexed(meta.new_affils(state).toList, Params.empty, AFFILIATION, render_new_affil)
+      indexed(metadata.entries, Params.empty, ENTRY, render_entry) :::
+        indexed(metadata.new_authors(state).toList, Params.empty, AUTHOR, render_new_author) :::
+        indexed(metadata.new_affils(state).toList, Params.empty, AFFILIATION, render_new_affil)
     }
 
 
@@ -1068,8 +1059,7 @@ object AFP_Submit {
               "You can submit multiple entries at once. " +
               "Put the corresponding folders in the archive " +
               "and use the button below to add more input fields for metadata. "),
-            api_button(api.api_url(API.SUBMISSION_ENTRIES_ADD), "additional entry")))) :::
-        break :::
+            api_button(api.api_url(API.SUBMISSION_ENTRIES_ADD), "additional entry")))) ::: break :::
         fieldset(legend("New Authors") ::
           explanation("", "If you are new to the AFP, add yourself here.") ::
           indexed(model.new_authors.v, Params.empty, AUTHOR, render_new_author) :::
@@ -1094,8 +1084,7 @@ object AFP_Submit {
           textfield(Nest_Key(AFFILIATION, ADDRESS), "https://proofcraft.org",
             model.new_affils_input) ::
           api_button(api.api_url(API.SUBMISSION_AFFILIATIONS_ADD), "add") ::
-          render_error("", model.new_affils)) ::
-        break :::
+          render_error("", model.new_affils)) :: break :::
         fieldset(List(legend(upload),
           api_button(api.api_url(API.SUBMISSION_UPLOAD), preview))) :: Nil))
     }
@@ -1230,11 +1219,9 @@ object AFP_Submit {
       }
 
       List(div(
-        span(text("Entry successfully saved. " + status)) ::
-        break :::
+        span(text("Entry successfully saved. " + status)) :: break :::
         frontend_link(Page.SUBMISSION, List(ID -> created.id),
-          text(api.app_url(Page.SUBMISSION, List(ID -> created.id)))) ::
-        break :::
+          text(api.app_url(Page.SUBMISSION, List(ID -> created.id)))) :: break :::
         render_if(mode == Mode.SUBMISSION, span(text("(keep that url!).")))))
     }
 
@@ -1338,7 +1325,7 @@ object AFP_Submit {
                     authors.updated(author.id, author.copy(homepages = author.homepages :+ h))
                 })
               }
-            }
+          }
         new_authors = new_author_ids.map(all_authors)
         entries <- fold(params.list(ENTRY), List.empty[Model.Create_Entry]) {
           case (entry, entries) => parse_entry(entry, all_authors).map(entries :+ _)
@@ -1648,7 +1635,7 @@ object AFP_Submit {
       Post(API.SUBMIT, "submit to editors", submit),
       Post(API.BUILD_ABORT, "abort the build", abort_build),
       Post(API.SUBMISSION, "get submission form", submission),
-      Post(API.SUBMISSION_AUTHORS_ADD, "add author",  add_new_author),
+      Post(API.SUBMISSION_AUTHORS_ADD, "add author", add_new_author),
       Post(API.SUBMISSION_AUTHORS_REMOVE, "remove author", remove_new_author),
       Post(API.SUBMISSION_AFFILIATIONS_ADD, "add affil", add_new_affil),
       Post(API.SUBMISSION_AFFILIATIONS_REMOVE, "remove affil", remove_new_affil),
@@ -1688,7 +1675,7 @@ Usage: isabelle afp_submit [OPTIONS]
 
   Options are:
       -a PATH      backend path (if endpoint is not server root)
-      -b URL       application frontend url. Default: """ + frontend_url + """"
+      -b URL       application frontend url. Default: """ + frontend_url + """
       -d           devel mode (serves frontend and skips automatic AFP repository updates)
       -p PORT      server port. Default: """ + port + """
       -v           verbose
