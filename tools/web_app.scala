@@ -8,12 +8,10 @@ package afp
 import isabelle.*
 
 import scala.annotation.tailrec
+import scala.collection.immutable.SortedMap
 
 
 object Web_App {
-  val FILE = "file"
-  val ACTION = "action"
-
   /* form html elements */
 
   object More_HTML {
@@ -29,21 +27,17 @@ object Web_App {
 
     def legend(txt: String): XML.Elem = XML.Elem(Markup("legend", Nil), text(txt))
     def input(typ: String): XML.Elem = XML.Elem(Markup("input", List("type" -> typ)), Nil)
-    def hidden(k: String, v: String): XML.Elem = id(k)(name(k)(value(v)(input("hidden"))))
+    def hidden(k: Params.Key, v: String): XML.Elem =
+      id(k.print)(name(k.print)(value(v)(input("hidden"))))
 
-    def textfield(i: String, p: String, v: String): XML.Elem =
-      id(i)(name(i)(value(v)(placeholder(p)(input("text")))))
+    def textfield(i: Params.Key, p: String, v: String): XML.Elem =
+      id(i.print)(name(i.print)(value(v)(placeholder(p)(input("text")))))
 
-    def browse(i: String, accept: List[String]): XML.Elem =
-      id(i)(name(i)(input("file"))) + ("accept" -> accept.mkString(","))
+    def browse(i: Params.Key, accept: List[String]): XML.Elem =
+      id(i.print)(name(i.print)(input("file"))) + ("accept" -> accept.mkString(","))
 
-    def label(`for`: String, txt: String): XML.Elem =
-      XML.Elem(Markup("label", List("for" -> `for`)), text(txt))
-
-    def fieldlabel(for_elem: String, txt: String): XML.Elem = label(for_elem, " " + txt + ": ")
-
-    def explanation(for_elem: String, txt: String): XML.Elem =
-      par(List(emph(List(label(for_elem, txt)))))
+    def label(`for`: Params.Key, txt: String): XML.Elem =
+      XML.Elem(Markup("label", List("for" -> `for`.print)), text(txt))
 
     def option(k: String, v: String): XML.Elem =
       XML.Elem(Markup("option", List("value" -> k)), text(v))
@@ -51,22 +45,22 @@ object Web_App {
     def optgroup(txt: String, opts: XML.Body): XML.Elem =
       XML.Elem(Markup("optgroup", List("label" -> txt)), opts)
 
-    def select(i: String, opts: XML.Body): XML.Elem =
-      XML.Elem(Markup("select", List("id" -> i, "name" -> i)), opts)
+    def select(i: Params.Key, opts: XML.Body): XML.Elem =
+      XML.Elem(Markup("select", List("id" -> i.print, "name" -> i.print)), opts)
 
-    def textarea(i: String, v: String): XML.Elem =
-      XML.Elem(Markup("textarea", List("id" -> i, "name" -> i, "value" -> v)), text(v + "\n"))
+    def textarea(i: Params.Key, v: String): XML.Elem =
+      XML.Elem(Markup("textarea", List("id" -> i.print, "name" -> i.print, "value" -> v)), text(v + "\n"))
 
-    def radio(i: String, v: String, values: List[(String, String)]): XML.Elem = {
-      def to_option(k: String): XML.Elem = {
-        val elem = id(i + k)(name(i)(value(k)(input("radio"))))
+    def radio(i: Params.Key, v: Params.Key, values: List[(Params.Key, String)]): XML.Elem = {
+      def to_option(k: Params.Key): XML.Elem = {
+        val elem = id(i.print + k)(name(i.print)(value(k.print)(input("radio"))))
         if (v == k) elem + ("checked" -> "checked") else elem
       }
 
       span(values.map { case (k, v) => span(List(label(i + k, v), to_option(k))) })
     }
 
-    def selection(i: String, selected: Option[String], opts: XML.Body): XML.Elem = {
+    def selection(i: Params.Key, selected: Option[String], opts: XML.Body): XML.Elem = {
       def sel(elem: XML.Tree): XML.Tree = {
         selected match {
           case Some(value) =>
@@ -94,128 +88,11 @@ object Web_App {
     def api_button(call: String, label: String): XML.Elem =
       button(text(label)) + ("formaction" -> call) + ("type" -> "submit")
 
-    def action_button(call: String, label: String, action: String): XML.Elem =
-      name(ACTION)(value(action)(api_button(call, label)))
-
     def submit_form(endpoint: String, body: XML.Body): XML.Elem = {
       val default_button = css("display: none")(input("submit") + ("formaction" -> endpoint))
       val attrs =
         List("method" -> "post", "target" -> "iframe", "enctype" -> "multipart/form-data")
       XML.Elem(Markup("form", attrs), default_button :: body)
-    }
-  }
-
-
-  /* request parameters */
-
-  object Params {
-    type Key = String
-    val empty: Key = ""
-
-    object Nest_Key {
-      def apply(k: Key, field: String): Key =
-        if (k == empty) field else k + "_" + field
-
-      def unapply(k: Key): Option[(Key, String)] =
-        k.split('_').filterNot(_.isEmpty).toList.reverse match {
-          case k :: ks => Some(ks.reverse.mkString("_"), k)
-          case _ => None
-        }
-    }
-
-    object List_Key {
-      def apply(k: Key, field: String, i: Int): Key =
-        Nest_Key(k, field + "_" + i.toString)
-
-      def unapply(k: Key): Option[(Key, (String, Int))] =
-        k.split('_').filterNot(_.isEmpty).toList.reverse match {
-          case Value.Int(i) :: k :: ks => Some(ks.reverse.mkString("_"), (k, i))
-          case _ => None
-        }
-
-      def num(field: String, k: Key): Option[Int] = k match {
-        case List_Key(_, (f, i)) if f == field => Some(i)
-        case _ => None
-      }
-
-      def split(field: String, k: Key): Option[(Key, Int)] = k match {
-        case List_Key(key, (f, i)) if f == field => Some(key, i)
-        case _ => None
-      }
-    }
-
-
-    /* structured data */
-
-    class Data private[Params](
-      v: Option[String] = None,
-      elem: Map[String, Data] = Map.empty,
-      elems: Map[String, List[Data]] = Map.empty
-    ) {
-      def is_empty: Boolean = v.isEmpty && elem.isEmpty && elems.isEmpty
-
-      override def toString: String = {
-        val parts =
-          v.map(v => if (v.length <= 100) quote(v) else quote(v.take(100) + "...")).toList ++
-          elem.toList.map { case (k, v) => k + " -> " + v.toString } ++
-          elems.toList.map { case (k, v) => k + " -> (" + v.mkString(",") + ")" }
-        "{" + parts.mkString(", ") + "}"
-      }
-
-      def value: String = v.getOrElse("")
-
-      def get(field: String): Data = elem.getOrElse(field, new Data())
-
-      def list(field: String): List[Data] = elems.getOrElse(field, Nil)
-    }
-
-    object Data {
-      def from_multipart(parts: List[Multi_Part.Data]): Data = {
-        sealed trait E
-        case class Value(rep: String) extends E
-        case class Index(i: Int, to: E) extends E
-        case class Nest(field: String, to: E) extends E
-
-        def group_map[A, B, C](v: List[(C, A)], agg: List[A] => B): Map[C, B] =
-          v.groupBy(_._1).view.mapValues(_.map(_._2)).mapValues(agg).toMap
-
-        def to_list(l: List[(Int, E)]): List[Data] = {
-          val t: List[(Int, Data)] = group_map(l, parse).toList
-          t.sortBy(_._1).map(_._2)
-        }
-
-        def parse(e: List[E]): Data = {
-          val value = e.collectFirst { case Value(rep) => rep }
-          val nest_by_key = e.collect {
-            case Nest(field, v: Value) => field -> v
-            case Nest(field, v: Nest) => field -> v
-          }
-          val elem = group_map(nest_by_key, parse)
-          val list_by_key = e.collect {
-            case Nest(field, Index(i, to)) => field -> (i -> to)
-          }
-          val elems = group_map(list_by_key, to_list)
-
-          new Data(value, elem, elems)
-        }
-
-        @tailrec
-        def expand(key: Key, to: E): E =
-          key match {
-            case List_Key(key, (field, i)) => expand(key, Nest(field, Index(i, to)))
-            case Nest_Key(key, field) => expand(key, Nest(field, to))
-            case _ => to
-          }
-
-        val params =
-          parts.flatMap {
-            case Multi_Part.Param(name, value) => List(name -> value)
-            case Multi_Part.File(name, file_name, content) =>
-              List(name -> file_name, Nest_Key(name, Web_App.FILE) -> content.encode_base64)
-          }
-
-        parse(params.map { case (k, v) => expand(k, Value(v)) })
-      }
     }
   }
 
@@ -297,6 +174,121 @@ object Web_App {
           parts(rest).getOrElse(Nil)
         case _ => Nil
       }
+    }
+  }
+
+
+  /* request parameters as structured data */
+
+  object Params {
+    def key(elems: (String | Int)*): Key =
+      Key(
+        elems.toList.map {
+          case s: String => Key.elem(s)
+          case i: Int => Key.elem(i)
+        })
+
+    object Key {
+      sealed trait Elem { def print: String }
+
+      class Nested_Elem private[Key](val rep: String) extends Elem {
+        override def equals(that: Any): Boolean =
+          that match {
+            case other: Nested_Elem => rep == other.rep
+            case _ => false
+          }
+        override def hashCode(): Int = rep.hashCode
+
+        def print: String = rep
+        override def toString: String = print
+      }
+
+      class List_Elem private[Key](val rep: Int) extends Elem {
+        override def equals(that: Any): Boolean =
+          that match {
+            case other: List_Elem => rep == other.rep
+            case _ => false
+          }
+        override def hashCode(): Int = rep.hashCode
+
+        def print: String = rep.toString
+        override def toString: String = print
+      }
+
+      def elem(s: String): Nested_Elem =
+        if (!s.forall(Symbol.is_ascii_letter)) error("Illegal element in: " + quote(s))
+        else new Nested_Elem(s)
+
+      def elem(i: Int): List_Elem =
+        if (i < 0) error("Illegal list element") else new List_Elem(i)
+
+      def empty: Key = Key(Nil)
+      def apply(s: String): Key = new Key(List(elem(s)))
+      def explode(s: String): Key =
+        new Key(
+          space_explode('_', s).map {
+            case Value.Int(i) => elem(i)
+            case s => elem(s)
+          })
+
+
+      /* ordering */
+
+      object Ordering extends scala.math.Ordering[Key] {
+        def compare(key1: Key, key2: Key): Int = key1.print.compareTo(key2.print)
+      }
+    }
+
+    case class Key(rep: List[Key.Elem]) {
+      def +(elem: Key.Elem): Key = Key(rep :+ elem)
+      def +(i: Int): Key = this + Key.elem(i)
+      def +(s: String): Key = this + Key.elem(s)
+      def +(key: Key) = Key(rep ++ key.rep)
+
+      def num: Option[Int] =
+        rep match {
+          case (e: Key.List_Elem) :: _ => Some(e.rep)
+          case _ => None
+        }
+
+      def get(key: Key): Option[Key] =
+        if (rep.startsWith(key.rep)) Some(Key(rep.drop(key.rep.length))) else None
+
+      def print = rep.map(_.print).mkString("_")
+      override def toString: String = print
+    }
+
+    def indexed[A, B](key: Key, xs: List[A], f: (Key, A) => B): List[B] =
+      for ((x, i) <- xs.zipWithIndex) yield f(key + i, x)
+
+
+    object Data {
+      def from_multipart(parts: List[Multi_Part.Data]): Data = {
+        val files = parts.collect { case f: Multi_Part.File => f }
+        val params =
+          parts.collect { case Multi_Part.Param(name, value) => Key.explode(name) -> value }
+        val file_params = files.map(file => Key.explode(file.name) -> file.file_name)
+        val file_files = files.map(file => Key.explode(file.name) -> file.content)
+
+        new Data(
+          SortedMap.from(params ++ file_params)(Key.Ordering),
+          SortedMap.from(file_files)(Key.Ordering))
+      }
+    }
+
+    class Data private(params: SortedMap[Key, String], files: SortedMap[Key, Bytes]) {
+      override def toString: String = "Data(" + params.toString() + "," + files.toString() + ")"
+
+      def get(key: Key): Option[String] = params.get(key)
+      def apply(key: Key): String = get(key).getOrElse("")
+      def list(key: Key): List[Key] =
+        (for {
+          key1 <- params.keys.toList
+          key2 <- key1.get(key)
+          i <- key2.num
+        } yield key + i).distinct
+
+      def file(key: Key): Option[Bytes] = files.get(key)
     }
   }
 
