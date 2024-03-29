@@ -303,25 +303,32 @@ object Web_App {
 
   /* API with backend base path, and application url (e.g. for frontend links). */
 
-  class API(val app: Url, val base_path: Path, val devel: Boolean = false) {
-    def url(path: Path, params: Properties.T = Nil): String = {
+  case class Paths(
+    frontend: Url,
+    api_base: Path,
+    serve_frontend: Boolean = false,
+    landing: Path = Path.current
+  ) {
+    def api_path(path: Path, external: Boolean = true): Path =
+      (if (serve_frontend) Path.explode("backend") else Path.current) +
+        (if (external) api_base else Path.current) + path
+
+    def route(path: Path, params: Properties.T = Nil): String = {
       def param(p: Properties.Entry): String = Url.encode(p._1) + "=" + Url.encode(p._2)
-      if (params.isEmpty) path.implode else path.implode + "?" + params.map(param).mkString("&")
+      val route =
+        if (params.isEmpty) path.implode else path.implode + "?" + params.map(param).mkString("&")
+      "/" + route
     }
 
-    def api_path(path: Path, external: Boolean = true): Path =
-      (if (devel) Path.explode("backend") else Path.current) +
-        (if (external) base_path else Path.current) + path
+    def api_route(path: Path, params: Properties.T = Nil, external: Boolean = true): String =
+      route(api_path(path, external = external), params)
 
-    def api_url(path: Path, params: Properties.T = Nil, external: Boolean = true): String =
-      "/" + url(api_path(path, external = external), params)
-
-    def app_url(path: Path, params: Properties.T = Nil): String =
-      app.toString + "/" + url(path, params)
+    def frontend_url(path: Path, params: Properties.T = Nil): Url =
+      frontend.resolve(route(path, params))
   }
 
   abstract class Server[A](
-    api: API,
+    paths: Paths,
     port: Int = 0,
     verbose: Boolean = false,
     progress: Progress = new Progress()
@@ -358,8 +365,8 @@ object Web_App {
 }).call(this)"""
 
         val set_src = """
-const base = '""" + api.app.toString.replace("/", "\\/") + """'
-document.getElementById('iframe').src = base + '""" + api.api_url(path).replace("/", "\\/") + """' + window.location.search"""
+const base = '""" + paths.frontend.toString.replace("/", "\\/") + """'
+document.getElementById('iframe').src = base + '""" + paths.api_route(path).replace("/", "\\/") + """' + window.location.search"""
 
         Some(HTTP.Response.html(output_document(
           List(
@@ -378,7 +385,7 @@ document.getElementById('iframe').src = base + '""" + api.api_url(path).replace(
     }
 
     sealed abstract class Endpoint(path: Path, method: String = "GET")
-      extends HTTP.Service(api.api_path(path, external = false).implode, method) {
+      extends HTTP.Service(paths.api_path(path, external = false).implode, method) {
 
       def reply(request: HTTP.Request): HTTP.Response
 
@@ -468,9 +475,11 @@ document.getElementById('iframe').src = base + '""" + api.api_url(path).replace(
 
     /* server */
 
-    private lazy val services =
-      endpoints ::: (if (api.devel) endpoints.collect { case g: Get => new UI(g.path) } else Nil)
-    private lazy val server = HTTP.server(port = port, name = "", services = services)
+    private def ui_endpoints =
+      if (paths.serve_frontend) endpoints.collect { case page: Get => new UI(page.path) } else Nil
+
+    private lazy val server =
+      HTTP.server(port = port, name = "", services = endpoints ::: ui_endpoints)
 
     def run(): Unit = {
       start()
@@ -486,7 +495,7 @@ document.getElementById('iframe').src = base + '""" + api.api_url(path).replace(
 
     def start(): Unit = {
       server.start()
-      progress.echo("Server started on port " + server.http_server.getAddress.getPort)
+      progress.echo("Server started on " + paths.frontend_url(paths.landing))
     }
 
     def stop(): Unit = {
