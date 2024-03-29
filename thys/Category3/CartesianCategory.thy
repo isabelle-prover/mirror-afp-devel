@@ -307,45 +307,47 @@ begin
            (\<forall>a0 a1. ide a0 \<and> ide a1 \<longrightarrow> (\<exists>p0 p1. has_as_binary_product a0 a1 p0 p1))"
 
     lemma has_as_binary_productI [intro]:
-    assumes "ide a" and "ide b"
-    and "\<guillemotleft>p : c \<rightarrow> a\<guillemotright>" and "\<guillemotleft>q : c \<rightarrow> b\<guillemotright>"
-    and "\<And>x f g. \<lbrakk>\<guillemotleft>f : x \<rightarrow> a\<guillemotright>; \<guillemotleft>g : x \<rightarrow> b\<guillemotright>\<rbrakk> \<Longrightarrow> \<exists>!h. \<guillemotleft>h : x \<rightarrow> c\<guillemotright> \<and> p \<cdot> h = f \<and> q \<cdot> h = g"
+    assumes "span p q" and "cod p = a" and "cod q = b"
+    and "\<And>x f g. \<lbrakk>\<guillemotleft>f : x \<rightarrow> a\<guillemotright>; \<guillemotleft>g : x \<rightarrow> b\<guillemotright>\<rbrakk> \<Longrightarrow> \<exists>!h. \<guillemotleft>h : x \<rightarrow> dom p\<guillemotright> \<and> p \<cdot> h = f \<and> q \<cdot> h = g"
     shows "has_as_binary_product a b p q"
     proof (unfold has_as_binary_product_def, intro conjI)
-      show "ide a" by fact
-      show "ide b" by fact
+      show a: "ide a"
+        using assms by auto
+      show b: "ide b"
+        using assms by auto
+      let ?c = "dom p"
       interpret J: binary_product_shape .
       interpret D: binary_product_diagram C a b
-        using assms(1-2) by unfold_locales auto
+        using a b by unfold_locales auto
       show "D.has_as_binary_product p q"
       proof -
         have 1: "D.is_rendered_commutative_by p q"
-          using assms ide_in_hom by blast
+          using assms a b ide_in_hom by blast
         let ?\<chi> = "D.mkCone p q"
-        interpret \<chi>: cone J.comp C D.map c ?\<chi>
+        interpret \<chi>: cone J.comp C D.map ?c ?\<chi>
            using assms(4) D.cone_mkCone 1 by auto
-        interpret \<chi>: limit_cone J.comp C D.map c ?\<chi>
+        interpret \<chi>: limit_cone J.comp C D.map ?c ?\<chi>
         proof
           fix x \<chi>'
           assume \<chi>': "D.cone x \<chi>'"
           interpret \<chi>': cone J.comp C D.map x \<chi>'
             using \<chi>' by simp
-          have 2: "\<exists>!h. \<guillemotleft>h : x \<rightarrow> c\<guillemotright> \<and> p \<cdot> h = \<chi>' J.FF \<and> q \<cdot> h = \<chi>' J.TT"
+          have 2: "\<exists>!h. \<guillemotleft>h : x \<rightarrow> ?c\<guillemotright> \<and> p \<cdot> h = \<chi>' J.FF \<and> q \<cdot> h = \<chi>' J.TT"
           proof -
             have "\<guillemotleft>\<chi>' J.FF : x \<rightarrow> a\<guillemotright> \<and> \<guillemotleft>\<chi>' J.TT : x \<rightarrow> b\<guillemotright>"
               by auto
             thus ?thesis
-              using assms(5) [of "\<chi>' J.FF" x "\<chi>' J.TT"] by simp
+              using assms(4) [of "\<chi>' J.FF" x "\<chi>' J.TT"] by simp
           qed
           have 3: "D.is_rendered_commutative_by (\<chi>' J.FF) (\<chi>' J.TT)"
-            using assms(1-2) by force
-          obtain h where h: "\<guillemotleft>h : x \<rightarrow> c\<guillemotright> \<and> p \<cdot> h = \<chi>' J.FF \<and> q \<cdot> h = \<chi>' J.TT"
+            using a b by force
+          obtain h where h: "\<guillemotleft>h : x \<rightarrow> ?c\<guillemotright> \<and> p \<cdot> h = \<chi>' J.FF \<and> q \<cdot> h = \<chi>' J.TT"
             using 2 by blast
           have 4: "\<guillemotleft>h : dom (\<chi>' (J.MkIde False)) \<rightarrow> dom p\<guillemotright>"
             using assms(3) h by auto
-          have "\<guillemotleft>h : x \<rightarrow> c\<guillemotright> \<and> D.cones_map h (D.mkCone p q) = \<chi>'"
+          have "\<guillemotleft>h : x \<rightarrow> ?c\<guillemotright> \<and> D.cones_map h (D.mkCone p q) = \<chi>'"
           proof (intro conjI)
-            show "\<guillemotleft>h : x \<rightarrow> c\<guillemotright>"
+            show "\<guillemotleft>h : x \<rightarrow> ?c\<guillemotright>"
               using h by blast
             show "D.cones_map h (D.mkCone p q) = \<chi>'"
             proof
@@ -354,22 +356,23 @@ begin
                 using h 1 3 4 D.cones_map_mkCone_eq_iff [of p q "\<chi>' J.FF" "\<chi>' J.TT"]
                       \<chi>.cone_axioms J.is_discrete \<chi>'.is_extensional
                       D.mkCone_def binary_product_shape.ide_char
-                by (cases "J.ide j") auto
+                apply (cases "J.ide j")
+                by (metis (no_types, lifting))+
             qed
           qed
-          moreover have "\<And>h'. \<guillemotleft>h' : x \<rightarrow> c\<guillemotright> \<and> D.cones_map h' (D.mkCone p q) = \<chi>' \<Longrightarrow> h' = h"
+          moreover have "\<And>h'. \<guillemotleft>h' : x \<rightarrow> ?c\<guillemotright> \<and> D.cones_map h' (D.mkCone p q) = \<chi>' \<Longrightarrow> h' = h"
           proof -
             fix h'
-            assume 5: "\<guillemotleft>h' : x \<rightarrow> c\<guillemotright> \<and> D.cones_map h' (D.mkCone p q) = \<chi>'"
-            have "\<exists>!h. \<guillemotleft>h : x \<rightarrow> c\<guillemotright> \<and> p \<cdot> h = \<chi>' J.FF \<and> q \<cdot> h = \<chi>' J.TT"
-              by (simp add: assms(5) in_homI)
-            moreover have "\<guillemotleft>h : x \<rightarrow> c\<guillemotright> \<and> \<chi>' J.FF = p \<cdot> h \<and> q \<cdot> h = \<chi>' J.TT"
+            assume 5: "\<guillemotleft>h' : x \<rightarrow> ?c\<guillemotright> \<and> D.cones_map h' (D.mkCone p q) = \<chi>'"
+            have "\<exists>!h. \<guillemotleft>h : x \<rightarrow> ?c\<guillemotright> \<and> p \<cdot> h = \<chi>' J.FF \<and> q \<cdot> h = \<chi>' J.TT"
+              by (simp add: assms(4) in_homI)
+            moreover have "\<guillemotleft>h : x \<rightarrow> ?c\<guillemotright> \<and> \<chi>' J.FF = p \<cdot> h \<and> q \<cdot> h = \<chi>' J.TT"
               using h by simp
-            moreover have "\<guillemotleft>h' : x \<rightarrow> c\<guillemotright> \<and> \<chi>' J.FF = p \<cdot> h' \<and> q \<cdot> h' = \<chi>' J.TT"
+            moreover have "\<guillemotleft>h' : x \<rightarrow> ?c\<guillemotright> \<and> \<chi>' J.FF = p \<cdot> h' \<and> q \<cdot> h' = \<chi>' J.TT"
               using 5 \<chi>.cone_axioms D.mkCone_def [of p q] by auto
             ultimately show "h' = h" by auto
           qed
-          ultimately show "\<exists>!h. \<guillemotleft>h : x \<rightarrow> c\<guillemotright> \<and> D.cones_map h (D.mkCone p q) = \<chi>'"
+          ultimately show "\<exists>!h. \<guillemotleft>h : x \<rightarrow> ?c\<guillemotright> \<and> D.cones_map h (D.mkCone p q) = \<chi>'"
             by blast
         qed
         show "D.has_as_binary_product p q"
@@ -673,12 +676,8 @@ begin
     assumes "ide a" and "ide b"
     shows "has_as_binary_product a b \<pp>\<^sub>1[a, b] \<pp>\<^sub>0[a, b]"
     proof
-      show "ide a" and "ide b"
+      show "span \<pp>\<^sub>1[a, b] \<pp>\<^sub>0[a, b]" and "cod \<pp>\<^sub>1[a, b] = a" and "cod \<pp>\<^sub>0[a, b] = b"
         using assms by auto
-      show "\<guillemotleft>\<pp>\<^sub>1[a, b] : dom \<pp>\<^sub>1[a, b] \<rightarrow> a\<guillemotright>"
-        using assms by simp
-      show "\<guillemotleft>\<pp>\<^sub>0[a, b] : dom \<pp>\<^sub>1[a, b] \<rightarrow> b\<guillemotright>"
-        using assms by simp
       fix x f g
       assume f: "\<guillemotleft>f : x \<rightarrow> a\<guillemotright>" and g: "\<guillemotleft>g : x \<rightarrow> b\<guillemotright>"
       have "span f g"
@@ -691,6 +690,47 @@ begin
     qed
 
   end
+
+  lemma (in category) elementary_category_with_binary_productsI:
+  assumes "\<And>a b. \<lbrakk>ide a; ide b\<rbrakk> \<Longrightarrow> has_as_binary_product a b (p a b) (q a b)"
+  shows "elementary_category_with_binary_products C
+           (\<lambda>a b. if ide a \<and> ide b then q a b else null)
+           (\<lambda>a b. if ide a \<and> ide b then p a b else null)"
+  proof -
+    let ?p = "\<lambda>a b. if ide a \<and> ide b then p a b else null"
+    let ?q = "\<lambda>a b. if ide a \<and> ide b then q a b else null"
+    show ?thesis
+    proof
+      fix a b
+      assume a: "ide a" and b: "ide b"
+      show "span (?p a b) (?q a b)"
+        using assms a b
+        by auto force
+      show "cod (?q a b) = b"
+        using a b assms has_as_binary_productE by auto
+      show "cod (?p a b) = a"
+        using a b assms has_as_binary_productE by auto
+      next
+      fix f g
+      assume fg: "span f g"
+      have 1: "has_as_binary_product (cod f) (cod g)
+                 (p (cod f) (cod g)) (q (cod f) (cod g))"
+        using assms fg by simp
+      obtain l where "p (cod f) (cod g) \<cdot> l = f \<and> q (cod f) (cod g) \<cdot> l = g"
+        using 1 fg has_as_binary_productE
+        by (metis in_homI)
+      hence "\<exists>l. ?p (cod f) (cod g) \<cdot> l = f \<and> ?q (cod f) (cod g) \<cdot> l = g"
+        using fg by auto
+      moreover have
+        "\<And>l l'. ?p (cod f) (cod g) \<cdot> l = f \<and> ?q (cod f) (cod g) \<cdot> l = g \<and>
+                 ?p (cod f) (cod g) \<cdot> l' = f \<and> ?q (cod f) (cod g) \<cdot> l' = g
+                    \<Longrightarrow> l = l'"
+        using 1 fg arr_iff_in_hom ide_cod
+        by (elim has_as_binary_productE, auto) metis
+      ultimately show "\<exists>!l. ?p (cod f) (cod g) \<cdot> l = f \<and> ?q (cod f) (cod g) \<cdot> l = g"
+        by blast
+    qed
+  qed
 
   subsection "Agreement between the Definitions"
 
@@ -782,6 +822,119 @@ begin
     where "some_prod \<equiv> prod"
 
   end
+
+  locale binary_product =
+    category C
+    for C :: "'a comp"
+    and a :: 'a
+    and b :: 'a
+    and p :: 'a
+    and q :: 'a +
+    assumes has_as_binary_product: "has_as_binary_product a b p q"
+  begin
+
+    definition product
+    where "product \<equiv> dom p"
+
+    lemma ide_product [intro, simp]:
+    shows "ide product"
+      unfolding product_def
+      using has_as_binary_product by fastforce
+
+    lemma prj_in_hom [intro, simp]:
+    shows "\<guillemotleft>p : product \<rightarrow> a\<guillemotright>"
+    and "\<guillemotleft>q : product \<rightarrow> b\<guillemotright>"
+      using has_as_binary_product product_def by auto
+
+    lemma prj_simps [simp]:
+    shows "dom p = product" and "cod p = a" and "dom q = product" and "cod q = b"
+      using prj_in_hom by blast+
+
+    definition tuple
+    where "tuple f g \<equiv> (THE h. C p h = f \<and> C q h = g)"
+
+    lemma tuple_props:
+    assumes "span f g" and "cod f = a" and "cod g = b"
+    shows [intro, simp]: "\<guillemotleft>tuple f g : dom f \<rightarrow> product\<guillemotright>"
+    and [simp]: "dom (tuple f g) = dom f"
+    and [simp]: "cod (tuple f g) = product"
+    and [simp]: "C p (tuple f g) = f"
+    and [simp]: "C q (tuple f g) = g"
+    and "\<And>h. \<lbrakk>C p h = f; C q h = g\<rbrakk> \<Longrightarrow> h = tuple f g"
+    proof -
+      have 0: "\<exists>!h. C p h = f \<and> C q h = g"
+        using assms has_as_binary_product by blast
+      hence *: "C p (tuple f g) = f \<and> C q (tuple f g) = g"
+        using tuple_def theI' [of "\<lambda>h. C p h = f \<and> C q h = g"] by simp
+      show 1: "\<guillemotleft>tuple f g : dom f \<rightarrow> product\<guillemotright>"
+        using assms *
+        by (metis dom_comp in_homI prj_simps(3) seqE)
+      show "dom (tuple f g) = dom f"
+        using 1 by auto
+      show "cod (tuple f g) = product"
+        using 1 by auto
+      show 2: "C p (tuple f g) = f"
+        using * by auto
+      show 3: "C q (tuple f g) = g"
+        using * by auto
+      show 4: "\<And>h. \<lbrakk>C p h = f; C q h = g\<rbrakk> \<Longrightarrow> h = tuple f g"
+        using * 0 2 3 by blast
+    qed
+
+    lemma tuple_proj:
+    shows [simp]: "tuple p q = product"
+      by (metis comp_arr_dom in_homE tuple_props(6) prj_in_hom(1-2))
+
+    lemma pr_joint_monic:
+    assumes "seq p x" and "seq p y" and "C p x = C p y" and "C q x = C q y"
+    shows "x = y"
+      by (metis (mono_tags, lifting) assms(1,3-4) cod_comp dom_comp tuple_props(6)
+          product_def arrI prj_in_hom(2) prj_simps(2-4) seqE seqI)
+
+  end
+
+  lemma (in category) binary_products_are_isomorphic:
+  assumes "has_as_binary_product a b p q" and "has_as_binary_product a b p' q'"
+  shows "isomorphic (dom p) (dom p')"
+  and "inverse_arrows (binary_product.tuple C p q p' q')
+                      (binary_product.tuple C p' q' p q)"
+  proof -
+    show "isomorphic (dom p) (dom p')"
+      using assms limits_are_isomorphic(1)
+      unfolding has_as_binary_product_def by blast
+    interpret pq: binary_product C a b p q
+      using assms(1) by unfold_locales auto
+    interpret p'q': binary_product C a b p' q'
+      using assms(2) by unfold_locales auto
+    show "inverse_arrows (pq.tuple p' q') (p'q'.tuple p q)"
+    proof
+      show "ide (p'q'.tuple p q \<cdot> pq.tuple p' q')"
+      proof -
+        have "p' \<cdot> p'q'.tuple p q \<cdot> pq.tuple p' q' = p' \<cdot> p'q'.product \<and>
+              q' \<cdot> p'q'.tuple p q \<cdot> pq.tuple p' q' = q' \<cdot> p'q'.product"
+          using pq.tuple_props [of p' q'] p'q'.tuple_props [of p q]
+                comp_assoc
+          by (metis arrI comp_arr_dom p'q'.prj_in_hom(1-2) p'q'.prj_simps(2-4)
+              p'q'.product_def pq.prj_in_hom(1-2) pq.prj_simps(2-4) pq.product_def)
+        thus ?thesis
+          by (metis comp_arr_dom p'q'.ide_product p'q'.tuple_props(6)
+              p'q'.prj_in_hom(1-2) p'q'.prj_simps(1-4) arrI)
+      qed
+      show "ide (pq.tuple p' q' \<cdot> p'q'.tuple p q)"
+      proof -
+        have "p \<cdot> pq.tuple p' q' \<cdot> p'q'.tuple p q = p \<cdot> pq.product \<and>
+              q \<cdot> pq.tuple p' q' \<cdot> p'q'.tuple p q = q \<cdot> pq.product"
+          using pq.tuple_props [of p' q'] p'q'.tuple_props [of p q]
+                comp_assoc
+            by (metis arrI comp_arr_dom p'q'.prj_in_hom(1-2) p'q'.prj_simps(2-4)
+                p'q'.product_def pq.prj_in_hom(1-2) pq.prj_simps(2-4)
+                pq.product_def)
+        thus ?thesis
+          by (metis arrI comp_arr_dom ide_char' pq.tuple_props(6) pq.prj_in_hom(1-2)
+              pq.prj_simps(2-4) pq.product_def seqE)
+      qed
+    qed
+  qed
 
   context elementary_category_with_binary_products
   begin
@@ -1428,6 +1581,28 @@ begin
 
   end
 
+  lemma (in category_with_terminal_object) binary_product_is_pullback:
+  assumes "has_as_binary_product a b p q"
+  shows "has_as_pullback \<t>\<^sup>?[a] \<t>\<^sup>?[b] p q"
+  proof
+    interpret elementary_category_with_terminal_object C \<open>\<one>\<^sup>?\<close> \<open>\<lambda>a. \<t>\<^sup>?[a]\<close>
+      using extends_to_elementary_category_with_terminal_object by blast
+    show "cospan \<t>\<^sup>?[a] \<t>\<^sup>?[b]"
+      using assms by fastforce
+    show "commutative_square \<t>\<^sup>?[a] \<t>\<^sup>?[b] p q"
+      using assms trm_naturality by fastforce
+    show "\<And>h k. commutative_square \<t>\<^sup>?[a] \<t>\<^sup>?[b] h k \<Longrightarrow> \<exists>!l. p \<cdot> l = h \<and> q \<cdot> l = k"
+    proof -
+      fix h k
+      assume 1: "commutative_square \<t>\<^sup>?[a] \<t>\<^sup>?[b] h k"
+      have "\<guillemotleft>h : dom h \<rightarrow> a\<guillemotright> \<and> \<guillemotleft>k : dom h \<rightarrow> b\<guillemotright>"
+        by (metis 1 \<open>commutative_square \<t>\<^sup>?[a] \<t>\<^sup>?[b] p q\<close> arr_iff_in_hom assms
+            commutative_squareE has_as_binary_productE in_homE)
+      thus "\<exists>!l. p \<cdot> l = h \<and> q \<cdot> l = k"
+        using assms has_as_binary_productE [of a b p q] by metis
+    qed
+  qed
+
   section "Cartesian Category"
 
   locale cartesian_category =
@@ -1453,9 +1628,9 @@ begin
             using a0 a1 has_pullbacks has_pullbacks_def by force
           have "has_as_binary_product a0 a1 p0 p1"
           proof
-            show "ide a0" and "ide a1"
-              using a0 a1 by auto
-            show "\<guillemotleft>p0 : dom p1 \<rightarrow> a0\<guillemotright>" and "\<guillemotleft>p1 : dom p1 \<rightarrow> a1\<guillemotright>"
+            show "span p0 p1"
+              using p0p1 by blast
+            show "cod p0 = a0" and "cod p1 = a1"
               using p0p1 a0 a1 commutative_squareE has_as_pullbackE in_homI trm_simps(2)
               by metis+
             fix x f g
@@ -1463,9 +1638,9 @@ begin
             have "commutative_square \<t>\<^sup>?[a0] \<t>\<^sup>?[a1] f g"
               by (metis a0 has_as_pullbackE in_homE commutative_squareI f g p0p1 trm_naturality
                   trm_simps(2))
-            moreover have "\<And>l. p0 \<cdot> l = f \<and> p1 \<cdot> l = g \<Longrightarrow> \<guillemotleft>l : x \<rightarrow> dom p1\<guillemotright>"
+            moreover have "\<And>l. p0 \<cdot> l = f \<and> p1 \<cdot> l = g \<Longrightarrow> \<guillemotleft>l : x \<rightarrow> dom p0\<guillemotright>"
               using f g by blast
-            ultimately show "\<exists>!l. \<guillemotleft>l : x \<rightarrow> dom p1\<guillemotright> \<and> p0 \<cdot> l = f \<and> p1 \<cdot> l = g"
+            ultimately show "\<exists>!l. \<guillemotleft>l : x \<rightarrow> dom p0\<guillemotright> \<and> p0 \<cdot> l = f \<and> p1 \<cdot> l = g"
               by (metis has_as_pullbackE p0p1)
           qed
           thus "\<exists>p0 p1. has_as_binary_product a0 a1 p0 p1"

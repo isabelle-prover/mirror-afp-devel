@@ -178,7 +178,6 @@ begin
       apply unfold_locales
           apply simp_all
         apply (metis empty_iff)
-       apply (metis empty_iff singletonD)
       by (metis empty_iff singletonD)
 
     abbreviation comp      (infixr "\<cdot>" 55)

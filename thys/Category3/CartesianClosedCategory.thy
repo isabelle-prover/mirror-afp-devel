@@ -19,7 +19,7 @@ begin
 
   locale cartesian_closed_category =
     cartesian_category +
-  assumes left_adjoint_prod: "\<And>b. ide b \<Longrightarrow> left_adjoint_functor C C (\<lambda>x. some_prod x b)"
+  assumes left_adjoint_prod_ax: "\<And>b. ide b \<Longrightarrow> left_adjoint_functor C C (\<lambda>x. some_prod x b)"
 
   locale elementary_cartesian_closed_category =
     elementary_cartesian_category C pr0 pr1 one trm
@@ -31,13 +31,13 @@ begin
   and exp :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"
   and eval :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"
   and curry :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" +
-  assumes eval_in_hom: "\<lbrakk> ide b; ide c \<rbrakk> \<Longrightarrow> \<guillemotleft>eval b c : prod (exp b c) b \<rightarrow> c\<guillemotright>"
-  and ide_exp [intro]: "\<lbrakk> ide b; ide c \<rbrakk> \<Longrightarrow> ide (exp b c)"
+  assumes eval_in_hom_ax: "\<lbrakk> ide b; ide c \<rbrakk> \<Longrightarrow> \<guillemotleft>eval b c : prod (exp b c) b \<rightarrow> c\<guillemotright>"
+  and ide_exp_ax [intro]: "\<lbrakk> ide b; ide c \<rbrakk> \<Longrightarrow> ide (exp b c)"
   and curry_in_hom: "\<lbrakk> ide a; ide b; ide c; \<guillemotleft>g : prod a b \<rightarrow> c\<guillemotright> \<rbrakk>
                           \<Longrightarrow> \<guillemotleft>curry a b c g : a \<rightarrow> exp b c\<guillemotright>"
-  and uncurry_curry: "\<lbrakk> ide a; ide b; ide c; \<guillemotleft>g : prod a b \<rightarrow> c\<guillemotright> \<rbrakk>
+  and uncurry_curry_ax: "\<lbrakk> ide a; ide b; ide c; \<guillemotleft>g : prod a b \<rightarrow> c\<guillemotright> \<rbrakk>
                           \<Longrightarrow> eval b c \<cdot> prod (curry a b c g) b = g"
-  and curry_uncurry: "\<lbrakk> ide a; ide b; ide c; \<guillemotleft>h : a \<rightarrow> exp b c\<guillemotright> \<rbrakk>
+  and curry_uncurry_ax: "\<lbrakk> ide a; ide b; ide c; \<guillemotleft>h : a \<rightarrow> exp b c\<guillemotright> \<rbrakk>
                           \<Longrightarrow> curry a b c (eval b c \<cdot> prod h b) = h"
 
   context cartesian_closed_category
@@ -48,16 +48,16 @@ begin
 
     lemma has_exponentials:
     assumes "ide b" and "ide c"
-    shows "\<exists>x e. ide x \<and> \<guillemotleft>e : prod x b \<rightarrow> c\<guillemotright> \<and>
-                 (\<forall>a g. ide a \<and> \<guillemotleft>g : prod a b \<rightarrow> c\<guillemotright> \<longrightarrow> (\<exists>!f. \<guillemotleft>f : a \<rightarrow> x\<guillemotright> \<and> g = e \<cdot> prod f b))"
+    shows "\<exists>x e. ide x \<and> \<guillemotleft>e : x \<otimes>\<^sup>? b \<rightarrow> c\<guillemotright> \<and>
+                 (\<forall>a g. ide a \<and> \<guillemotleft>g : a \<otimes>\<^sup>? b \<rightarrow> c\<guillemotright> \<longrightarrow> (\<exists>!f. \<guillemotleft>f : a \<rightarrow> x\<guillemotright> \<and> g = e \<cdot> (f \<otimes>\<^sup>? b)))"
     proof -
-      interpret F: left_adjoint_functor C C \<open>\<lambda>x. prod x b\<close>
-        using assms(1) left_adjoint_prod by simp
-      obtain x e where e: "terminal_arrow_from_functor C C (\<lambda>x. prod x b) x c e"
+      interpret F: left_adjoint_functor C C \<open>\<lambda>x. x \<otimes>\<^sup>? b\<close>
+        using assms(1) left_adjoint_prod_ax by simp
+      obtain x e where e: "terminal_arrow_from_functor C C (\<lambda>x. x \<otimes>\<^sup>? b) x c e"
         using assms F.ex_terminal_arrow [of c] by auto
-      interpret e: terminal_arrow_from_functor C C \<open>\<lambda>x. prod x b\<close> x c e
+      interpret e: terminal_arrow_from_functor C C \<open>\<lambda>x. x \<otimes>\<^sup>? b\<close> x c e
         using e by simp
-      have "\<And>a g. \<lbrakk> ide a; \<guillemotleft>g : some_prod a b \<rightarrow> c\<guillemotright> \<rbrakk> \<Longrightarrow> \<exists>!f. \<guillemotleft>f : a \<rightarrow> x\<guillemotright> \<and> g = e \<cdot> prod f b"
+      have "\<And>a g. \<lbrakk> ide a; \<guillemotleft>g : a \<otimes>\<^sup>? b \<rightarrow> c\<guillemotright> \<rbrakk> \<Longrightarrow> \<exists>!f. \<guillemotleft>f : a \<rightarrow> x\<guillemotright> \<and> g = e \<cdot> (f \<otimes>\<^sup>? b)"
         using e.is_terminal category_axioms F.functor_axioms
         unfolding e.is_coext_def arrow_from_functor_def arrow_from_functor_axioms_def
         by simp
@@ -65,168 +65,185 @@ begin
         using e.arrow by metis
     qed
 
-    definition some_exp
+    definition some_exp  ("exp\<^sup>?")
     where "some_exp b c \<equiv> SOME x. ide x \<and>
-                                    (\<exists>e. \<guillemotleft>e : prod x b \<rightarrow> c\<guillemotright> \<and>
-                                      (\<forall>a g. ide a \<and> \<guillemotleft>g : prod a b \<rightarrow> c\<guillemotright>
-                                              \<longrightarrow> (\<exists>!f. \<guillemotleft>f : a \<rightarrow> x\<guillemotright> \<and> g = e \<cdot> prod f b)))"
+                                    (\<exists>e. \<guillemotleft>e : x \<otimes>\<^sup>? b \<rightarrow> c\<guillemotright> \<and>
+                                      (\<forall>a g. ide a \<and> \<guillemotleft>g : a \<otimes>\<^sup>? b \<rightarrow> c\<guillemotright>
+                                              \<longrightarrow> (\<exists>!f. \<guillemotleft>f : a \<rightarrow> x\<guillemotright> \<and> g = e \<cdot> (f \<otimes>\<^sup>? b))))"
 
-    definition some_eval
-    where "some_eval b c \<equiv> SOME e. \<guillemotleft>e : prod (some_exp b c) b \<rightarrow> c\<guillemotright> \<and>
-                                     (\<forall>a g. ide a \<and> \<guillemotleft>g : prod a b \<rightarrow> c\<guillemotright>
-                                              \<longrightarrow> (\<exists>!f. \<guillemotleft>f : a \<rightarrow> some_exp b c\<guillemotright> \<and> g = e \<cdot> prod f b))"
+    definition some_eval  ("eval\<^sup>?")
+    where "some_eval b c \<equiv> SOME e. \<guillemotleft>e : exp\<^sup>? b c \<otimes>\<^sup>? b \<rightarrow> c\<guillemotright> \<and>
+                                     (\<forall>a g. ide a \<and> \<guillemotleft>g : a \<otimes>\<^sup>? b \<rightarrow> c\<guillemotright>
+                                              \<longrightarrow> (\<exists>!f. \<guillemotleft>f : a \<rightarrow> exp\<^sup>? b c\<guillemotright> \<and> g = e \<cdot>(f \<otimes>\<^sup>? b)))"
 
-    definition some_curry
-    where "some_curry a b c g \<equiv> THE f. \<guillemotleft>f : a \<rightarrow> some_exp b c\<guillemotright> \<and> g = some_eval b c \<cdot> prod f b"
+    definition some_Curry  ("Curry\<^sup>?")
+    where "some_Curry a b c g \<equiv> THE f. \<guillemotleft>f : a \<rightarrow> exp\<^sup>? b c\<guillemotright> \<and> g = eval\<^sup>? b c \<cdot> (f \<otimes>\<^sup>? b)"
 
-    lemma curry_uniqueness:
+    lemma Curry_uniqueness:
     assumes "ide b" and "ide c"
-    shows "ide (some_exp b c)"
-    and "\<guillemotleft>some_eval b c : prod (some_exp b c) b \<rightarrow> c\<guillemotright>"
-    and "\<lbrakk> ide a; \<guillemotleft>g : prod a b \<rightarrow> c\<guillemotright> \<rbrakk> \<Longrightarrow>
-            \<exists>!f. \<guillemotleft>f : a \<rightarrow> some_exp b c\<guillemotright> \<and> g = some_eval b c \<cdot> prod f b"
+    shows "ide (exp\<^sup>? b c)"
+    and "\<guillemotleft>eval\<^sup>? b c : exp\<^sup>? b c \<otimes>\<^sup>? b \<rightarrow> c\<guillemotright>"
+    and "\<lbrakk> ide a; \<guillemotleft>g : a \<otimes>\<^sup>? b \<rightarrow> c\<guillemotright> \<rbrakk> \<Longrightarrow>
+            \<exists>!f. \<guillemotleft>f : a \<rightarrow> exp\<^sup>? b c\<guillemotright> \<and> g = eval\<^sup>? b c \<cdot> (f \<otimes>\<^sup>? b)"
       using assms some_exp_def some_eval_def has_exponentials
-            someI_ex [of "\<lambda>x. ide x \<and> (\<exists>e. \<guillemotleft>e : prod x b \<rightarrow> c\<guillemotright> \<and>
-                                           (\<forall>a g. ide a \<and> \<guillemotleft>g : prod a b \<rightarrow> c\<guillemotright>
-                                              \<longrightarrow> (\<exists>!f. \<guillemotleft>f : a \<rightarrow> x\<guillemotright> \<and> g = e \<cdot> prod f b)))"]
-            someI_ex [of "\<lambda>e. \<guillemotleft>e : prod (some_exp b c) b \<rightarrow> c\<guillemotright> \<and>
-                              (\<forall>a g. ide a \<and> \<guillemotleft>g : prod a b \<rightarrow> c\<guillemotright>
-                                           \<longrightarrow> (\<exists>!f. \<guillemotleft>f : a \<rightarrow> some_exp b c\<guillemotright> \<and> g = e \<cdot> prod f b))"]
+            someI_ex [of "\<lambda>x. ide x \<and> (\<exists>e. \<guillemotleft>e : x \<otimes>\<^sup>? b \<rightarrow> c\<guillemotright> \<and>
+                                           (\<forall>a g. ide a \<and> \<guillemotleft>g : a \<otimes>\<^sup>? b \<rightarrow> c\<guillemotright>
+                                              \<longrightarrow> (\<exists>!f. \<guillemotleft>f : a \<rightarrow> x\<guillemotright> \<and> g = e \<cdot> (f \<otimes>\<^sup>? b))))"]
+            someI_ex [of "\<lambda>e. \<guillemotleft>e : exp\<^sup>? b c \<otimes>\<^sup>? b \<rightarrow> c\<guillemotright> \<and>
+                              (\<forall>a g. ide a \<and> \<guillemotleft>g : a \<otimes>\<^sup>? b \<rightarrow> c\<guillemotright>
+                                           \<longrightarrow> (\<exists>!f. \<guillemotleft>f : a \<rightarrow> exp\<^sup>? b c\<guillemotright> \<and> g = e \<cdot> (f \<otimes>\<^sup>? b)))"]
       by auto
 
     lemma ide_exp [intro, simp]:
     assumes "ide b" and "ide c"
-    shows "ide (some_exp b c)"
-      using assms curry_uniqueness(1) by force
+    shows "ide (exp\<^sup>? b c)"
+      using assms Curry_uniqueness(1) by force
 
     lemma eval_in_hom [intro]:
-    assumes "ide b" and "ide c" and "x = prod (some_exp b c) b"
-    shows "\<guillemotleft>some_eval b c : x \<rightarrow> c\<guillemotright>"
-      using assms curry_uniqueness by simp
+    assumes "ide b" and "ide c" and "x = exp\<^sup>? b c \<otimes>\<^sup>? b"
+    shows "\<guillemotleft>eval\<^sup>? b c : x \<rightarrow> c\<guillemotright>"
+      using assms Curry_uniqueness by simp
 
-    lemma uncurry_curry:
-    assumes "ide a" and "ide b" and "\<guillemotleft>g : prod a b \<rightarrow> c\<guillemotright>"
-    shows "\<guillemotleft>some_curry a b c g : a \<rightarrow> some_exp b c\<guillemotright> \<and>
-           g = some_eval b c \<cdot> prod (some_curry a b c g) b"
+    lemma Uncurry_Curry:
+    assumes "ide a" and "ide b" and "\<guillemotleft>g : a \<otimes>\<^sup>? b \<rightarrow> c\<guillemotright>"
+    shows "\<guillemotleft>Curry\<^sup>? a b c g : a \<rightarrow> exp\<^sup>? b c\<guillemotright> \<and> g = eval\<^sup>? b c \<cdot> (Curry\<^sup>? a b c g \<otimes>\<^sup>? b)"
     proof -
       have "ide c"
         using assms(3) by auto
       thus ?thesis
-        using assms some_curry_def curry_uniqueness
-              theI' [of "\<lambda>f. \<guillemotleft>f : a \<rightarrow> some_exp b c\<guillemotright> \<and> g = some_eval b c \<cdot> prod f b"]
+        using assms some_Curry_def Curry_uniqueness
+              theI' [of "\<lambda>f. \<guillemotleft>f : a \<rightarrow> exp\<^sup>? b c\<guillemotright> \<and> g = eval\<^sup>? b c \<cdot> (f \<otimes>\<^sup>? b)"]
         by simp
     qed
 
-    lemma curry_uncurry:
-    assumes "ide b" and "ide c" and "\<guillemotleft>h : a \<rightarrow> some_exp b c\<guillemotright>"
-    shows "some_curry a b c (some_eval b c \<cdot> prod h b) = h"
+    lemma Curry_Uncurry:
+    assumes "ide b" and "ide c" and "\<guillemotleft>h : a \<rightarrow> exp\<^sup>? b c\<guillemotright>"
+    shows "Curry\<^sup>? a b c (eval\<^sup>? b c \<cdot> (h \<otimes>\<^sup>? b)) = h"
     proof -
-      have "\<exists>!f. \<guillemotleft>f : a \<rightarrow> some_exp b c\<guillemotright> \<and> some_eval b c \<cdot> prod h b = some_eval b c \<cdot> prod f b"
+      have "\<exists>!f. \<guillemotleft>f : a \<rightarrow> exp\<^sup>? b c\<guillemotright> \<and> eval\<^sup>? b c \<cdot> (h \<otimes>\<^sup>? b) = eval\<^sup>? b c \<cdot> (f \<otimes>\<^sup>? b)"
       proof -
-        have "ide a \<and> \<guillemotleft>some_eval b c \<cdot> prod h b : prod a b \<rightarrow> c\<guillemotright>"
+        have "ide a \<and> \<guillemotleft>eval\<^sup>? b c \<cdot> (h \<otimes>\<^sup>? b) : (a \<otimes>\<^sup>? b) \<rightarrow> c\<guillemotright>"
         proof (intro conjI)
           show "ide a"
             using assms(3) by auto
-          show "\<guillemotleft>some_eval b c \<cdot> prod h b : prod a b \<rightarrow> c\<guillemotright>"
+          show "\<guillemotleft>eval\<^sup>? b c \<cdot> (h \<otimes>\<^sup>? b) : a \<otimes>\<^sup>? b \<rightarrow> c\<guillemotright>"
             using assms by (intro comp_in_homI) auto
         qed
         thus ?thesis
-          using assms curry_uniqueness by simp
+          using assms Curry_uniqueness by simp
       qed
-      moreover have "\<guillemotleft>h : a \<rightarrow> some_exp b c\<guillemotright> \<and> some_eval b c \<cdot> prod h b = some_eval b c \<cdot> prod h b"
+      moreover have "\<guillemotleft>h : a \<rightarrow> exp\<^sup>? b c\<guillemotright> \<and> eval\<^sup>? b c \<cdot> (h \<otimes>\<^sup>? b) = eval\<^sup>? b c \<cdot> (h \<otimes>\<^sup>? b)"
         using assms by simp
       ultimately show ?thesis
-        using assms some_curry_def curry_uniqueness uncurry_curry
-              the1_equality [of "\<lambda>f. \<guillemotleft>f : a \<rightarrow> some_exp b c\<guillemotright> \<and>
-                                     some_eval b c \<cdot> prod h b = some_eval b c \<cdot> prod f b"]
+        using assms some_Curry_def Curry_uniqueness Uncurry_Curry
+              the1_equality [of "\<lambda>f. \<guillemotleft>f : a \<rightarrow> exp\<^sup>? b c\<guillemotright> \<and>
+                                     eval\<^sup>? b c \<cdot> (h \<otimes>\<^sup>? b) = eval\<^sup>? b c \<cdot> (f \<otimes>\<^sup>? b)"]
         by simp
     qed
 
+    lemma Curry_in_hom [intro]:
+    assumes "ide a" and "ide b" and "\<guillemotleft>g : a \<otimes>\<^sup>? b \<rightarrow> c\<guillemotright>"
+    shows "\<guillemotleft>Curry\<^sup>? a b c g : a \<rightarrow> exp\<^sup>? b c\<guillemotright>"
+      using assms
+      by (simp add: Uncurry_Curry)
+
+    lemma Curry_simps [simp]:
+    assumes "ide a" and "ide b" and "\<guillemotleft>g : a \<otimes>\<^sup>? b \<rightarrow> c\<guillemotright>"
+    shows "arr (Curry\<^sup>? a b c g)"
+    and "dom (Curry\<^sup>? a b c g) = a"
+    and "cod (Curry\<^sup>? a b c g) = exp\<^sup>? b c"
+      using assms Curry_in_hom by blast+
+
+    lemma eval_simps [simp]:
+    assumes "ide b" and "ide c" and "x = (exp\<^sup>? b c) \<otimes>\<^sup>? b"
+    shows "arr (eval\<^sup>? b c)"
+    and "dom (eval\<^sup>? b c) = x"
+    and "cod (eval\<^sup>? b c) = c"
+      using assms eval_in_hom by auto
+
     interpretation elementary_cartesian_closed_category C some_pr0 some_pr1
-                     \<open>\<one>\<^sup>?\<close> \<open>\<lambda>a. \<t>\<^sup>?[a]\<close> some_exp some_eval some_curry
-      using curry_uniqueness uncurry_curry curry_uncurry
+                     \<open>\<one>\<^sup>?\<close> \<open>\<lambda>a. \<t>\<^sup>?[a]\<close> some_exp some_eval some_Curry
+      using Curry_uniqueness Uncurry_Curry Curry_Uncurry
       apply unfold_locales by auto
 
     lemma extends_to_elementary_cartesian_closed_category:
     shows "elementary_cartesian_closed_category C some_pr0 some_pr1
-             \<one>\<^sup>? (\<lambda>a. \<t>\<^sup>?[a]) some_exp some_eval some_curry"
+             \<one>\<^sup>? (\<lambda>a. \<t>\<^sup>?[a]) some_exp some_eval some_Curry"
       ..
 
     lemma has_as_exponential:
     assumes "ide b" and "ide c"
-    shows "has_as_exponential b c (some_exp b c) (some_eval b c)"
+    shows "has_as_exponential b c (exp\<^sup>? b c) (eval\<^sup>? b c)"
     proof
       show "ide b" by fact
-      show "ide (some_exp b c)"
+      show "ide (exp\<^sup>? b c)"
         using assms by simp
-      show "\<guillemotleft>some_eval b c : some_exp b c \<otimes>\<^sup>? b \<rightarrow> c\<guillemotright>"
+      show "\<guillemotleft>some_eval b c : exp\<^sup>? b c \<otimes>\<^sup>? b \<rightarrow> c\<guillemotright>"
         using assms by auto
       show "\<And>a g. \<lbrakk>ide a; \<guillemotleft>g : a \<otimes>\<^sup>? b \<rightarrow> c\<guillemotright>\<rbrakk> \<Longrightarrow>
-                     \<exists>!f. \<guillemotleft>f : a \<rightarrow> some_exp b c\<guillemotright> \<and> g = some_eval b c \<cdot> (f \<otimes>\<^sup>? b)"
-        by (simp add: assms curry_uniqueness(3))
+                     \<exists>!f. \<guillemotleft>f : a \<rightarrow> exp\<^sup>? b c\<guillemotright> \<and> g = eval\<^sup>? b c \<cdot> (f \<otimes>\<^sup>? b)"
+        by (simp add: assms Curry_uniqueness(3))
     qed
 
     lemma has_as_exponential_iff:
     shows "has_as_exponential b c x e \<longleftrightarrow>
-           ide b \<and> \<guillemotleft>e : some_prod x b \<rightarrow> c\<guillemotright> \<and>
-           (\<exists>h. \<guillemotleft>h : x \<rightarrow> some_exp b c\<guillemotright> \<and> e = some_eval b c \<cdot> some_prod h b \<and> iso h)"
+           ide b \<and> \<guillemotleft>e : x \<otimes>\<^sup>? b \<rightarrow> c\<guillemotright> \<and>
+           (\<exists>h. \<guillemotleft>h : x \<rightarrow> exp\<^sup>? b c\<guillemotright> \<and> e = eval\<^sup>? b c \<cdot> (h \<otimes>\<^sup>? b) \<and> iso h)"
     proof
       assume 1: "has_as_exponential b c x e"
-      moreover have 2: "has_as_exponential b c (some_exp b c) (some_eval b c)"
+      moreover have 2: "has_as_exponential b c (exp\<^sup>? b c) (eval\<^sup>? b c)"
         using 1 ide_cod has_as_exponential_def in_homE
         by (metis has_as_exponential)
-      ultimately show "ide b \<and> \<guillemotleft>e : some_prod x b \<rightarrow> c\<guillemotright> \<and>
-                       (\<exists>h. \<guillemotleft>h : x \<rightarrow> some_exp b c\<guillemotright> \<and> e = some_eval b c \<cdot> some_prod h b \<and> iso h)"
+      ultimately show "ide b \<and> \<guillemotleft>e : x \<otimes>\<^sup>? b \<rightarrow> c\<guillemotright> \<and>
+                       (\<exists>h. \<guillemotleft>h : x \<rightarrow> exp\<^sup>? b c\<guillemotright> \<and> e = eval\<^sup>? b c \<cdot> (h \<otimes>\<^sup>? b) \<and> iso h)"
         by (metis exponentials_are_isomorphic(2) has_as_exponentialE)
       next
-      assume 1: "ide b \<and> \<guillemotleft>e : some_prod x b \<rightarrow> c\<guillemotright> \<and>
-                 (\<exists>h. \<guillemotleft>h : x \<rightarrow> some_exp b c\<guillemotright> \<and> e = some_eval b c \<cdot> some_prod h b \<and> iso h)"
+      assume 1: "ide b \<and> \<guillemotleft>e : x \<otimes>\<^sup>? b \<rightarrow> c\<guillemotright> \<and>
+                 (\<exists>h. \<guillemotleft>h : x \<rightarrow> exp\<^sup>? b c\<guillemotright> \<and> e = eval\<^sup>? b c \<cdot> (h \<otimes>\<^sup>? b) \<and> iso h)"
       have c: "ide c"
         using 1 ide_cod in_homE by metis
-      have 2: "has_as_exponential b c (some_exp b c) (some_eval b c)"
-        by (simp add: 1 c eval_in_hom curry_uniqueness(3) has_as_exponential_def)
-      obtain h where h: "\<guillemotleft>h : x \<rightarrow> some_exp b c\<guillemotright> \<and> e = some_eval b c \<cdot> some_prod h b \<and> iso h"
+      have 2: "has_as_exponential b c (exp\<^sup>? b c) (eval\<^sup>? b c)"
+        by (simp add: 1 c eval_in_hom_ax Curry_uniqueness(3) has_as_exponential_def)
+      obtain h where h: "\<guillemotleft>h : x \<rightarrow> exp\<^sup>? b c\<guillemotright> \<and> e = eval\<^sup>? b c \<cdot> (h \<otimes>\<^sup>? b) \<and> iso h"
         using 1 by blast
       show "has_as_exponential b c x e"
       proof (unfold has_as_exponential_def, intro conjI)
-        show "ide b" and "ide x" and "\<guillemotleft>e : some_prod x b \<rightarrow> c\<guillemotright>"
+        show "ide b" and "ide x" and "\<guillemotleft>e : x \<otimes>\<^sup>? b \<rightarrow> c\<guillemotright>"
           using 1 h ide_dom by blast+
-        show "\<forall>y g. ide y \<and> \<guillemotleft>g : some_prod y b \<rightarrow> c\<guillemotright>
-                       \<longrightarrow> (\<exists>!f. \<guillemotleft>f : y \<rightarrow> x\<guillemotright> \<and> g = e \<cdot> some_prod f b)"
+        show "\<forall>y g. ide y \<and> \<guillemotleft>g : y \<otimes>\<^sup>? b \<rightarrow> c\<guillemotright> \<longrightarrow> (\<exists>!f. \<guillemotleft>f : y \<rightarrow> x\<guillemotright> \<and> g = e \<cdot> (f \<otimes>\<^sup>? b))"
         proof (intro allI impI)
           fix y g
-          assume 3: "ide y \<and> \<guillemotleft>g : some_prod y b \<rightarrow> c\<guillemotright>"
-          obtain k where k: "\<guillemotleft>k : y \<rightarrow> some_exp b c\<guillemotright> \<and> g = some_eval b c \<cdot> some_prod k b"
-            by (metis 3 \<open>ide b\<close> c curry_uniqueness(3))
-          show "\<exists>!f. \<guillemotleft>f : y \<rightarrow> x\<guillemotright> \<and> g = e \<cdot> some_prod f b"
+          assume 3: "ide y \<and> \<guillemotleft>g : y \<otimes>\<^sup>? b \<rightarrow> c\<guillemotright>"
+          obtain k where k: "\<guillemotleft>k : y \<rightarrow> exp\<^sup>? b c\<guillemotright> \<and> g = eval\<^sup>? b c \<cdot> (k \<otimes>\<^sup>? b)"
+            by (metis 3 \<open>ide b\<close> c Curry_uniqueness(3))
+          show "\<exists>!f. \<guillemotleft>f : y \<rightarrow> x\<guillemotright> \<and> g = e \<cdot> (f \<otimes>\<^sup>? b)"
           proof -
             let ?f = "inv h \<cdot> k"
             have f: "\<guillemotleft>?f : y \<rightarrow> x\<guillemotright>"
               by (meson comp_in_homI inv_in_hom h k)
-            moreover have "g = e \<cdot> some_prod ?f b"
+            moreover have "g = e \<cdot> (?f \<otimes>\<^sup>? b)"
             proof -
               have "e \<cdot> some_prod ?f b = e \<cdot> some_prod (inv h \<cdot> k) (b \<cdot> b)"
                 by (simp add: 1)
-              also have "... = e \<cdot> some_prod (inv h) b \<cdot> some_prod k b"
+              also have "... = e \<cdot> (inv h \<otimes>\<^sup>? b) \<cdot> (k \<otimes>\<^sup>? b)"
                 by (metis \<open>ide b\<close> f arrI comp_ide_self interchange ide_compE)
-              also have "... = (e \<cdot> some_prod (inv h) b) \<cdot> some_prod k b"
+              also have "... = (e \<cdot> (inv h \<otimes>\<^sup>? b)) \<cdot> (k \<otimes>\<^sup>? b)"
                 using comp_assoc by simp
-              also have "... = some_eval b c \<cdot> some_prod k b"
+              also have "... = eval\<^sup>? b c \<cdot> (k \<otimes>\<^sup>? b)"
                 by (metis \<open>\<guillemotleft>e : x \<otimes>\<^sup>? b \<rightarrow> c\<guillemotright>\<close> h \<open>ide b\<close> arrI inv_prod(1-2) ide_is_iso
                     inv_ide invert_side_of_triangle(2))
               also have "... = g"
                 using k by blast
               finally show ?thesis by blast
             qed
-            moreover have "\<And>f'. \<guillemotleft>f' : y \<rightarrow> x\<guillemotright> \<and> g = e \<cdot> some_prod f' b \<Longrightarrow> f' = ?f"
+            moreover have "\<And>f'. \<guillemotleft>f' : y \<rightarrow> x\<guillemotright> \<and> g = e \<cdot> (f' \<otimes>\<^sup>? b) \<Longrightarrow> f' = ?f"
             proof -
               fix f'
-              assume f': "\<guillemotleft>f' : y \<rightarrow> x\<guillemotright> \<and> g = e \<cdot> some_prod f' b"
-              have "\<guillemotleft>h \<cdot> f' : y \<rightarrow> some_exp b c\<guillemotright> \<and> g = some_eval b c \<cdot> some_prod (h \<cdot> f') b"
+              assume f': "\<guillemotleft>f' : y \<rightarrow> x\<guillemotright> \<and> g = e \<cdot> (f' \<otimes>\<^sup>? b)"
+              have "\<guillemotleft>h \<cdot> f' : y \<rightarrow> exp\<^sup>? b c\<guillemotright> \<and> g = eval\<^sup>? b c \<cdot> (h \<cdot> f' \<otimes>\<^sup>? b)"
                 using f' h \<open>ide b\<close> comp_assoc interchange seqI' by fastforce
               hence "C h f' = C h ?f"
-                by (metis \<open>ide b\<close> arrI c h k cartesian_closed_category.curry_uncurry
-                    cartesian_closed_category_axioms invert_side_of_triangle(1))
+                by (metis \<open>ide b\<close> arrI c h k Curry_Uncurry invert_side_of_triangle(1))
               thus "f' = ?f"
                 using f h iso_cancel_left by auto
             qed
@@ -260,7 +277,7 @@ begin
           show "\<exists>x e. terminal_arrow_from_functor C C (\<lambda>x. x \<otimes> b) x c e"
           proof (intro exI)
             interpret arrow_from_functor C C \<open>\<lambda>x. x \<otimes> b\<close> \<open>exp b c\<close> c \<open>eval b c\<close>
-              using assms c eval_in_hom
+              using assms c eval_in_hom_ax
               by (unfold_locales, auto)
             show "terminal_arrow_from_functor C C (\<lambda>x. x \<otimes> b) (exp b c) c (eval b c)"
             proof
@@ -278,10 +295,10 @@ begin
                     using f.arrow by simp
                   show "is_coext a f (curry a b c f)"
                     unfolding is_coext_def
-                    using assms a c curry_in_hom uncurry_curry f.arrow by simp
+                    using assms a c curry_in_hom uncurry_curry_ax f.arrow by simp
                   show "\<And>g. is_coext a f g \<Longrightarrow> g = curry a b c f"
                     unfolding is_coext_def
-                    using assms a c curry_uncurry f.arrow by simp
+                    using assms a c curry_uncurry_ax f.arrow by simp
                 qed
               qed
             qed

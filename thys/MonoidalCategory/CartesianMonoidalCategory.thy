@@ -118,6 +118,72 @@ section "Symmetric Monoidal Category"
 
   end
 
+  locale dual_symmetric_monoidal_category =
+    M: symmetric_monoidal_category
+  begin
+
+    sublocale dual_monoidal_category C T \<alpha> \<iota> ..
+    interpretation S: symmetry_functor comp comp ..
+    interpretation ToS: composite_functor MM.comp MM.comp comp S.map T ..
+    sublocale \<sigma>': inverse_transformation M.CC.comp C T M.ToS.map \<sigma> ..
+    interpretation \<sigma>: natural_transformation MM.comp comp T ToS.map \<sigma>'.map
+      using \<sigma>'.is_extensional \<sigma>'.is_natural_1 \<sigma>'.is_natural_2
+      by unfold_locales auto
+    interpretation \<sigma>: natural_isomorphism MM.comp comp T ToS.map \<sigma>'.map
+      by unfold_locales auto
+
+    sublocale symmetric_monoidal_category comp T M.\<alpha>' \<open>M.inv \<iota>\<close> \<sigma>'.map
+    proof
+      show "\<And>a b. \<lbrakk>ide a; ide b\<rbrakk> \<Longrightarrow> inverse_arrows (\<sigma>'.map (a, b)) (\<sigma>'.map (b, a))"
+        apply auto
+        by (metis M.inverse_arrowsE M.inverse_unique M.isoI M.sym_inverse ide_char
+            iso_char comp_def section_retraction_of_iso(1))
+      show "\<And>a. ide a \<Longrightarrow> lunit a \<cdot>\<^sup>o\<^sup>p \<sigma>'.map (a, unity) = runit a"
+        using M.unitor_coherence M.unit_in_hom M.unit_is_iso lunit_char runit_char
+        apply auto
+        by (metis M.inv_comp_left(1) M.iso_lunit M.iso_runit)
+      show "\<And>a b c.
+              \<lbrakk>ide a; ide b; ide c\<rbrakk>
+                 \<Longrightarrow> assoc b c a \<cdot>\<^sup>o\<^sup>p \<sigma>'.map (a, tensor b c) \<cdot>\<^sup>o\<^sup>p assoc a b c =
+                     (tensor b (\<sigma>'.map (a, c))) \<cdot>\<^sup>o\<^sup>p assoc b a c \<cdot>\<^sup>o\<^sup>p (tensor (\<sigma>'.map (a, b)) c)"
+      proof -
+        fix a b c
+        assume a: "ide a" and b: "ide b" and c: "ide c"
+        show "assoc b c a \<cdot>\<^sup>o\<^sup>p \<sigma>'.map (a, tensor b c) \<cdot>\<^sup>o\<^sup>p assoc a b c =
+              (tensor b (\<sigma>'.map (a, c))) \<cdot>\<^sup>o\<^sup>p assoc b a c \<cdot>\<^sup>o\<^sup>p (tensor (\<sigma>'.map (a, b)) c)"
+        proof -
+          have "assoc b c a \<cdot>\<^sup>o\<^sup>p \<sigma>'.map (a, tensor b c) \<cdot>\<^sup>o\<^sup>p assoc a b c =
+                (\<a>\<^sup>-\<^sup>1[a, b, c] \<cdot> M.inv \<s>[a, tensor b c]) \<cdot> \<a>\<^sup>-\<^sup>1[b, c, a]"
+            using a b c by auto
+          also have "... = M.inv (\<s>[a, tensor b c] \<cdot> M.assoc a b c) \<cdot> M.inv (M.assoc b c a)"
+            using a b c M.iso_assoc M.inv_comp by auto
+          also have "... = M.inv (M.assoc b c a \<cdot> \<s>[a, tensor b c] \<cdot> M.assoc a b c)"
+            using a b c M.iso_assoc
+                  M.inv_comp [of "\<s>[a, tensor b c] \<cdot> M.assoc a b c" "M.assoc b c a"]
+            by fastforce
+          also have "... = M.inv (tensor b \<s>[a, c] \<cdot> \<a>[b, a, c] \<cdot> (tensor \<s>[a, b] c))"
+            using a b c M.assoc_coherence by simp
+          also have "... = M.inv (\<a>[b, a, c] \<cdot> (tensor \<s>[a, b] c)) \<cdot> M.inv (tensor b \<s>[a, c])"
+            using a b c M.iso_assoc
+                  M.inv_comp [of "\<a>[b, a, c] \<cdot> (tensor \<s>[a, b] c)"]
+            by fastforce
+          also have "... =
+                     (tensor (M.inv \<s>[a, b]) c \<cdot> M.inv \<a>[b, a, c]) \<cdot> tensor b (M.inv \<s>[a, c])"
+            using a b c M.iso_assoc M.inv_comp by simp
+          also have "... =
+                     (tensor b (\<sigma>'.map (a, c))) \<cdot>\<^sup>o\<^sup>p assoc b a c \<cdot>\<^sup>o\<^sup>p (tensor (\<sigma>'.map (a, b)) c)"
+            using a b c by auto
+          finally show ?thesis by simp
+        qed
+      qed
+    qed
+
+    lemma is_symmetric_monoidal_category:
+    shows "symmetric_monoidal_category comp T M.\<alpha>' (M.inv \<iota>) \<sigma>'.map"
+      ..
+
+  end
+
 section "Cartesian Monoidal Category"
 
   text \<open>
@@ -302,6 +368,17 @@ section "Cartesian Monoidal Category"
         by (cases "CC.arr fg") auto
     qed
 
+    lemma tuple_pr [simp]:
+    assumes "ide a" and "ide b"
+    shows "\<langle>\<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle> = a \<otimes> b"
+      using assms prod_eq_tensor by simp
+
+    lemma tensor_expansion:
+    assumes "arr f" and "arr g"
+    shows "f \<otimes> g = \<langle>f \<cdot> \<pp>\<^sub>1[dom f, dom g], g \<cdot> \<pp>\<^sub>0[dom f, dom g]\<rangle>"
+      using assms
+      by (metis ECC.prod_def prod_eq_tensor)
+
   text \<open>
      It is somewhat amazing that once the tensor product has been assumed to be a
      categorical product with the indicated projections, then the associators are
@@ -437,6 +514,16 @@ section "Cartesian Monoidal Category"
     assumes "ide a"
     shows "\<pp>\<^sub>1[a, \<I>] = \<r>[a]"
       by (simp add: assms comp_arr_dom pr\<^sub>1_def trm_one)
+
+    lemma lunit'_as_tuple:
+    assumes "ide a"
+    shows "tuple \<t>[a] a = lunit' a"
+      using ECC.inverse_arrows_lunit assms inverse_unique lunit_eq by fastforce
+
+    lemma runit'_as_tuple:
+    assumes "ide a"
+    shows "tuple a \<t>[a] = runit' a"
+      using ECC.inverse_arrows_runit assms inverse_unique runit_eq by fastforce
 
     interpretation S: symmetry_functor C C ..
     interpretation ToS: composite_functor CC.comp CC.comp C S.map T ..

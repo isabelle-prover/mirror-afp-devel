@@ -574,6 +574,12 @@ text \<open>
       qed
     qed
 
+    lemma pullbacks_are_isomorphic:
+    assumes "has_as_pullback f g h k" and "has_as_pullback f g h' k'"
+    shows "isomorphic (dom h) (dom h')"
+      using assms limits_are_isomorphic(1)
+      unfolding has_as_pullback_def by blast
+
     lemma has_as_pullbackE [elim]:
     assumes "has_as_pullback f g p q"
     and "\<lbrakk>cospan f g; commutative_square f g p q;

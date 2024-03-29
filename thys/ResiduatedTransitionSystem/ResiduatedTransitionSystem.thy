@@ -1,3 +1,8 @@
+(*  Title:       ResiduatedTransitionSystem
+    Author:      Eugene W. Stark <stark@cs.stonybrook.edu>, 2022
+    Maintainer:  Eugene W. Stark <stark@cs.stonybrook.edu>
+*)
+
 chapter "Residuated Transition Systems"
 
 theory ResiduatedTransitionSystem
@@ -17,7 +22,7 @@ begin
   (*
    * TODO: This is currently identical with Category3.partial_magma.
    * This may get to be a problem for future theories that develop category-theoretic
-   * properties of residuated transitions, but for now I don't want this theory
+   * properties of residuated transition systems, but for now I don't want this theory
    * to depend on the Category3 session just because of this.
    *)
   locale partial_magma =
@@ -44,7 +49,7 @@ begin
   subsection "Residuation"
 
     text \<open>
-      A \emph{residuation} is a partial binary operation subject to three axioms.
+      A \emph{residuation} is a partial magma subject to three axioms.
       The first, \<open>con_sym_ax\<close>, states that the domain of a residuation is symmetric.
       The second, \<open>con_imp_arr_resid\<close>, constrains the results of residuation either to be \<open>null\<close>,
       which indicates inconsistency, or something that is self-consistent, which we will
@@ -1173,7 +1178,7 @@ begin
       seems more natural.
     \<close>
 
-    definition comp  (infixl "\<cdot>" 55)
+    definition comp  (infixr "\<cdot>" 55)
     where "t \<cdot> u \<equiv> if composable t u then THE v. composite_of t u v else null"
 
     lemma comp_is_composite_of:
@@ -2054,7 +2059,7 @@ begin
     B: extensional_rts B
   begin
 
-    notation B.comp  (infixl "\<cdot>\<^sub>B" 55)
+    notation B.comp  (infixr "\<cdot>\<^sub>B" 55)
     notation B.join  (infix "\<squnion>\<^sub>B" 52)
 
     lemma preserves_comp:
@@ -2078,7 +2083,7 @@ begin
     A: extensional_rts A
   begin
 
-    notation A.comp  (infixl "\<cdot>\<^sub>A" 55)
+    notation A.comp  (infixr "\<cdot>\<^sub>A" 55)
     notation A.join  (infix "\<squnion>\<^sub>A" 52)
 
     lemma preserves_src [simp]:
@@ -8185,7 +8190,7 @@ begin
 
     sublocale P: paths_in_weakly_extensional_rts resid ..
 
-    notation comp (infixl "\<lbrace>\<^sup>*\<cdot>\<^sup>*\<rbrace>" 55)
+    notation comp (infixr "\<lbrace>\<^sup>*\<cdot>\<^sup>*\<rbrace>" 55)
 
     text \<open>
       When applied to an extensional RTS, the composite completion construction does not
@@ -8229,7 +8234,7 @@ begin
     notation A.Resid1x  (infix "\<^sup>1\\\<^sub>A\<^sup>*" 70)
     notation A.Residx1  (infix "\<^sup>*\\\<^sub>A\<^sup>1" 70)
     notation A.Con      (infix "\<^sup>*\<frown>\<^sub>A\<^sup>*" 70)
-    notation B.comp     (infixl "\<cdot>\<^sub>B" 55)
+    notation B.comp     (infixr "\<cdot>\<^sub>B" 55)
     notation B.con      (infix "\<frown>\<^sub>B" 50)
 
     fun map
@@ -8275,7 +8280,7 @@ begin
         also have "... =  F t \<cdot>\<^sub>B (map T \<cdot>\<^sub>B map U)"
           using ind
           by (metis "1" A.Con_Arr_self A.Con_implies_Arr(1) A.Con_rec(4) T U append_is_Nil_conv)
-        also have "... = F t \<cdot>\<^sub>B map T \<cdot>\<^sub>B map U"
+        also have "... = (F t \<cdot>\<^sub>B map T) \<cdot>\<^sub>B map U"
           using B.comp_assoc\<^sub>E\<^sub>C by blast
         also have "... = map (t # T) \<cdot>\<^sub>B map U"
           using T 2

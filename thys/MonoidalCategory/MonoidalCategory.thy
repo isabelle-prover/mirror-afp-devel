@@ -1676,6 +1676,117 @@ $$\xymatrix{
 
   end
 
+  section "Dual Monoidal Category"
+
+  text\<open>
+    The \emph{dual} of a monoidal category is obtained by reversing the arrows of the
+    underlying category.  The tensor product remains the same, but the associators and
+    unitors are inverted.
+\<close>
+
+  locale dual_monoidal_category =
+    M: monoidal_category
+  begin
+
+    sublocale dual_category C ..
+    sublocale MM: product_category comp comp ..
+    interpretation T: binary_functor comp comp comp T
+      using M.T.is_extensional M.interchange MM.comp_char
+      by unfold_locales auto
+    interpretation T: binary_endofunctor comp ..
+    interpretation ToTC: "functor" T.CCC.comp comp T.ToTC
+      using T.functor_ToTC by blast
+    interpretation ToCT: "functor" T.CCC.comp comp T.ToCT
+      using T.functor_ToCT by blast
+    interpretation \<alpha>: natural_transformation T.CCC.comp comp T.ToTC T.ToCT M.\<alpha>'
+      using M.\<alpha>'.is_extensional M.\<alpha>'.is_natural_1 M.\<alpha>'.is_natural_2
+      by unfold_locales auto
+    interpretation \<alpha>: natural_isomorphism T.CCC.comp comp T.ToTC T.ToCT M.\<alpha>'
+      by unfold_locales auto
+    interpretation L: equivalence_functor comp comp \<open>M.tensor (cod (M.inv \<iota>))\<close>
+    proof -
+      interpret L: dual_equivalence_functor C C \<open>M.tensor \<I>\<close> ..
+      show "equivalence_functor comp comp (M.tensor (cod (M.inv \<iota>)))"
+        using L.equivalence_functor_axioms
+        by (simp add: M.unit_is_iso)
+    qed
+    interpretation R: equivalence_functor comp comp \<open>\<lambda>f. M.tensor f (cod (M.inv \<iota>))\<close>
+    proof -
+      interpret R: dual_equivalence_functor C C \<open>\<lambda>f. M.tensor f \<I>\<close> ..
+      show "equivalence_functor comp comp (\<lambda>f. M.tensor f (cod (M.inv \<iota>)))"
+        using R.equivalence_functor_axioms
+        by (simp add: M.unit_is_iso)
+    qed
+
+    sublocale monoidal_category comp T M.\<alpha>' \<open>M.inv \<iota>\<close>
+      using T.is_extensional M.unit_in_hom M.inv_in_hom M.unit_is_iso M.pentagon'
+            equivalence_functor_def category_axioms
+      by unfold_locales auto
+
+    lemma is_monoidal_category:
+    shows "monoidal_category comp T M.\<alpha>' (M.inv \<iota>)"
+      ..
+
+    no_notation comp  (infixr "\<cdot>" 55)
+
+    lemma assoc_char:
+    assumes "ide a" and "ide b" and "ide c"
+    shows "assoc a b c = M.assoc' a b c" and "assoc' a b c = M.assoc a b c"
+      using assms M.inv_inv M.iso_inv_iso
+      apply force
+      by (metis assms M.\<alpha>'_ide_simp M.comp_assoc_assoc'(2) M.ideD(1) M.iso_assoc
+          M.iso_cancel_left M.iso_inv_iso comp_assoc_assoc'(2) ide_char comp_def
+          tensor_preserves_ide)
+
+    lemma lunit_char:
+    assumes "ide a"
+    shows "lunit a = M.lunit' a"
+    proof -
+      have "M.lunit' a = lunit a"
+      proof (intro lunit_eqI)
+        show "in_hom (M.lunit' a) (tensor unity a) a"
+          using assms
+          by (simp add: M.lunit'_in_hom M.unit_is_iso)
+        show "tensor unity (M.lunit' a) = comp (tensor (M.inv \<iota>) a) (assoc' unity unity a)"
+        proof -
+          have "M.inv (tensor \<I> (M.lunit a) \<cdot> M.assoc \<I> \<I> a) = M.inv (tensor \<iota> a)"
+            using assms M.triangle M.unitor_coincidence by auto
+          hence "M.assoc' \<I> \<I> a \<cdot> tensor \<I> (M.lunit' a) = tensor (M.inv \<iota>) a"
+            using assms M.inv_comp M.unit_is_iso by fastforce
+          thus ?thesis
+            using assms M.unit_is_iso assoc_char
+                  M.invert_side_of_triangle(1)
+                    [of "tensor (M.inv \<iota>) a" "M.assoc' unity unity a" "tensor \<I> \<l>\<^sup>-\<^sup>1[a]"]
+            by auto
+        qed
+      qed
+      thus ?thesis by simp
+    qed
+
+    lemma runit_char:
+    assumes "ide a"
+    shows "runit a = M.runit' a"
+    proof -
+      have "M.runit' a = runit a"
+      proof (intro runit_eqI)
+        show "in_hom (M.runit' a) (tensor a unity) a"
+          using assms
+          by (simp add: M.runit'_in_hom M.unit_is_iso)
+        show "tensor (M.runit' a) unity = comp (tensor a (M.inv \<iota>)) (assoc a unity unity)"
+        proof -
+          have "M.inv (tensor a \<iota> \<cdot> M.assoc a \<I> \<I>) = M.inv (tensor (M.runit a) \<I>)"
+            using assms M.triangle [of a \<I>] M.unitor_coincidence by auto
+          hence "M.assoc' a \<I> \<I> \<cdot> tensor a (M.inv \<iota>) = tensor (M.runit' a) \<I>"
+            using assms M.inv_comp M.unit_in_hom M.unit_is_iso by auto
+          thus ?thesis
+            using assms M.unit_is_iso assoc_char by auto
+        qed
+      qed
+      thus ?thesis by simp
+    qed
+
+  end
+
   section "Monoidal Language"
 
   text\<open>

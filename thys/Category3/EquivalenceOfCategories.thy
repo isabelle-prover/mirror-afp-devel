@@ -276,6 +276,63 @@ begin
 
   end
 
+  locale dual_equivalence_of_categories =
+    E: equivalence_of_categories
+  begin
+
+    interpretation Cop: dual_category C ..
+    interpretation Dop: dual_category D ..
+    interpretation Fop: dual_functor D C F ..
+    interpretation Gop: dual_functor C D G ..
+    interpretation Gop_o_Fop: composite_functor Dop.comp Cop.comp Dop.comp Fop.map Gop.map ..
+    interpretation Fop_o_Gop: composite_functor Cop.comp Dop.comp Cop.comp Gop.map Fop.map ..
+    sublocale \<eta>': inverse_transformation D D E.D.map \<open>G \<circ> F\<close> \<eta> ..
+    interpretation \<eta>op: natural_transformation Dop.comp Dop.comp Dop.map Gop_o_Fop.map \<eta>'.map
+      using \<eta>'.is_extensional \<eta>'.is_natural_1 \<eta>'.is_natural_2
+      by unfold_locales auto
+    interpretation \<eta>op: natural_isomorphism Dop.comp Dop.comp Dop.map Gop_o_Fop.map \<eta>'.map
+      by unfold_locales auto
+    sublocale \<epsilon>': inverse_transformation C C \<open>F \<circ> G\<close> E.C.map \<epsilon> ..
+    interpretation \<epsilon>op: natural_transformation Cop.comp Cop.comp Fop_o_Gop.map Cop.map \<epsilon>'.map
+      using \<epsilon>'.is_extensional \<epsilon>'.is_natural_1 \<epsilon>'.is_natural_2
+      by unfold_locales auto
+    interpretation \<epsilon>op: natural_isomorphism Cop.comp Cop.comp Fop_o_Gop.map Cop.map \<epsilon>'.map
+      by unfold_locales auto
+    sublocale equivalence_of_categories Cop.comp Dop.comp Fop.map Gop.map \<eta>'.map \<epsilon>'.map
+      ..
+
+    lemma is_equivalence_of_categories:
+    shows "equivalence_of_categories Cop.comp Dop.comp Fop.map Gop.map \<eta>'.map \<epsilon>'.map"
+      ..
+
+  end
+
+  locale dual_equivalence_functor =
+    G: equivalence_functor
+  begin
+
+    interpretation Cop: dual_category C ..
+    interpretation Dop: dual_category D ..
+    interpretation Gop: dual_functor C D G ..
+
+    sublocale equivalence_functor Cop.comp Dop.comp Gop.map
+    proof -
+      obtain F \<eta> \<epsilon> where F: "equivalence_of_categories C D F G \<eta> \<epsilon>"
+        using G.equivalence_functor_axioms equivalence_functor_def
+              equivalence_functor_axioms_def
+        by blast
+      interpret E: equivalence_of_categories C D F G \<eta> \<epsilon>
+        using F by blast
+      interpret dual_equivalence_of_categories C D F G \<eta> \<epsilon> ..
+      show "equivalence_functor Cop.comp Dop.comp Gop.map" ..
+    qed
+
+    lemma is_equivalence_functor:
+    shows "equivalence_functor Cop.comp Dop.comp Gop.map"
+      ..
+
+  end
+
   text \<open>
     An adjoint equivalence is an equivalence of categories that is also an adjunction.
 \<close>
@@ -331,7 +388,7 @@ begin
       done it once and for all.
 \<close>
 
-    lemma dual_equivalence:
+    lemma dual_adjoint_equivalence:
     assumes "adjoint_equivalence C D F G \<eta> \<epsilon>"
     shows "adjoint_equivalence D C G F (inverse_transformation.map C C (C.map) \<epsilon>)
                                        (inverse_transformation.map D D (G o F) \<eta>)"
@@ -625,7 +682,7 @@ begin
       interpret \<epsilon>': inverse_transformation D D \<open>F o G\<close> D.map Adj.\<epsilon> ..
       interpret \<eta>': inverse_transformation C C C.map \<open>G o F\<close> Adj.\<eta> ..
       interpret E: adjoint_equivalence C D G F \<epsilon>'.map \<eta>'.map
-        using adjoint_equivalence_axioms dual_equivalence by blast
+        using adjoint_equivalence_axioms dual_adjoint_equivalence by blast
       show ?thesis
         using E.adjoint_equivalence_axioms by auto
     qed

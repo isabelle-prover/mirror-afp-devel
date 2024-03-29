@@ -1,3 +1,8 @@
+(*  Title:       LambdaCalculus
+    Author:      Eugene W. Stark <stark@cs.stonybrook.edu>, 2022
+    Maintainer:  Eugene W. Stark <stark@cs.stonybrook.edu>
+*)
+
 chapter "The Lambda Calculus"
 
   text \<open>

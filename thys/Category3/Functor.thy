@@ -532,6 +532,15 @@ begin
     lemma inv_is_inverse:
     shows "inverse_functors A B inv G" ..
   
+    sublocale inverse_functors A B inv G
+      using inv_is_inverse by simp
+
+    lemma is_surjective_on_objects:
+    shows "G ` Collect A.ide \<supseteq> Collect B.ide"
+      by (metis (no_types, lifting) B.category_axioms B.map_simp
+          CollectD CollectI F.preserves_ide category.ideD(1) image_eqI
+          inv o_apply subsetI)
+
     sublocale fully_faithful_functor A B G
     proof -
       obtain F where F: "inverse_functors A B F G"
@@ -595,8 +604,103 @@ begin
   
   end
 
-  sublocale invertible_functor \<subseteq> inverse_functors A B inv G
-    using inv_is_inverse by simp
+  context full_embedding_functor
+  begin
+
+    lemma is_invertible_if_surjective_on_objects:
+    assumes "F ` Collect A.ide \<supseteq> Collect B.ide"
+    shows "invertible_functor A B F"
+    and "inverse_functors A B (\<lambda>y. if B.arr y then inv_into (Collect A.arr) F y else A.null) F"
+    proof -
+      have *: "F ` Collect A.ide = Collect B.ide"
+        using assms preserves_reflects_arr by auto
+      have inj: "inj_on F (Collect A.arr)"
+        using is_embedding inj_on_def by blast
+      have inj': "inj_on F (Collect A.ide)"
+        by (simp add: inj_on_def is_embedding)
+      have surj: "F ` Collect A.arr = Collect B.arr"
+      proof
+        show "F ` Collect A.arr \<subseteq> Collect B.arr"
+          using preserves_reflects_arr by auto
+        show "Collect B.arr \<subseteq> F ` Collect A.arr"
+        proof
+          fix g
+          assume g: "g \<in> Collect B.arr"
+          let ?a = "inv_into (Collect A.ide) F (B.dom g)"
+          let ?a' = "inv_into (Collect A.ide) F (B.cod g)"
+          have a: "A.ide ?a \<and> F ?a = B.dom g"
+            using * g by (simp add: f_inv_into_f reflects_ide)
+          have a': "A.ide ?a' \<and> F ?a' = B.cod g"
+            using * g by (simp add: f_inv_into_f reflects_ide)
+          have "\<guillemotleft>g : F ?a \<rightarrow>\<^sub>B F ?a'\<guillemotright>"
+            using g a a' by auto
+          hence "\<exists>f. \<guillemotleft>f : ?a \<rightarrow>\<^sub>A ?a'\<guillemotright> \<and> F f = g"
+            using a a' is_full by blast
+          thus "g \<in> F ` Collect A.arr" by blast
+        qed
+      qed
+      let ?G = "\<lambda>y. if B.arr y then inv_into (Collect A.arr) F y else A.null"
+      show "inverse_functors A B ?G F"
+      proof
+        show "\<And>f. \<not> B.arr f \<Longrightarrow> ?G f = A.null"
+          by simp
+        show 1: "\<And>f. B.arr f \<Longrightarrow> A.arr (?G f)"
+          using assms inj surj inv_into_into
+          by (metis (full_types) mem_Collect_eq)
+        show 2: "\<And>f. B.arr f \<Longrightarrow> A.dom (?G f) = ?G (B.dom f)"
+        proof -
+          fix f
+          assume f: "B.arr f"
+          have "F (A.dom (?G f)) = B.dom f"
+          proof -
+            have "F (A.dom (?G f)) = B.dom (F (inv_into (Collect A.arr) F f))"
+              using f 1 preserves_dom by simp
+            also have "... = B.dom f"
+              using f f_inv_into_f by (metis CollectI surj)
+            finally show ?thesis by blast
+          qed
+          thus "A.dom (?G f) = ?G (B.dom f)"
+            using f
+            by (metis 1 A.arr_dom B.arr_dom inj inv_into_f_f mem_Collect_eq)
+        qed
+        show 3: "\<And>f. B.arr f \<Longrightarrow> A.cod (?G f) = ?G (B.cod f)"
+        proof -
+          fix f
+          assume f: "B.arr f"
+          have "F (A.cod (?G f)) = B.cod f"
+          proof -
+            have "F (A.cod (?G f)) = B.cod (F (inv_into (Collect A.arr) F f))"
+              using f 1 preserves_cod by simp
+            also have "... = B.cod f"
+              using f f_inv_into_f by (metis CollectI surj)
+            finally show ?thesis by blast
+          qed
+          thus "A.cod (?G f) = ?G (B.cod f)"
+            using f
+            by (metis 1 A.arr_cod B.arr_cod inj inv_into_f_f mem_Collect_eq)
+        qed
+        fix f g
+        assume fg: "B.seq g f"
+        show "?G (B g f) = A (?G g) (?G f)"
+          using assms fg 1 2 3 inj surj f_inv_into_f inj_on_def inv_into_into
+                preserves_comp
+          by (auto simp add: f_inv_into_f is_embedding)
+        next
+        show "F \<circ> ?G = B.map"
+          using inj surj f_inv_into_f A.not_arr_null B.map_def is_extensional
+          by (auto simp add: f_inv_into_f)
+        show "?G \<circ> F = A.map"
+          using inj surj A.is_extensional by auto
+      qed
+      hence "\<exists>G. inverse_functors A B G F"
+        by blast
+      thus "invertible_functor A B F"
+        using functor_axioms functor_def invertible_functor.intro
+              invertible_functor_axioms.intro
+        by blast
+    qed
+
+  end
 
   locale dual_functor =
     F: "functor" A B F +

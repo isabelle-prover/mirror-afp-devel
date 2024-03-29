@@ -29,7 +29,7 @@ begin
   fixes Obj :: "'o set"
   and Hom :: "'o \<Rightarrow> 'o \<Rightarrow> 'a comp"
   and Id :: "'o \<Rightarrow> 'a"
-  and Comp :: "'o \<Rightarrow> 'o \<Rightarrow> 'o \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow>'a"
+  and Comp :: "'o \<Rightarrow> 'o \<Rightarrow> 'o \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"
   and Unit :: "'o \<Rightarrow> 'a"
   and Assoc :: "'o \<Rightarrow> 'o \<Rightarrow> 'o \<Rightarrow> 'o \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"
   assumes category_Hom: "\<lbrakk> A \<in> Obj; B \<in> Obj \<rbrakk> \<Longrightarrow> category (Hom A B)"

@@ -37,8 +37,8 @@ begin
     assumes Id_in_Hom: "A \<in> Obj \<Longrightarrow> Id A \<in> Hom A A"
     and Comp_in_Hom: "\<lbrakk> A \<in> Obj; B \<in> Obj; C \<in> Obj; f \<in> Hom A B; g \<in> Hom B C \<rbrakk>
                          \<Longrightarrow> Comp C B A g f \<in> Hom A C"
-    and Comp_Hom_Id: "\<lbrakk> A \<in> Obj; f \<in> Hom A B \<rbrakk> \<Longrightarrow> Comp B A A f (Id A) = f"
-    and Comp_Id_Hom: "\<lbrakk> B \<in> Obj; f \<in> Hom A B \<rbrakk> \<Longrightarrow> Comp B B A (Id B) f = f"
+    and Comp_Hom_Id: "\<lbrakk> A \<in> Obj; B \<in> Obj; f \<in> Hom A B \<rbrakk> \<Longrightarrow> Comp B A A f (Id A) = f"
+    and Comp_Id_Hom: "\<lbrakk> A \<in> Obj; B \<in> Obj; f \<in> Hom A B \<rbrakk> \<Longrightarrow> Comp B B A (Id B) f = f"
     and Comp_assoc: "\<lbrakk> A \<in> Obj; B \<in> Obj; C \<in> Obj; D \<in> Obj;
                        f \<in> Hom A B; g \<in> Hom B C; h \<in> Hom C D \<rbrakk> \<Longrightarrow>
                         Comp D C A h (Comp C B A g f) = Comp D B A (Comp D C B h g) f"
