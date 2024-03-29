@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Mon, 05 Dec 2022 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Sat, 09 Mar 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/authors/benzmueller/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Conditional normative reasoning as a fragment of HOL (Isabelle/HOL dataset)</title>
+          <link>/entries/CondNormReasHOL.html</link>
+          <pubDate>Sat, 09 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/CondNormReasHOL.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Automation of Boolos&#39; Curious Inference in Isabelle/HOL</title>
           <link>/entries/Boolos_Curious_Inference_Automated.html</link>

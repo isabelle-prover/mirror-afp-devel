@@ -56,13 +56,22 @@
     <loc>/authors/yang/</loc>
     <lastmod>2024-03-15T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/authors/benzmueller/</loc>
+    <lastmod>2024-03-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/CondNormReasHOL.html</loc>
+    <lastmod>2024-03-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/logic/</loc>
+    <lastmod>2024-03-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/parent/</loc>
+    <lastmod>2024-03-09T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/authors/bergstroem/</loc>
     <lastmod>2024-03-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/chenj/</loc>
-    <lastmod>2024-03-06T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/logic/</loc>
     <lastmod>2024-03-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/three_squares/</loc>
@@ -816,9 +825,6 @@
     <lastmod>2022-12-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Boolos_Curious_Inference_Automated.html</loc>
-    <lastmod>2022-12-05T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/benzmueller/</loc>
     <lastmod>2022-12-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/fuenmayor/</loc>
@@ -5153,6 +5159,8 @@
     <loc>/sessions/conditional_simplification/</loc>
   </url><url>
     <loc>/sessions/conditional_transfer_rule/</loc>
+  </url><url>
+    <loc>/sessions/condnormreashol/</loc>
   </url><url>
     <loc>/sessions/consensus_refined/</loc>
   </url><url>

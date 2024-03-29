@@ -5026,6 +5026,24 @@ host = [
 
 [palmer.homepages]
 
+[parent]
+name = "Xavier Parent"
+
+[parent.emails]
+
+[parent.emails.parent_email]
+user = [
+  "x",
+  "parent",
+  "xavier",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[parent.homepages]
+
 [park]
 name = "Seung Hoon Park"
 orcid = "0000-0001-7165-6857"

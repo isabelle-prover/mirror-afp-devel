@@ -28,6 +28,13 @@
           <description></description>
         </item>
         <item>
+          <title>Conditional normative reasoning as a fragment of HOL (Isabelle/HOL dataset)</title>
+          <link>/entries/CondNormReasHOL.html</link>
+          <pubDate>Sat, 09 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/CondNormReasHOL.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Verified QBF Solving</title>
           <link>/entries/QBF_Solver_Verification.html</link>
           <pubDate>Wed, 06 Mar 2024 00:00:00 +0000</pubDate>
