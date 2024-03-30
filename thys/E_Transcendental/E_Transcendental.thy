@@ -12,13 +12,12 @@ theory E_Transcendental
     "HOL-Complex_Analysis.Complex_Analysis"
     "HOL-Number_Theory.Number_Theory"
     "HOL-Computational_Algebra.Polynomial"
+    "Polynomial_Interpolation.Ring_Hom_Poly"
 begin
 
 hide_const (open) UnivPoly.coeff  UnivPoly.up_ring.monom 
 hide_const (open) Module.smult  Coset.order
 
-(* TODO: Lots of stuff to move to the distribution *)
-  
 subsection \<open>Various auxiliary facts\<close>
 
 lemma fact_dvd_pochhammer:
@@ -55,155 +54,7 @@ lemma power_over_fact_tendsto_0':
   using tendsto_mult[OF tendsto_const[of c] power_over_fact_tendsto_0[of x]] by simp
 
 
-subsection \<open>Lifting integer polynomials\<close>
-
-lift_definition of_int_poly :: "int poly \<Rightarrow> 'a :: comm_ring_1 poly" is "\<lambda>g x. of_int (g x)"
-  by (auto elim: eventually_mono)
-
-lemma coeff_of_int_poly [simp]: "coeff (of_int_poly p) n = of_int (coeff p n)"
-  by (simp add: of_int_poly.rep_eq)
-
-lemma of_int_poly_0 [simp]: "of_int_poly 0 = 0"
-  by transfer (simp add: fun_eq_iff)
-
-lemma of_int_poly_pCons [simp]: "of_int_poly (pCons c p) = pCons (of_int c) (of_int_poly p)"
-  by transfer' (simp add: fun_eq_iff split: nat.splits)
-
-lemma of_int_poly_smult [simp]: "of_int_poly (smult c p) = smult (of_int c) (of_int_poly p)"
-  by transfer simp
-
-lemma of_int_poly_1 [simp]: "of_int_poly 1 = 1"
-  by (simp add: one_pCons)
-
-lemma of_int_poly_add [simp]: "of_int_poly (p + q) = of_int_poly p + of_int_poly q"
-  by transfer' (simp add: fun_eq_iff)
-
-lemma of_int_poly_mult [simp]: "of_int_poly (p * q) = (of_int_poly p * of_int_poly q)"
-  by (induction p) simp_all
-
-lemma of_int_poly_sum [simp]: "of_int_poly (sum f A) = sum (\<lambda>x. of_int_poly (f x)) A"
-  by (induction A rule: infinite_finite_induct) simp_all
-
-lemma of_int_poly_prod [simp]: "of_int_poly (prod f A) = prod (\<lambda>x. of_int_poly (f x)) A"
-  by (induction A rule: infinite_finite_induct) simp_all
-
-lemma of_int_poly_power [simp]: "of_int_poly (p ^ n) = of_int_poly p ^ n"
-  by (induction n) simp_all
-
-lemma of_int_poly_monom [simp]: "of_int_poly (monom c n) = monom (of_int c) n"
-  by transfer (simp add: fun_eq_iff)
-
-lemma poly_of_int_poly [simp]: "poly (of_int_poly p) (of_int x) = of_int (poly p x)"
-  by (induction p) simp_all
-
-lemma poly_of_int_poly_of_nat [simp]: "poly (of_int_poly p) (of_nat x) = of_int (poly p (int x))"
-  by (induction p) simp_all
-
-lemma poly_of_int_poly_0 [simp]: "poly (of_int_poly p) 0 = of_int (poly p 0)"
-  by (induction p) simp_all
-
-lemma poly_of_int_poly_1 [simp]: "poly (of_int_poly p) 1 = of_int (poly p 1)"
-  by (induction p) simp_all
-
-lemma poly_of_int_poly_of_real [simp]:
-    "poly (of_int_poly p) (of_real x) = of_real (poly (of_int_poly p) x)"
-  by (induction p) simp_all
-
-lemma of_int_poly_eq_iff [simp]:
-  "of_int_poly p = (of_int_poly q :: 'a :: {comm_ring_1, ring_char_0} poly) \<longleftrightarrow> p = q"
-  by (simp add: poly_eq_iff)
-
-lemma of_int_poly_eq_0_iff [simp]:
-  "of_int_poly p = (0 :: 'a :: {comm_ring_1, ring_char_0} poly) \<longleftrightarrow> p = 0"
-  using of_int_poly_eq_iff[of p 0] by (simp del: of_int_poly_eq_iff)
-
-lemma degree_of_int_poly [simp]:
-  "degree (of_int_poly p :: 'a :: {comm_ring_1, ring_char_0} poly) = degree p"
-  by (simp add: degree_def)
-
-lemma pderiv_of_int_poly [simp]: "pderiv (of_int_poly p) = of_int_poly (pderiv p)"
-  by (induction p) (simp_all add: pderiv_pCons)
-
-lemma higher_pderiv_of_int_poly [simp]:
-  "(pderiv ^^ n) (of_int_poly p) = of_int_poly ((pderiv ^^ n) p)"
-  by (induction n) simp_all
-
-lemma int_polyE:
-  assumes "\<And>n. coeff (p :: 'a :: {comm_ring_1, ring_char_0} poly) n \<in> \<int>"
-  obtains p' where "p = of_int_poly p'"
-proof -
-  from assms have "\<forall>n. \<exists>c. coeff p n = of_int c" by (auto simp: Ints_def)
-  hence "\<exists>c. \<forall>n. of_int (c n) = coeff p n" by (simp add: choice_iff eq_commute)
-  then obtain c where c: "of_int (c n) = coeff p n" for n by blast
-  have [simp]: "coeff (Abs_poly c) = c"
-  proof (rule poly.Abs_poly_inverse, clarify)
-    have "eventually (\<lambda>n. n > degree p) at_top" by (rule eventually_gt_at_top)
-    hence "eventually (\<lambda>n. coeff p n = 0) at_top"
-      by eventually_elim (simp add: coeff_eq_0)
-    thus "eventually (\<lambda>n. c n = 0) cofinite"
-      by (simp add: c [symmetric] cofinite_eq_sequentially)
-  qed
-  have "p = of_int_poly (Abs_poly c)"
-    by (rule poly_eqI) (simp add: c)
-  thus ?thesis by (rule that)
-qed
-
-
 subsection \<open>General facts about polynomials\<close>
-
-lemma pderiv_power:
-  "pderiv (p ^ n) = smult (of_nat n) (p ^ (n - 1) * pderiv p)"
-  by (cases n) (simp_all add: pderiv_power_Suc del: power_Suc)
-
-lemma degree_prod_sum_eq:
-  "(\<And>x. x \<in> A \<Longrightarrow> f x \<noteq> 0) \<Longrightarrow>
-     degree (prod f A :: 'a :: idom poly) = (\<Sum>x\<in>A. degree (f x))"
-  by (induction A rule: infinite_finite_induct) (auto simp: degree_mult_eq)
-
-lemma pderiv_monom:
-  "pderiv (monom c n) = monom (of_nat n * c) (n - 1)"
-  by (cases n)
-     (simp_all add: monom_altdef pderiv_power_Suc pderiv_smult pderiv_pCons mult_ac del: power_Suc)
-
-lemma power_poly_const [simp]: "[:c:] ^ n = [:c ^ n:]"
-  by (induction n) (simp_all add: power_commutes)
-
-lemma monom_power: "monom c n ^ k = monom (c ^ k) (n * k)"
-  by (induction k) (simp_all add: mult_monom)
-
-lemma coeff_higher_pderiv:
-  "coeff ((pderiv ^^ m) f) n = pochhammer (of_nat (Suc n)) m * coeff f (n + m)"
-  by (induction m arbitrary: n) (simp_all add: coeff_pderiv pochhammer_rec algebra_simps)
-
-lemma higher_pderiv_add: "(pderiv ^^ n) (p + q) = (pderiv ^^ n) p + (pderiv ^^ n) q"
-  by (induction n arbitrary: p q) (simp_all del: funpow.simps add: funpow_Suc_right pderiv_add)
-
-lemma higher_pderiv_smult: "(pderiv ^^ n) (smult c p) = smult c ((pderiv ^^ n) p)"
-  by (induction n arbitrary: p) (simp_all del: funpow.simps add: funpow_Suc_right pderiv_smult)
-
-lemma higher_pderiv_0 [simp]: "(pderiv ^^ n) 0 = 0"
-  by (induction n) simp_all
-
-lemma higher_pderiv_monom:
-  "m \<le> n + 1 \<Longrightarrow> (pderiv ^^ m) (monom c n) = monom (pochhammer (int n - int m + 1) m * c) (n - m)"
-proof (induction m arbitrary: c n)
-  case (Suc m)
-  thus ?case
-    by (cases n)
-       (simp_all del: funpow.simps add: funpow_Suc_right pderiv_monom pochhammer_rec' Suc.IH)
-qed simp_all
-
-lemma higher_pderiv_monom_eq_zero:
-  "m > n + 1 \<Longrightarrow> (pderiv ^^ m) (monom c n) = 0"
-proof (induction m arbitrary: c n)
-  case (Suc m)
-  thus ?case
-    by (cases n)
-       (simp_all del: funpow.simps add: funpow_Suc_right pderiv_monom pochhammer_rec' Suc.IH)
-qed simp_all
-
-lemma higher_pderiv_sum: "(pderiv ^^ n) (sum f A) = (\<Sum>x\<in>A. (pderiv ^^ n) (f x))"
-  by (induction A rule: infinite_finite_induct) (simp_all add: higher_pderiv_add)
 
 lemma fact_dvd_higher_pderiv:
   "[:fact n :: int:] dvd (pderiv ^^ n) p"
@@ -228,49 +79,6 @@ qed
 lemma fact_dvd_poly_higher_pderiv_aux':
   "m \<le> n \<Longrightarrow> (fact m :: int) dvd poly ((pderiv ^^ n) p) x"
   by (meson dvd_trans fact_dvd fact_dvd_poly_higher_pderiv_aux)
-
-lemma algebraicE':
-  assumes "algebraic (x :: 'a :: field_char_0)"
-  obtains p where "p \<noteq> 0" "poly (of_int_poly p) x = 0"
-proof -
-  from assms obtain q where "\<And>i. coeff q i \<in> \<int>" "q \<noteq> 0" "poly q x = 0"
-    by (erule algebraicE)
-  moreover from this(1) obtain q' where "q = of_int_poly q'" by (erule int_polyE)
-  ultimately show ?thesis by (intro that[of q']) simp_all
-qed
-
-lemma algebraicE'_nonzero:
-  assumes "algebraic (x :: 'a :: field_char_0)" "x \<noteq> 0"
-  obtains p where "p \<noteq> 0" "coeff p 0 \<noteq> 0" "poly (of_int_poly p) x = 0"
-proof -
-  from assms(1) obtain p where p: "p \<noteq> 0" "poly (of_int_poly p) x = 0"
-    by (erule algebraicE')
-  define n :: nat where "n = order 0 p"
-  have "monom 1 n dvd p" by (simp add: monom_1_dvd_iff p n_def)
-  then obtain q where q: "p = monom 1 n * q" by (erule dvdE)
-  from p have "q \<noteq> 0" "poly (of_int_poly q) x = 0" by (auto simp: q poly_monom assms(2))
-  moreover from this have "order 0 p = n + order 0 q" by (simp add: q order_mult)
-  hence "order 0 q = 0" by (simp add: n_def)
-  with \<open>q \<noteq> 0\<close> have "poly q 0 \<noteq> 0" by (simp add: order_root)
-  ultimately show ?thesis using that[of q] by (auto simp: poly_0_coeff_0)
-qed
-
-lemma algebraic_of_real_iff [simp]:
-   "algebraic (of_real x :: 'a :: {real_algebra_1,field_char_0}) \<longleftrightarrow> algebraic x"
-proof
-  assume "algebraic (of_real x :: 'a)"
-  then obtain p where "p \<noteq> 0" "poly (of_int_poly p) (of_real x :: 'a) = 0"
-    by (erule algebraicE')
-  hence "(of_int_poly p :: real poly) \<noteq> 0"
-        "poly (of_int_poly p :: real poly) x = 0" by simp_all
-  thus "algebraic x" by (intro algebraicI[of "of_int_poly p"]) simp_all
-next
-  assume "algebraic x"
-  then obtain p where "p \<noteq> 0" "poly (of_int_poly p) x = 0" by (erule algebraicE')
-  hence "of_int_poly p \<noteq> (0 :: 'a poly)" "poly (of_int_poly p) (of_real x :: 'a) = 0"
-    by simp_all
-  thus "algebraic (of_real x)" by (intro algebraicI[of "of_int_poly p"]) simp_all
-qed
 
 
 subsection \<open>Main proof\<close>
@@ -520,7 +328,7 @@ proof
     define f :: "int poly"
       where "f = monom 1 (p - 1) * (\<Prod>k\<in>{1..n}. [:-of_nat k, 1:] ^ p)"
     have poly_f: "poly (of_int_poly f) x = x ^ (p - 1) * (\<Prod>k\<in>{1..n}. (x - of_nat k)) ^ p"
-      for x :: complex by (simp add: f_def poly_prod poly_monom prod_power_distrib)
+      for x :: complex by (simp add: f_def poly_prod poly_monom prod_power_distrib hom_distribs)
     define m :: nat where "m = degree f"
     from p_pos have m: "m = (n + 1) * p - 1"
       by (simp add: m_def f_def degree_mult_eq degree_monom_eq degree_prod_sum_eq degree_linear_power)
@@ -530,6 +338,9 @@ proof
       by (auto simp: M_def prime_elem_int_not_dvd_neg1_power prime_dvd_power_iff
             prime_gt_0_nat prime_dvd_fact_iff_int prime_dvd_mult_iff)
 
+    have [simp]: "poly (of_int_poly p) (complex_of_nat k) = of_int (poly p (int k))" for p k
+      by (metis of_int_hom.poly_map_poly of_int_of_nat_eq)
+
     interpret lindemann_weierstrass_aux "of_int_poly f" .
     define J :: complex where "J = (\<Sum>k\<le>n. of_int (coeff q k) * I (of_nat k))"
     define idxs where "idxs = ({..n}\<times>{..m}) - {(0, p - 1)}"
@@ -537,7 +348,7 @@ proof
     hence "J = (\<Sum>k\<le>n. of_int (coeff q k) * exp 1 ^ k) * (\<Sum>n\<le>m. of_int (poly ((pderiv ^^ n) f) 0)) -
                  of_int (\<Sum>k\<le>n. \<Sum>n\<le>m. coeff q k * poly ((pderiv ^^ n) f) (int k))"
       by (simp add: J_def I_def algebra_simps sum_subtractf sum_distrib_left m_def
-                    exp_of_nat_mult [symmetric])
+                    exp_of_nat_mult [symmetric] flip: of_int_hom.map_poly_higher_pderiv)
     also have "(\<Sum>k\<le>n. of_int (coeff q k) * exp 1 ^ k) = poly (of_int_poly q) (exp 1 :: complex)"
       by (simp add: poly_altdef n_def)
     also have "\<dots> = 0" by fact

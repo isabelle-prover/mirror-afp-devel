@@ -4,6 +4,7 @@ session E_Transcendental = "HOL-Complex_Analysis" +
   options [timeout = 600]
   sessions
     "HOL-Number_Theory"
+    Polynomial_Interpolation
   theories
     E_Transcendental
   document_files

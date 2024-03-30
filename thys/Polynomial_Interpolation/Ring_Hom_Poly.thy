@@ -331,6 +331,10 @@ proof (induct p rule: pderiv.induct)
   then show ?case unfolding pderiv.simps map_poly_pCons_hom by (cases "p = 0", auto simp: hom_distribs)
 qed
 
+lemma(in idom_hom) map_poly_higher_pderiv[hom_distribs]:
+  "map_poly hom ((pderiv ^^ n) p) = (pderiv ^^ n) (map_poly hom p)"
+  by (induction n) (auto simp: hom_distribs)
+
 context field_hom
 begin
 

@@ -87,7 +87,8 @@ proof -
   have "\<exists>w. Re w \<in> \<rat> \<and> Im w \<in> \<rat> \<and> norm (w - z) < e" if "e > 0" for z and e::real
   proof -
     obtain x y where "x\<in>\<rat>" "y\<in>\<rat>" and xy: "dist (x,y) (Re z, Im z) < e"
-      using \<open>e > 0\<close> Rats_closure_real2 by (force simp: closure_approachable)
+      using \<open>e > 0\<close> Rats_closure_real2 unfolding closure_approachable set_eq_iff
+      by blast
     moreover have "dist (x,y) (Re z, Im z) = norm (Complex x y - z)"
       by (simp add: norm_complex_def norm_prod_def dist_norm)
     ultimately show "\<exists>w. Re w \<in> \<rat> \<and> Im w \<in> \<rat> \<and> norm (w - z) < e"

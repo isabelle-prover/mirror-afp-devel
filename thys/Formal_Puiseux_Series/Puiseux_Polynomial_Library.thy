@@ -8,19 +8,6 @@ theory Puiseux_Polynomial_Library
   imports "HOL-Computational_Algebra.Computational_Algebra" "Polynomial_Interpolation.Ring_Hom_Poly"
 begin
 
-(* TODO: move a lot of this *)
-
-lemma poly_sum_mset: "poly (\<Sum>x\<in>#A. p x) y = (\<Sum>x\<in>#A. poly (p x) y)"
-  by (induction A) auto
-
-lemma poly_prod_mset: "poly (\<Prod>x\<in>#A. p x) y = (\<Prod>x\<in>#A. poly (p x) y)"
-  by (induction A) auto
-
-lemma set_mset_subset_singletonD:
-  assumes "set_mset A \<subseteq> {x}"
-  shows   "A = replicate_mset (size A) x"
-  using assms by (induction A) auto
-
 lemma inj_idom_hom_compose [intro]:
   assumes "inj_idom_hom f" "inj_idom_hom g"
   shows   "inj_idom_hom (f \<circ> g)"
@@ -29,39 +16,6 @@ proof -
   interpret g: inj_idom_hom g by fact
   show ?thesis
     by unfold_locales (auto simp: f.hom_add g.hom_add f.hom_mult g.hom_mult)
-qed
-
-lemma coeff_pcompose_linear:
-  "coeff (pcompose p [:0, a :: 'a :: comm_semiring_1:]) i = a ^ i * coeff p i"
-  by (induction p arbitrary: i) (auto simp: pcompose_pCons coeff_pCons mult_ac split: nat.splits)
-
-lemma degree_cong:
-  assumes "\<And>i. coeff p i = 0 \<longleftrightarrow> coeff q i = 0"
-  shows   "degree p = degree q"
-proof -
-  have "(\<lambda>n. \<forall>i>n. poly.coeff p i = 0) = (\<lambda>n. \<forall>i>n. poly.coeff q i = 0)"
-    using assms by (auto simp: fun_eq_iff)
-  thus ?thesis
-    by (simp only: degree_def)
-qed
-
-lemma coeff_Abs_poly_If_le:
-  "coeff (Abs_poly (\<lambda>i. if i \<le> n then f i else 0)) = (\<lambda>i. if i \<le> n then f i else 0)"
-proof (rule Abs_poly_inverse, clarify)
-  have "eventually (\<lambda>i. i > n) cofinite"
-    by (auto simp: MOST_nat)
-  thus "eventually (\<lambda>i. (if i \<le> n then f i else 0) = 0) cofinite"
-    by eventually_elim auto
-qed
-
-lemma coeff_Abs_poly:
-  assumes "\<And>i. i > n \<Longrightarrow> f i = 0"
-  shows   "coeff (Abs_poly f) = f"
-proof (rule Abs_poly_inverse, clarify)
-  have "eventually (\<lambda>i. i > n) cofinite"
-    by (auto simp: MOST_nat)
-  thus "eventually (\<lambda>i. f i = 0) cofinite"
-    by eventually_elim (use assms in auto)
 qed
 
 lemma (in inj_idom_hom) inj_idom_hom_map_poly [intro]: "inj_idom_hom (map_poly hom)"
@@ -75,84 +29,6 @@ lemma inj_idom_hom_pcompose [intro]:
   assumes [simp]: "degree (p :: 'a :: idom poly) \<noteq> 0"
   shows "inj_idom_hom (\<lambda>q. pcompose q p)"
   by unfold_locales (simp_all add: pcompose_eq_0)
-
-lemma degree_sum_less:
-  assumes "\<And>x. x \<in> A \<Longrightarrow> degree (f x) < n" "n > 0"
-  shows   "degree (sum f A) < n"
-  using assms by (induction rule: infinite_finite_induct) (auto intro!: degree_add_less)
-
-lemma degree_lessI:
-  assumes "p \<noteq> 0 \<or> n > 0" "\<forall>k\<ge>n. coeff p k = 0"
-  shows   "degree p < n"
-proof (cases "p = 0")
-  case False
-  show ?thesis
-  proof (rule ccontr)
-    assume *: "\<not>(degree p < n)"
-    define d where "d = degree p"
-    from \<open>p \<noteq> 0\<close> have "coeff p d \<noteq> 0"
-      by (auto simp: d_def)
-    moreover have "coeff p d = 0"
-      using assms(2) * by (auto simp: not_less)
-    ultimately show False by contradiction
-  qed
-qed (use assms in auto)
-
-lemma coeff_linear_poly_power:
-  fixes c :: "'a :: semiring_1"
-  assumes "i \<le> n"
-  shows   "coeff ([:a, b:] ^ n) i = of_nat (n choose i) * b ^ i * a ^ (n - i)"
-proof -
-  have "[:a, b:] = monom b 1 + [:a:]"
-    by (simp add: monom_altdef)
-  also have "coeff (\<dots> ^ n) i = (\<Sum>k\<le>n. a^(n-k) * of_nat (n choose k) * (if k = i then b ^ k else 0))"
-    by (subst binomial_ring) (simp add: coeff_sum of_nat_poly monom_power poly_const_pow mult_ac)
-  also have "\<dots> = (\<Sum>k\<in>{i}. a ^ (n - i) * b ^ i * of_nat (n choose k))"
-    using assms by (intro sum.mono_neutral_cong_right) (auto simp: mult_ac)
-  finally show *: ?thesis by (simp add: mult_ac)
-qed
-
-lemma pcompose_altdef: "pcompose p q = poly (map_poly (\<lambda>x. [:x:]) p) q"
-  by (induction p) simp_all
-
-lemma coeff_mult_0: "coeff (p * q) 0 = coeff p 0 * coeff q 0"
-  by (simp add: coeff_mult)
-
-lemma coeff_pcompose_0 [simp]:
-  "coeff (pcompose p q) 0 = poly p (coeff q 0)"
-  by (induction p) (simp_all add: coeff_mult_0)
-
-lemma reducible_polyI:
-  fixes p :: "'a :: field poly"
-  assumes "p = q * r" "degree q > 0" "degree r > 0"
-  shows   "\<not>irreducible p"
-  using assms by (auto simp: irreducible_def)
-
-lemma root_imp_reducible_poly:
-  fixes x :: "'a :: field"
-  assumes "poly p x = 0" and "degree p > 1"
-  shows   "\<not>irreducible p"
-proof -
-  from assms have "p \<noteq> 0"
-    by auto
-  define q where "q = [:-x, 1:]"
-  have "q dvd p"
-    using assms by (simp add: poly_eq_0_iff_dvd q_def)
-  then obtain r where p_eq: "p = q * r"
-    by (elim dvdE)
-  have [simp]: "q \<noteq> 0" "r \<noteq> 0"
-    using \<open>p \<noteq> 0\<close> by (auto simp: p_eq)
-  have "degree p = Suc (degree r)"
-    unfolding p_eq by (subst degree_mult_eq) (auto simp: q_def)
-  with assms(2) have "degree r > 0"
-    by auto
-  hence "\<not>is_unit r"
-    by auto
-  moreover have "\<not>is_unit q"
-    by (auto simp: q_def)
-  ultimately show ?thesis using p_eq
-    by (auto simp: irreducible_def)
-qed
 
 
 subsection \<open>A typeclass for algebraically closed fields\<close>

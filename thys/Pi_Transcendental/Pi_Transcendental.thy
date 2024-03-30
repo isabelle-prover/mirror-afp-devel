@@ -10,7 +10,6 @@ imports
   "E_Transcendental.E_Transcendental"
   "Symmetric_Polynomials.Symmetric_Polynomials"
   "HOL-Real_Asymp.Real_Asymp" 
-  Pi_Transcendental_Polynomial_Library
 begin
 
 lemma ring_homomorphism_to_poly [intro]: "ring_homomorphism (\<lambda>i. [:i:])"
@@ -66,7 +65,7 @@ next
     also have "\<dots> \<in> \<int>" by auto
     finally show ?thesis using mn by (auto simp: q_def)
   qed (auto simp: q_def coeff_eq_0)
-  with int_polyE obtain q' where q': "q = of_int_poly q'" by auto
+  with intpolyE obtain q' where q': "q = of_int_poly q'" by auto
   moreover have "p = Polynomial.smult (inverse (of_nat c)) (map_poly of_rat (of_int_poly q'))"
     unfolding smult_conv_map_poly q'[symmetric] p' using \<open>c \<noteq> 0\<close>
     by (intro poly_eqI) (auto simp: coeff_map_poly q_def of_rat_mult)
@@ -284,7 +283,7 @@ proof
     by (simp add: Polynomial.monom_altdef)
   have degree_Q': "Polynomial.degree P' = Polynomial.degree Q' + (A - 1)"
     by (subst Q')
-       (auto simp: Q'_def Roots'_def degree_mult_eq Polynomial.degree_monom_eq degree_prod_eq)
+       (auto simp: Q'_def Roots'_def degree_mult_eq Polynomial.degree_monom_eq degree_prod_sum_eq)
 
   have "\<forall>i. poly.coeff Q' i \<in> \<rat>"
   proof
@@ -303,7 +302,7 @@ proof
   have degree_Q: "Polynomial.degree Q = Polynomial.degree Q'"
     by (subst Q) auto
   have "Polynomial.lead_coeff (of_int_poly Q :: complex poly) = c"
-    by (subst Q') (simp_all add: degree_Q Q'_def lead_coeff_prod)
+    by (subst Q') (simp_all add: degree_Q Q'_def Polynomial.lead_coeff_prod)
   hence lead_coeff_Q: "Polynomial.lead_coeff Q = int c"
     using of_int_eq_iff[of "Polynomial.lead_coeff Q" "of_nat c"] by (auto simp del: of_int_eq_iff)  
   have Q_decompose: "of_int_poly Q =
@@ -313,7 +312,7 @@ proof
     using \<open>{idx} \<in> Roots'\<close> \<open>finite Roots'\<close> idx 
     by (force simp: root'_def Q_decompose poly_prod)
   have degree_Q: "Polynomial.degree (of_int_poly Q :: complex poly) = card Roots'"
-    by (subst Q') (auto simp: Q'_def degree_prod_eq)
+    by (subst Q') (auto simp: Q'_def degree_prod_sum_eq)
   have "poly (of_int_poly Q) (0 :: complex) \<noteq> 0"
     by (subst Q') (auto simp: Q'_def Roots'_def poly_prod)
   hence [simp]: "poly Q 0 \<noteq> 0" by simp
@@ -431,8 +430,9 @@ proof
           by (intro of_int_divide_in_Ints) auto
         also have "of_int x / (of_int (c ^ j * fact p) :: complex) =
                      poly.coeff fp' j / (of_nat c ^ j * of_nat p)" using \<open>p > 1\<close>
-          by (auto simp: fact_reduce[of p] fp'_def fp_def higher_pderiv_smult x_def field_simps
-                   simp flip: coeff_of_int_poly higher_pderiv_of_int_poly)
+          unfolding x_def fp'_def fp_def
+          by (simp add: fact_reduce[of p] field_simps hom_distribs higher_pderiv_smult
+                   flip: of_int_hom.coeff_map_poly_hom)
         finally show ?thesis .
       qed
 
@@ -452,7 +452,7 @@ proof
   
         have "(\<Prod>i<l. [:- (of_nat c * root' (roots' ! i)), 1:]) =
                 (\<Prod>Y\<leftarrow>roots'. [:- (of_nat c * root' Y), 1:])"
-          by (subst prod_list_prod_nth) (auto simp: atLeast0LessThan l_def)
+          by (subst prod.list_conv_set_nth) (auto simp: atLeast0LessThan l_def)
         also have "\<dots> = (\<Prod>Y\<in>Roots'. [:- (of_nat c * root' Y), 1:])"
           using roots' by (subst prod.distinct_set_conv_list [symmetric]) auto
         also have "\<dots> = (\<Prod>Y\<in>Roots'. Polynomial.smult (of_nat c) ([:-root' Y, 1:])) \<circ>\<^sub>p [:0, 1 / c:]"
@@ -516,8 +516,7 @@ proof
   
         have "(pderiv ^^ i) fp = Polynomial.smult (of_nat c ^ s / fact (p - 1))
                 (of_int_poly ((pderiv ^^ i) ([:0, 1:] ^ (p - 1) * Q ^ p)))"
-          by (simp add: fp_def higher_pderiv_smult Polynomial.monom_altdef
-                   flip: higher_pderiv_of_int_poly)
+          by (simp add: fp_def higher_pderiv_smult Polynomial.monom_altdef hom_distribs)
         also have "poly \<dots> 0 / of_nat p = of_int (c ^ s * k)"
           using k \<open>p > 1\<close> by (simp add: fact_reduce[of p])
         also have "\<dots> \<in> \<int>" by simp
@@ -634,6 +633,54 @@ proof
   ultimately show False
     by (auto simp: frequently_def eventually_inf_principal primes_at_top_def)
 qed
+
+lemma pcompose_conjugates_integer:
+  assumes "\<And>i. poly.coeff p i \<in> \<int>"
+  shows   "poly.coeff (pcompose p [:0, \<i>:] * pcompose p [:0, -\<i>:]) i \<in> \<int>"
+proof -
+  let ?c = "\<lambda>i. poly.coeff p i :: complex"
+  have "poly.coeff (pcompose p [:0, \<i>:] * pcompose p [:0, -\<i>:]) i =
+          \<i> ^ i * (\<Sum>k\<le>i. (-1) ^ (i - k) * ?c k * ?c (i - k))"
+    unfolding coeff_mult sum_distrib_left
+    by (intro sum.cong) (auto simp: coeff_mult coeff_pcompose_linear power_minus' 
+                                    power_diff field_simps intro!: Ints_sum)
+  also have "(\<Sum>k\<le>i. (-1) ^ (i - k) * ?c k * ?c (i - k)) =
+          (\<Sum>k\<le>i. (-1) ^ k * ?c k * ?c (i - k))" (is "?S1 = ?S2")
+    by (intro sum.reindex_bij_witness[of _ "\<lambda>k. i - k" "\<lambda>k. i - k"]) (auto simp: mult_ac)
+  hence "?S1 = (?S1 + ?S2) / 2" by simp
+  also have "\<dots> = (\<Sum>k\<le>i. ((-1) ^ k + (-1) ^ (i - k)) / 2 * ?c k * ?c (i - k))"
+    by (simp add: ring_distribs sum.distrib sum_divide_distrib [symmetric])
+  also have "\<dots> = (\<Sum>k\<le>i. (1 + (-1) ^ i) / 2 * (-1) ^ k * ?c k * ?c (i - k))"
+    by (intro sum.cong) (auto simp: power_add power_diff field_simps)
+  also have "\<i> ^ i * \<dots> \<in> \<int>"
+  proof (cases "even i")
+    case True
+    thus ?thesis
+      by (intro Ints_mult Ints_sum assms) (auto elim!: evenE simp: power_mult)
+  next
+    case False
+    hence "1 + (-1) ^ i = (0 :: complex)" by (auto elim!: oddE simp: power_mult)
+    thus ?thesis by simp
+  qed
+  finally show ?thesis .
+qed
+
+lemma algebraic_times_i:
+  assumes "algebraic x"
+  shows   "algebraic (\<i> * x)" "algebraic (-\<i> * x)"
+proof -
+  from assms obtain p where p: "poly p x = 0" "\<forall>i. poly.coeff p i \<in> \<int>" "p \<noteq> 0"
+    by (auto elim!: algebraicE)
+  define p' where "p' = pcompose p [:0, \<i>:] * pcompose p [:0, -\<i>:]"
+  have p': "poly p' (\<i> * x) = 0" "poly p' (-\<i> * x) = 0" "p' \<noteq> 0"
+    by (auto simp: p'_def poly_pcompose algebra_simps p pcompose_eq_0_iff dest: pcompose_eq_0)
+  moreover have "\<forall>i. poly.coeff p' i \<in> \<int>"
+    using p unfolding p'_def by (intro allI pcompose_conjugates_integer) auto
+  ultimately show "algebraic (\<i> * x)" "algebraic (-\<i> * x)" by (intro algebraicI[of p']; simp)+
+qed
+
+lemma algebraic_times_i_iff: "algebraic (\<i> * x) \<longleftrightarrow> algebraic x"
+  using algebraic_times_i[of x] algebraic_times_i[of "\<i> * x"] by auto
 
 theorem transcendental_pi: "\<not>algebraic pi"
   using transcendental_i_pi by (simp add: algebraic_times_i_iff)

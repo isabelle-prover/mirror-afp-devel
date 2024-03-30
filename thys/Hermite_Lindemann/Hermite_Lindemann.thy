@@ -254,7 +254,7 @@ proof
     proof -
       have "Polynomial.degree (f_poly \<alpha>) = p - 1 + (n - 1) * p"
         unfolding f_poly_altdef[OF that] using that \<open>l > 0\<close> \<open>finite Roots'\<close>
-        by (subst prod.If_eq) (auto simp: degree_prod_eq degree_power_eq degree_mult_eq n_altdef)
+        by (subst prod.If_eq) (auto simp: degree_prod_sum_eq degree_power_eq degree_mult_eq n_altdef)
       also have "p - 1 + (n - 1) * p = n * p - 1"
         using \<open>n > 0\<close> \<open>p > 1\<close> by (cases n) auto
       finally show ?thesis .
@@ -548,7 +548,7 @@ proof
           next
             case True
             hence "i \<le> n * p - 1" using \<open>l > 0\<close>
-              by (simp add: Q'_def degree_prod_eq Q_def degree_power_eq)
+              by (simp add: Q'_def degree_prod_sum_eq Q_def degree_power_eq)
             also have "n * p > 0"
               using \<open>n > 0\<close> \<open>p > 1\<close> by auto
             hence "n * p - 1 < n * p"
@@ -833,7 +833,7 @@ proof
         finally show ?thesis .
       qed
       hence "(\<Prod>q\<in>P. \<Prod>\<alpha>\<in>Roots q. J \<alpha>) \<in> \<rat>"
-        by (rule prod_in_Rats)
+        by (rule Rats_prod)
       also have "(\<Prod>q\<in>P. \<Prod>\<alpha>\<in>Roots q. J \<alpha>) = J'"
         unfolding Roots'_def J'_def using disjoint
         by (intro prod.UNION_disjoint [symmetric]) (auto simp: disjoint_family_on_def)
