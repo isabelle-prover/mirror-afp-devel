@@ -39,24 +39,11 @@ text \<open>
 (* TODO: A lot of this (if not all of it) should really be in the library *)
 subsection \<open>Auxiliary facts about polynomials\<close>
 
-lemma degree_higher_pderiv: "degree ((pderiv ^^ n) p) = degree p - n"
-  for p :: "'a::{comm_semiring_1,semiring_no_zero_divisors,semiring_char_0} poly"
-  by (induction n arbitrary: p) (auto simp: degree_pderiv)
-
-lemma pcompose_power_left: "pcompose (p ^ n) q = pcompose p q ^ n"
-  by (induction n) (auto simp: pcompose_mult pcompose_1)
-
-lemma pderiv_sum: "pderiv (\<Sum>x\<in>A. f x) = (\<Sum>x\<in>A. pderiv (f x))"
-  by (induction A rule: infinite_finite_induct) (auto simp: pderiv_add)
-
 lemma higher_pderiv_minus: "(pderiv ^^ n) (-p :: 'a :: idom poly) = -(pderiv ^^ n) p"
   by (induction n) (auto simp: pderiv_minus)
 
 lemma pderiv_power: "pderiv (p ^ n) = smult (of_nat n) (p ^ (n - 1)) * pderiv p"
   by (cases n) (simp_all add: pderiv_power_Suc del: power_Suc)
-
-lemma pderiv_monom: "pderiv (monom c n) = monom (of_nat n * c) (n - 1)"
-  by (simp add: monom_altdef pderiv_smult pderiv_power pderiv_pCons mult_ac)
 
 lemma higher_pderiv_monom:
   "k \<le> n \<Longrightarrow> (pderiv ^^ k) (monom c n) = monom (of_nat (pochhammer (n - k + 1) k) * c) (n - k)"
@@ -415,7 +402,7 @@ proof -
     by (simp add: higher_pderiv_mult)
   also have "\<dots> = (\<Sum>i\<le>k. smult (of_nat (k choose i))
                     ((pderiv ^^ i) (monom 1 n) * (pderiv ^^ (k - i)) (monom 1 n \<circ>\<^sub>p [:1, -1:])))"
-    by (simp add: monom_altdef pcompose_pCons pcompose_power_left)
+    by (simp add: monom_altdef hom_distribs)
   also have "\<dots> = (\<Sum>i\<le>k. smult ((-1) ^ (k - i) * of_nat (k choose i))
                    ((pderiv ^^ i) (monom 1 n) * ((pderiv ^^ (k - i)) (monom 1 n) \<circ>\<^sub>p [:1, -1:])))"
     by (simp add: * mult_ac)
@@ -425,7 +412,7 @@ proof -
     using assms by (simp add: higher_pderiv_monom)
   also have "\<dots> = (\<Sum>i\<le>k. smult ((-1) ^ (k - i) * of_nat (k choose i) * pochhammer (n - i + 1) i * pochhammer (n - k + i + 1) (k - i))
                    ([:0, 1:] ^ (n - i) * [:1, -1:] ^ (n - k + i)))"
-    by (simp add: monom_altdef algebra_simps pcompose_smult pcompose_power_left pcompose_pCons)
+    by (simp add: monom_altdef algebra_simps pcompose_smult hom_distribs)
   finally show ?thesis .
 qed
 
@@ -466,7 +453,7 @@ lemma Gen_Shleg_altdef:
   shows   "Gen_Shleg k x = (\<Sum>i\<le>k. (-1)^(k-i) * of_nat (k choose i) *
                             of_int (pochhammer (n-i+1) i * pochhammer (n-k+i+1) (k-i)) *
                             x ^ (n - i) * (1 - x) ^ (n-k+i))"
-  using assms by (simp add: Gen_Shleg_def gen_shleg_poly_altdef poly_sum mult_ac)
+  using assms by (simp add: Gen_Shleg_def gen_shleg_poly_altdef poly_sum mult_ac hom_distribs)
 
 lemma Gen_Shleg_0 [simp]: "k < n \<Longrightarrow> Gen_Shleg k 0 = 0"
   by (simp add: Gen_Shleg_altdef zero_power)
@@ -505,20 +492,20 @@ proof -
 qed
 
 lemma Shleg_altdef: "Shleg x = Gen_Shleg n x / fact n"
-  by (simp add: Shleg_def Gen_Shleg_def gen_shleg_poly_n)
+  by (simp add: Shleg_def Gen_Shleg_def gen_shleg_poly_n hom_distribs)
 
 lemma Shleg_0 [simp]: "Shleg 0 = 1" and Shleg_1 [simp]: "Shleg 1 = (-1) ^ n"
   by (simp_all add: Shleg_altdef)
 
 lemma Gen_Shleg_0_left: "Gen_Shleg 0 x = x ^ n * (1 - x) ^ n"
-  by (simp add: Gen_Shleg_def gen_shleg_poly_def power_mult_distrib)
+  by (simp add: Gen_Shleg_def gen_shleg_poly_def power_mult_distrib hom_distribs)
 
 lemma has_field_derivative_Gen_Shleg:
   "(Gen_Shleg k has_field_derivative Gen_Shleg (Suc k) x) (at x)"
 proof -
   note [derivative_intros] = poly_DERIV
   show ?thesis unfolding Gen_Shleg_def
-    by (rule derivative_eq_intros) auto
+    by (rule derivative_eq_intros refl)+ (auto simp: hom_distribs simp flip: of_int_hom.map_poly_pderiv)
 qed
 
 lemma continuous_on_Gen_Shleg: "continuous_on A (Gen_Shleg k)"
@@ -1270,7 +1257,7 @@ definition beukers_integral3 :: real where
 text \<open>
   We first prove the following bound
   (which is a consequence of the arithmetic--geometric mean inequality)
-  that will help us to bound the triple integral.
+  that will help us bound the triple integral.
 \<close>
 lemma beukers_integral3_integrand_bound:
   fixes x y z :: real
