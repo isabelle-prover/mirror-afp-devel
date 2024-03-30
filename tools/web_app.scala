@@ -39,17 +39,16 @@ object Web_App {
     def label(`for`: Params.Key, txt: String): XML.Elem =
       XML.Elem(Markup("label", List("for" -> `for`.print)), text(txt))
 
-    def option(k: String, v: String): XML.Elem =
-      XML.Elem(Markup("option", List("value" -> k)), text(v))
+    def option(k: String, v: String): XML.Elem = value(k)(XML.elem("option", text(v)))
 
     def optgroup(txt: String, opts: XML.Body): XML.Elem =
       XML.Elem(Markup("optgroup", List("label" -> txt)), opts)
 
     def select(i: Params.Key, opts: XML.Body): XML.Elem =
-      XML.Elem(Markup("select", List("id" -> i.print, "name" -> i.print)), opts)
+      id(i.print)(name(i.print)(XML.elem("select", opts)))
 
     def textarea(i: Params.Key, v: String): XML.Elem =
-      XML.Elem(Markup("textarea", List("id" -> i.print, "name" -> i.print, "value" -> v)), text(v + "\n"))
+      id(i.print)(name(i.print)(value(v)(XML.elem("textarea", text(v + "\n")))))
 
     def radio(i: Params.Key, v: Params.Key, values: List[(Params.Key, String)]): XML.Elem = {
       def to_option(k: Params.Key): XML.Elem = {
@@ -323,7 +322,7 @@ object Web_App {
     paths: Paths,
     port: Int = 0,
     verbose: Boolean = false,
-    progress: Progress = new Progress()
+    progress: Progress = new Progress(),
   ) {
     def render(model: A): XML.Body
     val error_model: A
