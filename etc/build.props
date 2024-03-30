@@ -15,8 +15,7 @@ sources = \
   tools/hugo.scala \
   tools/metadata.scala \
   tools/rake.scala \
-  tools/utils.scala \
-  tools/web_app.scala
+  tools/utils.scala
 resources = \
   tools/SmartStoplist.txt:SmartStoplist.txt
 services = \

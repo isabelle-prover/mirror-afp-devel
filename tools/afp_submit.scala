@@ -7,9 +7,9 @@ package afp
 
 import isabelle.*
 import isabelle.HTML.*
+import isabelle.Web_App.Params
+import isabelle.Web_App.More_HTML.*
 
-import afp.Web_App.Params
-import afp.Web_App.More_HTML.*
 import afp.Metadata.{Affiliation, Author, Authors, DOI, Email, Entry, Entries, Formatted, Homepage, License, Licenses, Orcid, Reference, Release, Releases, Topic, Topics, Unaffiliated}
 
 import java.text.Normalizer
