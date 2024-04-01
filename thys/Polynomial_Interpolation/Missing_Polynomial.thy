@@ -1247,7 +1247,7 @@ proof-
     assume b: "degree b = 0"
     with l b0 have "irreducible\<^sub>d a"
       unfolding irreducible\<^sub>d_def
-      by (smt add_cancel_left_right degree_mult_eq degree_mult_eq_0 neq0_conv semiring_normalization_rules(16))
+      by (smt (verit) add_cancel_left_right degree_mult_eq degree_mult_eq_0 neq0_conv semiring_normalization_rules(16))
     with b b0 show ?thesis by auto
   qed
 qed
