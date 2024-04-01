@@ -64,7 +64,7 @@ shows "S$$(0,0) dvd A $$ (i,j)"
 proof -
   have S00: "(\<forall>i j. i<m \<and> j<n \<longrightarrow> S$$(0,0) dvd S$$(i,j))"
     using SNF_S unfolding Smith_normal_form_mat_def isDiagonal_mat_def
-    by (smt P Q SNF_first_divides A S_PAQ SNF_S carrier_matD 
+    by (smt (verit) P Q SNF_first_divides A S_PAQ SNF_S carrier_matD 
         dvd_0_right min_less_iff_conj mult_carrier_mat)
     obtain P' where PP': "inverts_mat P P'" and P'P: "inverts_mat P' P"
       using inv_P unfolding invertible_mat_def by auto
@@ -74,8 +74,9 @@ proof -
     proof -
       have "P'*S*Q' = P'*(P*A*Q)*Q'" unfolding S_PAQ by auto
       also have "... = (P'*P)*A*(Q*Q')"
-        by (smt A PP' Q Q'Q P assoc_mult_mat carrier_mat_triv index_mult_mat(2) index_mult_mat(3) 
-            index_one_mat(3) inverts_mat_def right_mult_one_mat)
+        by (smt (verit, ccfv_threshold) A P'P PP' Q'Q assms(2) assms(3) assoc_mult_mat
+            carrier_matD(2) carrier_matI index_mult_mat(2) index_mult_mat(3)
+            inverts_mat_def one_carrier_mat)
       also have "... = A"
         by (metis A P'P QQ' A Q P carrier_matD(1) index_mult_mat(3) index_one_mat(3) inverts_mat_def
             left_mult_one_mat right_mult_one_mat)

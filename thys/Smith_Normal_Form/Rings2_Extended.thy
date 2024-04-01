@@ -136,7 +136,7 @@ lemma ideal_generated_UNIV_union:
 lemma ideal_explicit2:
   assumes "finite S"
   shows "ideal_generated S = {y. \<exists>f. (\<Sum>i\<in>S. f i * i) = y}"
-  by (smt Collect_cong assms ideal_explicit obtain_sum_ideal_generated mem_Collect_eq subsetI)
+  by (smt (verit) Collect_cong assms ideal_explicit obtain_sum_ideal_generated mem_Collect_eq subsetI)
 
 lemma ideal_generated_unit:
   assumes u: "u dvd 1"
@@ -209,7 +209,7 @@ next
         using sum_rw local.insert(1) local.insert(2) by auto
       also have "... = f x * x + (\<Sum>i\<in>(\<lambda>x. u*x)` S. g i * i)" using sum_rw2 by auto
       also have "... = ?g (u * x) * (u * x) + (\<Sum>i\<in>(\<lambda>x. u*x)` S. g i * i)"
-        using inv_u by (smt local.mult_1_right local.mult_ac(1))
+        using inv_u by (smt (verit) local.mult_1_right local.mult_ac(1))
       also have "... =  ?g (u * x) * (u * x) + sum ((\<lambda>i. g i * i) \<circ> (\<lambda>x. u*x)) S"
         using sum_rw4 by auto
       also have "... = ((\<lambda>i. ?g i * i) \<circ> (\<lambda>x. u*x)) x + sum ((\<lambda>i. g i * i) \<circ> (\<lambda>x. u*x)) S" by auto
@@ -218,7 +218,7 @@ next
       also have "... = sum ((\<lambda>i. ?g i * i) \<circ> (\<lambda>x. u*x)) (insert x S)"
         by (rule sum.insert[symmetric], auto simp add: insert)
       also have "... = (\<Sum>i\<in>insert (u * x) ((\<lambda>x. u*x)` S). ?g i * i)"
-        by (smt abel_semigroup.commute f2 image_insert inv_u mult.abel_semigroup_axioms mult_1_right
+        by (smt (verit) abel_semigroup.commute f2 image_insert inv_u mult.abel_semigroup_axioms mult_1_right
             semiring_normalization_rules(18) sum.reindex_nontrivial)
       also have "... = (\<Sum>i\<in>(\<lambda>x. u*x)` (insert x S). ?g i * i)" by auto
       finally show ?thesis by auto
@@ -290,7 +290,7 @@ lemma ideal_generated_pair_exists_pq1:
   assumes i: "ideal_generated {a,b} = (UNIV::'a set)"
   shows "\<exists>p q. p*a + q*b = 1"
   using i unfolding ideal_generated_pair
-  by (smt iso_tuple_UNIV_I mem_Collect_eq)
+  by (smt (verit) iso_tuple_UNIV_I mem_Collect_eq)
 
 lemma ideal_generated_pair_UNIV:
   assumes sa_tb_u: "s*a+t*b = u" and u: "u dvd 1"

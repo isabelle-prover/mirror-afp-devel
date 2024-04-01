@@ -255,12 +255,11 @@ proof (induct "(P,A,Q)" arbitrary: P A Q rule: diagonalize_2x2_aux.induct)
           hence a0: "a = 0" and b1: "b = 1" by auto
           have "(?P' ** A ** ?Q') $h a $h b = (?P' ** (A ** ?Q')) $h a $h b" 
             by (simp add: matrix_mul_assoc)
-          also have "... = (A**?Q') $h a $h b" unfolding row_add_mat_1
-            by (smt True a_not_b prod.sel(2) row_add_def vec_lambda_beta)
+          also have "... = (A**?Q') $h a $h b" 
+            by (simp add: row_add_mat_1 a0 row_add_code row_add_code_nth)
           also have "... = 0" unfolding column_add_mat_1 a0 b1
-            by (smt Groups.mult_ac(2) a_dvd_b ab_group_add_class.ab_left_minus add_0_left
-                add_diff_cancel_left' add_uminus_conv_diff column_add_code_nth column_add_row_def
-                comm_semiring_class.distrib dvd_div_mult_self vec_lambda_beta)
+            by (smt (verit, ccfv_threshold) a_dvd_b column_add_code column_add_code_nth
+                dvd_mult_div_cancel more_arith_simps(4) more_arith_simps(8))
           finally show ?thesis .
         next
           case False
@@ -468,7 +467,8 @@ proof -
     also have "... = P2 * (P1 * (A * Q))" unfolding rw2 by simp
     also have "... = P2 * P1 * (A * Q)" by (rule assoc_mult_mat[symmetric], insert 1 2 A Q, auto)
     also have "... = P*(A*Q)" unfolding P by simp
-    also have "... = P*A*Q" by (rule assoc_mult_mat[symmetric], insert 1 2 A Q P, auto)
+    also have "... = P*A*Q"
+      by (smt (verit, ccfv_SIG) "1" "2" A P assoc_mult_mat dim_Q mult_carrier_mat)
     finally show "S = P * A * Q" using 1 2 S by auto
   qed (insert 1 2 P Q A S, auto)
 qed
@@ -514,7 +514,7 @@ next
     have "invertible Q" unfolding Q
       by (rule invertible_bezout_matrix_transpose[OF ib zero_less_one_type2], insert True, auto)
     moreover have "S $h 0 $h 1 = 0"
-      by (smt Finite_Cartesian_Product.transpose_transpose S True bezout_matrix_works2 ib 
+      by (smt (verit) Finite_Cartesian_Product.transpose_transpose S True bezout_matrix_works2 ib 
           matrix_transpose_mul rel_simps(92) transpose_code transpose_row_code)
     moreover have "S = A**Q" unfolding S Q by simp
     ultimately show ?thesis by simp
@@ -653,7 +653,7 @@ proof -
           using sum_two_elements by auto
         also have "... =  ?a*u + ?b * v" unfolding Q01 Q11 using i index_row(1) j A by auto          
         also have "... = 0" unfolding u v
-          by (smt Groups.mult_ac(2) Groups.mult_ac(3) add.right_inverse add_uminus_conv_diff da db 
+          by (smt (verit) Groups.mult_ac(2) Groups.mult_ac(3) add.right_inverse add_uminus_conv_diff da db 
               diff_minus_eq_add dvd_div_mult_self dvd_neg_div minus_mult_left)
         finally show ?thesis .
       qed

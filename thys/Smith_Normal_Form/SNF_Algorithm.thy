@@ -48,9 +48,10 @@ proof -
   proof (rule is_SNF_intro)
     show "invertible_mat (P $$ (0, 0) \<cdot>\<^sub>m Q)"
       by (rule invertible_mat_smult_mat, insert P00_dvd_1 assms, auto simp add: is_SNF_def)
-    show "S = 1\<^sub>m 1 * A * (P $$ (0, 0) \<cdot>\<^sub>m Q)" 
-      by (smt A PSQ is_SNF carrier_matD(2) index_mult_mat(2) index_one_mat(2) left_mult_one_mat
-          mult_smult_assoc_mat mult_smult_distrib smult_mat_mat_one_element is_SNF_def split_conv)      
+    show "S = 1\<^sub>m 1 * A * (P $$ (0, 0) \<cdot>\<^sub>m Q)"
+      by (smt (verit, ccfv_threshold) A PSQ is_SNF assoc_mult_mat carrier_matD(1) carrier_matD(2)
+          case_prodE is_SNF_def left_mult_one_mat mult_carrier_mat mult_smult_distrib prod.simps(1)
+          smult_mat_mat_one_element)
   qed (insert assms, auto simp add: is_SNF_def)
   thus ?thesis by auto
 qed
@@ -60,7 +61,8 @@ lemma Smith_1xn_two_matrices_all:
   shows "\<exists>Smith_1xn'. \<forall>(A::'a::comm_ring_1 mat) \<in> carrier_mat 1 n. is_SNF A (1\<^sub>m 1, (Smith_1xn' A))"
 proof -
   let ?Smith_1xn' = "\<lambda>A. let (P,S,Q) = (Smith_1xn A) in (S, P $$ (0, 0) \<cdot>\<^sub>m Q)"
-  show ?thesis by (rule exI[of _ ?Smith_1xn']) (smt Smith_1xn_two_matrices assms carrier_matD 
+  show ?thesis
+    by (rule exI[of _ ?Smith_1xn']) (smt (verit, ccfv_threshold) Smith_1xn_two_matrices assms carrier_matD
         carrier_matI case_prodE determinant_one_element index_smult_mat(2,3) invertible_iff_is_unit_JNF
         invertible_mat_smult_mat smult_mat_mat_one_element left_mult_one_mat is_SNF_def 
         mult_smult_assoc_mat mult_smult_distrib prod.simps(2))
@@ -242,7 +244,7 @@ next
     have "Matrix.row ?lhs j $v ia = ?lhs $$ (j,ia)"
       by (metis (no_types, lifting) Matrix.row_def ia index_mat_addrow(5) index_row(2) index_vec)
     also have "... = (-?k) * ?L$$(0,ia) + ?L$$(j,ia)"      
-      by (smt "2.prems"(1) "2.prems"(9) carrier_matD(1) ia index_mat_addrow(1,5) index_row(2) 
+      by (smt (verit) "2.prems"(1) "2.prems"(9) carrier_matD(1) ia index_mat_addrow(1,5) index_row(2) 
           insert_iff list.set(2) mult_carrier_mat rw that xa_P_init)
     also have "... = ?rhs $$ (j,ia)" using "2"(10) "2"(4) i1 i3 ia j by auto
     also have "... = Matrix.row ?rhs j $v ia" using 2 ia j by auto
@@ -460,7 +462,7 @@ proof -
         using \<open>Suc i < n - 1\<close> by linarith
     qed
     also have "... = 0" unfolding make_mat_def index_mat[OF insert_Sucin insert_k_Sucj]
-      using False ji by (auto, smt insert_index_def less_SucI nat.inject nat_neq_iff)
+      using False ji by (simp add: insert_index_def)
     finally show ?thesis .    
   qed  
   finally have "mat_delete ?MD (k - 1) 0 $$ (i, j) = 0" .
@@ -581,7 +583,7 @@ proof -
   also have "... = ?MD $$ (k-1, k-1) * (\<Prod>i \<in> {0..<dim_row ?MD} - {k-1}. ?MD $$ (i, i))"
     by (metis (no_types, lifting) Diff_iff finite_atLeastLessThan finite_insert prod.insert set_rw singletonI)
   also have "... = B$$(1,1)"
-    by (smt "1" "2" DiffD1 DiffD2 Groups.mult_ac(2) MD_rows add_diff_cancel_left' add_diff_inverse_nat 
+    by (smt (verit) "1" "2" DiffD1 DiffD2 Groups.mult_ac(2) MD_rows add_diff_cancel_left' add_diff_inverse_nat 
         k0 atLeastLessThan_iff class_cring.finprod_all1 insertI1 less_one more_arith_simps(5) 
         plus_1_eq_Suc set_rw)
   finally show ?thesis .
@@ -733,7 +735,7 @@ proof -
   also have "... = Matrix.row ?A 0 $v 0 * col ?Q 1 $v 0 + Matrix.row ?A 0 $v 1 * col ?Q 1 $v 1"
     using sum_two_elements by auto
   also have "... = A $$ (0,0) * ?Q $$ (0,1) + A $$ (0,Suc i) * ?Q $$ (1,1)"    
-    by (smt One_nat_def Q carrier_matD(1) carrier_matD(2) dim_col_mat(1) dim_row_mat(1) index_col 
+    by (smt (verit) One_nat_def Q carrier_matD(1) carrier_matD(2) dim_col_mat(1) dim_row_mat(1) index_col 
         index_mat(1) index_row(1) lessI numeral_2_eq_2 pos2 prod.simps(2) rel_simps(93))
   finally have "?S $$(0,1) = A $$ (0,0) * ?Q $$ (0,1) + A $$ (0,Suc i) * ?Q $$ (1,1)" by simp
   moreover have "?S $$(0,1) = 0" using SNF_S unfolding Smith_normal_form_mat_def isDiagonal_mat_def
@@ -775,7 +777,7 @@ next
   let ?Q_step_1x2 = "snd (Smith_1x2 ?A_step_1x2)"
   let ?Q_step = "make_mat (dim_col A) (Suc i) ?Q_step_1x2"
   have rw: "A * (Q * ?Q_step) = A * Q * ?Q_step"
-    by (smt A Q assoc_mult_mat carrier_matD(2) make_mat_carrier)  
+    by (smt (verit) A Q assoc_mult_mat carrier_matD(2) make_mat_carrier)  
   have Smith_rw: "Smith_1xn_aux (Suc i) A (S, Q) = Smith_1xn_aux i A (S * ?Q_step, Q * ?Q_step)"
     by (auto, metis (no_types, lifting) old.prod.exhaust snd_conv split_conv)
   show ?case 
@@ -842,7 +844,7 @@ next
   let ?Q_step_1x2 = "snd (Smith_1x2 ?A_step_1x2)"
   let ?Q_step = "make_mat (dim_col A) (Suc i) ?Q_step_1x2"
   have rw: "A * (Q * ?Q_step) = A * Q * ?Q_step"
-    by (smt "2.prems" assoc_mult_mat carrier_matD(2) make_mat_carrier)  
+    by (smt (verit) "2.prems" assoc_mult_mat carrier_matD(2) make_mat_carrier)  
    have Smith_rw: "Smith_1xn_aux (Suc i) A (S, Q) = Smith_1xn_aux i A (S * ?Q_step, Q * ?Q_step)"
     by (auto, metis (no_types, lifting) old.prod.exhaust snd_conv split_conv)
   show ?case 
@@ -853,7 +855,7 @@ next
     show "(S', Q') = Smith_1xn_aux i A (S * ?Q_step, Q * ?Q_step)" using "2.prems" Smith_rw by auto
     show " S * ?Q_step = A * (Q * ?Q_step)" using "2.prems" rw by auto
     show "S * ?Q_step \<in> carrier_mat 1 n"
-      using "2.prems" by (smt carrier_matD(2) make_mat_carrier mult_carrier_mat)
+      using "2.prems" by (smt (verit) carrier_matD(2) make_mat_carrier mult_carrier_mat)
   qed (auto)
 qed
 
@@ -876,7 +878,7 @@ next
   let ?Q_step = "make_mat (dim_col A) (Suc i) ?Q_step_1x2"
   have i_less_n: "i<n" by (simp add: "2"(6) Suc_lessD)
   have rw: "A * (Q * ?Q_step) = A * Q * ?Q_step"
-    by (smt "2.prems" assoc_mult_mat carrier_matD(2) make_mat_carrier)  
+    by (smt (verit) "2.prems" assoc_mult_mat carrier_matD(2) make_mat_carrier)  
    have Smith_rw: "Smith_1xn_aux (Suc i) A (S, Q) = Smith_1xn_aux i A (S * ?Q_step, Q * ?Q_step)"
      by (auto, metis (no_types, lifting) old.prod.exhaust snd_conv split_conv)
    have S'_AQ': "S' = A*Q'"
@@ -889,7 +891,7 @@ next
     show "(S', Q') = Smith_1xn_aux i A (S * ?Q_step, Q * ?Q_step)" using "2.prems" Smith_rw by auto
     show "S * ?Q_step = A * (Q * ?Q_step)" using "2.prems" rw by auto
     show "S * ?Q_step \<in> carrier_mat 1 n"      
-      using "2.prems" by (smt carrier_matD(2) make_mat_carrier mult_carrier_mat)  
+      using "2.prems" by (smt (verit) carrier_matD(2) make_mat_carrier mult_carrier_mat)  
     show "\<forall>j\<in>{i + 1..<n}. (S * ?Q_step) $$ (0, j) = 0"
     proof (rule ballI)
       fix j assume j: "j\<in>{i + 1..<n}" 
@@ -1168,15 +1170,15 @@ proof (induct A arbitrary: n rule: Smith_2xn.induct)
     show P2_P1: "P2 * P1 \<in> carrier_mat (dim_row A) (dim_row A)" by (rule mult_carrier_mat[OF P2 P1])
     show "invertible_mat (P2 * P1)" by (rule invertible_mult_JNF[OF P2 P1 inv_P2 inv_P1])
     have Q1': "Q1' \<in> carrier_mat (dim_col A) (dim_col A)" using Q1 unfolding Q1'_def
-      by (auto, smt A2 One_nat_def add_diff_inverse_nat carrier_matD(1) carrier_matD(2) carrier_matI 
+      by (auto, smt (verit) A2 One_nat_def add_diff_inverse_nat carrier_matD(1) carrier_matD(2) carrier_matI 
           dim_col_A_g2 gr_implies_not0 index_mat_four_block(2) index_mat_four_block(3) 
           index_one_mat(2) index_one_mat(3) less_Suc0)
     have Q2': "Q2' \<in> carrier_mat (dim_col A) (dim_col A)" using Q2 unfolding Q2'_def
-      by (smt D One_nat_def Suc_lessD add_diff_inverse_nat carrier_matD(1) carrier_matD(2) 
+      by (smt (verit) D One_nat_def Suc_lessD add_diff_inverse_nat carrier_matD(1) carrier_matD(2) 
           carrier_matI dim_col_A_g2 gr_implies_not0 index_mat_four_block(2) index_mat_four_block(3)
           index_one_mat(2) index_one_mat(3) less_2_cases numeral_2_eq_2 semiring_norm(138))
    have H2[simp]: "H2 \<in> carrier_mat (dim_row A) (dim_col A)" using A P2 D unfolding H2_def H_def
-     by (smt E_def Q2 Q2' Q2'_def append_cols_def arithmetic_simps(50) carrier_matD(1) carrier_matD(2) 
+     by (smt (verit) E_def Q2 Q2' Q2'_def append_cols_def arithmetic_simps(50) carrier_matD(1) carrier_matD(2) 
          carrier_mat_triv index_mat_addcol(4) index_mat_addcol(5) index_mat_four_block(2) 
          index_mat_four_block(3) index_mult_mat(2) index_mult_mat(3) index_one_mat(2) index_zero_mat(2) 
          index_zero_mat(3) length_map length_upt mat_of_cols_carrier(3))
@@ -1272,7 +1274,7 @@ proof (induct A arbitrary: n rule: Smith_2xn.induct)
        have "mat_of_cols (dim_row A) [col C 0, col C 1] $$ (i, j) = ?ws ! j $v i"
          by (rule mat_of_cols_index, insert i j, auto)       
        also have "... = C $$ (i, j)" using j index_col 
-         by (auto, smt A C_P1_A_Q1' P1 Q1' Suc_lessD carrier_matD i index_col index_mult_mat(2,3) 
+         by (auto, smt (verit) A C_P1_A_Q1' P1 Q1' Suc_lessD carrier_matD i index_col index_mult_mat(2,3) 
              less_2_cases n_ge_2 nth_Cons_0 nth_Cons_Suc numeral_2_eq_2)
        finally show ?thesis by simp
      qed
@@ -1296,7 +1298,7 @@ proof (induct A arbitrary: n rule: Smith_2xn.induct)
    qed
    have E[simp]: "E\<in>carrier_mat 2 (n-2)" unfolding E_def using A by auto 
    have H[simp]: "H \<in> carrier_mat (dim_row A) (dim_col A)" unfolding H_def append_cols_def using A
-     by (smt E Groups.add_ac(1) One_nat_def P2_P1 Q2 Q2' Q2'_def carrier_matD index_mat_four_block
+     by (smt (verit) E Groups.add_ac(1) One_nat_def P2_P1 Q2 Q2' Q2'_def carrier_matD index_mat_four_block
           plus_1_eq_Suc index_mult_mat index_one_mat index_zero_mat numeral_2_eq_2 carrier_matI)
    have H_P2_P1_A_Q1'_Q2': "H = P2 * P1 * A * Q1' * Q2'"
    proof -
@@ -1308,7 +1310,7 @@ proof (induct A arbitrary: n rule: Smith_2xn.induct)
      also have "... = (P2 * (D @\<^sub>c E)) * Q2'" using aux by auto
      also have "... = P2 * C * Q2'" unfolding C_D_E by auto
      also have "... = P2 * P1 * A * Q1' * Q2'" unfolding C_P1_A_Q1'
-       by (smt P1 P2 Q1' P2_P1 assoc_mult_mat carrier_mat_triv index_mult_mat(2))
+       by (smt (verit, ccfv_threshold) P1 P2 Q1' assoc_mult_mat carrier_mat_triv mult_carrier_mat)
      finally show ?thesis .
    qed
    have H2_H_Q_div_k: "H2 = H * Q_div_k" unfolding H2_def Q_div_k_def
@@ -1329,14 +1331,14 @@ proof (induct A arbitrary: n rule: Smith_2xn.induct)
    have H2_UR_00: "H2_UR $$ (0,0) = 0"
    proof -
      have "H2_UR $$ (0,0) = H2 $$ (0,1)"
-       by (smt A H2_H_Q_div_k H2_UL H2_as_four_block_mat H2_def H_P2_P1_A_Q1'_Q2' 
+       by (smt (verit) A H2_H_Q_div_k H2_UL H2_as_four_block_mat H2_def H_P2_P1_A_Q1'_Q2' 
            Num.numeral_nat(7) P2_P1 Q2' add_diff_cancel_left' carrier_matD dim_col_A_g2 index_mat_addcol
            index_mat_four_block index_mult_mat less_trans_Suc plus_1_eq_Suc pos2 semiring_norm(138) 
            zero_less_one_class.zero_less_one)
      also have "... = H $$ (0,1)"
        unfolding H2_def by (rule index_mat_addcol, insert H A n_ge_2, auto) 
      also have "... = (P2 * D * Q2) $$ (0,1)"
-       by (smt C_D_E C_P1_A_Q1' D H2_H_Q_div_k H2_UL H2_as_four_block_mat H_P2_P1_A_Q1'_Q2' H_def Q1' 
+       by (smt (verit) C_D_E C_P1_A_Q1' D H2_H_Q_div_k H2_UL H2_as_four_block_mat H_P2_P1_A_Q1'_Q2' H_def Q1' 
            Q2 add_lessD1 append_cols_def carrier_matD(1) carrier_matD(2) dim_col_A_g2 
            index_mat_four_block index_mult_mat(2) index_mult_mat(3) lessI numerals(2) plus_1_eq_Suc zero_less_Suc)
      also have "... = 0" using is_SNF_D P2D2Q2 D 
@@ -1371,7 +1373,7 @@ proof (induct A arbitrary: n rule: Smith_2xn.induct)
   have H00_dvd_D01: "H$$(0,0) dvd D$$(0,1)"
   proof -
     have "H$$(0,0) = (P2*D*Q2) $$ (0,0)" unfolding H_def using append_cols_nth D E
-      by (smt A C_D_E C_P1_A_Q1' D H2_DR H2_H_Q_div_k H2_UL H2_as_four_block_mat H_P2_P1_A_Q1'_Q2' 
+      by (smt (verit, ccfv_SIG) A C_D_E C_P1_A_Q1' D H2_DR H2_H_Q_div_k H2_UL H2_as_four_block_mat H_P2_P1_A_Q1'_Q2' 
           One_nat_def P1 Q1' Q2 Suc_lessD append_cols_def carrier_matD dim_col_A_g2 
           index_mat_four_block index_mult_mat numerals(2) plus_1_eq_Suc zero_less_Suc)
     also have "... dvd D$$(0,1)" by (rule S00_dvd_all_A[OF D _ _ inv_P2 inv_Q2],
@@ -1381,36 +1383,36 @@ proof (induct A arbitrary: n rule: Smith_2xn.induct)
   have D01_dvd_H02: "D$$(0,1) dvd H$$(0,2)" and D01_dvd_H12: "D$$(0,1) dvd H$$(1,2)"
   proof -
     have "D$$(0,1) = C$$(0,1)" unfolding C_D_E
-      by (smt A C_D_E C_P1_A_Q1' D One_nat_def P1 Q1' append_cols_def carrier_matD(1) carrier_matD(2) 
+      by (smt (verit) A C_D_E C_P1_A_Q1' D One_nat_def P1 Q1' append_cols_def carrier_matD(1) carrier_matD(2) 
           dim_col_A_g2 index_mat_four_block(1) index_mat_four_block(2) index_mat_four_block(3) 
           index_mult_mat(2) index_mult_mat(3) lessI less_trans_Suc numerals(2) pos2)
       also have "... = (P1*A2*Q1) $$ (0,0)" using C_def
-        by (smt "1"(2) A1 A_A1_A2 P1 Q1 add_diff_cancel_left' append_cols_def card_num_simps(30) 
+        by (smt (verit) "1"(2) A1 A_A1_A2 P1 Q1 add_diff_cancel_left' append_cols_def card_num_simps(30) 
             carrier_matD dim_col_A_g2 index_mat_four_block index_mult_mat less_numeral_extra(4) 
             less_trans_Suc plus_1_eq_Suc pos2)
       also have "... dvd (P1*A2*Q1) $$ (1,1)"
-        by (smt "1"(2) A2 One_nat_def P1 Q1 S00_dvd_all_A SNF_P1A2Q1 carrier_matD(1) carrier_matD(2) dim_col_A_g2 
+        by (smt (verit) "1"(2) A2 One_nat_def P1 Q1 S00_dvd_all_A SNF_P1A2Q1 carrier_matD(1) carrier_matD(2) dim_col_A_g2 
             dvd_elements_mult_matrix_left_right inv_P1 inv_Q1 lessI less_diff_conv numeral_2_eq_2 plus_1_eq_Suc)
       also have "... = C $$ (1,2)" unfolding C_def
-        by (smt "1"(2) A1 A_A1_A2 One_nat_def P1 Q1 append_cols_def carrier_matD(1) carrier_matD(2) diff_Suc_1 
+        by (smt (verit) "1"(2) A1 A_A1_A2 One_nat_def P1 Q1 append_cols_def carrier_matD(1) carrier_matD(2) diff_Suc_1 
             dim_col_A_g2 index_mat_four_block index_mult_mat lessI not_numeral_less_one numeral_2_eq_2)
       also have "... = E $$ (1,0)" unfolding C_D_E
-        by (smt "1"(3) A C_D_E C_P1_A_Q1' D One_nat_def append_cols_def carrier_matD less_irrefl_nat
+        by (smt (verit) "1"(3) A C_D_E C_P1_A_Q1' D One_nat_def append_cols_def carrier_matD less_irrefl_nat
             P1 Q1' diff_Suc_1 diff_Suc_Suc index_mat_four_block index_mult_mat lessI  numerals(2))
       finally have *: "D$$(0,1) dvd E $$(1,0)" by auto
       also have "... dvd (P2*E)$$ (0,0)" 
-        by (smt "1"(3) A E E_ij_0 P2 carrier_matD(1) carrier_matD(2) dvd_0_right 
+        by (smt (verit) "1"(3) A E E_ij_0 P2 carrier_matD(1) carrier_matD(2) dvd_0_right 
             dvd_elements_mult_matrix_left dvd_refl pos2 zero_less_diff) 
       also have "... = H$$(0,2)" unfolding H_def
-        by (smt "1"(3) A C_D_E C_P1_A_Q1' D Groups.add_ac(1) H2_DR H2_H_Q_div_k H2_UL H2_as_four_block_mat 
+        by (smt (verit) "1"(3) A C_D_E C_P1_A_Q1' D Groups.add_ac(1) H2_DR H2_H_Q_div_k H2_UL H2_as_four_block_mat 
             H_P2_P1_A_Q1'_Q2' One_nat_def P1 Q1' Q2 add_diff_cancel_left' append_cols_def carrier_matD
              index_mat_four_block index_mult_mat less_irrefl_nat numerals(2) plus_1_eq_Suc pos2)
       finally show "D $$ (0, 1) dvd H $$ (0, 2)" .
       have "E $$(1,0) dvd (P2*E)$$ (1,0)"
-        by (smt "1"(3) A E E_ij_0 P2 carrier_matD(1) carrier_matD(2) dvd_0_right 
+        by (smt (verit) "1"(3) A E E_ij_0 P2 carrier_matD(1) carrier_matD(2) dvd_0_right 
             dvd_elements_mult_matrix_left dvd_refl rel_simps(49) semiring_norm(76) zero_less_diff)
       also have "... = H $$(1,2)" unfolding H_def
-        by (smt A C_D_E C_P1_A_Q1' D H2_DR H2_H_Q_div_k H2_UL H2_as_four_block_mat H_P2_P1_A_Q1'_Q2' 
+        by (smt (verit) A C_D_E C_P1_A_Q1' D H2_DR H2_H_Q_div_k H2_UL H2_as_four_block_mat H_P2_P1_A_Q1'_Q2' 
             One_nat_def P1 Q1' Q2 add_diff_cancel_left' append_cols_def carrier_matD diff_Suc_eq_diff_pred 
             index_mat_four_block index_mult_mat lessI less_irrefl_nat n_ge_2 numerals(2) plus_1_eq_Suc)
       finally show "D$$(0,1) dvd H$$(1,2)" using * by auto
@@ -1442,7 +1444,7 @@ proof (induct A arbitrary: n rule: Smith_2xn.induct)
    have H2_DL_H_10: "H2_DL $$ (0,0) = H$$(1,0)"
    proof -
      have "H2_DL $$ (0,0) = H2 $$ (1,0)"
-       by (smt H2_DL One_nat_def Pair_inject add.right_neutral add_Suc_right carrier_matD(1) 
+       by (smt (verit, ccfv_threshold) H2_DL One_nat_def Pair_inject add.right_neutral add_Suc_right carrier_matD(1) 
            dim_row_mat(1) index_mat(1) rel_simps(68) split_H2 split_block_def split_conv)
      also have "... = H$$(1,0)" unfolding H2_def by (rule index_mat_addcol, insert H A n_ge_2, auto) 
      finally show ?thesis .
@@ -1450,7 +1452,7 @@ proof (induct A arbitrary: n rule: Smith_2xn.induct)
    have H_10: "H $$(1,0) = 0"
    proof -
      have "H $$(1,0) = (P2 * D * Q2) $$ (1,0)" unfolding H_def
-       by (smt A C_D_E C_P1_A_Q1' D E One_nat_def P1 P2_P1 Q2 Q2' Q2'_def Suc_lessD append_cols_def 
+       by (smt (verit) A C_D_E C_P1_A_Q1' D E One_nat_def P1 P2_P1 Q2 Q2' Q2'_def Suc_lessD append_cols_def 
            carrier_matD dim_col_A_g2 index_mat_four_block index_mult_mat index_one_mat 
            index_zero_mat lessI numerals(2))
      also have "... = 0" using is_SNF_D P2D2Q2 D 
@@ -1480,7 +1482,7 @@ proof (induct A arbitrary: n rule: Smith_2xn.induct)
        using * by auto
    qed
    thus "S = P2 * P1 * A * (Q1' * Q2' * Q_div_k * Q3')" unfolding H2_P2_P1_A_Q1'_Q2'_Q_div_k     
-     by (smt Q1' Q2' Q2'_def Q3' Q3'_def Q_div_k assoc_mult_mat 
+     by (smt (verit, ccfv_threshold) Q1' Q2' Q2'_def Q3' Q3'_def Q_div_k assoc_mult_mat 
          carrier_matD carrier_mat_triv index_mult_mat)
    show "Smith_normal_form_mat S"
    proof (rule Smith_normal_form_mat_intro)
@@ -1498,7 +1500,7 @@ proof (induct A arbitrary: n rule: Smith_2xn.induct)
           case True
           hence j0: "j>0" using ij by auto
           then show ?thesis using S_as_four_block_mat
-            by (smt "1"(2) H2_DR H2_H_Q_div_k H2_UL H_P2_P1_A_Q1'_Q2' Num.numeral_nat(7) P2_P1 Q3 S_H2_Q3'
+            by (smt (verit) "1"(2) H2_DR H2_H_Q_div_k H2_UL H_P2_P1_A_Q1'_Q2' Num.numeral_nat(7) P2_P1 Q3 S_H2_Q3'
                 Suc_pred True carrier_matD index_mat_four_block index_mult_mat index_zero_mat(1)
                 not_less_eq plus_1_eq_Suc pos2 that(3) zero_less_one_class.zero_less_one)
         next
@@ -1546,14 +1548,14 @@ proof (induct A arbitrary: n rule: Smith_2xn.induct)
             proof - 
               have "H2_UL $$ (0, 0) = H $$ (0, 0)" by (simp add: H2_UL_H)
               also have "... = (P2*D*Q2) $$ (0,0)" unfolding H_def using append_cols_nth D E
-                by (smt A C_D_E C_P1_A_Q1' D H2_DR H2_H_Q_div_k H2_UL H2_as_four_block_mat 
+                by (smt (verit, ccfv_threshold) A C_D_E C_P1_A_Q1' D H2_DR H2_H_Q_div_k H2_UL H2_as_four_block_mat 
                     H_P2_P1_A_Q1'_Q2' One_nat_def P1 Q1' Q2 Suc_lessD append_cols_def carrier_matD 
                     dim_col_A_g2 index_mat_four_block index_mult_mat numerals(2) plus_1_eq_Suc zero_less_Suc)
               also have "... dvd (P2*D*Q2) $$ (1,1)" 
                 using is_SNF_D P2D2Q2 unfolding is_SNF_def Smith_normal_form_mat_def by auto 
                 (metis D Q2 carrier_matD index_mult_mat(1) index_mult_mat(2) lessI numerals(2) pos2)
               also have "... = H $$ (1,1)" unfolding H_def using append_cols_nth D E
-                by (smt A C_D_E C_P1_A_Q1' H2_DR H2_H_Q_div_k H2_UL H2_as_four_block_mat H_P2_P1_A_Q1'_Q2' 
+                by (smt (verit, ccfv_threshold) A C_D_E C_P1_A_Q1' H2_DR H2_H_Q_div_k H2_UL H2_as_four_block_mat H_P2_P1_A_Q1'_Q2' 
                     One_nat_def P1 Q1' Q2 append_cols_def carrier_matD(1) carrier_matD(2) dim_col_A_g2 
                     index_mat_four_block index_mult_mat(2) index_mult_mat(3) lessI less_trans_Suc 
                     numerals(2) plus_1_eq_Suc pos2)
@@ -1593,7 +1595,7 @@ proof (induct A arbitrary: n rule: Smith_2xn.induct)
                     + Matrix.row P2 1 $v 1 * col E (j - 2) $v 1" 
                 by (simp add: sum_two_elements[OF zero_neq_one])
               also have "... = 0" using E_ij_0 E_def E A
-                by (auto, smt D Q2 Q2' Q2'_def Suc_lessD add_cancel_right_right add_diff_inverse_nat 
+                by (auto, smt (verit) D Q2 Q2' Q2'_def Suc_lessD add_cancel_right_right add_diff_inverse_nat 
                     arith_extra_simps(19) carrier_matD i i1 index_col index_mat_four_block(3) 
                     index_one_mat(3) less_2_cases nat_add_left_cancel_less numeral_2_eq_2 
                     semiring_norm(138) semiring_norm(160) j j1 zero_less_diff)                
@@ -1652,7 +1654,7 @@ proof -
       using is_SNF_PSQ invertible_mat_transpose unfolding is_SNF_def by auto
     thus "Smith_normal_form_mat S\<^sup>T" unfolding Smith_normal_form_mat_def isDiagonal_mat_def by auto
     show "S\<^sup>T = Q\<^sup>T * A * P\<^sup>T" using PATQ
-      by (smt Matrix.transpose_mult Matrix.transpose_transpose Pt Qt assoc_mult_mat
+      by (smt (verit, ccfv_threshold) Matrix.transpose_mult Matrix.transpose_transpose Pt Qt assoc_mult_mat
           carrier_mat_triv index_mult_mat(2))
   qed
 qed
@@ -1723,7 +1725,7 @@ next
     have "Smith_mxn A = (1\<^sub>m 1, Smith_1xn A)"
       using Smith_mxn.psimps[OF A_dom] True 1 by auto
     then show ?thesis using Smith_1xn_works unfolding is_SNF_def
-      by (smt Smith_1xn_aux_Q_carrier Smith_1xn_aux_S'_AQ' Smith_1xn_def True assms(1) carrier_matD 
+      by (smt (verit) Smith_1xn_aux_Q_carrier Smith_1xn_aux_S'_AQ' Smith_1xn_def True assms(1) carrier_matD 
           carrier_matI diff_less fst_conv index_mult_mat not_gr0 one_carrier_mat prod.collapse 
           right_mult_one_mat' snd_conv zero_less_one_class.zero_less_one)
   next
@@ -1799,7 +1801,7 @@ proof (induct arbitrary: m n rule: Smith_mxn.pinduct)
     case False
     hence "m=3" using m by auto
     hence A2': "A2 \<in> carrier_mat 2 n" using A2 by auto
-    have A2_dom: "Smith_mxn_dom A2" by (rule Smith_mxn.domintros, insert A2', auto)    
+    have A2_dom: "Smith_mxn_dom A2" using A2' Smith_mxn_dom_nm_less_2 by force
     have "dim_row A2 = 2" using A2 A2' by fast
     hence "Smith_mxn A2 = Smith_2xn A2" 
       using n unfolding Smith_mxn.psimps[OF A2_dom] by auto
@@ -1848,7 +1850,7 @@ proof (induct arbitrary: m n rule: Smith_mxn.pinduct)
       case False
       hence m3: "m=3" using m_eq_3_or_n_eq_3 n m by auto
       have H2_DR_dom: "Smith_mxn_dom H2_DR"
-        by (rule Smith_mxn.domintros, insert H2_DR m3, auto)
+        using False H2_DR Smith_mxn_dom_nm_less_2 not_less by blast
       have H2_DR': "H2_DR \<in> carrier_mat 2 (n-1)" using H2_DR m3 by auto
       hence "dim_row H2_DR = 2" by simp
       hence "Smith_mxn H2_DR = Smith_2xn H2_DR" 
@@ -1890,7 +1892,7 @@ proof (induct arbitrary: m n rule: Smith_mxn.pinduct)
   moreover have P3': "P3' \<in> carrier_mat m m" unfolding P3'_def using P3 m by auto
   moreover have P_H2: "P_H2 \<in> carrier_mat m m" using reduce_column[OF H P_H2H2] m by simp
   moreover have "S \<in> carrier_mat m n" unfolding S_def using H A S'
-    by (auto, smt C One_nat_def Suc_pred \<open>C \<in> carrier_mat (1 + (m - 1)) n\<close> carrier_matD carrier_matI 
+    by (auto, smt (verit) C One_nat_def Suc_pred \<open>C \<in> carrier_mat (1 + (m - 1)) n\<close> carrier_matD carrier_matI 
         dim_col_mat(1) dim_row_mat(1) index_mat_four_block n neq0_conv plus_1_eq_Suc zero_order(3))
   moreover have "Q3' \<in> carrier_mat n n" unfolding Q3'_def using Q3 n by auto
   ultimately show ?case using Smith_final Q1 Q2 by auto
@@ -1932,7 +1934,7 @@ termination proof (relation "measure (\<lambda>A. dim_row A)")
   hence P1: "P1\<in> carrier_mat (?m-1) (?m-1)"and D1: "D1 \<in> carrier_mat (?m-1) ?n"
     and Q1: "Q1 \<in> carrier_mat ?n ?n" using P1_y_xb D1_Q1_y xa_def xb_def by (metis fstI sndI)+
   have C: "C \<in> carrier_mat ?m ?n" unfolding C_def using A1 Q1 P1 A2 Q1 
-    by (smt 1 Suc_pred card_num_simps(30) carrier_append_rows mult_carrier_mat neq0_conv plus_1_eq_Suc)
+    by (smt (verit) 1 Suc_pred card_num_simps(30) carrier_append_rows mult_carrier_mat neq0_conv plus_1_eq_Suc)
   have D: "D \<in> carrier_mat 2 ?n" unfolding D_def using C by auto
   have E: "E \<in> carrier_mat (?m-2) ?n" unfolding E_def using C m by auto
   have P2FQ2: "(P2,F,Q2) = Smith_2xn D" using F_Q2_yb P2_yb_xf xf by blast
@@ -2076,7 +2078,7 @@ proof (induct A arbitrary: m n rule: Smith_mxn.induct)
       and SNF_P1A2Q1: "Smith_normal_form_mat (P1*A2*Q1)"
       using is_SNF_A2 P1D1Q1 A2 A n m unfolding is_SNF_def by auto
     have C[simp]: "C \<in> carrier_mat m n" unfolding C_def  using P1 Q1 A1 A2 m
-      by (smt "1"(3) A_dim_not0 Suc_pred card_num_simps(30) carrier_append_rows carrier_matD 
+      by (smt (verit) "1"(3) A_dim_not0 Suc_pred card_num_simps(30) carrier_append_rows carrier_matD 
           carrier_mat_triv index_mult_mat(2,3) neq0_conv plus_1_eq_Suc)
     have D[simp]: "D \<in> carrier_mat 2 n" unfolding D_def using A m by auto  
     have is_SNF_D: "is_SNF D (Smith_2xn D)" by (rule is_SNF_Smith_2xn[OF D])
@@ -2116,7 +2118,7 @@ proof (induct A arbitrary: m n rule: Smith_mxn.induct)
     have P3'[simp]: "P3' \<in> carrier_mat m m" unfolding P3'_def using P3 m by auto
     have P_H2[simp]: "P_H2 \<in> carrier_mat m m" using reduce_column[OF H P_H2H2] m by simp
     have S[simp]: "S \<in> carrier_mat m n" unfolding S_def using H A S'
-      by (smt A_dim_intro(1) One_nat_def Suc_pred carrier_matD carrier_matI dim_col_mat(1)
+      by (smt (verit) A_dim_intro(1) One_nat_def Suc_pred carrier_matD carrier_matI dim_col_mat(1)
           dim_row_mat(1) index_mat_four_block(2,3) nat_neq_iff not_less_zero plus_1_eq_Suc)
     have Q3'[simp]: "Q3' \<in> carrier_mat n n" unfolding Q3'_def using Q3 n by auto
         (*The following two goals could have been resolved with Smith_mxn_pinduct_carrier, but we need the 
@@ -2199,12 +2201,12 @@ proof (induct A arbitrary: m n rule: Smith_mxn.induct)
       also have "... =  P2' * C * Q2" unfolding C_D_E by simp
       also have "... = P2' * (P1' * A * Q1) * Q2" unfolding C_eq by simp
       also have "... = P2' * P1' * A * Q1 * Q2"
-        by (smt A P1' P2' Q1 \<open>P2' * C * Q2 = P2' * (P1' * A * Q1) * Q2\<close> assoc_mult_mat mult_carrier_mat)
+        by (smt (verit) A P1' P2' Q1 \<open>P2' * C * Q2 = P2' * (P1' * A * Q1) * Q2\<close> assoc_mult_mat mult_carrier_mat)
       finally show ?thesis .    
     qed
     have P_H2_H_H2: "P_H2 * H = H2" using reduce_column[OF H P_H2H2] m by auto
     hence H2_eq: "H2 = P_H2 * P2' * P1' * A * Q1 * Q2" unfolding H_eq
-      by (smt P1' P1'_def P2' P2'_def P_H2 P_final_carrier Q1 Q2 Q_final_carrier assoc_mult_mat 
+      by (smt (verit, ccfv_threshold) P1' P1'_def P2' P2'_def P_H2 P_final_carrier Q1 Q2 Q_final_carrier assoc_mult_mat 
           carrier_matD carrier_mat_triv index_mult_mat(2,3))        
     have H2_as_four_block_mat: "H2 = four_block_mat H2_UL H2_UR H2_DL H2_DR" 
       using split_H2 by (metis (no_types, lifting) H2 P1' P1'_def Q3' Q3'_def carrier_matD 
@@ -2265,20 +2267,20 @@ proof (induct A arbitrary: m n rule: Smith_mxn.induct)
     have D10_dvd_Eij: "D$$(1,0) dvd E$$(i,j)" if i: "i<m-2" and j: "j<n" for i j
     proof -
       have "D$$(1,0) = C$$(1,0)"
-        by (smt C C_D_E F F_P2DQ2 H H_def One_nat_def Suc_lessD add_diff_cancel_right' append_rows_def
+        by (smt (verit) C C_D_E F F_P2DQ2 H H_def One_nat_def Suc_lessD add_diff_cancel_right' append_rows_def
             arith_special(3) carrier_matD index_mat_four_block index_mult_mat(2) lessI m n plus_1_eq_Suc)
       also have "... = (P1*A2*Q1) $$ (0,0)"
-        by (smt "1"(3) A1 A2 A_A1_A2 A_dim_not0 P1 Q1 Suc_eq_plus1 Suc_lessD add_diff_cancel_right' 
+        by (smt (verit) "1"(3) A1 A2 A_A1_A2 A_dim_not0 P1 Q1 Suc_eq_plus1 Suc_lessD add_diff_cancel_right' 
             append_rows_def arith_special(3) card_num_simps(30) carrier_matD index_mat_four_block 
             index_mult_mat(2,3) less_not_refl2 local.C_def m neq0_conv)
       also have " ... dvd (P1*A2*Q1) $$ (i+1,j)"
         by (rule SNF_first_divides_all[OF SNF_P1A2Q1 _ _ j], insert P1 A2 Q1 i A, auto)
       also have "... = C $$ (i+2,j)" unfolding C_def using append_rows_nth
-        by (smt A A1 A2 A_A1_A2 P1 Q1 Suc_lessD add_Suc_right add_diff_cancel_left' append_rows_def
+        by (smt (verit, ccfv_threshold) A A1 A2 A_A1_A2 P1 Q1 Suc_lessD add_Suc_right add_diff_cancel_left' append_rows_def
             arith_special(3) carrier_matD index_mat_four_block index_mult_mat(2,3) j less_diff_conv 
             not_add_less2 plus_1_eq_Suc that(1))
       also have "... = E$$(i,j)"
-        by (smt C C_D_E D add_diff_cancel_right' append_rows_def carrier_matD index_mat_four_block j i
+        by (smt (verit) C C_D_E D add_diff_cancel_right' append_rows_def carrier_matD index_mat_four_block j i
             less_diff_conv not_add_less2)
       finally show ?thesis .   
     qed
@@ -2296,7 +2298,7 @@ proof (induct A arbitrary: m n rule: Smith_mxn.induct)
       case False
       have "F $$ (0,0) dvd (E*Q2) $$ (i-2,j)" by (rule F00_dvd_EQ2ij, insert False i j, auto)
       moreover have "H $$ (i, j) = (E*Q2) $$ (i-2,j)"
-        by (smt C C_D_E D F F_P2DQ2 False H_def append_rows_def carrier_matD i 
+        by (smt (verit) C C_D_E D F F_P2DQ2 False H_def append_rows_def carrier_matD i 
             index_mat_four_block index_mult_mat(2) j)
       ultimately show ?thesis using F00_H00 by simp
     qed    
@@ -2388,7 +2390,7 @@ proof (induct A arbitrary: m n rule: Smith_mxn.induct)
           have i_not_0: "i\<noteq>0" and j_not_0: "j\<noteq>0" using False by auto
           hence "?lhs = S' $$ (i - dim_row H2_UL, j - dim_col H2_UL)" using i j ij H2_UL by auto
           also have "... = 0" using diag_S' S' H2_UL i_not_0 j_not_0 ij unfolding isDiagonal_mat_def
-            by (smt S_as_four_block_mat add_diff_inverse_nat add_less_cancel_left carrier_matD i 
+            by (smt (verit) S_as_four_block_mat add_diff_inverse_nat add_less_cancel_left carrier_matD i 
                 index_mat_four_block(2,3) j less_one)
           finally show ?thesis .
         qed
@@ -2407,7 +2409,7 @@ proof (induct A arbitrary: m n rule: Smith_mxn.induct)
           case False
           have "S $$ (i, i)= S' $$ (i-1, i-1)" using False S_def i by auto
           also have "... dvd S' $$ (i, i)" using SNF_S' i S' S unfolding Smith_normal_form_mat_def
-            by (smt False H2_UL S_as_four_block_mat add.commute add_diff_inverse_nat carrier_matD 
+            by (smt (verit) False H2_UL S_as_four_block_mat add.commute add_diff_inverse_nat carrier_matD 
                 index_mat_four_block(2,3) less_one min_less_iff_conj nat_add_left_cancel_less)
           also have "... = S $$ (i+1,i+1)" using False S_def i by auto
           finally show ?thesis .

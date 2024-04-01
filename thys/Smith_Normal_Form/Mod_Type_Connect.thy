@@ -527,8 +527,8 @@ fun HMA_M3 where
 lemma HMA_M3_def: 
   "HMA_M3 A B = (Mod_Type_Connect.HMA_M (fst A) (fst B) 
   \<and> Mod_Type_Connect.HMA_M (fst (snd A)) (fst (snd B)) 
-  \<and> Mod_Type_Connect.HMA_M (snd (snd A)) (snd (snd B)))"  
-  by (smt HMA_M3.simps prod.collapse)
+  \<and> Mod_Type_Connect.HMA_M (snd (snd A)) (snd (snd B)))"
+  by (smt (verit, ccfv_SIG) HMA_M3.simps prod.collapse)
 
 
 context 

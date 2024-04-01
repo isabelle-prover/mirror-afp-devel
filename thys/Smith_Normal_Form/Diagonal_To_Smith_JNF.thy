@@ -273,7 +273,7 @@ lemma HMA_diagonal_to_Smith_i_PQ[transfer_rule]:
 proof (intro rel_funI, goal_cases)
   case (1 x y bezout bezout')
   then show ?case using HMA_diagonal_to_Smith_i_PQ_aux
-    by (auto, smt HMA_M3.elims(2))
+    by (auto, smt (verit) HMA_M3.elims(2))
 qed
 
 end
@@ -353,7 +353,7 @@ proof (intro rel_funI, clarify, goal_cases)
     have "HMA_M3 ?D_JNF ?D_HA" 
       using HMA_Diagonal_to_Smith_row_i_PQ[OF i] HMA_M3 unfolding rel_fun_def by blast
     then show ?case
-      by (auto, smt Cons.hyps HMA_M3.elims(2) list.set_intros(2) local.Cons(2))
+      by (auto, smt (verit) Cons.hyps HMA_M3.elims(2) list.set_intros(2) local.Cons(2))
   qed
 qed
 
@@ -654,6 +654,7 @@ Those cases could be treated separately.*)
   and n: "n>1" and m: "m>1" 
   shows "S = P*A*Q \<and> invertible_mat P \<and> invertible_mat Q \<and> Smith_normal_form_mat S
   \<and> P \<in> carrier_mat m m \<and> S \<in> carrier_mat m n \<and> Q \<in> carrier_mat n n"   
-  using diagonal_to_Smith_PQ_JNF_canceled_both[OF _ _ m n] using assms by force
+  using diagonal_to_Smith_PQ_JNF_canceled_both[OF _ _ m n]
+  by (smt (verit, best) assms(1) assms(3) assms(4) assms(6) atLeastLessThan_empty_iff gr_zeroI ib n not_less_iff_gr_or_eq of_nat_0_less_iff)
 end
 end
