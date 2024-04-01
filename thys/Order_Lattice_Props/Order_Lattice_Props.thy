@@ -71,7 +71,7 @@ lemma retraction_prop_fix: "f \<circ> f = f \<Longrightarrow> range f = Fix f"
 
 lemma Fix_map_dual: "Fix \<circ> \<partial>\<^sub>F = (`) \<partial> \<circ> Fix"
   unfolding Fix_def map_dual_def comp_def fun_eq_iff
-  by (smt Collect_cong invol_dual pointfree_idE setcompr_eq_image)
+  by (smt (verit) Collect_cong invol_dual pointfree_idE setcompr_eq_image)
 
 lemma Fix_map_dual_var: "Fix (\<partial>\<^sub>F f) = \<partial> ` (Fix f)"
   by (metis Fix_map_dual o_def)
@@ -233,7 +233,7 @@ lemma filtered_directed_dual: "filtered \<circ> (`) \<partial> = directed"
   apply clarsimp
   apply safe
    apply (meson finite_imageI imageI image_mono dual_dual_ord)
-  by (smt finite_subset_image imageE ord_dual)
+  by (smt (verit, ccfv_threshold) finite_subset_image imageE ord_dual)
 
 lemma directed_filtered_dual: "directed \<circ> (`) \<partial> = filtered"
   using filtered_directed_dual by (metis comp_id image_dual o_assoc) 
@@ -272,7 +272,7 @@ lemma upset_to_downset3: "\<up> x = \<partial> ` (\<down> (\<partial> x))"
 
 lemma downsets_upsets_dual: "(X \<in> downsets) = (\<partial> ` X \<in> upsets)"
   unfolding downsets_def upsets_def Fix_def
-  by (smt comp_eq_dest downset_set_upset_set_dual image_inv_f_f inj_dual mem_Collect_eq)
+  by (smt (verit) comp_eq_dest downset_set_upset_set_dual image_inv_f_f inj_dual mem_Collect_eq)
 
 lemma downset_setp_upset_setp_dual: "upclosed_set \<circ> (`) \<partial> = downclosed_set"
   unfolding downclosed_set_def upclosed_set_def using downsets_upsets_dual by fastforce
@@ -286,7 +286,7 @@ lemma upset_setp_downset_setp_dual: "downclosed_set \<circ> (`) \<partial> = upc
 text \<open>Filters and ideals are dual.\<close>
 
 lemma ideals_filters_dual: "(X \<in> ideals) = ((\<partial> ` X) \<in> filters)"
-  by (smt comp_eq_dest_lhs directed_filtered_dual image_inv_f_f image_is_empty inv_unique_comp filters_def ideals_def inj_dual invol_dual mem_Collect_eq upset_setp_downset_setp_dual)
+  by (smt (verit) comp_eq_dest_lhs directed_filtered_dual image_inv_f_f image_is_empty inv_unique_comp filters_def ideals_def inj_dual invol_dual mem_Collect_eq upset_setp_downset_setp_dual)
 
 lemma idealp_filterp_dual: "idealp = filterp \<circ> (`) \<partial>"
   unfolding fun_eq_iff by (simp add: ideals_filters_dual)
@@ -408,7 +408,7 @@ next
   thus "directed X"
     unfolding directed_def downset_set_def 
     apply clarsimp
-    by (smt Ball_Collect order_refl order_trans subsetCE)
+    by (smt (verit) Ball_Collect order_refl order_trans subsetCE)
 qed
 
 lemma downset_directed_downset [simp]: "directed \<circ> \<Down> = directed"
@@ -476,7 +476,8 @@ begin
 
 lemma lat_ideals: "X \<in> ideals = (X \<noteq> {} \<and> X \<in> downsets \<and> (\<forall>x \<in> X. \<forall> y \<in> X. x \<squnion> y \<in> X))"
   unfolding ideals_def directed_alt downsets_def Fix_def downset_set_def downclosed_set_def
-  by (clarsimp, smt sup.cobounded1 sup.orderE sup.orderI sup_absorb2 sup_left_commute mem_Collect_eq)
+  using local.sup.bounded_iff local.sup_ge2 by blast
+    
 
 end
 
@@ -560,7 +561,7 @@ lemma upclosed_upset: "upclosed_set (\<up>x)"
   by (simp add: upset_def upclosed_upset_set) 
   
 lemma upset_set_ext: "id \<le> \<Up>"
-  by (smt comp_def comp_id image_mono le_fun_def downset_set_ext image_dual upset_set_to_downset_set2)
+  by (smt (verit) comp_def comp_id image_mono le_fun_def downset_set_ext image_dual upset_set_to_downset_set2)
 
 lemma upset_set_anti: "mono \<Up>"
   by (metis image_mono downset_set_iso upset_set_to_downset_set2 mono_def)
@@ -627,7 +628,7 @@ begin
 
 lemma lat_filters: "X \<in> filters = (X \<noteq> {} \<and> X \<in> upsets \<and> (\<forall>x \<in> X. \<forall> y \<in> X. x \<sqinter> y \<in> X))"
   unfolding filters_to_ideals upsets_to_downsets inf_to_sup lat_ideals
-  by (smt image_iff image_inv_f_f image_is_empty inj_image_mem_iff inv_unique_comp inj_dual invol_dual)
+  by (smt (verit) image_iff image_inv_f_f image_is_empty inj_image_mem_iff inv_unique_comp inj_dual invol_dual)
 
 end
 
@@ -800,7 +801,7 @@ lemma Sup_sup_pres:
 lemma Inf_inf_pres: 
   fixes f :: "'a::complete_lattice \<Rightarrow> 'b::complete_lattice"
   shows"Inf_pres f \<Longrightarrow> inf_pres f"
-  by (smt INF_insert Inf_empty Inf_insert comp_eq_elim inf_top.right_neutral)
+  by (smt (verit) INF_insert Inf_empty Inf_insert comp_eq_elim inf_top.right_neutral)
 
 lemma Sup_bot_pres: 
   fixes f :: "'a::complete_lattice \<Rightarrow> 'b::complete_lattice"
@@ -815,12 +816,12 @@ lemma Inf_top_pres:
 lemma Sup_sup_dual: 
   fixes f :: "'a::complete_lattice \<Rightarrow> 'b::complete_lattice"
   shows "Sup_dual f \<Longrightarrow> sup_dual f"
-  by (smt comp_eq_elim image_empty image_insert inf_Inf sup_Sup)    
+  by (smt (verit) comp_eq_elim image_empty image_insert inf_Inf sup_Sup)    
 
 lemma Inf_inf_dual: 
   fixes f :: "'a::complete_lattice \<Rightarrow> 'b::complete_lattice"
   shows "Inf_dual f \<Longrightarrow> inf_dual f"
-  by (smt comp_eq_elim image_empty image_insert inf_Inf sup_Sup)   
+  by (smt (verit) comp_eq_elim image_empty image_insert inf_Inf sup_Sup)   
 
 lemma Sup_bot_dual: 
   fixes f :: "'a::complete_lattice \<Rightarrow> 'b::complete_lattice"
@@ -940,11 +941,11 @@ lemma fSup_distr_var: "\<Squnion>F \<circ> g = (\<Squnion>f \<in> F. f \<circ> g
 
 lemma fInf_distr: "Inf_pres (\<lambda>x. x \<circ> f)"
   unfolding fun_eq_iff comp_def
-  by (smt INF_apply Inf_fun_def Sup.SUP_cong) 
+  by (smt (verit) INF_apply Inf_fun_def Sup.SUP_cong) 
 
 lemma fInf_distr_var: "\<Sqinter>F \<circ> g = (\<Sqinter>f \<in> F. f \<circ> g)"
   unfolding fun_eq_iff comp_def
-  by (smt INF_apply INF_cong INF_image Inf_apply image_comp image_def image_image)
+  by (smt (verit) INF_apply INF_cong INF_image Inf_apply image_comp image_def image_image)
 
 
 text \<open>The next set of lemma revisits the preservation properties in the function space.\<close>
@@ -1014,19 +1015,19 @@ lift_definition Inf_iso :: "'a::complete_lattice iso set \<Rightarrow> 'a iso" i
   by (metis (mono_tags, lifting) SUP_subset_mono Sup_apply mono_def subsetI)
 
 lift_definition Sup_iso :: "'a::complete_lattice iso set \<Rightarrow> 'a iso" is Inf
-  by (smt INF_lower2 Inf_apply le_INF_iff mono_def)
+  by (smt (verit) INF_lower2 Inf_apply le_INF_iff mono_def)
 
 lift_definition bot_iso :: "'a::complete_lattice iso" is "\<top>"
   by (simp add: monoI)
 
 lift_definition sup_iso :: "'a::complete_lattice iso \<Rightarrow> 'a iso \<Rightarrow> 'a iso" is inf
-  by (smt inf_apply inf_mono monoD monoI)
+  by (smt (verit) inf_apply inf_mono monoD monoI)
 
 lift_definition top_iso :: "'a::complete_lattice iso" is "\<bottom>"
   by (simp add: mono_def)
 
 lift_definition inf_iso :: "'a::complete_lattice iso \<Rightarrow> 'a iso \<Rightarrow> 'a iso" is sup
-  by (smt mono_def sup.mono sup_apply)
+  by (smt (verit) mono_def sup.mono sup_apply)
 
 lift_definition less_eq_iso :: "'a::complete_lattice iso \<Rightarrow> 'a iso \<Rightarrow> bool" is "(\<ge>)".
 
@@ -1213,8 +1214,7 @@ proof-
   assume h1: "x \<noteq> \<bottom>"
   and h2: "\<forall>Y. (\<exists>y \<in> Y. x \<le> y) = (x \<le> \<Squnion>Y)"
   hence "\<forall>y z. (x \<le> y \<or> x \<le> z) = (x \<le> y \<squnion> z)"
-
-    by (smt insert_iff sup_Sup sup_bot.right_neutral)
+    by (smt (verit) insert_iff sup_Sup sup_bot.right_neutral)
   thus "atom x"
     by (simp add: h1 sup_atom)
 qed

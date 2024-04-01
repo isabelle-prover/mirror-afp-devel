@@ -268,7 +268,7 @@ next
   thus "directed X"
     unfolding directed_def downset_set_def 
     apply clarsimp
-    by (smt Ball_Collect order_refl order_trans subsetCE)
+    by (smt (verit) Ball_Collect order_refl order_trans subsetCE)
 qed
 
 lemma downset_directed_downset [simp]: "directed \<circ> \<Down> = directed"
@@ -295,7 +295,7 @@ begin
 
 lemma lat_ideals: "X \<in> ideals = (X \<noteq> {} \<and> X \<in> downsets \<and> (\<forall>x \<in> X. \<forall> y \<in> X. x \<squnion> y \<in> X))"
   unfolding ideals_def directed_alt downsets_def Fix_def downset_set_def 
-  by (clarsimp, smt sup.cobounded1 sup.orderE sup.orderI sup_absorb2 sup_left_commute mem_Collect_eq)
+  using local.sup.bounded_iff by blast
 
 end
 
@@ -479,7 +479,7 @@ lemma Sup_sup_pres:
 lemma Inf_inf_pres: 
   fixes f :: "'a::complete_lattice \<Rightarrow> 'b::complete_lattice"
   shows"Inf_pres f \<Longrightarrow> inf_pres f"
-  by (smt INF_insert comp_eq_elim dual_complete_lattice.Sup_empty dual_complete_lattice.Sup_insert inf_top.right_neutral)
+  by (smt (verit) INF_insert comp_eq_elim dual_complete_lattice.Sup_empty dual_complete_lattice.Sup_insert inf_top.right_neutral)
 
 lemma Sup_bot_pres: 
   fixes f :: "'a::complete_lattice \<Rightarrow> 'b::complete_lattice"
@@ -528,19 +528,19 @@ end
 
 lemma fSup_distr: "Sup_pres (\<lambda>x. x \<circ> f)"
   unfolding fun_eq_iff comp_def
-  by (smt Inf.INF_cong SUP_apply Sup_apply)
+  by (smt (verit) Inf.INF_cong SUP_apply Sup_apply)
 
 lemma fSup_distr_var: "\<Squnion>F \<circ> g = (\<Squnion>f \<in> F. f \<circ> g)"
   unfolding fun_eq_iff comp_def
-  by (smt Inf.INF_cong SUP_apply Sup_apply)
+  by (smt (verit) Inf.INF_cong SUP_apply Sup_apply)
 
 lemma fInf_distr: "Inf_pres (\<lambda>x. x \<circ> f)"
   unfolding fun_eq_iff comp_def
-  by (smt INF_apply Inf.INF_cong Inf_apply)
+  by (smt (verit) INF_apply Inf.INF_cong Inf_apply)
 
 lemma fInf_distr_var: "\<Sqinter>F \<circ> g = (\<Sqinter>f \<in> F. f \<circ> g)"
   unfolding fun_eq_iff comp_def
-  by (smt INF_apply Inf.INF_cong Inf_apply)
+  by (smt (verit) INF_apply Inf.INF_cong Inf_apply)
 
 lemma fSup_subdistl: 
   assumes "mono (f::'a::complete_lattice \<Rightarrow> 'b::complete_lattice)"

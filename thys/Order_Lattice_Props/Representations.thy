@@ -33,7 +33,7 @@ definition SSup :: "'a::complete_lattice downset \<Rightarrow> 'a" where
 
 lemma ds_SSup_inv: "ds \<circ> SSup = (id::'a::complete_lattice downset \<Rightarrow> 'a downset)"
   unfolding ds_def SSup_def
-  by (smt Rep_downset Rep_downset_inverse cSup_atMost eq_id_iff imageE o_def ord_class.atMost_def ord_class.downset_prop)
+  by (smt (verit) Rep_downset Rep_downset_inverse cSup_atMost eq_id_iff imageE o_def ord_class.atMost_def ord_class.downset_prop)
 
 lemma SSup_ds_inv: "SSup \<circ> ds = (id::'a::complete_lattice \<Rightarrow> 'a)"
   unfolding ds_def SSup_def fun_eq_iff id_def comp_def by (simp add: Abs_downset_inverse pointfree_idE) 
@@ -67,7 +67,7 @@ lemma ds_bij: "bij (ds::'a::order \<Rightarrow> 'a downset)"
   by (simp add: bijI ds_inj ds_surj)
 
 lemma ds_ord_iso: "ord_iso ds"
-  unfolding ord_iso_def comp_def inf_bool_def by (smt UNIV_I ds_bij ds_faithful ds_inj ds_iso ds_surj f_the_inv_into_f inf1I mono_def)
+  unfolding ord_iso_def comp_def inf_bool_def by (smt (verit) UNIV_I ds_bij ds_faithful ds_inj ds_iso ds_surj f_the_inv_into_f inf1I mono_def)
 
 text \<open>The morphishms between orderings and downsets are isotone functions. One can define functors mapping back and forth between these.\<close>
 
@@ -340,7 +340,7 @@ proof-
 qed
 
 lemma atom_map_inf_pres: "atom_map (x \<sqinter> y) = atom_map x \<inter> atom_map y"
-  by (smt Diff_Un atom_map_compl_pres atom_map_sup_pres compl_inf double_compl)
+  by (smt (verit) Diff_Un atom_map_compl_pres atom_map_sup_pres compl_inf double_compl)
 
 lemma atom_map_minus_pres: "atom_map (x - y) = atom_map x - atom_map y"
   using atom_map_compl_pres atom_map_def diff_eq by auto
@@ -375,18 +375,19 @@ instance
                 apply (transfer, simp)
                apply (transfer, blast)
               apply (simp add: Rep_atoms_inject less_eq_atoms.abs_eq)
-             apply (transfer, smt Abs_atoms_inverse Rep_atoms atom_map_inf_pres image_iff inf_le1 rangeI)
-            apply (transfer, smt Abs_atoms_inverse Rep_atoms atom_map_inf_pres image_iff inf_le2 rangeI)
-           apply (transfer, smt Abs_atoms_inverse Rep_atoms atom_map_inf_pres image_iff le_iff_sup rangeI sup_inf_distrib1)
-          apply (transfer, smt Abs_atoms_inverse Rep_atoms atom_map_sup_pres image_iff image_iff inf.orderE inf_sup_aci(6) le_iff_sup order_refl rangeI rangeI)
-         apply (transfer, smt Abs_atoms_inverse Rep_atoms atom_map_sup_pres image_iff inf_sup_aci(6) le_iff_sup rangeI sup.left_commute sup.right_idem)
+             apply (transfer, smt (verit) Abs_atoms_inverse Rep_atoms atom_map_inf_pres image_iff inf_le1 rangeI)
+            apply (transfer, smt (verit) Abs_atoms_inverse Rep_atoms atom_map_inf_pres image_iff inf_le2 rangeI)
+           apply (transfer, smt (verit) Abs_atoms_inverse Rep_atoms atom_map_inf_pres image_iff le_iff_sup rangeI sup_inf_distrib1)
+          apply (transfer, smt (verit) Abs_atoms_inverse Rep_atoms atom_map_sup_pres image_iff image_iff inf.orderE inf_sup_aci(6) le_iff_sup order_refl rangeI rangeI)
+         apply (transfer, smt (verit) Abs_atoms_inverse Rep_atoms atom_map_sup_pres image_iff inf_sup_aci(6) le_iff_sup rangeI sup.left_commute sup.right_idem)
         apply (transfer, subst Abs_atoms_inverse, metis (no_types, lifting) Rep_atoms atom_map_sup_pres image_iff rangeI, simp)
        apply transfer using Abs_atoms_inverse atom_map_bot_pres apply blast
       apply (transfer, metis Abs_atoms_inverse Rep_atoms atom_map_compl_pres atom_map_top_pres diff_eq double_compl inf_le1 rangeE rangeI)
-     apply (transfer, smt Abs_atoms_inverse Rep_atoms atom_map_inf_pres atom_map_sup_pres image_iff rangeI sup_inf_distrib1)
+     apply (transfer, smt (verit, ccfv_threshold) Abs_atoms_inverse Rep_atoms atom_map_inf_pres atom_map_sup_pres image_iff rangeI sup_inf_distrib1)
     apply (transfer, metis (no_types, opaque_lifting) Abs_atoms_inverse Diff_disjoint Rep_atoms atom_map_compl_pres rangeE rangeI)
    apply (transfer, smt Abs_atoms_inverse uminus_atoms.abs_eq Rep_atoms Un_Diff_cancel atom_map_compl_pres atom_map_inf_pres atom_map_minus_pres atom_map_sup_pres atom_map_top_pres diff_eq double_compl inf_compl_bot_right rangeE rangeI sup_commute sup_compl_top)
-  by transfer (smt Abs_atoms_inverse Rep_atoms atom_map_compl_pres atom_map_inf_pres atom_map_minus_pres diff_eq rangeE rangeI)
+  apply (transfer, smt Abs_atoms_inverse Rep_atoms atom_map_compl_pres atom_map_inf_pres atom_map_minus_pres diff_eq rangeE rangeI)
+  done
 
 end
 

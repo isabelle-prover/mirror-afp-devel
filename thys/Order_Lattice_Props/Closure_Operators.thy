@@ -132,7 +132,7 @@ lemma clop_Inf_closed:
   fixes f :: "'a::complete_lattice \<Rightarrow> 'a"
   shows  "clop f \<Longrightarrow> Inf_closed_set (Fix f)" 
   unfolding clop_def Inf_closed_set_def mono_def le_fun_def comp_def id_def Fix_def
-  by (smt Inf_greatest Inf_lower antisym mem_Collect_eq subsetCE)
+  by (smt (verit) Inf_greatest Inf_lower antisym mem_Collect_eq subsetCE)
 
 lemma clop_top_Fix: 
   fixes f :: "'a::complete_lattice \<Rightarrow> 'a"
@@ -145,7 +145,7 @@ text \<open>Conversely, every Inf-closed subset of a complete lattice is the set
 lemma Inf_closed_clop: 
   fixes X :: "'a::complete_lattice set"
   shows "Inf_closed_set X \<Longrightarrow> clop (\<lambda>y. \<Sqinter>{x \<in> X. y \<le> x})"
-  by (smt Collect_mono_iff Inf_superset_mono clop_alt dual_order.trans le_Inf_iff mem_Collect_eq)
+  by (smt (verit) Collect_mono_iff Inf_superset_mono clop_alt dual_order.trans le_Inf_iff mem_Collect_eq)
 
 lemma Inf_closed_clop_var: 
   fixes X :: "'a::complete_lattice set"
@@ -178,8 +178,9 @@ instance
       apply (transfer, simp)
      apply (transfer, blast)
     apply (simp add: Closure_Operators.less_eq_downsets.abs_eq Rep_downsets_inject)
-   apply (transfer, smt Abs_downsets_inverse INF_lower Inf_closed_clop_var Rep_downsets image_iff o_def preorder_clop)
-  by transfer (smt comp_def Abs_downsets_inverse Inf_closed_clop_var Rep_downsets image_iff le_INF_iff preorder_clop)
+   apply (transfer, smt (verit) Abs_downsets_inverse INF_lower Inf_closed_clop_var Rep_downsets image_iff o_def preorder_clop)
+  apply (transfer, smt (verit) comp_def Abs_downsets_inverse Inf_closed_clop_var Rep_downsets image_iff le_INF_iff preorder_clop)
+  done
 
 end
 
@@ -197,8 +198,9 @@ instance
       apply (transfer, simp)
      apply (transfer, blast)
     apply (simp add: Closure_Operators.less_eq_upsets.abs_eq Rep_upsets_inject)
-   apply (transfer, smt Abs_upsets_inverse Inf_closed_clop_var Inf_lower Rep_upsets comp_apply image_iff preorder_clop_dual)
-  by transfer (smt comp_def Abs_upsets_inverse Inf_closed_clop_var Inter_iff Rep_upsets image_iff preorder_clop_dual subsetCE subsetI)
+   apply (transfer, smt (verit) Abs_upsets_inverse Inf_closed_clop_var Inf_lower Rep_upsets comp_apply image_iff preorder_clop_dual)
+  apply (transfer, smt (verit) comp_def Abs_upsets_inverse Inf_closed_clop_var Inter_iff Rep_upsets image_iff preorder_clop_dual subsetCE subsetI)
+  done
 
 end
 
@@ -264,7 +266,7 @@ lemma coclop_Sup_closed_var:
 lemma Sup_closed_coclop_var: 
   fixes X :: "'a::complete_lattice set"
   shows "coclop f \<Longrightarrow> \<forall>x \<in> X. x \<in> range f \<Longrightarrow> \<Squnion>X \<in> range f"
-  by (smt Inf.INF_id_eq Sup.SUP_cong antisym coclop_closure coclop_coextensive_var coclop_iso id_apply mono_SUP)
+  by (smt (verit) Inf.INF_id_eq Sup.SUP_cong antisym coclop_closure coclop_coextensive_var coclop_iso id_apply mono_SUP)
 
 lemma coclop_bot: 
   fixes f :: "'a::complete_lattice_with_dual \<Rightarrow> 'a"
@@ -317,7 +319,7 @@ lemma coclop_Sup_closed:
   fixes f :: "'a::complete_lattice \<Rightarrow> 'a"
   shows  "coclop f \<Longrightarrow> Sup_closed_set (Fix f)"
   unfolding coclop_def Sup_closed_set_def mono_def le_fun_def comp_def id_def Fix_def
-  by (smt Sup_least Sup_upper antisym_conv mem_Collect_eq subsetCE)
+  by (smt (verit) Sup_least Sup_upper antisym_conv mem_Collect_eq subsetCE)
 
 lemma Sup_closed_coclop: 
   fixes X :: "'a::complete_lattice set"
@@ -325,7 +327,7 @@ lemma Sup_closed_coclop:
   unfolding Sup_closed_set_def coclop_def mono_def le_fun_def comp_def
   apply safe
   apply (metis (no_types, lifting) Sup_least eq_id_iff mem_Collect_eq)
-  apply (smt Collect_mono_iff Sup_subset_mono dual_order.trans)
+  apply (smt (verit) Collect_mono_iff Sup_subset_mono dual_order.trans)
   by (simp add: Collect_mono_iff Sup_subset_mono Sup_upper)
 
 
@@ -371,7 +373,7 @@ proof-
 qed
 
 lemma inf_closed_cl_op_var: "x \<in> range cl_op \<Longrightarrow> y \<in> range cl_op \<Longrightarrow> x \<sqinter> y \<in> range cl_op"
-  by (smt Inf_closed_cl_op_var UnI1 insert_iff insert_is_Un inf_Inf)
+  by (smt (verit) Inf_closed_cl_op_var UnI1 insert_iff insert_is_Un inf_Inf)
 
 end
 
@@ -381,7 +383,7 @@ typedef (overloaded) 'a::clattice_with_clop cl_op_im = "range (cl_op::'a \<Right
 setup_lifting type_definition_cl_op_im
 
 lemma cl_op_prop [iff]: "(cl_op (x \<squnion> y) = cl_op y) = (cl_op (x::'a::clattice_with_clop) \<le> cl_op y)"
-  by (smt cl_op_class.clop_iso clop_ext clop_wtrans inf_sup_ord(4) le_iff_sup sup.absorb_iff1 sup_left_commute)
+  by (smt (verit) cl_op_class.clop_iso clop_ext clop_wtrans inf_sup_ord(4) le_iff_sup sup.absorb_iff1 sup_left_commute)
 
 lemma cl_op_prop_var [iff]: "(cl_op (x \<squnion> cl_op y) = cl_op y) = (cl_op (x::'a::clattice_with_clop) \<le> cl_op y)"
   by (metis cl_op_prop clattice_with_clop_class.clop_idem_var)
@@ -456,7 +458,7 @@ lemma surj_Sup_pres_inj_on:
   assumes "surj f"
   and "Sup_pres f" 
   shows "inj_on f (range (radj f \<circ> f))"
-  by (smt Sup_pres_ladj_aux adj_idem2 assms(2) comp_apply inj_on_def retraction_prop)
+  by (smt (verit) Sup_pres_ladj_aux adj_idem2 assms(2) comp_apply inj_on_def retraction_prop)
 
 lemma surj_Sup_pres_bij_on: 
   fixes f :: "'a::complete_lattice_with_dual \<Rightarrow> 'b::complete_lattice_with_dual"

@@ -294,13 +294,13 @@ lemma Sup_dual_def_var: "\<partial> (\<Squnion>X) = \<Sqinter> (\<partial> ` X)"
   using comp_eq_dest Sups_dual_def by fastforce
 
 lemma bot_dual_def: "\<partial> \<top> = \<bottom>"
-  by (smt Inf_UNIV Sup_UNIV Sups_dual_def surj_dual o_eq_dest)
+  by (smt (verit) Inf_UNIV Sup_UNIV Sups_dual_def surj_dual o_eq_dest)
 
 lemma top_dual_def: "\<partial> \<bottom> = \<top>"
   using bot_dual_def dual_iff by blast
 
 lemma inf_dual2: "\<partial> (x \<sqinter> y) = \<partial> x \<squnion> \<partial> y"
-  by (smt comp_eq_elim Inf_dual Inf_empty Inf_insert SUP_insert inf_top.right_neutral)
+  by (smt (verit) comp_eq_elim Inf_dual Inf_empty Inf_insert SUP_insert inf_top.right_neutral)
 
 lemma sup_dual: "\<partial> (x \<squnion> y) = \<partial> x \<sqinter> \<partial> y"
   by (metis inf_dual2 dual_iff)

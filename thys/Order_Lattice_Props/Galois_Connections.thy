@@ -33,7 +33,7 @@ proof-
     by (simp add: setcompr_eq_image)
   ultimately show ?thesis
     unfolding ladj_def radj_def map_dual_def comp_def
-    by (smt Collect_cong invol_dual_var)
+    by (smt (verit) Collect_cong invol_dual_var)
 qed
 
 lemma radj_ladj_dual: 
