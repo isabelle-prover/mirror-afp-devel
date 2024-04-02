@@ -16,6 +16,6 @@ text \<open>
 \<close>
 
 
-export_code _ checking Go? (infinite_type "stream")
+export_code _ checking Go (infinite_type "stream")
 
 end

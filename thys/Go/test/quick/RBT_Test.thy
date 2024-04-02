@@ -21,6 +21,6 @@ export_code delete_list tree_from_list join invc trees_equal t1 in Go
   module_name RbtTest
 
 
-export_code delete_list tree_from_list join invc trees_equal t1 checking Go?
+export_code delete_list tree_from_list join invc trees_equal t1 checking Go
 
 end
