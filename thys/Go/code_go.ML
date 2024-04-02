@@ -285,7 +285,7 @@ fun print_go_stmt gen_stringer undefineds infinite_types tyco_syntax const_synta
             |> separate (str "&&")
             |> concat
         in Pretty.chunks
-           ((if is_boxed then [oneline [(block o commas) [str (if any_names then q else "_"), str p], str ":=", 
+           ((if is_boxed then [oneline [(block o commas) [str (if any_names then q else "_"), str p], str ":=",
               applify ".(" ")" I NOBR (str target) [apply_constraints tyvars ((str o deresolve) constr) typargs]]]
             else [oneline [str "_ =", str target]])
           @ [(if is_boxed then block_enclose (spaced [str "if", str p, str "{"], str "}") else Pretty.chunks)
@@ -387,10 +387,6 @@ fun print_go_stmt gen_stringer undefineds infinite_types tyco_syntax const_synta
     | IVar NONE => raise Fail "can't return a variable with no name!"
     | IVar (SOME v) => wrap_if is_stmt (str (lookup_var vars v))
     | (params, tys) `|=> (t, rty) => let
-        (* horrible workaround, please fix me upstream *)
-        val rty = case t of
-           ICase c => type_of_primitive_pattern (#primitive c)
-           | _ => rty
         val vars' = intro_vars (map_filter I [params]) vars;
         val func_head = print_func_head tyvars vars' NONE [] [] [params] [tys] (print_go_typ tyvars rty)
         val body = print_go_term const_syntax tyvars some_thm vars' fxy t
