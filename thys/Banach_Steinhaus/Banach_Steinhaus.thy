@@ -29,8 +29,9 @@ lemma linear_plus_norm:
 \<close>
 proof-
   have \<open>norm (f \<xi>) = norm ( (inverse (of_nat 2)) *\<^sub>R (f (x + \<xi>) - f (x - \<xi>)) )\<close>
-    by (smt add_diff_cancel_left' assms diff_add_cancel diff_diff_add linear_diff midpoint_def 
-        midpoint_plus_self of_nat_1 of_nat_add one_add_one scaleR_half_double)
+    by (metis (no_types, opaque_lifting) add.commute assms diff_diff_eq2 group_cancel.sub1
+        linear_cmul linear_diff of_nat_numeral real_vector_affinity_eq scaleR_2
+        scaleR_right_diff_distrib zero_neq_numeral)
   also have \<open>\<dots> = inverse (of_nat 2) * norm (f (x + \<xi>) - f (x - \<xi>))\<close>
     using Real_Vector_Spaces.real_normed_vector_class.norm_scaleR by simp
   also have \<open>\<dots> \<le> inverse (of_nat 2) * (norm (f (x + \<xi>)) + norm (f (x - \<xi>)))\<close>
@@ -55,7 +56,7 @@ proof-
     obtain M where \<open>\<And> \<xi>.  \<parallel>f *\<^sub>v \<xi>\<parallel> \<le> M * norm \<xi>\<close> and \<open>M \<ge> 0\<close>
       using norm_blinfun norm_ge_zero by blast      
     hence \<open>\<And> \<xi>. \<xi> \<in> ball 0 r \<Longrightarrow> \<parallel>f *\<^sub>v \<xi>\<parallel> \<le> M * r\<close>
-      using \<open>r > 0\<close> by (smt mem_ball_0 mult_left_mono) 
+      using \<open>r > 0\<close> by (smt (verit) mem_ball_0 mult_left_mono) 
     thus ?thesis by (meson bdd_aboveI2)     
   qed
   have bdd_above_2: \<open>bdd_above ((\<lambda> \<xi>. \<parallel>f *\<^sub>v (x + \<xi>)\<parallel>) ` (ball 0 r))\<close>
@@ -166,7 +167,7 @@ proof-
       using \<open>r > 0\<close> by auto      
     ultimately have \<open>Sup ((\<lambda>t. \<parallel>f *\<^sub>v t\<parallel>) ` (ball 0 r)) \<le>
                      Sup ((\<lambda>\<xi>. max \<parallel>f *\<^sub>v (x + \<xi>)\<parallel> \<parallel>f *\<^sub>v (x - \<xi>)\<parallel>) ` (ball 0 r))\<close>
-      using cSUP_mono by smt 
+      using cSUP_mono by (smt (verit)) 
     also have \<open>\<dots> = max (Sup ((\<lambda>\<xi>.  \<parallel>f *\<^sub>v (x + \<xi>)\<parallel>) ` (ball 0 r)))
                         (Sup ((\<lambda>\<xi>. \<parallel>f *\<^sub>v (x - \<xi>)\<parallel>) ` (ball 0 r)))\<close> 
       using Sup_2 by blast
@@ -211,7 +212,7 @@ next
   have \<open>norm f \<le>  Sup ( (\<lambda>\<xi>.  \<parallel>(*\<^sub>v) f \<xi>\<parallel>) ` (ball x r) ) / r\<close>
     using \<open>r > 0\<close> by (simp add: onorm_Sup_on_ball)  
   hence \<open>r * norm f \<le>  Sup ( (\<lambda>\<xi>.  \<parallel>(*\<^sub>v) f \<xi>\<parallel>) ` (ball x r) )\<close>
-    using \<open>0 < r\<close> by (smt divide_strict_right_mono nonzero_mult_div_cancel_left) 
+    using \<open>0 < r\<close> by (smt (verit) divide_strict_right_mono nonzero_mult_div_cancel_left) 
   moreover have \<open>\<tau> * r * norm f < r * norm f\<close>
     using  \<open>\<tau> < 1\<close> using \<open>0 < norm f\<close> \<open>0 < r\<close> by auto
   ultimately have \<open>\<tau> * r * norm f < Sup ( (norm \<circ> ((*\<^sub>v) f)) ` (ball x r) )\<close>
@@ -222,7 +223,7 @@ next
     using bdd_above_1 apply transfer by simp
   ultimately have \<open>\<exists>t \<in> (norm \<circ> ( (*\<^sub>v) f)) ` (ball x r). \<tau> * r * norm f < t\<close> 
     by (simp add: less_cSup_iff)    
-  thus ?thesis by (smt comp_def image_iff) 
+  thus ?thesis by (smt (verit) comp_def image_iff) 
 qed
 
 subsection \<open>Banach-Steinhaus theorem\<close>
@@ -292,14 +293,14 @@ proof(rule classical)
   have \<open>norm (T n) \<ge> of_nat (4^n)\<close> for n
     unfolding T_def using \<open>\<And> n. norm ((f \<circ> k) n) \<ge> 4^n\<close> by auto
   hence \<open>T n \<noteq> 0\<close> for n
-    by (smt T_def \<open>\<And>n. 4 ^ n \<le> norm ((f \<circ> k) n)\<close> norm_zero power_not_zero zero_le_power)
+    by (smt (verit) T_def \<open>\<And>n. 4 ^ n \<le> norm ((f \<circ> k) n)\<close> norm_zero power_not_zero zero_le_power)
   have \<open>inverse (of_nat 3^n) > (0::real)\<close> for n
     by auto
   define y::\<open>nat \<Rightarrow> 'a\<close> where \<open>y = rec_nat 0 (\<lambda>n x. \<xi> (T n) x (inverse (of_nat 3^n)))\<close>
   have \<open>y (Suc n) \<in> ball (y n) (inverse (of_nat 3^n))\<close> for n
     using f1 \<open>\<And> n. T n \<noteq> 0\<close> \<open>\<And> n. inverse (of_nat 3^n) > 0\<close> unfolding y_def by auto
   hence \<open>norm (y (Suc n) - y n) \<le> inverse (of_nat 3^n)\<close> for n
-    unfolding ball_def apply auto using dist_norm by (smt norm_minus_commute) 
+    unfolding ball_def apply auto using dist_norm by (smt (verit) norm_minus_commute) 
   moreover have \<open>\<exists>K. \<forall>n. sum (\<lambda>k. inverse (real_of_nat 3^k)) {0..n} \<le> K\<close>
     using sum_1 by blast
   moreover have \<open>Cauchy y\<close>
@@ -398,13 +399,13 @@ proof(rule classical)
       using inverse_2 by blast
     finally have \<open>(inverse (of_nat 6)) * (of_rat (4/3)^n) \<le> norm ((*\<^sub>v) (T n) x)\<close>
       by auto
-    thus ?thesis using \<open>\<And> n. norm ((*\<^sub>v) (T n) x) \<le> M\<close> by smt
+    thus ?thesis using \<open>\<And> n. norm ((*\<^sub>v) (T n) x) \<le> M\<close> by (smt (verit))
   qed
   have \<open>\<exists>n. M < (inverse (of_nat 6)) * (of_rat (4/3)^n)\<close>
     using Real.real_arch_pow by auto
   moreover have \<open>(inverse (of_nat 6)) * (of_rat (4/3)^n) \<le> M\<close> for n
     using inverse_1 by blast                      
-  ultimately show ?thesis by smt
+  ultimately show ?thesis by (smt (verit))
 qed
 
 subsection \<open>A consequence of Banach-Steinhaus theorem\<close>

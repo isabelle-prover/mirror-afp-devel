@@ -150,7 +150,7 @@ proof -
         index_mult_mat(3) index_one_mat(3) inverts_mat_def)
   have "B * A * B = B" using A AB B by auto
   hence "B * A * (B * B') = B * B'"
-    by (smt A AB B B'_carrier assoc_mult_mat carrier_matD(1) inv_BB' inverts_mat_def one_carrier_mat)
+    by (smt (verit, best) A B B'_carrier assoc_mult_mat mult_carrier_mat)
   thus ?thesis
     by (metis A B carrier_matD(1) carrier_matD(2) index_mult_mat(3) inv_BB'
         inverts_mat_def right_mult_one_mat')
@@ -167,7 +167,7 @@ proof (rule eq_vecI)
     by (simp add: dim_submatrix(1))
   fix i assume "i < dim_vec (col A (pick J j))"
   show "col (submatrix A UNIV J) j $v i = col A (pick J j) $v i"
-    by (smt Collect_cong assms col_def dim_col dim_eq dim_submatrix(1)
+    by (smt (verit) Collect_cong assms col_def dim_col dim_eq dim_submatrix(1)
         eq_vecI index_vec pick_UNIV submatrix_index)
 qed
 
@@ -656,15 +656,19 @@ qed
 lemma transpose_mat_append_rows:
  assumes A: "A \<in> carrier_mat a n" and B: "B \<in> carrier_mat b n"
  shows "(A @\<^sub>r B)\<^sup>T = A\<^sup>T @\<^sub>c B\<^sup>T"
-  by (smt append_cols_def append_rows_def A B carrier_matD(1) index_transpose_mat(3)
-      transpose_four_block_mat zero_carrier_mat zero_transpose_mat)
+proof -
+  have "(four_block_mat A (0\<^sub>m a n) B (0\<^sub>m b n))\<^sup>T = four_block_mat A\<^sup>T B\<^sup>T (0\<^sub>m a n)\<^sup>T (0\<^sub>m b n)\<^sup>T" for n
+    by (meson assms(1) assms(2) transpose_four_block_mat zero_carrier_mat)
+  then show ?thesis
+    by (metis Matrix.transpose_transpose append_cols_def append_rows_def assms(1) assms(2)
+        carrier_matD(2) index_transpose_mat(2) transpose_carrier_mat zero_transpose_mat)
+qed
 
 lemma transpose_mat_append_cols:
  assumes A: "A \<in> carrier_mat n a" and B: "B \<in> carrier_mat n b"
  shows "(A @\<^sub>c B)\<^sup>T = A\<^sup>T @\<^sub>r B\<^sup>T"
-  by (metis Matrix.transpose_transpose A B carrier_matD(1) carrier_mat_triv
-      index_transpose_mat(3) transpose_mat_append_rows)
-
+  by (smt (verit, ccfv_threshold) Matrix.transpose_transpose assms(1) assms(2)
+      transpose_carrier_mat transpose_mat_append_rows)
 
 lemma append_rows_mult_right:
   assumes A: "(A::'a::comm_semiring_1 mat) \<in> carrier_mat a n" and B: "B \<in> carrier_mat b n"
@@ -677,28 +681,29 @@ proof -
   also have "... = Q\<^sup>T * A\<^sup>T @\<^sub>c Q\<^sup>T * B\<^sup>T"
     using append_cols_mult_left assms by (metis transpose_carrier_mat)
   also have "transpose_mat ... = (A * Q) @\<^sub>r (B*Q)"
-    by (smt A B Matrix.transpose_mult Matrix.transpose_transpose append_cols_def append_rows_def Q
-        carrier_mat_triv index_mult_mat(2) index_transpose_mat(2) transpose_four_block_mat
-        zero_carrier_mat zero_transpose_mat)
+    by (smt (verit, ccfv_threshold) A B Matrix.transpose_mult Matrix.transpose_transpose
+        append_cols_def append_rows_def assms(3) carrier_matD(1) index_mult_mat(2)
+        index_transpose_mat(3) mult_carrier_mat transpose_four_block_mat zero_carrier_mat
+        zero_transpose_mat)
   finally show ?thesis by simp
 qed
 
 lemma append_rows_mult_left_id:
   assumes A: "(A::'a::comm_semiring_1 mat) \<in> carrier_mat 1 n"
-  and B: "B \<in> carrier_mat (m-1) n"
-  and C: "C = four_block_mat (1\<^sub>m 1) (0\<^sub>m 1 (m - 1)) (0\<^sub>m (m - 1) 1) D"
-  and D: "D \<in> carrier_mat (m-1) (m-1)"
-shows "C * (A @\<^sub>r B) = A @\<^sub>r (D * B)"
+    and B: "B \<in> carrier_mat (m-1) n"
+    and C: "C = four_block_mat (1\<^sub>m 1) (0\<^sub>m 1 (m - 1)) (0\<^sub>m (m - 1) 1) D"
+    and D: "D \<in> carrier_mat (m-1) (m-1)"
+  shows "C * (A @\<^sub>r B) = A @\<^sub>r (D * B)"
 proof -
   have "transpose_mat (C * (A @\<^sub>r B)) = (A @\<^sub>r B)\<^sup>T * C\<^sup>T"
     by (metis (no_types, lifting) B C D Matrix.transpose_mult append_rows_def A carrier_matD
         carrier_mat_triv index_mat_four_block(2,3) index_zero_mat(2) one_carrier_mat)
   also have "... = (A\<^sup>T @\<^sub>c B\<^sup>T) * C\<^sup>T" using transpose_mat_append_rows[OF A B] by auto
-  also have "... = A\<^sup>T @\<^sub>c (B\<^sup>T * D\<^sup>T)" by (rule append_cols_mult_right_id, insert A B C D, auto)
-  also have "transpose_mat ... = A @\<^sub>r (D * B)"
-    by (smt B D Matrix.transpose_mult Matrix.transpose_transpose append_cols_def append_rows_def A
-        carrier_matD(2) carrier_mat_triv index_mult_mat(3) index_transpose_mat(3)
-        transpose_four_block_mat zero_carrier_mat zero_transpose_mat)
+  also have "... = A\<^sup>T @\<^sub>c (B\<^sup>T * D\<^sup>T)" by (rule append_cols_mult_right_id) (use A B C D in auto)
+  also have "transpose_mat ... = A @\<^sub>r (D * B)" using A
+    by (metis (no_types, opaque_lifting)
+        Matrix.transpose_mult Matrix.transpose_transpose assms(2) assms(4)
+        mult_carrier_mat transpose_mat_append_rows)
   finally show ?thesis by auto
 qed
 
@@ -757,16 +762,17 @@ proof -
     have rw0: "(\<Sum>ia \<in> ({0..<n}-{j}). ?f ia) = 0" by (rule sum.neutral, auto)
     have rw0': "(\<Sum>ia \<in> ({0..<n}-{i}). ?g ia) = 0" by (rule sum.neutral, auto)
     have "?lhs = ?f j + (\<Sum>ia \<in> ({0..<n}-{j}). ?f ia)"
-      by (smt atLeast0LessThan finite_atLeastLessThan lessThan_iff sum.remove j)
+      by (smt (verit, del_insts) atLeast0LessThan finite_atLeastLessThan
+          lessThan_iff sum.remove that(2))
     also have "... = A $$ (i, j) * k" using rw0 by auto
     also have "... = ?g i + (\<Sum>ia \<in> ({0..<n}-{i}). ?g ia)" using rw0' by auto
     also have "... = ?rhs"
-      by (smt atLeast0LessThan finite_atLeastLessThan lessThan_iff sum.remove i)
+      by (smt (verit, ccfv_SIG) atLeast0LessThan finite_lessThan lessThan_iff sum.remove that(1))
     finally show ?thesis .
   qed
   thus ?thesis using A
-  unfolding times_mat_def scalar_prod_def
-  by auto (rule eq_matI, auto, smt sum.cong)
+    by (metis (no_types, lifting) left_mult_one_mat mult_smult_assoc_mat mult_smult_distrib
+        one_carrier_mat right_mult_one_mat)
 qed
 
 (*This lemma is obtained using Mod_Type_Connect, otherwise we cannot prove HMA_I 0 0.
@@ -785,7 +791,7 @@ proof -
   have "Determinant.det A = Determinants.det ?A" by (transfer, simp)
   also have "... = ?A $h 1 $h 1 * ?A $h 2 $h 2 - ?A $h 1 $h 2 * ?A $h 2 $h 1" unfolding det_2 by simp
   also have "... = ?A $h 0 $h 0 * ?A $h 1 $h 1 - ?A $h 0 $h 1 * ?A $h 1 $h 0"
-    by (smt Groups.mult_ac(2) exhaust_2 semiring_norm(160))
+    by (smt (verit, ccfv_SIG) Groups.mult_ac(2) exhaust_2 semiring_norm(160))
   also have "... = A$$(0,0) * A $$ (1,1) - A$$(0,1)*A$$(1,0)"
     unfolding index_hma_def[symmetric] by (transfer, auto)
   finally show ?thesis .
@@ -854,11 +860,9 @@ lemma inv_P'PAQQ':
 shows  "(P'*(P*A*Q)*Q') = A"
 proof -
   have "(P'*(P*A*Q)*Q') = (P'*(P*A*Q*Q'))"
-    by (smt P P' Q Q' assoc_mult_mat carrier_matD(1) carrier_matD(2) carrier_mat_triv
-        index_mult_mat(2) index_mult_mat(3))
+    by (meson P P' Q Q' assms(1) assoc_mult_mat mult_carrier_mat)
   also have "... = ((P'*P)*A*(Q*Q'))"
-    by (smt A P P' Q Q' assoc_mult_mat carrier_matD(1) carrier_matD(2) carrier_mat_triv
-        index_mult_mat(3) inv_Q inverts_mat_def right_mult_one_mat')
+    by (smt (verit, ccfv_SIG) P' Q' assms(1) assms(2) assms(5) assoc_mult_mat mult_carrier_mat)
   finally show ?thesis
     by (metis P' Q A inv_P inv_Q carrier_matD(1) inverts_mat_def
         left_mult_one_mat right_mult_one_mat)
@@ -972,7 +976,7 @@ next
       by (simp add: 1 rw)
     fix y assume y: "y \<in> I \<and> pick I i < y"
     show "sorted_list_of_set I ! Suc i \<le> y"
-      by (smt antisym_conv finI in_set_conv_nth less_Suc_eq less_Suc_eq_le nat_neq_iff rw
+      by (smt (verit) antisym_conv finI in_set_conv_nth less_Suc_eq less_Suc_eq_le nat_neq_iff rw
           sorted_iff_nth_mono_less sorted_list_of_set(1) sorted_sorted_list_of_set x_less y)
   qed
 qed

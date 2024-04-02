@@ -46,7 +46,7 @@ lemma Smith_normal_form_min:
   "Smith_normal_form A = Smith_normal_form_upt_k A (min (nrows A) (ncols A))"
   unfolding Smith_normal_form_def Smith_normal_form_upt_k_def nrows_def ncols_def 
   unfolding isDiagonal_upt_k_def isDiagonal_def
-  by (auto, smt Suc_le_eq le_trans less_le min.boundedI not_less_eq_eq suc_not_zero 
+  by (auto, smt (verit) Suc_le_eq le_trans less_le min.boundedI not_less_eq_eq suc_not_zero 
       to_nat_less_card to_nat_plus_one_less_card')
 
 

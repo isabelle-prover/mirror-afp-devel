@@ -324,9 +324,9 @@ proof (rule allI)+
   hence "?s*?a1*a + ?t*?a1*b = u*a"
     by (metis (no_types, lifting) ab1_ba1 mult.assoc mult.commute)
   hence a1d_ua:"?a1*?d=u*a"
-    by (smt Groups.mult_ac(2) distrib_left more_arith_simps(11) sa_tb_d)
+    by (smt (verit) Groups.mult_ac(2) distrib_left more_arith_simps(11) sa_tb_d)
   hence b1d_ub: "?b1*?d=u*b"
-    by (smt Groups.mult_ac(2) Groups.mult_ac(3) ab1_ba1 distrib_right sa_tb_d u_eq)
+    by (smt (verit, ccfv_threshold) Groups.mult_ac(2) Groups.mult_ac(3) ab1_ba1 distrib_right sa_tb_d u_eq)
   obtain inv_u where inv_u: "inv_u * u = 1" using u unfolding dvd_def
     by (metis mult.commute)
   hence inv_u_dvd_1: "inv_u dvd 1" unfolding dvd_def by auto

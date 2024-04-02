@@ -218,7 +218,7 @@ proof -
             = (\<Sum>ka = 0..<?n. P $$ (i, ka) * A $$ (ka, x)) * Q $$ (x, i)" unfolding rw_colQ by auto
   qed       
   also have "... = (\<Sum>k = 0..<?n. P $$ (i,k) * Q $$ (k, i) * A $$ (k, k))"
-    by (smt rw semiring_normalization_rules(16) sum.ivl_cong)
+    by (smt (verit) rw semiring_normalization_rules(16) sum.ivl_cong)
   also have "... = sum ?g (\<Union>(?positions_of ` ?T))" 
     using UNION_positions_of by auto
   also have "... = (\<Sum>x\<in>?T. sum ?g (?positions_of x))"
@@ -256,7 +256,7 @@ proof (rule all_fin_gen_ideals_are_principal_imp_bezout, rule allI, rule impI)
     have A_carrier: "?A \<in> carrier_mat ?n ?n" by auto
     have diag_A: "isDiagonal_mat ?A" unfolding isDiagonal_mat_def by auto
     have set_xs_eq: "set xs = {?A$$(i,i)| i. i<dim_row ?A}"
-      by (auto, smt case_prod_conv d distinct_Ex1 index_mat(1))
+      by (auto, smt (verit) case_prod_conv d distinct_Ex1 index_mat(1))
     have set_xs_diag_mat: "set xs = set (diag_mat ?A)" 
       using set_xs_eq unfolding diag_mat_def by auto
     obtain P Q where P: "P \<in> carrier_mat ?n ?n" 

@@ -179,9 +179,9 @@ proof (rule lnth_rel_chain)
 next
   show "\<forall>j. enat (j + 1) < llength (ldropn i xs) \<longrightarrow>
     R (lnth (ldropn i xs) j) (lnth (ldropn i xs) (j + 1))"
-    using rel by (smt (z3) One_nat_def Suc_ile_eq add.commute add.right_neutral add_Suc_right
-        add_le_cancel_right ldropn_eq_LNil ldropn_ldropn less_le_not_le linorder_not_less
-        lnth_ldropn not_less_zero)
+    using rel
+    by (smt (verit, best) Suc_ile_eq add.commute ldropn_eq_LNil ldropn_ldropn leD
+        le_add1 linorder_le_less_linear lnth_ldropn order_less_imp_le plus_1_eq_Suc)
 qed
 
 lemma chain_ldropn_lmapI:

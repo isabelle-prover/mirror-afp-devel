@@ -666,9 +666,7 @@ next
   proof -
     have u: "(map (\<lambda>i. f ((a # ws) ! i) \<cdot>\<^sub>v (a # ws) ! i) [0..<length (a # ws)]) 
         = (map (\<lambda>v. f v \<cdot>\<^sub>v v) (a # ws))"
-    proof (intro nth_equalityI, goal_cases)
-      case (2 i) thus ?case by (smt length_map map_nth nth_map)
-    qed auto
+      by (smt (verit, del_insts) length_map map_equality_iff map_nth nth_map)
     show ?thesis unfolding u ..
   qed
   also have "... = lincomb_list (\<lambda>i. f ((a # ws) ! i)) (a # ws)"
@@ -1077,9 +1075,7 @@ proof -
         using P'P left_mult_one_mat A P' unfolding inverts_mat_def by auto
       also have "... = ((P' * (P*A))\<^sup>T) *\<^sub>v y" using assoc_mult_mat_vec P' P A by auto
       also have "... = ((P*A)\<^sup>T * P'\<^sup>T) *\<^sub>v y" using transpose_mult P A P' mult_carrier_mat by metis        
-      also have "... = (P*A)\<^sup>T *\<^sub>v (P'\<^sup>T *\<^sub>v y)" 
-        using assoc_mult_mat_vec A P P' y mult_carrier_mat
-        by (smt carrier_matD(1) transpose_carrier_mat)
+      also have "... = (P*A)\<^sup>T *\<^sub>v (P'\<^sup>T *\<^sub>v y)" using A P' PA y by auto
       finally show "w \<in> row_space (P*A)"
         unfolding row_space_eq[OF PA] 
         using Py w_carrier A P by fastforce

@@ -237,7 +237,8 @@ next
     also have "... = A $ a $ b"
       unfolding diagonal_step_def
       using a_not_j a_not_i
-      by (smt i_min min.strict_boundedE nrows_def to_nat_from_nat_id vec_lambda_beta)
+      by (smt (verit, del_insts) i_min min_less_iff_conj nrows_def
+          to_nat_from_nat_id vec_lambda_unique)
     finally show ?thesis .
   qed
 qed
@@ -904,7 +905,7 @@ qed
 lemma Smith_normal_form_upt_k_le:
   assumes "a\<le>k" and "Smith_normal_form_upt_k A k"
   shows "Smith_normal_form_upt_k A a" using assms
-  by (smt Smith_normal_form_upt_k_def isDiagonal_upt_k_def less_le_trans)
+  by (smt (verit) Smith_normal_form_upt_k_def isDiagonal_upt_k_def less_le_trans)
 
 lemma Smith_normal_form_upt_k_imp_Suc_k:
   assumes s: "Smith_normal_form_upt_k (diagonal_to_Smith_aux A [0..<k] bezout) k"
@@ -1160,7 +1161,7 @@ proof -
       using smith_Suc_k min_eq by auto   
     have "diagonal_to_Smith A bezout $ from_nat ?k $ from_nat ?k 
       dvd diagonal_to_Smith A bezout $ from_nat (?k + 1) $ from_nat (?k + 1)"
-      by (smt One_nat_def Suc_eq_plus1 ib Suc_pred diagonal_to_Smith_aux_dvd diagonal_to_Smith_def 
+      by (smt (verit) One_nat_def Suc_eq_plus1 ib Suc_pred diagonal_to_Smith_aux_dvd diagonal_to_Smith_def 
           le_add1 lessI min_eq min_less_iff_conj ncols_def nrows_def to_nat_from_nat_id zero_less_card_finite)
     thus "diagonal_to_Smith A bezout $ from_nat (?min1 - 1) $ from_nat (?min1 - 1) 
       dvd diagonal_to_Smith A bezout $ from_nat ?min1 $ from_nat ?min1" 

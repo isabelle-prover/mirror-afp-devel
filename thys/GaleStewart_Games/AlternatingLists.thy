@@ -37,7 +37,7 @@ next
     case (LCons x21 x22)
     thus ?thesis unfolding ltake_ltl mult_Suc_right add_2_eq_Suc
       using eSuc_enat lalternate.code lalternate.ctr(1) lhd_LCons_ltl llist.sel(1)
-      by (smt (z3) lt ltake_ltl llist.simps(3) llist.simps(5) ltake_eSuc_LCons)
+      by (smt (verit) lt ltake_ltl llist.simps(3) llist.simps(5) ltake_eSuc_LCons)
   qed
 qed
 
@@ -127,7 +127,7 @@ proof -
   let ?xs = "ltake (2*Suc n) xs"
   have "lalternate ?xs $ n = ?xs $ (2 * n)"
     using assms alternate_list_of[of "ltake (2*Suc n) xs"] nth_alternate[of n "list_of ?xs"]
-    by (smt (z3) Suc_1 Suc_mult_less_cancel1 enat_ord_simps(2) infinite_small_llength lalternate_ltake length_list_of lessI llength_eq_enat_lfiniteD llength_ltake' ltake_all not_less nth_list_of numeral_eq_enat the_enat.simps times_enat_simps(1))
+    by (smt (verit) Suc_1 Suc_mult_less_cancel1 enat_ord_simps(2) infinite_small_llength lalternate_ltake length_list_of lessI llength_eq_enat_lfiniteD llength_ltake' ltake_all not_less nth_list_of numeral_eq_enat the_enat.simps times_enat_simps(1))
   thus ?thesis
     by (metis Suc_1 Suc_mult_less_cancel1 enat_ord_simps(2) lalternate_ltake lessI lnth_ltake)
 qed

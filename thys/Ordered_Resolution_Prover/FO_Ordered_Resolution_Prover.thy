@@ -532,7 +532,7 @@ proof (drule RP_ground_derive, erule sr_ext.derive.cases, hypsubst)
   next
     assume aft: "I \<Turnstile>s ?gSt'"
     have "I \<Turnstile>s ?gSt' \<union> sr.Rf ?gSt'"
-      by (rule sr.Rf_model) (smt Diff_eq_empty_iff Diff_subset Un_Diff aft
+      by (rule sr.Rf_model) (smt (verit) Diff_eq_empty_iff Diff_subset Un_Diff aft
           standard_redundancy_criterion.Rf_mono sup_bot.right_neutral sup_ge1 true_clss_mono)
     then have "I \<Turnstile>s sr.Rf ?gSt'"
       using true_clss_union by blast
@@ -663,7 +663,7 @@ proof -
     ultimately have "C \<in> sr.Rf (grounding_of_state (lnth Sts i))"
       using strict_subset_subsumption_redundant_clss by auto
     then have "C \<in> sr.Rf (Sup_llist Gs)"
-      using d ns by (smt contra_subsetD llength_lmap lnth_lmap lnth_subset_Sup_llist sr.Rf_mono)
+      using d ns by (smt (verit) contra_subsetD llength_lmap lnth_lmap lnth_subset_Sup_llist sr.Rf_mono)
     then have "C \<in> sr.Rf (Liminf_llist Gs)"
       unfolding ns using local.sr_ext.Rf_limit_Sup derivns ns by auto
     then show False
@@ -1322,7 +1322,7 @@ proof -
     then have "\<gamma> \<in> sr_ext_Ri (?N j)"
       unfolding sr_ext_Ri_def by auto
     then have "\<gamma> \<in> sr_ext_Ri (Sup_llist (lmap grounding_of_state Sts))"
-      using j_p' contra_subsetD llength_lmap lnth_lmap lnth_subset_Sup_llist sr_ext.Ri_mono by smt
+      using j_p' contra_subsetD llength_lmap lnth_lmap lnth_subset_Sup_llist sr_ext.Ri_mono by (smt (verit))
     then have "\<gamma> \<in> sr_ext_Ri (Liminf_llist (lmap grounding_of_state Sts))"
       using sr_ext.Ri_limit_Sup[of Gs] derivns ns by blast
   }

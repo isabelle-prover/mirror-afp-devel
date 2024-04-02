@@ -20,7 +20,7 @@ lemma strict_trans:
   assumes "a \<in> P" "b \<in> P" "c \<in> P" "a <\<^sup>P b" "b <\<^sup>P c"
   shows "a <\<^sup>P c"
   using antisymm antisymp_onD assms trans strict_iff_order transp_onD
-  by smt 
+  by (smt (verit, ccfv_SIG))
 
 end
 

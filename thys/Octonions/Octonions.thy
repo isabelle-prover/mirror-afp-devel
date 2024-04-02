@@ -391,11 +391,10 @@ lemma octo_power_commutes: "x ^ y * x = x * (x ^ y :: octo)"
   by (induction y) (simp_all add: octo_product_flexible)
 
 lemma octo_product_noncommutative: "\<not>(\<forall>x y::octo. (x * y = y * x))"
-
-  using inverse_1 left_inverse mult_not_zero octo.sel(8) octo_e4.sel(2)
-  octo_e4.sel(3)   octo_e4.sel(5)  octo_e5.sel(1) octo_e5.sel(2)
-  octo_e5.sel(3) octo_e5.sel(5) octo_e5.sel(6) octo_e5.sel(8) times_octo_def
-  by smt
+  by (auto simp: times_octo_def)
+    (metis (no_types, lifting) Im1_def add_0 mult.commute mult_1 mult_zero_left octo.case
+      octo_e5.simps(2) octo_e5.simps(3) octo_e5.simps(4) octo_e5.simps(5) octo_e5.simps(6)
+      octo_e5.simps(8) zero_neq_numeral)
 
 lemma octo_product_nonassociative :
   "\<not>(\<forall> x y z::octo. x * (y * z) = (x * y) * z)" 

@@ -116,7 +116,7 @@ proof -
     hence "checker_SNF A = Smith_ED_mxn A"
       using ext False c A
       unfolding checker_SNF_def Let_def Code.abort_def
-      by (smt carrier_matD case_prod_conv dim_col_mat(1) mat_of_rows_list_def)
+      by (smt (verit) carrier_matD case_prod_conv dim_col_mat(1) mat_of_rows_list_def)
     then show ?thesis using Smith_ED.is_SNF_Smith_mxn[OF A] c unfolding is_SNF_def
       by auto
   qed

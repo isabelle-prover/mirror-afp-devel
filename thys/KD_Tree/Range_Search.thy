@@ -31,7 +31,8 @@ proof -
   have "cbox p\<^sub>0 p\<^sub>1 = { p. \<forall>k. p\<^sub>0 \<bullet> axis k 1 \<le> p \<bullet> axis k 1 \<and> p \<bullet> axis k 1 \<le> p\<^sub>1 \<bullet> axis k 1 }"
     unfolding cbox_def using axis_inverse by auto
   also have "... = { p. \<forall>k. p\<^sub>0$k \<bullet> 1 \<le> p$k \<bullet> 1 \<and> p$k \<bullet> 1 \<le> p\<^sub>1$k \<bullet> 1 }"
-    using inner_axis[of _ _ 1] by (smt Collect_cong)
+    using inner_axis[of _ _ 1]
+    by (metis (mono_tags, opaque_lifting))
   also have "... = { p. \<forall>k. p\<^sub>0$k \<le> p$k \<and> p$k \<le> p\<^sub>1$k }"
     by simp
   finally show ?thesis .

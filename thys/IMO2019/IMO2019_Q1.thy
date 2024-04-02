@@ -60,7 +60,7 @@ proof
   thus ?rhs using f_classification[of f] by blast
 next
   assume ?rhs
-  thus ?lhs by smt
+  thus ?lhs by (smt (verit, ccfv_threshold) mult_2)
 qed
 
 end

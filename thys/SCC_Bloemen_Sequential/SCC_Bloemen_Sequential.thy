@@ -210,8 +210,7 @@ lemma precedes_trans:
   assumes "x \<preceq> y in xs" and "y \<preceq> z in xs" and "distinct xs"
   shows "x \<preceq> z in xs"
   using assms unfolding precedes_def
-  by (smt Un_iff append.assoc append_Cons_eq_iff distinct_append 
-          not_distinct_conv_prefix set_append split_list_last)
+  by (metis assms(2) disjoint_iff distinct_append precedes_append_left_iff precedes_mem(2))
 
 lemma precedes_antisym:
   assumes "x \<preceq> y in xs" and "y \<preceq> x in xs" and "distinct xs"

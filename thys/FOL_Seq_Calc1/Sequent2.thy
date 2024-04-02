@@ -22,7 +22,7 @@ theorem SC_completeness':
 proof -
   define ps' where \<open>ps' = map compl' ps\<close>
   then have \<open>ps = map compl ps'\<close>
-    by (induct ps arbitrary: ps') (simp, smt compl'_def compl.simps(1) list.simps(9) someI_ex)
+    by (induct ps arbitrary: ps') (simp, smt (verit) compl'_def compl.simps(1) list.simps(9) someI_ex)
   from assms have \<open>\<forall>(e :: nat \<Rightarrow> nat hterm) f g. (list_ex (eval e f g) ps) \<or> eval e f g p\<close>
     by auto
   then have \<open>\<forall>(e :: nat \<Rightarrow> nat hterm) f g. (list_ex (\<lambda>p. \<not> eval e f g p) ps') \<or> eval e f g p\<close>

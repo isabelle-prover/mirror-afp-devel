@@ -130,7 +130,7 @@ function sum_mult :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infix "*\<^sup>S" 6
 | "x *\<^sup>S y = 1\<^sup>S" if "x = 1\<^sup>S" "y = 1\<^sup>S"
 | "x *\<^sup>S y = undefined" if "x \<notin> S \<or> y \<notin> S"
   apply auto
-  using floor.cases floor.simps(1) floor_prop trichotomy apply smt
+  using floor.cases floor.simps(1) floor_prop trichotomy apply (smt (verit))
   using floor_prop strict_iff_order apply force
   using floor_prop strict_iff_order apply force
   using floor_prop trichotomy by auto
@@ -145,7 +145,7 @@ function sum_imp :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infix "\<rightarrow>
 | "x \<rightarrow>\<^sup>S y = 1\<^sup>S" if "x = 1\<^sup>S" "y = 1\<^sup>S"
 | "x \<rightarrow>\<^sup>S y = undefined" if "x \<notin> S \<or> y \<notin> S"
   apply auto
-  using floor.cases floor.simps(1) floor_prop trichotomy apply smt
+  using floor.cases floor.simps(1) floor_prop trichotomy apply (smt (verit))
   using floor_prop strict_iff_order apply force
   using floor_prop strict_iff_order apply force
   using floor_prop trichotomy by auto

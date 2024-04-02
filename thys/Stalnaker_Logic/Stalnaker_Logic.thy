@@ -364,7 +364,7 @@ proof (rule ccontr)
   then have \<open>(L i ((L i ?p) \<^bold>\<and> K i ?q)) \<in> V\<close>
     by (meson K_thm assms(2) assms(3) consequent_in_maximal deriv_in_maximal)
   then have \<open>(L i ((K i ?q) \<^bold>\<and> L i ?p)) \<in> V\<close>
-    by (smt (z3) \<open>K i (L i (conjunct (filter (\<lambda>p. p \<in> known U i) S'))) \<in> V\<close> assms(2) assms(3) assms(4) assms(5) assms(8) c4' exactly_one_in_maximal mcs_conjunction mem_Collect_eq subset_iff)
+    by (smt (verit) \<open>K i (L i (conjunct (filter (\<lambda>p. p \<in> known U i) S'))) \<in> V\<close> assms(2) assms(3) assms(4) assms(5) assms(8) c4' exactly_one_in_maximal mcs_conjunction mem_Collect_eq subset_iff)
   then obtain Z' where z1:\<open>(consistent A Z') \<and> (maximal A Z')\<close> and z2:\<open>Z' \<in> (reach A i V)\<close> 
                   and z3: \<open>((K i ?q) \<^bold>\<and> L i ?p) \<in> Z'\<close>
     using \<open>K i (L i (conjunct (filter (\<lambda>p. p \<in> known U i) S'))) \<in> V\<close> assms(4) assms(5) assms(8) c4' mcs_conjunction by blast

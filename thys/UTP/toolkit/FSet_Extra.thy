@@ -28,14 +28,6 @@ translations
 
 term "fBall"
 
-syntax
-  "_fBall" :: "pttrn => 'a fset => bool => bool" ("(3\<forall> _|\<in>|_./ _)" [0, 0, 10] 10)
-  "_fBex"  :: "pttrn => 'a fset => bool => bool" ("(3\<exists> _|\<in>|_./ _)" [0, 0, 10] 10)
-
-translations
-  "\<forall> x|\<in>|A. P" == "CONST fBall A (%x. P)"
-  "\<exists> x|\<in>|A. P" == "CONST fBex A (%x. P)"
-
 definition FUnion :: "'a fset fset \<Rightarrow> 'a fset" ("\<Union>\<^sub>f_" [90] 90) where
 "FUnion xs = Abs_fset (\<Union>x\<in>\<langle>xs\<rangle>\<^sub>f. \<langle>x\<rangle>\<^sub>f)"
 

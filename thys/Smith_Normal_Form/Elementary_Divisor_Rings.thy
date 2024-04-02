@@ -397,7 +397,7 @@ proof -
   moreover have "invertible_mat (1\<^sub>m 1)"
     using invertible_mat_def inverts_mat_def by fastforce
   ultimately show ?thesis using inv_U unfolding admits_diagonal_reduction_def
-    by (smt U assms(1) carrier_matD(1) one_carrier_mat)
+    by (smt (verit) U assms(1) carrier_matD(1) one_carrier_mat)
 qed
 
 
@@ -547,7 +547,7 @@ proof
                 also have "... = (vec_last (Matrix.row A 0) (n - 1)) $v x" 
                   by (rule mat_of_row_index, insert x V, auto)
                 also have "... = A $$ (0, x + 1)"
-                  by (smt Suc_less_eq V add.right_neutral add_Suc_right add_diff_cancel_right' 
+                  by (smt (verit) Suc_less_eq V add.right_neutral add_Suc_right add_diff_cancel_right' 
                       add_diff_inverse_nat atLeastLessThan_iff carrier_matD(1) carrier_matD(2) 
                       dim_col index_row(1) index_row(2) index_vec less.prems less_Suc0 n_not_0 
                       plus_1_eq_Suc vec_last_def x)
@@ -711,7 +711,7 @@ proof
             ultimately show ?thesis by simp
           qed
           then show ?thesis using inv_V_W2 V W2 less.prems
-            by (smt assoc_mult_mat mult_carrier_mat)
+            by (smt (verit) assoc_mult_mat mult_carrier_mat)
         qed
       qed
     qed
@@ -825,9 +825,9 @@ proof (rule allI)+
   hence "?s*?a1*a + ?t*?a1*b = u*a"
     by (metis (no_types, lifting) ab1_ba1 mult.assoc mult.commute)
   hence a1d_ua:"?a1*?d=u*a"
-    by (smt Groups.mult_ac(2) distrib_left more_arith_simps(11) sa_tb_d)
+    by (smt (verit) Groups.mult_ac(2) distrib_left more_arith_simps(11) sa_tb_d)
   hence b1d_ub: "?b1*?d=u*b"
-    by (smt Groups.mult_ac(2) Groups.mult_ac(3) ab1_ba1 distrib_right sa_tb_d u_eq)
+    by (smt (verit) Groups.mult_ac(2) Groups.mult_ac(3) ab1_ba1 distrib_right sa_tb_d u_eq)
   obtain inv_u where inv_u: "inv_u * u = 1" using u unfolding dvd_def
     by (metis mult.commute)
   hence inv_u_dvd_1: "inv_u dvd 1" unfolding dvd_def by auto
@@ -922,10 +922,9 @@ proof -
       using local.add_ac(1) local.left_diff_distrib' local.ring_distribs(2) by auto
     also have "... = s * l * k * l*t - s * l * t + s * l * a1 * k-b1 * k * l * t + b1 * t-b1 * a1 * k
       + t * l * s-t * l * k * l * s + t * l * b1 * k + a1 * s - a1 * k * l * s + a1 * b1 * k"
-      by (smt abel_semigroup.commute add.abel_semigroup_axioms diff_add_eq diff_diff_eq2
-          mult.semigroup_axioms ring_distribs(4) semiring_normalization_rules(34) semigroup.assoc)
+      by (smt (verit) local.add_diff_eq local.diff_add_eq local.diff_diff_eq2 local.mult_ac(1) local.ring_distribs(4))
     also have "... = a1 * s + b1 * t" unfolding aux_rw
-      by (smt add_ac(2) add_ac(3) add_minus_cancel ring_distribs(4) ring_normalization_rules(2))
+      by (smt (verit, ccfv_SIG) local.add_diff_cancel_left' local.diff_add_eq local.eq_diff_eq)
     also have "... = 1" using sa1_tb1 mult.commute by auto
     finally show ?thesis by simp
   qed
@@ -1240,7 +1239,7 @@ proof -
     have "Determinant.det ?Q = 1" using q00_q01 unfolding det_2[OF Q] unfolding q10_def q11_def
       by (auto, metis (no_types, lifting) add_uminus_conv_diff diff_minus_eq_add more_arith_simps(7)
           more_arith_simps(9) mult.commute)
-    hence inv_Q: "invertible_mat ?Q" by (smt Q dvd_refl invertible_iff_is_unit_JNF)
+    hence inv_Q: "invertible_mat ?Q" by (smt (verit) Q dvd_refl invertible_iff_is_unit_JNF)
     define S2 where "S2 = ?Q * S1 "
     have S2: "S2 \<in> carrier_mat 2 2" using A' P S2_def S1 Q mult_carrier_mat by blast
     have S2_00: "S2 $$ (0,0) = 1" unfolding mat_mult2_00[OF Q S1 S2_def] using q00_q01 
@@ -1266,20 +1265,20 @@ proof -
     hence SNF_S3_D: "Smith_normal_form_mat (S3*D)"
       using D_def S3 SNF_preserved_multiples_identity by blast
     have "S3 * D = ?Q * A' * ?P * ?P1 * D" using S1_def S2_def S3_def
-      by (smt A' P Q S1 addrow_mat_carrier assoc_mult_mat)
+      by (smt (verit) A' P Q S1 addrow_mat_carrier assoc_mult_mat)
     also have "... = ?Q * A' * ?P * (?P1 * D)"
       by (meson A' D addrow_mat_carrier assoc_mult_mat mat_carrier mult_carrier_mat)
     also have "... = ?Q * A' * ?P * (D * ?P1)" 
       using commute_multiples_identity[OF P1] unfolding D_def by auto
     also have "... = ?Q * A' * (?P * (D * ?P1))"
-      by (smt A' D assoc_mult_mat carrier_matD(1) carrier_matD(2) mat_carrier times_mat_def)
+      by (smt (verit) A' D assoc_mult_mat carrier_matD(1) carrier_matD(2) mat_carrier times_mat_def)
     also have "... = ?Q * A' * (D * (?P * ?P1))"
-      by (smt D D_def P P1 assoc_mult_mat commute_multiples_identity)
+      by (smt (verit) D D_def P P1 assoc_mult_mat commute_multiples_identity)
     also have "... = ?Q * (A' * D) * (?P * ?P1)"
-      by (smt A' D assoc_mult_mat carrier_matD(1) carrier_matD(2) mat_carrier times_mat_def)
+      by (smt (verit) A' D assoc_mult_mat carrier_matD(1) carrier_matD(2) mat_carrier times_mat_def)
     also have "... = ?Q * A * (?P * ?P1)" unfolding A_A'D by auto     
     also have "... = ?Q * B * (U * (?P * ?P1))" unfolding A_def 
-      by (smt B U assoc_mult_mat carrier_matD(1) carrier_matD(2) mat_carrier times_mat_def)
+      by (smt (verit) B U assoc_mult_mat carrier_matD(1) carrier_matD(2) mat_carrier times_mat_def)
    finally have S3_D_rw: "S3 * D = ?Q * B * (U * (?P * ?P1))" .
     show "admits_diagonal_reduction B" 
     proof (rule admits_diagonal_reduction_intro[OF _ _ inv_Q])    
