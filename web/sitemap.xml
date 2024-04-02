@@ -3,10 +3,37 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2024-03-20T00:00:00+00:00</lastmod>
+    <lastmod>2024-03-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2024-03-20T00:00:00+00:00</lastmod>
+    <lastmod>2024-03-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Broadcast_Psi.html</loc>
+    <lastmod>2024-03-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/computer-science/</loc>
+    <lastmod>2024-03-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2024-03-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2024-03-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/pohjola/</loc>
+    <lastmod>2024-03-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/psi_calculi/</loc>
+    <lastmod>2024-03-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/raabjerg/</loc>
+    <lastmod>2024-03-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2024-03-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/weber/</loc>
+    <lastmod>2024-03-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/coinductive/</loc>
     <lastmod>2024-03-20T00:00:00+00:00</lastmod>
@@ -14,13 +41,7 @@
     <loc>/entries/Continued_Fractions.html</loc>
     <lastmod>2024-03-20T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/</loc>
-    <lastmod>2024-03-20T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/eberl/</loc>
-    <lastmod>2024-03-20T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/</loc>
     <lastmod>2024-03-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Kummer_Congruence.html</loc>
@@ -35,16 +56,10 @@
     <loc>/dependencies/polynomial_factorization/</loc>
     <lastmod>2024-03-20T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/topics/</loc>
-    <lastmod>2024-03-20T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/zeta_function/</loc>
     <lastmod>2024-03-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Approximate_Model_Counting.html</loc>
-    <lastmod>2024-03-15T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/computer-science/</loc>
     <lastmod>2024-03-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/concentration_inequalities/</loc>
@@ -84,9 +99,6 @@
     <lastmod>2024-03-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/QBF_Solver_Verification.html</loc>
-    <lastmod>2024-03-06T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/weber/</loc>
     <lastmod>2024-03-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Wieferich_Kempner.html</loc>
@@ -759,9 +771,6 @@
     <lastmod>2023-01-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/myreen/</loc>
-    <lastmod>2023-01-20T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/pohjola/</loc>
     <lastmod>2023-01-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/tanaka/</loc>
@@ -4956,6 +4965,8 @@
     <loc>/sessions/boolos_curious_inference_automated/</loc>
   </url><url>
     <loc>/sessions/bounded_deducibility_security/</loc>
+  </url><url>
+    <loc>/sessions/broadcast_psi/</loc>
   </url><url>
     <loc>/sessions/btree/</loc>
   </url><url>

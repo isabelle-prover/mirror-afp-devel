@@ -1,0 +1,38 @@
+title = "Broadcast Psi-calculi"
+date = 2024-03-27
+topics = [
+  "Computer science/Concurrency/Process calculi",
+]
+abstract = """
+We provide an Isabelle/HOL-Nominal formalisation of the definitions, theorems and proofs in the paper Broadcast Psi-calculi with an
+Application to Wireless Protocols by Borgström et al., which extends the Psi-calculi framework with primitives for broadcast communication in order to model wireless protocols."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.raabjerg]
+email = "raabjerg_email"
+
+[authors.pohjola]
+email = "pohjola_email"
+
+[authors.weber]
+email = "weber_email"
+
+[contributors]
+
+[notify]
+pohjola = "pohjola_email"
+weber = "weber_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1007/s10270-013-0375-z",
+  "10.1007/978-3-642-24690-6_7",
+]
+pubs = []

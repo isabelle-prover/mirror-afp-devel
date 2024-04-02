@@ -5346,6 +5346,24 @@ host = [
 
 [qiu.homepages]
 
+[raabjerg]
+name = "Palle Raabjerg"
+
+[raabjerg.emails]
+
+[raabjerg.emails.raabjerg_email]
+user = [
+  "palle",
+  "raabjerg",
+]
+host = [
+  "ub",
+  "uu",
+  "se",
+]
+
+[raabjerg.homepages]
+
 [rabe]
 name = "Markus N. Rabe"
 
