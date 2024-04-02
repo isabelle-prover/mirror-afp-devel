@@ -832,7 +832,7 @@ text \<open>Idea: Proof uses pigeonhole principle to guarantee the existence of 
       col (f (\<lambda>i. if i \<le> r2-1 then 0 else ?c i))"
       using rel_propE[of ?c "r2-1"] pigeon_cols by simp
     then show ?thesis unfolding h_def f_def 
-      by (smt (z3) Nat.lessE One_nat_def add_diff_cancel_left' 
+      by (smt (verit) Nat.lessE One_nat_def add_diff_cancel_left' 
           le_less less_Suc_eq_le multi_arith_prog_mono plus_1_eq_Suc)
   qed
 

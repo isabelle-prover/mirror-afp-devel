@@ -80,7 +80,7 @@ proof-
           have \<open>{x | x :: nat. x < n \<and> coprime x n} =  {x | x :: nat. x \<noteq> 0 \<and> x < n}\<close> 
           proof
             show "{x |x. x < n \<and> coprime x n} \<subseteq> {x |x. x \<noteq> 0 \<and> x < n}"
-              by (smt Collect_mono not_le ord_0_nat ord_eq_0 order_refl prime_gt_1_nat that zero_neq_one)
+              using prime_nat_iff'' that by fastforce
             show "{x |x. x \<noteq> 0 \<and> x < n} \<subseteq> {x |x. x < n \<and> coprime x n}"
               using coprime_commute prime_nat_iff'' that 
               by fastforce              
@@ -473,11 +473,11 @@ proof-
                 have \<open>odd (1 + (m - 1) * k)\<close> 
                   by (simp add: \<open>even k\<close> )
                 hence \<open>coprime (3 + (m - 1) * k) (1 + (m - 1) * k)\<close> 
-                  by (smt add_numeral_left coprime_common_divisor coprime_right_2_iff_odd dvd_add_left_iff not_coprimeE numeral_Bit1 numeral_One numeral_plus_one one_add_one)
+                  by (smt (verit) add_numeral_left coprime_common_divisor coprime_right_2_iff_odd dvd_add_left_iff not_coprimeE numeral_Bit1 numeral_One numeral_plus_one one_add_one)
                 hence \<open>coprime (3 + (m - 1) * k) n\<close> 
                   by (metis \<open>even k\<close> \<open>n = 2 * (1 + (m - 1) * k)\<close> coprime_mult_right_iff coprime_right_2_iff_odd even_add even_mult_iff odd_numeral)
                 have \<open>3 + (m - 1) * k < n\<close> 
-                  by (smt Groups.add_ac(2) \<open>even k\<close> \<open>n = 2 * (1 + (m - 1) * k)\<close> \<open>n = 2 + (m - 1) * b\<close> \<open>n \<noteq> 2\<close> add_Suc_right add_cancel_right_right add_mono_thms_linordered_semiring(1) dvd_imp_le even_add even_mult_iff le_add2 le_neq_implies_less left_add_twice mult_2 neq0_conv numeral_Bit1 numeral_One odd_numeral one_add_one plus_1_eq_Suc)
+                  by (smt (verit) Groups.add_ac(2) \<open>even k\<close> \<open>n = 2 * (1 + (m - 1) * k)\<close> \<open>n = 2 + (m - 1) * b\<close> \<open>n \<noteq> 2\<close> add_Suc_right add_cancel_right_right add_mono_thms_linordered_semiring(1) dvd_imp_le even_add even_mult_iff le_add2 le_neq_implies_less left_add_twice mult_2 neq0_conv numeral_Bit1 numeral_One odd_numeral one_add_one plus_1_eq_Suc)
                 have \<open>3 + (m - 1) * k \<in> {x |x. x < n \<and> coprime x n}\<close> 
                   using \<open>3 + (m - 1) * k < n\<close> \<open>coprime (3 + (m - 1) * k) n\<close> 
                   by blast

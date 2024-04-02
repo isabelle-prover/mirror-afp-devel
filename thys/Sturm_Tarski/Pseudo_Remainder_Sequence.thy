@@ -283,7 +283,7 @@ next
   proof (cases "x \<in> set (coeffs p)")    
     case True
     show ?thesis using pCons(2)[OF True]
-      by (smt Ints_mult Ints_of_int a2_def de_lcm_pCons lcm_times1 
+      by (smt (verit) Ints_mult Ints_of_int a2_def de_lcm_pCons lcm_times1 
             mult.assoc mult.commute of_int_mult)
   next
     case False

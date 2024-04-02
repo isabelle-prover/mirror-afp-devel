@@ -172,9 +172,9 @@ next
     note * = 2 lappend_ltake_ldrop[of "enat n" lst] Suc_llength infinite_small_llength
              lappend_LNil2 leI lfilter_lappend_lfinite llength_ltake' min.strict_order_iff n
     have take_part:"ltake (enat (Suc x)) (?fP lst) = ?fP (ltake (enat n) lst)"
-      using * by (smt (z3) ltake_all)
+      using * by (smt (verit) ltake_all)
     from 2 have drop_part:"ldrop (enat (Suc x)) (?fP lst) = ?fP (ldrop (enat n) lst)"
-      using * by (smt (z3) ldrop_all)
+      using * by (smt (verit) ldrop_all)
     from take_part drop_part show ?thesis by blast
   next
   case 3
@@ -273,7 +273,7 @@ proof -
   from assms[OF this]
   have False using ineq by auto
 }
-thus ?thesis unfolding ldistinct_conv_lnth by (smt (z3) le_cases3 less_le)
+thus ?thesis unfolding ldistinct_conv_lnth by (smt (verit) le_cases3 less_le)
 qed
 
 lemma ldistinct_lfilterE:

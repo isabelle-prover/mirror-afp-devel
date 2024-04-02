@@ -78,7 +78,7 @@ lemma nat_sub2:
 
 lemma nat_sub3:
   "(a::nat) \<ge> b \<Longrightarrow> c \<ge> d \<Longrightarrow> (a - b) * (c - d) = (a * c + b * d) - (a * d + b * c) \<and> a * c + b * d \<ge> a * d + b * c"
-  by (smt diff_mult_distrib mult.commute mult_le_mono1 nat_sub2)
+  by (smt (verit) diff_mult_distrib mult.commute mult_le_mono1 nat_sub2)
 
 (* Cancel identical terms on two sides, yielding a normalized expression. *)
 lemma nat_sub_combine:
@@ -90,7 +90,7 @@ lemma nat_sub_combine2:
 
 lemma nat_sub_combine3:
   "n \<le> m \<Longrightarrow> (a::nat) + b * n \<ge> c + b * m \<Longrightarrow> (a + b * n) - (c + b * m) = a - (c + b * (m - n)) \<and> a \<ge> c + b * (m - n) \<and> m \<ge> n"
-  by (smt add.commute mult.commute nat_diff_add_eq2 nat_le_add_iff1)
+  by (smt (verit) add.commute mult.commute nat_diff_add_eq2 nat_le_add_iff1)
 
 ML_file \<open>nat_sub.ML\<close>
 ML_file \<open>nat_sub_test.ML\<close>

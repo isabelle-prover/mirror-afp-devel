@@ -408,7 +408,7 @@ lemma permute_comp_left_inj_on:
 lemma permute_comp_right_inj:
   "p permutes {..<n} \<Longrightarrow> inj (\<lambda>p'. p' \<circ> p)"
   using inj_onI comp_id o_assoc permutes_surj surj_iff
-  by (smt)
+  by (smt (verit))
 
 lemma permute_comp_right_inj_on:
   "p permutes {..<n} \<Longrightarrow> inj_on (\<lambda>p'. p' \<circ> p) A"

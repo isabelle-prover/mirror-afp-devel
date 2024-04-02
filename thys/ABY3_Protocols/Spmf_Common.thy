@@ -228,7 +228,7 @@ lemma scale_spmf_None_iff:
     inverse_nonpositive_iff_nonpositive
     weight_0_spmf
     measure_le_0_iff
-  by smt
+  by (smt (verit))
 
 lemma spmf_of_pmf_the:
   "lossless_spmf s \<Longrightarrow> spmf_of_pmf (map_pmf the s) = s"

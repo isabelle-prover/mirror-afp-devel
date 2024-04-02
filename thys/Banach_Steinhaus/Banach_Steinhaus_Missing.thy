@@ -577,7 +577,7 @@ proof-
   have f_x1: \<open>f (r *\<^sub>R x) = r *\<^sub>R f x\<close> for x
     by (simp add: blinfun.scaleR_right)    
   have \<open>ball (0::'a) r = ((*\<^sub>R) r) ` (ball 0 1)\<close>
-    by (smt assms ball_scale nonzero_mult_div_cancel_left right_inverse_eq scale_zero_right)
+    by (smt (verit) assms ball_scale nonzero_mult_div_cancel_left right_inverse_eq scale_zero_right)
   hence \<open>Sup ((\<lambda>t. \<parallel>f *\<^sub>v t\<parallel>) ` (ball 0 r)) = Sup ((\<lambda>t. \<parallel>f *\<^sub>v t\<parallel>) ` (((*\<^sub>R) r) ` (ball 0 1)))\<close>
     by simp
   also have \<open>\<dots> = Sup (((\<lambda>t. \<parallel>f *\<^sub>v t\<parallel>) \<circ> ((*\<^sub>R) r)) ` (ball 0 1))\<close>
@@ -886,7 +886,7 @@ proof (unfold Cauchy_altdef2, rule, rule)
     by (metis Suc_eq_plus1 Suc_le_D diff_Suc_1  gr0_implies_Suc less_eq_Suc_le less_imp_Suc_add 
         zero_less_Suc)
   hence \<open>\<exists>M. \<forall>m\<ge>M. \<forall>n\<ge>M. m > n \<longrightarrow> dist (\<phi> m) (\<phi> n) < e\<close> 
-    using sum_a2 \<open>e > 0\<close> by smt
+    using sum_a2 \<open>e > 0\<close> by (smt (verit))
   thus "\<exists>N. \<forall>n\<ge>N. dist (\<phi> n) (\<phi> N) < e"
     using \<open>0 < e\<close> by fastforce
 qed

@@ -100,11 +100,11 @@ proof (induct n arbitrary: k)
     by (metis binomial_eq_0_iff binomial_n_0 fps_nth_of_nat not_gr_zero of_nat_0 of_nat_1 power_0) 
 next
   case h: (Suc n)
-  fix k 
   have start: "(1 + fps_X)^(n + 1) = (1 + fps_X) * (1 + fps_X)^n" by auto
   show ?case 
     using One_nat_def Suc_eq_plus1 Suc_pred add.commute binomial_Suc_Suc binomial_n_0 
-        fps_mult_fps_X_plus_1_nth h.hyps neq0_conv start by (smt of_nat_add)  
+        fps_mult_fps_X_plus_1_nth h.hyps neq0_conv start
+    by (smt (verit, del_insts) of_nat_add)
 qed
 
 subsection \<open>Freshman's Dream Lemma on FPS \<close>
@@ -127,7 +127,8 @@ proof -
     using assms binomial_fact'[OF inequality] by auto
   also have "... = k * fact (p^n) div (fact k * fact((p^n) - k))"
     using binomial_fact_lemma div_mult_self_is_m fact_gt_zero inequality mult.assoc mult.commute 
-          nat_0_less_mult_iff by smt
+          nat_0_less_mult_iff
+    by (simp add: choose_dvd div_mult_swap)
   also have "... = k * fact (p^n) div (k * fact (k - 1) * fact((p^n) - k))" 
     by (metis assms(2) fact_nonzero fact_num_eq_if le0 le_antisym of_nat_id)
   also have "... = fact (p^n) div (fact (k - 1) * fact((p^n) - k))" 
@@ -364,7 +365,7 @@ next
     using nth_digit_general_def shift_bounds_fact by simp
   finally have "(n choose k ) mod p = ((\<Prod>i=0..(d+1). (nth_digit_general n i p) choose (nth_digit_general k i p))) mod p" 
     using One_nat_def atMost_atLeast0 mult.commute prod.atLeast1_atMost_eq prod.atMost_shift
-    by (smt Suc_eq_plus1 shift_bounds_fact)
+    by (smt (verit, ccfv_threshold))
   thus ?case
     using Suc_eq_plus1 atMost_atLeast0 by presburger
 qed

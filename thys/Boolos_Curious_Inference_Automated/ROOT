@@ -1,12 +1,9 @@
 chapter AFP
 
 session "Boolos_Curious_Inference_Automated" = HOL +
-
   options [timeout = 600]
-
   theories
-   Boolos_Curious_Inference_Automated
-
+    Boolos_Curious_Inference_Automated
   document_files
     "root.bib"
     "root.tex"

@@ -75,11 +75,11 @@ begin
 
 lift_definition divide_natL :: "natL \<Rightarrow> natL \<Rightarrow> natL" is divide
   apply (auto simp: div_int_pos_iff)
-  by (smt div_by_0 div_by_1 zdiv_mono2)
+  by (smt (verit) div_by_0 div_by_1 zdiv_mono2)
 
 lift_definition modulo_natL :: "natL \<Rightarrow> natL \<Rightarrow> natL" is modulo
   apply (auto simp: mod_int_pos_iff)
-  by (smt zmod_le_nonneg_dividend)
+  by (smt (verit) zmod_le_nonneg_dividend)
 
 instance
   by (standard; (transfer, simp add: mod_simps))

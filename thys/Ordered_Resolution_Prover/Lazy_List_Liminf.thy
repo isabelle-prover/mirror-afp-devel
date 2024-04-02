@@ -68,7 +68,7 @@ definition Sup_upto_llist :: "'a set llist \<Rightarrow> enat \<Rightarrow> 'a s
 
 lemma Sup_upto_llist_eq_Sup_llist_ltake: "Sup_upto_llist Xs j = Sup_llist (ltake (eSuc j) Xs)"
   unfolding Sup_upto_llist_def Sup_llist_def
-  by (smt Collect_cong Sup.SUP_cong iless_Suc_eq lnth_ltake less_llength_ltake mem_Collect_eq)
+  by (smt (verit) Collect_cong Sup.SUP_cong iless_Suc_eq lnth_ltake less_llength_ltake mem_Collect_eq)
 
 lemma Sup_upto_llist_enat_0[simp]:
   "Sup_upto_llist Xs (enat 0) = (if lnull Xs then {} else lhd Xs)"

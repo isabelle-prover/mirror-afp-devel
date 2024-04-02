@@ -161,7 +161,7 @@ proof -
       assume local_assm: "s'' \<in> {s' . s' \<in> S' \<and> dist s s' \<le> 2*r}"
       then have "distance (C \<union> {s}) s'' \<le> dist s'' s"
         using Min.coboundedI distance_def dist_lemmas calculation by auto
-      also have " ... \<le> 2 * r" using local_assm by (smt dist_self dist_triangle2 mem_Collect_eq)
+      also have " ... \<le> 2 * r" using local_assm by (smt (verit) dist_self dist_triangle2 mem_Collect_eq)
       finally show ?thesis .
     qed
   qed
@@ -190,11 +190,11 @@ proof -
     next
       assume case_assm: "c\<^sub>1 = s \<and> c\<^sub>2 \<in> C"
       have "(\<forall>c \<in> C. \<forall>s\<in>S'. S' \<noteq> {} \<longrightarrow> 2 * r < dist c s)" using IH inv_def by simp
-      then show ?thesis by (smt case_assm s_def assms(1) dist_self dist_triangle3 singletonD)
+      then show ?thesis by (smt (verit) case_assm s_def assms(1) dist_self dist_triangle3 singletonD)
     next
       assume case_assm: "c\<^sub>1 \<in> C \<and> c\<^sub>2 = s"
       have "(\<forall>c \<in> C. \<forall>s\<in>S'. S' \<noteq> {} \<longrightarrow> 2 * r < dist c s)" using IH inv_def by simp
-      then show ?thesis by (smt case_assm s_def assms(1) dist_self dist_triangle3 singletonD)
+      then show ?thesis by (smt (verit) case_assm s_def assms(1) dist_self dist_triangle3 singletonD)
     next
       assume "c\<^sub>1 = s \<and> c\<^sub>2 = s"
       then have False using local_assms(3) by simp
@@ -409,7 +409,7 @@ next
             then have "distance C s \<le> dist s s" using Min.coboundedI[of "distance C ` S" "dist s s"] 
               by (simp add: distance_def C_props)
             also have " ... = 0" by simp
-            finally have "distance C s = 0" using dist_lemmas(4) by (smt C_props)
+            finally have "distance C s = 0" using dist_lemmas(4) by (smt (verit) C_props)
             then have radius_le_zero: "2 * ?r < 0" using contr_assm s_def by simp
             obtain x where x_def: "?r = distance C' x" using radius_def2 by metis
             obtain l where l_def: "distance C' x = dist x l" using dist_lemmas(3) by (metis C'_assms card_gt_0_iff)

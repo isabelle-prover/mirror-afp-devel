@@ -371,7 +371,7 @@ proof (rule ccontr, simp)
     using \<open>y \<in> B - {x}\<close> \<open>finite B\<close> by (simp add: sum.remove)
   finally have *: "W B = W (B - {x} - {y}) + w x + w y" .
   have "\<forall>u \<in> B. 0 < w u" using bpE(3)[OF assms(1)] assms(2) weight by blast
-  then have "0 \<le> W (B - {x} - {y})" by (smt DiffD1 sum_nonneg)
+  then have "0 \<le> W (B - {x} - {y})" by (smt (verit) DiffD1 sum_nonneg)
   with * have "c < W B" using \<open>c < w x + w y\<close> by simp
   then show False using bpE(4)[OF assms(1)] assms(2) by fastforce
 qed
@@ -474,7 +474,7 @@ lemma sum_Un_ge:
   shows "sum f M \<le> sum f (M \<union> N)"
 proof -
   have "0 \<le> sum f N - sum f (M \<inter> N)"
-    using assms by (smt DiffD1 inf.cobounded2 UnCI sum_mono2)
+    using assms by (smt (verit) DiffD1 inf.cobounded2 UnCI sum_mono2)
   then have "sum f M \<le> sum f M + sum f N - sum f (M \<inter> N)"
     by simp
   also have "... = sum f (M \<union> N)"
@@ -518,7 +518,7 @@ next
     using bpE(2,3)[OF invrules(1)] weight by (metis (no_types, lifting) UnionI bp_bins_finite invrules(1) sum_pos)
   then have "(\<Sum>B \<in> P\<^sub>1 \<union> P\<^sub>2 \<union> wrap B\<^sub>2. W B) \<le> (\<Sum>B \<in> P\<^sub>1 \<union> P\<^sub>2 \<union> wrap B\<^sub>2 \<union> (wrap B\<^sub>1 \<union> {{v} |v. v \<in> V}). W B)"
     using sum_Un_ge[OF FINITE(3,4), of W] by blast
-  also have "... = (\<Sum>B \<in> P\<^sub>1 \<union> wrap B\<^sub>1 \<union> P\<^sub>2 \<union> wrap B\<^sub>2 \<union> {{v} |v. v \<in> V}. W B)" by (smt Un_assoc Un_commute) 
+  also have "... = (\<Sum>B \<in> P\<^sub>1 \<union> wrap B\<^sub>1 \<union> P\<^sub>2 \<union> wrap B\<^sub>2 \<union> {{v} |v. v \<in> V}. W B)" by (smt (verit) Un_assoc Un_commute) 
   also have "... = W U" using sum_Un_eq_sum_sum[OF invrules(1), symmetric] .
   finally have *: "(\<Sum>B \<in> P\<^sub>1 \<union> P\<^sub>2 \<union> wrap B\<^sub>2. W B) \<le> W U" .
 
@@ -1180,7 +1180,7 @@ proof (rule ccontr, simp)
     using \<open>y \<in> B - {x}\<close> \<open>finite B\<close> by (simp add: sum.remove)
   finally have *: "W B = W (B - {x} - {y}) + w x + w y" .
   have "\<forall>u \<in> B. 0 < w u" using bpE(3)[OF assms(1)] assms(2) weight by blast
-  then have "0 \<le> W (B - {x} - {y})" by (smt DiffD1 sum_nonneg)
+  then have "0 \<le> W (B - {x} - {y})" by (smt (verit) DiffD1 sum_nonneg)
   with * have "c < W B" using \<open>c < w x + w y\<close> by simp
   then show False using bpE(4)[OF assms(1)] assms(2) by fastforce
 qed
@@ -1273,7 +1273,7 @@ lemma sum_Un_ge:
   shows "sum f M \<le> sum f (M \<union> N)"
 proof -
   have "0 \<le> sum f N - sum f (M \<inter> N)"
-    using assms by (smt DiffD1 inf.cobounded2 UnCI sum_mono2)
+    using assms by (smt (verit) DiffD1 inf.cobounded2 UnCI sum_mono2)
   then have "sum f M \<le> sum f M + sum f N - sum f (M \<inter> N)"
     by simp
   also have "... = sum f (M \<union> N)"
@@ -1311,7 +1311,7 @@ next
     using bpE(2,3)[OF invrules(1)] weight by (metis (no_types, lifting) UnionI bp_bins_finite invrules(1) sum_pos)
   then have "(\<Sum>B \<in> P\<^sub>1 \<union> P\<^sub>2 \<union> wrap B\<^sub>2. W B) \<le> (\<Sum>B \<in> P\<^sub>1 \<union> P\<^sub>2 \<union> wrap B\<^sub>2 \<union> (wrap B\<^sub>1 \<union> {{v} |v. v \<in> S \<union> L}). W B)"
     using sum_Un_ge[OF FINITE(3,4), of W] by blast
-  also have "... = (\<Sum>B \<in> P\<^sub>1 \<union> wrap B\<^sub>1 \<union> P\<^sub>2 \<union> wrap B\<^sub>2 \<union> {{v} |v. v \<in> S \<union> L}. W B)" by (smt Un_assoc Un_commute) 
+  also have "... = (\<Sum>B \<in> P\<^sub>1 \<union> wrap B\<^sub>1 \<union> P\<^sub>2 \<union> wrap B\<^sub>2 \<union> {{v} |v. v \<in> S \<union> L}. W B)" by (smt (verit) Un_assoc Un_commute) 
   also have "... = W U" using sum_Un_eq_sum_sum[OF invrules(1), symmetric] .
   finally have *: "(\<Sum>B \<in> P\<^sub>1 \<union> P\<^sub>2 \<union> wrap B\<^sub>2. W B) \<le> W U" .
   have DISJNT: "P\<^sub>1 \<inter> (P\<^sub>2 \<union> wrap B\<^sub>2) = {}" using invrules(5) by blast
@@ -1507,7 +1507,7 @@ proof -
   from inv\<^sub>1_stepA[OF invrules(1) this assms(4)] * have 1: "inv\<^sub>1 P\<^sub>1 P\<^sub>2 (B\<^sub>1 \<union> {u}) B\<^sub>2 (S - {u} \<union> L)" by simp
   have "L \<noteq> {} \<Longrightarrow> \<forall>B\<in>P\<^sub>1 \<union> wrap B\<^sub>1. B \<inter> L\<^sub>U \<noteq> {}" using invrules(2) by blast
   then have 2: "L \<noteq> {} \<Longrightarrow> \<forall>B\<in>P\<^sub>1 \<union> wrap (B\<^sub>1 \<union> {u}). B \<inter> L\<^sub>U \<noteq> {}"
-    by (smt Int_insert_left Un_empty_right Un_iff Un_insert_right assms(2) insert_not_empty singletonD singletonI wrap_def)
+    by (smt (verit) Int_insert_left Un_empty_right Un_iff Un_insert_right assms(2) insert_not_empty singletonD singletonI wrap_def)
   from inv\<^sub>2I[OF 1 2] invrules have "inv\<^sub>2 P\<^sub>1 P\<^sub>2 (B\<^sub>1 \<union> {u}) B\<^sub>2 (S - {u}) L" by blast
   from inv\<^sub>3I[OF this] show ?thesis using inv\<^sub>3E(2)[OF assms(1)] .
 qed

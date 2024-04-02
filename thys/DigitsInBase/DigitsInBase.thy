@@ -705,9 +705,7 @@ proof -
       then have "last D \<ge> 1" by simp
       have "?m \<ge> seq (length D - 1) * b^(length D - 1)"
         using length_bounded_sum
-        by (smt (z3) One_nat_def Suc_pred diff_is_0_eq diff_le_self dual_order.strict_trans1 le_add2
-            linorder_le_less_linear mult.right_neutral mult_cancel1 seq_def sum.lessThan_Suc
-            zero_less_diff)
+        by (metis b_facts(2) less_eq_div_iff_mult_less_eq mod_less_eq_dividend seq_is_digits zero_less_power)
       then have "?m \<ge> (last D) * b^(length D - 1)"
         by (simp add: \<open>D \<noteq> []\<close> last_conv_nth seq_def)
       with \<open>last D \<ge> 1\<close> have "?m \<ge> b^(length D - 1)"

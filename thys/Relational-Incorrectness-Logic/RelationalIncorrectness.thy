@@ -222,7 +222,7 @@ proof(induct k)
   then show ?case by(clarsimp simp: ir_valid_def, blast)
 next
   case (Suc k)
-  then show ?case  using  WhileTrue get_back.simps(2) ir_valid_def by smt 
+  then show ?case  using  WhileTrue get_back.simps(2) ir_valid_def by (smt (verit))
 qed
 
 (* both this an the next one get used in the completeness proof *)
@@ -291,7 +291,7 @@ lemma Assign_complete:
   shows  "\<exists>s'. (\<exists>v. P (t(x1 := v)) s' \<and> t x1 = aval x2 (t(x1 := v))) \<and> (c', s') \<Rightarrow> t'"
 proof -
   from v and q obtain s s' where a: "P s s' \<and> (x1 ::= x2,s) \<Rightarrow> t \<and> (c',s') \<Rightarrow> t'"
-    using ir_valid_def by smt
+    using ir_valid_def by (smt (verit))
   hence "P (\<lambda>a. if a = x1 then s x1 else (s(x1 := aval x2 s)) a) s' \<and> aval x2 s = aval x2 (s(x1 := s x1))"
     using assign_upd_blah 
     by simp
@@ -338,12 +338,12 @@ next
        apply(rule ir_If_True,fastforce intro: t)
       apply(rule ir_If_False, fastforce intro: f)    
      apply blast
-    by (smt IfE ir_valid_def If)
+    by (smt (verit) IfE ir_valid_def If)
 next
   case (While x1 c)
   have a: "\<And>n. ir_hoare (\<lambda>s s'. get_back P x1 c n s s' \<and> bval x1 s) c SKIP (get_back P x1 c (Suc n))"
-    using ir_valid_While1  While
-    by (smt get_back.simps(2) ir_valid_def meh_simp)
+    using ir_valid_While1 While
+    by (smt (verit, ccfv_threshold) get_back.simps(2) ir_Skip_sym)
   have b: "ir_hoare (\<lambda>s s'. P s s' \<and> bval x1 s) c c'
                     (\<lambda>t t'.  \<exists>s'. (c', s') \<Rightarrow> t' \<and> (\<exists>s. (c, s) \<Rightarrow> t \<and> bval x1 s \<and> P s s') \<and> 
                     (\<exists>u. (WHILE x1 DO c, t) \<Rightarrow> u \<and> Q u t'))"
