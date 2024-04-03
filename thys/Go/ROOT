@@ -13,7 +13,7 @@ session Go_Test_Quick in "test/quick" = Go +
   options [timeout = 300]
   sessions
     "HOL-Data_Structures"
-  theories [document = false]
+  theories [document = false, condition = ISABELLE_GOEXE]
     RBT_Test
   export_files [3]
     "*:code/export1/**"
@@ -26,7 +26,7 @@ session Go_Test_Slow in "test/slow" = "HOL-Library" +
     "HOL-Number_Theory"
     "HOL-Data_Structures"
     "HOL-Examples"
-  theories [document = false]
+  theories [document = false, condition = ISABELLE_GOEXE]
     Candidates
     Generate
     Generate_Binary_Nat
