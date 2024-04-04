@@ -84,8 +84,8 @@ fun setmp_tree f context =
 fun stack_exec0 f {context, reports_text, error_lines} =
   let val ((reports_text', error_lines'), context) = setmp_tree f context
   in { context = context
-     , reports_text = append reports_text' reports_text
-     , error_lines = append error_lines' error_lines } end
+     , reports_text = reports_text' @ reports_text
+     , error_lines = error_lines' @ error_lines } end
 
 fun stack_exec env_dir data_put =
   stack_exec0 o Data_Lang.setmp (SOME (apsnd (C_Env.map_env_directives (K env_dir)) data_put))
