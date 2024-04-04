@@ -71,7 +71,7 @@ structure Data_Tree_Args : GENERIC_DATA_ARGS =
 struct
   type T = Position.report_text list * C_Env.error_lines
   val empty = ([], [])
-  fun merge ((l11, l12), (l21, l22)) = (l11 @ l21, l12 @ l22)
+  fun merge ((l11, l12), (l21, l22)) = (Library.merge (op =) (l11, l21), Library.merge (op =) (l12, l22))
 end
 
 structure Data_Tree = Generic_Data (Data_Tree_Args)
