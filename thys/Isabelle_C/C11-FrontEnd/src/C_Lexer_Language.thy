@@ -106,13 +106,6 @@ fun is_ascii_blank_no_line s =
 end
 \<close>
 
-ML \<comment> \<open>\<^file>\<open>~~/src/Pure/General/position.ML\<close>\<close> \<open>
-structure C_Position =
-struct
-type reports_text = Position.report_text list
-end
-\<close>
-
 ML \<comment> \<open>\<^file>\<open>~~/src/Pure/General/symbol_pos.ML\<close>\<close>
 (*  Author:     Frédéric Tuong, Université Paris-Saclay
     Analogous to:

@@ -159,12 +159,12 @@ sig
                      bool ->
                      ('b, 'b option * string * reports_text0) C_Ast.either ->
                      reports_text0) ->
-                    ('a, C_Position.reports_text) reports_base
-  val markup_tvar : (C_Env.markup_global, C_Position.reports_text) reports_base
-  val markup_var_enum : (C_Env.markup_global, C_Position.reports_text) reports_base
-  val markup_var : (C_Env.markup_ident, C_Position.reports_text) reports_base
-  val markup_var_bound : (C_Env.markup_ident, C_Position.reports_text) reports_base
-  val markup_var_improper : (C_Env.markup_ident, C_Position.reports_text) reports_base
+                    ('a, Position.report_text list) reports_base
+  val markup_tvar : (C_Env.markup_global, Position.report_text list) reports_base
+  val markup_var_enum : (C_Env.markup_global, Position.report_text list) reports_base
+  val markup_var : (C_Env.markup_ident, Position.report_text list) reports_base
+  val markup_var_bound : (C_Env.markup_ident, Position.report_text list) reports_base
+  val markup_var_improper : (C_Env.markup_ident, Position.report_text list) reports_base
 
   (* Language.C.Data.RList *)
   val empty : 'a list Reversed

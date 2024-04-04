@@ -84,7 +84,7 @@ signature C_ENV =
 
     type env_tree =     {context        : Context.generic, 
                          error_lines    : error_lines, 
-                         reports_text   : C_Position.reports_text}
+                         reports_text   : Position.report_text list}
 
     type env_propagation_reduce    = int option
     type env_propagation_ctxt      = env_propagation_reduce -> Context.generic -> Context.generic
@@ -117,7 +117,7 @@ signature C_ENV =
        | Parsing of (Symbol_Pos.T list * Symbol_Pos.T list) * eval_node
 
     datatype antiq_language = Antiq_none of C_Lex.token 
-                            | Antiq_stack of C_Position.reports_text * eval_time
+                            | Antiq_stack of Position.report_text list * eval_time
 
     type 'a stream_hook = ('a list * Symbol_Pos.T list * eval_node) list list
 
@@ -144,7 +144,7 @@ signature C_ENV =
                       -> {context: Context.generic, error_lines: 'd, reports_text: 'e} 
                       -> 'b * {context: Context.generic, error_lines: 'd, reports_text: 'e}
     (* why not just "env_tree" *)
-    val map_reports_text:(C_Position.reports_text -> C_Position.reports_text) -> env_tree -> env_tree
+    val map_reports_text: (Position.report_text list -> Position.report_text list) -> env_tree -> env_tree
     val map_error_lines: (error_lines -> error_lines) 
                          -> {context: 'c, error_lines: error_lines, reports_text: 'd} 
                          -> {context: 'c, error_lines: error_lines, reports_text: 'd}
@@ -226,7 +226,7 @@ type env_lang = { var_table : var_table \<comment> \<open>current active table i
 type error_lines = string list
 
 type env_tree = { context : Context.generic
-                , reports_text : C_Position.reports_text
+                , reports_text : Position.report_text list
                 , error_lines : error_lines }
 
 type rule_static = (env_tree -> env_lang * env_tree) option
@@ -261,7 +261,7 @@ datatype eval_time = Lexing of Position.range
                                  * eval_node
                    | Never (* to be manually treated by the semantic back-end, and analyzed there *)
 
-datatype antiq_language = Antiq_stack of C_Position.reports_text * eval_time
+datatype antiq_language = Antiq_stack of Position.report_text list * eval_time
                         | Antiq_none of C_Lex.token
 
 \<comment> \<open> One of the key element of the structure is
