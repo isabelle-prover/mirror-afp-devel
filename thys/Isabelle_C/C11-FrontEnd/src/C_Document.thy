@@ -34,7 +34,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
 
-section \<open>Support for Document Preparation: Text-Antioquotations.\<close>
+section \<open>Support for Document Preparation: Text-Antiquotations.\<close>
 
 theory C_Document
   imports C_Command
