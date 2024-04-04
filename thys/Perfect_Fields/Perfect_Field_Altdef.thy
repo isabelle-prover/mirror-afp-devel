@@ -13,15 +13,9 @@
 subsection \<open>Alternative definition of perfect fields\<close>
 theory Perfect_Field_Altdef
 imports 
-  Algebraic_Closure_Type
+  "HOL-Algebra.Algebraic_Closure_Type"
   Perfect_Fields
-  Perfect_Field_Algebraically_Closed
-  "HOL-Computational_Algebra.Field_as_Ring"
 begin
-
-(* TODO: Orphan instance. Move! *)
-instance poly :: ("{field, normalization_euclidean_semiring, factorial_ring_gcd,
-                    semiring_gcd_mult_normalize}") factorial_semiring_multiplicative ..
 
 text \<open>
   In the following, we will show that our definition of perfect fields is equivalent

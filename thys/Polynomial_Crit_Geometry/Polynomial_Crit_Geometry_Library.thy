@@ -7,7 +7,7 @@ theory Polynomial_Crit_Geometry_Library
 imports
   "HOL-Computational_Algebra.Computational_Algebra"
   "HOL-Library.FuncSet"
-  "Formal_Puiseux_Series.Formal_Puiseux_Series" (* for alg_closed_field *)
+  "Polynomial_Interpolation.Ring_Hom_Poly"
 begin
 
 (* TODO: all of this probably belongs in the library *)
@@ -99,7 +99,7 @@ lemma degree_prod_mset_eq: "0 \<notin># P \<Longrightarrow> degree (prod_mset P)
 
 lemma degree_prod_list_eq: "0 \<notin> set ps \<Longrightarrow> degree (prod_list ps) = (\<Sum>p\<leftarrow>ps. degree p)"
   for ps :: "'a::idom poly list"
-  by (induction ps) (auto simp: degree_mult_eq)
+  by (induction ps) (auto simp: degree_mult_eq prod_list_zero_iff)
 
 lemma order_conv_multiplicity:
   assumes "p \<noteq> 0"
@@ -116,7 +116,7 @@ proof -
   have "\<not>(degree p > 1)"
     using assms alg_closed_imp_reducible by blast
   moreover from assms have "degree p \<noteq> 0"
-    by (intro notI) auto
+    by (auto simp: irreducible_def is_unit_iff_degree)
   ultimately show ?thesis
     by linarith
 qed
@@ -133,7 +133,7 @@ proof -
     using assms by auto
   thus ?thesis
     using that[of "-a"] q \<open>degree q = 1\<close>
-    by (auto simp: unit_factor_poly_def one_pCons split: if_splits)
+    by (auto simp: unit_factor_poly_def one_pCons dvd_field_iff is_unit_unit_factor split: if_splits)
 qed
 
 lemma prime_factors_alg_closed_poly_bij_betw:

@@ -17,7 +17,7 @@ Examples for perfect fields are:
 <ul>
 <li> any field of characteristic 0 (e.g. the reals or complex numbers)</li>
 <li> any finite field (i.e. <i>F<sub>q</sub></i> for <i>q=p<sup>n</sup></i>, <i>n > 0</i> and <i>p</i> prime)</li>
-<li> any algebraically closed field (for example the formal Puiseux series over finite fields)</li>
+<li> any algebraically closed field</li>
 </ul>"""
 license = "bsd"
 note = ""

@@ -11,239 +11,9 @@
 section \<open>Perfect Fields\<close>
 theory Perfect_Fields
 imports
+  "HOL-Computational_Algebra.Computational_Algebra"
   "Berlekamp_Zassenhaus.Finite_Field" 
-  Perfect_Field_Library
 begin
-
-subsection \<open>Rings and fields with prime characteristic\<close>
-
-text \<open>
-  We introduce some type classes for rings and fields with prime characteristic.
-\<close>
-
-class semiring_prime_char = semiring_1 +
-  assumes prime_char_aux: "\<exists>n. prime n \<and> of_nat n = (0 :: 'a)"
-begin
-
-lemma CHAR_pos [intro, simp]: "CHAR('a) > 0"
-  using local.CHAR_pos_iff local.prime_char_aux prime_gt_0_nat by blast
-
-lemma CHAR_nonzero [simp]: "CHAR('a) \<noteq> 0"
-  using CHAR_pos by auto
-
-lemma CHAR_prime [intro, simp]: "prime CHAR('a)"
-  by (metis (mono_tags, lifting) gcd_nat.order_iff_strict local.of_nat_1 local.of_nat_eq_0_iff_char_dvd
-        local.one_neq_zero local.prime_char_aux prime_nat_iff)
-
-end
-
-lemma semiring_prime_charI [intro?]:
-  "prime CHAR('a :: semiring_1) \<Longrightarrow> OFCLASS('a, semiring_prime_char_class)"
-  by standard auto
-
-
-lemma idom_prime_charI [intro?]:
-  assumes "CHAR('a :: idom) > 0"
-  shows   "OFCLASS('a, semiring_prime_char_class)"
-proof
-  show "prime CHAR('a)"
-    using assms prime_CHAR_semidom by blast
-qed
-
-class comm_semiring_prime_char = comm_semiring_1 + semiring_prime_char
-class comm_ring_prime_char = comm_ring_1 + semiring_prime_char
-begin
-subclass comm_semiring_prime_char ..
-end
-class idom_prime_char = idom + semiring_prime_char
-begin
-subclass comm_ring_prime_char ..
-end
-
-class field_prime_char = field +
-  assumes pos_char_exists: "\<exists>n>0. of_nat n = (0 :: 'a)"
-begin
-subclass idom_prime_char
-  apply standard
-  using pos_char_exists local.CHAR_pos_iff local.of_nat_CHAR local.prime_CHAR_semidom by blast
-end
-
-
-lemma field_prime_charI [intro?]:
-  "n > 0 \<Longrightarrow> of_nat n = (0 :: 'a :: field) \<Longrightarrow> OFCLASS('a, field_prime_char_class)"
-  by standard auto
-
-lemma field_prime_charI' [intro?]:
-  "CHAR('a :: field) > 0 \<Longrightarrow> OFCLASS('a, field_prime_char_class)"
-  by standard auto
-
-
-text \<open>
-  Typical functors like polynomials, formal power seires, and formal Laurent series
-  preserve the characteristic of the coefficient ring.
-\<close>
-instance poly :: ("{semiring_prime_char,comm_semiring_1}") semiring_prime_char
-  by (rule semiring_prime_charI) auto
-instance poly :: ("{comm_semiring_prime_char,comm_semiring_1}") comm_semiring_prime_char
-  by standard
-instance poly :: ("{comm_ring_prime_char,comm_semiring_1}") comm_ring_prime_char
-  by standard
-instance poly :: ("{idom_prime_char,comm_semiring_1}") idom_prime_char
-  by standard
-
-instance fps :: ("{semiring_prime_char,comm_semiring_1}") semiring_prime_char
-  by (rule semiring_prime_charI) auto
-instance fps :: ("{comm_semiring_prime_char,comm_semiring_1}") comm_semiring_prime_char
-  by standard
-instance fps :: ("{comm_ring_prime_char,comm_semiring_1}") comm_ring_prime_char
-  by standard
-instance fps :: ("{idom_prime_char,comm_semiring_1}") idom_prime_char
-  by standard
-
-instance fls :: ("{semiring_prime_char,comm_semiring_1}") semiring_prime_char
-  by (rule semiring_prime_charI) auto
-instance fls :: ("{comm_semiring_prime_char,comm_semiring_1}") comm_semiring_prime_char
-  by standard
-instance fls :: ("{comm_ring_prime_char,comm_semiring_1}") comm_ring_prime_char
-  by standard
-instance fls :: ("{idom_prime_char,comm_semiring_1}") idom_prime_char
-  by standard
-instance fls :: ("{field_prime_char,comm_semiring_1}") field_prime_char
-  by (rule field_prime_charI') auto
-
-
-subsection \<open>Finite fields\<close>
-
-class finite_field = field_prime_char + finite
-
-lemma finite_fieldI [intro?]:
-  assumes "finite (UNIV :: 'a :: field set)"
-  shows   "OFCLASS('a, finite_field_class)"
-proof standard
-  show "\<exists>n>0. of_nat n = (0 :: 'a)"
-    using assms prime_CHAR_semidom[where ?'a = 'a] finite_imp_CHAR_pos[OF assms]
-    by (intro exI[of _ "CHAR('a)"]) auto
-qed fact+
-
-class enum_finite_field = finite_field +
-  fixes enum_finite_field :: "nat \<Rightarrow> 'a"
-  assumes enum_finite_field: "enum_finite_field ` {..<CARD('a)} = UNIV"
-begin
-
-lemma inj_on_enum_finite_field: "inj_on enum_finite_field {..<CARD('a)}"
-  using enum_finite_field by (simp add: eq_card_imp_inj_on)
-
-end
-
-instance mod_ring :: (prime_card) finite_field
-  by standard simp_all
-
-instantiation mod_ring :: (prime_card) enum_finite_field
-begin
-
-definition enum_finite_field_mod_ring :: "nat \<Rightarrow> 'a mod_ring" where
-  "enum_finite_field_mod_ring n = of_int_mod_ring (int n)"
-
-instance proof
-  interpret type_definition "Rep_mod_ring :: 'a mod_ring \<Rightarrow> int" Abs_mod_ring "{0..<CARD('a)}"
-    by (rule type_definition_mod_ring)
-  have "enum_finite_field ` {..<CARD('a mod_ring)} = of_int_mod_ring ` int ` {..<CARD('a mod_ring)}"
-    unfolding enum_finite_field_mod_ring_def by (simp add: image_image o_def)
-  also have "int ` {..<CARD('a mod_ring)} = {0..<int CARD('a mod_ring)}"
-    by (simp add: image_atLeastZeroLessThan_int)
-  also have "of_int_mod_ring ` \<dots> = (Abs_mod_ring ` \<dots> :: 'a mod_ring set)"
-    by (intro image_cong refl) (auto simp: of_int_mod_ring_def)
-  also have "\<dots> = (UNIV :: 'a mod_ring set)"
-    using Abs_image by simp
-  finally show "enum_finite_field ` {..<CARD('a mod_ring)} = (UNIV :: 'a mod_ring set)" .
-qed
-
-end
-
-
-
-text \<open>
-  On a finite field with \<open>n\<close> elements, taking the \<open>n\<close>-th power of an element
-  is the identity. This is an obvious consequence of the fact that the multiplicative group of
-  the field is a finite group of order \<open>n - 1\<close>, so \<open>x^n = 1\<close> for any non-zero \<open>x\<close>.
-
-  Note that this result is sharp in the sense that the multiplicative group of a
-  finite field is cyclic, i.e.\ it contains an element of order \<open>n - 1\<close>.
-  (We don't prove this here.)
-\<close>
-lemma finite_field_power_card_eq_same:
-  fixes x :: "'a :: finite_field"
-  shows   "x ^ CARD('a) = x"
-proof (cases "x = 0")
-  case False
-  let ?R = "\<lparr>carrier = (UNIV :: 'a set), monoid.mult = (*), one = 1, zero = 0, add = (+)\<rparr>"
-  interpret field "?R" rewrites "([^]\<^bsub>?R\<^esub>) = (^)"
-  proof -
-    show "field ?R"
-      by unfold_locales (auto simp: Units_def add_eq_0_iff ring_distribs
-                              intro!: exI[of _ "inverse x" for x] left_inverse right_inverse)
-    have "x [^]\<^bsub>?R\<^esub> n = x ^ n" for x n
-      by (induction n) auto
-    thus "([^]\<^bsub>?R\<^esub>) = (^)"
-      by blast
-  qed
-
-  note fin [intro] = finite_class.finite_UNIV[where ?'a = 'a]
-  have "x ^ (CARD('a) - 1) * x = x ^ CARD('a)"
-    using finite_UNIV_card_ge_0 power_minus_mult by blast
-  also have "x ^ (CARD('a) - 1) = 1"
-    using units_power_order_eq_one[of x] fin False
-    by (simp add: field_Units)
-  finally show ?thesis
-    by simp
-qed (use finite_class.finite_UNIV[where ?'a = 'a] in \<open>auto simp: card_gt_0_iff\<close>)
-
-lemma finite_field_power_card_power_eq_same:
-  fixes x :: "'a :: finite_field"
-  assumes "m = CARD('a) ^ n"
-  shows   "x ^ m = x"
-  unfolding assms
-  by (induction n) (simp_all add: finite_field_power_card_eq_same power_mult)
-
-
-typedef (overloaded) 'a :: semiring_1 ring_char = "if CHAR('a) = 0 then UNIV else {0..<CHAR('a)}"
-  by auto
-
-lemma CARD_ring_char [simp]: "CARD ('a :: semiring_1 ring_char) = CHAR('a)"
-proof -
-  let ?A = "if CHAR('a) = 0 then UNIV else {0..<CHAR('a)}"
-  interpret type_definition "Rep_ring_char :: 'a ring_char \<Rightarrow> nat" Abs_ring_char ?A
-    by (rule type_definition_ring_char)
-  from card show ?thesis
-    by auto
-qed
-
-instance ring_char :: (semiring_prime_char) nontriv
-proof
-  show "CARD('a ring_char) > 1"
-    using prime_nat_iff by auto
-qed
-
-instance ring_char :: (semiring_prime_char) prime_card
-proof
-  from CARD_ring_char show "prime CARD('a ring_char)"
-    by auto
-qed
-
-lemma to_int_mod_ring_add:
-  "to_int_mod_ring (x + y :: 'a :: finite mod_ring) = (to_int_mod_ring x + to_int_mod_ring y) mod CARD('a)"
-  by transfer auto
-
-lemma to_int_mod_ring_mult:
-  "to_int_mod_ring (x * y :: 'a :: finite mod_ring) = (to_int_mod_ring x * to_int_mod_ring y) mod CARD('a)"
-  by transfer auto
-
-lemma of_nat_mod_CHAR [simp]: "of_nat (x mod CHAR('a :: semiring_1)) = (of_nat x :: 'a)"
-  by (metis (no_types, opaque_lifting) comm_monoid_add_class.add_0 div_mod_decomp
-         mult_zero_right of_nat_CHAR of_nat_add of_nat_mult)
-
-lemma of_int_mod_CHAR [simp]: "of_int (x mod int CHAR('a :: ring_1)) = (of_int x :: 'a)"
-  by (simp add: of_int_eq_iff_cong_CHAR)
 
 lemma (in vector_space) bij_betw_representation:
   assumes [simp]: "independent B" "finite B"
@@ -496,6 +266,28 @@ lemma in_range_frob [simp, intro]: "(x :: 'a) \<in> range frob"
 
 lemma inv_frob_eq_iff [simp]: "inv_frob (x :: 'a) = y \<longleftrightarrow> frob y = x"
   using frob_inv_frob inv_frob_frob by blast
+
+end
+
+
+context alg_closed_field
+begin
+
+lemma alg_closed_surj_frob:
+  assumes "CHAR('a) > 0"
+  shows   "surj (frob :: 'a \<Rightarrow> 'a)"
+proof -
+  show "surj (frob :: 'a \<Rightarrow> 'a)"
+  proof safe
+    fix x :: 'a
+    obtain y where "y ^ CHAR('a) = x"
+      using nth_root_exists CHAR_pos assms by blast
+    hence "frob y = x"
+      using CHAR_pos by (simp add: frob_def)
+    thus "x \<in> range frob"
+      by (metis rangeI)
+  qed auto
+qed
 
 end
 
@@ -883,6 +675,12 @@ context surj_frob
 begin
 subclass perfect_field
   by standard auto
+end
+
+context alg_closed_field
+begin
+subclass perfect_field
+  by standard (use alg_closed_surj_frob in auto)
 end
 
 theorem irreducible_imp_pderiv_nonzero:

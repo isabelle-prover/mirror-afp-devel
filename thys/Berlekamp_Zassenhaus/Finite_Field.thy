@@ -350,4 +350,80 @@ proof -
   thus ?thesis unfolding mod_eq_0_iff_dvd .
 qed
 
+lemma semiring_char_mod_ring [simp]:
+  "CHAR('n :: nontriv mod_ring) = CARD('n)"
+proof (rule CHAR_eq_posI)
+  fix x assume "x > 0" "x < CARD('n)"
+  thus "of_nat x \<noteq> (0 :: 'n mod_ring)"
+    by transfer auto
+qed auto
+
+
+text \<open>
+  The following Material was contributed by Manuel Eberl
+\<close>
+instance mod_ring :: (prime_card) finite_field
+  by standard simp_all
+
+instantiation mod_ring :: (prime_card) enum_finite_field
+begin
+
+definition enum_finite_field_mod_ring :: "nat \<Rightarrow> 'a mod_ring" where
+  "enum_finite_field_mod_ring n = of_int_mod_ring (int n)"
+
+instance proof
+  interpret type_definition "Rep_mod_ring :: 'a mod_ring \<Rightarrow> int" Abs_mod_ring "{0..<CARD('a)}"
+    by (rule type_definition_mod_ring)
+  have "enum_finite_field ` {..<CARD('a mod_ring)} = of_int_mod_ring ` int ` {..<CARD('a mod_ring)}"
+    unfolding enum_finite_field_mod_ring_def by (simp add: image_image o_def)
+  also have "int ` {..<CARD('a mod_ring)} = {0..<int CARD('a mod_ring)}"
+    by (simp add: image_atLeastZeroLessThan_int)
+  also have "of_int_mod_ring ` \<dots> = (Abs_mod_ring ` \<dots> :: 'a mod_ring set)"
+    by (intro image_cong refl) (auto simp: of_int_mod_ring_def)
+  also have "\<dots> = (UNIV :: 'a mod_ring set)"
+    using Abs_image by simp
+  finally show "enum_finite_field ` {..<CARD('a mod_ring)} = (UNIV :: 'a mod_ring set)" .
+qed
+
+end
+
+typedef (overloaded) 'a :: semiring_1 ring_char = "if CHAR('a) = 0 then UNIV else {0..<CHAR('a)}"
+  by auto
+
+lemma CARD_ring_char [simp]: "CARD ('a :: semiring_1 ring_char) = CHAR('a)"
+proof -
+  let ?A = "if CHAR('a) = 0 then UNIV else {0..<CHAR('a)}"
+  interpret type_definition "Rep_ring_char :: 'a ring_char \<Rightarrow> nat" Abs_ring_char ?A
+    by (rule type_definition_ring_char)
+  from card show ?thesis
+    by auto
+qed
+
+instance ring_char :: (semiring_prime_char) nontriv
+proof
+  show "CARD('a ring_char) > 1"
+    using prime_nat_iff by auto
+qed
+
+instance ring_char :: (semiring_prime_char) prime_card
+proof
+  from CARD_ring_char show "prime CARD('a ring_char)"
+    by auto
+qed
+
+lemma to_int_mod_ring_add:
+  "to_int_mod_ring (x + y :: 'a :: finite mod_ring) = (to_int_mod_ring x + to_int_mod_ring y) mod CARD('a)"
+  by transfer auto
+
+lemma to_int_mod_ring_mult:
+  "to_int_mod_ring (x * y :: 'a :: finite mod_ring) = (to_int_mod_ring x * to_int_mod_ring y) mod CARD('a)"
+  by transfer auto
+
+lemma of_nat_mod_CHAR [simp]: "of_nat (x mod CHAR('a :: semiring_1)) = (of_nat x :: 'a)"
+  by (metis (no_types, opaque_lifting) comm_monoid_add_class.add_0 div_mod_decomp
+         mult_zero_right of_nat_CHAR of_nat_add of_nat_mult)
+
+lemma of_int_mod_CHAR [simp]: "of_int (x mod int CHAR('a :: ring_1)) = (of_int x :: 'a)"
+  by (simp add: of_int_eq_iff_cong_CHAR)
+
 end

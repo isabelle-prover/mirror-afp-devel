@@ -1821,4 +1821,21 @@ end
 instance fpxs :: (group_add) dist_norm
   by standard (auto simp: dist_fpxs_def norm_fpxs_def)
 
+lemma fpxs_const_eq_0_iff [simp]: "fpxs_const x = 0 \<longleftrightarrow> x = 0"
+  by (metis fpxs_const_0 fpxs_const_eq_iff)
+
+lemma semiring_char_fpxs [simp]: "CHAR('a :: comm_semiring_1 fpxs) = CHAR('a)"
+  by (rule CHAR_eqI; unfold of_nat_fpxs_eq) (auto simp: of_nat_eq_0_iff_char_dvd)
+
+instance fpxs :: ("{semiring_prime_char,comm_semiring_1}") semiring_prime_char
+  by (rule semiring_prime_charI) auto
+instance fpxs :: ("{comm_semiring_prime_char,comm_semiring_1}") comm_semiring_prime_char
+  by standard
+instance fpxs :: ("{comm_ring_prime_char,comm_semiring_1}") comm_ring_prime_char
+  by standard
+instance fpxs :: ("{idom_prime_char,comm_semiring_1}") idom_prime_char
+  by standard
+instance fpxs :: ("field_prime_char") field_prime_char
+  by standard auto
+
 end

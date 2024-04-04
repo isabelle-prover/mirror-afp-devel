@@ -1538,7 +1538,7 @@ proof -
   qed
   have B: "eventually (\<lambda>n. extended_Gromov_product_at basepoint (to_Gromov_completion (v n)) x > M) sequentially" if "M < \<infinity>" for M
   proof -
-    obtain N where "ereal N > M" using \<open>M < \<infinity>\<close> ereal_dense2 by auto
+    obtain N where "ereal N > M" using \<open>M < \<infinity>\<close> ereal_dense2 by blast
     then have "a \<ge> ereal N \<Longrightarrow> a > M" for a by auto
     then show ?thesis using A[of N] eventually_elim2 by force
   qed
