@@ -215,10 +215,10 @@ code_printing code_module Uint16 \<rightharpoonup> (Scala)
 \<open>object Uint16 {
 
 def set_bit(x: scala.Char, n: BigInt, b: Boolean) : scala.Char =
-  if (b)
-    (x | (1.toChar << n.intValue)).toChar
-  else
-    (x & (1.toChar << n.intValue).unary_~).toChar
+  b match {
+    case true => (x | (1.toChar << n.intValue)).toChar
+    case false => (x & (1.toChar << n.intValue).unary_~).toChar
+  }
 
 def shiftl(x: scala.Char, n: BigInt) : scala.Char = (x << n.intValue).toChar
 

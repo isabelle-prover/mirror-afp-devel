@@ -46,7 +46,7 @@ code_printing \<comment> \<open>FIXME illusion of partiality\<close>
     and (Eval) "Integer.div'_mod/ ( _ )/ ( _ )"
     and (OCaml) "Z.div'_rem"
     and (Haskell) "divMod/ ( _ )/ ( _ )"
-    and (Scala) "!((k: BigInt) => (l: BigInt) =>/ if (l == 0)/ (BigInt(0), k) else/ (k '/% l))"
+    and (Scala) "!((k: BigInt) => (l: BigInt) => l == 0 match { case true => (BigInt(0), k) case false => (k '/% l) })"
 
 subsection \<open>@{const Euclidean_Rings.divmod_nat}.\<close>
 text \<open>We implement @{const Euclidean_Rings.divmod_nat} via @{const divmod_integer}

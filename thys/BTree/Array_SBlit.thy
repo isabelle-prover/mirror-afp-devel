@@ -233,10 +233,10 @@ code_printing constant safe_sblit' \<rightharpoonup>
   (SML) "(fn/ ()/ => /array'_sblit _ _ _ _)"
   and (Scala) "{ ('_: Unit)/=>/
       def safescopy(src: Array['_], srci: Int, dsti: Int, len: Int) = {
-       if (len > 0)
-          System.arraycopy(src, srci, src, dsti, len)
-        else
-          ()
+        len > 0 match {
+          case true => System.arraycopy(src, srci, src, dsti, len)
+          case false => ()
+        }
       }
       safescopy(_.array,_.toInt,_.toInt,_.toInt)
     }"

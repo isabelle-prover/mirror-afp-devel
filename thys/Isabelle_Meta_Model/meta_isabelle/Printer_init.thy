@@ -167,12 +167,12 @@ object CodeType {
 object CodeConst {
   def outFile1 [A] (f : (String => A => Option [Unit]) => Option [Unit], file0 : String) : Option [Unit] = {
     val file = new java.io.File (file0)
-    if (file .isFile) {
-      None
-    } else {
-      val writer = new java.io.PrintWriter (file)
-      f ((fmt : String) => (s : A) => Some (writer .write (fmt .format (s))))
-      Some (writer .close ())
+    file .isFile match {
+      case true => None
+      case false =>
+        val writer = new java.io.PrintWriter (file)
+        f ((fmt : String) => (s : A) => Some (writer .write (fmt .format (s))))
+        Some (writer .close ())
     }
   }
 

@@ -855,9 +855,10 @@ object DiffArray {
     override def toString() = Array.freeze(realize()).toString
 
     override def equals(obj:Any) =
-      if (obj.isInstanceOf[T[A]]) obj.asInstanceOf[T[A]].realize().equals(realize())
-      else false
-
+      obj.isInstanceOf[T[A]] match {
+        case true => obj.asInstanceOf[T[A]].realize().equals(realize())
+        case false => false
+      }
   }
 
 
@@ -873,7 +874,7 @@ object DiffArray {
 
   private def sub[A](a:DiffArray_D[A], i:Int) : A = a match {
     case Current(a) => a(i).asInstanceOf[A]
-    case Upd(j,v,n) => if (i==j) v else sub(n,i)
+    case Upd(j,v,n) => i==j match { case true => v case false => sub(n,i) }
   }
 
   def get[A](a:T[A], i:BigInt) : A = sub(a.d,i.intValue)
@@ -894,32 +895,32 @@ object DiffArray {
   def grow[A](a:T[A], sz:BigInt, v:A) : T[A] = a.d match {
     case Current(ad) => {
       val n = ad.length
-      val adt = Array.init[AnyRef](sz.intValue)(i => if (i < n) ad(i) else v.asInstanceOf[AnyRef])
+      val adt = Array.init[AnyRef](sz.intValue)(i => i < n match { case true => ad(i) case false => v.asInstanceOf[AnyRef] })
       new T[A](Current[A](adt))
     }
     case Upd (_,_,_) =>  {
       val ad = realize(a.d)
       val n = ad.length
-      val adt = Array.init[AnyRef](sz.intValue)(i => if (i < n) ad(i) else v.asInstanceOf[AnyRef])
+      val adt = Array.init[AnyRef](sz.intValue)(i => i < n match { case true => ad(i) case false => v.asInstanceOf[AnyRef] })
       new T[A](Current[A](adt))
     }
   }
 
   def shrink[A](a:T[A], sz:BigInt) : T[A] =
-    if (sz==0) {
-      array_of_list(Nil)
-    } else {
-      a.d match {
-        case Current(ad) => {
-          val adt = Array.init[AnyRef](sz.intValue)(i => ad(i));
-          new T[A](Current[A](adt))
+    sz==0 match {
+      case true => array_of_list(Nil)
+      case false =>
+        a.d match {
+          case Current(ad) => {
+            val adt = Array.init[AnyRef](sz.intValue)(i => ad(i));
+            new T[A](Current[A](adt))
+          }
+          case Upd (_,_,_) =>  {
+            val ad = realize(a.d);
+            val adt = Array.init[AnyRef](sz.intValue)(i => ad(i));
+            new T[A](Current[A](adt))
+          }
         }
-        case Upd (_,_,_) =>  {
-          val ad = realize(a.d);
-          val adt = Array.init[AnyRef](sz.intValue)(i => ad(i));
-          new T[A](Current[A](adt))
-        }
-      }
     }
 
   def get_oo[A](d: => A, a:T[A], i:BigInt):A = try get(a,i) catch {
@@ -937,7 +938,7 @@ object Test {
 
 
 
-  def assert (b : Boolean) : Unit = if (b) () else throw new java.lang.AssertionError("Assertion Failed")
+  def assert (b : Boolean) : Unit = b match { case true => () case false => throw new java.lang.AssertionError("Assertion Failed") }
 
   def eql[A] (a:DiffArray.T[A], b:List[A]) = assert (a.realize.corresponds(b)((x,y) => x.equals(y)))
 

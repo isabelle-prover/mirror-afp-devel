@@ -268,31 +268,29 @@ code_printing code_module Integer_Bit \<rightharpoonup> (Scala)
 \<open>object Integer_Bit {
 
 def testBit(x: BigInt, n: BigInt) : Boolean =
-  if (n.isValidInt)
-    x.testBit(n.toInt)
-  else
-    sys.error("Bit index too large: " + n.toString)
+  n.isValidInt match {
+    case true => x.testBit(n.toInt)
+    case false => sys.error("Bit index too large: " + n.toString)
+  }
 
 def setBit(x: BigInt, n: BigInt, b: Boolean) : BigInt =
-  if (n.isValidInt)
-    if (b)
-      x.setBit(n.toInt)
-    else
-      x.clearBit(n.toInt)
-  else
-    sys.error("Bit index too large: " + n.toString)
+  n.isValidInt match {
+    case true if b => x.setBit(n.toInt)
+    case true => x.clearBit(n.toInt)
+    case false => sys.error("Bit index too large: " + n.toString)
+  }
 
 def shiftl(x: BigInt, n: BigInt) : BigInt =
-  if (n.isValidInt)
-    x << n.toInt
-  else
-    sys.error("Shift index too large: " + n.toString)
+  n.isValidInt match {
+    case true => x << n.toInt
+    case false => sys.error("Shift index too large: " + n.toString)
+  }
 
 def shiftr(x: BigInt, n: BigInt) : BigInt =
-  if (n.isValidInt)
-    x << n.toInt
-  else
-    sys.error("Shift index too large: " + n.toString)
+  n.isValidInt match {
+    case true => x << n.toInt
+    case false => sys.error("Shift index too large: " + n.toString)
+  }
 
 } /* object Integer_Bit */\<close>
 

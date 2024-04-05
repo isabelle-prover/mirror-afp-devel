@@ -443,18 +443,22 @@ code_printing code_module Uint64 \<rightharpoonup> (Scala)
 \<open>object Uint64 {
 
 def less(x: Long, y: Long) : Boolean =
-  if (x < 0) y < 0 && x < y
-  else y < 0 || x < y
+  x < 0 match {
+    case true => y < 0 && x < y
+    case false => y < 0 || x < y
+  }
 
 def less_eq(x: Long, y: Long) : Boolean =
-  if (x < 0) y < 0 && x <= y
-  else y < 0 || x <= y
+  x < 0 match {
+    case true => y < 0 && x <= y
+    case false => y < 0 || x <= y
+  }
 
 def set_bit(x: Long, n: BigInt, b: Boolean) : Long =
-  if (b)
-    x | (1L << n.intValue)
-  else
-    x & (1L << n.intValue).unary_~
+  b match {
+    case true => x | (1L << n.intValue)
+    case false => x & (1L << n.intValue).unary_~
+  }
 
 def shiftl(x: Long, n: BigInt) : Long = x << n.intValue
 

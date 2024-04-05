@@ -96,10 +96,10 @@ subsection "Code Generator Setup"
     (SML) "(fn/ ()/ => /array'_blit _ _ _ _ _)"
     and (Scala) "{ ('_: Unit)/=>/
       def safecopy(src: Array['_], srci: Int, dst: Array['_], dsti: Int, len: Int) = {
-        if (src eq dst)
-          sys.error(\"array'_blit: Same arrays\")
-        else
-          System.arraycopy(src, srci, dst, dsti, len)
+        src eq dst match {
+          case true => sys.error(\"array'_blit: Same arrays\")
+          case false => System.arraycopy(src, srci, dst, dsti, len)
+        }
       }
       safecopy(_.array,_.toInt,_.array,_.toInt,_.toInt)
     }"

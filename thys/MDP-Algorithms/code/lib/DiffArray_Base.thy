@@ -539,9 +539,10 @@ object DiffArray {
     override def toString() = realize().toSeq.toString
 
     override def equals(obj:Any) =
-      if (obj.isInstanceOf[T[A]]) obj.asInstanceOf[T[A]].realize().equals(realize())
-      else false
-
+      obj.isInstanceOf[T[A]] match {
+        case true => obj.asInstanceOf[T[A]].realize().equals(realize())
+        case false => false
+      }
   }
 
 

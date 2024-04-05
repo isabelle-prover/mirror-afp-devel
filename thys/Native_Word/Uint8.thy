@@ -209,18 +209,22 @@ code_printing code_module Uint8 \<rightharpoonup> (Scala)
 \<open>object Uint8 {
 
 def less(x: Byte, y: Byte) : Boolean =
-  if (x < 0) y < 0 && x < y
-  else y < 0 || x < y
+  x < 0 match {
+    case true => y < 0 && x < y
+    case false => y < 0 || x < y
+  }
 
 def less_eq(x: Byte, y: Byte) : Boolean =
-  if (x < 0) y < 0 && x <= y
-  else y < 0 || x <= y
+  x < 0 match {
+    case true => y < 0 && x <= y
+    case false => y < 0 || x <= y
+  }
 
 def set_bit(x: Byte, n: BigInt, b: Boolean) : Byte =
-  if (b)
-    (x | (1 << n.intValue)).toByte
-  else
-    (x & (1 << n.intValue).unary_~).toByte
+  b match {
+    case true => (x | (1 << n.intValue)).toByte
+    case false => (x & (1 << n.intValue).unary_~).toByte
+  }
 
 def shiftl(x: Byte, n: BigInt) : Byte = (x << n.intValue).toByte
 
