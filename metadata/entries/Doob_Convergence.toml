@@ -1,0 +1,33 @@
+title = "Doob's Upcrossing Inequality and Martingale Convergence Theorem"
+date = 2024-02-15
+topics = [
+  "Mathematics/Probability theory",
+]
+abstract = """
+In this entry, we formalize Doob's upcrossing inequality and subsequently prove Doob's first martingale convergence theorem. <br><br>
+
+The upcrossing inequality is a fundamental result in the study of martingales. It provides a bound on the expected number of times a submartingale crosses a certain threshold within a given interval. <br><br>
+
+Doob's martingale convergence theorem states that if we have a submartingale where the supremum over the mean of the positive parts is finite, then the limit process exists almost surely and is integrable. Furthermore, the limit process is measurable with respect to the smallest $\\sigma$-algebra containing all of the $\\sigma$-algebras in the filtration. Equivalent statements for martingales and supermartingales are also provided as corollaries."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.keskin]
+email = "keskin_email"
+
+[contributors]
+
+[notify]
+keskin = "keskin_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.48550/arXiv.2212.05578",
+]
+pubs = []

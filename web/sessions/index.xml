@@ -958,6 +958,13 @@
           <description></description>
         </item>
         <item>
+          <title>CondNormReasHOL</title>
+          <link>/sessions/condnormreashol/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/condnormreashol/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Consensus_Refined</title>
           <link>/sessions/consensus_refined/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -1417,6 +1424,13 @@
           <link>/sessions/dominance_chk/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/dominance_chk/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Doob_Convergence</title>
+          <link>/sessions/doob_convergence/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/doob_convergence/</guid>
           <description></description>
         </item>
         <item>
@@ -2873,6 +2887,13 @@
           <link>/sessions/kruskal/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/kruskal/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Kummer_Congruence</title>
+          <link>/sessions/kummer_congruence/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/kummer_congruence/</guid>
           <description></description>
         </item>
         <item>

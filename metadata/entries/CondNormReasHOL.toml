@@ -1,0 +1,32 @@
+title = "Conditional normative reasoning as a fragment of HOL (Isabelle/HOL dataset)"
+date = 2024-03-09
+topics = [
+  "Logic/Philosophical aspects",
+  "Logic/General logic",
+]
+abstract = "We present a mechanisation of (preference-based) conditional normative reasoning. Our focus is on Åqvist’s system E for conditional obligation and its extensions. We present both a correspondence-theory-focused metalogical study and a use-case application to Parfit’s repugnant conclusion, focusing on the mere addition paradox. Our contribution is explained in detail in [2]. This document presents a corresponding (but sligthly modified) Isabelle/HOL dataset."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.parent]
+email = "parent_email"
+
+[authors.benzmueller]
+email = "benzmueller_email"
+
+[contributors]
+
+[notify]
+benzmueller = "benzmueller_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.48550/arXiv.2308.10686",
+]
+pubs = []

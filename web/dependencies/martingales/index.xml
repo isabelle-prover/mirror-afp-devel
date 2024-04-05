@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Martingales on Archive of Formal Proofs
+    </title>
+    <link>/dependencies/martingales/</link>
+    <description>
+        Recent content in Martingales 
+        on Archive of Formal Proofs
+    </description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    
+      <lastBuildDate>Thu, 15 Feb 2024 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/martingales/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Doob&#39;s Upcrossing Inequality and Martingale Convergence Theorem</title>
+          <link>/entries/Doob_Convergence.html</link>
+          <pubDate>Thu, 15 Feb 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Doob_Convergence.html</guid>
+          <description></description>
+        </item>
+  </channel>
+</rss>

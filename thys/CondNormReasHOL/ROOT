@@ -1,0 +1,14 @@
+chapter AFP
+
+session "CondNormReasHOL" = HOL +
+  options [timeout = 300]
+
+  theories
+    DDLcube
+    mere_addition_opt
+    mere_addition_lewis
+    mere_addition_max
+
+  document_files
+    "root.bib"
+    "root.tex"

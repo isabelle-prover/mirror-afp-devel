@@ -1,0 +1,53 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+\usepackage[shortcuts]{extdash}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{rm}
+
+
+\begin{document}
+
+\title{Congruences of Bernoulli Numbers}
+\author{Manuel Eberl}
+\maketitle
+
+\begin{abstract}
+This entry provides proofs for two important congruences involving Bernoulli numbers.
+The proofs follow Cohen's textbook \emph{Number Theory Volume II: Analytic and Modern Tools}~\cite{cohen2007}.
+In the following we write $\mathcal{B}_k = N_k / D_k$ for the $k$-th Bernoulli number (with $\text{gcd}(N_k, D_k) = 1$).
+
+The first result that I showed is \emph{Voronoi's congruence}, which states that for any even integer
+$k\geq 2$ and all positive coprime integers $a$, $n$ we have:
+\[(a^k - 1) N_k \equiv k a^{k-1} D_k \sum_{m=1}^{n-1} m^{k-1} \left\lfloor\frac{ma}{n}\right\rfloor
+\hspace*{3mm}(\text{mod}\ n)\]
+
+Building upon this, I then derive \emph{Kummer's congruence}. In its common form, it states that 
+for a prime $p$ and even integers $k,k'$ with $\text{min}(k,k')\geq e+1$ and $(p - 1) \nmid k$ and
+$k \equiv k'\ (\text{mod}\ \varphi(p^e))$, we have:
+\[\hspace*{6mm}\frac{\mathcal{B}_k}{k} \equiv \frac{\mathcal{B}_{k'}}{k'}\hspace*{3mm}(\text{mod}\ p^e)\]
+The version proved in my entry is slightly more general than this.
+
+One application of these congruences is to prove that there are infinitely many irregular primes,
+which I formalised as well.
+\end{abstract}
+
+\newpage
+\tableofcontents
+
+\newpage
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\raggedright
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+

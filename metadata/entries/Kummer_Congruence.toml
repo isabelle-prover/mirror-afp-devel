@@ -1,0 +1,44 @@
+title = "Kummer's congruence"
+date = 2024-03-20
+topics = [
+  "Mathematics/Number theory",
+]
+abstract = """
+<p>This entry provides proofs for two important congruences involving Bernoulli numbers.
+The proofs follow Cohen's textbook <em>Number Theory Volume II: Analytic and Modern Tools</em>.
+In the following we write $\\mathcal{B}_k = N_k / D_k$ for the $k$-th Bernoulli number (with $\\text{gcd}(N_k, D_k) = 1$).
+</p>
+<p>
+The first result that I showed is <em>Voronoi's congruence</em>, which states that for any even integer
+$k\\geq 2$ and all positive coprime integers $a$, $n$ we have:</p>
+$$(a^k - 1) N_k \\equiv k a^{k-1} D_k \\sum_{m=1}^{n-1} m^{k-1} \\left\\lfloor\\frac{ma}{n}\\right\\rfloor
+\\hspace{3mm}(\\text{mod}\\ n)$$
+<p>
+Building upon this, I then derive <em>Kummer's congruence</em>. In its common form, it states that 
+for a prime $p$ and even integers $k,k'$ with $\\text{min}(k,k')\\geq e+1$ and $(p - 1) \\nmid k$ and
+$k \\equiv k'\\ (\\text{mod}\\ \\varphi(p^e))$, we have:</p>
+$$\\frac{\\mathcal{B}_k}{k} \\equiv \\frac{\\mathcal{B}_{k'}}{k'}\\hspace{3mm}(\\text{mod}\\ p^e)$$
+<p>The version proved in my entry is slightly more general than this.</p>
+<p>
+One application of these congruences is to prove that there are infinitely many irregular primes,
+which I formalised as well.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+email = "eberl_email"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

@@ -1,0 +1,98 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{isabelle,isabellesym}
+\usepackage{microtype}
+\usepackage{cite}
+\newtheorem*{lemma}{Lemma}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+\usepackage{doi}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Doob's Upcrossing Inequality and Martingale Convergence Theorem}
+\author{Ata Keskin}
+\maketitle
+
+\begin{abstract}
+In this entry, we formalize Doob's upcrossing inequality and subsequently prove Doob's first martingale convergence theorem. The upcrossing inequality is a fundamental result in the study of martingales. It provides a bound on the expected number of times a submartingale crosses a certain threshold within a given interval. Doob's martingale convergence theorem states that, if we have a submartingale where the supremum over the mean of the positive parts is finite, then the limit process exists almost surely and is integrable. Equivalent statements for martingales and supermartingales are also provided as corollaries.
+
+The proofs provided are based mostly on the formalization done in the Lean mathematical library \cite{ying2022formalization,Degenne_Ying_2022}.
+
+\end{abstract}
+
+\tableofcontents
+\pagebreak
+
+\section{Introduction}
+
+Martingales, in the context of stochastic processes, are encountered in various real-world scenarios where outcomes are influenced by past events but are not entirely predictable due to randomness or uncertainty. A martingale is a stochastic process in which the expected value of the next observation, given all past observations, is equal to the current observation.
+
+One real-world example can be encountered in environmental monitoring, particularly in the study of river flow rates. Consider a hydrologist tasked with monitoring the flow rate of a river to understand its behavior over time. The flow rate of a river is influenced by various factors such as rainfall, snowmelt, groundwater levels, and human activities like dam releases or water diversions. These factors contribute to the variability and unpredictability of the flow rate. In this scenario, the flow rate of the river can be modeled as a martingale. The flow rate at any given time is influenced by past events but is not entirely predictable due to the random nature of rainfall and other factors.
+
+One concept that comes up frequently in the study of martingales are upcrossings and downcrossings. Upcrossings and downcrossings are random variables representing when the value of a stochastic process leaves a fixed interval. Specifically, an upcrossing occurs when the process moves from below the lower bound of the interval to above the upper bound \cite{Grimmett_Stirzaker_2020}, indicating a potential upward trend or positive movement. Conversely, a downcrossing happens when the process crosses below the lower bound of the interval, suggesting a potential downward trend or negative movement. By analyzing the frequency and timing of these crossings, researchers can infer information about the underlying dynamics of the process and detect shifts in its behavior.
+
+For instance, consider tracking the movement of a stock price over time. The process representing the stock's price might cross above a certain threshold (upcrossing) or below it (downcrossing) multiple times during a trading session. The number of such crossings provides insights into the volatility and the trend of the stock. 
+
+\textit{Doob's upcrossing inequality} is a fundamental result in the study of martingales. It provides a bound on the expected number of upcrossings a submartingale undertakes before some point in time.
+
+Let's consider our example concerning river flow rates again. In this context, upcrossings represent instances where the flow rate of the river rises above a certain threshold. For example, the flow rate might cross a threshold indicating flood risk. Downcrossings, on the other hand, represent instances where the flow rate decreases below a certain threshold. This could indicate drought conditions or low-flow periods.
+
+\textit{Doob's first martingale convergence theorem} gives sufficient conditions for a submartingale to converge to a random variable almost surely. The proof is based on controlling the rate of growth or fluctuations of the submartingale, which is where the \textit{upcrossing inequality} comes into play. By bounding these fluctuations, we can ensure that the submartingale does not exhibit wild behavior or grow too quickly, which is essential for proving convergence. 
+
+Formally, the convergence theorem states that, if $(M_n)_{n \ge 0}$ is a submartingale with $\sup_n \mathbb{E}[M^{+}_n] < \infty$, where $M^{+}_n$ denotes the positive part of $M_n$, then the limit process $M_\infty := \lim_n M_n$ exists almost surely and is integrable. Furthermore, the limit process is measurable with respect to the smallest $\sigma$-algebra containing all of the $\sigma$-algebras in the filtration. In our formalization, we also show equivalent convergence statements for martingales and supermartingales. The theorem can be used to easily show convergence results for simple scenarios. 
+
+Consider the following example: Imagine a casino game where a player bets on the outcome of a random coin toss, where the coin comes up heads with odds $p \in [0, \frac{1}{2})$. Assume that the player goes bust when they have no money remaining. The player's wealth over time can be modeled as a supermartingale, where the value of their wealth at each time step depends only on the outcome of the previous coin toss. Doob's martingale convergence theorem assures us that the player will go bankrupt as the number of coin tosses increases.
+
+The theorem that we have described here and formalized in the scope of our project is called \textit{Doob's first martingale convergence theorem}.
+It is important to note that the convergence in this theorem is pointwise, not uniform, and is unrelated to convergence in mean square, or indeed in any $L^p$ space. In order to obtain convergence in $L^1$ (i.e., convergence in mean), one requires uniform integrability of the random variables. In this form, the theorem is called \textit{Doob's second martingale convergence theorem}. Since uniform integrability is not yet formalized in Isabelle/HOL, we have decided to confine our formalization to the first convergence theorem only.
+
+\pagebreak
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrvurl}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

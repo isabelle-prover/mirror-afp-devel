@@ -1,0 +1,9 @@
+chapter AFP
+
+session Doob_Convergence (AFP) = Martingales +
+  options [timeout=600]
+  theories
+    Doob_Convergence
+  document_files
+    "root.tex"
+    "root.bib"

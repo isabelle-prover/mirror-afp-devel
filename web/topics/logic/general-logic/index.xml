@@ -13,6 +13,20 @@
     
       <atom:link href="/topics/logic/general-logic/index.xml" rel="self" type="application/rss+xml" />
         <item>
+          <title>Conditional normative reasoning as a fragment of HOL (Isabelle/HOL dataset)</title>
+          <link>/entries/CondNormReasHOL.html</link>
+          <pubDate>Sat, 09 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/CondNormReasHOL.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Conditional normative reasoning as a fragment of HOL (Isabelle/HOL dataset)</title>
+          <link>/entries/CondNormReasHOL.html</link>
+          <pubDate>Sat, 09 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/CondNormReasHOL.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Soundness of the Q0 proof system for higher-order logic</title>
           <link>/entries/Q0_Soundness.html</link>
           <pubDate>Mon, 20 Nov 2023 00:00:00 +0000</pubDate>

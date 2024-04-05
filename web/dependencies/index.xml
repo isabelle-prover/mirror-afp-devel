@@ -11,8 +11,57 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Wed, 06 Mar 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Wed, 20 Mar 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Coinductive</title>
+          <link>/dependencies/coinductive/</link>
+          <pubDate>Wed, 20 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/coinductive/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Pell</title>
+          <link>/dependencies/pell/</link>
+          <pubDate>Wed, 20 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/pell/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Polynomial_Factorization</title>
+          <link>/dependencies/polynomial_factorization/</link>
+          <pubDate>Wed, 20 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/polynomial_factorization/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Zeta_Function</title>
+          <link>/dependencies/zeta_function/</link>
+          <pubDate>Wed, 20 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/zeta_function/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Concentration_Inequalities</title>
+          <link>/dependencies/concentration_inequalities/</link>
+          <pubDate>Fri, 15 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/concentration_inequalities/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Frequency_Moments</title>
+          <link>/dependencies/frequency_moments/</link>
+          <pubDate>Fri, 15 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/frequency_moments/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Monad_Normalisation</title>
+          <link>/dependencies/monad_normalisation/</link>
+          <pubDate>Fri, 15 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/monad_normalisation/</guid>
+          <description></description>
+        </item>
         <item>
           <title>Three_Squares</title>
           <link>/dependencies/three_squares/</link>
@@ -39,6 +88,13 @@
           <link>/dependencies/root_balanced_tree/</link>
           <pubDate>Mon, 19 Feb 2024 00:00:00 +0000</pubDate>
           <guid>/dependencies/root_balanced_tree/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Martingales</title>
+          <link>/dependencies/martingales/</link>
+          <pubDate>Thu, 15 Feb 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/martingales/</guid>
           <description></description>
         </item>
         <item>
@@ -126,10 +182,10 @@
           <description></description>
         </item>
         <item>
-          <title>Formal_Puiseux_Series</title>
-          <link>/dependencies/formal_puiseux_series/</link>
+          <title>Polynomial_Interpolation</title>
+          <link>/dependencies/polynomial_interpolation/</link>
           <pubDate>Tue, 14 Nov 2023 00:00:00 +0000</pubDate>
-          <guid>/dependencies/formal_puiseux_series/</guid>
+          <guid>/dependencies/polynomial_interpolation/</guid>
           <description></description>
         </item>
         <item>
@@ -144,13 +200,6 @@
           <link>/dependencies/lp/</link>
           <pubDate>Mon, 13 Nov 2023 00:00:00 +0000</pubDate>
           <guid>/dependencies/lp/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Polynomial_Interpolation</title>
-          <link>/dependencies/polynomial_interpolation/</link>
-          <pubDate>Mon, 13 Nov 2023 00:00:00 +0000</pubDate>
-          <guid>/dependencies/polynomial_interpolation/</guid>
           <description></description>
         </item>
         <item>
@@ -343,13 +392,6 @@
           <description></description>
         </item>
         <item>
-          <title>Zeta_Function</title>
-          <link>/dependencies/zeta_function/</link>
-          <pubDate>Mon, 19 Jun 2023 00:00:00 +0000</pubDate>
-          <guid>/dependencies/zeta_function/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>Elliptic_Curves_Group_Law</title>
           <link>/dependencies/elliptic_curves_group_law/</link>
           <pubDate>Tue, 06 Jun 2023 00:00:00 +0000</pubDate>
@@ -476,13 +518,6 @@
           <description></description>
         </item>
         <item>
-          <title>Frequency_Moments</title>
-          <link>/dependencies/frequency_moments/</link>
-          <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
-          <guid>/dependencies/frequency_moments/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>Stirling_Formula</title>
           <link>/dependencies/stirling_formula/</link>
           <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
@@ -536,13 +571,6 @@
           <link>/dependencies/propositional_logic_class/</link>
           <pubDate>Sun, 22 Jan 2023 00:00:00 +0000</pubDate>
           <guid>/dependencies/propositional_logic_class/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Coinductive</title>
-          <link>/dependencies/coinductive/</link>
-          <pubDate>Fri, 20 Jan 2023 00:00:00 +0000</pubDate>
-          <guid>/dependencies/coinductive/</guid>
           <description></description>
         </item>
         <item>
@@ -742,24 +770,10 @@
           <description></description>
         </item>
         <item>
-          <title>Polynomial_Factorization</title>
-          <link>/dependencies/polynomial_factorization/</link>
-          <pubDate>Thu, 21 Apr 2022 00:00:00 +0000</pubDate>
-          <guid>/dependencies/polynomial_factorization/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>Bertrands_Postulate</title>
           <link>/dependencies/bertrands_postulate/</link>
           <pubDate>Fri, 08 Apr 2022 00:00:00 +0000</pubDate>
           <guid>/dependencies/bertrands_postulate/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Concentration_Inequalities</title>
-          <link>/dependencies/concentration_inequalities/</link>
-          <pubDate>Fri, 08 Apr 2022 00:00:00 +0000</pubDate>
-          <guid>/dependencies/concentration_inequalities/</guid>
           <description></description>
         </item>
         <item>
@@ -1379,24 +1393,10 @@
           <description></description>
         </item>
         <item>
-          <title>Pell</title>
-          <link>/dependencies/pell/</link>
-          <pubDate>Fri, 17 Jan 2020 00:00:00 +0000</pubDate>
-          <guid>/dependencies/pell/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>Probabilistic_Prime_Tests</title>
           <link>/dependencies/probabilistic_prime_tests/</link>
           <pubDate>Fri, 17 Jan 2020 00:00:00 +0000</pubDate>
           <guid>/dependencies/probabilistic_prime_tests/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Monad_Normalisation</title>
-          <link>/dependencies/monad_normalisation/</link>
-          <pubDate>Thu, 09 Jan 2020 00:00:00 +0000</pubDate>
-          <guid>/dependencies/monad_normalisation/</guid>
           <description></description>
         </item>
         <item>

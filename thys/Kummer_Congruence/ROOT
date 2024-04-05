@@ -1,0 +1,13 @@
+chapter AFP
+
+session Kummer_Congruence (AFP) = "Zeta_Function" +
+  options [timeout = 1800]
+  sessions
+    "HOL-Computational_Algebra"
+    "HOL-Number_Theory"
+  theories
+    Kummer_Congruence
+    Irregular_Primes_Infinite
+  document_files
+    "root.tex"
+    "root.bib"

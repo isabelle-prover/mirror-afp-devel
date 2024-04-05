@@ -21,10 +21,24 @@
           <description></description>
         </item>
         <item>
+          <title>Kummer&#39;s congruence</title>
+          <link>/entries/Kummer_Congruence.html</link>
+          <pubDate>Wed, 20 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Kummer_Congruence.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Approximate Model Counting</title>
           <link>/entries/Approximate_Model_Counting.html</link>
           <pubDate>Fri, 15 Mar 2024 00:00:00 +0000</pubDate>
           <guid>/entries/Approximate_Model_Counting.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Conditional normative reasoning as a fragment of HOL (Isabelle/HOL dataset)</title>
+          <link>/entries/CondNormReasHOL.html</link>
+          <pubDate>Sat, 09 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/CondNormReasHOL.html</guid>
           <description></description>
         </item>
         <item>
@@ -46,6 +60,13 @@
           <link>/entries/Karatsuba.html</link>
           <pubDate>Mon, 19 Feb 2024 00:00:00 +0000</pubDate>
           <guid>/entries/Karatsuba.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Doob&#39;s Upcrossing Inequality and Martingale Convergence Theorem</title>
+          <link>/entries/Doob_Convergence.html</link>
+          <pubDate>Thu, 15 Feb 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Doob_Convergence.html</guid>
           <description></description>
         </item>
         <item>
