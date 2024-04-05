@@ -1,7 +1,7 @@
 section \<open>Catalan numbers\<close>
 
 theory Catalan_Auxiliary_Integral
-imports "HOL-Analysis.Equivalence_Lebesgue_Henstock_Integration"
+imports "HOL-Analysis.Analysis" "HOL-Real_Asymp.Real_Asymp"
 begin
 
 subsection \<open>Auxiliary integral\<close>
@@ -15,44 +15,7 @@ context
 begin
 
 text \<open>
-  First of all, we prove two limits that we will require.
-\<close>
-private lemma limit1: "filterlim (\<lambda>x::real. sqrt (4/x - 1) / (x - 4)) at_bot (at_left 4)"
-proof (rule lhopital_left)
-  show "((\<lambda>x::real. sqrt (4 / x - 1)) \<longlongrightarrow> 0) (at_left 4)" 
-    by (force intro: tendsto_eq_intros)
-  show "((\<lambda>x::real. x - 4) \<longlongrightarrow> 0) (at_left 4)"
-    by (force intro: tendsto_eq_intros)
-  show "\<forall>\<^sub>F x in at_left 4. ((\<lambda>x. x - 4) has_real_derivative 1) (at x)"
-    by (intro always_eventually) (auto intro!: derivative_eq_intros)
-  show "\<forall>\<^sub>F x in at_left 4. ((\<lambda>x. sqrt (4/x - 1)) has_real_derivative 
-          -2 / (sqrt (4/x - 1) * x^2)) (at x)"
-    by (intro eventually_at_leftI[of 0])
-       (auto intro!: derivative_eq_intros simp: field_simps power2_eq_square)
-  
-  have *: "((\<lambda>x::real. sqrt (4 / x - 1) * x\<^sup>2) \<longlongrightarrow> 0) (at_left 4)"
-    by (force intro!: tendsto_eq_intros)
-  have "filterlim (\<lambda>x. - (2 / (sqrt (4 / x - 1) * x\<^sup>2))) at_bot (at_left 4)"
-    unfolding filterlim_uminus_at_top [symmetric]
-    by (rule LIM_at_top_divide tendsto_const eventually_at_leftI[of 0] * | simp)+
-  thus "filterlim (\<lambda>x::real. - 2 / (sqrt (4 / x - 1) * x\<^sup>2) / 1) at_bot (at_left 4)" by simp
-qed (auto intro: eventually_at_leftI[of 0])
-
-private lemma limit2: "((\<lambda>x. sqrt (4/x - 1) * x) \<longlongrightarrow> 0) (at_right 0)"
-proof (rule Lim_transform_eventually)
-  show "((\<lambda>x::real. sqrt ((4 - x) * x)) \<longlongrightarrow> 0) (at_right 0)"
-    by (force intro: tendsto_eq_intros)
-  show "\<forall>\<^sub>F x in at_right 0. sqrt ((4 - x) * x) = sqrt (4 / x - 1) * x"
-  proof (rule eventually_at_rightI)
-    fix x :: real assume x: "x \<in> {0<..<1}"
-    from x have "(4 - x) * x = (4/x - 1) * x^2" by (simp add: field_simps power2_eq_square)
-    also from x have "sqrt \<dots> = sqrt (4/x - 1) * x" by (subst real_sqrt_mult) simp_all
-    finally show "sqrt ((4 - x) * x) = sqrt (4/x - 1) * x" .
-  qed simp_all
-qed
-
-text \<open>
-  Now we prove the integral by explicitly constructing the indefinite integral.
+  We prove the integral by explicitly constructing the indefinite integral.
 \<close>
 lemma catalan_aux_integral:
   "((\<lambda>x::real. sqrt ((4 - x) / x)) has_integral 2 * pi) {0..4}"
@@ -65,26 +28,14 @@ proof -
 
   \<comment> \<open>We now prove that the indefinite integral indeed tends to @{term "pi"} resp. @{term "-pi"} 
       at the edges of the integration interval.\<close>
-  have "filterlim (\<lambda>x. (x - 2) / (x - 4) * sqrt (-1 + 4/x)) at_top (at_right 0)"
-    by (rule filterlim_tendsto_pos_mult_at_top tendsto_intros filterlim_tendsto_add_at_top
-          filterlim_compose[OF sqrt_at_top] LIM_at_top_divide eventually_at_rightI[of 0 1] | simp)+
-  hence *: "filterlim (\<lambda>x. (sqrt (4/x - 1) * (x - 2)) / (x - 4)) at_top (at_right 0)"
-    by (simp add: field_simps)
-  have "(F \<longlongrightarrow> 0 - 2 * (pi/2)) (at_right 0)" unfolding F_def
-    by (intro tendsto_intros limit2 filterlim_compose[OF tendsto_arctan_at_top] *)
-  hence "(F \<longlongrightarrow> -pi) (at_right 0)" by simp
+  have "(F \<longlongrightarrow> -pi) (at_right 0)"
+    unfolding F_def by real_asymp
+  (* TODO: Why can real_asymp not show the thing below? *)
   hence G_0: "(G \<longlongrightarrow> -pi) (at_right 0)" unfolding G_def
     by (rule Lim_transform_eventually) (auto intro!: eventually_at_rightI[of 0 1])  
 
-  have *: "((\<lambda>x. sqrt (4 / x - 1) * x) \<longlongrightarrow> 0) (at_left 4)"
-    by (force intro: tendsto_eq_intros)
-  have "filterlim (\<lambda>x. (x - 2) * (sqrt (4 / x - 1) / (x - 4))) at_bot (at_left 4)"
-    by (rule filterlim_tendsto_pos_mult_at_bot tendsto_intros limit1 | simp)+
-  hence **: "LIM x at_left 4. sqrt (4 / x - 1) * (x - 2) / (x - 4) :> at_bot" 
-    by (simp add: mult_ac)
-  have "(F \<longlongrightarrow> 0 - 2 * -(pi/2)) (at_left 4)" unfolding F_def
-    by (intro tendsto_intros * ** filterlim_compose[OF tendsto_arctan_at_bot])
-  hence "(F \<longlongrightarrow> pi) (at_left 4)" by simp
+  have "(F \<longlongrightarrow> pi) (at_left 4)"
+    unfolding F_def by real_asymp
   hence G_4: "(G \<longlongrightarrow> pi) (at_left 4)" unfolding G_def
     by (rule Lim_transform_eventually) (auto intro!: eventually_at_leftI[of 1])
   
