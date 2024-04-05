@@ -10,6 +10,7 @@ theory Stirling_Formula
 imports
   "HOL-Analysis.Analysis"
   "Landau_Symbols.Landau_More"
+  "HOL-Real_Asymp.Real_Asymp"
 begin
 
 context
@@ -186,8 +187,7 @@ proof -
     finally show "1 / (2 * (x + real n)) = c n - (ln (real n) - S' n x - 1/(2*x))" by simp
   qed
   moreover have "(\<lambda>n. 1 / (2 * (x + real n))) \<longlonglongrightarrow> 0"
-    by (rule real_tendsto_divide_at_top tendsto_const filterlim_tendsto_pos_mult_at_top
-          filterlim_tendsto_add_at_top filterlim_real_sequentially | simp)+
+    by real_asymp
   ultimately have "(\<lambda>n. c n - (ln (real n) - S' n x - 1/(2*x))) \<longlonglongrightarrow> 0"
     by (blast intro: Lim_transform_eventually)
   from tendsto_minus[OF this] have "(\<lambda>n. (ln (real n) - S' n x - 1/(2*x)) - c n) \<longlonglongrightarrow> 0" by simp
@@ -228,9 +228,7 @@ qualified lemma D_summable:
   shows   "summable (\<lambda>n. D (real n + x))"
 proof -
   have *: "summable (\<lambda>n. 1 / (12 * (x + real n)\<^sup>2) - 1 / (12 * (x + real (Suc n))\<^sup>2))"
-    by (rule telescope_summable' real_tendsto_divide_at_top tendsto_const 
-             filterlim_tendsto_pos_mult_at_top filterlim_pow_at_top
-             filterlim_tendsto_add_at_top filterlim_real_sequentially | simp)+
+    by (rule telescope_summable') real_asymp
   show "summable (\<lambda>n. D (real n + x))" 
   proof (rule summable_comparison_test[OF _ *], rule exI[of _ 2], safe)
     fix n :: nat assume "n \<ge> 2"
@@ -489,8 +487,7 @@ proof (rule asymp_equiv_sandwich)
     using eventually_ge_at_top[of "1::real"]
     by (eventually_elim; use Gamma_bounds_aux in force)+
   have "((\<lambda>x::real. exp (1 / (12 * x))) \<longlongrightarrow> exp 0) at_top"
-    by (rule tendsto_intros real_tendsto_divide_at_top filterlim_tendsto_pos_mult_at_top)+
-       (simp_all add: filterlim_ident)
+    by real_asymp
   hence "(\<lambda>x. exp (1 / (12 * x))) \<sim> (\<lambda>x. 1 :: real)"
     by (intro asymp_equivI') simp_all
   hence "(\<lambda>x. exp c * x powr (x - 1 / 2) / exp x * 1) \<sim>

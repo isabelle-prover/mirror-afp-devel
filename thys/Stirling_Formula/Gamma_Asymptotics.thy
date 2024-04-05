@@ -10,7 +10,6 @@ section \<open>Complete asymptotics of the logarithmic Gamma function\<close>
 theory Gamma_Asymptotics
 imports 
   "HOL-Complex_Analysis.Complex_Analysis"
-  "HOL-Real_Asymp.Real_Asymp"
   Bernoulli.Bernoulli_FPS 
   Bernoulli.Periodic_Bernpoly 
   Stirling_Formula
@@ -525,7 +524,7 @@ proof -
         using eventually_ge_at_top[of "1::real"] 
         by eventually_elim (insert ln_Gamma_bounds(2), simp add: field_simps)
       show "((\<lambda>x::real. 1 / 12 * inverse x) \<longlongrightarrow> 0) at_top"
-        by (intro tendsto_mult_right_zero tendsto_inverse_0_at_top filterlim_ident)
+        by real_asymp
     qed simp_all
   next
     have "(\<lambda>x. s * of_real (harm (x - 1) - ln (real (x - 1)) - euler_mascheroni)) \<longlonglongrightarrow> 
