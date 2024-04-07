@@ -43,10 +43,10 @@ Life_Table
 Example
 - Changed the hypothesis of integrability to \"total_finite\" in the lemma \"IAJ_Life_Insurance_Math_2016_2_1_1\".
 """
-2023-07-08 = """
-Added the theories Survival_Model, Life_Table and Examples.
-Updated the theories Preliminaries and Interest.
-"""
+2023-07-08 = [
+  "Added the theories Survival_Model, Life_Table and Examples.",
+  "Updated the theories Preliminaries and Interest."
+]
 2022-01-23 = """
 Submitted the theories Preliminaries and Interest.
 """
