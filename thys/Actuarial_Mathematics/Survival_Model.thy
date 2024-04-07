@@ -6,14 +6,14 @@ begin
 section \<open>Survival Model\<close>
 
 text \<open>
-  The survival model is built on the probability space @{text "\<MM>"}.
-  Additionally, the random variable @{text "X : space \<MM> \<rightarrow> \<real>"} is introduced,
+  The survival model is built on the probability space \<open>\<MM>\<close>.
+  Additionally, the random variable \<open>X : space \<MM> \<rightarrow> \<real>\<close> is introduced,
   which represents the age at death.
 \<close>
 
 locale prob_space_actuary = MM_PS: prob_space \<MM> for \<MM> 
   \<comment> \<open>Since the letter M may be used as a commutation function,
-      adopt the letter @{text "\<MM>"} instead as a notation for the measure space.\<close>
+      adopt the letter \<open>\<MM>\<close> instead as a notation for the measure space.\<close>
 
 locale survival_model = prob_space_actuary +
   fixes X :: "'a \<Rightarrow> real"
@@ -43,9 +43,11 @@ qed
 lemma X_compl_gt_le: "space \<MM> - {\<xi> \<in> space \<MM>. X \<xi> > x} = {\<xi> \<in> space \<MM>. X \<xi> \<le> x}" for x::real
   using X_compl_le_gt by blast
 
-subsubsection \<open>Introduction of Survival Function for X\<close>
+subsubsection \<open>Introduction of Survival Function for \<open>X\<close>\<close>
 
-text \<open>Note that @{text "ccdf (distr \<MM> borel X)"} is the survival (distributive) function for X.\<close>
+text \<open>
+  Note that \<open>ccdf (distr \<MM> borel X)\<close> is the survival (distributive) function for \<open>X\<close>.
+\<close>
 
 lemma ccdfX_0_1: "ccdf (distr \<MM> borel X) 0 = 1"
   apply (rewrite MM_PS.ccdf_distr_P, simp)
@@ -151,7 +153,7 @@ qed
 corollary psi_pos'[simp]: "$\<psi> > ereal 0"
   using psi_pos zero_ereal_def by presburger
 
-subsubsection \<open>Introdution of Future-Lifetime Random Variable T(x)\<close>
+subsubsection \<open>Introdution of Future-Lifetime Random Variable \<open>T(x)\<close>\<close>
 
 definition alive :: "real \<Rightarrow> 'a set"
   where "alive x \<equiv> {\<xi> \<in> space \<MM>. X \<xi> > x}"
@@ -164,7 +166,7 @@ lemma X_alivex_measurable[measurable, simp]: "X \<in> borel_measurable (\<MM> \<
 
 definition futr_life :: "real \<Rightarrow> ('a \<Rightarrow> real)" ("T")
   where "T x \<equiv> (\<lambda>\<xi>. X \<xi> - x)"
-    \<comment> \<open>Note that @{text "T(x) : space \<MM> \<rightarrow> \<real>"} represents the time until death of a person aged x.\<close>
+    \<comment> \<open>Note that \<open>T(x) : space \<MM> \<rightarrow> \<real>\<close> represents the time until death of a person aged \<open>x\<close>.\<close>
 
 lemma T0_eq_X[simp]: "T 0 = X"
   unfolding futr_life_def by simp
@@ -190,45 +192,52 @@ subsubsection \<open>Actuarial Notations on the Survival Model\<close>
 
 definition survive :: "real \<Rightarrow> real \<Rightarrow> real" ("$p'_{_&_}" [0,0] 200)
   where "$p_{t&x} \<equiv> ccdf (distr (\<MM> \<downharpoonright> alive x) borel (T x)) t"
-    \<comment> \<open>the probability that a person aged x will survive for t years\<close>
-    \<comment> \<open>Note that the function @{text "$p_{\<cdot>&x}"} is the survival function
-        on @{text "(\<MM> \<downharpoonright> alive x)"} for the random variable T(x).\<close>
-    \<comment> \<open>The parameter t is usually nonnegative, but theoretically it can be negative.\<close>
+    \<comment> \<open>the probability that a person aged \<open>x\<close> will survive for \<open>t\<close> years\<close>
+    \<comment> \<open>Note that the function \<open>$p_{\<cdot>&x}\<close> is the survival function
+        on \<open>(\<MM> \<downharpoonright> alive x)\<close> for the random variable \<open>T(x)\<close>.\<close>
+    \<comment> \<open>The parameter \<open>t\<close> is usually nonnegative, but theoretically it can be negative.\<close>
+
 abbreviation survive_1 :: "real \<Rightarrow> real" ("$p'__" [101] 200)
   where "$p_x \<equiv> $p_{1&x}"
+
 definition die :: "real \<Rightarrow> real \<Rightarrow> real" ("$q'_{_&_}" [0,0] 200)
   where "$q_{t&x} \<equiv> cdf (distr (\<MM> \<downharpoonright> alive x) borel (T x)) t"
-    \<comment> \<open>the probability that a person aged x will die within t years\<close>
-    \<comment> \<open>Note that the function @{text "$q_{\<cdot>&x}"} is the cumulative distributive function
-        on @{text "(\<MM> \<downharpoonright> alive x)"} for the random variable T(x).\<close>
-    \<comment> \<open>The parameter t is usually nonnegative, but theoretically it can be negative.\<close>
+    \<comment> \<open>the probability that a person aged \<open>x\<close> will die within \<open>t\<close> years\<close>
+    \<comment> \<open>Note that the function \<open>$q_{\<cdot>&x}\<close> is the cumulative distributive function
+        on \<open>(\<MM> \<downharpoonright> alive x)\<close> for the random variable \<open>T(x)\<close>.\<close>
+    \<comment> \<open>The parameter \<open>t\<close> is usually nonnegative, but theoretically it can be negative.\<close>
+
 abbreviation die_1 :: "real \<Rightarrow> real" ("$q'__" [101] 200)
   where "$q_x \<equiv> $q_{1&x}"
+
 definition die_defer :: "real \<Rightarrow> real \<Rightarrow> real \<Rightarrow> real" ("$q'_{_\<bar>_&_}" [0,0,0] 200)
   where "$q_{f\<bar>t&x} = \<bar>$q_{f+t&x} - $q_{f&x}\<bar>"
-    \<comment> \<open>the probability that a person aged x will die within t years, deferred f years\<close>
-    \<comment> \<open>The parameters f and t are usually nonnegative, but theoretically they can be negative.\<close>
+    \<comment> \<open>the probability that a person aged \<open>x\<close> will die within \<open>t\<close> years, deferred \<open>f\<close> years\<close>
+    \<comment> \<open>The parameters \<open>f\<close> and \<open>t\<close> are usually nonnegative, but theoretically they can be negative.\<close>
+
 abbreviation die_defer_1 :: "real \<Rightarrow> real \<Rightarrow> real" ("$q'_{_\<bar>&_}" [0,0] 200)
   where "$q_{f\<bar>&x} \<equiv> $q_{f\<bar>1&x}"
+
 definition life_expect :: "real \<Rightarrow> real" ("$e`\<circ>'__" [101] 200)
   where "$e`\<circ>_x \<equiv> integral\<^sup>L (\<MM> \<downharpoonright> alive x) (T x)"
     \<comment> \<open>complete life expectation\<close>
-    \<comment> \<open>Note that @{text "$e`\<circ>_x"} is calculated as 0
-        when @{text "nn_integral (\<MM> \<downharpoonright> alve x) (T x) = \<infinity>"}.\<close>
+    \<comment> \<open>Note that \<open>$e`\<circ>_x\<close> is calculated as \<open>0\<close> when \<open>nn_integral (\<MM> \<downharpoonright> alve x) (T x) = \<infinity>\<close>.\<close>
+
 definition temp_life_expect :: "real \<Rightarrow> real \<Rightarrow>real" ("$e`\<circ>'_{_:_}" [0,0] 200)
   where "$e`\<circ>_{x:n} \<equiv> integral\<^sup>L (\<MM> \<downharpoonright> alive x) (\<lambda>\<xi>. min (T x \<xi>) n)"
     \<comment> \<open>temporary complete life expectation\<close>
+
 definition curt_life_expect :: "real \<Rightarrow> real" ("$e'__" [101] 200)
   where "$e_x \<equiv> integral\<^sup>L (\<MM> \<downharpoonright> alive x) (\<lambda>\<xi>. \<lfloor>T x \<xi>\<rfloor>)"
     \<comment> \<open>curtate life expectation\<close>
-    \<comment> \<open>Note that @{text "$e_x"} is calculated as 0 when
-        @{text "nn_integral (\<MM> \<downharpoonright> alive x) \<lfloor>T x\<rfloor> = \<infinity>"}.\<close>
+    \<comment> \<open>Note that \<open>$e_x\<close> is calculated as \<open>0\<close> when \<open>nn_integral (\<MM> \<downharpoonright> alive x) \<lfloor>T x\<rfloor> = \<infinity>\<close>.\<close>
+
 definition temp_curt_life_expect :: "real \<Rightarrow> real \<Rightarrow> real" ("$e'_{_:_}" [0,0] 200)
   where "$e_{x:n} \<equiv> integral\<^sup>L (\<MM> \<downharpoonright> alive x) (\<lambda>\<xi>. \<lfloor>min (T x \<xi>) n\<rfloor>)"
     \<comment> \<open>temporary curtate life expectation\<close>
-    \<comment> \<open>In the definition n can be a real number, but in practice n is usually a natural number.\<close>
+    \<comment> \<open>In the definition \<open>n\<close> can be a real number, but in practice \<open>n\<close> is usually a natural number.\<close>
 
-subsubsection \<open>Properties of Survival Function for T(x)\<close>
+subsubsection \<open>Properties of Survival Function for \<open>T(x)\<close>\<close>
 
 context
   fixes x::real
@@ -459,13 +468,16 @@ lemma differentiable_ccdfX_ccdfTx:
   unfolding field_differentiable_def using has_real_derivative_ccdfX_ccdfTx that
   by (smt (verit, del_insts) PXx_pos nonzero_mult_div_cancel_left)
 
-subsubsection \<open>Properties of @{text "$p_{t&x}"}\<close>
+subsubsection \<open>Properties of \<open>$p_{t&x}\<close>\<close>
 
 lemma p_0_1: "$p_{0&x} = 1"
   unfolding survive_def using ccdfTx_0_1 by simp
 
 lemma p_nonneg[simp]: "$p_{t&x} \<ge> 0" for t::real
   unfolding survive_def using distrTx_RD.ccdf_nonneg by simp
+
+lemma p_le_1[simp]: "$p_{t&x} \<le> 1" for t::real
+  unfolding survive_def using distrTx_RD.ccdf_bounded_prob by auto
 
 lemma p_0_equiv: "$p_{t&x} = 0 \<longleftrightarrow> x+t \<ge> $\<psi>" for t::real
   unfolding survive_def by (rule ccdfTx_0_equiv)
@@ -499,7 +511,7 @@ lemma p_PTx_ge_ccdf_isCont: "$p_{t&x} = \<P>(\<xi> in \<MM>. T x \<xi> \<ge> t \
 
 end
 
-subsubsection \<open>Properties of Survival Function for X\<close>
+subsubsection \<open>Properties of Survival Function for \<open>X\<close>\<close>
 
 lemma ccdfX_continuous_unborn[simp]: "continuous_on {..0} (ccdf (distr \<MM> borel X))"
   using ccdfTx_continuous_on_nonpos by (metis ccdfT0_eq_ccdfX psi_pos')
@@ -522,7 +534,7 @@ corollary ccdfX_integrable_on_Icc:
 lemma ccdfX_p: "ccdf (distr \<MM> borel X) x = $p_{x&0}" for x::real
   by (metis ccdfT0_eq_ccdfX survive_def psi_pos')
 
-subsubsection \<open>Introduction of Cumulative Distributive Function for X\<close>
+subsubsection \<open>Introduction of Cumulative Distributive Function for \<open>X\<close>\<close>
 
 lemma cdfX_0_0: "cdf (distr \<MM> borel X) 0 = 0"
   using ccdfX_0_1 distrX_RD.ccdf_cdf distrX_RD.prob_space by fastforce
@@ -539,7 +551,7 @@ lemma cdfX_psi_1: "cdf (distr \<MM> borel X) (real_of_ereal $\<psi>) = 1" if "$\
 lemma cdfX_1_equiv: "cdf (distr \<MM> borel X) x = 1 \<longleftrightarrow> x \<ge> $\<psi>" for x::real
   using ccdfX_0_equiv distrX_RD.cdf_ccdf distrX_RD.prob_space by force
 
-subsubsection \<open>Properties of Cumulative Distributive Function for T(x)\<close>
+subsubsection \<open>Properties of Cumulative Distributive Function for \<open>T(x)\<close>\<close>
 
 context
   fixes x::real
@@ -662,13 +674,19 @@ lemma differentiable_cdfX_cdfTx:
       distrX_RD.finite_borel_measure_axioms finite_borel_measure.differentiable_cdf_ccdf
       real_differentiable_def x_lt_psi)
 
-subsubsection \<open>Properties of @{text "$q_{t&x}"}\<close>
+subsubsection \<open>Properties of \<open>$q_{t&x}\<close>\<close>
 
-lemma q_0_0: "$q_{0&x} = 0"
-  unfolding die_def using cdfTx_0_0 by simp
+lemma q_nonpos_0: "$q_{t&x} = 0" if "t \<le> 0" for t::real
+  unfolding die_def using that cdfTx_nonpos_0 by simp
+
+corollary q_0_0: "$q_{0&x} = 0"
+  using q_nonpos_0 by simp
 
 lemma q_nonneg[simp]: "$q_{t&x} \<ge> 0" for t::real
   unfolding die_def using distrTx_RD.cdf_nonneg by simp
+
+lemma q_le_1[simp]: "$q_{t&x} \<le> 1" for t::real
+  unfolding die_def using distrTx_RD.cdf_bounded_prob by force
 
 lemma q_1_equiv: "$q_{t&x} = 1 \<longleftrightarrow> x+t \<ge> $\<psi>" for t::real
   unfolding die_def using cdfTx_1_equiv by simp
@@ -690,6 +708,9 @@ lemma q_defer_nonneg[simp]: "$q_{f\<bar>t&x} \<ge> 0" for f t :: real
 
 lemma q_defer_q: "$q_{f\<bar>t&x} = $q_{f+t & x} - $q_{f&x}" if "t \<ge> 0" for f t :: real
   unfolding die_defer_def die_def using distrTx_RD.cdf_nondecreasing that by simp
+
+corollary q_defer_le_1[simp]: "$q_{f\<bar>t&x} \<le> 1" if "t \<ge> 0" for f t :: real
+  by (smt (verit, ccfv_SIG) q_defer_q q_le_1 q_nonneg that)
 
 lemma q_defer_PTx: "$q_{f\<bar>t&x} = \<P>(\<xi> in \<MM>. f < T x \<xi> \<and> T x \<xi> \<le> f + t \<bar> T x \<xi> > 0)"
   if "t \<ge> 0" for f t :: real
@@ -746,7 +767,7 @@ qed
 
 end
 
-subsubsection \<open>Properties of Cumulative Distributive Function for X\<close>
+subsubsection \<open>Properties of Cumulative Distributive Function for \<open>X\<close>\<close>
 
 lemma cdfX_continuous_unborn[simp]: "continuous_on {..0} (cdf (distr \<MM> borel X))"
   using cdfTx_continuous_on_nonpos by (metis cdfT0_eq_cdfX psi_pos')
@@ -769,7 +790,7 @@ corollary cdfX_integrable_on_Icc:
 lemma cdfX_q: "cdf (distr \<MM> borel X) x = $q_{x&0}" if "x \<ge> 0" for x::real
   by (metis cdfT0_eq_cdfX die_def psi_pos')
 
-subsubsection \<open>Relations between @{text "$p_{t&x}"} and @{text "$q_{t&x}"}\<close>
+subsubsection \<open>Relations between \<open>$p_{t&x}\<close> and \<open>$q_{t&x}\<close>\<close>
 
 context
   fixes x::real
@@ -851,15 +872,23 @@ proof -
   ultimately show ?thesis using nn_integral_T_p by simp
 qed
 
+lemma e_pos_Tx: "$e`\<circ>_x > 0" if "integrable (\<MM> \<downharpoonright> alive x) (T x)"
+  unfolding life_expect_def
+  apply (rewrite integral_eq_nn_integral, simp_all)
+   apply (smt (verit, ccfv_SIG) AE_I2 alivex_Tx_pos)
+  using nn_integral_T_pos that
+  by (smt (verit) AE_I2 alivex_Tx_pos enn2real_ennreal ennreal_less_zero_iff
+      nn_integral_cong nn_integral_eq_integral)
+
 proposition e_LBINT_p: "$e`\<circ>_x = (LBINT t:{0..}. $p_{t&x})"
-  \<comment> \<open>Note that 0 = 0 holds when the integral diverges.\<close>
+  \<comment> \<open>Note that \<open>0 = 0\<close> holds when the integral diverges.\<close>
   unfolding life_expect_def apply (rewrite integral_eq_nn_integral, simp_all add: less_imp_le)
   unfolding set_lebesgue_integral_def apply (rewrite integral_eq_nn_integral, simp_all)
    apply (measurable, simp add: survive_def)
   by (rewrite nn_integral_T_p) (simp add: indicator_mult_ennreal mult.commute)
 
 corollary e_integral_p: "$e`\<circ>_x = integral {0..} (\<lambda>t. $p_{t&x})"
-  \<comment> \<open>Note that 0 = 0 holds when the integral diverges.\<close>
+  \<comment> \<open>Note that \<open>0 = 0\<close> holds when the integral diverges.\<close>
 proof -
   have "$e`\<circ>_x = (LBINT t:{0..}. $p_{t&x})" using e_LBINT_p by simp
   also have "\<dots> = integral {0..} (\<lambda>t. $p_{t&x})"
@@ -867,6 +896,23 @@ proof -
     unfolding survive_def by simp
   finally show ?thesis .
 qed
+
+lemma e_pos: "$e`\<circ>_x > 0" if "set_integrable lborel {0..} (\<lambda>t. $p_{t&x})"
+proof -
+  have "(\<integral>\<^sup>+t\<in>{0..}. ennreal ($p_{t&x}) \<partial>lborel) = ennreal (\<integral>t\<in>{0..}. $p_{t&x} \<partial>lborel)"
+    by (intro set_nn_integral_eq_set_integral; simp add: that)
+  also have "\<dots> < \<infinity>" using that by simp
+  finally have "(\<integral>\<^sup>+\<xi>. ennreal (T x \<xi>) \<partial>(\<MM> \<downharpoonright> alive x)) < \<infinity>" using nn_integral_T_p by simp
+  hence "integrable (\<MM> \<downharpoonright> alive x) (T x)"
+    by (smt (verit) alivex_Tx_pos integrableI_bounded nn_integral_cong real_norm_def
+        survival_model.Tx_alivex_measurable survival_model_axioms)
+  thus ?thesis by (rule e_pos_Tx)
+qed
+
+corollary e_pos': "$e`\<circ>_x > 0" if "(\<lambda>t. $p_{t&x}) integrable_on {0..}"
+  apply (rule e_pos)
+  using that apply (rewrite integrable_on_iff_set_integrable_nonneg; simp)
+  unfolding survive_def by simp
 
 lemma e_LBINT_p_Icc: "$e`\<circ>_x = (LBINT t:{0..n}. $p_{t&x})" if "x+n \<ge> $\<psi>" for n::real
 proof -
@@ -897,6 +943,29 @@ lemma e_integral_p_Icc: "$e`\<circ>_x = integral {0..n} (\<lambda>t. $p_{t&x})" 
   using that apply (rewrite e_LBINT_p_Icc, simp_all)
   using ccdfTx_integrable_Icc unfolding survive_def
   by (rewrite set_borel_integral_eq_integral; simp)
+
+lemma temp_e_le_n: "$e`\<circ>_{x:n} \<le> n" if "n \<ge> 0" for n::real
+proof -
+  have nni_n: "(\<integral>\<^sup>+_. ennreal n \<partial>(\<MM> \<downharpoonright> alive x)) = ennreal n"
+    by (rewrite nn_integral_const, rewrite alivex_PS.emeasure_space_1) simp
+  hence hbi_n: "has_bochner_integral (\<MM> \<downharpoonright> alive x) (\<lambda>_. n) n"
+    by (intro has_bochner_integral_nn_integral; simp add: that)
+  hence "integrable (\<MM> \<downharpoonright> alive x) (\<lambda>_. n)" by simp
+  moreover have "integrable (\<MM> \<downharpoonright> alive x) (\<lambda>\<xi>. min (T x \<xi>) n)"
+  proof -
+    have "(\<integral>\<^sup>+\<xi>. ennreal (norm (min (T x \<xi>) n)) \<partial>(\<MM> \<downharpoonright> alive x)) \<le> \<integral>\<^sup>+_. ennreal n \<partial>(\<MM> \<downharpoonright> alive x)"
+      apply (rule nn_integral_mono, rule ennreal_leI)
+      apply (rewrite real_norm_def, rewrite abs_of_nonneg; simp add: that)
+      by (smt (verit) alivex_Tx_pos)
+    also have "\<dots> < \<infinity>" using nni_n by simp
+    finally have "(\<integral>\<^sup>+\<xi>. ennreal (norm (min (T x \<xi>) n)) \<partial>(\<MM> \<downharpoonright> alive x)) < \<infinity>" .
+    thus ?thesis by (intro integrableI_bounded; simp)
+  qed
+  ultimately have "$e`\<circ>_{x:n} \<le> integral\<^sup>L (\<MM> \<downharpoonright> alive x) (\<lambda>_. n)"
+    unfolding temp_life_expect_def by (intro integral_mono; simp)
+  also have "\<dots> = n" using hbi_n has_bochner_integral_iff by blast
+  finally show ?thesis .
+qed
 
 lemma temp_e_P: "$e`\<circ>_{x:n} =
   MM_PS.expectation (\<lambda>\<xi>. indicator (alive x) \<xi> * min (T x \<xi>) n) / \<P>(\<xi> in \<MM>. T x \<xi> > 0)"
@@ -939,10 +1008,7 @@ proof -
   finally have "(\<integral>\<^sup>+\<xi>. ennreal (min (T x \<xi>) n) \<partial>(\<MM> \<downharpoonright> alive x)) =
     ennreal (LBINT t:{0..n}. $p_{t&x})" .
   thus ?thesis
-    unfolding temp_life_expect_def
-    apply (rewrite integral_eq_nn_integral; simp add: that)
-    apply (rewrite enn2real_ennreal; simp?)
-    unfolding set_lebesgue_integral_def by (simp add: that)
+    unfolding temp_life_expect_def by (rewrite integral_eq_nn_integral; simp add: that)
 qed
 
 lemma temp_e_integral_p: "$e`\<circ>_{x:n} = integral {0..n} (\<lambda>t. $p_{t&x})" if "n \<ge> 0" for n::real
@@ -964,7 +1030,8 @@ lemma curt_e_sum_P: "$e_x = (\<Sum>k. \<P>(\<xi> in \<MM>. T x \<xi> \<ge> k + 1
 proof -
   let ?F_flrTx = "cdf (distr (\<MM> \<downharpoonright> alive x) borel (\<lambda>\<xi>. \<lfloor>T x \<xi>\<rfloor>))"
   have [simp]: "\<And>\<xi>. \<xi> \<in> space (\<MM> \<downharpoonright> alive x) \<Longrightarrow> 0 \<le> T x \<xi>" by (smt (verit) alivex_Tx_pos)
-  have "integral\<^sup>N (\<MM> \<downharpoonright> alive x) (\<lambda>\<xi>. ennreal \<lfloor>T x \<xi>\<rfloor>) = (\<integral>\<^sup>+t\<in>{0..}. ennreal (1 - ?F_flrTx t) \<partial>lborel)"
+  have "integral\<^sup>N (\<MM> \<downharpoonright> alive x) (\<lambda>\<xi>. ennreal \<lfloor>T x \<xi>\<rfloor>) =
+    (\<integral>\<^sup>+t\<in>{0..}. ennreal (1 - ?F_flrTx t) \<partial>lborel)"
     by (rewrite alivex_PS.expectation_nonneg_tail; simp)
   also have "\<dots> = (\<integral>\<^sup>+t\<in>{0::real..}. ennreal \<P>(\<xi> in \<MM>. T x \<xi> \<ge> \<lfloor>t\<rfloor> + 1 \<bar> T x \<xi> > 0) \<partial>lborel)"
   proof -
@@ -980,7 +1047,8 @@ proof -
         finally show ?thesis .
       qed }
     thus ?thesis
-      by (intro nn_set_integral_cong2 AE_I2) simp
+      apply -
+      by (rule nn_set_integral_cong2, rule AE_I2) simp
   qed
   also have "\<dots> = (\<Sum>k. \<integral>\<^sup>+t\<in>{k..<k+1}. ennreal \<P>(\<xi> in \<MM>. T x \<xi> \<ge> \<lfloor>t\<rfloor> + 1 \<bar> T x \<xi> > 0) \<partial>lborel)"
     apply (rewrite nn_integral_disjoint_family[THEN sym]; simp)
@@ -1168,7 +1236,7 @@ proof -
       have "(\<lfloor>t\<rfloor> + 1 \<le> n) = (t < n)" by linarith
       hence "\<And>r::real.
         ennreal (r * of_bool (\<lfloor>t\<rfloor> + 1 \<le> n)) * indicator {0..} t = ennreal r * indicator {0..<n} t"
-        unfolding atLeastLessThan_def by (simp add: indicator_inter_arith) }
+        unfolding atLeastLessThan_def by (simp add: indicator_def) }
     thus ?thesis by simp
   qed
   also have "\<dots> = (\<integral>\<^sup>+t\<in>{0..<n}. ennreal \<P>(\<xi> in (\<MM> \<downharpoonright> alive x). T x \<xi> \<ge> \<lfloor>t\<rfloor> + 1) \<partial>lborel)"
@@ -1271,6 +1339,131 @@ qed
 
 end
 
+lemma p_set_integrable_shift:
+  "set_integrable lborel {0..} (\<lambda>t. $p_{t&0}) \<longleftrightarrow> set_integrable lborel {0..} (\<lambda>t. $p_{t&x})"
+  if "x < $\<psi>" for x::real
+proof -
+  have "set_integrable lborel {0..} (\<lambda>t. $p_{t&0}) \<longleftrightarrow> set_integrable lborel {x..} (\<lambda>t. $p_{t&0})"
+    by (rule set_integrable_Ici_equiv)
+      (metis (no_types, lifting) ccdfX_integrable_Icc ccdfX_p set_integrable_cong)
+  also have "\<dots> \<longleftrightarrow> set_integrable lborel {0..} (\<lambda>t. $p_{x+t&0})"
+    using set_integrable_Ici_shift[of x x] by force
+  also have "\<dots> \<longleftrightarrow> set_integrable lborel {0..} (\<lambda>t. $p_{x+t&0} / $p_{x&0})"
+    using that p_0_equiv by (rewrite set_integrable_mult_divide_iff; simp)
+  also have "\<dots> \<longleftrightarrow> set_integrable lborel {0..} (\<lambda>t. $p_{t&x})"
+    by (rule set_integrable_cong; simp) (simp add: ccdfTx_ccdfX ccdfX_p survive_def that)
+  finally show ?thesis .
+qed
+
+lemma e_p_e: "$e`\<circ>_x = $e`\<circ>_{x:n} + $p_{n&x} * $e`\<circ>_(x+n)"
+  if "set_integrable lborel {0..} (\<lambda>t. $p_{t&x})" "n \<ge> 0" "x+n < $\<psi>" for x n :: real
+proof -
+  have [simp]: "ereal x < $\<psi>" using that by (simp add: ereal_less_le)
+  hence "$e`\<circ>_x = (LBINT t:{0..}. $p_{t&x})" by (simp add: e_LBINT_p)
+  also have "\<dots> = (LBINT t:{0..n}. $p_{t&x}) + (LBINT t:{n..}. $p_{t&x})"
+  proof -
+    have "AE t in lborel. \<not> (t\<in>{0..n} \<and> t\<in>{n..})" using AE_lborel_singleton by force
+    moreover have "{0..} = {0..n} \<union> {n..}" using that by auto
+    moreover have "set_integrable lborel {0..n} (\<lambda>t. $p_{t&x})"
+      using that
+      by (metis Icc_subset_Ici_iff atLeastAtMost_borel order.refl set_integrable_subset sets_lborel)
+    moreover have "set_integrable lborel {n..} (\<lambda>t. $p_{t&x})"
+      using that by (metis atLeast_borel atLeast_subset_iff set_integrable_subset sets_lborel)
+    ultimately show ?thesis
+      using set_integral_Un_AE
+      by (metis (no_types, lifting) AE_cong atLeastAtMost_borel atLeast_borel sets_lborel)
+  qed
+  also have "\<dots> = (LBINT t:{0..n}. $p_{t&x}) + $p_{n&x} * (LBINT t:{0..}. $p_{t & x+n})"
+  proof -
+    have "(LBINT t:{n..}. $p_{t&x}) = (LBINT t:{0..}. $p_{n+t & x})"
+      using lborel_set_integral_Ici_shift[of n _ n, simplified] by force
+    also have "\<dots> = (LBINT t:{0..}. $p_{n&x} * $p_{t & x+n})"
+      apply (rule set_lebesgue_integral_cong; simp)
+      using that p_mult by force
+    finally show ?thesis by simp
+  qed
+  also have "\<dots> = $e`\<circ>_{x:n} + $p_{n&x} * $e`\<circ>_(x+n)"
+    apply (rewrite temp_e_LBINT_p, (simp_all add: that)[2])
+    by (rewrite e_LBINT_p; simp add: that)
+  finally show ?thesis .
+qed
+
+proposition x_ex_mono: "x + $e`\<circ>_x \<le> y + $e`\<circ>_y" if "x \<le> y" "y < $\<psi>" for x y :: real
+proof -
+  have x_lt_psi[simp]: "ereal x < $\<psi>" using that ereal_less_le by simp
+  show ?thesis
+  proof (cases \<open>set_integrable lborel {0..} (\<lambda>t. $p_{t&x})\<close>)
+    case True
+    hence "$e`\<circ>_x = $e`\<circ>_{x:y-x} + $p_{y-x&x}*$e`\<circ>_y" by (rewrite e_p_e[of x "y-x"]; simp add: that)
+    also have "\<dots> \<le> y - x + $e`\<circ>_y"
+    proof -
+      have "$e`\<circ>_{x:y-x} \<le> y - x" using that by (intro temp_e_le_n; simp)
+      moreover have "$p_{y-x&x}*$e`\<circ>_y \<le> $e`\<circ>_y"
+        using p_le_1 x_lt_psi that
+        by (smt (verit, ccfv_threshold) e_nonneg mult_less_cancel_right1)
+      ultimately show ?thesis by simp
+    qed
+    finally show ?thesis by simp
+  next
+    case False
+    hence "$e`\<circ>_x = 0"
+      using e_LBINT_p not_integrable_integral_eq
+      unfolding set_integrable_def set_lebesgue_integral_def
+      by simp
+    moreover have "$e`\<circ>_y = 0"
+    proof -
+      have "\<not> set_integrable lborel {0..} (\<lambda>t. $p_{t&y})"
+        using that False
+        apply (rewrite p_set_integrable_shift[THEN sym], simp)
+        by (rewrite p_set_integrable_shift[of x]; simp)
+      thus ?thesis
+        using e_LBINT_p not_integrable_integral_eq that
+        unfolding set_integrable_def set_lebesgue_integral_def
+        by simp
+    qed
+    ultimately show ?thesis using that by simp
+  qed
+qed
+
+proposition x_ex_const_equiv: "x + $e`\<circ>_x = y + $e`\<circ>_y \<longleftrightarrow> $q_{y-x&x} = 0"
+  if "set_integrable lborel {0..} (\<lambda>t. $p_{t&0})" "x \<le> y" "y < $\<psi>" for x y :: real
+proof -
+  have ey: "set_integrable lborel {0..} (\<lambda>t. $p_{t&y})" using that p_set_integrable_shift by blast
+  have x_lt_psi[simp]: "ereal x < $\<psi>" using that ereal_less_le by simp
+  hence ex: "set_integrable lborel {0..} (\<lambda>t. $p_{t&x})" using that p_set_integrable_shift by blast
+  show ?thesis
+  proof
+    assume const: "x + $e`\<circ>_x = y + $e`\<circ>_y"
+    hence "0 = y - x - $e`\<circ>_x + $e`\<circ>_y" by simp
+    also have "\<dots> = y - x - $e`\<circ>_{x:y-x} - $p_{y-x&x}*$e`\<circ>_y + $e`\<circ>_y"
+      using e_p_e[of x "y-x"] ex that by simp
+    also have "\<dots> = (y - x - $e`\<circ>_{x:y-x}) + (1 - $p_{y-x&x})*$e`\<circ>_y"
+      by (simp add: left_diff_distrib)
+    finally have "0 = (y - x - $e`\<circ>_{x:y-x}) + (1 - $p_{y-x&x})*$e`\<circ>_y" .
+    moreover have "y - x - $e`\<circ>_{x:y-x} \<ge> 0" using temp_e_le_n that by simp
+    ultimately have "(1 - $p_{y-x&x})*$e`\<circ>_y = 0"
+      by (smt (verit, ccfv_threshold) e_nonneg mult_nonneg_nonneg p_le_1 that x_lt_psi)
+    moreover have "$e`\<circ>_y > 0" using that e_pos ey by simp
+    ultimately have "1 - $p_{y-x&x} = 0" by simp
+    thus "$q_{y-x&x} = 0" by (smt (verit) p_q_1 x_lt_psi)
+  next
+    interpret alivex_PS: prob_space "\<MM> \<downharpoonright> alive x"
+      by (rule MM_PS.cond_prob_space_correct, simp_all add: alive_def)
+    interpret distrTx_RD: real_distribution "distr (\<MM> \<downharpoonright> alive x) borel (T x)" by simp
+    assume "$q_{y-x&x} = 0"
+    hence p1: "$p_{y-x&x} = 1" using p_q_1 by (metis add.right_neutral x_lt_psi)
+    hence "\<And>t. t\<in>{0..y-x} \<Longrightarrow> $p_{t&x} = 1"
+      unfolding survive_def using distrTx_RD.ccdf_nonincreasing
+      by simp (smt (verit) distrTx_RD.ccdf_bounded_prob)
+    hence "$e`\<circ>_{x:y-x} = y - x"
+      using that apply (rewrite temp_e_LBINT_p; simp)
+      by (rewrite set_lebesgue_integral_cong[where g="\<lambda>_. 1"]; simp)
+    moreover have "$e`\<circ>_x = $e`\<circ>_{x:y-x} + $p_{y-x&x}*$e`\<circ>_y"
+      by (rewrite e_p_e[of x "y-x"]; simp add: that ex)
+    ultimately show "x + $e`\<circ>_x = y + $e`\<circ>_y" using p1 by simp
+  qed
+qed
+
 end
 
 subsection \<open>Piecewise Differentiable Survival Function\<close>
@@ -1278,13 +1471,12 @@ subsection \<open>Piecewise Differentiable Survival Function\<close>
 locale smooth_survival_function = survival_model +
   assumes ccdfX_piecewise_differentiable[simp]:
     "(ccdf (distr \<MM> borel X)) piecewise_differentiable_on UNIV"
-
 begin
 
 interpretation distrX_RD: real_distribution "distr \<MM> borel X"
   using MM_PS.real_distribution_distr by simp
 
-subsubsection \<open>Properties of Survival Function for X\<close>
+subsubsection \<open>Properties of Survival Function for \<open>X\<close>\<close>
 
 lemma ccdfX_continuous[simp]: "continuous_on UNIV (ccdf (distr \<MM> borel X))"
   using ccdfX_piecewise_differentiable piecewise_differentiable_on_imp_continuous_on by fastforce
@@ -1322,7 +1514,7 @@ proof -
   thus ?thesis unfolding set_borel_measurable_def by simp
 qed
 
-subsubsection \<open>Properties of Cumulative Distributive Function for X\<close>
+subsubsection \<open>Properties of Cumulative Distributive Function for \<open>X\<close>\<close>
 
 lemma cdfX_piecewise_differentiable[simp]:
   "(cdf (distr \<MM> borel X)) piecewise_differentiable_on UNIV"
@@ -1356,7 +1548,7 @@ proof -
   thus ?thesis unfolding set_borel_measurable_def by simp
 qed
 
-subsubsection \<open>Introduction of Probability Density Functions of X and T(x)\<close>
+subsubsection \<open>Introduction of Probability Density Functions of \<open>X\<close> and \<open>T(x)\<close>\<close>
 
 definition pdfX :: "real \<Rightarrow> real"
   where "pdfX x \<equiv> if cdf (distr \<MM> borel X) differentiable at x
@@ -1396,7 +1588,7 @@ qed
 lemma pdfT0_X: "pdfT 0 = pdfX"
   unfolding pdfT_def pdfX_def using cdfT0_eq_cdfX psi_pos' by fastforce
 
-subsubsection \<open>Properties of Survival Function for T(x)\<close>
+subsubsection \<open>Properties of Survival Function for \<open>T(x)\<close>\<close>
 
 context
   fixes x::real
@@ -1488,7 +1680,7 @@ proof -
   thus ?thesis unfolding set_borel_measurable_def by simp
 qed
 
-subsubsection \<open>Properties of Cumulative Distributive Function for T(x)\<close>
+subsubsection \<open>Properties of Cumulative Distributive Function for \<open>T(x)\<close>\<close>
 
 lemma cdfTx_continuous[simp]:
   "continuous_on UNIV (cdf (distr (\<MM> \<downharpoonright> alive x) borel (T x)))"
@@ -1527,7 +1719,7 @@ proof -
   thus ?thesis unfolding set_borel_measurable_def by simp
 qed
 
-subsubsection \<open>Properties of Probability Density Function of T(x)\<close>
+subsubsection \<open>Properties of Probability Density Function of \<open>T(x)\<close>\<close>
 
 lemma pdfTx_nonneg: "pdfT x t \<ge> 0" for t::real
 proof -
@@ -1808,7 +2000,7 @@ corollary pdfTx_integrable_on_Icc: "pdfT x integrable_on {a..b}" for a b :: real
 
 end
 
-subsubsection \<open>Properties of Probability Density Function of X\<close>
+subsubsection \<open>Properties of Probability Density Function of \<open>X\<close>\<close>
 
 lemma pdfX_nonneg: "pdfX x \<ge> 0" for x::real
   using pdfTx_nonneg pdfT0_X psi_pos' by smt
@@ -1871,14 +2063,14 @@ proposition nn_integral_T_pdfT:
   "(\<integral>\<^sup>+\<xi>. ennreal (g (T x \<xi>)) \<partial>(\<MM> \<downharpoonright> alive x)) = (\<integral>\<^sup>+s\<in>{0..}. ennreal (pdfT x s * g s) \<partial>lborel)"
   if "g \<in> borel_measurable lborel" for g :: "real \<Rightarrow> real"
 proof -
-  have "(\<integral>\<^sup>+\<xi>. ennreal (g (T x \<xi>)) \<partial>(\<MM> \<downharpoonright> alive x)) = (\<integral>\<^sup>+s. ennreal (pdfT x s) * ennreal (g s) \<partial>lborel)"
+  have "(\<integral>\<^sup>+\<xi>. ennreal (g (T x \<xi>)) \<partial>(\<MM> \<downharpoonright> alive x)) = \<integral>\<^sup>+s. ennreal (pdfT x s) * ennreal (g s) \<partial>lborel"
   proof -
     have "distributed (\<MM> \<downharpoonright> alive x) lborel (T x) (\<lambda>s. ennreal (pdfT x s))"
       by (intro distributed_pdfTx) simp
     moreover have "(\<lambda>s. ennreal (g s)) \<in> borel_measurable borel" using that by measurable
     ultimately show ?thesis by (rewrite distributed_nn_integral; simp)
   qed
-  also have "\<dots> = (\<integral>\<^sup>+s. ennreal (pdfT x s * g s) \<partial>lborel)" using ennreal_mult' pdfTx_nonneg by force
+  also have "\<dots> = \<integral>\<^sup>+s. ennreal (pdfT x s * g s) \<partial>lborel" using ennreal_mult' pdfTx_nonneg by force
   also have "\<dots> = (\<integral>\<^sup>+s\<in>{0..}. ennreal (pdfT x s * g s) \<partial>lborel)"
     apply (rule nn_integral_cong, simp)
     by (metis atLeast_iff ennreal_0 indicator_simps linorder_not_le mult_1 mult_commute_abs
@@ -1889,7 +2081,7 @@ qed
 lemma expectation_LBINT_pdfT_nonneg:
   "alivex_PS.expectation (\<lambda>\<xi>. g (T x \<xi>)) = (LBINT s:{0..}. pdfT x s * g s)"
   if "\<And>s. s \<ge> 0 \<Longrightarrow> g s \<ge> 0" "g \<in> borel_measurable lborel" for g :: "real \<Rightarrow> real"
-  \<comment> \<open>Note that 0 = 0 holds when the integral diverges.\<close>
+  \<comment> \<open>Note that \<open>0 = 0\<close> holds when the integral diverges.\<close>
   using that apply (rewrite integral_eq_nn_integral, simp)
    apply (rule AE_I2, metis alivex_Tx_pos less_imp_le)
   unfolding set_lebesgue_integral_def apply (rewrite integral_eq_nn_integral, simp_all)
@@ -1900,7 +2092,7 @@ lemma expectation_LBINT_pdfT_nonneg:
 corollary expectation_integral_pdfT_nonneg:
   "alivex_PS.expectation (\<lambda>\<xi>. g (T x \<xi>)) = integral {0..} (\<lambda>s. pdfT x s * g s)"
   if "\<And>s. s \<ge> 0 \<Longrightarrow> g s \<ge> 0" "g \<in> borel_measurable lborel" for g :: "real \<Rightarrow> real"
-  \<comment> \<open>Note that 0 = 0 holds when the integral diverges.\<close>
+  \<comment> \<open>Note that \<open>0 = 0\<close> holds when the integral diverges.\<close>
 proof -
   have "alivex_PS.expectation (\<lambda>\<xi>. g (T x \<xi>)) = (LBINT s:{0..}. pdfT x s * g s)"
     using expectation_LBINT_pdfT_nonneg that by simp
@@ -1979,21 +2171,21 @@ proof -
 qed
 
 corollary e_LBINT_pdfT: "$e`\<circ>_x = (LBINT s:{0..}. pdfT x s * s)"
-  \<comment> \<open>Note that 0 = 0 holds when the life expectation diverges.\<close>
+  \<comment> \<open>Note that \<open>0 = 0\<close> holds when the life expectation diverges.\<close>
   unfolding life_expect_def using expectation_LBINT_pdfT_nonneg by force
 
 corollary e_integral_pdfT: "$e`\<circ>_x = integral {0..} (\<lambda>s. pdfT x s * s)"
-  \<comment> \<open>Note that 0 = 0 holds when the life expectation diverges.\<close>
+  \<comment> \<open>Note that \<open>0 = 0\<close> holds when the life expectation diverges.\<close>
   unfolding life_expect_def using expectation_integral_pdfT_nonneg by force
 
 end
 
 corollary e_LBINT_pdfX: "$e`\<circ>_0 = (LBINT x:{0..}. pdfX x * x)"
-  \<comment> \<open>Note that 0 = 0 holds when the life expectation diverges.\<close>
+  \<comment> \<open>Note that \<open>0 = 0\<close> holds when the life expectation diverges.\<close>
   using e_LBINT_pdfT pdfT0_X psi_pos' by presburger
 
 corollary e_integral_pdfX: "$e`\<circ>_0 = integral {0..} (\<lambda>x. pdfX x * x)"
-  \<comment> \<open>Note that 0 = 0 holds when the life expectation diverges.\<close>
+  \<comment> \<open>Note that \<open>0 = 0\<close> holds when the life expectation diverges.\<close>
   using e_integral_pdfT pdfT0_X psi_pos' by presburger
 
 subsubsection \<open>Introduction of Force of Mortality\<close>
@@ -2012,7 +2204,7 @@ lemma mu_unborn_0: "$\<mu>_x = 0" if "x < 0" for x::real
   using pdfX_nonpos_0 that by auto
 
 lemma mu_beyond_0: "$\<mu>_x = 0" if "x \<ge> $\<psi>" for x::real
-  \<comment> \<open>Note that division by 0 is defined as 0 in Isabelle/HOL.\<close>
+  \<comment> \<open>Note that division by \<open>0\<close> is defined as \<open>0\<close> in Isabelle/HOL.\<close>
   unfolding force_mortal_def using MM_PS.hazard_rate_0_ccdf_0 ccdfX_0_equiv that by simp
 
 lemma mu_nonneg_differentiable: "$\<mu>_x \<ge> 0"
@@ -2046,9 +2238,9 @@ lemma mu_deriv_ln: "$\<mu>_x = - deriv (\<lambda>x. ln (ccdf (distr \<MM> borel 
   using ccdfX_0_equiv that by force
 
 lemma p_exp_integral_mu: "$p_{t&x} = exp (- integral {x..x+t} (\<lambda>y. $\<mu>_y))"
-  if "x \<ge> 0" "t \<ge> 0" "x+t < $\<psi>"
+  if "x \<ge> 0" "t \<ge> 0" "x+t < $\<psi>" for x t :: real
 proof -
-  have [simp]: "x < $\<psi>" using that by (meson add_increasing2 ereal_less linorder_not_le)
+  have [simp]: "x < $\<psi>" using that by (simp add: ereal_less_le)
   have "$p_{t&x} = (ccdf (distr \<MM> borel X) (x+t)) / (ccdf (distr \<MM> borel X) x)"
     apply (rewrite p_PX, simp_all add: that)
     by (rewrite MM_PS.ccdf_distr_P, simp)+ simp
@@ -2181,7 +2373,7 @@ proof -
   ultimately show ?thesis using AE_I'[of ?N'] by simp
 qed
 
-lemma LBINT_p_mu_q: "(LBINT s:{f<..f+t}. $p_{s&x} * $\<mu>_(x+s)) = $q_{f\<bar>t&x}"
+lemma LBINT_p_mu_q_defer: "(LBINT s:{f<..f+t}. $p_{s&x} * $\<mu>_(x+s)) = $q_{f\<bar>t&x}"
   if "t \<ge> 0" "f \<ge> 0" for t f :: real
 proof -
   have "(LBINT s:{f<..f+t}. $p_{s&x} * $\<mu>_(x+s)) = (LBINT s:{f<..f+t}. pdfT x s)"
@@ -2193,7 +2385,7 @@ proof -
   proof -
     have "(\<integral>\<^sup>+s\<in>{f<..f+t}. ennreal (pdfT x s) \<partial>lborel) < \<top>"
     proof -
-      have "(\<integral>\<^sup>+s\<in>{f<..f+t}. ennreal (pdfT x s) \<partial>lborel) \<le> (\<integral>\<^sup>+s. ennreal (pdfT x s) \<partial>lborel)"
+      have "(\<integral>\<^sup>+s\<in>{f<..f+t}. ennreal (pdfT x s) \<partial>lborel) \<le> \<integral>\<^sup>+s. ennreal (pdfT x s) \<partial>lborel"
         by (smt (verit) indicator_simps le_zero_eq linorder_le_cases
             mult.right_neutral mult_zero_right nn_integral_mono)
       also have "\<dots> < \<top>" using nn_integral_pdfTx_1 by simp
@@ -2217,6 +2409,9 @@ proof -
   finally show ?thesis .
 qed
 
+corollary LBINT_p_mu_q: "(LBINT s:{0<..t}. $p_{s&x} * $\<mu>_(x+s)) = $q_{t&x}" if "t \<ge> 0" for t::real
+  using LBINT_p_mu_q_defer that by force
+
 lemma set_integrable_p_mu: "set_integrable lborel {f<..f+t} (\<lambda>s. $p_{s&x} * $\<mu>_(x+s))"
   if "t \<ge> 0" "f \<ge> 0" for t f :: real
 proof -
@@ -2231,7 +2426,7 @@ qed
 lemma p_mu_has_integral_q_defer_Ioc:
   "((\<lambda>s. $p_{s&x} * $\<mu>_(x+s)) has_integral $q_{f\<bar>t&x}) {f<..f+t}"
   if "t \<ge> 0" "f \<ge> 0" for t f :: real
-  apply (rewrite LBINT_p_mu_q[THEN sym], simp_all add: that)
+  apply (rewrite LBINT_p_mu_q_defer[THEN sym], simp_all add: that)
   apply (rewrite set_borel_integral_eq_integral, simp add: set_integrable_p_mu that)
   by (rewrite has_integral_integral[THEN sym];
       simp add: set_borel_integral_eq_integral set_integrable_p_mu that)
@@ -2276,7 +2471,7 @@ proof -
 qed
 
 lemma e_LBINT_p_mu: "$e`\<circ>_x = (LBINT s:{0..}. $p_{s&x} * $\<mu>_(x+s) * s)"
-  \<comment> \<open>Note that 0 = 0 holds when the life expectation diverges.\<close>
+  \<comment> \<open>Note that \<open>0 = 0\<close> holds when the life expectation diverges.\<close>
 proof -
   let ?f = "\<lambda>s. $p_{s&x} * $\<mu>_(x+s) * s"
   have [simp]: "(\<lambda>s. ?f s * indicat_real {0..} s) \<in> borel_measurable borel"
@@ -2339,7 +2534,7 @@ proof -
 qed
 
 lemma e_integral_p_mu: "$e`\<circ>_x = integral {0..} (\<lambda>s. $p_{s&x} * $\<mu>_(x+s) * s)"
-  \<comment> \<open>Note that 0 = 0 holds when the life expectation diverges.\<close>
+  \<comment> \<open>Note that \<open>0 = 0\<close> holds when the life expectation diverges.\<close>
 proof -
   have "(LBINT s:{0..}. $p_{s&x} * $\<mu>_(x+s) * s) = integral {0..} (\<lambda>s. $p_{s&x} * $\<mu>_(x+s) * s)"
   proof -
@@ -2536,7 +2731,8 @@ proof -
       hence "((\<lambda>y. (LBINT u:{y..b}. ?svl u) + (LBINT u:{b<..}. ?svl u)) has_real_derivative
         (- ?svl x)) (at x)"
         by (rewrite to "- ?svl x + 0" add_0_right[THEN sym], rule DERIV_add; simp)
-      moreover have "\<forall>\<^sub>F y in nhds x. (LBINT u:{y..}. ?svl u) = (LBINT u:{y..b}. ?svl u) + (LBINT u:{b<..}. ?svl u)"
+      moreover have "\<forall>\<^sub>F y in nhds x.
+        (LBINT u:{y..}. ?svl u) = (LBINT u:{y..b}. ?svl u) + (LBINT u:{b<..}. ?svl u)"
       proof -
         { fix y assume "dist y x < d"
           hence y_ab: "y \<in> {a<..<b}" unfolding d_def dist_real_def by force
@@ -2545,7 +2741,8 @@ proof -
             apply (rule set_integrable_subset, simp_all)+
             using y_ab by force
           moreover have "{y..b} \<inter> {b<..} = {}" "{y..} = {y..b} \<union> {b<..}" using y_ab by force+
-          ultimately have "(LBINT u:{y..}. ?svl u) = (LBINT u:{y..b}. ?svl u) + (LBINT u:{b<..}. ?svl u)"
+          ultimately have
+            "(LBINT u:{y..}. ?svl u) = (LBINT u:{y..b}. ?svl u) + (LBINT u:{b<..}. ?svl u)"
             using set_integral_Un by simp }
         thus ?thesis using d_pos by (rewrite eventually_nhds_metric) blast
       qed
@@ -2630,10 +2827,10 @@ end
 
 end
 
-subsection \<open>Finite Survival Function\<close>
+subsection \<open>Limited Survival Function\<close>
 
-locale finite_survival_function = survival_model +
-  assumes psi_finite[simp]: "$\<psi> < \<infinity>"
+locale limited_survival_function = survival_model +
+  assumes psi_limited[simp]: "$\<psi> < \<infinity>"
 begin
 
 definition ult_age :: nat ("$\<omega>")
@@ -2643,7 +2840,7 @@ definition ult_age :: nat ("$\<omega>")
 lemma ccdfX_ceil_psi_0: "ccdf (distr \<MM> borel X) \<lceil>real_of_ereal $\<psi>\<rceil> = 0"
 proof -
   have "real_of_ereal $\<psi> \<le> \<lceil>real_of_ereal $\<psi>\<rceil>" by simp
-  thus ?thesis using ccdfX_0_equiv psi_finite ccdfX_psi_0 le_ereal_le by presburger
+  thus ?thesis using ccdfX_0_equiv psi_limited ccdfX_psi_0 le_ereal_le by presburger
 qed
 
 lemma ccdfX_omega_0: "ccdf (distr \<MM> borel X) $\<omega> = 0"

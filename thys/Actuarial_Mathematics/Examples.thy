@@ -72,8 +72,9 @@ begin
 lemma IAJ_Life_Insurance_Math_2016_2_1_1:
   fixes a b :: real
   assumes "-1 < a" "a < 0" "0 < b" "-b/a \<le> $\<psi>" and
+    total_finite and
     "\<And>x. 0 < x \<Longrightarrow> x < -b/a \<Longrightarrow> l differentiable at x" and
-    "\<And>x. 0 \<le> x \<Longrightarrow> x < -b/a \<Longrightarrow> l integrable_on {x..} \<and> $e`\<circ>_x = a*x + b"
+    "\<And>x. 0 \<le> x \<Longrightarrow> x < -b/a \<Longrightarrow> $e`\<circ>_x = a*x + b"
   shows "\<And>x. 0 \<le> x \<Longrightarrow> x < -b/a \<Longrightarrow> $l_x = $l_0 * (b / (a*x + b)).^((a+1)/a)"
 proof -
   fix x assume asm_x: "0 \<le> x" "x < -b/a"
@@ -84,7 +85,7 @@ proof -
   proof -
     fix t assume asm_t: "t\<in>{0<..<-b/a}"
     with assms have "((\<lambda>u. $e`\<circ>_u) has_real_derivative ($\<mu>_t * $e`\<circ>_t - 1)) (at t)"
-      using asm_t assms by (intro e_has_derivative_mu_e_l'[where a=0]; simp)
+      by (intro e_has_derivative_mu_e_l'[where a=0]; simp)
     moreover have "((\<lambda>u. $e`\<circ>_u) has_real_derivative a) (at t)"
     proof -
       let ?d = "min t (-b/a - t)"
@@ -122,7 +123,7 @@ proof -
           apply (rule integral_unique)
           using assms asm_x apply (intro inverse_fun_has_integral_ln, simp_all)
           using axb_pos assms apply (smt (verit) mult_less_cancel_left)
-           apply (intro continuous_intros)
+          apply (intro continuous_intros)
           by (intro derivative_eq_intros) auto
         also have "\<dots> = ln ((a*x + b) / b)" using assms by (rewrite ln_div; simp)
         finally have "integral {0<..x} (\<lambda>t. a / (a*t + b)) = ln ((a*x + b) / b)" .
@@ -143,11 +144,11 @@ qed
 
 text \<open>REMARK.
   The original problem lacks the following hypotheses:
-    (i) @{text "0 < b"},
-    (ii) @{text "-b/a \<le> $\<psi>"},
-    (iii) @{text "\<forall>x. 0 < x < -b/a \<longrightarrow> l differentiable at x"},
-    (iv) @{text "\<forall>x. 0 \<le> x < -b/a \<longrightarrow> l integrable_on {x..}"}.
-  Moreover, the hypothesis @{text "\<forall>x. 0 \<le> x < -b/a"} is originally @{text "\<forall>x. 0 \<le> x \<le> -b/a"}.
+    (i) \<open>0 < b\<close>,
+    (ii) \<open>-b/a \<le> $\<psi>\<close>,
+    (iii) \<open>\<forall>x. 0 < x < -b/a \<longrightarrow> l differentiable at x\<close>,
+    (iv) \<open>\<forall>x. 0 \<le> x < -b/a \<longrightarrow> l integrable_on {x..}\<close>.
+  Moreover, the hypothesis \<open>\<forall>x. 0 \<le> x < -b/a\<close> is originally \<open>\<forall>x. 0 \<le> x \<le> -b/a\<close>.
 \<close>
 
 end
