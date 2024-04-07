@@ -37,24 +37,9 @@ email = "ito_email"
 ito = "ito_email"
 
 [history]
-2024-04-07 = {
-	   "Newly Added Lemmas" = "Added some lemmas with fractional age assumptions on life tables."
-	   "Incompatible Changes" = {
-	   		 Interest = "Deleted the actuarial notations in the global scope."
-			 Survival_Model = {
-			 		"Renamed \" lemma LBINT_p_mu_q \" to \" lemma LBINT_p_mu_q_defer \", and added new \" corollary LBINT_p_mu_q \" .",
-			 		"Adopted the word \" limited \" instead of \" finite \" to indicate that \" death_pt \" is not infinite."
-			 }
-			 Life_Table = {
-			 	    "Modified the definition of \" death \" .",
-			 	    "Dropped the hypothesis in the corollary \" e_integral_l \" .",
-				    "Changed the hypothesis of integrability to \" total_finite \" in the lemmas \" e_has_derivative_mu_e_l \", \" e_has_derivative_mu_e_l' \" .",
-				    "Changed the hypotheses of summability to \" total_finite \" in the lemmas \" curt_e_sum_l \", \" curt_e_sum_l_smooth \" .",
-				    "Changed the term \" measurize \" to \" measurable_extension \" .",
-				    "Adopted the word \" limited \" instead of \" finite \" to indicate the life table that takes the value zero at a certain age."
-			}
-	   }	
-}
+2024-04-07 = """
+Added some lemmas with fractional age assumptions on life tables.
+"""
 2023-07-08 = """
 Added the theories Survival_Model, Life_Table and Examples. Updated the theories Preliminaries and Interest.
 """
