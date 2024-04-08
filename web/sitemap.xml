@@ -35,6 +35,18 @@
     <loc>/authors/weber/</loc>
     <lastmod>2024-03-27T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2024-03-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/qhlprover/</loc>
+    <lastmod>2024-03-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/treml/</loc>
+    <lastmod>2024-03-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Uncertainty_Principle.html</loc>
+    <lastmod>2024-03-26T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/dependencies/coinductive/</loc>
     <lastmod>2024-03-20T00:00:00+00:00</lastmod>
   </url><url>
@@ -45,9 +57,6 @@
     <lastmod>2024-03-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Kummer_Congruence.html</loc>
-    <lastmod>2024-03-20T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/mathematics/</loc>
     <lastmod>2024-03-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/pell/</loc>
@@ -1743,9 +1752,6 @@
     <lastmod>2021-03-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/power_sum_polynomials/</loc>
-    <lastmod>2021-03-03T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/qhlprover/</loc>
     <lastmod>2021-03-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Projective_Measurements.html</loc>
@@ -6818,6 +6824,8 @@
     <loc>/sessions/types_tableaus_and_goedels_god/</loc>
   </url><url>
     <loc>/sessions/types_to_sets_extension/</loc>
+  </url><url>
+    <loc>/sessions/uncertainty_principle/</loc>
   </url><url>
     <loc>/sessions/undirected_graph_theory/</loc>
   </url><url>

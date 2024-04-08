@@ -13,6 +13,13 @@
     
       <atom:link href="/topics/mathematics/physics/quantum-information/index.xml" rel="self" type="application/rss+xml" />
         <item>
+          <title>Uncertainty Principle</title>
+          <link>/entries/Uncertainty_Principle.html</link>
+          <pubDate>Tue, 26 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Uncertainty_Principle.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>The CHSH inequality: Tsirelson&#39;s upper-bound and other results</title>
           <link>/entries/TsirelsonBound.html</link>
           <pubDate>Tue, 18 Apr 2023 00:00:00 +0000</pubDate>
