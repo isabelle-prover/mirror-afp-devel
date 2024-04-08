@@ -9,6 +9,7 @@ session Show = Deriving +
     Show_Poly
     Show_Complex
     Show_Real_Impl
+    Shows_Literal
   document_files
     "root.bib"
     "root.tex"

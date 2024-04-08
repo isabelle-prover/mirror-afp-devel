@@ -13,6 +13,8 @@ imports
   Matrix
 begin
 
+subsection \<open>For the @{class show}-class\<close>
+
 definition shows_vec :: "'a :: show vec \<Rightarrow> shows" where
   "shows_vec v \<equiv> shows (list_of_vec v)"
 
