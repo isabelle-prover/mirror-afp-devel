@@ -29,28 +29,16 @@ lemma path_offset[simp]:
 unfolding path_def
 proof 
   assume "continuous_on {0..1} (\<lambda>t. g t - z)" 
-  hence "continuous_on {0..1} (\<lambda>t. (g t - z) + z)" 
-    apply (rule continuous_intros)
-    by (intro continuous_intros)
+  hence "continuous_on {0..1} (\<lambda>t. (g t - z) + z)"
+    using continuous_on_add continuous_on_const by blast 
   then show "continuous_on {0..1} g" by auto
 qed (auto intro:continuous_intros)   
   
 lemma not_on_circlepathI:
   assumes "cmod (z-z0) \<noteq> \<bar>r\<bar>"
   shows "z \<notin> path_image (part_circlepath z0 r st tt)"
-proof (rule ccontr)
-  assume "\<not> z \<notin> path_image (part_circlepath z0 r st tt)"
-  then have "z\<in>path_image (part_circlepath z0 r st tt)" by simp
-  then obtain t where "t\<in>{0..1}" and *:"z = z0 + r * exp (\<i> * (linepath st tt t))"
-    unfolding path_image_def image_def part_circlepath_def by blast
-  define \<theta> where "\<theta> = linepath st tt t"
-  then have "z-z0 = r * exp (\<i> * \<theta>)" using * by auto
-  then have "cmod (z-z0) = cmod (r * exp (\<i> * \<theta>))" by auto
-  also have "\<dots> = \<bar>r\<bar> * cmod (exp (\<i> * \<theta>))" by (simp add: norm_mult)
-  also have "\<dots> = \<bar>r\<bar>" by auto
-  finally have "cmod (z-z0) = \<bar>r\<bar>" .
-  then show False using assms by auto
-qed    
+  using assms
+  by (auto simp add: path_image_def image_def part_circlepath_def norm_mult)
 
 lemma circlepath_inj_on: 
   assumes "r>0"
@@ -94,13 +82,11 @@ proof -
     qed
     ultimately show " deriv f (\<gamma> t) / (f (\<gamma> t) - z) * vector_derivative \<gamma> (at t) =
          1 / ((f \<circ> \<gamma>) t - z) * vector_derivative (f \<circ> \<gamma>) (at t)"
-      apply (subst vector_derivative_chain_at_general)
-      by (simp_all add:field_simps)
+      by (simp add: vector_derivative_chain_at_general)
   qed
   moreover note \<open>z \<notin> path_image (f \<circ> \<gamma>)\<close> 
   ultimately show ?thesis
-    apply (subst winding_number_valid_path)
-    by simp_all
+    using winding_number_valid_path by presburger
 qed  
   
 lemma winding_number_uminus_comp:
