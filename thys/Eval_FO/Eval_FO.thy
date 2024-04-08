@@ -1,5 +1,5 @@
 theory Eval_FO
-  imports Infinite FO
+  imports "HOL-Library.Infinite_Typeclass" FO
 begin
 
 datatype 'a eval_res = Fin "'a table" | Infin | Wf_error
