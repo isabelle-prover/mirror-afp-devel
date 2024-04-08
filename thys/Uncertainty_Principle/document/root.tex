@@ -1,0 +1,35 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Uncertainty Principle}
+\author{Alexander Treml}
+\maketitle
+
+\begin{abstract}
+	This is a formal proof of the uncertainty principle known from quantum  mechanics. 
+	It is based upon work on complex vector spaces contained in the QHLProver session\cite{QHLProver-AFP}.
+	The formalization follows the proof outlined in the book "Quantum computation and quantum information" by Nielsen and Chuang\cite{nielsen2010quantum}.
+\end{abstract}
+
+\tableofcontents
+
+\pagebreak
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
