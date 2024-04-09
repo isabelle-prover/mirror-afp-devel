@@ -151,12 +151,10 @@ context
   and ev_le_1: "card {x. poly (char_poly A) x = 0 \<and> x > 1} = 0"
 begin
 
-text \<open>Note that @{const yun_factorization} has an offset by 1, 
-  so the pair @{term "(f\<^sub>i,i) \<in> set fis"} encodes @{term "f\<^sub>i^(Suc i)"}.\<close>
 lemma perron_frobenius_spectral_radius_yun: 
   assumes bnd: "\<And> f\<^sub>i i. (f\<^sub>i,i) \<in> set fis 
     \<Longrightarrow> (\<exists> x :: complex. poly (map_poly of_real f\<^sub>i) x = 0 \<and> norm x = 1) 
-    \<Longrightarrow> Suc i \<le> d"
+    \<Longrightarrow> i \<le> d"
   shows "\<exists>c1 c2. \<forall>k a. a \<in> elements_mat (A ^\<^sub>m k) \<longrightarrow> abs a \<le> (c1 + c2 * real k ^ (d - 1))"
 proof (rule perron_frobenius_spectral_radius[OF A nonneg]; intro allI impI)
   let ?cr = complex_of_real
@@ -172,7 +170,7 @@ proof (rule perron_frobenius_spectral_radius[OF A nonneg]; intro allI impI)
   show "order x ?cp \<le> d" unfolding ox
   proof (cases ox)
     case (Suc oo)
-    with sff obtain fi where mem: "(fi,oo) \<in> set fis" and rt: "poly (map_poly ?cr fi) x = 0" by auto
+    with sff obtain fi where mem: "(fi,Suc oo) \<in> set fis" and rt: "poly (map_poly ?cr fi) x = 0" by auto
     from bnd[OF mem exI[of _ x], OF conjI[OF rt x]]
     show "ox \<le> d" unfolding Suc .
   qed auto
@@ -210,7 +208,7 @@ text \<open>Note that the only remaining problem in applying
 lemma perron_frobenius_spectral_radius_yun_real_roots: 
   assumes bnd: "\<And> f\<^sub>i i. (f\<^sub>i,i) \<in> set fis 
     \<Longrightarrow> card { x. poly f\<^sub>i x = 0} \<noteq> degree f\<^sub>i \<or> poly f\<^sub>i 1 = 0 \<or> poly f\<^sub>i (-1) = 0 
-    \<Longrightarrow> Suc i \<le> d"
+    \<Longrightarrow> i \<le> d"
   shows "\<exists>c1 c2. \<forall>k a. a \<in> elements_mat (A ^\<^sub>m k) \<longrightarrow> abs a \<le> (c1 + c2 * real k ^ (d - 1))"
 proof (rule perron_frobenius_spectral_radius_yun)
   fix fi i
@@ -219,7 +217,7 @@ proof (rule perron_frobenius_spectral_radius_yun)
   assume fi: "(fi, i) \<in> set fis"
     and "\<exists> x. poly (map_poly ?cr fi) x = 0 \<and> norm x = 1"
   then obtain x where rt: "poly (?cp fi) x = 0" and x: "norm x = 1" by auto
-  show "Suc i \<le> d"
+  show "i \<le> d"
   proof (rule bnd[OF fi])
     consider (c) "x \<notin> \<real>" | (1) "x = 1" | (m1) "x = -1" | (r) "x \<in> \<real>" "x \<notin> {1, -1}"
       by (cases "x \<in> \<real>"; auto)

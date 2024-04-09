@@ -252,15 +252,16 @@ lemma ratfps_nth_bigo_square_free_factorization:
   assumes "square_free_factorization q (b, cs)"
   assumes "q \<noteq> 0" and "R > 0"
   assumes roots1: "\<And>c l. (c, l) \<in> set cs \<Longrightarrow> \<forall>x\<in>ball 0 (1 / R). poly c x \<noteq> 0"
-  assumes roots2: "\<And>c l. (c, l) \<in> set cs \<Longrightarrow> l > k \<Longrightarrow> \<forall>x\<in>sphere 0 (1 / R). poly c x \<noteq> 0"
+  assumes roots2: "\<And>c l. (c, l) \<in> set cs \<Longrightarrow> l > Suc k \<Longrightarrow> \<forall>x\<in>sphere 0 (1 / R). poly c x \<noteq> 0"
   shows   "fps_nth (fps_of_poly p / fps_of_poly q) \<in> O(\<lambda>n. of_nat n ^ k * of_real R ^ n)"
 proof -
-  from assms(1) have q: "q = smult b (\<Prod>(c, l)\<in>set cs. c ^ Suc l)"
+  from assms(1) have q: "q = smult b (\<Prod>(c, l)\<in>set cs. c ^ l)"
     unfolding square_free_factorization_def prod.case by blast 
   with \<open>q \<noteq> 0\<close> have [simp]: "b \<noteq> 0" by auto
+  note sff = square_free_factorizationD[OF assms(1)]
 
-  from assms(1) have [simp]: "(0, x) \<notin> set cs" for x
-    by (auto simp: square_free_factorization_def)
+  from sff(2)[of 0] have [simp]: "(0, x) \<notin> set cs" for x by auto
+
   from assms(1) have coprime: "c1 = c2" "m = n"
     if "\<not>coprime c1 c2" "(c1, m) \<in> set cs" "(c2, n) \<in> set cs" for c1 c2 m n
     using that by (auto simp: square_free_factorization_def case_prod_unfold)
@@ -278,21 +279,21 @@ proof -
   next
     fix z :: complex assume z: "z \<in> sphere 0 (1 / R)"
 
-    have order: "order z q = order z (\<Prod>(c, l)\<in>set cs. c ^ Suc l)"
+    have order: "order z q = order z (\<Prod>(c, l)\<in>set cs. c ^ l)"
       by (simp add: order_smult q)
-    also have "\<dots> = (\<Sum>x\<in>set cs. order z (case x of (c, l) \<Rightarrow> c ^ Suc l))"
+    also have "\<dots> = (\<Sum>x\<in>set cs. order z (case x of (c, l) \<Rightarrow> c ^ l))"
       by (subst order_prod) (auto dest: coprime)
-    also have "\<dots> = (\<Sum>(c, l)\<in>set cs. Suc l * order z c)"
+    also have "\<dots> = (\<Sum>(c, l)\<in>set cs. l * order z c)"
       unfolding case_prod_unfold by (intro sum.cong refl, subst order_power) auto
     finally have "order z q = \<dots>" .
 
     show "order z q \<le> Suc k"
     proof (cases "\<exists>c0 l0. (c0, l0) \<in> set cs \<and> poly c0 z = 0")
       case False
-      have "order z q = (\<Sum>(c, l)\<in>set cs. Suc l * order z c)" by fact
+      have "order z q = (\<Sum>(c, l)\<in>set cs. l * order z c)" by fact
       also have "order z c = 0" if "(c, l) \<in> set cs" for c l
         using False that by (auto simp: order_root)
-      hence "(\<Sum>(c, l)\<in>set cs. Suc l * order z c) = 0"
+      hence "(\<Sum>(c, l)\<in>set cs. l * order z c) = 0"
         by (intro sum.neutral) auto
       finally show "order z q \<le> Suc k" by simp
     next
@@ -300,10 +301,10 @@ proof -
                    square-free factorisation that contains it.\<close>
       then obtain c0 l0 where cl0: "(c0, l0) \<in> set cs" "poly c0 z = 0"
         by blast
-      have "order z q = (\<Sum>(c, l)\<in>set cs. Suc l * order z c)" by fact
-      also have "\<dots> = Suc l0 * order z c0 + (\<Sum>(c, l) \<in> set cs - {(c0, l0)}. Suc l * order z c)"
+      have "order z q = (\<Sum>(c, l)\<in>set cs. l * order z c)" by fact
+      also have "\<dots> = l0 * order z c0 + (\<Sum>(c, l) \<in> set cs - {(c0, l0)}. l * order z c)"
         using cl0 by (subst sum.remove[of _ "(c0, l0)"]) auto
-      also have "(\<Sum>(c, l) \<in> set cs - {(c0, l0)}. Suc l * order z c) = 0"
+      also have "(\<Sum>(c, l) \<in> set cs - {(c0, l0)}. l * order z c) = 0"
       proof (intro sum.neutral ballI, goal_cases)
         case (1 cl)
         then obtain c l where [simp]: "cl = (c, l)" and cl: "(c, l) \<in> set cs" "(c0, l0) \<noteq> (c, l)"
@@ -318,18 +319,14 @@ proof -
       hence "rsquarefree c0" by (rule square_free_rsquarefree)
       with cl0 have "order z c0 = 1"
         by (auto simp: rsquarefree_def' order_root intro: antisym)
-      finally have "order z q = Suc l0" by simp
+      finally have "order z q = l0" by simp
 
-      also from roots2[of c0 l0] cl0 z have "l0 \<le> k"
-        by (cases l0 k rule: linorder_cases) auto
+      also from roots2[OF cl0(1)] cl0(2) z have "l0 \<le> Suc k"
+        by (cases l0 "Suc k" rule: linorder_cases) auto
       finally show "order z q \<le> Suc k" by simp
     qed
   qed fact+
 qed
-
-find_consts name:"Count_Complex"
-term proots_ball_card
-term proots_sphere_card
 
 lemma proots_within_card_zero_iff:
   assumes "p \<noteq> (0 :: 'a :: idom poly)"
@@ -343,14 +340,15 @@ lemma ratfps_nth_bigo_square_free_factorization':
   assumes "q \<noteq> 0" and "R > 0"
   assumes roots1: "list_all (\<lambda>cl. proots_ball_card (fst cl) 0 (1 / R) = 0) cs"
   assumes roots2: "list_all (\<lambda>cl. proots_sphere_card (fst cl) 0 (1 / R) = 0)
-                     (filter (\<lambda>cl. snd cl > k) cs)"
+                     (filter (\<lambda>cl. snd cl > Suc k) cs)"
   shows   "fps_nth (fps_of_poly p / fps_of_poly q) \<in> O(\<lambda>n. of_nat n ^ k * of_real R ^ n)"
 proof (rule ratfps_nth_bigo_square_free_factorization[OF assms(1)])
-  from assms(1) have q: "q = smult b (\<Prod>(c, l)\<in>set cs. c ^ Suc l)"
+  note sff = square_free_factorizationD[OF assms(1)]
+
+  from sff(2)[of 0] have [simp]: "(0, x) \<notin> set cs" for x by auto
+  from assms(1) have q: "q = smult b (\<Prod>(c, l)\<in>set cs. c ^ l)"
     unfolding square_free_factorization_def prod.case by blast 
   with \<open>q \<noteq> 0\<close> have [simp]: "b \<noteq> 0" by auto
-  from assms(1) have [simp]: "(0, x) \<notin> set cs" for x
-    by (auto simp: square_free_factorization_def)
 
   show "\<forall>x\<in>ball 0 (1 / R). poly c x \<noteq> 0" if "(c, l) \<in> set cs" for c l
   proof -
@@ -359,7 +357,7 @@ proof (rule ratfps_nth_bigo_square_free_factorization[OF assms(1)])
     with that show ?thesis by (subst (asm) proots_within_card_zero_iff) auto
   qed
 
-  show "\<forall>x\<in>sphere 0 (1 / R). poly c x \<noteq> 0" if "(c, l) \<in> set cs" "l > k" for c l
+  show "\<forall>x\<in>sphere 0 (1 / R). poly c x \<noteq> 0" if "(c, l) \<in> set cs" "l > Suc k" for c l
   proof -
     from roots2 that have "card (proots_within c (sphere 0 (1 / R))) = 0"
       by (auto simp: proots_sphere_card_def list_all_def)
@@ -371,7 +369,7 @@ definition ratfps_has_asymptotics where
   "ratfps_has_asymptotics q k R \<longleftrightarrow> q \<noteq> 0 \<and> R > 0 \<and>
      (let cs = snd (yun_factorization gcd q)
       in  list_all (\<lambda>cl. proots_ball_card (fst cl) 0 (1 / R) = 0) cs \<and>
-          list_all (\<lambda>cl. proots_sphere_card (fst cl) 0 (1 / R) = 0) (filter (\<lambda>cl. snd cl > k) cs))"
+          list_all (\<lambda>cl. proots_sphere_card (fst cl) 0 (1 / R) = 0) (filter (\<lambda>cl. snd cl > Suc k) cs))"
 
 lemma ratfps_has_asymptotics_correct:
   assumes "ratfps_has_asymptotics q k R"

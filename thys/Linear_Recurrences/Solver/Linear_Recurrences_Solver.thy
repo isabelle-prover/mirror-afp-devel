@@ -11,17 +11,35 @@ imports
   Factor_Algebraic_Polynomial.Factor_Complex_Poly
 begin
 
-lemma is_factorization_of_factor_complex_main:
-  assumes "factor_complex_main p = fctrs"
+definition factor_complex_main' where
+  "factor_complex_main' p = map_prod id (map (map_prod id (\<lambda> n. n - 1))) (factor_complex_main p)" 
+
+lemma is_factorization_of_factor_complex_main':
+  assumes "factor_complex_main' p = fctrs"
   shows   "is_factorization_of fctrs p"
   unfolding is_factorization_of_def
 proof safe
-  from assms have "p = Polynomial.smult (fst fctrs) (\<Prod>(x, i)\<leftarrow>snd fctrs. [:- x, 1:] ^ Suc i)"
+  obtain fctrs' where assm: "factor_complex_main p = fctrs'" by auto  
+  let ?decr = "map_prod id (map (map_prod id (\<lambda> n. n - 1)))" 
+  from assms assm have decr: "fctrs = ?decr fctrs'" unfolding factor_complex_main'_def by auto
+  from factor_complex_main[of p "fst fctrs'" "snd fctrs'"] assm
+  have 0: "0 \<notin> snd ` set (snd fctrs')" 
+    by auto
+  obtain c trs where fctrs': "fctrs' = (c,trs)" by force
+  from assm have "p = Polynomial.smult (fst fctrs') (\<Prod>(x, i)\<leftarrow>snd fctrs'. [:- x, 1:] ^ i)"
     by (intro factor_complex_main) simp_all
   also have "\<dots> = interp_factorization fctrs" 
-    by (simp add: interp_factorization_def case_prod_unfold)
+    unfolding interp_factorization_def case_prod_unfold decr
+    apply (rule arg_cong2[of _ _ _ _ "\<lambda> x y. smult x (prod_list y)"])
+    subgoal by force
+    subgoal using 0 unfolding map_map o_def fctrs' snd_conv map_prod_simp fst_map_prod id_apply snd_map_prod
+      by (intro map_cong[OF refl]) 
+        (metis diff_Suc_1 image_eqI not0_implies_Suc)
+    done
   finally show "interp_factorization fctrs = p" ..
-  show "distinct (map fst (snd fctrs))" unfolding assms[symmetric]
+  have id: "map fst (snd fctrs) = map fst (snd fctrs')" (is "?lhs = _")
+    unfolding decr by auto
+  show "distinct ?lhs" unfolding id unfolding assm[symmetric]
     by (rule distinct_factor_complex_main)
 qed
 
@@ -30,19 +48,19 @@ definition solve_ratfps
     :: "complex ratfps \<Rightarrow> complex poly \<times> (complex poly \<times> complex) list" where
   "solve_ratfps f = 
      (case quot_of_ratfps f of (p, q) \<Rightarrow>  
-        solve_factored_ratfps' p (factor_complex_main (reflect_poly q)))"
+        solve_factored_ratfps' p (factor_complex_main' (reflect_poly q)))"
 
 lemma solve_ratfps:
   assumes "solve_ratfps f = sol"
   shows   "Abs_fps (interp_ratfps_solution sol) = fps_of_ratfps f"
 proof -
   define p and q where "p = fst (quot_of_ratfps f)" and "q = snd (quot_of_ratfps f)"
-  with assms obtain fctrs where fctrs: "factor_complex_main (reflect_poly q) = fctrs"
+  with assms obtain fctrs where fctrs: "factor_complex_main' (reflect_poly q) = fctrs"
     by (auto simp: solve_ratfps_def p_def q_def case_prod_unfold split: if_splits)
   have q: "coeff q 0 \<noteq> 0" by (simp add: q_def)
   hence [simp]: "q \<noteq> 0" by auto
   from fctrs have "is_factorization_of fctrs (reflect_poly q)"
-    by (rule is_factorization_of_factor_complex_main)
+    by (rule is_factorization_of_factor_complex_main')
   with assms have "is_alt_factorization_of fctrs (reflect_poly (reflect_poly q))"
     by (intro reflect_factorization) simp_all
   hence "is_alt_factorization_of fctrs q" by (simp add: q)
@@ -62,7 +80,7 @@ definition solve_lhr
      let m = length fs + 1 - length cs;
          p = lhr_fps_numerator m cs (\<lambda>n. fs ! n);
          q = lr_fps_denominator' cs
-     in  Some (solve_factored_ratfps' p (factor_complex_main q)))"
+     in  Some (solve_factored_ratfps' p (factor_complex_main' q)))"
 
 
 lemma solve_lhr:
@@ -71,9 +89,9 @@ lemma solve_lhr:
   shows   "f = interp_ratfps_solution sol"
 proof -
   obtain fctrs where 
-      fctrs: "factor_complex_main (lr_fps_denominator' cs) = fctrs"
+      fctrs: "factor_complex_main' (lr_fps_denominator' cs) = fctrs"
     by auto
-  from is_factorization_of_factor_complex_main[OF this] 
+  from is_factorization_of_factor_complex_main'[OF this] 
     have factorization: "is_factorization_of fctrs (lr_fps_denominator' cs)" . 
 
   have "f = interp_ratfps_solution (solve_factored_ratfps' (lhr_fps_numerator 

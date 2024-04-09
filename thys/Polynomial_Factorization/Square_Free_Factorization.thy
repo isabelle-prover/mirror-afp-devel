@@ -228,22 +228,22 @@ context
 begin
 definition square_free_factorization :: "'a poly \<Rightarrow> 'a \<times> ('a poly \<times> nat) list \<Rightarrow> bool" where
   "square_free_factorization p cbs \<equiv> case cbs of (c,bs) \<Rightarrow>
-    (p = smult c (\<Prod>(a, i)\<in> set bs. a ^ Suc i))
+    (p = smult c (\<Prod>(a, i)\<in> set bs. a ^ i))
   \<and> (p = 0 \<longrightarrow> c = 0 \<and> bs = [])
-  \<and> (\<forall> a i. (a,i) \<in> set bs \<longrightarrow> square_free a \<and> degree a > 0)
+  \<and> (\<forall> a i. (a,i) \<in> set bs \<longrightarrow> square_free a \<and> degree a > 0 \<and> i > 0)
   \<and> (\<forall> a i b j. (a,i) \<in> set bs \<longrightarrow> (b,j) \<in> set bs \<longrightarrow> (a,i) \<noteq> (b,j) \<longrightarrow> coprime a b)
   \<and> distinct bs"
 
 lemma square_free_factorizationD: assumes "square_free_factorization p (c,bs)"
-  shows "p = smult c (\<Prod>(a, i)\<in> set bs. a ^ Suc i)"
-  "(a,i) \<in> set bs \<Longrightarrow> square_free a \<and> degree a \<noteq> 0"
+  shows "p = smult c (\<Prod>(a, i)\<in> set bs. a ^ i)"
+  "(a,i) \<in> set bs \<Longrightarrow> square_free a \<and> degree a \<noteq> 0 \<and> i > 0"
   "(a,i) \<in> set bs \<Longrightarrow> (b,j) \<in> set bs \<Longrightarrow> (a,i) \<noteq> (b,j) \<Longrightarrow> coprime a b"
   "p = 0 \<Longrightarrow> c = 0 \<and> bs = []"
   "distinct bs"
   using assms unfolding square_free_factorization_def split by blast+
 
 lemma square_free_factorization_prod_list: assumes "square_free_factorization p (c,bs)"
-  shows "p = smult c (prod_list (map (\<lambda> (a,i). a ^ Suc i) bs))"
+  shows "p = smult c (prod_list (map (\<lambda> (a,i). a ^ i) bs))"
 proof -
   note sff = square_free_factorizationD[OF assms]
   show ?thesis unfolding sff(1) 
@@ -265,7 +265,7 @@ partial_function (tailrec) yun_factorization_main ::
     let 
       dn = cn - pderiv bn;
       an = Gcd bn dn
-    in yun_factorization_main (bn div an) (dn div an) (Suc i) ((an,i) # sqr)))"
+    in yun_factorization_main (bn div an) (dn div an) (Suc i) ((an,Suc i) # sqr)))"
 
 definition yun_monic_factorization :: "'a poly \<Rightarrow> ('a poly \<times> nat)list" where
   "yun_monic_factorization p = (let
@@ -757,8 +757,8 @@ proof -
 qed
 
 lemma yun_factorization_main: assumes "yun_factorization_main (B n) (C n) n bs = cs"
-  "set bs = {(A i, i) | i. i < n}" "distinct (map snd bs)"
-  shows "\<exists> m. set cs = {(A i, i) | i. i < m} \<and> B m = 1 \<and> distinct (map snd cs)"
+  "set bs = {(A i, Suc i) | i. i < n}" "distinct (map snd bs)"
+  shows "\<exists> m. set cs = {(A i, Suc i) | i. i < m} \<and> B m = 1 \<and> distinct (map snd cs)"
   using assms
 proof -
   let ?m = "\<lambda> n. bound - n"
@@ -768,7 +768,7 @@ proof -
     note IH = 1(1)[rule_format]
     have res: "yun_factorization_main (B n) (C n) n bs = cs" by fact
     note res = res[unfolded yun_factorization_main.simps[of "B n"]]
-    have bs: "set bs = {(A i, i) |i. i < n}" "distinct (map snd bs)" by fact+
+    have bs: "set bs = {(A i, Suc i) |i. i < n}" "distinct (map snd bs)" by fact+
     show ?case
     proof (cases "B n = 1")
       case True
@@ -780,7 +780,7 @@ proof -
       hence "(Suc n, n) \<in> measure ?m" by auto
       note IH = IH[OF this]
       from Bn res[unfolded Let_def, folded D.simps C.simps B.simps A.simps] 
-      have res: "yun_factorization_main (B (Suc n)) (C (Suc n)) (Suc n) ((A n, n) # bs) = cs"
+      have res: "yun_factorization_main (B (Suc n)) (C (Suc n)) (Suc n) ((A n, Suc n) # bs) = cs"
         by simp
       note IH = IH[OF this]
       {
@@ -788,10 +788,10 @@ proof -
         assume "i < Suc n" "\<not> i < n"
         hence "n = i" by arith
       } note missing = this
-      have "set ((A n, n) # bs) = {(A i, i) |i. i < Suc n}"
+      have "set ((A n, Suc n) # bs) = {(A i, Suc i) |i. i < Suc n}"
         unfolding list.simps bs by (auto, subst missing, auto)
       note IH = IH[OF this]
-      from bs have "distinct (map snd ((A n, n) # bs))" by auto
+      from bs have "distinct (map snd ((A n, Suc n) # bs))" by auto
       note IH = IH[OF this]
       show ?thesis by (rule IH)
     qed
@@ -799,44 +799,46 @@ proof -
 qed
 
 lemma yun_monic_factorization_res: assumes res: "yun_monic_factorization p = bs"
-  shows "\<exists> m. set bs = {(A i, i) | i. i < m \<and> A i \<noteq> 1} \<and> B m = 1 \<and> distinct (map snd bs)"
+  shows "\<exists> m. set bs = {(A i, Suc i) | i. i < m \<and> A i \<noteq> 1} \<and> B m = 1 \<and> distinct (map snd bs)"
 proof -
   from res[unfolded yun_monic_factorization_def Let_def, 
     folded B.simps C.simps]
   obtain cs where yun: "yun_factorization_main (B 0) (C 0) 0 [] = cs" and bs: "bs = filter (\<lambda> (a,i). a \<noteq> 1) cs" 
     by auto
-  from yun_factorization_main[OF yun] show ?thesis unfolding bs
-    by (auto simp: distinct_map_filter)
+  from yun_factorization_main[OF yun] obtain m where "set cs = {(A i, Suc i) |i. i < m}" 
+    "B m = 1" "distinct (map snd cs)" 
+    by auto 
+  thus ?thesis unfolding bs by (auto simp: distinct_map_filter)
 qed                                                    
 
 lemma yun_monic_factorization: assumes yun: "yun_monic_factorization p = bs"
   shows "square_free_factorization p (1,bs)" "(b,i) \<in> set bs \<Longrightarrow> monic b" "distinct (map snd bs)" 
 proof -
   from yun_monic_factorization_res[OF yun]
-  obtain m where bs: "set bs = {(A i, i) | i. i < m \<and> A i \<noteq> 1}" and B: "B m = 1" 
+  obtain m where bs: "set bs = {(A i, Suc i) | i. i < m \<and> A i \<noteq> 1}" and B: "B m = 1" 
     and dist: "distinct (map snd bs)" by auto
   have id: "{0 ..< m} = {i. i < m \<and> A i = 1} \<union> {i. i < m \<and> A i \<noteq> 1}" (is "_ = ?ignore \<union> _") by auto
   have "p = (\<Prod>i = 0..<m. A i ^ Suc i)"
     by (rule prod_A_is_p_B_bound[OF B])
   also have "\<dots> = prod (\<lambda> i. A i ^ Suc i) {i. i < m \<and> A i \<noteq> 1}"
-    unfolding id 
-    by (subst prod.union_disjoint, (force+)[3],
-    subst prod.neutral[of ?ignore], auto)
-  also have "\<dots> = (\<Prod>(a, i)\<in> set bs. a ^ Suc i)" unfolding bs
-    by (rule prod.reindex_cong[of snd], auto simp: inj_on_def, force)
-  finally have 1: "p = (\<Prod>(a, i)\<in> set bs. a ^ Suc i)" .
+    unfolding id by (subst prod.union_disjoint, (force+)[3],
+      subst prod.neutral[of ?ignore], auto)
+  also have "\<dots> = (\<Prod>(a, i)\<in> set bs. a ^ i)" unfolding bs
+    by (rule prod.reindex_cong[of "(\<lambda> n. n - 1) o snd"], auto simp: inj_on_def, force)
+  finally have 1: "p = (\<Prod>(a, i)\<in> set bs. a ^ i)" .
   {
     fix a i
     assume "(a,i) \<in> set bs"
-    hence A: "a = A i" "A i \<noteq> 1" unfolding bs by auto
-    with A_square_free[of i] A_monic[of i] have "square_free a \<and> degree a \<noteq> 0" "monic a"
+    then obtain j where A: "a = A j" "A j \<noteq> 1" and i: "i \<noteq> 0" unfolding bs by auto
+    with A_square_free[of j] A_monic[of j] have "square_free a \<and> degree a \<noteq> 0" "monic a" "i \<noteq> 0" 
       by (auto simp: monic_degree_0)
   } note 2 = this
   {
     fix a i b j
     assume ai: "(a,i) \<in> set bs" and bj: "(b,j) \<in> set bs" and neq: "(a,i) \<noteq> (b,j)"
-    hence a: "a = A i" and b: "b = A j" unfolding bs by auto
-    from neq dist ai bj have neq: "i \<noteq> j" using a b by blast
+    then obtain i' j' where a: "a = A i'" and b: "b = A j'" and ij': "i = Suc i'" "j = Suc j'" 
+      unfolding bs by auto
+    from neq dist ai bj have neq: "i' \<noteq> j'" using a b ij' by blast
     from coprime_A_A [OF neq] have "coprime a b" unfolding a b .
   } note 3 = this
   have "monic p" unfolding p 
@@ -927,10 +929,10 @@ lemma square_free_factorization_smult: assumes c: "c \<noteq> 0"
   shows "square_free_factorization (smult c p) (c * d, bs)"
 proof -
   from sf[unfolded square_free_factorization_def split]
-  have p: "p = smult d (\<Prod>(a, i)\<in>set bs. a ^ Suc i)"
+  have p: "p = smult d (\<Prod>(a, i)\<in>set bs. a ^ i)"
     and eq: "p = 0 \<longrightarrow> d = 0 \<and> bs = []" by blast+
   from eq c have eq: "smult c p = 0 \<longrightarrow> c * d = 0 \<and> bs = []" by auto
-  from p have p: "smult c p = smult (c * d) (\<Prod>(a, i)\<in>set bs. a ^ Suc i)" by auto
+  from p have p: "smult c p = smult (c * d) (\<Prod>(a, i)\<in>set bs. a ^ i)" by auto
   from eq p sf show ?thesis unfolding square_free_factorization_def by blast
 qed
 
@@ -962,8 +964,8 @@ proof -
 qed
 
 
-lemma prod_list_pow_suc: "(\<Prod>x\<leftarrow>bs. (x :: 'a :: comm_monoid_mult) * x ^ i) 
-  = prod_list bs * prod_list bs ^ i" 
+lemma prod_list_pow: "(\<Prod>x\<leftarrow>bs. (x :: 'a :: comm_monoid_mult) ^ i) 
+  = prod_list bs ^ i" 
   by (induct bs, auto simp: field_simps)
 
 declare irreducible_linear_field_poly[intro!]
@@ -975,10 +977,10 @@ lemma square_free_factorization_order_root_mem:
   assumes sff: "square_free_factorization p (c,bs)"
     and p: "p \<noteq> (0 :: 'a poly)"
     and ai: "(a,i) \<in> set bs" and rt: "poly a x = 0"
-  shows "order x p = Suc i"
+  shows "order x p = i"
 proof -
   note sff = square_free_factorizationD[OF sff]
-  let ?prod = "(\<Prod>(a, i)\<in>set bs. a ^ Suc i)"
+  let ?prod = "(\<Prod>(a, i)\<in>set bs. a ^ i)"
   from sff have pf: "p = smult c ?prod" by blast
   with p have c: "c \<noteq> 0" by auto
   have ord: "order x p = order x ?prod" unfolding pf 
@@ -989,18 +991,18 @@ proof -
   from rt have qa: "q dvd a" unfolding q_def poly_eq_0_iff_dvd .
   then obtain b where aqb: "a = q * b" unfolding dvd_def by auto
   from sff(2)[OF ai] have sq: "square_free a" and mon: "degree a \<noteq> 0" by auto
-  let ?rem = "(\<Prod>(a, i)\<in>set bs - {(a,i)}. a ^ Suc i)"
+  let ?rem = "(\<Prod>(a, i)\<in>set bs - {(a,i)}. a ^ i)"
   have p0: "?prod \<noteq> 0" using p pf by auto
-  have "?prod = a ^ Suc i * ?rem"
+  have "?prod = a ^ i * ?rem"
     by (subst prod.remove[OF _ ai], auto)
-  also have "a ^ Suc i = q ^ Suc i * b ^ Suc i" unfolding aqb by (simp add: field_simps)
-  finally have id: "?prod = q ^ Suc i * (b ^ Suc i * ?rem)" by simp
-  hence dvd: "q ^ Suc i dvd ?prod" by auto
+  also have "a ^ i = q ^ i * b ^ i" unfolding aqb by (simp add: field_simps)
+  finally have id: "?prod = q ^ i * (b ^ i * ?rem)" by simp
+  hence dvd: "q ^ i dvd ?prod" by auto
   {
-    assume "q ^ Suc (Suc i) dvd ?prod"
-    hence "q dvd ?prod div q ^ Suc i"
+    assume "q ^ Suc i dvd ?prod"
+    hence "q dvd ?prod div q ^ i"
       by (metis dvd dvd_0_left_iff dvd_div_iff_mult p0 power_Suc)
-    also have "?prod div q ^ Suc i = b ^ Suc i * ?rem"
+    also have "?prod div q ^ i = b ^ i * ?rem"
       unfolding id by (rule nonzero_mult_div_cancel_left, insert q0, auto)
     finally have "q dvd b \<or> q dvd ?rem"
       using iq irreducible_dvd_pow[OF iq] by auto
@@ -1013,7 +1015,7 @@ proof -
     next
       assume "q dvd ?rem"
       from irreducible_dvd_prod[OF iq this]
-      obtain b j where bj: "(b,j) \<in> set bs" and neq: "(a,i) \<noteq> (b,j)" and dvd: "q dvd b ^ Suc j" by auto
+      obtain b j where bj: "(b,j) \<in> set bs" and neq: "(a,i) \<noteq> (b,j)" and dvd: "q dvd b ^ j" by auto
       from irreducible_dvd_pow[OF iq dvd] have qb: "q dvd b" .
       from sff(3)[OF ai bj neq] have gcd: "coprime a b" .
       from qb qa have "q dvd gcd a b" by simp
@@ -1021,8 +1023,8 @@ proof -
         using gcd by auto
     qed
   }
-  hence ndvd: "\<not> q ^ Suc (Suc i) dvd ?prod" by blast
-  with dvd have "order x ?prod = Suc i" unfolding q_def
+  hence ndvd: "\<not> q ^ Suc i dvd ?prod" by blast
+  with dvd have "order x ?prod = i" unfolding q_def
     by (metis order_unique_lemma)
   thus ?thesis unfolding ord .
 qed
@@ -1036,7 +1038,7 @@ proof (rule ccontr)
   assume o0: "order x p \<noteq> 0"
   with order_root[of p x] p have 0: "poly p x = 0" by auto
   note sff = square_free_factorizationD[OF sff]
-  let ?prod = "(\<Prod>(a, i)\<in>set bs. a ^ Suc i)"
+  let ?prod = "(\<Prod>(a, i)\<in>set bs. a ^ i)"
   from sff have pf: "p = smult c ?prod" by blast
   with p have c: "c \<noteq> 0" by auto
   with 0 have 0: "poly ?prod x = 0" unfolding pf by auto
@@ -1055,7 +1057,7 @@ lemma square_free_factorization_order_root:
   assumes sff: "square_free_factorization p (c,bs)"
     and p: "p \<noteq> (0 :: 'a poly)"
   shows "order x p = i \<longleftrightarrow> (i = 0 \<and> (\<forall> a j. (a,j) \<in> set bs \<longrightarrow> poly a x \<noteq> 0) 
-    \<or> (\<exists> a j. (a,j) \<in> set bs \<and> poly a x = 0 \<and> i = Suc j))" (is "?l = (?r1 \<or> ?r2)")
+    \<or> (\<exists> a j. (a,j) \<in> set bs \<and> poly a x = 0 \<and> i = j))" (is "?l = (?r1 \<or> ?r2)")
 proof -
   note mem = square_free_factorization_order_root_mem[OF sff p]
   note no_mem = square_free_factorization_order_root_no_mem[OF sff p]
@@ -1065,7 +1067,7 @@ proof -
     thus ?l
     proof
       assume ?r2
-      then obtain a j where aj: "(a,j) \<in> set bs" "poly a x = 0" and i: "i = Suc j" by auto
+      then obtain a j where aj: "(a,j) \<in> set bs" "poly a x = 0" and i: "i = j" by auto
       from mem[OF aj] i show ?l by simp
     next
       assume ?r1 
@@ -1093,19 +1095,20 @@ lemma square_free_factorization_root:
     and p: "p \<noteq> (0 :: 'a poly)"
   shows "{x. poly p x = 0} = {x. \<exists> a i. (a,i) \<in> set bs \<and> poly a x = 0}" 
   using square_free_factorization_order_root[OF sff p] p
+    square_free_factorizationD(2)[OF sff]
   unfolding order_root by auto
 
 lemma square_free_factorizationD': fixes p :: "'a poly"
   assumes sf: "square_free_factorization p (c, bs)"
-  shows "p = smult c (\<Prod>(a, i) \<leftarrow> bs. a ^ Suc i)"
+  shows "p = smult c (\<Prod>(a, i) \<leftarrow> bs. a ^ i)"
     and "square_free (prod_list (map fst bs))"
-    and "\<And> b i. (b,i) \<in> set bs \<Longrightarrow> degree b \<noteq> 0"
+    and "\<And> b i. (b,i) \<in> set bs \<Longrightarrow> degree b > 0 \<and> i > 0"
     and "p = 0 \<Longrightarrow> c = 0 \<and> bs = []"
 proof -
   note sf = square_free_factorizationD[OF sf]
-  show "p = smult c (\<Prod>(a, i) \<leftarrow> bs. a ^ Suc i)" unfolding sf(1) using sf(5)
+  show "p = smult c (\<Prod>(a, i) \<leftarrow> bs. a ^ i)" unfolding sf(1) using sf(5)
     by (simp add: prod.distinct_set_conv_list)
-  show bs: "\<And> b i. (b,i) \<in> set bs \<Longrightarrow> degree b \<noteq> 0" using sf(2) by auto
+  show bs: "\<And> b i. (b,i) \<in> set bs \<Longrightarrow> degree b > 0 \<and> i > 0" using sf(2) by auto
   show "p = 0 \<Longrightarrow> c = 0 \<and> bs = []" using sf(4) .
   show "square_free (prod_list (map fst bs))"
   proof (rule square_freeI)
@@ -1141,9 +1144,9 @@ qed
   
 
 lemma square_free_factorizationI': fixes p :: "'a poly"
-  assumes prod: "p = smult c (\<Prod>(a, i) \<leftarrow> bs. a ^ Suc i)"
+  assumes prod: "p = smult c (\<Prod>(a, i) \<leftarrow> bs. a ^ i)"
     and sf: "square_free (prod_list (map fst bs))"
-    and deg: "\<And> b i. (b,i) \<in> set bs \<Longrightarrow> degree b > 0"
+    and deg: "\<And> b i. (b,i) \<in> set bs \<Longrightarrow> degree b > 0 \<and> i > 0"
     and 0: "p = 0 \<Longrightarrow> c = 0 \<and> bs = []"
   shows "square_free_factorization p (c, bs)"
   unfolding square_free_factorization_def split
@@ -1152,7 +1155,7 @@ proof (intro conjI impI allI)
   {
     fix b i
     assume bi: "(b,i) \<in> set bs"
-    from deg[OF this] show "degree b > 0" .
+    from deg[OF this] show "degree b > 0" "0 < i" by auto
     have "b dvd prod_list (map fst bs)"
       by (intro prod_list_dvd, insert bi, force)
     from square_free_factor[OF this sf] show "square_free b" .
@@ -1168,7 +1171,7 @@ proof (intro conjI impI allI)
     from bs have "(b,i) \<in> set bs" by auto
     from deg[OF this] db show False by auto
   qed    
-  show "p = smult c (\<Prod>(a, i)\<in>set bs. a ^ Suc i)" unfolding prod using dist 
+  show "p = smult c (\<Prod>(a, i)\<in>set bs. a ^ i)" unfolding prod using dist 
     by (simp add: prod.distinct_set_conv_list)
   {
     fix a i b j
@@ -1194,9 +1197,9 @@ qed
 
 lemma square_free_factorization_def': fixes p :: "'a poly"
   shows "square_free_factorization p (c,bs) \<longleftrightarrow>
-  (p = smult c (\<Prod>(a, i) \<leftarrow> bs. a ^ Suc i)) \<and>
+  (p = smult c (\<Prod>(a, i) \<leftarrow> bs. a ^ i)) \<and>
   (square_free (prod_list (map fst bs))) \<and>
-  (\<forall> b i. (b,i) \<in> set bs \<longrightarrow> degree b > 0) \<and>
+  (\<forall> b i. (b,i) \<in> set bs \<longrightarrow> degree b > 0 \<and> i > 0) \<and>
   (p = 0 \<longrightarrow> c = 0 \<and> bs = [])"
   using square_free_factorizationD'[of p c bs]
   square_free_factorizationI'[of p c bs] by blast
@@ -1204,7 +1207,7 @@ lemma square_free_factorization_def': fixes p :: "'a poly"
 lemma square_free_factorization_smult_prod_listI: fixes p :: "'a poly"
   assumes sff: "square_free_factorization p (c, bs1 @ (smult b (prod_list bs),i) # bs2)"
   and bs: "\<And> b. b \<in> set bs \<Longrightarrow> degree b > 0"
-  shows "square_free_factorization p (c * b^(Suc i), bs1 @ map (\<lambda> b. (b,i)) bs @ bs2)"
+  shows "square_free_factorization p (c * b^i, bs1 @ map (\<lambda> b. (b,i)) bs @ bs2)"
 proof -
   from square_free_factorizationD'(3)[OF sff, of "smult b (prod_list bs)" i]
   have b: "b \<noteq> 0" by auto
@@ -1212,7 +1215,7 @@ proof -
   show ?thesis
   proof (intro square_free_factorizationI', goal_cases)
     case 1
-    thus ?case unfolding sff(1) by (simp add: o_def field_simps smult_power prod_list_pow_suc)
+    thus ?case unfolding sff(1) by (simp add: o_def ac_simps smult_power prod_list_pow)
   next
     case 2
     show ?case using sff(2) by (simp add: ac_simps o_def square_free_smult_iff[OF b])
@@ -1229,7 +1232,7 @@ lemma square_free_factorization_further_factorization: fixes p :: "'a poly"
   assumes sff: "square_free_factorization p (c, bs)"
   and bs: "\<And> b i d fs. (b,i) \<in> set bs \<Longrightarrow> f b = (d,fs) 
     \<Longrightarrow> b = smult d (prod_list fs) \<and> (\<forall> f \<in> set fs. degree f > 0)"
-  and h: "h = (\<lambda> (b,i). case f b of (d,fs) \<Rightarrow> (d^Suc i,map (\<lambda> f. (f,i)) fs))"
+  and h: "h = (\<lambda> (b,i). case f b of (d,fs) \<Rightarrow> (d^i,map (\<lambda> f. (f,i)) fs))"
   and gs: "gs = map h bs"
   and d: "d = c * prod_list (map fst gs)"
   and es: "es = concat (map snd gs)"
@@ -1241,7 +1244,7 @@ proof -
     assume "p = 0" 
     from sff(4)[OF this] show "d = 0 \<and> es = []" unfolding d es gs by auto
   next
-    have id: "(\<Prod>(a, i)\<leftarrow>bs. a * a ^ i) = smult (prod_list (map fst gs)) (\<Prod>(a, i)\<leftarrow>es. a * a ^ i)"
+    have id: "(\<Prod>(a, i)\<leftarrow>bs. a ^ i) = smult (prod_list (map fst gs)) (\<Prod>(a, i)\<leftarrow>es. a ^ i)"
       unfolding es gs h map_map o_def using bs
     proof (induct bs)
       case (Cons bi bs)
@@ -1251,19 +1254,21 @@ proof -
       note IH = Cons(1)[OF Cons(2), of "\<lambda> _ i _ _ . i"]
       show ?case unfolding bi
         by (simp add: f o_def, simp add: b ac_simps, subst IH, 
-          auto simp: smult_power prod_list_pow_suc ac_simps)
+          auto simp: smult_power prod_list_pow ac_simps)
     qed simp
-    show "p = smult d (\<Prod>(a, i)\<leftarrow>es. a ^ Suc i)" unfolding sff(1) using id
+    show "p = smult d (\<Prod>(a, i)\<leftarrow>es. a ^ i)" unfolding sff(1) using id
       by (simp add: d)
   next
     fix fi i
     assume fi: "(fi, i) \<in> set es"
     from this[unfolded es] obtain G where G: "G \<in> snd ` set gs" and fi: "(fi,i) \<in> set G" by auto
-    from G[unfolded gs] obtain b i where bi: "(b,i) \<in> set bs" 
-      and G: "G = snd (h (b,i))" by auto 
+    from G[unfolded gs] fi obtain b where bi: "(b,i) \<in> set bs" 
+      and G: "G = snd (h (b,i))" by (auto simp: h split: prod.splits)
+    from sff(3)[OF bi] have i: "i > 0" ..
     obtain d fs where f: "f b = (d,fs)" by force
-    show "degree fi > 0"
+    have "degree fi > 0"
       by (rule bs[THEN conjunct2, rule_format, OF bi f], insert fi G f, unfold h, auto)
+    with i show "degree fi > 0 \<and> i > 0" by auto
   next
     have id: "\<exists> c. prod_list (map fst bs) = smult c (prod_list (map fst es))"
       unfolding es gs map_map o_def using bs
@@ -1399,7 +1404,7 @@ qed
 
 lemma square_free_square_free_factorization: 
   "square_free (p :: 'a :: {field,factorial_ring_gcd,semiring_gcd_mult_normalize} poly) \<Longrightarrow> 
-     degree p \<noteq> 0 \<Longrightarrow> square_free_factorization p (1,[(p,0)])"
+     degree p \<noteq> 0 \<Longrightarrow> square_free_factorization p (1,[(p,1)])"
   by (intro square_free_factorizationI', auto)
 
 lemma constant_square_free_factorization: 

@@ -221,7 +221,7 @@ proof -
       have a: "yun_rel A c' a" unfolding A_def a_def
         by (rule yun_rel_gcd[OF f d c c'])
       hence "yun_erel A a" unfolding yun_erel_def by auto
-      thus "list_all2 (rel_prod yun_erel (=)) ((A, i) # Hs) ((a, i) # hs)" 
+      thus "list_all2 (rel_prod yun_erel (=)) ((A, Suc i) # Hs) ((a, Suc i) # hs)" 
         using hs by auto      
       have A0: "A \<noteq> 0" by (rule rel(4)[OF a])
       have "A dvd D" "a dvd d" unfolding A_def a_def by auto
@@ -297,7 +297,7 @@ qed
 
 definition square_free_factorization_int_main :: "int poly \<Rightarrow> (int poly \<times> nat) list" where 
   "square_free_factorization_int_main f = (case square_free_heuristic f of None \<Rightarrow> 
-    yun_gcd.yun_monic_factorization gcd f | Some p \<Rightarrow> [(f,0)])"
+    yun_gcd.yun_monic_factorization gcd f | Some p \<Rightarrow> [(f,1)])"
 
 lemma square_free_factorization_int_main: assumes res: "square_free_factorization_int_main f = fs"
   and ct: "content f = 1" and lc: "lead_coeff f > 0" 
@@ -340,13 +340,14 @@ proof (cases "square_free_heuristic f")
       with out_rel obtain bj where "bj \<in> set Fs" and "rel_prod yun_erel (=) (a,i) bj" 
         unfolding list_all2_conv_all_nth set_conv_nth by fastforce
       then obtain b where b: "(b,i) \<in> set Fs" and ab: "yun_erel a b" by (cases bj, auto simp: rel_prod.simps)
-      from sff(2)[OF b] have b': "square_free b" "degree b \<noteq> 0" by auto
+      from sff(2)[OF b] have b': "square_free b" "degree b \<noteq> 0" and i: "i > 0" by auto
       from ab obtain c where rel: "yun_rel a c b" unfolding yun_erel_def by auto
       note aa = yun_relD[OF this]
       from aa have c0: "c \<noteq> 0" by auto
       from b' aa(3) show "degree a > 0" by simp
       from square_free_smult[OF c0 b'(1), folded aa(2)]
       show "square_free a" unfolding square_free_def by (force simp: dvd_def hom_distribs)
+      show "i > 0" by fact
       show cnt: "content a = 1" and lc: "lead_coeff a > 0" using aa by auto
       fix A I
       assume A: "(A,I) \<in> set fs" and diff: "(a,i) \<noteq> (A,I)" 
@@ -371,8 +372,8 @@ proof (cases "square_free_heuristic f")
       from rel(8) rel(5) show "Rings.coprime a A"
         by (auto intro!: gcd_eq_1_imp_coprime simp add: gcd)
     }
-    let ?prod = "\<lambda> fs. (\<Prod>(a, i)\<in>set fs. a ^ Suc i)" 
-    let ?pr = "\<lambda> fs. (\<Prod>(a, i)\<leftarrow>fs. a ^ Suc i)"
+    let ?prod = "\<lambda> fs. (\<Prod>(a, i)\<in>set fs. a ^ i)" 
+    let ?pr = "\<lambda> fs. (\<Prod>(a, i)\<leftarrow>fs. a ^ i)"
     define pr where "pr = ?prod fs" 
     from \<open>distinct fs\<close> have pfs: "?prod fs = ?pr fs" by (rule prod.distinct_set_conv_list)
     from \<open>distinct Fs\<close> have pFs: "?prod Fs = ?pr Fs" by (rule prod.distinct_set_conv_list)
@@ -382,7 +383,7 @@ proof (cases "square_free_heuristic f")
       obtain a i where ai: "ai = (a,i)" by force
       from Cons(1) ai obtain A where Ai: "Ai = (A,i)" 
         and rel: "yun_erel a A" by (cases Ai, auto simp: rel_prod.simps)
-      show ?case unfolding ai Ai using yun_erel_mult[OF yun_erel_pow[OF rel, of "Suc i"] Cons(3)]
+      show ?case unfolding ai Ai using yun_erel_mult[OF yun_erel_pow[OF rel, of i] Cons(3)]
         by auto
     qed simp
     also have "?prod Fs = G" using sff(1) by simp
@@ -393,7 +394,7 @@ proof (cases "square_free_heuristic f")
   from main dist' show ?thesis by auto
 next
   case (Some p)
-  from res[unfolded square_free_factorization_int_main_def Some] have fs: "fs = [(f,0)]" by auto
+  from res[unfolded square_free_factorization_int_main_def Some] have fs: "fs = [(f,1)]" by auto
   from lc have f0: "f \<noteq> 0" by auto
   from square_free_heuristic[OF Some] poly_mod_prime.separable_impl(1)[of p f] square_free_mod_imp_square_free[of p f] deg
   show ?thesis unfolding fs
@@ -532,7 +533,7 @@ qed
 definition square_free_factorization_int :: "int poly \<Rightarrow> int \<times> (int poly \<times> nat)list" where
   "square_free_factorization_int f = (case x_split f of (n,g) \<comment> \<open>extract \<open>x^n\<close>\<close>
     \<Rightarrow> case square_free_factorization_int' g of (d,fs)
-    \<Rightarrow> if n = 0 then (d,fs) else (d, (monom 1 1, n - 1) # fs))" 
+    \<Rightarrow> if n = 0 then (d,fs) else (d, (monom 1 1, n) # fs))" 
 
 lemma square_free_factorization_int: assumes res: "square_free_factorization_int f = (d, fs)"
   shows "square_free_factorization f (d,fs)" 
@@ -541,7 +542,7 @@ proof -
   obtain n g where xs: "x_split f = (n,g)" by force
   obtain c hs where sf: "square_free_factorization_int' g = (c,hs)" by force
   from res[unfolded square_free_factorization_int_def xs sf split] 
-  have d: "d = c" and fs: "fs = (if n = 0 then hs else (monom 1 1, n - 1) # hs)" by (cases n, auto)
+  have d: "d = c" and fs: "fs = (if n = 0 then hs else (monom 1 1, n) # hs)" by (cases n, auto)
   note sff = square_free_factorization_int'(1-2)[OF sf]
   note xs = x_split[OF xs]
   let ?x = "monom 1 1 :: int poly" 
@@ -556,7 +557,7 @@ proof -
   next
     case (Suc m)
     with xs have fg: "f = monom 1 (Suc m) * g" and dvd: "\<not> ?x dvd g" by auto
-    from Suc have fs: "fs = (?x,m) # hs" unfolding fs by auto
+    from Suc have fs: "fs = (?x,Suc m) # hs" unfolding fs by auto
     have degx: "degree ?x = 1" by code_simp 
     from irreducible\<^sub>d_square_free[OF linear_irreducible\<^sub>d[OF this]] have sfx: "square_free ?x" by auto
     have fg: "f = ?x ^ n * g" unfolding fg Suc by (metis x_pow_n)
@@ -565,10 +566,10 @@ proof -
     {
       fix a i
       assume ai: "(a,i) \<in> set hs" 
-      with sf(4) have g0: "g \<noteq> 0" by auto
+      with sf(4) sf(2) have g0: "g \<noteq> 0" and "i > 0" by auto
       from split_list[OF ai] obtain ys zs where hs: "hs = ys @ (a,i) # zs" by auto
       have "a dvd g" unfolding square_free_factorization_prod_list[OF sff(1)] hs
-        by (rule dvd_smult, simp add: ac_simps)
+        by (rule dvd_smult, insert \<open>i > 0\<close>, cases i, auto simp add: ac_simps)
       moreover have "\<not> ?x dvd g" using xs[unfolded Suc] by auto
       ultimately have dvd: "\<not> ?x dvd a" using dvd_trans by blast
       from sf(2)[OF ai] have "a \<noteq> 0" by auto
@@ -607,15 +608,15 @@ proof -
         by (simp add: gcd_eq_1_imp_coprime)
       note this dvd
     } note hs_dvd_x = this
-    from hs_dvd_x[of ?x m]
-    have nmem: "(?x,m) \<notin> set hs" by auto
-    hence eq: "?x ^ n * g = smult c (\<Prod>(a, i)\<in>set fs. a ^ Suc i)" 
+    from hs_dvd_x[of ?x "Suc m"]
+    have nmem: "(?x,Suc m) \<notin> set hs" by auto
+    hence eq: "?x ^ n * g = smult c (\<Prod>(a, i)\<in>set fs. a ^ i)" 
       unfolding sf(1) unfolding fs Suc by simp
     show ?thesis unfolding fg d unfolding square_free_factorization_def split eq0 unfolding eq
     proof (intro conjI allI impI, rule refl)
       fix a i 
       assume ai: "(a,i) \<in> set fs" 
-      thus "square_free a" "degree a > 0" using sf(2) sfx degx unfolding fs by auto
+      thus "square_free a" "degree a > 0" "i > 0" using sf(2) sfx degx unfolding fs by auto
       fix b j
       assume bj: "(b,j) \<in> set fs" and diff: "(a,i) \<noteq> (b,j)" 
       consider (hs_hs) "(a,i) \<in> set hs" "(b,j) \<in> set hs" 

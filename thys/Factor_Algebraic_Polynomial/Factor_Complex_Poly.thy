@@ -37,7 +37,8 @@ lemma distinct_factor_complex_main:
   by (rule distinct_roots_of_complex_poly)
     
 lemma factor_complex_main: assumes rt: "factor_complex_main p = (c,xis)"
-  shows "p = smult c (\<Prod>(x, i)\<leftarrow>xis. [:- x, 1:] ^ Suc i)"
+  shows "p = smult c (\<Prod>(x, i)\<leftarrow>xis. [:- x, 1:] ^ i)" 
+    "0 \<notin> snd ` set xis"
 proof -
   obtain d pis where yun: "yun_factorization gcd p = (d,pis)" by force
   obtain d' pis' where yun_rf: "yun_rf (yun_polys p) = (d',pis')" by force
@@ -52,9 +53,9 @@ proof -
   note yun = yun_factorization[OF yun[unfolded d]]
   note yun = square_free_factorizationD[OF yun(1)] yun(2)[unfolded snd_conv]
   let ?exp = "\<lambda> pis. \<Prod>(x, i)\<leftarrow>concat
-    (map (\<lambda>(p, i). map (\<lambda>r. (r, i)) (roots_of_complex_rf_poly p)) pis). [:- x, 1:] ^ Suc i"
-  from yun(1) have p: "p = smult c (\<Prod>(a, i)\<in>set pis. a ^ Suc i)" .
-  also have "(\<Prod>(a, i)\<in>set pis. a ^ Suc i) = (\<Prod>(a, i)\<leftarrow>pis. a ^ Suc i)"
+    (map (\<lambda>(p, i). map (\<lambda>r. (r, i)) (roots_of_complex_rf_poly p)) pis). [:- x, 1:] ^ i"
+  from yun(1) have p: "p = smult c (\<Prod>(a, i)\<in>set pis. a ^ i)" .
+  also have "(\<Prod>(a, i)\<in>set pis. a ^ i) = (\<Prod>(a, i)\<leftarrow>pis. a ^ i)"
     by (rule prod.distinct_set_conv_list[OF yun(5)])
   also have "\<dots> = ?exp pis'" using yun(2,6) unfolding pis 
   proof (induct pis')
@@ -62,17 +63,17 @@ proof -
     obtain p i where pi: "pi = (p,i)" by force
     let ?rts = "roots_of_complex_rf_poly p"
     note Cons = Cons[unfolded pi]
-    have IH: "(\<Prod>(a, i)\<leftarrow>?map pis. a ^ Suc i) = (?exp pis)"
+    have IH: "(\<Prod>(a, i)\<leftarrow>?map pis. a ^ i) = (?exp pis)"
       by (rule Cons(1)[OF Cons(2-3)], auto)
     from Cons(2-3)[of "?p p" i] have p: "square_free (?p p)" "degree (?p p) \<noteq> 0" "?p p \<noteq> 0" "monic (?p p)" by auto
-    have "(\<Prod>(a, i)\<leftarrow>?map (pi # pis). a ^ Suc i) = ?p p ^ Suc i * (\<Prod>(a, i)\<leftarrow>?map pis. a ^ Suc i)"
+    have "(\<Prod>(a, i)\<leftarrow>?map (pi # pis). a ^ i) = ?p p ^ i * (\<Prod>(a, i)\<leftarrow>?map pis. a ^ i)"
       unfolding pi by simp
-    also have "(\<Prod>(a, i)\<leftarrow>?map pis. a ^ Suc i) = ?exp pis" by (rule IH)
-    finally have id: "(\<Prod>(a, i)\<leftarrow>?map (pi # pis). a ^ Suc i) = ?p p ^ Suc i * ?exp pis" by simp
+    also have "(\<Prod>(a, i)\<leftarrow>?map pis. a ^ i) = ?exp pis" by (rule IH)
+    finally have id: "(\<Prod>(a, i)\<leftarrow>?map (pi # pis). a ^ i) = ?p p ^ i * ?exp pis" by simp
     have "?exp (pi # pis) = ?exp [(p,i)] * ?exp pis" unfolding pi by simp
-    also have "?exp [(p,i)] = (\<Prod>(x, i)\<leftarrow> (map (\<lambda>r. (r, i)) ?rts). [:- x, 1:] ^ Suc i)" 
+    also have "?exp [(p,i)] = (\<Prod>(x, i)\<leftarrow> (map (\<lambda>r. (r, i)) ?rts). [:- x, 1:] ^ i)" 
       by simp
-    also have "\<dots> = (\<Prod> x \<leftarrow> ?rts. [:- x, 1:])^Suc i"
+    also have "\<dots> = (\<Prod> x \<leftarrow> ?rts. [:- x, 1:])^ i"
       unfolding prod_list_power by (rule arg_cong[of _ _ prod_list], auto)
     also have "(\<Prod> x \<leftarrow> ?rts. [:- x, 1:]) = ?p p" 
     proof -
@@ -100,16 +101,20 @@ proof -
         by (rule prod.distinct_set_conv_list[OF roots_of_complex_rf_poly(2)])
       finally show ?thesis by simp
     qed
-    finally have id2: "?exp (pi # pis) = ?p p ^ Suc i * ?exp pis" by simp
+    finally have id2: "?exp (pi # pis) = ?p p ^ i * ?exp pis" by simp
     show ?case unfolding id id2 ..
   qed simp
-  also have "?exp pis' = (\<Prod>(x, i)\<leftarrow>xis. [:- x, 1:] ^ Suc i)" unfolding xis ..
-  finally show ?thesis unfolding p xis by simp
+  also have "?exp pis' = (\<Prod>(x, i)\<leftarrow>xis. [:- x, 1:] ^ i)" unfolding xis ..
+  finally show "p = smult c (\<Prod>(x, i)\<leftarrow>xis. [:- x, 1:] ^ i)" unfolding p xis by simp
+
+  from yun(2) have "0 \<notin> snd ` set pis" by force
+  with pis have "0 \<notin> snd ` set pis'" by force
+  thus "0 \<notin> snd ` set xis" unfolding xis by force
 qed
 
 definition factor_complex_poly :: "complex poly \<Rightarrow> complex \<times> (complex poly \<times> nat) list" where
   "factor_complex_poly p = (case factor_complex_main p of
-     (c,ris) \<Rightarrow> (c, map (\<lambda> (r,i). ([:-r,1:],Suc i)) ris))"
+     (c,ris) \<Rightarrow> (c, map (\<lambda> (r,i). ([:-r,1:],i)) ris))"
 
 lemma distinct_factor_complex_poly:
   "distinct (map fst (snd (factor_complex_poly p)))" 
@@ -129,13 +134,13 @@ theorem factor_complex_poly: assumes fp: "factor_complex_poly p = (c,qis)"
 proof -
   from fp[unfolded factor_complex_poly_def]
   obtain pis where fp: "factor_complex_main p = (c,pis)"
-    and qis: "qis = map (\<lambda>(r, i). ([:- r, 1:], Suc i)) pis"
+    and qis: "qis = map (\<lambda>(r, i). ([:- r, 1:], i)) pis"
     by (cases "factor_complex_main p", auto)
-  from factor_complex_main[OF fp] have p: "p = smult c (\<Prod>(x, i)\<leftarrow>pis. [:- x, 1:] ^ Suc i)" .
+  from factor_complex_main[OF fp] have p: "p = smult c (\<Prod>(x, i)\<leftarrow>pis. [:- x, 1:] ^ i)" and 0: "0 \<notin> snd ` set pis" by auto
   show "p = smult c (\<Prod>(q, i)\<leftarrow>qis. q ^ i)" unfolding p qis
     by (rule arg_cong[of _ _ "\<lambda> p. smult c (prod_list p)"], auto)
   show "(q,i) \<in> set qis \<Longrightarrow> irreducible q \<and> i \<noteq> 0 \<and> monic q \<and> degree q = 1"
-    using linear_irreducible_field[of q] unfolding qis by auto
+    using linear_irreducible_field[of q] using 0 unfolding qis by force
 qed
 
 end

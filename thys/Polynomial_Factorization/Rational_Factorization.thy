@@ -108,11 +108,11 @@ proof -
     by (auto simp: roots_of_rat_poly_def split: if_splits)
   note yun = square_free_factorizationD(1,2,4)[OF yun_factorization(1)[OF yun]]
   from yun(1) p have c: "c \<noteq> 0" by auto
-  from yun(1) have p: "p = smult c (\<Prod>(a, i)\<in>set pis. a ^ Suc i)" .
-  have "{x. poly p x = 0} = {x. poly (\<Prod>(a, i)\<in>set pis. a ^ Suc i) x = 0}"
+  from yun(1) have p: "p = smult c (\<Prod>(a, i)\<in>set pis. a ^ i)" .
+  have "{x. poly p x = 0} = {x. poly (\<Prod>(a, i)\<in>set pis. a ^ i) x = 0}"
     unfolding p using c by auto
   also have "\<dots> = \<Union> ((\<lambda> p. {x. poly p x = 0}) ` fst ` set pis)" (is "_ = ?r")
-    by (subst poly_prod_0, force+)
+    using yun(2) by (subst poly_prod_0, force+)
   finally have r: "{x. poly p x = 0} = ?r" .
   {
     fix p i

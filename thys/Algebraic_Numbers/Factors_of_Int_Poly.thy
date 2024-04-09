@@ -57,15 +57,16 @@ proof -
   note fact_mem = factorize_int_poly(2,3)[OF factt]
   have sqf: "square_free_factorization p (c, qis)" by (rule fact(1))
   note sff = square_free_factorizationD[OF sqf]
-  have sff': "p = Polynomial.smult c (\<Prod>(a, i)\<leftarrow> qis. a ^ Suc i)"
+  have sff': "p = Polynomial.smult c (\<Prod>(a, i)\<leftarrow> qis. a ^ i)"
     unfolding sff(1) prod.distinct_set_conv_list[OF sff(5)] ..
   {
     fix q
     assume q: "q \<in> set qs"
     then obtain r i where qi: "(r,i) \<in> set qis" and qr: "q = abs_int_poly r" unfolding qs by auto
+    from sff(2)[OF qi] have i: "i > 0" by auto
     from split_list[OF qi] obtain qis1 qis2 where qis: "qis = qis1 @ (r,i) # qis2" by auto
-    have dvd: "r dvd p" unfolding sff' qis dvd_def
-      by (intro exI[of _ "smult c (r ^ i * (\<Prod>(a, i)\<leftarrow>qis1 @  qis2. a ^ Suc i))"], auto)
+    have dvd: "r dvd p" unfolding sff' qis dvd_def using i
+      by (intro exI[of _ "smult c (r ^ (i - 1) * (\<Prod>(a, i)\<leftarrow>qis1 @  qis2. a ^ i))"], cases i, auto)
     from fact_mem[OF qi] have r0: "r \<noteq> 0" by auto
     from qi factt have p: "p \<noteq> 0" by (cases p, auto)
     with dvd have deg: "degree r \<le> degree p" by (metis dvd_imp_degree_le)
@@ -107,12 +108,12 @@ proof -
   let ?r = "of_int :: int \<Rightarrow> 'a"
   let ?rp = "map_poly ?r"
   have rp: "\<And> x p. rp p x = 0 \<longleftrightarrow> poly (?rp p) x = 0" unfolding rp_def ..
-  have "rp p x = 0 \<longleftrightarrow> rp (\<Prod>(x, y)\<leftarrow>qis. x ^ Suc y) x = 0" unfolding sff'(1)
+  have "rp p x = 0 \<longleftrightarrow> rp (\<Prod>(x, y)\<leftarrow>qis. x ^ y) x = 0" unfolding sff'(1)
     unfolding rp hom_distribs using c by simp
-  also have "\<dots> = (\<exists> (q,i) \<in>set qis. poly (?rp (q ^ Suc i)) x = 0)"
+  also have "\<dots> = (\<exists> (q,i) \<in>set qis. poly (?rp (q ^ i)) x = 0)"
     unfolding qs rp of_int_poly_hom.hom_prod_list poly_prod_list_zero_iff set_map by fastforce
   also have "\<dots> = (\<exists> (q,i) \<in>set qis. poly (?rp q) x = 0)"
-    unfolding of_int_poly_hom.hom_power poly_power_zero_iff by auto
+    unfolding of_int_poly_hom.hom_power poly_power_zero_iff using sff(2) by auto
   also have "\<dots> = (\<exists> q \<in> fst ` set qis. poly (?rp q) x = 0)" by force
   also have "\<dots> = (\<exists> q \<in> set qs. rp q x = 0)" unfolding rp qs snd_conv o_def bex_simps set_map
     by simp
@@ -287,7 +288,5 @@ qed
 interpretation coeff_lift_hom:
   factor_preserving_hom "coeff_lift :: 'a :: {comm_semiring_1,semiring_no_zero_divisors} \<Rightarrow> _"
   by (unfold_locales, auto)
-
-
 
 end

@@ -148,7 +148,7 @@ lemma yun_polys: assumes "p \<noteq> 0"
     show ?thesis unfolding yun 
       unfolding square_free_factorizationD'(1)[OF sff] poly_smult poly_prod_list snd_conv
       mult_eq_0_iff prod_list_zero_iff
-      using c0 by force
+      using c0 square_free_factorizationD(2)[OF sff] by force
   qed
   done
 

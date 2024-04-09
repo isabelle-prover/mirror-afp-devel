@@ -68,7 +68,7 @@ definition factorize_rat_poly_monic :: "rat poly \<Rightarrow> (rat \<times> (ra
   where
     "factorize_rat_poly_monic p = (
     let (c,fs) =  factorize_rat_poly p ;
-        lcs = prod_list (map (\<lambda>(f,i). (lead_coeff f) ^ Suc i) fs) ;
+        lcs = prod_list (map (\<lambda>(f,i). (lead_coeff f) ^ i) fs) ;
         fs = map (\<lambda>(f,i). (normalize f, i)) fs
     in
     (c * lcs,fs)
@@ -93,7 +93,7 @@ definition undo_factorize :: "rat \<times> (nat \<times> nat) list \<Rightarrow>
     "undo_factorize cfs signs =
    squash
     (case cfs of (c,fs) \<Rightarrow>
-    (c * prod_list (map (\<lambda>(f,pow). (signs ! f) ^ Suc pow) fs)))
+    (c * prod_list (map (\<lambda>(f,pow). (signs ! f) ^ pow) fs)))
   "
 
 definition undo_factorize_polys :: "(rat \<times> (nat \<times> nat) list) list \<Rightarrow> rat list \<Rightarrow> rat list"
@@ -380,7 +380,7 @@ proof (unfold square_free_factorization_def split, intro conjI impI allI)
     using factorize_rat_poly_monic_def assms by auto
   have sq: "square_free_factorization f (c',fs')"
     using cfs factorize_rat_poly(1) by blast
-  obtain lcs where lcs: "lcs = prod_list (map (\<lambda>(f,i). lead_coeff f ^ Suc i) fs')" by force
+  obtain lcs where lcs: "lcs = prod_list (map (\<lambda>(f,i). lead_coeff f ^ i) fs')" by force
   have c: "c = c' * lcs"  using assms unfolding factorize_rat_poly_monic_def cfs Let_def lcs by auto
   show "f = 0 \<Longrightarrow> c = 0" using c cfs by auto                       
   show "f = 0 \<Longrightarrow> fs = []" using fs cfs by auto
@@ -409,37 +409,37 @@ proof (unfold square_free_factorization_def split, intro conjI impI allI)
     thus False
       using fa ij(1) nth_mem sq square_free_factorizationD'(3) by fastforce 
   qed
-  have ceq: "c = c' * (\<Prod>(a, i)\<in>set fs'. (lead_coeff a) ^ Suc i)" using c lcs
+  have ceq: "c = c' * (\<Prod>(a, i)\<in>set fs'. (lead_coeff a) ^ i)" using c lcs
     by (simp add: dist prod.distinct_set_conv_list) 
-  have fseq: " (\<Prod>(a, i)\<in>set fs. a ^ Suc i) =  (\<Prod>(a, i)\<in>set fs'. (normalize a) ^ Suc i)"
+  have fseq: " (\<Prod>(a, i)\<in>set fs. a ^ i) =  (\<Prod>(a, i)\<in>set fs'. (normalize a) ^ i)"
     apply (subst prod.distinct_set_conv_list[OF dist])
     apply (subst prod.distinct_set_conv_list[OF dist2])
     unfolding fs apply (auto simp add: o_def )
     by (metis (no_types, lifting) case_prod_conv old.prod.exhaust)
 
-  have "f = Polynomial.smult c' (\<Prod>(a, i)\<in>set fs'. a ^ Suc i)"  using sq square_free_factorizationD(1) by blast
-  moreover have "... =  Polynomial.smult c' (\<Prod>(a, i)\<in>set fs'. (Polynomial.smult ((unit_factor (lead_coeff a))) (normalize a)) ^ Suc i)"
+  have "f = Polynomial.smult c' (\<Prod>(a, i)\<in>set fs'. a ^ i)"  using sq square_free_factorizationD(1) by blast
+  moreover have "... =  Polynomial.smult c' (\<Prod>(a, i)\<in>set fs'. (Polynomial.smult ((unit_factor (lead_coeff a))) (normalize a)) ^ i)"
     apply (subst undo_normalize[symmetric]) by auto
   moreover have "... =  Polynomial.smult c'
-    (\<Prod>(a, i)\<in>set fs'. (Polynomial.smult ((lead_coeff a) ^ Suc i) ((normalize a) ^ Suc i)))"
+    (\<Prod>(a, i)\<in>set fs'. (Polynomial.smult ((lead_coeff a) ^ i) ((normalize a) ^ i)))"
     apply (subst smult_power) by auto
   moreover have "... =  Polynomial.smult c'
-    (Polynomial.smult (\<Prod>(a, i)\<in>set fs'. ((lead_coeff a) ^ Suc i))
-        (\<Prod>(a, i)\<in>set fs'. (normalize a) ^ Suc i))"
+    (Polynomial.smult (\<Prod>(a, i)\<in>set fs'. ((lead_coeff a) ^ i))
+        (\<Prod>(a, i)\<in>set fs'. (normalize a) ^ i))"
     apply (subst finite_smult_distr) by (auto simp add: dist)
-  moreover have "... =  Polynomial.smult (c' * (\<Prod>(a, i)\<in>set fs'. (lead_coeff a) ^ Suc i))
-        (\<Prod>(a, i)\<in>set fs'. (normalize a) ^ Suc i)"
+  moreover have "... =  Polynomial.smult (c' * (\<Prod>(a, i)\<in>set fs'. (lead_coeff a) ^ i))
+        (\<Prod>(a, i)\<in>set fs'. (normalize a) ^ i)"
     using smult_smult by blast
-  moreover have "... = Polynomial.smult c  (\<Prod>(a, i)\<in>set fs. a ^ Suc i)"
+  moreover have "... = Polynomial.smult c  (\<Prod>(a, i)\<in>set fs. a ^ i)"
     unfolding ceq fseq by auto
-  ultimately show "f =  Polynomial.smult c  (\<Prod>(a, i)\<in>set fs. a ^ Suc i)" by auto
+  ultimately show "f =  Polynomial.smult c  (\<Prod>(a, i)\<in>set fs. a ^ i)" by auto
   fix a i
   assume ai: "(a,i) \<in> set fs"
   obtain a' where a': "(a',i) \<in> set fs'" "a = normalize a'" using ai unfolding fs by auto
   show "square_free a" using square_free_normalize a'
     using sq square_free_factorizationD(2) by blast
-  show "0 < degree a" using degree_normalize a'
-    using sq square_free_factorizationD'(3) by fastforce
+  show "0 < degree a" "0 < i" using degree_normalize a'
+    using sq square_free_factorizationD'(3) by fastforce+
   fix  b j
   assume bj: "(b,j) \<in> set fs" "(a,i) \<noteq> (b,j)"
   obtain b' where b': "(b',j) \<in> set fs'" "b = normalize b'" using bj unfolding fs by auto
@@ -452,38 +452,38 @@ lemma undo_factorize_correct:
   assumes "\<And>f p. (f,p) \<in> set fs \<Longrightarrow> f \<in> set ftrs"
   shows "undo_factorize (c,map (\<lambda>(f,pow). (index_of ftrs f, pow)) fs) (sign_vec ftrs x) = squash (rpoly p x)"
 proof -
-  have p: "p = smult c (\<Prod>(a, i)\<in> set fs. a ^ Suc i)"
+  have p: "p = smult c (\<Prod>(a, i)\<in> set fs. a ^ i)"
     using assms(1) factorize_rat_poly_monic_square_free_factorization square_free_factorizationD(1) by blast
   have fs: "distinct fs"
     using assms(1) factorize_rat_poly_monic_square_free_factorization square_free_factorizationD(5) by blast
-  have "rpoly p x = ((real_of_rat c) * rpoly (\<Prod>(a, i)\<in> set fs. a ^ Suc i) x)"
+  have "rpoly p x = ((real_of_rat c) * rpoly (\<Prod>(a, i)\<in> set fs. a ^ i) x)"
     using p by (simp add: of_rat_hom.map_poly_hom_smult)
-  moreover have "... = ((real_of_rat c) * rpoly (\<Prod>ai\<in> set fs. case ai of (a,i) \<Rightarrow> a ^ Suc i) x)"
+  moreover have "... = ((real_of_rat c) * rpoly (\<Prod>ai\<in> set fs. case ai of (a,i) \<Rightarrow> a ^ i) x)"
     by blast
-  moreover have "... = ((real_of_rat c) * (\<Prod>ai\<in> set fs. case ai of (a,i) \<Rightarrow> rpoly (a ^ Suc i) x))"
+  moreover have "... = ((real_of_rat c) * (\<Prod>ai\<in> set fs. case ai of (a,i) \<Rightarrow> rpoly (a ^ i) x))"
     by (simp add: finite_prod_map_of_rat_poly_hom)
-  moreover have "... = ((real_of_rat c) * (\<Prod>ai\<in> set fs. case ai of (a,i) \<Rightarrow> (rpoly a x) ^ Suc i))"
+  moreover have "... = ((real_of_rat c) * (\<Prod>ai\<in> set fs. case ai of (a,i) \<Rightarrow> (rpoly a x) ^ i))"
     by (metis (mono_tags, lifting) of_rat_poly_hom.hom_power poly_hom.hom_power split_cong)
-  moreover have "...  = ((real_of_rat c) * (prod_list (map (\<lambda>ai. case ai of (a,i) \<Rightarrow> (rpoly a x) ^ Suc i) fs)))"
+  moreover have "...  = ((real_of_rat c) * (prod_list (map (\<lambda>ai. case ai of (a,i) \<Rightarrow> (rpoly a x) ^ i) fs)))"
     by (simp add: fs prod.distinct_set_conv_list)
-  ultimately have "rpoly p x = ((real_of_rat c) * (prod_list (map (\<lambda>ai. case ai of (a,i) \<Rightarrow> (rpoly a x) ^ Suc i) fs)))" by auto
+  ultimately have "rpoly p x = ((real_of_rat c) * (prod_list (map (\<lambda>ai. case ai of (a,i) \<Rightarrow> (rpoly a x) ^ i) fs)))" by auto
 
-  then have "squash (rpoly p x) = squash c * prod_list (map squash (map (\<lambda>ai. case ai of (a,i) \<Rightarrow> (rpoly a x) ^ Suc i) fs))"
+  then have "squash (rpoly p x) = squash c * prod_list (map squash (map (\<lambda>ai. case ai of (a,i) \<Rightarrow> (rpoly a x) ^ i) fs))"
     by (auto simp add: squash_mult squash_prod_list o_def)
-  moreover have "... = squash c * prod_list (map (\<lambda>ai. case ai of (a,i) \<Rightarrow> squash ((rpoly a x) ^ Suc i)) fs)"
+  moreover have "... = squash c * prod_list (map (\<lambda>ai. case ai of (a,i) \<Rightarrow> squash ((rpoly a x) ^ i)) fs)"
     apply (simp add: o_def)
     by (simp add: prod.case_distrib)
-  ultimately have rp:"squash(rpoly p x) = squash c * prod_list (map (\<lambda>ai. case ai of (a,i) \<Rightarrow> squash (rpoly a x) ^ Suc i) fs)"
+  ultimately have rp:"squash(rpoly p x) = squash c * prod_list (map (\<lambda>ai. case ai of (a,i) \<Rightarrow> squash (rpoly a x) ^ i) fs)"
     using squash_pow
     by presburger
   have "undo_factorize
      (c, map (\<lambda>(f, pow).(index_of ftrs f, pow)) fs) (sign_vec ftrs x) =
     squash
-     (c * (\<Prod>xa\<leftarrow>fs. case xa of (f, y) \<Rightarrow> sign_vec ftrs x ! index_of ftrs f ^ Suc y))"
+     (c * (\<Prod>xa\<leftarrow>fs. case xa of (f, y) \<Rightarrow> sign_vec ftrs x ! index_of ftrs f ^ y))"
     unfolding undo_factorize_def apply (auto simp add: o_def)
     by (metis (mono_tags, lifting) case_prod_conv old.prod.exhaust)
   moreover have "... =  squash
-     (c * (\<Prod>xa\<leftarrow>fs. case xa of (f, y) \<Rightarrow> (squash (rpoly f x)) ^ Suc y))"
+     (c * (\<Prod>xa\<leftarrow>fs. case xa of (f, y) \<Rightarrow> (squash (rpoly f x)) ^ y))"
     using assms(2) sign_vec_index_of map_eq_conv split_cong by (smt (verit, del_insts))
   ultimately show ?thesis using rp
     by (metis (mono_tags, lifting) of_rat_hom.hom_mult squash_idem squash_mult squash_real_of_rat)
@@ -712,20 +712,19 @@ qed
 
 lemma squarefree_factorization_degree:
   assumes "square_free_factorization p (c,fs)"
-  shows "degree p = sum_list (map (\<lambda>(f,c). (c+1) * degree f) fs)"
+  shows "degree p = sum_list (map (\<lambda>(f,c). c * degree f) fs)"
 proof -
   have "p =
     Polynomial.smult c
-     (\<Prod>(a, i)\<in>set fs. a ^ Suc i)" using assms unfolding square_free_factorization_def
+     (\<Prod>(a, i)\<in>set fs. a ^ i)" using assms unfolding square_free_factorization_def
     by blast
-  then have "degree p = degree (\<Prod>(a, i)\<in>set fs. a ^ Suc i)"
+  then have "degree p = degree (\<Prod>(a, i)\<in>set fs. a ^ i)"
     using assms square_free_factorizationD(4) by fastforce
-  also have "... = degree (prod_list (map (\<lambda>(f,c). f ^ Suc c) fs))"
+  also have "... = degree (prod_list (map (\<lambda>(f,c). f ^ c) fs))"
     by (metis assms prod.distinct_set_conv_list square_free_factorizationD(5))
-  also have "... = (\<Sum>(a, i)\<leftarrow>fs. degree (a ^ Suc i))"
+  also have "... = (\<Sum>(a, i)\<leftarrow>fs. degree (a ^ i))"
     apply (subst degree_prod_list_eq)
     apply (auto simp add: o_def)
-    using assms degree_0 square_free_factorizationD(2) apply blast
     using assms degree_0 square_free_factorizationD(2) apply blast
     by (simp add: prod.case_distrib)
   ultimately show ?thesis
