@@ -8,7 +8,6 @@ session Eval_FO = Containers +
     Cluster
     Eval_FO
     FO
-    Infinite
     Mapping_Code
   document_files
     "root.tex"
