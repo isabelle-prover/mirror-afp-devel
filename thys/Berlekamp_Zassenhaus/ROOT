@@ -42,6 +42,7 @@ session Berlekamp_Zassenhaus = Subresultants +
     Square_Free_Factorization_Int
     Factorize_Int_Poly
     Factorize_Rat_Poly
+    Factorization_External_Interface
   document_files
     "algorithm2e.sty"
     "root.bib"
