@@ -196,7 +196,7 @@ proof -
   moreover have "map Some (map g [0..<length xs]) = map (\<lambda>i. f (xs ! i) (ys ! i)) [0..<length xs]"
     using assms by auto
   hence "map Some (map g [0..<length xs]) = map2 f xs ys"
-    using assms by (smt map2_map_map map_eq_conv map_nth)
+    using assms by (smt (verit) map2_map_map map_eq_conv map_nth)
   hence "map (the \<circ> Some) (map g [0..<length xs]) = map the (map2 f xs ys)"
     by (metis map_map)
   hence "map g [0..<length xs] = map the (map2 f xs ys)"
