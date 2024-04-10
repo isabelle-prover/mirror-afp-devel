@@ -1,6 +1,6 @@
 cabal-version:       2.4
 name:                secav-prover
-version:             1.0.0.0
+version:             1.0.1.0
 synopsis:            Prover for the SeCaV system
 license:             GPL-3.0-only
 license-file:        LICENSE
@@ -38,7 +38,7 @@ library interface
                      , ShortLexer
                      , ShortParser
                      , Unshortener
-  build-depends:       base ^>=4.14.0.0
+  build-depends:       base ^>=4.17.0.0
                      , prover
                      , parsec
                      , bimap
@@ -51,7 +51,7 @@ test-suite completeness
   type:                detailed-0.9
   test-module:         Runner
   other-modules:       Tests
-  build-depends:       base ^>=4.14.0.0
+  build-depends:       base ^>=4.17.0.0
                      , Cabal >= 1.9.2
                      , process
                      , directory
@@ -65,7 +65,7 @@ test-suite soundness
   type:                detailed-0.9
   test-module:         Runner
   other-modules:       Tests
-  build-depends:       base ^>=4.14.0.0
+  build-depends:       base ^>=4.17.0.0
                      , Cabal >= 1.9.2
                      , process
                      , mtl
@@ -76,7 +76,7 @@ test-suite soundness
 
 executable secav-prover
   main-is:             Main.hs
-  build-depends:       base ^>=4.14.0.0
+  build-depends:       base ^>=4.17.0.0
                      , prover
                      , interface
                      , filepath

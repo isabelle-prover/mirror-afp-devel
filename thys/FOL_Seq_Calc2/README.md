@@ -7,7 +7,42 @@ The SeCaV Prover produces human-readable proofs in the SeCaV system, which means
 The prover is implemented and verified in Isabelle, with some supporting functions implemented in Haskell.
 
 ## Installation
-You can download an executable binary version of the prover from the [release section](https://github.com/fkj/secav-prover/releases) of the development repository, or you can compile one yourself.
+You can download an executable version of the prover (either as a Linux binary or a Docker image) from the [release section](https://github.com/fkj/secav-prover/releases) of the development repository, or you can compile one yourself.
+Please see the [development repository](https://github.com/fkj/secav-prover) for the newest version.
+
+### Running via Docker
+If you do not want to (or cannot) install the prover directly on your machine, you can run the prover in a [Docker](https://www.docker.com/) container.
+To do this you will need to have Docker installed on your machine.
+
+You can either download a ready-to-use Docker image from the release section of the repository or build your own image (see below).
+If you have downloaded a Docker image from the release section, you can load it by running
+```
+docker load -i secav-prover-docker-image.tar.gz
+```
+
+Once you have a Docker image with the prover, you can run the prover inside a Docker container using e.g.
+```
+docker run secav-prover "Imp P P"
+```
+
+If you would like the prover to write Isabelle proof files (using the `--isabelle` option), you will need to give the Docker container access to a directory on your machine.
+You can give the container access to the current working directory and make the prover write an Isabelle proof file to it by running e.g.
+```
+docker run -v .:/outside secav-prover "Imp P P" --isabelle /outside/Proof.thy
+```
+
+#### Building a Docker image
+To build your own Docker image, simply run the following command inside the repository directory:
+```
+docker build -t secav-prover .
+```
+This will take a while, but you should eventually end up with a Docker image containing the prover.
+
+If you need to share your Docker image, you can export it using
+```
+docker save -o secav-prover-docker-image.tar secav-prover
+```
+This image can then be loaded using the instructions above (even if it is first compressed using e.g. gzip).
 
 ### Compilation
 The prover is implemented in Isabelle and Haskell.

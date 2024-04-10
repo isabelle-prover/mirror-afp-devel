@@ -49,7 +49,7 @@ createTest topdir (testDir, f) =
 performTest :: String -> String -> IO Result
 performTest testDir f = do
   createDirectoryIfMissing False testDir
-  copyFile "isabelle/SeCaV.thy" $ testDir <> "/SeCaV.thy"
+  copyFile "SeCaV.thy" $ testDir <> "/SeCaV.thy"
   copyFile "test/completeness/ROOT" $ testDir <> "/ROOT"
 
   let parse = sequentParser f

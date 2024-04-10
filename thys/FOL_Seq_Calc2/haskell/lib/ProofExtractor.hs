@@ -53,23 +53,27 @@ second (_ : xs) = first xs
 -- Expansion of the alpha, delta, and double negation elimination rules
 expandAlphaDelta :: Tree (([Tm], [Fm]), Rule) -> Int -> Tree ([Fm], SeCaVRule)
 expandAlphaDelta (Node ((terms, f : fs), rule) (Abs_fset (Set [current]))) n =
-  let (srule, applied) = case (rule, f) of
-                  (AlphaDis, Dis p q) -> (RAlphaDis, [p, q])
-                  (AlphaCon, Neg (Con p q)) -> (RAlphaCon, [Neg p, Neg q])
-                  (AlphaImp, Imp p q) -> (RAlphaImp, [Neg p, q])
-                  (NegNeg, Neg (Neg p)) -> (RNeg, [p])
-                  (DeltaUni, Uni p) -> (RDeltaUni, [SeCaV.sub Arith.zero_nat (SeCaV.Fun (generateNew terms) []) p])
-                  (DeltaExi, Neg (Exi p)) -> (RDeltaExi, [Neg (SeCaV.sub Arith.zero_nat (SeCaV.Fun (generateNew terms) []) p)])
-                  (AlphaDis, x) -> (RAlphaDis, [x])
-                  (AlphaCon, x) -> (RAlphaCon, [x])
-                  (AlphaImp, x) -> (RAlphaImp, [x])
-                  (DeltaUni, x) -> (RDeltaUni, [x])
-                  (DeltaExi, x) -> (RDeltaExi, [x])
-                  (NegNeg, x) -> (RNeg, [x])
+  let (srule, applied, newTerms) = case (rule, f) of
+                  (AlphaDis, Dis p q) -> (RAlphaDis, [p, q], [])
+                  (AlphaCon, Neg (Con p q)) -> (RAlphaCon, [Neg p, Neg q], [])
+                  (AlphaImp, Imp p q) -> (RAlphaImp, [Neg p, q], [])
+                  (NegNeg, Neg (Neg p)) -> (RNeg, [p], [])
+                  (DeltaUni, Uni p) ->
+                    let newFun = SeCaV.Fun (generateNew terms) [] in
+                      (RDeltaUni, [SeCaV.sub Arith.zero_nat newFun p], [newFun])
+                  (DeltaExi, Neg (Exi p)) ->
+                    let newFun = SeCaV.Fun (generateNew terms) [] in
+                      (RDeltaExi, [Neg (SeCaV.sub Arith.zero_nat newFun p)], [newFun])
+                  (AlphaDis, x) -> (RAlphaDis, [x], [])
+                  (AlphaCon, x) -> (RAlphaCon, [x], [])
+                  (AlphaImp, x) -> (RAlphaImp, [x], [])
+                  (DeltaUni, x) -> (RDeltaUni, [x], [])
+                  (DeltaExi, x) -> (RDeltaExi, [x], [])
+                  (NegNeg, x) -> (RNeg, [x], [])
                   _ -> error "expandAlphaDelta must only be called on Alpha, Neg or Delta rules." in
   let extRule = if n == 1
         then Node (applied ++ fs, RExt) (Abs_fset (Set [expandMultiRules current]))
-        else Node (applied ++ fs, RExt) (Abs_fset (Set [expandAlphaDelta (Node ((terms, fs ++ applied), rule) (Abs_fset (Set [current]))) (n - 1)])) in
+        else Node (applied ++ fs, RExt) (Abs_fset (Set [expandAlphaDelta (Node ((terms ++ newTerms, fs ++ applied), rule) (Abs_fset (Set [current]))) (n - 1)])) in
   Node (f : fs, srule) (Abs_fset (Set [extRule]))
 expandAlphaDelta (Node ((_, []), _) _) _ = error "The sequent must never be empty."
 expandAlphaDelta (Node ((_, _), _) (Abs_fset (Coset _))) _ = error "The proof tree must not include cosets."

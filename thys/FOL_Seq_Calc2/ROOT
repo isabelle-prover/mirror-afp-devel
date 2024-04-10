@@ -1,7 +1,5 @@
-chapter AFP
-
-session FOL_Seq_Calc2 = "HOL-Library" +
-  options [timeout = 300]
+session SeCaV_Prover = "HOL-Library" +
+  options [document = pdf, document_output = "output", timeout = 300]
   sessions
     Collections
     Abstract_Completeness
