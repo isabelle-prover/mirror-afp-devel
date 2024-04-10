@@ -94,7 +94,7 @@ lemma hash: "bo \<le> vimage2p h h (=)"
 
 lemma join: "m a b = Some ab \<longleftrightarrow> bo a ab \<and> bo b ab \<and> (\<forall>u. bo a u \<longrightarrow> bo b u \<longrightarrow> bo ab u)"
   unfolding bo_def
-  by (smt Option.bind_cong bind.bind_lunit commute idem merkle_interface.assoc merkle_interface_axioms)
+  by (smt (verit) Option.bind_cong bind.bind_lunit commute idem merkle_interface.assoc merkle_interface_axioms)
 
 text \<open>The equivalence closure of the blinding relation are the equivalence classes of the hash function (the kernel).\<close>
 

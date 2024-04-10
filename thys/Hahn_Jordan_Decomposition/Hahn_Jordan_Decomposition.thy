@@ -1684,7 +1684,7 @@ lemma seq_meas_rep_ex:
   shows "seq_meas_rep n \<in> pos_sets \<and> \<mu> (seq_meas_rep n) = seq_meas n"
 proof -
   have ex: "\<exists>A. A \<in> pos_sets \<and> seq_meas n = \<mu> A" using seq_meas_props
-    by (smt (z3) UNIV_I image_subset_iff mem_Collect_eq pos_img_def) 
+    by (smt (verit) UNIV_I image_subset_iff mem_Collect_eq pos_img_def) 
   let ?V = "SOME A. A\<in> pos_sets \<and> seq_meas n = \<mu> A"
   have vprop: "?V\<in> pos_sets \<and> seq_meas n = \<mu> ?V" using 
       someI_ex[of "\<lambda>A. A\<in> pos_sets \<and> seq_meas n = \<mu> A"] using ex by blast

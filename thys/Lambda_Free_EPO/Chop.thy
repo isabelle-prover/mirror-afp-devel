@@ -206,8 +206,9 @@ proof -
       using Cons.prems by auto
     define k where k_def:"k = (num_args (fun t) - Suc (length p))"
     have 2:"take k (args (fun t)) = take (num_args t - Suc (length (a # p))) (args t)"
-      by (smt k_def Cons.prems(4) args.elims args_Nil_iff_is_Hd butlast_snoc diff_Suc_eq_diff_pred 
-          diff_Suc_less length_Cons length_butlast length_greater_0_conv take_butlast tm.sel(4))
+      by (metis (no_types, lifting) Cons.prems(4) args.elims args_Nil_iff_is_Hd butlast_snoc
+          diff_Suc_eq_diff_pred diff_less k_def length_Cons length_butlast length_greater_0_conv
+          take_butlast tm.sel(4) zero_less_Suc)
     have k_def': "k = num_args t - Suc (Suc (length p))" using k_def
       by (metis args.simps(2) diff_Suc_Suc length_append_singleton local.Cons(5) tm.collapse(2))
     have 3:"args (fun t) @ [arg t] = args t"

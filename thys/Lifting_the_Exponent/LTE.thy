@@ -203,7 +203,7 @@ proof -
         by (simp add: ac_simps)
     qed
     ultimately have "[(\<Sum>t<p. y^(p - Suc t) * x^t) = p*y^(p-1)] (mod p^2)"
-      by (smt cong_add cong_iff_dvd_diff)
+      using cong_add_lcancel_0 cong_trans by blast
     moreover have "\<not> p^2 dvd p*y^(p-1)"
       using \<open>p > 2\<close> \<open>prime p\<close> \<open>\<not> p dvd y\<close> by (simp add: power2_eq_square prime_dvd_power_int_iff)
     ultimately show "\<not> int p^(Suc 1) dvd (\<Sum>t<p. y^(p - Suc t) * x^t)"
@@ -325,7 +325,7 @@ proof -
         moreover from \<open>4 dvd x - y\<close> have "[x - y = 0] (mod 4)"
           by (simp add: cong_0_iff)
         ultimately have "[x + y = 2] (mod 4)"
-          by (smt cong_add)
+          by (metis add.commute assms(3) cong_add_lcancel cong_iff_dvd_diff cong_trans mult_2)
         with \<open>k = 0\<close> show ?thesis by simp
       next
         case (Suc k')
@@ -333,7 +333,7 @@ proof -
           using \<open>odd x\<close> \<open>odd y\<close>
           by (auto simp add: power_mult power_Suc2 simp del: power_Suc intro: odd_square_mod_4)
         thus "[x^2^k + y^2^k = 2] (mod 4)"
-          by (smt cong_add)
+          using cong_add by fastforce
       qed
       thus "\<not> 2^Suc 1 dvd x^2^k + y^2^k"
         by (simp add: cong_dvd_iff)

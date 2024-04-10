@@ -521,8 +521,7 @@ proof -
   proof -
     text \<open>First we show that @{term \<open>I-S\<close>} is a quorum in the projected system. This is immediate from the definition of quorum and assumption 1.\<close>
     have "proj.quorum (I-S)" using 1
-      unfolding proj.quorum_def project_def 
-      by (auto; smt DiffI Diff_Compl Diff_Int_distrib Diff_eq Diff_eq_empty_iff Int_commute)
+      by (simp add: proj.quorum_def project_def) (metis DiffI IntE IntI empty_iff subsetI)
     text \<open>Then we show that U is also a quorum in the projected system:\<close>
     moreover have "proj.quorum U" using \<open>orig.quorum U\<close> 
       unfolding proj.quorum_def orig.quorum_def project_def 
@@ -605,7 +604,7 @@ This is the only interesting part of the proof.\<close>
   text \<open>Finally we have covered all the cases and get the final result:\<close>
   ultimately
   show ?thesis
-    by (smt Int_Un_distrib Int_commute assms(3,4) sup_bot.right_neutral) 
+    by (smt (verit, best) Int_Un_distrib Int_commute assms(3) assms(4) sup_eq_bot_iff)
 qed
 
 end

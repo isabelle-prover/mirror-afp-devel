@@ -177,7 +177,7 @@ next
     case True
     from Arg_bounded[of x] have "- pi < Arg x" by auto
     also have "\<dots> \<le> Arg x / real n" using n1 True
-      by (smt (z3) div_by_1 divide_minus_left frac_le)
+      by (smt (verit) div_by_1 divide_minus_left frac_le)
     finally have one: "- pi < Arg x / real n" .
     have "Arg x / real n \<le> 0" using True n1 
       by (smt (verit) divide_less_0_iff)

@@ -90,9 +90,9 @@ next
   fix xa
   assume "xa \<in> H \<times> substs (V - {x}) H"
   then show "g (f xa) = xa" using assms
-    by (smt (z3) Diff_empty Diff_insert0 Diff_insert_absorb SigmaE case_prod_conv 
-            fun_upd_None_restrict fun_upd_same fun_upd_upd mk_disjoint_insert option.sel 
-            restrict_map_dom subst_dom)
+    by (smt (verit, ccfv_threshold) Diff_insert_absorb SigmaE case_prod_conv domI
+        fun_upd_None_restrict fun_upd_same fun_upd_upd mk_disjoint_insert option.sel restrict_map_dom
+        subst_dom)
 next
   fix y
   assume "y \<in> substs V H"

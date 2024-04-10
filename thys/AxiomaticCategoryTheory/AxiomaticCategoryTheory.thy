@@ -350,8 +350,8 @@ end
 
    lemma A4aRedundant: "dom(x\<cdot>y) \<cong> dom((dom x)\<cdot>y)" using A1 A2a A3a A5 by metis
    lemma A4bRedundant: "cod(x\<cdot>y) \<cong> cod(x\<cdot>(cod y))" using A1 A2b A3b A5 by (smt (verit))
-   lemma A2aRedundant: "cod(dom x) \<cong> dom x" using A1 A3a A3b A4a A4b by smt
-   lemma A2bRedundant: "dom(cod y) \<cong> cod y" using  A1 A3a A3b A4a A4b by smt
+   lemma A2aRedundant: "cod(dom x) \<cong> dom x" using A1 A3a A3b A4a A4b by (smt (verit))
+   lemma A2bRedundant: "dom(cod y) \<cong> cod y" using  A1 A3a A3b A4a A4b by (smt (verit))
   end
 
 
@@ -605,7 +605,7 @@ subsection\<open>AxiomsSet8Strict (algebraic reading)\<close>
    lemma C\<^sub>0 : "E(x\<cdot>y) \<^bold>\<rightarrow> (E x \<^bold>\<and> E y)" using S\<^sub>i by blast
    lemma C\<^sub>1 : "\<^bold>\<forall>\<gamma> \<beta> \<alpha>. (E(\<gamma>\<cdot>\<beta>) \<^bold>\<and> E((\<gamma>\<cdot>\<beta>)\<cdot>\<alpha>)) \<^bold>\<rightarrow> E(\<beta>\<cdot>\<alpha>)" by (metis A\<^sub>i S\<^sub>i)
    lemma C\<^sub>1': "\<^bold>\<forall>\<gamma> \<beta> \<alpha>. (E(\<beta>\<cdot>\<alpha>) \<^bold>\<and> E(\<gamma>\<cdot>(\<beta>\<cdot>\<alpha>))) \<^bold>\<rightarrow> E(\<gamma>\<cdot>\<beta>)" by (metis A\<^sub>i S\<^sub>i)
-   lemma C\<^sub>2 : "\<^bold>\<forall>\<gamma> \<beta> \<alpha>. (E(\<gamma>\<cdot>\<beta>) \<^bold>\<and> E(\<beta>\<cdot>\<alpha>)) \<^bold>\<rightarrow> (E((\<gamma>\<cdot>\<beta>)\<cdot>\<alpha>) \<^bold>\<and> E(\<gamma>\<cdot>(\<beta>\<cdot>\<alpha>)) \<^bold>\<and> ((\<gamma>\<cdot>\<beta>)\<cdot>\<alpha>) = (\<gamma>\<cdot>(\<beta>\<cdot>\<alpha>)))" by (smt A\<^sub>i C\<^sub>i E\<^sub>i S\<^sub>i)
+   lemma C\<^sub>2 : "\<^bold>\<forall>\<gamma> \<beta> \<alpha>. (E(\<gamma>\<cdot>\<beta>) \<^bold>\<and> E(\<beta>\<cdot>\<alpha>)) \<^bold>\<rightarrow> (E((\<gamma>\<cdot>\<beta>)\<cdot>\<alpha>) \<^bold>\<and> E(\<gamma>\<cdot>(\<beta>\<cdot>\<alpha>)) \<^bold>\<and> ((\<gamma>\<cdot>\<beta>)\<cdot>\<alpha>) = (\<gamma>\<cdot>(\<beta>\<cdot>\<alpha>)))" by (smt (verit) A\<^sub>i C\<^sub>i E\<^sub>i S\<^sub>i)
    lemma C\<^sub>3 : "\<^bold>\<forall>\<gamma>. \<^bold>\<exists>eD. IDMcL(eD) \<^bold>\<and> E(\<gamma>\<cdot>eD)" using D\<^sub>i by force
    lemma C\<^sub>4 : "\<^bold>\<forall>\<gamma>. \<^bold>\<exists>eR. IDMcL(eR) \<^bold>\<and> E(eR\<cdot>\<gamma>)" using C\<^sub>i by force
   end
