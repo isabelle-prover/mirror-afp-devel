@@ -250,7 +250,7 @@ proof (rule, goal_cases)
         and CONSUME: "consume (Trans s a ou s') vl vl'"
 
       have ph': "phase s' cid \<ge> subPH"
-        by (smt STET ph phase_increases)
+        by (smt (verit) STET ph phase_increases)
 
       have pid': "PID \<in>\<in> paperIDs s' cid" using pid STET
         by (metis paperIDs_mono)

@@ -478,7 +478,7 @@ proof -
     proof (cases x3)
       case (uuReview x31 x32 x33 x34 x35 x36)
       with UUact * show ?thesis
-        by (clarsimp; smt list.sel(1) nth_list_update nth_list_update_neq)
+        by (clarsimp; smt (verit) list.sel(1) nth_list_update nth_list_update_neq)
     qed auto
   qed auto
 qed

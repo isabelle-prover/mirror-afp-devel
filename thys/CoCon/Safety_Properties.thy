@@ -1231,7 +1231,7 @@ next
   show ?thesis proof safe
     {fix ph assume "ph \<in>\<in> map (\<lambda> trn. phase (srcOf trn) cid) tr"
      then obtain i where i: "i < length tr" and phe: "ph = phase (srcOf(tr!i)) cid"
-     by (smt comp_apply in_set_conv_nth length_map nth_map)
+     by (smt (verit) comp_apply in_set_conv_nth length_map nth_map)
      have "phase (srcOf (hd tr)) cid \<le> ph"
      unfolding phe using v l i phase_increases_trace_srcOf_hd by blast
      moreover have "ph \<le> phase (tgtOf (last tr)) cid"

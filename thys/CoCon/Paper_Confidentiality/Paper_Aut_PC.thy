@@ -251,7 +251,7 @@ proof(rule,goal_cases)
         and CONSUME: "consume (Trans s a ou s') vl vl'"
 
       have ph': "phase s' cid \<ge> subPH"
-        by (smt STEP ph phase_increases)
+        by (smt (verit) STEP ph phase_increases)
 
       have pid': "PID \<in>\<in> paperIDs s' cid" using pid STEP
         by (metis paperIDs_mono)

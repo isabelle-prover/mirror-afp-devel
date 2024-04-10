@@ -1083,7 +1083,7 @@ using assms apply(cases a)
 lemma invarNT_K2exit: "invarNT (\<lambda> s. K2exit cid s v)"
 unfolding invarNT_def apply (safe dest!: reachNT_reach)
 unfolding K2exit_def
-by (smt Collect_cong le_trans paperIDs_mono phase_increases revPH_isPC_constant revPH_pref_constant)
+by (smt (verit) Collect_cong le_trans paperIDs_mono phase_increases revPH_isPC_constant revPH_pref_constant)
 
 
 (* An even more interesting invariant than the one in Review_Confidentiality/RAut:

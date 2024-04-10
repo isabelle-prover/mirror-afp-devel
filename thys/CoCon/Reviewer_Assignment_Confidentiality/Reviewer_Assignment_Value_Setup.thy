@@ -462,7 +462,7 @@ and "step s a = (ou,s')"
 shows "eqExcPID2 s s'"
 using assms unfolding eqExcPID2_def eeqExcPID_def eqExcRLR_def
 apply (auto simp: c_defs)
-unfolding List.insert_def by (smt filter.simps(2) isRevRoleFor.simps(1))
+unfolding List.insert_def by (smt (verit) filter.simps(2) isRevRoleFor.simps(1))
 
 
 subsection \<open>Value Setup\<close>

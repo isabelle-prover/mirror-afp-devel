@@ -221,7 +221,7 @@ proof-
         subgoal by auto
         subgoal by auto
         subgoal by auto
-        subgoal by clarsimp (smt Suc_le_lessD eqExcRLR_imp filter_cong isRev_pref_notConflict_isPC not_less_eq)
+        subgoal by clarsimp (smt (verit) Suc_le_lessD eqExcRLR_imp filter_cong isRev_pref_notConflict_isPC not_less_eq)
         subgoal by clarsimp (metis Suc_le_lessD eqExcPID2_imp' not_less_eq ss1) .
     done
 qed
@@ -662,7 +662,7 @@ shows "pref s' uid pid = pref s uid pid"
 lemma invarNT_K2exit: "invarNT (\<lambda> s. K2exit cid s v)"
 unfolding invarNT_def apply (safe dest!: reachNT_reach)
 unfolding K2exit_def
-by (smt Collect_cong le_trans paperIDs_mono phase_increases revPH_isPC_constant revPH_pref_constant)
+by (smt (verit) Collect_cong le_trans paperIDs_mono phase_increases revPH_isPC_constant revPH_pref_constant)
 
 (* An even more interesting invariant than the one in Review_Confidentiality/RAut:
 it requires the binary version noVal2  *)

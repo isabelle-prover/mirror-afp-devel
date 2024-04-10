@@ -151,14 +151,14 @@ proof-
       apply(intro nth_equalityI)
       subgoal by simp
       subgoal for i apply (cases "i \<noteq> N")
-        subgoal by simp (smt eqExcPID_N2_imp3 getNthReview_def ss1)
+        subgoal by simp (smt (verit) eqExcPID_N2_imp3 getNthReview_def ss1)
         by (auto split: list.splits)
       subgoal for i ia
         apply (cases "pid = PID")
         subgoal
           apply(cases "reviewsPaper (paper s' PID) ! i")
           subgoal apply simp
-            by (smt decs_exit eqExcPID_N2_imp3 getNthReview_def list.simps(4) nth_Cons_0 ss1)
+            by (smt (verit) decs_exit eqExcPID_N2_imp3 getNthReview_def list.simps(4) nth_Cons_0 ss1)
           subgoal apply(cases "reviewsPaper (paper s1' PID) ! i ")
             subgoal apply simp
               by (metis (no_types, lifting) decs_exit eqExcD2 eqExcNth2_def neq_Nil_conv)
