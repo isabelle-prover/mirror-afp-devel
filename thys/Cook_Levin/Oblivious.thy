@@ -585,9 +585,7 @@ proof (rule traceI)
       using that by (simp add: nth_append)
     then have "?M ! i = ?C3 ! (i - (length M1 + 1))"
         if "i \<ge> length M1 + 1" and "i < length M1 + length M2 + 1" for i
-      using that
-      by (smt One_nat_def \<open>length (?C1 @ ?C2) = length M1 + 1\<close>
-        add.right_neutral add_Suc_right append.assoc length_append not_le nth_append plus_nat.simps(2) length_relocate)
+      using that by (simp add: length_relocate less_diff_conv2 nth_append)
     with 3 4 have "?M ! (fst (execute M2 (0, tps1) t <+=> (length M1 + 1))) =
         ?C3 ! ((fst (execute M2 (0, tps1) t <+=> (length M1 + 1))) - (length M1 + 1))"
       by simp
@@ -617,7 +615,7 @@ proof (rule traceI)
   then have exec_3: "execute ?M (0, tps0) t = execute M2 (0, tps1) (t - (length es1 + 1)) <+=> (length M1 + 1)"
       if "t \<ge> length es1 + 1 " and "t \<le> length es1 + length es2 + 1" for t
     using that
-    by (smt Nat.add_diff_assoc2 Nat.diff_diff_right add_diff_cancel_left' add_diff_cancel_right' le_Suc_ex le_add2)
+    by (smt (verit) Nat.add_diff_assoc2 Nat.diff_diff_right add_diff_cancel_left' add_diff_cancel_right' le_Suc_ex le_add2)
 
   have exec_4: "execute ?M (0, tps0) (length es1 + length es2 + 2) = (0, tps2)"
   proof -
@@ -1078,7 +1076,7 @@ proof (rule traces_sequential[where ?tps2.0="tps[0 := tps ! 0 |#=| 0]"])
   show "traces (tm_right 0) (tps[0 := tps ! 0 |#=| 0])
      [(1, tps :#: 1)] (tps[0 := tps ! 0 |#=| 1])"
     using assms tm_right_0_traces len
-    by (smt One_nat_def add.commute fst_conv length_list_update list_update_overwrite neq0_conv
+    by (smt (verit) One_nat_def add.commute fst_conv length_list_update list_update_overwrite neq0_conv
       nth_list_update_eq nth_list_update_neq plus_1_eq_Suc snd_conv zero_less_one)
 qed
 
@@ -1105,7 +1103,7 @@ proof (rule traces_sequential[where ?tps2.0="tps[1 := tps ! 1 |#=| 0]"])
   show "traces (tm_right 1) (tps[1 := tps ! 1 |#=| 0])
      [(tps :#: 0, 1)] (tps[1 := tps ! 1 |#=| 1])"
     using assms tm_right_1_traces
-    by (smt One_nat_def add.commute fst_conv length_list_update list_update_overwrite neq0_conv
+    by (smt (verit) One_nat_def add.commute fst_conv length_list_update list_update_overwrite neq0_conv
       nth_list_update_eq nth_list_update_neq plus_1_eq_Suc snd_conv zero_less_one)
 qed
 

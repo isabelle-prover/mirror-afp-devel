@@ -2223,7 +2223,7 @@ proof -
       map (\<lambda>j. case snd (xs ! j) of None \<Rightarrow> 0 | Some d \<Rightarrow> if i = exec (t + d) <#> j then 1 else 0) [0..<k] @
       [if i < t then 1 else 0,
        if i = 0 then 1 else 0])"
-    using assms(2) by (smt atLeastLessThan_iff map_eq_conv set_upt)
+    using assms(2) by (smt (verit) atLeastLessThan_iff map_eq_conv set_upt)
   also have "... = enc
      (map (\<lambda>j. (exec (t + fst (xs' ! j)) <:> j) i) [0..<k] @
       map (\<lambda>j. case snd (xs' ! j) of None \<Rightarrow> 0 | Some d \<Rightarrow> if i = exec (t + d) <#> j then 1 else 0) [0..<k] @
@@ -5098,7 +5098,7 @@ proof (rule semI[of "2 * k + 3"])
           using * rs_def threeplus2k_2[where ?a="(rs ! 0, Stay)"] 4 diff_add_inverse by auto
         also have "... = tps' ! j"
           using 4 assms(2,8) False act_Stay len rs_def that tpsL_mvs'
-          by (smt (z3) add.commute le_add_diff_inverse2)
+          by (smt (verit) add.commute le_add_diff_inverse2)
         finally show ?thesis .
       qed
     next
@@ -5133,9 +5133,7 @@ proof -
       (0, tpsL t xs (fmt n - tt + 1) 1 (\<lambda>j. sim_move t ! j) (\<lambda>j. sim_write t ! j))"
     using assms execute_tmL67_1[where ?tt="tt - 1"] by simp
   have **: "fmt n - tt + 1 = exec t <#> jj"
-    using assms(1,6,7) exec_pos_less_TT
-    by (smt (z3) Nat.add_diff_assoc2 Suc_diff_Suc add.right_neutral add_Suc_right add_diff_cancel_right'
-      diff_Suc_Suc diff_less le_add_diff_inverse2 nat_less_le plus_1_eq_Suc zero_less_Suc)
+    using assms(1,6,7) exec_pos_less_TT Suc_diff_le less_eq_Suc_le by auto
   have "execute (tmL67 jj) (0, tps) tt = exe (tmL67 jj) (execute (tmL67 jj) (0, tps) (tt - 1))"
      using `tt > 0` exe_lt_length by (metis One_nat_def Suc_diff_Suc diff_zero execute.simps(2))
   also have "... = sem (cmdL7 jj) (execute (tmL67 jj) (0, tps) (tt - 1))"
@@ -5447,7 +5445,7 @@ proof (rule semI[of "2 * k + 3"])
           using * rs_def threeplus2k_2[where ?a="(rs ! 0, Stay)"] 4 diff_add_inverse by auto
         also have "... = tps' ! j"
           using 4 assms(2,7) False act_Stay len rs_def that tpsL_mvs'
-          by (smt (z3) add.commute le_add_diff_inverse2)
+          by (smt (verit) add.commute le_add_diff_inverse2)
         finally show ?thesis .
       qed
     next
@@ -5479,7 +5477,7 @@ proof -
   let ?tps = "tpsL t ?xs ?i 1 (\<lambda>j. if j = jj then 3 else sim_move t ! j) (\<lambda>j. sim_write t ! j)"
   have 1: "Suc ?i = exec t <#> jj"
     using assms exec_pos_less_TT
-    by (smt (z3) Suc_diff_le diff_diff_cancel diff_is_0_eq nat_less_le neq0_conv not_less_eq zero_less_diff)
+    by (smt (verit) Suc_diff_le diff_diff_cancel diff_is_0_eq nat_less_le neq0_conv not_less_eq zero_less_diff)
   have 2: "?xs ! jj = (1, None)"
     by (simp add: assms(1) assms(3))
   have 3: "length ?xs = k"
@@ -5595,7 +5593,7 @@ proof (rule semI[of "2 * k + 3"])
       then have "act (cmdL7 jj (read tps) [!] j) (tps ! j) = act (rs ! j, Stay) (tps ! j)"
         using * rs_def threeplus2k_2[where ?a="(rs ! 0, Stay)"] 4 diff_add_inverse by auto
       also have "... = tps' ! j"
-        using 4 assms(2,7) act_Stay len rs_def that tpsL_mvs' by (smt (z3) add.commute le_add_diff_inverse2)
+        using 4 assms(2,7) act_Stay len rs_def that tpsL_mvs' by (smt (verit) add.commute le_add_diff_inverse2)
       finally show ?thesis .
     next
       case 5
@@ -6219,7 +6217,7 @@ proof (rule semI[of "2 * k + 3"])
           using * rs_def threeplus2k_2[where ?a="(rs ! 0, Stay)"] 4 diff_add_inverse by auto
         also have "... = tps' ! j"
           using 4 assms(2,7) False act_Stay len rs_def that tpsL_mvs'
-          by (smt (z3) add.commute le_add_diff_inverse2)
+          by (smt (verit) add.commute le_add_diff_inverse2)
         finally show ?thesis .
       qed
     next
@@ -6345,7 +6343,7 @@ proof (rule semI[of "2 * k + 3"])
           using * rs_def threeplus2k_2[where ?a="(rs ! 0, Stay)"] 4 diff_add_inverse by auto
         also have "... = tps' ! j"
           using 4 assms(2,7) False act_Stay len rs_def that tpsL_mvs'
-          by (smt (z3) add.commute le_add_diff_inverse2)
+          by (smt (verit) add.commute le_add_diff_inverse2)
         finally show ?thesis .
       qed
     next
@@ -6823,7 +6821,7 @@ next
   have "tmL49_upt (Suc j) = tmL49_upt j ;; tmL49 j"
     by simp
   moreover have "concat (replicate (Suc j) esL49) = concat (replicate j esL49) @ esL49"
-    by (smt (z3) append.assoc append_replicate_commute append_same_eq concat.simps(2) concat_append
+    by (smt (verit) append.assoc append_replicate_commute append_same_eq concat.simps(2) concat_append
       replicate.simps(2))
   moreover have "traces (tmL49_upt j ;; tmL49 j) (tpsL4 t) (concat (replicate j esL49) @ esL49) tps'"
   proof (rule traces_sequential)
@@ -6930,7 +6928,7 @@ proof -
       map (\<lambda>j. case Some 1 of None \<Rightarrow> 0 | Some d \<Rightarrow> if t = exec (t + d) <#> j then 1 else 0) [0..<k] @
       [0,
        if t = 0 then 1 else 0])"
-    using xs1 by (smt (z3) atLeastLessThan_iff map_eq_conv set_upt)
+    using xs1 by (smt (verit) atLeastLessThan_iff map_eq_conv set_upt)
   finally have 1: "zip_cont t xs1 t = enc
      (map (\<lambda>j. (exec (Suc t) <:> j) t) [0..<k] @
       map (\<lambda>j. if t = exec (Suc t) <#> j then 1 else 0) [0..<k] @
@@ -6961,7 +6959,7 @@ proof -
        (is "_ = enc ?zs")
     by simp
   moreover have "?zs = ?ys [2 * k := 1]"
-    by (smt (z3) Suc_1 append_assoc diff_zero length_append length_map length_upt list_update_length mult_Suc nat_mult_1)
+    by (smt (verit) Suc_1 append_assoc diff_zero length_append length_map length_upt list_update_length mult_Suc nat_mult_1)
   moreover have "?ys = dec ?n"
     using dec_zip_cont assms by simp
   ultimately show ?thesis
@@ -6999,7 +6997,7 @@ proof
        map (\<lambda>j. case Some 1 of None \<Rightarrow> 0 | Some d \<Rightarrow> if i = exec (t + d) <#> j then 1 else 0) [0..<k] @
        [if i < t then 1 else 0,
         if i = 0 then 1 else 0])"
-      using xs1 by (smt (z3) atLeastLessThan_iff map_eq_conv set_upt)
+      using xs1 by (smt (verit) atLeastLessThan_iff map_eq_conv set_upt)
     finally have 1: "zip_cont t xs1 i = enc
       (map (\<lambda>j. (exec (Suc t) <:> j) i) [0..<k] @
        map (\<lambda>j. if i = exec (Suc t) <#> j then 1 else 0) [0..<k] @

@@ -532,7 +532,7 @@ lemma tm7:
 proof (tform tps: assms(1) tps0 tps6_def tps7_def jk time: assms(2))
   show "tps7 t = (tps6 t)[j + 3 := (\<lfloor>0\<rfloor>\<^sub>N, 1)]"
     using tps6_def tps7_def tps0 jk
-    by (smt (z3) add_left_cancel list_update_id list_update_overwrite list_update_swap num.simps(8)
+    by (smt (verit) add_left_cancel list_update_id list_update_overwrite list_update_swap num.simps(8)
       numeral_eq_iff one_eq_numeral_iff semiring_norm(84))
 qed
 
@@ -566,7 +566,7 @@ lemma tm8:
 proof (tform tps: assms(1) tps0 tps7_def tps8_def jk time: assms(2))
   show "tps8 t = (tps7 t)[j + 4 := (\<lfloor>0\<rfloor>\<^sub>N, 1)]"
     using tps7_def tps8_def tps0 jk
-    by (smt (z3) add_left_imp_eq list_update_id list_update_overwrite list_update_swap numeral_eq_iff
+    by (smt (verit) add_left_imp_eq list_update_id list_update_overwrite list_update_swap numeral_eq_iff
       numeral_eq_one_iff semiring_norm(85) semiring_norm(87))
 qed
 
@@ -601,7 +601,7 @@ proof (tform)
       using tpsL_def jk by simp
     then show ?thesis
       using nltape'_tape_read that tapes_at_read' tpsL_def jk
-      by (smt (z3) Suc_eq_plus1 leD length_list_update less_add_same_cancel1 less_trans_Suc zero_less_numeral)
+      by (smt (verit) Suc_eq_plus1 leD length_list_update less_add_same_cancel1 less_trans_Suc zero_less_numeral)
   qed
   show "\<not> read (tpsL (length clause)) ! (j + 1) \<noteq> \<box>"
   proof -
@@ -609,7 +609,7 @@ proof (tform)
       using tpsL_def jk by simp
     then show ?thesis
       using nltape'_tape_read tapes_at_read' tpsL_def jk
-      by (smt (z3) Suc_eq_plus1 length_list_update less_add_same_cancel1 less_or_eq_imp_le less_trans_Suc zero_less_numeral)
+      by (smt (verit) Suc_eq_plus1 length_list_update less_add_same_cancel1 less_or_eq_imp_le less_trans_Suc zero_less_numeral)
   qed
   show "length clause * (71 + 32 * (nllength \<sigma>)\<^sup>2 + 2) + 1 \<le> ttt"
     using assms(1) by simp
@@ -1873,7 +1873,7 @@ lemma tm2 [transforms_intros]:
 proof (tform tps: assms tps0 jk tps2_def tps1_def)
   show "tps2 = tps1[j + 6 := tps1 ! (j + 6) |:=| 0]"
     using tps2_def tps1_def jk onesie_write
-    by (smt (z3) list_update_beyond list_update_overwrite nth_list_update_eq verit_comp_simplify1(3))
+    by (smt (verit) list_update_beyond list_update_overwrite nth_list_update_eq verit_comp_simplify1(3))
 qed
 
 definition "tps3 \<equiv> tps0
@@ -1912,7 +1912,8 @@ proof (tform tps: tps3_def jk tps0 tps4_def)
   show "tps4 = tps3[j + 5 := nltape ([] @ [0])]"
     unfolding tps3_def tps4_def
     using jk tps0
-    by (smt (z3) add_left_imp_eq list_update_overwrite list_update_swap num.simps(8) numeral_eq_iff self_append_conv2)
+    by (smt (verit, ccfv_threshold) add_Suc add_Suc_right append.left_neutral eval_nat_numeral(3)
+        list_update_overwrite list_update_swap n_not_Suc_n nlcontents_Nil numeral_Bit0)
   show "ttt = 8 + (7 + nllength [] - Suc 0 + 2 * nlength 0)"
     using assms by simp
 qed
@@ -1950,7 +1951,7 @@ proof -
       next
         case False
         then show ?thesis
-          unfolding tps4_def tpsL_def using * tps0 jk that by (smt (z3) nth_list_update_neq)
+          unfolding tps4_def tpsL_def using * tps0 jk that by (smt (verit) nth_list_update_neq)
       qed
     qed
   qed
@@ -2599,7 +2600,7 @@ lemma tm4' [transforms_intros]:
 proof -
   have "nlength (2 * ns ! t + (if t < kk then 1 else 0)) \<le> Suc (nlength (ns ! t))"
     using nlength_0_simp nlength_even_le nlength_le_n nlength_times2plus1
-    by (smt (z3) add.right_neutral le_Suc_eq mult_0_right neq0_conv)
+    by (smt (verit) add.right_neutral le_Suc_eq mult_0_right neq0_conv)
   then have "31 + 6 * nlength (ns ! t) +
       2 * nlength (2 * ns ! t + (if t < kk then 1 else 0)) \<le> ttt"
     using assms(2) by simp
@@ -2730,7 +2731,7 @@ qed
 lemma tpsL7_eq_tpsL: "tpsL7 t = tpsL (Suc t)"
   unfolding tpsL7_def tpsL_def
   using jk tps0
-  by (smt (z3) Suc_eq_plus1 add_2_eq_Suc' add_cancel_left_right add_left_cancel list_update_id list_update_swap
+  by (smt (verit) Suc_eq_plus1 add_2_eq_Suc' add_cancel_left_right add_left_cancel list_update_id list_update_swap
    num.simps(8) numeral_eq_iff numeral_eq_one_iff semiring_norm(86) zero_neq_numeral)
 
 lemma tm7'' [transforms_intros]:
@@ -3321,7 +3322,7 @@ proof -
     also have "... = ?l^2*3*H^3 + H^4"
       by simp
     also have "... = (?m^2 + 2 * ?m + 1)*3*H^3 + H^4"
-      by (smt (z3) add.commute add_Suc mult_2 nat_1_add_1 one_power2 plus_1_eq_Suc power2_sum)
+      by (smt (verit) add.commute add_Suc mult_2 nat_1_add_1 one_power2 plus_1_eq_Suc power2_sum)
     also have "... \<le> (?m^2 + 2 * ?m^2 + 1)*3*H^3 + H^4"
       using linear_le_pow by simp
     also have "... = (3*?m^2 + 1)*3*H^3 + H^4"

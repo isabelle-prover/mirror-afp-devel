@@ -462,7 +462,7 @@ proof (tform time: assms)
     by (metis (no_types, lifting) fst_conv length_list_update list_update_length nth_append_length)
   show "clean_tape (tps4 ! k1)"
     using tps4_def length_tps1a clean_tape_def
-    by (smt (z3) Suc_eq_plus1 add.commute add_cancel_right_right
+    by (smt (verit) Suc_eq_plus1 add.commute add_cancel_right_right
       fst_conv length_list_update nat.distinct(1) nat_1_add_1 nth_append_length numeral_3_eq_3)
 qed
 

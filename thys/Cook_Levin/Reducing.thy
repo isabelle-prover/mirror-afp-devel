@@ -625,7 +625,7 @@ proof -
     using assms Psi_def satisfies_def by simp
   moreover have "\<alpha> \<Turnstile> map (\<lambda>s. [Neg s]) (drop 3 vs)"
     using assms Psi_def satisfies_def
-    by (smt (z3) Cons_nth_drop_Suc One_nat_def Suc_1 Un_iff insert_iff list.set(2) list.simps(9)
+    by (smt (verit) Cons_nth_drop_Suc One_nat_def Suc_1 Un_iff insert_iff list.set(2) list.simps(9)
       numeral_3_eq_3 set_append)
   ultimately show ?thesis
     using Upsilon_def satisfies_def by auto
@@ -1053,7 +1053,7 @@ proof -
     using assms execute_num_tapes start_config_length tm_M by auto
   then have 3: "read (snd cfg) = [cfg <.> 0, cfg <.> 1]"
     using read_def
-    by (smt (z3) Cons_eq_map_conv Suc_1 length_0_conv length_Suc_conv list.simps(8)
+    by (smt (verit) Cons_eq_map_conv Suc_1 length_0_conv length_Suc_conv list.simps(8)
       nth_Cons_0 nth_Cons_Suc numeral_1_eq_Suc_0 numeral_One)
 
   have *: "(?cfg <:> 1) ?i = (M ! (fst cfg)) [cfg <.> 0, cfg <.> 1] [.] 1"
@@ -1115,7 +1115,7 @@ proof -
   then have "((exc zs t) <:> 1) ?i = (M ! (fst cfg)) [cfg <.> 0, cfg <.> 1] [.] 1"
     using Suc_leI assms by simp
   moreover have "?i = exc zs t <#> 1"
-    using assms(1,2,4) oblivious_headpos_1 prev_eq prev_less by (smt (z3))
+    using assms(1,2,4) oblivious_headpos_1 prev_eq prev_less by (smt (verit))
   ultimately show ?thesis
     by simp
 qed
@@ -1434,7 +1434,7 @@ proof -
     case 2
     then have "ysymbols u ! i = \<langle>x; u\<rangle> ! (i - 1)"
       using ysymbols_def
-      by (smt (z3) One_nat_def Suc_less_eq Suc_pred le_imp_less_Suc neq0_conv nth_Cons' nth_append)
+      by (smt (verit, del_insts) Nat.add_diff_assoc diff_is_0_eq gr_zeroI le_add_diff_inverse le_add_diff_inverse2 less_numeral_extra(1) nat_le_linear nth_Cons_pos nth_append zero_less_diff)
     then show ?thesis
       using init 2 by simp
   next
@@ -1502,9 +1502,10 @@ lemma ysymbols_at_2n2: "ysymbols u ! (2*n+2) = 3"
 proof -
   let ?i = "2 * n + 2"
   have "ysymbols u ! ?i = \<langle>x; u\<rangle> ! (2*n+1)"
-    using ysymbols_def
-    by (smt (z3) One_nat_def add.commute add.right_neutral add_2_eq_Suc' add_Suc_right le_add2
-      le_imp_less_Suc length_pair nth_Cons_Suc nth_append)
+    by (simp add: ysymbols_def)
+      (smt (verit, del_insts) add.right_neutral add_2_eq_Suc' length_greater_0_conv length_pair
+        lessI less_add_same_cancel1 less_trans_Suc list.size(3) mult_0_right mult_pos_pos nth_append
+        zero_less_numeral)
   also have "... = (if \<langle>x, u\<rangle> ! (2*n+1) then 3 else 2)"
     using length_pair by simp
   also have "... = 3"
@@ -1704,7 +1705,7 @@ proof -
   have "||exc ?y t|| = 2"
     using start_config_length execute_num_tapes tm_M by simp
   then have "snd (exc ?y t) = [exc ?y t <!> 0, exc ?y t <!> 1]"
-    by auto (smt (z3) Suc_length_conv length_0_conv nth_Cons_0 nth_Cons_Suc numeral_2_eq_2)
+    by auto (smt (verit) Suc_length_conv length_0_conv nth_Cons_0 nth_Cons_Suc numeral_2_eq_2)
   then have *: "read (snd (exc ?y t)) = [exc ?y t <.> 0, exc ?y t <.> 1]"
     using read_def by (metis (no_types, lifting) list.simps(8) list.simps(9))
 

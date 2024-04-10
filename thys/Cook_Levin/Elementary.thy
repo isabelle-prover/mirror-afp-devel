@@ -132,7 +132,7 @@ proof
   next
     case 3
     then show ?thesis
-      by (smt (z3) Suc_diff_Suc add_diff_inverse_nat contents_def diff_Suc_1 diff_commute leD less_one
+      by (smt (verit) Suc_diff_Suc add_diff_inverse_nat contents_def diff_Suc_1 diff_commute leD less_one
         less_or_eq_imp_le nat_add_left_cancel_le not_less_eq nth_append nth_replicate)
   next
     case 4
@@ -239,7 +239,7 @@ lemma config_update_fwd_0: "config_update_fwd cfg j 0 = cfg"
 lemma config_update_fwd_additive:
   "config_update_fwd (config_update_fwd cfg j d1) j d2 = (config_update_fwd cfg j (d1 + d2))"
   using config_update_fwd_def
-  by (smt add.commute add.left_commute fst_conv le_less_linear list_update_beyond list_update_overwrite nth_list_update_eq sndI)
+  by (smt (verit) add.commute add.left_commute fst_conv le_less_linear list_update_beyond list_update_overwrite nth_list_update_eq sndI)
 
 
 subsection \<open>Moving tape heads\<close>
@@ -276,7 +276,7 @@ lemma tape_list_eq:
     and "\<And>i. i < length tps \<Longrightarrow> i \<noteq> j \<Longrightarrow> tps' ! i = tps ! i"
     and "tps' ! j = x"
   shows "tps' = tps[j := x]"
-  using assms by (smt length_list_update list_update_beyond not_le nth_equalityI nth_list_update)
+  using assms by (smt (verit) length_list_update list_update_beyond not_le nth_equalityI nth_list_update)
 
 lemma sem_cmd_left:
   assumes "j < length tps"
@@ -740,7 +740,7 @@ proof (rule nth_equalityI)
           then have "?lhs ! j = (ltransplant (tps ! j1) (tps ! j2) f t) |:=| (f (tps' :.: j1)) |-| 1"
             using assms by simp
           then have "?lhs ! j = (ltransplant (tps ! j1) (tps ! j2) f (Suc t))"
-            using ltransplant_def assms ltransplant_upd by (smt (z3) j1_neq_j2 nth_list_update_eq nth_list_update_neq)
+            using ltransplant_def assms ltransplant_upd by (smt (verit) j1_neq_j2 nth_list_update_eq nth_list_update_neq)
           moreover have "?rhs ! j = ltransplant (tps ! j1) (tps ! j2) f (Suc t)"
             using assms(6) that j by simp
           ultimately show ?thesis
@@ -777,12 +777,12 @@ next
       using assms by simp
     show "(0, tps[j1 := tps ! j1 |+| t, j2 := transplant (tps ! j1) (tps ! j2) f t]) <.> j1 \<notin> H"
       using assms transplant_def rneigh_def \<open>t < n\<close>
-      by (smt fst_conv length_list_update less_not_refl2 nth_list_update_eq nth_list_update_neq snd_conv)
+      by (smt (verit) fst_conv length_list_update less_not_refl2 nth_list_update_eq nth_list_update_neq snd_conv)
   qed
   finally show ?case
     using assms transplant_upd
     by auto
-      (smt add.commute fst_conv transplant_def transplant_upd less_not_refl2 list_update_overwrite list_update_swap
+      (smt (verit) add.commute fst_conv transplant_def transplant_upd less_not_refl2 list_update_overwrite list_update_swap
        nth_list_update_eq nth_list_update_neq plus_1_eq_Suc snd_conv)
 qed
 
@@ -821,7 +821,7 @@ next
       using assms tps'_def by simp
     show "(0, tps') <.> j1 \<notin> H"
       using assms ltransplant_def tps'_def lneigh_def \<open>t < n\<close>
-      by (smt fst_conv length_list_update less_not_refl2 nth_list_update_eq nth_list_update_neq snd_conv)
+      by (smt (verit) fst_conv length_list_update less_not_refl2 nth_list_update_eq nth_list_update_neq snd_conv)
   qed
   finally show ?case
     using tapes_ltransplant_upd[OF 1 2 assms(1,2,3) tps'_def] by simp
@@ -844,7 +844,7 @@ proof -
       using assms(3) by simp
     moreover have "(0, ?tps) <.> j1 \<in> H"
       using rneigh_def transplant_def assms
-      by (smt fst_conv length_list_update less_not_refl2 nth_list_update_eq nth_list_update_neq snd_conv)
+      by (smt (verit) fst_conv length_list_update less_not_refl2 nth_list_update_eq nth_list_update_neq snd_conv)
     ultimately show ?thesis
       using exe_tm_trans_until_1 assms by simp
   qed
@@ -1040,7 +1040,7 @@ proof -
     next
       case 2
       then show ?thesis
-        using assms contents_def by (smt (z3) Suc_diff_1 less_trans_Suc not_add_less1 not_le not_less_eq_eq nth_append)
+        using assms contents_def by (smt (verit) Suc_diff_1 less_trans_Suc not_add_less1 not_le not_less_eq_eq nth_append)
     next
       case 3
       then have "?r j = ?zs ! (j - 1)"
@@ -1984,7 +1984,7 @@ proof -
     qed
     also have "... = (0, tps[j1 := tps ! j1 |+| Suc t, j2 := tps ! j2 |+| Suc t])"
       using assms
-      by (smt (z3) Suc_eq_plus1 add.commute fst_conv list_update_overwrite list_update_swap
+      by (smt (verit) Suc_eq_plus1 add.commute fst_conv list_update_overwrite list_update_swap
         nth_list_update_eq nth_list_update_neq snd_conv)
     finally show ?case
       by simp
@@ -2065,7 +2065,7 @@ proof -
   have neq: "\<lfloor>xs\<rfloor> m \<noteq> \<lfloor>ys\<rfloor> m"
     using ex_contents_neq[OF assms(8-10)] assms(13) by (metis (mono_tags, lifting) LeastI_ex)
   have eq: "\<lfloor>xs\<rfloor> i = \<lfloor>ys\<rfloor> i" if "i < m" for i
-    using ex_contents_neq[OF assms(8-10)] assms(13) not_less_Least that by (smt (z3) Least_le le_trans less_imp_le_nat)
+    using ex_contents_neq[OF assms(8-10)] assms(13) not_less_Least that by (smt (verit) Least_le le_trans less_imp_le_nat)
   have "m > 0"
     using neq contents_def gr0I by metis
 
@@ -2093,7 +2093,7 @@ proof -
         using Suc eq by simp
       moreover from this have "?tps :.: j1 \<noteq> \<box> \<and> ?tps :.: j2 \<noteq> \<box>"
         using 1 2 assms neq Suc.prems contents_def
-        by (smt (z3) Suc_leI Suc_le_lessD Suc_lessD diff_Suc_1 le_trans less_nat_zero_code zero_less_Suc)
+        by (smt (verit) Suc_leI Suc_le_lessD Suc_lessD diff_Suc_1 le_trans less_nat_zero_code zero_less_Suc)
       moreover have "length ?tps = k"
         using assms(1) by simp
       ultimately show ?thesis
@@ -2101,7 +2101,7 @@ proof -
     qed
     also have "... = (0, tps[j1 := tps ! j1 |+| Suc t, j2 := tps ! j2 |+| Suc t])"
       using assms
-      by (smt (z3) Suc_eq_plus1 add.commute fst_conv list_update_overwrite list_update_swap
+      by (smt (verit) Suc_eq_plus1 add.commute fst_conv list_update_overwrite list_update_swap
         nth_list_update_eq nth_list_update_neq snd_conv)
     finally show ?case
       by simp
@@ -2115,7 +2115,7 @@ proof -
   then show "execute (tm_cmp j1 j2 j3) (0, tps) m =
       (1, tps[j1 := tps ! j1 |+| (m - 1), j2 := tps ! j2 |+| (m - 1), j3 := tps ! j3 |:=| \<box>])"
     using exe_cmd_cmp1 assms \<open>0 < m\<close>
-    by (smt (z3) One_nat_def Suc_diff_Suc diff_zero fst_conv length_list_update neq nth_list_update_eq
+    by (smt (verit) One_nat_def Suc_diff_Suc diff_zero fst_conv length_list_update neq nth_list_update_eq
       nth_list_update_neq plus_1_eq_Suc snd_conv)
 qed
 

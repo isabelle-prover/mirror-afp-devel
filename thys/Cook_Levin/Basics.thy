@@ -975,7 +975,7 @@ proof (induction t arbitrary: i j)
     using turing_machine_def assms(1) by simp
   then show ?case
     using start_config_def contents_def 0 assms(2) start_config1 start_config2
-    by (smt One_nat_def Suc_1 Suc_lessD Suc_pred execute.simps(1)
+    by (smt (verit) One_nat_def Suc_1 Suc_lessD Suc_pred execute.simps(1)
       fst_conv lessI nat_less_le neq0_conv nth_Cons_0 snd_conv)
 next
   case (Suc t)
@@ -1373,7 +1373,7 @@ lemma transforms_running_time:
   assumes "transforms M tps t tps'"
   shows "running_time M (0, tps) \<le> t"
   using running_time_def transforms_def transits_def
-  by (smt Least_le[of _ t] assms execute_after_halting_ge fst_conv)
+  by (smt (verit) Least_le[of _ t] assms execute_after_halting_ge fst_conv)
 
 text \<open>
 This is the alternative characterization of @{const computes_in_time}:
@@ -2668,7 +2668,7 @@ next
       proof (rule nth_equalityI)
         have lenl: "length ?l = d + k"
           using lhs execute_num_tapes assms prepend_tapes_tm len_s
-          by (smt (z3) length_append shift_cfg_def snd_conv)
+          by (smt (verit) length_append shift_cfg_def snd_conv)
         moreover have "length ?r = d + k"
           using rhs execute_num_tapes assms shift_cfg_def
           by (metis (mono_tags, lifting) length_append snd_conv)
@@ -2694,7 +2694,7 @@ next
               using scmd by simp
             then have "snd (?scmd ?srs) ! j = map (\<lambda>h. (h, Stay)) (take d ?srs) ! j"
               using len_srs lenl True that
-              by (smt (z3) add.commute length_map length_take min_less_iff_conj nth_append)
+              by (smt (verit) add.commute length_map length_take min_less_iff_conj nth_append)
             then show ?thesis
               using len_srs True by simp
           qed
@@ -2726,7 +2726,7 @@ next
               using cmd by simp
             then have "snd (?scmd ?srs) ! j = snd ((M ! (fst ?cfg')) (drop d ?srs)) ! (j - d)"
               using len_srs lenl False that len_rs
-              by (smt (z3) Nat.add_diff_assoc add.right_neutral add_diff_cancel_left' append_take_drop_id
+              by (smt (verit) Nat.add_diff_assoc add.right_neutral add_diff_cancel_left' append_take_drop_id
                 le_add1 length_append length_map nth_append srs_rs)
             then have "snd (?scmd ?srs) ! j = snd (?cmd ?rs) ! (j - d)"
               using srs_rs by simp

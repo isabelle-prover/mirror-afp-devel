@@ -423,7 +423,7 @@ proof
         2: "transforms M (snd ?cfg) (T (length y)) tps"
         using ex computes_in_timeD by blast
       have len_tps: "length tps \<ge> 2"
-        by (smt (z3) "2" \<open>2 \<le> k\<close> ex execute_num_tapes start_config_length less_le_trans numeral_2_eq_2
+        by (smt (verit) "2" \<open>2 \<le> k\<close> ex execute_num_tapes start_config_length less_le_trans numeral_2_eq_2
           prod.sel(2) transforms_def transits_def zero_less_Suc)
       define zs where "zs = string_to_symbols (fverify y)"
       then have zs: "tps ::: 1 = \<lfloor>zs\<rfloor>" "proper_symbols zs"

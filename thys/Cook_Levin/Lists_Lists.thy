@@ -243,7 +243,7 @@ corollary numlist_take_at_term:
   assumes "i < length ns"
   shows "numlist ns ! (nllength (take i ns) + nlength (ns ! i)) = \<bar>"
   using assms take_drop_numlist nllength_def numlist_append
-  by (smt (z3) append_eq_conv_conj append_take_drop_id lessI nth_append_length nth_append_length_plus nth_take)
+  by (smt (verit) append_eq_conv_conj append_take_drop_id lessI nth_append_length nth_append_length_plus nth_take)
 
 lemma numlist_take_at:
   assumes "i < length ns" and "j < nlength (ns ! i)"
@@ -2012,7 +2012,7 @@ lemma tmB5:
 proof (tform tps: assms(2) tpsI_def jk time: assms(1))
   show "tpsB5 t = (tpsI t)[j2 + 2 := (\<lfloor>Suc t\<rfloor>\<^sub>N, 1)]"
     using tpsB5_def tpsI_def
-    by (smt (z3) add_left_imp_eq list_update_overwrite list_update_swap numeral_eq_iff semiring_norm(89))
+    by (smt (verit) add_left_imp_eq list_update_overwrite list_update_swap numeral_eq_iff semiring_norm(89))
 qed
 
 lemma tmB5' [transforms_intros]:
@@ -2689,7 +2689,7 @@ definition "tps3 \<equiv> tps0
 
 lemma tpsL_eq_tps3: "tpsL delta = tps3"
   using tps3_def tps0 jk tpsL_def
-  by (smt (z3) One_nat_def add_left_imp_eq cancel_comm_monoid_add_class.diff_cancel list_update_id
+  by (smt (verit) One_nat_def add_left_imp_eq cancel_comm_monoid_add_class.diff_cancel list_update_id
     list_update_swap n_not_Suc_n numeral_2_eq_2)
 
 lemma tm3:
@@ -3279,7 +3279,7 @@ corollary numlistlist_take_at_term:
   assumes "i < length ns"
   shows "numlistlist ns ! (nlllength (take i ns) + nllength (ns ! i)) = \<sharp>"
   using assms take_drop_numlistlist nlllength_def numlistlist_append
-  by (smt (z3) append_eq_conv_conj append_take_drop_id lessI nllength_def nth_append_length nth_append_length_plus nth_take)
+  by (smt (verit) append_eq_conv_conj append_take_drop_id lessI nllength_def nth_append_length nth_append_length_plus nth_take)
 
 lemma nlllength_take_Suc:
   assumes "i < length ns"

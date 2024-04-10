@@ -1171,7 +1171,7 @@ proof -
     have "H ^ 4 * (nlength (idx + step * numiter))^2 > 0"
       using step assms(1) nlength_0 H by auto
     then show ?thesis
-      by (smt (z3) One_nat_def Suc_leI add_mono_thms_linordered_semiring(2) mult.assoc mult_numeral_1_right nat_mult_le_cancel_disj numeral_code(1))
+      by (smt (verit) One_nat_def Suc_leI add_mono_thms_linordered_semiring(2) mult.assoc mult_numeral_1_right nat_mult_le_cancel_disj numeral_code(1))
   qed
   also have "... = (6 * step + 1882) * H ^ 4 * (nlength (idx + step * numiter))\<^sup>2"
     by algebra

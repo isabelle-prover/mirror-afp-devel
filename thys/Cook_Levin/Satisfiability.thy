@@ -345,7 +345,7 @@ proof -
         using * by auto
       moreover have "length (vs ! j) = l"
         using vs_def length_str_of_len \<open>j < length vs\<close>
-        by (smt (z3) filter_eq_nths in_str_of_len_length notin_set_nthsI nth_mem)
+        by (smt (verit) filter_eq_nths in_str_of_len_length notin_set_nthsI nth_mem)
       ultimately have "satisfies_clause a (cl (vs ! j))"
         using v_def cl1 by simp
       then show ?thesis

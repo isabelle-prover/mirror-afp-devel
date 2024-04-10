@@ -1302,8 +1302,8 @@ proof (tform tps: assms(1,3) time: assms(1,2))
             qed
             then show "\<And>y. y \<le> nlength x \<and> \<lfloor>x\<rfloor>\<^sub>N (Suc y) \<in> {\<box>, \<zero>} \<Longrightarrow> (Least ?Q) \<le> y"
               using True Q1 Q2 bit_symbols_canrepr contents_def
-              by (smt (z3) Least_le Suc_leI bot_nat_0.not_eq_extremum diff_Suc_1 insert_iff le_neq_implies_less
-                nat.simps(3) nlength_0_simp nlength_le_n nlength_less_n singletonD)
+              by (metis (no_types, lifting) Least_le antisym_conv2 diff_Suc_1 insert_iff
+                  le_less_Suc_eq less_nat_zero_code nat_le_linear proper_symbols_canrepr singletonD)
           qed
           then have i0: "i0 = Least ?Q"
             using assms(1) by simp
@@ -1343,8 +1343,7 @@ proof (tform tps: assms(1,3) time: assms(1,2))
               case 3
               then show ?thesis
                 using i0 Q1 canrepr_0 contents_inbounds nincr_canrepr nincr_zs nlength_0_simp nlength_Suc nlength_Suc_le
-                by (smt (z3) Suc_leI append_Cons diff_Suc_1 fun_upd_apply le_trans length_replicate
-                  nth_append_length zero_less_Suc)
+                by (metis (no_types, lifting) contents_append_update fun_upd_apply length_replicate)
             next
               case 4
               then have "?A i = (replicate i0 \<zero> @ [\<one>] @ drop (Suc i0) ?zs) ! (i - 1)"
@@ -2486,7 +2485,7 @@ proof (cases "t < length zs")
       case 3
       then show ?thesis
         using contents_def lt
-        by (smt (z3) One_nat_def Suc_leI add_Suc append_take_drop_id diff_Suc_1 diff_zero fun_upd_same
+        by (smt (verit, ccfv_threshold) One_nat_def Suc_leI add_Suc append_take_drop_id diff_Suc_1 diff_zero fun_upd_same
           length_append length_map length_take length_upt lessI min_absorb2 nat.simps(3) nth_append nth_map_upt plus_1_eq_Suc)
     next
       case 4
@@ -2688,7 +2687,7 @@ next
       [j1 := (\<lfloor>xs\<rfloor>, Suc (Suc t)),
        j2 := (\<lfloor>map (sumdigit xs ys) [0..<Suc t] @ drop (Suc t) ys\<rfloor>, Suc (Suc t)),
        length tps - 1 := \<lceil>carry xs ys (Suc t)\<rceil>]"
-      using assms by (smt (z3) list_update_overwrite list_update_swap)
+      using assms by (smt (verit) list_update_overwrite list_update_swap)
     ultimately show ?thesis
       by simp
   qed
@@ -3564,7 +3563,7 @@ next
   also have "... = (0, ?tps [j := ?tps ! j |:=| tosym (todigit ?z) |+| 1, k := \<lceil>xs ! (Suc t - 1)\<rceil>])"
     using 0 by simp
   also have "... = (0, tps [j := ?tps ! j |:=| tosym (todigit ?z) |+| 1, k := \<lceil>xs ! (Suc t - 1)\<rceil>])"
-    using assms by (smt (z3) list_update_overwrite list_update_swap)
+    using assms by (smt (verit) list_update_overwrite list_update_swap)
   also have "... = (0, tps [j := (\<lfloor>?xs\<rfloor>, Suc t) |:=| tosym (todigit ?z) |+| 1, k := \<lceil>xs ! (Suc t - 1)\<rceil>])"
     using 5 by simp
   also have "... = (0, tps
@@ -3660,7 +3659,7 @@ next
           by simp
         also have "... = (drop (Suc t) xs) ! (i - 1 - Suc t)"
           using Suc 4
-          by (smt (z3) Suc_diff_1 Suc_leD Suc_leI bot_nat_0.extremum_uniqueI length_Cons length_take
+          by (smt (verit) Suc_diff_1 Suc_leD Suc_leI bot_nat_0.extremum_uniqueI length_Cons length_take
             min_absorb2 not_le nth_append)
         also have "... = xs ! (i - 1)"
           using Suc 4 Suc_lessE by fastforce
@@ -3751,7 +3750,7 @@ proof -
   also have "... = (1, tps
       [j := (\<lfloor>?xs\<rfloor>, Suc (length ?xs)) |:=| ?z |+| 1,
        k := \<lceil>\<zero>\<rceil>])"
-    by (smt (z3) list_update_overwrite list_update_swap)
+    by (smt (verit) list_update_overwrite list_update_swap)
   also have "... = (1, tps
       [j := (\<lfloor>?xs\<rfloor>(Suc (length ?xs) := ?z), length ?xs + 2),
        k := \<lceil>\<zero>\<rceil>])"
@@ -4800,9 +4799,7 @@ lemma polyvalue_Nil: "polyvalue [] x = 0"
 
 lemma sum_upt_snoc: "(\<Sum>i\<leftarrow>[0..<length (zs @ [z])]. (zs @ [z]) ! i * x ^ i) =
     (\<Sum>i\<leftarrow>[0..<length zs]. zs ! i * x ^ i) + z * x ^ (length zs)"
-  by (smt (z3) add.right_neutral atLeastLessThan_iff length_append_singleton list.map(1) list.map(2)
-    map_append map_eq_conv nth_append nth_append_length set_upt sum_list_append sum_list_simps(1)
-    sum_list_simps(2) upt.simps(2) zero_order(1))
+  by simp (smt (verit, ccfv_SIG) length_map less_diff_conv map_equality_iff map_nth nth_append nth_upt zero_less_diff)
 
 lemma polyvalue_Cons: "polyvalue (c # cs) x = c * x ^ (length cs) + polyvalue cs x"
 proof -
@@ -4974,7 +4971,7 @@ lemma tm3:
 proof (tform tps: tps2_def tps3_def jk tps0 time: assms)
   show "tps3 = tps2[j + 3 := (\<lfloor>0\<rfloor>\<^sub>N, 1)]"
     using tps3_def tps2_def jk tps0
-    by (smt (z3) One_nat_def add_2_eq_Suc add_left_cancel lessI less_numeral_extra(4) list_update_id
+    by (smt (verit) One_nat_def add_2_eq_Suc add_left_cancel lessI less_numeral_extra(4) list_update_id
       list_update_overwrite list_update_swap numeral_3_eq_3 numeral_Bit0 plus_1_eq_Suc)
 qed
 
@@ -5214,7 +5211,7 @@ proof -
     also have "... \<le> ?a ^ 2 + (2 * ?a + 1) * (length cs) ^ 2 * Suc (nlength x) ^ 2"
       using nlength_Suc by simp
     also have "... = ?a ^ 2 + (2 * ?a + 1) * (length cs) ^ 2 * (nlength x ^ 2 + 2 * nlength x + 1)"
-      by (smt (z3) Suc_eq_plus1 add.assoc mult_2 nat_1_add_1 one_power2 plus_1_eq_Suc power2_sum)
+      by (smt (verit) Suc_eq_plus1 add.assoc mult_2 nat_1_add_1 one_power2 plus_1_eq_Suc power2_sum)
     also have "... \<le> ?a ^ 2 + (2 * ?a + 1) * (length cs) ^ 2 * (nlength x ^ 2 + 2 * nlength x ^ 2 + 1)"
     proof -
       have "nlength x ^ 2 + 2 * nlength x + 1 \<le> nlength x ^ 2 + 2 * nlength x ^ 2 + 1"
@@ -5584,7 +5581,7 @@ proof (rule semI)
         using assms 2 by simp
       ultimately show ?thesis
         using act_onesie assms 2 that rs_def rsj
-        by (smt (z3) One_nat_def Suc_1 add_2_eq_Suc' diff_less numeral_3_eq_3 zero_less_one)
+        by (smt (verit) One_nat_def Suc_1 add_2_eq_Suc' diff_less numeral_3_eq_3 zero_less_one)
     next
       case 3
       then show ?thesis
@@ -5757,7 +5754,7 @@ proof -
         using assms 3 by auto
       then have "?r x = drop (Suc i) xs ! (x - 1 - i)"
         using assms(3,4) 3
-        by (smt (z3) Suc_diff_1 dual_order.strict_trans length_take less_Suc_eq min_absorb2 nat_less_le nth_append)
+        by (smt (verit) Suc_diff_1 dual_order.strict_trans length_take less_Suc_eq min_absorb2 nat_less_le nth_append)
       then have "?r x = xs ! x"
         using assms 3 by simp
       then show ?thesis
@@ -5858,7 +5855,7 @@ next
   also have "... = (0, tps
       [j := ?tps ! j |:=| (xs ! (length xs - t)) |-| 1,
        k := \<lceil>?ys ! (length xs - t - 1)\<rceil>])"
-    using assms by (smt (z3) list_update_overwrite list_update_swap)
+    using assms by (smt (verit) list_update_overwrite list_update_swap)
   also have "... = (0, tps
       [j := (\<lfloor>?ys\<rfloor>, length xs - t) |:=| (xs ! (length xs - t)) |-| 1,
        k := \<lceil>?ys ! (length xs - t - 1)\<rceil>])"

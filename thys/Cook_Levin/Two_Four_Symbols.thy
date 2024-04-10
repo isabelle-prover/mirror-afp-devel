@@ -258,8 +258,8 @@ proof (rule nth_equalityI)
       by (metis (no_types, lifting) Suc_eq_plus1 add_lessD1 dvd_mult_div_cancel nat_mult_less_cancel_disj nth_append)
     also have "... = bindecode zs ! (i - ?l div 2)"
       using False bindecode_at that assms 1
-       by (smt (z3) Suc_eq_plus1 add_diff_inverse_nat diff_add_inverse diff_mult_distrib2 dvd_mult_div_cancel
-         left_add_mult_distrib length_append length_bindecode mult.commute nat_add_left_cancel_less)
+      by simp (metis Nat.add_diff_assoc add_mono_thms_linordered_semiring(1)
+          dvd_mult_div_cancel le_less_linear mult_2 plus_1_eq_Suc right_diff_distrib')
     also have "... = (bindecode ys @ bindecode zs) ! i"
       using l False by (simp add: nth_append)
     finally show ?thesis .
@@ -319,7 +319,7 @@ proof (rule nth_equalityI)
     proof -
       have "ys ! i = 2 \<or> ys ! i = 3 \<or> ys ! i = 4 \<or> ys ! i = 5"
         using assms len
-        by (smt (z3) Suc_1 add_Suc_shift add_cancel_right_left eval_nat_numeral(3)
+        by (smt (verit) Suc_1 add_Suc_shift add_cancel_right_left eval_nat_numeral(3)
           less_Suc_eq numeral_3_eq_3 numeral_Bit0 verit_comp_simplify1(3))
       then show ?thesis
         by auto
@@ -982,7 +982,7 @@ proof -
   then have "?s = todigit (zs ! (2 * i)) + 2"
     using tps1_def lentps by simp
   then have "?s = zs ! (2 * i)"
-    using ilen bs by (smt (z3) One_nat_def Suc_1 add_2_eq_Suc' add_lessD1 numeral_3_eq_3)
+    using ilen bs by (smt (verit) One_nat_def Suc_1 add_2_eq_Suc' add_lessD1 numeral_3_eq_3)
   moreover have "tps1 :.: j1 = zs ! ?i"
     using tps1_def ilen lentps j1j2 by simp
   ultimately have *: "decsym ?s (tps1 :.: j1) = decsym (zs ! (2*i)) (zs ! (Suc (2*i)))"
@@ -1043,11 +1043,12 @@ proof -
     qed
     also have "... = (\<lfloor>bindecode (take (2 * Suc i) zs)\<rfloor>, Suc (Suc i))"
       using bindecode_take_snoc ilen by simp
-    also have "... = tps' ! j2"
+    also have *: "... = tps' ! j2"
       by (metis assms(11) j_less(2) length_list_update lentps less_Suc_eq nth_list_update_eq)
     finally have "?tps ! j2 = tps' ! j2" .
-    then show ?thesis
-      using 1 2 assms(11) tps1_def by (smt (z3) list_update_id list_update_overwrite list_update_swap)
+    with 1 2 assms(11) * show ?thesis
+      unfolding tps1_def
+      by (smt (verit) j_less(1) j_less(2) lentps less_Suc_eq list_update_id list_update_overwrite list_update_swap nat_neq_iff nth_list_update_eq nth_list_update_neq)
   qed
   finally have "exe ?M (0, tps1) = (0, tps')" .
   then have "execute ?M (0, tps) 2 = (0, tps')"
@@ -1182,7 +1183,7 @@ proof -
         using tps1_def tps2_def j1_neq j_less(2) lentps ys by simp
       ultimately have "tps2 = ?tps"
         using tps2_def tps1_def j_less(1) lentps
-        by (smt (z3) list_update_id list_update_overwrite list_update_swap)
+        by (smt (verit) list_update_id list_update_overwrite list_update_swap)
       then show ?thesis
         by simp
     qed
@@ -1219,7 +1220,7 @@ proof -
       by simp
   qed
   ultimately have "transits ?M (0, tps) (2 * l + 2) (1, tps')"
-    using execute_imp_transits transits_additive by (smt (z3) ab_semigroup_add_class.add_ac(1) nat_1_add_1)
+    using execute_imp_transits transits_additive by (smt (verit) ab_semigroup_add_class.add_ac(1) nat_1_add_1)
   then show "transforms (tm_bindec j1 j2) tps (2 * l + 2) tps'"
     using transforms_def tm_bindec_def by simp
 qed
@@ -1287,7 +1288,7 @@ proof (cases "even (length zs)")
   case True
   then show ?thesis
     using transforms_tm_bindec_even[OF assms(1-3)] assms(1,4) j_less(1) j_less(2)
-    by (smt (z3) Suc_eq_plus1 dvd_mult_div_cancel list_update_id list_update_swap nat_neq_iff)
+    by (smt (verit) Suc_eq_plus1 dvd_mult_div_cancel list_update_id list_update_swap nat_neq_iff)
 next
   case False
   then show ?thesis
@@ -1361,7 +1362,7 @@ proof (rule cartesian_transforms_onesie)
             using else cmd_bindec_def by simp
           then have "snd (cmd_bindec j1 j2 rs) ! k = (todigit (rs ! j1) + 2, Stay)"
             using rs j1j2
-            by (smt (z3) add.left_neutral diff_Suc_1 diff_zero length_upt lessI nat_neq_iff nth_map nth_upt)
+            by (smt (verit) add.left_neutral diff_Suc_1 diff_zero length_upt lessI nat_neq_iff nth_map nth_upt)
           then show ?thesis
             using rs by simp
         next
@@ -1374,7 +1375,7 @@ proof (rule cartesian_transforms_onesie)
             using else cmd_bindec_def by simp
           then have "snd (cmd_bindec j1 j2 rs) ! k = (1, Stay)"
             using rs j1j2
-            by (smt (z3) add.left_neutral diff_Suc_1 diff_zero length_upt lessI nat_neq_iff nth_map nth_upt)
+            by (smt (verit) add.left_neutral diff_Suc_1 diff_zero length_upt lessI nat_neq_iff nth_map nth_upt)
           then show ?thesis
             using rs by simp
         qed

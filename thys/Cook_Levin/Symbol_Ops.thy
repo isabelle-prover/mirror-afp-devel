@@ -348,7 +348,7 @@ proof (tform tps: assms(1) tpsL_def tpsL1_def tps0 jk time: assms(2))
     using tpsL2_def tpsL1_def jk tps0 by simp
   then have "tpsL2 t = (tpsL1 t)[0 := tpsL1 t ! 0 |#=| Suc (tpsL1 t :#: 0)]"
     using tpsL2_def tpsL1_def jk tps0
-    by (smt (z3) fstI list_update_overwrite list_update_swap nat_neq_iff plus_1_eq_Suc prod.sel(2))
+    by (smt (verit) fstI list_update_overwrite list_update_swap nat_neq_iff plus_1_eq_Suc prod.sel(2))
   then show "tpsL (Suc t) = (tpsL1 t)[0 := tpsL1 t ! 0 |+| 1]"
     using tpsL2_def tpsL_def tpsL1_def jk tps0 by simp
 qed
@@ -1346,7 +1346,7 @@ proof -
       by (simp add: length_bitenc)
     ultimately show ?thesis
       using bindecode_append length_bindecode length_bitenc
-      by (smt (z3) add_mult_distrib2 add_self_div_2 dvd_triv_left length_append length_map mult_2)
+      by (smt (verit) add_mult_distrib2 add_self_div_2 dvd_triv_left length_append length_map mult_2)
   qed
   also have "... = string_to_symbols x @ bindecode (string_to_symbols [\<bbbI>, \<bbbI>]) @ string_to_symbols u"
     using bindecode_bitenc by simp
@@ -1593,7 +1593,7 @@ proof (tform tps: k tps2_def time: assms)
       using k tps2_def by simp
     ultimately show ?thesis
       using 0 1 tps2_def tps3_def tps0_def lentps k tps2
-      by (smt (z3) length_list_update list_update_overwrite list_update_swap nth_list_update)
+      by (smt (verit) length_list_update list_update_overwrite list_update_swap nth_list_update)
   qed
 qed
 

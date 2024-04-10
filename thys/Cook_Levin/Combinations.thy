@@ -650,7 +650,7 @@ corollary transforms_branchI:
     and "cond (read tps) \<Longrightarrow> tps' = tpsT"
     and "\<not> cond (read tps) \<Longrightarrow> tps' = tpsF"
   shows "transforms (IF cond THEN M1 ELSE M2 ENDIF) tps t tps'"
-  using transforms_branch_full assms by (smt (z3))
+  by (rule transforms_branch_full) (use assms in auto)
 
 
 subsection \<open>Loops\<close>

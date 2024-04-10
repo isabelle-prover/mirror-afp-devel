@@ -810,7 +810,7 @@ proof -
   have "length (esB4 n m) \<le> 2 * m + 5 + m * (14 + 3 * m + (2 * m + 3) * n) + m + 2"
     unfolding esB4_def
     using length_esB3 length_esLoop
-    by (smt ab_semigroup_add_class.add_ac(1) add_less_cancel_left le_eq_less_or_eq length_append)
+    by (smt (verit) ab_semigroup_add_class.add_ac(1) add_less_cancel_left le_eq_less_or_eq length_append)
   also have "... = 2 * m + 5 + (14 * m + 3 * m * m + (2 * m * m + 3 * m) * n) + m + 2"
     by algebra
   also have "... = 7 + 17 * m + 3 * m * m + (2 * m * m + 3 * m) * n"
@@ -931,7 +931,7 @@ proof -
   have "length (esB7 n m) \<le> 11 + 21 * m * m + 5 * m * m * n + m + 1"
     unfolding esB7_def esB67_def
     using length_esB6
-    by (smt add.commute add_Suc_right add_le_cancel_right length_append length_append_singleton
+    by (smt (verit) add.commute add_Suc_right add_le_cancel_right length_append length_append_singleton
       length_map length_upt minus_nat.diff_0 plus_1_eq_Suc)
   also have "... \<le> 12 + 22 * m * m + 5 * m * m * n"
     by simp
