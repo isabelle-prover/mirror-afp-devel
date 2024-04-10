@@ -383,27 +383,21 @@ proof -
     case b
     have p:"\<And>k. k \<le> length xs div 2 \<Longrightarrow> xs ! k \<notin> I"
       using b v_2 sorted_int[OF assms(2) assms(3) v_1, where j="length xs div 2"] apply simp by blast
-    have "card J \<le> card {Suc (length xs div 2)..<length xs}"
-      apply (rule card_mono, simp)
-      apply (rule subsetI, simp add:J_def not_less_eq_eq[symmetric])
-      using p by metis
+    hence "card J \<le> card {Suc (length xs div 2)..<length xs}"
+      unfolding J_def using not_less_eq_eq[symmetric] by (intro card_mono subsetI) auto
     hence "card J \<le> length xs - (Suc (length xs div 2))"
       using card_atLeastLessThan by metis
     hence "length xs \<le> 2*( length xs - (Suc (length xs div 2)))"
       using card_J_min by linarith
-    hence "False"
-      apply (simp add:nat_distrib)
-      apply (subst (asm) le_diff_conv2) using b v_1 apply linarith
-      by simp
+    hence "False" using b v_1 by auto
     then show ?thesis by simp
   next
     case c
-    have p:"\<And>k. k \<ge> length xs div 2 \<Longrightarrow> k < length xs \<Longrightarrow> xs ! k \<notin> I"
-      using c v_1 v_2 sorted_int[OF assms(2) assms(3), where i ="v" and j="length xs div 2"] apply simp by blast
-    have "card J \<le> card {0..<(length xs div 2)}"
-      apply (rule card_mono, simp)
-      apply (rule subsetI, simp add:J_def not_less_eq_eq[symmetric])
-      using p linorder_le_less_linear by blast
+    have "\<And>k. k \<ge> length xs div 2 \<Longrightarrow> k < length xs \<Longrightarrow> xs ! k \<notin> I"
+      using c v_1 v_2 sorted_int[OF assms(2,3), where i ="v" and j="length xs div 2"]
+      by simp blast
+    hence "card J \<le> card {0..<(length xs div 2)}"
+      unfolding J_def using linorder_le_less_linear by (intro card_mono subsetI) auto
     hence "card J \<le> (length xs div 2)"
       using card_atLeastLessThan by simp
     then show ?thesis using card_J_min by linarith
@@ -415,15 +409,29 @@ lemma median_est:
   assumes "2*card {k. k < n \<and> f k \<in> I} > n"
   shows "median n f \<in> I"
 proof -
-  have a:"{k. k < n \<and> f k \<in> I} = {i. i < n \<and> map f [0..<n] ! i \<in> I}"
-    apply (rule order_antisym, rule subsetI, simp)
-    by (rule subsetI, simp, metis add_0 diff_zero nth_map_upt)
+  have "{k. k < n \<and> f k \<in> I} = {i. i < n \<and> map f [0..<n] ! i \<in> I}" by auto
+  thus ?thesis using assms unfolding median_def
+    by (intro mid_in_interval[OF _ assms(1),where xs="sort (map f [0..<n])", simplified])
+      (simp_all add:filter_sort comp_def length_filter_conv_card)
+qed
 
-  show ?thesis
-    apply (simp add:median_def)
-    apply (rule mid_in_interval[where I="I" and xs="sort (map f [0..<n])", simplified])
-     using assms a apply (simp add:filter_sort comp_def length_filter_conv_card)
-    by (simp add:assms)
+lemma median_est_rev:
+  assumes "interval I"
+  assumes "median n f \<notin> I"
+  shows "2*card {k. k < n \<and> f k \<notin> I} \<ge> n"
+proof (rule ccontr)
+  assume a: "\<not>(2*card {k. k < n \<and> f k \<notin> I} \<ge> n)"
+
+  have "2 * n = 2 * card {k. k < n}" by simp
+  also have "... = 2 * card ({k. k < n \<and> f k \<in> I} \<union> {k. k < n \<and> f k \<notin> I})"
+    by (intro arg_cong2[where f="(*)"] refl arg_cong[where f="card"]) auto
+  also have "... = 2 * card {k. k < n \<and> f k \<in> I} + 2 * card {k. k < n \<and> f k \<notin> I}"
+    by (subst card_Un_disjoint) auto
+  also have "... \<le> n  + 2 * card {k. k < n \<and> f k \<notin> I}"
+    using median_est[OF assms(1)] assms(2) not_less by (intro add_mono) auto
+  also have "... < n + n"
+    using a by (intro add_strict_left_mono) auto
+  finally show "False" by auto
 qed
 
 lemma prod_pmf_bernoulli_mono:
@@ -800,27 +808,21 @@ corollary (in prob_space) median_bound_2:
   assumes "\<And>i. i < n \<Longrightarrow> \<P>(\<omega> in M. abs (X i \<omega> - \<mu>) > \<delta>) \<le> 1/3" 
   shows "\<P>(\<omega> in M. abs (median n (\<lambda>i. X i \<omega>) - \<mu>) \<le> \<delta>) \<ge> 1-\<epsilon>"
 proof -
-  have b:"\<And>i. i < n \<Longrightarrow> space M - {\<omega> \<in> space M. X i \<omega> \<in> {\<mu> - \<delta>..\<mu> + \<delta>}} =  {\<omega> \<in> space M. abs (X i \<omega> - \<mu>) > \<delta>}"
-    apply (rule order_antisym, rule subsetI, simp, linarith)
-    by (rule subsetI, simp, linarith)
+  have b:"space M - {\<omega> \<in> space M. X i \<omega> \<in> {\<mu>-\<delta>..\<mu>+\<delta>}} = {\<omega> \<in> space M. abs (X i \<omega> - \<mu>) > \<delta>}" for i
+    by auto
 
   have "\<And>i. i < n \<Longrightarrow> 1 - \<P>(\<omega> in M. X i \<omega> \<in> {\<mu>- \<delta>..\<mu>+\<delta>}) \<le> 1/3"
+    using assms
     apply (subst prob_compl[symmetric])
-     apply (measurable)
-     using assms(2) apply (simp add:indep_vars_def)
-    apply (subst b, simp)
-    using assms(4) by simp
+     apply (measurable, simp add:indep_vars_def)
+    by (subst b, simp)
 
   hence a:"\<And>i. i < n \<Longrightarrow> \<P>(\<omega> in M. X i \<omega> \<in> {\<mu>- \<delta>..\<mu>+\<delta>}) \<ge> 2/3" by simp
   
-  have "1-\<epsilon> \<le> \<P>(\<omega> in M. median n (\<lambda>i. X i \<omega>) \<in> {\<mu>-\<delta>..\<mu>+\<delta>})"
-    apply (rule median_bound_1[OF _ assms(1) assms(2), where \<alpha>="1/6"], simp) 
-     using assms(3) apply (simp add:power2_eq_square)
-    using a by simp
+  have "1-\<epsilon> \<le> \<P>(\<omega> in M. median n (\<lambda>i. X i \<omega>) \<in> {\<mu>-\<delta>..\<mu>+\<delta>})" using a assms(3)
+    by (intro median_bound_1[OF _ assms(1,2), where \<alpha>="1/6"]) (simp_all add:power2_eq_square)
   also have "... = \<P>(\<omega> in M. abs (median n (\<lambda>i. X i \<omega>) - \<mu>) \<le> \<delta>)"
-    apply (rule arg_cong2[where f="measure"], simp)
-    apply (rule order_antisym, rule subsetI, simp, linarith)
-    by (rule subsetI, simp, linarith)
+    by (intro arg_cong2[where f="measure"] Collect_cong) auto
   finally show ?thesis by simp
 qed
 
@@ -830,9 +832,8 @@ lemma sorted_mono_map:
   assumes "sorted xs"
   assumes "mono f"
   shows "sorted (map f xs)"
-  using assms apply (simp add:sorted_wrt_map)
-  apply (rule sorted_wrt_mono_rel[where P="(\<le>)"])
-  by (simp add:mono_def, simp)
+  using assms(2) unfolding sorted_wrt_map
+  by (intro sorted_wrt_mono_rel[OF _ assms(1)]) (simp add:mono_def)
 
 text \<open>This could be added to @{theory "HOL.List"}:\<close>
 lemma map_sort:
@@ -843,11 +844,8 @@ lemma map_sort:
 lemma median_cong:
   assumes "\<And>i. i < n \<Longrightarrow> f i = g i"
   shows "median n f = median n g"
-  apply (cases "n = 0", simp add:median_def)
-  apply (simp add:median_def)
-  apply (rule arg_cong2[where f="(!)"])
-   apply (rule arg_cong[where f="sort"], rule map_cong, simp, simp add:assms)
-  by simp
+  unfolding median_def using assms
+  by (intro arg_cong2[where f="(!)"] arg_cong[where f="sort"] map_cong) auto
 
 lemma median_restrict: 
   "median n (\<lambda>i \<in> {0..<n}.f i) = median n f"

@@ -218,22 +218,10 @@ proof (cases "stage_two")
   proof (rule pmf_mono)
     fix \<theta> assume "\<theta> \<in> set_pmf p"
     assume a:"\<theta> \<in> {\<omega>. median m (\<lambda>i. I.estimate (\<nu> \<omega> A ! i)) \<notin> I}"
-    have "real m = 2 * real m - real m"
-      by simp
-    also have "... \<le> 2 * real m - 2 * card {i. i < m \<and> I.estimate (\<nu> \<theta> A ! i) \<in> I}"
-      using median_est[OF int_I, where n="m"] a
-      by (intro diff_left_mono Nat.of_nat_mono)
-       (auto simp add:not_less[symmetric] simp del:I.estimate.simps)
-    also have "... = 2 * (real (card {..<m}) - card {i. i < m \<and> I.estimate (\<nu> \<theta> A ! i) \<in> I})"
-      by (simp del:I.estimate.simps)
-    also have "... = 2 * real (card {..<m} - card {i. i < m \<and> I.estimate (\<nu> \<theta> A ! i) \<in> I})"
-      by (intro_cong "[\<sigma>\<^sub>2 (*)]" more:of_nat_diff[symmetric] card_mono)
-        (auto simp del:I.estimate.simps)
-    also have "... = 2 * real (card ({..<m} - {i. i < m \<and> I.estimate (\<nu> \<theta> A ! i) \<in> I}))"
-      by (intro_cong "[\<sigma>\<^sub>2 (*), \<sigma>\<^sub>1 of_nat]" more:card_Diff_subset[symmetric])
-        (auto simp del:I.estimate.simps)
+    hence "real m \<le> real (2*card {i. i < m \<and> I.estimate (\<nu> \<theta> A ! i) \<notin> I})"
+      by (intro of_nat_mono median_est_rev int_I) auto
     also have "... = 2 * real (card {i\<in>{..<m}. I.estimate (\<nu> \<theta> A ! i) \<notin> I})"
-      by (intro_cong "[\<sigma>\<^sub>2 (*), \<sigma>\<^sub>1 of_nat, \<sigma>\<^sub>1 card]") (auto simp del:I.estimate.simps)
+      by simp
     also have "... = 2 * real (card {i \<in> {..<m}. I.estimate (I.\<tau> (pro_select \<Theta> \<theta> i) A) \<notin> I})"
       unfolding \<nu>_def by (intro_cong "[\<sigma>\<^sub>2 (*), \<sigma>\<^sub>1 of_nat, \<sigma>\<^sub>1 card]" more:restr_Collect_cong)
        (simp del:I.estimate.simps)

@@ -241,22 +241,10 @@ proof -
     assume "\<omega> \<in> set_pmf \<Omega>" "\<omega> \<in> {\<omega>. \<exists>\<sigma>\<le>q_max. median l (estimate1 (\<tau>\<^sub>2 \<omega> A \<sigma>, \<sigma>)) \<notin> I}"
     then obtain \<sigma> where \<sigma>_def: "median l (estimate1 (\<tau>\<^sub>2 \<omega> A \<sigma>, \<sigma>)) \<notin> I" "\<sigma>\<le>q_max"
       by auto
-
-    have "real l = 2 * real l - real l"
-      by simp
-    also have "... \<le> 2 * real l - 2 * card {i. i < l \<and> estimate1 (\<tau>\<^sub>2 \<omega> A \<sigma>, \<sigma>) i \<in> I}"
-      using \<sigma>_def median_est[OF int_I, where n="l"] not_less
-      by (intro diff_left_mono Nat.of_nat_mono) (auto simp del:estimate1.simps)
-    also have "... = 2 * (real (card {..<l}) -card {i. i < l \<and> estimate1 (\<tau>\<^sub>2 \<omega> A \<sigma>, \<sigma>) i \<in> I})"
-      by (simp del:estimate1.simps)
-    also have "... = 2 * real (card {..<l} -card {i. i < l \<and> estimate1 (\<tau>\<^sub>2 \<omega> A \<sigma>, \<sigma>) i \<in> I})"
-      by (intro_cong "[\<sigma>\<^sub>2 (*)]" more:of_nat_diff[symmetric] card_mono)
-        (auto simp del:estimate1.simps)
-    also have "... = 2 * real (card ({..<l} - {i. i < l \<and> estimate1 (\<tau>\<^sub>2 \<omega> A \<sigma>, \<sigma>) i \<in> I}))"
-      by (intro_cong "[\<sigma>\<^sub>2 (*), \<sigma>\<^sub>1 of_nat]" more:card_Diff_subset[symmetric])
-        (auto simp del:estimate1.simps)
+    hence "real l \<le> real (2 * card {i. i <l \<and> estimate1 (\<tau>\<^sub>2 \<omega> A \<sigma>, \<sigma>) i \<notin> I})"
+      by (intro of_nat_mono median_est_rev[OF int_I])
     also have "... = 2 * real (card {i\<in>{..<l}. estimate1 (\<tau>\<^sub>2 \<omega> A \<sigma>, \<sigma>) i \<notin> I})"
-      by (intro_cong "[\<sigma>\<^sub>2 (*), \<sigma>\<^sub>1 of_nat, \<sigma>\<^sub>1 card]") (auto simp del:estimate1.simps)
+      by simp
     also have "... = 2 * real (card {i \<in> {..<l}. Y\<^sub>c (\<omega> i) \<sigma> \<notin> I})"
       using estimate1_eq by (intro_cong "[\<sigma>\<^sub>2 (*), \<sigma>\<^sub>1 of_nat, \<sigma>\<^sub>1 card]" more:restr_Collect_cong) auto
     also have "... \<le> 2 * real (card {i \<in> {..<l}. (\<exists>\<sigma>\<le>q_max. Y\<^sub>c (\<omega> i) \<sigma> \<notin> I)})"
