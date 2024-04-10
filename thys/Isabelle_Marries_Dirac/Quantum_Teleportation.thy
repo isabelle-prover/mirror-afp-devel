@@ -301,7 +301,7 @@ assms(1) a0 a1 select_index_3_subsets by(auto simp add: norm_divide power_divide
         (p, q) = ((prob0 3 (alice \<phi>) 0) * (prob1 3 (post_meas0 3 (alice \<phi>) 0) 1), post_meas1 3 (post_meas0 3 (alice \<phi>) 0) 1) \<or>
         (p, q) = ((prob1 3 (alice \<phi>) 0) * (prob0 3 (post_meas1 3 (alice \<phi>) 0) 1), post_meas0 3 (post_meas1 3 (alice \<phi>) 0) 1) \<or>
         (p, q) = ((prob1 3 (alice \<phi>) 0) * (prob1 3 (post_meas1 3 (alice \<phi>) 0) 1), post_meas1 3 (post_meas1 3 (alice \<phi>) 0) 1)"
-    using assms(3) alice_meas_def List.member_def by(smt list.distinct(1) list.exhaust list.inject member_rec(1) member_rec(2))
+    using assms(3) alice_meas_def List.member_def by(smt (verit) list.distinct(1) list.exhaust list.inject member_rec(1) member_rec(2))
   then have "q = post_meas0 3 (post_meas0 3 (alice \<phi>) 0) 1 \<or> q = post_meas1 3 (post_meas0 3 (alice \<phi>) 0) 1 \<or>
              q = post_meas0 3 (post_meas1 3 (alice \<phi>) 0) 1 \<or> q = post_meas1 3 (post_meas1 3 (alice \<phi>) 0) 1"
     by auto

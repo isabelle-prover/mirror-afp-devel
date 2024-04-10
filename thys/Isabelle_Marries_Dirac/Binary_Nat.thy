@@ -192,11 +192,11 @@ proof-
       by auto
     moreover have "\<dots> = m mod 2^n + (\<Sum>i\<in>{1..<n}. (m mod 2^(n-i))) - (\<Sum>i<n-1. int (m mod 2^(n-1-i)))- m mod 2^0" 
       using sum.atLeast_Suc_atMost sum.lessThan_Suc assms(1) 
-      by (smt One_nat_def Suc_le_eq diff_self_eq_0 le_add_diff_inverse lessThan_atLeast0 minus_nat.diff_0 
+      by (smt (verit) One_nat_def Suc_le_eq diff_self_eq_0 le_add_diff_inverse lessThan_atLeast0 minus_nat.diff_0 
           plus_1_eq_Suc sum.atLeast_Suc_lessThan)
     moreover have "\<dots> = m mod 2^n + (\<Sum>i<n-1. m mod 2^(n-i-1)) - (\<Sum>i<n-1. int ( m mod 2^(n-1-i))) - m mod 2^0" 
       apply (auto simp add: sum_of_index_diff[of "\<lambda>i. m mod 2 ^ (n - 1 - i)" "1" "n-1"])
-      by (smt One_nat_def assms(1) le_add_diff_inverse lessThan_atLeast0 plus_1_eq_Suc sum.cong sum.shift_bounds_Suc_ivl)
+      by (smt (verit) One_nat_def assms(1) le_add_diff_inverse lessThan_atLeast0 plus_1_eq_Suc sum.cong sum.shift_bounds_Suc_ivl)
     moreover have "\<dots> = m mod 2^n - m mod 2^0" by simp
     moreover have "\<dots> = m" using assms by auto
     ultimately show "m = (\<Sum>i<n. bin_rep n m ! i * 2^(n-1-i))"
@@ -210,7 +210,7 @@ lemma bin_rep_index_0:
   shows "(bin_rep k m) ! 0 = 0"
 proof-
   have "m < 2^(k-1)" 
-    using assms by(smt Suc_diff_1 Suc_leI gr0I le_trans less_or_eq_imp_le linorder_neqE_nat not_less 
+    using assms by (smt (verit) Suc_diff_1 Suc_leI gr0I le_trans less_or_eq_imp_le linorder_neqE_nat not_less 
 one_less_numeral_iff power_strict_increasing semiring_norm(76))
   then have f:"m div 2^(k-1) = 0" 
     by auto

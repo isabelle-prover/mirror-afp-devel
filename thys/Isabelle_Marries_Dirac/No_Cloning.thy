@@ -156,7 +156,7 @@ proof
 index_tensor_mat less_nat_zero_code mult_not_zero neq0_conv)
     moreover have "((A\<^sup>\<dagger>) \<Otimes> (B\<^sup>\<dagger>)) $$ (i, j) =
 (A\<^sup>\<dagger>) $$ (i div dim_col(B), j div dim_row(B)) * (B\<^sup>\<dagger>) $$ (i mod dim_col(B), j mod dim_row(B))"
-      by (smt a0 a1 c1 dim_row_tensor_mat dim_col_of_dagger dim_row_of_dagger index_tensor_mat
+      by (smt (verit) a0 a1 c1 dim_row_tensor_mat dim_col_of_dagger dim_row_of_dagger index_tensor_mat
 less_nat_zero_code mult_eq_0_iff neq0_conv)
     moreover have "(B\<^sup>\<dagger>) $$ (i mod dim_col(B), j mod dim_row(B)) = cnj(B $$ (j mod dim_row(B), i mod dim_col(B)))"
     proof-
@@ -208,12 +208,12 @@ proof-
       using dagger_of_prod[of "U" "|v\<rangle> \<Otimes> |s\<rangle>"] f0 d0 by (simp add: ket_vec_def)
     then have "(U * ( |v\<rangle> \<Otimes> |s\<rangle>))\<^sup>\<dagger> * U * ( |w\<rangle> \<Otimes> |s\<rangle>) = (\<langle>|v\<rangle>| \<Otimes> \<langle>|s\<rangle>| ) * (U\<^sup>\<dagger>) * U * ( |w\<rangle> \<Otimes> |s\<rangle>)" by simp
     moreover have "(U * ( |v\<rangle> \<Otimes> |s\<rangle>))\<^sup>\<dagger> * U * ( |w\<rangle> \<Otimes> |s\<rangle>) = (( |v\<rangle> \<Otimes> |v\<rangle>)\<^sup>\<dagger>) * ( |w\<rangle> \<Otimes> |w\<rangle>)"
-      using assms(2-4) d0 unit_vec_def by (smt Matrix.dim_vec assoc_mult_mat carrier_mat_triv dim_row_mat(1)
+      using assms(2-4) d0 unit_vec_def by (smt (verit) Matrix.dim_vec assoc_mult_mat carrier_mat_triv dim_row_mat(1)
 dim_row_tensor_mat dim_col_of_dagger index_mult_mat(2) ket_vec_def square square_mat.elims(2))
     moreover have "(U\<^sup>\<dagger>) * U = 1\<^sub>m (2^n * 2^n)"
       using unitary_def dim_col unitary by simp
     moreover have "(\<langle>|v\<rangle>| \<Otimes> \<langle>|s\<rangle>| ) * (U\<^sup>\<dagger>) * U = (\<langle>|v\<rangle>| \<Otimes> \<langle>|s\<rangle>| ) * ((U\<^sup>\<dagger>) * U)"
-      using d0 assms(1) unit_vec_def by (smt Matrix.dim_vec assoc_mult_mat carrier_mat_triv dim_row_mat(1)
+      using d0 assms(1) unit_vec_def by (smt (verit) Matrix.dim_vec assoc_mult_mat carrier_mat_triv dim_row_mat(1)
 dim_row_tensor_mat f0 dim_col_of_dagger dim_row_of_dagger ket_vec_def local.dim_col)
     moreover have "(\<langle>|v\<rangle>| \<Otimes> \<langle>|s\<rangle>| ) * 1\<^sub>m (2^n * 2^n) = (\<langle>|v\<rangle>| \<Otimes> \<langle>|s\<rangle>| )"
       using f0 ket_vec_def d0 by simp

@@ -210,7 +210,7 @@ next
   show "\<And>j. j<dim_vec (vec_of_list (row (mat_to_cols_list A) i)) \<Longrightarrow> 
               Matrix.row A i $ j = vec_of_list (row (mat_to_cols_list A) i) $ j"
     using Matrix.row_def vec_of_list_def mat_to_cols_list_def
-    by(smt row_def assms dim_vec_of_list index_mat_of_cols_list index_row(1) 
+    by (smt (verit) row_def assms dim_vec_of_list index_mat_of_cols_list index_row(1) 
 length_mat_to_cols_list length_row_mat_to_cols_list mat_to_cols_list_to_mat nth_map vec_of_list_index)
 qed
 
@@ -328,7 +328,7 @@ proof
         using assms(2) assms(3) mat_to_cols_list_is_mat by simp
       ultimately show ?thesis
         using assms(1) a1 a2 row_length_mat_to_cols_list plus_mult.matrix_index[of 1 "(*)" 0 "(+)"] plus_mult_cpx
-        by (smt f1 f2 index_mult_mat(2) index_mult_mat(3))
+        by (smt (verit) f1 f2 index_mult_mat(2) index_mult_mat(3))
     qed
     finally show "(A * B) $$ (i, j) = M $$ (i, j)" by simp
   qed
@@ -403,10 +403,10 @@ proof -
       "N' = mult.Tensor (*) (mat_to_cols_list B) (mat_to_cols_list D)"
     then have "mat (mult.row_length M') (length M') M'"
       using M'_def mult.effective_well_defined_Tensor[of 1 "(*)"] mat_to_cols_list_is_mat a3 a5
-      by (smt mult.length_Tensor mult.row_length_mat plus_mult_cpx plus_mult_def)
+      by (smt (verit) mult.length_Tensor mult.row_length_mat plus_mult_cpx plus_mult_def)
     moreover have "mat (mult.row_length N') (length N') N'"
       using N'_def mult.effective_well_defined_Tensor[of 1 "(*)"] mat_to_cols_list_is_mat a4 a6
-      by (smt mult.length_Tensor mult.row_length_mat plus_mult_cpx plus_mult_def)
+      by (smt (verit) mult.length_Tensor mult.row_length_mat plus_mult_cpx plus_mult_def)
     ultimately show ?thesis
       using list_to_mat_to_cols_list M_def N_def mult.row_length_mat row_length_mat_to_cols_list 
       assms(3) a4 a5 a6 A'_def B'_def C'_def D'_def by(metis M'_def N'_def plus_mult_cpx plus_mult_def)
@@ -445,25 +445,24 @@ lemma tensor_mat_is_assoc:
   shows "A \<Otimes> (B \<Otimes> C) = (A \<Otimes> B) \<Otimes> C"
 proof-
   define M where d:"M = mat_of_cols_list (dim_row B * dim_row C) (mult.Tensor (*) (mat_to_cols_list B) (mat_to_cols_list C))"
-  then have "B \<Otimes> C = M" 
+  then have *: "B \<Otimes> C = M" 
     using tensor_mat_def by simp
-  moreover have "A \<Otimes> (B \<Otimes> C) = mat_of_cols_list (dim_row A * (dim_row B * dim_row C))
+  then have **: "A \<Otimes> (B \<Otimes> C) = mat_of_cols_list (dim_row A * (dim_row B * dim_row C))
 (mult.Tensor (*) (mat_to_cols_list A) (mat_to_cols_list M))"
     using tensor_mat_def d dim_row_tensor_mat by simp
-  moreover have "mat_to_cols_list M = mult.Tensor (*) (mat_to_cols_list B) (mat_to_cols_list C)"
-    using d list_to_mat_to_cols_list
-    by (smt calculation(1) dim_col_tensor_mat length_greater_0_conv length_mat_to_cols_list mat_to_cols_list_is_mat 
-mult.Tensor.simps(1) mult.Tensor_null mult.well_defined_Tensor nat_0_less_mult_iff plus_mult_cpx plus_mult_def row_length_mat_to_cols_list)
-  ultimately have "A \<Otimes> (B \<Otimes> C) = mat_of_cols_list (dim_row A * (dim_row B * dim_row C))
+  then have ***: "mat_to_cols_list M = mult.Tensor (*) (mat_to_cols_list B) (mat_to_cols_list C)"
+    unfolding d using list_to_mat_to_cols_list
+    by (smt (verit) Tensor.mat_of_cols_list_def bot_nat_0.not_eq_extremum * d dim_col_mat(1) dim_col_tensor_mat length_greater_0_conv length_mat_to_cols_list mat_to_cols_list_is_mat mult.effective_well_defined_Tensor mult_is_0 plus_mult_cpx plus_mult_def row_length_mat_to_cols_list)
+  with ** have "A \<Otimes> (B \<Otimes> C) = mat_of_cols_list (dim_row A * (dim_row B * dim_row C))
 (mult.Tensor (*) (mat_to_cols_list A) (mult.Tensor (*) (mat_to_cols_list B) (mat_to_cols_list C)))" by simp
   moreover have "\<dots> = mat_of_cols_list ((dim_row A * dim_row B) * dim_row C) 
 (mult.Tensor (*) (mult.Tensor (*) (mat_to_cols_list A) (mat_to_cols_list B)) (mat_to_cols_list C))"
     using Matrix_Tensor.mult.associativity
-    by (smt ab_semigroup_mult_class.mult_ac(1) length_greater_0_conv length_mat_to_cols_list
+    by (smt (verit) ab_semigroup_mult_class.mult_ac(1) length_greater_0_conv length_mat_to_cols_list
 mat_to_cols_list_is_mat mult.Tensor.simps(1) mult.Tensor_null plus_mult_cpx plus_mult_def)
   ultimately show ?thesis
     using tensor_mat_def
-    by (smt Tensor.mat_of_cols_list_def dim_col_mat(1) dim_col_tensor_mat dim_row_tensor_mat length_0_conv 
+    by (smt (verit) Tensor.mat_of_cols_list_def dim_col_mat(1) dim_col_tensor_mat dim_row_tensor_mat length_0_conv 
 list_to_mat_to_cols_list mat_to_cols_list_is_mat mult.well_defined_Tensor mult_is_0 neq0_conv 
 plus_mult_cpx plus_mult_def row_length_mat_to_cols_list)
 qed

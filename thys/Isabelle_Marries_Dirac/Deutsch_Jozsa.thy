@@ -408,7 +408,7 @@ proof-
       by (metis assms(1,2) index_transpose_mat(1) jozsa_transform_coeff_is_zero jozsa_transform_dim transpose_of_jozsa_transform)
     moreover have "U\<^sub>f $$ (i-1,j) = 0" 
       using assms a0 f0 
-      by auto (smt One_nat_def Suc_n_not_le_n add_diff_inverse_nat assms(1) assms(2) diff_Suc_less even_add 
+      by auto (smt (verit) One_nat_def Suc_n_not_le_n add_diff_inverse_nat assms(1) assms(2) diff_Suc_less even_add 
 jozsa_transform_coeff_is_zero jozsa_axioms less_imp_le less_le_trans less_one odd_one)
     ultimately have "(U\<^sub>f * U\<^sub>f) $$ (i,j) = (1-f(i div 2)) * 0 +  f(i div 2) * 0" 
       using f2 by simp
@@ -1289,7 +1289,7 @@ text \<open>General lemmata required to compute probabilities.\<close>
 
 lemma aux_comp_with_sqrt2:
   shows "(sqrt 2)^n * (sqrt 2)^n = 2^n"
-  by (smt power_mult_distrib real_sqrt_mult_self)
+  by (smt (verit) power_mult_distrib real_sqrt_mult_self)
 
 lemma aux_comp_with_sqrt2_bis [simp]:
   shows "2^n/(sqrt(2)^n * sqrt(2)^(n+1)) = 1/sqrt 2"
@@ -1299,8 +1299,8 @@ lemma aux_ineq_with_card:
   fixes g:: "nat \<Rightarrow> nat" and A:: "nat set"
   assumes "finite A" 
   shows "(\<Sum>k\<in>A. (-1)^(g k)) \<le> card A" and "(\<Sum>k\<in>A. (-1)^(g k)) \<ge> -card A" 
-   apply (smt assms neg_one_even_power neg_one_odd_power card_eq_sum of_nat_1 of_nat_sum sum_mono)
-   apply (smt assms neg_one_even_power neg_one_odd_power card_eq_sum of_nat_1 of_nat_sum sum_mono sum_negf).
+   apply (smt (verit) assms neg_one_even_power neg_one_odd_power card_eq_sum of_nat_1 of_nat_sum sum_mono)
+   apply (smt (verit) assms neg_one_even_power neg_one_odd_power card_eq_sum of_nat_1 of_nat_sum sum_mono sum_negf).
 
 lemma aux_comp_with_cmod:
   fixes g:: "nat \<Rightarrow> nat"
@@ -1333,7 +1333,7 @@ lemma square_less:
   fixes a n:: real
   assumes "a < n" and "a > -n" 
   shows "a\<^sup>2 < n\<^sup>2"
-  using assms by (smt power2_eq_iff power2_minus power_less_imp_less_base)
+  using assms by (smt (verit) power2_eq_iff power2_minus power_less_imp_less_base)
 
 lemma cmod_square_real [simp]:
   fixes n:: real
@@ -1380,7 +1380,7 @@ proof-
     = (cmod (\<Sum>k::nat<2^n. (-1)^(f k + 1 + ((1 div 2) \<cdot>\<^bsub>n\<^esub> k))/(sqrt(2)^n * sqrt(2)^(n+1))))\<^sup>2"
       using \<psi>\<^sub>3_dim by simp
     ultimately have "(cmod(jozsa_algo $$ (1,0)))\<^sup>2 = (cmod(\<Sum>k::nat<2^n. -1/(sqrt(2)^n * sqrt(2)^(n+1))))\<^sup>2"
-      by (smt lessThan_iff power_one_right sum.cong)
+      by (smt (verit) lessThan_iff power_one_right sum.cong)
     also have "... = (cmod(-1/(sqrt(2))))\<^sup>2" 
       using aux_comp_with_sqrt2_bis by simp
     also have "... = 1/2" 
@@ -1474,13 +1474,13 @@ proof-
       moreover have "- int (2^n - 1) \<le> (\<Sum>k\<in>{i| i:: nat. i < 2^n}-{x}. (-(1::nat))^(f k))"
         using aux_ineq_with_card(2)[of "{i| i:: nat. i<2^n}-{x}"] f0 by simp
       ultimately show ?thesis
-        by (smt diff_le_self of_nat_1 of_nat_add of_nat_power_le_of_nat_cancel_iff one_add_one)
+        by (smt (verit) diff_le_self of_nat_1 of_nat_add of_nat_power_le_of_nat_cancel_iff one_add_one)
    qed
    ultimately show ?thesis
      using cmod_less of_int_of_nat_eq of_nat_numeral of_nat_power by (metis (no_types, lifting))
   qed
   then have "(cmod (\<Sum>k::nat<2^n. (-(1::nat))^(f k)))\<^sup>2 < (2^n)\<^sup>2"
-    using square_less norm_ge_zero by smt
+    using square_less norm_ge_zero by (smt (verit))
   thus ?thesis
     by (simp add: power_even_eq)
 qed
@@ -1527,13 +1527,13 @@ proof-
       moreover have "- int (2^n - 1) \<le> (\<Sum>k\<in>{i| i:: nat. i < 2^n}-{x}. (-(1::nat))^(f k + 1))"
         using aux_ineq_with_card(2)[of "{i| i:: nat. i<2^n}-{x}" "\<lambda>k. f k + 1"] f0 by simp
       ultimately show ?thesis
-        by (smt diff_le_self of_nat_1 of_nat_add of_nat_power_le_of_nat_cancel_iff one_add_one)
+        by (smt (verit) diff_le_self of_nat_1 of_nat_add of_nat_power_le_of_nat_cancel_iff one_add_one)
    qed
    ultimately show ?thesis
      using cmod_less of_int_of_nat_eq of_nat_numeral of_nat_power by (metis (no_types, lifting))
   qed
   then have "(cmod (\<Sum>k::nat<2^n. (-(1::nat))^(f k + 1)))\<^sup>2 < (2^n)\<^sup>2"
-    using square_less norm_ge_zero by smt
+    using square_less norm_ge_zero by (smt (verit))
   thus ?thesis
     by (simp add: power_even_eq)
 qed
@@ -1605,7 +1605,7 @@ proof-
     by (simp add: power_divide)
   also have "... = ((cmod (\<Sum>k::nat<(2::nat)^n. (-1)^(f k)) ) )\<^sup>2/(2^(2*n+1))
                  + ((cmod(\<Sum>k::nat<(2::nat)^n. (-1)^(f k + 1))))\<^sup>2 /(2^(2*n+1))"
-    by (smt left_add_twice power2_eq_square power_add power_mult_distrib real_sqrt_pow2)
+    by (smt (verit) left_add_twice power2_eq_square power_add power_mult_distrib real_sqrt_pow2)
   also have "... = (((cmod (\<Sum>k::nat<(2::nat)^n. (-1)^(f k))))\<^sup>2 
                  + ((cmod(\<Sum>k::nat<(2::nat)^n. (-1)^(f k + 1))))\<^sup>2)/(2^(2*n+1)) "
     by (simp add: add_divide_distrib)

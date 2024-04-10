@@ -110,7 +110,7 @@ proof -
                    mult.Tensor (*) [[A $$ (0,0), A $$ (1,0)]] [[B $$ (0,0), B $$ (1,0)]]" by simp
   thus ?thesis
     using mult.Tensor_def[of "(1::complex)" "(*)"] mult.times_def[of "(1::complex)" "(*)"]
-    by (smt append_self_conv list.simps(6) mult.Tensor.simps(2) mult.vec_mat_Tensor.simps(1) 
+    by (smt (verit) append_self_conv list.simps(6) mult.Tensor.simps(2) mult.vec_mat_Tensor.simps(1) 
 mult.vec_mat_Tensor.simps(2) plus_mult_cpx plus_mult_def tensor_prod_2)
 qed
 
@@ -135,7 +135,7 @@ lemma mat_tensor_prod_2_col [simp]:
 proof
   show f1:"dim_vec (Matrix.col (v \<Otimes> w) 0) = dim_vec (Matrix.col v 0 \<otimes> Matrix.col w 0)"
     using assms vec_tensor_prod_2_bis
-    by (smt Tensor.mat_of_cols_list_def dim_col dim_row_mat(1) dim_vec mat_tensor_prod_2_prelim state.state_to_state_qbit)
+    by (smt (verit) Tensor.mat_of_cols_list_def dim_col dim_row_mat(1) dim_vec mat_tensor_prod_2_prelim state.state_to_state_qbit)
 next
   show "\<And>i. i<dim_vec (Matrix.col v 0 \<otimes> Matrix.col w 0) \<Longrightarrow> Matrix.col (v \<Otimes> w) 0 $ i = (Matrix.col v 0 \<otimes> Matrix.col w 0) $ i"
   proof -
@@ -143,24 +143,24 @@ next
       by (metis (no_types, lifting) assms(1) assms(2) dim_vec state.state_to_state_qbit vec_tensor_prod_2_bis)
     moreover have "(Matrix.col v 0 \<otimes> Matrix.col w 0) $ 0 = v $$ (0,0) * w $$ (0,0)"
       using assms vec_tensor_prod_2 state.state_to_state_qbit col_index_of_mat_col
-      by (smt nth_Cons_0 power_one_right state_def vec_of_list_index zero_less_numeral)
+      by (smt (verit) nth_Cons_0 power_one_right state_def vec_of_list_index zero_less_numeral)
     moreover have "\<dots> = Matrix.col (v \<Otimes> w) 0 $ 0"
       using assms by simp
     moreover have "(Matrix.col v 0 \<otimes> Matrix.col w 0) $ 1 = v $$ (0,0) * w $$ (1,0)"
       using assms vec_tensor_prod_2 state.state_to_state_qbit col_index_of_mat_col 
-      by (smt One_nat_def Suc_1 lessI nth_Cons_0 power_one_right state_def vec_index_vCons_Suc 
+      by (smt (verit) One_nat_def Suc_1 lessI nth_Cons_0 power_one_right state_def vec_index_vCons_Suc 
 vec_of_list_Cons vec_of_list_index zero_less_numeral)
     moreover have "\<dots> = Matrix.col (v \<Otimes> w) 0 $ 1"
       using assms by simp
     moreover have "(Matrix.col v 0 \<otimes> Matrix.col w 0) $ 2 = v $$ (1,0) * w $$ (0,0)"
       using assms vec_tensor_prod_2 state.state_to_state_qbit col_index_of_mat_col
-      by (smt One_nat_def Suc_1 lessI nth_Cons_0 power_one_right state_def vec_index_vCons_Suc 
+      by (smt (verit) One_nat_def Suc_1 lessI nth_Cons_0 power_one_right state_def vec_index_vCons_Suc 
 vec_of_list_Cons vec_of_list_index zero_less_numeral)
     moreover have "\<dots> = Matrix.col (v \<Otimes> w) 0 $ 2"
       using assms by simp
     moreover have "(Matrix.col v 0 \<otimes> Matrix.col w 0) $ 3 = v $$ (1,0) * w $$ (1,0)"
       using assms vec_tensor_prod_2 state.state_to_state_qbit col_index_of_mat_col numeral_3_eq_3
-  by (smt One_nat_def Suc_1 lessI nth_Cons_0 power_one_right state_def vec_index_vCons_Suc 
+  by (smt (verit) One_nat_def Suc_1 lessI nth_Cons_0 power_one_right state_def vec_index_vCons_Suc 
 vec_of_list_Cons vec_of_list_index zero_less_numeral)
     moreover have "\<dots> = Matrix.col (v \<Otimes> w) 0 $ 3"
       using assms by simp
@@ -280,7 +280,7 @@ nth_Cons_0 numeral_2_eq_2 numeral_Bit0 plus_1_eq_Suc vec_of_list_Cons zero_less_
       have "(\<Sum>i<4. (cmod (l ! i))\<^sup>2) = (cmod (l ! 0))\<^sup>2 + (cmod (l ! 1))\<^sup>2 + (cmod (l ! 2))\<^sup>2 + 
 (cmod (l ! 3))\<^sup>2"
         using sum_insert
-        by (smt One_nat_def empty_iff finite.emptyI finite.insertI insertE lessThan_0 lessThan_Suc 
+        by (smt (verit) One_nat_def empty_iff finite.emptyI finite.insertI insertE lessThan_0 lessThan_Suc 
 numeral_2_eq_2 numeral_3_eq_3 numeral_plus_one one_plus_numeral_commute plus_1_eq_Suc semiring_norm(2) 
 semiring_norm(8) sum.empty) 
       also have "\<dots> = (cmod (u $$ (0,0) * v $$ (0,0)))\<^sup>2 + (cmod(u $$ (0,0) * v $$ (1,0)))\<^sup>2 + 
@@ -327,7 +327,7 @@ next
   have "(\<Sum>i<(a+1)*b. f (i div b) * g (i mod b)) = (\<Sum>i<a*b. f (i div b) * g (i mod b)) + 
 (\<Sum>i\<in>{a*b..<(a+1)*b}. f (i div b) * g (i mod b))"
     apply (auto simp: algebra_simps)
-    by (smt add.commute mult_Suc sum.lessThan_Suc sum.nat_group)
+    by (smt (verit) add.commute mult_Suc sum.lessThan_Suc sum.nat_group)
   also have "\<dots> = (\<Sum>i<a. f(i)) * (\<Sum>j<b. g(j)) + (\<Sum>i\<in>{a*b..<(a+1)*b}. f (i div b) * g (i mod b))"
     by (simp add: Suc.IH)
   also have "\<dots> = (\<Sum>i<a. f(i)) * (\<Sum>j<b. g(j)) + (\<Sum>i\<in>{a*b..<(a+1)*b}. f (a) * g(i-a*b))" by simp
@@ -357,7 +357,7 @@ proof
     moreover have "(\<Sum>i<2^n. (cmod (v $$ (i, 0)))\<^sup>2) = (\<Sum>i<2^n. complex_of_real ((cmod (v $$ (i, 0)))\<^sup>2))" by simp
     ultimately show ?thesis
       using sum_prod[of "\<lambda>i. (cmod (u $$ (i , 0)))\<^sup>2" "2^n" "\<lambda>i. (cmod (v $$ (i , 0)))\<^sup>2" "2^m"]
-      by (smt of_real_eq_iff of_real_mult power_add)
+      by (smt (verit) of_real_eq_iff of_real_mult power_add)
   qed
   also have "\<dots> = 1"
   proof-

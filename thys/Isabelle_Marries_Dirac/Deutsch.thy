@@ -150,7 +150,7 @@ proof
   assume "i < dim_row V\<^sub>f" and "j < dim_col V\<^sub>f"
   then have "i < 4" and "j < 4" by auto
   thus "U\<^sub>f $$ (i,j) = V\<^sub>f $$ (i,j)"
-    by (smt deutsch_transform_alt_rep_coeff deutsch_transform_alt_rep_coeff_is_zero deutsch_transform_coeff
+    by (smt (verit) deutsch_transform_alt_rep_coeff deutsch_transform_alt_rep_coeff_is_zero deutsch_transform_coeff
  deutsch_transform_coeff_is_zero set_4_disj)
 qed
 

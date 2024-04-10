@@ -50,7 +50,7 @@ lemma unit_cpx_vec_length [simp]:
 proof -
   have "(\<Sum>j<n. (cmod((unit_vec n i) $ j))\<^sup>2) = (\<Sum>j<n. if j = i then 1 else 0)"
     using norm_vec_index_unit_vec_is_0 norm_vec_index_unit_vec_is_1
-    by (smt lessThan_iff one_power2 sum.cong zero_power2) 
+    by (smt (verit) lessThan_iff one_power2 sum.cong zero_power2) 
   also have "\<dots> = 1"
     using assms by simp
   finally have "sqrt (\<Sum>j<n. (cmod((unit_vec n i) $ j))\<^sup>2) = 1" 
@@ -265,8 +265,7 @@ next
   then have "(M * N)\<^sup>\<star> $$ (i,j) = cnj (\<Sum>k<(dim_row N). M $$ (i,k) * N $$ (k,j))"
     using assms cpx_mat_cnj_def index_mat times_mat_def scalar_prod_def row_def col_def 
 dim_row_of_cjn_prod dim_col_of_cjn_prod
-    by (smt case_prod_conv dim_col index_mult_mat(2) index_mult_mat(3) index_vec lessThan_atLeast0 
-        lessThan_iff sum.cong)
+    by simp
   also have "\<dots> = (\<Sum>k<(dim_row N). cnj(M $$ (i,k)) * cnj(N $$ (k,j)))" by simp
   also have "((M\<^sup>\<star>) * (N\<^sup>\<star>)) $$ (i,j) = 
     (\<Sum>k<(dim_row N). cnj(M $$ (i,k)) * cnj(N $$ (k,j)))"
@@ -380,7 +379,7 @@ next
     qed
     moreover have "(G1 * G2) * ((G1 * G2)\<^sup>\<dagger>) = 1\<^sub>m (dim_row (G1 * G2))"
       using assms calculation
-      by (smt carrier_matI dim_col_of_dagger dim_row_of_dagger gate.dim_row gate.square_mat index_mult_mat(2) index_mult_mat(3) 
+      by (smt (verit) carrier_matI dim_col_of_dagger dim_row_of_dagger gate.dim_row gate.square_mat index_mult_mat(2) index_mult_mat(3) 
           mat_mult_left_right_inverse square_mat.elims(2))
     ultimately show ?thesis using unitary_def by simp
   qed
@@ -477,7 +476,7 @@ lemma inner_prod_with_row_bra_vec [simp]:
   assumes "dim_vec u = dim_vec v"
   shows "\<langle>u|v\<rangle> = row (bra_vec u) 0 \<bullet> v"
   using assms inner_prod_def scalar_prod_def row_bra_vec index_vec
-  by (smt lessThan_atLeast0 lessThan_iff sum.cong)
+  by (smt (verit) lessThan_atLeast0 lessThan_iff sum.cong)
 
 lemma inner_prod_with_row_bra_vec_col_ket_vec [simp]:
   assumes "dim_vec u = dim_vec v"
@@ -496,7 +495,7 @@ lemma orthogonal_unit_vec [simp]:
 proof-
   have "\<langle>unit_vec n i|unit_vec n j\<rangle> = unit_vec n i \<bullet> unit_vec n j"
     using assms unit_vec_def inner_prod_def scalar_prod_def
-    by (smt complex_cnj_zero index_unit_vec(3) index_vec inner_prod_with_row_bra_vec row_bra_vec 
+    by (smt (verit) complex_cnj_zero index_unit_vec(3) index_vec inner_prod_with_row_bra_vec row_bra_vec 
         scalar_prod_right_unit)
   thus ?thesis
     using assms scalar_prod_def unit_vec_def by simp 
@@ -545,7 +544,7 @@ lemma inner_prod_with_itself_eq0 [simp]:
   assumes "u = 0\<^sub>v (dim_vec u)"
   shows "\<langle>u|u\<rangle> = 0"
   using assms inner_prod_def zero_vec_def
-  by (smt atLeastLessThan_iff complex_cnj_zero index_zero_vec(1) mult_zero_left sum.neutral)
+  by (smt (verit) atLeastLessThan_iff complex_cnj_zero index_zero_vec(1) mult_zero_left sum.neutral)
 
 lemma inner_prod_with_itself_Re:
   "Re (\<langle>u|u\<rangle>) \<ge> 0"
@@ -593,7 +592,7 @@ proof -
     using cpx_vec_length_def complex_of_real_def
     by (metis (no_types, lifting) real_sqrt_power real_sqrt_unique sum_nonneg zero_le_power2)
   also have "\<dots> = (\<Sum>i<dim_vec v. cnj (v $ i) * (v $ i))"
-    using complex_norm_square mult.commute by (smt of_real_sum sum.cong)
+    using complex_norm_square mult.commute by (smt (verit) of_real_sum sum.cong)
   finally show ?thesis
     using inner_prod_def by (simp add: lessThan_atLeast0)
 qed
@@ -639,7 +638,7 @@ next
     using a2 by simp 
   ultimately have "cnj((A * v) $$ (j,0)) = (row \<langle>v| 0) \<bullet> (col (A\<^sup>\<dagger>) j)"
     using assms scalar_prod_def
-    by (smt dim_vec index_vec lessThan_atLeast0 lessThan_iff sum.cong)
+    by (smt (verit) dim_vec index_vec lessThan_atLeast0 lessThan_iff sum.cong)
   then have "\<langle>A * v| $$ (0,j) = (\<langle>v| * (A\<^sup>\<dagger>)) $$ (0,j)"
     using bra_def times_mat_def a2 by simp
   thus "\<langle>A * |v\<rangle>| $$ (i, j) = (\<langle>v| * (A\<^sup>\<dagger>)) $$ (i, j)" 
@@ -685,7 +684,7 @@ next
   assume "j < dim_vec (col_fst (A * |unit_vec n i\<rangle>))"
   then show "col A i $ j = (A * |unit_vec n i\<rangle>) $ j"
     using assms times_mat_def ket_vec_def
-    by (smt col_fst_is_col dim_col dim_col_mat(1) index_col index_mult_mat(1) index_mult_mat(2) 
+    by (smt (verit) col_fst_is_col dim_col dim_col_mat(1) index_col index_mult_mat(1) index_mult_mat(2) 
 index_row(1) ket_vec_col less_numeral_extra(1) scalar_prod_right_unit)
 qed
 
@@ -712,7 +711,7 @@ proof -
     using assms(2) by simp
   ultimately have "\<langle>U * |v\<rangle>|U * |v\<rangle> \<rangle> = (\<langle>|v\<rangle>| * ((U\<^sup>\<dagger>) * U) * |v\<rangle>) $$ (0,0)"
     using assoc_mult_mat
-    by(smt carrier_mat_triv dim_row_mat(1) dagger_def ket_vec_def mat_carrier times_mat_def)
+    by(smt (verit, ccfv_threshold) carrier_mat_triv dim_row_mat(1) dagger_def ket_vec_def mat_carrier times_mat_def)
   then have "\<langle>U * |v\<rangle>|U * |v\<rangle> \<rangle> = (\<langle>|v\<rangle>| * |v\<rangle>) $$ (0,0)"
     using assms f1 unitary_def by simp
   thus ?thesis
@@ -979,7 +978,7 @@ lemma inner_prod_with_unitary_mat [simp]:
 proof -
   have f1:"\<langle>U * |u\<rangle>|U * |v\<rangle>\<rangle> = (\<langle>|u\<rangle>| * (U\<^sup>\<dagger>) * U * |v\<rangle>) $$ (0,0)"
     using assms(2-3) bra_mat_on_vec mult_ket_vec_is_ket_vec_of_mult
-    by (smt assoc_mult_mat carrier_mat_triv col_fst_def dim_vec dim_col_of_dagger index_mult_mat(2) 
+    by (smt (verit, ccfv_threshold) assoc_mult_mat carrier_mat_triv col_fst_def dim_vec dim_col_of_dagger index_mult_mat(2) 
         index_mult_mat(3) inner_prod_with_times_mat ket_vec_def mat_carrier)
   moreover have f2:"\<langle>|u\<rangle>| \<in> carrier_mat 1 (dim_vec v)"
     using bra_def ket_vec_def assms(2-3) by simp
@@ -1190,7 +1189,7 @@ proof-
   moreover have "j < 2"
     using assms(2) by (simp add: H_without_scalar_prod less_2_cases)
   ultimately show ?thesis 
-    using assms(3) H_without_scalar_prod by(smt One_nat_def index_mat(1) less_2_cases old.prod.case)
+    using assms(3) H_without_scalar_prod by (smt (verit) One_nat_def index_mat(1) less_2_cases old.prod.case)
 qed
 
 lemma H_values_right_bottom:
