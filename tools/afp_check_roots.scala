@@ -41,7 +41,8 @@ object AFP_Check_Roots {
         case Nil => true
         case offenders =>
           val msg = failure_msg + offenders.map("\n" + failure_format(_)).mkString
-          progress.echo_error_message(msg)
+          if (is_error) progress.echo_error_message(msg)
+          else progress.echo_warning(msg)
           false
       }
   }
@@ -66,7 +67,7 @@ object AFP_Check_Roots {
             info = structure(session_name)
             if !info.groups.toSet.subsetOf(Sessions.afp_groups) || !info.groups.contains("AFP")
           } yield (session_name, info.groups),
-        t => t._1 + "{" + t._2.mkString(", ") + "}"),
+        t => t._1 + ": {" + t._2.mkString(", ") + "}"),
       Check[String]("presence",
         "The following entries do not contain a corresponding session on top level:",
         (structure, sessions, check_dirs) =>
